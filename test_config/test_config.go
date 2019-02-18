@@ -46,7 +46,7 @@ func init() {
 func setTestConfig() {
 	TestConfig = viper.New()
 	TestConfig.SetConfigName("private")
-	TestConfig.AddConfigPath("$GOPATH/src/github.com/vulcanize/vulcanizedb/environments/")
+	TestConfig.AddConfigPath("$GOPATH/src/github.com/vulcanize/mcd_transformers/environments/")
 	err := TestConfig.ReadInConfig()
 	ipc := TestConfig.GetString("client.ipcPath")
 	if err != nil {
@@ -55,7 +55,6 @@ func setTestConfig() {
 	hn := TestConfig.GetString("database.hostname")
 	port := TestConfig.GetInt("database.port")
 	name := TestConfig.GetString("database.name")
-
 	DBConfig = config.Database{
 		Hostname: hn,
 		Name:     name,
@@ -69,7 +68,7 @@ func setTestConfig() {
 func setInfuraConfig() {
 	Infura = viper.New()
 	Infura.SetConfigName("infura")
-	Infura.AddConfigPath("$GOPATH/src/github.com/vulcanize/vulcanizedb/environments/")
+	Infura.AddConfigPath("$GOPATH/src/github.com/vulcanize/mcd_transformers/environments/")
 	err := Infura.ReadInConfig()
 	ipc := Infura.GetString("client.ipcpath")
 	if err != nil {

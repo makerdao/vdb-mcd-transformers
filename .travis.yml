@@ -7,9 +7,9 @@ services:
 addons:
   postgresql: "9.6"
   ssh_known_hosts:
-    - 147.75.96.51
+   - 147.75.96.51
 
-go_import_path: github.com/vulcanize/vulcanizedb
+go_import_path: github.com/vulcanize/mcd_transformers
 
 before_install:
   # ginkgo golint dep goose
@@ -25,12 +25,9 @@ before_script:
   - sudo -u postgres createdb vulcanize_private
   - make version_migrations
   - make migrate NAME=vulcanize_private
-  - bash ./pkg/transformers/start_test_chain.sh
-  - cd postgraphile && yarn
+  - bash ./scripts/start_test_chain.sh
 
 script:
-  - yarn test
-  - cd ../
   - make test
   - make integrationtest
 
@@ -38,5 +35,6 @@ notifications:
   email: false
 
 after_script:
-  - bash ./pkg/transformers/stop_test_chain.sh
+  - bash ./scripts/stop_test_chain.sh
   - bash ./bin/deploy.sh
+

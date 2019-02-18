@@ -1,8 +1,8 @@
-# Vulcanize DB
+# [MakerDAO](https://makerdao.com) [VulcanizeDB](https://github.com/vulcanize/vulcanizedb) Transformers
 
 [![Join the chat at https://gitter.im/vulcanizeio/VulcanizeDB](https://badges.gitter.im/vulcanizeio/VulcanizeDB.svg)](https://gitter.im/vulcanizeio/VulcanizeDB?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-[![Build Status](https://travis-ci.com/vulcanize/maker-vulcanizedb.svg?token=MKcE2K7CRvKtdxSSnbap&branch=staging)](https://travis-ci.com/vulcanize/maker-vulcanizedb)
+[![Build Status](https://travis-ci.com/vulcanize/mcd_transformers.svg?token=MKcE2K7CRvKtdxSSnbap&branch=staging)](https://travis-ci.com/vulcanize/mcd_transformers)
 
 ## About
 
@@ -168,37 +168,3 @@ If you have full rinkeby chaindata you can move it to `rinkeby_vulcanizedb_geth_
 1. you will need to make sure you have ssh agent running and your ssh key added to it. instructions [here](https://developer.github.com/v3/guides/using-ssh-agent-forwarding/#your-key-must-be-available-to-ssh-agent)
 1. `go get -u github.com/pressly/sup/cmd/sup`
 1. `sup staging deploy`
-
-## omniWatcher 
-These commands require a pre-synced (full or light) vulcanizeDB (see above sections) 
- 
-To watch all events of a contract using a light synced vDB:  
-    - Execute `./vulcanizedb omniWatcher --config <path to config.toml> --contract-address <contract address>`  
-    
-Or if you are using a full synced vDB, change the mode to full:  
-    - Execute `./vulcanizedb omniWatcher --mode full --config <path to config.toml> --contract-address <contract address>`  
-    
-To watch contracts on a network other than mainnet, use the network flag:  
-    - Execute `./vulcanizedb omniWatcher --config <path to config.toml> --contract-address <contract address> --network <ropsten, kovan, or rinkeby>`  
-    
-To watch events starting at a certain block use the starting block flag:
-    - Execute `./vulcanizedb omniWatcher --config <path to config.toml> --contract-address <contract address> --starting-block-number <#>`
-    
-To watch only specified events use the events flag:  
-    - Execute `./vulcanizedb omniWatcher --config <path to config.toml> --contract-address <contract address> --events <EventName1> --events <EventName2>`  
-    
-To watch events and poll the specified methods with any addresses and hashes emitted by the watched events utilize the methods flag:  
-    - Execute `./vulcanizedb omniWatcher --config <path to config.toml> --contract-address <contract address> --methods <methodName1> --methods <methodName2>`  
-    
-To watch specified events and poll the specified method with any addresses and hashes emitted by the watched events:  
-    - Execute `./vulcanizedb omniWatcher --config <path to config.toml> --contract-address <contract address> --events <EventName1> --events <EventName2> --methods <methodName>`  
-    
-To turn on method piping so that values returned from previous method calls are cached and used as arguments in subsequent method calls:  
-    - Execute `./vulcanizedb omniWatcher --config <path to config.toml> --piping true --contract-address <contract address> --events <EventName1> --events <EventName2> --methods <methodName>`  
-    
-To watch all types of events of the contract but only persist the ones that emit one of the filtered-for argument values:  
-    - Execute `./vulcanizedb omniWatcher --config <path to config.toml> --contract-address <contract address> --event-args <arg1> --event-args <arg2>`  
-    
-To watch all events of the contract but only poll the specified method with specified argument values (if they are emitted from the watched events):  
-    - Execute `./vulcanizedb omniWatcher --config <path to config.toml> --contract-address <contract address> --methods <methodName> --method-args <arg1> --method-args <arg2>`  
-

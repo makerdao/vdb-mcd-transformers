@@ -48,7 +48,6 @@ lint:
 
 .PHONY: test
 test: | $(GINKGO) $(LINT)
-	go get -t ./...
 	go vet ./...
 	go fmt ./...
 	$(GINKGO) -r --skipPackage=integration_tests,integration
@@ -57,7 +56,7 @@ test: | $(GINKGO) $(LINT)
 integrationtest: | $(GINKGO) $(LINT)
 	go vet ./...
 	go fmt ./...
-	$(GINKGO) -r pkg/transformers/integration_tests/ integration_test/
+	$(GINKGO) -r transformers/integration_tests/
 
 .PHONY: dep
 dep: | $(DEP)
@@ -87,7 +86,7 @@ checkdbvars:
 checkmigration:
 	test -n "$(MIGRATION)" # $$MIGRATION
 
-# Check that the migration name is provided
+## Check that the migration name is provided
 .PHONY: checkmigname
 checkmigname:
 	test -n "$(NAME)" # $$NAME

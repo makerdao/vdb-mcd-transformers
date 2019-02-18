@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 10.6
--- Dumped by pg_dump version 10.6
+-- Dumped from database version 10.5
+-- Dumped by pg_dump version 10.4
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -2462,9 +2462,9 @@ ALTER SEQUENCE public.blocks_id_seq OWNED BY public.blocks.id;
 CREATE TABLE public.checked_headers (
     id integer NOT NULL,
     header_id integer NOT NULL,
-    price_feeds_checked integer DEFAULT 0 NOT NULL,
     flip_kick_checked integer DEFAULT 0 NOT NULL,
     frob_checked integer DEFAULT 0 NOT NULL,
+    price_feeds_checked integer DEFAULT 0 NOT NULL,
     tend_checked integer DEFAULT 0 NOT NULL,
     bite_checked integer DEFAULT 0 NOT NULL,
     dent_checked integer DEFAULT 0 NOT NULL,
