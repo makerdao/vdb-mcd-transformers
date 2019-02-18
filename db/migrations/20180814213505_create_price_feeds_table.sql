@@ -11,6 +11,12 @@ CREATE TABLE maker.price_feeds (
   UNIQUE (header_id, medianizer_address, tx_idx, log_idx)
 );
 
+ALTER TABLE public.checked_headers
+  ADD COLUMN price_feeds_checked BOOLEAN NOT NULL DEFAULT FALSE;
+
 
 -- +goose Down
 DROP TABLE maker.price_feeds;
+
+ALTER TABLE public.checked_headers
+  DROP COLUMN price_feeds_checked;

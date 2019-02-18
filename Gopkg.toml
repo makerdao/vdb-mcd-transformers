@@ -20,34 +20,22 @@
 #  name = "github.com/x/y"
 #  version = "2.4.0"
 
-
 [[override]]
   name = "gopkg.in/fsnotify.v1"
   source = "gopkg.in/fsnotify/fsnotify.v1"
 
-[[override]]
-  name = "github.com/pressly/sup"
-  version = "0.5.3"
-
 [[constraint]]
-  name = "github.com/onsi/ginkgo"
-  version = "1.4.0"
-
-[[constraint]]
-  branch = "master"
-  name = "github.com/jmoiron/sqlx"
-
-[[constraint]]
-  branch = "master"
-  name = "github.com/lib/pq"
+  name = "github.com/vulcanize/vulcanizedb"
+  source = "github.com/vulcanize/maker-vulcanizedb"
+  branch = "compose_and_execute"
 
 [[constraint]]
   name = "github.com/sirupsen/logrus"
   version = "1.2.0"
 
 [[constraint]]
-  name = "github.com/spf13/cobra"
-  version = "0.0.1"
+  name = "github.com/onsi/ginkgo"
+  version = "1.4.0"
 
 [[constraint]]
   name = "github.com/ethereum/go-ethereum"
