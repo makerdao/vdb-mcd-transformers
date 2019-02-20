@@ -83,15 +83,16 @@ var _ = Describe("VatFold Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResults []vat_fold.VatFoldModel
-		err = db.Select(&dbResults, `SELECT ilk, urn, rate from maker.vat_fold`)
+		err = db.Select(&dbResults, `SELECT urn, rate from maker.vat_fold`)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResults)).To(Equal(1))
 		dbResult := dbResults[0]
 		ilkID, err := shared.GetOrCreateIlk("5245500000000000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
-		Expect(dbResult.Ilk).To(Equal(strconv.Itoa(ilkID)))
-		Expect(dbResult.Urn).To(Equal("0000000000000000000000003728e9777b2a0a611ee0f89e00e01044ce4736d1"))
+		urnID, err := shared.GetOrCreateUrn("0000000000000000000000003728e9777b2a0a611ee0f89e00e01044ce4736d1", ilkID, db)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(dbResult.Urn).To(Equal(strconv.Itoa(urnID)))
 		Expect(dbResult.Rate).To(Equal("0.000000000000000000000000000"))
 	})
 
@@ -139,15 +140,16 @@ var _ = Describe("VatFold Transformer", func() {
 		Expect(vatFoldChecked[0]).To(Equal(2))
 
 		var dbResults []vat_fold.VatFoldModel
-		err = db.Select(&dbResults, `SELECT ilk, urn, rate from maker.vat_fold`)
+		err = db.Select(&dbResults, `SELECT urn, rate from maker.vat_fold`)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResults)).To(Equal(1))
 		dbResult := dbResults[0]
 		ilkID, err := shared.GetOrCreateIlk("5245500000000000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
-		Expect(dbResult.Ilk).To(Equal(strconv.Itoa(ilkID)))
-		Expect(dbResult.Urn).To(Equal("0000000000000000000000003728e9777b2a0a611ee0f89e00e01044ce4736d1"))
+		urnID, err := shared.GetOrCreateUrn("0000000000000000000000003728e9777b2a0a611ee0f89e00e01044ce4736d1", ilkID, db)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(dbResult.Urn).To(Equal(strconv.Itoa(urnID)))
 		Expect(dbResult.Rate).To(Equal("0.000000000000000000000000000"))
 	})
 })

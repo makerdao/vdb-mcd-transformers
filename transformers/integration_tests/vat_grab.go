@@ -17,12 +17,12 @@
 package integration_tests
 
 import (
-	"math/big"
-	"strconv"
-
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
+	"math/big"
+	"strconv"
 
 	c2 "github.com/vulcanize/vulcanizedb/libraries/shared/constants"
 	fetch "github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
@@ -33,7 +33,6 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 )
 
 var _ = Describe("Vat Grab Transformer", func() {
@@ -76,14 +75,15 @@ var _ = Describe("Vat Grab Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []vat_grab.VatGrabModel
-		err = db.Select(&dbResult, `SELECT ilk, urn, v, w, dink, dart from maker.vat_grab`)
+		err = db.Select(&dbResult, `SELECT urn, v, w, dink, dart from maker.vat_grab`)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))
 		ilkID, err := shared.GetOrCreateIlk("5245500000000000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
-		Expect(dbResult[0].Ilk).To(Equal(strconv.Itoa(ilkID)))
-		Expect(dbResult[0].Urn).To(Equal("0000000000000000000000006a3ae20c315e845b2e398e68effe39139ec6060c"))
+		urnID, err := shared.GetOrCreateUrn("0000000000000000000000006a3ae20c315e845b2e398e68effe39139ec6060c", ilkID, db)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(dbResult[0].Urn).To(Equal(strconv.Itoa(urnID)))
 		Expect(dbResult[0].V).To(Equal("0000000000000000000000002f34f22a00ee4b7a8f8bbc4eaee1658774c624e0")) //cat contract address as bytes32
 		Expect(dbResult[0].W).To(Equal("0000000000000000000000003728e9777b2a0a611ee0f89e00e01044ce4736d1"))
 		expectedDink := new(big.Int)
@@ -146,14 +146,15 @@ var _ = Describe("Vat Grab Transformer", func() {
 		Expect(vatGrabChecked[0]).To(Equal(2))
 
 		var dbResult []vat_grab.VatGrabModel
-		err = db.Select(&dbResult, `SELECT ilk, urn, v, w, dink, dart from maker.vat_grab`)
+		err = db.Select(&dbResult, `SELECT urn, v, w, dink, dart from maker.vat_grab`)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))
 		ilkID, err := shared.GetOrCreateIlk("5245500000000000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
-		Expect(dbResult[0].Ilk).To(Equal(strconv.Itoa(ilkID)))
-		Expect(dbResult[0].Urn).To(Equal("0000000000000000000000006a3ae20c315e845b2e398e68effe39139ec6060c"))
+		urnID, err := shared.GetOrCreateUrn("0000000000000000000000006a3ae20c315e845b2e398e68effe39139ec6060c", ilkID, db)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(dbResult[0].Urn).To(Equal(strconv.Itoa(urnID)))
 		Expect(dbResult[0].V).To(Equal("0000000000000000000000002f34f22a00ee4b7a8f8bbc4eaee1658774c624e0")) //cat contract address
 		Expect(dbResult[0].W).To(Equal("0000000000000000000000003728e9777b2a0a611ee0f89e00e01044ce4736d1"))
 		expectedDink := new(big.Int)

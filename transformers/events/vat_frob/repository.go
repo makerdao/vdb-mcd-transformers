@@ -57,10 +57,22 @@ func (repository VatFrobRepository) Create(headerID int64, models []interface{})
 			return ilkErr
 		}
 
-		_, execErr := tx.Exec(`INSERT INTO maker.vat_frob (header_id, ilk, urn, v, w, dink, dart, raw_log, log_idx, tx_idx)
-		VALUES($1, $2::NUMERIC, $3, $4, $5, $6::NUMERIC, $7::NUMERIC, $8, $9, $10)
-		ON CONFLICT (header_id, tx_idx, log_idx) DO UPDATE SET ilk = $2, urn = $3, v = $4, w = $5, dink = $6, dart = $7, raw_log = $8;`,
-			headerID, ilkID, vatFrobModel.Urn, vatFrobModel.V, vatFrobModel.W, vatFrobModel.Dink, vatFrobModel.Dart, vatFrobModel.Raw, vatFrobModel.LogIndex, vatFrobModel.TransactionIndex)
+		urnID, urnErr := shared.GetOrCreateUrnInTransaction(vatFrobModel.Urn, ilkID, tx)
+		if urnErr != nil {
+			rollbackErr := tx.Rollback()
+			if rollbackErr != nil {
+				log.Error("failed to rollback", rollbackErr)
+			}
+			return urnErr
+		}
+
+		_, execErr := tx.Exec(
+			`INSERT INTO maker.vat_frob (header_id, urn, v, w, dink, dart, raw_log, log_idx, tx_idx)
+			VALUES($1, $2::NUMERIC, $3, $4, $5::NUMERIC, $6::NUMERIC, $7, $8, $9)
+			ON CONFLICT (header_id, tx_idx, log_idx)
+			DO UPDATE SET urn = $2, v = $3, w = $4, dink = $5, dart = $6, raw_log = $7;`,
+			headerID, urnID, vatFrobModel.V, vatFrobModel.W, vatFrobModel.Dink, vatFrobModel.Dart, vatFrobModel.Raw,
+			vatFrobModel.LogIndex, vatFrobModel.TransactionIndex)
 		if execErr != nil {
 			rollbackErr := tx.Rollback()
 			if rollbackErr != nil {

@@ -24,20 +24,25 @@ AS
 
 $body$
 WITH
-  ilks AS ( SELECT id, ilk FROM maker.ilks ),
+  urns AS (
+    SELECT urns.id AS urn_id, ilks.id AS ilk_id, ilks.ilk, urns.guy
+    FROM maker.urns urns
+    LEFT JOIN maker.ilks ilks
+    ON urns.ilk = ilks.id
+  ),
 
   inks AS ( -- Latest ink for each urn
-    SELECT DISTINCT ON (ilk, urn) ilk, urn, ink, block_number
+    SELECT DISTINCT ON (urn) urn, ink, block_number
     FROM maker.vat_urn_ink
     WHERE block_number <= block_height
-    ORDER BY ilk, urn, block_number DESC
+    ORDER BY urn, block_number DESC
   ),
 
   arts AS ( -- Latest art for each urn
-    SELECT DISTINCT ON (ilk, urn) ilk, urn, art, block_number
+    SELECT DISTINCT ON (urn) urn, art, block_number
     FROM maker.vat_urn_art
     WHERE block_number <= block_height
-    ORDER BY ilk, urn, block_number DESC
+    ORDER BY urn, block_number DESC
   ),
 
   rates AS ( -- Latest rate for each ilk
@@ -55,56 +60,57 @@ WITH
   ),
 
   ratio_data AS (
-    SELECT inks.ilk, inks.urn, ink, spot, art, rate
+    SELECT urns.ilk, urns.guy, inks.ink, spots.spot, arts.art, rates.rate
     FROM inks
-      JOIN arts ON arts.ilk = inks.ilk AND arts.urn = inks.urn
-      JOIN spots ON spots.ilk = arts.ilk
-      JOIN rates ON rates.ilk = arts.ilk
+      JOIN urns ON inks.urn = urns.urn_id
+      JOIN arts ON arts.urn = inks.urn
+      JOIN spots ON spots.ilk = urns.ilk_id
+      JOIN rates ON rates.ilk = spots.ilk
   ),
 
   ratios AS (
-    SELECT ilk, urn, ((1.0 * ink * spot) / NULLIF(art * rate, 0)) AS ratio FROM ratio_data
+    SELECT ilk, guy, ((1.0 * ink * spot) / NULLIF(art * rate, 0)) AS ratio FROM ratio_data
   ),
 
   safe AS (
-    SELECT ilk, urn, (ratio >= 1) AS safe FROM ratios
+    SELECT ilk, guy, (ratio >= 1) AS safe FROM ratios
   ),
 
   created AS (
-    SELECT ilk, urn, block_timestamp AS created
+    SELECT urn, block_timestamp AS created
     FROM
       (
-        SELECT DISTINCT ON (ilk, urn) ilk, urn, block_hash FROM maker.vat_urn_ink
-        ORDER BY ilk, urn, block_number ASC
+        SELECT DISTINCT ON (urn) urn, block_hash FROM maker.vat_urn_ink
+        ORDER BY urn, block_number ASC
       ) earliest_blocks
         LEFT JOIN public.headers ON hash = block_hash
   ),
 
   updated AS (
-    SELECT DISTINCT ON (ilk, urn) ilk, urn, headers.block_timestamp AS updated
+    SELECT DISTINCT ON (urn) urn, headers.block_timestamp AS updated
     FROM
       (
-        (SELECT DISTINCT ON (ilk, urn) ilk, urn, block_hash FROM maker.vat_urn_ink
+        (SELECT DISTINCT ON (urn) urn, block_hash FROM maker.vat_urn_ink
          WHERE block_number <= block_height
-         ORDER BY ilk, urn, block_number DESC)
+         ORDER BY urn, block_number DESC)
         UNION
-        (SELECT DISTINCT ON (ilk, urn) ilk, urn, block_hash FROM maker.vat_urn_art
+        (SELECT DISTINCT ON (urn) urn, block_hash FROM maker.vat_urn_art
          WHERE block_number <= block_height
-         ORDER BY ilk, urn, block_number DESC)
+         ORDER BY urn, block_number DESC)
       ) last_blocks
         LEFT JOIN public.headers ON headers.hash = last_blocks.block_hash
-    ORDER BY ilk, urn, headers.block_timestamp DESC
+    ORDER BY urn, headers.block_timestamp DESC
   )
 
-SELECT inks.urn, ilks.ilk, $1, inks.ink, arts.art, ratios.ratio,
+SELECT urns.guy, urns.ilk, $1, inks.ink, arts.art, ratios.ratio,
        COALESCE(safe.safe, arts.art = 0), created.created, updated.updated
 FROM inks
-  LEFT JOIN arts     ON arts.ilk = inks.ilk    AND arts.urn = inks.urn
-  LEFT JOIN ilks     ON ilks.id = arts.ilk
-  LEFT JOIN ratios   ON ratios.ilk = arts.ilk  AND ratios.urn = arts.urn
-  LEFT JOIN safe     ON safe.ilk = arts.ilk    AND safe.urn = arts.urn
-  LEFT JOIN created  ON created.ilk = arts.ilk AND created.urn = arts.urn
-  LEFT JOIN updated  ON updated.ilk = arts.ilk AND updated.urn = arts.urn
+  LEFT JOIN arts     ON arts.urn = inks.urn
+  LEFT JOIN urns     ON arts.urn = urns.urn_id
+  LEFT JOIN ratios   ON ratios.guy = urns.guy
+  LEFT JOIN safe     ON safe.guy = ratios.guy
+  LEFT JOIN created  ON created.urn = urns.urn_id
+  LEFT JOIN updated  ON updated.urn = urns.urn_id
   -- Add collections of frob and bite events?
 $body$
 LANGUAGE SQL;
