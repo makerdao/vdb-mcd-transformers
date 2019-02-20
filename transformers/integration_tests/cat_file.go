@@ -96,7 +96,7 @@ var _ = Describe("Cat File transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []chop_lump.CatFileChopLumpModel
-		err = db.Select(&dbResult, `SELECT ilk, what, data, log_idx FROM maker.cat_file_chop_lump`)
+		err = db.Select(&dbResult, `SELECT what, ilk, data, log_idx FROM maker.cat_file_chop_lump`)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(2))

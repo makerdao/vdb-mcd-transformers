@@ -41,11 +41,20 @@ func (repository VatTuneRepository) Create(headerID int64, models []interface{})
 			return ilkErr
 		}
 
+		urnID, urnErr := shared.GetOrCreateUrnInTransaction(vatTune.Urn, ilkID, tx)
+		if urnErr != nil {
+			rollbackErr := tx.Rollback()
+			if rollbackErr != nil {
+				log.Error("failed to rollback", rollbackErr)
+			}
+			return urnErr
+		}
+
 		_, execErr := tx.Exec(
-			`INSERT into maker.vat_tune (header_id, ilk, urn, v, w, dink, dart, tx_idx, log_idx, raw_log)
-	   VALUES($1, $2, $3, $4, $5, $6::NUMERIC, $7::NUMERIC, $8, $9, $10)
-		ON CONFLICT (header_id, tx_idx, log_idx) DO UPDATE SET ilk = $2, urn = $3, v = $4, w = $5, dink = $6, dart = $7, raw_log = $10;`,
-			headerID, ilkID, vatTune.Urn, vatTune.V, vatTune.W, vatTune.Dink, vatTune.Dart, vatTune.TransactionIndex, vatTune.LogIndex, vatTune.Raw,
+			`INSERT into maker.vat_tune (header_id, urn, v, w, dink, dart, tx_idx, log_idx, raw_log)
+	   VALUES($1, $2, $3, $4, $5::NUMERIC, $6::NUMERIC, $7, $8, $9)
+		ON CONFLICT (header_id, tx_idx, log_idx) DO UPDATE SET urn = $2, v = $3, w = $4, dink = $5, dart = $6, raw_log = $9;`,
+			headerID, urnID, vatTune.V, vatTune.W, vatTune.Dink, vatTune.Dart, vatTune.TransactionIndex, vatTune.LogIndex, vatTune.Raw,
 		)
 		if execErr != nil {
 			rollbackErr := tx.Rollback()

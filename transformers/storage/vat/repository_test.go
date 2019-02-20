@@ -326,7 +326,12 @@ var _ = Describe("Vat storage repository", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			var result DoubleMappingRes
-			err = db.Get(&result, `SELECT block_number, block_hash, ilk AS key_one, urn AS key_two, art AS value FROM maker.vat_urn_art`)
+			err = db.Get(&result, `
+				SELECT block_number, block_hash, ilks.id AS key_one, urns.guy AS key_two, art AS value
+				FROM maker.vat_urn_art
+				INNER JOIN maker.urns ON maker.urns.id = maker.vat_urn_art.urn
+				INNER JOIN maker.ilks on maker.urns.ilk = maker.ilks.id
+			`)
 			Expect(err).NotTo(HaveOccurred())
 			ilkID, err := shared.GetOrCreateIlk(fakeIlk, db)
 			Expect(err).NotTo(HaveOccurred())
@@ -361,7 +366,12 @@ var _ = Describe("Vat storage repository", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			var result DoubleMappingRes
-			err = db.Get(&result, `SELECT block_number, block_hash, ilk AS key_one, urn AS key_two, ink AS value FROM maker.vat_urn_ink`)
+			err = db.Get(&result, `
+				SELECT block_number, block_hash, ilks.id AS key_one, urns.guy AS key_two, ink AS value
+				FROM maker.vat_urn_ink
+				INNER JOIN maker.urns ON maker.urns.id = maker.vat_urn_ink.urn
+				INNER JOIN maker.ilks on maker.urns.ilk = maker.ilks.id
+			`)
 			Expect(err).NotTo(HaveOccurred())
 			ilkID, err := shared.GetOrCreateIlk(fakeIlk, db)
 			Expect(err).NotTo(HaveOccurred())

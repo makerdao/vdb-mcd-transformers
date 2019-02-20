@@ -75,8 +75,7 @@ CREATE TABLE maker.vat_urn_art (
   id            SERIAL PRIMARY KEY,
   block_number  BIGINT,
   block_hash    TEXT,
-  ilk           INTEGER NOT NULL REFERENCES maker.ilks (id),
-  urn           TEXT,
+  urn           INTEGER NOT NULL REFERENCES maker.urns (id),
   art           NUMERIC NOT NULL
 );
 
@@ -84,8 +83,7 @@ CREATE TABLE maker.vat_urn_ink (
   id            SERIAL PRIMARY KEY,
   block_number  BIGINT,
   block_hash    TEXT,
-  ilk           INTEGER NOT NULL REFERENCES maker.ilks (id),
-  urn           TEXT,
+  urn           INTEGER NOT NULL REFERENCES maker.urns (id),
   ink           NUMERIC NOT NULL
 );
 
