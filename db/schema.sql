@@ -3,7 +3,11 @@
 --
 
 -- Dumped from database version 10.5
+<<<<<<< HEAD
 -- Dumped by pg_dump version 10.4
+=======
+-- Dumped by pg_dump version 10.5
+>>>>>>> 08409ef0... Adds mapping, repository, migrations for drip
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -806,6 +810,168 @@ CREATE SEQUENCE maker.drip_file_vow_id_seq
 --
 
 ALTER SEQUENCE maker.drip_file_vow_id_seq OWNED BY maker.drip_file_vow.id;
+
+
+--
+-- Name: drip_ilk_rho; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.drip_ilk_rho (
+    id integer NOT NULL,
+    block_number bigint,
+    block_hash text,
+    ilk integer NOT NULL,
+    rho numeric NOT NULL
+);
+
+
+--
+-- Name: drip_ilk_rho_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.drip_ilk_rho_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: drip_ilk_rho_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.drip_ilk_rho_id_seq OWNED BY maker.drip_ilk_rho.id;
+
+
+--
+-- Name: drip_ilk_tax; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.drip_ilk_tax (
+    id integer NOT NULL,
+    block_number bigint,
+    block_hash text,
+    ilk integer NOT NULL,
+    tax numeric NOT NULL
+);
+
+
+--
+-- Name: drip_ilk_tax_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.drip_ilk_tax_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: drip_ilk_tax_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.drip_ilk_tax_id_seq OWNED BY maker.drip_ilk_tax.id;
+
+
+--
+-- Name: drip_repo; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.drip_repo (
+    id integer NOT NULL,
+    block_number bigint,
+    block_hash text,
+    repo text
+);
+
+
+--
+-- Name: drip_repo_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.drip_repo_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: drip_repo_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.drip_repo_id_seq OWNED BY maker.drip_repo.id;
+
+
+--
+-- Name: drip_vat; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.drip_vat (
+    id integer NOT NULL,
+    block_number bigint,
+    block_hash text,
+    vat text
+);
+
+
+--
+-- Name: drip_vat_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.drip_vat_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: drip_vat_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.drip_vat_id_seq OWNED BY maker.drip_vat.id;
+
+
+--
+-- Name: drip_vow; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.drip_vow (
+    id integer NOT NULL,
+    block_number bigint,
+    block_hash text,
+    vow text
+);
+
+
+--
+-- Name: drip_vow_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.drip_vow_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: drip_vow_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.drip_vow_id_seq OWNED BY maker.drip_vow.id;
 
 
 --
@@ -3022,6 +3188,41 @@ ALTER TABLE ONLY maker.drip_file_vow ALTER COLUMN id SET DEFAULT nextval('maker.
 
 
 --
+-- Name: drip_ilk_rho id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.drip_ilk_rho ALTER COLUMN id SET DEFAULT nextval('maker.drip_ilk_rho_id_seq'::regclass);
+
+
+--
+-- Name: drip_ilk_tax id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.drip_ilk_tax ALTER COLUMN id SET DEFAULT nextval('maker.drip_ilk_tax_id_seq'::regclass);
+
+
+--
+-- Name: drip_repo id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.drip_repo ALTER COLUMN id SET DEFAULT nextval('maker.drip_repo_id_seq'::regclass);
+
+
+--
+-- Name: drip_vat id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.drip_vat ALTER COLUMN id SET DEFAULT nextval('maker.drip_vat_id_seq'::regclass);
+
+
+--
+-- Name: drip_vow id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.drip_vow ALTER COLUMN id SET DEFAULT nextval('maker.drip_vow_id_seq'::regclass);
+
+
+--
 -- Name: flap_kick id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
@@ -3681,6 +3882,46 @@ ALTER TABLE ONLY maker.drip_file_vow
 
 ALTER TABLE ONLY maker.drip_file_vow
     ADD CONSTRAINT drip_file_vow_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: drip_ilk_rho drip_ilk_rho_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.drip_ilk_rho
+    ADD CONSTRAINT drip_ilk_rho_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: drip_ilk_tax drip_ilk_tax_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.drip_ilk_tax
+    ADD CONSTRAINT drip_ilk_tax_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: drip_repo drip_repo_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.drip_repo
+    ADD CONSTRAINT drip_repo_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: drip_vat drip_vat_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.drip_vat
+    ADD CONSTRAINT drip_vat_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: drip_vow drip_vow_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.drip_vow
+    ADD CONSTRAINT drip_vow_pkey PRIMARY KEY (id);
 
 
 --
@@ -4507,6 +4748,22 @@ ALTER TABLE ONLY maker.drip_file_repo
 
 ALTER TABLE ONLY maker.drip_file_vow
     ADD CONSTRAINT drip_file_vow_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: drip_ilk_rho drip_ilk_rho_ilk_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.drip_ilk_rho
+    ADD CONSTRAINT drip_ilk_rho_ilk_fkey FOREIGN KEY (ilk) REFERENCES maker.ilks(id);
+
+
+--
+-- Name: drip_ilk_tax drip_ilk_tax_ilk_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.drip_ilk_tax
+    ADD CONSTRAINT drip_ilk_tax_ilk_fkey FOREIGN KEY (ilk) REFERENCES maker.ilks(id);
 
 
 --

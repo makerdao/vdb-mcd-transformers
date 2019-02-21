@@ -38,6 +38,17 @@ var _ = Describe("Storage decoder", func() {
 		Expect(result).To(Equal(big.NewInt(0).SetBytes(fakeInt.Bytes()).String()))
 	})
 
+	It("decodes uint48", func() {
+		fakeInt := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000123")
+		row := shared.StorageDiffRow{StorageValue: fakeInt}
+		metadata := shared.StorageValueMetadata{Type: shared.Uint48}
+
+		result, err := shared.Decode(row, metadata)
+
+		Expect(err).NotTo(HaveOccurred())
+		Expect(result).To(Equal(big.NewInt(0).SetBytes(fakeInt.Bytes()).String()))
+	})
+
 	It("decodes address", func() {
 		fakeAddress := common.HexToAddress("0x12345")
 		row := utils.StorageDiffRow{StorageValue: fakeAddress.Hash()}
