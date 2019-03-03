@@ -45,7 +45,7 @@
   version = "v1.7.1"
 
 [[projects]]
-  digest = "1:3d26f660432345429f6b09595e4707ee12745547323bcd1dc91457125aefeedc"
+  digest = "1:49b5451a4ce27b50393cc0d4c6fdd9cf7fa148ee4c0dd9c1d6c515b232427022"
   name = "github.com/ethereum/go-ethereum"
   packages = [
     ".",
@@ -81,8 +81,8 @@
     "trie",
   ]
   pruneopts = ""
-  revision = "9dc5d1a915ac0e0bd8429d6ac41df50eec91de5f"
-  version = "v1.8.21"
+  revision = "c942700427557e3ff6de3aaf6b916e2f056c1ec2"
+  version = "v1.8.23"
 
 [[projects]]
   digest = "1:eb53021a8aa3f599d29c7102e65026242bdedce998a54837dc67f14b6a97c5fd"
@@ -380,12 +380,14 @@
   revision = "b001fa50d6b27f3f0bb175a87d0cb55426d0a0ae"
 
 [[projects]]
-  branch = "compose_and_execute"
-  digest = "1:8b82f859237c7821ef1779b0b796bd66a2bfb46074e3744b40b812d51c799f96"
+  branch = "staging"
+  digest = "1:957211b9594601eb8dbd64076aa8a37b31238888e2f16cb8aa0074fc6374b1f6"
   name = "github.com/vulcanize/vulcanizedb"
   packages = [
     "libraries/shared/chunker",
     "libraries/shared/constants",
+    "libraries/shared/factories",
+    "libraries/shared/factories/storage",
     "libraries/shared/fetcher",
     "libraries/shared/repository",
     "libraries/shared/storage",
@@ -413,7 +415,7 @@
     "pkg/plugin/writer",
   ]
   pruneopts = ""
-  revision = "a711309b0850721ef800715159ecb66b12c7a9c1"
+  revision = "22eecd5c5210b75577a4f71295864fecbf3f783f"
   source = "github.com/vulcanize/maker-vulcanizedb"
 
 [[projects]]
@@ -541,6 +543,8 @@
     "github.com/sirupsen/logrus",
     "github.com/spf13/viper",
     "github.com/vulcanize/vulcanizedb/libraries/shared/constants",
+    "github.com/vulcanize/vulcanizedb/libraries/shared/factories",
+    "github.com/vulcanize/vulcanizedb/libraries/shared/factories/storage",
     "github.com/vulcanize/vulcanizedb/libraries/shared/fetcher",
     "github.com/vulcanize/vulcanizedb/libraries/shared/repository",
     "github.com/vulcanize/vulcanizedb/libraries/shared/storage",
