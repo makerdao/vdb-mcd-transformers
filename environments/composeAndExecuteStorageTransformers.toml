@@ -13,7 +13,7 @@
 
 [exporter]
     home     = "github.com/vulcanize/vulcanizedb"
-    clone    = false
+    travis   = false
     name     = "storageTransformerExporter"
     save     = false
     transformerNames = [
