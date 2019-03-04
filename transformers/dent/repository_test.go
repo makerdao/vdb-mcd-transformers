@@ -17,6 +17,8 @@
 package dent_test
 
 import (
+	"strconv"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
@@ -80,10 +82,13 @@ var _ = Describe("Dent Repository", func() {
 			Expect(dbResult.TransactionIndex).To(Equal(test_data.DentModel.TransactionIndex))
 			Expect(dbResult.Raw).To(MatchJSON(test_data.DentModel.Raw))
 
+			blockTimestamp, parseIntErr := strconv.Atoi(fakes.FakeHeader.Timestamp)
+			Expect(parseIntErr).NotTo(HaveOccurred())
+			fakeHeaderTic := int64(blockTimestamp) + constants.TTL
 			var dbTic int64
 			err = db.Get(&dbTic, `SELECT tic FROM maker.dent WHERE header_id = $1`, headerID)
 			Expect(err).NotTo(HaveOccurred())
-			Expect(dbTic).To(Equal(fakes.FakeHeaderTic))
+			Expect(dbTic).To(Equal(fakeHeaderTic))
 		})
 	})
 

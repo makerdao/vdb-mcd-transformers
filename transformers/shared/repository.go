@@ -20,6 +20,8 @@ import (
 	"database/sql"
 
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
+
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
 func GetOrCreateIlk(ilk string, db *postgres.DB) (int, error) {
@@ -44,4 +46,15 @@ func GetOrCreateIlkInTransaction(ilk string, tx *sql.Tx) (int, error) {
 		}
 	}
 	return ilkID, err
+}
+
+func GetTicInTx(headerID int64, tx *sql.Tx) (int64, error) {
+	var blockTimestamp int64
+	err := tx.QueryRow(`SELECT block_timestamp FROM public.headers WHERE id = $1;`, headerID).Scan(&blockTimestamp)
+	if err != nil {
+		return 0, err
+	}
+
+	tic := blockTimestamp + constants.TTL
+	return tic, nil
 }
