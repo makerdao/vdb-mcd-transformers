@@ -40,16 +40,16 @@ import (
 
 var eventConfig = config.Plugin{
 	Home:  "github.com/vulcanize/mcd_transformers",
-	Clone: true,
+	Clone: false,
 	Transformers: map[string]config.Transformer{
 		"bite": {
-			Path:           "transformers/bite/initializer",
+			Path:           "transformers/events/bite/initializer",
 			Type:           config.EthEvent,
 			MigrationPath:  "db/migrations",
 			RepositoryPath: "github.com/vulcanize/mcd_transformers",
 		},
 		"deal": {
-			Path:           "transformers/deal/initializer",
+			Path:           "transformers/events/deal/initializer",
 			Type:           config.EthEvent,
 			MigrationPath:  "db/migrations",
 			RepositoryPath: "github.com/vulcanize/mcd_transformers",
@@ -62,16 +62,16 @@ var eventConfig = config.Plugin{
 
 var storageConfig = config.Plugin{
 	Home:  "github.com/vulcanize/mcd_transformers",
-	Clone: true,
+	Clone: false,
 	Transformers: map[string]config.Transformer{
 		"pit": {
-			Path:           "transformers/storage_diffs/maker/pit/initializer",
+			Path:           "transformers/storage/pit/initializer",
 			Type:           config.EthStorage,
 			MigrationPath:  "db/migrations",
 			RepositoryPath: "github.com/vulcanize/mcd_transformers",
 		},
 		"vat": {
-			Path:           "transformers/storage_diffs/maker/vat/initializer",
+			Path:           "transformers/storage/vat/initializer",
 			Type:           config.EthStorage,
 			MigrationPath:  "db/migrations",
 			RepositoryPath: "github.com/vulcanize/mcd_transformers",
@@ -84,28 +84,28 @@ var storageConfig = config.Plugin{
 
 var combinedConfig = config.Plugin{
 	Home:  "github.com/vulcanize/mcd_transformers",
-	Clone: true,
+	Clone: false,
 	Transformers: map[string]config.Transformer{
 		"bite": {
-			Path:           "transformers/bite/initializer",
+			Path:           "transformers/events/bite/initializer",
 			Type:           config.EthEvent,
 			MigrationPath:  "db/migrations",
 			RepositoryPath: "github.com/vulcanize/mcd_transformers",
 		},
 		"deal": {
-			Path:           "transformers/deal/initializer",
+			Path:           "transformers/events/deal/initializer",
 			Type:           config.EthEvent,
 			MigrationPath:  "db/migrations",
 			RepositoryPath: "github.com/vulcanize/mcd_transformers",
 		},
 		"pit": {
-			Path:           "transformers/storage_diffs/maker/pit/initializer",
+			Path:           "transformers/storage/pit/initializer",
 			Type:           config.EthStorage,
 			MigrationPath:  "db/migrations",
 			RepositoryPath: "github.com/vulcanize/mcd_transformers",
 		},
 		"vat": {
-			Path:           "transformers/storage_diffs/maker/vat/initializer",
+			Path:           "transformers/storage/vat/initializer",
 			Type:           config.EthStorage,
 			MigrationPath:  "db/migrations",
 			RepositoryPath: "github.com/vulcanize/mcd_transformers",
