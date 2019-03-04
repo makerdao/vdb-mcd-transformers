@@ -21,7 +21,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/vulcanize/mcd_transformers/transformers/frob"
+	"github.com/vulcanize/mcd_transformers/transformers/events/frob"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 	"math/big"
 )

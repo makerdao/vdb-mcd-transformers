@@ -21,9 +21,9 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/vulcanize/mcd_transformers/transformers/cat_file/chop_lump"
-	"github.com/vulcanize/mcd_transformers/transformers/cat_file/flip"
-	"github.com/vulcanize/mcd_transformers/transformers/cat_file/pit_vow"
+	"github.com/vulcanize/mcd_transformers/transformers/events/cat_file/chop_lump"
+	"github.com/vulcanize/mcd_transformers/transformers/events/cat_file/flip"
+	"github.com/vulcanize/mcd_transformers/transformers/events/cat_file/pit_vow"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 )
 

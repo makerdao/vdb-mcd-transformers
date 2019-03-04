@@ -24,22 +24,22 @@
         "drip"
     ]
     [exporter.pit]
-        path = "transformers/storage_diffs/maker/pit/initializer"
+        path = "transformers/storage/pit/initializer"
         type = "eth_storage"
         repository = "github.com/vulcanize/mcd_transformers"
         migrations = "db/migrations"
     [exporter.vat]
-        path = "transformers/storage_diffs/maker/vat/initializer"
+        path = "transformers/storage/vat/initializer"
         type = "eth_storage"
         repository = "github.com/vulcanize/mcd_transformers"
         migrations = "db/migrations"
     [exporter.vow]
-        path = "transformers/storage_diffs/maker/vow/initializer"
+        path = "transformers/storage/vow/initializer"
         type = "eth_storage"
         repository = "github.com/vulcanize/mcd_transformers"
         migrations = "db/migrations"
     [exporter.cat]
-        path = "transformers/storage_diffs/maker/cat/initializer"
+        path = "transformers/storage/cat/initializer"
         type = "eth_storage"
         repository = "github.com/vulcanize/mcd_transformers"
         migrations = "db/migrations"
