@@ -30,7 +30,7 @@ import (
 	"github.com/vulcanize/vulcanizedb/pkg/geth"
 
 	"github.com/vulcanize/mcd_transformers/test_config"
-	"github.com/vulcanize/mcd_transformers/transformers/bite"
+	"github.com/vulcanize/mcd_transformers/transformers/events/bite"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"

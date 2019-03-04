@@ -31,8 +31,8 @@ import (
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 
 	"github.com/vulcanize/mcd_transformers/test_config"
+	"github.com/vulcanize/mcd_transformers/transformers/events/vat_tune"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	"github.com/vulcanize/mcd_transformers/transformers/vat_tune"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/factories"
 )
 

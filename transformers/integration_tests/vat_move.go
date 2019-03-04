@@ -26,9 +26,9 @@ import (
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 
 	"github.com/vulcanize/mcd_transformers/test_config"
+	"github.com/vulcanize/mcd_transformers/transformers/events/vat_move"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
-	"github.com/vulcanize/mcd_transformers/transformers/vat_move"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/factories"
 )
 

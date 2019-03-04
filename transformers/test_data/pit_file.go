@@ -24,8 +24,8 @@ import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
 
-	"github.com/vulcanize/mcd_transformers/transformers/pit_file/debt_ceiling"
-	ilk2 "github.com/vulcanize/mcd_transformers/transformers/pit_file/ilk"
+	"github.com/vulcanize/mcd_transformers/transformers/events/pit_file/debt_ceiling"
+	ilk2 "github.com/vulcanize/mcd_transformers/transformers/events/pit_file/ilk"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 )

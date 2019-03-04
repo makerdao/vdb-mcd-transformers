@@ -22,17 +22,17 @@ import (
 	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/storage"
 
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
-	"github.com/vulcanize/mcd_transformers/transformers/storage_diffs/maker"
-	"github.com/vulcanize/mcd_transformers/transformers/storage_diffs/maker/cat"
-	"github.com/vulcanize/mcd_transformers/transformers/storage_diffs/maker/pit"
-	"github.com/vulcanize/mcd_transformers/transformers/storage_diffs/maker/vat"
-	"github.com/vulcanize/mcd_transformers/transformers/storage_diffs/maker/vow"
+	s2 "github.com/vulcanize/mcd_transformers/transformers/storage"
+	"github.com/vulcanize/mcd_transformers/transformers/storage/cat"
+	"github.com/vulcanize/mcd_transformers/transformers/storage/pit"
+	"github.com/vulcanize/mcd_transformers/transformers/storage/vat"
+	"github.com/vulcanize/mcd_transformers/transformers/storage/vow"
 )
 
 func GetCatStorageTransformer() storage.Transformer {
 	return storage.Transformer{
 		Address:    common.HexToAddress(constants.CatContractAddress()),
-		Mappings:   &cat.CatMappings{StorageRepository: &maker.MakerStorageRepository{}},
+		Mappings:   &cat.CatMappings{StorageRepository: &s2.MakerStorageRepository{}},
 		Repository: &cat.CatStorageRepository{},
 	}
 }
@@ -40,7 +40,7 @@ func GetCatStorageTransformer() storage.Transformer {
 func GetPitStorageTransformer() storage.Transformer {
 	return storage.Transformer{
 		Address:    common.HexToAddress(constants.PitContractAddress()),
-		Mappings:   &pit.PitMappings{StorageRepository: &maker.MakerStorageRepository{}},
+		Mappings:   &pit.PitMappings{StorageRepository: &s2.MakerStorageRepository{}},
 		Repository: &pit.PitStorageRepository{},
 	}
 }
@@ -48,7 +48,7 @@ func GetPitStorageTransformer() storage.Transformer {
 func GetVatStorageTransformer() storage.Transformer {
 	return storage.Transformer{
 		Address:    common.HexToAddress(constants.VatContractAddress()),
-		Mappings:   &vat.VatMappings{StorageRepository: &maker.MakerStorageRepository{}},
+		Mappings:   &vat.VatMappings{StorageRepository: &s2.MakerStorageRepository{}},
 		Repository: &vat.VatStorageRepository{},
 	}
 }
@@ -56,7 +56,7 @@ func GetVatStorageTransformer() storage.Transformer {
 func GetVowStorageTransformer() storage.Transformer {
 	return storage.Transformer{
 		Address:    common.HexToAddress(constants.VowContractAddress()),
-		Mappings:   &vow.VowMappings{StorageRepository: &maker.MakerStorageRepository{}},
+		Mappings:   &vow.VowMappings{StorageRepository: &s2.MakerStorageRepository{}},
 		Repository: &vow.VowStorageRepository{},
 	}
 }
