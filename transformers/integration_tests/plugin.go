@@ -39,8 +39,7 @@ import (
 )
 
 var eventConfig = config.Plugin{
-	Home:  "github.com/vulcanize/mcd_transformers",
-	Clone: false,
+	Home: "github.com/vulcanize/mcd_transformers",
 	Transformers: map[string]config.Transformer{
 		"bite": {
 			Path:           "transformers/events/bite/initializer",
@@ -61,8 +60,7 @@ var eventConfig = config.Plugin{
 }
 
 var storageConfig = config.Plugin{
-	Home:  "github.com/vulcanize/mcd_transformers",
-	Clone: false,
+	Home: "github.com/vulcanize/mcd_transformers",
 	Transformers: map[string]config.Transformer{
 		"pit": {
 			Path:           "transformers/storage/pit/initializer",
@@ -83,8 +81,7 @@ var storageConfig = config.Plugin{
 }
 
 var combinedConfig = config.Plugin{
-	Home:  "github.com/vulcanize/mcd_transformers",
-	Clone: false,
+	Home: "github.com/vulcanize/mcd_transformers",
 	Transformers: map[string]config.Transformer{
 		"bite": {
 			Path:           "transformers/events/bite/initializer",
