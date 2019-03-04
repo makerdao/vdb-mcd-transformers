@@ -25,6 +25,7 @@ import (
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
@@ -38,7 +39,7 @@ func (repository TendRepository) Create(headerID int64, models []interface{}) er
 		return dBaseErr
 	}
 
-	tic, getTicErr := repo.GetTicInTx(headerID, tx)
+	tic, getTicErr := shared.GetTicInTx(headerID, tx)
 	if getTicErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {

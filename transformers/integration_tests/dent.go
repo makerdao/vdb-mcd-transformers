@@ -87,7 +87,7 @@ var _ = Describe("Dent transformer", func() {
 		err = db.Get(&dbTic, `SELECT tic FROM maker.dent`)
 		Expect(err).NotTo(HaveOccurred())
 
-		actualTic := 1538637780 + c2.TTL
+		actualTic := 1538637780 + constants.TTL
 		Expect(dbTic).To(Equal(actualTic))
 	})
 
