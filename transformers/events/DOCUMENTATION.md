@@ -26,33 +26,33 @@ The transformer process for each of these different log types is the same, excep
 
 1. Pull an example event (from kovan / ganache etc.)
 1. Add event & method sig, contract address, `checked_headers` column name, and label to relevant files in [`constants`](../shared/constants)
-1. Write a test for the event sig in [`event_signature_generator_test.go`](../shared/event_signature_generator_test.go)
-1. Create DB table (using [`create_migration`](../../scripts/create_migration))
+1. Write a test for the event sig in [`event_signature_generator_test.go`](../shared/constants/event_signature_generator_test.go)
+1. Create DB table (using `make new_migration`
 1. Create columns in `checked_headers` in the _same_ migration
 1. Add a line to clean the new table `CleanTestDB` (in [`test_config.go`](../../test_config/test_config.go))
 1. Define `model.go`
-1. Create test event in [`test_data`](../../test_data)
+1. Create test event in [`test_data`](../test_data)
 1. Write converter + converter tests
 1. Write repository + repository tests
 1. Create converter + repository mocks
-1. Create an config object [`shared.TransformerConfig`](../shared/transformer.go) in `config.go`
+1. Create an config object [`shared.TransformerConfig`](https://github.com/vulcanize/maker-vulcanizedb/blob/staging/libraries/shared/transformer/event_transformer.go) in `config.go`
 1. Wire up transformer in [`transformers.go`](../transformers.go), remembering to add it to `TransformerInitializers()`
-1. Wire up transformer in [`continuousLogSync.go`](../../cmd/continuousLogSync.go)
-1. Manually trigger an event and check that it gets persisted to postgres
+1. Add transformer to config file for `composeAndExecute`.
+1. Manually trigger an event and check that it gets persisted to postgres.
 1. Create an integration test for the shiny new transformer in [`integration_tests`](../integration_tests)
 
 **Fetching Logs**
 
 1. Generate an example raw log event, by either:
 
-   - Pulling the log directly from the Kovan deployment ([address.go](https://github.com/8thlight/maker-vulcanizedb/blob/master/pkg/transformers/shared/constants/address.go)).
-   - Deploying the contract to a local chain and emiting the event manually.
+   - Pulling the log directly from the Kovan deployment.
+   - Deploying the contract to a local chain and emitting the event manually.
 
 1. Fetch the logs from the chain based on the example event's topic zero:
 
    - The topic zero is based on the keccak-256 hash of the log event's method signature. These are located in [`pkg/transformers/shared/constants/signature.go`](../shared/constants/signature.go).
-   - Fetching is done in batch from the [`watcher`](../../libraries/shared/watcher.go).
-   - The logs are then chunked up by the [`chunker`](../shared/log_chunker.go) before being delegated to each transformer.
+   - Fetching is done in batch from the [`watcher`](https://github.com/vulcanize/maker-vulcanizedb/blob/staging/libraries/shared/watcher/event_watcher.go).
+   - The logs are then chunked up by the [`chunker`](https://github.com/vulcanize/maker-vulcanizedb/blob/staging/libraries/shared/chunker/log_chunker.go) before being delegated to each transformer.
 
 **Coverting logs**
 
@@ -76,17 +76,17 @@ The transformer process for each of these different log types is the same, excep
             }
         ```
       - Using go-ethereum's `contract.UnpackLog` method we can unpack the raw log into the FlopperKick struct (which we're referring to as the `entity`).
-        - See the `ToEntity` method in [`pkg/transformers/flop_kick/converter.go`](flop_kick/converter.go).
+        - See the `ToEntity` method in [`events/flop_kick/converter.go`](flop_kick/converter.go).
   1.  Convert the entity into a database model. See the `ToModel` method in `pkg/transformers/flop_kick/converter`.
 
 - **Converting Price Feed custom events**
 
-  - Price Feed contracts use the [LogNote event](https://github.com/makerdao/medianizer/blob/master/src/medianizer.sol#L23)
+  - Price Feed contracts use the [LogNote event](https://github.com/dapphub/ds-note)
   - The LogNote event takes in the value of the price feed as it's sole argument, and does not index it. This means that this value can be taken directly from the log's data, and then properly converted using the `price_feeds.Convert` method (located in the model.go file).
   - Since this conversion from raw log to model includes less fields than some others, we've chosen to convert it directly to the database model, skipping the `ToEntity` step.
 
 - **Converting LogNote events** (such as tend)
-  - Since LogNote events are a generic structure, they depend on the method signature of the method that is calling them. For example, the `tend` method is called on the [flip.sol contract](https://github.com/makerdao/dss/blob/master/src/flip.sol#L117), and it's method signature looks like this: `tend(uint,uint,uint)`.
+  - Since LogNote events are a generic structure, they depend on the method signature of the method that is calling them. For example, the `tend` method is called on the [flip.sol contract](https://github.com/makerdao/dss/blob/master/src/flip.sol#L123), and it's method signature looks like this: `tend(uint,uint,uint)`.
     - The first four bytes of the Keccak-256 hashed method signature will be located in `topic[0]` on the log.
     - The message sender will be in `topic[1]`.
     - The first parameter passed to `tend` becomes `topic[2]`.
@@ -119,7 +119,7 @@ The transformer process for each of these different log types is the same, excep
 
 **Wire each component up in the transformer**
 
-- We use a [`TransformerInitializer`](../shared/transformer.go) struct for each transformer so that we can inject ethRPC and postgresDB connections as well as configuration data (including the contract address, block range, etc.) into the transformer.
+- We use a [`TransformerInitializer`](https://github.com/vulcanize/maker-vulcanizedb/blob/staging/libraries/shared/transformer/event_transformer.go) struct for each transformer so that we can inject ethRPC and postgresDB connections as well as configuration data (including the contract address, block range, etc.) into the transformer.
 - See any of `pkg/transformers/flop_kick/transformer.go`
 - All of the transformers are then initialized in `pkg/transformers/transformers.go` with their configuration.
 - The transformers can be executed by using the `continuousLogSync` command, which can be configured to run specific transformers or all transformers.
