@@ -101,7 +101,7 @@ rollback: $(GOOSE) checkdbvars
 	pg_dump -O -s $(CONNECT_STRING) > db/schema.sql
 
 
-## Rollbackt to a select migration (id/timestamp)
+## Rollback to a select migration (id/timestamp)
 .PHONY: rollback_to
 rollback_to: $(GOOSE) checkmigration checkdbvars
 	cd db/migrations;\
