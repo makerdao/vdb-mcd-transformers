@@ -17,15 +17,18 @@
 package drip_test
 
 import (
+	utils2 "github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
+	"strconv"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+
+	"github.com/vulcanize/mcd_transformers/test_config"
+	"github.com/vulcanize/mcd_transformers/transformers/storage_diffs/maker/drip"
+	. "github.com/vulcanize/mcd_transformers/transformers/storage_diffs/maker/test_helpers"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
-	shared2 "github.com/vulcanize/vulcanizedb/pkg/transformers/shared"
-	"github.com/vulcanize/vulcanizedb/pkg/transformers/storage_diffs/maker/drip"
-	. "github.com/vulcanize/vulcanizedb/pkg/transformers/storage_diffs/maker/test_helpers"
-	"github.com/vulcanize/vulcanizedb/pkg/transformers/storage_diffs/shared"
-	"github.com/vulcanize/vulcanizedb/test_config"
-	"strconv"
 )
 
 var _ = Describe("Drip storage repository", func() {
@@ -49,7 +52,7 @@ var _ = Describe("Drip storage repository", func() {
 	Describe("Ilk", func() {
 		Describe("Rho", func() {
 			It("writes a row", func() {
-				ilkRhoMetadata := shared.GetStorageValueMetadata(drip.IlkRho, map[shared.Key]string{shared.Ilk: fakeIlk}, shared.Uint256)
+				ilkRhoMetadata := utils.GetStorageValueMetadata(drip.IlkRho, map[utils.Key]string{constants.Ilk: fakeIlk}, utils.Uint256)
 
 				err := repo.Create(fakeBlockNumber, fakeBlockHash, ilkRhoMetadata, fakeUint256)
 
@@ -57,22 +60,22 @@ var _ = Describe("Drip storage repository", func() {
 				var result MappingRes
 				err = db.Get(&result, `SELECT block_number, block_hash, ilk AS key, rho AS VALUE FROM maker.drip_ilk_rho`)
 				Expect(err).NotTo(HaveOccurred())
-				ilkID, err := shared2.GetOrCreateIlk(fakeIlk, db)
+				ilkID, err := utils2.GetOrCreateIlk(fakeIlk, db)
 				Expect(err).NotTo(HaveOccurred())
 				AssertMapping(result, fakeBlockNumber, fakeBlockHash, strconv.Itoa(ilkID), fakeUint256)
 			})
 
 			It("returns an error if metadata missing ilk", func() {
-				malformedIlkRhoMetadata := shared.GetStorageValueMetadata(drip.IlkRho, nil, shared.Uint256)
+				malformedIlkRhoMetadata := utils.GetStorageValueMetadata(drip.IlkRho, nil, utils.Uint256)
 
 				err := repo.Create(fakeBlockNumber, fakeBlockHash, malformedIlkRhoMetadata, fakeUint256)
-				Expect(err).To(MatchError(shared.ErrMetadataMalformed{MissingData: shared.Ilk}))
+				Expect(err).To(MatchError(utils.ErrMetadataMalformed{MissingData: constants.Ilk}))
 			})
 		})
 
 		Describe("Tax", func() {
 			It("writes a row", func() {
-				ilkTaxMetadata := shared.GetStorageValueMetadata(drip.IlkTax, map[shared.Key]string{shared.Ilk: fakeIlk}, shared.Uint256)
+				ilkTaxMetadata := utils.GetStorageValueMetadata(drip.IlkTax, map[utils.Key]string{constants.Ilk: fakeIlk}, utils.Uint256)
 
 				err := repo.Create(fakeBlockNumber, fakeBlockHash, ilkTaxMetadata, fakeUint256)
 
@@ -80,17 +83,17 @@ var _ = Describe("Drip storage repository", func() {
 				var result MappingRes
 				err = db.Get(&result, `SELECT block_number, block_hash, ilk AS KEY, tax AS VALUE FROM maker.drip_ilk_tax`)
 				Expect(err).NotTo(HaveOccurred())
-				ilkID, err := shared2.GetOrCreateIlk(fakeIlk, db)
+				ilkID, err := utils2.GetOrCreateIlk(fakeIlk, db)
 				Expect(err).NotTo(HaveOccurred())
 
 				AssertMapping(result, fakeBlockNumber, fakeBlockHash, strconv.Itoa(ilkID), fakeUint256)
 			})
 
 			It("returns an error if metadata missing ilk", func() {
-				malformedIlkTaxMetadata := shared.GetStorageValueMetadata(drip.IlkTax, nil, shared.Uint256)
+				malformedIlkTaxMetadata := utils.GetStorageValueMetadata(drip.IlkTax, nil, utils.Uint256)
 
 				err := repo.Create(fakeBlockNumber, fakeBlockHash, malformedIlkTaxMetadata, fakeUint256)
-				Expect(err).To(MatchError(shared.ErrMetadataMalformed{MissingData: shared.Ilk}))
+				Expect(err).To(MatchError(utils.ErrMetadataMalformed{MissingData: constants.Ilk}))
 			})
 		})
 	})

@@ -18,10 +18,13 @@ package drip
 
 import (
 	"github.com/ethereum/go-ethereum/common"
+
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/mcd_transformers/transformers/storage_diffs/maker"
+
+	"github.com/vulcanize/vulcanizedb/libraries/shared/storage"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
-	"github.com/vulcanize/vulcanizedb/pkg/transformers/storage_diffs"
-	"github.com/vulcanize/vulcanizedb/pkg/transformers/storage_diffs/maker"
-	"github.com/vulcanize/vulcanizedb/pkg/transformers/storage_diffs/shared"
 )
 
 const (
@@ -33,28 +36,28 @@ const (
 )
 
 var (
-	IlkMappingIndex = storage_diffs.IndexOne
+	IlkMappingIndex = storage.IndexOne
 
-	VatKey      = common.HexToHash(storage_diffs.IndexTwo)
-	VatMetadata = shared.GetStorageValueMetadata(DripVat, nil, shared.Address)
+	VatKey      = common.HexToHash(storage.IndexTwo)
+	VatMetadata = utils.GetStorageValueMetadata(DripVat, nil, utils.Address)
 
-	VowKey      = common.HexToHash(storage_diffs.IndexThree)
-	VowMetadata = shared.GetStorageValueMetadata(DripVow, nil, shared.Bytes32)
+	VowKey      = common.HexToHash(storage.IndexThree)
+	VowMetadata = utils.GetStorageValueMetadata(DripVow, nil, utils.Bytes32)
 
-	RepoKey      = common.HexToHash(storage_diffs.IndexFour)
-	RepoMetadata = shared.GetStorageValueMetadata(DripRepo, nil, shared.Uint256)
+	RepoKey      = common.HexToHash(storage.IndexFour)
+	RepoMetadata = utils.GetStorageValueMetadata(DripRepo, nil, utils.Uint256)
 )
 
 type DripMappings struct {
 	StorageRepository maker.IMakerStorageRepository
-	mappings          map[common.Hash]shared.StorageValueMetadata
+	mappings          map[common.Hash]utils.StorageValueMetadata
 }
 
 func (mappings *DripMappings) SetDB(db *postgres.DB) {
 	mappings.StorageRepository.SetDB(db)
 }
 
-func (mappings *DripMappings) Lookup(key common.Hash) (shared.StorageValueMetadata, error) {
+func (mappings *DripMappings) Lookup(key common.Hash) (utils.StorageValueMetadata, error) {
 	metadata, ok := mappings.mappings[key]
 	if !ok {
 		err := mappings.loadMappings()
@@ -63,7 +66,7 @@ func (mappings *DripMappings) Lookup(key common.Hash) (shared.StorageValueMetada
 		}
 		metadata, ok = mappings.mappings[key]
 		if !ok {
-			return metadata, shared.ErrStorageKeyNotFound{Key: key.Hex()}
+			return metadata, utils.ErrStorageKeyNotFound{Key: key.Hex()}
 		}
 	}
 	return metadata, nil
@@ -82,8 +85,8 @@ func (mappings *DripMappings) loadMappings() error {
 	return nil
 }
 
-func getStaticMappings() map[common.Hash]shared.StorageValueMetadata {
-	mappings := make(map[common.Hash]shared.StorageValueMetadata)
+func getStaticMappings() map[common.Hash]utils.StorageValueMetadata {
+	mappings := make(map[common.Hash]utils.StorageValueMetadata)
 	mappings[VatKey] = VatMetadata
 	mappings[VowKey] = VowMetadata
 	mappings[RepoKey] = RepoMetadata
@@ -91,19 +94,19 @@ func getStaticMappings() map[common.Hash]shared.StorageValueMetadata {
 }
 
 func getTaxKey(ilk string) common.Hash {
-	return storage_diffs.GetMapping(IlkMappingIndex, ilk)
+	return storage.GetMapping(IlkMappingIndex, ilk)
 }
 
-func getTaxMetadata(ilk string) shared.StorageValueMetadata {
-	keys := map[shared.Key]string{shared.Ilk: ilk}
-	return shared.GetStorageValueMetadata(IlkTax, keys, shared.Uint256)
+func getTaxMetadata(ilk string) utils.StorageValueMetadata {
+	keys := map[utils.Key]string{constants.Ilk: ilk}
+	return utils.GetStorageValueMetadata(IlkTax, keys, utils.Uint256)
 }
 
 func getRhoKey(ilk string) common.Hash {
-	return storage_diffs.GetIncrementedKey(getTaxKey(ilk), 1)
+	return storage.GetIncrementedKey(getTaxKey(ilk), 1)
 }
 
-func getRhoMetadata(ilk string) shared.StorageValueMetadata {
-	keys := map[shared.Key]string{shared.Ilk: ilk}
-	return shared.GetStorageValueMetadata(IlkRho, keys, shared.Uint48)
+func getRhoMetadata(ilk string) utils.StorageValueMetadata {
+	keys := map[utils.Key]string{constants.Ilk: ilk}
+	return utils.GetStorageValueMetadata(IlkRho, keys, utils.Uint48)
 }

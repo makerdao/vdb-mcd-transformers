@@ -46,7 +46,7 @@ var (
 	DebtMetadata = utils.StorageValueMetadata{
 		Name: VatDebt,
 		Keys: nil,
-		Type: 0,
+		Type: utils.Uint256,
 	}
 
 	IlksMappingIndex = storage.IndexOne
@@ -59,7 +59,7 @@ var (
 	ViceMetadata = utils.StorageValueMetadata{
 		Name: VatVice,
 		Keys: nil,
-		Type: 0,
+		Type: utils.Uint256,
 	}
 )
 
