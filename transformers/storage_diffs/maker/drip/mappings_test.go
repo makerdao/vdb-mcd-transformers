@@ -21,10 +21,11 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/mcd_transformers/transformers/storage_diffs/maker/drip"
+	"github.com/vulcanize/mcd_transformers/transformers/storage_diffs/maker/test_helpers"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
-	"github.com/vulcanize/vulcanizedb/pkg/transformers/storage_diffs/maker/drip"
-	"github.com/vulcanize/vulcanizedb/pkg/transformers/storage_diffs/maker/test_helpers"
-	"github.com/vulcanize/vulcanizedb/pkg/transformers/storage_diffs/shared"
 	"math/big"
 )
 
@@ -45,7 +46,7 @@ var _ = Describe("drip storage mappings", func() {
 			_, err := mappings.Lookup(common.HexToHash(fakes.FakeHash.Hex()))
 
 			Expect(err).To(HaveOccurred())
-			Expect(err).To(MatchError(shared.ErrStorageKeyNotFound{Key: fakes.FakeHash.Hex()}))
+			Expect(err).To(MatchError(utils.ErrStorageKeyNotFound{Key: fakes.FakeHash.Hex()}))
 		})
 	})
 
@@ -65,10 +66,10 @@ var _ = Describe("drip storage mappings", func() {
 			storageRepository.Ilks = []string{fakeIlk}
 			mappings := drip.DripMappings{StorageRepository: storageRepository}
 			ilkTaxKey := common.BytesToHash(crypto.Keccak256(common.FromHex("0x" + fakeIlk + drip.IlkMappingIndex)))
-			expectedMetadata := shared.StorageValueMetadata{
+			expectedMetadata := utils.StorageValueMetadata{
 				Name: drip.IlkTax,
-				Keys: map[shared.Key]string{shared.Ilk: fakeIlk},
-				Type: shared.Uint256,
+				Keys: map[utils.Key]string{constants.Ilk: fakeIlk},
+				Type: utils.Uint256,
 			}
 
 			Expect(mappings.Lookup(ilkTaxKey)).To(Equal(expectedMetadata))
@@ -83,10 +84,10 @@ var _ = Describe("drip storage mappings", func() {
 			ilkTaxAsInt := big.NewInt(0).SetBytes(ilkTaxKeyBytes)
 			incrementedIlkTax := big.NewInt(0).Add(ilkTaxAsInt, big.NewInt(1))
 			ilkRhoKey := common.BytesToHash(incrementedIlkTax.Bytes())
-			expectedMetadata := shared.StorageValueMetadata{
+			expectedMetadata := utils.StorageValueMetadata{
 				Name: drip.IlkRho,
-				Keys: map[shared.Key]string{shared.Ilk: fakeIlk},
-				Type: shared.Uint48,
+				Keys: map[utils.Key]string{constants.Ilk: fakeIlk},
+				Type: utils.Uint48,
 			}
 
 			Expect(mappings.Lookup(ilkRhoKey)).To(Equal(expectedMetadata))
@@ -99,7 +100,7 @@ var _ = Describe("drip storage mappings", func() {
 			_, err := mappings.Lookup(fakes.FakeHash)
 
 			Expect(err).To(HaveOccurred())
-			Expect(err).To(MatchError(shared.ErrStorageKeyNotFound{Key: fakes.FakeHash.Hex()}))
+			Expect(err).To(MatchError(utils.ErrStorageKeyNotFound{Key: fakes.FakeHash.Hex()}))
 		})
 	})
 })

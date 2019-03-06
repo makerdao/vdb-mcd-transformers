@@ -18,9 +18,10 @@ package drip
 
 import (
 	"fmt"
+	shared2 "github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
-	shared2 "github.com/vulcanize/vulcanizedb/pkg/transformers/shared"
-	"github.com/vulcanize/vulcanizedb/pkg/transformers/storage_diffs/shared"
 )
 
 type DripStorageRepository struct {
@@ -31,7 +32,7 @@ func (repository *DripStorageRepository) SetDB(db *postgres.DB) {
 	repository.db = db
 }
 
-func (repository DripStorageRepository) Create(blockNumber int, blockHash string, metadata shared.StorageValueMetadata, value interface{}) error {
+func (repository DripStorageRepository) Create(blockNumber int, blockHash string, metadata utils.StorageValueMetadata, value interface{}) error {
 	switch metadata.Name {
 	case IlkRho:
 		return repository.insertIlkRho(blockNumber, blockHash, metadata, value.(string))
@@ -49,7 +50,7 @@ func (repository DripStorageRepository) Create(blockNumber int, blockHash string
 	}
 }
 
-func (repository DripStorageRepository) insertIlkRho(blockNumber int, blockHash string, metadata shared.StorageValueMetadata, rho string) error {
+func (repository DripStorageRepository) insertIlkRho(blockNumber int, blockHash string, metadata utils.StorageValueMetadata, rho string) error {
 	ilk, err := getIlk(metadata.Keys)
 	if err != nil {
 		return err
@@ -78,7 +79,7 @@ func (repository DripStorageRepository) insertIlkRho(blockNumber int, blockHash 
 	return tx.Commit()
 }
 
-func (repository DripStorageRepository) insertIlkTax(blockNumber int, blockHash string, metadata shared.StorageValueMetadata, tax string) error {
+func (repository DripStorageRepository) insertIlkTax(blockNumber int, blockHash string, metadata utils.StorageValueMetadata, tax string) error {
 	ilk, err := getIlk(metadata.Keys)
 	if err != nil {
 		return err
@@ -125,10 +126,10 @@ func (repository DripStorageRepository) insertDripRepo(blockNumber int, blockHas
 	return err
 }
 
-func getIlk(keys map[shared.Key]string) (string, error) {
-	ilk, ok := keys[shared.Ilk]
+func getIlk(keys map[utils.Key]string) (string, error) {
+	ilk, ok := keys[constants.Ilk]
 	if !ok {
-		return "", shared.ErrMetadataMalformed{MissingData: shared.Ilk}
+		return "", utils.ErrMetadataMalformed{MissingData: constants.Ilk}
 	}
 	return ilk, nil
 }
