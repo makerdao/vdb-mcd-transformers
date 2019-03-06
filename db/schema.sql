@@ -3,11 +3,7 @@
 --
 
 -- Dumped from database version 10.5
-<<<<<<< HEAD
--- Dumped by pg_dump version 10.4
-=======
 -- Dumped by pg_dump version 10.5
->>>>>>> 08409ef0... Adds mapping, repository, migrations for drip
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
