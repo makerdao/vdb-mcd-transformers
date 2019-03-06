@@ -90,7 +90,7 @@ func (repository *CatStorageRepository) insertIlkFlip(blockNumber int, blockHash
 	if err != nil {
 		return err
 	}
-	tx, txErr := repository.db.Begin()
+	tx, txErr := repository.db.Beginx()
 	if txErr != nil {
 		return txErr
 	}
@@ -120,7 +120,7 @@ func (repository *CatStorageRepository) insertIlkChop(blockNumber int, blockHash
 	if err != nil {
 		return err
 	}
-	tx, txErr := repository.db.Begin()
+	tx, txErr := repository.db.Beginx()
 	if txErr != nil {
 		return txErr
 	}
@@ -150,7 +150,7 @@ func (repository *CatStorageRepository) insertIlkLump(blockNumber int, blockHash
 	if err != nil {
 		return err
 	}
-	tx, txErr := repository.db.Begin()
+	tx, txErr := repository.db.Beginx()
 	if txErr != nil {
 		return txErr
 	}
@@ -181,7 +181,7 @@ func (repository *CatStorageRepository) insertFlipIlk(blockNumber int, blockHash
 	if err != nil {
 		return err
 	}
-	tx, txErr := repository.db.Begin()
+	tx, txErr := repository.db.Beginx()
 	if txErr != nil {
 		return txErr
 	}

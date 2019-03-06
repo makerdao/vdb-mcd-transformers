@@ -81,7 +81,7 @@ func (repository *VatStorageRepository) insertGem(blockNumber int, blockHash str
 	if guyErr != nil {
 		return guyErr
 	}
-	tx, txErr := repository.db.Begin()
+	tx, txErr := repository.db.Beginx()
 	if txErr != nil {
 		return txErr
 	}
@@ -109,7 +109,7 @@ func (repository *VatStorageRepository) insertIlkArt(blockNumber int, blockHash 
 	if err != nil {
 		return err
 	}
-	tx, txErr := repository.db.Begin()
+	tx, txErr := repository.db.Beginx()
 	if txErr != nil {
 		return txErr
 	}
@@ -137,7 +137,7 @@ func (repository *VatStorageRepository) insertIlkInk(blockNumber int, blockHash 
 	if err != nil {
 		return err
 	}
-	tx, txErr := repository.db.Begin()
+	tx, txErr := repository.db.Beginx()
 	if txErr != nil {
 		return txErr
 	}
@@ -165,7 +165,7 @@ func (repository *VatStorageRepository) insertIlkRate(blockNumber int, blockHash
 	if err != nil {
 		return err
 	}
-	tx, txErr := repository.db.Begin()
+	tx, txErr := repository.db.Beginx()
 	if txErr != nil {
 		return txErr
 	}
@@ -193,7 +193,7 @@ func (repository *VatStorageRepository) insertIlkTake(blockNumber int, blockHash
 	if err != nil {
 		return err
 	}
-	tx, txErr := repository.db.Begin()
+	tx, txErr := repository.db.Beginx()
 	if txErr != nil {
 		return txErr
 	}
@@ -234,7 +234,7 @@ func (repository *VatStorageRepository) insertUrnArt(blockNumber int, blockHash 
 	if guyErr != nil {
 		return guyErr
 	}
-	tx, txErr := repository.db.Begin()
+	tx, txErr := repository.db.Beginx()
 	if txErr != nil {
 		return txErr
 	}
@@ -266,7 +266,7 @@ func (repository *VatStorageRepository) insertUrnInk(blockNumber int, blockHash 
 	if guyErr != nil {
 		return guyErr
 	}
-	tx, txErr := repository.db.Begin()
+	tx, txErr := repository.db.Beginx()
 	if txErr != nil {
 		return txErr
 	}

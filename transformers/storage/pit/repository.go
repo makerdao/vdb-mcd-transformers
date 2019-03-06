@@ -58,7 +58,7 @@ func (repository PitStorageRepository) insertIlkLine(blockNumber int, blockHash 
 	if err != nil {
 		return err
 	}
-	tx, err := repository.db.Begin()
+	tx, err := repository.db.Beginx()
 	if err != nil {
 		return err
 	}
@@ -86,7 +86,7 @@ func (repository PitStorageRepository) insertIlkSpot(blockNumber int, blockHash 
 	if err != nil {
 		return err
 	}
-	tx, err := repository.db.Begin()
+	tx, err := repository.db.Beginx()
 	if err != nil {
 		return err
 	}

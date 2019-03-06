@@ -18,6 +18,7 @@ package shared
 
 import (
 	"database/sql"
+	"github.com/jmoiron/sqlx"
 
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 
@@ -36,9 +37,9 @@ func GetOrCreateIlk(ilk string, db *postgres.DB) (int, error) {
 	return ilkID, err
 }
 
-func GetOrCreateIlkInTransaction(ilk string, tx *sql.Tx) (int, error) {
+func GetOrCreateIlkInTransaction(ilk string, tx *sqlx.Tx) (int, error) {
 	var ilkID int
-	err := tx.QueryRow(`SELECT id FROM maker.ilks WHERE ilk = $1`, ilk).Scan(&ilkID)
+	err := tx.Get(&ilkID, `SELECT id FROM maker.ilks WHERE ilk = $1`, ilk)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			insertErr := tx.QueryRow(`INSERT INTO maker.ilks (ilk) VALUES ($1) RETURNING id`, ilk).Scan(&ilkID)
@@ -48,9 +49,9 @@ func GetOrCreateIlkInTransaction(ilk string, tx *sql.Tx) (int, error) {
 	return ilkID, err
 }
 
-func GetTicInTx(headerID int64, tx *sql.Tx) (int64, error) {
+func GetTicInTx(headerID int64, tx *sqlx.Tx) (int64, error) {
 	var blockTimestamp int64
-	err := tx.QueryRow(`SELECT block_timestamp FROM public.headers WHERE id = $1;`, headerID).Scan(&blockTimestamp)
+	err := tx.Get(&blockTimestamp, `SELECT block_timestamp FROM public.headers WHERE id = $1;`, headerID)
 	if err != nil {
 		return 0, err
 	}
