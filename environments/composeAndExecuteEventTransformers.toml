@@ -13,7 +13,6 @@
 
 [exporter]
     home     = "github.com/vulcanize/vulcanizedb"
-    travis   = false
     name     = "eventTransformerExporter"
     save     = false
     transformerNames = [

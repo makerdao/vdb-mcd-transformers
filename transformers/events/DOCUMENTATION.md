@@ -27,7 +27,7 @@ The transformer process for each of these different log types is the same, excep
 1. Pull an example event (from kovan / ganache etc.)
 1. Add event & method sig, contract address, `checked_headers` column name, and label to relevant files in [`constants`](../shared/constants)
 1. Write a test for the event sig in [`event_signature_generator_test.go`](../shared/constants/event_signature_generator_test.go)
-1. Create DB table (using `make new_migration`
+1. Create DB table (using `make new_migration`).
 1. Create columns in `checked_headers` in the _same_ migration
 1. Add a line to clean the new table `CleanTestDB` (in [`test_config.go`](../../test_config/test_config.go))
 1. Define `model.go`
