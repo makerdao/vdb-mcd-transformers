@@ -27,26 +27,31 @@
         type = "eth_storage"
         repository = "github.com/vulcanize/mcd_transformers"
         migrations = "db/migrations"
+        rank = "0"
     [exporter.vat]
         path = "transformers/storage/vat/initializer"
         type = "eth_storage"
         repository = "github.com/vulcanize/mcd_transformers"
         migrations = "db/migrations"
+        rank = "0"
     [exporter.vow]
         path = "transformers/storage/vow/initializer"
         type = "eth_storage"
         repository = "github.com/vulcanize/mcd_transformers"
         migrations = "db/migrations"
+        rank = "0"
     [exporter.cat]
         path = "transformers/storage/cat/initializer"
         type = "eth_storage"
         repository = "github.com/vulcanize/mcd_transformers"
         migrations = "db/migrations"
+        rank = "0"
     [exporter.drip]
         path = "transformers/storage/drip/initializer"
         type = "eth_storage"
         repository = "github.com/vulcanize/mcd_transformers"
         migrations = "db/migrations"
+        rank = "0"
 
 [filesystem]
     storageDiffsPath = "INSERT-PATH-TO-STORAGE-DIFFS"
