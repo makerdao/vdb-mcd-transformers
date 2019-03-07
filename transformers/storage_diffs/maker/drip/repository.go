@@ -67,8 +67,8 @@ func (repository DripStorageRepository) insertIlkRho(blockNumber int, blockHash 
 		}
 		return ilkErr
 	}
-	_, writeErr := tx.Exec(`INSERT INTO maker.drip_ilk_rho (block_number, block_hash, ilk, rho) 
-										VALUES ($1, $2, $3, $4)`, blockNumber, blockHash, ilkID, rho)
+	_, writeErr := tx.Exec(`INSERT INTO maker.drip_ilk_rho (block_number, block_hash, ilk, rho)
+                                  VALUES ($1, $2, $3, $4)`, blockNumber, blockHash, ilkID, rho)
 	if writeErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
@@ -101,7 +101,7 @@ func (repository DripStorageRepository) insertIlkTax(blockNumber int, blockHash 
 	if writeErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
-			return fmt.Errorf("failed to rollback transaction after failing to insert pit ilk spot: %s", writeErr.Error())
+			return fmt.Errorf("failed to rollback transaction after failing to insert drip ilk tax: %s", writeErr.Error())
 		}
 		return writeErr
 	}
@@ -109,20 +109,20 @@ func (repository DripStorageRepository) insertIlkTax(blockNumber int, blockHash 
 }
 
 func (repository DripStorageRepository) insertDripVat(blockNumber int, blockHash string, vat string) error {
-	_, err := repository.db.Exec(`INSERT INTO maker.drip_vat (block_number, block_hash, vat)  
-										VALUES ($1, $2, $3)`, blockNumber, blockHash, vat)
+	_, err := repository.db.Exec(`INSERT INTO maker.drip_vat (block_number, block_hash, vat)
+                                        VALUES ($1, $2, $3)`, blockNumber, blockHash, vat)
 	return err
 }
 
 func (repository DripStorageRepository) insertDripVow(blockNumber int, blockHash string, vow string) error {
-	_, err := repository.db.Exec(`INSERT INTO maker.drip_vow (block_number, block_hash, vow)  
-										VALUES ($1, $2, $3)`, blockNumber, blockHash, vow)
+	_, err := repository.db.Exec(`INSERT INTO maker.drip_vow (block_number, block_hash, vow)
+                                        VALUES ($1, $2, $3)`, blockNumber, blockHash, vow)
 	return err
 }
 
 func (repository DripStorageRepository) insertDripRepo(blockNumber int, blockHash string, repo string) error {
-	_, err := repository.db.Exec(`INSERT INTO maker.drip_repo (block_number, block_hash, repo)  
-										VALUES ($1, $2, $3)`, blockNumber, blockHash, repo)
+	_, err := repository.db.Exec(`INSERT INTO maker.drip_repo (block_number, block_hash, repo)
+                                        VALUES ($1, $2, $3)`, blockNumber, blockHash, repo)
 	return err
 }
 
