@@ -20,7 +20,8 @@
         "pit",
         "vat",
         "vow",
-        "cat"
+        "cat",
+        "drip"
     ]
     [exporter.pit]
         path = "transformers/storage_diffs/maker/pit/initializer"
@@ -42,6 +43,11 @@
         type = "eth_storage"
         repository = "github.com/vulcanize/mcd_transformers"
         migrations = "db/migrations"
+    [exporter.drip]
+        path = "transformers/storage_diffs/maker/drip/initializer"
+        type = "eth_storage"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
 
 [filesystem]
     storageDiffsPath = "INSERT-PATH-TO-STORAGE-DIFFS"
@@ -52,3 +58,4 @@
             vat      = "0xcd726790550afcd77e9a7a47e86a3f9010af126b"
             vow      = "0x3728e9777B2a0a611ee0F89e00E01044ce4736d1"
             cat      = "0x2f34f22a00ee4b7a8f8bbc4eaee1658774c624e0"
+            drip     = "0x891c04639a5edcae088e546fa125b5d7fb6a2b9d"
