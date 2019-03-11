@@ -24,7 +24,7 @@ import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
 
-	"github.com/vulcanize/mcd_transformers/transformers/tend"
+	"github.com/vulcanize/mcd_transformers/transformers/events/tend"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 )
 

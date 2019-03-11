@@ -33,9 +33,9 @@ import (
 	"github.com/vulcanize/vulcanizedb/pkg/geth/client"
 
 	"github.com/vulcanize/mcd_transformers/test_config"
-	"github.com/vulcanize/mcd_transformers/transformers/cat_file/chop_lump"
-	"github.com/vulcanize/mcd_transformers/transformers/cat_file/flip"
-	"github.com/vulcanize/mcd_transformers/transformers/cat_file/pit_vow"
+	"github.com/vulcanize/mcd_transformers/transformers/events/cat_file/chop_lump"
+	"github.com/vulcanize/mcd_transformers/transformers/events/cat_file/flip"
+	"github.com/vulcanize/mcd_transformers/transformers/events/cat_file/pit_vow"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"

@@ -29,7 +29,7 @@ import (
 	"strconv"
 
 	"github.com/vulcanize/mcd_transformers/test_config"
-	"github.com/vulcanize/mcd_transformers/transformers/drip_drip"
+	"github.com/vulcanize/mcd_transformers/transformers/events/drip_drip"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/factories"

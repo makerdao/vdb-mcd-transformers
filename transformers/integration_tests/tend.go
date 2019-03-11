@@ -28,8 +28,8 @@ import (
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 
 	"github.com/vulcanize/mcd_transformers/test_config"
+	"github.com/vulcanize/mcd_transformers/transformers/events/tend"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
-	"github.com/vulcanize/mcd_transformers/transformers/tend"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/factories"
 )
@@ -102,7 +102,7 @@ var _ = Describe("Tend LogNoteTransformer", func() {
 		err = db.Get(&dbTic, `SELECT tic FROM maker.tend`)
 		Expect(err).NotTo(HaveOccurred())
 
-		actualTic := 1538490276 + c2.TTL
+		actualTic := 1538490276 + constants.TTL
 		Expect(dbTic).To(Equal(actualTic))
 	})
 
@@ -148,7 +148,7 @@ var _ = Describe("Tend LogNoteTransformer", func() {
 		err = db.Get(&dbTic, `SELECT tic FROM maker.tend`)
 		Expect(err).NotTo(HaveOccurred())
 
-		actualTic := 1538490276 + c2.TTL
+		actualTic := 1538490276 + constants.TTL
 		Expect(dbTic).To(Equal(actualTic))
 	})
 
@@ -181,7 +181,7 @@ var _ = Describe("Tend LogNoteTransformer", func() {
 		err = db.Get(&dbTic, `SELECT tic FROM maker.tend`)
 		Expect(err).NotTo(HaveOccurred())
 
-		actualTic := 1538491224 + c2.TTL
+		actualTic := 1538491224 + constants.TTL
 		Expect(dbTic).To(Equal(actualTic))
 	})
 
@@ -214,7 +214,7 @@ var _ = Describe("Tend LogNoteTransformer", func() {
 		err = db.Get(&dbTic, `SELECT tic FROM maker.tend`)
 		Expect(err).NotTo(HaveOccurred())
 
-		actualTic := 1538992860 + c2.TTL
+		actualTic := 1538992860 + constants.TTL
 		Expect(dbTic).To(Equal(actualTic))
 	})
 })

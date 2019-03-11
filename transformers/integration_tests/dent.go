@@ -12,7 +12,7 @@ import (
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 
 	"github.com/vulcanize/mcd_transformers/test_config"
-	"github.com/vulcanize/mcd_transformers/transformers/dent"
+	"github.com/vulcanize/mcd_transformers/transformers/events/dent"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/factories"
@@ -87,7 +87,7 @@ var _ = Describe("Dent transformer", func() {
 		err = db.Get(&dbTic, `SELECT tic FROM maker.dent`)
 		Expect(err).NotTo(HaveOccurred())
 
-		actualTic := 1538637780 + c2.TTL
+		actualTic := 1538637780 + constants.TTL
 		Expect(dbTic).To(Equal(actualTic))
 	})
 

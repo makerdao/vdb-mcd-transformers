@@ -23,7 +23,7 @@ import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
 
-	"github.com/vulcanize/mcd_transformers/transformers/vat_move"
+	"github.com/vulcanize/mcd_transformers/transformers/events/vat_move"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 )
 
