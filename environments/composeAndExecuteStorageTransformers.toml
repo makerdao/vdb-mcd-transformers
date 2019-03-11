@@ -43,7 +43,7 @@
         repository = "github.com/vulcanize/mcd_transformers"
         migrations = "db/migrations"
     [exporter.drip]
-        path = "transformers/storage_diffs/maker/drip/initializer"
+        path = "transformers/storage/drip/initializer"
         type = "eth_storage"
         repository = "github.com/vulcanize/mcd_transformers"
         migrations = "db/migrations"
