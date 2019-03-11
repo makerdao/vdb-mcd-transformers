@@ -20,7 +20,7 @@ import (
 	"encoding/json"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/vulcanize/mcd_transformers/transformers/price_feeds"
+	"github.com/vulcanize/mcd_transformers/transformers/events/price_feeds"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 )
 

@@ -13,7 +13,6 @@
 
 [exporter]
     home     = "github.com/vulcanize/vulcanizedb"
-    clone    = false
     name     = "eventTransformerExporter"
     save     = false
     transformerNames = [
@@ -47,142 +46,142 @@
         "vow_flog"
     ]
     [exporter.bite]
-        path = "transformers/bite/initializer"
+        path = "transformers/events/bite/initializer"
         type = "eth_event"
         repository = "github.com/vulcanize/mcd_transformers"
         migrations = "db/migrations"
     [exporter.cat_chop_lump]
-        path = "transformers/cat_file/chop_lump/initializer"
+        path = "transformers/events/cat_file/chop_lump/initializer"
         type = "eth_event"
         repository = "github.com/vulcanize/mcd_transformers"
         migrations = "db/migrations"
     [exporter.cat_flip]
-        path = "transformers/cat_file/flip/initializer"
+        path = "transformers/events/cat_file/flip/initializer"
         type = "eth_event"
         repository = "github.com/vulcanize/mcd_transformers"
         migrations = "db/migrations"
     [exporter.cat_pit_vow]
-        path = "transformers/cat_file/pit_vow/initializer"
+        path = "transformers/events/cat_file/pit_vow/initializer"
         type = "eth_event"
         repository = "github.com/vulcanize/mcd_transformers"
         migrations = "db/migrations"
     [exporter.deal]
-        path = "transformers/deal/initializer"
+        path = "transformers/events/deal/initializer"
         type = "eth_event"
         repository = "github.com/vulcanize/mcd_transformers"
         migrations = "db/migrations"
     [exporter.dent]
-        path = "transformers/dent/initializer"
+        path = "transformers/events/dent/initializer"
         type = "eth_event"
         repository = "github.com/vulcanize/mcd_transformers"
         migrations = "db/migrations"
     [exporter.drip_drip]
-        path = "transformers/drip_drip/initializer"
+        path = "transformers/events/drip_drip/initializer"
         type = "eth_event"
         repository = "github.com/vulcanize/mcd_transformers"
         migrations = "db/migrations"
     [exporter.drip_file_ilk]
-        path = "transformers/drip_file/ilk/initializer"
+        path = "transformers/events/drip_file/ilk/initializer"
         type = "eth_event"
         repository = "github.com/vulcanize/mcd_transformers"
         migrations = "db/migrations"
     [exporter.drop_file_repo]
-        path = "transformers/drip_file/repo/initializer"
+        path = "transformers/events/drip_file/repo/initializer"
         type = "eth_event"
         repository = "github.com/vulcanize/mcd_transformers"
         migrations = "db/migrations"
     [exporter.drip_file_vow]
-        path = "transformers/drip_file/vow/initializer"
+        path = "transformers/events/drip_file/vow/initializer"
         type = "eth_event"
         repository = "github.com/vulcanize/mcd_transformers"
         migrations = "db/migrations"
     [exporter.flap_kick]
-        path = "transformers/flap_kick/initializer"
+        path = "transformers/events/flap_kick/initializer"
         type = "eth_event"
         repository = "github.com/vulcanize/mcd_transformers"
         migrations = "db/migrations"
     [exporter.flip_kick]
-        path = "transformers/flip_kick/initializer"
+        path = "transformers/events/flip_kick/initializer"
         type = "eth_event"
         repository = "github.com/vulcanize/mcd_transformers"
         migrations = "db/migrations"
     [exporter.flop_kick]
-        path = "transformers/flop_kick/initializer"
+        path = "transformers/events/flop_kick/initializer"
         type = "eth_event"
         repository = "github.com/vulcanize/mcd_transformers"
         migrations = "db/migrations"
     [exporter.frob]
-        path = "transformers/frob/initializer"
+        path = "transformers/events/frob/initializer"
         type = "eth_event"
         repository = "github.com/vulcanize/mcd_transformers"
         migrations = "db/migrations"
     [exporter.pit_file_debt_ceiling]
-        path = "transformers/pit_file/debt_ceiling/initializer"
+        path = "transformers/events/pit_file/debt_ceiling/initializer"
         type = "eth_event"
         repository = "github.com/vulcanize/mcd_transformers"
         migrations = "db/migrations"
     [exporter.pit_file_ilk]
-        path = "transformers/pit_file/ilk/initializer"
+        path = "transformers/events/pit_file/ilk/initializer"
         type = "eth_event"
         repository = "github.com/vulcanize/mcd_transformers"
         migrations = "db/migrations"
     [exporter.price_feeds]
-        path = "transformers/price_feeds/initializer"
+        path = "transformers/events/price_feeds/initializer"
         type = "eth_event"
         repository = "github.com/vulcanize/mcd_transformers"
         migrations = "db/migrations"
     [exporter.tend]
-        path = "transformers/tend/initializer"
+        path = "transformers/events/tend/initializer"
         type = "eth_event"
         repository = "github.com/vulcanize/mcd_transformers"
         migrations = "db/migrations"
     [exporter.vat_flux]
-        path = "transformers/vat_flux/initializer"
+        path = "transformers/events/vat_flux/initializer"
         type = "eth_event"
         repository = "github.com/vulcanize/mcd_transformers"
         migrations = "db/migrations"
     [exporter.vat_fold]
-        path = "transformers/vat_fold/initializer"
+        path = "transformers/events/vat_fold/initializer"
         type = "eth_event"
         repository = "github.com/vulcanize/mcd_transformers"
         migrations = "db/migrations"
     [exporter.vat_grab]
-        path = "transformers/vat_grab/initializer"
+        path = "transformers/events/vat_grab/initializer"
         type = "eth_event"
         repository = "github.com/vulcanize/mcd_transformers"
         migrations = "db/migrations"
     [exporter.vat_heal]
-        path = "transformers/vat_heal/initializer"
+        path = "transformers/events/vat_heal/initializer"
         type = "eth_event"
         repository = "github.com/vulcanize/mcd_transformers"
         migrations = "db/migrations"
     [exporter.vat_init]
-        path = "transformers/vat_init/initializer"
+        path = "transformers/events/vat_init/initializer"
         type = "eth_event"
         repository = "github.com/vulcanize/mcd_transformers"
         migrations = "db/migrations"
     [exporter.vat_move]
-        path = "transformers/vat_move/initializer"
+        path = "transformers/events/vat_move/initializer"
         type = "eth_event"
         repository = "github.com/vulcanize/mcd_transformers"
         migrations = "db/migrations"
     [exporter.vat_slip]
-        path = "transformers/vat_slip/initializer"
+        path = "transformers/events/vat_slip/initializer"
         type = "eth_event"
         repository = "github.com/vulcanize/mcd_transformers"
         migrations = "db/migrations"
     [exporter.vat_toll]
-        path = "transformers/vat_toll/initializer"
+        path = "transformers/events/vat_toll/initializer"
         type = "eth_event"
         repository = "github.com/vulcanize/mcd_transformers"
         migrations = "db/migrations"
     [exporter.vat_tune]
-        path = "transformers/vat_tune/initializer"
+        path = "transformers/events/vat_tune/initializer"
         type = "eth_event"
         repository = "github.com/vulcanize/mcd_transformers"
         migrations = "db/migrations"
     [exporter.vow_flog]
-        path = "transformers/vow_flog/initializer"
+        path = "transformers/events/vow_flog/initializer"
         type = "eth_event"
         repository = "github.com/vulcanize/mcd_transformers"
         migrations = "db/migrations"

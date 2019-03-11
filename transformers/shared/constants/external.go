@@ -3,10 +3,13 @@ package constants
 import (
 	"fmt"
 
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )
 
 var initialized = false
+
+var TTL = int64(10800) // 60 * 60 * 3 == 10800 seconds == 3 hours
 
 func initConfig() {
 	if initialized {
@@ -14,7 +17,7 @@ func initConfig() {
 	}
 
 	if err := viper.ReadInConfig(); err == nil {
-		fmt.Printf("Using config file: %s\n\n", viper.ConfigFileUsed())
+		log.Info("Using config file:", viper.ConfigFileUsed())
 	} else {
 		panic(fmt.Sprintf("Could not find environment file: %v", err))
 	}

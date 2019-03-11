@@ -21,7 +21,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/vulcanize/mcd_transformers/transformers/dent"
+	"github.com/vulcanize/mcd_transformers/transformers/events/dent"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 	"strconv"
 )

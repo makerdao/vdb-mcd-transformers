@@ -21,9 +21,9 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
-	ilk2 "github.com/vulcanize/mcd_transformers/transformers/drip_file/ilk"
-	"github.com/vulcanize/mcd_transformers/transformers/drip_file/repo"
-	"github.com/vulcanize/mcd_transformers/transformers/drip_file/vow"
+	ilk2 "github.com/vulcanize/mcd_transformers/transformers/events/drip_file/ilk"
+	"github.com/vulcanize/mcd_transformers/transformers/events/drip_file/repo"
+	"github.com/vulcanize/mcd_transformers/transformers/events/drip_file/vow"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 	"math/big"
 )
