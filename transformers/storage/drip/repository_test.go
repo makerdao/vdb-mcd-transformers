@@ -17,18 +17,19 @@
 package drip_test
 
 import (
-	utils2 "github.com/vulcanize/mcd_transformers/transformers/shared"
-	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
 	"strconv"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
-	"github.com/vulcanize/mcd_transformers/test_config"
-	"github.com/vulcanize/mcd_transformers/transformers/storage_diffs/maker/drip"
-	. "github.com/vulcanize/mcd_transformers/transformers/storage_diffs/maker/test_helpers"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
+
+	"github.com/vulcanize/mcd_transformers/test_config"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/mcd_transformers/transformers/storage/drip"
+	. "github.com/vulcanize/mcd_transformers/transformers/storage/test_helpers"
 )
 
 var _ = Describe("Drip storage repository", func() {
@@ -60,7 +61,7 @@ var _ = Describe("Drip storage repository", func() {
 				var result MappingRes
 				err = db.Get(&result, `SELECT block_number, block_hash, ilk AS key, rho AS VALUE FROM maker.drip_ilk_rho`)
 				Expect(err).NotTo(HaveOccurred())
-				ilkID, err := utils2.GetOrCreateIlk(fakeIlk, db)
+				ilkID, err := shared.GetOrCreateIlk(fakeIlk, db)
 				Expect(err).NotTo(HaveOccurred())
 				AssertMapping(result, fakeBlockNumber, fakeBlockHash, strconv.Itoa(ilkID), fakeUint256)
 			})
@@ -83,7 +84,7 @@ var _ = Describe("Drip storage repository", func() {
 				var result MappingRes
 				err = db.Get(&result, `SELECT block_number, block_hash, ilk AS KEY, tax AS VALUE FROM maker.drip_ilk_tax`)
 				Expect(err).NotTo(HaveOccurred())
-				ilkID, err := utils2.GetOrCreateIlk(fakeIlk, db)
+				ilkID, err := shared.GetOrCreateIlk(fakeIlk, db)
 				Expect(err).NotTo(HaveOccurred())
 
 				AssertMapping(result, fakeBlockNumber, fakeBlockHash, strconv.Itoa(ilkID), fakeUint256)

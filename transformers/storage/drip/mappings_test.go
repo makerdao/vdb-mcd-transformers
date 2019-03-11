@@ -17,16 +17,19 @@
 package drip_test
 
 import (
+	"math/big"
+
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
-	"github.com/vulcanize/mcd_transformers/transformers/storage_diffs/maker/drip"
-	"github.com/vulcanize/mcd_transformers/transformers/storage_diffs/maker/test_helpers"
+
 	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
-	"math/big"
+
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/mcd_transformers/transformers/storage/drip"
+	"github.com/vulcanize/mcd_transformers/transformers/storage/test_helpers"
 )
 
 var _ = Describe("drip storage mappings", func() {

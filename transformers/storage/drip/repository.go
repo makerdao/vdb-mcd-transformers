@@ -18,10 +18,12 @@ package drip
 
 import (
 	"fmt"
-	shared2 "github.com/vulcanize/mcd_transformers/transformers/shared"
-	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+
 	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
+
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
 type DripStorageRepository struct {
@@ -55,11 +57,11 @@ func (repository DripStorageRepository) insertIlkRho(blockNumber int, blockHash 
 	if err != nil {
 		return err
 	}
-	tx, err := repository.db.Begin()
+	tx, err := repository.db.Beginx()
 	if err != nil {
 		return err
 	}
-	ilkID, ilkErr := shared2.GetOrCreateIlkInTransaction(ilk, tx)
+	ilkID, ilkErr := shared.GetOrCreateIlkInTransaction(ilk, tx)
 	if ilkErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
@@ -84,11 +86,11 @@ func (repository DripStorageRepository) insertIlkTax(blockNumber int, blockHash 
 	if err != nil {
 		return err
 	}
-	tx, err := repository.db.Begin()
+	tx, err := repository.db.Beginx()
 	if err != nil {
 		return err
 	}
-	ilkID, ilkErr := shared2.GetOrCreateIlkInTransaction(ilk, tx)
+	ilkID, ilkErr := shared.GetOrCreateIlkInTransaction(ilk, tx)
 	if ilkErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
