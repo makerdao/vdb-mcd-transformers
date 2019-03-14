@@ -31,7 +31,7 @@ import (
 var EthDripFileIlkLog = types.Log{
 	Address: common.HexToAddress(KovanDripContractAddress),
 	Topics: []common.Hash{
-		common.HexToHash("0x1a0b287e00000000000000000000000000000000000000000000000000000000"),
+		common.HexToHash(KovanDripFileIlkSignature),
 		common.HexToHash("0x00000000000000000000000064d922894153be9eef7b7218dc565d1d0ce2a092"),
 		common.HexToHash("0x66616b6520696c6b000000000000000000000000000000000000000000000000"),
 		common.HexToHash("0x66616b6520766f77000000000000000000000000000000000000000000000000"),
@@ -58,7 +58,7 @@ var DripFileIlkModel = ilk2.DripFileIlkModel{
 var EthDripFileRepoLog = types.Log{
 	Address: common.HexToAddress(KovanDripContractAddress),
 	Topics: []common.Hash{
-		common.HexToHash("0x29ae811400000000000000000000000000000000000000000000000000000000"),
+		common.HexToHash(KovanDripFileRepoSignature),
 		common.HexToHash("0x00000000000000000000000064d922894153be9eef7b7218dc565d1d0ce2a092"),
 		common.HexToHash("0x66616b6520776861740000000000000000000000000000000000000000000000"),
 		common.HexToHash("0x000000000000000000000000000000000000000000000000000000000000007b"),
@@ -84,7 +84,7 @@ var DripFileRepoModel = repo.DripFileRepoModel{
 var EthDripFileVowLog = types.Log{
 	Address: common.HexToAddress(KovanDripContractAddress),
 	Topics: []common.Hash{
-		common.HexToHash("0xe9b674b900000000000000000000000000000000000000000000000000000000"),
+		common.HexToHash(KovanDripFileVowSignature),
 		common.HexToHash("0x00000000000000000000000064d922894153be9eef7b7218dc565d1d0ce2a092"),
 		common.HexToHash("0x766f770000000000000000000000000000000000000000000000000000000000"),
 		common.HexToHash("0x0000000000000000000000003728e9777b2a0a611ee0f89e00e01044ce4736d1"),

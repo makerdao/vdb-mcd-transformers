@@ -33,13 +33,13 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/events/flap_kick"
 	"github.com/vulcanize/mcd_transformers/transformers/events/flip_kick"
 	"github.com/vulcanize/mcd_transformers/transformers/events/flop_kick"
-	"github.com/vulcanize/mcd_transformers/transformers/events/frob"
 	"github.com/vulcanize/mcd_transformers/transformers/events/pit_file/debt_ceiling"
 	"github.com/vulcanize/mcd_transformers/transformers/events/pit_file/ilk"
 	"github.com/vulcanize/mcd_transformers/transformers/events/price_feeds"
 	"github.com/vulcanize/mcd_transformers/transformers/events/tend"
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_flux"
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_fold"
+	"github.com/vulcanize/mcd_transformers/transformers/events/vat_frob"
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_grab"
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_heal"
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_init"
@@ -75,11 +75,11 @@ func GetFlipKickTransformer() factories.Transformer {
 	}
 }
 
-func GetFrobTransformer() factories.Transformer {
-	return factories.Transformer{
-		Config:     frob.GetFrobConfig(),
-		Converter:  &frob.FrobConverter{},
-		Repository: &frob.FrobRepository{},
+func GetVatFrobTransformer() factories.LogNoteTransformer {
+	return factories.LogNoteTransformer{
+		Config:     vat_frob.GetVatFrobConfig(),
+		Converter:  &vat_frob.VatFrobConverter{},
+		Repository: &vat_frob.VatFrobRepository{},
 	}
 }
 
@@ -96,7 +96,6 @@ func getCustomEventTransformers() []factories.Transformer {
 		GetBiteTransformer(),
 		GetFlapKickTransformer(),
 		GetFlipKickTransformer(),
-		GetFrobTransformer(),
 		GetFlopKickTransformer(),
 	}
 }
@@ -302,6 +301,7 @@ func getLogNoteTransformers() []factories.LogNoteTransformer {
 		GetPitFileIlkTransformer(),
 		GetPriceFeedTransformer(),
 		GetTendTransformer(),
+		GetVatFrobTransformer(),
 		GetVatInitTransformer(),
 		GetVatGrabTransformer(),
 		GetVatFoldTransformer(),

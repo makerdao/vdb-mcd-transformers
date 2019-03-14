@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package frob_test
+package vat_frob_test
 
 import (
 	log "github.com/sirupsen/logrus"
@@ -25,9 +25,9 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-func TestFrob(t *testing.T) {
+func TestVatFrob(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "Frob Suite")
+	RunSpecs(t, "VatFrob Suite")
 }
 
 var _ = BeforeSuite(func() {

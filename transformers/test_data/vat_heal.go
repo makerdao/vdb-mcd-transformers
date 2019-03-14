@@ -28,7 +28,7 @@ import (
 var VatHealLog = types.Log{
 	Address: common.HexToAddress(KovanVatContractAddress),
 	Topics: []common.Hash{
-		common.HexToHash("0x990a5f6300000000000000000000000000000000000000000000000000000000"),
+		common.HexToHash(KovanVatHealSignature),
 		common.HexToHash("0x0000000000000000000000007d7bee5fcfd8028cf7b00876c5b1421c800561a6"),
 		common.HexToHash("0x0000000000000000000000007340e006f4135ba6970d43bf43d88dcad4e7a8ca"),
 		common.HexToHash("0x0000000000000000000000000000000000000000000000000000000000000078"),

@@ -14,45 +14,46 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package frob_test
+package vat_frob_test
 
 import (
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-
-	"github.com/vulcanize/mcd_transformers/transformers/events/frob"
+	"github.com/vulcanize/mcd_transformers/transformers/events/vat_frob"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
 var _ = Describe("Frob converter", func() {
-	var converter = frob.FrobConverter{}
-	It("converts a log to an entity", func() {
-		entities, err := converter.ToEntities(test_data.KovanPitABI, []types.Log{test_data.EthFrobLog})
+	converter := vat_frob.VatFrobConverter{}
 
-		Expect(err).NotTo(HaveOccurred())
-		Expect(len(entities)).To(Equal(1))
-		Expect(entities[0]).To(Equal(test_data.FrobEntity))
-	})
+	It("returns err if log is missing topics", func() {
+		badLog := types.Log{
+			Data: []byte{1, 1, 1, 1, 1},
+		}
 
-	It("returns an error if converting to an entity fails", func() {
-		_, err := converter.ToEntities("bad abi", []types.Log{test_data.EthFrobLog})
+		_, err := converter.ToModels([]types.Log{badLog})
 
 		Expect(err).To(HaveOccurred())
 	})
 
-	It("converts an entity to a model", func() {
-		models, err := converter.ToModels([]interface{}{test_data.FrobEntity})
+	It("returns err if log is missing data", func() {
+		badLog := types.Log{
+			Topics: []common.Hash{{}, {}, {}, {}},
+		}
+
+		_, err := converter.ToModels([]types.Log{badLog})
+
+		Expect(err).To(HaveOccurred())
+	})
+
+	It("converts a log to an model", func() {
+		models, err := converter.ToModels([]types.Log{test_data.EthVatFrobLog})
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(len(models)).To(Equal(1))
-		Expect(models[0]).To(Equal(test_data.FrobModel))
+		Expect(models[0]).To(Equal(test_data.VatFrobModel))
 	})
 
-	It("returns an error if the entity type is wrong", func() {
-		_, err := converter.ToModels([]interface{}{test_data.WrongEntity{}})
-
-		Expect(err).To(HaveOccurred())
-		Expect(err.Error()).To(ContainSubstring("entity of type test_data.WrongEntity, not frob.FrobEntity"))
-	})
 })

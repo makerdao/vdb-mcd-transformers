@@ -14,23 +14,21 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package frob
+package vat_frob
 
 import (
-	"math/big"
+	shared_t "github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 
-	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
-type FrobEntity struct {
-	Ilk              [32]byte
-	Urn              [32]byte
-	Ink              *big.Int
-	Art              *big.Int
-	Dink             *big.Int
-	Dart             *big.Int
-	IArt             *big.Int
-	LogIndex         uint
-	TransactionIndex uint
-	Raw              types.Log
+func GetVatFrobConfig() shared_t.TransformerConfig {
+	return shared_t.TransformerConfig{
+		TransformerName:     constants.VatFrobLabel,
+		ContractAddresses:   []string{constants.VatContractAddress()},
+		ContractAbi:         constants.VatABI(),
+		Topic:               constants.GetVatFrobSignature(),
+		StartingBlockNumber: constants.VatDeploymentBlock(),
+		EndingBlockNumber:   -1,
+	}
 }

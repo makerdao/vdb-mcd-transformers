@@ -33,7 +33,7 @@ var (
 // https://etherscan.io/tx/0xa51a50a2adbfba4e2ab3d72dfd67a21c769f1bc8d2b180663a15500a56cde58f
 var EthPriceFeedLog = types.Log{
 	Address:     medianizerAddress,
-	Topics:      []common.Hash{common.HexToHash("0x296ba4ca62c6c21c95e828080cb8aec7481b71390585605300a8a76f9e95b527")},
+	Topics:      []common.Hash{common.HexToHash(KovanLogValueSignature)},
 	Data:        common.FromHex("00000000000000000000000000000000000000000000001486f658319fb0c100"),
 	BlockNumber: blockNumber,
 	TxHash:      common.HexToHash("0xa51a50a2adbfba4e2ab3d72dfd67a21c769f1bc8d2b180663a15500a56cde58f"),

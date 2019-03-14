@@ -42,7 +42,7 @@ var _ = Describe("Dent transformer", func() {
 			TransformerName:     constants.DentLabel,
 			ContractAddresses:   []string{test_data.KovanFlipperContractAddress, test_data.KovanFlopperContractAddress},
 			ContractAbi:         test_data.KovanFlipperABI,
-			Topic:               test_data.KovanDentFunctionSignature,
+			Topic:               test_data.KovanDentSignature,
 			StartingBlockNumber: 0,
 			EndingBlockNumber:   -1,
 		}

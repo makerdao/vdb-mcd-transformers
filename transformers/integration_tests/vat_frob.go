@@ -19,33 +19,30 @@ package integration_tests
 import (
 	"strconv"
 
-	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
+	"github.com/vulcanize/mcd_transformers/test_config"
+	"github.com/vulcanize/mcd_transformers/transformers/events/vat_frob"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 	c2 "github.com/vulcanize/vulcanizedb/libraries/shared/constants"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories"
 	fetch "github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
-	"github.com/vulcanize/vulcanizedb/pkg/geth"
-
-	"github.com/vulcanize/mcd_transformers/test_config"
-	"github.com/vulcanize/mcd_transformers/transformers/events/frob"
-	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
-	"github.com/vulcanize/mcd_transformers/transformers/test_data"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories"
 )
 
-var _ = Describe("Frob Transformer", func() {
+var _ = Describe("Vat frob Transformer", func() {
 	var (
 		db          *postgres.DB
 		blockChain  core.BlockChain
 		fetcher     *fetch.Fetcher
 		config      transformer.TransformerConfig
-		initializer factories.Transformer
+		initializer factories.LogNoteTransformer
 	)
 
 	BeforeEach(func() {
@@ -58,23 +55,23 @@ var _ = Describe("Frob Transformer", func() {
 
 		fetcher = fetch.NewFetcher(blockChain)
 		config = transformer.TransformerConfig{
-			TransformerName:     constants.FrobLabel,
-			ContractAddresses:   []string{test_data.KovanPitContractAddress},
-			ContractAbi:         test_data.KovanPitABI,
-			Topic:               test_data.KovanFrobSignature,
+			TransformerName:     constants.VatFrobLabel,
+			ContractAddresses:   []string{test_data.KovanUpdatedVatContractAddress},
+			ContractAbi:         test_data.KovanUpdatedVatContractAddress,
+			Topic:               test_data.KovanVatFrobSignature,
 			StartingBlockNumber: 0,
 			EndingBlockNumber:   -1,
 		}
 
-		initializer = factories.Transformer{
+		initializer = factories.LogNoteTransformer{
 			Config:     config,
-			Converter:  &frob.FrobConverter{},
-			Repository: &frob.FrobRepository{},
+			Converter:  &vat_frob.VatFrobConverter{},
+			Repository: &vat_frob.VatFrobRepository{},
 		}
 	})
 
-	It("fetches and transforms a Frob event from Kovan chain", func() {
-		blockNumber := int64(8935258)
+	It("fetches and transforms a vat frob event from Kovan chain", func() {
+		blockNumber := int64(10512592)
 		initializer.Config.StartingBlockNumber = blockNumber
 		initializer.Config.EndingBlockNumber = blockNumber
 
@@ -87,28 +84,27 @@ var _ = Describe("Frob Transformer", func() {
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
-		transformer := initializer.NewTransformer(db)
+		transformer := initializer.NewLogNoteTransformer(db)
 		err = transformer.Execute(logs, header, c2.HeaderMissing)
 		Expect(err).NotTo(HaveOccurred())
 
-		var dbResult []frob.FrobModel
-		err = db.Select(&dbResult, `SELECT art, dart, dink, iart, ilk, ink, urn from maker.frob`)
+		var dbResult []vat_frob.VatFrobModel
+		err = db.Select(&dbResult, `SELECT ilk, urn, v, w, dink, dart from maker.vat_frob`)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))
-		Expect(dbResult[0].Art).To(Equal("10000000000000000"))
-		Expect(dbResult[0].Dart).To(Equal("0"))
-		Expect(dbResult[0].Dink).To(Equal("10000000000000"))
-		Expect(dbResult[0].IArt).To(Equal("1495509999999999999992"))
 		ilkID, err := shared.GetOrCreateIlk("4554480000000000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(dbResult[0].Ilk).To(Equal(strconv.Itoa(ilkID)))
-		Expect(dbResult[0].Ink).To(Equal("10050100000000000"))
-		Expect(dbResult[0].Urn).To(Equal("000000000000000000000000c8e093e5f3f9b5aa6a6b33ea45960b93c161430c"))
+		Expect(dbResult[0].Urn).To(Equal("da15dce70ab462e66779f23ee14f21d993789ee3000000000000000000000000"))
+		Expect(dbResult[0].V).To(Equal("da15dce70ab462e66779f23ee14f21d993789ee3000000000000000000000000"))
+		Expect(dbResult[0].W).To(Equal("da15dce70ab462e66779f23ee14f21d993789ee3000000000000000000000000"))
+		Expect(dbResult[0].Dink).To(Equal("1000000000000000000"))
+		Expect(dbResult[0].Dart).To(Equal("0"))
 	})
 
-	It("rechecks frob event", func() {
-		blockNumber := int64(8935258)
+	It("rechecks vat frob event", func() {
+		blockNumber := int64(10529222)
 		initializer.Config.StartingBlockNumber = blockNumber
 		initializer.Config.EndingBlockNumber = blockNumber
 
@@ -121,7 +117,7 @@ var _ = Describe("Frob Transformer", func() {
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
-		transformer := initializer.NewTransformer(db)
+		transformer := initializer.NewLogNoteTransformer(db)
 		err = transformer.Execute(logs, header, c2.HeaderMissing)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -132,46 +128,24 @@ var _ = Describe("Frob Transformer", func() {
 		err = db.Get(&headerID, `SELECT id FROM public.headers WHERE block_number = $1`, blockNumber)
 		Expect(err).NotTo(HaveOccurred())
 
-		var frobChecked []int
-		err = db.Select(&frobChecked, `SELECT frob_checked FROM public.checked_headers WHERE header_id = $1`, headerID)
+		var vatFrobChecked []int
+		err = db.Select(&vatFrobChecked, `SELECT vat_frob_checked FROM public.checked_headers WHERE header_id = $1`, headerID)
 		Expect(err).NotTo(HaveOccurred())
 
-		Expect(frobChecked[0]).To(Equal(2))
+		Expect(vatFrobChecked[0]).To(Equal(2))
 
-		var dbResult []frob.FrobModel
-		err = db.Select(&dbResult, `SELECT art, dart, dink, iart, ilk, ink, urn from maker.frob`)
+		var dbResult []vat_frob.VatFrobModel
+		err = db.Select(&dbResult, `SELECT ilk, urn, v, w, dink, dart from maker.vat_frob`)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))
-		Expect(dbResult[0].Art).To(Equal("10000000000000000"))
-		Expect(dbResult[0].Dart).To(Equal("0"))
-		Expect(dbResult[0].Dink).To(Equal("10000000000000"))
-		Expect(dbResult[0].IArt).To(Equal("1495509999999999999992"))
-		ilkID, err := shared.GetOrCreateIlk("4554480000000000000000000000000000000000000000000000000000000000", db)
+		ilkID, err := shared.GetOrCreateIlk("5245500000000000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(dbResult[0].Ilk).To(Equal(strconv.Itoa(ilkID)))
-		Expect(dbResult[0].Ink).To(Equal("10050100000000000"))
-		Expect(dbResult[0].Urn).To(Equal("000000000000000000000000c8e093e5f3f9b5aa6a6b33ea45960b93c161430c"))
-	})
-
-	It("unpacks an event log", func() {
-		address := common.HexToAddress(test_data.KovanPitContractAddress)
-		abi, err := geth.ParseAbi(test_data.KovanPitABI)
-		Expect(err).NotTo(HaveOccurred())
-
-		contract := bind.NewBoundContract(address, abi, nil, nil, nil)
-		entity := &frob.FrobEntity{}
-
-		var eventLog = test_data.EthFrobLog
-
-		err = contract.UnpackLog(entity, "Frob", eventLog)
-		Expect(err).NotTo(HaveOccurred())
-
-		expectedEntity := test_data.FrobEntity
-		Expect(entity.Art).To(Equal(expectedEntity.Art))
-		Expect(entity.IArt).To(Equal(expectedEntity.IArt))
-		Expect(entity.Ilk).To(Equal(expectedEntity.Ilk))
-		Expect(entity.Ink).To(Equal(expectedEntity.Ink))
-		Expect(entity.Urn).To(Equal(expectedEntity.Urn))
+		Expect(dbResult[0].Urn).To(Equal("16fb96a5fa0427af0c8f7cf1eb4870231c8154b6000000000000000000000000"))
+		Expect(dbResult[0].V).To(Equal("16fb96a5fa0427af0c8f7cf1eb4870231c8154b6000000000000000000000000"))
+		Expect(dbResult[0].W).To(Equal("16fb96a5fa0427af0c8f7cf1eb4870231c8154b6000000000000000000000000"))
+		Expect(dbResult[0].Dink).To(Equal("10000000000000000000"))
+		Expect(dbResult[0].Dart).To(Equal("0"))
 	})
 })
