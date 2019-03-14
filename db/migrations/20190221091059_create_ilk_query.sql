@@ -1,5 +1,102 @@
 -- +goose Up
--- SQL in this section is executed when the migration is applied.
+create type maker.relevant_block AS (
+  block_number bigint,
+  block_hash   text,
+  ilk          integer
+);
+
+create or replace function maker.get_ilk_blocks_before(block_number numeric, ilk_id int)
+  returns setof maker.relevant_block as $$
+SELECT
+  block_number,
+  block_hash,
+  ilk
+FROM maker.vat_ilk_take
+WHERE block_number <= $1
+      AND ilk = $2
+UNION
+SELECT
+  block_number,
+  block_hash,
+  ilk
+FROM maker.vat_ilk_rate
+WHERE block_number <= $1
+      AND ilk = $2
+UNION
+SELECT
+  block_number,
+  block_hash,
+  ilk
+FROM maker.vat_ilk_ink
+WHERE block_number <= $1
+      AND ilk = $2
+UNION
+SELECT
+  block_number,
+  block_hash,
+  ilk
+FROM maker.vat_ilk_art
+WHERE block_number <= $1
+      AND ilk = $2
+UNION
+SELECT
+  block_number,
+  block_hash,
+  ilk
+FROM maker.pit_ilk_spot
+WHERE block_number <= $1
+      AND ilk = $2
+UNION
+SELECT
+  block_number,
+  block_hash,
+  ilk
+FROM maker.pit_ilk_line
+WHERE block_number <= $1
+      AND ilk = $2
+UNION
+SELECT
+  block_number,
+  block_hash,
+  ilk
+FROM maker.cat_ilk_chop
+WHERE block_number <= $1
+      AND ilk = $2
+UNION
+SELECT
+  block_number,
+  block_hash,
+  ilk
+FROM maker.cat_ilk_lump
+WHERE block_number <= $1
+      AND ilk = $2
+UNION
+SELECT
+  block_number,
+  block_hash,
+  ilk
+FROM maker.cat_ilk_flip
+WHERE block_number <= $1
+      AND ilk = $2
+UNION
+SELECT
+  block_number,
+  block_hash,
+  ilk
+FROM maker.drip_ilk_rho
+WHERE block_number <= $1
+      AND ilk = $2
+UNION
+SELECT
+  block_number,
+  block_hash,
+  ilk
+FROM maker.drip_ilk_tax
+WHERE block_number <= $1
+      AND ilk = $2
+$$
+LANGUAGE sql;
+
 CREATE TYPE maker.ilk_state AS (
   ilk_id       integer,
   ilk          text,
@@ -18,6 +115,7 @@ CREATE TYPE maker.ilk_state AS (
   created      numeric,
   updated      numeric
 );
+
 CREATE FUNCTION maker.get_ilk_at_block_number(block_number numeric, ilk_id int)
   RETURNS maker.ilk_state
 AS $$
@@ -132,93 +230,7 @@ WITH takes AS (
     ORDER BY ilk, block_number DESC
     LIMIT 1
 ), relevant_blocks AS (
-  SELECT
-    block_number,
-    block_hash,
-    ilk
-  FROM maker.vat_ilk_take
-  WHERE block_number <= $1
-        AND ilk = ilk_id
-  UNION
-  SELECT
-    block_number,
-    block_hash,
-    ilk
-  FROM maker.vat_ilk_rate
-  WHERE block_number <= $1
-        AND ilk = ilk_id
-  UNION
-  SELECT
-    block_number,
-    block_hash,
-    ilk
-  FROM maker.vat_ilk_ink
-  WHERE block_number <= $1
-        AND ilk = ilk_id
-  UNION
-  SELECT
-    block_number,
-    block_hash,
-    ilk
-  FROM maker.vat_ilk_art
-  WHERE block_number <= $1
-        AND ilk = ilk_id
-  UNION
-  SELECT
-    block_number,
-    block_hash,
-    ilk
-  FROM maker.pit_ilk_spot
-  WHERE block_number <= $1
-        AND ilk = ilk_id
-  UNION
-  SELECT
-    block_number,
-    block_hash,
-    ilk
-  FROM maker.pit_ilk_line
-  WHERE block_number <= $1
-        AND ilk = ilk_id
-  UNION
-  SELECT
-    block_number,
-    block_hash,
-    ilk
-  FROM maker.cat_ilk_chop
-  WHERE block_number <= $1
-        AND ilk = ilk_id
-  UNION
-  SELECT
-    block_number,
-    block_hash,
-    ilk
-  FROM maker.cat_ilk_lump
-  WHERE block_number <= $1
-        AND ilk = ilk_id
-  UNION
-  SELECT
-    block_number,
-    block_hash,
-    ilk
-  FROM maker.cat_ilk_flip
-  WHERE block_number <= $1
-        AND ilk = ilk_id
-  UNION
-  SELECT
-    block_number,
-    block_hash,
-    ilk
-  FROM maker.drip_ilk_rho
-  WHERE block_number <= $1
-        AND ilk = ilk_id
-  UNION
-  SELECT
-    block_number,
-    block_hash,
-    ilk
-  FROM maker.drip_ilk_tax
-  WHERE block_number <= $1
-        AND ilk = ilk_id
+  SELECT * FROM maker.get_ilk_blocks_before($1, $2)
 ), created AS (
     SELECT DISTINCT ON (relevant_blocks.ilk, relevant_blocks.block_number)
       relevant_blocks.block_number,
@@ -290,6 +302,7 @@ LANGUAGE SQL
 STABLE;
 
 -- +goose Down
--- SQL in this section is executed when the migration is rolled back.
+DROP FUNCTION IF EXISTS maker.get_relevent_ilk_blocks(block_number numeric, ilk_id int);
+DROP TYPE maker.relevant_block CASCADE;
 DROP FUNCTION IF EXISTS maker.get_ilk_at_block_number(block_number numeric, ilk_id int );
 DROP TYPE maker.ilk_state CASCADE;
