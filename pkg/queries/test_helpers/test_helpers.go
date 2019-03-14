@@ -183,7 +183,6 @@ func CreateDripRecords(header core.Header, valuesMap map[string]string, metadata
 	}
 }
 
-
 func GetExpectedRatio(ink, spot, art, rate int) float64 {
 	inkXspot := float64(ink) * float64(spot)
 	artXrate := float64(art) * float64(rate)

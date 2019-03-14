@@ -2789,6 +2789,40 @@ ALTER SEQUENCE maker.vow_cow_id_seq OWNED BY maker.vow_cow.id;
 
 
 --
+-- Name: vow_fess; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.vow_fess (
+    id integer NOT NULL,
+    header_id integer NOT NULL,
+    tab numeric NOT NULL,
+    log_idx integer NOT NULL,
+    tx_idx integer NOT NULL,
+    raw_log jsonb
+);
+
+
+--
+-- Name: vow_fess_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.vow_fess_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: vow_fess_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.vow_fess_id_seq OWNED BY maker.vow_fess.id;
+
+
+--
 -- Name: vow_flog; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -3154,7 +3188,8 @@ CREATE TABLE public.checked_headers (
     vat_flux_checked integer DEFAULT 0 NOT NULL,
     vat_slip_checked integer DEFAULT 0 NOT NULL,
     vow_flog_checked integer DEFAULT 0 NOT NULL,
-    flap_kick_checked integer DEFAULT 0 NOT NULL
+    flap_kick_checked integer DEFAULT 0 NOT NULL,
+    vow_fess_checked integer DEFAULT 0 NOT NULL
 );
 
 
@@ -3946,6 +3981,13 @@ ALTER TABLE ONLY maker.vow_bump ALTER COLUMN id SET DEFAULT nextval('maker.vow_b
 --
 
 ALTER TABLE ONLY maker.vow_cow ALTER COLUMN id SET DEFAULT nextval('maker.vow_cow_id_seq'::regclass);
+
+
+--
+-- Name: vow_fess id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_fess ALTER COLUMN id SET DEFAULT nextval('maker.vow_fess_id_seq'::regclass);
 
 
 --
@@ -4810,6 +4852,22 @@ ALTER TABLE ONLY maker.vow_cow
 
 
 --
+-- Name: vow_fess vow_fess_header_id_tx_idx_log_idx_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_fess
+    ADD CONSTRAINT vow_fess_header_id_tx_idx_log_idx_key UNIQUE (header_id, tx_idx, log_idx);
+
+
+--
+-- Name: vow_fess vow_fess_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_fess
+    ADD CONSTRAINT vow_fess_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: vow_flog vow_flog_header_id_tx_idx_log_idx_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -5465,6 +5523,14 @@ ALTER TABLE ONLY maker.vat_urn_art
 
 ALTER TABLE ONLY maker.vat_urn_ink
     ADD CONSTRAINT vat_urn_ink_ilk_fkey FOREIGN KEY (ilk) REFERENCES maker.ilks(id);
+
+
+--
+-- Name: vow_fess vow_fess_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_fess
+    ADD CONSTRAINT vow_fess_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
 
 
 --

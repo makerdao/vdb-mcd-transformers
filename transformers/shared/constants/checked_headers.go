@@ -27,5 +27,6 @@ var (
 	VatMoveChecked            = "vat_move_checked"
 	VatSlipChecked            = "vat_slip_checked"
 	VatTuneChecked            = "vat_tune_checked"
+	VowFessChecked            = "vow_fess_checked"
 	VowFlogChecked            = "vow_flog_checked"
 )
