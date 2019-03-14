@@ -116,13 +116,6 @@ var _ = Describe("Event signature generator", func() {
 
 					Expect(expected).To(Equal(actual))
 				})
-
-				It("gets the file method signature", func() {
-					expected := "file(bytes32,uint256)"
-					actual := constants.GetSolidityFunctionSignature(test_data.KovanDripABI, "file")
-
-					Expect(expected).To(Equal(actual))
-				})
 			})
 
 			Describe("from the flipper contract", func() {
@@ -143,6 +136,15 @@ var _ = Describe("Event signature generator", func() {
 				It("gets the tend method signature", func() {
 					expected := "tend(uint256,uint256,uint256)"
 					actual := constants.GetSolidityFunctionSignature(test_data.KovanFlipperABI, "tend")
+
+					Expect(expected).To(Equal(actual))
+				})
+			})
+
+			Describe("from the jug contract", func() {
+				It("gets the file (vow) method signature", func() {
+					expected := "file(bytes32,bytes32)"
+					actual := constants.GetSolidityFunctionSignature(test_data.KovanJugABI, "file")
 
 					Expect(expected).To(Equal(actual))
 				})

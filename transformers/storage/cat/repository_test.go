@@ -90,7 +90,7 @@ var _ = Describe("Cat storage repository", func() {
 			})
 		})
 
-		Describe("Vow", func() {
+		Describe("What", func() {
 			It("writes a row", func() {
 				vowMetadata := utils.GetStorageValueMetadata(cat.Vow, nil, utils.Address)
 
