@@ -61,6 +61,17 @@ CREATE TYPE maker.ilk_state AS (
 
 
 --
+-- Name: relevant_block; Type: TYPE; Schema: maker; Owner: -
+--
+
+CREATE TYPE maker.relevant_block AS (
+	block_number bigint,
+	block_hash text,
+	ilk integer
+);
+
+
+--
 -- Name: get_ilk_at_block_number(numeric, integer); Type: FUNCTION; Schema: maker; Owner: -
 --
 
@@ -178,93 +189,7 @@ WITH takes AS (
     ORDER BY ilk, block_number DESC
     LIMIT 1
 ), relevant_blocks AS (
-  SELECT
-    block_number,
-    block_hash,
-    ilk
-  FROM maker.vat_ilk_take
-  WHERE block_number <= $1
-        AND ilk = ilk_id
-  UNION
-  SELECT
-    block_number,
-    block_hash,
-    ilk
-  FROM maker.vat_ilk_rate
-  WHERE block_number <= $1
-        AND ilk = ilk_id
-  UNION
-  SELECT
-    block_number,
-    block_hash,
-    ilk
-  FROM maker.vat_ilk_ink
-  WHERE block_number <= $1
-        AND ilk = ilk_id
-  UNION
-  SELECT
-    block_number,
-    block_hash,
-    ilk
-  FROM maker.vat_ilk_art
-  WHERE block_number <= $1
-        AND ilk = ilk_id
-  UNION
-  SELECT
-    block_number,
-    block_hash,
-    ilk
-  FROM maker.pit_ilk_spot
-  WHERE block_number <= $1
-        AND ilk = ilk_id
-  UNION
-  SELECT
-    block_number,
-    block_hash,
-    ilk
-  FROM maker.pit_ilk_line
-  WHERE block_number <= $1
-        AND ilk = ilk_id
-  UNION
-  SELECT
-    block_number,
-    block_hash,
-    ilk
-  FROM maker.cat_ilk_chop
-  WHERE block_number <= $1
-        AND ilk = ilk_id
-  UNION
-  SELECT
-    block_number,
-    block_hash,
-    ilk
-  FROM maker.cat_ilk_lump
-  WHERE block_number <= $1
-        AND ilk = ilk_id
-  UNION
-  SELECT
-    block_number,
-    block_hash,
-    ilk
-  FROM maker.cat_ilk_flip
-  WHERE block_number <= $1
-        AND ilk = ilk_id
-  UNION
-  SELECT
-    block_number,
-    block_hash,
-    ilk
-  FROM maker.drip_ilk_rho
-  WHERE block_number <= $1
-        AND ilk = ilk_id
-  UNION
-  SELECT
-    block_number,
-    block_hash,
-    ilk
-  FROM maker.drip_ilk_tax
-  WHERE block_number <= $1
-        AND ilk = ilk_id
+  SELECT * FROM maker.get_ilk_blocks_before($1, $2)
 ), created AS (
     SELECT DISTINCT ON (relevant_blocks.ilk, relevant_blocks.block_number)
       relevant_blocks.block_number,
@@ -331,6 +256,122 @@ WHERE (
   rhos.rho is not null OR
   taxes.tax is not null
 )
+$_$;
+
+
+--
+-- Name: get_ilk_blocks_before(numeric, integer); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.get_ilk_blocks_before(block_number numeric, ilk_id integer) RETURNS SETOF maker.relevant_block
+    LANGUAGE sql
+    AS $_$
+SELECT
+  block_number,
+  block_hash,
+  ilk
+FROM maker.vat_ilk_take
+WHERE block_number <= $1
+      AND ilk = $2
+UNION
+SELECT
+  block_number,
+  block_hash,
+  ilk
+FROM maker.vat_ilk_rate
+WHERE block_number <= $1
+      AND ilk = $2
+UNION
+SELECT
+  block_number,
+  block_hash,
+  ilk
+FROM maker.vat_ilk_ink
+WHERE block_number <= $1
+      AND ilk = $2
+UNION
+SELECT
+  block_number,
+  block_hash,
+  ilk
+FROM maker.vat_ilk_art
+WHERE block_number <= $1
+      AND ilk = $2
+UNION
+SELECT
+  block_number,
+  block_hash,
+  ilk
+FROM maker.pit_ilk_spot
+WHERE block_number <= $1
+      AND ilk = $2
+UNION
+SELECT
+  block_number,
+  block_hash,
+  ilk
+FROM maker.pit_ilk_line
+WHERE block_number <= $1
+      AND ilk = $2
+UNION
+SELECT
+  block_number,
+  block_hash,
+  ilk
+FROM maker.cat_ilk_chop
+WHERE block_number <= $1
+      AND ilk = $2
+UNION
+SELECT
+  block_number,
+  block_hash,
+  ilk
+FROM maker.cat_ilk_lump
+WHERE block_number <= $1
+      AND ilk = $2
+UNION
+SELECT
+  block_number,
+  block_hash,
+  ilk
+FROM maker.cat_ilk_flip
+WHERE block_number <= $1
+      AND ilk = $2
+UNION
+SELECT
+  block_number,
+  block_hash,
+  ilk
+FROM maker.drip_ilk_rho
+WHERE block_number <= $1
+      AND ilk = $2
+UNION
+SELECT
+  block_number,
+  block_hash,
+  ilk
+FROM maker.drip_ilk_tax
+WHERE block_number <= $1
+      AND ilk = $2
+$_$;
+
+
+--
+-- Name: get_ilk_history_before_block(numeric, integer); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.get_ilk_history_before_block(block_number numeric, ilk_id integer) RETURNS SETOF maker.ilk_state
+    LANGUAGE plpgsql
+    AS $_$
+DECLARE
+  r record;
+BEGIN
+  FOR r IN SELECT * FROM maker.get_ilk_blocks_before($1, $2)
+  LOOP
+    RETURN QUERY
+    SELECT * FROM maker.get_ilk_at_block_number(r.block_number::numeric, $2::integer);
+  END LOOP;
+END;
 $_$;
 
 
