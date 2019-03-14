@@ -31,16 +31,16 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/events/price_feeds"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 )
 
 var _ = Describe("Price feeds transformer", func() {
 	var (
 		db          *postgres.DB
 		blockChain  core.BlockChain
-		config      transformer.TransformerConfig
+		config      transformer.EventTransformerConfig
 		fetcher     *fetch.Fetcher
-		initializer factories.LogNoteTransformer
+		initializer event.LogNoteTransformer
 		topics      []common.Hash
 	)
 
@@ -52,7 +52,7 @@ var _ = Describe("Price feeds transformer", func() {
 		db = test_config.NewTestDB(blockChain.Node())
 		test_config.CleanTestDB(db)
 
-		config = transformer.TransformerConfig{
+		config = transformer.EventTransformerConfig{
 			TransformerName: constants.PriceFeedLabel,
 			ContractAddresses: []string{
 				test_data.KovanPepContractAddress,
@@ -69,7 +69,7 @@ var _ = Describe("Price feeds transformer", func() {
 
 		fetcher = fetch.NewFetcher(blockChain)
 
-		initializer = factories.LogNoteTransformer{
+		initializer = event.LogNoteTransformer{
 			Config:     config,
 			Converter:  &price_feeds.PriceFeedConverter{},
 			Repository: &price_feeds.PriceFeedRepository{},

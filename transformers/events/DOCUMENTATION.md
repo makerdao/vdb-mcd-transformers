@@ -35,8 +35,8 @@ The transformer process for each of these different log types is the same, excep
 1. Write converter + converter tests
 1. Write repository + repository tests
 1. Create converter + repository mocks
-1. Create an config object [`shared.TransformerConfig`](https://github.com/vulcanize/maker-vulcanizedb/blob/staging/libraries/shared/transformer/event_transformer.go) in `config.go`
-1. Wire up transformer in [`transformers.go`](../transformers.go), remembering to add it to `TransformerInitializers()`
+1. Create an config object [`shared.EventTransformerConfig`](https://github.com/vulcanize/maker-vulcanizedb/blob/staging/libraries/shared/transformer/event_transformer.go) in `config.go`
+1. Wire up transformer in [`transformers.go`](../transformers.go), remembering to add it to `EventTransformerInitializers()`
 1. Add transformer to config file for `composeAndExecute`.
 1. Manually trigger an event and check that it gets persisted to postgres.
 1. Create an integration test for the shiny new transformer in [`integration_tests`](../integration_tests)
@@ -119,7 +119,7 @@ The transformer process for each of these different log types is the same, excep
 
 **Wire each component up in the transformer**
 
-- We use a [`TransformerInitializer`](https://github.com/vulcanize/maker-vulcanizedb/blob/staging/libraries/shared/transformer/event_transformer.go) struct for each transformer so that we can inject ethRPC and postgresDB connections as well as configuration data (including the contract address, block range, etc.) into the transformer.
+- We use a [`EventTransformerInitializer`](https://github.com/vulcanize/maker-vulcanizedb/blob/staging/libraries/shared/transformer/event_transformer.go) struct for each transformer so that we can inject ethRPC and postgresDB connections as well as configuration data (including the contract address, block range, etc.) into the transformer.
 - See any of `pkg/transformers/flop_kick/transformer.go`
 - All of the transformers are then initialized in `pkg/transformers/transformers.go` with their configuration.
 - The transformers can be executed by using the `continuousLogSync` command, which can be configured to run specific transformers or all transformers.

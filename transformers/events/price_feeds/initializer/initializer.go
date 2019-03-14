@@ -17,13 +17,13 @@
 package initializer
 
 import (
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 
 	"github.com/vulcanize/mcd_transformers/transformers/events/price_feeds"
 )
 
-var TransformerInitializer transformer.TransformerInitializer = factories.LogNoteTransformer{
+var EventTransformerInitializer transformer.EventTransformerInitializer = event.LogNoteTransformer{
 	Config:     price_feeds.GetPriceFeedConfig(),
 	Converter:  &price_feeds.PriceFeedConverter{},
 	Repository: &price_feeds.PriceFeedRepository{},

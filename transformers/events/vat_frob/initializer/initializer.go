@@ -17,13 +17,13 @@
 package initializer
 
 import (
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_frob"
 )
 
-var TransformerInitializer transformer.TransformerInitializer = factories.LogNoteTransformer{
+var TransformerInitializer transformer.EventTransformerInitializer = event.LogNoteTransformer{
 	Config:     vat_frob.GetVatFrobConfig(),
 	Converter:  &vat_frob.VatFrobConverter{},
 	Repository: &vat_frob.VatFrobRepository{},

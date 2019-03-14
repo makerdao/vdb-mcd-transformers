@@ -22,8 +22,8 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
-func GetFlopKickConfig() shared_t.TransformerConfig {
-	return shared_t.TransformerConfig{
+func GetFlopKickConfig() shared_t.EventTransformerConfig {
+	return shared_t.EventTransformerConfig{
 		TransformerName:     constants.FlopKickLabel,
 		ContractAddresses:   []string{constants.FlopperContractAddress()},
 		ContractAbi:         constants.FlopperABI(),

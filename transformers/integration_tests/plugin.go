@@ -122,7 +122,7 @@ var dbConfig = config.Database{
 }
 
 type Exporter interface {
-	Export() ([]transformer.TransformerInitializer, []transformer.StorageTransformerInitializer)
+	Export() ([]transformer.EventTransformerInitializer, []transformer.StorageTransformerInitializer)
 }
 
 var _ = Describe("Plugin test", func() {

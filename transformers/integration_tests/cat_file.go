@@ -39,7 +39,7 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 )
 
 var _ = Describe("Cat File transformer", func() {
@@ -70,7 +70,7 @@ var _ = Describe("Cat File transformer", func() {
 		header, err := persistHeader(db, chopLumpBlockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		config := transformer.TransformerConfig{
+		config := transformer.EventTransformerConfig{
 			TransformerName:     constants.CatFileChopLumpLabel,
 			ContractAddresses:   []string{test_data.KovanCatContractAddress},
 			ContractAbi:         test_data.KovanCatABI,
@@ -79,7 +79,7 @@ var _ = Describe("Cat File transformer", func() {
 			EndingBlockNumber:   chopLumpBlockNumber,
 		}
 
-		initializer := factories.LogNoteTransformer{
+		initializer := event.LogNoteTransformer{
 			Config:     config,
 			Converter:  &chop_lump.CatFileChopLumpConverter{},
 			Repository: &chop_lump.CatFileChopLumpRepository{},
@@ -121,7 +121,7 @@ var _ = Describe("Cat File transformer", func() {
 		header, err := persistHeader(db, chopLumpBlockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		config := transformer.TransformerConfig{
+		config := transformer.EventTransformerConfig{
 			TransformerName:     constants.CatFileChopLumpLabel,
 			ContractAddresses:   []string{test_data.KovanCatContractAddress},
 			ContractAbi:         test_data.KovanCatABI,
@@ -130,7 +130,7 @@ var _ = Describe("Cat File transformer", func() {
 			EndingBlockNumber:   chopLumpBlockNumber,
 		}
 
-		initializer := factories.LogNoteTransformer{
+		initializer := event.LogNoteTransformer{
 			Config:     config,
 			Converter:  &chop_lump.CatFileChopLumpConverter{},
 			Repository: &chop_lump.CatFileChopLumpRepository{},
@@ -166,7 +166,7 @@ var _ = Describe("Cat File transformer", func() {
 		header, err := persistHeader(db, flipBlockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		config := transformer.TransformerConfig{
+		config := transformer.EventTransformerConfig{
 			TransformerName:     constants.CatFileFlipLabel,
 			ContractAddresses:   []string{test_data.KovanCatContractAddress},
 			ContractAbi:         test_data.KovanCatABI,
@@ -175,7 +175,7 @@ var _ = Describe("Cat File transformer", func() {
 			EndingBlockNumber:   flipBlockNumber,
 		}
 
-		initializer := factories.LogNoteTransformer{
+		initializer := event.LogNoteTransformer{
 			Config:     config,
 			Converter:  &flip.CatFileFlipConverter{},
 			Repository: &flip.CatFileFlipRepository{},
@@ -208,7 +208,7 @@ var _ = Describe("Cat File transformer", func() {
 		header, err := persistHeader(db, flipBlockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		config := transformer.TransformerConfig{
+		config := transformer.EventTransformerConfig{
 			TransformerName:     constants.CatFileFlipLabel,
 			ContractAddresses:   []string{test_data.KovanCatContractAddress},
 			ContractAbi:         test_data.KovanCatABI,
@@ -217,7 +217,7 @@ var _ = Describe("Cat File transformer", func() {
 			EndingBlockNumber:   flipBlockNumber,
 		}
 
-		initializer := factories.LogNoteTransformer{
+		initializer := event.LogNoteTransformer{
 			Config:     config,
 			Converter:  &flip.CatFileFlipConverter{},
 			Repository: &flip.CatFileFlipRepository{},
@@ -254,7 +254,7 @@ var _ = Describe("Cat File transformer", func() {
 		header, err := persistHeader(db, pitVowBlockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		config := transformer.TransformerConfig{
+		config := transformer.EventTransformerConfig{
 			TransformerName:     constants.CatFilePitVowLabel,
 			ContractAddresses:   []string{test_data.KovanCatContractAddress},
 			ContractAbi:         test_data.KovanCatABI,
@@ -263,7 +263,7 @@ var _ = Describe("Cat File transformer", func() {
 			EndingBlockNumber:   pitVowBlockNumber,
 		}
 
-		initializer := factories.LogNoteTransformer{
+		initializer := event.LogNoteTransformer{
 			Config:     config,
 			Converter:  &pit_vow.CatFilePitVowConverter{},
 			Repository: &pit_vow.CatFilePitVowRepository{},

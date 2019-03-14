@@ -33,13 +33,13 @@ import (
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_tune"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 )
 
 var _ = Describe("VatTune LogNoteTransformer", func() {
 	It("transforms VatTune log events", func() {
 		blockNumber := int64(8761670)
-		config := transformer.TransformerConfig{
+		config := transformer.EventTransformerConfig{
 			TransformerName:     constants.VatTuneLabel,
 			ContractAddresses:   []string{test_data.KovanVatContractAddress},
 			ContractAbi:         test_data.KovanVatABI,
@@ -66,7 +66,7 @@ var _ = Describe("VatTune LogNoteTransformer", func() {
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
-		transformer := factories.LogNoteTransformer{
+		transformer := event.LogNoteTransformer{
 			Config:     config,
 			Converter:  &vat_tune.VatTuneConverter{},
 			Repository: &vat_tune.VatTuneRepository{},
@@ -95,7 +95,7 @@ var _ = Describe("VatTune LogNoteTransformer", func() {
 
 	It("transforms VatTune log events", func() {
 		blockNumber := int64(8761670)
-		config := transformer.TransformerConfig{
+		config := transformer.EventTransformerConfig{
 			TransformerName:     constants.VatTuneLabel,
 			ContractAddresses:   []string{test_data.KovanVatContractAddress},
 			ContractAbi:         test_data.KovanVatABI,
@@ -122,7 +122,7 @@ var _ = Describe("VatTune LogNoteTransformer", func() {
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
-		transformer := factories.LogNoteTransformer{
+		transformer := event.LogNoteTransformer{
 			Config:     config,
 			Converter:  &vat_tune.VatTuneConverter{},
 			Repository: &vat_tune.VatTuneRepository{},

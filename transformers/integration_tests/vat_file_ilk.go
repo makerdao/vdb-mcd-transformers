@@ -34,14 +34,14 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 )
 
 var _ = Describe("VatFileIlk LogNoteTransformer", func() {
 	var (
 		db          *postgres.DB
 		blockChain  core.BlockChain
-		initializer factories.LogNoteTransformer
+		initializer event.LogNoteTransformer
 		addresses   []common.Address
 		topics      []common.Hash
 	)
@@ -53,7 +53,7 @@ var _ = Describe("VatFileIlk LogNoteTransformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 		db = test_config.NewTestDB(blockChain.Node())
 		test_config.CleanTestDB(db)
-		config := transformer.TransformerConfig{
+		config := transformer.EventTransformerConfig{
 			TransformerName:     constants.VatFileIlkLabel,
 			ContractAddresses:   []string{test_data.KovanUpdatedVatContractAddress},
 			ContractAbi:         test_data.KovanUpdatedVatABI,
@@ -65,7 +65,7 @@ var _ = Describe("VatFileIlk LogNoteTransformer", func() {
 		addresses = transformer.HexStringsToAddresses(config.ContractAddresses)
 		topics = []common.Hash{common.HexToHash(config.Topic)}
 
-		initializer = factories.LogNoteTransformer{
+		initializer = event.LogNoteTransformer{
 			Config:     config,
 			Converter:  &ilk.VatFileIlkConverter{},
 			Repository: &ilk.VatFileIlkRepository{},
