@@ -48,6 +48,7 @@ func DripContractAddress() string    { return getEnvironmentString("contract.add
 func FlapperContractAddress() string { return getEnvironmentString("contract.address.mcd_flap") }
 func FlipperContractAddress() string { return getEnvironmentString("contract.address.eth_flip") }
 func FlopperContractAddress() string { return getEnvironmentString("contract.address.mcd_flop") }
+func JugContractAddress() string     { return getEnvironmentString("contract.address.jug") }
 func PepContractAddress() string     { return getEnvironmentString("contract.address.pep") }
 func PipContractAddress() string     { return getEnvironmentString("contract.address.pip") }
 func PitContractAddress() string     { return getEnvironmentString("contract.address.pit") }
@@ -56,22 +57,28 @@ func VatContractAddress() string     { return getEnvironmentString("contract.add
 func OldVatContractAddress() string  { return getEnvironmentString("contract.address.old_vat") }
 func VowContractAddress() string     { return getEnvironmentString("contract.address.vow") }
 
-func CatABI() string        { return getEnvironmentString("contract.abi.cat") }
+func CatABI() string { return getEnvironmentString("contract.abi.cat") }
+
+// TODO: Remove once fully replaced by Jug
 func DripABI() string       { return getEnvironmentString("contract.abi.drip") }
 func FlapperABI() string    { return getEnvironmentString("contract.abi.mcd_flap") }
 func FlipperABI() string    { return getEnvironmentString("contract.abi.eth_flip") }
 func FlopperABI() string    { return getEnvironmentString("contract.abi.mcd_flop") }
+func JugABI() string        { return getEnvironmentString("contract.abi.jug") }
 func MedianizerABI() string { return getEnvironmentString("contract.abi.medianizer") }
 func PitABI() string        { return getEnvironmentString("contract.abi.pit") }
 func VatABI() string        { return getEnvironmentString("contract.abi.vat") }
 func OldVatABI() string     { return getEnvironmentString("contract.abi.old_vat") }
 func VowABI() string        { return getEnvironmentString("contract.abi.vow") }
 
-func CatDeploymentBlock() int64     { return getEnvironmentInt64("contract.deployment-block.cat") }
+func CatDeploymentBlock() int64 { return getEnvironmentInt64("contract.deployment-block.cat") }
+
+// TODO: Remove once fully replaced by Jug
 func DripDeploymentBlock() int64    { return getEnvironmentInt64("contract.deployment-block.drip") }
 func FlapperDeploymentBlock() int64 { return getEnvironmentInt64("contract.deployment-block.mcd_flap") }
 func FlipperDeploymentBlock() int64 { return getEnvironmentInt64("contract.deployment-block.eth_flip") }
 func FlopperDeploymentBlock() int64 { return getEnvironmentInt64("contract.deployment-block.mcd_flop") }
+func JugDeploymentBlock() int64     { return getEnvironmentInt64("contract.deployment-block.jug") }
 func PepDeploymentBlock() int64     { return getEnvironmentInt64("contract.deployment-block.pep") }
 func PipDeploymentBlock() int64     { return getEnvironmentInt64("contract.deployment-block.pip") }
 func PitDeploymentBlock() int64     { return getEnvironmentInt64("contract.deployment-block.pit") }

@@ -1152,112 +1152,6 @@ ALTER SEQUENCE maker.drip_drip_id_seq OWNED BY maker.drip_drip.id;
 
 
 --
--- Name: drip_file_ilk; Type: TABLE; Schema: maker; Owner: -
---
-
-CREATE TABLE maker.drip_file_ilk (
-    id integer NOT NULL,
-    header_id integer NOT NULL,
-    ilk integer NOT NULL,
-    vow text,
-    tax numeric,
-    log_idx integer NOT NULL,
-    tx_idx integer NOT NULL,
-    raw_log jsonb
-);
-
-
---
--- Name: drip_file_ilk_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
---
-
-CREATE SEQUENCE maker.drip_file_ilk_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: drip_file_ilk_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
---
-
-ALTER SEQUENCE maker.drip_file_ilk_id_seq OWNED BY maker.drip_file_ilk.id;
-
-
---
--- Name: drip_file_repo; Type: TABLE; Schema: maker; Owner: -
---
-
-CREATE TABLE maker.drip_file_repo (
-    id integer NOT NULL,
-    header_id integer NOT NULL,
-    what text,
-    data numeric,
-    log_idx integer NOT NULL,
-    tx_idx integer NOT NULL,
-    raw_log jsonb
-);
-
-
---
--- Name: drip_file_repo_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
---
-
-CREATE SEQUENCE maker.drip_file_repo_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: drip_file_repo_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
---
-
-ALTER SEQUENCE maker.drip_file_repo_id_seq OWNED BY maker.drip_file_repo.id;
-
-
---
--- Name: drip_file_vow; Type: TABLE; Schema: maker; Owner: -
---
-
-CREATE TABLE maker.drip_file_vow (
-    id integer NOT NULL,
-    header_id integer NOT NULL,
-    what text,
-    data text,
-    log_idx integer NOT NULL,
-    tx_idx integer NOT NULL,
-    raw_log jsonb
-);
-
-
---
--- Name: drip_file_vow_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
---
-
-CREATE SEQUENCE maker.drip_file_vow_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: drip_file_vow_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
---
-
-ALTER SEQUENCE maker.drip_file_vow_id_seq OWNED BY maker.drip_file_vow.id;
-
-
---
 -- Name: drip_ilk_rho; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -1563,6 +1457,112 @@ CREATE SEQUENCE maker.ilks_id_seq
 --
 
 ALTER SEQUENCE maker.ilks_id_seq OWNED BY maker.ilks.id;
+
+
+--
+-- Name: jug_file_ilk; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.jug_file_ilk (
+    id integer NOT NULL,
+    header_id integer NOT NULL,
+    ilk integer NOT NULL,
+    what text,
+    data numeric,
+    log_idx integer NOT NULL,
+    tx_idx integer NOT NULL,
+    raw_log jsonb
+);
+
+
+--
+-- Name: jug_file_ilk_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.jug_file_ilk_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: jug_file_ilk_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.jug_file_ilk_id_seq OWNED BY maker.jug_file_ilk.id;
+
+
+--
+-- Name: jug_file_repo; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.jug_file_repo (
+    id integer NOT NULL,
+    header_id integer NOT NULL,
+    what text,
+    data numeric,
+    log_idx integer NOT NULL,
+    tx_idx integer NOT NULL,
+    raw_log jsonb
+);
+
+
+--
+-- Name: jug_file_repo_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.jug_file_repo_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: jug_file_repo_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.jug_file_repo_id_seq OWNED BY maker.jug_file_repo.id;
+
+
+--
+-- Name: jug_file_vow; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.jug_file_vow (
+    id integer NOT NULL,
+    header_id integer NOT NULL,
+    what text,
+    data text,
+    log_idx integer NOT NULL,
+    tx_idx integer NOT NULL,
+    raw_log jsonb
+);
+
+
+--
+-- Name: jug_file_vow_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.jug_file_vow_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: jug_file_vow_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.jug_file_vow_id_seq OWNED BY maker.jug_file_vow.id;
 
 
 --
@@ -3045,9 +3045,9 @@ CREATE TABLE public.checked_headers (
     pit_file_debt_ceiling_checked integer DEFAULT 0 NOT NULL,
     pit_file_ilk_checked integer DEFAULT 0 NOT NULL,
     vat_init_checked integer DEFAULT 0 NOT NULL,
-    drip_file_ilk_checked integer DEFAULT 0 NOT NULL,
-    drip_file_repo_checked integer DEFAULT 0 NOT NULL,
-    drip_file_vow_checked integer DEFAULT 0 NOT NULL,
+    jug_file_ilk_checked integer DEFAULT 0 NOT NULL,
+    jug_file_repo_checked integer DEFAULT 0 NOT NULL,
+    jug_file_vow_checked integer DEFAULT 0 NOT NULL,
     deal_checked integer DEFAULT 0 NOT NULL,
     drip_drip_checked integer DEFAULT 0 NOT NULL,
     cat_file_chop_lump_checked integer DEFAULT 0 NOT NULL,
@@ -3542,27 +3542,6 @@ ALTER TABLE ONLY maker.drip_drip ALTER COLUMN id SET DEFAULT nextval('maker.drip
 
 
 --
--- Name: drip_file_ilk id; Type: DEFAULT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.drip_file_ilk ALTER COLUMN id SET DEFAULT nextval('maker.drip_file_ilk_id_seq'::regclass);
-
-
---
--- Name: drip_file_repo id; Type: DEFAULT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.drip_file_repo ALTER COLUMN id SET DEFAULT nextval('maker.drip_file_repo_id_seq'::regclass);
-
-
---
--- Name: drip_file_vow id; Type: DEFAULT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.drip_file_vow ALTER COLUMN id SET DEFAULT nextval('maker.drip_file_vow_id_seq'::regclass);
-
-
---
 -- Name: drip_ilk_rho id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
@@ -3623,6 +3602,27 @@ ALTER TABLE ONLY maker.flop_kick ALTER COLUMN id SET DEFAULT nextval('maker.flop
 --
 
 ALTER TABLE ONLY maker.ilks ALTER COLUMN id SET DEFAULT nextval('maker.ilks_id_seq'::regclass);
+
+
+--
+-- Name: jug_file_ilk id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.jug_file_ilk ALTER COLUMN id SET DEFAULT nextval('maker.jug_file_ilk_id_seq'::regclass);
+
+
+--
+-- Name: jug_file_repo id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.jug_file_repo ALTER COLUMN id SET DEFAULT nextval('maker.jug_file_repo_id_seq'::regclass);
+
+
+--
+-- Name: jug_file_vow id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.jug_file_vow ALTER COLUMN id SET DEFAULT nextval('maker.jug_file_vow_id_seq'::regclass);
 
 
 --
@@ -4198,54 +4198,6 @@ ALTER TABLE ONLY maker.drip_drip
 
 
 --
--- Name: drip_file_ilk drip_file_ilk_header_id_tx_idx_log_idx_key; Type: CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.drip_file_ilk
-    ADD CONSTRAINT drip_file_ilk_header_id_tx_idx_log_idx_key UNIQUE (header_id, tx_idx, log_idx);
-
-
---
--- Name: drip_file_ilk drip_file_ilk_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.drip_file_ilk
-    ADD CONSTRAINT drip_file_ilk_pkey PRIMARY KEY (id);
-
-
---
--- Name: drip_file_repo drip_file_repo_header_id_tx_idx_log_idx_key; Type: CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.drip_file_repo
-    ADD CONSTRAINT drip_file_repo_header_id_tx_idx_log_idx_key UNIQUE (header_id, tx_idx, log_idx);
-
-
---
--- Name: drip_file_repo drip_file_repo_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.drip_file_repo
-    ADD CONSTRAINT drip_file_repo_pkey PRIMARY KEY (id);
-
-
---
--- Name: drip_file_vow drip_file_vow_header_id_tx_idx_log_idx_key; Type: CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.drip_file_vow
-    ADD CONSTRAINT drip_file_vow_header_id_tx_idx_log_idx_key UNIQUE (header_id, tx_idx, log_idx);
-
-
---
--- Name: drip_file_vow drip_file_vow_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.drip_file_vow
-    ADD CONSTRAINT drip_file_vow_pkey PRIMARY KEY (id);
-
-
---
 -- Name: drip_ilk_rho drip_ilk_rho_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -4347,6 +4299,54 @@ ALTER TABLE ONLY maker.ilks
 
 ALTER TABLE ONLY maker.ilks
     ADD CONSTRAINT ilks_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: jug_file_ilk jug_file_ilk_header_id_tx_idx_log_idx_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.jug_file_ilk
+    ADD CONSTRAINT jug_file_ilk_header_id_tx_idx_log_idx_key UNIQUE (header_id, tx_idx, log_idx);
+
+
+--
+-- Name: jug_file_ilk jug_file_ilk_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.jug_file_ilk
+    ADD CONSTRAINT jug_file_ilk_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: jug_file_repo jug_file_repo_header_id_tx_idx_log_idx_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.jug_file_repo
+    ADD CONSTRAINT jug_file_repo_header_id_tx_idx_log_idx_key UNIQUE (header_id, tx_idx, log_idx);
+
+
+--
+-- Name: jug_file_repo jug_file_repo_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.jug_file_repo
+    ADD CONSTRAINT jug_file_repo_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: jug_file_vow jug_file_vow_header_id_tx_idx_log_idx_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.jug_file_vow
+    ADD CONSTRAINT jug_file_vow_header_id_tx_idx_log_idx_key UNIQUE (header_id, tx_idx, log_idx);
+
+
+--
+-- Name: jug_file_vow jug_file_vow_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.jug_file_vow
+    ADD CONSTRAINT jug_file_vow_pkey PRIMARY KEY (id);
 
 
 --
@@ -5064,38 +5064,6 @@ ALTER TABLE ONLY maker.drip_drip
 
 
 --
--- Name: drip_file_ilk drip_file_ilk_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.drip_file_ilk
-    ADD CONSTRAINT drip_file_ilk_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
-
-
---
--- Name: drip_file_ilk drip_file_ilk_ilk_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.drip_file_ilk
-    ADD CONSTRAINT drip_file_ilk_ilk_fkey FOREIGN KEY (ilk) REFERENCES maker.ilks(id);
-
-
---
--- Name: drip_file_repo drip_file_repo_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.drip_file_repo
-    ADD CONSTRAINT drip_file_repo_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
-
-
---
--- Name: drip_file_vow drip_file_vow_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.drip_file_vow
-    ADD CONSTRAINT drip_file_vow_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
-
-
---
 -- Name: drip_ilk_rho drip_ilk_rho_ilk_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -5133,6 +5101,38 @@ ALTER TABLE ONLY maker.flip_kick
 
 ALTER TABLE ONLY maker.flop_kick
     ADD CONSTRAINT flop_kick_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: jug_file_ilk jug_file_ilk_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.jug_file_ilk
+    ADD CONSTRAINT jug_file_ilk_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: jug_file_ilk jug_file_ilk_ilk_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.jug_file_ilk
+    ADD CONSTRAINT jug_file_ilk_ilk_fkey FOREIGN KEY (ilk) REFERENCES maker.ilks(id);
+
+
+--
+-- Name: jug_file_repo jug_file_repo_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.jug_file_repo
+    ADD CONSTRAINT jug_file_repo_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: jug_file_vow jug_file_vow_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.jug_file_vow
+    ADD CONSTRAINT jug_file_vow_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
 
 
 --

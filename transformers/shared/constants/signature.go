@@ -7,9 +7,9 @@ func GetCatFilePitVowSignature() string      { return GetLogNoteTopicZero(catFil
 func GetDealSignature() string               { return GetLogNoteTopicZero(dealMethod()) }
 func GetDentFunctionSignature() string       { return GetLogNoteTopicZero(dentMethod()) }
 func GetDripDripSignature() string           { return GetLogNoteTopicZero(dripDripMethod()) }
-func GetDripFileIlkSignature() string        { return GetLogNoteTopicZero(dripFileIlkMethod()) }
-func GetDripFileRepoSignature() string       { return GetLogNoteTopicZero(dripFileRepoMethod()) }
-func GetDripFileVowSignature() string        { return GetLogNoteTopicZero(dripFileVowMethod()) }
+func GetJugFileIlkSignature() string         { return GetLogNoteTopicZero(jugFileIlkMethod()) }
+func GetJugFileRepoSignature() string        { return GetLogNoteTopicZero(jugFileRepoMethod()) }
+func GetJugFileVowSignature() string         { return GetLogNoteTopicZero(jugFileVowMethod()) }
 func GetFlapKickSignature() string           { return GetEventTopicZero(flapKickMethod()) }
 func GetFlipKickSignature() string           { return GetEventTopicZero(flipKickMethod()) }
 func GetFlopKickSignature() string           { return GetEventTopicZero(flopKickMethod()) }
