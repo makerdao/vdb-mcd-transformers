@@ -41,7 +41,6 @@
         "vat_init",
         "vat_move",
         "vat_slip",
-        "vat_toll",
         "vat_tune",
         "vow_flog"
     ]
@@ -191,12 +190,6 @@
         rank = "0"
     [exporter.vat_slip]
         path = "transformers/events/vat_slip/initializer"
-        type = "eth_event"
-        repository = "github.com/vulcanize/mcd_transformers"
-        migrations = "db/migrations"
-        rank = "0"
-    [exporter.vat_toll]
-        path = "transformers/events/vat_toll/initializer"
         type = "eth_event"
         repository = "github.com/vulcanize/mcd_transformers"
         migrations = "db/migrations"

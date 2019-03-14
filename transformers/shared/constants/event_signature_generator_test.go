@@ -214,13 +214,6 @@ var _ = Describe("Event signature generator", func() {
 					Expect(expected).To(Equal(actual))
 				})
 
-				It("gets the toll method signature", func() {
-					expected := "toll(bytes32,bytes32,int256)"
-					actual := constants.GetSolidityFunctionSignature(test_data.KovanVatABI, "toll")
-
-					Expect(expected).To(Equal(actual))
-				})
-
 				It("gets the tune method signature", func() {
 					expected := "tune(bytes32,bytes32,bytes32,bytes32,int256,int256)"
 					actual := constants.GetSolidityFunctionSignature(test_data.KovanVatABI, "tune")
