@@ -41,7 +41,7 @@ var (
 var TendLogNote = types.Log{
 	Address: common.HexToAddress(KovanFlipperContractAddress),
 	Topics: []common.Hash{
-		common.HexToHash("0x4b43ed1200000000000000000000000000000000000000000000000000000000"), //abbreviated tend function signature
+		common.HexToHash(KovanTendSignature),                                                   //abbreviated tend function signature
 		common.HexToHash("0x0000000000000000000000007d7bee5fcfd8028cf7b00876c5b1421c800561a6"), //msg caller address
 		common.HexToHash("0x000000000000000000000000000000000000000000000000000000000000000a"), //first param of the function called (i.e. flip kick id)
 		common.HexToHash("0x0000000000000000000000000000000000000000000000049b9ca9a694340000"), //second param of the function called (i.e. lot)

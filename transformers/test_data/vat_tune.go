@@ -15,7 +15,7 @@ import (
 var EthVatTuneLog = types.Log{
 	Address: common.HexToAddress(KovanVatContractAddress),
 	Topics: []common.Hash{
-		common.HexToHash("0x5dd6471a00000000000000000000000000000000000000000000000000000000"),
+		common.HexToHash(KovanVatTuneSignature),
 		common.HexToHash("0x4554480000000000000000000000000000000000000000000000000000000000"),
 		common.HexToHash("0x0000000000000000000000004f26ffbe5f04ed43630fdc30a87638d53d0b0876"),
 		common.HexToHash("0x0000000000000000000000004f26ffbe5f04ed43630fdc30a87638d53d0b0876"),

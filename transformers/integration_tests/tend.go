@@ -57,7 +57,7 @@ var _ = Describe("Tend LogNoteTransformer", func() {
 			TransformerName:     constants.TendLabel,
 			ContractAddresses:   []string{test_data.KovanFlapperContractAddress, test_data.KovanFlipperContractAddress},
 			ContractAbi:         test_data.KovanFlipperABI,
-			Topic:               test_data.KovanTendFunctionSignature,
+			Topic:               test_data.KovanTendSignature,
 			StartingBlockNumber: 0,
 			EndingBlockNumber:   -1,
 		}

@@ -14,7 +14,7 @@ var (
 	FlapKickChecked           = "flap_kick_checked"
 	FlipKickChecked           = "flip_kick_checked"
 	FlopKickChecked           = "flop_kick_checked"
-	FrobChecked               = "frob_checked"
+	VatFrobChecked            = "vat_frob_checked"
 	PitFileDebtCeilingChecked = "pit_file_debt_ceiling_checked"
 	PitFileIlkChecked         = "pit_file_ilk_checked"
 	PriceFeedsChecked         = "price_feeds_checked"

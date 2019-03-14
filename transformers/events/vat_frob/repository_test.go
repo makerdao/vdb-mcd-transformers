@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package frob_test
+package vat_frob_test
 
 import (
 	"strconv"
@@ -27,69 +27,68 @@ import (
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 
 	"github.com/vulcanize/mcd_transformers/test_config"
-	"github.com/vulcanize/mcd_transformers/transformers/events/frob"
+	"github.com/vulcanize/mcd_transformers/transformers/events/vat_frob"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data/shared_behaviors"
 )
 
-var _ = Describe("Frob repository", func() {
+var _ = Describe("Vat frob repository", func() {
 	var (
-		db             *postgres.DB
-		frobRepository frob.FrobRepository
+		db                *postgres.DB
+		vatFrobRepository vat_frob.VatFrobRepository
 	)
 
 	BeforeEach(func() {
 		db = test_config.NewTestDB(test_config.NewTestNode())
 		test_config.CleanTestDB(db)
-		frobRepository = frob.FrobRepository{}
-		frobRepository.SetDB(db)
+		vatFrobRepository = vat_frob.VatFrobRepository{}
+		vatFrobRepository.SetDB(db)
 	})
 
 	Describe("Create", func() {
-		modelWithDifferentLogIdx := test_data.FrobModel
+		modelWithDifferentLogIdx := test_data.VatFrobModel
 		modelWithDifferentLogIdx.LogIndex++
 		inputs := shared_behaviors.CreateBehaviorInputs{
-			CheckedHeaderColumnName:  constants.FrobChecked,
-			LogEventTableName:        "maker.frob",
-			TestModel:                test_data.FrobModel,
+			CheckedHeaderColumnName:  constants.VatFrobChecked,
+			LogEventTableName:        "maker.vat_frob",
+			TestModel:                test_data.VatFrobModel,
 			ModelWithDifferentLogIdx: modelWithDifferentLogIdx,
-			Repository:               &frobRepository,
+			Repository:               &vatFrobRepository,
 		}
 
 		shared_behaviors.SharedRepositoryCreateBehaviors(&inputs)
 
-		It("adds a frob", func() {
+		It("adds a vat frob", func() {
 			headerRepository := repositories.NewHeaderRepository(db)
 			headerID, err := headerRepository.CreateOrUpdateHeader(fakes.FakeHeader)
 			Expect(err).NotTo(HaveOccurred())
 
-			err = frobRepository.Create(headerID, []interface{}{test_data.FrobModel})
+			err = vatFrobRepository.Create(headerID, []interface{}{test_data.VatFrobModel})
 			Expect(err).NotTo(HaveOccurred())
-			var dbFrob frob.FrobModel
-			err = db.Get(&dbFrob, `SELECT art, dart, dink, iart, ilk, ink, urn, log_idx, tx_idx, raw_log FROM maker.frob WHERE header_id = $1`, headerID)
+			var dbVatFrob vat_frob.VatFrobModel
+			err = db.Get(&dbVatFrob, `SELECT ilk, urn, v, w, dink, dart, log_idx, tx_idx, raw_log FROM maker.vat_frob WHERE header_id = $1`, headerID)
 
 			Expect(err).NotTo(HaveOccurred())
-			ilkID, err := shared.GetOrCreateIlk(test_data.FrobModel.Ilk, db)
+			ilkID, err := shared.GetOrCreateIlk(test_data.VatFrobModel.Ilk, db)
 			Expect(err).NotTo(HaveOccurred())
-			Expect(dbFrob.Ilk).To(Equal(strconv.Itoa(ilkID)))
-			Expect(dbFrob.Urn).To(Equal(test_data.FrobModel.Urn))
-			Expect(dbFrob.Ink).To(Equal(test_data.FrobModel.Ink))
-			Expect(dbFrob.Art).To(Equal(test_data.FrobModel.Art))
-			Expect(dbFrob.Dink).To(Equal(test_data.FrobModel.Dink))
-			Expect(dbFrob.Dart).To(Equal(test_data.FrobModel.Dart))
-			Expect(dbFrob.IArt).To(Equal(test_data.FrobModel.IArt))
-			Expect(dbFrob.LogIndex).To(Equal(test_data.FrobModel.LogIndex))
-			Expect(dbFrob.TransactionIndex).To(Equal(test_data.FrobModel.TransactionIndex))
-			Expect(dbFrob.Raw).To(MatchJSON(test_data.FrobModel.Raw))
+			Expect(dbVatFrob.Ilk).To(Equal(strconv.Itoa(ilkID)))
+			Expect(dbVatFrob.Urn).To(Equal(test_data.VatFrobModel.Urn))
+			Expect(dbVatFrob.V).To(Equal(test_data.VatFrobModel.V))
+			Expect(dbVatFrob.W).To(Equal(test_data.VatFrobModel.W))
+			Expect(dbVatFrob.Dink).To(Equal(test_data.VatFrobModel.Dink))
+			Expect(dbVatFrob.Dart).To(Equal(test_data.VatFrobModel.Dart))
+			Expect(dbVatFrob.LogIndex).To(Equal(test_data.VatFrobModel.LogIndex))
+			Expect(dbVatFrob.TransactionIndex).To(Equal(test_data.VatFrobModel.TransactionIndex))
+			Expect(dbVatFrob.Raw).To(MatchJSON(test_data.VatFrobModel.Raw))
 		})
 	})
 
 	Describe("MarkHeaderChecked", func() {
 		inputs := shared_behaviors.MarkedHeaderCheckedBehaviorInputs{
-			CheckedHeaderColumnName: constants.FrobChecked,
-			Repository:              &frobRepository,
+			CheckedHeaderColumnName: constants.VatFrobChecked,
+			Repository:              &vatFrobRepository,
 		}
 
 		shared_behaviors.SharedRepositoryMarkHeaderCheckedBehaviors(&inputs)

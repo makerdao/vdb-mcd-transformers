@@ -25,10 +25,10 @@ import (
 func GetVatInitConfig() shared_t.TransformerConfig {
 	return shared_t.TransformerConfig{
 		TransformerName:     constants.VatInitLabel,
-		ContractAddresses:   []string{constants.VatContractAddress()},
-		ContractAbi:         constants.VatABI(),
+		ContractAddresses:   []string{constants.OldVatContractAddress()},
+		ContractAbi:         constants.OldVatABI(),
 		Topic:               constants.GetVatInitSignature(),
-		StartingBlockNumber: constants.VatDeploymentBlock(),
+		StartingBlockNumber: constants.OldVatDeploymentBlock(),
 		EndingBlockNumber:   -1,
 	}
 }

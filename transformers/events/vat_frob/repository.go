@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package frob
+package vat_frob
 
 import (
 	"fmt"
@@ -29,26 +29,26 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
-type FrobRepository struct {
+type VatFrobRepository struct {
 	db *postgres.DB
 }
 
-func (repository FrobRepository) Create(headerID int64, models []interface{}) error {
+func (repository VatFrobRepository) Create(headerID int64, models []interface{}) error {
 	tx, dBaseErr := repository.db.Beginx()
 	if dBaseErr != nil {
 		return dBaseErr
 	}
 	for _, model := range models {
-		frobModel, ok := model.(FrobModel)
+		vatFrobModel, ok := model.(VatFrobModel)
 		if !ok {
 			rollbackErr := tx.Rollback()
 			if rollbackErr != nil {
 				log.Error("failed to rollback ", rollbackErr)
 			}
-			return fmt.Errorf("model of type %T, not %T", model, FrobModel{})
+			return fmt.Errorf("model of type %T, not %T", model, VatFrobModel{})
 		}
 
-		ilkID, ilkErr := shared.GetOrCreateIlkInTransaction(frobModel.Ilk, tx)
+		ilkID, ilkErr := shared.GetOrCreateIlkInTransaction(vatFrobModel.Ilk, tx)
 		if ilkErr != nil {
 			rollbackErr := tx.Rollback()
 			if rollbackErr != nil {
@@ -57,10 +57,10 @@ func (repository FrobRepository) Create(headerID int64, models []interface{}) er
 			return ilkErr
 		}
 
-		_, execErr := tx.Exec(`INSERT INTO maker.frob (header_id, art, dart, dink, iart, ilk, ink, urn, raw_log, log_idx, tx_idx)
-		VALUES($1, $2::NUMERIC, $3::NUMERIC, $4::NUMERIC, $5::NUMERIC, $6, $7::NUMERIC, $8, $9, $10, $11)
-		ON CONFLICT (header_id, tx_idx, log_idx) DO UPDATE SET art = $2, dart = $3, dink = $4, iart = $5, ilk = $6, ink = $7, urn = $8, raw_log = $9;`,
-			headerID, frobModel.Art, frobModel.Dart, frobModel.Dink, frobModel.IArt, ilkID, frobModel.Ink, frobModel.Urn, frobModel.Raw, frobModel.LogIndex, frobModel.TransactionIndex)
+		_, execErr := tx.Exec(`INSERT INTO maker.vat_frob (header_id, ilk, urn, v, w, dink, dart, raw_log, log_idx, tx_idx)
+		VALUES($1, $2::NUMERIC, $3, $4, $5, $6::NUMERIC, $7::NUMERIC, $8, $9, $10)
+		ON CONFLICT (header_id, tx_idx, log_idx) DO UPDATE SET ilk = $2, urn = $3, v = $4, w = $5, dink = $6, dart = $7, raw_log = $8;`,
+			headerID, ilkID, vatFrobModel.Urn, vatFrobModel.V, vatFrobModel.W, vatFrobModel.Dink, vatFrobModel.Dart, vatFrobModel.Raw, vatFrobModel.LogIndex, vatFrobModel.TransactionIndex)
 		if execErr != nil {
 			rollbackErr := tx.Rollback()
 			if rollbackErr != nil {
@@ -69,7 +69,7 @@ func (repository FrobRepository) Create(headerID int64, models []interface{}) er
 			return execErr
 		}
 	}
-	checkHeaderErr := repo.MarkHeaderCheckedInTransaction(headerID, tx, constants.FrobChecked)
+	checkHeaderErr := repo.MarkHeaderCheckedInTransaction(headerID, tx, constants.VatFrobChecked)
 	if checkHeaderErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
@@ -80,18 +80,18 @@ func (repository FrobRepository) Create(headerID int64, models []interface{}) er
 	return tx.Commit()
 }
 
-func (repository FrobRepository) MarkHeaderChecked(headerID int64) error {
-	return repo.MarkHeaderChecked(headerID, repository.db, constants.FrobChecked)
+func (repository VatFrobRepository) MarkHeaderChecked(headerID int64) error {
+	return repo.MarkHeaderChecked(headerID, repository.db, constants.VatFrobChecked)
 }
 
-func (repository FrobRepository) MissingHeaders(startingBlockNumber, endingBlockNumber int64) ([]core.Header, error) {
-	return repo.MissingHeaders(startingBlockNumber, endingBlockNumber, repository.db, constants.FrobChecked)
+func (repository VatFrobRepository) MissingHeaders(startingBlockNumber, endingBlockNumber int64) ([]core.Header, error) {
+	return repo.MissingHeaders(startingBlockNumber, endingBlockNumber, repository.db, constants.VatFrobChecked)
 }
 
-func (repository FrobRepository) RecheckHeaders(startingBlockNumber, endingBlockNumber int64) ([]core.Header, error) {
-	return repo.RecheckHeaders(startingBlockNumber, endingBlockNumber, repository.db, constants.FrobChecked)
+func (repository VatFrobRepository) RecheckHeaders(startingBlockNumber, endingBlockNumber int64) ([]core.Header, error) {
+	return repo.RecheckHeaders(startingBlockNumber, endingBlockNumber, repository.db, constants.VatFrobChecked)
 }
 
-func (repository *FrobRepository) SetDB(db *postgres.DB) {
+func (repository *VatFrobRepository) SetDB(db *postgres.DB) {
 	repository.db = db
 }

@@ -14,7 +14,7 @@ const (
 	FlapKickLabel           = "flapKick"
 	FlipKickLabel           = "flipKick"
 	FlopKickLabel           = "flopKick"
-	FrobLabel               = "frob"
+	VatFrobLabel            = "vatFrob"
 	PitFileDebtCeilingLabel = "pitFileDebtCeiling"
 	PitFileIlkLabel         = "pitFileIlk"
 	PriceFeedLabel          = "priceFeed"
@@ -46,7 +46,7 @@ func AllTransformerLabels() []string {
 		FlapKickLabel,
 		FlipKickLabel,
 		FlopKickLabel,
-		FrobLabel,
+		VatFrobLabel,
 		PitFileDebtCeilingLabel,
 		PitFileIlkLabel,
 		PriceFeedLabel,

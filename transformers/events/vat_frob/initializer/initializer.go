@@ -14,17 +14,17 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package frob
+package initializer
 
-type FrobModel struct {
-	Ilk              string
-	Urn              string
-	Ink              string
-	Art              string
-	Dink             string
-	Dart             string
-	IArt             string
-	LogIndex         uint   `db:"log_idx"`
-	TransactionIndex uint   `db:"tx_idx"`
-	Raw              []byte `db:"raw_log"`
-}
+import (
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
+
+	"github.com/vulcanize/mcd_transformers/transformers/events/vat_frob"
+)
+
+var TransformerInitializer transformer.TransformerInitializer = factories.LogNoteTransformer{
+	Config:     vat_frob.GetVatFrobConfig(),
+	Converter:  &vat_frob.VatFrobConverter{},
+	Repository: &vat_frob.VatFrobRepository{},
+}.NewLogNoteTransformer

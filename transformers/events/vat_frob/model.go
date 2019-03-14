@@ -14,21 +14,16 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package frob
+package vat_frob
 
-import (
-	shared_t "github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
-
-	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
-)
-
-func GetFrobConfig() shared_t.TransformerConfig {
-	return shared_t.TransformerConfig{
-		TransformerName:     constants.FrobLabel,
-		ContractAddresses:   []string{constants.PitContractAddress()},
-		ContractAbi:         constants.PitABI(),
-		Topic:               constants.GetFrobSignature(),
-		StartingBlockNumber: constants.PitDeploymentBlock(),
-		EndingBlockNumber:   -1,
-	}
+type VatFrobModel struct {
+	Ilk              string
+	Urn              string
+	V                string
+	W                string
+	Dink             string
+	Dart             string
+	LogIndex         uint   `db:"log_idx"`
+	TransactionIndex uint   `db:"tx_idx"`
+	Raw              []byte `db:"raw_log"`
 }

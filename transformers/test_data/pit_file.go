@@ -33,7 +33,7 @@ import (
 var EthPitFileDebtCeilingLog = types.Log{
 	Address: common.HexToAddress(KovanPitContractAddress),
 	Topics: []common.Hash{
-		common.HexToHash("0x29ae811400000000000000000000000000000000000000000000000000000000"),
+		common.HexToHash(KovanPitFileDebtCeilingSignature),
 		common.HexToHash("0x00000000000000000000000064d922894153be9eef7b7218dc565d1d0ce2a092"),
 		common.HexToHash("0x4c696e6500000000000000000000000000000000000000000000000000000000"),
 		common.HexToHash("0x000000000000000000000000000000000000000000000000000000000001e240"),
@@ -59,7 +59,7 @@ var PitFileDebtCeilingModel = debt_ceiling.PitFileDebtCeilingModel{
 var EthPitFileIlkLineLog = types.Log{
 	Address: common.HexToAddress(KovanPitContractAddress),
 	Topics: []common.Hash{
-		common.HexToHash("0x1a0b287e00000000000000000000000000000000000000000000000000000000"),
+		common.HexToHash(KovanPitFileIlkSignature),
 		common.HexToHash("0x00000000000000000000000064d922894153be9eef7b7218dc565d1d0ce2a092"),
 		common.HexToHash("0x66616b6520696c6b000000000000000000000000000000000000000000000000"),
 		common.HexToHash("0x6c696e6500000000000000000000000000000000000000000000000000000000"),
@@ -86,7 +86,7 @@ var PitFileIlkLineModel = ilk2.PitFileIlkModel{
 var EthPitFileIlkSpotLog = types.Log{
 	Address: common.HexToAddress(KovanPitContractAddress),
 	Topics: []common.Hash{
-		common.HexToHash("0x1a0b287e00000000000000000000000000000000000000000000000000000000"),
+		common.HexToHash(KovanPitFileIlkSignature),
 		common.HexToHash("0x00000000000000000000000064d922894153be9eef7b7218dc565d1d0ce2a092"),
 		common.HexToHash("0x66616b6520696c6b000000000000000000000000000000000000000000000000"),
 		common.HexToHash("0x73706f7400000000000000000000000000000000000000000000000000000000"),

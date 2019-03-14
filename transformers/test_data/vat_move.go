@@ -30,7 +30,7 @@ import (
 var EthVatMoveLog = types.Log{
 	Address: common.HexToAddress(KovanVatContractAddress),
 	Topics: []common.Hash{
-		common.HexToHash("0x78f1947000000000000000000000000000000000000000000000000000000000"),
+		common.HexToHash(KovanVatMoveSignature),
 		common.HexToHash("0x000000000000000000000000a730d1ff8b6bc74a26d54c20a9dda539909bab0e"),
 		common.HexToHash("0x000000000000000000000000b730d1ff8b6bc74a26d54c20a9dda539909bab0e"),
 		common.HexToHash("0x000000000000000000000000000000000000000000000000000000000000002a"),
