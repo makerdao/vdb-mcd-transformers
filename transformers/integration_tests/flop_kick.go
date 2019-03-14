@@ -35,15 +35,15 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/events/flop_kick"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 )
 
 var _ = Describe("FlopKick Transformer", func() {
 	var (
 		db          *postgres.DB
 		blockChain  core.BlockChain
-		config      transformer.TransformerConfig
-		initializer factories.Transformer
+		config      transformer.EventTransformerConfig
+		initializer event.Transformer
 		fetcher     fetch.LogFetcher
 		addresses   []common.Address
 		topics      []common.Hash
@@ -57,7 +57,7 @@ var _ = Describe("FlopKick Transformer", func() {
 		db = test_config.NewTestDB(blockChain.Node())
 		test_config.CleanTestDB(db)
 
-		config = transformer.TransformerConfig{
+		config = transformer.EventTransformerConfig{
 			TransformerName:     constants.FlopKickLabel,
 			ContractAddresses:   []string{test_data.KovanFlopperContractAddress},
 			ContractAbi:         test_data.KovanFlopperABI,
@@ -66,7 +66,7 @@ var _ = Describe("FlopKick Transformer", func() {
 			EndingBlockNumber:   -1,
 		}
 
-		initializer = factories.Transformer{
+		initializer = event.Transformer{
 			Config:     config,
 			Converter:  &flop_kick.FlopKickConverter{},
 			Repository: &flop_kick.FlopKickRepository{},

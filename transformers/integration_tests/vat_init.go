@@ -24,6 +24,7 @@ import (
 	. "github.com/onsi/gomega"
 
 	c2 "github.com/vulcanize/vulcanizedb/libraries/shared/constants"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 	fetch "github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 
@@ -32,13 +33,12 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories"
 )
 
 var _ = Describe("VatInit LogNoteTransformer", func() {
 	It("transforms VatInit log events", func() {
 		blockNumber := int64(8535561)
-		config := transformer.TransformerConfig{
+		config := transformer.EventTransformerConfig{
 			TransformerName:     constants.VatInitLabel,
 			ContractAddresses:   []string{test_data.KovanVatContractAddress},
 			ContractAbi:         test_data.KovanVatABI,
@@ -65,7 +65,7 @@ var _ = Describe("VatInit LogNoteTransformer", func() {
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
-		transformer := factories.LogNoteTransformer{
+		transformer := event.LogNoteTransformer{
 			Config:     config,
 			Converter:  &vat_init.VatInitConverter{},
 			Repository: &vat_init.VatInitRepository{},
@@ -87,7 +87,7 @@ var _ = Describe("VatInit LogNoteTransformer", func() {
 
 	It("rechecks vat init event", func() {
 		blockNumber := int64(8535561)
-		config := transformer.TransformerConfig{
+		config := transformer.EventTransformerConfig{
 			TransformerName:     constants.VatInitLabel,
 			ContractAddresses:   []string{test_data.KovanVatContractAddress},
 			ContractAbi:         test_data.KovanVatABI,
@@ -114,7 +114,7 @@ var _ = Describe("VatInit LogNoteTransformer", func() {
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
-		transformer := factories.LogNoteTransformer{
+		transformer := event.LogNoteTransformer{
 			Config:     config,
 			Converter:  &vat_init.VatInitConverter{},
 			Repository: &vat_init.VatInitRepository{},

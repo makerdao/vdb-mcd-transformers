@@ -17,13 +17,13 @@
 package initializer
 
 import (
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 
 	"github.com/vulcanize/mcd_transformers/transformers/events/cat_file/chop_lump"
 )
 
-var TransformerInitializer transformer.TransformerInitializer = factories.LogNoteTransformer{
+var EventTransformerInitializer transformer.EventTransformerInitializer = event.LogNoteTransformer{
 	Config:     chop_lump.GetCatFileChopLumpConfig(),
 	Converter:  chop_lump.CatFileChopLumpConverter{},
 	Repository: &chop_lump.CatFileChopLumpRepository{},

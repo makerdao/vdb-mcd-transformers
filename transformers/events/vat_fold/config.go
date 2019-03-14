@@ -22,8 +22,8 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
-func GetVatFoldConfig() shared_t.TransformerConfig {
-	return shared_t.TransformerConfig{
+func GetVatFoldConfig() shared_t.EventTransformerConfig {
+	return shared_t.EventTransformerConfig{
 		TransformerName:     constants.VatFoldLabel,
 		ContractAddresses:   []string{constants.OldVatContractAddress()},
 		ContractAbi:         constants.OldVatABI(),

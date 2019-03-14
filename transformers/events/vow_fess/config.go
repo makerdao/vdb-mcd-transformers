@@ -22,8 +22,8 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
-func GetVowFessConfig() shared_t.TransformerConfig {
-	return shared_t.TransformerConfig{
+func GetVowFessConfig() shared_t.EventTransformerConfig {
+	return shared_t.EventTransformerConfig{
 		TransformerName:     constants.VowFessLabel,
 		ContractAddresses:   []string{constants.VowContractAddress()},
 		ContractAbi:         constants.VowABI(),

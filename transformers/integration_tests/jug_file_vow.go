@@ -31,7 +31,7 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/events/jug_file/vow"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 )
 
 var _ = Describe("Jug File Vow LogNoteTransformer", func() {
@@ -51,7 +51,7 @@ var _ = Describe("Jug File Vow LogNoteTransformer", func() {
 
 	It("transforms JugFileVow log events", func() {
 		blockNumber := int64(10501125)
-		config := transformer.TransformerConfig{
+		config := transformer.EventTransformerConfig{
 			TransformerName:     constants.JugFileVowLabel,
 			ContractAddresses:   []string{test_data.KovanJugContractAddress},
 			ContractAbi:         test_data.KovanJugABI,
@@ -63,7 +63,7 @@ var _ = Describe("Jug File Vow LogNoteTransformer", func() {
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		initializer := factories.LogNoteTransformer{
+		initializer := event.LogNoteTransformer{
 			Config:     config,
 			Converter:  &vow.JugFileVowConverter{},
 			Repository: &vow.JugFileVowRepository{},
@@ -91,7 +91,7 @@ var _ = Describe("Jug File Vow LogNoteTransformer", func() {
 
 	It("rechecks drip file vow event", func() {
 		blockNumber := int64(10501125)
-		config := transformer.TransformerConfig{
+		config := transformer.EventTransformerConfig{
 			TransformerName:     constants.JugFileVowLabel,
 			ContractAddresses:   []string{test_data.KovanJugContractAddress},
 			ContractAbi:         test_data.KovanJugABI,
@@ -103,7 +103,7 @@ var _ = Describe("Jug File Vow LogNoteTransformer", func() {
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		initializer := factories.LogNoteTransformer{
+		initializer := event.LogNoteTransformer{
 			Config:     config,
 			Converter:  &vow.JugFileVowConverter{},
 			Repository: &vow.JugFileVowRepository{},

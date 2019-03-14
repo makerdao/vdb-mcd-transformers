@@ -17,13 +17,13 @@
 package initializer
 
 import (
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 
 	"github.com/vulcanize/mcd_transformers/transformers/events/jug_file/vow"
 )
 
-var TransformerInitializer transformer.TransformerInitializer = factories.LogNoteTransformer{
+var TransformerInitializer transformer.EventTransformerInitializer = event.LogNoteTransformer{
 	Config:     vow.GetJugFileVowConfig(),
 	Converter:  &vow.JugFileVowConverter{},
 	Repository: &vow.JugFileVowRepository{},

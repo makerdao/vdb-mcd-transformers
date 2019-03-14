@@ -22,8 +22,8 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
-func GetBiteConfig() shared_t.TransformerConfig {
-	return shared_t.TransformerConfig{
+func GetBiteConfig() shared_t.EventTransformerConfig {
+	return shared_t.EventTransformerConfig{
 		TransformerName:     constants.BiteLabel,
 		ContractAddresses:   []string{constants.CatContractAddress()},
 		ContractAbi:         constants.CatABI(),

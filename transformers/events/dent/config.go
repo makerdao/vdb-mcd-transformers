@@ -23,8 +23,8 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
-func GetDentConfig() shared_t.TransformerConfig {
-	return shared_t.TransformerConfig{
+func GetDentConfig() shared_t.EventTransformerConfig {
+	return shared_t.EventTransformerConfig{
 		TransformerName:     constants.DentLabel,
 		ContractAddresses:   []string{constants.FlipperContractAddress(), constants.FlopperContractAddress()},
 		ContractAbi:         constants.FlipperABI(),

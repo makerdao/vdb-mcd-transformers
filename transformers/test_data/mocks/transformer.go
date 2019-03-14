@@ -9,15 +9,15 @@ import (
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 )
 
-type MockTransformer struct {
+type MockEventTransformer struct {
 	ExecuteWasCalled bool
 	ExecuteError     error
 	PassedLogs       []types.Log
 	PassedHeader     core.Header
-	config           transformer.TransformerConfig
+	config           transformer.EventTransformerConfig
 }
 
-func (mh *MockTransformer) Execute(logs []types.Log, header core.Header, recheckHeaders constants.TransformerExecution) error {
+func (mh *MockEventTransformer) Execute(logs []types.Log, header core.Header, recheckHeaders constants.TransformerExecution) error {
 	if mh.ExecuteError != nil {
 		return mh.ExecuteError
 	}
@@ -27,19 +27,19 @@ func (mh *MockTransformer) Execute(logs []types.Log, header core.Header, recheck
 	return nil
 }
 
-func (mh *MockTransformer) GetConfig() transformer.TransformerConfig {
+func (mh *MockEventTransformer) GetConfig() transformer.EventTransformerConfig {
 	return mh.config
 }
 
-func (mh *MockTransformer) SetTransformerConfig(config transformer.TransformerConfig) {
+func (mh *MockEventTransformer) SetEventTransformerConfig(config transformer.EventTransformerConfig) {
 	mh.config = config
 }
 
-func (mh *MockTransformer) FakeTransformerInitializer(db *postgres.DB) transformer.EventTransformer {
+func (mh *MockEventTransformer) FakeEventTransformerInitializer(db *postgres.DB) transformer.EventTransformer {
 	return mh
 }
 
-var FakeTransformerConfig = transformer.TransformerConfig{
+var FakeTransformerConfig = transformer.EventTransformerConfig{
 	TransformerName:   "FakeTransformer",
 	ContractAddresses: []string{"FakeAddress"},
 	Topic:             "FakeTopic",

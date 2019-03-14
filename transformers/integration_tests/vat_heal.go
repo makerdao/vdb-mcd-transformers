@@ -29,13 +29,13 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_heal"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 )
 
 var _ = Describe("VatHeal Transformer", func() {
 	It("transforms VatHeal log events", func() {
 		blockNumber := int64(8935578)
-		config := transformer.TransformerConfig{
+		config := transformer.EventTransformerConfig{
 			TransformerName:     constants.VatHealLabel,
 			ContractAddresses:   []string{test_data.KovanVatContractAddress},
 			ContractAbi:         test_data.KovanVatABI,
@@ -62,7 +62,7 @@ var _ = Describe("VatHeal Transformer", func() {
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
-		tr := factories.LogNoteTransformer{
+		tr := event.LogNoteTransformer{
 			Config:     config,
 			Converter:  &vat_heal.VatHealConverter{},
 			Repository: &vat_heal.VatHealRepository{},
@@ -84,7 +84,7 @@ var _ = Describe("VatHeal Transformer", func() {
 
 	It("rechecks vat heal event", func() {
 		blockNumber := int64(8935578)
-		config := transformer.TransformerConfig{
+		config := transformer.EventTransformerConfig{
 			TransformerName:     constants.VatHealLabel,
 			ContractAddresses:   []string{test_data.KovanVatContractAddress},
 			ContractAbi:         test_data.KovanVatABI,
@@ -111,7 +111,7 @@ var _ = Describe("VatHeal Transformer", func() {
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
-		tr := factories.LogNoteTransformer{
+		tr := event.LogNoteTransformer{
 			Config:     config,
 			Converter:  &vat_heal.VatHealConverter{},
 			Repository: &vat_heal.VatHealRepository{},

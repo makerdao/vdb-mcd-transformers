@@ -17,13 +17,13 @@
 package initializer
 
 import (
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_file/ilk"
 )
 
-var TransformerInitializer transformer.TransformerInitializer = factories.LogNoteTransformer{
+var TransformerInitializer transformer.EventTransformerInitializer = event.LogNoteTransformer{
 	Config:     ilk.GetIlkFileConfig(),
 	Converter:  &ilk.VatFileIlkConverter{},
 	Repository: &ilk.VatFileIlkRepository{},
