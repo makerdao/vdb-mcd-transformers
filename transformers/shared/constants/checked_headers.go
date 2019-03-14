@@ -26,7 +26,6 @@ var (
 	VatInitChecked            = "vat_init_checked"
 	VatMoveChecked            = "vat_move_checked"
 	VatSlipChecked            = "vat_slip_checked"
-	VatTollChecked            = "vat_toll_checked"
 	VatTuneChecked            = "vat_tune_checked"
 	VowFlogChecked            = "vow_flog_checked"
 )
