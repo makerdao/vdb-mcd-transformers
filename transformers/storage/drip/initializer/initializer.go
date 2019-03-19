@@ -12,7 +12,7 @@ import (
 )
 
 var StorageTransformerInitializer transformer.StorageTransformerInitializer = storage.Transformer{
-	Address:    common.HexToAddress(constants.DripContractAddress()),
+	Address:    common.HexToAddress(constants.JugContractAddress()),
 	Mappings:   &drip.DripMappings{StorageRepository: &storage2.MakerStorageRepository{}},
 	Repository: &drip.DripStorageRepository{},
 }.NewTransformer

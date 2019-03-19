@@ -29,13 +29,13 @@ import (
 	"strconv"
 
 	"github.com/vulcanize/mcd_transformers/test_config"
-	"github.com/vulcanize/mcd_transformers/transformers/events/drip_drip"
+	"github.com/vulcanize/mcd_transformers/transformers/events/jug_drip"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/factories"
 )
 
-var _ = Describe("DripDrip Transformer", func() {
+var _ = Describe("JugDrip Transformer", func() {
 	var (
 		db         *postgres.DB
 		blockChain core.BlockChain
@@ -52,14 +52,14 @@ var _ = Describe("DripDrip Transformer", func() {
 
 		config = transformer.TransformerConfig{
 			ContractAddresses:   []string{test_data.KovanDripContractAddress},
-			ContractAbi:         test_data.KovanDripABI,
-			Topic:               test_data.KovanDripDripSignature,
+			ContractAbi:         test_data.KovanJugABI,
+			Topic:               test_data.KovanJugDripSignature,
 			StartingBlockNumber: 0,
 			EndingBlockNumber:   -1,
 		}
 	})
 
-	It("transforms DripDrip log events", func() {
+	It("transforms JugDrip log events", func() {
 		blockNumber := int64(8934775)
 		config.StartingBlockNumber = blockNumber
 		config.EndingBlockNumber = blockNumber
@@ -69,8 +69,8 @@ var _ = Describe("DripDrip Transformer", func() {
 
 		initializer := factories.LogNoteTransformer{
 			Config:     config,
-			Converter:  &drip_drip.DripDripConverter{},
-			Repository: &drip_drip.DripDripRepository{},
+			Converter:  &jug_drip.JugDripConverter{},
+			Repository: &jug_drip.JugDripRepository{},
 		}
 		tr := initializer.NewLogNoteTransformer(db)
 
@@ -84,8 +84,8 @@ var _ = Describe("DripDrip Transformer", func() {
 		err = tr.Execute(logs, header, constants.HeaderMissing)
 		Expect(err).NotTo(HaveOccurred())
 
-		var dbResults []drip_drip.DripDripModel
-		err = db.Select(&dbResults, `SELECT ilk from maker.drip_drip`)
+		var dbResults []jug_drip.JugDripModel
+		err = db.Select(&dbResults, `SELECT ilk from maker.jug_drip`)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResults)).To(Equal(1))
@@ -95,7 +95,7 @@ var _ = Describe("DripDrip Transformer", func() {
 		Expect(dbResult.Ilk).To(Equal(strconv.Itoa(ilkID)))
 	})
 
-	It("rechecks drip drip event", func() {
+	It("rechecks jug drip event", func() {
 		blockNumber := int64(8934775)
 		config.StartingBlockNumber = blockNumber
 		config.EndingBlockNumber = blockNumber
@@ -105,8 +105,8 @@ var _ = Describe("DripDrip Transformer", func() {
 
 		initializer := factories.LogNoteTransformer{
 			Config:     config,
-			Converter:  &drip_drip.DripDripConverter{},
-			Repository: &drip_drip.DripDripRepository{},
+			Converter:  &jug_drip.JugDripConverter{},
+			Repository: &jug_drip.JugDripRepository{},
 		}
 		tr := initializer.NewLogNoteTransformer(db)
 
@@ -127,8 +127,8 @@ var _ = Describe("DripDrip Transformer", func() {
 		err = db.Get(&headerID, `SELECT id FROM public.headers WHERE block_number = $1`, blockNumber)
 		Expect(err).NotTo(HaveOccurred())
 
-		var dripdripChecked []int
-		err = db.Select(&dripdripChecked, `SELECT drip_drip_checked FROM public.checked_headers WHERE header_id = $1`, headerID)
+		var jugDripChecked []int
+		err = db.Select(&jugDripChecked, `SELECT jug_drip_checked FROM public.checked_headers WHERE header_id = $1`, headerID)
 		Expect(err).NotTo(HaveOccurred())
 	})
 })

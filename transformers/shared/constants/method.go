@@ -7,7 +7,7 @@ func catFileFlipMethod() string        { return GetSolidityFunctionSignature(Cat
 func catFilePitVowMethod() string      { return "file(bytes32,address)" }
 func dealMethod() string               { return GetSolidityFunctionSignature(FlipperABI(), "deal") }
 func dentMethod() string               { return GetSolidityFunctionSignature(FlipperABI(), "dent") }
-func dripDripMethod() string           { return GetSolidityFunctionSignature(DripABI(), "drip") }
+func jugDripMethod() string            { return GetSolidityFunctionSignature(JugABI(), "drip") }
 func jugFileIlkMethod() string         { return "file(bytes32,bytes32,uint256)" }
 func jugFileRepoMethod() string        { return "file(bytes32,uint256)" }
 func jugFileVowMethod() string         { return "file(bytes32,bytes32)" }

@@ -14,22 +14,33 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package drip_drip_test
+package jug_drip_test
 
 import (
-	log "github.com/sirupsen/logrus"
-	"io/ioutil"
-	"testing"
-
+	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+
+	"github.com/vulcanize/mcd_transformers/transformers/events/jug_drip"
+	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
-func TestDripDrip(t *testing.T) {
-	RegisterFailHandler(Fail)
-	RunSpecs(t, "DripDrip Suite")
-}
+var _ = Describe("Jug drip converter", func() {
+	It("returns err if log is missing topics", func() {
+		converter := jug_drip.JugDripConverter{}
+		badLog := types.Log{}
 
-var _ = BeforeSuite(func() {
-	log.SetOutput(ioutil.Discard)
+		_, err := converter.ToModels([]types.Log{badLog})
+
+		Expect(err).To(HaveOccurred())
+	})
+
+	It("converts a log to an model", func() {
+		converter := jug_drip.JugDripConverter{}
+
+		model, err := converter.ToModels([]types.Log{test_data.EthJugDripLog})
+
+		Expect(err).NotTo(HaveOccurred())
+		Expect(model).To(Equal([]interface{}{test_data.JugDripModel}))
+	})
 })
