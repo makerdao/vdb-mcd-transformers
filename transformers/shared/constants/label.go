@@ -14,19 +14,18 @@ const (
 	FlapKickLabel           = "flapKick"
 	FlipKickLabel           = "flipKick"
 	FlopKickLabel           = "flopKick"
-	FrobLabel               = "frob"
 	PitFileDebtCeilingLabel = "pitFileDebtCeiling"
 	PitFileIlkLabel         = "pitFileIlk"
 	PriceFeedLabel          = "priceFeed"
 	TendLabel               = "tend"
 	VatFluxLabel            = "vatFlux"
 	VatFoldLabel            = "vatFold"
+	VatFrobLabel            = "vatFrob"
 	VatGrabLabel            = "vatGrab"
 	VatHealLabel            = "vatHeal"
 	VatInitLabel            = "vatInit"
 	VatMoveLabel            = "vatMove"
 	VatSlipLabel            = "vatSlip"
-	VatTollLabel            = "vatToll"
 	VatTuneLabel            = "vatTune"
 	VowFlogLabel            = "vowFlog"
 )
@@ -46,19 +45,18 @@ func AllTransformerLabels() []string {
 		FlapKickLabel,
 		FlipKickLabel,
 		FlopKickLabel,
-		FrobLabel,
 		PitFileDebtCeilingLabel,
 		PitFileIlkLabel,
 		PriceFeedLabel,
 		TendLabel,
 		VatFluxLabel,
 		VatFoldLabel,
+		VatFrobLabel,
 		VatGrabLabel,
 		VatHealLabel,
 		VatInitLabel,
 		VatMoveLabel,
 		VatSlipLabel,
-		VatTollLabel,
 		VatTuneLabel,
 		VowFlogLabel,
 	}

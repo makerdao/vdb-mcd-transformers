@@ -9,10 +9,10 @@ import (
 func GetVatFluxConfig() shared_t.TransformerConfig {
 	return shared_t.TransformerConfig{
 		TransformerName:     constants.VatFluxLabel,
-		ContractAddresses:   []string{constants.VatContractAddress()},
-		ContractAbi:         constants.VatABI(),
+		ContractAddresses:   []string{constants.OldVatContractAddress()},
+		ContractAbi:         constants.OldVatABI(),
 		Topic:               constants.GetVatFluxSignature(),
-		StartingBlockNumber: constants.VatDeploymentBlock(),
+		StartingBlockNumber: constants.OldVatDeploymentBlock(),
 		EndingBlockNumber:   -1,
 	}
 }

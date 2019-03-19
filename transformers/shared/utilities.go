@@ -17,6 +17,7 @@
 package shared
 
 import (
+	"math"
 	"math/big"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -50,6 +51,15 @@ func BigIntToString(value *big.Int) string {
 	}
 }
 
+func GetUpdatedLogNoteDataBytesAtIndex(n int, logData []byte) []byte {
+	zeroPaddedSignatureOffset := 28
+	indexOffset := int(math.Abs(float64(n)))
+	dataBegin := len(logData) - (indexOffset * constants.DataItemLength) - zeroPaddedSignatureOffset
+	dataEnd := len(logData) - ((indexOffset - 1) * constants.DataItemLength) - zeroPaddedSignatureOffset
+	return logData[dataBegin:dataEnd]
+}
+
+// TODO: Remove once transformers have been updated to use GetUpdatedLogNoteDataBytesAtIndex
 func GetDataBytesAtIndex(n int, logData []byte) []byte {
 	switch {
 	case n == -1:

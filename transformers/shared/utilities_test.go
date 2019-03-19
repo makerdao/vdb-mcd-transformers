@@ -45,7 +45,21 @@ var _ = Describe("Shared utilities", func() {
 
 			Expect(expected[:]).To(Equal(actual))
 		})
+	})
 
+	Describe("getting updated log note data bytes at index", func() {
+		It("accounts for topic zero's signature padding being appended to the end of the data", func() {
+			logData := hexutil.MustDecode("0x000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000c441fd3ef74554480000000000000000000000000000000000000000000000000000000000da15dce70ab462e66779f23ee14f21d993789ee3000000000000000000000000da15dce70ab462e66779f23ee14f21d993789ee3000000000000000000000000da15dce70ab462e66779f23ee14f21d993789ee30000000000000000000000000000000000000000000000000000000000000000000000000de0b6b3a7640000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000")
+			addressBytes := common.HexToAddress("0xda15dce70ab462e66779f23ee14f21d993789ee3").Bytes()
+			// common.address.Bytes() returns [20]byte{}, need [32]byte{}
+			expected := append(addressBytes, []byte{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}...)
+			actual := shared.GetUpdatedLogNoteDataBytesAtIndex(-3, logData)
+
+			Expect(expected[:]).To(Equal(actual))
+		})
+	})
+
+	Describe("Converting ray/wad", func() {
 		It("converts values to rays", func() {
 			rayOne := shared.ConvertToRay("123456789012345678901234567890")
 			Expect(rayOne).To(Equal("123.456789012345680589533003513"))

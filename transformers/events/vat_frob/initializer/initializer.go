@@ -14,22 +14,17 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package frob_test
+package initializer
 
 import (
-	log "github.com/sirupsen/logrus"
-	"io/ioutil"
-	"testing"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
+	"github.com/vulcanize/mcd_transformers/transformers/events/vat_frob"
 )
 
-func TestFrob(t *testing.T) {
-	RegisterFailHandler(Fail)
-	RunSpecs(t, "Frob Suite")
-}
-
-var _ = BeforeSuite(func() {
-	log.SetOutput(ioutil.Discard)
-})
+var TransformerInitializer transformer.TransformerInitializer = factories.LogNoteTransformer{
+	Config:     vat_frob.GetVatFrobConfig(),
+	Converter:  &vat_frob.VatFrobConverter{},
+	Repository: &vat_frob.VatFrobRepository{},
+}.NewLogNoteTransformer

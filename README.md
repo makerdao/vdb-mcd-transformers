@@ -162,7 +162,6 @@ If you have full rinkeby chaindata you can move it to `rinkeby_vulcanizedb_geth_
 ## Running the Tests
 - `make test` will run the unit tests and skip the integration tests
 - `make integrationtest` will run the just the integration tests
-- Note: requires Ganache chain setup and seeded with `flip-kick.js` and `frob.js` (in that order)
 
 ## Deploying
 1. you will need to make sure you have ssh agent running and your ssh key added to it. instructions [here](https://developer.github.com/v3/guides/using-ssh-agent-forwarding/#your-key-must-be-available-to-ssh-agent)

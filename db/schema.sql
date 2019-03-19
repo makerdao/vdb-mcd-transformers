@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 10.5
--- Dumped by pg_dump version 10.5
+-- Dumped from database version 10.6
+-- Dumped by pg_dump version 10.6
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -1536,46 +1536,6 @@ ALTER SEQUENCE maker.flop_kick_id_seq OWNED BY maker.flop_kick.id;
 
 
 --
--- Name: frob; Type: TABLE; Schema: maker; Owner: -
---
-
-CREATE TABLE maker.frob (
-    id integer NOT NULL,
-    header_id integer NOT NULL,
-    ilk integer NOT NULL,
-    urn text,
-    dink numeric,
-    dart numeric,
-    ink numeric,
-    art numeric,
-    iart numeric,
-    log_idx integer NOT NULL,
-    tx_idx integer NOT NULL,
-    raw_log jsonb
-);
-
-
---
--- Name: frob_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
---
-
-CREATE SEQUENCE maker.frob_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: frob_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
---
-
-ALTER SEQUENCE maker.frob_id_seq OWNED BY maker.frob.id;
-
-
---
 -- Name: ilks; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -2083,6 +2043,45 @@ ALTER SEQUENCE maker.vat_fold_id_seq OWNED BY maker.vat_fold.id;
 
 
 --
+-- Name: vat_frob; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.vat_frob (
+    id integer NOT NULL,
+    header_id integer NOT NULL,
+    ilk integer NOT NULL,
+    urn text,
+    v text,
+    w text,
+    dink numeric,
+    dart numeric,
+    log_idx integer NOT NULL,
+    tx_idx integer NOT NULL,
+    raw_log jsonb
+);
+
+
+--
+-- Name: vat_frob_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.vat_frob_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: vat_frob_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.vat_frob_id_seq OWNED BY maker.vat_frob.id;
+
+
+--
 -- Name: vat_gem; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -2460,42 +2459,6 @@ CREATE SEQUENCE maker.vat_slip_id_seq
 --
 
 ALTER SEQUENCE maker.vat_slip_id_seq OWNED BY maker.vat_slip.id;
-
-
---
--- Name: vat_toll; Type: TABLE; Schema: maker; Owner: -
---
-
-CREATE TABLE maker.vat_toll (
-    id integer NOT NULL,
-    header_id integer NOT NULL,
-    ilk integer NOT NULL,
-    urn text,
-    take numeric,
-    tx_idx integer NOT NULL,
-    log_idx integer NOT NULL,
-    raw_log jsonb
-);
-
-
---
--- Name: vat_toll_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
---
-
-CREATE SEQUENCE maker.vat_toll_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: vat_toll_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
---
-
-ALTER SEQUENCE maker.vat_toll_id_seq OWNED BY maker.vat_toll.id;
 
 
 --
@@ -3074,7 +3037,7 @@ CREATE TABLE public.checked_headers (
     id integer NOT NULL,
     header_id integer NOT NULL,
     flip_kick_checked integer DEFAULT 0 NOT NULL,
-    frob_checked integer DEFAULT 0 NOT NULL,
+    vat_frob_checked integer DEFAULT 0 NOT NULL,
     price_feeds_checked integer DEFAULT 0 NOT NULL,
     tend_checked integer DEFAULT 0 NOT NULL,
     bite_checked integer DEFAULT 0 NOT NULL,
@@ -3094,7 +3057,6 @@ CREATE TABLE public.checked_headers (
     vat_move_checked integer DEFAULT 0 NOT NULL,
     vat_fold_checked integer DEFAULT 0 NOT NULL,
     vat_heal_checked integer DEFAULT 0 NOT NULL,
-    vat_toll_checked integer DEFAULT 0 NOT NULL,
     vat_tune_checked integer DEFAULT 0 NOT NULL,
     vat_grab_checked integer DEFAULT 0 NOT NULL,
     vat_flux_checked integer DEFAULT 0 NOT NULL,
@@ -3352,38 +3314,6 @@ CREATE SEQUENCE public.receipts_id_seq
 --
 
 ALTER SEQUENCE public.receipts_id_seq OWNED BY public.receipts.id;
-
-
---
--- Name: token_supply; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.token_supply (
-    id integer NOT NULL,
-    block_id integer NOT NULL,
-    supply numeric NOT NULL,
-    token_address character varying(66) NOT NULL
-);
-
-
---
--- Name: token_supply_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.token_supply_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: token_supply_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.token_supply_id_seq OWNED BY public.token_supply.id;
 
 
 --
@@ -3689,13 +3619,6 @@ ALTER TABLE ONLY maker.flop_kick ALTER COLUMN id SET DEFAULT nextval('maker.flop
 
 
 --
--- Name: frob id; Type: DEFAULT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.frob ALTER COLUMN id SET DEFAULT nextval('maker.frob_id_seq'::regclass);
-
-
---
 -- Name: ilks id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
@@ -3801,6 +3724,13 @@ ALTER TABLE ONLY maker.vat_fold ALTER COLUMN id SET DEFAULT nextval('maker.vat_f
 
 
 --
+-- Name: vat_frob id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_frob ALTER COLUMN id SET DEFAULT nextval('maker.vat_frob_id_seq'::regclass);
+
+
+--
 -- Name: vat_gem id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
@@ -3875,13 +3805,6 @@ ALTER TABLE ONLY maker.vat_sin ALTER COLUMN id SET DEFAULT nextval('maker.vat_si
 --
 
 ALTER TABLE ONLY maker.vat_slip ALTER COLUMN id SET DEFAULT nextval('maker.vat_slip_id_seq'::regclass);
-
-
---
--- Name: vat_toll id; Type: DEFAULT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.vat_toll ALTER COLUMN id SET DEFAULT nextval('maker.vat_toll_id_seq'::regclass);
 
 
 --
@@ -4050,13 +3973,6 @@ ALTER TABLE ONLY public.queued_storage ALTER COLUMN id SET DEFAULT nextval('publ
 --
 
 ALTER TABLE ONLY public.receipts ALTER COLUMN id SET DEFAULT nextval('public.receipts_id_seq'::regclass);
-
-
---
--- Name: token_supply id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.token_supply ALTER COLUMN id SET DEFAULT nextval('public.token_supply_id_seq'::regclass);
 
 
 --
@@ -4418,22 +4334,6 @@ ALTER TABLE ONLY maker.flop_kick
 
 
 --
--- Name: frob frob_header_id_tx_idx_log_idx_key; Type: CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.frob
-    ADD CONSTRAINT frob_header_id_tx_idx_log_idx_key UNIQUE (header_id, tx_idx, log_idx);
-
-
---
--- Name: frob frob_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.frob
-    ADD CONSTRAINT frob_pkey PRIMARY KEY (id);
-
-
---
 -- Name: ilks ilks_ilk_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -4610,6 +4510,22 @@ ALTER TABLE ONLY maker.vat_fold
 
 
 --
+-- Name: vat_frob vat_frob_header_id_tx_idx_log_idx_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_frob
+    ADD CONSTRAINT vat_frob_header_id_tx_idx_log_idx_key UNIQUE (header_id, tx_idx, log_idx);
+
+
+--
+-- Name: vat_frob vat_frob_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_frob
+    ADD CONSTRAINT vat_frob_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: vat_gem vat_gem_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -4735,22 +4651,6 @@ ALTER TABLE ONLY maker.vat_slip
 
 ALTER TABLE ONLY maker.vat_slip
     ADD CONSTRAINT vat_slip_pkey PRIMARY KEY (id);
-
-
---
--- Name: vat_toll vat_toll_header_id_tx_idx_log_idx_key; Type: CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.vat_toll
-    ADD CONSTRAINT vat_toll_header_id_tx_idx_log_idx_key UNIQUE (header_id, tx_idx, log_idx);
-
-
---
--- Name: vat_toll vat_toll_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.vat_toll
-    ADD CONSTRAINT vat_toll_pkey PRIMARY KEY (id);
 
 
 --
@@ -5236,22 +5136,6 @@ ALTER TABLE ONLY maker.flop_kick
 
 
 --
--- Name: frob frob_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.frob
-    ADD CONSTRAINT frob_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
-
-
---
--- Name: frob frob_ilk_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.frob
-    ADD CONSTRAINT frob_ilk_fkey FOREIGN KEY (ilk) REFERENCES maker.ilks(id);
-
-
---
 -- Name: pit_file_debt_ceiling pit_file_debt_ceiling_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -5337,6 +5221,22 @@ ALTER TABLE ONLY maker.vat_fold
 
 ALTER TABLE ONLY maker.vat_fold
     ADD CONSTRAINT vat_fold_ilk_fkey FOREIGN KEY (ilk) REFERENCES maker.ilks(id);
+
+
+--
+-- Name: vat_frob vat_frob_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_frob
+    ADD CONSTRAINT vat_frob_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: vat_frob vat_frob_ilk_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_frob
+    ADD CONSTRAINT vat_frob_ilk_fkey FOREIGN KEY (ilk) REFERENCES maker.ilks(id);
 
 
 --
@@ -5444,22 +5344,6 @@ ALTER TABLE ONLY maker.vat_slip
 
 
 --
--- Name: vat_toll vat_toll_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.vat_toll
-    ADD CONSTRAINT vat_toll_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
-
-
---
--- Name: vat_toll vat_toll_ilk_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.vat_toll
-    ADD CONSTRAINT vat_toll_ilk_fkey FOREIGN KEY (ilk) REFERENCES maker.ilks(id);
-
-
---
 -- Name: vat_tune vat_tune_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -5512,14 +5396,6 @@ ALTER TABLE ONLY public.transactions
 --
 
 ALTER TABLE ONLY public.receipts
-    ADD CONSTRAINT blocks_fk FOREIGN KEY (block_id) REFERENCES public.blocks(id) ON DELETE CASCADE;
-
-
---
--- Name: token_supply blocks_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.token_supply
     ADD CONSTRAINT blocks_fk FOREIGN KEY (block_id) REFERENCES public.blocks(id) ON DELETE CASCADE;
 
 

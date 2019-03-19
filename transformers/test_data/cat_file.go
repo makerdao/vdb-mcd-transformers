@@ -30,7 +30,7 @@ import (
 var EthCatFileChopLog = types.Log{
 	Address: common.HexToAddress(KovanCatContractAddress),
 	Topics: []common.Hash{
-		common.HexToHash("0x1a0b287e00000000000000000000000000000000000000000000000000000000"),
+		common.HexToHash(KovanCatFileChopLumpSignature),
 		common.HexToHash("0x00000000000000000000000064d922894153be9eef7b7218dc565d1d0ce2a092"),
 		common.HexToHash("0x66616b6520696c6b000000000000000000000000000000000000000000000000"),
 		common.HexToHash("0x63686f7000000000000000000000000000000000000000000000000000000000"),
@@ -56,7 +56,7 @@ var CatFileChopModel = chop_lump.CatFileChopLumpModel{
 var EthCatFileLumpLog = types.Log{
 	Address: common.HexToAddress(KovanCatContractAddress),
 	Topics: []common.Hash{
-		common.HexToHash("0x1a0b287e00000000000000000000000000000000000000000000000000000000"),
+		common.HexToHash(KovanCatFileChopLumpSignature),
 		common.HexToHash("0x00000000000000000000000064d922894153be9eef7b7218dc565d1d0ce2a092"),
 		common.HexToHash("0x66616b6520696c6b000000000000000000000000000000000000000000000000"),
 		common.HexToHash("0x6c756d7000000000000000000000000000000000000000000000000000000000"),
@@ -82,7 +82,7 @@ var CatFileLumpModel = chop_lump.CatFileChopLumpModel{
 var EthCatFileFlipLog = types.Log{
 	Address: common.HexToAddress(KovanCatContractAddress),
 	Topics: []common.Hash{
-		common.HexToHash("0xebecb39d00000000000000000000000000000000000000000000000000000000"),
+		common.HexToHash(KovanCatFileFlipSignature),
 		common.HexToHash("0x00000000000000000000000064d922894153be9eef7b7218dc565d1d0ce2a092"),
 		common.HexToHash("0x66616b6520696c6b000000000000000000000000000000000000000000000000"),
 		common.HexToHash("0x666c697000000000000000000000000000000000000000000000000000000000"),
@@ -109,7 +109,7 @@ var CatFileFlipModel = flip.CatFileFlipModel{
 var EthCatFilePitVowLog = types.Log{
 	Address: common.HexToAddress(KovanCatContractAddress),
 	Topics: []common.Hash{
-		common.HexToHash("0xd4e8be8300000000000000000000000000000000000000000000000000000000"),
+		common.HexToHash(KovanCatFilePitVowSignature),
 		common.HexToHash("0x00000000000000000000000064d922894153be9eef7b7218dc565d1d0ce2a092"),
 		common.HexToHash("0x7069740000000000000000000000000000000000000000000000000000000000"),
 		common.HexToHash("0x0000000000000000000000008e84a1e068d77059cbe263c43ad0cdc130863313"),
