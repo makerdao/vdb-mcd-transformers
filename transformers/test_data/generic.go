@@ -19,35 +19,9 @@ package test_data
 import (
 	"math/rand"
 	"time"
-
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
-	shared_t "github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 )
 
-type GenericModel struct{}
-type GenericEntity struct{}
-
-var startingBlockNumber = rand.Int63()
-var topic = "0x" + randomString(64)
-var address = "0x" + randomString(38)
-
-var GenericTestLogs = []types.Log{{
-	Address:     common.HexToAddress(address),
-	Topics:      []common.Hash{common.HexToHash(topic)},
-	BlockNumber: uint64(startingBlockNumber),
-}}
-
-var GenericTestConfig = shared_t.TransformerConfig{
-	TransformerName:     "generic-test-transformer",
-	ContractAddresses:   []string{address},
-	ContractAbi:         randomString(100),
-	Topic:               topic,
-	StartingBlockNumber: startingBlockNumber,
-	EndingBlockNumber:   startingBlockNumber + 1,
-}
-
-func randomString(length int) string {
+func RandomString(length int) string {
 	var seededRand *rand.Rand = rand.New(
 		rand.NewSource(time.Now().UnixNano()))
 	charset := "abcdefghijklmnopqrstuvwxyz1234567890"

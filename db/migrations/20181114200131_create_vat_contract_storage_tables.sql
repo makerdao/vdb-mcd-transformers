@@ -51,7 +51,7 @@ CREATE TABLE maker.vat_urn_art (
   block_hash    TEXT,
   ilk           INTEGER NOT NULL REFERENCES maker.ilks (id),
   urn           TEXT,
-  art           TEXT
+  art           NUMERIC NOT NULL
 );
 
 CREATE TABLE maker.vat_urn_ink (
