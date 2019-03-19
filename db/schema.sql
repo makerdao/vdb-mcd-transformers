@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 10.6
--- Dumped by pg_dump version 10.6
+-- Dumped from database version 10.5
+-- Dumped by pg_dump version 10.5
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -68,6 +68,23 @@ CREATE TYPE maker.relevant_block AS (
 	block_number bigint,
 	block_hash text,
 	ilk integer
+);
+
+
+--
+-- Name: urn_state; Type: TYPE; Schema: maker; Owner: -
+--
+
+CREATE TYPE maker.urn_state AS (
+	urnid text,
+	ilkid text,
+	blockheight numeric,
+	ink numeric,
+	art numeric,
+	ratio numeric,
+	safe boolean,
+	created numeric,
+	updated numeric
 );
 
 
@@ -372,6 +389,99 @@ BEGIN
     SELECT * FROM maker.get_ilk_at_block_number(r.block_number::numeric, $2::integer);
   END LOOP;
 END;
+$_$;
+
+
+--
+-- Name: get_urn_states_at_block(numeric); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.get_urn_states_at_block(block_height numeric) RETURNS SETOF maker.urn_state
+    LANGUAGE sql
+    AS $_$
+WITH
+  ilks AS ( SELECT id, ilk FROM maker.ilks ),
+
+  inks AS ( -- Latest ink for each urn
+    SELECT DISTINCT ON (ilk, urn) ilk, urn, ink, block_number
+    FROM maker.vat_urn_ink
+    WHERE block_number <= block_height
+    ORDER BY ilk, urn, block_number DESC
+  ),
+
+  arts AS ( -- Latest art for each urn
+    SELECT DISTINCT ON (ilk, urn) ilk, urn, art, block_number
+    FROM maker.vat_urn_art
+    WHERE block_number <= block_height
+    ORDER BY ilk, urn, block_number DESC
+  ),
+
+  rates AS ( -- Latest rate for each ilk
+    SELECT DISTINCT ON (ilk) ilk, rate, block_number
+    FROM maker.vat_ilk_rate
+    WHERE block_number <= block_height
+    ORDER BY ilk, block_number DESC
+  ),
+
+  spots AS ( -- Get latest price update for ilk. Problematic from update frequency, slow query?
+    SELECT DISTINCT ON (ilk) ilk, spot, block_number
+    FROM maker.pit_ilk_spot
+    WHERE block_number <= block_height
+    ORDER BY ilk, block_number DESC
+  ),
+
+  ratio_data AS (
+    SELECT inks.ilk, inks.urn, ink, spot, art, rate
+    FROM inks
+      JOIN arts ON arts.ilk = inks.ilk AND arts.urn = inks.urn
+      JOIN spots ON spots.ilk = arts.ilk
+      JOIN rates ON rates.ilk = arts.ilk
+  ),
+
+  ratios AS (
+    SELECT ilk, urn, ((1.0 * ink * spot) / NULLIF(art * rate, 0)) AS ratio FROM ratio_data
+  ),
+
+  safe AS (
+    SELECT ilk, urn, (ratio >= 1) AS safe FROM ratios
+  ),
+
+  created AS (
+    SELECT ilk, urn, block_timestamp AS created
+    FROM
+      (
+        SELECT DISTINCT ON (ilk, urn) ilk, urn, block_hash FROM maker.vat_urn_ink
+        ORDER BY ilk, urn, block_number ASC
+      ) earliest_blocks
+        LEFT JOIN public.headers ON hash = block_hash
+  ),
+
+  updated AS (
+    SELECT DISTINCT ON (ilk, urn) ilk, urn, headers.block_timestamp AS updated
+    FROM
+      (
+        (SELECT DISTINCT ON (ilk, urn) ilk, urn, block_hash FROM maker.vat_urn_ink
+         WHERE block_number <= block_height
+         ORDER BY ilk, urn, block_number DESC)
+        UNION
+        (SELECT DISTINCT ON (ilk, urn) ilk, urn, block_hash FROM maker.vat_urn_art
+         WHERE block_number <= block_height
+         ORDER BY ilk, urn, block_number DESC)
+      ) last_blocks
+        LEFT JOIN public.headers ON headers.hash = last_blocks.block_hash
+    ORDER BY ilk, urn, headers.block_timestamp DESC
+  )
+
+SELECT inks.urn, ilks.ilk, $1, inks.ink, arts.art, ratios.ratio,
+       COALESCE(safe.safe, arts.art = 0), created.created, updated.updated
+FROM inks
+  LEFT JOIN arts     ON arts.ilk = inks.ilk    AND arts.urn = inks.urn
+  LEFT JOIN ilks     ON ilks.id = arts.ilk
+  LEFT JOIN ratios   ON ratios.ilk = arts.ilk  AND ratios.urn = arts.urn
+  LEFT JOIN safe     ON safe.ilk = arts.ilk    AND safe.urn = arts.urn
+  LEFT JOIN created  ON created.ilk = arts.ilk AND created.urn = arts.urn
+  LEFT JOIN updated  ON updated.ilk = arts.ilk AND updated.urn = arts.urn
+  -- Add collections of frob and bite events?
 $_$;
 
 
@@ -2437,7 +2547,7 @@ CREATE TABLE maker.vat_urn_art (
     block_hash text,
     ilk integer NOT NULL,
     urn text,
-    art text
+    art numeric NOT NULL
 );
 
 
@@ -3245,6 +3355,38 @@ ALTER SEQUENCE public.receipts_id_seq OWNED BY public.receipts.id;
 
 
 --
+-- Name: token_supply; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.token_supply (
+    id integer NOT NULL,
+    block_id integer NOT NULL,
+    supply numeric NOT NULL,
+    token_address character varying(66) NOT NULL
+);
+
+
+--
+-- Name: token_supply_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.token_supply_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: token_supply_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.token_supply_id_seq OWNED BY public.token_supply.id;
+
+
+--
 -- Name: transactions; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -3908,6 +4050,13 @@ ALTER TABLE ONLY public.queued_storage ALTER COLUMN id SET DEFAULT nextval('publ
 --
 
 ALTER TABLE ONLY public.receipts ALTER COLUMN id SET DEFAULT nextval('public.receipts_id_seq'::regclass);
+
+
+--
+-- Name: token_supply id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.token_supply ALTER COLUMN id SET DEFAULT nextval('public.token_supply_id_seq'::regclass);
 
 
 --
@@ -5363,6 +5512,14 @@ ALTER TABLE ONLY public.transactions
 --
 
 ALTER TABLE ONLY public.receipts
+    ADD CONSTRAINT blocks_fk FOREIGN KEY (block_id) REFERENCES public.blocks(id) ON DELETE CASCADE;
+
+
+--
+-- Name: token_supply blocks_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.token_supply
     ADD CONSTRAINT blocks_fk FOREIGN KEY (block_id) REFERENCES public.blocks(id) ON DELETE CASCADE;
 
 
