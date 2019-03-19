@@ -86,10 +86,6 @@ func (repository *MakerStorageRepository) GetGemKeys() ([]Urn, error) {
 		SELECT DISTINCT ilks.ilk, grab.v AS guy 
 		FROM maker.vat_grab grab
 		INNER JOIN maker.ilks ilks ON ilks.id = grab.ilk
-		UNION
-		SELECT DISTINCT ilks.ilk, toll.urn AS guy 
-		FROM maker.vat_toll toll
-		INNER JOIN maker.ilks ilks ON ilks.id = toll.ilk
 	`)
 	return gems, err
 }

@@ -14,17 +14,22 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package initializer
+package vat_frob_test
 
 import (
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
+	log "github.com/sirupsen/logrus"
+	"io/ioutil"
+	"testing"
 
-	"github.com/vulcanize/mcd_transformers/transformers/events/vat_toll"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 )
 
-var TransformerInitializer transformer.TransformerInitializer = factories.LogNoteTransformer{
-	Config:     vat_toll.GetVatTollConfig(),
-	Converter:  &vat_toll.VatTollConverter{},
-	Repository: &vat_toll.VatTollRepository{},
-}.NewLogNoteTransformer
+func TestVatFrob(t *testing.T) {
+	RegisterFailHandler(Fail)
+	RunSpecs(t, "VatFrob Suite")
+}
+
+var _ = BeforeSuite(func() {
+	log.SetOutput(ioutil.Discard)
+})

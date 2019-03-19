@@ -14,16 +14,15 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package frob
+package vat_frob
 
-type FrobModel struct {
+type VatFrobModel struct {
 	Ilk              string
 	Urn              string
-	Ink              string
-	Art              string
+	V                string
+	W                string
 	Dink             string
 	Dart             string
-	IArt             string
 	LogIndex         uint   `db:"log_idx"`
 	TransactionIndex uint   `db:"tx_idx"`
 	Raw              []byte `db:"raw_log"`

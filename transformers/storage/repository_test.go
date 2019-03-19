@@ -141,18 +141,16 @@ var _ = Describe("Maker storage repository", func() {
 			}}))
 		})
 
-		It("fetches unique urns from vat_slip + vat_flux + vat_tune + vat_grab + vat_toll events", func() {
+		It("fetches unique urns from vat_slip + vat_flux + vat_tune + vat_grab events", func() {
 			insertVatSlip(ilk1, guy1, 1, db)
 			insertVatFlux(ilk1, guy2, guy3, 2, db)
 			insertVatTune(ilk2, guy1, guy1, guy1, 3, db)
 			insertVatGrab(ilk2, guy1, guy2, guy1, 4, db)
-			insertVatToll(ilk2, guy3, 5, db)
 			// duplicates
 			insertVatSlip(ilk1, guy2, 6, db)
 			insertVatFlux(ilk2, guy2, guy3, 7, db)
 			insertVatTune(ilk2, guy1, guy1, guy1, 8, db)
 			insertVatGrab(ilk1, guy1, guy1, guy1, 9, db)
-			insertVatToll(ilk1, guy3, 10, db)
 
 			gems, err := repository.GetGemKeys()
 
@@ -378,20 +376,6 @@ func insertVatSlip(ilk, guy string, blockNumber int64, db *postgres.DB) {
 		`INSERT INTO maker.vat_slip (header_id, ilk, guy, log_idx, tx_idx)
 			VALUES($1, $2, $3, $4, $5)`,
 		headerID, ilkID, guy, 0, 0,
-	)
-	Expect(execErr).NotTo(HaveOccurred())
-}
-
-func insertVatToll(ilk, urn string, blockNumber int64, db *postgres.DB) {
-	headerRepository := repositories.NewHeaderRepository(db)
-	headerID, err := headerRepository.CreateOrUpdateHeader(fakes.GetFakeHeader(blockNumber))
-	Expect(err).NotTo(HaveOccurred())
-	ilkID, err := shared.GetOrCreateIlk(ilk, db)
-	Expect(err).NotTo(HaveOccurred())
-	_, execErr := db.Exec(
-		`INSERT INTO maker.vat_toll (header_id, ilk, urn, log_idx, tx_idx)
-			VALUES($1, $2, $3, $4, $5)`,
-		headerID, ilkID, urn, 0, 0,
 	)
 	Expect(execErr).NotTo(HaveOccurred())
 }

@@ -12,7 +12,7 @@ import (
 var EthVatGrabLog = types.Log{
 	Address: common.HexToAddress(KovanVatContractAddress),
 	Topics: []common.Hash{
-		common.HexToHash("0x3690ae4c00000000000000000000000000000000000000000000000000000000"),
+		common.HexToHash(KovanVatGrabSignature),
 		common.HexToHash("0x5245500000000000000000000000000000000000000000000000000000000000"),
 		common.HexToHash("0x0000000000000000000000006a3ae20c315e845b2e398e68effe39139ec6060c"),
 		common.HexToHash("0x0000000000000000000000002f34f22a00ee4b7a8f8bbc4eaee1658774c624e0"),

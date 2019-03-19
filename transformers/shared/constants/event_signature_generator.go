@@ -26,18 +26,18 @@ import (
 	"github.com/vulcanize/vulcanizedb/pkg/geth"
 )
 
-func GetEventSignature(solidityMethodSignature string) string {
-	eventSignature := []byte(solidityMethodSignature)
+func GetEventTopicZero(solidityEventSignature string) string {
+	eventSignature := []byte(solidityEventSignature)
 	hash := crypto.Keccak256Hash(eventSignature)
 	return hash.Hex()
 }
 
-func GetLogNoteSignature(solidityMethodSignature string) string {
-	rawSignature := GetEventSignature(solidityMethodSignature)
+func GetLogNoteTopicZero(solidityFunctionSignature string) string {
+	rawSignature := GetEventTopicZero(solidityFunctionSignature)
 	return rawSignature[:10] + "00000000000000000000000000000000000000000000000000000000"
 }
 
-func GetSolidityMethodSignature(abi, name string) string {
+func GetSolidityFunctionSignature(abi, name string) string {
 	parsedAbi, _ := geth.ParseAbi(abi)
 
 	if method, ok := parsedAbi.Methods[name]; ok {

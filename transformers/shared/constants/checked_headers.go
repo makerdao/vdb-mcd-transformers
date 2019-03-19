@@ -14,7 +14,7 @@ var (
 	FlapKickChecked           = "flap_kick_checked"
 	FlipKickChecked           = "flip_kick_checked"
 	FlopKickChecked           = "flop_kick_checked"
-	FrobChecked               = "frob_checked"
+	VatFrobChecked            = "vat_frob_checked"
 	PitFileDebtCeilingChecked = "pit_file_debt_ceiling_checked"
 	PitFileIlkChecked         = "pit_file_ilk_checked"
 	PriceFeedsChecked         = "price_feeds_checked"
@@ -26,7 +26,6 @@ var (
 	VatInitChecked            = "vat_init_checked"
 	VatMoveChecked            = "vat_move_checked"
 	VatSlipChecked            = "vat_slip_checked"
-	VatTollChecked            = "vat_toll_checked"
 	VatTuneChecked            = "vat_tune_checked"
 	VowFlogChecked            = "vow_flog_checked"
 )
