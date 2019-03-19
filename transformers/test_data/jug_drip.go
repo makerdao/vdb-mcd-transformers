@@ -21,14 +21,14 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/vulcanize/mcd_transformers/transformers/events/drip_drip"
+	"github.com/vulcanize/mcd_transformers/transformers/events/jug_drip"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 )
 
-var EthDripDripLog = types.Log{
-	Address: common.HexToAddress(KovanDripContractAddress),
+var EthJugDripLog = types.Log{
+	Address: common.HexToAddress(KovanJugContractAddress),
 	Topics: []common.Hash{
-		common.HexToHash(KovanDripDripSignature),
+		common.HexToHash(KovanJugDripSignature),
 		common.HexToHash("0x00000000000000000000000064d922894153be9eef7b7218dc565d1d0ce2a092"),
 		common.HexToHash("0x66616b6520696c6b000000000000000000000000000000000000000000000000"),
 		common.HexToHash("0x0000000000000000000000000000000000000000000000000000000000000000"),
@@ -42,10 +42,10 @@ var EthDripDripLog = types.Log{
 	Removed:     false,
 }
 
-var rawDripDripLog, _ = json.Marshal(EthDripDripLog)
-var DripDripModel = drip_drip.DripDripModel{
+var rawJugDripLog, _ = json.Marshal(EthJugDripLog)
+var JugDripModel = jug_drip.JugDripModel{
 	Ilk:              "66616b6520696c6b000000000000000000000000000000000000000000000000",
-	LogIndex:         EthDripDripLog.Index,
-	TransactionIndex: EthDripDripLog.TxIndex,
-	Raw:              rawDripDripLog,
+	LogIndex:         EthJugDripLog.Index,
+	TransactionIndex: EthJugDripLog.TxIndex,
+	Raw:              rawJugDripLog,
 }

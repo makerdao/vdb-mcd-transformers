@@ -115,7 +115,7 @@ func CleanTestDB(db *postgres.DB) {
 	db.MustExec("DELETE FROM maker.cat_vow")
 	db.MustExec("DELETE FROM maker.deal")
 	db.MustExec("DELETE FROM maker.dent")
-	db.MustExec("DELETE FROM maker.drip_drip")
+	db.MustExec("DELETE FROM maker.jug_drip")
 	db.MustExec("DELETE FROM maker.drip_ilk_rho")
 	db.MustExec("DELETE FROM maker.drip_ilk_tax")
 	db.MustExec("DELETE FROM maker.drip_repo")

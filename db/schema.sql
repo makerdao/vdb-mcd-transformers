@@ -21,7 +21,6 @@ SET row_security = off;
 
 CREATE SCHEMA maker;
 
-
 --
 -- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: -
 --
@@ -34,6 +33,7 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 --
 
 COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
+
 
 
 --
@@ -1118,40 +1118,6 @@ ALTER SEQUENCE maker.dent_id_seq OWNED BY maker.dent.id;
 
 
 --
--- Name: drip_drip; Type: TABLE; Schema: maker; Owner: -
---
-
-CREATE TABLE maker.drip_drip (
-    id integer NOT NULL,
-    header_id integer NOT NULL,
-    ilk integer NOT NULL,
-    log_idx integer NOT NULL,
-    tx_idx integer NOT NULL,
-    raw_log jsonb
-);
-
-
---
--- Name: drip_drip_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
---
-
-CREATE SEQUENCE maker.drip_drip_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: drip_drip_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
---
-
-ALTER SEQUENCE maker.drip_drip_id_seq OWNED BY maker.drip_drip.id;
-
-
---
 -- Name: drip_ilk_rho; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -1457,6 +1423,40 @@ CREATE SEQUENCE maker.ilks_id_seq
 --
 
 ALTER SEQUENCE maker.ilks_id_seq OWNED BY maker.ilks.id;
+
+
+--
+-- Name: jug_drip; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.jug_drip (
+    id integer NOT NULL,
+    header_id integer NOT NULL,
+    ilk integer NOT NULL,
+    log_idx integer NOT NULL,
+    tx_idx integer NOT NULL,
+    raw_log jsonb
+);
+
+
+--
+-- Name: jug_drip_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.jug_drip_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: jug_drip_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.jug_drip_id_seq OWNED BY maker.jug_drip.id;
 
 
 --
@@ -3049,7 +3049,7 @@ CREATE TABLE public.checked_headers (
     jug_file_repo_checked integer DEFAULT 0 NOT NULL,
     jug_file_vow_checked integer DEFAULT 0 NOT NULL,
     deal_checked integer DEFAULT 0 NOT NULL,
-    drip_drip_checked integer DEFAULT 0 NOT NULL,
+    jug_drip_checked integer DEFAULT 0 NOT NULL,
     cat_file_chop_lump_checked integer DEFAULT 0 NOT NULL,
     cat_file_flip_checked integer DEFAULT 0 NOT NULL,
     cat_file_pit_vow_checked integer DEFAULT 0 NOT NULL,
@@ -3535,13 +3535,6 @@ ALTER TABLE ONLY maker.dent ALTER COLUMN id SET DEFAULT nextval('maker.dent_id_s
 
 
 --
--- Name: drip_drip id; Type: DEFAULT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.drip_drip ALTER COLUMN id SET DEFAULT nextval('maker.drip_drip_id_seq'::regclass);
-
-
---
 -- Name: drip_ilk_rho id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
@@ -3602,6 +3595,13 @@ ALTER TABLE ONLY maker.flop_kick ALTER COLUMN id SET DEFAULT nextval('maker.flop
 --
 
 ALTER TABLE ONLY maker.ilks ALTER COLUMN id SET DEFAULT nextval('maker.ilks_id_seq'::regclass);
+
+
+--
+-- Name: jug_drip id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.jug_drip ALTER COLUMN id SET DEFAULT nextval('maker.jug_drip_id_seq'::regclass);
 
 
 --
@@ -4182,22 +4182,6 @@ ALTER TABLE ONLY maker.dent
 
 
 --
--- Name: drip_drip drip_drip_header_id_tx_idx_log_idx_key; Type: CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.drip_drip
-    ADD CONSTRAINT drip_drip_header_id_tx_idx_log_idx_key UNIQUE (header_id, tx_idx, log_idx);
-
-
---
--- Name: drip_drip drip_drip_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.drip_drip
-    ADD CONSTRAINT drip_drip_pkey PRIMARY KEY (id);
-
-
---
 -- Name: drip_ilk_rho drip_ilk_rho_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -4299,6 +4283,22 @@ ALTER TABLE ONLY maker.ilks
 
 ALTER TABLE ONLY maker.ilks
     ADD CONSTRAINT ilks_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: jug_drip jug_drip_header_id_tx_idx_log_idx_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.jug_drip
+    ADD CONSTRAINT jug_drip_header_id_tx_idx_log_idx_key UNIQUE (header_id, tx_idx, log_idx);
+
+
+--
+-- Name: jug_drip jug_drip_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.jug_drip
+    ADD CONSTRAINT jug_drip_pkey PRIMARY KEY (id);
 
 
 --
@@ -5048,22 +5048,6 @@ ALTER TABLE ONLY maker.dent
 
 
 --
--- Name: drip_drip drip_drip_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.drip_drip
-    ADD CONSTRAINT drip_drip_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
-
-
---
--- Name: drip_drip drip_drip_ilk_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.drip_drip
-    ADD CONSTRAINT drip_drip_ilk_fkey FOREIGN KEY (ilk) REFERENCES maker.ilks(id);
-
-
---
 -- Name: drip_ilk_rho drip_ilk_rho_ilk_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -5101,6 +5085,22 @@ ALTER TABLE ONLY maker.flip_kick
 
 ALTER TABLE ONLY maker.flop_kick
     ADD CONSTRAINT flop_kick_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: jug_drip jug_drip_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.jug_drip
+    ADD CONSTRAINT jug_drip_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: jug_drip jug_drip_ilk_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.jug_drip
+    ADD CONSTRAINT jug_drip_ilk_fkey FOREIGN KEY (ilk) REFERENCES maker.ilks(id);
 
 
 --

@@ -14,20 +14,17 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package drip_drip
+package initializer
 
 import (
-	shared_t "github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 
-	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/mcd_transformers/transformers/events/jug_drip"
 )
 
-func GetDripDripConfig() shared_t.TransformerConfig {
-	return shared_t.TransformerConfig{
-		ContractAddresses:   []string{constants.DripContractAddress()},
-		ContractAbi:         constants.DripABI(),
-		Topic:               constants.GetDripDripSignature(),
-		StartingBlockNumber: constants.DripDeploymentBlock(),
-		EndingBlockNumber:   -1,
-	}
-}
+var TransformerInitializer transformer.TransformerInitializer = factories.LogNoteTransformer{
+	Config:     jug_drip.GetJugDripConfig(),
+	Converter:  &jug_drip.JugDripConverter{},
+	Repository: &jug_drip.JugDripRepository{},
+}.NewLogNoteTransformer

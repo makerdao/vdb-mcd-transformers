@@ -14,11 +14,20 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package drip_drip
+package jug_drip
 
-type DripDripModel struct {
-	Ilk              string
-	LogIndex         uint   `db:"log_idx"`
-	TransactionIndex uint   `db:"tx_idx"`
-	Raw              []byte `db:"raw_log"`
+import (
+	shared_t "github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
+
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+)
+
+func GetJugDripConfig() shared_t.TransformerConfig {
+	return shared_t.TransformerConfig{
+		ContractAddresses:   []string{constants.JugContractAddress()},
+		ContractAbi:         constants.JugABI(),
+		Topic:               constants.GetJugDripSignature(),
+		StartingBlockNumber: constants.JugDeploymentBlock(),
+		EndingBlockNumber:   -1,
+	}
 }

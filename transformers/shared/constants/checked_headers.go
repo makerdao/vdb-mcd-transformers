@@ -7,7 +7,7 @@ var (
 	CatFilePitVowChecked      = "cat_file_pit_vow_checked"
 	DealChecked               = "deal_checked"
 	DentChecked               = "dent_checked"
-	DripDripChecked           = "drip_drip_checked"
+	JugDripChecked            = "jug_drip_checked"
 	JugFileIlkChecked         = "jug_file_ilk_checked"
 	JugFileRepoChecked        = "jug_file_repo_checked"
 	JugFileVowChecked         = "jug_file_vow_checked"
