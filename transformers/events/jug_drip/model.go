@@ -14,17 +14,11 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package initializer
+package jug_drip
 
-import (
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
-
-	"github.com/vulcanize/mcd_transformers/transformers/events/drip_drip"
-)
-
-var TransformerInitializer transformer.TransformerInitializer = factories.LogNoteTransformer{
-	Config:     drip_drip.GetDripDripConfig(),
-	Converter:  &drip_drip.DripDripConverter{},
-	Repository: &drip_drip.DripDripRepository{},
-}.NewLogNoteTransformer
+type JugDripModel struct {
+	Ilk              string
+	LogIndex         uint   `db:"log_idx"`
+	TransactionIndex uint   `db:"tx_idx"`
+	Raw              []byte `db:"raw_log"`
+}

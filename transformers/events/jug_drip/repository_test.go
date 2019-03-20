@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package drip_drip_test
+package jug_drip_test
 
 import (
 	"strconv"
@@ -28,63 +28,63 @@ import (
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 
 	"github.com/vulcanize/mcd_transformers/test_config"
-	"github.com/vulcanize/mcd_transformers/transformers/events/drip_drip"
+	"github.com/vulcanize/mcd_transformers/transformers/events/jug_drip"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data/shared_behaviors"
 )
 
-var _ = Describe("Drip drip repository", func() {
+var _ = Describe("Jug drip repository", func() {
 	var (
-		db                 *postgres.DB
-		dripDripRepository drip_drip.DripDripRepository
-		headerRepository   datastore.HeaderRepository
+		db                *postgres.DB
+		jugDripRepository jug_drip.JugDripRepository
+		headerRepository  datastore.HeaderRepository
 	)
 
 	BeforeEach(func() {
 		db = test_config.NewTestDB(test_config.NewTestNode())
 		test_config.CleanTestDB(db)
 		headerRepository = repositories.NewHeaderRepository(db)
-		dripDripRepository = drip_drip.DripDripRepository{}
-		dripDripRepository.SetDB(db)
+		jugDripRepository = jug_drip.JugDripRepository{}
+		jugDripRepository.SetDB(db)
 	})
 
 	Describe("Create", func() {
-		modelWithDifferentLogIdx := test_data.DripDripModel
+		modelWithDifferentLogIdx := test_data.JugDripModel
 		modelWithDifferentLogIdx.LogIndex++
 		inputs := shared_behaviors.CreateBehaviorInputs{
-			CheckedHeaderColumnName:  constants.DripDripChecked,
-			LogEventTableName:        "maker.drip_drip",
-			TestModel:                test_data.DripDripModel,
+			CheckedHeaderColumnName:  constants.JugDripChecked,
+			LogEventTableName:        "maker.jug_drip",
+			TestModel:                test_data.JugDripModel,
 			ModelWithDifferentLogIdx: modelWithDifferentLogIdx,
-			Repository:               &dripDripRepository,
+			Repository:               &jugDripRepository,
 		}
 
 		shared_behaviors.SharedRepositoryCreateBehaviors(&inputs)
 
-		It("adds a drip drip event", func() {
+		It("adds a jug drip event", func() {
 			headerID, err := headerRepository.CreateOrUpdateHeader(fakes.FakeHeader)
 			Expect(err).NotTo(HaveOccurred())
-			err = dripDripRepository.Create(headerID, []interface{}{test_data.DripDripModel})
+			err = jugDripRepository.Create(headerID, []interface{}{test_data.JugDripModel})
 
 			Expect(err).NotTo(HaveOccurred())
-			var dbDripDrip drip_drip.DripDripModel
-			err = db.Get(&dbDripDrip, `SELECT ilk, log_idx, tx_idx, raw_log FROM maker.drip_drip WHERE header_id = $1`, headerID)
+			var dbJugDrip jug_drip.JugDripModel
+			err = db.Get(&dbJugDrip, `SELECT ilk, log_idx, tx_idx, raw_log FROM maker.jug_drip WHERE header_id = $1`, headerID)
 			Expect(err).NotTo(HaveOccurred())
-			ilkID, err := shared.GetOrCreateIlk(test_data.DripDripModel.Ilk, db)
+			ilkID, err := shared.GetOrCreateIlk(test_data.JugDripModel.Ilk, db)
 			Expect(err).NotTo(HaveOccurred())
-			Expect(dbDripDrip.Ilk).To(Equal(strconv.Itoa(ilkID)))
-			Expect(dbDripDrip.LogIndex).To(Equal(test_data.DripDripModel.LogIndex))
-			Expect(dbDripDrip.TransactionIndex).To(Equal(test_data.DripDripModel.TransactionIndex))
-			Expect(dbDripDrip.Raw).To(MatchJSON(test_data.DripDripModel.Raw))
+			Expect(dbJugDrip.Ilk).To(Equal(strconv.Itoa(ilkID)))
+			Expect(dbJugDrip.LogIndex).To(Equal(test_data.JugDripModel.LogIndex))
+			Expect(dbJugDrip.TransactionIndex).To(Equal(test_data.JugDripModel.TransactionIndex))
+			Expect(dbJugDrip.Raw).To(MatchJSON(test_data.JugDripModel.Raw))
 		})
 	})
 
 	Describe("MarkHeaderChecked", func() {
 		inputs := shared_behaviors.MarkedHeaderCheckedBehaviorInputs{
-			CheckedHeaderColumnName: constants.DripDripChecked,
-			Repository:              &dripDripRepository,
+			CheckedHeaderColumnName: constants.JugDripChecked,
+			Repository:              &jugDripRepository,
 		}
 
 		shared_behaviors.SharedRepositoryMarkHeaderCheckedBehaviors(&inputs)

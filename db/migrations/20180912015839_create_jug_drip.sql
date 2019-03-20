@@ -1,5 +1,5 @@
 -- +goose Up
-CREATE TABLE maker.drip_drip (
+CREATE TABLE maker.jug_drip (
   id            SERIAL PRIMARY KEY,
   header_id     INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
   ilk           INTEGER NOT NULL REFERENCES maker.ilks (id),
@@ -10,11 +10,11 @@ CREATE TABLE maker.drip_drip (
 );
 
 ALTER TABLE public.checked_headers
-  ADD COLUMN drip_drip_checked BOOLEAN NOT NULL DEFAULT FALSE;
+  ADD COLUMN jug_drip_checked BOOLEAN NOT NULL DEFAULT FALSE;
 
 
 -- +goose Down
-DROP TABLE maker.drip_drip;
+DROP TABLE maker.jug_drip;
 
 ALTER TABLE public.checked_headers
-  DROP COLUMN drip_drip_checked;
+  DROP COLUMN jug_drip_checked;
