@@ -4,13 +4,11 @@ import (
 	"database/sql"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	. "github.com/vulcanize/mcd_transformers/pkg/queries/test_helpers"
 	"github.com/vulcanize/mcd_transformers/test_config"
-	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/pit"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/vat"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
-	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
@@ -52,16 +50,16 @@ var _ = Describe("Urn view", func() {
 		fakeBlockNo := rand.Int()
 		fakeTimestamp := 12345
 
-		setupData := getSetupData(fakeBlockNo, fakeTimestamp)
-		metadata := getMetadata(ilkOne, urnOne)
-		createUrn(setupData, metadata, vatRepo, pitRepo, headerRepo)
+		setupData := GetUrnSetupData(fakeBlockNo, fakeTimestamp)
+		metadata := GetUrnMetadata(ilkOne, urnOne)
+		CreateUrn(setupData, metadata, vatRepo, pitRepo, headerRepo)
 
 		var result UrnState
 		err = db.Get(&result, `SELECT urnId, ilkId, ink, art, ratio, safe, created, updated
-			FROM get_urn_states_at_block($1)`, fakeBlockNo)
+			FROM get_all_urn_states_at_block($1)`, fakeBlockNo)
 		Expect(err).NotTo(HaveOccurred())
 
-		expectedRatio := getExpectedRatio(setupData.Ink, setupData.Spot, setupData.Art, setupData.Rate)
+		expectedRatio := GetExpectedRatio(setupData.Ink, setupData.Spot, setupData.Art, setupData.Rate)
 
 		expectedUrn := UrnState{
 			UrnId:   urnOne,
@@ -88,21 +86,21 @@ var _ = Describe("Urn view", func() {
 		blockTwo := blockOne + 1
 		timestampTwo := timestampOne + 1
 
-		urnOneMetadata := getMetadata(ilkOne, urnOne)
-		urnOneSetupData := getSetupData(blockOne, timestampOne)
-		createUrn(urnOneSetupData, urnOneMetadata, vatRepo, pitRepo, headerRepo)
+		urnOneMetadata := GetUrnMetadata(ilkOne, urnOne)
+		urnOneSetupData := GetUrnSetupData(blockOne, timestampOne)
+		CreateUrn(urnOneSetupData, urnOneMetadata, vatRepo, pitRepo, headerRepo)
 
-		urnTwoMetadata := getMetadata(ilkTwo, urnTwo)
-		urnTwoSetupData := getSetupData(blockTwo, timestampTwo)
-		createUrn(urnTwoSetupData, urnTwoMetadata, vatRepo, pitRepo, headerRepo)
+		urnTwoMetadata := GetUrnMetadata(ilkTwo, urnTwo)
+		urnTwoSetupData := GetUrnSetupData(blockTwo, timestampTwo)
+		CreateUrn(urnTwoSetupData, urnTwoMetadata, vatRepo, pitRepo, headerRepo)
 
 		var result []UrnState
 		err = db.Select(&result, `SELECT urnId, ilkId, ink, art, ratio, safe, created, updated
-			FROM get_urn_states_at_block($1)`, blockTwo)
+			FROM get_all_urn_states_at_block($1)`, blockTwo)
 		Expect(err).NotTo(HaveOccurred())
 
-		expectedRatioOne := getExpectedRatio(urnOneSetupData.Ink, urnOneSetupData.Spot, urnOneSetupData.Art, urnOneSetupData.Rate)
-		expectedRatioTwo := getExpectedRatio(urnTwoSetupData.Ink, urnTwoSetupData.Spot, urnTwoSetupData.Art, urnTwoSetupData.Rate)
+		expectedRatioOne := GetExpectedRatio(urnOneSetupData.Ink, urnOneSetupData.Spot, urnOneSetupData.Art, urnOneSetupData.Rate)
+		expectedRatioTwo := GetExpectedRatio(urnTwoSetupData.Ink, urnTwoSetupData.Spot, urnTwoSetupData.Art, urnTwoSetupData.Rate)
 
 		expectedUrns := []UrnState{{
 			UrnId:   urnOne,
@@ -140,16 +138,16 @@ var _ = Describe("Urn view", func() {
 	It("returns urn state without timestamps if corresponding headers aren't synced", func() {
 		block := rand.Int()
 		timestamp := rand.Int()
-		metadata := getMetadata(ilkOne, urnOne)
-		setupData := getSetupData(block, timestamp)
+		metadata := GetUrnMetadata(ilkOne, urnOne)
+		setupData := GetUrnSetupData(block, timestamp)
 
-		createUrn(setupData, metadata, vatRepo, pitRepo, headerRepo)
+		CreateUrn(setupData, metadata, vatRepo, pitRepo, headerRepo)
 		_, err = db.Exec(`DELETE FROM headers`)
 		Expect(err).NotTo(HaveOccurred())
 
 		var result UrnState
 		err = db.Get(&result, `SELECT urnId, ilkId, ink, art, ratio, safe, created, updated
-			FROM get_urn_states_at_block($1)`, block)
+			FROM get_all_urn_states_at_block($1)`, block)
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(result.Created.String).To(BeEmpty())
@@ -161,24 +159,24 @@ var _ = Describe("Urn view", func() {
 			result       UrnState
 			blockOne     int
 			timestampOne int
-			setupDataOne SetupData
-			metadata     Metadata
+			setupDataOne UrnSetupData
+			metadata     UrnMetadata
 		)
 
 		BeforeEach(func() {
 			blockOne = rand.Int()
 			timestampOne = rand.Int()
-			setupDataOne = getSetupData(blockOne, timestampOne)
-			metadata = getMetadata(ilkOne, urnOne)
-			createUrn(setupDataOne, metadata, vatRepo, pitRepo, headerRepo)
+			setupDataOne = GetUrnSetupData(blockOne, timestampOne)
+			metadata = GetUrnMetadata(ilkOne, urnOne)
+			CreateUrn(setupDataOne, metadata, vatRepo, pitRepo, headerRepo)
 		})
 
 		It("gets urn state as of block one", func() {
 			err = db.Get(&result, `SELECT urnId, ilkId, ink, art, ratio, safe, created, updated
-				FROM get_urn_states_at_block($1)`, blockOne)
+				FROM get_all_urn_states_at_block($1)`, blockOne)
 			Expect(err).NotTo(HaveOccurred())
 
-			expectedRatio := getExpectedRatio(setupDataOne.Ink, setupDataOne.Spot, setupDataOne.Art, setupDataOne.Rate)
+			expectedRatio := GetExpectedRatio(setupDataOne.Ink, setupDataOne.Spot, setupDataOne.Art, setupDataOne.Rate)
 
 			expectedUrn := UrnState{
 				UrnId:   urnOne,
@@ -216,10 +214,10 @@ var _ = Describe("Urn view", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			err = db.Get(&result, `SELECT urnId, ilkId, ink, art, ratio, safe, created, updated
-				FROM get_urn_states_at_block($1)`, blockTwo)
+				FROM get_all_urn_states_at_block($1)`, blockTwo)
 			Expect(err).NotTo(HaveOccurred())
 
-			expectedRatio := getExpectedRatio(updatedInk, setupDataOne.Spot, setupDataOne.Art, setupDataOne.Rate)
+			expectedRatio := GetExpectedRatio(updatedInk, setupDataOne.Spot, setupDataOne.Art, setupDataOne.Rate)
 
 			expectedUrn := UrnState{
 				UrnId:   urnOne,
@@ -243,10 +241,10 @@ var _ = Describe("Urn view", func() {
 
 	It("returns null ratio and urn being safe if there is no debt", func() {
 		block := rand.Int()
-		setupData := getSetupData(block, 1)
+		setupData := GetUrnSetupData(block, 1)
 		setupData.Art = 0
-		metadata := getMetadata(ilkOne, urnOne)
-		createUrn(setupData, metadata, vatRepo, pitRepo, headerRepo)
+		metadata := GetUrnMetadata(ilkOne, urnOne)
+		CreateUrn(setupData, metadata, vatRepo, pitRepo, headerRepo)
 
 		fakeHeader := fakes.GetFakeHeader(int64(block))
 		_, err = headerRepo.CreateOrUpdateHeader(fakeHeader)
@@ -254,95 +252,10 @@ var _ = Describe("Urn view", func() {
 
 		var result UrnState
 		err = db.Get(&result, `SELECT urnId, ilkId, ink, art, ratio, safe, created, updated
-			FROM get_urn_states_at_block($1)`, block)
+			FROM get_all_urn_states_at_block($1)`, block)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(result.Ratio.String).To(BeEmpty())
 		Expect(result.Safe).To(BeTrue())
 	})
 })
-
-func getExpectedRatio(ink, spot, art, rate int) float64 {
-	inkXspot := float64(ink) * float64(spot)
-	artXrate := float64(art) * float64(rate)
-	return inkXspot / artXrate
-}
-
-// Creates urn by creating necessary state diffs and the corresponding header
-func createUrn(setupData SetupData, metadata Metadata, vatRepo vat.VatStorageRepository,
-	pitRepo pit.PitStorageRepository, headerRepo repositories.HeaderRepository) {
-
-	blockNo := int(setupData.Header.BlockNumber)
-	hash := setupData.Header.Hash
-
-	// This also creates the ilk if it doesn't exist
-	err := vatRepo.Create(blockNo, hash, metadata.UrnInk, strconv.Itoa(setupData.Ink))
-	Expect(err).NotTo(HaveOccurred())
-
-	err = vatRepo.Create(blockNo, hash, metadata.UrnArt, strconv.Itoa(setupData.Art))
-	Expect(err).NotTo(HaveOccurred())
-
-	err = pitRepo.Create(blockNo, hash, metadata.IlkSpot, strconv.Itoa(setupData.Spot))
-	Expect(err).NotTo(HaveOccurred())
-
-	err = vatRepo.Create(blockNo, hash, metadata.IlkRate, strconv.Itoa(setupData.Rate))
-	Expect(err).NotTo(HaveOccurred())
-
-	_, err = headerRepo.CreateOrUpdateHeader(setupData.Header)
-	Expect(err).NotTo(HaveOccurred())
-}
-
-// Does not return values computed by the query (ratio, safe, updated, created)
-func getSetupData(block, timestamp int) SetupData {
-	fakeHeader := fakes.GetFakeHeader(int64(block))
-	fakeHeader.Timestamp = strconv.Itoa(timestamp)
-	fakeHeader.Hash = test_data.RandomString(5)
-
-	return SetupData{
-		Header: fakeHeader,
-		Ink:    rand.Int(),
-		Art:    rand.Int(),
-		Spot:   rand.Int(),
-		Rate:   rand.Int(),
-	}
-}
-
-type SetupData struct {
-	Header core.Header
-	Ink    int
-	Art    int
-	Spot   int
-	Rate   int
-}
-
-func getMetadata(ilk, urn string) Metadata {
-	return Metadata{
-		UrnInk: utils.GetStorageValueMetadata(vat.UrnInk,
-			map[utils.Key]string{constants.Ilk: ilk, constants.Guy: urn}, utils.Uint256),
-		UrnArt: utils.GetStorageValueMetadata(vat.UrnArt,
-			map[utils.Key]string{constants.Ilk: ilk, constants.Guy: urn}, utils.Uint256),
-		IlkSpot: utils.GetStorageValueMetadata(pit.IlkSpot,
-			map[utils.Key]string{constants.Ilk: ilk}, utils.Uint256),
-		IlkRate: utils.GetStorageValueMetadata(vat.IlkRate,
-			map[utils.Key]string{constants.Ilk: ilk}, utils.Uint256),
-	}
-}
-
-type Metadata struct {
-	UrnInk  utils.StorageValueMetadata
-	UrnArt  utils.StorageValueMetadata
-	IlkSpot utils.StorageValueMetadata
-	IlkRate utils.StorageValueMetadata
-}
-
-type UrnState struct {
-	UrnId   string
-	IlkId   string
-	Ink     string
-	Art     string
-	Ratio   sql.NullString
-	Safe    bool
-	Created sql.NullString
-	Updated sql.NullString
-	// Frobs and bites collections, and ilk object, are missing
-}

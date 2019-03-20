@@ -8,8 +8,12 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/storage/drip"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/pit"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/vat"
+	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
+	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres/repositories"
+	"github.com/vulcanize/vulcanizedb/pkg/fakes"
+	"math/rand"
 	"strconv"
 )
 
@@ -177,4 +181,90 @@ func CreateDripRecords(header core.Header, valuesMap map[string]string, metadata
 
 		Expect(err).NotTo(HaveOccurred())
 	}
+}
+
+
+func GetExpectedRatio(ink, spot, art, rate int) float64 {
+	inkXspot := float64(ink) * float64(spot)
+	artXrate := float64(art) * float64(rate)
+	return inkXspot / artXrate
+}
+
+// Creates urn by creating necessary state diffs and the corresponding header
+func CreateUrn(setupData UrnSetupData, metadata UrnMetadata, vatRepo vat.VatStorageRepository,
+	pitRepo pit.PitStorageRepository, headerRepo repositories.HeaderRepository) {
+
+	blockNo := int(setupData.Header.BlockNumber)
+	hash := setupData.Header.Hash
+
+	// This also creates the ilk if it doesn't exist
+	err := vatRepo.Create(blockNo, hash, metadata.UrnInk, strconv.Itoa(setupData.Ink))
+	Expect(err).NotTo(HaveOccurred())
+
+	err = vatRepo.Create(blockNo, hash, metadata.UrnArt, strconv.Itoa(setupData.Art))
+	Expect(err).NotTo(HaveOccurred())
+
+	err = pitRepo.Create(blockNo, hash, metadata.IlkSpot, strconv.Itoa(setupData.Spot))
+	Expect(err).NotTo(HaveOccurred())
+
+	err = vatRepo.Create(blockNo, hash, metadata.IlkRate, strconv.Itoa(setupData.Rate))
+	Expect(err).NotTo(HaveOccurred())
+
+	_, err = headerRepo.CreateOrUpdateHeader(setupData.Header)
+	Expect(err).NotTo(HaveOccurred())
+}
+
+// Does not return values computed by the query (ratio, safe, updated, created)
+func GetUrnSetupData(block, timestamp int) UrnSetupData {
+	fakeHeader := fakes.GetFakeHeader(int64(block))
+	fakeHeader.Timestamp = strconv.Itoa(timestamp)
+	fakeHeader.Hash = test_data.RandomString(5)
+
+	return UrnSetupData{
+		Header: fakeHeader,
+		Ink:    rand.Int(),
+		Art:    rand.Int(),
+		Spot:   rand.Int(),
+		Rate:   rand.Int(),
+	}
+}
+
+type UrnSetupData struct {
+	Header core.Header
+	Ink    int
+	Art    int
+	Spot   int
+	Rate   int
+}
+
+func GetUrnMetadata(ilk, urn string) UrnMetadata {
+	return UrnMetadata{
+		UrnInk: utils.GetStorageValueMetadata(vat.UrnInk,
+			map[utils.Key]string{constants.Ilk: ilk, constants.Guy: urn}, utils.Uint256),
+		UrnArt: utils.GetStorageValueMetadata(vat.UrnArt,
+			map[utils.Key]string{constants.Ilk: ilk, constants.Guy: urn}, utils.Uint256),
+		IlkSpot: utils.GetStorageValueMetadata(pit.IlkSpot,
+			map[utils.Key]string{constants.Ilk: ilk}, utils.Uint256),
+		IlkRate: utils.GetStorageValueMetadata(vat.IlkRate,
+			map[utils.Key]string{constants.Ilk: ilk}, utils.Uint256),
+	}
+}
+
+type UrnMetadata struct {
+	UrnInk  utils.StorageValueMetadata
+	UrnArt  utils.StorageValueMetadata
+	IlkSpot utils.StorageValueMetadata
+	IlkRate utils.StorageValueMetadata
+}
+
+type UrnState struct {
+	UrnId   string
+	IlkId   string
+	Ink     string
+	Art     string
+	Ratio   sql.NullString
+	Safe    bool
+	Created sql.NullString
+	Updated sql.NullString
+	// Frobs and bites collections, and ilk object, are missing
 }
