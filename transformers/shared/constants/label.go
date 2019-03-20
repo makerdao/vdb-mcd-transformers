@@ -27,6 +27,7 @@ const (
 	VatMoveLabel            = "vatMove"
 	VatSlipLabel            = "vatSlip"
 	VatTuneLabel            = "vatTune"
+	VowFessLabel            = "vowFess"
 	VowFlogLabel            = "vowFlog"
 )
 
@@ -58,6 +59,7 @@ func AllTransformerLabels() []string {
 		VatMoveLabel,
 		VatSlipLabel,
 		VatTuneLabel,
+		VowFessLabel,
 		VowFlogLabel,
 	}
 }
