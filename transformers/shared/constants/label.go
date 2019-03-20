@@ -7,7 +7,7 @@ const (
 	CatFilePitVowLabel      = "catFilePitVow"
 	DealLabel               = "deal"
 	DentLabel               = "dent"
-	DripDripLabel           = "dripDrip"
+	JugDripLabel            = "jugDrip"
 	FlapKickLabel           = "flapKick"
 	FlipKickLabel           = "flipKick"
 	FlopKickLabel           = "flopKick"
@@ -39,7 +39,7 @@ func AllTransformerLabels() []string {
 		CatFilePitVowLabel,
 		DealLabel,
 		DentLabel,
-		DripDripLabel,
+		JugDripLabel,
 		FlapKickLabel,
 		FlipKickLabel,
 		FlopKickLabel,

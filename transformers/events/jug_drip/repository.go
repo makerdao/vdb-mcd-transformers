@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package drip_drip
+package jug_drip
 
 import (
 	"fmt"
@@ -29,26 +29,26 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
-type DripDripRepository struct {
+type JugDripRepository struct {
 	db *postgres.DB
 }
 
-func (repository DripDripRepository) Create(headerID int64, models []interface{}) error {
+func (repository JugDripRepository) Create(headerID int64, models []interface{}) error {
 	tx, dBaseErr := repository.db.Beginx()
 	if dBaseErr != nil {
 		return dBaseErr
 	}
 	for _, model := range models {
-		dripDrip, ok := model.(DripDripModel)
+		jugDrip, ok := model.(JugDripModel)
 		if !ok {
 			rollbackErr := tx.Rollback()
 			if rollbackErr != nil {
 				log.Error("failed to rollback ", rollbackErr)
 			}
-			return fmt.Errorf("model of type %T, not %T", model, DripDripModel{})
+			return fmt.Errorf("model of type %T, not %T", model, JugDripModel{})
 		}
 
-		ilkID, ilkErr := shared.GetOrCreateIlkInTransaction(dripDrip.Ilk, tx)
+		ilkID, ilkErr := shared.GetOrCreateIlkInTransaction(jugDrip.Ilk, tx)
 		if ilkErr != nil {
 			rollbackErr := tx.Rollback()
 			if rollbackErr != nil {
@@ -58,10 +58,10 @@ func (repository DripDripRepository) Create(headerID int64, models []interface{}
 		}
 
 		_, execErr := tx.Exec(
-			`INSERT into maker.drip_drip (header_id, ilk, log_idx, tx_idx, raw_log)
+			`INSERT into maker.jug_drip (header_id, ilk, log_idx, tx_idx, raw_log)
         			VALUES($1, $2, $3, $4, $5)
 					ON CONFLICT (header_id, tx_idx, log_idx) DO UPDATE SET ilk= $2, raw_log = $5;`,
-			headerID, ilkID, dripDrip.LogIndex, dripDrip.TransactionIndex, dripDrip.Raw,
+			headerID, ilkID, jugDrip.LogIndex, jugDrip.TransactionIndex, jugDrip.Raw,
 		)
 		if execErr != nil {
 			rollbackErr := tx.Rollback()
@@ -72,7 +72,7 @@ func (repository DripDripRepository) Create(headerID int64, models []interface{}
 		}
 	}
 
-	checkHeaderErr := repo.MarkHeaderCheckedInTransaction(headerID, tx, constants.DripDripChecked)
+	checkHeaderErr := repo.MarkHeaderCheckedInTransaction(headerID, tx, constants.JugDripChecked)
 	if checkHeaderErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
@@ -83,18 +83,18 @@ func (repository DripDripRepository) Create(headerID int64, models []interface{}
 	return tx.Commit()
 }
 
-func (repository DripDripRepository) MarkHeaderChecked(headerID int64) error {
-	return repo.MarkHeaderChecked(headerID, repository.db, constants.DripDripChecked)
+func (repository JugDripRepository) MarkHeaderChecked(headerID int64) error {
+	return repo.MarkHeaderChecked(headerID, repository.db, constants.JugDripChecked)
 }
 
-func (repository DripDripRepository) MissingHeaders(startingBlockNumber, endingBlockNumber int64) ([]core.Header, error) {
-	return repo.MissingHeaders(startingBlockNumber, endingBlockNumber, repository.db, constants.DripDripChecked)
+func (repository JugDripRepository) MissingHeaders(startingBlockNumber, endingBlockNumber int64) ([]core.Header, error) {
+	return repo.MissingHeaders(startingBlockNumber, endingBlockNumber, repository.db, constants.JugDripChecked)
 }
 
-func (repository DripDripRepository) RecheckHeaders(startingBlockNumber, endingBlockNumber int64) ([]core.Header, error) {
-	return repo.RecheckHeaders(startingBlockNumber, endingBlockNumber, repository.db, constants.DripDripChecked)
+func (repository JugDripRepository) RecheckHeaders(startingBlockNumber, endingBlockNumber int64) ([]core.Header, error) {
+	return repo.RecheckHeaders(startingBlockNumber, endingBlockNumber, repository.db, constants.JugDripChecked)
 }
 
-func (repository *DripDripRepository) SetDB(db *postgres.DB) {
+func (repository *JugDripRepository) SetDB(db *postgres.DB) {
 	repository.db = db
 }

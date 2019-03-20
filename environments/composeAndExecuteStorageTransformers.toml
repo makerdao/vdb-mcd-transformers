@@ -59,8 +59,6 @@
 [contract]
     [contract.address]
             cat      = "0x2f34f22a00ee4b7a8f8bbc4eaee1658774c624e0"
-            # TODO: Remove once fully replaced by Jug
-            drip     = "0x891c04639a5edcae088e546fa125b5d7fb6a2b9d"
             jug      = "0x25a008Bf942CE6D5b362f91ed7aE3e4104286a12"
             pit      = "0xe7cf3198787c9a4daac73371a38f29aaeeced87e"
             vat      = "0x67fd6c3575fc2dbe2cb596bd3bebc9edb5571fa1"

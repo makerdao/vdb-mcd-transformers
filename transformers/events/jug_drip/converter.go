@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package drip_drip
+package jug_drip
 
 import (
 	"encoding/json"
@@ -25,9 +25,9 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 )
 
-type DripDripConverter struct{}
+type JugDripConverter struct{}
 
-func (DripDripConverter) ToModels(ethLogs []types.Log) ([]interface{}, error) {
+func (JugDripConverter) ToModels(ethLogs []types.Log) ([]interface{}, error) {
 	var models []interface{}
 	for _, ethLog := range ethLogs {
 		err := verifyLog(ethLog)
@@ -39,7 +39,7 @@ func (DripDripConverter) ToModels(ethLogs []types.Log) ([]interface{}, error) {
 		if err != nil {
 			return nil, err
 		}
-		model := DripDripModel{
+		model := JugDripModel{
 			Ilk:              ilk,
 			LogIndex:         ethLog.Index,
 			TransactionIndex: ethLog.TxIndex,

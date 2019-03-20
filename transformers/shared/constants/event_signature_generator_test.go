@@ -109,10 +109,10 @@ var _ = Describe("Event signature generator", func() {
 				})
 			})
 
-			Describe("from the drip contract", func() {
+			Describe("from the jug contract", func() {
 				It("gets the drip method signature", func() {
 					expected := "drip(bytes32)"
-					actual := constants.GetSolidityFunctionSignature(test_data.KovanDripABI, "drip")
+					actual := constants.GetSolidityFunctionSignature(test_data.KovanJugABI, "drip")
 
 					Expect(expected).To(Equal(actual))
 				})
