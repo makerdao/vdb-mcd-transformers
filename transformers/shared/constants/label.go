@@ -8,12 +8,12 @@ const (
 	DealLabel               = "deal"
 	DentLabel               = "dent"
 	DripDripLabel           = "dripDrip"
-	DripFileIlkLabel        = "dripFileIlk"
-	DripFileRepoLabel       = "dripFileRepo"
-	DripFileVowLabel        = "dripFileVow"
 	FlapKickLabel           = "flapKick"
 	FlipKickLabel           = "flipKick"
 	FlopKickLabel           = "flopKick"
+	JugFileIlkLabel         = "jugFileIlk"
+	JugFileRepoLabel        = "jugFileRepo"
+	JugFileVowLabel         = "jugFileVow"
 	PitFileDebtCeilingLabel = "pitFileDebtCeiling"
 	PitFileIlkLabel         = "pitFileIlk"
 	PriceFeedLabel          = "priceFeed"
@@ -39,12 +39,12 @@ func AllTransformerLabels() []string {
 		DealLabel,
 		DentLabel,
 		DripDripLabel,
-		DripFileIlkLabel,
-		DripFileRepoLabel,
-		DripFileVowLabel,
 		FlapKickLabel,
 		FlipKickLabel,
 		FlopKickLabel,
+		JugFileIlkLabel,
+		JugFileRepoLabel,
+		JugFileVowLabel,
 		PitFileDebtCeilingLabel,
 		PitFileIlkLabel,
 		PriceFeedLabel,
