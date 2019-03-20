@@ -15,8 +15,8 @@ func flapKickMethod() string           { return GetSolidityFunctionSignature(Fla
 func flipKickMethod() string           { return GetSolidityFunctionSignature(FlipperABI(), "Kick") }
 func flopKickMethod() string           { return GetSolidityFunctionSignature(FlopperABI(), "Kick") }
 func logValueMethod() string           { return GetSolidityFunctionSignature(MedianizerABI(), "LogValue") }
-func pitFileDebtCeilingMethod() string { return "file(bytes32,uint256)" }
-func pitFileIlkMethod() string         { return "file(bytes32,bytes32,uint256)" }
+func vatFileDebtCeilingMethod() string { return "file(bytes32,uint256)" }
+func vatFileIlkMethod() string         { return "file(bytes32,bytes32,uint256)" }
 func tendMethod() string               { return GetSolidityFunctionSignature(FlipperABI(), "tend") }
 func vatFluxMethod() string            { return GetSolidityFunctionSignature(OldVatABI(), "flux") }
 func vatFoldMethod() string            { return GetSolidityFunctionSignature(OldVatABI(), "fold") }

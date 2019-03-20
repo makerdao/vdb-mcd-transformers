@@ -28,31 +28,31 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
-type PitFileDebtCeilingRepository struct {
+type VatFileDebtCeilingRepository struct {
 	db *postgres.DB
 }
 
-func (repository PitFileDebtCeilingRepository) Create(headerID int64, models []interface{}) error {
+func (repository VatFileDebtCeilingRepository) Create(headerID int64, models []interface{}) error {
 	tx, dBaseErr := repository.db.Beginx()
 	if dBaseErr != nil {
 		return dBaseErr
 	}
 
 	for _, model := range models {
-		pitFileDC, ok := model.(PitFileDebtCeilingModel)
+		vatFileDC, ok := model.(VatFileDebtCeilingModel)
 		if !ok {
 			rollbackErr := tx.Rollback()
 			if rollbackErr != nil {
 				log.Error("failed to rollback ", rollbackErr)
 			}
-			return fmt.Errorf("model of type %T, not %T", model, PitFileDebtCeilingModel{})
+			return fmt.Errorf("model of type %T, not %T", model, VatFileDebtCeilingModel{})
 		}
 
 		_, execErr := tx.Exec(
-			`INSERT into maker.pit_file_debt_ceiling (header_id, what, data, log_idx, tx_idx, raw_log)
+			`INSERT into maker.vat_file_debt_ceiling (header_id, what, data, log_idx, tx_idx, raw_log)
         VALUES($1, $2, $3::NUMERIC, $4, $5, $6)
 		ON CONFLICT (header_id, tx_idx, log_idx) DO UPDATE SET what = $2, data = $3, raw_log = $6;`,
-			headerID, pitFileDC.What, pitFileDC.Data, pitFileDC.LogIndex, pitFileDC.TransactionIndex, pitFileDC.Raw,
+			headerID, vatFileDC.What, vatFileDC.Data, vatFileDC.LogIndex, vatFileDC.TransactionIndex, vatFileDC.Raw,
 		)
 
 		if execErr != nil {
@@ -64,7 +64,7 @@ func (repository PitFileDebtCeilingRepository) Create(headerID int64, models []i
 		}
 	}
 
-	checkHeaderErr := repo.MarkHeaderCheckedInTransaction(headerID, tx, constants.PitFileDebtCeilingChecked)
+	checkHeaderErr := repo.MarkHeaderCheckedInTransaction(headerID, tx, constants.VatFileDebtCeilingChecked)
 	if checkHeaderErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
@@ -76,18 +76,18 @@ func (repository PitFileDebtCeilingRepository) Create(headerID int64, models []i
 	return tx.Commit()
 }
 
-func (repository PitFileDebtCeilingRepository) MarkHeaderChecked(headerID int64) error {
-	return repo.MarkHeaderChecked(headerID, repository.db, constants.PitFileDebtCeilingChecked)
+func (repository VatFileDebtCeilingRepository) MarkHeaderChecked(headerID int64) error {
+	return repo.MarkHeaderChecked(headerID, repository.db, constants.VatFileDebtCeilingChecked)
 }
 
-func (repository PitFileDebtCeilingRepository) MissingHeaders(startingBlockNumber, endingBlockNumber int64) ([]core.Header, error) {
-	return repo.MissingHeaders(startingBlockNumber, endingBlockNumber, repository.db, constants.PitFileDebtCeilingChecked)
+func (repository VatFileDebtCeilingRepository) MissingHeaders(startingBlockNumber, endingBlockNumber int64) ([]core.Header, error) {
+	return repo.MissingHeaders(startingBlockNumber, endingBlockNumber, repository.db, constants.VatFileDebtCeilingChecked)
 }
 
-func (repository PitFileDebtCeilingRepository) RecheckHeaders(startingBlockNumber, endingBlockNumber int64) ([]core.Header, error) {
-	return repo.RecheckHeaders(startingBlockNumber, endingBlockNumber, repository.db, constants.PitFileDebtCeilingChecked)
+func (repository VatFileDebtCeilingRepository) RecheckHeaders(startingBlockNumber, endingBlockNumber int64) ([]core.Header, error) {
+	return repo.RecheckHeaders(startingBlockNumber, endingBlockNumber, repository.db, constants.VatFileDebtCeilingChecked)
 }
 
-func (repository *PitFileDebtCeilingRepository) SetDB(db *postgres.DB) {
+func (repository *VatFileDebtCeilingRepository) SetDB(db *postgres.DB) {
 	repository.db = db
 }

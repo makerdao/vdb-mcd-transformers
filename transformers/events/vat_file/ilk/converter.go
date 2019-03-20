@@ -14,12 +14,13 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package debt_ceiling
+package ilk
 
 import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"math/big"
 
 	"github.com/ethereum/go-ethereum/core/types"
 
@@ -28,23 +29,30 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 )
 
-type PitFileDebtCeilingConverter struct{}
+type VatFileIlkConverter struct{}
 
-func (PitFileDebtCeilingConverter) ToModels(ethLogs []types.Log) ([]interface{}, error) {
+func (VatFileIlkConverter) ToModels(ethLogs []types.Log) ([]interface{}, error) {
+	//NOTE: the vat contract defines its own custom Note event, rather than relying on DS-Note
 	var models []interface{}
 	for _, ethLog := range ethLogs {
 		err := verifyLog(ethLog)
 		if err != nil {
 			return nil, err
 		}
+		ilk := shared.GetHexWithoutPrefix(ethLog.Topics[1].Bytes())
 		what := string(bytes.Trim(ethLog.Topics[2].Bytes(), "\x00"))
-		data := shared.ConvertToWad(ethLog.Topics[3].Big().String())
+		whatData := ethLog.Topics[3].Bytes()
+		data, err := getData(whatData, what)
+		if err != nil {
+			return nil, err
+		}
 
 		raw, err := json.Marshal(ethLog)
 		if err != nil {
 			return nil, err
 		}
-		model := PitFileDebtCeilingModel{
+		model := VatFileIlkModel{
+			Ilk:              ilk,
 			What:             what,
 			Data:             data,
 			LogIndex:         ethLog.Index,
@@ -56,8 +64,21 @@ func (PitFileDebtCeilingConverter) ToModels(ethLogs []types.Log) ([]interface{},
 	return models, nil
 }
 
+func getData(dataBytes []byte, what string) (string, error) {
+	n := big.NewInt(0).SetBytes(dataBytes).String()
+	if what == "spot" {
+		return shared.ConvertToRay(n), nil
+	} else if what == "line" {
+		return shared.ConvertToRad(n), nil
+	} else if what == "dust" {
+		return shared.ConvertToRad(n), nil
+	} else {
+		return "", errors.New("unexpected payload for 'what'")
+	}
+}
+
 func verifyLog(log types.Log) error {
-	if len(log.Topics) < 2 {
+	if len(log.Topics) < 4 {
 		return errors.New("log missing topics")
 	}
 	if len(log.Data) < constants.DataItemLength {

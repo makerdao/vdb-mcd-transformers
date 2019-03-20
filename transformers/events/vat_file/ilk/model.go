@@ -14,21 +14,13 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package debt_ceiling
+package ilk
 
-import (
-	shared_t "github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
-
-	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
-)
-
-func GetDebtCeilingFileConfig() shared_t.TransformerConfig {
-	return shared_t.TransformerConfig{
-		TransformerName:     constants.PitFileDebtCeilingLabel,
-		ContractAddresses:   []string{constants.PitContractAddress()},
-		ContractAbi:         constants.PitABI(),
-		Topic:               constants.GetPitFileDebtCeilingSignature(),
-		StartingBlockNumber: constants.PitDeploymentBlock(),
-		EndingBlockNumber:   -1,
-	}
+type VatFileIlkModel struct {
+	Ilk              string
+	What             string
+	Data             string
+	LogIndex         uint   `db:"log_idx"`
+	TransactionIndex uint   `db:"tx_idx"`
+	Raw              []byte `db:"raw_log"`
 }

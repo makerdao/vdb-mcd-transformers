@@ -75,6 +75,14 @@ var _ = Describe("Shared utilities", func() {
 			wadTwo := shared.ConvertToWad("1234567890123456789")
 			Expect(wadTwo).To(Equal("1.234567890123456690"))
 		})
+
+		It("converts values to rads", func() {
+			radOne := shared.ConvertToRad("12345678901234567890123")
+			Expect(radOne).To(Equal("0.000000000000000000000012345678901234568947028"))
+
+			radTwo := shared.ConvertToRad("12345678901234567890123456789012345678901234567890")
+			Expect(radTwo).To(Equal("12345.678901234567092615179717540740966796875000000"))
+		})
 	})
 
 	Describe("getting hex without prefix", func() {

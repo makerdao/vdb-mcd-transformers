@@ -15,8 +15,8 @@ func GetFlipKickSignature() string           { return GetEventTopicZero(flipKick
 func GetFlopKickSignature() string           { return GetEventTopicZero(flopKickMethod()) }
 func GetVatFrobSignature() string            { return GetLogNoteTopicZero(vatFrobMethod()) }
 func GetLogValueSignature() string           { return GetEventTopicZero(logValueMethod()) }
-func GetPitFileDebtCeilingSignature() string { return GetLogNoteTopicZero(pitFileDebtCeilingMethod()) }
-func GetPitFileIlkSignature() string         { return GetLogNoteTopicZero(pitFileIlkMethod()) }
+func GetVatFileDebtCeilingSignature() string { return GetLogNoteTopicZero(vatFileDebtCeilingMethod()) }
+func GetVatFileIlkSignature() string         { return GetLogNoteTopicZero(vatFileIlkMethod()) }
 func GetTendFunctionSignature() string       { return GetLogNoteTopicZero(tendMethod()) }
 func GetVatFluxSignature() string            { return GetLogNoteTopicZero(vatFluxMethod()) }
 func GetVatFoldSignature() string            { return GetLogNoteTopicZero(vatFoldMethod()) }

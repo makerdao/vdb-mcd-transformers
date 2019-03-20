@@ -25,61 +25,61 @@ import (
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 
 	"github.com/vulcanize/mcd_transformers/test_config"
-	"github.com/vulcanize/mcd_transformers/transformers/events/pit_file/debt_ceiling"
+	"github.com/vulcanize/mcd_transformers/transformers/events/vat_file/debt_ceiling"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data/shared_behaviors"
 )
 
-var _ = Describe("Pit file debt ceiling repository", func() {
+var _ = Describe("Vat file debt ceiling repository", func() {
 	var (
 		db                           *postgres.DB
-		pitFileDebtCeilingRepository debt_ceiling.PitFileDebtCeilingRepository
+		vatFileDebtCeilingRepository debt_ceiling.VatFileDebtCeilingRepository
 		headerRepository             repositories.HeaderRepository
 	)
 
 	BeforeEach(func() {
 		db = test_config.NewTestDB(test_config.NewTestNode())
 		test_config.CleanTestDB(db)
-		pitFileDebtCeilingRepository = debt_ceiling.PitFileDebtCeilingRepository{}
-		pitFileDebtCeilingRepository.SetDB(db)
+		vatFileDebtCeilingRepository = debt_ceiling.VatFileDebtCeilingRepository{}
+		vatFileDebtCeilingRepository.SetDB(db)
 		headerRepository = repositories.NewHeaderRepository(db)
 	})
 
 	Describe("Create", func() {
-		modelWithDifferentLogIdx := test_data.PitFileDebtCeilingModel
+		modelWithDifferentLogIdx := test_data.VatFileDebtCeilingModel
 		modelWithDifferentLogIdx.LogIndex = modelWithDifferentLogIdx.LogIndex + 1
 		inputs := shared_behaviors.CreateBehaviorInputs{
-			CheckedHeaderColumnName:  constants.PitFileDebtCeilingChecked,
-			LogEventTableName:        "maker.pit_file_debt_ceiling",
-			TestModel:                test_data.PitFileDebtCeilingModel,
+			CheckedHeaderColumnName:  constants.VatFileDebtCeilingChecked,
+			LogEventTableName:        "maker.vat_file_debt_ceiling",
+			TestModel:                test_data.VatFileDebtCeilingModel,
 			ModelWithDifferentLogIdx: modelWithDifferentLogIdx,
-			Repository:               &pitFileDebtCeilingRepository,
+			Repository:               &vatFileDebtCeilingRepository,
 		}
 
 		shared_behaviors.SharedRepositoryCreateBehaviors(&inputs)
 
-		It("adds a pit file debt ceiling event", func() {
+		It("adds a vat file debt ceiling event", func() {
 			headerID, err := headerRepository.CreateOrUpdateHeader(fakes.FakeHeader)
 			Expect(err).NotTo(HaveOccurred())
-			err = pitFileDebtCeilingRepository.Create(headerID, []interface{}{test_data.PitFileDebtCeilingModel})
+			err = vatFileDebtCeilingRepository.Create(headerID, []interface{}{test_data.VatFileDebtCeilingModel})
 
 			Expect(err).NotTo(HaveOccurred())
-			var dbPitFile debt_ceiling.PitFileDebtCeilingModel
-			err = db.Get(&dbPitFile, `SELECT what, data, log_idx, tx_idx, raw_log FROM maker.pit_file_debt_ceiling WHERE header_id = $1`, headerID)
+			var dbVatFile debt_ceiling.VatFileDebtCeilingModel
+			err = db.Get(&dbVatFile, `SELECT what, data, log_idx, tx_idx, raw_log FROM maker.vat_file_debt_ceiling WHERE header_id = $1`, headerID)
 			Expect(err).NotTo(HaveOccurred())
-			Expect(dbPitFile.What).To(Equal(test_data.PitFileDebtCeilingModel.What))
-			Expect(dbPitFile.Data).To(Equal(test_data.PitFileDebtCeilingModel.Data))
-			Expect(dbPitFile.LogIndex).To(Equal(test_data.PitFileDebtCeilingModel.LogIndex))
-			Expect(dbPitFile.TransactionIndex).To(Equal(test_data.PitFileDebtCeilingModel.TransactionIndex))
-			Expect(dbPitFile.Raw).To(MatchJSON(test_data.PitFileDebtCeilingModel.Raw))
+			Expect(dbVatFile.What).To(Equal(test_data.VatFileDebtCeilingModel.What))
+			Expect(dbVatFile.Data).To(Equal(test_data.VatFileDebtCeilingModel.Data))
+			Expect(dbVatFile.LogIndex).To(Equal(test_data.VatFileDebtCeilingModel.LogIndex))
+			Expect(dbVatFile.TransactionIndex).To(Equal(test_data.VatFileDebtCeilingModel.TransactionIndex))
+			Expect(dbVatFile.Raw).To(MatchJSON(test_data.VatFileDebtCeilingModel.Raw))
 		})
 	})
 
 	Describe("MarkHeaderChecked", func() {
 		inputs := shared_behaviors.MarkedHeaderCheckedBehaviorInputs{
-			CheckedHeaderColumnName: constants.PitFileDebtCeilingChecked,
-			Repository:              &pitFileDebtCeilingRepository,
+			CheckedHeaderColumnName: constants.VatFileDebtCeilingChecked,
+			Repository:              &vatFileDebtCeilingRepository,
 		}
 
 		shared_behaviors.SharedRepositoryMarkHeaderCheckedBehaviors(&inputs)

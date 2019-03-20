@@ -1690,77 +1690,6 @@ ALTER SEQUENCE maker.pit_drip_id_seq OWNED BY maker.pit_drip.id;
 
 
 --
--- Name: pit_file_debt_ceiling; Type: TABLE; Schema: maker; Owner: -
---
-
-CREATE TABLE maker.pit_file_debt_ceiling (
-    id integer NOT NULL,
-    header_id integer NOT NULL,
-    what text,
-    data numeric,
-    log_idx integer NOT NULL,
-    tx_idx integer NOT NULL,
-    raw_log jsonb
-);
-
-
---
--- Name: pit_file_debt_ceiling_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
---
-
-CREATE SEQUENCE maker.pit_file_debt_ceiling_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: pit_file_debt_ceiling_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
---
-
-ALTER SEQUENCE maker.pit_file_debt_ceiling_id_seq OWNED BY maker.pit_file_debt_ceiling.id;
-
-
---
--- Name: pit_file_ilk; Type: TABLE; Schema: maker; Owner: -
---
-
-CREATE TABLE maker.pit_file_ilk (
-    id integer NOT NULL,
-    header_id integer NOT NULL,
-    ilk integer NOT NULL,
-    what text,
-    data numeric,
-    log_idx integer NOT NULL,
-    tx_idx integer NOT NULL,
-    raw_log jsonb
-);
-
-
---
--- Name: pit_file_ilk_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
---
-
-CREATE SEQUENCE maker.pit_file_ilk_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: pit_file_ilk_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
---
-
-ALTER SEQUENCE maker.pit_file_ilk_id_seq OWNED BY maker.pit_file_ilk.id;
-
-
---
 -- Name: pit_ilk_line; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -2059,6 +1988,77 @@ CREATE SEQUENCE maker.vat_debt_id_seq
 --
 
 ALTER SEQUENCE maker.vat_debt_id_seq OWNED BY maker.vat_debt.id;
+
+
+--
+-- Name: vat_file_debt_ceiling; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.vat_file_debt_ceiling (
+    id integer NOT NULL,
+    header_id integer NOT NULL,
+    what text,
+    data numeric,
+    log_idx integer NOT NULL,
+    tx_idx integer NOT NULL,
+    raw_log jsonb
+);
+
+
+--
+-- Name: vat_file_debt_ceiling_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.vat_file_debt_ceiling_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: vat_file_debt_ceiling_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.vat_file_debt_ceiling_id_seq OWNED BY maker.vat_file_debt_ceiling.id;
+
+
+--
+-- Name: vat_file_ilk; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.vat_file_ilk (
+    id integer NOT NULL,
+    header_id integer NOT NULL,
+    ilk integer NOT NULL,
+    what text,
+    data numeric,
+    log_idx integer NOT NULL,
+    tx_idx integer NOT NULL,
+    raw_log jsonb
+);
+
+
+--
+-- Name: vat_file_ilk_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.vat_file_ilk_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: vat_file_ilk_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.vat_file_ilk_id_seq OWNED BY maker.vat_file_ilk.id;
 
 
 --
@@ -3168,8 +3168,8 @@ CREATE TABLE public.checked_headers (
     tend_checked integer DEFAULT 0 NOT NULL,
     bite_checked integer DEFAULT 0 NOT NULL,
     dent_checked integer DEFAULT 0 NOT NULL,
-    pit_file_debt_ceiling_checked integer DEFAULT 0 NOT NULL,
-    pit_file_ilk_checked integer DEFAULT 0 NOT NULL,
+    vat_file_debt_ceiling_checked integer DEFAULT 0 NOT NULL,
+    vat_file_ilk_checked integer DEFAULT 0 NOT NULL,
     vat_init_checked integer DEFAULT 0 NOT NULL,
     jug_file_ilk_checked integer DEFAULT 0 NOT NULL,
     jug_file_repo_checked integer DEFAULT 0 NOT NULL,
@@ -3760,20 +3760,6 @@ ALTER TABLE ONLY maker.pit_drip ALTER COLUMN id SET DEFAULT nextval('maker.pit_d
 
 
 --
--- Name: pit_file_debt_ceiling id; Type: DEFAULT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.pit_file_debt_ceiling ALTER COLUMN id SET DEFAULT nextval('maker.pit_file_debt_ceiling_id_seq'::regclass);
-
-
---
--- Name: pit_file_ilk id; Type: DEFAULT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.pit_file_ilk ALTER COLUMN id SET DEFAULT nextval('maker.pit_file_ilk_id_seq'::regclass);
-
-
---
 -- Name: pit_ilk_line id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
@@ -3834,6 +3820,20 @@ ALTER TABLE ONLY maker.vat_dai ALTER COLUMN id SET DEFAULT nextval('maker.vat_da
 --
 
 ALTER TABLE ONLY maker.vat_debt ALTER COLUMN id SET DEFAULT nextval('maker.vat_debt_id_seq'::regclass);
+
+
+--
+-- Name: vat_file_debt_ceiling id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_file_debt_ceiling ALTER COLUMN id SET DEFAULT nextval('maker.vat_file_debt_ceiling_id_seq'::regclass);
+
+
+--
+-- Name: vat_file_ilk id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_file_ilk ALTER COLUMN id SET DEFAULT nextval('maker.vat_file_ilk_id_seq'::regclass);
 
 
 --
@@ -4492,38 +4492,6 @@ ALTER TABLE ONLY maker.pit_drip
 
 
 --
--- Name: pit_file_debt_ceiling pit_file_debt_ceiling_header_id_tx_idx_log_idx_key; Type: CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.pit_file_debt_ceiling
-    ADD CONSTRAINT pit_file_debt_ceiling_header_id_tx_idx_log_idx_key UNIQUE (header_id, tx_idx, log_idx);
-
-
---
--- Name: pit_file_debt_ceiling pit_file_debt_ceiling_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.pit_file_debt_ceiling
-    ADD CONSTRAINT pit_file_debt_ceiling_pkey PRIMARY KEY (id);
-
-
---
--- Name: pit_file_ilk pit_file_ilk_header_id_tx_idx_log_idx_key; Type: CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.pit_file_ilk
-    ADD CONSTRAINT pit_file_ilk_header_id_tx_idx_log_idx_key UNIQUE (header_id, tx_idx, log_idx);
-
-
---
--- Name: pit_file_ilk pit_file_ilk_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.pit_file_ilk
-    ADD CONSTRAINT pit_file_ilk_pkey PRIMARY KEY (id);
-
-
---
 -- Name: pit_ilk_line pit_ilk_line_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -4609,6 +4577,38 @@ ALTER TABLE ONLY maker.vat_dai
 
 ALTER TABLE ONLY maker.vat_debt
     ADD CONSTRAINT vat_debt_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: vat_file_debt_ceiling vat_file_debt_ceiling_header_id_tx_idx_log_idx_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_file_debt_ceiling
+    ADD CONSTRAINT vat_file_debt_ceiling_header_id_tx_idx_log_idx_key UNIQUE (header_id, tx_idx, log_idx);
+
+
+--
+-- Name: vat_file_debt_ceiling vat_file_debt_ceiling_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_file_debt_ceiling
+    ADD CONSTRAINT vat_file_debt_ceiling_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: vat_file_ilk vat_file_ilk_header_id_tx_idx_log_idx_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_file_ilk
+    ADD CONSTRAINT vat_file_ilk_header_id_tx_idx_log_idx_key UNIQUE (header_id, tx_idx, log_idx);
+
+
+--
+-- Name: vat_file_ilk vat_file_ilk_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_file_ilk
+    ADD CONSTRAINT vat_file_ilk_pkey PRIMARY KEY (id);
 
 
 --
@@ -5286,30 +5286,6 @@ ALTER TABLE ONLY maker.jug_file_vow
 
 
 --
--- Name: pit_file_debt_ceiling pit_file_debt_ceiling_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.pit_file_debt_ceiling
-    ADD CONSTRAINT pit_file_debt_ceiling_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
-
-
---
--- Name: pit_file_ilk pit_file_ilk_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.pit_file_ilk
-    ADD CONSTRAINT pit_file_ilk_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
-
-
---
--- Name: pit_file_ilk pit_file_ilk_ilk_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.pit_file_ilk
-    ADD CONSTRAINT pit_file_ilk_ilk_fkey FOREIGN KEY (ilk) REFERENCES maker.ilks(id);
-
-
---
 -- Name: pit_ilk_line pit_ilk_line_ilk_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -5339,6 +5315,30 @@ ALTER TABLE ONLY maker.price_feeds
 
 ALTER TABLE ONLY maker.tend
     ADD CONSTRAINT tend_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: vat_file_debt_ceiling vat_file_debt_ceiling_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_file_debt_ceiling
+    ADD CONSTRAINT vat_file_debt_ceiling_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: vat_file_ilk vat_file_ilk_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_file_ilk
+    ADD CONSTRAINT vat_file_ilk_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: vat_file_ilk vat_file_ilk_ilk_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_file_ilk
+    ADD CONSTRAINT vat_file_ilk_ilk_fkey FOREIGN KEY (ilk) REFERENCES maker.ilks(id);
 
 
 --

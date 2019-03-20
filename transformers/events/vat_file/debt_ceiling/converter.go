@@ -14,13 +14,12 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package ilk
+package debt_ceiling
 
 import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"math/big"
 
 	"github.com/ethereum/go-ethereum/core/types"
 
@@ -29,29 +28,23 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 )
 
-type PitFileIlkConverter struct{}
+type VatFileDebtCeilingConverter struct{}
 
-func (PitFileIlkConverter) ToModels(ethLogs []types.Log) ([]interface{}, error) {
+func (VatFileDebtCeilingConverter) ToModels(ethLogs []types.Log) ([]interface{}, error) {
 	var models []interface{}
 	for _, ethLog := range ethLogs {
 		err := verifyLog(ethLog)
 		if err != nil {
 			return nil, err
 		}
-		ilk := shared.GetHexWithoutPrefix(ethLog.Topics[2].Bytes())
-		what := string(bytes.Trim(ethLog.Topics[3].Bytes(), "\x00"))
-		dataBytes := ethLog.Data[len(ethLog.Data)-constants.DataItemLength:]
-		data, err := getData(dataBytes, what)
-		if err != nil {
-			return nil, err
-		}
+		what := string(bytes.Trim(ethLog.Topics[1].Bytes(), "\x00"))
+		data := shared.ConvertToWad(ethLog.Topics[2].Big().String())
 
 		raw, err := json.Marshal(ethLog)
 		if err != nil {
 			return nil, err
 		}
-		model := PitFileIlkModel{
-			Ilk:              ilk,
+		model := VatFileDebtCeilingModel{
 			What:             what,
 			Data:             data,
 			LogIndex:         ethLog.Index,
@@ -63,19 +56,8 @@ func (PitFileIlkConverter) ToModels(ethLogs []types.Log) ([]interface{}, error) 
 	return models, nil
 }
 
-func getData(dataBytes []byte, what string) (string, error) {
-	n := big.NewInt(0).SetBytes(dataBytes).String()
-	if what == "spot" {
-		return shared.ConvertToRay(n), nil
-	} else if what == "line" {
-		return shared.ConvertToWad(n), nil
-	} else {
-		return "", errors.New("unexpected payload for 'what'")
-	}
-}
-
 func verifyLog(log types.Log) error {
-	if len(log.Topics) < 4 {
+	if len(log.Topics) < 2 {
 		return errors.New("log missing topics")
 	}
 	if len(log.Data) < constants.DataItemLength {
