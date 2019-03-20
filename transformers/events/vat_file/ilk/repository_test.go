@@ -27,65 +27,65 @@ import (
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 
 	"github.com/vulcanize/mcd_transformers/test_config"
-	"github.com/vulcanize/mcd_transformers/transformers/events/pit_file/ilk"
+	"github.com/vulcanize/mcd_transformers/transformers/events/vat_file/ilk"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data/shared_behaviors"
 )
 
-var _ = Describe("Pit file ilk repository", func() {
+var _ = Describe("Vat file ilk repository", func() {
 	var (
 		db                   *postgres.DB
-		pitFileIlkRepository ilk.PitFileIlkRepository
+		vatFileIlkRepository ilk.VatFileIlkRepository
 		headerRepository     repositories.HeaderRepository
 	)
 
 	BeforeEach(func() {
 		db = test_config.NewTestDB(test_config.NewTestNode())
 		test_config.CleanTestDB(db)
-		pitFileIlkRepository = ilk.PitFileIlkRepository{}
-		pitFileIlkRepository.SetDB(db)
+		vatFileIlkRepository = ilk.VatFileIlkRepository{}
+		vatFileIlkRepository.SetDB(db)
 		headerRepository = repositories.NewHeaderRepository(db)
 	})
 
 	Describe("Create", func() {
-		modelWithDifferentLogIdx := test_data.PitFileIlkSpotModel
+		modelWithDifferentLogIdx := test_data.VatFileIlkSpotModel
 		modelWithDifferentLogIdx.LogIndex = modelWithDifferentLogIdx.LogIndex + 1
 		inputs := shared_behaviors.CreateBehaviorInputs{
-			CheckedHeaderColumnName:  constants.PitFileIlkChecked,
-			LogEventTableName:        "maker.pit_file_ilk",
-			TestModel:                test_data.PitFileIlkSpotModel,
+			CheckedHeaderColumnName:  constants.VatFileIlkChecked,
+			LogEventTableName:        "maker.vat_file_ilk",
+			TestModel:                test_data.VatFileIlkSpotModel,
 			ModelWithDifferentLogIdx: modelWithDifferentLogIdx,
-			Repository:               &pitFileIlkRepository,
+			Repository:               &vatFileIlkRepository,
 		}
 
 		shared_behaviors.SharedRepositoryCreateBehaviors(&inputs)
 
-		It("adds a pit file ilk event", func() {
+		It("adds a vat file ilk event", func() {
 			headerID, err := headerRepository.CreateOrUpdateHeader(fakes.FakeHeader)
 			Expect(err).NotTo(HaveOccurred())
-			err = pitFileIlkRepository.Create(headerID, []interface{}{test_data.PitFileIlkSpotModel})
+			err = vatFileIlkRepository.Create(headerID, []interface{}{test_data.VatFileIlkSpotModel})
 
 			Expect(err).NotTo(HaveOccurred())
-			var dbPitFile ilk.PitFileIlkModel
-			err = db.Get(&dbPitFile, `SELECT ilk, what, data, log_idx, tx_idx, raw_log FROM maker.pit_file_ilk WHERE header_id = $1`, headerID)
+			var dbPitFile ilk.VatFileIlkModel
+			err = db.Get(&dbPitFile, `SELECT ilk, what, data, log_idx, tx_idx, raw_log FROM maker.vat_file_ilk WHERE header_id = $1`, headerID)
 			Expect(err).NotTo(HaveOccurred())
-			ilkID, err := shared.GetOrCreateIlk(test_data.PitFileIlkSpotModel.Ilk, db)
+			ilkID, err := shared.GetOrCreateIlk(test_data.VatFileIlkSpotModel.Ilk, db)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(dbPitFile.Ilk).To(Equal(strconv.Itoa(ilkID)))
-			Expect(dbPitFile.What).To(Equal(test_data.PitFileIlkSpotModel.What))
-			Expect(dbPitFile.Data).To(Equal(test_data.PitFileIlkSpotModel.Data))
-			Expect(dbPitFile.LogIndex).To(Equal(test_data.PitFileIlkSpotModel.LogIndex))
-			Expect(dbPitFile.TransactionIndex).To(Equal(test_data.PitFileIlkSpotModel.TransactionIndex))
-			Expect(dbPitFile.Raw).To(MatchJSON(test_data.PitFileIlkSpotModel.Raw))
+			Expect(dbPitFile.What).To(Equal(test_data.VatFileIlkSpotModel.What))
+			Expect(dbPitFile.Data).To(Equal(test_data.VatFileIlkSpotModel.Data))
+			Expect(dbPitFile.LogIndex).To(Equal(test_data.VatFileIlkSpotModel.LogIndex))
+			Expect(dbPitFile.TransactionIndex).To(Equal(test_data.VatFileIlkSpotModel.TransactionIndex))
+			Expect(dbPitFile.Raw).To(MatchJSON(test_data.VatFileIlkSpotModel.Raw))
 		})
 	})
 
 	Describe("MarkHeaderChecked", func() {
 		inputs := shared_behaviors.MarkedHeaderCheckedBehaviorInputs{
-			CheckedHeaderColumnName: constants.PitFileIlkChecked,
-			Repository:              &pitFileIlkRepository,
+			CheckedHeaderColumnName: constants.VatFileIlkChecked,
+			Repository:              &vatFileIlkRepository,
 		}
 
 		shared_behaviors.SharedRepositoryMarkHeaderCheckedBehaviors(&inputs)

@@ -30,14 +30,14 @@ import (
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 
 	"github.com/vulcanize/mcd_transformers/test_config"
-	"github.com/vulcanize/mcd_transformers/transformers/events/pit_file/ilk"
+	"github.com/vulcanize/mcd_transformers/transformers/events/vat_file/ilk"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/factories"
 )
 
-var _ = Describe("PitFileIlk LogNoteTransformer", func() {
+var _ = Describe("VatFileIlk LogNoteTransformer", func() {
 	var (
 		db          *postgres.DB
 		blockChain  core.BlockChain
@@ -54,10 +54,10 @@ var _ = Describe("PitFileIlk LogNoteTransformer", func() {
 		db = test_config.NewTestDB(blockChain.Node())
 		test_config.CleanTestDB(db)
 		config := transformer.TransformerConfig{
-			TransformerName:     constants.PitFileIlkLabel,
-			ContractAddresses:   []string{test_data.KovanPitContractAddress},
-			ContractAbi:         test_data.KovanPitABI,
-			Topic:               test_data.KovanPitFileIlkSignature,
+			TransformerName:     constants.VatFileIlkLabel,
+			ContractAddresses:   []string{test_data.KovanUpdatedVatContractAddress},
+			ContractAbi:         test_data.KovanUpdatedVatABI,
+			Topic:               test_data.KovanVatFileIlkSignature,
 			StartingBlockNumber: 0,
 			EndingBlockNumber:   -1,
 		}
@@ -67,13 +67,13 @@ var _ = Describe("PitFileIlk LogNoteTransformer", func() {
 
 		initializer = factories.LogNoteTransformer{
 			Config:     config,
-			Converter:  &ilk.PitFileIlkConverter{},
-			Repository: &ilk.PitFileIlkRepository{},
+			Converter:  &ilk.VatFileIlkConverter{},
+			Repository: &ilk.VatFileIlkRepository{},
 		}
 	})
 
-	It("fetches and transforms a Pit.file ilk 'spot' event from Kovan", func() {
-		blockNumber := int64(9103223)
+	It("fetches and transforms a Vat.file ilk 'spot' event from Kovan", func() {
+		blockNumber := int64(10501158)
 		initializer.Config.StartingBlockNumber = blockNumber
 		initializer.Config.EndingBlockNumber = blockNumber
 
@@ -88,8 +88,8 @@ var _ = Describe("PitFileIlk LogNoteTransformer", func() {
 		err = tr.Execute(logs, header, c2.HeaderMissing)
 		Expect(err).NotTo(HaveOccurred())
 
-		var dbResult []ilk.PitFileIlkModel
-		err = db.Select(&dbResult, `SELECT ilk, what, data from maker.pit_file_ilk`)
+		var dbResult []ilk.VatFileIlkModel
+		err = db.Select(&dbResult, `SELECT ilk, what, data from maker.vat_file_ilk`)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))
@@ -97,11 +97,11 @@ var _ = Describe("PitFileIlk LogNoteTransformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 		Expect(dbResult[0].Ilk).To(Equal(strconv.Itoa(ilkID)))
 		Expect(dbResult[0].What).To(Equal("spot"))
-		Expect(dbResult[0].Data).To(Equal("139.840000000000003410605131648"))
+		Expect(dbResult[0].Data).To(Equal("91.323333333333323480474064127"))
 	})
 
-	It("rechecks pit file ilk event", func() {
-		blockNumber := int64(9103223)
+	It("rechecks vat file ilk event", func() {
+		blockNumber := int64(10501158)
 		initializer.Config.StartingBlockNumber = blockNumber
 		initializer.Config.EndingBlockNumber = blockNumber
 
@@ -123,14 +123,14 @@ var _ = Describe("PitFileIlk LogNoteTransformer", func() {
 		err = db.Get(&headerID, `SELECT id FROM public.headers WHERE block_number = $1`, blockNumber)
 		Expect(err).NotTo(HaveOccurred())
 
-		var pitFileIlkChecked []int
-		err = db.Select(&pitFileIlkChecked, `SELECT pit_file_ilk_checked FROM public.checked_headers WHERE header_id = $1`, headerID)
+		var vatFileIlkChecked []int
+		err = db.Select(&vatFileIlkChecked, `SELECT vat_file_ilk_checked FROM public.checked_headers WHERE header_id = $1`, headerID)
 		Expect(err).NotTo(HaveOccurred())
 
-		Expect(pitFileIlkChecked[0]).To(Equal(2))
+		Expect(vatFileIlkChecked[0]).To(Equal(2))
 
-		var dbResult []ilk.PitFileIlkModel
-		err = db.Select(&dbResult, `SELECT ilk, what, data from maker.pit_file_ilk`)
+		var dbResult []ilk.VatFileIlkModel
+		err = db.Select(&dbResult, `SELECT ilk, what, data from maker.vat_file_ilk`)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))
@@ -138,39 +138,6 @@ var _ = Describe("PitFileIlk LogNoteTransformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 		Expect(dbResult[0].Ilk).To(Equal(strconv.Itoa(ilkID)))
 		Expect(dbResult[0].What).To(Equal("spot"))
-		Expect(dbResult[0].Data).To(Equal("139.840000000000003410605131648"))
-	})
-
-	It("fetches and transforms a Pit.file ilk 'line' event from Kovan", func() {
-		blockNumber := int64(8762253)
-		initializer.Config.StartingBlockNumber = blockNumber
-		initializer.Config.EndingBlockNumber = blockNumber
-
-		header, err := persistHeader(db, blockNumber, blockChain)
-		Expect(err).NotTo(HaveOccurred())
-
-		fetcher := fetch.NewFetcher(blockChain)
-		logs, err := fetcher.FetchLogs(addresses, topics, header)
-		Expect(err).NotTo(HaveOccurred())
-
-		tr := initializer.NewLogNoteTransformer(db)
-		err = tr.Execute(logs, header, c2.HeaderMissing)
-		Expect(err).NotTo(HaveOccurred())
-
-		var dbResult []ilk.PitFileIlkModel
-		err = db.Select(&dbResult, `SELECT ilk, what, data from maker.pit_file_ilk`)
-		Expect(err).NotTo(HaveOccurred())
-
-		Expect(len(dbResult)).To(Equal(2))
-		var pitFileIlkLineModel ilk.PitFileIlkModel
-		for _, result := range dbResult {
-			if result.What == "line" {
-				pitFileIlkLineModel = result
-			}
-		}
-		ilkID, err := shared.GetOrCreateIlk("5245500000000000000000000000000000000000000000000000000000000000", db)
-		Expect(err).NotTo(HaveOccurred())
-		Expect(dbResult[0].Ilk).To(Equal(strconv.Itoa(ilkID)))
-		Expect(pitFileIlkLineModel.Data).To(Equal("2000000.000000000000000000"))
+		Expect(dbResult[0].Data).To(Equal("91.323333333333323480474064127"))
 	})
 })

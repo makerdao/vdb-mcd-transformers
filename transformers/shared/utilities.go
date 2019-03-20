@@ -26,10 +26,13 @@ import (
 )
 
 var (
+	radBase      = big.NewFloat(1e45)
 	rayBase      = big.NewFloat(1e27)
 	wadBase      = big.NewFloat(1e18)
+	radPrecision = 45
 	rayPrecision = 27
 	wadPrecision = 18
+	rad          = "rad"
 	ray          = "ray"
 	wad          = "wad"
 )
@@ -84,12 +87,18 @@ func ConvertToWad(value string) string {
 	return convert(wad, value, wadPrecision)
 }
 
+func ConvertToRad(value string) string {
+	return convert(rad, value, radPrecision)
+}
+
 func convert(conversion string, value string, precision int) string {
 	result := big.NewFloat(0.0)
 	bigFloat := big.NewFloat(0.0)
 	bigFloat.SetString(value)
 
 	switch conversion {
+	case rad:
+		result.Quo(bigFloat, radBase)
 	case ray:
 		result.Quo(bigFloat, rayBase)
 	case wad:

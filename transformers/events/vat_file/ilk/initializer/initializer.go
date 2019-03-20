@@ -20,11 +20,11 @@ import (
 	"github.com/vulcanize/vulcanizedb/libraries/shared/factories"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 
-	"github.com/vulcanize/mcd_transformers/transformers/events/pit_file/debt_ceiling"
+	"github.com/vulcanize/mcd_transformers/transformers/events/vat_file/ilk"
 )
 
 var TransformerInitializer transformer.TransformerInitializer = factories.LogNoteTransformer{
-	Config:     debt_ceiling.GetDebtCeilingFileConfig(),
-	Converter:  &debt_ceiling.PitFileDebtCeilingConverter{},
-	Repository: &debt_ceiling.PitFileDebtCeilingRepository{},
+	Config:     ilk.GetIlkFileConfig(),
+	Converter:  &ilk.VatFileIlkConverter{},
+	Repository: &ilk.VatFileIlkRepository{},
 }.NewLogNoteTransformer

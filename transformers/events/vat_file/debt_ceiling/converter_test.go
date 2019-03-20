@@ -23,13 +23,13 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 
-	"github.com/vulcanize/mcd_transformers/transformers/events/pit_file/debt_ceiling"
+	"github.com/vulcanize/mcd_transformers/transformers/events/vat_file/debt_ceiling"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
-var _ = Describe("Pit file debt ceiling converter", func() {
+var _ = Describe("Vat file debt ceiling converter", func() {
 	It("returns err if log is missing topics", func() {
-		converter := debt_ceiling.PitFileDebtCeilingConverter{}
+		converter := debt_ceiling.VatFileDebtCeilingConverter{}
 		badLog := types.Log{
 			Data: []byte{1, 1, 1, 1, 1},
 		}
@@ -40,7 +40,7 @@ var _ = Describe("Pit file debt ceiling converter", func() {
 	})
 
 	It("returns err if log is missing data", func() {
-		converter := debt_ceiling.PitFileDebtCeilingConverter{}
+		converter := debt_ceiling.VatFileDebtCeilingConverter{}
 		badLog := types.Log{
 			Topics: []common.Hash{{}, {}, {}, {}},
 		}
@@ -51,12 +51,12 @@ var _ = Describe("Pit file debt ceiling converter", func() {
 	})
 
 	It("converts a log to an model", func() {
-		converter := debt_ceiling.PitFileDebtCeilingConverter{}
+		converter := debt_ceiling.VatFileDebtCeilingConverter{}
 
-		models, err := converter.ToModels([]types.Log{test_data.EthPitFileDebtCeilingLog})
+		models, err := converter.ToModels([]types.Log{test_data.EthVatFileDebtCeilingLog})
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(len(models)).To(Equal(1))
-		Expect(models[0].(debt_ceiling.PitFileDebtCeilingModel)).To(Equal(test_data.PitFileDebtCeilingModel))
+		Expect(models[0].(debt_ceiling.VatFileDebtCeilingModel)).To(Equal(test_data.VatFileDebtCeilingModel))
 	})
 })

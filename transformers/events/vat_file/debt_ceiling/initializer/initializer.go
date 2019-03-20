@@ -14,21 +14,17 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package ilk
+package initializer
 
 import (
-	shared_t "github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 
-	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/mcd_transformers/transformers/events/vat_file/debt_ceiling"
 )
 
-func GetIlkFileConfig() shared_t.TransformerConfig {
-	return shared_t.TransformerConfig{
-		TransformerName:     constants.PitFileIlkLabel,
-		ContractAddresses:   []string{constants.PitContractAddress()},
-		ContractAbi:         constants.PitABI(),
-		Topic:               constants.GetPitFileIlkSignature(),
-		StartingBlockNumber: constants.PitDeploymentBlock(),
-		EndingBlockNumber:   -1,
-	}
-}
+var TransformerInitializer transformer.TransformerInitializer = factories.LogNoteTransformer{
+	Config:     debt_ceiling.GetDebtCeilingFileConfig(),
+	Converter:  &debt_ceiling.VatFileDebtCeilingConverter{},
+	Repository: &debt_ceiling.VatFileDebtCeilingRepository{},
+}.NewLogNoteTransformer

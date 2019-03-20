@@ -22,13 +22,14 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
-	"github.com/vulcanize/mcd_transformers/transformers/events/pit_file/ilk"
+	"github.com/ethereum/go-ethereum/common/hexutil"
+	"github.com/vulcanize/mcd_transformers/transformers/events/vat_file/ilk"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
-var _ = Describe("Pit file ilk converter", func() {
+var _ = Describe("Vat file ilk converter", func() {
 	It("returns err if log is missing topics", func() {
-		converter := ilk.PitFileIlkConverter{}
+		converter := ilk.VatFileIlkConverter{}
 		badLog := types.Log{
 			Data: []byte{1, 1, 1, 1, 1},
 		}
@@ -39,7 +40,7 @@ var _ = Describe("Pit file ilk converter", func() {
 	})
 
 	It("returns err if log is missing data", func() {
-		converter := ilk.PitFileIlkConverter{}
+		converter := ilk.VatFileIlkConverter{}
 		badLog := types.Log{
 			Topics: []common.Hash{{}, {}, {}, {}},
 		}
@@ -50,22 +51,23 @@ var _ = Describe("Pit file ilk converter", func() {
 	})
 
 	It("returns error if 'what' field is unknown", func() {
+		invalidWhat := hexutil.Encode([]byte("invalid"))
 		log := types.Log{
-			Address: test_data.EthPitFileIlkLineLog.Address,
+			Address: test_data.EthVatFileIlkLineLog.Address,
 			Topics: []common.Hash{
-				test_data.EthPitFileIlkLineLog.Topics[0],
-				test_data.EthPitFileIlkLineLog.Topics[1],
-				test_data.EthPitFileIlkLineLog.Topics[2],
-				common.HexToHash("0x1111111100000000000000000000000000000000000000000000000000000000"),
+				test_data.EthVatFileIlkLineLog.Topics[0],
+				test_data.EthVatFileIlkLineLog.Topics[1],
+				common.HexToHash(invalidWhat),
+				test_data.EthVatFileIlkLineLog.Topics[3],
 			},
-			Data:        test_data.EthPitFileIlkLineLog.Data,
-			BlockNumber: test_data.EthPitFileIlkLineLog.BlockNumber,
-			TxHash:      test_data.EthPitFileIlkLineLog.TxHash,
-			TxIndex:     test_data.EthPitFileIlkLineLog.TxIndex,
-			BlockHash:   test_data.EthPitFileIlkLineLog.BlockHash,
-			Index:       test_data.EthPitFileIlkLineLog.Index,
+			Data:        test_data.EthVatFileIlkLineLog.Data,
+			BlockNumber: test_data.EthVatFileIlkLineLog.BlockNumber,
+			TxHash:      test_data.EthVatFileIlkLineLog.TxHash,
+			TxIndex:     test_data.EthVatFileIlkLineLog.TxIndex,
+			BlockHash:   test_data.EthVatFileIlkLineLog.BlockHash,
+			Index:       test_data.EthVatFileIlkLineLog.Index,
 		}
-		converter := ilk.PitFileIlkConverter{}
+		converter := ilk.VatFileIlkConverter{}
 
 		_, err := converter.ToModels([]types.Log{log})
 
@@ -74,24 +76,33 @@ var _ = Describe("Pit file ilk converter", func() {
 
 	Describe("when log is valid", func() {
 		It("converts to model with data converted to ray when what is 'spot'", func() {
-			converter := ilk.PitFileIlkConverter{}
+			converter := ilk.VatFileIlkConverter{}
 
-			models, err := converter.ToModels([]types.Log{test_data.EthPitFileIlkSpotLog})
+			models, err := converter.ToModels([]types.Log{test_data.EthVatFileIlkSpotLog})
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(models)).To(Equal(1))
-			Expect(models[0].(ilk.PitFileIlkModel)).To(Equal(test_data.PitFileIlkSpotModel))
+			Expect(models[0].(ilk.VatFileIlkModel)).To(Equal(test_data.VatFileIlkSpotModel))
 		})
 
 		It("converts to model with data converted to wad when what is 'line'", func() {
-			converter := ilk.PitFileIlkConverter{}
+			converter := ilk.VatFileIlkConverter{}
 
-			models, err := converter.ToModels([]types.Log{test_data.EthPitFileIlkLineLog})
+			models, err := converter.ToModels([]types.Log{test_data.EthVatFileIlkLineLog})
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(models)).To(Equal(1))
-			Expect(models[0].(ilk.PitFileIlkModel)).To(Equal(test_data.PitFileIlkLineModel))
+			Expect(models[0].(ilk.VatFileIlkModel)).To(Equal(test_data.VatFileIlkLineModel))
+		})
+
+		It("converts to model with data converted to rad when what is 'dust'", func() {
+			converter := ilk.VatFileIlkConverter{}
+
+			models, err := converter.ToModels([]types.Log{test_data.EthVatFileIlkDustLog})
+
+			Expect(err).NotTo(HaveOccurred())
+			Expect(len(models)).To(Equal(1))
+			Expect(models[0].(ilk.VatFileIlkModel)).To(Equal(test_data.VatFileIlkDustModel))
 		})
 	})
-
 })

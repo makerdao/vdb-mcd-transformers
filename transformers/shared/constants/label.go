@@ -14,10 +14,10 @@ const (
 	JugFileIlkLabel         = "jugFileIlk"
 	JugFileRepoLabel        = "jugFileRepo"
 	JugFileVowLabel         = "jugFileVow"
-	PitFileDebtCeilingLabel = "pitFileDebtCeiling"
-	PitFileIlkLabel         = "pitFileIlk"
 	PriceFeedLabel          = "priceFeed"
 	TendLabel               = "tend"
+	VatFileDebtCeilingLabel = "vatFileDebtCeiling"
+	VatFileIlkLabel         = "vatFileIlk"
 	VatFluxLabel            = "vatFlux"
 	VatFoldLabel            = "vatFold"
 	VatFrobLabel            = "vatFrob"
@@ -46,8 +46,8 @@ func AllTransformerLabels() []string {
 		JugFileIlkLabel,
 		JugFileRepoLabel,
 		JugFileVowLabel,
-		PitFileDebtCeilingLabel,
-		PitFileIlkLabel,
+		VatFileDebtCeilingLabel,
+		VatFileIlkLabel,
 		PriceFeedLabel,
 		TendLabel,
 		VatFluxLabel,
