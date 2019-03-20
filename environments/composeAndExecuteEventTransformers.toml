@@ -42,6 +42,7 @@
         "vat_move",
         "vat_slip",
         "vat_tune",
+	"vow_fess",
         "vow_flog"
     ]
     [exporter.bite]
@@ -196,6 +197,12 @@
         rank = "0"
     [exporter.vat_tune]
         path = "transformers/events/vat_tune/initializer"
+        type = "eth_event"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        rank = "0"
+    [exporter.vow_fess]
+        path = "transformers/events/vow_fess/initializer"
         type = "eth_event"
         repository = "github.com/vulcanize/mcd_transformers"
         migrations = "db/migrations"

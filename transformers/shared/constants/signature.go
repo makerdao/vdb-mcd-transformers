@@ -26,4 +26,5 @@ func GetVatInitSignature() string            { return GetLogNoteTopicZero(vatIni
 func GetVatMoveSignature() string            { return GetLogNoteTopicZero(vatMoveMethod()) }
 func GetVatSlipSignature() string            { return GetLogNoteTopicZero(vatSlipMethod()) }
 func GetVatTuneSignature() string            { return GetLogNoteTopicZero(vatTuneMethod()) }
+func GetVowFessSignature() string            { return GetLogNoteTopicZero(vowFessMethod()) }
 func GetVowFlogSignature() string            { return GetLogNoteTopicZero(vowFlogMethod()) }

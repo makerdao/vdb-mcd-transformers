@@ -27,4 +27,5 @@ func vatInitMethod() string            { return GetSolidityFunctionSignature(Old
 func vatMoveMethod() string            { return GetSolidityFunctionSignature(OldVatABI(), "move") }
 func vatSlipMethod() string            { return GetSolidityFunctionSignature(OldVatABI(), "slip") }
 func vatTuneMethod() string            { return GetSolidityFunctionSignature(OldVatABI(), "tune") }
+func vowFessMethod() string            { return GetSolidityFunctionSignature(VowABI(), "fess") }
 func vowFlogMethod() string            { return GetSolidityFunctionSignature(VowABI(), "flog") }
