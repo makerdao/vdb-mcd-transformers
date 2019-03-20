@@ -18,7 +18,7 @@ CREATE TYPE maker.urn_state AS (
   );
 
 -- Function returning state for all urns as of given block
-CREATE OR REPLACE FUNCTION get_urn_states_at_block(block_height numeric)
+CREATE OR REPLACE FUNCTION get_all_urn_states_at_block(block_height numeric)
   RETURNS SETOF maker.urn_state
 AS
 
@@ -111,5 +111,5 @@ LANGUAGE SQL;
 
 
 -- +goose Down
-DROP FUNCTION IF EXISTS get_urn_states_at_block(numeric);
+DROP FUNCTION IF EXISTS get_all_urn_states_at_block(numeric);
 DROP TYPE IF EXISTS maker.urn_state CASCADE;
