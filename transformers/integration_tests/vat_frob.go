@@ -29,7 +29,7 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 	c2 "github.com/vulcanize/vulcanizedb/libraries/shared/constants"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 	fetch "github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
@@ -41,8 +41,8 @@ var _ = Describe("Vat frob Transformer", func() {
 		db          *postgres.DB
 		blockChain  core.BlockChain
 		fetcher     *fetch.Fetcher
-		config      transformer.TransformerConfig
-		initializer factories.LogNoteTransformer
+		config      transformer.EventTransformerConfig
+		initializer event.LogNoteTransformer
 	)
 
 	BeforeEach(func() {
@@ -54,7 +54,7 @@ var _ = Describe("Vat frob Transformer", func() {
 		test_config.CleanTestDB(db)
 
 		fetcher = fetch.NewFetcher(blockChain)
-		config = transformer.TransformerConfig{
+		config = transformer.EventTransformerConfig{
 			TransformerName:     constants.VatFrobLabel,
 			ContractAddresses:   []string{test_data.KovanUpdatedVatContractAddress},
 			ContractAbi:         test_data.KovanUpdatedVatContractAddress,
@@ -63,7 +63,7 @@ var _ = Describe("Vat frob Transformer", func() {
 			EndingBlockNumber:   -1,
 		}
 
-		initializer = factories.LogNoteTransformer{
+		initializer = event.LogNoteTransformer{
 			Config:     config,
 			Converter:  &vat_frob.VatFrobConverter{},
 			Repository: &vat_frob.VatFrobRepository{},

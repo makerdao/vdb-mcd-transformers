@@ -18,11 +18,11 @@ package initializer
 
 import (
 	"github.com/vulcanize/mcd_transformers/transformers/events/vow_fess"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 )
 
-var TransformerInitializer transformer.TransformerInitializer = factories.LogNoteTransformer{
+var TransformerInitializer transformer.EventTransformerInitializer = event.LogNoteTransformer{
 	Config:     vow_fess.GetVowFessConfig(),
 	Converter:  &vow_fess.VowFessConverter{},
 	Repository: &vow_fess.VowFessRepository{},

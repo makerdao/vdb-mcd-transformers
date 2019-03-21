@@ -25,6 +25,7 @@ import (
 	. "github.com/onsi/gomega"
 
 	c2 "github.com/vulcanize/vulcanizedb/libraries/shared/constants"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 	fetch "github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 	"github.com/vulcanize/vulcanizedb/pkg/geth"
@@ -33,7 +34,6 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/events/flip_kick"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories"
 )
 
 var _ = Describe("FlipKick Transformer", func() {
@@ -62,7 +62,7 @@ var _ = Describe("FlipKick Transformer", func() {
 
 	It("fetches and transforms a FlipKick event from Kovan chain", func() {
 		blockNumber := int64(8956476)
-		config := transformer.TransformerConfig{
+		config := transformer.EventTransformerConfig{
 			TransformerName:     constants.FlipKickLabel,
 			ContractAddresses:   []string{test_data.KovanFlipperContractAddress},
 			ContractAbi:         test_data.KovanFlipperABI,
@@ -81,7 +81,7 @@ var _ = Describe("FlipKick Transformer", func() {
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		tr := factories.Transformer{
+		tr := event.Transformer{
 			Config:     config,
 			Converter:  &flip_kick.FlipKickConverter{},
 			Repository: &flip_kick.FlipKickRepository{},
@@ -111,7 +111,7 @@ var _ = Describe("FlipKick Transformer", func() {
 
 	It("rechecks flip kick event", func() {
 		blockNumber := int64(8956476)
-		config := transformer.TransformerConfig{
+		config := transformer.EventTransformerConfig{
 			TransformerName:     constants.FlipKickLabel,
 			ContractAddresses:   []string{test_data.KovanFlipperContractAddress},
 			ContractAbi:         test_data.KovanFlipperABI,
@@ -130,7 +130,7 @@ var _ = Describe("FlipKick Transformer", func() {
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		tr := factories.Transformer{
+		tr := event.Transformer{
 			Config:     config,
 			Converter:  &flip_kick.FlipKickConverter{},
 			Repository: &flip_kick.FlipKickRepository{},

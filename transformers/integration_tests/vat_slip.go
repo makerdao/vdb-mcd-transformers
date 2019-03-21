@@ -24,6 +24,7 @@ import (
 	. "github.com/onsi/gomega"
 
 	c2 "github.com/vulcanize/vulcanizedb/libraries/shared/constants"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 	fetch "github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
@@ -34,7 +35,6 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories"
 )
 
 var _ = Describe("Vat slip transformer", func() {
@@ -54,7 +54,7 @@ var _ = Describe("Vat slip transformer", func() {
 
 	It("persists vat slip event", func() {
 		blockNumber := int64(8953655)
-		config := transformer.TransformerConfig{
+		config := transformer.EventTransformerConfig{
 			TransformerName:     constants.VatSlipLabel,
 			ContractAddresses:   []string{test_data.KovanVatContractAddress},
 			ContractAbi:         test_data.KovanVatABI,
@@ -73,7 +73,7 @@ var _ = Describe("Vat slip transformer", func() {
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
-		tr := factories.LogNoteTransformer{
+		tr := event.LogNoteTransformer{
 			Config:     config,
 			Converter:  &vat_slip.VatSlipConverter{},
 			Repository: &vat_slip.VatSlipRepository{},
@@ -102,7 +102,7 @@ var _ = Describe("Vat slip transformer", func() {
 
 	It("rechecks vat slip event", func() {
 		blockNumber := int64(8953655)
-		config := transformer.TransformerConfig{
+		config := transformer.EventTransformerConfig{
 			TransformerName:     constants.VatSlipLabel,
 			ContractAddresses:   []string{test_data.KovanVatContractAddress},
 			ContractAbi:         test_data.KovanVatABI,
@@ -121,7 +121,7 @@ var _ = Describe("Vat slip transformer", func() {
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
-		tr := factories.LogNoteTransformer{
+		tr := event.LogNoteTransformer{
 			Config:     config,
 			Converter:  &vat_slip.VatSlipConverter{},
 			Repository: &vat_slip.VatSlipRepository{},

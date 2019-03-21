@@ -33,13 +33,13 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 )
 
 var _ = Describe("Vat Grab Transformer", func() {
 	It("transforms VatGrab log events", func() {
 		blockNumber := int64(8958230)
-		config := transformer.TransformerConfig{
+		config := transformer.EventTransformerConfig{
 			TransformerName:     constants.VatGrabLabel,
 			ContractAddresses:   []string{test_data.KovanVatContractAddress},
 			ContractAbi:         test_data.KovanVatABI,
@@ -66,7 +66,7 @@ var _ = Describe("Vat Grab Transformer", func() {
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
-		tr := factories.LogNoteTransformer{
+		tr := event.LogNoteTransformer{
 			Config:     config,
 			Converter:  &vat_grab.VatGrabConverter{},
 			Repository: &vat_grab.VatGrabRepository{},
@@ -97,7 +97,7 @@ var _ = Describe("Vat Grab Transformer", func() {
 
 	It("rechecks vat grab event", func() {
 		blockNumber := int64(8958230)
-		config := transformer.TransformerConfig{
+		config := transformer.EventTransformerConfig{
 			TransformerName:     constants.VatGrabLabel,
 			ContractAddresses:   []string{test_data.KovanVatContractAddress},
 			ContractAbi:         test_data.KovanVatABI,
@@ -123,7 +123,7 @@ var _ = Describe("Vat Grab Transformer", func() {
 			[]common.Hash{common.HexToHash(config.Topic)},
 			header)
 		Expect(err).NotTo(HaveOccurred())
-		tr := factories.LogNoteTransformer{
+		tr := event.LogNoteTransformer{
 			Config:     config,
 			Converter:  &vat_grab.VatGrabConverter{},
 			Repository: &vat_grab.VatGrabRepository{},

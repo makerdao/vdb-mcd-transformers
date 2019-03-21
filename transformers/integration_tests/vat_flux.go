@@ -32,13 +32,13 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 )
 
 var _ = Describe("VatFlux LogNoteTransformer", func() {
 	It("transforms VatFlux log events", func() {
 		blockNumber := int64(9004474)
-		config := transformer.TransformerConfig{
+		config := transformer.EventTransformerConfig{
 			TransformerName:     constants.VatFluxLabel,
 			ContractAddresses:   []string{test_data.KovanVatContractAddress},
 			ContractAbi:         test_data.KovanVatABI,
@@ -65,7 +65,7 @@ var _ = Describe("VatFlux LogNoteTransformer", func() {
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
-		initializer := factories.LogNoteTransformer{
+		initializer := event.LogNoteTransformer{
 			Config:     config,
 			Converter:  &vat_flux.VatFluxConverter{},
 			Repository: &vat_flux.VatFluxRepository{},
@@ -91,7 +91,7 @@ var _ = Describe("VatFlux LogNoteTransformer", func() {
 
 	It("rechecks vat flux event", func() {
 		blockNumber := int64(9004474)
-		config := transformer.TransformerConfig{
+		config := transformer.EventTransformerConfig{
 			TransformerName:     constants.VatFluxLabel,
 			ContractAddresses:   []string{test_data.KovanVatContractAddress},
 			ContractAbi:         test_data.KovanVatABI,
@@ -118,7 +118,7 @@ var _ = Describe("VatFlux LogNoteTransformer", func() {
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
-		initializer := factories.LogNoteTransformer{
+		initializer := event.LogNoteTransformer{
 			Config:     config,
 			Converter:  &vat_flux.VatFluxConverter{},
 			Repository: &vat_flux.VatFluxRepository{},

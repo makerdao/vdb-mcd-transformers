@@ -543,7 +543,7 @@
     "github.com/sirupsen/logrus",
     "github.com/spf13/viper",
     "github.com/vulcanize/vulcanizedb/libraries/shared/constants",
-    "github.com/vulcanize/vulcanizedb/libraries/shared/factories",
+    "github.com/vulcanize/vulcanizedb/libraries/shared/factories/event",
     "github.com/vulcanize/vulcanizedb/libraries/shared/factories/storage",
     "github.com/vulcanize/vulcanizedb/libraries/shared/fetcher",
     "github.com/vulcanize/vulcanizedb/libraries/shared/repository",

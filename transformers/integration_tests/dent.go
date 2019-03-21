@@ -15,7 +15,7 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/events/dent"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 )
 
 var _ = Describe("Dent transformer", func() {
@@ -24,10 +24,10 @@ var _ = Describe("Dent transformer", func() {
 		blockChain  core.BlockChain
 		fetcher     *fetch.Fetcher
 		tr          transformer.EventTransformer
-		config      transformer.TransformerConfig
+		config      transformer.EventTransformerConfig
 		addresses   []common.Address
 		topics      []common.Hash
-		initializer factories.LogNoteTransformer
+		initializer event.LogNoteTransformer
 	)
 
 	BeforeEach(func() {
@@ -38,7 +38,7 @@ var _ = Describe("Dent transformer", func() {
 		db = test_config.NewTestDB(blockChain.Node())
 		test_config.CleanTestDB(db)
 
-		config = transformer.TransformerConfig{
+		config = transformer.EventTransformerConfig{
 			TransformerName:     constants.DentLabel,
 			ContractAddresses:   []string{test_data.KovanFlipperContractAddress, test_data.KovanFlopperContractAddress},
 			ContractAbi:         test_data.KovanFlipperABI,
@@ -51,7 +51,7 @@ var _ = Describe("Dent transformer", func() {
 		topics = []common.Hash{common.HexToHash(config.Topic)}
 		fetcher = fetch.NewFetcher(blockChain)
 
-		initializer = factories.LogNoteTransformer{
+		initializer = event.LogNoteTransformer{
 			Config:     config,
 			Converter:  &dent.DentConverter{},
 			Repository: &dent.DentRepository{},

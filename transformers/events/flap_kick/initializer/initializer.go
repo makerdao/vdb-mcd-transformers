@@ -17,13 +17,13 @@
 package initializer
 
 import (
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 
 	"github.com/vulcanize/mcd_transformers/transformers/events/flap_kick"
 )
 
-var TransformerInitializer transformer.TransformerInitializer = factories.Transformer{
+var EventTransformerInitializer transformer.EventTransformerInitializer = event.Transformer{
 	Config:     flap_kick.GetFlapKickConfig(),
 	Converter:  &flap_kick.FlapKickConverter{},
 	Repository: &flap_kick.FlapKickRepository{},

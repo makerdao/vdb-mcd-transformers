@@ -22,6 +22,7 @@ import (
 	. "github.com/onsi/gomega"
 
 	c2 "github.com/vulcanize/vulcanizedb/libraries/shared/constants"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 	fetch "github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 
@@ -29,13 +30,12 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_move"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories"
 )
 
 var _ = Describe("VatMove LogNoteTransformer", func() {
 	It("transforms VatMove log events", func() {
 		blockNumber := int64(9004628)
-		config := transformer.TransformerConfig{
+		config := transformer.EventTransformerConfig{
 			TransformerName:     constants.VatMoveLabel,
 			ContractAddresses:   []string{test_data.KovanVatContractAddress},
 			ContractAbi:         test_data.KovanVatABI,
@@ -62,7 +62,7 @@ var _ = Describe("VatMove LogNoteTransformer", func() {
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
-		tr := factories.LogNoteTransformer{
+		tr := event.LogNoteTransformer{
 			Config:     config,
 			Converter:  &vat_move.VatMoveConverter{},
 			Repository: &vat_move.VatMoveRepository{},
@@ -84,7 +84,7 @@ var _ = Describe("VatMove LogNoteTransformer", func() {
 
 	It("rechecks vat move event", func() {
 		blockNumber := int64(9004628)
-		config := transformer.TransformerConfig{
+		config := transformer.EventTransformerConfig{
 			TransformerName:     constants.VatMoveLabel,
 			ContractAddresses:   []string{test_data.KovanVatContractAddress},
 			ContractAbi:         test_data.KovanVatABI,
@@ -111,7 +111,7 @@ var _ = Describe("VatMove LogNoteTransformer", func() {
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
-		tr := factories.LogNoteTransformer{
+		tr := event.LogNoteTransformer{
 			Config:     config,
 			Converter:  &vat_move.VatMoveConverter{},
 			Repository: &vat_move.VatMoveRepository{},
