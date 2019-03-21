@@ -29,10 +29,10 @@
         "jug_file_ilk",
         "jug_file_repo",
         "jug_file_vow",
-        "vat_file_debt_ceiling",
-        "vat_file_ilk",
         "price_feeds",
         "tend",
+        "vat_file_debt_ceiling",
+        "vat_file_ilk",
         "vat_flux",
         "vat_fold",
         "vat_frob",
@@ -123,18 +123,6 @@
         repository = "github.com/vulcanize/mcd_transformers"
         migrations = "db/migrations"
         rank = "0"
-    [exporter.vat_file_debt_ceiling]
-        path = "transformers/events/vat_file/debt_ceiling/initializer"
-        type = "eth_event"
-        repository = "github.com/vulcanize/mcd_transformers"
-        migrations = "db/migrations"
-        rank = "0"
-    [exporter.vat_file_ilk]
-        path = "transformers/events/vat_file/ilk/initializer"
-        type = "eth_event"
-        repository = "github.com/vulcanize/mcd_transformers"
-        migrations = "db/migrations"
-        rank = "0"
     [exporter.price_feeds]
         path = "transformers/events/price_feeds/initializer"
         type = "eth_event"
@@ -143,6 +131,18 @@
         rank = "0"
     [exporter.tend]
         path = "transformers/events/tend/initializer"
+        type = "eth_event"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        rank = "0"
+    [exporter.vat_file_debt_ceiling]
+        path = "transformers/events/vat_file/debt_ceiling/initializer"
+        type = "eth_event"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        rank = "0"
+    [exporter.vat_file_ilk]
+        path = "transformers/events/vat_file/ilk/initializer"
         type = "eth_event"
         repository = "github.com/vulcanize/mcd_transformers"
         migrations = "db/migrations"
