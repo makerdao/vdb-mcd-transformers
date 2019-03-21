@@ -63,7 +63,6 @@ func FlipperABI() string    { return getEnvironmentString("contract.abi.eth_flip
 func FlopperABI() string    { return getEnvironmentString("contract.abi.mcd_flop") }
 func JugABI() string        { return getEnvironmentString("contract.abi.jug") }
 func MedianizerABI() string { return getEnvironmentString("contract.abi.medianizer") }
-func PitABI() string        { return getEnvironmentString("contract.abi.pit") }
 func VatABI() string        { return getEnvironmentString("contract.abi.vat") }
 func OldVatABI() string     { return getEnvironmentString("contract.abi.old_vat") }
 func VowABI() string        { return getEnvironmentString("contract.abi.vow") }
@@ -76,7 +75,6 @@ func FlopperDeploymentBlock() int64 { return getEnvironmentInt64("contract.deplo
 func JugDeploymentBlock() int64     { return getEnvironmentInt64("contract.deployment-block.jug") }
 func PepDeploymentBlock() int64     { return getEnvironmentInt64("contract.deployment-block.pep") }
 func PipDeploymentBlock() int64     { return getEnvironmentInt64("contract.deployment-block.pip") }
-func PitDeploymentBlock() int64     { return getEnvironmentInt64("contract.deployment-block.pit") }
 func RepDeploymentBlock() int64     { return getEnvironmentInt64("contract.deployment-block.rep") }
 func VatDeploymentBlock() int64     { return getEnvironmentInt64("contract.deployment-block.vat") }
 func OldVatDeploymentBlock() int64  { return getEnvironmentInt64("contract.deployment-block.old_vat") }

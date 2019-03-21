@@ -30,36 +30,3 @@ const (
 	VowFessLabel            = "vowFess"
 	VowFlogLabel            = "vowFlog"
 )
-
-func AllTransformerLabels() []string {
-	return []string{
-		BiteLabel,
-		CatFileChopLumpLabel,
-		CatFileFlipLabel,
-		CatFilePitVowLabel,
-		DealLabel,
-		DentLabel,
-		JugDripLabel,
-		FlapKickLabel,
-		FlipKickLabel,
-		FlopKickLabel,
-		JugFileIlkLabel,
-		JugFileRepoLabel,
-		JugFileVowLabel,
-		VatFileDebtCeilingLabel,
-		VatFileIlkLabel,
-		PriceFeedLabel,
-		TendLabel,
-		VatFluxLabel,
-		VatFoldLabel,
-		VatFrobLabel,
-		VatGrabLabel,
-		VatHealLabel,
-		VatInitLabel,
-		VatMoveLabel,
-		VatSlipLabel,
-		VatTuneLabel,
-		VowFessLabel,
-		VowFlogLabel,
-	}
-}
