@@ -97,19 +97,6 @@ var _ = Describe("Vow storage repository test", func() {
 		AssertVariable(result, blockNumber, blockHash, expectedSow)
 	})
 
-	It("persists a vow woe", func() {
-		expectedWoe := "123"
-
-		err = repo.Create(blockNumber, blockHash, vow.WoeMetadata, expectedWoe)
-
-		Expect(err).NotTo(HaveOccurred())
-
-		var result VariableRes
-		err = db.Get(&result, `SELECT block_number, block_hash, woe AS value from maker.vow_woe`)
-		Expect(err).NotTo(HaveOccurred())
-		AssertVariable(result, blockNumber, blockHash, expectedWoe)
-	})
-
 	It("persists a vow Ash", func() {
 		expectedAsh := "123"
 
