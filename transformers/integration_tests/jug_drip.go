@@ -32,14 +32,14 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/events/jug_drip"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 )
 
 var _ = Describe("JugDrip Transformer", func() {
 	var (
 		db         *postgres.DB
 		blockChain core.BlockChain
-		config     transformer.TransformerConfig
+		config     transformer.EventTransformerConfig
 	)
 
 	BeforeEach(func() {
@@ -50,7 +50,7 @@ var _ = Describe("JugDrip Transformer", func() {
 		db = test_config.NewTestDB(blockChain.Node())
 		test_config.CleanTestDB(db)
 
-		config = transformer.TransformerConfig{
+		config = transformer.EventTransformerConfig{
 			ContractAddresses:   []string{test_data.KovanDripContractAddress},
 			ContractAbi:         test_data.KovanJugABI,
 			Topic:               test_data.KovanJugDripSignature,
@@ -67,7 +67,7 @@ var _ = Describe("JugDrip Transformer", func() {
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		initializer := factories.LogNoteTransformer{
+		initializer := event.LogNoteTransformer{
 			Config:     config,
 			Converter:  &jug_drip.JugDripConverter{},
 			Repository: &jug_drip.JugDripRepository{},
@@ -103,7 +103,7 @@ var _ = Describe("JugDrip Transformer", func() {
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		initializer := factories.LogNoteTransformer{
+		initializer := event.LogNoteTransformer{
 			Config:     config,
 			Converter:  &jug_drip.JugDripConverter{},
 			Repository: &jug_drip.JugDripRepository{},

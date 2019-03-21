@@ -31,7 +31,7 @@ import (
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 )
 
 var _ = Describe("VowFess LogNoteTransformer", func() {
@@ -51,7 +51,7 @@ var _ = Describe("VowFess LogNoteTransformer", func() {
 
 	It("transforms VowFess log events", func() {
 		blockNumber := int64(9377319)
-		config := transformer.TransformerConfig{
+		config := transformer.EventTransformerConfig{
 			TransformerName:     constants.VowFessLabel,
 			ContractAddresses:   []string{test_data.KovanVowContractAddress},
 			ContractAbi:         test_data.KovanVowABI,
@@ -71,7 +71,7 @@ var _ = Describe("VowFess LogNoteTransformer", func() {
 		Expect(len(logs)).To(Equal(1))
 		Expect(err).NotTo(HaveOccurred())
 
-		tr := factories.LogNoteTransformer{
+		tr := event.LogNoteTransformer{
 			Config:     config,
 			Converter:  &vow_fess.VowFessConverter{},
 			Repository: &vow_fess.VowFessRepository{},
@@ -91,7 +91,7 @@ var _ = Describe("VowFess LogNoteTransformer", func() {
 
 	It("rechecks vow fess event", func() {
 		blockNumber := int64(9377319)
-		config := transformer.TransformerConfig{
+		config := transformer.EventTransformerConfig{
 			TransformerName:     constants.VowFessLabel,
 			ContractAddresses:   []string{test_data.KovanVowContractAddress},
 			ContractAbi:         test_data.KovanVowABI,
@@ -110,7 +110,7 @@ var _ = Describe("VowFess LogNoteTransformer", func() {
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
-		tr := factories.LogNoteTransformer{
+		tr := event.LogNoteTransformer{
 			Config:     config,
 			Converter:  &vow_fess.VowFessConverter{},
 			Repository: &vow_fess.VowFessRepository{},

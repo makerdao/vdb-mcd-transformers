@@ -34,10 +34,10 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 )
 
-var testBiteConfig = transformer.TransformerConfig{
+var testBiteConfig = transformer.EventTransformerConfig{
 	TransformerName:     constants.BiteLabel,
 	ContractAddresses:   []string{test_data.KovanCatContractAddress},
 	ContractAbi:         test_data.KovanCatABI,
@@ -64,7 +64,7 @@ var _ = Describe("Bite Transformer", func() {
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		initializer := factories.Transformer{
+		initializer := event.Transformer{
 			Config:     config,
 			Converter:  &bite.BiteConverter{},
 			Repository: &bite.BiteRepository{},
@@ -133,7 +133,7 @@ var _ = Describe("Bite Transformer", func() {
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		initializer := factories.Transformer{
+		initializer := event.Transformer{
 			Config:     config,
 			Converter:  &bite.BiteConverter{},
 			Repository: &bite.BiteRepository{},

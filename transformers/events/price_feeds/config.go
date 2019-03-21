@@ -23,8 +23,8 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
-func GetPriceFeedConfig() shared_t.TransformerConfig {
-	return shared_t.TransformerConfig{
+func GetPriceFeedConfig() shared_t.EventTransformerConfig {
+	return shared_t.EventTransformerConfig{
 		TransformerName: constants.PriceFeedLabel,
 		ContractAddresses: []string{
 			constants.PepContractAddress(), constants.PipContractAddress(), constants.RepContractAddress(),

@@ -31,7 +31,7 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_file/debt_ceiling"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 )
 
 var _ = Describe("VatFileDebtCeiling LogNoteTransformer", func() {
@@ -51,7 +51,7 @@ var _ = Describe("VatFileDebtCeiling LogNoteTransformer", func() {
 
 	It("fetches and transforms a VatFileDebtCeiling event from Kovan chain", func() {
 		blockNumber := int64(10577169)
-		config := transformer.TransformerConfig{
+		config := transformer.EventTransformerConfig{
 			TransformerName:     constants.VatFileDebtCeilingLabel,
 			ContractAddresses:   []string{test_data.KovanUpdatedVatContractAddress},
 			ContractAbi:         test_data.KovanUpdatedVatABI,
@@ -70,7 +70,7 @@ var _ = Describe("VatFileDebtCeiling LogNoteTransformer", func() {
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
-		initializer := factories.LogNoteTransformer{
+		initializer := event.LogNoteTransformer{
 			Config:     config,
 			Converter:  &debt_ceiling.VatFileDebtCeilingConverter{},
 			Repository: &debt_ceiling.VatFileDebtCeilingRepository{},
@@ -91,7 +91,7 @@ var _ = Describe("VatFileDebtCeiling LogNoteTransformer", func() {
 
 	It("rechecks vat file debt ceiling event", func() {
 		blockNumber := int64(10577169)
-		config := transformer.TransformerConfig{
+		config := transformer.EventTransformerConfig{
 			TransformerName:     constants.VatFileDebtCeilingLabel,
 			ContractAddresses:   []string{test_data.KovanUpdatedVatContractAddress},
 			ContractAbi:         test_data.KovanUpdatedVatABI,
@@ -110,7 +110,7 @@ var _ = Describe("VatFileDebtCeiling LogNoteTransformer", func() {
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
-		initializer := factories.LogNoteTransformer{
+		initializer := event.LogNoteTransformer{
 			Config:     config,
 			Converter:  &debt_ceiling.VatFileDebtCeilingConverter{},
 			Repository: &debt_ceiling.VatFileDebtCeilingRepository{},
