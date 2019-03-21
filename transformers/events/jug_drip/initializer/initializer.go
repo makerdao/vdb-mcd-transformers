@@ -23,7 +23,7 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/events/jug_drip"
 )
 
-var TransformerInitializer transformer.EventTransformerInitializer = event.LogNoteTransformer{
+var EventTransformerInitializer transformer.EventTransformerInitializer = event.LogNoteTransformer{
 	Config:     jug_drip.GetJugDripConfig(),
 	Converter:  &jug_drip.JugDripConverter{},
 	Repository: &jug_drip.JugDripRepository{},
