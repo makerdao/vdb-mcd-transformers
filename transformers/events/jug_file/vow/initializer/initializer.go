@@ -23,7 +23,7 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/events/jug_file/vow"
 )
 
-var TransformerInitializer transformer.EventTransformerInitializer = event.LogNoteTransformer{
+var EventTransformerInitializer transformer.EventTransformerInitializer = event.LogNoteTransformer{
 	Config:     vow.GetJugFileVowConfig(),
 	Converter:  &vow.JugFileVowConverter{},
 	Repository: &vow.JugFileVowRepository{},

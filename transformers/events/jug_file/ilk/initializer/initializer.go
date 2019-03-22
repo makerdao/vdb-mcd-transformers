@@ -23,7 +23,7 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/events/jug_file/ilk"
 )
 
-var TransformerInitializer transformer.EventTransformerInitializer = event.LogNoteTransformer{
+var EventTransformerInitializer transformer.EventTransformerInitializer = event.LogNoteTransformer{
 	Config:     ilk.GetJugFileIlkConfig(),
 	Converter:  &ilk.JugFileIlkConverter{},
 	Repository: &ilk.JugFileIlkRepository{},
