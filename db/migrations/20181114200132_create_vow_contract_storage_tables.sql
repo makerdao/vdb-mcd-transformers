@@ -27,13 +27,6 @@ CREATE TABLE maker.vow_sin (
   sin           numeric
 );
 
-CREATE TABLE maker.vow_woe (
-  id            SERIAL PRIMARY KEY,
-  block_number  BIGINT,
-  block_hash    TEXT,
-  woe           numeric
-);
-
 CREATE TABLE maker.vow_ash (
   id            SERIAL PRIMARY KEY,
   block_number  BIGINT,
@@ -74,7 +67,6 @@ DROP TABLE maker.vow_vat;
 DROP TABLE maker.vow_cow;
 DROP TABLE maker.vow_row;
 DROP TABLE maker.vow_sin;
-DROP TABLE maker.vow_woe;
 DROP TABLE maker.vow_ash;
 DROP TABLE maker.vow_wait;
 DROP TABLE maker.vow_sump;
