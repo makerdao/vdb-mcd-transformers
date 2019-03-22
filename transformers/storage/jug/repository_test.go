@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package drip_test
+package jug_test
 
 import (
 	"strconv"
@@ -28,14 +28,14 @@ import (
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
-	"github.com/vulcanize/mcd_transformers/transformers/storage/drip"
+	"github.com/vulcanize/mcd_transformers/transformers/storage/jug"
 	. "github.com/vulcanize/mcd_transformers/transformers/storage/test_helpers"
 )
 
-var _ = Describe("Drip storage repository", func() {
+var _ = Describe("Jug storage repository", func() {
 	var (
 		db              *postgres.DB
-		repo            drip.DripStorageRepository
+		repo            jug.JugStorageRepository
 		fakeAddress     = "0x12345"
 		fakeBlockNumber = 123
 		fakeBlockHash   = "expected_block_hash"
@@ -46,20 +46,20 @@ var _ = Describe("Drip storage repository", func() {
 	BeforeEach(func() {
 		db = test_config.NewTestDB(test_config.NewTestNode())
 		test_config.CleanTestDB(db)
-		repo = drip.DripStorageRepository{}
+		repo = jug.JugStorageRepository{}
 		repo.SetDB(db)
 	})
 
 	Describe("Ilk", func() {
 		Describe("Rho", func() {
 			It("writes a row", func() {
-				ilkRhoMetadata := utils.GetStorageValueMetadata(drip.IlkRho, map[utils.Key]string{constants.Ilk: fakeIlk}, utils.Uint256)
+				ilkRhoMetadata := utils.GetStorageValueMetadata(jug.IlkRho, map[utils.Key]string{constants.Ilk: fakeIlk}, utils.Uint256)
 
 				err := repo.Create(fakeBlockNumber, fakeBlockHash, ilkRhoMetadata, fakeUint256)
 
 				Expect(err).NotTo(HaveOccurred())
 				var result MappingRes
-				err = db.Get(&result, `SELECT block_number, block_hash, ilk AS key, rho AS VALUE FROM maker.drip_ilk_rho`)
+				err = db.Get(&result, `SELECT block_number, block_hash, ilk AS key, rho AS VALUE FROM maker.jug_ilk_rho`)
 				Expect(err).NotTo(HaveOccurred())
 				ilkID, err := shared.GetOrCreateIlk(fakeIlk, db)
 				Expect(err).NotTo(HaveOccurred())
@@ -67,7 +67,7 @@ var _ = Describe("Drip storage repository", func() {
 			})
 
 			It("returns an error if metadata missing ilk", func() {
-				malformedIlkRhoMetadata := utils.GetStorageValueMetadata(drip.IlkRho, nil, utils.Uint256)
+				malformedIlkRhoMetadata := utils.GetStorageValueMetadata(jug.IlkRho, nil, utils.Uint256)
 
 				err := repo.Create(fakeBlockNumber, fakeBlockHash, malformedIlkRhoMetadata, fakeUint256)
 				Expect(err).To(MatchError(utils.ErrMetadataMalformed{MissingData: constants.Ilk}))
@@ -76,13 +76,13 @@ var _ = Describe("Drip storage repository", func() {
 
 		Describe("Tax", func() {
 			It("writes a row", func() {
-				ilkTaxMetadata := utils.GetStorageValueMetadata(drip.IlkTax, map[utils.Key]string{constants.Ilk: fakeIlk}, utils.Uint256)
+				ilkTaxMetadata := utils.GetStorageValueMetadata(jug.IlkTax, map[utils.Key]string{constants.Ilk: fakeIlk}, utils.Uint256)
 
 				err := repo.Create(fakeBlockNumber, fakeBlockHash, ilkTaxMetadata, fakeUint256)
 
 				Expect(err).NotTo(HaveOccurred())
 				var result MappingRes
-				err = db.Get(&result, `SELECT block_number, block_hash, ilk AS KEY, tax AS VALUE FROM maker.drip_ilk_tax`)
+				err = db.Get(&result, `SELECT block_number, block_hash, ilk AS KEY, tax AS VALUE FROM maker.jug_ilk_tax`)
 				Expect(err).NotTo(HaveOccurred())
 				ilkID, err := shared.GetOrCreateIlk(fakeIlk, db)
 				Expect(err).NotTo(HaveOccurred())
@@ -91,7 +91,7 @@ var _ = Describe("Drip storage repository", func() {
 			})
 
 			It("returns an error if metadata missing ilk", func() {
-				malformedIlkTaxMetadata := utils.GetStorageValueMetadata(drip.IlkTax, nil, utils.Uint256)
+				malformedIlkTaxMetadata := utils.GetStorageValueMetadata(jug.IlkTax, nil, utils.Uint256)
 
 				err := repo.Create(fakeBlockNumber, fakeBlockHash, malformedIlkTaxMetadata, fakeUint256)
 				Expect(err).To(MatchError(utils.ErrMetadataMalformed{MissingData: constants.Ilk}))
@@ -99,34 +99,34 @@ var _ = Describe("Drip storage repository", func() {
 		})
 	})
 
-	It("persists a drip vat", func() {
-		err := repo.Create(fakeBlockNumber, fakeBlockHash, drip.VatMetadata, fakeAddress)
+	It("persists a jug vat", func() {
+		err := repo.Create(fakeBlockNumber, fakeBlockHash, jug.VatMetadata, fakeAddress)
 
 		Expect(err).NotTo(HaveOccurred())
 		var result VariableRes
-		err = db.Get(&result, `SELECT block_number, block_hash, vat AS value FROM maker.drip_vat`)
+		err = db.Get(&result, `SELECT block_number, block_hash, vat AS value FROM maker.jug_vat`)
 		Expect(err).NotTo(HaveOccurred())
 		AssertVariable(result, fakeBlockNumber, fakeBlockHash, fakeAddress)
 	})
 
-	It("persists a drip vow", func() {
-		err := repo.Create(fakeBlockNumber, fakeBlockHash, drip.VowMetadata, fakeUint256)
+	It("persists a jug vow", func() {
+		err := repo.Create(fakeBlockNumber, fakeBlockHash, jug.VowMetadata, fakeUint256)
 
 		Expect(err).NotTo(HaveOccurred())
 		var result VariableRes
-		err = db.Get(&result, `SELECT block_number, block_hash, vow AS value FROM maker.drip_vow`)
+		err = db.Get(&result, `SELECT block_number, block_hash, vow AS value FROM maker.jug_vow`)
 		Expect(err).NotTo(HaveOccurred())
 		AssertVariable(result, fakeBlockNumber, fakeBlockHash, fakeUint256)
 	})
 
-	It("persists a drip repo", func() {
+	It("persists a jug repo", func() {
 		expectedRepo := "12345"
 
-		err := repo.Create(fakeBlockNumber, fakeBlockHash, drip.RepoMetadata, expectedRepo)
+		err := repo.Create(fakeBlockNumber, fakeBlockHash, jug.RepoMetadata, expectedRepo)
 		Expect(err).NotTo(HaveOccurred())
 
 		var result VariableRes
-		err = db.Get(&result, `SELECT block_number, block_hash, repo AS value FROM maker.drip_repo`)
+		err = db.Get(&result, `SELECT block_number, block_hash, repo AS value FROM maker.jug_repo`)
 		Expect(err).NotTo(HaveOccurred())
 
 		AssertVariable(result, fakeBlockNumber, fakeBlockHash, expectedRepo)

@@ -89,7 +89,7 @@ var _ = Describe("Jug File Vow LogNoteTransformer", func() {
 		Expect(dbResult[0].Data).To(Equal("0x17560834075da3db54f737db74377e799c865821000000000000000000000000"))
 	})
 
-	It("rechecks drip file vow event", func() {
+	It("rechecks jug file vow event", func() {
 		blockNumber := int64(10501125)
 		config := transformer.EventTransformerConfig{
 			TransformerName:     constants.JugFileVowLabel,
