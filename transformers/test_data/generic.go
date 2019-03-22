@@ -51,7 +51,7 @@ var GenericTestConfig = shared_t.EventTransformerConfig{
 func RandomString(length int) string {
 	var seededRand *rand.Rand = rand.New(
 		rand.NewSource(time.Now().UnixNano()))
-	charset := "abcdefghijklmnopqrstuvwxyz1234567890"
+	charset := "abcdef1234567890"
 	b := make([]byte, length)
 	for i := range b {
 		b[i] = charset[seededRand.Intn(len(charset))]
