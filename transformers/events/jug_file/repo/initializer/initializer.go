@@ -23,7 +23,7 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/events/jug_file/repo"
 )
 
-var TransformerInitializer transformer.EventTransformerInitializer = event.LogNoteTransformer{
+var EventTransformerInitializer transformer.EventTransformerInitializer = event.LogNoteTransformer{
 	Config:     repo.GetJugFileRepoConfig(),
 	Converter:  &repo.JugFileRepoConverter{},
 	Repository: &repo.JugFileRepoRepository{},
