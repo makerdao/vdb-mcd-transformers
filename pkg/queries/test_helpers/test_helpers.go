@@ -5,7 +5,7 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/cat"
-	"github.com/vulcanize/mcd_transformers/transformers/storage/drip"
+	"github.com/vulcanize/mcd_transformers/transformers/storage/jug"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/pit"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/vat"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
@@ -32,8 +32,8 @@ var (
 	fakeIlkChopMetadata = GetMetadata(cat.IlkChop, FakeIlk, utils.Uint256)
 	fakeIlkLumpMetadata = GetMetadata(cat.IlkLump, FakeIlk, utils.Uint256)
 	fakeIlkFlipMetadata = GetMetadata(cat.IlkFlip, FakeIlk, utils.Address)
-	fakeIlkRhoMetadata  = GetMetadata(drip.IlkRho, FakeIlk, utils.Uint256)
-	fakeIlkTaxMetadata  = GetMetadata(drip.IlkTax, FakeIlk, utils.Uint256)
+	fakeIlkRhoMetadata  = GetMetadata(jug.IlkRho, FakeIlk, utils.Uint256)
+	fakeIlkTaxMetadata  = GetMetadata(jug.IlkTax, FakeIlk, utils.Uint256)
 	FakeIlkVatMetadatas = []utils.StorageValueMetadata{
 		FakeIlkTakeMetadata,
 		FakeIlkRateMetadata,
@@ -49,7 +49,7 @@ var (
 		fakeIlkLumpMetadata,
 		fakeIlkFlipMetadata,
 	}
-	FakeIlkDripMetadatas = []utils.StorageValueMetadata{
+	FakeIlkJugMetadatas = []utils.StorageValueMetadata{
 		fakeIlkRhoMetadata,
 		fakeIlkTaxMetadata,
 	}
@@ -63,8 +63,8 @@ var (
 	anotherFakeIlkChopMetadata = GetMetadata(cat.IlkChop, AnotherFakeIlk, utils.Uint256)
 	anotherFakeIlkLumpMetadata = GetMetadata(cat.IlkLump, AnotherFakeIlk, utils.Uint256)
 	anotherFakeIlkFlipMetadata = GetMetadata(cat.IlkFlip, AnotherFakeIlk, utils.Address)
-	anotherFakeIlkRhoMetadata  = GetMetadata(drip.IlkRho, AnotherFakeIlk, utils.Uint256)
-	anotherFakeIlkTaxMetadata  = GetMetadata(drip.IlkTax, AnotherFakeIlk, utils.Uint256)
+	anotherFakeIlkRhoMetadata  = GetMetadata(jug.IlkRho, AnotherFakeIlk, utils.Uint256)
+	anotherFakeIlkTaxMetadata  = GetMetadata(jug.IlkTax, AnotherFakeIlk, utils.Uint256)
 
 	AnotherFakeIlkVatMetadatas = []utils.StorageValueMetadata{
 		anotherFakeIlkTakeMetadata,
@@ -81,7 +81,7 @@ var (
 		anotherFakeIlkLumpMetadata,
 		anotherFakeIlkFlipMetadata,
 	}
-	AnotherFakeIlkDripMetadatas = []utils.StorageValueMetadata{
+	AnotherFakeIlkJugMetadatas = []utils.StorageValueMetadata{
 		anotherFakeIlkRhoMetadata,
 		anotherFakeIlkTaxMetadata,
 	}
@@ -94,7 +94,7 @@ func fakeIlkMetadatas() map[string][]utils.StorageValueMetadata {
 	m["vat"] = FakeIlkVatMetadatas
 	m["pit"] = FakeIlkPitMetadatas
 	m["cat"] = FakeIlkCatMetadatas
-	m["drip"] = FakeIlkDripMetadatas
+	m["jug"] = FakeIlkJugMetadatas
 	return m
 }
 
@@ -126,8 +126,8 @@ func GetIlkState(seed int) map[string]string {
 	valuesMap[cat.IlkChop] = strconv.Itoa(7 + seed)
 	valuesMap[cat.IlkLump] = strconv.Itoa(8 + seed)
 	valuesMap[cat.IlkFlip] = "an address" + strconv.Itoa(seed)
-	valuesMap[drip.IlkRho] = strconv.Itoa(9 + seed)
-	valuesMap[drip.IlkTax] = strconv.Itoa(10 + seed)
+	valuesMap[jug.IlkRho] = strconv.Itoa(9 + seed)
+	valuesMap[jug.IlkTax] = strconv.Itoa(10 + seed)
 
 	return valuesMap
 }
@@ -171,7 +171,7 @@ func CreateCatRecords(header core.Header, valuesMap map[string]string, metadatas
 	}
 }
 
-func CreateDripRecords(header core.Header, valuesMap map[string]string, metadatas []utils.StorageValueMetadata, repository drip.DripStorageRepository) {
+func CreateJugRecords(header core.Header, valuesMap map[string]string, metadatas []utils.StorageValueMetadata, repository jug.JugStorageRepository) {
 	blockHash := header.Hash
 	blockNumber := int(header.BlockNumber)
 

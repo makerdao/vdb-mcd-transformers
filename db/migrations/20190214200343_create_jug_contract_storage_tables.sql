@@ -1,5 +1,5 @@
 -- +goose Up
-CREATE TABLE maker.drip_ilk_rho (
+CREATE TABLE maker.jug_ilk_rho(
   id            SERIAL PRIMARY KEY,
   block_number  BIGINT,
   block_hash    TEXT,
@@ -7,7 +7,7 @@ CREATE TABLE maker.drip_ilk_rho (
   rho           NUMERIC NOT NULL
 );
 
-CREATE TABLE maker.drip_ilk_tax (
+CREATE TABLE maker.jug_ilk_tax(
   id            SERIAL PRIMARY KEY,
   block_number  BIGINT,
   block_hash    TEXT,
@@ -15,21 +15,21 @@ CREATE TABLE maker.drip_ilk_tax (
   tax           NUMERIC NOT NULL
 );
 
-CREATE TABLE maker.drip_vat (
+CREATE TABLE maker.jug_vat(
   id            SERIAL PRIMARY KEY,
   block_number  BIGINT,
   block_hash    TEXT,
   vat           TEXT
 );
 
-CREATE TABLE maker.drip_vow (
+CREATE TABLE maker.jug_vow(
   id            SERIAL PRIMARY KEY,
   block_number  BIGINT,
   block_hash    TEXT,
   vow           TEXT
 );
 
-CREATE TABLE maker.drip_repo (
+CREATE TABLE maker.jug_repo (
   id            SERIAL PRIMARY KEY,
   block_number  BIGINT,
   block_hash    TEXT,
@@ -37,8 +37,8 @@ CREATE TABLE maker.drip_repo (
 );
 
 -- +goose Down
-DROP TABLE maker.drip_ilk_rho;
-DROP TABLE maker.drip_ilk_tax;
-DROP TABLE maker.drip_vat;
-DROP TABLE maker.drip_vow;
-DROP TABLE maker.drip_repo;
+DROP TABLE maker.jug_ilk_rho;
+DROP TABLE maker.jug_ilk_tax;
+DROP TABLE maker.jug_vat;
+DROP TABLE maker.jug_vow;
+DROP TABLE maker.jug_repo;

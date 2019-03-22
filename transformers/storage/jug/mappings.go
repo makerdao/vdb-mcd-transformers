@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package drip
+package jug
 
 import (
 	"github.com/ethereum/go-ethereum/common"
@@ -28,36 +28,36 @@ import (
 )
 
 const (
-	IlkTax   = "tax"
-	IlkRho   = "rho"
-	DripVat  = "vat"
-	DripVow  = "vow"
-	DripRepo = "repo"
+	IlkTax  = "tax"
+	IlkRho  = "rho"
+	JugVat  = "vat"
+	JugVow  = "vow"
+	JugRepo = "repo"
 )
 
 var (
 	IlkMappingIndex = storage.IndexOne
 
 	VatKey      = common.HexToHash(storage.IndexTwo)
-	VatMetadata = utils.GetStorageValueMetadata(DripVat, nil, utils.Address)
+	VatMetadata = utils.GetStorageValueMetadata(JugVat, nil, utils.Address)
 
 	VowKey      = common.HexToHash(storage.IndexThree)
-	VowMetadata = utils.GetStorageValueMetadata(DripVow, nil, utils.Bytes32)
+	VowMetadata = utils.GetStorageValueMetadata(JugVow, nil, utils.Bytes32)
 
 	RepoKey      = common.HexToHash(storage.IndexFour)
-	RepoMetadata = utils.GetStorageValueMetadata(DripRepo, nil, utils.Uint256)
+	RepoMetadata = utils.GetStorageValueMetadata(JugRepo, nil, utils.Uint256)
 )
 
-type DripMappings struct {
+type JugMappings struct {
 	StorageRepository storage2.IMakerStorageRepository
 	mappings          map[common.Hash]utils.StorageValueMetadata
 }
 
-func (mappings *DripMappings) SetDB(db *postgres.DB) {
+func (mappings *JugMappings) SetDB(db *postgres.DB) {
 	mappings.StorageRepository.SetDB(db)
 }
 
-func (mappings *DripMappings) Lookup(key common.Hash) (utils.StorageValueMetadata, error) {
+func (mappings *JugMappings) Lookup(key common.Hash) (utils.StorageValueMetadata, error) {
 	metadata, ok := mappings.mappings[key]
 	if !ok {
 		err := mappings.loadMappings()
@@ -72,7 +72,7 @@ func (mappings *DripMappings) Lookup(key common.Hash) (utils.StorageValueMetadat
 	return metadata, nil
 }
 
-func (mappings *DripMappings) loadMappings() error {
+func (mappings *JugMappings) loadMappings() error {
 	mappings.mappings = getStaticMappings()
 	ilks, err := mappings.StorageRepository.GetIlks()
 	if err != nil {
