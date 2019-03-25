@@ -22,8 +22,6 @@ func (repository *CatStorageRepository) Create(blockNumber int, blockHash string
 		return repository.insertLive(blockNumber, blockHash, value.(string))
 	case Vat:
 		return repository.insertVat(blockNumber, blockHash, value.(string))
-	case Pit:
-		return repository.insertPit(blockNumber, blockHash, value.(string))
 	case Vow:
 		return repository.insertVow(blockNumber, blockHash, value.(string))
 	case IlkFlip:
@@ -67,13 +65,6 @@ func (repository *CatStorageRepository) insertVat(blockNumber int, blockHash str
 	_, writeErr := repository.db.Exec(
 		`INSERT INTO maker.cat_vat (block_number, block_hash, vat) VALUES ($1, $2, $3 )`,
 		blockNumber, blockHash, vat)
-	return writeErr
-}
-
-func (repository *CatStorageRepository) insertPit(blockNumber int, blockHash string, pit string) error {
-	_, writeErr := repository.db.Exec(
-		`INSERT INTO maker.cat_pit (block_number, block_hash, pit) VALUES ($1, $2, $3 )`,
-		blockNumber, blockHash, pit)
 	return writeErr
 }
 

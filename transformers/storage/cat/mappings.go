@@ -18,7 +18,6 @@ const (
 	NFlip = "nflip"
 	Live  = "live"
 	Vat   = "vat"
-	Pit   = "pit"
 	Vow   = "vow"
 
 	IlkFlip = "flip"
@@ -45,10 +44,7 @@ var (
 	VatKey      = common.HexToHash(storage.IndexFive)
 	VatMetadata = utils.GetStorageValueMetadata(Vat, nil, utils.Address)
 
-	PitKey      = common.HexToHash(storage.IndexSix)
-	PitMetadata = utils.GetStorageValueMetadata(Pit, nil, utils.Address)
-
-	VowKey      = common.HexToHash(storage.IndexSeven)
+	VowKey      = common.HexToHash(storage.IndexSix)
 	VowMetadata = utils.GetStorageValueMetadata(Vow, nil, utils.Address)
 )
 
@@ -96,7 +92,6 @@ func loadStaticMappings() map[common.Hash]utils.StorageValueMetadata {
 	mappings[NFlipKey] = NFlipMetadata
 	mappings[LiveKey] = LiveMetadata
 	mappings[VatKey] = VatMetadata
-	mappings[PitKey] = PitMetadata
 	mappings[VowKey] = VowMetadata
 	return mappings
 }
