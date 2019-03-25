@@ -8,11 +8,11 @@ import (
 
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	storage2 "github.com/vulcanize/mcd_transformers/transformers/storage"
-	"github.com/vulcanize/mcd_transformers/transformers/storage/drip"
+	"github.com/vulcanize/mcd_transformers/transformers/storage/jug"
 )
 
 var StorageTransformerInitializer transformer.StorageTransformerInitializer = storage.Transformer{
 	Address:    common.HexToAddress(constants.JugContractAddress()),
-	Mappings:   &drip.DripMappings{StorageRepository: &storage2.MakerStorageRepository{}},
-	Repository: &drip.DripStorageRepository{},
+	Mappings:   &jug.JugMappings{StorageRepository: &storage2.MakerStorageRepository{}},
+	Repository: &jug.JugStorageRepository{},
 }.NewTransformer

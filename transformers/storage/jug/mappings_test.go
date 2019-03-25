@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package drip_test
+package jug_test
 
 import (
 	"math/big"
@@ -28,23 +28,23 @@ import (
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
-	"github.com/vulcanize/mcd_transformers/transformers/storage/drip"
+	"github.com/vulcanize/mcd_transformers/transformers/storage/jug"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/test_helpers"
 )
 
-var _ = Describe("drip storage mappings", func() {
+var _ = Describe("jug storage mappings", func() {
 	Describe("looking up static keys", func() {
 		It("returns value metadata if key exists", func() {
 			storageRepository := &test_helpers.MockMakerStorageRepository{}
-			mappings := drip.DripMappings{StorageRepository: storageRepository}
+			mappings := jug.JugMappings{StorageRepository: storageRepository}
 
-			Expect(mappings.Lookup(drip.VatKey)).To(Equal(drip.VatMetadata))
-			Expect(mappings.Lookup(drip.VowKey)).To(Equal(drip.VowMetadata))
-			Expect(mappings.Lookup(drip.RepoKey)).To(Equal(drip.RepoMetadata))
+			Expect(mappings.Lookup(jug.VatKey)).To(Equal(jug.VatMetadata))
+			Expect(mappings.Lookup(jug.VowKey)).To(Equal(jug.VowMetadata))
+			Expect(mappings.Lookup(jug.RepoKey)).To(Equal(jug.RepoMetadata))
 		})
 
 		It("returns error if key does not exist", func() {
-			mappings := drip.DripMappings{StorageRepository: &test_helpers.MockMakerStorageRepository{}}
+			mappings := jug.JugMappings{StorageRepository: &test_helpers.MockMakerStorageRepository{}}
 
 			_, err := mappings.Lookup(common.HexToHash(fakes.FakeHash.Hex()))
 
@@ -56,7 +56,7 @@ var _ = Describe("drip storage mappings", func() {
 	Describe("looking up dynamic keys", func() {
 		It("refreshes mappings from the repository if key not found", func() {
 			storageRepository := &test_helpers.MockMakerStorageRepository{}
-			mappings := drip.DripMappings{StorageRepository: storageRepository}
+			mappings := jug.JugMappings{StorageRepository: storageRepository}
 
 			mappings.Lookup(fakes.FakeHash)
 
@@ -67,10 +67,10 @@ var _ = Describe("drip storage mappings", func() {
 			storageRepository := &test_helpers.MockMakerStorageRepository{}
 			fakeIlk := "fakeIlk"
 			storageRepository.Ilks = []string{fakeIlk}
-			mappings := drip.DripMappings{StorageRepository: storageRepository}
-			ilkTaxKey := common.BytesToHash(crypto.Keccak256(common.FromHex("0x" + fakeIlk + drip.IlkMappingIndex)))
+			mappings := jug.JugMappings{StorageRepository: storageRepository}
+			ilkTaxKey := common.BytesToHash(crypto.Keccak256(common.FromHex("0x" + fakeIlk + jug.IlkMappingIndex)))
 			expectedMetadata := utils.StorageValueMetadata{
-				Name: drip.IlkTax,
+				Name: jug.IlkTax,
 				Keys: map[utils.Key]string{constants.Ilk: fakeIlk},
 				Type: utils.Uint256,
 			}
@@ -82,13 +82,13 @@ var _ = Describe("drip storage mappings", func() {
 			storageRepository := &test_helpers.MockMakerStorageRepository{}
 			fakeIlk := "fakeIlk"
 			storageRepository.Ilks = []string{fakeIlk}
-			mappings := drip.DripMappings{StorageRepository: storageRepository}
-			ilkTaxKeyBytes := crypto.Keccak256(common.FromHex("0x" + fakeIlk + drip.IlkMappingIndex))
+			mappings := jug.JugMappings{StorageRepository: storageRepository}
+			ilkTaxKeyBytes := crypto.Keccak256(common.FromHex("0x" + fakeIlk + jug.IlkMappingIndex))
 			ilkTaxAsInt := big.NewInt(0).SetBytes(ilkTaxKeyBytes)
 			incrementedIlkTax := big.NewInt(0).Add(ilkTaxAsInt, big.NewInt(1))
 			ilkRhoKey := common.BytesToHash(incrementedIlkTax.Bytes())
 			expectedMetadata := utils.StorageValueMetadata{
-				Name: drip.IlkRho,
+				Name: jug.IlkRho,
 				Keys: map[utils.Key]string{constants.Ilk: fakeIlk},
 				Type: utils.Uint48,
 			}
@@ -98,7 +98,7 @@ var _ = Describe("drip storage mappings", func() {
 
 		It("returns error if key not found", func() {
 			storageRepository := &test_helpers.MockMakerStorageRepository{}
-			mappings := drip.DripMappings{StorageRepository: storageRepository}
+			mappings := jug.JugMappings{StorageRepository: storageRepository}
 
 			_, err := mappings.Lookup(fakes.FakeHash)
 
