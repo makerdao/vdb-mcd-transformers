@@ -1,4 +1,4 @@
-package drip_test
+package jug_test
 
 import (
 	"github.com/sirupsen/logrus"
@@ -11,7 +11,7 @@ import (
 
 func TestDrip(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "Drip Suite")
+	RunSpecs(t, "Jug Suite")
 }
 
 var _ = BeforeSuite(func() {

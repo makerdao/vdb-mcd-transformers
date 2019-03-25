@@ -1,6 +1,6 @@
 package constants
 
-//TODO: get cat, pit, and drip file method signatures directly from the ABI
+//TODO: get cat, pit, and jug file method signatures directly from the ABI
 func biteMethod() string               { return GetSolidityFunctionSignature(CatABI(), "Bite") }
 func catFileChopLumpMethod() string    { return "file(bytes32,bytes32,uint256)" }
 func catFileFlipMethod() string        { return GetSolidityFunctionSignature(CatABI(), "file") }

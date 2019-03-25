@@ -7,7 +7,7 @@ import (
 	"github.com/vulcanize/mcd_transformers/pkg/queries/test_helpers"
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/cat"
-	"github.com/vulcanize/mcd_transformers/transformers/storage/drip"
+	"github.com/vulcanize/mcd_transformers/transformers/storage/jug"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/pit"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/vat"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
@@ -22,7 +22,7 @@ var (
 	vatRepository                                    vat.VatStorageRepository
 	pitRepository                                    pit.PitStorageRepository
 	catRepository                                    cat.CatStorageRepository
-	dripRepository                                   drip.DripStorageRepository
+	jugRepository                                    jug.JugStorageRepository
 	headerRepository                                 repositories.HeaderRepository
 	blockOneHeader, blockTwoHeader, blockThreeHeader core.Header
 )
@@ -43,7 +43,7 @@ var _ = Describe("Ilk State Query", func() {
 		vatRepository.SetDB(db)
 		pitRepository.SetDB(db)
 		catRepository.SetDB(db)
-		dripRepository.SetDB(db)
+		jugRepository.SetDB(db)
 		headerRepository = repositories.NewHeaderRepository(db)
 
 		blockOneHeader = fakes.GetFakeHeader(int64(blockOne))
@@ -69,7 +69,7 @@ var _ = Describe("Ilk State Query", func() {
 
 	It("gets an ilk", func() {
 		ilkState := test_helpers.GetIlkState(0)
-		createIlkAtBlock(blockOneHeader, ilkState, test_helpers.FakeIlkVatMetadatas, test_helpers.FakeIlkPitMetadatas, test_helpers.FakeIlkCatMetadatas, test_helpers.FakeIlkDripMetadatas)
+		createIlkAtBlock(blockOneHeader, ilkState, test_helpers.FakeIlkVatMetadatas, test_helpers.FakeIlkPitMetadatas, test_helpers.FakeIlkCatMetadatas, test_helpers.FakeIlkJugMetadatas)
 
 		var ilkId int
 		err := db.Get(&ilkId, `SELECT id FROM maker.ilks WHERE ilk = $1`, fakeIlk)
@@ -93,8 +93,8 @@ var _ = Describe("Ilk State Query", func() {
 			Chop:    ilkState[cat.IlkChop],
 			Lump:    ilkState[cat.IlkLump],
 			Flip:    ilkState[cat.IlkFlip],
-			Rho:     ilkState[drip.IlkRho],
-			Tax:     ilkState[drip.IlkTax],
+			Rho:     ilkState[jug.IlkRho],
+			Tax:     ilkState[jug.IlkTax],
 			Created: sql.NullString{String: blockOneHeader.Timestamp, Valid: true},
 			Updated: sql.NullString{String: blockOneHeader.Timestamp, Valid: true},
 		}
@@ -104,8 +104,8 @@ var _ = Describe("Ilk State Query", func() {
 	It("returns the correct data if there are several ilks", func() {
 		fakeIlkState := test_helpers.GetIlkState(1)
 		anotherFakeIlkState := test_helpers.GetIlkState(2)
-		createIlkAtBlock(blockOneHeader, fakeIlkState, test_helpers.FakeIlkVatMetadatas, test_helpers.FakeIlkPitMetadatas, test_helpers.FakeIlkCatMetadatas, test_helpers.FakeIlkDripMetadatas)
-		createIlkAtBlock(blockOneHeader, anotherFakeIlkState, test_helpers.AnotherFakeIlkVatMetadatas, test_helpers.AnotherFakeIlkPitMetadatas, test_helpers.AnotherFakeIlkCatMetadatas, test_helpers.AnotherFakeIlkDripMetadatas)
+		createIlkAtBlock(blockOneHeader, fakeIlkState, test_helpers.FakeIlkVatMetadatas, test_helpers.FakeIlkPitMetadatas, test_helpers.FakeIlkCatMetadatas, test_helpers.FakeIlkJugMetadatas)
+		createIlkAtBlock(blockOneHeader, anotherFakeIlkState, test_helpers.AnotherFakeIlkVatMetadatas, test_helpers.AnotherFakeIlkPitMetadatas, test_helpers.AnotherFakeIlkCatMetadatas, test_helpers.AnotherFakeIlkJugMetadatas)
 
 		var fakeIlkId int
 		err := db.Get(&fakeIlkId, `SELECT id FROM maker.ilks WHERE ilk = $1`, fakeIlk)
@@ -140,8 +140,8 @@ var _ = Describe("Ilk State Query", func() {
 			Chop:    fakeIlkState[cat.IlkChop],
 			Lump:    fakeIlkState[cat.IlkLump],
 			Flip:    fakeIlkState[cat.IlkFlip],
-			Rho:     fakeIlkState[drip.IlkRho],
-			Tax:     fakeIlkState[drip.IlkTax],
+			Rho:     fakeIlkState[jug.IlkRho],
+			Tax:     fakeIlkState[jug.IlkTax],
 			Created: sql.NullString{String: blockOneHeader.Timestamp, Valid: true},
 			Updated: sql.NullString{String: blockOneHeader.Timestamp, Valid: true},
 		}
@@ -156,8 +156,8 @@ var _ = Describe("Ilk State Query", func() {
 			Chop:    anotherFakeIlkState[cat.IlkChop],
 			Lump:    anotherFakeIlkState[cat.IlkLump],
 			Flip:    anotherFakeIlkState[cat.IlkFlip],
-			Rho:     anotherFakeIlkState[drip.IlkRho],
-			Tax:     anotherFakeIlkState[drip.IlkTax],
+			Rho:     anotherFakeIlkState[jug.IlkRho],
+			Tax:     anotherFakeIlkState[jug.IlkTax],
 			Created: sql.NullString{String: blockOneHeader.Timestamp, Valid: true},
 			Updated: sql.NullString{String: blockOneHeader.Timestamp, Valid: true},
 		}
@@ -312,10 +312,10 @@ var _ = Describe("Ilk State Query", func() {
 		createIlkAtBlock(blockOneHeader, blockOneFakeIlkState, test_helpers.FakeIlkVatMetadatas, test_helpers.EmptyMetadatas, test_helpers.EmptyMetadatas, test_helpers.EmptyMetadatas)
 
 		blockTwoFakeIlkState := test_helpers.GetIlkState(1)
-		createIlkAtBlock(blockTwoHeader, blockTwoFakeIlkState, test_helpers.EmptyMetadatas, test_helpers.EmptyMetadatas, test_helpers.EmptyMetadatas, test_helpers.FakeIlkDripMetadatas)
+		createIlkAtBlock(blockTwoHeader, blockTwoFakeIlkState, test_helpers.EmptyMetadatas, test_helpers.EmptyMetadatas, test_helpers.EmptyMetadatas, test_helpers.FakeIlkJugMetadatas)
 
 		blockTwoAnotherFakeIlkState := test_helpers.GetIlkState(2)
-		createIlkAtBlock(blockTwoHeader, blockTwoAnotherFakeIlkState, test_helpers.EmptyMetadatas, test_helpers.EmptyMetadatas, test_helpers.EmptyMetadatas, test_helpers.AnotherFakeIlkDripMetadatas)
+		createIlkAtBlock(blockTwoHeader, blockTwoAnotherFakeIlkState, test_helpers.EmptyMetadatas, test_helpers.EmptyMetadatas, test_helpers.EmptyMetadatas, test_helpers.AnotherFakeIlkJugMetadatas)
 
 		var fakeIlkId int
 		err := db.Get(&fakeIlkId, `SELECT id FROM maker.ilks WHERE ilk = $1`, fakeIlk)
@@ -358,9 +358,9 @@ var _ = Describe("Ilk State Query", func() {
 	})
 })
 
-func createIlkAtBlock(header core.Header, valuesMap map[string]string, vatMetadatas, pitMetadatas, catMetadatas, dripMetadatas []utils.StorageValueMetadata) {
+func createIlkAtBlock(header core.Header, valuesMap map[string]string, vatMetadatas, pitMetadatas, catMetadatas, jugMetadatas []utils.StorageValueMetadata) {
 	test_helpers.CreateVatRecords(header, valuesMap, vatMetadatas, vatRepository)
 	test_helpers.CreatePitRecords(header, valuesMap, pitMetadatas, pitRepository)
 	test_helpers.CreateCatRecords(header, valuesMap, catMetadatas, catRepository)
-	test_helpers.CreateDripRecords(header, valuesMap, dripMetadatas, dripRepository)
+	test_helpers.CreateJugRecords(header, valuesMap, jugMetadatas, jugRepository)
 }

@@ -83,7 +83,7 @@ SELECT
   block_number,
   block_hash,
   ilk
-FROM maker.drip_ilk_rho
+FROM maker.jug_ilk_rho
 WHERE block_number <= $1
       AND ilk = $2
 UNION
@@ -91,7 +91,7 @@ SELECT
   block_number,
   block_hash,
   ilk
-FROM maker.drip_ilk_tax
+FROM maker.jug_ilk_tax
 WHERE block_number <= $1
       AND ilk = $2
 $$
@@ -214,7 +214,7 @@ WITH takes AS (
       rho,
       ilk,
       block_hash
-    FROM maker.drip_ilk_rho
+    FROM maker.jug_ilk_rho
     WHERE ilk = ilk_id
           AND block_number <= $1
     ORDER BY ilk, block_number DESC
@@ -224,7 +224,7 @@ WITH takes AS (
       tax,
       ilk,
       block_hash
-    FROM maker.drip_ilk_tax
+    FROM maker.jug_ilk_tax
     WHERE ilk = ilk_id
           AND block_number <= $1
     ORDER BY ilk, block_number DESC
