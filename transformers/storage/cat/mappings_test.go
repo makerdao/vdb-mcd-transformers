@@ -38,7 +38,6 @@ var _ = Describe("Cat storage mappings", func() {
 			Expect(mappings.Lookup(cat.NFlipKey)).To(Equal(cat.NFlipMetadata))
 			Expect(mappings.Lookup(cat.LiveKey)).To(Equal(cat.LiveMetadata))
 			Expect(mappings.Lookup(cat.VatKey)).To(Equal(cat.VatMetadata))
-			Expect(mappings.Lookup(cat.PitKey)).To(Equal(cat.PitMetadata))
 			Expect(mappings.Lookup(cat.VowKey)).To(Equal(cat.VowMetadata))
 		})
 
