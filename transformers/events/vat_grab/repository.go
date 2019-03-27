@@ -51,9 +51,9 @@ func (repository VatGrabRepository) Create(headerID int64, models []interface{})
 		}
 
 		_, execErr := tx.Exec(
-			`INSERT into maker.vat_grab (header_id, urn, v, w, dink, dart, log_idx, tx_idx, raw_log)
+			`INSERT into maker.vat_grab (header_id, urn_id, v, w, dink, dart, log_idx, tx_idx, raw_log)
 	   VALUES($1, $2, $3, $4, $5::NUMERIC, $6::NUMERIC, $7, $8, $9)
-		ON CONFLICT (header_id, tx_idx, log_idx) DO UPDATE SET urn = $2, v = $3, w = $4, dink = $5, dart = $6, raw_log = $9;`,
+		ON CONFLICT (header_id, tx_idx, log_idx) DO UPDATE SET urn_id = $2, v = $3, w = $4, dink = $5, dart = $6, raw_log = $9;`,
 			headerID, urnID, vatGrab.V, vatGrab.W, vatGrab.Dink, vatGrab.Dart, vatGrab.LogIndex, vatGrab.TransactionIndex, vatGrab.Raw,
 		)
 		if execErr != nil {

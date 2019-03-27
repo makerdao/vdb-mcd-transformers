@@ -55,7 +55,7 @@ var _ = Describe("Vat grab repository", func() {
 			err = vatGrabRepository.Create(headerID, []interface{}{test_data.VatGrabModel})
 			Expect(err).NotTo(HaveOccurred())
 			var dbVatGrab vat_grab.VatGrabModel
-			err = db.Get(&dbVatGrab, `SELECT urn, v, w, dink, dart, log_idx, tx_idx, raw_log FROM maker.vat_grab WHERE header_id = $1`, headerID)
+			err = db.Get(&dbVatGrab, `SELECT urn_id, v, w, dink, dart, log_idx, tx_idx, raw_log FROM maker.vat_grab WHERE header_id = $1`, headerID)
 			Expect(err).NotTo(HaveOccurred())
 			ilkID, err := shared.GetOrCreateIlk(test_data.VatGrabModel.Ilk, db)
 			Expect(err).NotTo(HaveOccurred())

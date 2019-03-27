@@ -36,7 +36,7 @@ var _ = Describe("Vat tune repository", func() {
 		modelWithDifferentLogIdx.LogIndex++
 		inputs := shared_behaviors.CreateBehaviorInputs{
 			CheckedHeaderColumnName:  constants.VatTuneChecked,
-			LogEventTableName:        "maker.vat_heal",
+			LogEventTableName:        "maker.vat_tune",
 			TestModel:                test_data.VatTuneModel,
 			ModelWithDifferentLogIdx: modelWithDifferentLogIdx,
 			Repository:               &repository,
@@ -52,7 +52,7 @@ var _ = Describe("Vat tune repository", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			var dbVatTune vat_tune.VatTuneModel
-			err = db.Get(&dbVatTune, `SELECT urn, v, w, dink, dart, tx_idx, log_idx, raw_log FROM maker.vat_tune WHERE header_id = $1`, headerID)
+			err = db.Get(&dbVatTune, `SELECT urn_id, v, w, dink, dart, tx_idx, log_idx, raw_log FROM maker.vat_tune WHERE header_id = $1`, headerID)
 			Expect(err).NotTo(HaveOccurred())
 			ilkID, err := shared.GetOrCreateIlk(test_data.VatTuneModel.Ilk, db)
 			Expect(err).NotTo(HaveOccurred())

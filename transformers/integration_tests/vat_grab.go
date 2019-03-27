@@ -75,7 +75,7 @@ var _ = Describe("Vat Grab Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []vat_grab.VatGrabModel
-		err = db.Select(&dbResult, `SELECT urn, v, w, dink, dart from maker.vat_grab`)
+		err = db.Select(&dbResult, `SELECT urn_id, v, w, dink, dart from maker.vat_grab`)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))
@@ -146,7 +146,7 @@ var _ = Describe("Vat Grab Transformer", func() {
 		Expect(vatGrabChecked[0]).To(Equal(2))
 
 		var dbResult []vat_grab.VatGrabModel
-		err = db.Select(&dbResult, `SELECT urn, v, w, dink, dart from maker.vat_grab`)
+		err = db.Select(&dbResult, `SELECT urn_id, v, w, dink, dart from maker.vat_grab`)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))

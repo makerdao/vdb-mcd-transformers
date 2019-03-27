@@ -17,7 +17,6 @@
 package integration_tests
 
 import (
-	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"plugin"
 	"strconv"
 
@@ -38,6 +37,7 @@ import (
 	"github.com/vulcanize/vulcanizedb/pkg/plugin/test_helpers"
 
 	"github.com/vulcanize/mcd_transformers/test_config"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 )
 
 var eventConfig = config.Plugin{
@@ -189,7 +189,7 @@ var _ = Describe("Plugin test", func() {
 				Expect(err).ToNot(HaveOccurred())
 
 				type model struct {
-					Urn              string
+					Urn              string `db:"urn_id"`
 					Ink              string
 					Art              string
 					IArt             string
@@ -325,7 +325,7 @@ var _ = Describe("Plugin test", func() {
 				Expect(err).ToNot(HaveOccurred())
 
 				type model struct {
-					Urn              string
+					Urn              string `db:"urn_id"`
 					Ink              string
 					Art              string
 					IArt             string

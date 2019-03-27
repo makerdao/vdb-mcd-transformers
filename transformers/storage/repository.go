@@ -50,7 +50,7 @@ func (repository *MakerStorageRepository) GetDaiKeys() ([]string, error) {
 		SELECT DISTINCT w FROM maker.vat_tune UNION
 		SELECT DISTINCT v FROM maker.vat_heal UNION
 		SELECT DISTINCT urns.guy FROM maker.vat_fold
-			INNER JOIN maker.urns on urns.id = maker.vat_fold.urn
+			INNER JOIN maker.urns on urns.id = maker.vat_fold.urn_id
 	`)
 	return daiKeys, err
 }
@@ -82,12 +82,12 @@ func (repository *MakerStorageRepository) GetGemKeys() ([]Urn, error) {
 		UNION
 		SELECT DISTINCT ilks.ilk, tune.v AS guy 
 		FROM maker.vat_tune tune
-		INNER JOIN maker.urns on urns.id = tune.urn
+		INNER JOIN maker.urns on urns.id = tune.urn_id
 		INNER JOIN maker.ilks ilks ON ilks.id = urns.ilk
 		UNION
 		SELECT DISTINCT ilks.ilk, grab.v AS guy 
 		FROM maker.vat_grab grab
-		INNER JOIN maker.urns on urns.id = grab.urn
+		INNER JOIN maker.urns on urns.id = grab.urn_id
 		INNER JOIN maker.ilks ilks ON ilks.id = urns.ilk
 	`)
 	return gems, err

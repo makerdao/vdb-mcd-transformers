@@ -83,7 +83,7 @@ var _ = Describe("VatFold Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResults []vat_fold.VatFoldModel
-		err = db.Select(&dbResults, `SELECT urn, rate from maker.vat_fold`)
+		err = db.Select(&dbResults, `SELECT urn_id, rate from maker.vat_fold`)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResults)).To(Equal(1))
@@ -140,7 +140,7 @@ var _ = Describe("VatFold Transformer", func() {
 		Expect(vatFoldChecked[0]).To(Equal(2))
 
 		var dbResults []vat_fold.VatFoldModel
-		err = db.Select(&dbResults, `SELECT urn, rate from maker.vat_fold`)
+		err = db.Select(&dbResults, `SELECT urn_id, rate from maker.vat_fold`)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResults)).To(Equal(1))

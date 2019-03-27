@@ -18,7 +18,7 @@ package bite
 
 type BiteModel struct {
 	Ilk              string
-	Urn              string
+	Urn              string `db:"urn_id"`
 	Ink              string
 	Art              string
 	IArt             string

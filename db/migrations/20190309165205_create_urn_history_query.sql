@@ -13,10 +13,10 @@ BEGIN
   CREATE TEMP TABLE updated ON COMMIT DROP AS
   SELECT block_number FROM (
     SELECT block_number FROM maker.vat_urn_ink
-    WHERE vat_urn_ink.urn = urnId AND block_number <= $3
+    WHERE vat_urn_ink.urn_id = urnId AND block_number <= $3
     UNION
     SELECT block_number FROM maker.vat_urn_art
-    WHERE vat_urn_art.urn = urnId AND block_number <= $3
+    WHERE vat_urn_art.urn_id = urnId AND block_number <= $3
   ) inks_and_arts
   ORDER BY block_number DESC;
 

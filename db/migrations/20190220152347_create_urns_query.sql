@@ -32,17 +32,17 @@ WITH
   ),
 
   inks AS ( -- Latest ink for each urn
-    SELECT DISTINCT ON (urn) urn, ink, block_number
+    SELECT DISTINCT ON (urn_id) urn_id, ink, block_number
     FROM maker.vat_urn_ink
     WHERE block_number <= block_height
-    ORDER BY urn, block_number DESC
+    ORDER BY urn_id, block_number DESC
   ),
 
   arts AS ( -- Latest art for each urn
-    SELECT DISTINCT ON (urn) urn, art, block_number
+    SELECT DISTINCT ON (urn_id) urn_id, art, block_number
     FROM maker.vat_urn_art
     WHERE block_number <= block_height
-    ORDER BY urn, block_number DESC
+    ORDER BY urn_id, block_number DESC
   ),
 
   rates AS ( -- Latest rate for each ilk
@@ -62,8 +62,8 @@ WITH
   ratio_data AS (
     SELECT urns.ilk, urns.guy, inks.ink, spots.spot, arts.art, rates.rate
     FROM inks
-      JOIN urns ON inks.urn = urns.urn_id
-      JOIN arts ON arts.urn = inks.urn
+      JOIN urns ON inks.urn_id = urns.urn_id
+      JOIN arts ON arts.urn_id = inks.urn_id
       JOIN spots ON spots.ilk = urns.ilk_id
       JOIN rates ON rates.ilk = spots.ilk
   ),
@@ -77,40 +77,40 @@ WITH
   ),
 
   created AS (
-    SELECT urn, block_timestamp AS created
+    SELECT urn_id, block_timestamp AS created
     FROM
       (
-        SELECT DISTINCT ON (urn) urn, block_hash FROM maker.vat_urn_ink
-        ORDER BY urn, block_number ASC
+        SELECT DISTINCT ON (urn_id) urn_id, block_hash FROM maker.vat_urn_ink
+        ORDER BY urn_id, block_number ASC
       ) earliest_blocks
         LEFT JOIN public.headers ON hash = block_hash
   ),
 
   updated AS (
-    SELECT DISTINCT ON (urn) urn, headers.block_timestamp AS updated
+    SELECT DISTINCT ON (urn_id) urn_id, headers.block_timestamp AS updated
     FROM
       (
-        (SELECT DISTINCT ON (urn) urn, block_hash FROM maker.vat_urn_ink
+        (SELECT DISTINCT ON (urn_id) urn_id, block_hash FROM maker.vat_urn_ink
          WHERE block_number <= block_height
-         ORDER BY urn, block_number DESC)
+         ORDER BY urn_id, block_number DESC)
         UNION
-        (SELECT DISTINCT ON (urn) urn, block_hash FROM maker.vat_urn_art
+        (SELECT DISTINCT ON (urn_id) urn_id, block_hash FROM maker.vat_urn_art
          WHERE block_number <= block_height
-         ORDER BY urn, block_number DESC)
+         ORDER BY urn_id, block_number DESC)
       ) last_blocks
         LEFT JOIN public.headers ON headers.hash = last_blocks.block_hash
-    ORDER BY urn, headers.block_timestamp DESC
+    ORDER BY urn_id, headers.block_timestamp DESC
   )
 
 SELECT urns.guy, urns.ilk, $1, inks.ink, arts.art, ratios.ratio,
        COALESCE(safe.safe, arts.art = 0), created.created, updated.updated
 FROM inks
-  LEFT JOIN arts     ON arts.urn = inks.urn
-  LEFT JOIN urns     ON arts.urn = urns.urn_id
+  LEFT JOIN arts     ON arts.urn_id = inks.urn_id
+  LEFT JOIN urns     ON arts.urn_id = urns.urn_id
   LEFT JOIN ratios   ON ratios.guy = urns.guy
   LEFT JOIN safe     ON safe.guy = ratios.guy
-  LEFT JOIN created  ON created.urn = urns.urn_id
-  LEFT JOIN updated  ON updated.urn = urns.urn_id
+  LEFT JOIN created  ON created.urn_id = urns.urn_id
+  LEFT JOIN updated  ON updated.urn_id = urns.urn_id
   -- Add collections of frob and bite events?
 $body$
 LANGUAGE SQL;
