@@ -104,17 +104,17 @@ WITH
   ),
 
   inks AS ( -- Latest ink for each urn
-    SELECT DISTINCT ON (urn) urn, ink, block_number
+    SELECT DISTINCT ON (urn_id) urn_id, ink, block_number
     FROM maker.vat_urn_ink
     WHERE block_number <= block_height
-    ORDER BY urn, block_number DESC
+    ORDER BY urn_id, block_number DESC
   ),
 
   arts AS ( -- Latest art for each urn
-    SELECT DISTINCT ON (urn) urn, art, block_number
+    SELECT DISTINCT ON (urn_id) urn_id, art, block_number
     FROM maker.vat_urn_art
     WHERE block_number <= block_height
-    ORDER BY urn, block_number DESC
+    ORDER BY urn_id, block_number DESC
   ),
 
   rates AS ( -- Latest rate for each ilk
@@ -134,8 +134,8 @@ WITH
   ratio_data AS (
     SELECT urns.ilk, urns.guy, inks.ink, spots.spot, arts.art, rates.rate
     FROM inks
-      JOIN urns ON inks.urn = urns.urn_id
-      JOIN arts ON arts.urn = inks.urn
+      JOIN urns ON inks.urn_id = urns.urn_id
+      JOIN arts ON arts.urn_id = inks.urn_id
       JOIN spots ON spots.ilk = urns.ilk_id
       JOIN rates ON rates.ilk = spots.ilk
   ),
@@ -149,40 +149,40 @@ WITH
   ),
 
   created AS (
-    SELECT urn, block_timestamp AS created
+    SELECT urn_id, block_timestamp AS created
     FROM
       (
-        SELECT DISTINCT ON (urn) urn, block_hash FROM maker.vat_urn_ink
-        ORDER BY urn, block_number ASC
+        SELECT DISTINCT ON (urn_id) urn_id, block_hash FROM maker.vat_urn_ink
+        ORDER BY urn_id, block_number ASC
       ) earliest_blocks
         LEFT JOIN public.headers ON hash = block_hash
   ),
 
   updated AS (
-    SELECT DISTINCT ON (urn) urn, headers.block_timestamp AS updated
+    SELECT DISTINCT ON (urn_id) urn_id, headers.block_timestamp AS updated
     FROM
       (
-        (SELECT DISTINCT ON (urn) urn, block_hash FROM maker.vat_urn_ink
+        (SELECT DISTINCT ON (urn_id) urn_id, block_hash FROM maker.vat_urn_ink
          WHERE block_number <= block_height
-         ORDER BY urn, block_number DESC)
+         ORDER BY urn_id, block_number DESC)
         UNION
-        (SELECT DISTINCT ON (urn) urn, block_hash FROM maker.vat_urn_art
+        (SELECT DISTINCT ON (urn_id) urn_id, block_hash FROM maker.vat_urn_art
          WHERE block_number <= block_height
-         ORDER BY urn, block_number DESC)
+         ORDER BY urn_id, block_number DESC)
       ) last_blocks
         LEFT JOIN public.headers ON headers.hash = last_blocks.block_hash
-    ORDER BY urn, headers.block_timestamp DESC
+    ORDER BY urn_id, headers.block_timestamp DESC
   )
 
 SELECT urns.guy, urns.ilk, $1, inks.ink, arts.art, ratios.ratio,
        COALESCE(safe.safe, arts.art = 0), created.created, updated.updated
 FROM inks
-  LEFT JOIN arts     ON arts.urn = inks.urn
-  LEFT JOIN urns     ON arts.urn = urns.urn_id
+  LEFT JOIN arts     ON arts.urn_id = inks.urn_id
+  LEFT JOIN urns     ON arts.urn_id = urns.urn_id
   LEFT JOIN ratios   ON ratios.guy = urns.guy
   LEFT JOIN safe     ON safe.guy = ratios.guy
-  LEFT JOIN created  ON created.urn = urns.urn_id
-  LEFT JOIN updated  ON updated.urn = urns.urn_id
+  LEFT JOIN created  ON created.urn_id = urns.urn_id
+  LEFT JOIN updated  ON updated.urn_id = urns.urn_id
   -- Add collections of frob and bite events?
 $_$;
 
@@ -509,10 +509,10 @@ BEGIN
   CREATE TEMP TABLE updated ON COMMIT DROP AS
   SELECT block_number FROM (
     SELECT block_number FROM maker.vat_urn_ink
-    WHERE vat_urn_ink.urn = urnId AND block_number <= $3
+    WHERE vat_urn_ink.urn_id = urnId AND block_number <= $3
     UNION
     SELECT block_number FROM maker.vat_urn_art
-    WHERE vat_urn_art.urn = urnId AND block_number <= $3
+    WHERE vat_urn_art.urn_id = urnId AND block_number <= $3
   ) inks_and_arts
   ORDER BY block_number DESC;
 
@@ -542,17 +542,17 @@ WITH
   ),
 
   ink AS ( -- Latest ink
-    SELECT DISTINCT ON (urn) urn, ink, block_number
+    SELECT DISTINCT ON (urn_id) urn_id, ink, block_number
     FROM maker.vat_urn_ink
-    WHERE urn = (SELECT urn_id from urn where guy = $2) AND block_number <= block_height
-    ORDER BY urn, block_number DESC
+    WHERE urn_id = (SELECT urn_id from urn where guy = $2) AND block_number <= block_height
+    ORDER BY urn_id, block_number DESC
   ),
 
   art AS ( -- Latest art
-    SELECT DISTINCT ON (urn) urn, art, block_number
+    SELECT DISTINCT ON (urn_id) urn_id, art, block_number
     FROM maker.vat_urn_art
-    WHERE urn = (SELECT urn_id from urn where guy = $2) AND block_number <= block_height
-    ORDER BY urn, block_number DESC
+    WHERE urn_id = (SELECT urn_id from urn where guy = $2) AND block_number <= block_height
+    ORDER BY urn_id, block_number DESC
   ),
 
   rate AS ( -- Latest rate for ilk
@@ -572,8 +572,8 @@ WITH
   ratio_data AS (
     SELECT urn.ilk, urn.guy, ink, spot, art, rate
     FROM ink
-      JOIN urn ON ink.urn = urn.urn_id
-      JOIN art ON art.urn = ink.urn
+      JOIN urn ON ink.urn_id = urn.urn_id
+      JOIN art ON art.urn_id = ink.urn_id
       JOIN spot ON spot.ilk = urn.ilk_id
       JOIN rate ON rate.ilk = spot.ilk
   ),
@@ -588,39 +588,39 @@ WITH
   ),
 
   created AS (
-    SELECT urn, block_timestamp AS created
+    SELECT urn_id, block_timestamp AS created
     FROM
       (
-        SELECT DISTINCT ON (urn) urn, block_hash FROM maker.vat_urn_ink
-        WHERE urn = (SELECT urn_id from urn where guy = $2)
-        ORDER BY urn, block_number ASC
+        SELECT DISTINCT ON (urn_id) urn_id, block_hash FROM maker.vat_urn_ink
+        WHERE urn_id = (SELECT urn_id from urn where guy = $2)
+        ORDER BY urn_id, block_number ASC
       ) earliest_blocks
         LEFT JOIN public.headers ON hash = block_hash
   ),
 
   updated AS (
-    SELECT DISTINCT ON (urn) urn, headers.block_timestamp AS updated
+    SELECT DISTINCT ON (urn_id) urn_id, headers.block_timestamp AS updated
     FROM
       (
-        SELECT urn, block_number FROM ink
+        SELECT urn_id, block_number FROM ink
         UNION
-        SELECT urn, block_number FROM art
+        SELECT urn_id, block_number FROM art
       ) last_blocks
         LEFT JOIN public.headers ON headers.block_number = last_blocks.block_number
-    ORDER BY urn, headers.block_timestamp DESC
+    ORDER BY urn_id, headers.block_timestamp DESC
   )
 
 SELECT $2 AS urnId, $1 AS ilkId, $3 AS block_height, ink.ink, art.art, ratio.ratio,
        COALESCE(safe.safe, art.art = 0), created.created, updated.updated
 FROM ink
-  LEFT JOIN art     ON art.urn = ink.urn
-  LEFT JOIN urn     ON urn.urn_id = ink.urn
+  LEFT JOIN art     ON art.urn_id = ink.urn_id
+  LEFT JOIN urn     ON urn.urn_id = ink.urn_id
   LEFT JOIN ratio   ON ratio.ilk = urn.ilk   AND ratio.guy = urn.guy
   LEFT JOIN safe    ON safe.ilk = ratio.ilk  AND safe.guy = ratio.guy
-  LEFT JOIN created ON created.urn = art.urn
-  LEFT JOIN updated ON updated.urn = art.urn
+  LEFT JOIN created ON created.urn_id = art.urn_id
+  LEFT JOIN updated ON updated.urn_id = art.urn_id
   -- Add collections of frob and bite events?
-WHERE ink.urn IS NOT NULL
+WHERE ink.urn_id IS NOT NULL
 $_$;
 
 
@@ -652,7 +652,7 @@ SET default_with_oids = false;
 CREATE TABLE maker.bite (
     id integer NOT NULL,
     header_id integer NOT NULL,
-    urn integer NOT NULL,
+    urn_id integer NOT NULL,
     ink numeric,
     art numeric,
     iart numeric,
@@ -2182,7 +2182,7 @@ ALTER SEQUENCE maker.vat_flux_id_seq OWNED BY maker.vat_flux.id;
 CREATE TABLE maker.vat_fold (
     id integer NOT NULL,
     header_id integer NOT NULL,
-    urn integer NOT NULL,
+    urn_id integer NOT NULL,
     rate numeric,
     log_idx integer NOT NULL,
     tx_idx integer NOT NULL,
@@ -2217,7 +2217,7 @@ ALTER SEQUENCE maker.vat_fold_id_seq OWNED BY maker.vat_fold.id;
 CREATE TABLE maker.vat_frob (
     id integer NOT NULL,
     header_id integer NOT NULL,
-    urn integer NOT NULL,
+    urn_id integer NOT NULL,
     v text,
     w text,
     dink numeric,
@@ -2289,7 +2289,7 @@ ALTER SEQUENCE maker.vat_gem_id_seq OWNED BY maker.vat_gem.id;
 CREATE TABLE maker.vat_grab (
     id integer NOT NULL,
     header_id integer NOT NULL,
-    urn integer NOT NULL,
+    urn_id integer NOT NULL,
     v text,
     w text,
     dink numeric,
@@ -2797,7 +2797,7 @@ ALTER SEQUENCE maker.vat_slip_id_seq OWNED BY maker.vat_slip.id;
 CREATE TABLE maker.vat_tune (
     id integer NOT NULL,
     header_id integer NOT NULL,
-    urn integer NOT NULL,
+    urn_id integer NOT NULL,
     v text,
     w text,
     dink numeric,
@@ -2836,7 +2836,7 @@ CREATE TABLE maker.vat_urn_art (
     id integer NOT NULL,
     block_number bigint,
     block_hash text,
-    urn integer NOT NULL,
+    urn_id integer NOT NULL,
     art numeric NOT NULL
 );
 
@@ -2869,7 +2869,7 @@ CREATE TABLE maker.vat_urn_ink (
     id integer NOT NULL,
     block_number bigint,
     block_hash text,
-    urn integer NOT NULL,
+    urn_id integer NOT NULL,
     ink numeric NOT NULL
 );
 
@@ -5449,11 +5449,11 @@ ALTER TABLE ONLY maker.bite
 
 
 --
--- Name: bite bite_urn_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+-- Name: bite bite_urn_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.bite
-    ADD CONSTRAINT bite_urn_fkey FOREIGN KEY (urn) REFERENCES maker.urns(id);
+    ADD CONSTRAINT bite_urn_id_fkey FOREIGN KEY (urn_id) REFERENCES maker.urns(id);
 
 
 --
@@ -5713,11 +5713,11 @@ ALTER TABLE ONLY maker.vat_fold
 
 
 --
--- Name: vat_fold vat_fold_urn_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+-- Name: vat_fold vat_fold_urn_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.vat_fold
-    ADD CONSTRAINT vat_fold_urn_fkey FOREIGN KEY (urn) REFERENCES maker.urns(id);
+    ADD CONSTRAINT vat_fold_urn_id_fkey FOREIGN KEY (urn_id) REFERENCES maker.urns(id);
 
 
 --
@@ -5729,11 +5729,11 @@ ALTER TABLE ONLY maker.vat_frob
 
 
 --
--- Name: vat_frob vat_frob_urn_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+-- Name: vat_frob vat_frob_urn_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.vat_frob
-    ADD CONSTRAINT vat_frob_urn_fkey FOREIGN KEY (urn) REFERENCES maker.urns(id);
+    ADD CONSTRAINT vat_frob_urn_id_fkey FOREIGN KEY (urn_id) REFERENCES maker.urns(id);
 
 
 --
@@ -5753,11 +5753,11 @@ ALTER TABLE ONLY maker.vat_grab
 
 
 --
--- Name: vat_grab vat_grab_urn_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+-- Name: vat_grab vat_grab_urn_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.vat_grab
-    ADD CONSTRAINT vat_grab_urn_fkey FOREIGN KEY (urn) REFERENCES maker.urns(id);
+    ADD CONSTRAINT vat_grab_urn_id_fkey FOREIGN KEY (urn_id) REFERENCES maker.urns(id);
 
 
 --
@@ -5873,27 +5873,27 @@ ALTER TABLE ONLY maker.vat_tune
 
 
 --
--- Name: vat_tune vat_tune_urn_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+-- Name: vat_tune vat_tune_urn_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.vat_tune
-    ADD CONSTRAINT vat_tune_urn_fkey FOREIGN KEY (urn) REFERENCES maker.urns(id);
+    ADD CONSTRAINT vat_tune_urn_id_fkey FOREIGN KEY (urn_id) REFERENCES maker.urns(id);
 
 
 --
--- Name: vat_urn_art vat_urn_art_urn_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+-- Name: vat_urn_art vat_urn_art_urn_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.vat_urn_art
-    ADD CONSTRAINT vat_urn_art_urn_fkey FOREIGN KEY (urn) REFERENCES maker.urns(id);
+    ADD CONSTRAINT vat_urn_art_urn_id_fkey FOREIGN KEY (urn_id) REFERENCES maker.urns(id);
 
 
 --
--- Name: vat_urn_ink vat_urn_ink_urn_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+-- Name: vat_urn_ink vat_urn_ink_urn_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.vat_urn_ink
-    ADD CONSTRAINT vat_urn_ink_urn_fkey FOREIGN KEY (urn) REFERENCES maker.urns(id);
+    ADD CONSTRAINT vat_urn_ink_urn_id_fkey FOREIGN KEY (urn_id) REFERENCES maker.urns(id);
 
 
 --

@@ -294,7 +294,7 @@ func insertVatFold(urn string, blockNumber int64, db *postgres.DB) {
 	urnID, err := shared.GetOrCreateUrn(urn, ilkID, db)
 	Expect(err).NotTo(HaveOccurred())
 	_, execErr := db.Exec(
-		`INSERT INTO maker.vat_fold (header_id, urn, log_idx, tx_idx)
+		`INSERT INTO maker.vat_fold (header_id, urn_id, log_idx, tx_idx)
 			VALUES($1, $2, $3, $4)`,
 		headerID, urnID, 0, 0,
 	)
@@ -324,7 +324,7 @@ func insertVatGrab(ilk, urn, v, w string, blockNumber int64, db *postgres.DB) {
 
 	Expect(err).NotTo(HaveOccurred())
 	_, execErr := db.Exec(
-		`INSERT INTO maker.vat_grab (header_id, urn, v, w, log_idx, tx_idx)
+		`INSERT INTO maker.vat_grab (header_id, urn_id, v, w, log_idx, tx_idx)
 			VALUES($1, $2, $3, $4, $5, $6)`,
 		headerID, urnID, v, w, 0, 0,
 	)
@@ -391,7 +391,7 @@ func insertVatTune(ilk, urn, v, w string, blockNumber int64, db *postgres.DB) {
 	urnID, err := shared.GetOrCreateUrn(urn, ilkID, db)
 	Expect(err).NotTo(HaveOccurred())
 	_, execErr := db.Exec(
-		`INSERT INTO maker.vat_tune (header_id, urn, v, w, log_idx, tx_idx)
+		`INSERT INTO maker.vat_tune (header_id, urn_id, v, w, log_idx, tx_idx)
 			VALUES($1, $2, $3, $4, $5, $6)`,
 		headerID, urnID, v, w, 0, 0,
 	)

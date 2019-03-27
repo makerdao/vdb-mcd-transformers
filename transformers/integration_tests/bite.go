@@ -81,7 +81,7 @@ var _ = Describe("Bite Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []bite.BiteModel
-		err = db.Select(&dbResult, `SELECT art, iart, ink, nflip, tab, urn from maker.bite`)
+		err = db.Select(&dbResult, `SELECT art, iart, ink, nflip, tab, urn_id from maker.bite`)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))

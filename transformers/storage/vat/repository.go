@@ -38,8 +38,8 @@ const (
 	insertIlkSpotQuery = `INSERT INTO maker.vat_ilk_spot (block_number, block_hash, ilk, spot) VALUES ($1, $2, $3, $4)`
 	insertIlkTakeQuery = `INSERT INTO maker.vat_ilk_take (block_number, block_hash, ilk, take) VALUES ($1, $2, $3, $4)`
 	insertSinQuery     = `INSERT INTO maker.vat_sin (block_number, block_hash, guy, sin) VALUES ($1, $2, $3, $4)`
-	insertUrnArtQuery  = `INSERT INTO maker.vat_urn_art (block_number, block_hash, urn, art) VALUES ($1, $2, $3, $4)`
-	insertUrnInkQuery  = `INSERT INTO maker.vat_urn_ink (block_number, block_hash, urn, ink) VALUES ($1, $2, $3, $4)`
+	insertUrnArtQuery  = `INSERT INTO maker.vat_urn_art (block_number, block_hash, urn_id, art) VALUES ($1, $2, $3, $4)`
+	insertUrnInkQuery  = `INSERT INTO maker.vat_urn_ink (block_number, block_hash, urn_id, ink) VALUES ($1, $2, $3, $4)`
 	insertVatLineQuery = `INSERT INTO maker.vat_line (block_number, block_hash, line) VALUES ($1, $2, $3)`
 	insertVatLiveQuery = `INSERT INTO maker.vat_live (block_number, block_hash, live) VALUES ($1, $2, $3)`
 	insertVatViceQuery = `INSERT INTO maker.vat_vice (block_number, block_hash, vice) VALUES ($1, $2, $3)`

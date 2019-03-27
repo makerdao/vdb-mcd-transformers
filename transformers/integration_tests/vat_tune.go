@@ -76,7 +76,7 @@ var _ = Describe("VatTune LogNoteTransformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []vat_tune.VatTuneModel
-		err = db.Select(&dbResult, `SELECT urn, v, w, dink, dart from maker.vat_tune`)
+		err = db.Select(&dbResult, `SELECT urn_id, v, w, dink, dart from maker.vat_tune`)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))
@@ -146,7 +146,7 @@ var _ = Describe("VatTune LogNoteTransformer", func() {
 		Expect(vatTuneChecked[0]).To(Equal(2))
 
 		var dbResult []vat_tune.VatTuneModel
-		err = db.Select(&dbResult, `SELECT urn, v, w, dink, dart from maker.vat_tune`)
+		err = db.Select(&dbResult, `SELECT urn_id, v, w, dink, dart from maker.vat_tune`)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))

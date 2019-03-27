@@ -69,7 +69,7 @@ var _ = Describe("Bite repository", func() {
 
 			Expect(err).NotTo(HaveOccurred())
 			var dbBite bite.BiteModel
-			err = db.Get(&dbBite, `SELECT urn, ink, art, tab, nflip, iart, log_idx, tx_idx, raw_log FROM maker.bite WHERE header_id = $1`, headerID)
+			err = db.Get(&dbBite, `SELECT urn_id, ink, art, tab, nflip, iart, log_idx, tx_idx, raw_log FROM maker.bite WHERE header_id = $1`, headerID)
 			ilkID, err := shared.GetOrCreateIlk(test_data.BiteModel.Ilk, db)
 			Expect(err).NotTo(HaveOccurred())
 			urnID, err := shared.GetOrCreateUrn(test_data.BiteModel.Urn, ilkID, db)

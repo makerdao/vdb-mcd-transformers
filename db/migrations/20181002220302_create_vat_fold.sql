@@ -2,7 +2,7 @@
 CREATE TABLE maker.vat_fold (
   id        SERIAL PRIMARY KEY,
   header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
-  urn       INTEGER NOT NULL REFERENCES maker.urns (id),
+  urn_id    INTEGER NOT NULL REFERENCES maker.urns (id),
   rate      NUMERIC,
   log_idx   INTEGER NOT NULL,
   tx_idx    INTEGER NOT NULL,

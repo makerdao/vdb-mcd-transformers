@@ -70,7 +70,7 @@ var _ = Describe("Vat.fold repository", func() {
 
 			Expect(err).NotTo(HaveOccurred())
 			var dbVatFold vat_fold.VatFoldModel
-			err = db.Get(&dbVatFold, `SELECT urn, rate, log_idx, tx_idx, raw_log FROM maker.vat_fold WHERE header_id = $1`, headerID)
+			err = db.Get(&dbVatFold, `SELECT urn_id, rate, log_idx, tx_idx, raw_log FROM maker.vat_fold WHERE header_id = $1`, headerID)
 			Expect(err).NotTo(HaveOccurred())
 
 			ilkID, err := shared.GetOrCreateIlk(test_data.VatFoldModel.Ilk, db)

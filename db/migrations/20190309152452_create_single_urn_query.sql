@@ -17,17 +17,17 @@ WITH
   ),
 
   ink AS ( -- Latest ink
-    SELECT DISTINCT ON (urn) urn, ink, block_number
+    SELECT DISTINCT ON (urn_id) urn_id, ink, block_number
     FROM maker.vat_urn_ink
-    WHERE urn = (SELECT urn_id from urn where guy = $2) AND block_number <= block_height
-    ORDER BY urn, block_number DESC
+    WHERE urn_id = (SELECT urn_id from urn where guy = $2) AND block_number <= block_height
+    ORDER BY urn_id, block_number DESC
   ),
 
   art AS ( -- Latest art
-    SELECT DISTINCT ON (urn) urn, art, block_number
+    SELECT DISTINCT ON (urn_id) urn_id, art, block_number
     FROM maker.vat_urn_art
-    WHERE urn = (SELECT urn_id from urn where guy = $2) AND block_number <= block_height
-    ORDER BY urn, block_number DESC
+    WHERE urn_id = (SELECT urn_id from urn where guy = $2) AND block_number <= block_height
+    ORDER BY urn_id, block_number DESC
   ),
 
   rate AS ( -- Latest rate for ilk
@@ -47,8 +47,8 @@ WITH
   ratio_data AS (
     SELECT urn.ilk, urn.guy, ink, spot, art, rate
     FROM ink
-      JOIN urn ON ink.urn = urn.urn_id
-      JOIN art ON art.urn = ink.urn
+      JOIN urn ON ink.urn_id = urn.urn_id
+      JOIN art ON art.urn_id = ink.urn_id
       JOIN spot ON spot.ilk = urn.ilk_id
       JOIN rate ON rate.ilk = spot.ilk
   ),
@@ -63,39 +63,39 @@ WITH
   ),
 
   created AS (
-    SELECT urn, block_timestamp AS created
+    SELECT urn_id, block_timestamp AS created
     FROM
       (
-        SELECT DISTINCT ON (urn) urn, block_hash FROM maker.vat_urn_ink
-        WHERE urn = (SELECT urn_id from urn where guy = $2)
-        ORDER BY urn, block_number ASC
+        SELECT DISTINCT ON (urn_id) urn_id, block_hash FROM maker.vat_urn_ink
+        WHERE urn_id = (SELECT urn_id from urn where guy = $2)
+        ORDER BY urn_id, block_number ASC
       ) earliest_blocks
         LEFT JOIN public.headers ON hash = block_hash
   ),
 
   updated AS (
-    SELECT DISTINCT ON (urn) urn, headers.block_timestamp AS updated
+    SELECT DISTINCT ON (urn_id) urn_id, headers.block_timestamp AS updated
     FROM
       (
-        SELECT urn, block_number FROM ink
+        SELECT urn_id, block_number FROM ink
         UNION
-        SELECT urn, block_number FROM art
+        SELECT urn_id, block_number FROM art
       ) last_blocks
         LEFT JOIN public.headers ON headers.block_number = last_blocks.block_number
-    ORDER BY urn, headers.block_timestamp DESC
+    ORDER BY urn_id, headers.block_timestamp DESC
   )
 
 SELECT $2 AS urnId, $1 AS ilkId, $3 AS block_height, ink.ink, art.art, ratio.ratio,
        COALESCE(safe.safe, art.art = 0), created.created, updated.updated
 FROM ink
-  LEFT JOIN art     ON art.urn = ink.urn
-  LEFT JOIN urn     ON urn.urn_id = ink.urn
+  LEFT JOIN art     ON art.urn_id = ink.urn_id
+  LEFT JOIN urn     ON urn.urn_id = ink.urn_id
   LEFT JOIN ratio   ON ratio.ilk = urn.ilk   AND ratio.guy = urn.guy
   LEFT JOIN safe    ON safe.ilk = ratio.ilk  AND safe.guy = ratio.guy
-  LEFT JOIN created ON created.urn = art.urn
-  LEFT JOIN updated ON updated.urn = art.urn
+  LEFT JOIN created ON created.urn_id = art.urn_id
+  LEFT JOIN updated ON updated.urn_id = art.urn_id
   -- Add collections of frob and bite events?
-WHERE ink.urn IS NOT NULL
+WHERE ink.urn_id IS NOT NULL
 $body$
   LANGUAGE SQL;
 

@@ -329,7 +329,7 @@ var _ = Describe("Vat storage repository", func() {
 			err = db.Get(&result, `
 				SELECT block_number, block_hash, ilks.id AS key_one, urns.guy AS key_two, art AS value
 				FROM maker.vat_urn_art
-				INNER JOIN maker.urns ON maker.urns.id = maker.vat_urn_art.urn
+				INNER JOIN maker.urns ON maker.urns.id = maker.vat_urn_art.urn_id
 				INNER JOIN maker.ilks on maker.urns.ilk = maker.ilks.id
 			`)
 			Expect(err).NotTo(HaveOccurred())
@@ -369,7 +369,7 @@ var _ = Describe("Vat storage repository", func() {
 			err = db.Get(&result, `
 				SELECT block_number, block_hash, ilks.id AS key_one, urns.guy AS key_two, ink AS value
 				FROM maker.vat_urn_ink
-				INNER JOIN maker.urns ON maker.urns.id = maker.vat_urn_ink.urn
+				INNER JOIN maker.urns ON maker.urns.id = maker.vat_urn_ink.urn_id
 				INNER JOIN maker.ilks on maker.urns.ilk = maker.ilks.id
 			`)
 			Expect(err).NotTo(HaveOccurred())

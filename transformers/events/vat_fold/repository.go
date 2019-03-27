@@ -67,9 +67,9 @@ func (repository VatFoldRepository) Create(headerID int64, models []interface{})
 		}
 
 		_, execErr := tx.Exec(
-			`INSERT into maker.vat_fold (header_id, urn, rate, log_idx, tx_idx, raw_log)
+			`INSERT into maker.vat_fold (header_id, urn_id, rate, log_idx, tx_idx, raw_log)
 				VALUES($1, $2, $3::NUMERIC, $4, $5, $6)
-				ON CONFLICT (header_id, tx_idx, log_idx) DO UPDATE SET urn = $2, rate = $3, raw_log = $6;`,
+				ON CONFLICT (header_id, tx_idx, log_idx) DO UPDATE SET urn_id = $2, rate = $3, raw_log = $6;`,
 			headerID, urnID, vatFold.Rate, vatFold.LogIndex, vatFold.TransactionIndex, vatFold.Raw,
 		)
 		if execErr != nil {
