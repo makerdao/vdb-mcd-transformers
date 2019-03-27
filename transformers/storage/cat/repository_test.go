@@ -77,19 +77,6 @@ var _ = Describe("Cat storage repository", func() {
 			})
 		})
 
-		Describe("Pit", func() {
-			It("writes a row", func() {
-				pitMetadata := utils.GetStorageValueMetadata(cat.Pit, nil, utils.Address)
-
-				err := repo.Create(fakeBlockNumber, fakeBlockHash, pitMetadata, fakeAddress)
-				Expect(err).NotTo(HaveOccurred())
-
-				err = db.Get(&result, `SELECT block_number, block_hash, pit AS value FROM maker.cat_pit`)
-				Expect(err).NotTo(HaveOccurred())
-				AssertVariable(result, fakeBlockNumber, fakeBlockHash, fakeAddress)
-			})
-		})
-
 		Describe("What", func() {
 			It("writes a row", func() {
 				vowMetadata := utils.GetStorageValueMetadata(cat.Vow, nil, utils.Address)
