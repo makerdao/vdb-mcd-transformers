@@ -69,7 +69,7 @@ var _ = Describe("Vat storage mappings", func() {
 			Expect(storageRepository.GetDaiKeysCalled).To(BeTrue())
 			Expect(storageRepository.GetGemKeysCalled).To(BeTrue())
 			Expect(storageRepository.GetIlksCalled).To(BeTrue())
-			Expect(storageRepository.GetSinKeysCalled).To(BeTrue())
+			Expect(storageRepository.GetVatSinKeysCalled).To(BeTrue())
 			Expect(storageRepository.GetUrnsCalled).To(BeTrue())
 		})
 
@@ -101,7 +101,7 @@ var _ = Describe("Vat storage mappings", func() {
 		})
 
 		It("returns error if sin keys lookup fails", func() {
-			storageRepository.GetSinKeysError = fakes.FakeError
+			storageRepository.GetVatSinKeysError = fakes.FakeError
 
 			_, err := mappings.Lookup(fakes.FakeHash)
 

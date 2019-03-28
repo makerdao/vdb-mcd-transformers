@@ -176,7 +176,7 @@ func (mappings *VatMappings) loadIlkKeys() error {
 }
 
 func (mappings *VatMappings) loadSinKeys() error {
-	sinKeys, err := mappings.StorageRepository.GetSinKeys()
+	sinKeys, err := mappings.StorageRepository.GetVatSinKeys()
 	if err != nil {
 		return err
 	}

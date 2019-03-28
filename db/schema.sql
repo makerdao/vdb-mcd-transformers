@@ -2996,10 +2996,10 @@ ALTER SEQUENCE maker.vow_row_id_seq OWNED BY maker.vow_row.id;
 
 
 --
--- Name: vow_sin; Type: TABLE; Schema: maker; Owner: -
+-- Name: vow_sin_integer; Type: TABLE; Schema: maker; Owner: -
 --
 
-CREATE TABLE maker.vow_sin (
+CREATE TABLE maker.vow_sin_integer (
     id integer NOT NULL,
     block_number bigint,
     block_hash text,
@@ -3008,10 +3008,10 @@ CREATE TABLE maker.vow_sin (
 
 
 --
--- Name: vow_sin_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+-- Name: vow_sin_integer_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
-CREATE SEQUENCE maker.vow_sin_id_seq
+CREATE SEQUENCE maker.vow_sin_integer_id_seq
     AS integer
     START WITH 1
     INCREMENT BY 1
@@ -3021,10 +3021,43 @@ CREATE SEQUENCE maker.vow_sin_id_seq
 
 
 --
--- Name: vow_sin_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+-- Name: vow_sin_integer_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
 --
 
-ALTER SEQUENCE maker.vow_sin_id_seq OWNED BY maker.vow_sin.id;
+ALTER SEQUENCE maker.vow_sin_integer_id_seq OWNED BY maker.vow_sin_integer.id;
+
+
+--
+-- Name: vow_sin_mapping; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.vow_sin_mapping (
+    id integer NOT NULL,
+    block_number bigint,
+    block_hash text,
+    "timestamp" numeric,
+    sin numeric
+);
+
+
+--
+-- Name: vow_sin_mapping_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.vow_sin_mapping_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: vow_sin_mapping_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.vow_sin_mapping_id_seq OWNED BY maker.vow_sin_mapping.id;
 
 
 --
@@ -4150,10 +4183,17 @@ ALTER TABLE ONLY maker.vow_row ALTER COLUMN id SET DEFAULT nextval('maker.vow_ro
 
 
 --
--- Name: vow_sin id; Type: DEFAULT; Schema: maker; Owner: -
+-- Name: vow_sin_integer id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
-ALTER TABLE ONLY maker.vow_sin ALTER COLUMN id SET DEFAULT nextval('maker.vow_sin_id_seq'::regclass);
+ALTER TABLE ONLY maker.vow_sin_integer ALTER COLUMN id SET DEFAULT nextval('maker.vow_sin_integer_id_seq'::regclass);
+
+
+--
+-- Name: vow_sin_mapping id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_sin_mapping ALTER COLUMN id SET DEFAULT nextval('maker.vow_sin_mapping_id_seq'::regclass);
 
 
 --
@@ -5028,11 +5068,19 @@ ALTER TABLE ONLY maker.vow_row
 
 
 --
--- Name: vow_sin vow_sin_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: vow_sin_integer vow_sin_integer_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
-ALTER TABLE ONLY maker.vow_sin
-    ADD CONSTRAINT vow_sin_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY maker.vow_sin_integer
+    ADD CONSTRAINT vow_sin_integer_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: vow_sin_mapping vow_sin_mapping_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_sin_mapping
+    ADD CONSTRAINT vow_sin_mapping_pkey PRIMARY KEY (id);
 
 
 --

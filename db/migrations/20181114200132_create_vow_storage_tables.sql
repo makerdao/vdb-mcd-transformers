@@ -20,10 +20,18 @@ CREATE TABLE maker.vow_row (
   row           TEXT
 );
 
-CREATE TABLE maker.vow_sin (
+CREATE TABLE maker.vow_sin_integer (
   id            SERIAL PRIMARY KEY,
   block_number  BIGINT,
   block_hash    TEXT,
+  sin           numeric
+);
+
+CREATE TABLE maker.vow_sin_mapping (
+  id            SERIAL PRIMARY KEY,
+  block_number  BIGINT,
+  block_hash    TEXT,
+  timestamp     numeric,
   sin           numeric
 );
 

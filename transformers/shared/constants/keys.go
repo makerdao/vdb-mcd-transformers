@@ -19,7 +19,8 @@ package constants
 import "github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
 
 const (
-	Ilk  utils.Key = "ilk"
-	Guy  utils.Key = "guy"
-	Flip utils.Key = "flip"
+	Ilk       utils.Key = "ilk"
+	Guy       utils.Key = "guy"
+	Flip      utils.Key = "flip"
+	Timestamp utils.Key = "timestamp"
 )
