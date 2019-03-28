@@ -4,7 +4,7 @@ hostname = "localhost"
 port = 5432
 
 [client]
-ipcPath = "https://mainnet.infura.io/J5Vd2fRtGsw0zZ0Ov3BL"
+ipcPath = ""
 
 [contract]
 cat = "0x2f34f22a00ee4b7a8f8bbc4eaee1658774c624e0"
