@@ -50,6 +50,8 @@ var _ = Describe("Vat storage mappings", func() {
 		It("returns value metadata if key exists", func() {
 			Expect(mappings.Lookup(vat.DebtKey)).To(Equal(vat.DebtMetadata))
 			Expect(mappings.Lookup(vat.ViceKey)).To(Equal(vat.ViceMetadata))
+			Expect(mappings.Lookup(vat.LineKey)).To(Equal(vat.LineMetadata))
+			Expect(mappings.Lookup(vat.LiveKey)).To(Equal(vat.LiveMetadata))
 		})
 
 		It("returns error if key does not exist", func() {
@@ -117,24 +119,28 @@ var _ = Describe("Vat storage mappings", func() {
 		})
 
 		Describe("ilk", func() {
-			It("returns value metadata for ilk take", func() {
+			var ilkArtKey common.Hash
+			var ilkArtAsInt *big.Int
+
+			BeforeEach(func() {
 				storageRepository.Ilks = []string{fakeIlk}
-				ilkTakeKey := common.BytesToHash(crypto.Keccak256(common.FromHex("0x" + fakeIlk + vat.IlksMappingIndex)))
+				ilkArtKey = common.BytesToHash(crypto.Keccak256(common.FromHex("0x" + fakeIlk + vat.IlksMappingIndex)))
+				ilkArtAsInt = big.NewInt(0).SetBytes(ilkArtKey.Bytes())
+			})
+
+			It("returns value metadata for ilk Art", func() {
 				expectedMetadata := utils.StorageValueMetadata{
-					Name: vat.IlkTake,
+					Name: vat.IlkArt,
 					Keys: map[utils.Key]string{constants.Ilk: fakeIlk},
 					Type: utils.Uint256,
 				}
 
-				Expect(mappings.Lookup(ilkTakeKey)).To(Equal(expectedMetadata))
+				Expect(mappings.Lookup(ilkArtKey)).To(Equal(expectedMetadata))
 			})
 
 			It("returns value metadata for ilk rate", func() {
-				storageRepository.Ilks = []string{fakeIlk}
-				ilkTakeBytes := crypto.Keccak256(common.FromHex("0x" + fakeIlk + vat.IlksMappingIndex))
-				ilkTakeAsInt := big.NewInt(0).SetBytes(ilkTakeBytes)
-				incrementedIlkTake := big.NewInt(0).Add(ilkTakeAsInt, big.NewInt(1))
-				ilkRateKey := common.BytesToHash(incrementedIlkTake.Bytes())
+				incrementedIlkArt := big.NewInt(0).Add(ilkArtAsInt, big.NewInt(1))
+				ilkRateKey := common.BytesToHash(incrementedIlkArt.Bytes())
 				expectedMetadata := utils.StorageValueMetadata{
 					Name: vat.IlkRate,
 					Keys: map[utils.Key]string{constants.Ilk: fakeIlk},
@@ -144,34 +150,40 @@ var _ = Describe("Vat storage mappings", func() {
 				Expect(mappings.Lookup(ilkRateKey)).To(Equal(expectedMetadata))
 			})
 
-			It("returns value metadata for ilk Ink", func() {
-				storageRepository.Ilks = []string{fakeIlk}
-				ilkTakeBytes := crypto.Keccak256(common.FromHex("0x" + fakeIlk + vat.IlksMappingIndex))
-				ilkTakeAsInt := big.NewInt(0).SetBytes(ilkTakeBytes)
-				doubleIncrementedIlkTake := big.NewInt(0).Add(ilkTakeAsInt, big.NewInt(2))
-				ilkInkKey := common.BytesToHash(doubleIncrementedIlkTake.Bytes())
+			It("returns value metadata for ilk spot", func() {
+				incrementedIlkArt := big.NewInt(0).Add(ilkArtAsInt, big.NewInt(2))
+				ilkSpotKey := common.BytesToHash(incrementedIlkArt.Bytes())
 				expectedMetadata := utils.StorageValueMetadata{
-					Name: vat.IlkInk,
+					Name: vat.IlkSpot,
 					Keys: map[utils.Key]string{constants.Ilk: fakeIlk},
 					Type: utils.Uint256,
 				}
 
-				Expect(mappings.Lookup(ilkInkKey)).To(Equal(expectedMetadata))
+				Expect(mappings.Lookup(ilkSpotKey)).To(Equal(expectedMetadata))
 			})
 
-			It("returns value metadata for ilk Art", func() {
-				storageRepository.Ilks = []string{fakeIlk}
-				ilkTakeBytes := crypto.Keccak256(common.FromHex("0x" + fakeIlk + vat.IlksMappingIndex))
-				ilkTakeAsInt := big.NewInt(0).SetBytes(ilkTakeBytes)
-				tripleIncrementedIlkTake := big.NewInt(0).Add(ilkTakeAsInt, big.NewInt(3))
-				ilkArtKey := common.BytesToHash(tripleIncrementedIlkTake.Bytes())
+			It("returns value metadata for ilk line", func() {
+				incrementedIlkArt := big.NewInt(0).Add(ilkArtAsInt, big.NewInt(3))
+				ilkLineKey := common.BytesToHash(incrementedIlkArt.Bytes())
 				expectedMetadata := utils.StorageValueMetadata{
-					Name: vat.IlkArt,
+					Name: vat.IlkLine,
 					Keys: map[utils.Key]string{constants.Ilk: fakeIlk},
 					Type: utils.Uint256,
 				}
 
-				Expect(mappings.Lookup(ilkArtKey)).To(Equal(expectedMetadata))
+				Expect(mappings.Lookup(ilkLineKey)).To(Equal(expectedMetadata))
+			})
+
+			It("returns value metadata for ilk dust", func() {
+				incrementedIlkArt := big.NewInt(0).Add(ilkArtAsInt, big.NewInt(4))
+				ilkDustKey := common.BytesToHash(incrementedIlkArt.Bytes())
+				expectedMetadata := utils.StorageValueMetadata{
+					Name: vat.IlkDust,
+					Keys: map[utils.Key]string{constants.Ilk: fakeIlk},
+					Type: utils.Uint256,
+				}
+
+				Expect(mappings.Lookup(ilkDustKey)).To(Equal(expectedMetadata))
 			})
 		})
 

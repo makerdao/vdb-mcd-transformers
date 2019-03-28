@@ -21,6 +21,31 @@ CREATE TABLE maker.vat_ilk_art (
   art           NUMERIC NOT NULL
 );
 
+CREATE TABLE maker.vat_ilk_dust (
+  id            SERIAL PRIMARY KEY,
+  block_number  BIGINT,
+  block_hash    TEXT,
+  ilk           INTEGER NOT NULL REFERENCES maker.ilks (id),
+  dust          NUMERIC NOT NULL
+);
+
+CREATE TABLE maker.vat_ilk_line (
+  id            SERIAL PRIMARY KEY,
+  block_number  BIGINT,
+  block_hash    TEXT,
+  ilk           INTEGER NOT NULL REFERENCES maker.ilks (id),
+  line          NUMERIC NOT NULL
+);
+
+CREATE TABLE maker.vat_ilk_spot (
+  id            SERIAL PRIMARY KEY,
+  block_number  BIGINT,
+  block_hash    TEXT,
+  ilk           INTEGER NOT NULL REFERENCES maker.ilks (id),
+  spot          NUMERIC NOT NULL
+);
+
+-- TODO: remove this once the ilk query no longer depends on it
 CREATE TABLE maker.vat_ilk_ink (
   id            SERIAL PRIMARY KEY,
   block_number  BIGINT,
@@ -37,6 +62,7 @@ CREATE TABLE maker.vat_ilk_rate (
   rate          NUMERIC NOT NULL
 );
 
+-- TODO: remove this once the ilk query no longer depends on it
 CREATE TABLE maker.vat_ilk_take (
   id            SERIAL PRIMARY KEY,
   block_number  BIGINT,
@@ -88,15 +114,34 @@ CREATE TABLE maker.vat_sin (
   sin           NUMERIC NOT NULL
 );
 
+CREATE TABLE maker.vat_line (
+  id            SERIAL PRIMARY KEY,
+  block_number  BIGINT,
+  block_hash    TEXT,
+  line          NUMERIC NOT NULL
+);
+
+CREATE TABLE maker.vat_live (
+  id            SERIAL PRIMARY KEY,
+  block_number  BIGINT,
+  block_hash    TEXT,
+  live          NUMERIC NOT NULL
+);
+
 -- +goose Down
 DROP TABLE maker.vat_debt;
 DROP TABLE maker.vat_vice;
 DROP TABLE maker.vat_ilk_art;
-DROP TABLE maker.vat_ilk_ink;
+DROP TABLE maker.vat_ilk_dust;
+DROP TABLE maker.vat_ilk_line;
+DROP TABLE maker.vat_ilk_spot;
+DROP TABLE maker.vat_ilk_ink; -- TODO: remove this once the ilk query no longer depends on it
 DROP TABLE maker.vat_ilk_rate;
-DROP TABLE maker.vat_ilk_take;
+DROP TABLE maker.vat_ilk_take; -- TODO: remove this once the ilk query no longer depends on it
 DROP TABLE maker.vat_urn_art;
 DROP TABLE maker.vat_urn_ink;
 DROP TABLE maker.vat_gem;
 DROP TABLE maker.vat_dai;
 DROP TABLE maker.vat_sin;
+DROP TABLE maker.vat_line;
+DROP TABLE maker.vat_live;

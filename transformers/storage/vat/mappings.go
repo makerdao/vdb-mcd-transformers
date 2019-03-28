@@ -31,33 +31,52 @@ const (
 	Dai     = "dai"
 	Gem     = "gem"
 	IlkArt  = "Art"
-	IlkInk  = "Ink"
+	IlkInk  = "Ink" //TODO: remove when ilk query is switched over to new vat contract
+	IlkDust = "dust"
+	IlkLine = "line"
 	IlkRate = "rate"
-	IlkTake = "take"
+	IlkSpot = "spot"
+	IlkTake = "take" //TODO: remove when ilk query is switched over to new vat contract
 	Sin     = "sin"
 	UrnArt  = "art"
 	UrnInk  = "ink"
 	VatDebt = "debt"
 	VatVice = "vice"
+	VatLine = "Line"
+	VatLive = "live"
 )
 
 var (
-	DebtKey      = common.HexToHash(storage.IndexSix)
+	IlksMappingIndex = storage.IndexTwo
+	UrnsMappingIndex = storage.IndexThree
+	GemsMappingIndex = storage.IndexFour
+	DaiMappingIndex  = storage.IndexFive
+	SinMappingIndex  = storage.IndexSix
+
+	DebtKey      = common.HexToHash(storage.IndexSeven)
 	DebtMetadata = utils.StorageValueMetadata{
 		Name: VatDebt,
 		Keys: nil,
 		Type: utils.Uint256,
 	}
 
-	IlksMappingIndex = storage.IndexOne
-	UrnsMappingIndex = storage.IndexTwo
-	GemsMappingIndex = storage.IndexThree
-	DaiMappingIndex  = storage.IndexFour
-	SinMappingIndex  = storage.IndexFive
-
-	ViceKey      = common.HexToHash(storage.IndexSeven)
+	ViceKey      = common.HexToHash(storage.IndexEight)
 	ViceMetadata = utils.StorageValueMetadata{
 		Name: VatVice,
+		Keys: nil,
+		Type: utils.Uint256,
+	}
+
+	LineKey      = common.HexToHash(storage.IndexNine)
+	LineMetadata = utils.StorageValueMetadata{
+		Name: VatLine,
+		Keys: nil,
+		Type: utils.Uint256,
+	}
+
+	LiveKey      = common.HexToHash(storage.IndexTen)
+	LiveMetadata = utils.StorageValueMetadata{
+		Name: VatLive,
 		Keys: nil,
 		Type: utils.Uint256,
 	}
@@ -116,6 +135,8 @@ func loadStaticMappings() map[common.Hash]utils.StorageValueMetadata {
 	mappings := make(map[common.Hash]utils.StorageValueMetadata)
 	mappings[DebtKey] = DebtMetadata
 	mappings[ViceKey] = ViceMetadata
+	mappings[LineKey] = LineMetadata
+	mappings[LiveKey] = LiveMetadata
 	return mappings
 }
 
@@ -147,10 +168,11 @@ func (mappings *VatMappings) loadIlkKeys() error {
 		return err
 	}
 	for _, ilk := range ilks {
-		mappings.mappings[getIlkTakeKey(ilk)] = getIlkTakeMetadata(ilk)
-		mappings.mappings[getIlkRateKey(ilk)] = getIlkRateMetadata(ilk)
-		mappings.mappings[getIlkInkKey(ilk)] = getIlkInkMetadata(ilk)
 		mappings.mappings[getIlkArtKey(ilk)] = getIlkArtMetadata(ilk)
+		mappings.mappings[getIlkRateKey(ilk)] = getIlkRateMetadata(ilk)
+		mappings.mappings[getIlkSpotKey(ilk)] = getIlkSpotMetadata(ilk)
+		mappings.mappings[getIlkLineKey(ilk)] = getIlkLineMetadata(ilk)
+		mappings.mappings[getIlkDustKey(ilk)] = getIlkDustMetadata(ilk)
 	}
 	return nil
 }
@@ -172,23 +194,23 @@ func (mappings *VatMappings) loadUrnKeys() error {
 		return err
 	}
 	for _, urn := range urns {
-		mappings.mappings[getUrnInkKey(urn.Ilk, urn.Guy)] = getUrnInkMetadata(urn.Ilk, urn.Guy)
 		mappings.mappings[getUrnArtKey(urn.Ilk, urn.Guy)] = getUrnArtMetadata(urn.Ilk, urn.Guy)
+		mappings.mappings[getUrnInkKey(urn.Ilk, urn.Guy)] = getUrnInkMetadata(urn.Ilk, urn.Guy)
 	}
 	return nil
 }
 
-func getIlkTakeKey(ilk string) common.Hash {
+func getIlkArtKey(ilk string) common.Hash {
 	return storage.GetMapping(IlksMappingIndex, ilk)
 }
 
-func getIlkTakeMetadata(ilk string) utils.StorageValueMetadata {
+func getIlkArtMetadata(ilk string) utils.StorageValueMetadata {
 	keys := map[utils.Key]string{constants.Ilk: ilk}
-	return utils.GetStorageValueMetadata(IlkTake, keys, utils.Uint256)
+	return utils.GetStorageValueMetadata(IlkArt, keys, utils.Uint256)
 }
 
 func getIlkRateKey(ilk string) common.Hash {
-	return storage.GetIncrementedKey(getIlkTakeKey(ilk), 1)
+	return storage.GetIncrementedKey(getIlkArtKey(ilk), 1)
 }
 
 func getIlkRateMetadata(ilk string) utils.StorageValueMetadata {
@@ -196,22 +218,31 @@ func getIlkRateMetadata(ilk string) utils.StorageValueMetadata {
 	return utils.GetStorageValueMetadata(IlkRate, keys, utils.Uint256)
 }
 
-func getIlkInkKey(ilk string) common.Hash {
-	return storage.GetIncrementedKey(getIlkTakeKey(ilk), 2)
+func getIlkSpotKey(ilk string) common.Hash {
+	return storage.GetIncrementedKey(getIlkArtKey(ilk), 2)
 }
 
-func getIlkInkMetadata(ilk string) utils.StorageValueMetadata {
+func getIlkSpotMetadata(ilk string) utils.StorageValueMetadata {
 	keys := map[utils.Key]string{constants.Ilk: ilk}
-	return utils.GetStorageValueMetadata(IlkInk, keys, utils.Uint256)
+	return utils.GetStorageValueMetadata(IlkSpot, keys, utils.Uint256)
 }
 
-func getIlkArtKey(ilk string) common.Hash {
-	return storage.GetIncrementedKey(getIlkTakeKey(ilk), 3)
+func getIlkLineKey(ilk string) common.Hash {
+	return storage.GetIncrementedKey(getIlkArtKey(ilk), 3)
 }
 
-func getIlkArtMetadata(ilk string) utils.StorageValueMetadata {
+func getIlkLineMetadata(ilk string) utils.StorageValueMetadata {
 	keys := map[utils.Key]string{constants.Ilk: ilk}
-	return utils.GetStorageValueMetadata(IlkArt, keys, utils.Uint256)
+	return utils.GetStorageValueMetadata(IlkLine, keys, utils.Uint256)
+}
+
+func getIlkDustKey(ilk string) common.Hash {
+	return storage.GetIncrementedKey(getIlkArtKey(ilk), 4)
+}
+
+func getIlkDustMetadata(ilk string) utils.StorageValueMetadata {
+	keys := map[utils.Key]string{constants.Ilk: ilk}
+	return utils.GetStorageValueMetadata(IlkDust, keys, utils.Uint256)
 }
 
 func getUrnInkKey(ilk, guy string) common.Hash {

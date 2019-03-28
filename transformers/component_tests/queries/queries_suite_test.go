@@ -1,4 +1,4 @@
-package queries_test
+package queries
 
 import (
 	"github.com/sirupsen/logrus"
