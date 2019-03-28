@@ -28,7 +28,7 @@ WITH
     SELECT urns.id AS urn_id, ilks.id AS ilk_id, ilks.ilk, urns.guy
     FROM maker.urns urns
     LEFT JOIN maker.ilks ilks
-    ON urns.ilk = ilks.id
+    ON urns.ilk_id = ilks.id
   ),
 
   inks AS ( -- Latest ink for each urn
@@ -46,17 +46,17 @@ WITH
   ),
 
   rates AS ( -- Latest rate for each ilk
-    SELECT DISTINCT ON (ilk) ilk, rate, block_number
+    SELECT DISTINCT ON (ilk_id) ilk_id, rate, block_number
     FROM maker.vat_ilk_rate
     WHERE block_number <= block_height
-    ORDER BY ilk, block_number DESC
+    ORDER BY ilk_id, block_number DESC
   ),
 
   spots AS ( -- Get latest price update for ilk. Problematic from update frequency, slow query?
-    SELECT DISTINCT ON (ilk) ilk, spot, block_number
+    SELECT DISTINCT ON (ilk_id) ilk_id, spot, block_number
     FROM maker.pit_ilk_spot
     WHERE block_number <= block_height
-    ORDER BY ilk, block_number DESC
+    ORDER BY ilk_id, block_number DESC
   ),
 
   ratio_data AS (
@@ -64,8 +64,8 @@ WITH
     FROM inks
       JOIN urns ON inks.urn_id = urns.urn_id
       JOIN arts ON arts.urn_id = inks.urn_id
-      JOIN spots ON spots.ilk = urns.ilk_id
-      JOIN rates ON rates.ilk = spots.ilk
+      JOIN spots ON spots.ilk_id = urns.ilk_id
+      JOIN rates ON rates.ilk_id = spots.ilk_id
   ),
 
   ratios AS (

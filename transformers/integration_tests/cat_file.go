@@ -96,7 +96,7 @@ var _ = Describe("Cat File transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []chop_lump.CatFileChopLumpModel
-		err = db.Select(&dbResult, `SELECT what, ilk, data, log_idx FROM maker.cat_file_chop_lump`)
+		err = db.Select(&dbResult, `SELECT what, ilk_id, data, log_idx FROM maker.cat_file_chop_lump`)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(2))
@@ -193,11 +193,13 @@ var _ = Describe("Cat File transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []flip.CatFileFlipModel
-		err = db.Select(&dbResult, `SELECT ilk, what, flip FROM maker.cat_file_flip`)
+		err = db.Select(&dbResult, `SELECT ilk_id, what, flip FROM maker.cat_file_flip`)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))
-		Expect(dbResult[0].Ilk).To(Equal("4554480000000000000000000000000000000000000000000000000000000000"))
+		ilkID, err := shared.GetOrCreateIlk("4554480000000000000000000000000000000000000000000000000000000000", db)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(dbResult[0].Ilk).To(Equal(strconv.Itoa(ilkID)))
 		Expect(dbResult[0].What).To(Equal("flip"))
 		Expect(dbResult[0].Flip).To(Equal("0x32D496Ad866D110060866B7125981C73642cc509"))
 	})

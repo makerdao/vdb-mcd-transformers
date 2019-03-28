@@ -59,7 +59,7 @@ var _ = Describe("Jug storage repository", func() {
 
 				Expect(err).NotTo(HaveOccurred())
 				var result MappingRes
-				err = db.Get(&result, `SELECT block_number, block_hash, ilk AS key, rho AS VALUE FROM maker.jug_ilk_rho`)
+				err = db.Get(&result, `SELECT block_number, block_hash, ilk_id AS key, rho AS VALUE FROM maker.jug_ilk_rho`)
 				Expect(err).NotTo(HaveOccurred())
 				ilkID, err := shared.GetOrCreateIlk(fakeIlk, db)
 				Expect(err).NotTo(HaveOccurred())
@@ -82,7 +82,7 @@ var _ = Describe("Jug storage repository", func() {
 
 				Expect(err).NotTo(HaveOccurred())
 				var result MappingRes
-				err = db.Get(&result, `SELECT block_number, block_hash, ilk AS KEY, tax AS VALUE FROM maker.jug_ilk_tax`)
+				err = db.Get(&result, `SELECT block_number, block_hash, ilk_id AS KEY, tax AS VALUE FROM maker.jug_ilk_tax`)
 				Expect(err).NotTo(HaveOccurred())
 				ilkID, err := shared.GetOrCreateIlk(fakeIlk, db)
 				Expect(err).NotTo(HaveOccurred())

@@ -59,9 +59,9 @@ func (repository VatInitRepository) Create(headerID int64, models []interface{})
 		}
 
 		_, execErr := tx.Exec(
-			`INSERT INTO maker.vat_init (header_id, ilk, log_idx, tx_idx, raw_log)
+			`INSERT INTO maker.vat_init (header_id, ilk_id, log_idx, tx_idx, raw_log)
 			VALUES($1, $2, $3, $4, $5)
-			ON CONFLICT (header_id, tx_idx, log_idx) DO UPDATE SET ilk = $2, raw_log = $5;`,
+			ON CONFLICT (header_id, tx_idx, log_idx) DO UPDATE SET ilk_id = $2, raw_log = $5;`,
 			headerID, ilkID, vatInit.LogIndex, vatInit.TransactionIndex, vatInit.Raw,
 		)
 		if execErr != nil {

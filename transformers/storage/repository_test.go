@@ -308,7 +308,7 @@ func insertVatFlux(ilk, src, dst string, blockNumber int64, db *postgres.DB) {
 	ilkID, err := shared.GetOrCreateIlk(ilk, db)
 	Expect(err).NotTo(HaveOccurred())
 	_, execErr := db.Exec(
-		`INSERT INTO maker.vat_flux (header_id, ilk, src, dst, log_idx, tx_idx)
+		`INSERT INTO maker.vat_flux (header_id, ilk_id, src, dst, log_idx, tx_idx)
 			VALUES($1, $2, $3, $4, $5, $6)`,
 		headerID, ilkID, src, dst, 0, 0,
 	)
@@ -350,7 +350,7 @@ func insertVatInit(ilk string, blockNumber int64, db *postgres.DB) {
 	ilkID, err := shared.GetOrCreateIlk(ilk, db)
 	Expect(err).NotTo(HaveOccurred())
 	_, execErr := db.Exec(
-		`INSERT INTO maker.vat_init (header_id, ilk, log_idx, tx_idx)
+		`INSERT INTO maker.vat_init (header_id, ilk_id, log_idx, tx_idx)
 			VALUES($1, $2, $3, $4)`,
 		headerID, ilkID, 0, 0,
 	)
@@ -376,7 +376,7 @@ func insertVatSlip(ilk, guy string, blockNumber int64, db *postgres.DB) {
 	ilkID, err := shared.GetOrCreateIlk(ilk, db)
 	Expect(err).NotTo(HaveOccurred())
 	_, execErr := db.Exec(
-		`INSERT INTO maker.vat_slip (header_id, ilk, guy, log_idx, tx_idx)
+		`INSERT INTO maker.vat_slip (header_id, ilk_id, guy, log_idx, tx_idx)
 			VALUES($1, $2, $3, $4, $5)`,
 		headerID, ilkID, guy, 0, 0,
 	)
