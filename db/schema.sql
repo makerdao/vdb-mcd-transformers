@@ -2348,6 +2348,39 @@ ALTER SEQUENCE maker.vat_ilk_art_id_seq OWNED BY maker.vat_ilk_art.id;
 
 
 --
+-- Name: vat_ilk_dust; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.vat_ilk_dust (
+    id integer NOT NULL,
+    block_number bigint,
+    block_hash text,
+    ilk integer NOT NULL,
+    dust numeric NOT NULL
+);
+
+
+--
+-- Name: vat_ilk_dust_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.vat_ilk_dust_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: vat_ilk_dust_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.vat_ilk_dust_id_seq OWNED BY maker.vat_ilk_dust.id;
+
+
+--
 -- Name: vat_ilk_ink; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -2381,6 +2414,39 @@ ALTER SEQUENCE maker.vat_ilk_ink_id_seq OWNED BY maker.vat_ilk_ink.id;
 
 
 --
+-- Name: vat_ilk_line; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.vat_ilk_line (
+    id integer NOT NULL,
+    block_number bigint,
+    block_hash text,
+    ilk integer NOT NULL,
+    line numeric NOT NULL
+);
+
+
+--
+-- Name: vat_ilk_line_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.vat_ilk_line_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: vat_ilk_line_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.vat_ilk_line_id_seq OWNED BY maker.vat_ilk_line.id;
+
+
+--
 -- Name: vat_ilk_rate; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -2411,6 +2477,39 @@ CREATE SEQUENCE maker.vat_ilk_rate_id_seq
 --
 
 ALTER SEQUENCE maker.vat_ilk_rate_id_seq OWNED BY maker.vat_ilk_rate.id;
+
+
+--
+-- Name: vat_ilk_spot; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.vat_ilk_spot (
+    id integer NOT NULL,
+    block_number bigint,
+    block_hash text,
+    ilk integer NOT NULL,
+    spot numeric NOT NULL
+);
+
+
+--
+-- Name: vat_ilk_spot_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.vat_ilk_spot_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: vat_ilk_spot_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.vat_ilk_spot_id_seq OWNED BY maker.vat_ilk_spot.id;
 
 
 --
@@ -2478,6 +2577,70 @@ CREATE SEQUENCE maker.vat_init_id_seq
 --
 
 ALTER SEQUENCE maker.vat_init_id_seq OWNED BY maker.vat_init.id;
+
+
+--
+-- Name: vat_line; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.vat_line (
+    id integer NOT NULL,
+    block_number bigint,
+    block_hash text,
+    line numeric NOT NULL
+);
+
+
+--
+-- Name: vat_line_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.vat_line_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: vat_line_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.vat_line_id_seq OWNED BY maker.vat_line.id;
+
+
+--
+-- Name: vat_live; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.vat_live (
+    id integer NOT NULL,
+    block_number bigint,
+    block_hash text,
+    live numeric NOT NULL
+);
+
+
+--
+-- Name: vat_live_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.vat_live_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: vat_live_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.vat_live_id_seq OWNED BY maker.vat_live.id;
 
 
 --
@@ -3918,6 +4081,13 @@ ALTER TABLE ONLY maker.vat_ilk_art ALTER COLUMN id SET DEFAULT nextval('maker.va
 
 
 --
+-- Name: vat_ilk_dust id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_ilk_dust ALTER COLUMN id SET DEFAULT nextval('maker.vat_ilk_dust_id_seq'::regclass);
+
+
+--
 -- Name: vat_ilk_ink id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
@@ -3925,10 +4095,24 @@ ALTER TABLE ONLY maker.vat_ilk_ink ALTER COLUMN id SET DEFAULT nextval('maker.va
 
 
 --
+-- Name: vat_ilk_line id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_ilk_line ALTER COLUMN id SET DEFAULT nextval('maker.vat_ilk_line_id_seq'::regclass);
+
+
+--
 -- Name: vat_ilk_rate id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.vat_ilk_rate ALTER COLUMN id SET DEFAULT nextval('maker.vat_ilk_rate_id_seq'::regclass);
+
+
+--
+-- Name: vat_ilk_spot id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_ilk_spot ALTER COLUMN id SET DEFAULT nextval('maker.vat_ilk_spot_id_seq'::regclass);
 
 
 --
@@ -3943,6 +4127,20 @@ ALTER TABLE ONLY maker.vat_ilk_take ALTER COLUMN id SET DEFAULT nextval('maker.v
 --
 
 ALTER TABLE ONLY maker.vat_init ALTER COLUMN id SET DEFAULT nextval('maker.vat_init_id_seq'::regclass);
+
+
+--
+-- Name: vat_line id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_line ALTER COLUMN id SET DEFAULT nextval('maker.vat_line_id_seq'::regclass);
+
+
+--
+-- Name: vat_live id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_live ALTER COLUMN id SET DEFAULT nextval('maker.vat_live_id_seq'::regclass);
 
 
 --
@@ -4740,6 +4938,14 @@ ALTER TABLE ONLY maker.vat_ilk_art
 
 
 --
+-- Name: vat_ilk_dust vat_ilk_dust_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_ilk_dust
+    ADD CONSTRAINT vat_ilk_dust_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: vat_ilk_ink vat_ilk_ink_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -4748,11 +4954,27 @@ ALTER TABLE ONLY maker.vat_ilk_ink
 
 
 --
+-- Name: vat_ilk_line vat_ilk_line_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_ilk_line
+    ADD CONSTRAINT vat_ilk_line_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: vat_ilk_rate vat_ilk_rate_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.vat_ilk_rate
     ADD CONSTRAINT vat_ilk_rate_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: vat_ilk_spot vat_ilk_spot_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_ilk_spot
+    ADD CONSTRAINT vat_ilk_spot_pkey PRIMARY KEY (id);
 
 
 --
@@ -4777,6 +4999,22 @@ ALTER TABLE ONLY maker.vat_init
 
 ALTER TABLE ONLY maker.vat_init
     ADD CONSTRAINT vat_init_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: vat_line vat_line_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_line
+    ADD CONSTRAINT vat_line_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: vat_live vat_live_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_live
+    ADD CONSTRAINT vat_live_pkey PRIMARY KEY (id);
 
 
 --
@@ -5469,6 +5707,14 @@ ALTER TABLE ONLY maker.vat_ilk_art
 
 
 --
+-- Name: vat_ilk_dust vat_ilk_dust_ilk_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_ilk_dust
+    ADD CONSTRAINT vat_ilk_dust_ilk_fkey FOREIGN KEY (ilk) REFERENCES maker.ilks(id);
+
+
+--
 -- Name: vat_ilk_ink vat_ilk_ink_ilk_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -5477,11 +5723,27 @@ ALTER TABLE ONLY maker.vat_ilk_ink
 
 
 --
+-- Name: vat_ilk_line vat_ilk_line_ilk_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_ilk_line
+    ADD CONSTRAINT vat_ilk_line_ilk_fkey FOREIGN KEY (ilk) REFERENCES maker.ilks(id);
+
+
+--
 -- Name: vat_ilk_rate vat_ilk_rate_ilk_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.vat_ilk_rate
     ADD CONSTRAINT vat_ilk_rate_ilk_fkey FOREIGN KEY (ilk) REFERENCES maker.ilks(id);
+
+
+--
+-- Name: vat_ilk_spot vat_ilk_spot_ilk_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_ilk_spot
+    ADD CONSTRAINT vat_ilk_spot_ilk_fkey FOREIGN KEY (ilk) REFERENCES maker.ilks(id);
 
 
 --

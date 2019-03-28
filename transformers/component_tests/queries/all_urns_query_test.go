@@ -1,11 +1,11 @@
-package queries_test
+package queries
 
 import (
 	"database/sql"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	helper "github.com/vulcanize/mcd_transformers/pkg/queries/test_helpers"
 	"github.com/vulcanize/mcd_transformers/test_config"
+	helper "github.com/vulcanize/mcd_transformers/transformers/component_tests/queries/test_helpers"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/pit"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/vat"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"

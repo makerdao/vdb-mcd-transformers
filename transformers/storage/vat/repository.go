@@ -38,11 +38,19 @@ func (repository *VatStorageRepository) Create(blockNumber int, blockHash string
 		return repository.insertGem(blockNumber, blockHash, metadata, value.(string))
 	case IlkArt:
 		return repository.insertIlkArt(blockNumber, blockHash, metadata, value.(string))
+	case IlkDust:
+		return repository.insertIlkDust(blockNumber, blockHash, metadata, value.(string))
 	case IlkInk:
+		//TODO: remove once Ilk query tests are updated
 		return repository.insertIlkInk(blockNumber, blockHash, metadata, value.(string))
+	case IlkLine:
+		return repository.insertIlkLine(blockNumber, blockHash, metadata, value.(string))
 	case IlkRate:
 		return repository.insertIlkRate(blockNumber, blockHash, metadata, value.(string))
+	case IlkSpot:
+		return repository.insertIlkSpot(blockNumber, blockHash, metadata, value.(string))
 	case IlkTake:
+		//TODO: remove once Ilk query tests are updated
 		return repository.insertIlkTake(blockNumber, blockHash, metadata, value.(string))
 	case Sin:
 		return repository.insertSin(blockNumber, blockHash, metadata, value.(string))
@@ -54,6 +62,10 @@ func (repository *VatStorageRepository) Create(blockNumber int, blockHash string
 		return repository.insertVatDebt(blockNumber, blockHash, value.(string))
 	case VatVice:
 		return repository.insertVatVice(blockNumber, blockHash, value.(string))
+	case VatLine:
+		return repository.insertVatLine(blockNumber, blockHash, value.(string))
+	case VatLive:
+		return repository.insertVatLive(blockNumber, blockHash, value.(string))
 	default:
 		panic(fmt.Sprintf("unrecognized vat contract storage name: %s", metadata.Name))
 	}
@@ -132,6 +144,34 @@ func (repository *VatStorageRepository) insertIlkArt(blockNumber int, blockHash 
 	return tx.Commit()
 }
 
+func (repository *VatStorageRepository) insertIlkDust(blockNumber int, blockHash string, metadata utils.StorageValueMetadata, dust string) error {
+	ilk, err := getIlk(metadata.Keys)
+	if err != nil {
+		return err
+	}
+	tx, txErr := repository.db.Beginx()
+	if txErr != nil {
+		return txErr
+	}
+	ilkID, ilkErr := shared.GetOrCreateIlkInTransaction(ilk, tx)
+	if ilkErr != nil {
+		rollbackErr := tx.Rollback()
+		if rollbackErr != nil {
+			return fmt.Errorf("failed to rollback transaction after failing to insert ilk: %s", ilkErr.Error())
+		}
+		return ilkErr
+	}
+	_, writeErr := tx.Exec(`INSERT INTO maker.vat_ilk_dust (block_number, block_hash, ilk, dust) VALUES ($1, $2, $3, $4)`, blockNumber, blockHash, ilkID, dust)
+	if writeErr != nil {
+		rollbackErr := tx.Rollback()
+		if rollbackErr != nil {
+			return fmt.Errorf("failed to rollback transaction after failing to insert ilk dust: %s", writeErr.Error())
+		}
+		return writeErr
+	}
+	return tx.Commit()
+}
+
 func (repository *VatStorageRepository) insertIlkInk(blockNumber int, blockHash string, metadata utils.StorageValueMetadata, ink string) error {
 	ilk, err := getIlk(metadata.Keys)
 	if err != nil {
@@ -160,6 +200,34 @@ func (repository *VatStorageRepository) insertIlkInk(blockNumber int, blockHash 
 	return tx.Commit()
 }
 
+func (repository *VatStorageRepository) insertIlkLine(blockNumber int, blockHash string, metadata utils.StorageValueMetadata, line string) error {
+	ilk, err := getIlk(metadata.Keys)
+	if err != nil {
+		return err
+	}
+	tx, txErr := repository.db.Beginx()
+	if txErr != nil {
+		return txErr
+	}
+	ilkID, ilkErr := shared.GetOrCreateIlkInTransaction(ilk, tx)
+	if ilkErr != nil {
+		rollbackErr := tx.Rollback()
+		if rollbackErr != nil {
+			return fmt.Errorf("failed to rollback transaction after failing to insert ilk: %s", ilkErr.Error())
+		}
+		return ilkErr
+	}
+	_, writeErr := tx.Exec(`INSERT INTO maker.vat_ilk_line (block_number, block_hash, ilk, line) VALUES ($1, $2, $3, $4)`, blockNumber, blockHash, ilkID, line)
+	if writeErr != nil {
+		rollbackErr := tx.Rollback()
+		if rollbackErr != nil {
+			return fmt.Errorf("failed to rollback transaction after failing to insert ilk line: %s", writeErr.Error())
+		}
+		return writeErr
+	}
+	return tx.Commit()
+}
+
 func (repository *VatStorageRepository) insertIlkRate(blockNumber int, blockHash string, metadata utils.StorageValueMetadata, rate string) error {
 	ilk, err := getIlk(metadata.Keys)
 	if err != nil {
@@ -182,6 +250,34 @@ func (repository *VatStorageRepository) insertIlkRate(blockNumber int, blockHash
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
 			return fmt.Errorf("failed to rollback transaction after failing to insert ilk rate: %s", writeErr.Error())
+		}
+		return writeErr
+	}
+	return tx.Commit()
+}
+
+func (repository *VatStorageRepository) insertIlkSpot(blockNumber int, blockHash string, metadata utils.StorageValueMetadata, spot string) error {
+	ilk, err := getIlk(metadata.Keys)
+	if err != nil {
+		return err
+	}
+	tx, txErr := repository.db.Beginx()
+	if txErr != nil {
+		return txErr
+	}
+	ilkID, ilkErr := shared.GetOrCreateIlkInTransaction(ilk, tx)
+	if ilkErr != nil {
+		rollbackErr := tx.Rollback()
+		if rollbackErr != nil {
+			return fmt.Errorf("failed to rollback transaction after failing to insert ilk: %s", ilkErr.Error())
+		}
+		return ilkErr
+	}
+	_, writeErr := tx.Exec(`INSERT INTO maker.vat_ilk_spot (block_number, block_hash, ilk, spot) VALUES ($1, $2, $3, $4)`, blockNumber, blockHash, ilkID, spot)
+	if writeErr != nil {
+		rollbackErr := tx.Rollback()
+		if rollbackErr != nil {
+			return fmt.Errorf("failed to rollback transaction after failing to insert ilk spot: %s", writeErr.Error())
 		}
 		return writeErr
 	}
@@ -296,6 +392,16 @@ func (repository *VatStorageRepository) insertVatDebt(blockNumber int, blockHash
 
 func (repository *VatStorageRepository) insertVatVice(blockNumber int, blockHash, vice string) error {
 	_, err := repository.db.Exec(`INSERT INTO maker.vat_vice (block_number, block_hash, vice) VALUES ($1, $2, $3)`, blockNumber, blockHash, vice)
+	return err
+}
+
+func (repository *VatStorageRepository) insertVatLine(blockNumber int, blockHash, line string) error {
+	_, err := repository.db.Exec(`INSERT INTO maker.vat_line (block_number, block_hash, line) VALUES ($1, $2, $3)`, blockNumber, blockHash, line)
+	return err
+}
+
+func (repository *VatStorageRepository) insertVatLive(blockNumber int, blockHash, live string) error {
+	_, err := repository.db.Exec(`INSERT INTO maker.vat_live (block_number, block_hash, live) VALUES ($1, $2, $3)`, blockNumber, blockHash, live)
 	return err
 }
 

@@ -135,7 +135,34 @@ var _ = Describe("Vat storage repository", func() {
 		})
 	})
 
+	Describe("ilk dust", func() {
+		It("writes row", func() {
+			ilkDustMetadata := utils.GetStorageValueMetadata(vat.IlkDust, map[utils.Key]string{constants.Ilk: fakeIlk}, utils.Uint256)
+
+			err := repo.Create(fakeBlockNumber, fakeBlockHash, ilkDustMetadata, fakeUint256)
+
+			Expect(err).NotTo(HaveOccurred())
+
+			var result MappingRes
+			err = db.Get(&result, `SELECT block_number, block_hash, ilk AS key, dust AS value FROM maker.vat_ilk_dust`)
+			Expect(err).NotTo(HaveOccurred())
+			ilkID, err := shared.GetOrCreateIlk(fakeIlk, db)
+			Expect(err).NotTo(HaveOccurred())
+			AssertMapping(result, fakeBlockNumber, fakeBlockHash, strconv.Itoa(ilkID), fakeUint256)
+		})
+
+		It("returns error if metadata missing ilk", func() {
+			malformedIlkDustMetadata := utils.GetStorageValueMetadata(vat.IlkDust, nil, utils.Uint256)
+
+			err := repo.Create(fakeBlockNumber, fakeBlockHash, malformedIlkDustMetadata, fakeUint256)
+
+			Expect(err).To(HaveOccurred())
+			Expect(err).To(MatchError(utils.ErrMetadataMalformed{MissingData: constants.Ilk}))
+		})
+	})
+
 	Describe("ilk Ink", func() {
+		//TODO: remove once ilk query test is updated
 		It("writes row", func() {
 			ilkInkMetadata := utils.GetStorageValueMetadata(vat.IlkInk, map[utils.Key]string{constants.Ilk: fakeIlk}, utils.Uint256)
 
@@ -155,6 +182,32 @@ var _ = Describe("Vat storage repository", func() {
 			malformedIlkInkMetadata := utils.GetStorageValueMetadata(vat.IlkInk, nil, utils.Uint256)
 
 			err := repo.Create(fakeBlockNumber, fakeBlockHash, malformedIlkInkMetadata, fakeUint256)
+
+			Expect(err).To(HaveOccurred())
+			Expect(err).To(MatchError(utils.ErrMetadataMalformed{MissingData: constants.Ilk}))
+		})
+	})
+
+	Describe("ilk line", func() {
+		It("writes row", func() {
+			ilkLineMetadata := utils.GetStorageValueMetadata(vat.IlkLine, map[utils.Key]string{constants.Ilk: fakeIlk}, utils.Uint256)
+
+			err := repo.Create(fakeBlockNumber, fakeBlockHash, ilkLineMetadata, fakeUint256)
+
+			Expect(err).NotTo(HaveOccurred())
+
+			var result MappingRes
+			err = db.Get(&result, `SELECT block_number, block_hash, ilk AS key, line AS value FROM maker.vat_ilk_line`)
+			Expect(err).NotTo(HaveOccurred())
+			ilkID, err := shared.GetOrCreateIlk(fakeIlk, db)
+			Expect(err).NotTo(HaveOccurred())
+			AssertMapping(result, fakeBlockNumber, fakeBlockHash, strconv.Itoa(ilkID), fakeUint256)
+		})
+
+		It("returns error if metadata missing ilk", func() {
+			malformedIlkLineMetadata := utils.GetStorageValueMetadata(vat.IlkLine, nil, utils.Uint256)
+
+			err := repo.Create(fakeBlockNumber, fakeBlockHash, malformedIlkLineMetadata, fakeUint256)
 
 			Expect(err).To(HaveOccurred())
 			Expect(err).To(MatchError(utils.ErrMetadataMalformed{MissingData: constants.Ilk}))
@@ -187,7 +240,34 @@ var _ = Describe("Vat storage repository", func() {
 		})
 	})
 
+	Describe("ilk spot", func() {
+		It("writes row", func() {
+			ilkSpotMetadata := utils.GetStorageValueMetadata(vat.IlkSpot, map[utils.Key]string{constants.Ilk: fakeIlk}, utils.Uint256)
+
+			err := repo.Create(fakeBlockNumber, fakeBlockHash, ilkSpotMetadata, fakeUint256)
+
+			Expect(err).NotTo(HaveOccurred())
+
+			var result MappingRes
+			err = db.Get(&result, `SELECT block_number, block_hash, ilk AS key, spot AS value FROM maker.vat_ilk_spot`)
+			Expect(err).NotTo(HaveOccurred())
+			ilkID, err := shared.GetOrCreateIlk(fakeIlk, db)
+			Expect(err).NotTo(HaveOccurred())
+			AssertMapping(result, fakeBlockNumber, fakeBlockHash, strconv.Itoa(ilkID), fakeUint256)
+		})
+
+		It("returns error if metadata missing ilk", func() {
+			malformedIlkSpotMetadata := utils.GetStorageValueMetadata(vat.IlkSpot, nil, utils.Uint256)
+
+			err := repo.Create(fakeBlockNumber, fakeBlockHash, malformedIlkSpotMetadata, fakeUint256)
+
+			Expect(err).To(HaveOccurred())
+			Expect(err).To(MatchError(utils.ErrMetadataMalformed{MissingData: constants.Ilk}))
+		})
+	})
+
 	Describe("ilk take", func() {
+		//TODO: remove once ilk query test is updated
 		It("writes row", func() {
 			ilkTakeMetadata := utils.GetStorageValueMetadata(vat.IlkTake, map[utils.Key]string{constants.Ilk: fakeIlk}, utils.Uint256)
 
@@ -325,6 +405,28 @@ var _ = Describe("Vat storage repository", func() {
 
 		var result VariableRes
 		err = db.Get(&result, `SELECT block_number, block_hash, vice AS value FROM maker.vat_vice`)
+		Expect(err).NotTo(HaveOccurred())
+		AssertVariable(result, fakeBlockNumber, fakeBlockHash, fakeUint256)
+	})
+
+	It("persists vat Line", func() {
+		err := repo.Create(fakeBlockNumber, fakeBlockHash, vat.LineMetadata, fakeUint256)
+
+		Expect(err).NotTo(HaveOccurred())
+
+		var result VariableRes
+		err = db.Get(&result, `SELECT block_number, block_hash, line AS value FROM maker.vat_line`)
+		Expect(err).NotTo(HaveOccurred())
+		AssertVariable(result, fakeBlockNumber, fakeBlockHash, fakeUint256)
+	})
+
+	It("persists vat live", func() {
+		err := repo.Create(fakeBlockNumber, fakeBlockHash, vat.LiveMetadata, fakeUint256)
+
+		Expect(err).NotTo(HaveOccurred())
+
+		var result VariableRes
+		err = db.Get(&result, `SELECT block_number, block_hash, live AS value FROM maker.vat_live`)
 		Expect(err).NotTo(HaveOccurred())
 		AssertVariable(result, fakeBlockNumber, fakeBlockHash, fakeUint256)
 	})
