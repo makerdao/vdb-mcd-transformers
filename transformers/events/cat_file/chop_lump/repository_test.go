@@ -68,7 +68,7 @@ var _ = Describe("Cat file chop lump repository", func() {
 
 			Expect(err).NotTo(HaveOccurred())
 			var dbResult chop_lump.CatFileChopLumpModel
-			err = db.Get(&dbResult, `SELECT ilk, what, data, tx_idx, log_idx, raw_log FROM maker.cat_file_chop_lump WHERE header_id = $1`, headerID)
+			err = db.Get(&dbResult, `SELECT ilk_id, what, data, tx_idx, log_idx, raw_log FROM maker.cat_file_chop_lump WHERE header_id = $1`, headerID)
 			Expect(err).NotTo(HaveOccurred())
 			ilkID, err := shared.GetOrCreateIlk(test_data.CatFileChopModel.Ilk, db)
 			Expect(err).NotTo(HaveOccurred())
@@ -88,7 +88,7 @@ var _ = Describe("Cat file chop lump repository", func() {
 
 			Expect(err).NotTo(HaveOccurred())
 			var dbResult chop_lump.CatFileChopLumpModel
-			err = db.Get(&dbResult, `SELECT ilk, what, data, tx_idx, log_idx, raw_log FROM maker.cat_file_chop_lump WHERE header_id = $1`, headerID)
+			err = db.Get(&dbResult, `SELECT ilk_id, what, data, tx_idx, log_idx, raw_log FROM maker.cat_file_chop_lump WHERE header_id = $1`, headerID)
 			Expect(err).NotTo(HaveOccurred())
 			ilkID, err := shared.GetOrCreateIlk(test_data.CatFileLumpModel.Ilk, db)
 			Expect(err).NotTo(HaveOccurred())

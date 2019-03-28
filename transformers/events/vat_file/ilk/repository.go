@@ -59,9 +59,9 @@ func (repository VatFileIlkRepository) Create(headerID int64, models []interface
 		}
 
 		_, execErr := tx.Exec(
-			`INSERT into maker.vat_file_ilk (header_id, ilk, what, data, log_idx, tx_idx, raw_log)
+			`INSERT into maker.vat_file_ilk (header_id, ilk_id, what, data, log_idx, tx_idx, raw_log)
         VALUES($1, $2, $3, $4::NUMERIC, $5, $6, $7)
-		ON CONFLICT (header_id, tx_idx, log_idx) DO UPDATE SET ilk = $2, what = $3, data = $4, raw_log = $7;`,
+		ON CONFLICT (header_id, tx_idx, log_idx) DO UPDATE SET ilk_id = $2, what = $3, data = $4, raw_log = $7;`,
 			headerID, ilkID, vatFileIlk.What, vatFileIlk.Data, vatFileIlk.LogIndex, vatFileIlk.TransactionIndex, vatFileIlk.Raw,
 		)
 		if execErr != nil {

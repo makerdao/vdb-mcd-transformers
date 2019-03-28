@@ -17,7 +17,7 @@
 package vat_init
 
 type VatInitModel struct {
-	Ilk              string
+	Ilk              string `db:"ilk_id"`
 	LogIndex         uint   `db:"log_idx"`
 	TransactionIndex uint   `db:"tx_idx"`
 	Raw              []byte `db:"raw_log"`

@@ -89,7 +89,7 @@ var _ = Describe("VatFileIlk LogNoteTransformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []ilk.VatFileIlkModel
-		err = db.Select(&dbResult, `SELECT ilk, what, data from maker.vat_file_ilk`)
+		err = db.Select(&dbResult, `SELECT ilk_id, what, data from maker.vat_file_ilk`)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))
@@ -130,7 +130,7 @@ var _ = Describe("VatFileIlk LogNoteTransformer", func() {
 		Expect(vatFileIlkChecked[0]).To(Equal(2))
 
 		var dbResult []ilk.VatFileIlkModel
-		err = db.Select(&dbResult, `SELECT ilk, what, data from maker.vat_file_ilk`)
+		err = db.Select(&dbResult, `SELECT ilk_id, what, data from maker.vat_file_ilk`)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))

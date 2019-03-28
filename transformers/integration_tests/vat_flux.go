@@ -76,7 +76,7 @@ var _ = Describe("VatFlux LogNoteTransformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []vat_flux.VatFluxModel
-		err = db.Select(&dbResult, `SELECT ilk, src, dst, rad from maker.vat_flux`)
+		err = db.Select(&dbResult, `SELECT ilk_id, src, dst, rad from maker.vat_flux`)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))
@@ -142,7 +142,7 @@ var _ = Describe("VatFlux LogNoteTransformer", func() {
 		Expect(vatFluxChecked[0]).To(Equal(2))
 
 		var dbResult []vat_flux.VatFluxModel
-		err = db.Select(&dbResult, `SELECT ilk, src, dst, rad from maker.vat_flux`)
+		err = db.Select(&dbResult, `SELECT ilk_id, src, dst, rad from maker.vat_flux`)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))

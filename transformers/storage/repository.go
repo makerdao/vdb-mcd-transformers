@@ -70,25 +70,25 @@ func (repository *MakerStorageRepository) GetGemKeys() ([]Urn, error) {
 	err := repository.db.Select(&gems, `
 		SELECT DISTINCT ilks.ilk, slip.guy 
 		FROM maker.vat_slip slip
-		INNER JOIN maker.ilks ilks ON ilks.id = slip.ilk
+		INNER JOIN maker.ilks ilks ON ilks.id = slip.ilk_id
 		UNION
 		SELECT DISTINCT ilks.ilk, flux.src AS guy 
 		FROM maker.vat_flux flux
-		INNER JOIN maker.ilks ilks ON ilks.id = flux.ilk
+		INNER JOIN maker.ilks ilks ON ilks.id = flux.ilk_id
 		UNION
 		SELECT DISTINCT ilks.ilk, flux.dst AS guy 
 		FROM maker.vat_flux flux
-		INNER JOIN maker.ilks ilks ON ilks.id = flux.ilk
+		INNER JOIN maker.ilks ilks ON ilks.id = flux.ilk_id
 		UNION
 		SELECT DISTINCT ilks.ilk, tune.v AS guy 
 		FROM maker.vat_tune tune
 		INNER JOIN maker.urns on urns.id = tune.urn_id
-		INNER JOIN maker.ilks ilks ON ilks.id = urns.ilk
+		INNER JOIN maker.ilks ilks ON ilks.id = urns.ilk_id
 		UNION
 		SELECT DISTINCT ilks.ilk, grab.v AS guy 
 		FROM maker.vat_grab grab
 		INNER JOIN maker.urns on urns.id = grab.urn_id
-		INNER JOIN maker.ilks ilks ON ilks.id = urns.ilk
+		INNER JOIN maker.ilks ilks ON ilks.id = urns.ilk_id
 	`)
 	return gems, err
 }
@@ -113,7 +113,7 @@ func (repository *MakerStorageRepository) GetUrns() ([]Urn, error) {
 	err := repository.db.Select(&urns, `
 		SELECT DISTINCT ilks.ilk, urns.guy
 		FROM maker.urns
-		JOIN maker.ilks on maker.ilks.id = maker.urns.ilk
+		JOIN maker.ilks on maker.ilks.id = maker.urns.ilk_id
 `)
 	return urns, err
 }

@@ -2,7 +2,7 @@
 CREATE TABLE maker.vat_flux (
   id            SERIAL PRIMARY KEY,
   header_id     INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
-  ilk           INTEGER NOT NULL REFERENCES maker.ilks (id),
+  ilk_id        INTEGER NOT NULL REFERENCES maker.ilks (id),
   src           TEXT,
   dst           TEXT,
   rad           numeric,

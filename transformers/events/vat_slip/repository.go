@@ -42,9 +42,9 @@ func (repository VatSlipRepository) Create(headerID int64, models []interface{})
 		}
 
 		_, execErr := tx.Exec(
-			`INSERT into maker.vat_slip (header_id, ilk, guy, rad, tx_idx, log_idx, raw_log)
+			`INSERT into maker.vat_slip (header_id, ilk_id, guy, rad, tx_idx, log_idx, raw_log)
 			VALUES($1, $2, $3, $4::NUMERIC, $5, $6, $7)
-			ON CONFLICT (header_id, tx_idx, log_idx) DO UPDATE SET ilk = $2, guy = $3, rad = $4, raw_log = $7;`,
+			ON CONFLICT (header_id, tx_idx, log_idx) DO UPDATE SET ilk_id = $2, guy = $3, rad = $4, raw_log = $7;`,
 			headerID, ilkID, vatSlip.Guy, vatSlip.Rad, vatSlip.TransactionIndex, vatSlip.LogIndex, vatSlip.Raw,
 		)
 		if execErr != nil {

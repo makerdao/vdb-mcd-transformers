@@ -94,7 +94,7 @@ func (repository *CatStorageRepository) insertIlkFlip(blockNumber int, blockHash
 		return ilkErr
 	}
 	_, writeErr := tx.Exec(
-		`INSERT INTO maker.cat_ilk_flip (block_number, block_hash, ilk, flip) VALUES ($1, $2, $3, $4)`,
+		`INSERT INTO maker.cat_ilk_flip (block_number, block_hash, ilk_id, flip) VALUES ($1, $2, $3, $4)`,
 		blockNumber, blockHash, ilkID, flip)
 	if writeErr != nil {
 		rollbackErr := tx.Rollback()
@@ -124,7 +124,7 @@ func (repository *CatStorageRepository) insertIlkChop(blockNumber int, blockHash
 		return ilkErr
 	}
 	_, writeErr := tx.Exec(
-		`INSERT INTO maker.cat_ilk_chop (block_number, block_hash, ilk, chop) VALUES ($1, $2, $3, $4)`,
+		`INSERT INTO maker.cat_ilk_chop (block_number, block_hash, ilk_id, chop) VALUES ($1, $2, $3, $4)`,
 		blockNumber, blockHash, ilkID, chop)
 	if writeErr != nil {
 		rollbackErr := tx.Rollback()
@@ -154,7 +154,7 @@ func (repository *CatStorageRepository) insertIlkLump(blockNumber int, blockHash
 		return ilkErr
 	}
 	_, writeErr := tx.Exec(
-		`INSERT INTO maker.cat_ilk_lump (block_number, block_hash, ilk, lump) VALUES ($1, $2, $3, $4)`,
+		`INSERT INTO maker.cat_ilk_lump (block_number, block_hash, ilk_id, lump) VALUES ($1, $2, $3, $4)`,
 		blockNumber, blockHash, ilkID, lump)
 	if writeErr != nil {
 		rollbackErr := tx.Rollback()
@@ -185,7 +185,7 @@ func (repository *CatStorageRepository) insertFlipIlk(blockNumber int, blockHash
 		return ilkErr
 	}
 	_, writeErr := tx.Exec(
-		`INSERT INTO maker.cat_flip_ilk (block_number, block_hash, flip, ilk) VALUES ($1, $2, $3, $4)`,
+		`INSERT INTO maker.cat_flip_ilk (block_number, block_hash, flip, ilk_id) VALUES ($1, $2, $3, $4)`,
 		blockNumber, blockHash, flip, ilkID)
 	if writeErr != nil {
 		rollbackErr := tx.Rollback()
