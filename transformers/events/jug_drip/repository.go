@@ -58,9 +58,9 @@ func (repository JugDripRepository) Create(headerID int64, models []interface{})
 		}
 
 		_, execErr := tx.Exec(
-			`INSERT into maker.jug_drip (header_id, ilk, log_idx, tx_idx, raw_log)
+			`INSERT into maker.jug_drip (header_id, ilk_id, log_idx, tx_idx, raw_log)
         			VALUES($1, $2, $3, $4, $5)
-					ON CONFLICT (header_id, tx_idx, log_idx) DO UPDATE SET ilk= $2, raw_log = $5;`,
+					ON CONFLICT (header_id, tx_idx, log_idx) DO UPDATE SET ilk_id = $2, raw_log = $5;`,
 			headerID, ilkID, jugDrip.LogIndex, jugDrip.TransactionIndex, jugDrip.Raw,
 		)
 		if execErr != nil {

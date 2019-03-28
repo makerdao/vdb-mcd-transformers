@@ -49,7 +49,8 @@ func (repository *MakerStorageRepository) GetDaiKeys() ([]string, error) {
 		SELECT DISTINCT dst FROM maker.vat_move UNION
 		SELECT DISTINCT w FROM maker.vat_tune UNION
 		SELECT DISTINCT v FROM maker.vat_heal UNION
-		SELECT DISTINCT urn FROM maker.vat_fold
+		SELECT DISTINCT urns.guy FROM maker.vat_fold
+			INNER JOIN maker.urns on urns.id = maker.vat_fold.urn_id
 	`)
 	return daiKeys, err
 }
@@ -69,23 +70,25 @@ func (repository *MakerStorageRepository) GetGemKeys() ([]Urn, error) {
 	err := repository.db.Select(&gems, `
 		SELECT DISTINCT ilks.ilk, slip.guy 
 		FROM maker.vat_slip slip
-		INNER JOIN maker.ilks ilks ON ilks.id = slip.ilk
+		INNER JOIN maker.ilks ilks ON ilks.id = slip.ilk_id
 		UNION
 		SELECT DISTINCT ilks.ilk, flux.src AS guy 
 		FROM maker.vat_flux flux
-		INNER JOIN maker.ilks ilks ON ilks.id = flux.ilk
+		INNER JOIN maker.ilks ilks ON ilks.id = flux.ilk_id
 		UNION
 		SELECT DISTINCT ilks.ilk, flux.dst AS guy 
 		FROM maker.vat_flux flux
-		INNER JOIN maker.ilks ilks ON ilks.id = flux.ilk
+		INNER JOIN maker.ilks ilks ON ilks.id = flux.ilk_id
 		UNION
 		SELECT DISTINCT ilks.ilk, tune.v AS guy 
 		FROM maker.vat_tune tune
-		INNER JOIN maker.ilks ilks ON ilks.id = tune.ilk
+		INNER JOIN maker.urns on urns.id = tune.urn_id
+		INNER JOIN maker.ilks ilks ON ilks.id = urns.ilk_id
 		UNION
 		SELECT DISTINCT ilks.ilk, grab.v AS guy 
 		FROM maker.vat_grab grab
-		INNER JOIN maker.ilks ilks ON ilks.id = grab.ilk
+		INNER JOIN maker.urns on urns.id = grab.urn_id
+		INNER JOIN maker.ilks ilks ON ilks.id = urns.ilk_id
 	`)
 	return gems, err
 }
@@ -98,7 +101,9 @@ func (repository MakerStorageRepository) GetIlks() ([]string, error) {
 
 func (repository *MakerStorageRepository) GetSinKeys() ([]string, error) {
 	var sinKeys []string
-	err := repository.db.Select(&sinKeys, `SELECT DISTINCT w FROM maker.vat_grab UNION
+	err := repository.db.Select(&sinKeys, `
+		SELECT DISTINCT w FROM maker.vat_grab
+		UNION
 		SELECT DISTINCT urn FROM maker.vat_heal`)
 	return sinKeys, err
 }
@@ -106,13 +111,9 @@ func (repository *MakerStorageRepository) GetSinKeys() ([]string, error) {
 func (repository *MakerStorageRepository) GetUrns() ([]Urn, error) {
 	var urns []Urn
 	err := repository.db.Select(&urns, `
-		SELECT DISTINCT ilks.ilk, tune.urn AS guy
-		FROM maker.vat_tune tune
-		INNER JOIN maker.ilks ilks ON ilks.id = tune.ilk
-		UNION
-		SELECT DISTINCT ilks.ilk, grab.urn AS guy
-		FROM maker.vat_grab grab
-		INNER JOIN maker.ilks ilks ON ilks.id = grab.ilk
+		SELECT DISTINCT ilks.ilk, urns.guy
+		FROM maker.urns
+		JOIN maker.ilks on maker.ilks.id = maker.urns.ilk_id
 `)
 	return urns, err
 }

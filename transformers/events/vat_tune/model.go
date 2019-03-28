@@ -2,7 +2,7 @@ package vat_tune
 
 type VatTuneModel struct {
 	Ilk              string
-	Urn              string
+	Urn              string `db:"urn_id"`
 	V                string
 	W                string
 	Dink             string

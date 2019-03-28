@@ -2,7 +2,7 @@
 CREATE TABLE maker.jug_drip (
   id            SERIAL PRIMARY KEY,
   header_id     INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
-  ilk           INTEGER NOT NULL REFERENCES maker.ilks (id),
+  ilk_id        INTEGER NOT NULL REFERENCES maker.ilks (id),
   log_idx       INTEGER NOT NUll,
   tx_idx        INTEGER NOT NUll,
   raw_log       JSONB,

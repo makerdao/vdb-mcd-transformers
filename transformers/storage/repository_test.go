@@ -291,11 +291,12 @@ func insertVatFold(urn string, blockNumber int64, db *postgres.DB) {
 	headerID, err := headerRepository.CreateOrUpdateHeader(fakes.GetFakeHeader(blockNumber))
 	Expect(err).NotTo(HaveOccurred())
 	ilkID, err := shared.GetOrCreateIlk("fake_ilk", db)
+	urnID, err := shared.GetOrCreateUrn(urn, ilkID, db)
 	Expect(err).NotTo(HaveOccurred())
 	_, execErr := db.Exec(
-		`INSERT INTO maker.vat_fold (header_id, urn, ilk, log_idx, tx_idx)
-			VALUES($1, $2, $3, $4, $5)`,
-		headerID, urn, ilkID, 0, 0,
+		`INSERT INTO maker.vat_fold (header_id, urn_id, log_idx, tx_idx)
+			VALUES($1, $2, $3, $4)`,
+		headerID, urnID, 0, 0,
 	)
 	Expect(execErr).NotTo(HaveOccurred())
 }
@@ -307,7 +308,7 @@ func insertVatFlux(ilk, src, dst string, blockNumber int64, db *postgres.DB) {
 	ilkID, err := shared.GetOrCreateIlk(ilk, db)
 	Expect(err).NotTo(HaveOccurred())
 	_, execErr := db.Exec(
-		`INSERT INTO maker.vat_flux (header_id, ilk, src, dst, log_idx, tx_idx)
+		`INSERT INTO maker.vat_flux (header_id, ilk_id, src, dst, log_idx, tx_idx)
 			VALUES($1, $2, $3, $4, $5, $6)`,
 		headerID, ilkID, src, dst, 0, 0,
 	)
@@ -319,11 +320,13 @@ func insertVatGrab(ilk, urn, v, w string, blockNumber int64, db *postgres.DB) {
 	headerID, err := headerRepository.CreateOrUpdateHeader(fakes.GetFakeHeader(blockNumber))
 	Expect(err).NotTo(HaveOccurred())
 	ilkID, err := shared.GetOrCreateIlk(ilk, db)
+	urnID, err := shared.GetOrCreateUrn(urn, ilkID, db)
+
 	Expect(err).NotTo(HaveOccurred())
 	_, execErr := db.Exec(
-		`INSERT INTO maker.vat_grab (header_id, ilk, urn, v, w, log_idx, tx_idx)
-			VALUES($1, $2, $3, $4, $5, $6, $7)`,
-		headerID, ilkID, urn, v, w, 0, 0,
+		`INSERT INTO maker.vat_grab (header_id, urn_id, v, w, log_idx, tx_idx)
+			VALUES($1, $2, $3, $4, $5, $6)`,
+		headerID, urnID, v, w, 0, 0,
 	)
 	Expect(execErr).NotTo(HaveOccurred())
 }
@@ -347,7 +350,7 @@ func insertVatInit(ilk string, blockNumber int64, db *postgres.DB) {
 	ilkID, err := shared.GetOrCreateIlk(ilk, db)
 	Expect(err).NotTo(HaveOccurred())
 	_, execErr := db.Exec(
-		`INSERT INTO maker.vat_init (header_id, ilk, log_idx, tx_idx)
+		`INSERT INTO maker.vat_init (header_id, ilk_id, log_idx, tx_idx)
 			VALUES($1, $2, $3, $4)`,
 		headerID, ilkID, 0, 0,
 	)
@@ -373,7 +376,7 @@ func insertVatSlip(ilk, guy string, blockNumber int64, db *postgres.DB) {
 	ilkID, err := shared.GetOrCreateIlk(ilk, db)
 	Expect(err).NotTo(HaveOccurred())
 	_, execErr := db.Exec(
-		`INSERT INTO maker.vat_slip (header_id, ilk, guy, log_idx, tx_idx)
+		`INSERT INTO maker.vat_slip (header_id, ilk_id, guy, log_idx, tx_idx)
 			VALUES($1, $2, $3, $4, $5)`,
 		headerID, ilkID, guy, 0, 0,
 	)
@@ -385,11 +388,12 @@ func insertVatTune(ilk, urn, v, w string, blockNumber int64, db *postgres.DB) {
 	headerID, err := headerRepository.CreateOrUpdateHeader(fakes.GetFakeHeader(blockNumber))
 	Expect(err).NotTo(HaveOccurred())
 	ilkID, err := shared.GetOrCreateIlk(ilk, db)
+	urnID, err := shared.GetOrCreateUrn(urn, ilkID, db)
 	Expect(err).NotTo(HaveOccurred())
 	_, execErr := db.Exec(
-		`INSERT INTO maker.vat_tune (header_id, ilk, urn, v, w, log_idx, tx_idx)
-			VALUES($1, $2, $3, $4, $5, $6, $7)`,
-		headerID, ilkID, urn, v, w, 0, 0,
+		`INSERT INTO maker.vat_tune (header_id, urn_id, v, w, log_idx, tx_idx)
+			VALUES($1, $2, $3, $4, $5, $6)`,
+		headerID, urnID, v, w, 0, 0,
 	)
 	Expect(execErr).NotTo(HaveOccurred())
 }

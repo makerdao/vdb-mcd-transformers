@@ -2,8 +2,7 @@
 CREATE TABLE maker.vat_frob (
   id        SERIAL PRIMARY KEY,
   header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
-  ilk       INTEGER NOT NULL REFERENCES maker.ilks (id),
-  urn       TEXT,
+  urn_id    INTEGER NOT NULL REFERENCES maker.urns (id),
   v         TEXT,
   w         TEXT,
   dink      NUMERIC,

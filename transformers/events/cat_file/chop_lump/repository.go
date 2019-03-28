@@ -59,9 +59,9 @@ func (repository CatFileChopLumpRepository) Create(headerID int64, models []inte
 		}
 
 		_, execErr := tx.Exec(
-			`INSERT into maker.cat_file_chop_lump (header_id, ilk, what, data, tx_idx, log_idx, raw_log)
+			`INSERT into maker.cat_file_chop_lump (header_id, ilk_id, what, data, tx_idx, log_idx, raw_log)
 			VALUES($1, $2, $3, $4::NUMERIC, $5, $6, $7)
-			ON CONFLICT (header_id, tx_idx, log_idx) DO UPDATE SET ilk = $2, what = $3, data = $4, raw_log = $7;`,
+			ON CONFLICT (header_id, tx_idx, log_idx) DO UPDATE SET ilk_id = $2, what = $3, data = $4, raw_log = $7;`,
 			headerID, ilkID, chopLump.What, chopLump.Data, chopLump.TransactionIndex, chopLump.LogIndex, chopLump.Raw,
 		)
 		if execErr != nil {

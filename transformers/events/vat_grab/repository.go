@@ -41,11 +41,20 @@ func (repository VatGrabRepository) Create(headerID int64, models []interface{})
 			return ilkErr
 		}
 
+		urnID, urnErr := shared.GetOrCreateUrnInTransaction(vatGrab.Urn, ilkID, tx)
+		if urnErr != nil {
+			rollbackErr := tx.Rollback()
+			if rollbackErr != nil {
+				log.Error("failed to rollback", rollbackErr)
+			}
+			return urnErr
+		}
+
 		_, execErr := tx.Exec(
-			`INSERT into maker.vat_grab (header_id, ilk, urn, v, w, dink, dart, log_idx, tx_idx, raw_log)
-	   VALUES($1, $2, $3, $4, $5, $6::NUMERIC, $7::NUMERIC, $8, $9, $10)
-		ON CONFLICT (header_id, tx_idx, log_idx) DO UPDATE SET ilk = $2, urn = $3, v = $4, w = $5, dink = $6, dart = $7, raw_log = $10;`,
-			headerID, ilkID, vatGrab.Urn, vatGrab.V, vatGrab.W, vatGrab.Dink, vatGrab.Dart, vatGrab.LogIndex, vatGrab.TransactionIndex, vatGrab.Raw,
+			`INSERT into maker.vat_grab (header_id, urn_id, v, w, dink, dart, log_idx, tx_idx, raw_log)
+	   VALUES($1, $2, $3, $4, $5::NUMERIC, $6::NUMERIC, $7, $8, $9)
+		ON CONFLICT (header_id, tx_idx, log_idx) DO UPDATE SET urn_id = $2, v = $3, w = $4, dink = $5, dart = $6, raw_log = $9;`,
+			headerID, urnID, vatGrab.V, vatGrab.W, vatGrab.Dink, vatGrab.Dart, vatGrab.LogIndex, vatGrab.TransactionIndex, vatGrab.Raw,
 		)
 		if execErr != nil {
 			rollbackErr := tx.Rollback()

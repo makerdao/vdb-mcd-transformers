@@ -25,12 +25,20 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
+const (
+	getBlockTimestampQuery = `SELECT block_timestamp FROM public.headers WHERE id = $1;`
+	getIlkIdQuery          = `SELECT id FROM maker.ilks WHERE ilk = $1`
+	getUrnIdQuery          = `SELECT id FROM maker.urns WHERE guy = $1 AND ilk_id = $2`
+	insertIlkQuery         = `INSERT INTO maker.ilks (ilk) VALUES ($1) RETURNING id`
+	insertUrnQuery         = `INSERT INTO maker.urns (guy, ilk_id) VALUES ($1, $2) RETURNING id`
+)
+
 func GetOrCreateIlk(ilk string, db *postgres.DB) (int, error) {
 	var ilkID int
-	err := db.Get(&ilkID, `SELECT id FROM maker.ilks WHERE ilk = $1`, ilk)
+	err := db.Get(&ilkID, getIlkIdQuery, ilk)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			insertErr := db.QueryRow(`INSERT INTO maker.ilks (ilk) VALUES ($1) RETURNING id`, ilk).Scan(&ilkID)
+			insertErr := db.QueryRow(insertIlkQuery, ilk).Scan(&ilkID)
 			return ilkID, insertErr
 		}
 	}
@@ -39,10 +47,10 @@ func GetOrCreateIlk(ilk string, db *postgres.DB) (int, error) {
 
 func GetOrCreateIlkInTransaction(ilk string, tx *sqlx.Tx) (int, error) {
 	var ilkID int
-	err := tx.Get(&ilkID, `SELECT id FROM maker.ilks WHERE ilk = $1`, ilk)
+	err := tx.Get(&ilkID, getIlkIdQuery, ilk)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			insertErr := tx.QueryRow(`INSERT INTO maker.ilks (ilk) VALUES ($1) RETURNING id`, ilk).Scan(&ilkID)
+			insertErr := tx.QueryRow(insertIlkQuery, ilk).Scan(&ilkID)
 			return ilkID, insertErr
 		}
 	}
@@ -51,11 +59,38 @@ func GetOrCreateIlkInTransaction(ilk string, tx *sqlx.Tx) (int, error) {
 
 func GetTicInTx(headerID int64, tx *sqlx.Tx) (int64, error) {
 	var blockTimestamp int64
-	err := tx.Get(&blockTimestamp, `SELECT block_timestamp FROM public.headers WHERE id = $1;`, headerID)
+	err := tx.Get(&blockTimestamp, getBlockTimestampQuery, headerID)
 	if err != nil {
 		return 0, err
 	}
 
 	tic := blockTimestamp + constants.TTL
 	return tic, nil
+}
+
+func GetOrCreateUrn(guy string, ilkID int, db *postgres.DB) (int, error) {
+	var urnID int
+	err := db.Get(&urnID, getUrnIdQuery, guy, ilkID)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			insertErr := db.QueryRow(insertUrnQuery, guy, ilkID).Scan(&urnID)
+			return urnID, insertErr
+		}
+	}
+
+	return urnID, err
+}
+
+func GetOrCreateUrnInTransaction(guy string, ilkID int, tx *sqlx.Tx) (int, error) {
+	var urnID int
+	err := tx.Get(&urnID, getUrnIdQuery, guy, ilkID)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			insertErr := tx.QueryRow(insertUrnQuery, guy, ilkID).Scan(&urnID)
+			return urnID, insertErr
+		}
+	}
+
+	return urnID, err
 }

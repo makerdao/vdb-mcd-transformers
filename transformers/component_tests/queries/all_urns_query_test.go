@@ -118,7 +118,7 @@ var _ = Describe("Urn view", func() {
 
 		var result []helper.UrnState
 		err = db.Select(&result, `SELECT urnId, ilkId, ink, art, ratio, safe, created, updated
-			FROM maker.get_all_urn_states_at_block($1)`, blockTwo)
+			FROM maker.get_all_urn_states_at_block($1) ORDER BY created`, blockTwo)
 		Expect(err).NotTo(HaveOccurred())
 
 		helper.AssertUrn(result[0], expectedUrnOne)

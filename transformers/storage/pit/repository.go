@@ -70,7 +70,7 @@ func (repository PitStorageRepository) insertIlkLine(blockNumber int, blockHash 
 		}
 		return ilkErr
 	}
-	_, writeErr := tx.Exec(`INSERT INTO maker.pit_ilk_line (block_number, block_hash, ilk, line) VALUES ($1, $2, $3, $4)`, blockNumber, blockHash, ilkID, line)
+	_, writeErr := tx.Exec(`INSERT INTO maker.pit_ilk_line (block_number, block_hash, ilk_id, line) VALUES ($1, $2, $3, $4)`, blockNumber, blockHash, ilkID, line)
 	if writeErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
@@ -98,7 +98,7 @@ func (repository PitStorageRepository) insertIlkSpot(blockNumber int, blockHash 
 		}
 		return ilkErr
 	}
-	_, writeErr := tx.Exec(`INSERT INTO maker.pit_ilk_spot (block_number, block_hash, ilk, spot) VALUES ($1, $2, $3, $4)`, blockNumber, blockHash, ilkID, spot)
+	_, writeErr := tx.Exec(`INSERT INTO maker.pit_ilk_spot (block_number, block_hash, ilk_id, spot) VALUES ($1, $2, $3, $4)`, blockNumber, blockHash, ilkID, spot)
 	if writeErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {

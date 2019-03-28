@@ -61,12 +61,22 @@ func (repository BiteRepository) Create(headerID int64, models []interface{}) er
 			return ilkErr
 		}
 
+		urnID, urnErr := shared.GetOrCreateUrnInTransaction(biteModel.Urn, ilkID, tx)
+		if urnErr != nil {
+			rollbackErr := tx.Rollback()
+			if rollbackErr != nil {
+				log.Error("failed to rollback", rollbackErr)
+			}
+			return urnErr
+		}
+
 		_, execErr := tx.Exec(
-			`INSERT into maker.bite (header_id, ilk, urn, ink, art, iart, tab, nflip, log_idx, tx_idx, raw_log)
-        			VALUES($1, $2, $3, $4::NUMERIC, $5::NUMERIC, $6::NUMERIC, $7::NUMERIC, $8::NUMERIC, $9, $10, $11)
-					ON CONFLICT (header_id, tx_idx, log_idx) DO UPDATE SET ilk = $2, urn = $3, ink = $4, art = $5, iart = $6, tab = $7, nflip = $8, raw_log = $11;`,
-			headerID, ilkID, biteModel.Urn, biteModel.Ink, biteModel.Art, biteModel.IArt, biteModel.Tab, biteModel.NFlip, biteModel.LogIndex, biteModel.TransactionIndex, biteModel.Raw,
-		)
+			`INSERT into maker.bite (header_id, urn_id, ink, art, iart, tab, nflip, log_idx, tx_idx, raw_log)
+			VALUES($1, $2, $3::NUMERIC, $4::NUMERIC, $5::NUMERIC, $6::NUMERIC, $7::NUMERIC, $8, $9, $10)
+			ON CONFLICT (header_id, tx_idx, log_idx)
+			DO UPDATE SET urn_id = $2, ink = $3, art = $4, iart = $5, tab = $6, nflip = $9, raw_log = $10;`,
+			headerID, urnID, biteModel.Ink, biteModel.Art, biteModel.IArt, biteModel.Tab, biteModel.NFlip,
+			biteModel.LogIndex, biteModel.TransactionIndex, biteModel.Raw)
 		if execErr != nil {
 			rollbackErr := tx.Rollback()
 			if rollbackErr != nil {

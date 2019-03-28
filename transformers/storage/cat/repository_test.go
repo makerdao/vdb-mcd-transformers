@@ -101,7 +101,7 @@ var _ = Describe("Cat storage repository", func() {
 				err := repo.Create(fakeBlockNumber, fakeBlockHash, ilkFlipMetadata, fakeAddress)
 				Expect(err).NotTo(HaveOccurred())
 
-				err = db.Get(&result, `SELECT block_number, block_hash, ilk AS key, flip AS value FROM maker.cat_ilk_flip`)
+				err = db.Get(&result, `SELECT block_number, block_hash, ilk_id AS key, flip AS value FROM maker.cat_ilk_flip`)
 				Expect(err).NotTo(HaveOccurred())
 				ilkID, err := shared.GetOrCreateIlk(fakeIlk, db)
 				Expect(err).NotTo(HaveOccurred())
@@ -123,7 +123,7 @@ var _ = Describe("Cat storage repository", func() {
 				err := repo.Create(fakeBlockNumber, fakeBlockHash, ilkChopMetadata, fakeUint256)
 				Expect(err).NotTo(HaveOccurred())
 
-				err = db.Get(&result, `SELECT block_number, block_hash, ilk AS key, chop AS value FROM maker.cat_ilk_chop`)
+				err = db.Get(&result, `SELECT block_number, block_hash, ilk_id AS key, chop AS value FROM maker.cat_ilk_chop`)
 				Expect(err).NotTo(HaveOccurred())
 				ilkID, err := shared.GetOrCreateIlk(fakeIlk, db)
 				Expect(err).NotTo(HaveOccurred())
@@ -145,7 +145,7 @@ var _ = Describe("Cat storage repository", func() {
 				err := repo.Create(fakeBlockNumber, fakeBlockHash, ilkLumpMetadata, fakeUint256)
 				Expect(err).NotTo(HaveOccurred())
 
-				err = db.Get(&result, `SELECT block_number, block_hash, ilk AS key, lump AS value FROM maker.cat_ilk_lump`)
+				err = db.Get(&result, `SELECT block_number, block_hash, ilk_id AS key, lump AS value FROM maker.cat_ilk_lump`)
 				Expect(err).NotTo(HaveOccurred())
 				ilkID, err := shared.GetOrCreateIlk(fakeIlk, db)
 				Expect(err).NotTo(HaveOccurred())
@@ -171,7 +171,7 @@ var _ = Describe("Cat storage repository", func() {
 				err := repo.Create(fakeBlockNumber, fakeBlockHash, flipIlkMetadata, fakeBytes32)
 				Expect(err).NotTo(HaveOccurred())
 
-				err = db.Get(&result, `SELECT block_number, block_hash, flip AS key, ilk AS value FROM maker.cat_flip_ilk`)
+				err = db.Get(&result, `SELECT block_number, block_hash, flip AS key, ilk_id AS value FROM maker.cat_flip_ilk`)
 				Expect(err).NotTo(HaveOccurred())
 				ilkID, err := shared.GetOrCreateIlk(fakeBytes32, db)
 				Expect(err).NotTo(HaveOccurred())

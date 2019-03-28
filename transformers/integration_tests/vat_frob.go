@@ -89,14 +89,15 @@ var _ = Describe("Vat frob Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []vat_frob.VatFrobModel
-		err = db.Select(&dbResult, `SELECT ilk, urn, v, w, dink, dart from maker.vat_frob`)
+		err = db.Select(&dbResult, `SELECT urn_id, v, w, dink, dart from maker.vat_frob`)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))
 		ilkID, err := shared.GetOrCreateIlk("4554480000000000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
-		Expect(dbResult[0].Ilk).To(Equal(strconv.Itoa(ilkID)))
-		Expect(dbResult[0].Urn).To(Equal("da15dce70ab462e66779f23ee14f21d993789ee3000000000000000000000000"))
+		urnID, err := shared.GetOrCreateUrn("da15dce70ab462e66779f23ee14f21d993789ee3000000000000000000000000", ilkID, db)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(dbResult[0].Urn).To(Equal(strconv.Itoa(urnID)))
 		Expect(dbResult[0].V).To(Equal("da15dce70ab462e66779f23ee14f21d993789ee3000000000000000000000000"))
 		Expect(dbResult[0].W).To(Equal("da15dce70ab462e66779f23ee14f21d993789ee3000000000000000000000000"))
 		Expect(dbResult[0].Dink).To(Equal("1000000000000000000"))
@@ -135,14 +136,15 @@ var _ = Describe("Vat frob Transformer", func() {
 		Expect(vatFrobChecked[0]).To(Equal(2))
 
 		var dbResult []vat_frob.VatFrobModel
-		err = db.Select(&dbResult, `SELECT ilk, urn, v, w, dink, dart from maker.vat_frob`)
+		err = db.Select(&dbResult, `SELECT urn_id, v, w, dink, dart from maker.vat_frob`)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))
 		ilkID, err := shared.GetOrCreateIlk("5245500000000000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
-		Expect(dbResult[0].Ilk).To(Equal(strconv.Itoa(ilkID)))
-		Expect(dbResult[0].Urn).To(Equal("16fb96a5fa0427af0c8f7cf1eb4870231c8154b6000000000000000000000000"))
+		urnID, err := shared.GetOrCreateUrn("16fb96a5fa0427af0c8f7cf1eb4870231c8154b6000000000000000000000000", ilkID, db)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(dbResult[0].Urn).To(Equal(strconv.Itoa(urnID)))
 		Expect(dbResult[0].V).To(Equal("16fb96a5fa0427af0c8f7cf1eb4870231c8154b6000000000000000000000000"))
 		Expect(dbResult[0].W).To(Equal("16fb96a5fa0427af0c8f7cf1eb4870231c8154b6000000000000000000000000"))
 		Expect(dbResult[0].Dink).To(Equal("10000000000000000000"))

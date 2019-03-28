@@ -178,7 +178,8 @@ func CleanTestDB(db *postgres.DB) {
 	db.MustExec("DELETE FROM receipts")
 	db.MustExec("DELETE FROM transactions")
 	db.MustExec("DELETE FROM watched_contracts")
-	// TODO: add ON DELETE CASCADE? otherwise this needs to come after deleting tables that reference it
+	// TODO: add ON DELETE CASCADE? otherwise these need to come after deleting tables that reference it
+	db.MustExec("DELETE FROM maker.urns")
 	db.MustExec("DELETE FROM maker.ilks")
 }
 

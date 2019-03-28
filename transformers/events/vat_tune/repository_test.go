@@ -36,7 +36,7 @@ var _ = Describe("Vat tune repository", func() {
 		modelWithDifferentLogIdx.LogIndex++
 		inputs := shared_behaviors.CreateBehaviorInputs{
 			CheckedHeaderColumnName:  constants.VatTuneChecked,
-			LogEventTableName:        "maker.vat_heal",
+			LogEventTableName:        "maker.vat_tune",
 			TestModel:                test_data.VatTuneModel,
 			ModelWithDifferentLogIdx: modelWithDifferentLogIdx,
 			Repository:               &repository,
@@ -52,12 +52,13 @@ var _ = Describe("Vat tune repository", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			var dbVatTune vat_tune.VatTuneModel
-			err = db.Get(&dbVatTune, `SELECT ilk, urn, v, w, dink, dart, tx_idx, log_idx, raw_log FROM maker.vat_tune WHERE header_id = $1`, headerID)
+			err = db.Get(&dbVatTune, `SELECT urn_id, v, w, dink, dart, tx_idx, log_idx, raw_log FROM maker.vat_tune WHERE header_id = $1`, headerID)
 			Expect(err).NotTo(HaveOccurred())
 			ilkID, err := shared.GetOrCreateIlk(test_data.VatTuneModel.Ilk, db)
 			Expect(err).NotTo(HaveOccurred())
-			Expect(dbVatTune.Ilk).To(Equal(strconv.Itoa(ilkID)))
-			Expect(dbVatTune.Urn).To(Equal(test_data.VatTuneModel.Urn))
+			urnID, err := shared.GetOrCreateUrn(test_data.VatTuneModel.Urn, ilkID, db)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(dbVatTune.Urn).To(Equal(strconv.Itoa(urnID)))
 			Expect(dbVatTune.V).To(Equal(test_data.VatTuneModel.V))
 			Expect(dbVatTune.W).To(Equal(test_data.VatTuneModel.W))
 			Expect(dbVatTune.Dink).To(Equal(test_data.VatTuneModel.Dink))

@@ -85,7 +85,7 @@ var _ = Describe("JugDrip Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResults []jug_drip.JugDripModel
-		err = db.Select(&dbResults, `SELECT ilk from maker.jug_drip`)
+		err = db.Select(&dbResults, `SELECT ilk_id from maker.jug_drip`)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResults)).To(Equal(1))

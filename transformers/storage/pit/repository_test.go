@@ -60,7 +60,7 @@ var _ = Describe("Pit storage repository", func() {
 
 				Expect(err).NotTo(HaveOccurred())
 				var result MappingRes
-				err = db.Get(&result, `SELECT block_number, block_hash, ilk AS key, line AS value FROM maker.pit_ilk_line`)
+				err = db.Get(&result, `SELECT block_number, block_hash, ilk_id AS key, line AS value FROM maker.pit_ilk_line`)
 				Expect(err).NotTo(HaveOccurred())
 				ilkID, err := shared.GetOrCreateIlk(fakeIlk, db)
 				Expect(err).NotTo(HaveOccurred())
@@ -83,7 +83,7 @@ var _ = Describe("Pit storage repository", func() {
 
 				Expect(err).NotTo(HaveOccurred())
 				var result MappingRes
-				err = db.Get(&result, `SELECT block_number, block_hash, ilk AS key, spot AS value FROM maker.pit_ilk_spot`)
+				err = db.Get(&result, `SELECT block_number, block_hash, ilk_id AS key, spot AS value FROM maker.pit_ilk_spot`)
 				Expect(err).NotTo(HaveOccurred())
 				ilkID, err := shared.GetOrCreateIlk(fakeIlk, db)
 				Expect(err).NotTo(HaveOccurred())

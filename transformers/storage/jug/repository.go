@@ -69,7 +69,7 @@ func (repository JugStorageRepository) insertIlkRho(blockNumber int, blockHash s
 		}
 		return ilkErr
 	}
-	_, writeErr := tx.Exec(`INSERT INTO maker.jug_ilk_rho (block_number, block_hash, ilk, rho)
+	_, writeErr := tx.Exec(`INSERT INTO maker.jug_ilk_rho (block_number, block_hash, ilk_id, rho)
                                   VALUES ($1, $2, $3, $4)`, blockNumber, blockHash, ilkID, rho)
 	if writeErr != nil {
 		rollbackErr := tx.Rollback()
@@ -98,7 +98,7 @@ func (repository JugStorageRepository) insertIlkTax(blockNumber int, blockHash s
 		}
 		return ilkErr
 	}
-	_, writeErr := tx.Exec(`INSERT INTO maker.jug_ilk_tax (block_number, block_hash, ilk, tax) VALUES ($1, $2, $3, $4)`, blockNumber, blockHash, ilkID, tax)
+	_, writeErr := tx.Exec(`INSERT INTO maker.jug_ilk_tax (block_number, block_hash, ilk_id, tax) VALUES ($1, $2, $3, $4)`, blockNumber, blockHash, ilkID, tax)
 
 	if writeErr != nil {
 		rollbackErr := tx.Rollback()
