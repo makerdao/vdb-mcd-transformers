@@ -9,24 +9,26 @@ import (
 )
 
 type MockMakerStorageRepository struct {
-	DaiKeys          []string
-	GemKeys          []storage.Urn
-	GetDaiKeysCalled bool
-	GetDaiKeysError  error
-	GetGemKeysCalled bool
-	GetGemKeysError  error
-	GetIlksCalled    bool
-	GetIlksError     error
-	GetMaxFlipCalled bool
-	GetMaxFlipError  error
-	GetSinKeysCalled bool
-	GetSinKeysError  error
-	GetUrnsCalled    bool
-	GetUrnsError     error
-	Ilks             []string
-	MaxFlip          *big.Int
-	SinKeys          []string
-	Urns             []storage.Urn
+	DaiKeys             []string
+	GemKeys             []storage.Urn
+	GetDaiKeysCalled    bool
+	GetDaiKeysError     error
+	GetGemKeysCalled    bool
+	GetGemKeysError     error
+	GetIlksCalled       bool
+	GetIlksError        error
+	GetMaxFlipCalled    bool
+	GetMaxFlipError     error
+	GetVatSinKeysCalled bool
+	GetVatSinKeysError  error
+	GetVowSinKeysCalled bool
+	GetVowSinKeysError  error
+	GetUrnsCalled       bool
+	GetUrnsError        error
+	Ilks                []string
+	MaxFlip             *big.Int
+	SinKeys             []string
+	Urns                []storage.Urn
 }
 
 func (repository *MockMakerStorageRepository) GetDaiKeys() ([]string, error) {
@@ -49,9 +51,14 @@ func (repository *MockMakerStorageRepository) GetMaxFlip() (*big.Int, error) {
 	return repository.MaxFlip, repository.GetMaxFlipError
 }
 
-func (repository *MockMakerStorageRepository) GetSinKeys() ([]string, error) {
-	repository.GetSinKeysCalled = true
-	return repository.SinKeys, repository.GetSinKeysError
+func (repository *MockMakerStorageRepository) GetVatSinKeys() ([]string, error) {
+	repository.GetVatSinKeysCalled = true
+	return repository.SinKeys, repository.GetVatSinKeysError
+}
+
+func (repository *MockMakerStorageRepository) GetVowSinKeys() ([]string, error) {
+	repository.GetVowSinKeysCalled = true
+	return repository.SinKeys, repository.GetVowSinKeysError
 }
 
 func (repository *MockMakerStorageRepository) GetUrns() ([]storage.Urn, error) {

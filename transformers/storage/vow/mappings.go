@@ -18,7 +18,10 @@ package vow
 
 import (
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/common/hexutil"
+	"strconv"
 
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/storage"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
@@ -27,15 +30,16 @@ import (
 )
 
 const (
-	VowVat  = "vat"
-	VowCow  = "cow"
-	VowRow  = "row"
-	VowSin  = "Sin"
-	VowAsh  = "Ash"
-	VowWait = "wait"
-	VowSump = "sump"
-	VowBump = "bump"
-	VowHump = "hump"
+	VowVat     = "vat"
+	VowCow     = "cow"
+	VowRow     = "row"
+	SinMapping = "sin"
+	SinInteger = "Sin"
+	VowAsh     = "Ash"
+	VowWait    = "wait"
+	VowSump    = "sump"
+	VowBump    = "bump"
+	VowHump    = "hump"
 )
 
 var (
@@ -60,9 +64,11 @@ var (
 		Type: utils.Address,
 	}
 
-	SinKey      = common.HexToHash(storage.IndexFive)
-	SinMetadata = utils.StorageValueMetadata{
-		Name: VowSin,
+	SinMappingIndex = storage.IndexFour
+
+	SinIntegerKey      = common.HexToHash(storage.IndexFive)
+	SinIntegerMetadata = utils.StorageValueMetadata{
+		Name: SinInteger,
 		Keys: nil,
 		Type: utils.Uint256,
 	}
@@ -124,22 +130,63 @@ func (mappings *VowMappings) Lookup(key common.Hash) (utils.StorageValueMetadata
 }
 
 func (mappings *VowMappings) loadMappings() error {
-	staticMappings := make(map[common.Hash]utils.StorageValueMetadata)
-	staticMappings[VatKey] = VatMetadata
-	staticMappings[CowKey] = CowMetadata
-	staticMappings[RowKey] = RowMetadata
-	staticMappings[SinKey] = SinMetadata
-	staticMappings[AshKey] = AshMetadata
-	staticMappings[WaitKey] = WaitMetadata
-	staticMappings[SumpKey] = SumpMetadata
-	staticMappings[BumpKey] = BumpMetadata
-	staticMappings[HumpKey] = HumpMetadata
-
-	mappings.mappings = staticMappings
-
+	mappings.mappings = loadStaticMappings()
+	sinErr := mappings.loadSinKeys()
+	if sinErr != nil {
+		return sinErr
+	}
 	return nil
 }
 
 func (mappings *VowMappings) SetDB(db *postgres.DB) {
 	mappings.StorageRepository.SetDB(db)
+}
+
+func loadStaticMappings() map[common.Hash]utils.StorageValueMetadata {
+	mappings := make(map[common.Hash]utils.StorageValueMetadata)
+	mappings[VatKey] = VatMetadata
+	mappings[CowKey] = CowMetadata
+	mappings[RowKey] = RowMetadata
+	mappings[SinIntegerKey] = SinIntegerMetadata
+	mappings[AshKey] = AshMetadata
+	mappings[WaitKey] = WaitMetadata
+	mappings[SumpKey] = SumpMetadata
+	mappings[BumpKey] = BumpMetadata
+	mappings[HumpKey] = HumpMetadata
+	return mappings
+}
+
+func (mappings *VowMappings) loadSinKeys() error {
+	sinKeys, err := mappings.StorageRepository.GetVowSinKeys()
+	if err != nil {
+		return err
+	}
+	for _, timestamp := range sinKeys {
+		decodedBytes, err := timestampToBytes(timestamp)
+		if err != nil {
+			return err
+		}
+		hexTimestamp := common.Bytes2Hex(common.LeftPadBytes(decodedBytes, 32))
+		mappings.mappings[getSinKey(hexTimestamp)] = getSinMetadata(timestamp)
+	}
+	return nil
+}
+
+func getSinKey(hexTimestamp string) common.Hash {
+	return storage.GetMapping(SinMappingIndex, hexTimestamp)
+}
+
+func getSinMetadata(timestamp string) utils.StorageValueMetadata {
+	keys := map[utils.Key]string{constants.Timestamp: timestamp}
+	return utils.GetStorageValueMetadata(SinMapping, keys, utils.Uint256)
+}
+
+func timestampToBytes(timestamp string) ([]byte, error) {
+	intTimestamp, err := strconv.Atoi(timestamp)
+	if err != nil {
+		return nil, err
+	}
+	encodedBytes := hexutil.EncodeUint64(uint64(intTimestamp))
+	decoded, err := hexutil.Decode(encodedBytes)
+	return decoded, nil
 }

@@ -20,25 +20,30 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-
-	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
-	"github.com/vulcanize/vulcanizedb/pkg/fakes"
-
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/test_helpers"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/vow"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
+	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 )
 
 var _ = Describe("Vow storage mappings", func() {
+	var (
+		storageRepository *test_helpers.MockMakerStorageRepository
+		mappings          vow.VowMappings
+	)
+
+	BeforeEach(func() {
+		storageRepository = &test_helpers.MockMakerStorageRepository{}
+		mappings = vow.VowMappings{StorageRepository: storageRepository}
+	})
+
 	Describe("looking up static keys", func() {
 		It("returns value metadata if key exists", func() {
-			storageRepository := &test_helpers.MockMakerStorageRepository{}
-
-			mappings := vow.VowMappings{StorageRepository: storageRepository}
-
 			Expect(mappings.Lookup(vow.VatKey)).To(Equal(vow.VatMetadata))
 			Expect(mappings.Lookup(vow.CowKey)).To(Equal(vow.CowMetadata))
 			Expect(mappings.Lookup(vow.RowKey)).To(Equal(vow.RowMetadata))
-			Expect(mappings.Lookup(vow.SinKey)).To(Equal(vow.SinMetadata))
+			Expect(mappings.Lookup(vow.SinIntegerKey)).To(Equal(vow.SinIntegerMetadata))
 			Expect(mappings.Lookup(vow.AshKey)).To(Equal(vow.AshMetadata))
 			Expect(mappings.Lookup(vow.WaitKey)).To(Equal(vow.WaitMetadata))
 			Expect(mappings.Lookup(vow.SumpKey)).To(Equal(vow.SumpMetadata))
@@ -47,13 +52,49 @@ var _ = Describe("Vow storage mappings", func() {
 		})
 
 		It("returns error if key does not exist", func() {
-			storageRepository := &test_helpers.MockMakerStorageRepository{}
-
-			mappings := vow.VowMappings{StorageRepository: storageRepository}
 			_, err := mappings.Lookup(common.HexToHash(fakes.FakeHash.Hex()))
 
 			Expect(err).To(HaveOccurred())
 			Expect(err).To(MatchError(utils.ErrStorageKeyNotFound{Key: fakes.FakeHash.Hex()}))
+		})
+	})
+
+	Describe("looking up dynamic keys", func() {
+		It("refreshes mappings from repository if key not found", func() {
+			mappings.Lookup(fakes.FakeHash)
+
+			Expect(storageRepository.GetVowSinKeysCalled).To(BeTrue())
+		})
+
+		It("returns error if sin keys lookup fails", func() {
+			storageRepository.GetVowSinKeysError = fakes.FakeError
+
+			_, err := mappings.Lookup(fakes.FakeHash)
+
+			Expect(err).To(HaveOccurred())
+			Expect(err).To(MatchError(fakes.FakeError))
+		})
+
+		It("returns value metadata for sin with vow flog event", func() {
+			fakeTimestamp := "1538558052"
+			storageRepository.SinKeys = []string{fakeTimestamp}
+			sinKey := common.HexToHash("0x409bb97b2bc2657d61f96ef15378c58e2a7d5a67559d3718cbad711b817d9000")
+			// key found at https://github.com/8thlight/maker-vulcanizedb/pull/132/files#diff-fe4d48373094a6c01df6ca0e35c677c3R1360
+			expectedKeys := map[utils.Key]string{constants.Timestamp: fakeTimestamp}
+			expectedMetadata := utils.GetStorageValueMetadata(vow.SinMapping, expectedKeys, utils.Uint256)
+
+			Expect(mappings.Lookup(sinKey)).To(Equal(expectedMetadata))
+		})
+
+		It("returns value metadata for sin with vow fess event", func() {
+			fakeTimestamp := "1540893520"
+			storageRepository.SinKeys = []string{fakeTimestamp}
+			sinKey := common.HexToHash("0x37f4e61f380b4127c877057bc12214bd6b243aa33839584689548356b019d8b8")
+			// key found at https://github.com/8thlight/maker-vulcanizedb/pull/132/files#diff-fe4d48373094a6c01df6ca0e35c677c3R2058
+			expectedKeys := map[utils.Key]string{constants.Timestamp: fakeTimestamp}
+			expectedMetadata := utils.GetStorageValueMetadata(vow.SinMapping, expectedKeys, utils.Uint256)
+
+			Expect(mappings.Lookup(sinKey)).To(Equal(expectedMetadata))
 		})
 	})
 })
