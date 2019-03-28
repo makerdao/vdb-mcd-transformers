@@ -106,7 +106,9 @@ func NewTestDB(node core.Node) *postgres.DB {
 func CleanTestDB(db *postgres.DB) {
 	db.MustExec("DELETE FROM blocks")
 	db.MustExec("DELETE FROM checked_headers")
+	db.MustExec("DELETE FROM full_sync_transactions")
 	db.MustExec("DELETE FROM headers")
+	db.MustExec("DELETE FROM light_sync_transactions")
 	db.MustExec("DELETE FROM log_filters")
 	db.MustExec("DELETE FROM logs")
 	db.MustExec("DELETE FROM maker.bite")
@@ -176,7 +178,6 @@ func CleanTestDB(db *postgres.DB) {
 	db.MustExec("DELETE FROM maker.vow_fess")
 	db.MustExec("DELETE FROM maker.vow_flog")
 	db.MustExec("DELETE FROM receipts")
-	db.MustExec("DELETE FROM transactions")
 	db.MustExec("DELETE FROM watched_contracts")
 	// TODO: add ON DELETE CASCADE? otherwise these need to come after deleting tables that reference it
 	db.MustExec("DELETE FROM maker.urns")

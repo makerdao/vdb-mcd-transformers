@@ -124,7 +124,7 @@ var dbConfig = config.Database{
 }
 
 type Exporter interface {
-	Export() ([]transformer.EventTransformerInitializer, []transformer.StorageTransformerInitializer)
+	Export() ([]transformer.EventTransformerInitializer, []transformer.StorageTransformerInitializer, []transformer.ContractTransformerInitializer)
 }
 
 var _ = Describe("Plugin test", func() {
@@ -160,9 +160,9 @@ var _ = Describe("Plugin test", func() {
 				Expect(err).ToNot(HaveOccurred())
 				exporter, ok := symExporter.(Exporter)
 				Expect(ok).To(Equal(true))
-				initializers, store := exporter.Export()
-				Expect(len(initializers)).To(Equal(2))
-				Expect(len(store)).To(Equal(0))
+				eventTransformerInitializers, storageTransformerInitializers, _ := exporter.Export()
+				Expect(len(eventTransformerInitializers)).To(Equal(2))
+				Expect(len(storageTransformerInitializers)).To(Equal(0))
 			})
 
 			It("Loads our generated Exporter and uses it to import an arbitrary set of TransformerInitializers that we can execute over", func() {
@@ -181,10 +181,10 @@ var _ = Describe("Plugin test", func() {
 				Expect(err).ToNot(HaveOccurred())
 				exporter, ok := symExporter.(Exporter)
 				Expect(ok).To(Equal(true))
-				initializers, _ := exporter.Export()
+				eventTransformerInitializers, _, _ := exporter.Export()
 
 				w := watcher.NewEventWatcher(db, bc)
-				w.AddTransformers(initializers)
+				w.AddTransformers(eventTransformerInitializers)
 				err = w.Execute(constants.HeaderMissing)
 				Expect(err).ToNot(HaveOccurred())
 
@@ -246,9 +246,9 @@ var _ = Describe("Plugin test", func() {
 				Expect(err).ToNot(HaveOccurred())
 				exporter, ok := symExporter.(Exporter)
 				Expect(ok).To(Equal(true))
-				event, initializers := exporter.Export()
-				Expect(len(initializers)).To(Equal(2))
-				Expect(len(event)).To(Equal(0))
+				eventTransformerInitializers, storageTransformerInitializers, _ := exporter.Export()
+				Expect(len(storageTransformerInitializers)).To(Equal(2))
+				Expect(len(eventTransformerInitializers)).To(Equal(0))
 			})
 
 			It("Loads our generated Exporter and uses it to import an arbitrary set of StorageTransformerInitializers that we can execute over", func() {
@@ -261,11 +261,11 @@ var _ = Describe("Plugin test", func() {
 				Expect(err).ToNot(HaveOccurred())
 				exporter, ok := symExporter.(Exporter)
 				Expect(ok).To(Equal(true))
-				_, initializers := exporter.Export()
+				_, storageTransformerInitializers, _ := exporter.Export()
 
 				tailer := fs.FileTailer{Path: viper.GetString("filesystem.storageDiffsPath")}
 				w := watcher.NewStorageWatcher(tailer, db)
-				w.AddTransformers(initializers)
+				w.AddTransformers(storageTransformerInitializers)
 				// This blocks right now, need to make test file to read from
 				//err = w.Execute()
 				//Expect(err).ToNot(HaveOccurred())
@@ -296,7 +296,7 @@ var _ = Describe("Plugin test", func() {
 				Expect(err).ToNot(HaveOccurred())
 				exporter, ok := symExporter.(Exporter)
 				Expect(ok).To(Equal(true))
-				eventInitializers, storageInitializers := exporter.Export()
+				eventInitializers, storageInitializers, _ := exporter.Export()
 				Expect(len(eventInitializers)).To(Equal(2))
 				Expect(len(storageInitializers)).To(Equal(2))
 			})
@@ -317,7 +317,7 @@ var _ = Describe("Plugin test", func() {
 				Expect(err).ToNot(HaveOccurred())
 				exporter, ok := symExporter.(Exporter)
 				Expect(ok).To(Equal(true))
-				eventInitializers, storageInitializers := exporter.Export()
+				eventInitializers, storageInitializers, _ := exporter.Export()
 
 				ew := watcher.NewEventWatcher(db, bc)
 				ew.AddTransformers(eventInitializers)

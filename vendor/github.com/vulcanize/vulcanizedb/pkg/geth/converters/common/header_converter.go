@@ -38,4 +38,3 @@ func (converter HeaderConverter) Convert(gethHeader *types.Header, blockHash str
 	}
 	return coreHeader
 }
-
