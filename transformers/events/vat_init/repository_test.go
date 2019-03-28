@@ -69,7 +69,7 @@ var _ = Describe("Vat init repository", func() {
 
 			Expect(err).NotTo(HaveOccurred())
 			var dbVatInit vat_init.VatInitModel
-			err = db.Get(&dbVatInit, `SELECT ilk, log_idx, tx_idx, raw_log FROM maker.vat_init WHERE header_id = $1`, headerID)
+			err = db.Get(&dbVatInit, `SELECT ilk_id, log_idx, tx_idx, raw_log FROM maker.vat_init WHERE header_id = $1`, headerID)
 			Expect(err).NotTo(HaveOccurred())
 			ilkID, err := shared.GetOrCreateIlk(test_data.VatInitModel.Ilk, db)
 			Expect(err).NotTo(HaveOccurred())

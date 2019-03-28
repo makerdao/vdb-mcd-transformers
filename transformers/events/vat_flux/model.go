@@ -17,7 +17,7 @@
 package vat_flux
 
 type VatFluxModel struct {
-	Ilk              string
+	Ilk              string `db:"ilk_id"`
 	Src              string
 	Dst              string
 	Rad              string

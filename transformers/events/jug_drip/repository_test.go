@@ -70,7 +70,7 @@ var _ = Describe("Jug drip repository", func() {
 
 			Expect(err).NotTo(HaveOccurred())
 			var dbJugDrip jug_drip.JugDripModel
-			err = db.Get(&dbJugDrip, `SELECT ilk, log_idx, tx_idx, raw_log FROM maker.jug_drip WHERE header_id = $1`, headerID)
+			err = db.Get(&dbJugDrip, `SELECT ilk_id, log_idx, tx_idx, raw_log FROM maker.jug_drip WHERE header_id = $1`, headerID)
 			Expect(err).NotTo(HaveOccurred())
 			ilkID, err := shared.GetOrCreateIlk(test_data.JugDripModel.Ilk, db)
 			Expect(err).NotTo(HaveOccurred())

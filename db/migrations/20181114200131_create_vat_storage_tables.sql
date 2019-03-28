@@ -17,7 +17,7 @@ CREATE TABLE maker.vat_ilk_art (
   id            SERIAL PRIMARY KEY,
   block_number  BIGINT,
   block_hash    TEXT,
-  ilk           INTEGER NOT NULL REFERENCES maker.ilks (id),
+  ilk_id        INTEGER NOT NULL REFERENCES maker.ilks (id),
   art           NUMERIC NOT NULL
 );
 
@@ -25,7 +25,7 @@ CREATE TABLE maker.vat_ilk_dust (
   id            SERIAL PRIMARY KEY,
   block_number  BIGINT,
   block_hash    TEXT,
-  ilk           INTEGER NOT NULL REFERENCES maker.ilks (id),
+  ilk_id        INTEGER NOT NULL REFERENCES maker.ilks (id),
   dust          NUMERIC NOT NULL
 );
 
@@ -33,7 +33,7 @@ CREATE TABLE maker.vat_ilk_line (
   id            SERIAL PRIMARY KEY,
   block_number  BIGINT,
   block_hash    TEXT,
-  ilk           INTEGER NOT NULL REFERENCES maker.ilks (id),
+  ilk_id        INTEGER NOT NULL REFERENCES maker.ilks (id),
   line          NUMERIC NOT NULL
 );
 
@@ -41,7 +41,7 @@ CREATE TABLE maker.vat_ilk_spot (
   id            SERIAL PRIMARY KEY,
   block_number  BIGINT,
   block_hash    TEXT,
-  ilk           INTEGER NOT NULL REFERENCES maker.ilks (id),
+  ilk_id        INTEGER NOT NULL REFERENCES maker.ilks (id),
   spot          NUMERIC NOT NULL
 );
 
@@ -50,7 +50,7 @@ CREATE TABLE maker.vat_ilk_ink (
   id            SERIAL PRIMARY KEY,
   block_number  BIGINT,
   block_hash    TEXT,
-  ilk           INTEGER NOT NULL REFERENCES maker.ilks (id),
+  ilk_id        INTEGER NOT NULL REFERENCES maker.ilks (id),
   ink           NUMERIC NOT NULL
 );
 
@@ -58,7 +58,7 @@ CREATE TABLE maker.vat_ilk_rate (
   id            SERIAL PRIMARY KEY,
   block_number  BIGINT,
   block_hash    TEXT,
-  ilk           INTEGER NOT NULL REFERENCES maker.ilks (id),
+  ilk_id        INTEGER NOT NULL REFERENCES maker.ilks (id),
   rate          NUMERIC NOT NULL
 );
 
@@ -67,7 +67,7 @@ CREATE TABLE maker.vat_ilk_take (
   id            SERIAL PRIMARY KEY,
   block_number  BIGINT,
   block_hash    TEXT,
-  ilk           INTEGER NOT NULL REFERENCES maker.ilks (id),
+  ilk_id        INTEGER NOT NULL REFERENCES maker.ilks (id),
   take          NUMERIC NOT NULL
 );
 
@@ -75,8 +75,7 @@ CREATE TABLE maker.vat_urn_art (
   id            SERIAL PRIMARY KEY,
   block_number  BIGINT,
   block_hash    TEXT,
-  ilk           INTEGER NOT NULL REFERENCES maker.ilks (id),
-  urn           TEXT,
+  urn_id        INTEGER NOT NULL REFERENCES maker.urns (id),
   art           NUMERIC NOT NULL
 );
 
@@ -84,8 +83,7 @@ CREATE TABLE maker.vat_urn_ink (
   id            SERIAL PRIMARY KEY,
   block_number  BIGINT,
   block_hash    TEXT,
-  ilk           INTEGER NOT NULL REFERENCES maker.ilks (id),
-  urn           TEXT,
+  urn_id        INTEGER NOT NULL REFERENCES maker.urns (id),
   ink           NUMERIC NOT NULL
 );
 
@@ -93,7 +91,7 @@ CREATE TABLE maker.vat_gem (
   id            SERIAL PRIMARY KEY,
   block_number  BIGINT,
   block_hash    TEXT,
-  ilk           INTEGER NOT NULL REFERENCES maker.ilks (id),
+  ilk_id        INTEGER NOT NULL REFERENCES maker.ilks (id),
   guy           TEXT,
   gem           NUMERIC NOT NULL
 );

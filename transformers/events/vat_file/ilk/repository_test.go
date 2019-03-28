@@ -69,7 +69,7 @@ var _ = Describe("Vat file ilk repository", func() {
 
 			Expect(err).NotTo(HaveOccurred())
 			var dbPitFile ilk.VatFileIlkModel
-			err = db.Get(&dbPitFile, `SELECT ilk, what, data, log_idx, tx_idx, raw_log FROM maker.vat_file_ilk WHERE header_id = $1`, headerID)
+			err = db.Get(&dbPitFile, `SELECT ilk_id, what, data, log_idx, tx_idx, raw_log FROM maker.vat_file_ilk WHERE header_id = $1`, headerID)
 			Expect(err).NotTo(HaveOccurred())
 			ilkID, err := shared.GetOrCreateIlk(test_data.VatFileIlkSpotModel.Ilk, db)
 			Expect(err).NotTo(HaveOccurred())

@@ -18,6 +18,7 @@ package integration_tests
 
 import (
 	"plugin"
+	"strconv"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -36,6 +37,7 @@ import (
 	"github.com/vulcanize/vulcanizedb/pkg/plugin/test_helpers"
 
 	"github.com/vulcanize/mcd_transformers/test_config"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 )
 
 var eventConfig = config.Plugin{
@@ -187,8 +189,7 @@ var _ = Describe("Plugin test", func() {
 				Expect(err).ToNot(HaveOccurred())
 
 				type model struct {
-					Ilk              string
-					Urn              string
+					Urn              string `db:"urn_id"`
 					Ink              string
 					Art              string
 					IArt             string
@@ -205,7 +206,12 @@ var _ = Describe("Plugin test", func() {
 
 				err = db.Get(&returned, `SELECT * FROM maker.bite WHERE header_id = $1`, headerID)
 				Expect(err).ToNot(HaveOccurred())
-				Expect(returned.Urn).To(Equal("0000000000000000000000000000d8b4147eda80fec7122ae16da2479cbd7ffb"))
+
+				ilkID, err := shared.GetOrCreateIlk("4554480000000000000000000000000000000000000000000000000000000000", db)
+				Expect(err).NotTo(HaveOccurred())
+				urnID, err := shared.GetOrCreateUrn("0000000000000000000000000000d8b4147eda80fec7122ae16da2479cbd7ffb", ilkID, db)
+				Expect(err).NotTo(HaveOccurred())
+				Expect(returned.Urn).To(Equal(strconv.Itoa(urnID)))
 				Expect(returned.Ink).To(Equal("80000000000000000000"))
 				Expect(returned.Art).To(Equal("11000000000000000000000"))
 				Expect(returned.IArt).To(Equal("12496609999999999999992"))
@@ -319,8 +325,7 @@ var _ = Describe("Plugin test", func() {
 				Expect(err).ToNot(HaveOccurred())
 
 				type model struct {
-					Ilk              string
-					Urn              string
+					Urn              string `db:"urn_id"`
 					Ink              string
 					Art              string
 					IArt             string
@@ -337,7 +342,12 @@ var _ = Describe("Plugin test", func() {
 
 				err = db.Get(&returned, `SELECT * FROM maker.bite WHERE header_id = $1`, headerID)
 				Expect(err).ToNot(HaveOccurred())
-				Expect(returned.Urn).To(Equal("0000000000000000000000000000d8b4147eda80fec7122ae16da2479cbd7ffb"))
+
+				ilkID, err := shared.GetOrCreateIlk("4554480000000000000000000000000000000000000000000000000000000000", db)
+				Expect(err).NotTo(HaveOccurred())
+				urnID, err := shared.GetOrCreateUrn("0000000000000000000000000000d8b4147eda80fec7122ae16da2479cbd7ffb", ilkID, db)
+				Expect(err).NotTo(HaveOccurred())
+				Expect(returned.Urn).To(Equal(strconv.Itoa(urnID)))
 				Expect(returned.Ink).To(Equal("80000000000000000000"))
 				Expect(returned.Art).To(Equal("11000000000000000000000"))
 				Expect(returned.IArt).To(Equal("12496609999999999999992"))

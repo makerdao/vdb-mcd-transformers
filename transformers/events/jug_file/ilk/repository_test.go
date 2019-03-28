@@ -70,7 +70,7 @@ var _ = Describe("Jug file ilk repository", func() {
 
 			Expect(err).NotTo(HaveOccurred())
 			var dbJugFileIlk ilk.JugFileIlkModel
-			err = db.Get(&dbJugFileIlk, `SELECT ilk, what, data, log_idx, tx_idx, raw_log FROM maker.jug_file_ilk WHERE header_id = $1`, headerID)
+			err = db.Get(&dbJugFileIlk, `SELECT ilk_id, what, data, log_idx, tx_idx, raw_log FROM maker.jug_file_ilk WHERE header_id = $1`, headerID)
 			Expect(err).NotTo(HaveOccurred())
 			ilkID, err := shared.GetOrCreateIlk(test_data.JugFileIlkModel.Ilk, db)
 			Expect(err).NotTo(HaveOccurred())

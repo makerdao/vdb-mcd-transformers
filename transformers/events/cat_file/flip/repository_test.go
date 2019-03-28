@@ -19,6 +19,8 @@ package flip_test
 import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"strconv"
 
 	"github.com/vulcanize/vulcanizedb/pkg/datastore"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
@@ -67,9 +69,11 @@ var _ = Describe("Cat file flip repository", func() {
 
 			Expect(err).NotTo(HaveOccurred())
 			var dbResult flip.CatFileFlipModel
-			err = db.Get(&dbResult, `SELECT ilk, what, flip, tx_idx, log_idx, raw_log FROM maker.cat_file_flip WHERE header_id = $1`, headerID)
+			err = db.Get(&dbResult, `SELECT ilk_id, what, flip, tx_idx, log_idx, raw_log FROM maker.cat_file_flip WHERE header_id = $1`, headerID)
 			Expect(err).NotTo(HaveOccurred())
-			Expect(dbResult.Ilk).To(Equal(test_data.CatFileFlipModel.Ilk))
+			ilkID, err := shared.GetOrCreateIlk(test_data.CatFileFlipModel.Ilk, db)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(dbResult.Ilk).To(Equal(strconv.Itoa(ilkID)))
 			Expect(dbResult.What).To(Equal(test_data.CatFileFlipModel.What))
 			Expect(dbResult.Flip).To(Equal(test_data.CatFileFlipModel.Flip))
 			Expect(dbResult.TransactionIndex).To(Equal(test_data.CatFileFlipModel.TransactionIndex))

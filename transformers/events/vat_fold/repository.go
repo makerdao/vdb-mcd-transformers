@@ -57,11 +57,20 @@ func (repository VatFoldRepository) Create(headerID int64, models []interface{})
 			return ilkErr
 		}
 
+		urnID, urnErr := shared.GetOrCreateUrnInTransaction(vatFold.Urn, ilkID, tx)
+		if urnErr != nil {
+			rollbackErr := tx.Rollback()
+			if rollbackErr != nil {
+				log.Error("failed to rollback", rollbackErr)
+			}
+			return urnErr
+		}
+
 		_, execErr := tx.Exec(
-			`INSERT into maker.vat_fold (header_id, ilk, urn, rate, log_idx, tx_idx, raw_log)
-				VALUES($1, $2, $3, $4::NUMERIC, $5, $6, $7)
-				ON CONFLICT (header_id, tx_idx, log_idx) DO UPDATE SET ilk = $2, urn = $3, rate = $4, raw_log = $7;`,
-			headerID, ilkID, vatFold.Urn, vatFold.Rate, vatFold.LogIndex, vatFold.TransactionIndex, vatFold.Raw,
+			`INSERT into maker.vat_fold (header_id, urn_id, rate, log_idx, tx_idx, raw_log)
+				VALUES($1, $2, $3::NUMERIC, $4, $5, $6)
+				ON CONFLICT (header_id, tx_idx, log_idx) DO UPDATE SET urn_id = $2, rate = $3, raw_log = $6;`,
+			headerID, urnID, vatFold.Rate, vatFold.LogIndex, vatFold.TransactionIndex, vatFold.Raw,
 		)
 		if execErr != nil {
 			rollbackErr := tx.Rollback()

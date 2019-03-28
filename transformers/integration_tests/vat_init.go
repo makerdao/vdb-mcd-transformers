@@ -75,7 +75,7 @@ var _ = Describe("VatInit LogNoteTransformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResults []vat_init.VatInitModel
-		err = db.Select(&dbResults, `SELECT ilk from maker.vat_init`)
+		err = db.Select(&dbResults, `SELECT ilk_id from maker.vat_init`)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResults)).To(Equal(1))
@@ -137,7 +137,7 @@ var _ = Describe("VatInit LogNoteTransformer", func() {
 		Expect(vatInitChecked[0]).To(Equal(2))
 
 		var dbResults []vat_init.VatInitModel
-		err = db.Select(&dbResults, `SELECT ilk from maker.vat_init`)
+		err = db.Select(&dbResults, `SELECT ilk_id from maker.vat_init`)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResults)).To(Equal(1))

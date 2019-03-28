@@ -17,12 +17,12 @@
 package integration_tests
 
 import (
-	"strconv"
-
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
+	"strconv"
 
 	c2 "github.com/vulcanize/vulcanizedb/libraries/shared/constants"
 	fetch "github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
@@ -34,7 +34,6 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 )
 
 var testBiteConfig = transformer.EventTransformerConfig{
@@ -82,7 +81,7 @@ var _ = Describe("Bite Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []bite.BiteModel
-		err = db.Select(&dbResult, `SELECT art, iart, ilk, ink, nflip, tab, urn from maker.bite`)
+		err = db.Select(&dbResult, `SELECT art, iart, ink, nflip, tab, urn_id from maker.bite`)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))
@@ -90,11 +89,12 @@ var _ = Describe("Bite Transformer", func() {
 		Expect(dbResult[0].IArt).To(Equal("1645356666666666655736"))
 		ilkID, err := shared.GetOrCreateIlk("4554480000000000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
-		Expect(dbResult[0].Ilk).To(Equal(strconv.Itoa(ilkID)))
+		urnID, err := shared.GetOrCreateUrn("0000000000000000000000000000d8b4147eda80fec7122ae16da2479cbd7ffb", ilkID, db)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(dbResult[0].Urn).To(Equal(strconv.Itoa(urnID)))
 		Expect(dbResult[0].Ink).To(Equal("1000000000000000000"))
 		Expect(dbResult[0].NFlip).To(Equal("2"))
 		Expect(dbResult[0].Tab).To(Equal("149846666666666655744"))
-		Expect(dbResult[0].Urn).To(Equal("0000000000000000000000000000d8b4147eda80fec7122ae16da2479cbd7ffb"))
 	})
 
 	It("unpacks an event log", func() {

@@ -83,7 +83,7 @@ var _ = Describe("Vat storage repository", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			var result DoubleMappingRes
-			err = db.Get(&result, `SELECT block_number, block_hash, ilk AS key_one, guy AS key_two, gem AS value FROM maker.vat_gem`)
+			err = db.Get(&result, `SELECT block_number, block_hash, ilk_id AS key_one, guy AS key_two, gem AS value FROM maker.vat_gem`)
 			Expect(err).NotTo(HaveOccurred())
 			ilkID, err := shared.GetOrCreateIlk(fakeIlk, db)
 			Expect(err).NotTo(HaveOccurred())
@@ -118,7 +118,7 @@ var _ = Describe("Vat storage repository", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			var result MappingRes
-			err = db.Get(&result, `SELECT block_number, block_hash, ilk AS key, art AS value FROM maker.vat_ilk_art`)
+			err = db.Get(&result, `SELECT block_number, block_hash, ilk_id AS key, art AS value FROM maker.vat_ilk_art`)
 			Expect(err).NotTo(HaveOccurred())
 			ilkID, err := shared.GetOrCreateIlk(fakeIlk, db)
 			Expect(err).NotTo(HaveOccurred())
@@ -144,7 +144,7 @@ var _ = Describe("Vat storage repository", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			var result MappingRes
-			err = db.Get(&result, `SELECT block_number, block_hash, ilk AS key, dust AS value FROM maker.vat_ilk_dust`)
+			err = db.Get(&result, `SELECT block_number, block_hash, ilk_id AS key, dust AS value FROM maker.vat_ilk_dust`)
 			Expect(err).NotTo(HaveOccurred())
 			ilkID, err := shared.GetOrCreateIlk(fakeIlk, db)
 			Expect(err).NotTo(HaveOccurred())
@@ -171,7 +171,7 @@ var _ = Describe("Vat storage repository", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			var result MappingRes
-			err = db.Get(&result, `SELECT block_number, block_hash, ilk AS key, ink AS value FROM maker.vat_ilk_ink`)
+			err = db.Get(&result, `SELECT block_number, block_hash, ilk_id AS key, ink AS value FROM maker.vat_ilk_ink`)
 			Expect(err).NotTo(HaveOccurred())
 			ilkID, err := shared.GetOrCreateIlk(fakeIlk, db)
 			Expect(err).NotTo(HaveOccurred())
@@ -197,7 +197,7 @@ var _ = Describe("Vat storage repository", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			var result MappingRes
-			err = db.Get(&result, `SELECT block_number, block_hash, ilk AS key, line AS value FROM maker.vat_ilk_line`)
+			err = db.Get(&result, `SELECT block_number, block_hash, ilk_id AS key, line AS value FROM maker.vat_ilk_line`)
 			Expect(err).NotTo(HaveOccurred())
 			ilkID, err := shared.GetOrCreateIlk(fakeIlk, db)
 			Expect(err).NotTo(HaveOccurred())
@@ -223,7 +223,7 @@ var _ = Describe("Vat storage repository", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			var result MappingRes
-			err = db.Get(&result, `SELECT block_number, block_hash, ilk AS key, rate AS value FROM maker.vat_ilk_rate`)
+			err = db.Get(&result, `SELECT block_number, block_hash, ilk_id AS key, rate AS value FROM maker.vat_ilk_rate`)
 			Expect(err).NotTo(HaveOccurred())
 			ilkID, err := shared.GetOrCreateIlk(fakeIlk, db)
 			Expect(err).NotTo(HaveOccurred())
@@ -249,7 +249,7 @@ var _ = Describe("Vat storage repository", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			var result MappingRes
-			err = db.Get(&result, `SELECT block_number, block_hash, ilk AS key, spot AS value FROM maker.vat_ilk_spot`)
+			err = db.Get(&result, `SELECT block_number, block_hash, ilk_id AS key, spot AS value FROM maker.vat_ilk_spot`)
 			Expect(err).NotTo(HaveOccurred())
 			ilkID, err := shared.GetOrCreateIlk(fakeIlk, db)
 			Expect(err).NotTo(HaveOccurred())
@@ -276,7 +276,7 @@ var _ = Describe("Vat storage repository", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			var result MappingRes
-			err = db.Get(&result, `SELECT block_number, block_hash, ilk AS key, take AS value FROM maker.vat_ilk_take`)
+			err = db.Get(&result, `SELECT block_number, block_hash, ilk_id AS key, take AS value FROM maker.vat_ilk_take`)
 			Expect(err).NotTo(HaveOccurred())
 			ilkID, err := shared.GetOrCreateIlk(fakeIlk, db)
 			Expect(err).NotTo(HaveOccurred())
@@ -326,7 +326,12 @@ var _ = Describe("Vat storage repository", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			var result DoubleMappingRes
-			err = db.Get(&result, `SELECT block_number, block_hash, ilk AS key_one, urn AS key_two, art AS value FROM maker.vat_urn_art`)
+			err = db.Get(&result, `
+				SELECT block_number, block_hash, ilks.id AS key_one, urns.guy AS key_two, art AS value
+				FROM maker.vat_urn_art
+				INNER JOIN maker.urns ON maker.urns.id = maker.vat_urn_art.urn_id
+				INNER JOIN maker.ilks on maker.urns.ilk_id = maker.ilks.id
+			`)
 			Expect(err).NotTo(HaveOccurred())
 			ilkID, err := shared.GetOrCreateIlk(fakeIlk, db)
 			Expect(err).NotTo(HaveOccurred())
@@ -361,7 +366,12 @@ var _ = Describe("Vat storage repository", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			var result DoubleMappingRes
-			err = db.Get(&result, `SELECT block_number, block_hash, ilk AS key_one, urn AS key_two, ink AS value FROM maker.vat_urn_ink`)
+			err = db.Get(&result, `
+				SELECT block_number, block_hash, ilks.id AS key_one, urns.guy AS key_two, ink AS value
+				FROM maker.vat_urn_ink
+				INNER JOIN maker.urns ON maker.urns.id = maker.vat_urn_ink.urn_id
+				INNER JOIN maker.ilks on maker.urns.ilk_id = maker.ilks.id
+			`)
 			Expect(err).NotTo(HaveOccurred())
 			ilkID, err := shared.GetOrCreateIlk(fakeIlk, db)
 			Expect(err).NotTo(HaveOccurred())

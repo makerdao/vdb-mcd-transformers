@@ -17,7 +17,7 @@
 package chop_lump
 
 type CatFileChopLumpModel struct {
-	Ilk              string
+	Ilk              string `db:"ilk_id"`
 	What             string
 	Data             string
 	TransactionIndex uint   `db:"tx_idx"`

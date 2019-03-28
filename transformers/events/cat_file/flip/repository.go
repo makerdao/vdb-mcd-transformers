@@ -18,6 +18,7 @@ package flip
 
 import (
 	"fmt"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 
 	log "github.com/sirupsen/logrus"
 
@@ -38,7 +39,7 @@ func (repository CatFileFlipRepository) Create(headerID int64, models []interfac
 		return dBaseErr
 	}
 	for _, model := range models {
-		flip, ok := model.(CatFileFlipModel)
+		flipModel, ok := model.(CatFileFlipModel)
 		if !ok {
 			rollbackErr := tx.Rollback()
 			if rollbackErr != nil {
@@ -47,11 +48,20 @@ func (repository CatFileFlipRepository) Create(headerID int64, models []interfac
 			return fmt.Errorf("model of type %T, not %T", model, CatFileFlipModel{})
 		}
 
-		_, execErr := repository.db.Exec(
-			`INSERT into maker.cat_file_flip (header_id, ilk, what, flip, tx_idx, log_idx, raw_log)
+		ilkID, ilkErr := shared.GetOrCreateIlkInTransaction(flipModel.Ilk, tx)
+		if ilkErr != nil {
+			rollbackErr := tx.Rollback()
+			if rollbackErr != nil {
+				log.Error("failed to rollback ", rollbackErr)
+			}
+			return ilkErr
+		}
+
+		_, execErr := tx.Exec(
+			`INSERT into maker.cat_file_flip (header_id, ilk_id, what, flip, tx_idx, log_idx, raw_log)
 			VALUES($1, $2, $3, $4, $5, $6, $7)
-			ON CONFLICT (header_id, tx_idx, log_idx) DO UPDATE SET ilk = $2, what = $3, flip = $4, raw_log = $7;`,
-			headerID, flip.Ilk, flip.What, flip.Flip, flip.TransactionIndex, flip.LogIndex, flip.Raw,
+			ON CONFLICT (header_id, tx_idx, log_idx) DO UPDATE SET ilk_id = $2, what = $3, flip = $4, raw_log = $7;`,
+			headerID, ilkID, flipModel.What, flipModel.Flip, flipModel.TransactionIndex, flipModel.LogIndex, flipModel.Raw,
 		)
 		if execErr != nil {
 			rollbackErr := tx.Rollback()

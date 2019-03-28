@@ -17,7 +17,7 @@
 package ilk
 
 type VatFileIlkModel struct {
-	Ilk              string
+	Ilk              string `db:"ilk_id"`
 	What             string
 	Data             string
 	LogIndex         uint   `db:"log_idx"`
