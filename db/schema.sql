@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 10.6
--- Dumped by pg_dump version 10.6
+-- Dumped from database version 10.5
+-- Dumped by pg_dump version 10.5
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -34,6 +34,18 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 --
 
 COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
+
+
+--
+-- Name: frob_event; Type: TYPE; Schema: maker; Owner: -
+--
+
+CREATE TYPE maker.frob_event AS (
+	ilkid text,
+	urnid text,
+	dink numeric,
+	dart numeric
+);
 
 
 --
@@ -89,11 +101,34 @@ CREATE TYPE maker.urn_state AS (
 
 
 --
+-- Name: frobs(text, text); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.frobs(ilk text, urn text) RETURNS SETOF maker.frob_event
+    LANGUAGE sql
+    AS $_$
+WITH
+  ilk AS (SELECT id FROM maker.ilks WHERE ilks.ilk = $1),
+  urn AS (
+    SELECT id FROM maker.urns
+    WHERE ilk_id = (SELECT id FROM ilk)
+      AND guy = $2
+  )
+
+SELECT $1 AS ilkId, $2 AS urnId, dink, dart
+  FROM maker.vat_frob LEFT JOIN headers ON vat_frob.header_id = headers.id
+WHERE vat_frob.urn_id = (SELECT id FROM urn)
+ORDER BY block_number DESC
+
+$_$;
+
+
+--
 -- Name: get_all_urn_states_at_block(numeric); Type: FUNCTION; Schema: maker; Owner: -
 --
 
 CREATE FUNCTION maker.get_all_urn_states_at_block(block_height numeric) RETURNS SETOF maker.urn_state
-    LANGUAGE sql
+    LANGUAGE sql STABLE
     AS $_$
 WITH
   urns AS (
@@ -477,10 +512,10 @@ $_$;
 --
 
 CREATE FUNCTION maker.get_ilk_history_before_block(block_number numeric, ilk_id integer) RETURNS SETOF maker.ilk_state
-    LANGUAGE plpgsql
+    LANGUAGE plpgsql STABLE
     AS $_$
 DECLARE
-  r record;
+  r maker.relevant_block;
 BEGIN
   FOR r IN SELECT * FROM maker.get_ilk_blocks_before($1, $2)
   LOOP
@@ -496,7 +531,7 @@ $_$;
 --
 
 CREATE FUNCTION maker.get_urn_history_before_block(ilk text, urn text, block_height numeric) RETURNS SETOF maker.urn_state
-    LANGUAGE plpgsql
+    LANGUAGE plpgsql STABLE
     AS $_$
 DECLARE
   i NUMERIC;
@@ -530,7 +565,7 @@ $_$;
 --
 
 CREATE FUNCTION maker.get_urn_state_at_block(ilk text, urn text, block_height numeric) RETURNS maker.urn_state
-    LANGUAGE sql
+    LANGUAGE sql STABLE
     AS $_$
 WITH
   urn AS (
