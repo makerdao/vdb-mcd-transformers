@@ -69,7 +69,6 @@ func (converter BiteConverter) ToModels(entities []interface{}) ([]interface{}, 
 		urn := shared.GetHexWithoutPrefix(biteEntity.Urn[:])
 		ink := biteEntity.Ink
 		art := biteEntity.Art
-		iArt := biteEntity.IArt
 		tab := biteEntity.Tab
 		flip := biteEntity.Flip
 		logIdx := biteEntity.LogIndex
@@ -84,7 +83,6 @@ func (converter BiteConverter) ToModels(entities []interface{}) ([]interface{}, 
 			Urn:              urn,
 			Ink:              shared.BigIntToString(ink),
 			Art:              shared.BigIntToString(art),
-			IArt:             shared.BigIntToString(iArt),
 			Tab:              shared.BigIntToString(tab),
 			NFlip:            shared.BigIntToString(flip),
 			LogIndex:         logIdx,
