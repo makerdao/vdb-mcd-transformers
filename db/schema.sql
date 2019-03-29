@@ -37,18 +37,6 @@ COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
 
 
 --
--- Name: frob_event; Type: TYPE; Schema: maker; Owner: -
---
-
-CREATE TYPE maker.frob_event AS (
-	ilkid text,
-	urnid text,
-	dink numeric,
-	dart numeric
-);
-
-
---
 -- Name: ilk_state; Type: TYPE; Schema: maker; Owner: -
 --
 
@@ -98,24 +86,6 @@ CREATE TYPE maker.urn_state AS (
 	created numeric,
 	updated numeric
 );
-
-
---
--- Name: frobs(text, text); Type: FUNCTION; Schema: maker; Owner: -
---
-
-CREATE FUNCTION maker.frobs(ilk text, urn text) RETURNS SETOF maker.frob_event
-    LANGUAGE sql
-    AS $_$
-WITH
-  ilk AS (SELECT id FROM maker.ilks WHERE ilks.ilk = $1)
-
-SELECT $1 AS ilkId, $2 AS urnId, dink, dart
-  FROM maker.vat_frob LEFT JOIN headers ON vat_frob.header_id = headers.id
-WHERE vat_frob.ilk = (SELECT id FROM ilk) AND vat_frob.urn = $2
-ORDER BY block_number DESC
-
-$_$;
 
 
 --
