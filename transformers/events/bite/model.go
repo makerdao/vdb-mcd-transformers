@@ -21,7 +21,6 @@ type BiteModel struct {
 	Urn              string `db:"urn_id"`
 	Ink              string
 	Art              string
-	IArt             string
 	Tab              string
 	NFlip            string
 	LogIndex         uint   `db:"log_idx"`
