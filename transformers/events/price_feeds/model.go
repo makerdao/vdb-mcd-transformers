@@ -18,18 +18,13 @@ package price_feeds
 
 import (
 	"math/big"
-
-	"github.com/ethereum/go-ethereum/common"
 )
-
-type LogValueEntity struct {
-	Val common.Address
-}
 
 type PriceFeedModel struct {
 	BlockNumber       uint64 `db:"block_number"`
 	MedianizerAddress string `db:"medianizer_address"`
 	UsdValue          string `db:"usd_value"`
+	Age               string
 	LogIndex          uint   `db:"log_idx"`
 	TransactionIndex  uint   `db:"tx_idx"`
 	Raw               []byte `db:"raw_log"`

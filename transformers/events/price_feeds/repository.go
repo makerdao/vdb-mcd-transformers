@@ -47,10 +47,13 @@ func (repository PriceFeedRepository) Create(headerID int64, models []interface{
 			return fmt.Errorf("model of type %T, not %T", model, PriceFeedModel{})
 		}
 
-		_, err := tx.Exec(`INSERT INTO maker.price_feeds (block_number, header_id, medianizer_address, usd_value, log_idx, tx_idx, raw_log)
-		VALUES ($1, $2, $3, $4::NUMERIC, $5, $6, $7)
-		ON CONFLICT (header_id, medianizer_address, tx_idx, log_idx) DO UPDATE SET block_number = $1, usd_value = $4, raw_log = $7;`,
-			priceUpdate.BlockNumber, headerID, priceUpdate.MedianizerAddress, priceUpdate.UsdValue, priceUpdate.LogIndex, priceUpdate.TransactionIndex, priceUpdate.Raw)
+		_, err := tx.Exec(
+			`INSERT INTO maker.price_feeds (block_number, header_id, medianizer_address, usd_value, age, log_idx, tx_idx, raw_log)
+			VALUES ($1, $2, $3, $4::NUMERIC, $5::NUMERIC, $6, $7, $8)
+			ON CONFLICT (header_id, medianizer_address, tx_idx, log_idx)
+			DO UPDATE SET block_number = $1, usd_value = $4, age = $5, raw_log = $8;`,
+			priceUpdate.BlockNumber, headerID, priceUpdate.MedianizerAddress, priceUpdate.UsdValue, priceUpdate.Age,
+			priceUpdate.LogIndex, priceUpdate.TransactionIndex, priceUpdate.Raw)
 		if err != nil {
 			tx.Rollback()
 			return err
