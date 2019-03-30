@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 10.5
--- Dumped by pg_dump version 10.5
+-- Dumped from database version 10.6
+-- Dumped by pg_dump version 10.6
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -128,7 +128,7 @@ $_$;
 --
 
 CREATE FUNCTION maker.get_all_urn_states_at_block(block_height numeric) RETURNS SETOF maker.urn_state
-    LANGUAGE sql STABLE
+    LANGUAGE sql
     AS $_$
 WITH
   urns AS (
@@ -512,10 +512,10 @@ $_$;
 --
 
 CREATE FUNCTION maker.get_ilk_history_before_block(block_number numeric, ilk_id integer) RETURNS SETOF maker.ilk_state
-    LANGUAGE plpgsql STABLE
+    LANGUAGE plpgsql
     AS $_$
 DECLARE
-  r maker.relevant_block;
+  r record;
 BEGIN
   FOR r IN SELECT * FROM maker.get_ilk_blocks_before($1, $2)
   LOOP
@@ -531,7 +531,7 @@ $_$;
 --
 
 CREATE FUNCTION maker.get_urn_history_before_block(ilk text, urn text, block_height numeric) RETURNS SETOF maker.urn_state
-    LANGUAGE plpgsql STABLE
+    LANGUAGE plpgsql
     AS $_$
 DECLARE
   i NUMERIC;
@@ -565,7 +565,7 @@ $_$;
 --
 
 CREATE FUNCTION maker.get_urn_state_at_block(ilk text, urn text, block_height numeric) RETURNS maker.urn_state
-    LANGUAGE sql STABLE
+    LANGUAGE sql
     AS $_$
 WITH
   urn AS (
@@ -1941,6 +1941,7 @@ CREATE TABLE maker.price_feeds (
     block_number bigint NOT NULL,
     header_id integer NOT NULL,
     medianizer_address text,
+    age numeric,
     usd_value numeric,
     log_idx integer NOT NULL,
     tx_idx integer NOT NULL,

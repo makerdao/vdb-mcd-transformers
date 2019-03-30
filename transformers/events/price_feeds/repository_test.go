@@ -66,10 +66,11 @@ var _ = Describe("Price feeds repository", func() {
 
 			Expect(err).NotTo(HaveOccurred())
 			var dbPriceFeedUpdate price_feeds.PriceFeedModel
-			err = db.Get(&dbPriceFeedUpdate, `SELECT block_number, medianizer_address, usd_value, log_idx, tx_idx, raw_log FROM maker.price_feeds WHERE header_id = $1`, headerID)
+			err = db.Get(&dbPriceFeedUpdate, `SELECT block_number, medianizer_address, usd_value, age, log_idx, tx_idx, raw_log FROM maker.price_feeds WHERE header_id = $1`, headerID)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(dbPriceFeedUpdate.BlockNumber).To(Equal(test_data.PriceFeedModel.BlockNumber))
 			Expect(dbPriceFeedUpdate.MedianizerAddress).To(Equal(test_data.PriceFeedModel.MedianizerAddress))
+			Expect(dbPriceFeedUpdate.Age).To(Equal(test_data.PriceFeedModel.Age))
 			Expect(dbPriceFeedUpdate.UsdValue).To(Equal(test_data.PriceFeedModel.UsdValue))
 			Expect(dbPriceFeedUpdate.LogIndex).To(Equal(test_data.PriceFeedModel.LogIndex))
 			Expect(dbPriceFeedUpdate.TransactionIndex).To(Equal(test_data.PriceFeedModel.TransactionIndex))
