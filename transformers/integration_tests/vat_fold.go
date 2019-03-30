@@ -52,7 +52,8 @@ var _ = Describe("VatFold Transformer", func() {
 		test_config.CleanTestDB(db)
 	})
 
-	It("transforms VatFold log events", func() {
+	// TODO: Replace block number once there is a fold event on the updated Vat
+	XIt("transforms VatFold log events", func() {
 		blockNumber := int64(9367233)
 		config := transformer.EventTransformerConfig{
 			TransformerName:     constants.VatFoldLabel,
@@ -96,7 +97,8 @@ var _ = Describe("VatFold Transformer", func() {
 		Expect(dbResult.Rate).To(Equal("0.000000000000000000000000000"))
 	})
 
-	It("rechecks vat fold event", func() {
+	// TODO: Replace block number once there is a fold event on the updated Vat
+	XIt("rechecks vat fold event", func() {
 		blockNumber := int64(9367233)
 		config := transformer.EventTransformerConfig{
 			TransformerName:     constants.VatFoldLabel,

@@ -1,6 +1,6 @@
 package constants
 
-//TODO: get cat, pit, and jug file method signatures directly from the ABI
+//TODO: get cat and jug file method signatures directly from the ABI
 func biteMethod() string            { return GetSolidityFunctionSignature(CatABI(), "Bite") }
 func catFileChopLumpMethod() string { return "file(bytes32,bytes32,uint256)" }
 func catFileFlipMethod() string     { return GetSolidityFunctionSignature(CatABI(), "file") }
@@ -20,14 +20,13 @@ func logMedianPriceMethod() string {
 func tendMethod() string               { return GetSolidityFunctionSignature(FlipperABI(), "tend") }
 func vatFileDebtCeilingMethod() string { return "file(bytes32,uint256)" }
 func vatFileIlkMethod() string         { return "file(bytes32,bytes32,uint256)" }
-func vatFluxMethod() string            { return GetSolidityFunctionSignature(OldVatABI(), "flux") }
-func vatFoldMethod() string            { return GetSolidityFunctionSignature(OldVatABI(), "fold") }
+func vatFluxMethod() string            { return GetSolidityFunctionSignature(VatABI(), "flux") }
+func vatFoldMethod() string            { return GetSolidityFunctionSignature(VatABI(), "fold") }
 func vatFrobMethod() string            { return GetSolidityFunctionSignature(VatABI(), "frob") }
-func vatGrabMethod() string            { return GetSolidityFunctionSignature(OldVatABI(), "grab") }
-func vatHealMethod() string            { return GetSolidityFunctionSignature(OldVatABI(), "heal") }
-func vatInitMethod() string            { return GetSolidityFunctionSignature(OldVatABI(), "init") }
-func vatMoveMethod() string            { return GetSolidityFunctionSignature(OldVatABI(), "move") }
-func vatSlipMethod() string            { return GetSolidityFunctionSignature(OldVatABI(), "slip") }
-func vatTuneMethod() string            { return GetSolidityFunctionSignature(OldVatABI(), "tune") }
+func vatGrabMethod() string            { return GetSolidityFunctionSignature(VatABI(), "grab") }
+func vatHealMethod() string            { return GetSolidityFunctionSignature(VatABI(), "heal") }
+func vatInitMethod() string            { return GetSolidityFunctionSignature(VatABI(), "init") }
+func vatMoveMethod() string            { return GetSolidityFunctionSignature(VatABI(), "move") }
+func vatSlipMethod() string            { return GetSolidityFunctionSignature(VatABI(), "slip") }
 func vowFessMethod() string            { return GetSolidityFunctionSignature(VowABI(), "fess") }
 func vowFlogMethod() string            { return GetSolidityFunctionSignature(VowABI(), "flog") }

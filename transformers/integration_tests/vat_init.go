@@ -36,8 +36,8 @@ import (
 )
 
 var _ = Describe("VatInit LogNoteTransformer", func() {
-	It("transforms VatInit log events", func() {
-		blockNumber := int64(8535561)
+	It("transforms vat init log events", func() {
+		blockNumber := int64(10501138)
 		config := transformer.EventTransformerConfig{
 			TransformerName:     constants.VatInitLabel,
 			ContractAddresses:   []string{test_data.KovanVatContractAddress},
@@ -86,7 +86,7 @@ var _ = Describe("VatInit LogNoteTransformer", func() {
 	})
 
 	It("rechecks vat init event", func() {
-		blockNumber := int64(8535561)
+		blockNumber := int64(10501138)
 		config := transformer.EventTransformerConfig{
 			TransformerName:     constants.VatInitLabel,
 			ContractAddresses:   []string{test_data.KovanVatContractAddress},

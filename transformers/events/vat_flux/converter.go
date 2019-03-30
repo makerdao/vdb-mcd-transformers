@@ -39,6 +39,8 @@ func (VatFluxConverter) ToModels(ethLogs []types.Log) ([]interface{}, error) {
 		ilk := shared.GetHexWithoutPrefix(ethLog.Topics[1].Bytes())
 		src := shared.GetHexWithoutPrefix(ethLog.Topics[2].Bytes())
 		dst := shared.GetHexWithoutPrefix(ethLog.Topics[3].Bytes())
+		// TODO: circle back on this when event is on Kovan
+		// suspicious that we will need to use the shared.GetLogNoteDataBytesAtIndex
 		radBytes := shared.GetDataBytesAtIndex(-1, ethLog.Data)
 		rad := big.NewInt(0).SetBytes(radBytes).String()
 

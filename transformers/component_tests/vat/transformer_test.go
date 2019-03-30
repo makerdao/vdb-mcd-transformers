@@ -5,17 +5,13 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/vulcanize/mcd_transformers/test_config"
-	"github.com/vulcanize/mcd_transformers/transformers/events/vat_tune"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	storage2 "github.com/vulcanize/mcd_transformers/transformers/storage"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/test_helpers"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/vat"
-	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/storage"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
-	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres/repositories"
-	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 )
 
 var _ = Describe("Executing the transformer", func() {
@@ -37,25 +33,6 @@ var _ = Describe("Executing the transformer", func() {
 		ilk := "4554480000000000000000000000000000000000000000000000000000000000"
 		_, err := shared.GetOrCreateIlk(ilk, db)
 		Expect(err).NotTo(HaveOccurred())
-
-		h := repositories.NewHeaderRepository(db)
-		i, _ := h.CreateOrUpdateHeader(fakes.FakeHeader)
-		v := vat_tune.VatTuneRepository{}
-		v.SetDB(db)
-
-		m := vat_tune.VatTuneModel{
-			Ilk:              "4554480000000000000000000000000000000000000000000000000000000000",
-			Urn:              "84271a423a68d9a3904fe8107185d9ff58a64974000000000000000000000037",
-			V:                "v",
-			W:                "w",
-			Dink:             test_data.VatTuneModel.Dink,
-			Dart:             test_data.VatTuneModel.Dart,
-			TransactionIndex: 0,
-			LogIndex:         0,
-			Raw:              test_data.VatTuneModel.Raw,
-		}
-
-		v.Create(i, []interface{}{m})
 	})
 
 	It("reads in a Vat.rate storage diff row and persists it", func() {

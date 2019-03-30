@@ -47,7 +47,7 @@ func (repository *MakerStorageRepository) GetDaiKeys() ([]string, error) {
 	err := repository.db.Select(&daiKeys, `
 		SELECT DISTINCT src FROM maker.vat_move UNION
 		SELECT DISTINCT dst FROM maker.vat_move UNION
-		SELECT DISTINCT w FROM maker.vat_tune UNION
+		SELECT DISTINCT w FROM maker.vat_frob UNION
 		SELECT DISTINCT v FROM maker.vat_heal UNION
 		SELECT DISTINCT urns.guy FROM maker.vat_fold
 			INNER JOIN maker.urns on urns.id = maker.vat_fold.urn_id
@@ -80,9 +80,9 @@ func (repository *MakerStorageRepository) GetGemKeys() ([]Urn, error) {
 		FROM maker.vat_flux flux
 		INNER JOIN maker.ilks ilks ON ilks.id = flux.ilk_id
 		UNION
-		SELECT DISTINCT ilks.ilk, tune.v AS guy 
-		FROM maker.vat_tune tune
-		INNER JOIN maker.urns on urns.id = tune.urn_id
+		SELECT DISTINCT ilks.ilk, frob.v AS guy 
+		FROM maker.vat_frob frob
+		INNER JOIN maker.urns on urns.id = frob.urn_id
 		INNER JOIN maker.ilks ilks ON ilks.id = urns.ilk_id
 		UNION
 		SELECT DISTINCT ilks.ilk, grab.v AS guy 

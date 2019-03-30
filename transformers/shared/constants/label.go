@@ -26,7 +26,6 @@ const (
 	VatInitLabel            = "vatInit"
 	VatMoveLabel            = "vatMove"
 	VatSlipLabel            = "vatSlip"
-	VatTuneLabel            = "vatTune"
 	VowFessLabel            = "vowFess"
 	VowFlogLabel            = "vowFlog"
 )
