@@ -36,7 +36,8 @@ import (
 )
 
 var _ = Describe("VatFlux LogNoteTransformer", func() {
-	It("transforms VatFlux log events", func() {
+	// TODO: Replace block number once there's a flux event on the updated Vat
+	XIt("transforms VatFlux log events", func() {
 		blockNumber := int64(9004474)
 		config := transformer.EventTransformerConfig{
 			TransformerName:     constants.VatFluxLabel,
@@ -89,7 +90,8 @@ var _ = Describe("VatFlux LogNoteTransformer", func() {
 		Expect(dbResult[0].TransactionIndex).To(Equal(uint(0)))
 	})
 
-	It("rechecks vat flux event", func() {
+	// TODO: Replace block number once there's a flux event on the updated Vat
+	XIt("rechecks vat flux event", func() {
 		blockNumber := int64(9004474)
 		config := transformer.EventTransformerConfig{
 			TransformerName:     constants.VatFluxLabel,

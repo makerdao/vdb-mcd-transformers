@@ -53,8 +53,8 @@ var _ = Describe("VatFileDebtCeiling LogNoteTransformer", func() {
 		blockNumber := int64(10577169)
 		config := transformer.EventTransformerConfig{
 			TransformerName:     constants.VatFileDebtCeilingLabel,
-			ContractAddresses:   []string{test_data.KovanUpdatedVatContractAddress},
-			ContractAbi:         test_data.KovanUpdatedVatABI,
+			ContractAddresses:   []string{test_data.KovanVatContractAddress},
+			ContractAbi:         test_data.KovanVatABI,
 			Topic:               test_data.KovanVatFileDebtCeilingSignature,
 			StartingBlockNumber: blockNumber,
 			EndingBlockNumber:   blockNumber,
@@ -93,8 +93,8 @@ var _ = Describe("VatFileDebtCeiling LogNoteTransformer", func() {
 		blockNumber := int64(10577169)
 		config := transformer.EventTransformerConfig{
 			TransformerName:     constants.VatFileDebtCeilingLabel,
-			ContractAddresses:   []string{test_data.KovanUpdatedVatContractAddress},
-			ContractAbi:         test_data.KovanUpdatedVatABI,
+			ContractAddresses:   []string{test_data.KovanVatContractAddress},
+			ContractAbi:         test_data.KovanVatABI,
 			Topic:               test_data.KovanVatFileDebtCeilingSignature,
 			StartingBlockNumber: blockNumber,
 			EndingBlockNumber:   blockNumber,

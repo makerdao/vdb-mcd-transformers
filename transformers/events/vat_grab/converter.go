@@ -26,6 +26,8 @@ func (VatGrabConverter) ToModels(ethLogs []types.Log) ([]interface{}, error) {
 		v := shared.GetHexWithoutPrefix(ethLog.Topics[3].Bytes())
 		wBytes := shared.GetDataBytesAtIndex(-3, ethLog.Data)
 		w := shared.GetHexWithoutPrefix(wBytes)
+		// TODO: circle back on this when event is on Kovan
+		// suspicious that we will need to use the shared.GetLogNoteDataBytesAtIndex
 		dinkBytes := shared.GetDataBytesAtIndex(-2, ethLog.Data)
 		dink := big.NewInt(0).SetBytes(dinkBytes).String()
 		dartBytes := shared.GetDataBytesAtIndex(-1, ethLog.Data)

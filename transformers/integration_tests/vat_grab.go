@@ -36,7 +36,8 @@ import (
 )
 
 var _ = Describe("Vat Grab Transformer", func() {
-	It("transforms VatGrab log events", func() {
+	// TODO: Replace block number once there's a grab event on the updated Vat
+	XIt("transforms VatGrab log events", func() {
 		blockNumber := int64(8958230)
 		config := transformer.EventTransformerConfig{
 			TransformerName:     constants.VatGrabLabel,
@@ -95,7 +96,8 @@ var _ = Describe("Vat Grab Transformer", func() {
 		Expect(dbResult[0].TransactionIndex).To(Equal(uint(0)))
 	})
 
-	It("rechecks vat grab event", func() {
+	// TODO: Replace block number once there's a grab event on the updated Vat
+	XIt("rechecks vat grab event", func() {
 		blockNumber := int64(8958230)
 		config := transformer.EventTransformerConfig{
 			TransformerName:     constants.VatGrabLabel,

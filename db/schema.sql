@@ -2545,44 +2545,6 @@ ALTER SEQUENCE maker.vat_slip_id_seq OWNED BY maker.vat_slip.id;
 
 
 --
--- Name: vat_tune; Type: TABLE; Schema: maker; Owner: -
---
-
-CREATE TABLE maker.vat_tune (
-    id integer NOT NULL,
-    header_id integer NOT NULL,
-    urn_id integer NOT NULL,
-    v text,
-    w text,
-    dink numeric,
-    dart numeric,
-    tx_idx integer NOT NULL,
-    log_idx integer NOT NULL,
-    raw_log jsonb
-);
-
-
---
--- Name: vat_tune_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
---
-
-CREATE SEQUENCE maker.vat_tune_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: vat_tune_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
---
-
-ALTER SEQUENCE maker.vat_tune_id_seq OWNED BY maker.vat_tune.id;
-
-
---
 -- Name: vat_urn_art; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -3139,7 +3101,6 @@ CREATE TABLE public.checked_headers (
     vat_move_checked integer DEFAULT 0 NOT NULL,
     vat_fold_checked integer DEFAULT 0 NOT NULL,
     vat_heal_checked integer DEFAULT 0 NOT NULL,
-    vat_tune_checked integer DEFAULT 0 NOT NULL,
     vat_grab_checked integer DEFAULT 0 NOT NULL,
     vat_flux_checked integer DEFAULT 0 NOT NULL,
     vat_slip_checked integer DEFAULT 0 NOT NULL,
@@ -3916,13 +3877,6 @@ ALTER TABLE ONLY maker.vat_sin ALTER COLUMN id SET DEFAULT nextval('maker.vat_si
 --
 
 ALTER TABLE ONLY maker.vat_slip ALTER COLUMN id SET DEFAULT nextval('maker.vat_slip_id_seq'::regclass);
-
-
---
--- Name: vat_tune id; Type: DEFAULT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.vat_tune ALTER COLUMN id SET DEFAULT nextval('maker.vat_tune_id_seq'::regclass);
 
 
 --
@@ -4764,22 +4718,6 @@ ALTER TABLE ONLY maker.vat_slip
 
 
 --
--- Name: vat_tune vat_tune_header_id_tx_idx_log_idx_key; Type: CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.vat_tune
-    ADD CONSTRAINT vat_tune_header_id_tx_idx_log_idx_key UNIQUE (header_id, tx_idx, log_idx);
-
-
---
--- Name: vat_tune vat_tune_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.vat_tune
-    ADD CONSTRAINT vat_tune_pkey PRIMARY KEY (id);
-
-
---
 -- Name: vat_urn_art vat_urn_art_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -5490,22 +5428,6 @@ ALTER TABLE ONLY maker.vat_slip
 
 ALTER TABLE ONLY maker.vat_slip
     ADD CONSTRAINT vat_slip_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id);
-
-
---
--- Name: vat_tune vat_tune_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.vat_tune
-    ADD CONSTRAINT vat_tune_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
-
-
---
--- Name: vat_tune vat_tune_urn_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.vat_tune
-    ADD CONSTRAINT vat_tune_urn_id_fkey FOREIGN KEY (urn_id) REFERENCES maker.urns(id);
 
 
 --

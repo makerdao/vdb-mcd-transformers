@@ -31,7 +31,7 @@ var (
 )
 
 var EthVatFrobLog = types.Log{
-	Address: common.HexToAddress(KovanUpdatedVatContractAddress),
+	Address: common.HexToAddress(KovanVatContractAddress),
 	Topics: []common.Hash{
 		common.HexToHash(KovanVatFrobSignature),
 		common.HexToHash("0x4554480000000000000000000000000000000000000000000000000000000000"),

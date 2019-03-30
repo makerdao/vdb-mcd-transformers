@@ -58,8 +58,8 @@ var _ = Describe("Maker storage repository", func() {
 			Expect(keys).To(ConsistOf(guy1, guy2))
 		})
 
-		It("fetches guy from w field on vat_tune", func() {
-			insertVatTune(guy1, guy1, guy1, guy2, 1, db)
+		It("fetches guy from w field on vat_frob", func() {
+			insertVatFrob(guy1, guy1, guy1, guy2, 1, db)
 
 			keys, err := repository.GetDaiKeys()
 
@@ -78,17 +78,17 @@ var _ = Describe("Maker storage repository", func() {
 			Expect(keys).To(ConsistOf(guy1))
 		})
 
-		It("fetches unique guys from vat_move + vat_tune + vat_heal + vat_fold", func() {
+		It("fetches unique guys from vat_move + vat_frob + vat_heal + vat_fold", func() {
 			guy4 := "guy4"
 			guy5 := "guy5"
 			guy6 := "guy6"
 			insertVatMove(guy1, guy2, 1, db)
-			insertVatTune(guy1, guy1, guy1, guy3, 2, db)
+			insertVatFrob(guy1, guy1, guy1, guy3, 2, db)
 			insertVatHeal(guy6, guy4, 3, db)
 			insertVatFold(guy5, 4, db)
 			// duplicates
 			insertVatMove(guy3, guy1, 5, db)
-			insertVatTune(guy2, guy2, guy2, guy5, 6, db)
+			insertVatFrob(guy2, guy2, guy2, guy5, 6, db)
 			insertVatHeal(guy6, guy2, 7, db)
 			insertVatFold(guy4, 8, db)
 
@@ -124,8 +124,8 @@ var _ = Describe("Maker storage repository", func() {
 			}}))
 		})
 
-		It("fetches guy from v field on vat_tune + vat_grab", func() {
-			insertVatTune(ilk1, guy1, guy2, guy1, 1, db)
+		It("fetches guy from v field on vat_frob + vat_grab", func() {
+			insertVatFrob(ilk1, guy1, guy2, guy1, 1, db)
 			insertVatGrab(ilk1, guy1, guy3, guy1, 2, db)
 
 			gems, err := repository.GetGemKeys()
@@ -141,15 +141,15 @@ var _ = Describe("Maker storage repository", func() {
 			}}))
 		})
 
-		It("fetches unique urns from vat_slip + vat_flux + vat_tune + vat_grab events", func() {
+		It("fetches unique urns from vat_slip + vat_flux + vat_frob + vat_grab events", func() {
 			insertVatSlip(ilk1, guy1, 1, db)
 			insertVatFlux(ilk1, guy2, guy3, 2, db)
-			insertVatTune(ilk2, guy1, guy1, guy1, 3, db)
+			insertVatFrob(ilk2, guy1, guy1, guy1, 3, db)
 			insertVatGrab(ilk2, guy1, guy2, guy1, 4, db)
 			// duplicates
 			insertVatSlip(ilk1, guy2, 6, db)
 			insertVatFlux(ilk2, guy2, guy3, 7, db)
-			insertVatTune(ilk2, guy1, guy1, guy1, 8, db)
+			insertVatFrob(ilk2, guy1, guy1, guy1, 8, db)
 			insertVatGrab(ilk1, guy1, guy1, guy1, 9, db)
 
 			gems, err := repository.GetGemKeys()
@@ -250,11 +250,11 @@ var _ = Describe("Maker storage repository", func() {
 	})
 
 	Describe("getting urns", func() {
-		It("fetches unique urns from vat_tune + vat_grab events", func() {
-			insertVatTune(ilk1, guy1, guy1, guy1, 1, db)
-			insertVatTune(ilk1, guy2, guy1, guy1, 2, db)
-			insertVatTune(ilk2, guy1, guy1, guy1, 3, db)
-			insertVatTune(ilk1, guy1, guy1, guy1, 4, db)
+		It("fetches unique urns from vat_frob + vat_grab events", func() {
+			insertVatFrob(ilk1, guy1, guy1, guy1, 1, db)
+			insertVatFrob(ilk1, guy2, guy1, guy1, 2, db)
+			insertVatFrob(ilk2, guy1, guy1, guy1, 3, db)
+			insertVatFrob(ilk1, guy1, guy1, guy1, 4, db)
 			insertVatGrab(ilk1, guy1, guy1, guy1, 5, db)
 			insertVatGrab(ilk1, guy3, guy1, guy1, 6, db)
 
@@ -383,7 +383,7 @@ func insertVatSlip(ilk, guy string, blockNumber int64, db *postgres.DB) {
 	Expect(execErr).NotTo(HaveOccurred())
 }
 
-func insertVatTune(ilk, urn, v, w string, blockNumber int64, db *postgres.DB) {
+func insertVatFrob(ilk, urn, v, w string, blockNumber int64, db *postgres.DB) {
 	headerRepository := repositories.NewHeaderRepository(db)
 	headerID, err := headerRepository.CreateOrUpdateHeader(fakes.GetFakeHeader(blockNumber))
 	Expect(err).NotTo(HaveOccurred())
@@ -391,7 +391,7 @@ func insertVatTune(ilk, urn, v, w string, blockNumber int64, db *postgres.DB) {
 	urnID, err := shared.GetOrCreateUrn(urn, ilkID, db)
 	Expect(err).NotTo(HaveOccurred())
 	_, execErr := db.Exec(
-		`INSERT INTO maker.vat_tune (header_id, urn_id, v, w, log_idx, tx_idx)
+		`INSERT INTO maker.vat_frob (header_id, urn_id, v, w, log_idx, tx_idx)
 			VALUES($1, $2, $3, $4, $5, $6)`,
 		headerID, urnID, v, w, 0, 0,
 	)

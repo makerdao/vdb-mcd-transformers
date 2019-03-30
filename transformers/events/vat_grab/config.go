@@ -9,10 +9,10 @@ import (
 func GetVatGrabConfig() shared_t.EventTransformerConfig {
 	return shared_t.EventTransformerConfig{
 		TransformerName:     constants.VatGrabLabel,
-		ContractAddresses:   []string{constants.OldVatContractAddress()},
-		ContractAbi:         constants.OldVatABI(),
+		ContractAddresses:   []string{constants.VatContractAddress()},
+		ContractAbi:         constants.VatABI(),
 		Topic:               constants.GetVatGrabSignature(),
-		StartingBlockNumber: constants.OldVatDeploymentBlock(),
+		StartingBlockNumber: constants.VatDeploymentBlock(),
 		EndingBlockNumber:   -1,
 	}
 }

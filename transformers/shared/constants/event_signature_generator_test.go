@@ -181,7 +181,7 @@ var _ = Describe("Event signature generator", func() {
 
 				It("gets the frob method signature", func() {
 					expected := "frob(bytes32,bytes32,bytes32,bytes32,int256,int256)"
-					actual := constants.GetSolidityFunctionSignature(test_data.KovanUpdatedVatABI, "frob")
+					actual := constants.GetSolidityFunctionSignature(test_data.KovanVatABI, "frob")
 
 					Expect(expected).To(Equal(actual))
 				})
@@ -203,13 +203,6 @@ var _ = Describe("Event signature generator", func() {
 				It("gets the slip method signature", func() {
 					expected := "slip(bytes32,bytes32,int256)"
 					actual := constants.GetSolidityFunctionSignature(test_data.KovanVatABI, "slip")
-
-					Expect(expected).To(Equal(actual))
-				})
-
-				It("gets the tune method signature", func() {
-					expected := "tune(bytes32,bytes32,bytes32,bytes32,int256,int256)"
-					actual := constants.GetSolidityFunctionSignature(test_data.KovanVatABI, "tune")
 
 					Expect(expected).To(Equal(actual))
 				})

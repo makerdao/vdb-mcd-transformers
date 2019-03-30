@@ -33,7 +33,8 @@ import (
 )
 
 var _ = Describe("VatHeal Transformer", func() {
-	It("transforms VatHeal log events", func() {
+	// TODO: Replace block number once there's a heal event on the updated Vat
+	XIt("transforms VatHeal log events", func() {
 		blockNumber := int64(8935578)
 		config := transformer.EventTransformerConfig{
 			TransformerName:     constants.VatHealLabel,
@@ -82,7 +83,8 @@ var _ = Describe("VatHeal Transformer", func() {
 		Expect(dbResult.Rad).To(Equal("1000000000000000000000000000"))
 	})
 
-	It("rechecks vat heal event", func() {
+	// TODO: Replace block number once there's a heal event on the updated Vat
+	XIt("rechecks vat heal event", func() {
 		blockNumber := int64(8935578)
 		config := transformer.EventTransformerConfig{
 			TransformerName:     constants.VatHealLabel,

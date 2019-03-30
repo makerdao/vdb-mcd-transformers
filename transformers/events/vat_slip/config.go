@@ -9,10 +9,10 @@ import (
 func GetVatSlipConfig() shared_t.EventTransformerConfig {
 	return shared_t.EventTransformerConfig{
 		TransformerName:     constants.VatSlipLabel,
-		ContractAddresses:   []string{constants.OldVatContractAddress()},
-		ContractAbi:         constants.OldVatABI(),
+		ContractAddresses:   []string{constants.VatContractAddress()},
+		ContractAbi:         constants.VatABI(),
 		Topic:               constants.GetVatSlipSignature(),
-		StartingBlockNumber: constants.OldVatDeploymentBlock(),
+		StartingBlockNumber: constants.VatDeploymentBlock(),
 		EndingBlockNumber:   -1,
 	}
 }

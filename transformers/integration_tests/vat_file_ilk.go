@@ -55,8 +55,8 @@ var _ = Describe("VatFileIlk LogNoteTransformer", func() {
 		test_config.CleanTestDB(db)
 		config := transformer.EventTransformerConfig{
 			TransformerName:     constants.VatFileIlkLabel,
-			ContractAddresses:   []string{test_data.KovanUpdatedVatContractAddress},
-			ContractAbi:         test_data.KovanUpdatedVatABI,
+			ContractAddresses:   []string{test_data.KovanVatContractAddress},
+			ContractAbi:         test_data.KovanVatABI,
 			Topic:               test_data.KovanVatFileIlkSignature,
 			StartingBlockNumber: 0,
 			EndingBlockNumber:   -1,

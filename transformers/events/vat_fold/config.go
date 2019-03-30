@@ -25,10 +25,10 @@ import (
 func GetVatFoldConfig() shared_t.EventTransformerConfig {
 	return shared_t.EventTransformerConfig{
 		TransformerName:     constants.VatFoldLabel,
-		ContractAddresses:   []string{constants.OldVatContractAddress()},
-		ContractAbi:         constants.OldVatABI(),
+		ContractAddresses:   []string{constants.VatContractAddress()},
+		ContractAbi:         constants.VatABI(),
 		Topic:               constants.GetVatFoldSignature(),
-		StartingBlockNumber: constants.OldVatDeploymentBlock(),
+		StartingBlockNumber: constants.VatDeploymentBlock(),
 		EndingBlockNumber:   -1,
 	}
 }
