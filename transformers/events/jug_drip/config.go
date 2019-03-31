@@ -24,6 +24,7 @@ import (
 
 func GetJugDripConfig() shared_t.EventTransformerConfig {
 	return shared_t.EventTransformerConfig{
+		TransformerName:     constants.JugDripLabel,
 		ContractAddresses:   []string{constants.JugContractAddress()},
 		ContractAbi:         constants.JugABI(),
 		Topic:               constants.GetJugDripSignature(),
