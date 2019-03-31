@@ -17,7 +17,7 @@
     save     = false
     transformerNames = [
         "cat",
-        "drip"
+        "jug",
         "pit",
         "vat",
         "vow",
@@ -28,8 +28,8 @@
         repository = "github.com/vulcanize/mcd_transformers"
         migrations = "db/migrations"
         rank = "0"
-    [exporter.drip]
-        path = "transformers/storage/drip/initializer"
+    [exporter.jug]
+        path = "transformers/storage/jug/initializer"
         type = "eth_storage"
         repository = "github.com/vulcanize/mcd_transformers"
         migrations = "db/migrations"
@@ -59,7 +59,7 @@
 [contract]
     [contract.address]
             cat      = "0x2f34f22a00ee4b7a8f8bbc4eaee1658774c624e0"
-            jug      = "0x25a008Bf942CE6D5b362f91ed7aE3e4104286a12"
+            MCD_JUG  = "0x25a008Bf942CE6D5b362f91ed7aE3e4104286a12"
             pit      = "0xe7cf3198787c9a4daac73371a38f29aaeeced87e"
             vat      = "0x67fd6c3575fc2dbe2cb596bd3bebc9edb5571fa1"
             old_vat  = "0xcd726790550afcd77e9a7a47e86a3f9010af126b"

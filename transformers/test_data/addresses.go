@@ -1,9 +1,7 @@
 package test_data
 
 const (
-	KovanCatContractAddress = "0x2f34f22a00ee4b7a8f8bbc4eaee1658774c624e0"
-	// TODO: Remove once integration tests are targeting new Kovan deploy
-	KovanDripContractAddress       = "0x891c04639a5edcae088e546fa125b5d7fb6a2b9d"
+	KovanCatContractAddress        = "0x2f34f22a00ee4b7a8f8bbc4eaee1658774c624e0"
 	KovanFlapperContractAddress    = "0x8868BAd8e74FcA4505676D1B5B21EcC23328d132"
 	KovanFlipperContractAddress    = "0x32D496Ad866D110060866B7125981C73642cc509"
 	KovanFlopperContractAddress    = "0x6191C9b0086c2eBF92300cC507009b53996FbFFa"
