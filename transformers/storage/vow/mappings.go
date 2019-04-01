@@ -31,7 +31,6 @@ const (
 	VowCow  = "cow"
 	VowRow  = "row"
 	VowSin  = "Sin"
-	VowWoe  = "Woe"
 	VowAsh  = "Ash"
 	VowWait = "wait"
 	VowSump = "sump"
@@ -68,42 +67,35 @@ var (
 		Type: utils.Uint256,
 	}
 
-	WoeKey      = common.HexToHash(storage.IndexSix)
-	WoeMetadata = utils.StorageValueMetadata{
-		Name: VowWoe,
-		Keys: nil,
-		Type: utils.Uint256,
-	}
-
-	AshKey      = common.HexToHash(storage.IndexSeven)
+	AshKey      = common.HexToHash(storage.IndexSix)
 	AshMetadata = utils.StorageValueMetadata{
 		Name: VowAsh,
 		Keys: nil,
 		Type: utils.Uint256,
 	}
 
-	WaitKey      = common.HexToHash(storage.IndexEight)
+	WaitKey      = common.HexToHash(storage.IndexSeven)
 	WaitMetadata = utils.StorageValueMetadata{
 		Name: VowWait,
 		Keys: nil,
 		Type: utils.Uint256,
 	}
 
-	SumpKey      = common.HexToHash(storage.IndexNine)
+	SumpKey      = common.HexToHash(storage.IndexEight)
 	SumpMetadata = utils.StorageValueMetadata{
 		Name: VowSump,
 		Keys: nil,
 		Type: utils.Uint256,
 	}
 
-	BumpKey      = common.HexToHash(storage.IndexTen)
+	BumpKey      = common.HexToHash(storage.IndexNine)
 	BumpMetadata = utils.StorageValueMetadata{
 		Name: VowBump,
 		Keys: nil,
 		Type: utils.Uint256,
 	}
 
-	HumpKey      = common.HexToHash(storage.IndexEleven)
+	HumpKey      = common.HexToHash(storage.IndexTen)
 	HumpMetadata = utils.StorageValueMetadata{
 		Name: VowHump,
 		Keys: nil,
@@ -137,7 +129,6 @@ func (mappings *VowMappings) loadMappings() error {
 	staticMappings[CowKey] = CowMetadata
 	staticMappings[RowKey] = RowMetadata
 	staticMappings[SinKey] = SinMetadata
-	staticMappings[WoeKey] = WoeMetadata
 	staticMappings[AshKey] = AshMetadata
 	staticMappings[WaitKey] = WaitMetadata
 	staticMappings[SumpKey] = SumpMetadata

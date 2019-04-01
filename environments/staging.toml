@@ -6,7 +6,7 @@
     port = 5432
 
 [client]
-    ipcPath = "https://kovan.infura.io/J5Vd2fRtGsw0zZ0Ov3BL"
+    ipcPath = "https://kovan.infura.io/v3/be5f83b248b74b34890cbf76e0945e29"
 
 [datadog]
     name = "maker_vdb_staging"
