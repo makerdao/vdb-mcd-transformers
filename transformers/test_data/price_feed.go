@@ -25,18 +25,18 @@ import (
 )
 
 var (
-	medianizerAddress = common.HexToAddress("0x99041f808d598b782d5a3e498681c2452a31da08")
-	blockNumber       = uint64(6147230)
-	txIndex           = uint(119)
+	medianizerAddress = common.HexToAddress("0xefa5f53c62531cb29b8a8e298687a422b8793d72")
+	blockNumber       = uint64(10653439)
+	txIndex           = uint(2)
 )
 
-// https://etherscan.io/tx/0xa51a50a2adbfba4e2ab3d72dfd67a21c769f1bc8d2b180663a15500a56cde58f
+// https://kovan.etherscan.io/tx/0x7d144771f01d5b6b18ab777fb3b72ac7d61e48847cd7716c38d99d80c879942f
 var EthPriceFeedLog = types.Log{
 	Address:     medianizerAddress,
-	Topics:      []common.Hash{common.HexToHash(KovanLogValueSignature)},
-	Data:        common.FromHex("00000000000000000000000000000000000000000000001486f658319fb0c100"),
+	Topics:      []common.Hash{common.HexToHash(KovanLogMedianPriceSignature)},
+	Data:        common.FromHex("0x000000000000000000000000000000000000000000000000e6c7928c7e3f4c00000000000000000000000000000000000000000000000000000000005c9f06dc"),
 	BlockNumber: blockNumber,
-	TxHash:      common.HexToHash("0xa51a50a2adbfba4e2ab3d72dfd67a21c769f1bc8d2b180663a15500a56cde58f"),
+	TxHash:      common.HexToHash("0x7d144771f01d5b6b18ab777fb3b72ac7d61e48847cd7716c38d99d80c879942f"),
 	TxIndex:     txIndex,
 	BlockHash:   fakes.FakeHash,
 	Index:       8,
@@ -47,7 +47,8 @@ var rawPriceFeedLog, _ = json.Marshal(EthPriceFeedLog)
 var PriceFeedModel = price_feeds.PriceFeedModel{
 	BlockNumber:       blockNumber,
 	MedianizerAddress: EthPriceFeedLog.Address.String(),
-	UsdValue:          "378.659938889700015352",
+	UsdValue:          "16.629421281200002625",
+	Age:               "1553925852",
 	LogIndex:          EthPriceFeedLog.Index,
 	TransactionIndex:  EthPriceFeedLog.TxIndex,
 	Raw:               rawPriceFeedLog,

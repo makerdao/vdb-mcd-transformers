@@ -55,12 +55,11 @@ var _ = Describe("Price feeds transformer", func() {
 		config = transformer.EventTransformerConfig{
 			TransformerName: constants.PriceFeedLabel,
 			ContractAddresses: []string{
-				test_data.KovanPepContractAddress,
-				test_data.KovanPipContractAddress,
-				test_data.KovanRepContractAddress,
+				test_data.KovanPipEthContractAddress,
+				test_data.KovanPipRepContractAddress,
 			},
 			ContractAbi:         test_data.KovanMedianizerABI,
-			Topic:               test_data.KovanLogValueSignature,
+			Topic:               test_data.KovanLogMedianPriceSignature,
 			StartingBlockNumber: 0,
 			EndingBlockNumber:   -1,
 		}
@@ -77,10 +76,10 @@ var _ = Describe("Price feeds transformer", func() {
 	})
 
 	It("persists a ETH/USD price feed event", func() {
-		blockNumber := int64(8763054)
+		blockNumber := int64(10648994)
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
-		addresses := []string{test_data.KovanPipContractAddress}
+		addresses := []string{test_data.KovanPipEthContractAddress}
 		initializer.Config.ContractAddresses = addresses
 		initializer.Config.StartingBlockNumber = blockNumber
 		initializer.Config.EndingBlockNumber = blockNumber
@@ -96,17 +95,18 @@ var _ = Describe("Price feeds transformer", func() {
 
 		Expect(err).NotTo(HaveOccurred())
 		var model price_feeds.PriceFeedModel
-		err = db.Get(&model, `SELECT block_number, medianizer_address, usd_value, tx_idx, raw_log FROM maker.price_feeds WHERE block_number = $1`, initializer.Config.StartingBlockNumber)
+		err = db.Get(&model, `SELECT block_number, medianizer_address, age, usd_value, tx_idx, raw_log FROM maker.price_feeds WHERE block_number = $1`, initializer.Config.StartingBlockNumber)
 		Expect(err).NotTo(HaveOccurred())
-		Expect(model.UsdValue).To(Equal("207.314891143000011198"))
+		Expect(model.UsdValue).To(Equal("140.705000000000012506"))
+		Expect(model.Age).To(Equal("1553885404"))
 		Expect(model.MedianizerAddress).To(Equal(addresses[0]))
 	})
 
 	It("rechecks price feed event", func() {
-		blockNumber := int64(8763054)
+		blockNumber := int64(10648994)
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
-		addresses := []string{test_data.KovanPipContractAddress}
+		addresses := []string{test_data.KovanPipEthContractAddress}
 		initializer.Config.ContractAddresses = addresses
 		initializer.Config.StartingBlockNumber = blockNumber
 		initializer.Config.EndingBlockNumber = blockNumber
@@ -135,43 +135,18 @@ var _ = Describe("Price feeds transformer", func() {
 		Expect(priceFeedChecked[0]).To(Equal(2))
 
 		var model price_feeds.PriceFeedModel
-		err = db.Get(&model, `SELECT block_number, medianizer_address, usd_value, tx_idx, raw_log FROM maker.price_feeds WHERE block_number = $1`, initializer.Config.StartingBlockNumber)
+		err = db.Get(&model, `SELECT block_number, medianizer_address, usd_value, age, tx_idx, raw_log FROM maker.price_feeds WHERE block_number = $1`, initializer.Config.StartingBlockNumber)
 		Expect(err).NotTo(HaveOccurred())
-		Expect(model.UsdValue).To(Equal("207.314891143000011198"))
-		Expect(model.MedianizerAddress).To(Equal(addresses[0]))
-	})
-
-	It("persists a MKR/USD price feed event", func() {
-		blockNumber := int64(8763059)
-		header, err := persistHeader(db, blockNumber, blockChain)
-		Expect(err).NotTo(HaveOccurred())
-		addresses := []string{test_data.KovanPepContractAddress}
-		initializer.Config.ContractAddresses = addresses
-		initializer.Config.StartingBlockNumber = blockNumber
-		initializer.Config.EndingBlockNumber = blockNumber
-
-		logs, err := fetcher.FetchLogs(
-			transformer.HexStringsToAddresses(addresses),
-			topics,
-			header)
-		Expect(err).NotTo(HaveOccurred())
-
-		transformer := initializer.NewLogNoteTransformer(db)
-		err = transformer.Execute(logs, header, c2.HeaderMissing)
-
-		Expect(err).NotTo(HaveOccurred())
-		var model price_feeds.PriceFeedModel
-		err = db.Get(&model, `SELECT block_number, medianizer_address, usd_value, tx_idx, raw_log FROM maker.price_feeds WHERE block_number = $1`, initializer.Config.StartingBlockNumber)
-		Expect(err).NotTo(HaveOccurred())
-		Expect(model.UsdValue).To(Equal("391.803979212000001553"))
+		Expect(model.UsdValue).To(Equal("140.705000000000012506"))
+		Expect(model.Age).To(Equal("1553885404"))
 		Expect(model.MedianizerAddress).To(Equal(addresses[0]))
 	})
 
 	It("persists a REP/USD price feed event", func() {
-		blockNumber := int64(8763062)
+		blockNumber := int64(10653439)
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
-		addresses := []string{test_data.KovanRepContractAddress}
+		addresses := []string{test_data.KovanPipRepContractAddress}
 		initializer.Config.ContractAddresses = addresses
 		initializer.Config.StartingBlockNumber = blockNumber
 		initializer.Config.EndingBlockNumber = blockNumber
@@ -187,9 +162,10 @@ var _ = Describe("Price feeds transformer", func() {
 
 		Expect(err).NotTo(HaveOccurred())
 		var model price_feeds.PriceFeedModel
-		err = db.Get(&model, `SELECT block_number, medianizer_address, usd_value, tx_idx, raw_log FROM maker.price_feeds WHERE block_number = $1`, initializer.Config.StartingBlockNumber)
+		err = db.Get(&model, `SELECT block_number, medianizer_address, usd_value, age, tx_idx, raw_log FROM maker.price_feeds WHERE block_number = $1`, initializer.Config.StartingBlockNumber)
 		Expect(err).NotTo(HaveOccurred())
-		Expect(model.UsdValue).To(Equal("12.816928482699999847"))
+		Expect(model.UsdValue).To(Equal("16.629421281200002625"))
+		Expect(model.Age).To(Equal("1553925852"))
 		Expect(model.MedianizerAddress).To(Equal(addresses[0]))
 	})
 })
