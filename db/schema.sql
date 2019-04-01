@@ -3319,38 +3319,6 @@ ALTER SEQUENCE maker.vow_wait_id_seq OWNED BY maker.vow_wait.id;
 
 
 --
--- Name: vow_woe; Type: TABLE; Schema: maker; Owner: -
---
-
-CREATE TABLE maker.vow_woe (
-    id integer NOT NULL,
-    block_number bigint,
-    block_hash text,
-    woe numeric
-);
-
-
---
--- Name: vow_woe_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
---
-
-CREATE SEQUENCE maker.vow_woe_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: vow_woe_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
---
-
-ALTER SEQUENCE maker.vow_woe_id_seq OWNED BY maker.vow_woe.id;
-
-
---
 -- Name: logs; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -4394,13 +4362,6 @@ ALTER TABLE ONLY maker.vow_wait ALTER COLUMN id SET DEFAULT nextval('maker.vow_w
 
 
 --
--- Name: vow_woe id; Type: DEFAULT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.vow_woe ALTER COLUMN id SET DEFAULT nextval('maker.vow_woe_id_seq'::regclass);
-
-
---
 -- Name: blocks id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -5346,14 +5307,6 @@ ALTER TABLE ONLY maker.vow_vat
 
 ALTER TABLE ONLY maker.vow_wait
     ADD CONSTRAINT vow_wait_pkey PRIMARY KEY (id);
-
-
---
--- Name: vow_woe vow_woe_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.vow_woe
-    ADD CONSTRAINT vow_woe_pkey PRIMARY KEY (id);
 
 
 --
