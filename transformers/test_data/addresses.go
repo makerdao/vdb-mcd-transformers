@@ -11,5 +11,5 @@ const (
 	KovanPipRepContractAddress     = "0xEfA5F53c62531Cb29b8A8E298687A422b8793D72"
 	KovanUpdatedVatContractAddress = "0x67fd6c3575fc2dbe2cb596bd3bebc9edb5571fa1"
 	KovanVatContractAddress        = "0xcd726790550afcd77e9a7a47e86a3f9010af126b"
-	KovanVowContractAddress        = "0x3728e9777B2a0a611ee0F89e00E01044ce4736d1"
+	KovanVowContractAddress        = "0x17560834075da3db54f737db74377e799c865821"
 )
