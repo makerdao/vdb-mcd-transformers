@@ -18,6 +18,7 @@ package price_feeds
 
 import (
 	"encoding/json"
+	"math/big"
 
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -34,10 +35,13 @@ func (converter PriceFeedConverter) ToModels(ethLogs []types.Log) ([]interface{}
 		if err != nil {
 			return nil, err
 		}
+		usdValueBytes := shared.GetDataBytesAtIndex(-2, log.Data)
+		ageBytes := shared.GetDataBytesAtIndex(-1, log.Data)
 		model := PriceFeedModel{
 			BlockNumber:       log.BlockNumber,
 			MedianizerAddress: log.Address.String(),
-			UsdValue:          shared.ConvertToWad(hexutil.Encode(log.Data)),
+			UsdValue:          shared.ConvertToWad(hexutil.Encode(usdValueBytes)),
+			Age:               big.NewInt(0).SetBytes(ageBytes).String(),
 			LogIndex:          log.Index,
 			TransactionIndex:  log.TxIndex,
 			Raw:               raw,

@@ -13,7 +13,7 @@ func GetJugDripSignature() string            { return GetLogNoteTopicZero(jugDri
 func GetJugFileIlkSignature() string         { return GetLogNoteTopicZero(jugFileIlkMethod()) }
 func GetJugFileRepoSignature() string        { return GetLogNoteTopicZero(jugFileRepoMethod()) }
 func GetJugFileVowSignature() string         { return GetLogNoteTopicZero(jugFileVowMethod()) }
-func GetLogValueSignature() string           { return GetEventTopicZero(logValueMethod()) }
+func GetLogMedianPriceSignature() string     { return GetEventTopicZero(logMedianPriceMethod()) }
 func GetTendFunctionSignature() string       { return GetLogNoteTopicZero(tendMethod()) }
 func GetVatFileDebtCeilingSignature() string { return GetLogNoteTopicZero(vatFileDebtCeilingMethod()) }
 func GetVatFileIlkSignature() string         { return GetLogNoteTopicZero(vatFileIlkMethod()) }

@@ -27,12 +27,12 @@ func GetPriceFeedConfig() shared_t.EventTransformerConfig {
 	return shared_t.EventTransformerConfig{
 		TransformerName: constants.PriceFeedLabel,
 		ContractAddresses: []string{
-			constants.PepContractAddress(), constants.PipContractAddress(), constants.RepContractAddress(),
+			constants.PipEthContractAddress(), constants.PipRepContractAddress(),
 		},
 		ContractAbi: constants.MedianizerABI(),
-		Topic:       constants.GetLogValueSignature(),
+		Topic:       constants.GetLogMedianPriceSignature(),
 		StartingBlockNumber: shared.MinInt64([]int64{
-			constants.PepDeploymentBlock(), constants.PipDeploymentBlock(), constants.RepDeploymentBlock(),
+			constants.PipEthDeploymentBlock(), constants.PipRepDeploymentBlock(),
 		}),
 		EndingBlockNumber: -1,
 	}
