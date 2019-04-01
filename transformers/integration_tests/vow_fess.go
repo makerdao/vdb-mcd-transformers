@@ -49,7 +49,8 @@ var _ = Describe("VowFess LogNoteTransformer", func() {
 		test_config.CleanTestDB(db)
 	})
 
-	It("transforms VowFess log events", func() {
+	// TODO: replace block number when there is a fess event on the updated Vow
+	XIt("transforms VowFess log events", func() {
 		blockNumber := int64(9377319)
 		config := transformer.EventTransformerConfig{
 			TransformerName:     constants.VowFessLabel,
@@ -89,7 +90,8 @@ var _ = Describe("VowFess LogNoteTransformer", func() {
 		Expect(dbResult[0].TransactionIndex).To(Equal(uint(1)))
 	})
 
-	It("rechecks vow fess event", func() {
+	// TODO: replace block number when there is a fess event on the updated Vow
+	XIt("rechecks vow fess event", func() {
 		blockNumber := int64(9377319)
 		config := transformer.EventTransformerConfig{
 			TransformerName:     constants.VowFessLabel,
@@ -136,6 +138,7 @@ var _ = Describe("VowFess LogNoteTransformer", func() {
 		err = db.Select(&dbResult, `SELECT tab, log_idx, tx_idx from maker.vow_fess`)
 		Expect(err).NotTo(HaveOccurred())
 
+		Expect(len(dbResult)).To(Equal(1))
 		Expect(dbResult[0].Tab).To(Equal("11000000000000000000000"))
 		Expect(dbResult[0].LogIndex).To(Equal(uint(3)))
 		Expect(dbResult[0].TransactionIndex).To(Equal(uint(1)))
