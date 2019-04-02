@@ -23,7 +23,7 @@ CREATE TABLE maker.cat_file_flip (
   UNIQUE (header_id, tx_idx, log_idx)
 );
 
-CREATE TABLE maker.cat_file_pit_vow (
+CREATE TABLE maker.cat_file_vow (
   id            SERIAL PRIMARY KEY,
   header_id     INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
   what          TEXT,
@@ -41,13 +41,13 @@ ALTER TABLE public.checked_headers
   ADD COLUMN cat_file_flip_checked BOOLEAN NOT NULL DEFAULT FALSE;
 
 ALTER TABLE public.checked_headers
-  ADD COLUMN cat_file_pit_vow_checked BOOLEAN NOT NULL DEFAULT FALSE;
+  ADD COLUMN cat_file_vow_checked BOOLEAN NOT NULL DEFAULT FALSE;
 
 
 -- +goose Down
 DROP TABLE maker.cat_file_chop_lump;
 DROP TABLE maker.cat_file_flip;
-DROP TABLE maker.cat_file_pit_vow;
+DROP TABLE maker.cat_file_vow;
 
 ALTER TABLE public.checked_headers
   DROP COLUMN cat_file_chop_lump_checked;
@@ -56,4 +56,4 @@ ALTER TABLE public.checked_headers
   DROP COLUMN cat_file_flip_checked;
 
 ALTER TABLE public.checked_headers
-  DROP COLUMN cat_file_pit_vow_checked;
+  DROP COLUMN cat_file_vow_checked;

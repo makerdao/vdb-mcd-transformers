@@ -43,7 +43,7 @@ func getEnvironmentInt64(key string) int64 {
 }
 
 // Getters for contract addresses from environment files
-func CatContractAddress() string     { return getEnvironmentString("contract.address.cat") }
+func CatContractAddress() string     { return getEnvironmentString("contract.address.MCD_CAT") }
 func FlapperContractAddress() string { return getEnvironmentString("contract.address.mcd_flap") }
 func FlipperContractAddress() string { return getEnvironmentString("contract.address.eth_flip") }
 func FlopperContractAddress() string { return getEnvironmentString("contract.address.mcd_flop") }
@@ -64,7 +64,7 @@ func MedianizerABI() string { return getEnvironmentString("contract.abi.medianiz
 func VatABI() string        { return getEnvironmentString("contract.abi.MCD_VAT") }
 func VowABI() string        { return getEnvironmentString("contract.abi.MCD_VOW") }
 
-func CatDeploymentBlock() int64     { return getEnvironmentInt64("contract.deployment-block.cat") }
+func CatDeploymentBlock() int64     { return getEnvironmentInt64("contract.deployment-block.MCD_CAT") }
 func FlapperDeploymentBlock() int64 { return getEnvironmentInt64("contract.deployment-block.mcd_flap") }
 func FlipperDeploymentBlock() int64 { return getEnvironmentInt64("contract.deployment-block.eth_flip") }
 func FlopperDeploymentBlock() int64 { return getEnvironmentInt64("contract.deployment-block.mcd_flop") }

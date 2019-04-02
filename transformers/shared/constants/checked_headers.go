@@ -4,7 +4,7 @@ var (
 	BiteChecked               = "bite_checked"
 	CatFileChopLumpChecked    = "cat_file_chop_lump_checked"
 	CatFileFlipChecked        = "cat_file_flip_checked"
-	CatFilePitVowChecked      = "cat_file_pit_vow_checked"
+	CatFileVowChecked         = "cat_file_vow_checked"
 	DealChecked               = "deal_checked"
 	DentChecked               = "dent_checked"
 	FlapKickChecked           = "flap_kick_checked"
