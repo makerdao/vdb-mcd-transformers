@@ -161,33 +161,6 @@ var _ = Describe("Vat storage repository", func() {
 		})
 	})
 
-	Describe("ilk Ink", func() {
-		//TODO: remove once ilk query test is updated
-		It("writes row", func() {
-			ilkInkMetadata := utils.GetStorageValueMetadata(vat.IlkInk, map[utils.Key]string{constants.Ilk: fakeIlk}, utils.Uint256)
-
-			err := repo.Create(fakeBlockNumber, fakeBlockHash, ilkInkMetadata, fakeUint256)
-
-			Expect(err).NotTo(HaveOccurred())
-
-			var result MappingRes
-			err = db.Get(&result, `SELECT block_number, block_hash, ilk_id AS key, ink AS value FROM maker.vat_ilk_ink`)
-			Expect(err).NotTo(HaveOccurred())
-			ilkID, err := shared.GetOrCreateIlk(fakeIlk, db)
-			Expect(err).NotTo(HaveOccurred())
-			AssertMapping(result, fakeBlockNumber, fakeBlockHash, strconv.Itoa(ilkID), fakeUint256)
-		})
-
-		It("returns error if metadata missing ilk", func() {
-			malformedIlkInkMetadata := utils.GetStorageValueMetadata(vat.IlkInk, nil, utils.Uint256)
-
-			err := repo.Create(fakeBlockNumber, fakeBlockHash, malformedIlkInkMetadata, fakeUint256)
-
-			Expect(err).To(HaveOccurred())
-			Expect(err).To(MatchError(utils.ErrMetadataMalformed{MissingData: constants.Ilk}))
-		})
-	})
-
 	Describe("ilk line", func() {
 		It("writes row", func() {
 			ilkLineMetadata := utils.GetStorageValueMetadata(vat.IlkLine, map[utils.Key]string{constants.Ilk: fakeIlk}, utils.Uint256)
@@ -260,33 +233,6 @@ var _ = Describe("Vat storage repository", func() {
 			malformedIlkSpotMetadata := utils.GetStorageValueMetadata(vat.IlkSpot, nil, utils.Uint256)
 
 			err := repo.Create(fakeBlockNumber, fakeBlockHash, malformedIlkSpotMetadata, fakeUint256)
-
-			Expect(err).To(HaveOccurred())
-			Expect(err).To(MatchError(utils.ErrMetadataMalformed{MissingData: constants.Ilk}))
-		})
-	})
-
-	Describe("ilk take", func() {
-		//TODO: remove once ilk query test is updated
-		It("writes row", func() {
-			ilkTakeMetadata := utils.GetStorageValueMetadata(vat.IlkTake, map[utils.Key]string{constants.Ilk: fakeIlk}, utils.Uint256)
-
-			err := repo.Create(fakeBlockNumber, fakeBlockHash, ilkTakeMetadata, fakeUint256)
-
-			Expect(err).NotTo(HaveOccurred())
-
-			var result MappingRes
-			err = db.Get(&result, `SELECT block_number, block_hash, ilk_id AS key, take AS value FROM maker.vat_ilk_take`)
-			Expect(err).NotTo(HaveOccurred())
-			ilkID, err := shared.GetOrCreateIlk(fakeIlk, db)
-			Expect(err).NotTo(HaveOccurred())
-			AssertMapping(result, fakeBlockNumber, fakeBlockHash, strconv.Itoa(ilkID), fakeUint256)
-		})
-
-		It("returns error if metadata missing ilk", func() {
-			malformedIlkTakeMetadata := utils.GetStorageValueMetadata(vat.IlkTake, nil, utils.Uint256)
-
-			err := repo.Create(fakeBlockNumber, fakeBlockHash, malformedIlkTakeMetadata, fakeUint256)
 
 			Expect(err).To(HaveOccurred())
 			Expect(err).To(MatchError(utils.ErrMetadataMalformed{MissingData: constants.Ilk}))

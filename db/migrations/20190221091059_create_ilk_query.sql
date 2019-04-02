@@ -5,29 +5,13 @@ create type maker.relevant_block AS (
   ilk_id       integer
 );
 
-create or replace function maker.get_ilk_blocks_before(block_number numeric, ilk_id int)
+create or replace function maker.get_ilk_blocks_before(block_number bigint, ilk_id int)
   returns setof maker.relevant_block as $$
 SELECT
   block_number,
   block_hash,
   ilk_id
-FROM maker.vat_ilk_take
-WHERE block_number <= $1
-      AND ilk_id = $2
-UNION
-SELECT
-  block_number,
-  block_hash,
-  ilk_id
 FROM maker.vat_ilk_rate
-WHERE block_number <= $1
-      AND ilk_id = $2
-UNION
-SELECT
-  block_number,
-  block_hash,
-  ilk_id
-FROM maker.vat_ilk_ink
 WHERE block_number <= $1
       AND ilk_id = $2
 UNION
@@ -43,7 +27,7 @@ SELECT
   block_number,
   block_hash,
   ilk_id
-FROM maker.pit_ilk_spot
+FROM maker.vat_ilk_spot
 WHERE block_number <= $1
       AND ilk_id = $2
 UNION
@@ -51,7 +35,15 @@ SELECT
   block_number,
   block_hash,
   ilk_id
-FROM maker.pit_ilk_line
+FROM maker.vat_ilk_line
+WHERE block_number <= $1
+      AND ilk_id = $2
+UNION
+SELECT
+  block_number,
+  block_hash,
+  ilk_id
+FROM maker.vat_ilk_dust
 WHERE block_number <= $1
       AND ilk_id = $2
 UNION
@@ -100,13 +92,12 @@ LANGUAGE sql;
 CREATE TYPE maker.ilk_state AS (
   ilk_id       integer,
   ilk          text,
-  block_number numeric,
-  take         numeric,
+  block_number bigint,
   rate         numeric,
-  ink          numeric,
   art          numeric,
   spot         numeric,
   line         numeric,
+  dust         numeric,
   chop         numeric,
   lump         numeric,
   flip         text,
@@ -116,35 +107,15 @@ CREATE TYPE maker.ilk_state AS (
   updated      numeric
 );
 
-CREATE FUNCTION maker.get_ilk_at_block_number(block_number numeric, ilkId int)
+CREATE FUNCTION maker.get_ilk_at_block_number(block_number bigint, ilkId int)
   RETURNS maker.ilk_state
 AS $$
-WITH takes AS (
-    SELECT
-      take,
-      ilk_id,
-      block_hash
-    FROM maker.vat_ilk_take
-    WHERE ilk_id = ilkId
-          AND block_number <= $1
-    ORDER BY ilk_id, block_number DESC
-    LIMIT 1
-), rates AS (
+WITH rates AS (
     SELECT
       rate,
       ilk_id,
       block_hash
     FROM maker.vat_ilk_rate
-    WHERE ilk_id = ilkId
-          AND block_number <= $1
-    ORDER BY ilk_id, block_number DESC
-    LIMIT 1
-), inks AS (
-    SELECT
-      ink,
-      ilk_id,
-      block_hash
-    FROM maker.vat_ilk_ink
     WHERE ilk_id = ilkId
           AND block_number <= $1
     ORDER BY ilk_id, block_number DESC
@@ -164,7 +135,7 @@ WITH takes AS (
       spot,
       ilk_id,
       block_hash
-    FROM maker.pit_ilk_spot
+    FROM maker.vat_ilk_spot
     WHERE ilk_id = ilkId
           AND block_number <= $1
     ORDER BY ilk_id, block_number DESC
@@ -174,7 +145,17 @@ WITH takes AS (
       line,
       ilk_id,
       block_hash
-    FROM maker.pit_ilk_line
+    FROM maker.vat_ilk_line
+    WHERE ilk_id = ilkId
+          AND block_number <= $1
+    ORDER BY ilk_id, block_number DESC
+    LIMIT 1
+), dusts AS (
+    SELECT
+      dust,
+      ilk_id,
+      block_hash
+    FROM maker.vat_ilk_dust
     WHERE ilk_id = ilkId
           AND block_number <= $1
     ORDER BY ilk_id, block_number DESC
@@ -257,12 +238,11 @@ SELECT
   ilks.id,
   ilks.ilk,
   $1 block_number,
-  takes.take,
   rates.rate,
-  inks.ink,
   arts.art,
   spots.spot,
   lines.line,
+  dusts.dust,
   chops.chop,
   lumps.lump,
   flips.flip,
@@ -271,12 +251,11 @@ SELECT
   created.block_timestamp,
   updated.block_timestamp
 FROM maker.ilks AS ilks
-  LEFT JOIN takes ON takes.ilk_id = ilks.id
   LEFT JOIN rates ON rates.ilk_id = ilks.id
-  LEFT JOIN inks ON inks.ilk_id = ilks.id
   LEFT JOIN arts ON arts.ilk_id = ilks.id
   LEFT JOIN spots ON spots.ilk_id = ilks.id
   LEFT JOIN lines ON lines.ilk_id = ilks.id
+  LEFT JOIN dusts ON dusts.ilk_id = ilks.id
   LEFT JOIN chops ON chops.ilk_id = ilks.id
   LEFT JOIN lumps ON lumps.ilk_id = ilks.id
   LEFT JOIN flips ON flips.ilk_id = ilks.id
@@ -285,12 +264,11 @@ FROM maker.ilks AS ilks
   LEFT JOIN created ON created.ilk_id = ilks.id
   LEFT JOIN updated ON updated.ilk_id = ilks.id
 WHERE (
-  takes.take is not null OR
   rates.rate is not null OR
-  inks.ink is not null OR
   arts.art is not null OR
   spots.spot is not null OR
   lines.line is not null OR
+  dusts.dust is not null OR
   chops.chop is not null OR
   lumps.lump is not null OR
   flips.flip is not null OR
@@ -302,7 +280,7 @@ LANGUAGE SQL
 STABLE;
 
 -- +goose Down
-DROP FUNCTION IF EXISTS maker.get_relevent_ilk_blocks(block_number numeric, ilk_id int);
+DROP FUNCTION IF EXISTS maker.get_relevent_ilk_blocks(block_number bigint, ilk_id int);
 DROP TYPE maker.relevant_block CASCADE;
-DROP FUNCTION IF EXISTS maker.get_ilk_at_block_number(block_number numeric, ilk_id int );
+DROP FUNCTION IF EXISTS maker.get_ilk_at_block_number(block_number bigint, ilk_id int );
 DROP TYPE maker.ilk_state CASCADE;

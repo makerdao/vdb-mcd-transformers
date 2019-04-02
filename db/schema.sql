@@ -55,13 +55,12 @@ CREATE TYPE maker.frob_event AS (
 CREATE TYPE maker.ilk_state AS (
 	ilk_id integer,
 	ilk text,
-	block_number numeric,
-	take numeric,
+	block_number bigint,
 	rate numeric,
-	ink numeric,
 	art numeric,
 	spot numeric,
 	line numeric,
+	dust numeric,
 	chop numeric,
 	lump numeric,
 	flip text,
@@ -223,38 +222,18 @@ $_$;
 
 
 --
--- Name: get_ilk_at_block_number(numeric, integer); Type: FUNCTION; Schema: maker; Owner: -
+-- Name: get_ilk_at_block_number(bigint, integer); Type: FUNCTION; Schema: maker; Owner: -
 --
 
-CREATE FUNCTION maker.get_ilk_at_block_number(block_number numeric, ilkid integer) RETURNS maker.ilk_state
+CREATE FUNCTION maker.get_ilk_at_block_number(block_number bigint, ilkid integer) RETURNS maker.ilk_state
     LANGUAGE sql STABLE
     AS $_$
-WITH takes AS (
-    SELECT
-      take,
-      ilk_id,
-      block_hash
-    FROM maker.vat_ilk_take
-    WHERE ilk_id = ilkId
-          AND block_number <= $1
-    ORDER BY ilk_id, block_number DESC
-    LIMIT 1
-), rates AS (
+WITH rates AS (
     SELECT
       rate,
       ilk_id,
       block_hash
     FROM maker.vat_ilk_rate
-    WHERE ilk_id = ilkId
-          AND block_number <= $1
-    ORDER BY ilk_id, block_number DESC
-    LIMIT 1
-), inks AS (
-    SELECT
-      ink,
-      ilk_id,
-      block_hash
-    FROM maker.vat_ilk_ink
     WHERE ilk_id = ilkId
           AND block_number <= $1
     ORDER BY ilk_id, block_number DESC
@@ -274,7 +253,7 @@ WITH takes AS (
       spot,
       ilk_id,
       block_hash
-    FROM maker.pit_ilk_spot
+    FROM maker.vat_ilk_spot
     WHERE ilk_id = ilkId
           AND block_number <= $1
     ORDER BY ilk_id, block_number DESC
@@ -284,7 +263,17 @@ WITH takes AS (
       line,
       ilk_id,
       block_hash
-    FROM maker.pit_ilk_line
+    FROM maker.vat_ilk_line
+    WHERE ilk_id = ilkId
+          AND block_number <= $1
+    ORDER BY ilk_id, block_number DESC
+    LIMIT 1
+), dusts AS (
+    SELECT
+      dust,
+      ilk_id,
+      block_hash
+    FROM maker.vat_ilk_dust
     WHERE ilk_id = ilkId
           AND block_number <= $1
     ORDER BY ilk_id, block_number DESC
@@ -367,12 +356,11 @@ SELECT
   ilks.id,
   ilks.ilk,
   $1 block_number,
-  takes.take,
   rates.rate,
-  inks.ink,
   arts.art,
   spots.spot,
   lines.line,
+  dusts.dust,
   chops.chop,
   lumps.lump,
   flips.flip,
@@ -381,12 +369,11 @@ SELECT
   created.block_timestamp,
   updated.block_timestamp
 FROM maker.ilks AS ilks
-  LEFT JOIN takes ON takes.ilk_id = ilks.id
   LEFT JOIN rates ON rates.ilk_id = ilks.id
-  LEFT JOIN inks ON inks.ilk_id = ilks.id
   LEFT JOIN arts ON arts.ilk_id = ilks.id
   LEFT JOIN spots ON spots.ilk_id = ilks.id
   LEFT JOIN lines ON lines.ilk_id = ilks.id
+  LEFT JOIN dusts ON dusts.ilk_id = ilks.id
   LEFT JOIN chops ON chops.ilk_id = ilks.id
   LEFT JOIN lumps ON lumps.ilk_id = ilks.id
   LEFT JOIN flips ON flips.ilk_id = ilks.id
@@ -395,12 +382,11 @@ FROM maker.ilks AS ilks
   LEFT JOIN created ON created.ilk_id = ilks.id
   LEFT JOIN updated ON updated.ilk_id = ilks.id
 WHERE (
-  takes.take is not null OR
   rates.rate is not null OR
-  inks.ink is not null OR
   arts.art is not null OR
   spots.spot is not null OR
   lines.line is not null OR
+  dusts.dust is not null OR
   chops.chop is not null OR
   lumps.lump is not null OR
   flips.flip is not null OR
@@ -411,33 +397,17 @@ $_$;
 
 
 --
--- Name: get_ilk_blocks_before(numeric, integer); Type: FUNCTION; Schema: maker; Owner: -
+-- Name: get_ilk_blocks_before(bigint, integer); Type: FUNCTION; Schema: maker; Owner: -
 --
 
-CREATE FUNCTION maker.get_ilk_blocks_before(block_number numeric, ilk_id integer) RETURNS SETOF maker.relevant_block
+CREATE FUNCTION maker.get_ilk_blocks_before(block_number bigint, ilk_id integer) RETURNS SETOF maker.relevant_block
     LANGUAGE sql
     AS $_$
 SELECT
   block_number,
   block_hash,
   ilk_id
-FROM maker.vat_ilk_take
-WHERE block_number <= $1
-      AND ilk_id = $2
-UNION
-SELECT
-  block_number,
-  block_hash,
-  ilk_id
 FROM maker.vat_ilk_rate
-WHERE block_number <= $1
-      AND ilk_id = $2
-UNION
-SELECT
-  block_number,
-  block_hash,
-  ilk_id
-FROM maker.vat_ilk_ink
 WHERE block_number <= $1
       AND ilk_id = $2
 UNION
@@ -453,7 +423,7 @@ SELECT
   block_number,
   block_hash,
   ilk_id
-FROM maker.pit_ilk_spot
+FROM maker.vat_ilk_spot
 WHERE block_number <= $1
       AND ilk_id = $2
 UNION
@@ -461,7 +431,15 @@ SELECT
   block_number,
   block_hash,
   ilk_id
-FROM maker.pit_ilk_line
+FROM maker.vat_ilk_line
+WHERE block_number <= $1
+      AND ilk_id = $2
+UNION
+SELECT
+  block_number,
+  block_hash,
+  ilk_id
+FROM maker.vat_ilk_dust
 WHERE block_number <= $1
       AND ilk_id = $2
 UNION
@@ -508,10 +486,10 @@ $_$;
 
 
 --
--- Name: get_ilk_history_before_block(numeric, integer); Type: FUNCTION; Schema: maker; Owner: -
+-- Name: get_ilk_history_before_block(bigint, integer); Type: FUNCTION; Schema: maker; Owner: -
 --
 
-CREATE FUNCTION maker.get_ilk_history_before_block(block_number numeric, ilk_id integer) RETURNS SETOF maker.ilk_state
+CREATE FUNCTION maker.get_ilk_history_before_block(block_number bigint, ilk_id integer) RETURNS SETOF maker.ilk_state
     LANGUAGE plpgsql
     AS $_$
 DECLARE
@@ -520,7 +498,7 @@ BEGIN
   FOR r IN SELECT * FROM maker.get_ilk_blocks_before($1, $2)
   LOOP
     RETURN QUERY
-    SELECT * FROM maker.get_ilk_at_block_number(r.block_number::numeric, $2::integer);
+    SELECT * FROM maker.get_ilk_at_block_number(r.block_number::bigint, $2::integer);
   END LOOP;
 END;
 $_$;
@@ -1771,39 +1749,6 @@ ALTER SEQUENCE maker.pit_drip_id_seq OWNED BY maker.pit_drip.id;
 
 
 --
--- Name: pit_ilk_line; Type: TABLE; Schema: maker; Owner: -
---
-
-CREATE TABLE maker.pit_ilk_line (
-    id integer NOT NULL,
-    block_number bigint,
-    block_hash text,
-    ilk_id integer NOT NULL,
-    line numeric NOT NULL
-);
-
-
---
--- Name: pit_ilk_line_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
---
-
-CREATE SEQUENCE maker.pit_ilk_line_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: pit_ilk_line_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
---
-
-ALTER SEQUENCE maker.pit_ilk_line_id_seq OWNED BY maker.pit_ilk_line.id;
-
-
---
 -- Name: pit_ilk_spot; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -2459,39 +2404,6 @@ ALTER SEQUENCE maker.vat_ilk_dust_id_seq OWNED BY maker.vat_ilk_dust.id;
 
 
 --
--- Name: vat_ilk_ink; Type: TABLE; Schema: maker; Owner: -
---
-
-CREATE TABLE maker.vat_ilk_ink (
-    id integer NOT NULL,
-    block_number bigint,
-    block_hash text,
-    ilk_id integer NOT NULL,
-    ink numeric NOT NULL
-);
-
-
---
--- Name: vat_ilk_ink_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
---
-
-CREATE SEQUENCE maker.vat_ilk_ink_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: vat_ilk_ink_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
---
-
-ALTER SEQUENCE maker.vat_ilk_ink_id_seq OWNED BY maker.vat_ilk_ink.id;
-
-
---
 -- Name: vat_ilk_line; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -2588,39 +2500,6 @@ CREATE SEQUENCE maker.vat_ilk_spot_id_seq
 --
 
 ALTER SEQUENCE maker.vat_ilk_spot_id_seq OWNED BY maker.vat_ilk_spot.id;
-
-
---
--- Name: vat_ilk_take; Type: TABLE; Schema: maker; Owner: -
---
-
-CREATE TABLE maker.vat_ilk_take (
-    id integer NOT NULL,
-    block_number bigint,
-    block_hash text,
-    ilk_id integer NOT NULL,
-    take numeric NOT NULL
-);
-
-
---
--- Name: vat_ilk_take_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
---
-
-CREATE SEQUENCE maker.vat_ilk_take_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: vat_ilk_take_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
---
-
-ALTER SEQUENCE maker.vat_ilk_take_id_seq OWNED BY maker.vat_ilk_take.id;
 
 
 --
@@ -4040,13 +3919,6 @@ ALTER TABLE ONLY maker.pit_drip ALTER COLUMN id SET DEFAULT nextval('maker.pit_d
 
 
 --
--- Name: pit_ilk_line id; Type: DEFAULT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.pit_ilk_line ALTER COLUMN id SET DEFAULT nextval('maker.pit_ilk_line_id_seq'::regclass);
-
-
---
 -- Name: pit_ilk_spot id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
@@ -4180,13 +4052,6 @@ ALTER TABLE ONLY maker.vat_ilk_dust ALTER COLUMN id SET DEFAULT nextval('maker.v
 
 
 --
--- Name: vat_ilk_ink id; Type: DEFAULT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.vat_ilk_ink ALTER COLUMN id SET DEFAULT nextval('maker.vat_ilk_ink_id_seq'::regclass);
-
-
---
 -- Name: vat_ilk_line id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
@@ -4205,13 +4070,6 @@ ALTER TABLE ONLY maker.vat_ilk_rate ALTER COLUMN id SET DEFAULT nextval('maker.v
 --
 
 ALTER TABLE ONLY maker.vat_ilk_spot ALTER COLUMN id SET DEFAULT nextval('maker.vat_ilk_spot_id_seq'::regclass);
-
-
---
--- Name: vat_ilk_take id; Type: DEFAULT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.vat_ilk_take ALTER COLUMN id SET DEFAULT nextval('maker.vat_ilk_take_id_seq'::regclass);
 
 
 --
@@ -4814,14 +4672,6 @@ ALTER TABLE ONLY maker.pit_drip
 
 
 --
--- Name: pit_ilk_line pit_ilk_line_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.pit_ilk_line
-    ADD CONSTRAINT pit_ilk_line_pkey PRIMARY KEY (id);
-
-
---
 -- Name: pit_ilk_spot pit_ilk_spot_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -5054,14 +4904,6 @@ ALTER TABLE ONLY maker.vat_ilk_dust
 
 
 --
--- Name: vat_ilk_ink vat_ilk_ink_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.vat_ilk_ink
-    ADD CONSTRAINT vat_ilk_ink_pkey PRIMARY KEY (id);
-
-
---
 -- Name: vat_ilk_line vat_ilk_line_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -5083,14 +4925,6 @@ ALTER TABLE ONLY maker.vat_ilk_rate
 
 ALTER TABLE ONLY maker.vat_ilk_spot
     ADD CONSTRAINT vat_ilk_spot_pkey PRIMARY KEY (id);
-
-
---
--- Name: vat_ilk_take vat_ilk_take_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.vat_ilk_take
-    ADD CONSTRAINT vat_ilk_take_pkey PRIMARY KEY (id);
 
 
 --
@@ -5687,15 +5521,6 @@ ALTER TABLE ONLY maker.jug_ilk_tax
 
 
 --
--- Name: pit_ilk_line pit_ilk_line_ilk_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.pit_ilk_line
-    ADD CONSTRAINT pit_ilk_line_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id);
-
-
---
--- Name: pit_ilk_spot pit_ilk_spot_ilk_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.pit_ilk_spot
@@ -5847,15 +5672,6 @@ ALTER TABLE ONLY maker.vat_ilk_dust
 
 
 --
--- Name: vat_ilk_ink vat_ilk_ink_ilk_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.vat_ilk_ink
-    ADD CONSTRAINT vat_ilk_ink_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id);
-
-
---
--- Name: vat_ilk_line vat_ilk_line_ilk_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.vat_ilk_line
@@ -5876,14 +5692,6 @@ ALTER TABLE ONLY maker.vat_ilk_rate
 
 ALTER TABLE ONLY maker.vat_ilk_spot
     ADD CONSTRAINT vat_ilk_spot_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id);
-
-
---
--- Name: vat_ilk_take vat_ilk_take_ilk_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.vat_ilk_take
-    ADD CONSTRAINT vat_ilk_take_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id);
 
 
 --

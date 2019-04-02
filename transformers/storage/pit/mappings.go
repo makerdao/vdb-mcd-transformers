@@ -28,7 +28,6 @@ import (
 )
 
 const (
-	IlkLine = "line"
 	IlkSpot = "spot"
 	PitDrip = "drip"
 	PitLine = "Line"
@@ -104,7 +103,6 @@ func (mappings *PitMappings) loadMappings() error {
 	}
 	for _, ilk := range ilks {
 		mappings.mappings[getSpotKey(ilk)] = getSpotMetadata(ilk)
-		mappings.mappings[getLineKey(ilk)] = getLineMetadata(ilk)
 	}
 	return nil
 }
@@ -118,6 +116,7 @@ func getStaticMappings() map[common.Hash]utils.StorageValueMetadata {
 	return mappings
 }
 
+//TODO: remove when Urn query is updated
 func getSpotKey(ilk string) common.Hash {
 	return storage.GetMapping(IlkSpotIndex, ilk)
 }
@@ -125,13 +124,4 @@ func getSpotKey(ilk string) common.Hash {
 func getSpotMetadata(ilk string) utils.StorageValueMetadata {
 	keys := map[utils.Key]string{constants.Ilk: ilk}
 	return utils.GetStorageValueMetadata(IlkSpot, keys, utils.Uint256)
-}
-
-func getLineKey(ilk string) common.Hash {
-	return storage.GetIncrementedKey(getSpotKey(ilk), 1)
-}
-
-func getLineMetadata(ilk string) utils.StorageValueMetadata {
-	keys := map[utils.Key]string{constants.Ilk: ilk}
-	return utils.GetStorageValueMetadata(IlkLine, keys, utils.Uint256)
 }

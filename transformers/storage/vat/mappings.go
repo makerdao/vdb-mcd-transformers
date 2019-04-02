@@ -31,12 +31,10 @@ const (
 	Dai     = "dai"
 	Gem     = "gem"
 	IlkArt  = "Art"
-	IlkInk  = "Ink" //TODO: remove when ilk query is switched over to new vat contract
 	IlkDust = "dust"
 	IlkLine = "line"
 	IlkRate = "rate"
 	IlkSpot = "spot"
-	IlkTake = "take" //TODO: remove when ilk query is switched over to new vat contract
 	Sin     = "sin"
 	UrnArt  = "art"
 	UrnInk  = "ink"

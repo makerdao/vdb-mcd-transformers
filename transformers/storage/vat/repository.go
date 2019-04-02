@@ -31,11 +31,9 @@ const (
 	insertGemQuery     = `INSERT INTO maker.vat_gem (block_number, block_hash, ilk_id, guy, gem) VALUES ($1, $2, $3, $4, $5)`
 	insertIlkArtQuery  = `INSERT INTO maker.vat_ilk_art (block_number, block_hash, ilk_id, art) VALUES ($1, $2, $3, $4)`
 	insertIlkDustQuery = `INSERT INTO maker.vat_ilk_dust (block_number, block_hash, ilk_id, dust) VALUES ($1, $2, $3, $4)`
-	insertIlkInkQuery  = `INSERT INTO maker.vat_ilk_ink (block_number, block_hash, ilk_id, ink) VALUES ($1, $2, $3, $4)`
 	insertIlkLineQuery = `INSERT INTO maker.vat_ilk_line (block_number, block_hash, ilk_id, line) VALUES ($1, $2, $3, $4)`
 	insertIlkRateQuery = `INSERT INTO maker.vat_ilk_rate (block_number, block_hash, ilk_id, rate) VALUES ($1, $2, $3, $4)`
 	insertIlkSpotQuery = `INSERT INTO maker.vat_ilk_spot (block_number, block_hash, ilk_id, spot) VALUES ($1, $2, $3, $4)`
-	insertIlkTakeQuery = `INSERT INTO maker.vat_ilk_take (block_number, block_hash, ilk_id, take) VALUES ($1, $2, $3, $4)`
 	insertSinQuery     = `INSERT INTO maker.vat_sin (block_number, block_hash, guy, sin) VALUES ($1, $2, $3, $4)`
 	insertUrnArtQuery  = `INSERT INTO maker.vat_urn_art (block_number, block_hash, urn_id, art) VALUES ($1, $2, $3, $4)`
 	insertUrnInkQuery  = `INSERT INTO maker.vat_urn_ink (block_number, block_hash, urn_id, ink) VALUES ($1, $2, $3, $4)`
@@ -59,18 +57,12 @@ func (repository *VatStorageRepository) Create(blockNumber int, blockHash string
 		return repository.insertIlkArt(blockNumber, blockHash, metadata, value.(string))
 	case IlkDust:
 		return repository.insertIlkDust(blockNumber, blockHash, metadata, value.(string))
-	case IlkInk:
-		//TODO: remove once Ilk query tests are updated
-		return repository.insertIlkInk(blockNumber, blockHash, metadata, value.(string))
 	case IlkLine:
 		return repository.insertIlkLine(blockNumber, blockHash, metadata, value.(string))
 	case IlkRate:
 		return repository.insertIlkRate(blockNumber, blockHash, metadata, value.(string))
 	case IlkSpot:
 		return repository.insertIlkSpot(blockNumber, blockHash, metadata, value.(string))
-	case IlkTake:
-		//TODO: remove once Ilk query tests are updated
-		return repository.insertIlkTake(blockNumber, blockHash, metadata, value.(string))
 	case Sin:
 		return repository.insertSin(blockNumber, blockHash, metadata, value.(string))
 	case UrnArt:
@@ -151,14 +143,6 @@ func (repository *VatStorageRepository) insertIlkDust(blockNumber int, blockHash
 	return repository.insertFieldWithIlk(blockNumber, blockHash, ilk, IlkDust, insertIlkDustQuery, dust)
 }
 
-func (repository *VatStorageRepository) insertIlkInk(blockNumber int, blockHash string, metadata utils.StorageValueMetadata, ink string) error {
-	ilk, err := getIlk(metadata.Keys)
-	if err != nil {
-		return err
-	}
-	return repository.insertFieldWithIlk(blockNumber, blockHash, ilk, IlkInk, insertIlkInkQuery, ink)
-}
-
 func (repository *VatStorageRepository) insertIlkLine(blockNumber int, blockHash string, metadata utils.StorageValueMetadata, line string) error {
 	ilk, err := getIlk(metadata.Keys)
 	if err != nil {
@@ -181,14 +165,6 @@ func (repository *VatStorageRepository) insertIlkSpot(blockNumber int, blockHash
 		return err
 	}
 	return repository.insertFieldWithIlk(blockNumber, blockHash, ilk, IlkSpot, insertIlkSpotQuery, spot)
-}
-
-func (repository *VatStorageRepository) insertIlkTake(blockNumber int, blockHash string, metadata utils.StorageValueMetadata, take string) error {
-	ilk, err := getIlk(metadata.Keys)
-	if err != nil {
-		return err
-	}
-	return repository.insertFieldWithIlk(blockNumber, blockHash, ilk, IlkTake, insertIlkTakeQuery, take)
 }
 
 func (repository *VatStorageRepository) insertSin(blockNumber int, blockHash string, metadata utils.StorageValueMetadata, sin string) error {

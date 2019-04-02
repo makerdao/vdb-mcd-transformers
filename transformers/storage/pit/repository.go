@@ -36,8 +36,7 @@ func (repository *PitStorageRepository) SetDB(db *postgres.DB) {
 
 func (repository PitStorageRepository) Create(blockNumber int, blockHash string, metadata utils.StorageValueMetadata, value interface{}) error {
 	switch metadata.Name {
-	case IlkLine:
-		return repository.insertIlkLine(blockNumber, blockHash, metadata, value.(string))
+	//TODO: remove when Urn query is updated
 	case IlkSpot:
 		return repository.insertIlkSpot(blockNumber, blockHash, metadata, value.(string))
 	case PitDrip:
@@ -51,34 +50,6 @@ func (repository PitStorageRepository) Create(blockNumber int, blockHash string,
 	default:
 		panic(fmt.Sprintf("unrecognized pit contract storage name: %s", metadata.Name))
 	}
-}
-
-func (repository PitStorageRepository) insertIlkLine(blockNumber int, blockHash string, metadata utils.StorageValueMetadata, line string) error {
-	ilk, err := getIlk(metadata.Keys)
-	if err != nil {
-		return err
-	}
-	tx, err := repository.db.Beginx()
-	if err != nil {
-		return err
-	}
-	ilkID, ilkErr := shared.GetOrCreateIlkInTransaction(ilk, tx)
-	if ilkErr != nil {
-		rollbackErr := tx.Rollback()
-		if rollbackErr != nil {
-			return fmt.Errorf("failed to rollback transaction after failing to insert ilk: %s", ilkErr.Error())
-		}
-		return ilkErr
-	}
-	_, writeErr := tx.Exec(`INSERT INTO maker.pit_ilk_line (block_number, block_hash, ilk_id, line) VALUES ($1, $2, $3, $4)`, blockNumber, blockHash, ilkID, line)
-	if writeErr != nil {
-		rollbackErr := tx.Rollback()
-		if rollbackErr != nil {
-			return fmt.Errorf("failed to rollback transaction after failing to insert pit ilk line: %s", writeErr.Error())
-		}
-		return writeErr
-	}
-	return tx.Commit()
 }
 
 func (repository PitStorageRepository) insertIlkSpot(blockNumber int, blockHash string, metadata utils.StorageValueMetadata, spot string) error {
