@@ -14,14 +14,6 @@ CREATE TABLE maker.pit_ilk_spot (
   spot          NUMERIC NOT NULL
 );
 
-CREATE TABLE maker.pit_ilk_line (
-  id            SERIAL PRIMARY KEY,
-  block_number  BIGINT,
-  block_hash    TEXT,
-  ilk_id        INTEGER NOT NULL REFERENCES maker.ilks (id),
-  line          NUMERIC NOT NULL
-);
-
 CREATE TABLE maker.pit_line (
   id            SERIAL PRIMARY KEY,
   block_number  BIGINT,
@@ -46,7 +38,6 @@ CREATE TABLE maker.pit_vat (
 -- +goose Down
 DROP TABLE maker.pit_drip;
 DROP TABLE maker.pit_ilk_spot;
-DROP TABLE maker.pit_ilk_line;
 DROP TABLE maker.pit_line;
 DROP TABLE maker.pit_live;
 DROP TABLE maker.pit_vat;

@@ -17,8 +17,6 @@
 package pit_test
 
 import (
-	"math/big"
-
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 	. "github.com/onsi/ginkgo"
@@ -77,24 +75,6 @@ var _ = Describe("Pit storage mappings", func() {
 			}
 
 			Expect(mappings.Lookup(ilkSpotKey)).To(Equal(expectedMetadata))
-		})
-
-		It("returns value metadata for line when ilk in the DB", func() {
-			storageRepository := &test_helpers.MockMakerStorageRepository{}
-			fakeIlk := "fakeIlk"
-			storageRepository.Ilks = []string{fakeIlk}
-			mappings := pit.PitMappings{StorageRepository: storageRepository}
-			ilkSpotKeyBytes := crypto.Keccak256(common.FromHex("0x" + fakeIlk + pit.IlkSpotIndex))
-			ilkSpotAsInt := big.NewInt(0).SetBytes(ilkSpotKeyBytes)
-			incrementedIlkSpot := big.NewInt(0).Add(ilkSpotAsInt, big.NewInt(1))
-			ilkLineKey := common.BytesToHash(incrementedIlkSpot.Bytes())
-			expectedMetadata := utils.StorageValueMetadata{
-				Name: pit.IlkLine,
-				Keys: map[utils.Key]string{constants.Ilk: fakeIlk},
-				Type: utils.Uint256,
-			}
-
-			Expect(mappings.Lookup(ilkLineKey)).To(Equal(expectedMetadata))
 		})
 
 		It("returns error if key not found", func() {

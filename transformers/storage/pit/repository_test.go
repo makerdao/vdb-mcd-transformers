@@ -52,29 +52,6 @@ var _ = Describe("Pit storage repository", func() {
 	})
 
 	Describe("Ilk", func() {
-		Describe("Line", func() {
-			It("writes a row", func() {
-				ilkLineMetadata := utils.GetStorageValueMetadata(pit.IlkLine, map[utils.Key]string{constants.Ilk: fakeIlk}, utils.Uint256)
-
-				err = repo.Create(fakeBlockNumber, fakeBlockHash, ilkLineMetadata, fakeUint256)
-
-				Expect(err).NotTo(HaveOccurred())
-				var result MappingRes
-				err = db.Get(&result, `SELECT block_number, block_hash, ilk_id AS key, line AS value FROM maker.pit_ilk_line`)
-				Expect(err).NotTo(HaveOccurred())
-				ilkID, err := shared.GetOrCreateIlk(fakeIlk, db)
-				Expect(err).NotTo(HaveOccurred())
-				AssertMapping(result, fakeBlockNumber, fakeBlockHash, strconv.Itoa(ilkID), fakeUint256)
-			})
-
-			It("returns an error if metadata missing ilk", func() {
-				malformedIlkLineMetadata := utils.GetStorageValueMetadata(pit.IlkLine, nil, utils.Uint256)
-
-				err := repo.Create(fakeBlockNumber, fakeBlockHash, malformedIlkLineMetadata, fakeUint256)
-				Expect(err).To(MatchError(utils.ErrMetadataMalformed{MissingData: constants.Ilk}))
-			})
-		})
-
 		Describe("Spot", func() {
 			It("writes a row", func() {
 				ilkSpotMetadata := utils.GetStorageValueMetadata(pit.IlkSpot, map[utils.Key]string{constants.Ilk: fakeIlk}, utils.Uint256)

@@ -45,30 +45,12 @@ CREATE TABLE maker.vat_ilk_spot (
   spot          NUMERIC NOT NULL
 );
 
--- TODO: remove this once the ilk query no longer depends on it
-CREATE TABLE maker.vat_ilk_ink (
-  id            SERIAL PRIMARY KEY,
-  block_number  BIGINT,
-  block_hash    TEXT,
-  ilk_id        INTEGER NOT NULL REFERENCES maker.ilks (id),
-  ink           NUMERIC NOT NULL
-);
-
 CREATE TABLE maker.vat_ilk_rate (
   id            SERIAL PRIMARY KEY,
   block_number  BIGINT,
   block_hash    TEXT,
   ilk_id        INTEGER NOT NULL REFERENCES maker.ilks (id),
   rate          NUMERIC NOT NULL
-);
-
--- TODO: remove this once the ilk query no longer depends on it
-CREATE TABLE maker.vat_ilk_take (
-  id            SERIAL PRIMARY KEY,
-  block_number  BIGINT,
-  block_hash    TEXT,
-  ilk_id        INTEGER NOT NULL REFERENCES maker.ilks (id),
-  take          NUMERIC NOT NULL
 );
 
 CREATE TABLE maker.vat_urn_art (
@@ -133,9 +115,7 @@ DROP TABLE maker.vat_ilk_art;
 DROP TABLE maker.vat_ilk_dust;
 DROP TABLE maker.vat_ilk_line;
 DROP TABLE maker.vat_ilk_spot;
-DROP TABLE maker.vat_ilk_ink; -- TODO: remove this once the ilk query no longer depends on it
 DROP TABLE maker.vat_ilk_rate;
-DROP TABLE maker.vat_ilk_take; -- TODO: remove this once the ilk query no longer depends on it
 DROP TABLE maker.vat_urn_art;
 DROP TABLE maker.vat_urn_ink;
 DROP TABLE maker.vat_gem;
