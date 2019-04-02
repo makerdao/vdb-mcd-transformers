@@ -35,7 +35,7 @@ import (
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/events/cat_file/chop_lump"
 	"github.com/vulcanize/mcd_transformers/transformers/events/cat_file/flip"
-	"github.com/vulcanize/mcd_transformers/transformers/events/cat_file/pit_vow"
+	"github.com/vulcanize/mcd_transformers/transformers/events/cat_file/vow"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
@@ -63,10 +63,8 @@ var _ = Describe("Cat File transformer", func() {
 		fetcher = fetch.NewFetcher(blockChain)
 	})
 
-	// Cat contract Kovan address: 0x2f34f22a00ee4b7a8f8bbc4eaee1658774c624e0
 	It("persists a chop lump event", func() {
-		// transaction: 0x98574bfba4d05c3875be10d2376e678d005dbebe9a4520363407508fd21f4014
-		chopLumpBlockNumber := int64(8762253)
+		chopLumpBlockNumber := int64(10501145)
 		header, err := persistHeader(db, chopLumpBlockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -107,17 +105,16 @@ var _ = Describe("Cat File transformer", func() {
 		Expect(dbResult[0].Ilk).To(Equal(strconv.Itoa(ilkID)))
 		Expect(dbResult[0].What).To(Equal("lump"))
 		Expect(dbResult[0].Data).To(Equal("10000.000000000000000000"))
-		Expect(dbResult[0].LogIndex).To(Equal(uint(3)))
+		Expect(dbResult[0].LogIndex).To(Equal(uint(1)))
 
 		Expect(dbResult[1].Ilk).To(Equal(strconv.Itoa(ilkID)))
 		Expect(dbResult[1].What).To(Equal("chop"))
 		Expect(dbResult[1].Data).To(Equal("1.000000000000000000000000000"))
-		Expect(dbResult[1].LogIndex).To(Equal(uint(4)))
+		Expect(dbResult[1].LogIndex).To(Equal(uint(2)))
 	})
 
 	It("rechecks header for chop lump event", func() {
-		// transaction: 0x98574bfba4d05c3875be10d2376e678d005dbebe9a4520363407508fd21f4014
-		chopLumpBlockNumber := int64(8762253)
+		chopLumpBlockNumber := int64(10501145)
 		header, err := persistHeader(db, chopLumpBlockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -161,8 +158,7 @@ var _ = Describe("Cat File transformer", func() {
 	})
 
 	It("persists a flip event", func() {
-		// transaction: 0x44bc18fdb1a5a263db114e7879653304db3e19ceb4e4496f21bc0a76c5faccbe
-		flipBlockNumber := int64(8751794)
+		flipBlockNumber := int64(10501145)
 		header, err := persistHeader(db, flipBlockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -197,11 +193,11 @@ var _ = Describe("Cat File transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))
-		ilkID, err := shared.GetOrCreateIlk("4554480000000000000000000000000000000000000000000000000000000000", db)
+		ilkID, err := shared.GetOrCreateIlk("5245500000000000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(dbResult[0].Ilk).To(Equal(strconv.Itoa(ilkID)))
 		Expect(dbResult[0].What).To(Equal("flip"))
-		Expect(dbResult[0].Flip).To(Equal("0x32D496Ad866D110060866B7125981C73642cc509"))
+		Expect(dbResult[0].Flip).To(Equal("0x4EC982bC57c463D4A1825d975E2A525C4daadD91"))
 	})
 
 	It("rechecks a flip event", func() {
@@ -250,25 +246,24 @@ var _ = Describe("Cat File transformer", func() {
 		Expect(catFlipChecked[0]).To(Equal(2))
 	})
 
-	It("persists a pit vow event", func() {
-		// transaction: 0x44bc18fdb1a5a263db114e7879653304db3e19ceb4e4496f21bc0a76c5faccbe
-		pitVowBlockNumber := int64(8751794)
-		header, err := persistHeader(db, pitVowBlockNumber, blockChain)
+	It("persists a vow event", func() {
+		vowBlockNumber := int64(10501127)
+		header, err := persistHeader(db, vowBlockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
 		config := transformer.EventTransformerConfig{
-			TransformerName:     constants.CatFilePitVowLabel,
+			TransformerName:     constants.CatFileVowLabel,
 			ContractAddresses:   []string{test_data.KovanCatContractAddress},
 			ContractAbi:         test_data.KovanCatABI,
-			Topic:               test_data.KovanCatFilePitVowSignature,
-			StartingBlockNumber: pitVowBlockNumber,
-			EndingBlockNumber:   pitVowBlockNumber,
+			Topic:               test_data.KovanCatFileVowSignature,
+			StartingBlockNumber: vowBlockNumber,
+			EndingBlockNumber:   vowBlockNumber,
 		}
 
 		initializer := event.LogNoteTransformer{
 			Config:     config,
-			Converter:  &pit_vow.CatFilePitVowConverter{},
-			Repository: &pit_vow.CatFilePitVowRepository{},
+			Converter:  &vow.CatFileVowConverter{},
+			Repository: &vow.CatFileVowRepository{},
 		}
 		t := initializer.NewLogNoteTransformer(db)
 
@@ -281,19 +276,14 @@ var _ = Describe("Cat File transformer", func() {
 		err = t.Execute(logs, header, c2.HeaderMissing)
 		Expect(err).NotTo(HaveOccurred())
 
-		var dbResult []pit_vow.CatFilePitVowModel
-		err = db.Select(&dbResult, `SELECT what, data, log_idx FROM maker.cat_file_pit_vow`)
+		var dbResult []vow.CatFileVowModel
+		err = db.Select(&dbResult, `SELECT what, data, log_idx FROM maker.cat_file_vow`)
 		Expect(err).NotTo(HaveOccurred())
 
-		Expect(len(dbResult)).To(Equal(2))
-		sort.Sort(byLogIndexPitVow(dbResult))
+		Expect(len(dbResult)).To(Equal(1))
 		Expect(dbResult[0].What).To(Equal("vow"))
-		Expect(dbResult[0].Data).To(Equal("0x3728e9777B2a0a611ee0F89e00E01044ce4736d1"))
-		Expect(dbResult[0].LogIndex).To(Equal(uint(1)))
-
-		Expect(dbResult[1].What).To(Equal("pit"))
-		Expect(dbResult[1].Data).To(Equal("0xE7CF3198787C9A4daAc73371A38f29aAeECED87e"))
-		Expect(dbResult[1].LogIndex).To(Equal(uint(2)))
+		Expect(dbResult[0].Data).To(Equal("0x17560834075DA3Db54f737db74377E799c865821"))
+		Expect(dbResult[0].LogIndex).To(Equal(uint(2)))
 	})
 })
 
@@ -303,8 +293,3 @@ func (c byLogIndexChopLump) Len() int           { return len(c) }
 func (c byLogIndexChopLump) Less(i, j int) bool { return c[i].LogIndex < c[j].LogIndex }
 func (c byLogIndexChopLump) Swap(i, j int)      { c[i], c[j] = c[j], c[i] }
 
-type byLogIndexPitVow []pit_vow.CatFilePitVowModel
-
-func (c byLogIndexPitVow) Len() int           { return len(c) }
-func (c byLogIndexPitVow) Less(i, j int) bool { return c[i].LogIndex < c[j].LogIndex }
-func (c byLogIndexPitVow) Swap(i, j int)      { c[i], c[j] = c[j], c[i] }

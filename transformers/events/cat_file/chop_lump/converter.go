@@ -45,7 +45,7 @@ func (CatFileChopLumpConverter) ToModels(ethLogs []types.Log) ([]interface{}, er
 		}
 		ilk := shared.GetHexWithoutPrefix(ethLog.Topics[2].Bytes())
 		what := string(bytes.Trim(ethLog.Topics[3].Bytes(), "\x00"))
-		dataBytes := ethLog.Data[len(ethLog.Data)-constants.DataItemLength:]
+		dataBytes := shared.GetUpdatedLogNoteDataBytesAtIndex(-1, ethLog.Data)
 		data := big.NewInt(0).SetBytes(dataBytes).String()
 
 		raw, err := json.Marshal(ethLog)

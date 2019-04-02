@@ -46,7 +46,9 @@ var testBiteConfig = transformer.EventTransformerConfig{
 }
 
 var _ = Describe("Bite Transformer", func() {
-	It("fetches and transforms a Bite event from Kovan chain", func() {
+
+	// TODO: replace block number when there is an updated Cat bite event
+	XIt("fetches and transforms a Bite event from Kovan chain", func() {
 		blockNumber := int64(8956422)
 		config := testBiteConfig
 		config.StartingBlockNumber = blockNumber

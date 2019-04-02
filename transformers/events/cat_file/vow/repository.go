@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package pit_vow
+package vow
 
 import (
 	"fmt"
@@ -28,27 +28,27 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
-type CatFilePitVowRepository struct {
+type CatFileVowRepository struct {
 	db *postgres.DB
 }
 
-func (repository CatFilePitVowRepository) Create(headerID int64, models []interface{}) error {
+func (repository CatFileVowRepository) Create(headerID int64, models []interface{}) error {
 	tx, dBaseErr := repository.db.Beginx()
 	if dBaseErr != nil {
 		return dBaseErr
 	}
 	for _, model := range models {
-		vow, ok := model.(CatFilePitVowModel)
+		vow, ok := model.(CatFileVowModel)
 		if !ok {
 			rollbackErr := tx.Rollback()
 			if rollbackErr != nil {
 				log.Error("failed to rollback ", rollbackErr)
 			}
-			return fmt.Errorf("model of type %T, not %T", model, CatFilePitVowModel{})
+			return fmt.Errorf("model of type %T, not %T", model, CatFileVowModel{})
 		}
 
 		_, execErr := repository.db.Exec(
-			`INSERT into maker.cat_file_pit_vow (header_id, what, data, tx_idx, log_idx, raw_log)
+			`INSERT into maker.cat_file_vow (header_id, what, data, tx_idx, log_idx, raw_log)
 			VALUES($1, $2, $3, $4, $5, $6)
 			ON CONFLICT (header_id, tx_idx, log_idx) DO UPDATE SET what = $2, data = $3, raw_log = $6;`,
 			headerID, vow.What, vow.Data, vow.TransactionIndex, vow.LogIndex, vow.Raw,
@@ -62,7 +62,7 @@ func (repository CatFilePitVowRepository) Create(headerID int64, models []interf
 		}
 	}
 
-	checkHeaderErr := repo.MarkHeaderCheckedInTransaction(headerID, tx, constants.CatFilePitVowChecked)
+	checkHeaderErr := repo.MarkHeaderCheckedInTransaction(headerID, tx, constants.CatFileVowChecked)
 	if checkHeaderErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
@@ -73,18 +73,18 @@ func (repository CatFilePitVowRepository) Create(headerID int64, models []interf
 	return tx.Commit()
 }
 
-func (repository CatFilePitVowRepository) MarkHeaderChecked(headerID int64) error {
-	return repo.MarkHeaderChecked(headerID, repository.db, constants.CatFilePitVowChecked)
+func (repository CatFileVowRepository) MarkHeaderChecked(headerID int64) error {
+	return repo.MarkHeaderChecked(headerID, repository.db, constants.CatFileVowChecked)
 }
 
-func (repository CatFilePitVowRepository) MissingHeaders(startingBlockNumber, endingBlockNumber int64) ([]core.Header, error) {
-	return repo.MissingHeaders(startingBlockNumber, endingBlockNumber, repository.db, constants.CatFilePitVowChecked)
+func (repository CatFileVowRepository) MissingHeaders(startingBlockNumber, endingBlockNumber int64) ([]core.Header, error) {
+	return repo.MissingHeaders(startingBlockNumber, endingBlockNumber, repository.db, constants.CatFileVowChecked)
 }
 
-func (repository CatFilePitVowRepository) RecheckHeaders(startingBlockNumber, endingBlockNumber int64) ([]core.Header, error) {
-	return repo.RecheckHeaders(startingBlockNumber, endingBlockNumber, repository.db, constants.CatFilePitVowChecked)
+func (repository CatFileVowRepository) RecheckHeaders(startingBlockNumber, endingBlockNumber int64) ([]core.Header, error) {
+	return repo.RecheckHeaders(startingBlockNumber, endingBlockNumber, repository.db, constants.CatFileVowChecked)
 }
 
-func (repository *CatFilePitVowRepository) SetDB(db *postgres.DB) {
+func (repository *CatFileVowRepository) SetDB(db *postgres.DB) {
 	repository.db = db
 }

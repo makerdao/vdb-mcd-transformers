@@ -4,7 +4,7 @@ const (
 	BiteLabel               = "bite"
 	CatFileChopLumpLabel    = "catFileChopLump"
 	CatFileFlipLabel        = "catFileFlip"
-	CatFilePitVowLabel      = "catFilePitVow"
+	CatFileVowLabel         = "catFileVow"
 	DealLabel               = "deal"
 	DentLabel               = "dent"
 	JugDripLabel            = "jugDrip"

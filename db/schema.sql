@@ -770,10 +770,10 @@ ALTER SEQUENCE maker.cat_file_flip_id_seq OWNED BY maker.cat_file_flip.id;
 
 
 --
--- Name: cat_file_pit_vow; Type: TABLE; Schema: maker; Owner: -
+-- Name: cat_file_vow; Type: TABLE; Schema: maker; Owner: -
 --
 
-CREATE TABLE maker.cat_file_pit_vow (
+CREATE TABLE maker.cat_file_vow (
     id integer NOT NULL,
     header_id integer NOT NULL,
     what text,
@@ -785,10 +785,10 @@ CREATE TABLE maker.cat_file_pit_vow (
 
 
 --
--- Name: cat_file_pit_vow_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+-- Name: cat_file_vow_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
-CREATE SEQUENCE maker.cat_file_pit_vow_id_seq
+CREATE SEQUENCE maker.cat_file_vow_id_seq
     AS integer
     START WITH 1
     INCREMENT BY 1
@@ -798,10 +798,10 @@ CREATE SEQUENCE maker.cat_file_pit_vow_id_seq
 
 
 --
--- Name: cat_file_pit_vow_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+-- Name: cat_file_vow_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
 --
 
-ALTER SEQUENCE maker.cat_file_pit_vow_id_seq OWNED BY maker.cat_file_pit_vow.id;
+ALTER SEQUENCE maker.cat_file_vow_id_seq OWNED BY maker.cat_file_vow.id;
 
 
 --
@@ -3096,7 +3096,7 @@ CREATE TABLE public.checked_headers (
     jug_drip_checked integer DEFAULT 0 NOT NULL,
     cat_file_chop_lump_checked integer DEFAULT 0 NOT NULL,
     cat_file_flip_checked integer DEFAULT 0 NOT NULL,
-    cat_file_pit_vow_checked integer DEFAULT 0 NOT NULL,
+    cat_file_vow_checked integer DEFAULT 0 NOT NULL,
     flop_kick_checked integer DEFAULT 0 NOT NULL,
     vat_move_checked integer DEFAULT 0 NOT NULL,
     vat_fold_checked integer DEFAULT 0 NOT NULL,
@@ -3516,10 +3516,10 @@ ALTER TABLE ONLY maker.cat_file_flip ALTER COLUMN id SET DEFAULT nextval('maker.
 
 
 --
--- Name: cat_file_pit_vow id; Type: DEFAULT; Schema: maker; Owner: -
+-- Name: cat_file_vow id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
-ALTER TABLE ONLY maker.cat_file_pit_vow ALTER COLUMN id SET DEFAULT nextval('maker.cat_file_pit_vow_id_seq'::regclass);
+ALTER TABLE ONLY maker.cat_file_vow ALTER COLUMN id SET DEFAULT nextval('maker.cat_file_vow_id_seq'::regclass);
 
 
 --
@@ -4110,19 +4110,19 @@ ALTER TABLE ONLY maker.cat_file_flip
 
 
 --
--- Name: cat_file_pit_vow cat_file_pit_vow_header_id_tx_idx_log_idx_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: cat_file_vow cat_file_vow_header_id_tx_idx_log_idx_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
-ALTER TABLE ONLY maker.cat_file_pit_vow
-    ADD CONSTRAINT cat_file_pit_vow_header_id_tx_idx_log_idx_key UNIQUE (header_id, tx_idx, log_idx);
+ALTER TABLE ONLY maker.cat_file_vow
+    ADD CONSTRAINT cat_file_vow_header_id_tx_idx_log_idx_key UNIQUE (header_id, tx_idx, log_idx);
 
 
 --
--- Name: cat_file_pit_vow cat_file_pit_vow_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: cat_file_vow cat_file_vow_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
-ALTER TABLE ONLY maker.cat_file_pit_vow
-    ADD CONSTRAINT cat_file_pit_vow_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY maker.cat_file_vow
+    ADD CONSTRAINT cat_file_vow_pkey PRIMARY KEY (id);
 
 
 --
@@ -5079,11 +5079,11 @@ ALTER TABLE ONLY maker.cat_file_flip
 
 
 --
--- Name: cat_file_pit_vow cat_file_pit_vow_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+-- Name: cat_file_vow cat_file_vow_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
-ALTER TABLE ONLY maker.cat_file_pit_vow
-    ADD CONSTRAINT cat_file_pit_vow_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+ALTER TABLE ONLY maker.cat_file_vow
+    ADD CONSTRAINT cat_file_vow_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
 
 
 --
