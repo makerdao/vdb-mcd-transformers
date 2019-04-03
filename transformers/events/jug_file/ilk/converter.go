@@ -17,6 +17,7 @@
 package ilk
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"math/big"
@@ -39,9 +40,9 @@ func (JugFileIlkConverter) ToModels(ethLogs []types.Log) ([]interface{}, error) 
 		}
 
 		ilk := shared.GetHexWithoutPrefix(ethLog.Topics[2].Bytes())
-		what := shared.GetHexWithoutPrefix(ethLog.Topics[3].Bytes())
-		dataBytes := ethLog.Data[len(ethLog.Data)-constants.DataItemLength:]
-		data := shared.ConvertToRay(big.NewInt(0).SetBytes(dataBytes).String())
+		what := string(bytes.Trim(ethLog.Topics[3].Bytes(), "\x00"))
+		dataBytes := shared.GetUpdatedLogNoteDataBytesAtIndex(-1, ethLog.Data)
+		data := big.NewInt(0).SetBytes(dataBytes).String()
 		raw, err := json.Marshal(ethLog)
 		if err != nil {
 			return nil, err
