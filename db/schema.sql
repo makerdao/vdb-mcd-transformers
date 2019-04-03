@@ -668,7 +668,6 @@ CREATE TABLE maker.bite (
     urn_id integer NOT NULL,
     ink numeric,
     art numeric,
-    iart numeric,
     tab numeric,
     nflip numeric,
     tx_idx integer NOT NULL,

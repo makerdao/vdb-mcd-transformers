@@ -5,7 +5,6 @@ CREATE TABLE maker.bite (
   urn_id    INTEGER NOT NULL REFERENCES maker.urns (id),
   ink       NUMERIC,
   art       NUMERIC,
-  iArt      NUMERIC,
   tab       NUMERIC,
   nflip     NUMERIC,
   tx_idx    INTEGER NOT NUll,
