@@ -39,7 +39,7 @@ WITH
 
   spot AS ( -- Get latest price update for ilk. Problematic from update frequency, slow query?
     SELECT DISTINCT ON (ilk_id) ilk_id, spot, block_number
-    FROM maker.pit_ilk_spot
+    FROM maker.vat_ilk_spot
     WHERE ilk_id = (SELECT ilk_id from urn where ilk = $1) AND block_number <= block_height
     ORDER BY ilk_id, block_number DESC
   ),

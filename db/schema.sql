@@ -160,7 +160,7 @@ WITH
 
   spots AS ( -- Get latest price update for ilk. Problematic from update frequency, slow query?
     SELECT DISTINCT ON (ilk_id) ilk_id, spot, block_number
-    FROM maker.pit_ilk_spot
+    FROM maker.vat_ilk_spot
     WHERE block_number <= block_height
     ORDER BY ilk_id, block_number DESC
   ),
@@ -577,7 +577,7 @@ WITH
 
   spot AS ( -- Get latest price update for ilk. Problematic from update frequency, slow query?
     SELECT DISTINCT ON (ilk_id) ilk_id, spot, block_number
-    FROM maker.pit_ilk_spot
+    FROM maker.vat_ilk_spot
     WHERE ilk_id = (SELECT ilk_id from urn where ilk = $1) AND block_number <= block_height
     ORDER BY ilk_id, block_number DESC
   ),
@@ -1714,167 +1714,6 @@ CREATE SEQUENCE maker.jug_vow_id_seq
 --
 
 ALTER SEQUENCE maker.jug_vow_id_seq OWNED BY maker.jug_vow.id;
-
-
---
--- Name: pit_drip; Type: TABLE; Schema: maker; Owner: -
---
-
-CREATE TABLE maker.pit_drip (
-    id integer NOT NULL,
-    block_number bigint,
-    block_hash text,
-    drip text
-);
-
-
---
--- Name: pit_drip_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
---
-
-CREATE SEQUENCE maker.pit_drip_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: pit_drip_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
---
-
-ALTER SEQUENCE maker.pit_drip_id_seq OWNED BY maker.pit_drip.id;
-
-
---
--- Name: pit_ilk_spot; Type: TABLE; Schema: maker; Owner: -
---
-
-CREATE TABLE maker.pit_ilk_spot (
-    id integer NOT NULL,
-    block_number bigint,
-    block_hash text,
-    ilk_id integer NOT NULL,
-    spot numeric NOT NULL
-);
-
-
---
--- Name: pit_ilk_spot_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
---
-
-CREATE SEQUENCE maker.pit_ilk_spot_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: pit_ilk_spot_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
---
-
-ALTER SEQUENCE maker.pit_ilk_spot_id_seq OWNED BY maker.pit_ilk_spot.id;
-
-
---
--- Name: pit_line; Type: TABLE; Schema: maker; Owner: -
---
-
-CREATE TABLE maker.pit_line (
-    id integer NOT NULL,
-    block_number bigint,
-    block_hash text,
-    line numeric NOT NULL
-);
-
-
---
--- Name: pit_line_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
---
-
-CREATE SEQUENCE maker.pit_line_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: pit_line_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
---
-
-ALTER SEQUENCE maker.pit_line_id_seq OWNED BY maker.pit_line.id;
-
-
---
--- Name: pit_live; Type: TABLE; Schema: maker; Owner: -
---
-
-CREATE TABLE maker.pit_live (
-    id integer NOT NULL,
-    block_number bigint,
-    block_hash text,
-    live numeric NOT NULL
-);
-
-
---
--- Name: pit_live_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
---
-
-CREATE SEQUENCE maker.pit_live_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: pit_live_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
---
-
-ALTER SEQUENCE maker.pit_live_id_seq OWNED BY maker.pit_live.id;
-
-
---
--- Name: pit_vat; Type: TABLE; Schema: maker; Owner: -
---
-
-CREATE TABLE maker.pit_vat (
-    id integer NOT NULL,
-    block_number bigint,
-    block_hash text,
-    vat text
-);
-
-
---
--- Name: pit_vat_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
---
-
-CREATE SEQUENCE maker.pit_vat_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: pit_vat_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
---
-
-ALTER SEQUENCE maker.pit_vat_id_seq OWNED BY maker.pit_vat.id;
 
 
 --
@@ -3912,41 +3751,6 @@ ALTER TABLE ONLY maker.jug_vow ALTER COLUMN id SET DEFAULT nextval('maker.jug_vo
 
 
 --
--- Name: pit_drip id; Type: DEFAULT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.pit_drip ALTER COLUMN id SET DEFAULT nextval('maker.pit_drip_id_seq'::regclass);
-
-
---
--- Name: pit_ilk_spot id; Type: DEFAULT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.pit_ilk_spot ALTER COLUMN id SET DEFAULT nextval('maker.pit_ilk_spot_id_seq'::regclass);
-
-
---
--- Name: pit_line id; Type: DEFAULT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.pit_line ALTER COLUMN id SET DEFAULT nextval('maker.pit_line_id_seq'::regclass);
-
-
---
--- Name: pit_live id; Type: DEFAULT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.pit_live ALTER COLUMN id SET DEFAULT nextval('maker.pit_live_id_seq'::regclass);
-
-
---
--- Name: pit_vat id; Type: DEFAULT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.pit_vat ALTER COLUMN id SET DEFAULT nextval('maker.pit_vat_id_seq'::regclass);
-
-
---
 -- Name: price_feeds id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
@@ -4661,46 +4465,6 @@ ALTER TABLE ONLY maker.jug_vat
 
 ALTER TABLE ONLY maker.jug_vow
     ADD CONSTRAINT jug_vow_pkey PRIMARY KEY (id);
-
-
---
--- Name: pit_drip pit_drip_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.pit_drip
-    ADD CONSTRAINT pit_drip_pkey PRIMARY KEY (id);
-
-
---
--- Name: pit_ilk_spot pit_ilk_spot_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.pit_ilk_spot
-    ADD CONSTRAINT pit_ilk_spot_pkey PRIMARY KEY (id);
-
-
---
--- Name: pit_line pit_line_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.pit_line
-    ADD CONSTRAINT pit_line_pkey PRIMARY KEY (id);
-
-
---
--- Name: pit_live pit_live_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.pit_live
-    ADD CONSTRAINT pit_live_pkey PRIMARY KEY (id);
-
-
---
--- Name: pit_vat pit_vat_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.pit_vat
-    ADD CONSTRAINT pit_vat_pkey PRIMARY KEY (id);
 
 
 --
@@ -5521,13 +5285,6 @@ ALTER TABLE ONLY maker.jug_ilk_tax
 
 
 --
---
-
-ALTER TABLE ONLY maker.pit_ilk_spot
-    ADD CONSTRAINT pit_ilk_spot_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id);
-
-
---
 -- Name: price_feeds price_feeds_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -5672,6 +5429,7 @@ ALTER TABLE ONLY maker.vat_ilk_dust
 
 
 --
+-- Name: vat_ilk_line vat_ilk_line_ilk_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.vat_ilk_line

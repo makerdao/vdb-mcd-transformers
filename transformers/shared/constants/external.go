@@ -49,7 +49,6 @@ func FlipperContractAddress() string { return getEnvironmentString("contract.add
 func FlopperContractAddress() string { return getEnvironmentString("contract.address.mcd_flop") }
 func JugContractAddress() string     { return getEnvironmentString("contract.address.MCD_JUG") }
 func PipEthContractAddress() string  { return getEnvironmentString("contract.address.PIP_ETH") }
-func PitContractAddress() string     { return getEnvironmentString("contract.address.pit") }
 func PipRepContractAddress() string  { return getEnvironmentString("contract.address.PIP_REP") }
 func VatContractAddress() string     { return getEnvironmentString("contract.address.vat") }
 func OldVatContractAddress() string  { return getEnvironmentString("contract.address.old_vat") }
