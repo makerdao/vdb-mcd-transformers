@@ -14,12 +14,17 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package repo
+package initializer
 
-type JugFileRepoModel struct {
-	What             string
-	Data             string
-	LogIndex         uint   `db:"log_idx"`
-	TransactionIndex uint   `db:"tx_idx"`
-	Raw              []byte `db:"raw_log"`
-}
+import (
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
+
+	"github.com/vulcanize/mcd_transformers/transformers/events/jug_file/base"
+)
+
+var EventTransformerInitializer transformer.EventTransformerInitializer = event.LogNoteTransformer{
+	Config:     base.GetJugFileBaseConfig(),
+	Converter:  &base.JugFileBaseConverter{},
+	Repository: &base.JugFileBaseRepository{},
+}.NewLogNoteTransformer

@@ -26,8 +26,8 @@
         "flip_kick",
         "flop_kick",
         "jug_drip",
+        "jug_file_base",
         "jug_file_ilk",
-        "jug_file_repo",
         "jug_file_vow",
         "price_feeds",
         "tend",
@@ -104,14 +104,14 @@
         repository = "github.com/vulcanize/mcd_transformers"
         migrations = "db/migrations"
         rank = "0"
-    [exporter.jug_file_ilk]
-        path = "transformers/events/jug_file/ilk/initializer"
+    [exporter.jug_file_base]
+        path = "transformers/events/jug_file/base/initializer"
         type = "eth_event"
         repository = "github.com/vulcanize/mcd_transformers"
         migrations = "db/migrations"
         rank = "0"
-    [exporter.jug_file_repo]
-        path = "transformers/events/jug_file/repo/initializer"
+    [exporter.jug_file_ilk]
+        path = "transformers/events/jug_file/ilk/initializer"
         type = "eth_event"
         repository = "github.com/vulcanize/mcd_transformers"
         migrations = "db/migrations"

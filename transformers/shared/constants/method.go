@@ -11,8 +11,8 @@ func flapKickMethod() string        { return GetSolidityFunctionSignature(Flappe
 func flipKickMethod() string        { return GetSolidityFunctionSignature(FlipperABI(), "Kick") }
 func flopKickMethod() string        { return GetSolidityFunctionSignature(FlopperABI(), "Kick") }
 func jugDripMethod() string         { return GetSolidityFunctionSignature(JugABI(), "drip") }
+func jugFileBaseMethod() string     { return "file(bytes32,uint256)" }
 func jugFileIlkMethod() string      { return "file(bytes32,bytes32,uint256)" }
-func jugFileRepoMethod() string     { return "file(bytes32,uint256)" }
 func jugFileVowMethod() string      { return "file(bytes32,bytes32)" }
 func logMedianPriceMethod() string {
 	return GetSolidityFunctionSignature(MedianizerABI(), "LogMedianPrice")

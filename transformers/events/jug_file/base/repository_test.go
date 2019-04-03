@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package repo_test
+package base_test
 
 import (
 	. "github.com/onsi/ginkgo"
@@ -26,16 +26,16 @@ import (
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 
 	"github.com/vulcanize/mcd_transformers/test_config"
-	"github.com/vulcanize/mcd_transformers/transformers/events/jug_file/repo"
+	"github.com/vulcanize/mcd_transformers/transformers/events/jug_file/base"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data/shared_behaviors"
 )
 
-var _ = Describe("Jug file repo repository", func() {
+var _ = Describe("Jug file base repository", func() {
 	var (
 		db                    *postgres.DB
-		jugFileRepoRepository repo.JugFileRepoRepository
+		jugFileBaseRepository base.JugFileBaseRepository
 		headerRepository      datastore.HeaderRepository
 	)
 
@@ -43,44 +43,44 @@ var _ = Describe("Jug file repo repository", func() {
 		db = test_config.NewTestDB(test_config.NewTestNode())
 		test_config.CleanTestDB(db)
 		headerRepository = repositories.NewHeaderRepository(db)
-		jugFileRepoRepository = repo.JugFileRepoRepository{}
-		jugFileRepoRepository.SetDB(db)
+		jugFileBaseRepository = base.JugFileBaseRepository{}
+		jugFileBaseRepository.SetDB(db)
 	})
 
 	Describe("Create", func() {
-		modelWithDifferentLogIdx := test_data.JugFileRepoModel
+		modelWithDifferentLogIdx := test_data.JugFileBaseModel
 		modelWithDifferentLogIdx.LogIndex++
 		inputs := shared_behaviors.CreateBehaviorInputs{
-			CheckedHeaderColumnName:  constants.JugFileRepoChecked,
-			LogEventTableName:        "maker.jug_file_repo",
-			TestModel:                test_data.JugFileRepoModel,
+			CheckedHeaderColumnName:  constants.JugFileBaseChecked,
+			LogEventTableName:        "maker.jug_file_base",
+			TestModel:                test_data.JugFileBaseModel,
 			ModelWithDifferentLogIdx: modelWithDifferentLogIdx,
-			Repository:               &jugFileRepoRepository,
+			Repository:               &jugFileBaseRepository,
 		}
 
 		shared_behaviors.SharedRepositoryCreateBehaviors(&inputs)
 
-		It("adds a jug file repo event", func() {
+		It("adds a jug file base event", func() {
 			headerID, err := headerRepository.CreateOrUpdateHeader(fakes.FakeHeader)
 			Expect(err).NotTo(HaveOccurred())
-			err = jugFileRepoRepository.Create(headerID, []interface{}{test_data.JugFileRepoModel})
+			err = jugFileBaseRepository.Create(headerID, []interface{}{test_data.JugFileBaseModel})
 
 			Expect(err).NotTo(HaveOccurred())
-			var jugFileRepo repo.JugFileRepoModel
-			err = db.Get(&jugFileRepo, `SELECT what, data, log_idx, tx_idx, raw_log FROM maker.jug_file_repo WHERE header_id = $1`, headerID)
+			var jugFileBase base.JugFileBaseModel
+			err = db.Get(&jugFileBase, `SELECT what, data, log_idx, tx_idx, raw_log FROM maker.jug_file_base WHERE header_id = $1`, headerID)
 			Expect(err).NotTo(HaveOccurred())
-			Expect(jugFileRepo.What).To(Equal(test_data.JugFileRepoModel.What))
-			Expect(jugFileRepo.Data).To(Equal(test_data.JugFileRepoModel.Data))
-			Expect(jugFileRepo.LogIndex).To(Equal(test_data.JugFileRepoModel.LogIndex))
-			Expect(jugFileRepo.TransactionIndex).To(Equal(test_data.JugFileRepoModel.TransactionIndex))
-			Expect(jugFileRepo.Raw).To(MatchJSON(test_data.JugFileRepoModel.Raw))
+			Expect(jugFileBase.What).To(Equal(test_data.JugFileBaseModel.What))
+			Expect(jugFileBase.Data).To(Equal(test_data.JugFileBaseModel.Data))
+			Expect(jugFileBase.LogIndex).To(Equal(test_data.JugFileBaseModel.LogIndex))
+			Expect(jugFileBase.TransactionIndex).To(Equal(test_data.JugFileBaseModel.TransactionIndex))
+			Expect(jugFileBase.Raw).To(MatchJSON(test_data.JugFileBaseModel.Raw))
 		})
 	})
 
 	Describe("MarkHeaderChecked", func() {
 		inputs := shared_behaviors.MarkedHeaderCheckedBehaviorInputs{
-			CheckedHeaderColumnName: constants.JugFileRepoChecked,
-			Repository:              &jugFileRepoRepository,
+			CheckedHeaderColumnName: constants.JugFileBaseChecked,
+			Repository:              &jugFileBaseRepository,
 		}
 
 		shared_behaviors.SharedRepositoryMarkHeaderCheckedBehaviors(&inputs)

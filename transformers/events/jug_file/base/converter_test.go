@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package repo_test
+package base_test
 
 import (
 	. "github.com/onsi/ginkgo"
@@ -23,13 +23,13 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 
-	"github.com/vulcanize/mcd_transformers/transformers/events/jug_file/repo"
+	"github.com/vulcanize/mcd_transformers/transformers/events/jug_file/base"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
-var _ = Describe("Jug file repo converter", func() {
+var _ = Describe("Jug file base converter", func() {
 	It("returns err if log missing topics", func() {
-		converter := repo.JugFileRepoConverter{}
+		converter := base.JugFileBaseConverter{}
 		badLog := types.Log{
 			Topics: []common.Hash{{}},
 			Data:   []byte{1, 1, 1, 1, 1},
@@ -41,12 +41,12 @@ var _ = Describe("Jug file repo converter", func() {
 	})
 
 	It("converts a log to a model", func() {
-		converter := repo.JugFileRepoConverter{}
+		converter := base.JugFileBaseConverter{}
 
-		models, err := converter.ToModels([]types.Log{test_data.EthJugFileRepoLog})
+		models, err := converter.ToModels([]types.Log{test_data.EthJugFileBaseLog})
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(len(models)).To(Equal(1))
-		Expect(models[0].(repo.JugFileRepoModel)).To(Equal(test_data.JugFileRepoModel))
+		Expect(models[0].(base.JugFileBaseModel)).To(Equal(test_data.JugFileBaseModel))
 	})
 })

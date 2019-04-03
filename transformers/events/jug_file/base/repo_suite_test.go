@@ -14,21 +14,22 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package repo
+package base_test
 
 import (
-	shared_t "github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
+	log "github.com/sirupsen/logrus"
+	"io/ioutil"
+	"testing"
 
-	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 )
 
-func GetJugFileRepoConfig() shared_t.EventTransformerConfig {
-	return shared_t.EventTransformerConfig{
-		TransformerName:     constants.JugFileRepoLabel,
-		ContractAddresses:   []string{constants.JugContractAddress()},
-		ContractAbi:         constants.JugABI(),
-		Topic:               constants.GetJugFileRepoSignature(),
-		StartingBlockNumber: constants.JugDeploymentBlock(),
-		EndingBlockNumber:   -1,
-	}
+func TestBase(t *testing.T) {
+	RegisterFailHandler(Fail)
+	RunSpecs(t, "JugFileBase Suite")
 }
+
+var _ = BeforeSuite(func() {
+	log.SetOutput(ioutil.Discard)
+})

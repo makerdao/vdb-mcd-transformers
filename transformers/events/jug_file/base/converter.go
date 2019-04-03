@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package repo
+package base
 
 import (
 	"bytes"
@@ -25,9 +25,9 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 )
 
-type JugFileRepoConverter struct{}
+type JugFileBaseConverter struct{}
 
-func (JugFileRepoConverter) ToModels(ethLogs []types.Log) ([]interface{}, error) {
+func (JugFileBaseConverter) ToModels(ethLogs []types.Log) ([]interface{}, error) {
 	var models []interface{}
 	for _, ethLog := range ethLogs {
 		err := verifyLog(ethLog)
@@ -42,7 +42,7 @@ func (JugFileRepoConverter) ToModels(ethLogs []types.Log) ([]interface{}, error)
 			return nil, err
 		}
 
-		model := JugFileRepoModel{
+		model := JugFileBaseModel{
 			What:             what,
 			Data:             data,
 			LogIndex:         ethLog.Index,
