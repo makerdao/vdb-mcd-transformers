@@ -21,8 +21,8 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/vulcanize/mcd_transformers/transformers/events/jug_file/base"
 	ilk2 "github.com/vulcanize/mcd_transformers/transformers/events/jug_file/ilk"
-	"github.com/vulcanize/mcd_transformers/transformers/events/jug_file/repo"
 	"github.com/vulcanize/mcd_transformers/transformers/events/jug_file/vow"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 	"math/big"
@@ -55,10 +55,10 @@ var JugFileIlkModel = ilk2.JugFileIlkModel{
 	Raw:              rawJugFileIlkLog,
 }
 
-var EthJugFileRepoLog = types.Log{
+var EthJugFileBaseLog = types.Log{
 	Address: common.HexToAddress(KovanJugContractAddress),
 	Topics: []common.Hash{
-		common.HexToHash(KovanJugFileRepoSignature),
+		common.HexToHash(KovanJugFileBaseSignature),
 		common.HexToHash("0x00000000000000000000000064d922894153be9eef7b7218dc565d1d0ce2a092"),
 		common.HexToHash("0x66616b6520776861740000000000000000000000000000000000000000000000"),
 		common.HexToHash("0x000000000000000000000000000000000000000000000000000000000000007b"),
@@ -72,13 +72,13 @@ var EthJugFileRepoLog = types.Log{
 	Removed:     false,
 }
 
-var rawJugFileRepoLog, _ = json.Marshal(EthJugFileRepoLog)
-var JugFileRepoModel = repo.JugFileRepoModel{
+var rawJugFileBaseLog, _ = json.Marshal(EthJugFileBaseLog)
+var JugFileBaseModel = base.JugFileBaseModel{
 	What:             "fake what",
 	Data:             big.NewInt(123).String(),
-	LogIndex:         EthJugFileRepoLog.Index,
-	TransactionIndex: EthJugFileRepoLog.TxIndex,
-	Raw:              rawJugFileRepoLog,
+	LogIndex:         EthJugFileBaseLog.Index,
+	TransactionIndex: EthJugFileBaseLog.TxIndex,
+	Raw:              rawJugFileBaseLog,
 }
 
 var EthJugFileVowLog = types.Log{

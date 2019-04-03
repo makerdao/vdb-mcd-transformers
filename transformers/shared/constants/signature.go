@@ -11,7 +11,7 @@ func GetFlipKickSignature() string           { return GetEventTopicZero(flipKick
 func GetFlopKickSignature() string           { return GetEventTopicZero(flopKickMethod()) }
 func GetJugDripSignature() string            { return GetLogNoteTopicZero(jugDripMethod()) }
 func GetJugFileIlkSignature() string         { return GetLogNoteTopicZero(jugFileIlkMethod()) }
-func GetJugFileRepoSignature() string        { return GetLogNoteTopicZero(jugFileRepoMethod()) }
+func GetJugFileBaseSignature() string        { return GetLogNoteTopicZero(jugFileBaseMethod()) }
 func GetJugFileVowSignature() string         { return GetLogNoteTopicZero(jugFileVowMethod()) }
 func GetLogMedianPriceSignature() string     { return GetEventTopicZero(logMedianPriceMethod()) }
 func GetTendFunctionSignature() string       { return GetLogNoteTopicZero(tendMethod()) }

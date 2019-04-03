@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package repo
+package base
 
 import (
 	"fmt"
@@ -28,30 +28,30 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
-type JugFileRepoRepository struct {
+type JugFileBaseRepository struct {
 	db *postgres.DB
 }
 
-func (repository JugFileRepoRepository) Create(headerID int64, models []interface{}) error {
+func (repository JugFileBaseRepository) Create(headerID int64, models []interface{}) error {
 	tx, dBaseErr := repository.db.Beginx()
 	if dBaseErr != nil {
 		return dBaseErr
 	}
 
 	for _, model := range models {
-		repo, ok := model.(JugFileRepoModel)
+		baseModel, ok := model.(JugFileBaseModel)
 		if !ok {
 			rollbackErr := tx.Rollback()
 			if rollbackErr != nil {
 				log.Error("failed to rollback ", rollbackErr)
 			}
-			return fmt.Errorf("model of type %T, not %T", model, JugFileRepoModel{})
+			return fmt.Errorf("model of type %T, not %T", model, JugFileBaseModel{})
 		}
 
 		_, execErr := tx.Exec(
-			`INSERT into maker.jug_file_repo (header_id, what, data, log_idx, tx_idx, raw_log)
+			`INSERT into maker.jug_file_base (header_id, what, data, log_idx, tx_idx, raw_log)
         	VALUES($1, $2, $3::NUMERIC, $4, $5, $6)`,
-			headerID, repo.What, repo.Data, repo.LogIndex, repo.TransactionIndex, repo.Raw,
+			headerID, baseModel.What, baseModel.Data, baseModel.LogIndex, baseModel.TransactionIndex, baseModel.Raw,
 		)
 
 		if execErr != nil {
@@ -63,7 +63,7 @@ func (repository JugFileRepoRepository) Create(headerID int64, models []interfac
 		}
 	}
 
-	checkHeaderErr := repo.MarkHeaderCheckedInTransaction(headerID, tx, constants.JugFileRepoChecked)
+	checkHeaderErr := repo.MarkHeaderCheckedInTransaction(headerID, tx, constants.JugFileBaseChecked)
 	if checkHeaderErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
@@ -75,18 +75,18 @@ func (repository JugFileRepoRepository) Create(headerID int64, models []interfac
 	return tx.Commit()
 }
 
-func (repository JugFileRepoRepository) MarkHeaderChecked(headerID int64) error {
-	return repo.MarkHeaderChecked(headerID, repository.db, constants.JugFileRepoChecked)
+func (repository JugFileBaseRepository) MarkHeaderChecked(headerID int64) error {
+	return repo.MarkHeaderChecked(headerID, repository.db, constants.JugFileBaseChecked)
 }
 
-func (repository JugFileRepoRepository) MissingHeaders(startingBlockNumber, endingBlockNumber int64) ([]core.Header, error) {
-	return repo.MissingHeaders(startingBlockNumber, endingBlockNumber, repository.db, constants.JugFileRepoChecked)
+func (repository JugFileBaseRepository) MissingHeaders(startingBlockNumber, endingBlockNumber int64) ([]core.Header, error) {
+	return repo.MissingHeaders(startingBlockNumber, endingBlockNumber, repository.db, constants.JugFileBaseChecked)
 }
 
-func (repository JugFileRepoRepository) RecheckHeaders(startingBlockNumber, endingBlockNumber int64) ([]core.Header, error) {
-	return repo.RecheckHeaders(startingBlockNumber, endingBlockNumber, repository.db, constants.JugFileRepoChecked)
+func (repository JugFileBaseRepository) RecheckHeaders(startingBlockNumber, endingBlockNumber int64) ([]core.Header, error) {
+	return repo.RecheckHeaders(startingBlockNumber, endingBlockNumber, repository.db, constants.JugFileBaseChecked)
 }
 
-func (repository *JugFileRepoRepository) SetDB(db *postgres.DB) {
+func (repository *JugFileBaseRepository) SetDB(db *postgres.DB) {
 	repository.db = db
 }

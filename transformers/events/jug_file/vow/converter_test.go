@@ -27,7 +27,7 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
-var _ = Describe("Jug file repo converter", func() {
+var _ = Describe("Jug file base converter", func() {
 	It("returns err if log missing topics", func() {
 		converter := vow.JugFileVowConverter{}
 		badLog := types.Log{
