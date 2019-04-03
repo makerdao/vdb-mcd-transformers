@@ -7,7 +7,6 @@ import (
 	"github.com/vulcanize/mcd_transformers/test_config"
 	helper "github.com/vulcanize/mcd_transformers/transformers/component_tests/queries/test_helpers"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
-	"github.com/vulcanize/mcd_transformers/transformers/storage/pit"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/vat"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
@@ -22,7 +21,6 @@ var _ = Describe("Urn history query", func() {
 	var (
 		db         *postgres.DB
 		vatRepo    vat.VatStorageRepository
-		pitRepo    pit.PitStorageRepository
 		headerRepo repositories.HeaderRepository
 		fakeUrn    string
 		fakeIlk    string
@@ -33,8 +31,6 @@ var _ = Describe("Urn history query", func() {
 		headerRepo = repositories.NewHeaderRepository(db)
 		vatRepo = vat.VatStorageRepository{}
 		vatRepo.SetDB(db)
-		pitRepo = pit.PitStorageRepository{}
-		pitRepo.SetDB(db)
 
 		fakeIlk = test_data.RandomString(5)
 		fakeUrn = test_data.RandomString(5)
@@ -45,7 +41,7 @@ var _ = Describe("Urn history query", func() {
 		timestampOne := rand.Int()
 		urnSetupData := helper.GetUrnSetupData(blockOne, timestampOne)
 		urnMetadata := helper.GetUrnMetadata(fakeIlk, fakeUrn)
-		helper.CreateUrn(urnSetupData, urnMetadata, vatRepo, pitRepo, headerRepo)
+		helper.CreateUrn(urnSetupData, urnMetadata, vatRepo, headerRepo)
 
 		inkBlockOne := urnSetupData.Ink
 		artBlockOne := urnSetupData.Art

@@ -68,17 +68,17 @@ var _ = Describe("Vat file ilk repository", func() {
 			err = vatFileIlkRepository.Create(headerID, []interface{}{test_data.VatFileIlkSpotModel})
 
 			Expect(err).NotTo(HaveOccurred())
-			var dbPitFile ilk.VatFileIlkModel
-			err = db.Get(&dbPitFile, `SELECT ilk_id, what, data, log_idx, tx_idx, raw_log FROM maker.vat_file_ilk WHERE header_id = $1`, headerID)
+			var dbVatFile ilk.VatFileIlkModel
+			err = db.Get(&dbVatFile, `SELECT ilk_id, what, data, log_idx, tx_idx, raw_log FROM maker.vat_file_ilk WHERE header_id = $1`, headerID)
 			Expect(err).NotTo(HaveOccurred())
 			ilkID, err := shared.GetOrCreateIlk(test_data.VatFileIlkSpotModel.Ilk, db)
 			Expect(err).NotTo(HaveOccurred())
-			Expect(dbPitFile.Ilk).To(Equal(strconv.Itoa(ilkID)))
-			Expect(dbPitFile.What).To(Equal(test_data.VatFileIlkSpotModel.What))
-			Expect(dbPitFile.Data).To(Equal(test_data.VatFileIlkSpotModel.Data))
-			Expect(dbPitFile.LogIndex).To(Equal(test_data.VatFileIlkSpotModel.LogIndex))
-			Expect(dbPitFile.TransactionIndex).To(Equal(test_data.VatFileIlkSpotModel.TransactionIndex))
-			Expect(dbPitFile.Raw).To(MatchJSON(test_data.VatFileIlkSpotModel.Raw))
+			Expect(dbVatFile.Ilk).To(Equal(strconv.Itoa(ilkID)))
+			Expect(dbVatFile.What).To(Equal(test_data.VatFileIlkSpotModel.What))
+			Expect(dbVatFile.Data).To(Equal(test_data.VatFileIlkSpotModel.Data))
+			Expect(dbVatFile.LogIndex).To(Equal(test_data.VatFileIlkSpotModel.LogIndex))
+			Expect(dbVatFile.TransactionIndex).To(Equal(test_data.VatFileIlkSpotModel.TransactionIndex))
+			Expect(dbVatFile.Raw).To(MatchJSON(test_data.VatFileIlkSpotModel.Raw))
 		})
 	})
 

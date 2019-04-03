@@ -66,8 +66,8 @@ var eventConfig = config.Plugin{
 var storageConfig = config.Plugin{
 	Home: "github.com/vulcanize/mcd_transformers",
 	Transformers: map[string]config.Transformer{
-		"pit": {
-			Path:           "transformers/storage/pit/initializer",
+		"jug": {
+			Path:           "transformers/storage/jug/initializer",
 			Type:           config.EthStorage,
 			MigrationPath:  "db/migrations",
 			RepositoryPath: "github.com/vulcanize/mcd_transformers",
@@ -99,8 +99,8 @@ var combinedConfig = config.Plugin{
 			MigrationPath:  "db/migrations",
 			RepositoryPath: "github.com/vulcanize/mcd_transformers",
 		},
-		"pit": {
-			Path:           "transformers/storage/pit/initializer",
+		"jug": {
+			Path:           "transformers/storage/jug/initializer",
 			Type:           config.EthStorage,
 			MigrationPath:  "db/migrations",
 			RepositoryPath: "github.com/vulcanize/mcd_transformers",
@@ -239,7 +239,7 @@ var _ = Describe("Plugin test", func() {
 		})
 		Describe("GenerateTransformerPlugin", func() {
 
-			It("It bundles the specified  StorageTransformerInitializers into a Exporter object and creates .so", func() {
+			It("It bundles the specified StorageTransformerInitializers into a Exporter object and creates .so", func() {
 				plug, err := plugin.Open(soPath)
 				Expect(err).ToNot(HaveOccurred())
 				symExporter, err := plug.Lookup("Exporter")
@@ -289,7 +289,7 @@ var _ = Describe("Plugin test", func() {
 		})
 		Describe("GenerateTransformerPlugin", func() {
 
-			It("It bundles the specified  TransformerInitializers and StorageTransformerInitializers into a Exporter object and creates .so", func() {
+			It("It bundles the specified TransformerInitializers and StorageTransformerInitializers into a Exporter object and creates .so", func() {
 				plug, err := plugin.Open(soPath)
 				Expect(err).ToNot(HaveOccurred())
 				symExporter, err := plug.Lookup("Exporter")

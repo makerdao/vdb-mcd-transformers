@@ -6,7 +6,6 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/cat"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/jug"
-	"github.com/vulcanize/mcd_transformers/transformers/storage/pit"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/vat"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
@@ -157,9 +156,7 @@ func GetExpectedRatio(ink, spot, art, rate int) float64 {
 }
 
 // Creates urn by creating necessary state diffs and the corresponding header
-func CreateUrn(setupData UrnSetupData, metadata UrnMetadata, vatRepo vat.VatStorageRepository,
-	pitRepo pit.PitStorageRepository, headerRepo repositories.HeaderRepository) {
-
+func CreateUrn(setupData UrnSetupData, metadata UrnMetadata, vatRepo vat.VatStorageRepository, headerRepo repositories.HeaderRepository) {
 	blockNo := int(setupData.Header.BlockNumber)
 	hash := setupData.Header.Hash
 
@@ -170,7 +167,7 @@ func CreateUrn(setupData UrnSetupData, metadata UrnMetadata, vatRepo vat.VatStor
 	err = vatRepo.Create(blockNo, hash, metadata.UrnArt, strconv.Itoa(setupData.Art))
 	Expect(err).NotTo(HaveOccurred())
 
-	err = pitRepo.Create(blockNo, hash, metadata.IlkSpot, strconv.Itoa(setupData.Spot))
+	err = vatRepo.Create(blockNo, hash, metadata.IlkSpot, strconv.Itoa(setupData.Spot))
 	Expect(err).NotTo(HaveOccurred())
 
 	err = vatRepo.Create(blockNo, hash, metadata.IlkRate, strconv.Itoa(setupData.Rate))
@@ -209,7 +206,7 @@ func GetUrnMetadata(ilk, urn string) UrnMetadata {
 			map[utils.Key]string{constants.Ilk: ilk, constants.Guy: urn}, utils.Uint256),
 		UrnArt: utils.GetStorageValueMetadata(vat.UrnArt,
 			map[utils.Key]string{constants.Ilk: ilk, constants.Guy: urn}, utils.Uint256),
-		IlkSpot: utils.GetStorageValueMetadata(pit.IlkSpot,
+		IlkSpot: utils.GetStorageValueMetadata(vat.IlkSpot,
 			map[utils.Key]string{constants.Ilk: ilk}, utils.Uint256),
 		IlkRate: utils.GetStorageValueMetadata(vat.IlkRate,
 			map[utils.Key]string{constants.Ilk: ilk}, utils.Uint256),

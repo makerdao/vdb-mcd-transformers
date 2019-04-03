@@ -69,21 +69,21 @@ var _ = Describe("Event signature generator", func() {
 			Expect(expected).To(Equal(actual))
 		})
 
-		It("generates pit file event signature for overloaded function with three arguments", func() {
+		It("generates vat file event signature for overloaded function with three arguments", func() {
 			expected := "0x1a0b287e00000000000000000000000000000000000000000000000000000000"
 			actual := constants.GetLogNoteTopicZero("file(bytes32,bytes32,uint256)")
 
 			Expect(expected).To(Equal(actual))
 		})
 
-		It("generates pit file event signature for overloaded function with two arguments", func() {
+		It("generates vat file event signature for overloaded function with two arguments", func() {
 			expected := "0x29ae811400000000000000000000000000000000000000000000000000000000"
 			actual := constants.GetLogNoteTopicZero("file(bytes32,uint256)")
 
 			Expect(expected).To(Equal(actual))
 		})
 
-		It("generates pit file event signature for overloaded function with two different arguments", func() {
+		It("generates vat file event signature for overloaded function with two different arguments", func() {
 			expected := "0xd4e8be8300000000000000000000000000000000000000000000000000000000"
 			actual := constants.GetLogNoteTopicZero("file(bytes32,address)")
 
@@ -145,15 +145,6 @@ var _ = Describe("Event signature generator", func() {
 				It("gets the file (vow) method signature", func() {
 					expected := "file(bytes32,bytes32)"
 					actual := constants.GetSolidityFunctionSignature(test_data.KovanJugABI, "file")
-
-					Expect(expected).To(Equal(actual))
-				})
-			})
-
-			Describe("from the pit contract", func() {
-				It("gets the file method signature", func() {
-					expected := "file(bytes32,address)"
-					actual := constants.GetSolidityFunctionSignature(test_data.KovanPitABI, "file")
 
 					Expect(expected).To(Equal(actual))
 				})

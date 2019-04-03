@@ -6,7 +6,6 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/vulcanize/mcd_transformers/test_config"
 	helper "github.com/vulcanize/mcd_transformers/transformers/component_tests/queries/test_helpers"
-	"github.com/vulcanize/mcd_transformers/transformers/storage/pit"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/vat"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
@@ -21,7 +20,6 @@ var _ = Describe("Urn view", func() {
 	var (
 		db         *postgres.DB
 		vatRepo    vat.VatStorageRepository
-		pitRepo    pit.PitStorageRepository
 		headerRepo repositories.HeaderRepository
 		urnOne     string
 		urnTwo     string
@@ -35,8 +33,6 @@ var _ = Describe("Urn view", func() {
 		test_config.CleanTestDB(db)
 		vatRepo = vat.VatStorageRepository{}
 		vatRepo.SetDB(db)
-		pitRepo = pit.PitStorageRepository{}
-		pitRepo.SetDB(db)
 		headerRepo = repositories.NewHeaderRepository(db)
 		rand.Seed(time.Now().UnixNano())
 
@@ -52,7 +48,7 @@ var _ = Describe("Urn view", func() {
 
 		setupData := helper.GetUrnSetupData(fakeBlockNo, fakeTimestamp)
 		metadata := helper.GetUrnMetadata(ilkOne, urnOne)
-		helper.CreateUrn(setupData, metadata, vatRepo, pitRepo, headerRepo)
+		helper.CreateUrn(setupData, metadata, vatRepo, headerRepo)
 
 		var actualUrn helper.UrnState
 		err = db.Get(&actualUrn, `SELECT urnId, ilkId, blockHeight, ink, art, ratio, safe, created, updated
@@ -82,7 +78,7 @@ var _ = Describe("Urn view", func() {
 
 		urnOneMetadata := helper.GetUrnMetadata(ilkOne, urnOne)
 		urnOneSetupData := helper.GetUrnSetupData(blockOne, timestampOne)
-		helper.CreateUrn(urnOneSetupData, urnOneMetadata, vatRepo, pitRepo, headerRepo)
+		helper.CreateUrn(urnOneSetupData, urnOneMetadata, vatRepo, headerRepo)
 		expectedRatioOne := helper.GetExpectedRatio(urnOneSetupData.Ink, urnOneSetupData.Spot, urnOneSetupData.Art, urnOneSetupData.Rate)
 
 		expectedUrnOne := helper.UrnState{
@@ -102,7 +98,7 @@ var _ = Describe("Urn view", func() {
 
 		urnTwoMetadata := helper.GetUrnMetadata(ilkTwo, urnTwo)
 		urnTwoSetupData := helper.GetUrnSetupData(blockTwo, timestampTwo)
-		helper.CreateUrn(urnTwoSetupData, urnTwoMetadata, vatRepo, pitRepo, headerRepo)
+		helper.CreateUrn(urnTwoSetupData, urnTwoMetadata, vatRepo, headerRepo)
 		expectedRatioTwo := helper.GetExpectedRatio(urnTwoSetupData.Ink, urnTwoSetupData.Spot, urnTwoSetupData.Art, urnTwoSetupData.Rate)
 
 		expectedUrnTwo := helper.UrnState{
@@ -131,7 +127,7 @@ var _ = Describe("Urn view", func() {
 		metadata := helper.GetUrnMetadata(ilkOne, urnOne)
 		setupData := helper.GetUrnSetupData(block, timestamp)
 
-		helper.CreateUrn(setupData, metadata, vatRepo, pitRepo, headerRepo)
+		helper.CreateUrn(setupData, metadata, vatRepo, headerRepo)
 		_, err = db.Exec(`DELETE FROM headers`)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -158,7 +154,7 @@ var _ = Describe("Urn view", func() {
 			timestampOne = rand.Int()
 			setupDataOne = helper.GetUrnSetupData(blockOne, timestampOne)
 			metadata = helper.GetUrnMetadata(ilkOne, urnOne)
-			helper.CreateUrn(setupDataOne, metadata, vatRepo, pitRepo, headerRepo)
+			helper.CreateUrn(setupDataOne, metadata, vatRepo, headerRepo)
 		})
 
 		It("gets urn state as of block one", func() {
@@ -224,7 +220,7 @@ var _ = Describe("Urn view", func() {
 		setupData := helper.GetUrnSetupData(block, 1)
 		setupData.Art = 0
 		metadata := helper.GetUrnMetadata(ilkOne, urnOne)
-		helper.CreateUrn(setupData, metadata, vatRepo, pitRepo, headerRepo)
+		helper.CreateUrn(setupData, metadata, vatRepo, headerRepo)
 
 		fakeHeader := fakes.GetFakeHeader(int64(block))
 		_, err = headerRepo.CreateOrUpdateHeader(fakeHeader)
