@@ -227,7 +227,7 @@ var _ = Describe("Event signature generator", func() {
 
 		Describe("it handles events", func() {
 			It("gets the Bite event signature", func() {
-				expected := "Bite(bytes32,bytes32,uint256,uint256,uint256,uint256,uint256)"
+				expected := "Bite(bytes32,bytes32,uint256,uint256,uint256,uint256)"
 				actual := constants.GetSolidityFunctionSignature(test_data.KovanCatABI, "Bite")
 
 				Expect(expected).To(Equal(actual))
