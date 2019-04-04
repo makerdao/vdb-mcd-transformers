@@ -69,7 +69,7 @@ func (repository *MakerStorageRepository) GetMaxFlip() (*big.Int, error) {
 func (repository *MakerStorageRepository) GetGemKeys() ([]Urn, error) {
 	var gems []Urn
 	err := repository.db.Select(&gems, `
-		SELECT DISTINCT ilks.ilk, slip.guy 
+		SELECT DISTINCT ilks.ilk, slip.usr AS guy
 		FROM maker.vat_slip slip
 		INNER JOIN maker.ilks ilks ON ilks.id = slip.ilk_id
 		UNION

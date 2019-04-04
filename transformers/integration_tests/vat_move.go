@@ -34,7 +34,7 @@ import (
 
 var _ = Describe("VatMove LogNoteTransformer", func() {
 	It("transforms VatMove log events", func() {
-		blockNumber := int64(10581223)
+		blockNumber := int64(10670187)
 		config := transformer.EventTransformerConfig{
 			TransformerName:     constants.VatMoveLabel,
 			ContractAddresses:   []string{test_data.KovanVatContractAddress},
@@ -77,13 +77,13 @@ var _ = Describe("VatMove LogNoteTransformer", func() {
 
 		Expect(len(dbResults)).To(Equal(1))
 		dbResult := dbResults[0]
-		Expect(dbResult.Src).To(Equal("84271a423a68d9a3904fe8107185d9ff58a6497400000000000000000000001e"))
-		Expect(dbResult.Dst).To(Equal("eb43a43a6460288abb60ccf337377f505c27d46e000000000000000000000000"))
+		Expect(dbResult.Src).To(Equal("cba1bbad5fe83cf0bc96028ae3ed8bb98b56986d00000000000000000000006d"))
+		Expect(dbResult.Dst).To(Equal("4abad252c30380d1d46ce3b5c52cc108b8c778c7000000000000000000000000"))
 		Expect(dbResult.Rad).To(Equal("1000000000000000000000000000000000000000000000"))
 	})
 
 	It("rechecks vat move event", func() {
-		blockNumber := int64(10581223)
+		blockNumber := int64(10670187)
 		config := transformer.EventTransformerConfig{
 			TransformerName:     constants.VatMoveLabel,
 			ContractAddresses:   []string{test_data.KovanVatContractAddress},
@@ -139,8 +139,8 @@ var _ = Describe("VatMove LogNoteTransformer", func() {
 
 		Expect(len(dbResults)).To(Equal(1))
 		dbResult := dbResults[0]
-		Expect(dbResult.Src).To(Equal("84271a423a68d9a3904fe8107185d9ff58a6497400000000000000000000001e"))
-		Expect(dbResult.Dst).To(Equal("eb43a43a6460288abb60ccf337377f505c27d46e000000000000000000000000"))
+		Expect(dbResult.Src).To(Equal("cba1bbad5fe83cf0bc96028ae3ed8bb98b56986d00000000000000000000006d"))
+		Expect(dbResult.Dst).To(Equal("4abad252c30380d1d46ce3b5c52cc108b8c778c7000000000000000000000000"))
 		Expect(dbResult.Rad).To(Equal("1000000000000000000000000000000000000000000000"))
 	})
 })

@@ -447,16 +447,16 @@ func insertVatMove(src, dst string, blockNumber int64, db *postgres.DB) {
 	Expect(execErr).NotTo(HaveOccurred())
 }
 
-func insertVatSlip(ilk, guy string, blockNumber int64, db *postgres.DB) {
+func insertVatSlip(ilk, usr string, blockNumber int64, db *postgres.DB) {
 	headerRepository := repositories.NewHeaderRepository(db)
 	headerID, err := headerRepository.CreateOrUpdateHeader(fakes.GetFakeHeader(blockNumber))
 	Expect(err).NotTo(HaveOccurred())
 	ilkID, err := shared.GetOrCreateIlk(ilk, db)
 	Expect(err).NotTo(HaveOccurred())
 	_, execErr := db.Exec(
-		`INSERT INTO maker.vat_slip (header_id, ilk_id, guy, log_idx, tx_idx)
+		`INSERT INTO maker.vat_slip (header_id, ilk_id, usr, log_idx, tx_idx)
 			VALUES($1, $2, $3, $4, $5)`,
-		headerID, ilkID, guy, 0, 0,
+		headerID, ilkID, usr, 0, 0,
 	)
 	Expect(execErr).NotTo(HaveOccurred())
 }

@@ -5,7 +5,7 @@ CREATE TABLE maker.vat_flux (
   ilk_id        INTEGER NOT NULL REFERENCES maker.ilks (id),
   src           TEXT,
   dst           TEXT,
-  rad           numeric,
+  wad           numeric,
   tx_idx        INTEGER NOT NULL,
   log_idx       INTEGER NOT NULL,
   raw_log       JSONB,

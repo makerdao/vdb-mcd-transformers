@@ -2093,7 +2093,7 @@ CREATE TABLE maker.vat_flux (
     ilk_id integer NOT NULL,
     src text,
     dst text,
-    rad numeric,
+    wad numeric,
     tx_idx integer NOT NULL,
     log_idx integer NOT NULL,
     raw_log jsonb
@@ -2641,7 +2641,7 @@ CREATE TABLE maker.vat_slip (
     id integer NOT NULL,
     header_id integer NOT NULL,
     ilk_id integer NOT NULL,
-    guy text,
+    usr text,
     rad numeric,
     tx_idx integer NOT NULL,
     log_idx integer NOT NULL,

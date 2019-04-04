@@ -3,7 +3,7 @@ CREATE TABLE maker.vat_slip (
   id            SERIAL PRIMARY KEY,
   header_id     INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
   ilk_id        INTEGER NOT NULL REFERENCES maker.ilks (id),
-  guy           TEXT,
+  usr           TEXT,
   rad           NUMERIC,
   tx_idx        INTEGER NOT NULL,
   log_idx       INTEGER NOT NULL,

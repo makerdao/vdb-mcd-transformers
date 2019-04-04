@@ -18,7 +18,7 @@ package vat_slip
 
 type VatSlipModel struct {
 	Ilk              string `db:"ilk_id"`
-	Guy              string
+	Usr              string
 	Rad              string
 	TransactionIndex uint   `db:"tx_idx"`
 	LogIndex         uint   `db:"log_idx"`

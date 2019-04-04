@@ -35,7 +35,7 @@ func (VatSlipConverter) ToModels(ethLogs []types.Log) ([]interface{}, error) {
 			return nil, err
 		}
 		ilk := shared.GetHexWithoutPrefix(ethLog.Topics[1].Bytes())
-		guy := shared.GetHexWithoutPrefix(ethLog.Topics[2].Bytes())
+		usr := shared.GetHexWithoutPrefix(ethLog.Topics[2].Bytes())
 		rad := ethLog.Topics[3].Big()
 
 		raw, err := json.Marshal(ethLog)
@@ -44,7 +44,7 @@ func (VatSlipConverter) ToModels(ethLogs []types.Log) ([]interface{}, error) {
 		}
 		model := VatSlipModel{
 			Ilk:              ilk,
-			Guy:              guy,
+			Usr:              usr,
 			Rad:              rad.String(),
 			TransactionIndex: ethLog.TxIndex,
 			LogIndex:         ethLog.Index,

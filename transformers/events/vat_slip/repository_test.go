@@ -53,12 +53,12 @@ var _ = Describe("Vat slip repository", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			var dbVatSlip vat_slip.VatSlipModel
-			err = db.Get(&dbVatSlip, `SELECT ilk_id, guy, rad, tx_idx, log_idx, raw_log FROM maker.vat_slip WHERE header_id = $1`, headerID)
+			err = db.Get(&dbVatSlip, `SELECT ilk_id, usr, rad, tx_idx, log_idx, raw_log FROM maker.vat_slip WHERE header_id = $1`, headerID)
 			Expect(err).NotTo(HaveOccurred())
 			ilkID, err := shared.GetOrCreateIlk(test_data.VatSlipModel.Ilk, db)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(dbVatSlip.Ilk).To(Equal(strconv.Itoa(ilkID)))
-			Expect(dbVatSlip.Guy).To(Equal(test_data.VatSlipModel.Guy))
+			Expect(dbVatSlip.Usr).To(Equal(test_data.VatSlipModel.Usr))
 			Expect(dbVatSlip.Rad).To(Equal(test_data.VatSlipModel.Rad))
 			Expect(dbVatSlip.TransactionIndex).To(Equal(test_data.VatSlipModel.TransactionIndex))
 			Expect(dbVatSlip.LogIndex).To(Equal(test_data.VatSlipModel.LogIndex))
