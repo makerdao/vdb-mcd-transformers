@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package pit_vow_test
+package vow_test
 
 import (
 	. "github.com/onsi/ginkgo"
@@ -26,61 +26,61 @@ import (
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 
 	"github.com/vulcanize/mcd_transformers/test_config"
-	"github.com/vulcanize/mcd_transformers/transformers/events/cat_file/pit_vow"
+	"github.com/vulcanize/mcd_transformers/transformers/events/cat_file/vow"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data/shared_behaviors"
 )
 
-var _ = Describe("Cat file pit vow repository", func() {
+var _ = Describe("Cat file vow repository", func() {
 	var (
-		catFilePitVowRepository pit_vow.CatFilePitVowRepository
-		db                      *postgres.DB
-		headerRepository        datastore.HeaderRepository
+		catFileVowRepository vow.CatFileVowRepository
+		db                   *postgres.DB
+		headerRepository     datastore.HeaderRepository
 	)
 
 	BeforeEach(func() {
 		db = test_config.NewTestDB(test_config.NewTestNode())
 		test_config.CleanTestDB(db)
 		headerRepository = repositories.NewHeaderRepository(db)
-		catFilePitVowRepository = pit_vow.CatFilePitVowRepository{}
-		catFilePitVowRepository.SetDB(db)
+		catFileVowRepository = vow.CatFileVowRepository{}
+		catFileVowRepository.SetDB(db)
 	})
 
 	Describe("Create", func() {
-		modelWithDifferentLogIdx := test_data.CatFilePitVowModel
+		modelWithDifferentLogIdx := test_data.CatFileVowModel
 		modelWithDifferentLogIdx.LogIndex++
 		inputs := shared_behaviors.CreateBehaviorInputs{
-			CheckedHeaderColumnName:  constants.CatFilePitVowChecked,
-			LogEventTableName:        "maker.cat_file_pit_vow",
-			TestModel:                test_data.CatFilePitVowModel,
+			CheckedHeaderColumnName:  constants.CatFileVowChecked,
+			LogEventTableName:        "maker.cat_file_vow",
+			TestModel:                test_data.CatFileVowModel,
 			ModelWithDifferentLogIdx: modelWithDifferentLogIdx,
-			Repository:               &catFilePitVowRepository,
+			Repository:               &catFileVowRepository,
 		}
 
 		shared_behaviors.SharedRepositoryCreateBehaviors(&inputs)
 
-		It("adds a cat file pit vow event", func() {
+		It("adds a cat file vow event", func() {
 			headerID, err := headerRepository.CreateOrUpdateHeader(fakes.FakeHeader)
 			Expect(err).NotTo(HaveOccurred())
-			err = catFilePitVowRepository.Create(headerID, []interface{}{test_data.CatFilePitVowModel})
+			err = catFileVowRepository.Create(headerID, []interface{}{test_data.CatFileVowModel})
 
 			Expect(err).NotTo(HaveOccurred())
-			var dbResult pit_vow.CatFilePitVowModel
-			err = db.Get(&dbResult, `SELECT what, data, tx_idx, log_idx, raw_log FROM maker.cat_file_pit_vow WHERE header_id = $1`, headerID)
+			var dbResult vow.CatFileVowModel
+			err = db.Get(&dbResult, `SELECT what, data, tx_idx, log_idx, raw_log FROM maker.cat_file_vow WHERE header_id = $1`, headerID)
 			Expect(err).NotTo(HaveOccurred())
-			Expect(dbResult.What).To(Equal(test_data.CatFilePitVowModel.What))
-			Expect(dbResult.Data).To(Equal(test_data.CatFilePitVowModel.Data))
-			Expect(dbResult.TransactionIndex).To(Equal(test_data.CatFilePitVowModel.TransactionIndex))
-			Expect(dbResult.LogIndex).To(Equal(test_data.CatFilePitVowModel.LogIndex))
-			Expect(dbResult.Raw).To(MatchJSON(test_data.CatFilePitVowModel.Raw))
+			Expect(dbResult.What).To(Equal(test_data.CatFileVowModel.What))
+			Expect(dbResult.Data).To(Equal(test_data.CatFileVowModel.Data))
+			Expect(dbResult.TransactionIndex).To(Equal(test_data.CatFileVowModel.TransactionIndex))
+			Expect(dbResult.LogIndex).To(Equal(test_data.CatFileVowModel.LogIndex))
+			Expect(dbResult.Raw).To(MatchJSON(test_data.CatFileVowModel.Raw))
 		})
 	})
 
 	Describe("MarkHeaderChecked", func() {
 		inputs := shared_behaviors.MarkedHeaderCheckedBehaviorInputs{
-			CheckedHeaderColumnName: constants.CatFilePitVowChecked,
-			Repository:              &catFilePitVowRepository,
+			CheckedHeaderColumnName: constants.CatFileVowChecked,
+			Repository:              &catFileVowRepository,
 		}
 		shared_behaviors.SharedRepositoryMarkHeaderCheckedBehaviors(&inputs)
 	})

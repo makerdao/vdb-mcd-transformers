@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package pit_vow_test
+package vow_test
 
 import (
 	"github.com/ethereum/go-ethereum/common"
@@ -22,15 +22,15 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
-	"github.com/vulcanize/mcd_transformers/transformers/events/cat_file/pit_vow"
+	"github.com/vulcanize/mcd_transformers/transformers/events/cat_file/vow"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
-var _ = Describe("Cat file pit vow converter", func() {
-	var converter pit_vow.CatFilePitVowConverter
+var _ = Describe("Cat file vow converter", func() {
+	var converter vow.CatFileVowConverter
 
 	BeforeEach(func() {
-		converter = pit_vow.CatFilePitVowConverter{}
+		converter = vow.CatFileVowConverter{}
 	})
 
 	It("returns err if log is missing topics", func() {
@@ -52,9 +52,9 @@ var _ = Describe("Cat file pit vow converter", func() {
 	})
 
 	It("converts a log to an model", func() {
-		models, err := converter.ToModels([]types.Log{test_data.EthCatFilePitVowLog})
+		models, err := converter.ToModels([]types.Log{test_data.EthCatFileVowLog})
 
 		Expect(err).NotTo(HaveOccurred())
-		Expect(models).To(Equal([]interface{}{test_data.CatFilePitVowModel}))
+		Expect(models).To(Equal([]interface{}{test_data.CatFileVowModel}))
 	})
 })

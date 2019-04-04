@@ -3,7 +3,7 @@ package constants
 func GetBiteSignature() string               { return GetEventTopicZero(biteMethod()) }
 func GetCatFileChopLumpSignature() string    { return GetLogNoteTopicZero(catFileChopLumpMethod()) }
 func GetCatFileFlipSignature() string        { return GetLogNoteTopicZero(catFileFlipMethod()) }
-func GetCatFilePitVowSignature() string      { return GetLogNoteTopicZero(catFilePitVowMethod()) }
+func GetCatFileVowSignature() string         { return GetLogNoteTopicZero(catFileVowMethod()) }
 func GetDealSignature() string               { return GetLogNoteTopicZero(dealMethod()) }
 func GetDentFunctionSignature() string       { return GetLogNoteTopicZero(dentMethod()) }
 func GetFlapKickSignature() string           { return GetEventTopicZero(flapKickMethod()) }

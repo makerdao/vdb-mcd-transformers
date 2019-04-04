@@ -4,7 +4,7 @@ package constants
 func biteMethod() string            { return GetSolidityFunctionSignature(CatABI(), "Bite") }
 func catFileChopLumpMethod() string { return "file(bytes32,bytes32,uint256)" }
 func catFileFlipMethod() string     { return GetSolidityFunctionSignature(CatABI(), "file") }
-func catFilePitVowMethod() string   { return "file(bytes32,address)" }
+func catFileVowMethod() string      { return "file(bytes32,address)" }
 func dealMethod() string            { return GetSolidityFunctionSignature(FlipperABI(), "deal") }
 func dentMethod() string            { return GetSolidityFunctionSignature(FlipperABI(), "dent") }
 func flapKickMethod() string        { return GetSolidityFunctionSignature(FlapperABI(), "Kick") }

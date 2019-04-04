@@ -14,12 +14,21 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package pit_vow
+package vow
 
-type CatFilePitVowModel struct {
-	What             string
-	Data             string
-	TransactionIndex uint   `db:"tx_idx"`
-	LogIndex         uint   `db:"log_idx"`
-	Raw              []byte `db:"raw_log"`
+import (
+	shared_t "github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
+
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+)
+
+func GetCatFileVowConfig() shared_t.EventTransformerConfig {
+	return shared_t.EventTransformerConfig{
+		TransformerName:     constants.CatFileVowLabel,
+		ContractAddresses:   []string{constants.CatContractAddress()},
+		ContractAbi:         constants.CatABI(),
+		Topic:               constants.GetCatFileVowSignature(),
+		StartingBlockNumber: constants.CatDeploymentBlock(),
+		EndingBlockNumber:   -1,
+	}
 }

@@ -14,22 +14,17 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package pit_vow_test
+package initializer
 
 import (
-	log "github.com/sirupsen/logrus"
-	"io/ioutil"
-	"testing"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
+	"github.com/vulcanize/mcd_transformers/transformers/events/cat_file/vow"
 )
 
-func TestPitVow(t *testing.T) {
-	RegisterFailHandler(Fail)
-	RunSpecs(t, "PitVow Suite")
-}
-
-var _ = BeforeSuite(func() {
-	log.SetOutput(ioutil.Discard)
-})
+var EventTransformerInitializer transformer.EventTransformerInitializer = event.LogNoteTransformer{
+	Config:     vow.GetCatFileVowConfig(),
+	Converter:  &vow.CatFileVowConverter{},
+	Repository: &vow.CatFileVowRepository{},
+}.NewLogNoteTransformer
