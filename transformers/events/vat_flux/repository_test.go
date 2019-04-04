@@ -85,7 +85,7 @@ var _ = Describe("VatFlux Repository", func() {
 			Expect(dbResult[0].Ilk).To(Equal(strconv.Itoa(ilkID)))
 			Expect(dbResult[0].Dst).To(Equal(test_data.VatFluxModel.Dst))
 			Expect(dbResult[0].Src).To(Equal(test_data.VatFluxModel.Src))
-			Expect(dbResult[0].Rad).To(Equal(test_data.VatFluxModel.Rad))
+			Expect(dbResult[0].Wad).To(Equal(test_data.VatFluxModel.Wad))
 			Expect(dbResult[0].TransactionIndex).To(Equal(test_data.VatFluxModel.TransactionIndex))
 			Expect(dbResult[1].TransactionIndex).To(Equal(test_data.VatFluxModel.TransactionIndex + 1))
 			Expect(dbResult[0].LogIndex).To(Equal(test_data.VatFluxModel.LogIndex))

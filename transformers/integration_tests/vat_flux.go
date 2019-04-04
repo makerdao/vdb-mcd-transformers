@@ -86,7 +86,7 @@ var _ = Describe("VatFlux LogNoteTransformer", func() {
 		Expect(dbResult[0].Ilk).To(Equal(strconv.Itoa(ilkID)))
 		Expect(dbResult[0].Src).To(Equal("000000000000000000000000c0851f73cc8dd5c0765e71980ec7e7fd1ef74434"))
 		Expect(dbResult[0].Dst).To(Equal("0000000000000000000000000000d8b4147eda80fec7122ae16da2479cbd7ffb"))
-		Expect(dbResult[0].Rad).To(Equal("1800000000000000000000000000000000000000000000"))
+		Expect(dbResult[0].Wad).To(Equal("1800000000000000000000000000000000000000000000"))
 		Expect(dbResult[0].TransactionIndex).To(Equal(uint(0)))
 	})
 
@@ -153,7 +153,7 @@ var _ = Describe("VatFlux LogNoteTransformer", func() {
 		Expect(dbResult[0].Ilk).To(Equal(strconv.Itoa(ilkID)))
 		Expect(dbResult[0].Src).To(Equal("000000000000000000000000c0851f73cc8dd5c0765e71980ec7e7fd1ef74434"))
 		Expect(dbResult[0].Dst).To(Equal("0000000000000000000000000000d8b4147eda80fec7122ae16da2479cbd7ffb"))
-		Expect(dbResult[0].Rad).To(Equal("1800000000000000000000000000000000000000000000"))
+		Expect(dbResult[0].Wad).To(Equal("1800000000000000000000000000000000000000000000"))
 		Expect(dbResult[0].TransactionIndex).To(Equal(uint(0)))
 	})
 })

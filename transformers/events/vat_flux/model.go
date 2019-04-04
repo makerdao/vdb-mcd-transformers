@@ -20,7 +20,7 @@ type VatFluxModel struct {
 	Ilk              string `db:"ilk_id"`
 	Src              string
 	Dst              string
-	Rad              string
+	Wad              string
 	TransactionIndex uint   `db:"tx_idx"`
 	LogIndex         uint   `db:"log_idx"`
 	Raw              []byte `db:"raw_log"`

@@ -93,32 +93,34 @@ var _ = Describe("Event signature generator", func() {
 			Expect(test_data.KovanJugFileVowSignature).To(Equal(actual))
 		})
 
-		It("generates vat file event signature for overloaded function with three arguments", func() {
-			expected := "0x1a0b287e00000000000000000000000000000000000000000000000000000000"
+		It("generates vat file ilk event signature", func() {
 			actual := constants.GetLogNoteTopicZero("file(bytes32,bytes32,uint256)")
 
-			Expect(expected).To(Equal(actual))
+			Expect(test_data.KovanVatFileIlkSignature).To(Equal(actual))
 		})
 
-		It("generates vat file event signature for overloaded function with two arguments", func() {
-			expected := "0x29ae811400000000000000000000000000000000000000000000000000000000"
+		It("generates the vat file debt ceiling event signature", func() {
 			actual := constants.GetLogNoteTopicZero("file(bytes32,uint256)")
 
-			Expect(expected).To(Equal(actual))
+			Expect(test_data.KovanVatFileDebtCeilingSignature).To(Equal(actual))
 		})
 
-		It("generates vat file event signature for overloaded function with two different arguments", func() {
-			expected := "0xd4e8be8300000000000000000000000000000000000000000000000000000000"
-			actual := constants.GetLogNoteTopicZero("file(bytes32,address)")
+		It("generates the vat flux event signature", func() {
+			actual := constants.GetLogNoteTopicZero("flux(bytes32,bytes32,bytes32,uint256)")
 
-			Expect(expected).To(Equal(actual))
+			Expect(test_data.KovanVatFluxSignature).To(Equal(actual))
 		})
 
-		It("generate vat frob event signature", func() {
-			expected := "0x41fd3ef700000000000000000000000000000000000000000000000000000000"
+		It("generates the vat frob event signature", func() {
 			actual := constants.GetLogNoteTopicZero("frob(bytes32,bytes32,bytes32,bytes32,int256,int256)")
 
-			Expect(expected).To(Equal(actual))
+			Expect(test_data.KovanVatFrobSignature).To(Equal(actual))
+		})
+
+		It("generates the vat move signature", func() {
+			actual := constants.GetLogNoteTopicZero("move(bytes32,bytes32,uint256)")
+
+			Expect(test_data.KovanVatMoveSignature).To(Equal(actual))
 		})
 	})
 
@@ -175,16 +177,9 @@ var _ = Describe("Event signature generator", func() {
 			})
 
 			Describe("from the vat contract", func() {
-				It("gets the init method signature", func() {
-					expected := "init(bytes32)"
-					actual := constants.GetSolidityFunctionSignature(test_data.KovanVatABI, "init")
-
-					Expect(expected).To(Equal(actual))
-				})
-
-				It("gets the heal method signature", func() {
-					expected := "heal(bytes32,bytes32,int256)"
-					actual := constants.GetSolidityFunctionSignature(test_data.KovanVatABI, "heal")
+				It("gets the flux method signature", func() {
+					expected := "flux(bytes32,bytes32,bytes32,uint256)"
+					actual := constants.GetSolidityFunctionSignature(test_data.KovanVatABI, "flux")
 
 					Expect(expected).To(Equal(actual))
 				})
@@ -192,13 +187,6 @@ var _ = Describe("Event signature generator", func() {
 				It("gets the fold method signature", func() {
 					expected := "fold(bytes32,bytes32,int256)"
 					actual := constants.GetSolidityFunctionSignature(test_data.KovanVatABI, "fold")
-
-					Expect(expected).To(Equal(actual))
-				})
-
-				It("gets the flux method signature", func() {
-					expected := "flux(bytes32,bytes32,bytes32,int256)"
-					actual := constants.GetSolidityFunctionSignature(test_data.KovanVatABI, "flux")
 
 					Expect(expected).To(Equal(actual))
 				})
@@ -217,8 +205,22 @@ var _ = Describe("Event signature generator", func() {
 					Expect(expected).To(Equal(actual))
 				})
 
+				It("gets the heal method signature", func() {
+					expected := "heal(bytes32,bytes32,int256)"
+					actual := constants.GetSolidityFunctionSignature(test_data.KovanVatABI, "heal")
+
+					Expect(expected).To(Equal(actual))
+				})
+
+				It("gets the init method signature", func() {
+					expected := "init(bytes32)"
+					actual := constants.GetSolidityFunctionSignature(test_data.KovanVatABI, "init")
+
+					Expect(expected).To(Equal(actual))
+				})
+
 				It("gets the move method signature", func() {
-					expected := "move(bytes32,bytes32,int256)"
+					expected := "move(bytes32,bytes32,uint256)"
 					actual := constants.GetSolidityFunctionSignature(test_data.KovanVatABI, "move")
 
 					Expect(expected).To(Equal(actual))
@@ -233,16 +235,16 @@ var _ = Describe("Event signature generator", func() {
 			})
 
 			Describe("from the vow contract", func() {
-				It("gets the flog method signature", func() {
-					expected := "flog(uint48)"
-					actual := constants.GetSolidityFunctionSignature(test_data.KovanVowABI, "flog")
+				It("gets the fess method signature", func() {
+					expected := "fess(uint256)"
+					actual := constants.GetSolidityFunctionSignature(test_data.KovanVowABI, "fess")
 
 					Expect(expected).To(Equal(actual))
 				})
 
-				It("gets the fess method signature", func() {
-					expected := "fess(uint256)"
-					actual := constants.GetSolidityFunctionSignature(test_data.KovanVowABI, "fess")
+				It("gets the flog method signature", func() {
+					expected := "flog(uint48)"
+					actual := constants.GetSolidityFunctionSignature(test_data.KovanVowABI, "flog")
 
 					Expect(expected).To(Equal(actual))
 				})

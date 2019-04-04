@@ -47,7 +47,7 @@ var VatFluxModel = vat_flux.VatFluxModel{
 	Ilk:              "5245500000000000000000000000000000000000000000000000000000000000",
 	Src:              "0000000000000000000000007fa9ef6609ca7921112231f8f195138ebba29770",
 	Dst:              "00000000000000000000000093086347c52a8878af71bb818509d484c6a2e1bf",
-	Rad:              "123",
+	Wad:              "123",
 	TransactionIndex: VatFluxLog.TxIndex,
 	LogIndex:         VatFluxLog.Index,
 	Raw:              rawFluxLog,
