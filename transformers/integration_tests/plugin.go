@@ -50,6 +50,12 @@ var eventConfig = config.Plugin{
 			MigrationRank:  0,
 			RepositoryPath: "github.com/vulcanize/mcd_transformers",
 		},
+		"cat_file": {
+			Path:           "transformers/events/cat_file/flip/initializer",
+			Type:           config.EthEvent,
+			MigrationPath:  "db/migrations",
+			RepositoryPath: "github.com/vulcanize/mcd_transformers",
+		},
 		"deal": {
 			Path:           "transformers/events/deal/initializer",
 			Type:           config.EthEvent,
@@ -93,6 +99,12 @@ var combinedConfig = config.Plugin{
 			MigrationPath:  "db/migrations",
 			RepositoryPath: "github.com/vulcanize/mcd_transformers",
 		},
+		"cat_file": {
+			Path:           "transformers/events/cat_file/flip/initializer",
+			Type:           config.EthEvent,
+			MigrationPath:  "db/migrations",
+			RepositoryPath: "github.com/vulcanize/mcd_transformers",
+		},
 		"deal": {
 			Path:           "transformers/events/deal/initializer",
 			Type:           config.EthEvent,
@@ -127,11 +139,19 @@ type Exporter interface {
 	Export() ([]transformer.EventTransformerInitializer, []transformer.StorageTransformerInitializer, []transformer.ContractTransformerInitializer)
 }
 
+func SetupDBandBC() (*postgres.DB, core.BlockChain) {
+	rpcClient, ethClient, err := getClients(ipc)
+	Expect(err).NotTo(HaveOccurred())
+	bc, err := getBlockChain(rpcClient, ethClient)
+	Expect(err).NotTo(HaveOccurred())
+	db := test_config.NewTestDB(bc.Node())
+	return db, bc
+}
+
 var _ = Describe("Plugin test", func() {
 	var g p2.Generator
 	var goPath, soPath string
 	var err error
-	var bc core.BlockChain
 	var db *postgres.DB
 	var hr repositories.HeaderRepository
 	var headerID int64
@@ -161,16 +181,15 @@ var _ = Describe("Plugin test", func() {
 				exporter, ok := symExporter.(Exporter)
 				Expect(ok).To(Equal(true))
 				eventTransformerInitializers, storageTransformerInitializers, _ := exporter.Export()
-				Expect(len(eventTransformerInitializers)).To(Equal(2))
+				Expect(len(eventTransformerInitializers)).To(Equal(3))
 				Expect(len(storageTransformerInitializers)).To(Equal(0))
 			})
 
 			It("Loads our generated Exporter and uses it to import an arbitrary set of TransformerInitializers that we can execute over", func() {
-				db, bc = test_helpers.SetupDBandBC()
+				db, bc := SetupDBandBC()
 				defer test_config.CleanTestDB(db)
-
 				hr = repositories.NewHeaderRepository(db)
-				header1, err := bc.GetHeaderByNumber(9377319)
+				header1, err := bc.GetHeaderByNumber(10501145)
 				Expect(err).ToNot(HaveOccurred())
 				headerID, err = hr.CreateOrUpdateHeader(header1)
 				Expect(err).ToNot(HaveOccurred())
@@ -189,12 +208,9 @@ var _ = Describe("Plugin test", func() {
 				Expect(err).ToNot(HaveOccurred())
 
 				type model struct {
-					Urn              string `db:"urn_id"`
-					Ink              string
-					Art              string
-					IArt             string
-					Tab              string
-					NFlip            string
+					Ilk              string `db:"ilk_id"`
+					What             string
+					Flip             string
 					LogIndex         uint   `db:"log_idx"`
 					TransactionIndex uint   `db:"tx_idx"`
 					Raw              []byte `db:"raw_log"`
@@ -204,21 +220,16 @@ var _ = Describe("Plugin test", func() {
 
 				returned := model{}
 
-				err = db.Get(&returned, `SELECT * FROM maker.bite WHERE header_id = $1`, headerID)
+				err = db.Get(&returned, `SELECT * FROM maker.cat_file_flip WHERE header_id = $1`, headerID)
 				Expect(err).ToNot(HaveOccurred())
 
-				ilkID, err := shared.GetOrCreateIlk("4554480000000000000000000000000000000000000000000000000000000000", db)
+				ilkID, err := shared.GetOrCreateIlk("5245500000000000000000000000000000000000000000000000000000000000", db)
 				Expect(err).NotTo(HaveOccurred())
-				urnID, err := shared.GetOrCreateUrn("0000000000000000000000000000d8b4147eda80fec7122ae16da2479cbd7ffb", ilkID, db)
-				Expect(err).NotTo(HaveOccurred())
-				Expect(returned.Urn).To(Equal(strconv.Itoa(urnID)))
-				Expect(returned.Ink).To(Equal("80000000000000000000"))
-				Expect(returned.Art).To(Equal("11000000000000000000000"))
-				Expect(returned.IArt).To(Equal("12496609999999999999992"))
-				Expect(returned.Tab).To(Equal("11000000000000000000000"))
-				Expect(returned.NFlip).To(Equal("7"))
-				Expect(returned.TransactionIndex).To(Equal(uint(1)))
-				Expect(returned.LogIndex).To(Equal(uint(4)))
+				Expect(returned.Ilk).To(Equal(strconv.Itoa(ilkID)))
+				Expect(returned.What).To(Equal("flip"))
+				Expect(returned.Flip).To(Equal("0x4EC982bC57c463D4A1825d975E2A525C4daadD91"))
+				Expect(returned.TransactionIndex).To(Equal(uint(5)))
+				Expect(returned.LogIndex).To(Equal(uint(0)))
 			})
 		})
 	})
@@ -297,16 +308,15 @@ var _ = Describe("Plugin test", func() {
 				exporter, ok := symExporter.(Exporter)
 				Expect(ok).To(Equal(true))
 				eventInitializers, storageInitializers, _ := exporter.Export()
-				Expect(len(eventInitializers)).To(Equal(2))
+				Expect(len(eventInitializers)).To(Equal(3))
 				Expect(len(storageInitializers)).To(Equal(2))
 			})
 
 			It("Loads our generated Exporter and uses it to import an arbitrary set of TransformerInitializers and StorageTransformerInitializers that we can execute over", func() {
-				db, bc = test_helpers.SetupDBandBC()
+				db, bc := SetupDBandBC()
 				defer test_config.CleanTestDB(db)
-
 				hr = repositories.NewHeaderRepository(db)
-				header1, err := bc.GetHeaderByNumber(9377319)
+				header1, err := bc.GetHeaderByNumber(10501145)
 				Expect(err).ToNot(HaveOccurred())
 				headerID, err = hr.CreateOrUpdateHeader(header1)
 				Expect(err).ToNot(HaveOccurred())
@@ -325,12 +335,9 @@ var _ = Describe("Plugin test", func() {
 				Expect(err).ToNot(HaveOccurred())
 
 				type model struct {
-					Urn              string `db:"urn_id"`
-					Ink              string
-					Art              string
-					IArt             string
-					Tab              string
-					NFlip            string
+					Ilk              string `db:"ilk_id"`
+					What             string
+					Flip             string
 					LogIndex         uint   `db:"log_idx"`
 					TransactionIndex uint   `db:"tx_idx"`
 					Raw              []byte `db:"raw_log"`
@@ -340,21 +347,16 @@ var _ = Describe("Plugin test", func() {
 
 				returned := model{}
 
-				err = db.Get(&returned, `SELECT * FROM maker.bite WHERE header_id = $1`, headerID)
+				err = db.Get(&returned, `SELECT * FROM maker.cat_file_flip WHERE header_id = $1`, headerID)
 				Expect(err).ToNot(HaveOccurred())
 
-				ilkID, err := shared.GetOrCreateIlk("4554480000000000000000000000000000000000000000000000000000000000", db)
+				ilkID, err := shared.GetOrCreateIlk("5245500000000000000000000000000000000000000000000000000000000000", db)
 				Expect(err).NotTo(HaveOccurred())
-				urnID, err := shared.GetOrCreateUrn("0000000000000000000000000000d8b4147eda80fec7122ae16da2479cbd7ffb", ilkID, db)
-				Expect(err).NotTo(HaveOccurred())
-				Expect(returned.Urn).To(Equal(strconv.Itoa(urnID)))
-				Expect(returned.Ink).To(Equal("80000000000000000000"))
-				Expect(returned.Art).To(Equal("11000000000000000000000"))
-				Expect(returned.IArt).To(Equal("12496609999999999999992"))
-				Expect(returned.Tab).To(Equal("11000000000000000000000"))
-				Expect(returned.NFlip).To(Equal("7"))
-				Expect(returned.TransactionIndex).To(Equal(uint(1)))
-				Expect(returned.LogIndex).To(Equal(uint(4)))
+				Expect(returned.Ilk).To(Equal(strconv.Itoa(ilkID)))
+				Expect(returned.What).To(Equal("flip"))
+				Expect(returned.Flip).To(Equal("0x4EC982bC57c463D4A1825d975E2A525C4daadD91"))
+				Expect(returned.TransactionIndex).To(Equal(uint(5)))
+				Expect(returned.LogIndex).To(Equal(uint(0)))
 
 				tailer := fs.FileTailer{Path: viper.GetString("filesystem.storageDiffsPath")}
 				sw := watcher.NewStorageWatcher(tailer, db)

@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package pit_vow
+package vow
 
 import (
 	"bytes"
@@ -27,9 +27,9 @@ import (
 	"github.com/vulcanize/vulcanizedb/libraries/shared/constants"
 )
 
-type CatFilePitVowConverter struct{}
+type CatFileVowConverter struct{}
 
-func (CatFilePitVowConverter) ToModels(ethLogs []types.Log) ([]interface{}, error) {
+func (CatFileVowConverter) ToModels(ethLogs []types.Log) ([]interface{}, error) {
 	var results []interface{}
 	for _, ethLog := range ethLogs {
 		err := verifyLog(ethLog)
@@ -45,7 +45,7 @@ func (CatFilePitVowConverter) ToModels(ethLogs []types.Log) ([]interface{}, erro
 			return nil, err
 		}
 
-		result := CatFilePitVowModel{
+		result := CatFileVowModel{
 			What:             what,
 			Data:             data,
 			TransactionIndex: ethLog.TxIndex,

@@ -14,17 +14,12 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package initializer
+package vow
 
-import (
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
-
-	"github.com/vulcanize/mcd_transformers/transformers/events/cat_file/pit_vow"
-)
-
-var EventTransformerInitializer transformer.EventTransformerInitializer = event.LogNoteTransformer{
-	Config:     pit_vow.GetCatFilePitVowConfig(),
-	Converter:  &pit_vow.CatFilePitVowConverter{},
-	Repository: &pit_vow.CatFilePitVowRepository{},
-}.NewLogNoteTransformer
+type CatFileVowModel struct {
+	What             string
+	Data             string
+	TransactionIndex uint   `db:"tx_idx"`
+	LogIndex         uint   `db:"log_idx"`
+	Raw              []byte `db:"raw_log"`
+}
