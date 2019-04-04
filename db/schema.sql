@@ -669,7 +669,7 @@ CREATE TABLE maker.bite (
     ink numeric,
     art numeric,
     tab numeric,
-    nflip numeric,
+    flip numeric,
     tx_idx integer NOT NULL,
     log_idx integer NOT NULL,
     raw_log jsonb
