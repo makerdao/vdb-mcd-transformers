@@ -26,8 +26,8 @@ import (
 var _ = Describe("Event signature generator", func() {
 	Describe("generating non-anonymous event signatures", func() {
 		It("generates bite event signature", func() {
-			expected := "0x99b5620489b6ef926d4518936cfec15d305452712b88bd59da2d9c10fb0953e8"
-			actual := constants.GetEventTopicZero("Bite(bytes32,bytes32,uint256,uint256,uint256,uint256,uint256)")
+			expected := "0xa09cf5c84ddb9da74c619289a981b41ecd0c8e8440728e9faf9ed2b20175599e"
+			actual := constants.GetEventTopicZero("Bite(bytes32,bytes32,uint256,uint256,uint256,uint256)")
 
 			Expect(expected).To(Equal(actual))
 		})
