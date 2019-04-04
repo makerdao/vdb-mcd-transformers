@@ -69,6 +69,30 @@ var _ = Describe("Event signature generator", func() {
 			Expect(expected).To(Equal(actual))
 		})
 
+		It("generates the jug file drip signature", func() {
+			actual := constants.GetLogNoteTopicZero("drip(bytes32)")
+
+			Expect(test_data.KovanJugDripSignature).To(Equal(actual))
+		})
+
+		It("generates the jug file base signature", func() {
+			actual := constants.GetLogNoteTopicZero("file(bytes32,uint256)")
+
+			Expect(test_data.KovanJugFileBaseSignature).To(Equal(actual))
+		})
+
+		It("generates the jug file ilk signature", func() {
+			actual := constants.GetLogNoteTopicZero("file(bytes32,bytes32,uint256)")
+
+			Expect(test_data.KovanJugFileIlkSignature).To(Equal(actual))
+		})
+
+		It("generates the jug file vow signature", func() {
+			actual := constants.GetLogNoteTopicZero("file(bytes32,bytes32)")
+
+			Expect(test_data.KovanJugFileVowSignature).To(Equal(actual))
+		})
+
 		It("generates vat file event signature for overloaded function with three arguments", func() {
 			expected := "0x1a0b287e00000000000000000000000000000000000000000000000000000000"
 			actual := constants.GetLogNoteTopicZero("file(bytes32,bytes32,uint256)")

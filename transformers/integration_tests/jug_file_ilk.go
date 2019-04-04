@@ -1,25 +1,12 @@
-// VulcanizeDB
-// Copyright © 2018 Vulcanize
-
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU Affero General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU Affero General Public License for more details.
-
-// You should have received a copy of the GNU Affero General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
 package integration_tests
 
 import (
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/vulcanize/mcd_transformers/transformers/events/jug_file/ilk"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"strconv"
 
 	c2 "github.com/vulcanize/vulcanizedb/libraries/shared/constants"
 	fetch "github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
@@ -28,13 +15,12 @@ import (
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 
 	"github.com/vulcanize/mcd_transformers/test_config"
-	"github.com/vulcanize/mcd_transformers/transformers/events/jug_file/vow"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 )
 
-var _ = Describe("Jug File Vow LogNoteTransformer", func() {
+var _ = Describe("Jug File Ilk LogNoteTransformer", func() {
 	var (
 		db         *postgres.DB
 		blockChain core.BlockChain
@@ -49,13 +35,13 @@ var _ = Describe("Jug File Vow LogNoteTransformer", func() {
 		test_config.CleanTestDB(db)
 	})
 
-	It("transforms JugFileVow log events", func() {
-		blockNumber := int64(10590320)
+	It("transforms jug file ilk log events", func() {
+		blockNumber := int64(10590493)
 		config := transformer.EventTransformerConfig{
-			TransformerName:     constants.JugFileVowLabel,
+			TransformerName:     constants.JugFileIlkLabel,
 			ContractAddresses:   []string{test_data.KovanJugContractAddress},
 			ContractAbi:         test_data.KovanJugABI,
-			Topic:               test_data.KovanJugFileVowSignature,
+			Topic:               test_data.KovanJugFileIlkSignature,
 			StartingBlockNumber: blockNumber,
 			EndingBlockNumber:   blockNumber,
 		}
@@ -65,8 +51,8 @@ var _ = Describe("Jug File Vow LogNoteTransformer", func() {
 
 		initializer := event.LogNoteTransformer{
 			Config:     config,
-			Converter:  &vow.JugFileVowConverter{},
-			Repository: &vow.JugFileVowRepository{},
+			Converter:  &ilk.JugFileIlkConverter{},
+			Repository: &ilk.JugFileIlkRepository{},
 		}
 		tr := initializer.NewLogNoteTransformer(db)
 
@@ -80,22 +66,25 @@ var _ = Describe("Jug File Vow LogNoteTransformer", func() {
 		err = tr.Execute(logs, header, c2.HeaderMissing)
 		Expect(err).NotTo(HaveOccurred())
 
-		var dbResult []vow.JugFileVowModel
-		err = db.Select(&dbResult, `SELECT what, data FROM maker.jug_file_vow`)
+		var dbResult []ilk.JugFileIlkModel
+		err = db.Select(&dbResult, `SELECT ilk_id, what, data FROM maker.jug_file_ilk`)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))
-		Expect(dbResult[0].What).To(Equal("vow"))
-		Expect(dbResult[0].Data).To(Equal("0xb267c22a437637a4672ad61ef69504a8006ccb45000000000000000000000000"))
+		ilkID, err := shared.GetOrCreateIlk("4554482d41000000000000000000000000000000000000000000000000000000", db)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(dbResult[0].Ilk).To(Equal(strconv.Itoa(ilkID)))
+		Expect(dbResult[0].What).To(Equal("duty"))
+		Expect(dbResult[0].Data).To(Equal("1000000000782997609082909351"))
 	})
 
-	It("rechecks jug file vow event", func() {
-		blockNumber := int64(10590320)
+	It("rechecks jug file ilk event", func() {
+		blockNumber := int64(10590493)
 		config := transformer.EventTransformerConfig{
-			TransformerName:     constants.JugFileVowLabel,
+			TransformerName:     constants.JugFileIlkLabel,
 			ContractAddresses:   []string{test_data.KovanJugContractAddress},
 			ContractAbi:         test_data.KovanJugABI,
-			Topic:               test_data.KovanJugFileVowSignature,
+			Topic:               test_data.KovanJugFileIlkSignature,
 			StartingBlockNumber: blockNumber,
 			EndingBlockNumber:   blockNumber,
 		}
@@ -105,8 +94,8 @@ var _ = Describe("Jug File Vow LogNoteTransformer", func() {
 
 		initializer := event.LogNoteTransformer{
 			Config:     config,
-			Converter:  &vow.JugFileVowConverter{},
-			Repository: &vow.JugFileVowRepository{},
+			Converter:  &ilk.JugFileIlkConverter{},
+			Repository: &ilk.JugFileIlkRepository{},
 		}
 		tr := initializer.NewLogNoteTransformer(db)
 
@@ -127,10 +116,10 @@ var _ = Describe("Jug File Vow LogNoteTransformer", func() {
 		err = db.Get(&headerID, `SELECT id FROM public.headers WHERE block_number = $1`, blockNumber)
 		Expect(err).NotTo(HaveOccurred())
 
-		var jugFileVowChecked []int
-		err = db.Select(&jugFileVowChecked, `SELECT jug_file_vow_checked FROM public.checked_headers WHERE header_id = $1`, headerID)
+		var jugFileIlkChecked []int
+		err = db.Select(&jugFileIlkChecked, `SELECT jug_file_ilk_checked FROM public.checked_headers WHERE header_id = $1`, headerID)
 		Expect(err).NotTo(HaveOccurred())
 
-		Expect(jugFileVowChecked[0]).To(Equal(2))
+		Expect(jugFileIlkChecked[0]).To(Equal(2))
 	})
 })
