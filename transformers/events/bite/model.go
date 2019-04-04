@@ -22,7 +22,7 @@ type BiteModel struct {
 	Ink              string
 	Art              string
 	Tab              string
-	NFlip            string
+	Flip             string
 	LogIndex         uint   `db:"log_idx"`
 	TransactionIndex uint   `db:"tx_idx"`
 	Raw              []byte `db:"raw_log"`

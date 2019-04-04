@@ -6,7 +6,7 @@ CREATE TABLE maker.bite (
   ink       NUMERIC,
   art       NUMERIC,
   tab       NUMERIC,
-  nflip     NUMERIC,
+  flip      NUMERIC,
   tx_idx    INTEGER NOT NUll,
   log_idx   INTEGER NOT NUll,
   raw_log   JSONB,

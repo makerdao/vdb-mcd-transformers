@@ -78,7 +78,7 @@ var BiteModel = bite.BiteModel{
 	Ink:              biteInk.String(),
 	Art:              biteArt.String(),
 	Tab:              biteTab.String(),
-	NFlip:            biteFlip.String(),
+	Flip:             biteFlip.String(),
 	LogIndex:         EthBiteLog.Index,
 	TransactionIndex: EthBiteLog.TxIndex,
 	Raw:              biteRawJson,
