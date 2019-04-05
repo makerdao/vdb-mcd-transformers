@@ -51,7 +51,7 @@
 
 [contract]
     [contract.address]
-            MCD_CAT  = "0x35f3d8997ef261c7961bd7c07ddc390f5cf76bd3"
+            MCD_CAT  = "0xc20e4eaf6b53347ad2d895390dd96ba635bbe4c1"
             MCD_JUG  = "0x4e4b50afc59ef5d79f75c4c8731750762fdae24e"
             MCD_VAT  = "0x48f749bd988caafacd7b951abbecc1aa31488690"
             MCD_VOW  = "0x17560834075da3db54f737db74377e799c865821"

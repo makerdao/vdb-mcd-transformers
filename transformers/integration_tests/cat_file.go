@@ -64,7 +64,7 @@ var _ = Describe("Cat File transformer", func() {
 	})
 
 	It("persists a chop lump event", func() {
-		chopLumpBlockNumber := int64(10501145)
+		chopLumpBlockNumber := int64(10590360)
 		header, err := persistHeader(db, chopLumpBlockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -100,21 +100,21 @@ var _ = Describe("Cat File transformer", func() {
 		Expect(len(dbResult)).To(Equal(2))
 		sort.Sort(byLogIndexChopLump(dbResult))
 
-		ilkID, err := shared.GetOrCreateIlk("5245500000000000000000000000000000000000000000000000000000000000", db)
+		ilkID, err := shared.GetOrCreateIlk("4554482d43000000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(dbResult[0].Ilk).To(Equal(strconv.Itoa(ilkID)))
 		Expect(dbResult[0].What).To(Equal("lump"))
-		Expect(dbResult[0].Data).To(Equal("10000.000000000000000000"))
-		Expect(dbResult[0].LogIndex).To(Equal(uint(1)))
+		Expect(dbResult[0].Data).To(Equal("9999999999999999635896294965248.000000000000000000"))
+		Expect(dbResult[0].LogIndex).To(Equal(uint(2)))
 
 		Expect(dbResult[1].Ilk).To(Equal(strconv.Itoa(ilkID)))
 		Expect(dbResult[1].What).To(Equal("chop"))
 		Expect(dbResult[1].Data).To(Equal("1.000000000000000000000000000"))
-		Expect(dbResult[1].LogIndex).To(Equal(uint(2)))
+		Expect(dbResult[1].LogIndex).To(Equal(uint(3)))
 	})
 
 	It("rechecks header for chop lump event", func() {
-		chopLumpBlockNumber := int64(10501145)
+		chopLumpBlockNumber := int64(10590360)
 		header, err := persistHeader(db, chopLumpBlockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -158,7 +158,7 @@ var _ = Describe("Cat File transformer", func() {
 	})
 
 	It("persists a flip event", func() {
-		flipBlockNumber := int64(10501145)
+		flipBlockNumber := int64(10590340)
 		header, err := persistHeader(db, flipBlockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -193,16 +193,15 @@ var _ = Describe("Cat File transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))
-		ilkID, err := shared.GetOrCreateIlk("5245500000000000000000000000000000000000000000000000000000000000", db)
+		ilkID, err := shared.GetOrCreateIlk("4554482d41000000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(dbResult[0].Ilk).To(Equal(strconv.Itoa(ilkID)))
 		Expect(dbResult[0].What).To(Equal("flip"))
-		Expect(dbResult[0].Flip).To(Equal("0x4EC982bC57c463D4A1825d975E2A525C4daadD91"))
+		Expect(dbResult[0].Flip).To(Equal("0x1f952AFAfeE7DBEA561211bC4c0c04E4D32b5903"))
 	})
 
 	It("rechecks a flip event", func() {
-		// transaction: 0x44bc18fdb1a5a263db114e7879653304db3e19ceb4e4496f21bc0a76c5faccbe
-		flipBlockNumber := int64(8751794)
+		flipBlockNumber := int64(10590340)
 		header, err := persistHeader(db, flipBlockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -247,7 +246,7 @@ var _ = Describe("Cat File transformer", func() {
 	})
 
 	It("persists a vow event", func() {
-		vowBlockNumber := int64(10501127)
+		vowBlockNumber := int64(10590322)
 		header, err := persistHeader(db, vowBlockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -282,7 +281,7 @@ var _ = Describe("Cat File transformer", func() {
 
 		Expect(len(dbResult)).To(Equal(1))
 		Expect(dbResult[0].What).To(Equal("vow"))
-		Expect(dbResult[0].Data).To(Equal("0x17560834075DA3Db54f737db74377E799c865821"))
+		Expect(dbResult[0].Data).To(Equal("0xb267c22a437637a4672aD61EF69504a8006Ccb45"))
 		Expect(dbResult[0].LogIndex).To(Equal(uint(2)))
 	})
 })
