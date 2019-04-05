@@ -19,11 +19,11 @@ package core
 type TransactionModel struct {
 	Data     []byte `db:"input_data"`
 	From     string `db:"tx_from"`
-	GasLimit uint64
-	GasPrice int64
+	GasLimit uint64 `db:"gas_limit"`
+	GasPrice int64  `db:"gas_price"`
 	Hash     string
 	Nonce    uint64
-	Raw      []byte
+	Raw      []byte `db:"raw"`
 	Receipt
 	To      string `db:"tx_to"`
 	TxIndex int64  `db:"tx_index"`
