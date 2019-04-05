@@ -1,7 +1,7 @@
 package test_data
 
 const (
-	KovanCatContractAddress     = "0x35f3d8997ef261c7961bd7c07ddc390f5cf76bd3"
+	KovanCatContractAddress     = "0xc20e4eaf6b53347ad2d895390dd96ba635bbe4c1"
 	KovanFlapperContractAddress = "0x8868BAd8e74FcA4505676D1B5B21EcC23328d132"
 	KovanFlipperContractAddress = "0x32D496Ad866D110060866B7125981C73642cc509"
 	KovanFlopperContractAddress = "0x6191C9b0086c2eBF92300cC507009b53996FbFFa"
