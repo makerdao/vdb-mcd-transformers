@@ -34,7 +34,6 @@ import (
 	"github.com/vulcanize/vulcanizedb/pkg/fs"
 	p2 "github.com/vulcanize/vulcanizedb/pkg/plugin"
 	"github.com/vulcanize/vulcanizedb/pkg/plugin/helpers"
-	"github.com/vulcanize/vulcanizedb/pkg/plugin/test_helpers"
 
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
@@ -263,7 +262,7 @@ var _ = Describe("Plugin test", func() {
 			})
 
 			It("Loads our generated Exporter and uses it to import an arbitrary set of StorageTransformerInitializers that we can execute over", func() {
-				db, _ = test_helpers.SetupDBandBC()
+				db, _ = SetupDBandBC()
 				defer test_config.CleanTestDB(db)
 
 				plug, err := plugin.Open(soPath)
