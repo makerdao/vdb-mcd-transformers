@@ -37,7 +37,6 @@ var (
 	biteArt        = big.NewInt(2)
 	biteTab        = big.NewInt(3)
 	biteFlip       = big.NewInt(4)
-	biteIArt       = big.NewInt(5)
 	biteRawJson, _ = json.Marshal(EthBiteLog)
 	biteIlk        = [32]byte{69, 84, 72, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
 	biteLad        = [32]byte{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 216, 180, 20, 126, 218, 128, 254, 199, 18, 42, 225, 109, 162, 71, 156, 189, 127, 251}
@@ -68,7 +67,6 @@ var BiteEntity = bite.BiteEntity{
 	Art:              biteArt,
 	Tab:              biteTab,
 	Flip:             biteFlip,
-	IArt:             biteIArt,
 	LogIndex:         EthBiteLog.Index,
 	TransactionIndex: EthBiteLog.TxIndex,
 	Raw:              EthBiteLog,
@@ -79,9 +77,8 @@ var BiteModel = bite.BiteModel{
 	Urn:              biteLadString,
 	Ink:              biteInk.String(),
 	Art:              biteArt.String(),
-	IArt:             biteIArt.String(),
 	Tab:              biteTab.String(),
-	NFlip:            biteFlip.String(),
+	Flip:             biteFlip.String(),
 	LogIndex:         EthBiteLog.Index,
 	TransactionIndex: EthBiteLog.TxIndex,
 	Raw:              biteRawJson,

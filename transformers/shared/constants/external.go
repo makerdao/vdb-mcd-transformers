@@ -54,8 +54,7 @@ func PitContractAddress() string     { return getEnvironmentString("contract.add
 func VatContractAddress() string     { return getEnvironmentString("contract.address.MCD_VAT") }
 func VowContractAddress() string     { return getEnvironmentString("contract.address.MCD_VOW") }
 
-func CatABI() string { return getEnvironmentString("contract.abi.cat") }
-
+func CatABI() string        { return getEnvironmentString("contract.abi.MCD_CAT") }
 func FlapperABI() string    { return getEnvironmentString("contract.abi.mcd_flap") }
 func FlipperABI() string    { return getEnvironmentString("contract.abi.eth_flip") }
 func FlopperABI() string    { return getEnvironmentString("contract.abi.mcd_flop") }
