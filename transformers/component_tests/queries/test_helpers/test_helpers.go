@@ -94,7 +94,7 @@ type IlkState struct {
 	Updated sql.NullString
 }
 
-func GetIlkState(seed int) map[string]string {
+func GetIlkValues(seed int) map[string]string {
 	valuesMap := make(map[string]string)
 	valuesMap[vat.IlkRate] = strconv.Itoa(1 + seed)
 	valuesMap[vat.IlkArt] = strconv.Itoa(2 + seed)
@@ -108,6 +108,24 @@ func GetIlkState(seed int) map[string]string {
 	valuesMap[jug.IlkTax] = strconv.Itoa(9 + seed)
 
 	return valuesMap
+}
+
+func IlkStateFromValues(ilk, updated, created string, ilkValues map[string]string) IlkState {
+	return IlkState{
+		Ilk:     ilk,
+		Rate:    ilkValues[vat.IlkRate],
+		Art:     ilkValues[vat.IlkArt],
+		Spot:    ilkValues[vat.IlkSpot],
+		Line:    ilkValues[vat.IlkLine],
+		Dust:    ilkValues[vat.IlkDust],
+		Chop:    ilkValues[cat.IlkChop],
+		Lump:    ilkValues[cat.IlkLump],
+		Flip:    ilkValues[cat.IlkFlip],
+		Rho:     ilkValues[jug.IlkRho],
+		Tax:     ilkValues[jug.IlkTax],
+		Created: sql.NullString{String: created, Valid: true},
+		Updated: sql.NullString{String: updated, Valid: true},
+	}
 }
 
 func GetMetadata(fieldType, ilk string, valueType utils.ValueType) utils.StorageValueMetadata {
@@ -174,6 +192,10 @@ func CreateUrn(setupData UrnSetupData, metadata UrnMetadata, vatRepo vat.VatStor
 	Expect(err).NotTo(HaveOccurred())
 
 	_, err = headerRepo.CreateOrUpdateHeader(setupData.Header)
+	if err == repositories.ErrValidHeaderExists {
+		// In some tests, the header has been created in other operations
+		err = nil
+	}
 	Expect(err).NotTo(HaveOccurred())
 }
 
@@ -230,7 +252,6 @@ type UrnState struct {
 	Safe        bool
 	Created     sql.NullString
 	Updated     sql.NullString
-	// Frobs and bites collections, and ilk object, are missing
 }
 
 func AssertUrn(actual, expected UrnState) {
@@ -253,4 +274,11 @@ func AssertUrn(actual, expected UrnState) {
 	Expect(actual.Safe).To(Equal(expected.Safe))
 	Expect(actual.Created).To(Equal(expected.Created))
 	Expect(actual.Updated).To(Equal(expected.Updated))
+}
+
+type FrobEvent struct {
+	IlkId string
+	UrnId string
+	Dink  string
+	Dart  string
 }

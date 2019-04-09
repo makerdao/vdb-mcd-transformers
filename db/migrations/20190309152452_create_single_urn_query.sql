@@ -2,7 +2,7 @@
 -- SQL in this section is executed when the migration is applied.
 
 -- Function returning state for a single urn as of given block
-CREATE OR REPLACE FUNCTION maker.get_urn_state_at_block(ilk TEXT, urn TEXT, block_height NUMERIC)
+CREATE OR REPLACE FUNCTION maker.get_urn_state_at_block(ilk TEXT, urn TEXT, block_height BIGINT)
   RETURNS maker.urn_state
 AS
 
@@ -97,8 +97,9 @@ FROM ink
   -- Add collections of frob and bite events?
 WHERE ink.urn_id IS NOT NULL
 $body$
-  LANGUAGE SQL;
+LANGUAGE SQL
+STABLE;
 
 
 -- +goose Down
-DROP FUNCTION IF EXISTS maker.get_urn_state_at_block(TEXT, TEXT, NUMERIC);
+DROP FUNCTION IF EXISTS maker.get_urn_state_at_block(TEXT, TEXT, BIGINT);

@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 10.6
--- Dumped by pg_dump version 10.6
+-- Dumped from database version 10.5
+-- Dumped by pg_dump version 10.5
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -37,6 +37,16 @@ COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
 
 
 --
+-- Name: era; Type: TYPE; Schema: maker; Owner: -
+--
+
+CREATE TYPE maker.era AS (
+	epoch bigint,
+	iso timestamp without time zone
+);
+
+
+--
 -- Name: frob_event; Type: TYPE; Schema: maker; Owner: -
 --
 
@@ -44,7 +54,8 @@ CREATE TYPE maker.frob_event AS (
 	ilkid text,
 	urnid text,
 	dink numeric,
-	dart numeric
+	dart numeric,
+	block_number bigint
 );
 
 
@@ -83,13 +94,27 @@ CREATE TYPE maker.relevant_block AS (
 
 
 --
+-- Name: tx; Type: TYPE; Schema: maker; Owner: -
+--
+
+CREATE TYPE maker.tx AS (
+	transaction_hash text,
+	transaction_index integer,
+	block_number bigint,
+	block_hash text,
+	tx_from text,
+	tx_to text
+);
+
+
+--
 -- Name: urn_state; Type: TYPE; Schema: maker; Owner: -
 --
 
 CREATE TYPE maker.urn_state AS (
 	urnid text,
 	ilkid text,
-	blockheight numeric,
+	blockheight bigint,
 	ink numeric,
 	art numeric,
 	ratio numeric,
@@ -100,34 +125,70 @@ CREATE TYPE maker.urn_state AS (
 
 
 --
--- Name: frobs(text, text); Type: FUNCTION; Schema: maker; Owner: -
+-- Name: all_frobs(text); Type: FUNCTION; Schema: maker; Owner: -
 --
 
-CREATE FUNCTION maker.frobs(ilk text, urn text) RETURNS SETOF maker.frob_event
-    LANGUAGE sql
+CREATE FUNCTION maker.all_frobs(ilk text) RETURNS SETOF maker.frob_event
+    LANGUAGE sql STABLE
     AS $_$
-WITH
-  ilk AS (SELECT id FROM maker.ilks WHERE ilks.ilk = $1),
-  urn AS (
-    SELECT id FROM maker.urns
-    WHERE ilk_id = (SELECT id FROM ilk)
-      AND guy = $2
-  )
+  WITH
+    ilk AS (SELECT id FROM maker.ilks WHERE ilks.ilk = $1)
 
-SELECT $1 AS ilkId, $2 AS urnId, dink, dart
-  FROM maker.vat_frob LEFT JOIN headers ON vat_frob.header_id = headers.id
-WHERE vat_frob.urn_id = (SELECT id FROM urn)
-ORDER BY block_number DESC
-
+  SELECT $1 AS ilkId, guy AS urnId, dink, dart, block_number
+  FROM maker.vat_frob
+  LEFT JOIN maker.urns ON vat_frob.urn_id = urns.id
+  LEFT JOIN headers    ON vat_frob.header_id = headers.id
+  WHERE urns.ilk_id = (SELECT id FROM ilk)
+  ORDER BY guy, block_number DESC
 $_$;
 
 
 --
--- Name: get_all_urn_states_at_block(numeric); Type: FUNCTION; Schema: maker; Owner: -
+-- Name: frob_event_ilk(maker.frob_event); Type: FUNCTION; Schema: maker; Owner: -
 --
 
-CREATE FUNCTION maker.get_all_urn_states_at_block(block_height numeric) RETURNS SETOF maker.urn_state
-    LANGUAGE sql
+CREATE FUNCTION maker.frob_event_ilk(event maker.frob_event) RETURNS SETOF maker.ilk_state
+    LANGUAGE sql STABLE
+    AS $$
+  SELECT * FROM maker.get_ilk_at_block_number(
+    event.block_number,
+    (SELECT id FROM maker.ilks WHERE ilk = event.ilkid))
+$$;
+
+
+--
+-- Name: frob_event_tx(maker.frob_event); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.frob_event_tx(event maker.frob_event) RETURNS maker.tx
+    LANGUAGE sql STABLE
+    AS $$
+  SELECT txs.hash, txs.tx_index, block_number, headers.hash, tx_from, tx_to
+  FROM public.light_sync_transactions txs
+  LEFT JOIN headers ON txs.header_id = headers.id
+  WHERE block_number <= event.block_number
+  ORDER BY block_number DESC
+  LIMIT 1 -- Should always be true anyway?
+$$;
+
+
+--
+-- Name: frob_event_urn(maker.frob_event); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.frob_event_urn(event maker.frob_event) RETURNS SETOF maker.urn_state
+    LANGUAGE sql STABLE
+    AS $$
+  SELECT * FROM maker.get_urn_state_at_block(event.ilkid, event.urnid, event.block_number)
+$$;
+
+
+--
+-- Name: get_all_urn_states_at_block(bigint); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.get_all_urn_states_at_block(block_height bigint) RETURNS SETOF maker.urn_state
+    LANGUAGE sql STABLE
     AS $_$
 WITH
   urns AS (
@@ -401,7 +462,7 @@ $_$;
 --
 
 CREATE FUNCTION maker.get_ilk_blocks_before(block_number bigint, ilk_id integer) RETURNS SETOF maker.relevant_block
-    LANGUAGE sql
+    LANGUAGE sql STABLE
     AS $_$
 SELECT
   block_number,
@@ -490,46 +551,53 @@ $_$;
 --
 
 CREATE FUNCTION maker.get_ilk_history_before_block(block_number bigint, ilk_id integer) RETURNS SETOF maker.ilk_state
-    LANGUAGE plpgsql
+    LANGUAGE plpgsql STABLE
     AS $_$
 DECLARE
-  r record;
+  r maker.relevant_block;
 BEGIN
   FOR r IN SELECT * FROM maker.get_ilk_blocks_before($1, $2)
   LOOP
     RETURN QUERY
-    SELECT * FROM maker.get_ilk_at_block_number(r.block_number::bigint, $2::integer);
+    SELECT * FROM maker.get_ilk_at_block_number(r.block_number, $2::integer);
   END LOOP;
 END;
 $_$;
 
 
 --
--- Name: get_urn_history_before_block(text, text, numeric); Type: FUNCTION; Schema: maker; Owner: -
+-- Name: get_urn_history_before_block(text, text, bigint); Type: FUNCTION; Schema: maker; Owner: -
 --
 
-CREATE FUNCTION maker.get_urn_history_before_block(ilk text, urn text, block_height numeric) RETURNS SETOF maker.urn_state
-    LANGUAGE plpgsql
+CREATE FUNCTION maker.get_urn_history_before_block(ilk text, urn text, block_height bigint) RETURNS SETOF maker.urn_state
+    LANGUAGE plpgsql STABLE
     AS $_$
 DECLARE
-  i NUMERIC;
+  blocks BIGINT[];
+  i BIGINT;
   ilkId NUMERIC;
   urnId NUMERIC;
 BEGIN
   SELECT id FROM maker.ilks WHERE ilks.ilk = $1 INTO ilkId;
   SELECT id FROM maker.urns WHERE urns.guy = $2 AND urns.ilk_id = ilkID INTO urnId;
 
-  CREATE TEMP TABLE updated ON COMMIT DROP AS
-  SELECT block_number FROM (
-    SELECT block_number FROM maker.vat_urn_ink
-    WHERE vat_urn_ink.urn_id = urnId AND block_number <= $3
-    UNION
-    SELECT block_number FROM maker.vat_urn_art
-    WHERE vat_urn_art.urn_id = urnId AND block_number <= $3
-  ) inks_and_arts
-  ORDER BY block_number DESC;
+  blocks := ARRAY(
+    SELECT block_number
+    FROM (
+       SELECT block_number
+       FROM maker.vat_urn_ink
+       WHERE vat_urn_ink.urn_id = urnId
+         AND block_number <= $3
+       UNION
+       SELECT block_number
+       FROM maker.vat_urn_art
+       WHERE vat_urn_art.urn_id = urnId
+         AND block_number <= $3
+     ) inks_and_arts
+    ORDER BY block_number DESC
+  );
 
-  FOR i IN SELECT block_number FROM updated
+  FOREACH i IN ARRAY blocks
     LOOP
       RETURN QUERY
         SELECT * FROM maker.get_urn_state_at_block(ilk, urn, i);
@@ -539,11 +607,11 @@ $_$;
 
 
 --
--- Name: get_urn_state_at_block(text, text, numeric); Type: FUNCTION; Schema: maker; Owner: -
+-- Name: get_urn_state_at_block(text, text, bigint); Type: FUNCTION; Schema: maker; Owner: -
 --
 
-CREATE FUNCTION maker.get_urn_state_at_block(ilk text, urn text, block_height numeric) RETURNS maker.urn_state
-    LANGUAGE sql
+CREATE FUNCTION maker.get_urn_state_at_block(ilk text, urn text, block_height bigint) RETURNS maker.urn_state
+    LANGUAGE sql STABLE
     AS $_$
 WITH
   urn AS (
@@ -635,6 +703,64 @@ FROM ink
   -- Add collections of frob and bite events?
 WHERE ink.urn_id IS NOT NULL
 $_$;
+
+
+--
+-- Name: ilk_state_frobs(maker.ilk_state); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.ilk_state_frobs(state maker.ilk_state) RETURNS SETOF maker.frob_event
+    LANGUAGE sql STABLE
+    AS $$
+  SELECT * FROM maker.all_frobs(state.ilk)
+  WHERE block_number <= state.block_number
+$$;
+
+
+--
+-- Name: tx_era(maker.tx); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.tx_era(tx maker.tx) RETURNS maker.era
+    LANGUAGE sql STABLE
+    AS $$
+SELECT block_timestamp::BIGINT AS "epoch", (SELECT TIMESTAMP 'epoch' + block_timestamp * INTERVAL '1 second') AS iso
+  FROM headers WHERE block_number = tx.block_number
+$$;
+
+
+--
+-- Name: urn_frobs(text, text); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.urn_frobs(ilk text, urn text) RETURNS SETOF maker.frob_event
+    LANGUAGE sql STABLE
+    AS $_$
+  WITH
+    ilk AS (SELECT id FROM maker.ilks WHERE ilks.ilk = $1),
+    urn AS (
+      SELECT id FROM maker.urns
+      WHERE ilk_id = (SELECT id FROM ilk)
+        AND guy = $2
+    )
+
+  SELECT $1 AS ilkId, $2 AS urnId, dink, dart, block_number
+  FROM maker.vat_frob LEFT JOIN headers ON vat_frob.header_id = headers.id
+  WHERE vat_frob.urn_id = (SELECT id FROM urn)
+  ORDER BY block_number DESC
+$_$;
+
+
+--
+-- Name: urn_state_frobs(maker.urn_state); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.urn_state_frobs(state maker.urn_state) RETURNS SETOF maker.frob_event
+    LANGUAGE sql STABLE
+    AS $$
+  SELECT * FROM maker.urn_frobs(state.ilkid, state.urnid)
+  WHERE block_number <= state.blockheight
+$$;
 
 
 --
