@@ -17,9 +17,8 @@
 package storage
 
 import (
-	"database/sql"
-	"math/big"
-
+	"errors"
+	
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 )
 
@@ -28,9 +27,11 @@ type Urn struct {
 	Guy string
 }
 
+var ErrNoFlips = errors.New("no flips exist in db")
+
 type IMakerStorageRepository interface {
 	GetDaiKeys() ([]string, error)
-	GetMaxFlip() (*big.Int, error)
+	GetMaxFlip() (int64, error)
 	GetGemKeys() ([]Urn, error)
 	GetIlks() ([]string, error)
 	GetVatSinKeys() ([]string, error)
@@ -56,14 +57,18 @@ func (repository *MakerStorageRepository) GetDaiKeys() ([]string, error) {
 	return daiKeys, err
 }
 
-func (repository *MakerStorageRepository) GetMaxFlip() (*big.Int, error) {
-	var maxFlip big.Int
-	err := repository.db.Get(&maxFlip, `SELECT MAX(nflip) FROM maker.cat_nflip`)
-	if err == sql.ErrNoRows {
-		// No flips have occurred; this is different from flip 0 having occurred
-		return nil, nil
+func (repository *MakerStorageRepository) GetMaxFlip() (int64, error) {
+	var flipExists bool
+	existErr := repository.db.Get(&flipExists, `SELECT EXISTS(SELECT 1 FROM maker.cat_nflip)`)
+	if existErr != nil {
+		return 0, existErr
 	}
-	return &maxFlip, err
+	if flipExists {
+		var maxFlip int64
+		maxErr := repository.db.Get(&maxFlip, `SELECT MAX(nflip) FROM maker.cat_nflip`)
+		return maxFlip, maxErr
+	}
+	return 0, ErrNoFlips
 }
 
 func (repository *MakerStorageRepository) GetGemKeys() ([]Urn, error) {

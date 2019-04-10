@@ -25,7 +25,7 @@ var _ = Describe("Cat storage repository", func() {
 		fakeAddress     = "0x12345"
 		fakeIlk         = "fake_ilk"
 		fakeUint256     = "12345"
-		fakeBytes32     = "fake_bytes32"
+		fakeBytes32     = "0x123456789abcdef123456789abcdef123456789abcdef123456789abcdef"
 	)
 
 	BeforeEach(func() {
@@ -173,7 +173,8 @@ var _ = Describe("Cat storage repository", func() {
 
 				err = db.Get(&result, `SELECT block_number, block_hash, flip AS key, ilk_id AS value FROM maker.cat_flip_ilk`)
 				Expect(err).NotTo(HaveOccurred())
-				ilkID, err := shared.GetOrCreateIlk(fakeBytes32, db)
+				// Remove hex prefix from byte32 value that's an ilk
+				ilkID, err := shared.GetOrCreateIlk(fakeBytes32[2:], db)
 				Expect(err).NotTo(HaveOccurred())
 				AssertMapping(result, fakeBlockNumber, fakeBlockHash, fakeUint256, strconv.Itoa(ilkID))
 			})

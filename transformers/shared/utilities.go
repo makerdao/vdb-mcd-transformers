@@ -17,8 +17,11 @@
 package shared
 
 import (
+	"bytes"
+	"encoding/binary"
 	"math"
 	"math/big"
+	"strconv"
 
 	"github.com/ethereum/go-ethereum/common"
 
@@ -52,6 +55,25 @@ func BigIntToString(value *big.Int) string {
 	} else {
 		return result
 	}
+}
+
+func ConvertIntStringToHex(n string) (string, error) {
+	strAsInt, err := strconv.Atoi(n)
+	if err != nil {
+		return "", err
+	}
+	return ConvertIntToHex(strAsInt)
+}
+
+func ConvertIntToHex(n int) (string, error) {
+	b := new(bytes.Buffer)
+	err := binary.Write(b, binary.BigEndian, uint64(n))
+	if err != nil {
+		return "", err
+	}
+	leftPaddedBytes := common.LeftPadBytes(b.Bytes(), 32)
+	hex := common.Bytes2Hex(leftPaddedBytes)
+	return hex, nil
 }
 
 func GetUpdatedLogNoteDataBytesAtIndex(n int, logData []byte) []byte {
