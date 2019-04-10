@@ -9,8 +9,8 @@ CREATE TABLE maker.flip_kick (
 	"end"         TIMESTAMP WITH TIME ZONE,
   urn           TEXT,
   tab           NUMERIC,
-  tx_idx        INTEGER NOT NUll,
-  log_idx       INTEGER NOT NUll,
+  tx_idx        INTEGER NOT NULL,
+  log_idx       INTEGER NOT NULL,
   raw_log       JSONB,
   UNIQUE (header_id, tx_idx, log_idx)
 );
