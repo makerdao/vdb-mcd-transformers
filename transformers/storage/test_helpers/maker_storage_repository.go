@@ -1,8 +1,6 @@
 package test_helpers
 
 import (
-	"math/big"
-
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 
 	"github.com/vulcanize/mcd_transformers/transformers/storage"
@@ -26,7 +24,7 @@ type MockMakerStorageRepository struct {
 	GetUrnsCalled       bool
 	GetUrnsError        error
 	Ilks                []string
-	MaxFlip             *big.Int
+	MaxFlip             int64
 	SinKeys             []string
 	Urns                []storage.Urn
 }
@@ -46,7 +44,7 @@ func (repository *MockMakerStorageRepository) GetIlks() ([]string, error) {
 	return repository.Ilks, repository.GetIlksError
 }
 
-func (repository *MockMakerStorageRepository) GetMaxFlip() (*big.Int, error) {
+func (repository *MockMakerStorageRepository) GetMaxFlip() (int64, error) {
 	repository.GetMaxFlipCalled = true
 	return repository.MaxFlip, repository.GetMaxFlipError
 }

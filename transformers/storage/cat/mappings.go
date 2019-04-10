@@ -1,8 +1,6 @@
 package cat
 
 import (
-	"strconv"
-
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/sirupsen/logrus"
 
@@ -10,6 +8,7 @@ import (
 	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	s2 "github.com/vulcanize/mcd_transformers/transformers/storage"
 )
@@ -143,15 +142,18 @@ func getIlkLumpMetadata(ilk string) utils.StorageValueMetadata {
 func (mappings CatMappings) loadFlipsKeys() error {
 	maxFlip, err := mappings.StorageRepository.GetMaxFlip()
 	if err != nil {
+		if err == s2.ErrNoFlips {
+			return nil
+		}
 		logrus.Error("loadFlipsKeys: error getting max flip: ", err)
 		return err
-	} else if maxFlip == nil { // No flips occurred yet
-		return nil
 	}
 
-	last := maxFlip.Int64()
-	for flip := 0; int64(flip) <= last; flip++ {
-		flipStr := strconv.Itoa(flip)
+	for flip := 0; int64(flip) <= maxFlip; flip++ {
+		flipStr, err := shared.ConvertIntToHex(flip)
+		if err != nil {
+			return err
+		}
 		mappings.mappings[getFlipIlkKey(flipStr)] = getFlipIlkMetadata(flipStr)
 		mappings.mappings[getFlipUrnKey(flipStr)] = getFlipUrnMetadata(flipStr)
 		mappings.mappings[getFlipInkKey(flipStr)] = getFlipInkMetadata(flipStr)

@@ -3,6 +3,8 @@ package cat
 import (
 	"fmt"
 
+	"github.com/ethereum/go-ethereum/common"
+
 	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 
@@ -176,7 +178,9 @@ func (repository *CatStorageRepository) insertFlipIlk(blockNumber int, blockHash
 	if txErr != nil {
 		return txErr
 	}
-	ilkID, ilkErr := shared.GetOrCreateIlkInTransaction(ilk, tx)
+	// Ilks are stored without prefix in the db, but bytes32 values are decoded with a prefix
+	ilkWithoutPrefix := common.Bytes2Hex(common.FromHex(ilk))
+	ilkID, ilkErr := shared.GetOrCreateIlkInTransaction(ilkWithoutPrefix, tx)
 	if ilkErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {

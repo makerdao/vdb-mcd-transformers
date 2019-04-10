@@ -17,11 +17,12 @@
 package storage_test
 
 import (
+	"math/big"
+	"strconv"
+
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"math/big"
-	"strconv"
 
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres/repositories"
@@ -110,6 +111,26 @@ var _ = Describe("Maker storage repository", func() {
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(daiKeys)).To(BeZero())
+		})
+	})
+
+	Describe("getting max flip", func() {
+		It("fetches the max flip", func() {
+			insertCatNFlip("1", db)
+			insertCatNFlip("3", db)
+			insertCatNFlip("2", db)
+
+			maxFlip, err := repository.GetMaxFlip()
+
+			Expect(err).NotTo(HaveOccurred())
+			Expect(maxFlip).To(Equal(int64(3)))
+		})
+
+		It("returns ErrNoFlips if no flips from which to draw max", func() {
+			_, err := repository.GetMaxFlip()
+
+			Expect(err).To(HaveOccurred())
+			Expect(err).To(MatchError(storage.ErrNoFlips))
 		})
 	})
 
@@ -334,6 +355,11 @@ var _ = Describe("Maker storage repository", func() {
 		})
 	})
 })
+
+func insertCatNFlip(nflip string, db *postgres.DB) {
+	_, err := db.Exec(`INSERT INTO maker.cat_nflip (nflip) VALUES ($1)`, nflip)
+	Expect(err).NotTo(HaveOccurred())
+}
 
 func insertVatFold(urn string, blockNumber int64, db *postgres.DB) {
 	headerRepository := repositories.NewHeaderRepository(db)

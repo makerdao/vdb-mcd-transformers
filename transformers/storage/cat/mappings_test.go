@@ -1,13 +1,12 @@
 package cat_test
 
 import (
-	"math/big"
-
+	"database/sql"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-
+	storage2 "github.com/vulcanize/mcd_transformers/transformers/storage"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/storage"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
@@ -20,7 +19,7 @@ import (
 var _ = Describe("Cat storage mappings", func() {
 	const (
 		fakeIlk  = "fakeIlk"
-		fakeFlip = "2"
+		fakeFlip = storage.IndexOne
 	)
 
 	var (
@@ -42,7 +41,7 @@ var _ = Describe("Cat storage mappings", func() {
 		})
 
 		It("returns error if key does not exist", func() {
-			_, err := mappings.Lookup(common.HexToHash(fakes.FakeHash.Hex()))
+			_, err := mappings.Lookup(fakes.FakeHash)
 
 			Expect(err).To(HaveOccurred())
 			Expect(err).To(MatchError(utils.ErrStorageKeyNotFound{Key: fakes.FakeHash.Hex()}))
@@ -66,22 +65,31 @@ var _ = Describe("Cat storage mappings", func() {
 			Expect(err).To(MatchError(fakes.FakeError))
 		})
 
-		It("returns error if max flip lookup fails", func() {
-			storageRepository.GetMaxFlipError = fakes.FakeError
+		It("does not return error if no flips found", func() {
+			storageRepository.GetMaxFlipError = storage2.ErrNoFlips
 
 			_, err := mappings.Lookup(fakes.FakeHash)
 
 			Expect(err).To(HaveOccurred())
-			Expect(err).To(MatchError(fakes.FakeError))
+			Expect(err).To(MatchError(utils.ErrStorageKeyNotFound{Key: fakes.FakeHash.Hex()}))
+		})
+
+		It("returns error if max flip lookup fails for other reason", func() {
+			storageRepository.GetMaxFlipError = sql.ErrNoRows
+
+			_, err := mappings.Lookup(fakes.FakeHash)
+
+			Expect(err).To(HaveOccurred())
+			Expect(err).To(MatchError(sql.ErrNoRows))
 		})
 
 		It("interpolates flips up to max", func() {
-			storageRepository.MaxFlip = big.NewInt(1)
+			storageRepository.MaxFlip = 1
 
-			_, err := mappings.Lookup(storage.GetMapping(storage.IndexTwo, "0"))
+			_, err := mappings.Lookup(storage.GetMapping(storage.IndexTwo, storage.IndexZero))
 			Expect(err).NotTo(HaveOccurred())
 
-			_, err = mappings.Lookup(storage.GetMapping(storage.IndexTwo, "1"))
+			_, err = mappings.Lookup(storage.GetMapping(storage.IndexTwo, storage.IndexOne))
 			Expect(err).NotTo(HaveOccurred())
 		})
 
@@ -123,10 +131,10 @@ var _ = Describe("Cat storage mappings", func() {
 		})
 
 		Describe("flip", func() {
-			var flipIlkKey = common.BytesToHash(crypto.Keccak256(common.FromHex(fakeFlip + cat.FlipsMappingIndex)))
+			var flipIlkKey = common.BytesToHash(crypto.Keccak256(common.FromHex("0x" + fakeFlip + cat.FlipsMappingIndex)))
 
 			BeforeEach(func() {
-				storageRepository.MaxFlip = big.NewInt(2)
+				storageRepository.MaxFlip = 2
 			})
 
 			It("returns value metadata for flip ilk", func() {
