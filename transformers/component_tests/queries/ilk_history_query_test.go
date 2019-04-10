@@ -67,7 +67,7 @@ var _ = Describe("Ilk State History Query", func() {
 
 		var dbResult []test_helpers.IlkState
 		err = db.Select(&dbResult,
-			`SELECT ilk, rate, art, spot, line, dust, chop, lump, flip, rho, tax, created, updated from maker.get_ilk_history_before_block($1, $2)`,
+			`SELECT ilk, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated from maker.get_ilk_history_before_block($1, $2)`,
 			blockTwo,
 			ilkId)
 		Expect(err).NotTo(HaveOccurred())
@@ -92,13 +92,12 @@ var _ = Describe("Ilk State History Query", func() {
 
 		var dbResult []test_helpers.IlkState
 		err = db.Select(&dbResult,
-			`SELECT ilk, rate, art, spot, line, dust, chop, lump, flip, rho, tax, created, updated from maker.get_ilk_history_before_block($1, $2)`,
+			`SELECT ilk, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated from maker.get_ilk_history_before_block($1, $2)`,
 			blockTwo,
 			ilkId)
 		Expect(err).NotTo(HaveOccurred())
 		expectedBlockOneAnotherIlkState := test_helpers.IlkStateFromValues(test_helpers.AnotherFakeIlk,
 			blockOneHeader.Timestamp, blockOneHeader.Timestamp, blockOneAnotherFakeIlkValues)
-
 		//does not include fake ilk's results
 		Expect(len(dbResult)).To(Equal(1))
 		Expect(dbResult).To(ConsistOf([]test_helpers.IlkState{
@@ -120,7 +119,7 @@ var _ = Describe("Ilk State History Query", func() {
 
 		var dbResult []test_helpers.IlkState
 		err = db.Select(&dbResult,
-			`SELECT ilk, rate, art, spot, line, dust, chop, lump, flip, rho, tax, created, updated from maker.get_ilk_history_before_block($1, $2)`,
+			`SELECT ilk, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated from maker.get_ilk_history_before_block($1, $2)`,
 			blockZero,
 			ilkId)
 		Expect(err).NotTo(HaveOccurred())
@@ -141,7 +140,7 @@ var _ = Describe("Ilk State History Query", func() {
 
 		var dbResult []test_helpers.IlkState
 		err = db.Select(&dbResult,
-			`SELECT ilk, rate, art, spot, line, dust, chop, lump, flip, rho, tax, created, updated from maker.get_ilk_history_before_block($1, $2)`,
+			`SELECT ilk, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated from maker.get_ilk_history_before_block($1, $2)`,
 			blockOneHundred,
 			ilkId)
 		Expect(err).NotTo(HaveOccurred())

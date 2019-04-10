@@ -28,11 +28,11 @@ import (
 )
 
 const (
-	IlkTax  = "tax"
+	IlkDuty = "duty"
 	IlkRho  = "rho"
 	JugVat  = "vat"
 	JugVow  = "vow"
-	JugRepo = "repo"
+	JugBase = "base"
 )
 
 var (
@@ -44,8 +44,8 @@ var (
 	VowKey      = common.HexToHash(storage.IndexThree)
 	VowMetadata = utils.GetStorageValueMetadata(JugVow, nil, utils.Bytes32)
 
-	RepoKey      = common.HexToHash(storage.IndexFour)
-	RepoMetadata = utils.GetStorageValueMetadata(JugRepo, nil, utils.Uint256)
+	BaseKey      = common.HexToHash(storage.IndexFour)
+	BaseMetadata = utils.GetStorageValueMetadata(JugBase, nil, utils.Uint256)
 )
 
 type JugMappings struct {
@@ -79,7 +79,7 @@ func (mappings *JugMappings) loadMappings() error {
 		return err
 	}
 	for _, ilk := range ilks {
-		mappings.mappings[getTaxKey(ilk)] = getTaxMetadata(ilk)
+		mappings.mappings[getDutyKey(ilk)] = getDutyMetadata(ilk)
 		mappings.mappings[getRhoKey(ilk)] = getRhoMetadata(ilk)
 	}
 	return nil
@@ -89,21 +89,21 @@ func getStaticMappings() map[common.Hash]utils.StorageValueMetadata {
 	mappings := make(map[common.Hash]utils.StorageValueMetadata)
 	mappings[VatKey] = VatMetadata
 	mappings[VowKey] = VowMetadata
-	mappings[RepoKey] = RepoMetadata
+	mappings[BaseKey] = BaseMetadata
 	return mappings
 }
 
-func getTaxKey(ilk string) common.Hash {
+func getDutyKey(ilk string) common.Hash {
 	return storage.GetMapping(IlkMappingIndex, ilk)
 }
 
-func getTaxMetadata(ilk string) utils.StorageValueMetadata {
+func getDutyMetadata(ilk string) utils.StorageValueMetadata {
 	keys := map[utils.Key]string{constants.Ilk: ilk}
-	return utils.GetStorageValueMetadata(IlkTax, keys, utils.Uint256)
+	return utils.GetStorageValueMetadata(IlkDuty, keys, utils.Uint256)
 }
 
 func getRhoKey(ilk string) common.Hash {
-	return storage.GetIncrementedKey(getTaxKey(ilk), 1)
+	return storage.GetIncrementedKey(getDutyKey(ilk), 1)
 }
 
 func getRhoMetadata(ilk string) utils.StorageValueMetadata {

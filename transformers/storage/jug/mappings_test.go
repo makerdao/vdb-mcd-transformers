@@ -40,7 +40,7 @@ var _ = Describe("jug storage mappings", func() {
 
 			Expect(mappings.Lookup(jug.VatKey)).To(Equal(jug.VatMetadata))
 			Expect(mappings.Lookup(jug.VowKey)).To(Equal(jug.VowMetadata))
-			Expect(mappings.Lookup(jug.RepoKey)).To(Equal(jug.RepoMetadata))
+			Expect(mappings.Lookup(jug.BaseKey)).To(Equal(jug.BaseMetadata))
 		})
 
 		It("returns error if key does not exist", func() {
@@ -70,7 +70,7 @@ var _ = Describe("jug storage mappings", func() {
 			mappings := jug.JugMappings{StorageRepository: storageRepository}
 			ilkTaxKey := common.BytesToHash(crypto.Keccak256(common.FromHex("0x" + fakeIlk + jug.IlkMappingIndex)))
 			expectedMetadata := utils.StorageValueMetadata{
-				Name: jug.IlkTax,
+				Name: jug.IlkDuty,
 				Keys: map[utils.Key]string{constants.Ilk: fakeIlk},
 				Type: utils.Uint256,
 			}

@@ -74,15 +74,15 @@ var _ = Describe("Jug storage repository", func() {
 			})
 		})
 
-		Describe("Tax", func() {
+		Describe("Duty", func() {
 			It("writes a row", func() {
-				ilkTaxMetadata := utils.GetStorageValueMetadata(jug.IlkTax, map[utils.Key]string{constants.Ilk: fakeIlk}, utils.Uint256)
+				ilkTaxMetadata := utils.GetStorageValueMetadata(jug.IlkDuty, map[utils.Key]string{constants.Ilk: fakeIlk}, utils.Uint256)
 
 				err := repo.Create(fakeBlockNumber, fakeBlockHash, ilkTaxMetadata, fakeUint256)
 
 				Expect(err).NotTo(HaveOccurred())
 				var result MappingRes
-				err = db.Get(&result, `SELECT block_number, block_hash, ilk_id AS KEY, tax AS VALUE FROM maker.jug_ilk_tax`)
+				err = db.Get(&result, `SELECT block_number, block_hash, ilk_id AS KEY, duty AS VALUE FROM maker.jug_ilk_duty`)
 				Expect(err).NotTo(HaveOccurred())
 				ilkID, err := shared.GetOrCreateIlk(fakeIlk, db)
 				Expect(err).NotTo(HaveOccurred())
@@ -91,7 +91,7 @@ var _ = Describe("Jug storage repository", func() {
 			})
 
 			It("returns an error if metadata missing ilk", func() {
-				malformedIlkTaxMetadata := utils.GetStorageValueMetadata(jug.IlkTax, nil, utils.Uint256)
+				malformedIlkTaxMetadata := utils.GetStorageValueMetadata(jug.IlkDuty, nil, utils.Uint256)
 
 				err := repo.Create(fakeBlockNumber, fakeBlockHash, malformedIlkTaxMetadata, fakeUint256)
 				Expect(err).To(MatchError(utils.ErrMetadataMalformed{MissingData: constants.Ilk}))
@@ -119,14 +119,14 @@ var _ = Describe("Jug storage repository", func() {
 		AssertVariable(result, fakeBlockNumber, fakeBlockHash, fakeUint256)
 	})
 
-	It("persists a jug repo", func() {
+	It("persists a jug base", func() {
 		expectedRepo := "12345"
 
-		err := repo.Create(fakeBlockNumber, fakeBlockHash, jug.RepoMetadata, expectedRepo)
+		err := repo.Create(fakeBlockNumber, fakeBlockHash, jug.BaseMetadata, expectedRepo)
 		Expect(err).NotTo(HaveOccurred())
 
 		var result VariableRes
-		err = db.Get(&result, `SELECT block_number, block_hash, repo AS value FROM maker.jug_repo`)
+		err = db.Get(&result, `SELECT block_number, block_hash, base AS value FROM maker.jug_base`)
 		Expect(err).NotTo(HaveOccurred())
 
 		AssertVariable(result, fakeBlockNumber, fakeBlockHash, expectedRepo)
