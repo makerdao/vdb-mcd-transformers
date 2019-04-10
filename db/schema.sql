@@ -76,7 +76,7 @@ CREATE TYPE maker.ilk_state AS (
 	lump numeric,
 	flip text,
 	rho numeric,
-	tax numeric,
+	duty numeric,
 	created numeric,
 	updated numeric
 );
@@ -379,12 +379,12 @@ WITH rates AS (
           AND block_number <= $1
     ORDER BY ilk_id, block_number DESC
     LIMIT 1
-), taxes AS (
+), duties AS (
     SELECT
-      tax,
+      duty,
       ilk_id,
       block_hash
-    FROM maker.jug_ilk_tax
+    FROM maker.jug_ilk_duty
     WHERE ilk_id = ilkId
           AND block_number <= $1
     ORDER BY ilk_id, block_number DESC
@@ -426,7 +426,7 @@ SELECT
   lumps.lump,
   flips.flip,
   rhos.rho,
-  taxes.tax,
+  duties.duty,
   created.block_timestamp,
   updated.block_timestamp
 FROM maker.ilks AS ilks
@@ -439,7 +439,7 @@ FROM maker.ilks AS ilks
   LEFT JOIN lumps ON lumps.ilk_id = ilks.id
   LEFT JOIN flips ON flips.ilk_id = ilks.id
   LEFT JOIN rhos ON rhos.ilk_id = ilks.id
-  LEFT JOIN taxes ON taxes.ilk_id = ilks.id
+  LEFT JOIN duties ON duties.ilk_id = ilks.id
   LEFT JOIN created ON created.ilk_id = ilks.id
   LEFT JOIN updated ON updated.ilk_id = ilks.id
 WHERE (
@@ -452,7 +452,7 @@ WHERE (
   lumps.lump is not null OR
   flips.flip is not null OR
   rhos.rho is not null OR
-  taxes.tax is not null
+  duties.duty is not null
 )
 $_$;
 
@@ -540,7 +540,7 @@ SELECT
   block_number,
   block_hash,
   ilk_id
-FROM maker.jug_ilk_tax
+FROM maker.jug_ilk_duty
 WHERE block_number <= $1
       AND ilk_id = $2
 $_$;
@@ -1540,6 +1540,38 @@ ALTER SEQUENCE maker.ilks_id_seq OWNED BY maker.ilks.id;
 
 
 --
+-- Name: jug_base; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.jug_base (
+    id integer NOT NULL,
+    block_number bigint,
+    block_hash text,
+    base text
+);
+
+
+--
+-- Name: jug_base_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.jug_base_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: jug_base_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.jug_base_id_seq OWNED BY maker.jug_base.id;
+
+
+--
 -- Name: jug_drip; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -1680,6 +1712,39 @@ ALTER SEQUENCE maker.jug_file_vow_id_seq OWNED BY maker.jug_file_vow.id;
 
 
 --
+-- Name: jug_ilk_duty; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.jug_ilk_duty (
+    id integer NOT NULL,
+    block_number bigint,
+    block_hash text,
+    ilk_id integer NOT NULL,
+    duty numeric NOT NULL
+);
+
+
+--
+-- Name: jug_ilk_duty_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.jug_ilk_duty_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: jug_ilk_duty_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.jug_ilk_duty_id_seq OWNED BY maker.jug_ilk_duty.id;
+
+
+--
 -- Name: jug_ilk_rho; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -1710,71 +1775,6 @@ CREATE SEQUENCE maker.jug_ilk_rho_id_seq
 --
 
 ALTER SEQUENCE maker.jug_ilk_rho_id_seq OWNED BY maker.jug_ilk_rho.id;
-
-
---
--- Name: jug_ilk_tax; Type: TABLE; Schema: maker; Owner: -
---
-
-CREATE TABLE maker.jug_ilk_tax (
-    id integer NOT NULL,
-    block_number bigint,
-    block_hash text,
-    ilk_id integer NOT NULL,
-    tax numeric NOT NULL
-);
-
-
---
--- Name: jug_ilk_tax_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
---
-
-CREATE SEQUENCE maker.jug_ilk_tax_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: jug_ilk_tax_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
---
-
-ALTER SEQUENCE maker.jug_ilk_tax_id_seq OWNED BY maker.jug_ilk_tax.id;
-
-
---
--- Name: jug_repo; Type: TABLE; Schema: maker; Owner: -
---
-
-CREATE TABLE maker.jug_repo (
-    id integer NOT NULL,
-    block_number bigint,
-    block_hash text,
-    repo text
-);
-
-
---
--- Name: jug_repo_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
---
-
-CREATE SEQUENCE maker.jug_repo_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: jug_repo_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
---
-
-ALTER SEQUENCE maker.jug_repo_id_seq OWNED BY maker.jug_repo.id;
 
 
 --
@@ -3849,6 +3849,13 @@ ALTER TABLE ONLY maker.ilks ALTER COLUMN id SET DEFAULT nextval('maker.ilks_id_s
 
 
 --
+-- Name: jug_base id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.jug_base ALTER COLUMN id SET DEFAULT nextval('maker.jug_base_id_seq'::regclass);
+
+
+--
 -- Name: jug_drip id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
@@ -3877,24 +3884,17 @@ ALTER TABLE ONLY maker.jug_file_vow ALTER COLUMN id SET DEFAULT nextval('maker.j
 
 
 --
+-- Name: jug_ilk_duty id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.jug_ilk_duty ALTER COLUMN id SET DEFAULT nextval('maker.jug_ilk_duty_id_seq'::regclass);
+
+
+--
 -- Name: jug_ilk_rho id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.jug_ilk_rho ALTER COLUMN id SET DEFAULT nextval('maker.jug_ilk_rho_id_seq'::regclass);
-
-
---
--- Name: jug_ilk_tax id; Type: DEFAULT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.jug_ilk_tax ALTER COLUMN id SET DEFAULT nextval('maker.jug_ilk_tax_id_seq'::regclass);
-
-
---
--- Name: jug_repo id; Type: DEFAULT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.jug_repo ALTER COLUMN id SET DEFAULT nextval('maker.jug_repo_id_seq'::regclass);
 
 
 --
@@ -4532,6 +4532,14 @@ ALTER TABLE ONLY maker.ilks
 
 
 --
+-- Name: jug_base jug_base_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.jug_base
+    ADD CONSTRAINT jug_base_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: jug_drip jug_drip_header_id_tx_idx_log_idx_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -4596,27 +4604,19 @@ ALTER TABLE ONLY maker.jug_file_vow
 
 
 --
+-- Name: jug_ilk_duty jug_ilk_duty_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.jug_ilk_duty
+    ADD CONSTRAINT jug_ilk_duty_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: jug_ilk_rho jug_ilk_rho_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.jug_ilk_rho
     ADD CONSTRAINT jug_ilk_rho_pkey PRIMARY KEY (id);
-
-
---
--- Name: jug_ilk_tax jug_ilk_tax_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.jug_ilk_tax
-    ADD CONSTRAINT jug_ilk_tax_pkey PRIMARY KEY (id);
-
-
---
--- Name: jug_repo jug_repo_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.jug_repo
-    ADD CONSTRAINT jug_repo_pkey PRIMARY KEY (id);
 
 
 --
@@ -5453,19 +5453,19 @@ ALTER TABLE ONLY maker.jug_file_vow
 
 
 --
+-- Name: jug_ilk_duty jug_ilk_duty_ilk_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.jug_ilk_duty
+    ADD CONSTRAINT jug_ilk_duty_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id);
+
+
+--
 -- Name: jug_ilk_rho jug_ilk_rho_ilk_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.jug_ilk_rho
     ADD CONSTRAINT jug_ilk_rho_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id);
-
-
---
--- Name: jug_ilk_tax jug_ilk_tax_ilk_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.jug_ilk_tax
-    ADD CONSTRAINT jug_ilk_tax_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id);
 
 
 --

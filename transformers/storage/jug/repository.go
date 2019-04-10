@@ -38,14 +38,14 @@ func (repository JugStorageRepository) Create(blockNumber int, blockHash string,
 	switch metadata.Name {
 	case IlkRho:
 		return repository.insertIlkRho(blockNumber, blockHash, metadata, value.(string))
-	case IlkTax:
-		return repository.insertIlkTax(blockNumber, blockHash, metadata, value.(string))
+	case IlkDuty:
+		return repository.insertIlkDuty(blockNumber, blockHash, metadata, value.(string))
 	case JugVat:
 		return repository.insertJugVat(blockNumber, blockHash, value.(string))
 	case JugVow:
 		return repository.insertJugVow(blockNumber, blockHash, value.(string))
-	case JugRepo:
-		return repository.insertJugRepo(blockNumber, blockHash, value.(string))
+	case JugBase:
+		return repository.insertJugBase(blockNumber, blockHash, value.(string))
 
 	default:
 		panic(fmt.Sprintf("unrecognized jug contract storage name: %s", metadata.Name))
@@ -81,7 +81,7 @@ func (repository JugStorageRepository) insertIlkRho(blockNumber int, blockHash s
 	return tx.Commit()
 }
 
-func (repository JugStorageRepository) insertIlkTax(blockNumber int, blockHash string, metadata utils.StorageValueMetadata, tax string) error {
+func (repository JugStorageRepository) insertIlkDuty(blockNumber int, blockHash string, metadata utils.StorageValueMetadata, tax string) error {
 	ilk, err := getIlk(metadata.Keys)
 	if err != nil {
 		return err
@@ -98,7 +98,7 @@ func (repository JugStorageRepository) insertIlkTax(blockNumber int, blockHash s
 		}
 		return ilkErr
 	}
-	_, writeErr := tx.Exec(`INSERT INTO maker.jug_ilk_tax (block_number, block_hash, ilk_id, tax) VALUES ($1, $2, $3, $4)`, blockNumber, blockHash, ilkID, tax)
+	_, writeErr := tx.Exec(`INSERT INTO maker.jug_ilk_duty (block_number, block_hash, ilk_id, duty) VALUES ($1, $2, $3, $4)`, blockNumber, blockHash, ilkID, tax)
 
 	if writeErr != nil {
 		rollbackErr := tx.Rollback()
@@ -122,8 +122,8 @@ func (repository JugStorageRepository) insertJugVow(blockNumber int, blockHash s
 	return err
 }
 
-func (repository JugStorageRepository) insertJugRepo(blockNumber int, blockHash string, repo string) error {
-	_, err := repository.db.Exec(`INSERT INTO maker.jug_repo (block_number, block_hash, repo)
+func (repository JugStorageRepository) insertJugBase(blockNumber int, blockHash string, repo string) error {
+	_, err := repository.db.Exec(`INSERT INTO maker.jug_base (block_number, block_hash, base)
                                         VALUES ($1, $2, $3)`, blockNumber, blockHash, repo)
 	return err
 }

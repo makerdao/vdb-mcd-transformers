@@ -7,12 +7,12 @@ CREATE TABLE maker.jug_ilk_rho(
   rho           NUMERIC NOT NULL
 );
 
-CREATE TABLE maker.jug_ilk_tax(
+CREATE TABLE maker.jug_ilk_duty(
   id            SERIAL PRIMARY KEY,
   block_number  BIGINT,
   block_hash    TEXT,
   ilk_id        INTEGER NOT NULL REFERENCES maker.ilks (id),
-  tax           NUMERIC NOT NULL
+  duty          NUMERIC NOT NULL
 );
 
 CREATE TABLE maker.jug_vat(
@@ -29,16 +29,16 @@ CREATE TABLE maker.jug_vow(
   vow           TEXT
 );
 
-CREATE TABLE maker.jug_repo (
+CREATE TABLE maker.jug_base (
   id            SERIAL PRIMARY KEY,
   block_number  BIGINT,
   block_hash    TEXT,
-  repo          TEXT
+  base          TEXT
 );
 
 -- +goose Down
 DROP TABLE maker.jug_ilk_rho;
-DROP TABLE maker.jug_ilk_tax;
+DROP TABLE maker.jug_ilk_duty;
 DROP TABLE maker.jug_vat;
 DROP TABLE maker.jug_vow;
-DROP TABLE maker.jug_repo;
+DROP TABLE maker.jug_base;

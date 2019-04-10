@@ -9,7 +9,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-func TestDrip(t *testing.T) {
+func TestJug(t *testing.T) {
 	RegisterFailHandler(Fail)
 	RunSpecs(t, "Jug Suite")
 }

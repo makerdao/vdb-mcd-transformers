@@ -70,7 +70,7 @@ var _ = Describe("Ilk State Query", func() {
 
 		var dbResult test_helpers.IlkState
 		err = db.Get(&dbResult,
-			`SELECT ilk, rate, art, spot, line, dust, chop, lump, flip, rho, tax, created, updated from maker.get_ilk_at_block_number($1, $2)`,
+			`SELECT ilk, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated from maker.get_ilk_at_block_number($1, $2)`,
 			blockOne,
 			ilkId)
 		Expect(err).NotTo(HaveOccurred())
@@ -96,14 +96,14 @@ var _ = Describe("Ilk State Query", func() {
 
 		var fakeIlkResult test_helpers.IlkState
 		err = db.Get(&fakeIlkResult,
-			`SELECT ilk, rate, art, spot, line, dust, chop, lump, flip, rho, tax, created, updated from maker.get_ilk_at_block_number($1, $2)`,
+			`SELECT ilk, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated from maker.get_ilk_at_block_number($1, $2)`,
 			blockOne,
 			fakeIlkId)
 		Expect(err).NotTo(HaveOccurred())
 
 		var anotherFakeIlkResult test_helpers.IlkState
 		err = db.Get(&anotherFakeIlkResult,
-			`SELECT ilk, rate, art, spot, line, dust, chop, lump, flip, rho, tax, created, updated from maker.get_ilk_at_block_number($1, $2)`,
+			`SELECT ilk, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated from maker.get_ilk_at_block_number($1, $2)`,
 			blockOne,
 			anotherFakeIlkId)
 		Expect(err).NotTo(HaveOccurred())
@@ -127,7 +127,7 @@ var _ = Describe("Ilk State Query", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			var blockOneDbResult test_helpers.IlkState
-			err = db.Get(&blockOneDbResult, `SELECT ilk, rate, art, spot, line, dust, chop, lump, flip, rho, tax, created, updated from maker.get_ilk_at_block_number($1, $2)`, blockOne, fakeIlkId)
+			err = db.Get(&blockOneDbResult, `SELECT ilk, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated from maker.get_ilk_at_block_number($1, $2)`, blockOne, fakeIlkId)
 			Expect(err).NotTo(HaveOccurred())
 
 			expectedIlk := test_helpers.IlkStateFromValues(fakeIlk, blockOneHeader.Timestamp, blockOneHeader.Timestamp,
@@ -252,7 +252,7 @@ var _ = Describe("Ilk State Query", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		var blockOneDbResult test_helpers.IlkState
-		err = db.Get(&blockOneDbResult, `SELECT ilk, art, spot, line, dust, chop, lump, flip, rho, tax, created, updated from maker.get_ilk_at_block_number($1, $2)`, blockOne, fakeIlkId)
+		err = db.Get(&blockOneDbResult, `SELECT ilk, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated from maker.get_ilk_at_block_number($1, $2)`, blockOne, fakeIlkId)
 		Expect(err).NotTo(HaveOccurred())
 
 		expectedIlk := test_helpers.IlkStateFromValues(fakeIlk, blockOneHeader.Timestamp, blockOneHeader.Timestamp, blockOneFakeIlkValues)

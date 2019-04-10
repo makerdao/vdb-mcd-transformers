@@ -83,7 +83,7 @@ SELECT
   block_number,
   block_hash,
   ilk_id
-FROM maker.jug_ilk_tax
+FROM maker.jug_ilk_duty
 WHERE block_number <= $1
       AND ilk_id = $2
 $$
@@ -102,7 +102,7 @@ CREATE TYPE maker.ilk_state AS (
   lump         numeric,
   flip         text,
   rho          numeric,
-  tax          numeric,
+  duty         numeric,
   created      numeric,
   updated      numeric
 );
@@ -200,12 +200,12 @@ WITH rates AS (
           AND block_number <= $1
     ORDER BY ilk_id, block_number DESC
     LIMIT 1
-), taxes AS (
+), duties AS (
     SELECT
-      tax,
+      duty,
       ilk_id,
       block_hash
-    FROM maker.jug_ilk_tax
+    FROM maker.jug_ilk_duty
     WHERE ilk_id = ilkId
           AND block_number <= $1
     ORDER BY ilk_id, block_number DESC
@@ -247,7 +247,7 @@ SELECT
   lumps.lump,
   flips.flip,
   rhos.rho,
-  taxes.tax,
+  duties.duty,
   created.block_timestamp,
   updated.block_timestamp
 FROM maker.ilks AS ilks
@@ -260,7 +260,7 @@ FROM maker.ilks AS ilks
   LEFT JOIN lumps ON lumps.ilk_id = ilks.id
   LEFT JOIN flips ON flips.ilk_id = ilks.id
   LEFT JOIN rhos ON rhos.ilk_id = ilks.id
-  LEFT JOIN taxes ON taxes.ilk_id = ilks.id
+  LEFT JOIN duties ON duties.ilk_id = ilks.id
   LEFT JOIN created ON created.ilk_id = ilks.id
   LEFT JOIN updated ON updated.ilk_id = ilks.id
 WHERE (
@@ -273,7 +273,7 @@ WHERE (
   lumps.lump is not null OR
   flips.flip is not null OR
   rhos.rho is not null OR
-  taxes.tax is not null
+  duties.duty is not null
 )
 $$
 LANGUAGE SQL

@@ -31,7 +31,7 @@ var (
 	fakeIlkLumpMetadata = GetMetadata(cat.IlkLump, FakeIlk, utils.Uint256)
 	fakeIlkFlipMetadata = GetMetadata(cat.IlkFlip, FakeIlk, utils.Address)
 	fakeIlkRhoMetadata  = GetMetadata(jug.IlkRho, FakeIlk, utils.Uint256)
-	fakeIlkTaxMetadata  = GetMetadata(jug.IlkTax, FakeIlk, utils.Uint256)
+	fakeIlkTaxMetadata  = GetMetadata(jug.IlkDuty, FakeIlk, utils.Uint256)
 	FakeIlkVatMetadatas = []utils.StorageValueMetadata{
 		FakeIlkRateMetadata,
 		FakeIlkArtMetadata,
@@ -58,7 +58,7 @@ var (
 	anotherFakeIlkLumpMetadata = GetMetadata(cat.IlkLump, AnotherFakeIlk, utils.Uint256)
 	anotherFakeIlkFlipMetadata = GetMetadata(cat.IlkFlip, AnotherFakeIlk, utils.Address)
 	anotherFakeIlkRhoMetadata  = GetMetadata(jug.IlkRho, AnotherFakeIlk, utils.Uint256)
-	anotherFakeIlkTaxMetadata  = GetMetadata(jug.IlkTax, AnotherFakeIlk, utils.Uint256)
+	anotherFakeIlkTaxMetadata  = GetMetadata(jug.IlkDuty, AnotherFakeIlk, utils.Uint256)
 
 	AnotherFakeIlkVatMetadatas = []utils.StorageValueMetadata{
 		anotherFakeIlkRateMetadata,
@@ -89,7 +89,7 @@ type IlkState struct {
 	Lump    string
 	Flip    string
 	Rho     string
-	Tax     string
+	Duty    string
 	Created sql.NullString
 	Updated sql.NullString
 }
@@ -105,7 +105,7 @@ func GetIlkValues(seed int) map[string]string {
 	valuesMap[cat.IlkLump] = strconv.Itoa(7 + seed)
 	valuesMap[cat.IlkFlip] = "an address" + strconv.Itoa(seed)
 	valuesMap[jug.IlkRho] = strconv.Itoa(8 + seed)
-	valuesMap[jug.IlkTax] = strconv.Itoa(9 + seed)
+	valuesMap[jug.IlkDuty] = strconv.Itoa(9 + seed)
 
 	return valuesMap
 }
@@ -122,7 +122,7 @@ func IlkStateFromValues(ilk, updated, created string, ilkValues map[string]strin
 		Lump:    ilkValues[cat.IlkLump],
 		Flip:    ilkValues[cat.IlkFlip],
 		Rho:     ilkValues[jug.IlkRho],
-		Tax:     ilkValues[jug.IlkTax],
+		Duty:    ilkValues[jug.IlkDuty],
 		Created: sql.NullString{String: created, Valid: true},
 		Updated: sql.NullString{String: updated, Valid: true},
 	}
