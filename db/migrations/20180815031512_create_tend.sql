@@ -7,8 +7,8 @@ CREATE TABLE maker.tend (
   bid              NUMERIC,
   guy              TEXT,
   tic              NUMERIC,
-  log_idx          INTEGER NOT NUll,
-  tx_idx           INTEGER NOT NUll,
+  log_idx          INTEGER NOT NULL,
+  tx_idx           INTEGER NOT NULL,
   raw_log          JSONB,
   UNIQUE (header_id, tx_idx, log_idx)
 );

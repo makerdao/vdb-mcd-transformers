@@ -16,8 +16,8 @@ CREATE TABLE maker.jug_file_ilk (
   ilk_id    INTEGER NOT NULL REFERENCES maker.ilks (id),
   what      TEXT,
   data      NUMERIC,
-  log_idx   INTEGER NOT NUll,
-  tx_idx    INTEGER NOT NUll,
+  log_idx   INTEGER NOT NULL,
+  tx_idx    INTEGER NOT NULL,
   raw_log   JSONB,
   UNIQUE (header_id, tx_idx, log_idx)
 );

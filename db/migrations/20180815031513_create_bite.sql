@@ -7,8 +7,8 @@ CREATE TABLE maker.bite (
   art       NUMERIC,
   tab       NUMERIC,
   flip      NUMERIC,
-  tx_idx    INTEGER NOT NUll,
-  log_idx   INTEGER NOT NUll,
+  tx_idx    INTEGER NOT NULL,
+  log_idx   INTEGER NOT NULL,
   raw_log   JSONB,
   UNIQUE (header_id, tx_idx, log_idx)
 );

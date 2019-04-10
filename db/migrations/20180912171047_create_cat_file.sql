@@ -5,7 +5,7 @@ CREATE TABLE maker.cat_file_chop_lump (
   ilk_id        INTEGER NOT NULL REFERENCES maker.ilks (id),
   what          TEXT,
   data          NUMERIC,
-  tx_idx        INTEGER NOT NUll,
+  tx_idx        INTEGER NOT NULL,
   log_idx       INTEGER NOT NULL,
   raw_log       JSONB,
   UNIQUE (header_id, tx_idx, log_idx)
@@ -17,7 +17,7 @@ CREATE TABLE maker.cat_file_flip (
   ilk_id        INTEGER NOT NULL REFERENCES maker.ilks (id),
   what          TEXT,
   flip          TEXT,
-  tx_idx        INTEGER NOT NUll,
+  tx_idx        INTEGER NOT NULL,
   log_idx       INTEGER NOT NULL,
   raw_log       JSONB,
   UNIQUE (header_id, tx_idx, log_idx)
@@ -28,7 +28,7 @@ CREATE TABLE maker.cat_file_vow (
   header_id     INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
   what          TEXT,
   data          TEXT,
-  tx_idx        INTEGER NOT NUll,
+  tx_idx        INTEGER NOT NULL,
   log_idx       INTEGER NOT NULL,
   raw_log       JSONB,
   UNIQUE (header_id, tx_idx, log_idx)
