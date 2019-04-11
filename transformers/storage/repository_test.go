@@ -17,8 +17,11 @@
 package storage_test
 
 import (
+	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"math/big"
+	"strconv"
 
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres/repositories"
@@ -38,6 +41,9 @@ var _ = Describe("Maker storage repository", func() {
 		guy1       = "guy1"
 		guy2       = "guy2"
 		guy3       = "guy3"
+		era        = big.NewInt(0).SetBytes(common.FromHex("0x000000000000000000000000000000000000000000000000000000005bb48864")).String()
+		tab        = big.NewInt(0).SetBytes(common.FromHex("0x0000000000000000000000000000000000000000000002544faa778090e00000")).String()
+		timestamp  = int64(1538558053)
 	)
 
 	BeforeEach(func() {
@@ -206,11 +212,11 @@ var _ = Describe("Maker storage repository", func() {
 		})
 	})
 
-	Describe("getting sin keys", func() {
+	Describe("getting vat sin keys", func() {
 		It("fetches guy from w field of vat grab", func() {
 			insertVatGrab(guy1, guy1, guy1, guy2, 1, db)
 
-			sinKeys, err := repository.GetSinKeys()
+			sinKeys, err := repository.GetVatSinKeys()
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(sinKeys)).To(Equal(1))
@@ -220,7 +226,7 @@ var _ = Describe("Maker storage repository", func() {
 		It("fetches guy from u field of vat heal", func() {
 			insertVatHeal(guy1, guy2, 1, db)
 
-			sinKeys, err := repository.GetSinKeys()
+			sinKeys, err := repository.GetVatSinKeys()
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(sinKeys)).To(Equal(1))
@@ -234,7 +240,7 @@ var _ = Describe("Maker storage repository", func() {
 			insertVatGrab(guy2, guy2, guy2, guy2, 3, db)
 			insertVatHeal(guy1, guy2, 4, db)
 
-			sinKeys, err := repository.GetSinKeys()
+			sinKeys, err := repository.GetVatSinKeys()
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(sinKeys)).To(Equal(2))
@@ -242,7 +248,50 @@ var _ = Describe("Maker storage repository", func() {
 		})
 
 		It("does not return error if no matching rows", func() {
-			sinKeys, err := repository.GetSinKeys()
+			sinKeys, err := repository.GetVatSinKeys()
+
+			Expect(err).NotTo(HaveOccurred())
+			Expect(len(sinKeys)).To(BeZero())
+		})
+	})
+
+	Describe("getting vow sin keys", func() {
+		It("fetches timestamp from era field of vow flog", func() {
+			insertVowFlog(era, 1, db)
+
+			sinKeys, err := repository.GetVowSinKeys()
+
+			Expect(err).NotTo(HaveOccurred())
+			Expect(len(sinKeys)).To(Equal(1))
+			Expect(sinKeys).To(ConsistOf(era))
+		})
+
+		It("fetches timestamp from header of vow fess event", func() {
+			insertVowFess(tab, timestamp, 1, db)
+
+			sinKeys, err := repository.GetVowSinKeys()
+
+			Expect(err).NotTo(HaveOccurred())
+			Expect(len(sinKeys)).To(Equal(1))
+			Expect(sinKeys).To(ConsistOf(strconv.FormatInt(timestamp, 10)))
+		})
+
+		It("fetches unique sin keys from vow flog and vow fess header", func() {
+			insertVowFlog(era, 1, db)
+			insertVowFess(tab, timestamp, 2, db)
+			// duplicates
+			insertVowFlog(era, 3, db)
+			insertVowFess(tab, timestamp, 4, db)
+
+			sinKeys, err := repository.GetVowSinKeys()
+
+			Expect(err).NotTo(HaveOccurred())
+			Expect(len(sinKeys)).To(Equal(2))
+			Expect(sinKeys).To(ConsistOf(era, strconv.FormatInt(timestamp, 10)))
+		})
+
+		It("does not return error if no matching rows", func() {
+			sinKeys, err := repository.GetVowSinKeys()
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(sinKeys)).To(BeZero())
@@ -327,6 +376,35 @@ func insertVatGrab(ilk, urn, v, w string, blockNumber int64, db *postgres.DB) {
 		`INSERT INTO maker.vat_grab (header_id, urn_id, v, w, log_idx, tx_idx)
 			VALUES($1, $2, $3, $4, $5, $6)`,
 		headerID, urnID, v, w, 0, 0,
+	)
+	Expect(execErr).NotTo(HaveOccurred())
+}
+
+func insertVowFlog(era string, blockNumber int64, db *postgres.DB) {
+	headerRepository := repositories.NewHeaderRepository(db)
+	headerID, err := headerRepository.CreateOrUpdateHeader(fakes.GetFakeHeader(blockNumber))
+
+	Expect(err).NotTo(HaveOccurred())
+	_, execErr := db.Exec(
+		`INSERT INTO maker.vow_flog (header_id, era, log_idx, tx_idx)
+			VALUES($1, $2, $3, $4)`,
+		headerID, era, 0, 0,
+	)
+	Expect(execErr).NotTo(HaveOccurred())
+}
+
+func insertVowFess(tab string, timestamp, blockNumber int64, db *postgres.DB) {
+	headerRepository := repositories.NewHeaderRepository(db)
+	fakeHeader := fakes.GetFakeHeader(blockNumber)
+	fakeHeader.Timestamp = strconv.FormatInt(timestamp, 10)
+	// TODO: replace above 2 lines with fakes.GetFakeHeaderWithTimestamp once it's in a versioned release
+	headerID, err := headerRepository.CreateOrUpdateHeader(fakeHeader)
+
+	Expect(err).NotTo(HaveOccurred())
+	_, execErr := db.Exec(
+		`INSERT INTO maker.vow_fess (header_id, tab, log_idx, tx_idx)
+			VALUES($1, $2, $3, $4)`,
+		headerID, tab, 0, 0,
 	)
 	Expect(execErr).NotTo(HaveOccurred())
 }
