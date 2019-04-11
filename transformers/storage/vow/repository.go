@@ -17,8 +17,22 @@
 package vow
 
 import (
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
+)
+
+const (
+	insertVatQuery        = `INSERT INTO maker.vow_vat (block_number, block_hash, vat) VALUES ($1, $2, $3)`
+	insertCowQuery        = `INSERT INTO maker.vow_cow (block_number, block_hash, cow) VALUES ($1, $2, $3)`
+	insertRowQuery        = `INSERT INTO maker.vow_row (block_number, block_hash, row) VALUES ($1, $2, $3)`
+	insertSinMappingQuery = `INSERT INTO maker.vow_sin_mapping (block_number, block_hash, timestamp, sin) VALUES ($1, $2, $3, $4)`
+	insertSinIntegerQuery = `INSERT INTO maker.vow_sin_integer (block_number, block_hash, sin) VALUES ($1, $2, $3)`
+	insertAshQuery        = `INSERT INTO maker.vow_ash (block_number, block_hash, ash) VALUES ($1, $2, $3)`
+	insertWaitQuery       = `INSERT INTO maker.vow_wait (block_number, block_hash, wait) VALUES ($1, $2, $3)`
+	insertSumpQuery       = `INSERT INTO maker.vow_sump (block_number, block_hash, sump) VALUES ($1, $2, $3)`
+	insertBumpQuery       = `INSERT INTO maker.vow_bump (block_number, block_hash, bump) VALUES ($1, $2, $3)`
+	insertHumpQuery       = `INSERT INTO maker.vow_hump (block_number, block_hash, hump) VALUES ($1, $2, $3)`
 )
 
 type VowStorageRepository struct {
@@ -37,8 +51,10 @@ func (repository VowStorageRepository) Create(blockNumber int, blockHash string,
 		return repository.insertVowCow(blockNumber, blockHash, value.(string))
 	case VowRow:
 		return repository.insertVowRow(blockNumber, blockHash, value.(string))
-	case VowSin:
-		return repository.insertVowSin(blockNumber, blockHash, value.(string))
+	case SinMapping:
+		return repository.insertSinMapping(blockNumber, blockHash, metadata, value.(string))
+	case SinInteger:
+		return repository.insertSinInteger(blockNumber, blockHash, value.(string))
 	case VowAsh:
 		return repository.insertVowAsh(blockNumber, blockHash, value.(string))
 	case VowWait:
@@ -55,55 +71,73 @@ func (repository VowStorageRepository) Create(blockNumber int, blockHash string,
 }
 
 func (repository VowStorageRepository) insertVowVat(blockNumber int, blockHash string, vat string) error {
-	_, err := repository.db.Exec(`INSERT INTO maker.vow_vat (block_number, block_hash, vat) VALUES ($1, $2, $3)`, blockNumber, blockHash, vat)
+	_, err := repository.db.Exec(insertVatQuery, blockNumber, blockHash, vat)
 
 	return err
 }
 
 func (repository VowStorageRepository) insertVowCow(blockNumber int, blockHash string, cow string) error {
-	_, err := repository.db.Exec(`INSERT INTO maker.vow_cow (block_number, block_hash, cow) VALUES ($1, $2, $3)`, blockNumber, blockHash, cow)
+	_, err := repository.db.Exec(insertCowQuery, blockNumber, blockHash, cow)
 
 	return err
 }
 
 func (repository VowStorageRepository) insertVowRow(blockNumber int, blockHash string, row string) error {
-	_, err := repository.db.Exec(`INSERT INTO maker.vow_row (block_number, block_hash, row) VALUES ($1, $2, $3)`, blockNumber, blockHash, row)
+	_, err := repository.db.Exec(insertRowQuery, blockNumber, blockHash, row)
 
 	return err
 }
 
-func (repository VowStorageRepository) insertVowSin(blockNumber int, blockHash string, sin string) error {
-	_, err := repository.db.Exec(`INSERT INTO maker.vow_sin (block_number, block_hash, sin) VALUES ($1, $2, $3)`, blockNumber, blockHash, sin)
+func (repository VowStorageRepository) insertSinInteger(blockNumber int, blockHash string, sin string) error {
+	_, err := repository.db.Exec(insertSinIntegerQuery, blockNumber, blockHash, sin)
 
 	return err
+}
+
+func (repository VowStorageRepository) insertSinMapping(blockNumber int, blockHash string, metadata utils.StorageValueMetadata, sin string) error {
+	timestamp, err := getTimestamp(metadata.Keys)
+	if err != nil {
+		return err
+	}
+	_, writeErr := repository.db.Exec(insertSinMappingQuery, blockNumber, blockHash, timestamp, sin)
+
+	return writeErr
 }
 
 func (repository VowStorageRepository) insertVowAsh(blockNumber int, blockHash string, ash string) error {
-	_, err := repository.db.Exec(`INSERT INTO maker.vow_ash (block_number, block_hash, ash) VALUES ($1, $2, $3)`, blockNumber, blockHash, ash)
+	_, err := repository.db.Exec(insertAshQuery, blockNumber, blockHash, ash)
 
 	return err
 }
 
 func (repository VowStorageRepository) insertVowWait(blockNumber int, blockHash string, wait string) error {
-	_, err := repository.db.Exec(`INSERT INTO maker.vow_wait (block_number, block_hash, wait) VALUES ($1, $2, $3)`, blockNumber, blockHash, wait)
+	_, err := repository.db.Exec(insertWaitQuery, blockNumber, blockHash, wait)
 
 	return err
 }
 
 func (repository VowStorageRepository) insertVowSump(blockNumber int, blockHash string, sump string) error {
-	_, err := repository.db.Exec(`INSERT INTO maker.vow_sump (block_number, block_hash, sump) VALUES ($1, $2, $3)`, blockNumber, blockHash, sump)
+	_, err := repository.db.Exec(insertSumpQuery, blockNumber, blockHash, sump)
 
 	return err
 }
 
 func (repository VowStorageRepository) insertVowBump(blockNumber int, blockHash string, bump string) error {
-	_, err := repository.db.Exec(`INSERT INTO maker.vow_bump (block_number, block_hash, bump) VALUES ($1, $2, $3)`, blockNumber, blockHash, bump)
+	_, err := repository.db.Exec(insertBumpQuery, blockNumber, blockHash, bump)
 
 	return err
 }
 
 func (repository VowStorageRepository) insertVowHump(blockNumber int, blockHash string, hump string) error {
-	_, err := repository.db.Exec(`INSERT INTO maker.vow_hump (block_number, block_hash, hump) VALUES ($1, $2, $3)`, blockNumber, blockHash, hump)
+	_, err := repository.db.Exec(insertHumpQuery, blockNumber, blockHash, hump)
 
 	return err
+}
+
+func getTimestamp(keys map[utils.Key]string) (string, error) {
+	timestamp, ok := keys[constants.Timestamp]
+	if !ok {
+		return "", utils.ErrMetadataMalformed{MissingData: constants.Timestamp}
+	}
+	return timestamp, nil
 }

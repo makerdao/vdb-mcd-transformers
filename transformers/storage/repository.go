@@ -33,7 +33,8 @@ type IMakerStorageRepository interface {
 	GetMaxFlip() (*big.Int, error)
 	GetGemKeys() ([]Urn, error)
 	GetIlks() ([]string, error)
-	GetSinKeys() ([]string, error)
+	GetVatSinKeys() ([]string, error)
+	GetVowSinKeys() ([]string, error)
 	GetUrns() ([]Urn, error)
 	SetDB(db *postgres.DB)
 }
@@ -99,7 +100,7 @@ func (repository MakerStorageRepository) GetIlks() ([]string, error) {
 	return ilks, err
 }
 
-func (repository *MakerStorageRepository) GetSinKeys() ([]string, error) {
+func (repository *MakerStorageRepository) GetVatSinKeys() ([]string, error) {
 	var sinKeys []string
 	err := repository.db.Select(&sinKeys, `
 		SELECT DISTINCT w FROM maker.vat_grab
@@ -108,13 +109,23 @@ func (repository *MakerStorageRepository) GetSinKeys() ([]string, error) {
 	return sinKeys, err
 }
 
+func (repository *MakerStorageRepository) GetVowSinKeys() ([]string, error) {
+	var sinKeys []string
+	err := repository.db.Select(&sinKeys, `
+		SELECT DISTINCT era FROM maker.vow_flog
+		UNION
+		SELECT DISTINCT headers.block_timestamp
+		FROM maker.vow_fess
+		JOIN headers ON maker.vow_fess.header_id = headers.id`)
+	return sinKeys, err
+}
+
 func (repository *MakerStorageRepository) GetUrns() ([]Urn, error) {
 	var urns []Urn
 	err := repository.db.Select(&urns, `
 		SELECT DISTINCT ilks.ilk, urns.guy
 		FROM maker.urns
-		JOIN maker.ilks on maker.ilks.id = maker.urns.ilk_id
-`)
+		JOIN maker.ilks on maker.ilks.id = maker.urns.ilk_id`)
 	return urns, err
 }
 

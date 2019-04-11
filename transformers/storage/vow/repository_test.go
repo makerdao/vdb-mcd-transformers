@@ -19,8 +19,10 @@ package vow_test
 import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
+	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 
 	"github.com/vulcanize/mcd_transformers/test_config"
 	. "github.com/vulcanize/mcd_transformers/transformers/storage/test_helpers"
@@ -29,16 +31,20 @@ import (
 
 var _ = Describe("Vow storage repository test", func() {
 	var (
-		blockNumber int
-		blockHash   string
-		db          *postgres.DB
-		err         error
-		repo        vow.VowStorageRepository
+		fakeBlockNumber int
+		fakeBlockHash   string
+		fakeAddress     string
+		fakeUint256     string
+		db              *postgres.DB
+		err             error
+		repo            vow.VowStorageRepository
 	)
 
 	BeforeEach(func() {
-		blockNumber = 123
-		blockHash = "expected_block_hash"
+		fakeBlockNumber = 123
+		fakeBlockHash = "expected_block_hash"
+		fakeAddress = fakes.FakeAddress.Hex()
+		fakeUint256 = "12345"
 		db = test_config.NewTestDB(test_config.NewTestNode())
 		test_config.CleanTestDB(db)
 		repo = vow.VowStorageRepository{}
@@ -46,119 +52,127 @@ var _ = Describe("Vow storage repository test", func() {
 	})
 
 	It("persists a vow vat", func() {
-		expectedVat := "123"
-
-		err = repo.Create(blockNumber, blockHash, vow.VatMetadata, expectedVat)
+		err = repo.Create(fakeBlockNumber, fakeBlockHash, vow.VatMetadata, fakeAddress)
 
 		Expect(err).NotTo(HaveOccurred())
 
 		var result VariableRes
 		err = db.Get(&result, `SELECT block_number, block_hash, vat AS value from maker.vow_vat`)
 		Expect(err).NotTo(HaveOccurred())
-		AssertVariable(result, blockNumber, blockHash, expectedVat)
+		AssertVariable(result, fakeBlockNumber, fakeBlockHash, fakeAddress)
 	})
 
 	It("persists a vow cow", func() {
-		expectedCow := "123"
-
-		err = repo.Create(blockNumber, blockHash, vow.CowMetadata, expectedCow)
+		err = repo.Create(fakeBlockNumber, fakeBlockHash, vow.CowMetadata, fakeAddress)
 
 		Expect(err).NotTo(HaveOccurred())
 
 		var result VariableRes
 		err = db.Get(&result, `SELECT block_number, block_hash, cow AS value from maker.vow_cow`)
 		Expect(err).NotTo(HaveOccurred())
-		AssertVariable(result, blockNumber, blockHash, expectedCow)
+		AssertVariable(result, fakeBlockNumber, fakeBlockHash, fakeAddress)
 	})
 
 	It("persists a vow row", func() {
-		expectedRow := "123"
-
-		err = repo.Create(blockNumber, blockHash, vow.RowMetadata, expectedRow)
+		err = repo.Create(fakeBlockNumber, fakeBlockHash, vow.RowMetadata, fakeAddress)
 
 		Expect(err).NotTo(HaveOccurred())
 
 		var result VariableRes
 		err = db.Get(&result, `SELECT block_number, block_hash, row AS value from maker.vow_row`)
 		Expect(err).NotTo(HaveOccurred())
-		AssertVariable(result, blockNumber, blockHash, expectedRow)
+		AssertVariable(result, fakeBlockNumber, fakeBlockHash, fakeAddress)
 	})
 
-	It("persists a vow Sin", func() {
-		expectedSow := "123"
+	Describe("vow sin mapping", func() {
+		It("writes row", func() {
+			timestamp := "1538558052"
+			fakeKeys := map[utils.Key]string{constants.Timestamp: timestamp}
+			vowSinMetadata := utils.GetStorageValueMetadata(vow.SinMapping, fakeKeys, utils.Uint256)
 
-		err = repo.Create(blockNumber, blockHash, vow.SinMetadata, expectedSow)
+			err := repo.Create(fakeBlockNumber, fakeBlockHash, vowSinMetadata, fakeUint256)
+
+			Expect(err).NotTo(HaveOccurred())
+
+			var result MappingRes
+			err = db.Get(&result, `SELECT block_number, block_hash, timestamp AS key, sin AS value FROM maker.vow_sin_mapping`)
+			Expect(err).NotTo(HaveOccurred())
+			AssertMapping(result, fakeBlockNumber, fakeBlockHash, timestamp, fakeUint256)
+		})
+
+		It("returns error if metadata missing timestamp", func() {
+			malformedVowSinMappingMetadata := utils.GetStorageValueMetadata(vow.SinMapping, nil, utils.Uint256)
+
+			err := repo.Create(fakeBlockNumber, fakeBlockHash, malformedVowSinMappingMetadata, fakeUint256)
+
+			Expect(err).To(HaveOccurred())
+			Expect(err).To(MatchError(utils.ErrMetadataMalformed{MissingData: constants.Timestamp}))
+		})
+	})
+
+	It("persists a vow Sin integer", func() {
+		err = repo.Create(fakeBlockNumber, fakeBlockHash, vow.SinIntegerMetadata, fakeUint256)
 
 		Expect(err).NotTo(HaveOccurred())
 
 		var result VariableRes
-		err = db.Get(&result, `SELECT block_number, block_hash, sin AS value from maker.vow_sin`)
+		err = db.Get(&result, `SELECT block_number, block_hash, sin AS value from maker.vow_sin_integer`)
 		Expect(err).NotTo(HaveOccurred())
-		AssertVariable(result, blockNumber, blockHash, expectedSow)
+		AssertVariable(result, fakeBlockNumber, fakeBlockHash, fakeUint256)
 	})
 
 	It("persists a vow Ash", func() {
-		expectedAsh := "123"
-
-		err = repo.Create(blockNumber, blockHash, vow.AshMetadata, expectedAsh)
+		err = repo.Create(fakeBlockNumber, fakeBlockHash, vow.AshMetadata, fakeUint256)
 
 		Expect(err).NotTo(HaveOccurred())
 
 		var result VariableRes
 		err = db.Get(&result, `SELECT block_number, block_hash, ash AS value from maker.vow_ash`)
 		Expect(err).NotTo(HaveOccurred())
-		AssertVariable(result, blockNumber, blockHash, expectedAsh)
+		AssertVariable(result, fakeBlockNumber, fakeBlockHash, fakeUint256)
 	})
 
 	It("persists a vow Wait", func() {
-		expectedWait := "123"
-
-		err = repo.Create(blockNumber, blockHash, vow.WaitMetadata, expectedWait)
+		err = repo.Create(fakeBlockNumber, fakeBlockHash, vow.WaitMetadata, fakeUint256)
 
 		Expect(err).NotTo(HaveOccurred())
 
 		var result VariableRes
 		err = db.Get(&result, `SELECT block_number, block_hash, wait AS value from maker.vow_wait`)
 		Expect(err).NotTo(HaveOccurred())
-		AssertVariable(result, blockNumber, blockHash, expectedWait)
-	})
-
-	It("persists a vow Bump", func() {
-		expectedBump := "123"
-
-		err = repo.Create(blockNumber, blockHash, vow.BumpMetadata, expectedBump)
-
-		Expect(err).NotTo(HaveOccurred())
-
-		var result VariableRes
-		err = db.Get(&result, `SELECT block_number, block_hash, bump AS value from maker.vow_bump`)
-		Expect(err).NotTo(HaveOccurred())
-		AssertVariable(result, blockNumber, blockHash, expectedBump)
+		AssertVariable(result, fakeBlockNumber, fakeBlockHash, fakeUint256)
 	})
 
 	It("persists a vow Sump", func() {
-		expectedSump := "123"
-
-		err = repo.Create(blockNumber, blockHash, vow.SumpMetadata, expectedSump)
+		err = repo.Create(fakeBlockNumber, fakeBlockHash, vow.SumpMetadata, fakeUint256)
 
 		Expect(err).NotTo(HaveOccurred())
 
 		var result VariableRes
 		err = db.Get(&result, `SELECT block_number, block_hash, sump AS value from maker.vow_sump`)
 		Expect(err).NotTo(HaveOccurred())
-		AssertVariable(result, blockNumber, blockHash, expectedSump)
+		AssertVariable(result, fakeBlockNumber, fakeBlockHash, fakeUint256)
+	})
+
+	It("persists a vow Bump", func() {
+		err = repo.Create(fakeBlockNumber, fakeBlockHash, vow.BumpMetadata, fakeUint256)
+
+		Expect(err).NotTo(HaveOccurred())
+
+		var result VariableRes
+		err = db.Get(&result, `SELECT block_number, block_hash, bump AS value from maker.vow_bump`)
+		Expect(err).NotTo(HaveOccurred())
+		AssertVariable(result, fakeBlockNumber, fakeBlockHash, fakeUint256)
 	})
 
 	It("persists a vow Hump", func() {
-		expectedHump := "123"
-
-		err = repo.Create(blockNumber, blockHash, vow.HumpMetadata, expectedHump)
+		err = repo.Create(fakeBlockNumber, fakeBlockHash, vow.HumpMetadata, fakeUint256)
 
 		Expect(err).NotTo(HaveOccurred())
 
 		var result VariableRes
 		err = db.Get(&result, `SELECT block_number, block_hash, hump AS value from maker.vow_hump`)
 		Expect(err).NotTo(HaveOccurred())
-		AssertVariable(result, blockNumber, blockHash, expectedHump)
+		AssertVariable(result, fakeBlockNumber, fakeBlockHash, fakeUint256)
 	})
 })
