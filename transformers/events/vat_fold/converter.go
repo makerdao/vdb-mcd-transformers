@@ -37,7 +37,7 @@ func (VatFoldConverter) ToModels(ethLogs []types.Log) ([]interface{}, error) {
 
 		ilk := shared.GetHexWithoutPrefix(ethLog.Topics[1].Bytes())
 		urn := shared.GetHexWithoutPrefix(ethLog.Topics[2].Bytes())
-		rate := shared.ConvertToRay(ethLog.Topics[3].Big().String())
+		rate := ethLog.Topics[3].Big().String()
 		raw, err := json.Marshal(ethLog)
 
 		if err != nil {

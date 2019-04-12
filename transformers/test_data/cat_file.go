@@ -47,7 +47,7 @@ var rawCatFileChopLog, _ = json.Marshal(EthCatFileChopLog)
 var CatFileChopModel = chop_lump.CatFileChopLumpModel{
 	Ilk:              "66616b6520696c6b000000000000000000000000000000000000000000000000",
 	What:             "chop",
-	Data:             "1.000000000000000000000000000",
+	Data:             "1000000000000000000000000000",
 	TransactionIndex: EthCatFileChopLog.TxIndex,
 	LogIndex:         EthCatFileChopLog.Index,
 	Raw:              rawCatFileChopLog,
@@ -73,7 +73,7 @@ var rawCatFileLumpLog, _ = json.Marshal(EthCatFileLumpLog)
 var CatFileLumpModel = chop_lump.CatFileChopLumpModel{
 	Ilk:              "66616b6520696c6b000000000000000000000000000000000000000000000000",
 	What:             "lump",
-	Data:             "10000.000000000000000000",
+	Data:             "10000000000000000000000",
 	TransactionIndex: EthCatFileLumpLog.TxIndex,
 	LogIndex:         EthCatFileLumpLog.Index,
 	Raw:              rawCatFileLumpLog,

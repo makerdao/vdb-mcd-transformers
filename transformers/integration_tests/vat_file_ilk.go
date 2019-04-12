@@ -98,7 +98,7 @@ var _ = Describe("VatFileIlk LogNoteTransformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 		Expect(dbResult[0].Ilk).To(Equal(strconv.Itoa(ilkID)))
 		Expect(dbResult[0].What).To(Equal("spot"))
-		Expect(dbResult[0].Data).To(Equal("67.162500000000008526512829121"))
+		Expect(dbResult[0].Data).To(Equal("67162500000000000000000000000"))
 	})
 
 	It("fetches and transforms a Vat.file ilk 'line' event from Kovan", func() {
@@ -128,7 +128,7 @@ var _ = Describe("VatFileIlk LogNoteTransformer", func() {
 		dbResult := dbResults[0]
 		Expect(dbResult.Ilk).To(Equal(strconv.Itoa(ilkID)))
 		Expect(dbResult.What).To(Equal("line"))
-		Expect(dbResult.Data).To(Equal("300000.000000000000000000000000000000000000000000000"))
+		Expect(dbResult.Data).To(Equal("300000000000000000000000000000000000000000000000000"))
 	})
 
 	It("rechecks vat file ilk event", func() {
@@ -169,7 +169,7 @@ var _ = Describe("VatFileIlk LogNoteTransformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 		Expect(dbResult[0].Ilk).To(Equal(strconv.Itoa(ilkID)))
 		Expect(dbResult[0].What).To(Equal("spot"))
-		Expect(dbResult[0].Data).To(Equal("67.162500000000008526512829121"))
+		Expect(dbResult[0].Data).To(Equal("67162500000000000000000000000"))
 	})
 })
 

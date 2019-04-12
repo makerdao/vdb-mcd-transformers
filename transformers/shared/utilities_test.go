@@ -59,32 +59,6 @@ var _ = Describe("Shared utilities", func() {
 		})
 	})
 
-	Describe("Converting ray/wad", func() {
-		It("converts values to rays", func() {
-			rayOne := shared.ConvertToRay("123456789012345678901234567890")
-			Expect(rayOne).To(Equal("123.456789012345680589533003513"))
-
-			rayTwo := shared.ConvertToRay("1234567890123456790123567890")
-			Expect(rayTwo).To(Equal("1.234567890123456912476740399"))
-		})
-
-		It("converts values to wads", func() {
-			wadOne := shared.ConvertToWad("12345678901234567890123")
-			Expect(wadOne).To(Equal("12345.678901234567092615"))
-
-			wadTwo := shared.ConvertToWad("1234567890123456789")
-			Expect(wadTwo).To(Equal("1.234567890123456690"))
-		})
-
-		It("converts values to rads", func() {
-			radOne := shared.ConvertToRad("12345678901234567890123")
-			Expect(radOne).To(Equal("0.000000000000000000000012345678901234568947028"))
-
-			radTwo := shared.ConvertToRad("12345678901234567890123456789012345678901234567890")
-			Expect(radTwo).To(Equal("12345.678901234567092615179717540740966796875000000"))
-		})
-	})
-
 	Describe("getting hex without prefix", func() {
 		It("returns bytes as hex without 0x prefix", func() {
 			raw := common.HexToHash("0x4554480000000000000000000000000000000000000000000000000000000000").Bytes()

@@ -97,7 +97,7 @@ var _ = Describe("Price feeds transformer", func() {
 		var model price_feeds.PriceFeedModel
 		err = db.Get(&model, `SELECT block_number, medianizer_address, age, usd_value, tx_idx, raw_log FROM maker.price_feeds WHERE block_number = $1`, initializer.Config.StartingBlockNumber)
 		Expect(err).NotTo(HaveOccurred())
-		Expect(model.UsdValue).To(Equal("140.705000000000012506"))
+		Expect(model.UsdValue).To(Equal("140705000000000000000"))
 		Expect(model.Age).To(Equal("1553885404"))
 		Expect(model.MedianizerAddress).To(Equal(addresses[0]))
 	})
@@ -137,7 +137,7 @@ var _ = Describe("Price feeds transformer", func() {
 		var model price_feeds.PriceFeedModel
 		err = db.Get(&model, `SELECT block_number, medianizer_address, usd_value, age, tx_idx, raw_log FROM maker.price_feeds WHERE block_number = $1`, initializer.Config.StartingBlockNumber)
 		Expect(err).NotTo(HaveOccurred())
-		Expect(model.UsdValue).To(Equal("140.705000000000012506"))
+		Expect(model.UsdValue).To(Equal("140705000000000000000"))
 		Expect(model.Age).To(Equal("1553885404"))
 		Expect(model.MedianizerAddress).To(Equal(addresses[0]))
 	})
@@ -164,7 +164,7 @@ var _ = Describe("Price feeds transformer", func() {
 		var model price_feeds.PriceFeedModel
 		err = db.Get(&model, `SELECT block_number, medianizer_address, usd_value, age, tx_idx, raw_log FROM maker.price_feeds WHERE block_number = $1`, initializer.Config.StartingBlockNumber)
 		Expect(err).NotTo(HaveOccurred())
-		Expect(model.UsdValue).To(Equal("16.629421281200002625"))
+		Expect(model.UsdValue).To(Equal("16629421281200000000"))
 		Expect(model.Age).To(Equal("1553925852"))
 		Expect(model.MedianizerAddress).To(Equal(addresses[0]))
 	})

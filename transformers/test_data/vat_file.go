@@ -47,7 +47,7 @@ var EthVatFileDebtCeilingLog = types.Log{
 var rawVatFileDebtCeilingLog, _ = json.Marshal(EthVatFileDebtCeilingLog)
 var VatFileDebtCeilingModel = debt_ceiling.VatFileDebtCeilingModel{
 	What:             "Line",
-	Data:             "999999999999999945575230987042816.000000000000000000",
+	Data:             "1000000000000000000000000000000000000000000000000000",
 	LogIndex:         EthVatFileDebtCeilingLog.Index,
 	TransactionIndex: EthVatFileDebtCeilingLog.TxIndex,
 	Raw:              rawVatFileDebtCeilingLog,
@@ -75,7 +75,7 @@ var rawVatFileIlkDustLog, _ = json.Marshal(EthVatFileIlkDustLog)
 var VatFileIlkDustModel = ilk2.VatFileIlkModel{
 	Ilk:              "5245500000000000000000000000000000000000000000000000000000000000",
 	What:             "dust",
-	Data:             "0.000000000000010390649719961926601266313231061",
+	Data:             "10390649719961925488562719249749",
 	LogIndex:         EthVatFileIlkDustLog.Index,
 	TransactionIndex: EthVatFileIlkDustLog.TxIndex,
 	Raw:              rawVatFileIlkDustLog,
@@ -103,7 +103,7 @@ var rawVatFileIlkLineLog, _ = json.Marshal(EthVatFileIlkLineLog)
 var VatFileIlkLineModel = ilk2.VatFileIlkModel{
 	Ilk:              "5245500000000000000000000000000000000000000000000000000000000000",
 	What:             "line",
-	Data:             "0.000000000000000000000000220086151196920083973",
+	Data:             "220086151196920075605",
 	LogIndex:         EthVatFileIlkLineLog.Index,
 	TransactionIndex: EthVatFileIlkLineLog.TxIndex,
 	Raw:              rawVatFileIlkLineLog,
@@ -130,7 +130,7 @@ var rawVatFileIlkSpotLog, _ = json.Marshal(EthVatFileIlkSpotLog)
 var VatFileIlkSpotModel = ilk2.VatFileIlkModel{
 	Ilk:              "4554480000000000000000000000000000000000000000000000000000000000",
 	What:             "spot",
-	Data:             "91.323333333333323480474064127",
+	Data:             "91323333333333333333333333333",
 	LogIndex:         EthVatFileIlkSpotLog.Index,
 	TransactionIndex: EthVatFileIlkSpotLog.TxIndex,
 	Raw:              rawVatFileIlkSpotLog,
