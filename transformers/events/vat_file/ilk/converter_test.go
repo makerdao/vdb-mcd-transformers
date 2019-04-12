@@ -22,7 +22,6 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
-	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_file/ilk"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
@@ -46,30 +45,6 @@ var _ = Describe("Vat file ilk converter", func() {
 		}
 
 		_, err := converter.ToModels([]types.Log{badLog})
-
-		Expect(err).To(HaveOccurred())
-	})
-
-	It("returns error if 'what' field is unknown", func() {
-		invalidWhat := hexutil.Encode([]byte("invalid"))
-		log := types.Log{
-			Address: test_data.EthVatFileIlkLineLog.Address,
-			Topics: []common.Hash{
-				test_data.EthVatFileIlkLineLog.Topics[0],
-				test_data.EthVatFileIlkLineLog.Topics[1],
-				common.HexToHash(invalidWhat),
-				test_data.EthVatFileIlkLineLog.Topics[3],
-			},
-			Data:        test_data.EthVatFileIlkLineLog.Data,
-			BlockNumber: test_data.EthVatFileIlkLineLog.BlockNumber,
-			TxHash:      test_data.EthVatFileIlkLineLog.TxHash,
-			TxIndex:     test_data.EthVatFileIlkLineLog.TxIndex,
-			BlockHash:   test_data.EthVatFileIlkLineLog.BlockHash,
-			Index:       test_data.EthVatFileIlkLineLog.Index,
-		}
-		converter := ilk.VatFileIlkConverter{}
-
-		_, err := converter.ToModels([]types.Log{log})
 
 		Expect(err).To(HaveOccurred())
 	})

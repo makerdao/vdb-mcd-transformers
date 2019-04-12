@@ -20,8 +20,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"math/big"
-
 	"github.com/ethereum/go-ethereum/core/types"
 
 	"github.com/vulcanize/vulcanizedb/libraries/shared/constants"
@@ -41,8 +39,7 @@ func (VatFileIlkConverter) ToModels(ethLogs []types.Log) ([]interface{}, error) 
 		}
 		ilk := shared.GetHexWithoutPrefix(ethLog.Topics[1].Bytes())
 		what := string(bytes.Trim(ethLog.Topics[2].Bytes(), "\x00"))
-		whatData := ethLog.Topics[3].Bytes()
-		data, err := getData(whatData, what)
+		data := ethLog.Topics[3].Big().String()
 		if err != nil {
 			return nil, err
 		}
@@ -62,19 +59,6 @@ func (VatFileIlkConverter) ToModels(ethLogs []types.Log) ([]interface{}, error) 
 		models = append(models, model)
 	}
 	return models, nil
-}
-
-func getData(dataBytes []byte, what string) (string, error) {
-	n := big.NewInt(0).SetBytes(dataBytes).String()
-	if what == "spot" {
-		return shared.ConvertToRay(n), nil
-	} else if what == "line" {
-		return shared.ConvertToRad(n), nil
-	} else if what == "dust" {
-		return shared.ConvertToRad(n), nil
-	} else {
-		return "", errors.New("unexpected payload for 'what'")
-	}
 }
 
 func verifyLog(log types.Log) error {

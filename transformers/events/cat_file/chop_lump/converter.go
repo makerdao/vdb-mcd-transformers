@@ -55,7 +55,7 @@ func (CatFileChopLumpConverter) ToModels(ethLogs []types.Log) ([]interface{}, er
 		result := CatFileChopLumpModel{
 			Ilk:              ilk,
 			What:             what,
-			Data:             convertData(what, data),
+			Data:             data,
 			TransactionIndex: ethLog.TxIndex,
 			LogIndex:         ethLog.Index,
 			Raw:              raw,
@@ -63,17 +63,6 @@ func (CatFileChopLumpConverter) ToModels(ethLogs []types.Log) ([]interface{}, er
 		results = append(results, result)
 	}
 	return results, nil
-}
-
-func convertData(what, data string) string {
-	var convertedData string
-	if what == chop {
-		convertedData = shared.ConvertToRay(data)
-	} else if what == lump {
-		convertedData = shared.ConvertToWad(data)
-	}
-
-	return convertedData
 }
 
 func verifyLog(log types.Log) error {

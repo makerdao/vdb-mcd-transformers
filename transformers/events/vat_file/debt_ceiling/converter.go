@@ -24,8 +24,6 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 
 	"github.com/vulcanize/vulcanizedb/libraries/shared/constants"
-
-	"github.com/vulcanize/mcd_transformers/transformers/shared"
 )
 
 type VatFileDebtCeilingConverter struct{}
@@ -38,7 +36,7 @@ func (VatFileDebtCeilingConverter) ToModels(ethLogs []types.Log) ([]interface{},
 			return nil, err
 		}
 		what := string(bytes.Trim(ethLog.Topics[1].Bytes(), "\x00"))
-		data := shared.ConvertToWad(ethLog.Topics[2].Big().String())
+		data := ethLog.Topics[2].Big().String()
 
 		raw, err := json.Marshal(ethLog)
 		if err != nil {

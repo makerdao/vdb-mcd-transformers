@@ -20,7 +20,6 @@ import (
 	"encoding/json"
 	"math/big"
 
-	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
 
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
@@ -36,11 +35,12 @@ func (converter PriceFeedConverter) ToModels(ethLogs []types.Log) ([]interface{}
 			return nil, err
 		}
 		usdValueBytes := shared.GetDataBytesAtIndex(-2, log.Data)
+		usdValueBigInt := new(big.Int).SetBytes(usdValueBytes)
 		ageBytes := shared.GetDataBytesAtIndex(-1, log.Data)
 		model := PriceFeedModel{
 			BlockNumber:       log.BlockNumber,
 			MedianizerAddress: log.Address.String(),
-			UsdValue:          shared.ConvertToWad(hexutil.Encode(usdValueBytes)),
+			UsdValue:          usdValueBigInt.String(),
 			Age:               big.NewInt(0).SetBytes(ageBytes).String(),
 			LogIndex:          log.Index,
 			TransactionIndex:  log.TxIndex,

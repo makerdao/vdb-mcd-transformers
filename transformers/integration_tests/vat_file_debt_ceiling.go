@@ -86,7 +86,7 @@ var _ = Describe("VatFileDebtCeiling LogNoteTransformer", func() {
 
 		Expect(len(dbResult)).To(Equal(1))
 		Expect(dbResult[0].What).To(Equal("Line"))
-		Expect(dbResult[0].Data).To(Equal("999999999999999945575230987042816.000000000000000000"))
+		Expect(dbResult[0].Data).To(Equal("1000000000000000000000000000000000000000000000000000"))
 	})
 
 	It("rechecks vat file debt ceiling event", func() {
@@ -139,6 +139,6 @@ var _ = Describe("VatFileDebtCeiling LogNoteTransformer", func() {
 
 		Expect(len(dbResult)).To(Equal(1))
 		Expect(dbResult[0].What).To(Equal("Line"))
-		Expect(dbResult[0].Data).To(Equal("999999999999999945575230987042816.000000000000000000"))
+		Expect(dbResult[0].Data).To(Equal("1000000000000000000000000000000000000000000000000000"))
 	})
 })

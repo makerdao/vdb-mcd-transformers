@@ -79,34 +79,6 @@ func GetHexWithoutPrefix(raw []byte) string {
 	return common.Bytes2Hex(raw)
 }
 
-func ConvertToRay(value string) string {
-	return convert(ray, value, rayPrecision)
-}
-
-func ConvertToWad(value string) string {
-	return convert(wad, value, wadPrecision)
-}
-
-func ConvertToRad(value string) string {
-	return convert(rad, value, radPrecision)
-}
-
-func convert(conversion string, value string, precision int) string {
-	result := big.NewFloat(0.0)
-	bigFloat := big.NewFloat(0.0)
-	bigFloat.SetString(value)
-
-	switch conversion {
-	case rad:
-		result.Quo(bigFloat, radBase)
-	case ray:
-		result.Quo(bigFloat, rayBase)
-	case wad:
-		result.Quo(bigFloat, wadBase)
-	}
-	return result.Text('f', precision)
-}
-
 func MinInt64(ints []int64) (min int64) {
 	if len(ints) == 0 {
 		return 0

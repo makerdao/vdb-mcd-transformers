@@ -48,7 +48,7 @@ var rawVatFoldLog, _ = json.Marshal(EthVatFoldLog)
 var VatFoldModel = vat_fold.VatFoldModel{
 	Ilk:              "5245500000000000000000000000000000000000000000000000000000000000",
 	Urn:              "0000000000000000000000003728e9777b2a0a611ee0f89e00e01044ce4736d1",
-	Rate:             "0.000000000000000000000000002",
+	Rate:             "2",
 	LogIndex:         EthVatFoldLog.Index,
 	TransactionIndex: EthVatFoldLog.TxIndex,
 	Raw:              rawVatFoldLog,
