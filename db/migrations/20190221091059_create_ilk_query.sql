@@ -277,7 +277,7 @@ WHERE (
 )
 $$
 LANGUAGE SQL
-STABLE;
+STABLE SECURITY DEFINER;
 
 -- +goose Down
 DROP FUNCTION IF EXISTS maker.get_ilk_blocks_before(block_number bigint, ilk_id int);

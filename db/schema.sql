@@ -129,7 +129,7 @@ CREATE TYPE maker.urn_state AS (
 --
 
 CREATE FUNCTION maker.all_frobs(ilk text) RETURNS SETOF maker.frob_event
-    LANGUAGE sql STABLE
+    LANGUAGE sql STABLE SECURITY DEFINER
     AS $_$
   WITH
     ilk AS (SELECT id FROM maker.ilks WHERE ilks.ilk = $1)
@@ -188,7 +188,7 @@ $$;
 --
 
 CREATE FUNCTION maker.get_all_urn_states_at_block(block_height bigint) RETURNS SETOF maker.urn_state
-    LANGUAGE sql STABLE
+    LANGUAGE sql STABLE SECURITY DEFINER
     AS $_$
 WITH
   urns AS (
@@ -287,7 +287,7 @@ $_$;
 --
 
 CREATE FUNCTION maker.get_ilk_at_block_number(block_number bigint, ilkid integer) RETURNS maker.ilk_state
-    LANGUAGE sql STABLE
+    LANGUAGE sql STABLE SECURITY DEFINER
     AS $_$
 WITH rates AS (
     SELECT
@@ -551,7 +551,7 @@ $_$;
 --
 
 CREATE FUNCTION maker.get_ilk_history_before_block(block_number bigint, ilk_id integer) RETURNS SETOF maker.ilk_state
-    LANGUAGE plpgsql STABLE
+    LANGUAGE plpgsql STABLE SECURITY DEFINER
     AS $_$
 DECLARE
   r maker.relevant_block;
@@ -570,7 +570,7 @@ $_$;
 --
 
 CREATE FUNCTION maker.get_urn_history_before_block(ilk text, urn text, block_height bigint) RETURNS SETOF maker.urn_state
-    LANGUAGE plpgsql STABLE
+    LANGUAGE plpgsql STABLE SECURITY DEFINER
     AS $_$
 DECLARE
   blocks BIGINT[];
@@ -611,7 +611,7 @@ $_$;
 --
 
 CREATE FUNCTION maker.get_urn_state_at_block(ilk text, urn text, block_height bigint) RETURNS maker.urn_state
-    LANGUAGE sql STABLE
+    LANGUAGE sql STABLE SECURITY DEFINER
     AS $_$
 WITH
   urn AS (
@@ -5841,6 +5841,104 @@ ALTER TABLE ONLY public.uncles
 
 ALTER TABLE ONLY public.uncles
     ADD CONSTRAINT uncles_eth_node_id_fkey FOREIGN KEY (eth_node_id) REFERENCES public.eth_nodes(id) ON DELETE CASCADE;
+
+
+--
+-- Name: FUNCTION all_frobs(ilk text); Type: ACL; Schema: maker; Owner: -
+--
+
+REVOKE ALL ON FUNCTION maker.all_frobs(ilk text) FROM PUBLIC;
+
+
+--
+-- Name: FUNCTION frob_event_ilk(event maker.frob_event); Type: ACL; Schema: maker; Owner: -
+--
+
+REVOKE ALL ON FUNCTION maker.frob_event_ilk(event maker.frob_event) FROM PUBLIC;
+
+
+--
+-- Name: FUNCTION frob_event_tx(event maker.frob_event); Type: ACL; Schema: maker; Owner: -
+--
+
+REVOKE ALL ON FUNCTION maker.frob_event_tx(event maker.frob_event) FROM PUBLIC;
+
+
+--
+-- Name: FUNCTION frob_event_urn(event maker.frob_event); Type: ACL; Schema: maker; Owner: -
+--
+
+REVOKE ALL ON FUNCTION maker.frob_event_urn(event maker.frob_event) FROM PUBLIC;
+
+
+--
+-- Name: FUNCTION get_all_urn_states_at_block(block_height bigint); Type: ACL; Schema: maker; Owner: -
+--
+
+REVOKE ALL ON FUNCTION maker.get_all_urn_states_at_block(block_height bigint) FROM PUBLIC;
+
+
+--
+-- Name: FUNCTION get_ilk_at_block_number(block_number bigint, ilkid integer); Type: ACL; Schema: maker; Owner: -
+--
+
+REVOKE ALL ON FUNCTION maker.get_ilk_at_block_number(block_number bigint, ilkid integer) FROM PUBLIC;
+
+
+--
+-- Name: FUNCTION get_ilk_blocks_before(block_number bigint, ilk_id integer); Type: ACL; Schema: maker; Owner: -
+--
+
+REVOKE ALL ON FUNCTION maker.get_ilk_blocks_before(block_number bigint, ilk_id integer) FROM PUBLIC;
+
+
+--
+-- Name: FUNCTION get_ilk_history_before_block(block_number bigint, ilk_id integer); Type: ACL; Schema: maker; Owner: -
+--
+
+REVOKE ALL ON FUNCTION maker.get_ilk_history_before_block(block_number bigint, ilk_id integer) FROM PUBLIC;
+
+
+--
+-- Name: FUNCTION get_urn_history_before_block(ilk text, urn text, block_height bigint); Type: ACL; Schema: maker; Owner: -
+--
+
+REVOKE ALL ON FUNCTION maker.get_urn_history_before_block(ilk text, urn text, block_height bigint) FROM PUBLIC;
+
+
+--
+-- Name: FUNCTION get_urn_state_at_block(ilk text, urn text, block_height bigint); Type: ACL; Schema: maker; Owner: -
+--
+
+REVOKE ALL ON FUNCTION maker.get_urn_state_at_block(ilk text, urn text, block_height bigint) FROM PUBLIC;
+
+
+--
+-- Name: FUNCTION ilk_state_frobs(state maker.ilk_state); Type: ACL; Schema: maker; Owner: -
+--
+
+REVOKE ALL ON FUNCTION maker.ilk_state_frobs(state maker.ilk_state) FROM PUBLIC;
+
+
+--
+-- Name: FUNCTION tx_era(tx maker.tx); Type: ACL; Schema: maker; Owner: -
+--
+
+REVOKE ALL ON FUNCTION maker.tx_era(tx maker.tx) FROM PUBLIC;
+
+
+--
+-- Name: FUNCTION urn_frobs(ilk text, urn text); Type: ACL; Schema: maker; Owner: -
+--
+
+REVOKE ALL ON FUNCTION maker.urn_frobs(ilk text, urn text) FROM PUBLIC;
+
+
+--
+-- Name: FUNCTION urn_state_frobs(state maker.urn_state); Type: ACL; Schema: maker; Owner: -
+--
+
+REVOKE ALL ON FUNCTION maker.urn_state_frobs(state maker.urn_state) FROM PUBLIC;
 
 
 --
