@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package price_feeds
+package pip_log_value
 
 import (
 	"fmt"
@@ -28,39 +28,39 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
-type PriceFeedRepository struct {
+type PipLogValueRepository struct {
 	db *postgres.DB
 }
 
-func (repository PriceFeedRepository) Create(headerID int64, models []interface{}) error {
+func (repository PipLogValueRepository) Create(headerID int64, models []interface{}) error {
 	tx, dBaseErr := repository.db.Beginx()
 	if dBaseErr != nil {
 		return dBaseErr
 	}
 	for _, model := range models {
-		priceUpdate, ok := model.(PriceFeedModel)
+		pipLogValue, ok := model.(PipLogValueModel)
 		if !ok {
 			rollbackErr := tx.Rollback()
 			if rollbackErr != nil {
 				log.Error("failed to rollback ", rollbackErr)
 			}
-			return fmt.Errorf("model of type %T, not %T", model, PriceFeedModel{})
+			return fmt.Errorf("model of type %T, not %T", model, PipLogValueModel{})
 		}
 
 		_, err := tx.Exec(
-			`INSERT INTO maker.price_feeds (block_number, header_id, medianizer_address, usd_value, age, log_idx, tx_idx, raw_log)
-			VALUES ($1, $2, $3, $4::NUMERIC, $5::NUMERIC, $6, $7, $8)
-			ON CONFLICT (header_id, medianizer_address, tx_idx, log_idx)
-			DO UPDATE SET block_number = $1, usd_value = $4, age = $5, raw_log = $8;`,
-			priceUpdate.BlockNumber, headerID, priceUpdate.MedianizerAddress, priceUpdate.UsdValue, priceUpdate.Age,
-			priceUpdate.LogIndex, priceUpdate.TransactionIndex, priceUpdate.Raw)
+			`INSERT INTO maker.pip_log_value (block_number, header_id, contract_address, val, log_idx, tx_idx, raw_log)
+			VALUES ($1, $2, $3, $4::NUMERIC, $5::NUMERIC, $6, $7)
+			ON CONFLICT (header_id, contract_address, tx_idx, log_idx)
+			DO UPDATE SET block_number = $1, val = $4, raw_log = $7;`,
+			pipLogValue.BlockNumber, headerID, pipLogValue.ContractAddress, pipLogValue.Value,
+			pipLogValue.LogIndex, pipLogValue.TransactionIndex, pipLogValue.Raw)
 		if err != nil {
 			tx.Rollback()
 			return err
 		}
 	}
 
-	checkHeaderErr := repo.MarkHeaderCheckedInTransaction(headerID, tx, constants.PriceFeedsChecked)
+	checkHeaderErr := repo.MarkHeaderCheckedInTransaction(headerID, tx, constants.PipLogValueChecked)
 	if checkHeaderErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
@@ -71,18 +71,18 @@ func (repository PriceFeedRepository) Create(headerID int64, models []interface{
 	return tx.Commit()
 }
 
-func (repository PriceFeedRepository) MarkHeaderChecked(headerID int64) error {
-	return repo.MarkHeaderChecked(headerID, repository.db, constants.PriceFeedsChecked)
+func (repository PipLogValueRepository) MarkHeaderChecked(headerID int64) error {
+	return repo.MarkHeaderChecked(headerID, repository.db, constants.PipLogValueChecked)
 }
 
-func (repository PriceFeedRepository) MissingHeaders(startingBlockNumber, endingBlockNumber int64) ([]core.Header, error) {
-	return repo.MissingHeaders(startingBlockNumber, endingBlockNumber, repository.db, constants.PriceFeedsChecked)
+func (repository PipLogValueRepository) MissingHeaders(startingBlockNumber, endingBlockNumber int64) ([]core.Header, error) {
+	return repo.MissingHeaders(startingBlockNumber, endingBlockNumber, repository.db, constants.PipLogValueChecked)
 }
 
-func (repository PriceFeedRepository) RecheckHeaders(startingBlockNumber, endingBlockNumber int64) ([]core.Header, error) {
-	return repo.RecheckHeaders(startingBlockNumber, endingBlockNumber, repository.db, constants.PriceFeedsChecked)
+func (repository PipLogValueRepository) RecheckHeaders(startingBlockNumber, endingBlockNumber int64) ([]core.Header, error) {
+	return repo.RecheckHeaders(startingBlockNumber, endingBlockNumber, repository.db, constants.PipLogValueChecked)
 }
 
-func (repository *PriceFeedRepository) SetDB(db *postgres.DB) {
+func (repository *PipLogValueRepository) SetDB(db *postgres.DB) {
 	repository.db = db
 }

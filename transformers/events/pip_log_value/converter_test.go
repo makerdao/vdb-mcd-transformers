@@ -14,17 +14,26 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package initializer
+package pip_log_value_test
 
 import (
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 
-	"github.com/vulcanize/mcd_transformers/transformers/events/price_feeds"
+	"github.com/ethereum/go-ethereum/core/types"
+
+	"github.com/vulcanize/mcd_transformers/transformers/events/pip_log_value"
+	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
-var EventTransformerInitializer transformer.EventTransformerInitializer = event.LogNoteTransformer{
-	Config:     price_feeds.GetPriceFeedConfig(),
-	Converter:  &price_feeds.PriceFeedConverter{},
-	Repository: &price_feeds.PriceFeedRepository{},
-}.NewLogNoteTransformer
+var _ = Describe("Pip LogValue Converter", func() {
+	It("converts a log to a pip log value model", func() {
+		converter := pip_log_value.PipLogValueConverter{}
+
+		models, err := converter.ToModels([]types.Log{test_data.EthPipLogValueLog})
+
+		Expect(err).NotTo(HaveOccurred())
+		Expect(len(models)).To(Equal(1))
+		Expect(models[0]).To(Equal(test_data.PipLogValueModel))
+	})
+})

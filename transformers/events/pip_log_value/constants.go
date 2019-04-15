@@ -14,30 +14,15 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package price_feeds
+package pip_log_value
 
 import (
+	"errors"
 	"math/big"
 )
 
-type PriceFeedModel struct {
-	BlockNumber       uint64 `db:"block_number"`
-	MedianizerAddress string `db:"medianizer_address"`
-	UsdValue          string `db:"usd_value"`
-	Age               string
-	LogIndex          uint   `db:"log_idx"`
-	TransactionIndex  uint   `db:"tx_idx"`
-	Raw               []byte `db:"raw_log"`
-}
-
-func Convert(conversion string, value string, prec int) string {
-	var bgflt = big.NewFloat(0.0)
-	bgflt.SetString(value)
-	switch conversion {
-	case "ray":
-		bgflt.Quo(bgflt, Ray)
-	case "wad":
-		bgflt.Quo(bgflt, Ether)
-	}
-	return bgflt.Text('g', prec)
-}
+var (
+	ErrNoMatchingLog = errors.New("no matching log")
+	Ether            = big.NewFloat(1e18)
+	Ray              = big.NewFloat(1e27)
+)

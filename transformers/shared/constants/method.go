@@ -14,8 +14,8 @@ func jugDripMethod() string         { return GetSolidityFunctionSignature(JugABI
 func jugFileBaseMethod() string     { return "file(bytes32,uint256)" }
 func jugFileIlkMethod() string      { return "file(bytes32,bytes32,uint256)" }
 func jugFileVowMethod() string      { return "file(bytes32,bytes32)" }
-func logMedianPriceMethod() string {
-	return GetSolidityFunctionSignature(MedianizerABI(), "LogMedianPrice")
+func pipLogValueMethod() string {
+	return GetSolidityFunctionSignature(PipABI(), "LogValue")
 }
 func tendMethod() string               { return GetSolidityFunctionSignature(FlipperABI(), "tend") }
 func vatFileDebtCeilingMethod() string { return "file(bytes32,uint256)" }

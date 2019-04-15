@@ -14,15 +14,22 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package price_feeds
+package pip_log_value_test
 
 import (
-	"errors"
-	"math/big"
+	log "github.com/sirupsen/logrus"
+	"io/ioutil"
+	"testing"
+
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 )
 
-var (
-	ErrNoMatchingLog = errors.New("no matching log")
-	Ether            = big.NewFloat(1e18)
-	Ray              = big.NewFloat(1e27)
-)
+func TestPipLogValue(t *testing.T) {
+	RegisterFailHandler(Fail)
+	RunSpecs(t, "Pip LogValue Suite")
+}
+
+var _ = BeforeSuite(func() {
+	log.SetOutput(ioutil.Discard)
+})
