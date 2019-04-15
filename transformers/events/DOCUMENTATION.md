@@ -79,12 +79,6 @@ The transformer process for each of these different log types is the same, excep
         - See the `ToEntity` method in [`events/flop_kick/converter.go`](flop_kick/converter.go).
   1.  Convert the entity into a database model. See the `ToModel` method in `pkg/transformers/flop_kick/converter`.
 
-- **Converting Price Feed custom events**
-
-  - Price Feed contracts use the [LogNote event](https://github.com/dapphub/ds-note)
-  - The LogNote event takes in the value of the price feed as it's sole argument, and does not index it. This means that this value can be taken directly from the log's data, and then properly converted using the `price_feeds.Convert` method (located in the model.go file).
-  - Since this conversion from raw log to model includes less fields than some others, we've chosen to convert it directly to the database model, skipping the `ToEntity` step.
-
 - **Converting LogNote events** (such as tend)
   - Since LogNote events are a generic structure, they depend on the method signature of the method that is calling them. For example, the `tend` method is called on the [flip.sol contract](https://github.com/makerdao/dss/blob/master/src/flip.sol#L123), and it's method signature looks like this: `tend(uint,uint,uint)`.
     - The first four bytes of the Keccak-256 hashed method signature will be located in `topic[0]` on the log.

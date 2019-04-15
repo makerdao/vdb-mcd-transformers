@@ -14,7 +14,7 @@ const (
 	JugFileBaseLabel        = "jugFileBase"
 	JugFileIlkLabel         = "jugFileIlk"
 	JugFileVowLabel         = "jugFileVow"
-	PriceFeedLabel          = "priceFeed"
+	PipLogValueLabel        = "pipLogValue"
 	TendLabel               = "tend"
 	VatFileDebtCeilingLabel = "vatFileDebtCeiling"
 	VatFileIlkLabel         = "vatFileIlk"

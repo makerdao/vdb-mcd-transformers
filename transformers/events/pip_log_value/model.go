@@ -14,26 +14,13 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package price_feeds_test
+package pip_log_value
 
-import (
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
-
-	"github.com/ethereum/go-ethereum/core/types"
-
-	"github.com/vulcanize/mcd_transformers/transformers/events/price_feeds"
-	"github.com/vulcanize/mcd_transformers/transformers/test_data"
-)
-
-var _ = Describe("Price feed Converter", func() {
-	It("converts a log to a price feed model", func() {
-		converter := price_feeds.PriceFeedConverter{}
-
-		models, err := converter.ToModels([]types.Log{test_data.EthPriceFeedLog})
-
-		Expect(err).NotTo(HaveOccurred())
-		Expect(len(models)).To(Equal(1))
-		Expect(models[0]).To(Equal(test_data.PriceFeedModel))
-	})
-})
+type PipLogValueModel struct {
+	BlockNumber      uint64 `db:"block_number"`
+	ContractAddress  string `db:"contract_address"`
+	Value            string `db:"val"`
+	LogIndex         uint   `db:"log_idx"`
+	TransactionIndex uint   `db:"tx_idx"`
+	Raw              []byte `db:"raw_log"`
+}

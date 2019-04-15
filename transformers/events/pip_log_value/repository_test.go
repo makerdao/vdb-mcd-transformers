@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package price_feeds_test
+package pip_log_value_test
 
 import (
 	. "github.com/onsi/ginkgo"
@@ -25,63 +25,62 @@ import (
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 
 	"github.com/vulcanize/mcd_transformers/test_config"
-	"github.com/vulcanize/mcd_transformers/transformers/events/price_feeds"
+	"github.com/vulcanize/mcd_transformers/transformers/events/pip_log_value"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data/shared_behaviors"
 )
 
-var _ = Describe("Price feeds repository", func() {
+var _ = Describe("Pip LogValue repository", func() {
 	var (
-		db                  *postgres.DB
-		priceFeedRepository price_feeds.PriceFeedRepository
-		headerRepository    repositories.HeaderRepository
+		db                    *postgres.DB
+		pipLogValueRepository pip_log_value.PipLogValueRepository
+		headerRepository      repositories.HeaderRepository
 	)
 
 	BeforeEach(func() {
 		db = test_config.NewTestDB(test_config.NewTestNode())
 		test_config.CleanTestDB(db)
-		priceFeedRepository = price_feeds.PriceFeedRepository{}
-		priceFeedRepository.SetDB(db)
+		pipLogValueRepository = pip_log_value.PipLogValueRepository{}
+		pipLogValueRepository.SetDB(db)
 		headerRepository = repositories.NewHeaderRepository(db)
 	})
 
 	Describe("Create", func() {
-		modelWithDifferentLogIdx := test_data.PriceFeedModel
+		modelWithDifferentLogIdx := test_data.PipLogValueModel
 		modelWithDifferentLogIdx.LogIndex = modelWithDifferentLogIdx.LogIndex + 1
 		inputs := shared_behaviors.CreateBehaviorInputs{
-			CheckedHeaderColumnName:  constants.PriceFeedsChecked,
-			LogEventTableName:        "maker.price_feeds",
-			TestModel:                test_data.PriceFeedModel,
+			CheckedHeaderColumnName:  constants.PipLogValueChecked,
+			LogEventTableName:        "maker.pip_log_value",
+			TestModel:                test_data.PipLogValueModel,
 			ModelWithDifferentLogIdx: modelWithDifferentLogIdx,
-			Repository:               &priceFeedRepository,
+			Repository:               &pipLogValueRepository,
 		}
 
 		shared_behaviors.SharedRepositoryCreateBehaviors(&inputs)
 
-		It("persists a price feed update", func() {
+		It("persists a pip log value", func() {
 			headerID, err := headerRepository.CreateOrUpdateHeader(fakes.FakeHeader)
 			Expect(err).NotTo(HaveOccurred())
-			err = priceFeedRepository.Create(headerID, []interface{}{test_data.PriceFeedModel})
+			err = pipLogValueRepository.Create(headerID, []interface{}{test_data.PipLogValueModel})
 
 			Expect(err).NotTo(HaveOccurred())
-			var dbPriceFeedUpdate price_feeds.PriceFeedModel
-			err = db.Get(&dbPriceFeedUpdate, `SELECT block_number, medianizer_address, usd_value, age, log_idx, tx_idx, raw_log FROM maker.price_feeds WHERE header_id = $1`, headerID)
+			var dbPipLogValue pip_log_value.PipLogValueModel
+			err = db.Get(&dbPipLogValue, `SELECT block_number, contract_address, val, log_idx, tx_idx, raw_log FROM maker.pip_log_value WHERE header_id = $1`, headerID)
 			Expect(err).NotTo(HaveOccurred())
-			Expect(dbPriceFeedUpdate.BlockNumber).To(Equal(test_data.PriceFeedModel.BlockNumber))
-			Expect(dbPriceFeedUpdate.MedianizerAddress).To(Equal(test_data.PriceFeedModel.MedianizerAddress))
-			Expect(dbPriceFeedUpdate.Age).To(Equal(test_data.PriceFeedModel.Age))
-			Expect(dbPriceFeedUpdate.UsdValue).To(Equal(test_data.PriceFeedModel.UsdValue))
-			Expect(dbPriceFeedUpdate.LogIndex).To(Equal(test_data.PriceFeedModel.LogIndex))
-			Expect(dbPriceFeedUpdate.TransactionIndex).To(Equal(test_data.PriceFeedModel.TransactionIndex))
-			Expect(dbPriceFeedUpdate.Raw).To(MatchJSON(test_data.PriceFeedModel.Raw))
+			Expect(dbPipLogValue.BlockNumber).To(Equal(test_data.PipLogValueModel.BlockNumber))
+			Expect(dbPipLogValue.ContractAddress).To(Equal(test_data.PipLogValueModel.ContractAddress))
+			Expect(dbPipLogValue.Value).To(Equal(test_data.PipLogValueModel.Value))
+			Expect(dbPipLogValue.LogIndex).To(Equal(test_data.PipLogValueModel.LogIndex))
+			Expect(dbPipLogValue.TransactionIndex).To(Equal(test_data.PipLogValueModel.TransactionIndex))
+			Expect(dbPipLogValue.Raw).To(MatchJSON(test_data.PipLogValueModel.Raw))
 		})
 	})
 
 	Describe("MarkHeaderChecked", func() {
 		inputs := shared_behaviors.MarkedHeaderCheckedBehaviorInputs{
-			CheckedHeaderColumnName: constants.PriceFeedsChecked,
-			Repository:              &priceFeedRepository,
+			CheckedHeaderColumnName: constants.PipLogValueChecked,
+			Repository:              &pipLogValueRepository,
 		}
 
 		shared_behaviors.SharedRepositoryMarkHeaderCheckedBehaviors(&inputs)

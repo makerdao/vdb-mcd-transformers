@@ -14,22 +14,34 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package price_feeds_test
+package pip_log_value
 
 import (
-	log "github.com/sirupsen/logrus"
-	"io/ioutil"
-	"testing"
+	"encoding/json"
+	"math/big"
 
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
+	"github.com/ethereum/go-ethereum/core/types"
 )
 
-func TestPriceFeeds(t *testing.T) {
-	RegisterFailHandler(Fail)
-	RunSpecs(t, "PriceFeeds Suite")
-}
+type PipLogValueConverter struct{}
 
-var _ = BeforeSuite(func() {
-	log.SetOutput(ioutil.Discard)
-})
+func (converter PipLogValueConverter) ToModels(ethLogs []types.Log) ([]interface{}, error) {
+	var results []interface{}
+	for _, log := range ethLogs {
+		raw, err := json.Marshal(log)
+		if err != nil {
+			return nil, err
+		}
+		value := new(big.Int).SetBytes(log.Data)
+		model := PipLogValueModel{
+			BlockNumber:      log.BlockNumber,
+			ContractAddress:  log.Address.String(),
+			Value:            value.String(),
+			LogIndex:         log.Index,
+			TransactionIndex: log.TxIndex,
+			Raw:              raw,
+		}
+		results = append(results, model)
+	}
+	return results, nil
+}

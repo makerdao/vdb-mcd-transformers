@@ -14,7 +14,7 @@ var (
 	JugFileBaseChecked        = "jug_file_base_checked"
 	JugFileIlkChecked         = "jug_file_ilk_checked"
 	JugFileVowChecked         = "jug_file_vow_checked"
-	PriceFeedsChecked         = "price_feeds_checked"
+	PipLogValueChecked        = "pip_log_value_checked"
 	TendChecked               = "tend_checked"
 	VatFileDebtCeilingChecked = "vat_file_debt_ceiling_checked"
 	VatFileIlkChecked         = "vat_file_ilk_checked"

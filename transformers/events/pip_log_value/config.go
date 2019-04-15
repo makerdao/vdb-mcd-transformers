@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package price_feeds
+package pip_log_value
 
 import (
 	shared_t "github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
@@ -23,16 +23,26 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
-func GetPriceFeedConfig() shared_t.EventTransformerConfig {
+func GetPipLogValueConfig() shared_t.EventTransformerConfig {
 	return shared_t.EventTransformerConfig{
-		TransformerName: constants.PriceFeedLabel,
+		TransformerName: constants.PipLogValueLabel,
 		ContractAddresses: []string{
-			constants.PipEthContractAddress(), constants.PipRepContractAddress(),
+			constants.PipEthContractAddress(),
+			constants.PipCol1ContractAddress(),
+			constants.PipCol2ContractAddress(),
+			constants.PipCol3ContractAddress(),
+			constants.PipCol4ContractAddress(),
+			constants.PipCol5ContractAddress(),
 		},
-		ContractAbi: constants.MedianizerABI(),
-		Topic:       constants.GetLogMedianPriceSignature(),
+		ContractAbi: constants.PipABI(),
+		Topic:       constants.GetPipLogValueSignature(),
 		StartingBlockNumber: shared.MinInt64([]int64{
-			constants.PipEthDeploymentBlock(), constants.PipRepDeploymentBlock(),
+			constants.PipEthDeploymentBlock(),
+			constants.PipCol1DeploymentBlock(),
+			constants.PipCol2DeploymentBlock(),
+			constants.PipCol3DeploymentBlock(),
+			constants.PipCol4DeploymentBlock(),
+			constants.PipCol5DeploymentBlock(),
 		}),
 		EndingBlockNumber: -1,
 	}

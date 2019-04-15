@@ -53,9 +53,9 @@ var _ = Describe("Event signature generator", func() {
 			Expect(expected).To(Equal(actual))
 		})
 
-		It("generates log median price event signature", func() {
-			expected := "0xb78ebc573f1f889ca9e1e0fb62c843c836f3d3a2e1f43ef62940e9b894f4ea4c"
-			actual := constants.GetEventTopicZero("LogMedianPrice(uint256,uint256)")
+		It("generates pip log value signature", func() {
+			expected := "0x296ba4ca62c6c21c95e828080cb8aec7481b71390585605300a8a76f9e95b527"
+			actual := constants.GetEventTopicZero("LogValue(bytes32)")
 
 			Expect(expected).To(Equal(actual))
 		})
@@ -281,8 +281,8 @@ var _ = Describe("Event signature generator", func() {
 			})
 
 			It("gets the log value method signature", func() {
-				expected := "LogMedianPrice(uint256,uint256)"
-				actual := constants.GetSolidityFunctionSignature(test_data.KovanMedianizerABI, "LogMedianPrice")
+				expected := "LogValue(bytes32)"
+				actual := constants.GetSolidityFunctionSignature(test_data.KovanPipABI, "LogValue")
 
 				Expect(expected).To(Equal(actual))
 			})

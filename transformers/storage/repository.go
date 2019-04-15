@@ -18,7 +18,7 @@ package storage
 
 import (
 	"errors"
-	
+
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 )
 
