@@ -98,7 +98,7 @@ FROM ink
 WHERE ink.urn_id IS NOT NULL
 $body$
 LANGUAGE SQL
-STABLE;
+STABLE SECURITY DEFINER;
 
 
 -- +goose Down

@@ -114,7 +114,7 @@ FROM inks
   -- Add collections of frob and bite events?
 $body$
 LANGUAGE SQL
-STABLE;
+STABLE SECURITY DEFINER;
 
 
 -- +goose Down

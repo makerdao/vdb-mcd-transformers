@@ -35,7 +35,7 @@ BEGIN
 END;
 $$
 LANGUAGE plpgsql
-STABLE;
+STABLE SECURITY DEFINER;
 -- +goose StatementEnd
 
 -- +goose Down
