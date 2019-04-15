@@ -52,7 +52,7 @@ var _ = Describe("Urn view", func() {
 
 		var actualUrn helper.UrnState
 		err = db.Get(&actualUrn, `SELECT urnId, ilkId, blockHeight, ink, art, ratio, safe, created, updated
-			FROM maker.get_all_urn_states_at_block($1)`, fakeBlockNo)
+			FROM maker.all_urns($1)`, fakeBlockNo)
 		Expect(err).NotTo(HaveOccurred())
 
 		expectedRatio := helper.GetExpectedRatio(setupData.Ink, setupData.Spot, setupData.Art, setupData.Rate)
@@ -114,7 +114,7 @@ var _ = Describe("Urn view", func() {
 
 		var result []helper.UrnState
 		err = db.Select(&result, `SELECT urnId, ilkId, ink, art, ratio, safe, created, updated
-			FROM maker.get_all_urn_states_at_block($1) ORDER BY created`, blockTwo)
+			FROM maker.all_urns($1) ORDER BY created`, blockTwo)
 		Expect(err).NotTo(HaveOccurred())
 
 		helper.AssertUrn(result[0], expectedUrnOne)
@@ -133,7 +133,7 @@ var _ = Describe("Urn view", func() {
 
 		var result helper.UrnState
 		err = db.Get(&result, `SELECT urnId, ilkId, ink, art, ratio, safe, created, updated
-			FROM maker.get_all_urn_states_at_block($1)`, block)
+			FROM maker.all_urns($1)`, block)
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(result.Created.String).To(BeEmpty())
@@ -159,7 +159,7 @@ var _ = Describe("Urn view", func() {
 
 		It("gets urn state as of block one", func() {
 			err = db.Get(&actualUrn, `SELECT urnId, ilkId, ink, art, ratio, safe, created, updated
-				FROM maker.get_all_urn_states_at_block($1)`, blockOne)
+				FROM maker.all_urns($1)`, blockOne)
 			Expect(err).NotTo(HaveOccurred())
 
 			expectedRatio := helper.GetExpectedRatio(setupDataOne.Ink, setupDataOne.Spot, setupDataOne.Art, setupDataOne.Rate)
@@ -208,7 +208,7 @@ var _ = Describe("Urn view", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			err = db.Get(&actualUrn, `SELECT urnId, ilkId, ink, art, ratio, safe, created, updated
-				FROM maker.get_all_urn_states_at_block($1)`, blockTwo)
+				FROM maker.all_urns($1)`, blockTwo)
 			Expect(err).NotTo(HaveOccurred())
 
 			helper.AssertUrn(actualUrn, expectedUrn)
@@ -228,7 +228,7 @@ var _ = Describe("Urn view", func() {
 
 		var result helper.UrnState
 		err = db.Get(&result, `SELECT urnId, ilkId, ink, art, ratio, safe, created, updated
-			FROM maker.get_all_urn_states_at_block($1)`, block)
+			FROM maker.all_urns($1)`, block)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(result.Ratio.String).To(BeEmpty())

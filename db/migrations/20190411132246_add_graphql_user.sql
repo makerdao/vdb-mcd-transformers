@@ -16,11 +16,11 @@ DO
 -- +goose StatementEnd
 GRANT USAGE ON SCHEMA maker TO graphql;
 GRANT EXECUTE ON FUNCTION maker.all_frobs(text) TO graphql;
-GRANT EXECUTE ON FUNCTION maker.get_all_urn_states_at_block(bigint) TO graphql;
-GRANT EXECUTE ON FUNCTION maker.get_ilk_at_block_number(bigint, integer) TO graphql;
-GRANT EXECUTE ON FUNCTION maker.get_ilk_history_before_block(bigint, integer) TO graphql;
-GRANT EXECUTE ON FUNCTION maker.get_urn_history_before_block(text, text, bigint) TO graphql;
-GRANT EXECUTE ON FUNCTION maker.get_urn_state_at_block(text, text, bigint) TO graphql;
+GRANT EXECUTE ON FUNCTION maker.all_urns(bigint) TO graphql;
+GRANT EXECUTE ON FUNCTION maker.get_ilk(bigint, integer) TO graphql;
+GRANT EXECUTE ON FUNCTION maker.all_ilk_states(bigint, integer) TO graphql;
+GRANT EXECUTE ON FUNCTION maker.all_urn_states(text, text, bigint) TO graphql;
+GRANT EXECUTE ON FUNCTION maker.get_urn(text, text, bigint) TO graphql;
 
 -- +goose Down
 REVOKE ALL PRIVILEGES ON ALL TABLES IN SCHEMA maker FROM graphql;
