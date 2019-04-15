@@ -89,10 +89,10 @@ WHERE block_number <= $1
 $$
 LANGUAGE sql STABLE;
 
-CREATE TYPE maker.ilk_state AS (
+CREATE TYPE maker.ilk AS (
   ilk_id       integer,
   ilk          text,
-  block_number bigint,
+  block_height bigint,
   rate         numeric,
   art          numeric,
   spot         numeric,
@@ -107,8 +107,8 @@ CREATE TYPE maker.ilk_state AS (
   updated      numeric
 );
 
-CREATE FUNCTION maker.get_ilk_at_block_number(block_number bigint, ilkId int)
-  RETURNS maker.ilk_state
+CREATE FUNCTION maker.get_ilk(block_height bigint, ilkId int)
+  RETURNS maker.ilk
 AS $$
 WITH rates AS (
     SELECT
@@ -237,7 +237,7 @@ WITH rates AS (
 SELECT
   ilks.id,
   ilks.ilk,
-  $1 block_number,
+  $1 block_height,
   rates.rate,
   arts.art,
   spots.spot,
@@ -282,5 +282,5 @@ STABLE SECURITY DEFINER;
 -- +goose Down
 DROP FUNCTION IF EXISTS maker.get_ilk_blocks_before(block_number bigint, ilk_id int);
 DROP TYPE maker.relevant_block CASCADE;
-DROP FUNCTION IF EXISTS maker.get_ilk_at_block_number(block_number bigint, ilk_id int );
-DROP TYPE maker.ilk_state CASCADE;
+DROP FUNCTION IF EXISTS maker.get_ilk(block_height bigint, ilk_id int );
+DROP TYPE maker.ilk CASCADE;

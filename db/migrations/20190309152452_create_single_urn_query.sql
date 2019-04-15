@@ -2,8 +2,8 @@
 -- SQL in this section is executed when the migration is applied.
 
 -- Function returning state for a single urn as of given block
-CREATE OR REPLACE FUNCTION maker.get_urn_state_at_block(ilk TEXT, urn TEXT, block_height BIGINT)
-  RETURNS maker.urn_state
+CREATE OR REPLACE FUNCTION maker.get_urn(ilk TEXT, urn TEXT, block_height BIGINT)
+  RETURNS maker.urn
 AS
 
 $body$
@@ -102,4 +102,4 @@ STABLE SECURITY DEFINER;
 
 
 -- +goose Down
-DROP FUNCTION IF EXISTS maker.get_urn_state_at_block(TEXT, TEXT, BIGINT);
+DROP FUNCTION IF EXISTS maker.get_urn(TEXT, TEXT, BIGINT);
