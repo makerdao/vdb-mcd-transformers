@@ -3,18 +3,18 @@
 -- Spec: https://github.com/makerdao/vulcan.spec/blob/master/mcd.graphql
 
 CREATE TYPE maker.urn AS (
-  urnId       TEXT,
-  ilkId       TEXT,
-  blockHeight BIGINT,
+  urn_id       TEXT,
+  ilk_id       TEXT,
+  block_height BIGINT,
   -- ilk object
-  ink         NUMERIC,
-  art         NUMERIC,
-  ratio       NUMERIC,
-  safe        BOOLEAN,
+  ink          NUMERIC,
+  art          NUMERIC,
+  ratio        NUMERIC,
+  safe         BOOLEAN,
   -- frobs
   -- bites
-  created     NUMERIC,
-  updated     NUMERIC
+  created      TIMESTAMP,
+  updated      TIMESTAMP
   );
 
 -- Function returning state for all urns as of given block
@@ -77,7 +77,7 @@ WITH
   ),
 
   created AS (
-    SELECT urn_id, block_timestamp AS created
+    SELECT urn_id, (SELECT TIMESTAMP 'epoch' + block_timestamp * INTERVAL '1 second') AS datetime
     FROM
       (
         SELECT DISTINCT ON (urn_id) urn_id, block_hash FROM maker.vat_urn_ink
@@ -87,7 +87,7 @@ WITH
   ),
 
   updated AS (
-    SELECT DISTINCT ON (urn_id) urn_id, headers.block_timestamp AS updated
+    SELECT DISTINCT ON (urn_id) urn_id, (SELECT TIMESTAMP 'epoch' + block_timestamp * INTERVAL '1 second') AS datetime
     FROM
       (
         (SELECT DISTINCT ON (urn_id) urn_id, block_hash FROM maker.vat_urn_ink
@@ -103,7 +103,7 @@ WITH
   )
 
 SELECT urns.guy, urns.ilk, $1, inks.ink, arts.art, ratios.ratio,
-       COALESCE(safe.safe, arts.art = 0), created.created, updated.updated
+       COALESCE(safe.safe, arts.art = 0), created.datetime, updated.datetime
 FROM inks
   LEFT JOIN arts     ON arts.urn_id = inks.urn_id
   LEFT JOIN urns     ON arts.urn_id = urns.urn_id

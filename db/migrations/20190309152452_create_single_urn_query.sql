@@ -63,7 +63,7 @@ WITH
   ),
 
   created AS (
-    SELECT urn_id, block_timestamp AS created
+    SELECT urn_id, (SELECT TIMESTAMP 'epoch' + block_timestamp * INTERVAL '1 second') AS datetime
     FROM
       (
         SELECT DISTINCT ON (urn_id) urn_id, block_hash FROM maker.vat_urn_ink
@@ -74,7 +74,7 @@ WITH
   ),
 
   updated AS (
-    SELECT DISTINCT ON (urn_id) urn_id, headers.block_timestamp AS updated
+    SELECT DISTINCT ON (urn_id) urn_id, (SELECT TIMESTAMP 'epoch' + block_timestamp * INTERVAL '1 second') AS datetime
     FROM
       (
         SELECT urn_id, block_number FROM ink
@@ -82,11 +82,11 @@ WITH
         SELECT urn_id, block_number FROM art
       ) last_blocks
         LEFT JOIN public.headers ON headers.block_number = last_blocks.block_number
-    ORDER BY urn_id, headers.block_timestamp DESC
+    ORDER BY urn_id, block_timestamp DESC
   )
 
 SELECT $2 AS urnId, $1 AS ilkId, $3 AS block_height, ink.ink, art.art, ratio.ratio,
-       COALESCE(safe.safe, art.art = 0), created.created, updated.updated
+       COALESCE(safe.safe, art.art = 0), created.datetime, updated.datetime
 FROM ink
   LEFT JOIN art     ON art.urn_id = ink.urn_id
   LEFT JOIN urn     ON urn.urn_id = ink.urn_id

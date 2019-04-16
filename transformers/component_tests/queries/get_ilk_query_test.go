@@ -281,8 +281,8 @@ var _ = Describe("Ilk State Query", func() {
 		Expect(err).NotTo(HaveOccurred())
 		expectedBlockOneFakeIlkState := test_helpers.IlkState{
 			Ilk:     fakeIlk,
-			Created: sql.NullString{String: blockOneHeader.Timestamp, Valid: true},
-			Updated: sql.NullString{String: blockOneHeader.Timestamp, Valid: true},
+			Created: sql.NullString{String: "1973-07-10T00:11:51Z", Valid: true},
+			Updated: sql.NullString{String: "1973-07-10T00:11:51Z", Valid: true},
 		}
 		Expect(fakeIlkBlockOneDbResult).To(Equal(expectedBlockOneFakeIlkState))
 
@@ -291,8 +291,8 @@ var _ = Describe("Ilk State Query", func() {
 		Expect(err).NotTo(HaveOccurred())
 		expectedBlockTwoFakeIlkState := test_helpers.IlkState{
 			Ilk:     fakeIlk,
-			Created: sql.NullString{String: blockOneHeader.Timestamp, Valid: true},
-			Updated: sql.NullString{String: blockTwoHeader.Timestamp, Valid: true},
+			Created: sql.NullString{String: "1973-07-10T00:11:51Z", Valid: true},
+			Updated: sql.NullString{String: "2005-03-18T01:58:32Z", Valid: true},
 		}
 		Expect(fakeIlkBlockTwoDbResult).To(Equal(expectedBlockTwoFakeIlkState))
 
@@ -305,8 +305,8 @@ var _ = Describe("Ilk State Query", func() {
 		Expect(err).NotTo(HaveOccurred())
 		expectedBlockTwoAnotherFakeIlkState := test_helpers.IlkState{
 			Ilk:     anotherFakeIlk,
-			Created: sql.NullString{String: blockTwoHeader.Timestamp, Valid: true},
-			Updated: sql.NullString{String: blockTwoHeader.Timestamp, Valid: true},
+			Created: sql.NullString{String: "2005-03-18T01:58:32Z", Valid: true},
+			Updated: sql.NullString{String: "2005-03-18T01:58:32Z", Valid: true},
 		}
 
 		Expect(anotherFakeIlkDbResult).To(Equal(expectedBlockTwoAnotherFakeIlkState))

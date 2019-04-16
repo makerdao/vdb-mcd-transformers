@@ -1,9 +1,9 @@
 -- +goose Up
 -- SQL in this section is executed when the migration is applied.
 CREATE TYPE maker.frob_event AS (
-  ilkId        TEXT,
+  ilk_id        TEXT,
   -- ilk object
-  urnId        TEXT,
+  urn_id        TEXT,
   dink         NUMERIC,
   dart         NUMERIC,
   block_number BIGINT

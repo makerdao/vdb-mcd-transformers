@@ -14,6 +14,7 @@ import (
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 	"math/rand"
 	"strconv"
+	"time"
 )
 
 var (
@@ -111,6 +112,11 @@ func GetIlkValues(seed int) map[string]string {
 }
 
 func IlkStateFromValues(ilk, updated, created string, ilkValues map[string]string) IlkState {
+	parsedCreated, _ := strconv.ParseInt(created, 10, 64)
+	parsedUpdated, _ := strconv.ParseInt(updated, 10, 64)
+	createdTimestamp := time.Unix(parsedCreated, 0).UTC().Format(time.RFC3339)
+	updatedTimestamp := time.Unix(parsedUpdated, 0).UTC().Format(time.RFC3339)
+
 	return IlkState{
 		Ilk:     ilk,
 		Rate:    ilkValues[vat.IlkRate],
@@ -123,8 +129,8 @@ func IlkStateFromValues(ilk, updated, created string, ilkValues map[string]strin
 		Flip:    ilkValues[cat.IlkFlip],
 		Rho:     ilkValues[jug.IlkRho],
 		Duty:    ilkValues[jug.IlkDuty],
-		Created: sql.NullString{String: created, Valid: true},
-		Updated: sql.NullString{String: updated, Valid: true},
+		Created: sql.NullString{String: createdTimestamp, Valid: true},
+		Updated: sql.NullString{String: updatedTimestamp, Valid: true},
 	}
 }
 
@@ -243,9 +249,9 @@ type UrnMetadata struct {
 }
 
 type UrnState struct {
-	UrnId       string
-	IlkId       string
-	BlockHeight int
+	UrnId       string `db:"urn_id"`
+	IlkId       string `db:"ilk_id"`
+	BlockHeight int    `db:"block_height"`
 	Ink         string
 	Art         string
 	Ratio       sql.NullString
@@ -277,8 +283,12 @@ func AssertUrn(actual, expected UrnState) {
 }
 
 type FrobEvent struct {
-	IlkId string
-	UrnId string
+	IlkId string `db:"ilk_id"`
+	UrnId string `db:"urn_id"`
 	Dink  string
 	Dart  string
+}
+
+func GetExpectedTimestamp(epoch int) string {
+	return time.Unix(int64(epoch), 0).UTC().Format(time.RFC3339)
 }
