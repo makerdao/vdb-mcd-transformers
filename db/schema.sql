@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 10.6
--- Dumped by pg_dump version 10.6
+-- Dumped from database version 11.2
+-- Dumped by pg_dump version 11.2
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -23,20 +23,6 @@ CREATE SCHEMA maker;
 
 
 --
--- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: -
---
-
-CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
-
-
---
--- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: -
---
-
-COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
-
-
---
 -- Name: era; Type: TYPE; Schema: maker; Owner: -
 --
 
@@ -51,8 +37,8 @@ CREATE TYPE maker.era AS (
 --
 
 CREATE TYPE maker.frob_event AS (
-	ilkid text,
-	urnid text,
+	ilk_id text,
+	urn_id text,
 	dink numeric,
 	dart numeric,
 	block_number bigint
@@ -66,7 +52,7 @@ CREATE TYPE maker.frob_event AS (
 CREATE TYPE maker.ilk AS (
 	ilk_id integer,
 	ilk text,
-	block_number bigint,
+	block_height bigint,
 	rate numeric,
 	art numeric,
 	spot numeric,
@@ -77,8 +63,8 @@ CREATE TYPE maker.ilk AS (
 	flip text,
 	rho numeric,
 	duty numeric,
-	created numeric,
-	updated numeric
+	created timestamp without time zone,
+	updated timestamp without time zone
 );
 
 
@@ -112,15 +98,15 @@ CREATE TYPE maker.tx AS (
 --
 
 CREATE TYPE maker.urn AS (
-	urnid text,
-	ilkid text,
-	blockheight bigint,
+	urn_id text,
+	ilk_id text,
+	block_height bigint,
 	ink numeric,
 	art numeric,
 	ratio numeric,
 	safe boolean,
-	created numeric,
-	updated numeric
+	created timestamp without time zone,
+	updated timestamp without time zone
 );
 
 
@@ -147,7 +133,7 @@ $_$;
 -- Name: all_ilk_states(bigint, integer); Type: FUNCTION; Schema: maker; Owner: -
 --
 
-CREATE FUNCTION maker.all_ilk_states(block_number bigint, ilk_id integer) RETURNS SETOF maker.ilk
+CREATE FUNCTION maker.all_ilk_states(block_height bigint, ilk_id integer) RETURNS SETOF maker.ilk
     LANGUAGE plpgsql STABLE SECURITY DEFINER
     AS $_$
 DECLARE
@@ -264,7 +250,7 @@ WITH
   ),
 
   created AS (
-    SELECT urn_id, block_timestamp AS created
+    SELECT urn_id, (SELECT TIMESTAMP 'epoch' + block_timestamp * INTERVAL '1 second') AS datetime
     FROM
       (
         SELECT DISTINCT ON (urn_id) urn_id, block_hash FROM maker.vat_urn_ink
@@ -274,7 +260,7 @@ WITH
   ),
 
   updated AS (
-    SELECT DISTINCT ON (urn_id) urn_id, headers.block_timestamp AS updated
+    SELECT DISTINCT ON (urn_id) urn_id, (SELECT TIMESTAMP 'epoch' + block_timestamp * INTERVAL '1 second') AS datetime
     FROM
       (
         (SELECT DISTINCT ON (urn_id) urn_id, block_hash FROM maker.vat_urn_ink
@@ -290,7 +276,7 @@ WITH
   )
 
 SELECT urns.guy, urns.ilk, $1, inks.ink, arts.art, ratios.ratio,
-       COALESCE(safe.safe, arts.art = 0), created.created, updated.updated
+       COALESCE(safe.safe, arts.art = 0), created.datetime, updated.datetime
 FROM inks
   LEFT JOIN arts     ON arts.urn_id = inks.urn_id
   LEFT JOIN urns     ON arts.urn_id = urns.urn_id
@@ -311,7 +297,7 @@ CREATE FUNCTION maker.frob_event_ilk(event maker.frob_event) RETURNS SETOF maker
     AS $$
   SELECT * FROM maker.get_ilk(
     event.block_number,
-    (SELECT id FROM maker.ilks WHERE ilk = event.ilkid))
+    (SELECT id FROM maker.ilks WHERE ilk = event.ilk_id))
 $$;
 
 
@@ -338,7 +324,7 @@ $$;
 CREATE FUNCTION maker.frob_event_urn(event maker.frob_event) RETURNS SETOF maker.urn
     LANGUAGE sql STABLE
     AS $$
-  SELECT * FROM maker.get_urn(event.ilkid, event.urnid, event.block_number)
+  SELECT * FROM maker.get_urn(event.ilk_id, event.urn_id, event.block_number)
 $$;
 
 
@@ -346,7 +332,7 @@ $$;
 -- Name: get_ilk(bigint, integer); Type: FUNCTION; Schema: maker; Owner: -
 --
 
-CREATE FUNCTION maker.get_ilk(block_number bigint, ilkid integer) RETURNS maker.ilk
+CREATE FUNCTION maker.get_ilk(block_height bigint, ilkid integer) RETURNS maker.ilk
     LANGUAGE sql STABLE SECURITY DEFINER
     AS $_$
 WITH rates AS (
@@ -456,7 +442,7 @@ WITH rates AS (
       relevant_blocks.block_number,
       relevant_blocks.block_hash,
       relevant_blocks.ilk_id,
-      headers.block_timestamp
+      (SELECT TIMESTAMP 'epoch' + headers.block_timestamp * INTERVAL '1 second') as datetime
     FROM relevant_blocks
       LEFT JOIN public.headers AS headers on headers.hash = relevant_blocks.block_hash
     ORDER BY block_number ASC
@@ -466,7 +452,7 @@ WITH rates AS (
       relevant_blocks.block_number,
       relevant_blocks.block_hash,
       relevant_blocks.ilk_id,
-      headers.block_timestamp
+      (SELECT TIMESTAMP 'epoch' + headers.block_timestamp * INTERVAL '1 second') as datetime
     FROM relevant_blocks
       LEFT JOIN public.headers AS headers on headers.hash = relevant_blocks.block_hash
     ORDER BY block_number DESC
@@ -476,7 +462,7 @@ WITH rates AS (
 SELECT
   ilks.id,
   ilks.ilk,
-  $1 block_number,
+  $1 block_height,
   rates.rate,
   arts.art,
   spots.spot,
@@ -487,8 +473,8 @@ SELECT
   flips.flip,
   rhos.rho,
   duties.duty,
-  created.block_timestamp,
-  updated.block_timestamp
+  created.datetime,
+  updated.datetime
 FROM maker.ilks AS ilks
   LEFT JOIN rates ON rates.ilk_id = ilks.id
   LEFT JOIN arts ON arts.ilk_id = ilks.id
@@ -669,7 +655,7 @@ WITH
   ),
 
   created AS (
-    SELECT urn_id, block_timestamp AS created
+    SELECT urn_id, (SELECT TIMESTAMP 'epoch' + block_timestamp * INTERVAL '1 second') AS datetime
     FROM
       (
         SELECT DISTINCT ON (urn_id) urn_id, block_hash FROM maker.vat_urn_ink
@@ -680,7 +666,7 @@ WITH
   ),
 
   updated AS (
-    SELECT DISTINCT ON (urn_id) urn_id, headers.block_timestamp AS updated
+    SELECT DISTINCT ON (urn_id) urn_id, (SELECT TIMESTAMP 'epoch' + block_timestamp * INTERVAL '1 second') AS datetime
     FROM
       (
         SELECT urn_id, block_number FROM ink
@@ -688,11 +674,11 @@ WITH
         SELECT urn_id, block_number FROM art
       ) last_blocks
         LEFT JOIN public.headers ON headers.block_number = last_blocks.block_number
-    ORDER BY urn_id, headers.block_timestamp DESC
+    ORDER BY urn_id, block_timestamp DESC
   )
 
 SELECT $2 AS urnId, $1 AS ilkId, $3 AS block_height, ink.ink, art.art, ratio.ratio,
-       COALESCE(safe.safe, art.art = 0), created.created, updated.updated
+       COALESCE(safe.safe, art.art = 0), created.datetime, updated.datetime
 FROM ink
   LEFT JOIN art     ON art.urn_id = ink.urn_id
   LEFT JOIN urn     ON urn.urn_id = ink.urn_id
@@ -713,7 +699,7 @@ CREATE FUNCTION maker.ilk_state_frobs(state maker.ilk) RETURNS SETOF maker.frob_
     LANGUAGE sql STABLE
     AS $$
   SELECT * FROM maker.all_frobs(state.ilk)
-  WHERE block_number <= state.block_number
+  WHERE block_number <= state.block_height
 $$;
 
 
@@ -758,8 +744,8 @@ $_$;
 CREATE FUNCTION maker.urn_state_frobs(state maker.urn) RETURNS SETOF maker.frob_event
     LANGUAGE sql STABLE
     AS $$
-  SELECT * FROM maker.urn_frobs(state.ilkid, state.urnid)
-  WHERE block_number <= state.blockheight
+  SELECT * FROM maker.urn_frobs(state.ilk_id, state.urn_id)
+  WHERE block_number <= state.block_height
 $$;
 
 
@@ -5859,11 +5845,11 @@ GRANT ALL ON FUNCTION maker.all_frobs(ilk text) TO graphql;
 
 
 --
--- Name: FUNCTION all_ilk_states(block_number bigint, ilk_id integer); Type: ACL; Schema: maker; Owner: -
+-- Name: FUNCTION all_ilk_states(block_height bigint, ilk_id integer); Type: ACL; Schema: maker; Owner: -
 --
 
-REVOKE ALL ON FUNCTION maker.all_ilk_states(block_number bigint, ilk_id integer) FROM PUBLIC;
-GRANT ALL ON FUNCTION maker.all_ilk_states(block_number bigint, ilk_id integer) TO graphql;
+REVOKE ALL ON FUNCTION maker.all_ilk_states(block_height bigint, ilk_id integer) FROM PUBLIC;
+GRANT ALL ON FUNCTION maker.all_ilk_states(block_height bigint, ilk_id integer) TO graphql;
 
 
 --
@@ -5904,11 +5890,11 @@ REVOKE ALL ON FUNCTION maker.frob_event_urn(event maker.frob_event) FROM PUBLIC;
 
 
 --
--- Name: FUNCTION get_ilk(block_number bigint, ilkid integer); Type: ACL; Schema: maker; Owner: -
+-- Name: FUNCTION get_ilk(block_height bigint, ilkid integer); Type: ACL; Schema: maker; Owner: -
 --
 
-REVOKE ALL ON FUNCTION maker.get_ilk(block_number bigint, ilkid integer) FROM PUBLIC;
-GRANT ALL ON FUNCTION maker.get_ilk(block_number bigint, ilkid integer) TO graphql;
+REVOKE ALL ON FUNCTION maker.get_ilk(block_height bigint, ilkid integer) FROM PUBLIC;
+GRANT ALL ON FUNCTION maker.get_ilk(block_height bigint, ilkid integer) TO graphql;
 
 
 --

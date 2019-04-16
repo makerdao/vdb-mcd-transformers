@@ -38,7 +38,7 @@ var _ = Describe("Urn history query", func() {
 
 	It("returns a reverse chronological history for the given ilk and urn", func() {
 		blockOne := rand.Int()
-		timestampOne := rand.Int()
+		timestampOne := int(rand.Int31())
 		urnSetupData := helper.GetUrnSetupData(blockOne, timestampOne)
 		urnMetadata := helper.GetUrnMetadata(fakeIlk, fakeUrn)
 		helper.CreateUrn(urnSetupData, urnMetadata, vatRepo, headerRepo)
@@ -47,7 +47,7 @@ var _ = Describe("Urn history query", func() {
 		artBlockOne := urnSetupData.Art
 
 		expectedRatioBlockOne := helper.GetExpectedRatio(inkBlockOne, urnSetupData.Spot, artBlockOne, urnSetupData.Rate)
-
+		expectedTimestampOne := helper.GetExpectedTimestamp(timestampOne)
 		expectedUrnBlockOne := helper.UrnState{
 			UrnId:       fakeUrn,
 			IlkId:       fakeIlk,
@@ -56,8 +56,8 @@ var _ = Describe("Urn history query", func() {
 			Art:         strconv.Itoa(artBlockOne),
 			Ratio:       sql.NullString{String: strconv.FormatFloat(expectedRatioBlockOne, 'f', 8, 64), Valid: true},
 			Safe:        expectedRatioBlockOne >= 1,
-			Created:     sql.NullString{String: strconv.Itoa(timestampOne), Valid: true},
-			Updated:     sql.NullString{String: strconv.Itoa(timestampOne), Valid: true},
+			Created:     sql.NullString{String: expectedTimestampOne, Valid: true},
+			Updated:     sql.NullString{String: expectedTimestampOne, Valid: true},
 		}
 
 		// New block
@@ -79,7 +79,7 @@ var _ = Describe("Urn history query", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		expectedRatioBlockTwo := helper.GetExpectedRatio(inkBlockTwo, urnSetupData.Spot, artBlockOne, urnSetupData.Rate)
-
+		expectedTimestampTwo := helper.GetExpectedTimestamp(timestampTwo)
 		expectedUrnBlockTwo := helper.UrnState{
 			UrnId:       fakeUrn,
 			IlkId:       fakeIlk,
@@ -88,8 +88,8 @@ var _ = Describe("Urn history query", func() {
 			Art:         strconv.Itoa(artBlockOne),
 			Ratio:       sql.NullString{String: strconv.FormatFloat(expectedRatioBlockTwo, 'f', 8, 64), Valid: true},
 			Safe:        expectedRatioBlockTwo >= 1,
-			Created:     sql.NullString{String: strconv.Itoa(timestampOne), Valid: true},
-			Updated:     sql.NullString{String: strconv.Itoa(timestampTwo), Valid: true},
+			Created:     sql.NullString{String: expectedTimestampOne, Valid: true},
+			Updated:     sql.NullString{String: expectedTimestampTwo, Valid: true},
 		}
 
 		// New block
@@ -102,6 +102,7 @@ var _ = Describe("Urn history query", func() {
 		err = vatRepo.Create(blockThree, fakes.FakeHash.String(), urnMetadata.UrnArt, strconv.Itoa(artBlockThree))
 		Expect(err).NotTo(HaveOccurred())
 
+		expectedTimestampThree := helper.GetExpectedTimestamp(timestampThree)
 		expectedUrnBlockThree := helper.UrnState{
 			UrnId:       fakeUrn,
 			IlkId:       fakeIlk,
@@ -110,8 +111,8 @@ var _ = Describe("Urn history query", func() {
 			Art:         strconv.Itoa(artBlockThree),
 			Ratio:       sql.NullString{Valid: false}, // 0 art => null ratio
 			Safe:        true,                         // 0 art => safe urn
-			Created:     sql.NullString{String: strconv.Itoa(timestampOne), Valid: true},
-			Updated:     sql.NullString{String: strconv.Itoa(timestampThree), Valid: true},
+			Created:     sql.NullString{String: expectedTimestampOne, Valid: true},
+			Updated:     sql.NullString{String: expectedTimestampThree, Valid: true},
 		}
 
 		var result []helper.UrnState
