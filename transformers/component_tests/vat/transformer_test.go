@@ -108,10 +108,10 @@ var _ = Describe("Executing the transformer", func() {
 		err := transformer.Execute(vatLineRow)
 		Expect(err).NotTo(HaveOccurred())
 
-		var debtResult test_helpers.MappingRes
-		err = db.Get(&debtResult, `SELECT block_number, block_hash, ilk_id AS key, line AS value FROM maker.vat_ilk_line`)
+		var lineResult test_helpers.MappingRes
+		err = db.Get(&lineResult, `SELECT block_number, block_hash, ilk_id AS key, line AS value FROM maker.vat_ilk_line`)
 		Expect(err).NotTo(HaveOccurred())
-		test_helpers.AssertMapping(debtResult, blockNumber, blockHash, strconv.Itoa(ilkId), "100000000000000000000000000000000000000000000")
+		test_helpers.AssertMapping(lineResult, blockNumber, blockHash, strconv.Itoa(ilkId), "100000000000000000000000000000000000000000000")
 	})
 
 	It("reads in a Vat debt storage diff row and persists it", func() {
@@ -133,7 +133,7 @@ var _ = Describe("Executing the transformer", func() {
 		test_helpers.AssertVariable(debtResult, blockNumber, blockHash, "100000000000000000000000000000000000000000000")
 	})
 
-	It("reads in a Vat.Line storage diff row and persists it", func() {
+	It("reads in a Vat Line storage diff row and persists it", func() {
 		blockNumber := 10590469
 		blockHash := "0x29ff622ea764035385c003fc1587a39fd38937c673f732651f8caaee0244c0f0"
 		vatLineRow := utils.StorageDiffRow{
@@ -152,7 +152,7 @@ var _ = Describe("Executing the transformer", func() {
 		test_helpers.AssertVariable(lineResult, blockNumber, blockHash, "1000000000000000000000000000000000000000000000000000")
 	})
 
-	It("reads in a Vat.live storage diff row and persists it", func() {
+	It("reads in a Vat live storage diff row and persists it", func() {
 		blockNumber := 10501122
 		vatLineRow := utils.StorageDiffRow{
 			Contract:     common.HexToAddress("67fd6c3575fc2dbe2cb596bd3bebc9edb5571fa1"),
