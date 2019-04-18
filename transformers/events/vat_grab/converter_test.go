@@ -37,11 +37,19 @@ var _ = Describe("Vat grab converter", func() {
 		Expect(err).To(HaveOccurred())
 	})
 
-	It("converts a log to an model", func() {
-		models, err := converter.ToModels([]types.Log{test_data.EthVatGrabLog})
+	It("converts a log with positive dink to a model", func() {
+		models, err := converter.ToModels([]types.Log{test_data.EthVatGrabLogWithPositiveDink})
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(len(models)).To(Equal(1))
-		Expect(models[0]).To(Equal(test_data.VatGrabModel))
+		Expect(models[0]).To(Equal(test_data.VatGrabModelWithPositiveDink))
+	})
+
+	It("converts a log with negative dink to a model", func() {
+		models, err := converter.ToModels([]types.Log{test_data.EthVatGrabLogWithNegativeDink})
+
+		Expect(err).NotTo(HaveOccurred())
+		Expect(len(models)).To(Equal(1))
+		Expect(models[0]).To(Equal(test_data.VatGrabModelWithNegativeDink))
 	})
 })

@@ -3,8 +3,7 @@ package vat_grab
 import (
 	"encoding/json"
 	"errors"
-	"math/big"
-
+	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
 
 	"github.com/vulcanize/vulcanizedb/libraries/shared/constants"
@@ -25,14 +24,12 @@ func (VatGrabConverter) ToModels(ethLogs []types.Log) ([]interface{}, error) {
 		ilk := shared.GetHexWithoutPrefix(ethLog.Topics[1].Bytes())
 		urn := common.BytesToAddress(ethLog.Topics[2].Bytes()).String()
 		v := common.BytesToAddress(ethLog.Topics[3].Bytes()).String()
-		wBytes := shared.GetDataBytesAtIndex(-3, ethLog.Data)
+		wBytes := shared.GetLogNoteDataBytesAtIndex(-3, ethLog.Data)
 		w := common.BytesToAddress(wBytes).String()
-		// TODO: circle back on this when event is on Kovan
-		// suspicious that we will need to use the shared.GetLogNoteDataBytesAtIndex
-		dinkBytes := shared.GetDataBytesAtIndex(-2, ethLog.Data)
-		dink := big.NewInt(0).SetBytes(dinkBytes).String()
-		dartBytes := shared.GetDataBytesAtIndex(-1, ethLog.Data)
-		dart := big.NewInt(0).SetBytes(dartBytes).String()
+		dinkBytes := shared.GetLogNoteDataBytesAtIndex(-2, ethLog.Data)
+		dink := shared.ConvertInt256HexToBigInt(hexutil.Encode(dinkBytes))
+		dartBytes := shared.GetLogNoteDataBytesAtIndex(-1, ethLog.Data)
+		dart := shared.ConvertInt256HexToBigInt(hexutil.Encode(dartBytes))
 
 		raw, err := json.Marshal(ethLog)
 		if err != nil {
@@ -43,8 +40,8 @@ func (VatGrabConverter) ToModels(ethLogs []types.Log) ([]interface{}, error) {
 			Urn:              urn,
 			V:                v,
 			W:                w,
-			Dink:             dink,
-			Dart:             dart,
+			Dink:             dink.String(),
+			Dart:             dart.String(),
 			LogIndex:         ethLog.Index,
 			TransactionIndex: ethLog.TxIndex,
 			Raw:              raw,

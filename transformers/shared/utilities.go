@@ -24,20 +24,9 @@ import (
 	"strconv"
 
 	"github.com/ethereum/go-ethereum/common"
+	math2 "github.com/ethereum/go-ethereum/common/math"
 
 	"github.com/vulcanize/vulcanizedb/libraries/shared/constants"
-)
-
-var (
-	radBase      = big.NewFloat(1e45)
-	rayBase      = big.NewFloat(1e27)
-	wadBase      = big.NewFloat(1e18)
-	radPrecision = 45
-	rayPrecision = 27
-	wadPrecision = 18
-	rad          = "rad"
-	ray          = "ray"
-	wad          = "wad"
 )
 
 func BigIntToInt64(value *big.Int) int64 {
@@ -76,25 +65,48 @@ func ConvertIntToHex(n int) (string, error) {
 	return hex, nil
 }
 
-func GetUpdatedLogNoteDataBytesAtIndex(n int, logData []byte) []byte {
+func ConvertInt256HexToBigInt(hex string) *big.Int {
+	n := ConvertUint256HexToBigInt(hex)
+	return math2.S256(n)
+}
+
+func ConvertUint256HexToBigInt(hex string) *big.Int {
+	hexBytes := common.FromHex(hex)
+	return big.NewInt(0).SetBytes(hexBytes)
+}
+
+// Extract relevant bytes from log data emitted by DSNote and Vat Note modifiers.
+// For DSNote, index is backward from last argument. For example,
+//		- if 4 arguments:
+//			- topic 0 is function signature
+//			- topic 1 is msg.sender
+//			- topic 2 is argument 1
+//			- topic 3 is argument 2
+//			- argument 3 can be accessed via GetLogNoteDataBytesAtIndex(-2, logData)
+//			- argument 4 can be accessed via GetLogNoteDataBytesAtIndex(-1, logData)
+//		- if 6 arguments:
+//			- topics 0-3 are same as above
+//			- argument 3 can be accessed via GetLogNoteDataBytesAtIndex(-3, logData)
+//			- argument 4 can be accessed via GetLogNoteDataBytesAtIndex(-2, logData)
+//			- argument 5 can be accessed via GetLogNoteDataBytesAtIndex(-1, logData)
+// For Vat Note, note is padded at fixed length supporting 6 arguments. For example,
+//		- if 4 arguments:
+//			- topic 0 is function signature
+//			- topic 1 is argument 1
+//			- topic 2 is argument 2
+//			- topic 3 is argument 3
+//			- argument 4 can be accessed via GetLogNoteDataBytesAtIndex(-3, logData)
+//		- if 6 arguments:
+//			- topics 0-3 are same as above
+//			- argument 4 can be accessed via GetLogNoteDataBytesAtIndex(-3, logData)
+//			- argument 5 can be accessed via GetLogNoteDataBytesAtIndex(-2, logData)
+//			- argument 6 can be accessed via GetLogNoteDataBytesAtIndex(-1, logData)
+func GetLogNoteDataBytesAtIndex(n int, logData []byte) []byte {
 	zeroPaddedSignatureOffset := 28
 	indexOffset := int(math.Abs(float64(n)))
 	dataBegin := len(logData) - (indexOffset * constants.DataItemLength) - zeroPaddedSignatureOffset
 	dataEnd := len(logData) - ((indexOffset - 1) * constants.DataItemLength) - zeroPaddedSignatureOffset
 	return logData[dataBegin:dataEnd]
-}
-
-// TODO: Remove once transformers have been updated to use GetUpdatedLogNoteDataBytesAtIndex
-func GetDataBytesAtIndex(n int, logData []byte) []byte {
-	switch {
-	case n == -1:
-		return logData[len(logData)-constants.DataItemLength:]
-	case n == -2:
-		return logData[len(logData)-(2*constants.DataItemLength) : len(logData)-constants.DataItemLength]
-	case n == -3:
-		return logData[len(logData)-(3*constants.DataItemLength) : len(logData)-(2*constants.DataItemLength)]
-	}
-	return []byte{}
 }
 
 func GetHexWithoutPrefix(raw []byte) string {

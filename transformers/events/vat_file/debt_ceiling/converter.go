@@ -20,6 +20,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 
 	"github.com/ethereum/go-ethereum/core/types"
 
@@ -36,7 +37,7 @@ func (VatFileDebtCeilingConverter) ToModels(ethLogs []types.Log) ([]interface{},
 			return nil, err
 		}
 		what := string(bytes.Trim(ethLog.Topics[1].Bytes(), "\x00"))
-		data := ethLog.Topics[2].Big().String()
+		data := shared.ConvertUint256HexToBigInt(ethLog.Topics[2].Hex())
 
 		raw, err := json.Marshal(ethLog)
 		if err != nil {
@@ -44,7 +45,7 @@ func (VatFileDebtCeilingConverter) ToModels(ethLogs []types.Log) ([]interface{},
 		}
 		model := VatFileDebtCeilingModel{
 			What:             what,
-			Data:             data,
+			Data:             data.String(),
 			LogIndex:         ethLog.Index,
 			TransactionIndex: ethLog.TxIndex,
 			Raw:              raw,

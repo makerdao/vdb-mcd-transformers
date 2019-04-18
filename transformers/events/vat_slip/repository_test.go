@@ -32,12 +32,12 @@ var _ = Describe("Vat slip repository", func() {
 	})
 
 	Describe("Create", func() {
-		modelWithDifferentLogIdx := test_data.VatSlipModel
+		modelWithDifferentLogIdx := test_data.VatSlipModelWithNegativeWad
 		modelWithDifferentLogIdx.LogIndex++
 		inputs := shared_behaviors.CreateBehaviorInputs{
 			CheckedHeaderColumnName:  constants.VatSlipChecked,
 			LogEventTableName:        "maker.vat_slip",
-			TestModel:                test_data.VatSlipModel,
+			TestModel:                test_data.VatSlipModelWithNegativeWad,
 			ModelWithDifferentLogIdx: modelWithDifferentLogIdx,
 			Repository:               &repository,
 		}
@@ -49,20 +49,20 @@ var _ = Describe("Vat slip repository", func() {
 			headerID, err := headerRepository.CreateOrUpdateHeader(fakes.FakeHeader)
 			Expect(err).NotTo(HaveOccurred())
 
-			err = repository.Create(headerID, []interface{}{test_data.VatSlipModel})
+			err = repository.Create(headerID, []interface{}{test_data.VatSlipModelWithNegativeWad})
 			Expect(err).NotTo(HaveOccurred())
 
 			var dbVatSlip vat_slip.VatSlipModel
 			err = db.Get(&dbVatSlip, `SELECT ilk_id, usr, wad, tx_idx, log_idx, raw_log FROM maker.vat_slip WHERE header_id = $1`, headerID)
 			Expect(err).NotTo(HaveOccurred())
-			ilkID, err := shared.GetOrCreateIlk(test_data.VatSlipModel.Ilk, db)
+			ilkID, err := shared.GetOrCreateIlk(test_data.VatSlipModelWithNegativeWad.Ilk, db)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(dbVatSlip.Ilk).To(Equal(strconv.Itoa(ilkID)))
-			Expect(dbVatSlip.Usr).To(Equal(test_data.VatSlipModel.Usr))
-			Expect(dbVatSlip.Wad).To(Equal(test_data.VatSlipModel.Wad))
-			Expect(dbVatSlip.TransactionIndex).To(Equal(test_data.VatSlipModel.TransactionIndex))
-			Expect(dbVatSlip.LogIndex).To(Equal(test_data.VatSlipModel.LogIndex))
-			Expect(dbVatSlip.Raw).To(MatchJSON(test_data.VatSlipModel.Raw))
+			Expect(dbVatSlip.Usr).To(Equal(test_data.VatSlipModelWithNegativeWad.Usr))
+			Expect(dbVatSlip.Wad).To(Equal(test_data.VatSlipModelWithNegativeWad.Wad))
+			Expect(dbVatSlip.TransactionIndex).To(Equal(test_data.VatSlipModelWithNegativeWad.TransactionIndex))
+			Expect(dbVatSlip.LogIndex).To(Equal(test_data.VatSlipModelWithNegativeWad.LogIndex))
+			Expect(dbVatSlip.Raw).To(MatchJSON(test_data.VatSlipModelWithNegativeWad.Raw))
 		})
 	})
 

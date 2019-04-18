@@ -27,7 +27,34 @@ import (
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 )
 
-var EthVatSlipLog = types.Log{
+var EthVatSlipLogWithPositiveWad = types.Log{
+	Address: common.Address{},
+	Topics: []common.Hash{
+		common.HexToHash(KovanVatSlipSignature),
+		common.HexToHash("0x4554482d41000000000000000000000000000000000000000000000000000000"),
+		common.HexToHash("0x0000000000000000000000005c8c8e5895b9ccf34acf391c99e13c79ee2efb46"),
+		common.HexToHash("0x000000000000000000000000000000000000000000000000002386f26fc10000"),
+	},
+	Data:        hexutil.MustDecode("0x000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000e07cdd3fde4554482d410000000000000000000000000000000000000000000000000000000000000000000000000000005c8c8e5895b9ccf34acf391c99e13c79ee2efb46000000000000000000000000000000000000000000000000002386f26fc1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"),
+	BlockNumber: 10713689,
+	TxHash:      common.HexToHash("0xf8a206ce1acb5c39125cab95456041afb4ccfbe496cf8850e982259128f5aafd"),
+	TxIndex:     0,
+	BlockHash:   common.HexToHash("0xde1338d81bd1c8e0472fa96e13d5fa58f7a215d499d8f17f15adbef7ef9586b8"),
+	Index:       5,
+	Removed:     false,
+}
+
+var rawVatSlipLogWithPositiveWad, _ = json.Marshal(EthVatSlipLogWithPositiveWad)
+var VatSlipModelWithPositiveWad = vat_slip.VatSlipModel{
+	Ilk:              "4554482d41000000000000000000000000000000000000000000000000000000",
+	Usr:              "0x5c8c8e5895B9cCf34ACF391C99E13C79EE2eFb46",
+	Wad:              "10000000000000000",
+	TransactionIndex: 0,
+	LogIndex:         5,
+	Raw:              rawVatSlipLogWithPositiveWad,
+}
+
+var EthVatSlipLogWithNegativeWad = types.Log{
 	Address: common.HexToAddress(KovanVatContractAddress),
 	Topics: []common.Hash{
 		common.HexToHash(KovanVatSlipSignature),
@@ -44,12 +71,12 @@ var EthVatSlipLog = types.Log{
 	Removed:     false,
 }
 
-var rawVatSlipLog, _ = json.Marshal(EthVatSlipLog)
-var VatSlipModel = vat_slip.VatSlipModel{
+var rawVatSlipLogWithNegativeWad, _ = json.Marshal(EthVatSlipLogWithNegativeWad)
+var VatSlipModelWithNegativeWad = vat_slip.VatSlipModel{
 	Ilk:              "4554482d41000000000000000000000000000000000000000000000000000000",
 	Usr:              "0xFc7440E2Ed4A3AEb14d40c00f02a14221Be0474d",
-	Wad:              "115792089237316195423570985008687907853269984665640564039457579007913129639936",
-	TransactionIndex: EthVatSlipLog.TxIndex,
-	LogIndex:         EthVatSlipLog.Index,
-	Raw:              rawVatSlipLog,
+	Wad:              "-5000000000000000",
+	TransactionIndex: EthVatSlipLogWithNegativeWad.TxIndex,
+	LogIndex:         EthVatSlipLogWithNegativeWad.Index,
+	Raw:              rawVatSlipLogWithNegativeWad,
 }

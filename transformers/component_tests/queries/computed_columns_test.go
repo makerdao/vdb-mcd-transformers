@@ -54,7 +54,7 @@ var _ = Describe("Extension function", func() {
 				test_helpers.FakeIlkCatMetadatas, test_helpers.FakeIlkJugMetadatas)
 
 			// Create a frob event
-			frobEvent = test_data.VatFrobModel
+			frobEvent = test_data.VatFrobModelWithPositiveDart
 			frobEvent.Ilk = test_helpers.FakeIlk
 			err = frobRepo.Create(headerId, []interface{}{frobEvent})
 			Expect(err).NotTo(HaveOccurred())
@@ -62,7 +62,7 @@ var _ = Describe("Extension function", func() {
 
 		Describe("ilk_state_frobs", func() {
 			It("returns relevant frobs for an ilk_state", func() {
-				irrelevantFrob := test_data.VatFrobModel
+				irrelevantFrob := test_data.VatFrobModelWithPositiveDart
 				irrelevantFrob.Ilk = "irrelevantIlk"
 				irrelevantFrob.Urn = "anotherGuy"
 				irrelevantFrob.TransactionIndex = frobEvent.TransactionIndex + 1
@@ -126,7 +126,7 @@ var _ = Describe("Extension function", func() {
 			urnMetadata := test_helpers.GetUrnMetadata(test_helpers.FakeIlk, fakeGuy)
 			test_helpers.CreateUrn(urnSetupData, urnMetadata, vatRepository, headerRepository)
 
-			frobEvent = test_data.VatFrobModel
+			frobEvent = test_data.VatFrobModelWithPositiveDart
 			frobEvent.Urn = fakeGuy
 			frobEvent.Ilk = test_helpers.FakeIlk
 			err = frobRepo.Create(headerId, []interface{}{frobEvent})
@@ -202,7 +202,7 @@ var _ = Describe("Extension function", func() {
 		It("returns transaction for a frob_event", func() {
 			frobRepo := vat_frob.VatFrobRepository{}
 			frobRepo.SetDB(db)
-			frobEvent := test_data.VatFrobModel
+			frobEvent := test_data.VatFrobModelWithPositiveDart
 			frobEvent.Ilk = test_helpers.FakeIlk
 			err = frobRepo.Create(headerId, []interface{}{frobEvent})
 			Expect(err).NotTo(HaveOccurred())

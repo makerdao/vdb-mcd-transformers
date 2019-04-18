@@ -20,9 +20,8 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"math/big"
-
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 )
 
 type JugFileBaseConverter struct{}
@@ -36,7 +35,7 @@ func (JugFileBaseConverter) ToModels(ethLogs []types.Log) ([]interface{}, error)
 		}
 
 		what := string(bytes.Trim(ethLog.Topics[2].Bytes(), "\x00"))
-		data := big.NewInt(0).SetBytes(ethLog.Topics[3].Bytes()).String()
+		data := shared.ConvertUint256HexToBigInt(ethLog.Topics[3].Hex())
 		raw, err := json.Marshal(ethLog)
 		if err != nil {
 			return nil, err
@@ -44,7 +43,7 @@ func (JugFileBaseConverter) ToModels(ethLogs []types.Log) ([]interface{}, error)
 
 		model := JugFileBaseModel{
 			What:             what,
-			Data:             data,
+			Data:             data.String(),
 			LogIndex:         ethLog.Index,
 			TransactionIndex: ethLog.TxIndex,
 			Raw:              raw,

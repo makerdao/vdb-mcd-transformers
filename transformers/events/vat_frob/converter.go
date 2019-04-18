@@ -20,10 +20,10 @@ import (
 	"encoding/json"
 	"errors"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/constants"
-	"math/big"
 )
 
 type VatFrobConverter struct{}
@@ -38,12 +38,12 @@ func (VatFrobConverter) ToModels(ethLogs []types.Log) ([]interface{}, error) {
 		ilk := shared.GetHexWithoutPrefix(ethLog.Topics[1].Bytes())
 		urn := common.BytesToAddress(ethLog.Topics[2].Bytes()).String()
 		v := common.BytesToAddress(ethLog.Topics[3].Bytes()).String()
-		wBytes := shared.GetUpdatedLogNoteDataBytesAtIndex(-3, ethLog.Data)
+		wBytes := shared.GetLogNoteDataBytesAtIndex(-3, ethLog.Data)
 		w := common.BytesToAddress(wBytes).String()
-		dinkBytes := shared.GetUpdatedLogNoteDataBytesAtIndex(-2, ethLog.Data)
-		dink := big.NewInt(0).SetBytes(dinkBytes).String()
-		dartBytes := shared.GetUpdatedLogNoteDataBytesAtIndex(-1, ethLog.Data)
-		dart := big.NewInt(0).SetBytes(dartBytes).String()
+		dinkBytes := shared.GetLogNoteDataBytesAtIndex(-2, ethLog.Data)
+		dink := shared.ConvertInt256HexToBigInt(hexutil.Encode(dinkBytes))
+		dartBytes := shared.GetLogNoteDataBytesAtIndex(-1, ethLog.Data)
+		dart := shared.ConvertInt256HexToBigInt(hexutil.Encode(dartBytes))
 
 		raw, err := json.Marshal(ethLog)
 		if err != nil {
@@ -54,8 +54,8 @@ func (VatFrobConverter) ToModels(ethLogs []types.Log) ([]interface{}, error) {
 			Urn:              urn,
 			V:                v,
 			W:                w,
-			Dink:             dink,
-			Dart:             dart,
+			Dink:             dink.String(),
+			Dart:             dart.String(),
 			LogIndex:         ethLog.Index,
 			TransactionIndex: ethLog.TxIndex,
 			Raw:              raw,

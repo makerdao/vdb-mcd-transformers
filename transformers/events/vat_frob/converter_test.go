@@ -48,12 +48,19 @@ var _ = Describe("Frob converter", func() {
 		Expect(err).To(HaveOccurred())
 	})
 
-	It("converts a log to an model", func() {
-		models, err := converter.ToModels([]types.Log{test_data.EthVatFrobLog})
+	It("converts a log with positive dart to a model", func() {
+		models, err := converter.ToModels([]types.Log{test_data.EthVatFrobLogWithPositiveDart})
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(len(models)).To(Equal(1))
-		Expect(models[0]).To(Equal(test_data.VatFrobModel))
+		Expect(models[0]).To(Equal(test_data.VatFrobModelWithPositiveDart))
 	})
 
+	It("converts a log with negative dink to a model", func() {
+		models, err := converter.ToModels([]types.Log{test_data.EthVatFrobLogWithNegativeDink})
+
+		Expect(err).NotTo(HaveOccurred())
+		Expect(len(models)).To(Equal(1))
+		Expect(models[0]).To(Equal(test_data.VatFrobModelWithNegativeDink))
+	})
 })

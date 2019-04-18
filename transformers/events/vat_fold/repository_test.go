@@ -49,13 +49,13 @@ var _ = Describe("Vat.fold repository", func() {
 	})
 
 	Describe("Create", func() {
-		modelWithDifferentLogIdx := test_data.VatFoldModel
+		modelWithDifferentLogIdx := test_data.VatFoldModelWithPositiveRate
 		modelWithDifferentLogIdx.LogIndex++
 
 		inputs := shared_behaviors.CreateBehaviorInputs{
 			CheckedHeaderColumnName:  constants.VatFoldChecked,
 			LogEventTableName:        "maker.vat_fold",
-			TestModel:                test_data.VatFoldModel,
+			TestModel:                test_data.VatFoldModelWithPositiveRate,
 			ModelWithDifferentLogIdx: modelWithDifferentLogIdx,
 			Repository:               &repository,
 		}
@@ -66,22 +66,22 @@ var _ = Describe("Vat.fold repository", func() {
 			headerRepository := repositories.NewHeaderRepository(db)
 			headerID, err := headerRepository.CreateOrUpdateHeader(fakes.FakeHeader)
 			Expect(err).NotTo(HaveOccurred())
-			err = repository.Create(headerID, []interface{}{test_data.VatFoldModel})
+			err = repository.Create(headerID, []interface{}{test_data.VatFoldModelWithPositiveRate})
 
 			Expect(err).NotTo(HaveOccurred())
 			var dbVatFold vat_fold.VatFoldModel
 			err = db.Get(&dbVatFold, `SELECT urn_id, rate, log_idx, tx_idx, raw_log FROM maker.vat_fold WHERE header_id = $1`, headerID)
 			Expect(err).NotTo(HaveOccurred())
 
-			ilkID, err := shared.GetOrCreateIlk(test_data.VatFoldModel.Ilk, db)
+			ilkID, err := shared.GetOrCreateIlk(test_data.VatFoldModelWithPositiveRate.Ilk, db)
 			Expect(err).NotTo(HaveOccurred())
-			urnID, err := shared.GetOrCreateUrn(test_data.VatFoldModel.Urn, ilkID, db)
+			urnID, err := shared.GetOrCreateUrn(test_data.VatFoldModelWithPositiveRate.Urn, ilkID, db)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(dbVatFold.Urn).To(Equal(strconv.Itoa(urnID)))
-			Expect(dbVatFold.Rate).To(Equal(test_data.VatFoldModel.Rate))
-			Expect(dbVatFold.LogIndex).To(Equal(test_data.VatFoldModel.LogIndex))
-			Expect(dbVatFold.TransactionIndex).To(Equal(test_data.VatFoldModel.TransactionIndex))
-			Expect(dbVatFold.Raw).To(MatchJSON(test_data.VatFoldModel.Raw))
+			Expect(dbVatFold.Rate).To(Equal(test_data.VatFoldModelWithPositiveRate.Rate))
+			Expect(dbVatFold.LogIndex).To(Equal(test_data.VatFoldModelWithPositiveRate.LogIndex))
+			Expect(dbVatFold.TransactionIndex).To(Equal(test_data.VatFoldModelWithPositiveRate.TransactionIndex))
+			Expect(dbVatFold.Raw).To(MatchJSON(test_data.VatFoldModelWithPositiveRate.Raw))
 		})
 	})
 

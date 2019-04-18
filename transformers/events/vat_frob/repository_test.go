@@ -48,12 +48,12 @@ var _ = Describe("Vat frob repository", func() {
 	})
 
 	Describe("Create", func() {
-		modelWithDifferentLogIdx := test_data.VatFrobModel
+		modelWithDifferentLogIdx := test_data.VatFrobModelWithPositiveDart
 		modelWithDifferentLogIdx.LogIndex++
 		inputs := shared_behaviors.CreateBehaviorInputs{
 			CheckedHeaderColumnName:  constants.VatFrobChecked,
 			LogEventTableName:        "maker.vat_frob",
-			TestModel:                test_data.VatFrobModel,
+			TestModel:                test_data.VatFrobModelWithPositiveDart,
 			ModelWithDifferentLogIdx: modelWithDifferentLogIdx,
 			Repository:               &vatFrobRepository,
 		}
@@ -65,23 +65,23 @@ var _ = Describe("Vat frob repository", func() {
 			headerID, err := headerRepository.CreateOrUpdateHeader(fakes.FakeHeader)
 			Expect(err).NotTo(HaveOccurred())
 
-			err = vatFrobRepository.Create(headerID, []interface{}{test_data.VatFrobModel})
+			err = vatFrobRepository.Create(headerID, []interface{}{test_data.VatFrobModelWithPositiveDart})
 			Expect(err).NotTo(HaveOccurred())
 			var dbVatFrob vat_frob.VatFrobModel
 			err = db.Get(&dbVatFrob, `SELECT urn_id, v, w, dink, dart, log_idx, tx_idx, raw_log FROM maker.vat_frob WHERE header_id = $1`, headerID)
 
 			Expect(err).NotTo(HaveOccurred())
-			ilkID, err := shared.GetOrCreateIlk(test_data.VatFrobModel.Ilk, db)
+			ilkID, err := shared.GetOrCreateIlk(test_data.VatFrobModelWithPositiveDart.Ilk, db)
 			Expect(err).NotTo(HaveOccurred())
-			urnID, err := shared.GetOrCreateUrn(test_data.VatFrobModel.Urn, ilkID, db)
+			urnID, err := shared.GetOrCreateUrn(test_data.VatFrobModelWithPositiveDart.Urn, ilkID, db)
 			Expect(dbVatFrob.Urn).To(Equal(strconv.Itoa(urnID)))
-			Expect(dbVatFrob.V).To(Equal(test_data.VatFrobModel.V))
-			Expect(dbVatFrob.W).To(Equal(test_data.VatFrobModel.W))
-			Expect(dbVatFrob.Dink).To(Equal(test_data.VatFrobModel.Dink))
-			Expect(dbVatFrob.Dart).To(Equal(test_data.VatFrobModel.Dart))
-			Expect(dbVatFrob.LogIndex).To(Equal(test_data.VatFrobModel.LogIndex))
-			Expect(dbVatFrob.TransactionIndex).To(Equal(test_data.VatFrobModel.TransactionIndex))
-			Expect(dbVatFrob.Raw).To(MatchJSON(test_data.VatFrobModel.Raw))
+			Expect(dbVatFrob.V).To(Equal(test_data.VatFrobModelWithPositiveDart.V))
+			Expect(dbVatFrob.W).To(Equal(test_data.VatFrobModelWithPositiveDart.W))
+			Expect(dbVatFrob.Dink).To(Equal(test_data.VatFrobModelWithPositiveDart.Dink))
+			Expect(dbVatFrob.Dart).To(Equal(test_data.VatFrobModelWithPositiveDart.Dart))
+			Expect(dbVatFrob.LogIndex).To(Equal(test_data.VatFrobModelWithPositiveDart.LogIndex))
+			Expect(dbVatFrob.TransactionIndex).To(Equal(test_data.VatFrobModelWithPositiveDart.TransactionIndex))
+			Expect(dbVatFrob.Raw).To(MatchJSON(test_data.VatFrobModelWithPositiveDart.Raw))
 		})
 	})
 

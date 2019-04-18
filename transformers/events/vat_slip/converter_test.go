@@ -37,13 +37,23 @@ var _ = Describe("Vat slip converter", func() {
 		Expect(err).To(HaveOccurred())
 	})
 
-	It("converts a log to a model", func() {
+	It("converts a log with positive wad to a model", func() {
 		converter := vat_slip.VatSlipConverter{}
 
-		models, err := converter.ToModels([]types.Log{test_data.EthVatSlipLog})
+		models, err := converter.ToModels([]types.Log{test_data.EthVatSlipLogWithPositiveWad})
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(len(models)).To(Equal(1))
-		Expect(models[0]).To(Equal(test_data.VatSlipModel))
+		Expect(models[0]).To(Equal(test_data.VatSlipModelWithPositiveWad))
+	})
+
+	It("converts a log with a negative wad to a model", func() {
+		converter := vat_slip.VatSlipConverter{}
+
+		models, err := converter.ToModels([]types.Log{test_data.EthVatSlipLogWithNegativeWad})
+
+		Expect(err).NotTo(HaveOccurred())
+		Expect(len(models)).To(Equal(1))
+		Expect(models[0]).To(Equal(test_data.VatSlipModelWithNegativeWad))
 	})
 })
