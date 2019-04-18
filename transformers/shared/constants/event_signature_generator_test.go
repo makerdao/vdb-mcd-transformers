@@ -32,13 +32,6 @@ var _ = Describe("Event signature generator", func() {
 			Expect(expected).To(Equal(actual))
 		})
 
-		It("generates frob event signature", func() {
-			expected := "0xb2afa28318bcc689926b52835d844de174ef8de97e982a85c0199d584920791b"
-			actual := constants.GetEventTopicZero("Frob(bytes32,bytes32,uint256,uint256,int256,int256,uint256)")
-
-			Expect(expected).To(Equal(actual))
-		})
-
 		It("generates the flap kick event signature", func() {
 			expected := "0xefa52d9342a199cb30efd2692463f2c2bef63cd7186b50382d4fb94ad207880e"
 			actual := constants.GetEventTopicZero("Kick(uint256,uint256,uint256,address,uint48)")
@@ -64,63 +57,93 @@ var _ = Describe("Event signature generator", func() {
 	Describe("generating LogNote event signatures", func() {
 		It("generates flip tend event signature", func() {
 			expected := "0x4b43ed1200000000000000000000000000000000000000000000000000000000"
-			actual := constants.GetLogNoteTopicZero("tend(uint256,uint256,uint256)")
+			actual := constants.GetLogNoteTopicZeroWithZeroPadding("tend(uint256,uint256,uint256)")
 
 			Expect(expected).To(Equal(actual))
 		})
 
 		It("generates the jug file drip signature", func() {
-			actual := constants.GetLogNoteTopicZero("drip(bytes32)")
+			actual := constants.GetLogNoteTopicZeroWithZeroPadding("drip(bytes32)")
 
 			Expect(test_data.KovanJugDripSignature).To(Equal(actual))
 		})
 
 		It("generates the jug file base signature", func() {
-			actual := constants.GetLogNoteTopicZero("file(bytes32,uint256)")
+			actual := constants.GetLogNoteTopicZeroWithZeroPadding("file(bytes32,uint256)")
 
 			Expect(test_data.KovanJugFileBaseSignature).To(Equal(actual))
 		})
 
 		It("generates the jug file ilk signature", func() {
-			actual := constants.GetLogNoteTopicZero("file(bytes32,bytes32,uint256)")
+			actual := constants.GetLogNoteTopicZeroWithZeroPadding("file(bytes32,bytes32,uint256)")
 
 			Expect(test_data.KovanJugFileIlkSignature).To(Equal(actual))
 		})
 
 		It("generates the jug file vow signature", func() {
-			actual := constants.GetLogNoteTopicZero("file(bytes32,bytes32)")
+			actual := constants.GetLogNoteTopicZeroWithZeroPadding("file(bytes32,address)")
 
 			Expect(test_data.KovanJugFileVowSignature).To(Equal(actual))
 		})
 
 		It("generates vat file ilk event signature", func() {
-			actual := constants.GetLogNoteTopicZero("file(bytes32,bytes32,uint256)")
+			actual := constants.GetLogNoteTopicZeroWithLeadingZeros("file(bytes32,bytes32,uint256)")
 
 			Expect(test_data.KovanVatFileIlkSignature).To(Equal(actual))
 		})
 
 		It("generates the vat file debt ceiling event signature", func() {
-			actual := constants.GetLogNoteTopicZero("file(bytes32,uint256)")
+			actual := constants.GetLogNoteTopicZeroWithLeadingZeros("file(bytes32,uint256)")
 
 			Expect(test_data.KovanVatFileDebtCeilingSignature).To(Equal(actual))
 		})
 
 		It("generates the vat flux event signature", func() {
-			actual := constants.GetLogNoteTopicZero("flux(bytes32,bytes32,bytes32,uint256)")
+			actual := constants.GetLogNoteTopicZeroWithLeadingZeros("flux(bytes32,address,address,uint256)")
 
 			Expect(test_data.KovanVatFluxSignature).To(Equal(actual))
 		})
 
+		It("generates the vat fold event signature", func() {
+			actual := constants.GetLogNoteTopicZeroWithLeadingZeros("fold(bytes32,address,int256)")
+
+			Expect(test_data.KovanVatFoldSignature).To(Equal(actual))
+		})
+
 		It("generates the vat frob event signature", func() {
-			actual := constants.GetLogNoteTopicZero("frob(bytes32,bytes32,bytes32,bytes32,int256,int256)")
+			actual := constants.GetLogNoteTopicZeroWithLeadingZeros("frob(bytes32,address,address,address,int256,int256)")
 
 			Expect(test_data.KovanVatFrobSignature).To(Equal(actual))
 		})
 
+		It("generates the vat grab event signature", func() {
+			actual := constants.GetLogNoteTopicZeroWithLeadingZeros("grab(bytes32,address,address,address,int256,int256)")
+
+			Expect(test_data.KovanVatGrabSignature).To(Equal(actual))
+		})
+
+		It("generates the vat heal event signature", func() {
+			actual := constants.GetLogNoteTopicZeroWithLeadingZeros("heal(address,address,int256)")
+
+			Expect(test_data.KovanVatHealSignature).To(Equal(actual))
+		})
+
+		It("generates the vat init event signature", func() {
+			actual := constants.GetLogNoteTopicZeroWithLeadingZeros("init(bytes32)")
+
+			Expect(test_data.KovanVatInitSignature).To(Equal(actual))
+		})
+
 		It("generates the vat move signature", func() {
-			actual := constants.GetLogNoteTopicZero("move(bytes32,bytes32,uint256)")
+			actual := constants.GetLogNoteTopicZeroWithLeadingZeros("move(address,address,uint256)")
 
 			Expect(test_data.KovanVatMoveSignature).To(Equal(actual))
+		})
+
+		It("generates the vat slip signature", func() {
+			actual := constants.GetLogNoteTopicZeroWithLeadingZeros("slip(bytes32,address,int256)")
+
+			Expect(test_data.KovanVatSlipSignature).To(Equal(actual))
 		})
 	})
 
@@ -169,7 +192,7 @@ var _ = Describe("Event signature generator", func() {
 
 			Describe("from the jug contract", func() {
 				It("gets the file (vow) method signature", func() {
-					expected := "file(bytes32,bytes32)"
+					expected := "file(bytes32,address)"
 					actual := constants.GetSolidityFunctionSignature(test_data.KovanJugABI, "file")
 
 					Expect(expected).To(Equal(actual))
@@ -178,35 +201,35 @@ var _ = Describe("Event signature generator", func() {
 
 			Describe("from the vat contract", func() {
 				It("gets the flux method signature", func() {
-					expected := "flux(bytes32,bytes32,bytes32,uint256)"
+					expected := "flux(bytes32,address,address,uint256)"
 					actual := constants.GetSolidityFunctionSignature(test_data.KovanVatABI, "flux")
 
 					Expect(expected).To(Equal(actual))
 				})
 
 				It("gets the fold method signature", func() {
-					expected := "fold(bytes32,bytes32,int256)"
+					expected := "fold(bytes32,address,int256)"
 					actual := constants.GetSolidityFunctionSignature(test_data.KovanVatABI, "fold")
 
 					Expect(expected).To(Equal(actual))
 				})
 
 				It("gets the frob method signature", func() {
-					expected := "frob(bytes32,bytes32,bytes32,bytes32,int256,int256)"
+					expected := "frob(bytes32,address,address,address,int256,int256)"
 					actual := constants.GetSolidityFunctionSignature(test_data.KovanVatABI, "frob")
 
 					Expect(expected).To(Equal(actual))
 				})
 
 				It("gets the grab method signature", func() {
-					expected := "grab(bytes32,bytes32,bytes32,bytes32,int256,int256)"
+					expected := "grab(bytes32,address,address,address,int256,int256)"
 					actual := constants.GetSolidityFunctionSignature(test_data.KovanVatABI, "grab")
 
 					Expect(expected).To(Equal(actual))
 				})
 
 				It("gets the heal method signature", func() {
-					expected := "heal(bytes32,bytes32,int256)"
+					expected := "heal(address,address,int256)"
 					actual := constants.GetSolidityFunctionSignature(test_data.KovanVatABI, "heal")
 
 					Expect(expected).To(Equal(actual))
@@ -220,14 +243,14 @@ var _ = Describe("Event signature generator", func() {
 				})
 
 				It("gets the move method signature", func() {
-					expected := "move(bytes32,bytes32,uint256)"
+					expected := "move(address,address,uint256)"
 					actual := constants.GetSolidityFunctionSignature(test_data.KovanVatABI, "move")
 
 					Expect(expected).To(Equal(actual))
 				})
 
 				It("gets the slip method signature", func() {
-					expected := "slip(bytes32,bytes32,int256)"
+					expected := "slip(bytes32,address,int256)"
 					actual := constants.GetSolidityFunctionSignature(test_data.KovanVatABI, "slip")
 
 					Expect(expected).To(Equal(actual))

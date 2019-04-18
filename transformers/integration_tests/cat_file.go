@@ -71,7 +71,6 @@ var _ = Describe("Cat File transformer", func() {
 		config := transformer.EventTransformerConfig{
 			TransformerName:     constants.CatFileChopLumpLabel,
 			ContractAddresses:   []string{test_data.KovanCatContractAddress},
-			ContractAbi:         test_data.KovanCatABI,
 			Topic:               test_data.KovanCatFileChopLumpSignature,
 			StartingBlockNumber: chopLumpBlockNumber,
 			EndingBlockNumber:   chopLumpBlockNumber,

@@ -42,7 +42,6 @@ var _ = Describe("VatFlux LogNoteTransformer", func() {
 		config := transformer.EventTransformerConfig{
 			TransformerName:     constants.VatFluxLabel,
 			ContractAddresses:   []string{test_data.KovanVatContractAddress},
-			ContractAbi:         test_data.KovanVatABI,
 			Topic:               test_data.KovanVatFluxSignature,
 			StartingBlockNumber: blockNumber,
 			EndingBlockNumber:   blockNumber,

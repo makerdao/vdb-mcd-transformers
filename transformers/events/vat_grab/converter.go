@@ -9,6 +9,7 @@ import (
 
 	"github.com/vulcanize/vulcanizedb/libraries/shared/constants"
 
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 )
 
@@ -22,10 +23,10 @@ func (VatGrabConverter) ToModels(ethLogs []types.Log) ([]interface{}, error) {
 			return nil, err
 		}
 		ilk := shared.GetHexWithoutPrefix(ethLog.Topics[1].Bytes())
-		urn := shared.GetHexWithoutPrefix(ethLog.Topics[2].Bytes())
-		v := shared.GetHexWithoutPrefix(ethLog.Topics[3].Bytes())
+		urn := common.BytesToAddress(ethLog.Topics[2].Bytes()).String()
+		v := common.BytesToAddress(ethLog.Topics[3].Bytes()).String()
 		wBytes := shared.GetDataBytesAtIndex(-3, ethLog.Data)
-		w := shared.GetHexWithoutPrefix(wBytes)
+		w := common.BytesToAddress(wBytes).String()
 		// TODO: circle back on this when event is on Kovan
 		// suspicious that we will need to use the shared.GetLogNoteDataBytesAtIndex
 		dinkBytes := shared.GetDataBytesAtIndex(-2, ethLog.Data)

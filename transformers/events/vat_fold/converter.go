@@ -22,6 +22,7 @@ import (
 
 	"github.com/ethereum/go-ethereum/core/types"
 
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 )
 
@@ -36,7 +37,7 @@ func (VatFoldConverter) ToModels(ethLogs []types.Log) ([]interface{}, error) {
 		}
 
 		ilk := shared.GetHexWithoutPrefix(ethLog.Topics[1].Bytes())
-		urn := shared.GetHexWithoutPrefix(ethLog.Topics[2].Bytes())
+		urn := common.BytesToAddress(ethLog.Topics[2].Bytes()).String()
 		rate := ethLog.Topics[3].Big().String()
 		raw, err := json.Marshal(ethLog)
 

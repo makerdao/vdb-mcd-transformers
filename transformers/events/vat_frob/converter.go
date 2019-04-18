@@ -19,6 +19,7 @@ package vat_frob
 import (
 	"encoding/json"
 	"errors"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/constants"
@@ -35,10 +36,10 @@ func (VatFrobConverter) ToModels(ethLogs []types.Log) ([]interface{}, error) {
 			return nil, err
 		}
 		ilk := shared.GetHexWithoutPrefix(ethLog.Topics[1].Bytes())
-		urn := shared.GetHexWithoutPrefix(ethLog.Topics[2].Bytes())
-		v := shared.GetHexWithoutPrefix(ethLog.Topics[3].Bytes())
+		urn := common.BytesToAddress(ethLog.Topics[2].Bytes()).String()
+		v := common.BytesToAddress(ethLog.Topics[3].Bytes()).String()
 		wBytes := shared.GetUpdatedLogNoteDataBytesAtIndex(-3, ethLog.Data)
-		w := shared.GetHexWithoutPrefix(wBytes)
+		w := common.BytesToAddress(wBytes).String()
 		dinkBytes := shared.GetUpdatedLogNoteDataBytesAtIndex(-2, ethLog.Data)
 		dink := big.NewInt(0).SetBytes(dinkBytes).String()
 		dartBytes := shared.GetUpdatedLogNoteDataBytesAtIndex(-1, ethLog.Data)

@@ -42,7 +42,6 @@ var _ = Describe("Vat Grab Transformer", func() {
 		config := transformer.EventTransformerConfig{
 			TransformerName:     constants.VatGrabLabel,
 			ContractAddresses:   []string{test_data.KovanVatContractAddress},
-			ContractAbi:         test_data.KovanVatABI,
 			Topic:               test_data.KovanVatGrabSignature,
 			StartingBlockNumber: blockNumber,
 			EndingBlockNumber:   blockNumber,

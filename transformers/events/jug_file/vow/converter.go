@@ -21,6 +21,7 @@ import (
 	"encoding/json"
 	"errors"
 
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 )
 
@@ -35,7 +36,7 @@ func (JugFileVowConverter) ToModels(ethLogs []types.Log) ([]interface{}, error) 
 		}
 
 		what := string(bytes.Trim(ethLog.Topics[2].Bytes(), "\x00"))
-		data := ethLog.Topics[3].Hex()
+		data := common.BytesToAddress(ethLog.Topics[3].Bytes()).String()
 		raw, err := json.Marshal(ethLog)
 		if err != nil {
 			return nil, err

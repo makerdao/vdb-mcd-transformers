@@ -22,7 +22,7 @@ import (
 
 	"github.com/ethereum/go-ethereum/core/types"
 
-	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/ethereum/go-ethereum/common"
 )
 
 type VatMoveConverter struct{}
@@ -35,8 +35,8 @@ func (VatMoveConverter) ToModels(ethLogs []types.Log) ([]interface{}, error) {
 			return []interface{}{}, err
 		}
 
-		src := shared.GetHexWithoutPrefix(ethLog.Topics[1].Bytes())
-		dst := shared.GetHexWithoutPrefix(ethLog.Topics[2].Bytes())
+		src := common.BytesToAddress(ethLog.Topics[1].Bytes()).String()
+		dst := common.BytesToAddress(ethLog.Topics[2].Bytes()).String()
 		rad := ethLog.Topics[3].Big()
 		raw, err := json.Marshal(ethLog)
 		if err != nil {

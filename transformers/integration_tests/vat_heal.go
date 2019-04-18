@@ -39,7 +39,6 @@ var _ = Describe("VatHeal Transformer", func() {
 		config := transformer.EventTransformerConfig{
 			TransformerName:     constants.VatHealLabel,
 			ContractAddresses:   []string{test_data.KovanVatContractAddress},
-			ContractAbi:         test_data.KovanVatABI,
 			Topic:               test_data.KovanVatHealSignature,
 			StartingBlockNumber: blockNumber,
 			EndingBlockNumber:   blockNumber,
