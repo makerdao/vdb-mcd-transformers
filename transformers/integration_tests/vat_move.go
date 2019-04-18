@@ -34,11 +34,10 @@ import (
 
 var _ = Describe("VatMove LogNoteTransformer", func() {
 	It("transforms VatMove log events", func() {
-		blockNumber := int64(10670187)
+		blockNumber := int64(10728067)
 		config := transformer.EventTransformerConfig{
 			TransformerName:     constants.VatMoveLabel,
 			ContractAddresses:   []string{test_data.KovanVatContractAddress},
-			ContractAbi:         test_data.KovanVatABI,
 			Topic:               test_data.KovanVatMoveSignature,
 			StartingBlockNumber: blockNumber,
 			EndingBlockNumber:   blockNumber,
@@ -77,13 +76,13 @@ var _ = Describe("VatMove LogNoteTransformer", func() {
 
 		Expect(len(dbResults)).To(Equal(1))
 		dbResult := dbResults[0]
-		Expect(dbResult.Src).To(Equal("cba1bbad5fe83cf0bc96028ae3ed8bb98b56986d00000000000000000000006d"))
-		Expect(dbResult.Dst).To(Equal("4abad252c30380d1d46ce3b5c52cc108b8c778c7000000000000000000000000"))
-		Expect(dbResult.Rad).To(Equal("1000000000000000000000000000000000000000000000"))
+		Expect(dbResult.Src).To(Equal("0xdf5A2Df07b5a4b83b2bd654996b33E6345b7779a"))
+		Expect(dbResult.Dst).To(Equal("0xEEec867B3F51ab5b619d582481BF53eea930b074"))
+		Expect(dbResult.Rad).To(Equal("100000000000000000000000000000000000000000000"))
 	})
 
 	It("rechecks vat move event", func() {
-		blockNumber := int64(10670187)
+		blockNumber := int64(10728067)
 		config := transformer.EventTransformerConfig{
 			TransformerName:     constants.VatMoveLabel,
 			ContractAddresses:   []string{test_data.KovanVatContractAddress},
@@ -139,8 +138,8 @@ var _ = Describe("VatMove LogNoteTransformer", func() {
 
 		Expect(len(dbResults)).To(Equal(1))
 		dbResult := dbResults[0]
-		Expect(dbResult.Src).To(Equal("cba1bbad5fe83cf0bc96028ae3ed8bb98b56986d00000000000000000000006d"))
-		Expect(dbResult.Dst).To(Equal("4abad252c30380d1d46ce3b5c52cc108b8c778c7000000000000000000000000"))
-		Expect(dbResult.Rad).To(Equal("1000000000000000000000000000000000000000000000"))
+		Expect(dbResult.Src).To(Equal("0xdf5A2Df07b5a4b83b2bd654996b33E6345b7779a"))
+		Expect(dbResult.Dst).To(Equal("0xEEec867B3F51ab5b619d582481BF53eea930b074"))
+		Expect(dbResult.Rad).To(Equal("100000000000000000000000000000000000000000000"))
 	})
 })

@@ -57,7 +57,6 @@ var _ = Describe("VatFileIlk LogNoteTransformer", func() {
 		config := transformer.EventTransformerConfig{
 			TransformerName:     constants.VatFileIlkLabel,
 			ContractAddresses:   []string{test_data.KovanVatContractAddress},
-			ContractAbi:         test_data.KovanVatABI,
 			Topic:               test_data.KovanVatFileIlkSignature,
 			StartingBlockNumber: 0,
 			EndingBlockNumber:   -1,
@@ -74,7 +73,7 @@ var _ = Describe("VatFileIlk LogNoteTransformer", func() {
 	})
 
 	It("fetches and transforms a Vat.file ilk 'spot' event from Kovan", func() {
-		blockNumber := int64(10590528)
+		blockNumber := int64(10691381)
 		initializer.Config.StartingBlockNumber = blockNumber
 		initializer.Config.EndingBlockNumber = blockNumber
 
@@ -94,15 +93,15 @@ var _ = Describe("VatFileIlk LogNoteTransformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))
-		ilkID, err := shared.GetOrCreateIlk("4554482d42000000000000000000000000000000000000000000000000000000", db)
+		ilkID, err := shared.GetOrCreateIlk("434f4c352d410000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(dbResult[0].Ilk).To(Equal(strconv.Itoa(ilkID)))
 		Expect(dbResult[0].What).To(Equal("spot"))
-		Expect(dbResult[0].Data).To(Equal("67162500000000000000000000000"))
+		Expect(dbResult[0].Data).To(Equal("46619239947368421052631579"))
 	})
 
 	It("fetches and transforms a Vat.file ilk 'line' event from Kovan", func() {
-		blockNumber := int64(10616268)
+		blockNumber := int64(10693705)
 		initializer.Config.StartingBlockNumber = blockNumber
 		initializer.Config.EndingBlockNumber = blockNumber
 
@@ -132,7 +131,7 @@ var _ = Describe("VatFileIlk LogNoteTransformer", func() {
 	})
 
 	It("rechecks vat file ilk event", func() {
-		blockNumber := int64(10590528)
+		blockNumber := int64(10691381)
 		initializer.Config.StartingBlockNumber = blockNumber
 		initializer.Config.EndingBlockNumber = blockNumber
 
@@ -165,11 +164,11 @@ var _ = Describe("VatFileIlk LogNoteTransformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))
-		ilkID, err := shared.GetOrCreateIlk("4554482d42000000000000000000000000000000000000000000000000000000", db)
+		ilkID, err := shared.GetOrCreateIlk("434f4c352d410000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(dbResult[0].Ilk).To(Equal(strconv.Itoa(ilkID)))
 		Expect(dbResult[0].What).To(Equal("spot"))
-		Expect(dbResult[0].Data).To(Equal("67162500000000000000000000000"))
+		Expect(dbResult[0].Data).To(Equal("46619239947368421052631579"))
 	})
 })
 

@@ -22,6 +22,7 @@ import (
 
 	"github.com/ethereum/go-ethereum/core/types"
 
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 )
 
@@ -35,8 +36,8 @@ func (VatSlipConverter) ToModels(ethLogs []types.Log) ([]interface{}, error) {
 			return nil, err
 		}
 		ilk := shared.GetHexWithoutPrefix(ethLog.Topics[1].Bytes())
-		usr := shared.GetHexWithoutPrefix(ethLog.Topics[2].Bytes())
-		rad := ethLog.Topics[3].Big()
+		usr := common.BytesToAddress(ethLog.Topics[2].Bytes()).String()
+		wad := ethLog.Topics[3].Big()
 
 		raw, err := json.Marshal(ethLog)
 		if err != nil {
@@ -45,7 +46,7 @@ func (VatSlipConverter) ToModels(ethLogs []types.Log) ([]interface{}, error) {
 		model := VatSlipModel{
 			Ilk:              ilk,
 			Usr:              usr,
-			Rad:              rad.String(),
+			Wad:              wad.String(),
 			TransactionIndex: ethLog.TxIndex,
 			LogIndex:         ethLog.Index,
 			Raw:              raw,

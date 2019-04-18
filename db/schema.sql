@@ -2641,7 +2641,7 @@ CREATE TABLE maker.vat_slip (
     header_id integer NOT NULL,
     ilk_id integer NOT NULL,
     usr text,
-    rad numeric,
+    wad numeric,
     tx_idx integer NOT NULL,
     log_idx integer NOT NULL,
     raw_log jsonb

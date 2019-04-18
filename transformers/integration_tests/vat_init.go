@@ -37,11 +37,10 @@ import (
 
 var _ = Describe("VatInit LogNoteTransformer", func() {
 	It("transforms vat init log events", func() {
-		blockNumber := int64(10590349)
+		blockNumber := int64(10691326)
 		config := transformer.EventTransformerConfig{
 			TransformerName:     constants.VatInitLabel,
 			ContractAddresses:   []string{test_data.KovanVatContractAddress},
-			ContractAbi:         test_data.KovanVatABI,
 			Topic:               test_data.KovanVatInitSignature,
 			StartingBlockNumber: blockNumber,
 			EndingBlockNumber:   blockNumber,
@@ -80,13 +79,13 @@ var _ = Describe("VatInit LogNoteTransformer", func() {
 
 		Expect(len(dbResults)).To(Equal(1))
 		dbResult := dbResults[0]
-		ilkID, err := shared.GetOrCreateIlk("4554482d42000000000000000000000000000000000000000000000000000000", db)
+		ilkID, err := shared.GetOrCreateIlk("434f4c352d410000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(dbResult.Ilk).To(Equal(strconv.Itoa(ilkID)))
 	})
 
 	It("rechecks vat init event", func() {
-		blockNumber := int64(10590349)
+		blockNumber := int64(10691326)
 		config := transformer.EventTransformerConfig{
 			TransformerName:     constants.VatInitLabel,
 			ContractAddresses:   []string{test_data.KovanVatContractAddress},
@@ -142,7 +141,7 @@ var _ = Describe("VatInit LogNoteTransformer", func() {
 
 		Expect(len(dbResults)).To(Equal(1))
 		dbResult := dbResults[0]
-		ilkID, err := shared.GetOrCreateIlk("4554482d42000000000000000000000000000000000000000000000000000000", db)
+		ilkID, err := shared.GetOrCreateIlk("434f4c352d410000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(dbResult.Ilk).To(Equal(strconv.Itoa(ilkID)))
 	})

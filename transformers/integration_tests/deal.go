@@ -56,7 +56,6 @@ var _ = Describe("Deal transformer", func() {
 		config = transformer.EventTransformerConfig{
 			TransformerName:     constants.DealLabel,
 			ContractAddresses:   []string{test_data.KovanFlapperContractAddress, test_data.KovanFlipperContractAddress, test_data.KovanFlopperContractAddress},
-			ContractAbi:         test_data.KovanFlipperABI,
 			Topic:               test_data.KovanDealSignature,
 			StartingBlockNumber: 0,
 			EndingBlockNumber:   -1,

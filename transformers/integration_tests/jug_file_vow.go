@@ -50,7 +50,7 @@ var _ = Describe("Jug File Vow LogNoteTransformer", func() {
 	})
 
 	It("transforms JugFileVow log events", func() {
-		blockNumber := int64(10590320)
+		blockNumber := int64(10691243)
 		config := transformer.EventTransformerConfig{
 			TransformerName:     constants.JugFileVowLabel,
 			ContractAddresses:   []string{test_data.KovanJugContractAddress},
@@ -86,11 +86,11 @@ var _ = Describe("Jug File Vow LogNoteTransformer", func() {
 
 		Expect(len(dbResult)).To(Equal(1))
 		Expect(dbResult[0].What).To(Equal("vow"))
-		Expect(dbResult[0].Data).To(Equal("0xb267c22a437637a4672ad61ef69504a8006ccb45000000000000000000000000"))
+		Expect(dbResult[0].Data).To(Equal("0xBbA55b7E500e8eE2cF4887Ed393306803da04aEB"))
 	})
 
 	It("rechecks jug file vow event", func() {
-		blockNumber := int64(10590320)
+		blockNumber := int64(10691243)
 		config := transformer.EventTransformerConfig{
 			TransformerName:     constants.JugFileVowLabel,
 			ContractAddresses:   []string{test_data.KovanJugContractAddress},

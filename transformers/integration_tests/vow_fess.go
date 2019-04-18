@@ -55,7 +55,6 @@ var _ = Describe("VowFess LogNoteTransformer", func() {
 		config := transformer.EventTransformerConfig{
 			TransformerName:     constants.VowFessLabel,
 			ContractAddresses:   []string{test_data.KovanVowContractAddress},
-			ContractAbi:         test_data.KovanVowABI,
 			Topic:               test_data.KovanVowFessSignature,
 			StartingBlockNumber: blockNumber,
 			EndingBlockNumber:   blockNumber,

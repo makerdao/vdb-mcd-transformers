@@ -58,7 +58,6 @@ var _ = Describe("VatFold Transformer", func() {
 		config := transformer.EventTransformerConfig{
 			TransformerName:     constants.VatFoldLabel,
 			ContractAddresses:   []string{test_data.KovanVatContractAddress},
-			ContractAbi:         test_data.KovanVatABI,
 			Topic:               test_data.KovanVatFoldSignature,
 			StartingBlockNumber: blockNumber,
 			EndingBlockNumber:   blockNumber,

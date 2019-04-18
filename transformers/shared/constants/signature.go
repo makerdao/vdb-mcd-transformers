@@ -1,29 +1,33 @@
 package constants
 
-func GetBiteSignature() string               { return GetEventTopicZero(biteMethod()) }
-func GetCatFileChopLumpSignature() string    { return GetLogNoteTopicZero(catFileChopLumpMethod()) }
-func GetCatFileFlipSignature() string        { return GetLogNoteTopicZero(catFileFlipMethod()) }
-func GetCatFileVowSignature() string         { return GetLogNoteTopicZero(catFileVowMethod()) }
-func GetDealSignature() string               { return GetLogNoteTopicZero(dealMethod()) }
-func GetDentFunctionSignature() string       { return GetLogNoteTopicZero(dentMethod()) }
-func GetFlapKickSignature() string           { return GetEventTopicZero(flapKickMethod()) }
-func GetFlipKickSignature() string           { return GetEventTopicZero(flipKickMethod()) }
-func GetFlopKickSignature() string           { return GetEventTopicZero(flopKickMethod()) }
-func GetJugDripSignature() string            { return GetLogNoteTopicZero(jugDripMethod()) }
-func GetJugFileIlkSignature() string         { return GetLogNoteTopicZero(jugFileIlkMethod()) }
-func GetJugFileBaseSignature() string        { return GetLogNoteTopicZero(jugFileBaseMethod()) }
-func GetJugFileVowSignature() string         { return GetLogNoteTopicZero(jugFileVowMethod()) }
-func GetPipLogValueSignature() string        { return GetEventTopicZero(pipLogValueMethod()) }
-func GetTendFunctionSignature() string       { return GetLogNoteTopicZero(tendMethod()) }
-func GetVatFileDebtCeilingSignature() string { return GetLogNoteTopicZero(vatFileDebtCeilingMethod()) }
-func GetVatFileIlkSignature() string         { return GetLogNoteTopicZero(vatFileIlkMethod()) }
-func GetVatFluxSignature() string            { return GetLogNoteTopicZero(vatFluxMethod()) }
-func GetVatFoldSignature() string            { return GetLogNoteTopicZero(vatFoldMethod()) }
-func GetVatFrobSignature() string            { return GetLogNoteTopicZero(vatFrobMethod()) }
-func GetVatGrabSignature() string            { return GetLogNoteTopicZero(vatGrabMethod()) }
-func GetVatHealSignature() string            { return GetLogNoteTopicZero(vatHealMethod()) }
-func GetVatInitSignature() string            { return GetLogNoteTopicZero(vatInitMethod()) }
-func GetVatMoveSignature() string            { return GetLogNoteTopicZero(vatMoveMethod()) }
-func GetVatSlipSignature() string            { return GetLogNoteTopicZero(vatSlipMethod()) }
-func GetVowFessSignature() string            { return GetLogNoteTopicZero(vowFessMethod()) }
-func GetVowFlogSignature() string            { return GetLogNoteTopicZero(vowFlogMethod()) }
+func GetBiteSignature() string { return GetEventTopicZero(biteMethod()) }
+func GetCatFileChopLumpSignature() string {
+	return GetLogNoteTopicZeroWithZeroPadding(catFileChopLumpMethod())
+}
+func GetCatFileFlipSignature() string  { return GetLogNoteTopicZeroWithZeroPadding(catFileFlipMethod()) }
+func GetCatFileVowSignature() string   { return GetLogNoteTopicZeroWithZeroPadding(catFileVowMethod()) }
+func GetDealSignature() string         { return GetLogNoteTopicZeroWithZeroPadding(dealMethod()) }
+func GetDentFunctionSignature() string { return GetLogNoteTopicZeroWithZeroPadding(dentMethod()) }
+func GetFlapKickSignature() string     { return GetEventTopicZero(flapKickMethod()) }
+func GetFlipKickSignature() string     { return GetEventTopicZero(flipKickMethod()) }
+func GetFlopKickSignature() string     { return GetEventTopicZero(flopKickMethod()) }
+func GetJugDripSignature() string      { return GetLogNoteTopicZeroWithZeroPadding(jugDripMethod()) }
+func GetJugFileIlkSignature() string   { return GetLogNoteTopicZeroWithZeroPadding(jugFileIlkMethod()) }
+func GetJugFileBaseSignature() string  { return GetLogNoteTopicZeroWithZeroPadding(jugFileBaseMethod()) }
+func GetJugFileVowSignature() string   { return GetLogNoteTopicZeroWithZeroPadding(jugFileVowMethod()) }
+func GetPipLogValueSignature() string  { return GetEventTopicZero(pipLogValueMethod()) }
+func GetTendFunctionSignature() string { return GetLogNoteTopicZeroWithZeroPadding(tendMethod()) }
+func GetVatFileDebtCeilingSignature() string {
+	return GetLogNoteTopicZeroWithLeadingZeros(vatFileDebtCeilingMethod())
+}
+func GetVatFileIlkSignature() string { return GetLogNoteTopicZeroWithLeadingZeros(vatFileIlkMethod()) }
+func GetVatFluxSignature() string    { return GetLogNoteTopicZeroWithLeadingZeros(vatFluxMethod()) }
+func GetVatFoldSignature() string    { return GetLogNoteTopicZeroWithLeadingZeros(vatFoldMethod()) }
+func GetVatFrobSignature() string    { return GetLogNoteTopicZeroWithLeadingZeros(vatFrobMethod()) }
+func GetVatGrabSignature() string    { return GetLogNoteTopicZeroWithLeadingZeros(vatGrabMethod()) }
+func GetVatHealSignature() string    { return GetLogNoteTopicZeroWithLeadingZeros(vatHealMethod()) }
+func GetVatInitSignature() string    { return GetLogNoteTopicZeroWithLeadingZeros(vatInitMethod()) }
+func GetVatMoveSignature() string    { return GetLogNoteTopicZeroWithLeadingZeros(vatMoveMethod()) }
+func GetVatSlipSignature() string    { return GetLogNoteTopicZeroWithLeadingZeros(vatSlipMethod()) }
+func GetVowFessSignature() string    { return GetLogNoteTopicZeroWithZeroPadding(vowFessMethod()) }
+func GetVowFlogSignature() string    { return GetLogNoteTopicZeroWithZeroPadding(vowFlogMethod()) }
