@@ -20,8 +20,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"math/big"
-
+	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
 
 	"github.com/vulcanize/vulcanizedb/libraries/shared/constants"
@@ -41,8 +40,8 @@ func (JugFileIlkConverter) ToModels(ethLogs []types.Log) ([]interface{}, error) 
 
 		ilk := shared.GetHexWithoutPrefix(ethLog.Topics[2].Bytes())
 		what := string(bytes.Trim(ethLog.Topics[3].Bytes(), "\x00"))
-		dataBytes := shared.GetUpdatedLogNoteDataBytesAtIndex(-1, ethLog.Data)
-		data := big.NewInt(0).SetBytes(dataBytes).String()
+		dataBytes := shared.GetLogNoteDataBytesAtIndex(-1, ethLog.Data)
+		data := shared.ConvertUint256HexToBigInt(hexutil.Encode(dataBytes))
 		raw, err := json.Marshal(ethLog)
 		if err != nil {
 			return nil, err
@@ -51,7 +50,7 @@ func (JugFileIlkConverter) ToModels(ethLogs []types.Log) ([]interface{}, error) 
 		model := JugFileIlkModel{
 			Ilk:              ilk,
 			What:             what,
-			Data:             data,
+			Data:             data.String(),
 			LogIndex:         ethLog.Index,
 			TransactionIndex: ethLog.TxIndex,
 			Raw:              raw,

@@ -19,8 +19,7 @@ package vat_flux
 import (
 	"encoding/json"
 	"errors"
-	"math/big"
-
+	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -40,10 +39,8 @@ func (VatFluxConverter) ToModels(ethLogs []types.Log) ([]interface{}, error) {
 		ilk := shared.GetHexWithoutPrefix(ethLog.Topics[1].Bytes())
 		src := common.BytesToAddress(ethLog.Topics[2].Bytes()).String()
 		dst := common.BytesToAddress(ethLog.Topics[3].Bytes()).String()
-		// TODO: circle back on this when event is on Kovan
-		// suspicious that we will need to use the shared.GetLogNoteDataBytesAtIndex
-		wadBytes := shared.GetDataBytesAtIndex(-1, ethLog.Data)
-		wad := big.NewInt(0).SetBytes(wadBytes).String()
+		wadBytes := shared.GetLogNoteDataBytesAtIndex(-3, ethLog.Data)
+		wad := shared.ConvertUint256HexToBigInt(hexutil.Encode(wadBytes))
 
 		if err != nil {
 			return nil, err
@@ -58,7 +55,7 @@ func (VatFluxConverter) ToModels(ethLogs []types.Log) ([]interface{}, error) {
 			Ilk:              ilk,
 			Src:              src,
 			Dst:              dst,
-			Wad:              wad,
+			Wad:              wad.String(),
 			TransactionIndex: ethLog.TxIndex,
 			LogIndex:         ethLog.Index,
 			Raw:              rawLogJson,

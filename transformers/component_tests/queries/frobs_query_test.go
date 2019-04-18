@@ -38,13 +38,13 @@ var _ = Describe("Frobs query", func() {
 			headerOneId, err := headerRepo.CreateOrUpdateHeader(headerOne)
 			Expect(err).NotTo(HaveOccurred())
 
-			frobBlockOne := test_data.VatFrobModel
+			frobBlockOne := test_data.VatFrobModelWithPositiveDart
 			frobBlockOne.Ilk = fakeIlk
 			frobBlockOne.Urn = fakeUrn
 			frobBlockOne.Dink = strconv.Itoa(rand.Int())
 			frobBlockOne.Dart = strconv.Itoa(rand.Int())
 
-			irrelevantFrob := test_data.VatFrobModel
+			irrelevantFrob := test_data.VatFrobModelWithPositiveDart
 			irrelevantFrob.Ilk = "wrong ilk"
 			irrelevantFrob.Urn = fakeUrn
 			irrelevantFrob.Dink = strconv.Itoa(rand.Int())
@@ -60,7 +60,7 @@ var _ = Describe("Frobs query", func() {
 			headerTwoId, err := headerRepo.CreateOrUpdateHeader(headerTwo)
 			Expect(err).NotTo(HaveOccurred())
 
-			frobBlockTwo := test_data.VatFrobModel
+			frobBlockTwo := test_data.VatFrobModelWithPositiveDart
 			frobBlockTwo.Ilk = fakeIlk
 			frobBlockTwo.Urn = fakeUrn
 			frobBlockTwo.Dink = strconv.Itoa(rand.Int())
@@ -87,14 +87,14 @@ var _ = Describe("Frobs query", func() {
 			headerOneId, err := headerRepo.CreateOrUpdateHeader(headerOne)
 			Expect(err).NotTo(HaveOccurred())
 
-			frobOne := test_data.VatFrobModel
+			frobOne := test_data.VatFrobModelWithPositiveDart
 			frobOne.Ilk = fakeIlk
 			frobOne.Urn = fakeUrn
 			frobOne.Dink = strconv.Itoa(rand.Int())
 			frobOne.Dart = strconv.Itoa(rand.Int())
 
 			anotherUrn := "anotherUrn"
-			frobTwo := test_data.VatFrobModel
+			frobTwo := test_data.VatFrobModelWithPositiveDart
 			frobTwo.Ilk = fakeIlk
 			frobTwo.Urn = anotherUrn
 			frobTwo.Dink = strconv.Itoa(rand.Int())

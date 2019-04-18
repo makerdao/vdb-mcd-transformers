@@ -22,32 +22,58 @@ import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_heal"
-	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 )
 
-var VatHealLog = types.Log{
+var EthVatHealLogWithPositiveRad = types.Log{
 	Address: common.HexToAddress(KovanVatContractAddress),
 	Topics: []common.Hash{
 		common.HexToHash(KovanVatHealSignature),
-		common.HexToHash("0x0000000000000000000000007d7bee5fcfd8028cf7b00876c5b1421c800561a6"),
+		common.HexToHash("0x00000000000000000000000007fa9ef6609ca7921112231f8f195138ebba2977"),
 		common.HexToHash("0x0000000000000000000000007340e006f4135ba6970d43bf43d88dcad4e7a8ca"),
-		common.HexToHash("0x0000000000000000000000000000000000000000000000000000000000000078"),
+		common.HexToHash("0x00000000000000000000000000000000000000000000003635c9adc5dea00000"),
 	},
-	Data:        hexutil.MustDecode("0x00000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000064990a5f637d7bee5fcfd8028cf7b00876c5b1421c800561a600000000000000000000000074686520762076616c75650000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000078"),
-	BlockNumber: 10,
-	TxHash:      common.HexToHash("0x991b8079b1333024000dcaf2b00c24c5db0315e112a4ac4d912aa96a602e12b9"),
+	Data:        hexutil.MustDecode("0x000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000e0ee8cd74800000000000000000000000007fa9ef6609ca7921112231f8f195138ebba29770000000000000000000000007340e006f4135ba6970d43bf43d88dcad4e7a8ca00000000000000000000000000000000000000000000003635c9adc5dea0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"),
+	BlockNumber: 105,
+	TxHash:      common.HexToHash("0x2730b707ef875c02ea45fd68f6d193320b85cf062b1860a02d1f1d407c845b65"),
 	TxIndex:     2,
-	BlockHash:   fakes.FakeHash,
+	BlockHash:   common.HexToHash("0x39185e33e15a6bd521240566bc3c5e34853ecd1af3212b000d50e7ca80d5cdbc"),
 	Index:       3,
 	Removed:     false,
 }
 
-var rawHealLog, _ = json.Marshal(VatHealLog)
-var VatHealModel = vat_heal.VatHealModel{
-	Urn:              "0x7d7bEe5fCfD8028cf7b00876C5b1421c800561A6",
+var rawVatHealLogWithPositiveRad, _ = json.Marshal(EthVatHealLogWithPositiveRad)
+var VatHealModelWithPositiveRad = vat_heal.VatHealModel{
+	Urn:              "0x07Fa9eF6609cA7921112231F8f195138ebbA2977",
 	V:                "0x7340e006f4135BA6970D43bf43d88DCAD4e7a8CA",
-	Rad:              "120",
-	LogIndex:         VatHealLog.Index,
-	TransactionIndex: VatHealLog.TxIndex,
-	Raw:              rawHealLog,
+	Rad:              "1000000000000000000000",
+	LogIndex:         EthVatHealLogWithPositiveRad.Index,
+	TransactionIndex: EthVatHealLogWithPositiveRad.TxIndex,
+	Raw:              rawVatHealLogWithPositiveRad,
+}
+
+var EthVatHealLogWithNegativeRad = types.Log{
+	Address: common.HexToAddress(KovanVatContractAddress),
+	Topics: []common.Hash{
+		common.HexToHash(KovanVatHealSignature),
+		common.HexToHash("0x00000000000000000000000007fa9ef6609ca7921112231f8f195138ebba2977"),
+		common.HexToHash("0x0000000000000000000000007340e006f4135ba6970d43bf43d88dcad4e7a8ca"),
+		common.HexToHash("0xffffffffffffffffffffffffffffffffffffffffffffffc9ca36523a21600000"),
+	},
+	Data:        hexutil.MustDecode("0x000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000e0ee8cd74800000000000000000000000007fa9ef6609ca7921112231f8f195138ebba29770000000000000000000000007340e006f4135ba6970d43bf43d88dcad4e7a8caffffffffffffffffffffffffffffffffffffffffffffffc9ca36523a2160000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"),
+	BlockNumber: 106,
+	TxHash:      common.HexToHash("0xf9956cfa5f5290b087a99d9e667cd0b61ea80020901cd570293f6fac745b6eac"),
+	TxIndex:     2,
+	BlockHash:   common.HexToHash("0xeca99c865e695c1a8e2fae5df0b359da145f72eae8b4873d2da3e190213d0cf2"),
+	Index:       3,
+	Removed:     false,
+}
+
+var rawVatHealLogWithNegativeRad, _ = json.Marshal(EthVatHealLogWithNegativeRad)
+var VatHealModelWithNegativeRad = vat_heal.VatHealModel{
+	Urn:              "0x07Fa9eF6609cA7921112231F8f195138ebbA2977",
+	V:                "0x7340e006f4135BA6970D43bf43d88DCAD4e7a8CA",
+	Rad:              "-1000000000000000000000",
+	LogIndex:         EthVatHealLogWithNegativeRad.Index,
+	TransactionIndex: EthVatHealLogWithNegativeRad.TxIndex,
+	Raw:              rawVatHealLogWithNegativeRad,
 }

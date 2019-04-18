@@ -27,7 +27,7 @@ import (
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 )
 
-var EthVatFoldLog = types.Log{
+var EthVatFoldLogWithPositiveRate = types.Log{
 	Address: common.HexToAddress(KovanVatContractAddress),
 	Topics: []common.Hash{
 		common.HexToHash(KovanVatFoldSignature),
@@ -44,12 +44,39 @@ var EthVatFoldLog = types.Log{
 	Removed:     false,
 }
 
-var rawVatFoldLog, _ = json.Marshal(EthVatFoldLog)
-var VatFoldModel = vat_fold.VatFoldModel{
+var rawVatFoldLogWithPositiveRate, _ = json.Marshal(EthVatFoldLogWithPositiveRate)
+var VatFoldModelWithPositiveRate = vat_fold.VatFoldModel{
 	Ilk:              "5245500000000000000000000000000000000000000000000000000000000000",
 	Urn:              "0x3728e9777B2a0a611ee0F89e00E01044ce4736d1",
 	Rate:             "2",
-	LogIndex:         EthVatFoldLog.Index,
-	TransactionIndex: EthVatFoldLog.TxIndex,
-	Raw:              rawVatFoldLog,
+	LogIndex:         EthVatFoldLogWithPositiveRate.Index,
+	TransactionIndex: EthVatFoldLogWithPositiveRate.TxIndex,
+	Raw:              rawVatFoldLogWithPositiveRate,
+}
+
+var EthVatFoldLogWithNegativeRate = types.Log{
+	Address: common.HexToAddress(KovanVatContractAddress),
+	Topics: []common.Hash{
+		common.HexToHash(KovanVatFoldSignature),
+		common.HexToHash("0x66616b6520696c6b000000000000000000000000000000000000000000000000"),
+		common.HexToHash("0x0000000000000000000000007d7bee5fcfd8028cf7b00876c5b1421c800561a6"),
+		common.HexToHash("0xffffffffffffffffffffffffffffffffffffffffffffffe4e51b291d10b00000"),
+	},
+	Data:        hexutil.MustDecode("0x000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000e0b65337df66616b6520696c6b0000000000000000000000000000000000000000000000000000000000000000000000007d7bee5fcfd8028cf7b00876c5b1421c800561a6ffffffffffffffffffffffffffffffffffffffffffffffe4e51b291d10b0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"),
+	BlockNumber: 75,
+	TxHash:      common.HexToHash("0x09fa5041c3046a42947edde6193d70143045c38405842d4b08f6614b09272e76"),
+	TxIndex:     0,
+	BlockHash:   common.HexToHash("0x843138ef186be9695fbd9bbde858491a7d324735175f3b3d4d8e228fa8423271"),
+	Index:       0,
+	Removed:     false,
+}
+
+var rawVatFoldLogWithNegativeRate, _ = json.Marshal(EthVatFoldLogWithNegativeRate)
+var VatFoldModelWithNegativeRate = vat_fold.VatFoldModel{
+	Ilk:              "66616b6520696c6b000000000000000000000000000000000000000000000000",
+	Urn:              "0x7d7bEe5fCfD8028cf7b00876C5b1421c800561A6",
+	Rate:             "-500000000000000000000",
+	LogIndex:         0,
+	TransactionIndex: 0,
+	Raw:              rawVatFoldLogWithNegativeRate,
 }

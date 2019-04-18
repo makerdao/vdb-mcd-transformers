@@ -38,9 +38,8 @@ func (VatFoldConverter) ToModels(ethLogs []types.Log) ([]interface{}, error) {
 
 		ilk := shared.GetHexWithoutPrefix(ethLog.Topics[1].Bytes())
 		urn := common.BytesToAddress(ethLog.Topics[2].Bytes()).String()
-		rate := ethLog.Topics[3].Big().String()
+		rate := shared.ConvertInt256HexToBigInt(ethLog.Topics[3].Hex())
 		raw, err := json.Marshal(ethLog)
-
 		if err != nil {
 			return models, err
 		}
@@ -48,7 +47,7 @@ func (VatFoldConverter) ToModels(ethLogs []types.Log) ([]interface{}, error) {
 		model := VatFoldModel{
 			Ilk:              ilk,
 			Urn:              urn,
-			Rate:             rate,
+			Rate:             rate.String(),
 			LogIndex:         ethLog.Index,
 			TransactionIndex: ethLog.TxIndex,
 			Raw:              raw,

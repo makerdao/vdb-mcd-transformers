@@ -35,13 +35,13 @@ var _ = Describe("Vat grab repository", func() {
 	})
 
 	Describe("Create", func() {
-		modelWithDifferentLogIdx := test_data.VatGrabModel
+		modelWithDifferentLogIdx := test_data.VatGrabModelWithPositiveDink
 		modelWithDifferentLogIdx.LogIndex++
 
 		inputs := shared_behaviors.CreateBehaviorInputs{
 			CheckedHeaderColumnName:  constants.VatGrabChecked,
 			LogEventTableName:        "maker.vat_grab",
-			TestModel:                test_data.VatGrabModel,
+			TestModel:                test_data.VatGrabModelWithPositiveDink,
 			ModelWithDifferentLogIdx: modelWithDifferentLogIdx,
 			Repository:               &vatGrabRepository,
 		}
@@ -52,22 +52,22 @@ var _ = Describe("Vat grab repository", func() {
 			headerID, err := headerRepository.CreateOrUpdateHeader(fakes.FakeHeader)
 			Expect(err).NotTo(HaveOccurred())
 
-			err = vatGrabRepository.Create(headerID, []interface{}{test_data.VatGrabModel})
+			err = vatGrabRepository.Create(headerID, []interface{}{test_data.VatGrabModelWithPositiveDink})
 			Expect(err).NotTo(HaveOccurred())
 			var dbVatGrab vat_grab.VatGrabModel
 			err = db.Get(&dbVatGrab, `SELECT urn_id, v, w, dink, dart, log_idx, tx_idx, raw_log FROM maker.vat_grab WHERE header_id = $1`, headerID)
 			Expect(err).NotTo(HaveOccurred())
-			ilkID, err := shared.GetOrCreateIlk(test_data.VatGrabModel.Ilk, db)
+			ilkID, err := shared.GetOrCreateIlk(test_data.VatGrabModelWithPositiveDink.Ilk, db)
 			Expect(err).NotTo(HaveOccurred())
-			urnID, err := shared.GetOrCreateUrn(test_data.VatGrabModel.Urn, ilkID, db)
+			urnID, err := shared.GetOrCreateUrn(test_data.VatGrabModelWithPositiveDink.Urn, ilkID, db)
 			Expect(dbVatGrab.Urn).To(Equal(strconv.Itoa(urnID)))
-			Expect(dbVatGrab.V).To(Equal(test_data.VatGrabModel.V))
-			Expect(dbVatGrab.W).To(Equal(test_data.VatGrabModel.W))
-			Expect(dbVatGrab.Dink).To(Equal(test_data.VatGrabModel.Dink))
-			Expect(dbVatGrab.Dart).To(Equal(test_data.VatGrabModel.Dart))
-			Expect(dbVatGrab.LogIndex).To(Equal(test_data.VatGrabModel.LogIndex))
-			Expect(dbVatGrab.TransactionIndex).To(Equal(test_data.VatGrabModel.TransactionIndex))
-			Expect(dbVatGrab.Raw).To(MatchJSON(test_data.VatGrabModel.Raw))
+			Expect(dbVatGrab.V).To(Equal(test_data.VatGrabModelWithPositiveDink.V))
+			Expect(dbVatGrab.W).To(Equal(test_data.VatGrabModelWithPositiveDink.W))
+			Expect(dbVatGrab.Dink).To(Equal(test_data.VatGrabModelWithPositiveDink.Dink))
+			Expect(dbVatGrab.Dart).To(Equal(test_data.VatGrabModelWithPositiveDink.Dart))
+			Expect(dbVatGrab.LogIndex).To(Equal(test_data.VatGrabModelWithPositiveDink.LogIndex))
+			Expect(dbVatGrab.TransactionIndex).To(Equal(test_data.VatGrabModelWithPositiveDink.TransactionIndex))
+			Expect(dbVatGrab.Raw).To(MatchJSON(test_data.VatGrabModelWithPositiveDink.Raw))
 		})
 	})
 

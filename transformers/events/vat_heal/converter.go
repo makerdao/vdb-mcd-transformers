@@ -19,6 +19,7 @@ package vat_heal
 import (
 	"encoding/json"
 	"errors"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 
 	"github.com/ethereum/go-ethereum/core/types"
 
@@ -37,10 +38,7 @@ func (VatHealConverter) ToModels(ethLogs []types.Log) ([]interface{}, error) {
 
 		urn := common.BytesToAddress(ethLog.Topics[1].Bytes()).String()
 		v := common.BytesToAddress(ethLog.Topics[2].Bytes()).String()
-		radInt := ethLog.Topics[3].Big()
-		if err != nil {
-			return nil, err
-		}
+		radInt := shared.ConvertInt256HexToBigInt(ethLog.Topics[3].Hex())
 
 		rawLogJson, err := json.Marshal(ethLog)
 		if err != nil {

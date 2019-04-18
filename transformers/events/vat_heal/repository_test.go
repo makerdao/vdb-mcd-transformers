@@ -51,12 +51,12 @@ var _ = Describe("VatHeal Repository", func() {
 	}
 
 	Describe("Create", func() {
-		modelWithDifferentLogIdx := test_data.VatHealModel
+		modelWithDifferentLogIdx := test_data.VatHealModelWithPositiveRad
 		modelWithDifferentLogIdx.LogIndex++
 		inputs := shared_behaviors.CreateBehaviorInputs{
 			CheckedHeaderColumnName:  constants.VatHealChecked,
 			LogEventTableName:        "maker.vat_heal",
-			TestModel:                test_data.VatHealModel,
+			TestModel:                test_data.VatHealModelWithPositiveRad,
 			ModelWithDifferentLogIdx: modelWithDifferentLogIdx,
 			Repository:               &repository,
 		}
@@ -67,21 +67,21 @@ var _ = Describe("VatHeal Repository", func() {
 			headerRepository := repositories.NewHeaderRepository(db)
 			headerId, err := headerRepository.CreateOrUpdateHeader(fakes.FakeHeader)
 			Expect(err).NotTo(HaveOccurred())
-			anotherVatHeal := test_data.VatHealModel
-			anotherVatHeal.LogIndex = test_data.VatHealModel.LogIndex + 1
-			err = repository.Create(headerId, []interface{}{test_data.VatHealModel, anotherVatHeal})
+			anotherVatHeal := test_data.VatHealModelWithPositiveRad
+			anotherVatHeal.LogIndex = test_data.VatHealModelWithPositiveRad.LogIndex + 1
+			err = repository.Create(headerId, []interface{}{test_data.VatHealModelWithPositiveRad, anotherVatHeal})
 
 			var dbResult []VatHealDBResult
 			err = db.Select(&dbResult, `SELECT * from maker.vat_heal where header_id = $1`, headerId)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(dbResult)).To(Equal(2))
-			Expect(dbResult[0].Urn).To(Equal(test_data.VatHealModel.Urn))
-			Expect(dbResult[0].V).To(Equal(test_data.VatHealModel.V))
-			Expect(dbResult[0].Rad).To(Equal(test_data.VatHealModel.Rad))
-			Expect(dbResult[0].LogIndex).To(Equal(test_data.VatHealModel.LogIndex))
-			Expect(dbResult[1].LogIndex).To(Equal(test_data.VatHealModel.LogIndex + 1))
-			Expect(dbResult[0].TransactionIndex).To(Equal(test_data.VatHealModel.TransactionIndex))
-			Expect(dbResult[0].Raw).To(MatchJSON(test_data.VatHealModel.Raw))
+			Expect(dbResult[0].Urn).To(Equal(test_data.VatHealModelWithPositiveRad.Urn))
+			Expect(dbResult[0].V).To(Equal(test_data.VatHealModelWithPositiveRad.V))
+			Expect(dbResult[0].Rad).To(Equal(test_data.VatHealModelWithPositiveRad.Rad))
+			Expect(dbResult[0].LogIndex).To(Equal(test_data.VatHealModelWithPositiveRad.LogIndex))
+			Expect(dbResult[1].LogIndex).To(Equal(test_data.VatHealModelWithPositiveRad.LogIndex + 1))
+			Expect(dbResult[0].TransactionIndex).To(Equal(test_data.VatHealModelWithPositiveRad.TransactionIndex))
+			Expect(dbResult[0].Raw).To(MatchJSON(test_data.VatHealModelWithPositiveRad.Raw))
 			Expect(dbResult[0].HeaderId).To(Equal(headerId))
 		})
 	})

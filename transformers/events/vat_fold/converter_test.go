@@ -35,12 +35,21 @@ var _ = Describe("Vat fold converter", func() {
 		Expect(err).To(HaveOccurred())
 	})
 
-	It("converts a log to an model", func() {
+	It("converts a log with positive rate to an model", func() {
 		converter := vat_fold.VatFoldConverter{}
 
-		model, err := converter.ToModels([]types.Log{test_data.EthVatFoldLog})
+		model, err := converter.ToModels([]types.Log{test_data.EthVatFoldLogWithPositiveRate})
 
 		Expect(err).NotTo(HaveOccurred())
-		Expect(model).To(Equal([]interface{}{test_data.VatFoldModel}))
+		Expect(model).To(Equal([]interface{}{test_data.VatFoldModelWithPositiveRate}))
+	})
+
+	It("converts a log with negative rate to an model", func() {
+		converter := vat_fold.VatFoldConverter{}
+
+		model, err := converter.ToModels([]types.Log{test_data.EthVatFoldLogWithNegativeRate})
+
+		Expect(err).NotTo(HaveOccurred())
+		Expect(model).To(Equal([]interface{}{test_data.VatFoldModelWithNegativeRate}))
 	})
 })
