@@ -1,7 +1,7 @@
 -- +goose Up
 -- +goose StatementBegin
 CREATE OR REPLACE FUNCTION maker.all_urn_states(ilk TEXT, urn TEXT, block_height BIGINT)
-  RETURNS SETOF maker.urn AS $$
+  RETURNS SETOF maker.urn_state AS $$
 DECLARE
   blocks BIGINT[];
   i BIGINT;

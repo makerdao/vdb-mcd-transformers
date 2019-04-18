@@ -76,7 +76,7 @@ var _ = Describe("Extension function", func() {
 				var actualFrobs []test_helpers.FrobEvent
 				err = db.Select(&actualFrobs,
 					`SELECT ilk_id, urn_id, dink, dart FROM maker.ilk_state_frobs(
-                        (SELECT (ilk_id, ilk, block_height, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated)::maker.ilk
+                        (SELECT (ilk_id, ilk, block_height, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated)::maker.ilk_state
                          FROM maker.get_ilk($1, $2))
                     )`, fakeBlock, ilkId)
 				Expect(err).NotTo(HaveOccurred())
@@ -156,7 +156,7 @@ var _ = Describe("Extension function", func() {
 				var actualFrobs test_helpers.FrobEvent
 				err = db.Get(&actualFrobs,
 					`SELECT ilk_id, urn_id, dink, dart FROM maker.urn_state_frobs(
-                        (SELECT (urn_id, ilk_id, block_height, ink, art, ratio, safe, created, updated)::maker.urn
+                        (SELECT (urn_id, ilk_id, block_height, ink, art, ratio, safe, created, updated)::maker.urn_state
                          FROM maker.all_urns($1))
                     )`, fakeBlock)
 				Expect(err).NotTo(HaveOccurred())

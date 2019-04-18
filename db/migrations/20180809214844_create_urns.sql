@@ -6,5 +6,7 @@ CREATE TABLE maker.urns (
   UNIQUE (ilk_id, guy)
 );
 
+COMMENT ON TABLE maker.urns IS E'@name raw_urns';
+
 -- +goose Down
 DROP TABLE maker.urns;
