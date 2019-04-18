@@ -46,10 +46,10 @@ CREATE TYPE maker.frob_event AS (
 
 
 --
--- Name: ilk; Type: TYPE; Schema: maker; Owner: -
+-- Name: ilk_state; Type: TYPE; Schema: maker; Owner: -
 --
 
-CREATE TYPE maker.ilk AS (
+CREATE TYPE maker.ilk_state AS (
 	ilk_id integer,
 	ilk text,
 	block_height bigint,
@@ -94,10 +94,10 @@ CREATE TYPE maker.tx AS (
 
 
 --
--- Name: urn; Type: TYPE; Schema: maker; Owner: -
+-- Name: urn_state; Type: TYPE; Schema: maker; Owner: -
 --
 
-CREATE TYPE maker.urn AS (
+CREATE TYPE maker.urn_state AS (
 	urn_id text,
 	ilk_id text,
 	block_height bigint,
@@ -133,7 +133,7 @@ $_$;
 -- Name: all_ilk_states(bigint, integer); Type: FUNCTION; Schema: maker; Owner: -
 --
 
-CREATE FUNCTION maker.all_ilk_states(block_height bigint, ilk_id integer) RETURNS SETOF maker.ilk
+CREATE FUNCTION maker.all_ilk_states(block_height bigint, ilk_id integer) RETURNS SETOF maker.ilk_state
     LANGUAGE plpgsql STABLE SECURITY DEFINER
     AS $_$
 DECLARE
@@ -152,7 +152,7 @@ $_$;
 -- Name: all_urn_states(text, text, bigint); Type: FUNCTION; Schema: maker; Owner: -
 --
 
-CREATE FUNCTION maker.all_urn_states(ilk text, urn text, block_height bigint) RETURNS SETOF maker.urn
+CREATE FUNCTION maker.all_urn_states(ilk text, urn text, block_height bigint) RETURNS SETOF maker.urn_state
     LANGUAGE plpgsql STABLE SECURITY DEFINER
     AS $_$
 DECLARE
@@ -193,7 +193,7 @@ $_$;
 -- Name: all_urns(bigint); Type: FUNCTION; Schema: maker; Owner: -
 --
 
-CREATE FUNCTION maker.all_urns(block_height bigint) RETURNS SETOF maker.urn
+CREATE FUNCTION maker.all_urns(block_height bigint) RETURNS SETOF maker.urn_state
     LANGUAGE sql STABLE SECURITY DEFINER
     AS $_$
 WITH
@@ -292,7 +292,7 @@ $_$;
 -- Name: frob_event_ilk(maker.frob_event); Type: FUNCTION; Schema: maker; Owner: -
 --
 
-CREATE FUNCTION maker.frob_event_ilk(event maker.frob_event) RETURNS SETOF maker.ilk
+CREATE FUNCTION maker.frob_event_ilk(event maker.frob_event) RETURNS SETOF maker.ilk_state
     LANGUAGE sql STABLE
     AS $$
   SELECT * FROM maker.get_ilk(
@@ -321,7 +321,7 @@ $$;
 -- Name: frob_event_urn(maker.frob_event); Type: FUNCTION; Schema: maker; Owner: -
 --
 
-CREATE FUNCTION maker.frob_event_urn(event maker.frob_event) RETURNS SETOF maker.urn
+CREATE FUNCTION maker.frob_event_urn(event maker.frob_event) RETURNS SETOF maker.urn_state
     LANGUAGE sql STABLE
     AS $$
   SELECT * FROM maker.get_urn(event.ilk_id, event.urn_id, event.block_number)
@@ -332,7 +332,7 @@ $$;
 -- Name: get_ilk(bigint, integer); Type: FUNCTION; Schema: maker; Owner: -
 --
 
-CREATE FUNCTION maker.get_ilk(block_height bigint, ilkid integer) RETURNS maker.ilk
+CREATE FUNCTION maker.get_ilk(block_height bigint, ilkid integer) RETURNS maker.ilk_state
     LANGUAGE sql STABLE SECURITY DEFINER
     AS $_$
 WITH rates AS (
@@ -596,7 +596,7 @@ $_$;
 -- Name: get_urn(text, text, bigint); Type: FUNCTION; Schema: maker; Owner: -
 --
 
-CREATE FUNCTION maker.get_urn(ilk text, urn text, block_height bigint) RETURNS maker.urn
+CREATE FUNCTION maker.get_urn(ilk text, urn text, block_height bigint) RETURNS maker.urn_state
     LANGUAGE sql STABLE SECURITY DEFINER
     AS $_$
 WITH
@@ -692,10 +692,10 @@ $_$;
 
 
 --
--- Name: ilk_state_frobs(maker.ilk); Type: FUNCTION; Schema: maker; Owner: -
+-- Name: ilk_state_frobs(maker.ilk_state); Type: FUNCTION; Schema: maker; Owner: -
 --
 
-CREATE FUNCTION maker.ilk_state_frobs(state maker.ilk) RETURNS SETOF maker.frob_event
+CREATE FUNCTION maker.ilk_state_frobs(state maker.ilk_state) RETURNS SETOF maker.frob_event
     LANGUAGE sql STABLE
     AS $$
   SELECT * FROM maker.all_frobs(state.ilk)
@@ -738,10 +738,10 @@ $_$;
 
 
 --
--- Name: urn_state_frobs(maker.urn); Type: FUNCTION; Schema: maker; Owner: -
+-- Name: urn_state_frobs(maker.urn_state); Type: FUNCTION; Schema: maker; Owner: -
 --
 
-CREATE FUNCTION maker.urn_state_frobs(state maker.urn) RETURNS SETOF maker.frob_event
+CREATE FUNCTION maker.urn_state_frobs(state maker.urn_state) RETURNS SETOF maker.frob_event
     LANGUAGE sql STABLE
     AS $$
   SELECT * FROM maker.urn_frobs(state.ilk_id, state.urn_id)
@@ -1910,6 +1910,13 @@ CREATE TABLE maker.urns (
     ilk_id integer NOT NULL,
     guy text
 );
+
+
+--
+-- Name: TABLE urns; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.urns IS '@name raw_urns';
 
 
 --
@@ -5913,10 +5920,10 @@ GRANT ALL ON FUNCTION maker.get_urn(ilk text, urn text, block_height bigint) TO 
 
 
 --
--- Name: FUNCTION ilk_state_frobs(state maker.ilk); Type: ACL; Schema: maker; Owner: -
+-- Name: FUNCTION ilk_state_frobs(state maker.ilk_state); Type: ACL; Schema: maker; Owner: -
 --
 
-REVOKE ALL ON FUNCTION maker.ilk_state_frobs(state maker.ilk) FROM PUBLIC;
+REVOKE ALL ON FUNCTION maker.ilk_state_frobs(state maker.ilk_state) FROM PUBLIC;
 
 
 --
@@ -5934,10 +5941,10 @@ REVOKE ALL ON FUNCTION maker.urn_frobs(ilk text, urn text) FROM PUBLIC;
 
 
 --
--- Name: FUNCTION urn_state_frobs(state maker.urn); Type: ACL; Schema: maker; Owner: -
+-- Name: FUNCTION urn_state_frobs(state maker.urn_state); Type: ACL; Schema: maker; Owner: -
 --
 
-REVOKE ALL ON FUNCTION maker.urn_state_frobs(state maker.urn) FROM PUBLIC;
+REVOKE ALL ON FUNCTION maker.urn_state_frobs(state maker.urn_state) FROM PUBLIC;
 
 
 --

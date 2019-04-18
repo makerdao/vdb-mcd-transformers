@@ -3,7 +3,7 @@
 
 -- Function returning state for a single urn as of given block
 CREATE OR REPLACE FUNCTION maker.get_urn(ilk TEXT, urn TEXT, block_height BIGINT)
-  RETURNS maker.urn
+  RETURNS maker.urn_state
 AS
 
 $body$

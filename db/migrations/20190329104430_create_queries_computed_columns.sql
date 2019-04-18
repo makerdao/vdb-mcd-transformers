@@ -6,7 +6,7 @@
 
 -- Extend type frob_event with ilk field
 CREATE OR REPLACE FUNCTION maker.frob_event_ilk(event maker.frob_event)
-  RETURNS SETOF maker.ilk AS
+  RETURNS SETOF maker.ilk_state AS
 $$
   SELECT * FROM maker.get_ilk(
     event.block_number,
@@ -16,7 +16,7 @@ $$ LANGUAGE sql STABLE;
 
 -- Extend type frob_event with urn field
 CREATE OR REPLACE FUNCTION maker.frob_event_urn(event maker.frob_event)
-  RETURNS SETOF maker.urn AS
+  RETURNS SETOF maker.urn_state AS
 $$
   SELECT * FROM maker.get_urn(event.ilk_id, event.urn_id, event.block_number)
 $$ LANGUAGE sql STABLE;
@@ -61,7 +61,7 @@ $$ LANGUAGE sql STABLE;
 
 
 -- Extend ilk_state with frob events
-CREATE OR REPLACE FUNCTION maker.ilk_state_frobs(state maker.ilk)
+CREATE OR REPLACE FUNCTION maker.ilk_state_frobs(state maker.ilk_state)
   RETURNS SETOF maker.frob_event AS
 $$
   SELECT * FROM maker.all_frobs(state.ilk)
@@ -70,7 +70,7 @@ $$ LANGUAGE sql STABLE;
 
 
 -- Extend urn_state with frob_events
-CREATE OR REPLACE FUNCTION maker.urn_state_frobs(state maker.urn)
+CREATE OR REPLACE FUNCTION maker.urn_state_frobs(state maker.urn_state)
   RETURNS SETOF maker.frob_event AS
 $$
   SELECT * FROM maker.urn_frobs(state.ilk_id, state.urn_id)
@@ -84,7 +84,7 @@ DROP FUNCTION maker.frob_event_ilk(maker.frob_event);
 DROP FUNCTION maker.frob_event_urn(maker.frob_event);
 DROP FUNCTION maker.tx_era(maker.tx);
 DROP FUNCTION maker.frob_event_tx(maker.frob_event);
-DROP FUNCTION maker.ilk_state_frobs(maker.ilk);
-DROP FUNCTION maker.urn_state_frobs(maker.urn);
+DROP FUNCTION maker.ilk_state_frobs(maker.ilk_state);
+DROP FUNCTION maker.urn_state_frobs(maker.urn_state);
 DROP TYPE maker.tx CASCADE;
 DROP TYPE maker.era CASCADE;

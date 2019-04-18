@@ -1,7 +1,7 @@
 -- +goose Up
 -- +goose StatementBegin
 create or replace function maker.all_ilk_states(block_height bigint, ilk_id int)
-  returns setof maker.ilk as $$
+  returns setof maker.ilk_state as $$
 DECLARE
   r maker.relevant_block;
 BEGIN
