@@ -24,11 +24,20 @@ func (VatGrabConverter) ToModels(ethLogs []types.Log) ([]interface{}, error) {
 		ilk := shared.GetHexWithoutPrefix(ethLog.Topics[1].Bytes())
 		urn := common.BytesToAddress(ethLog.Topics[2].Bytes()).String()
 		v := common.BytesToAddress(ethLog.Topics[3].Bytes()).String()
-		wBytes := shared.GetLogNoteDataBytesAtIndex(-3, ethLog.Data)
+		wBytes, wErr := shared.GetVatNoteDataBytesAtIndex(4, ethLog.Data)
+		if wErr != nil {
+			return nil, wErr
+		}
 		w := common.BytesToAddress(wBytes).String()
-		dinkBytes := shared.GetLogNoteDataBytesAtIndex(-2, ethLog.Data)
+		dinkBytes, dinkErr := shared.GetVatNoteDataBytesAtIndex(5, ethLog.Data)
+		if dinkErr != nil {
+			return nil, dinkErr
+		}
 		dink := shared.ConvertInt256HexToBigInt(hexutil.Encode(dinkBytes))
-		dartBytes := shared.GetLogNoteDataBytesAtIndex(-1, ethLog.Data)
+		dartBytes, dartErr := shared.GetVatNoteDataBytesAtIndex(6, ethLog.Data)
+		if dartErr != nil {
+			return nil, dartErr
+		}
 		dart := shared.ConvertInt256HexToBigInt(hexutil.Encode(dartBytes))
 
 		raw, err := json.Marshal(ethLog)

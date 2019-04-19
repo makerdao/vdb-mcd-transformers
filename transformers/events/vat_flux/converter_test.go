@@ -29,7 +29,7 @@ import (
 var _ = Describe("VatFlux converter", func() {
 	It("Converts logs to models", func() {
 		converter := vat_flux.VatFluxConverter{}
-		models, err := converter.ToModels([]types.Log{test_data.VatFluxLog})
+		models, err := converter.ToModels([]types.Log{test_data.EthVatFluxLog})
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(len(models)).To(Equal(1))

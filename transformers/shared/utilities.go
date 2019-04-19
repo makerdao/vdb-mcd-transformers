@@ -19,7 +19,8 @@ package shared
 import (
 	"bytes"
 	"encoding/binary"
-	"math"
+	"errors"
+	"fmt"
 	"math/big"
 	"strconv"
 
@@ -28,6 +29,10 @@ import (
 
 	"github.com/vulcanize/vulcanizedb/libraries/shared/constants"
 )
+
+var ErrInvalidIndex = func(index int) error {
+	return errors.New(fmt.Sprintf("unsupported log data index: %d", index))
+}
 
 func BigIntToInt64(value *big.Int) int64 {
 	if value == nil {
@@ -75,37 +80,32 @@ func ConvertUint256HexToBigInt(hex string) *big.Int {
 	return big.NewInt(0).SetBytes(hexBytes)
 }
 
-// Extract relevant bytes from log data emitted by DSNote and Vat Note modifiers.
-// For DSNote, index is backward from last argument. For example,
-//		- if 4 arguments:
-//			- topic 0 is function signature
-//			- topic 1 is msg.sender
-//			- topic 2 is argument 1
-//			- topic 3 is argument 2
-//			- argument 3 can be accessed via GetLogNoteDataBytesAtIndex(-2, logData)
-//			- argument 4 can be accessed via GetLogNoteDataBytesAtIndex(-1, logData)
-//		- if 6 arguments:
-//			- topics 0-3 are same as above
-//			- argument 3 can be accessed via GetLogNoteDataBytesAtIndex(-3, logData)
-//			- argument 4 can be accessed via GetLogNoteDataBytesAtIndex(-2, logData)
-//			- argument 5 can be accessed via GetLogNoteDataBytesAtIndex(-1, logData)
-// For Vat Note, note is padded at fixed length supporting 6 arguments. For example,
-//		- if 4 arguments:
-//			- topic 0 is function signature
-//			- topic 1 is argument 1
-//			- topic 2 is argument 2
-//			- topic 3 is argument 3
-//			- argument 4 can be accessed via GetLogNoteDataBytesAtIndex(-3, logData)
-//		- if 6 arguments:
-//			- topics 0-3 are same as above
-//			- argument 4 can be accessed via GetLogNoteDataBytesAtIndex(-3, logData)
-//			- argument 5 can be accessed via GetLogNoteDataBytesAtIndex(-2, logData)
-//			- argument 6 can be accessed via GetLogNoteDataBytesAtIndex(-1, logData)
-func GetLogNoteDataBytesAtIndex(n int, logData []byte) []byte {
+func GetDSNoteThirdArgument(logData []byte) []byte {
+	return getDataWithIndexOffset(1, logData)
+}
+
+func GetVatNoteDataBytesAtIndex(index int, logData []byte) ([]byte, error) {
+	indexOffset, err := getVatNoteArgIndexOffset(index)
+	if err != nil {
+		return nil, err
+	}
+	return getDataWithIndexOffset(indexOffset, logData), nil
+}
+
+func getVatNoteArgIndexOffset(index int) (int, error) {
+	minArgIndex := 4
+	maxArgIndex := 6
+	if index < minArgIndex || index > maxArgIndex {
+		return 0, ErrInvalidIndex(index)
+	}
+	offsets := map[int]int{4: 3, 5: 2, 6: 1}
+	return offsets[index], nil
+}
+
+func getDataWithIndexOffset(offset int, logData []byte) []byte {
 	zeroPaddedSignatureOffset := 28
-	indexOffset := int(math.Abs(float64(n)))
-	dataBegin := len(logData) - (indexOffset * constants.DataItemLength) - zeroPaddedSignatureOffset
-	dataEnd := len(logData) - ((indexOffset - 1) * constants.DataItemLength) - zeroPaddedSignatureOffset
+	dataBegin := len(logData) - (offset * constants.DataItemLength) - zeroPaddedSignatureOffset
+	dataEnd := len(logData) - ((offset - 1) * constants.DataItemLength) - zeroPaddedSignatureOffset
 	return logData[dataBegin:dataEnd]
 }
 

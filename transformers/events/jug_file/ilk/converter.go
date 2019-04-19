@@ -40,7 +40,7 @@ func (JugFileIlkConverter) ToModels(ethLogs []types.Log) ([]interface{}, error) 
 
 		ilk := shared.GetHexWithoutPrefix(ethLog.Topics[2].Bytes())
 		what := string(bytes.Trim(ethLog.Topics[3].Bytes(), "\x00"))
-		dataBytes := shared.GetLogNoteDataBytesAtIndex(-1, ethLog.Data)
+		dataBytes := shared.GetDSNoteThirdArgument(ethLog.Data)
 		data := shared.ConvertUint256HexToBigInt(hexutil.Encode(dataBytes))
 		raw, err := json.Marshal(ethLog)
 		if err != nil {
