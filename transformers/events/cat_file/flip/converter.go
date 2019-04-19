@@ -39,7 +39,7 @@ func (CatFileFlipConverter) ToModels(ethLogs []types.Log) ([]interface{}, error)
 		}
 		ilk := shared.GetHexWithoutPrefix(ethLog.Topics[2].Bytes())
 		what := string(bytes.Trim(ethLog.Topics[3].Bytes(), "\x00"))
-		flipBytes := shared.GetLogNoteDataBytesAtIndex(-1, ethLog.Data)
+		flipBytes := shared.GetDSNoteThirdArgument(ethLog.Data)
 		flip := common.BytesToAddress(flipBytes).String()
 
 		raw, err := json.Marshal(ethLog)

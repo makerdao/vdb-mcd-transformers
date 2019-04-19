@@ -24,7 +24,7 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_flux"
 )
 
-var VatFluxLog = types.Log{
+var EthVatFluxLog = types.Log{
 	Address: common.HexToAddress(KovanVatContractAddress),
 	Topics: []common.Hash{
 		common.HexToHash(KovanVatFluxSignature),
@@ -41,13 +41,13 @@ var VatFluxLog = types.Log{
 	Removed:     false,
 }
 
-var rawFluxLog, _ = json.Marshal(VatFluxLog)
+var rawFluxLog, _ = json.Marshal(EthVatFluxLog)
 var VatFluxModel = vat_flux.VatFluxModel{
 	Ilk:              "66616b6520696c6b000000000000000000000000000000000000000000000000",
 	Src:              "0x07Fa9eF6609cA7921112231F8f195138ebbA2977",
 	Dst:              "0x7340e006f4135BA6970D43bf43d88DCAD4e7a8CA",
 	Wad:              "1000000000000",
-	TransactionIndex: VatFluxLog.TxIndex,
-	LogIndex:         VatFluxLog.Index,
+	TransactionIndex: EthVatFluxLog.TxIndex,
+	LogIndex:         EthVatFluxLog.Index,
 	Raw:              rawFluxLog,
 }

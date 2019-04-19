@@ -39,16 +39,15 @@ func (VatFluxConverter) ToModels(ethLogs []types.Log) ([]interface{}, error) {
 		ilk := shared.GetHexWithoutPrefix(ethLog.Topics[1].Bytes())
 		src := common.BytesToAddress(ethLog.Topics[2].Bytes()).String()
 		dst := common.BytesToAddress(ethLog.Topics[3].Bytes()).String()
-		wadBytes := shared.GetLogNoteDataBytesAtIndex(-3, ethLog.Data)
+		wadBytes, dataErr := shared.GetVatNoteDataBytesAtIndex(4, ethLog.Data)
+		if dataErr != nil {
+			return nil, dataErr
+		}
 		wad := shared.ConvertUint256HexToBigInt(hexutil.Encode(wadBytes))
 
-		if err != nil {
-			return nil, err
-		}
-
-		rawLogJson, err := json.Marshal(ethLog)
-		if err != nil {
-			return nil, err
+		rawLogJson, jsonErr := json.Marshal(ethLog)
+		if jsonErr != nil {
+			return nil, jsonErr
 		}
 
 		model := VatFluxModel{
