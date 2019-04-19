@@ -12,11 +12,14 @@ import (
 	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/storage"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
+	"strconv"
 )
 
 var _ = Describe("Executing the transformer", func() {
 	var (
 		db          *postgres.DB
+		ilkId       int
+		err         error
 		mappings    = vat.VatMappings{StorageRepository: &storage2.MakerStorageRepository{}}
 		repository  = vat.VatStorageRepository{}
 		transformer = storage.Transformer{
@@ -31,7 +34,7 @@ var _ = Describe("Executing the transformer", func() {
 		test_config.CleanTestDB(db)
 		transformer.NewTransformer(db)
 		ilk := "4554482d41000000000000000000000000000000000000000000000000000000"
-		_, err := shared.GetOrCreateIlk(ilk, db)
+		ilkId, err = shared.GetOrCreateIlk(ilk, db)
 		Expect(err).NotTo(HaveOccurred())
 	})
 
@@ -48,10 +51,10 @@ var _ = Describe("Executing the transformer", func() {
 		err := transformer.Execute(vatLineRow)
 		Expect(err).NotTo(HaveOccurred())
 
-		var artResult test_helpers.VariableRes
-		err = db.Get(&artResult, `SELECT block_number, block_hash, art AS value FROM maker.vat_ilk_art`)
+		var artResult test_helpers.MappingRes
+		err = db.Get(&artResult, `SELECT block_number, block_hash, ilk_id AS key, art AS value FROM maker.vat_ilk_art`)
 		Expect(err).NotTo(HaveOccurred())
-		test_helpers.AssertVariable(artResult, blockNumber, blockHash, "1000000000000000000")
+		test_helpers.AssertMapping(artResult, blockNumber, blockHash, strconv.Itoa(ilkId), "1000000000000000000")
 	})
 
 	It("reads in a Vat ilk rate storage diff row and persists it", func() {
@@ -67,10 +70,10 @@ var _ = Describe("Executing the transformer", func() {
 		err := transformer.Execute(vatLineRow)
 		Expect(err).NotTo(HaveOccurred())
 
-		var rateResult test_helpers.VariableRes
-		err = db.Get(&rateResult, `SELECT block_number, block_hash, rate AS value FROM maker.vat_ilk_rate`)
+		var rateResult test_helpers.MappingRes
+		err = db.Get(&rateResult, `SELECT block_number, block_hash, ilk_id AS key, rate AS value FROM maker.vat_ilk_rate`)
 		Expect(err).NotTo(HaveOccurred())
-		test_helpers.AssertVariable(rateResult, blockNumber, blockHash, "1000000000000000000000000000")
+		test_helpers.AssertMapping(rateResult, blockNumber, blockHash, strconv.Itoa(ilkId), "1000000000000000000000000000")
 	})
 
 	It("reads in a Vat ilk spot storage diff row and persists it", func() {
@@ -86,10 +89,10 @@ var _ = Describe("Executing the transformer", func() {
 		err := transformer.Execute(vatLineRow)
 		Expect(err).NotTo(HaveOccurred())
 
-		var spotResult test_helpers.VariableRes
-		err = db.Get(&spotResult, `SELECT block_number, block_hash, spot AS value FROM maker.vat_ilk_spot`)
+		var spotResult test_helpers.MappingRes
+		err = db.Get(&spotResult, `SELECT block_number, block_hash, ilk_id AS key, spot AS value FROM maker.vat_ilk_spot`)
 		Expect(err).NotTo(HaveOccurred())
-		test_helpers.AssertVariable(spotResult, blockNumber, blockHash, "89550000000000000000000000000")
+		test_helpers.AssertMapping(spotResult, blockNumber, blockHash, strconv.Itoa(ilkId), "89550000000000000000000000000")
 	})
 
 	It("reads in a Vat ilk line storage diff row and persists it", func() {
@@ -105,10 +108,10 @@ var _ = Describe("Executing the transformer", func() {
 		err := transformer.Execute(vatLineRow)
 		Expect(err).NotTo(HaveOccurred())
 
-		var debtResult test_helpers.VariableRes
-		err = db.Get(&debtResult, `SELECT block_number, block_hash, line AS value FROM maker.vat_ilk_line`)
+		var debtResult test_helpers.MappingRes
+		err = db.Get(&debtResult, `SELECT block_number, block_hash, ilk_id AS key, line AS value FROM maker.vat_ilk_line`)
 		Expect(err).NotTo(HaveOccurred())
-		test_helpers.AssertVariable(debtResult, blockNumber, blockHash, "100000000000000000000000000000000000000000000")
+		test_helpers.AssertMapping(debtResult, blockNumber, blockHash, strconv.Itoa(ilkId), "100000000000000000000000000000000000000000000")
 	})
 
 	It("reads in a Vat debt storage diff row and persists it", func() {
