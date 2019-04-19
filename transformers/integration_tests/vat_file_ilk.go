@@ -55,11 +55,9 @@ var _ = Describe("VatFileIlk LogNoteTransformer", func() {
 		db = test_config.NewTestDB(blockChain.Node())
 		test_config.CleanTestDB(db)
 		config := transformer.EventTransformerConfig{
-			TransformerName:     constants.VatFileIlkLabel,
-			ContractAddresses:   []string{test_data.KovanVatContractAddress},
-			Topic:               test_data.KovanVatFileIlkSignature,
-			StartingBlockNumber: 0,
-			EndingBlockNumber:   -1,
+			TransformerName:   constants.VatFileIlkLabel,
+			ContractAddresses: []string{test_data.KovanVatContractAddress},
+			Topic:             test_data.KovanVatFileIlkSignature,
 		}
 
 		addresses = transformer.HexStringsToAddresses(config.ContractAddresses)

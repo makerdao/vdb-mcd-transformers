@@ -51,11 +51,9 @@ var _ = Describe("JugDrip Transformer", func() {
 		test_config.CleanTestDB(db)
 
 		config = transformer.EventTransformerConfig{
-			ContractAddresses:   []string{test_data.KovanJugContractAddress},
-			ContractAbi:         test_data.KovanJugABI,
-			Topic:               test_data.KovanJugDripSignature,
-			StartingBlockNumber: 0,
-			EndingBlockNumber:   -1,
+			ContractAddresses: []string{test_data.KovanJugContractAddress},
+			ContractAbi:       test_data.KovanJugABI,
+			Topic:             test_data.KovanJugDripSignature,
 		}
 	})
 

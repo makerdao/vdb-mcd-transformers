@@ -55,11 +55,9 @@ var _ = Describe("Vat frob Transformer", func() {
 
 		fetcher = fetch.NewFetcher(blockChain)
 		config = transformer.EventTransformerConfig{
-			TransformerName:     constants.VatFrobLabel,
-			ContractAddresses:   []string{test_data.KovanVatContractAddress},
-			Topic:               test_data.KovanVatFrobSignature,
-			StartingBlockNumber: 0,
-			EndingBlockNumber:   -1,
+			TransformerName:   constants.VatFrobLabel,
+			ContractAddresses: []string{test_data.KovanVatContractAddress},
+			Topic:             test_data.KovanVatFrobSignature,
 		}
 
 		initializer = event.LogNoteTransformer{

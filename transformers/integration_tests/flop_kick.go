@@ -58,12 +58,10 @@ var _ = Describe("FlopKick Transformer", func() {
 		test_config.CleanTestDB(db)
 
 		config = transformer.EventTransformerConfig{
-			TransformerName:     constants.FlopKickLabel,
-			ContractAddresses:   []string{test_data.KovanFlopperContractAddress},
-			ContractAbi:         test_data.KovanFlopperABI,
-			Topic:               test_data.KovanFlopKickSignature,
-			StartingBlockNumber: 0,
-			EndingBlockNumber:   -1,
+			TransformerName:   constants.FlopKickLabel,
+			ContractAddresses: []string{test_data.KovanFlopperContractAddress},
+			ContractAbi:       test_data.KovanFlopperABI,
+			Topic:             test_data.KovanFlopKickSignature,
 		}
 
 		initializer = event.Transformer{
