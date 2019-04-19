@@ -54,11 +54,9 @@ var _ = Describe("Deal transformer", func() {
 		test_config.CleanTestDB(db)
 
 		config = transformer.EventTransformerConfig{
-			TransformerName:     constants.DealLabel,
-			ContractAddresses:   []string{test_data.KovanFlapperContractAddress, test_data.KovanFlipperContractAddress, test_data.KovanFlopperContractAddress},
-			Topic:               test_data.KovanDealSignature,
-			StartingBlockNumber: 0,
-			EndingBlockNumber:   -1,
+			TransformerName:   constants.DealLabel,
+			ContractAddresses: []string{test_data.KovanFlapperContractAddress, test_data.KovanFlipperContractAddress, test_data.KovanFlopperContractAddress},
+			Topic:             test_data.KovanDealSignature,
 		}
 
 		initializer = event.LogNoteTransformer{

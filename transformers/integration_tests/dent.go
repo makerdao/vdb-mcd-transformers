@@ -39,12 +39,10 @@ var _ = Describe("Dent transformer", func() {
 		test_config.CleanTestDB(db)
 
 		config = transformer.EventTransformerConfig{
-			TransformerName:     constants.DentLabel,
-			ContractAddresses:   []string{test_data.KovanFlipperContractAddress, test_data.KovanFlopperContractAddress},
-			ContractAbi:         test_data.KovanFlipperABI,
-			Topic:               test_data.KovanDentSignature,
-			StartingBlockNumber: 0,
-			EndingBlockNumber:   -1,
+			TransformerName:   constants.DentLabel,
+			ContractAddresses: []string{test_data.KovanFlipperContractAddress, test_data.KovanFlopperContractAddress},
+			ContractAbi:       test_data.KovanFlipperABI,
+			Topic:             test_data.KovanDentSignature,
 		}
 
 		addresses = transformer.HexStringsToAddresses(config.ContractAddresses)

@@ -37,12 +37,10 @@ import (
 )
 
 var testBiteConfig = transformer.EventTransformerConfig{
-	TransformerName:     constants.BiteLabel,
-	ContractAddresses:   []string{test_data.KovanCatContractAddress},
-	ContractAbi:         test_data.KovanCatABI,
-	Topic:               test_data.KovanBiteSignature,
-	StartingBlockNumber: 0,
-	EndingBlockNumber:   -1,
+	TransformerName:   constants.BiteLabel,
+	ContractAddresses: []string{test_data.KovanCatContractAddress},
+	ContractAbi:       test_data.KovanCatABI,
+	Topic:             test_data.KovanBiteSignature,
 }
 
 var _ = Describe("Bite Transformer", func() {
