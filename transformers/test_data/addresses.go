@@ -1,7 +1,7 @@
 package test_data
 
 const (
-	KovanCatContractAddress     = "0xc20e4eaf6b53347ad2d895390dd96ba635bbe4c1"
+	KovanCatContractAddress     = "0x6465ec75870a2f5995506109937d794a38eb9fe9"
 	KovanFlapperContractAddress = "0x8868BAd8e74FcA4505676D1B5B21EcC23328d132"
 	KovanFlipperContractAddress = "0x32D496Ad866D110060866B7125981C73642cc509"
 	KovanFlopperContractAddress = "0x6191C9b0086c2eBF92300cC507009b53996FbFFa"
@@ -13,5 +13,5 @@ const (
 	KovanPipCol4ContractAddress = "0xc9eb67DA2d05702459C521CE3BFED097cB490F8b"
 	KovanPipCol5ContractAddress = "0xA53e6EFB4cBeD841Eace02220498860905E94998"
 	KovanVatContractAddress     = "0x2dfb8277bbed6f85e4c6bc2ab37ac297c3cc858a"
-	KovanVowContractAddress     = "0xb267c22a437637a4672ad61ef69504a8006ccb45"
+	KovanVowContractAddress     = "0xbba55b7e500e8ee2cf4887ed393306803da04aeb"
 )
