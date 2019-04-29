@@ -26,28 +26,28 @@ import (
 var _ = Describe("Event signature generator", func() {
 	Describe("generating non-anonymous event signatures", func() {
 		It("generates bite event signature", func() {
-			expected := "0xa09cf5c84ddb9da74c619289a981b41ecd0c8e8440728e9faf9ed2b20175599e"
-			actual := constants.GetEventTopicZero("Bite(bytes32,bytes32,uint256,uint256,uint256,uint256)")
+			expected := test_data.KovanBiteSignature
+			actual := constants.GetEventTopicZero("Bite(bytes32,address,uint256,uint256,uint256,uint256)")
 
 			Expect(expected).To(Equal(actual))
 		})
 
 		It("generates the flap kick event signature", func() {
-			expected := "0xefa52d9342a199cb30efd2692463f2c2bef63cd7186b50382d4fb94ad207880e"
+			expected := test_data.KovanFlapKickSignature
 			actual := constants.GetEventTopicZero("Kick(uint256,uint256,uint256,address,uint48)")
 
 			Expect(expected).To(Equal(actual))
 		})
 
 		It("generates flip kick event signature", func() {
-			expected := "0xbac86238bdba81d21995024470425ecb370078fa62b7271b90cf28cbd1e3e87e"
+			expected := test_data.KovanFlipKickSignature
 			actual := constants.GetEventTopicZero("Kick(uint256,uint256,uint256,address,uint48,bytes32,uint256)")
 
 			Expect(expected).To(Equal(actual))
 		})
 
 		It("generates pip log value signature", func() {
-			expected := "0x296ba4ca62c6c21c95e828080cb8aec7481b71390585605300a8a76f9e95b527"
+			expected := test_data.KovanPipLogValueSignature
 			actual := constants.GetEventTopicZero("LogValue(bytes32)")
 
 			Expect(expected).To(Equal(actual))
@@ -55,11 +55,28 @@ var _ = Describe("Event signature generator", func() {
 	})
 
 	Describe("generating LogNote event signatures", func() {
+		It("generates cat file chop lump event signature", func() {
+			actual := constants.GetLogNoteTopicZeroWithZeroPadding("file(bytes32,bytes32,uint256)")
+
+			Expect(test_data.KovanCatFileChopLumpSignature).To(Equal(actual))
+		})
+
+		It("generates cat file flip event signature", func() {
+			actual := constants.GetLogNoteTopicZeroWithZeroPadding("file(bytes32,bytes32,address)")
+
+			Expect(test_data.KovanCatFileFlipSignature).To(Equal(actual))
+		})
+
+		It("generates cat file vow event signature", func() {
+			actual := constants.GetLogNoteTopicZeroWithZeroPadding("file(bytes32,address)")
+
+			Expect(test_data.KovanCatFileVowSignature).To(Equal(actual))
+		})
+
 		It("generates flip tend event signature", func() {
-			expected := "0x4b43ed1200000000000000000000000000000000000000000000000000000000"
 			actual := constants.GetLogNoteTopicZeroWithZeroPadding("tend(uint256,uint256,uint256)")
 
-			Expect(expected).To(Equal(actual))
+			Expect(test_data.KovanTendSignature).To(Equal(actual))
 		})
 
 		It("generates the jug file drip signature", func() {
@@ -276,7 +293,7 @@ var _ = Describe("Event signature generator", func() {
 
 		Describe("it handles events", func() {
 			It("gets the Bite event signature", func() {
-				expected := "Bite(bytes32,bytes32,uint256,uint256,uint256,uint256)"
+				expected := "Bite(bytes32,address,uint256,uint256,uint256,uint256)"
 				actual := constants.GetSolidityFunctionSignature(test_data.KovanCatABI, "Bite")
 
 				Expect(expected).To(Equal(actual))
