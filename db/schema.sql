@@ -1501,7 +1501,8 @@ ALTER SEQUENCE maker.flop_kick_id_seq OWNED BY maker.flop_kick.id;
 
 CREATE TABLE maker.ilks (
     id integer NOT NULL,
-    ilk text
+    ilk text NOT NULL,
+    name text NOT NULL
 );
 
 
@@ -4553,6 +4554,14 @@ ALTER TABLE ONLY maker.flop_kick
 
 ALTER TABLE ONLY maker.ilks
     ADD CONSTRAINT ilks_ilk_key UNIQUE (ilk);
+
+
+--
+-- Name: ilks ilks_name_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.ilks
+    ADD CONSTRAINT ilks_name_key UNIQUE (name);
 
 
 --

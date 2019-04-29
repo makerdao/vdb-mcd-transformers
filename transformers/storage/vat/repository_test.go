@@ -17,6 +17,7 @@
 package vat_test
 
 import (
+	"github.com/vulcanize/mcd_transformers/transformers/component_tests/queries/test_helpers"
 	"strconv"
 
 	. "github.com/onsi/ginkgo"
@@ -38,7 +39,6 @@ var _ = Describe("Vat storage repository", func() {
 		repo            vat.VatStorageRepository
 		fakeBlockNumber = 123
 		fakeBlockHash   = "expected_block_hash"
-		fakeIlk         = "fake_ilk"
 		fakeGuy         = "fake_urn"
 		fakeUint256     = "12345"
 	)
@@ -76,7 +76,7 @@ var _ = Describe("Vat storage repository", func() {
 
 	Describe("gem", func() {
 		It("writes row", func() {
-			gemMetadata := utils.GetStorageValueMetadata(vat.Gem, map[utils.Key]string{constants.Ilk: fakeIlk, constants.Guy: fakeGuy}, utils.Uint256)
+			gemMetadata := utils.GetStorageValueMetadata(vat.Gem, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk, constants.Guy: fakeGuy}, utils.Uint256)
 
 			err := repo.Create(fakeBlockNumber, fakeBlockHash, gemMetadata, fakeUint256)
 
@@ -85,7 +85,7 @@ var _ = Describe("Vat storage repository", func() {
 			var result DoubleMappingRes
 			err = db.Get(&result, `SELECT block_number, block_hash, ilk_id AS key_one, guy AS key_two, gem AS value FROM maker.vat_gem`)
 			Expect(err).NotTo(HaveOccurred())
-			ilkID, err := shared.GetOrCreateIlk(fakeIlk, db)
+			ilkID, err := shared.GetOrCreateIlk(test_helpers.FakeIlk, db)
 			Expect(err).NotTo(HaveOccurred())
 			AssertDoubleMapping(result, fakeBlockNumber, fakeBlockHash, strconv.Itoa(ilkID), fakeGuy, fakeUint256)
 		})
@@ -100,7 +100,7 @@ var _ = Describe("Vat storage repository", func() {
 		})
 
 		It("returns error if metadata missing guy", func() {
-			malformedGemMetadata := utils.GetStorageValueMetadata(vat.Gem, map[utils.Key]string{constants.Ilk: fakeIlk}, utils.Uint256)
+			malformedGemMetadata := utils.GetStorageValueMetadata(vat.Gem, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk}, utils.Uint256)
 
 			err := repo.Create(fakeBlockNumber, fakeBlockHash, malformedGemMetadata, fakeUint256)
 
@@ -111,7 +111,7 @@ var _ = Describe("Vat storage repository", func() {
 
 	Describe("ilk Art", func() {
 		It("writes row", func() {
-			ilkArtMetadata := utils.GetStorageValueMetadata(vat.IlkArt, map[utils.Key]string{constants.Ilk: fakeIlk}, utils.Uint256)
+			ilkArtMetadata := utils.GetStorageValueMetadata(vat.IlkArt, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk}, utils.Uint256)
 
 			err := repo.Create(fakeBlockNumber, fakeBlockHash, ilkArtMetadata, fakeUint256)
 
@@ -120,7 +120,7 @@ var _ = Describe("Vat storage repository", func() {
 			var result MappingRes
 			err = db.Get(&result, `SELECT block_number, block_hash, ilk_id AS key, art AS value FROM maker.vat_ilk_art`)
 			Expect(err).NotTo(HaveOccurred())
-			ilkID, err := shared.GetOrCreateIlk(fakeIlk, db)
+			ilkID, err := shared.GetOrCreateIlk(test_helpers.FakeIlk, db)
 			Expect(err).NotTo(HaveOccurred())
 			AssertMapping(result, fakeBlockNumber, fakeBlockHash, strconv.Itoa(ilkID), fakeUint256)
 		})
@@ -137,7 +137,7 @@ var _ = Describe("Vat storage repository", func() {
 
 	Describe("ilk dust", func() {
 		It("writes row", func() {
-			ilkDustMetadata := utils.GetStorageValueMetadata(vat.IlkDust, map[utils.Key]string{constants.Ilk: fakeIlk}, utils.Uint256)
+			ilkDustMetadata := utils.GetStorageValueMetadata(vat.IlkDust, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk}, utils.Uint256)
 
 			err := repo.Create(fakeBlockNumber, fakeBlockHash, ilkDustMetadata, fakeUint256)
 
@@ -146,7 +146,7 @@ var _ = Describe("Vat storage repository", func() {
 			var result MappingRes
 			err = db.Get(&result, `SELECT block_number, block_hash, ilk_id AS key, dust AS value FROM maker.vat_ilk_dust`)
 			Expect(err).NotTo(HaveOccurred())
-			ilkID, err := shared.GetOrCreateIlk(fakeIlk, db)
+			ilkID, err := shared.GetOrCreateIlk(test_helpers.FakeIlk, db)
 			Expect(err).NotTo(HaveOccurred())
 			AssertMapping(result, fakeBlockNumber, fakeBlockHash, strconv.Itoa(ilkID), fakeUint256)
 		})
@@ -163,7 +163,7 @@ var _ = Describe("Vat storage repository", func() {
 
 	Describe("ilk line", func() {
 		It("writes row", func() {
-			ilkLineMetadata := utils.GetStorageValueMetadata(vat.IlkLine, map[utils.Key]string{constants.Ilk: fakeIlk}, utils.Uint256)
+			ilkLineMetadata := utils.GetStorageValueMetadata(vat.IlkLine, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk}, utils.Uint256)
 
 			err := repo.Create(fakeBlockNumber, fakeBlockHash, ilkLineMetadata, fakeUint256)
 
@@ -172,7 +172,7 @@ var _ = Describe("Vat storage repository", func() {
 			var result MappingRes
 			err = db.Get(&result, `SELECT block_number, block_hash, ilk_id AS key, line AS value FROM maker.vat_ilk_line`)
 			Expect(err).NotTo(HaveOccurred())
-			ilkID, err := shared.GetOrCreateIlk(fakeIlk, db)
+			ilkID, err := shared.GetOrCreateIlk(test_helpers.FakeIlk, db)
 			Expect(err).NotTo(HaveOccurred())
 			AssertMapping(result, fakeBlockNumber, fakeBlockHash, strconv.Itoa(ilkID), fakeUint256)
 		})
@@ -189,7 +189,7 @@ var _ = Describe("Vat storage repository", func() {
 
 	Describe("ilk rate", func() {
 		It("writes row", func() {
-			ilkRateMetadata := utils.GetStorageValueMetadata(vat.IlkRate, map[utils.Key]string{constants.Ilk: fakeIlk}, utils.Uint256)
+			ilkRateMetadata := utils.GetStorageValueMetadata(vat.IlkRate, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk}, utils.Uint256)
 
 			err := repo.Create(fakeBlockNumber, fakeBlockHash, ilkRateMetadata, fakeUint256)
 
@@ -198,7 +198,7 @@ var _ = Describe("Vat storage repository", func() {
 			var result MappingRes
 			err = db.Get(&result, `SELECT block_number, block_hash, ilk_id AS key, rate AS value FROM maker.vat_ilk_rate`)
 			Expect(err).NotTo(HaveOccurred())
-			ilkID, err := shared.GetOrCreateIlk(fakeIlk, db)
+			ilkID, err := shared.GetOrCreateIlk(test_helpers.FakeIlk, db)
 			Expect(err).NotTo(HaveOccurred())
 			AssertMapping(result, fakeBlockNumber, fakeBlockHash, strconv.Itoa(ilkID), fakeUint256)
 		})
@@ -215,7 +215,7 @@ var _ = Describe("Vat storage repository", func() {
 
 	Describe("ilk spot", func() {
 		It("writes row", func() {
-			ilkSpotMetadata := utils.GetStorageValueMetadata(vat.IlkSpot, map[utils.Key]string{constants.Ilk: fakeIlk}, utils.Uint256)
+			ilkSpotMetadata := utils.GetStorageValueMetadata(vat.IlkSpot, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk}, utils.Uint256)
 
 			err := repo.Create(fakeBlockNumber, fakeBlockHash, ilkSpotMetadata, fakeUint256)
 
@@ -224,7 +224,7 @@ var _ = Describe("Vat storage repository", func() {
 			var result MappingRes
 			err = db.Get(&result, `SELECT block_number, block_hash, ilk_id AS key, spot AS value FROM maker.vat_ilk_spot`)
 			Expect(err).NotTo(HaveOccurred())
-			ilkID, err := shared.GetOrCreateIlk(fakeIlk, db)
+			ilkID, err := shared.GetOrCreateIlk(test_helpers.FakeIlk, db)
 			Expect(err).NotTo(HaveOccurred())
 			AssertMapping(result, fakeBlockNumber, fakeBlockHash, strconv.Itoa(ilkID), fakeUint256)
 		})
@@ -265,7 +265,7 @@ var _ = Describe("Vat storage repository", func() {
 
 	Describe("urn art", func() {
 		It("writes row", func() {
-			urnArtMetadata := utils.GetStorageValueMetadata(vat.UrnArt, map[utils.Key]string{constants.Ilk: fakeIlk, constants.Guy: fakeGuy}, utils.Uint256)
+			urnArtMetadata := utils.GetStorageValueMetadata(vat.UrnArt, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk, constants.Guy: fakeGuy}, utils.Uint256)
 
 			err := repo.Create(fakeBlockNumber, fakeBlockHash, urnArtMetadata, fakeUint256)
 
@@ -279,7 +279,7 @@ var _ = Describe("Vat storage repository", func() {
 				INNER JOIN maker.ilks on maker.urns.ilk_id = maker.ilks.id
 			`)
 			Expect(err).NotTo(HaveOccurred())
-			ilkID, err := shared.GetOrCreateIlk(fakeIlk, db)
+			ilkID, err := shared.GetOrCreateIlk(test_helpers.FakeIlk, db)
 			Expect(err).NotTo(HaveOccurred())
 			AssertDoubleMapping(result, fakeBlockNumber, fakeBlockHash, strconv.Itoa(ilkID), fakeGuy, fakeUint256)
 		})
@@ -294,7 +294,7 @@ var _ = Describe("Vat storage repository", func() {
 		})
 
 		It("returns error if metadata missing guy", func() {
-			malformedUrnArtMetadata := utils.GetStorageValueMetadata(vat.UrnArt, map[utils.Key]string{constants.Ilk: fakeIlk}, utils.Uint256)
+			malformedUrnArtMetadata := utils.GetStorageValueMetadata(vat.UrnArt, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk}, utils.Uint256)
 
 			err := repo.Create(fakeBlockNumber, fakeBlockHash, malformedUrnArtMetadata, fakeUint256)
 
@@ -305,7 +305,7 @@ var _ = Describe("Vat storage repository", func() {
 
 	Describe("urn ink", func() {
 		It("writes row", func() {
-			urnInkMetadata := utils.GetStorageValueMetadata(vat.UrnInk, map[utils.Key]string{constants.Ilk: fakeIlk, constants.Guy: fakeGuy}, utils.Uint256)
+			urnInkMetadata := utils.GetStorageValueMetadata(vat.UrnInk, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk, constants.Guy: fakeGuy}, utils.Uint256)
 
 			err := repo.Create(fakeBlockNumber, fakeBlockHash, urnInkMetadata, fakeUint256)
 
@@ -319,7 +319,7 @@ var _ = Describe("Vat storage repository", func() {
 				INNER JOIN maker.ilks on maker.urns.ilk_id = maker.ilks.id
 			`)
 			Expect(err).NotTo(HaveOccurred())
-			ilkID, err := shared.GetOrCreateIlk(fakeIlk, db)
+			ilkID, err := shared.GetOrCreateIlk(test_helpers.FakeIlk, db)
 			Expect(err).NotTo(HaveOccurred())
 			AssertDoubleMapping(result, fakeBlockNumber, fakeBlockHash, strconv.Itoa(ilkID), fakeGuy, fakeUint256)
 		})
@@ -334,7 +334,7 @@ var _ = Describe("Vat storage repository", func() {
 		})
 
 		It("returns error if metadata missing guy", func() {
-			malformedUrnInkMetadata := utils.GetStorageValueMetadata(vat.UrnInk, map[utils.Key]string{constants.Ilk: fakeIlk}, utils.Uint256)
+			malformedUrnInkMetadata := utils.GetStorageValueMetadata(vat.UrnInk, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk}, utils.Uint256)
 
 			err := repo.Create(fakeBlockNumber, fakeBlockHash, malformedUrnInkMetadata, fakeUint256)
 

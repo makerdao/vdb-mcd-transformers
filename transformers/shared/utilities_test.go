@@ -113,4 +113,32 @@ var _ = Describe("Shared utilities", func() {
 			Expect(result.String()).To(Equal("-100000000000000000"))
 		})
 	})
+
+	Describe("decoding ilk name", func() {
+		It("handles hex ilk", func() {
+			hexIlk := "464b450000000000000000000000000000000000000000000000000000000000"
+			expectedIlkName := "FKE"
+			actualIlkName, err := shared.DecodeIlkName(hexIlk)
+
+			Expect(err).NotTo(HaveOccurred())
+			Expect(actualIlkName).To(Equal(expectedIlkName))
+		})
+
+		It("handles hex ilk with leading 0x", func() {
+			hexIlk := "0x464b450000000000000000000000000000000000000000000000000000000000"
+			expectedIlkName := "FKE"
+			actualIlkName, err := shared.DecodeIlkName(hexIlk)
+
+			Expect(err).NotTo(HaveOccurred())
+			Expect(actualIlkName).To(Equal(expectedIlkName))
+		})
+
+		It("discards zero bytes", func() {
+			hexIlk := "0x000000"
+			actualIlkName, err := shared.DecodeIlkName(hexIlk)
+
+			Expect(err).NotTo(HaveOccurred())
+			Expect(actualIlkName).To(Equal(""))
+		})
+	})
 })
