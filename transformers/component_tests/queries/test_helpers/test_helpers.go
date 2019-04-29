@@ -18,8 +18,8 @@ import (
 )
 
 var (
-	FakeIlk        = "fakeIlk"
-	AnotherFakeIlk = "anotherFakeIlk"
+	FakeIlk        = "464b450000000000000000000000000000000000000000000000000000000000" // FKE
+	AnotherFakeIlk = "464b453200000000000000000000000000000000000000000000000000000000" // FKE2
 
 	EmptyMetadatas []utils.StorageValueMetadata
 

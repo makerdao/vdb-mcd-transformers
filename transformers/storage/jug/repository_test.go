@@ -17,6 +17,7 @@
 package jug_test
 
 import (
+	"github.com/vulcanize/mcd_transformers/transformers/component_tests/queries/test_helpers"
 	"strconv"
 
 	. "github.com/onsi/ginkgo"
@@ -39,7 +40,7 @@ var _ = Describe("Jug storage repository", func() {
 		fakeAddress     = "0x12345"
 		fakeBlockNumber = 123
 		fakeBlockHash   = "expected_block_hash"
-		fakeIlk         = "fake_ilk"
+		fakeIlk         = test_helpers.FakeIlk
 		fakeUint256     = "12345"
 	)
 

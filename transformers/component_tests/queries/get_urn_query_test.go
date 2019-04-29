@@ -38,8 +38,8 @@ var _ = Describe("Single urn view", func() {
 
 		urnOne = test_data.RandomString(5)
 		urnTwo = test_data.RandomString(5)
-		ilkOne = test_data.RandomString(5)
-		ilkTwo = test_data.RandomString(5)
+		ilkOne = helper.FakeIlk
+		ilkTwo = helper.AnotherFakeIlk
 	})
 
 	It("gets only the specified urn", func() {

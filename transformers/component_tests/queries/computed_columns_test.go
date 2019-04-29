@@ -63,7 +63,7 @@ var _ = Describe("Extension function", func() {
 		Describe("ilk_state_frobs", func() {
 			It("returns relevant frobs for an ilk_state", func() {
 				irrelevantFrob := test_data.VatFrobModelWithPositiveDart
-				irrelevantFrob.Ilk = "irrelevantIlk"
+				irrelevantFrob.Ilk = test_helpers.AnotherFakeIlk
 				irrelevantFrob.Urn = "anotherGuy"
 				irrelevantFrob.TransactionIndex = frobEvent.TransactionIndex + 1
 				err = frobRepo.Create(headerId, []interface{}{irrelevantFrob})
