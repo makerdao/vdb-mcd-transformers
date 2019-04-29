@@ -19,12 +19,13 @@ package bite
 import (
 	"math/big"
 
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 )
 
 type BiteEntity struct {
 	Ilk              [32]byte
-	Urn              [32]byte
+	Urn              common.Address
 	Ink              *big.Int
 	Art              *big.Int
 	Tab              *big.Int

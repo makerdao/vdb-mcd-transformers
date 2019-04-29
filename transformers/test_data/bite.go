@@ -39,9 +39,7 @@ var (
 	biteFlip       = big.NewInt(4)
 	biteRawJson, _ = json.Marshal(EthBiteLog)
 	biteIlk        = [32]byte{69, 84, 72, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
-	biteLad        = [32]byte{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 216, 180, 20, 126, 218, 128, 254, 199, 18, 42, 225, 109, 162, 71, 156, 189, 127, 251}
-	biteIlkString  = "4554480000000000000000000000000000000000000000000000000000000000"
-	biteLadString  = "0000000000000000000000000000d8b4147eda80fec7122ae16da2479cbd7ffb"
+	biteUrn        = common.BytesToAddress([]byte{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 216, 180, 20, 126, 218, 128, 254, 199, 18, 42, 225, 109, 162, 71, 156, 189, 127, 251})
 )
 
 var EthBiteLog = types.Log{
@@ -62,7 +60,7 @@ var EthBiteLog = types.Log{
 
 var BiteEntity = bite.BiteEntity{
 	Ilk:              biteIlk,
-	Urn:              biteLad,
+	Urn:              biteUrn,
 	Ink:              biteInk,
 	Art:              biteArt,
 	Tab:              biteTab,
@@ -73,8 +71,8 @@ var BiteEntity = bite.BiteEntity{
 }
 
 var BiteModel = bite.BiteModel{
-	Ilk:              biteIlkString,
-	Urn:              biteLadString,
+	Ilk:              "4554480000000000000000000000000000000000000000000000000000000000",
+	Urn:              "0000d8b4147eda80fec7122ae16da2479cbd7ffb",
 	Ink:              biteInk.String(),
 	Art:              biteArt.String(),
 	Tab:              biteTab.String(),
