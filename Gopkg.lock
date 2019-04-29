@@ -45,7 +45,7 @@
   version = "v1.7.1"
 
 [[projects]]
-  digest = "1:49b5451a4ce27b50393cc0d4c6fdd9cf7fa148ee4c0dd9c1d6c515b232427022"
+  digest = "1:90d36f5b581e95e00ced808cd48824ed6c320c25887828cce461bdef4cb7bc7c"
   name = "github.com/ethereum/go-ethereum"
   packages = [
     ".",
@@ -81,8 +81,7 @@
     "trie",
   ]
   pruneopts = ""
-  revision = "c942700427557e3ff6de3aaf6b916e2f056c1ec2"
-  version = "v1.8.23"
+  revision = "cd79bc61a983d6482579d12cdd239b37bbfa12ef"
 
 [[projects]]
   digest = "1:eb53021a8aa3f599d29c7102e65026242bdedce998a54837dc67f14b6a97c5fd"
@@ -381,20 +380,23 @@
 
 [[projects]]
   branch = "staging"
-  digest = "1:957211b9594601eb8dbd64076aa8a37b31238888e2f16cb8aa0074fc6374b1f6"
+  digest = "1:571696008ef00e47fcb3236f524bead955927100128fb8ae4960192bab5f1b47"
   name = "github.com/vulcanize/vulcanizedb"
   packages = [
     "libraries/shared/chunker",
     "libraries/shared/constants",
-    "libraries/shared/factories",
+    "libraries/shared/factories/event",
     "libraries/shared/factories/storage",
     "libraries/shared/fetcher",
     "libraries/shared/repository",
     "libraries/shared/storage",
     "libraries/shared/storage/utils",
+    "libraries/shared/transactions",
     "libraries/shared/transformer",
     "libraries/shared/watcher",
     "pkg/config",
+    "pkg/contract_watcher/shared/contract",
+    "pkg/contract_watcher/shared/types",
     "pkg/core",
     "pkg/datastore",
     "pkg/datastore/postgres",
@@ -411,11 +413,10 @@
     "pkg/plugin/builder",
     "pkg/plugin/helpers",
     "pkg/plugin/manager",
-    "pkg/plugin/test_helpers",
     "pkg/plugin/writer",
   ]
   pruneopts = ""
-  revision = "22eecd5c5210b75577a4f71295864fecbf3f783f"
+  revision = "573897dcdfdeeb48708af488275e52601df57c90"
   source = "github.com/vulcanize/maker-vulcanizedb"
 
 [[projects]]
@@ -534,10 +535,12 @@
     "github.com/ethereum/go-ethereum/accounts/abi/bind",
     "github.com/ethereum/go-ethereum/common",
     "github.com/ethereum/go-ethereum/common/hexutil",
+    "github.com/ethereum/go-ethereum/common/math",
     "github.com/ethereum/go-ethereum/core/types",
     "github.com/ethereum/go-ethereum/crypto",
     "github.com/ethereum/go-ethereum/ethclient",
     "github.com/ethereum/go-ethereum/rpc",
+    "github.com/jmoiron/sqlx",
     "github.com/onsi/ginkgo",
     "github.com/onsi/gomega",
     "github.com/sirupsen/logrus",
@@ -564,7 +567,6 @@
     "github.com/vulcanize/vulcanizedb/pkg/geth/node",
     "github.com/vulcanize/vulcanizedb/pkg/plugin",
     "github.com/vulcanize/vulcanizedb/pkg/plugin/helpers",
-    "github.com/vulcanize/vulcanizedb/pkg/plugin/test_helpers",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1
