@@ -236,7 +236,7 @@ WITH rates AS (
 
 SELECT
   ilks.id,
-  ilks.ilk,
+  ilks.name,
   $1 block_height,
   rates.rate,
   arts.art,

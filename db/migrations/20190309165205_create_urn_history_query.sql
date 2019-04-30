@@ -8,7 +8,7 @@ DECLARE
   ilkId NUMERIC;
   urnId NUMERIC;
 BEGIN
-  SELECT id FROM maker.ilks WHERE ilks.ilk = $1 INTO ilkId;
+  SELECT id FROM maker.ilks WHERE ilks.name = $1 INTO ilkId;
   SELECT id FROM maker.urns WHERE urns.guy = $2 AND urns.ilk_id = ilkID INTO urnId;
 
   blocks := ARRAY(

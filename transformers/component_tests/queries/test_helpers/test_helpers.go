@@ -3,6 +3,7 @@ package test_helpers
 import (
 	"database/sql"
 	. "github.com/onsi/gomega"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/cat"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/jug"
@@ -117,8 +118,10 @@ func IlkStateFromValues(ilk, updated, created string, ilkValues map[string]strin
 	createdTimestamp := time.Unix(parsedCreated, 0).UTC().Format(time.RFC3339)
 	updatedTimestamp := time.Unix(parsedUpdated, 0).UTC().Format(time.RFC3339)
 
+	ilkName, err := shared.DecodeIlkName(ilk)
+	Expect(err).NotTo(HaveOccurred())
 	return IlkState{
-		Ilk:     ilk,
+		Ilk:     ilkName,
 		Rate:    ilkValues[vat.IlkRate],
 		Art:     ilkValues[vat.IlkArt],
 		Spot:    ilkValues[vat.IlkSpot],

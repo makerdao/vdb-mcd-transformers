@@ -15,7 +15,7 @@ CREATE OR REPLACE FUNCTION maker.urn_frobs(ilk TEXT, urn TEXT)
   RETURNS SETOF maker.frob_event AS
 $body$
   WITH
-    ilk AS (SELECT id FROM maker.ilks WHERE ilks.ilk = $1),
+    ilk AS (SELECT id FROM maker.ilks WHERE ilks.name = $1),
     urn AS (
       SELECT id FROM maker.urns
       WHERE ilk_id = (SELECT id FROM ilk)
@@ -34,7 +34,7 @@ CREATE OR REPLACE FUNCTION maker.all_frobs(ilk TEXT)
   RETURNS SETOF maker.frob_event AS
 $$
   WITH
-    ilk AS (SELECT id FROM maker.ilks WHERE ilks.ilk = $1)
+    ilk AS (SELECT id FROM maker.ilks WHERE ilks.name = $1)
 
   SELECT $1 AS ilkId, guy AS urnId, dink, dart, block_number
   FROM maker.vat_frob

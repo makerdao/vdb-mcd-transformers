@@ -10,7 +10,7 @@ CREATE OR REPLACE FUNCTION maker.frob_event_ilk(event maker.frob_event)
 $$
   SELECT * FROM maker.get_ilk(
     event.block_number,
-    (SELECT id FROM maker.ilks WHERE ilk = event.ilk_id))
+    (SELECT id FROM maker.ilks WHERE name = event.ilk_id))
 $$ LANGUAGE sql STABLE;
 
 

@@ -223,14 +223,14 @@ var _ = Describe("Ilk State Query", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			blockThreeExpectedFakeIlk := test_helpers.IlkState{
-				Ilk:  fakeIlk,
+				Ilk:  "FKE",
 				Rate: blockOneFakeIlkValues[vat.IlkRate], // value hasn't changed since block 1
 				Art:  blockThreeFakeIlkValues[vat.IlkArt],
 				Spot: blockThreeFakeIlkValues[vat.IlkSpot],
 				Line: blockThreeFakeIlkValues[vat.IlkLine],
 			}
 			blockThreeExpectedAnotherFakeIlk := test_helpers.IlkState{
-				Ilk:  anotherFakeIlk,
+				Ilk:  "FKE2",
 				Rate: blockOneAnotherFakeIlkState[vat.IlkRate], // value hasn't changed since block 1
 				Art:  blockOneAnotherFakeIlkState[vat.IlkArt],  // value hasn't changed since block 1
 				Spot: blockOneAnotherFakeIlkState[vat.IlkSpot], // value hasn't changed since block 1
@@ -280,7 +280,7 @@ var _ = Describe("Ilk State Query", func() {
 		err = db.Get(&fakeIlkBlockOneDbResult, `SELECT ilk, created, updated from maker.get_ilk($1, $2)`, blockOne, fakeIlkId)
 		Expect(err).NotTo(HaveOccurred())
 		expectedBlockOneFakeIlkState := test_helpers.IlkState{
-			Ilk:     fakeIlk,
+			Ilk:     "FKE",
 			Created: sql.NullString{String: "1973-07-10T00:11:51Z", Valid: true},
 			Updated: sql.NullString{String: "1973-07-10T00:11:51Z", Valid: true},
 		}
@@ -290,7 +290,7 @@ var _ = Describe("Ilk State Query", func() {
 		err = db.Get(&fakeIlkBlockTwoDbResult, `SELECT ilk, created, updated from maker.get_ilk($1, $2)`, blockTwo, fakeIlkId)
 		Expect(err).NotTo(HaveOccurred())
 		expectedBlockTwoFakeIlkState := test_helpers.IlkState{
-			Ilk:     fakeIlk,
+			Ilk:     "FKE",
 			Created: sql.NullString{String: "1973-07-10T00:11:51Z", Valid: true},
 			Updated: sql.NullString{String: "2005-03-18T01:58:32Z", Valid: true},
 		}
@@ -304,7 +304,7 @@ var _ = Describe("Ilk State Query", func() {
 		err = db.Get(&anotherFakeIlkDbResult, `SELECT ilk, created, updated from maker.get_ilk($1, $2)`, blockTwo, anotherFakeIlkId)
 		Expect(err).NotTo(HaveOccurred())
 		expectedBlockTwoAnotherFakeIlkState := test_helpers.IlkState{
-			Ilk:     anotherFakeIlk,
+			Ilk:     "FKE2",
 			Created: sql.NullString{String: "2005-03-18T01:58:32Z", Valid: true},
 			Updated: sql.NullString{String: "2005-03-18T01:58:32Z", Valid: true},
 		}
