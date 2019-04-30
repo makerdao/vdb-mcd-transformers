@@ -23,8 +23,9 @@ var _ = Describe("Single urn view", func() {
 		headerRepo repositories.HeaderRepository
 		urnOne     string
 		urnTwo     string
-		ilkOne     string
-		ilkTwo     string
+		ilkOne     = helper.FakeIlk
+		ilkOneName = "FKE"
+		ilkTwo     = helper.AnotherFakeIlk
 		err        error
 	)
 
@@ -38,8 +39,6 @@ var _ = Describe("Single urn view", func() {
 
 		urnOne = test_data.RandomString(5)
 		urnTwo = test_data.RandomString(5)
-		ilkOne = helper.FakeIlk
-		ilkTwo = helper.AnotherFakeIlk
 	})
 
 	It("gets only the specified urn", func() {
@@ -56,7 +55,7 @@ var _ = Describe("Single urn view", func() {
 		expectedTimestampOne := helper.GetExpectedTimestamp(timestampOne)
 		expectedUrn := helper.UrnState{
 			UrnId:   urnOne,
-			IlkId:   ilkOne,
+			IlkId:   ilkOneName,
 			Ink:     strconv.Itoa(urnOneSetupData.Ink),
 			Art:     strconv.Itoa(urnOneSetupData.Art),
 			Ratio:   sql.NullString{String: strconv.FormatFloat(expectedRatio, 'f', 8, 64), Valid: true},
@@ -71,7 +70,7 @@ var _ = Describe("Single urn view", func() {
 
 		var actualUrn helper.UrnState
 		err = db.Get(&actualUrn, `SELECT urn_id, ilk_id, ink, art, ratio, safe, created, updated
-			FROM maker.get_urn($1, $2, $3)`, ilkOne, urnOne, blockTwo)
+			FROM maker.get_urn($1, $2, $3)`, ilkOneName, urnOne, blockTwo)
 		Expect(err).NotTo(HaveOccurred())
 
 		helper.AssertUrn(actualUrn, expectedUrn)
@@ -89,7 +88,7 @@ var _ = Describe("Single urn view", func() {
 
 		var result helper.UrnState
 		err = db.Get(&result, `SELECT urn_id, ilk_id, ink, art, ratio, safe, created, updated
-			FROM maker.get_urn($1, $2, $3)`, ilkOne, urnOne, block)
+			FROM maker.get_urn($1, $2, $3)`, ilkOneName, urnOne, block)
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(result.Created.String).To(BeEmpty())
@@ -125,7 +124,7 @@ var _ = Describe("Single urn view", func() {
 			expectedTimestampOne := helper.GetExpectedTimestamp(timestampOne)
 			expectedUrn := helper.UrnState{
 				UrnId:   urnOne,
-				IlkId:   ilkOne,
+				IlkId:   ilkOneName,
 				Ink:     strconv.Itoa(setupDataOne.Ink),
 				Art:     strconv.Itoa(setupDataOne.Art),
 				Ratio:   sql.NullString{String: strconv.FormatFloat(expectedRatio, 'f', 8, 64), Valid: true},
@@ -135,7 +134,7 @@ var _ = Describe("Single urn view", func() {
 			}
 
 			err = db.Get(&actualUrn, `SELECT urn_id, ilk_id, ink, art, ratio, safe, created, updated
-				FROM maker.get_urn($1, $2, $3)`, ilkOne, urnOne, blockOne)
+				FROM maker.get_urn($1, $2, $3)`, ilkOneName, urnOne, blockOne)
 			Expect(err).NotTo(HaveOccurred())
 
 			helper.AssertUrn(actualUrn, expectedUrn)
@@ -155,7 +154,7 @@ var _ = Describe("Single urn view", func() {
 			expectedTimestampTwo := helper.GetExpectedTimestamp(timestampTwo)
 			expectedUrn := helper.UrnState{
 				UrnId:   urnOne,
-				IlkId:   ilkOne,
+				IlkId:   ilkOneName,
 				Ink:     strconv.Itoa(updatedInk),
 				Art:     strconv.Itoa(setupDataOne.Art), // Not changed
 				Ratio:   sql.NullString{String: strconv.FormatFloat(expectedRatio, 'f', 8, 64), Valid: true},
@@ -172,7 +171,7 @@ var _ = Describe("Single urn view", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			err = db.Get(&actualUrn, `SELECT urn_id, ilk_id, ink, art, ratio, safe, created, updated
-				FROM maker.get_urn($1, $2, $3)`, ilkOne, urnOne, blockTwo)
+				FROM maker.get_urn($1, $2, $3)`, ilkOneName, urnOne, blockTwo)
 			Expect(err).NotTo(HaveOccurred())
 
 			helper.AssertUrn(actualUrn, expectedUrn)
@@ -192,7 +191,7 @@ var _ = Describe("Single urn view", func() {
 
 		var result helper.UrnState
 		err = db.Get(&result, `SELECT urn_id, ilk_id, ink, art, ratio, safe, created, updated
-			FROM maker.get_urn($1, $2, $3)`, ilkOne, urnOne, block)
+			FROM maker.get_urn($1, $2, $3)`, ilkOneName, urnOne, block)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(result.Ratio.String).To(BeEmpty())

@@ -82,7 +82,7 @@ var _ = Describe("Extension function", func() {
 				Expect(err).NotTo(HaveOccurred())
 
 				expectedFrobs := []test_helpers.FrobEvent{{
-					IlkId: test_helpers.FakeIlk,
+					IlkId: "FKE",
 					UrnId: frobEvent.Urn,
 					Dink:  frobEvent.Dink,
 					Dart:  frobEvent.Dart,
@@ -101,7 +101,7 @@ var _ = Describe("Extension function", func() {
 					`SELECT ilk, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated
                     FROM maker.frob_event_ilk(
                         (SELECT (ilk_id, urn_id, dink, dart, block_number)::maker.frob_event FROM maker.all_frobs($1))
-                    )`, test_helpers.FakeIlk)
+                    )`, "FKE")
 
 				Expect(err).NotTo(HaveOccurred())
 				Expect(result).To(Equal(expectedIlk))
@@ -139,12 +139,12 @@ var _ = Describe("Extension function", func() {
 				err = db.Get(&actualUrn,
 					`SELECT urn_id, ilk_id FROM maker.frob_event_urn(
                         (SELECT (ilk_id, urn_id, dink, dart, block_number)::maker.frob_event FROM maker.all_frobs($1)))`,
-					test_helpers.FakeIlk)
+					"FKE")
 				Expect(err).NotTo(HaveOccurred())
 
 				expectedUrn := test_helpers.UrnState{
 					UrnId: fakeGuy,
-					IlkId: test_helpers.FakeIlk,
+					IlkId: "FKE",
 				}
 
 				test_helpers.AssertUrn(actualUrn, expectedUrn)
@@ -162,7 +162,7 @@ var _ = Describe("Extension function", func() {
 				Expect(err).NotTo(HaveOccurred())
 
 				expectedFrobs := test_helpers.FrobEvent{
-					IlkId: test_helpers.FakeIlk,
+					IlkId: "FKE",
 					UrnId: fakeGuy,
 					Dink:  frobEvent.Dink,
 					Dart:  frobEvent.Dart,
@@ -224,7 +224,7 @@ var _ = Describe("Extension function", func() {
 			var actualTx Tx
 			err = db.Get(&actualTx, `SELECT * FROM maker.frob_event_tx(
 			    (SELECT (ilk_id, urn_id, dink, dart, block_number)::maker.frob_event FROM maker.all_frobs($1)))`,
-				test_helpers.FakeIlk)
+				"FKE")
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(actualTx).To(Equal(expectedTx))

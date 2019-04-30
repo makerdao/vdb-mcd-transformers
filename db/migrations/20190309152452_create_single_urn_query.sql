@@ -13,7 +13,7 @@ WITH
     FROM maker.urns urns
     LEFT JOIN maker.ilks ilks
     ON urns.ilk_id = ilks.id
-    WHERE ilks.ilk = $1 AND urns.guy = $2
+    WHERE ilks.name = $1 AND urns.guy = $2
   ),
 
   ink AS ( -- Latest ink
@@ -33,14 +33,14 @@ WITH
   rate AS ( -- Latest rate for ilk
     SELECT DISTINCT ON (ilk_id) ilk_id, rate, block_number
     FROM maker.vat_ilk_rate
-    WHERE ilk_id = (SELECT ilk_id from urn where ilk = $1) AND block_number <= block_height
+    WHERE ilk_id = (SELECT ilk_id FROM urn) AND block_number <= block_height
     ORDER BY ilk_id, block_number DESC
   ),
 
   spot AS ( -- Get latest price update for ilk. Problematic from update frequency, slow query?
     SELECT DISTINCT ON (ilk_id) ilk_id, spot, block_number
     FROM maker.vat_ilk_spot
-    WHERE ilk_id = (SELECT ilk_id from urn where ilk = $1) AND block_number <= block_height
+    WHERE ilk_id = (SELECT ilk_id FROM urn) AND block_number <= block_height
     ORDER BY ilk_id, block_number DESC
   ),
 

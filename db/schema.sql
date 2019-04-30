@@ -118,7 +118,7 @@ CREATE FUNCTION maker.all_frobs(ilk text) RETURNS SETOF maker.frob_event
     LANGUAGE sql STABLE SECURITY DEFINER
     AS $_$
   WITH
-    ilk AS (SELECT id FROM maker.ilks WHERE ilks.ilk = $1)
+    ilk AS (SELECT id FROM maker.ilks WHERE ilks.name = $1)
 
   SELECT $1 AS ilkId, guy AS urnId, dink, dart, block_number
   FROM maker.vat_frob
@@ -161,7 +161,7 @@ DECLARE
   ilkId NUMERIC;
   urnId NUMERIC;
 BEGIN
-  SELECT id FROM maker.ilks WHERE ilks.ilk = $1 INTO ilkId;
+  SELECT id FROM maker.ilks WHERE ilks.name = $1 INTO ilkId;
   SELECT id FROM maker.urns WHERE urns.guy = $2 AND urns.ilk_id = ilkID INTO urnId;
 
   blocks := ARRAY(
@@ -275,16 +275,16 @@ WITH
     ORDER BY urn_id, headers.block_timestamp DESC
   )
 
-SELECT urns.guy, urns.ilk, $1, inks.ink, arts.art, ratios.ratio,
+SELECT urns.guy, ilks.name, $1, inks.ink, arts.art, ratios.ratio,
        COALESCE(safe.safe, arts.art = 0), created.datetime, updated.datetime
 FROM inks
-  LEFT JOIN arts     ON arts.urn_id = inks.urn_id
-  LEFT JOIN urns     ON arts.urn_id = urns.urn_id
-  LEFT JOIN ratios   ON ratios.guy = urns.guy
-  LEFT JOIN safe     ON safe.guy = ratios.guy
-  LEFT JOIN created  ON created.urn_id = urns.urn_id
-  LEFT JOIN updated  ON updated.urn_id = urns.urn_id
-  -- Add collections of frob and bite events?
+  LEFT JOIN arts       ON arts.urn_id = inks.urn_id
+  LEFT JOIN urns       ON arts.urn_id = urns.urn_id
+  LEFT JOIN ratios     ON ratios.guy = urns.guy
+  LEFT JOIN safe       ON safe.guy = ratios.guy
+  LEFT JOIN created    ON created.urn_id = urns.urn_id
+  LEFT JOIN updated    ON updated.urn_id = urns.urn_id
+  LEFT JOIN maker.ilks ON ilks.id = urns.ilk_id
 $_$;
 
 
@@ -297,7 +297,7 @@ CREATE FUNCTION maker.frob_event_ilk(event maker.frob_event) RETURNS SETOF maker
     AS $$
   SELECT * FROM maker.get_ilk(
     event.block_number,
-    (SELECT id FROM maker.ilks WHERE ilk = event.ilk_id))
+    (SELECT id FROM maker.ilks WHERE name = event.ilk_id))
 $$;
 
 
@@ -461,7 +461,7 @@ WITH rates AS (
 
 SELECT
   ilks.id,
-  ilks.ilk,
+  ilks.name,
   $1 block_height,
   rates.rate,
   arts.art,
@@ -605,7 +605,7 @@ WITH
     FROM maker.urns urns
     LEFT JOIN maker.ilks ilks
     ON urns.ilk_id = ilks.id
-    WHERE ilks.ilk = $1 AND urns.guy = $2
+    WHERE ilks.name = $1 AND urns.guy = $2
   ),
 
   ink AS ( -- Latest ink
@@ -625,14 +625,14 @@ WITH
   rate AS ( -- Latest rate for ilk
     SELECT DISTINCT ON (ilk_id) ilk_id, rate, block_number
     FROM maker.vat_ilk_rate
-    WHERE ilk_id = (SELECT ilk_id from urn where ilk = $1) AND block_number <= block_height
+    WHERE ilk_id = (SELECT ilk_id FROM urn) AND block_number <= block_height
     ORDER BY ilk_id, block_number DESC
   ),
 
   spot AS ( -- Get latest price update for ilk. Problematic from update frequency, slow query?
     SELECT DISTINCT ON (ilk_id) ilk_id, spot, block_number
     FROM maker.vat_ilk_spot
-    WHERE ilk_id = (SELECT ilk_id from urn where ilk = $1) AND block_number <= block_height
+    WHERE ilk_id = (SELECT ilk_id FROM urn) AND block_number <= block_height
     ORDER BY ilk_id, block_number DESC
   ),
 
@@ -723,7 +723,7 @@ CREATE FUNCTION maker.urn_frobs(ilk text, urn text) RETURNS SETOF maker.frob_eve
     LANGUAGE sql STABLE
     AS $_$
   WITH
-    ilk AS (SELECT id FROM maker.ilks WHERE ilks.ilk = $1),
+    ilk AS (SELECT id FROM maker.ilks WHERE ilks.name = $1),
     urn AS (
       SELECT id FROM maker.urns
       WHERE ilk_id = (SELECT id FROM ilk)
