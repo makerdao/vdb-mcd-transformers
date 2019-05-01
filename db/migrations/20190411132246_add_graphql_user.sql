@@ -17,6 +17,7 @@ DO
 GRANT USAGE ON SCHEMA maker TO graphql;
 GRANT EXECUTE ON FUNCTION maker.all_frobs(text) TO graphql;
 GRANT EXECUTE ON FUNCTION maker.all_urns(bigint) TO graphql;
+GRANT EXECUTE ON FUNCTION maker.all_ilks(bigint) TO graphql;
 GRANT EXECUTE ON FUNCTION maker.get_ilk(bigint, integer) TO graphql;
 GRANT EXECUTE ON FUNCTION maker.all_ilk_states(bigint, integer) TO graphql;
 GRANT EXECUTE ON FUNCTION maker.all_urn_states(text, text, bigint) TO graphql;

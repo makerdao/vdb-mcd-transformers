@@ -107,6 +107,7 @@ CREATE TYPE maker.ilk_state AS (
   updated      TIMESTAMP
 );
 
+-- Function returning the state for a single ilk as of the given block height
 CREATE FUNCTION maker.get_ilk(block_height BIGINT, ilkId INT)
   RETURNS maker.ilk_state
 AS $$
