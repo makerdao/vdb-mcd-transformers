@@ -1,14 +1,14 @@
 -- +goose Up
 CREATE TYPE maker.relevant_block AS (
-  block_number BIGINT,
+  block_height BIGINT,
   block_hash   TEXT,
   ilk_id       INTEGER
 );
 
-create or replace function maker.get_ilk_blocks_before(block_number bigint, ilk_id int)
-  returns setof maker.relevant_block as $$
+CREATE OR REPLACE FUNCTION maker.get_ilk_blocks_before(block_height BIGINT, ilk_id INT)
+  RETURNS SETOF maker.relevant_block AS $$
 SELECT
-  block_number,
+  block_number AS block_height,
   block_hash,
   ilk_id
 FROM maker.vat_ilk_rate
@@ -16,7 +16,7 @@ WHERE block_number <= $1
       AND ilk_id = $2
 UNION
 SELECT
-  block_number,
+  block_number AS block_height,
   block_hash,
   ilk_id
 FROM maker.vat_ilk_art
@@ -24,7 +24,7 @@ WHERE block_number <= $1
       AND ilk_id = $2
 UNION
 SELECT
-  block_number,
+  block_number AS block_height,
   block_hash,
   ilk_id
 FROM maker.vat_ilk_spot
@@ -32,7 +32,7 @@ WHERE block_number <= $1
       AND ilk_id = $2
 UNION
 SELECT
-  block_number,
+  block_number AS block_height,
   block_hash,
   ilk_id
 FROM maker.vat_ilk_line
@@ -40,7 +40,7 @@ WHERE block_number <= $1
       AND ilk_id = $2
 UNION
 SELECT
-  block_number,
+  block_number AS block_height,
   block_hash,
   ilk_id
 FROM maker.vat_ilk_dust
@@ -48,7 +48,7 @@ WHERE block_number <= $1
       AND ilk_id = $2
 UNION
 SELECT
-  block_number,
+  block_number AS block_height,
   block_hash,
   ilk_id
 FROM maker.cat_ilk_chop
@@ -56,7 +56,7 @@ WHERE block_number <= $1
       AND ilk_id = $2
 UNION
 SELECT
-  block_number,
+  block_number AS block_height,
   block_hash,
   ilk_id
 FROM maker.cat_ilk_lump
@@ -64,7 +64,7 @@ WHERE block_number <= $1
       AND ilk_id = $2
 UNION
 SELECT
-  block_number,
+  block_number AS block_height,
   block_hash,
   ilk_id
 FROM maker.cat_ilk_flip
@@ -72,7 +72,7 @@ WHERE block_number <= $1
       AND ilk_id = $2
 UNION
 SELECT
-  block_number,
+  block_number AS block_height,
   block_hash,
   ilk_id
 FROM maker.jug_ilk_rho
@@ -80,7 +80,7 @@ WHERE block_number <= $1
       AND ilk_id = $2
 UNION
 SELECT
-  block_number,
+  block_number AS block_height,
   block_hash,
   ilk_id
 FROM maker.jug_ilk_duty
@@ -108,7 +108,7 @@ CREATE TYPE maker.ilk_state AS (
 );
 
 -- Function returning the state for a single ilk as of the given block height
-CREATE FUNCTION maker.get_ilk(block_height BIGINT, ilkId INT)
+CREATE FUNCTION maker.get_ilk(block_height BIGINT, _ilk_id INT)
   RETURNS maker.ilk_state
 AS $$
 WITH rates AS (
@@ -117,7 +117,7 @@ WITH rates AS (
       ilk_id,
       block_hash
     FROM maker.vat_ilk_rate
-    WHERE ilk_id = ilkId
+    WHERE ilk_id = _ilk_id
           AND block_number <= $1
     ORDER BY ilk_id, block_number DESC
     LIMIT 1
@@ -127,7 +127,7 @@ WITH rates AS (
       ilk_id,
       block_hash
     FROM maker.vat_ilk_art
-    WHERE ilk_id = ilkId
+    WHERE ilk_id = _ilk_id
           AND block_number <= $1
     ORDER BY ilk_id, block_number DESC
     LIMIT 1
@@ -137,7 +137,7 @@ WITH rates AS (
       ilk_id,
       block_hash
     FROM maker.vat_ilk_spot
-    WHERE ilk_id = ilkId
+    WHERE ilk_id = _ilk_id
           AND block_number <= $1
     ORDER BY ilk_id, block_number DESC
     LIMIT 1
@@ -147,7 +147,7 @@ WITH rates AS (
       ilk_id,
       block_hash
     FROM maker.vat_ilk_line
-    WHERE ilk_id = ilkId
+    WHERE ilk_id = _ilk_id
           AND block_number <= $1
     ORDER BY ilk_id, block_number DESC
     LIMIT 1
@@ -157,7 +157,7 @@ WITH rates AS (
       ilk_id,
       block_hash
     FROM maker.vat_ilk_dust
-    WHERE ilk_id = ilkId
+    WHERE ilk_id = _ilk_id
           AND block_number <= $1
     ORDER BY ilk_id, block_number DESC
     LIMIT 1
@@ -167,7 +167,7 @@ WITH rates AS (
       ilk_id,
       block_hash
     FROM maker.cat_ilk_chop
-    WHERE ilk_id = ilkId
+    WHERE ilk_id = _ilk_id
           AND block_number <= $1
     ORDER BY ilk_id, block_number DESC
     LIMIT 1
@@ -177,7 +177,7 @@ WITH rates AS (
       ilk_id,
       block_hash
     FROM maker.cat_ilk_lump
-    WHERE ilk_id = ilkId
+    WHERE ilk_id = _ilk_id
           AND block_number <= $1
     ORDER BY ilk_id, block_number DESC
     LIMIT 1
@@ -187,7 +187,7 @@ WITH rates AS (
       ilk_id,
       block_hash
     FROM maker.cat_ilk_flip
-    WHERE ilk_id = ilkId
+    WHERE ilk_id = _ilk_id
           AND block_number <= $1
     ORDER BY ilk_id, block_number DESC
     LIMIT 1
@@ -197,7 +197,7 @@ WITH rates AS (
       ilk_id,
       block_hash
     FROM maker.jug_ilk_rho
-    WHERE ilk_id = ilkId
+    WHERE ilk_id = _ilk_id
           AND block_number <= $1
     ORDER BY ilk_id, block_number DESC
     LIMIT 1
@@ -207,31 +207,31 @@ WITH rates AS (
       ilk_id,
       block_hash
     FROM maker.jug_ilk_duty
-    WHERE ilk_id = ilkId
+    WHERE ilk_id = _ilk_id
           AND block_number <= $1
     ORDER BY ilk_id, block_number DESC
     LIMIT 1
 ), relevant_blocks AS (
   SELECT * FROM maker.get_ilk_blocks_before($1, $2)
 ), created AS (
-    SELECT DISTINCT ON (relevant_blocks.ilk_id, relevant_blocks.block_number)
-      relevant_blocks.block_number,
+    SELECT DISTINCT ON (relevant_blocks.ilk_id, relevant_blocks.block_height)
+      relevant_blocks.block_height,
       relevant_blocks.block_hash,
       relevant_blocks.ilk_id,
       (SELECT TIMESTAMP 'epoch' + headers.block_timestamp * INTERVAL '1 second') as datetime
     FROM relevant_blocks
       LEFT JOIN public.headers AS headers on headers.hash = relevant_blocks.block_hash
-    ORDER BY block_number ASC
+    ORDER BY relevant_blocks.block_height ASC
     LIMIT 1
 ), updated AS (
-    SELECT DISTINCT ON (relevant_blocks.ilk_id, relevant_blocks.block_number)
-      relevant_blocks.block_number,
+    SELECT DISTINCT ON (relevant_blocks.ilk_id, relevant_blocks.block_height)
+      relevant_blocks.block_height,
       relevant_blocks.block_hash,
       relevant_blocks.ilk_id,
       (SELECT TIMESTAMP 'epoch' + headers.block_timestamp * INTERVAL '1 second') as datetime
     FROM relevant_blocks
       LEFT JOIN public.headers AS headers on headers.hash = relevant_blocks.block_hash
-    ORDER BY block_number DESC
+    ORDER BY relevant_blocks.block_height DESC
     LIMIT 1
 )
 
@@ -281,7 +281,7 @@ LANGUAGE SQL
 STABLE SECURITY DEFINER;
 
 -- +goose Down
-DROP FUNCTION IF EXISTS maker.get_ilk_blocks_before(block_number BIGINT, ilk_id INT);
+DROP FUNCTION IF EXISTS maker.get_ilk_blocks_before(BIGINT, INT);
 DROP TYPE maker.relevant_block CASCADE;
-DROP FUNCTION IF EXISTS maker.get_ilk(block_height BIGINT, ilk_id INT );
+DROP FUNCTION IF EXISTS maker.get_ilk(BIGINT, INT );
 DROP TYPE maker.ilk_state CASCADE;

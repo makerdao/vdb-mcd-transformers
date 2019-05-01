@@ -9,7 +9,7 @@ CREATE OR REPLACE FUNCTION maker.frob_event_ilk(event maker.frob_event)
   RETURNS SETOF maker.ilk_state AS
 $$
   SELECT * FROM maker.get_ilk(
-    event.block_number,
+    event.block_height,
     (SELECT id FROM maker.ilks WHERE name = event.ilk_name))
 $$ LANGUAGE sql STABLE;
 
@@ -18,14 +18,14 @@ $$ LANGUAGE sql STABLE;
 CREATE OR REPLACE FUNCTION maker.frob_event_urn(event maker.frob_event)
   RETURNS SETOF maker.urn_state AS
 $$
-  SELECT * FROM maker.get_urn(event.ilk_name, event.urn_id, event.block_number)
+  SELECT * FROM maker.get_urn(event.ilk_name, event.urn_id, event.block_height)
 $$ LANGUAGE sql STABLE;
 
 
 CREATE TYPE maker.tx AS (
   transaction_hash TEXT,
   transaction_index INTEGER,
-  block_number BIGINT,
+  block_height BIGINT,
   block_hash TEXT,
   -- Era object
   tx_from TEXT,
@@ -43,7 +43,7 @@ CREATE OR REPLACE FUNCTION maker.tx_era(tx maker.tx)
   RETURNS maker.era AS
 $$
 SELECT block_timestamp::BIGINT AS "epoch", (SELECT TIMESTAMP 'epoch' + block_timestamp * INTERVAL '1 second') AS iso
-  FROM headers WHERE block_number = tx.block_number
+  FROM headers WHERE block_number = tx.block_height
 $$ LANGUAGE sql STABLE;
 
 
@@ -51,11 +51,11 @@ $$ LANGUAGE sql STABLE;
 CREATE OR REPLACE FUNCTION maker.frob_event_tx(event maker.frob_event)
   RETURNS maker.tx AS
 $$
-  SELECT txs.hash, txs.tx_index, block_number, headers.hash, tx_from, tx_to
+  SELECT txs.hash, txs.tx_index, headers.block_number AS block_height, headers.hash, tx_from, tx_to
   FROM public.light_sync_transactions txs
   LEFT JOIN headers ON txs.header_id = headers.id
-  WHERE block_number <= event.block_number
-  ORDER BY block_number DESC
+  WHERE block_number <= event.block_height
+  ORDER BY block_height DESC
   LIMIT 1 -- Should always be true anyway?
 $$ LANGUAGE sql STABLE;
 
@@ -65,7 +65,7 @@ CREATE OR REPLACE FUNCTION maker.ilk_state_frobs(state maker.ilk_state)
   RETURNS SETOF maker.frob_event AS
 $$
   SELECT * FROM maker.all_frobs(state.ilk_name)
-  WHERE block_number <= state.block_height
+  WHERE block_height <= state.block_height
 $$ LANGUAGE sql STABLE;
 
 
@@ -74,7 +74,7 @@ CREATE OR REPLACE FUNCTION maker.urn_state_frobs(state maker.urn_state)
   RETURNS SETOF maker.frob_event AS
 $$
   SELECT * FROM maker.urn_frobs(state.ilk_name, state.urn_id)
-  WHERE block_number <= state.block_height
+  WHERE block_height <= state.block_height
 $$ LANGUAGE sql STABLE;
 
 

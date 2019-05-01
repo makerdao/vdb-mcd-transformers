@@ -6,7 +6,7 @@ CREATE TYPE maker.frob_event AS (
   urn_id       TEXT,
   dink         NUMERIC,
   dart         NUMERIC,
-  block_number BIGINT
+  block_height BIGINT
   -- tx
 );
 
@@ -22,7 +22,7 @@ $body$
         AND guy = $2
     )
 
-  SELECT $1 AS ilk_name, $2 AS urn_id, dink, dart, block_number
+  SELECT $1 AS ilk_name, $2 AS urn_id, dink, dart, block_number AS block_height
   FROM maker.vat_frob LEFT JOIN headers ON vat_frob.header_id = headers.id
   WHERE vat_frob.urn_id = (SELECT id FROM urn)
   ORDER BY block_number DESC
@@ -36,7 +36,7 @@ $$
   WITH
     ilk AS (SELECT id FROM maker.ilks WHERE ilks.name = $1)
 
-  SELECT $1 AS ilk_name, guy AS urn_id, dink, dart, block_number
+  SELECT $1 AS ilk_name, guy AS urn_id, dink, dart, block_number AS block_height
   FROM maker.vat_frob
   LEFT JOIN maker.urns ON vat_frob.urn_id = urns.id
   LEFT JOIN headers    ON vat_frob.header_id = headers.id
