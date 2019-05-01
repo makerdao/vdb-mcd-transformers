@@ -38,13 +38,13 @@ var _ = Describe("Frobs query", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			frobBlockOne := test_data.VatFrobModelWithPositiveDart
-			frobBlockOne.Ilk = test_helpers.FakeIlk
+			frobBlockOne.Ilk = test_helpers.FakeIlk.Hex
 			frobBlockOne.Urn = fakeUrn
 			frobBlockOne.Dink = strconv.Itoa(rand.Int())
 			frobBlockOne.Dart = strconv.Itoa(rand.Int())
 
 			irrelevantFrob := test_data.VatFrobModelWithPositiveDart
-			irrelevantFrob.Ilk = test_helpers.AnotherFakeIlk
+			irrelevantFrob.Ilk = test_helpers.AnotherFakeIlk.Hex
 			irrelevantFrob.Urn = fakeUrn
 			irrelevantFrob.Dink = strconv.Itoa(rand.Int())
 			irrelevantFrob.Dart = strconv.Itoa(rand.Int())
@@ -60,7 +60,7 @@ var _ = Describe("Frobs query", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			frobBlockTwo := test_data.VatFrobModelWithPositiveDart
-			frobBlockTwo.Ilk = test_helpers.FakeIlk
+			frobBlockTwo.Ilk = test_helpers.FakeIlk.Hex
 			frobBlockTwo.Urn = fakeUrn
 			frobBlockTwo.Dink = strconv.Itoa(rand.Int())
 			frobBlockTwo.Dart = strconv.Itoa(rand.Int())
@@ -68,14 +68,13 @@ var _ = Describe("Frobs query", func() {
 			err = frobRepo.Create(headerTwoId, []interface{}{frobBlockTwo})
 			Expect(err).NotTo(HaveOccurred())
 
-			ilkName := "FKE"
 			var actualFrobs []test_helpers.FrobEvent
-			err = db.Select(&actualFrobs, `SELECT ilk_name, urn_id, dink, dart FROM maker.urn_frobs($1, $2)`, ilkName, fakeUrn)
+			err = db.Select(&actualFrobs, `SELECT ilk_name, urn_id, dink, dart FROM maker.urn_frobs($1, $2)`, test_helpers.FakeIlk.Name, fakeUrn)
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(actualFrobs).To(ConsistOf(
-				test_helpers.FrobEvent{IlkName: ilkName, UrnId: fakeUrn, Dink: frobBlockOne.Dink, Dart: frobBlockOne.Dart},
-				test_helpers.FrobEvent{IlkName: ilkName, UrnId: fakeUrn, Dink: frobBlockTwo.Dink, Dart: frobBlockTwo.Dart},
+				test_helpers.FrobEvent{IlkName: test_helpers.FakeIlk.Name, UrnId: fakeUrn, Dink: frobBlockOne.Dink, Dart: frobBlockOne.Dart},
+				test_helpers.FrobEvent{IlkName: test_helpers.FakeIlk.Name, UrnId: fakeUrn, Dink: frobBlockTwo.Dink, Dart: frobBlockTwo.Dart},
 			))
 		})
 	})
@@ -88,14 +87,14 @@ var _ = Describe("Frobs query", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			frobOne := test_data.VatFrobModelWithPositiveDart
-			frobOne.Ilk = test_helpers.FakeIlk
+			frobOne.Ilk = test_helpers.FakeIlk.Hex
 			frobOne.Urn = fakeUrn
 			frobOne.Dink = strconv.Itoa(rand.Int())
 			frobOne.Dart = strconv.Itoa(rand.Int())
 
 			anotherUrn := "anotherUrn"
 			frobTwo := test_data.VatFrobModelWithPositiveDart
-			frobTwo.Ilk = test_helpers.FakeIlk
+			frobTwo.Ilk = test_helpers.FakeIlk.Hex
 			frobTwo.Urn = anotherUrn
 			frobTwo.Dink = strconv.Itoa(rand.Int())
 			frobTwo.Dart = strconv.Itoa(rand.Int())
@@ -104,14 +103,13 @@ var _ = Describe("Frobs query", func() {
 			err = frobRepo.Create(headerOneId, []interface{}{frobOne, frobTwo})
 			Expect(err).NotTo(HaveOccurred())
 
-			ilkName := "FKE"
 			var actualFrobs []test_helpers.FrobEvent
-			err = db.Select(&actualFrobs, `SELECT ilk_name, urn_id, dink, dart FROM maker.all_frobs($1)`, ilkName)
+			err = db.Select(&actualFrobs, `SELECT ilk_name, urn_id, dink, dart FROM maker.all_frobs($1)`, test_helpers.FakeIlk.Name)
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(actualFrobs).To(ConsistOf(
-				test_helpers.FrobEvent{IlkName: ilkName, UrnId: fakeUrn, Dink: frobOne.Dink, Dart: frobOne.Dart},
-				test_helpers.FrobEvent{IlkName: ilkName, UrnId: anotherUrn, Dink: frobTwo.Dink, Dart: frobTwo.Dart},
+				test_helpers.FrobEvent{IlkName: test_helpers.FakeIlk.Name, UrnId: fakeUrn, Dink: frobOne.Dink, Dart: frobOne.Dart},
+				test_helpers.FrobEvent{IlkName: test_helpers.FakeIlk.Name, UrnId: anotherUrn, Dink: frobTwo.Dink, Dart: frobTwo.Dart},
 			))
 		})
 	})

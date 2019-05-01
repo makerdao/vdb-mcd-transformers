@@ -19,21 +19,28 @@ import (
 )
 
 var (
-	FakeIlk        = "464b450000000000000000000000000000000000000000000000000000000000" // FKE
-	AnotherFakeIlk = "464b453200000000000000000000000000000000000000000000000000000000" // FKE2
+	FakeIlk = TestIlk{
+		Hex:  "464b450000000000000000000000000000000000000000000000000000000000",
+		Name: "FKE",
+	}
+
+	AnotherFakeIlk = TestIlk{
+		Hex:  "464b453200000000000000000000000000000000000000000000000000000000",
+		Name: "FKE2",
+	}
 
 	EmptyMetadatas []utils.StorageValueMetadata
 
-	FakeIlkRateMetadata = GetMetadata(vat.IlkRate, FakeIlk, utils.Uint256)
-	FakeIlkArtMetadata  = GetMetadata(vat.IlkArt, FakeIlk, utils.Uint256)
-	FakeIlkSpotMetadata = GetMetadata(vat.IlkSpot, FakeIlk, utils.Uint256)
-	FakeIlkLineMetadata = GetMetadata(vat.IlkLine, FakeIlk, utils.Uint256)
-	FakeIlkDustMetadata = GetMetadata(vat.IlkDust, FakeIlk, utils.Uint256)
-	fakeIlkChopMetadata = GetMetadata(cat.IlkChop, FakeIlk, utils.Uint256)
-	fakeIlkLumpMetadata = GetMetadata(cat.IlkLump, FakeIlk, utils.Uint256)
-	fakeIlkFlipMetadata = GetMetadata(cat.IlkFlip, FakeIlk, utils.Address)
-	fakeIlkRhoMetadata  = GetMetadata(jug.IlkRho, FakeIlk, utils.Uint256)
-	fakeIlkTaxMetadata  = GetMetadata(jug.IlkDuty, FakeIlk, utils.Uint256)
+	FakeIlkRateMetadata = GetMetadata(vat.IlkRate, FakeIlk.Hex, utils.Uint256)
+	FakeIlkArtMetadata  = GetMetadata(vat.IlkArt, FakeIlk.Hex, utils.Uint256)
+	FakeIlkSpotMetadata = GetMetadata(vat.IlkSpot, FakeIlk.Hex, utils.Uint256)
+	FakeIlkLineMetadata = GetMetadata(vat.IlkLine, FakeIlk.Hex, utils.Uint256)
+	FakeIlkDustMetadata = GetMetadata(vat.IlkDust, FakeIlk.Hex, utils.Uint256)
+	fakeIlkChopMetadata = GetMetadata(cat.IlkChop, FakeIlk.Hex, utils.Uint256)
+	fakeIlkLumpMetadata = GetMetadata(cat.IlkLump, FakeIlk.Hex, utils.Uint256)
+	fakeIlkFlipMetadata = GetMetadata(cat.IlkFlip, FakeIlk.Hex, utils.Address)
+	fakeIlkRhoMetadata  = GetMetadata(jug.IlkRho, FakeIlk.Hex, utils.Uint256)
+	fakeIlkTaxMetadata  = GetMetadata(jug.IlkDuty, FakeIlk.Hex, utils.Uint256)
 	FakeIlkVatMetadatas = []utils.StorageValueMetadata{
 		FakeIlkRateMetadata,
 		FakeIlkArtMetadata,
@@ -51,16 +58,16 @@ var (
 		fakeIlkTaxMetadata,
 	}
 
-	anotherFakeIlkRateMetadata = GetMetadata(vat.IlkRate, AnotherFakeIlk, utils.Uint256)
-	anotherFakeIlkArtMetadata  = GetMetadata(vat.IlkArt, AnotherFakeIlk, utils.Uint256)
-	anotherFakeIlkSpotMetadata = GetMetadata(vat.IlkSpot, AnotherFakeIlk, utils.Uint256)
-	anotherFakeIlkLineMetadata = GetMetadata(vat.IlkLine, AnotherFakeIlk, utils.Uint256)
-	anotherFakeIlkDustMetadata = GetMetadata(vat.IlkDust, AnotherFakeIlk, utils.Uint256)
-	anotherFakeIlkChopMetadata = GetMetadata(cat.IlkChop, AnotherFakeIlk, utils.Uint256)
-	anotherFakeIlkLumpMetadata = GetMetadata(cat.IlkLump, AnotherFakeIlk, utils.Uint256)
-	anotherFakeIlkFlipMetadata = GetMetadata(cat.IlkFlip, AnotherFakeIlk, utils.Address)
-	anotherFakeIlkRhoMetadata  = GetMetadata(jug.IlkRho, AnotherFakeIlk, utils.Uint256)
-	anotherFakeIlkTaxMetadata  = GetMetadata(jug.IlkDuty, AnotherFakeIlk, utils.Uint256)
+	anotherFakeIlkRateMetadata = GetMetadata(vat.IlkRate, AnotherFakeIlk.Hex, utils.Uint256)
+	anotherFakeIlkArtMetadata  = GetMetadata(vat.IlkArt, AnotherFakeIlk.Hex, utils.Uint256)
+	anotherFakeIlkSpotMetadata = GetMetadata(vat.IlkSpot, AnotherFakeIlk.Hex, utils.Uint256)
+	anotherFakeIlkLineMetadata = GetMetadata(vat.IlkLine, AnotherFakeIlk.Hex, utils.Uint256)
+	anotherFakeIlkDustMetadata = GetMetadata(vat.IlkDust, AnotherFakeIlk.Hex, utils.Uint256)
+	anotherFakeIlkChopMetadata = GetMetadata(cat.IlkChop, AnotherFakeIlk.Hex, utils.Uint256)
+	anotherFakeIlkLumpMetadata = GetMetadata(cat.IlkLump, AnotherFakeIlk.Hex, utils.Uint256)
+	anotherFakeIlkFlipMetadata = GetMetadata(cat.IlkFlip, AnotherFakeIlk.Hex, utils.Address)
+	anotherFakeIlkRhoMetadata  = GetMetadata(jug.IlkRho, AnotherFakeIlk.Hex, utils.Uint256)
+	anotherFakeIlkTaxMetadata  = GetMetadata(jug.IlkDuty, AnotherFakeIlk.Hex, utils.Uint256)
 
 	AnotherFakeIlkVatMetadatas = []utils.StorageValueMetadata{
 		anotherFakeIlkRateMetadata,
@@ -79,6 +86,11 @@ var (
 		anotherFakeIlkTaxMetadata,
 	}
 )
+
+type TestIlk struct {
+	Hex  string
+	Name string
+}
 
 type IlkState struct {
 	IlkName string `db:"ilk_name"`

@@ -55,7 +55,7 @@ var _ = Describe("Extension function", func() {
 
 			// Create a frob event
 			frobEvent = test_data.VatFrobModelWithPositiveDart
-			frobEvent.Ilk = test_helpers.FakeIlk
+			frobEvent.Ilk = test_helpers.FakeIlk.Hex
 			err = frobRepo.Create(headerId, []interface{}{frobEvent})
 			Expect(err).NotTo(HaveOccurred())
 		})
@@ -63,14 +63,14 @@ var _ = Describe("Extension function", func() {
 		Describe("ilk_state_frobs", func() {
 			It("returns relevant frobs for an ilk_state", func() {
 				irrelevantFrob := test_data.VatFrobModelWithPositiveDart
-				irrelevantFrob.Ilk = test_helpers.AnotherFakeIlk
+				irrelevantFrob.Ilk = test_helpers.AnotherFakeIlk.Hex
 				irrelevantFrob.Urn = "anotherGuy"
 				irrelevantFrob.TransactionIndex = frobEvent.TransactionIndex + 1
 				err = frobRepo.Create(headerId, []interface{}{irrelevantFrob})
 				Expect(err).NotTo(HaveOccurred())
 
 				var ilkId int
-				err = db.Get(&ilkId, `SELECT id FROM maker.ilks WHERE ilk = $1`, test_helpers.FakeIlk)
+				err = db.Get(&ilkId, `SELECT id FROM maker.ilks WHERE ilk = $1`, test_helpers.FakeIlk.Hex)
 				Expect(err).NotTo(HaveOccurred())
 
 				var actualFrobs []test_helpers.FrobEvent
@@ -82,7 +82,7 @@ var _ = Describe("Extension function", func() {
 				Expect(err).NotTo(HaveOccurred())
 
 				expectedFrobs := []test_helpers.FrobEvent{{
-					IlkName: "FKE",
+					IlkName: test_helpers.FakeIlk.Name,
 					UrnId:   frobEvent.Urn,
 					Dink:    frobEvent.Dink,
 					Dart:    frobEvent.Dart,
@@ -94,14 +94,14 @@ var _ = Describe("Extension function", func() {
 
 		Describe("frob_event_ilk", func() {
 			It("returns ilk_state for a frob_event", func() {
-				expectedIlk := test_helpers.IlkStateFromValues(test_helpers.FakeIlk, fakeHeader.Timestamp, fakeHeader.Timestamp, ilkValues)
+				expectedIlk := test_helpers.IlkStateFromValues(test_helpers.FakeIlk.Hex, fakeHeader.Timestamp, fakeHeader.Timestamp, ilkValues)
 
 				var result test_helpers.IlkState
 				err = db.Get(&result,
 					`SELECT ilk_name, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated
                     FROM maker.frob_event_ilk(
                         (SELECT (ilk_name, urn_id, dink, dart, block_number)::maker.frob_event FROM maker.all_frobs($1))
-                    )`, "FKE")
+                    )`, test_helpers.FakeIlk.Name)
 
 				Expect(err).NotTo(HaveOccurred())
 				Expect(result).To(Equal(expectedIlk))
@@ -123,12 +123,12 @@ var _ = Describe("Extension function", func() {
 
 			urnSetupData := test_helpers.GetUrnSetupData(fakeBlock, 1)
 			urnSetupData.Header.Hash = fakeHeader.Hash
-			urnMetadata := test_helpers.GetUrnMetadata(test_helpers.FakeIlk, fakeGuy)
+			urnMetadata := test_helpers.GetUrnMetadata(test_helpers.FakeIlk.Hex, fakeGuy)
 			test_helpers.CreateUrn(urnSetupData, urnMetadata, vatRepository, headerRepository)
 
 			frobEvent = test_data.VatFrobModelWithPositiveDart
 			frobEvent.Urn = fakeGuy
-			frobEvent.Ilk = test_helpers.FakeIlk
+			frobEvent.Ilk = test_helpers.FakeIlk.Hex
 			err = frobRepo.Create(headerId, []interface{}{frobEvent})
 			Expect(err).NotTo(HaveOccurred())
 		})
@@ -139,12 +139,12 @@ var _ = Describe("Extension function", func() {
 				err = db.Get(&actualUrn,
 					`SELECT urn_id, ilk_name FROM maker.frob_event_urn(
                         (SELECT (ilk_name, urn_id, dink, dart, block_number)::maker.frob_event FROM maker.all_frobs($1)))`,
-					"FKE")
+					test_helpers.FakeIlk.Name)
 				Expect(err).NotTo(HaveOccurred())
 
 				expectedUrn := test_helpers.UrnState{
 					UrnId:   fakeGuy,
-					IlkName: "FKE",
+					IlkName: test_helpers.FakeIlk.Name,
 				}
 
 				test_helpers.AssertUrn(actualUrn, expectedUrn)
@@ -162,7 +162,7 @@ var _ = Describe("Extension function", func() {
 				Expect(err).NotTo(HaveOccurred())
 
 				expectedFrobs := test_helpers.FrobEvent{
-					IlkName: "FKE",
+					IlkName: test_helpers.FakeIlk.Name,
 					UrnId:   fakeGuy,
 					Dink:    frobEvent.Dink,
 					Dart:    frobEvent.Dart,
@@ -203,7 +203,7 @@ var _ = Describe("Extension function", func() {
 			frobRepo := vat_frob.VatFrobRepository{}
 			frobRepo.SetDB(db)
 			frobEvent := test_data.VatFrobModelWithPositiveDart
-			frobEvent.Ilk = test_helpers.FakeIlk
+			frobEvent.Ilk = test_helpers.FakeIlk.Hex
 			err = frobRepo.Create(headerId, []interface{}{frobEvent})
 			Expect(err).NotTo(HaveOccurred())
 
@@ -224,7 +224,7 @@ var _ = Describe("Extension function", func() {
 			var actualTx Tx
 			err = db.Get(&actualTx, `SELECT * FROM maker.frob_event_tx(
 			    (SELECT (ilk_name, urn_id, dink, dart, block_number)::maker.frob_event FROM maker.all_frobs($1)))`,
-				"FKE")
+				test_helpers.FakeIlk.Name)
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(actualTx).To(Equal(expectedTx))
