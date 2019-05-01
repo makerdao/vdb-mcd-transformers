@@ -81,7 +81,7 @@ var (
 )
 
 type IlkState struct {
-	Ilk     string
+	IlkName string `db:"ilk_name"`
 	Rate    string
 	Art     string
 	Spot    string
@@ -121,7 +121,7 @@ func IlkStateFromValues(ilk, updated, created string, ilkValues map[string]strin
 	ilkName, err := shared.DecodeIlkName(ilk)
 	Expect(err).NotTo(HaveOccurred())
 	return IlkState{
-		Ilk:     ilkName,
+		IlkName: ilkName,
 		Rate:    ilkValues[vat.IlkRate],
 		Art:     ilkValues[vat.IlkArt],
 		Spot:    ilkValues[vat.IlkSpot],
@@ -253,7 +253,7 @@ type UrnMetadata struct {
 
 type UrnState struct {
 	UrnId       string `db:"urn_id"`
-	IlkId       string `db:"ilk_id"`
+	IlkName     string `db:"ilk_name"`
 	BlockHeight int    `db:"block_height"`
 	Ink         string
 	Art         string
@@ -265,7 +265,7 @@ type UrnState struct {
 
 func AssertUrn(actual, expected UrnState) {
 	Expect(actual.UrnId).To(Equal(expected.UrnId))
-	Expect(actual.IlkId).To(Equal(expected.IlkId))
+	Expect(actual.IlkName).To(Equal(expected.IlkName))
 	Expect(actual.BlockHeight).To(Equal(expected.BlockHeight))
 	Expect(actual.Ink).To(Equal(expected.Ink))
 	Expect(actual.Art).To(Equal(expected.Art))
@@ -286,10 +286,10 @@ func AssertUrn(actual, expected UrnState) {
 }
 
 type FrobEvent struct {
-	IlkId string `db:"ilk_id"`
-	UrnId string `db:"urn_id"`
-	Dink  string
-	Dart  string
+	IlkName string `db:"ilk_name"`
+	UrnId   string `db:"urn_id"`
+	Dink    string
+	Dart    string
 }
 
 func GetExpectedTimestamp(epoch int) string {

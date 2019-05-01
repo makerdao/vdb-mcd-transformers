@@ -75,17 +75,17 @@ var _ = Describe("Extension function", func() {
 
 				var actualFrobs []test_helpers.FrobEvent
 				err = db.Select(&actualFrobs,
-					`SELECT ilk_id, urn_id, dink, dart FROM maker.ilk_state_frobs(
-                        (SELECT (ilk_id, ilk, block_height, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated)::maker.ilk_state
+					`SELECT ilk_name, urn_id, dink, dart FROM maker.ilk_state_frobs(
+                        (SELECT (ilk_id, ilk_name, block_height, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated)::maker.ilk_state
                          FROM maker.get_ilk($1, $2))
                     )`, fakeBlock, ilkId)
 				Expect(err).NotTo(HaveOccurred())
 
 				expectedFrobs := []test_helpers.FrobEvent{{
-					IlkId: "FKE",
-					UrnId: frobEvent.Urn,
-					Dink:  frobEvent.Dink,
-					Dart:  frobEvent.Dart,
+					IlkName: "FKE",
+					UrnId:   frobEvent.Urn,
+					Dink:    frobEvent.Dink,
+					Dart:    frobEvent.Dart,
 				}}
 
 				Expect(actualFrobs).To(Equal(expectedFrobs))
@@ -98,9 +98,9 @@ var _ = Describe("Extension function", func() {
 
 				var result test_helpers.IlkState
 				err = db.Get(&result,
-					`SELECT ilk, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated
+					`SELECT ilk_name, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated
                     FROM maker.frob_event_ilk(
-                        (SELECT (ilk_id, urn_id, dink, dart, block_number)::maker.frob_event FROM maker.all_frobs($1))
+                        (SELECT (ilk_name, urn_id, dink, dart, block_number)::maker.frob_event FROM maker.all_frobs($1))
                     )`, "FKE")
 
 				Expect(err).NotTo(HaveOccurred())
@@ -137,14 +137,14 @@ var _ = Describe("Extension function", func() {
 			It("returns urn_state for a frob_event", func() {
 				var actualUrn test_helpers.UrnState
 				err = db.Get(&actualUrn,
-					`SELECT urn_id, ilk_id FROM maker.frob_event_urn(
-                        (SELECT (ilk_id, urn_id, dink, dart, block_number)::maker.frob_event FROM maker.all_frobs($1)))`,
+					`SELECT urn_id, ilk_name FROM maker.frob_event_urn(
+                        (SELECT (ilk_name, urn_id, dink, dart, block_number)::maker.frob_event FROM maker.all_frobs($1)))`,
 					"FKE")
 				Expect(err).NotTo(HaveOccurred())
 
 				expectedUrn := test_helpers.UrnState{
-					UrnId: fakeGuy,
-					IlkId: "FKE",
+					UrnId:   fakeGuy,
+					IlkName: "FKE",
 				}
 
 				test_helpers.AssertUrn(actualUrn, expectedUrn)
@@ -155,17 +155,17 @@ var _ = Describe("Extension function", func() {
 			It("returns relevant frobs for an urn_state", func() {
 				var actualFrobs test_helpers.FrobEvent
 				err = db.Get(&actualFrobs,
-					`SELECT ilk_id, urn_id, dink, dart FROM maker.urn_state_frobs(
-                        (SELECT (urn_id, ilk_id, block_height, ink, art, ratio, safe, created, updated)::maker.urn_state
+					`SELECT ilk_name, urn_id, dink, dart FROM maker.urn_state_frobs(
+                        (SELECT (urn_id, ilk_name, block_height, ink, art, ratio, safe, created, updated)::maker.urn_state
                          FROM maker.all_urns($1))
                     )`, fakeBlock)
 				Expect(err).NotTo(HaveOccurred())
 
 				expectedFrobs := test_helpers.FrobEvent{
-					IlkId: "FKE",
-					UrnId: fakeGuy,
-					Dink:  frobEvent.Dink,
-					Dart:  frobEvent.Dart,
+					IlkName: "FKE",
+					UrnId:   fakeGuy,
+					Dink:    frobEvent.Dink,
+					Dart:    frobEvent.Dart,
 				}
 
 				Expect(actualFrobs).To(Equal(expectedFrobs))
@@ -223,7 +223,7 @@ var _ = Describe("Extension function", func() {
 
 			var actualTx Tx
 			err = db.Get(&actualTx, `SELECT * FROM maker.frob_event_tx(
-			    (SELECT (ilk_id, urn_id, dink, dart, block_number)::maker.frob_event FROM maker.all_frobs($1)))`,
+			    (SELECT (ilk_name, urn_id, dink, dart, block_number)::maker.frob_event FROM maker.all_frobs($1)))`,
 				"FKE")
 
 			Expect(err).NotTo(HaveOccurred())
