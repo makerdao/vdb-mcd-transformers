@@ -366,7 +366,7 @@ func insertVatFold(urn string, blockNumber int64, db *postgres.DB) {
 	headerRepository := repositories.NewHeaderRepository(db)
 	headerID, err := headerRepository.CreateOrUpdateHeader(fakes.GetFakeHeader(blockNumber))
 	Expect(err).NotTo(HaveOccurred())
-	ilkID, err := shared.GetOrCreateIlk(test_helpers.FakeIlk, db)
+	ilkID, err := shared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
 	Expect(err).NotTo(HaveOccurred())
 	urnID, err := shared.GetOrCreateUrn(urn, ilkID, db)
 	Expect(err).NotTo(HaveOccurred())

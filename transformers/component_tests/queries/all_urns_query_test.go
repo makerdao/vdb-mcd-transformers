@@ -23,10 +23,6 @@ var _ = Describe("Urn view", func() {
 		headerRepo repositories.HeaderRepository
 		urnOne     string
 		urnTwo     string
-		ilkOne     = helper.FakeIlk
-		ilkOneName = "FKE"
-		ilkTwo     = helper.AnotherFakeIlk
-		ilkTwoName = "FKE2"
 		err        error
 	)
 
@@ -48,7 +44,7 @@ var _ = Describe("Urn view", func() {
 		fakeTimestamp := 12345
 
 		setupData := helper.GetUrnSetupData(fakeBlockNo, fakeTimestamp)
-		metadata := helper.GetUrnMetadata(ilkOne, urnOne)
+		metadata := helper.GetUrnMetadata(helper.FakeIlk.Hex, urnOne)
 		helper.CreateUrn(setupData, metadata, vatRepo, headerRepo)
 
 		var actualUrn helper.UrnState
@@ -60,7 +56,7 @@ var _ = Describe("Urn view", func() {
 		expectedTimestamp := helper.GetExpectedTimestamp(fakeTimestamp)
 		expectedUrn := helper.UrnState{
 			UrnId:       urnOne,
-			IlkName:     ilkOneName,
+			IlkName:     helper.FakeIlk.Name,
 			BlockHeight: fakeBlockNo,
 			Ink:         strconv.Itoa(setupData.Ink),
 			Art:         strconv.Itoa(setupData.Art),
@@ -77,7 +73,7 @@ var _ = Describe("Urn view", func() {
 		blockOne := rand.Int()
 		timestampOne := int(rand.Int31())
 
-		urnOneMetadata := helper.GetUrnMetadata(ilkOne, urnOne)
+		urnOneMetadata := helper.GetUrnMetadata(helper.FakeIlk.Hex, urnOne)
 		urnOneSetupData := helper.GetUrnSetupData(blockOne, timestampOne)
 		helper.CreateUrn(urnOneSetupData, urnOneMetadata, vatRepo, headerRepo)
 		expectedRatioOne := helper.GetExpectedRatio(urnOneSetupData.Ink, urnOneSetupData.Spot, urnOneSetupData.Art, urnOneSetupData.Rate)
@@ -85,7 +81,7 @@ var _ = Describe("Urn view", func() {
 		expectedTimestamp := time.Unix(int64(timestampOne), 0).UTC().Format(time.RFC3339)
 		expectedUrnOne := helper.UrnState{
 			UrnId:   urnOne,
-			IlkName: ilkOneName,
+			IlkName: helper.FakeIlk.Name,
 			Ink:     strconv.Itoa(urnOneSetupData.Ink),
 			Art:     strconv.Itoa(urnOneSetupData.Art),
 			Ratio:   sql.NullString{String: strconv.FormatFloat(expectedRatioOne, 'f', 8, 64), Valid: true},
@@ -98,7 +94,7 @@ var _ = Describe("Urn view", func() {
 		blockTwo := blockOne + 1
 		timestampTwo := timestampOne + 1
 
-		urnTwoMetadata := helper.GetUrnMetadata(ilkTwo, urnTwo)
+		urnTwoMetadata := helper.GetUrnMetadata(helper.AnotherFakeIlk.Hex, urnTwo)
 		urnTwoSetupData := helper.GetUrnSetupData(blockTwo, timestampTwo)
 		helper.CreateUrn(urnTwoSetupData, urnTwoMetadata, vatRepo, headerRepo)
 		expectedRatioTwo := helper.GetExpectedRatio(urnTwoSetupData.Ink, urnTwoSetupData.Spot, urnTwoSetupData.Art, urnTwoSetupData.Rate)
@@ -106,7 +102,7 @@ var _ = Describe("Urn view", func() {
 		expectedTimestampTwo := helper.GetExpectedTimestamp(timestampTwo)
 		expectedUrnTwo := helper.UrnState{
 			UrnId:   urnTwo,
-			IlkName: ilkTwoName,
+			IlkName: helper.AnotherFakeIlk.Name,
 			Ink:     strconv.Itoa(urnTwoSetupData.Ink),
 			Art:     strconv.Itoa(urnTwoSetupData.Art),
 			Ratio:   sql.NullString{String: strconv.FormatFloat(expectedRatioTwo, 'f', 8, 64), Valid: true},
@@ -127,7 +123,7 @@ var _ = Describe("Urn view", func() {
 	It("returns urn state without timestamps if corresponding headers aren't synced", func() {
 		block := rand.Int()
 		timestamp := int(rand.Int31())
-		metadata := helper.GetUrnMetadata(ilkOne, urnOne)
+		metadata := helper.GetUrnMetadata(helper.FakeIlk.Hex, urnOne)
 		setupData := helper.GetUrnSetupData(block, timestamp)
 
 		helper.CreateUrn(setupData, metadata, vatRepo, headerRepo)
@@ -156,7 +152,7 @@ var _ = Describe("Urn view", func() {
 			blockOne = rand.Int()
 			timestampOne = int(rand.Int31())
 			setupDataOne = helper.GetUrnSetupData(blockOne, timestampOne)
-			metadata = helper.GetUrnMetadata(ilkOne, urnOne)
+			metadata = helper.GetUrnMetadata(helper.FakeIlk.Hex, urnOne)
 			helper.CreateUrn(setupDataOne, metadata, vatRepo, headerRepo)
 		})
 
@@ -169,7 +165,7 @@ var _ = Describe("Urn view", func() {
 			expectedTimestamp := helper.GetExpectedTimestamp(timestampOne)
 			expectedUrn := helper.UrnState{
 				UrnId:   urnOne,
-				IlkName: ilkOneName,
+				IlkName: helper.FakeIlk.Name,
 				Ink:     strconv.Itoa(setupDataOne.Ink),
 				Art:     strconv.Itoa(setupDataOne.Art),
 				Ratio:   sql.NullString{String: strconv.FormatFloat(expectedRatio, 'f', 8, 64), Valid: true},
@@ -195,7 +191,7 @@ var _ = Describe("Urn view", func() {
 			expectedTimestampTwo := helper.GetExpectedTimestamp(timestampTwo)
 			expectedUrn := helper.UrnState{
 				UrnId:   urnOne,
-				IlkName: ilkOneName,
+				IlkName: helper.FakeIlk.Name,
 				Ink:     strconv.Itoa(updatedInk),
 				Art:     strconv.Itoa(setupDataOne.Art), // Not changed
 				Ratio:   sql.NullString{String: strconv.FormatFloat(expectedRatio, 'f', 8, 64), Valid: true},
@@ -223,7 +219,7 @@ var _ = Describe("Urn view", func() {
 		block := rand.Int()
 		setupData := helper.GetUrnSetupData(block, 1)
 		setupData.Art = 0
-		metadata := helper.GetUrnMetadata(ilkOne, urnOne)
+		metadata := helper.GetUrnMetadata(helper.FakeIlk.Hex, urnOne)
 		helper.CreateUrn(setupData, metadata, vatRepo, headerRepo)
 
 		fakeHeader := fakes.GetFakeHeader(int64(block))
