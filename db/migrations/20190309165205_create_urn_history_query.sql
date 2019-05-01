@@ -1,6 +1,6 @@
 -- +goose Up
 -- +goose StatementBegin
-CREATE OR REPLACE FUNCTION maker.all_urn_states(ilk TEXT, urn TEXT, block_height BIGINT)
+CREATE OR REPLACE FUNCTION maker.all_urn_states(ilk_name TEXT, urn TEXT, block_height BIGINT)
   RETURNS SETOF maker.urn_state AS $$
 DECLARE
   blocks BIGINT[];
@@ -8,8 +8,8 @@ DECLARE
   ilkId NUMERIC;
   urnId NUMERIC;
 BEGIN
-  SELECT id FROM maker.ilks WHERE ilks.ilk = $1 INTO ilkId;
-  SELECT id FROM maker.urns WHERE urns.guy = $2 AND urns.ilk_id = ilkID INTO urnId;
+  SELECT id FROM maker.ilks WHERE ilks.name = $1 INTO ilkId;
+  SELECT id FROM maker.urns WHERE urns.guy = $2 AND urns.ilk_id = ilkId INTO urnId;
 
   blocks := ARRAY(
     SELECT block_number
@@ -30,7 +30,7 @@ BEGIN
   FOREACH i IN ARRAY blocks
     LOOP
       RETURN QUERY
-        SELECT * FROM maker.get_urn(ilk, urn, i);
+        SELECT * FROM maker.get_urn(ilk_name, urn, i);
     END LOOP;
 END;
 $$

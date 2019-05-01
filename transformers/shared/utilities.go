@@ -19,6 +19,7 @@ package shared
 import (
 	"bytes"
 	"encoding/binary"
+	"encoding/hex"
 	"errors"
 	"fmt"
 	"math/big"
@@ -124,4 +125,15 @@ func MinInt64(ints []int64) (min int64) {
 		}
 	}
 	return
+}
+
+func DecodeIlkName(hexIlk string) (string, error) {
+	// Remove possible 0x intro
+	nakedHex := GetHexWithoutPrefix(common.FromHex(hexIlk))
+	ilkNamePadded, err := hex.DecodeString(nakedHex)
+	if err != nil {
+		return "", fmt.Errorf("couldn't convert hex ilk representation to string: %v", err)
+	}
+	ilkName := fmt.Sprintf("%s", bytes.Trim(ilkNamePadded, "\x00"))
+	return ilkName, nil
 }

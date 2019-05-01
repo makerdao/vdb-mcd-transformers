@@ -17,6 +17,7 @@
 package jug_test
 
 import (
+	"github.com/vulcanize/mcd_transformers/transformers/component_tests/queries/test_helpers"
 	"strconv"
 
 	. "github.com/onsi/ginkgo"
@@ -39,7 +40,6 @@ var _ = Describe("Jug storage repository", func() {
 		fakeAddress     = "0x12345"
 		fakeBlockNumber = 123
 		fakeBlockHash   = "expected_block_hash"
-		fakeIlk         = "fake_ilk"
 		fakeUint256     = "12345"
 	)
 
@@ -53,7 +53,7 @@ var _ = Describe("Jug storage repository", func() {
 	Describe("Ilk", func() {
 		Describe("Rho", func() {
 			It("writes a row", func() {
-				ilkRhoMetadata := utils.GetStorageValueMetadata(jug.IlkRho, map[utils.Key]string{constants.Ilk: fakeIlk}, utils.Uint256)
+				ilkRhoMetadata := utils.GetStorageValueMetadata(jug.IlkRho, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Uint256)
 
 				err := repo.Create(fakeBlockNumber, fakeBlockHash, ilkRhoMetadata, fakeUint256)
 
@@ -61,7 +61,7 @@ var _ = Describe("Jug storage repository", func() {
 				var result MappingRes
 				err = db.Get(&result, `SELECT block_number, block_hash, ilk_id AS key, rho AS VALUE FROM maker.jug_ilk_rho`)
 				Expect(err).NotTo(HaveOccurred())
-				ilkID, err := shared.GetOrCreateIlk(fakeIlk, db)
+				ilkID, err := shared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
 				Expect(err).NotTo(HaveOccurred())
 				AssertMapping(result, fakeBlockNumber, fakeBlockHash, strconv.Itoa(ilkID), fakeUint256)
 			})
@@ -76,7 +76,7 @@ var _ = Describe("Jug storage repository", func() {
 
 		Describe("Duty", func() {
 			It("writes a row", func() {
-				ilkTaxMetadata := utils.GetStorageValueMetadata(jug.IlkDuty, map[utils.Key]string{constants.Ilk: fakeIlk}, utils.Uint256)
+				ilkTaxMetadata := utils.GetStorageValueMetadata(jug.IlkDuty, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Uint256)
 
 				err := repo.Create(fakeBlockNumber, fakeBlockHash, ilkTaxMetadata, fakeUint256)
 
@@ -84,7 +84,7 @@ var _ = Describe("Jug storage repository", func() {
 				var result MappingRes
 				err = db.Get(&result, `SELECT block_number, block_hash, ilk_id AS KEY, duty AS VALUE FROM maker.jug_ilk_duty`)
 				Expect(err).NotTo(HaveOccurred())
-				ilkID, err := shared.GetOrCreateIlk(fakeIlk, db)
+				ilkID, err := shared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
 				Expect(err).NotTo(HaveOccurred())
 
 				AssertMapping(result, fakeBlockNumber, fakeBlockHash, strconv.Itoa(ilkID), fakeUint256)

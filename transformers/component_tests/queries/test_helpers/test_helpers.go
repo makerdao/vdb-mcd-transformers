@@ -3,6 +3,7 @@ package test_helpers
 import (
 	"database/sql"
 	. "github.com/onsi/gomega"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/cat"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/jug"
@@ -18,21 +19,28 @@ import (
 )
 
 var (
-	FakeIlk        = "fakeIlk"
-	AnotherFakeIlk = "anotherFakeIlk"
+	FakeIlk = TestIlk{
+		Hex:  "464b450000000000000000000000000000000000000000000000000000000000",
+		Name: "FKE",
+	}
+
+	AnotherFakeIlk = TestIlk{
+		Hex:  "464b453200000000000000000000000000000000000000000000000000000000",
+		Name: "FKE2",
+	}
 
 	EmptyMetadatas []utils.StorageValueMetadata
 
-	FakeIlkRateMetadata = GetMetadata(vat.IlkRate, FakeIlk, utils.Uint256)
-	FakeIlkArtMetadata  = GetMetadata(vat.IlkArt, FakeIlk, utils.Uint256)
-	FakeIlkSpotMetadata = GetMetadata(vat.IlkSpot, FakeIlk, utils.Uint256)
-	FakeIlkLineMetadata = GetMetadata(vat.IlkLine, FakeIlk, utils.Uint256)
-	FakeIlkDustMetadata = GetMetadata(vat.IlkDust, FakeIlk, utils.Uint256)
-	fakeIlkChopMetadata = GetMetadata(cat.IlkChop, FakeIlk, utils.Uint256)
-	fakeIlkLumpMetadata = GetMetadata(cat.IlkLump, FakeIlk, utils.Uint256)
-	fakeIlkFlipMetadata = GetMetadata(cat.IlkFlip, FakeIlk, utils.Address)
-	fakeIlkRhoMetadata  = GetMetadata(jug.IlkRho, FakeIlk, utils.Uint256)
-	fakeIlkTaxMetadata  = GetMetadata(jug.IlkDuty, FakeIlk, utils.Uint256)
+	FakeIlkRateMetadata = GetMetadata(vat.IlkRate, FakeIlk.Hex, utils.Uint256)
+	FakeIlkArtMetadata  = GetMetadata(vat.IlkArt, FakeIlk.Hex, utils.Uint256)
+	FakeIlkSpotMetadata = GetMetadata(vat.IlkSpot, FakeIlk.Hex, utils.Uint256)
+	FakeIlkLineMetadata = GetMetadata(vat.IlkLine, FakeIlk.Hex, utils.Uint256)
+	FakeIlkDustMetadata = GetMetadata(vat.IlkDust, FakeIlk.Hex, utils.Uint256)
+	fakeIlkChopMetadata = GetMetadata(cat.IlkChop, FakeIlk.Hex, utils.Uint256)
+	fakeIlkLumpMetadata = GetMetadata(cat.IlkLump, FakeIlk.Hex, utils.Uint256)
+	fakeIlkFlipMetadata = GetMetadata(cat.IlkFlip, FakeIlk.Hex, utils.Address)
+	fakeIlkRhoMetadata  = GetMetadata(jug.IlkRho, FakeIlk.Hex, utils.Uint256)
+	fakeIlkTaxMetadata  = GetMetadata(jug.IlkDuty, FakeIlk.Hex, utils.Uint256)
 	FakeIlkVatMetadatas = []utils.StorageValueMetadata{
 		FakeIlkRateMetadata,
 		FakeIlkArtMetadata,
@@ -50,16 +58,16 @@ var (
 		fakeIlkTaxMetadata,
 	}
 
-	anotherFakeIlkRateMetadata = GetMetadata(vat.IlkRate, AnotherFakeIlk, utils.Uint256)
-	anotherFakeIlkArtMetadata  = GetMetadata(vat.IlkArt, AnotherFakeIlk, utils.Uint256)
-	anotherFakeIlkSpotMetadata = GetMetadata(vat.IlkSpot, AnotherFakeIlk, utils.Uint256)
-	anotherFakeIlkLineMetadata = GetMetadata(vat.IlkLine, AnotherFakeIlk, utils.Uint256)
-	anotherFakeIlkDustMetadata = GetMetadata(vat.IlkDust, AnotherFakeIlk, utils.Uint256)
-	anotherFakeIlkChopMetadata = GetMetadata(cat.IlkChop, AnotherFakeIlk, utils.Uint256)
-	anotherFakeIlkLumpMetadata = GetMetadata(cat.IlkLump, AnotherFakeIlk, utils.Uint256)
-	anotherFakeIlkFlipMetadata = GetMetadata(cat.IlkFlip, AnotherFakeIlk, utils.Address)
-	anotherFakeIlkRhoMetadata  = GetMetadata(jug.IlkRho, AnotherFakeIlk, utils.Uint256)
-	anotherFakeIlkTaxMetadata  = GetMetadata(jug.IlkDuty, AnotherFakeIlk, utils.Uint256)
+	anotherFakeIlkRateMetadata = GetMetadata(vat.IlkRate, AnotherFakeIlk.Hex, utils.Uint256)
+	anotherFakeIlkArtMetadata  = GetMetadata(vat.IlkArt, AnotherFakeIlk.Hex, utils.Uint256)
+	anotherFakeIlkSpotMetadata = GetMetadata(vat.IlkSpot, AnotherFakeIlk.Hex, utils.Uint256)
+	anotherFakeIlkLineMetadata = GetMetadata(vat.IlkLine, AnotherFakeIlk.Hex, utils.Uint256)
+	anotherFakeIlkDustMetadata = GetMetadata(vat.IlkDust, AnotherFakeIlk.Hex, utils.Uint256)
+	anotherFakeIlkChopMetadata = GetMetadata(cat.IlkChop, AnotherFakeIlk.Hex, utils.Uint256)
+	anotherFakeIlkLumpMetadata = GetMetadata(cat.IlkLump, AnotherFakeIlk.Hex, utils.Uint256)
+	anotherFakeIlkFlipMetadata = GetMetadata(cat.IlkFlip, AnotherFakeIlk.Hex, utils.Address)
+	anotherFakeIlkRhoMetadata  = GetMetadata(jug.IlkRho, AnotherFakeIlk.Hex, utils.Uint256)
+	anotherFakeIlkTaxMetadata  = GetMetadata(jug.IlkDuty, AnotherFakeIlk.Hex, utils.Uint256)
 
 	AnotherFakeIlkVatMetadatas = []utils.StorageValueMetadata{
 		anotherFakeIlkRateMetadata,
@@ -79,8 +87,13 @@ var (
 	}
 )
 
+type TestIlk struct {
+	Hex  string
+	Name string
+}
+
 type IlkState struct {
-	Ilk     string
+	IlkName string `db:"ilk_name"`
 	Rate    string
 	Art     string
 	Spot    string
@@ -117,8 +130,10 @@ func IlkStateFromValues(ilk, updated, created string, ilkValues map[string]strin
 	createdTimestamp := time.Unix(parsedCreated, 0).UTC().Format(time.RFC3339)
 	updatedTimestamp := time.Unix(parsedUpdated, 0).UTC().Format(time.RFC3339)
 
+	ilkName, err := shared.DecodeIlkName(ilk)
+	Expect(err).NotTo(HaveOccurred())
 	return IlkState{
-		Ilk:     ilk,
+		IlkName: ilkName,
 		Rate:    ilkValues[vat.IlkRate],
 		Art:     ilkValues[vat.IlkArt],
 		Spot:    ilkValues[vat.IlkSpot],
@@ -250,7 +265,7 @@ type UrnMetadata struct {
 
 type UrnState struct {
 	UrnId       string `db:"urn_id"`
-	IlkId       string `db:"ilk_id"`
+	IlkName     string `db:"ilk_name"`
 	BlockHeight int    `db:"block_height"`
 	Ink         string
 	Art         string
@@ -262,7 +277,7 @@ type UrnState struct {
 
 func AssertUrn(actual, expected UrnState) {
 	Expect(actual.UrnId).To(Equal(expected.UrnId))
-	Expect(actual.IlkId).To(Equal(expected.IlkId))
+	Expect(actual.IlkName).To(Equal(expected.IlkName))
 	Expect(actual.BlockHeight).To(Equal(expected.BlockHeight))
 	Expect(actual.Ink).To(Equal(expected.Ink))
 	Expect(actual.Art).To(Equal(expected.Art))
@@ -283,10 +298,10 @@ func AssertUrn(actual, expected UrnState) {
 }
 
 type FrobEvent struct {
-	IlkId string `db:"ilk_id"`
-	UrnId string `db:"urn_id"`
-	Dink  string
-	Dart  string
+	IlkName string `db:"ilk_name"`
+	UrnId   string `db:"urn_id"`
+	Dink    string
+	Dart    string
 }
 
 func GetExpectedTimestamp(epoch int) string {

@@ -23,7 +23,6 @@ var _ = Describe("Urn history query", func() {
 		vatRepo    vat.VatStorageRepository
 		headerRepo repositories.HeaderRepository
 		fakeUrn    string
-		fakeIlk    string
 	)
 
 	BeforeEach(func() {
@@ -32,7 +31,6 @@ var _ = Describe("Urn history query", func() {
 		vatRepo = vat.VatStorageRepository{}
 		vatRepo.SetDB(db)
 
-		fakeIlk = test_data.RandomString(5)
 		fakeUrn = test_data.RandomString(5)
 	})
 
@@ -40,7 +38,7 @@ var _ = Describe("Urn history query", func() {
 		blockOne := rand.Int()
 		timestampOne := int(rand.Int31())
 		urnSetupData := helper.GetUrnSetupData(blockOne, timestampOne)
-		urnMetadata := helper.GetUrnMetadata(fakeIlk, fakeUrn)
+		urnMetadata := helper.GetUrnMetadata(helper.FakeIlk.Hex, fakeUrn)
 		helper.CreateUrn(urnSetupData, urnMetadata, vatRepo, headerRepo)
 
 		inkBlockOne := urnSetupData.Ink
@@ -50,7 +48,7 @@ var _ = Describe("Urn history query", func() {
 		expectedTimestampOne := helper.GetExpectedTimestamp(timestampOne)
 		expectedUrnBlockOne := helper.UrnState{
 			UrnId:       fakeUrn,
-			IlkId:       fakeIlk,
+			IlkName:     helper.FakeIlk.Name,
 			BlockHeight: blockOne,
 			Ink:         strconv.Itoa(inkBlockOne),
 			Art:         strconv.Itoa(artBlockOne),
@@ -74,7 +72,7 @@ var _ = Describe("Urn history query", func() {
 		wrongUrn := test_data.RandomString(5)
 		wrongArt := strconv.Itoa(rand.Int())
 		wrongMetadata := utils.GetStorageValueMetadata(vat.UrnArt,
-			map[utils.Key]string{constants.Ilk: fakeIlk, constants.Guy: wrongUrn}, utils.Uint256)
+			map[utils.Key]string{constants.Ilk: helper.FakeIlk.Hex, constants.Guy: wrongUrn}, utils.Uint256)
 		err = vatRepo.Create(blockOne, fakes.FakeHash.String(), wrongMetadata, wrongArt)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -82,7 +80,7 @@ var _ = Describe("Urn history query", func() {
 		expectedTimestampTwo := helper.GetExpectedTimestamp(timestampTwo)
 		expectedUrnBlockTwo := helper.UrnState{
 			UrnId:       fakeUrn,
-			IlkId:       fakeIlk,
+			IlkName:     helper.FakeIlk.Name,
 			BlockHeight: blockTwo,
 			Ink:         strconv.Itoa(inkBlockTwo),
 			Art:         strconv.Itoa(artBlockOne),
@@ -105,7 +103,7 @@ var _ = Describe("Urn history query", func() {
 		expectedTimestampThree := helper.GetExpectedTimestamp(timestampThree)
 		expectedUrnBlockThree := helper.UrnState{
 			UrnId:       fakeUrn,
-			IlkId:       fakeIlk,
+			IlkName:     helper.FakeIlk.Name,
 			BlockHeight: blockThree,
 			Ink:         strconv.Itoa(inkBlockTwo),
 			Art:         strconv.Itoa(artBlockThree),
@@ -118,7 +116,7 @@ var _ = Describe("Urn history query", func() {
 		var result []helper.UrnState
 		dbErr := db.Select(&result,
 			`SELECT * FROM maker.all_urn_states($1, $2, $3)`,
-			fakeIlk, fakeUrn, blockThree)
+			helper.FakeIlk.Name, fakeUrn, blockThree)
 		Expect(dbErr).NotTo(HaveOccurred())
 
 		// Reverse chronological order
