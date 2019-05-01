@@ -17,6 +17,7 @@
 package storage_test
 
 import (
+	"github.com/vulcanize/mcd_transformers/transformers/component_tests/queries/test_helpers"
 	"math/big"
 	"strconv"
 
@@ -37,11 +38,11 @@ var _ = Describe("Maker storage repository", func() {
 	var (
 		db         *postgres.DB
 		repository storage.IMakerStorageRepository
-		ilk1       = "ilk1"
-		ilk2       = "ilk2"
-		guy1       = "guy1"
-		guy2       = "guy2"
-		guy3       = "guy3"
+		ilk1       = "494c4b31" // ILK1
+		ilk2       = "494c4b32" // ILK2
+		guy1       = "47555931" // GUY1
+		guy2       = "47555932" // GUY2
+		guy3       = "47555933" // GUY3
 		era        = big.NewInt(0).SetBytes(common.FromHex("0x000000000000000000000000000000000000000000000000000000005bb48864")).String()
 		tab        = big.NewInt(0).SetBytes(common.FromHex("0x0000000000000000000000000000000000000000000002544faa778090e00000")).String()
 		timestamp  = int64(1538558053)
@@ -66,7 +67,7 @@ var _ = Describe("Maker storage repository", func() {
 		})
 
 		It("fetches guy from w field on vat_frob", func() {
-			insertVatFrob(guy1, guy1, guy1, guy2, 1, db)
+			insertVatFrob(ilk1, guy1, guy1, guy2, 1, db)
 
 			keys, err := repository.GetDaiKeys()
 
@@ -86,16 +87,16 @@ var _ = Describe("Maker storage repository", func() {
 		})
 
 		It("fetches unique guys from vat_move + vat_frob + vat_heal + vat_fold", func() {
-			guy4 := "guy4"
-			guy5 := "guy5"
-			guy6 := "guy6"
+			guy4 := "47555934"
+			guy5 := "47555935"
+			guy6 := "47555936"
 			insertVatMove(guy1, guy2, 1, db)
-			insertVatFrob(guy1, guy1, guy1, guy3, 2, db)
+			insertVatFrob(ilk1, guy1, guy1, guy3, 2, db)
 			insertVatHeal(guy6, guy4, 3, db)
 			insertVatFold(guy5, 4, db)
 			// duplicates
 			insertVatMove(guy3, guy1, 5, db)
-			insertVatFrob(guy2, guy2, guy2, guy5, 6, db)
+			insertVatFrob(ilk2, guy2, guy2, guy5, 6, db)
 			insertVatHeal(guy6, guy2, 7, db)
 			insertVatFold(guy4, 8, db)
 
@@ -365,9 +366,11 @@ func insertVatFold(urn string, blockNumber int64, db *postgres.DB) {
 	headerRepository := repositories.NewHeaderRepository(db)
 	headerID, err := headerRepository.CreateOrUpdateHeader(fakes.GetFakeHeader(blockNumber))
 	Expect(err).NotTo(HaveOccurred())
-	ilkID, err := shared.GetOrCreateIlk("fake_ilk", db)
+	ilkID, err := shared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
+	Expect(err).NotTo(HaveOccurred())
 	urnID, err := shared.GetOrCreateUrn(urn, ilkID, db)
 	Expect(err).NotTo(HaveOccurred())
+
 	_, execErr := db.Exec(
 		`INSERT INTO maker.vat_fold (header_id, urn_id, log_idx, tx_idx)
 			VALUES($1, $2, $3, $4)`,
@@ -382,6 +385,7 @@ func insertVatFlux(ilk, src, dst string, blockNumber int64, db *postgres.DB) {
 	Expect(err).NotTo(HaveOccurred())
 	ilkID, err := shared.GetOrCreateIlk(ilk, db)
 	Expect(err).NotTo(HaveOccurred())
+
 	_, execErr := db.Exec(
 		`INSERT INTO maker.vat_flux (header_id, ilk_id, src, dst, log_idx, tx_idx)
 			VALUES($1, $2, $3, $4, $5, $6)`,
@@ -395,9 +399,10 @@ func insertVatGrab(ilk, urn, v, w string, blockNumber int64, db *postgres.DB) {
 	headerID, err := headerRepository.CreateOrUpdateHeader(fakes.GetFakeHeader(blockNumber))
 	Expect(err).NotTo(HaveOccurred())
 	ilkID, err := shared.GetOrCreateIlk(ilk, db)
-	urnID, err := shared.GetOrCreateUrn(urn, ilkID, db)
-
 	Expect(err).NotTo(HaveOccurred())
+	urnID, err := shared.GetOrCreateUrn(urn, ilkID, db)
+	Expect(err).NotTo(HaveOccurred())
+
 	_, execErr := db.Exec(
 		`INSERT INTO maker.vat_grab (header_id, urn_id, v, w, log_idx, tx_idx)
 			VALUES($1, $2, $3, $4, $5, $6)`,
@@ -492,8 +497,10 @@ func insertVatFrob(ilk, urn, v, w string, blockNumber int64, db *postgres.DB) {
 	headerID, err := headerRepository.CreateOrUpdateHeader(fakes.GetFakeHeader(blockNumber))
 	Expect(err).NotTo(HaveOccurred())
 	ilkID, err := shared.GetOrCreateIlk(ilk, db)
+	Expect(err).NotTo(HaveOccurred())
 	urnID, err := shared.GetOrCreateUrn(urn, ilkID, db)
 	Expect(err).NotTo(HaveOccurred())
+
 	_, execErr := db.Exec(
 		`INSERT INTO maker.vat_frob (header_id, urn_id, v, w, log_idx, tx_idx)
 			VALUES($1, $2, $3, $4, $5, $6)`,

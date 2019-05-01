@@ -4,7 +4,7 @@
 
 CREATE TYPE maker.urn_state AS (
   urn_id       TEXT,
-  ilk_id       TEXT,
+  ilk_name     TEXT,
   block_height BIGINT,
   -- ilk object
   ink          NUMERIC,
@@ -102,16 +102,16 @@ WITH
     ORDER BY urn_id, headers.block_timestamp DESC
   )
 
-SELECT urns.guy, urns.ilk, $1, inks.ink, arts.art, ratios.ratio,
+SELECT urns.guy, ilks.name, $1, inks.ink, arts.art, ratios.ratio,
        COALESCE(safe.safe, arts.art = 0), created.datetime, updated.datetime
 FROM inks
-  LEFT JOIN arts     ON arts.urn_id = inks.urn_id
-  LEFT JOIN urns     ON arts.urn_id = urns.urn_id
-  LEFT JOIN ratios   ON ratios.guy = urns.guy
-  LEFT JOIN safe     ON safe.guy = ratios.guy
-  LEFT JOIN created  ON created.urn_id = urns.urn_id
-  LEFT JOIN updated  ON updated.urn_id = urns.urn_id
-  -- Add collections of frob and bite events?
+  LEFT JOIN arts       ON arts.urn_id = inks.urn_id
+  LEFT JOIN urns       ON arts.urn_id = urns.urn_id
+  LEFT JOIN ratios     ON ratios.guy = urns.guy
+  LEFT JOIN safe       ON safe.guy = ratios.guy
+  LEFT JOIN created    ON created.urn_id = urns.urn_id
+  LEFT JOIN updated    ON updated.urn_id = urns.urn_id
+  LEFT JOIN maker.ilks ON ilks.id = urns.ilk_id
 $body$
 LANGUAGE SQL
 STABLE SECURITY DEFINER;

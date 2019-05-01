@@ -1,6 +1,7 @@
 package cat_test
 
 import (
+	"github.com/vulcanize/mcd_transformers/transformers/component_tests/queries/test_helpers"
 	"strconv"
 
 	. "github.com/onsi/ginkgo"
@@ -23,9 +24,8 @@ var _ = Describe("Cat storage repository", func() {
 		fakeBlockNumber = 123
 		fakeBlockHash   = "expected_block_hash"
 		fakeAddress     = "0x12345"
-		fakeIlk         = "fake_ilk"
 		fakeUint256     = "12345"
-		fakeBytes32     = "0x123456789abcdef123456789abcdef123456789abcdef123456789abcdef"
+		fakeBytes32     = "0x464b450000000000000000000000000000000000000000000000000000000000" // FKE (FlipIlk payload)
 	)
 
 	BeforeEach(func() {
@@ -96,14 +96,14 @@ var _ = Describe("Cat storage repository", func() {
 
 		Describe("Flip", func() {
 			It("writes a row", func() {
-				ilkFlipMetadata := utils.GetStorageValueMetadata(cat.IlkFlip, map[utils.Key]string{constants.Ilk: fakeIlk}, utils.Address)
+				ilkFlipMetadata := utils.GetStorageValueMetadata(cat.IlkFlip, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Address)
 
 				err := repo.Create(fakeBlockNumber, fakeBlockHash, ilkFlipMetadata, fakeAddress)
 				Expect(err).NotTo(HaveOccurred())
 
 				err = db.Get(&result, `SELECT block_number, block_hash, ilk_id AS key, flip AS value FROM maker.cat_ilk_flip`)
 				Expect(err).NotTo(HaveOccurred())
-				ilkID, err := shared.GetOrCreateIlk(fakeIlk, db)
+				ilkID, err := shared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
 				Expect(err).NotTo(HaveOccurred())
 				AssertMapping(result, fakeBlockNumber, fakeBlockHash, strconv.Itoa(ilkID), fakeAddress)
 			})
@@ -118,14 +118,14 @@ var _ = Describe("Cat storage repository", func() {
 
 		Describe("Chop", func() {
 			It("writes a row", func() {
-				ilkChopMetadata := utils.GetStorageValueMetadata(cat.IlkChop, map[utils.Key]string{constants.Ilk: fakeIlk}, utils.Uint256)
+				ilkChopMetadata := utils.GetStorageValueMetadata(cat.IlkChop, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Uint256)
 
 				err := repo.Create(fakeBlockNumber, fakeBlockHash, ilkChopMetadata, fakeUint256)
 				Expect(err).NotTo(HaveOccurred())
 
 				err = db.Get(&result, `SELECT block_number, block_hash, ilk_id AS key, chop AS value FROM maker.cat_ilk_chop`)
 				Expect(err).NotTo(HaveOccurred())
-				ilkID, err := shared.GetOrCreateIlk(fakeIlk, db)
+				ilkID, err := shared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
 				Expect(err).NotTo(HaveOccurred())
 				AssertMapping(result, fakeBlockNumber, fakeBlockHash, strconv.Itoa(ilkID), fakeUint256)
 			})
@@ -140,14 +140,14 @@ var _ = Describe("Cat storage repository", func() {
 
 		Describe("Lump", func() {
 			It("writes a row", func() {
-				ilkLumpMetadata := utils.GetStorageValueMetadata(cat.IlkLump, map[utils.Key]string{constants.Ilk: fakeIlk}, utils.Uint256)
+				ilkLumpMetadata := utils.GetStorageValueMetadata(cat.IlkLump, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Uint256)
 
 				err := repo.Create(fakeBlockNumber, fakeBlockHash, ilkLumpMetadata, fakeUint256)
 				Expect(err).NotTo(HaveOccurred())
 
 				err = db.Get(&result, `SELECT block_number, block_hash, ilk_id AS key, lump AS value FROM maker.cat_ilk_lump`)
 				Expect(err).NotTo(HaveOccurred())
-				ilkID, err := shared.GetOrCreateIlk(fakeIlk, db)
+				ilkID, err := shared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
 				Expect(err).NotTo(HaveOccurred())
 				AssertMapping(result, fakeBlockNumber, fakeBlockHash, strconv.Itoa(ilkID), fakeUint256)
 			})

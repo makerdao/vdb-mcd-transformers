@@ -91,7 +91,7 @@ LANGUAGE sql STABLE;
 
 CREATE TYPE maker.ilk_state AS (
   ilk_id       INTEGER,
-  ilk          TEXT,
+  ilk_name     TEXT,
   block_height BIGINT,
   rate         NUMERIC,
   art          NUMERIC,
@@ -236,7 +236,7 @@ WITH rates AS (
 
 SELECT
   ilks.id,
-  ilks.ilk,
+  ilks.name,
   $1 block_height,
   rates.rate,
   arts.art,
