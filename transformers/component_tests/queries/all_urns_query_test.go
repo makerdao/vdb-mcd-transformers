@@ -51,12 +51,12 @@ var _ = Describe("Urn view", func() {
 		helper.CreateUrn(setupData, metadata, vatRepo, headerRepo)
 
 		var actualUrn helper.UrnState
-		err = db.Get(&actualUrn, `SELECT urnId, ilkId, blockHeight, ink, art, ratio, safe, created, updated
-			FROM maker.get_all_urn_states_at_block($1)`, fakeBlockNo)
+		err = db.Get(&actualUrn, `SELECT urn_id, ilk_id, block_height, ink, art, ratio, safe, created, updated
+			FROM maker.all_urns($1)`, fakeBlockNo)
 		Expect(err).NotTo(HaveOccurred())
 
 		expectedRatio := helper.GetExpectedRatio(setupData.Ink, setupData.Spot, setupData.Art, setupData.Rate)
-
+		expectedTimestamp := helper.GetExpectedTimestamp(fakeTimestamp)
 		expectedUrn := helper.UrnState{
 			UrnId:       urnOne,
 			IlkId:       ilkOne,
@@ -65,8 +65,8 @@ var _ = Describe("Urn view", func() {
 			Art:         strconv.Itoa(setupData.Art),
 			Ratio:       sql.NullString{String: strconv.FormatFloat(expectedRatio, 'f', 8, 64), Valid: true},
 			Safe:        expectedRatio >= 1,
-			Created:     sql.NullString{String: "12345", Valid: true},
-			Updated:     sql.NullString{String: "12345", Valid: true},
+			Created:     sql.NullString{String: expectedTimestamp, Valid: true},
+			Updated:     sql.NullString{String: expectedTimestamp, Valid: true},
 		}
 
 		helper.AssertUrn(actualUrn, expectedUrn)
@@ -74,13 +74,14 @@ var _ = Describe("Urn view", func() {
 
 	It("returns the correct data for multiple urns", func() {
 		blockOne := rand.Int()
-		timestampOne := rand.Int()
+		timestampOne := int(rand.Int31())
 
 		urnOneMetadata := helper.GetUrnMetadata(ilkOne, urnOne)
 		urnOneSetupData := helper.GetUrnSetupData(blockOne, timestampOne)
 		helper.CreateUrn(urnOneSetupData, urnOneMetadata, vatRepo, headerRepo)
 		expectedRatioOne := helper.GetExpectedRatio(urnOneSetupData.Ink, urnOneSetupData.Spot, urnOneSetupData.Art, urnOneSetupData.Rate)
 
+		expectedTimestamp := time.Unix(int64(timestampOne), 0).UTC().Format(time.RFC3339)
 		expectedUrnOne := helper.UrnState{
 			UrnId:   urnOne,
 			IlkId:   ilkOne,
@@ -88,8 +89,8 @@ var _ = Describe("Urn view", func() {
 			Art:     strconv.Itoa(urnOneSetupData.Art),
 			Ratio:   sql.NullString{String: strconv.FormatFloat(expectedRatioOne, 'f', 8, 64), Valid: true},
 			Safe:    expectedRatioOne >= 1,
-			Created: sql.NullString{String: strconv.Itoa(timestampOne), Valid: true},
-			Updated: sql.NullString{String: strconv.Itoa(timestampOne), Valid: true},
+			Created: sql.NullString{String: expectedTimestamp, Valid: true},
+			Updated: sql.NullString{String: expectedTimestamp, Valid: true},
 		}
 
 		// New block
@@ -101,6 +102,7 @@ var _ = Describe("Urn view", func() {
 		helper.CreateUrn(urnTwoSetupData, urnTwoMetadata, vatRepo, headerRepo)
 		expectedRatioTwo := helper.GetExpectedRatio(urnTwoSetupData.Ink, urnTwoSetupData.Spot, urnTwoSetupData.Art, urnTwoSetupData.Rate)
 
+		expectedTimestampTwo := helper.GetExpectedTimestamp(timestampTwo)
 		expectedUrnTwo := helper.UrnState{
 			UrnId:   urnTwo,
 			IlkId:   ilkTwo,
@@ -108,13 +110,13 @@ var _ = Describe("Urn view", func() {
 			Art:     strconv.Itoa(urnTwoSetupData.Art),
 			Ratio:   sql.NullString{String: strconv.FormatFloat(expectedRatioTwo, 'f', 8, 64), Valid: true},
 			Safe:    expectedRatioTwo >= 1,
-			Created: sql.NullString{String: strconv.Itoa(timestampTwo), Valid: true},
-			Updated: sql.NullString{String: strconv.Itoa(timestampTwo), Valid: true},
+			Created: sql.NullString{String: expectedTimestampTwo, Valid: true},
+			Updated: sql.NullString{String: expectedTimestampTwo, Valid: true},
 		}
 
 		var result []helper.UrnState
-		err = db.Select(&result, `SELECT urnId, ilkId, ink, art, ratio, safe, created, updated
-			FROM maker.get_all_urn_states_at_block($1) ORDER BY created`, blockTwo)
+		err = db.Select(&result, `SELECT urn_id, ilk_id, ink, art, ratio, safe, created, updated
+			FROM maker.all_urns($1) ORDER BY created`, blockTwo)
 		Expect(err).NotTo(HaveOccurred())
 
 		helper.AssertUrn(result[0], expectedUrnOne)
@@ -123,7 +125,7 @@ var _ = Describe("Urn view", func() {
 
 	It("returns urn state without timestamps if corresponding headers aren't synced", func() {
 		block := rand.Int()
-		timestamp := rand.Int()
+		timestamp := int(rand.Int31())
 		metadata := helper.GetUrnMetadata(ilkOne, urnOne)
 		setupData := helper.GetUrnSetupData(block, timestamp)
 
@@ -132,8 +134,8 @@ var _ = Describe("Urn view", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		var result helper.UrnState
-		err = db.Get(&result, `SELECT urnId, ilkId, ink, art, ratio, safe, created, updated
-			FROM maker.get_all_urn_states_at_block($1)`, block)
+		err = db.Get(&result, `SELECT urn_id, ilk_id, ink, art, ratio, safe, created, updated
+			FROM maker.all_urns($1)`, block)
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(result.Created.String).To(BeEmpty())
@@ -151,19 +153,19 @@ var _ = Describe("Urn view", func() {
 
 		BeforeEach(func() {
 			blockOne = rand.Int()
-			timestampOne = rand.Int()
+			timestampOne = int(rand.Int31())
 			setupDataOne = helper.GetUrnSetupData(blockOne, timestampOne)
 			metadata = helper.GetUrnMetadata(ilkOne, urnOne)
 			helper.CreateUrn(setupDataOne, metadata, vatRepo, headerRepo)
 		})
 
 		It("gets urn state as of block one", func() {
-			err = db.Get(&actualUrn, `SELECT urnId, ilkId, ink, art, ratio, safe, created, updated
-				FROM maker.get_all_urn_states_at_block($1)`, blockOne)
+			err = db.Get(&actualUrn, `SELECT urn_id, ilk_id, ink, art, ratio, safe, created, updated
+				FROM maker.all_urns($1)`, blockOne)
 			Expect(err).NotTo(HaveOccurred())
 
 			expectedRatio := helper.GetExpectedRatio(setupDataOne.Ink, setupDataOne.Spot, setupDataOne.Art, setupDataOne.Rate)
-
+			expectedTimestamp := helper.GetExpectedTimestamp(timestampOne)
 			expectedUrn := helper.UrnState{
 				UrnId:   urnOne,
 				IlkId:   ilkOne,
@@ -171,8 +173,8 @@ var _ = Describe("Urn view", func() {
 				Art:     strconv.Itoa(setupDataOne.Art),
 				Ratio:   sql.NullString{String: strconv.FormatFloat(expectedRatio, 'f', 8, 64), Valid: true},
 				Safe:    expectedRatio >= 1,
-				Created: sql.NullString{String: strconv.Itoa(timestampOne), Valid: true},
-				Updated: sql.NullString{String: strconv.Itoa(timestampOne), Valid: true},
+				Created: sql.NullString{String: expectedTimestamp, Valid: true},
+				Updated: sql.NullString{String: expectedTimestamp, Valid: true},
 			}
 
 			helper.AssertUrn(actualUrn, expectedUrn)
@@ -188,7 +190,8 @@ var _ = Describe("Urn view", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			expectedRatio := helper.GetExpectedRatio(updatedInk, setupDataOne.Spot, setupDataOne.Art, setupDataOne.Rate)
-
+			expectedTimestampOne := helper.GetExpectedTimestamp(timestampOne)
+			expectedTimestampTwo := helper.GetExpectedTimestamp(timestampTwo)
 			expectedUrn := helper.UrnState{
 				UrnId:   urnOne,
 				IlkId:   ilkOne,
@@ -196,8 +199,8 @@ var _ = Describe("Urn view", func() {
 				Art:     strconv.Itoa(setupDataOne.Art), // Not changed
 				Ratio:   sql.NullString{String: strconv.FormatFloat(expectedRatio, 'f', 8, 64), Valid: true},
 				Safe:    expectedRatio >= 1,
-				Created: sql.NullString{String: strconv.Itoa(timestampOne), Valid: true},
-				Updated: sql.NullString{String: strconv.Itoa(timestampTwo), Valid: true},
+				Created: sql.NullString{String: expectedTimestampOne, Valid: true},
+				Updated: sql.NullString{String: expectedTimestampTwo, Valid: true},
 			}
 
 			fakeHeaderTwo := fakes.GetFakeHeader(int64(blockTwo))
@@ -207,8 +210,8 @@ var _ = Describe("Urn view", func() {
 			_, err = headerRepo.CreateOrUpdateHeader(fakeHeaderTwo)
 			Expect(err).NotTo(HaveOccurred())
 
-			err = db.Get(&actualUrn, `SELECT urnId, ilkId, ink, art, ratio, safe, created, updated
-				FROM maker.get_all_urn_states_at_block($1)`, blockTwo)
+			err = db.Get(&actualUrn, `SELECT urn_id, ilk_id, ink, art, ratio, safe, created, updated
+				FROM maker.all_urns($1)`, blockTwo)
 			Expect(err).NotTo(HaveOccurred())
 
 			helper.AssertUrn(actualUrn, expectedUrn)
@@ -227,8 +230,8 @@ var _ = Describe("Urn view", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		var result helper.UrnState
-		err = db.Get(&result, `SELECT urnId, ilkId, ink, art, ratio, safe, created, updated
-			FROM maker.get_all_urn_states_at_block($1)`, block)
+		err = db.Get(&result, `SELECT urn_id, ilk_id, ink, art, ratio, safe, created, updated
+			FROM maker.all_urns($1)`, block)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(result.Ratio.String).To(BeEmpty())

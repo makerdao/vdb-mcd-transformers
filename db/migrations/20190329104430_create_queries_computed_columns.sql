@@ -8,9 +8,9 @@
 CREATE OR REPLACE FUNCTION maker.frob_event_ilk(event maker.frob_event)
   RETURNS SETOF maker.ilk_state AS
 $$
-  SELECT * FROM maker.get_ilk_at_block_number(
+  SELECT * FROM maker.get_ilk(
     event.block_number,
-    (SELECT id FROM maker.ilks WHERE ilk = event.ilkid))
+    (SELECT id FROM maker.ilks WHERE ilk = event.ilk_id))
 $$ LANGUAGE sql STABLE;
 
 
@@ -18,7 +18,7 @@ $$ LANGUAGE sql STABLE;
 CREATE OR REPLACE FUNCTION maker.frob_event_urn(event maker.frob_event)
   RETURNS SETOF maker.urn_state AS
 $$
-  SELECT * FROM maker.get_urn_state_at_block(event.ilkid, event.urnid, event.block_number)
+  SELECT * FROM maker.get_urn(event.ilk_id, event.urn_id, event.block_number)
 $$ LANGUAGE sql STABLE;
 
 
@@ -65,7 +65,7 @@ CREATE OR REPLACE FUNCTION maker.ilk_state_frobs(state maker.ilk_state)
   RETURNS SETOF maker.frob_event AS
 $$
   SELECT * FROM maker.all_frobs(state.ilk)
-  WHERE block_number <= state.block_number
+  WHERE block_number <= state.block_height
 $$ LANGUAGE sql STABLE;
 
 
@@ -73,8 +73,8 @@ $$ LANGUAGE sql STABLE;
 CREATE OR REPLACE FUNCTION maker.urn_state_frobs(state maker.urn_state)
   RETURNS SETOF maker.frob_event AS
 $$
-  SELECT * FROM maker.urn_frobs(state.ilkid, state.urnid)
-  WHERE block_number <= state.blockheight
+  SELECT * FROM maker.urn_frobs(state.ilk_id, state.urn_id)
+  WHERE block_number <= state.block_height
 $$ LANGUAGE sql STABLE;
 
 

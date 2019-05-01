@@ -1,6 +1,6 @@
 -- +goose Up
 -- +goose StatementBegin
-CREATE OR REPLACE FUNCTION maker.get_urn_history_before_block(ilk TEXT, urn TEXT, block_height BIGINT)
+CREATE OR REPLACE FUNCTION maker.all_urn_states(ilk TEXT, urn TEXT, block_height BIGINT)
   RETURNS SETOF maker.urn_state AS $$
 DECLARE
   blocks BIGINT[];
@@ -30,13 +30,13 @@ BEGIN
   FOREACH i IN ARRAY blocks
     LOOP
       RETURN QUERY
-        SELECT * FROM maker.get_urn_state_at_block(ilk, urn, i);
+        SELECT * FROM maker.get_urn(ilk, urn, i);
     END LOOP;
 END;
 $$
 LANGUAGE plpgsql
-STABLE;
+STABLE SECURITY DEFINER;
 -- +goose StatementEnd
 
 -- +goose Down
-DROP FUNCTION  maker.get_urn_history_before_block(TEXT, TEXT, BIGINT);
+DROP FUNCTION  maker.all_urn_states(TEXT, TEXT, BIGINT);
