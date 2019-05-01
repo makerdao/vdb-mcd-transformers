@@ -100,7 +100,7 @@ var _ = Describe("Extension function", func() {
 				err = db.Get(&result,
 					`SELECT ilk_name, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated
                     FROM maker.frob_event_ilk(
-                        (SELECT (ilk_name, urn_id, dink, dart, block_number)::maker.frob_event FROM maker.all_frobs($1))
+                        (SELECT (ilk_name, urn_id, dink, dart, block_height)::maker.frob_event FROM maker.all_frobs($1))
                     )`, test_helpers.FakeIlk.Name)
 
 				Expect(err).NotTo(HaveOccurred())
@@ -138,7 +138,7 @@ var _ = Describe("Extension function", func() {
 				var actualUrn test_helpers.UrnState
 				err = db.Get(&actualUrn,
 					`SELECT urn_id, ilk_name FROM maker.frob_event_urn(
-                        (SELECT (ilk_name, urn_id, dink, dart, block_number)::maker.frob_event FROM maker.all_frobs($1)))`,
+                        (SELECT (ilk_name, urn_id, dink, dart, block_height)::maker.frob_event FROM maker.all_frobs($1)))`,
 					test_helpers.FakeIlk.Name)
 				Expect(err).NotTo(HaveOccurred())
 
@@ -210,7 +210,7 @@ var _ = Describe("Extension function", func() {
 			expectedTx := Tx{
 				TransactionHash:  "txHash",
 				TransactionIndex: strconv.Itoa(rand.Intn(10)),
-				BlockNumber:      strconv.Itoa(fakeBlock),
+				BlockHeight:      strconv.Itoa(fakeBlock),
 				BlockHash:        fakeHeader.Hash,
 				TxFrom:           "fromAddress",
 				TxTo:             "toAddress",
@@ -223,7 +223,7 @@ var _ = Describe("Extension function", func() {
 
 			var actualTx Tx
 			err = db.Get(&actualTx, `SELECT * FROM maker.frob_event_tx(
-			    (SELECT (ilk_name, urn_id, dink, dart, block_number)::maker.frob_event FROM maker.all_frobs($1)))`,
+			    (SELECT (ilk_name, urn_id, dink, dart, block_height)::maker.frob_event FROM maker.all_frobs($1)))`,
 				test_helpers.FakeIlk.Name)
 
 			Expect(err).NotTo(HaveOccurred())
@@ -240,7 +240,7 @@ type Era struct {
 type Tx struct {
 	TransactionHash  string `db:"transaction_hash"`
 	TransactionIndex string `db:"transaction_index"`
-	BlockNumber      string `db:"block_number"`
+	BlockHeight      string `db:"block_height"`
 	BlockHash        string `db:"block_hash"`
 	TxFrom           string `db:"tx_from"`
 	TxTo             string `db:"tx_to"`

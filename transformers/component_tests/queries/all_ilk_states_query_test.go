@@ -59,7 +59,7 @@ var _ = Describe("Ilk State History Query", func() {
 		expectedBlockTwoIlkState = test_helpers.IlkStateFromValues(test_helpers.FakeIlk.Hex, blockTwoHeader.Timestamp, blockOneHeader.Timestamp, blockTwoIlkValues)
 	})
 
-	It("returns the history of an ilk from the given block number", func() {
+	It("returns the history of an ilk from the given block height", func() {
 		var ilkId int
 		err := db.Get(&ilkId, `SELECT id FROM maker.ilks WHERE ilk = $1`, test_helpers.FakeIlk.Hex)
 		Expect(err).NotTo(HaveOccurred())
@@ -104,7 +104,7 @@ var _ = Describe("Ilk State History Query", func() {
 		}))
 	})
 
-	It("handles a query with a block number before the ilk is in the db", func() {
+	It("handles a query with a block height before the ilk is in the db", func() {
 		blockZero := blockOne - 1
 
 		blockZeroHeader := fakes.GetFakeHeader(int64(blockZero))
