@@ -31,16 +31,17 @@ var (
 
 	EmptyMetadatas []utils.StorageValueMetadata
 
-	FakeIlkRateMetadata = GetMetadata(vat.IlkRate, FakeIlk.Hex, utils.Uint256)
-	FakeIlkArtMetadata  = GetMetadata(vat.IlkArt, FakeIlk.Hex, utils.Uint256)
-	FakeIlkSpotMetadata = GetMetadata(vat.IlkSpot, FakeIlk.Hex, utils.Uint256)
-	FakeIlkLineMetadata = GetMetadata(vat.IlkLine, FakeIlk.Hex, utils.Uint256)
-	FakeIlkDustMetadata = GetMetadata(vat.IlkDust, FakeIlk.Hex, utils.Uint256)
-	fakeIlkChopMetadata = GetMetadata(cat.IlkChop, FakeIlk.Hex, utils.Uint256)
-	fakeIlkLumpMetadata = GetMetadata(cat.IlkLump, FakeIlk.Hex, utils.Uint256)
-	fakeIlkFlipMetadata = GetMetadata(cat.IlkFlip, FakeIlk.Hex, utils.Address)
-	fakeIlkRhoMetadata  = GetMetadata(jug.IlkRho, FakeIlk.Hex, utils.Uint256)
-	fakeIlkTaxMetadata  = GetMetadata(jug.IlkDuty, FakeIlk.Hex, utils.Uint256)
+	FakeIlkRateMetadata = utils.GetStorageValueMetadata(vat.IlkRate, map[utils.Key]string{constants.Ilk: FakeIlk.Hex}, utils.Uint256)
+	FakeIlkArtMetadata  = utils.GetStorageValueMetadata(vat.IlkArt, map[utils.Key]string{constants.Ilk: FakeIlk.Hex}, utils.Uint256)
+	FakeIlkSpotMetadata = utils.GetStorageValueMetadata(vat.IlkSpot, map[utils.Key]string{constants.Ilk: FakeIlk.Hex}, utils.Uint256)
+	FakeIlkLineMetadata = utils.GetStorageValueMetadata(vat.IlkLine, map[utils.Key]string{constants.Ilk: FakeIlk.Hex}, utils.Uint256)
+	FakeIlkDustMetadata = utils.GetStorageValueMetadata(vat.IlkDust, map[utils.Key]string{constants.Ilk: FakeIlk.Hex}, utils.Uint256)
+	fakeIlkChopMetadata = utils.GetStorageValueMetadata(cat.IlkChop, map[utils.Key]string{constants.Ilk: FakeIlk.Hex}, utils.Uint256)
+	fakeIlkLumpMetadata = utils.GetStorageValueMetadata(cat.IlkLump, map[utils.Key]string{constants.Ilk: FakeIlk.Hex}, utils.Uint256)
+	fakeIlkFlipMetadata = utils.GetStorageValueMetadata(cat.IlkFlip, map[utils.Key]string{constants.Ilk: FakeIlk.Hex}, utils.Uint256)
+	fakeIlkRhoMetadata  = utils.GetStorageValueMetadata(jug.IlkRho, map[utils.Key]string{constants.Ilk: FakeIlk.Hex}, utils.Uint256)
+	fakeIlkTaxMetadata  = utils.GetStorageValueMetadata(jug.IlkDuty, map[utils.Key]string{constants.Ilk: FakeIlk.Hex}, utils.Uint256)
+
 	FakeIlkVatMetadatas = []utils.StorageValueMetadata{
 		FakeIlkRateMetadata,
 		FakeIlkArtMetadata,
@@ -58,16 +59,16 @@ var (
 		fakeIlkTaxMetadata,
 	}
 
-	anotherFakeIlkRateMetadata = GetMetadata(vat.IlkRate, AnotherFakeIlk.Hex, utils.Uint256)
-	anotherFakeIlkArtMetadata  = GetMetadata(vat.IlkArt, AnotherFakeIlk.Hex, utils.Uint256)
-	anotherFakeIlkSpotMetadata = GetMetadata(vat.IlkSpot, AnotherFakeIlk.Hex, utils.Uint256)
-	anotherFakeIlkLineMetadata = GetMetadata(vat.IlkLine, AnotherFakeIlk.Hex, utils.Uint256)
-	anotherFakeIlkDustMetadata = GetMetadata(vat.IlkDust, AnotherFakeIlk.Hex, utils.Uint256)
-	anotherFakeIlkChopMetadata = GetMetadata(cat.IlkChop, AnotherFakeIlk.Hex, utils.Uint256)
-	anotherFakeIlkLumpMetadata = GetMetadata(cat.IlkLump, AnotherFakeIlk.Hex, utils.Uint256)
-	anotherFakeIlkFlipMetadata = GetMetadata(cat.IlkFlip, AnotherFakeIlk.Hex, utils.Address)
-	anotherFakeIlkRhoMetadata  = GetMetadata(jug.IlkRho, AnotherFakeIlk.Hex, utils.Uint256)
-	anotherFakeIlkTaxMetadata  = GetMetadata(jug.IlkDuty, AnotherFakeIlk.Hex, utils.Uint256)
+	anotherFakeIlkRateMetadata = utils.GetStorageValueMetadata(vat.IlkRate, map[utils.Key]string{constants.Ilk: AnotherFakeIlk.Hex}, utils.Uint256)
+	anotherFakeIlkArtMetadata  = utils.GetStorageValueMetadata(vat.IlkArt, map[utils.Key]string{constants.Ilk: AnotherFakeIlk.Hex}, utils.Uint256)
+	anotherFakeIlkSpotMetadata = utils.GetStorageValueMetadata(vat.IlkSpot, map[utils.Key]string{constants.Ilk: AnotherFakeIlk.Hex}, utils.Uint256)
+	anotherFakeIlkLineMetadata = utils.GetStorageValueMetadata(vat.IlkLine, map[utils.Key]string{constants.Ilk: AnotherFakeIlk.Hex}, utils.Uint256)
+	anotherFakeIlkDustMetadata = utils.GetStorageValueMetadata(vat.IlkDust, map[utils.Key]string{constants.Ilk: AnotherFakeIlk.Hex}, utils.Uint256)
+	anotherFakeIlkChopMetadata = utils.GetStorageValueMetadata(cat.IlkChop, map[utils.Key]string{constants.Ilk: AnotherFakeIlk.Hex}, utils.Uint256)
+	anotherFakeIlkLumpMetadata = utils.GetStorageValueMetadata(cat.IlkLump, map[utils.Key]string{constants.Ilk: AnotherFakeIlk.Hex}, utils.Uint256)
+	anotherFakeIlkFlipMetadata = utils.GetStorageValueMetadata(cat.IlkFlip, map[utils.Key]string{constants.Ilk: AnotherFakeIlk.Hex}, utils.Address)
+	anotherFakeIlkRhoMetadata  = utils.GetStorageValueMetadata(jug.IlkRho, map[utils.Key]string{constants.Ilk: AnotherFakeIlk.Hex}, utils.Uint256)
+	anotherFakeIlkTaxMetadata  = utils.GetStorageValueMetadata(jug.IlkDuty, map[utils.Key]string{constants.Ilk: AnotherFakeIlk.Hex}, utils.Uint256)
 
 	AnotherFakeIlkVatMetadatas = []utils.StorageValueMetadata{
 		anotherFakeIlkRateMetadata,
@@ -149,9 +150,6 @@ func IlkStateFromValues(ilk, updated, created string, ilkValues map[string]strin
 	}
 }
 
-func GetMetadata(fieldType, ilk string, valueType utils.ValueType) utils.StorageValueMetadata {
-	return utils.GetStorageValueMetadata(fieldType, map[utils.Key]string{constants.Ilk: ilk}, valueType)
-}
 func CreateVatRecords(header core.Header, valuesMap map[string]string, metadatas []utils.StorageValueMetadata, repository vat.VatStorageRepository) {
 	blockHash := header.Hash
 	blockNumber := int(header.BlockNumber)
