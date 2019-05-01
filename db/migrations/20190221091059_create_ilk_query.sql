@@ -1,8 +1,8 @@
 -- +goose Up
-create type maker.relevant_block AS (
-  block_number bigint,
-  block_hash   text,
-  ilk_id       integer
+CREATE TYPE maker.relevant_block AS (
+  block_number BIGINT,
+  block_hash   TEXT,
+  ilk_id       INTEGER
 );
 
 create or replace function maker.get_ilk_blocks_before(block_number bigint, ilk_id int)
@@ -90,24 +90,24 @@ $$
 LANGUAGE sql STABLE;
 
 CREATE TYPE maker.ilk_state AS (
-  ilk_id       integer,
-  ilk          text,
-  block_number bigint,
-  rate         numeric,
-  art          numeric,
-  spot         numeric,
-  line         numeric,
-  dust         numeric,
-  chop         numeric,
-  lump         numeric,
-  flip         text,
-  rho          numeric,
-  duty         numeric,
-  created      numeric,
-  updated      numeric
+  ilk_id       INTEGER,
+  ilk          TEXT,
+  block_height BIGINT,
+  rate         NUMERIC,
+  art          NUMERIC,
+  spot         NUMERIC,
+  line         NUMERIC,
+  dust         NUMERIC,
+  chop         NUMERIC,
+  lump         NUMERIC,
+  flip         TEXT,
+  rho          NUMERIC,
+  duty         NUMERIC,
+  created      TIMESTAMP,
+  updated      TIMESTAMP
 );
 
-CREATE FUNCTION maker.get_ilk_at_block_number(block_number bigint, ilkId int)
+CREATE FUNCTION maker.get_ilk(block_height BIGINT, ilkId INT)
   RETURNS maker.ilk_state
 AS $$
 WITH rates AS (
@@ -217,7 +217,7 @@ WITH rates AS (
       relevant_blocks.block_number,
       relevant_blocks.block_hash,
       relevant_blocks.ilk_id,
-      headers.block_timestamp
+      (SELECT TIMESTAMP 'epoch' + headers.block_timestamp * INTERVAL '1 second') as datetime
     FROM relevant_blocks
       LEFT JOIN public.headers AS headers on headers.hash = relevant_blocks.block_hash
     ORDER BY block_number ASC
@@ -227,7 +227,7 @@ WITH rates AS (
       relevant_blocks.block_number,
       relevant_blocks.block_hash,
       relevant_blocks.ilk_id,
-      headers.block_timestamp
+      (SELECT TIMESTAMP 'epoch' + headers.block_timestamp * INTERVAL '1 second') as datetime
     FROM relevant_blocks
       LEFT JOIN public.headers AS headers on headers.hash = relevant_blocks.block_hash
     ORDER BY block_number DESC
@@ -237,7 +237,7 @@ WITH rates AS (
 SELECT
   ilks.id,
   ilks.ilk,
-  $1 block_number,
+  $1 block_height,
   rates.rate,
   arts.art,
   spots.spot,
@@ -248,8 +248,8 @@ SELECT
   flips.flip,
   rhos.rho,
   duties.duty,
-  created.block_timestamp,
-  updated.block_timestamp
+  created.datetime,
+  updated.datetime
 FROM maker.ilks AS ilks
   LEFT JOIN rates ON rates.ilk_id = ilks.id
   LEFT JOIN arts ON arts.ilk_id = ilks.id
@@ -277,10 +277,10 @@ WHERE (
 )
 $$
 LANGUAGE SQL
-STABLE;
+STABLE SECURITY DEFINER;
 
 -- +goose Down
-DROP FUNCTION IF EXISTS maker.get_ilk_blocks_before(block_number bigint, ilk_id int);
+DROP FUNCTION IF EXISTS maker.get_ilk_blocks_before(block_number BIGINT, ilk_id INT);
 DROP TYPE maker.relevant_block CASCADE;
-DROP FUNCTION IF EXISTS maker.get_ilk_at_block_number(block_number bigint, ilk_id int );
+DROP FUNCTION IF EXISTS maker.get_ilk(block_height BIGINT, ilk_id INT );
 DROP TYPE maker.ilk_state CASCADE;

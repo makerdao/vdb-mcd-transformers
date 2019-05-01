@@ -1,9 +1,9 @@
 -- +goose Up
 -- SQL in this section is executed when the migration is applied.
 CREATE TYPE maker.frob_event AS (
-  ilkId        TEXT,
+  ilk_id        TEXT,
   -- ilk object
-  urnId        TEXT,
+  urn_id        TEXT,
   dink         NUMERIC,
   dart         NUMERIC,
   block_number BIGINT
@@ -42,7 +42,7 @@ $$
   LEFT JOIN headers    ON vat_frob.header_id = headers.id
   WHERE urns.ilk_id = (SELECT id FROM ilk)
   ORDER BY guy, block_number DESC
-$$ LANGUAGE sql STABLE;
+$$ LANGUAGE sql STABLE SECURITY DEFINER;
 
 
 -- +goose Down
