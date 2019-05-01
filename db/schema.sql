@@ -37,7 +37,7 @@ CREATE TYPE maker.era AS (
 --
 
 CREATE TYPE maker.frob_event AS (
-	ilk_id text,
+	ilk_name text,
 	urn_id text,
 	dink numeric,
 	dart numeric,
@@ -51,7 +51,7 @@ CREATE TYPE maker.frob_event AS (
 
 CREATE TYPE maker.ilk_state AS (
 	ilk_id integer,
-	ilk text,
+	ilk_name text,
 	block_height bigint,
 	rate numeric,
 	art numeric,
@@ -99,7 +99,7 @@ CREATE TYPE maker.tx AS (
 
 CREATE TYPE maker.urn_state AS (
 	urn_id text,
-	ilk_id text,
+	ilk_name text,
 	block_height bigint,
 	ink numeric,
 	art numeric,
@@ -114,13 +114,13 @@ CREATE TYPE maker.urn_state AS (
 -- Name: all_frobs(text); Type: FUNCTION; Schema: maker; Owner: -
 --
 
-CREATE FUNCTION maker.all_frobs(ilk text) RETURNS SETOF maker.frob_event
+CREATE FUNCTION maker.all_frobs(ilk_name text) RETURNS SETOF maker.frob_event
     LANGUAGE sql STABLE SECURITY DEFINER
     AS $_$
   WITH
     ilk AS (SELECT id FROM maker.ilks WHERE ilks.name = $1)
 
-  SELECT $1 AS ilkId, guy AS urnId, dink, dart, block_number
+  SELECT $1 AS ilk_name, guy AS urn_id, dink, dart, block_number
   FROM maker.vat_frob
   LEFT JOIN maker.urns ON vat_frob.urn_id = urns.id
   LEFT JOIN headers    ON vat_frob.header_id = headers.id
@@ -152,7 +152,7 @@ $_$;
 -- Name: all_urn_states(text, text, bigint); Type: FUNCTION; Schema: maker; Owner: -
 --
 
-CREATE FUNCTION maker.all_urn_states(ilk text, urn text, block_height bigint) RETURNS SETOF maker.urn_state
+CREATE FUNCTION maker.all_urn_states(ilk_name text, urn text, block_height bigint) RETURNS SETOF maker.urn_state
     LANGUAGE plpgsql STABLE SECURITY DEFINER
     AS $_$
 DECLARE
@@ -162,7 +162,7 @@ DECLARE
   urnId NUMERIC;
 BEGIN
   SELECT id FROM maker.ilks WHERE ilks.name = $1 INTO ilkId;
-  SELECT id FROM maker.urns WHERE urns.guy = $2 AND urns.ilk_id = ilkID INTO urnId;
+  SELECT id FROM maker.urns WHERE urns.guy = $2 AND urns.ilk_id = ilkId INTO urnId;
 
   blocks := ARRAY(
     SELECT block_number
@@ -183,7 +183,7 @@ BEGIN
   FOREACH i IN ARRAY blocks
     LOOP
       RETURN QUERY
-        SELECT * FROM maker.get_urn(ilk, urn, i);
+        SELECT * FROM maker.get_urn(ilk_name, urn, i);
     END LOOP;
 END;
 $_$;
@@ -297,7 +297,7 @@ CREATE FUNCTION maker.frob_event_ilk(event maker.frob_event) RETURNS SETOF maker
     AS $$
   SELECT * FROM maker.get_ilk(
     event.block_number,
-    (SELECT id FROM maker.ilks WHERE name = event.ilk_id))
+    (SELECT id FROM maker.ilks WHERE name = event.ilk_name))
 $$;
 
 
@@ -324,7 +324,7 @@ $$;
 CREATE FUNCTION maker.frob_event_urn(event maker.frob_event) RETURNS SETOF maker.urn_state
     LANGUAGE sql STABLE
     AS $$
-  SELECT * FROM maker.get_urn(event.ilk_id, event.urn_id, event.block_number)
+  SELECT * FROM maker.get_urn(event.ilk_name, event.urn_id, event.block_number)
 $$;
 
 
@@ -677,7 +677,7 @@ WITH
     ORDER BY urn_id, block_timestamp DESC
   )
 
-SELECT $2 AS urnId, $1 AS ilkId, $3 AS block_height, ink.ink, art.art, ratio.ratio,
+SELECT $2 AS urn_id, $1 AS ilk_name, $3 AS block_height, ink.ink, art.art, ratio.ratio,
        COALESCE(safe.safe, art.art = 0), created.datetime, updated.datetime
 FROM ink
   LEFT JOIN art     ON art.urn_id = ink.urn_id
@@ -698,7 +698,7 @@ $_$;
 CREATE FUNCTION maker.ilk_state_frobs(state maker.ilk_state) RETURNS SETOF maker.frob_event
     LANGUAGE sql STABLE
     AS $$
-  SELECT * FROM maker.all_frobs(state.ilk)
+  SELECT * FROM maker.all_frobs(state.ilk_name)
   WHERE block_number <= state.block_height
 $$;
 
@@ -719,7 +719,7 @@ $$;
 -- Name: urn_frobs(text, text); Type: FUNCTION; Schema: maker; Owner: -
 --
 
-CREATE FUNCTION maker.urn_frobs(ilk text, urn text) RETURNS SETOF maker.frob_event
+CREATE FUNCTION maker.urn_frobs(ilk_name text, urn text) RETURNS SETOF maker.frob_event
     LANGUAGE sql STABLE
     AS $_$
   WITH
@@ -730,7 +730,7 @@ CREATE FUNCTION maker.urn_frobs(ilk text, urn text) RETURNS SETOF maker.frob_eve
         AND guy = $2
     )
 
-  SELECT $1 AS ilkId, $2 AS urnId, dink, dart, block_number
+  SELECT $1 AS ilk_name, $2 AS urn_id, dink, dart, block_number
   FROM maker.vat_frob LEFT JOIN headers ON vat_frob.header_id = headers.id
   WHERE vat_frob.urn_id = (SELECT id FROM urn)
   ORDER BY block_number DESC
@@ -744,7 +744,7 @@ $_$;
 CREATE FUNCTION maker.urn_state_frobs(state maker.urn_state) RETURNS SETOF maker.frob_event
     LANGUAGE sql STABLE
     AS $$
-  SELECT * FROM maker.urn_frobs(state.ilk_id, state.urn_id)
+  SELECT * FROM maker.urn_frobs(state.ilk_name, state.urn_id)
   WHERE block_number <= state.block_height
 $$;
 
@@ -5853,11 +5853,11 @@ GRANT USAGE ON SCHEMA maker TO graphql;
 
 
 --
--- Name: FUNCTION all_frobs(ilk text); Type: ACL; Schema: maker; Owner: -
+-- Name: FUNCTION all_frobs(ilk_name text); Type: ACL; Schema: maker; Owner: -
 --
 
-REVOKE ALL ON FUNCTION maker.all_frobs(ilk text) FROM PUBLIC;
-GRANT ALL ON FUNCTION maker.all_frobs(ilk text) TO graphql;
+REVOKE ALL ON FUNCTION maker.all_frobs(ilk_name text) FROM PUBLIC;
+GRANT ALL ON FUNCTION maker.all_frobs(ilk_name text) TO graphql;
 
 
 --
@@ -5869,11 +5869,11 @@ GRANT ALL ON FUNCTION maker.all_ilk_states(block_height bigint, ilk_id integer) 
 
 
 --
--- Name: FUNCTION all_urn_states(ilk text, urn text, block_height bigint); Type: ACL; Schema: maker; Owner: -
+-- Name: FUNCTION all_urn_states(ilk_name text, urn text, block_height bigint); Type: ACL; Schema: maker; Owner: -
 --
 
-REVOKE ALL ON FUNCTION maker.all_urn_states(ilk text, urn text, block_height bigint) FROM PUBLIC;
-GRANT ALL ON FUNCTION maker.all_urn_states(ilk text, urn text, block_height bigint) TO graphql;
+REVOKE ALL ON FUNCTION maker.all_urn_states(ilk_name text, urn text, block_height bigint) FROM PUBLIC;
+GRANT ALL ON FUNCTION maker.all_urn_states(ilk_name text, urn text, block_height bigint) TO graphql;
 
 
 --
@@ -5943,10 +5943,10 @@ REVOKE ALL ON FUNCTION maker.tx_era(tx maker.tx) FROM PUBLIC;
 
 
 --
--- Name: FUNCTION urn_frobs(ilk text, urn text); Type: ACL; Schema: maker; Owner: -
+-- Name: FUNCTION urn_frobs(ilk_name text, urn text); Type: ACL; Schema: maker; Owner: -
 --
 
-REVOKE ALL ON FUNCTION maker.urn_frobs(ilk text, urn text) FROM PUBLIC;
+REVOKE ALL ON FUNCTION maker.urn_frobs(ilk_name text, urn text) FROM PUBLIC;
 
 
 --

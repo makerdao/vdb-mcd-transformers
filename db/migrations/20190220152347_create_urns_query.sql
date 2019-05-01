@@ -4,7 +4,7 @@
 
 CREATE TYPE maker.urn_state AS (
   urn_id       TEXT,
-  ilk_id       TEXT,
+  ilk_name     TEXT,
   block_height BIGINT,
   -- ilk object
   ink          NUMERIC,

@@ -1,9 +1,9 @@
 -- +goose Up
 -- SQL in this section is executed when the migration is applied.
 CREATE TYPE maker.frob_event AS (
-  ilk_id        TEXT,
+  ilk_name     TEXT,
   -- ilk object
-  urn_id        TEXT,
+  urn_id       TEXT,
   dink         NUMERIC,
   dart         NUMERIC,
   block_number BIGINT
@@ -11,7 +11,7 @@ CREATE TYPE maker.frob_event AS (
 );
 
 
-CREATE OR REPLACE FUNCTION maker.urn_frobs(ilk TEXT, urn TEXT)
+CREATE OR REPLACE FUNCTION maker.urn_frobs(ilk_name TEXT, urn TEXT)
   RETURNS SETOF maker.frob_event AS
 $body$
   WITH
@@ -22,7 +22,7 @@ $body$
         AND guy = $2
     )
 
-  SELECT $1 AS ilkId, $2 AS urnId, dink, dart, block_number
+  SELECT $1 AS ilk_name, $2 AS urn_id, dink, dart, block_number
   FROM maker.vat_frob LEFT JOIN headers ON vat_frob.header_id = headers.id
   WHERE vat_frob.urn_id = (SELECT id FROM urn)
   ORDER BY block_number DESC
@@ -30,13 +30,13 @@ $body$
 LANGUAGE sql STABLE;
 
 
-CREATE OR REPLACE FUNCTION maker.all_frobs(ilk TEXT)
+CREATE OR REPLACE FUNCTION maker.all_frobs(ilk_name TEXT)
   RETURNS SETOF maker.frob_event AS
 $$
   WITH
     ilk AS (SELECT id FROM maker.ilks WHERE ilks.name = $1)
 
-  SELECT $1 AS ilkId, guy AS urnId, dink, dart, block_number
+  SELECT $1 AS ilk_name, guy AS urn_id, dink, dart, block_number
   FROM maker.vat_frob
   LEFT JOIN maker.urns ON vat_frob.urn_id = urns.id
   LEFT JOIN headers    ON vat_frob.header_id = headers.id

@@ -91,7 +91,7 @@ LANGUAGE sql STABLE;
 
 CREATE TYPE maker.ilk_state AS (
   ilk_id       INTEGER,
-  ilk          TEXT,
+  ilk_name     TEXT,
   block_height BIGINT,
   rate         NUMERIC,
   art          NUMERIC,
