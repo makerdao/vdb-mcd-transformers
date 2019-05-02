@@ -5,23 +5,23 @@ CREATE OR REPLACE FUNCTION maker.all_urn_states(ilk_name TEXT, urn TEXT, block_h
 DECLARE
   blocks BIGINT[];
   i BIGINT;
-  ilkId NUMERIC;
-  urnId NUMERIC;
+  _ilk_id NUMERIC;
+  _urn_id NUMERIC;
 BEGIN
-  SELECT id FROM maker.ilks WHERE ilks.name = $1 INTO ilkId;
-  SELECT id FROM maker.urns WHERE urns.guy = $2 AND urns.ilk_id = ilkId INTO urnId;
+  SELECT id FROM maker.ilks WHERE ilks.name = $1 INTO _ilk_id;
+  SELECT id FROM maker.urns WHERE urns.guy = $2 AND urns.ilk_id = _ilk_id INTO _urn_id;
 
   blocks := ARRAY(
     SELECT block_number
     FROM (
        SELECT block_number
        FROM maker.vat_urn_ink
-       WHERE vat_urn_ink.urn_id = urnId
+       WHERE vat_urn_ink.urn_id = _urn_id
          AND block_number <= $3
        UNION
        SELECT block_number
        FROM maker.vat_urn_art
-       WHERE vat_urn_art.urn_id = urnId
+       WHERE vat_urn_art.urn_id = _urn_id
          AND block_number <= $3
      ) inks_and_arts
     ORDER BY block_number DESC

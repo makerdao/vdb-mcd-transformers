@@ -72,14 +72,14 @@ WITH rates AS (
     (
       SELECT TIMESTAMP 'epoch' + h.block_timestamp * INTERVAL '1 second'
       FROM maker.get_ilk_blocks_before($1, ilks.id) b
-      JOIN headers h on h.block_number = b.block_number
+      JOIN headers h on h.block_number = b.block_height
       ORDER BY h.block_number DESC
       LIMIT 1
     ),
     (
       SELECT TIMESTAMP 'epoch' + h.block_timestamp * INTERVAL '1 second'
       FROM maker.get_ilk_blocks_before($1, ilks.id) b
-      JOIN headers h on h.block_number = b.block_number
+      JOIN headers h on h.block_number = b.block_height
       ORDER BY h.block_number ASC
       LIMIT 1
     )
