@@ -18,15 +18,18 @@ package test_data
 
 import (
 	"encoding/json"
+
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/vulcanize/mcd_transformers/transformers/events/jug_drip"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
+
+	"github.com/vulcanize/mcd_transformers/transformers/events/jug_drip"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
 var EthJugDripLog = types.Log{
-	Address: common.HexToAddress(KovanJugContractAddress),
+	Address: common.HexToAddress(constants.JugContractAddress()),
 	Topics: []common.Hash{
 		common.HexToHash(KovanJugDripSignature),
 		common.HexToHash("0x00000000000000000000000064d922894153be9eef7b7218dc565d1d0ce2a092"),

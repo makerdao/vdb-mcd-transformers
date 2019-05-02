@@ -21,14 +21,12 @@ import (
 	"fmt"
 	"os"
 
-	. "github.com/onsi/gomega"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 
 	"github.com/vulcanize/vulcanizedb/pkg/config"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
-	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres/repositories"
 )
 
 var TestConfig *viper.Viper
@@ -193,11 +191,4 @@ func NewTestNode() core.Node {
 		ID:           "b6f90c0fdd8ec9607aed8ee45c69322e47b7063f0bfb7a29c8ecafab24d0a22d24dd2329b5ee6ed4125a03cb14e57fd584e67f9e53e6c631055cbbd82f080845",
 		ClientName:   "Geth/v1.7.2-stable-1db4ecdc/darwin-amd64/go1.9",
 	}
-}
-
-func NewTestBlock(blockNumber int64, repository repositories.BlockRepository) (blockId int64) {
-	blockId, err := repository.CreateOrUpdateBlock(core.Block{Number: blockNumber})
-	Expect(err).NotTo(HaveOccurred())
-
-	return blockId
 }

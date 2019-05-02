@@ -22,28 +22,29 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-
-	c2 "github.com/vulcanize/vulcanizedb/libraries/shared/constants"
-	fetch "github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/constants"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_init"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
 var _ = Describe("VatInit LogNoteTransformer", func() {
+	testVatInitConfig := transformer.EventTransformerConfig{
+		TransformerName:   mcdConstants.VatInitLabel,
+		ContractAddresses: []string{mcdConstants.VatContractAddress()},
+		ContractAbi:       test_data.KovanVatABI,
+		Topic:             test_data.KovanVatInitSignature,
+	}
+
 	It("transforms vat init log events", func() {
 		blockNumber := int64(10691326)
-		config := transformer.EventTransformerConfig{
-			TransformerName:     constants.VatInitLabel,
-			ContractAddresses:   []string{test_data.KovanVatContractAddress},
-			Topic:               test_data.KovanVatInitSignature,
-			StartingBlockNumber: blockNumber,
-			EndingBlockNumber:   blockNumber,
-		}
+		testVatInitConfig.StartingBlockNumber = blockNumber
+		testVatInitConfig.EndingBlockNumber = blockNumber
 
 		rpcClient, ethClient, err := getClients(ipc)
 		Expect(err).NotTo(HaveOccurred())
@@ -56,20 +57,20 @@ var _ = Describe("VatInit LogNoteTransformer", func() {
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		fetcher := fetch.NewLogFetcher(blockChain)
-		logs, err := fetcher.FetchLogs(
-			transformer.HexStringsToAddresses(config.ContractAddresses),
-			[]common.Hash{common.HexToHash(config.Topic)},
+		logFetcher := fetcher.NewLogFetcher(blockChain)
+		logs, err := logFetcher.FetchLogs(
+			transformer.HexStringsToAddresses(testVatInitConfig.ContractAddresses),
+			[]common.Hash{common.HexToHash(testVatInitConfig.Topic)},
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
 		transformer := shared.LogNoteTransformer{
-			Config:     config,
+			Config:     testVatInitConfig,
 			Converter:  &vat_init.VatInitConverter{},
 			Repository: &vat_init.VatInitRepository{},
 		}.NewLogNoteTransformer(db)
 
-		err = transformer.Execute(logs, header, c2.HeaderMissing)
+		err = transformer.Execute(logs, header, constants.HeaderMissing)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResults []vat_init.VatInitModel
@@ -85,14 +86,8 @@ var _ = Describe("VatInit LogNoteTransformer", func() {
 
 	It("rechecks vat init event", func() {
 		blockNumber := int64(10691326)
-		config := transformer.EventTransformerConfig{
-			TransformerName:     constants.VatInitLabel,
-			ContractAddresses:   []string{test_data.KovanVatContractAddress},
-			ContractAbi:         test_data.KovanVatABI,
-			Topic:               test_data.KovanVatInitSignature,
-			StartingBlockNumber: blockNumber,
-			EndingBlockNumber:   blockNumber,
-		}
+		testVatInitConfig.StartingBlockNumber = blockNumber
+		testVatInitConfig.EndingBlockNumber = blockNumber
 
 		rpcClient, ethClient, err := getClients(ipc)
 		Expect(err).NotTo(HaveOccurred())
@@ -105,23 +100,23 @@ var _ = Describe("VatInit LogNoteTransformer", func() {
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		fetcher := fetch.NewLogFetcher(blockChain)
-		logs, err := fetcher.FetchLogs(
-			transformer.HexStringsToAddresses(config.ContractAddresses),
-			[]common.Hash{common.HexToHash(config.Topic)},
+		logFetcher := fetcher.NewLogFetcher(blockChain)
+		logs, err := logFetcher.FetchLogs(
+			transformer.HexStringsToAddresses(testVatInitConfig.ContractAddresses),
+			[]common.Hash{common.HexToHash(testVatInitConfig.Topic)},
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
 		transformer := shared.LogNoteTransformer{
-			Config:     config,
+			Config:     testVatInitConfig,
 			Converter:  &vat_init.VatInitConverter{},
 			Repository: &vat_init.VatInitRepository{},
 		}.NewLogNoteTransformer(db)
 
-		err = transformer.Execute(logs, header, c2.HeaderMissing)
+		err = transformer.Execute(logs, header, constants.HeaderMissing)
 		Expect(err).NotTo(HaveOccurred())
 
-		err = transformer.Execute(logs, header, c2.HeaderMissing)
+		err = transformer.Execute(logs, header, constants.HeaderMissing)
 		Expect(err).NotTo(HaveOccurred())
 
 		var headerID int64

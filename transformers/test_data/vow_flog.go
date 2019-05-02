@@ -22,11 +22,12 @@ import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/vulcanize/mcd_transformers/transformers/events/vow_flog"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 )
 
 var EthVowFlogLog = types.Log{
-	Address: common.HexToAddress(KovanVowContractAddress),
+	Address: common.HexToAddress(constants.VowContractAddress()),
 	Topics: []common.Hash{
 		common.HexToHash(KovanVowFlogSignature),
 		common.HexToHash("0x0000000000000000000000008e84a1e068d77059cbe263c43ad0cdc130863313"),

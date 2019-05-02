@@ -17,34 +17,36 @@
 package integration_tests
 
 import (
-	"github.com/ethereum/go-ethereum/common"
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
 	"math/big"
 	"strconv"
 
-	c2 "github.com/vulcanize/vulcanizedb/libraries/shared/constants"
-	fetch "github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
+	"github.com/ethereum/go-ethereum/common"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/constants"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_grab"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
 var _ = Describe("Vat Grab Transformer", func() {
+	testVatGrabConfig := transformer.EventTransformerConfig{
+		TransformerName:   mcdConstants.VatGrabLabel,
+		ContractAddresses: []string{mcdConstants.VatContractAddress()},
+		ContractAbi:       test_data.KovanVatABI,
+		Topic:             test_data.KovanVatGrabSignature,
+	}
+
 	// TODO: Replace block number once there's a grab event on the updated Vat
 	XIt("transforms VatGrab log events", func() {
 		blockNumber := int64(8958230)
-		config := transformer.EventTransformerConfig{
-			TransformerName:     constants.VatGrabLabel,
-			ContractAddresses:   []string{test_data.KovanVatContractAddress},
-			Topic:               test_data.KovanVatGrabSignature,
-			StartingBlockNumber: blockNumber,
-			EndingBlockNumber:   blockNumber,
-		}
+		testVatGrabConfig.StartingBlockNumber = blockNumber
+		testVatGrabConfig.EndingBlockNumber = blockNumber
 
 		rpcClient, ethClient, err := getClients(ipc)
 		Expect(err).NotTo(HaveOccurred())
@@ -57,20 +59,20 @@ var _ = Describe("Vat Grab Transformer", func() {
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		fetcher := fetch.NewLogFetcher(blockChain)
-		logs, err := fetcher.FetchLogs(
-			transformer.HexStringsToAddresses(config.ContractAddresses),
-			[]common.Hash{common.HexToHash(config.Topic)},
+		logFetcher := fetcher.NewLogFetcher(blockChain)
+		logs, err := logFetcher.FetchLogs(
+			transformer.HexStringsToAddresses(testVatGrabConfig.ContractAddresses),
+			[]common.Hash{common.HexToHash(testVatGrabConfig.Topic)},
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
 		tr := shared.LogNoteTransformer{
-			Config:     config,
+			Config:     testVatGrabConfig,
 			Converter:  &vat_grab.VatGrabConverter{},
 			Repository: &vat_grab.VatGrabRepository{},
 		}.NewLogNoteTransformer(db)
 
-		err = tr.Execute(logs, header, c2.HeaderMissing)
+		err = tr.Execute(logs, header, constants.HeaderMissing)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []vat_grab.VatGrabModel
@@ -97,14 +99,8 @@ var _ = Describe("Vat Grab Transformer", func() {
 	// TODO: Replace block number once there's a grab event on the updated Vat
 	XIt("rechecks vat grab event", func() {
 		blockNumber := int64(8958230)
-		config := transformer.EventTransformerConfig{
-			TransformerName:     constants.VatGrabLabel,
-			ContractAddresses:   []string{test_data.KovanVatContractAddress},
-			ContractAbi:         test_data.KovanVatABI,
-			Topic:               test_data.KovanVatGrabSignature,
-			StartingBlockNumber: blockNumber,
-			EndingBlockNumber:   blockNumber,
-		}
+		testVatGrabConfig.StartingBlockNumber = blockNumber
+		testVatGrabConfig.EndingBlockNumber = blockNumber
 
 		rpcClient, ethClient, err := getClients(ipc)
 		Expect(err).NotTo(HaveOccurred())
@@ -117,22 +113,22 @@ var _ = Describe("Vat Grab Transformer", func() {
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		fetcher := fetch.NewLogFetcher(blockChain)
-		logs, err := fetcher.FetchLogs(
-			transformer.HexStringsToAddresses(config.ContractAddresses),
-			[]common.Hash{common.HexToHash(config.Topic)},
+		logFetcher := fetcher.NewLogFetcher(blockChain)
+		logs, err := logFetcher.FetchLogs(
+			transformer.HexStringsToAddresses(testVatGrabConfig.ContractAddresses),
+			[]common.Hash{common.HexToHash(testVatGrabConfig.Topic)},
 			header)
 		Expect(err).NotTo(HaveOccurred())
 		tr := shared.LogNoteTransformer{
-			Config:     config,
+			Config:     testVatGrabConfig,
 			Converter:  &vat_grab.VatGrabConverter{},
 			Repository: &vat_grab.VatGrabRepository{},
 		}.NewLogNoteTransformer(db)
 
-		err = tr.Execute(logs, header, c2.HeaderMissing)
+		err = tr.Execute(logs, header, constants.HeaderMissing)
 		Expect(err).NotTo(HaveOccurred())
 
-		err = tr.Execute(logs, header, c2.HeaderRecheck)
+		err = tr.Execute(logs, header, constants.HeaderRecheck)
 		Expect(err).NotTo(HaveOccurred())
 
 		var headerID int64

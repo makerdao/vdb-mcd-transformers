@@ -22,9 +22,8 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-
-	c2 "github.com/vulcanize/vulcanizedb/libraries/shared/constants"
-	fetch "github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/constants"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
@@ -32,7 +31,7 @@ import (
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_fold"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
@@ -51,34 +50,36 @@ var _ = Describe("VatFold Transformer", func() {
 		test_config.CleanTestDB(db)
 	})
 
+	testVatFoldConfig := transformer.EventTransformerConfig{
+		TransformerName:   mcdConstants.VatFoldLabel,
+		ContractAddresses: []string{mcdConstants.VatContractAddress()},
+		ContractAbi:       test_data.KovanVatABI,
+		Topic:             test_data.KovanVatFoldSignature,
+	}
+
 	// TODO: Replace block number once there is a fold event on the updated Vat
 	XIt("transforms VatFold log events", func() {
 		blockNumber := int64(9367233)
-		config := transformer.EventTransformerConfig{
-			TransformerName:     constants.VatFoldLabel,
-			ContractAddresses:   []string{test_data.KovanVatContractAddress},
-			Topic:               test_data.KovanVatFoldSignature,
-			StartingBlockNumber: blockNumber,
-			EndingBlockNumber:   blockNumber,
-		}
+		testVatFoldConfig.StartingBlockNumber = blockNumber
+		testVatFoldConfig.EndingBlockNumber = blockNumber
 
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		fetcher := fetch.NewLogFetcher(blockChain)
-		logs, err := fetcher.FetchLogs(
-			transformer.HexStringsToAddresses(config.ContractAddresses),
-			[]common.Hash{common.HexToHash(config.Topic)},
+		logFetcher := fetcher.NewLogFetcher(blockChain)
+		logs, err := logFetcher.FetchLogs(
+			transformer.HexStringsToAddresses(testVatFoldConfig.ContractAddresses),
+			[]common.Hash{common.HexToHash(testVatFoldConfig.Topic)},
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
 		transformer := shared.LogNoteTransformer{
-			Config:     config,
+			Config:     testVatFoldConfig,
 			Converter:  &vat_fold.VatFoldConverter{},
 			Repository: &vat_fold.VatFoldRepository{},
 		}.NewLogNoteTransformer(db)
 
-		err = transformer.Execute(logs, header, c2.HeaderMissing)
+		err = transformer.Execute(logs, header, constants.HeaderMissing)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResults []vat_fold.VatFoldModel
@@ -98,35 +99,29 @@ var _ = Describe("VatFold Transformer", func() {
 	// TODO: Replace block number once there is a fold event on the updated Vat
 	XIt("rechecks vat fold event", func() {
 		blockNumber := int64(9367233)
-		config := transformer.EventTransformerConfig{
-			TransformerName:     constants.VatFoldLabel,
-			ContractAddresses:   []string{test_data.KovanVatContractAddress},
-			ContractAbi:         test_data.KovanVatABI,
-			Topic:               test_data.KovanVatFoldSignature,
-			StartingBlockNumber: blockNumber,
-			EndingBlockNumber:   blockNumber,
-		}
+		testVatFoldConfig.StartingBlockNumber = blockNumber
+		testVatFoldConfig.EndingBlockNumber = blockNumber
 
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		fetcher := fetch.NewLogFetcher(blockChain)
-		logs, err := fetcher.FetchLogs(
-			transformer.HexStringsToAddresses(config.ContractAddresses),
-			[]common.Hash{common.HexToHash(config.Topic)},
+		logFetcher := fetcher.NewLogFetcher(blockChain)
+		logs, err := logFetcher.FetchLogs(
+			transformer.HexStringsToAddresses(testVatFoldConfig.ContractAddresses),
+			[]common.Hash{common.HexToHash(testVatFoldConfig.Topic)},
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
 		transformer := shared.LogNoteTransformer{
-			Config:     config,
+			Config:     testVatFoldConfig,
 			Converter:  &vat_fold.VatFoldConverter{},
 			Repository: &vat_fold.VatFoldRepository{},
 		}.NewLogNoteTransformer(db)
 
-		err = transformer.Execute(logs, header, c2.HeaderMissing)
+		err = transformer.Execute(logs, header, constants.HeaderMissing)
 		Expect(err).NotTo(HaveOccurred())
 
-		err = transformer.Execute(logs, header, c2.HeaderRecheck)
+		err = transformer.Execute(logs, header, constants.HeaderRecheck)
 		Expect(err).NotTo(HaveOccurred())
 
 		var headerID int64

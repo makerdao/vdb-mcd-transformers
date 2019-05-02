@@ -20,9 +20,8 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-
-	c2 "github.com/vulcanize/vulcanizedb/libraries/shared/constants"
-	fetch "github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/constants"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
@@ -30,7 +29,7 @@ import (
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/events/jug_file/vow"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
@@ -52,8 +51,8 @@ var _ = Describe("Jug File Vow LogNoteTransformer", func() {
 	It("transforms JugFileVow log events", func() {
 		blockNumber := int64(10691243)
 		config := transformer.EventTransformerConfig{
-			TransformerName:     constants.JugFileVowLabel,
-			ContractAddresses:   []string{test_data.KovanJugContractAddress},
+			TransformerName:     mcdConstants.JugFileVowLabel,
+			ContractAddresses:   []string{mcdConstants.JugContractAddress()},
 			ContractAbi:         test_data.KovanJugABI,
 			Topic:               test_data.KovanJugFileVowSignature,
 			StartingBlockNumber: blockNumber,
@@ -70,14 +69,14 @@ var _ = Describe("Jug File Vow LogNoteTransformer", func() {
 		}
 		tr := initializer.NewLogNoteTransformer(db)
 
-		f := fetch.NewLogFetcher(blockChain)
+		f := fetcher.NewLogFetcher(blockChain)
 		logs, err := f.FetchLogs(
 			transformer.HexStringsToAddresses(config.ContractAddresses),
 			[]common.Hash{common.HexToHash(config.Topic)},
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
-		err = tr.Execute(logs, header, c2.HeaderMissing)
+		err = tr.Execute(logs, header, constants.HeaderMissing)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []vow.JugFileVowModel
@@ -92,8 +91,8 @@ var _ = Describe("Jug File Vow LogNoteTransformer", func() {
 	It("rechecks jug file vow event", func() {
 		blockNumber := int64(10691243)
 		config := transformer.EventTransformerConfig{
-			TransformerName:     constants.JugFileVowLabel,
-			ContractAddresses:   []string{test_data.KovanJugContractAddress},
+			TransformerName:     mcdConstants.JugFileVowLabel,
+			ContractAddresses:   []string{mcdConstants.JugContractAddress()},
 			ContractAbi:         test_data.KovanJugABI,
 			Topic:               test_data.KovanJugFileVowSignature,
 			StartingBlockNumber: blockNumber,
@@ -110,17 +109,17 @@ var _ = Describe("Jug File Vow LogNoteTransformer", func() {
 		}
 		tr := initializer.NewLogNoteTransformer(db)
 
-		f := fetch.NewLogFetcher(blockChain)
+		f := fetcher.NewLogFetcher(blockChain)
 		logs, err := f.FetchLogs(
 			transformer.HexStringsToAddresses(config.ContractAddresses),
 			[]common.Hash{common.HexToHash(config.Topic)},
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
-		err = tr.Execute(logs, header, c2.HeaderMissing)
+		err = tr.Execute(logs, header, constants.HeaderMissing)
 		Expect(err).NotTo(HaveOccurred())
 
-		err = tr.Execute(logs, header, c2.HeaderRecheck)
+		err = tr.Execute(logs, header, constants.HeaderRecheck)
 		Expect(err).NotTo(HaveOccurred())
 
 		var headerID int64

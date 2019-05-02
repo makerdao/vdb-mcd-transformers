@@ -23,22 +23,28 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-
-	c2 "github.com/vulcanize/vulcanizedb/libraries/shared/constants"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/constants"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
-	fetch "github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 	"github.com/vulcanize/vulcanizedb/pkg/geth"
 
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/events/flip_kick"
-	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
 var _ = Describe("FlipKick Transformer", func() {
+	testConfig := transformer.EventTransformerConfig{
+		TransformerName:   mcdConstants.FlipKickLabel,
+		ContractAddresses: []string{mcdConstants.FlipperContractAddress()},
+		ContractAbi:       test_data.KovanFlipperABI,
+		Topic:             test_data.KovanFlipKickSignature,
+	}
+
 	It("unpacks an event log", func() {
-		address := common.HexToAddress(test_data.KovanFlipperContractAddress)
+		address := common.HexToAddress(mcdConstants.FlipperContractAddress())
 		abi, err := geth.ParseAbi(test_data.KovanFlipperABI)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -62,14 +68,8 @@ var _ = Describe("FlipKick Transformer", func() {
 
 	It("fetches and transforms a FlipKick event from Kovan chain", func() {
 		blockNumber := int64(8956476)
-		config := transformer.EventTransformerConfig{
-			TransformerName:     constants.FlipKickLabel,
-			ContractAddresses:   []string{test_data.KovanFlipperContractAddress},
-			ContractAbi:         test_data.KovanFlipperABI,
-			Topic:               test_data.KovanFlipKickSignature,
-			StartingBlockNumber: blockNumber,
-			EndingBlockNumber:   blockNumber,
-		}
+		testConfig.StartingBlockNumber = blockNumber
+		testConfig.EndingBlockNumber = blockNumber
 
 		rpcClient, ethClient, err := getClients(ipc)
 		Expect(err).NotTo(HaveOccurred())
@@ -82,19 +82,19 @@ var _ = Describe("FlipKick Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		tr := event.Transformer{
-			Config:     config,
+			Config:     testConfig,
 			Converter:  &flip_kick.FlipKickConverter{},
 			Repository: &flip_kick.FlipKickRepository{},
 		}.NewTransformer(db)
 
-		f := fetch.NewLogFetcher(blockChain)
+		f := fetcher.NewLogFetcher(blockChain)
 		logs, err := f.FetchLogs(
-			transformer.HexStringsToAddresses(config.ContractAddresses),
-			[]common.Hash{common.HexToHash(config.Topic)},
+			transformer.HexStringsToAddresses(testConfig.ContractAddresses),
+			[]common.Hash{common.HexToHash(testConfig.Topic)},
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
-		err = tr.Execute(logs, header, c2.HeaderMissing)
+		err = tr.Execute(logs, header, constants.HeaderMissing)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []flip_kick.FlipKickModel
@@ -111,14 +111,8 @@ var _ = Describe("FlipKick Transformer", func() {
 
 	It("rechecks flip kick event", func() {
 		blockNumber := int64(8956476)
-		config := transformer.EventTransformerConfig{
-			TransformerName:     constants.FlipKickLabel,
-			ContractAddresses:   []string{test_data.KovanFlipperContractAddress},
-			ContractAbi:         test_data.KovanFlipperABI,
-			Topic:               test_data.KovanFlipKickSignature,
-			StartingBlockNumber: blockNumber,
-			EndingBlockNumber:   blockNumber,
-		}
+		testConfig.StartingBlockNumber = blockNumber
+		testConfig.EndingBlockNumber = blockNumber
 
 		rpcClient, ethClient, err := getClients(ipc)
 		Expect(err).NotTo(HaveOccurred())
@@ -131,22 +125,22 @@ var _ = Describe("FlipKick Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		tr := event.Transformer{
-			Config:     config,
+			Config:     testConfig,
 			Converter:  &flip_kick.FlipKickConverter{},
 			Repository: &flip_kick.FlipKickRepository{},
 		}.NewTransformer(db)
 
-		f := fetch.NewLogFetcher(blockChain)
+		f := fetcher.NewLogFetcher(blockChain)
 		logs, err := f.FetchLogs(
-			transformer.HexStringsToAddresses(config.ContractAddresses),
-			[]common.Hash{common.HexToHash(config.Topic)},
+			transformer.HexStringsToAddresses(testConfig.ContractAddresses),
+			[]common.Hash{common.HexToHash(testConfig.Topic)},
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
-		err = tr.Execute(logs, header, c2.HeaderMissing)
+		err = tr.Execute(logs, header, constants.HeaderMissing)
 		Expect(err).NotTo(HaveOccurred())
 
-		err = tr.Execute(logs, header, c2.HeaderRecheck)
+		err = tr.Execute(logs, header, constants.HeaderRecheck)
 		Expect(err).NotTo(HaveOccurred())
 
 		var headerID int64

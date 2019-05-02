@@ -18,21 +18,23 @@ package test_data
 
 import (
 	"encoding/json"
+
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/vulcanize/mcd_transformers/transformers/events/pip_log_value"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
+
+	"github.com/vulcanize/mcd_transformers/transformers/events/pip_log_value"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
 var (
-	pipAddress  = common.HexToAddress("0x8C73Ec0fBCdEC6b8C060BC224D94740FD41f3774")
 	blockNumber = uint64(10606964)
 	txIndex     = uint(2)
 )
 
 // https://kovan.etherscan.io/tx/0xbf700fefd1817c91c6a3e2dfa9f2f84f1c4d6a42c13f91ac6aa64bfc63f2e568
 var EthPipLogValueLog = types.Log{
-	Address:     pipAddress,
+	Address:     common.HexToAddress(constants.PipEthContractAddress()),
 	Topics:      []common.Hash{common.HexToHash(KovanPipLogValueSignature)},
 	Data:        common.FromHex("0000000000000000000000000000000000000000000000076eec1981d1900000"),
 	BlockNumber: blockNumber,

@@ -22,13 +22,14 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_init"
-	"github.com/vulcanize/vulcanizedb/pkg/fakes"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
 var EthVatInitLog = types.Log{
-	Address: common.HexToAddress(KovanVatContractAddress),
+	Address: common.HexToAddress(constants.VatContractAddress()),
 	Topics: []common.Hash{
 		common.HexToHash(KovanVatInitSignature),
 		common.HexToHash("0x66616b6520696c6b000000000000000000000000000000000000000000000000"),

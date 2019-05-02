@@ -20,9 +20,8 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-
-	c2 "github.com/vulcanize/vulcanizedb/libraries/shared/constants"
-	fetch "github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/constants"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
@@ -30,7 +29,7 @@ import (
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/events/vow_flog"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
@@ -49,34 +48,36 @@ var _ = Describe("VowFlog LogNoteTransformer", func() {
 		test_config.CleanTestDB(db)
 	})
 
+	testVowFlogConfig := transformer.EventTransformerConfig{
+		TransformerName:   mcdConstants.VowFlogLabel,
+		ContractAddresses: []string{mcdConstants.VowContractAddress()},
+		ContractAbi:       test_data.KovanVowABI,
+		Topic:             test_data.KovanVowFlogSignature,
+	}
+
 	// TODO: replace block number when there is a flog event on the updated Vow
 	XIt("transforms VowFlog log events", func() {
 		blockNumber := int64(8946819)
-		config := transformer.EventTransformerConfig{
-			TransformerName:     constants.VowFlogLabel,
-			ContractAddresses:   []string{test_data.KovanVowContractAddress},
-			Topic:               test_data.KovanVowFlogSignature,
-			StartingBlockNumber: blockNumber,
-			EndingBlockNumber:   blockNumber,
-		}
+		testVowFlogConfig.StartingBlockNumber = blockNumber
+		testVowFlogConfig.EndingBlockNumber = blockNumber
 
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		fetcher := fetch.NewLogFetcher(blockChain)
-		logs, err := fetcher.FetchLogs(
-			transformer.HexStringsToAddresses(config.ContractAddresses),
-			[]common.Hash{common.HexToHash(config.Topic)},
+		logFetcher := fetcher.NewLogFetcher(blockChain)
+		logs, err := logFetcher.FetchLogs(
+			transformer.HexStringsToAddresses(testVowFlogConfig.ContractAddresses),
+			[]common.Hash{common.HexToHash(testVowFlogConfig.Topic)},
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
 		tr := shared.LogNoteTransformer{
-			Config:     config,
+			Config:     testVowFlogConfig,
 			Converter:  &vow_flog.VowFlogConverter{},
 			Repository: &vow_flog.VowFlogRepository{},
 		}.NewLogNoteTransformer(db)
 
-		err = tr.Execute(logs, header, c2.HeaderMissing)
+		err = tr.Execute(logs, header, constants.HeaderMissing)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []vow_flog.VowFlogModel
@@ -92,34 +93,28 @@ var _ = Describe("VowFlog LogNoteTransformer", func() {
 	// TODO: replace block number when there is a flog event on the updated Vow
 	XIt("rechecks vow flog event", func() {
 		blockNumber := int64(8946819)
-		config := transformer.EventTransformerConfig{
-			TransformerName:     constants.VowFlogLabel,
-			ContractAddresses:   []string{test_data.KovanVowContractAddress},
-			ContractAbi:         test_data.KovanVowABI,
-			Topic:               test_data.KovanVowFlogSignature,
-			StartingBlockNumber: blockNumber,
-			EndingBlockNumber:   blockNumber,
-		}
+		testVowFlogConfig.StartingBlockNumber = blockNumber
+		testVowFlogConfig.EndingBlockNumber = blockNumber
 
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		fetcher := fetch.NewLogFetcher(blockChain)
-		logs, err := fetcher.FetchLogs(
-			transformer.HexStringsToAddresses(config.ContractAddresses),
-			[]common.Hash{common.HexToHash(config.Topic)},
+		logFetcher := fetcher.NewLogFetcher(blockChain)
+		logs, err := logFetcher.FetchLogs(
+			transformer.HexStringsToAddresses(testVowFlogConfig.ContractAddresses),
+			[]common.Hash{common.HexToHash(testVowFlogConfig.Topic)},
 			header)
 		Expect(err).NotTo(HaveOccurred())
 		tr := shared.LogNoteTransformer{
-			Config:     config,
+			Config:     testVowFlogConfig,
 			Converter:  &vow_flog.VowFlogConverter{},
 			Repository: &vow_flog.VowFlogRepository{},
 		}.NewLogNoteTransformer(db)
 
-		err = tr.Execute(logs, header, c2.HeaderMissing)
+		err = tr.Execute(logs, header, constants.HeaderMissing)
 		Expect(err).NotTo(HaveOccurred())
 
-		err = tr.Execute(logs, header, c2.HeaderRecheck)
+		err = tr.Execute(logs, header, constants.HeaderRecheck)
 		Expect(err).NotTo(HaveOccurred())
 
 		var headerID int64

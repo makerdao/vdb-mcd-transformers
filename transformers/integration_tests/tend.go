@@ -20,9 +20,8 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-
-	c2 "github.com/vulcanize/vulcanizedb/libraries/shared/constants"
-	fetch "github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/constants"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
@@ -30,7 +29,7 @@ import (
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/events/tend"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
@@ -39,8 +38,8 @@ var _ = Describe("Tend LogNoteTransformer", func() {
 		db          *postgres.DB
 		blockChain  core.BlockChain
 		config      transformer.EventTransformerConfig
-		fetcher     *fetch.LogFetcher
 		initializer shared.LogNoteTransformer
+		logFetcher  fetcher.ILogFetcher
 		addresses   []common.Address
 		topics      []common.Hash
 	)
@@ -54,13 +53,13 @@ var _ = Describe("Tend LogNoteTransformer", func() {
 		test_config.CleanTestDB(db)
 
 		config = transformer.EventTransformerConfig{
-			TransformerName:   constants.TendLabel,
-			ContractAddresses: []string{test_data.KovanFlapperContractAddress, test_data.KovanFlipperContractAddress},
+			TransformerName:   mcdConstants.TendLabel,
+			ContractAddresses: []string{mcdConstants.FlapperContractAddress(), mcdConstants.FlipperContractAddress()},
 			ContractAbi:       test_data.KovanFlipperABI,
 			Topic:             test_data.KovanTendSignature,
 		}
 
-		fetcher = fetch.NewLogFetcher(blockChain)
+		logFetcher = fetcher.NewLogFetcher(blockChain)
 		addresses = transformer.HexStringsToAddresses(config.ContractAddresses)
 		topics = []common.Hash{common.HexToHash(config.Topic)}
 
@@ -79,11 +78,11 @@ var _ = Describe("Tend LogNoteTransformer", func() {
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		logs, err := fetcher.FetchLogs(addresses, topics, header)
+		logs, err := logFetcher.FetchLogs(addresses, topics, header)
 		Expect(err).NotTo(HaveOccurred())
 
 		transformer := initializer.NewLogNoteTransformer(db)
-		err = transformer.Execute(logs, header, c2.HeaderMissing)
+		err = transformer.Execute(logs, header, constants.HeaderMissing)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []tend.TendModel
@@ -100,7 +99,7 @@ var _ = Describe("Tend LogNoteTransformer", func() {
 		err = db.Get(&dbTic, `SELECT tic FROM maker.tend`)
 		Expect(err).NotTo(HaveOccurred())
 
-		actualTic := 1538490276 + constants.TTL
+		actualTic := 1538490276 + mcdConstants.TTL
 		Expect(dbTic).To(Equal(actualTic))
 	})
 
@@ -112,14 +111,14 @@ var _ = Describe("Tend LogNoteTransformer", func() {
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		logs, err := fetcher.FetchLogs(addresses, topics, header)
+		logs, err := logFetcher.FetchLogs(addresses, topics, header)
 		Expect(err).NotTo(HaveOccurred())
 
 		transformer := initializer.NewLogNoteTransformer(db)
-		err = transformer.Execute(logs, header, c2.HeaderMissing)
+		err = transformer.Execute(logs, header, constants.HeaderMissing)
 		Expect(err).NotTo(HaveOccurred())
 
-		err = transformer.Execute(logs, header, c2.HeaderRecheck)
+		err = transformer.Execute(logs, header, constants.HeaderRecheck)
 		Expect(err).NotTo(HaveOccurred())
 
 		var headerID int64
@@ -146,7 +145,7 @@ var _ = Describe("Tend LogNoteTransformer", func() {
 		err = db.Get(&dbTic, `SELECT tic FROM maker.tend`)
 		Expect(err).NotTo(HaveOccurred())
 
-		actualTic := 1538490276 + constants.TTL
+		actualTic := 1538490276 + mcdConstants.TTL
 		Expect(dbTic).To(Equal(actualTic))
 	})
 
@@ -158,11 +157,11 @@ var _ = Describe("Tend LogNoteTransformer", func() {
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		logs, err := fetcher.FetchLogs(addresses, topics, header)
+		logs, err := logFetcher.FetchLogs(addresses, topics, header)
 		Expect(err).NotTo(HaveOccurred())
 
 		transformer := initializer.NewLogNoteTransformer(db)
-		err = transformer.Execute(logs, header, c2.HeaderMissing)
+		err = transformer.Execute(logs, header, constants.HeaderMissing)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []tend.TendModel
@@ -179,7 +178,7 @@ var _ = Describe("Tend LogNoteTransformer", func() {
 		err = db.Get(&dbTic, `SELECT tic FROM maker.tend`)
 		Expect(err).NotTo(HaveOccurred())
 
-		actualTic := 1538491224 + constants.TTL
+		actualTic := 1538491224 + mcdConstants.TTL
 		Expect(dbTic).To(Equal(actualTic))
 	})
 
@@ -191,11 +190,11 @@ var _ = Describe("Tend LogNoteTransformer", func() {
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		logs, err := fetcher.FetchLogs(addresses, topics, header)
+		logs, err := logFetcher.FetchLogs(addresses, topics, header)
 		Expect(err).NotTo(HaveOccurred())
 
 		transformer := initializer.NewLogNoteTransformer(db)
-		err = transformer.Execute(logs, header, c2.HeaderMissing)
+		err = transformer.Execute(logs, header, constants.HeaderMissing)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []tend.TendModel
@@ -212,7 +211,7 @@ var _ = Describe("Tend LogNoteTransformer", func() {
 		err = db.Get(&dbTic, `SELECT tic FROM maker.tend`)
 		Expect(err).NotTo(HaveOccurred())
 
-		actualTic := 1538992860 + constants.TTL
+		actualTic := 1538992860 + mcdConstants.TTL
 		Expect(dbTic).To(Equal(actualTic))
 	})
 })

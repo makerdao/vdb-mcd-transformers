@@ -18,17 +18,19 @@ package test_data
 
 import (
 	"encoding/json"
+
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_file/debt_ceiling"
 	ilk2 "github.com/vulcanize/mcd_transformers/transformers/events/vat_file/ilk"
-	"github.com/vulcanize/vulcanizedb/pkg/fakes"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
 var EthVatFileDebtCeilingLog = types.Log{
-	Address: common.HexToAddress(KovanVatContractAddress),
+	Address: common.HexToAddress(constants.VatContractAddress()),
 	Topics: []common.Hash{
 		common.HexToHash(KovanVatFileDebtCeilingSignature),
 		common.HexToHash("0x4c696e6500000000000000000000000000000000000000000000000000000000"),
@@ -54,7 +56,7 @@ var VatFileDebtCeilingModel = debt_ceiling.VatFileDebtCeilingModel{
 }
 
 var EthVatFileIlkDustLog = types.Log{
-	Address: common.HexToAddress(KovanVatContractAddress),
+	Address: common.HexToAddress(constants.VatContractAddress()),
 	Topics: []common.Hash{
 		common.HexToHash("0x1a0b287e00000000000000000000000000000000000000000000000000000000"),  //sig
 		common.HexToHash("0x5245500000000000000000000000000000000000000000000000000000000000"),  //ilk
@@ -82,7 +84,7 @@ var VatFileIlkDustModel = ilk2.VatFileIlkModel{
 }
 
 var EthVatFileIlkLineLog = types.Log{
-	Address: common.HexToAddress(KovanVatContractAddress),
+	Address: common.HexToAddress(constants.VatContractAddress()),
 	Topics: []common.Hash{
 		common.HexToHash(KovanVatFileIlkSignature),
 		common.HexToHash("0x5245500000000000000000000000000000000000000000000000000000000000"),
@@ -110,7 +112,7 @@ var VatFileIlkLineModel = ilk2.VatFileIlkModel{
 }
 
 var EthVatFileIlkSpotLog = types.Log{
-	Address: common.HexToAddress(KovanVatContractAddress),
+	Address: common.HexToAddress(constants.VatContractAddress()),
 	Topics: []common.Hash{
 		common.HexToHash(KovanVatFileIlkSignature),
 		common.HexToHash("0x4554480000000000000000000000000000000000000000000000000000000000"),

@@ -22,13 +22,14 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_slip"
-	"github.com/vulcanize/vulcanizedb/pkg/fakes"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
 var EthVatSlipLogWithPositiveWad = types.Log{
-	Address: common.Address{},
+	Address: common.HexToAddress(constants.VatContractAddress()),
 	Topics: []common.Hash{
 		common.HexToHash(KovanVatSlipSignature),
 		common.HexToHash("0x4554482d41000000000000000000000000000000000000000000000000000000"),
@@ -55,7 +56,7 @@ var VatSlipModelWithPositiveWad = vat_slip.VatSlipModel{
 }
 
 var EthVatSlipLogWithNegativeWad = types.Log{
-	Address: common.HexToAddress(KovanVatContractAddress),
+	Address: common.HexToAddress(constants.VatContractAddress()),
 	Topics: []common.Hash{
 		common.HexToHash(KovanVatSlipSignature),
 		common.HexToHash("0x4554482d41000000000000000000000000000000000000000000000000000000"),

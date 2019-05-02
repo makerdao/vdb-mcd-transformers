@@ -22,9 +22,8 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-
-	c2 "github.com/vulcanize/vulcanizedb/libraries/shared/constants"
-	fetch "github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/constants"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
@@ -32,7 +31,7 @@ import (
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_slip"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
@@ -51,34 +50,35 @@ var _ = Describe("Vat slip transformer", func() {
 		test_config.CleanTestDB(db)
 	})
 
+	testVatSlipConfig := transformer.EventTransformerConfig{
+		TransformerName:   mcdConstants.VatSlipLabel,
+		ContractAddresses: []string{mcdConstants.VatContractAddress()},
+		ContractAbi:       test_data.KovanVatABI,
+		Topic:             test_data.KovanVatSlipSignature,
+	}
+
 	It("persists vat slip event", func() {
 		blockNumber := int64(10728061)
-		config := transformer.EventTransformerConfig{
-			TransformerName:     constants.VatSlipLabel,
-			ContractAddresses:   []string{test_data.KovanVatContractAddress},
-			ContractAbi:         test_data.KovanVatABI,
-			Topic:               test_data.KovanVatSlipSignature,
-			StartingBlockNumber: blockNumber,
-			EndingBlockNumber:   blockNumber,
-		}
+		testVatSlipConfig.StartingBlockNumber = blockNumber
+		testVatSlipConfig.EndingBlockNumber = blockNumber
 
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		fetcher := fetch.NewLogFetcher(blockChain)
-		logs, err := fetcher.FetchLogs(
-			transformer.HexStringsToAddresses(config.ContractAddresses),
-			[]common.Hash{common.HexToHash(config.Topic)},
+		logFetcher := fetcher.NewLogFetcher(blockChain)
+		logs, err := logFetcher.FetchLogs(
+			transformer.HexStringsToAddresses(testVatSlipConfig.ContractAddresses),
+			[]common.Hash{common.HexToHash(testVatSlipConfig.Topic)},
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
 		tr := shared.LogNoteTransformer{
-			Config:     config,
+			Config:     testVatSlipConfig,
 			Converter:  &vat_slip.VatSlipConverter{},
 			Repository: &vat_slip.VatSlipRepository{},
 		}.NewLogNoteTransformer(db)
 
-		err = tr.Execute(logs, header, c2.HeaderMissing)
+		err = tr.Execute(logs, header, constants.HeaderMissing)
 
 		Expect(err).NotTo(HaveOccurred())
 		var headerID int64
@@ -101,35 +101,29 @@ var _ = Describe("Vat slip transformer", func() {
 
 	It("rechecks vat slip event", func() {
 		blockNumber := int64(10728061)
-		config := transformer.EventTransformerConfig{
-			TransformerName:     constants.VatSlipLabel,
-			ContractAddresses:   []string{test_data.KovanVatContractAddress},
-			ContractAbi:         test_data.KovanVatABI,
-			Topic:               test_data.KovanVatSlipSignature,
-			StartingBlockNumber: blockNumber,
-			EndingBlockNumber:   blockNumber,
-		}
+		testVatSlipConfig.StartingBlockNumber = blockNumber
+		testVatSlipConfig.EndingBlockNumber = blockNumber
 
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		fetcher := fetch.NewLogFetcher(blockChain)
-		logs, err := fetcher.FetchLogs(
-			transformer.HexStringsToAddresses(config.ContractAddresses),
-			[]common.Hash{common.HexToHash(config.Topic)},
+		logFetcher := fetcher.NewLogFetcher(blockChain)
+		logs, err := logFetcher.FetchLogs(
+			transformer.HexStringsToAddresses(testVatSlipConfig.ContractAddresses),
+			[]common.Hash{common.HexToHash(testVatSlipConfig.Topic)},
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
 		tr := shared.LogNoteTransformer{
-			Config:     config,
+			Config:     testVatSlipConfig,
 			Converter:  &vat_slip.VatSlipConverter{},
 			Repository: &vat_slip.VatSlipRepository{},
 		}.NewLogNoteTransformer(db)
 
-		err = tr.Execute(logs, header, c2.HeaderMissing)
+		err = tr.Execute(logs, header, constants.HeaderMissing)
 		Expect(err).NotTo(HaveOccurred())
 
-		err = tr.Execute(logs, header, c2.HeaderRecheck)
+		err = tr.Execute(logs, header, constants.HeaderRecheck)
 		Expect(err).NotTo(HaveOccurred())
 
 		var headerID int64

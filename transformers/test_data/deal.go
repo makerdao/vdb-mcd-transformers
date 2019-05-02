@@ -18,15 +18,18 @@ package test_data
 
 import (
 	"encoding/json"
+
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/vulcanize/mcd_transformers/transformers/events/deal"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
+
+	"github.com/vulcanize/mcd_transformers/transformers/events/deal"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
 var DealLogNote = types.Log{
-	Address: common.HexToAddress(KovanFlipperContractAddress),
+	Address: common.HexToAddress(constants.FlipperContractAddress()),
 	Topics: []common.Hash{
 		common.HexToHash(KovanDealSignature),
 		common.HexToHash("0x00000000000000000000000064d922894153be9eef7b7218dc565d1d0ce2a092"),
@@ -45,7 +48,7 @@ var dealRawJson, _ = json.Marshal(DealLogNote)
 
 var DealModel = deal.DealModel{
 	BidId:            "123",
-	ContractAddress:  KovanFlipperContractAddress,
+	ContractAddress:  constants.FlipperContractAddress(),
 	LogIndex:         DealLogNote.Index,
 	TransactionIndex: DealLogNote.TxIndex,
 	Raw:              dealRawJson,

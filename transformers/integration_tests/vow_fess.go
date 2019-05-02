@@ -20,17 +20,16 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/vulcanize/mcd_transformers/transformers/events/vow_fess"
-
-	c2 "github.com/vulcanize/vulcanizedb/libraries/shared/constants"
-	fetch "github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/constants"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 
 	"github.com/vulcanize/mcd_transformers/test_config"
+	"github.com/vulcanize/mcd_transformers/transformers/events/vow_fess"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
@@ -49,35 +48,37 @@ var _ = Describe("VowFess LogNoteTransformer", func() {
 		test_config.CleanTestDB(db)
 	})
 
+	testVowFessConfig := transformer.EventTransformerConfig{
+		TransformerName:   mcdConstants.VowFessLabel,
+		ContractAddresses: []string{mcdConstants.VowContractAddress()},
+		ContractAbi:       test_data.KovanVowABI,
+		Topic:             test_data.KovanVowFessSignature,
+	}
+
 	// TODO: replace block number when there is a fess event on the updated Vow
 	XIt("transforms VowFess log events", func() {
 		blockNumber := int64(9377319)
-		config := transformer.EventTransformerConfig{
-			TransformerName:     constants.VowFessLabel,
-			ContractAddresses:   []string{test_data.KovanVowContractAddress},
-			Topic:               test_data.KovanVowFessSignature,
-			StartingBlockNumber: blockNumber,
-			EndingBlockNumber:   blockNumber,
-		}
+		testVowFessConfig.StartingBlockNumber = blockNumber
+		testVowFessConfig.EndingBlockNumber = blockNumber
 
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		fetcher := fetch.NewLogFetcher(blockChain)
-		logs, err := fetcher.FetchLogs(
-			transformer.HexStringsToAddresses(config.ContractAddresses),
-			[]common.Hash{common.HexToHash(config.Topic)},
+		logFetcher := fetcher.NewLogFetcher(blockChain)
+		logs, err := logFetcher.FetchLogs(
+			transformer.HexStringsToAddresses(testVowFessConfig.ContractAddresses),
+			[]common.Hash{common.HexToHash(testVowFessConfig.Topic)},
 			header)
 		Expect(len(logs)).To(Equal(1))
 		Expect(err).NotTo(HaveOccurred())
 
 		tr := shared.LogNoteTransformer{
-			Config:     config,
+			Config:     testVowFessConfig,
 			Converter:  &vow_fess.VowFessConverter{},
 			Repository: &vow_fess.VowFessRepository{},
 		}.NewLogNoteTransformer(db)
 
-		err = tr.Execute(logs, header, c2.HeaderMissing)
+		err = tr.Execute(logs, header, constants.HeaderMissing)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []vow_fess.VowFessModel
@@ -92,35 +93,29 @@ var _ = Describe("VowFess LogNoteTransformer", func() {
 	// TODO: replace block number when there is a fess event on the updated Vow
 	XIt("rechecks vow fess event", func() {
 		blockNumber := int64(9377319)
-		config := transformer.EventTransformerConfig{
-			TransformerName:     constants.VowFessLabel,
-			ContractAddresses:   []string{test_data.KovanVowContractAddress},
-			ContractAbi:         test_data.KovanVowABI,
-			Topic:               test_data.KovanVowFessSignature,
-			StartingBlockNumber: blockNumber,
-			EndingBlockNumber:   blockNumber,
-		}
+		testVowFessConfig.StartingBlockNumber = blockNumber
+		testVowFessConfig.EndingBlockNumber = blockNumber
 
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		fetcher := fetch.NewLogFetcher(blockChain)
-		logs, err := fetcher.FetchLogs(
-			transformer.HexStringsToAddresses(config.ContractAddresses),
-			[]common.Hash{common.HexToHash(config.Topic)},
+		logFetcher := fetcher.NewLogFetcher(blockChain)
+		logs, err := logFetcher.FetchLogs(
+			transformer.HexStringsToAddresses(testVowFessConfig.ContractAddresses),
+			[]common.Hash{common.HexToHash(testVowFessConfig.Topic)},
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
 		tr := shared.LogNoteTransformer{
-			Config:     config,
+			Config:     testVowFessConfig,
 			Converter:  &vow_fess.VowFessConverter{},
 			Repository: &vow_fess.VowFessRepository{},
 		}.NewLogNoteTransformer(db)
 
-		err = tr.Execute(logs, header, c2.HeaderMissing)
+		err = tr.Execute(logs, header, constants.HeaderMissing)
 		Expect(err).NotTo(HaveOccurred())
 
-		err = tr.Execute(logs, header, c2.HeaderRecheck)
+		err = tr.Execute(logs, header, constants.HeaderRecheck)
 		Expect(err).NotTo(HaveOccurred())
 
 		var headerID int64

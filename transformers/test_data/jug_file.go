@@ -18,18 +18,21 @@ package test_data
 
 import (
 	"encoding/json"
+	"math/big"
+
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/vulcanize/vulcanizedb/pkg/fakes"
+
 	"github.com/vulcanize/mcd_transformers/transformers/events/jug_file/base"
 	ilk2 "github.com/vulcanize/mcd_transformers/transformers/events/jug_file/ilk"
 	"github.com/vulcanize/mcd_transformers/transformers/events/jug_file/vow"
-	"github.com/vulcanize/vulcanizedb/pkg/fakes"
-	"math/big"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
 var EthJugFileIlkLog = types.Log{
-	Address: common.HexToAddress(KovanJugContractAddress),
+	Address: common.HexToAddress(constants.JugContractAddress()),
 	Topics: []common.Hash{
 		common.HexToHash(KovanJugFileIlkSignature),
 		common.HexToHash("0x000000000000000000000000793c60586f0be45d9e5c13dfa982dd6d3b5bc9a4"),
@@ -56,7 +59,7 @@ var JugFileIlkModel = ilk2.JugFileIlkModel{
 }
 
 var EthJugFileBaseLog = types.Log{
-	Address: common.HexToAddress(KovanJugContractAddress),
+	Address: common.HexToAddress(constants.JugContractAddress()),
 	Topics: []common.Hash{
 		common.HexToHash(KovanJugFileBaseSignature),
 		common.HexToHash("0x00000000000000000000000064d922894153be9eef7b7218dc565d1d0ce2a092"),
@@ -82,7 +85,7 @@ var JugFileBaseModel = base.JugFileBaseModel{
 }
 
 var EthJugFileVowLog = types.Log{
-	Address: common.HexToAddress(KovanJugContractAddress),
+	Address: common.HexToAddress(constants.JugContractAddress()),
 	Topics: []common.Hash{
 		common.HexToHash(KovanJugFileVowSignature),
 		common.HexToHash("0x0000000000000000000000003652c2af10cbbdb753c3b46489db5226b73e6497"),

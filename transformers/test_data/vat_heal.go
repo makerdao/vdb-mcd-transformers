@@ -18,14 +18,17 @@ package test_data
 
 import (
 	"encoding/json"
+
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
+
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_heal"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
 var EthVatHealLogWithPositiveRad = types.Log{
-	Address: common.HexToAddress(KovanVatContractAddress),
+	Address: common.HexToAddress(constants.VatContractAddress()),
 	Topics: []common.Hash{
 		common.HexToHash(KovanVatHealSignature),
 		common.HexToHash("0x00000000000000000000000007fa9ef6609ca7921112231f8f195138ebba2977"),
@@ -52,7 +55,7 @@ var VatHealModelWithPositiveRad = vat_heal.VatHealModel{
 }
 
 var EthVatHealLogWithNegativeRad = types.Log{
-	Address: common.HexToAddress(KovanVatContractAddress),
+	Address: common.HexToAddress(constants.VatContractAddress()),
 	Topics: []common.Hash{
 		common.HexToHash(KovanVatHealSignature),
 		common.HexToHash("0x00000000000000000000000007fa9ef6609ca7921112231f8f195138ebba2977"),
