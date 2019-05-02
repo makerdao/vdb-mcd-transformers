@@ -22,17 +22,16 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-
-	c2 "github.com/vulcanize/vulcanizedb/libraries/shared/constants"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/constants"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
-	fetch "github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/events/flap_kick"
-	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
@@ -54,8 +53,8 @@ var _ = Describe("FlapKick Transformer", func() {
 	It("fetches and transforms a FlapKick event from Kovan chain", func() {
 		blockNumber := int64(9002933)
 		config := transformer.EventTransformerConfig{
-			TransformerName:     constants.FlapKickLabel,
-			ContractAddresses:   []string{test_data.KovanFlapperContractAddress},
+			TransformerName:     mcdConstants.FlapKickLabel,
+			ContractAddresses:   []string{mcdConstants.FlapperContractAddress()},
 			ContractAbi:         test_data.KovanFlapperABI,
 			Topic:               test_data.KovanFlapKickSignature,
 			StartingBlockNumber: blockNumber,
@@ -71,14 +70,14 @@ var _ = Describe("FlapKick Transformer", func() {
 			Repository: &flap_kick.FlapKickRepository{},
 		}.NewTransformer(db)
 
-		fetcher := fetch.NewLogFetcher(blockChain)
-		logs, err := fetcher.FetchLogs(
+		logFetcher := fetcher.NewLogFetcher(blockChain)
+		logs, err := logFetcher.FetchLogs(
 			transformer.HexStringsToAddresses(config.ContractAddresses),
 			[]common.Hash{common.HexToHash(config.Topic)},
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
-		err = tr.Execute(logs, header, c2.HeaderMissing)
+		err = tr.Execute(logs, header, constants.HeaderMissing)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []flap_kick.FlapKickModel
@@ -96,8 +95,8 @@ var _ = Describe("FlapKick Transformer", func() {
 	It("rechecks flap kick transformer", func() {
 		blockNumber := int64(9002933)
 		config := transformer.EventTransformerConfig{
-			TransformerName:     constants.FlapKickLabel,
-			ContractAddresses:   []string{test_data.KovanFlapperContractAddress},
+			TransformerName:     mcdConstants.FlapKickLabel,
+			ContractAddresses:   []string{mcdConstants.FlapperContractAddress()},
 			ContractAbi:         test_data.KovanFlapperABI,
 			Topic:               test_data.KovanFlapKickSignature,
 			StartingBlockNumber: blockNumber,
@@ -113,17 +112,17 @@ var _ = Describe("FlapKick Transformer", func() {
 			Repository: &flap_kick.FlapKickRepository{},
 		}.NewTransformer(db)
 
-		f := fetch.NewLogFetcher(blockChain)
+		f := fetcher.NewLogFetcher(blockChain)
 		logs, err := f.FetchLogs(
 			transformer.HexStringsToAddresses(config.ContractAddresses),
 			[]common.Hash{common.HexToHash(config.Topic)},
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
-		err = tr.Execute(logs, header, c2.HeaderMissing)
+		err = tr.Execute(logs, header, constants.HeaderMissing)
 		Expect(err).NotTo(HaveOccurred())
 
-		err = tr.Execute(logs, header, c2.HeaderRecheck)
+		err = tr.Execute(logs, header, constants.HeaderRecheck)
 		Expect(err).NotTo(HaveOccurred())
 
 		var headerID int64

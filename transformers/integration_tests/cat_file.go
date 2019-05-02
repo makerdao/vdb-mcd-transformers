@@ -24,9 +24,8 @@ import (
 	"github.com/ethereum/go-ethereum/ethclient"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-
-	c2 "github.com/vulcanize/vulcanizedb/libraries/shared/constants"
-	fetch "github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/constants"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
@@ -37,7 +36,7 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/events/cat_file/flip"
 	"github.com/vulcanize/mcd_transformers/transformers/events/cat_file/vow"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
@@ -48,8 +47,13 @@ var _ = Describe("Cat File transformer", func() {
 		rpcClient  client.RpcClient
 		err        error
 		ethClient  *ethclient.Client
-		fetcher    *fetch.LogFetcher
+		logFetcher fetcher.ILogFetcher
 	)
+
+	var testCatFileConfig = transformer.EventTransformerConfig{
+		ContractAddresses: []string{mcdConstants.CatContractAddress()},
+		ContractAbi:       test_data.KovanCatABI,
+	}
 
 	BeforeEach(func() {
 		rpcClient, ethClient, err = getClients(ipc)
@@ -59,36 +63,32 @@ var _ = Describe("Cat File transformer", func() {
 		db = test_config.NewTestDB(blockChain.Node())
 		test_config.CleanTestDB(db)
 
-		fetcher = fetch.NewLogFetcher(blockChain)
+		logFetcher = fetcher.NewLogFetcher(blockChain)
 	})
 
 	It("persists a chop lump event", func() {
 		chopLumpBlockNumber := int64(10691268)
 		header, err := persistHeader(db, chopLumpBlockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
-
-		config := transformer.EventTransformerConfig{
-			TransformerName:     constants.CatFileChopLumpLabel,
-			ContractAddresses:   []string{test_data.KovanCatContractAddress},
-			Topic:               test_data.KovanCatFileChopLumpSignature,
-			StartingBlockNumber: chopLumpBlockNumber,
-			EndingBlockNumber:   chopLumpBlockNumber,
-		}
+		testCatFileConfig.TransformerName = mcdConstants.CatFileChopLumpLabel
+		testCatFileConfig.Topic = test_data.KovanCatFileChopLumpSignature
+		testCatFileConfig.StartingBlockNumber = chopLumpBlockNumber
+		testCatFileConfig.EndingBlockNumber = chopLumpBlockNumber
 
 		initializer := shared.LogNoteTransformer{
-			Config:     config,
+			Config:     testCatFileConfig,
 			Converter:  &chop_lump.CatFileChopLumpConverter{},
 			Repository: &chop_lump.CatFileChopLumpRepository{},
 		}
 		transformer := initializer.NewLogNoteTransformer(db)
 
-		logs, err := fetcher.FetchLogs(
-			[]common.Address{common.HexToAddress(config.ContractAddresses[0])},
-			[]common.Hash{common.HexToHash(config.Topic)},
+		logs, err := logFetcher.FetchLogs(
+			[]common.Address{common.HexToAddress(testCatFileConfig.ContractAddresses[0])},
+			[]common.Hash{common.HexToHash(testCatFileConfig.Topic)},
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
-		err = transformer.Execute(logs, header, c2.HeaderMissing)
+		err = transformer.Execute(logs, header, constants.HeaderMissing)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []chop_lump.CatFileChopLumpModel
@@ -115,33 +115,28 @@ var _ = Describe("Cat File transformer", func() {
 		chopLumpBlockNumber := int64(10691268)
 		header, err := persistHeader(db, chopLumpBlockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
-
-		config := transformer.EventTransformerConfig{
-			TransformerName:     constants.CatFileChopLumpLabel,
-			ContractAddresses:   []string{test_data.KovanCatContractAddress},
-			ContractAbi:         test_data.KovanCatABI,
-			Topic:               test_data.KovanCatFileChopLumpSignature,
-			StartingBlockNumber: chopLumpBlockNumber,
-			EndingBlockNumber:   chopLumpBlockNumber,
-		}
+		testCatFileConfig.TransformerName = mcdConstants.CatFileChopLumpLabel
+		testCatFileConfig.Topic = test_data.KovanCatFileChopLumpSignature
+		testCatFileConfig.StartingBlockNumber = chopLumpBlockNumber
+		testCatFileConfig.EndingBlockNumber = chopLumpBlockNumber
 
 		initializer := shared.LogNoteTransformer{
-			Config:     config,
+			Config:     testCatFileConfig,
 			Converter:  &chop_lump.CatFileChopLumpConverter{},
 			Repository: &chop_lump.CatFileChopLumpRepository{},
 		}
 		transformer := initializer.NewLogNoteTransformer(db)
 
-		logs, err := fetcher.FetchLogs(
-			[]common.Address{common.HexToAddress(config.ContractAddresses[0])},
-			[]common.Hash{common.HexToHash(config.Topic)},
+		logs, err := logFetcher.FetchLogs(
+			[]common.Address{common.HexToAddress(testCatFileConfig.ContractAddresses[0])},
+			[]common.Hash{common.HexToHash(testCatFileConfig.Topic)},
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
-		err = transformer.Execute(logs, header, c2.HeaderMissing)
+		err = transformer.Execute(logs, header, constants.HeaderMissing)
 		Expect(err).NotTo(HaveOccurred())
 
-		err = transformer.Execute(logs, header, c2.HeaderRecheck)
+		err = transformer.Execute(logs, header, constants.HeaderRecheck)
 		Expect(err).NotTo(HaveOccurred())
 
 		var headerID int64
@@ -159,31 +154,26 @@ var _ = Describe("Cat File transformer", func() {
 		flipBlockNumber := int64(10691255)
 		header, err := persistHeader(db, flipBlockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
-
-		config := transformer.EventTransformerConfig{
-			TransformerName:     constants.CatFileFlipLabel,
-			ContractAddresses:   []string{test_data.KovanCatContractAddress},
-			ContractAbi:         test_data.KovanCatABI,
-			Topic:               test_data.KovanCatFileFlipSignature,
-			StartingBlockNumber: flipBlockNumber,
-			EndingBlockNumber:   flipBlockNumber,
-		}
+		testCatFileConfig.TransformerName = mcdConstants.CatFileFlipLabel
+		testCatFileConfig.Topic = test_data.KovanCatFileFlipSignature
+		testCatFileConfig.StartingBlockNumber = flipBlockNumber
+		testCatFileConfig.EndingBlockNumber = flipBlockNumber
 
 		initializer := shared.LogNoteTransformer{
-			Config:     config,
+			Config:     testCatFileConfig,
 			Converter:  &flip.CatFileFlipConverter{},
 			Repository: &flip.CatFileFlipRepository{},
 		}
 
 		t := initializer.NewLogNoteTransformer(db)
 
-		logs, err := fetcher.FetchLogs(
-			[]common.Address{common.HexToAddress(config.ContractAddresses[0])},
-			[]common.Hash{common.HexToHash(config.Topic)},
+		logs, err := logFetcher.FetchLogs(
+			[]common.Address{common.HexToAddress(testCatFileConfig.ContractAddresses[0])},
+			[]common.Hash{common.HexToHash(testCatFileConfig.Topic)},
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
-		err = t.Execute(logs, header, c2.HeaderMissing)
+		err = t.Execute(logs, header, constants.HeaderMissing)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []flip.CatFileFlipModel
@@ -202,34 +192,29 @@ var _ = Describe("Cat File transformer", func() {
 		flipBlockNumber := int64(10691255)
 		header, err := persistHeader(db, flipBlockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
-
-		config := transformer.EventTransformerConfig{
-			TransformerName:     constants.CatFileFlipLabel,
-			ContractAddresses:   []string{test_data.KovanCatContractAddress},
-			ContractAbi:         test_data.KovanCatABI,
-			Topic:               test_data.KovanCatFileFlipSignature,
-			StartingBlockNumber: flipBlockNumber,
-			EndingBlockNumber:   flipBlockNumber,
-		}
+		testCatFileConfig.TransformerName = mcdConstants.CatFileFlipLabel
+		testCatFileConfig.Topic = test_data.KovanCatFileFlipSignature
+		testCatFileConfig.StartingBlockNumber = flipBlockNumber
+		testCatFileConfig.EndingBlockNumber = flipBlockNumber
 
 		initializer := shared.LogNoteTransformer{
-			Config:     config,
+			Config:     testCatFileConfig,
 			Converter:  &flip.CatFileFlipConverter{},
 			Repository: &flip.CatFileFlipRepository{},
 		}
 
 		t := initializer.NewLogNoteTransformer(db)
 
-		logs, err := fetcher.FetchLogs(
-			[]common.Address{common.HexToAddress(config.ContractAddresses[0])},
-			[]common.Hash{common.HexToHash(config.Topic)},
+		logs, err := logFetcher.FetchLogs(
+			[]common.Address{common.HexToAddress(testCatFileConfig.ContractAddresses[0])},
+			[]common.Hash{common.HexToHash(testCatFileConfig.Topic)},
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
-		err = t.Execute(logs, header, c2.HeaderMissing)
+		err = t.Execute(logs, header, constants.HeaderMissing)
 		Expect(err).NotTo(HaveOccurred())
 
-		err = t.Execute(logs, header, c2.HeaderRecheck)
+		err = t.Execute(logs, header, constants.HeaderRecheck)
 		Expect(err).NotTo(HaveOccurred())
 
 		var headerID int64
@@ -247,30 +232,25 @@ var _ = Describe("Cat File transformer", func() {
 		vowBlockNumber := int64(10691245)
 		header, err := persistHeader(db, vowBlockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
-
-		config := transformer.EventTransformerConfig{
-			TransformerName:     constants.CatFileVowLabel,
-			ContractAddresses:   []string{test_data.KovanCatContractAddress},
-			ContractAbi:         test_data.KovanCatABI,
-			Topic:               test_data.KovanCatFileVowSignature,
-			StartingBlockNumber: vowBlockNumber,
-			EndingBlockNumber:   vowBlockNumber,
-		}
+		testCatFileConfig.TransformerName = mcdConstants.CatFileVowLabel
+		testCatFileConfig.Topic = test_data.KovanCatFileVowSignature
+		testCatFileConfig.StartingBlockNumber = vowBlockNumber
+		testCatFileConfig.EndingBlockNumber = vowBlockNumber
 
 		initializer := shared.LogNoteTransformer{
-			Config:     config,
+			Config:     testCatFileConfig,
 			Converter:  &vow.CatFileVowConverter{},
 			Repository: &vow.CatFileVowRepository{},
 		}
 		t := initializer.NewLogNoteTransformer(db)
 
-		logs, err := fetcher.FetchLogs(
-			[]common.Address{common.HexToAddress(config.ContractAddresses[0])},
-			[]common.Hash{common.HexToHash(config.Topic)},
+		logs, err := logFetcher.FetchLogs(
+			[]common.Address{common.HexToAddress(testCatFileConfig.ContractAddresses[0])},
+			[]common.Hash{common.HexToHash(testCatFileConfig.Topic)},
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
-		err = t.Execute(logs, header, c2.HeaderMissing)
+		err = t.Execute(logs, header, constants.HeaderMissing)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []vow.CatFileVowModel

@@ -18,19 +18,22 @@ package test_data
 
 import (
 	"encoding/json"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/vulcanize/mcd_transformers/transformers/events/flop_kick"
-	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 	"math/big"
 	"strconv"
 	"time"
+
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/common/hexutil"
+	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/vulcanize/vulcanizedb/pkg/fakes"
+
+	"github.com/vulcanize/mcd_transformers/transformers/events/flop_kick"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
 var (
 	FlopKickLog = types.Log{
-		Address: common.HexToAddress(KovanFlopperContractAddress),
+		Address: common.HexToAddress(constants.FlopperContractAddress()),
 		Topics: []common.Hash{
 			common.HexToHash(KovanFlopKickSignature),
 			common.HexToHash("0x0000000000000000000000000000000000000000000000000000000000000005"),

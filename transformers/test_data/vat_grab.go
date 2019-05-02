@@ -2,14 +2,17 @@ package test_data
 
 import (
 	"encoding/json"
+
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
+
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_grab"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
 var EthVatGrabLogWithPositiveDink = types.Log{
-	Address: common.HexToAddress(KovanVatContractAddress),
+	Address: common.HexToAddress(constants.VatContractAddress()),
 	Topics: []common.Hash{
 		common.HexToHash(KovanVatGrabSignature),
 		common.HexToHash("0x66616b6520696c6b000000000000000000000000000000000000000000000000"),
@@ -39,7 +42,7 @@ var VatGrabModelWithPositiveDink = vat_grab.VatGrabModel{
 }
 
 var EthVatGrabLogWithNegativeDink = types.Log{
-	Address: common.HexToAddress(KovanVatContractAddress),
+	Address: common.HexToAddress(constants.VatContractAddress()),
 	Topics: []common.Hash{
 		common.HexToHash(KovanVatGrabSignature),
 		common.HexToHash("0x66616b6520696c6b000000000000000000000000000000000000000000000000"),

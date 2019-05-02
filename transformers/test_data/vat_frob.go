@@ -18,11 +18,14 @@ package test_data
 
 import (
 	"encoding/json"
+
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/vulcanize/mcd_transformers/transformers/events/vat_frob"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
+
+	"github.com/vulcanize/mcd_transformers/transformers/events/vat_frob"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
 var (
@@ -30,7 +33,7 @@ var (
 )
 
 var EthVatFrobLogWithPositiveDart = types.Log{
-	Address: common.HexToAddress(KovanVatContractAddress),
+	Address: common.HexToAddress(constants.VatContractAddress()),
 	Topics: []common.Hash{
 		common.HexToHash(KovanVatFrobSignature),
 		common.HexToHash("0x4554480000000000000000000000000000000000000000000000000000000000"),
@@ -60,7 +63,7 @@ var VatFrobModelWithPositiveDart = vat_frob.VatFrobModel{
 }
 
 var EthVatFrobLogWithNegativeDink = types.Log{
-	Address: common.HexToAddress(KovanVatContractAddress),
+	Address: common.HexToAddress(constants.VatContractAddress()),
 	Topics: []common.Hash{
 		common.HexToHash(KovanVatFrobSignature),
 		common.HexToHash("0x4554482d41000000000000000000000000000000000000000000000000000000"),

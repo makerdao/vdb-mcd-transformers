@@ -20,9 +20,8 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-
-	c2 "github.com/vulcanize/vulcanizedb/libraries/shared/constants"
-	fetch "github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/constants"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
@@ -30,7 +29,7 @@ import (
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/events/pip_log_value"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
@@ -39,8 +38,8 @@ var _ = Describe("Pip LogValue transformer", func() {
 		db          *postgres.DB
 		blockChain  core.BlockChain
 		config      transformer.EventTransformerConfig
-		fetcher     *fetch.LogFetcher
 		initializer shared.LogNoteTransformer
+		logFetcher  fetcher.ILogFetcher
 		topics      []common.Hash
 	)
 
@@ -53,14 +52,14 @@ var _ = Describe("Pip LogValue transformer", func() {
 		test_config.CleanTestDB(db)
 
 		config = transformer.EventTransformerConfig{
-			TransformerName: constants.PipLogValueLabel,
+			TransformerName: mcdConstants.PipLogValueLabel,
 			ContractAbi:     test_data.KovanPipABI,
 			Topic:           test_data.KovanPipLogValueSignature,
 		}
 
 		topics = []common.Hash{common.HexToHash(config.Topic)}
 
-		fetcher = fetch.NewLogFetcher(blockChain)
+		logFetcher = fetcher.NewLogFetcher(blockChain)
 
 		initializer = shared.LogNoteTransformer{
 			Config:     config,
@@ -73,19 +72,19 @@ var _ = Describe("Pip LogValue transformer", func() {
 		blockNumber := int64(10606964)
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
-		addresses := []string{test_data.KovanPipEthContractAddress}
+		addresses := []string{mcdConstants.PipEthContractAddress()}
 		initializer.Config.ContractAddresses = addresses
 		initializer.Config.StartingBlockNumber = blockNumber
 		initializer.Config.EndingBlockNumber = blockNumber
 
-		logs, err := fetcher.FetchLogs(
+		logs, err := logFetcher.FetchLogs(
 			transformer.HexStringsToAddresses(addresses),
 			topics,
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
 		transformer := initializer.NewLogNoteTransformer(db)
-		err = transformer.Execute(logs, header, c2.HeaderMissing)
+		err = transformer.Execute(logs, header, constants.HeaderMissing)
 
 		Expect(err).NotTo(HaveOccurred())
 		var model pip_log_value.PipLogValueModel
@@ -99,22 +98,22 @@ var _ = Describe("Pip LogValue transformer", func() {
 		blockNumber := int64(10606964)
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
-		addresses := []string{test_data.KovanPipEthContractAddress}
+		addresses := []string{mcdConstants.PipEthContractAddress()}
 		initializer.Config.ContractAddresses = addresses
 		initializer.Config.StartingBlockNumber = blockNumber
 		initializer.Config.EndingBlockNumber = blockNumber
 
-		logs, err := fetcher.FetchLogs(
+		logs, err := logFetcher.FetchLogs(
 			transformer.HexStringsToAddresses(addresses),
 			topics,
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
 		transformer := initializer.NewLogNoteTransformer(db)
-		err = transformer.Execute(logs, header, c2.HeaderMissing)
+		err = transformer.Execute(logs, header, constants.HeaderMissing)
 		Expect(err).NotTo(HaveOccurred())
 
-		err = transformer.Execute(logs, header, c2.HeaderRecheck)
+		err = transformer.Execute(logs, header, constants.HeaderRecheck)
 		Expect(err).NotTo(HaveOccurred())
 
 		var headerID int64
@@ -138,19 +137,19 @@ var _ = Describe("Pip LogValue transformer", func() {
 		blockNumber := int64(10606076)
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
-		addresses := []string{test_data.KovanPipCol1ContractAddress}
+		addresses := []string{mcdConstants.PipCol1ContractAddress()}
 		initializer.Config.ContractAddresses = addresses
 		initializer.Config.StartingBlockNumber = blockNumber
 		initializer.Config.EndingBlockNumber = blockNumber
 
-		logs, err := fetcher.FetchLogs(
+		logs, err := logFetcher.FetchLogs(
 			transformer.HexStringsToAddresses(addresses),
 			topics,
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
 		transformer := initializer.NewLogNoteTransformer(db)
-		err = transformer.Execute(logs, header, c2.HeaderMissing)
+		err = transformer.Execute(logs, header, constants.HeaderMissing)
 
 		Expect(err).NotTo(HaveOccurred())
 		var model pip_log_value.PipLogValueModel
@@ -164,19 +163,19 @@ var _ = Describe("Pip LogValue transformer", func() {
 		blockNumber := int64(10606078)
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
-		addresses := []string{test_data.KovanPipCol2ContractAddress}
+		addresses := []string{mcdConstants.PipCol2ContractAddress()}
 		initializer.Config.ContractAddresses = addresses
 		initializer.Config.StartingBlockNumber = blockNumber
 		initializer.Config.EndingBlockNumber = blockNumber
 
-		logs, err := fetcher.FetchLogs(
+		logs, err := logFetcher.FetchLogs(
 			transformer.HexStringsToAddresses(addresses),
 			topics,
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
 		transformer := initializer.NewLogNoteTransformer(db)
-		err = transformer.Execute(logs, header, c2.HeaderMissing)
+		err = transformer.Execute(logs, header, constants.HeaderMissing)
 
 		Expect(err).NotTo(HaveOccurred())
 		var model pip_log_value.PipLogValueModel
@@ -190,19 +189,19 @@ var _ = Describe("Pip LogValue transformer", func() {
 		blockNumber := int64(10606080)
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
-		addresses := []string{test_data.KovanPipCol3ContractAddress}
+		addresses := []string{mcdConstants.PipCol3ContractAddress()}
 		initializer.Config.ContractAddresses = addresses
 		initializer.Config.StartingBlockNumber = blockNumber
 		initializer.Config.EndingBlockNumber = blockNumber
 
-		logs, err := fetcher.FetchLogs(
+		logs, err := logFetcher.FetchLogs(
 			transformer.HexStringsToAddresses(addresses),
 			topics,
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
 		transformer := initializer.NewLogNoteTransformer(db)
-		err = transformer.Execute(logs, header, c2.HeaderMissing)
+		err = transformer.Execute(logs, header, constants.HeaderMissing)
 
 		Expect(err).NotTo(HaveOccurred())
 		var model pip_log_value.PipLogValueModel
@@ -216,19 +215,19 @@ var _ = Describe("Pip LogValue transformer", func() {
 		blockNumber := int64(10606068)
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
-		addresses := []string{test_data.KovanPipCol4ContractAddress}
+		addresses := []string{mcdConstants.PipCol4ContractAddress()}
 		initializer.Config.ContractAddresses = addresses
 		initializer.Config.StartingBlockNumber = blockNumber
 		initializer.Config.EndingBlockNumber = blockNumber
 
-		logs, err := fetcher.FetchLogs(
+		logs, err := logFetcher.FetchLogs(
 			transformer.HexStringsToAddresses(addresses),
 			topics,
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
 		transformer := initializer.NewLogNoteTransformer(db)
-		err = transformer.Execute(logs, header, c2.HeaderMissing)
+		err = transformer.Execute(logs, header, constants.HeaderMissing)
 
 		Expect(err).NotTo(HaveOccurred())
 		var model pip_log_value.PipLogValueModel
@@ -242,19 +241,19 @@ var _ = Describe("Pip LogValue transformer", func() {
 		blockNumber := int64(10606070)
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
-		addresses := []string{test_data.KovanPipCol5ContractAddress}
+		addresses := []string{mcdConstants.PipCol5ContractAddress()}
 		initializer.Config.ContractAddresses = addresses
 		initializer.Config.StartingBlockNumber = blockNumber
 		initializer.Config.EndingBlockNumber = blockNumber
 
-		logs, err := fetcher.FetchLogs(
+		logs, err := logFetcher.FetchLogs(
 			transformer.HexStringsToAddresses(addresses),
 			topics,
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
 		transformer := initializer.NewLogNoteTransformer(db)
-		err = transformer.Execute(logs, header, c2.HeaderMissing)
+		err = transformer.Execute(logs, header, constants.HeaderMissing)
 
 		Expect(err).NotTo(HaveOccurred())
 		var model pip_log_value.PipLogValueModel

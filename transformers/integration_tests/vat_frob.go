@@ -22,26 +22,26 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/constants"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
+	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_frob"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
-	c2 "github.com/vulcanize/vulcanizedb/libraries/shared/constants"
-	fetch "github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
-	"github.com/vulcanize/vulcanizedb/pkg/core"
-	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 )
 
 var _ = Describe("Vat frob Transformer", func() {
 	var (
-		db          *postgres.DB
-		blockChain  core.BlockChain
-		fetcher     *fetch.LogFetcher
-		config      transformer.EventTransformerConfig
-		initializer shared.LogNoteTransformer
+		db                *postgres.DB
+		blockChain        core.BlockChain
+		logFetcher        fetcher.ILogFetcher
+		testVatFrobConfig transformer.EventTransformerConfig
+		initializer       shared.LogNoteTransformer
 	)
 
 	BeforeEach(func() {
@@ -52,15 +52,15 @@ var _ = Describe("Vat frob Transformer", func() {
 		db = test_config.NewTestDB(blockChain.Node())
 		test_config.CleanTestDB(db)
 
-		fetcher = fetch.NewLogFetcher(blockChain)
-		config = transformer.EventTransformerConfig{
-			TransformerName:   constants.VatFrobLabel,
-			ContractAddresses: []string{test_data.KovanVatContractAddress},
+		logFetcher = fetcher.NewLogFetcher(blockChain)
+		testVatFrobConfig = transformer.EventTransformerConfig{
+			TransformerName:   mcdConstants.VatFrobLabel,
+			ContractAddresses: []string{mcdConstants.VatContractAddress()},
 			Topic:             test_data.KovanVatFrobSignature,
 		}
 
 		initializer = shared.LogNoteTransformer{
-			Config:     config,
+			Config:     testVatFrobConfig,
 			Converter:  &vat_frob.VatFrobConverter{},
 			Repository: &vat_frob.VatFrobRepository{},
 		}
@@ -74,14 +74,14 @@ var _ = Describe("Vat frob Transformer", func() {
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		logs, err := fetcher.FetchLogs(
-			transformer.HexStringsToAddresses(config.ContractAddresses),
-			[]common.Hash{common.HexToHash(config.Topic)},
+		logs, err := logFetcher.FetchLogs(
+			transformer.HexStringsToAddresses(testVatFrobConfig.ContractAddresses),
+			[]common.Hash{common.HexToHash(testVatFrobConfig.Topic)},
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
 		transformer := initializer.NewLogNoteTransformer(db)
-		err = transformer.Execute(logs, header, c2.HeaderMissing)
+		err = transformer.Execute(logs, header, constants.HeaderMissing)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []vat_frob.VatFrobModel
@@ -108,17 +108,17 @@ var _ = Describe("Vat frob Transformer", func() {
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		logs, err := fetcher.FetchLogs(
-			transformer.HexStringsToAddresses(config.ContractAddresses),
-			[]common.Hash{common.HexToHash(config.Topic)},
+		logs, err := logFetcher.FetchLogs(
+			transformer.HexStringsToAddresses(testVatFrobConfig.ContractAddresses),
+			[]common.Hash{common.HexToHash(testVatFrobConfig.Topic)},
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
 		transformer := initializer.NewLogNoteTransformer(db)
-		err = transformer.Execute(logs, header, c2.HeaderMissing)
+		err = transformer.Execute(logs, header, constants.HeaderMissing)
 		Expect(err).NotTo(HaveOccurred())
 
-		err = transformer.Execute(logs, header, c2.HeaderRecheck)
+		err = transformer.Execute(logs, header, constants.HeaderRecheck)
 		Expect(err).NotTo(HaveOccurred())
 
 		var headerID int64

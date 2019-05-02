@@ -17,33 +17,32 @@
 package integration_tests
 
 import (
+	"strconv"
+
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/constants"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
-	"strconv"
-
-	c2 "github.com/vulcanize/vulcanizedb/libraries/shared/constants"
-	fetch "github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 	"github.com/vulcanize/vulcanizedb/pkg/geth"
 
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/events/bite"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
-var testBiteConfig = transformer.EventTransformerConfig{
-	TransformerName:   constants.BiteLabel,
-	ContractAddresses: []string{test_data.KovanCatContractAddress},
-	ContractAbi:       test_data.KovanCatABI,
-	Topic:             test_data.KovanBiteSignature,
-}
-
 var _ = Describe("Bite Transformer", func() {
+	testBiteConfig := transformer.EventTransformerConfig{
+		TransformerName:   mcdConstants.BiteLabel,
+		ContractAddresses: []string{mcdConstants.CatContractAddress()},
+		ContractAbi:       test_data.KovanCatABI,
+		Topic:             test_data.KovanBiteSignature,
+	}
 
 	// TODO: replace block number when there is an updated Cat bite event
 	XIt("fetches and transforms a Bite event from Kovan chain", func() {
@@ -70,14 +69,14 @@ var _ = Describe("Bite Transformer", func() {
 		}
 		transformer := initializer.NewTransformer(db)
 
-		fetcher := fetch.NewLogFetcher(blockChain)
-		logs, err := fetcher.FetchLogs(
+		logFetcher := fetcher.NewLogFetcher(blockChain)
+		logs, err := logFetcher.FetchLogs(
 			[]common.Address{common.HexToAddress(config.ContractAddresses[0])},
 			[]common.Hash{common.HexToHash(config.Topic)},
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
-		err = transformer.Execute(logs, header, c2.HeaderMissing)
+		err = transformer.Execute(logs, header, constants.HeaderMissing)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []bite.BiteModel
@@ -94,25 +93,6 @@ var _ = Describe("Bite Transformer", func() {
 		Expect(dbResult[0].Ink).To(Equal("1000000000000000000"))
 		Expect(dbResult[0].Flip).To(Equal("2"))
 		Expect(dbResult[0].Tab).To(Equal("149846666666666655744"))
-	})
-
-	It("unpacks an event log", func() {
-		address := common.HexToAddress(test_data.KovanCatContractAddress)
-		abi, err := geth.ParseAbi(test_data.KovanCatABI)
-		Expect(err).NotTo(HaveOccurred())
-
-		contract := bind.NewBoundContract(address, abi, nil, nil, nil)
-		entity := &bite.BiteEntity{}
-
-		var eventLog = test_data.EthBiteLog
-
-		err = contract.UnpackLog(entity, "Bite", eventLog)
-		Expect(err).NotTo(HaveOccurred())
-
-		expectedEntity := test_data.BiteEntity
-		Expect(entity.Art).To(Equal(expectedEntity.Art))
-		Expect(entity.Ilk).To(Equal(expectedEntity.Ilk))
-		Expect(entity.Ink).To(Equal(expectedEntity.Ink))
 	})
 
 	It("rechecks header for bite event", func() {
@@ -139,17 +119,17 @@ var _ = Describe("Bite Transformer", func() {
 		}
 		transformer := initializer.NewTransformer(db)
 
-		fetcher := fetch.NewLogFetcher(blockChain)
-		logs, err := fetcher.FetchLogs(
+		logFetcher := fetcher.NewLogFetcher(blockChain)
+		logs, err := logFetcher.FetchLogs(
 			[]common.Address{common.HexToAddress(config.ContractAddresses[0])},
 			[]common.Hash{common.HexToHash(config.Topic)},
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
-		err = transformer.Execute(logs, header, c2.HeaderMissing)
+		err = transformer.Execute(logs, header, constants.HeaderMissing)
 		Expect(err).NotTo(HaveOccurred())
 
-		err = transformer.Execute(logs, header, c2.HeaderRecheck)
+		err = transformer.Execute(logs, header, constants.HeaderRecheck)
 		Expect(err).NotTo(HaveOccurred())
 
 		var headerID int64
@@ -164,7 +144,7 @@ var _ = Describe("Bite Transformer", func() {
 	})
 
 	It("unpacks an event log", func() {
-		address := common.HexToAddress(test_data.KovanCatContractAddress)
+		address := common.HexToAddress(mcdConstants.CatContractAddress())
 		abi, err := geth.ParseAbi(test_data.KovanCatABI)
 		Expect(err).NotTo(HaveOccurred())
 

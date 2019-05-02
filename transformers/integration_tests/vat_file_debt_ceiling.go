@@ -20,9 +20,8 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-
-	c2 "github.com/vulcanize/vulcanizedb/libraries/shared/constants"
-	fetch "github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/constants"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
@@ -30,7 +29,7 @@ import (
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_file/debt_ceiling"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
@@ -52,8 +51,8 @@ var _ = Describe("VatFileDebtCeiling LogNoteTransformer", func() {
 	It("fetches and transforms a VatFileDebtCeiling event from Kovan chain", func() {
 		blockNumber := int64(10691344)
 		config := transformer.EventTransformerConfig{
-			TransformerName:     constants.VatFileDebtCeilingLabel,
-			ContractAddresses:   []string{test_data.KovanVatContractAddress},
+			TransformerName:     mcdConstants.VatFileDebtCeilingLabel,
+			ContractAddresses:   []string{mcdConstants.VatContractAddress()},
 			ContractAbi:         test_data.KovanVatABI,
 			Topic:               test_data.KovanVatFileDebtCeilingSignature,
 			StartingBlockNumber: blockNumber,
@@ -63,8 +62,8 @@ var _ = Describe("VatFileDebtCeiling LogNoteTransformer", func() {
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		fetcher := fetch.NewLogFetcher(blockChain)
-		logs, err := fetcher.FetchLogs(
+		logFetcher := fetcher.NewLogFetcher(blockChain)
+		logs, err := logFetcher.FetchLogs(
 			transformer.HexStringsToAddresses(config.ContractAddresses),
 			[]common.Hash{common.HexToHash(config.Topic)},
 			header)
@@ -77,7 +76,7 @@ var _ = Describe("VatFileDebtCeiling LogNoteTransformer", func() {
 		}
 		transformer := initializer.NewLogNoteTransformer(db)
 
-		err = transformer.Execute(logs, header, c2.HeaderMissing)
+		err = transformer.Execute(logs, header, constants.HeaderMissing)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []debt_ceiling.VatFileDebtCeilingModel
@@ -92,8 +91,8 @@ var _ = Describe("VatFileDebtCeiling LogNoteTransformer", func() {
 	It("rechecks vat file debt ceiling event", func() {
 		blockNumber := int64(10691344)
 		config := transformer.EventTransformerConfig{
-			TransformerName:     constants.VatFileDebtCeilingLabel,
-			ContractAddresses:   []string{test_data.KovanVatContractAddress},
+			TransformerName:     mcdConstants.VatFileDebtCeilingLabel,
+			ContractAddresses:   []string{mcdConstants.VatContractAddress()},
 			ContractAbi:         test_data.KovanVatABI,
 			Topic:               test_data.KovanVatFileDebtCeilingSignature,
 			StartingBlockNumber: blockNumber,
@@ -103,8 +102,8 @@ var _ = Describe("VatFileDebtCeiling LogNoteTransformer", func() {
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		fetcher := fetch.NewLogFetcher(blockChain)
-		logs, err := fetcher.FetchLogs(
+		logFetcher := fetcher.NewLogFetcher(blockChain)
+		logs, err := logFetcher.FetchLogs(
 			transformer.HexStringsToAddresses(config.ContractAddresses),
 			[]common.Hash{common.HexToHash(config.Topic)},
 			header)
@@ -117,10 +116,10 @@ var _ = Describe("VatFileDebtCeiling LogNoteTransformer", func() {
 		}
 		transformer := initializer.NewLogNoteTransformer(db)
 
-		err = transformer.Execute(logs, header, c2.HeaderMissing)
+		err = transformer.Execute(logs, header, constants.HeaderMissing)
 		Expect(err).NotTo(HaveOccurred())
 
-		err = transformer.Execute(logs, header, c2.HeaderRecheck)
+		err = transformer.Execute(logs, header, constants.HeaderRecheck)
 		Expect(err).NotTo(HaveOccurred())
 
 		var headerID int64

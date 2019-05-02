@@ -18,12 +18,15 @@ package test_data
 
 import (
 	"encoding/json"
+	"strconv"
+
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/vulcanize/mcd_transformers/transformers/events/dent"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
-	"strconv"
+
+	"github.com/vulcanize/mcd_transformers/transformers/events/dent"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
 var (
@@ -37,7 +40,7 @@ var (
 )
 
 var DentLog = types.Log{
-	Address: common.HexToAddress(KovanFlipperContractAddress),
+	Address: common.HexToAddress(constants.FlipperContractAddress()),
 	Topics: []common.Hash{
 		common.HexToHash(KovanDentSignature),
 		common.HexToHash("0x00000000000000000000000064d922894153be9eef7b7218dc565d1d0ce2a092"),

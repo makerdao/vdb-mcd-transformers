@@ -18,17 +18,20 @@ package test_data
 
 import (
 	"encoding/json"
+
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/vulcanize/vulcanizedb/pkg/fakes"
+
 	"github.com/vulcanize/mcd_transformers/transformers/events/cat_file/chop_lump"
 	"github.com/vulcanize/mcd_transformers/transformers/events/cat_file/flip"
 	"github.com/vulcanize/mcd_transformers/transformers/events/cat_file/vow"
-	"github.com/vulcanize/vulcanizedb/pkg/fakes"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
 var EthCatFileChopLog = types.Log{
-	Address: common.HexToAddress(KovanCatContractAddress),
+	Address: common.HexToAddress(constants.CatContractAddress()),
 	Topics: []common.Hash{
 		common.HexToHash(KovanCatFileChopLumpSignature),
 		common.HexToHash("0x00000000000000000000000064d922894153be9eef7b7218dc565d1d0ce2a092"),
@@ -54,7 +57,7 @@ var CatFileChopModel = chop_lump.CatFileChopLumpModel{
 }
 
 var EthCatFileLumpLog = types.Log{
-	Address: common.HexToAddress(KovanCatContractAddress),
+	Address: common.HexToAddress(constants.CatContractAddress()),
 	Topics: []common.Hash{
 		common.HexToHash(KovanCatFileChopLumpSignature),
 		common.HexToHash("0x00000000000000000000000064d922894153be9eef7b7218dc565d1d0ce2a092"),
@@ -80,7 +83,7 @@ var CatFileLumpModel = chop_lump.CatFileChopLumpModel{
 }
 
 var EthCatFileFlipLog = types.Log{
-	Address: common.HexToAddress(KovanCatContractAddress),
+	Address: common.HexToAddress(constants.CatContractAddress()),
 	Topics: []common.Hash{
 		common.HexToHash(KovanCatFileFlipSignature),
 		common.HexToHash("0x00000000000000000000000064d922894153be9eef7b7218dc565d1d0ce2a092"),
@@ -107,7 +110,7 @@ var CatFileFlipModel = flip.CatFileFlipModel{
 }
 
 var EthCatFileVowLog = types.Log{
-	Address: common.HexToAddress(KovanCatContractAddress),
+	Address: common.HexToAddress(constants.CatContractAddress()),
 	Topics: []common.Hash{
 		common.HexToHash(KovanCatFileVowSignature),
 		common.HexToHash("0x0000000000000000000000003652c2af10cbbdb753c3b46489db5226b73e6497"),

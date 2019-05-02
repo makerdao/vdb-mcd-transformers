@@ -18,12 +18,15 @@ package test_data
 
 import (
 	"encoding/json"
+	"math/big"
+
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/vulcanize/mcd_transformers/transformers/events/bite"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
-	"math/big"
+
+	"github.com/vulcanize/mcd_transformers/transformers/events/bite"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
 const (
@@ -43,7 +46,7 @@ var (
 )
 
 var EthBiteLog = types.Log{
-	Address: common.HexToAddress("0x35f3d8997ef261c7961bd7c07ddc390f5cf76bd3"),
+	Address: common.HexToAddress(constants.CatContractAddress()),
 	Topics: []common.Hash{
 		common.HexToHash(KovanBiteSignature),
 		common.HexToHash("0x4554480000000000000000000000000000000000000000000000000000000000"),

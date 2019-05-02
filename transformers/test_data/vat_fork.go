@@ -2,9 +2,12 @@ package test_data
 
 import (
 	"encoding/json"
+
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
+
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
 type VatForkModel struct {
@@ -19,7 +22,7 @@ type VatForkModel struct {
 }
 
 var EthVatForkLogWithNegativeDart = types.Log{
-	Address: common.HexToAddress(KovanVatContractAddress),
+	Address: common.HexToAddress(constants.VatContractAddress()),
 	Topics: []common.Hash{
 		common.HexToHash("0x00000000000000000000000000000000000000000000000000000000870c616d"),
 		common.HexToHash("0x66616b6520696c6b000000000000000000000000000000000000000000000000"),

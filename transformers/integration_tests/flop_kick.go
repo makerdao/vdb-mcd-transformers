@@ -23,9 +23,9 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-
-	c2 "github.com/vulcanize/vulcanizedb/libraries/shared/constants"
-	fetch "github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/constants"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
@@ -33,9 +33,8 @@ import (
 
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/events/flop_kick"
-	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 )
 
 var _ = Describe("FlopKick Transformer", func() {
@@ -44,7 +43,7 @@ var _ = Describe("FlopKick Transformer", func() {
 		blockChain  core.BlockChain
 		config      transformer.EventTransformerConfig
 		initializer event.Transformer
-		fetcher     *fetch.LogFetcher
+		logFetcher  fetcher.ILogFetcher
 		addresses   []common.Address
 		topics      []common.Hash
 	)
@@ -58,8 +57,8 @@ var _ = Describe("FlopKick Transformer", func() {
 		test_config.CleanTestDB(db)
 
 		config = transformer.EventTransformerConfig{
-			TransformerName:   constants.FlopKickLabel,
-			ContractAddresses: []string{test_data.KovanFlopperContractAddress},
+			TransformerName:   mcdConstants.FlopKickLabel,
+			ContractAddresses: []string{mcdConstants.FlopperContractAddress()},
 			ContractAbi:       test_data.KovanFlopperABI,
 			Topic:             test_data.KovanFlopKickSignature,
 		}
@@ -70,7 +69,7 @@ var _ = Describe("FlopKick Transformer", func() {
 			Repository: &flop_kick.FlopKickRepository{},
 		}
 
-		fetcher = fetch.NewLogFetcher(blockChain)
+		logFetcher = fetcher.NewLogFetcher(blockChain)
 		addresses = transformer.HexStringsToAddresses(config.ContractAddresses)
 		topics = []common.Hash{common.HexToHash(config.Topic)}
 	})
@@ -83,11 +82,11 @@ var _ = Describe("FlopKick Transformer", func() {
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		logs, err := fetcher.FetchLogs(addresses, topics, header)
+		logs, err := logFetcher.FetchLogs(addresses, topics, header)
 		Expect(err).NotTo(HaveOccurred())
 
 		transformer := initializer.NewTransformer(db)
-		err = transformer.Execute(logs, header, c2.HeaderMissing)
+		err = transformer.Execute(logs, header, constants.HeaderMissing)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []flop_kick.Model
@@ -111,14 +110,14 @@ var _ = Describe("FlopKick Transformer", func() {
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		logs, err := fetcher.FetchLogs(addresses, topics, header)
+		logs, err := logFetcher.FetchLogs(addresses, topics, header)
 		Expect(err).NotTo(HaveOccurred())
 
 		transformer := initializer.NewTransformer(db)
-		err = transformer.Execute(logs, header, c2.HeaderMissing)
+		err = transformer.Execute(logs, header, constants.HeaderMissing)
 		Expect(err).NotTo(HaveOccurred())
 
-		err = transformer.Execute(logs, header, c2.HeaderRecheck)
+		err = transformer.Execute(logs, header, constants.HeaderRecheck)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []flop_kick.Model
@@ -152,11 +151,11 @@ var _ = Describe("FlopKick Transformer", func() {
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		logs, err := fetcher.FetchLogs(addresses, topics, header)
+		logs, err := logFetcher.FetchLogs(addresses, topics, header)
 		Expect(err).NotTo(HaveOccurred())
 
 		transformer := initializer.NewTransformer(db)
-		err = transformer.Execute(logs, header, c2.HeaderMissing)
+		err = transformer.Execute(logs, header, constants.HeaderMissing)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []flop_kick.Model
@@ -172,7 +171,7 @@ var _ = Describe("FlopKick Transformer", func() {
 	})
 
 	It("unpacks an flop kick event log", func() {
-		address := common.HexToAddress(test_data.KovanFlopperContractAddress)
+		address := common.HexToAddress(mcdConstants.FlopperContractAddress())
 		abi, err := geth.ParseAbi(test_data.KovanFlopperABI)
 		Expect(err).NotTo(HaveOccurred())
 

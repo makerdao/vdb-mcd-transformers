@@ -20,9 +20,8 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-
-	c2 "github.com/vulcanize/vulcanizedb/libraries/shared/constants"
-	fetch "github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/constants"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
@@ -30,7 +29,7 @@ import (
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/events/deal"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
@@ -40,7 +39,7 @@ var _ = Describe("Deal transformer", func() {
 		blockChain  core.BlockChain
 		config      transformer.EventTransformerConfig
 		initializer shared.LogNoteTransformer
-		fetcher     *fetch.LogFetcher
+		logFetcher  fetcher.ILogFetcher
 		addresses   []common.Address
 		topics      []common.Hash
 	)
@@ -54,9 +53,13 @@ var _ = Describe("Deal transformer", func() {
 		test_config.CleanTestDB(db)
 
 		config = transformer.EventTransformerConfig{
-			TransformerName:   constants.DealLabel,
-			ContractAddresses: []string{test_data.KovanFlapperContractAddress, test_data.KovanFlipperContractAddress, test_data.KovanFlopperContractAddress},
-			Topic:             test_data.KovanDealSignature,
+			TransformerName: mcdConstants.DealLabel,
+			ContractAddresses: []string{
+				mcdConstants.FlapperContractAddress(),
+				mcdConstants.FlipperContractAddress(),
+				mcdConstants.FlopperContractAddress(),
+			},
+			Topic: test_data.KovanDealSignature,
 		}
 
 		initializer = shared.LogNoteTransformer{
@@ -65,7 +68,7 @@ var _ = Describe("Deal transformer", func() {
 			Repository: &deal.DealRepository{},
 		}
 
-		fetcher = fetch.NewLogFetcher(blockChain)
+		logFetcher = fetcher.NewLogFetcher(blockChain)
 		addresses = transformer.HexStringsToAddresses(config.ContractAddresses)
 		topics = []common.Hash{common.HexToHash(config.Topic)}
 
@@ -80,11 +83,11 @@ var _ = Describe("Deal transformer", func() {
 		initializer.Config.StartingBlockNumber = flipBlockNumber
 		initializer.Config.EndingBlockNumber = flipBlockNumber
 
-		logs, err := fetcher.FetchLogs(addresses, topics, header)
+		logs, err := logFetcher.FetchLogs(addresses, topics, header)
 		Expect(err).NotTo(HaveOccurred())
 
 		transformer := initializer.NewLogNoteTransformer(db)
-		err = transformer.Execute(logs, header, c2.HeaderMissing)
+		err = transformer.Execute(logs, header, constants.HeaderMissing)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []deal.DealModel
@@ -93,7 +96,7 @@ var _ = Describe("Deal transformer", func() {
 
 		Expect(len(dbResult)).To(Equal(1))
 		Expect(dbResult[0].BidId).To(Equal("6"))
-		Expect(dbResult[0].ContractAddress).To(Equal(test_data.KovanFlipperContractAddress))
+		Expect(dbResult[0].ContractAddress).To(Equal(mcdConstants.FlipperContractAddress()))
 	})
 
 	It("rechecks flip deal event", func() {
@@ -105,14 +108,14 @@ var _ = Describe("Deal transformer", func() {
 		initializer.Config.StartingBlockNumber = flipBlockNumber
 		initializer.Config.EndingBlockNumber = flipBlockNumber
 
-		logs, err := fetcher.FetchLogs(addresses, topics, header)
+		logs, err := logFetcher.FetchLogs(addresses, topics, header)
 		Expect(err).NotTo(HaveOccurred())
 
 		transformer := initializer.NewLogNoteTransformer(db)
-		err = transformer.Execute(logs, header, c2.HeaderMissing)
+		err = transformer.Execute(logs, header, constants.HeaderMissing)
 		Expect(err).NotTo(HaveOccurred())
 
-		err = transformer.Execute(logs, header, c2.HeaderRecheck)
+		err = transformer.Execute(logs, header, constants.HeaderRecheck)
 		Expect(err).NotTo(HaveOccurred())
 
 		var headerID int64
@@ -136,11 +139,11 @@ var _ = Describe("Deal transformer", func() {
 		initializer.Config.StartingBlockNumber = flapBlockNumber
 		initializer.Config.EndingBlockNumber = flapBlockNumber
 
-		logs, err := fetcher.FetchLogs(addresses, topics, header)
+		logs, err := logFetcher.FetchLogs(addresses, topics, header)
 		Expect(err).NotTo(HaveOccurred())
 
 		transformer := initializer.NewLogNoteTransformer(db)
-		err = transformer.Execute(logs, header, c2.HeaderMissing)
+		err = transformer.Execute(logs, header, constants.HeaderMissing)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []deal.DealModel
@@ -149,6 +152,6 @@ var _ = Describe("Deal transformer", func() {
 
 		Expect(len(dbResult)).To(Equal(1))
 		Expect(dbResult[0].BidId).To(Equal("1"))
-		Expect(dbResult[0].ContractAddress).To(Equal(test_data.KovanFlapperContractAddress))
+		Expect(dbResult[0].ContractAddress).To(Equal(mcdConstants.FlapperContractAddress()))
 	})
 })
