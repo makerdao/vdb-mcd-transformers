@@ -14,13 +14,14 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package event
+package shared
 
 import (
 	"github.com/ethereum/go-ethereum/core/types"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/vulcanize/vulcanizedb/libraries/shared/constants"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
@@ -29,7 +30,7 @@ import (
 type LogNoteTransformer struct {
 	Config     transformer.EventTransformerConfig
 	Converter  LogNoteConverter
-	Repository Repository
+	Repository event.Repository
 }
 
 func (tr LogNoteTransformer) NewLogNoteTransformer(db *postgres.DB) transformer.EventTransformer {

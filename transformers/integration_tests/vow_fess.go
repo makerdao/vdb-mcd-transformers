@@ -29,9 +29,9 @@ import (
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 
 	"github.com/vulcanize/mcd_transformers/test_config"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 )
 
 var _ = Describe("VowFess LogNoteTransformer", func() {
@@ -71,7 +71,7 @@ var _ = Describe("VowFess LogNoteTransformer", func() {
 		Expect(len(logs)).To(Equal(1))
 		Expect(err).NotTo(HaveOccurred())
 
-		tr := event.LogNoteTransformer{
+		tr := shared.LogNoteTransformer{
 			Config:     config,
 			Converter:  &vow_fess.VowFessConverter{},
 			Repository: &vow_fess.VowFessRepository{},
@@ -111,7 +111,7 @@ var _ = Describe("VowFess LogNoteTransformer", func() {
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
-		tr := event.LogNoteTransformer{
+		tr := shared.LogNoteTransformer{
 			Config:     config,
 			Converter:  &vow_fess.VowFessConverter{},
 			Repository: &vow_fess.VowFessRepository{},

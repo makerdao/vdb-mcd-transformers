@@ -39,7 +39,6 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 )
 
 var _ = Describe("Cat File transformer", func() {
@@ -76,7 +75,7 @@ var _ = Describe("Cat File transformer", func() {
 			EndingBlockNumber:   chopLumpBlockNumber,
 		}
 
-		initializer := event.LogNoteTransformer{
+		initializer := shared.LogNoteTransformer{
 			Config:     config,
 			Converter:  &chop_lump.CatFileChopLumpConverter{},
 			Repository: &chop_lump.CatFileChopLumpRepository{},
@@ -126,7 +125,7 @@ var _ = Describe("Cat File transformer", func() {
 			EndingBlockNumber:   chopLumpBlockNumber,
 		}
 
-		initializer := event.LogNoteTransformer{
+		initializer := shared.LogNoteTransformer{
 			Config:     config,
 			Converter:  &chop_lump.CatFileChopLumpConverter{},
 			Repository: &chop_lump.CatFileChopLumpRepository{},
@@ -170,7 +169,7 @@ var _ = Describe("Cat File transformer", func() {
 			EndingBlockNumber:   flipBlockNumber,
 		}
 
-		initializer := event.LogNoteTransformer{
+		initializer := shared.LogNoteTransformer{
 			Config:     config,
 			Converter:  &flip.CatFileFlipConverter{},
 			Repository: &flip.CatFileFlipRepository{},
@@ -213,7 +212,7 @@ var _ = Describe("Cat File transformer", func() {
 			EndingBlockNumber:   flipBlockNumber,
 		}
 
-		initializer := event.LogNoteTransformer{
+		initializer := shared.LogNoteTransformer{
 			Config:     config,
 			Converter:  &flip.CatFileFlipConverter{},
 			Repository: &flip.CatFileFlipRepository{},
@@ -258,7 +257,7 @@ var _ = Describe("Cat File transformer", func() {
 			EndingBlockNumber:   vowBlockNumber,
 		}
 
-		initializer := event.LogNoteTransformer{
+		initializer := shared.LogNoteTransformer{
 			Config:     config,
 			Converter:  &vow.CatFileVowConverter{},
 			Repository: &vow.CatFileVowRepository{},

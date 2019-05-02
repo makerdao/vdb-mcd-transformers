@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package event_test
+package shared_test
 
 import (
 	"math/rand"
@@ -23,8 +23,8 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/constants"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/mocks"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/test_data"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
@@ -46,7 +46,7 @@ var _ = Describe("LogNoteTransformer", func() {
 	BeforeEach(func() {
 		repository = mocks.MockRepository{}
 		converter = mocks.MockLogNoteConverter{}
-		t = event.LogNoteTransformer{
+		t = shared.LogNoteTransformer{
 			Config:     config,
 			Converter:  &converter,
 			Repository: &repository,

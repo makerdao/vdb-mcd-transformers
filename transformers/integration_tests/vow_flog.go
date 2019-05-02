@@ -29,9 +29,9 @@ import (
 
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/events/vow_flog"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 )
 
 var _ = Describe("VowFlog LogNoteTransformer", func() {
@@ -70,7 +70,7 @@ var _ = Describe("VowFlog LogNoteTransformer", func() {
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
-		tr := event.LogNoteTransformer{
+		tr := shared.LogNoteTransformer{
 			Config:     config,
 			Converter:  &vow_flog.VowFlogConverter{},
 			Repository: &vow_flog.VowFlogRepository{},
@@ -110,7 +110,7 @@ var _ = Describe("VowFlog LogNoteTransformer", func() {
 			[]common.Hash{common.HexToHash(config.Topic)},
 			header)
 		Expect(err).NotTo(HaveOccurred())
-		tr := event.LogNoteTransformer{
+		tr := shared.LogNoteTransformer{
 			Config:     config,
 			Converter:  &vow_flog.VowFlogConverter{},
 			Repository: &vow_flog.VowFlogRepository{},
