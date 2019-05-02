@@ -22,12 +22,12 @@ import (
 	. "github.com/onsi/gomega"
 
 	c2 "github.com/vulcanize/vulcanizedb/libraries/shared/constants"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 	fetch "github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_move"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
@@ -61,7 +61,7 @@ var _ = Describe("VatMove LogNoteTransformer", func() {
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
-		tr := event.LogNoteTransformer{
+		tr := shared.LogNoteTransformer{
 			Config:     config,
 			Converter:  &vat_move.VatMoveConverter{},
 			Repository: &vat_move.VatMoveRepository{},
@@ -110,7 +110,7 @@ var _ = Describe("VatMove LogNoteTransformer", func() {
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
-		tr := event.LogNoteTransformer{
+		tr := shared.LogNoteTransformer{
 			Config:     config,
 			Converter:  &vat_move.VatMoveConverter{},
 			Repository: &vat_move.VatMoveRepository{},

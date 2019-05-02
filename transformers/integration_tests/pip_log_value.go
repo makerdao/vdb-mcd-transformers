@@ -29,9 +29,9 @@ import (
 
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/events/pip_log_value"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 )
 
 var _ = Describe("Pip LogValue transformer", func() {
@@ -40,7 +40,7 @@ var _ = Describe("Pip LogValue transformer", func() {
 		blockChain  core.BlockChain
 		config      transformer.EventTransformerConfig
 		fetcher     *fetch.Fetcher
-		initializer event.LogNoteTransformer
+		initializer shared.LogNoteTransformer
 		topics      []common.Hash
 	)
 
@@ -62,7 +62,7 @@ var _ = Describe("Pip LogValue transformer", func() {
 
 		fetcher = fetch.NewFetcher(blockChain)
 
-		initializer = event.LogNoteTransformer{
+		initializer = shared.LogNoteTransformer{
 			Config:     config,
 			Converter:  &pip_log_value.PipLogValueConverter{},
 			Repository: &pip_log_value.PipLogValueRepository{},

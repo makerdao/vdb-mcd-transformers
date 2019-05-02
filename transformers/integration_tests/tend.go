@@ -29,9 +29,9 @@ import (
 
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/events/tend"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 )
 
 var _ = Describe("Tend LogNoteTransformer", func() {
@@ -40,7 +40,7 @@ var _ = Describe("Tend LogNoteTransformer", func() {
 		blockChain  core.BlockChain
 		config      transformer.EventTransformerConfig
 		fetcher     *fetch.Fetcher
-		initializer event.LogNoteTransformer
+		initializer shared.LogNoteTransformer
 		addresses   []common.Address
 		topics      []common.Hash
 	)
@@ -64,7 +64,7 @@ var _ = Describe("Tend LogNoteTransformer", func() {
 		addresses = transformer.HexStringsToAddresses(config.ContractAddresses)
 		topics = []common.Hash{common.HexToHash(config.Topic)}
 
-		initializer = event.LogNoteTransformer{
+		initializer = shared.LogNoteTransformer{
 			Config:     config,
 			Converter:  &tend.TendConverter{},
 			Repository: &tend.TendRepository{},

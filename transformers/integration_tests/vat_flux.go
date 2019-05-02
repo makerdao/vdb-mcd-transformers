@@ -32,7 +32,6 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 )
 
 var _ = Describe("VatFlux LogNoteTransformer", func() {
@@ -65,7 +64,7 @@ var _ = Describe("VatFlux LogNoteTransformer", func() {
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
-		initializer := event.LogNoteTransformer{
+		initializer := shared.LogNoteTransformer{
 			Config:     config,
 			Converter:  &vat_flux.VatFluxConverter{},
 			Repository: &vat_flux.VatFluxRepository{},
@@ -119,7 +118,7 @@ var _ = Describe("VatFlux LogNoteTransformer", func() {
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
-		initializer := event.LogNoteTransformer{
+		initializer := shared.LogNoteTransformer{
 			Config:     config,
 			Converter:  &vat_flux.VatFluxConverter{},
 			Repository: &vat_flux.VatFluxRepository{},

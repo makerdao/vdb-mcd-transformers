@@ -29,7 +29,6 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 	c2 "github.com/vulcanize/vulcanizedb/libraries/shared/constants"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 	fetch "github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
@@ -42,7 +41,7 @@ var _ = Describe("Vat frob Transformer", func() {
 		blockChain  core.BlockChain
 		fetcher     *fetch.Fetcher
 		config      transformer.EventTransformerConfig
-		initializer event.LogNoteTransformer
+		initializer shared.LogNoteTransformer
 	)
 
 	BeforeEach(func() {
@@ -60,7 +59,7 @@ var _ = Describe("Vat frob Transformer", func() {
 			Topic:             test_data.KovanVatFrobSignature,
 		}
 
-		initializer = event.LogNoteTransformer{
+		initializer = shared.LogNoteTransformer{
 			Config:     config,
 			Converter:  &vat_frob.VatFrobConverter{},
 			Repository: &vat_frob.VatFrobRepository{},

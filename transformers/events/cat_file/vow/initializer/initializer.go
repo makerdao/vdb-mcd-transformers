@@ -17,13 +17,13 @@
 package initializer
 
 import (
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 
 	"github.com/vulcanize/mcd_transformers/transformers/events/cat_file/vow"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 )
 
-var EventTransformerInitializer transformer.EventTransformerInitializer = event.LogNoteTransformer{
+var EventTransformerInitializer transformer.EventTransformerInitializer = shared.LogNoteTransformer{
 	Config:     vow.GetCatFileVowConfig(),
 	Converter:  &vow.CatFileVowConverter{},
 	Repository: &vow.CatFileVowRepository{},

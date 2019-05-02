@@ -17,13 +17,13 @@
 package initializer
 
 import (
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 
 	"github.com/vulcanize/mcd_transformers/transformers/events/dent"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 )
 
-var EventTransformerInitializer transformer.EventTransformerInitializer = event.LogNoteTransformer{
+var EventTransformerInitializer transformer.EventTransformerInitializer = shared.LogNoteTransformer{
 	Config:     dent.GetDentConfig(),
 	Converter:  &dent.DentConverter{},
 	Repository: &dent.DentRepository{},

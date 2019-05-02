@@ -32,7 +32,6 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/events/jug_drip"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 )
 
 var _ = Describe("JugDrip Transformer", func() {
@@ -66,7 +65,7 @@ var _ = Describe("JugDrip Transformer", func() {
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		initializer := event.LogNoteTransformer{
+		initializer := shared.LogNoteTransformer{
 			Config:     config,
 			Converter:  &jug_drip.JugDripConverter{},
 			Repository: &jug_drip.JugDripRepository{},
@@ -103,7 +102,7 @@ var _ = Describe("JugDrip Transformer", func() {
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		initializer := event.LogNoteTransformer{
+		initializer := shared.LogNoteTransformer{
 			Config:     config,
 			Converter:  &jug_drip.JugDripConverter{},
 			Repository: &jug_drip.JugDripRepository{},

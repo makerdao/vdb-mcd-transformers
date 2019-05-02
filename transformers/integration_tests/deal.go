@@ -29,9 +29,9 @@ import (
 
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/events/deal"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 )
 
 var _ = Describe("Deal transformer", func() {
@@ -39,7 +39,7 @@ var _ = Describe("Deal transformer", func() {
 		db          *postgres.DB
 		blockChain  core.BlockChain
 		config      transformer.EventTransformerConfig
-		initializer event.LogNoteTransformer
+		initializer shared.LogNoteTransformer
 		fetcher     *fetch.Fetcher
 		addresses   []common.Address
 		topics      []common.Hash
@@ -59,7 +59,7 @@ var _ = Describe("Deal transformer", func() {
 			Topic:             test_data.KovanDealSignature,
 		}
 
-		initializer = event.LogNoteTransformer{
+		initializer = shared.LogNoteTransformer{
 			Config:     config,
 			Converter:  &deal.DealConverter{},
 			Repository: &deal.DealRepository{},

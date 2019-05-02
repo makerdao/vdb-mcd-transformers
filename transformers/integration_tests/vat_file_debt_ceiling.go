@@ -29,9 +29,9 @@ import (
 
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_file/debt_ceiling"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 )
 
 var _ = Describe("VatFileDebtCeiling LogNoteTransformer", func() {
@@ -70,7 +70,7 @@ var _ = Describe("VatFileDebtCeiling LogNoteTransformer", func() {
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
-		initializer := event.LogNoteTransformer{
+		initializer := shared.LogNoteTransformer{
 			Config:     config,
 			Converter:  &debt_ceiling.VatFileDebtCeilingConverter{},
 			Repository: &debt_ceiling.VatFileDebtCeilingRepository{},
@@ -110,7 +110,7 @@ var _ = Describe("VatFileDebtCeiling LogNoteTransformer", func() {
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
-		initializer := event.LogNoteTransformer{
+		initializer := shared.LogNoteTransformer{
 			Config:     config,
 			Converter:  &debt_ceiling.VatFileDebtCeilingConverter{},
 			Repository: &debt_ceiling.VatFileDebtCeilingRepository{},

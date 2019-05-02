@@ -20,7 +20,6 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 	"math/big"
 	"strconv"
 
@@ -65,7 +64,7 @@ var _ = Describe("Vat Grab Transformer", func() {
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
-		tr := event.LogNoteTransformer{
+		tr := shared.LogNoteTransformer{
 			Config:     config,
 			Converter:  &vat_grab.VatGrabConverter{},
 			Repository: &vat_grab.VatGrabRepository{},
@@ -124,7 +123,7 @@ var _ = Describe("Vat Grab Transformer", func() {
 			[]common.Hash{common.HexToHash(config.Topic)},
 			header)
 		Expect(err).NotTo(HaveOccurred())
-		tr := event.LogNoteTransformer{
+		tr := shared.LogNoteTransformer{
 			Config:     config,
 			Converter:  &vat_grab.VatGrabConverter{},
 			Repository: &vat_grab.VatGrabRepository{},

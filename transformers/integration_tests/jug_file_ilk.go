@@ -17,7 +17,6 @@ import (
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 )
 
 var _ = Describe("Jug File Ilk LogNoteTransformer", func() {
@@ -49,7 +48,7 @@ var _ = Describe("Jug File Ilk LogNoteTransformer", func() {
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		initializer := event.LogNoteTransformer{
+		initializer := shared.LogNoteTransformer{
 			Config:     config,
 			Converter:  &ilk.JugFileIlkConverter{},
 			Repository: &ilk.JugFileIlkRepository{},
@@ -92,7 +91,7 @@ var _ = Describe("Jug File Ilk LogNoteTransformer", func() {
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		initializer := event.LogNoteTransformer{
+		initializer := shared.LogNoteTransformer{
 			Config:     config,
 			Converter:  &ilk.JugFileIlkConverter{},
 			Repository: &ilk.JugFileIlkRepository{},
