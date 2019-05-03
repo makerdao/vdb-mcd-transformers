@@ -16,6 +16,8 @@ DO
 -- +goose StatementEnd
 GRANT USAGE ON SCHEMA maker TO graphql;
 GRANT EXECUTE ON FUNCTION maker.all_bites(text) TO graphql;
+-- remove once we have structs querying files by address
+GRANT EXECUTE ON FUNCTION maker.address_files(text) TO graphql;
 GRANT EXECUTE ON FUNCTION maker.all_frobs(text) TO graphql;
 GRANT EXECUTE ON FUNCTION maker.all_urns(bigint) TO graphql;
 GRANT EXECUTE ON FUNCTION maker.all_ilks(bigint) TO graphql;
