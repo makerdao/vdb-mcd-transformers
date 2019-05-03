@@ -1,10 +1,12 @@
 package queries
 
 import (
+	"database/sql"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/component_tests/queries/test_helpers"
+	"github.com/vulcanize/mcd_transformers/transformers/events/vat_file/ilk"
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_frob"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
@@ -13,6 +15,7 @@ import (
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 	"math/rand"
 	"strconv"
+	"strings"
 )
 
 var _ = Describe("Extension function", func() {
@@ -101,6 +104,77 @@ var _ = Describe("Extension function", func() {
 					`SELECT ilk_name, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated
                     FROM maker.frob_event_ilk(
                         (SELECT (ilk_name, urn_id, dink, dart, block_height)::maker.frob_event FROM maker.all_frobs($1))
+                    )`, test_helpers.FakeIlk.Name)
+
+				Expect(err).NotTo(HaveOccurred())
+				Expect(result).To(Equal(expectedIlk))
+			})
+		})
+	})
+
+	Describe("using ilk and file", func() {
+		var (
+			fileRepo  ilk.VatFileIlkRepository
+			fileEvent ilk.VatFileIlkModel
+			ilkValues map[string]string
+		)
+
+		BeforeEach(func() {
+			fileRepo = ilk.VatFileIlkRepository{}
+			fileRepo.SetDB(db)
+			vatRepository.SetDB(db)
+			catRepository.SetDB(db)
+			jugRepository.SetDB(db)
+
+			// Create an ilk
+			ilkValues = test_helpers.GetIlkValues(0)
+			createIlkAtBlock(fakeHeader, ilkValues, test_helpers.FakeIlkVatMetadatas,
+				test_helpers.FakeIlkCatMetadatas, test_helpers.FakeIlkJugMetadatas)
+
+			// Create a file event
+			fileEvent = test_data.VatFileIlkDustModel
+			fileEvent.Ilk = test_helpers.FakeIlk.Hex
+			err = fileRepo.Create(headerId, []interface{}{fileEvent})
+			Expect(err).NotTo(HaveOccurred())
+		})
+
+		Describe("ilks_state_files", func() {
+			It("returns file event for an ilk state", func() {
+				var ilkId int
+				err = db.Get(&ilkId, `SELECT id FROM maker.ilks WHERE ilk = $1`, test_helpers.FakeIlk.Hex)
+				Expect(err).NotTo(HaveOccurred())
+
+				var actualFiles []test_helpers.FileEvent
+				err = db.Select(&actualFiles,
+					`SELECT id, ilk_name, what, data FROM maker.ilk_state_files(
+                        (SELECT (ilk_id, ilk_name, block_height, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated)::maker.ilk_state
+                         FROM maker.get_ilk($1, $2))
+                    )`, fakeBlock, ilkId)
+				Expect(err).NotTo(HaveOccurred())
+
+				expectedFiles := []test_helpers.FileEvent{{
+					Id: strings.ToLower(test_data.EthVatFileIlkDustLog.Address.Hex()),
+					IlkName: sql.NullString{
+						String: test_helpers.FakeIlk.Name,
+						Valid:  true,
+					},
+					What: fileEvent.What,
+					Data: fileEvent.Data,
+				}}
+
+				Expect(actualFiles).To(Equal(expectedFiles))
+			})
+		})
+
+		Describe("file_event_ilk", func() {
+			It("returns ilk_state for a file_event", func() {
+				expectedIlk := test_helpers.IlkStateFromValues(test_helpers.FakeIlk.Hex, fakeHeader.Timestamp, fakeHeader.Timestamp, ilkValues)
+
+				var result test_helpers.IlkState
+				err = db.Get(&result,
+					`SELECT ilk_name, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated
+                    FROM maker.file_event_ilk(
+                        (SELECT (id, ilk_name, what, data, block_height)::maker.file_event FROM maker.ilk_files($1))
                     )`, test_helpers.FakeIlk.Name)
 
 				Expect(err).NotTo(HaveOccurred())
@@ -224,6 +298,39 @@ var _ = Describe("Extension function", func() {
 			var actualTx test_helpers.Tx
 			err = db.Get(&actualTx, `SELECT * FROM maker.frob_event_tx(
 			    (SELECT (ilk_name, urn_id, dink, dart, block_height)::maker.frob_event FROM maker.all_frobs($1)))`,
+				test_helpers.FakeIlk.Name)
+
+			Expect(err).NotTo(HaveOccurred())
+			Expect(actualTx).To(Equal(expectedTx))
+		})
+	})
+
+	Describe("file_event_tx", func() {
+		It("returns transaction for a file event", func() {
+			fileRepo := ilk.VatFileIlkRepository{}
+			fileRepo.SetDB(db)
+			fileEvent := test_data.VatFileIlkDustModel
+			fileEvent.Ilk = test_helpers.FakeIlk.Hex
+			err = fileRepo.Create(headerId, []interface{}{fileEvent})
+			Expect(err).NotTo(HaveOccurred())
+
+			expectedTx := test_helpers.Tx{
+				TransactionHash:  "txHash",
+				TransactionIndex: strconv.Itoa(rand.Intn(10)),
+				BlockHeight:      strconv.Itoa(fakeBlock),
+				BlockHash:        fakeHeader.Hash,
+				TxFrom:           "fromAddress",
+				TxTo:             "toAddress",
+			}
+
+			_, err = db.Exec(`INSERT INTO header_sync_transactions (header_id, hash, tx_from, tx_index, tx_to)
+                VALUES ($1, $2, $3, $4, $5)`, headerId, expectedTx.TransactionHash, expectedTx.TxFrom,
+				expectedTx.TransactionIndex, expectedTx.TxTo)
+			Expect(err).NotTo(HaveOccurred())
+
+			var actualTx test_helpers.Tx
+			err = db.Get(&actualTx, `SELECT * FROM maker.file_event_tx(
+			    (SELECT (id, ilk_name, what, data, block_height)::maker.file_event FROM maker.ilk_files($1)))`,
 				test_helpers.FakeIlk.Name)
 
 			Expect(err).NotTo(HaveOccurred())

@@ -61,6 +61,19 @@ CREATE TYPE maker.era AS (
 
 
 --
+-- Name: file_event; Type: TYPE; Schema: maker; Owner: -
+--
+
+CREATE TYPE maker.file_event AS (
+	id text,
+	ilk_name text,
+	what text,
+	data text,
+	block_height bigint
+);
+
+
+--
 -- Name: frob_event; Type: TYPE; Schema: maker; Owner: -
 --
 
@@ -94,6 +107,25 @@ CREATE TYPE maker.ilk_state AS (
 	created timestamp without time zone,
 	updated timestamp without time zone
 );
+
+
+--
+-- Name: log_value; Type: TYPE; Schema: maker; Owner: -
+--
+
+CREATE TYPE maker.log_value AS (
+	val numeric,
+	block_number bigint,
+	tx_idx integer,
+	contract_address text
+);
+
+
+--
+-- Name: COLUMN log_value.tx_idx; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON COLUMN maker.log_value.tx_idx IS '@omit';
 
 
 --
@@ -136,6 +168,64 @@ CREATE TYPE maker.urn_state AS (
 	created timestamp without time zone,
 	updated timestamp without time zone
 );
+
+
+--
+-- Name: address_files(text); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.address_files(address text) RETURNS SETOF maker.file_event
+    LANGUAGE sql STABLE SECURITY DEFINER
+    AS $_$
+-- ilk files
+  SELECT cat_file_chop_lump.raw_log::json->>'address' AS id, ilks.name AS ilk_name, what, data::text, block_number AS block_height
+  FROM maker.cat_file_chop_lump
+  LEFT JOIN maker.ilks ON cat_file_chop_lump.ilk_id = ilks.id
+  LEFT JOIN headers    ON cat_file_chop_lump.header_id = headers.id
+  WHERE lower(cat_file_chop_lump.raw_log::json->>'address') = lower($1)
+  UNION
+  SELECT cat_file_flip.raw_log::json->>'address' AS id, ilks.name AS ilk_name, what, flip AS data, block_number AS block_height
+  FROM maker.cat_file_flip
+  LEFT JOIN maker.ilks ON cat_file_flip.ilk_id = ilks.id
+  LEFT JOIN headers ON cat_file_flip.header_id = headers.id
+  WHERE lower(cat_file_flip.raw_log::json->>'address') = lower($1)
+  UNION
+  SELECT jug_file_ilk.raw_log::json->>'address' AS id, ilks.name AS ilk_name, what, data::text, block_number AS block_height
+  FROM maker.jug_file_ilk
+  LEFT JOIN maker.ilks ON jug_file_ilk.ilk_id = ilks.id
+  LEFT JOIN headers ON jug_file_ilk.header_id = headers.id
+  WHERE lower(jug_file_ilk.raw_log::json->>'address') = lower($1)
+  UNION
+  SELECT vat_file_ilk.raw_log::json->>'address' AS id, ilks.name AS ilk_name, what, data::text, block_number AS block_height
+  FROM maker.vat_file_ilk
+  LEFT JOIN maker.ilks ON vat_file_ilk.ilk_id = ilks.id
+  LEFT JOIN headers ON vat_file_ilk.header_id = headers.id
+  WHERE lower(vat_file_ilk.raw_log::json->>'address') = lower($1)
+
+-- contract files
+  UNION
+  SELECT cat_file_vow.raw_log::json->>'address' AS id, NULL AS ilk_name, what, data, block_number AS block_height
+  FROM maker.cat_file_vow
+  LEFT JOIN headers ON cat_file_vow.header_id = headers.id
+  WHERE lower(cat_file_vow.raw_log::json->>'address') = lower($1)
+  UNION
+  SELECT jug_file_base.raw_log::json->>'address' AS id, NULL AS ilk_name, what, data::text, block_number AS block_height
+  FROM maker.jug_file_base
+  LEFT JOIN headers ON jug_file_base.header_id = headers.id
+  WHERE lower(jug_file_base.raw_log::json->>'address') = lower($1)
+  UNION
+  SELECT jug_file_vow.raw_log::json->>'address' AS id, NULL AS ilk_name, what, data, block_number AS block_height
+  FROM maker.jug_file_vow
+  LEFT JOIN headers ON jug_file_vow.header_id = headers.id
+  WHERE lower(jug_file_vow.raw_log::json->>'address') = lower($1)
+  UNION
+  SELECT vat_file_debt_ceiling.raw_log::json->>'address' AS id, NULL AS ilk_name, what, data::text, block_number AS block_height
+  FROM maker.vat_file_debt_ceiling
+  LEFT JOIN headers on vat_file_debt_ceiling.header_id = headers.id
+  WHERE lower(vat_file_debt_ceiling.raw_log::json->>'address') = lower($1)
+
+  ORDER BY block_height DESC
+$_$;
 
 
 --
@@ -483,6 +573,36 @@ CREATE FUNCTION maker.bite_event_urn(event maker.bite_event) RETURNS SETOF maker
     LANGUAGE sql STABLE
     AS $$
   SELECT * FROM maker.get_urn(event.ilk_name, event.urn_id, event.block_height)
+$$;
+
+
+--
+-- Name: file_event_ilk(maker.file_event); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.file_event_ilk(event maker.file_event) RETURNS SETOF maker.ilk_state
+    LANGUAGE sql STABLE
+    AS $$
+  SELECT * FROM maker.get_ilk(
+    event.block_height,
+    (SELECT id FROM maker.ilks WHERE name = event.ilk_name)
+  )
+$$;
+
+
+--
+-- Name: file_event_tx(maker.file_event); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.file_event_tx(event maker.file_event) RETURNS maker.tx
+    LANGUAGE sql STABLE
+    AS $$
+  SELECT txs.hash, txs.tx_index, headers.block_number AS block_height, headers.hash, tx_from, tx_to
+  FROM public.header_sync_transactions txs
+  LEFT JOIN headers ON txs.header_id = headers.id
+  WHERE block_number <= event.block_height
+  ORDER BY block_height DESC
+  LIMIT 1
 $$;
 
 
@@ -890,6 +1010,51 @@ $_$;
 
 
 --
+-- Name: ilk_files(text); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.ilk_files(ilk_name text) RETURNS SETOF maker.file_event
+    LANGUAGE sql STABLE
+    AS $_$
+  WITH
+    ilk AS (SELECT id FROM maker.ilks WHERE ilks.name = $1)
+
+  SELECT cat_file_chop_lump.raw_log::json->>'address' AS id, $1 AS ilk_name, what, data::text, block_number AS block_height
+  FROM maker.cat_file_chop_lump
+  LEFT JOIN headers ON cat_file_chop_lump.header_id = headers.id
+  WHERE cat_file_chop_lump.ilk_id = (SELECT id FROM ilk)
+  UNION
+  SELECT cat_file_flip.raw_log::json->>'address' AS id, $1 AS ilk_name, what, flip AS data, block_number AS block_height
+  FROM maker.cat_file_flip
+  LEFT JOIN headers ON cat_file_flip.header_id = headers.id
+  WHERE cat_file_flip.ilk_id = (SELECT id FROM ilk)
+  UNION
+  SELECT jug_file_ilk.raw_log::json->>'address' AS id, $1 AS ilk_name, what, data::text, block_number AS block_height
+  FROM maker.jug_file_ilk
+  LEFT JOIN headers ON jug_file_ilk.header_id = headers.id
+  WHERE jug_file_ilk.ilk_id = (SELECT id FROM ilk)
+  UNION
+  SELECT vat_file_ilk.raw_log::json->>'address' AS id, $1 AS ilk_name, what, data::text, block_number AS block_height
+  FROM maker.vat_file_ilk
+  LEFT JOIN headers ON vat_file_ilk.header_id = headers.id
+  WHERE vat_file_ilk.ilk_id = (SELECT id FROM ilk)
+  ORDER BY block_height DESC
+$_$;
+
+
+--
+-- Name: ilk_state_files(maker.ilk_state); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.ilk_state_files(state maker.ilk_state) RETURNS SETOF maker.file_event
+    LANGUAGE sql STABLE
+    AS $$
+  SELECT * FROM maker.ilk_files(state.ilk_name)
+  WHERE block_height <= state.block_height
+$$;
+
+
+--
 -- Name: ilk_state_frobs(maker.ilk_state); Type: FUNCTION; Schema: maker; Owner: -
 --
 
@@ -899,6 +1064,35 @@ CREATE FUNCTION maker.ilk_state_frobs(state maker.ilk_state) RETURNS SETOF maker
   SELECT * FROM maker.all_frobs(state.ilk_name)
   WHERE block_height <= state.block_height
 $$;
+
+
+--
+-- Name: log_value_tx(maker.log_value); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.log_value_tx(priceupdate maker.log_value) RETURNS maker.tx
+    LANGUAGE sql STABLE
+    AS $$
+  SELECT txs.hash, txs.tx_index, headers.block_number, headers.hash, txs.tx_from, txs.tx_to
+    FROM maker.pip_log_value plv
+    LEFT JOIN public.header_sync_transactions txs ON plv.header_id = txs.header_id
+    LEFT JOIN headers ON plv.header_id = headers.id
+    WHERE headers.block_number = priceUpdate.block_number AND priceUpdate.tx_idx = txs.tx_index
+    ORDER BY headers.block_number DESC
+$$;
+
+
+--
+-- Name: log_values(integer, integer); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.log_values(begintime integer, endtime integer) RETURNS SETOF maker.log_value
+    LANGUAGE sql STABLE
+    AS $_$
+  SELECT val, pip_log_value.block_number, tx_idx, contract_address FROM maker.pip_log_value
+    LEFT JOIN public.headers ON pip_log_value.header_id = headers.id
+    WHERE block_timestamp BETWEEN $1 AND $2
+$_$;
 
 
 --
@@ -6065,6 +6259,14 @@ GRANT USAGE ON SCHEMA maker TO graphql;
 
 
 --
+-- Name: FUNCTION address_files(address text); Type: ACL; Schema: maker; Owner: -
+--
+
+REVOKE ALL ON FUNCTION maker.address_files(address text) FROM PUBLIC;
+GRANT ALL ON FUNCTION maker.address_files(address text) TO graphql;
+
+
+--
 -- Name: FUNCTION all_bites(ilk_name text); Type: ACL; Schema: maker; Owner: -
 --
 
@@ -6134,6 +6336,20 @@ REVOKE ALL ON FUNCTION maker.bite_event_urn(event maker.bite_event) FROM PUBLIC;
 
 
 --
+-- Name: FUNCTION file_event_ilk(event maker.file_event); Type: ACL; Schema: maker; Owner: -
+--
+
+REVOKE ALL ON FUNCTION maker.file_event_ilk(event maker.file_event) FROM PUBLIC;
+
+
+--
+-- Name: FUNCTION file_event_tx(event maker.file_event); Type: ACL; Schema: maker; Owner: -
+--
+
+REVOKE ALL ON FUNCTION maker.file_event_tx(event maker.file_event) FROM PUBLIC;
+
+
+--
 -- Name: FUNCTION frob_event_ilk(event maker.frob_event); Type: ACL; Schema: maker; Owner: -
 --
 
@@ -6175,6 +6391,20 @@ REVOKE ALL ON FUNCTION maker.get_ilk_blocks_before(block_height bigint, ilk_id i
 
 REVOKE ALL ON FUNCTION maker.get_urn(ilk text, urn text, block_height bigint) FROM PUBLIC;
 GRANT ALL ON FUNCTION maker.get_urn(ilk text, urn text, block_height bigint) TO graphql;
+
+
+--
+-- Name: FUNCTION ilk_files(ilk_name text); Type: ACL; Schema: maker; Owner: -
+--
+
+REVOKE ALL ON FUNCTION maker.ilk_files(ilk_name text) FROM PUBLIC;
+
+
+--
+-- Name: FUNCTION ilk_state_files(state maker.ilk_state); Type: ACL; Schema: maker; Owner: -
+--
+
+REVOKE ALL ON FUNCTION maker.ilk_state_files(state maker.ilk_state) FROM PUBLIC;
 
 
 --
