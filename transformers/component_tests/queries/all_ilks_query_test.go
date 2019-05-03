@@ -65,7 +65,7 @@ var _ = Describe("All Ilks query", func() {
 		It("returns ilks as of block 1", func() {
 			var dbResult []test_helpers.IlkState
 			expectedResult := test_helpers.IlkState{
-				IlkName: fakeIlk.Hex,
+				IlkName: fakeIlk.Name,
 				Rate:    fakeIlkStateBlock1[vat.IlkRate],
 				Art:     fakeIlkStateBlock1[vat.IlkArt],
 				Spot:    fakeIlkStateBlock1[vat.IlkSpot],
@@ -91,7 +91,7 @@ var _ = Describe("All Ilks query", func() {
 			var dbResult []test_helpers.IlkState
 			//fakeIlk was created at block 1
 			fakeIlkExpectedResult := test_helpers.IlkState{
-				IlkName: fakeIlk.Hex,
+				IlkName: fakeIlk.Name,
 				Rate:    fakeIlkStateBlock1[vat.IlkRate],
 				Art:     fakeIlkStateBlock1[vat.IlkArt],
 				Spot:    fakeIlkStateBlock1[vat.IlkSpot],
@@ -107,7 +107,7 @@ var _ = Describe("All Ilks query", func() {
 			}
 			//anotherFakeIlk was created at block 2
 			anotherFakeIlkExpectedResult := test_helpers.IlkState{
-				IlkName: anotherFakeIlk.Hex,
+				IlkName: anotherFakeIlk.Name,
 				Rate:    anotherFakeIlkStateBlock2[vat.IlkRate],
 				Art:     anotherFakeIlkStateBlock2[vat.IlkArt],
 				Spot:    anotherFakeIlkStateBlock2[vat.IlkSpot],
@@ -146,7 +146,7 @@ var _ = Describe("All Ilks query", func() {
 
 			var dbResult []test_helpers.IlkState
 			fakeIlkExpectedResult := test_helpers.IlkState{
-				IlkName: fakeIlk.Hex,
+				IlkName: fakeIlk.Name,
 				Rate:    fakeIlkStateBlock1[vat.IlkRate],
 				Art:     fakeIlkStateBlock1[vat.IlkArt],
 				Spot:    fakeIlkStateBlock3[vat.IlkSpot],
@@ -161,7 +161,7 @@ var _ = Describe("All Ilks query", func() {
 				Updated: sql.NullString{String: getFormattedTimestamp(blockThreeHeader.Timestamp), Valid: true},
 			}
 			anotherFakeIlkExpectedResult := test_helpers.IlkState{
-				IlkName: anotherFakeIlk.Hex,
+				IlkName: anotherFakeIlk.Name,
 				Rate:    anotherFakeIlkStateBlock3[vat.IlkRate],
 				Art:     anotherFakeIlkStateBlock3[vat.IlkArt],
 				Spot:    anotherFakeIlkStateBlock3[vat.IlkSpot],
@@ -187,7 +187,7 @@ var _ = Describe("All Ilks query", func() {
 	It("returns ilk states without timestamps if the corresponding header hasn't been synced yet", func() {
 		var dbResult []test_helpers.IlkState
 		expectedResult := test_helpers.IlkState{
-			IlkName: fakeIlk.Hex,
+			IlkName: fakeIlk.Name,
 			Rate:    fakeIlkStateBlock1[vat.IlkRate],
 			Art:     fakeIlkStateBlock1[vat.IlkArt],
 			Spot:    fakeIlkStateBlock1[vat.IlkSpot],
@@ -214,11 +214,11 @@ var _ = Describe("All Ilks query", func() {
 		headerRepository.CreateOrUpdateHeader(blockFourHeader)
 
 		//updating fakeIlk spot value at block 3
-		newIlk := test_helpers.TestIlk{Name: "newIlk"}
+		newIlk := test_helpers.TestIlk{Name: "newIlk", Hex: "6e6577496c6b0000000000000000000000000000000000000000000000000000"}
 		newIlkStateBlock4 := test_helpers.GetIlkValues(4)
 		metadata := []utils.StorageValueMetadata{{
 			Name: vat.IlkRate,
-			Keys: map[utils.Key]string{constants.Ilk: newIlk.Name},
+			Keys: map[utils.Key]string{constants.Ilk: newIlk.Hex},
 			Type: utils.Uint256,
 		}}
 		//only creating a vat_ilk_rate record
