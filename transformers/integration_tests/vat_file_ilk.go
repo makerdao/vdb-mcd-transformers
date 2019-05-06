@@ -77,7 +77,7 @@ var _ = Describe("VatFileIlk LogNoteTransformer", func() {
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		fetcher := fetch.NewFetcher(blockChain)
+		fetcher := fetch.NewLogFetcher(blockChain)
 		logs, err := fetcher.FetchLogs(addresses, topics, header)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -105,7 +105,7 @@ var _ = Describe("VatFileIlk LogNoteTransformer", func() {
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		fetcher := fetch.NewFetcher(blockChain)
+		fetcher := fetch.NewLogFetcher(blockChain)
 		logs, err := fetcher.FetchLogs(addresses, topics, header)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -135,7 +135,7 @@ var _ = Describe("VatFileIlk LogNoteTransformer", func() {
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		fetcher := fetch.NewFetcher(blockChain)
+		fetcher := fetch.NewLogFetcher(blockChain)
 		logs, err := fetcher.FetchLogs(addresses, topics, header)
 		Expect(err).NotTo(HaveOccurred())
 

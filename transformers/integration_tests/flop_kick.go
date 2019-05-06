@@ -44,7 +44,7 @@ var _ = Describe("FlopKick Transformer", func() {
 		blockChain  core.BlockChain
 		config      transformer.EventTransformerConfig
 		initializer event.Transformer
-		fetcher     fetch.LogFetcher
+		fetcher     *fetch.LogFetcher
 		addresses   []common.Address
 		topics      []common.Hash
 	)
@@ -70,7 +70,7 @@ var _ = Describe("FlopKick Transformer", func() {
 			Repository: &flop_kick.FlopKickRepository{},
 		}
 
-		fetcher = fetch.NewFetcher(blockChain)
+		fetcher = fetch.NewLogFetcher(blockChain)
 		addresses = transformer.HexStringsToAddresses(config.ContractAddresses)
 		topics = []common.Hash{common.HexToHash(config.Topic)}
 	})

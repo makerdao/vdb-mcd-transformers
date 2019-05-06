@@ -178,14 +178,14 @@ var _ = Describe("Extension function", func() {
 			txFrom := "fromAddress"
 			txTo := "toAddress"
 			txIndex := rand.Intn(10)
-			_, err = db.Exec(`INSERT INTO light_sync_transactions (header_id, hash, tx_from, tx_index, tx_to)
+			_, err = db.Exec(`INSERT INTO header_sync_transactions (header_id, hash, tx_from, tx_index, tx_to)
                 VALUES ($1, $2, $3, $4, $5)`, headerId, fakeHeader.Hash, txFrom, txIndex, txTo)
 			Expect(err).NotTo(HaveOccurred())
 
 			var actualEra Era
 			err = db.Get(&actualEra, `SELECT * FROM maker.tx_era(
                     (SELECT (txs.hash, txs.tx_index, h.block_number, h.hash, txs.tx_from, txs.tx_to)::maker.tx
-			        FROM light_sync_transactions txs
+			        FROM header_sync_transactions txs
 			        LEFT JOIN headers h ON h.id = txs.header_id)
 			    )`)
 			Expect(err).NotTo(HaveOccurred())
@@ -216,7 +216,7 @@ var _ = Describe("Extension function", func() {
 				TxTo:             "toAddress",
 			}
 
-			_, err = db.Exec(`INSERT INTO light_sync_transactions (header_id, hash, tx_from, tx_index, tx_to)
+			_, err = db.Exec(`INSERT INTO header_sync_transactions (header_id, hash, tx_from, tx_index, tx_to)
                 VALUES ($1, $2, $3, $4, $5)`, headerId, expectedTx.TransactionHash, expectedTx.TxFrom,
 				expectedTx.TransactionIndex, expectedTx.TxTo)
 			Expect(err).NotTo(HaveOccurred())

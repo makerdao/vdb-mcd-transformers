@@ -22,7 +22,7 @@ var _ = Describe("Dent transformer", func() {
 	var (
 		db          *postgres.DB
 		blockChain  core.BlockChain
-		fetcher     *fetch.Fetcher
+		fetcher     *fetch.LogFetcher
 		tr          transformer.EventTransformer
 		config      transformer.EventTransformerConfig
 		addresses   []common.Address
@@ -47,7 +47,7 @@ var _ = Describe("Dent transformer", func() {
 
 		addresses = transformer.HexStringsToAddresses(config.ContractAddresses)
 		topics = []common.Hash{common.HexToHash(config.Topic)}
-		fetcher = fetch.NewFetcher(blockChain)
+		fetcher = fetch.NewLogFetcher(blockChain)
 
 		initializer = shared.LogNoteTransformer{
 			Config:     config,

@@ -105,30 +105,30 @@ Sync VulcanizeDB from the LevelDB underlying a Geth node.
     - `--ending-block-number <block number>`/`-e <block number>`: block number to sync to
     - `--all`/`-a`: sync all missing blocks
 
-## Alternatively, sync in "light" mode
+## Alternatively, only sync the headers
 Syncs VulcanizeDB with the configured Ethereum node, populating only block headers.
 This command is useful when you want a minimal baseline from which to track targeted data on the blockchain (e.g. individual smart contract storage values).
 1. Start Ethereum node
 1. In a separate terminal start VulcanizeDB:
-    - `./vulcanizedb lightSync --config <config.toml> --starting-block-number <block-number>`
+    - `./vulcanizedb headerSync --config <config.toml> --starting-block-number <block-number>`
 
-## Continuously sync Maker event logs from light sync
+## Continuously sync Maker event logs from header sync
 Continuously syncs Maker event logs from the configured Ethereum node based on the populated block headers.
 This includes logs related to auctions, multi-collateral dai, and price feeds.
-This command requires that the `lightSync` process is also being run so as to be able to sync in real time.
+This command requires that the `headerSync` process is also being run so as to be able to sync in real time.
 
 1. Start Ethereum node (or plan to configure the commands to point to a remote IPC path).
-1. In a separate terminal run the lightSync command (see above).
+1. In a separate terminal run the headerSync command (see above).
 1. In another terminal window run the continuousLogSync command:
   - `./vulcanizedb continuousLogSync --config <config.toml>`
   - An option `--transformers` flag may be passed to the command to specific which transformers to execute, this will default to all transformers if the flag is not passed.
     - `./vulcanizedb continuousLogSync --config environments/private.toml --transformers="priceFeed"`
     - see the `buildTransformerInitializerMap` method in `cmd/continuousLogSync.go` for available transformers
 
-## Backfill Maker event logs from light sync
+## Backfill Maker event logs from header sync
 Backfills Maker event logs from the configured Ethereum node based on the populated block headers.
 This includes logs related to auctions, multi-collateral dai, and price feeds.
-This command requires that a light sync (see command above) has previously been run.
+This command requires that a header sync (see command above) has previously been run.
 
 _Since auction/mcd contracts have not yet been deployed, this command will need to be run a local blockchain at the moment. As such, a new environment file will need to be added. See `environments/local.toml.example`._
 

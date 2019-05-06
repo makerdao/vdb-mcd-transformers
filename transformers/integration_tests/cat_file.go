@@ -48,7 +48,7 @@ var _ = Describe("Cat File transformer", func() {
 		rpcClient  client.RpcClient
 		err        error
 		ethClient  *ethclient.Client
-		fetcher    *fetch.Fetcher
+		fetcher    *fetch.LogFetcher
 	)
 
 	BeforeEach(func() {
@@ -59,7 +59,7 @@ var _ = Describe("Cat File transformer", func() {
 		db = test_config.NewTestDB(blockChain.Node())
 		test_config.CleanTestDB(db)
 
-		fetcher = fetch.NewFetcher(blockChain)
+		fetcher = fetch.NewLogFetcher(blockChain)
 	})
 
 	It("persists a chop lump event", func() {

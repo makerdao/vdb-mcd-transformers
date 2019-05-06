@@ -39,7 +39,7 @@ var _ = Describe("Vat frob Transformer", func() {
 	var (
 		db          *postgres.DB
 		blockChain  core.BlockChain
-		fetcher     *fetch.Fetcher
+		fetcher     *fetch.LogFetcher
 		config      transformer.EventTransformerConfig
 		initializer shared.LogNoteTransformer
 	)
@@ -52,7 +52,7 @@ var _ = Describe("Vat frob Transformer", func() {
 		db = test_config.NewTestDB(blockChain.Node())
 		test_config.CleanTestDB(db)
 
-		fetcher = fetch.NewFetcher(blockChain)
+		fetcher = fetch.NewLogFetcher(blockChain)
 		config = transformer.EventTransformerConfig{
 			TransformerName:   constants.VatFrobLabel,
 			ContractAddresses: []string{test_data.KovanVatContractAddress},

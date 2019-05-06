@@ -39,7 +39,7 @@ var _ = Describe("Tend LogNoteTransformer", func() {
 		db          *postgres.DB
 		blockChain  core.BlockChain
 		config      transformer.EventTransformerConfig
-		fetcher     *fetch.Fetcher
+		fetcher     *fetch.LogFetcher
 		initializer shared.LogNoteTransformer
 		addresses   []common.Address
 		topics      []common.Hash
@@ -60,7 +60,7 @@ var _ = Describe("Tend LogNoteTransformer", func() {
 			Topic:             test_data.KovanTendSignature,
 		}
 
-		fetcher = fetch.NewFetcher(blockChain)
+		fetcher = fetch.NewLogFetcher(blockChain)
 		addresses = transformer.HexStringsToAddresses(config.ContractAddresses)
 		topics = []common.Hash{common.HexToHash(config.Topic)}
 

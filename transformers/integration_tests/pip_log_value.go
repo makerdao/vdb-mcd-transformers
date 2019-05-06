@@ -39,7 +39,7 @@ var _ = Describe("Pip LogValue transformer", func() {
 		db          *postgres.DB
 		blockChain  core.BlockChain
 		config      transformer.EventTransformerConfig
-		fetcher     *fetch.Fetcher
+		fetcher     *fetch.LogFetcher
 		initializer shared.LogNoteTransformer
 		topics      []common.Hash
 	)
@@ -60,7 +60,7 @@ var _ = Describe("Pip LogValue transformer", func() {
 
 		topics = []common.Hash{common.HexToHash(config.Topic)}
 
-		fetcher = fetch.NewFetcher(blockChain)
+		fetcher = fetch.NewLogFetcher(blockChain)
 
 		initializer = shared.LogNoteTransformer{
 			Config:     config,
