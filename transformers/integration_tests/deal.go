@@ -40,7 +40,7 @@ var _ = Describe("Deal transformer", func() {
 		blockChain  core.BlockChain
 		config      transformer.EventTransformerConfig
 		initializer shared.LogNoteTransformer
-		fetcher     *fetch.Fetcher
+		fetcher     *fetch.LogFetcher
 		addresses   []common.Address
 		topics      []common.Hash
 	)
@@ -65,7 +65,7 @@ var _ = Describe("Deal transformer", func() {
 			Repository: &deal.DealRepository{},
 		}
 
-		fetcher = fetch.NewFetcher(blockChain)
+		fetcher = fetch.NewLogFetcher(blockChain)
 		addresses = transformer.HexStringsToAddresses(config.ContractAddresses)
 		topics = []common.Hash{common.HexToHash(config.Topic)}
 

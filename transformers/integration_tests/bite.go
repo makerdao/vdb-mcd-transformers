@@ -70,7 +70,7 @@ var _ = Describe("Bite Transformer", func() {
 		}
 		transformer := initializer.NewTransformer(db)
 
-		fetcher := fetch.NewFetcher(blockChain)
+		fetcher := fetch.NewLogFetcher(blockChain)
 		logs, err := fetcher.FetchLogs(
 			[]common.Address{common.HexToAddress(config.ContractAddresses[0])},
 			[]common.Hash{common.HexToHash(config.Topic)},
@@ -139,7 +139,7 @@ var _ = Describe("Bite Transformer", func() {
 		}
 		transformer := initializer.NewTransformer(db)
 
-		fetcher := fetch.NewFetcher(blockChain)
+		fetcher := fetch.NewLogFetcher(blockChain)
 		logs, err := fetcher.FetchLogs(
 			[]common.Address{common.HexToAddress(config.ContractAddresses[0])},
 			[]common.Hash{common.HexToHash(config.Topic)},

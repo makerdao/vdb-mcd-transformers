@@ -52,7 +52,7 @@ CREATE OR REPLACE FUNCTION maker.frob_event_tx(event maker.frob_event)
   RETURNS maker.tx AS
 $$
   SELECT txs.hash, txs.tx_index, headers.block_number AS block_height, headers.hash, tx_from, tx_to
-  FROM public.light_sync_transactions txs
+  FROM public.header_sync_transactions txs
   LEFT JOIN headers ON txs.header_id = headers.id
   WHERE block_number <= event.block_height
   ORDER BY block_height DESC

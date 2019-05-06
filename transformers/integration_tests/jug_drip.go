@@ -72,7 +72,7 @@ var _ = Describe("JugDrip Transformer", func() {
 		}
 		tr := initializer.NewLogNoteTransformer(db)
 
-		fetcher := fetch.NewFetcher(blockChain)
+		fetcher := fetch.NewLogFetcher(blockChain)
 		logs, err := fetcher.FetchLogs(
 			transformer.HexStringsToAddresses(config.ContractAddresses),
 			[]common.Hash{common.HexToHash(config.Topic)},
@@ -109,7 +109,7 @@ var _ = Describe("JugDrip Transformer", func() {
 		}
 		tr := initializer.NewLogNoteTransformer(db)
 
-		f := fetch.NewFetcher(blockChain)
+		f := fetch.NewLogFetcher(blockChain)
 		logs, err := f.FetchLogs(
 			transformer.HexStringsToAddresses(config.ContractAddresses),
 			[]common.Hash{common.HexToHash(config.Topic)},

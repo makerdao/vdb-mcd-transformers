@@ -37,6 +37,7 @@ import (
 
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
 )
 
 var eventConfig = config.Plugin{
@@ -274,7 +275,8 @@ var _ = Describe("Plugin test", func() {
 				_, storageTransformerInitializers, _ := exporter.Export()
 
 				tailer := fs.FileTailer{Path: viper.GetString("filesystem.storageDiffsPath")}
-				w := watcher.NewStorageWatcher(tailer, db)
+				storageFetcher := fetcher.NewCsvTailStorageFetcher(tailer)
+				w := watcher.NewStorageWatcher(storageFetcher, db)
 				w.AddTransformers(storageTransformerInitializers)
 				// This blocks right now, need to make test file to read from
 				//err = w.Execute()
@@ -358,7 +360,8 @@ var _ = Describe("Plugin test", func() {
 				Expect(returned.LogIndex).To(Equal(uint(0)))
 
 				tailer := fs.FileTailer{Path: viper.GetString("filesystem.storageDiffsPath")}
-				sw := watcher.NewStorageWatcher(tailer, db)
+				storageFetcher := fetcher.NewCsvTailStorageFetcher(tailer)
+				sw := watcher.NewStorageWatcher(storageFetcher, db)
 				sw.AddTransformers(storageInitializers)
 				// This blocks right now, need to make test file to read from
 				//err = w.Execute()

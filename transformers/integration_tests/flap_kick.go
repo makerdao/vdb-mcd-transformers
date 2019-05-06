@@ -71,7 +71,7 @@ var _ = Describe("FlapKick Transformer", func() {
 			Repository: &flap_kick.FlapKickRepository{},
 		}.NewTransformer(db)
 
-		fetcher := fetch.NewFetcher(blockChain)
+		fetcher := fetch.NewLogFetcher(blockChain)
 		logs, err := fetcher.FetchLogs(
 			transformer.HexStringsToAddresses(config.ContractAddresses),
 			[]common.Hash{common.HexToHash(config.Topic)},
@@ -113,7 +113,7 @@ var _ = Describe("FlapKick Transformer", func() {
 			Repository: &flap_kick.FlapKickRepository{},
 		}.NewTransformer(db)
 
-		f := fetch.NewFetcher(blockChain)
+		f := fetch.NewLogFetcher(blockChain)
 		logs, err := f.FetchLogs(
 			transformer.HexStringsToAddresses(config.ContractAddresses),
 			[]common.Hash{common.HexToHash(config.Topic)},

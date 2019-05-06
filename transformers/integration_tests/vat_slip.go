@@ -65,7 +65,7 @@ var _ = Describe("Vat slip transformer", func() {
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		fetcher := fetch.NewFetcher(blockChain)
+		fetcher := fetch.NewLogFetcher(blockChain)
 		logs, err := fetcher.FetchLogs(
 			transformer.HexStringsToAddresses(config.ContractAddresses),
 			[]common.Hash{common.HexToHash(config.Topic)},
@@ -113,7 +113,7 @@ var _ = Describe("Vat slip transformer", func() {
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		fetcher := fetch.NewFetcher(blockChain)
+		fetcher := fetch.NewLogFetcher(blockChain)
 		logs, err := fetcher.FetchLogs(
 			transformer.HexStringsToAddresses(config.ContractAddresses),
 			[]common.Hash{common.HexToHash(config.Topic)},
