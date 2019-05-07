@@ -1,8 +1,6 @@
 package queries
 
 import (
-	"github.com/sirupsen/logrus"
-	"io/ioutil"
 	"testing"
 
 	. "github.com/onsi/ginkgo"
@@ -15,5 +13,5 @@ func TestQueries(t *testing.T) {
 }
 
 var _ = BeforeSuite(func() {
-	logrus.SetOutput(ioutil.Discard)
+	//logrus.SetOutput(ioutil.Discard)
 })
