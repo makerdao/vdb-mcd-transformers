@@ -102,16 +102,17 @@ func (state *GeneratorState) touchIlks() error {
 }
 
 func (state *GeneratorState) createIlk() error {
-	hexIlk := test_data.RandomString(10)
-	name := strings.ToUpper(test_data.RandomString(5))
-	ilkId, err := state.insertIlk(hexIlk, name)
-	if err != nil {
-		return err
+	ilkName := strings.ToUpper(test_data.RandomString(5))
+	hexIlk := GetHexIlk(ilkName)
+
+	ilkId, insertIlkErr := state.insertIlk(hexIlk, ilkName)
+	if insertIlkErr != nil {
+		return insertIlkErr
 	}
 
-	err = state.insertInitialIlkData(ilkId)
-	if err != nil {
-		return err
+	initIlkErr := state.insertInitialIlkData(ilkId)
+	if initIlkErr != nil {
+		return initIlkErr
 	}
 
 	state.ilks = append(state.ilks, ilkId)
@@ -146,9 +147,9 @@ func (state *GeneratorState) touchUrns() error {
 func (state *GeneratorState) createUrn() error {
 	randomIlkId := state.ilks[rand.Intn(len(state.ilks))]
 	guy := test_data.RandomString(10)
-	urnId, err := state.insertUrn(randomIlkId, guy)
-	if err != nil {
-		return err
+	urnId, insertUrnErr := state.insertUrn(randomIlkId, guy)
+	if insertUrnErr != nil {
+		return insertUrnErr
 	}
 
 	blockNumber := state.currentHeader.BlockNumber
@@ -251,4 +252,14 @@ func (state *GeneratorState) insertCurrentHeader() error {
 
 func (state *GeneratorState) getCurrentBlockAndHash() (int64, string) {
 	return state.currentHeader.BlockNumber, state.currentHeader.Hash
+}
+
+// UTF-oblivious, names generated with alphanums anyway
+func GetHexIlk(ilkName string) string {
+	hexIlk := fmt.Sprintf("%x", ilkName)
+	unpaddedLength := len(hexIlk)
+	for i := unpaddedLength; i < 64; i++ {
+		hexIlk = hexIlk + "0"
+	}
+	return hexIlk
 }
