@@ -51,16 +51,16 @@ func (state *GeneratorState) Run(steps int) {
 	}*/
 
 	state.currentHeader = fakes.GetFakeHeaderWithTimestamp(0, 0)
-	headerErr := state.InsertCurrentHeader()
+	headerErr := state.insertCurrentHeader()
 	if headerErr != nil {
 		panic(fmt.Sprintf("Could not insert initial header: %v", headerErr))
 	}
 
-	ilkErr := state.CreateIlk()
+	ilkErr := state.createIlk()
 	if ilkErr != nil {
 		panic(fmt.Sprintf("Could not create initial ilk: %v", ilkErr))
 	}
-	urnErr := state.CreateUrn()
+	urnErr := state.createUrn()
 	if urnErr != nil {
 		panic(fmt.Sprintf("Could not create initial urn: %v", urnErr))
 	}
@@ -70,7 +70,7 @@ func (state *GeneratorState) Run(steps int) {
 	for i := 1; i <= steps; i++ {
 		state.currentHeader = fakes.GetFakeHeaderWithTimestamp(int64(i), int64(i))
 		state.currentHeader.Hash = test_data.RandomString(10)
-		headerErr := state.InsertCurrentHeader()
+		headerErr := state.insertCurrentHeader()
 		if headerErr != nil {
 			fmt.Println("Error inserting current header: ", headerErr)
 			continue
@@ -78,12 +78,12 @@ func (state *GeneratorState) Run(steps int) {
 
 		p = rand.Float32()
 		if p < 0.2 { // Interact with Ilks
-			err = state.TouchIlks()
+			err = state.touchIlks()
 			if err != nil {
 				fmt.Println("Error touching ilks: ", err)
 			}
 		} else { // Interact with Urns
-			err = state.TouchUrns()
+			err = state.touchUrns()
 			if err != nil {
 				fmt.Println("Error touching urns: ", err)
 			}
@@ -92,24 +92,24 @@ func (state *GeneratorState) Run(steps int) {
 }
 
 // Creates a new ilk, or updates a random one
-func (state *GeneratorState) TouchIlks() error {
+func (state *GeneratorState) touchIlks() error {
 	p := rand.Float32()
 	if p < 0.05 {
-		return state.CreateIlk()
+		return state.createIlk()
 	} else {
-		return state.UpdateIlk()
+		return state.updateIlk()
 	}
 }
 
-func (state *GeneratorState) CreateIlk() error {
+func (state *GeneratorState) createIlk() error {
 	hexIlk := test_data.RandomString(10)
 	name := strings.ToUpper(test_data.RandomString(5))
-	ilkId, err := state.InsertIlk(hexIlk, name)
+	ilkId, err := state.insertIlk(hexIlk, name)
 	if err != nil {
 		return err
 	}
 
-	err = state.InsertInitialIlkData(ilkId)
+	err = state.insertInitialIlkData(ilkId)
 	if err != nil {
 		return err
 	}
@@ -119,9 +119,9 @@ func (state *GeneratorState) CreateIlk() error {
 }
 
 // Updates a random property of a randomly chosen ilk
-func (state *GeneratorState) UpdateIlk() error {
+func (state *GeneratorState) updateIlk() error {
 	randomIlkId := state.ilks[rand.Intn(len(state.ilks))]
-	blockNumber, blockHash := state.GetCurrentBlockAndHash()
+	blockNumber, blockHash := state.getCurrentBlockAndHash()
 
 	var err error
 	p := rand.Float64()
@@ -133,20 +133,20 @@ func (state *GeneratorState) UpdateIlk() error {
 	return err
 }
 
-func (state *GeneratorState) TouchUrns() error {
+func (state *GeneratorState) touchUrns() error {
 	p := rand.Float32()
 	if p < 0.1 {
-		return state.CreateUrn()
+		return state.createUrn()
 	} else {
-		return state.UpdateUrn()
+		return state.updateUrn()
 	}
 }
 
 // Creates a new urn associated with a random ilk
-func (state *GeneratorState) CreateUrn() error {
+func (state *GeneratorState) createUrn() error {
 	randomIlkId := state.ilks[rand.Intn(len(state.ilks))]
 	guy := test_data.RandomString(10)
-	urnId, err := state.InsertUrn(randomIlkId, guy)
+	urnId, err := state.insertUrn(randomIlkId, guy)
 	if err != nil {
 		return err
 	}
@@ -171,7 +171,7 @@ func (state *GeneratorState) CreateUrn() error {
 }
 
 // Updates ink or art on a random urn
-func (state *GeneratorState) UpdateUrn() error {
+func (state *GeneratorState) updateUrn() error {
 	randomUrnId := state.urns[rand.Intn(len(state.urns))]
 	blockNumber := state.currentHeader.BlockNumber
 	blockHash := state.currentHeader.Hash
@@ -189,7 +189,7 @@ func (state *GeneratorState) UpdateUrn() error {
 }
 
 // Inserts into `urns` table, returning the urn_id from the database
-func (state *GeneratorState) InsertUrn(ilkId int64, guy string) (int64, error) {
+func (state *GeneratorState) insertUrn(ilkId int64, guy string) (int64, error) {
 	var id int64
 	err := state.db.QueryRow(shared.InsertUrnQuery, guy, ilkId).Scan(&id)
 	if err != nil {
@@ -200,7 +200,7 @@ func (state *GeneratorState) InsertUrn(ilkId int64, guy string) (int64, error) {
 }
 
 // Inserts into `ilks` table, returning the ilk_id from the database
-func (state *GeneratorState) InsertIlk(hexIlk, name string) (int64, error) {
+func (state *GeneratorState) insertIlk(hexIlk, name string) (int64, error) {
 	var id int64
 	err := state.db.QueryRow(shared.InsertIlkQuery, hexIlk, name).Scan(&id)
 	if err != nil {
@@ -210,9 +210,9 @@ func (state *GeneratorState) InsertIlk(hexIlk, name string) (int64, error) {
 	return id, nil
 }
 
-func (state *GeneratorState) InsertInitialIlkData(ilkId int64) error {
+func (state *GeneratorState) insertInitialIlkData(ilkId int64) error {
 	tx, _ := state.db.Beginx()
-	blockNumber, blockHash := state.GetCurrentBlockAndHash()
+	blockNumber, blockHash := state.getCurrentBlockAndHash()
 	intInsertions := []string{
 		vat.InsertIlkRateQuery,
 		vat.InsertIlkSpotQuery,
@@ -242,13 +242,13 @@ func (state *GeneratorState) InsertInitialIlkData(ilkId int64) error {
 	return nil
 }
 
-func (state *GeneratorState) InsertCurrentHeader() error {
+func (state *GeneratorState) insertCurrentHeader() error {
 	header := state.currentHeader
 	nodeId := test_config.NewTestNode().ID
 	_, err := state.db.Exec(headerSql, header.Hash, header.BlockNumber, header.Raw, header.Timestamp, 1, nodeId)
 	return err
 }
 
-func (state *GeneratorState) GetCurrentBlockAndHash() (int64, string) {
+func (state *GeneratorState) getCurrentBlockAndHash() (int64, string) {
 	return state.currentHeader.BlockNumber, state.currentHeader.Hash
 }
