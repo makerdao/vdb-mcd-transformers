@@ -3,6 +3,10 @@ package test_helpers
 import (
 	"fmt"
 	"github.com/vulcanize/mcd_transformers/test_config"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/mcd_transformers/transformers/storage/cat"
+	"github.com/vulcanize/mcd_transformers/transformers/storage/jug"
+	"github.com/vulcanize/mcd_transformers/transformers/storage/vat"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
@@ -14,24 +18,7 @@ import (
 const (
 	headerSql = `INSERT INTO public.headers (hash, block_number, raw, block_timestamp, eth_node_id, eth_node_fingerprint)
 				  VALUES ($1, $2, $3, $4, $5, $6)`
-	nodeSql = `INSERT INTO public.eth_nodes (genesis_block, network_id, eth_node_id) VALUES ($1, $2, $3)`
-	// Ilk data
-	ilkSql     = `INSERT INTO maker.ilks (ilk, name) VALUES ($1, $2) RETURNING id`
-	ilkRateSql = `INSERT INTO maker.vat_ilk_rate (block_number, block_hash, ilk_id, rate) VALUES ($1, $2, $3, $4)`
-	ilkSpotSql = `INSERT INTO maker.vat_ilk_spot (block_number, block_hash, ilk_id, spot) VALUES ($1, $2, $3, $4)`
-	ilkArtSql  = `INSERT INTO maker.vat_ilk_art (block_number, block_hash, ilk_id, art) VALUES ($1, $2, $3, $4)`
-	ilkLineSql = `INSERT INTO maker.vat_ilk_line (block_number, block_hash, ilk_id, line) VALUES ($1, $2, $3, $4)`
-	ilkDustSql = `INSERT INTO maker.vat_ilk_dust (block_number, block_hash, ilk_id, dust) VALUES ($1, $2, $3, $4)`
-	ilkDutySql = `INSERT INTO maker.jug_ilk_duty (block_number, block_hash, ilk_id, duty) VALUES ($1, $2, $3, $4)`
-	ilkRhoSql  = `INSERT INTO maker.jug_ilk_rho (block_number, block_hash, ilk_id, rho) VALUES ($1, $2, $3, $4)`
-	ilkChopSql = `INSERT INTO maker.cat_ilk_chop (block_number, block_hash, ilk_id, chop) VALUES ($1, $2, $3, $4)`
-	ilkFlipSql = `INSERT INTO maker.cat_ilk_flip (block_number, block_hash, ilk_id, flip) VALUES ($1, $2, $3, $4)`
-	ilkLumpSql = `INSERT INTO maker.cat_ilk_lump (block_number, block_hash, ilk_id, lump) VALUES ($1, $2, $3, $4)`
-
-	// Urn data
-	urnSql    = `INSERT INTO maker.urns (ilk_id, guy) VALUES ($1, $2) RETURNING id`
-	urnArtSql = `INSERT INTO maker.vat_urn_art (block_number, block_hash, urn_id, art) VALUES ($1, $2, $3, $4)`
-	urnInkSql = `INSERT INTO maker.vat_urn_ink (block_number, block_hash, urn_id, ink) VALUES ($1, $2, $3, $4)`
+	// nodeSql = `INSERT INTO public.eth_nodes (genesis_block, network_id, eth_node_id) VALUES ($1, $2, $3)`
 
 	// Event data
 	// TODO add event data
@@ -139,9 +126,9 @@ func (state *GeneratorState) UpdateIlk() error {
 	var err error
 	p := rand.Float64()
 	if p < 0.1 {
-		_, err = state.db.Exec(ilkRateSql, blockNumber, blockHash, randomIlkId, rand.Int())
+		_, err = state.db.Exec(vat.InsertIlkRateQuery, blockNumber, blockHash, randomIlkId, rand.Int())
 	} else {
-		_, err = state.db.Exec(ilkSpotSql, blockNumber, blockHash, randomIlkId, rand.Int())
+		_, err = state.db.Exec(vat.InsertIlkSpotQuery, blockNumber, blockHash, randomIlkId, rand.Int())
 	}
 	return err
 }
@@ -168,8 +155,8 @@ func (state *GeneratorState) CreateUrn() error {
 	blockHash := state.currentHeader.Hash
 
 	tx, _ := state.db.Beginx()
-	_, artErr := tx.Exec(urnArtSql, blockNumber, blockHash, urnId, rand.Int())
-	_, inkErr := tx.Exec(urnInkSql, blockNumber, blockHash, urnId, rand.Int())
+	_, artErr := tx.Exec(vat.InsertUrnArtQuery, blockNumber, blockHash, urnId, rand.Int())
+	_, inkErr := tx.Exec(vat.InsertUrnInkQuery, blockNumber, blockHash, urnId, rand.Int())
 
 	// TODO insert urn event data?
 
@@ -193,10 +180,10 @@ func (state *GeneratorState) UpdateUrn() error {
 	p := rand.Float32()
 	if p < 0.5 {
 		// Update ink
-		_, err = state.db.Exec(urnInkSql, blockNumber, blockHash, randomUrnId, rand.Int())
+		_, err = state.db.Exec(vat.InsertUrnInkQuery, blockNumber, blockHash, randomUrnId, rand.Int())
 	} else {
 		// Update art
-		_, err = state.db.Exec(urnArtSql, blockNumber, blockHash, randomUrnId, rand.Int())
+		_, err = state.db.Exec(vat.InsertUrnArtQuery, blockNumber, blockHash, randomUrnId, rand.Int())
 	}
 	return err
 }
@@ -204,7 +191,7 @@ func (state *GeneratorState) UpdateUrn() error {
 // Inserts into `urns` table, returning the urn_id from the database
 func (state *GeneratorState) InsertUrn(ilkId int64, guy string) (int64, error) {
 	var id int64
-	err := state.db.QueryRow(urnSql, ilkId, guy).Scan(&id)
+	err := state.db.QueryRow(shared.InsertUrnQuery, guy, ilkId).Scan(&id)
 	if err != nil {
 		return -1, fmt.Errorf("error inserting urn: %v", err)
 	}
@@ -215,7 +202,7 @@ func (state *GeneratorState) InsertUrn(ilkId int64, guy string) (int64, error) {
 // Inserts into `ilks` table, returning the ilk_id from the database
 func (state *GeneratorState) InsertIlk(hexIlk, name string) (int64, error) {
 	var id int64
-	err := state.db.QueryRow(ilkSql, hexIlk, name).Scan(&id)
+	err := state.db.QueryRow(shared.InsertIlkQuery, hexIlk, name).Scan(&id)
 	if err != nil {
 		return -1, fmt.Errorf("error inserting ilk: %v", err)
 	}
@@ -227,15 +214,15 @@ func (state *GeneratorState) InsertInitialIlkData(ilkId int64) error {
 	tx, _ := state.db.Beginx()
 	blockNumber, blockHash := state.GetCurrentBlockAndHash()
 	intInsertions := []string{
-		ilkRateSql,
-		ilkSpotSql,
-		ilkArtSql,
-		ilkLineSql,
-		ilkDustSql,
-		ilkDutySql,
-		ilkRhoSql,
-		ilkChopSql,
-		ilkLumpSql,
+		vat.InsertIlkRateQuery,
+		vat.InsertIlkSpotQuery,
+		vat.InsertIlkArtQuery,
+		vat.InsertIlkLineQuery,
+		vat.InsertIlkDustQuery,
+		jug.InsertJugIlkDutyQuery,
+		jug.InsertJugIlkRhoQuery,
+		cat.InsertCatIlkChopQuery,
+		cat.InsertCatIlkLumpQuery,
 	}
 
 	for _, intInsertSql := range intInsertions {
@@ -245,7 +232,7 @@ func (state *GeneratorState) InsertInitialIlkData(ilkId int64) error {
 			return fmt.Errorf("error inserting initial ilk data: %v", err)
 		}
 	}
-	_, flipErr := tx.Exec(ilkFlipSql, blockNumber, blockHash, ilkId, test_data.RandomString(10))
+	_, flipErr := tx.Exec(cat.InsertCatIlkFlipQuery, blockNumber, blockHash, ilkId, test_data.RandomString(10))
 	if flipErr != nil {
 		_ = tx.Rollback()
 		return fmt.Errorf("error inserting initial ilk data: %v", flipErr)
