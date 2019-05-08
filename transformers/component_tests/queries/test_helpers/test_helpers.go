@@ -109,6 +109,15 @@ type IlkState struct {
 	Updated sql.NullString
 }
 
+type Tx struct {
+	TransactionHash  string `db:"transaction_hash"`
+	TransactionIndex string `db:"transaction_index"`
+	BlockHeight      string `db:"block_height"`
+	BlockHash        string `db:"block_hash"`
+	TxFrom           string `db:"tx_from"`
+	TxTo             string `db:"tx_to"`
+}
+
 func GetIlkValues(seed int) map[string]string {
 	valuesMap := make(map[string]string)
 	valuesMap[vat.IlkRate] = strconv.Itoa(1 + seed)
@@ -300,6 +309,14 @@ type FrobEvent struct {
 	UrnId   string `db:"urn_id"`
 	Dink    string
 	Dart    string
+}
+
+type BiteEvent struct {
+	IlkName string `db:"ilk_name"`
+	UrnId   string `db:"urn_id"`
+	Ink     string
+	Art     string
+	Tab     string
 }
 
 func GetExpectedTimestamp(epoch int) string {

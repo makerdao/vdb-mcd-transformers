@@ -37,6 +37,20 @@ COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
 
 
 --
+-- Name: bite_event; Type: TYPE; Schema: maker; Owner: -
+--
+
+CREATE TYPE maker.bite_event AS (
+	ilk_name text,
+	urn_id text,
+	ink numeric,
+	art numeric,
+	tab numeric,
+	block_height bigint
+);
+
+
+--
 -- Name: era; Type: TYPE; Schema: maker; Owner: -
 --
 
@@ -122,6 +136,25 @@ CREATE TYPE maker.urn_state AS (
 	created timestamp without time zone,
 	updated timestamp without time zone
 );
+
+
+--
+-- Name: all_bites(text); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.all_bites(ilk_name text) RETURNS SETOF maker.bite_event
+    LANGUAGE sql STABLE
+    AS $_$
+  WITH
+    ilk AS (SELECT id FROM maker.ilks WHERE ilks.name = $1)
+
+  SELECT $1 AS ilk_name, guy AS urn_id, ink, art, tab, block_number AS block_height
+  FROM maker.bite
+  LEFT JOIN maker.urns ON bite.urn_id = urns.id
+  LEFT JOIN headers    ON bite.header_id = headers.id
+  WHERE urns.ilk_id = (SELECT id FROM ilk)
+  ORDER BY guy, block_number DESC
+$_$;
 
 
 --
@@ -412,6 +445,45 @@ FROM inks
   LEFT JOIN updated    ON updated.urn_id = urns.urn_id
   LEFT JOIN maker.ilks ON ilks.id = urns.ilk_id
 $_$;
+
+
+--
+-- Name: bite_event_ilk(maker.bite_event); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.bite_event_ilk(event maker.bite_event) RETURNS SETOF maker.ilk_state
+    LANGUAGE sql STABLE
+    AS $$
+  SELECT * FROM maker.get_ilk(
+     event.block_height,
+     (SELECT id FROM maker.ilks WHERE name = event.ilk_name))
+$$;
+
+
+--
+-- Name: bite_event_tx(maker.bite_event); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.bite_event_tx(event maker.bite_event) RETURNS maker.tx
+    LANGUAGE sql STABLE
+    AS $$
+  SELECT txs.hash, txs.tx_index, headers.block_number AS block_height, headers.hash, tx_from, tx_to
+  FROM public.header_sync_transactions txs
+         LEFT JOIN headers ON txs.header_id = headers.id
+  WHERE block_number <= event.block_height
+  ORDER BY block_height DESC
+$$;
+
+
+--
+-- Name: bite_event_urn(maker.bite_event); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.bite_event_urn(event maker.bite_event) RETURNS SETOF maker.urn_state
+    LANGUAGE sql STABLE
+    AS $$
+  SELECT * FROM maker.get_urn(event.ilk_name, event.urn_id, event.block_height)
+$$;
 
 
 --
@@ -912,6 +984,13 @@ CREATE TABLE maker.bite (
     log_idx integer NOT NULL,
     raw_log jsonb
 );
+
+
+--
+-- Name: TABLE bite; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.bite IS '@name raw_bites';
 
 
 --
@@ -5986,6 +6065,14 @@ GRANT USAGE ON SCHEMA maker TO graphql;
 
 
 --
+-- Name: FUNCTION all_bites(ilk_name text); Type: ACL; Schema: maker; Owner: -
+--
+
+REVOKE ALL ON FUNCTION maker.all_bites(ilk_name text) FROM PUBLIC;
+GRANT ALL ON FUNCTION maker.all_bites(ilk_name text) TO graphql;
+
+
+--
 -- Name: FUNCTION all_frobs(ilk_name text); Type: ACL; Schema: maker; Owner: -
 --
 
@@ -6023,6 +6110,27 @@ GRANT ALL ON FUNCTION maker.all_urn_states(ilk_name text, urn text, block_height
 
 REVOKE ALL ON FUNCTION maker.all_urns(block_height bigint) FROM PUBLIC;
 GRANT ALL ON FUNCTION maker.all_urns(block_height bigint) TO graphql;
+
+
+--
+-- Name: FUNCTION bite_event_ilk(event maker.bite_event); Type: ACL; Schema: maker; Owner: -
+--
+
+REVOKE ALL ON FUNCTION maker.bite_event_ilk(event maker.bite_event) FROM PUBLIC;
+
+
+--
+-- Name: FUNCTION bite_event_tx(event maker.bite_event); Type: ACL; Schema: maker; Owner: -
+--
+
+REVOKE ALL ON FUNCTION maker.bite_event_tx(event maker.bite_event) FROM PUBLIC;
+
+
+--
+-- Name: FUNCTION bite_event_urn(event maker.bite_event); Type: ACL; Schema: maker; Owner: -
+--
+
+REVOKE ALL ON FUNCTION maker.bite_event_urn(event maker.bite_event) FROM PUBLIC;
 
 
 --
