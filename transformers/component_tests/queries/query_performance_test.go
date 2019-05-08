@@ -12,7 +12,7 @@ var _ = Describe("data generator", func() {
 		db := test_config.NewTestDB(test_config.NewTestNode())
 		test_config.CleanTestDB(db)
 		state := test_helpers.NewGenerator(db)
-		state.Run(1000)
+		state.Run(10)
 		fmt.Println("Stop!")
 	})
 })

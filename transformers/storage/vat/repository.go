@@ -29,14 +29,14 @@ import (
 const (
 	insertDaiQuery     = `INSERT INTO maker.vat_dai (block_number, block_hash, guy, dai) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
 	insertGemQuery     = `INSERT INTO maker.vat_gem (block_number, block_hash, ilk_id, guy, gem) VALUES ($1, $2, $3, $4, $5) ON CONFLICT DO NOTHING`
-	insertIlkArtQuery  = `INSERT INTO maker.vat_ilk_art (block_number, block_hash, ilk_id, art) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
-	insertIlkDustQuery = `INSERT INTO maker.vat_ilk_dust (block_number, block_hash, ilk_id, dust) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
-	insertIlkLineQuery = `INSERT INTO maker.vat_ilk_line (block_number, block_hash, ilk_id, line) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
-	insertIlkRateQuery = `INSERT INTO maker.vat_ilk_rate (block_number, block_hash, ilk_id, rate) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
-	insertIlkSpotQuery = `INSERT INTO maker.vat_ilk_spot (block_number, block_hash, ilk_id, spot) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
+	InsertIlkArtQuery  = `INSERT INTO maker.vat_ilk_art (block_number, block_hash, ilk_id, art) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
+	InsertIlkDustQuery = `INSERT INTO maker.vat_ilk_dust (block_number, block_hash, ilk_id, dust) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
+	InsertIlkLineQuery = `INSERT INTO maker.vat_ilk_line (block_number, block_hash, ilk_id, line) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
+	InsertIlkRateQuery = `INSERT INTO maker.vat_ilk_rate (block_number, block_hash, ilk_id, rate) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
+	InsertIlkSpotQuery = `INSERT INTO maker.vat_ilk_spot (block_number, block_hash, ilk_id, spot) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
 	insertSinQuery     = `INSERT INTO maker.vat_sin (block_number, block_hash, guy, sin) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
-	insertUrnArtQuery  = `INSERT INTO maker.vat_urn_art (block_number, block_hash, urn_id, art) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
-	insertUrnInkQuery  = `INSERT INTO maker.vat_urn_ink (block_number, block_hash, urn_id, ink) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
+	InsertUrnArtQuery  = `INSERT INTO maker.vat_urn_art (block_number, block_hash, urn_id, art) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
+	InsertUrnInkQuery  = `INSERT INTO maker.vat_urn_ink (block_number, block_hash, urn_id, ink) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
 	insertVatDebtQuery = `INSERT INTO maker.vat_debt (block_number, block_hash, debt) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
 	insertVatLineQuery = `INSERT INTO maker.vat_line (block_number, block_hash, line) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
 	insertVatLiveQuery = `INSERT INTO maker.vat_live (block_number, block_hash, live) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
@@ -132,7 +132,7 @@ func (repository *VatStorageRepository) insertIlkArt(blockNumber int, blockHash 
 	if err != nil {
 		return err
 	}
-	return repository.insertFieldWithIlk(blockNumber, blockHash, ilk, IlkArt, insertIlkArtQuery, art)
+	return repository.insertFieldWithIlk(blockNumber, blockHash, ilk, IlkArt, InsertIlkArtQuery, art)
 }
 
 func (repository *VatStorageRepository) insertIlkDust(blockNumber int, blockHash string, metadata utils.StorageValueMetadata, dust string) error {
@@ -140,7 +140,7 @@ func (repository *VatStorageRepository) insertIlkDust(blockNumber int, blockHash
 	if err != nil {
 		return err
 	}
-	return repository.insertFieldWithIlk(blockNumber, blockHash, ilk, IlkDust, insertIlkDustQuery, dust)
+	return repository.insertFieldWithIlk(blockNumber, blockHash, ilk, IlkDust, InsertIlkDustQuery, dust)
 }
 
 func (repository *VatStorageRepository) insertIlkLine(blockNumber int, blockHash string, metadata utils.StorageValueMetadata, line string) error {
@@ -148,7 +148,7 @@ func (repository *VatStorageRepository) insertIlkLine(blockNumber int, blockHash
 	if err != nil {
 		return err
 	}
-	return repository.insertFieldWithIlk(blockNumber, blockHash, ilk, IlkLine, insertIlkLineQuery, line)
+	return repository.insertFieldWithIlk(blockNumber, blockHash, ilk, IlkLine, InsertIlkLineQuery, line)
 }
 
 func (repository *VatStorageRepository) insertIlkRate(blockNumber int, blockHash string, metadata utils.StorageValueMetadata, rate string) error {
@@ -156,7 +156,7 @@ func (repository *VatStorageRepository) insertIlkRate(blockNumber int, blockHash
 	if err != nil {
 		return err
 	}
-	return repository.insertFieldWithIlk(blockNumber, blockHash, ilk, IlkRate, insertIlkRateQuery, rate)
+	return repository.insertFieldWithIlk(blockNumber, blockHash, ilk, IlkRate, InsertIlkRateQuery, rate)
 }
 
 func (repository *VatStorageRepository) insertIlkSpot(blockNumber int, blockHash string, metadata utils.StorageValueMetadata, spot string) error {
@@ -164,7 +164,7 @@ func (repository *VatStorageRepository) insertIlkSpot(blockNumber int, blockHash
 	if err != nil {
 		return err
 	}
-	return repository.insertFieldWithIlk(blockNumber, blockHash, ilk, IlkSpot, insertIlkSpotQuery, spot)
+	return repository.insertFieldWithIlk(blockNumber, blockHash, ilk, IlkSpot, InsertIlkSpotQuery, spot)
 }
 
 func (repository *VatStorageRepository) insertSin(blockNumber int, blockHash string, metadata utils.StorageValueMetadata, sin string) error {
@@ -185,7 +185,7 @@ func (repository *VatStorageRepository) insertUrnArt(blockNumber int, blockHash 
 	if guyErr != nil {
 		return guyErr
 	}
-	return repository.insertFieldWithIlkAndUrn(blockNumber, blockHash, ilk, guy, UrnArt, insertUrnArtQuery, art)
+	return repository.insertFieldWithIlkAndUrn(blockNumber, blockHash, ilk, guy, UrnArt, InsertUrnArtQuery, art)
 }
 
 func (repository *VatStorageRepository) insertUrnInk(blockNumber int, blockHash string, metadata utils.StorageValueMetadata, ink string) error {
@@ -197,7 +197,7 @@ func (repository *VatStorageRepository) insertUrnInk(blockNumber int, blockHash 
 	if guyErr != nil {
 		return guyErr
 	}
-	return repository.insertFieldWithIlkAndUrn(blockNumber, blockHash, ilk, guy, UrnInk, insertUrnInkQuery, ink)
+	return repository.insertFieldWithIlkAndUrn(blockNumber, blockHash, ilk, guy, UrnInk, InsertUrnInkQuery, ink)
 }
 
 func (repository *VatStorageRepository) insertVatDebt(blockNumber int, blockHash, debt string) error {
