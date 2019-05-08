@@ -207,7 +207,7 @@ var _ = Describe("Extension function", func() {
 			err = frobRepo.Create(headerId, []interface{}{frobEvent})
 			Expect(err).NotTo(HaveOccurred())
 
-			expectedTx := Tx{
+			expectedTx := test_helpers.Tx{
 				TransactionHash:  "txHash",
 				TransactionIndex: strconv.Itoa(rand.Intn(10)),
 				BlockHeight:      strconv.Itoa(fakeBlock),
@@ -221,7 +221,7 @@ var _ = Describe("Extension function", func() {
 				expectedTx.TransactionIndex, expectedTx.TxTo)
 			Expect(err).NotTo(HaveOccurred())
 
-			var actualTx Tx
+			var actualTx test_helpers.Tx
 			err = db.Get(&actualTx, `SELECT * FROM maker.frob_event_tx(
 			    (SELECT (ilk_name, urn_id, dink, dart, block_height)::maker.frob_event FROM maker.all_frobs($1)))`,
 				test_helpers.FakeIlk.Name)
@@ -235,13 +235,4 @@ var _ = Describe("Extension function", func() {
 type Era struct {
 	Epoch string
 	Iso   string
-}
-
-type Tx struct {
-	TransactionHash  string `db:"transaction_hash"`
-	TransactionIndex string `db:"transaction_index"`
-	BlockHeight      string `db:"block_height"`
-	BlockHash        string `db:"block_hash"`
-	TxFrom           string `db:"tx_from"`
-	TxTo             string `db:"tx_to"`
 }
