@@ -14,7 +14,6 @@ import (
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 	"math/rand"
-	"strconv"
 	"strings"
 )
 
@@ -103,7 +102,7 @@ var _ = Describe("Extension function", func() {
 				err = db.Get(&result,
 					`SELECT ilk_name, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated
                     FROM maker.frob_event_ilk(
-                        (SELECT (ilk_name, urn_id, dink, dart, block_height)::maker.frob_event FROM maker.all_frobs($1))
+                        (SELECT (ilk_name, urn_id, dink, dart, block_height, tx_idx)::maker.frob_event FROM maker.all_frobs($1))
                     )`, test_helpers.FakeIlk.Name)
 
 				Expect(err).NotTo(HaveOccurred())
@@ -174,7 +173,7 @@ var _ = Describe("Extension function", func() {
 				err = db.Get(&result,
 					`SELECT ilk_name, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated
                     FROM maker.file_event_ilk(
-                        (SELECT (id, ilk_name, what, data, block_height)::maker.file_event FROM maker.ilk_files($1))
+                        (SELECT (id, ilk_name, what, data, block_height, tx_idx)::maker.file_event FROM maker.ilk_files($1))
                     )`, test_helpers.FakeIlk.Name)
 
 				Expect(err).NotTo(HaveOccurred())
@@ -212,7 +211,7 @@ var _ = Describe("Extension function", func() {
 				var actualUrn test_helpers.UrnState
 				err = db.Get(&actualUrn,
 					`SELECT urn_id, ilk_name FROM maker.frob_event_urn(
-                        (SELECT (ilk_name, urn_id, dink, dart, block_height)::maker.frob_event FROM maker.all_frobs($1)))`,
+                        (SELECT (ilk_name, urn_id, dink, dart, block_height, tx_idx)::maker.frob_event FROM maker.all_frobs($1)))`,
 					test_helpers.FakeIlk.Name)
 				Expect(err).NotTo(HaveOccurred())
 
@@ -273,68 +272,142 @@ var _ = Describe("Extension function", func() {
 	})
 
 	Describe("frob_event_tx", func() {
-		It("returns transaction for a frob_event", func() {
-			frobRepo := vat_frob.VatFrobRepository{}
+		var (
+			frobRepo  vat_frob.VatFrobRepository
+			frobEvent vat_frob.VatFrobModel
+		)
+
+		BeforeEach(func() {
+			frobRepo = vat_frob.VatFrobRepository{}
 			frobRepo.SetDB(db)
-			frobEvent := test_data.VatFrobModelWithPositiveDart
+			frobEvent = test_data.VatFrobModelWithPositiveDart
 			frobEvent.Ilk = test_helpers.FakeIlk.Hex
 			err = frobRepo.Create(headerId, []interface{}{frobEvent})
 			Expect(err).NotTo(HaveOccurred())
+		})
 
-			expectedTx := test_helpers.Tx{
-				TransactionHash:  "txHash",
-				TransactionIndex: strconv.Itoa(rand.Intn(10)),
-				BlockHeight:      strconv.Itoa(fakeBlock),
-				BlockHash:        fakeHeader.Hash,
-				TxFrom:           "fromAddress",
-				TxTo:             "toAddress",
+		It("returns transaction for a frob_event", func() {
+			expectedTx := Tx{
+				TransactionHash: sql.NullString{String: "txHash", Valid: true},
+				TransactionIndex: sql.NullInt64{
+					Int64: int64(frobEvent.TransactionIndex),
+					Valid: true,
+				},
+				BlockHeight: sql.NullInt64{Int64: int64(fakeBlock), Valid: true},
+				BlockHash:   sql.NullString{String: fakeHeader.Hash, Valid: true},
+				TxFrom:      sql.NullString{String: "fromAddress", Valid: true},
+				TxTo:        sql.NullString{String: "toAddress", Valid: true},
 			}
 
 			_, err = db.Exec(`INSERT INTO header_sync_transactions (header_id, hash, tx_from, tx_index, tx_to)
-                VALUES ($1, $2, $3, $4, $5)`, headerId, expectedTx.TransactionHash, expectedTx.TxFrom,
+				VALUES ($1, $2, $3, $4, $5)`, headerId, expectedTx.TransactionHash, expectedTx.TxFrom,
 				expectedTx.TransactionIndex, expectedTx.TxTo)
 			Expect(err).NotTo(HaveOccurred())
 
-			var actualTx test_helpers.Tx
+			var actualTx Tx
 			err = db.Get(&actualTx, `SELECT * FROM maker.frob_event_tx(
-			    (SELECT (ilk_name, urn_id, dink, dart, block_height)::maker.frob_event FROM maker.all_frobs($1)))`,
+			    (SELECT (ilk_name, urn_id, dink, dart, block_height, tx_idx)::maker.frob_event FROM maker.all_frobs($1)))`,
 				test_helpers.FakeIlk.Name)
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(actualTx).To(Equal(expectedTx))
 		})
-	})
 
-	Describe("file_event_tx", func() {
-		It("returns transaction for a file event", func() {
-			fileRepo := ilk.VatFileIlkRepository{}
-			fileRepo.SetDB(db)
-			fileEvent := test_data.VatFileIlkDustModel
-			fileEvent.Ilk = test_helpers.FakeIlk.Hex
-			err = fileRepo.Create(headerId, []interface{}{fileEvent})
-			Expect(err).NotTo(HaveOccurred())
-
-			expectedTx := test_helpers.Tx{
-				TransactionHash:  "txHash",
-				TransactionIndex: strconv.Itoa(rand.Intn(10)),
-				BlockHeight:      strconv.Itoa(fakeBlock),
-				BlockHash:        fakeHeader.Hash,
-				TxFrom:           "fromAddress",
-				TxTo:             "toAddress",
+		It("does not return transaction from same block with different index", func() {
+			wrongTx := Tx{
+				TransactionHash: sql.NullString{String: "wrongTxHash", Valid: true},
+				TransactionIndex: sql.NullInt64{
+					Int64: int64(frobEvent.TransactionIndex) + 1,
+					Valid: true,
+				},
+				BlockHeight: sql.NullInt64{Int64: int64(fakeBlock), Valid: true},
+				BlockHash:   sql.NullString{String: fakeHeader.Hash, Valid: true},
+				TxFrom:      sql.NullString{String: "wrongFromAddress", Valid: true},
+				TxTo:        sql.NullString{String: "wrongToAddress", Valid: true},
 			}
 
 			_, err = db.Exec(`INSERT INTO header_sync_transactions (header_id, hash, tx_from, tx_index, tx_to)
-                VALUES ($1, $2, $3, $4, $5)`, headerId, expectedTx.TransactionHash, expectedTx.TxFrom,
+				VALUES ($1, $2, $3, $4, $5)`, headerId, wrongTx.TransactionHash, wrongTx.TxFrom,
+				wrongTx.TransactionIndex, wrongTx.TxTo)
+			Expect(err).NotTo(HaveOccurred())
+
+			var actualTx Tx
+			err = db.Get(&actualTx, `SELECT * FROM maker.frob_event_tx(
+			    (SELECT (ilk_name, urn_id, dink, dart, block_height, tx_idx)::maker.frob_event FROM maker.all_frobs($1)))`,
+				test_helpers.FakeIlk.Name)
+
+			Expect(err).NotTo(HaveOccurred())
+			Expect(actualTx).To(BeZero())
+		})
+	})
+
+	Describe("file_event_tx", func() {
+		var (
+			fileRepo  ilk.VatFileIlkRepository
+			fileEvent ilk.VatFileIlkModel
+		)
+
+		BeforeEach(func() {
+			fileRepo = ilk.VatFileIlkRepository{}
+			fileRepo.SetDB(db)
+			fileEvent = test_data.VatFileIlkDustModel
+			fileEvent.Ilk = test_helpers.FakeIlk.Hex
+			err = fileRepo.Create(headerId, []interface{}{fileEvent})
+			Expect(err).NotTo(HaveOccurred())
+		})
+
+		It("returns transaction for a file event", func() {
+			expectedTx := Tx{
+				TransactionHash: sql.NullString{String: "txHash", Valid: true},
+				TransactionIndex: sql.NullInt64{
+					Int64: int64(fileEvent.TransactionIndex),
+					Valid: true,
+				},
+				BlockHeight: sql.NullInt64{Int64: int64(fakeBlock), Valid: true},
+				BlockHash:   sql.NullString{String: fakeHeader.Hash, Valid: true},
+				TxFrom:      sql.NullString{String: "fromAddress", Valid: true},
+				TxTo:        sql.NullString{String: "toAddress", Valid: true},
+			}
+
+			_, err = db.Exec(`INSERT INTO header_sync_transactions (header_id, hash, tx_from, tx_index, tx_to)
+				VALUES ($1, $2, $3, $4, $5)`, headerId, expectedTx.TransactionHash, expectedTx.TxFrom,
 				expectedTx.TransactionIndex, expectedTx.TxTo)
 			Expect(err).NotTo(HaveOccurred())
 
-			var actualTx test_helpers.Tx
+			var actualTx Tx
 			err = db.Get(&actualTx, `SELECT * FROM maker.file_event_tx(
-			    (SELECT (id, ilk_name, what, data, block_height)::maker.file_event FROM maker.ilk_files($1)))`,
+			    (SELECT (id, ilk_name, what, data, block_height, tx_idx)::maker.file_event FROM maker.ilk_files($1)))`,
 				test_helpers.FakeIlk.Name)
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(actualTx).To(Equal(expectedTx))
+		})
+
+		It("does not return transaction from same block with different index", func() {
+			wrongTx := Tx{
+				TransactionHash: sql.NullString{String: "wrongTxHash", Valid: true},
+				TransactionIndex: sql.NullInt64{
+					Int64: int64(fileEvent.TransactionIndex) + 1,
+					Valid: true,
+				},
+				BlockHeight: sql.NullInt64{Int64: int64(fakeBlock), Valid: true},
+				BlockHash:   sql.NullString{String: fakeHeader.Hash, Valid: true},
+				TxFrom:      sql.NullString{String: "wrongFromAddress", Valid: true},
+				TxTo:        sql.NullString{String: "wrongToAddress", Valid: true},
+			}
+
+			_, err = db.Exec(`INSERT INTO header_sync_transactions (header_id, hash, tx_from, tx_index, tx_to)
+				VALUES ($1, $2, $3, $4, $5)`, headerId, wrongTx.TransactionHash, wrongTx.TxFrom,
+				wrongTx.TransactionIndex, wrongTx.TxTo)
+			Expect(err).NotTo(HaveOccurred())
+
+			var actualTx Tx
+			err = db.Get(&actualTx, `SELECT * FROM maker.file_event_tx(
+			    (SELECT (id, ilk_name, what, data, block_height, tx_idx)::maker.file_event FROM maker.ilk_files($1)))`,
+				test_helpers.FakeIlk.Name)
+
+			Expect(err).NotTo(HaveOccurred())
+			Expect(actualTx).To(BeZero())
 		})
 	})
 })
@@ -342,4 +415,13 @@ var _ = Describe("Extension function", func() {
 type Era struct {
 	Epoch string
 	Iso   string
+}
+
+type Tx struct {
+	TransactionHash  sql.NullString `db:"transaction_hash"`
+	TransactionIndex sql.NullInt64  `db:"transaction_index"`
+	BlockHeight      sql.NullInt64  `db:"block_height"`
+	BlockHash        sql.NullString `db:"block_hash"`
+	TxFrom           sql.NullString `db:"tx_from"`
+	TxTo             sql.NullString `db:"tx_to"`
 }
