@@ -1,7 +1,9 @@
-package test_helpers
+package main
 
 import (
+	"flag"
 	"fmt"
+	"github.com/jmoiron/sqlx"
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/cat"
@@ -12,6 +14,7 @@ import (
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 	"math/rand"
+	"os"
 	"strings"
 )
 
@@ -24,6 +27,39 @@ const (
 	// TODO add event data
 	// TODO add tx for events
 )
+
+func main() {
+	const defaultConnectionString = "postgres://vulcanize:vulcanize@localhost:5432/vulcanize_private?sslmode=disable"
+	connectionStringPtr := flag.String("pg-connection-string", defaultConnectionString,
+		"postgres connection string")
+	stepsPtr := flag.Int("steps", 100, "number of interactions to generate")
+	flag.Parse()
+
+	db, connectErr := sqlx.Connect("postgres", *connectionStringPtr)
+	if connectErr != nil {
+		fmt.Println("Could not connect to DB: ", connectErr)
+		os.Exit(1)
+	}
+
+	pg := postgres.DB{
+		DB:     db,
+		Node:   test_config.NewTestNode(),
+		NodeID: 0,
+	}
+
+	fmt.Println("\nRunning this will write mock data to the DB you specified, possibly contaminating real data.")
+	fmt.Println("------------------------------")
+	fmt.Print("Do you want to continue? (y/n)")
+
+	var input string
+	_, err := fmt.Scanln(&input)
+	if input != "y" || err != nil {
+		os.Exit(0)
+	}
+
+	generatorState := NewGenerator(&pg)
+	generatorState.Run(*stepsPtr)
+}
 
 type GeneratorState struct {
 	db            *postgres.DB
