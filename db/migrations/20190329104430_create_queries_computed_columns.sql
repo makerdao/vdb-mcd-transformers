@@ -64,7 +64,7 @@ $$
   SELECT txs.hash, txs.tx_index, headers.block_number AS block_height, headers.hash, tx_from, tx_to
   FROM public.header_sync_transactions txs
   LEFT JOIN headers ON txs.header_id = headers.id
-  WHERE block_number <= event.block_height
+  WHERE block_number <= event.block_height AND txs.tx_index = event.tx_idx
   ORDER BY block_height DESC
   LIMIT 1 -- Should always be true anyway?
 $$ LANGUAGE sql STABLE;
@@ -77,7 +77,7 @@ $$
   SELECT txs.hash, txs.tx_index, headers.block_number AS block_height, headers.hash, tx_from, tx_to
   FROM public.header_sync_transactions txs
   LEFT JOIN headers ON txs.header_id = headers.id
-  WHERE block_number <= event.block_height
+  WHERE block_number <= event.block_height AND txs.tx_index = event.tx_idx
   ORDER BY block_height DESC
   LIMIT 1
 $$ LANGUAGE sql STABLE;

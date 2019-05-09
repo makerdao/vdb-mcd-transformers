@@ -69,7 +69,8 @@ CREATE TYPE maker.file_event AS (
 	ilk_name text,
 	what text,
 	data text,
-	block_height bigint
+	block_height bigint,
+	tx_idx integer
 );
 
 
@@ -82,7 +83,8 @@ CREATE TYPE maker.frob_event AS (
 	urn_id text,
 	dink numeric,
 	dart numeric,
-	block_height bigint
+	block_height bigint,
+	tx_idx integer
 );
 
 
@@ -178,25 +180,25 @@ CREATE FUNCTION maker.address_files(address text) RETURNS SETOF maker.file_event
     LANGUAGE sql STABLE SECURITY DEFINER
     AS $_$
 -- ilk files
-  SELECT cat_file_chop_lump.raw_log::json->>'address' AS id, ilks.name AS ilk_name, what, data::text, block_number AS block_height
+  SELECT cat_file_chop_lump.raw_log::json->>'address' AS id, ilks.name AS ilk_name, what, data::text, block_number AS block_height, tx_idx
   FROM maker.cat_file_chop_lump
   LEFT JOIN maker.ilks ON cat_file_chop_lump.ilk_id = ilks.id
   LEFT JOIN headers    ON cat_file_chop_lump.header_id = headers.id
   WHERE lower(cat_file_chop_lump.raw_log::json->>'address') = lower($1)
   UNION
-  SELECT cat_file_flip.raw_log::json->>'address' AS id, ilks.name AS ilk_name, what, flip AS data, block_number AS block_height
+  SELECT cat_file_flip.raw_log::json->>'address' AS id, ilks.name AS ilk_name, what, flip AS data, block_number AS block_height, tx_idx
   FROM maker.cat_file_flip
   LEFT JOIN maker.ilks ON cat_file_flip.ilk_id = ilks.id
   LEFT JOIN headers ON cat_file_flip.header_id = headers.id
   WHERE lower(cat_file_flip.raw_log::json->>'address') = lower($1)
   UNION
-  SELECT jug_file_ilk.raw_log::json->>'address' AS id, ilks.name AS ilk_name, what, data::text, block_number AS block_height
+  SELECT jug_file_ilk.raw_log::json->>'address' AS id, ilks.name AS ilk_name, what, data::text, block_number AS block_height, tx_idx
   FROM maker.jug_file_ilk
   LEFT JOIN maker.ilks ON jug_file_ilk.ilk_id = ilks.id
   LEFT JOIN headers ON jug_file_ilk.header_id = headers.id
   WHERE lower(jug_file_ilk.raw_log::json->>'address') = lower($1)
   UNION
-  SELECT vat_file_ilk.raw_log::json->>'address' AS id, ilks.name AS ilk_name, what, data::text, block_number AS block_height
+  SELECT vat_file_ilk.raw_log::json->>'address' AS id, ilks.name AS ilk_name, what, data::text, block_number AS block_height, tx_idx
   FROM maker.vat_file_ilk
   LEFT JOIN maker.ilks ON vat_file_ilk.ilk_id = ilks.id
   LEFT JOIN headers ON vat_file_ilk.header_id = headers.id
@@ -204,22 +206,22 @@ CREATE FUNCTION maker.address_files(address text) RETURNS SETOF maker.file_event
 
 -- contract files
   UNION
-  SELECT cat_file_vow.raw_log::json->>'address' AS id, NULL AS ilk_name, what, data, block_number AS block_height
+  SELECT cat_file_vow.raw_log::json->>'address' AS id, NULL AS ilk_name, what, data, block_number AS block_height, tx_idx
   FROM maker.cat_file_vow
   LEFT JOIN headers ON cat_file_vow.header_id = headers.id
   WHERE lower(cat_file_vow.raw_log::json->>'address') = lower($1)
   UNION
-  SELECT jug_file_base.raw_log::json->>'address' AS id, NULL AS ilk_name, what, data::text, block_number AS block_height
+  SELECT jug_file_base.raw_log::json->>'address' AS id, NULL AS ilk_name, what, data::text, block_number AS block_height, tx_idx
   FROM maker.jug_file_base
   LEFT JOIN headers ON jug_file_base.header_id = headers.id
   WHERE lower(jug_file_base.raw_log::json->>'address') = lower($1)
   UNION
-  SELECT jug_file_vow.raw_log::json->>'address' AS id, NULL AS ilk_name, what, data, block_number AS block_height
+  SELECT jug_file_vow.raw_log::json->>'address' AS id, NULL AS ilk_name, what, data, block_number AS block_height, tx_idx
   FROM maker.jug_file_vow
   LEFT JOIN headers ON jug_file_vow.header_id = headers.id
   WHERE lower(jug_file_vow.raw_log::json->>'address') = lower($1)
   UNION
-  SELECT vat_file_debt_ceiling.raw_log::json->>'address' AS id, NULL AS ilk_name, what, data::text, block_number AS block_height
+  SELECT vat_file_debt_ceiling.raw_log::json->>'address' AS id, NULL AS ilk_name, what, data::text, block_number AS block_height, tx_idx
   FROM maker.vat_file_debt_ceiling
   LEFT JOIN headers on vat_file_debt_ceiling.header_id = headers.id
   WHERE lower(vat_file_debt_ceiling.raw_log::json->>'address') = lower($1)
@@ -257,7 +259,7 @@ CREATE FUNCTION maker.all_frobs(ilk_name text) RETURNS SETOF maker.frob_event
   WITH
     ilk AS (SELECT id FROM maker.ilks WHERE ilks.name = $1)
 
-  SELECT $1 AS ilk_name, guy AS urn_id, dink, dart, block_number AS block_height
+  SELECT $1 AS ilk_name, guy AS urn_id, dink, dart, block_number AS block_height, tx_idx
   FROM maker.vat_frob
   LEFT JOIN maker.urns ON vat_frob.urn_id = urns.id
   LEFT JOIN headers    ON vat_frob.header_id = headers.id
@@ -600,7 +602,7 @@ CREATE FUNCTION maker.file_event_tx(event maker.file_event) RETURNS maker.tx
   SELECT txs.hash, txs.tx_index, headers.block_number AS block_height, headers.hash, tx_from, tx_to
   FROM public.header_sync_transactions txs
   LEFT JOIN headers ON txs.header_id = headers.id
-  WHERE block_number <= event.block_height
+  WHERE block_number <= event.block_height AND txs.tx_index = event.tx_idx
   ORDER BY block_height DESC
   LIMIT 1
 $$;
@@ -629,7 +631,7 @@ CREATE FUNCTION maker.frob_event_tx(event maker.frob_event) RETURNS maker.tx
   SELECT txs.hash, txs.tx_index, headers.block_number AS block_height, headers.hash, tx_from, tx_to
   FROM public.header_sync_transactions txs
   LEFT JOIN headers ON txs.header_id = headers.id
-  WHERE block_number <= event.block_height
+  WHERE block_number <= event.block_height AND txs.tx_index = event.tx_idx
   ORDER BY block_height DESC
   LIMIT 1 -- Should always be true anyway?
 $$;
@@ -1019,22 +1021,22 @@ CREATE FUNCTION maker.ilk_files(ilk_name text) RETURNS SETOF maker.file_event
   WITH
     ilk AS (SELECT id FROM maker.ilks WHERE ilks.name = $1)
 
-  SELECT cat_file_chop_lump.raw_log::json->>'address' AS id, $1 AS ilk_name, what, data::text, block_number AS block_height
+  SELECT cat_file_chop_lump.raw_log::json->>'address' AS id, $1 AS ilk_name, what, data::text, block_number AS block_height, tx_idx
   FROM maker.cat_file_chop_lump
   LEFT JOIN headers ON cat_file_chop_lump.header_id = headers.id
   WHERE cat_file_chop_lump.ilk_id = (SELECT id FROM ilk)
   UNION
-  SELECT cat_file_flip.raw_log::json->>'address' AS id, $1 AS ilk_name, what, flip AS data, block_number AS block_height
+  SELECT cat_file_flip.raw_log::json->>'address' AS id, $1 AS ilk_name, what, flip AS data, block_number AS block_height, tx_idx
   FROM maker.cat_file_flip
   LEFT JOIN headers ON cat_file_flip.header_id = headers.id
   WHERE cat_file_flip.ilk_id = (SELECT id FROM ilk)
   UNION
-  SELECT jug_file_ilk.raw_log::json->>'address' AS id, $1 AS ilk_name, what, data::text, block_number AS block_height
+  SELECT jug_file_ilk.raw_log::json->>'address' AS id, $1 AS ilk_name, what, data::text, block_number AS block_height, tx_idx
   FROM maker.jug_file_ilk
   LEFT JOIN headers ON jug_file_ilk.header_id = headers.id
   WHERE jug_file_ilk.ilk_id = (SELECT id FROM ilk)
   UNION
-  SELECT vat_file_ilk.raw_log::json->>'address' AS id, $1 AS ilk_name, what, data::text, block_number AS block_height
+  SELECT vat_file_ilk.raw_log::json->>'address' AS id, $1 AS ilk_name, what, data::text, block_number AS block_height, tx_idx
   FROM maker.vat_file_ilk
   LEFT JOIN headers ON vat_file_ilk.header_id = headers.id
   WHERE vat_file_ilk.ilk_id = (SELECT id FROM ilk)
@@ -1122,7 +1124,7 @@ CREATE FUNCTION maker.urn_frobs(ilk_name text, urn text) RETURNS SETOF maker.fro
         AND guy = $2
     )
 
-  SELECT $1 AS ilk_name, $2 AS urn_id, dink, dart, block_number AS block_height
+  SELECT $1 AS ilk_name, $2 AS urn_id, dink, dart, block_number AS block_height, tx_idx
   FROM maker.vat_frob LEFT JOIN headers ON vat_frob.header_id = headers.id
   WHERE vat_frob.urn_id = (SELECT id FROM urn)
   ORDER BY block_number DESC
