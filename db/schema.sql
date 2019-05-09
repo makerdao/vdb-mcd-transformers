@@ -1144,6 +1144,20 @@ $$;
 
 
 --
+-- Name: urn_state_ilk(maker.urn_state); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.urn_state_ilk(state maker.urn_state) RETURNS maker.ilk_state
+    LANGUAGE sql STABLE
+    AS $$
+  SELECT * FROM maker.get_ilk (
+    state.block_height,
+    (SELECT id FROM maker.ilks WHERE name = state.ilk_name)
+  )
+$$;
+
+
+--
 -- Name: notify_pip_log_value(); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -6435,6 +6449,13 @@ REVOKE ALL ON FUNCTION maker.urn_frobs(ilk_name text, urn text) FROM PUBLIC;
 --
 
 REVOKE ALL ON FUNCTION maker.urn_state_frobs(state maker.urn_state) FROM PUBLIC;
+
+
+--
+-- Name: FUNCTION urn_state_ilk(state maker.urn_state); Type: ACL; Schema: maker; Owner: -
+--
+
+REVOKE ALL ON FUNCTION maker.urn_state_ilk(state maker.urn_state) FROM PUBLIC;
 
 
 --

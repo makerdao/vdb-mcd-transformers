@@ -2,19 +2,23 @@ package queries
 
 import (
 	"database/sql"
+	"github.com/vulcanize/mcd_transformers/transformers/storage/vat"
+	"math/rand"
+	"strconv"
+	"strings"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
+	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
+	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres/repositories"
+	"github.com/vulcanize/vulcanizedb/pkg/fakes"
+
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/component_tests/queries/test_helpers"
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_file/ilk"
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_frob"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
-	"github.com/vulcanize/vulcanizedb/pkg/core"
-	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
-	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres/repositories"
-	"github.com/vulcanize/vulcanizedb/pkg/fakes"
-	"math/rand"
-	"strings"
 )
 
 var _ = Describe("Extension function", func() {
@@ -243,6 +247,42 @@ var _ = Describe("Extension function", func() {
 
 				Expect(actualFrobs).To(Equal(expectedFrobs))
 			})
+		})
+	})
+
+	Describe("urn_state_ilk", func() {
+		It("returns the ilk for an urn", func() {
+			vatRepository.SetDB(db)
+
+			// Create ilk
+			ilkValues := test_helpers.GetIlkValues(0)
+			createIlkAtBlock(fakeHeader, ilkValues, test_helpers.FakeIlkVatMetadatas,
+				test_helpers.FakeIlkCatMetadatas, test_helpers.FakeIlkJugMetadatas)
+
+			// create urn
+			fakeGuy := "fakeAddress"
+			urnSetupData := test_helpers.GetUrnSetupData(fakeBlock, 1)
+			urnSetupData.Header.Hash = fakeHeader.Hash
+			ilkRate, err := strconv.Atoi(ilkValues[vat.IlkRate])
+			Expect(err).NotTo(HaveOccurred())
+			urnSetupData.Rate = ilkRate
+			ilkSpot, err := strconv.Atoi(ilkValues[vat.IlkSpot])
+			Expect(err).NotTo(HaveOccurred())
+			urnSetupData.Spot = ilkSpot
+			urnMetadata := test_helpers.GetUrnMetadata(test_helpers.FakeIlk.Hex, fakeGuy)
+			test_helpers.CreateUrn(urnSetupData, urnMetadata, vatRepository, headerRepository)
+
+			expectedIlk := test_helpers.IlkStateFromValues(test_helpers.FakeIlk.Hex, fakeHeader.Timestamp, fakeHeader.Timestamp, ilkValues)
+
+			var result test_helpers.IlkState
+			err = db.Get(&result,
+				`SELECT ilk_name, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated
+					FROM maker.urn_state_ilk(
+					(SELECT (urn_id, ilk_name, block_height, ink, art, ratio, safe, created, updated)::maker.urn_state
+					FROM maker.get_urn($1, $2, $3)))`, test_helpers.FakeIlk.Name, fakeGuy, fakeHeader.BlockNumber)
+
+			Expect(err).NotTo(HaveOccurred())
+			Expect(result).To(Equal(expectedIlk))
 		})
 	})
 
