@@ -21,7 +21,7 @@ import (
 const (
 	headerSql = `INSERT INTO public.headers (hash, block_number, raw, block_timestamp, eth_node_id, eth_node_fingerprint)
 				  VALUES ($1, $2, $3, $4, $5, $6)`
-	// nodeSql = `INSERT INTO public.eth_nodes (genesis_block, network_id, eth_node_id) VALUES ($1, $2, $3)`
+	nodeSql = `INSERT INTO public.eth_nodes (genesis_block, network_id, eth_node_id) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
 
 	// Event data
 	// TODO add event data
@@ -63,7 +63,7 @@ func main() {
 
 type GeneratorState struct {
 	db            *postgres.DB
-	currentHeader core.Header // Current work header
+	currentHeader core.Header // Current work header (Read-only everywhere except in Run)
 	ilks          []int64     // Generated ilks
 	urns          []int64     // Generated urns
 }
@@ -79,27 +79,7 @@ func NewGenerator(db *postgres.DB) GeneratorState {
 
 // Runs probabilistic generator for random ilk/urn interaction.
 func (state *GeneratorState) Run(steps int) {
-	/* Unnecessary?
-	nodeId := test_config.NewTestNode().ID
-	_, nodeErr := state.db.Exec(nodeSql, "GENESIS", 1, nodeId)
-	if nodeErr != nil {
-		fmt.Println("Could not insert initial node: ", nodeErr)
-	}*/
-
-	state.currentHeader = fakes.GetFakeHeaderWithTimestamp(0, 0)
-	headerErr := state.insertCurrentHeader()
-	if headerErr != nil {
-		panic(fmt.Sprintf("Could not insert initial header: %v", headerErr))
-	}
-
-	ilkErr := state.createIlk()
-	if ilkErr != nil {
-		panic(fmt.Sprintf("Could not create initial ilk: %v", ilkErr))
-	}
-	urnErr := state.createUrn()
-	if urnErr != nil {
-		panic(fmt.Sprintf("Could not create initial urn: %v", urnErr))
-	}
+	state.doInitialSetup()
 
 	var p float32
 	var err error
@@ -124,6 +104,31 @@ func (state *GeneratorState) Run(steps int) {
 				fmt.Println("Error touching urns: ", err)
 			}
 		}
+	}
+}
+
+// Creates a starting ilk and urn, with the corresponding header.
+func (state *GeneratorState) doInitialSetup() {
+	// This may or may not have been initialised, needed for a FK constraint
+	nodeId := test_config.NewTestNode().ID
+	_, nodeErr := state.db.Exec(nodeSql, "GENESIS", 1, nodeId)
+	if nodeErr != nil {
+		panic(fmt.Sprintf("Could not insert initial node: %v", nodeErr))
+	}
+
+	state.currentHeader = fakes.GetFakeHeaderWithTimestamp(0, 0)
+	headerErr := state.insertCurrentHeader()
+	if headerErr != nil {
+		panic(fmt.Sprintf("Could not insert initial header: %v", headerErr))
+	}
+
+	ilkErr := state.createIlk()
+	if ilkErr != nil {
+		panic(fmt.Sprintf("Could not create initial ilk: %v", ilkErr))
+	}
+	urnErr := state.createUrn()
+	if urnErr != nil {
+		panic(fmt.Sprintf("Could not create initial urn: %v", urnErr))
 	}
 }
 
