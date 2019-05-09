@@ -33,6 +33,16 @@ $$
 $$ LANGUAGE sql STABLE;
 
 
+-- Extend urn_state with ilk_state
+CREATE OR REPLACE FUNCTION maker.urn_state_ilk(state maker.urn_state)
+  RETURNS maker.ilk_state AS
+$$
+  SELECT * FROM maker.get_ilk(
+    state.block_height,
+    (SELECT id FROM maker.ilks WHERE name = state.ilk_name)
+  )
+$$ LANGUAGE sql STABLE;
+
 CREATE TYPE maker.tx AS (
   transaction_hash TEXT,
   transaction_index INTEGER,
