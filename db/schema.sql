@@ -1150,7 +1150,7 @@ $$;
 CREATE FUNCTION maker.urn_state_ilk(state maker.urn_state) RETURNS maker.ilk_state
     LANGUAGE sql STABLE
     AS $$
-  SELECT * FROM maker.get_ilk (
+  SELECT * FROM maker.get_ilk(
     state.block_height,
     (SELECT id FROM maker.ilks WHERE name = state.ilk_name)
   )
