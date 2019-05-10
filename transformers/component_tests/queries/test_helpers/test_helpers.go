@@ -319,6 +319,13 @@ type BiteEvent struct {
 	Tab     string
 }
 
+type LogValue struct {
+	Val             string
+	BlockNumber     uint64 `db:"block_number"`
+	TxIdx           uint   `db:"tx_idx"`
+	ContractAddress string `db:"contract_address"`
+}
+
 func GetExpectedTimestamp(epoch int) string {
 	return time.Unix(int64(epoch), 0).UTC().Format(time.RFC3339)
 }
