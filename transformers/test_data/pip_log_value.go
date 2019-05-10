@@ -52,3 +52,28 @@ var PipLogValueModel = pip_log_value.PipLogValueModel{
 	TransactionIndex: EthPipLogValueLog.TxIndex,
 	Raw:              rawPipLogValueLog,
 }
+
+func GetFakePipLogValue(blockNum int, txIdx int, value string) pip_log_value.PipLogValueModel {
+	var EthPipLogValueLog = types.Log{
+		Address:     pipAddress,
+		Topics:      []common.Hash{common.HexToHash(KovanPipLogValueSignature)},
+		Data:        common.FromHex("0000000000000000000000000000000000000000000000076eec1981d1900000"),
+		BlockNumber: uint64(blockNum),
+		TxHash:      common.HexToHash("0xbf700fefd1817c91c6a3e2dfa9f2f84f1c4d6a42c13f91ac6aa64bfc63f2e568"),
+		TxIndex:     uint(txIdx),
+		BlockHash:   fakes.FakeHash,
+		Index:       8,
+		Removed:     false,
+	}
+
+	var rawPipLogValue, _ = json.Marshal(EthPipLogValueLog)
+
+	return pip_log_value.PipLogValueModel{
+		BlockNumber:      uint64(blockNum),
+		ContractAddress:  EthPipLogValueLog.Address.String(),
+		Value:            value,
+		LogIndex:         EthPipLogValueLog.Index,
+		TransactionIndex: EthPipLogValueLog.TxIndex,
+		Raw:              rawPipLogValue,
+	}
+}
