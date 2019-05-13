@@ -3,28 +3,32 @@ CREATE TABLE maker.vow_vat (
   id            SERIAL PRIMARY KEY,
   block_number  BIGINT,
   block_hash    TEXT,
-  vat           TEXT
+  vat           TEXT,
+  UNIQUE (block_number, block_hash, vat)
 );
 
 CREATE TABLE maker.vow_cow (
   id            SERIAL PRIMARY KEY,
   block_number  BIGINT,
   block_hash    TEXT,
-  cow           TEXT
+  cow           TEXT,
+  UNIQUE (block_number, block_hash, cow)
 );
 
 CREATE TABLE maker.vow_row (
   id            SERIAL PRIMARY KEY,
   block_number  BIGINT,
   block_hash    TEXT,
-  row           TEXT
+  row           TEXT,
+  UNIQUE (block_number, block_hash, row)
 );
 
 CREATE TABLE maker.vow_sin_integer (
   id            SERIAL PRIMARY KEY,
   block_number  BIGINT,
   block_hash    TEXT,
-  sin           numeric
+  sin           numeric,
+  UNIQUE (block_number, block_hash, sin)
 );
 
 CREATE TABLE maker.vow_sin_mapping (
@@ -32,42 +36,48 @@ CREATE TABLE maker.vow_sin_mapping (
   block_number  BIGINT,
   block_hash    TEXT,
   timestamp     numeric,
-  sin           numeric
+  sin           numeric,
+  UNIQUE (block_number, block_hash, timestamp, sin)
 );
 
 CREATE TABLE maker.vow_ash (
   id            SERIAL PRIMARY KEY,
   block_number  BIGINT,
   block_hash    TEXT,
-  ash           numeric
+  ash           numeric,
+  UNIQUE (block_number, block_hash, ash)
 );
 
 CREATE TABLE maker.vow_wait (
   id            SERIAL PRIMARY KEY,
   block_number  BIGINT,
   block_hash    TEXT,
-  wait          numeric
+  wait          numeric,
+  UNIQUE (block_number, block_hash, wait)
 );
 
 CREATE TABLE maker.vow_sump (
   id            SERIAL PRIMARY KEY,
   block_number  BIGINT,
   block_hash    TEXT,
-  sump          numeric
+  sump          numeric,
+  UNIQUE (block_number, block_hash, sump)
 );
 
 CREATE TABLE maker.vow_bump (
   id            SERIAL PRIMARY KEY,
   block_number  BIGINT,
   block_hash    TEXT,
-  bump          numeric
+  bump          numeric,
+  UNIQUE (block_number, block_hash, bump)
 );
 
 CREATE TABLE maker.vow_hump (
   id            SERIAL PRIMARY KEY,
   block_number  BIGINT,
   block_hash    TEXT,
-  hump          numeric
+  hump          numeric,
+  UNIQUE (block_number, block_hash, hump)
 );
 
 -- +goose Down

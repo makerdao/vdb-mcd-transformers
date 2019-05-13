@@ -5563,6 +5563,14 @@ ALTER TABLE ONLY maker.vat_vice
 
 
 --
+-- Name: vow_ash vow_ash_block_number_block_hash_ash_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_ash
+    ADD CONSTRAINT vow_ash_block_number_block_hash_ash_key UNIQUE (block_number, block_hash, ash);
+
+
+--
 -- Name: vow_ash vow_ash_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -5571,11 +5579,27 @@ ALTER TABLE ONLY maker.vow_ash
 
 
 --
+-- Name: vow_bump vow_bump_block_number_block_hash_bump_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_bump
+    ADD CONSTRAINT vow_bump_block_number_block_hash_bump_key UNIQUE (block_number, block_hash, bump);
+
+
+--
 -- Name: vow_bump vow_bump_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.vow_bump
     ADD CONSTRAINT vow_bump_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: vow_cow vow_cow_block_number_block_hash_cow_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_cow
+    ADD CONSTRAINT vow_cow_block_number_block_hash_cow_key UNIQUE (block_number, block_hash, cow);
 
 
 --
@@ -5619,11 +5643,27 @@ ALTER TABLE ONLY maker.vow_flog
 
 
 --
+-- Name: vow_hump vow_hump_block_number_block_hash_hump_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_hump
+    ADD CONSTRAINT vow_hump_block_number_block_hash_hump_key UNIQUE (block_number, block_hash, hump);
+
+
+--
 -- Name: vow_hump vow_hump_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.vow_hump
     ADD CONSTRAINT vow_hump_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: vow_row vow_row_block_number_block_hash_row_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_row
+    ADD CONSTRAINT vow_row_block_number_block_hash_row_key UNIQUE (block_number, block_hash, "row");
 
 
 --
@@ -5635,11 +5675,27 @@ ALTER TABLE ONLY maker.vow_row
 
 
 --
+-- Name: vow_sin_integer vow_sin_integer_block_number_block_hash_sin_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_sin_integer
+    ADD CONSTRAINT vow_sin_integer_block_number_block_hash_sin_key UNIQUE (block_number, block_hash, sin);
+
+
+--
 -- Name: vow_sin_integer vow_sin_integer_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.vow_sin_integer
     ADD CONSTRAINT vow_sin_integer_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: vow_sin_mapping vow_sin_mapping_block_number_block_hash_timestamp_sin_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_sin_mapping
+    ADD CONSTRAINT vow_sin_mapping_block_number_block_hash_timestamp_sin_key UNIQUE (block_number, block_hash, "timestamp", sin);
 
 
 --
@@ -5651,6 +5707,14 @@ ALTER TABLE ONLY maker.vow_sin_mapping
 
 
 --
+-- Name: vow_sump vow_sump_block_number_block_hash_sump_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_sump
+    ADD CONSTRAINT vow_sump_block_number_block_hash_sump_key UNIQUE (block_number, block_hash, sump);
+
+
+--
 -- Name: vow_sump vow_sump_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -5659,11 +5723,27 @@ ALTER TABLE ONLY maker.vow_sump
 
 
 --
+-- Name: vow_vat vow_vat_block_number_block_hash_vat_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_vat
+    ADD CONSTRAINT vow_vat_block_number_block_hash_vat_key UNIQUE (block_number, block_hash, vat);
+
+
+--
 -- Name: vow_vat vow_vat_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.vow_vat
     ADD CONSTRAINT vow_vat_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: vow_wait vow_wait_block_number_block_hash_wait_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_wait
+    ADD CONSTRAINT vow_wait_block_number_block_hash_wait_key UNIQUE (block_number, block_hash, wait);
 
 
 --
