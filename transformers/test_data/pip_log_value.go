@@ -53,7 +53,7 @@ var PipLogValueModel = pip_log_value.PipLogValueModel{
 	Raw:              rawPipLogValueLog,
 }
 
-func GetFakePipLogValue(blockNum int, txIdx int, value string) pip_log_value.PipLogValueModel {
+func GetFakePipLogValue(blockNum int64, txIdx int, value string) pip_log_value.PipLogValueModel {
 	var EthPipLogValueLog = types.Log{
 		Address:     pipAddress,
 		Topics:      []common.Hash{common.HexToHash(KovanPipLogValueSignature)},

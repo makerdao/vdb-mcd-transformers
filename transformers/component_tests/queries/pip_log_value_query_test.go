@@ -29,21 +29,24 @@ var _ = Describe("Pip logValue query", func() {
 	})
 
 	It("returns 2 pip log values in different blocks between a time range", func() {
-		beginningTimeRange := 111111111
-		endingTimeRange := 111111112
+		var (
+			anotherBlockNumber int64 = 10606965
+			beginningTimeRange int64 = 111111111
+			endingTimeRange    int64 = 111111112
+		)
 
-		fakeHeaderOne := fakes.GetFakeHeaderWithTimestamp(111111111, 10606964)
+		fakeHeaderOne := fakes.GetFakeHeaderWithTimestamp(beginningTimeRange, int64(test_data.PipLogValueModel.BlockNumber))
 		headerID, err := headerRepository.CreateOrUpdateHeader(fakeHeaderOne)
 		Expect(err).NotTo(HaveOccurred())
 
 		err = pipLogValueRepository.Create(headerID, []interface{}{test_data.PipLogValueModel})
 		Expect(err).NotTo(HaveOccurred())
 
-		fakeHeaderTwo := fakes.GetFakeHeaderWithTimestamp(111111112, 10606965)
+		fakeHeaderTwo := fakes.GetFakeHeaderWithTimestamp(endingTimeRange, anotherBlockNumber)
 		anotherHeaderID, err := headerRepository.CreateOrUpdateHeader(fakeHeaderTwo)
 		Expect(err).NotTo(HaveOccurred())
 
-		anotherPipLogValue := test_data.GetFakePipLogValue(10606965, 3, "123456789")
+		anotherPipLogValue := test_data.GetFakePipLogValue(anotherBlockNumber, 3, "123456789")
 		err = pipLogValueRepository.Create(anotherHeaderID, []interface{}{anotherPipLogValue})
 		Expect(err).NotTo(HaveOccurred())
 
@@ -69,18 +72,24 @@ var _ = Describe("Pip logValue query", func() {
 	})
 
 	It("returns a transaction from a logValue", func() {
+		var (
+			anotherBlockNumber int64 = 10606965
+			endingTimeRange    int64 = 111111112
+			logValue                 = "123456789"
+			transactionIdx           = 3
+		)
 
-		fakeHeaderTwo := fakes.GetFakeHeaderWithTimestamp(111111112, 10606965)
+		fakeHeaderTwo := fakes.GetFakeHeaderWithTimestamp(endingTimeRange, anotherBlockNumber)
 		anotherHeaderID, err := headerRepository.CreateOrUpdateHeader(fakeHeaderTwo)
 		Expect(err).NotTo(HaveOccurred())
 
-		anotherPipLogValue := test_data.GetFakePipLogValue(10606965, 3, "123456789")
+		anotherPipLogValue := test_data.GetFakePipLogValue(anotherBlockNumber, transactionIdx, logValue)
 		err = pipLogValueRepository.Create(anotherHeaderID, []interface{}{anotherPipLogValue})
 		Expect(err).NotTo(HaveOccurred())
 
 		expectedTx := LogValueTx{
 			TransactionHash:  fakeHeaderTwo.Hash,
-			TransactionIndex: strconv.Itoa(3),
+			TransactionIndex: strconv.Itoa(transactionIdx),
 			BlockHeight:      "10606965",
 			BlockHash:        "",
 			TxFrom:           "fromAddress",
@@ -104,17 +113,22 @@ var _ = Describe("Pip logValue query", func() {
 	})
 
 	It("returns 2 pip log values with transactions in the same block", func() {
-		beginningTimeRange := 111111111
-		endingTimeRange := 111111112
+		var (
+			beginningTimeRange int64 = 111111111
+			endingTimeRange    int64 = 111111112
+			anotherBlockNumber int64 = 10606964
+			logValue                 = "123456789"
+			transactionIdx           = 3
+		)
 
-		fakeHeaderOne := fakes.GetFakeHeaderWithTimestamp(111111111, 10606964)
+		fakeHeaderOne := fakes.GetFakeHeaderWithTimestamp(beginningTimeRange, anotherBlockNumber)
 		headerID, err := headerRepository.CreateOrUpdateHeader(fakeHeaderOne)
 		Expect(err).NotTo(HaveOccurred())
 
 		err = pipLogValueRepository.Create(headerID, []interface{}{test_data.PipLogValueModel})
 		Expect(err).NotTo(HaveOccurred())
 
-		anotherPipLogValue := test_data.GetFakePipLogValue(10606964, 3, "123456789")
+		anotherPipLogValue := test_data.GetFakePipLogValue(anotherBlockNumber, transactionIdx, logValue)
 		err = pipLogValueRepository.Create(headerID, []interface{}{anotherPipLogValue})
 		Expect(err).NotTo(HaveOccurred())
 
