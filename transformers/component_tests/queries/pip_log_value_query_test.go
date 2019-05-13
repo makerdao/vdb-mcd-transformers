@@ -33,6 +33,8 @@ var _ = Describe("Pip logValue query", func() {
 			anotherBlockNumber int64 = 10606965
 			beginningTimeRange int64 = 111111111
 			endingTimeRange    int64 = 111111112
+			logValue                 = "123456789"
+			transactionIdx           = 3
 		)
 
 		fakeHeaderOne := fakes.GetFakeHeaderWithTimestamp(beginningTimeRange, int64(test_data.PipLogValueModel.BlockNumber))
@@ -46,7 +48,7 @@ var _ = Describe("Pip logValue query", func() {
 		anotherHeaderID, err := headerRepository.CreateOrUpdateHeader(fakeHeaderTwo)
 		Expect(err).NotTo(HaveOccurred())
 
-		anotherPipLogValue := test_data.GetFakePipLogValue(anotherBlockNumber, 3, "123456789")
+		anotherPipLogValue := test_data.GetFakePipLogValue(anotherBlockNumber, transactionIdx, logValue)
 		err = pipLogValueRepository.Create(anotherHeaderID, []interface{}{anotherPipLogValue})
 		Expect(err).NotTo(HaveOccurred())
 
@@ -68,7 +70,7 @@ var _ = Describe("Pip logValue query", func() {
 											JOIN public.headers ON public.headers.id = maker.pip_log_value.header_id
 											WHERE public.headers.block_timestamp BETWEEN $1 AND $2`, beginningTimeRange, endingTimeRange)
 		Expect(err).NotTo(HaveOccurred())
-		Expect(dbPipLogValue).To(ConsistOf(expectedValues))
+		Expect(dbPipLogValue).To(Equal(expectedValues))
 	})
 
 	It("returns a transaction from a logValue", func() {
@@ -109,7 +111,7 @@ var _ = Describe("Pip logValue query", func() {
     									WHERE headers.block_number = $1 
     									ORDER BY headers.block_number DESC`, expectedTx.BlockHeight)
 		Expect(err).NotTo(HaveOccurred())
-		Expect(actualTx).To(ConsistOf(expectedTx))
+		Expect(actualTx[0]).To(Equal(expectedTx))
 	})
 
 	It("returns 2 pip log values with transactions in the same block", func() {
@@ -150,7 +152,7 @@ var _ = Describe("Pip logValue query", func() {
 											JOIN public.headers ON public.headers.id = maker.pip_log_value.header_id
 											WHERE public.headers.block_timestamp BETWEEN $1 AND $2`, beginningTimeRange, endingTimeRange)
 		Expect(err).NotTo(HaveOccurred())
-		Expect(dbPipLogValue).To(ConsistOf(expectedValues))
+		Expect(dbPipLogValue).To(Equal(expectedValues))
 	})
 })
 
