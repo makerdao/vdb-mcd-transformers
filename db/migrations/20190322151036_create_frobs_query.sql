@@ -11,6 +11,8 @@ CREATE TYPE maker.frob_event AS (
   -- tx
 );
 
+COMMENT ON COLUMN maker.frob_event.block_height IS E'@omit';
+COMMENT ON COLUMN maker.frob_event.tx_idx IS E'@omit';
 
 CREATE OR REPLACE FUNCTION maker.urn_frobs(ilk_name TEXT, urn TEXT)
   RETURNS SETOF maker.frob_event AS

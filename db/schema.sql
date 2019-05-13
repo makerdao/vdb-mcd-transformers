@@ -75,6 +75,20 @@ CREATE TYPE maker.file_event AS (
 
 
 --
+-- Name: COLUMN file_event.block_height; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON COLUMN maker.file_event.block_height IS '@omit';
+
+
+--
+-- Name: COLUMN file_event.tx_idx; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON COLUMN maker.file_event.tx_idx IS '@omit';
+
+
+--
 -- Name: frob_event; Type: TYPE; Schema: maker; Owner: -
 --
 
@@ -86,6 +100,20 @@ CREATE TYPE maker.frob_event AS (
 	block_height bigint,
 	tx_idx integer
 );
+
+
+--
+-- Name: COLUMN frob_event.block_height; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON COLUMN maker.frob_event.block_height IS '@omit';
+
+
+--
+-- Name: COLUMN frob_event.tx_idx; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON COLUMN maker.frob_event.tx_idx IS '@omit';
 
 
 --
@@ -179,52 +207,55 @@ CREATE TYPE maker.urn_state AS (
 CREATE FUNCTION maker.address_files(address text) RETURNS SETOF maker.file_event
     LANGUAGE sql STABLE SECURITY DEFINER
     AS $_$
+  WITH
+    lowerAddress AS (SELECT lower($1))
+
 -- ilk files
   SELECT cat_file_chop_lump.raw_log::json->>'address' AS id, ilks.name AS ilk_name, what, data::text, block_number AS block_height, tx_idx
   FROM maker.cat_file_chop_lump
   LEFT JOIN maker.ilks ON cat_file_chop_lump.ilk_id = ilks.id
   LEFT JOIN headers    ON cat_file_chop_lump.header_id = headers.id
-  WHERE lower(cat_file_chop_lump.raw_log::json->>'address') = lower($1)
+  WHERE lower(cat_file_chop_lump.raw_log::json->>'address') = (SELECT * FROM lowerAddress)
   UNION
   SELECT cat_file_flip.raw_log::json->>'address' AS id, ilks.name AS ilk_name, what, flip AS data, block_number AS block_height, tx_idx
   FROM maker.cat_file_flip
   LEFT JOIN maker.ilks ON cat_file_flip.ilk_id = ilks.id
   LEFT JOIN headers ON cat_file_flip.header_id = headers.id
-  WHERE lower(cat_file_flip.raw_log::json->>'address') = lower($1)
+  WHERE lower(cat_file_flip.raw_log::json->>'address') = (SELECT * FROM lowerAddress)
   UNION
   SELECT jug_file_ilk.raw_log::json->>'address' AS id, ilks.name AS ilk_name, what, data::text, block_number AS block_height, tx_idx
   FROM maker.jug_file_ilk
   LEFT JOIN maker.ilks ON jug_file_ilk.ilk_id = ilks.id
   LEFT JOIN headers ON jug_file_ilk.header_id = headers.id
-  WHERE lower(jug_file_ilk.raw_log::json->>'address') = lower($1)
+  WHERE lower(jug_file_ilk.raw_log::json->>'address') = (SELECT * FROM lowerAddress)
   UNION
   SELECT vat_file_ilk.raw_log::json->>'address' AS id, ilks.name AS ilk_name, what, data::text, block_number AS block_height, tx_idx
   FROM maker.vat_file_ilk
   LEFT JOIN maker.ilks ON vat_file_ilk.ilk_id = ilks.id
   LEFT JOIN headers ON vat_file_ilk.header_id = headers.id
-  WHERE lower(vat_file_ilk.raw_log::json->>'address') = lower($1)
+  WHERE lower(vat_file_ilk.raw_log::json->>'address') = (SELECT * FROM lowerAddress)
 
 -- contract files
   UNION
   SELECT cat_file_vow.raw_log::json->>'address' AS id, NULL AS ilk_name, what, data, block_number AS block_height, tx_idx
   FROM maker.cat_file_vow
   LEFT JOIN headers ON cat_file_vow.header_id = headers.id
-  WHERE lower(cat_file_vow.raw_log::json->>'address') = lower($1)
+  WHERE lower(cat_file_vow.raw_log::json->>'address') = (SELECT * FROM lowerAddress)
   UNION
   SELECT jug_file_base.raw_log::json->>'address' AS id, NULL AS ilk_name, what, data::text, block_number AS block_height, tx_idx
   FROM maker.jug_file_base
   LEFT JOIN headers ON jug_file_base.header_id = headers.id
-  WHERE lower(jug_file_base.raw_log::json->>'address') = lower($1)
+  WHERE lower(jug_file_base.raw_log::json->>'address') = (SELECT * FROM lowerAddress)
   UNION
   SELECT jug_file_vow.raw_log::json->>'address' AS id, NULL AS ilk_name, what, data, block_number AS block_height, tx_idx
   FROM maker.jug_file_vow
   LEFT JOIN headers ON jug_file_vow.header_id = headers.id
-  WHERE lower(jug_file_vow.raw_log::json->>'address') = lower($1)
+  WHERE lower(jug_file_vow.raw_log::json->>'address') = (SELECT * FROM lowerAddress)
   UNION
   SELECT vat_file_debt_ceiling.raw_log::json->>'address' AS id, NULL AS ilk_name, what, data::text, block_number AS block_height, tx_idx
   FROM maker.vat_file_debt_ceiling
   LEFT JOIN headers on vat_file_debt_ceiling.header_id = headers.id
-  WHERE lower(vat_file_debt_ceiling.raw_log::json->>'address') = lower($1)
+  WHERE lower(vat_file_debt_ceiling.raw_log::json->>'address') = (SELECT * FROM lowerAddress)
 
   ORDER BY block_height DESC
 $_$;
