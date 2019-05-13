@@ -66,6 +66,20 @@ var _ = Describe("Jug storage repository", func() {
 				AssertMapping(result, fakeBlockNumber, fakeBlockHash, strconv.Itoa(ilkID), fakeUint256)
 			})
 
+			It("does not duplicate row", func() {
+				ilkRhoMetadata := utils.GetStorageValueMetadata(jug.IlkRho, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Uint256)
+				insertOneErr := repo.Create(fakeBlockNumber, fakeBlockHash, ilkRhoMetadata, fakeUint256)
+				Expect(insertOneErr).NotTo(HaveOccurred())
+
+				insertTwoErr := repo.Create(fakeBlockNumber, fakeBlockHash, ilkRhoMetadata, fakeUint256)
+
+				Expect(insertTwoErr).NotTo(HaveOccurred())
+				var count int
+				getCountErr := db.Get(&count, `SELECT count(*) FROM maker.jug_ilk_rho`)
+				Expect(getCountErr).NotTo(HaveOccurred())
+				Expect(count).To(Equal(1))
+			})
+
 			It("returns an error if metadata missing ilk", func() {
 				malformedIlkRhoMetadata := utils.GetStorageValueMetadata(jug.IlkRho, nil, utils.Uint256)
 
@@ -76,9 +90,9 @@ var _ = Describe("Jug storage repository", func() {
 
 		Describe("Duty", func() {
 			It("writes a row", func() {
-				ilkTaxMetadata := utils.GetStorageValueMetadata(jug.IlkDuty, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Uint256)
+				ilkDutyMetadata := utils.GetStorageValueMetadata(jug.IlkDuty, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Uint256)
 
-				err := repo.Create(fakeBlockNumber, fakeBlockHash, ilkTaxMetadata, fakeUint256)
+				err := repo.Create(fakeBlockNumber, fakeBlockHash, ilkDutyMetadata, fakeUint256)
 
 				Expect(err).NotTo(HaveOccurred())
 				var result MappingRes
@@ -90,10 +104,24 @@ var _ = Describe("Jug storage repository", func() {
 				AssertMapping(result, fakeBlockNumber, fakeBlockHash, strconv.Itoa(ilkID), fakeUint256)
 			})
 
-			It("returns an error if metadata missing ilk", func() {
-				malformedIlkTaxMetadata := utils.GetStorageValueMetadata(jug.IlkDuty, nil, utils.Uint256)
+			It("does not duplicate row", func() {
+				ilkDutyMetadata := utils.GetStorageValueMetadata(jug.IlkDuty, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Uint256)
+				insertOneErr := repo.Create(fakeBlockNumber, fakeBlockHash, ilkDutyMetadata, fakeUint256)
+				Expect(insertOneErr).NotTo(HaveOccurred())
 
-				err := repo.Create(fakeBlockNumber, fakeBlockHash, malformedIlkTaxMetadata, fakeUint256)
+				insertTwoErr := repo.Create(fakeBlockNumber, fakeBlockHash, ilkDutyMetadata, fakeUint256)
+
+				Expect(insertTwoErr).NotTo(HaveOccurred())
+				var count int
+				getCountErr := db.Get(&count, `SELECT count(*) FROM maker.jug_ilk_duty`)
+				Expect(getCountErr).NotTo(HaveOccurred())
+				Expect(count).To(Equal(1))
+			})
+
+			It("returns an error if metadata missing ilk", func() {
+				malformedIlkDutyMetadata := utils.GetStorageValueMetadata(jug.IlkDuty, nil, utils.Uint256)
+
+				err := repo.Create(fakeBlockNumber, fakeBlockHash, malformedIlkDutyMetadata, fakeUint256)
 				Expect(err).To(MatchError(utils.ErrMetadataMalformed{MissingData: constants.Ilk}))
 			})
 		})
@@ -109,6 +137,19 @@ var _ = Describe("Jug storage repository", func() {
 		AssertVariable(result, fakeBlockNumber, fakeBlockHash, fakeAddress)
 	})
 
+	It("does not duplicate jug vat", func() {
+		insertOneErr := repo.Create(fakeBlockNumber, fakeBlockHash, jug.VatMetadata, fakeAddress)
+		Expect(insertOneErr).NotTo(HaveOccurred())
+
+		insertTwoErr := repo.Create(fakeBlockNumber, fakeBlockHash, jug.VatMetadata, fakeAddress)
+
+		Expect(insertTwoErr).NotTo(HaveOccurred())
+		var count int
+		getCountErr := db.Get(&count, `SELECT count(*) FROM maker.jug_vat`)
+		Expect(getCountErr).NotTo(HaveOccurred())
+		Expect(count).To(Equal(1))
+	})
+
 	It("persists a jug vow", func() {
 		err := repo.Create(fakeBlockNumber, fakeBlockHash, jug.VowMetadata, fakeUint256)
 
@@ -119,16 +160,40 @@ var _ = Describe("Jug storage repository", func() {
 		AssertVariable(result, fakeBlockNumber, fakeBlockHash, fakeUint256)
 	})
 
-	It("persists a jug base", func() {
-		expectedRepo := "12345"
+	It("does not duplicate jug vow", func() {
+		insertOneErr := repo.Create(fakeBlockNumber, fakeBlockHash, jug.VowMetadata, fakeUint256)
+		Expect(insertOneErr).NotTo(HaveOccurred())
 
-		err := repo.Create(fakeBlockNumber, fakeBlockHash, jug.BaseMetadata, expectedRepo)
+		insertTwoErr := repo.Create(fakeBlockNumber, fakeBlockHash, jug.VowMetadata, fakeUint256)
+
+		Expect(insertTwoErr).NotTo(HaveOccurred())
+		var count int
+		getCountErr := db.Get(&count, `SELECT count(*) FROM maker.jug_vow`)
+		Expect(getCountErr).NotTo(HaveOccurred())
+		Expect(count).To(Equal(1))
+	})
+
+	It("persists a jug base", func() {
+		err := repo.Create(fakeBlockNumber, fakeBlockHash, jug.BaseMetadata, fakeUint256)
 		Expect(err).NotTo(HaveOccurred())
 
 		var result VariableRes
 		err = db.Get(&result, `SELECT block_number, block_hash, base AS value FROM maker.jug_base`)
 		Expect(err).NotTo(HaveOccurred())
 
-		AssertVariable(result, fakeBlockNumber, fakeBlockHash, expectedRepo)
+		AssertVariable(result, fakeBlockNumber, fakeBlockHash, fakeUint256)
+	})
+
+	It("does not duplicate jug base", func() {
+		insertOneErr := repo.Create(fakeBlockNumber, fakeBlockHash, jug.BaseMetadata, fakeUint256)
+		Expect(insertOneErr).NotTo(HaveOccurred())
+
+		insertTwoErr := repo.Create(fakeBlockNumber, fakeBlockHash, jug.BaseMetadata, fakeUint256)
+
+		Expect(insertTwoErr).NotTo(HaveOccurred())
+		var count int
+		getCountErr := db.Get(&count, `SELECT count(*) FROM maker.jug_base`)
+		Expect(getCountErr).NotTo(HaveOccurred())
+		Expect(count).To(Equal(1))
 	})
 })
