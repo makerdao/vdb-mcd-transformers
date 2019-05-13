@@ -5027,6 +5027,14 @@ ALTER TABLE ONLY maker.ilks
 
 
 --
+-- Name: jug_base jug_base_block_number_block_hash_base_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.jug_base
+    ADD CONSTRAINT jug_base_block_number_block_hash_base_key UNIQUE (block_number, block_hash, base);
+
+
+--
 -- Name: jug_base jug_base_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -5099,11 +5107,27 @@ ALTER TABLE ONLY maker.jug_file_vow
 
 
 --
+-- Name: jug_ilk_duty jug_ilk_duty_block_number_block_hash_ilk_id_duty_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.jug_ilk_duty
+    ADD CONSTRAINT jug_ilk_duty_block_number_block_hash_ilk_id_duty_key UNIQUE (block_number, block_hash, ilk_id, duty);
+
+
+--
 -- Name: jug_ilk_duty jug_ilk_duty_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.jug_ilk_duty
     ADD CONSTRAINT jug_ilk_duty_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: jug_ilk_rho jug_ilk_rho_block_number_block_hash_ilk_id_rho_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.jug_ilk_rho
+    ADD CONSTRAINT jug_ilk_rho_block_number_block_hash_ilk_id_rho_key UNIQUE (block_number, block_hash, ilk_id, rho);
 
 
 --
@@ -5115,11 +5139,27 @@ ALTER TABLE ONLY maker.jug_ilk_rho
 
 
 --
+-- Name: jug_vat jug_vat_block_number_block_hash_vat_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.jug_vat
+    ADD CONSTRAINT jug_vat_block_number_block_hash_vat_key UNIQUE (block_number, block_hash, vat);
+
+
+--
 -- Name: jug_vat jug_vat_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.jug_vat
     ADD CONSTRAINT jug_vat_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: jug_vow jug_vow_block_number_block_hash_vow_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.jug_vow
+    ADD CONSTRAINT jug_vow_block_number_block_hash_vow_key UNIQUE (block_number, block_hash, vow);
 
 
 --
