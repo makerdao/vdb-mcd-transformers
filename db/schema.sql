@@ -1658,38 +1658,6 @@ ALTER SEQUENCE maker.cat_nflip_id_seq OWNED BY maker.cat_nflip.id;
 
 
 --
--- Name: cat_pit; Type: TABLE; Schema: maker; Owner: -
---
-
-CREATE TABLE maker.cat_pit (
-    id integer NOT NULL,
-    block_number bigint,
-    block_hash text,
-    pit text
-);
-
-
---
--- Name: cat_pit_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
---
-
-CREATE SEQUENCE maker.cat_pit_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: cat_pit_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
---
-
-ALTER SEQUENCE maker.cat_pit_id_seq OWNED BY maker.cat_pit.id;
-
-
---
 -- Name: cat_vat; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -4266,13 +4234,6 @@ ALTER TABLE ONLY maker.cat_nflip ALTER COLUMN id SET DEFAULT nextval('maker.cat_
 
 
 --
--- Name: cat_pit id; Type: DEFAULT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.cat_pit ALTER COLUMN id SET DEFAULT nextval('maker.cat_pit_id_seq'::regclass);
-
-
---
 -- Name: cat_vat id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
@@ -4827,11 +4788,27 @@ ALTER TABLE ONLY maker.cat_file_vow
 
 
 --
+-- Name: cat_flip_ilk cat_flip_ilk_block_number_block_hash_flip_ilk_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_flip_ilk
+    ADD CONSTRAINT cat_flip_ilk_block_number_block_hash_flip_ilk_id_key UNIQUE (block_number, block_hash, flip, ilk_id);
+
+
+--
 -- Name: cat_flip_ilk cat_flip_ilk_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.cat_flip_ilk
     ADD CONSTRAINT cat_flip_ilk_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: cat_flip_ink cat_flip_ink_block_number_block_hash_flip_ink_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_flip_ink
+    ADD CONSTRAINT cat_flip_ink_block_number_block_hash_flip_ink_key UNIQUE (block_number, block_hash, flip, ink);
 
 
 --
@@ -4843,11 +4820,27 @@ ALTER TABLE ONLY maker.cat_flip_ink
 
 
 --
+-- Name: cat_flip_tab cat_flip_tab_block_number_block_hash_flip_tab_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_flip_tab
+    ADD CONSTRAINT cat_flip_tab_block_number_block_hash_flip_tab_key UNIQUE (block_number, block_hash, flip, tab);
+
+
+--
 -- Name: cat_flip_tab cat_flip_tab_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.cat_flip_tab
     ADD CONSTRAINT cat_flip_tab_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: cat_flip_urn cat_flip_urn_block_number_block_hash_flip_urn_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_flip_urn
+    ADD CONSTRAINT cat_flip_urn_block_number_block_hash_flip_urn_key UNIQUE (block_number, block_hash, flip, urn);
 
 
 --
@@ -4859,11 +4852,27 @@ ALTER TABLE ONLY maker.cat_flip_urn
 
 
 --
+-- Name: cat_ilk_chop cat_ilk_chop_block_number_block_hash_ilk_id_chop_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_ilk_chop
+    ADD CONSTRAINT cat_ilk_chop_block_number_block_hash_ilk_id_chop_key UNIQUE (block_number, block_hash, ilk_id, chop);
+
+
+--
 -- Name: cat_ilk_chop cat_ilk_chop_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.cat_ilk_chop
     ADD CONSTRAINT cat_ilk_chop_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: cat_ilk_flip cat_ilk_flip_block_number_block_hash_ilk_id_flip_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_ilk_flip
+    ADD CONSTRAINT cat_ilk_flip_block_number_block_hash_ilk_id_flip_key UNIQUE (block_number, block_hash, ilk_id, flip);
 
 
 --
@@ -4875,11 +4884,27 @@ ALTER TABLE ONLY maker.cat_ilk_flip
 
 
 --
+-- Name: cat_ilk_lump cat_ilk_lump_block_number_block_hash_ilk_id_lump_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_ilk_lump
+    ADD CONSTRAINT cat_ilk_lump_block_number_block_hash_ilk_id_lump_key UNIQUE (block_number, block_hash, ilk_id, lump);
+
+
+--
 -- Name: cat_ilk_lump cat_ilk_lump_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.cat_ilk_lump
     ADD CONSTRAINT cat_ilk_lump_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: cat_live cat_live_block_number_block_hash_live_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_live
+    ADD CONSTRAINT cat_live_block_number_block_hash_live_key UNIQUE (block_number, block_hash, live);
 
 
 --
@@ -4891,6 +4916,14 @@ ALTER TABLE ONLY maker.cat_live
 
 
 --
+-- Name: cat_nflip cat_nflip_block_number_block_hash_nflip_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_nflip
+    ADD CONSTRAINT cat_nflip_block_number_block_hash_nflip_key UNIQUE (block_number, block_hash, nflip);
+
+
+--
 -- Name: cat_nflip cat_nflip_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -4899,11 +4932,11 @@ ALTER TABLE ONLY maker.cat_nflip
 
 
 --
--- Name: cat_pit cat_pit_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: cat_vat cat_vat_block_number_block_hash_vat_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
-ALTER TABLE ONLY maker.cat_pit
-    ADD CONSTRAINT cat_pit_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY maker.cat_vat
+    ADD CONSTRAINT cat_vat_block_number_block_hash_vat_key UNIQUE (block_number, block_hash, vat);
 
 
 --
@@ -4912,6 +4945,14 @@ ALTER TABLE ONLY maker.cat_pit
 
 ALTER TABLE ONLY maker.cat_vat
     ADD CONSTRAINT cat_vat_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: cat_vow cat_vow_block_number_block_hash_vow_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_vow
+    ADD CONSTRAINT cat_vow_block_number_block_hash_vow_key UNIQUE (block_number, block_hash, vow);
 
 
 --
