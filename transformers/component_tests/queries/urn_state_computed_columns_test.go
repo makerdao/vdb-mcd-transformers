@@ -43,6 +43,7 @@ var _ = Describe("Urn state computed columns", func() {
 
 	Describe("urn_state_ilk", func() {
 		It("returns the ilk for an urn", func() {
+			catRepository.SetDB(db)
 			ilkValues := test_helpers.GetIlkValues(0)
 			createIlkAtBlock(fakeHeader, ilkValues, test_helpers.FakeIlkVatMetadatas,
 				test_helpers.FakeIlkCatMetadatas, test_helpers.FakeIlkJugMetadatas)

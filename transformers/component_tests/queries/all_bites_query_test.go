@@ -166,7 +166,7 @@ var _ = Describe("Bites query", func() {
 				err = db.Get(&result,
 					`SELECT ilk_name, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated
 						FROM maker.bite_event_ilk(
-							(SELECT (ilk_name, urn_id, ink, art, tab, block_height)::maker.bite_event FROM maker.all_bites($1))
+							(SELECT (ilk_name, urn_id, ink, art, tab, block_height, tx_idx)::maker.bite_event FROM maker.all_bites($1))
 						)`, test_helpers.FakeIlk.Name)
 
 				Expect(err).NotTo(HaveOccurred())
@@ -192,7 +192,7 @@ var _ = Describe("Bites query", func() {
 				var actualUrn test_helpers.UrnState
 				err = db.Get(&actualUrn,
 					`SELECT urn_id, ilk_name FROM maker.bite_event_urn(
-							(SELECT (ilk_name, urn_id, ink, art, tab, block_height)::maker.bite_event FROM maker.all_bites($1)))`,
+							(SELECT (ilk_name, urn_id, ink, art, tab, block_height, tx_idx)::maker.bite_event FROM maker.all_bites($1)))`,
 					test_helpers.FakeIlk.Name)
 				Expect(err).NotTo(HaveOccurred())
 
@@ -214,7 +214,7 @@ var _ = Describe("Bites query", func() {
 
 				expectedTx := Tx{
 					TransactionHash:  sql.NullString{String: "txHash", Valid: true},
-					TransactionIndex: sql.NullInt64{Int64: int64(rand.Intn(10)), Valid: true},
+					TransactionIndex: sql.NullInt64{Int64: int64(biteEvent.TransactionIndex), Valid: true},
 					BlockHeight:      sql.NullInt64{Int64: int64(fakeBlock), Valid: true},
 					BlockHash:        sql.NullString{String: fakeHeader.Hash, Valid: true},
 					TxFrom:           sql.NullString{String: "fromAddress", Valid: true},
@@ -228,11 +228,43 @@ var _ = Describe("Bites query", func() {
 
 				var actualTx Tx
 				err = db.Get(&actualTx, `SELECT * FROM maker.bite_event_tx(
-			    (SELECT (ilk_name, urn_id, ink, art, tab, block_height)::maker.bite_event FROM maker.all_bites($1)))`,
+			    (SELECT (ilk_name, urn_id, ink, art, tab, block_height, tx_idx)::maker.bite_event FROM maker.all_bites($1)))`,
 					test_helpers.FakeIlk.Name)
 
 				Expect(err).NotTo(HaveOccurred())
 				Expect(actualTx).To(Equal(expectedTx))
+			})
+
+			It("does not return transaction from same block with different index", func() {
+				biteEvent := test_data.BiteModel
+				biteEvent.Ilk = test_helpers.FakeIlk.Hex
+				err = biteRepo.Create(headerId, []interface{}{biteEvent})
+				Expect(err).NotTo(HaveOccurred())
+
+				wrongTx := Tx{
+					TransactionHash: sql.NullString{String: "wrongTxHash", Valid: true},
+					TransactionIndex: sql.NullInt64{
+						Int64: int64(biteEvent.TransactionIndex) + 1,
+						Valid: true,
+					},
+					BlockHeight: sql.NullInt64{Int64: int64(fakeBlock), Valid: true},
+					BlockHash:   sql.NullString{String: fakeHeader.Hash, Valid: true},
+					TxFrom:      sql.NullString{String: "wrongFromAddress", Valid: true},
+					TxTo:        sql.NullString{String: "wrongToAddress", Valid: true},
+				}
+
+				_, insertErr := db.Exec(`INSERT INTO header_sync_transactions (header_id, hash, tx_from, tx_index, tx_to)
+				VALUES ($1, $2, $3, $4, $5)`, headerId, wrongTx.TransactionHash, wrongTx.TxFrom,
+					wrongTx.TransactionIndex, wrongTx.TxTo)
+				Expect(insertErr).NotTo(HaveOccurred())
+
+				var actualTx Tx
+				err := db.Get(&actualTx, `SELECT * FROM maker.bite_event_tx(
+			    (SELECT (ilk_name, urn_id, ink, art, tab, block_height, tx_idx)::maker.bite_event FROM maker.all_bites($1)))`,
+					test_helpers.FakeIlk.Name)
+
+				Expect(err).NotTo(HaveOccurred())
+				Expect(actualTx).To(BeZero())
 			})
 		})
 	})

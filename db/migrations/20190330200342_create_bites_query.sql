@@ -7,10 +7,13 @@ CREATE TYPE maker.bite_event AS (
   ink          NUMERIC,
   art          NUMERIC,
   tab          NUMERIC,
-  block_height BIGINT
+  block_height BIGINT,
+  tx_idx       INTEGER
   -- tx
 );
 
+COMMENT ON COLUMN maker.bite_event.block_height IS E'@omit';
+COMMENT ON COLUMN maker.bite_event.tx_idx IS E'@omit';
 
 CREATE OR REPLACE FUNCTION maker.all_bites(ilk_name TEXT)
   RETURNS SETOF maker.bite_event AS
@@ -18,7 +21,7 @@ $$
   WITH
     ilk AS (SELECT id FROM maker.ilks WHERE ilks.name = $1)
 
-  SELECT $1 AS ilk_name, guy AS urn_id, ink, art, tab, block_number AS block_height
+  SELECT $1 AS ilk_name, guy AS urn_id, ink, art, tab, block_number AS block_height, tx_idx
   FROM maker.bite
   LEFT JOIN maker.urns ON bite.urn_id = urns.id
   LEFT JOIN headers    ON bite.header_id = headers.id
@@ -52,7 +55,7 @@ $$
   SELECT txs.hash, txs.tx_index, headers.block_number AS block_height, headers.hash, tx_from, tx_to
   FROM public.header_sync_transactions txs
          LEFT JOIN headers ON txs.header_id = headers.id
-  WHERE block_number <= event.block_height
+  WHERE block_number <= event.block_height AND txs.tx_index = event.tx_idx
   ORDER BY block_height DESC
 $$ LANGUAGE sql STABLE;
 

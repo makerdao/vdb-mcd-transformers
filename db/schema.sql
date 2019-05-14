@@ -46,7 +46,8 @@ CREATE TYPE maker.bite_event AS (
 	ink numeric,
 	art numeric,
 	tab numeric,
-	block_height bigint
+	block_height bigint,
+	tx_idx integer
 );
 
 
@@ -271,7 +272,7 @@ CREATE FUNCTION maker.all_bites(ilk_name text) RETURNS SETOF maker.bite_event
   WITH
     ilk AS (SELECT id FROM maker.ilks WHERE ilks.name = $1)
 
-  SELECT $1 AS ilk_name, guy AS urn_id, ink, art, tab, block_number AS block_height
+  SELECT $1 AS ilk_name, guy AS urn_id, ink, art, tab, block_number AS block_height, tx_idx
   FROM maker.bite
   LEFT JOIN maker.urns ON bite.urn_id = urns.id
   LEFT JOIN headers    ON bite.header_id = headers.id
@@ -593,7 +594,7 @@ CREATE FUNCTION maker.bite_event_tx(event maker.bite_event) RETURNS maker.tx
   SELECT txs.hash, txs.tx_index, headers.block_number AS block_height, headers.hash, tx_from, tx_to
   FROM public.header_sync_transactions txs
          LEFT JOIN headers ON txs.header_id = headers.id
-  WHERE block_number <= event.block_height
+  WHERE block_number <= event.block_height AND txs.tx_index = event.tx_idx
   ORDER BY block_height DESC
 $$;
 
