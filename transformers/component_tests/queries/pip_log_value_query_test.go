@@ -54,19 +54,21 @@ var _ = Describe("Pip logValue query", func() {
 
 		expectedValues := []test_helpers.LogValue{
 			{
-				Val:         test_data.PipLogValueModel.Value,
-				BlockNumber: test_data.PipLogValueModel.BlockNumber,
-				TxIdx:       test_data.PipLogValueModel.TransactionIndex,
+				Val:             test_data.PipLogValueModel.Value,
+				BlockNumber:     test_data.PipLogValueModel.BlockNumber,
+				TxIdx:           test_data.PipLogValueModel.TransactionIndex,
+				ContractAddress: test_data.PipLogValueModel.ContractAddress,
 			},
 			{
-				Val:         anotherPipLogValue.Value,
-				BlockNumber: anotherPipLogValue.BlockNumber,
-				TxIdx:       anotherPipLogValue.TransactionIndex,
+				Val:             anotherPipLogValue.Value,
+				BlockNumber:     anotherPipLogValue.BlockNumber,
+				TxIdx:           anotherPipLogValue.TransactionIndex,
+				ContractAddress: anotherPipLogValue.ContractAddress,
 			},
 		}
 
 		var dbPipLogValue []test_helpers.LogValue
-		err = db.Select(&dbPipLogValue, `SELECT val, maker.pip_log_value.block_number, tx_idx FROM maker.pip_log_value 
+		err = db.Select(&dbPipLogValue, `SELECT val, maker.pip_log_value.block_number, tx_idx, contract_address FROM maker.pip_log_value 
                                             JOIN public.headers ON public.headers.id = maker.pip_log_value.header_id
                                             WHERE public.headers.block_timestamp BETWEEN $1 AND $2`, beginningTimeRange, endingTimeRange)
 		Expect(err).NotTo(HaveOccurred())
@@ -136,19 +138,21 @@ var _ = Describe("Pip logValue query", func() {
 
 		expectedValues := []test_helpers.LogValue{
 			{
-				Val:         test_data.PipLogValueModel.Value,
-				BlockNumber: test_data.PipLogValueModel.BlockNumber,
-				TxIdx:       test_data.PipLogValueModel.TransactionIndex,
+				Val:             test_data.PipLogValueModel.Value,
+				BlockNumber:     test_data.PipLogValueModel.BlockNumber,
+				TxIdx:           test_data.PipLogValueModel.TransactionIndex,
+				ContractAddress: test_data.PipLogValueModel.ContractAddress,
 			},
 			{
-				Val:         anotherPipLogValue.Value,
-				BlockNumber: anotherPipLogValue.BlockNumber,
-				TxIdx:       anotherPipLogValue.TransactionIndex,
+				Val:             anotherPipLogValue.Value,
+				BlockNumber:     anotherPipLogValue.BlockNumber,
+				TxIdx:           anotherPipLogValue.TransactionIndex,
+				ContractAddress: anotherPipLogValue.ContractAddress,
 			},
 		}
 
 		var dbPipLogValue []test_helpers.LogValue
-		err = db.Select(&dbPipLogValue, `SELECT val, maker.pip_log_value.block_number, tx_idx FROM maker.pip_log_value 
+		err = db.Select(&dbPipLogValue, `SELECT val, maker.pip_log_value.block_number, tx_idx, contract_address FROM maker.pip_log_value 
                                             JOIN public.headers ON public.headers.id = maker.pip_log_value.header_id
                                             WHERE public.headers.block_timestamp BETWEEN $1 AND $2`, beginningTimeRange, endingTimeRange)
 		Expect(err).NotTo(HaveOccurred())

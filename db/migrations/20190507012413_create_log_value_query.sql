@@ -3,15 +3,17 @@
 CREATE TYPE maker.log_value AS (
   val           NUMERIC,
   block_number  BIGINT,
-  tx_idx        INTEGER
+  tx_idx        INTEGER,
+  contract_address TEXT
   -- tx
   );
 
+COMMENT ON COLUMN maker.log_value.tx_idx IS E'@omit';
 
 CREATE OR REPLACE FUNCTION maker.log_values(beginTime INT, endTime INT)
   RETURNS SETOF maker.log_value AS
 $body$
-  SELECT val, pip_log_value.block_number, tx_idx FROM maker.pip_log_value
+  SELECT val, pip_log_value.block_number, tx_idx, contract_address FROM maker.pip_log_value
     LEFT JOIN public.headers ON pip_log_value.header_id = headers.id
     WHERE block_timestamp BETWEEN $1 AND $2
 $body$
