@@ -2,7 +2,7 @@
 
 -- Spec: https://github.com/makerdao/vulcan.spec/blob/master/mcd.graphql
 
-CREATE TYPE maker.urn_state AS (
+CREATE TYPE api.urn AS (
   urn_id       TEXT,
   ilk_name     TEXT,
   block_height BIGINT,
@@ -18,8 +18,8 @@ CREATE TYPE maker.urn_state AS (
   );
 
 -- Function returning state for all urns as of given block
-CREATE OR REPLACE FUNCTION maker.all_urns(block_height BIGINT)
-  RETURNS SETOF maker.urn_state
+CREATE FUNCTION api.all_urns(block_height BIGINT)
+  RETURNS SETOF api.urn
 AS
 
 $body$
@@ -113,10 +113,9 @@ FROM inks
   LEFT JOIN updated    ON updated.urn_id = urns.urn_id
   LEFT JOIN maker.ilks ON ilks.id = urns.ilk_id
 $body$
-LANGUAGE SQL
-STABLE SECURITY DEFINER;
+LANGUAGE SQL STABLE;
 
 
 -- +goose Down
-DROP FUNCTION IF EXISTS maker.all_urns(BIGINT);
-DROP TYPE IF EXISTS maker.urn_state CASCADE;
+DROP FUNCTION api.all_urns(BIGINT);
+DROP TYPE api.urn CASCADE;

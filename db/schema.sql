@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 10.6
--- Dumped by pg_dump version 10.6
+-- Dumped from database version 11.2
+-- Dumped by pg_dump version 11.2
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -16,6 +16,13 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
+-- Name: api; Type: SCHEMA; Schema: -; Owner: -
+--
+
+CREATE SCHEMA api;
+
+
+--
 -- Name: maker; Type: SCHEMA; Schema: -; Owner: -
 --
 
@@ -23,34 +30,20 @@ CREATE SCHEMA maker;
 
 
 --
--- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: -
+-- Name: era; Type: TYPE; Schema: api; Owner: -
 --
 
-CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
-
-
---
--- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: -
---
-
-COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
-
-
---
--- Name: era; Type: TYPE; Schema: maker; Owner: -
---
-
-CREATE TYPE maker.era AS (
+CREATE TYPE api.era AS (
 	epoch bigint,
 	iso timestamp without time zone
 );
 
 
 --
--- Name: frob_event; Type: TYPE; Schema: maker; Owner: -
+-- Name: frob_event; Type: TYPE; Schema: api; Owner: -
 --
 
-CREATE TYPE maker.frob_event AS (
+CREATE TYPE api.frob_event AS (
 	ilk_name text,
 	urn_id text,
 	dink numeric,
@@ -60,10 +53,10 @@ CREATE TYPE maker.frob_event AS (
 
 
 --
--- Name: ilk_state; Type: TYPE; Schema: maker; Owner: -
+-- Name: ilk; Type: TYPE; Schema: api; Owner: -
 --
 
-CREATE TYPE maker.ilk_state AS (
+CREATE TYPE api.ilk AS (
 	ilk_id integer,
 	ilk_name text,
 	block_height bigint,
@@ -83,10 +76,10 @@ CREATE TYPE maker.ilk_state AS (
 
 
 --
--- Name: relevant_block; Type: TYPE; Schema: maker; Owner: -
+-- Name: relevant_block; Type: TYPE; Schema: api; Owner: -
 --
 
-CREATE TYPE maker.relevant_block AS (
+CREATE TYPE api.relevant_block AS (
 	block_height bigint,
 	block_hash text,
 	ilk_id integer
@@ -94,10 +87,10 @@ CREATE TYPE maker.relevant_block AS (
 
 
 --
--- Name: tx; Type: TYPE; Schema: maker; Owner: -
+-- Name: tx; Type: TYPE; Schema: api; Owner: -
 --
 
-CREATE TYPE maker.tx AS (
+CREATE TYPE api.tx AS (
 	transaction_hash text,
 	transaction_index integer,
 	block_height bigint,
@@ -108,10 +101,10 @@ CREATE TYPE maker.tx AS (
 
 
 --
--- Name: urn_state; Type: TYPE; Schema: maker; Owner: -
+-- Name: urn; Type: TYPE; Schema: api; Owner: -
 --
 
-CREATE TYPE maker.urn_state AS (
+CREATE TYPE api.urn AS (
 	urn_id text,
 	ilk_name text,
 	block_height bigint,
@@ -125,11 +118,11 @@ CREATE TYPE maker.urn_state AS (
 
 
 --
--- Name: all_frobs(text); Type: FUNCTION; Schema: maker; Owner: -
+-- Name: all_frobs(text); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION maker.all_frobs(ilk_name text) RETURNS SETOF maker.frob_event
-    LANGUAGE sql STABLE SECURITY DEFINER
+CREATE FUNCTION api.all_frobs(ilk_name text) RETURNS SETOF api.frob_event
+    LANGUAGE sql STABLE
     AS $_$
   WITH
     ilk AS (SELECT id FROM maker.ilks WHERE ilks.name = $1)
@@ -144,30 +137,30 @@ $_$;
 
 
 --
--- Name: all_ilk_states(bigint, integer); Type: FUNCTION; Schema: maker; Owner: -
+-- Name: all_ilk_states(bigint, integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION maker.all_ilk_states(block_height bigint, ilk_id integer) RETURNS SETOF maker.ilk_state
-    LANGUAGE plpgsql STABLE SECURITY DEFINER
+CREATE FUNCTION api.all_ilk_states(block_height bigint, ilk_id integer) RETURNS SETOF api.ilk
+    LANGUAGE plpgsql STABLE
     AS $_$
 DECLARE
-  r maker.relevant_block;
+  r api.relevant_block;
 BEGIN
-  FOR r IN SELECT * FROM maker.get_ilk_blocks_before($1, $2)
+  FOR r IN SELECT * FROM api.get_ilk_blocks_before($1, $2)
   LOOP
     RETURN QUERY
-    SELECT * FROM maker.get_ilk(r.block_height, $2::INTEGER);
+    SELECT * FROM api.get_ilk(r.block_height, $2::INTEGER);
   END LOOP;
 END;
 $_$;
 
 
 --
--- Name: all_ilks(bigint); Type: FUNCTION; Schema: maker; Owner: -
+-- Name: all_ilks(bigint); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION maker.all_ilks(block_height bigint) RETURNS SETOF maker.ilk_state
-    LANGUAGE sql STABLE SECURITY DEFINER
+CREATE FUNCTION api.all_ilks(block_height bigint) RETURNS SETOF api.ilk
+    LANGUAGE sql STABLE
     AS $_$
 WITH rates AS (
   SELECT DISTINCT ON (ilk_id) rate, ilk_id, block_hash
@@ -236,14 +229,14 @@ WITH rates AS (
     duties.duty,
     (
       SELECT TIMESTAMP 'epoch' + h.block_timestamp * INTERVAL '1 second'
-      FROM maker.get_ilk_blocks_before($1, ilks.id) b
+      FROM api.get_ilk_blocks_before($1, ilks.id) b
       JOIN headers h on h.block_number = b.block_height
       ORDER BY h.block_number DESC
       LIMIT 1
     ),
     (
       SELECT TIMESTAMP 'epoch' + h.block_timestamp * INTERVAL '1 second'
-      FROM maker.get_ilk_blocks_before($1, ilks.id) b
+      FROM api.get_ilk_blocks_before($1, ilks.id) b
       JOIN headers h on h.block_number = b.block_height
       ORDER BY h.block_number ASC
       LIMIT 1
@@ -275,11 +268,11 @@ $_$;
 
 
 --
--- Name: all_urn_states(text, text, bigint); Type: FUNCTION; Schema: maker; Owner: -
+-- Name: all_urn_states(text, text, bigint); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION maker.all_urn_states(ilk_name text, urn text, block_height bigint) RETURNS SETOF maker.urn_state
-    LANGUAGE plpgsql STABLE SECURITY DEFINER
+CREATE FUNCTION api.all_urn_states(ilk_name text, urn text, block_height bigint) RETURNS SETOF api.urn
+    LANGUAGE plpgsql STABLE
     AS $_$
 DECLARE
   blocks BIGINT[];
@@ -309,18 +302,18 @@ BEGIN
   FOREACH i IN ARRAY blocks
     LOOP
       RETURN QUERY
-        SELECT * FROM maker.get_urn(ilk_name, urn, i);
+        SELECT * FROM api.get_urn(ilk_name, urn, i);
     END LOOP;
 END;
 $_$;
 
 
 --
--- Name: all_urns(bigint); Type: FUNCTION; Schema: maker; Owner: -
+-- Name: all_urns(bigint); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION maker.all_urns(block_height bigint) RETURNS SETOF maker.urn_state
-    LANGUAGE sql STABLE SECURITY DEFINER
+CREATE FUNCTION api.all_urns(block_height bigint) RETURNS SETOF api.urn
+    LANGUAGE sql STABLE
     AS $_$
 WITH
   urns AS (
@@ -415,23 +408,23 @@ $_$;
 
 
 --
--- Name: frob_event_ilk(maker.frob_event); Type: FUNCTION; Schema: maker; Owner: -
+-- Name: frob_event_ilk(api.frob_event); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION maker.frob_event_ilk(event maker.frob_event) RETURNS SETOF maker.ilk_state
+CREATE FUNCTION api.frob_event_ilk(event api.frob_event) RETURNS SETOF api.ilk
     LANGUAGE sql STABLE
     AS $$
-  SELECT * FROM maker.get_ilk(
+  SELECT * FROM api.get_ilk(
     event.block_height,
     (SELECT id FROM maker.ilks WHERE name = event.ilk_name))
 $$;
 
 
 --
--- Name: frob_event_tx(maker.frob_event); Type: FUNCTION; Schema: maker; Owner: -
+-- Name: frob_event_tx(api.frob_event); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION maker.frob_event_tx(event maker.frob_event) RETURNS maker.tx
+CREATE FUNCTION api.frob_event_tx(event api.frob_event) RETURNS api.tx
     LANGUAGE sql STABLE
     AS $$
   SELECT txs.hash, txs.tx_index, headers.block_number AS block_height, headers.hash, tx_from, tx_to
@@ -444,22 +437,44 @@ $$;
 
 
 --
--- Name: frob_event_urn(maker.frob_event); Type: FUNCTION; Schema: maker; Owner: -
+-- Name: frob_event_urn(api.frob_event); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION maker.frob_event_urn(event maker.frob_event) RETURNS SETOF maker.urn_state
+CREATE FUNCTION api.frob_event_urn(event api.frob_event) RETURNS SETOF api.urn
     LANGUAGE sql STABLE
     AS $$
-  SELECT * FROM maker.get_urn(event.ilk_name, event.urn_id, event.block_height)
+  SELECT * FROM api.get_urn(event.ilk_name, event.urn_id, event.block_height)
 $$;
 
 
 --
--- Name: get_ilk(bigint, integer); Type: FUNCTION; Schema: maker; Owner: -
+-- Name: frobs_for_urn(text, text); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION maker.get_ilk(block_height bigint, _ilk_id integer) RETURNS maker.ilk_state
-    LANGUAGE sql STABLE SECURITY DEFINER
+CREATE FUNCTION api.frobs_for_urn(ilk_name text, urn text) RETURNS SETOF api.frob_event
+    LANGUAGE sql STABLE
+    AS $_$
+  WITH
+    ilk AS (SELECT id FROM maker.ilks WHERE ilks.name = $1),
+    urn AS (
+      SELECT id FROM maker.urns
+      WHERE ilk_id = (SELECT id FROM ilk)
+        AND guy = $2
+    )
+
+  SELECT $1 AS ilk_name, $2 AS urn_id, dink, dart, block_number AS block_height
+  FROM maker.vat_frob LEFT JOIN headers ON vat_frob.header_id = headers.id
+  WHERE vat_frob.urn_id = (SELECT id FROM urn)
+  ORDER BY block_number DESC
+$_$;
+
+
+--
+-- Name: get_ilk(bigint, integer); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.get_ilk(block_height bigint, _ilk_id integer) RETURNS api.ilk
+    LANGUAGE sql STABLE
     AS $_$
 WITH rates AS (
     SELECT
@@ -562,7 +577,7 @@ WITH rates AS (
     ORDER BY ilk_id, block_number DESC
     LIMIT 1
 ), relevant_blocks AS (
-  SELECT * FROM maker.get_ilk_blocks_before($1, $2)
+  SELECT * FROM api.get_ilk_blocks_before($1, $2)
 ), created AS (
     SELECT DISTINCT ON (relevant_blocks.ilk_id, relevant_blocks.block_height)
       relevant_blocks.block_height,
@@ -630,10 +645,10 @@ $_$;
 
 
 --
--- Name: get_ilk_blocks_before(bigint, integer); Type: FUNCTION; Schema: maker; Owner: -
+-- Name: get_ilk_blocks_before(bigint, integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION maker.get_ilk_blocks_before(block_height bigint, ilk_id integer) RETURNS SETOF maker.relevant_block
+CREATE FUNCTION api.get_ilk_blocks_before(block_height bigint, ilk_id integer) RETURNS SETOF api.relevant_block
     LANGUAGE sql STABLE
     AS $_$
 SELECT
@@ -719,11 +734,18 @@ $_$;
 
 
 --
--- Name: get_urn(text, text, bigint); Type: FUNCTION; Schema: maker; Owner: -
+-- Name: FUNCTION get_ilk_blocks_before(block_height bigint, ilk_id integer); Type: COMMENT; Schema: api; Owner: -
 --
 
-CREATE FUNCTION maker.get_urn(ilk text, urn text, block_height bigint) RETURNS maker.urn_state
-    LANGUAGE sql STABLE SECURITY DEFINER
+COMMENT ON FUNCTION api.get_ilk_blocks_before(block_height bigint, ilk_id integer) IS '@omit';
+
+
+--
+-- Name: get_urn(text, text, bigint); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.get_urn(ilk text, urn text, block_height bigint) RETURNS api.urn
+    LANGUAGE sql STABLE
     AS $_$
 WITH
   urn AS (
@@ -818,22 +840,22 @@ $_$;
 
 
 --
--- Name: ilk_state_frobs(maker.ilk_state); Type: FUNCTION; Schema: maker; Owner: -
+-- Name: ilk_frobs(api.ilk); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION maker.ilk_state_frobs(state maker.ilk_state) RETURNS SETOF maker.frob_event
+CREATE FUNCTION api.ilk_frobs(state api.ilk) RETURNS SETOF api.frob_event
     LANGUAGE sql STABLE
     AS $$
-  SELECT * FROM maker.all_frobs(state.ilk_name)
+  SELECT * FROM api.all_frobs(state.ilk_name)
   WHERE block_height <= state.block_height
 $$;
 
 
 --
--- Name: tx_era(maker.tx); Type: FUNCTION; Schema: maker; Owner: -
+-- Name: tx_era(api.tx); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION maker.tx_era(tx maker.tx) RETURNS maker.era
+CREATE FUNCTION api.tx_era(tx api.tx) RETURNS api.era
     LANGUAGE sql STABLE
     AS $$
 SELECT block_timestamp::BIGINT AS "epoch", (SELECT TIMESTAMP 'epoch' + block_timestamp * INTERVAL '1 second') AS iso
@@ -842,35 +864,13 @@ $$;
 
 
 --
--- Name: urn_frobs(text, text); Type: FUNCTION; Schema: maker; Owner: -
+-- Name: urn_frobs(api.urn); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION maker.urn_frobs(ilk_name text, urn text) RETURNS SETOF maker.frob_event
-    LANGUAGE sql STABLE
-    AS $_$
-  WITH
-    ilk AS (SELECT id FROM maker.ilks WHERE ilks.name = $1),
-    urn AS (
-      SELECT id FROM maker.urns
-      WHERE ilk_id = (SELECT id FROM ilk)
-        AND guy = $2
-    )
-
-  SELECT $1 AS ilk_name, $2 AS urn_id, dink, dart, block_number AS block_height
-  FROM maker.vat_frob LEFT JOIN headers ON vat_frob.header_id = headers.id
-  WHERE vat_frob.urn_id = (SELECT id FROM urn)
-  ORDER BY block_number DESC
-$_$;
-
-
---
--- Name: urn_state_frobs(maker.urn_state); Type: FUNCTION; Schema: maker; Owner: -
---
-
-CREATE FUNCTION maker.urn_state_frobs(state maker.urn_state) RETURNS SETOF maker.frob_event
+CREATE FUNCTION api.urn_frobs(state api.urn) RETURNS SETOF api.frob_event
     LANGUAGE sql STABLE
     AS $$
-  SELECT * FROM maker.urn_frobs(state.ilk_name, state.urn_id)
+  SELECT * FROM api.frobs_for_urn(state.ilk_name, state.urn_id)
   WHERE block_height <= state.block_height
 $$;
 
@@ -5976,125 +5976,6 @@ ALTER TABLE ONLY public.uncles
 
 ALTER TABLE ONLY public.uncles
     ADD CONSTRAINT uncles_eth_node_id_fkey FOREIGN KEY (eth_node_id) REFERENCES public.eth_nodes(id) ON DELETE CASCADE;
-
-
---
--- Name: SCHEMA maker; Type: ACL; Schema: -; Owner: -
---
-
-GRANT USAGE ON SCHEMA maker TO graphql;
-
-
---
--- Name: FUNCTION all_frobs(ilk_name text); Type: ACL; Schema: maker; Owner: -
---
-
-REVOKE ALL ON FUNCTION maker.all_frobs(ilk_name text) FROM PUBLIC;
-GRANT ALL ON FUNCTION maker.all_frobs(ilk_name text) TO graphql;
-
-
---
--- Name: FUNCTION all_ilk_states(block_height bigint, ilk_id integer); Type: ACL; Schema: maker; Owner: -
---
-
-REVOKE ALL ON FUNCTION maker.all_ilk_states(block_height bigint, ilk_id integer) FROM PUBLIC;
-GRANT ALL ON FUNCTION maker.all_ilk_states(block_height bigint, ilk_id integer) TO graphql;
-
-
---
--- Name: FUNCTION all_ilks(block_height bigint); Type: ACL; Schema: maker; Owner: -
---
-
-REVOKE ALL ON FUNCTION maker.all_ilks(block_height bigint) FROM PUBLIC;
-GRANT ALL ON FUNCTION maker.all_ilks(block_height bigint) TO graphql;
-
-
---
--- Name: FUNCTION all_urn_states(ilk_name text, urn text, block_height bigint); Type: ACL; Schema: maker; Owner: -
---
-
-REVOKE ALL ON FUNCTION maker.all_urn_states(ilk_name text, urn text, block_height bigint) FROM PUBLIC;
-GRANT ALL ON FUNCTION maker.all_urn_states(ilk_name text, urn text, block_height bigint) TO graphql;
-
-
---
--- Name: FUNCTION all_urns(block_height bigint); Type: ACL; Schema: maker; Owner: -
---
-
-REVOKE ALL ON FUNCTION maker.all_urns(block_height bigint) FROM PUBLIC;
-GRANT ALL ON FUNCTION maker.all_urns(block_height bigint) TO graphql;
-
-
---
--- Name: FUNCTION frob_event_ilk(event maker.frob_event); Type: ACL; Schema: maker; Owner: -
---
-
-REVOKE ALL ON FUNCTION maker.frob_event_ilk(event maker.frob_event) FROM PUBLIC;
-
-
---
--- Name: FUNCTION frob_event_tx(event maker.frob_event); Type: ACL; Schema: maker; Owner: -
---
-
-REVOKE ALL ON FUNCTION maker.frob_event_tx(event maker.frob_event) FROM PUBLIC;
-
-
---
--- Name: FUNCTION frob_event_urn(event maker.frob_event); Type: ACL; Schema: maker; Owner: -
---
-
-REVOKE ALL ON FUNCTION maker.frob_event_urn(event maker.frob_event) FROM PUBLIC;
-
-
---
--- Name: FUNCTION get_ilk(block_height bigint, _ilk_id integer); Type: ACL; Schema: maker; Owner: -
---
-
-REVOKE ALL ON FUNCTION maker.get_ilk(block_height bigint, _ilk_id integer) FROM PUBLIC;
-GRANT ALL ON FUNCTION maker.get_ilk(block_height bigint, _ilk_id integer) TO graphql;
-
-
---
--- Name: FUNCTION get_ilk_blocks_before(block_height bigint, ilk_id integer); Type: ACL; Schema: maker; Owner: -
---
-
-REVOKE ALL ON FUNCTION maker.get_ilk_blocks_before(block_height bigint, ilk_id integer) FROM PUBLIC;
-
-
---
--- Name: FUNCTION get_urn(ilk text, urn text, block_height bigint); Type: ACL; Schema: maker; Owner: -
---
-
-REVOKE ALL ON FUNCTION maker.get_urn(ilk text, urn text, block_height bigint) FROM PUBLIC;
-GRANT ALL ON FUNCTION maker.get_urn(ilk text, urn text, block_height bigint) TO graphql;
-
-
---
--- Name: FUNCTION ilk_state_frobs(state maker.ilk_state); Type: ACL; Schema: maker; Owner: -
---
-
-REVOKE ALL ON FUNCTION maker.ilk_state_frobs(state maker.ilk_state) FROM PUBLIC;
-
-
---
--- Name: FUNCTION tx_era(tx maker.tx); Type: ACL; Schema: maker; Owner: -
---
-
-REVOKE ALL ON FUNCTION maker.tx_era(tx maker.tx) FROM PUBLIC;
-
-
---
--- Name: FUNCTION urn_frobs(ilk_name text, urn text); Type: ACL; Schema: maker; Owner: -
---
-
-REVOKE ALL ON FUNCTION maker.urn_frobs(ilk_name text, urn text) FROM PUBLIC;
-
-
---
--- Name: FUNCTION urn_state_frobs(state maker.urn_state); Type: ACL; Schema: maker; Owner: -
---
-
-REVOKE ALL ON FUNCTION maker.urn_state_frobs(state maker.urn_state) FROM PUBLIC;
 
 
 --

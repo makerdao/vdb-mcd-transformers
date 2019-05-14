@@ -1,7 +1,7 @@
 -- +goose Up
 -- +goose StatementBegin
-CREATE OR REPLACE FUNCTION maker.all_urn_states(ilk_name TEXT, urn TEXT, block_height BIGINT)
-  RETURNS SETOF maker.urn_state AS $$
+CREATE  FUNCTION api.all_urn_states(ilk_name TEXT, urn TEXT, block_height BIGINT)
+  RETURNS SETOF api.urn AS $$
 DECLARE
   blocks BIGINT[];
   i BIGINT;
@@ -30,13 +30,12 @@ BEGIN
   FOREACH i IN ARRAY blocks
     LOOP
       RETURN QUERY
-        SELECT * FROM maker.get_urn(ilk_name, urn, i);
+        SELECT * FROM api.get_urn(ilk_name, urn, i);
     END LOOP;
 END;
 $$
-LANGUAGE plpgsql
-STABLE SECURITY DEFINER;
+LANGUAGE plpgsql STABLE;
 -- +goose StatementEnd
 
 -- +goose Down
-DROP FUNCTION  maker.all_urn_states(TEXT, TEXT, BIGINT);
+DROP FUNCTION  api.all_urn_states(TEXT, TEXT, BIGINT);

@@ -5,24 +5,24 @@
 -- + anything not rooted in urn/ilk type
 
 -- Extend type frob_event with ilk field
-CREATE OR REPLACE FUNCTION maker.frob_event_ilk(event maker.frob_event)
-  RETURNS SETOF maker.ilk_state AS
+CREATE FUNCTION api.frob_event_ilk(event api.frob_event)
+  RETURNS SETOF api.ilk AS
 $$
-  SELECT * FROM maker.get_ilk(
+  SELECT * FROM api.get_ilk(
     event.block_height,
     (SELECT id FROM maker.ilks WHERE name = event.ilk_name))
 $$ LANGUAGE sql STABLE;
 
 
 -- Extend type frob_event with urn field
-CREATE OR REPLACE FUNCTION maker.frob_event_urn(event maker.frob_event)
-  RETURNS SETOF maker.urn_state AS
+CREATE FUNCTION api.frob_event_urn(event api.frob_event)
+  RETURNS SETOF api.urn AS
 $$
-  SELECT * FROM maker.get_urn(event.ilk_name, event.urn_id, event.block_height)
+  SELECT * FROM api.get_urn(event.ilk_name, event.urn_id, event.block_height)
 $$ LANGUAGE sql STABLE;
 
 
-CREATE TYPE maker.tx AS (
+CREATE TYPE api.tx AS (
   transaction_hash TEXT,
   transaction_index INTEGER,
   block_height BIGINT,
@@ -32,15 +32,15 @@ CREATE TYPE maker.tx AS (
   tx_to TEXT
 );
 
-CREATE TYPE maker.era AS (
+CREATE TYPE api.era AS (
   "epoch" BIGINT,
   iso TIMESTAMP
 );
 
 
 -- Extend tx type with era object
-CREATE OR REPLACE FUNCTION maker.tx_era(tx maker.tx)
-  RETURNS maker.era AS
+CREATE FUNCTION api.tx_era(tx api.tx)
+  RETURNS api.era AS
 $$
 SELECT block_timestamp::BIGINT AS "epoch", (SELECT TIMESTAMP 'epoch' + block_timestamp * INTERVAL '1 second') AS iso
   FROM headers WHERE block_number = tx.block_height
@@ -48,8 +48,8 @@ $$ LANGUAGE sql STABLE;
 
 
 -- Extend type frob_event with txs field
-CREATE OR REPLACE FUNCTION maker.frob_event_tx(event maker.frob_event)
-  RETURNS maker.tx AS
+CREATE FUNCTION api.frob_event_tx(event api.frob_event)
+  RETURNS api.tx AS
 $$
   SELECT txs.hash, txs.tx_index, headers.block_number AS block_height, headers.hash, tx_from, tx_to
   FROM public.header_sync_transactions txs
@@ -60,31 +60,31 @@ $$
 $$ LANGUAGE sql STABLE;
 
 
--- Extend ilk_state with frob events
-CREATE OR REPLACE FUNCTION maker.ilk_state_frobs(state maker.ilk_state)
-  RETURNS SETOF maker.frob_event AS
+-- Extend ilk with frob events
+CREATE FUNCTION api.ilk_frobs(state api.ilk)
+  RETURNS SETOF api.frob_event AS
 $$
-  SELECT * FROM maker.all_frobs(state.ilk_name)
+  SELECT * FROM api.all_frobs(state.ilk_name)
   WHERE block_height <= state.block_height
 $$ LANGUAGE sql STABLE;
 
 
--- Extend urn_state with frob_events
-CREATE OR REPLACE FUNCTION maker.urn_state_frobs(state maker.urn_state)
-  RETURNS SETOF maker.frob_event AS
+-- Extend urn with frob_events
+CREATE FUNCTION api.urn_frobs(state api.urn)
+  RETURNS SETOF api.frob_event AS
 $$
-  SELECT * FROM maker.urn_frobs(state.ilk_name, state.urn_id)
+  SELECT * FROM api.frobs_for_urn(state.ilk_name, state.urn_id)
   WHERE block_height <= state.block_height
 $$ LANGUAGE sql STABLE;
 
 
 -- +goose Down
 -- SQL in this section is executed when the migration is rolled back.
-DROP FUNCTION maker.frob_event_ilk(maker.frob_event);
-DROP FUNCTION maker.frob_event_urn(maker.frob_event);
-DROP FUNCTION maker.tx_era(maker.tx);
-DROP FUNCTION maker.frob_event_tx(maker.frob_event);
-DROP FUNCTION maker.ilk_state_frobs(maker.ilk_state);
-DROP FUNCTION maker.urn_state_frobs(maker.urn_state);
-DROP TYPE maker.tx CASCADE;
-DROP TYPE maker.era CASCADE;
+DROP FUNCTION api.frob_event_ilk(api.frob_event);
+DROP FUNCTION api.frob_event_urn(api.frob_event);
+DROP FUNCTION api.tx_era(api.tx);
+DROP FUNCTION api.frob_event_tx(api.frob_event);
+DROP FUNCTION api.ilk_frobs(api.ilk);
+DROP FUNCTION api.urn_frobs(api.urn);
+DROP TYPE api.tx CASCADE;
+DROP TYPE api.era CASCADE;
