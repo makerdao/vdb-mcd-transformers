@@ -67,8 +67,8 @@ var _ = Describe("Pip logValue query", func() {
 
 		var dbPipLogValue []test_helpers.LogValue
 		err = db.Select(&dbPipLogValue, `SELECT val, maker.pip_log_value.block_number, tx_idx FROM maker.pip_log_value 
-											JOIN public.headers ON public.headers.id = maker.pip_log_value.header_id
-											WHERE public.headers.block_timestamp BETWEEN $1 AND $2`, beginningTimeRange, endingTimeRange)
+                                            JOIN public.headers ON public.headers.id = maker.pip_log_value.header_id
+                                            WHERE public.headers.block_timestamp BETWEEN $1 AND $2`, beginningTimeRange, endingTimeRange)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(dbPipLogValue).To(Equal(expectedValues))
 	})
@@ -105,11 +105,11 @@ var _ = Describe("Pip logValue query", func() {
 
 		var actualTx []LogValueTx
 		err = db.Select(&actualTx, `SELECT txs.hash, txs.tx_index, headers.block_number, headers.hash, txs.tx_from, txs.tx_to
-										FROM public.header_sync_transactions txs
-    									LEFT JOIN headers ON txs.header_id = headers.id
-    									LEFT JOIN maker.pip_log_value plv ON txs.header_id = plv.header_id
-    									WHERE headers.block_number = $1 
-    									ORDER BY headers.block_number DESC`, expectedTx.BlockHeight)
+                                        FROM public.header_sync_transactions txs
+                                        LEFT JOIN headers ON txs.header_id = headers.id
+                                        LEFT JOIN maker.pip_log_value plv ON txs.header_id = plv.header_id
+                                        WHERE headers.block_number = $1 
+                                        ORDER BY headers.block_number DESC`, expectedTx.BlockHeight)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(actualTx[0]).To(Equal(expectedTx))
 	})
@@ -149,11 +149,53 @@ var _ = Describe("Pip logValue query", func() {
 
 		var dbPipLogValue []test_helpers.LogValue
 		err = db.Select(&dbPipLogValue, `SELECT val, maker.pip_log_value.block_number, tx_idx FROM maker.pip_log_value 
-											JOIN public.headers ON public.headers.id = maker.pip_log_value.header_id
-											WHERE public.headers.block_timestamp BETWEEN $1 AND $2`, beginningTimeRange, endingTimeRange)
+                                            JOIN public.headers ON public.headers.id = maker.pip_log_value.header_id
+                                            WHERE public.headers.block_timestamp BETWEEN $1 AND $2`, beginningTimeRange, endingTimeRange)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(dbPipLogValue).To(Equal(expectedValues))
 	})
+
+	It("returns 1 pip log value between a time range", func() {
+		var (
+			anotherBlockNumber int64 = 10606965
+			beginningTimeRange int64 = 111111111
+			endingTimeRange    int64 = 111111113
+			outsideTimeRange   int64 = 111111200
+			logValue                 = "123456789"
+			transactionIdx           = 3
+		)
+
+		fakeHeaderOne := fakes.GetFakeHeaderWithTimestamp(beginningTimeRange, int64(test_data.PipLogValueModel.BlockNumber))
+		headerID, err := headerRepository.CreateOrUpdateHeader(fakeHeaderOne)
+		Expect(err).NotTo(HaveOccurred())
+
+		err = pipLogValueRepository.Create(headerID, []interface{}{test_data.PipLogValueModel})
+		Expect(err).NotTo(HaveOccurred())
+
+		fakeHeaderTwo := fakes.GetFakeHeaderWithTimestamp(outsideTimeRange, anotherBlockNumber)
+		anotherHeaderID, err := headerRepository.CreateOrUpdateHeader(fakeHeaderTwo)
+		Expect(err).NotTo(HaveOccurred())
+
+		anotherPipLogValue := test_data.GetFakePipLogValue(anotherBlockNumber, transactionIdx, logValue)
+		err = pipLogValueRepository.Create(anotherHeaderID, []interface{}{anotherPipLogValue})
+		Expect(err).NotTo(HaveOccurred())
+
+		expectedValues := []test_helpers.LogValue{
+			{
+				Val:         test_data.PipLogValueModel.Value,
+				BlockNumber: test_data.PipLogValueModel.BlockNumber,
+				TxIdx:       test_data.PipLogValueModel.TransactionIndex,
+			},
+		}
+
+		var dbPipLogValue []test_helpers.LogValue
+		err = db.Select(&dbPipLogValue, `SELECT val, maker.pip_log_value.block_number, tx_idx FROM maker.pip_log_value 
+                                            JOIN public.headers ON public.headers.id = maker.pip_log_value.header_id
+                                            WHERE public.headers.block_timestamp BETWEEN $1 AND $2`, beginningTimeRange, endingTimeRange)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(dbPipLogValue).To(Equal(expectedValues))
+	})
+
 })
 
 type LogValueTx struct {
