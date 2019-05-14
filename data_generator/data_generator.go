@@ -1,10 +1,12 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
 	"fmt"
 	"github.com/jmoiron/sqlx"
 	"github.com/vulcanize/mcd_transformers/test_config"
+	"github.com/vulcanize/mcd_transformers/transformers/events/vat_frob"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/cat"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/jug"
@@ -20,7 +22,7 @@ import (
 
 const (
 	headerSql = `INSERT INTO public.headers (hash, block_number, raw, block_timestamp, eth_node_id, eth_node_fingerprint)
-				  VALUES ($1, $2, $3, $4, $5, $6)`
+				  VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`
 	nodeSql = `INSERT INTO public.eth_nodes (genesis_block, network_id, eth_node_id) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
 
 	// Event data
@@ -196,15 +198,18 @@ func (state *GeneratorState) createUrn() error {
 	blockNumber := state.currentHeader.BlockNumber
 	blockHash := state.currentHeader.Hash
 
+	ink := rand.Int()
+	art := rand.Int()
+	emptyRaw, _ := json.Marshal("emptyLog")
 	tx, _ := state.db.Beginx()
 	_, artErr := tx.Exec(vat.InsertUrnArtQuery, blockNumber, blockHash, urnId, rand.Int())
 	_, inkErr := tx.Exec(vat.InsertUrnInkQuery, blockNumber, blockHash, urnId, rand.Int())
+	_, frobErr := tx.Exec(vat_frob.InsertVatFrobQuery,
+		state.currentHeader.Id, urnId, guy, guy, ink, art, emptyRaw, 0, 0) // raw, logIx, txIx discarded
 
-	// TODO insert urn event data?
-
-	if artErr != nil && inkErr != nil {
+	if artErr != nil || inkErr != nil || frobErr != nil {
 		_ = tx.Rollback()
-		return fmt.Errorf("Error creating urn.\n artErr: %v\ninkErr: %v", artErr, inkErr)
+		return fmt.Errorf("Error creating urn.\n artErr: %v\ninkErr: %v\nfrobErr: %v", artErr, inkErr, frobErr)
 	}
 
 	_ = tx.Commit()
@@ -217,6 +222,9 @@ func (state *GeneratorState) updateUrn() error {
 	randomUrnId := state.urns[rand.Intn(len(state.urns))]
 	blockNumber := state.currentHeader.BlockNumber
 	blockHash := state.currentHeader.Hash
+
+	// TODO create frob event for updates.
+	// Computing correct diff complicated, also getting correct guy :(
 
 	var err error
 	p := rand.Float32()
@@ -287,7 +295,9 @@ func (state *GeneratorState) insertInitialIlkData(ilkId int64) error {
 func (state *GeneratorState) insertCurrentHeader() error {
 	header := state.currentHeader
 	nodeId := test_config.NewTestNode().ID
-	_, err := state.db.Exec(headerSql, header.Hash, header.BlockNumber, header.Raw, header.Timestamp, 1, nodeId)
+	var id int64
+	err := state.db.QueryRow(headerSql, header.Hash, header.BlockNumber, header.Raw, header.Timestamp, 1, nodeId).Scan(&id)
+	state.currentHeader.Id = id
 	return err
 }
 
