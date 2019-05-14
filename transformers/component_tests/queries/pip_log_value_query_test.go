@@ -105,11 +105,11 @@ var _ = Describe("Pip logValue query", func() {
 
 		var actualTx []LogValueTx
 		err = db.Select(&actualTx, `SELECT txs.hash, txs.tx_index, headers.block_number, headers.hash, txs.tx_from, txs.tx_to
-                                        FROM public.header_sync_transactions txs
-                                        LEFT JOIN headers ON txs.header_id = headers.id
-                                        LEFT JOIN maker.pip_log_value plv ON txs.header_id = plv.header_id
-                                        WHERE headers.block_number = $1 
-                                        ORDER BY headers.block_number DESC`, expectedTx.BlockHeight)
+                                        FROM maker.pip_log_value plv 
+                                        LEFT JOIN public.header_sync_transactions txs ON plv.header_id = txs.header_id
+                                        LEFT JOIN headers ON plv.header_id = headers.id
+                                        WHERE headers.block_number = $1 AND txs.tx_index = $2
+                                        ORDER BY headers.block_number DESC`, expectedTx.BlockHeight, expectedTx.TransactionIndex)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(actualTx[0]).To(Equal(expectedTx))
 	})
