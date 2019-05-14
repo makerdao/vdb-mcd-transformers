@@ -32,18 +32,18 @@ import (
 )
 
 var _ = Describe("VatHeal Transformer", func() {
-	testVatHealConfig := transformer.EventTransformerConfig{
+	vatHealConfig := transformer.EventTransformerConfig{
 		TransformerName:   mcdConstants.VatHealLabel,
 		ContractAddresses: []string{mcdConstants.VatContractAddress()},
-		ContractAbi:       test_data.KovanVatABI,
+		ContractAbi:       mcdConstants.VatABI(),
 		Topic:             test_data.KovanVatHealSignature,
 	}
 
 	// TODO: Replace block number once there's a heal event on the updated Vat
 	XIt("transforms VatHeal log events", func() {
 		blockNumber := int64(8935578)
-		testVatHealConfig.StartingBlockNumber = blockNumber
-		testVatHealConfig.EndingBlockNumber = blockNumber
+		vatHealConfig.StartingBlockNumber = blockNumber
+		vatHealConfig.EndingBlockNumber = blockNumber
 
 		rpcClient, ethClient, err := getClients(ipc)
 		Expect(err).NotTo(HaveOccurred())
@@ -58,13 +58,13 @@ var _ = Describe("VatHeal Transformer", func() {
 
 		logFetcher := fetcher.NewLogFetcher(blockChain)
 		logs, err := logFetcher.FetchLogs(
-			transformer.HexStringsToAddresses(testVatHealConfig.ContractAddresses),
-			[]common.Hash{common.HexToHash(testVatHealConfig.Topic)},
+			transformer.HexStringsToAddresses(vatHealConfig.ContractAddresses),
+			[]common.Hash{common.HexToHash(vatHealConfig.Topic)},
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
 		tr := shared.LogNoteTransformer{
-			Config:     testVatHealConfig,
+			Config:     vatHealConfig,
 			Converter:  &vat_heal.VatHealConverter{},
 			Repository: &vat_heal.VatHealRepository{},
 		}.NewLogNoteTransformer(db)
@@ -86,8 +86,8 @@ var _ = Describe("VatHeal Transformer", func() {
 	// TODO: Replace block number once there's a heal event on the updated Vat
 	XIt("rechecks vat heal event", func() {
 		blockNumber := int64(8935578)
-		testVatHealConfig.StartingBlockNumber = blockNumber
-		testVatHealConfig.EndingBlockNumber = blockNumber
+		vatHealConfig.StartingBlockNumber = blockNumber
+		vatHealConfig.EndingBlockNumber = blockNumber
 
 		rpcClient, ethClient, err := getClients(ipc)
 		Expect(err).NotTo(HaveOccurred())
@@ -102,13 +102,13 @@ var _ = Describe("VatHeal Transformer", func() {
 
 		logFetcher := fetcher.NewLogFetcher(blockChain)
 		logs, err := logFetcher.FetchLogs(
-			transformer.HexStringsToAddresses(testVatHealConfig.ContractAddresses),
-			[]common.Hash{common.HexToHash(testVatHealConfig.Topic)},
+			transformer.HexStringsToAddresses(vatHealConfig.ContractAddresses),
+			[]common.Hash{common.HexToHash(vatHealConfig.Topic)},
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
 		tr := shared.LogNoteTransformer{
-			Config:     testVatHealConfig,
+			Config:     vatHealConfig,
 			Converter:  &vat_heal.VatHealConverter{},
 			Repository: &vat_heal.VatHealRepository{},
 		}.NewLogNoteTransformer(db)

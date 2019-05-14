@@ -35,18 +35,18 @@ import (
 )
 
 var _ = Describe("Vat Grab Transformer", func() {
-	testVatGrabConfig := transformer.EventTransformerConfig{
+	vatGrabConfig := transformer.EventTransformerConfig{
 		TransformerName:   mcdConstants.VatGrabLabel,
 		ContractAddresses: []string{mcdConstants.VatContractAddress()},
-		ContractAbi:       test_data.KovanVatABI,
+		ContractAbi:       mcdConstants.VatABI(),
 		Topic:             test_data.KovanVatGrabSignature,
 	}
 
 	// TODO: Replace block number once there's a grab event on the updated Vat
 	XIt("transforms VatGrab log events", func() {
 		blockNumber := int64(8958230)
-		testVatGrabConfig.StartingBlockNumber = blockNumber
-		testVatGrabConfig.EndingBlockNumber = blockNumber
+		vatGrabConfig.StartingBlockNumber = blockNumber
+		vatGrabConfig.EndingBlockNumber = blockNumber
 
 		rpcClient, ethClient, err := getClients(ipc)
 		Expect(err).NotTo(HaveOccurred())
@@ -61,13 +61,13 @@ var _ = Describe("Vat Grab Transformer", func() {
 
 		logFetcher := fetcher.NewLogFetcher(blockChain)
 		logs, err := logFetcher.FetchLogs(
-			transformer.HexStringsToAddresses(testVatGrabConfig.ContractAddresses),
-			[]common.Hash{common.HexToHash(testVatGrabConfig.Topic)},
+			transformer.HexStringsToAddresses(vatGrabConfig.ContractAddresses),
+			[]common.Hash{common.HexToHash(vatGrabConfig.Topic)},
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
 		tr := shared.LogNoteTransformer{
-			Config:     testVatGrabConfig,
+			Config:     vatGrabConfig,
 			Converter:  &vat_grab.VatGrabConverter{},
 			Repository: &vat_grab.VatGrabRepository{},
 		}.NewLogNoteTransformer(db)
@@ -99,8 +99,8 @@ var _ = Describe("Vat Grab Transformer", func() {
 	// TODO: Replace block number once there's a grab event on the updated Vat
 	XIt("rechecks vat grab event", func() {
 		blockNumber := int64(8958230)
-		testVatGrabConfig.StartingBlockNumber = blockNumber
-		testVatGrabConfig.EndingBlockNumber = blockNumber
+		vatGrabConfig.StartingBlockNumber = blockNumber
+		vatGrabConfig.EndingBlockNumber = blockNumber
 
 		rpcClient, ethClient, err := getClients(ipc)
 		Expect(err).NotTo(HaveOccurred())
@@ -115,12 +115,12 @@ var _ = Describe("Vat Grab Transformer", func() {
 
 		logFetcher := fetcher.NewLogFetcher(blockChain)
 		logs, err := logFetcher.FetchLogs(
-			transformer.HexStringsToAddresses(testVatGrabConfig.ContractAddresses),
-			[]common.Hash{common.HexToHash(testVatGrabConfig.Topic)},
+			transformer.HexStringsToAddresses(vatGrabConfig.ContractAddresses),
+			[]common.Hash{common.HexToHash(vatGrabConfig.Topic)},
 			header)
 		Expect(err).NotTo(HaveOccurred())
 		tr := shared.LogNoteTransformer{
-			Config:     testVatGrabConfig,
+			Config:     vatGrabConfig,
 			Converter:  &vat_grab.VatGrabConverter{},
 			Repository: &vat_grab.VatGrabRepository{},
 		}.NewLogNoteTransformer(db)

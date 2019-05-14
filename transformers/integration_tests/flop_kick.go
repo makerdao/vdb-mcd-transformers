@@ -39,13 +39,13 @@ import (
 
 var _ = Describe("FlopKick Transformer", func() {
 	var (
-		db          *postgres.DB
-		blockChain  core.BlockChain
-		config      transformer.EventTransformerConfig
-		initializer event.Transformer
-		logFetcher  fetcher.ILogFetcher
-		addresses   []common.Address
-		topics      []common.Hash
+		db             *postgres.DB
+		blockChain     core.BlockChain
+		flopKickConfig transformer.EventTransformerConfig
+		initializer    event.Transformer
+		logFetcher     fetcher.ILogFetcher
+		addresses      []common.Address
+		topics         []common.Hash
 	)
 
 	BeforeEach(func() {
@@ -56,22 +56,22 @@ var _ = Describe("FlopKick Transformer", func() {
 		db = test_config.NewTestDB(blockChain.Node())
 		test_config.CleanTestDB(db)
 
-		config = transformer.EventTransformerConfig{
+		flopKickConfig = transformer.EventTransformerConfig{
 			TransformerName:   mcdConstants.FlopKickLabel,
 			ContractAddresses: []string{mcdConstants.FlopperContractAddress()},
-			ContractAbi:       test_data.KovanFlopperABI,
+			ContractAbi:       mcdConstants.FlopperABI(),
 			Topic:             test_data.KovanFlopKickSignature,
 		}
 
 		initializer = event.Transformer{
-			Config:     config,
+			Config:     flopKickConfig,
 			Converter:  &flop_kick.FlopKickConverter{},
 			Repository: &flop_kick.FlopKickRepository{},
 		}
 
 		logFetcher = fetcher.NewLogFetcher(blockChain)
-		addresses = transformer.HexStringsToAddresses(config.ContractAddresses)
-		topics = []common.Hash{common.HexToHash(config.Topic)}
+		addresses = transformer.HexStringsToAddresses(flopKickConfig.ContractAddresses)
+		topics = []common.Hash{common.HexToHash(flopKickConfig.Topic)}
 	})
 
 	It("fetches and transforms a FlopKick event from Kovan chain", func() {
@@ -172,7 +172,7 @@ var _ = Describe("FlopKick Transformer", func() {
 
 	It("unpacks an flop kick event log", func() {
 		address := common.HexToAddress(mcdConstants.FlopperContractAddress())
-		abi, err := geth.ParseAbi(test_data.KovanFlopperABI)
+		abi, err := geth.ParseAbi(mcdConstants.FlopperABI())
 		Expect(err).NotTo(HaveOccurred())
 
 		contract := bind.NewBoundContract(address, abi, nil, nil, nil)

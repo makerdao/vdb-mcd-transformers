@@ -36,16 +36,16 @@ import (
 )
 
 var _ = Describe("FlipKick Transformer", func() {
-	testConfig := transformer.EventTransformerConfig{
+	flipKickConfig := transformer.EventTransformerConfig{
 		TransformerName:   mcdConstants.FlipKickLabel,
 		ContractAddresses: []string{mcdConstants.FlipperContractAddress()},
-		ContractAbi:       test_data.KovanFlipperABI,
+		ContractAbi:       mcdConstants.FlipperABI(),
 		Topic:             test_data.KovanFlipKickSignature,
 	}
 
 	It("unpacks an event log", func() {
 		address := common.HexToAddress(mcdConstants.FlipperContractAddress())
-		abi, err := geth.ParseAbi(test_data.KovanFlipperABI)
+		abi, err := geth.ParseAbi(flipKickConfig.ContractAbi)
 		Expect(err).NotTo(HaveOccurred())
 
 		contract := bind.NewBoundContract(address, abi, nil, nil, nil)
@@ -68,8 +68,8 @@ var _ = Describe("FlipKick Transformer", func() {
 
 	It("fetches and transforms a FlipKick event from Kovan chain", func() {
 		blockNumber := int64(8956476)
-		testConfig.StartingBlockNumber = blockNumber
-		testConfig.EndingBlockNumber = blockNumber
+		flipKickConfig.StartingBlockNumber = blockNumber
+		flipKickConfig.EndingBlockNumber = blockNumber
 
 		rpcClient, ethClient, err := getClients(ipc)
 		Expect(err).NotTo(HaveOccurred())
@@ -82,15 +82,15 @@ var _ = Describe("FlipKick Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		tr := event.Transformer{
-			Config:     testConfig,
+			Config:     flipKickConfig,
 			Converter:  &flip_kick.FlipKickConverter{},
 			Repository: &flip_kick.FlipKickRepository{},
 		}.NewTransformer(db)
 
 		f := fetcher.NewLogFetcher(blockChain)
 		logs, err := f.FetchLogs(
-			transformer.HexStringsToAddresses(testConfig.ContractAddresses),
-			[]common.Hash{common.HexToHash(testConfig.Topic)},
+			transformer.HexStringsToAddresses(flipKickConfig.ContractAddresses),
+			[]common.Hash{common.HexToHash(flipKickConfig.Topic)},
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -111,8 +111,8 @@ var _ = Describe("FlipKick Transformer", func() {
 
 	It("rechecks flip kick event", func() {
 		blockNumber := int64(8956476)
-		testConfig.StartingBlockNumber = blockNumber
-		testConfig.EndingBlockNumber = blockNumber
+		flipKickConfig.StartingBlockNumber = blockNumber
+		flipKickConfig.EndingBlockNumber = blockNumber
 
 		rpcClient, ethClient, err := getClients(ipc)
 		Expect(err).NotTo(HaveOccurred())
@@ -125,15 +125,15 @@ var _ = Describe("FlipKick Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		tr := event.Transformer{
-			Config:     testConfig,
+			Config:     flipKickConfig,
 			Converter:  &flip_kick.FlipKickConverter{},
 			Repository: &flip_kick.FlipKickRepository{},
 		}.NewTransformer(db)
 
 		f := fetcher.NewLogFetcher(blockChain)
 		logs, err := f.FetchLogs(
-			transformer.HexStringsToAddresses(testConfig.ContractAddresses),
-			[]common.Hash{common.HexToHash(testConfig.Topic)},
+			transformer.HexStringsToAddresses(flipKickConfig.ContractAddresses),
+			[]common.Hash{common.HexToHash(flipKickConfig.Topic)},
 			header)
 		Expect(err).NotTo(HaveOccurred())
 

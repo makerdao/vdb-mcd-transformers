@@ -37,9 +37,9 @@ import (
 
 var _ = Describe("JugDrip Transformer", func() {
 	var (
-		db         *postgres.DB
-		blockChain core.BlockChain
-		config     transformer.EventTransformerConfig
+		db            *postgres.DB
+		blockChain    core.BlockChain
+		jugDripConfig transformer.EventTransformerConfig
 	)
 
 	BeforeEach(func() {
@@ -50,9 +50,9 @@ var _ = Describe("JugDrip Transformer", func() {
 		db = test_config.NewTestDB(blockChain.Node())
 		test_config.CleanTestDB(db)
 
-		config = transformer.EventTransformerConfig{
+		jugDripConfig = transformer.EventTransformerConfig{
 			ContractAddresses: []string{mcdConstants.JugContractAddress()},
-			ContractAbi:       test_data.KovanJugABI,
+			ContractAbi:       mcdConstants.JugABI(),
 			Topic:             test_data.KovanJugDripSignature,
 		}
 	})
@@ -60,14 +60,14 @@ var _ = Describe("JugDrip Transformer", func() {
 	// TODO: Replace block number once there is a drip event on the Jug contract
 	XIt("transforms JugDrip log events", func() {
 		blockNumber := int64(8934775)
-		config.StartingBlockNumber = blockNumber
-		config.EndingBlockNumber = blockNumber
+		jugDripConfig.StartingBlockNumber = blockNumber
+		jugDripConfig.EndingBlockNumber = blockNumber
 
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
 		initializer := shared.LogNoteTransformer{
-			Config:     config,
+			Config:     jugDripConfig,
 			Converter:  &jug_drip.JugDripConverter{},
 			Repository: &jug_drip.JugDripRepository{},
 		}
@@ -75,8 +75,8 @@ var _ = Describe("JugDrip Transformer", func() {
 
 		logFetcher := fetcher.NewLogFetcher(blockChain)
 		logs, err := logFetcher.FetchLogs(
-			transformer.HexStringsToAddresses(config.ContractAddresses),
-			[]common.Hash{common.HexToHash(config.Topic)},
+			transformer.HexStringsToAddresses(jugDripConfig.ContractAddresses),
+			[]common.Hash{common.HexToHash(jugDripConfig.Topic)},
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -97,14 +97,14 @@ var _ = Describe("JugDrip Transformer", func() {
 	// TODO: Replace block number once there is a drip event on the Jug contract
 	XIt("rechecks jug drip event", func() {
 		blockNumber := int64(8934775)
-		config.StartingBlockNumber = blockNumber
-		config.EndingBlockNumber = blockNumber
+		jugDripConfig.StartingBlockNumber = blockNumber
+		jugDripConfig.EndingBlockNumber = blockNumber
 
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
 		initializer := shared.LogNoteTransformer{
-			Config:     config,
+			Config:     jugDripConfig,
 			Converter:  &jug_drip.JugDripConverter{},
 			Repository: &jug_drip.JugDripRepository{},
 		}
@@ -112,8 +112,8 @@ var _ = Describe("JugDrip Transformer", func() {
 
 		f := fetcher.NewLogFetcher(blockChain)
 		logs, err := f.FetchLogs(
-			transformer.HexStringsToAddresses(config.ContractAddresses),
-			[]common.Hash{common.HexToHash(config.Topic)},
+			transformer.HexStringsToAddresses(jugDripConfig.ContractAddresses),
+			[]common.Hash{common.HexToHash(jugDripConfig.Topic)},
 			header)
 		Expect(err).NotTo(HaveOccurred())
 

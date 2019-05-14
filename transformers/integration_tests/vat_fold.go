@@ -50,31 +50,31 @@ var _ = Describe("VatFold Transformer", func() {
 		test_config.CleanTestDB(db)
 	})
 
-	testVatFoldConfig := transformer.EventTransformerConfig{
+	vatFoldConfig := transformer.EventTransformerConfig{
 		TransformerName:   mcdConstants.VatFoldLabel,
 		ContractAddresses: []string{mcdConstants.VatContractAddress()},
-		ContractAbi:       test_data.KovanVatABI,
+		ContractAbi:       mcdConstants.VatABI(),
 		Topic:             test_data.KovanVatFoldSignature,
 	}
 
 	// TODO: Replace block number once there is a fold event on the updated Vat
 	XIt("transforms VatFold log events", func() {
 		blockNumber := int64(9367233)
-		testVatFoldConfig.StartingBlockNumber = blockNumber
-		testVatFoldConfig.EndingBlockNumber = blockNumber
+		vatFoldConfig.StartingBlockNumber = blockNumber
+		vatFoldConfig.EndingBlockNumber = blockNumber
 
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
 		logFetcher := fetcher.NewLogFetcher(blockChain)
 		logs, err := logFetcher.FetchLogs(
-			transformer.HexStringsToAddresses(testVatFoldConfig.ContractAddresses),
-			[]common.Hash{common.HexToHash(testVatFoldConfig.Topic)},
+			transformer.HexStringsToAddresses(vatFoldConfig.ContractAddresses),
+			[]common.Hash{common.HexToHash(vatFoldConfig.Topic)},
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
 		transformer := shared.LogNoteTransformer{
-			Config:     testVatFoldConfig,
+			Config:     vatFoldConfig,
 			Converter:  &vat_fold.VatFoldConverter{},
 			Repository: &vat_fold.VatFoldRepository{},
 		}.NewLogNoteTransformer(db)
@@ -99,21 +99,21 @@ var _ = Describe("VatFold Transformer", func() {
 	// TODO: Replace block number once there is a fold event on the updated Vat
 	XIt("rechecks vat fold event", func() {
 		blockNumber := int64(9367233)
-		testVatFoldConfig.StartingBlockNumber = blockNumber
-		testVatFoldConfig.EndingBlockNumber = blockNumber
+		vatFoldConfig.StartingBlockNumber = blockNumber
+		vatFoldConfig.EndingBlockNumber = blockNumber
 
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
 		logFetcher := fetcher.NewLogFetcher(blockChain)
 		logs, err := logFetcher.FetchLogs(
-			transformer.HexStringsToAddresses(testVatFoldConfig.ContractAddresses),
-			[]common.Hash{common.HexToHash(testVatFoldConfig.Topic)},
+			transformer.HexStringsToAddresses(vatFoldConfig.ContractAddresses),
+			[]common.Hash{common.HexToHash(vatFoldConfig.Topic)},
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
 		transformer := shared.LogNoteTransformer{
-			Config:     testVatFoldConfig,
+			Config:     vatFoldConfig,
 			Converter:  &vat_fold.VatFoldConverter{},
 			Repository: &vat_fold.VatFoldRepository{},
 		}.NewLogNoteTransformer(db)

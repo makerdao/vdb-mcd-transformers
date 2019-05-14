@@ -35,12 +35,12 @@ import (
 
 var _ = Describe("Pip LogValue transformer", func() {
 	var (
-		db          *postgres.DB
-		blockChain  core.BlockChain
-		config      transformer.EventTransformerConfig
-		initializer shared.LogNoteTransformer
-		logFetcher  fetcher.ILogFetcher
-		topics      []common.Hash
+		db                *postgres.DB
+		blockChain        core.BlockChain
+		pipLogValueConfig transformer.EventTransformerConfig
+		initializer       shared.LogNoteTransformer
+		logFetcher        fetcher.ILogFetcher
+		topics            []common.Hash
 	)
 
 	BeforeEach(func() {
@@ -51,18 +51,18 @@ var _ = Describe("Pip LogValue transformer", func() {
 		db = test_config.NewTestDB(blockChain.Node())
 		test_config.CleanTestDB(db)
 
-		config = transformer.EventTransformerConfig{
+		pipLogValueConfig = transformer.EventTransformerConfig{
 			TransformerName: mcdConstants.PipLogValueLabel,
-			ContractAbi:     test_data.KovanPipABI,
+			ContractAbi:     mcdConstants.PipABI(),
 			Topic:           test_data.KovanPipLogValueSignature,
 		}
 
-		topics = []common.Hash{common.HexToHash(config.Topic)}
+		topics = []common.Hash{common.HexToHash(pipLogValueConfig.Topic)}
 
 		logFetcher = fetcher.NewLogFetcher(blockChain)
 
 		initializer = shared.LogNoteTransformer{
-			Config:     config,
+			Config:     pipLogValueConfig,
 			Converter:  &pip_log_value.PipLogValueConverter{},
 			Repository: &pip_log_value.PipLogValueRepository{},
 		}

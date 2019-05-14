@@ -25,6 +25,7 @@ import (
 	. "github.com/onsi/gomega"
 
 	"github.com/vulcanize/mcd_transformers/transformers/events/flop_kick"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
@@ -32,7 +33,7 @@ var _ = Describe("FlopKick Converter", func() {
 	Describe("ToEntities", func() {
 		It("converts a log to a FlopKick entity", func() {
 			converter := flop_kick.FlopKickConverter{}
-			entities, err := converter.ToEntities(test_data.KovanFlopperABI, []types.Log{test_data.FlopKickLog})
+			entities, err := converter.ToEntities(constants.FlopperABI(), []types.Log{test_data.FlopKickLog})
 
 			Expect(err).NotTo(HaveOccurred())
 			entity := entities[0]

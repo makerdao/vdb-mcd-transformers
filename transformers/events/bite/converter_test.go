@@ -24,6 +24,7 @@ import (
 	. "github.com/onsi/gomega"
 
 	"github.com/vulcanize/mcd_transformers/transformers/events/bite"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
@@ -32,7 +33,7 @@ var _ = Describe("Bite Converter", func() {
 
 	Describe("ToEntity", func() {
 		It("converts an eth log to a bite entity", func() {
-			entities, err := converter.ToEntities(test_data.KovanCatABI, []types.Log{test_data.EthBiteLog})
+			entities, err := converter.ToEntities(constants.CatABI(), []types.Log{test_data.EthBiteLog})
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(entities)).To(Equal(1))

@@ -26,6 +26,7 @@ import (
 	. "github.com/onsi/gomega"
 
 	"github.com/vulcanize/mcd_transformers/transformers/events/flap_kick"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
@@ -34,7 +35,7 @@ var _ = Describe("Flap kick converter", func() {
 
 	Describe("ToEntity", func() {
 		It("converts an Eth Log to a FlapKickEntity", func() {
-			entities, err := converter.ToEntities(test_data.KovanFlapperABI, []types.Log{test_data.EthFlapKickLog})
+			entities, err := converter.ToEntities(constants.FlapperABI(), []types.Log{test_data.EthFlapKickLog})
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(entities)).To(Equal(1))
