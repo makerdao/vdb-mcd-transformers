@@ -1,6 +1,7 @@
 package queries
 
 import (
+	"database/sql"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/vulcanize/mcd_transformers/test_config"
@@ -211,13 +212,13 @@ var _ = Describe("Bites query", func() {
 				err = biteRepo.Create(headerId, []interface{}{biteEvent})
 				Expect(err).NotTo(HaveOccurred())
 
-				expectedTx := test_helpers.Tx{
-					TransactionHash:  "txHash",
-					TransactionIndex: strconv.Itoa(rand.Intn(10)),
-					BlockHeight:      strconv.Itoa(fakeBlock),
-					BlockHash:        fakeHeader.Hash,
-					TxFrom:           "fromAddress",
-					TxTo:             "toAddress",
+				expectedTx := Tx{
+					TransactionHash:  sql.NullString{String: "txHash", Valid: true},
+					TransactionIndex: sql.NullInt64{Int64: int64(rand.Intn(10)), Valid: true},
+					BlockHeight:      sql.NullInt64{Int64: int64(fakeBlock), Valid: true},
+					BlockHash:        sql.NullString{String: fakeHeader.Hash, Valid: true},
+					TxFrom:           sql.NullString{String: "fromAddress", Valid: true},
+					TxTo:             sql.NullString{String: "toAddress", Valid: true},
 				}
 
 				_, err = db.Exec(`INSERT INTO header_sync_transactions (header_id, hash, tx_from, tx_index, tx_to)
@@ -225,7 +226,7 @@ var _ = Describe("Bites query", func() {
 					expectedTx.TransactionIndex, expectedTx.TxTo)
 				Expect(err).NotTo(HaveOccurred())
 
-				var actualTx test_helpers.Tx
+				var actualTx Tx
 				err = db.Get(&actualTx, `SELECT * FROM maker.bite_event_tx(
 			    (SELECT (ilk_name, urn_id, ink, art, tab, block_height)::maker.bite_event FROM maker.all_bites($1)))`,
 					test_helpers.FakeIlk.Name)
