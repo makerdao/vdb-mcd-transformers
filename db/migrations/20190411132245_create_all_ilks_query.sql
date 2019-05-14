@@ -1,8 +1,8 @@
 -- +goose Up
 
 -- Function returning state for all ilks as of the given block height
-CREATE OR REPLACE FUNCTION maker.all_ilks(block_height BIGINT)
-  RETURNS SETOF maker.ilk_state
+CREATE FUNCTION api.all_ilks(block_height BIGINT)
+  RETURNS SETOF api.ilk
 AS $$
 WITH rates AS (
   SELECT DISTINCT ON (ilk_id) rate, ilk_id, block_hash
@@ -71,14 +71,14 @@ WITH rates AS (
     duties.duty,
     (
       SELECT TIMESTAMP 'epoch' + h.block_timestamp * INTERVAL '1 second'
-      FROM maker.get_ilk_blocks_before($1, ilks.id) b
+      FROM api.get_ilk_blocks_before($1, ilks.id) b
       JOIN headers h on h.block_number = b.block_height
       ORDER BY h.block_number DESC
       LIMIT 1
     ),
     (
       SELECT TIMESTAMP 'epoch' + h.block_timestamp * INTERVAL '1 second'
-      FROM maker.get_ilk_blocks_before($1, ilks.id) b
+      FROM api.get_ilk_blocks_before($1, ilks.id) b
       JOIN headers h on h.block_number = b.block_height
       ORDER BY h.block_number ASC
       LIMIT 1
@@ -107,8 +107,7 @@ WITH rates AS (
     duties.duty is not null
   )
 $$
-LANGUAGE SQL
-STABLE SECURITY DEFINER;
+LANGUAGE SQL STABLE;
 
 -- +goose Down
-DROP FUNCTION IF EXISTS maker.all_ilks(block_height BIGINT);
+DROP FUNCTION api.all_ilks(block_height BIGINT);

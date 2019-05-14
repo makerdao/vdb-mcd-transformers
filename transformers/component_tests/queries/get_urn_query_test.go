@@ -67,7 +67,7 @@ var _ = Describe("Single urn view", func() {
 
 		var actualUrn helper.UrnState
 		err = db.Get(&actualUrn, `SELECT urn_id, ilk_name, ink, art, ratio, safe, created, updated
-			FROM maker.get_urn($1, $2, $3)`, helper.FakeIlk.Name, urnOne, blockTwo)
+			FROM api.get_urn($1, $2, $3)`, helper.FakeIlk.Name, urnOne, blockTwo)
 		Expect(err).NotTo(HaveOccurred())
 
 		helper.AssertUrn(actualUrn, expectedUrn)
@@ -85,7 +85,7 @@ var _ = Describe("Single urn view", func() {
 
 		var result helper.UrnState
 		err = db.Get(&result, `SELECT urn_id, ilk_name, ink, art, ratio, safe, created, updated
-			FROM maker.get_urn($1, $2, $3)`, helper.FakeIlk.Name, urnOne, block)
+			FROM api.get_urn($1, $2, $3)`, helper.FakeIlk.Name, urnOne, block)
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(result.Created.String).To(BeEmpty())
@@ -131,7 +131,7 @@ var _ = Describe("Single urn view", func() {
 			}
 
 			err = db.Get(&actualUrn, `SELECT urn_id, ilk_name, ink, art, ratio, safe, created, updated
-				FROM maker.get_urn($1, $2, $3)`, helper.FakeIlk.Name, urnOne, blockOne)
+				FROM api.get_urn($1, $2, $3)`, helper.FakeIlk.Name, urnOne, blockOne)
 			Expect(err).NotTo(HaveOccurred())
 
 			helper.AssertUrn(actualUrn, expectedUrn)
@@ -168,7 +168,7 @@ var _ = Describe("Single urn view", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			err = db.Get(&actualUrn, `SELECT urn_id, ilk_name, ink, art, ratio, safe, created, updated
-				FROM maker.get_urn($1, $2, $3)`, helper.FakeIlk.Name, urnOne, blockTwo)
+				FROM api.get_urn($1, $2, $3)`, helper.FakeIlk.Name, urnOne, blockTwo)
 			Expect(err).NotTo(HaveOccurred())
 
 			helper.AssertUrn(actualUrn, expectedUrn)
@@ -188,7 +188,7 @@ var _ = Describe("Single urn view", func() {
 
 		var result helper.UrnState
 		err = db.Get(&result, `SELECT urn_id, ilk_name, ink, art, ratio, safe, created, updated
-			FROM maker.get_urn($1, $2, $3)`, helper.FakeIlk.Name, urnOne, block)
+			FROM api.get_urn($1, $2, $3)`, helper.FakeIlk.Name, urnOne, block)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(result.Ratio.String).To(BeEmpty())

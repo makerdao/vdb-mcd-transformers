@@ -66,7 +66,7 @@ var _ = Describe("Ilk State History Query", func() {
 
 		var dbResult []test_helpers.IlkState
 		err = db.Select(&dbResult,
-			`SELECT ilk_name, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated from maker.all_ilk_states($1, $2)`,
+			`SELECT ilk_name, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated from api.all_ilk_states($1, $2)`,
 			blockTwo,
 			ilkId)
 		Expect(err).NotTo(HaveOccurred())
@@ -91,7 +91,7 @@ var _ = Describe("Ilk State History Query", func() {
 
 		var dbResult []test_helpers.IlkState
 		err = db.Select(&dbResult,
-			`SELECT ilk_name, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated from maker.all_ilk_states($1, $2)`,
+			`SELECT ilk_name, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated from api.all_ilk_states($1, $2)`,
 			blockTwo,
 			ilkId)
 		Expect(err).NotTo(HaveOccurred())
@@ -118,7 +118,7 @@ var _ = Describe("Ilk State History Query", func() {
 
 		var dbResult []test_helpers.IlkState
 		err = db.Select(&dbResult,
-			`SELECT ilk_name, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated from maker.all_ilk_states($1, $2)`,
+			`SELECT ilk_name, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated from api.all_ilk_states($1, $2)`,
 			blockZero,
 			ilkId)
 		Expect(err).NotTo(HaveOccurred())
@@ -139,7 +139,7 @@ var _ = Describe("Ilk State History Query", func() {
 
 		var dbResult []test_helpers.IlkState
 		err = db.Select(&dbResult,
-			`SELECT ilk_name, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated from maker.all_ilk_states($1, $2)`,
+			`SELECT ilk_name, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated from api.all_ilk_states($1, $2)`,
 			blockOneHundred,
 			ilkId)
 		Expect(err).NotTo(HaveOccurred())
