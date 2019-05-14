@@ -30,7 +30,7 @@ import (
 var EthVatHealLogWithPositiveRad = types.Log{
 	Address: common.HexToAddress(constants.VatContractAddress()),
 	Topics: []common.Hash{
-		common.HexToHash(KovanVatHealSignature),
+		common.HexToHash(constants.VatHealSignature()),
 		common.HexToHash("0x00000000000000000000000007fa9ef6609ca7921112231f8f195138ebba2977"),
 		common.HexToHash("0x0000000000000000000000007340e006f4135ba6970d43bf43d88dcad4e7a8ca"),
 		common.HexToHash("0x00000000000000000000000000000000000000000000003635c9adc5dea00000"),
@@ -57,7 +57,7 @@ var VatHealModelWithPositiveRad = vat_heal.VatHealModel{
 var EthVatHealLogWithNegativeRad = types.Log{
 	Address: common.HexToAddress(constants.VatContractAddress()),
 	Topics: []common.Hash{
-		common.HexToHash(KovanVatHealSignature),
+		common.HexToHash(constants.VatHealSignature()),
 		common.HexToHash("0x00000000000000000000000007fa9ef6609ca7921112231f8f195138ebba2977"),
 		common.HexToHash("0x0000000000000000000000007340e006f4135ba6970d43bf43d88dcad4e7a8ca"),
 		common.HexToHash("0xffffffffffffffffffffffffffffffffffffffffffffffc9ca36523a21600000"),

@@ -27,7 +27,7 @@ func GetVatFoldConfig() shared_t.EventTransformerConfig {
 		TransformerName:     constants.VatFoldLabel,
 		ContractAddresses:   []string{constants.VatContractAddress()},
 		ContractAbi:         constants.VatABI(),
-		Topic:               constants.GetVatFoldSignature(),
+		Topic:               constants.VatFoldSignature(),
 		StartingBlockNumber: constants.VatDeploymentBlock(),
 		EndingBlockNumber:   -1,
 	}

@@ -27,7 +27,7 @@ func GetVatHealConfig() shared_t.EventTransformerConfig {
 		TransformerName:     constants.VatHealLabel,
 		ContractAddresses:   []string{constants.VatContractAddress()},
 		ContractAbi:         constants.VatABI(),
-		Topic:               constants.GetVatHealSignature(),
+		Topic:               constants.VatHealSignature(),
 		StartingBlockNumber: constants.VatDeploymentBlock(),
 		EndingBlockNumber:   -1,
 	}

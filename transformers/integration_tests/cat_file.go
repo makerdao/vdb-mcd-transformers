@@ -37,7 +37,6 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/events/cat_file/vow"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
-	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
 var _ = Describe("Cat File transformer", func() {
@@ -71,7 +70,7 @@ var _ = Describe("Cat File transformer", func() {
 		header, err := persistHeader(db, chopLumpBlockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 		catFileConfig.TransformerName = mcdConstants.CatFileChopLumpLabel
-		catFileConfig.Topic = test_data.KovanCatFileChopLumpSignature
+		catFileConfig.Topic = mcdConstants.CatFileChopLumpSignature()
 		catFileConfig.StartingBlockNumber = chopLumpBlockNumber
 		catFileConfig.EndingBlockNumber = chopLumpBlockNumber
 
@@ -116,7 +115,7 @@ var _ = Describe("Cat File transformer", func() {
 		header, err := persistHeader(db, chopLumpBlockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 		catFileConfig.TransformerName = mcdConstants.CatFileChopLumpLabel
-		catFileConfig.Topic = test_data.KovanCatFileChopLumpSignature
+		catFileConfig.Topic = mcdConstants.CatFileChopLumpSignature()
 		catFileConfig.StartingBlockNumber = chopLumpBlockNumber
 		catFileConfig.EndingBlockNumber = chopLumpBlockNumber
 
@@ -155,7 +154,7 @@ var _ = Describe("Cat File transformer", func() {
 		header, err := persistHeader(db, flipBlockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 		catFileConfig.TransformerName = mcdConstants.CatFileFlipLabel
-		catFileConfig.Topic = test_data.KovanCatFileFlipSignature
+		catFileConfig.Topic = mcdConstants.CatFileFlipSignature()
 		catFileConfig.StartingBlockNumber = flipBlockNumber
 		catFileConfig.EndingBlockNumber = flipBlockNumber
 
@@ -193,7 +192,7 @@ var _ = Describe("Cat File transformer", func() {
 		header, err := persistHeader(db, flipBlockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 		catFileConfig.TransformerName = mcdConstants.CatFileFlipLabel
-		catFileConfig.Topic = test_data.KovanCatFileFlipSignature
+		catFileConfig.Topic = mcdConstants.CatFileFlipSignature()
 		catFileConfig.StartingBlockNumber = flipBlockNumber
 		catFileConfig.EndingBlockNumber = flipBlockNumber
 
@@ -233,7 +232,7 @@ var _ = Describe("Cat File transformer", func() {
 		header, err := persistHeader(db, vowBlockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 		catFileConfig.TransformerName = mcdConstants.CatFileVowLabel
-		catFileConfig.Topic = test_data.KovanCatFileVowSignature
+		catFileConfig.Topic = mcdConstants.CatFileVowSignature()
 		catFileConfig.StartingBlockNumber = vowBlockNumber
 		catFileConfig.EndingBlockNumber = vowBlockNumber
 

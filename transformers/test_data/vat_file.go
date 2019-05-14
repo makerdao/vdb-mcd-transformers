@@ -32,7 +32,7 @@ import (
 var EthVatFileDebtCeilingLog = types.Log{
 	Address: common.HexToAddress(constants.VatContractAddress()),
 	Topics: []common.Hash{
-		common.HexToHash(KovanVatFileDebtCeilingSignature),
+		common.HexToHash(constants.VatFileDebtCeilingSignature()),
 		common.HexToHash("0x4c696e6500000000000000000000000000000000000000000000000000000000"),
 		common.HexToHash("0x0000000000000000000002ac3a4edbbfb8014e3ba83411e915e8000000000000"),
 		common.HexToHash("0x0000000000000000000000000000000000000000000000000000000000000000"),
@@ -58,7 +58,7 @@ var VatFileDebtCeilingModel = debt_ceiling.VatFileDebtCeilingModel{
 var EthVatFileIlkDustLog = types.Log{
 	Address: common.HexToAddress(constants.VatContractAddress()),
 	Topics: []common.Hash{
-		common.HexToHash("0x1a0b287e00000000000000000000000000000000000000000000000000000000"),  //sig
+		common.HexToHash(constants.VatFileIlkSignature()),                                       //sig
 		common.HexToHash("0x5245500000000000000000000000000000000000000000000000000000000000"),  //ilk
 		common.HexToHash("0x6475737400000000000000000000000000000000000000000000000000000000"),  //what
 		common.HexToHash("0x000000000000000000000000000000000000000832600000bee4f14727b555555"), //val
@@ -86,7 +86,7 @@ var VatFileIlkDustModel = ilk2.VatFileIlkModel{
 var EthVatFileIlkLineLog = types.Log{
 	Address: common.HexToAddress(constants.VatContractAddress()),
 	Topics: []common.Hash{
-		common.HexToHash(KovanVatFileIlkSignature),
+		common.HexToHash(constants.VatFileIlkSignature()),
 		common.HexToHash("0x5245500000000000000000000000000000000000000000000000000000000000"),
 		common.HexToHash("0x6c696e6500000000000000000000000000000000000000000000000000000000"),
 		common.HexToHash("0x00000000000000000000000000000000000000000000000bee4f14727b555555"),
@@ -114,7 +114,7 @@ var VatFileIlkLineModel = ilk2.VatFileIlkModel{
 var EthVatFileIlkSpotLog = types.Log{
 	Address: common.HexToAddress(constants.VatContractAddress()),
 	Topics: []common.Hash{
-		common.HexToHash(KovanVatFileIlkSignature),
+		common.HexToHash(constants.VatFileIlkSignature()),
 		common.HexToHash("0x4554480000000000000000000000000000000000000000000000000000000000"),
 		common.HexToHash("0x73706f7400000000000000000000000000000000000000000000000000000000"),
 		common.HexToHash("0x00000000000000000000000000000000000000012714e40bee4f14727b555555"),

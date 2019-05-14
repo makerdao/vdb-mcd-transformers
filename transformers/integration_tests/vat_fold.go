@@ -32,7 +32,6 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_fold"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
-	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
 var _ = Describe("VatFold Transformer", func() {
@@ -54,7 +53,7 @@ var _ = Describe("VatFold Transformer", func() {
 		TransformerName:   mcdConstants.VatFoldLabel,
 		ContractAddresses: []string{mcdConstants.VatContractAddress()},
 		ContractAbi:       mcdConstants.VatABI(),
-		Topic:             test_data.KovanVatFoldSignature,
+		Topic:             mcdConstants.VatFoldSignature(),
 	}
 
 	// TODO: Replace block number once there is a fold event on the updated Vat

@@ -60,7 +60,7 @@ var _ = Describe("FlopKick Transformer", func() {
 			TransformerName:   mcdConstants.FlopKickLabel,
 			ContractAddresses: []string{mcdConstants.FlopperContractAddress()},
 			ContractAbi:       mcdConstants.FlopperABI(),
-			Topic:             test_data.KovanFlopKickSignature,
+			Topic:             mcdConstants.FlopKickSignature(),
 		}
 
 		initializer = event.Transformer{

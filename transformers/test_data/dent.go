@@ -42,7 +42,7 @@ var (
 var DentLog = types.Log{
 	Address: common.HexToAddress(constants.FlipperContractAddress()),
 	Topics: []common.Hash{
-		common.HexToHash(KovanDentSignature),
+		common.HexToHash(constants.DentSignature()),
 		common.HexToHash("0x00000000000000000000000064d922894153be9eef7b7218dc565d1d0ce2a092"),
 		common.HexToHash("0x0000000000000000000000000000000000000000000000000000000000000001"),
 		common.HexToHash("0x00000000000000000000000000000000000000000000000098a7d9b8314c0000"),

@@ -32,7 +32,6 @@ import (
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/events/flap_kick"
 	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
-	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
 var _ = Describe("FlapKick Transformer", func() {
@@ -54,7 +53,7 @@ var _ = Describe("FlapKick Transformer", func() {
 		TransformerName:   mcdConstants.FlapKickLabel,
 		ContractAddresses: []string{mcdConstants.FlapperContractAddress()},
 		ContractAbi:       mcdConstants.FlapperABI(),
-		Topic:             test_data.KovanFlapKickSignature,
+		Topic:             mcdConstants.FlapKickSignature(),
 	}
 
 	It("fetches and transforms a FlapKick event from Kovan chain", func() {

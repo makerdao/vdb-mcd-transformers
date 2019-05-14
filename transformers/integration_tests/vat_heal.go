@@ -28,7 +28,6 @@ import (
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_heal"
 	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
-	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
 var _ = Describe("VatHeal Transformer", func() {
@@ -36,7 +35,7 @@ var _ = Describe("VatHeal Transformer", func() {
 		TransformerName:   mcdConstants.VatHealLabel,
 		ContractAddresses: []string{mcdConstants.VatContractAddress()},
 		ContractAbi:       mcdConstants.VatABI(),
-		Topic:             test_data.KovanVatHealSignature,
+		Topic:             mcdConstants.VatHealSignature(),
 	}
 
 	// TODO: Replace block number once there's a heal event on the updated Vat

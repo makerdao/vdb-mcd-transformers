@@ -31,7 +31,7 @@ import (
 var EthJugDripLog = types.Log{
 	Address: common.HexToAddress(constants.JugContractAddress()),
 	Topics: []common.Hash{
-		common.HexToHash(KovanJugDripSignature),
+		common.HexToHash(constants.JugDripSignature()),
 		common.HexToHash("0x00000000000000000000000064d922894153be9eef7b7218dc565d1d0ce2a092"),
 		common.HexToHash("0x66616b6520696c6b000000000000000000000000000000000000000000000000"),
 		common.HexToHash("0x0000000000000000000000000000000000000000000000000000000000000000"),

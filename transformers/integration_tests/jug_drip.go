@@ -32,7 +32,6 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/events/jug_drip"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
-	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
 var _ = Describe("JugDrip Transformer", func() {
@@ -53,7 +52,7 @@ var _ = Describe("JugDrip Transformer", func() {
 		jugDripConfig = transformer.EventTransformerConfig{
 			ContractAddresses: []string{mcdConstants.JugContractAddress()},
 			ContractAbi:       mcdConstants.JugABI(),
-			Topic:             test_data.KovanJugDripSignature,
+			Topic:             mcdConstants.JugDripSignature(),
 		}
 	})
 

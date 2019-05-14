@@ -30,7 +30,6 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_flux"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
-	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
 var _ = Describe("VatFlux LogNoteTransformer", func() {
@@ -38,7 +37,7 @@ var _ = Describe("VatFlux LogNoteTransformer", func() {
 		TransformerName:   mcdConstants.VatFluxLabel,
 		ContractAddresses: []string{mcdConstants.VatContractAddress()},
 		ContractAbi:       mcdConstants.VatABI(),
-		Topic:             test_data.KovanVatFluxSignature,
+		Topic:             mcdConstants.VatFluxSignature(),
 	}
 
 	// TODO: Replace block number once there's a flux event on the updated Vat

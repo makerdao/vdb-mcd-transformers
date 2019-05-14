@@ -29,7 +29,7 @@ import (
 var EthVowFlogLog = types.Log{
 	Address: common.HexToAddress(constants.VowContractAddress()),
 	Topics: []common.Hash{
-		common.HexToHash(KovanVowFlogSignature),
+		common.HexToHash(constants.VowFlogSignature()),
 		common.HexToHash("0x0000000000000000000000008e84a1e068d77059cbe263c43ad0cdc130863313"),
 		common.HexToHash("0x0000000000000000000000000000000000000000000000000000000000000539"),
 		common.HexToHash("0x0000000000000000000000000000000000000000000000000000000000000000"),

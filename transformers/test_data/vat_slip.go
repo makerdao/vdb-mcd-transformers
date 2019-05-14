@@ -31,7 +31,7 @@ import (
 var EthVatSlipLogWithPositiveWad = types.Log{
 	Address: common.HexToAddress(constants.VatContractAddress()),
 	Topics: []common.Hash{
-		common.HexToHash(KovanVatSlipSignature),
+		common.HexToHash(constants.VatSlipSignature()),
 		common.HexToHash("0x4554482d41000000000000000000000000000000000000000000000000000000"),
 		common.HexToHash("0x0000000000000000000000005c8c8e5895b9ccf34acf391c99e13c79ee2efb46"),
 		common.HexToHash("0x000000000000000000000000000000000000000000000000002386f26fc10000"),
@@ -58,7 +58,7 @@ var VatSlipModelWithPositiveWad = vat_slip.VatSlipModel{
 var EthVatSlipLogWithNegativeWad = types.Log{
 	Address: common.HexToAddress(constants.VatContractAddress()),
 	Topics: []common.Hash{
-		common.HexToHash(KovanVatSlipSignature),
+		common.HexToHash(constants.VatSlipSignature()),
 		common.HexToHash("0x4554482d41000000000000000000000000000000000000000000000000000000"),
 		common.HexToHash("0x000000000000000000000000fc7440e2ed4a3aeb14d40c00f02a14221be0474d"),
 		common.HexToHash("0xffffffffffffffffffffffffffffffffffffffffffffffffffee3c86c81f8000"),

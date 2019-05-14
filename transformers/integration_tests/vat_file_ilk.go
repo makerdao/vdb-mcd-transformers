@@ -33,7 +33,6 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_file/ilk"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
-	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
 var _ = Describe("VatFileIlk LogNoteTransformer", func() {
@@ -56,7 +55,7 @@ var _ = Describe("VatFileIlk LogNoteTransformer", func() {
 			TransformerName:   mcdConstants.VatFileIlkLabel,
 			ContractAddresses: []string{mcdConstants.VatContractAddress()},
 			ContractAbi:       mcdConstants.VatABI(),
-			Topic:             test_data.KovanVatFileIlkSignature,
+			Topic:             mcdConstants.VatFileIlkSignature(),
 		}
 
 		addresses = transformer.HexStringsToAddresses(vatFileIlkConfig.ContractAddresses)

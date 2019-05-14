@@ -30,7 +30,6 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_file/debt_ceiling"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
-	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
 var _ = Describe("VatFileDebtCeiling LogNoteTransformer", func() {
@@ -52,7 +51,7 @@ var _ = Describe("VatFileDebtCeiling LogNoteTransformer", func() {
 		TransformerName:   mcdConstants.VatFileDebtCeilingLabel,
 		ContractAddresses: []string{mcdConstants.VatContractAddress()},
 		ContractAbi:       mcdConstants.VatABI(),
-		Topic:             test_data.KovanVatFileDebtCeilingSignature,
+		Topic:             mcdConstants.VatFileDebtCeilingSignature(),
 	}
 
 	It("fetches and transforms a VatFileDebtCeiling event from Kovan chain", func() {

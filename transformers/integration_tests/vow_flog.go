@@ -30,7 +30,6 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/events/vow_flog"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
-	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
 var _ = Describe("VowFlog LogNoteTransformer", func() {
@@ -52,7 +51,7 @@ var _ = Describe("VowFlog LogNoteTransformer", func() {
 		TransformerName:   mcdConstants.VowFlogLabel,
 		ContractAddresses: []string{mcdConstants.VowContractAddress()},
 		ContractAbi:       mcdConstants.VowABI(),
-		Topic:             test_data.KovanVowFlogSignature,
+		Topic:             mcdConstants.VowFlogSignature(),
 	}
 
 	// TODO: replace block number when there is a flog event on the updated Vow

@@ -27,7 +27,7 @@ func GetBiteConfig() shared_t.EventTransformerConfig {
 		TransformerName:     constants.BiteLabel,
 		ContractAddresses:   []string{constants.CatContractAddress()},
 		ContractAbi:         constants.CatABI(),
-		Topic:               constants.GetBiteSignature(),
+		Topic:               constants.BiteSignature(),
 		StartingBlockNumber: constants.CatDeploymentBlock(),
 		EndingBlockNumber:   -1,
 	}

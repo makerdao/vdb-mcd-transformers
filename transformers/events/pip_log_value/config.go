@@ -35,7 +35,7 @@ func GetPipLogValueConfig() shared_t.EventTransformerConfig {
 			constants.PipCol5ContractAddress(),
 		},
 		ContractAbi: constants.PipABI(),
-		Topic:       constants.GetPipLogValueSignature(),
+		Topic:       constants.PipLogValueSignature(),
 		StartingBlockNumber: shared.MinInt64([]int64{
 			constants.PipEthDeploymentBlock(),
 			constants.PipCol1DeploymentBlock(),

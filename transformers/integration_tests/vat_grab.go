@@ -31,7 +31,6 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_grab"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
-	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
 var _ = Describe("Vat Grab Transformer", func() {
@@ -39,7 +38,7 @@ var _ = Describe("Vat Grab Transformer", func() {
 		TransformerName:   mcdConstants.VatGrabLabel,
 		ContractAddresses: []string{mcdConstants.VatContractAddress()},
 		ContractAbi:       mcdConstants.VatABI(),
-		Topic:             test_data.KovanVatGrabSignature,
+		Topic:             mcdConstants.VatGrabSignature(),
 	}
 
 	// TODO: Replace block number once there's a grab event on the updated Vat

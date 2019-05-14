@@ -30,7 +30,6 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/events/vow_fess"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
-	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
 var _ = Describe("VowFess LogNoteTransformer", func() {
@@ -52,7 +51,7 @@ var _ = Describe("VowFess LogNoteTransformer", func() {
 		TransformerName:   mcdConstants.VowFessLabel,
 		ContractAddresses: []string{mcdConstants.VowContractAddress()},
 		ContractAbi:       mcdConstants.VowABI(),
-		Topic:             test_data.KovanVowFessSignature,
+		Topic:             mcdConstants.VowFessSignature(),
 	}
 
 	// TODO: replace block number when there is a fess event on the updated Vow

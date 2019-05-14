@@ -32,7 +32,6 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_slip"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
-	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
 var _ = Describe("Vat slip transformer", func() {
@@ -54,7 +53,7 @@ var _ = Describe("Vat slip transformer", func() {
 		TransformerName:   mcdConstants.VatSlipLabel,
 		ContractAddresses: []string{mcdConstants.VatContractAddress()},
 		ContractAbi:       mcdConstants.VatABI(),
-		Topic:             test_data.KovanVatSlipSignature,
+		Topic:             mcdConstants.VatSlipSignature(),
 	}
 
 	It("persists vat slip event", func() {

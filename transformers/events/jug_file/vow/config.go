@@ -27,7 +27,7 @@ func GetJugFileVowConfig() shared_t.EventTransformerConfig {
 		TransformerName:     constants.JugFileVowLabel,
 		ContractAddresses:   []string{constants.JugContractAddress()},
 		ContractAbi:         constants.JugABI(),
-		Topic:               constants.GetJugFileVowSignature(),
+		Topic:               constants.JugFileVowSignature(),
 		StartingBlockNumber: constants.JugDeploymentBlock(),
 		EndingBlockNumber:   -1,
 	}

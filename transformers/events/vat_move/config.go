@@ -27,7 +27,7 @@ func GetVatMoveConfig() shared_t.EventTransformerConfig {
 		TransformerName:     constants.VatMoveLabel,
 		ContractAddresses:   []string{constants.VatContractAddress()},
 		ContractAbi:         constants.VatABI(),
-		Topic:               constants.GetVatMoveSignature(),
+		Topic:               constants.VatMoveSignature(),
 		StartingBlockNumber: constants.VatDeploymentBlock(),
 		EndingBlockNumber:   -1,
 	}

@@ -55,7 +55,7 @@ var (
 var EthFlipKickLog = types.Log{
 	Address: common.HexToAddress(constants.FlipperContractAddress()),
 	Topics: []common.Hash{
-		common.HexToHash(KovanFlipKickSignature),
+		common.HexToHash(constants.FlipKickSignature()),
 		common.HexToHash("0x0000000000000000000000000000000000000000000000000000000000000001"),
 		common.HexToHash("0x7340e006f4135ba6970d43bf43d88dcad4e7a8ca000000000000000000000000"),
 	},

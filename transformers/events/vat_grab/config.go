@@ -11,7 +11,7 @@ func GetVatGrabConfig() shared_t.EventTransformerConfig {
 		TransformerName:     constants.VatGrabLabel,
 		ContractAddresses:   []string{constants.VatContractAddress()},
 		ContractAbi:         constants.VatABI(),
-		Topic:               constants.GetVatGrabSignature(),
+		Topic:               constants.VatGrabSignature(),
 		StartingBlockNumber: constants.VatDeploymentBlock(),
 		EndingBlockNumber:   -1,
 	}

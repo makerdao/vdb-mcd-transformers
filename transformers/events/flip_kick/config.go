@@ -27,7 +27,7 @@ func GetFlipKickConfig() shared_t.EventTransformerConfig {
 		TransformerName:     constants.FlipKickLabel,
 		ContractAddresses:   []string{constants.FlipperContractAddress()},
 		ContractAbi:         constants.FlipperABI(),
-		Topic:               constants.GetFlipKickSignature(),
+		Topic:               constants.FlipKickSignature(),
 		StartingBlockNumber: constants.FlipperDeploymentBlock(),
 		EndingBlockNumber:   -1,
 	}

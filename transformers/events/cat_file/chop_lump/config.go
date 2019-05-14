@@ -27,7 +27,7 @@ func GetCatFileChopLumpConfig() shared_t.EventTransformerConfig {
 		TransformerName:     constants.CatFileChopLumpLabel,
 		ContractAddresses:   []string{constants.CatContractAddress()},
 		ContractAbi:         constants.CatABI(),
-		Topic:               constants.GetCatFileChopLumpSignature(),
+		Topic:               constants.CatFileChopLumpSignature(),
 		StartingBlockNumber: constants.CatDeploymentBlock(),
 		EndingBlockNumber:   -1,
 	}

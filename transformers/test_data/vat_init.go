@@ -31,7 +31,7 @@ import (
 var EthVatInitLog = types.Log{
 	Address: common.HexToAddress(constants.VatContractAddress()),
 	Topics: []common.Hash{
-		common.HexToHash(KovanVatInitSignature),
+		common.HexToHash(constants.VatInitSignature()),
 		common.HexToHash("0x66616b6520696c6b000000000000000000000000000000000000000000000000"),
 		common.HexToHash("0x0000000000000000000000000000000000000000000000000000000000000000"),
 		common.HexToHash("0x0000000000000000000000000000000000000000000000000000000000000000"),
