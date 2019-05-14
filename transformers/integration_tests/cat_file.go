@@ -50,9 +50,9 @@ var _ = Describe("Cat File transformer", func() {
 		logFetcher fetcher.ILogFetcher
 	)
 
-	var testCatFileConfig = transformer.EventTransformerConfig{
+	var catFileConfig = transformer.EventTransformerConfig{
 		ContractAddresses: []string{mcdConstants.CatContractAddress()},
-		ContractAbi:       test_data.KovanCatABI,
+		ContractAbi:       mcdConstants.CatABI(),
 	}
 
 	BeforeEach(func() {
@@ -70,21 +70,21 @@ var _ = Describe("Cat File transformer", func() {
 		chopLumpBlockNumber := int64(10691268)
 		header, err := persistHeader(db, chopLumpBlockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
-		testCatFileConfig.TransformerName = mcdConstants.CatFileChopLumpLabel
-		testCatFileConfig.Topic = test_data.KovanCatFileChopLumpSignature
-		testCatFileConfig.StartingBlockNumber = chopLumpBlockNumber
-		testCatFileConfig.EndingBlockNumber = chopLumpBlockNumber
+		catFileConfig.TransformerName = mcdConstants.CatFileChopLumpLabel
+		catFileConfig.Topic = test_data.KovanCatFileChopLumpSignature
+		catFileConfig.StartingBlockNumber = chopLumpBlockNumber
+		catFileConfig.EndingBlockNumber = chopLumpBlockNumber
 
 		initializer := shared.LogNoteTransformer{
-			Config:     testCatFileConfig,
+			Config:     catFileConfig,
 			Converter:  &chop_lump.CatFileChopLumpConverter{},
 			Repository: &chop_lump.CatFileChopLumpRepository{},
 		}
 		transformer := initializer.NewLogNoteTransformer(db)
 
 		logs, err := logFetcher.FetchLogs(
-			[]common.Address{common.HexToAddress(testCatFileConfig.ContractAddresses[0])},
-			[]common.Hash{common.HexToHash(testCatFileConfig.Topic)},
+			[]common.Address{common.HexToAddress(catFileConfig.ContractAddresses[0])},
+			[]common.Hash{common.HexToHash(catFileConfig.Topic)},
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -115,21 +115,21 @@ var _ = Describe("Cat File transformer", func() {
 		chopLumpBlockNumber := int64(10691268)
 		header, err := persistHeader(db, chopLumpBlockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
-		testCatFileConfig.TransformerName = mcdConstants.CatFileChopLumpLabel
-		testCatFileConfig.Topic = test_data.KovanCatFileChopLumpSignature
-		testCatFileConfig.StartingBlockNumber = chopLumpBlockNumber
-		testCatFileConfig.EndingBlockNumber = chopLumpBlockNumber
+		catFileConfig.TransformerName = mcdConstants.CatFileChopLumpLabel
+		catFileConfig.Topic = test_data.KovanCatFileChopLumpSignature
+		catFileConfig.StartingBlockNumber = chopLumpBlockNumber
+		catFileConfig.EndingBlockNumber = chopLumpBlockNumber
 
 		initializer := shared.LogNoteTransformer{
-			Config:     testCatFileConfig,
+			Config:     catFileConfig,
 			Converter:  &chop_lump.CatFileChopLumpConverter{},
 			Repository: &chop_lump.CatFileChopLumpRepository{},
 		}
 		transformer := initializer.NewLogNoteTransformer(db)
 
 		logs, err := logFetcher.FetchLogs(
-			[]common.Address{common.HexToAddress(testCatFileConfig.ContractAddresses[0])},
-			[]common.Hash{common.HexToHash(testCatFileConfig.Topic)},
+			[]common.Address{common.HexToAddress(catFileConfig.ContractAddresses[0])},
+			[]common.Hash{common.HexToHash(catFileConfig.Topic)},
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -154,13 +154,13 @@ var _ = Describe("Cat File transformer", func() {
 		flipBlockNumber := int64(10691255)
 		header, err := persistHeader(db, flipBlockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
-		testCatFileConfig.TransformerName = mcdConstants.CatFileFlipLabel
-		testCatFileConfig.Topic = test_data.KovanCatFileFlipSignature
-		testCatFileConfig.StartingBlockNumber = flipBlockNumber
-		testCatFileConfig.EndingBlockNumber = flipBlockNumber
+		catFileConfig.TransformerName = mcdConstants.CatFileFlipLabel
+		catFileConfig.Topic = test_data.KovanCatFileFlipSignature
+		catFileConfig.StartingBlockNumber = flipBlockNumber
+		catFileConfig.EndingBlockNumber = flipBlockNumber
 
 		initializer := shared.LogNoteTransformer{
-			Config:     testCatFileConfig,
+			Config:     catFileConfig,
 			Converter:  &flip.CatFileFlipConverter{},
 			Repository: &flip.CatFileFlipRepository{},
 		}
@@ -168,8 +168,8 @@ var _ = Describe("Cat File transformer", func() {
 		t := initializer.NewLogNoteTransformer(db)
 
 		logs, err := logFetcher.FetchLogs(
-			[]common.Address{common.HexToAddress(testCatFileConfig.ContractAddresses[0])},
-			[]common.Hash{common.HexToHash(testCatFileConfig.Topic)},
+			[]common.Address{common.HexToAddress(catFileConfig.ContractAddresses[0])},
+			[]common.Hash{common.HexToHash(catFileConfig.Topic)},
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -192,13 +192,13 @@ var _ = Describe("Cat File transformer", func() {
 		flipBlockNumber := int64(10691255)
 		header, err := persistHeader(db, flipBlockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
-		testCatFileConfig.TransformerName = mcdConstants.CatFileFlipLabel
-		testCatFileConfig.Topic = test_data.KovanCatFileFlipSignature
-		testCatFileConfig.StartingBlockNumber = flipBlockNumber
-		testCatFileConfig.EndingBlockNumber = flipBlockNumber
+		catFileConfig.TransformerName = mcdConstants.CatFileFlipLabel
+		catFileConfig.Topic = test_data.KovanCatFileFlipSignature
+		catFileConfig.StartingBlockNumber = flipBlockNumber
+		catFileConfig.EndingBlockNumber = flipBlockNumber
 
 		initializer := shared.LogNoteTransformer{
-			Config:     testCatFileConfig,
+			Config:     catFileConfig,
 			Converter:  &flip.CatFileFlipConverter{},
 			Repository: &flip.CatFileFlipRepository{},
 		}
@@ -206,8 +206,8 @@ var _ = Describe("Cat File transformer", func() {
 		t := initializer.NewLogNoteTransformer(db)
 
 		logs, err := logFetcher.FetchLogs(
-			[]common.Address{common.HexToAddress(testCatFileConfig.ContractAddresses[0])},
-			[]common.Hash{common.HexToHash(testCatFileConfig.Topic)},
+			[]common.Address{common.HexToAddress(catFileConfig.ContractAddresses[0])},
+			[]common.Hash{common.HexToHash(catFileConfig.Topic)},
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -232,21 +232,21 @@ var _ = Describe("Cat File transformer", func() {
 		vowBlockNumber := int64(10691245)
 		header, err := persistHeader(db, vowBlockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
-		testCatFileConfig.TransformerName = mcdConstants.CatFileVowLabel
-		testCatFileConfig.Topic = test_data.KovanCatFileVowSignature
-		testCatFileConfig.StartingBlockNumber = vowBlockNumber
-		testCatFileConfig.EndingBlockNumber = vowBlockNumber
+		catFileConfig.TransformerName = mcdConstants.CatFileVowLabel
+		catFileConfig.Topic = test_data.KovanCatFileVowSignature
+		catFileConfig.StartingBlockNumber = vowBlockNumber
+		catFileConfig.EndingBlockNumber = vowBlockNumber
 
 		initializer := shared.LogNoteTransformer{
-			Config:     testCatFileConfig,
+			Config:     catFileConfig,
 			Converter:  &vow.CatFileVowConverter{},
 			Repository: &vow.CatFileVowRepository{},
 		}
 		t := initializer.NewLogNoteTransformer(db)
 
 		logs, err := logFetcher.FetchLogs(
-			[]common.Address{common.HexToAddress(testCatFileConfig.ContractAddresses[0])},
-			[]common.Hash{common.HexToHash(testCatFileConfig.Topic)},
+			[]common.Address{common.HexToAddress(catFileConfig.ContractAddresses[0])},
+			[]common.Hash{common.HexToHash(catFileConfig.Topic)},
 			header)
 		Expect(err).NotTo(HaveOccurred())
 

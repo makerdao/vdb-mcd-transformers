@@ -48,22 +48,23 @@ var _ = Describe("Jug File Vow LogNoteTransformer", func() {
 		test_config.CleanTestDB(db)
 	})
 
+	jugFileVowConfig := transformer.EventTransformerConfig{
+		TransformerName:   mcdConstants.JugFileVowLabel,
+		ContractAddresses: []string{mcdConstants.JugContractAddress()},
+		ContractAbi:       mcdConstants.JugABI(),
+		Topic:             test_data.KovanJugFileVowSignature,
+	}
+
 	It("transforms JugFileVow log events", func() {
 		blockNumber := int64(10691243)
-		config := transformer.EventTransformerConfig{
-			TransformerName:     mcdConstants.JugFileVowLabel,
-			ContractAddresses:   []string{mcdConstants.JugContractAddress()},
-			ContractAbi:         test_data.KovanJugABI,
-			Topic:               test_data.KovanJugFileVowSignature,
-			StartingBlockNumber: blockNumber,
-			EndingBlockNumber:   blockNumber,
-		}
+		jugFileVowConfig.StartingBlockNumber = blockNumber
+		jugFileVowConfig.EndingBlockNumber = blockNumber
 
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
 		initializer := shared.LogNoteTransformer{
-			Config:     config,
+			Config:     jugFileVowConfig,
 			Converter:  &vow.JugFileVowConverter{},
 			Repository: &vow.JugFileVowRepository{},
 		}
@@ -71,8 +72,8 @@ var _ = Describe("Jug File Vow LogNoteTransformer", func() {
 
 		f := fetcher.NewLogFetcher(blockChain)
 		logs, err := f.FetchLogs(
-			transformer.HexStringsToAddresses(config.ContractAddresses),
-			[]common.Hash{common.HexToHash(config.Topic)},
+			transformer.HexStringsToAddresses(jugFileVowConfig.ContractAddresses),
+			[]common.Hash{common.HexToHash(jugFileVowConfig.Topic)},
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -90,20 +91,14 @@ var _ = Describe("Jug File Vow LogNoteTransformer", func() {
 
 	It("rechecks jug file vow event", func() {
 		blockNumber := int64(10691243)
-		config := transformer.EventTransformerConfig{
-			TransformerName:     mcdConstants.JugFileVowLabel,
-			ContractAddresses:   []string{mcdConstants.JugContractAddress()},
-			ContractAbi:         test_data.KovanJugABI,
-			Topic:               test_data.KovanJugFileVowSignature,
-			StartingBlockNumber: blockNumber,
-			EndingBlockNumber:   blockNumber,
-		}
+		jugFileVowConfig.StartingBlockNumber = blockNumber
+		jugFileVowConfig.EndingBlockNumber = blockNumber
 
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
 		initializer := shared.LogNoteTransformer{
-			Config:     config,
+			Config:     jugFileVowConfig,
 			Converter:  &vow.JugFileVowConverter{},
 			Repository: &vow.JugFileVowRepository{},
 		}
@@ -111,8 +106,8 @@ var _ = Describe("Jug File Vow LogNoteTransformer", func() {
 
 		f := fetcher.NewLogFetcher(blockChain)
 		logs, err := f.FetchLogs(
-			transformer.HexStringsToAddresses(config.ContractAddresses),
-			[]common.Hash{common.HexToHash(config.Topic)},
+			transformer.HexStringsToAddresses(jugFileVowConfig.ContractAddresses),
+			[]common.Hash{common.HexToHash(jugFileVowConfig.Topic)},
 			header)
 		Expect(err).NotTo(HaveOccurred())
 

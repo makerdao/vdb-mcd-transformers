@@ -34,17 +34,17 @@ import (
 )
 
 var _ = Describe("VatInit LogNoteTransformer", func() {
-	testVatInitConfig := transformer.EventTransformerConfig{
+	vatInitConfig := transformer.EventTransformerConfig{
 		TransformerName:   mcdConstants.VatInitLabel,
 		ContractAddresses: []string{mcdConstants.VatContractAddress()},
-		ContractAbi:       test_data.KovanVatABI,
+		ContractAbi:       mcdConstants.VatABI(),
 		Topic:             test_data.KovanVatInitSignature,
 	}
 
 	It("transforms vat init log events", func() {
 		blockNumber := int64(10691326)
-		testVatInitConfig.StartingBlockNumber = blockNumber
-		testVatInitConfig.EndingBlockNumber = blockNumber
+		vatInitConfig.StartingBlockNumber = blockNumber
+		vatInitConfig.EndingBlockNumber = blockNumber
 
 		rpcClient, ethClient, err := getClients(ipc)
 		Expect(err).NotTo(HaveOccurred())
@@ -59,13 +59,13 @@ var _ = Describe("VatInit LogNoteTransformer", func() {
 
 		logFetcher := fetcher.NewLogFetcher(blockChain)
 		logs, err := logFetcher.FetchLogs(
-			transformer.HexStringsToAddresses(testVatInitConfig.ContractAddresses),
-			[]common.Hash{common.HexToHash(testVatInitConfig.Topic)},
+			transformer.HexStringsToAddresses(vatInitConfig.ContractAddresses),
+			[]common.Hash{common.HexToHash(vatInitConfig.Topic)},
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
 		transformer := shared.LogNoteTransformer{
-			Config:     testVatInitConfig,
+			Config:     vatInitConfig,
 			Converter:  &vat_init.VatInitConverter{},
 			Repository: &vat_init.VatInitRepository{},
 		}.NewLogNoteTransformer(db)
@@ -86,8 +86,8 @@ var _ = Describe("VatInit LogNoteTransformer", func() {
 
 	It("rechecks vat init event", func() {
 		blockNumber := int64(10691326)
-		testVatInitConfig.StartingBlockNumber = blockNumber
-		testVatInitConfig.EndingBlockNumber = blockNumber
+		vatInitConfig.StartingBlockNumber = blockNumber
+		vatInitConfig.EndingBlockNumber = blockNumber
 
 		rpcClient, ethClient, err := getClients(ipc)
 		Expect(err).NotTo(HaveOccurred())
@@ -102,13 +102,13 @@ var _ = Describe("VatInit LogNoteTransformer", func() {
 
 		logFetcher := fetcher.NewLogFetcher(blockChain)
 		logs, err := logFetcher.FetchLogs(
-			transformer.HexStringsToAddresses(testVatInitConfig.ContractAddresses),
-			[]common.Hash{common.HexToHash(testVatInitConfig.Topic)},
+			transformer.HexStringsToAddresses(vatInitConfig.ContractAddresses),
+			[]common.Hash{common.HexToHash(vatInitConfig.Topic)},
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
 		transformer := shared.LogNoteTransformer{
-			Config:     testVatInitConfig,
+			Config:     vatInitConfig,
 			Converter:  &vat_init.VatInitConverter{},
 			Repository: &vat_init.VatInitRepository{},
 		}.NewLogNoteTransformer(db)

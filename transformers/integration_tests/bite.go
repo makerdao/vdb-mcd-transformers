@@ -37,19 +37,18 @@ import (
 )
 
 var _ = Describe("Bite Transformer", func() {
-	testBiteConfig := transformer.EventTransformerConfig{
+	biteConfig := transformer.EventTransformerConfig{
 		TransformerName:   mcdConstants.BiteLabel,
 		ContractAddresses: []string{mcdConstants.CatContractAddress()},
-		ContractAbi:       test_data.KovanCatABI,
+		ContractAbi:       mcdConstants.CatABI(),
 		Topic:             test_data.KovanBiteSignature,
 	}
 
 	// TODO: replace block number when there is an updated Cat bite event
 	XIt("fetches and transforms a Bite event from Kovan chain", func() {
 		blockNumber := int64(8956422)
-		config := testBiteConfig
-		config.StartingBlockNumber = blockNumber
-		config.EndingBlockNumber = blockNumber
+		biteConfig.StartingBlockNumber = blockNumber
+		biteConfig.EndingBlockNumber = blockNumber
 
 		rpcClient, ethClient, err := getClients(ipc)
 		Expect(err).NotTo(HaveOccurred())
@@ -63,7 +62,7 @@ var _ = Describe("Bite Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		initializer := event.Transformer{
-			Config:     config,
+			Config:     biteConfig,
 			Converter:  &bite.BiteConverter{},
 			Repository: &bite.BiteRepository{},
 		}
@@ -71,8 +70,8 @@ var _ = Describe("Bite Transformer", func() {
 
 		logFetcher := fetcher.NewLogFetcher(blockChain)
 		logs, err := logFetcher.FetchLogs(
-			[]common.Address{common.HexToAddress(config.ContractAddresses[0])},
-			[]common.Hash{common.HexToHash(config.Topic)},
+			[]common.Address{common.HexToAddress(biteConfig.ContractAddresses[0])},
+			[]common.Hash{common.HexToHash(biteConfig.Topic)},
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -97,9 +96,8 @@ var _ = Describe("Bite Transformer", func() {
 
 	It("rechecks header for bite event", func() {
 		blockNumber := int64(8956422)
-		config := testBiteConfig
-		config.StartingBlockNumber = blockNumber
-		config.EndingBlockNumber = blockNumber
+		biteConfig.StartingBlockNumber = blockNumber
+		biteConfig.EndingBlockNumber = blockNumber
 
 		rpcClient, ethClient, err := getClients(ipc)
 		Expect(err).NotTo(HaveOccurred())
@@ -113,7 +111,7 @@ var _ = Describe("Bite Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		initializer := event.Transformer{
-			Config:     config,
+			Config:     biteConfig,
 			Converter:  &bite.BiteConverter{},
 			Repository: &bite.BiteRepository{},
 		}
@@ -121,8 +119,8 @@ var _ = Describe("Bite Transformer", func() {
 
 		logFetcher := fetcher.NewLogFetcher(blockChain)
 		logs, err := logFetcher.FetchLogs(
-			[]common.Address{common.HexToAddress(config.ContractAddresses[0])},
-			[]common.Hash{common.HexToHash(config.Topic)},
+			[]common.Address{common.HexToAddress(biteConfig.ContractAddresses[0])},
+			[]common.Hash{common.HexToHash(biteConfig.Topic)},
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -145,7 +143,7 @@ var _ = Describe("Bite Transformer", func() {
 
 	It("unpacks an event log", func() {
 		address := common.HexToAddress(mcdConstants.CatContractAddress())
-		abi, err := geth.ParseAbi(test_data.KovanCatABI)
+		abi, err := geth.ParseAbi(mcdConstants.CatABI())
 		Expect(err).NotTo(HaveOccurred())
 
 		contract := bind.NewBoundContract(address, abi, nil, nil, nil)

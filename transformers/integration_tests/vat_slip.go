@@ -50,30 +50,30 @@ var _ = Describe("Vat slip transformer", func() {
 		test_config.CleanTestDB(db)
 	})
 
-	testVatSlipConfig := transformer.EventTransformerConfig{
+	vatSlipConfig := transformer.EventTransformerConfig{
 		TransformerName:   mcdConstants.VatSlipLabel,
 		ContractAddresses: []string{mcdConstants.VatContractAddress()},
-		ContractAbi:       test_data.KovanVatABI,
+		ContractAbi:       mcdConstants.VatABI(),
 		Topic:             test_data.KovanVatSlipSignature,
 	}
 
 	It("persists vat slip event", func() {
 		blockNumber := int64(10728061)
-		testVatSlipConfig.StartingBlockNumber = blockNumber
-		testVatSlipConfig.EndingBlockNumber = blockNumber
+		vatSlipConfig.StartingBlockNumber = blockNumber
+		vatSlipConfig.EndingBlockNumber = blockNumber
 
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
 		logFetcher := fetcher.NewLogFetcher(blockChain)
 		logs, err := logFetcher.FetchLogs(
-			transformer.HexStringsToAddresses(testVatSlipConfig.ContractAddresses),
-			[]common.Hash{common.HexToHash(testVatSlipConfig.Topic)},
+			transformer.HexStringsToAddresses(vatSlipConfig.ContractAddresses),
+			[]common.Hash{common.HexToHash(vatSlipConfig.Topic)},
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
 		tr := shared.LogNoteTransformer{
-			Config:     testVatSlipConfig,
+			Config:     vatSlipConfig,
 			Converter:  &vat_slip.VatSlipConverter{},
 			Repository: &vat_slip.VatSlipRepository{},
 		}.NewLogNoteTransformer(db)
@@ -101,21 +101,21 @@ var _ = Describe("Vat slip transformer", func() {
 
 	It("rechecks vat slip event", func() {
 		blockNumber := int64(10728061)
-		testVatSlipConfig.StartingBlockNumber = blockNumber
-		testVatSlipConfig.EndingBlockNumber = blockNumber
+		vatSlipConfig.StartingBlockNumber = blockNumber
+		vatSlipConfig.EndingBlockNumber = blockNumber
 
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
 		logFetcher := fetcher.NewLogFetcher(blockChain)
 		logs, err := logFetcher.FetchLogs(
-			transformer.HexStringsToAddresses(testVatSlipConfig.ContractAddresses),
-			[]common.Hash{common.HexToHash(testVatSlipConfig.Topic)},
+			transformer.HexStringsToAddresses(vatSlipConfig.ContractAddresses),
+			[]common.Hash{common.HexToHash(vatSlipConfig.Topic)},
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
 		tr := shared.LogNoteTransformer{
-			Config:     testVatSlipConfig,
+			Config:     vatSlipConfig,
 			Converter:  &vat_slip.VatSlipConverter{},
 			Repository: &vat_slip.VatSlipRepository{},
 		}.NewLogNoteTransformer(db)

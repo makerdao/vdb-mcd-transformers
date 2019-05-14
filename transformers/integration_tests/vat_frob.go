@@ -37,11 +37,11 @@ import (
 
 var _ = Describe("Vat frob Transformer", func() {
 	var (
-		db                *postgres.DB
-		blockChain        core.BlockChain
-		logFetcher        fetcher.ILogFetcher
-		testVatFrobConfig transformer.EventTransformerConfig
-		initializer       shared.LogNoteTransformer
+		db            *postgres.DB
+		blockChain    core.BlockChain
+		logFetcher    fetcher.ILogFetcher
+		vatFrobConfig transformer.EventTransformerConfig
+		initializer   shared.LogNoteTransformer
 	)
 
 	BeforeEach(func() {
@@ -53,14 +53,15 @@ var _ = Describe("Vat frob Transformer", func() {
 		test_config.CleanTestDB(db)
 
 		logFetcher = fetcher.NewLogFetcher(blockChain)
-		testVatFrobConfig = transformer.EventTransformerConfig{
+		vatFrobConfig = transformer.EventTransformerConfig{
 			TransformerName:   mcdConstants.VatFrobLabel,
 			ContractAddresses: []string{mcdConstants.VatContractAddress()},
+			ContractAbi:       mcdConstants.VatABI(),
 			Topic:             test_data.KovanVatFrobSignature,
 		}
 
 		initializer = shared.LogNoteTransformer{
-			Config:     testVatFrobConfig,
+			Config:     vatFrobConfig,
 			Converter:  &vat_frob.VatFrobConverter{},
 			Repository: &vat_frob.VatFrobRepository{},
 		}
@@ -75,8 +76,8 @@ var _ = Describe("Vat frob Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		logs, err := logFetcher.FetchLogs(
-			transformer.HexStringsToAddresses(testVatFrobConfig.ContractAddresses),
-			[]common.Hash{common.HexToHash(testVatFrobConfig.Topic)},
+			transformer.HexStringsToAddresses(vatFrobConfig.ContractAddresses),
+			[]common.Hash{common.HexToHash(vatFrobConfig.Topic)},
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -109,8 +110,8 @@ var _ = Describe("Vat frob Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		logs, err := logFetcher.FetchLogs(
-			transformer.HexStringsToAddresses(testVatFrobConfig.ContractAddresses),
-			[]common.Hash{common.HexToHash(testVatFrobConfig.Topic)},
+			transformer.HexStringsToAddresses(vatFrobConfig.ContractAddresses),
+			[]common.Hash{common.HexToHash(vatFrobConfig.Topic)},
 			header)
 		Expect(err).NotTo(HaveOccurred())
 

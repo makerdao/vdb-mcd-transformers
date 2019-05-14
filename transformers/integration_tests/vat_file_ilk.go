@@ -52,17 +52,18 @@ var _ = Describe("VatFileIlk LogNoteTransformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 		db = test_config.NewTestDB(blockChain.Node())
 		test_config.CleanTestDB(db)
-		config := transformer.EventTransformerConfig{
+		vatFileIlkConfig := transformer.EventTransformerConfig{
 			TransformerName:   mcdConstants.VatFileIlkLabel,
 			ContractAddresses: []string{mcdConstants.VatContractAddress()},
+			ContractAbi:       mcdConstants.VatABI(),
 			Topic:             test_data.KovanVatFileIlkSignature,
 		}
 
-		addresses = transformer.HexStringsToAddresses(config.ContractAddresses)
-		topics = []common.Hash{common.HexToHash(config.Topic)}
+		addresses = transformer.HexStringsToAddresses(vatFileIlkConfig.ContractAddresses)
+		topics = []common.Hash{common.HexToHash(vatFileIlkConfig.Topic)}
 
 		initializer = shared.LogNoteTransformer{
-			Config:     config,
+			Config:     vatFileIlkConfig,
 			Converter:  &ilk.VatFileIlkConverter{},
 			Repository: &ilk.VatFileIlkRepository{},
 		}

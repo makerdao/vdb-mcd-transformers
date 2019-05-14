@@ -48,29 +48,30 @@ var _ = Describe("VatFileDebtCeiling LogNoteTransformer", func() {
 		test_config.CleanTestDB(db)
 	})
 
+	vatFileDebtCeilingConfig := transformer.EventTransformerConfig{
+		TransformerName:   mcdConstants.VatFileDebtCeilingLabel,
+		ContractAddresses: []string{mcdConstants.VatContractAddress()},
+		ContractAbi:       mcdConstants.VatABI(),
+		Topic:             test_data.KovanVatFileDebtCeilingSignature,
+	}
+
 	It("fetches and transforms a VatFileDebtCeiling event from Kovan chain", func() {
 		blockNumber := int64(10691344)
-		config := transformer.EventTransformerConfig{
-			TransformerName:     mcdConstants.VatFileDebtCeilingLabel,
-			ContractAddresses:   []string{mcdConstants.VatContractAddress()},
-			ContractAbi:         test_data.KovanVatABI,
-			Topic:               test_data.KovanVatFileDebtCeilingSignature,
-			StartingBlockNumber: blockNumber,
-			EndingBlockNumber:   blockNumber,
-		}
+		vatFileDebtCeilingConfig.StartingBlockNumber = blockNumber
+		vatFileDebtCeilingConfig.EndingBlockNumber = blockNumber
 
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
 		logFetcher := fetcher.NewLogFetcher(blockChain)
 		logs, err := logFetcher.FetchLogs(
-			transformer.HexStringsToAddresses(config.ContractAddresses),
-			[]common.Hash{common.HexToHash(config.Topic)},
+			transformer.HexStringsToAddresses(vatFileDebtCeilingConfig.ContractAddresses),
+			[]common.Hash{common.HexToHash(vatFileDebtCeilingConfig.Topic)},
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
 		initializer := shared.LogNoteTransformer{
-			Config:     config,
+			Config:     vatFileDebtCeilingConfig,
 			Converter:  &debt_ceiling.VatFileDebtCeilingConverter{},
 			Repository: &debt_ceiling.VatFileDebtCeilingRepository{},
 		}
@@ -90,27 +91,21 @@ var _ = Describe("VatFileDebtCeiling LogNoteTransformer", func() {
 
 	It("rechecks vat file debt ceiling event", func() {
 		blockNumber := int64(10691344)
-		config := transformer.EventTransformerConfig{
-			TransformerName:     mcdConstants.VatFileDebtCeilingLabel,
-			ContractAddresses:   []string{mcdConstants.VatContractAddress()},
-			ContractAbi:         test_data.KovanVatABI,
-			Topic:               test_data.KovanVatFileDebtCeilingSignature,
-			StartingBlockNumber: blockNumber,
-			EndingBlockNumber:   blockNumber,
-		}
+		vatFileDebtCeilingConfig.StartingBlockNumber = blockNumber
+		vatFileDebtCeilingConfig.EndingBlockNumber = blockNumber
 
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
 		logFetcher := fetcher.NewLogFetcher(blockChain)
 		logs, err := logFetcher.FetchLogs(
-			transformer.HexStringsToAddresses(config.ContractAddresses),
-			[]common.Hash{common.HexToHash(config.Topic)},
+			transformer.HexStringsToAddresses(vatFileDebtCeilingConfig.ContractAddresses),
+			[]common.Hash{common.HexToHash(vatFileDebtCeilingConfig.Topic)},
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
 		initializer := shared.LogNoteTransformer{
-			Config:     config,
+			Config:     vatFileDebtCeilingConfig,
 			Converter:  &debt_ceiling.VatFileDebtCeilingConverter{},
 			Repository: &debt_ceiling.VatFileDebtCeilingRepository{},
 		}

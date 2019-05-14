@@ -32,17 +32,17 @@ import (
 )
 
 var _ = Describe("VatMove LogNoteTransformer", func() {
-	testVatMoveConfig := transformer.EventTransformerConfig{
+	vatMoveConfig := transformer.EventTransformerConfig{
 		TransformerName:   mcdConstants.VatMoveLabel,
 		ContractAddresses: []string{mcdConstants.VatContractAddress()},
-		ContractAbi:       test_data.KovanVatABI,
+		ContractAbi:       mcdConstants.VatABI(),
 		Topic:             test_data.KovanVatMoveSignature,
 	}
 
 	It("transforms VatMove log events", func() {
 		blockNumber := int64(10728067)
-		testVatMoveConfig.StartingBlockNumber = blockNumber
-		testVatMoveConfig.EndingBlockNumber = blockNumber
+		vatMoveConfig.StartingBlockNumber = blockNumber
+		vatMoveConfig.EndingBlockNumber = blockNumber
 
 		rpcClient, ethClient, err := getClients(ipc)
 		Expect(err).NotTo(HaveOccurred())
@@ -57,13 +57,13 @@ var _ = Describe("VatMove LogNoteTransformer", func() {
 
 		logFetcher := fetcher.NewLogFetcher(blockChain)
 		logs, err := logFetcher.FetchLogs(
-			transformer.HexStringsToAddresses(testVatMoveConfig.ContractAddresses),
-			[]common.Hash{common.HexToHash(testVatMoveConfig.Topic)},
+			transformer.HexStringsToAddresses(vatMoveConfig.ContractAddresses),
+			[]common.Hash{common.HexToHash(vatMoveConfig.Topic)},
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
 		tr := shared.LogNoteTransformer{
-			Config:     testVatMoveConfig,
+			Config:     vatMoveConfig,
 			Converter:  &vat_move.VatMoveConverter{},
 			Repository: &vat_move.VatMoveRepository{},
 		}.NewLogNoteTransformer(db)
@@ -84,8 +84,8 @@ var _ = Describe("VatMove LogNoteTransformer", func() {
 
 	It("rechecks vat move event", func() {
 		blockNumber := int64(10728067)
-		testVatMoveConfig.StartingBlockNumber = blockNumber
-		testVatMoveConfig.EndingBlockNumber = blockNumber
+		vatMoveConfig.StartingBlockNumber = blockNumber
+		vatMoveConfig.EndingBlockNumber = blockNumber
 
 		rpcClient, ethClient, err := getClients(ipc)
 		Expect(err).NotTo(HaveOccurred())
@@ -100,13 +100,13 @@ var _ = Describe("VatMove LogNoteTransformer", func() {
 
 		logFetcher := fetcher.NewLogFetcher(blockChain)
 		logs, err := logFetcher.FetchLogs(
-			transformer.HexStringsToAddresses(testVatMoveConfig.ContractAddresses),
-			[]common.Hash{common.HexToHash(testVatMoveConfig.Topic)},
+			transformer.HexStringsToAddresses(vatMoveConfig.ContractAddresses),
+			[]common.Hash{common.HexToHash(vatMoveConfig.Topic)},
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
 		tr := shared.LogNoteTransformer{
-			Config:     testVatMoveConfig,
+			Config:     vatMoveConfig,
 			Converter:  &vat_move.VatMoveConverter{},
 			Repository: &vat_move.VatMoveRepository{},
 		}.NewLogNoteTransformer(db)

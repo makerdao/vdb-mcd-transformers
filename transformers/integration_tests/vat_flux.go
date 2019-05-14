@@ -34,18 +34,18 @@ import (
 )
 
 var _ = Describe("VatFlux LogNoteTransformer", func() {
-	testVatFluxConfig := transformer.EventTransformerConfig{
+	vatFluxConfig := transformer.EventTransformerConfig{
 		TransformerName:   mcdConstants.VatFluxLabel,
 		ContractAddresses: []string{mcdConstants.VatContractAddress()},
-		ContractAbi:       test_data.KovanVatABI,
+		ContractAbi:       mcdConstants.VatABI(),
 		Topic:             test_data.KovanVatFluxSignature,
 	}
 
 	// TODO: Replace block number once there's a flux event on the updated Vat
 	XIt("transforms VatFlux log events", func() {
 		blockNumber := int64(9004474)
-		testVatFluxConfig.StartingBlockNumber = blockNumber
-		testVatFluxConfig.EndingBlockNumber = blockNumber
+		vatFluxConfig.StartingBlockNumber = blockNumber
+		vatFluxConfig.EndingBlockNumber = blockNumber
 
 		rpcClient, ethClient, err := getClients(ipc)
 		Expect(err).NotTo(HaveOccurred())
@@ -60,13 +60,13 @@ var _ = Describe("VatFlux LogNoteTransformer", func() {
 
 		logFetcher := fetcher.NewLogFetcher(blockChain)
 		logs, err := logFetcher.FetchLogs(
-			transformer.HexStringsToAddresses(testVatFluxConfig.ContractAddresses),
-			[]common.Hash{common.HexToHash(testVatFluxConfig.Topic)},
+			transformer.HexStringsToAddresses(vatFluxConfig.ContractAddresses),
+			[]common.Hash{common.HexToHash(vatFluxConfig.Topic)},
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
 		initializer := shared.LogNoteTransformer{
-			Config:     testVatFluxConfig,
+			Config:     vatFluxConfig,
 			Converter:  &vat_flux.VatFluxConverter{},
 			Repository: &vat_flux.VatFluxRepository{},
 		}
@@ -92,8 +92,8 @@ var _ = Describe("VatFlux LogNoteTransformer", func() {
 	// TODO: Replace block number once there's a flux event on the updated Vat
 	XIt("rechecks vat flux event", func() {
 		blockNumber := int64(9004474)
-		testVatFluxConfig.StartingBlockNumber = blockNumber
-		testVatFluxConfig.EndingBlockNumber = blockNumber
+		vatFluxConfig.StartingBlockNumber = blockNumber
+		vatFluxConfig.EndingBlockNumber = blockNumber
 
 		rpcClient, ethClient, err := getClients(ipc)
 		Expect(err).NotTo(HaveOccurred())
@@ -108,13 +108,13 @@ var _ = Describe("VatFlux LogNoteTransformer", func() {
 
 		logFetcher := fetcher.NewLogFetcher(blockChain)
 		logs, err := logFetcher.FetchLogs(
-			transformer.HexStringsToAddresses(testVatFluxConfig.ContractAddresses),
-			[]common.Hash{common.HexToHash(testVatFluxConfig.Topic)},
+			transformer.HexStringsToAddresses(vatFluxConfig.ContractAddresses),
+			[]common.Hash{common.HexToHash(vatFluxConfig.Topic)},
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
 		initializer := shared.LogNoteTransformer{
-			Config:     testVatFluxConfig,
+			Config:     vatFluxConfig,
 			Converter:  &vat_flux.VatFluxConverter{},
 			Repository: &vat_flux.VatFluxRepository{},
 		}

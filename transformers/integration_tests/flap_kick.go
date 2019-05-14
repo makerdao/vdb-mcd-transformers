@@ -50,30 +50,31 @@ var _ = Describe("FlapKick Transformer", func() {
 		test_config.CleanTestDB(db)
 	})
 
+	flapKickConfig := transformer.EventTransformerConfig{
+		TransformerName:   mcdConstants.FlapKickLabel,
+		ContractAddresses: []string{mcdConstants.FlapperContractAddress()},
+		ContractAbi:       mcdConstants.FlapperABI(),
+		Topic:             test_data.KovanFlapKickSignature,
+	}
+
 	It("fetches and transforms a FlapKick event from Kovan chain", func() {
 		blockNumber := int64(9002933)
-		config := transformer.EventTransformerConfig{
-			TransformerName:     mcdConstants.FlapKickLabel,
-			ContractAddresses:   []string{mcdConstants.FlapperContractAddress()},
-			ContractAbi:         test_data.KovanFlapperABI,
-			Topic:               test_data.KovanFlapKickSignature,
-			StartingBlockNumber: blockNumber,
-			EndingBlockNumber:   blockNumber,
-		}
+		flapKickConfig.StartingBlockNumber = blockNumber
+		flapKickConfig.EndingBlockNumber = blockNumber
 
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
 		tr := event.Transformer{
-			Config:     config,
+			Config:     flapKickConfig,
 			Converter:  &flap_kick.FlapKickConverter{},
 			Repository: &flap_kick.FlapKickRepository{},
 		}.NewTransformer(db)
 
 		logFetcher := fetcher.NewLogFetcher(blockChain)
 		logs, err := logFetcher.FetchLogs(
-			transformer.HexStringsToAddresses(config.ContractAddresses),
-			[]common.Hash{common.HexToHash(config.Topic)},
+			transformer.HexStringsToAddresses(flapKickConfig.ContractAddresses),
+			[]common.Hash{common.HexToHash(flapKickConfig.Topic)},
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -94,28 +95,22 @@ var _ = Describe("FlapKick Transformer", func() {
 
 	It("rechecks flap kick transformer", func() {
 		blockNumber := int64(9002933)
-		config := transformer.EventTransformerConfig{
-			TransformerName:     mcdConstants.FlapKickLabel,
-			ContractAddresses:   []string{mcdConstants.FlapperContractAddress()},
-			ContractAbi:         test_data.KovanFlapperABI,
-			Topic:               test_data.KovanFlapKickSignature,
-			StartingBlockNumber: blockNumber,
-			EndingBlockNumber:   blockNumber,
-		}
+		flapKickConfig.StartingBlockNumber = blockNumber
+		flapKickConfig.EndingBlockNumber = blockNumber
 
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
 		tr := event.Transformer{
-			Config:     config,
+			Config:     flapKickConfig,
 			Converter:  &flap_kick.FlapKickConverter{},
 			Repository: &flap_kick.FlapKickRepository{},
 		}.NewTransformer(db)
 
 		f := fetcher.NewLogFetcher(blockChain)
 		logs, err := f.FetchLogs(
-			transformer.HexStringsToAddresses(config.ContractAddresses),
-			[]common.Hash{common.HexToHash(config.Topic)},
+			transformer.HexStringsToAddresses(flapKickConfig.ContractAddresses),
+			[]common.Hash{common.HexToHash(flapKickConfig.Topic)},
 			header)
 		Expect(err).NotTo(HaveOccurred())
 

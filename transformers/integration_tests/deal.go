@@ -37,7 +37,7 @@ var _ = Describe("Deal transformer", func() {
 	var (
 		db          *postgres.DB
 		blockChain  core.BlockChain
-		config      transformer.EventTransformerConfig
+		dealConfig  transformer.EventTransformerConfig
 		initializer shared.LogNoteTransformer
 		logFetcher  fetcher.ILogFetcher
 		addresses   []common.Address
@@ -52,7 +52,7 @@ var _ = Describe("Deal transformer", func() {
 		db = test_config.NewTestDB(blockChain.Node())
 		test_config.CleanTestDB(db)
 
-		config = transformer.EventTransformerConfig{
+		dealConfig = transformer.EventTransformerConfig{
 			TransformerName: mcdConstants.DealLabel,
 			ContractAddresses: []string{
 				mcdConstants.FlapperContractAddress(),
@@ -63,14 +63,14 @@ var _ = Describe("Deal transformer", func() {
 		}
 
 		initializer = shared.LogNoteTransformer{
-			Config:     config,
+			Config:     dealConfig,
 			Converter:  &deal.DealConverter{},
 			Repository: &deal.DealRepository{},
 		}
 
 		logFetcher = fetcher.NewLogFetcher(blockChain)
-		addresses = transformer.HexStringsToAddresses(config.ContractAddresses)
-		topics = []common.Hash{common.HexToHash(config.Topic)}
+		addresses = transformer.HexStringsToAddresses(dealConfig.ContractAddresses)
+		topics = []common.Hash{common.HexToHash(dealConfig.Topic)}
 
 	})
 

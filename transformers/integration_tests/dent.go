@@ -23,7 +23,7 @@ var _ = Describe("Dent transformer", func() {
 		blockChain  core.BlockChain
 		logFetcher  fetcher.ILogFetcher
 		tr          transformer.EventTransformer
-		config      transformer.EventTransformerConfig
+		dentConfig  transformer.EventTransformerConfig
 		addresses   []common.Address
 		topics      []common.Hash
 		initializer shared.LogNoteTransformer
@@ -37,19 +37,19 @@ var _ = Describe("Dent transformer", func() {
 		db = test_config.NewTestDB(blockChain.Node())
 		test_config.CleanTestDB(db)
 
-		config = transformer.EventTransformerConfig{
+		dentConfig = transformer.EventTransformerConfig{
 			TransformerName:   mcdConstants.DentLabel,
 			ContractAddresses: []string{mcdConstants.FlipperContractAddress(), mcdConstants.FlopperContractAddress()},
-			ContractAbi:       test_data.KovanFlipperABI,
+			ContractAbi:       mcdConstants.FlipperABI(),
 			Topic:             test_data.KovanDentSignature,
 		}
 
-		addresses = transformer.HexStringsToAddresses(config.ContractAddresses)
-		topics = []common.Hash{common.HexToHash(config.Topic)}
+		addresses = transformer.HexStringsToAddresses(dentConfig.ContractAddresses)
+		topics = []common.Hash{common.HexToHash(dentConfig.Topic)}
 		logFetcher = fetcher.NewLogFetcher(blockChain)
 
 		initializer = shared.LogNoteTransformer{
-			Config:     config,
+			Config:     dentConfig,
 			Converter:  &dent.DentConverter{},
 			Repository: &dent.DentRepository{},
 		}

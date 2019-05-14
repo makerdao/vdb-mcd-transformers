@@ -37,7 +37,7 @@ var _ = Describe("Tend LogNoteTransformer", func() {
 	var (
 		db          *postgres.DB
 		blockChain  core.BlockChain
-		config      transformer.EventTransformerConfig
+		tendConfig  transformer.EventTransformerConfig
 		initializer shared.LogNoteTransformer
 		logFetcher  fetcher.ILogFetcher
 		addresses   []common.Address
@@ -52,19 +52,19 @@ var _ = Describe("Tend LogNoteTransformer", func() {
 		db = test_config.NewTestDB(blockChain.Node())
 		test_config.CleanTestDB(db)
 
-		config = transformer.EventTransformerConfig{
+		tendConfig = transformer.EventTransformerConfig{
 			TransformerName:   mcdConstants.TendLabel,
 			ContractAddresses: []string{mcdConstants.FlapperContractAddress(), mcdConstants.FlipperContractAddress()},
-			ContractAbi:       test_data.KovanFlipperABI,
+			ContractAbi:       mcdConstants.FlipperABI(),
 			Topic:             test_data.KovanTendSignature,
 		}
 
 		logFetcher = fetcher.NewLogFetcher(blockChain)
-		addresses = transformer.HexStringsToAddresses(config.ContractAddresses)
-		topics = []common.Hash{common.HexToHash(config.Topic)}
+		addresses = transformer.HexStringsToAddresses(tendConfig.ContractAddresses)
+		topics = []common.Hash{common.HexToHash(tendConfig.Topic)}
 
 		initializer = shared.LogNoteTransformer{
-			Config:     config,
+			Config:     tendConfig,
 			Converter:  &tend.TendConverter{},
 			Repository: &tend.TendRepository{},
 		}
