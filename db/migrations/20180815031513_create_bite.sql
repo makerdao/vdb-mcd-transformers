@@ -13,6 +13,8 @@ CREATE TABLE maker.bite (
   UNIQUE (header_id, tx_idx, log_idx)
 );
 
+COMMENT ON TABLE maker.bite IS E'@name raw_bites';
+
 ALTER TABLE public.checked_headers
   ADD COLUMN bite_checked BOOLEAN NOT NULL DEFAULT FALSE;
 
