@@ -27,7 +27,7 @@ func GetJugDripConfig() shared_t.EventTransformerConfig {
 		TransformerName:     constants.JugDripLabel,
 		ContractAddresses:   []string{constants.JugContractAddress()},
 		ContractAbi:         constants.JugABI(),
-		Topic:               constants.GetJugDripSignature(),
+		Topic:               constants.JugDripSignature(),
 		StartingBlockNumber: constants.JugDeploymentBlock(),
 		EndingBlockNumber:   -1,
 	}

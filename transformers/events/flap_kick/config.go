@@ -27,7 +27,7 @@ func GetFlapKickConfig() shared_t.EventTransformerConfig {
 		TransformerName:     constants.FlapKickLabel,
 		ContractAddresses:   []string{constants.FlapperContractAddress()},
 		ContractAbi:         constants.FlapperABI(),
-		Topic:               constants.GetFlapKickSignature(),
+		Topic:               constants.FlapKickSignature(),
 		StartingBlockNumber: constants.FlapperDeploymentBlock(),
 		EndingBlockNumber:   -1,
 	}

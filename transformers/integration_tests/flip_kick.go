@@ -40,7 +40,7 @@ var _ = Describe("FlipKick Transformer", func() {
 		TransformerName:   mcdConstants.FlipKickLabel,
 		ContractAddresses: []string{mcdConstants.FlipperContractAddress()},
 		ContractAbi:       mcdConstants.FlipperABI(),
-		Topic:             test_data.KovanFlipKickSignature,
+		Topic:             mcdConstants.FlipKickSignature(),
 	}
 
 	It("unpacks an event log", func() {

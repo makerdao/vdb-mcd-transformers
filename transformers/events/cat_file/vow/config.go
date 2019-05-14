@@ -27,7 +27,7 @@ func GetCatFileVowConfig() shared_t.EventTransformerConfig {
 		TransformerName:     constants.CatFileVowLabel,
 		ContractAddresses:   []string{constants.CatContractAddress()},
 		ContractAbi:         constants.CatABI(),
-		Topic:               constants.GetCatFileVowSignature(),
+		Topic:               constants.CatFileVowSignature(),
 		StartingBlockNumber: constants.CatDeploymentBlock(),
 		EndingBlockNumber:   -1,
 	}

@@ -26,25 +26,25 @@ import (
 	"github.com/vulcanize/vulcanizedb/pkg/geth"
 )
 
-func GetEventTopicZero(solidityEventSignature string) string {
+func getEventTopicZero(solidityEventSignature string) string {
 	eventSignature := []byte(solidityEventSignature)
 	hash := crypto.Keccak256Hash(eventSignature)
 	return hash.Hex()
 }
 
 // Gets the first ten characters of the topic0 with zero padding; to be used with DSNote modified events.
-func GetLogNoteTopicZeroWithZeroPadding(solidityFunctionSignature string) string {
-	rawSignature := GetEventTopicZero(solidityFunctionSignature)
+func getLogNoteTopicZeroWithZeroPadding(solidityFunctionSignature string) string {
+	rawSignature := getEventTopicZero(solidityFunctionSignature)
 	return rawSignature[:10] + "00000000000000000000000000000000000000000000000000000000"
 }
 
 // Gets the first ten characters of the topic zero with leading zeros; to be used with the Vat contract's custom Note event modifier.
-func GetLogNoteTopicZeroWithLeadingZeros(solidityFunctionSignature string) string {
-	rawSignature := GetEventTopicZero(solidityFunctionSignature)
+func getLogNoteTopicZeroWithLeadingZeros(solidityFunctionSignature string) string {
+	rawSignature := getEventTopicZero(solidityFunctionSignature)
 	return "0x00000000000000000000000000000000000000000000000000000000" + rawSignature[2:10]
 }
 
-func GetSolidityFunctionSignature(abi, name string) string {
+func getSolidityFunctionSignature(abi, name string) string {
 	parsedAbi, _ := geth.ParseAbi(abi)
 
 	if method, ok := parsedAbi.Methods[name]; ok {

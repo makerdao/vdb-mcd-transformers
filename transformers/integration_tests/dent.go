@@ -14,7 +14,6 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/events/dent"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
-	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
 var _ = Describe("Dent transformer", func() {
@@ -41,7 +40,7 @@ var _ = Describe("Dent transformer", func() {
 			TransformerName:   mcdConstants.DentLabel,
 			ContractAddresses: []string{mcdConstants.FlipperContractAddress(), mcdConstants.FlopperContractAddress()},
 			ContractAbi:       mcdConstants.FlipperABI(),
-			Topic:             test_data.KovanDentSignature,
+			Topic:             mcdConstants.DentSignature(),
 		}
 
 		addresses = transformer.HexStringsToAddresses(dentConfig.ContractAddresses)

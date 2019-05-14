@@ -32,7 +32,6 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_frob"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
-	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
 var _ = Describe("Vat frob Transformer", func() {
@@ -57,7 +56,7 @@ var _ = Describe("Vat frob Transformer", func() {
 			TransformerName:   mcdConstants.VatFrobLabel,
 			ContractAddresses: []string{mcdConstants.VatContractAddress()},
 			ContractAbi:       mcdConstants.VatABI(),
-			Topic:             test_data.KovanVatFrobSignature,
+			Topic:             mcdConstants.VatFrobSignature(),
 		}
 
 		initializer = shared.LogNoteTransformer{

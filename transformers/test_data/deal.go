@@ -31,7 +31,7 @@ import (
 var DealLogNote = types.Log{
 	Address: common.HexToAddress(constants.FlipperContractAddress()),
 	Topics: []common.Hash{
-		common.HexToHash(KovanDealSignature),
+		common.HexToHash(constants.DealSignature()),
 		common.HexToHash("0x00000000000000000000000064d922894153be9eef7b7218dc565d1d0ce2a092"),
 		common.HexToHash("0x000000000000000000000000000000000000000000000000000000000000007b"),
 		common.HexToHash("0x0000000000000000000000000000000000000000000000000000000000000000"),

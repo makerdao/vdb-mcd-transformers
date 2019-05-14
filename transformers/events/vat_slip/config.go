@@ -11,7 +11,7 @@ func GetVatSlipConfig() shared_t.EventTransformerConfig {
 		TransformerName:     constants.VatSlipLabel,
 		ContractAddresses:   []string{constants.VatContractAddress()},
 		ContractAbi:         constants.VatABI(),
-		Topic:               constants.GetVatSlipSignature(),
+		Topic:               constants.VatSlipSignature(),
 		StartingBlockNumber: constants.VatDeploymentBlock(),
 		EndingBlockNumber:   -1,
 	}

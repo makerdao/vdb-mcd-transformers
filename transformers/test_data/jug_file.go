@@ -34,7 +34,7 @@ import (
 var EthJugFileIlkLog = types.Log{
 	Address: common.HexToAddress(constants.JugContractAddress()),
 	Topics: []common.Hash{
-		common.HexToHash(KovanJugFileIlkSignature),
+		common.HexToHash(constants.JugFileIlkSignature()),
 		common.HexToHash("0x000000000000000000000000793c60586f0be45d9e5c13dfa982dd6d3b5bc9a4"),
 		common.HexToHash("0x4554482d41000000000000000000000000000000000000000000000000000000"),
 		common.HexToHash("0x6475747900000000000000000000000000000000000000000000000000000000"),
@@ -61,7 +61,7 @@ var JugFileIlkModel = ilk2.JugFileIlkModel{
 var EthJugFileBaseLog = types.Log{
 	Address: common.HexToAddress(constants.JugContractAddress()),
 	Topics: []common.Hash{
-		common.HexToHash(KovanJugFileBaseSignature),
+		common.HexToHash(constants.JugFileBaseSignature()),
 		common.HexToHash("0x00000000000000000000000064d922894153be9eef7b7218dc565d1d0ce2a092"),
 		common.HexToHash("0x66616b6520776861740000000000000000000000000000000000000000000000"),
 		common.HexToHash("0x000000000000000000000000000000000000000000000000000000000000007b"),
@@ -87,7 +87,7 @@ var JugFileBaseModel = base.JugFileBaseModel{
 var EthJugFileVowLog = types.Log{
 	Address: common.HexToAddress(constants.JugContractAddress()),
 	Topics: []common.Hash{
-		common.HexToHash(KovanJugFileVowSignature),
+		common.HexToHash(constants.JugFileVowSignature()),
 		common.HexToHash("0x0000000000000000000000003652c2af10cbbdb753c3b46489db5226b73e6497"),
 		common.HexToHash("0x766f770000000000000000000000000000000000000000000000000000000000"),
 		common.HexToHash("0x00000000000000000000000017560834075da3db54f737db74377e799c865821"),

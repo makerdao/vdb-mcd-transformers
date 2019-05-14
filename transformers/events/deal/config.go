@@ -28,7 +28,7 @@ func GetDealConfig() shared_t.EventTransformerConfig {
 		TransformerName:   constants.DealLabel,
 		ContractAddresses: []string{constants.FlapperContractAddress(), constants.FlipperContractAddress(), constants.FlopperContractAddress()},
 		ContractAbi:       constants.FlipperABI(),
-		Topic:             constants.GetDealSignature(),
+		Topic:             constants.DealSignature(),
 		StartingBlockNumber: shared.MinInt64([]int64{
 			constants.FlapperDeploymentBlock(), constants.FlipperDeploymentBlock(), constants.FlopperDeploymentBlock()}),
 		EndingBlockNumber: -1,

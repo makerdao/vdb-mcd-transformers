@@ -31,7 +31,7 @@ import (
 var EthVatFoldLogWithPositiveRate = types.Log{
 	Address: common.HexToAddress(constants.VatContractAddress()),
 	Topics: []common.Hash{
-		common.HexToHash(KovanVatFoldSignature),
+		common.HexToHash(constants.VatFoldSignature()),
 		common.HexToHash("0x5245500000000000000000000000000000000000000000000000000000000000"),
 		common.HexToHash("0x0000000000000000000000003728e9777b2a0a611ee0f89e00e01044ce4736d1"),
 		common.HexToHash("0x0000000000000000000000000000000000000000000000000000000000000002"),
@@ -58,7 +58,7 @@ var VatFoldModelWithPositiveRate = vat_fold.VatFoldModel{
 var EthVatFoldLogWithNegativeRate = types.Log{
 	Address: common.HexToAddress(constants.VatContractAddress()),
 	Topics: []common.Hash{
-		common.HexToHash(KovanVatFoldSignature),
+		common.HexToHash(constants.VatFoldSignature()),
 		common.HexToHash("0x66616b6520696c6b000000000000000000000000000000000000000000000000"),
 		common.HexToHash("0x0000000000000000000000007d7bee5fcfd8028cf7b00876c5b1421c800561a6"),
 		common.HexToHash("0xffffffffffffffffffffffffffffffffffffffffffffffe4e51b291d10b00000"),

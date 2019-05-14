@@ -30,7 +30,7 @@ import (
 var EthVatFluxLog = types.Log{
 	Address: common.HexToAddress(constants.VatContractAddress()),
 	Topics: []common.Hash{
-		common.HexToHash(KovanVatFluxSignature),
+		common.HexToHash(constants.VatFluxSignature()),
 		common.HexToHash("0x66616b6520696c6b000000000000000000000000000000000000000000000000"),
 		common.HexToHash("0x00000000000000000000000007fa9ef6609ca7921112231f8f195138ebba2977"),
 		common.HexToHash("0x0000000000000000000000007340e006f4135ba6970d43bf43d88dcad4e7a8ca"),

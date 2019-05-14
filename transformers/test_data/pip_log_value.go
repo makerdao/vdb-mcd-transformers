@@ -35,7 +35,7 @@ var (
 // https://kovan.etherscan.io/tx/0xbf700fefd1817c91c6a3e2dfa9f2f84f1c4d6a42c13f91ac6aa64bfc63f2e568
 var EthPipLogValueLog = types.Log{
 	Address:     common.HexToAddress(constants.PipEthContractAddress()),
-	Topics:      []common.Hash{common.HexToHash(KovanPipLogValueSignature)},
+	Topics:      []common.Hash{common.HexToHash(constants.PipLogValueSignature())},
 	Data:        common.FromHex("0000000000000000000000000000000000000000000000076eec1981d1900000"),
 	BlockNumber: blockNumber,
 	TxHash:      common.HexToHash("0xbf700fefd1817c91c6a3e2dfa9f2f84f1c4d6a42c13f91ac6aa64bfc63f2e568"),
@@ -57,8 +57,8 @@ var PipLogValueModel = pip_log_value.PipLogValueModel{
 
 func GetFakePipLogValue(blockNum int64, txIdx int, value string) pip_log_value.PipLogValueModel {
 	var EthPipLogValueLog = types.Log{
-		Address:     pipAddress,
-		Topics:      []common.Hash{common.HexToHash(KovanPipLogValueSignature)},
+		Address:     common.HexToAddress(constants.PipEthContractAddress()),
+		Topics:      []common.Hash{common.HexToHash(constants.PipLogValueSignature())},
 		Data:        common.FromHex("0000000000000000000000000000000000000000000000076eec1981d1900000"),
 		BlockNumber: uint64(blockNum),
 		TxHash:      common.HexToHash("0xbf700fefd1817c91c6a3e2dfa9f2f84f1c4d6a42c13f91ac6aa64bfc63f2e568"),

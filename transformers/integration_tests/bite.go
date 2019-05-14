@@ -41,7 +41,7 @@ var _ = Describe("Bite Transformer", func() {
 		TransformerName:   mcdConstants.BiteLabel,
 		ContractAddresses: []string{mcdConstants.CatContractAddress()},
 		ContractAbi:       mcdConstants.CatABI(),
-		Topic:             test_data.KovanBiteSignature,
+		Topic:             mcdConstants.BiteSignature(),
 	}
 
 	// TODO: replace block number when there is an updated Cat bite event

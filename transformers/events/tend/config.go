@@ -28,7 +28,7 @@ func GetTendConfig() shared_t.EventTransformerConfig {
 		TransformerName:     constants.TendLabel,
 		ContractAddresses:   []string{constants.FlapperContractAddress(), constants.FlipperContractAddress()},
 		ContractAbi:         constants.FlipperABI(),
-		Topic:               constants.GetTendFunctionSignature(),
+		Topic:               constants.TendSignature(),
 		StartingBlockNumber: shared.MinInt64([]int64{constants.FlapperDeploymentBlock(), constants.FlipperDeploymentBlock()}),
 		EndingBlockNumber:   -1,
 	}

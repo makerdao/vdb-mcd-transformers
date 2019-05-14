@@ -29,7 +29,7 @@ import (
 var EthVowFessLog = types.Log{
 	Address: common.HexToAddress(constants.VowContractAddress()),
 	Topics: []common.Hash{
-		common.HexToHash("0x697efb7800000000000000000000000000000000000000000000000000000000"),
+		common.HexToHash(constants.VowFessSignature()),
 		common.HexToHash("0x0000000000000000000000002f34f22a00ee4b7a8f8bbc4eaee1658774c624e0"),
 		common.HexToHash("0x0000000000000000000000000000000000000000000000000000000000000539"),
 		common.HexToHash("0x0000000000000000000000000000000000000000000000000000000000000000"),

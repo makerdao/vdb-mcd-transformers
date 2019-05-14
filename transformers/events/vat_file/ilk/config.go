@@ -27,7 +27,7 @@ func GetIlkFileConfig() shared_t.EventTransformerConfig {
 		TransformerName:     constants.VatFileIlkLabel,
 		ContractAddresses:   []string{constants.VatContractAddress()},
 		ContractAbi:         constants.VatABI(),
-		Topic:               constants.GetVatFileIlkSignature(),
+		Topic:               constants.VatFileIlkSignature(),
 		StartingBlockNumber: constants.VatDeploymentBlock(),
 		EndingBlockNumber:   -1,
 	}

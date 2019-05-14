@@ -23,6 +23,7 @@ import (
 	vow2 "github.com/vulcanize/mcd_transformers/transformers/events/jug_file/vow"
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_file/debt_ceiling"
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_file/ilk"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
@@ -240,7 +241,7 @@ var _ = Describe("Files query", func() {
 			Expect(catFileVowErr).NotTo(HaveOccurred())
 
 			var actualFiles []test_helpers.FileEvent
-			filesErr := db.Select(&actualFiles, `SELECT id, ilk_name, what, data FROM api.address_files($1)`, test_data.KovanCatContractAddress)
+			filesErr := db.Select(&actualFiles, `SELECT id, ilk_name, what, data FROM api.address_files($1)`, constants.CatContractAddress())
 			Expect(filesErr).NotTo(HaveOccurred())
 
 			Expect(actualFiles).To(ConsistOf(
@@ -278,7 +279,7 @@ var _ = Describe("Files query", func() {
 			Expect(jugFileVowErr).NotTo(HaveOccurred())
 
 			var actualFiles []test_helpers.FileEvent
-			filesErr := db.Select(&actualFiles, `SELECT id, ilk_name, what, data FROM api.address_files($1)`, test_data.KovanJugContractAddress)
+			filesErr := db.Select(&actualFiles, `SELECT id, ilk_name, what, data FROM api.address_files($1)`, constants.JugContractAddress())
 			Expect(filesErr).NotTo(HaveOccurred())
 
 			Expect(actualFiles).To(ConsistOf(
@@ -313,7 +314,7 @@ var _ = Describe("Files query", func() {
 			Expect(vatFileIlkErr).NotTo(HaveOccurred())
 
 			var actualFiles []test_helpers.FileEvent
-			filesErr := db.Select(&actualFiles, `SELECT id, ilk_name, what, data FROM api.address_files($1)`, test_data.KovanVatContractAddress)
+			filesErr := db.Select(&actualFiles, `SELECT id, ilk_name, what, data FROM api.address_files($1)`, constants.VatContractAddress())
 			Expect(filesErr).NotTo(HaveOccurred())
 
 			Expect(actualFiles).To(ConsistOf(
@@ -351,7 +352,7 @@ var _ = Describe("Files query", func() {
 			Expect(fileBlockTwoErr).NotTo(HaveOccurred())
 
 			var actualFiles []test_helpers.FileEvent
-			filesErr := db.Select(&actualFiles, `SELECT id, ilk_name, what, data FROM api.address_files($1)`, test_data.KovanVatContractAddress)
+			filesErr := db.Select(&actualFiles, `SELECT id, ilk_name, what, data FROM api.address_files($1)`, constants.VatContractAddress())
 			Expect(filesErr).NotTo(HaveOccurred())
 
 			Expect(actualFiles).To(ConsistOf(
@@ -382,7 +383,7 @@ var _ = Describe("Files query", func() {
 			Expect(vatBlockOneErr).NotTo(HaveOccurred())
 
 			var actualFiles []test_helpers.FileEvent
-			filesErr := db.Select(&actualFiles, `SELECT id, ilk_name, what, data FROM api.address_files($1)`, test_data.KovanVatContractAddress)
+			filesErr := db.Select(&actualFiles, `SELECT id, ilk_name, what, data FROM api.address_files($1)`, constants.VatContractAddress())
 			Expect(filesErr).NotTo(HaveOccurred())
 
 			Expect(actualFiles).To(ConsistOf(

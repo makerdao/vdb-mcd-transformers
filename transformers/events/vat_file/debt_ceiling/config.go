@@ -27,7 +27,7 @@ func GetDebtCeilingFileConfig() shared_t.EventTransformerConfig {
 		TransformerName:     constants.VatFileDebtCeilingLabel,
 		ContractAddresses:   []string{constants.VatContractAddress()},
 		ContractAbi:         constants.VatABI(),
-		Topic:               constants.GetVatFileDebtCeilingSignature(),
+		Topic:               constants.VatFileDebtCeilingSignature(),
 		StartingBlockNumber: constants.VatDeploymentBlock(),
 		EndingBlockNumber:   -1,
 	}

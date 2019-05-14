@@ -27,7 +27,7 @@ func GetVowFlogConfig() shared_t.EventTransformerConfig {
 		TransformerName:     constants.VowFlogLabel,
 		ContractAddresses:   []string{constants.VowContractAddress()},
 		ContractAbi:         constants.VowABI(),
-		Topic:               constants.GetVowFlogSignature(),
+		Topic:               constants.VowFlogSignature(),
 		StartingBlockNumber: constants.VowDeploymentBlock(),
 		EndingBlockNumber:   -1,
 	}

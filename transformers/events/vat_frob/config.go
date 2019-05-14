@@ -27,7 +27,7 @@ func GetVatFrobConfig() shared_t.EventTransformerConfig {
 		TransformerName:     constants.VatFrobLabel,
 		ContractAddresses:   []string{constants.VatContractAddress()},
 		ContractAbi:         constants.VatABI(),
-		Topic:               constants.GetVatFrobSignature(),
+		Topic:               constants.VatFrobSignature(),
 		StartingBlockNumber: constants.VatDeploymentBlock(),
 		EndingBlockNumber:   -1,
 	}

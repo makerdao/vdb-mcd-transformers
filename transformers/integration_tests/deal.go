@@ -30,7 +30,6 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/events/deal"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
-	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
 var _ = Describe("Deal transformer", func() {
@@ -59,7 +58,7 @@ var _ = Describe("Deal transformer", func() {
 				mcdConstants.FlipperContractAddress(),
 				mcdConstants.FlopperContractAddress(),
 			},
-			Topic: test_data.KovanDealSignature,
+			Topic: mcdConstants.DealSignature(),
 		}
 
 		initializer = shared.LogNoteTransformer{

@@ -48,7 +48,7 @@ var (
 var EthBiteLog = types.Log{
 	Address: common.HexToAddress(constants.CatContractAddress()),
 	Topics: []common.Hash{
-		common.HexToHash(KovanBiteSignature),
+		common.HexToHash(constants.BiteSignature()),
 		common.HexToHash("0x4554480000000000000000000000000000000000000000000000000000000000"),
 		common.HexToHash("0x0000000000000000000000000000d8b4147eda80fec7122ae16da2479cbd7ffb"),
 	},

@@ -30,7 +30,6 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/events/jug_file/vow"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
-	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
 var _ = Describe("Jug File Vow LogNoteTransformer", func() {
@@ -52,7 +51,7 @@ var _ = Describe("Jug File Vow LogNoteTransformer", func() {
 		TransformerName:   mcdConstants.JugFileVowLabel,
 		ContractAddresses: []string{mcdConstants.JugContractAddress()},
 		ContractAbi:       mcdConstants.JugABI(),
-		Topic:             test_data.KovanJugFileVowSignature,
+		Topic:             mcdConstants.JugFileVowSignature(),
 	}
 
 	It("transforms JugFileVow log events", func() {

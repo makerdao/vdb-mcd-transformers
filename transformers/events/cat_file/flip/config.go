@@ -27,7 +27,7 @@ func GetCatFileFlipConfig() shared_t.EventTransformerConfig {
 		TransformerName:     constants.CatFileFlipLabel,
 		ContractAddresses:   []string{constants.CatContractAddress()},
 		ContractAbi:         constants.CatABI(),
-		Topic:               constants.GetCatFileFlipSignature(),
+		Topic:               constants.CatFileFlipSignature(),
 		StartingBlockNumber: constants.CatDeploymentBlock(),
 		EndingBlockNumber:   -1,
 	}

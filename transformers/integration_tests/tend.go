@@ -30,7 +30,6 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/events/tend"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
-	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
 var _ = Describe("Tend LogNoteTransformer", func() {
@@ -56,7 +55,7 @@ var _ = Describe("Tend LogNoteTransformer", func() {
 			TransformerName:   mcdConstants.TendLabel,
 			ContractAddresses: []string{mcdConstants.FlapperContractAddress(), mcdConstants.FlipperContractAddress()},
 			ContractAbi:       mcdConstants.FlipperABI(),
-			Topic:             test_data.KovanTendSignature,
+			Topic:             mcdConstants.TendSignature(),
 		}
 
 		logFetcher = fetcher.NewLogFetcher(blockChain)

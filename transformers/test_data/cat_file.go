@@ -33,7 +33,7 @@ import (
 var EthCatFileChopLog = types.Log{
 	Address: common.HexToAddress(constants.CatContractAddress()),
 	Topics: []common.Hash{
-		common.HexToHash(KovanCatFileChopLumpSignature),
+		common.HexToHash(constants.CatFileChopLumpSignature()),
 		common.HexToHash("0x00000000000000000000000064d922894153be9eef7b7218dc565d1d0ce2a092"),
 		common.HexToHash("0x66616b6520696c6b000000000000000000000000000000000000000000000000"),
 		common.HexToHash("0x63686f7000000000000000000000000000000000000000000000000000000000"),
@@ -59,7 +59,7 @@ var CatFileChopModel = chop_lump.CatFileChopLumpModel{
 var EthCatFileLumpLog = types.Log{
 	Address: common.HexToAddress(constants.CatContractAddress()),
 	Topics: []common.Hash{
-		common.HexToHash(KovanCatFileChopLumpSignature),
+		common.HexToHash(constants.CatFileChopLumpSignature()),
 		common.HexToHash("0x00000000000000000000000064d922894153be9eef7b7218dc565d1d0ce2a092"),
 		common.HexToHash("0x66616b6520696c6b000000000000000000000000000000000000000000000000"),
 		common.HexToHash("0x6c756d7000000000000000000000000000000000000000000000000000000000"),
@@ -85,7 +85,7 @@ var CatFileLumpModel = chop_lump.CatFileChopLumpModel{
 var EthCatFileFlipLog = types.Log{
 	Address: common.HexToAddress(constants.CatContractAddress()),
 	Topics: []common.Hash{
-		common.HexToHash(KovanCatFileFlipSignature),
+		common.HexToHash(constants.CatFileFlipSignature()),
 		common.HexToHash("0x00000000000000000000000064d922894153be9eef7b7218dc565d1d0ce2a092"),
 		common.HexToHash("0x66616b6520696c6b000000000000000000000000000000000000000000000000"),
 		common.HexToHash("0x666c697000000000000000000000000000000000000000000000000000000000"),
@@ -112,7 +112,7 @@ var CatFileFlipModel = flip.CatFileFlipModel{
 var EthCatFileVowLog = types.Log{
 	Address: common.HexToAddress(constants.CatContractAddress()),
 	Topics: []common.Hash{
-		common.HexToHash(KovanCatFileVowSignature),
+		common.HexToHash(constants.CatFileVowSignature()),
 		common.HexToHash("0x0000000000000000000000003652c2af10cbbdb753c3b46489db5226b73e6497"),
 		common.HexToHash("0x766f770000000000000000000000000000000000000000000000000000000000"),
 		common.HexToHash("0x00000000000000000000000017560834075da3db54f737db74377e799c865821"),

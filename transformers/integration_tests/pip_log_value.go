@@ -30,7 +30,6 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/events/pip_log_value"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
-	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
 var _ = Describe("Pip LogValue transformer", func() {
@@ -54,7 +53,7 @@ var _ = Describe("Pip LogValue transformer", func() {
 		pipLogValueConfig = transformer.EventTransformerConfig{
 			TransformerName: mcdConstants.PipLogValueLabel,
 			ContractAbi:     mcdConstants.PipABI(),
-			Topic:           test_data.KovanPipLogValueSignature,
+			Topic:           mcdConstants.PipLogValueSignature(),
 		}
 
 		topics = []common.Hash{common.HexToHash(pipLogValueConfig.Topic)}
