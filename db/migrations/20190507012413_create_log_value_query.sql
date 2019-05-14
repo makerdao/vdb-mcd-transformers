@@ -22,10 +22,10 @@ CREATE OR REPLACE FUNCTION maker.log_value_tx(priceUpdate maker.log_value)
   RETURNS maker.tx AS
 $body$
   SELECT txs.hash, txs.tx_index, headers.block_number, headers.hash, txs.tx_from, txs.tx_to
-    FROM public.header_sync_transactions txs
-    LEFT JOIN headers ON txs.header_id = headers.id
-    LEFT JOIN maker.pip_log_value plv ON txs.header_id = plv.header_id
-    WHERE headers.block_number = priceUpdate.block_number
+    FROM maker.pip_log_value plv
+    LEFT JOIN public.header_sync_transactions txs ON plv.header_id = txs.header_id
+    LEFT JOIN headers ON plv.header_id = headers.id
+    WHERE headers.block_number = priceUpdate.block_number AND priceUpdate.tx_idx = txs.tx_index
     ORDER BY headers.block_number DESC
 $body$
   LANGUAGE sql STABLE;
