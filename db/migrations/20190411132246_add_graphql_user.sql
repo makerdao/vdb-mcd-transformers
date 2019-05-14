@@ -15,6 +15,7 @@ DO
   $do$;
 -- +goose StatementEnd
 GRANT USAGE ON SCHEMA maker TO graphql;
+GRANT EXECUTE ON FUNCTION maker.all_bites(text) TO graphql;
 GRANT EXECUTE ON FUNCTION maker.all_frobs(text) TO graphql;
 GRANT EXECUTE ON FUNCTION maker.all_urns(bigint) TO graphql;
 GRANT EXECUTE ON FUNCTION maker.all_ilks(bigint) TO graphql;
