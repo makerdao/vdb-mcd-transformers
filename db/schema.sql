@@ -30,6 +30,35 @@ CREATE SCHEMA maker;
 
 
 --
+-- Name: bite_event; Type: TYPE; Schema: api; Owner: -
+--
+
+CREATE TYPE api.bite_event AS (
+	ilk_name text,
+	urn_id text,
+	ink numeric,
+	art numeric,
+	tab numeric,
+	block_height bigint,
+	tx_idx integer
+);
+
+
+--
+-- Name: COLUMN bite_event.block_height; Type: COMMENT; Schema: api; Owner: -
+--
+
+COMMENT ON COLUMN api.bite_event.block_height IS '@omit';
+
+
+--
+-- Name: COLUMN bite_event.tx_idx; Type: COMMENT; Schema: api; Owner: -
+--
+
+COMMENT ON COLUMN api.bite_event.tx_idx IS '@omit';
+
+
+--
 -- Name: era; Type: TYPE; Schema: api; Owner: -
 --
 
@@ -37,6 +66,34 @@ CREATE TYPE api.era AS (
 	epoch bigint,
 	iso timestamp without time zone
 );
+
+
+--
+-- Name: file_event; Type: TYPE; Schema: api; Owner: -
+--
+
+CREATE TYPE api.file_event AS (
+	id text,
+	ilk_name text,
+	what text,
+	data text,
+	block_height bigint,
+	tx_idx integer
+);
+
+
+--
+-- Name: COLUMN file_event.block_height; Type: COMMENT; Schema: api; Owner: -
+--
+
+COMMENT ON COLUMN api.file_event.block_height IS '@omit';
+
+
+--
+-- Name: COLUMN file_event.tx_idx; Type: COMMENT; Schema: api; Owner: -
+--
+
+COMMENT ON COLUMN api.file_event.tx_idx IS '@omit';
 
 
 --
@@ -48,15 +105,30 @@ CREATE TYPE api.frob_event AS (
 	urn_id text,
 	dink numeric,
 	dart numeric,
-	block_height bigint
+	block_height bigint,
+	tx_idx integer
 );
 
 
 --
--- Name: ilk; Type: TYPE; Schema: api; Owner: -
+-- Name: COLUMN frob_event.block_height; Type: COMMENT; Schema: api; Owner: -
 --
 
-CREATE TYPE api.ilk AS (
+COMMENT ON COLUMN api.frob_event.block_height IS '@omit';
+
+
+--
+-- Name: COLUMN frob_event.tx_idx; Type: COMMENT; Schema: api; Owner: -
+--
+
+COMMENT ON COLUMN api.frob_event.tx_idx IS '@omit';
+
+
+--
+-- Name: ilk_state; Type: TYPE; Schema: api; Owner: -
+--
+
+CREATE TYPE api.ilk_state AS (
 	ilk_id integer,
 	ilk_name text,
 	block_height bigint,
@@ -73,6 +145,25 @@ CREATE TYPE api.ilk AS (
 	created timestamp without time zone,
 	updated timestamp without time zone
 );
+
+
+--
+-- Name: log_value; Type: TYPE; Schema: api; Owner: -
+--
+
+CREATE TYPE api.log_value AS (
+	val numeric,
+	block_number bigint,
+	tx_idx integer,
+	contract_address text
+);
+
+
+--
+-- Name: COLUMN log_value.tx_idx; Type: COMMENT; Schema: api; Owner: -
+--
+
+COMMENT ON COLUMN api.log_value.tx_idx IS '@omit';
 
 
 --
@@ -101,10 +192,10 @@ CREATE TYPE api.tx AS (
 
 
 --
--- Name: urn; Type: TYPE; Schema: api; Owner: -
+-- Name: urn_state; Type: TYPE; Schema: api; Owner: -
 --
 
-CREATE TYPE api.urn AS (
+CREATE TYPE api.urn_state AS (
 	urn_id text,
 	ilk_name text,
 	block_height bigint,
@@ -118,6 +209,86 @@ CREATE TYPE api.urn AS (
 
 
 --
+-- Name: address_files(text); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.address_files(address text) RETURNS SETOF api.file_event
+    LANGUAGE sql STABLE
+    AS $_$
+  WITH
+    lowerAddress AS (SELECT lower($1))
+
+-- ilk files
+  SELECT cat_file_chop_lump.raw_log::json->>'address' AS id, ilks.name AS ilk_name, what, data::text, block_number AS block_height, tx_idx
+  FROM maker.cat_file_chop_lump
+  LEFT JOIN maker.ilks ON cat_file_chop_lump.ilk_id = ilks.id
+  LEFT JOIN headers    ON cat_file_chop_lump.header_id = headers.id
+  WHERE lower(cat_file_chop_lump.raw_log::json->>'address') = (SELECT * FROM lowerAddress)
+  UNION
+  SELECT cat_file_flip.raw_log::json->>'address' AS id, ilks.name AS ilk_name, what, flip AS data, block_number AS block_height, tx_idx
+  FROM maker.cat_file_flip
+  LEFT JOIN maker.ilks ON cat_file_flip.ilk_id = ilks.id
+  LEFT JOIN headers ON cat_file_flip.header_id = headers.id
+  WHERE lower(cat_file_flip.raw_log::json->>'address') = (SELECT * FROM lowerAddress)
+  UNION
+  SELECT jug_file_ilk.raw_log::json->>'address' AS id, ilks.name AS ilk_name, what, data::text, block_number AS block_height, tx_idx
+  FROM maker.jug_file_ilk
+  LEFT JOIN maker.ilks ON jug_file_ilk.ilk_id = ilks.id
+  LEFT JOIN headers ON jug_file_ilk.header_id = headers.id
+  WHERE lower(jug_file_ilk.raw_log::json->>'address') = (SELECT * FROM lowerAddress)
+  UNION
+  SELECT vat_file_ilk.raw_log::json->>'address' AS id, ilks.name AS ilk_name, what, data::text, block_number AS block_height, tx_idx
+  FROM maker.vat_file_ilk
+  LEFT JOIN maker.ilks ON vat_file_ilk.ilk_id = ilks.id
+  LEFT JOIN headers ON vat_file_ilk.header_id = headers.id
+  WHERE lower(vat_file_ilk.raw_log::json->>'address') = (SELECT * FROM lowerAddress)
+
+-- contract files
+  UNION
+  SELECT cat_file_vow.raw_log::json->>'address' AS id, NULL AS ilk_name, what, data, block_number AS block_height, tx_idx
+  FROM maker.cat_file_vow
+  LEFT JOIN headers ON cat_file_vow.header_id = headers.id
+  WHERE lower(cat_file_vow.raw_log::json->>'address') = (SELECT * FROM lowerAddress)
+  UNION
+  SELECT jug_file_base.raw_log::json->>'address' AS id, NULL AS ilk_name, what, data::text, block_number AS block_height, tx_idx
+  FROM maker.jug_file_base
+  LEFT JOIN headers ON jug_file_base.header_id = headers.id
+  WHERE lower(jug_file_base.raw_log::json->>'address') = (SELECT * FROM lowerAddress)
+  UNION
+  SELECT jug_file_vow.raw_log::json->>'address' AS id, NULL AS ilk_name, what, data, block_number AS block_height, tx_idx
+  FROM maker.jug_file_vow
+  LEFT JOIN headers ON jug_file_vow.header_id = headers.id
+  WHERE lower(jug_file_vow.raw_log::json->>'address') = (SELECT * FROM lowerAddress)
+  UNION
+  SELECT vat_file_debt_ceiling.raw_log::json->>'address' AS id, NULL AS ilk_name, what, data::text, block_number AS block_height, tx_idx
+  FROM maker.vat_file_debt_ceiling
+  LEFT JOIN headers on vat_file_debt_ceiling.header_id = headers.id
+  WHERE lower(vat_file_debt_ceiling.raw_log::json->>'address') = (SELECT * FROM lowerAddress)
+
+  ORDER BY block_height DESC
+$_$;
+
+
+--
+-- Name: all_bites(text); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.all_bites(ilk_name text) RETURNS SETOF api.bite_event
+    LANGUAGE sql STABLE
+    AS $_$
+  WITH
+    ilk AS (SELECT id FROM maker.ilks WHERE ilks.name = $1)
+
+  SELECT $1 AS ilk_name, guy AS urn_id, ink, art, tab, block_number AS block_height, tx_idx
+  FROM maker.bite
+  LEFT JOIN maker.urns ON bite.urn_id = urns.id
+  LEFT JOIN headers    ON bite.header_id = headers.id
+  WHERE urns.ilk_id = (SELECT id FROM ilk)
+  ORDER BY guy, block_number DESC
+$_$;
+
+
+--
 -- Name: all_frobs(text); Type: FUNCTION; Schema: api; Owner: -
 --
 
@@ -127,7 +298,7 @@ CREATE FUNCTION api.all_frobs(ilk_name text) RETURNS SETOF api.frob_event
   WITH
     ilk AS (SELECT id FROM maker.ilks WHERE ilks.name = $1)
 
-  SELECT $1 AS ilk_name, guy AS urn_id, dink, dart, block_number AS block_height
+  SELECT $1 AS ilk_name, guy AS urn_id, dink, dart, block_number AS block_height, tx_idx
   FROM maker.vat_frob
   LEFT JOIN maker.urns ON vat_frob.urn_id = urns.id
   LEFT JOIN headers    ON vat_frob.header_id = headers.id
@@ -140,7 +311,7 @@ $_$;
 -- Name: all_ilk_states(bigint, integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.all_ilk_states(block_height bigint, ilk_id integer) RETURNS SETOF api.ilk
+CREATE FUNCTION api.all_ilk_states(block_height bigint, ilk_id integer) RETURNS SETOF api.ilk_state
     LANGUAGE plpgsql STABLE
     AS $_$
 DECLARE
@@ -159,7 +330,7 @@ $_$;
 -- Name: all_ilks(bigint); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.all_ilks(block_height bigint) RETURNS SETOF api.ilk
+CREATE FUNCTION api.all_ilks(block_height bigint) RETURNS SETOF api.ilk_state
     LANGUAGE sql STABLE
     AS $_$
 WITH rates AS (
@@ -271,7 +442,7 @@ $_$;
 -- Name: all_urn_states(text, text, bigint); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.all_urn_states(ilk_name text, urn text, block_height bigint) RETURNS SETOF api.urn
+CREATE FUNCTION api.all_urn_states(ilk_name text, urn text, block_height bigint) RETURNS SETOF api.urn_state
     LANGUAGE plpgsql STABLE
     AS $_$
 DECLARE
@@ -312,7 +483,7 @@ $_$;
 -- Name: all_urns(bigint); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.all_urns(block_height bigint) RETURNS SETOF api.urn
+CREATE FUNCTION api.all_urns(block_height bigint) RETURNS SETOF api.urn_state
     LANGUAGE sql STABLE
     AS $_$
 WITH
@@ -408,10 +579,79 @@ $_$;
 
 
 --
+-- Name: bite_event_ilk(api.bite_event); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.bite_event_ilk(event api.bite_event) RETURNS SETOF api.ilk_state
+    LANGUAGE sql STABLE
+    AS $$
+  SELECT * FROM api.get_ilk(
+     event.block_height,
+     (SELECT id FROM maker.ilks WHERE name = event.ilk_name))
+$$;
+
+
+--
+-- Name: bite_event_tx(api.bite_event); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.bite_event_tx(event api.bite_event) RETURNS api.tx
+    LANGUAGE sql STABLE
+    AS $$
+  SELECT txs.hash, txs.tx_index, headers.block_number AS block_height, headers.hash, tx_from, tx_to
+  FROM public.header_sync_transactions txs
+         LEFT JOIN headers ON txs.header_id = headers.id
+  WHERE block_number <= event.block_height AND txs.tx_index = event.tx_idx
+  ORDER BY block_height DESC
+$$;
+
+
+--
+-- Name: bite_event_urn(api.bite_event); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.bite_event_urn(event api.bite_event) RETURNS SETOF api.urn_state
+    LANGUAGE sql STABLE
+    AS $$
+  SELECT * FROM api.get_urn(event.ilk_name, event.urn_id, event.block_height)
+$$;
+
+
+--
+-- Name: file_event_ilk(api.file_event); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.file_event_ilk(event api.file_event) RETURNS SETOF api.ilk_state
+    LANGUAGE sql STABLE
+    AS $$
+  SELECT * FROM api.get_ilk(
+    event.block_height,
+    (SELECT id FROM maker.ilks WHERE name = event.ilk_name)
+  )
+$$;
+
+
+--
+-- Name: file_event_tx(api.file_event); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.file_event_tx(event api.file_event) RETURNS api.tx
+    LANGUAGE sql STABLE
+    AS $$
+  SELECT txs.hash, txs.tx_index, headers.block_number AS block_height, headers.hash, tx_from, tx_to
+  FROM public.header_sync_transactions txs
+  LEFT JOIN headers ON txs.header_id = headers.id
+  WHERE block_number <= event.block_height AND txs.tx_index = event.tx_idx
+  ORDER BY block_height DESC
+  LIMIT 1
+$$;
+
+
+--
 -- Name: frob_event_ilk(api.frob_event); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.frob_event_ilk(event api.frob_event) RETURNS SETOF api.ilk
+CREATE FUNCTION api.frob_event_ilk(event api.frob_event) RETURNS SETOF api.ilk_state
     LANGUAGE sql STABLE
     AS $$
   SELECT * FROM api.get_ilk(
@@ -430,7 +670,7 @@ CREATE FUNCTION api.frob_event_tx(event api.frob_event) RETURNS api.tx
   SELECT txs.hash, txs.tx_index, headers.block_number AS block_height, headers.hash, tx_from, tx_to
   FROM public.header_sync_transactions txs
   LEFT JOIN headers ON txs.header_id = headers.id
-  WHERE block_number <= event.block_height
+  WHERE block_number <= event.block_height AND txs.tx_index = event.tx_idx
   ORDER BY block_height DESC
   LIMIT 1 -- Should always be true anyway?
 $$;
@@ -440,7 +680,7 @@ $$;
 -- Name: frob_event_urn(api.frob_event); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.frob_event_urn(event api.frob_event) RETURNS SETOF api.urn
+CREATE FUNCTION api.frob_event_urn(event api.frob_event) RETURNS SETOF api.urn_state
     LANGUAGE sql STABLE
     AS $$
   SELECT * FROM api.get_urn(event.ilk_name, event.urn_id, event.block_height)
@@ -448,32 +688,10 @@ $$;
 
 
 --
--- Name: frobs_for_urn(text, text); Type: FUNCTION; Schema: api; Owner: -
---
-
-CREATE FUNCTION api.frobs_for_urn(ilk_name text, urn text) RETURNS SETOF api.frob_event
-    LANGUAGE sql STABLE
-    AS $_$
-  WITH
-    ilk AS (SELECT id FROM maker.ilks WHERE ilks.name = $1),
-    urn AS (
-      SELECT id FROM maker.urns
-      WHERE ilk_id = (SELECT id FROM ilk)
-        AND guy = $2
-    )
-
-  SELECT $1 AS ilk_name, $2 AS urn_id, dink, dart, block_number AS block_height
-  FROM maker.vat_frob LEFT JOIN headers ON vat_frob.header_id = headers.id
-  WHERE vat_frob.urn_id = (SELECT id FROM urn)
-  ORDER BY block_number DESC
-$_$;
-
-
---
 -- Name: get_ilk(bigint, integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.get_ilk(block_height bigint, _ilk_id integer) RETURNS api.ilk
+CREATE FUNCTION api.get_ilk(block_height bigint, _ilk_id integer) RETURNS api.ilk_state
     LANGUAGE sql STABLE
     AS $_$
 WITH rates AS (
@@ -744,7 +962,7 @@ COMMENT ON FUNCTION api.get_ilk_blocks_before(block_height bigint, ilk_id intege
 -- Name: get_urn(text, text, bigint); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.get_urn(ilk text, urn text, block_height bigint) RETURNS api.urn
+CREATE FUNCTION api.get_urn(ilk text, urn text, block_height bigint) RETURNS api.urn_state
     LANGUAGE sql STABLE
     AS $_$
 WITH
@@ -840,15 +1058,89 @@ $_$;
 
 
 --
--- Name: ilk_frobs(api.ilk); Type: FUNCTION; Schema: api; Owner: -
+-- Name: ilk_files(text); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.ilk_frobs(state api.ilk) RETURNS SETOF api.frob_event
+CREATE FUNCTION api.ilk_files(ilk_name text) RETURNS SETOF api.file_event
+    LANGUAGE sql STABLE
+    AS $_$
+  WITH
+    ilk AS (SELECT id FROM maker.ilks WHERE ilks.name = $1)
+
+  SELECT cat_file_chop_lump.raw_log::json->>'address' AS id, $1 AS ilk_name, what, data::text, block_number AS block_height, tx_idx
+  FROM maker.cat_file_chop_lump
+  LEFT JOIN headers ON cat_file_chop_lump.header_id = headers.id
+  WHERE cat_file_chop_lump.ilk_id = (SELECT id FROM ilk)
+  UNION
+  SELECT cat_file_flip.raw_log::json->>'address' AS id, $1 AS ilk_name, what, flip AS data, block_number AS block_height, tx_idx
+  FROM maker.cat_file_flip
+  LEFT JOIN headers ON cat_file_flip.header_id = headers.id
+  WHERE cat_file_flip.ilk_id = (SELECT id FROM ilk)
+  UNION
+  SELECT jug_file_ilk.raw_log::json->>'address' AS id, $1 AS ilk_name, what, data::text, block_number AS block_height, tx_idx
+  FROM maker.jug_file_ilk
+  LEFT JOIN headers ON jug_file_ilk.header_id = headers.id
+  WHERE jug_file_ilk.ilk_id = (SELECT id FROM ilk)
+  UNION
+  SELECT vat_file_ilk.raw_log::json->>'address' AS id, $1 AS ilk_name, what, data::text, block_number AS block_height, tx_idx
+  FROM maker.vat_file_ilk
+  LEFT JOIN headers ON vat_file_ilk.header_id = headers.id
+  WHERE vat_file_ilk.ilk_id = (SELECT id FROM ilk)
+  ORDER BY block_height DESC
+$_$;
+
+
+--
+-- Name: ilk_state_files(api.ilk_state); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.ilk_state_files(state api.ilk_state) RETURNS SETOF api.file_event
+    LANGUAGE sql STABLE
+    AS $$
+  SELECT * FROM api.ilk_files(state.ilk_name)
+  WHERE block_height <= state.block_height
+$$;
+
+
+--
+-- Name: ilk_state_frobs(api.ilk_state); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.ilk_state_frobs(state api.ilk_state) RETURNS SETOF api.frob_event
     LANGUAGE sql STABLE
     AS $$
   SELECT * FROM api.all_frobs(state.ilk_name)
   WHERE block_height <= state.block_height
 $$;
+
+
+--
+-- Name: log_value_tx(api.log_value); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.log_value_tx(priceupdate api.log_value) RETURNS api.tx
+    LANGUAGE sql STABLE
+    AS $$
+  SELECT txs.hash, txs.tx_index, headers.block_number, headers.hash, txs.tx_from, txs.tx_to
+    FROM maker.pip_log_value plv
+    LEFT JOIN public.header_sync_transactions txs ON plv.header_id = txs.header_id
+    LEFT JOIN headers ON plv.header_id = headers.id
+    WHERE headers.block_number = priceUpdate.block_number AND priceUpdate.tx_idx = txs.tx_index
+    ORDER BY headers.block_number DESC
+$$;
+
+
+--
+-- Name: log_values(integer, integer); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.log_values(begintime integer, endtime integer) RETURNS SETOF api.log_value
+    LANGUAGE sql STABLE
+    AS $_$
+  SELECT val, pip_log_value.block_number, tx_idx, contract_address FROM maker.pip_log_value
+    LEFT JOIN public.headers ON pip_log_value.header_id = headers.id
+    WHERE block_timestamp BETWEEN $1 AND $2
+$_$;
 
 
 --
@@ -864,14 +1156,50 @@ $$;
 
 
 --
--- Name: urn_frobs(api.urn); Type: FUNCTION; Schema: api; Owner: -
+-- Name: urn_frobs(text, text); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.urn_frobs(state api.urn) RETURNS SETOF api.frob_event
+CREATE FUNCTION api.urn_frobs(ilk_name text, urn text) RETURNS SETOF api.frob_event
+    LANGUAGE sql STABLE
+    AS $_$
+  WITH
+    ilk AS (SELECT id FROM maker.ilks WHERE ilks.name = $1),
+    urn AS (
+      SELECT id FROM maker.urns
+      WHERE ilk_id = (SELECT id FROM ilk)
+        AND guy = $2
+    )
+
+  SELECT $1 AS ilk_name, $2 AS urn_id, dink, dart, block_number AS block_height, tx_idx
+  FROM maker.vat_frob LEFT JOIN headers ON vat_frob.header_id = headers.id
+  WHERE vat_frob.urn_id = (SELECT id FROM urn)
+  ORDER BY block_number DESC
+$_$;
+
+
+--
+-- Name: urn_state_frobs(api.urn_state); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.urn_state_frobs(state api.urn_state) RETURNS SETOF api.frob_event
     LANGUAGE sql STABLE
     AS $$
-  SELECT * FROM api.frobs_for_urn(state.ilk_name, state.urn_id)
+  SELECT * FROM api.urn_frobs(state.ilk_name, state.urn_id)
   WHERE block_height <= state.block_height
+$$;
+
+
+--
+-- Name: urn_state_ilk(api.urn_state); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.urn_state_ilk(state api.urn_state) RETURNS api.ilk_state
+    LANGUAGE sql STABLE
+    AS $$
+  SELECT * FROM api.get_ilk(
+    state.block_height,
+    (SELECT id FROM maker.ilks WHERE name = state.ilk_name)
+  )
 $$;
 
 
@@ -912,6 +1240,13 @@ CREATE TABLE maker.bite (
     log_idx integer NOT NULL,
     raw_log jsonb
 );
+
+
+--
+-- Name: TABLE bite; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.bite IS '@name raw_bites';
 
 
 --
@@ -1334,38 +1669,6 @@ CREATE SEQUENCE maker.cat_nflip_id_seq
 --
 
 ALTER SEQUENCE maker.cat_nflip_id_seq OWNED BY maker.cat_nflip.id;
-
-
---
--- Name: cat_pit; Type: TABLE; Schema: maker; Owner: -
---
-
-CREATE TABLE maker.cat_pit (
-    id integer NOT NULL,
-    block_number bigint,
-    block_hash text,
-    pit text
-);
-
-
---
--- Name: cat_pit_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
---
-
-CREATE SEQUENCE maker.cat_pit_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: cat_pit_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
---
-
-ALTER SEQUENCE maker.cat_pit_id_seq OWNED BY maker.cat_pit.id;
 
 
 --
@@ -3945,13 +4248,6 @@ ALTER TABLE ONLY maker.cat_nflip ALTER COLUMN id SET DEFAULT nextval('maker.cat_
 
 
 --
--- Name: cat_pit id; Type: DEFAULT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.cat_pit ALTER COLUMN id SET DEFAULT nextval('maker.cat_pit_id_seq'::regclass);
-
-
---
 -- Name: cat_vat id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
@@ -4506,11 +4802,27 @@ ALTER TABLE ONLY maker.cat_file_vow
 
 
 --
+-- Name: cat_flip_ilk cat_flip_ilk_block_number_block_hash_flip_ilk_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_flip_ilk
+    ADD CONSTRAINT cat_flip_ilk_block_number_block_hash_flip_ilk_id_key UNIQUE (block_number, block_hash, flip, ilk_id);
+
+
+--
 -- Name: cat_flip_ilk cat_flip_ilk_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.cat_flip_ilk
     ADD CONSTRAINT cat_flip_ilk_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: cat_flip_ink cat_flip_ink_block_number_block_hash_flip_ink_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_flip_ink
+    ADD CONSTRAINT cat_flip_ink_block_number_block_hash_flip_ink_key UNIQUE (block_number, block_hash, flip, ink);
 
 
 --
@@ -4522,11 +4834,27 @@ ALTER TABLE ONLY maker.cat_flip_ink
 
 
 --
+-- Name: cat_flip_tab cat_flip_tab_block_number_block_hash_flip_tab_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_flip_tab
+    ADD CONSTRAINT cat_flip_tab_block_number_block_hash_flip_tab_key UNIQUE (block_number, block_hash, flip, tab);
+
+
+--
 -- Name: cat_flip_tab cat_flip_tab_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.cat_flip_tab
     ADD CONSTRAINT cat_flip_tab_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: cat_flip_urn cat_flip_urn_block_number_block_hash_flip_urn_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_flip_urn
+    ADD CONSTRAINT cat_flip_urn_block_number_block_hash_flip_urn_key UNIQUE (block_number, block_hash, flip, urn);
 
 
 --
@@ -4538,11 +4866,27 @@ ALTER TABLE ONLY maker.cat_flip_urn
 
 
 --
+-- Name: cat_ilk_chop cat_ilk_chop_block_number_block_hash_ilk_id_chop_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_ilk_chop
+    ADD CONSTRAINT cat_ilk_chop_block_number_block_hash_ilk_id_chop_key UNIQUE (block_number, block_hash, ilk_id, chop);
+
+
+--
 -- Name: cat_ilk_chop cat_ilk_chop_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.cat_ilk_chop
     ADD CONSTRAINT cat_ilk_chop_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: cat_ilk_flip cat_ilk_flip_block_number_block_hash_ilk_id_flip_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_ilk_flip
+    ADD CONSTRAINT cat_ilk_flip_block_number_block_hash_ilk_id_flip_key UNIQUE (block_number, block_hash, ilk_id, flip);
 
 
 --
@@ -4554,11 +4898,27 @@ ALTER TABLE ONLY maker.cat_ilk_flip
 
 
 --
+-- Name: cat_ilk_lump cat_ilk_lump_block_number_block_hash_ilk_id_lump_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_ilk_lump
+    ADD CONSTRAINT cat_ilk_lump_block_number_block_hash_ilk_id_lump_key UNIQUE (block_number, block_hash, ilk_id, lump);
+
+
+--
 -- Name: cat_ilk_lump cat_ilk_lump_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.cat_ilk_lump
     ADD CONSTRAINT cat_ilk_lump_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: cat_live cat_live_block_number_block_hash_live_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_live
+    ADD CONSTRAINT cat_live_block_number_block_hash_live_key UNIQUE (block_number, block_hash, live);
 
 
 --
@@ -4570,6 +4930,14 @@ ALTER TABLE ONLY maker.cat_live
 
 
 --
+-- Name: cat_nflip cat_nflip_block_number_block_hash_nflip_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_nflip
+    ADD CONSTRAINT cat_nflip_block_number_block_hash_nflip_key UNIQUE (block_number, block_hash, nflip);
+
+
+--
 -- Name: cat_nflip cat_nflip_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -4578,11 +4946,11 @@ ALTER TABLE ONLY maker.cat_nflip
 
 
 --
--- Name: cat_pit cat_pit_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: cat_vat cat_vat_block_number_block_hash_vat_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
-ALTER TABLE ONLY maker.cat_pit
-    ADD CONSTRAINT cat_pit_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY maker.cat_vat
+    ADD CONSTRAINT cat_vat_block_number_block_hash_vat_key UNIQUE (block_number, block_hash, vat);
 
 
 --
@@ -4591,6 +4959,14 @@ ALTER TABLE ONLY maker.cat_pit
 
 ALTER TABLE ONLY maker.cat_vat
     ADD CONSTRAINT cat_vat_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: cat_vow cat_vow_block_number_block_hash_vow_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_vow
+    ADD CONSTRAINT cat_vow_block_number_block_hash_vow_key UNIQUE (block_number, block_hash, vow);
 
 
 --
@@ -4706,6 +5082,14 @@ ALTER TABLE ONLY maker.ilks
 
 
 --
+-- Name: jug_base jug_base_block_number_block_hash_base_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.jug_base
+    ADD CONSTRAINT jug_base_block_number_block_hash_base_key UNIQUE (block_number, block_hash, base);
+
+
+--
 -- Name: jug_base jug_base_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -4778,11 +5162,27 @@ ALTER TABLE ONLY maker.jug_file_vow
 
 
 --
+-- Name: jug_ilk_duty jug_ilk_duty_block_number_block_hash_ilk_id_duty_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.jug_ilk_duty
+    ADD CONSTRAINT jug_ilk_duty_block_number_block_hash_ilk_id_duty_key UNIQUE (block_number, block_hash, ilk_id, duty);
+
+
+--
 -- Name: jug_ilk_duty jug_ilk_duty_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.jug_ilk_duty
     ADD CONSTRAINT jug_ilk_duty_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: jug_ilk_rho jug_ilk_rho_block_number_block_hash_ilk_id_rho_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.jug_ilk_rho
+    ADD CONSTRAINT jug_ilk_rho_block_number_block_hash_ilk_id_rho_key UNIQUE (block_number, block_hash, ilk_id, rho);
 
 
 --
@@ -4794,11 +5194,27 @@ ALTER TABLE ONLY maker.jug_ilk_rho
 
 
 --
+-- Name: jug_vat jug_vat_block_number_block_hash_vat_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.jug_vat
+    ADD CONSTRAINT jug_vat_block_number_block_hash_vat_key UNIQUE (block_number, block_hash, vat);
+
+
+--
 -- Name: jug_vat jug_vat_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.jug_vat
     ADD CONSTRAINT jug_vat_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: jug_vow jug_vow_block_number_block_hash_vow_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.jug_vow
+    ADD CONSTRAINT jug_vow_block_number_block_hash_vow_key UNIQUE (block_number, block_hash, vow);
 
 
 --
@@ -4858,11 +5274,27 @@ ALTER TABLE ONLY maker.urns
 
 
 --
+-- Name: vat_dai vat_dai_block_number_block_hash_guy_dai_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_dai
+    ADD CONSTRAINT vat_dai_block_number_block_hash_guy_dai_key UNIQUE (block_number, block_hash, guy, dai);
+
+
+--
 -- Name: vat_dai vat_dai_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.vat_dai
     ADD CONSTRAINT vat_dai_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: vat_debt vat_debt_block_number_block_hash_debt_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_debt
+    ADD CONSTRAINT vat_debt_block_number_block_hash_debt_key UNIQUE (block_number, block_hash, debt);
 
 
 --
@@ -4954,6 +5386,14 @@ ALTER TABLE ONLY maker.vat_frob
 
 
 --
+-- Name: vat_gem vat_gem_block_number_block_hash_ilk_id_guy_gem_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_gem
+    ADD CONSTRAINT vat_gem_block_number_block_hash_ilk_id_guy_gem_key UNIQUE (block_number, block_hash, ilk_id, guy, gem);
+
+
+--
 -- Name: vat_gem vat_gem_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -4994,11 +5434,27 @@ ALTER TABLE ONLY maker.vat_heal
 
 
 --
+-- Name: vat_ilk_art vat_ilk_art_block_number_block_hash_ilk_id_art_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_ilk_art
+    ADD CONSTRAINT vat_ilk_art_block_number_block_hash_ilk_id_art_key UNIQUE (block_number, block_hash, ilk_id, art);
+
+
+--
 -- Name: vat_ilk_art vat_ilk_art_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.vat_ilk_art
     ADD CONSTRAINT vat_ilk_art_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: vat_ilk_dust vat_ilk_dust_block_number_block_hash_ilk_id_dust_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_ilk_dust
+    ADD CONSTRAINT vat_ilk_dust_block_number_block_hash_ilk_id_dust_key UNIQUE (block_number, block_hash, ilk_id, dust);
 
 
 --
@@ -5010,6 +5466,14 @@ ALTER TABLE ONLY maker.vat_ilk_dust
 
 
 --
+-- Name: vat_ilk_line vat_ilk_line_block_number_block_hash_ilk_id_line_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_ilk_line
+    ADD CONSTRAINT vat_ilk_line_block_number_block_hash_ilk_id_line_key UNIQUE (block_number, block_hash, ilk_id, line);
+
+
+--
 -- Name: vat_ilk_line vat_ilk_line_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -5018,11 +5482,27 @@ ALTER TABLE ONLY maker.vat_ilk_line
 
 
 --
+-- Name: vat_ilk_rate vat_ilk_rate_block_number_block_hash_ilk_id_rate_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_ilk_rate
+    ADD CONSTRAINT vat_ilk_rate_block_number_block_hash_ilk_id_rate_key UNIQUE (block_number, block_hash, ilk_id, rate);
+
+
+--
 -- Name: vat_ilk_rate vat_ilk_rate_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.vat_ilk_rate
     ADD CONSTRAINT vat_ilk_rate_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: vat_ilk_spot vat_ilk_spot_block_number_block_hash_ilk_id_spot_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_ilk_spot
+    ADD CONSTRAINT vat_ilk_spot_block_number_block_hash_ilk_id_spot_key UNIQUE (block_number, block_hash, ilk_id, spot);
 
 
 --
@@ -5050,11 +5530,27 @@ ALTER TABLE ONLY maker.vat_init
 
 
 --
+-- Name: vat_line vat_line_block_number_block_hash_line_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_line
+    ADD CONSTRAINT vat_line_block_number_block_hash_line_key UNIQUE (block_number, block_hash, line);
+
+
+--
 -- Name: vat_line vat_line_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.vat_line
     ADD CONSTRAINT vat_line_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: vat_live vat_live_block_number_block_hash_live_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_live
+    ADD CONSTRAINT vat_live_block_number_block_hash_live_key UNIQUE (block_number, block_hash, live);
 
 
 --
@@ -5082,6 +5578,14 @@ ALTER TABLE ONLY maker.vat_move
 
 
 --
+-- Name: vat_sin vat_sin_block_number_block_hash_guy_sin_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_sin
+    ADD CONSTRAINT vat_sin_block_number_block_hash_guy_sin_key UNIQUE (block_number, block_hash, guy, sin);
+
+
+--
 -- Name: vat_sin vat_sin_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -5106,11 +5610,27 @@ ALTER TABLE ONLY maker.vat_slip
 
 
 --
+-- Name: vat_urn_art vat_urn_art_block_number_block_hash_urn_id_art_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_urn_art
+    ADD CONSTRAINT vat_urn_art_block_number_block_hash_urn_id_art_key UNIQUE (block_number, block_hash, urn_id, art);
+
+
+--
 -- Name: vat_urn_art vat_urn_art_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.vat_urn_art
     ADD CONSTRAINT vat_urn_art_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: vat_urn_ink vat_urn_ink_block_number_block_hash_urn_id_ink_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_urn_ink
+    ADD CONSTRAINT vat_urn_ink_block_number_block_hash_urn_id_ink_key UNIQUE (block_number, block_hash, urn_id, ink);
 
 
 --
@@ -5122,11 +5642,27 @@ ALTER TABLE ONLY maker.vat_urn_ink
 
 
 --
+-- Name: vat_vice vat_vice_block_number_block_hash_vice_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_vice
+    ADD CONSTRAINT vat_vice_block_number_block_hash_vice_key UNIQUE (block_number, block_hash, vice);
+
+
+--
 -- Name: vat_vice vat_vice_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.vat_vice
     ADD CONSTRAINT vat_vice_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: vow_ash vow_ash_block_number_block_hash_ash_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_ash
+    ADD CONSTRAINT vow_ash_block_number_block_hash_ash_key UNIQUE (block_number, block_hash, ash);
 
 
 --
@@ -5138,11 +5674,27 @@ ALTER TABLE ONLY maker.vow_ash
 
 
 --
+-- Name: vow_bump vow_bump_block_number_block_hash_bump_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_bump
+    ADD CONSTRAINT vow_bump_block_number_block_hash_bump_key UNIQUE (block_number, block_hash, bump);
+
+
+--
 -- Name: vow_bump vow_bump_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.vow_bump
     ADD CONSTRAINT vow_bump_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: vow_cow vow_cow_block_number_block_hash_cow_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_cow
+    ADD CONSTRAINT vow_cow_block_number_block_hash_cow_key UNIQUE (block_number, block_hash, cow);
 
 
 --
@@ -5186,11 +5738,27 @@ ALTER TABLE ONLY maker.vow_flog
 
 
 --
+-- Name: vow_hump vow_hump_block_number_block_hash_hump_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_hump
+    ADD CONSTRAINT vow_hump_block_number_block_hash_hump_key UNIQUE (block_number, block_hash, hump);
+
+
+--
 -- Name: vow_hump vow_hump_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.vow_hump
     ADD CONSTRAINT vow_hump_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: vow_row vow_row_block_number_block_hash_row_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_row
+    ADD CONSTRAINT vow_row_block_number_block_hash_row_key UNIQUE (block_number, block_hash, "row");
 
 
 --
@@ -5202,11 +5770,27 @@ ALTER TABLE ONLY maker.vow_row
 
 
 --
+-- Name: vow_sin_integer vow_sin_integer_block_number_block_hash_sin_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_sin_integer
+    ADD CONSTRAINT vow_sin_integer_block_number_block_hash_sin_key UNIQUE (block_number, block_hash, sin);
+
+
+--
 -- Name: vow_sin_integer vow_sin_integer_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.vow_sin_integer
     ADD CONSTRAINT vow_sin_integer_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: vow_sin_mapping vow_sin_mapping_block_number_block_hash_timestamp_sin_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_sin_mapping
+    ADD CONSTRAINT vow_sin_mapping_block_number_block_hash_timestamp_sin_key UNIQUE (block_number, block_hash, "timestamp", sin);
 
 
 --
@@ -5218,6 +5802,14 @@ ALTER TABLE ONLY maker.vow_sin_mapping
 
 
 --
+-- Name: vow_sump vow_sump_block_number_block_hash_sump_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_sump
+    ADD CONSTRAINT vow_sump_block_number_block_hash_sump_key UNIQUE (block_number, block_hash, sump);
+
+
+--
 -- Name: vow_sump vow_sump_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -5226,11 +5818,27 @@ ALTER TABLE ONLY maker.vow_sump
 
 
 --
+-- Name: vow_vat vow_vat_block_number_block_hash_vat_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_vat
+    ADD CONSTRAINT vow_vat_block_number_block_hash_vat_key UNIQUE (block_number, block_hash, vat);
+
+
+--
 -- Name: vow_vat vow_vat_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.vow_vat
     ADD CONSTRAINT vow_vat_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: vow_wait vow_wait_block_number_block_hash_wait_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_wait
+    ADD CONSTRAINT vow_wait_block_number_block_hash_wait_key UNIQUE (block_number, block_hash, wait);
 
 
 --

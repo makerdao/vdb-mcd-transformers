@@ -2,7 +2,6 @@ package cat
 
 import (
 	"fmt"
-
 	"github.com/ethereum/go-ethereum/common"
 
 	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
@@ -10,6 +9,20 @@ import (
 
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+)
+
+const (
+	insertNFlipQuery   = `INSERT INTO maker.cat_nflip (block_number, block_hash, nflip) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
+	insertLiveQuery    = `INSERT INTO maker.cat_live (block_number, block_hash, live) VALUES ($1, $2, $3 ) ON CONFLICT DO NOTHING`
+	insertVatQuery     = `INSERT INTO maker.cat_vat (block_number, block_hash, vat) VALUES ($1, $2, $3 ) ON CONFLICT DO NOTHING`
+	insertVowQuery     = `INSERT INTO maker.cat_vow (block_number, block_hash, vow) VALUES ($1, $2, $3 ) ON CONFLICT DO NOTHING`
+	insertIlkFlipQuery = `INSERT INTO maker.cat_ilk_flip (block_number, block_hash, ilk_id, flip) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
+	insertIlkChopQuery = `INSERT INTO maker.cat_ilk_chop (block_number, block_hash, ilk_id, chop) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
+	insertIlkLumpQuery = `INSERT INTO maker.cat_ilk_lump (block_number, block_hash, ilk_id, lump) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
+	insertFlipIlkQuery = `INSERT INTO maker.cat_flip_ilk (block_number, block_hash, ilk_id, flip) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
+	insertFlipUrnQuery = `INSERT INTO maker.cat_flip_urn (block_number, block_hash, flip, urn) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
+	insertFlipInkQuery = `INSERT INTO maker.cat_flip_ink (block_number, block_hash, flip, ink) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
+	insertFlipTabQuery = `INSERT INTO maker.cat_flip_tab (block_number, block_hash, flip, tab) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
 )
 
 type CatStorageRepository struct {
@@ -50,30 +63,22 @@ func (repository *CatStorageRepository) SetDB(db *postgres.DB) {
 }
 
 func (repository *CatStorageRepository) insertNFlip(blockNumber int, blockHash string, nflip string) error {
-	_, writeErr := repository.db.Exec(
-		`INSERT INTO maker.cat_nflip (block_number, block_hash, nflip) VALUES ($1, $2, $3)`,
-		blockNumber, blockHash, nflip)
+	_, writeErr := repository.db.Exec(insertNFlipQuery, blockNumber, blockHash, nflip)
 	return writeErr
 }
 
 func (repository *CatStorageRepository) insertLive(blockNumber int, blockHash string, live string) error {
-	_, writeErr := repository.db.Exec(
-		`INSERT INTO maker.cat_live (block_number, block_hash, live) VALUES ($1, $2, $3 )`,
-		blockNumber, blockHash, live)
+	_, writeErr := repository.db.Exec(insertLiveQuery, blockNumber, blockHash, live)
 	return writeErr
 }
 
 func (repository *CatStorageRepository) insertVat(blockNumber int, blockHash string, vat string) error {
-	_, writeErr := repository.db.Exec(
-		`INSERT INTO maker.cat_vat (block_number, block_hash, vat) VALUES ($1, $2, $3 )`,
-		blockNumber, blockHash, vat)
+	_, writeErr := repository.db.Exec(insertVatQuery, blockNumber, blockHash, vat)
 	return writeErr
 }
 
 func (repository *CatStorageRepository) insertVow(blockNumber int, blockHash string, vow string) error {
-	_, writeErr := repository.db.Exec(
-		`INSERT INTO maker.cat_vow (block_number, block_hash, vow) VALUES ($1, $2, $3 )`,
-		blockNumber, blockHash, vow)
+	_, writeErr := repository.db.Exec(insertVowQuery, blockNumber, blockHash, vow)
 	return writeErr
 }
 
@@ -83,29 +88,7 @@ func (repository *CatStorageRepository) insertIlkFlip(blockNumber int, blockHash
 	if err != nil {
 		return err
 	}
-	tx, txErr := repository.db.Beginx()
-	if txErr != nil {
-		return txErr
-	}
-	ilkID, ilkErr := shared.GetOrCreateIlkInTransaction(ilk, tx)
-	if ilkErr != nil {
-		rollbackErr := tx.Rollback()
-		if rollbackErr != nil {
-			return fmt.Errorf("failed to rollback transaction after failing to insert ilk: %s", ilkErr.Error())
-		}
-		return ilkErr
-	}
-	_, writeErr := tx.Exec(
-		`INSERT INTO maker.cat_ilk_flip (block_number, block_hash, ilk_id, flip) VALUES ($1, $2, $3, $4)`,
-		blockNumber, blockHash, ilkID, flip)
-	if writeErr != nil {
-		rollbackErr := tx.Rollback()
-		if rollbackErr != nil {
-			return fmt.Errorf("failed to rollback transaction after failing to insert ilk flip: %s", writeErr.Error())
-		}
-		return writeErr
-	}
-	return tx.Commit()
+	return repository.insertFieldWithIlk(blockNumber, blockHash, ilk, IlkFlip, insertIlkFlipQuery, flip)
 }
 
 func (repository *CatStorageRepository) insertIlkChop(blockNumber int, blockHash string, metadata utils.StorageValueMetadata, chop string) error {
@@ -113,29 +96,7 @@ func (repository *CatStorageRepository) insertIlkChop(blockNumber int, blockHash
 	if err != nil {
 		return err
 	}
-	tx, txErr := repository.db.Beginx()
-	if txErr != nil {
-		return txErr
-	}
-	ilkID, ilkErr := shared.GetOrCreateIlkInTransaction(ilk, tx)
-	if ilkErr != nil {
-		rollbackErr := tx.Rollback()
-		if rollbackErr != nil {
-			return fmt.Errorf("failed to rollback transaction after failing to insert ilk: %s", ilkErr.Error())
-		}
-		return ilkErr
-	}
-	_, writeErr := tx.Exec(
-		`INSERT INTO maker.cat_ilk_chop (block_number, block_hash, ilk_id, chop) VALUES ($1, $2, $3, $4)`,
-		blockNumber, blockHash, ilkID, chop)
-	if writeErr != nil {
-		rollbackErr := tx.Rollback()
-		if rollbackErr != nil {
-			return fmt.Errorf("failed to rollback transaction after failing to insert ilk chop: %s", writeErr.Error())
-		}
-		return writeErr
-	}
-	return tx.Commit()
+	return repository.insertFieldWithIlk(blockNumber, blockHash, ilk, IlkChop, insertIlkChopQuery, chop)
 }
 
 func (repository *CatStorageRepository) insertIlkLump(blockNumber int, blockHash string, metadata utils.StorageValueMetadata, lump string) error {
@@ -143,29 +104,7 @@ func (repository *CatStorageRepository) insertIlkLump(blockNumber int, blockHash
 	if err != nil {
 		return err
 	}
-	tx, txErr := repository.db.Beginx()
-	if txErr != nil {
-		return txErr
-	}
-	ilkID, ilkErr := shared.GetOrCreateIlkInTransaction(ilk, tx)
-	if ilkErr != nil {
-		rollbackErr := tx.Rollback()
-		if rollbackErr != nil {
-			return fmt.Errorf("failed to rollback transaction after failing to insert ilk: %s", ilkErr.Error())
-		}
-		return ilkErr
-	}
-	_, writeErr := tx.Exec(
-		`INSERT INTO maker.cat_ilk_lump (block_number, block_hash, ilk_id, lump) VALUES ($1, $2, $3, $4)`,
-		blockNumber, blockHash, ilkID, lump)
-	if writeErr != nil {
-		rollbackErr := tx.Rollback()
-		if rollbackErr != nil {
-			return fmt.Errorf("failed to rollback transaction after failing to insert ilk lump: %s", writeErr.Error())
-		}
-		return writeErr
-	}
-	return tx.Commit()
+	return repository.insertFieldWithIlk(blockNumber, blockHash, ilk, IlkLump, insertIlkLumpQuery, lump)
 }
 
 // Flips mapping: uint256 => ilk, urn bytes32; ink, tab uint256 (both wad)
@@ -174,31 +113,9 @@ func (repository *CatStorageRepository) insertFlipIlk(blockNumber int, blockHash
 	if err != nil {
 		return err
 	}
-	tx, txErr := repository.db.Beginx()
-	if txErr != nil {
-		return txErr
-	}
 	// Ilks are stored without prefix in the db, but bytes32 values are decoded with a prefix
 	ilkWithoutPrefix := common.Bytes2Hex(common.FromHex(ilk))
-	ilkID, ilkErr := shared.GetOrCreateIlkInTransaction(ilkWithoutPrefix, tx)
-	if ilkErr != nil {
-		rollbackErr := tx.Rollback()
-		if rollbackErr != nil {
-			return fmt.Errorf("failed to rollback transaction after failing to insert ilk: %s", ilkErr.Error())
-		}
-		return ilkErr
-	}
-	_, writeErr := tx.Exec(
-		`INSERT INTO maker.cat_flip_ilk (block_number, block_hash, flip, ilk_id) VALUES ($1, $2, $3, $4)`,
-		blockNumber, blockHash, flip, ilkID)
-	if writeErr != nil {
-		rollbackErr := tx.Rollback()
-		if rollbackErr != nil {
-			return fmt.Errorf("failed to rollback transaction after failing to insert flip ilk: %s", writeErr.Error())
-		}
-		return writeErr
-	}
-	return tx.Commit()
+	return repository.insertFieldWithIlk(blockNumber, blockHash, ilkWithoutPrefix, FlipIlk, insertFlipIlkQuery, flip)
 }
 
 func (repository *CatStorageRepository) insertFlipUrn(blockNumber int, blockHash string, metadata utils.StorageValueMetadata, urn string) error {
@@ -206,9 +123,7 @@ func (repository *CatStorageRepository) insertFlipUrn(blockNumber int, blockHash
 	if err != nil {
 		return err
 	}
-	_, writeErr := repository.db.Exec(
-		`INSERT INTO maker.cat_flip_urn (block_number, block_hash, flip, urn) VALUES ($1, $2, $3, $4)`,
-		blockNumber, blockHash, flip, urn)
+	_, writeErr := repository.db.Exec(insertFlipUrnQuery, blockNumber, blockHash, flip, urn)
 	return writeErr
 }
 
@@ -217,9 +132,7 @@ func (repository *CatStorageRepository) insertFlipInk(blockNumber int, blockHash
 	if err != nil {
 		return err
 	}
-	_, writeErr := repository.db.Exec(
-		`INSERT INTO maker.cat_flip_ink (block_number, block_hash, flip, ink) VALUES ($1, $2, $3, $4)`,
-		blockNumber, blockHash, flip, ink)
+	_, writeErr := repository.db.Exec(insertFlipInkQuery, blockNumber, blockHash, flip, ink)
 	return writeErr
 }
 
@@ -228,10 +141,32 @@ func (repository *CatStorageRepository) insertFlipTab(blockNumber int, blockHash
 	if err != nil {
 		return err
 	}
-	_, writeErr := repository.db.Exec(
-		`INSERT INTO maker.cat_flip_tab (block_number, block_hash, flip, tab) VALUES ($1, $2, $3, $4)`,
-		blockNumber, blockHash, flip, tab)
+	_, writeErr := repository.db.Exec(insertFlipTabQuery, blockNumber, blockHash, flip, tab)
 	return writeErr
+}
+
+func (repository *CatStorageRepository) insertFieldWithIlk(blockNumber int, blockHash, ilk, variableName, query, value string) error {
+	tx, txErr := repository.db.Beginx()
+	if txErr != nil {
+		return txErr
+	}
+	ilkID, ilkErr := shared.GetOrCreateIlkInTransaction(ilk, tx)
+	if ilkErr != nil {
+		rollbackErr := tx.Rollback()
+		if rollbackErr != nil {
+			return formatRollbackError("ilk", ilkErr.Error())
+		}
+		return ilkErr
+	}
+	_, writeErr := tx.Exec(query, blockNumber, blockHash, ilkID, value)
+	if writeErr != nil {
+		rollbackErr := tx.Rollback()
+		if rollbackErr != nil {
+			return formatRollbackError(variableName, writeErr.Error())
+		}
+		return writeErr
+	}
+	return tx.Commit()
 }
 
 func getIlk(keys map[utils.Key]string) (string, error) {
@@ -248,4 +183,8 @@ func getFlip(keys map[utils.Key]string) (string, error) {
 		return "", utils.ErrMetadataMalformed{MissingData: constants.Flip}
 	}
 	return flip, nil
+}
+
+func formatRollbackError(field, err string) error {
+	return fmt.Errorf("failed to rollback transaction after failing to insert %s: %s", field, err)
 }

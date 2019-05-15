@@ -23,16 +23,16 @@ import (
 )
 
 const (
-	insertVatQuery        = `INSERT INTO maker.vow_vat (block_number, block_hash, vat) VALUES ($1, $2, $3)`
-	insertCowQuery        = `INSERT INTO maker.vow_cow (block_number, block_hash, cow) VALUES ($1, $2, $3)`
-	insertRowQuery        = `INSERT INTO maker.vow_row (block_number, block_hash, row) VALUES ($1, $2, $3)`
-	insertSinMappingQuery = `INSERT INTO maker.vow_sin_mapping (block_number, block_hash, timestamp, sin) VALUES ($1, $2, $3, $4)`
-	insertSinIntegerQuery = `INSERT INTO maker.vow_sin_integer (block_number, block_hash, sin) VALUES ($1, $2, $3)`
-	insertAshQuery        = `INSERT INTO maker.vow_ash (block_number, block_hash, ash) VALUES ($1, $2, $3)`
-	insertWaitQuery       = `INSERT INTO maker.vow_wait (block_number, block_hash, wait) VALUES ($1, $2, $3)`
-	insertSumpQuery       = `INSERT INTO maker.vow_sump (block_number, block_hash, sump) VALUES ($1, $2, $3)`
-	insertBumpQuery       = `INSERT INTO maker.vow_bump (block_number, block_hash, bump) VALUES ($1, $2, $3)`
-	insertHumpQuery       = `INSERT INTO maker.vow_hump (block_number, block_hash, hump) VALUES ($1, $2, $3)`
+	insertVatQuery        = `INSERT INTO maker.vow_vat (block_number, block_hash, vat) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
+	insertCowQuery        = `INSERT INTO maker.vow_cow (block_number, block_hash, cow) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
+	insertRowQuery        = `INSERT INTO maker.vow_row (block_number, block_hash, row) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
+	insertSinMappingQuery = `INSERT INTO maker.vow_sin_mapping (block_number, block_hash, timestamp, sin) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
+	insertSinIntegerQuery = `INSERT INTO maker.vow_sin_integer (block_number, block_hash, sin) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
+	insertAshQuery        = `INSERT INTO maker.vow_ash (block_number, block_hash, ash) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
+	insertWaitQuery       = `INSERT INTO maker.vow_wait (block_number, block_hash, wait) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
+	insertSumpQuery       = `INSERT INTO maker.vow_sump (block_number, block_hash, sump) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
+	insertBumpQuery       = `INSERT INTO maker.vow_bump (block_number, block_hash, bump) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
+	insertHumpQuery       = `INSERT INTO maker.vow_hump (block_number, block_hash, hump) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
 )
 
 type VowStorageRepository struct {

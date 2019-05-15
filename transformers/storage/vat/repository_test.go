@@ -64,6 +64,20 @@ var _ = Describe("Vat storage repository", func() {
 			AssertMapping(result, fakeBlockNumber, fakeBlockHash, fakeGuy, fakeUint256)
 		})
 
+		It("does not duplicate row", func() {
+			daiMetadata := utils.GetStorageValueMetadata(vat.Dai, map[utils.Key]string{constants.Guy: fakeGuy}, utils.Uint256)
+			insertOneErr := repo.Create(fakeBlockNumber, fakeBlockHash, daiMetadata, fakeUint256)
+			Expect(insertOneErr).NotTo(HaveOccurred())
+
+			insertTwoErr := repo.Create(fakeBlockNumber, fakeBlockHash, daiMetadata, fakeUint256)
+
+			Expect(insertTwoErr).NotTo(HaveOccurred())
+			var count int
+			getCountErr := db.Get(&count, `SELECT count(*) FROM maker.vat_dai`)
+			Expect(getCountErr).NotTo(HaveOccurred())
+			Expect(count).To(Equal(1))
+		})
+
 		It("returns error if metadata missing guy", func() {
 			malformedDaiMetadata := utils.GetStorageValueMetadata(vat.Dai, nil, utils.Uint256)
 
@@ -88,6 +102,20 @@ var _ = Describe("Vat storage repository", func() {
 			ilkID, err := shared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
 			Expect(err).NotTo(HaveOccurred())
 			AssertDoubleMapping(result, fakeBlockNumber, fakeBlockHash, strconv.Itoa(ilkID), fakeGuy, fakeUint256)
+		})
+
+		It("does not duplicate row", func() {
+			gemMetadata := utils.GetStorageValueMetadata(vat.Gem, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex, constants.Guy: fakeGuy}, utils.Uint256)
+			insertOneErr := repo.Create(fakeBlockNumber, fakeBlockHash, gemMetadata, fakeUint256)
+			Expect(insertOneErr).NotTo(HaveOccurred())
+
+			insertTwoErr := repo.Create(fakeBlockNumber, fakeBlockHash, gemMetadata, fakeUint256)
+
+			Expect(insertTwoErr).NotTo(HaveOccurred())
+			var count int
+			getCountErr := db.Get(&count, `SELECT count(*) FROM maker.vat_gem`)
+			Expect(getCountErr).NotTo(HaveOccurred())
+			Expect(count).To(Equal(1))
 		})
 
 		It("returns error if metadata missing ilk", func() {
@@ -125,6 +153,20 @@ var _ = Describe("Vat storage repository", func() {
 			AssertMapping(result, fakeBlockNumber, fakeBlockHash, strconv.Itoa(ilkID), fakeUint256)
 		})
 
+		It("does not duplicate row", func() {
+			ilkArtMetadata := utils.GetStorageValueMetadata(vat.IlkArt, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Uint256)
+			insertOneErr := repo.Create(fakeBlockNumber, fakeBlockHash, ilkArtMetadata, fakeUint256)
+			Expect(insertOneErr).NotTo(HaveOccurred())
+
+			insertTwoErr := repo.Create(fakeBlockNumber, fakeBlockHash, ilkArtMetadata, fakeUint256)
+
+			Expect(insertTwoErr).NotTo(HaveOccurred())
+			var count int
+			getCountErr := db.Get(&count, `SELECT count(*) FROM maker.vat_ilk_art`)
+			Expect(getCountErr).NotTo(HaveOccurred())
+			Expect(count).To(Equal(1))
+		})
+
 		It("returns error if metadata missing ilk", func() {
 			malformedIlkArtMetadata := utils.GetStorageValueMetadata(vat.IlkArt, nil, utils.Uint256)
 
@@ -149,6 +191,20 @@ var _ = Describe("Vat storage repository", func() {
 			ilkID, err := shared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
 			Expect(err).NotTo(HaveOccurred())
 			AssertMapping(result, fakeBlockNumber, fakeBlockHash, strconv.Itoa(ilkID), fakeUint256)
+		})
+
+		It("does not duplicate row", func() {
+			ilkDustMetadata := utils.GetStorageValueMetadata(vat.IlkDust, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Uint256)
+			insertOneErr := repo.Create(fakeBlockNumber, fakeBlockHash, ilkDustMetadata, fakeUint256)
+			Expect(insertOneErr).NotTo(HaveOccurred())
+
+			insertTwoErr := repo.Create(fakeBlockNumber, fakeBlockHash, ilkDustMetadata, fakeUint256)
+
+			Expect(insertTwoErr).NotTo(HaveOccurred())
+			var count int
+			getCountErr := db.Get(&count, `SELECT count(*) FROM maker.vat_ilk_dust`)
+			Expect(getCountErr).NotTo(HaveOccurred())
+			Expect(count).To(Equal(1))
 		})
 
 		It("returns error if metadata missing ilk", func() {
@@ -177,6 +233,20 @@ var _ = Describe("Vat storage repository", func() {
 			AssertMapping(result, fakeBlockNumber, fakeBlockHash, strconv.Itoa(ilkID), fakeUint256)
 		})
 
+		It("does not duplicate row", func() {
+			ilkLineMetadata := utils.GetStorageValueMetadata(vat.IlkLine, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Uint256)
+			insertOneErr := repo.Create(fakeBlockNumber, fakeBlockHash, ilkLineMetadata, fakeUint256)
+			Expect(insertOneErr).NotTo(HaveOccurred())
+
+			insertTwoErr := repo.Create(fakeBlockNumber, fakeBlockHash, ilkLineMetadata, fakeUint256)
+
+			Expect(insertTwoErr).NotTo(HaveOccurred())
+			var count int
+			getCountErr := db.Get(&count, `SELECT count(*) FROM maker.vat_ilk_line`)
+			Expect(getCountErr).NotTo(HaveOccurred())
+			Expect(count).To(Equal(1))
+		})
+
 		It("returns error if metadata missing ilk", func() {
 			malformedIlkLineMetadata := utils.GetStorageValueMetadata(vat.IlkLine, nil, utils.Uint256)
 
@@ -201,6 +271,20 @@ var _ = Describe("Vat storage repository", func() {
 			ilkID, err := shared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
 			Expect(err).NotTo(HaveOccurred())
 			AssertMapping(result, fakeBlockNumber, fakeBlockHash, strconv.Itoa(ilkID), fakeUint256)
+		})
+
+		It("does not duplicate row", func() {
+			ilkRateMetadata := utils.GetStorageValueMetadata(vat.IlkRate, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Uint256)
+			insertOneErr := repo.Create(fakeBlockNumber, fakeBlockHash, ilkRateMetadata, fakeUint256)
+			Expect(insertOneErr).NotTo(HaveOccurred())
+
+			insertTwoErr := repo.Create(fakeBlockNumber, fakeBlockHash, ilkRateMetadata, fakeUint256)
+
+			Expect(insertTwoErr).NotTo(HaveOccurred())
+			var count int
+			getCountErr := db.Get(&count, `SELECT count(*) FROM maker.vat_ilk_rate`)
+			Expect(getCountErr).NotTo(HaveOccurred())
+			Expect(count).To(Equal(1))
 		})
 
 		It("returns error if metadata missing ilk", func() {
@@ -229,6 +313,20 @@ var _ = Describe("Vat storage repository", func() {
 			AssertMapping(result, fakeBlockNumber, fakeBlockHash, strconv.Itoa(ilkID), fakeUint256)
 		})
 
+		It("does not duplicate row", func() {
+			ilkSpotMetadata := utils.GetStorageValueMetadata(vat.IlkSpot, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Uint256)
+			insertOneErr := repo.Create(fakeBlockNumber, fakeBlockHash, ilkSpotMetadata, fakeUint256)
+			Expect(insertOneErr).NotTo(HaveOccurred())
+
+			insertTwoErr := repo.Create(fakeBlockNumber, fakeBlockHash, ilkSpotMetadata, fakeUint256)
+
+			Expect(insertTwoErr).NotTo(HaveOccurred())
+			var count int
+			getCountErr := db.Get(&count, `SELECT count(*) FROM maker.vat_ilk_spot`)
+			Expect(getCountErr).NotTo(HaveOccurred())
+			Expect(count).To(Equal(1))
+		})
+
 		It("returns error if metadata missing ilk", func() {
 			malformedIlkSpotMetadata := utils.GetStorageValueMetadata(vat.IlkSpot, nil, utils.Uint256)
 
@@ -251,6 +349,20 @@ var _ = Describe("Vat storage repository", func() {
 			err = db.Get(&result, `SELECT block_number, block_hash, guy AS key, sin AS value FROM maker.vat_sin`)
 			Expect(err).NotTo(HaveOccurred())
 			AssertMapping(result, fakeBlockNumber, fakeBlockHash, fakeGuy, fakeUint256)
+		})
+
+		It("does not duplicate row", func() {
+			sinMetadata := utils.GetStorageValueMetadata(vat.Sin, map[utils.Key]string{constants.Guy: fakeGuy}, utils.Uint256)
+			insertOneErr := repo.Create(fakeBlockNumber, fakeBlockHash, sinMetadata, fakeUint256)
+			Expect(insertOneErr).NotTo(HaveOccurred())
+
+			insertTwoErr := repo.Create(fakeBlockNumber, fakeBlockHash, sinMetadata, fakeUint256)
+
+			Expect(insertTwoErr).NotTo(HaveOccurred())
+			var count int
+			getCountErr := db.Get(&count, `SELECT count(*) FROM maker.vat_sin`)
+			Expect(getCountErr).NotTo(HaveOccurred())
+			Expect(count).To(Equal(1))
 		})
 
 		It("returns error if metadata missing guy", func() {
@@ -282,6 +394,20 @@ var _ = Describe("Vat storage repository", func() {
 			ilkID, err := shared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
 			Expect(err).NotTo(HaveOccurred())
 			AssertDoubleMapping(result, fakeBlockNumber, fakeBlockHash, strconv.Itoa(ilkID), fakeGuy, fakeUint256)
+		})
+
+		It("does not duplicate row", func() {
+			urnArtMetadata := utils.GetStorageValueMetadata(vat.UrnArt, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex, constants.Guy: fakeGuy}, utils.Uint256)
+			insertOneErr := repo.Create(fakeBlockNumber, fakeBlockHash, urnArtMetadata, fakeUint256)
+			Expect(insertOneErr).NotTo(HaveOccurred())
+
+			insertTwoErr := repo.Create(fakeBlockNumber, fakeBlockHash, urnArtMetadata, fakeUint256)
+
+			Expect(insertTwoErr).NotTo(HaveOccurred())
+			var count int
+			getCountErr := db.Get(&count, `SELECT count(*) FROM maker.vat_urn_art`)
+			Expect(getCountErr).NotTo(HaveOccurred())
+			Expect(count).To(Equal(1))
 		})
 
 		It("returns error if metadata missing ilk", func() {
@@ -324,6 +450,20 @@ var _ = Describe("Vat storage repository", func() {
 			AssertDoubleMapping(result, fakeBlockNumber, fakeBlockHash, strconv.Itoa(ilkID), fakeGuy, fakeUint256)
 		})
 
+		It("does not duplicate row", func() {
+			urnInkMetadata := utils.GetStorageValueMetadata(vat.UrnInk, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex, constants.Guy: fakeGuy}, utils.Uint256)
+			insertOneErr := repo.Create(fakeBlockNumber, fakeBlockHash, urnInkMetadata, fakeUint256)
+			Expect(insertOneErr).NotTo(HaveOccurred())
+
+			insertTwoErr := repo.Create(fakeBlockNumber, fakeBlockHash, urnInkMetadata, fakeUint256)
+
+			Expect(insertTwoErr).NotTo(HaveOccurred())
+			var count int
+			getCountErr := db.Get(&count, `SELECT count(*) FROM maker.vat_urn_ink`)
+			Expect(getCountErr).NotTo(HaveOccurred())
+			Expect(count).To(Equal(1))
+		})
+
 		It("returns error if metadata missing ilk", func() {
 			malformedUrnInkMetadata := utils.GetStorageValueMetadata(vat.UrnInk, map[utils.Key]string{constants.Guy: fakeGuy}, utils.Uint256)
 
@@ -354,6 +494,19 @@ var _ = Describe("Vat storage repository", func() {
 		AssertVariable(result, fakeBlockNumber, fakeBlockHash, fakeUint256)
 	})
 
+	It("does not duplicate vat debt", func() {
+		insertOneErr := repo.Create(fakeBlockNumber, fakeBlockHash, vat.DebtMetadata, fakeUint256)
+		Expect(insertOneErr).NotTo(HaveOccurred())
+
+		insertTwoErr := repo.Create(fakeBlockNumber, fakeBlockHash, vat.DebtMetadata, fakeUint256)
+
+		Expect(insertTwoErr).NotTo(HaveOccurred())
+		var count int
+		getCountErr := db.Get(&count, `SELECT count(*) FROM maker.vat_debt`)
+		Expect(getCountErr).NotTo(HaveOccurred())
+		Expect(count).To(Equal(1))
+	})
+
 	It("persists vat vice", func() {
 		err := repo.Create(fakeBlockNumber, fakeBlockHash, vat.ViceMetadata, fakeUint256)
 
@@ -363,6 +516,19 @@ var _ = Describe("Vat storage repository", func() {
 		err = db.Get(&result, `SELECT block_number, block_hash, vice AS value FROM maker.vat_vice`)
 		Expect(err).NotTo(HaveOccurred())
 		AssertVariable(result, fakeBlockNumber, fakeBlockHash, fakeUint256)
+	})
+
+	It("does not duplicate vat vice", func() {
+		insertOneErr := repo.Create(fakeBlockNumber, fakeBlockHash, vat.ViceMetadata, fakeUint256)
+		Expect(insertOneErr).NotTo(HaveOccurred())
+
+		insertTwoErr := repo.Create(fakeBlockNumber, fakeBlockHash, vat.ViceMetadata, fakeUint256)
+
+		Expect(insertTwoErr).NotTo(HaveOccurred())
+		var count int
+		getCountErr := db.Get(&count, `SELECT count(*) FROM maker.vat_vice`)
+		Expect(getCountErr).NotTo(HaveOccurred())
+		Expect(count).To(Equal(1))
 	})
 
 	It("persists vat Line", func() {
@@ -376,6 +542,19 @@ var _ = Describe("Vat storage repository", func() {
 		AssertVariable(result, fakeBlockNumber, fakeBlockHash, fakeUint256)
 	})
 
+	It("does not duplicate vat Line", func() {
+		insertOneErr := repo.Create(fakeBlockNumber, fakeBlockHash, vat.LineMetadata, fakeUint256)
+		Expect(insertOneErr).NotTo(HaveOccurred())
+
+		insertTwoErr := repo.Create(fakeBlockNumber, fakeBlockHash, vat.LineMetadata, fakeUint256)
+
+		Expect(insertTwoErr).NotTo(HaveOccurred())
+		var count int
+		getCountErr := db.Get(&count, `SELECT count(*) FROM maker.vat_line`)
+		Expect(getCountErr).NotTo(HaveOccurred())
+		Expect(count).To(Equal(1))
+	})
+
 	It("persists vat live", func() {
 		err := repo.Create(fakeBlockNumber, fakeBlockHash, vat.LiveMetadata, fakeUint256)
 
@@ -385,5 +564,18 @@ var _ = Describe("Vat storage repository", func() {
 		err = db.Get(&result, `SELECT block_number, block_hash, live AS value FROM maker.vat_live`)
 		Expect(err).NotTo(HaveOccurred())
 		AssertVariable(result, fakeBlockNumber, fakeBlockHash, fakeUint256)
+	})
+
+	It("does not duplicate vat live", func() {
+		insertOneErr := repo.Create(fakeBlockNumber, fakeBlockHash, vat.LiveMetadata, fakeUint256)
+		Expect(insertOneErr).NotTo(HaveOccurred())
+
+		insertTwoErr := repo.Create(fakeBlockNumber, fakeBlockHash, vat.LiveMetadata, fakeUint256)
+
+		Expect(insertTwoErr).NotTo(HaveOccurred())
+		var count int
+		getCountErr := db.Get(&count, `SELECT count(*) FROM maker.vat_live`)
+		Expect(getCountErr).NotTo(HaveOccurred())
+		Expect(count).To(Equal(1))
 	})
 })

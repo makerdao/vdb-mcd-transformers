@@ -3,7 +3,7 @@
 
 -- Function returning state for a single urn as of given block
 CREATE FUNCTION api.get_urn(ilk TEXT, urn TEXT, block_height BIGINT)
-  RETURNS api.urn
+  RETURNS api.urn_state
 AS
 
 $body$

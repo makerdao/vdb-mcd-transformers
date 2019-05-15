@@ -69,7 +69,7 @@ var _ = Describe("Frobs query", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			var actualFrobs []test_helpers.FrobEvent
-			err = db.Select(&actualFrobs, `SELECT ilk_name, urn_id, dink, dart FROM api.frobs_for_urn($1, $2)`, test_helpers.FakeIlk.Name, fakeUrn)
+			err = db.Select(&actualFrobs, `SELECT ilk_name, urn_id, dink, dart FROM api.urn_frobs($1, $2)`, test_helpers.FakeIlk.Name, fakeUrn)
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(actualFrobs).To(ConsistOf(
