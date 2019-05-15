@@ -55,7 +55,7 @@ var _ = Describe("Jug File Vow LogNoteTransformer", func() {
 	}
 
 	It("transforms JugFileVow log events", func() {
-		blockNumber := int64(10691243)
+		blockNumber := int64(10771086)
 		jugFileVowConfig.StartingBlockNumber = blockNumber
 		jugFileVowConfig.EndingBlockNumber = blockNumber
 
@@ -89,7 +89,7 @@ var _ = Describe("Jug File Vow LogNoteTransformer", func() {
 	})
 
 	It("rechecks jug file vow event", func() {
-		blockNumber := int64(10691243)
+		blockNumber := int64(10771086)
 		jugFileVowConfig.StartingBlockNumber = blockNumber
 		jugFileVowConfig.EndingBlockNumber = blockNumber
 

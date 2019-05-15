@@ -228,7 +228,7 @@ var _ = Describe("Cat File transformer", func() {
 	})
 
 	It("persists a vow event", func() {
-		vowBlockNumber := int64(10691245)
+		vowBlockNumber := int64(10771088)
 		header, err := persistHeader(db, vowBlockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 		catFileConfig.TransformerName = mcdConstants.CatFileVowLabel
