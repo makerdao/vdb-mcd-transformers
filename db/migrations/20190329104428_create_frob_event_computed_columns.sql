@@ -2,24 +2,24 @@
 -- SQL in this section is executed when the migration is applied.
 
 -- Extend frob_event with ilk_state
-CREATE OR REPLACE FUNCTION maker.frob_event_ilk(event maker.frob_event)
-  RETURNS SETOF maker.ilk_state AS
+CREATE FUNCTION api.frob_event_ilk(event api.frob_event)
+  RETURNS SETOF api.ilk_state AS
 $$
-  SELECT * FROM maker.get_ilk(
+  SELECT * FROM api.get_ilk(
     event.block_height,
     (SELECT id FROM maker.ilks WHERE name = event.ilk_name))
 $$ LANGUAGE sql STABLE;
 
 -- Extend frob_event with urn_state
-CREATE OR REPLACE FUNCTION maker.frob_event_urn(event maker.frob_event)
-  RETURNS SETOF maker.urn_state AS
+CREATE FUNCTION api.frob_event_urn(event api.frob_event)
+  RETURNS SETOF api.urn_state AS
 $$
-  SELECT * FROM maker.get_urn(event.ilk_name, event.urn_id, event.block_height)
+  SELECT * FROM api.get_urn(event.ilk_name, event.urn_id, event.block_height)
 $$ LANGUAGE sql STABLE;
 
 -- Extend frob_event with txs
-CREATE OR REPLACE FUNCTION maker.frob_event_tx(event maker.frob_event)
-  RETURNS maker.tx AS
+CREATE FUNCTION api.frob_event_tx(event api.frob_event)
+  RETURNS api.tx AS
 $$
   SELECT txs.hash, txs.tx_index, headers.block_number AS block_height, headers.hash, tx_from, tx_to
   FROM public.header_sync_transactions txs
@@ -32,6 +32,6 @@ $$ LANGUAGE sql STABLE;
 
 -- +goose Down
 -- SQL in this section is executed when the migration is rolled back.
-DROP FUNCTION maker.frob_event_ilk(maker.frob_event);
-DROP FUNCTION maker.frob_event_urn(maker.frob_event);
-DROP FUNCTION maker.frob_event_tx(maker.frob_event);
+DROP FUNCTION api.frob_event_ilk(api.frob_event);
+DROP FUNCTION api.frob_event_urn(api.frob_event);
+DROP FUNCTION api.frob_event_tx(api.frob_event);

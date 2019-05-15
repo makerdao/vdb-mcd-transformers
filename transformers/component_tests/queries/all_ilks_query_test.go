@@ -80,7 +80,7 @@ var _ = Describe("All Ilks query", func() {
 				Updated: sql.NullString{String: getFormattedTimestamp(blockOneHeader.Timestamp), Valid: true},
 			}
 			err := db.Select(&dbResult,
-				`SELECT ilk_name, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated FROM maker.all_ilks($1)`,
+				`SELECT ilk_name, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated FROM api.all_ilks($1)`,
 				blockOneHeader.BlockNumber)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(dbResult)).To(Equal(1))
@@ -122,7 +122,7 @@ var _ = Describe("All Ilks query", func() {
 				Updated: sql.NullString{String: getFormattedTimestamp(blockTwoHeader.Timestamp), Valid: true},
 			}
 			err := db.Select(&dbResult,
-				`SELECT ilk_name, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated FROM maker.all_ilks($1)`,
+				`SELECT ilk_name, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated FROM api.all_ilks($1)`,
 				blockTwoHeader.BlockNumber)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(dbResult)).To(Equal(2))
@@ -176,7 +176,7 @@ var _ = Describe("All Ilks query", func() {
 				Updated: sql.NullString{String: getFormattedTimestamp(blockThreeHeader.Timestamp), Valid: true},
 			}
 			err := db.Select(&dbResult,
-				`SELECT ilk_name, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated FROM maker.all_ilks($1)`,
+				`SELECT ilk_name, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated FROM api.all_ilks($1)`,
 				blockThreeHeader.BlockNumber)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(dbResult)).To(Equal(2))
@@ -202,7 +202,7 @@ var _ = Describe("All Ilks query", func() {
 			Updated: sql.NullString{String: "", Valid: false},
 		}
 		err := db.Select(&dbResult,
-			`SELECT ilk_name, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated FROM maker.all_ilks($1)`,
+			`SELECT ilk_name, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated FROM api.all_ilks($1)`,
 			blockOneHeader.BlockNumber)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(len(dbResult)).To(Equal(1))
@@ -232,7 +232,7 @@ var _ = Describe("All Ilks query", func() {
 			Updated: sql.NullString{String: getFormattedTimestamp(blockFourHeader.Timestamp), Valid: true},
 		}
 		err := db.Select(&dbResult,
-			`SELECT ilk_name, rate, created, updated FROM maker.all_ilks($1)`,
+			`SELECT ilk_name, rate, created, updated FROM api.all_ilks($1)`,
 			blockFourHeader.BlockNumber)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(len(dbResult)).To(Equal(3))

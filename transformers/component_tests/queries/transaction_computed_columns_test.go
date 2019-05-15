@@ -32,8 +32,8 @@ var _ = Describe("Transaction computed columns", func() {
 			Expect(insertTxErr).NotTo(HaveOccurred())
 
 			var actualEra Era
-			getEraErr := db.Get(&actualEra, `SELECT * FROM maker.tx_era(
-                    (SELECT (txs.hash, txs.tx_index, h.block_number, h.hash, txs.tx_from, txs.tx_to)::maker.tx
+			getEraErr := db.Get(&actualEra, `SELECT * FROM api.tx_era(
+                    (SELECT (txs.hash, txs.tx_index, h.block_number, h.hash, txs.tx_from, txs.tx_to)::api.tx
 			        FROM header_sync_transactions txs
 			        LEFT JOIN headers h ON h.id = txs.header_id)
 			    )`)

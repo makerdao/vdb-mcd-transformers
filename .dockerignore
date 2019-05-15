@@ -5,7 +5,6 @@ bin
 .gitignore
 integration_test
 LICENSE
-postgraphile
 .private_blockchain_password
 README.md
 scripts

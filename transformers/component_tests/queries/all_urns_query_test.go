@@ -49,7 +49,7 @@ var _ = Describe("Urn view", func() {
 
 		var actualUrn helper.UrnState
 		err = db.Get(&actualUrn, `SELECT urn_id, ilk_name, block_height, ink, art, ratio, safe, created, updated
-			FROM maker.all_urns($1)`, fakeBlockNo)
+			FROM api.all_urns($1)`, fakeBlockNo)
 		Expect(err).NotTo(HaveOccurred())
 
 		expectedRatio := helper.GetExpectedRatio(setupData.Ink, setupData.Spot, setupData.Art, setupData.Rate)
@@ -113,7 +113,7 @@ var _ = Describe("Urn view", func() {
 
 		var result []helper.UrnState
 		err = db.Select(&result, `SELECT urn_id, ilk_name, ink, art, ratio, safe, created, updated
-			FROM maker.all_urns($1) ORDER BY created`, blockTwo)
+			FROM api.all_urns($1) ORDER BY created`, blockTwo)
 		Expect(err).NotTo(HaveOccurred())
 
 		helper.AssertUrn(result[0], expectedUrnOne)
@@ -132,7 +132,7 @@ var _ = Describe("Urn view", func() {
 
 		var result helper.UrnState
 		err = db.Get(&result, `SELECT urn_id, ilk_name, ink, art, ratio, safe, created, updated
-			FROM maker.all_urns($1)`, block)
+			FROM api.all_urns($1)`, block)
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(result.Created.String).To(BeEmpty())
@@ -158,7 +158,7 @@ var _ = Describe("Urn view", func() {
 
 		It("gets urn state as of block one", func() {
 			err = db.Get(&actualUrn, `SELECT urn_id, ilk_name, ink, art, ratio, safe, created, updated
-				FROM maker.all_urns($1)`, blockOne)
+				FROM api.all_urns($1)`, blockOne)
 			Expect(err).NotTo(HaveOccurred())
 
 			expectedRatio := helper.GetExpectedRatio(setupDataOne.Ink, setupDataOne.Spot, setupDataOne.Art, setupDataOne.Rate)
@@ -208,7 +208,7 @@ var _ = Describe("Urn view", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			err = db.Get(&actualUrn, `SELECT urn_id, ilk_name, ink, art, ratio, safe, created, updated
-				FROM maker.all_urns($1)`, blockTwo)
+				FROM api.all_urns($1)`, blockTwo)
 			Expect(err).NotTo(HaveOccurred())
 
 			helper.AssertUrn(actualUrn, expectedUrn)
@@ -228,7 +228,7 @@ var _ = Describe("Urn view", func() {
 
 		var result helper.UrnState
 		err = db.Get(&result, `SELECT urn_id, ilk_name, ink, art, ratio, safe, created, updated
-			FROM maker.all_urns($1)`, block)
+			FROM api.all_urns($1)`, block)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(result.Ratio.String).To(BeEmpty())

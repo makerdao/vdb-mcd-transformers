@@ -61,8 +61,8 @@ var _ = Describe("File event computed columns", func() {
 			var result test_helpers.IlkState
 			err := db.Get(&result,
 				`SELECT ilk_name, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated
-                    FROM maker.file_event_ilk(
-                        (SELECT (id, ilk_name, what, data, block_height, tx_idx)::maker.file_event FROM maker.ilk_files($1))
+                    FROM api.file_event_ilk(
+                        (SELECT (id, ilk_name, what, data, block_height, tx_idx)::api.file_event FROM api.ilk_files($1))
                     )`, test_helpers.FakeIlk.Name)
 
 			Expect(err).NotTo(HaveOccurred())
@@ -90,8 +90,8 @@ var _ = Describe("File event computed columns", func() {
 			Expect(insertErr).NotTo(HaveOccurred())
 
 			var actualTx Tx
-			err := db.Get(&actualTx, `SELECT * FROM maker.file_event_tx(
-			    (SELECT (id, ilk_name, what, data, block_height, tx_idx)::maker.file_event FROM maker.ilk_files($1)))`,
+			err := db.Get(&actualTx, `SELECT * FROM api.file_event_tx(
+			    (SELECT (id, ilk_name, what, data, block_height, tx_idx)::api.file_event FROM api.ilk_files($1)))`,
 				test_helpers.FakeIlk.Name)
 
 			Expect(err).NotTo(HaveOccurred())
@@ -117,8 +117,8 @@ var _ = Describe("File event computed columns", func() {
 			Expect(insertErr).NotTo(HaveOccurred())
 
 			var actualTx Tx
-			err := db.Get(&actualTx, `SELECT * FROM maker.file_event_tx(
-			    (SELECT (id, ilk_name, what, data, block_height, tx_idx)::maker.file_event FROM maker.ilk_files($1)))`,
+			err := db.Get(&actualTx, `SELECT * FROM api.file_event_tx(
+			    (SELECT (id, ilk_name, what, data, block_height, tx_idx)::api.file_event FROM api.ilk_files($1)))`,
 				test_helpers.FakeIlk.Name)
 
 			Expect(err).NotTo(HaveOccurred())

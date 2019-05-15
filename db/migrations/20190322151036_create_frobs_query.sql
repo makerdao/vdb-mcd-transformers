@@ -1,6 +1,6 @@
 -- +goose Up
 -- SQL in this section is executed when the migration is applied.
-CREATE TYPE maker.frob_event AS (
+CREATE TYPE api.frob_event AS (
   ilk_name     TEXT,
   -- ilk object
   urn_id       TEXT,
@@ -11,11 +11,11 @@ CREATE TYPE maker.frob_event AS (
   -- tx
 );
 
-COMMENT ON COLUMN maker.frob_event.block_height IS E'@omit';
-COMMENT ON COLUMN maker.frob_event.tx_idx IS E'@omit';
+COMMENT ON COLUMN api.frob_event.block_height IS E'@omit';
+COMMENT ON COLUMN api.frob_event.tx_idx IS E'@omit';
 
-CREATE OR REPLACE FUNCTION maker.urn_frobs(ilk_name TEXT, urn TEXT)
-  RETURNS SETOF maker.frob_event AS
+CREATE FUNCTION api.urn_frobs(ilk_name TEXT, urn TEXT)
+  RETURNS SETOF api.frob_event AS
 $body$
   WITH
     ilk AS (SELECT id FROM maker.ilks WHERE ilks.name = $1),
@@ -33,8 +33,8 @@ $body$
 LANGUAGE sql STABLE;
 
 
-CREATE OR REPLACE FUNCTION maker.all_frobs(ilk_name TEXT)
-  RETURNS SETOF maker.frob_event AS
+CREATE FUNCTION api.all_frobs(ilk_name TEXT)
+  RETURNS SETOF api.frob_event AS
 $$
   WITH
     ilk AS (SELECT id FROM maker.ilks WHERE ilks.name = $1)
@@ -45,11 +45,11 @@ $$
   LEFT JOIN headers    ON vat_frob.header_id = headers.id
   WHERE urns.ilk_id = (SELECT id FROM ilk)
   ORDER BY guy, block_number DESC
-$$ LANGUAGE sql STABLE SECURITY DEFINER;
+$$ LANGUAGE sql STABLE;
 
 
 -- +goose Down
 -- SQL in this section is executed when the migration is rolled back.
-DROP FUNCTION IF EXISTS maker.urn_frobs(TEXT, TEXT);
-DROP FUNCTION maker.all_frobs(TEXT);
-DROP TYPE maker.frob_event CASCADE;
+DROP FUNCTION api.urn_frobs(TEXT, TEXT);
+DROP FUNCTION api.all_frobs(TEXT);
+DROP TYPE api.frob_event CASCADE;

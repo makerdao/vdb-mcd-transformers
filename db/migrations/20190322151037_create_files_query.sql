@@ -1,6 +1,6 @@
 -- +goose Up
 -- SQL in this section is executed when the migration is applied.
-CREATE TYPE maker.file_event AS (
+CREATE TYPE api.file_event AS (
   id            TEXT,
   ilk_name      TEXT,
   -- ilk
@@ -11,11 +11,11 @@ CREATE TYPE maker.file_event AS (
   -- tx
 );
 
-COMMENT ON COLUMN maker.file_event.block_height IS E'@omit';
-COMMENT ON COLUMN maker.file_event.tx_idx IS E'@omit';
+COMMENT ON COLUMN api.file_event.block_height IS E'@omit';
+COMMENT ON COLUMN api.file_event.tx_idx IS E'@omit';
 
-CREATE OR REPLACE FUNCTION maker.ilk_files(ilk_name TEXT)
-  RETURNS SETOF maker.file_event AS
+CREATE FUNCTION api.ilk_files(ilk_name TEXT)
+  RETURNS SETOF api.file_event AS
 $body$
   WITH
     ilk AS (SELECT id FROM maker.ilks WHERE ilks.name = $1)
@@ -45,8 +45,8 @@ LANGUAGE sql STABLE;
 
 -- expensive query, hitting lots of tables
 -- probably can narrow it down for specific contracts
-CREATE OR REPLACE FUNCTION maker.address_files(address TEXT)
-  RETURNS SETOF maker.file_event AS
+CREATE FUNCTION api.address_files(address TEXT)
+  RETURNS SETOF api.file_event AS
 $body$
   WITH
     lowerAddress AS (SELECT lower($1))
@@ -100,11 +100,11 @@ $body$
 
   ORDER BY block_height DESC
 $body$
-LANGUAGE sql STABLE SECURITY DEFINER;
+LANGUAGE sql STABLE;
 
 
 -- +goose Down
 -- SQL in this section is executed when the migration is rolled back.
-DROP FUNCTION IF EXISTS maker.ilk_files(TEXT);
-DROP FUNCTION IF EXISTS maker.address_files(TEXT);
-DROP TYPE IF EXISTS maker.file_event CASCADE;
+DROP FUNCTION api.ilk_files(TEXT);
+DROP FUNCTION api.address_files(TEXT);
+DROP TYPE api.file_event CASCADE;
