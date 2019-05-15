@@ -55,6 +55,14 @@ Lastly, ensure that `GOPATH` is defined in your shell. If necessary, `GOPATH` ca
 
     * See below for configuring additional environments
 
+### Setting up GraphQL frontend
+The database migrations sets up prerequisites for a GraphQL API, which can be generated with Postgraphile.
+To present the API as specified [here](https://github.com/makerdao/vulcan.spec/blob/master/mcd.graphql):
+
+1. Install Postgraphile: `npm install -g postgraphile`
+1. Invoke `postgraphile --connection postgres://[superuser]:[password]@localhost:5432/vulcanize_public --schema api --disable-default-mutations --no-ignore-rbac --watch --enhance-graphiql`
+1. The GraphiQL frontend can be found at `localhost:5000/graphiql`, and the GraphQL endpoint at `/graphql`
+
 ## Create a migration file
 1. `make new_migration NAME=add_columnA_to_table1`
     - This will create a new timestamped migration file in `db/migrations`
@@ -136,29 +144,6 @@ _Since auction/mcd contracts have not yet been deployed, this command will need 
 1. In a separate terminal run the backfill command:
   - `./vulcanizedb backfillMakerLogs --config <config.toml>`
   
-## Start full environment in docker by single command
-
-### Geth Rinkeby
-
-make command        | description
-------------------- | ----------------
-rinkeby_env_up      | start geth, postgres and rolling migrations, after migrations done starting vulcanizedb container
-rinkeby_env_deploy  | build and run vulcanizedb container in rinkeby environment
-rinkeby_env_migrate | build and run rinkeby env migrations
-rinkeby_env_down    | stop and remove all rinkeby env containers
-
-Success run of the VulcanizeDB container require full geth state sync,
-attach to geth console and check sync state:
-
-```bash
-$ docker exec -it rinkeby_vulcanizedb_geth geth --rinkeby attach
-...
-> eth.syncing
-false
-```
-
-If you have full rinkeby chaindata you can move it to `rinkeby_vulcanizedb_geth_data` docker volume to skip long wait of sync.
-
 ## Running the Tests
 - `make test` will run the unit tests and skip the integration tests
 - `make integrationtest` will run the just the integration tests

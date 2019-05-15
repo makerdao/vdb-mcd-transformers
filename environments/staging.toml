@@ -4,9 +4,6 @@
     user = "vulcanize"
     password = "vulcanize"
     port = 5432
-    gq_schemas = ["maker"]
-    gq_user = "graphql"
-    gq_password = "graphql"
 
 [client]
     ipcPath = ""
