@@ -27,11 +27,11 @@ import (
 )
 
 const (
-	insertIlkRhoQuery  = `INSERT INTO maker.jug_ilk_rho (block_number, block_hash, ilk_id, rho) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
-	insertIlkDutyQuery = `INSERT INTO maker.jug_ilk_duty (block_number, block_hash, ilk_id, duty) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
-	insertVatQuery     = `INSERT INTO maker.jug_vat (block_number, block_hash, vat) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
-	insertVowQuery     = `INSERT INTO maker.jug_vow (block_number, block_hash, vow) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
-	insertBaseQuery    = `INSERT INTO maker.jug_base (block_number, block_hash, base) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
+	InsertJugIlkRhoQuery  = `INSERT INTO maker.jug_ilk_rho (block_number, block_hash, ilk_id, rho) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
+	InsertJugIlkDutyQuery = `INSERT INTO maker.jug_ilk_duty (block_number, block_hash, ilk_id, duty) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
+	insertJugVatQuery     = `INSERT INTO maker.jug_vat (block_number, block_hash, vat) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
+	insertJugVowQuery     = `INSERT INTO maker.jug_vow (block_number, block_hash, vow) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
+	insertJugBaseQuery    = `INSERT INTO maker.jug_base (block_number, block_hash, base) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
 )
 
 type JugStorageRepository struct {
@@ -65,7 +65,8 @@ func (repository JugStorageRepository) insertIlkRho(blockNumber int, blockHash s
 	if err != nil {
 		return err
 	}
-	return repository.insertFieldWithIlk(blockNumber, blockHash, ilk, IlkRho, insertIlkRhoQuery, rho)
+
+	return repository.insertFieldWithIlk(blockNumber, blockHash, ilk, IlkRho, InsertJugIlkRhoQuery, rho)
 }
 
 func (repository JugStorageRepository) insertIlkDuty(blockNumber int, blockHash string, metadata utils.StorageValueMetadata, duty string) error {
@@ -73,21 +74,21 @@ func (repository JugStorageRepository) insertIlkDuty(blockNumber int, blockHash 
 	if err != nil {
 		return err
 	}
-	return repository.insertFieldWithIlk(blockNumber, blockHash, ilk, IlkDuty, insertIlkDutyQuery, duty)
+	return repository.insertFieldWithIlk(blockNumber, blockHash, ilk, IlkDuty, InsertJugIlkDutyQuery, duty)
 }
 
 func (repository JugStorageRepository) insertJugVat(blockNumber int, blockHash string, vat string) error {
-	_, err := repository.db.Exec(insertVatQuery, blockNumber, blockHash, vat)
+	_, err := repository.db.Exec(insertJugVatQuery, blockNumber, blockHash, vat)
 	return err
 }
 
 func (repository JugStorageRepository) insertJugVow(blockNumber int, blockHash string, vow string) error {
-	_, err := repository.db.Exec(insertVowQuery, blockNumber, blockHash, vow)
+	_, err := repository.db.Exec(insertJugVowQuery, blockNumber, blockHash, vow)
 	return err
 }
 
 func (repository JugStorageRepository) insertJugBase(blockNumber int, blockHash string, repo string) error {
-	_, err := repository.db.Exec(insertBaseQuery, blockNumber, blockHash, repo)
+	_, err := repository.db.Exec(insertJugBaseQuery, blockNumber, blockHash, repo)
 	return err
 }
 
@@ -105,6 +106,7 @@ func (repository *JugStorageRepository) insertFieldWithIlk(blockNumber int, bloc
 		return ilkErr
 	}
 	_, writeErr := tx.Exec(query, blockNumber, blockHash, ilkID, value)
+
 	if writeErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
