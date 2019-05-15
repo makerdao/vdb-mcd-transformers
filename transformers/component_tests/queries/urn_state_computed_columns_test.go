@@ -13,6 +13,7 @@ import (
 
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/component_tests/queries/test_helpers"
+	"github.com/vulcanize/mcd_transformers/transformers/events/bite"
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_frob"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/vat"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
@@ -46,7 +47,7 @@ var _ = Describe("Urn state computed columns", func() {
 	Describe("urn_state_ilk", func() {
 		It("returns the ilk for an urn", func() {
 			ilkValues := test_helpers.GetIlkValues(0)
-			createIlkAtBlock(fakeHeader, ilkValues, test_helpers.FakeIlkVatMetadatas,
+			test_helpers.CreateIlk(db, fakeHeader, ilkValues, test_helpers.FakeIlkVatMetadatas,
 				test_helpers.FakeIlkCatMetadatas, test_helpers.FakeIlkJugMetadatas)
 
 			fakeGuy := "fakeAddress"
@@ -106,6 +107,41 @@ var _ = Describe("Urn state computed columns", func() {
 			}
 
 			Expect(actualFrobs).To(Equal(expectedFrobs))
+		})
+	})
+
+	Describe("urn_state_bites", func() {
+		It("returns bites for an urn_state", func() {
+			urnSetupData := test_helpers.GetUrnSetupData(fakeBlock, 1)
+			urnSetupData.Header.Hash = fakeHeader.Hash
+			urnMetadata := test_helpers.GetUrnMetadata(test_helpers.FakeIlk.Hex, fakeGuy)
+			test_helpers.CreateUrn(urnSetupData, urnMetadata, vatRepository, headerRepository)
+
+			biteRepo := bite.BiteRepository{}
+			biteRepo.SetDB(db)
+			biteEvent := test_data.BiteModel
+			biteEvent.Urn = fakeGuy
+			biteEvent.Ilk = test_helpers.FakeIlk.Hex
+			insertBiteErr := biteRepo.Create(headerId, []interface{}{biteEvent})
+			Expect(insertBiteErr).NotTo(HaveOccurred())
+
+			var actualBites test_helpers.BiteEvent
+			getBitesErr := db.Get(&actualBites, `
+				SELECT ilk_name, urn_guy, ink, art, tab FROM api.urn_state_bites(
+				    (SELECT (urn_guy, ilk_name, block_height, ink, art, ratio, safe, created, updated)::api.urn_state
+				    FROM api.all_urns($1)))`,
+				fakeBlock)
+			Expect(getBitesErr).NotTo(HaveOccurred())
+
+			expectedBites := test_helpers.BiteEvent{
+				IlkName: test_helpers.FakeIlk.Name,
+				UrnGuy:  fakeGuy,
+				Ink:     biteEvent.Ink,
+				Art:     biteEvent.Art,
+				Tab:     biteEvent.Tab,
+			}
+
+			Expect(actualBites).To(Equal(expectedBites))
 		})
 	})
 })
