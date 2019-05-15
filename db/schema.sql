@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 11.3
+-- Dumped from database version 11.2
 -- Dumped by pg_dump version 11.3
 
 SET statement_timeout = 0;
@@ -279,10 +279,10 @@ CREATE FUNCTION api.all_bites(ilk_name text) RETURNS SETOF api.bite_event
   WITH
     ilk AS (SELECT id FROM maker.ilks WHERE ilks.name = $1)
 
-  SELECT $1 AS ilk_name, guy AS urn_id, ink, art, tab, block_number AS block_height, tx_idx
+  SELECT $1 AS ilk_name, guy AS urn_guy, ink, art, tab, block_number AS block_height, tx_idx
   FROM maker.bite
   LEFT JOIN maker.urns ON bite.urn_id = urns.id
-  LEFT JOIN headers    ON bite.header_id = headers.id
+  LEFT JOIN headers ON bite.header_id = headers.id
   WHERE urns.ilk_id = (SELECT id FROM ilk)
   ORDER BY guy, block_number DESC
 $_$;
@@ -584,9 +584,7 @@ $_$;
 CREATE FUNCTION api.bite_event_ilk(event api.bite_event) RETURNS SETOF api.ilk_state
     LANGUAGE sql STABLE
     AS $$
-  SELECT * FROM api.get_ilk(
-     event.block_height,
-     event.ilk_name)
+    SELECT * FROM api.get_ilk(event.block_height, event.ilk_name)
 $$;
 
 
@@ -597,11 +595,11 @@ $$;
 CREATE FUNCTION api.bite_event_tx(event api.bite_event) RETURNS api.tx
     LANGUAGE sql STABLE
     AS $$
-  SELECT txs.hash, txs.tx_index, headers.block_number AS block_height, headers.hash, tx_from, tx_to
-  FROM public.header_sync_transactions txs
-         LEFT JOIN headers ON txs.header_id = headers.id
-  WHERE block_number <= event.block_height AND txs.tx_index = event.tx_idx
-  ORDER BY block_height DESC
+    SELECT txs.hash, txs.tx_index, headers.block_number AS block_height, headers.hash, tx_from, tx_to
+    FROM public.header_sync_transactions txs
+    LEFT JOIN headers ON txs.header_id = headers.id
+    WHERE block_number <= event.block_height AND txs.tx_index = event.tx_idx
+    ORDER BY block_height DESC
 $$;
 
 
@@ -612,7 +610,7 @@ $$;
 CREATE FUNCTION api.bite_event_urn(event api.bite_event) RETURNS SETOF api.urn_state
     LANGUAGE sql STABLE
     AS $$
-  SELECT * FROM api.get_urn(event.ilk_name, event.urn_guy, event.block_height)
+    SELECT * FROM api.get_urn(event.ilk_name, event.urn_guy, event.block_height)
 $$;
 
 
@@ -1095,6 +1093,18 @@ $_$;
 
 
 --
+-- Name: ilk_state_bites(api.ilk_state); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.ilk_state_bites(state api.ilk_state) RETURNS SETOF api.bite_event
+    LANGUAGE sql STABLE
+    AS $$
+  SELECT * FROM api.all_bites(state.ilk_name)
+  WHERE block_height <= state.block_height
+$$;
+
+
+--
 -- Name: ilk_state_files(api.ilk_state); Type: FUNCTION; Schema: api; Owner: -
 --
 
@@ -1160,6 +1170,28 @@ $$;
 
 
 --
+-- Name: urn_bites(text, text); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.urn_bites(ilk_name text, urn text) RETURNS SETOF api.bite_event
+    LANGUAGE sql STABLE
+    AS $_$
+  WITH
+    ilk AS (SELECT id FROM maker.ilks WHERE ilks.name = $1),
+    urn AS (
+      SELECT id FROM maker.urns
+      WHERE ilk_id = (SELECT id FROM ilk)
+        AND guy = $2
+    )
+
+  SELECT $1 AS ilk_name, $2 AS urn_guy, ink, art, tab, block_number AS block_height, tx_idx
+  FROM maker.bite LEFT JOIN headers ON bite.header_id = headers.id
+  WHERE bite.urn_id = (SELECT id FROM urn)
+  ORDER BY block_number DESC
+$_$;
+
+
+--
 -- Name: urn_frobs(text, text); Type: FUNCTION; Schema: api; Owner: -
 --
 
@@ -1174,11 +1206,23 @@ CREATE FUNCTION api.urn_frobs(ilk_name text, urn text) RETURNS SETOF api.frob_ev
         AND guy = $2
     )
 
-  SELECT $1 AS ilk_name, $2 AS urn_id, dink, dart, block_number AS block_height, tx_idx
+  SELECT $1 AS ilk_name, $2 AS urn_guy, dink, dart, block_number AS block_height, tx_idx
   FROM maker.vat_frob LEFT JOIN headers ON vat_frob.header_id = headers.id
   WHERE vat_frob.urn_id = (SELECT id FROM urn)
   ORDER BY block_number DESC
 $_$;
+
+
+--
+-- Name: urn_state_bites(api.urn_state); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.urn_state_bites(state api.urn_state) RETURNS SETOF api.bite_event
+    LANGUAGE sql STABLE
+    AS $$
+  SELECT * FROM api.urn_bites(state.ilk_name, state.urn_guy)
+  WHERE block_height <= state.block_height
+$$;
 
 
 --
@@ -1204,48 +1248,6 @@ CREATE FUNCTION api.urn_state_ilk(state api.urn_state) RETURNS api.ilk_state
     state.block_height,
     state.ilk_name
   )
-$$;
-
-
---
--- Name: notify_watchers_ddl(); Type: FUNCTION; Schema: postgraphile_watch; Owner: -
---
-
-CREATE FUNCTION postgraphile_watch.notify_watchers_ddl() RETURNS event_trigger
-    LANGUAGE plpgsql
-    AS $$
-begin
-  perform pg_notify(
-    'postgraphile_watch',
-    json_build_object(
-      'type',
-      'ddl',
-      'payload',
-      (select json_agg(json_build_object('schema', schema_name, 'command', command_tag)) from pg_event_trigger_ddl_commands() as x)
-    )::text
-  );
-end;
-$$;
-
-
---
--- Name: notify_watchers_drop(); Type: FUNCTION; Schema: postgraphile_watch; Owner: -
---
-
-CREATE FUNCTION postgraphile_watch.notify_watchers_drop() RETURNS event_trigger
-    LANGUAGE plpgsql
-    AS $$
-begin
-  perform pg_notify(
-    'postgraphile_watch',
-    json_build_object(
-      'type',
-      'drop',
-      'payload',
-      (select json_agg(distinct x.schema_name) from pg_event_trigger_dropped_objects() as x)
-    )::text
-  );
-end;
 $$;
 
 
@@ -6630,23 +6632,6 @@ ALTER TABLE ONLY public.uncles
 
 ALTER TABLE ONLY public.uncles
     ADD CONSTRAINT uncles_eth_node_id_fkey FOREIGN KEY (eth_node_id) REFERENCES public.eth_nodes(id) ON DELETE CASCADE;
-
-
---
--- Name: postgraphile_watch_ddl; Type: EVENT TRIGGER; Schema: -; Owner: -
---
-
-CREATE EVENT TRIGGER postgraphile_watch_ddl ON ddl_command_end
-         WHEN TAG IN ('ALTER AGGREGATE', 'ALTER DOMAIN', 'ALTER EXTENSION', 'ALTER FOREIGN TABLE', 'ALTER FUNCTION', 'ALTER POLICY', 'ALTER SCHEMA', 'ALTER TABLE', 'ALTER TYPE', 'ALTER VIEW', 'COMMENT', 'CREATE AGGREGATE', 'CREATE DOMAIN', 'CREATE EXTENSION', 'CREATE FOREIGN TABLE', 'CREATE FUNCTION', 'CREATE INDEX', 'CREATE POLICY', 'CREATE RULE', 'CREATE SCHEMA', 'CREATE TABLE', 'CREATE TABLE AS', 'CREATE VIEW', 'DROP AGGREGATE', 'DROP DOMAIN', 'DROP EXTENSION', 'DROP FOREIGN TABLE', 'DROP FUNCTION', 'DROP INDEX', 'DROP OWNED', 'DROP POLICY', 'DROP RULE', 'DROP SCHEMA', 'DROP TABLE', 'DROP TYPE', 'DROP VIEW', 'GRANT', 'REVOKE', 'SELECT INTO')
-   EXECUTE PROCEDURE postgraphile_watch.notify_watchers_ddl();
-
-
---
--- Name: postgraphile_watch_drop; Type: EVENT TRIGGER; Schema: -; Owner: -
---
-
-CREATE EVENT TRIGGER postgraphile_watch_drop ON sql_drop
-   EXECUTE PROCEDURE postgraphile_watch.notify_watchers_drop();
 
 
 --

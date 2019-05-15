@@ -3,7 +3,7 @@
 CREATE TYPE api.frob_event AS (
   ilk_name     TEXT,
   -- ilk object
-  urn_guy       TEXT,
+  urn_guy      TEXT,
   dink         NUMERIC,
   dart         NUMERIC,
   block_height BIGINT,
