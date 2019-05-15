@@ -30,4 +30,6 @@ func TestConstants(t *testing.T) {
 	RunSpecs(t, "Constants Suite")
 }
 
+// Because tests in this package depend on reading values from config, it is necessary to setup a config file to
+// be used in such lookups
 var configSet = test_data.SetTestConfig()
