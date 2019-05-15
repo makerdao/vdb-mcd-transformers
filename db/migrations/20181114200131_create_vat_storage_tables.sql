@@ -3,14 +3,16 @@ CREATE TABLE maker.vat_debt (
   id            SERIAL PRIMARY KEY,
   block_number  BIGINT,
   block_hash    TEXT,
-  debt          NUMERIC NOT NULL
+  debt          NUMERIC NOT NULL,
+  UNIQUE (block_number, block_hash, debt)
 );
 
 CREATE TABLE maker.vat_vice (
   id            SERIAL PRIMARY KEY,
   block_number  BIGINT,
   block_hash    TEXT,
-  vice          NUMERIC NOT NULL
+  vice          NUMERIC NOT NULL,
+  UNIQUE (block_number, block_hash, vice)
 );
 
 CREATE TABLE maker.vat_ilk_art (
@@ -18,7 +20,8 @@ CREATE TABLE maker.vat_ilk_art (
   block_number  BIGINT,
   block_hash    TEXT,
   ilk_id        INTEGER NOT NULL REFERENCES maker.ilks (id),
-  art           NUMERIC NOT NULL
+  art           NUMERIC NOT NULL,
+  UNIQUE (block_number, block_hash, ilk_id, art)
 );
 
 CREATE TABLE maker.vat_ilk_dust (
@@ -26,7 +29,8 @@ CREATE TABLE maker.vat_ilk_dust (
   block_number  BIGINT,
   block_hash    TEXT,
   ilk_id        INTEGER NOT NULL REFERENCES maker.ilks (id),
-  dust          NUMERIC NOT NULL
+  dust          NUMERIC NOT NULL,
+  UNIQUE (block_number, block_hash, ilk_id, dust)
 );
 
 CREATE TABLE maker.vat_ilk_line (
@@ -34,7 +38,8 @@ CREATE TABLE maker.vat_ilk_line (
   block_number  BIGINT,
   block_hash    TEXT,
   ilk_id        INTEGER NOT NULL REFERENCES maker.ilks (id),
-  line          NUMERIC NOT NULL
+  line          NUMERIC NOT NULL,
+  UNIQUE (block_number, block_hash, ilk_id, line)
 );
 
 CREATE TABLE maker.vat_ilk_spot (
@@ -42,7 +47,8 @@ CREATE TABLE maker.vat_ilk_spot (
   block_number  BIGINT,
   block_hash    TEXT,
   ilk_id        INTEGER NOT NULL REFERENCES maker.ilks (id),
-  spot          NUMERIC NOT NULL
+  spot          NUMERIC NOT NULL,
+  UNIQUE (block_number, block_hash, ilk_id, spot)
 );
 
 CREATE TABLE maker.vat_ilk_rate (
@@ -50,7 +56,8 @@ CREATE TABLE maker.vat_ilk_rate (
   block_number  BIGINT,
   block_hash    TEXT,
   ilk_id        INTEGER NOT NULL REFERENCES maker.ilks (id),
-  rate          NUMERIC NOT NULL
+  rate          NUMERIC NOT NULL,
+  UNIQUE (block_number, block_hash, ilk_id, rate)
 );
 
 CREATE TABLE maker.vat_urn_art (
@@ -58,7 +65,8 @@ CREATE TABLE maker.vat_urn_art (
   block_number  BIGINT,
   block_hash    TEXT,
   urn_id        INTEGER NOT NULL REFERENCES maker.urns (id),
-  art           NUMERIC NOT NULL
+  art           NUMERIC NOT NULL,
+  UNIQUE (block_number, block_hash, urn_id, art)
 );
 
 CREATE TABLE maker.vat_urn_ink (
@@ -66,7 +74,8 @@ CREATE TABLE maker.vat_urn_ink (
   block_number  BIGINT,
   block_hash    TEXT,
   urn_id        INTEGER NOT NULL REFERENCES maker.urns (id),
-  ink           NUMERIC NOT NULL
+  ink           NUMERIC NOT NULL,
+  UNIQUE (block_number, block_hash, urn_id, ink)
 );
 
 CREATE TABLE maker.vat_gem (
@@ -75,7 +84,8 @@ CREATE TABLE maker.vat_gem (
   block_hash    TEXT,
   ilk_id        INTEGER NOT NULL REFERENCES maker.ilks (id),
   guy           TEXT,
-  gem           NUMERIC NOT NULL
+  gem           NUMERIC NOT NULL,
+  UNIQUE (block_number, block_hash, ilk_id, guy, gem)
 );
 
 CREATE TABLE maker.vat_dai (
@@ -83,7 +93,8 @@ CREATE TABLE maker.vat_dai (
   block_number  BIGINT,
   block_hash    TEXT,
   guy           TEXT,
-  dai           NUMERIC NOT NULL
+  dai           NUMERIC NOT NULL,
+  UNIQUE (block_number, block_hash, guy, dai)
 );
 
 CREATE TABLE maker.vat_sin (
@@ -91,21 +102,24 @@ CREATE TABLE maker.vat_sin (
   block_number  BIGINT,
   block_hash    TEXT,
   guy           TEXT,
-  sin           NUMERIC NOT NULL
+  sin           NUMERIC NOT NULL,
+  UNIQUE (block_number, block_hash, guy, sin)
 );
 
 CREATE TABLE maker.vat_line (
   id            SERIAL PRIMARY KEY,
   block_number  BIGINT,
   block_hash    TEXT,
-  line          NUMERIC NOT NULL
+  line          NUMERIC NOT NULL,
+  UNIQUE (block_number, block_hash, line)
 );
 
 CREATE TABLE maker.vat_live (
   id            SERIAL PRIMARY KEY,
   block_number  BIGINT,
   block_hash    TEXT,
-  live          NUMERIC NOT NULL
+  live          NUMERIC NOT NULL,
+  UNIQUE (block_number, block_hash, live)
 );
 
 -- +goose Down

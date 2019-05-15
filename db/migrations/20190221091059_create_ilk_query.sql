@@ -92,7 +92,7 @@ LANGUAGE sql STABLE;
 COMMENT ON FUNCTION api.get_ilk_blocks_before(bigint, integer) IS E'@omit';
 
 
-CREATE TYPE api.ilk AS (
+CREATE TYPE api.ilk_state AS (
   ilk_id       INTEGER,
   ilk_name     TEXT,
   block_height BIGINT,
@@ -112,7 +112,7 @@ CREATE TYPE api.ilk AS (
 
 -- Function returning the state for a single ilk as of the given block height
 CREATE FUNCTION api.get_ilk(block_height BIGINT, _ilk_id INT)
-  RETURNS api.ilk
+  RETURNS api.ilk_state
 AS $$
 WITH rates AS (
     SELECT
@@ -286,4 +286,4 @@ LANGUAGE SQL STABLE;
 DROP FUNCTION api.get_ilk_blocks_before(BIGINT, INT);
 DROP TYPE api.relevant_block CASCADE;
 DROP FUNCTION api.get_ilk(BIGINT, INT );
-DROP TYPE api.ilk CASCADE;
+DROP TYPE api.ilk_state CASCADE;

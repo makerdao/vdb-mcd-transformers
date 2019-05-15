@@ -2,7 +2,7 @@
 
 -- Function returning state for all ilks as of the given block height
 CREATE FUNCTION api.all_ilks(block_height BIGINT)
-  RETURNS SETOF api.ilk
+  RETURNS SETOF api.ilk_state
 AS $$
 WITH rates AS (
   SELECT DISTINCT ON (ilk_id) rate, ilk_id, block_hash

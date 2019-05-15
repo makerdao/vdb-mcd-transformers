@@ -26,6 +26,14 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
+const (
+	insertIlkRhoQuery  = `INSERT INTO maker.jug_ilk_rho (block_number, block_hash, ilk_id, rho) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
+	insertIlkDutyQuery = `INSERT INTO maker.jug_ilk_duty (block_number, block_hash, ilk_id, duty) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
+	insertVatQuery     = `INSERT INTO maker.jug_vat (block_number, block_hash, vat) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
+	insertVowQuery     = `INSERT INTO maker.jug_vow (block_number, block_hash, vow) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
+	insertBaseQuery    = `INSERT INTO maker.jug_base (block_number, block_hash, base) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
+)
+
 type JugStorageRepository struct {
 	db *postgres.DB
 }
@@ -57,75 +65,54 @@ func (repository JugStorageRepository) insertIlkRho(blockNumber int, blockHash s
 	if err != nil {
 		return err
 	}
-	tx, err := repository.db.Beginx()
-	if err != nil {
-		return err
-	}
-	ilkID, ilkErr := shared.GetOrCreateIlkInTransaction(ilk, tx)
-	if ilkErr != nil {
-		rollbackErr := tx.Rollback()
-		if rollbackErr != nil {
-			return fmt.Errorf("failed to rollback transaction after failing to insert ilk: %s", ilkErr.Error())
-		}
-		return ilkErr
-	}
-	_, writeErr := tx.Exec(`INSERT INTO maker.jug_ilk_rho (block_number, block_hash, ilk_id, rho)
-                                  VALUES ($1, $2, $3, $4)`, blockNumber, blockHash, ilkID, rho)
-	if writeErr != nil {
-		rollbackErr := tx.Rollback()
-		if rollbackErr != nil {
-			return fmt.Errorf("failed to rollback transaction after failing to insert jug ilk rho: %s", writeErr.Error())
-		}
-		return writeErr
-	}
-	return tx.Commit()
+	return repository.insertFieldWithIlk(blockNumber, blockHash, ilk, IlkRho, insertIlkRhoQuery, rho)
 }
 
-func (repository JugStorageRepository) insertIlkDuty(blockNumber int, blockHash string, metadata utils.StorageValueMetadata, tax string) error {
+func (repository JugStorageRepository) insertIlkDuty(blockNumber int, blockHash string, metadata utils.StorageValueMetadata, duty string) error {
 	ilk, err := getIlk(metadata.Keys)
 	if err != nil {
 		return err
 	}
-	tx, err := repository.db.Beginx()
-	if err != nil {
-		return err
+	return repository.insertFieldWithIlk(blockNumber, blockHash, ilk, IlkDuty, insertIlkDutyQuery, duty)
+}
+
+func (repository JugStorageRepository) insertJugVat(blockNumber int, blockHash string, vat string) error {
+	_, err := repository.db.Exec(insertVatQuery, blockNumber, blockHash, vat)
+	return err
+}
+
+func (repository JugStorageRepository) insertJugVow(blockNumber int, blockHash string, vow string) error {
+	_, err := repository.db.Exec(insertVowQuery, blockNumber, blockHash, vow)
+	return err
+}
+
+func (repository JugStorageRepository) insertJugBase(blockNumber int, blockHash string, repo string) error {
+	_, err := repository.db.Exec(insertBaseQuery, blockNumber, blockHash, repo)
+	return err
+}
+
+func (repository *JugStorageRepository) insertFieldWithIlk(blockNumber int, blockHash, ilk, variableName, query, value string) error {
+	tx, txErr := repository.db.Beginx()
+	if txErr != nil {
+		return txErr
 	}
 	ilkID, ilkErr := shared.GetOrCreateIlkInTransaction(ilk, tx)
 	if ilkErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
-			return fmt.Errorf("failed to rollback transaction after failing to insert ilk: %s", ilkErr.Error())
+			return formatRollbackError("ilk", ilkErr.Error())
 		}
 		return ilkErr
 	}
-	_, writeErr := tx.Exec(`INSERT INTO maker.jug_ilk_duty (block_number, block_hash, ilk_id, duty) VALUES ($1, $2, $3, $4)`, blockNumber, blockHash, ilkID, tax)
-
+	_, writeErr := tx.Exec(query, blockNumber, blockHash, ilkID, value)
 	if writeErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
-			return fmt.Errorf("failed to rollback transaction after failing to insert jug ilk tax: %s", writeErr.Error())
+			return formatRollbackError(variableName, writeErr.Error())
 		}
 		return writeErr
 	}
 	return tx.Commit()
-}
-
-func (repository JugStorageRepository) insertJugVat(blockNumber int, blockHash string, vat string) error {
-	_, err := repository.db.Exec(`INSERT INTO maker.jug_vat (block_number, block_hash, vat)
-                                        VALUES ($1, $2, $3)`, blockNumber, blockHash, vat)
-	return err
-}
-
-func (repository JugStorageRepository) insertJugVow(blockNumber int, blockHash string, vow string) error {
-	_, err := repository.db.Exec(`INSERT INTO maker.jug_vow (block_number, block_hash, vow)
-                                        VALUES ($1, $2, $3)`, blockNumber, blockHash, vow)
-	return err
-}
-
-func (repository JugStorageRepository) insertJugBase(blockNumber int, blockHash string, repo string) error {
-	_, err := repository.db.Exec(`INSERT INTO maker.jug_base (block_number, block_hash, base)
-                                        VALUES ($1, $2, $3)`, blockNumber, blockHash, repo)
-	return err
 }
 
 func getIlk(keys map[utils.Key]string) (string, error) {
@@ -134,4 +121,8 @@ func getIlk(keys map[utils.Key]string) (string, error) {
 		return "", utils.ErrMetadataMalformed{MissingData: constants.Ilk}
 	}
 	return ilk, nil
+}
+
+func formatRollbackError(field, err string) error {
+	return fmt.Errorf("failed to rollback transaction after failing to insert %s: %s", field, err)
 }

@@ -62,6 +62,19 @@ var _ = Describe("Vow storage repository test", func() {
 		AssertVariable(result, fakeBlockNumber, fakeBlockHash, fakeAddress)
 	})
 
+	It("does not duplicate vow vat", func() {
+		insertOneErr := repo.Create(fakeBlockNumber, fakeBlockHash, vow.VatMetadata, fakeAddress)
+		Expect(insertOneErr).NotTo(HaveOccurred())
+
+		insertTwoErr := repo.Create(fakeBlockNumber, fakeBlockHash, vow.VatMetadata, fakeAddress)
+
+		Expect(insertTwoErr).NotTo(HaveOccurred())
+		var count int
+		getCountErr := db.Get(&count, `SELECT count(*) FROM maker.vow_vat`)
+		Expect(getCountErr).NotTo(HaveOccurred())
+		Expect(count).To(Equal(1))
+	})
+
 	It("persists a vow cow", func() {
 		err = repo.Create(fakeBlockNumber, fakeBlockHash, vow.CowMetadata, fakeAddress)
 
@@ -73,6 +86,19 @@ var _ = Describe("Vow storage repository test", func() {
 		AssertVariable(result, fakeBlockNumber, fakeBlockHash, fakeAddress)
 	})
 
+	It("does not duplicate vow cow", func() {
+		insertOneErr := repo.Create(fakeBlockNumber, fakeBlockHash, vow.CowMetadata, fakeAddress)
+		Expect(insertOneErr).NotTo(HaveOccurred())
+
+		insertTwoErr := repo.Create(fakeBlockNumber, fakeBlockHash, vow.CowMetadata, fakeAddress)
+
+		Expect(insertTwoErr).NotTo(HaveOccurred())
+		var count int
+		getCountErr := db.Get(&count, `SELECT count(*) FROM maker.vow_cow`)
+		Expect(getCountErr).NotTo(HaveOccurred())
+		Expect(count).To(Equal(1))
+	})
+
 	It("persists a vow row", func() {
 		err = repo.Create(fakeBlockNumber, fakeBlockHash, vow.RowMetadata, fakeAddress)
 
@@ -82,6 +108,19 @@ var _ = Describe("Vow storage repository test", func() {
 		err = db.Get(&result, `SELECT block_number, block_hash, row AS value from maker.vow_row`)
 		Expect(err).NotTo(HaveOccurred())
 		AssertVariable(result, fakeBlockNumber, fakeBlockHash, fakeAddress)
+	})
+
+	It("does not duplicate vow row", func() {
+		insertOneErr := repo.Create(fakeBlockNumber, fakeBlockHash, vow.RowMetadata, fakeAddress)
+		Expect(insertOneErr).NotTo(HaveOccurred())
+
+		insertTwoErr := repo.Create(fakeBlockNumber, fakeBlockHash, vow.RowMetadata, fakeAddress)
+
+		Expect(insertTwoErr).NotTo(HaveOccurred())
+		var count int
+		getCountErr := db.Get(&count, `SELECT count(*) FROM maker.vow_row`)
+		Expect(getCountErr).NotTo(HaveOccurred())
+		Expect(count).To(Equal(1))
 	})
 
 	Describe("vow sin mapping", func() {
@@ -98,6 +137,22 @@ var _ = Describe("Vow storage repository test", func() {
 			err = db.Get(&result, `SELECT block_number, block_hash, timestamp AS key, sin AS value FROM maker.vow_sin_mapping`)
 			Expect(err).NotTo(HaveOccurred())
 			AssertMapping(result, fakeBlockNumber, fakeBlockHash, timestamp, fakeUint256)
+		})
+
+		It("does not duplicate row", func() {
+			timestamp := "1538558052"
+			fakeKeys := map[utils.Key]string{constants.Timestamp: timestamp}
+			vowSinMetadata := utils.GetStorageValueMetadata(vow.SinMapping, fakeKeys, utils.Uint256)
+			insertOneErr := repo.Create(fakeBlockNumber, fakeBlockHash, vowSinMetadata, fakeUint256)
+			Expect(insertOneErr).NotTo(HaveOccurred())
+
+			insertTwoErr := repo.Create(fakeBlockNumber, fakeBlockHash, vowSinMetadata, fakeUint256)
+
+			Expect(insertTwoErr).NotTo(HaveOccurred())
+			var count int
+			getCountErr := db.Get(&count, `SELECT count(*) FROM maker.vow_sin_mapping`)
+			Expect(getCountErr).NotTo(HaveOccurred())
+			Expect(count).To(Equal(1))
 		})
 
 		It("returns error if metadata missing timestamp", func() {
@@ -121,6 +176,19 @@ var _ = Describe("Vow storage repository test", func() {
 		AssertVariable(result, fakeBlockNumber, fakeBlockHash, fakeUint256)
 	})
 
+	It("does not duplicate vow Sin integer", func() {
+		insertOneErr := repo.Create(fakeBlockNumber, fakeBlockHash, vow.SinIntegerMetadata, fakeUint256)
+		Expect(insertOneErr).NotTo(HaveOccurred())
+
+		insertTwoErr := repo.Create(fakeBlockNumber, fakeBlockHash, vow.SinIntegerMetadata, fakeUint256)
+
+		Expect(insertTwoErr).NotTo(HaveOccurred())
+		var count int
+		getCountErr := db.Get(&count, `SELECT count(*) FROM maker.vow_sin_integer`)
+		Expect(getCountErr).NotTo(HaveOccurred())
+		Expect(count).To(Equal(1))
+	})
+
 	It("persists a vow Ash", func() {
 		err = repo.Create(fakeBlockNumber, fakeBlockHash, vow.AshMetadata, fakeUint256)
 
@@ -130,6 +198,19 @@ var _ = Describe("Vow storage repository test", func() {
 		err = db.Get(&result, `SELECT block_number, block_hash, ash AS value from maker.vow_ash`)
 		Expect(err).NotTo(HaveOccurred())
 		AssertVariable(result, fakeBlockNumber, fakeBlockHash, fakeUint256)
+	})
+
+	It("does not duplicate vow Ash", func() {
+		insertOneErr := repo.Create(fakeBlockNumber, fakeBlockHash, vow.AshMetadata, fakeUint256)
+		Expect(insertOneErr).NotTo(HaveOccurred())
+
+		insertTwoErr := repo.Create(fakeBlockNumber, fakeBlockHash, vow.AshMetadata, fakeUint256)
+
+		Expect(insertTwoErr).NotTo(HaveOccurred())
+		var count int
+		getCountErr := db.Get(&count, `SELECT count(*) FROM maker.vow_ash`)
+		Expect(getCountErr).NotTo(HaveOccurred())
+		Expect(count).To(Equal(1))
 	})
 
 	It("persists a vow Wait", func() {
@@ -143,6 +224,19 @@ var _ = Describe("Vow storage repository test", func() {
 		AssertVariable(result, fakeBlockNumber, fakeBlockHash, fakeUint256)
 	})
 
+	It("does not duplicate vow Wait", func() {
+		insertOneErr := repo.Create(fakeBlockNumber, fakeBlockHash, vow.WaitMetadata, fakeUint256)
+		Expect(insertOneErr).NotTo(HaveOccurred())
+
+		insertTwoErr := repo.Create(fakeBlockNumber, fakeBlockHash, vow.WaitMetadata, fakeUint256)
+
+		Expect(insertTwoErr).NotTo(HaveOccurred())
+		var count int
+		getCountErr := db.Get(&count, `SELECT count(*) FROM maker.vow_wait`)
+		Expect(getCountErr).NotTo(HaveOccurred())
+		Expect(count).To(Equal(1))
+	})
+
 	It("persists a vow Sump", func() {
 		err = repo.Create(fakeBlockNumber, fakeBlockHash, vow.SumpMetadata, fakeUint256)
 
@@ -152,6 +246,19 @@ var _ = Describe("Vow storage repository test", func() {
 		err = db.Get(&result, `SELECT block_number, block_hash, sump AS value from maker.vow_sump`)
 		Expect(err).NotTo(HaveOccurred())
 		AssertVariable(result, fakeBlockNumber, fakeBlockHash, fakeUint256)
+	})
+
+	It("does not duplicate vow Sump", func() {
+		insertOneErr := repo.Create(fakeBlockNumber, fakeBlockHash, vow.SumpMetadata, fakeUint256)
+		Expect(insertOneErr).NotTo(HaveOccurred())
+
+		insertTwoErr := repo.Create(fakeBlockNumber, fakeBlockHash, vow.SumpMetadata, fakeUint256)
+
+		Expect(insertTwoErr).NotTo(HaveOccurred())
+		var count int
+		getCountErr := db.Get(&count, `SELECT count(*) FROM maker.vow_sump`)
+		Expect(getCountErr).NotTo(HaveOccurred())
+		Expect(count).To(Equal(1))
 	})
 
 	It("persists a vow Bump", func() {
@@ -165,6 +272,19 @@ var _ = Describe("Vow storage repository test", func() {
 		AssertVariable(result, fakeBlockNumber, fakeBlockHash, fakeUint256)
 	})
 
+	It("does not duplicate vow Bump", func() {
+		insertOneErr := repo.Create(fakeBlockNumber, fakeBlockHash, vow.BumpMetadata, fakeUint256)
+		Expect(insertOneErr).NotTo(HaveOccurred())
+
+		insertTwoErr := repo.Create(fakeBlockNumber, fakeBlockHash, vow.BumpMetadata, fakeUint256)
+
+		Expect(insertTwoErr).NotTo(HaveOccurred())
+		var count int
+		getCountErr := db.Get(&count, `SELECT count(*) FROM maker.vow_bump`)
+		Expect(getCountErr).NotTo(HaveOccurred())
+		Expect(count).To(Equal(1))
+	})
+
 	It("persists a vow Hump", func() {
 		err = repo.Create(fakeBlockNumber, fakeBlockHash, vow.HumpMetadata, fakeUint256)
 
@@ -174,5 +294,18 @@ var _ = Describe("Vow storage repository test", func() {
 		err = db.Get(&result, `SELECT block_number, block_hash, hump AS value from maker.vow_hump`)
 		Expect(err).NotTo(HaveOccurred())
 		AssertVariable(result, fakeBlockNumber, fakeBlockHash, fakeUint256)
+	})
+
+	It("does not duplicate vow Hump", func() {
+		insertOneErr := repo.Create(fakeBlockNumber, fakeBlockHash, vow.HumpMetadata, fakeUint256)
+		Expect(insertOneErr).NotTo(HaveOccurred())
+
+		insertTwoErr := repo.Create(fakeBlockNumber, fakeBlockHash, vow.HumpMetadata, fakeUint256)
+
+		Expect(insertTwoErr).NotTo(HaveOccurred())
+		var count int
+		getCountErr := db.Get(&count, `SELECT count(*) FROM maker.vow_hump`)
+		Expect(getCountErr).NotTo(HaveOccurred())
+		Expect(count).To(Equal(1))
 	})
 })

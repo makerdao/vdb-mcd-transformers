@@ -2,7 +2,7 @@
 
 -- Spec: https://github.com/makerdao/vulcan.spec/blob/master/mcd.graphql
 
-CREATE TYPE api.urn AS (
+CREATE TYPE api.urn_state AS (
   urn_id       TEXT,
   ilk_name     TEXT,
   block_height BIGINT,
@@ -19,7 +19,7 @@ CREATE TYPE api.urn AS (
 
 -- Function returning state for all urns as of given block
 CREATE FUNCTION api.all_urns(block_height BIGINT)
-  RETURNS SETOF api.urn
+  RETURNS SETOF api.urn_state
 AS
 
 $body$
@@ -118,4 +118,4 @@ LANGUAGE SQL STABLE;
 
 -- +goose Down
 DROP FUNCTION api.all_urns(BIGINT);
-DROP TYPE api.urn CASCADE;
+DROP TYPE api.urn_state CASCADE;

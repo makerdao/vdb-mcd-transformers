@@ -1,7 +1,7 @@
 -- +goose Up
 -- +goose StatementBegin
 CREATE  FUNCTION api.all_urn_states(ilk_name TEXT, urn TEXT, block_height BIGINT)
-  RETURNS SETOF api.urn AS $$
+  RETURNS SETOF api.urn_state AS $$
 DECLARE
   blocks BIGINT[];
   i BIGINT;

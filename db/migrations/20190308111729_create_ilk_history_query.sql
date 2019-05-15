@@ -3,7 +3,7 @@
 
 -- Function returning the history of a given ilk as of the given block height
 CREATE FUNCTION api.all_ilk_states(block_height BIGINT, ilk_id INT)
-  RETURNS SETOF api.ilk AS $$
+  RETURNS SETOF api.ilk_state AS $$
 DECLARE
   r api.relevant_block;
 BEGIN
