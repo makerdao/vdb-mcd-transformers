@@ -52,6 +52,20 @@ CREATE TYPE maker.bite_event AS (
 
 
 --
+-- Name: COLUMN bite_event.block_height; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON COLUMN maker.bite_event.block_height IS '@omit';
+
+
+--
+-- Name: COLUMN bite_event.tx_idx; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON COLUMN maker.bite_event.tx_idx IS '@omit';
+
+
+--
 -- Name: era; Type: TYPE; Schema: maker; Owner: -
 --
 
