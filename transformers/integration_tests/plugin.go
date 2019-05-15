@@ -227,7 +227,7 @@ var _ = Describe("Plugin test", func() {
 				Expect(err).NotTo(HaveOccurred())
 				Expect(returned.Ilk).To(Equal(strconv.Itoa(ilkID)))
 				Expect(returned.What).To(Equal("flip"))
-				Expect(returned.Flip).To(Equal("0x668f2857d0Bab4e17B6E690f50f3Cd973C3ae1B6"))
+				Expect(returned.Flip).To(Equal("0x259d562d7d14c11efcf4fc1678f29d3f618b68ad"))
 				Expect(returned.TransactionIndex).To(Equal(uint(0)))
 				Expect(returned.LogIndex).To(Equal(uint(0)))
 			})
@@ -355,7 +355,7 @@ var _ = Describe("Plugin test", func() {
 				Expect(err).NotTo(HaveOccurred())
 				Expect(returned.Ilk).To(Equal(strconv.Itoa(ilkID)))
 				Expect(returned.What).To(Equal("flip"))
-				Expect(returned.Flip).To(Equal("0x668f2857d0Bab4e17B6E690f50f3Cd973C3ae1B6"))
+				Expect(returned.Flip).To(Equal("0x259d562d7d14c11efcf4fc1678f29d3f618b68ad"))
 				Expect(returned.TransactionIndex).To(Equal(uint(0)))
 				Expect(returned.LogIndex).To(Equal(uint(0)))
 
