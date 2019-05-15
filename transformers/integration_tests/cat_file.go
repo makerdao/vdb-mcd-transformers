@@ -184,7 +184,7 @@ var _ = Describe("Cat File transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 		Expect(dbResult[0].Ilk).To(Equal(strconv.Itoa(ilkID)))
 		Expect(dbResult[0].What).To(Equal("flip"))
-		Expect(dbResult[0].Flip).To(Equal("0x668f2857d0Bab4e17B6E690f50f3Cd973C3ae1B6"))
+		Expect(dbResult[0].Flip).To(Equal("0x259d562d7d14c11efcf4fc1678f29d3f618b68ad"))
 	})
 
 	It("rechecks a flip event", func() {
@@ -258,7 +258,7 @@ var _ = Describe("Cat File transformer", func() {
 
 		Expect(len(dbResult)).To(Equal(1))
 		Expect(dbResult[0].What).To(Equal("vow"))
-		Expect(dbResult[0].Data).To(Equal("0xBbA55b7E500e8eE2cF4887Ed393306803da04aEB"))
+		Expect(dbResult[0].Data).To(Equal("0xa2c0d575cb4e1f145830326420e0ccfab8bebc1d"))
 		Expect(dbResult[0].LogIndex).To(Equal(uint(15)))
 	})
 })
