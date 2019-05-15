@@ -2,18 +2,18 @@
 -- SQL in this section is executed when the migration is applied.
 
 -- Extend file_event with ilk_state
-CREATE OR REPLACE FUNCTION maker.file_event_ilk(event maker.file_event)
-  RETURNS SETOF maker.ilk_state AS
+CREATE FUNCTION api.file_event_ilk(event api.file_event)
+  RETURNS SETOF api.ilk_state AS
 $$
-  SELECT * FROM maker.get_ilk(
+  SELECT * FROM api.get_ilk(
     event.block_height,
     (SELECT id FROM maker.ilks WHERE name = event.ilk_name)
   )
 $$ LANGUAGE sql STABLE;
 
 -- Extend file_event with txs
-CREATE OR REPLACE FUNCTION maker.file_event_tx(event maker.file_event)
-  RETURNS maker.tx AS
+CREATE FUNCTION api.file_event_tx(event api.file_event)
+  RETURNS api.tx AS
 $$
   SELECT txs.hash, txs.tx_index, headers.block_number AS block_height, headers.hash, tx_from, tx_to
   FROM public.header_sync_transactions txs
@@ -26,5 +26,5 @@ $$ LANGUAGE sql STABLE;
 
 -- +goose Down
 -- SQL in this section is executed when the migration is rolled back.
-DROP FUNCTION maker.file_event_ilk(event maker.file_event);
-DROP FUNCTION maker.file_event_tx(maker.file_event);
+DROP FUNCTION api.file_event_ilk(event api.file_event);
+DROP FUNCTION api.file_event_tx(api.file_event);

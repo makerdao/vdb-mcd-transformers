@@ -1,6 +1,6 @@
 -- +goose Up
 -- SQL in this section is executed when the migration is applied.
-CREATE TYPE maker.bite_event AS (
+CREATE TYPE api.bite_event AS (
   ilk_name     TEXT,
   -- ilk object
   urn_id       TEXT,
@@ -12,11 +12,11 @@ CREATE TYPE maker.bite_event AS (
   -- tx
 );
 
-COMMENT ON COLUMN maker.bite_event.block_height IS E'@omit';
-COMMENT ON COLUMN maker.bite_event.tx_idx IS E'@omit';
+COMMENT ON COLUMN api.bite_event.block_height IS E'@omit';
+COMMENT ON COLUMN api.bite_event.tx_idx IS E'@omit';
 
-CREATE OR REPLACE FUNCTION maker.all_bites(ilk_name TEXT)
-  RETURNS SETOF maker.bite_event AS
+CREATE FUNCTION api.all_bites(ilk_name TEXT)
+  RETURNS SETOF api.bite_event AS
 $$
   WITH
     ilk AS (SELECT id FROM maker.ilks WHERE ilks.name = $1)
@@ -31,26 +31,26 @@ $$ LANGUAGE sql STABLE;
 
 
 -- Extend type bite_event with ilk field
-CREATE OR REPLACE FUNCTION maker.bite_event_ilk(event maker.bite_event)
-  RETURNS SETOF maker.ilk_state AS
+CREATE FUNCTION api.bite_event_ilk(event api.bite_event)
+  RETURNS SETOF api.ilk_state AS
 $$
-  SELECT * FROM maker.get_ilk(
+  SELECT * FROM api.get_ilk(
      event.block_height,
      (SELECT id FROM maker.ilks WHERE name = event.ilk_name))
 $$ LANGUAGE sql STABLE;
 
 
 -- Extend type bite_event with urn field
-CREATE OR REPLACE FUNCTION maker.bite_event_urn(event maker.bite_event)
-  RETURNS SETOF maker.urn_state AS
+CREATE FUNCTION api.bite_event_urn(event api.bite_event)
+  RETURNS SETOF api.urn_state AS
 $$
-  SELECT * FROM maker.get_urn(event.ilk_name, event.urn_id, event.block_height)
+  SELECT * FROM api.get_urn(event.ilk_name, event.urn_id, event.block_height)
 $$ LANGUAGE sql STABLE;
 
 
 -- Extend type bite_event with txs field
-CREATE OR REPLACE FUNCTION maker.bite_event_tx(event maker.bite_event)
-  RETURNS maker.tx AS
+CREATE FUNCTION api.bite_event_tx(event api.bite_event)
+  RETURNS api.tx AS
 $$
   SELECT txs.hash, txs.tx_index, headers.block_number AS block_height, headers.hash, tx_from, tx_to
   FROM public.header_sync_transactions txs
@@ -62,8 +62,8 @@ $$ LANGUAGE sql STABLE;
 
 -- +goose Down
 -- SQL in this section is executed when the migration is rolled back.
-DROP FUNCTION maker.bite_event_tx(maker.bite_event);
-DROP FUNCTION maker.bite_event_urn(maker.bite_event);
-DROP FUNCTION maker.bite_event_ilk(maker.bite_event);
-DROP FUNCTION maker.all_bites(TEXT);
-DROP TYPE maker.bite_event CASCADE;
+DROP FUNCTION api.bite_event_tx(api.bite_event);
+DROP FUNCTION api.bite_event_urn(api.bite_event);
+DROP FUNCTION api.bite_event_ilk(api.bite_event);
+DROP FUNCTION api.all_bites(TEXT);
+DROP TYPE api.bite_event CASCADE;

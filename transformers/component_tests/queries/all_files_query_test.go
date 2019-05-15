@@ -82,7 +82,7 @@ var _ = Describe("Files query", func() {
 			Expect(vatErr).NotTo(HaveOccurred())
 
 			var actualFiles []test_helpers.FileEvent
-			filesErr := db.Select(&actualFiles, `SELECT id, ilk_name, what, data FROM maker.ilk_files($1)`, test_helpers.FakeIlk.Name)
+			filesErr := db.Select(&actualFiles, `SELECT id, ilk_name, what, data FROM api.ilk_files($1)`, test_helpers.FakeIlk.Name)
 			Expect(filesErr).NotTo(HaveOccurred())
 
 			Expect(actualFiles).To(ConsistOf(
@@ -132,7 +132,7 @@ var _ = Describe("Files query", func() {
 			Expect(fileBlockTwoErr).NotTo(HaveOccurred())
 
 			var actualFiles []test_helpers.FileEvent
-			filesErr := db.Select(&actualFiles, `SELECT id, ilk_name, what, data FROM maker.ilk_files($1)`, test_helpers.FakeIlk.Name)
+			filesErr := db.Select(&actualFiles, `SELECT id, ilk_name, what, data FROM api.ilk_files($1)`, test_helpers.FakeIlk.Name)
 			Expect(filesErr).NotTo(HaveOccurred())
 
 			Expect(actualFiles).To(ConsistOf(
@@ -165,7 +165,7 @@ var _ = Describe("Files query", func() {
 			Expect(vatBlockOneErr).NotTo(HaveOccurred())
 
 			var actualFiles []test_helpers.FileEvent
-			filesErr := db.Select(&actualFiles, `SELECT id, ilk_name, what, data FROM maker.ilk_files($1)`, test_helpers.FakeIlk.Name)
+			filesErr := db.Select(&actualFiles, `SELECT id, ilk_name, what, data FROM api.ilk_files($1)`, test_helpers.FakeIlk.Name)
 			Expect(filesErr).NotTo(HaveOccurred())
 
 			Expect(actualFiles).To(ConsistOf(
@@ -240,7 +240,7 @@ var _ = Describe("Files query", func() {
 			Expect(catFileVowErr).NotTo(HaveOccurred())
 
 			var actualFiles []test_helpers.FileEvent
-			filesErr := db.Select(&actualFiles, `SELECT id, ilk_name, what, data FROM maker.address_files($1)`, test_data.KovanCatContractAddress)
+			filesErr := db.Select(&actualFiles, `SELECT id, ilk_name, what, data FROM api.address_files($1)`, test_data.KovanCatContractAddress)
 			Expect(filesErr).NotTo(HaveOccurred())
 
 			Expect(actualFiles).To(ConsistOf(
@@ -278,7 +278,7 @@ var _ = Describe("Files query", func() {
 			Expect(jugFileVowErr).NotTo(HaveOccurred())
 
 			var actualFiles []test_helpers.FileEvent
-			filesErr := db.Select(&actualFiles, `SELECT id, ilk_name, what, data FROM maker.address_files($1)`, test_data.KovanJugContractAddress)
+			filesErr := db.Select(&actualFiles, `SELECT id, ilk_name, what, data FROM api.address_files($1)`, test_data.KovanJugContractAddress)
 			Expect(filesErr).NotTo(HaveOccurred())
 
 			Expect(actualFiles).To(ConsistOf(
@@ -313,7 +313,7 @@ var _ = Describe("Files query", func() {
 			Expect(vatFileIlkErr).NotTo(HaveOccurred())
 
 			var actualFiles []test_helpers.FileEvent
-			filesErr := db.Select(&actualFiles, `SELECT id, ilk_name, what, data FROM maker.address_files($1)`, test_data.KovanVatContractAddress)
+			filesErr := db.Select(&actualFiles, `SELECT id, ilk_name, what, data FROM api.address_files($1)`, test_data.KovanVatContractAddress)
 			Expect(filesErr).NotTo(HaveOccurred())
 
 			Expect(actualFiles).To(ConsistOf(
@@ -351,7 +351,7 @@ var _ = Describe("Files query", func() {
 			Expect(fileBlockTwoErr).NotTo(HaveOccurred())
 
 			var actualFiles []test_helpers.FileEvent
-			filesErr := db.Select(&actualFiles, `SELECT id, ilk_name, what, data FROM maker.address_files($1)`, test_data.KovanVatContractAddress)
+			filesErr := db.Select(&actualFiles, `SELECT id, ilk_name, what, data FROM api.address_files($1)`, test_data.KovanVatContractAddress)
 			Expect(filesErr).NotTo(HaveOccurred())
 
 			Expect(actualFiles).To(ConsistOf(
@@ -382,7 +382,7 @@ var _ = Describe("Files query", func() {
 			Expect(vatBlockOneErr).NotTo(HaveOccurred())
 
 			var actualFiles []test_helpers.FileEvent
-			filesErr := db.Select(&actualFiles, `SELECT id, ilk_name, what, data FROM maker.address_files($1)`, test_data.KovanVatContractAddress)
+			filesErr := db.Select(&actualFiles, `SELECT id, ilk_name, what, data FROM api.address_files($1)`, test_data.KovanVatContractAddress)
 			Expect(filesErr).NotTo(HaveOccurred())
 
 			Expect(actualFiles).To(ConsistOf(
@@ -414,11 +414,11 @@ var _ = Describe("Files query", func() {
 			upperCaseAddress := strings.ToUpper(address)
 
 			var lowerCaseAddressFiles []test_helpers.FileEvent
-			lowerAddressErr := db.Select(&lowerCaseAddressFiles, `SELECT id, ilk_name, what, data FROM maker.address_files($1)`, lowerCaseAddress)
+			lowerAddressErr := db.Select(&lowerCaseAddressFiles, `SELECT id, ilk_name, what, data FROM api.address_files($1)`, lowerCaseAddress)
 			Expect(lowerAddressErr).NotTo(HaveOccurred())
 
 			var upperCaseAddressFiles []test_helpers.FileEvent
-			upperAddressErr := db.Select(&upperCaseAddressFiles, `SELECT id, ilk_name, what, data FROM maker.address_files($1)`, upperCaseAddress)
+			upperAddressErr := db.Select(&upperCaseAddressFiles, `SELECT id, ilk_name, what, data FROM api.address_files($1)`, upperCaseAddress)
 			Expect(upperAddressErr).NotTo(HaveOccurred())
 
 			Expect(lowerCaseAddress).NotTo(BeEmpty())

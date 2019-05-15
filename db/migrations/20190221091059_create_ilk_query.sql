@@ -1,12 +1,12 @@
 -- +goose Up
-CREATE TYPE maker.relevant_block AS (
+CREATE TYPE api.relevant_block AS (
   block_height BIGINT,
   block_hash   TEXT,
   ilk_id       INTEGER
 );
 
-CREATE OR REPLACE FUNCTION maker.get_ilk_blocks_before(block_height BIGINT, ilk_id INT)
-  RETURNS SETOF maker.relevant_block AS $$
+CREATE FUNCTION api.get_ilk_blocks_before(block_height BIGINT, ilk_id INT)
+  RETURNS SETOF api.relevant_block AS $$
 SELECT
   block_number AS block_height,
   block_hash,
@@ -89,7 +89,10 @@ WHERE block_number <= $1
 $$
 LANGUAGE sql STABLE;
 
-CREATE TYPE maker.ilk_state AS (
+COMMENT ON FUNCTION api.get_ilk_blocks_before(bigint, integer) IS E'@omit';
+
+
+CREATE TYPE api.ilk_state AS (
   ilk_id       INTEGER,
   ilk_name     TEXT,
   block_height BIGINT,
@@ -108,8 +111,8 @@ CREATE TYPE maker.ilk_state AS (
 );
 
 -- Function returning the state for a single ilk as of the given block height
-CREATE FUNCTION maker.get_ilk(block_height BIGINT, _ilk_id INT)
-  RETURNS maker.ilk_state
+CREATE FUNCTION api.get_ilk(block_height BIGINT, _ilk_id INT)
+  RETURNS api.ilk_state
 AS $$
 WITH rates AS (
     SELECT
@@ -212,7 +215,7 @@ WITH rates AS (
     ORDER BY ilk_id, block_number DESC
     LIMIT 1
 ), relevant_blocks AS (
-  SELECT * FROM maker.get_ilk_blocks_before($1, $2)
+  SELECT * FROM api.get_ilk_blocks_before($1, $2)
 ), created AS (
     SELECT DISTINCT ON (relevant_blocks.ilk_id, relevant_blocks.block_height)
       relevant_blocks.block_height,
@@ -277,11 +280,10 @@ WHERE (
   duties.duty is not null
 )
 $$
-LANGUAGE SQL
-STABLE SECURITY DEFINER;
+LANGUAGE SQL STABLE;
 
 -- +goose Down
-DROP FUNCTION IF EXISTS maker.get_ilk_blocks_before(BIGINT, INT);
-DROP TYPE maker.relevant_block CASCADE;
-DROP FUNCTION IF EXISTS maker.get_ilk(BIGINT, INT );
-DROP TYPE maker.ilk_state CASCADE;
+DROP FUNCTION api.get_ilk_blocks_before(BIGINT, INT);
+DROP TYPE api.relevant_block CASCADE;
+DROP FUNCTION api.get_ilk(BIGINT, INT );
+DROP TYPE api.ilk_state CASCADE;

@@ -1,6 +1,6 @@
 -- +goose Up
 -- SQL in this section is executed when the migration is applied.
-CREATE TYPE maker.log_value AS (
+CREATE TYPE api.log_value AS (
   val           NUMERIC,
   block_number  BIGINT,
   tx_idx        INTEGER,
@@ -8,10 +8,10 @@ CREATE TYPE maker.log_value AS (
   -- tx
   );
 
-COMMENT ON COLUMN maker.log_value.tx_idx IS E'@omit';
+COMMENT ON COLUMN api.log_value.tx_idx IS E'@omit';
 
-CREATE OR REPLACE FUNCTION maker.log_values(beginTime INT, endTime INT)
-  RETURNS SETOF maker.log_value AS
+CREATE FUNCTION api.log_values(beginTime INT, endTime INT)
+  RETURNS SETOF api.log_value AS
 $body$
   SELECT val, pip_log_value.block_number, tx_idx, contract_address FROM maker.pip_log_value
     LEFT JOIN public.headers ON pip_log_value.header_id = headers.id
@@ -20,8 +20,8 @@ $body$
   LANGUAGE sql STABLE;
 
 
-CREATE OR REPLACE FUNCTION maker.log_value_tx(priceUpdate maker.log_value)
-  RETURNS maker.tx AS
+CREATE FUNCTION api.log_value_tx(priceUpdate api.log_value)
+  RETURNS api.tx AS
 $body$
   SELECT txs.hash, txs.tx_index, headers.block_number, headers.hash, txs.tx_from, txs.tx_to
     FROM maker.pip_log_value plv
@@ -35,6 +35,6 @@ $body$
 
 -- +goose Down
 -- SQL in this section is executed when the migration is rolled back
-DROP FUNCTION IF EXISTS maker.log_values(INT, INT);
-DROP FUNCTION maker.log_value_tx(maker.log_value);
-DROP TYPE maker.log_value CASCADE;
+DROP FUNCTION api.log_values(INT, INT);
+DROP FUNCTION api.log_value_tx(api.log_value);
+DROP TYPE api.log_value CASCADE;

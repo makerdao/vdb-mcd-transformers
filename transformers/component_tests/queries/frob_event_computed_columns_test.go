@@ -63,8 +63,8 @@ var _ = Describe("Frob event computed columns", func() {
 			var result test_helpers.IlkState
 			getIlkErr := db.Get(&result,
 				`SELECT ilk_name, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated
-                    FROM maker.frob_event_ilk(
-                        (SELECT (ilk_name, urn_id, dink, dart, block_height, tx_idx)::maker.frob_event FROM maker.all_frobs($1))
+                    FROM api.frob_event_ilk(
+                        (SELECT (ilk_name, urn_id, dink, dart, block_height, tx_idx)::api.frob_event FROM api.all_frobs($1))
                     )`, test_helpers.FakeIlk.Name)
 
 			Expect(getIlkErr).NotTo(HaveOccurred())
@@ -81,8 +81,8 @@ var _ = Describe("Frob event computed columns", func() {
 
 			var actualUrn test_helpers.UrnState
 			getUrnErr := db.Get(&actualUrn,
-				`SELECT urn_id, ilk_name FROM maker.frob_event_urn(
-                        (SELECT (ilk_name, urn_id, dink, dart, block_height, tx_idx)::maker.frob_event FROM maker.all_frobs($1)))`,
+				`SELECT urn_id, ilk_name FROM api.frob_event_urn(
+                        (SELECT (ilk_name, urn_id, dink, dart, block_height, tx_idx)::api.frob_event FROM api.all_frobs($1)))`,
 				test_helpers.FakeIlk.Name)
 			Expect(getUrnErr).NotTo(HaveOccurred())
 
@@ -115,8 +115,8 @@ var _ = Describe("Frob event computed columns", func() {
 			Expect(insertTxErr).NotTo(HaveOccurred())
 
 			var actualTx Tx
-			getTxErr := db.Get(&actualTx, `SELECT * FROM maker.frob_event_tx(
-			    (SELECT (ilk_name, urn_id, dink, dart, block_height, tx_idx)::maker.frob_event FROM maker.all_frobs($1)))`,
+			getTxErr := db.Get(&actualTx, `SELECT * FROM api.frob_event_tx(
+			    (SELECT (ilk_name, urn_id, dink, dart, block_height, tx_idx)::api.frob_event FROM api.all_frobs($1)))`,
 				test_helpers.FakeIlk.Name)
 
 			Expect(getTxErr).NotTo(HaveOccurred())
@@ -142,8 +142,8 @@ var _ = Describe("Frob event computed columns", func() {
 			Expect(insertTxErr).NotTo(HaveOccurred())
 
 			var actualTx Tx
-			getTxErr := db.Get(&actualTx, `SELECT * FROM maker.frob_event_tx(
-			    (SELECT (ilk_name, urn_id, dink, dart, block_height, tx_idx)::maker.frob_event FROM maker.all_frobs($1)))`,
+			getTxErr := db.Get(&actualTx, `SELECT * FROM api.frob_event_tx(
+			    (SELECT (ilk_name, urn_id, dink, dart, block_height, tx_idx)::api.frob_event FROM api.all_frobs($1)))`,
 				test_helpers.FakeIlk.Name)
 
 			Expect(getTxErr).NotTo(HaveOccurred())

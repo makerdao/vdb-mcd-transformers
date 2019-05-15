@@ -63,9 +63,9 @@ var _ = Describe("Ilk state computed columns", func() {
 
 			var actualFrobs []test_helpers.FrobEvent
 			getFrobsErr := db.Select(&actualFrobs,
-				`SELECT ilk_name, urn_id, dink, dart FROM maker.ilk_state_frobs(
-                        (SELECT (ilk_id, ilk_name, block_height, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated)::maker.ilk_state
-                         FROM maker.get_ilk($1, $2))
+				`SELECT ilk_name, urn_id, dink, dart FROM api.ilk_state_frobs(
+                        (SELECT (ilk_id, ilk_name, block_height, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated)::api.ilk_state
+                         FROM api.get_ilk($1, $2))
                     )`, fakeBlock, ilkID)
 			Expect(getFrobsErr).NotTo(HaveOccurred())
 
@@ -91,9 +91,9 @@ var _ = Describe("Ilk state computed columns", func() {
 
 			var actualFiles []test_helpers.FileEvent
 			getFilesErr := db.Select(&actualFiles,
-				`SELECT id, ilk_name, what, data FROM maker.ilk_state_files(
-                        (SELECT (ilk_id, ilk_name, block_height, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated)::maker.ilk_state
-                         FROM maker.get_ilk($1, $2))
+				`SELECT id, ilk_name, what, data FROM api.ilk_state_files(
+                        (SELECT (ilk_id, ilk_name, block_height, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated)::api.ilk_state
+                         FROM api.get_ilk($1, $2))
                     )`, fakeBlock, ilkID)
 			Expect(getFilesErr).NotTo(HaveOccurred())
 

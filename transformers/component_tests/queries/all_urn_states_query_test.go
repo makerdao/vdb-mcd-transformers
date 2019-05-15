@@ -115,7 +115,7 @@ var _ = Describe("Urn history query", func() {
 
 		var result []helper.UrnState
 		dbErr := db.Select(&result,
-			`SELECT * FROM maker.all_urn_states($1, $2, $3)`,
+			`SELECT * FROM api.all_urn_states($1, $2, $3)`,
 			helper.FakeIlk.Name, fakeUrn, blockThree)
 		Expect(dbErr).NotTo(HaveOccurred())
 

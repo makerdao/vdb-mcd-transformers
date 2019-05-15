@@ -49,7 +49,7 @@ var _ = Describe("Bites query", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			var actualBites []test_helpers.BiteEvent
-			err = db.Select(&actualBites, `SELECT ilk_name, urn_id, ink, art, tab FROM maker.all_bites($1)`, test_helpers.FakeIlk.Name)
+			err = db.Select(&actualBites, `SELECT ilk_name, urn_id, ink, art, tab FROM api.all_bites($1)`, test_helpers.FakeIlk.Name)
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(actualBites).To(ConsistOf(
@@ -89,7 +89,7 @@ var _ = Describe("Bites query", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			var actualBites []test_helpers.BiteEvent
-			err = db.Select(&actualBites, `SELECT ilk_name, urn_id, ink, art, tab FROM maker.all_bites($1)`, test_helpers.FakeIlk.Name)
+			err = db.Select(&actualBites, `SELECT ilk_name, urn_id, ink, art, tab FROM api.all_bites($1)`, test_helpers.FakeIlk.Name)
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(actualBites).To(ConsistOf(
@@ -122,7 +122,7 @@ var _ = Describe("Bites query", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			var actualBites []test_helpers.BiteEvent
-			err = db.Select(&actualBites, `SELECT ilk_name, urn_id, ink, art, tab FROM maker.all_bites($1)`, test_helpers.FakeIlk.Name)
+			err = db.Select(&actualBites, `SELECT ilk_name, urn_id, ink, art, tab FROM api.all_bites($1)`, test_helpers.FakeIlk.Name)
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(actualBites).To(ConsistOf(
@@ -165,8 +165,8 @@ var _ = Describe("Bites query", func() {
 				var result test_helpers.IlkState
 				err = db.Get(&result,
 					`SELECT ilk_name, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated
-						FROM maker.bite_event_ilk(
-							(SELECT (ilk_name, urn_id, ink, art, tab, block_height, tx_idx)::maker.bite_event FROM maker.all_bites($1))
+						FROM api.bite_event_ilk(
+							(SELECT (ilk_name, urn_id, ink, art, tab, block_height, tx_idx)::api.bite_event FROM api.all_bites($1))
 						)`, test_helpers.FakeIlk.Name)
 
 				Expect(err).NotTo(HaveOccurred())
@@ -191,8 +191,8 @@ var _ = Describe("Bites query", func() {
 
 				var actualUrn test_helpers.UrnState
 				err = db.Get(&actualUrn,
-					`SELECT urn_id, ilk_name FROM maker.bite_event_urn(
-							(SELECT (ilk_name, urn_id, ink, art, tab, block_height, tx_idx)::maker.bite_event FROM maker.all_bites($1)))`,
+					`SELECT urn_id, ilk_name FROM api.bite_event_urn(
+							(SELECT (ilk_name, urn_id, ink, art, tab, block_height, tx_idx)::api.bite_event FROM api.all_bites($1)))`,
 					test_helpers.FakeIlk.Name)
 				Expect(err).NotTo(HaveOccurred())
 
@@ -227,8 +227,8 @@ var _ = Describe("Bites query", func() {
 				Expect(err).NotTo(HaveOccurred())
 
 				var actualTx Tx
-				err = db.Get(&actualTx, `SELECT * FROM maker.bite_event_tx(
-			    (SELECT (ilk_name, urn_id, ink, art, tab, block_height, tx_idx)::maker.bite_event FROM maker.all_bites($1)))`,
+				err = db.Get(&actualTx, `SELECT * FROM api.bite_event_tx(
+			    (SELECT (ilk_name, urn_id, ink, art, tab, block_height, tx_idx)::api.bite_event FROM api.all_bites($1)))`,
 					test_helpers.FakeIlk.Name)
 
 				Expect(err).NotTo(HaveOccurred())
@@ -259,8 +259,8 @@ var _ = Describe("Bites query", func() {
 				Expect(insertErr).NotTo(HaveOccurred())
 
 				var actualTx Tx
-				err := db.Get(&actualTx, `SELECT * FROM maker.bite_event_tx(
-			    (SELECT (ilk_name, urn_id, ink, art, tab, block_height, tx_idx)::maker.bite_event FROM maker.all_bites($1)))`,
+				err := db.Get(&actualTx, `SELECT * FROM api.bite_event_tx(
+			    (SELECT (ilk_name, urn_id, ink, art, tab, block_height, tx_idx)::api.bite_event FROM api.all_bites($1)))`,
 					test_helpers.FakeIlk.Name)
 
 				Expect(err).NotTo(HaveOccurred())
