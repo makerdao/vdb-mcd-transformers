@@ -173,6 +173,19 @@ COMMENT ON COLUMN api.log_value.tx_idx IS '@omit';
 
 
 --
+-- Name: queued_sin; Type: TYPE; Schema: api; Owner: -
+--
+
+CREATE TYPE api.queued_sin AS (
+	era numeric,
+	tab numeric,
+	flogged boolean,
+	created timestamp without time zone,
+	updated timestamp without time zone
+);
+
+
+--
 -- Name: relevant_block; Type: TYPE; Schema: api; Owner: -
 --
 
@@ -466,6 +479,26 @@ WITH rates AS (
     rhos.rho is not null OR
     duties.duty is not null
   )
+$$;
+
+
+--
+-- Name: all_queued_sin(); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.all_queued_sin() RETURNS SETOF api.queued_sin
+    LANGUAGE plpgsql STABLE
+    AS $$
+DECLARE
+  _era NUMERIC;
+BEGIN
+  FOR _era IN
+    SELECT DISTINCT timestamp FROM maker.vow_sin_mapping
+  LOOP
+    RETURN QUERY
+      SELECT * FROM api.get_queued_sin(_era);
+  END LOOP;
+END;
 $$;
 
 
@@ -997,6 +1030,41 @@ $$;
 --
 
 COMMENT ON FUNCTION api.get_ilk_blocks_before(_block_height bigint, _ilk_name text) IS '@omit';
+
+
+--
+-- Name: get_queued_sin(numeric); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.get_queued_sin(era numeric) RETURNS SETOF api.queued_sin
+    LANGUAGE sql STABLE
+    AS $_$
+  WITH
+    created AS (
+      SELECT vow_sin_mapping.timestamp AS era, vow_sin_mapping.block_number, (SELECT TIMESTAMP 'epoch' + block_timestamp * INTERVAL '1 second') AS datetime
+      FROM maker.vow_sin_mapping
+      LEFT JOIN public.headers ON hash = block_hash
+      WHERE vow_sin_mapping.timestamp = $1
+      ORDER BY vow_sin_mapping.block_number ASC
+      LIMIT 1
+    ),
+
+    updated AS (
+      SELECT vow_sin_mapping.timestamp AS era, vow_sin_mapping.block_number, (SELECT TIMESTAMP 'epoch' + block_timestamp * INTERVAL '1 second') AS datetime
+      FROM maker.vow_sin_mapping
+      LEFT JOIN public.headers ON hash = block_hash
+      WHERE vow_sin_mapping.timestamp = $1
+      ORDER BY vow_sin_mapping.block_number DESC
+      LIMIT 1
+    )
+
+  SELECT $1 AS era, sin AS tab, (SELECT EXISTS(SELECT id FROM maker.vow_flog WHERE vow_flog.era = $1)) AS flogged, created.datetime, updated.datetime
+  FROM maker.vow_sin_mapping vow_sin_mapping
+  LEFT JOIN created ON created.era = vow_sin_mapping.timestamp
+  LEFT JOIN updated ON updated.era = vow_sin_mapping.timestamp
+  WHERE vow_sin_mapping.timestamp = $1
+  ORDER BY vow_sin_mapping.block_number DESC
+$_$;
 
 
 --
