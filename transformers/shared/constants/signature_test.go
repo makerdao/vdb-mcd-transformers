@@ -126,6 +126,10 @@ var _ = Describe("Signature constants", func() {
 		Expect(VowFessSignature()).To(Equal("0x697efb7800000000000000000000000000000000000000000000000000000000"))
 	})
 
+	It("generates vow file signature", func() {
+		Expect(VowFileSignature()).To(Equal("0x29ae811400000000000000000000000000000000000000000000000000000000"))
+	})
+
 	It("generates vow flog signature", func() {
 		Expect(VowFlogSignature()).To(Equal("0x35aee16f00000000000000000000000000000000000000000000000000000000"))
 	})

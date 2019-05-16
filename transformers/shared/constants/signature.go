@@ -46,4 +46,5 @@ func VatInitSignature() string    { return getLogNoteTopicZeroWithLeadingZeros(v
 func VatMoveSignature() string    { return getLogNoteTopicZeroWithLeadingZeros(vatMoveMethod()) }
 func VatSlipSignature() string    { return getLogNoteTopicZeroWithLeadingZeros(vatSlipMethod()) }
 func VowFessSignature() string    { return getLogNoteTopicZeroWithZeroPadding(vowFessMethod()) }
+func VowFileSignature() string    { return getLogNoteTopicZeroWithZeroPadding(vowFileMethod()) }
 func VowFlogSignature() string    { return getLogNoteTopicZeroWithZeroPadding(vowFlogMethod()) }

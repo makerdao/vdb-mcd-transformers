@@ -43,5 +43,6 @@ const (
 	VatMoveLabel            = "vatMove"
 	VatSlipLabel            = "vatSlip"
 	VowFessLabel            = "vowFess"
+	VowFileLabel            = "vowFile"
 	VowFlogLabel            = "vowFlog"
 )
