@@ -56,9 +56,8 @@ var _ = Describe("JugDrip Transformer", func() {
 		}
 	})
 
-	// TODO: Replace block number once there is a drip event on the Jug contract
-	XIt("transforms JugDrip log events", func() {
-		blockNumber := int64(8934775)
+	It("transforms JugDrip log events", func() {
+		blockNumber := int64(10921612)
 		jugDripConfig.StartingBlockNumber = blockNumber
 		jugDripConfig.EndingBlockNumber = blockNumber
 
@@ -88,14 +87,13 @@ var _ = Describe("JugDrip Transformer", func() {
 
 		Expect(len(dbResults)).To(Equal(1))
 		dbResult := dbResults[0]
-		ilkID, err := shared.GetOrCreateIlk("4554480000000000000000000000000000000000000000000000000000000000", db)
+		ilkID, err := shared.GetOrCreateIlk("4554485f41000000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(dbResult.Ilk).To(Equal(strconv.Itoa(ilkID)))
 	})
 
-	// TODO: Replace block number once there is a drip event on the Jug contract
-	XIt("rechecks jug drip event", func() {
-		blockNumber := int64(8934775)
+	It("rechecks jug drip event", func() {
+		blockNumber := int64(10921612)
 		jugDripConfig.StartingBlockNumber = blockNumber
 		jugDripConfig.EndingBlockNumber = blockNumber
 
