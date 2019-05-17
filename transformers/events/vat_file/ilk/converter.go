@@ -17,7 +17,6 @@
 package ilk
 
 import (
-	"bytes"
 	"encoding/json"
 	"errors"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -38,7 +37,7 @@ func (VatFileIlkConverter) ToModels(ethLogs []types.Log) ([]interface{}, error) 
 			return nil, err
 		}
 		ilk := shared.GetHexWithoutPrefix(ethLog.Topics[1].Bytes())
-		what := string(bytes.Trim(ethLog.Topics[2].Bytes(), "\x00"))
+		what := shared.DecodeHexToText(ethLog.Topics[2].Hex())
 		data := ethLog.Topics[3].Big().String()
 		if err != nil {
 			return nil, err

@@ -17,7 +17,6 @@
 package debt_ceiling
 
 import (
-	"bytes"
 	"encoding/json"
 	"errors"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
@@ -36,7 +35,7 @@ func (VatFileDebtCeilingConverter) ToModels(ethLogs []types.Log) ([]interface{},
 		if err != nil {
 			return nil, err
 		}
-		what := string(bytes.Trim(ethLog.Topics[1].Bytes(), "\x00"))
+		what := shared.DecodeHexToText(ethLog.Topics[1].Hex())
 		data := shared.ConvertUint256HexToBigInt(ethLog.Topics[2].Hex())
 
 		raw, err := json.Marshal(ethLog)

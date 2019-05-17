@@ -37,10 +37,7 @@ func GetOrCreateIlk(ilk string, db *postgres.DB) (int, error) {
 	var ilkID int
 	err := db.Get(&ilkID, getIlkIdQuery, ilk)
 	if err == sql.ErrNoRows {
-		ilkName, err := DecodeIlkName(ilk)
-		if err != nil {
-			return 0, err
-		}
+		ilkName := DecodeHexToText(ilk)
 		insertErr := db.QueryRow(InsertIlkQuery, ilk, ilkName).Scan(&ilkID)
 		return ilkID, insertErr
 	}
@@ -51,10 +48,7 @@ func GetOrCreateIlkInTransaction(ilk string, tx *sqlx.Tx) (int, error) {
 	var ilkID int
 	err := tx.Get(&ilkID, getIlkIdQuery, ilk)
 	if err == sql.ErrNoRows {
-		ilkName, err := DecodeIlkName(ilk)
-		if err != nil {
-			return 0, err
-		}
+		ilkName := DecodeHexToText(ilk)
 		insertErr := tx.QueryRow(InsertIlkQuery, ilk, ilkName).Scan(&ilkID)
 		return ilkID, insertErr
 	}

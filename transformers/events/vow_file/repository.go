@@ -47,7 +47,7 @@ func (repo VowFileRepository) Create(headerID int64, models []interface{}) error
 
 		_, execErr := tx.Exec(
 			`INSERT into maker.vow_file (header_id, what, data, log_idx, tx_idx, raw_log)
-        	VALUES($1, $2, $3::NUMERIC, $4, $5, $6)`,
+			VALUES($1, $2, $3::NUMERIC, $4, $5, $6)`,
 			headerID, vowFileModel.What, vowFileModel.Data, vowFileModel.LogIndex, vowFileModel.TransactionIndex, vowFileModel.Raw,
 		)
 

@@ -1,6 +1,6 @@
 -- +goose Up
 CREATE TABLE maker.vow_file (
-  id SERIAL PRIMARY KEY,
+  id        SERIAL PRIMARY KEY,
   header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
   what      TEXT,
   data      NUMERIC,

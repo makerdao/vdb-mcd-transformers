@@ -17,7 +17,6 @@
 package ilk
 
 import (
-	"bytes"
 	"encoding/json"
 	"errors"
 	"github.com/ethereum/go-ethereum/common/hexutil"
@@ -39,7 +38,7 @@ func (JugFileIlkConverter) ToModels(ethLogs []types.Log) ([]interface{}, error) 
 		}
 
 		ilk := shared.GetHexWithoutPrefix(ethLog.Topics[2].Bytes())
-		what := string(bytes.Trim(ethLog.Topics[3].Bytes(), "\x00"))
+		what := shared.DecodeHexToText(ethLog.Topics[3].Hex())
 		dataBytes := shared.GetDSNoteThirdArgument(ethLog.Data)
 		data := shared.ConvertUint256HexToBigInt(hexutil.Encode(dataBytes))
 		raw, err := json.Marshal(ethLog)
