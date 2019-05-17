@@ -17,8 +17,20 @@ CREATE TYPE api.urn_state AS (
   updated      TIMESTAMP
 );
 
+CREATE FUNCTION api.epoch_to_datetime(_epoch NUMERIC) RETURNS TIMESTAMP AS $$
+    SELECT TIMESTAMP 'epoch' + _epoch * INTERVAL '1 second' AS datetime
+$$ LANGUAGE SQL IMMUTABLE;
+
+COMMENT ON FUNCTION api.epoch_to_datetime(_epoch NUMERIC) IS E'@omit';
+
+CREATE FUNCTION api.max_block() RETURNS BIGINT AS $$
+  SELECT max(block_number) FROM public.headers
+$$ LANGUAGE SQL STABLE;
+
+COMMENT ON FUNCTION api.max_block() IS E'@omit';
+
 -- Function returning state for all urns as of given block
-CREATE FUNCTION api.all_urns(block_height BIGINT)
+CREATE FUNCTION api.all_urns(block_height BIGINT DEFAULT api.max_block())
   RETURNS SETOF api.urn_state
 AS
 
@@ -77,7 +89,7 @@ WITH
   ),
 
   created AS (
-    SELECT urn_id, (SELECT TIMESTAMP 'epoch' + block_timestamp * INTERVAL '1 second') AS datetime
+    SELECT urn_id, api.epoch_to_datetime(block_timestamp) AS datetime
     FROM
       (
         SELECT DISTINCT ON (urn_id) urn_id, block_hash FROM maker.vat_urn_ink
@@ -87,7 +99,7 @@ WITH
   ),
 
   updated AS (
-    SELECT DISTINCT ON (urn_id) urn_id, (SELECT TIMESTAMP 'epoch' + block_timestamp * INTERVAL '1 second') AS datetime
+    SELECT DISTINCT ON (urn_id) urn_id, api.epoch_to_datetime(block_timestamp) AS datetime
     FROM
       (
         (SELECT DISTINCT ON (urn_id) urn_id, block_hash FROM maker.vat_urn_ink
@@ -118,4 +130,6 @@ LANGUAGE SQL STABLE STRICT;
 
 -- +goose Down
 DROP FUNCTION api.all_urns(BIGINT);
+DROP FUNCTION api.max_block();
+DROP FUNCTION api.epoch_to_datetime(NUMERIC);
 DROP TYPE api.urn_state CASCADE;

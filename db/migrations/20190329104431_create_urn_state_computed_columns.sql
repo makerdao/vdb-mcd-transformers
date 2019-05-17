@@ -5,10 +5,7 @@
 CREATE FUNCTION api.urn_state_ilk(state api.urn_state)
   RETURNS api.ilk_state AS
 $$
-  SELECT * FROM api.get_ilk(
-    state.block_height,
-    state.ilk_name
-  )
+  SELECT * FROM api.get_ilk(state.ilk_name, state.block_height)
 $$ LANGUAGE sql STABLE;
 
 -- Extend urn_state with frob_events
