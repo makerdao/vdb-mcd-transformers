@@ -17,7 +17,7 @@ $body$
     LEFT JOIN public.headers ON pip_log_value.header_id = headers.id
     WHERE block_timestamp BETWEEN $1 AND $2
 $body$
-  LANGUAGE sql STABLE;
+  LANGUAGE sql STABLE STRICT;
 
 
 CREATE FUNCTION api.log_value_tx(priceUpdate api.log_value)

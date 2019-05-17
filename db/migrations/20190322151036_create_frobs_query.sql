@@ -30,7 +30,7 @@ $body$
   WHERE vat_frob.urn_id = (SELECT id FROM urn)
   ORDER BY block_number DESC
 $body$
-LANGUAGE sql STABLE;
+LANGUAGE sql STABLE STRICT;
 
 
 CREATE FUNCTION api.all_frobs(ilk_name TEXT)
@@ -45,7 +45,7 @@ $$
   LEFT JOIN headers    ON vat_frob.header_id = headers.id
   WHERE urns.ilk_id = (SELECT id FROM ilk)
   ORDER BY guy, block_number DESC
-$$ LANGUAGE sql STABLE;
+$$ LANGUAGE sql STABLE STRICT;
 
 
 -- +goose Down

@@ -41,7 +41,7 @@ $body$
   WHERE vat_file_ilk.ilk_id = (SELECT id FROM ilk)
   ORDER BY block_height DESC
 $body$
-LANGUAGE sql STABLE;
+LANGUAGE sql STABLE STRICT;
 
 -- expensive query, hitting lots of tables
 -- probably can narrow it down for specific contracts
@@ -100,7 +100,7 @@ $body$
 
   ORDER BY block_height DESC
 $body$
-LANGUAGE sql STABLE;
+LANGUAGE sql STABLE STRICT;
 
 
 -- +goose Down

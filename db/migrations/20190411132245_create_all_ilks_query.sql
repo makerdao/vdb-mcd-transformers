@@ -106,7 +106,7 @@ WITH rates AS (
     duties.duty is not null
   )
 $$
-LANGUAGE SQL STABLE;
+LANGUAGE SQL STABLE STRICT;
 
 -- +goose Down
 DROP FUNCTION api.all_ilks(block_height BIGINT);
