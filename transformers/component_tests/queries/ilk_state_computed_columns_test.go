@@ -60,9 +60,8 @@ var _ = Describe("Ilk state computed columns", func() {
 				`SELECT ilk_name, urn_guy, dink, dart FROM api.ilk_state_frobs(
                         (SELECT (ilk_name, block_height, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated)::api.ilk_state
                          FROM api.get_ilk($1, $2))
-                    )`,
-				fakeBlock,
-				test_helpers.FakeIlk.Name)
+
+                    )`, test_helpers.FakeIlk.Name, fakeBlock)
 			Expect(getFrobsErr).NotTo(HaveOccurred())
 
 			expectedFrobs := []test_helpers.FrobEvent{{
@@ -90,9 +89,7 @@ var _ = Describe("Ilk state computed columns", func() {
 				`SELECT id, ilk_name, what, data FROM api.ilk_state_files(
                         (SELECT (ilk_name, block_height, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated)::api.ilk_state
                          FROM api.get_ilk($1, $2))
-                    )`,
-				fakeBlock,
-				test_helpers.FakeIlk.Name)
+                    )`, test_helpers.FakeIlk.Name, fakeBlock)
 			Expect(getFilesErr).NotTo(HaveOccurred())
 
 			expectedFiles := []test_helpers.FileEvent{{

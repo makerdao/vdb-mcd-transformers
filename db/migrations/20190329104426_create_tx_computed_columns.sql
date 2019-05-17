@@ -20,7 +20,7 @@ CREATE TYPE api.era AS (
 CREATE FUNCTION api.tx_era(tx api.tx)
   RETURNS api.era AS
 $$
-SELECT block_timestamp::BIGINT AS "epoch", (SELECT TIMESTAMP 'epoch' + block_timestamp * INTERVAL '1 second') AS iso
+SELECT block_timestamp::BIGINT AS "epoch", api.epoch_to_datetime(block_timestamp) AS iso
   FROM headers WHERE block_number = tx.block_height
 $$ LANGUAGE sql STABLE;
 

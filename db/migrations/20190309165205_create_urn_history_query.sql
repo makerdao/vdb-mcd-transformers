@@ -1,6 +1,6 @@
 -- +goose Up
 -- +goose StatementBegin
-CREATE  FUNCTION api.all_urn_states(ilk_name TEXT, urn TEXT, block_height BIGINT)
+CREATE  FUNCTION api.all_urn_states(ilk_name TEXT, urn TEXT, block_height BIGINT DEFAULT api.max_block())
   RETURNS SETOF api.urn_state AS $$
 DECLARE
   blocks BIGINT[];

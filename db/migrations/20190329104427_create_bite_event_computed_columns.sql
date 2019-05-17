@@ -5,7 +5,7 @@
 CREATE FUNCTION api.bite_event_ilk(event api.bite_event)
     RETURNS SETOF api.ilk_state AS
 $$
-    SELECT * FROM api.get_ilk(event.block_height, event.ilk_name)
+    SELECT * FROM api.get_ilk(event.ilk_name, event.block_height)
 $$ LANGUAGE sql STABLE;
 
 

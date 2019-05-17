@@ -5,10 +5,9 @@
 CREATE FUNCTION api.frob_event_ilk(event api.frob_event)
   RETURNS SETOF api.ilk_state AS
 $$
-  SELECT * FROM api.get_ilk(
-    event.block_height,
-    event.ilk_name)
+  SELECT * FROM api.get_ilk(event.ilk_name, event.block_height)
 $$ LANGUAGE sql STABLE;
+
 
 -- Extend frob_event with urn_state
 CREATE FUNCTION api.frob_event_urn(event api.frob_event)
@@ -16,6 +15,7 @@ CREATE FUNCTION api.frob_event_urn(event api.frob_event)
 $$
   SELECT * FROM api.get_urn(event.ilk_name, event.urn_guy, event.block_height)
 $$ LANGUAGE sql STABLE;
+
 
 -- Extend frob_event with txs
 CREATE FUNCTION api.frob_event_tx(event api.frob_event)
