@@ -38,9 +38,8 @@ var _ = Describe("VatHeal Transformer", func() {
 		Topic:             mcdConstants.VatHealSignature(),
 	}
 
-	// TODO: Replace block number once there's a heal event on the updated Vat
-	XIt("transforms VatHeal log events", func() {
-		blockNumber := int64(8935578)
+	It("transforms VatHeal log events", func() {
+		blockNumber := int64(10921610)
 		vatHealConfig.StartingBlockNumber = blockNumber
 		vatHealConfig.EndingBlockNumber = blockNumber
 
@@ -77,14 +76,13 @@ var _ = Describe("VatHeal Transformer", func() {
 
 		Expect(len(dbResults)).To(Equal(1))
 		dbResult := dbResults[0]
-		Expect(dbResult.Urn).To(Equal("0000000000000000000000003728e9777b2a0a611ee0f89e00e01044ce4736d1"))
-		Expect(dbResult.V).To(Equal("0000000000000000000000003728e9777b2a0a611ee0f89e00e01044ce4736d1"))
-		Expect(dbResult.Rad).To(Equal("1000000000000000000000000000"))
+		Expect(dbResult.Urn).To(Equal("0xa2c0D575CB4e1F145830326420e0CcFab8BeBc1d"))
+		Expect(dbResult.V).To(Equal("0xa2c0D575CB4e1F145830326420e0CcFab8BeBc1d"))
+		Expect(dbResult.Rad).To(Equal("0"))
 	})
 
-	// TODO: Replace block number once there's a heal event on the updated Vat
-	XIt("rechecks vat heal event", func() {
-		blockNumber := int64(8935578)
+	It("rechecks vat heal event", func() {
+		blockNumber := int64(10921610)
 		vatHealConfig.StartingBlockNumber = blockNumber
 		vatHealConfig.EndingBlockNumber = blockNumber
 
@@ -133,8 +131,8 @@ var _ = Describe("VatHeal Transformer", func() {
 
 		Expect(len(dbResults)).To(Equal(1))
 		dbResult := dbResults[0]
-		Expect(dbResult.Urn).To(Equal("0000000000000000000000003728e9777b2a0a611ee0f89e00e01044ce4736d1"))
-		Expect(dbResult.V).To(Equal("0000000000000000000000003728e9777b2a0a611ee0f89e00e01044ce4736d1"))
-		Expect(dbResult.Rad).To(Equal("1000000000000000000000000000"))
+		Expect(dbResult.Urn).To(Equal("0xa2c0D575CB4e1F145830326420e0CcFab8BeBc1d"))
+		Expect(dbResult.V).To(Equal("0xa2c0D575CB4e1F145830326420e0CcFab8BeBc1d"))
+		Expect(dbResult.Rad).To(Equal("0"))
 	})
 })
