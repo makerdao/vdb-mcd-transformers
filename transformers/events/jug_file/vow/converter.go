@@ -17,12 +17,13 @@
 package vow
 
 import (
-	"bytes"
 	"encoding/json"
 	"errors"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
+
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 )
 
 type JugFileVowConverter struct{}
@@ -35,7 +36,7 @@ func (JugFileVowConverter) ToModels(ethLogs []types.Log) ([]interface{}, error) 
 			return nil, err
 		}
 
-		what := string(bytes.Trim(ethLog.Topics[2].Bytes(), "\x00"))
+		what := shared.DecodeHexToText(ethLog.Topics[2].Hex())
 		data := common.BytesToAddress(ethLog.Topics[3].Bytes()).String()
 		raw, err := json.Marshal(ethLog)
 		if err != nil {

@@ -17,7 +17,6 @@
 package base
 
 import (
-	"bytes"
 	"encoding/json"
 	"errors"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -34,7 +33,7 @@ func (JugFileBaseConverter) ToModels(ethLogs []types.Log) ([]interface{}, error)
 			return nil, err
 		}
 
-		what := string(bytes.Trim(ethLog.Topics[2].Bytes(), "\x00"))
+		what := shared.DecodeHexToText(ethLog.Topics[2].Hex())
 		data := shared.ConvertUint256HexToBigInt(ethLog.Topics[3].Hex())
 		raw, err := json.Marshal(ethLog)
 		if err != nil {
