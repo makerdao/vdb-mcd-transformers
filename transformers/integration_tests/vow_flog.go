@@ -54,9 +54,8 @@ var _ = Describe("VowFlog LogNoteTransformer", func() {
 		Topic:             mcdConstants.VowFlogSignature(),
 	}
 
-	// TODO: replace block number when there is a flog event on the updated Vow
-	XIt("transforms VowFlog log events", func() {
-		blockNumber := int64(8946819)
+	It("transforms VowFlog log events", func() {
+		blockNumber := int64(10921609)
 		vowFlogConfig.StartingBlockNumber = blockNumber
 		vowFlogConfig.EndingBlockNumber = blockNumber
 
@@ -84,14 +83,13 @@ var _ = Describe("VowFlog LogNoteTransformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))
-		Expect(dbResult[0].Era).To(Equal("1538558052"))
-		Expect(dbResult[0].LogIndex).To(Equal(uint(2)))
-		Expect(dbResult[0].TransactionIndex).To(Equal(uint(2)))
+		Expect(dbResult[0].Era).To(Equal("0"))
+		Expect(dbResult[0].LogIndex).To(Equal(uint(1)))
+		Expect(dbResult[0].TransactionIndex).To(Equal(uint(8)))
 	})
 
-	// TODO: replace block number when there is a flog event on the updated Vow
-	XIt("rechecks vow flog event", func() {
-		blockNumber := int64(8946819)
+	It("rechecks vow flog event", func() {
+		blockNumber := int64(10921609)
 		vowFlogConfig.StartingBlockNumber = blockNumber
 		vowFlogConfig.EndingBlockNumber = blockNumber
 
@@ -131,8 +129,8 @@ var _ = Describe("VowFlog LogNoteTransformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))
-		Expect(dbResult[0].Era).To(Equal("1538558052"))
-		Expect(dbResult[0].LogIndex).To(Equal(uint(2)))
-		Expect(dbResult[0].TransactionIndex).To(Equal(uint(2)))
+		Expect(dbResult[0].Era).To(Equal("0"))
+		Expect(dbResult[0].LogIndex).To(Equal(uint(1)))
+		Expect(dbResult[0].TransactionIndex).To(Equal(uint(8)))
 	})
 })
