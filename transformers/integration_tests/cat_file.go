@@ -17,15 +17,20 @@
 package integration_tests
 
 import (
-	"sort"
-	"strconv"
-
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+<<<<<<< HEAD
 	"github.com/vulcanize/vulcanizedb/libraries/shared/constants"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
+=======
+	"sort"
+	"strconv"
+
+	c2 "github.com/vulcanize/vulcanizedb/libraries/shared/constants"
+	fetch "github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
+>>>>>>> Fixes integration tests
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
@@ -66,7 +71,7 @@ var _ = Describe("Cat File transformer", func() {
 	})
 
 	It("persists a chop lump event", func() {
-		chopLumpBlockNumber := int64(10691268)
+		chopLumpBlockNumber := int64(10771104)
 		header, err := persistHeader(db, chopLumpBlockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 		catFileConfig.TransformerName = mcdConstants.CatFileChopLumpLabel
@@ -97,7 +102,7 @@ var _ = Describe("Cat File transformer", func() {
 		Expect(len(dbResult)).To(Equal(2))
 		sort.Sort(byLogIndexChopLump(dbResult))
 
-		ilkID, err := shared.GetOrCreateIlk("4554482d43000000000000000000000000000000000000000000000000000000", db)
+		ilkID, err := shared.GetOrCreateIlk("4554482d41000000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(dbResult[0].Ilk).To(Equal(strconv.Itoa(ilkID)))
 		Expect(dbResult[0].What).To(Equal("lump"))
@@ -150,7 +155,7 @@ var _ = Describe("Cat File transformer", func() {
 	})
 
 	It("persists a flip event", func() {
-		flipBlockNumber := int64(10691255)
+		flipBlockNumber := int64(10771104)
 		header, err := persistHeader(db, flipBlockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 		catFileConfig.TransformerName = mcdConstants.CatFileFlipLabel
@@ -184,11 +189,11 @@ var _ = Describe("Cat File transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 		Expect(dbResult[0].Ilk).To(Equal(strconv.Itoa(ilkID)))
 		Expect(dbResult[0].What).To(Equal("flip"))
-		Expect(dbResult[0].Flip).To(Equal("0x259d562d7d14c11efcf4fc1678f29d3f618b68ad"))
+		Expect(dbResult[0].Flip).To(Equal("0x259D562D7d14c11efCF4fc1678F29D3f618B68aD"))
 	})
 
 	It("rechecks a flip event", func() {
-		flipBlockNumber := int64(10691255)
+		flipBlockNumber := int64(10771104)
 		header, err := persistHeader(db, flipBlockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 		catFileConfig.TransformerName = mcdConstants.CatFileFlipLabel
@@ -258,8 +263,8 @@ var _ = Describe("Cat File transformer", func() {
 
 		Expect(len(dbResult)).To(Equal(1))
 		Expect(dbResult[0].What).To(Equal("vow"))
-		Expect(dbResult[0].Data).To(Equal("0xa2c0d575cb4e1f145830326420e0ccfab8bebc1d"))
-		Expect(dbResult[0].LogIndex).To(Equal(uint(15)))
+		Expect(dbResult[0].Data).To(Equal("0xa2c0D575CB4e1F145830326420e0CcFab8BeBc1d"))
+		Expect(dbResult[0].LogIndex).To(Equal(uint(2)))
 	})
 })
 

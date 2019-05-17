@@ -85,7 +85,7 @@ var _ = Describe("Jug File Vow LogNoteTransformer", func() {
 
 		Expect(len(dbResult)).To(Equal(1))
 		Expect(dbResult[0].What).To(Equal("vow"))
-		Expect(dbResult[0].Data).To(Equal("0xa2c0d575cb4e1f145830326420e0ccfab8bebc1d"))
+		Expect(dbResult[0].Data).To(Equal("0xa2c0D575CB4e1F145830326420e0CcFab8BeBc1d"))
 	})
 
 	It("rechecks jug file vow event", func() {
