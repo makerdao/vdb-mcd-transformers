@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 11.3
--- Dumped by pg_dump version 11.3
+-- Dumped from database version 11.2
+-- Dumped by pg_dump version 11.2
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -12,7 +12,6 @@ SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 SELECT pg_catalog.set_config('search_path', '', false);
 SET check_function_bodies = false;
-SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
@@ -213,7 +212,7 @@ CREATE TYPE api.urn_state AS (
 --
 
 CREATE FUNCTION api.address_files(address text) RETURNS SETOF api.file_event
-    LANGUAGE sql STABLE
+    LANGUAGE sql STABLE STRICT
     AS $_$
   WITH
     lowerAddress AS (SELECT lower($1))
@@ -293,7 +292,7 @@ $_$;
 --
 
 CREATE FUNCTION api.all_frobs(ilk_name text) RETURNS SETOF api.frob_event
-    LANGUAGE sql STABLE
+    LANGUAGE sql STABLE STRICT
     AS $_$
   WITH
     ilk AS (SELECT id FROM maker.ilks WHERE ilks.name = $1)
@@ -312,7 +311,7 @@ $_$;
 --
 
 CREATE FUNCTION api.all_ilk_states(block_height bigint, ilk_name text) RETURNS SETOF api.ilk_state
-    LANGUAGE plpgsql STABLE
+    LANGUAGE plpgsql STABLE STRICT
     AS $_$
 DECLARE
   r api.relevant_block;
@@ -331,7 +330,7 @@ $_$;
 --
 
 CREATE FUNCTION api.all_ilks(block_height bigint) RETURNS SETOF api.ilk_state
-    LANGUAGE sql STABLE
+    LANGUAGE sql STABLE STRICT
     AS $_$
 WITH rates AS (
   SELECT DISTINCT ON (ilk_id) rate, ilk_id, block_hash
@@ -442,7 +441,7 @@ $_$;
 --
 
 CREATE FUNCTION api.all_urn_states(ilk_name text, urn text, block_height bigint) RETURNS SETOF api.urn_state
-    LANGUAGE plpgsql STABLE
+    LANGUAGE plpgsql STABLE STRICT
     AS $_$
 DECLARE
   blocks BIGINT[];
@@ -483,7 +482,7 @@ $_$;
 --
 
 CREATE FUNCTION api.all_urns(block_height bigint) RETURNS SETOF api.urn_state
-    LANGUAGE sql STABLE
+    LANGUAGE sql STABLE STRICT
     AS $_$
 WITH
   urns AS (
@@ -689,7 +688,7 @@ $$;
 --
 
 CREATE FUNCTION api.get_ilk(block_height bigint, ilk_name text) RETURNS api.ilk_state
-    LANGUAGE sql STABLE
+    LANGUAGE sql STABLE STRICT
     AS $_$
 WITH ilk AS (
     SELECT id FROM maker.ilks WHERE name = $2
@@ -965,7 +964,7 @@ COMMENT ON FUNCTION api.get_ilk_blocks_before(block_height bigint, ilk_name text
 --
 
 CREATE FUNCTION api.get_urn(ilk text, urn text, block_height bigint) RETURNS api.urn_state
-    LANGUAGE sql STABLE
+    LANGUAGE sql STABLE STRICT
     AS $_$
 WITH
   urn AS (
@@ -1064,7 +1063,7 @@ $_$;
 --
 
 CREATE FUNCTION api.ilk_files(ilk_name text) RETURNS SETOF api.file_event
-    LANGUAGE sql STABLE
+    LANGUAGE sql STABLE STRICT
     AS $_$
   WITH
     ilk AS (SELECT id FROM maker.ilks WHERE ilks.name = $1)
@@ -1149,7 +1148,7 @@ $$;
 --
 
 CREATE FUNCTION api.log_values(begintime integer, endtime integer) RETURNS SETOF api.log_value
-    LANGUAGE sql STABLE
+    LANGUAGE sql STABLE STRICT
     AS $_$
   SELECT val, pip_log_value.block_number, tx_idx, contract_address FROM maker.pip_log_value
     LEFT JOIN public.headers ON pip_log_value.header_id = headers.id
@@ -1196,7 +1195,7 @@ $_$;
 --
 
 CREATE FUNCTION api.urn_frobs(ilk_name text, urn text) RETURNS SETOF api.frob_event
-    LANGUAGE sql STABLE
+    LANGUAGE sql STABLE STRICT
     AS $_$
   WITH
     ilk AS (SELECT id FROM maker.ilks WHERE ilks.name = $1),

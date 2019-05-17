@@ -97,7 +97,7 @@ FROM ink
   -- Add collections of frob and bite events?
 WHERE ink.urn_id IS NOT NULL
 $body$
-LANGUAGE SQL STABLE;
+LANGUAGE SQL STABLE STRICT;
 
 
 -- +goose Down

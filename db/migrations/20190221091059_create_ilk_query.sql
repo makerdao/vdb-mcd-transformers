@@ -284,7 +284,7 @@ WHERE (
   duties.duty is not null
 )
 $$
-LANGUAGE SQL STABLE;
+LANGUAGE SQL STABLE STRICT;
 
 -- +goose Down
 DROP FUNCTION api.get_ilk_blocks_before(BIGINT, TEXT);

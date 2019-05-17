@@ -113,7 +113,7 @@ FROM inks
   LEFT JOIN updated    ON updated.urn_id = urns.urn_id
   LEFT JOIN maker.ilks ON ilks.id = urns.ilk_id
 $body$
-LANGUAGE SQL STABLE;
+LANGUAGE SQL STABLE STRICT;
 
 
 -- +goose Down
