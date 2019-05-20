@@ -182,11 +182,11 @@ var _ = Describe("Bites query", func() {
 })
 
 func generateBite(ilk, urn string) bite.BiteModel {
-	bite := test_data.BiteModel
-	bite.Ilk = ilk
-	bite.Urn = urn
-	bite.Ink = strconv.Itoa(rand.Int())
-	bite.Art = strconv.Itoa(rand.Int())
-	bite.Tab = strconv.Itoa(rand.Int())
-	return bite
+	biteEvent := test_data.BiteModel
+	biteEvent.Ilk = ilk
+	biteEvent.Urn = urn
+	biteEvent.Ink = strconv.Itoa(rand.Int())
+	biteEvent.Art = strconv.Itoa(rand.Int())
+	biteEvent.Tab = strconv.Itoa(rand.Int())
+	return biteEvent
 }
