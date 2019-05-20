@@ -177,6 +177,42 @@ CREATE TYPE api.relevant_block AS (
 
 
 --
+-- Name: sin_act; Type: TYPE; Schema: api; Owner: -
+--
+
+CREATE TYPE api.sin_act AS ENUM (
+    'flog',
+    'fess'
+);
+
+
+--
+-- Name: sin_queue_event; Type: TYPE; Schema: api; Owner: -
+--
+
+CREATE TYPE api.sin_queue_event AS (
+	era numeric,
+	act api.sin_act,
+	block_height bigint,
+	tx_idx integer
+);
+
+
+--
+-- Name: COLUMN sin_queue_event.block_height; Type: COMMENT; Schema: api; Owner: -
+--
+
+COMMENT ON COLUMN api.sin_queue_event.block_height IS '@omit';
+
+
+--
+-- Name: COLUMN sin_queue_event.tx_idx; Type: COMMENT; Schema: api; Owner: -
+--
+
+COMMENT ON COLUMN api.sin_queue_event.tx_idx IS '@omit';
+
+
+--
 -- Name: tx; Type: TYPE; Schema: api; Owner: -
 --
 
@@ -452,6 +488,26 @@ WITH rates AS (
     duties.duty is not null
   )
 $$;
+
+
+--
+-- Name: all_sin_queue_events(numeric); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.all_sin_queue_events(era numeric) RETURNS SETOF api.sin_queue_event
+    LANGUAGE sql STABLE
+    AS $_$
+  SELECT block_timestamp AS era, 'fess'::api.sin_act AS act, block_number AS block_height, tx_idx
+  FROM maker.vow_fess
+  LEFT JOIN headers ON vow_fess.header_id = headers.id
+  WHERE block_timestamp = $1
+  UNION
+  SELECT era, 'flog'::api.sin_act AS act, block_number AS block_height, tx_idx
+  FROM maker.vow_flog
+  LEFT JOIN headers ON vow_flog.header_id = headers.id
+  where vow_flog.era = $1
+  ORDER BY block_height DESC
+$_$;
 
 
 --
@@ -1186,6 +1242,21 @@ CREATE FUNCTION api.log_values(begintime integer, endtime integer) RETURNS SETOF
     LEFT JOIN public.headers ON pip_log_value.header_id = headers.id
     WHERE block_timestamp BETWEEN $1 AND $2
 $_$;
+
+
+--
+-- Name: sin_queue_event_tx(api.sin_queue_event); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.sin_queue_event_tx(event api.sin_queue_event) RETURNS api.tx
+    LANGUAGE sql STABLE
+    AS $$
+    SELECT txs.hash, txs.tx_index, headers.block_number AS block_height, headers.hash, tx_from, tx_to
+    FROM public.header_sync_transactions txs
+    LEFT JOIN headers ON txs.header_id = headers.id
+    WHERE block_number <= event.block_height AND txs.tx_index = event.tx_idx
+    ORDER BY block_height DESC
+$$;
 
 
 --
