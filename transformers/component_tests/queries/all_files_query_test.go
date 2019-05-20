@@ -178,6 +178,12 @@ var _ = Describe("Files query", func() {
 				},
 			))
 		})
+
+		It("fails if no argument is supplied (STRICT)", func() {
+			_, err := db.Exec(`SELECT * FROM api.ilk_files()`)
+			Expect(err).NotTo(BeNil())
+			Expect(err.Error()).To(ContainSubstring("function api.ilk_files() does not exist"))
+		})
 	})
 
 	Describe("address files", func() {
@@ -424,6 +430,12 @@ var _ = Describe("Files query", func() {
 
 			Expect(lowerCaseAddress).NotTo(BeEmpty())
 			Expect(lowerCaseAddressFiles).To(ConsistOf(upperCaseAddressFiles))
+		})
+
+		It("fails if no argument is supplied (STRICT)", func() {
+			_, err := db.Exec(`SELECT * FROM api.address_files()`)
+			Expect(err).NotTo(BeNil())
+			Expect(err.Error()).To(ContainSubstring("function api.address_files() does not exist"))
 		})
 	})
 })

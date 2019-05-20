@@ -100,6 +100,17 @@ var _ = Describe("Ilk State Query", func() {
 		Expect(anotherFakeIlkResult).To(Equal(expectedAnotherFakeIlk))
 	})
 
+	It("fails if no argument is supplied (STRICT)", func() {
+		_, err := db.Exec(`SELECT * FROM api.get_ilk()`)
+		Expect(err).NotTo(BeNil())
+		Expect(err.Error()).To(ContainSubstring("function api.get_ilk() does not exist"))
+	})
+
+	It("allows blockHeight argument to be omitted", func() {
+		_, err := db.Exec(`SELECT * FROM api.get_ilk($1)`, 0)
+		Expect(err).NotTo(HaveOccurred())
+	})
+
 	Describe("handles getting the most recent Ilk values as of a given block", func() {
 		It("gets the Ilk for block one", func() {
 			fakeIlkvalues := test_helpers.GetIlkValues(0)

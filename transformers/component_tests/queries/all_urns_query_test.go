@@ -139,6 +139,11 @@ var _ = Describe("Urn view", func() {
 		Expect(result.Updated.String).To(BeEmpty())
 	})
 
+	It("allows blockHeight argument to be omitted", func() {
+		_, err := db.Exec(`SELECT * FROM api.all_urns()`)
+		Expect(err).NotTo(HaveOccurred())
+	})
+
 	Describe("it includes diffs only up to given block height", func() {
 		var (
 			actualUrn    helper.UrnState

@@ -77,6 +77,18 @@ var _ = Describe("Frobs query", func() {
 				test_helpers.FrobEvent{IlkName: test_helpers.FakeIlk.Name, UrnGuy: fakeUrn, Dink: frobBlockTwo.Dink, Dart: frobBlockTwo.Dart},
 			))
 		})
+
+		It("fails if no argument is supplied (STRICT)", func() {
+			_, err := db.Exec(`SELECT * FROM api.urn_frobs()`)
+			Expect(err).NotTo(BeNil())
+			Expect(err.Error()).To(ContainSubstring("function api.urn_frobs() does not exist"))
+		})
+
+		It("fails if only one argument is supplied (STRICT)", func() {
+			_, err := db.Exec(`SELECT * FROM api.urn_frobs($1::text)`, test_helpers.FakeIlk.Name)
+			Expect(err).NotTo(BeNil())
+			Expect(err.Error()).To(ContainSubstring("function api.urn_frobs(text) does not exist"))
+		})
 	})
 
 	Describe("all_frobs", func() {
@@ -111,6 +123,12 @@ var _ = Describe("Frobs query", func() {
 				test_helpers.FrobEvent{IlkName: test_helpers.FakeIlk.Name, UrnGuy: fakeUrn, Dink: frobOne.Dink, Dart: frobOne.Dart},
 				test_helpers.FrobEvent{IlkName: test_helpers.FakeIlk.Name, UrnGuy: anotherUrn, Dink: frobTwo.Dink, Dart: frobTwo.Dart},
 			))
+		})
+
+		It("fails if no argument is supplied (STRICT)", func() {
+			_, err := db.Exec(`SELECT * FROM api.all_frobs()`)
+			Expect(err).NotTo(BeNil())
+			Expect(err.Error()).To(ContainSubstring("function api.all_frobs() does not exist"))
 		})
 	})
 })
