@@ -26,7 +26,6 @@ var _ = Describe("Ilk state computed columns", func() {
 		fakeGuy    = "fakeAddress"
 		fakeHeader core.Header
 		headerId   int64
-		ilkID      int64
 	)
 
 	BeforeEach(func() {
@@ -46,9 +45,6 @@ var _ = Describe("Ilk state computed columns", func() {
 		ilkValues := test_helpers.GetIlkValues(0)
 		createIlkAtBlock(fakeHeader, ilkValues, test_helpers.FakeIlkVatMetadatas,
 			test_helpers.FakeIlkCatMetadatas, test_helpers.FakeIlkJugMetadatas)
-
-		getIlkErr := db.Get(&ilkID, `SELECT id FROM maker.ilks WHERE ilk = $1`, test_helpers.FakeIlk.Hex)
-		Expect(getIlkErr).NotTo(HaveOccurred())
 	})
 
 	Describe("ilk_state_frobs", func() {
@@ -63,15 +59,17 @@ var _ = Describe("Ilk state computed columns", func() {
 
 			var actualFrobs []test_helpers.FrobEvent
 			getFrobsErr := db.Select(&actualFrobs,
-				`SELECT ilk_name, urn_id, dink, dart FROM api.ilk_state_frobs(
-                        (SELECT (ilk_id, ilk_name, block_height, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated)::api.ilk_state
+				`SELECT ilk_name, urn_guy, dink, dart FROM api.ilk_state_frobs(
+                        (SELECT (ilk_name, block_height, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated)::api.ilk_state
                          FROM api.get_ilk($1, $2))
-                    )`, fakeBlock, ilkID)
+                    )`,
+				fakeBlock,
+				test_helpers.FakeIlk.Name)
 			Expect(getFrobsErr).NotTo(HaveOccurred())
 
 			expectedFrobs := []test_helpers.FrobEvent{{
 				IlkName: test_helpers.FakeIlk.Name,
-				UrnId:   frobEvent.Urn,
+				UrnGuy:  frobEvent.Urn,
 				Dink:    frobEvent.Dink,
 				Dart:    frobEvent.Dart,
 			}}
@@ -92,9 +90,11 @@ var _ = Describe("Ilk state computed columns", func() {
 			var actualFiles []test_helpers.FileEvent
 			getFilesErr := db.Select(&actualFiles,
 				`SELECT id, ilk_name, what, data FROM api.ilk_state_files(
-                        (SELECT (ilk_id, ilk_name, block_height, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated)::api.ilk_state
+                        (SELECT (ilk_name, block_height, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated)::api.ilk_state
                          FROM api.get_ilk($1, $2))
-                    )`, fakeBlock, ilkID)
+                    )`,
+				fakeBlock,
+				test_helpers.FakeIlk.Name)
 			Expect(getFilesErr).NotTo(HaveOccurred())
 
 			expectedFiles := []test_helpers.FileEvent{{

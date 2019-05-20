@@ -69,12 +69,12 @@ var _ = Describe("Frobs query", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			var actualFrobs []test_helpers.FrobEvent
-			err = db.Select(&actualFrobs, `SELECT ilk_name, urn_id, dink, dart FROM api.urn_frobs($1, $2)`, test_helpers.FakeIlk.Name, fakeUrn)
+			err = db.Select(&actualFrobs, `SELECT ilk_name, urn_guy, dink, dart FROM api.urn_frobs($1, $2)`, test_helpers.FakeIlk.Name, fakeUrn)
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(actualFrobs).To(ConsistOf(
-				test_helpers.FrobEvent{IlkName: test_helpers.FakeIlk.Name, UrnId: fakeUrn, Dink: frobBlockOne.Dink, Dart: frobBlockOne.Dart},
-				test_helpers.FrobEvent{IlkName: test_helpers.FakeIlk.Name, UrnId: fakeUrn, Dink: frobBlockTwo.Dink, Dart: frobBlockTwo.Dart},
+				test_helpers.FrobEvent{IlkName: test_helpers.FakeIlk.Name, UrnGuy: fakeUrn, Dink: frobBlockOne.Dink, Dart: frobBlockOne.Dart},
+				test_helpers.FrobEvent{IlkName: test_helpers.FakeIlk.Name, UrnGuy: fakeUrn, Dink: frobBlockTwo.Dink, Dart: frobBlockTwo.Dart},
 			))
 		})
 	})
@@ -104,12 +104,12 @@ var _ = Describe("Frobs query", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			var actualFrobs []test_helpers.FrobEvent
-			err = db.Select(&actualFrobs, `SELECT ilk_name, urn_id, dink, dart FROM api.all_frobs($1)`, test_helpers.FakeIlk.Name)
+			err = db.Select(&actualFrobs, `SELECT ilk_name, urn_guy, dink, dart FROM api.all_frobs($1)`, test_helpers.FakeIlk.Name)
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(actualFrobs).To(ConsistOf(
-				test_helpers.FrobEvent{IlkName: test_helpers.FakeIlk.Name, UrnId: fakeUrn, Dink: frobOne.Dink, Dart: frobOne.Dart},
-				test_helpers.FrobEvent{IlkName: test_helpers.FakeIlk.Name, UrnId: anotherUrn, Dink: frobTwo.Dink, Dart: frobTwo.Dart},
+				test_helpers.FrobEvent{IlkName: test_helpers.FakeIlk.Name, UrnGuy: fakeUrn, Dink: frobOne.Dink, Dart: frobOne.Dart},
+				test_helpers.FrobEvent{IlkName: test_helpers.FakeIlk.Name, UrnGuy: anotherUrn, Dink: frobTwo.Dink, Dart: frobTwo.Dart},
 			))
 		})
 	})

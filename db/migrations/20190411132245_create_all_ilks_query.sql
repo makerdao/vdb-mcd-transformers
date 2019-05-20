@@ -56,7 +56,6 @@ WITH rates AS (
   ORDER BY ilk_id, block_number DESC
 )
   SELECT
-    ilks.id,
     ilks.name,
     $1 block_height,
     rates.rate,
@@ -71,14 +70,14 @@ WITH rates AS (
     duties.duty,
     (
       SELECT TIMESTAMP 'epoch' + h.block_timestamp * INTERVAL '1 second'
-      FROM api.get_ilk_blocks_before($1, ilks.id) b
+      FROM api.get_ilk_blocks_before($1, ilks.name) b
       JOIN headers h on h.block_number = b.block_height
       ORDER BY h.block_number DESC
       LIMIT 1
     ),
     (
       SELECT TIMESTAMP 'epoch' + h.block_timestamp * INTERVAL '1 second'
-      FROM api.get_ilk_blocks_before($1, ilks.id) b
+      FROM api.get_ilk_blocks_before($1, ilks.name) b
       JOIN headers h on h.block_number = b.block_height
       ORDER BY h.block_number ASC
       LIMIT 1
