@@ -125,4 +125,17 @@ var _ = Describe("Ilk State History Query", func() {
 
 		Expect(dbResult).To(ConsistOf(expectedBlockOneIlkState, expectedBlockTwoIlkState))
 	})
+
+	It("fails if no argument is supplied (STRICT)", func() {
+		_, err := db.Exec(`SELECT * FROM api.all_ilk_states()`)
+		Expect(err).NotTo(BeNil())
+		Expect(err.Error()).To(ContainSubstring("function api.all_ilk_states() does not exist"))
+	})
+
+	It("uses default value for blockHeight if not supplied", func() {
+		var dbResult []int
+		err := db.Select(&dbResult, `SELECT block_height FROM api.all_ilk_states($1)`, test_helpers.FakeIlk.Name)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(dbResult).To(Equal([]int{blockTwo, blockOne}))
+	})
 })

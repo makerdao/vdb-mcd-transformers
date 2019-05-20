@@ -121,8 +121,8 @@ var _ = Describe("Ilk state computed columns", func() {
 					(SELECT (ilk_name, block_height, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated)::api.ilk_state
 					FROM api.get_ilk($1, $2))
 				)`,
-				fakeBlock,
-				test_helpers.FakeIlk.Name)
+				test_helpers.FakeIlk.Name,
+				fakeBlock)
 			Expect(getBitesErr).NotTo(HaveOccurred())
 
 			expectedBites := []test_helpers.BiteEvent{{

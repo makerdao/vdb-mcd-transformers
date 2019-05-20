@@ -124,6 +124,23 @@ var _ = Describe("Urn history query", func() {
 		helper.AssertUrn(result[1], expectedUrnBlockTwo)
 		helper.AssertUrn(result[2], expectedUrnBlockOne)
 	})
+
+	It("fails if no argument is supplied (STRICT)", func() {
+		_, err := db.Exec(`SELECT * FROM api.all_urn_states()`)
+		Expect(err).NotTo(BeNil())
+		Expect(err.Error()).To(ContainSubstring("function api.all_urn_states() does not exist"))
+	})
+
+	It("fails if only one argument is supplied (STRICT)", func() {
+		_, err := db.Exec(`SELECT * FROM api.all_urn_states($1::text)`, helper.FakeIlk.Name)
+		Expect(err).NotTo(BeNil())
+		Expect(err.Error()).To(ContainSubstring("function api.all_urn_states(text) does not exist"))
+	})
+
+	It("allows blockHeight argument to be omitted", func() {
+		_, err := db.Exec(`SELECT * FROM api.all_urn_states($1, $2)`, helper.FakeIlk.Name, fakeUrn)
+		Expect(err).NotTo(HaveOccurred())
+	})
 })
 
 func createFakeHeader(blockNumber, timestamp int, headerRepo repositories.HeaderRepository) {

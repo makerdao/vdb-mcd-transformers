@@ -89,8 +89,8 @@ SELECT
 FROM maker.jug_ilk_duty
 WHERE block_number <= _block_height
       AND ilk_id = (SELECT id FROM ilk)
-$$
-LANGUAGE sql STABLE;
+ORDER BY block_height DESC
+$$ LANGUAGE sql STABLE;
 
 COMMENT ON FUNCTION api.get_ilk_blocks_before(BIGINT, TEXT) IS E'@omit';
 
