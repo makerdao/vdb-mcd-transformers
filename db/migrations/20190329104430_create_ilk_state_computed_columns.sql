@@ -19,7 +19,17 @@ $$
 $$ LANGUAGE sql STABLE;
 
 
+-- Extend ilk_state with bite events
+CREATE FUNCTION api.ilk_state_bites(state api.ilk_state)
+  RETURNS SETOF api.bite_event AS
+$$
+  SELECT * FROM api.all_bites(state.ilk_name)
+  WHERE block_height <= state.block_height
+$$ LANGUAGE sql STABLE;
+
+
 -- +goose Down
 -- SQL in this section is executed when the migration is rolled back.
+DROP FUNCTION api.ilk_state_bites(api.ilk_state);
 DROP FUNCTION api.ilk_state_frobs(api.ilk_state);
 DROP FUNCTION api.ilk_state_files(api.ilk_state);

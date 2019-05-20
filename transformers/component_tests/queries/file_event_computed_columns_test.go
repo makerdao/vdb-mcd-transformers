@@ -48,12 +48,8 @@ var _ = Describe("File event computed columns", func() {
 
 	Describe("file_event_ilk", func() {
 		It("returns ilk_state for a file_event", func() {
-			vatRepository.SetDB(db)
-			catRepository.SetDB(db)
-			jugRepository.SetDB(db)
-
 			ilkValues := test_helpers.GetIlkValues(0)
-			createIlkAtBlock(fakeHeader, ilkValues, test_helpers.FakeIlkVatMetadatas,
+			test_helpers.CreateIlk(db, fakeHeader, ilkValues, test_helpers.FakeIlkVatMetadatas,
 				test_helpers.FakeIlkCatMetadatas, test_helpers.FakeIlkJugMetadatas)
 
 			expectedIlk := test_helpers.IlkStateFromValues(test_helpers.FakeIlk.Hex, fakeHeader.Timestamp, fakeHeader.Timestamp, ilkValues)
