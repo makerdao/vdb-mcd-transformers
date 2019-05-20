@@ -31,19 +31,12 @@ CREATE SCHEMA maker;
 
 
 --
--- Name: postgraphile_watch; Type: SCHEMA; Schema: -; Owner: -
---
-
-CREATE SCHEMA postgraphile_watch;
-
-
---
 -- Name: bite_event; Type: TYPE; Schema: api; Owner: -
 --
 
 CREATE TYPE api.bite_event AS (
 	ilk_name text,
-	urn_id text,
+	urn_guy text,
 	ink numeric,
 	art numeric,
 	tab numeric,
@@ -110,7 +103,7 @@ COMMENT ON COLUMN api.file_event.tx_idx IS '@omit';
 
 CREATE TYPE api.frob_event AS (
 	ilk_name text,
-	urn_id text,
+	urn_guy text,
 	dink numeric,
 	dart numeric,
 	block_height bigint,
@@ -137,7 +130,6 @@ COMMENT ON COLUMN api.frob_event.tx_idx IS '@omit';
 --
 
 CREATE TYPE api.ilk_state AS (
-	ilk_id integer,
 	ilk_name text,
 	block_height bigint,
 	rate numeric,
@@ -204,7 +196,7 @@ CREATE TYPE api.tx AS (
 --
 
 CREATE TYPE api.urn_state AS (
-	urn_id text,
+	urn_guy text,
 	ilk_name text,
 	block_height bigint,
 	ink numeric,
@@ -316,19 +308,19 @@ $_$;
 
 
 --
--- Name: all_ilk_states(bigint, integer); Type: FUNCTION; Schema: api; Owner: -
+-- Name: all_ilk_states(bigint, text); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.all_ilk_states(block_height bigint, ilk_id integer) RETURNS SETOF api.ilk_state
+CREATE FUNCTION api.all_ilk_states(block_height bigint, ilk_name text) RETURNS SETOF api.ilk_state
     LANGUAGE plpgsql STABLE
     AS $_$
 DECLARE
   r api.relevant_block;
 BEGIN
-  FOR r IN SELECT * FROM api.get_ilk_blocks_before($1, $2)
+  FOR r IN SELECT get_ilk_blocks_before.block_height FROM api.get_ilk_blocks_before($1, $2)
   LOOP
     RETURN QUERY
-    SELECT * FROM api.get_ilk(r.block_height, $2::INTEGER);
+    SELECT * FROM api.get_ilk(r.block_height, $2);
   END LOOP;
 END;
 $_$;
@@ -393,7 +385,6 @@ WITH rates AS (
   ORDER BY ilk_id, block_number DESC
 )
   SELECT
-    ilks.id,
     ilks.name,
     $1 block_height,
     rates.rate,
@@ -408,14 +399,14 @@ WITH rates AS (
     duties.duty,
     (
       SELECT TIMESTAMP 'epoch' + h.block_timestamp * INTERVAL '1 second'
-      FROM api.get_ilk_blocks_before($1, ilks.id) b
+      FROM api.get_ilk_blocks_before($1, ilks.name) b
       JOIN headers h on h.block_number = b.block_height
       ORDER BY h.block_number DESC
       LIMIT 1
     ),
     (
       SELECT TIMESTAMP 'epoch' + h.block_timestamp * INTERVAL '1 second'
-      FROM api.get_ilk_blocks_before($1, ilks.id) b
+      FROM api.get_ilk_blocks_before($1, ilks.name) b
       JOIN headers h on h.block_number = b.block_height
       ORDER BY h.block_number ASC
       LIMIT 1
@@ -595,7 +586,7 @@ CREATE FUNCTION api.bite_event_ilk(event api.bite_event) RETURNS SETOF api.ilk_s
     AS $$
   SELECT * FROM api.get_ilk(
      event.block_height,
-     (SELECT id FROM maker.ilks WHERE name = event.ilk_name))
+     event.ilk_name)
 $$;
 
 
@@ -621,7 +612,7 @@ $$;
 CREATE FUNCTION api.bite_event_urn(event api.bite_event) RETURNS SETOF api.urn_state
     LANGUAGE sql STABLE
     AS $$
-  SELECT * FROM api.get_urn(event.ilk_name, event.urn_id, event.block_height)
+  SELECT * FROM api.get_urn(event.ilk_name, event.urn_guy, event.block_height)
 $$;
 
 
@@ -634,7 +625,7 @@ CREATE FUNCTION api.file_event_ilk(event api.file_event) RETURNS SETOF api.ilk_s
     AS $$
   SELECT * FROM api.get_ilk(
     event.block_height,
-    (SELECT id FROM maker.ilks WHERE name = event.ilk_name)
+    event.ilk_name
   )
 $$;
 
@@ -664,7 +655,7 @@ CREATE FUNCTION api.frob_event_ilk(event api.frob_event) RETURNS SETOF api.ilk_s
     AS $$
   SELECT * FROM api.get_ilk(
     event.block_height,
-    (SELECT id FROM maker.ilks WHERE name = event.ilk_name))
+    event.ilk_name)
 $$;
 
 
@@ -691,24 +682,27 @@ $$;
 CREATE FUNCTION api.frob_event_urn(event api.frob_event) RETURNS SETOF api.urn_state
     LANGUAGE sql STABLE
     AS $$
-  SELECT * FROM api.get_urn(event.ilk_name, event.urn_id, event.block_height)
+  SELECT * FROM api.get_urn(event.ilk_name, event.urn_guy, event.block_height)
 $$;
 
 
 --
--- Name: get_ilk(bigint, integer); Type: FUNCTION; Schema: api; Owner: -
+-- Name: get_ilk(bigint, text); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.get_ilk(block_height bigint, _ilk_id integer) RETURNS api.ilk_state
+CREATE FUNCTION api.get_ilk(block_height bigint, ilk_name text) RETURNS api.ilk_state
     LANGUAGE sql STABLE
     AS $_$
-WITH rates AS (
+WITH ilk AS (
+    SELECT id FROM maker.ilks WHERE name = $2
+),
+rates AS (
     SELECT
       rate,
       ilk_id,
       block_hash
     FROM maker.vat_ilk_rate
-    WHERE ilk_id = _ilk_id
+    WHERE ilk_id = (SELECT id FROM ilk)
           AND block_number <= $1
     ORDER BY ilk_id, block_number DESC
     LIMIT 1
@@ -718,7 +712,7 @@ WITH rates AS (
       ilk_id,
       block_hash
     FROM maker.vat_ilk_art
-    WHERE ilk_id = _ilk_id
+    WHERE ilk_id = (SELECT id FROM ilk)
           AND block_number <= $1
     ORDER BY ilk_id, block_number DESC
     LIMIT 1
@@ -728,7 +722,7 @@ WITH rates AS (
       ilk_id,
       block_hash
     FROM maker.vat_ilk_spot
-    WHERE ilk_id = _ilk_id
+    WHERE ilk_id = (SELECT id FROM ilk)
           AND block_number <= $1
     ORDER BY ilk_id, block_number DESC
     LIMIT 1
@@ -738,7 +732,7 @@ WITH rates AS (
       ilk_id,
       block_hash
     FROM maker.vat_ilk_line
-    WHERE ilk_id = _ilk_id
+    WHERE ilk_id = (SELECT id FROM ilk)
           AND block_number <= $1
     ORDER BY ilk_id, block_number DESC
     LIMIT 1
@@ -748,7 +742,7 @@ WITH rates AS (
       ilk_id,
       block_hash
     FROM maker.vat_ilk_dust
-    WHERE ilk_id = _ilk_id
+    WHERE ilk_id = (SELECT id FROM ilk)
           AND block_number <= $1
     ORDER BY ilk_id, block_number DESC
     LIMIT 1
@@ -758,7 +752,7 @@ WITH rates AS (
       ilk_id,
       block_hash
     FROM maker.cat_ilk_chop
-    WHERE ilk_id = _ilk_id
+    WHERE ilk_id = (SELECT id FROM ilk)
           AND block_number <= $1
     ORDER BY ilk_id, block_number DESC
     LIMIT 1
@@ -768,7 +762,7 @@ WITH rates AS (
       ilk_id,
       block_hash
     FROM maker.cat_ilk_lump
-    WHERE ilk_id = _ilk_id
+    WHERE ilk_id = (SELECT id FROM ilk)
           AND block_number <= $1
     ORDER BY ilk_id, block_number DESC
     LIMIT 1
@@ -778,7 +772,7 @@ WITH rates AS (
       ilk_id,
       block_hash
     FROM maker.cat_ilk_flip
-    WHERE ilk_id = _ilk_id
+    WHERE ilk_id = (SELECT id FROM ilk)
           AND block_number <= $1
     ORDER BY ilk_id, block_number DESC
     LIMIT 1
@@ -788,7 +782,7 @@ WITH rates AS (
       ilk_id,
       block_hash
     FROM maker.jug_ilk_rho
-    WHERE ilk_id = _ilk_id
+    WHERE ilk_id = (SELECT id FROM ilk)
           AND block_number <= $1
     ORDER BY ilk_id, block_number DESC
     LIMIT 1
@@ -798,7 +792,7 @@ WITH rates AS (
       ilk_id,
       block_hash
     FROM maker.jug_ilk_duty
-    WHERE ilk_id = _ilk_id
+    WHERE ilk_id = (SELECT id FROM ilk)
           AND block_number <= $1
     ORDER BY ilk_id, block_number DESC
     LIMIT 1
@@ -827,7 +821,6 @@ WITH rates AS (
 )
 
 SELECT
-  ilks.id,
   ilks.name,
   $1 block_height,
   rates.rate,
@@ -871,19 +864,22 @@ $_$;
 
 
 --
--- Name: get_ilk_blocks_before(bigint, integer); Type: FUNCTION; Schema: api; Owner: -
+-- Name: get_ilk_blocks_before(bigint, text); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.get_ilk_blocks_before(block_height bigint, ilk_id integer) RETURNS SETOF api.relevant_block
+CREATE FUNCTION api.get_ilk_blocks_before(block_height bigint, ilk_name text) RETURNS SETOF api.relevant_block
     LANGUAGE sql STABLE
     AS $_$
+  WITH ilk AS (
+    SELECT id FROM maker.ilks WHERE name = $2
+  )
 SELECT
   block_number AS block_height,
   block_hash,
   ilk_id
 FROM maker.vat_ilk_rate
 WHERE block_number <= $1
-      AND ilk_id = $2
+      AND ilk_id = (SELECT id FROM ilk)
 UNION
 SELECT
   block_number AS block_height,
@@ -891,7 +887,7 @@ SELECT
   ilk_id
 FROM maker.vat_ilk_art
 WHERE block_number <= $1
-      AND ilk_id = $2
+      AND ilk_id = (SELECT id FROM ilk)
 UNION
 SELECT
   block_number AS block_height,
@@ -899,7 +895,7 @@ SELECT
   ilk_id
 FROM maker.vat_ilk_spot
 WHERE block_number <= $1
-      AND ilk_id = $2
+      AND ilk_id = (SELECT id FROM ilk)
 UNION
 SELECT
   block_number AS block_height,
@@ -907,7 +903,7 @@ SELECT
   ilk_id
 FROM maker.vat_ilk_line
 WHERE block_number <= $1
-      AND ilk_id = $2
+      AND ilk_id = (SELECT id FROM ilk)
 UNION
 SELECT
   block_number AS block_height,
@@ -915,7 +911,7 @@ SELECT
   ilk_id
 FROM maker.vat_ilk_dust
 WHERE block_number <= $1
-      AND ilk_id = $2
+      AND ilk_id = (SELECT id FROM ilk)
 UNION
 SELECT
   block_number AS block_height,
@@ -923,7 +919,7 @@ SELECT
   ilk_id
 FROM maker.cat_ilk_chop
 WHERE block_number <= $1
-      AND ilk_id = $2
+      AND ilk_id = (SELECT id FROM ilk)
 UNION
 SELECT
   block_number AS block_height,
@@ -931,7 +927,7 @@ SELECT
   ilk_id
 FROM maker.cat_ilk_lump
 WHERE block_number <= $1
-      AND ilk_id = $2
+      AND ilk_id = (SELECT id FROM ilk)
 UNION
 SELECT
   block_number AS block_height,
@@ -939,7 +935,7 @@ SELECT
   ilk_id
 FROM maker.cat_ilk_flip
 WHERE block_number <= $1
-      AND ilk_id = $2
+      AND ilk_id = (SELECT id FROM ilk)
 UNION
 SELECT
   block_number AS block_height,
@@ -947,7 +943,7 @@ SELECT
   ilk_id
 FROM maker.jug_ilk_rho
 WHERE block_number <= $1
-      AND ilk_id = $2
+      AND ilk_id = (SELECT id FROM ilk)
 UNION
 SELECT
   block_number AS block_height,
@@ -955,15 +951,15 @@ SELECT
   ilk_id
 FROM maker.jug_ilk_duty
 WHERE block_number <= $1
-      AND ilk_id = $2
+      AND ilk_id = (SELECT id FROM ilk)
 $_$;
 
 
 --
--- Name: FUNCTION get_ilk_blocks_before(block_height bigint, ilk_id integer); Type: COMMENT; Schema: api; Owner: -
+-- Name: FUNCTION get_ilk_blocks_before(block_height bigint, ilk_name text); Type: COMMENT; Schema: api; Owner: -
 --
 
-COMMENT ON FUNCTION api.get_ilk_blocks_before(block_height bigint, ilk_id integer) IS '@omit';
+COMMENT ON FUNCTION api.get_ilk_blocks_before(block_height bigint, ilk_name text) IS '@omit';
 
 
 --
@@ -1051,7 +1047,7 @@ WITH
     ORDER BY urn_id, block_timestamp DESC
   )
 
-SELECT $2 AS urn_id, $1 AS ilk_name, $3 AS block_height, ink.ink, art.art, ratio.ratio,
+SELECT $2 AS urn_guy, $1 AS ilk_name, $3 AS block_height, ink.ink, art.art, ratio.ratio,
        COALESCE(safe.safe, art.art = 0), created.datetime, updated.datetime
 FROM ink
   LEFT JOIN art     ON art.urn_id = ink.urn_id
@@ -1192,7 +1188,7 @@ $_$;
 CREATE FUNCTION api.urn_state_frobs(state api.urn_state) RETURNS SETOF api.frob_event
     LANGUAGE sql STABLE
     AS $$
-  SELECT * FROM api.urn_frobs(state.ilk_name, state.urn_id)
+  SELECT * FROM api.urn_frobs(state.ilk_name, state.urn_guy)
   WHERE block_height <= state.block_height
 $$;
 
@@ -1206,7 +1202,7 @@ CREATE FUNCTION api.urn_state_ilk(state api.urn_state) RETURNS api.ilk_state
     AS $$
   SELECT * FROM api.get_ilk(
     state.block_height,
-    (SELECT id FROM maker.ilks WHERE name = state.ilk_name)
+    state.ilk_name
   )
 $$;
 

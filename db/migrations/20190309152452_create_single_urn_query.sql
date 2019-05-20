@@ -85,7 +85,7 @@ WITH
     ORDER BY urn_id, block_timestamp DESC
   )
 
-SELECT $2 AS urn_id, $1 AS ilk_name, $3 AS block_height, ink.ink, art.art, ratio.ratio,
+SELECT $2 AS urn_guy, $1 AS ilk_name, $3 AS block_height, ink.ink, art.art, ratio.ratio,
        COALESCE(safe.safe, art.art = 0), created.datetime, updated.datetime
 FROM ink
   LEFT JOIN art     ON art.urn_id = ink.urn_id

@@ -60,15 +60,11 @@ var _ = Describe("Ilk State History Query", func() {
 	})
 
 	It("returns the history of an ilk from the given block height", func() {
-		var ilkId int
-		err := db.Get(&ilkId, `SELECT id FROM maker.ilks WHERE ilk = $1`, test_helpers.FakeIlk.Hex)
-		Expect(err).NotTo(HaveOccurred())
-
 		var dbResult []test_helpers.IlkState
-		err = db.Select(&dbResult,
+		err := db.Select(&dbResult,
 			`SELECT ilk_name, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated from api.all_ilk_states($1, $2)`,
 			blockTwo,
-			ilkId)
+			test_helpers.FakeIlk.Name)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(2))
@@ -85,15 +81,11 @@ var _ = Describe("Ilk State History Query", func() {
 		test_helpers.CreateCatRecords(blockOneHeader, blockOneAnotherFakeIlkValues, test_helpers.AnotherFakeIlkCatMetadatas, catRepository)
 		test_helpers.CreateJugRecords(blockOneHeader, blockOneAnotherFakeIlkValues, test_helpers.AnotherFakeIlkJugMetadatas, jugRepository)
 
-		var ilkId int
-		err := db.Get(&ilkId, `SELECT id FROM maker.ilks WHERE ilk = $1`, test_helpers.AnotherFakeIlk.Hex)
-		Expect(err).NotTo(HaveOccurred())
-
 		var dbResult []test_helpers.IlkState
-		err = db.Select(&dbResult,
+		err := db.Select(&dbResult,
 			`SELECT ilk_name, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated from api.all_ilk_states($1, $2)`,
 			blockTwo,
-			ilkId)
+			test_helpers.AnotherFakeIlk.Name)
 		Expect(err).NotTo(HaveOccurred())
 		expectedBlockOneAnotherIlkState := test_helpers.IlkStateFromValues(test_helpers.AnotherFakeIlk.Hex,
 			blockOneHeader.Timestamp, blockOneHeader.Timestamp, blockOneAnotherFakeIlkValues)
@@ -111,16 +103,11 @@ var _ = Describe("Ilk State History Query", func() {
 		_, err := headerRepository.CreateOrUpdateHeader(blockZeroHeader)
 		Expect(err).NotTo(HaveOccurred())
 
-		//the ilk is created in block 1 in the BeforeEach
-		var ilkId int
-		err = db.Get(&ilkId, `SELECT id FROM maker.ilks WHERE ilk = $1`, test_helpers.FakeIlk.Hex)
-		Expect(err).NotTo(HaveOccurred())
-
 		var dbResult []test_helpers.IlkState
 		err = db.Select(&dbResult,
 			`SELECT ilk_name, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated from api.all_ilk_states($1, $2)`,
 			blockZero,
-			ilkId)
+			test_helpers.FakeIlk.Name)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(dbResult).To(BeEmpty())
 	})
@@ -133,15 +120,11 @@ var _ = Describe("Ilk State History Query", func() {
 
 		test_helpers.CreateVatRecords(blockOneHundredHeader, test_helpers.GetIlkValues(100), test_helpers.AnotherFakeIlkVatMetadatas, vatRepository)
 
-		var ilkId int
-		err = db.Get(&ilkId, `SELECT id FROM maker.ilks WHERE ilk = $1`, test_helpers.FakeIlk.Hex)
-		Expect(err).NotTo(HaveOccurred())
-
 		var dbResult []test_helpers.IlkState
 		err = db.Select(&dbResult,
 			`SELECT ilk_name, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated from api.all_ilk_states($1, $2)`,
 			blockOneHundred,
-			ilkId)
+			test_helpers.FakeIlk.Name)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(dbResult).To(ConsistOf(expectedBlockOneIlkState, expectedBlockTwoIlkState))

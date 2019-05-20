@@ -3,7 +3,7 @@
 -- Spec: https://github.com/makerdao/vulcan.spec/blob/master/mcd.graphql
 
 CREATE TYPE api.urn_state AS (
-  urn_id       TEXT,
+  urn_guy      TEXT,
   ilk_name     TEXT,
   block_height BIGINT,
   -- ilk object
@@ -15,7 +15,7 @@ CREATE TYPE api.urn_state AS (
   -- bites
   created      TIMESTAMP,
   updated      TIMESTAMP
-  );
+);
 
 -- Function returning state for all urns as of given block
 CREATE FUNCTION api.all_urns(block_height BIGINT)

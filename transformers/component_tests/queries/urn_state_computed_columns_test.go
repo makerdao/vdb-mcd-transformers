@@ -67,7 +67,7 @@ var _ = Describe("Urn state computed columns", func() {
 			getIlkErr := db.Get(&result,
 				`SELECT ilk_name, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated
 					FROM api.urn_state_ilk(
-					(SELECT (urn_id, ilk_name, block_height, ink, art, ratio, safe, created, updated)::api.urn_state
+					(SELECT (urn_guy, ilk_name, block_height, ink, art, ratio, safe, created, updated)::api.urn_state
 					FROM api.get_urn($1, $2, $3)))`, test_helpers.FakeIlk.Name, fakeGuy, fakeHeader.BlockNumber)
 
 			Expect(getIlkErr).NotTo(HaveOccurred())
@@ -92,15 +92,15 @@ var _ = Describe("Urn state computed columns", func() {
 
 			var actualFrobs test_helpers.FrobEvent
 			getFrobsErr := db.Get(&actualFrobs,
-				`SELECT ilk_name, urn_id, dink, dart FROM api.urn_state_frobs(
-                        (SELECT (urn_id, ilk_name, block_height, ink, art, ratio, safe, created, updated)::api.urn_state
+				`SELECT ilk_name, urn_guy, dink, dart FROM api.urn_state_frobs(
+                        (SELECT (urn_guy, ilk_name, block_height, ink, art, ratio, safe, created, updated)::api.urn_state
                          FROM api.all_urns($1))
                     )`, fakeBlock)
 			Expect(getFrobsErr).NotTo(HaveOccurred())
 
 			expectedFrobs := test_helpers.FrobEvent{
 				IlkName: test_helpers.FakeIlk.Name,
-				UrnId:   fakeGuy,
+				UrnGuy:  fakeGuy,
 				Dink:    frobEvent.Dink,
 				Dart:    frobEvent.Dart,
 			}

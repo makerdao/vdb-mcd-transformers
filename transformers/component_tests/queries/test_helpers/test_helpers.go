@@ -262,7 +262,7 @@ type UrnMetadata struct {
 }
 
 type UrnState struct {
-	UrnId       string `db:"urn_id"`
+	UrnGuy      string `db:"urn_guy"`
 	IlkName     string `db:"ilk_name"`
 	BlockHeight int    `db:"block_height"`
 	Ink         string
@@ -274,7 +274,7 @@ type UrnState struct {
 }
 
 func AssertUrn(actual, expected UrnState) {
-	Expect(actual.UrnId).To(Equal(expected.UrnId))
+	Expect(actual.UrnGuy).To(Equal(expected.UrnGuy))
 	Expect(actual.IlkName).To(Equal(expected.IlkName))
 	Expect(actual.BlockHeight).To(Equal(expected.BlockHeight))
 	Expect(actual.Ink).To(Equal(expected.Ink))
@@ -304,14 +304,14 @@ type FileEvent struct {
 
 type FrobEvent struct {
 	IlkName string `db:"ilk_name"`
-	UrnId   string `db:"urn_id"`
+	UrnGuy  string `db:"urn_guy"`
 	Dink    string
 	Dart    string
 }
 
 type BiteEvent struct {
 	IlkName string `db:"ilk_name"`
-	UrnId   string `db:"urn_id"`
+	UrnGuy  string `db:"urn_guy"`
 	Ink     string
 	Art     string
 	Tab     string

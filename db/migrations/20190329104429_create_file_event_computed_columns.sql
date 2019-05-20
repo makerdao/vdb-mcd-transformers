@@ -7,7 +7,7 @@ CREATE FUNCTION api.file_event_ilk(event api.file_event)
 $$
   SELECT * FROM api.get_ilk(
     event.block_height,
-    (SELECT id FROM maker.ilks WHERE name = event.ilk_name)
+    event.ilk_name
   )
 $$ LANGUAGE sql STABLE;
 

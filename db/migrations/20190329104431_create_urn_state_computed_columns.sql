@@ -7,7 +7,7 @@ CREATE FUNCTION api.urn_state_ilk(state api.urn_state)
 $$
   SELECT * FROM api.get_ilk(
     state.block_height,
-    (SELECT id FROM maker.ilks WHERE name = state.ilk_name)
+    state.ilk_name
   )
 $$ LANGUAGE sql STABLE;
 
@@ -15,7 +15,7 @@ $$ LANGUAGE sql STABLE;
 CREATE FUNCTION api.urn_state_frobs(state api.urn_state)
   RETURNS SETOF api.frob_event AS
 $$
-  SELECT * FROM api.urn_frobs(state.ilk_name, state.urn_id)
+  SELECT * FROM api.urn_frobs(state.ilk_name, state.urn_guy)
   WHERE block_height <= state.block_height
 $$ LANGUAGE sql STABLE;
 
