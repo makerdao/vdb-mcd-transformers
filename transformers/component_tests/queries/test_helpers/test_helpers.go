@@ -11,6 +11,7 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
+	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 	"math/rand"
@@ -216,6 +217,20 @@ func CreateUrn(setupData UrnSetupData, metadata UrnMetadata, vatRepo vat.VatStor
 		err = nil
 	}
 	Expect(err).NotTo(HaveOccurred())
+}
+
+func CreateIlk(db *postgres.DB, header core.Header, valuesMap map[string]string, vatMetadatas, catMetadatas, jugMetadatas []utils.StorageValueMetadata) {
+	var (
+		vatRepo vat.VatStorageRepository
+		catRepo cat.CatStorageRepository
+		jugRepo jug.JugStorageRepository
+	)
+	vatRepo.SetDB(db)
+	catRepo.SetDB(db)
+	jugRepo.SetDB(db)
+	CreateVatRecords(header, valuesMap, vatMetadatas, vatRepo)
+	CreateCatRecords(header, valuesMap, catMetadatas, catRepo)
+	CreateJugRecords(header, valuesMap, jugMetadatas, jugRepo)
 }
 
 // Does not return values computed by the query (ratio, safe, updated, created)

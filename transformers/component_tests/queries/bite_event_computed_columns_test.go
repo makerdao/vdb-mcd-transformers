@@ -13,18 +13,18 @@ import (
 
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/component_tests/queries/test_helpers"
-	"github.com/vulcanize/mcd_transformers/transformers/events/vat_frob"
+	"github.com/vulcanize/mcd_transformers/transformers/events/bite"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
-var _ = Describe("Frob event computed columns", func() {
+var _ = Describe("Bite event computed columns", func() {
 	var (
 		db         *postgres.DB
 		fakeBlock  int
-		fakeGuy    = "fakeAddress"
+		fakeGuy    string
 		fakeHeader core.Header
-		frobRepo   vat_frob.VatFrobRepository
-		frobEvent  vat_frob.VatFrobModel
+		biteEvent  bite.BiteModel
+		biteRepo   bite.BiteRepository
 		headerId   int64
 	)
 
@@ -32,6 +32,7 @@ var _ = Describe("Frob event computed columns", func() {
 		db = test_config.NewTestDB(test_config.NewTestNode())
 		test_config.CleanTestDB(db)
 
+		fakeGuy = "fakeGuy"
 		headerRepository = repositories.NewHeaderRepository(db)
 		fakeBlock = rand.Int()
 		fakeHeader = fakes.GetFakeHeader(int64(fakeBlock))
@@ -39,17 +40,17 @@ var _ = Describe("Frob event computed columns", func() {
 		headerId, insertHeaderErr = headerRepository.CreateOrUpdateHeader(fakeHeader)
 		Expect(insertHeaderErr).NotTo(HaveOccurred())
 
-		frobRepo = vat_frob.VatFrobRepository{}
-		frobRepo.SetDB(db)
-		frobEvent = test_data.VatFrobModelWithPositiveDart
-		frobEvent.Urn = fakeGuy
-		frobEvent.Ilk = test_helpers.FakeIlk.Hex
-		insertFrobErr := frobRepo.Create(headerId, []interface{}{frobEvent})
-		Expect(insertFrobErr).NotTo(HaveOccurred())
+		biteRepo = bite.BiteRepository{}
+		biteRepo.SetDB(db)
+		biteEvent = test_data.BiteModel
+		biteEvent.Ilk = test_helpers.FakeIlk.Hex
+		biteEvent.Urn = fakeGuy
+		insertBiteErr := biteRepo.Create(headerId, []interface{}{biteEvent})
+		Expect(insertBiteErr).NotTo(HaveOccurred())
 	})
 
-	Describe("frob_event_ilk", func() {
-		It("returns ilk_state for a frob_event", func() {
+	Describe("bite_event_ilk", func() {
+		It("returns ilk_state for a bite_event", func() {
 			ilkValues := test_helpers.GetIlkValues(0)
 			test_helpers.CreateIlk(db, fakeHeader, ilkValues, test_helpers.FakeIlkVatMetadatas,
 				test_helpers.FakeIlkCatMetadatas, test_helpers.FakeIlkJugMetadatas)
@@ -57,31 +58,31 @@ var _ = Describe("Frob event computed columns", func() {
 			expectedIlk := test_helpers.IlkStateFromValues(test_helpers.FakeIlk.Hex, fakeHeader.Timestamp, fakeHeader.Timestamp, ilkValues)
 
 			var result test_helpers.IlkState
-			getIlkErr := db.Get(&result,
-				`SELECT ilk_name, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated
-                    FROM api.frob_event_ilk(
-                        (SELECT (ilk_name, urn_guy, dink, dart, block_height, tx_idx)::api.frob_event FROM api.all_frobs($1))
-                    )`, test_helpers.FakeIlk.Name)
+			err := db.Get(&result, `
+				SELECT ilk_name, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated
+				FROM api.bite_event_ilk(
+					(SELECT (ilk_name, urn_guy, ink, art, tab, block_height, tx_idx)::api.bite_event FROM api.all_bites($1))
+				)`, test_helpers.FakeIlk.Name)
 
-			Expect(getIlkErr).NotTo(HaveOccurred())
+			Expect(err).NotTo(HaveOccurred())
 			Expect(result).To(Equal(expectedIlk))
 		})
 	})
 
-	Describe("frob_event_urn", func() {
-		It("returns urn_state for a frob_event", func() {
+	Describe("bite_event_urn", func() {
+		It("returns urn_state for a bite_event", func() {
+			vatRepository.SetDB(db)
 			urnSetupData := test_helpers.GetUrnSetupData(fakeBlock, 1)
 			urnSetupData.Header.Hash = fakeHeader.Hash
 			urnMetadata := test_helpers.GetUrnMetadata(test_helpers.FakeIlk.Hex, fakeGuy)
-			vatRepository.SetDB(db)
 			test_helpers.CreateUrn(urnSetupData, urnMetadata, vatRepository, headerRepository)
 
 			var actualUrn test_helpers.UrnState
-			getUrnErr := db.Get(&actualUrn,
-				`SELECT urn_guy, ilk_name FROM api.frob_event_urn(
-                        (SELECT (ilk_name, urn_guy, dink, dart, block_height, tx_idx)::api.frob_event FROM api.all_frobs($1)))`,
+			err := db.Get(&actualUrn, `
+				SELECT urn_guy, ilk_name FROM api.bite_event_urn(
+					(SELECT (ilk_name, urn_guy, ink, art, tab, block_height, tx_idx)::api.bite_event FROM api.all_bites($1)))`,
 				test_helpers.FakeIlk.Name)
-			Expect(getUrnErr).NotTo(HaveOccurred())
+			Expect(err).NotTo(HaveOccurred())
 
 			expectedUrn := test_helpers.UrnState{
 				UrnGuy:  fakeGuy,
@@ -92,31 +93,29 @@ var _ = Describe("Frob event computed columns", func() {
 		})
 	})
 
-	Describe("frob_event_tx", func() {
-		It("returns transaction for a frob_event", func() {
+	Describe("bite_event_tx", func() {
+		It("returns transaction for a bite_event", func() {
 			expectedTx := Tx{
-				TransactionHash: sql.NullString{String: "txHash", Valid: true},
-				TransactionIndex: sql.NullInt64{
-					Int64: int64(frobEvent.TransactionIndex),
-					Valid: true,
-				},
-				BlockHeight: sql.NullInt64{Int64: int64(fakeBlock), Valid: true},
-				BlockHash:   sql.NullString{String: fakeHeader.Hash, Valid: true},
-				TxFrom:      sql.NullString{String: "fromAddress", Valid: true},
-				TxTo:        sql.NullString{String: "toAddress", Valid: true},
+				TransactionHash:  sql.NullString{String: "txHash", Valid: true},
+				TransactionIndex: sql.NullInt64{Int64: int64(biteEvent.TransactionIndex), Valid: true},
+				BlockHeight:      sql.NullInt64{Int64: int64(fakeBlock), Valid: true},
+				BlockHash:        sql.NullString{String: fakeHeader.Hash, Valid: true},
+				TxFrom:           sql.NullString{String: "fromAddress", Valid: true},
+				TxTo:             sql.NullString{String: "toAddress", Valid: true},
 			}
 
-			_, insertTxErr := db.Exec(`INSERT INTO header_sync_transactions (header_id, hash, tx_from, tx_index, tx_to)
-				VALUES ($1, $2, $3, $4, $5)`, headerId, expectedTx.TransactionHash, expectedTx.TxFrom,
+			_, err := db.Exec(`INSERT INTO header_sync_transactions (header_id, hash, tx_from, tx_index, tx_to)
+		        VALUES ($1, $2, $3, $4, $5)`, headerId, expectedTx.TransactionHash, expectedTx.TxFrom,
 				expectedTx.TransactionIndex, expectedTx.TxTo)
-			Expect(insertTxErr).NotTo(HaveOccurred())
+			Expect(err).NotTo(HaveOccurred())
 
 			var actualTx Tx
-			getTxErr := db.Get(&actualTx, `SELECT * FROM api.frob_event_tx(
-			    (SELECT (ilk_name, urn_guy, dink, dart, block_height, tx_idx)::api.frob_event FROM api.all_frobs($1)))`,
+			err = db.Get(&actualTx, `
+				SELECT * FROM api.bite_event_tx(
+					(SELECT (ilk_name, urn_guy, ink, art, tab, block_height, tx_idx)::api.bite_event FROM api.all_bites($1)))`,
 				test_helpers.FakeIlk.Name)
 
-			Expect(getTxErr).NotTo(HaveOccurred())
+			Expect(err).NotTo(HaveOccurred())
 			Expect(actualTx).To(Equal(expectedTx))
 		})
 
@@ -124,7 +123,7 @@ var _ = Describe("Frob event computed columns", func() {
 			wrongTx := Tx{
 				TransactionHash: sql.NullString{String: "wrongTxHash", Valid: true},
 				TransactionIndex: sql.NullInt64{
-					Int64: int64(frobEvent.TransactionIndex) + 1,
+					Int64: int64(biteEvent.TransactionIndex) + 1,
 					Valid: true,
 				},
 				BlockHeight: sql.NullInt64{Int64: int64(fakeBlock), Valid: true},
@@ -133,17 +132,18 @@ var _ = Describe("Frob event computed columns", func() {
 				TxTo:        sql.NullString{String: "wrongToAddress", Valid: true},
 			}
 
-			_, insertTxErr := db.Exec(`INSERT INTO header_sync_transactions (header_id, hash, tx_from, tx_index, tx_to)
+			_, insertErr := db.Exec(`INSERT INTO header_sync_transactions (header_id, hash, tx_from, tx_index, tx_to)
 				VALUES ($1, $2, $3, $4, $5)`, headerId, wrongTx.TransactionHash, wrongTx.TxFrom,
 				wrongTx.TransactionIndex, wrongTx.TxTo)
-			Expect(insertTxErr).NotTo(HaveOccurred())
+			Expect(insertErr).NotTo(HaveOccurred())
 
 			var actualTx Tx
-			getTxErr := db.Get(&actualTx, `SELECT * FROM api.frob_event_tx(
-			    (SELECT (ilk_name, urn_guy, dink, dart, block_height, tx_idx)::api.frob_event FROM api.all_frobs($1)))`,
+			err := db.Get(&actualTx, `
+				SELECT * FROM api.bite_event_tx(
+					(SELECT (ilk_name, urn_guy, ink, art, tab, block_height, tx_idx)::api.bite_event FROM api.all_bites($1)))`,
 				test_helpers.FakeIlk.Name)
 
-			Expect(getTxErr).NotTo(HaveOccurred())
+			Expect(err).NotTo(HaveOccurred())
 			Expect(actualTx).To(BeZero())
 		})
 	})

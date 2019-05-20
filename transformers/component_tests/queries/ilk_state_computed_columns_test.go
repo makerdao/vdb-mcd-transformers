@@ -14,6 +14,7 @@ import (
 
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/component_tests/queries/test_helpers"
+	"github.com/vulcanize/mcd_transformers/transformers/events/bite"
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_file/ilk"
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_frob"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
@@ -39,11 +40,8 @@ var _ = Describe("Ilk state computed columns", func() {
 		headerId, insertHeaderErr = headerRepository.CreateOrUpdateHeader(fakeHeader)
 		Expect(insertHeaderErr).NotTo(HaveOccurred())
 
-		vatRepository.SetDB(db)
-		catRepository.SetDB(db)
-		jugRepository.SetDB(db)
 		ilkValues := test_helpers.GetIlkValues(0)
-		createIlkAtBlock(fakeHeader, ilkValues, test_helpers.FakeIlkVatMetadatas,
+		test_helpers.CreateIlk(db, fakeHeader, ilkValues, test_helpers.FakeIlkVatMetadatas,
 			test_helpers.FakeIlkCatMetadatas, test_helpers.FakeIlkJugMetadatas)
 	})
 
@@ -108,6 +106,37 @@ var _ = Describe("Ilk state computed columns", func() {
 			}}
 
 			Expect(actualFiles).To(Equal(expectedFiles))
+		})
+	})
+
+	Describe("ilk_state_bites", func() {
+		It("returns bite event for an ilk state", func() {
+			biteRepo := bite.BiteRepository{}
+			biteRepo.SetDB(db)
+			biteEvent := test_data.BiteModel
+			biteEvent.Ilk = test_helpers.FakeIlk.Hex
+			insertBiteErr := biteRepo.Create(headerId, []interface{}{biteEvent})
+			Expect(insertBiteErr).NotTo(HaveOccurred())
+
+			var actualBites []test_helpers.BiteEvent
+			getBitesErr := db.Select(&actualBites, `
+				SELECT ilk_name, urn_guy, ink, art, tab FROM api.ilk_state_bites(
+					(SELECT (ilk_name, block_height, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated)::api.ilk_state
+					FROM api.get_ilk($1, $2))
+				)`,
+				fakeBlock,
+				test_helpers.FakeIlk.Name)
+			Expect(getBitesErr).NotTo(HaveOccurred())
+
+			expectedBites := []test_helpers.BiteEvent{{
+				IlkName: test_helpers.FakeIlk.Name,
+				UrnGuy:  biteEvent.Urn,
+				Ink:     biteEvent.Ink,
+				Art:     biteEvent.Art,
+				Tab:     biteEvent.Tab,
+			}}
+
+			Expect(actualBites).To(Equal(expectedBites))
 		})
 	})
 })
