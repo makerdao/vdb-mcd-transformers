@@ -182,6 +182,11 @@ var _ = Describe("All Ilks query", func() {
 			Expect(len(dbResult)).To(Equal(2))
 			Expect(dbResult).To(ConsistOf(fakeIlkExpectedResult, anotherFakeIlkExpectedResult))
 		})
+
+		It("uses default value for blockHeight if not supplied", func() {
+			_, err := db.Exec(`SELECT * FROM api.all_ilks()`)
+			Expect(err).NotTo(HaveOccurred())
+		})
 	})
 
 	It("returns ilk states without timestamps if the corresponding header hasn't been synced yet", func() {

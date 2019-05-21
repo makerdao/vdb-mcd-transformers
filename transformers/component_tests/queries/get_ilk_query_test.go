@@ -65,8 +65,7 @@ var _ = Describe("Ilk State Query", func() {
 		var dbResult test_helpers.IlkState
 		err := db.Get(&dbResult,
 			`SELECT ilk_name, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated from api.get_ilk($1, $2)`,
-			blockOne,
-			test_helpers.FakeIlk.Name)
+			test_helpers.FakeIlk.Name, blockOne)
 		Expect(err).NotTo(HaveOccurred())
 
 		expectedIlk := test_helpers.IlkStateFromValues(
@@ -83,15 +82,13 @@ var _ = Describe("Ilk State Query", func() {
 		var fakeIlkResult test_helpers.IlkState
 		err := db.Get(&fakeIlkResult,
 			`SELECT ilk_name, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated from api.get_ilk($1, $2)`,
-			blockOne,
-			test_helpers.FakeIlk.Name)
+			test_helpers.FakeIlk.Name, blockOne)
 		Expect(err).NotTo(HaveOccurred())
 
 		var anotherFakeIlkResult test_helpers.IlkState
 		err = db.Get(&anotherFakeIlkResult,
 			`SELECT ilk_name, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated from api.get_ilk($1, $2)`,
-			blockOne,
-			test_helpers.AnotherFakeIlk.Name)
+			test_helpers.AnotherFakeIlk.Name, blockOne)
 		Expect(err).NotTo(HaveOccurred())
 
 		expectedFakeIlk := test_helpers.IlkStateFromValues(
@@ -103,6 +100,17 @@ var _ = Describe("Ilk State Query", func() {
 		Expect(anotherFakeIlkResult).To(Equal(expectedAnotherFakeIlk))
 	})
 
+	It("fails if no argument is supplied (STRICT)", func() {
+		_, err := db.Exec(`SELECT * FROM api.get_ilk()`)
+		Expect(err).NotTo(BeNil())
+		Expect(err.Error()).To(ContainSubstring("function api.get_ilk() does not exist"))
+	})
+
+	It("allows blockHeight argument to be omitted", func() {
+		_, err := db.Exec(`SELECT * FROM api.get_ilk($1)`, 0)
+		Expect(err).NotTo(HaveOccurred())
+	})
+
 	Describe("handles getting the most recent Ilk values as of a given block", func() {
 		It("gets the Ilk for block one", func() {
 			fakeIlkvalues := test_helpers.GetIlkValues(0)
@@ -110,12 +118,11 @@ var _ = Describe("Ilk State Query", func() {
 
 			var blockOneDbResult test_helpers.IlkState
 			err := db.Get(&blockOneDbResult, `SELECT ilk_name, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated from api.get_ilk($1, $2)`,
-				blockOne,
-				test_helpers.FakeIlk.Name)
+				test_helpers.FakeIlk.Name, blockOne)
 			Expect(err).NotTo(HaveOccurred())
 
-			expectedIlk := test_helpers.IlkStateFromValues(test_helpers.FakeIlk.Hex, blockOneHeader.Timestamp, blockOneHeader.Timestamp,
-				fakeIlkvalues)
+			expectedIlk := test_helpers.IlkStateFromValues(test_helpers.FakeIlk.Hex, blockOneHeader.Timestamp,
+				blockOneHeader.Timestamp, fakeIlkvalues)
 			Expect(blockOneDbResult).To(Equal(expectedIlk))
 		})
 
@@ -129,8 +136,7 @@ var _ = Describe("Ilk State Query", func() {
 
 			var blockTwoDbResult test_helpers.IlkState
 			err := db.Get(&blockTwoDbResult, `SELECT rate, art, spot, line from api.get_ilk($1, $2)`,
-				blockTwo,
-				test_helpers.FakeIlk.Name)
+				test_helpers.FakeIlk.Name, blockTwo)
 			Expect(err).NotTo(HaveOccurred())
 
 			blockTwoExpectedIlk := test_helpers.IlkState{
@@ -157,8 +163,7 @@ var _ = Describe("Ilk State Query", func() {
 
 			var blockThreeDbResult test_helpers.IlkState
 			err := db.Get(&blockThreeDbResult, `SELECT rate, art, spot, line from api.get_ilk($1, $2)`,
-				blockThree,
-				test_helpers.FakeIlk.Name)
+				test_helpers.FakeIlk.Name, blockThree)
 			Expect(err).NotTo(HaveOccurred())
 
 			blockThreeExpectedIlk := test_helpers.IlkState{
@@ -188,14 +193,12 @@ var _ = Describe("Ilk State Query", func() {
 
 			var fakeIlkResult test_helpers.IlkState
 			err := db.Get(&fakeIlkResult, `SELECT ilk_name, rate, art, spot, line from api.get_ilk($1, $2)`,
-				blockThree,
-				test_helpers.FakeIlk.Name)
+				test_helpers.FakeIlk.Name, blockThree)
 			Expect(err).NotTo(HaveOccurred())
 
 			var anotherFakeIlkResult test_helpers.IlkState
 			err = db.Get(&anotherFakeIlkResult, `SELECT ilk_name, rate, art, spot, line from api.get_ilk($1, $2)`,
-				blockThree,
-				test_helpers.AnotherFakeIlk.Name)
+				test_helpers.AnotherFakeIlk.Name, blockThree)
 			Expect(err).NotTo(HaveOccurred())
 
 			blockThreeExpectedFakeIlk := test_helpers.IlkState{
@@ -225,8 +228,8 @@ var _ = Describe("Ilk State Query", func() {
 
 		var blockOneDbResult test_helpers.IlkState
 		err := db.Get(&blockOneDbResult, `SELECT ilk_name, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated from api.get_ilk($1, $2)`,
-			blockOne,
-			test_helpers.FakeIlk.Name)
+			test_helpers.FakeIlk.Name, blockOne)
+
 		Expect(err).NotTo(HaveOccurred())
 
 		expectedIlk := test_helpers.IlkStateFromValues(test_helpers.FakeIlk.Hex, blockOneHeader.Timestamp, blockOneHeader.Timestamp, blockOneFakeIlkValues)
@@ -248,8 +251,7 @@ var _ = Describe("Ilk State Query", func() {
 
 		var fakeIlkBlockOneDbResult test_helpers.IlkState
 		err := db.Get(&fakeIlkBlockOneDbResult, `SELECT ilk_name, created, updated from api.get_ilk($1, $2)`,
-			blockOne,
-			test_helpers.FakeIlk.Name)
+			test_helpers.FakeIlk.Name, blockOne)
 		Expect(err).NotTo(HaveOccurred())
 		expectedBlockOneFakeIlkState := test_helpers.IlkState{
 			IlkName: test_helpers.FakeIlk.Name,
@@ -260,8 +262,7 @@ var _ = Describe("Ilk State Query", func() {
 
 		var fakeIlkBlockTwoDbResult test_helpers.IlkState
 		err = db.Get(&fakeIlkBlockTwoDbResult, `SELECT ilk_name, created, updated from api.get_ilk($1, $2)`,
-			blockTwo,
-			test_helpers.FakeIlk.Name)
+			test_helpers.FakeIlk.Name, blockTwo)
 		Expect(err).NotTo(HaveOccurred())
 		expectedBlockTwoFakeIlkState := test_helpers.IlkState{
 			IlkName: test_helpers.FakeIlk.Name,
@@ -272,8 +273,7 @@ var _ = Describe("Ilk State Query", func() {
 
 		var anotherFakeIlkDbResult test_helpers.IlkState
 		err = db.Get(&anotherFakeIlkDbResult, `SELECT ilk_name, created, updated from api.get_ilk($1, $2)`,
-			blockTwo,
-			test_helpers.AnotherFakeIlk.Name)
+			test_helpers.AnotherFakeIlk.Name, blockTwo)
 		Expect(err).NotTo(HaveOccurred())
 		expectedBlockTwoAnotherFakeIlkState := test_helpers.IlkState{
 			IlkName: "FKE2",

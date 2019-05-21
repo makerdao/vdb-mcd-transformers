@@ -2,7 +2,7 @@
 -- SQL in this section is executed when the migration is applied.
 
 -- Function returning state for a single urn as of given block
-CREATE FUNCTION api.get_urn(ilk TEXT, urn TEXT, block_height BIGINT)
+CREATE FUNCTION api.get_urn(ilk TEXT, urn TEXT, block_height BIGINT DEFAULT api.max_block())
   RETURNS api.urn_state
 AS
 
@@ -63,7 +63,7 @@ WITH
   ),
 
   created AS (
-    SELECT urn_id, (SELECT TIMESTAMP 'epoch' + block_timestamp * INTERVAL '1 second') AS datetime
+    SELECT urn_id, api.epoch_to_datetime(block_timestamp) AS datetime
     FROM
       (
         SELECT DISTINCT ON (urn_id) urn_id, block_hash FROM maker.vat_urn_ink
@@ -74,7 +74,7 @@ WITH
   ),
 
   updated AS (
-    SELECT DISTINCT ON (urn_id) urn_id, (SELECT TIMESTAMP 'epoch' + block_timestamp * INTERVAL '1 second') AS datetime
+    SELECT DISTINCT ON (urn_id) urn_id, api.epoch_to_datetime(block_timestamp) AS datetime
     FROM
       (
         SELECT urn_id, block_number FROM ink
@@ -97,7 +97,7 @@ FROM ink
   -- Add collections of frob and bite events?
 WHERE ink.urn_id IS NOT NULL
 $body$
-LANGUAGE SQL STABLE;
+LANGUAGE SQL STABLE STRICT;
 
 
 -- +goose Down

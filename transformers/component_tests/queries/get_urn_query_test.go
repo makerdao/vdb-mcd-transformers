@@ -92,6 +92,23 @@ var _ = Describe("Single urn view", func() {
 		Expect(result.Updated.String).To(BeEmpty())
 	})
 
+	It("fails if no argument is supplied (STRICT)", func() {
+		_, err := db.Exec(`SELECT * FROM api.get_urn()`)
+		Expect(err).NotTo(BeNil())
+		Expect(err.Error()).To(ContainSubstring("function api.get_urn() does not exist"))
+	})
+
+	It("fails if only one argument is supplied (STRICT)", func() {
+		_, err := db.Exec(`SELECT * FROM api.get_urn($1::text)`, helper.FakeIlk.Name)
+		Expect(err).NotTo(BeNil())
+		Expect(err.Error()).To(ContainSubstring("function api.get_urn(text) does not exist"))
+	})
+
+	It("allows blockHeight argument to be omitted", func() {
+		_, err := db.Exec(`SELECT * FROM api.get_urn($1, $2)`, helper.FakeIlk.Name, urnOne)
+		Expect(err).NotTo(HaveOccurred())
+	})
+
 	Describe("it includes diffs only up to given block height", func() {
 		var (
 			actualUrn    helper.UrnState
