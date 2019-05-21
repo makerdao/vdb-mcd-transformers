@@ -29,6 +29,11 @@ var _ = Describe("Sin queue events query", func() {
 		headerRepo = repositories.NewHeaderRepository(db)
 	})
 
+	AfterEach(func() {
+		closeErr := db.Close()
+		Expect(closeErr).NotTo(HaveOccurred())
+	})
+
 	Describe("all_sin_queue_events", func() {
 		It("returns vow fess events", func() {
 			fakeEra := strconv.Itoa(int(rand.Int31()))

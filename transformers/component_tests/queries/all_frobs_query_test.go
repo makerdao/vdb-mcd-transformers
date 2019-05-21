@@ -30,6 +30,11 @@ var _ = Describe("Frobs query", func() {
 		frobRepo.SetDB(db)
 	})
 
+	AfterEach(func() {
+		closeErr := db.Close()
+		Expect(closeErr).NotTo(HaveOccurred())
+	})
+
 	Describe("urn_frobs", func() {
 		It("returns frobs for relevant ilk/urn", func() {
 			headerOne := fakes.GetFakeHeader(1)

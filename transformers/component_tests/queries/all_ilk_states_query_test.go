@@ -59,6 +59,11 @@ var _ = Describe("Ilk State History Query", func() {
 		expectedBlockTwoIlkState = test_helpers.IlkStateFromValues(test_helpers.FakeIlk.Hex, blockTwoHeader.Timestamp, blockOneHeader.Timestamp, blockTwoIlkValues)
 	})
 
+	AfterEach(func() {
+		closeErr := db.Close()
+		Expect(closeErr).NotTo(HaveOccurred())
+	})
+
 	It("returns the history of an ilk from the given block height", func() {
 		var dbResult []test_helpers.IlkState
 		err := db.Select(&dbResult,

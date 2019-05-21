@@ -49,6 +49,11 @@ var _ = Describe("Sin queue event computed columns", func() {
 		Expect(insertErr).NotTo(HaveOccurred())
 	})
 
+	AfterEach(func() {
+		closeErr := db.Close()
+		Expect(closeErr).NotTo(HaveOccurred())
+	})
+
 	Describe("sin_queue_event_tx", func() {
 		It("returns transaction for a sin_queue_event", func() {
 			expectedTx := Tx{

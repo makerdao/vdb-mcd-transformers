@@ -35,7 +35,11 @@ var _ = Describe("Urn view", func() {
 
 		urnOne = test_data.RandomString(5)
 		urnTwo = test_data.RandomString(5)
+	})
 
+	AfterEach(func() {
+		closeErr := db.Close()
+		Expect(closeErr).NotTo(HaveOccurred())
 	})
 
 	It("gets an urn", func() {

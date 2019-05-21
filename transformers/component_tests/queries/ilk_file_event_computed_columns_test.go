@@ -46,6 +46,10 @@ var _ = Describe("Ilk file event computed columns", func() {
 		Expect(insertFileErr).NotTo(HaveOccurred())
 	})
 
+	AfterEach(func() {
+		closeErr := db.Close()
+		Expect(closeErr).NotTo(HaveOccurred())
+	})
 	Describe("ilk_file_event_ilk", func() {
 		It("returns ilk_state for an ilk_file_event", func() {
 			ilkValues := test_helpers.GetIlkValues(0)

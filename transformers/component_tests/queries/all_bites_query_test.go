@@ -32,6 +32,11 @@ var _ = Describe("Bites query", func() {
 		biteRepo.SetDB(db)
 	})
 
+	AfterEach(func() {
+		closeErr := db.Close()
+		Expect(closeErr).NotTo(HaveOccurred())
+	})
+
 	Describe("all_bites", func() {
 		It("returns bites for an ilk", func() {
 			headerOne := fakes.GetFakeHeader(1)

@@ -49,6 +49,11 @@ var _ = Describe("Bite event computed columns", func() {
 		Expect(insertBiteErr).NotTo(HaveOccurred())
 	})
 
+	AfterEach(func() {
+		closeErr := db.Close()
+		Expect(closeErr).NotTo(HaveOccurred())
+	})
+
 	Describe("bite_event_ilk", func() {
 		It("returns ilk_state for a bite_event", func() {
 			ilkValues := test_helpers.GetIlkValues(0)

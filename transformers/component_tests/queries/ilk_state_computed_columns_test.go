@@ -43,6 +43,11 @@ var _ = Describe("Ilk state computed columns", func() {
 			test_helpers.FakeIlkCatMetadatas, test_helpers.FakeIlkJugMetadatas)
 	})
 
+	AfterEach(func() {
+		closeErr := db.Close()
+		Expect(closeErr).NotTo(HaveOccurred())
+	})
+
 	Describe("ilk_state_frobs", func() {
 		It("returns relevant frobs for an ilk_state", func() {
 			frobRepo := vat_frob.VatFrobRepository{}
