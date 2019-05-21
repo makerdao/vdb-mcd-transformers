@@ -44,6 +44,11 @@ var _ = Describe("Urn state computed columns", func() {
 		jugRepository.SetDB(db)
 	})
 
+	AfterEach(func() {
+		closeErr := db.Close()
+		Expect(closeErr).NotTo(HaveOccurred())
+	})
+
 	Describe("urn_state_ilk", func() {
 		It("returns the ilk for an urn", func() {
 			ilkValues := test_helpers.GetIlkValues(0)

@@ -48,6 +48,11 @@ var _ = Describe("Frob event computed columns", func() {
 		Expect(insertFrobErr).NotTo(HaveOccurred())
 	})
 
+	AfterEach(func() {
+		closeErr := db.Close()
+		Expect(closeErr).NotTo(HaveOccurred())
+	})
+
 	Describe("frob_event_ilk", func() {
 		It("returns ilk_state for a frob_event", func() {
 			ilkValues := test_helpers.GetIlkValues(0)

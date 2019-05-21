@@ -57,6 +57,11 @@ var _ = Describe("Ilk State Query", func() {
 		Expect(err).NotTo(HaveOccurred())
 	})
 
+	AfterEach(func() {
+		closeErr := db.Close()
+		Expect(closeErr).NotTo(HaveOccurred())
+	})
+
 	It("gets an ilk", func() {
 		ilkValues := test_helpers.GetIlkValues(0)
 		createIlkAtBlock(blockOneHeader, ilkValues, test_helpers.FakeIlkVatMetadatas, test_helpers.FakeIlkCatMetadatas, test_helpers.FakeIlkJugMetadatas)

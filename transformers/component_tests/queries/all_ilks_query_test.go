@@ -38,6 +38,7 @@ var _ = Describe("All Ilks query", func() {
 	BeforeEach(func() {
 		db = test_config.NewTestDB(test_config.NewTestNode())
 		test_config.CleanTestDB(db)
+		headerRepository = repositories.NewHeaderRepository(db)
 		vatRepository.SetDB(db)
 		catRepository.SetDB(db)
 		jugRepository.SetDB(db)
@@ -52,9 +53,13 @@ var _ = Describe("All Ilks query", func() {
 		test_helpers.CreateJugRecords(blockTwoHeader, anotherFakeIlkStateBlock2, test_helpers.AnotherFakeIlkJugMetadatas, jugRepository)
 	})
 
+	AfterEach(func() {
+		closeErr := db.Close()
+		Expect(closeErr).NotTo(HaveOccurred())
+	})
+
 	Context("When the headerSync is complete", func() {
 		BeforeEach(func() {
-			headerRepository = repositories.NewHeaderRepository(db)
 			_, err := headerRepository.CreateOrUpdateHeader(blockOneHeader)
 			Expect(err).NotTo(HaveOccurred())
 			_, err = headerRepository.CreateOrUpdateHeader(blockTwoHeader)

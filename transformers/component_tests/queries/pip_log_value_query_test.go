@@ -28,6 +28,11 @@ var _ = Describe("Pip logValue query", func() {
 		headerRepository = repositories.NewHeaderRepository(db)
 	})
 
+	AfterEach(func() {
+		closeErr := db.Close()
+		Expect(closeErr).NotTo(HaveOccurred())
+	})
+
 	It("returns 2 pip log values in different blocks between a time range", func() {
 		var (
 			anotherBlockNumber int64 = 10606965

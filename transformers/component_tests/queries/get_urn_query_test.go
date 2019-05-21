@@ -37,6 +37,11 @@ var _ = Describe("Single urn view", func() {
 		urnTwo = test_data.RandomString(5)
 	})
 
+	AfterEach(func() {
+		closeErr := db.Close()
+		Expect(closeErr).NotTo(HaveOccurred())
+	})
+
 	It("gets only the specified urn", func() {
 		blockOne := rand.Int()
 		timestampOne := int(rand.Int31())

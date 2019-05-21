@@ -52,6 +52,11 @@ var _ = Describe("QueuedSin", func() {
 		Expect(insertSinMappingErr).NotTo(HaveOccurred())
 	})
 
+	AfterEach(func() {
+		closeErr := db.Close()
+		Expect(closeErr).NotTo(HaveOccurred())
+	})
+
 	Describe("getting a single queued sin for an era", func() {
 		It("gets queued sin for an era", func() {
 			var result QueuedSin

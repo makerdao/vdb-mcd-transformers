@@ -33,6 +33,11 @@ var _ = Describe("Urn history query", func() {
 		fakeUrn = test_data.RandomString(5)
 	})
 
+	AfterEach(func() {
+		closeErr := db.Close()
+		Expect(closeErr).NotTo(HaveOccurred())
+	})
+
 	It("returns a reverse chronological history for the given ilk and urn", func() {
 		blockOne := rand.Int()
 		timestampOne := int(rand.Int31())
