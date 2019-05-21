@@ -101,6 +101,12 @@ var _ = Describe("Bites query", func() {
 				test_helpers.BiteEvent{IlkName: test_helpers.FakeIlk.Name, UrnGuy: fakeUrn, Ink: bite.Ink, Art: bite.Art, Tab: bite.Tab},
 			))
 		})
+
+		It("fails if no argument is supplied (STRICT)", func() {
+			_, err := db.Exec(`SELECT * FROM api.all_bites()`)
+			Expect(err).NotTo(BeNil())
+			Expect(err.Error()).To(ContainSubstring("function api.all_bites() does not exist"))
+		})
 	})
 
 	Describe("urn_bites", func() {

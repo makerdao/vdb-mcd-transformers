@@ -200,6 +200,17 @@ var _ = Describe("Pip logValue query", func() {
 		Expect(dbPipLogValue).To(Equal(expectedValues))
 	})
 
+	It("fails if no argument is supplied (STRICT)", func() {
+		_, err := db.Exec(`SELECT * FROM api.log_values()`)
+		Expect(err).NotTo(BeNil())
+		Expect(err.Error()).To(ContainSubstring("function api.log_values() does not exist"))
+	})
+
+	It("fails if only one argument is supplied (STRICT)", func() {
+		_, err := db.Exec(`SELECT * FROM api.log_values($1::integer)`, 0)
+		Expect(err).NotTo(BeNil())
+		Expect(err.Error()).To(ContainSubstring("function api.log_values(integer) does not exist"))
+	})
 })
 
 type LogValueTx struct {
