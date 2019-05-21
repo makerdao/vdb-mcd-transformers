@@ -28,6 +28,13 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
+const (
+	InsertPipLogValueQuery = `INSERT INTO maker.pip_log_value (block_number, header_id, contract_address, val, log_idx, tx_idx, raw_log)
+		VALUES ($1, $2, $3, $4::NUMERIC, $5::NUMERIC, $6, $7)
+		ON CONFLICT (header_id, contract_address, tx_idx, log_idx)
+		DO UPDATE SET block_number = $1, val = $4, raw_log = $7;`
+)
+
 type PipLogValueRepository struct {
 	db *postgres.DB
 }
@@ -47,11 +54,7 @@ func (repository PipLogValueRepository) Create(headerID int64, models []interfac
 			return fmt.Errorf("model of type %T, not %T", model, PipLogValueModel{})
 		}
 
-		_, err := tx.Exec(
-			`INSERT INTO maker.pip_log_value (block_number, header_id, contract_address, val, log_idx, tx_idx, raw_log)
-			VALUES ($1, $2, $3, $4::NUMERIC, $5::NUMERIC, $6, $7)
-			ON CONFLICT (header_id, contract_address, tx_idx, log_idx)
-			DO UPDATE SET block_number = $1, val = $4, raw_log = $7;`,
+		_, err := tx.Exec(InsertPipLogValueQuery,
 			pipLogValue.BlockNumber, headerID, pipLogValue.ContractAddress, pipLogValue.Value,
 			pipLogValue.LogIndex, pipLogValue.TransactionIndex, pipLogValue.Raw)
 		if err != nil {
