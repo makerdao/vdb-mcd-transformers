@@ -331,6 +331,11 @@ type BiteEvent struct {
 	Tab     string
 }
 
+type SinQueueEvent struct {
+	Era string
+	Act string
+}
+
 type LogValue struct {
 	Val             string
 	BlockNumber     uint64 `db:"block_number"`

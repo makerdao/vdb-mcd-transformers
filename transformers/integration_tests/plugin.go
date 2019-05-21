@@ -145,6 +145,7 @@ func SetupDBandBC() (*postgres.DB, core.BlockChain) {
 	bc, err := getBlockChain(rpcClient, ethClient)
 	Expect(err).NotTo(HaveOccurred())
 	db := test_config.NewTestDB(bc.Node())
+	test_config.CleanTestDB(db)
 	return db, bc
 }
 
@@ -187,7 +188,6 @@ var _ = Describe("Plugin test", func() {
 
 			It("Loads our generated Exporter and uses it to import an arbitrary set of TransformerInitializers that we can execute over", func() {
 				db, bc := SetupDBandBC()
-				defer test_config.CleanTestDB(db)
 				hr = repositories.NewHeaderRepository(db)
 				header1, err := bc.GetHeaderByNumber(10771104)
 				Expect(err).ToNot(HaveOccurred())
@@ -264,8 +264,6 @@ var _ = Describe("Plugin test", func() {
 
 			It("Loads our generated Exporter and uses it to import an arbitrary set of StorageTransformerInitializers that we can execute over", func() {
 				db, _ = SetupDBandBC()
-				defer test_config.CleanTestDB(db)
-
 				plug, err := plugin.Open(soPath)
 				Expect(err).ToNot(HaveOccurred())
 				symExporter, err := plug.Lookup("Exporter")
@@ -315,7 +313,6 @@ var _ = Describe("Plugin test", func() {
 
 			It("Loads our generated Exporter and uses it to import an arbitrary set of TransformerInitializers and StorageTransformerInitializers that we can execute over", func() {
 				db, bc := SetupDBandBC()
-				defer test_config.CleanTestDB(db)
 				hr = repositories.NewHeaderRepository(db)
 				header1, err := bc.GetHeaderByNumber(10771104)
 				Expect(err).ToNot(HaveOccurred())
