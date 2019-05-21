@@ -493,7 +493,7 @@ DECLARE
   _era NUMERIC;
 BEGIN
   FOR _era IN
-    SELECT DISTINCT timestamp FROM maker.vow_sin_mapping
+    SELECT DISTINCT era FROM maker.vow_sin_mapping
   LOOP
     RETURN QUERY
       SELECT * FROM api.get_queued_sin(_era);
@@ -1041,28 +1041,28 @@ CREATE FUNCTION api.get_queued_sin(era numeric) RETURNS SETOF api.queued_sin
     AS $_$
   WITH
     created AS (
-      SELECT vow_sin_mapping.timestamp AS era, vow_sin_mapping.block_number, (SELECT TIMESTAMP 'epoch' + block_timestamp * INTERVAL '1 second') AS datetime
+      SELECT era, vow_sin_mapping.block_number, (SELECT TIMESTAMP 'epoch' + block_timestamp * INTERVAL '1 second') AS datetime
       FROM maker.vow_sin_mapping
       LEFT JOIN public.headers ON hash = block_hash
-      WHERE vow_sin_mapping.timestamp = $1
+      WHERE era = $1
       ORDER BY vow_sin_mapping.block_number ASC
       LIMIT 1
     ),
 
     updated AS (
-      SELECT vow_sin_mapping.timestamp AS era, vow_sin_mapping.block_number, (SELECT TIMESTAMP 'epoch' + block_timestamp * INTERVAL '1 second') AS datetime
+      SELECT era, vow_sin_mapping.block_number, (SELECT TIMESTAMP 'epoch' + block_timestamp * INTERVAL '1 second') AS datetime
       FROM maker.vow_sin_mapping
       LEFT JOIN public.headers ON hash = block_hash
-      WHERE vow_sin_mapping.timestamp = $1
+      WHERE era = $1
       ORDER BY vow_sin_mapping.block_number DESC
       LIMIT 1
     )
 
-  SELECT $1 AS era, sin AS tab, (SELECT EXISTS(SELECT id FROM maker.vow_flog WHERE vow_flog.era = $1)) AS flogged, created.datetime, updated.datetime
-  FROM maker.vow_sin_mapping vow_sin_mapping
-  LEFT JOIN created ON created.era = vow_sin_mapping.timestamp
-  LEFT JOIN updated ON updated.era = vow_sin_mapping.timestamp
-  WHERE vow_sin_mapping.timestamp = $1
+  SELECT $1 AS era, tab, (SELECT EXISTS(SELECT id FROM maker.vow_flog WHERE vow_flog.era = $1)) AS flogged, created.datetime, updated.datetime
+  FROM maker.vow_sin_mapping
+  LEFT JOIN created ON created.era = vow_sin_mapping.era
+  LEFT JOIN updated ON updated.era = vow_sin_mapping.era
+  WHERE vow_sin_mapping.era = $1
   ORDER BY vow_sin_mapping.block_number DESC
 $_$;
 
@@ -3660,8 +3660,8 @@ CREATE TABLE maker.vow_sin_mapping (
     id integer NOT NULL,
     block_number bigint,
     block_hash text,
-    "timestamp" numeric,
-    sin numeric
+    era numeric,
+    tab numeric
 );
 
 
@@ -6006,11 +6006,11 @@ ALTER TABLE ONLY maker.vow_sin_integer
 
 
 --
--- Name: vow_sin_mapping vow_sin_mapping_block_number_block_hash_timestamp_sin_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: vow_sin_mapping vow_sin_mapping_block_number_block_hash_era_tab_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.vow_sin_mapping
-    ADD CONSTRAINT vow_sin_mapping_block_number_block_hash_timestamp_sin_key UNIQUE (block_number, block_hash, "timestamp", sin);
+    ADD CONSTRAINT vow_sin_mapping_block_number_block_hash_era_tab_key UNIQUE (block_number, block_hash, era, tab);
 
 
 --

@@ -35,9 +35,9 @@ CREATE TABLE maker.vow_sin_mapping (
   id            SERIAL PRIMARY KEY,
   block_number  BIGINT,
   block_hash    TEXT,
-  timestamp     numeric,
-  sin           numeric,
-  UNIQUE (block_number, block_hash, timestamp, sin)
+  era           numeric,
+  tab           numeric,
+  UNIQUE (block_number, block_hash, era, tab)
 );
 
 CREATE TABLE maker.vow_ash (
