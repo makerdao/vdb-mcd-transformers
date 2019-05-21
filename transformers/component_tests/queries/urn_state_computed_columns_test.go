@@ -15,17 +15,23 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/component_tests/queries/test_helpers"
 	"github.com/vulcanize/mcd_transformers/transformers/events/bite"
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_frob"
+	"github.com/vulcanize/mcd_transformers/transformers/storage/cat"
+	"github.com/vulcanize/mcd_transformers/transformers/storage/jug"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/vat"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
 var _ = Describe("Urn state computed columns", func() {
 	var (
-		db         *postgres.DB
-		fakeBlock  int
-		fakeGuy    = "fakeAddress"
-		fakeHeader core.Header
-		headerId   int64
+		db               *postgres.DB
+		fakeBlock        int
+		fakeGuy          = "fakeAddress"
+		fakeHeader       core.Header
+		headerId         int64
+		vatRepository    vat.VatStorageRepository
+		catRepository    cat.CatStorageRepository
+		jugRepository    jug.JugStorageRepository
+		headerRepository repositories.HeaderRepository
 	)
 
 	BeforeEach(func() {

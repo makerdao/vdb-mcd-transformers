@@ -31,6 +31,7 @@ var _ = Describe("QueuedSin", func() {
 		headerID           int64
 		sinMappingMetadata utils.StorageValueMetadata
 		vowRepository      vow.VowStorageRepository
+		headerRepository   repositories.HeaderRepository
 	)
 
 	BeforeEach(func() {

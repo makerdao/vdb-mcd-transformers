@@ -19,12 +19,13 @@ import (
 
 var _ = Describe("Ilk file event computed columns", func() {
 	var (
-		db         *postgres.DB
-		fakeBlock  int
-		fakeHeader core.Header
-		fileEvent  ilk.VatFileIlkModel
-		fileRepo   ilk.VatFileIlkRepository
-		headerId   int64
+		db               *postgres.DB
+		fakeBlock        int
+		fakeHeader       core.Header
+		fileEvent        ilk.VatFileIlkModel
+		fileRepo         ilk.VatFileIlkRepository
+		headerId         int64
+		headerRepository repositories.HeaderRepository
 	)
 
 	BeforeEach(func() {

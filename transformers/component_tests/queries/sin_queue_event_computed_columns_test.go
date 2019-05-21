@@ -20,13 +20,14 @@ import (
 
 var _ = Describe("Sin queue event computed columns", func() {
 	var (
-		db           *postgres.DB
-		fakeBlock    int
-		fakeEra      string
-		fakeHeader   core.Header
-		vowFessEvent vow_fess.VowFessModel
-		vowFessRepo  vow_fess.VowFessRepository
-		headerId     int64
+		db               *postgres.DB
+		fakeBlock        int
+		fakeEra          string
+		fakeHeader       core.Header
+		vowFessEvent     vow_fess.VowFessModel
+		vowFessRepo      vow_fess.VowFessRepository
+		headerId         int64
+		headerRepository repositories.HeaderRepository
 	)
 
 	BeforeEach(func() {

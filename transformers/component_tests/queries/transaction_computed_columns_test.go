@@ -19,7 +19,7 @@ var _ = Describe("Transaction computed columns", func() {
 			test_config.CleanTestDB(db)
 			defer db.Close()
 
-			headerRepository = repositories.NewHeaderRepository(db)
+			headerRepository := repositories.NewHeaderRepository(db)
 			fakeBlock := rand.Int()
 			fakeHeader := fakes.GetFakeHeader(int64(fakeBlock))
 			headerId, insertHeaderErr := headerRepository.CreateOrUpdateHeader(fakeHeader)
