@@ -6,7 +6,7 @@ DECLARE
   _era NUMERIC;
 BEGIN
   FOR _era IN
-    SELECT DISTINCT timestamp FROM maker.vow_sin_mapping
+    SELECT DISTINCT era FROM maker.vow_sin_mapping
   LOOP
     RETURN QUERY
       SELECT * FROM api.get_queued_sin(_era);

@@ -134,7 +134,7 @@ var _ = Describe("Vow storage repository test", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			var result MappingRes
-			err = db.Get(&result, `SELECT block_number, block_hash, timestamp AS key, sin AS value FROM maker.vow_sin_mapping`)
+			err = db.Get(&result, `SELECT block_number, block_hash, era AS key, tab AS value FROM maker.vow_sin_mapping`)
 			Expect(err).NotTo(HaveOccurred())
 			AssertMapping(result, fakeBlockNumber, fakeBlockHash, timestamp, fakeUint256)
 		})
