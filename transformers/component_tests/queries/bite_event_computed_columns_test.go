@@ -2,6 +2,7 @@ package queries
 
 import (
 	"database/sql"
+	"github.com/vulcanize/mcd_transformers/transformers/storage/vat"
 	"math/rand"
 
 	. "github.com/onsi/ginkgo"
@@ -19,13 +20,15 @@ import (
 
 var _ = Describe("Bite event computed columns", func() {
 	var (
-		db         *postgres.DB
-		fakeBlock  int
-		fakeGuy    string
-		fakeHeader core.Header
-		biteEvent  bite.BiteModel
-		biteRepo   bite.BiteRepository
-		headerId   int64
+		db               *postgres.DB
+		fakeBlock        int
+		fakeGuy          string
+		fakeHeader       core.Header
+		biteEvent        bite.BiteModel
+		biteRepo         bite.BiteRepository
+		headerId         int64
+		vatRepository    vat.VatStorageRepository
+		headerRepository repositories.HeaderRepository
 	)
 
 	BeforeEach(func() {

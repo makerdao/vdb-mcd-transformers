@@ -14,18 +14,21 @@ import (
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/component_tests/queries/test_helpers"
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_frob"
+	"github.com/vulcanize/mcd_transformers/transformers/storage/vat"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
 var _ = Describe("Frob event computed columns", func() {
 	var (
-		db         *postgres.DB
-		fakeBlock  int
-		fakeGuy    = "fakeAddress"
-		fakeHeader core.Header
-		frobRepo   vat_frob.VatFrobRepository
-		frobEvent  vat_frob.VatFrobModel
-		headerId   int64
+		db               *postgres.DB
+		fakeBlock        int
+		fakeGuy          = "fakeAddress"
+		fakeHeader       core.Header
+		frobRepo         vat_frob.VatFrobRepository
+		frobEvent        vat_frob.VatFrobModel
+		headerId         int64
+		vatRepository    vat.VatStorageRepository
+		headerRepository repositories.HeaderRepository
 	)
 
 	BeforeEach(func() {

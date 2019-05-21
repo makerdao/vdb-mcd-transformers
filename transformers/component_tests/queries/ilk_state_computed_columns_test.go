@@ -20,11 +20,12 @@ import (
 
 var _ = Describe("Ilk state computed columns", func() {
 	var (
-		db         *postgres.DB
-		fakeBlock  int
-		fakeGuy    = "fakeAddress"
-		fakeHeader core.Header
-		headerId   int64
+		db               *postgres.DB
+		fakeBlock        int
+		fakeGuy          = "fakeAddress"
+		fakeHeader       core.Header
+		headerId         int64
+		headerRepository repositories.HeaderRepository
 	)
 
 	BeforeEach(func() {
