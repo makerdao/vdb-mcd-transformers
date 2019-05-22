@@ -25,7 +25,7 @@ const (
 	headerSql = `INSERT INTO public.headers (hash, block_number, raw, block_timestamp, eth_node_id, eth_node_fingerprint)
 		VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`
 	nodeSql = `INSERT INTO public.eth_nodes (genesis_block, network_id, eth_node_id) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
-	txSql = `INSERT INTO header_sync_transactions (header_id, hash, tx_from, tx_index, tx_to)
+	txSql   = `INSERT INTO header_sync_transactions (header_id, hash, tx_from, tx_index, tx_to)
 		VALUES ($1, $2, $3, $4, $5)`
 
 	// Event data

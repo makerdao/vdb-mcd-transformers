@@ -3,7 +3,6 @@ package queries
 import (
 	"database/sql"
 	"math/rand"
-	"strings"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -75,8 +74,8 @@ var _ = Describe("Ilk state computed columns", func() {
 		})
 	})
 
-	Describe("ilks_state_files", func() {
-		It("returns file event for an ilk state", func() {
+	Describe("ilks_state_ilk_file_events", func() {
+		It("returns ilk file events for an ilk state", func() {
 			fileRepo := ilk.VatFileIlkRepository{}
 			fileRepo.SetDB(db)
 			fileEvent := test_data.VatFileIlkDustModel
@@ -84,17 +83,16 @@ var _ = Describe("Ilk state computed columns", func() {
 			insertFileErr := fileRepo.Create(headerId, []interface{}{fileEvent})
 			Expect(insertFileErr).NotTo(HaveOccurred())
 
-			var actualFiles []test_helpers.FileEvent
+			var actualFiles []test_helpers.IlkFileEvent
 			getFilesErr := db.Select(&actualFiles,
-				`SELECT id, ilk_name, what, data FROM api.ilk_state_files(
+				`SELECT ilk_identifier, what, data FROM api.ilk_state_ilk_file_events(
                         (SELECT (ilk_name, block_height, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated)::api.ilk_state
                          FROM api.get_ilk($1, $2))
                     )`, test_helpers.FakeIlk.Name, fakeBlock)
 			Expect(getFilesErr).NotTo(HaveOccurred())
 
-			expectedFiles := []test_helpers.FileEvent{{
-				Id: strings.ToLower(test_data.EthVatFileIlkDustLog.Address.Hex()),
-				IlkName: sql.NullString{
+			expectedFiles := []test_helpers.IlkFileEvent{{
+				IlkIdentifier: sql.NullString{
 					String: test_helpers.FakeIlk.Name,
 					Valid:  true,
 				},

@@ -309,11 +309,10 @@ func AssertUrn(actual, expected UrnState) {
 	Expect(actual.Updated).To(Equal(expected.Updated))
 }
 
-type FileEvent struct {
-	Id      string
-	IlkName sql.NullString `db:"ilk_name"`
-	What    string
-	Data    string
+type IlkFileEvent struct {
+	IlkIdentifier sql.NullString `db:"ilk_identifier"`
+	What          string
+	Data          string
 }
 
 type FrobEvent struct {
