@@ -17,7 +17,7 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
-var _ = Describe("File event computed columns", func() {
+var _ = Describe("Ilk file event computed columns", func() {
 	var (
 		db         *postgres.DB
 		fakeBlock  int
@@ -46,8 +46,8 @@ var _ = Describe("File event computed columns", func() {
 		Expect(insertFileErr).NotTo(HaveOccurred())
 	})
 
-	Describe("file_event_ilk", func() {
-		It("returns ilk_state for a file_event", func() {
+	Describe("ilk_file_event_ilk", func() {
+		It("returns ilk_state for an ilk_file_event", func() {
 			ilkValues := test_helpers.GetIlkValues(0)
 			test_helpers.CreateIlk(db, fakeHeader, ilkValues, test_helpers.FakeIlkVatMetadatas,
 				test_helpers.FakeIlkCatMetadatas, test_helpers.FakeIlkJugMetadatas)
@@ -57,8 +57,8 @@ var _ = Describe("File event computed columns", func() {
 			var result test_helpers.IlkState
 			err := db.Get(&result,
 				`SELECT ilk_name, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated
-                    FROM api.file_event_ilk(
-                        (SELECT (id, ilk_name, what, data, block_height, tx_idx)::api.file_event FROM api.ilk_files($1))
+                    FROM api.ilk_file_event_ilk(
+                        (SELECT (ilk_identifier, what, data, block_height, tx_idx)::api.ilk_file_event FROM api.all_ilk_file_events($1))
                     )`, test_helpers.FakeIlk.Name)
 
 			Expect(err).NotTo(HaveOccurred())
@@ -66,8 +66,8 @@ var _ = Describe("File event computed columns", func() {
 		})
 	})
 
-	Describe("file_event_tx", func() {
-		It("returns transaction for a file event", func() {
+	Describe("ilk_file_event_tx", func() {
+		It("returns transaction for an ilk_file_event", func() {
 			expectedTx := Tx{
 				TransactionHash: sql.NullString{String: "txHash", Valid: true},
 				TransactionIndex: sql.NullInt64{
@@ -86,8 +86,8 @@ var _ = Describe("File event computed columns", func() {
 			Expect(insertErr).NotTo(HaveOccurred())
 
 			var actualTx Tx
-			err := db.Get(&actualTx, `SELECT * FROM api.file_event_tx(
-			    (SELECT (id, ilk_name, what, data, block_height, tx_idx)::api.file_event FROM api.ilk_files($1)))`,
+			err := db.Get(&actualTx, `SELECT * FROM api.ilk_file_event_tx(
+			    (SELECT (ilk_identifier, what, data, block_height, tx_idx)::api.ilk_file_event FROM api.all_ilk_file_events($1)))`,
 				test_helpers.FakeIlk.Name)
 
 			Expect(err).NotTo(HaveOccurred())
@@ -113,8 +113,8 @@ var _ = Describe("File event computed columns", func() {
 			Expect(insertErr).NotTo(HaveOccurred())
 
 			var actualTx Tx
-			err := db.Get(&actualTx, `SELECT * FROM api.file_event_tx(
-			    (SELECT (id, ilk_name, what, data, block_height, tx_idx)::api.file_event FROM api.ilk_files($1)))`,
+			err := db.Get(&actualTx, `SELECT * FROM api.ilk_file_event_tx(
+			    (SELECT (ilk_identifier, what, data, block_height, tx_idx)::api.ilk_file_event FROM api.all_ilk_file_events($1)))`,
 				test_helpers.FakeIlk.Name)
 
 			Expect(err).NotTo(HaveOccurred())

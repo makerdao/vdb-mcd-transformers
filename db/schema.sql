@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 11.2
--- Dumped by pg_dump version 11.2
+-- Dumped from database version 11.3
+-- Dumped by pg_dump version 11.3
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -12,6 +12,7 @@ SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 SELECT pg_catalog.set_config('search_path', '', false);
 SET check_function_bodies = false;
+SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
@@ -69,34 +70,6 @@ CREATE TYPE api.era AS (
 
 
 --
--- Name: file_event; Type: TYPE; Schema: api; Owner: -
---
-
-CREATE TYPE api.file_event AS (
-	id text,
-	ilk_name text,
-	what text,
-	data text,
-	block_height bigint,
-	tx_idx integer
-);
-
-
---
--- Name: COLUMN file_event.block_height; Type: COMMENT; Schema: api; Owner: -
---
-
-COMMENT ON COLUMN api.file_event.block_height IS '@omit';
-
-
---
--- Name: COLUMN file_event.tx_idx; Type: COMMENT; Schema: api; Owner: -
---
-
-COMMENT ON COLUMN api.file_event.tx_idx IS '@omit';
-
-
---
 -- Name: frob_event; Type: TYPE; Schema: api; Owner: -
 --
 
@@ -122,6 +95,40 @@ COMMENT ON COLUMN api.frob_event.block_height IS '@omit';
 --
 
 COMMENT ON COLUMN api.frob_event.tx_idx IS '@omit';
+
+
+--
+-- Name: ilk_file_event; Type: TYPE; Schema: api; Owner: -
+--
+
+CREATE TYPE api.ilk_file_event AS (
+	ilk_identifier text,
+	what text,
+	data text,
+	block_height bigint,
+	tx_idx integer
+);
+
+
+--
+-- Name: COLUMN ilk_file_event.ilk_identifier; Type: COMMENT; Schema: api; Owner: -
+--
+
+COMMENT ON COLUMN api.ilk_file_event.ilk_identifier IS '@omit';
+
+
+--
+-- Name: COLUMN ilk_file_event.block_height; Type: COMMENT; Schema: api; Owner: -
+--
+
+COMMENT ON COLUMN api.ilk_file_event.block_height IS '@omit';
+
+
+--
+-- Name: COLUMN ilk_file_event.tx_idx; Type: COMMENT; Schema: api; Owner: -
+--
+
+COMMENT ON COLUMN api.ilk_file_event.tx_idx IS '@omit';
 
 
 --
@@ -244,67 +251,6 @@ CREATE TYPE api.urn_state AS (
 
 
 --
--- Name: address_files(text); Type: FUNCTION; Schema: api; Owner: -
---
-
-CREATE FUNCTION api.address_files(_address text) RETURNS SETOF api.file_event
-    LANGUAGE sql STABLE STRICT
-    AS $$
-  WITH
-    lowerAddress AS (SELECT lower(_address))
-
--- ilk files
-  SELECT cat_file_chop_lump.raw_log::json->>'address' AS id, ilks.name AS ilk_name, what, data::text, block_number AS block_height, tx_idx
-  FROM maker.cat_file_chop_lump
-  LEFT JOIN maker.ilks ON cat_file_chop_lump.ilk_id = ilks.id
-  LEFT JOIN headers    ON cat_file_chop_lump.header_id = headers.id
-  WHERE lower(cat_file_chop_lump.raw_log::json->>'address') = (SELECT * FROM lowerAddress)
-  UNION
-  SELECT cat_file_flip.raw_log::json->>'address' AS id, ilks.name AS ilk_name, what, flip AS data, block_number AS block_height, tx_idx
-  FROM maker.cat_file_flip
-  LEFT JOIN maker.ilks ON cat_file_flip.ilk_id = ilks.id
-  LEFT JOIN headers ON cat_file_flip.header_id = headers.id
-  WHERE lower(cat_file_flip.raw_log::json->>'address') = (SELECT * FROM lowerAddress)
-  UNION
-  SELECT jug_file_ilk.raw_log::json->>'address' AS id, ilks.name AS ilk_name, what, data::text, block_number AS block_height, tx_idx
-  FROM maker.jug_file_ilk
-  LEFT JOIN maker.ilks ON jug_file_ilk.ilk_id = ilks.id
-  LEFT JOIN headers ON jug_file_ilk.header_id = headers.id
-  WHERE lower(jug_file_ilk.raw_log::json->>'address') = (SELECT * FROM lowerAddress)
-  UNION
-  SELECT vat_file_ilk.raw_log::json->>'address' AS id, ilks.name AS ilk_name, what, data::text, block_number AS block_height, tx_idx
-  FROM maker.vat_file_ilk
-  LEFT JOIN maker.ilks ON vat_file_ilk.ilk_id = ilks.id
-  LEFT JOIN headers ON vat_file_ilk.header_id = headers.id
-  WHERE lower(vat_file_ilk.raw_log::json->>'address') = (SELECT * FROM lowerAddress)
-
--- contract files
-  UNION
-  SELECT cat_file_vow.raw_log::json->>'address' AS id, NULL AS ilk_name, what, data, block_number AS block_height, tx_idx
-  FROM maker.cat_file_vow
-  LEFT JOIN headers ON cat_file_vow.header_id = headers.id
-  WHERE lower(cat_file_vow.raw_log::json->>'address') = (SELECT * FROM lowerAddress)
-  UNION
-  SELECT jug_file_base.raw_log::json->>'address' AS id, NULL AS ilk_name, what, data::text, block_number AS block_height, tx_idx
-  FROM maker.jug_file_base
-  LEFT JOIN headers ON jug_file_base.header_id = headers.id
-  WHERE lower(jug_file_base.raw_log::json->>'address') = (SELECT * FROM lowerAddress)
-  UNION
-  SELECT jug_file_vow.raw_log::json->>'address' AS id, NULL AS ilk_name, what, data, block_number AS block_height, tx_idx
-  FROM maker.jug_file_vow
-  LEFT JOIN headers ON jug_file_vow.header_id = headers.id
-  WHERE lower(jug_file_vow.raw_log::json->>'address') = (SELECT * FROM lowerAddress)
-  UNION
-  SELECT vat_file_debt_ceiling.raw_log::json->>'address' AS id, NULL AS ilk_name, what, data::text, block_number AS block_height, tx_idx
-  FROM maker.vat_file_debt_ceiling
-  LEFT JOIN headers on vat_file_debt_ceiling.header_id = headers.id
-  WHERE lower(vat_file_debt_ceiling.raw_log::json->>'address') = (SELECT * FROM lowerAddress)
-
-  ORDER BY block_height DESC
-$$;
-
-
---
 -- Name: all_bites(text); Type: FUNCTION; Schema: api; Owner: -
 --
 
@@ -339,6 +285,39 @@ CREATE FUNCTION api.all_frobs(_ilk_name text) RETURNS SETOF api.frob_event
   LEFT JOIN headers    ON vat_frob.header_id = headers.id
   WHERE urns.ilk_id = (SELECT id FROM ilk)
   ORDER BY guy, block_number DESC
+$$;
+
+
+--
+-- Name: all_ilk_file_events(text); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.all_ilk_file_events(ilk_identifier text) RETURNS SETOF api.ilk_file_event
+    LANGUAGE sql STABLE STRICT
+    AS $$
+  WITH
+    ilk AS (SELECT id FROM maker.ilks WHERE ilks.name = ilk_identifier)
+
+  SELECT ilk_identifier, what, data::text, block_number, tx_idx
+  FROM maker.cat_file_chop_lump
+  LEFT JOIN headers ON cat_file_chop_lump.header_id = headers.id
+  WHERE cat_file_chop_lump.ilk_id = (SELECT id FROM ilk)
+  UNION
+  SELECT ilk_identifier, what, flip AS data, block_number, tx_idx
+  FROM maker.cat_file_flip
+  LEFT JOIN headers ON cat_file_flip.header_id = headers.id
+  WHERE cat_file_flip.ilk_id = (SELECT id FROM ilk)
+  UNION
+  SELECT ilk_identifier, what, data::text, block_number, tx_idx
+  FROM maker.jug_file_ilk
+  LEFT JOIN headers ON jug_file_ilk.header_id = headers.id
+  WHERE jug_file_ilk.ilk_id = (SELECT id FROM ilk)
+  UNION
+  SELECT ilk_identifier, what, data::text, block_number, tx_idx
+  FROM maker.vat_file_ilk
+  LEFT JOIN headers ON vat_file_ilk.header_id = headers.id
+  WHERE vat_file_ilk.ilk_id = (SELECT id FROM ilk)
+  ORDER BY block_number DESC
 $$;
 
 
@@ -494,20 +473,20 @@ $$;
 -- Name: all_sin_queue_events(numeric); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.all_sin_queue_events(era numeric) RETURNS SETOF api.sin_queue_event
+CREATE FUNCTION api.all_sin_queue_events(_era numeric) RETURNS SETOF api.sin_queue_event
     LANGUAGE sql STABLE
-    AS $_$
+    AS $$
   SELECT block_timestamp AS era, 'fess'::api.sin_act AS act, block_number AS block_height, tx_idx
   FROM maker.vow_fess
   LEFT JOIN headers ON vow_fess.header_id = headers.id
-  WHERE block_timestamp = $1
+  WHERE block_timestamp = _era
   UNION
   SELECT era, 'flog'::api.sin_act AS act, block_number AS block_height, tx_idx
   FROM maker.vow_flog
   LEFT JOIN headers ON vow_flog.header_id = headers.id
-  where vow_flog.era = $1
+  where vow_flog.era = _era
   ORDER BY block_height DESC
-$_$;
+$$;
 
 
 --
@@ -703,33 +682,6 @@ $$;
 --
 
 COMMENT ON FUNCTION api.epoch_to_datetime(_epoch numeric) IS '@omit';
-
-
---
--- Name: file_event_ilk(api.file_event); Type: FUNCTION; Schema: api; Owner: -
---
-
-CREATE FUNCTION api.file_event_ilk(event api.file_event) RETURNS SETOF api.ilk_state
-    LANGUAGE sql STABLE
-    AS $$
-  SELECT * FROM api.get_ilk(event.ilk_name, event.block_height)
-$$;
-
-
---
--- Name: file_event_tx(api.file_event); Type: FUNCTION; Schema: api; Owner: -
---
-
-CREATE FUNCTION api.file_event_tx(event api.file_event) RETURNS api.tx
-    LANGUAGE sql STABLE
-    AS $$
-  SELECT txs.hash, txs.tx_index, headers.block_number AS block_height, headers.hash, tx_from, tx_to
-  FROM public.header_sync_transactions txs
-  LEFT JOIN headers ON txs.header_id = headers.id
-  WHERE block_number <= event.block_height AND txs.tx_index = event.tx_idx
-  ORDER BY block_height DESC
-  LIMIT 1
-$$;
 
 
 --
@@ -1147,35 +1099,29 @@ $_$;
 
 
 --
--- Name: ilk_files(text); Type: FUNCTION; Schema: api; Owner: -
+-- Name: ilk_file_event_ilk(api.ilk_file_event); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.ilk_files(_ilk_name text) RETURNS SETOF api.file_event
-    LANGUAGE sql STABLE STRICT
+CREATE FUNCTION api.ilk_file_event_ilk(event api.ilk_file_event) RETURNS SETOF api.ilk_state
+    LANGUAGE sql STABLE
     AS $$
-  WITH
-    ilk AS (SELECT id FROM maker.ilks WHERE ilks.name = _ilk_name)
+  SELECT * FROM api.get_ilk(event.ilk_identifier, event.block_height)
+$$;
 
-  SELECT cat_file_chop_lump.raw_log::json->>'address' AS id, _ilk_name AS ilk_name, what, data::text, block_number AS block_height, tx_idx
-  FROM maker.cat_file_chop_lump
-  LEFT JOIN headers ON cat_file_chop_lump.header_id = headers.id
-  WHERE cat_file_chop_lump.ilk_id = (SELECT id FROM ilk)
-  UNION
-  SELECT cat_file_flip.raw_log::json->>'address' AS id, _ilk_name AS ilk_name, what, flip AS data, block_number AS block_height, tx_idx
-  FROM maker.cat_file_flip
-  LEFT JOIN headers ON cat_file_flip.header_id = headers.id
-  WHERE cat_file_flip.ilk_id = (SELECT id FROM ilk)
-  UNION
-  SELECT jug_file_ilk.raw_log::json->>'address' AS id, _ilk_name AS ilk_name, what, data::text, block_number AS block_height, tx_idx
-  FROM maker.jug_file_ilk
-  LEFT JOIN headers ON jug_file_ilk.header_id = headers.id
-  WHERE jug_file_ilk.ilk_id = (SELECT id FROM ilk)
-  UNION
-  SELECT vat_file_ilk.raw_log::json->>'address' AS id, _ilk_name AS ilk_name, what, data::text, block_number AS block_height, tx_idx
-  FROM maker.vat_file_ilk
-  LEFT JOIN headers ON vat_file_ilk.header_id = headers.id
-  WHERE vat_file_ilk.ilk_id = (SELECT id FROM ilk)
+
+--
+-- Name: ilk_file_event_tx(api.ilk_file_event); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.ilk_file_event_tx(event api.ilk_file_event) RETURNS api.tx
+    LANGUAGE sql STABLE
+    AS $$
+  SELECT txs.hash, txs.tx_index, headers.block_number AS block_height, headers.hash, tx_from, tx_to
+  FROM public.header_sync_transactions txs
+  LEFT JOIN headers ON txs.header_id = headers.id
+  WHERE block_number <= event.block_height AND txs.tx_index = event.tx_idx
   ORDER BY block_height DESC
+  LIMIT 1
 $$;
 
 
@@ -1192,18 +1138,6 @@ $$;
 
 
 --
--- Name: ilk_state_files(api.ilk_state); Type: FUNCTION; Schema: api; Owner: -
---
-
-CREATE FUNCTION api.ilk_state_files(state api.ilk_state) RETURNS SETOF api.file_event
-    LANGUAGE sql STABLE
-    AS $$
-  SELECT * FROM api.ilk_files(state.ilk_name)
-  WHERE block_height <= state.block_height
-$$;
-
-
---
 -- Name: ilk_state_frobs(api.ilk_state); Type: FUNCTION; Schema: api; Owner: -
 --
 
@@ -1211,6 +1145,18 @@ CREATE FUNCTION api.ilk_state_frobs(state api.ilk_state) RETURNS SETOF api.frob_
     LANGUAGE sql STABLE
     AS $$
   SELECT * FROM api.all_frobs(state.ilk_name)
+  WHERE block_height <= state.block_height
+$$;
+
+
+--
+-- Name: ilk_state_ilk_file_events(api.ilk_state); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.ilk_state_ilk_file_events(state api.ilk_state) RETURNS SETOF api.ilk_file_event
+    LANGUAGE sql STABLE
+    AS $$
+  SELECT * FROM api.all_ilk_file_events(state.ilk_name)
   WHERE block_height <= state.block_height
 $$;
 
