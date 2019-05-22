@@ -8,7 +8,7 @@ CREATE TYPE api.queued_sin AS (
   updated TIMESTAMP
 );
 
-CREATE FUNCTION api.get_queued_sin(era NUMERIC)
+CREATE FUNCTION api.get_queued_sin(_era NUMERIC)
   RETURNS SETOF api.queued_sin AS
 $body$
   WITH
@@ -16,7 +16,7 @@ $body$
       SELECT era, vow_sin_mapping.block_number, (SELECT TIMESTAMP 'epoch' + block_timestamp * INTERVAL '1 second') AS datetime
       FROM maker.vow_sin_mapping
       LEFT JOIN public.headers ON hash = block_hash
-      WHERE era = $1
+      WHERE era = _era
       ORDER BY vow_sin_mapping.block_number ASC
       LIMIT 1
     ),
@@ -25,16 +25,16 @@ $body$
       SELECT era, vow_sin_mapping.block_number, (SELECT TIMESTAMP 'epoch' + block_timestamp * INTERVAL '1 second') AS datetime
       FROM maker.vow_sin_mapping
       LEFT JOIN public.headers ON hash = block_hash
-      WHERE era = $1
+      WHERE era = _era
       ORDER BY vow_sin_mapping.block_number DESC
       LIMIT 1
     )
 
-  SELECT $1 AS era, tab, (SELECT EXISTS(SELECT id FROM maker.vow_flog WHERE vow_flog.era = $1)) AS flogged, created.datetime, updated.datetime
+  SELECT _era, tab, (SELECT EXISTS(SELECT id FROM maker.vow_flog WHERE vow_flog.era = _era)) AS flogged, created.datetime, updated.datetime
   FROM maker.vow_sin_mapping
   LEFT JOIN created ON created.era = vow_sin_mapping.era
   LEFT JOIN updated ON updated.era = vow_sin_mapping.era
-  WHERE vow_sin_mapping.era = $1
+  WHERE vow_sin_mapping.era = _era
   ORDER BY vow_sin_mapping.block_number DESC
 $body$
 LANGUAGE sql STABLE;
