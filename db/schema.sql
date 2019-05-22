@@ -1036,15 +1036,15 @@ COMMENT ON FUNCTION api.get_ilk_blocks_before(_block_height bigint, _ilk_name te
 -- Name: get_queued_sin(numeric); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.get_queued_sin(era numeric) RETURNS SETOF api.queued_sin
+CREATE FUNCTION api.get_queued_sin(_era numeric) RETURNS SETOF api.queued_sin
     LANGUAGE sql STABLE
-    AS $_$
+    AS $$
   WITH
     created AS (
       SELECT era, vow_sin_mapping.block_number, (SELECT TIMESTAMP 'epoch' + block_timestamp * INTERVAL '1 second') AS datetime
       FROM maker.vow_sin_mapping
       LEFT JOIN public.headers ON hash = block_hash
-      WHERE era = $1
+      WHERE era = _era
       ORDER BY vow_sin_mapping.block_number ASC
       LIMIT 1
     ),
@@ -1053,18 +1053,18 @@ CREATE FUNCTION api.get_queued_sin(era numeric) RETURNS SETOF api.queued_sin
       SELECT era, vow_sin_mapping.block_number, (SELECT TIMESTAMP 'epoch' + block_timestamp * INTERVAL '1 second') AS datetime
       FROM maker.vow_sin_mapping
       LEFT JOIN public.headers ON hash = block_hash
-      WHERE era = $1
+      WHERE era = _era
       ORDER BY vow_sin_mapping.block_number DESC
       LIMIT 1
     )
 
-  SELECT $1 AS era, tab, (SELECT EXISTS(SELECT id FROM maker.vow_flog WHERE vow_flog.era = $1)) AS flogged, created.datetime, updated.datetime
+  SELECT _era, tab, (SELECT EXISTS(SELECT id FROM maker.vow_flog WHERE vow_flog.era = _era)) AS flogged, created.datetime, updated.datetime
   FROM maker.vow_sin_mapping
   LEFT JOIN created ON created.era = vow_sin_mapping.era
   LEFT JOIN updated ON updated.era = vow_sin_mapping.era
-  WHERE vow_sin_mapping.era = $1
+  WHERE vow_sin_mapping.era = _era
   ORDER BY vow_sin_mapping.block_number DESC
-$_$;
+$$;
 
 
 --
@@ -1256,6 +1256,17 @@ CREATE FUNCTION api.log_values(begintime integer, endtime integer) RETURNS SETOF
     LEFT JOIN public.headers ON pip_log_value.header_id = headers.id
     WHERE block_timestamp BETWEEN $1 AND $2
 $_$;
+
+
+--
+-- Name: queued_sin_sin_queue_events(api.queued_sin); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.queued_sin_sin_queue_events(state api.queued_sin) RETURNS SETOF api.sin_queue_event
+    LANGUAGE sql STABLE
+    AS $$
+  SELECT * FROM api.all_sin_queue_events(state.era)
+$$;
 
 
 --
