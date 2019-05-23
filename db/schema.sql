@@ -1036,12 +1036,12 @@ COMMENT ON FUNCTION api.get_ilk_blocks_before(_block_height bigint, _ilk_name te
 -- Name: get_queued_sin(numeric); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.get_queued_sin(_era numeric) RETURNS SETOF api.queued_sin
-    LANGUAGE sql STABLE
+CREATE FUNCTION api.get_queued_sin(_era numeric) RETURNS api.queued_sin
+    LANGUAGE sql STABLE STRICT
     AS $$
   WITH
     created AS (
-      SELECT era, vow_sin_mapping.block_number, (SELECT TIMESTAMP 'epoch' + block_timestamp * INTERVAL '1 second') AS datetime
+      SELECT era, vow_sin_mapping.block_number, api.epoch_to_datetime(block_timestamp) AS datetime
       FROM maker.vow_sin_mapping
       LEFT JOIN public.headers ON hash = block_hash
       WHERE era = _era
@@ -1050,7 +1050,7 @@ CREATE FUNCTION api.get_queued_sin(_era numeric) RETURNS SETOF api.queued_sin
     ),
 
     updated AS (
-      SELECT era, vow_sin_mapping.block_number, (SELECT TIMESTAMP 'epoch' + block_timestamp * INTERVAL '1 second') AS datetime
+      SELECT era, vow_sin_mapping.block_number, api.epoch_to_datetime(block_timestamp) AS datetime
       FROM maker.vow_sin_mapping
       LEFT JOIN public.headers ON hash = block_hash
       WHERE era = _era

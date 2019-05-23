@@ -2,6 +2,7 @@ package queries
 
 import (
 	"database/sql"
+	"github.com/vulcanize/mcd_transformers/transformers/component_tests/queries/test_helpers"
 	"math/rand"
 	"strconv"
 	"time"
@@ -25,9 +26,9 @@ var _ = Describe("QueuedSin", func() {
 	var (
 		db                 *postgres.DB
 		fakeBlock          int
-		fakeEra            = "1557920248"
+		fakeEra            = strconv.Itoa(int(rand.Int31()))
 		fakeHeader         core.Header
-		fakeTab            = "123"
+		fakeTab            = strconv.Itoa(int(rand.Int31()))
 		headerID           int64
 		sinMappingMetadata utils.StorageValueMetadata
 		vowRepository      vow.VowStorageRepository
@@ -64,12 +65,13 @@ var _ = Describe("QueuedSin", func() {
 			err := db.Get(&result, `SELECT era, tab, flogged, created, updated from api.get_queued_sin($1)`, fakeEra)
 			Expect(err).NotTo(HaveOccurred())
 
-			Expect(result.Era).To(Equal(fakeEra))
-			Expect(result.Tab).To(Equal(fakeTab))
-			Expect(result.Flogged).To(BeFalse())
+			Expect(result.Era).To(Equal(test_helpers.GetValidNullString(fakeEra)))
+			Expect(result.Tab).To(Equal(test_helpers.GetValidNullString(fakeTab)))
+			Expect(result.Flogged).To(Equal(sql.NullBool{Bool: false, Valid: true}))
 			timestampAsInt, convertErr := strconv.ParseInt(fakeHeader.Timestamp, 10, 64)
 			Expect(convertErr).NotTo(HaveOccurred())
-			expectedTimestamp := time.Unix(timestampAsInt, 0).UTC().Format(time.RFC3339)
+			timestampAsStr := time.Unix(timestampAsInt, 0).UTC().Format(time.RFC3339)
+			expectedTimestamp := test_helpers.GetValidNullString(timestampAsStr)
 			Expect(result.Created).To(Equal(expectedTimestamp))
 			Expect(result.Updated).To(Equal(expectedTimestamp))
 		})
@@ -86,16 +88,16 @@ var _ = Describe("QueuedSin", func() {
 			err := db.Get(&result, `SELECT era, tab, flogged, created, updated from api.get_queued_sin($1)`, fakeEra)
 			Expect(err).NotTo(HaveOccurred())
 
-			Expect(result.Flogged).To(BeTrue())
+			Expect(result.Flogged).To(Equal(sql.NullBool{Bool: true, Valid: true}))
 		})
 
 		It("does not return queued sin for another era", func() {
-			anotherFakeEra := "1111111111"
+			anotherFakeEra := strconv.Itoa(int(rand.Int31()))
 			var result QueuedSin
 			err := db.Get(&result, `SELECT era, tab, flogged, created, updated from api.get_queued_sin($1)`, anotherFakeEra)
 
-			Expect(err).To(HaveOccurred())
-			Expect(err).To(MatchError(sql.ErrNoRows))
+			Expect(err).NotTo(HaveOccurred())
+			Expect(result).To(BeZero())
 		})
 
 		Context("when tab for an era has been updated", func() {
@@ -127,12 +129,12 @@ var _ = Describe("QueuedSin", func() {
 				createdTimestampAsInt, convertCreatedErr := strconv.ParseInt(fakeHeader.Timestamp, 10, 64)
 				Expect(convertCreatedErr).NotTo(HaveOccurred())
 				expectedCreatedTimestamp := time.Unix(createdTimestampAsInt, 0).UTC().Format(time.RFC3339)
-				Expect(result.Created).To(Equal(expectedCreatedTimestamp))
+				Expect(result.Created).To(Equal(test_helpers.GetValidNullString(expectedCreatedTimestamp)))
 
 				updatedTimestampAsInt, convertUpdatedErr := strconv.ParseInt(laterTimestamp, 10, 64)
 				Expect(convertUpdatedErr).NotTo(HaveOccurred())
 				expectedUpdatedTimestamp := time.Unix(updatedTimestampAsInt, 0).UTC().Format(time.RFC3339)
-				Expect(result.Updated).To(Equal(expectedUpdatedTimestamp))
+				Expect(result.Updated).To(Equal(test_helpers.GetValidNullString(expectedUpdatedTimestamp)))
 			})
 
 			It("returns most recent tab value", func() {
@@ -140,15 +142,15 @@ var _ = Describe("QueuedSin", func() {
 				err := db.Get(&result, `SELECT era, tab, flogged, created, updated from api.get_queued_sin($1)`, fakeEra)
 				Expect(err).NotTo(HaveOccurred())
 
-				Expect(result.Tab).To(Equal(anotherFakeTab))
+				Expect(result.Tab).To(Equal(test_helpers.GetValidNullString(anotherFakeTab)))
 			})
 		})
 	})
 
 	Describe("getting all queued sins", func() {
 		It("returns queued sin for every era", func() {
-			anotherFakeEra := "1111111111"
-			anotherFakeTab := "321"
+			anotherFakeEra := strconv.Itoa(int(rand.Int31()))
+			anotherFakeTab := strconv.Itoa(int(rand.Int31()))
 			anotherSinMappingKeys := map[utils.Key]string{constants.Timestamp: anotherFakeEra}
 			anotherSinMappingMetadata := utils.GetStorageValueMetadata(vow.SinMapping, anotherSinMappingKeys, utils.Uint256)
 			insertSinMappingErr := vowRepository.Create(int(fakeHeader.BlockNumber), fakeHeader.Hash, anotherSinMappingMetadata, anotherFakeTab)
@@ -159,16 +161,20 @@ var _ = Describe("QueuedSin", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(len(results)).To(Equal(2))
-			Expect(results[0].Era).To(Or(Equal(fakeEra), Equal(anotherFakeEra)))
-			Expect(results[0].Tab).To(Or(Equal(fakeTab), Equal(anotherFakeTab)))
+			fakeEraNullString := test_helpers.GetValidNullString(fakeEra)
+			anotherFakeEraNullString := test_helpers.GetValidNullString(anotherFakeEra)
+			Expect(results[0].Era).To(Or(Equal(fakeEraNullString), Equal(anotherFakeEraNullString)))
+			fakeTabNullString := test_helpers.GetValidNullString(fakeTab)
+			anotherFakeTabNullString := test_helpers.GetValidNullString(anotherFakeTab)
+			Expect(results[0].Tab).To(Or(Equal(fakeTabNullString), Equal(anotherFakeTabNullString)))
 		})
 	})
 })
 
 type QueuedSin struct {
-	Era     string
-	Tab     string
-	Flogged bool
-	Created string
-	Updated string
+	Era     sql.NullString
+	Tab     sql.NullString
+	Flogged sql.NullBool
+	Created sql.NullString
+	Updated sql.NullString
 }
