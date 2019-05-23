@@ -17,7 +17,6 @@ $(BIN)/ginkgo:
 GOOSE = $(BIN)/goose
 $(BIN)/goose:
 	go get -u -d github.com/pressly/goose/cmd/goose
-	cd $(GOPATH)/src/github.com/pressly/goose && git checkout v2.6.0 && go get ./...
 	go build -tags='no_mysql no_sqlite' -o $(BIN)/goose github.com/pressly/goose/cmd/goose
 
 ## Source linter
