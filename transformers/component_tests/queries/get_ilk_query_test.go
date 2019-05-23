@@ -1,7 +1,6 @@
 package queries
 
 import (
-	"database/sql"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/vulcanize/mcd_transformers/test_config"
@@ -255,8 +254,8 @@ var _ = Describe("Ilk State Query", func() {
 		Expect(err).NotTo(HaveOccurred())
 		expectedBlockOneFakeIlkState := test_helpers.IlkState{
 			IlkName: test_helpers.FakeIlk.Name,
-			Created: sql.NullString{String: "1973-07-10T00:11:51Z", Valid: true},
-			Updated: sql.NullString{String: "1973-07-10T00:11:51Z", Valid: true},
+			Created: test_helpers.GetValidNullString("1973-07-10T00:11:51Z"),
+			Updated: test_helpers.GetValidNullString("1973-07-10T00:11:51Z"),
 		}
 		Expect(fakeIlkBlockOneDbResult).To(Equal(expectedBlockOneFakeIlkState))
 
@@ -266,8 +265,8 @@ var _ = Describe("Ilk State Query", func() {
 		Expect(err).NotTo(HaveOccurred())
 		expectedBlockTwoFakeIlkState := test_helpers.IlkState{
 			IlkName: test_helpers.FakeIlk.Name,
-			Created: sql.NullString{String: "1973-07-10T00:11:51Z", Valid: true},
-			Updated: sql.NullString{String: "2005-03-18T01:58:32Z", Valid: true},
+			Created: test_helpers.GetValidNullString("1973-07-10T00:11:51Z"),
+			Updated: test_helpers.GetValidNullString("2005-03-18T01:58:32Z"),
 		}
 		Expect(fakeIlkBlockTwoDbResult).To(Equal(expectedBlockTwoFakeIlkState))
 
@@ -277,8 +276,8 @@ var _ = Describe("Ilk State Query", func() {
 		Expect(err).NotTo(HaveOccurred())
 		expectedBlockTwoAnotherFakeIlkState := test_helpers.IlkState{
 			IlkName: "FKE2",
-			Created: sql.NullString{String: "2005-03-18T01:58:32Z", Valid: true},
-			Updated: sql.NullString{String: "2005-03-18T01:58:32Z", Valid: true},
+			Created: test_helpers.GetValidNullString("2005-03-18T01:58:32Z"),
+			Updated: test_helpers.GetValidNullString("2005-03-18T01:58:32Z"),
 		}
 
 		Expect(anotherFakeIlkDbResult).To(Equal(expectedBlockTwoAnotherFakeIlkState))

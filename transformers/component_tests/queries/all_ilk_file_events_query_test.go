@@ -1,7 +1,6 @@
 package queries
 
 import (
-	"database/sql"
 	"math/rand"
 	"strconv"
 
@@ -30,11 +29,8 @@ var _ = Describe("Ilk File Events Query", func() {
 		headerOneId         int64
 		headerRepo          datastore.HeaderRepository
 		jugFileRepo         ilk2.JugFileIlkRepository
-		relevantIlkName     = sql.NullString{
-			String: test_helpers.FakeIlk.Name,
-			Valid:  true,
-		}
-		vatFileRepo ilk.VatFileIlkRepository
+		relevantIlkName     = test_helpers.GetValidNullString(test_helpers.FakeIlk.Name)
+		vatFileRepo         ilk.VatFileIlkRepository
 	)
 
 	BeforeEach(func() {

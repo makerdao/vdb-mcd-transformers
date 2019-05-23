@@ -1,7 +1,6 @@
 package queries
 
 import (
-	"database/sql"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/vulcanize/mcd_transformers/test_config"
@@ -55,10 +54,10 @@ var _ = Describe("Single urn view", func() {
 			IlkName: helper.FakeIlk.Name,
 			Ink:     strconv.Itoa(urnOneSetupData.Ink),
 			Art:     strconv.Itoa(urnOneSetupData.Art),
-			Ratio:   sql.NullString{String: strconv.FormatFloat(expectedRatio, 'f', 8, 64), Valid: true},
+			Ratio:   helper.GetValidNullString(strconv.FormatFloat(expectedRatio, 'f', 8, 64)),
 			Safe:    expectedRatio >= 1,
-			Created: sql.NullString{String: expectedTimestampOne, Valid: true},
-			Updated: sql.NullString{String: expectedTimestampOne, Valid: true},
+			Created: helper.GetValidNullString(expectedTimestampOne),
+			Updated: helper.GetValidNullString(expectedTimestampOne),
 		}
 
 		urnTwoMetadata := helper.GetUrnMetadata(helper.AnotherFakeIlk.Hex, urnTwo)
@@ -141,10 +140,10 @@ var _ = Describe("Single urn view", func() {
 				IlkName: helper.FakeIlk.Name,
 				Ink:     strconv.Itoa(setupDataOne.Ink),
 				Art:     strconv.Itoa(setupDataOne.Art),
-				Ratio:   sql.NullString{String: strconv.FormatFloat(expectedRatio, 'f', 8, 64), Valid: true},
+				Ratio:   helper.GetValidNullString(strconv.FormatFloat(expectedRatio, 'f', 8, 64)),
 				Safe:    expectedRatio >= 1,
-				Created: sql.NullString{String: expectedTimestampOne, Valid: true},
-				Updated: sql.NullString{String: expectedTimestampOne, Valid: true},
+				Created: helper.GetValidNullString(expectedTimestampOne),
+				Updated: helper.GetValidNullString(expectedTimestampOne),
 			}
 
 			err = db.Get(&actualUrn, `SELECT urn_guy, ilk_name, ink, art, ratio, safe, created, updated
@@ -171,10 +170,10 @@ var _ = Describe("Single urn view", func() {
 				IlkName: helper.FakeIlk.Name,
 				Ink:     strconv.Itoa(updatedInk),
 				Art:     strconv.Itoa(setupDataOne.Art), // Not changed
-				Ratio:   sql.NullString{String: strconv.FormatFloat(expectedRatio, 'f', 8, 64), Valid: true},
+				Ratio:   helper.GetValidNullString(strconv.FormatFloat(expectedRatio, 'f', 8, 64)),
 				Safe:    expectedRatio >= 1,
-				Created: sql.NullString{String: expectedTimestampOne, Valid: true},
-				Updated: sql.NullString{String: expectedTimestampTwo, Valid: true},
+				Created: helper.GetValidNullString(expectedTimestampOne),
+				Updated: helper.GetValidNullString(expectedTimestampTwo),
 			}
 
 			fakeHeaderTwo := fakes.GetFakeHeader(int64(blockTwo))

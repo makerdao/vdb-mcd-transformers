@@ -5,14 +5,15 @@ import (
 	"math/rand"
 	"strconv"
 
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
 	"github.com/vulcanize/mcd_transformers/test_config"
+	"github.com/vulcanize/mcd_transformers/transformers/component_tests/queries/test_helpers"
 	"github.com/vulcanize/mcd_transformers/transformers/events/vow_fess"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
@@ -51,12 +52,12 @@ var _ = Describe("Sin queue event computed columns", func() {
 	Describe("sin_queue_event_tx", func() {
 		It("returns transaction for a sin_queue_event", func() {
 			expectedTx := Tx{
-				TransactionHash:  sql.NullString{String: "txHash", Valid: true},
+				TransactionHash:  test_helpers.GetValidNullString("txHash"),
 				TransactionIndex: sql.NullInt64{Int64: int64(vowFessEvent.TransactionIndex), Valid: true},
 				BlockHeight:      sql.NullInt64{Int64: int64(fakeBlock), Valid: true},
-				BlockHash:        sql.NullString{String: fakeHeader.Hash, Valid: true},
-				TxFrom:           sql.NullString{String: "fromAddress", Valid: true},
-				TxTo:             sql.NullString{String: "toAddress", Valid: true},
+				BlockHash:        test_helpers.GetValidNullString(fakeHeader.Hash),
+				TxFrom:           test_helpers.GetValidNullString("fromAddress"),
+				TxTo:             test_helpers.GetValidNullString("toAddress"),
 			}
 
 			_, err := db.Exec(`INSERT INTO header_sync_transactions (header_id, hash, tx_from, tx_index, tx_to)
@@ -76,15 +77,15 @@ var _ = Describe("Sin queue event computed columns", func() {
 
 		It("does not return transaction from same block with different index", func() {
 			wrongTx := Tx{
-				TransactionHash: sql.NullString{String: "wrongTxHash", Valid: true},
+				TransactionHash: test_helpers.GetValidNullString("wrongTxHash"),
 				TransactionIndex: sql.NullInt64{
 					Int64: int64(vowFessEvent.TransactionIndex) + 1,
 					Valid: true,
 				},
 				BlockHeight: sql.NullInt64{Int64: int64(fakeBlock), Valid: true},
-				BlockHash:   sql.NullString{String: fakeHeader.Hash, Valid: true},
-				TxFrom:      sql.NullString{String: "wrongFromAddress", Valid: true},
-				TxTo:        sql.NullString{String: "wrongToAddress", Valid: true},
+				BlockHash:   test_helpers.GetValidNullString(fakeHeader.Hash),
+				TxFrom:      test_helpers.GetValidNullString("wrongFromAddress"),
+				TxTo:        test_helpers.GetValidNullString("wrongToAddress"),
 			}
 
 			_, insertErr := db.Exec(`INSERT INTO header_sync_transactions (header_id, hash, tx_from, tx_index, tx_to)
