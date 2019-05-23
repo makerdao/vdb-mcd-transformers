@@ -1,7 +1,6 @@
 package queries
 
 import (
-	"database/sql"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/vulcanize/mcd_transformers/test_config"
@@ -76,8 +75,8 @@ var _ = Describe("All Ilks query", func() {
 				Flip:    fakeIlkStateBlock1[cat.IlkFlip],
 				Rho:     fakeIlkStateBlock1[jug.IlkRho],
 				Duty:    fakeIlkStateBlock1[jug.IlkDuty],
-				Created: sql.NullString{String: getFormattedTimestamp(blockOneHeader.Timestamp), Valid: true},
-				Updated: sql.NullString{String: getFormattedTimestamp(blockOneHeader.Timestamp), Valid: true},
+				Created: test_helpers.GetValidNullString(getFormattedTimestamp(blockOneHeader.Timestamp)),
+				Updated: test_helpers.GetValidNullString(getFormattedTimestamp(blockOneHeader.Timestamp)),
 			}
 			err := db.Select(&dbResult,
 				`SELECT ilk_name, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated FROM api.all_ilks($1)`,
@@ -102,8 +101,8 @@ var _ = Describe("All Ilks query", func() {
 				Flip:    fakeIlkStateBlock1[cat.IlkFlip],
 				Rho:     fakeIlkStateBlock1[jug.IlkRho],
 				Duty:    fakeIlkStateBlock1[jug.IlkDuty],
-				Created: sql.NullString{String: getFormattedTimestamp(blockOneHeader.Timestamp), Valid: true},
-				Updated: sql.NullString{String: getFormattedTimestamp(blockOneHeader.Timestamp), Valid: true},
+				Created: test_helpers.GetValidNullString(getFormattedTimestamp(blockOneHeader.Timestamp)),
+				Updated: test_helpers.GetValidNullString(getFormattedTimestamp(blockOneHeader.Timestamp)),
 			}
 			//anotherFakeIlk was created at block 2
 			anotherFakeIlkExpectedResult := test_helpers.IlkState{
@@ -118,8 +117,8 @@ var _ = Describe("All Ilks query", func() {
 				Flip:    anotherFakeIlkStateBlock2[cat.IlkFlip],
 				Rho:     anotherFakeIlkStateBlock2[jug.IlkRho],
 				Duty:    anotherFakeIlkStateBlock2[jug.IlkDuty],
-				Created: sql.NullString{String: getFormattedTimestamp(blockTwoHeader.Timestamp), Valid: true},
-				Updated: sql.NullString{String: getFormattedTimestamp(blockTwoHeader.Timestamp), Valid: true},
+				Created: test_helpers.GetValidNullString(getFormattedTimestamp(blockTwoHeader.Timestamp)),
+				Updated: test_helpers.GetValidNullString(getFormattedTimestamp(blockTwoHeader.Timestamp)),
 			}
 			err := db.Select(&dbResult,
 				`SELECT ilk_name, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated FROM api.all_ilks($1)`,
@@ -157,8 +156,8 @@ var _ = Describe("All Ilks query", func() {
 				Flip:    fakeIlkStateBlock1[cat.IlkFlip],
 				Rho:     fakeIlkStateBlock1[jug.IlkRho],
 				Duty:    fakeIlkStateBlock1[jug.IlkDuty],
-				Created: sql.NullString{String: getFormattedTimestamp(blockOneHeader.Timestamp), Valid: true},
-				Updated: sql.NullString{String: getFormattedTimestamp(blockThreeHeader.Timestamp), Valid: true},
+				Created: test_helpers.GetValidNullString(getFormattedTimestamp(blockOneHeader.Timestamp)),
+				Updated: test_helpers.GetValidNullString(getFormattedTimestamp(blockThreeHeader.Timestamp)),
 			}
 			anotherFakeIlkExpectedResult := test_helpers.IlkState{
 				IlkName: anotherFakeIlk.Name,
@@ -172,8 +171,8 @@ var _ = Describe("All Ilks query", func() {
 				Flip:    anotherFakeIlkStateBlock3[cat.IlkFlip],
 				Rho:     anotherFakeIlkStateBlock3[jug.IlkRho],
 				Duty:    anotherFakeIlkStateBlock3[jug.IlkDuty],
-				Created: sql.NullString{String: getFormattedTimestamp(blockTwoHeader.Timestamp), Valid: true},
-				Updated: sql.NullString{String: getFormattedTimestamp(blockThreeHeader.Timestamp), Valid: true},
+				Created: test_helpers.GetValidNullString(getFormattedTimestamp(blockTwoHeader.Timestamp)),
+				Updated: test_helpers.GetValidNullString(getFormattedTimestamp(blockThreeHeader.Timestamp)),
 			}
 			err := db.Select(&dbResult,
 				`SELECT ilk_name, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated FROM api.all_ilks($1)`,
@@ -203,8 +202,8 @@ var _ = Describe("All Ilks query", func() {
 			Flip:    fakeIlkStateBlock1[cat.IlkFlip],
 			Rho:     fakeIlkStateBlock1[jug.IlkRho],
 			Duty:    fakeIlkStateBlock1[jug.IlkDuty],
-			Created: sql.NullString{String: "", Valid: false},
-			Updated: sql.NullString{String: "", Valid: false},
+			Created: test_helpers.GetEmptyNullString(),
+			Updated: test_helpers.GetEmptyNullString(),
 		}
 		err := db.Select(&dbResult,
 			`SELECT ilk_name, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated FROM api.all_ilks($1)`,
@@ -233,8 +232,8 @@ var _ = Describe("All Ilks query", func() {
 		newIlkExpectedResult := test_helpers.IlkState{
 			IlkName: newIlk.Name,
 			Rate:    newIlkStateBlock4[vat.IlkRate],
-			Created: sql.NullString{String: getFormattedTimestamp(blockFourHeader.Timestamp), Valid: true},
-			Updated: sql.NullString{String: getFormattedTimestamp(blockFourHeader.Timestamp), Valid: true},
+			Created: test_helpers.GetValidNullString(getFormattedTimestamp(blockFourHeader.Timestamp)),
+			Updated: test_helpers.GetValidNullString(getFormattedTimestamp(blockFourHeader.Timestamp)),
 		}
 		err := db.Select(&dbResult,
 			`SELECT ilk_name, rate, created, updated FROM api.all_ilks($1)`,

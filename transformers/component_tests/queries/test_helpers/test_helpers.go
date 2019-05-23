@@ -345,3 +345,14 @@ type LogValue struct {
 func GetExpectedTimestamp(epoch int) string {
 	return time.Unix(int64(epoch), 0).UTC().Format(time.RFC3339)
 }
+
+func GetValidNullString(val string) sql.NullString {
+	return sql.NullString{
+		String: val,
+		Valid:  true,
+	}
+}
+
+func GetEmptyNullString() sql.NullString {
+	return sql.NullString{}
+}

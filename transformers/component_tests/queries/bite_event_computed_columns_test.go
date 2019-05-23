@@ -96,12 +96,12 @@ var _ = Describe("Bite event computed columns", func() {
 	Describe("bite_event_tx", func() {
 		It("returns transaction for a bite_event", func() {
 			expectedTx := Tx{
-				TransactionHash:  sql.NullString{String: "txHash", Valid: true},
+				TransactionHash:  test_helpers.GetValidNullString("txHash"),
 				TransactionIndex: sql.NullInt64{Int64: int64(biteEvent.TransactionIndex), Valid: true},
 				BlockHeight:      sql.NullInt64{Int64: int64(fakeBlock), Valid: true},
-				BlockHash:        sql.NullString{String: fakeHeader.Hash, Valid: true},
-				TxFrom:           sql.NullString{String: "fromAddress", Valid: true},
-				TxTo:             sql.NullString{String: "toAddress", Valid: true},
+				BlockHash:        test_helpers.GetValidNullString(fakeHeader.Hash),
+				TxFrom:           test_helpers.GetValidNullString("fromAddress"),
+				TxTo:             test_helpers.GetValidNullString("toAddress"),
 			}
 
 			_, err := db.Exec(`INSERT INTO header_sync_transactions (header_id, hash, tx_from, tx_index, tx_to)
@@ -121,15 +121,15 @@ var _ = Describe("Bite event computed columns", func() {
 
 		It("does not return transaction from same block with different index", func() {
 			wrongTx := Tx{
-				TransactionHash: sql.NullString{String: "wrongTxHash", Valid: true},
+				TransactionHash: test_helpers.GetValidNullString("wrongTxHash"),
 				TransactionIndex: sql.NullInt64{
 					Int64: int64(biteEvent.TransactionIndex) + 1,
 					Valid: true,
 				},
 				BlockHeight: sql.NullInt64{Int64: int64(fakeBlock), Valid: true},
-				BlockHash:   sql.NullString{String: fakeHeader.Hash, Valid: true},
-				TxFrom:      sql.NullString{String: "wrongFromAddress", Valid: true},
-				TxTo:        sql.NullString{String: "wrongToAddress", Valid: true},
+				BlockHash:   test_helpers.GetValidNullString(fakeHeader.Hash),
+				TxFrom:      test_helpers.GetValidNullString("wrongFromAddress"),
+				TxTo:        test_helpers.GetValidNullString("wrongToAddress"),
 			}
 
 			_, insertErr := db.Exec(`INSERT INTO header_sync_transactions (header_id, hash, tx_from, tx_index, tx_to)

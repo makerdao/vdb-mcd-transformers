@@ -1,7 +1,6 @@
 package queries
 
 import (
-	"database/sql"
 	"math/rand"
 
 	. "github.com/onsi/ginkgo"
@@ -92,12 +91,9 @@ var _ = Describe("Ilk state computed columns", func() {
 			Expect(getFilesErr).NotTo(HaveOccurred())
 
 			expectedFiles := []test_helpers.IlkFileEvent{{
-				IlkIdentifier: sql.NullString{
-					String: test_helpers.FakeIlk.Name,
-					Valid:  true,
-				},
-				What: fileEvent.What,
-				Data: fileEvent.Data,
+				IlkIdentifier: test_helpers.GetValidNullString(test_helpers.FakeIlk.Name),
+				What:          fileEvent.What,
+				Data:          fileEvent.Data,
 			}}
 
 			Expect(actualFiles).To(Equal(expectedFiles))

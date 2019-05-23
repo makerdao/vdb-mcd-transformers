@@ -1,7 +1,6 @@
 package queries
 
 import (
-	"database/sql"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/vulcanize/mcd_transformers/test_config"
@@ -52,10 +51,10 @@ var _ = Describe("Urn history query", func() {
 			BlockHeight: blockOne,
 			Ink:         strconv.Itoa(inkBlockOne),
 			Art:         strconv.Itoa(artBlockOne),
-			Ratio:       sql.NullString{String: strconv.FormatFloat(expectedRatioBlockOne, 'f', 8, 64), Valid: true},
+			Ratio:       helper.GetValidNullString(strconv.FormatFloat(expectedRatioBlockOne, 'f', 8, 64)),
 			Safe:        expectedRatioBlockOne >= 1,
-			Created:     sql.NullString{String: expectedTimestampOne, Valid: true},
-			Updated:     sql.NullString{String: expectedTimestampOne, Valid: true},
+			Created:     helper.GetValidNullString(expectedTimestampOne),
+			Updated:     helper.GetValidNullString(expectedTimestampOne),
 		}
 
 		// New block
@@ -84,10 +83,10 @@ var _ = Describe("Urn history query", func() {
 			BlockHeight: blockTwo,
 			Ink:         strconv.Itoa(inkBlockTwo),
 			Art:         strconv.Itoa(artBlockOne),
-			Ratio:       sql.NullString{String: strconv.FormatFloat(expectedRatioBlockTwo, 'f', 8, 64), Valid: true},
+			Ratio:       helper.GetValidNullString(strconv.FormatFloat(expectedRatioBlockTwo, 'f', 8, 64)),
 			Safe:        expectedRatioBlockTwo >= 1,
-			Created:     sql.NullString{String: expectedTimestampOne, Valid: true},
-			Updated:     sql.NullString{String: expectedTimestampTwo, Valid: true},
+			Created:     helper.GetValidNullString(expectedTimestampOne),
+			Updated:     helper.GetValidNullString(expectedTimestampTwo),
 		}
 
 		// New block
@@ -107,10 +106,10 @@ var _ = Describe("Urn history query", func() {
 			BlockHeight: blockThree,
 			Ink:         strconv.Itoa(inkBlockTwo),
 			Art:         strconv.Itoa(artBlockThree),
-			Ratio:       sql.NullString{Valid: false}, // 0 art => null ratio
-			Safe:        true,                         // 0 art => safe urn
-			Created:     sql.NullString{String: expectedTimestampOne, Valid: true},
-			Updated:     sql.NullString{String: expectedTimestampThree, Valid: true},
+			Ratio:       helper.GetEmptyNullString(), // 0 art => null ratio
+			Safe:        true,                        // 0 art => safe urn
+			Created:     helper.GetValidNullString(expectedTimestampOne),
+			Updated:     helper.GetValidNullString(expectedTimestampThree),
 		}
 
 		var result []helper.UrnState
