@@ -9,11 +9,11 @@ CREATE TYPE api.queued_sin AS (
 );
 
 CREATE FUNCTION api.get_queued_sin(_era NUMERIC)
-  RETURNS SETOF api.queued_sin AS
+  RETURNS api.queued_sin AS
 $body$
   WITH
     created AS (
-      SELECT era, vow_sin_mapping.block_number, (SELECT TIMESTAMP 'epoch' + block_timestamp * INTERVAL '1 second') AS datetime
+      SELECT era, vow_sin_mapping.block_number, api.epoch_to_datetime(block_timestamp) AS datetime
       FROM maker.vow_sin_mapping
       LEFT JOIN public.headers ON hash = block_hash
       WHERE era = _era
@@ -22,7 +22,7 @@ $body$
     ),
 
     updated AS (
-      SELECT era, vow_sin_mapping.block_number, (SELECT TIMESTAMP 'epoch' + block_timestamp * INTERVAL '1 second') AS datetime
+      SELECT era, vow_sin_mapping.block_number, api.epoch_to_datetime(block_timestamp) AS datetime
       FROM maker.vow_sin_mapping
       LEFT JOIN public.headers ON hash = block_hash
       WHERE era = _era
@@ -37,7 +37,7 @@ $body$
   WHERE vow_sin_mapping.era = _era
   ORDER BY vow_sin_mapping.block_number DESC
 $body$
-LANGUAGE sql STABLE;
+LANGUAGE sql STABLE STRICT;
 
 
 -- +goose Down
