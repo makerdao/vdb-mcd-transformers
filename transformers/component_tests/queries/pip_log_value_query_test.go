@@ -98,12 +98,12 @@ var _ = Describe("Pip logValue query", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		expectedTx := Tx{
-			TransactionHash:  sql.NullString{String: fakeHeaderTwo.Hash, Valid: true},
+			TransactionHash:  test_helpers.GetValidNullString(fakeHeaderTwo.Hash),
 			TransactionIndex: sql.NullInt64{Int64: int64(transactionIdx), Valid: true},
 			BlockHeight:      sql.NullInt64{Int64: anotherBlockNumber, Valid: true},
-			BlockHash:        sql.NullString{String: fakeHeaderTwo.Hash, Valid: true},
-			TxFrom:           sql.NullString{String: "fromAddress", Valid: true},
-			TxTo:             sql.NullString{String: "toAddress", Valid: true},
+			BlockHash:        test_helpers.GetValidNullString(fakeHeaderTwo.Hash),
+			TxFrom:           test_helpers.GetValidNullString("fromAddress"),
+			TxTo:             test_helpers.GetValidNullString("toAddress"),
 		}
 		_, err = db.Exec(`INSERT INTO header_sync_transactions (header_id, hash, tx_from, tx_index, tx_to)
                 VALUES ($1, $2, $3, $4, $5)`, anotherHeaderID, expectedTx.TransactionHash, expectedTx.TxFrom,
