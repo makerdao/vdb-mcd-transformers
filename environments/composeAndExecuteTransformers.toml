@@ -8,14 +8,15 @@
 [client]
     ipcPath = ""
 
-[datadog]
-    name     = "maker_vdb_staging"
-
 [exporter]
     home     = "github.com/vulcanize/vulcanizedb"
-    name     = "eventTransformerExporter"
+    name     = "transformerExporter"
     save     = false
     transformerNames = [
+        "cat",
+        "jug",
+        "vat",
+        "vow",
         "bite",
         "cat_chop_lump",
         "cat_flip",
@@ -45,6 +46,31 @@
         "vow_file",
         "vow_flog"
     ]
+
+    [exporter.cat]
+        path = "transformers/storage/cat/initializer"
+        type = "eth_storage"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        rank = "0"
+    [exporter.jug]
+        path = "transformers/storage/jug/initializer"
+        type = "eth_storage"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        rank = "0"
+    [exporter.vat]
+        path = "transformers/storage/vat/initializer"
+        type = "eth_storage"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        rank = "0"
+    [exporter.vow]
+        path = "transformers/storage/vow/initializer"
+        type = "eth_storage"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        rank = "0"
     [exporter.bite]
         path = "transformers/events/bite/initializer"
         type = "eth_event"
@@ -255,3 +281,4 @@
             PIP_COL3 = 10587088
             PIP_COL4 = 10587100
             PIP_COL5 = 10587112
+
