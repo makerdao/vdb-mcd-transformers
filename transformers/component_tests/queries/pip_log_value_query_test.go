@@ -2,6 +2,8 @@ package queries
 
 import (
 	"database/sql"
+	"math/rand"
+	"strconv"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -28,6 +30,7 @@ var _ = Describe("Pip logValue query", func() {
 		pipLogValueRepository = pip_log_value.PipLogValueRepository{}
 		pipLogValueRepository.SetDB(db)
 		headerRepository = repositories.NewHeaderRepository(db)
+		rand.Seed(GinkgoRandomSeed())
 	})
 
 	AfterEach(func() {
@@ -38,11 +41,12 @@ var _ = Describe("Pip logValue query", func() {
 	It("returns 2 pip log values in different blocks between a time range", func() {
 		var (
 			anotherBlockNumber int64 = 10606965
-			beginningTimeRange int64 = 111111111
-			endingTimeRange    int64 = 111111112
-			logValue                 = "123456789"
 			transactionIdx           = 3
 		)
+
+		logValue := strconv.Itoa(test_helpers.GetRandomInt(100, 10000))
+		beginningTimeRange := int64(test_helpers.GetRandomInt(1558710000, 1558720000))
+		endingTimeRange := int64(test_helpers.GetRandomInt(1558720001, 1558730000))
 
 		fakeHeaderOne := fakes.GetFakeHeaderWithTimestamp(beginningTimeRange, int64(test_data.PipLogValueModel.BlockNumber))
 		headerID, err := headerRepository.CreateOrUpdateHeader(fakeHeaderOne)
@@ -83,11 +87,12 @@ var _ = Describe("Pip logValue query", func() {
 	It("returns a transaction from a logValue", func() {
 		var (
 			anotherBlockNumber int64 = 10606965
-			beginningTimeRange int64 = 111111111
-			endingTimeRange    int64 = 111111112
-			logValue                 = "123456789"
 			transactionIdx           = 3
 		)
+
+		logValue := strconv.Itoa(test_helpers.GetRandomInt(100, 10000))
+		beginningTimeRange := int64(test_helpers.GetRandomInt(1558710000, 1558720000))
+		endingTimeRange := int64(test_helpers.GetRandomInt(1558720001, 1558730000))
 
 		fakeHeaderTwo := fakes.GetFakeHeaderWithTimestamp(endingTimeRange, anotherBlockNumber)
 		anotherHeaderID, err := headerRepository.CreateOrUpdateHeader(fakeHeaderTwo)
@@ -112,7 +117,8 @@ var _ = Describe("Pip logValue query", func() {
 
 		var actualTx []Tx
 		err = db.Select(&actualTx, `SELECT * FROM api.log_value_tx(
-			(SELECT (val, block_number, tx_idx, contract_address)::api.log_value FROM api.log_values($1, $2)))`, beginningTimeRange, endingTimeRange)
+			(SELECT (val, block_number, tx_idx, contract_address)::api.log_value 
+				FROM api.log_values($1, $2)))`, beginningTimeRange, endingTimeRange)
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(actualTx[0]).To(Equal(expectedTx))
@@ -120,12 +126,13 @@ var _ = Describe("Pip logValue query", func() {
 
 	It("returns 2 pip log values with transactions in the same block", func() {
 		var (
-			beginningTimeRange int64 = 111111111
-			endingTimeRange    int64 = 111111112
 			anotherBlockNumber int64 = 10606964
-			logValue                 = "123456789"
 			transactionIdx           = 3
 		)
+
+		logValue := strconv.Itoa(test_helpers.GetRandomInt(100, 10000))
+		beginningTimeRange := int64(test_helpers.GetRandomInt(1558710000, 1558720000))
+		endingTimeRange := int64(test_helpers.GetRandomInt(1558720001, 1558730000))
 
 		fakeHeaderOne := fakes.GetFakeHeaderWithTimestamp(beginningTimeRange, anotherBlockNumber)
 		headerID, err := headerRepository.CreateOrUpdateHeader(fakeHeaderOne)
@@ -162,12 +169,13 @@ var _ = Describe("Pip logValue query", func() {
 	It("returns 1 pip log value between a time range", func() {
 		var (
 			anotherBlockNumber int64 = 10606965
-			beginningTimeRange int64 = 111111111
-			endingTimeRange    int64 = 111111113
-			outsideTimeRange   int64 = 111111200
-			logValue                 = "123456789"
 			transactionIdx           = 3
 		)
+
+		logValue := strconv.Itoa(test_helpers.GetRandomInt(100, 10000))
+		beginningTimeRange := int64(test_helpers.GetRandomInt(1558710000, 1558720000))
+		endingTimeRange := int64(test_helpers.GetRandomInt(1558720001, 1558730000))
+		outsideTimeRange := int64(test_helpers.GetRandomInt(1558730001, 1558740000))
 
 		fakeHeaderOne := fakes.GetFakeHeaderWithTimestamp(beginningTimeRange, int64(test_data.PipLogValueModel.BlockNumber))
 		headerID, err := headerRepository.CreateOrUpdateHeader(fakeHeaderOne)
