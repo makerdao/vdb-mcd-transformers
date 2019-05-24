@@ -356,3 +356,7 @@ func GetValidNullString(val string) sql.NullString {
 func GetEmptyNullString() sql.NullString {
 	return sql.NullString{}
 }
+
+func GetRandomInt(min, max int) int {
+	return min + rand.Intn(max-min)
+}
