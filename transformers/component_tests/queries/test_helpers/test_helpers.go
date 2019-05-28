@@ -21,13 +21,13 @@ import (
 
 var (
 	FakeIlk = TestIlk{
-		Hex:  "464b450000000000000000000000000000000000000000000000000000000000",
-		Name: "FKE",
+		Hex:        "464b450000000000000000000000000000000000000000000000000000000000",
+		Identifier: "FKE",
 	}
 
 	AnotherFakeIlk = TestIlk{
-		Hex:  "464b453200000000000000000000000000000000000000000000000000000000",
-		Name: "FKE2",
+		Hex:        "464b453200000000000000000000000000000000000000000000000000000000",
+		Identifier: "FKE2",
 	}
 
 	EmptyMetadatas []utils.StorageValueMetadata
@@ -90,24 +90,24 @@ var (
 )
 
 type TestIlk struct {
-	Hex  string
-	Name string
+	Hex        string
+	Identifier string
 }
 
 type IlkState struct {
-	IlkName string `db:"ilk_name"`
-	Rate    string
-	Art     string
-	Spot    string
-	Line    string
-	Dust    string
-	Chop    string
-	Lump    string
-	Flip    string
-	Rho     string
-	Duty    string
-	Created sql.NullString
-	Updated sql.NullString
+	IlkIdentifier string `db:"ilk_identifier"`
+	Rate          string
+	Art           string
+	Spot          string
+	Line          string
+	Dust          string
+	Chop          string
+	Lump          string
+	Flip          string
+	Rho           string
+	Duty          string
+	Created       sql.NullString
+	Updated       sql.NullString
 }
 
 func GetIlkValues(seed int) map[string]string {
@@ -132,21 +132,21 @@ func IlkStateFromValues(ilk, updated, created string, ilkValues map[string]strin
 	createdTimestamp := time.Unix(parsedCreated, 0).UTC().Format(time.RFC3339)
 	updatedTimestamp := time.Unix(parsedUpdated, 0).UTC().Format(time.RFC3339)
 
-	ilkName := shared.DecodeHexToText(ilk)
+	ilkIdentifier := shared.DecodeHexToText(ilk)
 	return IlkState{
-		IlkName: ilkName,
-		Rate:    ilkValues[vat.IlkRate],
-		Art:     ilkValues[vat.IlkArt],
-		Spot:    ilkValues[vat.IlkSpot],
-		Line:    ilkValues[vat.IlkLine],
-		Dust:    ilkValues[vat.IlkDust],
-		Chop:    ilkValues[cat.IlkChop],
-		Lump:    ilkValues[cat.IlkLump],
-		Flip:    ilkValues[cat.IlkFlip],
-		Rho:     ilkValues[jug.IlkRho],
-		Duty:    ilkValues[jug.IlkDuty],
-		Created: sql.NullString{String: createdTimestamp, Valid: true},
-		Updated: sql.NullString{String: updatedTimestamp, Valid: true},
+		IlkIdentifier: ilkIdentifier,
+		Rate:          ilkValues[vat.IlkRate],
+		Art:           ilkValues[vat.IlkArt],
+		Spot:          ilkValues[vat.IlkSpot],
+		Line:          ilkValues[vat.IlkLine],
+		Dust:          ilkValues[vat.IlkDust],
+		Chop:          ilkValues[cat.IlkChop],
+		Lump:          ilkValues[cat.IlkLump],
+		Flip:          ilkValues[cat.IlkFlip],
+		Rho:           ilkValues[jug.IlkRho],
+		Duty:          ilkValues[jug.IlkDuty],
+		Created:       sql.NullString{String: createdTimestamp, Valid: true},
+		Updated:       sql.NullString{String: updatedTimestamp, Valid: true},
 	}
 }
 
@@ -276,20 +276,20 @@ type UrnMetadata struct {
 }
 
 type UrnState struct {
-	UrnGuy      string `db:"urn_guy"`
-	IlkName     string `db:"ilk_name"`
-	BlockHeight int    `db:"block_height"`
-	Ink         string
-	Art         string
-	Ratio       sql.NullString
-	Safe        bool
-	Created     sql.NullString
-	Updated     sql.NullString
+	UrnGuy        string `db:"urn_guy"`
+	IlkIdentifier string `db:"ilk_identifier"`
+	BlockHeight   int    `db:"block_height"`
+	Ink           string
+	Art           string
+	Ratio         sql.NullString
+	Safe          bool
+	Created       sql.NullString
+	Updated       sql.NullString
 }
 
 func AssertUrn(actual, expected UrnState) {
 	Expect(actual.UrnGuy).To(Equal(expected.UrnGuy))
-	Expect(actual.IlkName).To(Equal(expected.IlkName))
+	Expect(actual.IlkIdentifier).To(Equal(expected.IlkIdentifier))
 	Expect(actual.BlockHeight).To(Equal(expected.BlockHeight))
 	Expect(actual.Ink).To(Equal(expected.Ink))
 	Expect(actual.Art).To(Equal(expected.Art))
@@ -316,18 +316,18 @@ type IlkFileEvent struct {
 }
 
 type FrobEvent struct {
-	IlkName string `db:"ilk_name"`
-	UrnGuy  string `db:"urn_guy"`
-	Dink    string
-	Dart    string
+	IlkIdentifier string `db:"ilk_identifier"`
+	UrnGuy        string `db:"urn_guy"`
+	Dink          string
+	Dart          string
 }
 
 type BiteEvent struct {
-	IlkName string `db:"ilk_name"`
-	UrnGuy  string `db:"urn_guy"`
-	Ink     string
-	Art     string
-	Tab     string
+	IlkIdentifier string `db:"ilk_identifier"`
+	UrnGuy        string `db:"urn_guy"`
+	Ink           string
+	Art           string
+	Tab           string
 }
 
 type SinQueueEvent struct {

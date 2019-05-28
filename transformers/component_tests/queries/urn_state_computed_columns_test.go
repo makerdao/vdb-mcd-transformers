@@ -77,10 +77,10 @@ var _ = Describe("Urn state computed columns", func() {
 
 			var result test_helpers.IlkState
 			getIlkErr := db.Get(&result,
-				`SELECT ilk_name, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated
+				`SELECT ilk_identifier, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated
 					FROM api.urn_state_ilk(
-					(SELECT (urn_guy, ilk_name, block_height, ink, art, ratio, safe, created, updated)::api.urn_state
-					FROM api.get_urn($1, $2, $3)))`, test_helpers.FakeIlk.Name, fakeGuy, fakeHeader.BlockNumber)
+					(SELECT (urn_guy, ilk_identifier, block_height, ink, art, ratio, safe, created, updated)::api.urn_state
+					FROM api.get_urn($1, $2, $3)))`, test_helpers.FakeIlk.Identifier, fakeGuy, fakeHeader.BlockNumber)
 
 			Expect(getIlkErr).NotTo(HaveOccurred())
 			Expect(result).To(Equal(expectedIlk))
@@ -104,17 +104,17 @@ var _ = Describe("Urn state computed columns", func() {
 
 			var actualFrobs test_helpers.FrobEvent
 			getFrobsErr := db.Get(&actualFrobs,
-				`SELECT ilk_name, urn_guy, dink, dart FROM api.urn_state_frobs(
-                        (SELECT (urn_guy, ilk_name, block_height, ink, art, ratio, safe, created, updated)::api.urn_state
+				`SELECT ilk_identifier, urn_guy, dink, dart FROM api.urn_state_frobs(
+                        (SELECT (urn_guy, ilk_identifier, block_height, ink, art, ratio, safe, created, updated)::api.urn_state
                          FROM api.all_urns($1))
                     )`, fakeBlock)
 			Expect(getFrobsErr).NotTo(HaveOccurred())
 
 			expectedFrobs := test_helpers.FrobEvent{
-				IlkName: test_helpers.FakeIlk.Name,
-				UrnGuy:  fakeGuy,
-				Dink:    frobEvent.Dink,
-				Dart:    frobEvent.Dart,
+				IlkIdentifier: test_helpers.FakeIlk.Identifier,
+				UrnGuy:        fakeGuy,
+				Dink:          frobEvent.Dink,
+				Dart:          frobEvent.Dart,
 			}
 
 			Expect(actualFrobs).To(Equal(expectedFrobs))
@@ -138,18 +138,18 @@ var _ = Describe("Urn state computed columns", func() {
 
 			var actualBites test_helpers.BiteEvent
 			getBitesErr := db.Get(&actualBites, `
-				SELECT ilk_name, urn_guy, ink, art, tab FROM api.urn_state_bites(
-				    (SELECT (urn_guy, ilk_name, block_height, ink, art, ratio, safe, created, updated)::api.urn_state
+				SELECT ilk_identifier, urn_guy, ink, art, tab FROM api.urn_state_bites(
+				    (SELECT (urn_guy, ilk_identifier, block_height, ink, art, ratio, safe, created, updated)::api.urn_state
 				    FROM api.all_urns($1)))`,
 				fakeBlock)
 			Expect(getBitesErr).NotTo(HaveOccurred())
 
 			expectedBites := test_helpers.BiteEvent{
-				IlkName: test_helpers.FakeIlk.Name,
-				UrnGuy:  fakeGuy,
-				Ink:     biteEvent.Ink,
-				Art:     biteEvent.Art,
-				Tab:     biteEvent.Tab,
+				IlkIdentifier: test_helpers.FakeIlk.Identifier,
+				UrnGuy:        fakeGuy,
+				Ink:           biteEvent.Ink,
+				Art:           biteEvent.Art,
+				Tab:           biteEvent.Tab,
 			}
 
 			Expect(actualBites).To(Equal(expectedBites))

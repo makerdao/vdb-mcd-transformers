@@ -29,7 +29,7 @@ const (
 	getBlockTimestampQuery = `SELECT block_timestamp FROM public.headers WHERE id = $1;`
 	getIlkIdQuery          = `SELECT id FROM maker.ilks WHERE ilk = $1`
 	getUrnIdQuery          = `SELECT id FROM maker.urns WHERE guy = $1 AND ilk_id = $2`
-	InsertIlkQuery         = `INSERT INTO maker.ilks (ilk, name) VALUES ($1, $2) RETURNING id`
+	InsertIlkQuery         = `INSERT INTO maker.ilks (ilk, identifier) VALUES ($1, $2) RETURNING id`
 	InsertUrnQuery         = `INSERT INTO maker.urns (guy, ilk_id) VALUES ($1, $2) RETURNING id`
 )
 
@@ -37,8 +37,8 @@ func GetOrCreateIlk(ilk string, db *postgres.DB) (int, error) {
 	var ilkID int
 	err := db.Get(&ilkID, getIlkIdQuery, ilk)
 	if err == sql.ErrNoRows {
-		ilkName := DecodeHexToText(ilk)
-		insertErr := db.QueryRow(InsertIlkQuery, ilk, ilkName).Scan(&ilkID)
+		ilkIdentifier := DecodeHexToText(ilk)
+		insertErr := db.QueryRow(InsertIlkQuery, ilk, ilkIdentifier).Scan(&ilkID)
 		return ilkID, insertErr
 	}
 	return ilkID, err
@@ -48,8 +48,8 @@ func GetOrCreateIlkInTransaction(ilk string, tx *sqlx.Tx) (int, error) {
 	var ilkID int
 	err := tx.Get(&ilkID, getIlkIdQuery, ilk)
 	if err == sql.ErrNoRows {
-		ilkName := DecodeHexToText(ilk)
-		insertErr := tx.QueryRow(InsertIlkQuery, ilk, ilkName).Scan(&ilkID)
+		ilkIdentifier := DecodeHexToText(ilk)
+		insertErr := tx.QueryRow(InsertIlkQuery, ilk, ilkIdentifier).Scan(&ilkID)
 		return ilkID, insertErr
 	}
 	return ilkID, err

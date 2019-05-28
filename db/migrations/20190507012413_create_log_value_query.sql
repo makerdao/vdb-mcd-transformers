@@ -15,7 +15,7 @@ CREATE FUNCTION api.log_values(beginTime INT, endTime INT)
 $body$
   SELECT val, pip_log_value.block_number, tx_idx, contract_address FROM maker.pip_log_value
     LEFT JOIN public.headers ON pip_log_value.header_id = headers.id
-    WHERE block_timestamp BETWEEN $1 AND $2
+    WHERE block_timestamp BETWEEN beginTime AND endTime
 $body$
   LANGUAGE sql STABLE STRICT;
 

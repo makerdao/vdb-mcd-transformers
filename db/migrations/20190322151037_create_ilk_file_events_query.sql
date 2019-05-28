@@ -18,7 +18,7 @@ CREATE FUNCTION api.all_ilk_file_events(ilk_identifier TEXT)
   RETURNS SETOF api.ilk_file_event AS
 $$
   WITH
-    ilk AS (SELECT id FROM maker.ilks WHERE ilks.name = ilk_identifier)
+    ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier)
 
   SELECT ilk_identifier, what, data::text, block_number, tx_idx
   FROM maker.cat_file_chop_lump

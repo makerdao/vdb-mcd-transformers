@@ -3,25 +3,25 @@
 -- Spec: https://github.com/makerdao/vulcan.spec/blob/master/mcd.graphql
 
 CREATE TYPE api.urn_state AS (
-  urn_guy      TEXT,
-  ilk_name     TEXT,
-  block_height BIGINT,
+  urn_guy        TEXT,
+  ilk_identifier TEXT,
+  block_height   BIGINT,
   -- ilk object
-  ink          NUMERIC,
-  art          NUMERIC,
-  ratio        NUMERIC,
-  safe         BOOLEAN,
+  ink            NUMERIC,
+  art            NUMERIC,
+  ratio          NUMERIC,
+  safe           BOOLEAN,
   -- frobs
   -- bites
-  created      TIMESTAMP,
-  updated      TIMESTAMP
+  created        TIMESTAMP,
+  updated        TIMESTAMP
 );
 
-CREATE FUNCTION api.epoch_to_datetime(_epoch NUMERIC) RETURNS TIMESTAMP AS $$
-    SELECT TIMESTAMP 'epoch' + _epoch * INTERVAL '1 second' AS datetime
+CREATE FUNCTION api.epoch_to_datetime(epoch NUMERIC) RETURNS TIMESTAMP AS $$
+    SELECT TIMESTAMP 'epoch' + epoch * INTERVAL '1 second' AS datetime
 $$ LANGUAGE SQL IMMUTABLE;
 
-COMMENT ON FUNCTION api.epoch_to_datetime(_epoch NUMERIC) IS E'@omit';
+COMMENT ON FUNCTION api.epoch_to_datetime(epoch NUMERIC) IS E'@omit';
 
 CREATE FUNCTION api.max_block() RETURNS BIGINT AS $$
   SELECT max(block_number) FROM public.headers
@@ -114,7 +114,7 @@ WITH
     ORDER BY urn_id, headers.block_timestamp DESC
   )
 
-SELECT urns.guy, ilks.name, $1, inks.ink, arts.art, ratios.ratio,
+SELECT urns.guy, ilks.identifier, block_height, inks.ink, arts.art, ratios.ratio,
        COALESCE(safe.safe, arts.art = 0), created.datetime, updated.datetime
 FROM inks
   LEFT JOIN arts       ON arts.urn_id = inks.urn_id

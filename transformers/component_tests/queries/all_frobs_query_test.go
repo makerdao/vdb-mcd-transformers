@@ -37,7 +37,7 @@ var _ = Describe("Frobs query", func() {
 
 	Describe("urn_frobs", func() {
 		It("returns frobs for relevant ilk/urn", func() {
-			headerOne := fakes.GetFakeHeader(1)
+			headerOne := fakes.GetFakeHeaderWithTimestamp(int64(111111111), 1)
 
 			headerOneId, err := headerRepo.CreateOrUpdateHeader(headerOne)
 			Expect(err).NotTo(HaveOccurred())
@@ -59,7 +59,7 @@ var _ = Describe("Frobs query", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			// New block
-			headerTwo := fakes.GetFakeHeader(2)
+			headerTwo := fakes.GetFakeHeaderWithTimestamp(int64(222222222), 2)
 			headerTwo.Hash = "anotherHash"
 			headerTwoId, err := headerRepo.CreateOrUpdateHeader(headerTwo)
 			Expect(err).NotTo(HaveOccurred())
@@ -74,12 +74,12 @@ var _ = Describe("Frobs query", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			var actualFrobs []test_helpers.FrobEvent
-			err = db.Select(&actualFrobs, `SELECT ilk_name, urn_guy, dink, dart FROM api.urn_frobs($1, $2)`, test_helpers.FakeIlk.Name, fakeUrn)
+			err = db.Select(&actualFrobs, `SELECT ilk_identifier, urn_guy, dink, dart FROM api.urn_frobs($1, $2)`, test_helpers.FakeIlk.Identifier, fakeUrn)
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(actualFrobs).To(ConsistOf(
-				test_helpers.FrobEvent{IlkName: test_helpers.FakeIlk.Name, UrnGuy: fakeUrn, Dink: frobBlockOne.Dink, Dart: frobBlockOne.Dart},
-				test_helpers.FrobEvent{IlkName: test_helpers.FakeIlk.Name, UrnGuy: fakeUrn, Dink: frobBlockTwo.Dink, Dart: frobBlockTwo.Dart},
+				test_helpers.FrobEvent{IlkIdentifier: test_helpers.FakeIlk.Identifier, UrnGuy: fakeUrn, Dink: frobBlockOne.Dink, Dart: frobBlockOne.Dart},
+				test_helpers.FrobEvent{IlkIdentifier: test_helpers.FakeIlk.Identifier, UrnGuy: fakeUrn, Dink: frobBlockTwo.Dink, Dart: frobBlockTwo.Dart},
 			))
 		})
 
@@ -90,7 +90,7 @@ var _ = Describe("Frobs query", func() {
 		})
 
 		It("fails if only one argument is supplied (STRICT)", func() {
-			_, err := db.Exec(`SELECT * FROM api.urn_frobs($1::text)`, test_helpers.FakeIlk.Name)
+			_, err := db.Exec(`SELECT * FROM api.urn_frobs($1::text)`, test_helpers.FakeIlk.Identifier)
 			Expect(err).NotTo(BeNil())
 			Expect(err.Error()).To(ContainSubstring("function api.urn_frobs(text) does not exist"))
 		})
@@ -121,12 +121,12 @@ var _ = Describe("Frobs query", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			var actualFrobs []test_helpers.FrobEvent
-			err = db.Select(&actualFrobs, `SELECT ilk_name, urn_guy, dink, dart FROM api.all_frobs($1)`, test_helpers.FakeIlk.Name)
+			err = db.Select(&actualFrobs, `SELECT ilk_identifier, urn_guy, dink, dart FROM api.all_frobs($1)`, test_helpers.FakeIlk.Identifier)
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(actualFrobs).To(ConsistOf(
-				test_helpers.FrobEvent{IlkName: test_helpers.FakeIlk.Name, UrnGuy: fakeUrn, Dink: frobOne.Dink, Dart: frobOne.Dart},
-				test_helpers.FrobEvent{IlkName: test_helpers.FakeIlk.Name, UrnGuy: anotherUrn, Dink: frobTwo.Dink, Dart: frobTwo.Dart},
+				test_helpers.FrobEvent{IlkIdentifier: test_helpers.FakeIlk.Identifier, UrnGuy: fakeUrn, Dink: frobOne.Dink, Dart: frobOne.Dart},
+				test_helpers.FrobEvent{IlkIdentifier: test_helpers.FakeIlk.Identifier, UrnGuy: anotherUrn, Dink: frobTwo.Dink, Dart: frobTwo.Dart},
 			))
 		})
 

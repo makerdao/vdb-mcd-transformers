@@ -5,14 +5,14 @@
 CREATE FUNCTION api.urn_state_ilk(state api.urn_state)
   RETURNS api.ilk_state AS
 $$
-  SELECT * FROM api.get_ilk(state.ilk_name, state.block_height)
+  SELECT * FROM api.get_ilk(state.ilk_identifier, state.block_height)
 $$ LANGUAGE sql STABLE;
 
 -- Extend urn_state with frob_events
 CREATE FUNCTION api.urn_state_frobs(state api.urn_state)
   RETURNS SETOF api.frob_event AS
 $$
-  SELECT * FROM api.urn_frobs(state.ilk_name, state.urn_guy)
+  SELECT * FROM api.urn_frobs(state.ilk_identifier, state.urn_guy)
   WHERE block_height <= state.block_height
 $$ LANGUAGE sql STABLE;
 
@@ -21,7 +21,7 @@ $$ LANGUAGE sql STABLE;
 CREATE FUNCTION api.urn_state_bites(state api.urn_state)
   RETURNS SETOF api.bite_event AS
 $$
-  SELECT * FROM api.urn_bites(state.ilk_name, state.urn_guy)
+  SELECT * FROM api.urn_bites(state.ilk_identifier, state.urn_guy)
   WHERE block_height <= state.block_height
 $$ LANGUAGE sql STABLE;
 
