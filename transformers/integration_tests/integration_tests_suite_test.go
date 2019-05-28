@@ -18,7 +18,7 @@ func TestIntegrationTests(t *testing.T) {
 
 var _ = BeforeSuite(func() {
 	testConfig := viper.New()
-	testConfig.SetConfigName("infura")
+	testConfig.SetConfigName("testing")
 	testConfig.AddConfigPath("$GOPATH/src/github.com/vulcanize/mcd_transformers/environments/")
 	err := testConfig.ReadInConfig()
 	ipc = testConfig.GetString("client.ipcPath")

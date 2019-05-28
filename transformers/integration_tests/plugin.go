@@ -156,7 +156,7 @@ var _ = Describe("Plugin test", func() {
 	var db *postgres.DB
 	var hr repositories.HeaderRepository
 	var headerID int64
-	viper.SetConfigName("composeAndExecuteEventTransformers")
+	viper.SetConfigName("testing")
 	viper.AddConfigPath("$GOPATH/src/github.com/vulcanize/mcd_transformers/environments/")
 
 	Describe("Event Transformers only", func() {
