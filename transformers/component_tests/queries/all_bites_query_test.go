@@ -48,17 +48,17 @@ var _ = Describe("Bites query", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			var actualBites []test_helpers.BiteEvent
-			err = db.Select(&actualBites, `SELECT ilk_name, urn_guy, ink, art, tab FROM api.all_bites($1)`,
-				test_helpers.FakeIlk.Name)
+			err = db.Select(&actualBites, `SELECT ilk_identifier, urn_guy, ink, art, tab FROM api.all_bites($1)`,
+				test_helpers.FakeIlk.Identifier)
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(actualBites).To(ConsistOf(
-				test_helpers.BiteEvent{IlkName: test_helpers.FakeIlk.Name, UrnGuy: fakeUrn, Ink: biteOne.Ink, Art: biteOne.Art, Tab: biteOne.Tab},
+				test_helpers.BiteEvent{IlkIdentifier: test_helpers.FakeIlk.Identifier, UrnGuy: fakeUrn, Ink: biteOne.Ink, Art: biteOne.Art, Tab: biteOne.Tab},
 			))
 		})
 
 		It("returns bites from multiple blocks", func() {
-			headerOne := fakes.GetFakeHeader(1)
+			headerOne := fakes.GetFakeHeaderWithTimestamp(int64(111111111), 1)
 			headerOneId, err := headerRepo.CreateOrUpdateHeader(headerOne)
 			Expect(err).NotTo(HaveOccurred())
 
@@ -67,7 +67,7 @@ var _ = Describe("Bites query", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			// New block
-			headerTwo := fakes.GetFakeHeader(2)
+			headerTwo := fakes.GetFakeHeaderWithTimestamp(int64(222222222), 2)
 			headerTwo.Hash = "anotherHash"
 			headerTwoId, err := headerRepo.CreateOrUpdateHeader(headerTwo)
 			Expect(err).NotTo(HaveOccurred())
@@ -77,12 +77,12 @@ var _ = Describe("Bites query", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			var actualBites []test_helpers.BiteEvent
-			err = db.Select(&actualBites, `SELECT ilk_name, urn_guy, ink, art, tab FROM api.all_bites($1)`, test_helpers.FakeIlk.Name)
+			err = db.Select(&actualBites, `SELECT ilk_identifier, urn_guy, ink, art, tab FROM api.all_bites($1)`, test_helpers.FakeIlk.Identifier)
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(actualBites).To(ConsistOf(
-				test_helpers.BiteEvent{IlkName: test_helpers.FakeIlk.Name, UrnGuy: fakeUrn, Ink: biteBlockTwo.Ink, Art: biteBlockTwo.Art, Tab: biteBlockTwo.Tab},
-				test_helpers.BiteEvent{IlkName: test_helpers.FakeIlk.Name, UrnGuy: fakeUrn, Ink: biteBlockOne.Ink, Art: biteBlockOne.Art, Tab: biteBlockOne.Tab},
+				test_helpers.BiteEvent{IlkIdentifier: test_helpers.FakeIlk.Identifier, UrnGuy: fakeUrn, Ink: biteBlockTwo.Ink, Art: biteBlockTwo.Art, Tab: biteBlockTwo.Tab},
+				test_helpers.BiteEvent{IlkIdentifier: test_helpers.FakeIlk.Identifier, UrnGuy: fakeUrn, Ink: biteBlockOne.Ink, Art: biteBlockOne.Art, Tab: biteBlockOne.Tab},
 			))
 		})
 
@@ -99,11 +99,11 @@ var _ = Describe("Bites query", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			var actualBites []test_helpers.BiteEvent
-			err = db.Select(&actualBites, `SELECT ilk_name, urn_guy, ink, art, tab FROM api.all_bites($1)`, test_helpers.FakeIlk.Name)
+			err = db.Select(&actualBites, `SELECT ilk_identifier, urn_guy, ink, art, tab FROM api.all_bites($1)`, test_helpers.FakeIlk.Identifier)
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(actualBites).To(ConsistOf(
-				test_helpers.BiteEvent{IlkName: test_helpers.FakeIlk.Name, UrnGuy: fakeUrn, Ink: bite.Ink, Art: bite.Art, Tab: bite.Tab},
+				test_helpers.BiteEvent{IlkIdentifier: test_helpers.FakeIlk.Identifier, UrnGuy: fakeUrn, Ink: bite.Ink, Art: bite.Art, Tab: bite.Tab},
 			))
 		})
 
@@ -126,16 +126,16 @@ var _ = Describe("Bites query", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			var actualBites []test_helpers.BiteEvent
-			err = db.Select(&actualBites, `SELECT ilk_name, urn_guy, ink, art, tab FROM api.urn_bites($1, $2)`, test_helpers.FakeIlk.Name, fakeUrn)
+			err = db.Select(&actualBites, `SELECT ilk_identifier, urn_guy, ink, art, tab FROM api.urn_bites($1, $2)`, test_helpers.FakeIlk.Identifier, fakeUrn)
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(actualBites).To(ConsistOf(
-				test_helpers.BiteEvent{IlkName: test_helpers.FakeIlk.Name, UrnGuy: fakeUrn, Ink: biteOne.Ink, Art: biteOne.Art, Tab: biteOne.Tab},
+				test_helpers.BiteEvent{IlkIdentifier: test_helpers.FakeIlk.Identifier, UrnGuy: fakeUrn, Ink: biteOne.Ink, Art: biteOne.Art, Tab: biteOne.Tab},
 			))
 		})
 
 		It("returns bites from multiple blocks", func() {
-			headerOne := fakes.GetFakeHeader(1)
+			headerOne := fakes.GetFakeHeaderWithTimestamp(int64(111111111), 1)
 			headerOneId, err := headerRepo.CreateOrUpdateHeader(headerOne)
 			Expect(err).NotTo(HaveOccurred())
 
@@ -144,7 +144,7 @@ var _ = Describe("Bites query", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			// New block
-			headerTwo := fakes.GetFakeHeader(2)
+			headerTwo := fakes.GetFakeHeaderWithTimestamp(int64(222222222), 2)
 			headerTwo.Hash = "anotherHash"
 			headerTwoId, err := headerRepo.CreateOrUpdateHeader(headerTwo)
 			Expect(err).NotTo(HaveOccurred())
@@ -154,12 +154,12 @@ var _ = Describe("Bites query", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			var actualBites []test_helpers.BiteEvent
-			err = db.Select(&actualBites, `SELECT ilk_name, urn_guy, ink, art, tab FROM api.urn_bites($1, $2)`, test_helpers.FakeIlk.Name, fakeUrn)
+			err = db.Select(&actualBites, `SELECT ilk_identifier, urn_guy, ink, art, tab FROM api.urn_bites($1, $2)`, test_helpers.FakeIlk.Identifier, fakeUrn)
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(actualBites).To(ConsistOf(
-				test_helpers.BiteEvent{IlkName: test_helpers.FakeIlk.Name, UrnGuy: fakeUrn, Ink: biteBlockTwo.Ink, Art: biteBlockTwo.Art, Tab: biteBlockTwo.Tab},
-				test_helpers.BiteEvent{IlkName: test_helpers.FakeIlk.Name, UrnGuy: fakeUrn, Ink: biteBlockOne.Ink, Art: biteBlockOne.Art, Tab: biteBlockOne.Tab},
+				test_helpers.BiteEvent{IlkIdentifier: test_helpers.FakeIlk.Identifier, UrnGuy: fakeUrn, Ink: biteBlockTwo.Ink, Art: biteBlockTwo.Art, Tab: biteBlockTwo.Tab},
+				test_helpers.BiteEvent{IlkIdentifier: test_helpers.FakeIlk.Identifier, UrnGuy: fakeUrn, Ink: biteBlockOne.Ink, Art: biteBlockOne.Art, Tab: biteBlockOne.Tab},
 			))
 		})
 
@@ -176,11 +176,11 @@ var _ = Describe("Bites query", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			var actualBites []test_helpers.BiteEvent
-			err = db.Select(&actualBites, `SELECT ilk_name, urn_guy, ink, art, tab FROM api.urn_bites($1, $2)`, test_helpers.FakeIlk.Name, fakeUrn)
+			err = db.Select(&actualBites, `SELECT ilk_identifier, urn_guy, ink, art, tab FROM api.urn_bites($1, $2)`, test_helpers.FakeIlk.Identifier, fakeUrn)
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(actualBites).To(ConsistOf(
-				test_helpers.BiteEvent{IlkName: test_helpers.FakeIlk.Name, UrnGuy: fakeUrn, Ink: bite.Ink, Art: bite.Art, Tab: bite.Tab},
+				test_helpers.BiteEvent{IlkIdentifier: test_helpers.FakeIlk.Identifier, UrnGuy: fakeUrn, Ink: bite.Ink, Art: bite.Art, Tab: bite.Tab},
 			))
 		})
 	})

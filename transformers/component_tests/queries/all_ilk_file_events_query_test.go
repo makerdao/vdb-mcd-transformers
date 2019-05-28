@@ -22,15 +22,15 @@ import (
 
 var _ = Describe("Ilk File Events Query", func() {
 	var (
-		catFileChopLumpRepo chop_lump.CatFileChopLumpRepository
-		catFileFlipRepo     flip.CatFileFlipRepository
-		db                  *postgres.DB
-		err                 error
-		headerOneId         int64
-		headerRepo          datastore.HeaderRepository
-		jugFileRepo         ilk2.JugFileIlkRepository
-		relevantIlkName     = test_helpers.GetValidNullString(test_helpers.FakeIlk.Name)
-		vatFileRepo         ilk.VatFileIlkRepository
+		catFileChopLumpRepo   chop_lump.CatFileChopLumpRepository
+		catFileFlipRepo       flip.CatFileFlipRepository
+		db                    *postgres.DB
+		err                   error
+		headerOneId           int64
+		headerRepo            datastore.HeaderRepository
+		jugFileRepo           ilk2.JugFileIlkRepository
+		relevantIlkIdentifier = test_helpers.GetValidNullString(test_helpers.FakeIlk.Identifier)
+		vatFileRepo           ilk.VatFileIlkRepository
 	)
 
 	BeforeEach(func() {
@@ -72,27 +72,27 @@ var _ = Describe("Ilk File Events Query", func() {
 		Expect(vatErr).NotTo(HaveOccurred())
 
 		var actualFiles []test_helpers.IlkFileEvent
-		filesErr := db.Select(&actualFiles, `SELECT ilk_identifier, what, data FROM api.all_ilk_file_events($1)`, test_helpers.FakeIlk.Name)
+		filesErr := db.Select(&actualFiles, `SELECT ilk_identifier, what, data FROM api.all_ilk_file_events($1)`, test_helpers.FakeIlk.Identifier)
 		Expect(filesErr).NotTo(HaveOccurred())
 
 		Expect(actualFiles).To(ConsistOf(
 			test_helpers.IlkFileEvent{
-				IlkIdentifier: relevantIlkName,
+				IlkIdentifier: relevantIlkIdentifier,
 				What:          catFileChopLump.What,
 				Data:          catFileChopLump.Data,
 			},
 			test_helpers.IlkFileEvent{
-				IlkIdentifier: relevantIlkName,
+				IlkIdentifier: relevantIlkIdentifier,
 				What:          catFileFlip.What,
 				Data:          catFileFlip.Flip,
 			},
 			test_helpers.IlkFileEvent{
-				IlkIdentifier: relevantIlkName,
+				IlkIdentifier: relevantIlkIdentifier,
 				What:          jugFile.What,
 				Data:          jugFile.Data,
 			},
 			test_helpers.IlkFileEvent{
-				IlkIdentifier: relevantIlkName,
+				IlkIdentifier: relevantIlkIdentifier,
 				What:          vatFile.What,
 				Data:          vatFile.Data,
 			},
@@ -118,17 +118,17 @@ var _ = Describe("Ilk File Events Query", func() {
 		Expect(fileBlockTwoErr).NotTo(HaveOccurred())
 
 		var actualFiles []test_helpers.IlkFileEvent
-		filesErr := db.Select(&actualFiles, `SELECT ilk_identifier, what, data FROM api.all_ilk_file_events($1)`, test_helpers.FakeIlk.Name)
+		filesErr := db.Select(&actualFiles, `SELECT ilk_identifier, what, data FROM api.all_ilk_file_events($1)`, test_helpers.FakeIlk.Identifier)
 		Expect(filesErr).NotTo(HaveOccurred())
 
 		Expect(actualFiles).To(ConsistOf(
 			test_helpers.IlkFileEvent{
-				IlkIdentifier: relevantIlkName,
+				IlkIdentifier: relevantIlkIdentifier,
 				What:          fileBlockOne.What,
 				Data:          fileBlockOne.Data,
 			},
 			test_helpers.IlkFileEvent{
-				IlkIdentifier: relevantIlkName,
+				IlkIdentifier: relevantIlkIdentifier,
 				What:          fileBlockTwo.What,
 				Data:          fileBlockTwo.Data,
 			},
@@ -149,12 +149,12 @@ var _ = Describe("Ilk File Events Query", func() {
 		Expect(vatBlockOneErr).NotTo(HaveOccurred())
 
 		var actualFiles []test_helpers.IlkFileEvent
-		filesErr := db.Select(&actualFiles, `SELECT ilk_identifier, what, data FROM api.all_ilk_file_events($1)`, test_helpers.FakeIlk.Name)
+		filesErr := db.Select(&actualFiles, `SELECT ilk_identifier, what, data FROM api.all_ilk_file_events($1)`, test_helpers.FakeIlk.Identifier)
 		Expect(filesErr).NotTo(HaveOccurred())
 
 		Expect(actualFiles).To(ConsistOf(
 			test_helpers.IlkFileEvent{
-				IlkIdentifier: relevantIlkName,
+				IlkIdentifier: relevantIlkIdentifier,
 				What:          relevantFile.What,
 				Data:          relevantFile.Data,
 			},

@@ -40,12 +40,11 @@ var _ = Describe("Ilk State History Query", func() {
 		jugRepository.SetDB(db)
 		headerRepository = repositories.NewHeaderRepository(db)
 
-		blockOneHeader = fakes.GetFakeHeader(int64(blockOne))
+		blockOneHeader = fakes.GetFakeHeaderWithTimestamp(int64(111111111), int64(blockOne))
 		_, err := headerRepository.CreateOrUpdateHeader(blockOneHeader)
 		Expect(err).NotTo(HaveOccurred())
 
-		blockTwoHeader = fakes.GetFakeHeader(int64(blockTwo))
-		blockTwoHeader.Timestamp = blockTwoHeader.Timestamp + "2"
+		blockTwoHeader = fakes.GetFakeHeaderWithTimestamp(int64(222222222), int64(blockTwo))
 		blockTwoHeader.Hash = "block2Hash"
 		_, err = headerRepository.CreateOrUpdateHeader(blockTwoHeader)
 		Expect(err).NotTo(HaveOccurred())
@@ -71,8 +70,8 @@ var _ = Describe("Ilk State History Query", func() {
 	It("returns the history of an ilk from the given block height", func() {
 		var dbResult []test_helpers.IlkState
 		err := db.Select(&dbResult,
-			`SELECT ilk_name, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated from api.all_ilk_states($1, $2)`,
-			test_helpers.FakeIlk.Name, blockTwo)
+			`SELECT ilk_identifier, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated from api.all_ilk_states($1, $2)`,
+			test_helpers.FakeIlk.Identifier, blockTwo)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(2))
@@ -91,8 +90,8 @@ var _ = Describe("Ilk State History Query", func() {
 
 		var dbResult []test_helpers.IlkState
 		err := db.Select(&dbResult,
-			`SELECT ilk_name, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated from api.all_ilk_states($1, $2)`,
-			test_helpers.AnotherFakeIlk.Name, blockTwo)
+			`SELECT ilk_identifier, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated from api.all_ilk_states($1, $2)`,
+			test_helpers.AnotherFakeIlk.Identifier, blockTwo)
 		Expect(err).NotTo(HaveOccurred())
 		expectedBlockOneAnotherIlkState := test_helpers.IlkStateFromValues(test_helpers.AnotherFakeIlk.Hex,
 			blockOneHeader.Timestamp, blockOneHeader.Timestamp, blockOneAnotherFakeIlkValues)
@@ -106,21 +105,21 @@ var _ = Describe("Ilk State History Query", func() {
 	It("handles a query with a block height before the ilk is in the db", func() {
 		blockZero := blockOne - 1
 
-		blockZeroHeader := fakes.GetFakeHeader(int64(blockZero))
+		blockZeroHeader := fakes.GetFakeHeaderWithTimestamp(int64(000000000), int64(blockZero))
 		_, err := headerRepository.CreateOrUpdateHeader(blockZeroHeader)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []test_helpers.IlkState
 		err = db.Select(&dbResult,
-			`SELECT ilk_name, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated from api.all_ilk_states($1, $2)`,
-			test_helpers.FakeIlk.Name, blockZero)
+			`SELECT ilk_identifier, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated from api.all_ilk_states($1, $2)`,
+			test_helpers.FakeIlk.Identifier, blockZero)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(dbResult).To(BeEmpty())
 	})
 
 	It("handles when there have been no recent updates to the ilk", func() {
 		blockOneHundred := int64(blockOne + 100)
-		blockOneHundredHeader := fakes.GetFakeHeader(blockOneHundred)
+		blockOneHundredHeader := fakes.GetFakeHeaderWithTimestamp(int64(999999999), blockOneHundred)
 		_, err := headerRepository.CreateOrUpdateHeader(blockOneHundredHeader)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -128,8 +127,8 @@ var _ = Describe("Ilk State History Query", func() {
 
 		var dbResult []test_helpers.IlkState
 		err = db.Select(&dbResult,
-			`SELECT ilk_name, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated from api.all_ilk_states($1, $2)`,
-			test_helpers.FakeIlk.Name, blockOneHundred)
+			`SELECT ilk_identifier, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated from api.all_ilk_states($1, $2)`,
+			test_helpers.FakeIlk.Identifier, blockOneHundred)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(dbResult).To(ConsistOf(expectedBlockOneIlkState, expectedBlockTwoIlkState))
@@ -143,7 +142,7 @@ var _ = Describe("Ilk State History Query", func() {
 
 	It("uses default value for blockHeight if not supplied", func() {
 		var dbResult []int
-		err := db.Select(&dbResult, `SELECT block_height FROM api.all_ilk_states($1)`, test_helpers.FakeIlk.Name)
+		err := db.Select(&dbResult, `SELECT block_height FROM api.all_ilk_states($1)`, test_helpers.FakeIlk.Identifier)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(dbResult).To(Equal([]int{blockTwo, blockOne}))
 	})

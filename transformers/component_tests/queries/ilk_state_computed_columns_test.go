@@ -61,18 +61,17 @@ var _ = Describe("Ilk state computed columns", func() {
 
 			var actualFrobs []test_helpers.FrobEvent
 			getFrobsErr := db.Select(&actualFrobs,
-				`SELECT ilk_name, urn_guy, dink, dart FROM api.ilk_state_frobs(
-                        (SELECT (ilk_name, block_height, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated)::api.ilk_state
+				`SELECT ilk_identifier, urn_guy, dink, dart FROM api.ilk_state_frobs(
+                        (SELECT (ilk_identifier, block_height, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated)::api.ilk_state
                          FROM api.get_ilk($1, $2))
-
-                    )`, test_helpers.FakeIlk.Name, fakeBlock)
+                    )`, test_helpers.FakeIlk.Identifier, fakeBlock)
 			Expect(getFrobsErr).NotTo(HaveOccurred())
 
 			expectedFrobs := []test_helpers.FrobEvent{{
-				IlkName: test_helpers.FakeIlk.Name,
-				UrnGuy:  frobEvent.Urn,
-				Dink:    frobEvent.Dink,
-				Dart:    frobEvent.Dart,
+				IlkIdentifier: test_helpers.FakeIlk.Identifier,
+				UrnGuy:        frobEvent.Urn,
+				Dink:          frobEvent.Dink,
+				Dart:          frobEvent.Dart,
 			}}
 
 			Expect(actualFrobs).To(Equal(expectedFrobs))
@@ -91,13 +90,13 @@ var _ = Describe("Ilk state computed columns", func() {
 			var actualFiles []test_helpers.IlkFileEvent
 			getFilesErr := db.Select(&actualFiles,
 				`SELECT ilk_identifier, what, data FROM api.ilk_state_ilk_file_events(
-                        (SELECT (ilk_name, block_height, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated)::api.ilk_state
+                        (SELECT (ilk_identifier, block_height, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated)::api.ilk_state
                          FROM api.get_ilk($1, $2))
-                    )`, test_helpers.FakeIlk.Name, fakeBlock)
+                    )`, test_helpers.FakeIlk.Identifier, fakeBlock)
 			Expect(getFilesErr).NotTo(HaveOccurred())
 
 			expectedFiles := []test_helpers.IlkFileEvent{{
-				IlkIdentifier: test_helpers.GetValidNullString(test_helpers.FakeIlk.Name),
+				IlkIdentifier: test_helpers.GetValidNullString(test_helpers.FakeIlk.Identifier),
 				What:          fileEvent.What,
 				Data:          fileEvent.Data,
 			}}
@@ -117,20 +116,20 @@ var _ = Describe("Ilk state computed columns", func() {
 
 			var actualBites []test_helpers.BiteEvent
 			getBitesErr := db.Select(&actualBites, `
-				SELECT ilk_name, urn_guy, ink, art, tab FROM api.ilk_state_bites(
-					(SELECT (ilk_name, block_height, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated)::api.ilk_state
+				SELECT ilk_identifier, urn_guy, ink, art, tab FROM api.ilk_state_bites(
+					(SELECT (ilk_identifier, block_height, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated)::api.ilk_state
 					FROM api.get_ilk($1, $2))
 				)`,
-				test_helpers.FakeIlk.Name,
+				test_helpers.FakeIlk.Identifier,
 				fakeBlock)
 			Expect(getBitesErr).NotTo(HaveOccurred())
 
 			expectedBites := []test_helpers.BiteEvent{{
-				IlkName: test_helpers.FakeIlk.Name,
-				UrnGuy:  biteEvent.Urn,
-				Ink:     biteEvent.Ink,
-				Art:     biteEvent.Art,
-				Tab:     biteEvent.Tab,
+				IlkIdentifier: test_helpers.FakeIlk.Identifier,
+				UrnGuy:        biteEvent.Urn,
+				Ink:           biteEvent.Ink,
+				Art:           biteEvent.Art,
+				Tab:           biteEvent.Tab,
 			}}
 
 			Expect(actualBites).To(Equal(expectedBites))

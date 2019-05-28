@@ -51,15 +51,15 @@ var _ = Describe("Urn history query", func() {
 		expectedRatioBlockOne := helper.GetExpectedRatio(inkBlockOne, urnSetupData.Spot, artBlockOne, urnSetupData.Rate)
 		expectedTimestampOne := helper.GetExpectedTimestamp(timestampOne)
 		expectedUrnBlockOne := helper.UrnState{
-			UrnGuy:      fakeUrn,
-			IlkName:     helper.FakeIlk.Name,
-			BlockHeight: blockOne,
-			Ink:         strconv.Itoa(inkBlockOne),
-			Art:         strconv.Itoa(artBlockOne),
-			Ratio:       helper.GetValidNullString(strconv.FormatFloat(expectedRatioBlockOne, 'f', 8, 64)),
-			Safe:        expectedRatioBlockOne >= 1,
-			Created:     helper.GetValidNullString(expectedTimestampOne),
-			Updated:     helper.GetValidNullString(expectedTimestampOne),
+			UrnGuy:        fakeUrn,
+			IlkIdentifier: helper.FakeIlk.Identifier,
+			BlockHeight:   blockOne,
+			Ink:           strconv.Itoa(inkBlockOne),
+			Art:           strconv.Itoa(artBlockOne),
+			Ratio:         helper.GetValidNullString(strconv.FormatFloat(expectedRatioBlockOne, 'f', 8, 64)),
+			Safe:          expectedRatioBlockOne >= 1,
+			Created:       helper.GetValidNullString(expectedTimestampOne),
+			Updated:       helper.GetValidNullString(expectedTimestampOne),
 		}
 
 		// New block
@@ -83,15 +83,15 @@ var _ = Describe("Urn history query", func() {
 		expectedRatioBlockTwo := helper.GetExpectedRatio(inkBlockTwo, urnSetupData.Spot, artBlockOne, urnSetupData.Rate)
 		expectedTimestampTwo := helper.GetExpectedTimestamp(timestampTwo)
 		expectedUrnBlockTwo := helper.UrnState{
-			UrnGuy:      fakeUrn,
-			IlkName:     helper.FakeIlk.Name,
-			BlockHeight: blockTwo,
-			Ink:         strconv.Itoa(inkBlockTwo),
-			Art:         strconv.Itoa(artBlockOne),
-			Ratio:       helper.GetValidNullString(strconv.FormatFloat(expectedRatioBlockTwo, 'f', 8, 64)),
-			Safe:        expectedRatioBlockTwo >= 1,
-			Created:     helper.GetValidNullString(expectedTimestampOne),
-			Updated:     helper.GetValidNullString(expectedTimestampTwo),
+			UrnGuy:        fakeUrn,
+			IlkIdentifier: helper.FakeIlk.Identifier,
+			BlockHeight:   blockTwo,
+			Ink:           strconv.Itoa(inkBlockTwo),
+			Art:           strconv.Itoa(artBlockOne),
+			Ratio:         helper.GetValidNullString(strconv.FormatFloat(expectedRatioBlockTwo, 'f', 8, 64)),
+			Safe:          expectedRatioBlockTwo >= 1,
+			Created:       helper.GetValidNullString(expectedTimestampOne),
+			Updated:       helper.GetValidNullString(expectedTimestampTwo),
 		}
 
 		// New block
@@ -106,21 +106,21 @@ var _ = Describe("Urn history query", func() {
 
 		expectedTimestampThree := helper.GetExpectedTimestamp(timestampThree)
 		expectedUrnBlockThree := helper.UrnState{
-			UrnGuy:      fakeUrn,
-			IlkName:     helper.FakeIlk.Name,
-			BlockHeight: blockThree,
-			Ink:         strconv.Itoa(inkBlockTwo),
-			Art:         strconv.Itoa(artBlockThree),
-			Ratio:       helper.GetEmptyNullString(), // 0 art => null ratio
-			Safe:        true,                        // 0 art => safe urn
-			Created:     helper.GetValidNullString(expectedTimestampOne),
-			Updated:     helper.GetValidNullString(expectedTimestampThree),
+			UrnGuy:        fakeUrn,
+			IlkIdentifier: helper.FakeIlk.Identifier,
+			BlockHeight:   blockThree,
+			Ink:           strconv.Itoa(inkBlockTwo),
+			Art:           strconv.Itoa(artBlockThree),
+			Ratio:         helper.GetEmptyNullString(), // 0 art => null ratio
+			Safe:          true,                        // 0 art => safe urn
+			Created:       helper.GetValidNullString(expectedTimestampOne),
+			Updated:       helper.GetValidNullString(expectedTimestampThree),
 		}
 
 		var result []helper.UrnState
 		dbErr := db.Select(&result,
 			`SELECT * FROM api.all_urn_states($1, $2, $3)`,
-			helper.FakeIlk.Name, fakeUrn, blockThree)
+			helper.FakeIlk.Identifier, fakeUrn, blockThree)
 		Expect(dbErr).NotTo(HaveOccurred())
 
 		// Reverse chronological order
@@ -136,13 +136,13 @@ var _ = Describe("Urn history query", func() {
 	})
 
 	It("fails if only one argument is supplied (STRICT)", func() {
-		_, err := db.Exec(`SELECT * FROM api.all_urn_states($1::text)`, helper.FakeIlk.Name)
+		_, err := db.Exec(`SELECT * FROM api.all_urn_states($1::text)`, helper.FakeIlk.Identifier)
 		Expect(err).NotTo(BeNil())
 		Expect(err.Error()).To(ContainSubstring("function api.all_urn_states(text) does not exist"))
 	})
 
 	It("allows blockHeight argument to be omitted", func() {
-		_, err := db.Exec(`SELECT * FROM api.all_urn_states($1, $2)`, helper.FakeIlk.Name, fakeUrn)
+		_, err := db.Exec(`SELECT * FROM api.all_urn_states($1, $2)`, helper.FakeIlk.Identifier, fakeUrn)
 		Expect(err).NotTo(HaveOccurred())
 	})
 })

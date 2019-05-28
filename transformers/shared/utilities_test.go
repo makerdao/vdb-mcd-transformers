@@ -133,23 +133,23 @@ var _ = Describe("Shared utilities", func() {
 
 	Describe("decoding ilk name", func() {
 		It("handles hex ilk", func() {
-			actualIlkName := shared.DecodeHexToText(test_helpers.FakeIlk.Hex)
+			actualIlkIdentifier := shared.DecodeHexToText(test_helpers.FakeIlk.Hex)
 
-			Expect(actualIlkName).To(Equal(test_helpers.FakeIlk.Name))
+			Expect(actualIlkIdentifier).To(Equal(test_helpers.FakeIlk.Identifier))
 		})
 
 		It("handles hex ilk with leading 0x", func() {
 			hexIlk := "0x" + test_helpers.FakeIlk.Hex
-			actualIlkName := shared.DecodeHexToText(hexIlk)
+			actualIlkIdentifier := shared.DecodeHexToText(hexIlk)
 
-			Expect(actualIlkName).To(Equal(test_helpers.FakeIlk.Name))
+			Expect(actualIlkIdentifier).To(Equal(test_helpers.FakeIlk.Identifier))
 		})
 
 		It("discards zero bytes", func() {
 			hexIlk := "0x000000"
-			actualIlkName := shared.DecodeHexToText(hexIlk)
+			actualIlkIdentifier := shared.DecodeHexToText(hexIlk)
 
-			Expect(actualIlkName).To(Equal(""))
+			Expect(actualIlkIdentifier).To(Equal(""))
 		})
 	})
 })

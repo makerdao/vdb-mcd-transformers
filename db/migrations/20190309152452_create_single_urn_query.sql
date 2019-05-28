@@ -2,7 +2,7 @@
 -- SQL in this section is executed when the migration is applied.
 
 -- Function returning state for a single urn as of given block
-CREATE FUNCTION api.get_urn(ilk TEXT, urn TEXT, block_height BIGINT DEFAULT api.max_block())
+CREATE FUNCTION api.get_urn(ilk_identifier TEXT, urn_guy TEXT, block_height BIGINT DEFAULT api.max_block())
   RETURNS api.urn_state
 AS
 
@@ -13,34 +13,34 @@ WITH
     FROM maker.urns urns
     LEFT JOIN maker.ilks ilks
     ON urns.ilk_id = ilks.id
-    WHERE ilks.name = $1 AND urns.guy = $2
+    WHERE ilks.identifier = ilk_identifier AND urns.guy = urn_guy
   ),
 
   ink AS ( -- Latest ink
     SELECT DISTINCT ON (urn_id) urn_id, ink, block_number
     FROM maker.vat_urn_ink
-    WHERE urn_id = (SELECT urn_id from urn where guy = $2) AND block_number <= block_height
+    WHERE urn_id = (SELECT urn_id from urn where guy = urn_guy) AND block_number <= $3
     ORDER BY urn_id, block_number DESC
   ),
 
   art AS ( -- Latest art
     SELECT DISTINCT ON (urn_id) urn_id, art, block_number
     FROM maker.vat_urn_art
-    WHERE urn_id = (SELECT urn_id from urn where guy = $2) AND block_number <= block_height
+    WHERE urn_id = (SELECT urn_id from urn where guy = urn_guy) AND block_number <=  $3
     ORDER BY urn_id, block_number DESC
   ),
 
   rate AS ( -- Latest rate for ilk
     SELECT DISTINCT ON (ilk_id) ilk_id, rate, block_number
     FROM maker.vat_ilk_rate
-    WHERE ilk_id = (SELECT ilk_id FROM urn) AND block_number <= block_height
+    WHERE ilk_id = (SELECT ilk_id FROM urn) AND block_number <= $3
     ORDER BY ilk_id, block_number DESC
   ),
 
   spot AS ( -- Get latest price update for ilk. Problematic from update frequency, slow query?
     SELECT DISTINCT ON (ilk_id) ilk_id, spot, block_number
     FROM maker.vat_ilk_spot
-    WHERE ilk_id = (SELECT ilk_id FROM urn) AND block_number <= block_height
+    WHERE ilk_id = (SELECT ilk_id FROM urn) AND block_number <= $3
     ORDER BY ilk_id, block_number DESC
   ),
 
@@ -67,7 +67,7 @@ WITH
     FROM
       (
         SELECT DISTINCT ON (urn_id) urn_id, block_hash FROM maker.vat_urn_ink
-        WHERE urn_id = (SELECT urn_id from urn where guy = $2)
+        WHERE urn_id = (SELECT urn_id from urn where guy = urn_guy)
         ORDER BY urn_id, block_number ASC
       ) earliest_blocks
         LEFT JOIN public.headers ON hash = block_hash
@@ -85,7 +85,7 @@ WITH
     ORDER BY urn_id, block_timestamp DESC
   )
 
-SELECT $2 AS urn_guy, $1 AS ilk_name, $3 AS block_height, ink.ink, art.art, ratio.ratio,
+SELECT urn_guy, ilk_identifier, $3, ink.ink, art.art, ratio.ratio,
        COALESCE(safe.safe, art.art = 0), created.datetime, updated.datetime
 FROM ink
   LEFT JOIN art     ON art.urn_id = ink.urn_id
