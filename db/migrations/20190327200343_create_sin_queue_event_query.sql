@@ -22,12 +22,12 @@ $$
   SELECT block_timestamp AS era, 'fess'::api.sin_act AS act, block_number AS block_height, tx_idx
   FROM maker.vow_fess
   LEFT JOIN headers ON vow_fess.header_id = headers.id
-  WHERE block_timestamp = $1
+  WHERE block_timestamp = all_sin_queue_events.era
   UNION
   SELECT era, 'flog'::api.sin_act AS act, block_number AS block_height, tx_idx
   FROM maker.vow_flog
   LEFT JOIN headers ON vow_flog.header_id = headers.id
-  where vow_flog.era = $1
+  where vow_flog.era = all_sin_queue_events.era
   ORDER BY block_height DESC
 $$ LANGUAGE sql STABLE;
 

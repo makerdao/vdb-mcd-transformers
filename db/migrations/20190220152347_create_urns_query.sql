@@ -46,28 +46,28 @@ WITH
   inks AS ( -- Latest ink for each urn
     SELECT DISTINCT ON (urn_id) urn_id, ink, block_number
     FROM maker.vat_urn_ink
-    WHERE block_number <= block_height
+    WHERE block_number <= all_urns.block_height
     ORDER BY urn_id, block_number DESC
   ),
 
   arts AS ( -- Latest art for each urn
     SELECT DISTINCT ON (urn_id) urn_id, art, block_number
     FROM maker.vat_urn_art
-    WHERE block_number <= block_height
+    WHERE block_number <= all_urns.block_height
     ORDER BY urn_id, block_number DESC
   ),
 
   rates AS ( -- Latest rate for each ilk
     SELECT DISTINCT ON (ilk_id) ilk_id, rate, block_number
     FROM maker.vat_ilk_rate
-    WHERE block_number <= block_height
+    WHERE block_number <= all_urns.block_height
     ORDER BY ilk_id, block_number DESC
   ),
 
   spots AS ( -- Get latest price update for ilk. Problematic from update frequency, slow query?
     SELECT DISTINCT ON (ilk_id) ilk_id, spot, block_number
     FROM maker.vat_ilk_spot
-    WHERE block_number <= block_height
+    WHERE block_number <= all_urns.block_height
     ORDER BY ilk_id, block_number DESC
   ),
 
@@ -114,7 +114,7 @@ WITH
     ORDER BY urn_id, headers.block_timestamp DESC
   )
 
-SELECT urns.guy, ilks.identifier, block_height, inks.ink, arts.art, ratios.ratio,
+SELECT urns.guy, ilks.identifier, all_urns.block_height, inks.ink, arts.art, ratios.ratio,
        COALESCE(safe.safe, arts.art = 0), created.datetime, updated.datetime
 FROM inks
   LEFT JOIN arts       ON arts.urn_id = inks.urn_id

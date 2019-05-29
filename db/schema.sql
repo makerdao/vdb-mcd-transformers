@@ -357,17 +357,17 @@ COMMENT ON FUNCTION api.max_block() IS '@omit';
 
 CREATE FUNCTION api.all_ilk_states(ilk_identifier text, block_height bigint DEFAULT api.max_block()) RETURNS SETOF api.ilk_state
     LANGUAGE plpgsql STABLE STRICT
-    AS $_$
+    AS $$
 DECLARE
   r api.relevant_block;
 BEGIN
-  FOR r IN SELECT get_ilk_blocks_before.block_height FROM api.get_ilk_blocks_before(ilk_identifier, $2)
+  FOR r IN SELECT get_ilk_blocks_before.block_height FROM api.get_ilk_blocks_before(ilk_identifier, all_ilk_states.block_height)
   LOOP
     RETURN QUERY
     SELECT * FROM api.get_ilk(ilk_identifier, r.block_height);
   END LOOP;
 END;
-$_$;
+$$;
 
 
 --
@@ -376,61 +376,61 @@ $_$;
 
 CREATE FUNCTION api.all_ilks(block_height bigint DEFAULT api.max_block()) RETURNS SETOF api.ilk_state
     LANGUAGE sql STABLE STRICT
-    AS $_$
+    AS $$
 WITH rates AS (
   SELECT DISTINCT ON (ilk_id) rate, ilk_id, block_hash
   FROM maker.vat_ilk_rate
-  WHERE block_number <= $1
+  WHERE block_number <= all_ilks.block_height
   ORDER BY ilk_id, block_number DESC
 ), arts AS (
   SELECT DISTINCT ON (ilk_id) art, ilk_id, block_hash
   FROM maker.vat_ilk_art
-  WHERE block_number <= $1
+  WHERE block_number <= all_ilks.block_height
   ORDER BY ilk_id, block_number DESC
 ), spots AS (
   SELECT DISTINCT ON (ilk_id) spot, ilk_id, block_hash
   FROM maker.vat_ilk_spot
-  WHERE block_number <= $1
+  WHERE block_number <= all_ilks.block_height
   ORDER BY ilk_id, block_number DESC
 ), lines AS (
   SELECT DISTINCT ON (ilk_id) line, ilk_id, block_hash
   FROM maker.vat_ilk_line
-  WHERE block_number <= $1
+  WHERE block_number <= all_ilks.block_height
   ORDER BY ilk_id, block_number DESC
 ), dusts AS (
   SELECT DISTINCT ON (ilk_id) dust, ilk_id, block_hash
   FROM maker.vat_ilk_dust
-  WHERE block_number <= $1
+  WHERE block_number <= all_ilks.block_height
   ORDER BY ilk_id, block_number DESC
 ), chops AS (
   SELECT DISTINCT ON (ilk_id) chop, ilk_id, block_hash
   FROM maker.cat_ilk_chop
-  WHERE block_number <= $1
+  WHERE block_number <= all_ilks.block_height
   ORDER BY ilk_id, block_number DESC
 ), lumps AS (
   SELECT DISTINCT ON (ilk_id) lump, ilk_id, block_hash
   FROM maker.cat_ilk_lump
-  WHERE block_number <= $1
+  WHERE block_number <= all_ilks.block_height
   ORDER BY ilk_id, block_number DESC
 ), flips AS (
   SELECT DISTINCT ON (ilk_id) flip, ilk_id, block_hash
   FROM maker.cat_ilk_flip
-  WHERE block_number <= $1
+  WHERE block_number <= all_ilks.block_height
   ORDER BY ilk_id, block_number DESC
 ), rhos AS (
   SELECT DISTINCT ON (ilk_id) rho, ilk_id, block_hash
   FROM maker.jug_ilk_rho
-  WHERE block_number <= $1
+  WHERE block_number <= all_ilks.block_height
   ORDER BY ilk_id, block_number DESC
 ), duties AS (
   SELECT DISTINCT ON (ilk_id) duty, ilk_id, block_hash
   FROM maker.jug_ilk_duty
-  WHERE block_number <= $1
+  WHERE block_number <= all_ilks.block_height
   ORDER BY ilk_id, block_number DESC
 )
   SELECT
     ilks.identifier,
-    $1 AS block_height,
+    all_ilks.block_height,
     rates.rate,
     arts.art,
     spots.spot,
@@ -443,14 +443,14 @@ WITH rates AS (
     duties.duty,
     (
       SELECT api.epoch_to_datetime(h.block_timestamp) AS created
-      FROM api.get_ilk_blocks_before(ilks.identifier, $1) b
+      FROM api.get_ilk_blocks_before(ilks.identifier, all_ilks.block_height) b
       JOIN headers h on h.block_number = b.block_height
       ORDER BY h.block_number ASC
       LIMIT 1
     ),
     (
       SELECT api.epoch_to_datetime(h.block_timestamp) AS updated
-      FROM api.get_ilk_blocks_before(ilks.identifier, $1) b
+      FROM api.get_ilk_blocks_before(ilks.identifier, all_ilks.block_height) b
       JOIN headers h on h.block_number = b.block_height
       ORDER BY h.block_number DESC
       LIMIT 1
@@ -478,7 +478,7 @@ WITH rates AS (
     rhos.rho is not null OR
     duties.duty is not null
   )
-$_$;
+$$;
 
 
 --
@@ -507,18 +507,18 @@ $$;
 
 CREATE FUNCTION api.all_sin_queue_events(era numeric) RETURNS SETOF api.sin_queue_event
     LANGUAGE sql STABLE
-    AS $_$
+    AS $$
   SELECT block_timestamp AS era, 'fess'::api.sin_act AS act, block_number AS block_height, tx_idx
   FROM maker.vow_fess
   LEFT JOIN headers ON vow_fess.header_id = headers.id
-  WHERE block_timestamp = $1
+  WHERE block_timestamp = all_sin_queue_events.era
   UNION
   SELECT era, 'flog'::api.sin_act AS act, block_number AS block_height, tx_idx
   FROM maker.vow_flog
   LEFT JOIN headers ON vow_flog.header_id = headers.id
-  where vow_flog.era = $1
+  where vow_flog.era = all_sin_queue_events.era
   ORDER BY block_height DESC
-$_$;
+$$;
 
 
 --
@@ -527,7 +527,7 @@ $_$;
 
 CREATE FUNCTION api.all_urn_states(ilk_identifier text, urn_guy text, block_height bigint DEFAULT api.max_block()) RETURNS SETOF api.urn_state
     LANGUAGE plpgsql STABLE STRICT
-    AS $_$
+    AS $$
 DECLARE
   blocks BIGINT[];
   i BIGINT;
@@ -543,12 +543,12 @@ BEGIN
        SELECT block_number
        FROM maker.vat_urn_ink
        WHERE vat_urn_ink.urn_id = _urn_id
-         AND block_number <= $3
+         AND block_number <= all_urn_states.block_height
        UNION
        SELECT block_number
        FROM maker.vat_urn_art
        WHERE vat_urn_art.urn_id = _urn_id
-         AND block_number <= $3
+         AND block_number <= all_urn_states.block_height
      ) inks_and_arts
     ORDER BY block_number DESC
   );
@@ -559,7 +559,7 @@ BEGIN
         SELECT * FROM api.get_urn(ilk_identifier, urn_guy, i);
     END LOOP;
 END;
-$_$;
+$$;
 
 
 --
@@ -580,28 +580,28 @@ WITH
   inks AS ( -- Latest ink for each urn
     SELECT DISTINCT ON (urn_id) urn_id, ink, block_number
     FROM maker.vat_urn_ink
-    WHERE block_number <= block_height
+    WHERE block_number <= all_urns.block_height
     ORDER BY urn_id, block_number DESC
   ),
 
   arts AS ( -- Latest art for each urn
     SELECT DISTINCT ON (urn_id) urn_id, art, block_number
     FROM maker.vat_urn_art
-    WHERE block_number <= block_height
+    WHERE block_number <= all_urns.block_height
     ORDER BY urn_id, block_number DESC
   ),
 
   rates AS ( -- Latest rate for each ilk
     SELECT DISTINCT ON (ilk_id) ilk_id, rate, block_number
     FROM maker.vat_ilk_rate
-    WHERE block_number <= block_height
+    WHERE block_number <= all_urns.block_height
     ORDER BY ilk_id, block_number DESC
   ),
 
   spots AS ( -- Get latest price update for ilk. Problematic from update frequency, slow query?
     SELECT DISTINCT ON (ilk_id) ilk_id, spot, block_number
     FROM maker.vat_ilk_spot
-    WHERE block_number <= block_height
+    WHERE block_number <= all_urns.block_height
     ORDER BY ilk_id, block_number DESC
   ),
 
@@ -648,7 +648,7 @@ WITH
     ORDER BY urn_id, headers.block_timestamp DESC
   )
 
-SELECT urns.guy, ilks.identifier, block_height, inks.ink, arts.art, ratios.ratio,
+SELECT urns.guy, ilks.identifier, all_urns.block_height, inks.ink, arts.art, ratios.ratio,
        COALESCE(safe.safe, arts.art = 0), created.datetime, updated.datetime
 FROM inks
   LEFT JOIN arts       ON arts.urn_id = inks.urn_id
@@ -760,7 +760,7 @@ $$;
 
 CREATE FUNCTION api.get_ilk(ilk_identifier text, block_height bigint DEFAULT api.max_block()) RETURNS api.ilk_state
     LANGUAGE sql STABLE STRICT
-    AS $_$
+    AS $$
 WITH ilk AS (
     SELECT id FROM maker.ilks WHERE identifier = ilk_identifier
 ),
@@ -771,7 +771,7 @@ rates AS (
       block_hash
     FROM maker.vat_ilk_rate
     WHERE ilk_id = (SELECT id FROM ilk)
-          AND block_number <= $2
+          AND block_number <= get_ilk.block_height
     ORDER BY ilk_id, block_number DESC
     LIMIT 1
 ), arts AS (
@@ -781,7 +781,7 @@ rates AS (
       block_hash
     FROM maker.vat_ilk_art
     WHERE ilk_id = (SELECT id FROM ilk)
-          AND block_number <= $2
+          AND block_number <= get_ilk.block_height
     ORDER BY ilk_id, block_number DESC
     LIMIT 1
 ), spots AS (
@@ -791,7 +791,7 @@ rates AS (
       block_hash
     FROM maker.vat_ilk_spot
     WHERE ilk_id = (SELECT id FROM ilk)
-          AND block_number <= $2
+          AND block_number <= get_ilk.block_height
     ORDER BY ilk_id, block_number DESC
     LIMIT 1
 ), lines AS (
@@ -801,7 +801,7 @@ rates AS (
       block_hash
     FROM maker.vat_ilk_line
     WHERE ilk_id = (SELECT id FROM ilk)
-          AND block_number <= $2
+          AND block_number <= get_ilk.block_height
     ORDER BY ilk_id, block_number DESC
     LIMIT 1
 ), dusts AS (
@@ -811,7 +811,7 @@ rates AS (
       block_hash
     FROM maker.vat_ilk_dust
     WHERE ilk_id = (SELECT id FROM ilk)
-          AND block_number <= $2
+          AND block_number <= get_ilk.block_height
     ORDER BY ilk_id, block_number DESC
     LIMIT 1
 ), chops AS (
@@ -821,7 +821,7 @@ rates AS (
       block_hash
     FROM maker.cat_ilk_chop
     WHERE ilk_id = (SELECT id FROM ilk)
-          AND block_number <= $2
+          AND block_number <= get_ilk.block_height
     ORDER BY ilk_id, block_number DESC
     LIMIT 1
 ), lumps AS (
@@ -831,7 +831,7 @@ rates AS (
       block_hash
     FROM maker.cat_ilk_lump
     WHERE ilk_id = (SELECT id FROM ilk)
-          AND block_number <= $2
+          AND block_number <= get_ilk.block_height
     ORDER BY ilk_id, block_number DESC
     LIMIT 1
 ), flips AS (
@@ -841,7 +841,7 @@ rates AS (
       block_hash
     FROM maker.cat_ilk_flip
     WHERE ilk_id = (SELECT id FROM ilk)
-          AND block_number <= $2
+          AND block_number <= get_ilk.block_height
     ORDER BY ilk_id, block_number DESC
     LIMIT 1
 ), rhos AS (
@@ -851,7 +851,7 @@ rates AS (
       block_hash
     FROM maker.jug_ilk_rho
     WHERE ilk_id = (SELECT id FROM ilk)
-          AND block_number <= $2
+          AND block_number <= get_ilk.block_height
     ORDER BY ilk_id, block_number DESC
     LIMIT 1
 ), duties AS (
@@ -861,11 +861,11 @@ rates AS (
       block_hash
     FROM maker.jug_ilk_duty
     WHERE ilk_id = (SELECT id FROM ilk)
-          AND block_number <= $2
+          AND block_number <= get_ilk.block_height
     ORDER BY ilk_id, block_number DESC
     LIMIT 1
 ), relevant_blocks AS (
-  SELECT * FROM api.get_ilk_blocks_before(ilk_identifier, $2)
+  SELECT * FROM api.get_ilk_blocks_before(ilk_identifier, get_ilk.block_height)
 ), created AS (
     SELECT DISTINCT ON (relevant_blocks.ilk_id, relevant_blocks.block_height)
       relevant_blocks.block_height,
@@ -890,7 +890,7 @@ rates AS (
 
 SELECT
   ilks.identifier,
-  $2 AS block_height,
+  get_ilk.block_height,
   rates.rate,
   arts.art,
   spots.spot,
@@ -928,7 +928,7 @@ WHERE (
   rhos.rho is not null OR
   duties.duty is not null
 )
-$_$;
+$$;
 
 
 --
@@ -937,7 +937,7 @@ $_$;
 
 CREATE FUNCTION api.get_ilk_blocks_before(ilk_identifier text, block_height bigint) RETURNS SETOF api.relevant_block
     LANGUAGE sql STABLE
-    AS $_$
+    AS $$
   WITH ilk AS (
     SELECT id FROM maker.ilks WHERE identifier = ilk_identifier
   )
@@ -946,7 +946,7 @@ SELECT
   block_hash,
   ilk_id
 FROM maker.vat_ilk_rate
-WHERE block_number <= $2
+WHERE block_number <= get_ilk_blocks_before.block_height
       AND ilk_id = (SELECT id FROM ilk)
 UNION
 SELECT
@@ -954,7 +954,7 @@ SELECT
   block_hash,
   ilk_id
 FROM maker.vat_ilk_art
-WHERE block_number <= $2
+WHERE block_number <= get_ilk_blocks_before.block_height
       AND ilk_id = (SELECT id FROM ilk)
 UNION
 SELECT
@@ -962,7 +962,7 @@ SELECT
   block_hash,
   ilk_id
 FROM maker.vat_ilk_spot
-WHERE block_number <= $2
+WHERE block_number <= get_ilk_blocks_before.block_height
       AND ilk_id = (SELECT id FROM ilk)
 UNION
 SELECT
@@ -970,7 +970,7 @@ SELECT
   block_hash,
   ilk_id
 FROM maker.vat_ilk_line
-WHERE block_number <= $2
+WHERE block_number <= get_ilk_blocks_before.block_height
       AND ilk_id = (SELECT id FROM ilk)
 UNION
 SELECT
@@ -978,7 +978,7 @@ SELECT
   block_hash,
   ilk_id
 FROM maker.vat_ilk_dust
-WHERE block_number <= $2
+WHERE block_number <= get_ilk_blocks_before.block_height
       AND ilk_id = (SELECT id FROM ilk)
 UNION
 SELECT
@@ -986,7 +986,7 @@ SELECT
   block_hash,
   ilk_id
 FROM maker.cat_ilk_chop
-WHERE block_number <= $2
+WHERE block_number <= get_ilk_blocks_before.block_height
       AND ilk_id = (SELECT id FROM ilk)
 UNION
 SELECT
@@ -994,7 +994,7 @@ SELECT
   block_hash,
   ilk_id
 FROM maker.cat_ilk_lump
-WHERE block_number <= $2
+WHERE block_number <= get_ilk_blocks_before.block_height
       AND ilk_id = (SELECT id FROM ilk)
 UNION
 SELECT
@@ -1002,7 +1002,7 @@ SELECT
   block_hash,
   ilk_id
 FROM maker.cat_ilk_flip
-WHERE block_number <= $2
+WHERE block_number <= get_ilk_blocks_before.block_height
       AND ilk_id = (SELECT id FROM ilk)
 UNION
 SELECT
@@ -1010,7 +1010,7 @@ SELECT
   block_hash,
   ilk_id
 FROM maker.jug_ilk_rho
-WHERE block_number <= $2
+WHERE block_number <= get_ilk_blocks_before.block_height
       AND ilk_id = (SELECT id FROM ilk)
 UNION
 SELECT
@@ -1018,10 +1018,10 @@ SELECT
   block_hash,
   ilk_id
 FROM maker.jug_ilk_duty
-WHERE block_number <= $2
+WHERE block_number <= get_ilk_blocks_before.block_height
       AND ilk_id = (SELECT id FROM ilk)
 ORDER BY block_height DESC
-$_$;
+$$;
 
 
 --
@@ -1035,7 +1035,7 @@ COMMENT ON FUNCTION api.get_ilk_blocks_before(ilk_identifier text, block_height 
 -- Name: get_queued_sin(numeric); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.get_queued_sin(_era numeric) RETURNS api.queued_sin
+CREATE FUNCTION api.get_queued_sin(era numeric) RETURNS api.queued_sin
     LANGUAGE sql STABLE STRICT
     AS $$
   WITH
@@ -1043,7 +1043,7 @@ CREATE FUNCTION api.get_queued_sin(_era numeric) RETURNS api.queued_sin
       SELECT era, vow_sin_mapping.block_number, api.epoch_to_datetime(block_timestamp) AS datetime
       FROM maker.vow_sin_mapping
       LEFT JOIN public.headers ON hash = block_hash
-      WHERE era = _era
+      WHERE era = get_queued_sin.era
       ORDER BY vow_sin_mapping.block_number ASC
       LIMIT 1
     ),
@@ -1052,16 +1052,16 @@ CREATE FUNCTION api.get_queued_sin(_era numeric) RETURNS api.queued_sin
       SELECT era, vow_sin_mapping.block_number, api.epoch_to_datetime(block_timestamp) AS datetime
       FROM maker.vow_sin_mapping
       LEFT JOIN public.headers ON hash = block_hash
-      WHERE era = _era
+      WHERE era = get_queued_sin.era
       ORDER BY vow_sin_mapping.block_number DESC
       LIMIT 1
     )
 
-  SELECT _era, tab, (SELECT EXISTS(SELECT id FROM maker.vow_flog WHERE vow_flog.era = _era)) AS flogged, created.datetime, updated.datetime
+  SELECT get_queued_sin.era, tab, (SELECT EXISTS(SELECT id FROM maker.vow_flog WHERE vow_flog.era = get_queued_sin.era)) AS flogged, created.datetime, updated.datetime
   FROM maker.vow_sin_mapping
   LEFT JOIN created ON created.era = vow_sin_mapping.era
   LEFT JOIN updated ON updated.era = vow_sin_mapping.era
-  WHERE vow_sin_mapping.era = _era
+  WHERE vow_sin_mapping.era = get_queued_sin.era
   ORDER BY vow_sin_mapping.block_number DESC
 $$;
 
@@ -1085,28 +1085,28 @@ WITH
   ink AS ( -- Latest ink
     SELECT DISTINCT ON (urn_id) urn_id, ink, block_number
     FROM maker.vat_urn_ink
-    WHERE urn_id = (SELECT urn_id from urn where guy = urn_guy) AND block_number <= $3
+    WHERE urn_id = (SELECT urn_id from urn where guy = urn_guy) AND block_number <= get_urn.block_height
     ORDER BY urn_id, block_number DESC
   ),
 
   art AS ( -- Latest art
     SELECT DISTINCT ON (urn_id) urn_id, art, block_number
     FROM maker.vat_urn_art
-    WHERE urn_id = (SELECT urn_id from urn where guy = urn_guy) AND block_number <=  $3
+    WHERE urn_id = (SELECT urn_id from urn where guy = urn_guy) AND block_number <= get_urn.block_height
     ORDER BY urn_id, block_number DESC
   ),
 
   rate AS ( -- Latest rate for ilk
     SELECT DISTINCT ON (ilk_id) ilk_id, rate, block_number
     FROM maker.vat_ilk_rate
-    WHERE ilk_id = (SELECT ilk_id FROM urn) AND block_number <= $3
+    WHERE ilk_id = (SELECT ilk_id FROM urn) AND block_number <= get_urn.block_height
     ORDER BY ilk_id, block_number DESC
   ),
 
   spot AS ( -- Get latest price update for ilk. Problematic from update frequency, slow query?
     SELECT DISTINCT ON (ilk_id) ilk_id, spot, block_number
     FROM maker.vat_ilk_spot
-    WHERE ilk_id = (SELECT ilk_id FROM urn) AND block_number <= $3
+    WHERE ilk_id = (SELECT ilk_id FROM urn) AND block_number <= get_urn.block_height
     ORDER BY ilk_id, block_number DESC
   ),
 
@@ -1160,7 +1160,6 @@ FROM ink
   LEFT JOIN safe    ON safe.ilk = ratio.ilk  AND safe.guy = ratio.guy
   LEFT JOIN created ON created.urn_id = art.urn_id
   LEFT JOIN updated ON updated.urn_id = art.urn_id
-  -- Add collections of frob and bite events?
 WHERE ink.urn_id IS NOT NULL
 $_$;
 
@@ -1311,7 +1310,7 @@ $$;
 -- Name: urn_bites(text, text); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.urn_bites(ilk_identifier text, _urn text) RETURNS SETOF api.bite_event
+CREATE FUNCTION api.urn_bites(ilk_identifier text, urn text) RETURNS SETOF api.bite_event
     LANGUAGE sql STABLE STRICT
     AS $$
   WITH
@@ -1319,10 +1318,10 @@ CREATE FUNCTION api.urn_bites(ilk_identifier text, _urn text) RETURNS SETOF api.
     urn AS (
       SELECT id FROM maker.urns
       WHERE ilk_id = (SELECT id FROM ilk)
-        AND guy = _urn
+        AND guy = urn_bites.urn
     )
 
-  SELECT ilk_identifier, _urn AS urn_guy, ink, art, tab, block_number, tx_idx
+  SELECT ilk_identifier, urn_bites.urn, ink, art, tab, block_number, tx_idx
   FROM maker.bite LEFT JOIN headers ON bite.header_id = headers.id
   WHERE bite.urn_id = (SELECT id FROM urn)
   ORDER BY block_number DESC

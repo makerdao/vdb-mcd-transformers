@@ -17,12 +17,12 @@ BEGIN
        SELECT block_number
        FROM maker.vat_urn_ink
        WHERE vat_urn_ink.urn_id = _urn_id
-         AND block_number <= $3
+         AND block_number <= all_urn_states.block_height
        UNION
        SELECT block_number
        FROM maker.vat_urn_art
        WHERE vat_urn_art.urn_id = _urn_id
-         AND block_number <= $3
+         AND block_number <= all_urn_states.block_height
      ) inks_and_arts
     ORDER BY block_number DESC
   );
