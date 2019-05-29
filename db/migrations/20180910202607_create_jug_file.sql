@@ -1,6 +1,6 @@
 -- +goose Up
 CREATE TABLE maker.jug_file_base (
-  id SERIAL PRIMARY KEY,
+  id        SERIAL PRIMARY KEY,
   header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
   what      TEXT,
   data      NUMERIC,
@@ -23,7 +23,7 @@ CREATE TABLE maker.jug_file_ilk (
 );
 
 CREATE TABLE maker.jug_file_vow (
-  id SERIAL PRIMARY KEY,
+  id        SERIAL PRIMARY KEY,
   header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
   what      TEXT,
   data      TEXT,
@@ -41,7 +41,6 @@ ALTER TABLE public.checked_headers
 
 ALTER TABLE public.checked_headers
   ADD COLUMN jug_file_vow_checked BOOLEAN NOT NULL DEFAULT FALSE;
-
 
 -- +goose Down
 DROP TABLE maker.jug_file_ilk;

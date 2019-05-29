@@ -13,7 +13,6 @@ CREATE TABLE maker.vow_file (
 ALTER TABLE public.checked_headers
   ADD COLUMN vow_file_checked INTEGER NOT NULL DEFAULT 0;
 
-
 -- +goose Down
 DROP TABLE maker.vow_file;
 
