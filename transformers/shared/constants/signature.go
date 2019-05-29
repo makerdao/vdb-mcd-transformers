@@ -16,35 +16,31 @@
 
 package constants
 
-func BiteSignature() string { return getEventTopicZero(biteMethod()) }
-func CatFileChopLumpSignature() string {
-	return getLogNoteTopicZeroWithZeroPadding(catFileChopLumpMethod())
-}
-func CatFileFlipSignature() string { return getLogNoteTopicZeroWithZeroPadding(catFileFlipMethod()) }
-func CatFileVowSignature() string  { return getLogNoteTopicZeroWithZeroPadding(catFileVowMethod()) }
-func DealSignature() string        { return getLogNoteTopicZeroWithZeroPadding(dealMethod()) }
-func DentSignature() string        { return getLogNoteTopicZeroWithZeroPadding(dentMethod()) }
-func FlapKickSignature() string    { return getEventTopicZero(flapKickMethod()) }
-func FlipKickSignature() string    { return getEventTopicZero(flipKickMethod()) }
-func FlopKickSignature() string    { return getEventTopicZero(flopKickMethod()) }
-func JugDripSignature() string     { return getLogNoteTopicZeroWithZeroPadding(jugDripMethod()) }
-func JugFileIlkSignature() string  { return getLogNoteTopicZeroWithZeroPadding(jugFileIlkMethod()) }
-func JugFileBaseSignature() string { return getLogNoteTopicZeroWithZeroPadding(jugFileBaseMethod()) }
-func JugFileVowSignature() string  { return getLogNoteTopicZeroWithZeroPadding(jugFileVowMethod()) }
-func PipLogValueSignature() string { return getEventTopicZero(pipLogValueMethod()) }
-func TendSignature() string        { return getLogNoteTopicZeroWithZeroPadding(tendMethod()) }
-func VatFileDebtCeilingSignature() string {
-	return getLogNoteTopicZeroWithLeadingZeros(vatFileDebtCeilingMethod())
-}
-func VatFileIlkSignature() string { return getLogNoteTopicZeroWithLeadingZeros(vatFileIlkMethod()) }
-func VatFluxSignature() string    { return getLogNoteTopicZeroWithLeadingZeros(vatFluxMethod()) }
-func VatFoldSignature() string    { return getLogNoteTopicZeroWithLeadingZeros(vatFoldMethod()) }
-func VatFrobSignature() string    { return getLogNoteTopicZeroWithLeadingZeros(vatFrobMethod()) }
-func VatGrabSignature() string    { return getLogNoteTopicZeroWithLeadingZeros(vatGrabMethod()) }
-func VatHealSignature() string    { return getLogNoteTopicZeroWithLeadingZeros(vatHealMethod()) }
-func VatInitSignature() string    { return getLogNoteTopicZeroWithLeadingZeros(vatInitMethod()) }
-func VatMoveSignature() string    { return getLogNoteTopicZeroWithLeadingZeros(vatMoveMethod()) }
-func VatSlipSignature() string    { return getLogNoteTopicZeroWithLeadingZeros(vatSlipMethod()) }
-func VowFessSignature() string    { return getLogNoteTopicZeroWithZeroPadding(vowFessMethod()) }
-func VowFileSignature() string    { return getLogNoteTopicZeroWithZeroPadding(vowFileMethod()) }
-func VowFlogSignature() string    { return getLogNoteTopicZeroWithZeroPadding(vowFlogMethod()) }
+func BiteSignature() string               { return getEventTopicZero(biteMethod()) }
+func CatFileChopLumpSignature() string    { return getLogNoteTopicZero(catFileChopLumpMethod()) }
+func CatFileFlipSignature() string        { return getLogNoteTopicZero(catFileFlipMethod()) }
+func CatFileVowSignature() string         { return getLogNoteTopicZero(catFileVowMethod()) }
+func DealSignature() string               { return getLogNoteTopicZero(dealMethod()) }
+func DentSignature() string               { return getLogNoteTopicZero(dentMethod()) }
+func FlapKickSignature() string           { return getEventTopicZero(flapKickMethod()) }
+func FlipKickSignature() string           { return getEventTopicZero(flipKickMethod()) }
+func FlopKickSignature() string           { return getEventTopicZero(flopKickMethod()) }
+func JugDripSignature() string            { return getLogNoteTopicZero(jugDripMethod()) }
+func JugFileIlkSignature() string         { return getLogNoteTopicZero(jugFileIlkMethod()) }
+func JugFileBaseSignature() string        { return getLogNoteTopicZero(jugFileBaseMethod()) }
+func JugFileVowSignature() string         { return getLogNoteTopicZero(jugFileVowMethod()) }
+func PipLogValueSignature() string        { return getEventTopicZero(pipLogValueMethod()) }
+func TendSignature() string               { return getLogNoteTopicZero(tendMethod()) }
+func VatFileDebtCeilingSignature() string { return getLogNoteTopicZero(vatFileDebtCeilingMethod()) }
+func VatFileIlkSignature() string         { return getLogNoteTopicZero(vatFileIlkMethod()) }
+func VatFluxSignature() string            { return getLogNoteTopicZero(vatFluxMethod()) }
+func VatFoldSignature() string            { return getLogNoteTopicZero(vatFoldMethod()) }
+func VatFrobSignature() string            { return getLogNoteTopicZero(vatFrobMethod()) }
+func VatGrabSignature() string            { return getLogNoteTopicZero(vatGrabMethod()) }
+func VatHealSignature() string            { return getLogNoteTopicZero(vatHealMethod()) }
+func VatInitSignature() string            { return getLogNoteTopicZero(vatInitMethod()) }
+func VatMoveSignature() string            { return getLogNoteTopicZero(vatMoveMethod()) }
+func VatSlipSignature() string            { return getLogNoteTopicZero(vatSlipMethod()) }
+func VowFessSignature() string            { return getLogNoteTopicZero(vowFessMethod()) }
+func VowFileSignature() string            { return getLogNoteTopicZero(vowFileMethod()) }
+func VowFlogSignature() string            { return getLogNoteTopicZero(vowFlogMethod()) }
