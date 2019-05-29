@@ -5,7 +5,8 @@ CREATE TABLE maker.ilks (
   identifier TEXT UNIQUE NOT NULL
 );
 
-COMMENT ON TABLE maker.ilks IS E'@name raw_ilks';
+COMMENT ON TABLE maker.ilks
+IS E'@name raw_ilks';
 
 -- +goose Down
 DROP TABLE maker.ilks;

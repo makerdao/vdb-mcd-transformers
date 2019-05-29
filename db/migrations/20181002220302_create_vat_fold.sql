@@ -13,7 +13,6 @@ CREATE TABLE maker.vat_fold (
 ALTER TABLE public.checked_headers
   ADD COLUMN vat_fold_checked BOOLEAN NOT NULL DEFAULT FALSE;
 
-
 -- +goose Down
 DROP TABLE maker.vat_fold;
 ALTER TABLE public.checked_headers

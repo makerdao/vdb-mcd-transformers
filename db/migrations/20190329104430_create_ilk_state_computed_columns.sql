@@ -5,31 +5,39 @@
 CREATE FUNCTION api.ilk_state_frobs(state api.ilk_state)
   RETURNS SETOF api.frob_event AS
 $$
-  SELECT * FROM api.all_frobs(state.ilk_identifier)
-  WHERE block_height <= state.block_height
-$$ LANGUAGE sql STABLE;
+SELECT *
+FROM api.all_frobs(state.ilk_identifier)
+WHERE block_height <= state.block_height
+$$
+LANGUAGE sql
+STABLE;
 
 
 -- Extend ilk_state with file events
 CREATE FUNCTION api.ilk_state_ilk_file_events(state api.ilk_state)
   RETURNS SETOF api.ilk_file_event AS
 $$
-  SELECT * FROM api.all_ilk_file_events(state.ilk_identifier)
-  WHERE block_height <= state.block_height
-$$ LANGUAGE sql STABLE;
+SELECT *
+FROM api.all_ilk_file_events(state.ilk_identifier)
+WHERE block_height <= state.block_height
+$$
+LANGUAGE sql
+STABLE;
 
 
 -- Extend ilk_state with bite events
 CREATE FUNCTION api.ilk_state_bites(state api.ilk_state)
   RETURNS SETOF api.bite_event AS
 $$
-  SELECT * FROM api.all_bites(state.ilk_identifier)
-  WHERE block_height <= state.block_height
-$$ LANGUAGE sql STABLE;
-
+SELECT *
+FROM api.all_bites(state.ilk_identifier)
+WHERE block_height <= state.block_height
+$$
+LANGUAGE sql
+STABLE;
 
 -- +goose Down
 -- SQL in this section is executed when the migration is rolled back.
-DROP FUNCTION api.ilk_state_bites(api.ilk_state);
-DROP FUNCTION api.ilk_state_frobs(api.ilk_state);
-DROP FUNCTION api.ilk_state_ilk_file_events(api.ilk_state);
+DROP FUNCTION api.ilk_state_bites(api .ilk_state );
+DROP FUNCTION api.ilk_state_frobs(api .ilk_state );
+DROP FUNCTION api.ilk_state_ilk_file_events(api .ilk_state );

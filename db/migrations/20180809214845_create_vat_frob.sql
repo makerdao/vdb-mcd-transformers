@@ -16,7 +16,6 @@ CREATE TABLE maker.vat_frob (
 ALTER TABLE public.checked_headers
   ADD COLUMN vat_frob_checked BOOLEAN NOT NULL DEFAULT FALSE;
 
-
 -- +goose Down
 DROP TABLE maker.vat_frob;
 

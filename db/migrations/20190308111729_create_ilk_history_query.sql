@@ -7,15 +7,19 @@ CREATE FUNCTION api.all_ilk_states(ilk_identifier TEXT, block_height BIGINT DEFA
 DECLARE
   r api.relevant_block;
 BEGIN
-  FOR r IN SELECT get_ilk_blocks_before.block_height FROM api.get_ilk_blocks_before(ilk_identifier, all_ilk_states.block_height)
+  FOR r IN SELECT get_ilk_blocks_before.block_height
+           FROM api.get_ilk_blocks_before(ilk_identifier, all_ilk_states.block_height)
   LOOP
     RETURN QUERY
-    SELECT * FROM api.get_ilk(ilk_identifier, r.block_height);
+    SELECT *
+    FROM api.get_ilk(ilk_identifier, r.block_height);
   END LOOP;
 END;
 $$
-LANGUAGE plpgsql STABLE STRICT;
+LANGUAGE plpgsql
+STABLE
+STRICT;
 -- +goose StatementEnd
 
 -- +goose Down
-DROP FUNCTION api.all_ilk_states(TEXT, BIGINT);
+DROP FUNCTION api.all_ilk_states( TEXT, BIGINT );
