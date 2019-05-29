@@ -19,28 +19,28 @@ WITH
   ink AS ( -- Latest ink
     SELECT DISTINCT ON (urn_id) urn_id, ink, block_number
     FROM maker.vat_urn_ink
-    WHERE urn_id = (SELECT urn_id from urn where guy = urn_guy) AND block_number <= $3
+    WHERE urn_id = (SELECT urn_id from urn where guy = urn_guy) AND block_number <= get_urn.block_height
     ORDER BY urn_id, block_number DESC
   ),
 
   art AS ( -- Latest art
     SELECT DISTINCT ON (urn_id) urn_id, art, block_number
     FROM maker.vat_urn_art
-    WHERE urn_id = (SELECT urn_id from urn where guy = urn_guy) AND block_number <=  $3
+    WHERE urn_id = (SELECT urn_id from urn where guy = urn_guy) AND block_number <= get_urn.block_height
     ORDER BY urn_id, block_number DESC
   ),
 
   rate AS ( -- Latest rate for ilk
     SELECT DISTINCT ON (ilk_id) ilk_id, rate, block_number
     FROM maker.vat_ilk_rate
-    WHERE ilk_id = (SELECT ilk_id FROM urn) AND block_number <= $3
+    WHERE ilk_id = (SELECT ilk_id FROM urn) AND block_number <= get_urn.block_height
     ORDER BY ilk_id, block_number DESC
   ),
 
   spot AS ( -- Get latest price update for ilk. Problematic from update frequency, slow query?
     SELECT DISTINCT ON (ilk_id) ilk_id, spot, block_number
     FROM maker.vat_ilk_spot
-    WHERE ilk_id = (SELECT ilk_id FROM urn) AND block_number <= $3
+    WHERE ilk_id = (SELECT ilk_id FROM urn) AND block_number <= get_urn.block_height
     ORDER BY ilk_id, block_number DESC
   ),
 
@@ -94,7 +94,6 @@ FROM ink
   LEFT JOIN safe    ON safe.ilk = ratio.ilk  AND safe.guy = ratio.guy
   LEFT JOIN created ON created.urn_id = art.urn_id
   LEFT JOIN updated ON updated.urn_id = art.urn_id
-  -- Add collections of frob and bite events?
 WHERE ink.urn_id IS NOT NULL
 $body$
 LANGUAGE SQL STABLE STRICT;

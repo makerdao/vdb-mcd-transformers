@@ -31,7 +31,7 @@ $$
 $$ LANGUAGE sql STABLE STRICT;
 
 
-CREATE FUNCTION api.urn_bites(ilk_identifier TEXT, _urn TEXT)
+CREATE FUNCTION api.urn_bites(ilk_identifier TEXT, urn TEXT)
   RETURNS SETOF api.bite_event AS
 $$
   WITH
@@ -39,10 +39,10 @@ $$
     urn AS (
       SELECT id FROM maker.urns
       WHERE ilk_id = (SELECT id FROM ilk)
-        AND guy = _urn
+        AND guy = urn_bites.urn
     )
 
-  SELECT ilk_identifier, _urn AS urn_guy, ink, art, tab, block_number, tx_idx
+  SELECT ilk_identifier, urn_bites.urn, ink, art, tab, block_number, tx_idx
   FROM maker.bite LEFT JOIN headers ON bite.header_id = headers.id
   WHERE bite.urn_id = (SELECT id FROM urn)
   ORDER BY block_number DESC

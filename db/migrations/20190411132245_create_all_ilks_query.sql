@@ -7,57 +7,57 @@ AS $$
 WITH rates AS (
   SELECT DISTINCT ON (ilk_id) rate, ilk_id, block_hash
   FROM maker.vat_ilk_rate
-  WHERE block_number <= $1
+  WHERE block_number <= all_ilks.block_height
   ORDER BY ilk_id, block_number DESC
 ), arts AS (
   SELECT DISTINCT ON (ilk_id) art, ilk_id, block_hash
   FROM maker.vat_ilk_art
-  WHERE block_number <= $1
+  WHERE block_number <= all_ilks.block_height
   ORDER BY ilk_id, block_number DESC
 ), spots AS (
   SELECT DISTINCT ON (ilk_id) spot, ilk_id, block_hash
   FROM maker.vat_ilk_spot
-  WHERE block_number <= $1
+  WHERE block_number <= all_ilks.block_height
   ORDER BY ilk_id, block_number DESC
 ), lines AS (
   SELECT DISTINCT ON (ilk_id) line, ilk_id, block_hash
   FROM maker.vat_ilk_line
-  WHERE block_number <= $1
+  WHERE block_number <= all_ilks.block_height
   ORDER BY ilk_id, block_number DESC
 ), dusts AS (
   SELECT DISTINCT ON (ilk_id) dust, ilk_id, block_hash
   FROM maker.vat_ilk_dust
-  WHERE block_number <= $1
+  WHERE block_number <= all_ilks.block_height
   ORDER BY ilk_id, block_number DESC
 ), chops AS (
   SELECT DISTINCT ON (ilk_id) chop, ilk_id, block_hash
   FROM maker.cat_ilk_chop
-  WHERE block_number <= $1
+  WHERE block_number <= all_ilks.block_height
   ORDER BY ilk_id, block_number DESC
 ), lumps AS (
   SELECT DISTINCT ON (ilk_id) lump, ilk_id, block_hash
   FROM maker.cat_ilk_lump
-  WHERE block_number <= $1
+  WHERE block_number <= all_ilks.block_height
   ORDER BY ilk_id, block_number DESC
 ), flips AS (
   SELECT DISTINCT ON (ilk_id) flip, ilk_id, block_hash
   FROM maker.cat_ilk_flip
-  WHERE block_number <= $1
+  WHERE block_number <= all_ilks.block_height
   ORDER BY ilk_id, block_number DESC
 ), rhos AS (
   SELECT DISTINCT ON (ilk_id) rho, ilk_id, block_hash
   FROM maker.jug_ilk_rho
-  WHERE block_number <= $1
+  WHERE block_number <= all_ilks.block_height
   ORDER BY ilk_id, block_number DESC
 ), duties AS (
   SELECT DISTINCT ON (ilk_id) duty, ilk_id, block_hash
   FROM maker.jug_ilk_duty
-  WHERE block_number <= $1
+  WHERE block_number <= all_ilks.block_height
   ORDER BY ilk_id, block_number DESC
 )
   SELECT
     ilks.identifier,
-    $1 AS block_height,
+    all_ilks.block_height,
     rates.rate,
     arts.art,
     spots.spot,
@@ -70,14 +70,14 @@ WITH rates AS (
     duties.duty,
     (
       SELECT api.epoch_to_datetime(h.block_timestamp) AS created
-      FROM api.get_ilk_blocks_before(ilks.identifier, $1) b
+      FROM api.get_ilk_blocks_before(ilks.identifier, all_ilks.block_height) b
       JOIN headers h on h.block_number = b.block_height
       ORDER BY h.block_number ASC
       LIMIT 1
     ),
     (
       SELECT api.epoch_to_datetime(h.block_timestamp) AS updated
-      FROM api.get_ilk_blocks_before(ilks.identifier, $1) b
+      FROM api.get_ilk_blocks_before(ilks.identifier, all_ilks.block_height) b
       JOIN headers h on h.block_number = b.block_height
       ORDER BY h.block_number DESC
       LIMIT 1

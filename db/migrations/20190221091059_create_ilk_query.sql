@@ -15,7 +15,7 @@ SELECT
   block_hash,
   ilk_id
 FROM maker.vat_ilk_rate
-WHERE block_number <= $2
+WHERE block_number <= get_ilk_blocks_before.block_height
       AND ilk_id = (SELECT id FROM ilk)
 UNION
 SELECT
@@ -23,7 +23,7 @@ SELECT
   block_hash,
   ilk_id
 FROM maker.vat_ilk_art
-WHERE block_number <= $2
+WHERE block_number <= get_ilk_blocks_before.block_height
       AND ilk_id = (SELECT id FROM ilk)
 UNION
 SELECT
@@ -31,7 +31,7 @@ SELECT
   block_hash,
   ilk_id
 FROM maker.vat_ilk_spot
-WHERE block_number <= $2
+WHERE block_number <= get_ilk_blocks_before.block_height
       AND ilk_id = (SELECT id FROM ilk)
 UNION
 SELECT
@@ -39,7 +39,7 @@ SELECT
   block_hash,
   ilk_id
 FROM maker.vat_ilk_line
-WHERE block_number <= $2
+WHERE block_number <= get_ilk_blocks_before.block_height
       AND ilk_id = (SELECT id FROM ilk)
 UNION
 SELECT
@@ -47,7 +47,7 @@ SELECT
   block_hash,
   ilk_id
 FROM maker.vat_ilk_dust
-WHERE block_number <= $2
+WHERE block_number <= get_ilk_blocks_before.block_height
       AND ilk_id = (SELECT id FROM ilk)
 UNION
 SELECT
@@ -55,7 +55,7 @@ SELECT
   block_hash,
   ilk_id
 FROM maker.cat_ilk_chop
-WHERE block_number <= $2
+WHERE block_number <= get_ilk_blocks_before.block_height
       AND ilk_id = (SELECT id FROM ilk)
 UNION
 SELECT
@@ -63,7 +63,7 @@ SELECT
   block_hash,
   ilk_id
 FROM maker.cat_ilk_lump
-WHERE block_number <= $2
+WHERE block_number <= get_ilk_blocks_before.block_height
       AND ilk_id = (SELECT id FROM ilk)
 UNION
 SELECT
@@ -71,7 +71,7 @@ SELECT
   block_hash,
   ilk_id
 FROM maker.cat_ilk_flip
-WHERE block_number <= $2
+WHERE block_number <= get_ilk_blocks_before.block_height
       AND ilk_id = (SELECT id FROM ilk)
 UNION
 SELECT
@@ -79,7 +79,7 @@ SELECT
   block_hash,
   ilk_id
 FROM maker.jug_ilk_rho
-WHERE block_number <= $2
+WHERE block_number <= get_ilk_blocks_before.block_height
       AND ilk_id = (SELECT id FROM ilk)
 UNION
 SELECT
@@ -87,7 +87,7 @@ SELECT
   block_hash,
   ilk_id
 FROM maker.jug_ilk_duty
-WHERE block_number <= $2
+WHERE block_number <= get_ilk_blocks_before.block_height
       AND ilk_id = (SELECT id FROM ilk)
 ORDER BY block_height DESC
 $$ LANGUAGE sql STABLE;
@@ -126,7 +126,7 @@ rates AS (
       block_hash
     FROM maker.vat_ilk_rate
     WHERE ilk_id = (SELECT id FROM ilk)
-          AND block_number <= $2
+          AND block_number <= get_ilk.block_height
     ORDER BY ilk_id, block_number DESC
     LIMIT 1
 ), arts AS (
@@ -136,7 +136,7 @@ rates AS (
       block_hash
     FROM maker.vat_ilk_art
     WHERE ilk_id = (SELECT id FROM ilk)
-          AND block_number <= $2
+          AND block_number <= get_ilk.block_height
     ORDER BY ilk_id, block_number DESC
     LIMIT 1
 ), spots AS (
@@ -146,7 +146,7 @@ rates AS (
       block_hash
     FROM maker.vat_ilk_spot
     WHERE ilk_id = (SELECT id FROM ilk)
-          AND block_number <= $2
+          AND block_number <= get_ilk.block_height
     ORDER BY ilk_id, block_number DESC
     LIMIT 1
 ), lines AS (
@@ -156,7 +156,7 @@ rates AS (
       block_hash
     FROM maker.vat_ilk_line
     WHERE ilk_id = (SELECT id FROM ilk)
-          AND block_number <= $2
+          AND block_number <= get_ilk.block_height
     ORDER BY ilk_id, block_number DESC
     LIMIT 1
 ), dusts AS (
@@ -166,7 +166,7 @@ rates AS (
       block_hash
     FROM maker.vat_ilk_dust
     WHERE ilk_id = (SELECT id FROM ilk)
-          AND block_number <= $2
+          AND block_number <= get_ilk.block_height
     ORDER BY ilk_id, block_number DESC
     LIMIT 1
 ), chops AS (
@@ -176,7 +176,7 @@ rates AS (
       block_hash
     FROM maker.cat_ilk_chop
     WHERE ilk_id = (SELECT id FROM ilk)
-          AND block_number <= $2
+          AND block_number <= get_ilk.block_height
     ORDER BY ilk_id, block_number DESC
     LIMIT 1
 ), lumps AS (
@@ -186,7 +186,7 @@ rates AS (
       block_hash
     FROM maker.cat_ilk_lump
     WHERE ilk_id = (SELECT id FROM ilk)
-          AND block_number <= $2
+          AND block_number <= get_ilk.block_height
     ORDER BY ilk_id, block_number DESC
     LIMIT 1
 ), flips AS (
@@ -196,7 +196,7 @@ rates AS (
       block_hash
     FROM maker.cat_ilk_flip
     WHERE ilk_id = (SELECT id FROM ilk)
-          AND block_number <= $2
+          AND block_number <= get_ilk.block_height
     ORDER BY ilk_id, block_number DESC
     LIMIT 1
 ), rhos AS (
@@ -206,7 +206,7 @@ rates AS (
       block_hash
     FROM maker.jug_ilk_rho
     WHERE ilk_id = (SELECT id FROM ilk)
-          AND block_number <= $2
+          AND block_number <= get_ilk.block_height
     ORDER BY ilk_id, block_number DESC
     LIMIT 1
 ), duties AS (
@@ -216,11 +216,11 @@ rates AS (
       block_hash
     FROM maker.jug_ilk_duty
     WHERE ilk_id = (SELECT id FROM ilk)
-          AND block_number <= $2
+          AND block_number <= get_ilk.block_height
     ORDER BY ilk_id, block_number DESC
     LIMIT 1
 ), relevant_blocks AS (
-  SELECT * FROM api.get_ilk_blocks_before(ilk_identifier, $2)
+  SELECT * FROM api.get_ilk_blocks_before(ilk_identifier, get_ilk.block_height)
 ), created AS (
     SELECT DISTINCT ON (relevant_blocks.ilk_id, relevant_blocks.block_height)
       relevant_blocks.block_height,
@@ -245,7 +245,7 @@ rates AS (
 
 SELECT
   ilks.identifier,
-  $2 AS block_height,
+  get_ilk.block_height,
   rates.rate,
   arts.art,
   spots.spot,
