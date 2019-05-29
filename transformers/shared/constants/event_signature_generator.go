@@ -32,14 +32,7 @@ func getEventTopicZero(solidityEventSignature string) string {
 	return hash.Hex()
 }
 
-// Gets the first ten characters of the topic0 with zero padding; to be used with DSNote modified events.
-func getLogNoteTopicZeroWithZeroPadding(solidityFunctionSignature string) string {
-	rawSignature := getEventTopicZero(solidityFunctionSignature)
-	return rawSignature[:10] + "00000000000000000000000000000000000000000000000000000000"
-}
-
-// Gets the first ten characters of the topic zero with leading zeros; to be used with the Vat contract's custom Note event modifier.
-func getLogNoteTopicZeroWithLeadingZeros(solidityFunctionSignature string) string {
+func getLogNoteTopicZero(solidityFunctionSignature string) string {
 	rawSignature := getEventTopicZero(solidityFunctionSignature)
 	return "0x00000000000000000000000000000000000000000000000000000000" + rawSignature[2:10]
 }

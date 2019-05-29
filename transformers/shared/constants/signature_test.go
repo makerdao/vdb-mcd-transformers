@@ -27,23 +27,23 @@ var _ = Describe("Signature constants", func() {
 	})
 
 	It("generates cat file chop lump signature", func() {
-		Expect(CatFileChopLumpSignature()).To(Equal("0x1a0b287e00000000000000000000000000000000000000000000000000000000"))
+		Expect(CatFileChopLumpSignature()).To(Equal("0x000000000000000000000000000000000000000000000000000000001a0b287e"))
 	})
 
 	It("generates cat file flip signature", func() {
-		Expect(CatFileFlipSignature()).To(Equal("0xebecb39d00000000000000000000000000000000000000000000000000000000"))
+		Expect(CatFileFlipSignature()).To(Equal("0x00000000000000000000000000000000000000000000000000000000ebecb39d"))
 	})
 
 	It("generates cat file vow signature", func() {
-		Expect(CatFileVowSignature()).To(Equal("0xd4e8be8300000000000000000000000000000000000000000000000000000000"))
+		Expect(CatFileVowSignature()).To(Equal("0x00000000000000000000000000000000000000000000000000000000d4e8be83"))
 	})
 
 	It("generates deal signature", func() {
-		Expect(DealSignature()).To(Equal("0xc959c42b00000000000000000000000000000000000000000000000000000000"))
+		Expect(DealSignature()).To(Equal("0x00000000000000000000000000000000000000000000000000000000c959c42b"))
 	})
 
 	It("generates dent signature", func() {
-		Expect(DentSignature()).To(Equal("0x5ff3a38200000000000000000000000000000000000000000000000000000000"))
+		Expect(DentSignature()).To(Equal("0x000000000000000000000000000000000000000000000000000000005ff3a382"))
 	})
 
 	It("generates flap kick signature", func() {
@@ -59,19 +59,19 @@ var _ = Describe("Signature constants", func() {
 	})
 
 	It("generates jug drip signature", func() {
-		Expect(JugDripSignature()).To(Equal("0x44e2a5a800000000000000000000000000000000000000000000000000000000"))
+		Expect(JugDripSignature()).To(Equal("0x0000000000000000000000000000000000000000000000000000000044e2a5a8"))
 	})
 
 	It("generates jug file base signature", func() {
-		Expect(JugFileBaseSignature()).To(Equal("0x29ae811400000000000000000000000000000000000000000000000000000000"))
+		Expect(JugFileBaseSignature()).To(Equal("0x0000000000000000000000000000000000000000000000000000000029ae8114"))
 	})
 
 	It("generates jug file ilk signature", func() {
-		Expect(JugFileIlkSignature()).To(Equal("0x1a0b287e00000000000000000000000000000000000000000000000000000000"))
+		Expect(JugFileIlkSignature()).To(Equal("0x000000000000000000000000000000000000000000000000000000001a0b287e"))
 	})
 
 	It("generates jug file vow signature", func() {
-		Expect(JugFileVowSignature()).To(Equal("0xd4e8be8300000000000000000000000000000000000000000000000000000000"))
+		Expect(JugFileVowSignature()).To(Equal("0x00000000000000000000000000000000000000000000000000000000d4e8be83"))
 	})
 
 	It("generates pip log value signature", func() {
@@ -79,7 +79,7 @@ var _ = Describe("Signature constants", func() {
 	})
 
 	It("generates tend signature", func() {
-		Expect(TendSignature()).To(Equal("0x4b43ed1200000000000000000000000000000000000000000000000000000000"))
+		Expect(TendSignature()).To(Equal("0x000000000000000000000000000000000000000000000000000000004b43ed12"))
 	})
 
 	It("generates vat file debt ceiling signature", func() {
@@ -123,14 +123,14 @@ var _ = Describe("Signature constants", func() {
 	})
 
 	It("generates vow fess signature", func() {
-		Expect(VowFessSignature()).To(Equal("0x697efb7800000000000000000000000000000000000000000000000000000000"))
+		Expect(VowFessSignature()).To(Equal("0x00000000000000000000000000000000000000000000000000000000697efb78"))
 	})
 
 	It("generates vow file signature", func() {
-		Expect(VowFileSignature()).To(Equal("0x29ae811400000000000000000000000000000000000000000000000000000000"))
+		Expect(VowFileSignature()).To(Equal("0x0000000000000000000000000000000000000000000000000000000029ae8114"))
 	})
 
 	It("generates vow flog signature", func() {
-		Expect(VowFlogSignature()).To(Equal("0x35aee16f00000000000000000000000000000000000000000000000000000000"))
+		Expect(VowFlogSignature()).To(Equal("0x0000000000000000000000000000000000000000000000000000000035aee16f"))
 	})
 })
