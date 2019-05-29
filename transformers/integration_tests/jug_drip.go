@@ -34,7 +34,8 @@ import (
 	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
-var _ = Describe("JugDrip Transformer", func() {
+// TODO: Replace block number once there is a drip event on the Jug contract
+var _ = XDescribe("JugDrip Transformer", func() {
 	var (
 		db            *postgres.DB
 		blockChain    core.BlockChain

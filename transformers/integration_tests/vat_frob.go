@@ -67,7 +67,7 @@ var _ = Describe("Vat frob Transformer", func() {
 	})
 
 	It("fetches and transforms a vat frob event from Kovan chain", func() {
-		blockNumber := int64(10876410)
+		blockNumber := int64(11048363)
 		initializer.Config.StartingBlockNumber = blockNumber
 		initializer.Config.EndingBlockNumber = blockNumber
 
@@ -91,18 +91,18 @@ var _ = Describe("Vat frob Transformer", func() {
 		Expect(len(dbResult)).To(Equal(1))
 		ilkID, err := shared.GetOrCreateIlk("4554482d41000000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
-		urnID, err := shared.GetOrCreateUrn("0x9bC547bF214FA4eb0AC02d25D84F714DC4FCB8f3", ilkID, db)
-
+		urnID, err := shared.GetOrCreateUrn("0x7AB9727399C182063909D0374331d4e4E4fA5Da9", ilkID, db)
 		Expect(err).NotTo(HaveOccurred())
+
 		Expect(dbResult[0].Urn).To(Equal(strconv.Itoa(urnID)))
-		Expect(dbResult[0].V).To(Equal("0x9bC547bF214FA4eb0AC02d25D84F714DC4FCB8f3"))
-		Expect(dbResult[0].W).To(Equal("0x9bC547bF214FA4eb0AC02d25D84F714DC4FCB8f3"))
-		Expect(dbResult[0].Dink).To(Equal("0"))
-		Expect(dbResult[0].Dart).To(Equal("-300000000000000000"))
+		Expect(dbResult[0].V).To(Equal("0x7AB9727399C182063909D0374331d4e4E4fA5Da9"))
+		Expect(dbResult[0].W).To(Equal("0x7AB9727399C182063909D0374331d4e4E4fA5Da9"))
+		Expect(dbResult[0].Dink).To(Equal("100000000000000000"))
+		Expect(dbResult[0].Dart).To(Equal("1000000000000000000"))
 	})
 
 	It("rechecks vat frob event", func() {
-		blockNumber := int64(10876410)
+		blockNumber := int64(11048363)
 		initializer.Config.StartingBlockNumber = blockNumber
 		initializer.Config.EndingBlockNumber = blockNumber
 
@@ -139,12 +139,13 @@ var _ = Describe("Vat frob Transformer", func() {
 		Expect(len(dbResult)).To(Equal(1))
 		ilkID, err := shared.GetOrCreateIlk("4554482d41000000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
-		urnID, err := shared.GetOrCreateUrn("0x9bC547bF214FA4eb0AC02d25D84F714DC4FCB8f3", ilkID, db)
+		urnID, err := shared.GetOrCreateUrn("0x7AB9727399C182063909D0374331d4e4E4fA5Da9", ilkID, db)
 		Expect(err).NotTo(HaveOccurred())
+
 		Expect(dbResult[0].Urn).To(Equal(strconv.Itoa(urnID)))
-		Expect(dbResult[0].V).To(Equal("0x9bC547bF214FA4eb0AC02d25D84F714DC4FCB8f3"))
-		Expect(dbResult[0].W).To(Equal("0x9bC547bF214FA4eb0AC02d25D84F714DC4FCB8f3"))
-		Expect(dbResult[0].Dink).To(Equal("0"))
-		Expect(dbResult[0].Dart).To(Equal("-300000000000000000"))
+		Expect(dbResult[0].V).To(Equal("0x7AB9727399C182063909D0374331d4e4E4fA5Da9"))
+		Expect(dbResult[0].W).To(Equal("0x7AB9727399C182063909D0374331d4e4E4fA5Da9"))
+		Expect(dbResult[0].Dink).To(Equal("100000000000000000"))
+		Expect(dbResult[0].Dart).To(Equal("1000000000000000000"))
 	})
 })
