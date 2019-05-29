@@ -32,7 +32,8 @@ import (
 	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
-var _ = Describe("VowFlog LogNoteTransformer", func() {
+// TODO: replace block number when there is a flog event on the updated Vow
+var _ = XDescribe("VowFlog LogNoteTransformer", func() {
 	var (
 		db         *postgres.DB
 		blockChain core.BlockChain
