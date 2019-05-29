@@ -19,6 +19,7 @@ import (
 	"math/rand"
 	"os"
 	"strings"
+	"time"
 )
 
 const (
@@ -48,6 +49,8 @@ func main() {
 	connectionStringPtr := flag.String("pg-connection-string", defaultConnectionString,
 		"postgres connection string")
 	stepsPtr := flag.Int("steps", 100, "number of interactions to generate")
+	seedPtr := flag.Int64("seed", -1,
+		"optional seed for repeatability. Running same seed several times will lead to database constraint violations.")
 	flag.Parse()
 
 	db, connectErr := sqlx.Connect("postgres", *connectionStringPtr)
@@ -62,7 +65,17 @@ func main() {
 		NodeID: 0,
 	}
 
-	fmt.Println("\nRunning this will write mock data to the DB you specified, possibly contaminating real data.")
+	if *seedPtr != -1 {
+		rand.Seed(*seedPtr)
+		fmt.Println("\nUsing passed seed. If data from this seed is already in the DB, there will be database constraint errors.")
+	} else {
+		seed := time.Now().UnixNano()
+		rand.Seed(seed)
+		fmt.Printf("\nUsing current time as seed: %v. Pass this with '-seed' to reproduce results on a fresh DB.\n", seed)
+	}
+
+	fmt.Println("\nRunning this will write mock data to the DB you specified, possibly contaminating real data:")
+	fmt.Println(*connectionStringPtr)
 	fmt.Println("------------------------------")
 	fmt.Print("Do you want to continue? (y/n)")
 
@@ -73,7 +86,10 @@ func main() {
 	}
 
 	generatorState := NewGenerator(&pg)
-	generatorState.Run(*stepsPtr)
+	runErr := generatorState.Run(*stepsPtr)
+	if runErr != nil {
+		fmt.Println("Error occurred while running generator, results may be partial: ", runErr.Error())
+	}
 }
 
 type GeneratorState struct {
@@ -93,58 +109,62 @@ func NewGenerator(db *postgres.DB) GeneratorState {
 }
 
 // Runs probabilistic generator for random ilk/urn interaction.
-func (state *GeneratorState) Run(steps int) {
-	state.doInitialSetup()
+func (state *GeneratorState) Run(steps int) error {
+	initErr := state.doInitialSetup()
+	if initErr != nil {
+		return initErr
+	}
 
 	var p float32
 	var err error
 	for i := 1; i <= steps; i++ {
 		state.currentHeader = fakes.GetFakeHeaderWithTimestamp(int64(i), int64(i))
-		state.currentHeader.Hash = test_data.RandomString(10)
+		state.currentHeader.Hash = test_data.AlreadySeededRandomString(10)
 		headerErr := state.insertCurrentHeader()
 		if headerErr != nil {
-			fmt.Println("Error inserting current header: ", headerErr)
-			continue
+			return fmt.Errorf("error inserting current header: %v", headerErr)
 		}
 
 		p = rand.Float32()
 		if p < 0.2 { // Interact with Ilks
 			err = state.touchIlks()
 			if err != nil {
-				fmt.Println("Error touching ilks: ", err)
+				return fmt.Errorf("error touching ilks: %v", err)
 			}
 		} else { // Interact with Urns
 			err = state.touchUrns()
 			if err != nil {
-				fmt.Println("Error touching urns: ", err)
+				return fmt.Errorf("error touching urns: %v", err)
 			}
 		}
 	}
+	return nil
 }
 
 // Creates a starting ilk and urn, with the corresponding header.
-func (state *GeneratorState) doInitialSetup() {
+func (state *GeneratorState) doInitialSetup() error {
 	// This may or may not have been initialised, needed for a FK constraint
 	_, nodeErr := state.db.Exec(nodeSql, "GENESIS", 1, node.ID)
 	if nodeErr != nil {
-		panic(fmt.Sprintf("Could not insert initial node: %v", nodeErr))
+		return fmt.Errorf("could not insert initial node: %v", nodeErr)
 	}
 
 	state.currentHeader = fakes.GetFakeHeaderWithTimestamp(0, 0)
-	state.currentHeader.Hash = test_data.RandomString(10)
+	state.currentHeader.Hash = test_data.AlreadySeededRandomString(10)
 	headerErr := state.insertCurrentHeader()
 	if headerErr != nil {
-		panic(fmt.Sprintf("Could not insert initial header: %v", headerErr))
+		return fmt.Errorf("could not insert initial header: %v", headerErr)
 	}
 
 	ilkErr := state.createIlk()
 	if ilkErr != nil {
-		panic(fmt.Sprintf("Could not create initial ilk: %v", ilkErr))
+		return fmt.Errorf("could not create initial ilk: %v", ilkErr)
 	}
 	urnErr := state.createUrn()
 	if urnErr != nil {
-		panic(fmt.Sprintf("Could not create initial urn: %v", urnErr))
+		return fmt.Errorf("could not create initial urn: %v", urnErr)
 	}
+	return nil
 }
 
 // Creates a new ilk, or updates a random one
@@ -158,7 +178,7 @@ func (state *GeneratorState) touchIlks() error {
 }
 
 func (state *GeneratorState) createIlk() error {
-	ilkName := strings.ToUpper(test_data.RandomString(5))
+	ilkName := strings.ToUpper(test_data.AlreadySeededRandomString(5))
 	hexIlk := GetHexIlk(ilkName)
 
 	ilkId, insertIlkErr := state.insertIlk(hexIlk, ilkName)
@@ -237,8 +257,8 @@ func (state *GeneratorState) createUrn() error {
 	ink := rand.Int()
 	art := rand.Int()
 	pgTx, _ := state.db.Beginx()
-	_, artErr := pgTx.Exec(vat.InsertUrnArtQuery, blockNumber, blockHash, urnId, rand.Int())
-	_, inkErr := pgTx.Exec(vat.InsertUrnInkQuery, blockNumber, blockHash, urnId, rand.Int())
+	_, artErr := pgTx.Exec(vat.InsertUrnArtQuery, blockNumber, blockHash, urnId, art)
+	_, inkErr := pgTx.Exec(vat.InsertUrnInkQuery, blockNumber, blockHash, urnId, ink)
 	_, frobErr := pgTx.Exec(vat_frob.InsertVatFrobQuery,
 		state.currentHeader.Id, urnId, guy, guy, ink, art, emptyRaw, 0, 0) // txIx 0 to match tx
 
@@ -348,7 +368,8 @@ func (state *GeneratorState) insertInitialIlkData(ilkId int64) error {
 			return fmt.Errorf("error inserting initial ilk data: %v", err)
 		}
 	}
-	_, flipErr := pgTx.Exec(cat.InsertCatIlkFlipQuery, blockNumber, blockHash, ilkId, test_data.RandomString(10))
+	_, flipErr := pgTx.Exec(cat.InsertCatIlkFlipQuery,
+		blockNumber, blockHash, ilkId, test_data.AlreadySeededRandomString(10))
 	if flipErr != nil {
 		_ = pgTx.Rollback()
 		return fmt.Errorf("error inserting initial ilk data: %v", flipErr)
@@ -397,7 +418,7 @@ func getRandomAddress() string {
 }
 
 func getRandomHash() string {
-	seed := test_data.RandomString(5)
+	seed := test_data.AlreadySeededRandomString(5)
 	hash := sha3.Sum256([]byte(seed))
 	return fmt.Sprintf("0x%x", hash)
 }
