@@ -30,7 +30,8 @@ import (
 	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
-var _ = Describe("VatHeal Transformer", func() {
+// TODO: Replace block number once there's a heal event on the updated Vat
+var _ = XDescribe("VatHeal Transformer", func() {
 	vatHealConfig := transformer.EventTransformerConfig{
 		TransformerName:   mcdConstants.VatHealLabel,
 		ContractAddresses: []string{mcdConstants.VatContractAddress()},
