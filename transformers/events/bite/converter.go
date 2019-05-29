@@ -21,6 +21,7 @@ import (
 	"fmt"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 
 	"github.com/vulcanize/vulcanizedb/pkg/geth"
@@ -66,11 +67,11 @@ func (converter BiteConverter) ToModels(entities []interface{}) ([]interface{}, 
 		}
 
 		ilk := shared.GetHexWithoutPrefix(biteEntity.Ilk[:])
-		urn := shared.GetHexWithoutPrefix(biteEntity.Urn[:])
+		urn := common.BytesToAddress(biteEntity.Urn[:]).Hex()
 		ink := biteEntity.Ink
 		art := biteEntity.Art
 		tab := biteEntity.Tab
-		flip := biteEntity.Flip
+		flip := common.BytesToAddress(biteEntity.Flip.Bytes()).Hex()
 		logIdx := biteEntity.LogIndex
 		txIdx := biteEntity.TransactionIndex
 		rawLog, err := json.Marshal(biteEntity.Raw)
@@ -84,7 +85,7 @@ func (converter BiteConverter) ToModels(entities []interface{}) ([]interface{}, 
 			Ink:              shared.BigIntToString(ink),
 			Art:              shared.BigIntToString(art),
 			Tab:              shared.BigIntToString(tab),
-			Flip:             shared.BigIntToString(flip),
+			Flip:             flip,
 			LogIndex:         logIdx,
 			TransactionIndex: txIdx,
 			Raw:              rawLog,

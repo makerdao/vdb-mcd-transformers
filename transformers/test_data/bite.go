@@ -31,18 +31,19 @@ import (
 
 const (
 	TemporaryBiteBlockNumber = int64(26)
-	TemporaryBiteData        = "0x00000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000300000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000005"
+	biteData                 = "0x00000000000000000000000000000000000000000000000000000002540be40000000000000000000000000000000000000000000000000000000004a817c80000000000000000000000000000000000000000000000000000000006fc23ac000000000000000000000000007d7bee5fcfd8028cf7b00876c5b1421c800561a600000000000000000000000000000000000000000000000000000009502f9000"
 	TemporaryBiteTransaction = "0x5c698f13940a2153440c6d19660878bc90219d9298fdcf37365aa8d88d40fc42"
 )
 
 var (
-	biteInk        = big.NewInt(1)
-	biteArt        = big.NewInt(2)
-	biteTab        = big.NewInt(3)
-	biteFlip       = big.NewInt(4)
+	biteInk        = big.NewInt(10000000000)
+	biteArt        = big.NewInt(20000000000)
+	biteTab        = big.NewInt(30000000000)
+	biteFlip       = common.HexToAddress("0x7d7bEe5fCfD8028cf7b00876C5b1421c800561A6")
+	biteID         = big.NewInt(40000000000)
 	biteRawJson, _ = json.Marshal(EthBiteLog)
 	biteIlk        = [32]byte{69, 84, 72, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
-	biteUrn        = common.BytesToAddress([]byte{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 216, 180, 20, 126, 218, 128, 254, 199, 18, 42, 225, 109, 162, 71, 156, 189, 127, 251})
+	biteUrn        = common.HexToAddress("0x7d7bEe5fCfD8028cf7b00876C5b1421c800561A6")
 )
 
 var EthBiteLog = types.Log{
@@ -50,9 +51,9 @@ var EthBiteLog = types.Log{
 	Topics: []common.Hash{
 		common.HexToHash(constants.BiteSignature()),
 		common.HexToHash("0x4554480000000000000000000000000000000000000000000000000000000000"),
-		common.HexToHash("0x0000000000000000000000000000d8b4147eda80fec7122ae16da2479cbd7ffb"),
+		common.HexToHash("0x0000000000000000000000007d7bee5fcfd8028cf7b00876c5b1421c800561a6"),
 	},
-	Data:        hexutil.MustDecode(TemporaryBiteData),
+	Data:        hexutil.MustDecode(biteData),
 	BlockNumber: uint64(TemporaryBiteBlockNumber),
 	TxHash:      common.HexToHash(TemporaryBiteTransaction),
 	TxIndex:     111,
@@ -68,6 +69,7 @@ var BiteEntity = bite.BiteEntity{
 	Art:              biteArt,
 	Tab:              biteTab,
 	Flip:             biteFlip,
+	Id:               biteID,
 	LogIndex:         EthBiteLog.Index,
 	TransactionIndex: EthBiteLog.TxIndex,
 	Raw:              EthBiteLog,
@@ -75,11 +77,11 @@ var BiteEntity = bite.BiteEntity{
 
 var BiteModel = bite.BiteModel{
 	Ilk:              "4554480000000000000000000000000000000000000000000000000000000000",
-	Urn:              "0000d8b4147eda80fec7122ae16da2479cbd7ffb",
+	Urn:              "0x7d7bEe5fCfD8028cf7b00876C5b1421c800561A6",
 	Ink:              biteInk.String(),
 	Art:              biteArt.String(),
 	Tab:              biteTab.String(),
-	Flip:             biteFlip.String(),
+	Flip:             "0x7d7bEe5fCfD8028cf7b00876C5b1421c800561A6",
 	LogIndex:         EthBiteLog.Index,
 	TransactionIndex: EthBiteLog.TxIndex,
 	Raw:              biteRawJson,

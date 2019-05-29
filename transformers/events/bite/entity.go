@@ -29,7 +29,8 @@ type BiteEntity struct {
 	Ink              *big.Int
 	Art              *big.Int
 	Tab              *big.Int
-	Flip             *big.Int
+	Flip             common.Address
+	Id               *big.Int
 	LogIndex         uint
 	TransactionIndex uint
 	Raw              types.Log
