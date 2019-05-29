@@ -11,4 +11,4 @@ $$
     STABLE;
 
 -- +goose Down
-DROP FUNCTION api.all_queued_sin_sin_queue_events(api.queued_sin)
+DROP FUNCTION api.queued_sin_sin_queue_events(api.queued_sin);

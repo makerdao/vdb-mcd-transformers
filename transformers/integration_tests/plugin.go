@@ -132,7 +132,7 @@ var combinedConfig = config.Plugin{
 var dbConfig = config.Database{
 	Hostname: "localhost",
 	Port:     5432,
-	Name:     "vulcanize_private",
+	Name:     "vulcanize_testing",
 }
 
 type Exporter interface {
