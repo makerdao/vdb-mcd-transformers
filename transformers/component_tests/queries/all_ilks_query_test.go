@@ -138,7 +138,8 @@ var _ = Describe("All Ilks query", func() {
 		It("returns updated values as of block 3", func() {
 			blockThreeTimestamp := int64(333333333)
 			blockThreeHeader := fakes.GetFakeHeaderWithTimestamp(blockThreeTimestamp, int64(3))
-			headerRepository.CreateOrUpdateHeader(blockThreeHeader)
+			_, headerErr := headerRepository.CreateOrUpdateHeader(blockThreeHeader)
+			Expect(headerErr).NotTo(HaveOccurred())
 
 			//updating fakeIlk spot value at block 3
 			fakeIlkStateBlock3 := test_helpers.GetIlkValues(3)
@@ -223,7 +224,8 @@ var _ = Describe("All Ilks query", func() {
 
 	It("handles cases where some of the data is null", func() {
 		blockFourHeader := fakes.GetFakeHeaderWithTimestamp(int64(444444444), int64(4))
-		headerRepository.CreateOrUpdateHeader(blockFourHeader)
+		_, headerErr := headerRepository.CreateOrUpdateHeader(blockFourHeader)
+		Expect(headerErr).NotTo(HaveOccurred())
 
 		//updating fakeIlk spot value at block 3
 		newIlk := test_helpers.TestIlk{Identifier: "newIlk", Hex: "6e6577496c6b0000000000000000000000000000000000000000000000000000"}
