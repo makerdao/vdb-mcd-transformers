@@ -295,7 +295,7 @@ var _ = Describe("Ilk State Query", func() {
 			test_helpers.AnotherFakeIlk.Identifier, blockTwo)
 		Expect(err).NotTo(HaveOccurred())
 		expectedBlockTwoAnotherFakeIlkState := test_helpers.IlkState{
-			IlkIdentifier: "FKE2",
+			IlkIdentifier: test_helpers.AnotherFakeIlk.Identifier,
 			Created:       test_helpers.GetValidNullString("2005-03-18T01:58:32Z"),
 			Updated:       test_helpers.GetValidNullString("2005-03-18T01:58:32Z"),
 		}

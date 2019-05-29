@@ -5,7 +5,7 @@ CREATE TYPE api.relevant_block AS (
   ilk_id       INTEGER
 );
 
-CREATE FUNCTION api.get_ilk_blocks_before(block_height BIGINT, ilk_identifier TEXT)
+CREATE FUNCTION api.get_ilk_blocks_before(ilk_identifier TEXT, block_height BIGINT)
   RETURNS SETOF api.relevant_block AS $$
   WITH ilk AS (
     SELECT id FROM maker.ilks WHERE identifier = ilk_identifier
@@ -15,7 +15,7 @@ SELECT
   block_hash,
   ilk_id
 FROM maker.vat_ilk_rate
-WHERE block_number <= $1
+WHERE block_number <= $2
       AND ilk_id = (SELECT id FROM ilk)
 UNION
 SELECT
@@ -23,7 +23,7 @@ SELECT
   block_hash,
   ilk_id
 FROM maker.vat_ilk_art
-WHERE block_number <= $1
+WHERE block_number <= $2
       AND ilk_id = (SELECT id FROM ilk)
 UNION
 SELECT
@@ -31,7 +31,7 @@ SELECT
   block_hash,
   ilk_id
 FROM maker.vat_ilk_spot
-WHERE block_number <= $1
+WHERE block_number <= $2
       AND ilk_id = (SELECT id FROM ilk)
 UNION
 SELECT
@@ -39,7 +39,7 @@ SELECT
   block_hash,
   ilk_id
 FROM maker.vat_ilk_line
-WHERE block_number <= $1
+WHERE block_number <= $2
       AND ilk_id = (SELECT id FROM ilk)
 UNION
 SELECT
@@ -47,7 +47,7 @@ SELECT
   block_hash,
   ilk_id
 FROM maker.vat_ilk_dust
-WHERE block_number <= $1
+WHERE block_number <= $2
       AND ilk_id = (SELECT id FROM ilk)
 UNION
 SELECT
@@ -55,7 +55,7 @@ SELECT
   block_hash,
   ilk_id
 FROM maker.cat_ilk_chop
-WHERE block_number <= $1
+WHERE block_number <= $2
       AND ilk_id = (SELECT id FROM ilk)
 UNION
 SELECT
@@ -63,7 +63,7 @@ SELECT
   block_hash,
   ilk_id
 FROM maker.cat_ilk_lump
-WHERE block_number <= $1
+WHERE block_number <= $2
       AND ilk_id = (SELECT id FROM ilk)
 UNION
 SELECT
@@ -71,7 +71,7 @@ SELECT
   block_hash,
   ilk_id
 FROM maker.cat_ilk_flip
-WHERE block_number <= $1
+WHERE block_number <= $2
       AND ilk_id = (SELECT id FROM ilk)
 UNION
 SELECT
@@ -79,7 +79,7 @@ SELECT
   block_hash,
   ilk_id
 FROM maker.jug_ilk_rho
-WHERE block_number <= $1
+WHERE block_number <= $2
       AND ilk_id = (SELECT id FROM ilk)
 UNION
 SELECT
@@ -87,12 +87,12 @@ SELECT
   block_hash,
   ilk_id
 FROM maker.jug_ilk_duty
-WHERE block_number <= $1
+WHERE block_number <= $2
       AND ilk_id = (SELECT id FROM ilk)
 ORDER BY block_height DESC
 $$ LANGUAGE sql STABLE;
 
-COMMENT ON FUNCTION api.get_ilk_blocks_before(BIGINT, TEXT) IS E'@omit';
+COMMENT ON FUNCTION api.get_ilk_blocks_before(TEXT, BIGINT) IS E'@omit';
 
 
 CREATE TYPE api.ilk_state AS (
@@ -220,7 +220,7 @@ rates AS (
     ORDER BY ilk_id, block_number DESC
     LIMIT 1
 ), relevant_blocks AS (
-  SELECT * FROM api.get_ilk_blocks_before($2, ilk_identifier)
+  SELECT * FROM api.get_ilk_blocks_before(ilk_identifier, $2)
 ), created AS (
     SELECT DISTINCT ON (relevant_blocks.ilk_id, relevant_blocks.block_height)
       relevant_blocks.block_height,
@@ -287,7 +287,7 @@ $$
 LANGUAGE SQL STABLE STRICT;
 
 -- +goose Down
-DROP FUNCTION api.get_ilk_blocks_before(BIGINT, TEXT);
+DROP FUNCTION api.get_ilk_blocks_before(TEXT, BIGINT);
 DROP TYPE api.relevant_block CASCADE;
 DROP FUNCTION api.get_ilk(TEXT, BIGINT);
 DROP TYPE api.ilk_state CASCADE;
