@@ -3,7 +3,7 @@
 
 -- Extend type bite_event with ilk field
 CREATE FUNCTION api.bite_event_ilk(event api.bite_event)
-    RETURNS SETOF api.ilk_state AS
+    RETURNS api.ilk_state AS
 $$
     SELECT * FROM api.get_ilk(event.ilk_identifier, event.block_height)
 $$ LANGUAGE sql STABLE;

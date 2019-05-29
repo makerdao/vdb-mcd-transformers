@@ -3,7 +3,7 @@
 
 -- Extend frob_event with ilk_state
 CREATE FUNCTION api.frob_event_ilk(event api.frob_event)
-  RETURNS SETOF api.ilk_state AS
+  RETURNS api.ilk_state AS
 $$
   SELECT * FROM api.get_ilk(event.ilk_identifier, event.block_height)
 $$ LANGUAGE sql STABLE;

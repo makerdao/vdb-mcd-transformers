@@ -7,7 +7,7 @@ CREATE FUNCTION api.all_ilk_states(ilk_identifier TEXT, block_height BIGINT DEFA
 DECLARE
   r api.relevant_block;
 BEGIN
-  FOR r IN SELECT get_ilk_blocks_before.block_height FROM api.get_ilk_blocks_before($2, ilk_identifier)
+  FOR r IN SELECT get_ilk_blocks_before.block_height FROM api.get_ilk_blocks_before(ilk_identifier, $2)
   LOOP
     RETURN QUERY
     SELECT * FROM api.get_ilk(ilk_identifier, r.block_height);

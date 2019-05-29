@@ -10,7 +10,15 @@ CREATE TYPE api.log_value AS (
 
 COMMENT ON COLUMN api.log_value.tx_idx IS E'@omit';
 
-CREATE FUNCTION api.log_values(beginTime INT, endTime INT)
+CREATE FUNCTION api.max_timestamp()
+  RETURNS NUMERIC AS $$
+SELECT max(block_timestamp)
+FROM public.headers
+$$
+LANGUAGE SQL
+STABLE;
+
+CREATE FUNCTION api.log_values(beginTime NUMERIC DEFAULT 0, endTime NUMERIC DEFAULT api.max_timestamp())
   RETURNS SETOF api.log_value AS
 $body$
   SELECT val, pip_log_value.block_number, tx_idx, contract_address FROM maker.pip_log_value

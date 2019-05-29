@@ -70,14 +70,14 @@ WITH rates AS (
     duties.duty,
     (
       SELECT api.epoch_to_datetime(h.block_timestamp) AS created
-      FROM api.get_ilk_blocks_before($1, ilks.identifier) b
+      FROM api.get_ilk_blocks_before(ilks.identifier, $1) b
       JOIN headers h on h.block_number = b.block_height
       ORDER BY h.block_number ASC
       LIMIT 1
     ),
     (
       SELECT api.epoch_to_datetime(h.block_timestamp) AS updated
-      FROM api.get_ilk_blocks_before($1, ilks.identifier) b
+      FROM api.get_ilk_blocks_before(ilks.identifier, $1) b
       JOIN headers h on h.block_number = b.block_height
       ORDER BY h.block_number DESC
       LIMIT 1
