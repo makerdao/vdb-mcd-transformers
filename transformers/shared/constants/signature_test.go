@@ -23,7 +23,7 @@ import (
 
 var _ = Describe("Signature constants", func() {
 	It("generates bite signature", func() {
-		Expect(BiteSignature()).To(Equal("0x88e5f75b2d0202dabce2e4bb93dada96d0a4601ee749f081182bed3a554c92e3"))
+		Expect(BiteSignature()).To(Equal("0xa716da86bc1fb6d43d1493373f34d7a418b619681cd7b90f7ea667ba1489be28"))
 	})
 
 	It("generates cat file chop lump signature", func() {
@@ -107,7 +107,7 @@ var _ = Describe("Signature constants", func() {
 	})
 
 	It("generates vat heal signature", func() {
-		Expect(VatHealSignature()).To(Equal("0x00000000000000000000000000000000000000000000000000000000ee8cd748"))
+		Expect(VatHealSignature()).To(Equal("0x00000000000000000000000000000000000000000000000000000000f37ac61c"))
 	})
 
 	It("generates vat init signature", func() {
