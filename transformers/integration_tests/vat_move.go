@@ -39,7 +39,7 @@ var _ = Describe("VatMove LogNoteTransformer", func() {
 	}
 
 	It("transforms VatMove log events", func() {
-		blockNumber := int64(10904287)
+		blockNumber := int64(11087683)
 		vatMoveConfig.StartingBlockNumber = blockNumber
 		vatMoveConfig.EndingBlockNumber = blockNumber
 
@@ -74,15 +74,15 @@ var _ = Describe("VatMove LogNoteTransformer", func() {
 		err = db.Select(&dbResults, `SELECT src, dst, rad from maker.vat_move`)
 		Expect(err).NotTo(HaveOccurred())
 
-		Expect(len(dbResults)).To(Equal(2))
+		Expect(len(dbResults)).To(Equal(1))
 		dbResult := dbResults[0]
-		Expect(dbResult.Src).To(Equal("0xb5E4175555626d2249445718083Ae3C30eB97F42"))
-		Expect(dbResult.Dst).To(Equal("0x1753116b88892073C3Cc3Ff4b3c60A1EEbc965AC"))
-		Expect(dbResult.Rad).To(Equal("50000000000000000000000000000000000000000000"))
+		Expect(dbResult.Src).To(Equal("0xa9c49Fa1e51B8F1Ebfaf56f552C8281647BC4921"))
+		Expect(dbResult.Dst).To(Equal("0xbDC7b2ff2Ed3508eDA88dbcF32a96E888edfC18c"))
+		Expect(dbResult.Rad).To(Equal("500000000000000000000000000000000000000000000000"))
 	})
 
 	It("rechecks vat move event", func() {
-		blockNumber := int64(10904287)
+		blockNumber := int64(11087683)
 		vatMoveConfig.StartingBlockNumber = blockNumber
 		vatMoveConfig.EndingBlockNumber = blockNumber
 
@@ -130,10 +130,10 @@ var _ = Describe("VatMove LogNoteTransformer", func() {
 		err = db.Select(&dbResults, `SELECT src, dst, rad from maker.vat_move`)
 		Expect(err).NotTo(HaveOccurred())
 
-		Expect(len(dbResults)).To(Equal(2))
+		Expect(len(dbResults)).To(Equal(1))
 		dbResult := dbResults[0]
-		Expect(dbResult.Src).To(Equal("0xb5E4175555626d2249445718083Ae3C30eB97F42"))
-		Expect(dbResult.Dst).To(Equal("0x1753116b88892073C3Cc3Ff4b3c60A1EEbc965AC"))
-		Expect(dbResult.Rad).To(Equal("50000000000000000000000000000000000000000000"))
+		Expect(dbResult.Src).To(Equal("0xa9c49Fa1e51B8F1Ebfaf56f552C8281647BC4921"))
+		Expect(dbResult.Dst).To(Equal("0xbDC7b2ff2Ed3508eDA88dbcF32a96E888edfC18c"))
+		Expect(dbResult.Rad).To(Equal("500000000000000000000000000000000000000000000000"))
 	})
 })
