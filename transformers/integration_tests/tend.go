@@ -32,7 +32,7 @@ import (
 	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
-var _ = Describe("Tend LogNoteTransformer", func() {
+var _ = XDescribe("Tend LogNoteTransformer", func() {
 	var (
 		db          *postgres.DB
 		blockChain  core.BlockChain

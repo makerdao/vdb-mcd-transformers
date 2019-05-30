@@ -39,7 +39,7 @@ func (VatFluxConverter) ToModels(ethLogs []types.Log) ([]interface{}, error) {
 		ilk := shared.GetHexWithoutPrefix(ethLog.Topics[1].Bytes())
 		src := common.BytesToAddress(ethLog.Topics[2].Bytes()).String()
 		dst := common.BytesToAddress(ethLog.Topics[3].Bytes()).String()
-		wadBytes, dataErr := shared.GetVatNoteDataBytesAtIndex(4, ethLog.Data)
+		wadBytes, dataErr := shared.GetLogNoteArgumentAtIndex(4, ethLog.Data)
 		if dataErr != nil {
 			return nil, dataErr
 		}
