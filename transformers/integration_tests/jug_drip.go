@@ -34,8 +34,7 @@ import (
 	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
-// TODO: Replace block number once there is a drip event on the Jug contract
-var _ = XDescribe("JugDrip Transformer", func() {
+var _ = Describe("JugDrip Transformer", func() {
 	var (
 		db            *postgres.DB
 		blockChain    core.BlockChain
@@ -58,7 +57,7 @@ var _ = XDescribe("JugDrip Transformer", func() {
 	})
 
 	It("transforms JugDrip log events", func() {
-		blockNumber := int64(10921612)
+		blockNumber := int64(11144455)
 		jugDripConfig.StartingBlockNumber = blockNumber
 		jugDripConfig.EndingBlockNumber = blockNumber
 
@@ -88,13 +87,13 @@ var _ = XDescribe("JugDrip Transformer", func() {
 
 		Expect(len(dbResults)).To(Equal(1))
 		dbResult := dbResults[0]
-		ilkID, err := shared.GetOrCreateIlk("4554485f41000000000000000000000000000000000000000000000000000000", db)
+		ilkID, err := shared.GetOrCreateIlk("434f4c312d410000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(dbResult.Ilk).To(Equal(strconv.Itoa(ilkID)))
 	})
 
 	It("rechecks jug drip event", func() {
-		blockNumber := int64(10921612)
+		blockNumber := int64(11144455)
 		jugDripConfig.StartingBlockNumber = blockNumber
 		jugDripConfig.EndingBlockNumber = blockNumber
 

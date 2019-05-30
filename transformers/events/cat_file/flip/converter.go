@@ -32,18 +32,21 @@ type CatFileFlipConverter struct{}
 func (CatFileFlipConverter) ToModels(ethLogs []types.Log) ([]interface{}, error) {
 	var results []interface{}
 	for _, ethLog := range ethLogs {
-		err := verifyLog(ethLog)
-		if err != nil {
-			return nil, err
+		verifyErr := verifyLog(ethLog)
+		if verifyErr != nil {
+			return nil, verifyErr
 		}
 		ilk := shared.GetHexWithoutPrefix(ethLog.Topics[2].Bytes())
 		what := shared.DecodeHexToText(ethLog.Topics[3].Hex())
-		flipBytes := shared.GetDSNoteThirdArgument(ethLog.Data)
+		flipBytes, parseErr := shared.GetLogNoteArgumentAtIndex(3, ethLog.Data)
+		if parseErr != nil {
+			return nil, parseErr
+		}
 		flip := common.BytesToAddress(flipBytes).String()
 
-		raw, err := json.Marshal(ethLog)
-		if err != nil {
-			return nil, err
+		raw, marshalErr := json.Marshal(ethLog)
+		if marshalErr != nil {
+			return nil, marshalErr
 		}
 		result := CatFileFlipModel{
 			Ilk:              ilk,

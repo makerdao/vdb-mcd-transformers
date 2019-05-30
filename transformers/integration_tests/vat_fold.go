@@ -56,9 +56,8 @@ var _ = Describe("VatFold Transformer", func() {
 		Topic:             mcdConstants.VatFoldSignature(),
 	}
 
-	// TODO: Replace block number once there is a fold event on the updated Vat
-	XIt("transforms VatFold log events", func() {
-		blockNumber := int64(9367233)
+	It("transforms VatFold log events", func() {
+		blockNumber := int64(11144455)
 		vatFoldConfig.StartingBlockNumber = blockNumber
 		vatFoldConfig.EndingBlockNumber = blockNumber
 
@@ -87,17 +86,16 @@ var _ = Describe("VatFold Transformer", func() {
 
 		Expect(len(dbResults)).To(Equal(1))
 		dbResult := dbResults[0]
-		ilkID, err := shared.GetOrCreateIlk("5245500000000000000000000000000000000000000000000000000000000000", db)
+		ilkID, err := shared.GetOrCreateIlk("434f4c312d410000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
-		urnID, err := shared.GetOrCreateUrn("0000000000000000000000003728e9777b2a0a611ee0f89e00e01044ce4736d1", ilkID, db)
+		urnID, err := shared.GetOrCreateUrn("0x21444AC712cCD21ce82AF24eA1aEc64Cf07361D2", ilkID, db)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(dbResult.Urn).To(Equal(strconv.Itoa(urnID)))
-		Expect(dbResult.Rate).To(Equal("0.000000000000000000000000000"))
+		Expect(dbResult.Rate).To(Equal("479620379870463446010918"))
 	})
 
-	// TODO: Replace block number once there is a fold event on the updated Vat
-	XIt("rechecks vat fold event", func() {
-		blockNumber := int64(9367233)
+	It("rechecks vat fold event", func() {
+		blockNumber := int64(11144455)
 		vatFoldConfig.StartingBlockNumber = blockNumber
 		vatFoldConfig.EndingBlockNumber = blockNumber
 
@@ -139,11 +137,11 @@ var _ = Describe("VatFold Transformer", func() {
 
 		Expect(len(dbResults)).To(Equal(1))
 		dbResult := dbResults[0]
-		ilkID, err := shared.GetOrCreateIlk("5245500000000000000000000000000000000000000000000000000000000000", db)
+		ilkID, err := shared.GetOrCreateIlk("434f4c312d410000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
-		urnID, err := shared.GetOrCreateUrn("0000000000000000000000003728e9777b2a0a611ee0f89e00e01044ce4736d1", ilkID, db)
+		urnID, err := shared.GetOrCreateUrn("0x21444AC712cCD21ce82AF24eA1aEc64Cf07361D2", ilkID, db)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(dbResult.Urn).To(Equal(strconv.Itoa(urnID)))
-		Expect(dbResult.Rate).To(Equal("0.000000000000000000000000000"))
+		Expect(dbResult.Rate).To(Equal("479620379870463446010918"))
 	})
 })

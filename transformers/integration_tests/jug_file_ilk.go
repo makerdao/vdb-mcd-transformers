@@ -41,7 +41,7 @@ var _ = Describe("Jug File Ilk LogNoteTransformer", func() {
 	}
 
 	It("transforms jug file ilk log events", func() {
-		blockNumber := int64(10869801)
+		blockNumber := int64(10980324)
 		jugFileIlkConfig.StartingBlockNumber = blockNumber
 		jugFileIlkConfig.EndingBlockNumber = blockNumber
 
@@ -70,15 +70,15 @@ var _ = Describe("Jug File Ilk LogNoteTransformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))
-		ilkID, err := shared.GetOrCreateIlk("434f4c352d410000000000000000000000000000000000000000000000000000", db)
+		ilkID, err := shared.GetOrCreateIlk("4554482d41000000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(dbResult[0].Ilk).To(Equal(strconv.Itoa(ilkID)))
 		Expect(dbResult[0].What).To(Equal("duty"))
-		Expect(dbResult[0].Data).To(Equal("1000000000565700093016775172"))
+		Expect(dbResult[0].Data).To(Equal("1000000000782997609082909351"))
 	})
 
 	It("rechecks jug file ilk event", func() {
-		blockNumber := int64(10869801)
+		blockNumber := int64(10980324)
 		jugFileIlkConfig.StartingBlockNumber = blockNumber
 		jugFileIlkConfig.EndingBlockNumber = blockNumber
 

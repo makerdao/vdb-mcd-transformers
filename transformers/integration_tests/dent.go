@@ -16,7 +16,7 @@ import (
 	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
-var _ = Describe("Dent transformer", func() {
+var _ = XDescribe("Dent transformer", func() {
 	var (
 		db          *postgres.DB
 		blockChain  core.BlockChain

@@ -57,7 +57,7 @@ var _ = Describe("Vat slip transformer", func() {
 	}
 
 	It("persists vat slip event", func() {
-		blockNumber := int64(11087683)
+		blockNumber := int64(11210826)
 		vatSlipConfig.StartingBlockNumber = blockNumber
 		vatSlipConfig.EndingBlockNumber = blockNumber
 
@@ -86,11 +86,11 @@ var _ = Describe("Vat slip transformer", func() {
 		var model vat_slip.VatSlipModel
 		err = db.Get(&model, `SELECT ilk_id, usr, wad, tx_idx FROM maker.vat_slip WHERE header_id = $1`, headerID)
 		Expect(err).NotTo(HaveOccurred())
-		ilkID, err := shared.GetOrCreateIlk("4554482d41000000000000000000000000000000000000000000000000000000", db)
+		ilkID, err := shared.GetOrCreateIlk("434f4c312d410000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(model.Ilk).To(Equal(strconv.Itoa(ilkID)))
-		Expect(model.Usr).To(Equal("0xfA6c314ECDD6942f988548A7905b3A59765560A1"))
-		Expect(model.Wad).To(Equal("0"))
+		Expect(model.Usr).To(Equal("0x16Fb96a5fa0427Af0C8F7cF1eB4870231c8154B6"))
+		Expect(model.Wad).To(Equal("-60000000000000000000"))
 		Expect(model.TransactionIndex).To(Equal(uint(0)))
 		var headerChecked bool
 		err = db.Get(&headerChecked, `SELECT vat_slip_checked FROM public.checked_headers WHERE header_id = $1`, headerID)
@@ -99,7 +99,7 @@ var _ = Describe("Vat slip transformer", func() {
 	})
 
 	It("rechecks vat slip event", func() {
-		blockNumber := int64(11087683)
+		blockNumber := int64(11210826)
 		vatSlipConfig.StartingBlockNumber = blockNumber
 		vatSlipConfig.EndingBlockNumber = blockNumber
 
@@ -140,11 +140,11 @@ var _ = Describe("Vat slip transformer", func() {
 		var model vat_slip.VatSlipModel
 		err = db.Get(&model, `SELECT ilk_id, usr, wad, tx_idx FROM maker.vat_slip WHERE header_id = $1`, headerID)
 		Expect(err).NotTo(HaveOccurred())
-		ilkID, err := shared.GetOrCreateIlk("4554482d41000000000000000000000000000000000000000000000000000000", db)
+		ilkID, err := shared.GetOrCreateIlk("434f4c312d410000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(model.Ilk).To(Equal(strconv.Itoa(ilkID)))
-		Expect(model.Usr).To(Equal("0xfA6c314ECDD6942f988548A7905b3A59765560A1"))
-		Expect(model.Wad).To(Equal("0"))
+		Expect(model.Usr).To(Equal("0x16Fb96a5fa0427Af0C8F7cF1eB4870231c8154B6"))
+		Expect(model.Wad).To(Equal("-60000000000000000000"))
 		Expect(model.TransactionIndex).To(Equal(uint(0)))
 		var headerChecked int
 		err = db.Get(&headerChecked, `SELECT vat_slip_checked FROM public.checked_headers WHERE header_id = $1`, headerID)

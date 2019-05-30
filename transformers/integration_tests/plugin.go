@@ -189,7 +189,7 @@ var _ = Describe("Plugin test", func() {
 			It("Loads our generated Exporter and uses it to import an arbitrary set of TransformerInitializers that we can execute over", func() {
 				db, bc := SetupDBandBC()
 				hr = repositories.NewHeaderRepository(db)
-				header1, err := bc.GetHeaderByNumber(10869682)
+				header1, err := bc.GetHeaderByNumber(10980036)
 				Expect(err).ToNot(HaveOccurred())
 				headerID, err = hr.CreateOrUpdateHeader(header1)
 				Expect(err).ToNot(HaveOccurred())
@@ -227,8 +227,8 @@ var _ = Describe("Plugin test", func() {
 				Expect(err).NotTo(HaveOccurred())
 				Expect(returned.Ilk).To(Equal(strconv.Itoa(ilkID)))
 				Expect(returned.What).To(Equal("flip"))
-				Expect(returned.Flip).To(Equal("0x9EB4fb7368538a13B4a99792c2b56558e43Ad183"))
-				Expect(returned.TransactionIndex).To(Equal(uint(3)))
+				Expect(returned.Flip).To(Equal("0xB88d2655abA486A06e638707FBEbD858D430AC6E"))
+				Expect(returned.TransactionIndex).To(Equal(uint(1)))
 				Expect(returned.LogIndex).To(Equal(uint(2)))
 			})
 		})
@@ -314,7 +314,7 @@ var _ = Describe("Plugin test", func() {
 			It("Loads our generated Exporter and uses it to import an arbitrary set of TransformerInitializers and StorageTransformerInitializers that we can execute over", func() {
 				db, bc := SetupDBandBC()
 				hr = repositories.NewHeaderRepository(db)
-				header1, err := bc.GetHeaderByNumber(10869682)
+				header1, err := bc.GetHeaderByNumber(10980036)
 				Expect(err).ToNot(HaveOccurred())
 				headerID, err = hr.CreateOrUpdateHeader(header1)
 				Expect(err).ToNot(HaveOccurred())
@@ -352,8 +352,8 @@ var _ = Describe("Plugin test", func() {
 				Expect(err).NotTo(HaveOccurred())
 				Expect(returned.Ilk).To(Equal(strconv.Itoa(ilkID)))
 				Expect(returned.What).To(Equal("flip"))
-				Expect(returned.Flip).To(Equal("0x9EB4fb7368538a13B4a99792c2b56558e43Ad183"))
-				Expect(returned.TransactionIndex).To(Equal(uint(3)))
+				Expect(returned.Flip).To(Equal("0xB88d2655abA486A06e638707FBEbD858D430AC6E"))
+				Expect(returned.TransactionIndex).To(Equal(uint(1)))
 				Expect(returned.LogIndex).To(Equal(uint(2)))
 
 				tailer := fs.FileTailer{Path: viper.GetString("filesystem.storageDiffsPath")}

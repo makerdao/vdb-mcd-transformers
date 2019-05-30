@@ -66,7 +66,7 @@ var _ = Describe("Cat File transformer", func() {
 	})
 
 	It("persists a chop lump event", func() {
-		chopLumpBlockNumber := int64(10869682)
+		chopLumpBlockNumber := int64(10980036)
 		header, err := persistHeader(db, chopLumpBlockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 		catFileConfig.TransformerName = mcdConstants.CatFileChopLumpLabel
@@ -111,7 +111,7 @@ var _ = Describe("Cat File transformer", func() {
 	})
 
 	It("rechecks header for chop lump event", func() {
-		chopLumpBlockNumber := int64(10869682)
+		chopLumpBlockNumber := int64(10980036)
 		header, err := persistHeader(db, chopLumpBlockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 		catFileConfig.TransformerName = mcdConstants.CatFileChopLumpLabel
@@ -150,7 +150,7 @@ var _ = Describe("Cat File transformer", func() {
 	})
 
 	It("persists a flip event", func() {
-		flipBlockNumber := int64(10869682)
+		flipBlockNumber := int64(10980036)
 		header, err := persistHeader(db, flipBlockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 		catFileConfig.TransformerName = mcdConstants.CatFileFlipLabel
@@ -184,11 +184,11 @@ var _ = Describe("Cat File transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 		Expect(dbResult[0].Ilk).To(Equal(strconv.Itoa(ilkID)))
 		Expect(dbResult[0].What).To(Equal("flip"))
-		Expect(dbResult[0].Flip).To(Equal("0x9EB4fb7368538a13B4a99792c2b56558e43Ad183"))
+		Expect(dbResult[0].Flip).To(Equal("0xB88d2655abA486A06e638707FBEbD858D430AC6E"))
 	})
 
 	It("rechecks a flip event", func() {
-		flipBlockNumber := int64(10869682)
+		flipBlockNumber := int64(10980036)
 		header, err := persistHeader(db, flipBlockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 		catFileConfig.TransformerName = mcdConstants.CatFileFlipLabel
@@ -228,7 +228,7 @@ var _ = Describe("Cat File transformer", func() {
 	})
 
 	It("persists a vow event", func() {
-		vowBlockNumber := int64(10869670)
+		vowBlockNumber := int64(10980005)
 		header, err := persistHeader(db, vowBlockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 		catFileConfig.TransformerName = mcdConstants.CatFileVowLabel
@@ -258,7 +258,7 @@ var _ = Describe("Cat File transformer", func() {
 
 		Expect(len(dbResult)).To(Equal(1))
 		Expect(dbResult[0].What).To(Equal("vow"))
-		Expect(dbResult[0].Data).To(Equal("0x4afcAb85f27DD2e1A5EC1008b5B294E44e487f90"))
+		Expect(dbResult[0].Data).To(Equal("0x21444AC712cCD21ce82AF24eA1aEc64Cf07361D2"))
 		Expect(dbResult[0].LogIndex).To(Equal(uint(3)))
 	})
 })

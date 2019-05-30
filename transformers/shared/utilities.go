@@ -80,25 +80,21 @@ func ConvertUint256HexToBigInt(hex string) *big.Int {
 	return big.NewInt(0).SetBytes(hexBytes)
 }
 
-func GetDSNoteThirdArgument(logData []byte) []byte {
-	return getDataWithIndexOffset(1, logData)
-}
-
-func GetVatNoteDataBytesAtIndex(index int, logData []byte) ([]byte, error) {
-	indexOffset, err := getVatNoteArgIndexOffset(index)
+func GetLogNoteArgumentAtIndex(index int, logData []byte) ([]byte, error) {
+	indexOffset, err := getLogNoteArgumentIndexOffset(index)
 	if err != nil {
 		return nil, err
 	}
 	return getDataWithIndexOffset(indexOffset, logData), nil
 }
 
-func getVatNoteArgIndexOffset(index int) (int, error) {
-	minArgIndex := 4
+func getLogNoteArgumentIndexOffset(index int) (int, error) {
+	minArgIndex := 3
 	maxArgIndex := 6
 	if index < minArgIndex || index > maxArgIndex {
 		return 0, ErrInvalidIndex(index)
 	}
-	offsets := map[int]int{4: 3, 5: 2, 6: 1}
+	offsets := map[int]int{3: 4, 4: 3, 5: 2, 6: 1}
 	return offsets[index], nil
 }
 
