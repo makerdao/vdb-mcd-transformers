@@ -63,12 +63,6 @@ To present the API as specified [here](https://github.com/makerdao/vulcan.spec/b
 1. Invoke `postgraphile --connection postgres://[superuser]:[password]@localhost:5432/vulcanize_public --schema api --disable-default-mutations --no-ignore-rbac --watch --enhance-graphiql`
 1. The GraphiQL frontend can be found at `localhost:5000/graphiql`, and the GraphQL endpoint at `/graphql`
 
-## Create a migration file
-1. `make new_migration NAME=add_columnA_to_table1`
-    - This will create a new timestamped migration file in `db/migrations`
-1. Write the migration code in the created file, under the respective `goose` pragma
-    - Goose automatically runs each migration in a transaction; don't add `BEGIN` and `COMMIT` statements.
-
 ## Configuration
 - To use a local Ethereum node, copy `environments/public.toml.example` to
   `environments/public.toml` and update the `ipcPath` and `levelDbPath`.
