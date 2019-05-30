@@ -1,22 +1,21 @@
 -- +goose Up
 -- +goose StatementBegin
 CREATE FUNCTION api.all_queued_sin()
-  RETURNS SETOF api.queued_sin AS $$
+    RETURNS SETOF api.queued_sin AS
+$$
 DECLARE
-  _era NUMERIC;
+    _era NUMERIC;
 BEGIN
-  FOR _era IN
-  SELECT DISTINCT era
-  FROM maker.vow_sin_mapping
-  LOOP
-    RETURN QUERY
-    SELECT *
-    FROM api.get_queued_sin(_era);
-  END LOOP;
+    FOR _era IN
+        SELECT DISTINCT era FROM maker.vow_sin_mapping
+        LOOP
+            RETURN QUERY
+                SELECT * FROM api.get_queued_sin(_era);
+        END LOOP;
 END;
 $$
-LANGUAGE plpgsql
-STABLE;
+    LANGUAGE plpgsql
+    STABLE;
 -- +goose StatementEnd
 
 
