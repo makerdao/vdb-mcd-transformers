@@ -40,6 +40,7 @@ func vatFileIlkMethod() string         { return "file(bytes32,bytes32,uint256)" 
 func vatFluxMethod() string            { return getSolidityFunctionSignature(VatABI(), "flux") }
 func vatFoldMethod() string            { return getSolidityFunctionSignature(VatABI(), "fold") }
 func vatFrobMethod() string            { return getSolidityFunctionSignature(VatABI(), "frob") }
+func vatForkMethod() string            { return getSolidityFunctionSignature(VatABI(), "fork") }
 func vatGrabMethod() string            { return getSolidityFunctionSignature(VatABI(), "grab") }
 func vatHealMethod() string            { return getSolidityFunctionSignature(VatABI(), "heal") }
 func vatInitMethod() string            { return getSolidityFunctionSignature(VatABI(), "init") }
