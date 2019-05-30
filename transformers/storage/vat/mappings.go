@@ -17,6 +17,8 @@
 package vat
 
 import (
+	"errors"
+	"fmt"
 	"github.com/ethereum/go-ethereum/common"
 
 	"github.com/vulcanize/vulcanizedb/libraries/shared/storage"
@@ -45,6 +47,8 @@ const (
 )
 
 var (
+	ErrAddressLengthInvalid = func(len int) error { return errors.New(fmt.Sprintf("address length invalid: %d", len)) }
+
 	IlksMappingIndex = storage.IndexTwo
 	UrnsMappingIndex = storage.IndexThree
 	GemsMappingIndex = storage.IndexFour
@@ -144,7 +148,11 @@ func (mappings *VatMappings) loadDaiKeys() error {
 		return err
 	}
 	for _, d := range daiKeys {
-		mappings.mappings[getDaiKey(d)] = getDaiMetadata(d)
+		paddedDai, padErr := padAddressTo32ByteHex(d)
+		if padErr != nil {
+			return padErr
+		}
+		mappings.mappings[getDaiKey(paddedDai)] = getDaiMetadata(d)
 	}
 	return nil
 }
@@ -155,7 +163,11 @@ func (mappings *VatMappings) loadGemKeys() error {
 		return err
 	}
 	for _, gem := range gemKeys {
-		mappings.mappings[getGemKey(gem.Ilk, gem.Guy)] = getGemMetadata(gem.Ilk, gem.Guy)
+		paddedGem, padErr := padAddressTo32ByteHex(gem.Guy)
+		if padErr != nil {
+			return padErr
+		}
+		mappings.mappings[getGemKey(gem.Ilk, paddedGem)] = getGemMetadata(gem.Ilk, gem.Guy)
 	}
 	return nil
 }
@@ -181,7 +193,11 @@ func (mappings *VatMappings) loadSinKeys() error {
 		return err
 	}
 	for _, s := range sinKeys {
-		mappings.mappings[getSinKey(s)] = getSinMetadata(s)
+		paddedSin, padErr := padAddressTo32ByteHex(s)
+		if padErr != nil {
+			return padErr
+		}
+		mappings.mappings[getSinKey(paddedSin)] = getSinMetadata(s)
 	}
 	return nil
 }
@@ -192,8 +208,12 @@ func (mappings *VatMappings) loadUrnKeys() error {
 		return err
 	}
 	for _, urn := range urns {
-		mappings.mappings[getUrnArtKey(urn.Ilk, urn.Guy)] = getUrnArtMetadata(urn.Ilk, urn.Guy)
-		mappings.mappings[getUrnInkKey(urn.Ilk, urn.Guy)] = getUrnInkMetadata(urn.Ilk, urn.Guy)
+		paddedGuy, padErr := padAddressTo32ByteHex(urn.Guy)
+		if padErr != nil {
+			return padErr
+		}
+		mappings.mappings[getUrnArtKey(urn.Ilk, paddedGuy)] = getUrnArtMetadata(urn.Ilk, urn.Guy)
+		mappings.mappings[getUrnInkKey(urn.Ilk, paddedGuy)] = getUrnInkMetadata(urn.Ilk, urn.Guy)
 	}
 	return nil
 }
@@ -286,4 +306,14 @@ func getSinKey(guy string) common.Hash {
 func getSinMetadata(guy string) utils.StorageValueMetadata {
 	keys := map[utils.Key]string{constants.Guy: guy}
 	return utils.GetStorageValueMetadata(Sin, keys, utils.Uint256)
+}
+
+func padAddressTo32ByteHex(addr string) (string, error) {
+	var validAddrWithPrefixLen = 42
+	if len(addr) != validAddrWithPrefixLen {
+		return "", ErrAddressLengthInvalid(len(addr))
+	}
+	addrWithoutPrefix := addr[2:]
+	paddedAddr := "000000000000000000000000" + addrWithoutPrefix
+	return paddedAddr, nil
 }
