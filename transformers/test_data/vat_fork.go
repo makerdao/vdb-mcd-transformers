@@ -7,19 +7,9 @@ import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
 
+	"github.com/vulcanize/mcd_transformers/transformers/events/vat_fork"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
-
-type VatForkModel struct {
-	Ilk              string
-	Src              string
-	Dst              string
-	Dink             string
-	Dart             string
-	LogIndex         uint
-	TransactionIndex uint
-	Raw              []byte
-}
 
 var EthVatForkLogWithNegativeDart = types.Log{
 	Address: common.HexToAddress(constants.VatContractAddress()),
@@ -39,7 +29,7 @@ var EthVatForkLogWithNegativeDart = types.Log{
 }
 
 var rawVatForkLogWithNegativeDart, _ = json.Marshal(EthVatForkLogWithNegativeDart)
-var VatForkModelWithNegativeDart = VatForkModel{
+var VatForkModelWithNegativeDart = vat_fork.VatForkModel{
 	Ilk:              "66616b6520696c6b000000000000000000000000000000000000000000000000",
 	Src:              "0x07Fa9eF6609cA7921112231F8f195138ebbA2977",
 	Dst:              "0x7526EB4f95e2a1394797Cb38a921Fb1EbA09291B",
