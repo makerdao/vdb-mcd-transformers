@@ -138,6 +138,7 @@ var _ = Describe("All Ilks query", func() {
 		It("returns updated values as of block 3", func() {
 			blockThreeTimestamp := int64(333333333)
 			blockThreeHeader := fakes.GetFakeHeaderWithTimestamp(blockThreeTimestamp, int64(3))
+
 			_, headerErr := headerRepository.CreateOrUpdateHeader(blockThreeHeader)
 			Expect(headerErr).NotTo(HaveOccurred())
 
