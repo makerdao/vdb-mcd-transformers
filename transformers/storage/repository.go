@@ -31,7 +31,6 @@ var ErrNoFlips = errors.New("no flips exist in db")
 
 type IMakerStorageRepository interface {
 	GetDaiKeys() ([]string, error)
-	GetMaxFlip() (int64, error)
 	GetGemKeys() ([]Urn, error)
 	GetIlks() ([]string, error)
 	GetVatSinKeys() ([]string, error)
@@ -55,20 +54,6 @@ func (repository *MakerStorageRepository) GetDaiKeys() ([]string, error) {
 			INNER JOIN maker.urns on urns.id = maker.vat_fold.urn_id
 	`)
 	return daiKeys, err
-}
-
-func (repository *MakerStorageRepository) GetMaxFlip() (int64, error) {
-	var flipExists bool
-	existErr := repository.db.Get(&flipExists, `SELECT EXISTS(SELECT 1 FROM maker.cat_nflip)`)
-	if existErr != nil {
-		return 0, existErr
-	}
-	if flipExists {
-		var maxFlip int64
-		maxErr := repository.db.Get(&maxFlip, `SELECT MAX(nflip) FROM maker.cat_nflip`)
-		return maxFlip, maxErr
-	}
-	return 0, ErrNoFlips
 }
 
 func (repository *MakerStorageRepository) GetGemKeys() ([]Urn, error) {

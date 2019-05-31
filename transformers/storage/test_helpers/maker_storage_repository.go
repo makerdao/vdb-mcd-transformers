@@ -15,8 +15,6 @@ type MockMakerStorageRepository struct {
 	GetGemKeysError     error
 	GetIlksCalled       bool
 	GetIlksError        error
-	GetMaxFlipCalled    bool
-	GetMaxFlipError     error
 	GetVatSinKeysCalled bool
 	GetVatSinKeysError  error
 	GetVowSinKeysCalled bool
@@ -24,7 +22,6 @@ type MockMakerStorageRepository struct {
 	GetUrnsCalled       bool
 	GetUrnsError        error
 	Ilks                []string
-	MaxFlip             int64
 	SinKeys             []string
 	Urns                []storage.Urn
 }
@@ -42,11 +39,6 @@ func (repository *MockMakerStorageRepository) GetGemKeys() ([]storage.Urn, error
 func (repository *MockMakerStorageRepository) GetIlks() ([]string, error) {
 	repository.GetIlksCalled = true
 	return repository.Ilks, repository.GetIlksError
-}
-
-func (repository *MockMakerStorageRepository) GetMaxFlip() (int64, error) {
-	repository.GetMaxFlipCalled = true
-	return repository.MaxFlip, repository.GetMaxFlipError
 }
 
 func (repository *MockMakerStorageRepository) GetVatSinKeys() ([]string, error) {
