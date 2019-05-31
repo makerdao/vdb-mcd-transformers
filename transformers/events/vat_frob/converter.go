@@ -38,17 +38,17 @@ func (VatFrobConverter) ToModels(ethLogs []types.Log) ([]interface{}, error) {
 		ilk := shared.GetHexWithoutPrefix(ethLog.Topics[1].Bytes())
 		urn := common.BytesToAddress(ethLog.Topics[2].Bytes()).String()
 		v := common.BytesToAddress(ethLog.Topics[3].Bytes()).String()
-		wBytes, wErr := shared.GetLogNoteArgumentAtIndex(4, ethLog.Data)
+		wBytes, wErr := shared.GetLogNoteArgumentAtIndex(3, ethLog.Data)
 		if wErr != nil {
 			return nil, wErr
 		}
 		w := common.BytesToAddress(wBytes).String()
-		dinkBytes, dinkErr := shared.GetLogNoteArgumentAtIndex(5, ethLog.Data)
+		dinkBytes, dinkErr := shared.GetLogNoteArgumentAtIndex(4, ethLog.Data)
 		if dinkErr != nil {
 			return nil, dinkErr
 		}
 		dink := shared.ConvertInt256HexToBigInt(hexutil.Encode(dinkBytes))
-		dartBytes, dartErr := shared.GetLogNoteArgumentAtIndex(6, ethLog.Data)
+		dartBytes, dartErr := shared.GetLogNoteArgumentAtIndex(5, ethLog.Data)
 		if dartErr != nil {
 			return nil, dartErr
 		}
