@@ -17,12 +17,12 @@
 package vat_fork
 
 type VatForkModel struct {
-	Ilk              string
+	Ilk              string `db:"ilk_id"`
 	Src              string
 	Dst              string
 	Dink             string
 	Dart             string
-	TransactionIndex uint
-	LogIndex         uint
-	Raw              []byte
+	LogIndex         uint   `db:"log_idx"`
+	TransactionIndex uint   `db:"tx_idx"`
+	Raw              []byte `db:"raw_log"`
 }
