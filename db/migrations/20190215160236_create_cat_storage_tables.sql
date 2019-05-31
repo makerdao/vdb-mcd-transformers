@@ -1,13 +1,4 @@
 -- +goose Up
-CREATE TABLE maker.cat_nflip
-(
-    id           SERIAL PRIMARY KEY,
-    block_number BIGINT,
-    block_hash   TEXT,
-    nflip        NUMERIC NOT NULL,
-    UNIQUE (block_number, block_hash, nflip)
-);
-
 CREATE TABLE maker.cat_live
 (
     id           SERIAL PRIMARY KEY,
@@ -65,55 +56,11 @@ CREATE TABLE maker.cat_ilk_lump
     UNIQUE (block_number, block_hash, ilk_id, lump)
 );
 
-CREATE TABLE maker.cat_flip_ilk
-(
-    id           SERIAL PRIMARY KEY,
-    block_number BIGINT,
-    block_hash   TEXT,
-    flip         NUMERIC NOT NULL,
-    ilk_id       INTEGER NOT NULL REFERENCES maker.ilks (id),
-    UNIQUE (block_number, block_hash, flip, ilk_id)
-);
-
-CREATE TABLE maker.cat_flip_urn
-(
-    id           SERIAL PRIMARY KEY,
-    block_number BIGINT,
-    block_hash   TEXT,
-    flip         NUMERIC NOT NULL,
-    urn          TEXT,
-    UNIQUE (block_number, block_hash, flip, urn)
-);
-
-CREATE TABLE maker.cat_flip_ink
-(
-    id           SERIAL PRIMARY KEY,
-    block_number BIGINT,
-    block_hash   TEXT,
-    flip         NUMERIC NOT NULL,
-    ink          NUMERIC NOT NULL,
-    UNIQUE (block_number, block_hash, flip, ink)
-);
-
-CREATE TABLE maker.cat_flip_tab
-(
-    id           SERIAL PRIMARY KEY,
-    block_number BIGINT,
-    block_hash   TEXT,
-    flip         NUMERIC NOT NULL,
-    tab          NUMERIC NOT NULL,
-    UNIQUE (block_number, block_hash, flip, tab)
-);
 
 -- +goose Down
-DROP TABLE maker.cat_nflip;
 DROP TABLE maker.cat_live;
 DROP TABLE maker.cat_vat;
 DROP TABLE maker.cat_vow;
 DROP TABLE maker.cat_ilk_flip;
 DROP TABLE maker.cat_ilk_chop;
 DROP TABLE maker.cat_ilk_lump;
-DROP TABLE maker.cat_flip_ilk;
-DROP TABLE maker.cat_flip_urn;
-DROP TABLE maker.cat_flip_ink;
-DROP TABLE maker.cat_flip_tab;

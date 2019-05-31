@@ -2,48 +2,35 @@ package cat
 
 import (
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/sirupsen/logrus"
-
 	"github.com/vulcanize/vulcanizedb/libraries/shared/storage"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 
-	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	s2 "github.com/vulcanize/mcd_transformers/transformers/storage"
 )
 
 const (
-	NFlip = "nflip"
-	Live  = "live"
-	Vat   = "vat"
-	Vow   = "vow"
+	Live = "live"
+	Vat  = "vat"
+	Vow  = "vow"
 
 	IlkFlip = "flip"
 	IlkChop = "chop"
 	IlkLump = "lump"
-
-	FlipIlk = "ilk"
-	FlipUrn = "urn"
-	FlipInk = "ink"
-	FlipTab = "tab"
 )
 
 var (
 	// wards takes up index 0
-	IlksMappingIndex  = storage.IndexOne // bytes32 => flip address; chop (ray), lump (wad) uint256
-	FlipsMappingIndex = storage.IndexTwo // uint256 => ilk, urn bytes32; ink, tab uint256 (both wad)
+	IlksMappingIndex = storage.IndexOne // bytes32 => flip address; chop (ray), lump (wad) uint256
 
-	NFlipKey      = common.HexToHash(storage.IndexThree)
-	NFlipMetadata = utils.GetStorageValueMetadata(NFlip, nil, utils.Uint256)
-
-	LiveKey      = common.HexToHash(storage.IndexFour)
+	LiveKey      = common.HexToHash(storage.IndexTwo)
 	LiveMetadata = utils.GetStorageValueMetadata(Live, nil, utils.Uint256)
 
-	VatKey      = common.HexToHash(storage.IndexFive)
+	VatKey      = common.HexToHash(storage.IndexThree)
 	VatMetadata = utils.GetStorageValueMetadata(Vat, nil, utils.Address)
 
-	VowKey      = common.HexToHash(storage.IndexSix)
+	VowKey      = common.HexToHash(storage.IndexFour)
 	VowMetadata = utils.GetStorageValueMetadata(Vow, nil, utils.Address)
 )
 
@@ -78,17 +65,11 @@ func (mappings *CatMappings) loadMappings() error {
 		return ilkErr
 	}
 
-	flipsErr := mappings.loadFlipsKeys()
-	if flipsErr != nil {
-		return flipsErr
-	}
-
 	return nil
 }
 
 func loadStaticMappings() map[common.Hash]utils.StorageValueMetadata {
 	mappings := make(map[common.Hash]utils.StorageValueMetadata)
-	mappings[NFlipKey] = NFlipMetadata
 	mappings[LiveKey] = LiveMetadata
 	mappings[VatKey] = VatMetadata
 	mappings[VowKey] = VowMetadata
@@ -134,66 +115,4 @@ func getIlkLumpKey(ilk string) common.Hash {
 func getIlkLumpMetadata(ilk string) utils.StorageValueMetadata {
 	keys := map[utils.Key]string{constants.Ilk: ilk}
 	return utils.GetStorageValueMetadata(IlkLump, keys, utils.Uint256)
-}
-
-// Flip ID increments each time it happens, so we just need the biggest flip ID from the DB
-// and we can interpolate the sequence [0..max]. This makes sure we track all earlier flips,
-// even if we've missed events
-func (mappings CatMappings) loadFlipsKeys() error {
-	maxFlip, err := mappings.StorageRepository.GetMaxFlip()
-	if err != nil {
-		if err == s2.ErrNoFlips {
-			return nil
-		}
-		logrus.Error("loadFlipsKeys: error getting max flip: ", err)
-		return err
-	}
-
-	for flip := 0; int64(flip) <= maxFlip; flip++ {
-		flipStr, err := shared.ConvertIntToHex(flip)
-		if err != nil {
-			return err
-		}
-		mappings.mappings[getFlipIlkKey(flipStr)] = getFlipIlkMetadata(flipStr)
-		mappings.mappings[getFlipUrnKey(flipStr)] = getFlipUrnMetadata(flipStr)
-		mappings.mappings[getFlipInkKey(flipStr)] = getFlipInkMetadata(flipStr)
-		mappings.mappings[getFlipTabKey(flipStr)] = getFlipTabMetadata(flipStr)
-	}
-	return nil
-}
-
-func getFlipIlkKey(flip string) common.Hash {
-	return storage.GetMapping(FlipsMappingIndex, flip)
-}
-
-func getFlipIlkMetadata(flip string) utils.StorageValueMetadata {
-	keys := map[utils.Key]string{constants.Flip: flip}
-	return utils.GetStorageValueMetadata(FlipIlk, keys, utils.Bytes32)
-}
-
-func getFlipUrnKey(flip string) common.Hash {
-	return storage.GetIncrementedKey(getFlipIlkKey(flip), 1)
-}
-
-func getFlipUrnMetadata(flip string) utils.StorageValueMetadata {
-	keys := map[utils.Key]string{constants.Flip: flip}
-	return utils.GetStorageValueMetadata(FlipUrn, keys, utils.Bytes32)
-}
-
-func getFlipInkKey(flip string) common.Hash {
-	return storage.GetIncrementedKey(getFlipIlkKey(flip), 2)
-}
-
-func getFlipInkMetadata(flip string) utils.StorageValueMetadata {
-	keys := map[utils.Key]string{constants.Flip: flip}
-	return utils.GetStorageValueMetadata(FlipInk, keys, utils.Uint256)
-}
-
-func getFlipTabKey(flip string) common.Hash {
-	return storage.GetIncrementedKey(getFlipIlkKey(flip), 3)
-}
-
-func getFlipTabMetadata(flip string) utils.StorageValueMetadata {
-	keys := map[utils.Key]string{constants.Flip: flip}
-	return utils.GetStorageValueMetadata(FlipTab, keys, utils.Uint256)
 }

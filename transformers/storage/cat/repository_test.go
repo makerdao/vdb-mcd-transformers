@@ -25,7 +25,6 @@ var _ = Describe("Cat storage repository", func() {
 		fakeBlockHash   = "expected_block_hash"
 		fakeAddress     = "0x12345"
 		fakeUint256     = "12345"
-		fakeBytes32     = "0x464b450000000000000000000000000000000000000000000000000000000000" // FKE (FlipIlk payload)
 	)
 
 	BeforeEach(func() {
@@ -37,33 +36,6 @@ var _ = Describe("Cat storage repository", func() {
 
 	Describe("Variable", func() {
 		var result VariableRes
-
-		Describe("NFlip", func() {
-			It("writes a row", func() {
-				nFlipMetadata := utils.GetStorageValueMetadata(cat.NFlip, nil, utils.Uint256)
-
-				err := repo.Create(fakeBlockNumber, fakeBlockHash, nFlipMetadata, fakeUint256)
-				Expect(err).NotTo(HaveOccurred())
-
-				err = db.Get(&result, `SELECT block_number, block_hash, nflip AS value FROM maker.cat_nflip`)
-				Expect(err).NotTo(HaveOccurred())
-				AssertVariable(result, fakeBlockNumber, fakeBlockHash, fakeUint256)
-			})
-
-			It("does not duplicate row", func() {
-				nFlipMetadata := utils.GetStorageValueMetadata(cat.NFlip, nil, utils.Uint256)
-				insertOneErr := repo.Create(fakeBlockNumber, fakeBlockHash, nFlipMetadata, fakeUint256)
-				Expect(insertOneErr).NotTo(HaveOccurred())
-
-				insertTwoErr := repo.Create(fakeBlockNumber, fakeBlockHash, nFlipMetadata, fakeUint256)
-
-				Expect(insertTwoErr).NotTo(HaveOccurred())
-				var count int
-				getCountErr := db.Get(&count, `SELECT count(*) FROM maker.cat_nflip`)
-				Expect(getCountErr).NotTo(HaveOccurred())
-				Expect(count).To(Equal(1))
-			})
-		})
 
 		Describe("Live", func() {
 			It("writes a row", func() {
@@ -119,7 +91,7 @@ var _ = Describe("Cat storage repository", func() {
 			})
 		})
 
-		Describe("What", func() {
+		Describe("Vow", func() {
 			It("writes a row", func() {
 				vowMetadata := utils.GetStorageValueMetadata(cat.Vow, nil, utils.Address)
 
@@ -255,149 +227,6 @@ var _ = Describe("Cat storage repository", func() {
 
 				err := repo.Create(fakeBlockNumber, fakeBlockHash, malformedIlkLumpMetadata, fakeAddress)
 				Expect(err).To(MatchError(utils.ErrMetadataMalformed{MissingData: constants.Ilk}))
-			})
-		})
-	})
-
-	Describe("Flip", func() {
-		var result MappingRes
-
-		Describe("FlipIlk", func() {
-			It("writes a row", func() {
-				flipIlkMetadata := utils.GetStorageValueMetadata(cat.FlipIlk, map[utils.Key]string{constants.Flip: fakeUint256}, utils.Bytes32)
-
-				err := repo.Create(fakeBlockNumber, fakeBlockHash, flipIlkMetadata, fakeBytes32)
-				Expect(err).NotTo(HaveOccurred())
-
-				err = db.Get(&result, `SELECT block_number, block_hash, flip AS key, ilk_id AS value FROM maker.cat_flip_ilk`)
-				Expect(err).NotTo(HaveOccurred())
-				// Remove hex prefix from byte32 value that's an ilk
-				ilkID, err := shared.GetOrCreateIlk(fakeBytes32[2:], db)
-				Expect(err).NotTo(HaveOccurred())
-				AssertMapping(result, fakeBlockNumber, fakeBlockHash, fakeUint256, strconv.Itoa(ilkID))
-			})
-
-			It("does not duplicate row", func() {
-				flipIlkMetadata := utils.GetStorageValueMetadata(cat.FlipIlk, map[utils.Key]string{constants.Flip: fakeUint256}, utils.Bytes32)
-				insertOneErr := repo.Create(fakeBlockNumber, fakeBlockHash, flipIlkMetadata, fakeBytes32)
-				Expect(insertOneErr).NotTo(HaveOccurred())
-
-				insertTwoErr := repo.Create(fakeBlockNumber, fakeBlockHash, flipIlkMetadata, fakeBytes32)
-
-				Expect(insertTwoErr).NotTo(HaveOccurred())
-				var count int
-				getCountErr := db.Get(&count, `SELECT count(*) FROM maker.cat_flip_ilk`)
-				Expect(getCountErr).NotTo(HaveOccurred())
-				Expect(count).To(Equal(1))
-			})
-
-			It("returns an error if metadata missing flip", func() {
-				malformedFlipIlkMetadata := utils.GetStorageValueMetadata(cat.FlipIlk, map[utils.Key]string{}, utils.Bytes32)
-
-				err := repo.Create(fakeBlockNumber, fakeBlockHash, malformedFlipIlkMetadata, fakeBytes32)
-				Expect(err).To(MatchError(utils.ErrMetadataMalformed{MissingData: constants.Flip}))
-			})
-		})
-
-		Describe("FlipUrn", func() {
-			It("writes a row", func() {
-				flipUrnMetadata := utils.GetStorageValueMetadata(cat.FlipUrn, map[utils.Key]string{constants.Flip: fakeUint256}, utils.Bytes32)
-
-				err := repo.Create(fakeBlockNumber, fakeBlockHash, flipUrnMetadata, fakeBytes32)
-				Expect(err).NotTo(HaveOccurred())
-
-				err = db.Get(&result, `SELECT block_number, block_hash, flip AS key, urn AS value FROM maker.cat_flip_urn`)
-				Expect(err).NotTo(HaveOccurred())
-				AssertMapping(result, fakeBlockNumber, fakeBlockHash, fakeUint256, fakeBytes32)
-			})
-
-			It("does not duplicate row", func() {
-				flipUrnMetadata := utils.GetStorageValueMetadata(cat.FlipUrn, map[utils.Key]string{constants.Flip: fakeUint256}, utils.Bytes32)
-				insertOneErr := repo.Create(fakeBlockNumber, fakeBlockHash, flipUrnMetadata, fakeBytes32)
-				Expect(insertOneErr).NotTo(HaveOccurred())
-
-				insertTwoErr := repo.Create(fakeBlockNumber, fakeBlockHash, flipUrnMetadata, fakeBytes32)
-
-				Expect(insertTwoErr).NotTo(HaveOccurred())
-				var count int
-				getCountErr := db.Get(&count, `SELECT count(*) FROM maker.cat_flip_urn`)
-				Expect(getCountErr).NotTo(HaveOccurred())
-				Expect(count).To(Equal(1))
-			})
-
-			It("returns an error if metadata missing flip", func() {
-				malformedFlipUrnMetadata := utils.GetStorageValueMetadata(cat.FlipUrn, map[utils.Key]string{}, utils.Bytes32)
-
-				err := repo.Create(fakeBlockNumber, fakeBlockHash, malformedFlipUrnMetadata, fakeBytes32)
-				Expect(err).To(MatchError(utils.ErrMetadataMalformed{MissingData: constants.Flip}))
-			})
-		})
-
-		Describe("FlipInk", func() {
-			It("writes a row", func() {
-				flipInkMetadata := utils.GetStorageValueMetadata(cat.FlipInk, map[utils.Key]string{constants.Flip: fakeUint256}, utils.Uint256)
-
-				err := repo.Create(fakeBlockNumber, fakeBlockHash, flipInkMetadata, fakeUint256)
-				Expect(err).NotTo(HaveOccurred())
-
-				err = db.Get(&result, `SELECT block_number, block_hash, flip AS key, ink AS value FROM maker.cat_flip_ink`)
-				Expect(err).NotTo(HaveOccurred())
-				AssertMapping(result, fakeBlockNumber, fakeBlockHash, fakeUint256, fakeUint256)
-			})
-
-			It("does not duplicate row", func() {
-				flipInkMetadata := utils.GetStorageValueMetadata(cat.FlipInk, map[utils.Key]string{constants.Flip: fakeUint256}, utils.Uint256)
-				insertOneErr := repo.Create(fakeBlockNumber, fakeBlockHash, flipInkMetadata, fakeUint256)
-				Expect(insertOneErr).NotTo(HaveOccurred())
-
-				insertTwoErr := repo.Create(fakeBlockNumber, fakeBlockHash, flipInkMetadata, fakeUint256)
-
-				Expect(insertTwoErr).NotTo(HaveOccurred())
-				var count int
-				getCountErr := db.Get(&count, `SELECT count(*) FROM maker.cat_flip_ink`)
-				Expect(getCountErr).NotTo(HaveOccurred())
-				Expect(count).To(Equal(1))
-			})
-
-			It("returns an error if metadata missing flip", func() {
-				malformedFlipInkMetadata := utils.GetStorageValueMetadata(cat.FlipInk, map[utils.Key]string{}, utils.Uint256)
-
-				err := repo.Create(fakeBlockNumber, fakeBlockHash, malformedFlipInkMetadata, fakeUint256)
-				Expect(err).To(MatchError(utils.ErrMetadataMalformed{MissingData: constants.Flip}))
-			})
-		})
-
-		Describe("FlipTab", func() {
-			It("writes a row", func() {
-				flipTabMetadata := utils.GetStorageValueMetadata(cat.FlipTab, map[utils.Key]string{constants.Flip: fakeUint256}, utils.Uint256)
-
-				err := repo.Create(fakeBlockNumber, fakeBlockHash, flipTabMetadata, fakeUint256)
-				Expect(err).NotTo(HaveOccurred())
-
-				err = db.Get(&result, `SELECT block_number, block_hash, flip AS key, tab AS value FROM maker.cat_flip_tab`)
-				Expect(err).NotTo(HaveOccurred())
-				AssertMapping(result, fakeBlockNumber, fakeBlockHash, fakeUint256, fakeUint256)
-			})
-
-			It("does not duplicate row", func() {
-				flipTabMetadata := utils.GetStorageValueMetadata(cat.FlipTab, map[utils.Key]string{constants.Flip: fakeUint256}, utils.Uint256)
-				insertOneErr := repo.Create(fakeBlockNumber, fakeBlockHash, flipTabMetadata, fakeUint256)
-				Expect(insertOneErr).NotTo(HaveOccurred())
-
-				insertTwoErr := repo.Create(fakeBlockNumber, fakeBlockHash, flipTabMetadata, fakeUint256)
-
-				Expect(insertTwoErr).NotTo(HaveOccurred())
-				var count int
-				getCountErr := db.Get(&count, `SELECT count(*) FROM maker.cat_flip_tab`)
-				Expect(getCountErr).NotTo(HaveOccurred())
-				Expect(count).To(Equal(1))
-			})
-
-			It("returns an error if metadata missing flip", func() {
-				malformedFlipTabMetadata := utils.GetStorageValueMetadata(cat.FlipTab, map[utils.Key]string{}, utils.Uint256)
-
-				err := repo.Create(fakeBlockNumber, fakeBlockHash, malformedFlipTabMetadata, fakeUint256)
-				Expect(err).To(MatchError(utils.ErrMetadataMalformed{MissingData: constants.Flip}))
 			})
 		})
 	})
