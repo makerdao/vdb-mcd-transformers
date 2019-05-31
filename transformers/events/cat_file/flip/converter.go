@@ -38,7 +38,7 @@ func (CatFileFlipConverter) ToModels(ethLogs []types.Log) ([]interface{}, error)
 		}
 		ilk := shared.GetHexWithoutPrefix(ethLog.Topics[2].Bytes())
 		what := shared.DecodeHexToText(ethLog.Topics[3].Hex())
-		flipBytes, parseErr := shared.GetLogNoteArgumentAtIndex(3, ethLog.Data)
+		flipBytes, parseErr := shared.GetLogNoteArgumentAtIndex(2, ethLog.Data)
 		if parseErr != nil {
 			return nil, parseErr
 		}

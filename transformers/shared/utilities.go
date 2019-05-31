@@ -89,12 +89,12 @@ func GetLogNoteArgumentAtIndex(index int, logData []byte) ([]byte, error) {
 }
 
 func getLogNoteArgumentIndexOffset(index int) (int, error) {
-	minArgIndex := 3
-	maxArgIndex := 6
+	minArgIndex := 2
+	maxArgIndex := 5
 	if index < minArgIndex || index > maxArgIndex {
 		return 0, ErrInvalidIndex(index)
 	}
-	offsets := map[int]int{3: 4, 4: 3, 5: 2, 6: 1}
+	offsets := map[int]int{2: 4, 3: 3, 4: 2, 5: 1}
 	return offsets[index], nil
 }
 
