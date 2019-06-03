@@ -41,6 +41,7 @@ func VatHealSignature() string            { return getLogNoteTopicZero(vatHealMe
 func VatInitSignature() string            { return getLogNoteTopicZero(vatInitMethod()) }
 func VatMoveSignature() string            { return getLogNoteTopicZero(vatMoveMethod()) }
 func VatSlipSignature() string            { return getLogNoteTopicZero(vatSlipMethod()) }
+func VatSuckSignature() string            { return getLogNoteTopicZero(vatSuckMethod()) }
 func VowFessSignature() string            { return getLogNoteTopicZero(vowFessMethod()) }
 func VowFileSignature() string            { return getLogNoteTopicZero(vowFileMethod()) }
 func VowFlogSignature() string            { return getLogNoteTopicZero(vowFlogMethod()) }
