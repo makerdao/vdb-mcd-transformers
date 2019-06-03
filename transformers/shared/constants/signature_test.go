@@ -103,7 +103,7 @@ var _ = Describe("Signature constants", func() {
 	})
 
 	It("generates vat fork signature", func() {
-		Expect(VatForkSignature()).To(Equal("0x000000000000000000000000000000000000000000000000000000009f7e669c"))
+		Expect(VatForkSignature()).To(Equal("0x00000000000000000000000000000000000000000000000000000000870c616d"))
 	})
 
 	It("generates vat frob signature", func() {

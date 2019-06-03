@@ -1,10 +1,30 @@
+// VulcanizeDB
+// Copyright © 2019 Vulcanize
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 package vat_fork_test
 
 import (
+	"strconv"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_fork"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data/shared_behaviors"
@@ -51,6 +71,10 @@ var _ = Describe("Vat fork repository", func() {
 			err = db.Get(&dbVatFork, `SELECT ilk_id, src, dst, dink, dart, log_idx, tx_idx, raw_log FROM maker.vat_fork WHERE header_id = $1`, headerID)
 			Expect(err).NotTo(HaveOccurred())
 
+			ilkID, err := shared.GetOrCreateIlk(test_data.VatForkModelWithNegativeDart.Ilk, db)
+			Expect(err).NotTo(HaveOccurred())
+
+			Expect(dbVatFork.Ilk).To(Equal(strconv.Itoa(ilkID)))
 			Expect(dbVatFork.Src).To(Equal(test_data.VatForkModelWithNegativeDart.Src))
 			Expect(dbVatFork.Dst).To(Equal(test_data.VatForkModelWithNegativeDart.Dst))
 			Expect(dbVatFork.Dink).To(Equal(test_data.VatForkModelWithNegativeDart.Dink))
