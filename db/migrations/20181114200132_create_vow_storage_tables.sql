@@ -8,22 +8,22 @@ CREATE TABLE maker.vow_vat
     UNIQUE (block_number, block_hash, vat)
 );
 
-CREATE TABLE maker.vow_cow
+CREATE TABLE maker.vow_flapper
 (
     id           SERIAL PRIMARY KEY,
     block_number BIGINT,
     block_hash   TEXT,
-    cow          TEXT,
-    UNIQUE (block_number, block_hash, cow)
+    flapper      TEXT,
+    UNIQUE (block_number, block_hash, flapper)
 );
 
-CREATE TABLE maker.vow_row
+CREATE TABLE maker.vow_flopper
 (
     id           SERIAL PRIMARY KEY,
     block_number BIGINT,
     block_hash   TEXT,
-    row          TEXT,
-    UNIQUE (block_number, block_hash, row)
+    flopper      TEXT,
+    UNIQUE (block_number, block_hash, flopper)
 );
 
 CREATE TABLE maker.vow_sin_integer
@@ -92,8 +92,8 @@ CREATE TABLE maker.vow_hump
 
 -- +goose Down
 DROP TABLE maker.vow_vat;
-DROP TABLE maker.vow_cow;
-DROP TABLE maker.vow_row;
+DROP TABLE maker.vow_flapper;
+DROP TABLE maker.vow_flopper;
 DROP TABLE maker.vow_sin_integer;
 DROP TABLE maker.vow_sin_mapping;
 DROP TABLE maker.vow_ash;

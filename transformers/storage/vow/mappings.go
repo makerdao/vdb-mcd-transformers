@@ -29,8 +29,8 @@ import (
 
 const (
 	VowVat     = "vat"
-	VowCow     = "cow"
-	VowRow     = "row"
+	VowFlapper = "flapper"
+	VowFlopper = "flopper"
 	SinMapping = "sin"
 	SinInteger = "Sin"
 	VowAsh     = "Ash"
@@ -48,16 +48,16 @@ var (
 		Type: utils.Address,
 	}
 
-	CowKey      = common.HexToHash(storage.IndexTwo)
-	CowMetadata = utils.StorageValueMetadata{
-		Name: VowCow,
+	FlapperKey      = common.HexToHash(storage.IndexTwo)
+	FlapperMetadata = utils.StorageValueMetadata{
+		Name: VowFlapper,
 		Keys: nil,
 		Type: utils.Address,
 	}
 
-	RowKey      = common.HexToHash(storage.IndexThree)
-	RowMetadata = utils.StorageValueMetadata{
-		Name: VowRow,
+	FlopperKey      = common.HexToHash(storage.IndexThree)
+	FlopperMetadata = utils.StorageValueMetadata{
+		Name: VowFlopper,
 		Keys: nil,
 		Type: utils.Address,
 	}
@@ -143,8 +143,8 @@ func (mappings *VowMappings) SetDB(db *postgres.DB) {
 func loadStaticMappings() map[common.Hash]utils.StorageValueMetadata {
 	mappings := make(map[common.Hash]utils.StorageValueMetadata)
 	mappings[VatKey] = VatMetadata
-	mappings[CowKey] = CowMetadata
-	mappings[RowKey] = RowMetadata
+	mappings[FlapperKey] = FlapperMetadata
+	mappings[FlopperKey] = FlopperMetadata
 	mappings[SinIntegerKey] = SinIntegerMetadata
 	mappings[AshKey] = AshMetadata
 	mappings[WaitKey] = WaitMetadata

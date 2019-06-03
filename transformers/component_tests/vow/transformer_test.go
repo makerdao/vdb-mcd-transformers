@@ -49,40 +49,40 @@ var _ = Describe("Executing the transformer", func() {
 		test_helpers.AssertVariable(vatResult, blockNumber, "0x1822bb271ce246212f0d097e59b3b04e0302819da3a2bd80e85b91e8c89fc883", "0x67fd6c3575Fc2dBE2CB596bD3bEbc9EDb5571fA1")
 	})
 
-	It("reads in a Vow.cow storage diff row and persists it", func() {
-		blockNumber := 10501125
-		vowCow := utils.StorageDiffRow{
-			Contract:     common.HexToAddress("17560834075da3db54f737db74377e799c865821"),
+	It("reads in a Vow.flapper storage diff row and persists it", func() {
+		blockNumber := 10980004
+		vowFlapper := utils.StorageDiffRow{
+			Contract:     common.HexToAddress("21444ac712ccd21ce82af24ea1aec64cf07361d2"),
 			BlockHeight:  blockNumber,
-			BlockHash:    common.HexToHash("1822bb271ce246212f0d097e59b3b04e0302819da3a2bd80e85b91e8c89fc883"),
+			BlockHash:    common.HexToHash("44c07814be2cd81491f4d815ac922cc6590184e8777a5f0e3982c3b9ea83600e"),
 			StorageKey:   common.HexToHash("0000000000000000000000000000000000000000000000000000000000000002"),
-			StorageValue: common.HexToHash("00000000000000000000000069803564432dee97e37ac1064e486aa52d607e03"),
+			StorageValue: common.HexToHash("000000000000000000000000b6e31ab6ea62be7c530c32daea96e84d92fe20b7"),
 		}
-		err := transformer.Execute(vowCow)
+		err := transformer.Execute(vowFlapper)
 		Expect(err).NotTo(HaveOccurred())
 
-		var cowResult test_helpers.VariableRes
-		err = db.Get(&cowResult, `SELECT block_number, block_hash, cow AS value FROM maker.vow_cow`)
+		var flapperResult test_helpers.VariableRes
+		err = db.Get(&flapperResult, `SELECT block_number, block_hash, flapper AS value FROM maker.vow_flapper`)
 		Expect(err).NotTo(HaveOccurred())
-		test_helpers.AssertVariable(cowResult, blockNumber, "0x1822bb271ce246212f0d097e59b3b04e0302819da3a2bd80e85b91e8c89fc883", "0x69803564432dEe97e37aC1064e486aA52D607E03")
+		test_helpers.AssertVariable(flapperResult, blockNumber, "0x44c07814be2cd81491f4d815ac922cc6590184e8777a5f0e3982c3b9ea83600e", "0xB6e31ab6Ea62Be7c530C32DAEa96E84d92fe20B7")
 	})
 
-	It("reads in a Vow.row storage diff row and persists it", func() {
-		blockNumber := 10501127
-		vowRow := utils.StorageDiffRow{
-			Contract:     common.HexToAddress("17560834075da3db54f737db74377e799c865821"),
+	It("reads in a Vow.flopper storage diff row and persists it", func() {
+		blockNumber := 10980004
+		vowFlopper := utils.StorageDiffRow{
+			Contract:     common.HexToAddress("21444ac712ccd21ce82af24ea1aec64cf07361d2"),
 			BlockHeight:  blockNumber,
-			BlockHash:    common.HexToHash("c3c83991f0d591f66d77b77208be4ed7ec7376edfb156fa4e0bbc9be67b41834"),
+			BlockHash:    common.HexToHash("44c07814be2cd81491f4d815ac922cc6590184e8777a5f0e3982c3b9ea83600e"),
 			StorageKey:   common.HexToHash("0000000000000000000000000000000000000000000000000000000000000003"),
-			StorageValue: common.HexToHash("000000000000000000000000187e5de065079320b50b8420692cae8aaba098a3"),
+			StorageValue: common.HexToHash("000000000000000000000000275ec1950d6406e3ce6156f9f529c047ea41c8ce"),
 		}
-		err := transformer.Execute(vowRow)
+		err := transformer.Execute(vowFlopper)
 		Expect(err).NotTo(HaveOccurred())
 
-		var rowResult test_helpers.VariableRes
-		err = db.Get(&rowResult, `SELECT block_number, block_hash, row AS value FROM maker.vow_row`)
+		var flopperResult test_helpers.VariableRes
+		err = db.Get(&flopperResult, `SELECT block_number, block_hash, flopper AS value FROM maker.vow_flopper`)
 		Expect(err).NotTo(HaveOccurred())
-		test_helpers.AssertVariable(rowResult, blockNumber, "0xc3c83991f0d591f66d77b77208be4ed7ec7376edfb156fa4e0bbc9be67b41834", "0x187e5De065079320B50B8420692Cae8aABa098A3")
+		test_helpers.AssertVariable(flopperResult, blockNumber, "0x44c07814be2cd81491f4d815ac922cc6590184e8777a5f0e3982c3b9ea83600e", "0x275eC1950D6406e3cE6156f9F529c047Ea41c8cE")
 	})
 
 	It("reads in a Vow.sump storage diff row and persists it", func() {

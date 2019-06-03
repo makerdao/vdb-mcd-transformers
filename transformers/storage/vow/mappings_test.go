@@ -41,8 +41,8 @@ var _ = Describe("Vow storage mappings", func() {
 	Describe("looking up static keys", func() {
 		It("returns value metadata if key exists", func() {
 			Expect(mappings.Lookup(vow.VatKey)).To(Equal(vow.VatMetadata))
-			Expect(mappings.Lookup(vow.CowKey)).To(Equal(vow.CowMetadata))
-			Expect(mappings.Lookup(vow.RowKey)).To(Equal(vow.RowMetadata))
+			Expect(mappings.Lookup(vow.FlapperKey)).To(Equal(vow.FlapperMetadata))
+			Expect(mappings.Lookup(vow.FlopperKey)).To(Equal(vow.FlopperMetadata))
 			Expect(mappings.Lookup(vow.SinIntegerKey)).To(Equal(vow.SinIntegerMetadata))
 			Expect(mappings.Lookup(vow.AshKey)).To(Equal(vow.AshMetadata))
 			Expect(mappings.Lookup(vow.WaitKey)).To(Equal(vow.WaitMetadata))

@@ -75,50 +75,50 @@ var _ = Describe("Vow storage repository test", func() {
 		Expect(count).To(Equal(1))
 	})
 
-	It("persists a vow cow", func() {
-		err = repo.Create(fakeBlockNumber, fakeBlockHash, vow.CowMetadata, fakeAddress)
+	It("persists a vow flapper", func() {
+		err = repo.Create(fakeBlockNumber, fakeBlockHash, vow.FlapperMetadata, fakeAddress)
 
 		Expect(err).NotTo(HaveOccurred())
 
 		var result VariableRes
-		err = db.Get(&result, `SELECT block_number, block_hash, cow AS value from maker.vow_cow`)
+		err = db.Get(&result, `SELECT block_number, block_hash, flapper AS value from maker.vow_flapper`)
 		Expect(err).NotTo(HaveOccurred())
 		AssertVariable(result, fakeBlockNumber, fakeBlockHash, fakeAddress)
 	})
 
-	It("does not duplicate vow cow", func() {
-		insertOneErr := repo.Create(fakeBlockNumber, fakeBlockHash, vow.CowMetadata, fakeAddress)
+	It("does not duplicate vow flapper", func() {
+		insertOneErr := repo.Create(fakeBlockNumber, fakeBlockHash, vow.FlapperMetadata, fakeAddress)
 		Expect(insertOneErr).NotTo(HaveOccurred())
 
-		insertTwoErr := repo.Create(fakeBlockNumber, fakeBlockHash, vow.CowMetadata, fakeAddress)
+		insertTwoErr := repo.Create(fakeBlockNumber, fakeBlockHash, vow.FlapperMetadata, fakeAddress)
 
 		Expect(insertTwoErr).NotTo(HaveOccurred())
 		var count int
-		getCountErr := db.Get(&count, `SELECT count(*) FROM maker.vow_cow`)
+		getCountErr := db.Get(&count, `SELECT count(*) FROM maker.vow_flapper`)
 		Expect(getCountErr).NotTo(HaveOccurred())
 		Expect(count).To(Equal(1))
 	})
 
-	It("persists a vow row", func() {
-		err = repo.Create(fakeBlockNumber, fakeBlockHash, vow.RowMetadata, fakeAddress)
+	It("persists a vow flopper", func() {
+		err = repo.Create(fakeBlockNumber, fakeBlockHash, vow.FlopperMetadata, fakeAddress)
 
 		Expect(err).NotTo(HaveOccurred())
 
 		var result VariableRes
-		err = db.Get(&result, `SELECT block_number, block_hash, row AS value from maker.vow_row`)
+		err = db.Get(&result, `SELECT block_number, block_hash, flopper AS value from maker.vow_flopper`)
 		Expect(err).NotTo(HaveOccurred())
 		AssertVariable(result, fakeBlockNumber, fakeBlockHash, fakeAddress)
 	})
 
-	It("does not duplicate vow row", func() {
-		insertOneErr := repo.Create(fakeBlockNumber, fakeBlockHash, vow.RowMetadata, fakeAddress)
+	It("does not duplicate vow flopper", func() {
+		insertOneErr := repo.Create(fakeBlockNumber, fakeBlockHash, vow.FlopperMetadata, fakeAddress)
 		Expect(insertOneErr).NotTo(HaveOccurred())
 
-		insertTwoErr := repo.Create(fakeBlockNumber, fakeBlockHash, vow.RowMetadata, fakeAddress)
+		insertTwoErr := repo.Create(fakeBlockNumber, fakeBlockHash, vow.FlopperMetadata, fakeAddress)
 
 		Expect(insertTwoErr).NotTo(HaveOccurred())
 		var count int
-		getCountErr := db.Get(&count, `SELECT count(*) FROM maker.vow_row`)
+		getCountErr := db.Get(&count, `SELECT count(*) FROM maker.vow_flopper`)
 		Expect(getCountErr).NotTo(HaveOccurred())
 		Expect(count).To(Equal(1))
 	})
