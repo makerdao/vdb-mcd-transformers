@@ -36,6 +36,7 @@ func VatFileDebtCeilingSignature() string { return getLogNoteTopicZero(vatFileDe
 func VatFileIlkSignature() string         { return getLogNoteTopicZero(vatFileIlkMethod()) }
 func VatFluxSignature() string            { return getLogNoteTopicZero(vatFluxMethod()) }
 func VatFoldSignature() string            { return getLogNoteTopicZero(vatFoldMethod()) }
+func VatForkSignature() string            { return getLogNoteTopicZero(vatForkMethod()) }
 func VatFrobSignature() string            { return getLogNoteTopicZero(vatFrobMethod()) }
 func VatGrabSignature() string            { return getLogNoteTopicZero(vatGrabMethod()) }
 func VatHealSignature() string            { return getLogNoteTopicZero(vatHealMethod()) }

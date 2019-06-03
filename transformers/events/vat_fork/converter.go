@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -19,12 +19,13 @@ package vat_fork
 import (
 	"encoding/json"
 	"errors"
-	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/constants"
 
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/common/hexutil"
+	"github.com/ethereum/go-ethereum/core/types"
+
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/constants"
 )
 
 type VatForkConverter struct{}
@@ -41,13 +42,13 @@ func (VatForkConverter) ToModels(ethLogs []types.Log) ([]interface{}, error) {
 		src := common.BytesToAddress(ethLog.Topics[2].Bytes()).String()
 		dst := common.BytesToAddress(ethLog.Topics[3].Bytes()).String()
 
-		dinkBytes, dinkErr := shared.GetVatNoteDataBytesAtIndex(4, ethLog.Data)
+		dinkBytes, dinkErr := shared.GetLogNoteArgumentAtIndex(3, ethLog.Data)
 		if dinkErr != nil {
 			return nil, dinkErr
 		}
 		dink := shared.ConvertInt256HexToBigInt(hexutil.Encode(dinkBytes))
 
-		dartBytes, dartErr := shared.GetVatNoteDataBytesAtIndex(5, ethLog.Data)
+		dartBytes, dartErr := shared.GetLogNoteArgumentAtIndex(4, ethLog.Data)
 		if dartErr != nil {
 			return nil, dartErr
 		}
