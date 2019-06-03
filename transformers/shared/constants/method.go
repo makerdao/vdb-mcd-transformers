@@ -45,7 +45,5 @@ func vatInitMethod() string            { return getSolidityFunctionSignature(Vat
 func vatMoveMethod() string            { return getSolidityFunctionSignature(VatABI(), "move") }
 func vatSlipMethod() string            { return getSolidityFunctionSignature(VatABI(), "slip") }
 func vowFessMethod() string            { return getSolidityFunctionSignature(VowABI(), "fess") }
-
-// Vow has two file methods through 0.2.5, only one as of 0.2.6
-func vowFileMethod() string { return "file(bytes32,uint256)" }
-func vowFlogMethod() string { return getSolidityFunctionSignature(VowABI(), "flog") }
+func vowFileMethod() string            { return getSolidityFunctionSignature(VowABI(), "file") }
+func vowFlogMethod() string            { return getSolidityFunctionSignature(VowABI(), "flog") }
