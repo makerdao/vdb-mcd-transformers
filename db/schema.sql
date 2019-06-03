@@ -3160,38 +3160,6 @@ ALTER SEQUENCE maker.vow_bump_id_seq OWNED BY maker.vow_bump.id;
 
 
 --
--- Name: vow_cow; Type: TABLE; Schema: maker; Owner: -
---
-
-CREATE TABLE maker.vow_cow (
-    id integer NOT NULL,
-    block_number bigint,
-    block_hash text,
-    cow text
-);
-
-
---
--- Name: vow_cow_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
---
-
-CREATE SEQUENCE maker.vow_cow_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: vow_cow_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
---
-
-ALTER SEQUENCE maker.vow_cow_id_seq OWNED BY maker.vow_cow.id;
-
-
---
 -- Name: vow_fess; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -3261,6 +3229,38 @@ ALTER SEQUENCE maker.vow_file_id_seq OWNED BY maker.vow_file.id;
 
 
 --
+-- Name: vow_flapper; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.vow_flapper (
+    id integer NOT NULL,
+    block_number bigint,
+    block_hash text,
+    flapper text
+);
+
+
+--
+-- Name: vow_flapper_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.vow_flapper_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: vow_flapper_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.vow_flapper_id_seq OWNED BY maker.vow_flapper.id;
+
+
+--
 -- Name: vow_flog; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -3295,6 +3295,38 @@ ALTER SEQUENCE maker.vow_flog_id_seq OWNED BY maker.vow_flog.id;
 
 
 --
+-- Name: vow_flopper; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.vow_flopper (
+    id integer NOT NULL,
+    block_number bigint,
+    block_hash text,
+    flopper text
+);
+
+
+--
+-- Name: vow_flopper_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.vow_flopper_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: vow_flopper_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.vow_flopper_id_seq OWNED BY maker.vow_flopper.id;
+
+
+--
 -- Name: vow_hump; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -3324,38 +3356,6 @@ CREATE SEQUENCE maker.vow_hump_id_seq
 --
 
 ALTER SEQUENCE maker.vow_hump_id_seq OWNED BY maker.vow_hump.id;
-
-
---
--- Name: vow_row; Type: TABLE; Schema: maker; Owner: -
---
-
-CREATE TABLE maker.vow_row (
-    id integer NOT NULL,
-    block_number bigint,
-    block_hash text,
-    "row" text
-);
-
-
---
--- Name: vow_row_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
---
-
-CREATE SEQUENCE maker.vow_row_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: vow_row_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
---
-
-ALTER SEQUENCE maker.vow_row_id_seq OWNED BY maker.vow_row.id;
 
 
 --
@@ -4470,13 +4470,6 @@ ALTER TABLE ONLY maker.vow_bump ALTER COLUMN id SET DEFAULT nextval('maker.vow_b
 
 
 --
--- Name: vow_cow id; Type: DEFAULT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.vow_cow ALTER COLUMN id SET DEFAULT nextval('maker.vow_cow_id_seq'::regclass);
-
-
---
 -- Name: vow_fess id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
@@ -4491,6 +4484,13 @@ ALTER TABLE ONLY maker.vow_file ALTER COLUMN id SET DEFAULT nextval('maker.vow_f
 
 
 --
+-- Name: vow_flapper id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_flapper ALTER COLUMN id SET DEFAULT nextval('maker.vow_flapper_id_seq'::regclass);
+
+
+--
 -- Name: vow_flog id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
@@ -4498,17 +4498,17 @@ ALTER TABLE ONLY maker.vow_flog ALTER COLUMN id SET DEFAULT nextval('maker.vow_f
 
 
 --
+-- Name: vow_flopper id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_flopper ALTER COLUMN id SET DEFAULT nextval('maker.vow_flopper_id_seq'::regclass);
+
+
+--
 -- Name: vow_hump id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.vow_hump ALTER COLUMN id SET DEFAULT nextval('maker.vow_hump_id_seq'::regclass);
-
-
---
--- Name: vow_row id; Type: DEFAULT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.vow_row ALTER COLUMN id SET DEFAULT nextval('maker.vow_row_id_seq'::regclass);
 
 
 --
@@ -5517,22 +5517,6 @@ ALTER TABLE ONLY maker.vow_bump
 
 
 --
--- Name: vow_cow vow_cow_block_number_block_hash_cow_key; Type: CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.vow_cow
-    ADD CONSTRAINT vow_cow_block_number_block_hash_cow_key UNIQUE (block_number, block_hash, cow);
-
-
---
--- Name: vow_cow vow_cow_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.vow_cow
-    ADD CONSTRAINT vow_cow_pkey PRIMARY KEY (id);
-
-
---
 -- Name: vow_fess vow_fess_header_id_tx_idx_log_idx_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -5565,6 +5549,22 @@ ALTER TABLE ONLY maker.vow_file
 
 
 --
+-- Name: vow_flapper vow_flapper_block_number_block_hash_flapper_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_flapper
+    ADD CONSTRAINT vow_flapper_block_number_block_hash_flapper_key UNIQUE (block_number, block_hash, flapper);
+
+
+--
+-- Name: vow_flapper vow_flapper_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_flapper
+    ADD CONSTRAINT vow_flapper_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: vow_flog vow_flog_header_id_tx_idx_log_idx_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -5581,6 +5581,22 @@ ALTER TABLE ONLY maker.vow_flog
 
 
 --
+-- Name: vow_flopper vow_flopper_block_number_block_hash_flopper_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_flopper
+    ADD CONSTRAINT vow_flopper_block_number_block_hash_flopper_key UNIQUE (block_number, block_hash, flopper);
+
+
+--
+-- Name: vow_flopper vow_flopper_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_flopper
+    ADD CONSTRAINT vow_flopper_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: vow_hump vow_hump_block_number_block_hash_hump_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -5594,22 +5610,6 @@ ALTER TABLE ONLY maker.vow_hump
 
 ALTER TABLE ONLY maker.vow_hump
     ADD CONSTRAINT vow_hump_pkey PRIMARY KEY (id);
-
-
---
--- Name: vow_row vow_row_block_number_block_hash_row_key; Type: CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.vow_row
-    ADD CONSTRAINT vow_row_block_number_block_hash_row_key UNIQUE (block_number, block_hash, "row");
-
-
---
--- Name: vow_row vow_row_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.vow_row
-    ADD CONSTRAINT vow_row_pkey PRIMARY KEY (id);
 
 
 --

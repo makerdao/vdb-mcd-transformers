@@ -24,8 +24,8 @@ import (
 
 const (
 	insertVatQuery        = `INSERT INTO maker.vow_vat (block_number, block_hash, vat) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
-	insertCowQuery        = `INSERT INTO maker.vow_cow (block_number, block_hash, cow) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
-	insertRowQuery        = `INSERT INTO maker.vow_row (block_number, block_hash, row) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
+	insertFlapperQuery    = `INSERT INTO maker.vow_flapper (block_number, block_hash, flapper) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
+	insertFlopperQuery    = `INSERT INTO maker.vow_flopper (block_number, block_hash, flopper) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
 	insertSinMappingQuery = `INSERT INTO maker.vow_sin_mapping (block_number, block_hash, era, tab) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
 	insertSinIntegerQuery = `INSERT INTO maker.vow_sin_integer (block_number, block_hash, sin) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
 	insertAshQuery        = `INSERT INTO maker.vow_ash (block_number, block_hash, ash) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
@@ -47,10 +47,10 @@ func (repository VowStorageRepository) Create(blockNumber int, blockHash string,
 	switch metadata.Name {
 	case VowVat:
 		return repository.insertVowVat(blockNumber, blockHash, value.(string))
-	case VowCow:
-		return repository.insertVowCow(blockNumber, blockHash, value.(string))
-	case VowRow:
-		return repository.insertVowRow(blockNumber, blockHash, value.(string))
+	case VowFlapper:
+		return repository.insertVowFlapper(blockNumber, blockHash, value.(string))
+	case VowFlopper:
+		return repository.insertVowFlopper(blockNumber, blockHash, value.(string))
 	case SinMapping:
 		return repository.insertSinMapping(blockNumber, blockHash, metadata, value.(string))
 	case SinInteger:
@@ -76,14 +76,14 @@ func (repository VowStorageRepository) insertVowVat(blockNumber int, blockHash s
 	return err
 }
 
-func (repository VowStorageRepository) insertVowCow(blockNumber int, blockHash string, cow string) error {
-	_, err := repository.db.Exec(insertCowQuery, blockNumber, blockHash, cow)
+func (repository VowStorageRepository) insertVowFlapper(blockNumber int, blockHash string, flapper string) error {
+	_, err := repository.db.Exec(insertFlapperQuery, blockNumber, blockHash, flapper)
 
 	return err
 }
 
-func (repository VowStorageRepository) insertVowRow(blockNumber int, blockHash string, row string) error {
-	_, err := repository.db.Exec(insertRowQuery, blockNumber, blockHash, row)
+func (repository VowStorageRepository) insertVowFlopper(blockNumber int, blockHash string, flopper string) error {
+	_, err := repository.db.Exec(insertFlopperQuery, blockNumber, blockHash, flopper)
 
 	return err
 }
