@@ -17,4 +17,4 @@ $$
 
 -- +goose Down
 -- SQL in this section is executed when the migration is rolled back.
-DROP FUNCTION api.sin_queue_event_tx(api.sin_queue_event)
+DROP FUNCTION api.sin_queue_event_tx(api.sin_queue_event);

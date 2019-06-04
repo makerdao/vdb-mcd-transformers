@@ -49,6 +49,7 @@ $body$
 
 -- +goose Down
 -- SQL in this section is executed when the migration is rolled back
-DROP FUNCTION api.log_values(INT, INT);
+DROP FUNCTION api.log_values(NUMERIC, NUMERIC);
 DROP FUNCTION api.log_value_tx(api.log_value);
+DROP FUNCTION api.max_timestamp();
 DROP TYPE api.log_value CASCADE;
