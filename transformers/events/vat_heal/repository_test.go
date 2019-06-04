@@ -75,8 +75,6 @@ var _ = Describe("VatHeal Repository", func() {
 			err = db.Select(&dbResult, `SELECT * from maker.vat_heal where header_id = $1`, headerId)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(dbResult)).To(Equal(2))
-			Expect(dbResult[0].Urn).To(Equal(test_data.VatHealModelWithPositiveRad.Urn))
-			Expect(dbResult[0].V).To(Equal(test_data.VatHealModelWithPositiveRad.V))
 			Expect(dbResult[0].Rad).To(Equal(test_data.VatHealModelWithPositiveRad.Rad))
 			Expect(dbResult[0].LogIndex).To(Equal(test_data.VatHealModelWithPositiveRad.LogIndex))
 			Expect(dbResult[1].LogIndex).To(Equal(test_data.VatHealModelWithPositiveRad.LogIndex + 1))
