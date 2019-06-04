@@ -14,9 +14,8 @@ before_install:
 - echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
 - sudo apt-get update && sudo apt-get install yarn
 before_script:
-- sudo -u postgres createdb vulcanize_private
+- sudo -u postgres createdb vulcanize_testing
 - make version_migrations
-- make migrate NAME=vulcanize_private
 script:
 - make test
 - make integrationtest
