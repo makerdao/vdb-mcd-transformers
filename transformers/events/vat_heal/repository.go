@@ -52,10 +52,10 @@ func (repository VatHealRepository) Create(headerID int64, models []interface{})
 			return fmt.Errorf("model of type %T, not %T", model, VatHealModel{})
 		}
 
-		_, execErr := tx.Exec(`INSERT INTO maker.vat_heal (header_id, urn, v, rad, log_idx, tx_idx, raw_log)
-		VALUES($1, $2, $3, $4::NUMERIC, $5, $6, $7)
-		ON CONFlICT (header_id, tx_idx, log_idx) DO UPDATE SET urn = $2, v = $3, rad = $4, raw_log = $7;`,
-			headerID, vatHeal.Urn, vatHeal.V, vatHeal.Rad, vatHeal.LogIndex, vatHeal.TransactionIndex, vatHeal.Raw)
+		_, execErr := tx.Exec(`INSERT INTO maker.vat_heal (header_id, rad, log_idx, tx_idx, raw_log)
+		VALUES($1, $2::NUMERIC, $3, $4, $5)
+		ON CONFlICT (header_id, tx_idx, log_idx) DO UPDATE SET rad = $2, raw_log = $5;`,
+			headerID, vatHeal.Rad, vatHeal.LogIndex, vatHeal.TransactionIndex, vatHeal.Raw)
 		if execErr != nil {
 			rollbackErr := tx.Rollback()
 			if rollbackErr != nil {

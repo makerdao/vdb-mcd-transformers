@@ -17,8 +17,6 @@
 package vat_heal
 
 type VatHealModel struct {
-	Urn              string
-	V                string
 	Rad              string
 	LogIndex         uint   `db:"log_idx"`
 	TransactionIndex uint   `db:"tx_idx"`

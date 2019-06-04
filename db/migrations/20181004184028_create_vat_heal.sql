@@ -3,8 +3,6 @@ CREATE TABLE maker.vat_heal
 (
     id        SERIAL PRIMARY KEY,
     header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
-    urn       TEXT,
-    v         TEXT,
     rad       NUMERIC,
     log_idx   INTEGER NOT NULL,
     tx_idx    INTEGER NOT NULL,

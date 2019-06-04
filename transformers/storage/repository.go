@@ -18,7 +18,6 @@ package storage
 
 import (
 	"errors"
-
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 )
 
@@ -46,10 +45,16 @@ type MakerStorageRepository struct {
 func (repository *MakerStorageRepository) GetDaiKeys() ([]string, error) {
 	var daiKeys []string
 	err := repository.db.Select(&daiKeys, `
-		SELECT DISTINCT src FROM maker.vat_move UNION
-		SELECT DISTINCT dst FROM maker.vat_move UNION
-		SELECT DISTINCT w FROM maker.vat_frob UNION
-		SELECT DISTINCT v FROM maker.vat_heal UNION
+		SELECT DISTINCT src FROM maker.vat_move
+		UNION
+		SELECT DISTINCT dst FROM maker.vat_move
+		UNION
+		SELECT DISTINCT w FROM maker.vat_frob
+		UNION
+		SELECT DISTINCT tx_from FROM public.header_sync_transactions AS transactions
+			LEFT JOIN maker.vat_heal AS vat_heal ON vat_heal.header_id = transactions.header_id
+			WHERE vat_heal.tx_idx = transactions.tx_index
+		UNION
 		SELECT DISTINCT urns.guy FROM maker.vat_fold
 			INNER JOIN maker.urns on urns.id = maker.vat_fold.urn_id
 	`)
@@ -95,7 +100,9 @@ func (repository *MakerStorageRepository) GetVatSinKeys() ([]string, error) {
 	err := repository.db.Select(&sinKeys, `
 		SELECT DISTINCT w FROM maker.vat_grab
 		UNION
-		SELECT DISTINCT urn FROM maker.vat_heal`)
+		SELECT DISTINCT tx_from FROM public.header_sync_transactions AS transactions
+			LEFT JOIN maker.vat_heal AS vat_heal ON vat_heal.header_id = transactions.header_id
+			WHERE vat_heal.tx_idx = transactions.tx_index`)
 	return sinKeys, err
 }
 

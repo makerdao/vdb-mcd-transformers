@@ -22,8 +22,6 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 
 	"github.com/ethereum/go-ethereum/core/types"
-
-	"github.com/ethereum/go-ethereum/common"
 )
 
 type VatHealConverter struct{}
@@ -36,9 +34,7 @@ func (VatHealConverter) ToModels(ethLogs []types.Log) ([]interface{}, error) {
 			return nil, err
 		}
 
-		urn := common.BytesToAddress(ethLog.Topics[1].Bytes()).String()
-		v := common.BytesToAddress(ethLog.Topics[2].Bytes()).String()
-		radInt := shared.ConvertInt256HexToBigInt(ethLog.Topics[3].Hex())
+		radInt := shared.ConvertUint256HexToBigInt(ethLog.Topics[1].Hex())
 
 		rawLogJson, err := json.Marshal(ethLog)
 		if err != nil {
@@ -46,8 +42,6 @@ func (VatHealConverter) ToModels(ethLogs []types.Log) ([]interface{}, error) {
 		}
 
 		model := VatHealModel{
-			Urn:              urn,
-			V:                v,
 			Rad:              radInt.String(),
 			LogIndex:         ethLog.Index,
 			TransactionIndex: ethLog.TxIndex,

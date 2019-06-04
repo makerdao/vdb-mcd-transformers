@@ -77,8 +77,6 @@ var _ = XDescribe("VatHeal Transformer", func() {
 
 		Expect(len(dbResults)).To(Equal(1))
 		dbResult := dbResults[0]
-		Expect(dbResult.Urn).To(Equal("0xa2c0D575CB4e1F145830326420e0CcFab8BeBc1d"))
-		Expect(dbResult.V).To(Equal("0xa2c0D575CB4e1F145830326420e0CcFab8BeBc1d"))
 		Expect(dbResult.Rad).To(Equal("0"))
 	})
 
@@ -132,8 +130,6 @@ var _ = XDescribe("VatHeal Transformer", func() {
 
 		Expect(len(dbResults)).To(Equal(1))
 		dbResult := dbResults[0]
-		Expect(dbResult.Urn).To(Equal("0xa2c0D575CB4e1F145830326420e0CcFab8BeBc1d"))
-		Expect(dbResult.V).To(Equal("0xa2c0D575CB4e1F145830326420e0CcFab8BeBc1d"))
 		Expect(dbResult.Rad).To(Equal("0"))
 	})
 })

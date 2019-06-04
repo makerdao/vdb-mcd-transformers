@@ -17,7 +17,6 @@
 package storage_test
 
 import (
-	"github.com/vulcanize/mcd_transformers/transformers/component_tests/queries/test_helpers"
 	"math/big"
 	"strconv"
 
@@ -25,27 +24,33 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
+	"github.com/vulcanize/mcd_transformers/test_config"
+	"github.com/vulcanize/mcd_transformers/transformers/component_tests/queries/test_helpers"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/mcd_transformers/transformers/storage"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
-
-	"github.com/vulcanize/mcd_transformers/test_config"
-	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	"github.com/vulcanize/mcd_transformers/transformers/storage"
 )
 
 var _ = Describe("Maker storage repository", func() {
 	var (
-		db         *postgres.DB
-		repository storage.IMakerStorageRepository
-		ilk1       = "494c4b31" // ILK1
-		ilk2       = "494c4b32" // ILK2
-		guy1       = "47555931" // GUY1
-		guy2       = "47555932" // GUY2
-		guy3       = "47555933" // GUY3
-		era        = big.NewInt(0).SetBytes(common.FromHex("0x000000000000000000000000000000000000000000000000000000005bb48864")).String()
-		tab        = big.NewInt(0).SetBytes(common.FromHex("0x0000000000000000000000000000000000000000000002544faa778090e00000")).String()
-		timestamp  = int64(1538558053)
+		db                  *postgres.DB
+		repository          storage.IMakerStorageRepository
+		ilk1                = "494c4b31" // ILK1
+		ilk2                = "494c4b32" // ILK2
+		guy1                = "47555931" // GUY1
+		guy2                = "47555932" // GUY2
+		guy3                = "47555933" // GUY3
+		era                 = big.NewInt(0).SetBytes(common.FromHex("0x000000000000000000000000000000000000000000000000000000005bb48864")).String()
+		tab                 = big.NewInt(0).SetBytes(common.FromHex("0x0000000000000000000000000000000000000000000002544faa778090e00000")).String()
+		timestamp           = int64(1538558053)
+		transactionFromGuy1 = core.TransactionModel{
+			From:    guy1,
+			TxIndex: 3,
+			Value:   "0",
+		}
 	)
 
 	BeforeEach(func() {
@@ -76,8 +81,8 @@ var _ = Describe("Maker storage repository", func() {
 			Expect(keys).To(ConsistOf(guy2))
 		})
 
-		It("fetches guy from v field on vat_heal", func() {
-			insertVatHeal(guy2, guy1, 1, db)
+		It("fetches guy from vat_heal transaction", func() {
+			insertVatHeal(1, transactionFromGuy1, db)
 
 			keys, err := repository.GetDaiKeys()
 
@@ -89,15 +94,15 @@ var _ = Describe("Maker storage repository", func() {
 		It("fetches unique guys from vat_move + vat_frob + vat_heal + vat_fold", func() {
 			guy4 := "47555934"
 			guy5 := "47555935"
-			guy6 := "47555936"
+			transactionFromGuy4 := core.TransactionModel{From: guy4, TxIndex: 4, Value: "0"}
 			insertVatMove(guy1, guy2, 1, db)
 			insertVatFrob(ilk1, guy1, guy1, guy3, 2, db)
-			insertVatHeal(guy6, guy4, 3, db)
+			insertVatHeal(3, transactionFromGuy4, db)
 			insertVatFold(guy5, 4, db)
 			// duplicates
 			insertVatMove(guy3, guy1, 5, db)
 			insertVatFrob(ilk2, guy2, guy2, guy5, 6, db)
-			insertVatHeal(guy6, guy2, 7, db)
+			insertVatHeal(7, transactionFromGuy1, db)
 			insertVatFold(guy4, 8, db)
 
 			keys, err := repository.GetDaiKeys()
@@ -105,6 +110,18 @@ var _ = Describe("Maker storage repository", func() {
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(keys)).To(Equal(5))
 			Expect(keys).To(ConsistOf(guy1, guy2, guy3, guy4, guy5))
+		})
+
+		It("fetches the correct guy when there are multiple transactions in a block", func() {
+			insertVatHeal(1, transactionFromGuy1, db)
+			unrelatedTransaction := core.TransactionModel{From: "unrelated guy", TxIndex: 15, Value: "0"}
+			insertTransaction(1, unrelatedTransaction, db)
+
+			sinKeys, err := repository.GetDaiKeys()
+
+			Expect(err).NotTo(HaveOccurred())
+			Expect(len(sinKeys)).To(Equal(1))
+			Expect(sinKeys).To(ConsistOf(guy1))
 		})
 
 		It("does not return error if no matching rows", func() {
@@ -225,8 +242,20 @@ var _ = Describe("Maker storage repository", func() {
 			Expect(sinKeys).To(ConsistOf(guy2))
 		})
 
-		It("fetches guy from u field of vat heal", func() {
-			insertVatHeal(guy1, guy2, 1, db)
+		It("fetches guy from vat heal transaction", func() {
+			insertVatHeal(1, transactionFromGuy1, db)
+
+			sinKeys, err := repository.GetVatSinKeys()
+
+			Expect(err).NotTo(HaveOccurred())
+			Expect(len(sinKeys)).To(Equal(1))
+			Expect(sinKeys).To(ConsistOf(guy1))
+		})
+
+		It("fetches the correct guy when there are multiple transactions in a block", func() {
+			insertVatHeal(1, transactionFromGuy1, db)
+			unrelatedTransaction := core.TransactionModel{From: "unrelated guy", TxIndex: 15, Value: "0"}
+			insertTransaction(1, unrelatedTransaction, db)
 
 			sinKeys, err := repository.GetVatSinKeys()
 
@@ -236,11 +265,12 @@ var _ = Describe("Maker storage repository", func() {
 		})
 
 		It("fetches unique sin keys from vat_grab + vat_heal", func() {
+			transactionFromGuy2 := core.TransactionModel{From: guy2, TxIndex: 2, Value: "0"}
 			insertVatGrab(guy3, guy3, guy3, guy1, 1, db)
-			insertVatHeal(guy2, guy3, 2, db)
+			insertVatHeal(2, transactionFromGuy2, db)
 			// duplicates
 			insertVatGrab(guy2, guy2, guy2, guy2, 3, db)
-			insertVatHeal(guy1, guy2, 4, db)
+			insertVatHeal(4, transactionFromGuy2, db)
 
 			sinKeys, err := repository.GetVatSinKeys()
 
@@ -415,16 +445,28 @@ func insertVowFess(tab string, timestamp, blockNumber int64, db *postgres.DB) {
 	Expect(execErr).NotTo(HaveOccurred())
 }
 
-func insertVatHeal(urn, v string, blockNumber int64, db *postgres.DB) {
+func insertVatHeal(blockNumber int64, transaction core.TransactionModel, db *postgres.DB) {
 	headerRepository := repositories.NewHeaderRepository(db)
 	headerID, err := headerRepository.CreateOrUpdateHeader(fakes.GetFakeHeader(blockNumber))
 	Expect(err).NotTo(HaveOccurred())
+	err = headerRepository.CreateTransactions(headerID, []core.TransactionModel{transaction})
+	Expect(err).NotTo(HaveOccurred())
 	_, execErr := db.Exec(
-		`INSERT INTO maker.vat_heal (header_id, urn, v, log_idx, tx_idx)
-			VALUES($1, $2, $3, $4, $5)`,
-		headerID, urn, v, 0, 0,
+		`INSERT INTO maker.vat_heal (header_id, log_idx, tx_idx)
+			VALUES($1, $2, $3)`,
+		headerID, 0, transaction.TxIndex,
 	)
 	Expect(execErr).NotTo(HaveOccurred())
+}
+
+func insertTransaction(blockNumber int64, transaction core.TransactionModel, db *postgres.DB) {
+	var headerID int64
+	err := db.Get(&headerID, `SELECT id FROM public.headers WHERE block_number = $1`, blockNumber)
+	Expect(err).NotTo(HaveOccurred())
+
+	headerRepository := repositories.NewHeaderRepository(db)
+	err = headerRepository.CreateTransactions(headerID, []core.TransactionModel{transaction})
+	Expect(err).NotTo(HaveOccurred())
 }
 
 func insertVatInit(ilk string, blockNumber int64, db *postgres.DB) {

@@ -36,15 +36,6 @@ var _ = Describe("VatHeal converter", func() {
 		Expect(models[0]).To(Equal(test_data.VatHealModelWithPositiveRad))
 	})
 
-	It("Convert log with negative rad to a model", func() {
-		converter := vat_heal.VatHealConverter{}
-		models, err := converter.ToModels([]types.Log{test_data.EthVatHealLogWithNegativeRad})
-
-		Expect(err).NotTo(HaveOccurred())
-		Expect(len(models)).To(Equal(1))
-		Expect(models[0]).To(Equal(test_data.VatHealModelWithNegativeRad))
-	})
-
 	It("Returns an error there are missing topics", func() {
 		converter := vat_heal.VatHealConverter{}
 		badLog := types.Log{
