@@ -2998,6 +2998,42 @@ ALTER SEQUENCE maker.vat_slip_id_seq OWNED BY maker.vat_slip.id;
 
 
 --
+-- Name: vat_suck; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.vat_suck (
+    id integer NOT NULL,
+    header_id integer NOT NULL,
+    u text,
+    v text,
+    rad numeric,
+    log_idx integer NOT NULL,
+    tx_idx integer NOT NULL,
+    raw_log jsonb
+);
+
+
+--
+-- Name: vat_suck_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.vat_suck_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: vat_suck_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.vat_suck_id_seq OWNED BY maker.vat_suck.id;
+
+
+--
 -- Name: vat_urn_art; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -3628,7 +3664,8 @@ CREATE TABLE public.checked_headers (
     vow_flog_checked integer DEFAULT 0 NOT NULL,
     flap_kick_checked integer DEFAULT 0 NOT NULL,
     vow_fess_checked integer DEFAULT 0 NOT NULL,
-    vow_file_checked integer DEFAULT 0 NOT NULL
+    vow_file_checked integer DEFAULT 0 NOT NULL,
+    vat_suck_checked integer DEFAULT 0 NOT NULL
 );
 
 
@@ -4432,6 +4469,13 @@ ALTER TABLE ONLY maker.vat_sin ALTER COLUMN id SET DEFAULT nextval('maker.vat_si
 --
 
 ALTER TABLE ONLY maker.vat_slip ALTER COLUMN id SET DEFAULT nextval('maker.vat_slip_id_seq'::regclass);
+
+
+--
+-- Name: vat_suck id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_suck ALTER COLUMN id SET DEFAULT nextval('maker.vat_suck_id_seq'::regclass);
 
 
 --
@@ -5437,6 +5481,22 @@ ALTER TABLE ONLY maker.vat_slip
 
 
 --
+-- Name: vat_suck vat_suck_header_id_tx_idx_log_idx_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_suck
+    ADD CONSTRAINT vat_suck_header_id_tx_idx_log_idx_key UNIQUE (header_id, tx_idx, log_idx);
+
+
+--
+-- Name: vat_suck vat_suck_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_suck
+    ADD CONSTRAINT vat_suck_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: vat_urn_art vat_urn_art_block_number_block_hash_urn_id_art_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -6299,6 +6359,14 @@ ALTER TABLE ONLY maker.vat_slip
 
 ALTER TABLE ONLY maker.vat_slip
     ADD CONSTRAINT vat_slip_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id);
+
+
+--
+-- Name: vat_suck vat_suck_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_suck
+    ADD CONSTRAINT vat_suck_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
 
 
 --

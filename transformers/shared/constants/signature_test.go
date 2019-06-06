@@ -122,6 +122,10 @@ var _ = Describe("Signature constants", func() {
 		Expect(VatSlipSignature()).To(Equal("0x000000000000000000000000000000000000000000000000000000007cdd3fde"))
 	})
 
+	It("generates vat suck signature", func() {
+		Expect(VatSuckSignature()).To(Equal("0x00000000000000000000000000000000000000000000000000000000f24e23eb"))
+	})
+
 	It("generates vow fess signature", func() {
 		Expect(VowFessSignature()).To(Equal("0x00000000000000000000000000000000000000000000000000000000697efb78"))
 	})
