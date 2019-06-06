@@ -44,6 +44,7 @@ func vatHealMethod() string            { return getSolidityFunctionSignature(Vat
 func vatInitMethod() string            { return getSolidityFunctionSignature(VatABI(), "init") }
 func vatMoveMethod() string            { return getSolidityFunctionSignature(VatABI(), "move") }
 func vatSlipMethod() string            { return getSolidityFunctionSignature(VatABI(), "slip") }
+func vatSuckMethod() string            { return getSolidityFunctionSignature(VatABI(), "suck") }
 func vowFessMethod() string            { return getSolidityFunctionSignature(VowABI(), "fess") }
 func vowFileMethod() string            { return getSolidityFunctionSignature(VowABI(), "file") }
 func vowFlogMethod() string            { return getSolidityFunctionSignature(VowABI(), "flog") }
