@@ -74,6 +74,10 @@ var _ = Describe("Signature constants", func() {
 		Expect(JugFileVowSignature()).To(Equal("0x00000000000000000000000000000000000000000000000000000000d4e8be83"))
 	})
 
+	It("generates jug init signature", func() {
+		Expect(JugInitSignature()).To(Equal("0x000000000000000000000000000000000000000000000000000000003b663195"))
+	})
+
 	It("generates pip log value signature", func() {
 		Expect(PipLogValueSignature()).To(Equal("0x296ba4ca62c6c21c95e828080cb8aec7481b71390585605300a8a76f9e95b527"))
 	})

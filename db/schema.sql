@@ -2100,6 +2100,40 @@ ALTER SEQUENCE maker.jug_ilk_rho_id_seq OWNED BY maker.jug_ilk_rho.id;
 
 
 --
+-- Name: jug_init; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.jug_init (
+    id integer NOT NULL,
+    header_id integer NOT NULL,
+    ilk_id integer NOT NULL,
+    log_idx integer NOT NULL,
+    tx_idx integer NOT NULL,
+    raw_log jsonb
+);
+
+
+--
+-- Name: jug_init_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.jug_init_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: jug_init_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.jug_init_id_seq OWNED BY maker.jug_init.id;
+
+
+--
 -- Name: jug_vat; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -3663,7 +3697,8 @@ CREATE TABLE public.checked_headers (
     flap_kick_checked integer DEFAULT 0 NOT NULL,
     vow_fess_checked integer DEFAULT 0 NOT NULL,
     vow_file_checked integer DEFAULT 0 NOT NULL,
-    vat_suck_checked integer DEFAULT 0 NOT NULL
+    vat_suck_checked integer DEFAULT 0 NOT NULL,
+    jug_init_checked integer DEFAULT 0 NOT NULL
 );
 
 
@@ -4285,6 +4320,13 @@ ALTER TABLE ONLY maker.jug_ilk_duty ALTER COLUMN id SET DEFAULT nextval('maker.j
 --
 
 ALTER TABLE ONLY maker.jug_ilk_rho ALTER COLUMN id SET DEFAULT nextval('maker.jug_ilk_rho_id_seq'::regclass);
+
+
+--
+-- Name: jug_init id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.jug_init ALTER COLUMN id SET DEFAULT nextval('maker.jug_init_id_seq'::regclass);
 
 
 --
@@ -5060,6 +5102,22 @@ ALTER TABLE ONLY maker.jug_ilk_rho
 
 ALTER TABLE ONLY maker.jug_ilk_rho
     ADD CONSTRAINT jug_ilk_rho_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: jug_init jug_init_header_id_tx_idx_log_idx_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.jug_init
+    ADD CONSTRAINT jug_init_header_id_tx_idx_log_idx_key UNIQUE (header_id, tx_idx, log_idx);
+
+
+--
+-- Name: jug_init jug_init_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.jug_init
+    ADD CONSTRAINT jug_init_pkey PRIMARY KEY (id);
 
 
 --
@@ -6149,6 +6207,22 @@ ALTER TABLE ONLY maker.jug_ilk_duty
 
 ALTER TABLE ONLY maker.jug_ilk_rho
     ADD CONSTRAINT jug_ilk_rho_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id) ON DELETE CASCADE;
+
+
+--
+-- Name: jug_init jug_init_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.jug_init
+    ADD CONSTRAINT jug_init_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: jug_init jug_init_ilk_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.jug_init
+    ADD CONSTRAINT jug_init_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id) ON DELETE CASCADE;
 
 
 --

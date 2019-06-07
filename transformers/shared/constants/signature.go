@@ -26,9 +26,10 @@ func FlapKickSignature() string           { return getEventTopicZero(flapKickMet
 func FlipKickSignature() string           { return getEventTopicZero(flipKickMethod()) }
 func FlopKickSignature() string           { return getEventTopicZero(flopKickMethod()) }
 func JugDripSignature() string            { return getLogNoteTopicZero(jugDripMethod()) }
-func JugFileIlkSignature() string         { return getLogNoteTopicZero(jugFileIlkMethod()) }
 func JugFileBaseSignature() string        { return getLogNoteTopicZero(jugFileBaseMethod()) }
+func JugFileIlkSignature() string         { return getLogNoteTopicZero(jugFileIlkMethod()) }
 func JugFileVowSignature() string         { return getLogNoteTopicZero(jugFileVowMethod()) }
+func JugInitSignature() string            { return getLogNoteTopicZero(jugInitMethod()) }
 func PipLogValueSignature() string        { return getEventTopicZero(pipLogValueMethod()) }
 func TendSignature() string               { return getLogNoteTopicZero(tendMethod()) }
 func VatFileDebtCeilingSignature() string { return getLogNoteTopicZero(vatFileDebtCeilingMethod()) }
