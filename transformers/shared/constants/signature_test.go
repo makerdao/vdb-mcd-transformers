@@ -82,6 +82,10 @@ var _ = Describe("Signature constants", func() {
 		Expect(PipLogValueSignature()).To(Equal("0x296ba4ca62c6c21c95e828080cb8aec7481b71390585605300a8a76f9e95b527"))
 	})
 
+	It("generates spot file pip signature", func() {
+		Expect(SpotFilePipSignature()).To(Equal("0xd4e8be8300000000000000000000000000000000000000000000000000000000"))
+	})
+
 	It("generates tend signature", func() {
 		Expect(TendSignature()).To(Equal("0x4b43ed1200000000000000000000000000000000000000000000000000000000"))
 	})

@@ -32,6 +32,7 @@ const (
 	JugFileVowLabel         = "jugFileVow"
 	JugInitLabel            = "jugInit"
 	PipLogValueLabel        = "pipLogValue"
+	SpotFilePipLabel        = "spotFilePip"
 	TendLabel               = "tend"
 	VatFileDebtCeilingLabel = "vatFileDebtCeiling"
 	VatFileIlkLabel         = "vatFileIlk"

@@ -31,6 +31,7 @@ func JugFileIlkSignature() string         { return getLogNoteTopicZero(jugFileIl
 func JugFileVowSignature() string         { return getLogNoteTopicZero(jugFileVowMethod()) }
 func JugInitSignature() string            { return getLogNoteTopicZero(jugInitMethod()) }
 func PipLogValueSignature() string        { return getEventTopicZero(pipLogValueMethod()) }
+func SpotFilePipSignature() string        { return getLogNoteTopicZero(spotFilePipMethod()) }
 func TendSignature() string               { return getLogNoteTopicZero(tendMethod()) }
 func VatFileDebtCeilingSignature() string { return getLogNoteTopicZero(vatFileDebtCeilingMethod()) }
 func VatFileIlkSignature() string         { return getLogNoteTopicZero(vatFileIlkMethod()) }
