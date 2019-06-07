@@ -82,6 +82,7 @@ var BiteModel = bite.BiteModel{
 	Art:              biteArt.String(),
 	Tab:              biteTab.String(),
 	Flip:             "0x7d7bEe5fCfD8028cf7b00876C5b1421c800561A6",
+	Id:               biteID.String(),
 	LogIndex:         EthBiteLog.Index,
 	TransactionIndex: EthBiteLog.TxIndex,
 	Raw:              biteRawJson,

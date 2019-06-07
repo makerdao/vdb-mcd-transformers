@@ -72,6 +72,7 @@ func (converter BiteConverter) ToModels(entities []interface{}) ([]interface{}, 
 		art := biteEntity.Art
 		tab := biteEntity.Tab
 		flip := common.BytesToAddress(biteEntity.Flip.Bytes()).Hex()
+		id := biteEntity.Id
 		logIdx := biteEntity.LogIndex
 		txIdx := biteEntity.TransactionIndex
 		rawLog, err := json.Marshal(biteEntity.Raw)
@@ -86,6 +87,7 @@ func (converter BiteConverter) ToModels(entities []interface{}) ([]interface{}, 
 			Art:              shared.BigIntToString(art),
 			Tab:              shared.BigIntToString(tab),
 			Flip:             flip,
+			Id:               shared.BigIntToString(id),
 			LogIndex:         logIdx,
 			TransactionIndex: txIdx,
 			Raw:              rawLog,

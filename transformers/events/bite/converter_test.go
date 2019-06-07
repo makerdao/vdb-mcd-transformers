@@ -77,6 +77,7 @@ var _ = Describe("Bite Converter", func() {
 				Art:              "",
 				Tab:              "",
 				Flip:             "0x0000000000000000000000000000000000000000",
+				Id:               "",
 				TransactionIndex: 0,
 				Raw:              emptyLog,
 			}
