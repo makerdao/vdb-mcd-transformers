@@ -1,32 +1,15 @@
 S
 `Dockerfile` will build an alpine image containing:
-- vDB as a binary with runtime deps statically linked: `/app/vulcanizedb`
-- The migration tool goose: `/app/goose`
-- Two services for running `headerSync` and `continuousLogSync`, started with the default configuration `environments/staging.toml`.
+- An $GOPATH with vulcanizedb, mcd_transformers, and goose
+- An app directory with the vulcanizedb binary, startup_script.sh, and a (configurable) config.toml
+Build with (e.g. from the project directory) `docker build ./ -t mcd:0.0.1 --build-arg USER`
 
-By default, vDB is configured towards the Kovan deploy. The configuration values can be overridden using environment variables, using the same hierarchical naming pattern but in CAPS and using underscores. For example, the contract address for the `Pit` can be set with the variable `CONTRACT_ADDRESS_PIT="0x123..."`.
 
 ## To use the container:
-1. Setup a postgres database with superuser `vulcanize`
-2. Set the env variables `DATABASE_NAME`, `DATABASE_HOSTNAME`,
-  `DATABASE_PORT`, `DATABASE_USER` & `DATABASE_PASSWORD`
-3. Run the DB migrations:
-  * `./goose postgres "postgresql://$(DATABASE_USER):$(DATABASE_PASSWORD)@$(DATABASE_HOSTNAME):$(DATABASE_PORT)/$(DATABASE_NAME)?sslmode=disable"
-e`
-4. Set `CLIENT_IPCPATH` to a node endpoint
-5. Set the contract variables:
-  * `CONTRACT_ADDRESS_[CONTRACT NAME]=0x123...`
-  * `CONTRACT_ABI_[CONTRACT NAME]="ABI STRING"`
-  * `CONTRACT_DEPLOYMENT-BLOCK_[CONTRACT NAME]=0` (doesn't really matter on a short chain, just avoids long unnecessary searching)
-6. Start the `headerSync` and `continuousLogSync` services:
-   `./vulcanizedb headerSync --config environments/staging.toml`
-  * `./vulcanizedb continuousLogSync --config environments/staging.toml`
+1. Setup a postgres database matching your config (e.g. `vulcanize_public`)
+1. Set the config's (default: `environments/example.toml`) ipc path to a node endpoint
+1. Run with e.g. `docker run mcd:0.0.1` [this triggers `headerSync` + `composeAndExecute` with the specified config]
 
-### Automated
-The steps above have been rolled into a script: `/app/startup_script.sh`, which just assumes the DB env variables have been set, and defaults the rest to Kovan according to `environments/staging.toml`. This can be called with something like:
-
-`docker run -d -e DATABASE_NAME=vulcanize_public -e DATABASE_HOSTNAME=localhost -e DATABASE_PORT=5432 -e DATABASE_USER=vulcanize -e DATABASE_PASSWORD=vulcanize m0ar/images:vDB`
-
-### Logging
-When running, vDB services log to `/app/vulcanizedb.log`.
+NOTE: this file is written for execution on OS X, making use of `host.docker.internal` to access Postgres from the host.
+For execution on linux, replace instances of `host.docker.internal` with `localhost` and run with `--network="host"`.
 
