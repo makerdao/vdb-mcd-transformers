@@ -29,12 +29,20 @@ import (
 var _ = Describe("VatFork converter", func() {
 	converter := vat_fork.VatForkConverter{}
 
-	It("Converts logs to models", func() {
-		models, err := converter.ToModels([]types.Log{test_data.EthVatForkLogWithNegativeDart})
+	It("Converts a log with a negative dink and dart to a model", func() {
+		models, err := converter.ToModels([]types.Log{test_data.EthVatForkLogWithNegativeDinkDart})
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(len(models)).To(Equal(1))
-		Expect(models[0]).To(Equal(test_data.VatForkModelWithNegativeDart))
+		Expect(models[0]).To(Equal(test_data.VatForkModelWithNegativeDinkDart))
+	})
+
+	It("Converts a log with a positive dink and dart to a model", func() {
+		models, err := converter.ToModels([]types.Log{test_data.EthVatForkLogWithPositiveDinkDart})
+
+		Expect(err).NotTo(HaveOccurred())
+		Expect(len(models)).To(Equal(1))
+		Expect(models[0]).To(Equal(test_data.VatForkModelWithPositiveDinkDart))
 	})
 
 	It("Returns an error there are missing topics", func() {
