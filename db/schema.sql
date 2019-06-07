@@ -35,7 +35,7 @@ CREATE SCHEMA maker;
 
 CREATE TYPE api.bite_event AS (
 	ilk_identifier text,
-	urn_guy text,
+	urn_identifier text,
 	ink numeric,
 	art numeric,
 	tab numeric,
@@ -74,7 +74,7 @@ CREATE TYPE api.era AS (
 
 CREATE TYPE api.frob_event AS (
 	ilk_identifier text,
-	urn_guy text,
+	urn_identifier text,
 	dink numeric,
 	dart numeric,
 	block_height bigint,
@@ -250,7 +250,7 @@ CREATE TYPE api.tx AS (
 --
 
 CREATE TYPE api.urn_state AS (
-	urn_guy text,
+	urn_identifier text,
 	ilk_identifier text,
 	block_height bigint,
 	ink numeric,
@@ -271,12 +271,12 @@ CREATE FUNCTION api.all_bites(ilk_identifier text) RETURNS SETOF api.bite_event
     AS $$
 WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier)
 
-SELECT ilk_identifier, guy AS urn_guy, ink, art, tab, block_number, tx_idx
+SELECT ilk_identifier, identifier AS urn_identifier, ink, art, tab, block_number, tx_idx
 FROM maker.bite
          LEFT JOIN maker.urns ON bite.urn_id = urns.id
          LEFT JOIN headers ON bite.header_id = headers.id
 WHERE urns.ilk_id = (SELECT id FROM ilk)
-ORDER BY guy, block_number DESC
+ORDER BY urn_identifier, block_number DESC
 $$;
 
 
@@ -289,12 +289,12 @@ CREATE FUNCTION api.all_frobs(ilk_identifier text) RETURNS SETOF api.frob_event
     AS $$
 WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier)
 
-SELECT ilk_identifier, guy AS urn_id, dink, dart, block_number, tx_idx
+SELECT ilk_identifier, identifier AS urn_identifier, dink, dart, block_number, tx_idx
 FROM maker.vat_frob
          LEFT JOIN maker.urns ON vat_frob.urn_id = urns.id
          LEFT JOIN headers ON vat_frob.header_id = headers.id
 WHERE urns.ilk_id = (SELECT id FROM ilk)
-ORDER BY guy, block_number DESC
+ORDER BY identifier, block_number DESC
 $$;
 
 
@@ -508,7 +508,7 @@ $$;
 -- Name: all_urn_states(text, text, bigint); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.all_urn_states(ilk_identifier text, urn_guy text, block_height bigint DEFAULT api.max_block()) RETURNS SETOF api.urn_state
+CREATE FUNCTION api.all_urn_states(ilk_identifier text, urn_identifier text, block_height bigint DEFAULT api.max_block()) RETURNS SETOF api.urn_state
     LANGUAGE plpgsql STABLE STRICT
     AS $$
 DECLARE
@@ -522,7 +522,7 @@ BEGIN
     WHERE ilks.identifier = ilk_identifier INTO _ilk_id;
     SELECT id
     FROM maker.urns
-    WHERE urns.guy = urn_guy
+    WHERE urns.identifier = urn_identifier
       AND urns.ilk_id = _ilk_id INTO _urn_id;
 
     blocks := ARRAY(
@@ -542,7 +542,7 @@ BEGIN
     FOREACH i IN ARRAY blocks
         LOOP
             RETURN QUERY
-                SELECT * FROM api.get_urn(ilk_identifier, urn_guy, i);
+                SELECT * FROM api.get_urn(ilk_identifier, urn_identifier, i);
         END LOOP;
 END;
 $$;
@@ -555,7 +555,7 @@ $$;
 CREATE FUNCTION api.all_urns(block_height bigint DEFAULT api.max_block()) RETURNS SETOF api.urn_state
     LANGUAGE sql STABLE STRICT
     AS $$
-WITH urns AS (SELECT urns.id AS urn_id, ilks.id AS ilk_id, ilks.ilk, urns.guy
+WITH urns AS (SELECT urns.id AS urn_id, ilks.id AS ilk_id, ilks.ilk, urns.identifier
               FROM maker.urns urns
                        LEFT JOIN maker.ilks ilks ON urns.ilk_id = ilks.id),
      inks AS ( -- Latest ink for each urn
@@ -578,14 +578,15 @@ WITH urns AS (SELECT urns.id AS urn_id, ilks.id AS ilk_id, ilks.ilk, urns.guy
          FROM maker.vat_ilk_spot
          WHERE block_number <= all_urns.block_height
          ORDER BY ilk_id, block_number DESC),
-     ratio_data AS (SELECT urns.ilk, urns.guy, inks.ink, spots.spot, arts.art, rates.rate
+     ratio_data AS (SELECT urns.ilk, urns.identifier, inks.ink, spots.spot, arts.art, rates.rate
                     FROM inks
                              JOIN urns ON inks.urn_id = urns.urn_id
                              JOIN arts ON arts.urn_id = inks.urn_id
                              JOIN spots ON spots.ilk_id = urns.ilk_id
                              JOIN rates ON rates.ilk_id = spots.ilk_id),
-     ratios AS (SELECT ilk, guy, ((1.0 * ink * spot) / NULLIF(art * rate, 0)) AS ratio FROM ratio_data),
-     safe AS (SELECT ilk, guy, (ratio >= 1) AS safe FROM ratios),
+     ratios AS (SELECT ilk, identifier as urn_identifier, ((1.0 * ink * spot) / NULLIF(art * rate, 0)) AS ratio
+                FROM ratio_data),
+     safe AS (SELECT ilk, urn_identifier, (ratio >= 1) AS safe FROM ratios),
      created AS (SELECT urn_id, api.epoch_to_datetime(block_timestamp) AS datetime
                  FROM (SELECT DISTINCT ON (urn_id) urn_id, block_hash
                        FROM maker.vat_urn_ink
@@ -604,7 +605,7 @@ WITH urns AS (SELECT urns.id AS urn_id, ilks.id AS ilk_id, ilks.ilk, urns.guy
                           LEFT JOIN public.headers ON headers.hash = last_blocks.block_hash
                  ORDER BY urn_id, headers.block_timestamp DESC)
 
-SELECT urns.guy,
+SELECT urns.identifier,
        ilks.identifier,
        all_urns.block_height,
        inks.ink,
@@ -616,8 +617,8 @@ SELECT urns.guy,
 FROM inks
          LEFT JOIN arts ON arts.urn_id = inks.urn_id
          LEFT JOIN urns ON arts.urn_id = urns.urn_id
-         LEFT JOIN ratios ON ratios.guy = urns.guy
-         LEFT JOIN safe ON safe.guy = ratios.guy
+         LEFT JOIN ratios ON ratios.urn_identifier = urns.identifier
+         LEFT JOIN safe ON safe.urn_identifier = ratios.urn_identifier
          LEFT JOIN created ON created.urn_id = urns.urn_id
          LEFT JOIN updated ON updated.urn_id = urns.urn_id
          LEFT JOIN maker.ilks ON ilks.id = urns.ilk_id
@@ -660,7 +661,7 @@ CREATE FUNCTION api.bite_event_urn(event api.bite_event) RETURNS SETOF api.urn_s
     LANGUAGE sql STABLE
     AS $$
 SELECT *
-FROM api.get_urn(event.ilk_identifier, event.urn_guy, event.block_height)
+FROM api.get_urn(event.ilk_identifier, event.urn_identifier, event.block_height)
 $$;
 
 
@@ -719,7 +720,7 @@ CREATE FUNCTION api.frob_event_urn(event api.frob_event) RETURNS SETOF api.urn_s
     LANGUAGE sql STABLE
     AS $$
 SELECT *
-FROM api.get_urn(event.ilk_identifier, event.urn_guy, event.block_height)
+FROM api.get_urn(event.ilk_identifier, event.urn_identifier, event.block_height)
 $$;
 
 
@@ -958,24 +959,24 @@ $$;
 -- Name: get_urn(text, text, bigint); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.get_urn(ilk_identifier text, urn_guy text, block_height bigint DEFAULT api.max_block()) RETURNS api.urn_state
+CREATE FUNCTION api.get_urn(ilk_identifier text, urn_identifier text, block_height bigint DEFAULT api.max_block()) RETURNS api.urn_state
     LANGUAGE sql STABLE STRICT
     AS $_$
-WITH urn AS (SELECT urns.id AS urn_id, ilks.id AS ilk_id, ilks.ilk, urns.guy
+WITH urn AS (SELECT urns.id AS urn_id, ilks.id AS ilk_id, ilks.ilk, urns.identifier
              FROM maker.urns urns
                       LEFT JOIN maker.ilks ilks ON urns.ilk_id = ilks.id
              WHERE ilks.identifier = ilk_identifier
-               AND urns.guy = urn_guy),
+               AND urns.identifier = urn_identifier),
      ink AS ( -- Latest ink
          SELECT DISTINCT ON (urn_id) urn_id, ink, block_number
          FROM maker.vat_urn_ink
-         WHERE urn_id = (SELECT urn_id from urn where guy = urn_guy)
+         WHERE urn_id = (SELECT urn_id from urn where identifier = urn_identifier)
            AND block_number <= get_urn.block_height
          ORDER BY urn_id, block_number DESC),
      art AS ( -- Latest art
          SELECT DISTINCT ON (urn_id) urn_id, art, block_number
          FROM maker.vat_urn_art
-         WHERE urn_id = (SELECT urn_id from urn where guy = urn_guy)
+         WHERE urn_id = (SELECT urn_id from urn where identifier = urn_identifier)
            AND block_number <= get_urn.block_height
          ORDER BY urn_id, block_number DESC),
      rate AS ( -- Latest rate for ilk
@@ -990,18 +991,18 @@ WITH urn AS (SELECT urns.id AS urn_id, ilks.id AS ilk_id, ilks.ilk, urns.guy
          WHERE ilk_id = (SELECT ilk_id FROM urn)
            AND block_number <= get_urn.block_height
          ORDER BY ilk_id, block_number DESC),
-     ratio_data AS (SELECT urn.ilk, urn.guy, ink, spot, art, rate
+     ratio_data AS (SELECT urn.ilk, urn.identifier, ink, spot, art, rate
                     FROM ink
                              JOIN urn ON ink.urn_id = urn.urn_id
                              JOIN art ON art.urn_id = ink.urn_id
                              JOIN spot ON spot.ilk_id = urn.ilk_id
                              JOIN rate ON rate.ilk_id = spot.ilk_id),
-     ratio AS (SELECT ilk, guy, ((1.0 * ink * spot) / NULLIF(art * rate, 0)) AS ratio FROM ratio_data),
-     safe AS (SELECT ilk, guy, (ratio >= 1) AS safe FROM ratio),
+     ratio AS (SELECT ilk, identifier as urn_identifier, ((1.0 * ink * spot) / NULLIF(art * rate, 0)) AS ratio FROM ratio_data),
+     safe AS (SELECT ilk, urn_identifier, (ratio >= 1) AS safe FROM ratio),
      created AS (SELECT urn_id, api.epoch_to_datetime(block_timestamp) AS datetime
                  FROM (SELECT DISTINCT ON (urn_id) urn_id, block_hash
                        FROM maker.vat_urn_ink
-                       WHERE urn_id = (SELECT urn_id from urn where guy = urn_guy)
+                       WHERE urn_id = (SELECT urn_id from urn where identifier = urn_identifier)
                        ORDER BY urn_id, block_number ASC) earliest_blocks
                           LEFT JOIN public.headers ON hash = block_hash),
      updated AS (SELECT DISTINCT ON (urn_id) urn_id, api.epoch_to_datetime(block_timestamp) AS datetime
@@ -1013,7 +1014,7 @@ WITH urn AS (SELECT urns.id AS urn_id, ilks.id AS ilk_id, ilks.ilk, urns.guy
                           LEFT JOIN public.headers ON headers.block_number = last_blocks.block_number
                  ORDER BY urn_id, block_timestamp DESC)
 
-SELECT urn_guy,
+SELECT get_urn.urn_identifier,
        ilk_identifier,
        $3,
        ink.ink,
@@ -1025,8 +1026,8 @@ SELECT urn_guy,
 FROM ink
          LEFT JOIN art ON art.urn_id = ink.urn_id
          LEFT JOIN urn ON urn.urn_id = ink.urn_id
-         LEFT JOIN ratio ON ratio.ilk = urn.ilk AND ratio.guy = urn.guy
-         LEFT JOIN safe ON safe.ilk = ratio.ilk AND safe.guy = ratio.guy
+         LEFT JOIN ratio ON ratio.ilk = urn.ilk AND ratio.urn_identifier = urn.identifier
+         LEFT JOIN safe ON safe.ilk = ratio.ilk AND safe.urn_identifier = ratio.urn_identifier
          LEFT JOIN created ON created.urn_id = art.urn_id
          LEFT JOIN updated ON updated.urn_id = art.urn_id
 WHERE ink.urn_id IS NOT NULL
@@ -1189,16 +1190,16 @@ $$;
 -- Name: urn_bites(text, text); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.urn_bites(ilk_identifier text, urn text) RETURNS SETOF api.bite_event
+CREATE FUNCTION api.urn_bites(ilk_identifier text, urn_identifier text) RETURNS SETOF api.bite_event
     LANGUAGE sql STABLE STRICT
     AS $$
 WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier),
      urn AS (SELECT id
              FROM maker.urns
              WHERE ilk_id = (SELECT id FROM ilk)
-               AND guy = urn_bites.urn)
+               AND identifier = urn_bites.urn_identifier)
 
-SELECT ilk_identifier, urn_bites.urn, ink, art, tab, block_number, tx_idx
+SELECT ilk_identifier, urn_bites.urn_identifier, ink, art, tab, block_number, tx_idx
 FROM maker.bite
          LEFT JOIN headers ON bite.header_id = headers.id
 WHERE bite.urn_id = (SELECT id FROM urn)
@@ -1210,16 +1211,16 @@ $$;
 -- Name: urn_frobs(text, text); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.urn_frobs(ilk_identifier text, urn_guy text) RETURNS SETOF api.frob_event
+CREATE FUNCTION api.urn_frobs(ilk_identifier text, urn_identifier text) RETURNS SETOF api.frob_event
     LANGUAGE sql STABLE STRICT
     AS $$
 WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier),
      urn AS (SELECT id
              FROM maker.urns
              WHERE ilk_id = (SELECT id FROM ilk)
-               AND guy = urn_guy)
+               AND identifier = urn_identifier)
 
-SELECT ilk_identifier, urn_guy, dink, dart, block_number, tx_idx
+SELECT ilk_identifier, urn_identifier, dink, dart, block_number, tx_idx
 FROM maker.vat_frob
          LEFT JOIN headers ON vat_frob.header_id = headers.id
 WHERE vat_frob.urn_id = (SELECT id FROM urn)
@@ -1235,7 +1236,7 @@ CREATE FUNCTION api.urn_state_bites(state api.urn_state) RETURNS SETOF api.bite_
     LANGUAGE sql STABLE
     AS $$
 SELECT *
-FROM api.urn_bites(state.ilk_identifier, state.urn_guy)
+FROM api.urn_bites(state.ilk_identifier, state.urn_identifier)
 WHERE block_height <= state.block_height
 $$;
 
@@ -1248,7 +1249,7 @@ CREATE FUNCTION api.urn_state_frobs(state api.urn_state) RETURNS SETOF api.frob_
     LANGUAGE sql STABLE
     AS $$
 SELECT *
-FROM api.urn_frobs(state.ilk_identifier, state.urn_guy)
+FROM api.urn_frobs(state.ilk_identifier, state.urn_identifier)
 WHERE block_height <= state.block_height
 $$;
 
@@ -2243,7 +2244,7 @@ ALTER SEQUENCE maker.tend_id_seq OWNED BY maker.tend.id;
 CREATE TABLE maker.urns (
     id integer NOT NULL,
     ilk_id integer NOT NULL,
-    guy text
+    identifier text
 );
 
 
@@ -5126,11 +5127,11 @@ ALTER TABLE ONLY maker.tend
 
 
 --
--- Name: urns urns_ilk_id_guy_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: urns urns_ilk_id_identifier_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.urns
-    ADD CONSTRAINT urns_ilk_id_guy_key UNIQUE (ilk_id, guy);
+    ADD CONSTRAINT urns_ilk_id_identifier_key UNIQUE (ilk_id, identifier);
 
 
 --

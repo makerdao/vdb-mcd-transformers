@@ -17,7 +17,7 @@ CREATE FUNCTION api.bite_event_urn(event api.bite_event)
     RETURNS SETOF api.urn_state AS
 $$
 SELECT *
-FROM api.get_urn(event.ilk_identifier, event.urn_guy, event.block_height)
+FROM api.get_urn(event.ilk_identifier, event.urn_identifier, event.block_height)
 $$
     LANGUAGE sql
     STABLE;

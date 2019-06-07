@@ -3,7 +3,7 @@
 -- Spec: https://github.com/makerdao/vulcan.spec/blob/master/mcd.graphql
 
 CREATE TYPE api.urn_state AS (
-    urn_guy TEXT,
+    urn_identifier TEXT,
     ilk_identifier TEXT,
     block_height BIGINT,
     -- ilk object
@@ -46,7 +46,7 @@ CREATE FUNCTION api.all_urns(block_height BIGINT DEFAULT api.max_block())
 AS
 
 $body$
-WITH urns AS (SELECT urns.id AS urn_id, ilks.id AS ilk_id, ilks.ilk, urns.guy
+WITH urns AS (SELECT urns.id AS urn_id, ilks.id AS ilk_id, ilks.ilk, urns.identifier
               FROM maker.urns urns
                        LEFT JOIN maker.ilks ilks ON urns.ilk_id = ilks.id),
      inks AS ( -- Latest ink for each urn
@@ -69,14 +69,15 @@ WITH urns AS (SELECT urns.id AS urn_id, ilks.id AS ilk_id, ilks.ilk, urns.guy
          FROM maker.vat_ilk_spot
          WHERE block_number <= all_urns.block_height
          ORDER BY ilk_id, block_number DESC),
-     ratio_data AS (SELECT urns.ilk, urns.guy, inks.ink, spots.spot, arts.art, rates.rate
+     ratio_data AS (SELECT urns.ilk, urns.identifier, inks.ink, spots.spot, arts.art, rates.rate
                     FROM inks
                              JOIN urns ON inks.urn_id = urns.urn_id
                              JOIN arts ON arts.urn_id = inks.urn_id
                              JOIN spots ON spots.ilk_id = urns.ilk_id
                              JOIN rates ON rates.ilk_id = spots.ilk_id),
-     ratios AS (SELECT ilk, guy, ((1.0 * ink * spot) / NULLIF(art * rate, 0)) AS ratio FROM ratio_data),
-     safe AS (SELECT ilk, guy, (ratio >= 1) AS safe FROM ratios),
+     ratios AS (SELECT ilk, identifier as urn_identifier, ((1.0 * ink * spot) / NULLIF(art * rate, 0)) AS ratio
+                FROM ratio_data),
+     safe AS (SELECT ilk, urn_identifier, (ratio >= 1) AS safe FROM ratios),
      created AS (SELECT urn_id, api.epoch_to_datetime(block_timestamp) AS datetime
                  FROM (SELECT DISTINCT ON (urn_id) urn_id, block_hash
                        FROM maker.vat_urn_ink
@@ -95,7 +96,7 @@ WITH urns AS (SELECT urns.id AS urn_id, ilks.id AS ilk_id, ilks.ilk, urns.guy
                           LEFT JOIN public.headers ON headers.hash = last_blocks.block_hash
                  ORDER BY urn_id, headers.block_timestamp DESC)
 
-SELECT urns.guy,
+SELECT urns.identifier,
        ilks.identifier,
        all_urns.block_height,
        inks.ink,
@@ -107,8 +108,8 @@ SELECT urns.guy,
 FROM inks
          LEFT JOIN arts ON arts.urn_id = inks.urn_id
          LEFT JOIN urns ON arts.urn_id = urns.urn_id
-         LEFT JOIN ratios ON ratios.guy = urns.guy
-         LEFT JOIN safe ON safe.guy = ratios.guy
+         LEFT JOIN ratios ON ratios.urn_identifier = urns.identifier
+         LEFT JOIN safe ON safe.urn_identifier = ratios.urn_identifier
          LEFT JOIN created ON created.urn_id = urns.urn_id
          LEFT JOIN updated ON updated.urn_id = urns.urn_id
          LEFT JOIN maker.ilks ON ilks.id = urns.ilk_id

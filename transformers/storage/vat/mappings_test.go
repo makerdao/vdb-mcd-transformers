@@ -197,7 +197,7 @@ var _ = Describe("Vat storage mappings", func() {
 
 		Describe("urn", func() {
 			It("returns value metadata for urn ink", func() {
-				storageRepository.Urns = []storage.Urn{{Ilk: fakeIlk, Guy: fakeGuy}}
+				storageRepository.Urns = []storage.Urn{{Ilk: fakeIlk, Identifier: fakeGuy}}
 				encodedPrimaryMapIndex := crypto.Keccak256(common.FromHex("0x" + fakeIlk + vat.UrnsMappingIndex))
 				encodedSecondaryMapIndex := crypto.Keccak256(common.FromHex("0x000000000000000000000000"+fakeGuy[2:]), encodedPrimaryMapIndex)
 				urnInkKey := common.BytesToHash(encodedSecondaryMapIndex)
@@ -211,7 +211,7 @@ var _ = Describe("Vat storage mappings", func() {
 			})
 
 			It("returns value metadata for urn art", func() {
-				storageRepository.Urns = []storage.Urn{{Ilk: fakeIlk, Guy: fakeGuy}}
+				storageRepository.Urns = []storage.Urn{{Ilk: fakeIlk, Identifier: fakeGuy}}
 				encodedPrimaryMapIndex := crypto.Keccak256(common.FromHex("0x" + fakeIlk + vat.UrnsMappingIndex))
 				urnInkAsInt := big.NewInt(0).SetBytes(crypto.Keccak256(common.FromHex("0x000000000000000000000000"+fakeGuy[2:]), encodedPrimaryMapIndex))
 				incrementedUrnInk := big.NewInt(0).Add(urnInkAsInt, big.NewInt(1))
@@ -228,7 +228,7 @@ var _ = Describe("Vat storage mappings", func() {
 
 		Describe("gem", func() {
 			It("returns value metadata for gem", func() {
-				storageRepository.GemKeys = []storage.Urn{{Ilk: fakeIlk, Guy: fakeGuy}}
+				storageRepository.GemKeys = []storage.Urn{{Ilk: fakeIlk, Identifier: fakeGuy}}
 				encodedPrimaryMapIndex := crypto.Keccak256(common.FromHex("0x" + fakeIlk + vat.GemsMappingIndex))
 				encodedSecondaryMapIndex := crypto.Keccak256(common.FromHex("0x000000000000000000000000"+fakeGuy[2:]), encodedPrimaryMapIndex)
 				gemKey := common.BytesToHash(encodedSecondaryMapIndex)

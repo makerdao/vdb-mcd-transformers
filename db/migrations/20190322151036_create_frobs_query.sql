@@ -3,7 +3,7 @@
 CREATE TYPE api.frob_event AS (
     ilk_identifier TEXT,
     -- ilk object
-    urn_guy TEXT,
+    urn_identifier TEXT,
     -- urn object
     dink NUMERIC,
     dart NUMERIC,
@@ -17,16 +17,16 @@ COMMENT ON COLUMN api.frob_event.block_height
 COMMENT ON COLUMN api.frob_event.tx_idx
     IS E'@omit';
 
-CREATE FUNCTION api.urn_frobs(ilk_identifier TEXT, urn_guy TEXT)
+CREATE FUNCTION api.urn_frobs(ilk_identifier TEXT, urn_identifier TEXT)
     RETURNS SETOF api.frob_event AS
 $$
 WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier),
      urn AS (SELECT id
              FROM maker.urns
              WHERE ilk_id = (SELECT id FROM ilk)
-               AND guy = urn_guy)
+               AND identifier = urn_identifier)
 
-SELECT ilk_identifier, urn_guy, dink, dart, block_number, tx_idx
+SELECT ilk_identifier, urn_identifier, dink, dart, block_number, tx_idx
 FROM maker.vat_frob
          LEFT JOIN headers ON vat_frob.header_id = headers.id
 WHERE vat_frob.urn_id = (SELECT id FROM urn)
@@ -42,12 +42,12 @@ CREATE FUNCTION api.all_frobs(ilk_identifier TEXT)
 $$
 WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier)
 
-SELECT ilk_identifier, guy AS urn_id, dink, dart, block_number, tx_idx
+SELECT ilk_identifier, identifier AS urn_identifier, dink, dart, block_number, tx_idx
 FROM maker.vat_frob
          LEFT JOIN maker.urns ON vat_frob.urn_id = urns.id
          LEFT JOIN headers ON vat_frob.header_id = headers.id
 WHERE urns.ilk_id = (SELECT id FROM ilk)
-ORDER BY guy, block_number DESC
+ORDER BY identifier, block_number DESC
 $$
     LANGUAGE sql
     STABLE

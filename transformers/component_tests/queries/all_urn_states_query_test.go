@@ -51,7 +51,7 @@ var _ = Describe("Urn history query", func() {
 		expectedRatioBlockOne := helper.GetExpectedRatio(inkBlockOne, urnSetupData.Spot, artBlockOne, urnSetupData.Rate)
 		expectedTimestampOne := helper.GetExpectedTimestamp(timestampOne)
 		expectedUrnBlockOne := helper.UrnState{
-			UrnGuy:        fakeUrn,
+			UrnIdentifier: fakeUrn,
 			IlkIdentifier: helper.FakeIlk.Identifier,
 			BlockHeight:   blockOne,
 			Ink:           strconv.Itoa(inkBlockOne),
@@ -83,7 +83,7 @@ var _ = Describe("Urn history query", func() {
 		expectedRatioBlockTwo := helper.GetExpectedRatio(inkBlockTwo, urnSetupData.Spot, artBlockOne, urnSetupData.Rate)
 		expectedTimestampTwo := helper.GetExpectedTimestamp(timestampTwo)
 		expectedUrnBlockTwo := helper.UrnState{
-			UrnGuy:        fakeUrn,
+			UrnIdentifier: fakeUrn,
 			IlkIdentifier: helper.FakeIlk.Identifier,
 			BlockHeight:   blockTwo,
 			Ink:           strconv.Itoa(inkBlockTwo),
@@ -106,7 +106,7 @@ var _ = Describe("Urn history query", func() {
 
 		expectedTimestampThree := helper.GetExpectedTimestamp(timestampThree)
 		expectedUrnBlockThree := helper.UrnState{
-			UrnGuy:        fakeUrn,
+			UrnIdentifier: fakeUrn,
 			IlkIdentifier: helper.FakeIlk.Identifier,
 			BlockHeight:   blockThree,
 			Ink:           strconv.Itoa(inkBlockTwo),

@@ -16,7 +16,7 @@ CREATE FUNCTION api.urn_state_frobs(state api.urn_state)
     RETURNS SETOF api.frob_event AS
 $$
 SELECT *
-FROM api.urn_frobs(state.ilk_identifier, state.urn_guy)
+FROM api.urn_frobs(state.ilk_identifier, state.urn_identifier)
 WHERE block_height <= state.block_height
 $$
     LANGUAGE sql
@@ -28,7 +28,7 @@ CREATE FUNCTION api.urn_state_bites(state api.urn_state)
     RETURNS SETOF api.bite_event AS
 $$
 SELECT *
-FROM api.urn_bites(state.ilk_identifier, state.urn_guy)
+FROM api.urn_bites(state.ilk_identifier, state.urn_identifier)
 WHERE block_height <= state.block_height
 $$
     LANGUAGE sql

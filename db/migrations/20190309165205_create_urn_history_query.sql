@@ -1,6 +1,6 @@
 -- +goose Up
 -- +goose StatementBegin
-CREATE FUNCTION api.all_urn_states(ilk_identifier TEXT, urn_guy TEXT, block_height BIGINT DEFAULT api.max_block())
+CREATE FUNCTION api.all_urn_states(ilk_identifier TEXT, urn_identifier TEXT, block_height BIGINT DEFAULT api.max_block())
     RETURNS SETOF api.urn_state AS
 $$
 DECLARE
@@ -14,7 +14,7 @@ BEGIN
     WHERE ilks.identifier = ilk_identifier INTO _ilk_id;
     SELECT id
     FROM maker.urns
-    WHERE urns.guy = urn_guy
+    WHERE urns.identifier = urn_identifier
       AND urns.ilk_id = _ilk_id INTO _urn_id;
 
     blocks := ARRAY(
@@ -34,7 +34,7 @@ BEGIN
     FOREACH i IN ARRAY blocks
         LOOP
             RETURN QUERY
-                SELECT * FROM api.get_urn(ilk_identifier, urn_guy, i);
+                SELECT * FROM api.get_urn(ilk_identifier, urn_identifier, i);
         END LOOP;
 END;
 $$
