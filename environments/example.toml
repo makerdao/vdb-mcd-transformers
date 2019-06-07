@@ -1,0 +1,326 @@
+[database]
+    name     = "vulcanize_public"
+    hostname = "host.docker.internal"
+    port     = 5432
+
+[client]
+    ipcPath = ""
+
+[exporter]
+    home     = "github.com/vulcanize/vulcanizedb"
+    name     = "transformerExporter"
+    save     = false
+    transformerNames = [
+        "cat",
+        "jug",
+        "spot",
+        "vat",
+        "vow",
+        "bite",
+        "cat_chop_lump",
+        "cat_flip",
+        "cat_vow",
+        "deal",
+        "dent",
+        "flap_kick",
+        "flip_kick",
+        "flop_kick",
+        "jug_drip",
+        "jug_file_base",
+        "jug_file_ilk",
+        "jug_file_vow",
+        "jug_init",
+        "spot_file_mat",
+        "spot_file_pip",
+        "spot_poke",
+        "tend",
+        "vat_file_debt_ceiling",
+        "vat_file_ilk",
+        "vat_flux",
+        "vat_fold",
+        "vat_fork",
+        "vat_frob",
+        "vat_grab",
+        "vat_heal",
+        "vat_init",
+        "vat_move",
+        "vat_slip",
+        "vat_suck",
+        "vow_fess",
+        "vow_file",
+        "vow_flog"
+    ]
+
+    [exporter.cat]
+        path = "transformers/storage/cat/initializer"
+        type = "eth_storage"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        rank = "0"
+    [exporter.jug]
+        path = "transformers/storage/jug/initializer"
+        type = "eth_storage"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        rank = "0"
+    [exporter.spot]
+        path = "transformers/storage/spot/initializer"
+        type = "eth_storage"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        rank = "0"
+    [exporter.vat]
+        path = "transformers/storage/vat/initializer"
+        type = "eth_storage"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        rank = "0"
+    [exporter.vow]
+        path = "transformers/storage/vow/initializer"
+        type = "eth_storage"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        rank = "0"
+    [exporter.bite]
+        path = "transformers/events/bite/initializer"
+        type = "eth_event"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        rank = "0"
+    [exporter.cat_chop_lump]
+        path = "transformers/events/cat_file/chop_lump/initializer"
+        type = "eth_event"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        rank = "0"
+    [exporter.cat_flip]
+        path = "transformers/events/cat_file/flip/initializer"
+        type = "eth_event"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        rank = "0"
+    [exporter.cat_vow]
+        path = "transformers/events/cat_file/vow/initializer"
+        type = "eth_event"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        rank = "0"
+    [exporter.deal]
+        path = "transformers/events/deal/initializer"
+        type = "eth_event"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        rank = "0"
+    [exporter.dent]
+        path = "transformers/events/dent/initializer"
+        type = "eth_event"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        rank = "0"
+    [exporter.flap_kick]
+        path = "transformers/events/flap_kick/initializer"
+        type = "eth_event"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        rank = "0"
+    [exporter.flip_kick]
+        path = "transformers/events/flip_kick/initializer"
+        type = "eth_event"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        rank = "0"
+    [exporter.flop_kick]
+        path = "transformers/events/flop_kick/initializer"
+        type = "eth_event"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        rank = "0"
+    [exporter.jug_drip]
+        path = "transformers/events/jug_drip/initializer"
+        type = "eth_event"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        rank = "0"
+    [exporter.jug_file_base]
+        path = "transformers/events/jug_file/base/initializer"
+        type = "eth_event"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        rank = "0"
+    [exporter.jug_file_ilk]
+        path = "transformers/events/jug_file/ilk/initializer"
+        type = "eth_event"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        rank = "0"
+    [exporter.jug_file_vow]
+        path = "transformers/events/jug_file/vow/initializer"
+        type = "eth_event"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        rank = "0"
+    [exporter.jug_init]
+        path = "transformers/events/jug_init/initializer"
+        type = "eth_event"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        rank = "0"
+    [exporter.spot_poke]
+        path = "transformers/events/spot_poke/initializer"
+        type = "eth_event"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        rank = "0"
+    [exporter.spot_file_mat]
+        path = "transformers/events/spot_file/mat/initializer"
+        type = "eth_event"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        rank = "0"
+    [exporter.spot_file_pip]
+        path = "transformers/events/spot_file/pip/initializer"
+        type = "eth_event"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        rank = "0"
+    [exporter.tend]
+        path = "transformers/events/tend/initializer"
+        type = "eth_event"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        rank = "0"
+    [exporter.vat_file_debt_ceiling]
+        path = "transformers/events/vat_file/debt_ceiling/initializer"
+        type = "eth_event"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        rank = "0"
+    [exporter.vat_file_ilk]
+        path = "transformers/events/vat_file/ilk/initializer"
+        type = "eth_event"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        rank = "0"
+    [exporter.vat_flux]
+        path = "transformers/events/vat_flux/initializer"
+        type = "eth_event"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        rank = "0"
+    [exporter.vat_fold]
+        path = "transformers/events/vat_fold/initializer"
+        type = "eth_event"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        rank = "0"
+    [exporter.vat_fork]
+        path = "transformers/events/vat_fork/initializer"
+        type = "eth_event"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        rank = "0"
+    [exporter.vat_frob]
+        path = "transformers/events/vat_frob/initializer"
+        type = "eth_event"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        rank = "0"
+    [exporter.vat_grab]
+        path = "transformers/events/vat_grab/initializer"
+        type = "eth_event"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        rank = "0"
+    [exporter.vat_heal]
+        path = "transformers/events/vat_heal/initializer"
+        type = "eth_event"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        rank = "0"
+    [exporter.vat_init]
+        path = "transformers/events/vat_init/initializer"
+        type = "eth_event"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        rank = "0"
+    [exporter.vat_move]
+        path = "transformers/events/vat_move/initializer"
+        type = "eth_event"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        rank = "0"
+    [exporter.vat_slip]
+        path = "transformers/events/vat_slip/initializer"
+        type = "eth_event"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        rank = "0"
+    [exporter.vat_suck]
+        path = "transformers/events/vat_suck/initializer"
+        type = "eth_event"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        rank = "0"
+    [exporter.vow_fess]
+        path = "transformers/events/vow_fess/initializer"
+        type = "eth_event"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        rank = "0"
+    [exporter.vow_file]
+        path = "transformers/events/vow_file/initializer"
+        type = "eth_event"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        rank = "0"
+    [exporter.vow_flog]
+        path = "transformers/events/vow_flog/initializer"
+        type = "eth_event"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        rank = "0"
+
+[filesystem]
+    storageDiffsPath = "INSERT-PATH-TO-STORAGE-DIFFS"
+
+[contract]
+    [contract.address]
+            ETH_FLIP_OLD = "0x32D496Ad866D110060866B7125981C73642cc509"
+            MCD_CAT      = "0xd2195c16e366e20855c532e5b98fb11bd3573398"
+            MCD_FLAP_OLD = "0x8868BAd8e74FcA4505676D1B5B21EcC23328d132"
+            MCD_FLAP     = "0x164a942d9d7A269B2Dc8551C8dFad32e8fFd0b80"
+            MCD_FLOP_OLD = "0x6191C9b0086c2eBF92300cC507009b53996FbFFa"
+            MCD_JUG      = "0xee59115d5e12f1d6e6c580cacd84374fbaa9a484"
+            MCD_SPOT     = "0xa57d4123c8a80ac410e924df9d5e47765ffd1375"
+            MCD_VAT      = "0x57aa8b02f5d3e28371fedcf672c8668869f9aac7"
+            MCD_VOW      = "0x528c10d35d9612d1667d2d9b8915f80a573a800b"
+            ETH_FLIP_A   = "0x43c331c0389a92af62ee726d5ae0c8a424320c31"
+            ETH_FLIP_B   = "0x2151047513dbeac7eccd0c97ece5f270649b3604"
+            ETH_FLIP_C   = "0xf4d49a91a37ba0eeada456977e18f2f23f1b3ebc"
+            COL1_FLIP    = "0x911c1bb935ce7fe5acb8069acd52d50d3c896353"
+            COL2_FLIP    = "0x6b982b27c732ced61e12c50b000cdb209164122c"
+            COL3_FLIP    = "0xd1300443f52157ab267e66cb818d122b2c021820"
+            COL4_FLIP    = "0x21a13c6678377ff2fcf74f924777aad69e1dc4ac"
+            COL5_FLIP    = "0x4f3c0d0f42b9f2052c6d9cacadb6d88d9b50e037"
+    [contract.abi]
+            MCD_CAT      = '[{"constant":false,"inputs":[{"name":"ilk","type":"bytes32"},{"name":"what","type":"bytes32"},{"name":"data","type":"uint256"}],"name":"file","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"vat","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"ilk","type":"bytes32"},{"name":"urn","type":"address"}],"name":"bite","outputs":[{"name":"id","type":"uint256"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"vow","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"usr","type":"address"}],"name":"rely","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[],"name":"cage","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"live","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"usr","type":"address"}],"name":"deny","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"wards","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"what","type":"bytes32"},{"name":"data","type":"address"}],"name":"file","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"","type":"bytes32"}],"name":"ilks","outputs":[{"name":"flip","type":"address"},{"name":"chop","type":"uint256"},{"name":"lump","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"ilk","type":"bytes32"},{"name":"what","type":"bytes32"},{"name":"flip","type":"address"}],"name":"file","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"inputs":[{"name":"vat_","type":"address"}],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"name":"ilk","type":"bytes32"},{"indexed":true,"name":"urn","type":"address"},{"indexed":false,"name":"ink","type":"uint256"},{"indexed":false,"name":"art","type":"uint256"},{"indexed":false,"name":"tab","type":"uint256"},{"indexed":false,"name":"flip","type":"address"},{"indexed":false,"name":"id","type":"uint256"}],"name":"Bite","type":"event"},{"anonymous":true,"inputs":[{"indexed":true,"name":"sig","type":"bytes4"},{"indexed":true,"name":"usr","type":"address"},{"indexed":true,"name":"arg1","type":"bytes32"},{"indexed":true,"name":"arg2","type":"bytes32"},{"indexed":false,"name":"data","type":"bytes"}],"name":"LogNote","type":"event"}]'
+            ETH_FLIP_OLD = '[{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"bids","outputs":[{"name":"bid","type":"uint256"},{"name":"lot","type":"uint256"},{"name":"guy","type":"address"},{"name":"tic","type":"uint48"},{"name":"end","type":"uint48"},{"name":"urn","type":"bytes32"},{"name":"gal","type":"address"},{"name":"tab","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function","signature":"0x4423c5f1"},{"constant":true,"inputs":[],"name":"ttl","outputs":[{"name":"","type":"uint48"}],"payable":false,"stateMutability":"view","type":"function","signature":"0x4e8b1dd5"},{"constant":true,"inputs":[],"name":"gem","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function","signature":"0x7bd2bea7"},{"constant":true,"inputs":[],"name":"beg","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function","signature":"0x7d780d82"},{"constant":true,"inputs":[],"name":"tau","outputs":[{"name":"","type":"uint48"}],"payable":false,"stateMutability":"view","type":"function","signature":"0xcfc4af55"},{"constant":true,"inputs":[],"name":"kicks","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function","signature":"0xcfdd3302"},{"constant":true,"inputs":[],"name":"dai","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function","signature":"0xf4b9fa75"},{"inputs":[{"name":"dai_","type":"address"},{"name":"gem_","type":"address"}],"payable":false,"stateMutability":"nonpayable","type":"constructor","signature":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"name":"id","type":"uint256"},{"indexed":false,"name":"lot","type":"uint256"},{"indexed":false,"name":"bid","type":"uint256"},{"indexed":false,"name":"gal","type":"address"},{"indexed":false,"name":"end","type":"uint48"},{"indexed":true,"name":"urn","type":"bytes32"},{"indexed":false,"name":"tab","type":"uint256"}],"name":"Kick","type":"event","signature":"0xbac86238bdba81d21995024470425ecb370078fa62b7271b90cf28cbd1e3e87e"},{"anonymous":true,"inputs":[{"indexed":true,"name":"sig","type":"bytes4"},{"indexed":true,"name":"guy","type":"address"},{"indexed":true,"name":"foo","type":"bytes32"},{"indexed":true,"name":"bar","type":"bytes32"},{"indexed":false,"name":"wad","type":"uint256"},{"indexed":false,"name":"fax","type":"bytes"}],"name":"LogNote","type":"event","signature":"0x644843f351d3fba4abcd60109eaff9f54bac8fb8ccf0bab941009c21df21cf31"},{"constant":true,"inputs":[],"name":"era","outputs":[{"name":"","type":"uint48"}],"payable":false,"stateMutability":"view","type":"function","signature":"0x143e55e0"},{"constant":false,"inputs":[{"name":"urn","type":"bytes32"},{"name":"gal","type":"address"},{"name":"tab","type":"uint256"},{"name":"lot","type":"uint256"},{"name":"bid","type":"uint256"}],"name":"kick","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"nonpayable","type":"function","signature":"0xeae19d9e"},{"constant":false,"inputs":[{"name":"id","type":"uint256"}],"name":"tick","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function","signature":"0xfc7b6aee"},{"constant":false,"inputs":[{"name":"id","type":"uint256"},{"name":"lot","type":"uint256"},{"name":"bid","type":"uint256"}],"name":"tend","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function","signature":"0x4b43ed12"},{"constant":false,"inputs":[{"name":"id","type":"uint256"},{"name":"lot","type":"uint256"},{"name":"bid","type":"uint256"}],"name":"dent","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function","signature":"0x5ff3a382"},{"constant":false,"inputs":[{"name":"id","type":"uint256"}],"name":"deal","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function","signature":"0xc959c42b"}]'
+            MCD_FLIP     = '[{"constant":false,"inputs":[{"name":"id","type":"uint256"}],"name":"yank","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"what","type":"bytes32"},{"name":"data","type":"uint256"}],"name":"file","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"usr","type":"address"},{"name":"gal","type":"address"},{"name":"tab","type":"uint256"},{"name":"lot","type":"uint256"},{"name":"bid","type":"uint256"}],"name":"kick","outputs":[{"name":"id","type":"uint256"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"vat","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"bids","outputs":[{"name":"bid","type":"uint256"},{"name":"lot","type":"uint256"},{"name":"guy","type":"address"},{"name":"tic","type":"uint48"},{"name":"end","type":"uint48"},{"name":"usr","type":"address"},{"name":"gal","type":"address"},{"name":"tab","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"id","type":"uint256"},{"name":"lot","type":"uint256"},{"name":"bid","type":"uint256"}],"name":"tend","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"ttl","outputs":[{"name":"","type":"uint48"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"id","type":"uint256"},{"name":"lot","type":"uint256"},{"name":"bid","type":"uint256"}],"name":"dent","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"usr","type":"address"}],"name":"rely","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"beg","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"usr","type":"address"}],"name":"deny","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"wards","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"ilk","outputs":[{"name":"","type":"bytes32"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"id","type":"uint256"}],"name":"deal","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"tau","outputs":[{"name":"","type":"uint48"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"kicks","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"id","type":"uint256"}],"name":"tick","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"inputs":[{"name":"vat_","type":"address"},{"name":"ilk_","type":"bytes32"}],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"name":"id","type":"uint256"},{"indexed":false,"name":"lot","type":"uint256"},{"indexed":false,"name":"bid","type":"uint256"},{"indexed":false,"name":"tab","type":"uint256"},{"indexed":true,"name":"usr","type":"address"},{"indexed":true,"name":"gal","type":"address"}],"name":"Kick","type":"event"},{"anonymous":true,"inputs":[{"indexed":true,"name":"sig","type":"bytes4"},{"indexed":true,"name":"usr","type":"address"},{"indexed":true,"name":"arg1","type":"bytes32"},{"indexed":true,"name":"arg2","type":"bytes32"},{"indexed":false,"name":"data","type":"bytes"}],"name":"LogNote","type":"event"}]'
+            MCD_FLAP_OLD = '[{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"bids","outputs":[{"name":"bid","type":"uint256"},{"name":"lot","type":"uint256"},{"name":"guy","type":"address"},{"name":"tic","type":"uint48"},{"name":"end","type":"uint48"},{"name":"gal","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"ttl","outputs":[{"name":"","type":"uint48"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"gem","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"beg","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"tau","outputs":[{"name":"","type":"uint48"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"kicks","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"dai","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[{"name":"dai_","type":"address"},{"name":"gem_","type":"address"}],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"name":"id","type":"uint256"},{"indexed":false,"name":"lot","type":"uint256"},{"indexed":false,"name":"bid","type":"uint256"},{"indexed":false,"name":"gal","type":"address"},{"indexed":false,"name":"end","type":"uint48"}],"name":"Kick","type":"event"},{"anonymous":true,"inputs":[{"indexed":true,"name":"sig","type":"bytes4"},{"indexed":true,"name":"guy","type":"address"},{"indexed":true,"name":"foo","type":"bytes32"},{"indexed":true,"name":"bar","type":"bytes32"},{"indexed":false,"name":"wad","type":"uint256"},{"indexed":false,"name":"fax","type":"bytes"}],"name":"LogNote","type":"event"},{"constant":false,"inputs":[{"name":"gal","type":"address"},{"name":"lot","type":"uint256"},{"name":"bid","type":"uint256"}],"name":"kick","outputs":[{"name":"id","type":"uint256"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"id","type":"uint256"},{"name":"lot","type":"uint256"},{"name":"bid","type":"uint256"}],"name":"tend","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"id","type":"uint256"}],"name":"deal","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"}]'
+            MCD_FLAP     = '[{"constant":false,"inputs":[{"name":"id","type":"uint256"}],"name":"yank","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"what","type":"bytes32"},{"name":"data","type":"uint256"}],"name":"file","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"vat","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"bids","outputs":[{"name":"bid","type":"uint256"},{"name":"lot","type":"uint256"},{"name":"guy","type":"address"},{"name":"tic","type":"uint48"},{"name":"end","type":"uint48"},{"name":"gal","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"id","type":"uint256"},{"name":"lot","type":"uint256"},{"name":"bid","type":"uint256"}],"name":"tend","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"ttl","outputs":[{"name":"","type":"uint48"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"usr","type":"address"}],"name":"rely","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"gem","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"beg","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"live","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"usr","type":"address"}],"name":"deny","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"rad","type":"uint256"}],"name":"cage","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"gal","type":"address"},{"name":"lot","type":"uint256"},{"name":"bid","type":"uint256"}],"name":"kick","outputs":[{"name":"id","type":"uint256"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"wards","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"id","type":"uint256"}],"name":"deal","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"tau","outputs":[{"name":"","type":"uint48"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"kicks","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[{"name":"vat_","type":"address"},{"name":"gem_","type":"address"}],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"name":"id","type":"uint256"},{"indexed":false,"name":"lot","type":"uint256"},{"indexed":false,"name":"bid","type":"uint256"},{"indexed":true,"name":"gal","type":"address"}],"name":"Kick","type":"event"},{"anonymous":true,"inputs":[{"indexed":true,"name":"sig","type":"bytes4"},{"indexed":true,"name":"usr","type":"address"},{"indexed":true,"name":"arg1","type":"bytes32"},{"indexed":true,"name":"arg2","type":"bytes32"},{"indexed":false,"name":"data","type":"bytes"}],"name":"LogNote","type":"event"}]'
+            MCD_FLOP_OLD = '[{"constant":true,"inputs":[],"name":"era","outputs":[{"name":"","type":"uint48"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"bids","outputs":[{"name":"bid","type":"uint256"},{"name":"lot","type":"uint256"},{"name":"guy","type":"address"},{"name":"tic","type":"uint48"},{"name":"end","type":"uint48"},{"name":"vow","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"ttl","outputs":[{"name":"","type":"uint48"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"id","type":"uint256"},{"name":"lot","type":"uint256"},{"name":"bid","type":"uint256"}],"name":"dent","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"guy","type":"address"}],"name":"rely","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"gem","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"beg","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"guy","type":"address"}],"name":"deny","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"gal","type":"address"},{"name":"lot","type":"uint256"},{"name":"bid","type":"uint256"}],"name":"kick","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"wards","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"id","type":"uint256"}],"name":"deal","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"tau","outputs":[{"name":"","type":"uint48"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"kicks","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"dai","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[{"name":"dai_","type":"address"},{"name":"gem_","type":"address"}],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"name":"id","type":"uint256"},{"indexed":false,"name":"lot","type":"uint256"},{"indexed":false,"name":"bid","type":"uint256"},{"indexed":false,"name":"gal","type":"address"},{"indexed":false,"name":"end","type":"uint48"}],"name":"Kick","type":"event"},{"anonymous":true,"inputs":[{"indexed":true,"name":"sig","type":"bytes4"},{"indexed":true,"name":"guy","type":"address"},{"indexed":true,"name":"foo","type":"bytes32"},{"indexed":true,"name":"bar","type":"bytes32"},{"indexed":false,"name":"wad","type":"uint256"},{"indexed":false,"name":"fax","type":"bytes"}],"name":"LogNote","type":"event"}]'
+            MCD_JUG      = '[{"constant":false,"inputs":[{"name":"ilk","type":"bytes32"},{"name":"what","type":"bytes32"},{"name":"data","type":"uint256"}],"name":"file","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"what","type":"bytes32"},{"name":"data","type":"uint256"}],"name":"file","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"vat","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"ilk","type":"bytes32"}],"name":"init","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"ilk","type":"bytes32"}],"name":"drip","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"base","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"vow","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"usr","type":"address"}],"name":"rely","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"usr","type":"address"}],"name":"deny","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"wards","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"what","type":"bytes32"},{"name":"data","type":"address"}],"name":"file","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"","type":"bytes32"}],"name":"ilks","outputs":[{"name":"duty","type":"uint256"},{"name":"rho","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[{"name":"vat_","type":"address"}],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"anonymous":true,"inputs":[{"indexed":true,"name":"sig","type":"bytes4"},{"indexed":true,"name":"usr","type":"address"},{"indexed":true,"name":"arg1","type":"bytes32"},{"indexed":true,"name":"arg2","type":"bytes32"},{"indexed":false,"name":"data","type":"bytes"}],"name":"LogNote","type":"event"}]'
+            MCD_SPOT     = '[{"constant":false,"inputs":[{"name":"ilk","type":"bytes32"}],"name":"poke","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"ilk","type":"bytes32"},{"name":"what","type":"bytes32"},{"name":"data","type":"uint256"}],"name":"file","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"what","type":"bytes32"},{"name":"data","type":"uint256"}],"name":"file","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"vat","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"par","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"guy","type":"address"}],"name":"rely","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"guy","type":"address"}],"name":"deny","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"wards","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"ilk","type":"bytes32"},{"name":"pip_","type":"address"}],"name":"file","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"","type":"bytes32"}],"name":"ilks","outputs":[{"name":"pip","type":"address"},{"name":"mat","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[{"name":"vat_","type":"address"}],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"name":"ilk","type":"bytes32"},{"indexed":false,"name":"val","type":"bytes32"},{"indexed":false,"name":"spot","type":"uint256"}],"name":"Poke","type":"event"},{"anonymous":true,"inputs":[{"indexed":true,"name":"sig","type":"bytes4"},{"indexed":true,"name":"usr","type":"address"},{"indexed":true,"name":"arg1","type":"bytes32"},{"indexed":true,"name":"arg2","type":"bytes32"},{"indexed":false,"name":"data","type":"bytes"}],"name":"LogNote","type":"event"}]'
+            MCD_VAT      = '[{"constant":true,"inputs":[],"name":"debt","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"ilk","type":"bytes32"},{"name":"what","type":"bytes32"},{"name":"data","type":"uint256"}],"name":"file","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"","type":"bytes32"},{"name":"","type":"address"}],"name":"gem","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"bytes32"},{"name":"","type":"address"}],"name":"urns","outputs":[{"name":"ink","type":"uint256"},{"name":"art","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"what","type":"bytes32"},{"name":"data","type":"uint256"}],"name":"file","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"vice","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"ilk","type":"bytes32"}],"name":"init","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"},{"name":"","type":"address"}],"name":"can","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"ilk","type":"bytes32"},{"name":"src","type":"address"},{"name":"dst","type":"address"},{"name":"wad","type":"uint256"}],"name":"flux","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"usr","type":"address"}],"name":"rely","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[],"name":"cage","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"dai","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"i","type":"bytes32"},{"name":"u","type":"address"},{"name":"v","type":"address"},{"name":"w","type":"address"},{"name":"dink","type":"int256"},{"name":"dart","type":"int256"}],"name":"frob","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"i","type":"bytes32"},{"name":"u","type":"address"},{"name":"v","type":"address"},{"name":"w","type":"address"},{"name":"dink","type":"int256"},{"name":"dart","type":"int256"}],"name":"grab","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"ilk","type":"bytes32"},{"name":"usr","type":"address"},{"name":"wad","type":"int256"}],"name":"slip","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"ilk","type":"bytes32"},{"name":"src","type":"address"},{"name":"dst","type":"address"},{"name":"dink","type":"int256"},{"name":"dart","type":"int256"}],"name":"fork","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"live","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"usr","type":"address"}],"name":"deny","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"usr","type":"address"}],"name":"hope","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"i","type":"bytes32"},{"name":"u","type":"address"},{"name":"rate","type":"int256"}],"name":"fold","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"Line","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"src","type":"address"},{"name":"dst","type":"address"},{"name":"rad","type":"uint256"}],"name":"move","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"wards","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"bytes32"}],"name":"ilks","outputs":[{"name":"Art","type":"uint256"},{"name":"rate","type":"uint256"},{"name":"spot","type":"uint256"},{"name":"line","type":"uint256"},{"name":"dust","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"usr","type":"address"}],"name":"nope","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"sin","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"u","type":"address"},{"name":"v","type":"address"},{"name":"rad","type":"uint256"}],"name":"suck","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"rad","type":"uint256"}],"name":"heal","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"anonymous":true,"inputs":[{"indexed":true,"name":"sig","type":"bytes4"},{"indexed":true,"name":"arg1","type":"bytes32"},{"indexed":true,"name":"arg2","type":"bytes32"},{"indexed":true,"name":"arg3","type":"bytes32"},{"indexed":false,"name":"data","type":"bytes"}],"name":"LogNote","type":"event"}]'
+            MCD_VOW      = '[{"constant":true,"inputs":[],"name":"Awe","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"Joy","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[],"name":"flap","outputs":[{"name":"id","type":"uint256"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"hump","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"rad","type":"uint256"}],"name":"kiss","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"what","type":"bytes32"},{"name":"data","type":"uint256"}],"name":"file","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"Ash","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"vat","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"flopper","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"Woe","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"flapper","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"wait","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"usr","type":"address"}],"name":"rely","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"bump","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[],"name":"cage","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"tab","type":"uint256"}],"name":"fess","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"live","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"usr","type":"address"}],"name":"deny","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[],"name":"flop","outputs":[{"name":"id","type":"uint256"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"wards","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"sump","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"sin","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"Sin","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"era","type":"uint256"}],"name":"flog","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"rad","type":"uint256"}],"name":"heal","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"inputs":[{"name":"vat_","type":"address"},{"name":"flapper_","type":"address"},{"name":"flopper_","type":"address"}],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"anonymous":true,"inputs":[{"indexed":true,"name":"sig","type":"bytes4"},{"indexed":true,"name":"usr","type":"address"},{"indexed":true,"name":"arg1","type":"bytes32"},{"indexed":true,"name":"arg2","type":"bytes32"},{"indexed":false,"name":"data","type":"bytes"}],"name":"LogNote","type":"event"}]'
+    [contract.deployment-block]
+            ETH_FLIP_OLD = 8535561
+            MCD_FLIP     = 11579891 # deployment block of ETH_FLIP_A contract-- on update, ensure that it's still the first one deployed
+            MCD_CAT      = 11257175
+            MCD_FLAP_OLD = 8535544
+            MCD_FLAP     = 11579860
+            MCD_FLOP_OLD = 8535545
+            MCD_JUG      = 11257173
+            MCD_SPOT     = 11257169
+            MCD_VAT      = 11257169
+            MCD_VOW      = 11257173
