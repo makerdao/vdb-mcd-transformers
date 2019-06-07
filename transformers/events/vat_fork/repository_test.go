@@ -47,12 +47,12 @@ var _ = Describe("Vat fork repository", func() {
 	})
 
 	Describe("Create", func() {
-		modelWithDifferentLogIdx := test_data.VatForkModelWithNegativeDart
+		modelWithDifferentLogIdx := test_data.VatForkModelWithNegativeDinkDart
 		modelWithDifferentLogIdx.LogIndex++
 		inputs := shared_behaviors.CreateBehaviorInputs{
 			CheckedHeaderColumnName:  constants.VatForkChecked,
 			LogEventTableName:        "maker.vat_fork",
-			TestModel:                test_data.VatForkModelWithNegativeDart,
+			TestModel:                test_data.VatForkModelWithNegativeDinkDart,
 			ModelWithDifferentLogIdx: modelWithDifferentLogIdx,
 			Repository:               &vatForkRepository,
 		}
@@ -64,24 +64,24 @@ var _ = Describe("Vat fork repository", func() {
 			headerID, err := headerRepository.CreateOrUpdateHeader(fakes.FakeHeader)
 			Expect(err).NotTo(HaveOccurred())
 
-			err = vatForkRepository.Create(headerID, []interface{}{test_data.VatForkModelWithNegativeDart})
+			err = vatForkRepository.Create(headerID, []interface{}{test_data.VatForkModelWithNegativeDinkDart})
 			Expect(err).NotTo(HaveOccurred())
 
 			var dbVatFork vat_fork.VatForkModel
 			err = db.Get(&dbVatFork, `SELECT ilk_id, src, dst, dink, dart, log_idx, tx_idx, raw_log FROM maker.vat_fork WHERE header_id = $1`, headerID)
 			Expect(err).NotTo(HaveOccurred())
 
-			ilkID, err := shared.GetOrCreateIlk(test_data.VatForkModelWithNegativeDart.Ilk, db)
+			ilkID, err := shared.GetOrCreateIlk(test_data.VatForkModelWithNegativeDinkDart.Ilk, db)
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(dbVatFork.Ilk).To(Equal(strconv.Itoa(ilkID)))
-			Expect(dbVatFork.Src).To(Equal(test_data.VatForkModelWithNegativeDart.Src))
-			Expect(dbVatFork.Dst).To(Equal(test_data.VatForkModelWithNegativeDart.Dst))
-			Expect(dbVatFork.Dink).To(Equal(test_data.VatForkModelWithNegativeDart.Dink))
-			Expect(dbVatFork.Dart).To(Equal(test_data.VatForkModelWithNegativeDart.Dart))
-			Expect(dbVatFork.LogIndex).To(Equal(test_data.VatForkModelWithNegativeDart.LogIndex))
-			Expect(dbVatFork.TransactionIndex).To(Equal(test_data.VatForkModelWithNegativeDart.TransactionIndex))
-			Expect(dbVatFork.Raw).To(MatchJSON(test_data.VatForkModelWithNegativeDart.Raw))
+			Expect(dbVatFork.Src).To(Equal(test_data.VatForkModelWithNegativeDinkDart.Src))
+			Expect(dbVatFork.Dst).To(Equal(test_data.VatForkModelWithNegativeDinkDart.Dst))
+			Expect(dbVatFork.Dink).To(Equal(test_data.VatForkModelWithNegativeDinkDart.Dink))
+			Expect(dbVatFork.Dart).To(Equal(test_data.VatForkModelWithNegativeDinkDart.Dart))
+			Expect(dbVatFork.LogIndex).To(Equal(test_data.VatForkModelWithNegativeDinkDart.LogIndex))
+			Expect(dbVatFork.TransactionIndex).To(Equal(test_data.VatForkModelWithNegativeDinkDart.TransactionIndex))
+			Expect(dbVatFork.Raw).To(MatchJSON(test_data.VatForkModelWithNegativeDinkDart.Raw))
 		})
 	})
 

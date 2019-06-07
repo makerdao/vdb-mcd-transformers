@@ -53,19 +53,19 @@ var _ = Describe("Shared utilities", func() {
 			})
 
 			It("extracts fourth of five arguments", func() {
-				dinkBytes, err := shared.GetLogNoteArgumentAtIndex(3, test_data.EthVatForkLogWithNegativeDart.Data)
+				dinkBytes, err := shared.GetLogNoteArgumentAtIndex(3, test_data.EthVatForkLogWithNegativeDinkDart.Data)
 
 				Expect(err).NotTo(HaveOccurred())
 				dinkInt := shared.ConvertInt256HexToBigInt(hexutil.Encode(dinkBytes))
-				Expect(dinkInt.String()).To(Equal(test_data.VatForkModelWithNegativeDart.Dink))
+				Expect(dinkInt.String()).To(Equal(test_data.VatForkModelWithNegativeDinkDart.Dink))
 			})
 
 			It("extracts fifth of five arguments", func() {
-				dartBytes, err := shared.GetLogNoteArgumentAtIndex(4, test_data.EthVatForkLogWithNegativeDart.Data)
+				dartBytes, err := shared.GetLogNoteArgumentAtIndex(4, test_data.EthVatForkLogWithNegativeDinkDart.Data)
 
 				Expect(err).NotTo(HaveOccurred())
 				dartInt := shared.ConvertInt256HexToBigInt(hexutil.Encode(dartBytes))
-				Expect(dartInt.String()).To(Equal(test_data.VatForkModelWithNegativeDart.Dart))
+				Expect(dartInt.String()).To(Equal(test_data.VatForkModelWithNegativeDinkDart.Dart))
 			})
 
 			It("extracts the fourth of six arguments", func() {
