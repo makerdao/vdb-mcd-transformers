@@ -163,11 +163,11 @@ func (mappings *VatMappings) loadGemKeys() error {
 		return err
 	}
 	for _, gem := range gemKeys {
-		paddedGem, padErr := padAddressTo32ByteHex(gem.Guy)
+		paddedGem, padErr := padAddressTo32ByteHex(gem.Identifier)
 		if padErr != nil {
 			return padErr
 		}
-		mappings.mappings[getGemKey(gem.Ilk, paddedGem)] = getGemMetadata(gem.Ilk, gem.Guy)
+		mappings.mappings[getGemKey(gem.Ilk, paddedGem)] = getGemMetadata(gem.Ilk, gem.Identifier)
 	}
 	return nil
 }
@@ -208,12 +208,12 @@ func (mappings *VatMappings) loadUrnKeys() error {
 		return err
 	}
 	for _, urn := range urns {
-		paddedGuy, padErr := padAddressTo32ByteHex(urn.Guy)
+		paddedGuy, padErr := padAddressTo32ByteHex(urn.Identifier)
 		if padErr != nil {
 			return padErr
 		}
-		mappings.mappings[getUrnArtKey(urn.Ilk, paddedGuy)] = getUrnArtMetadata(urn.Ilk, urn.Guy)
-		mappings.mappings[getUrnInkKey(urn.Ilk, paddedGuy)] = getUrnInkMetadata(urn.Ilk, urn.Guy)
+		mappings.mappings[getUrnArtKey(urn.Ilk, paddedGuy)] = getUrnArtMetadata(urn.Ilk, urn.Identifier)
+		mappings.mappings[getUrnInkKey(urn.Ilk, paddedGuy)] = getUrnInkMetadata(urn.Ilk, urn.Identifier)
 	}
 	return nil
 }

@@ -22,8 +22,8 @@ import (
 )
 
 type Urn struct {
-	Ilk string
-	Guy string
+	Ilk        string
+	Identifier string
 }
 
 var ErrNoFlips = errors.New("no flips exist in db")
@@ -55,7 +55,7 @@ func (repository *MakerStorageRepository) GetDaiKeys() ([]string, error) {
 			LEFT JOIN maker.vat_heal AS vat_heal ON vat_heal.header_id = transactions.header_id
 			WHERE vat_heal.tx_idx = transactions.tx_index
 		UNION
-		SELECT DISTINCT urns.guy FROM maker.vat_fold
+		SELECT DISTINCT urns.identifier FROM maker.vat_fold
 			INNER JOIN maker.urns on urns.id = maker.vat_fold.urn_id
 	`)
 	return daiKeys, err
@@ -64,24 +64,24 @@ func (repository *MakerStorageRepository) GetDaiKeys() ([]string, error) {
 func (repository *MakerStorageRepository) GetGemKeys() ([]Urn, error) {
 	var gems []Urn
 	err := repository.db.Select(&gems, `
-		SELECT DISTINCT ilks.ilk, slip.usr AS guy
+		SELECT DISTINCT ilks.ilk, slip.usr AS identifier
 		FROM maker.vat_slip slip
 		INNER JOIN maker.ilks ilks ON ilks.id = slip.ilk_id
 		UNION
-		SELECT DISTINCT ilks.ilk, flux.src AS guy 
+		SELECT DISTINCT ilks.ilk, flux.src AS identifier
 		FROM maker.vat_flux flux
 		INNER JOIN maker.ilks ilks ON ilks.id = flux.ilk_id
 		UNION
-		SELECT DISTINCT ilks.ilk, flux.dst AS guy 
+		SELECT DISTINCT ilks.ilk, flux.dst AS identifier
 		FROM maker.vat_flux flux
 		INNER JOIN maker.ilks ilks ON ilks.id = flux.ilk_id
 		UNION
-		SELECT DISTINCT ilks.ilk, frob.v AS guy 
+		SELECT DISTINCT ilks.ilk, frob.v AS identifier
 		FROM maker.vat_frob frob
 		INNER JOIN maker.urns on urns.id = frob.urn_id
 		INNER JOIN maker.ilks ilks ON ilks.id = urns.ilk_id
 		UNION
-		SELECT DISTINCT ilks.ilk, grab.v AS guy 
+		SELECT DISTINCT ilks.ilk, grab.v AS identifier
 		FROM maker.vat_grab grab
 		INNER JOIN maker.urns on urns.id = grab.urn_id
 		INNER JOIN maker.ilks ilks ON ilks.id = urns.ilk_id
@@ -120,7 +120,7 @@ func (repository *MakerStorageRepository) GetVowSinKeys() ([]string, error) {
 func (repository *MakerStorageRepository) GetUrns() ([]Urn, error) {
 	var urns []Urn
 	err := repository.db.Select(&urns, `
-		SELECT DISTINCT ilks.ilk, urns.guy
+		SELECT DISTINCT ilks.ilk, urns.identifier
 		FROM maker.urns
 		JOIN maker.ilks on maker.ilks.id = maker.urns.ilk_id`)
 	return urns, err

@@ -141,11 +141,11 @@ var _ = Describe("Maker storage repository", func() {
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(gems)).To(Equal(2))
 			Expect(gems).To(ConsistOf([]storage.Urn{{
-				Ilk: ilk1,
-				Guy: guy1,
+				Ilk:        ilk1,
+				Identifier: guy1,
 			}, {
-				Ilk: ilk1,
-				Guy: guy2,
+				Ilk:        ilk1,
+				Identifier: guy2,
 			}}))
 		})
 
@@ -158,11 +158,11 @@ var _ = Describe("Maker storage repository", func() {
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(gems)).To(Equal(2))
 			Expect(gems).To(ConsistOf([]storage.Urn{{
-				Ilk: ilk1,
-				Guy: guy2,
+				Ilk:        ilk1,
+				Identifier: guy2,
 			}, {
-				Ilk: ilk1,
-				Guy: guy3,
+				Ilk:        ilk1,
+				Identifier: guy3,
 			}}))
 		})
 
@@ -182,23 +182,23 @@ var _ = Describe("Maker storage repository", func() {
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(gems)).To(Equal(6))
 			Expect(gems).To(ConsistOf([]storage.Urn{{
-				Ilk: ilk1,
-				Guy: guy1,
+				Ilk:        ilk1,
+				Identifier: guy1,
 			}, {
-				Ilk: ilk1,
-				Guy: guy2,
+				Ilk:        ilk1,
+				Identifier: guy2,
 			}, {
-				Ilk: ilk1,
-				Guy: guy3,
+				Ilk:        ilk1,
+				Identifier: guy3,
 			}, {
-				Ilk: ilk2,
-				Guy: guy1,
+				Ilk:        ilk2,
+				Identifier: guy1,
 			}, {
-				Ilk: ilk2,
-				Guy: guy2,
+				Ilk:        ilk2,
+				Identifier: guy2,
 			}, {
-				Ilk: ilk2,
-				Guy: guy3,
+				Ilk:        ilk2,
+				Identifier: guy3,
 			}}))
 		})
 
@@ -344,17 +344,17 @@ var _ = Describe("Maker storage repository", func() {
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(urns)).To(Equal(4))
 			Expect(urns).To(ConsistOf([]storage.Urn{{
-				Ilk: ilk1,
-				Guy: guy1,
+				Ilk:        ilk1,
+				Identifier: guy1,
 			}, {
-				Ilk: ilk1,
-				Guy: guy2,
+				Ilk:        ilk1,
+				Identifier: guy2,
 			}, {
-				Ilk: ilk2,
-				Guy: guy1,
+				Ilk:        ilk2,
+				Identifier: guy1,
 			}, {
-				Ilk: ilk1,
-				Guy: guy3,
+				Ilk:        ilk1,
+				Identifier: guy3,
 			}}))
 		})
 

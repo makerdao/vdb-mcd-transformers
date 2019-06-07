@@ -61,7 +61,7 @@ var _ = Describe("Ilk state computed columns", func() {
 
 			var actualFrobs []test_helpers.FrobEvent
 			getFrobsErr := db.Select(&actualFrobs,
-				`SELECT ilk_identifier, urn_guy, dink, dart FROM api.ilk_state_frobs(
+				`SELECT ilk_identifier, urn_identifier, dink, dart FROM api.ilk_state_frobs(
                         (SELECT (ilk_identifier, block_height, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated)::api.ilk_state
                          FROM api.get_ilk($1, $2))
                     )`, test_helpers.FakeIlk.Identifier, fakeBlock)
@@ -69,7 +69,7 @@ var _ = Describe("Ilk state computed columns", func() {
 
 			expectedFrobs := []test_helpers.FrobEvent{{
 				IlkIdentifier: test_helpers.FakeIlk.Identifier,
-				UrnGuy:        frobEvent.Urn,
+				UrnIdentifier: frobEvent.Urn,
 				Dink:          frobEvent.Dink,
 				Dart:          frobEvent.Dart,
 			}}
@@ -116,7 +116,7 @@ var _ = Describe("Ilk state computed columns", func() {
 
 			var actualBites []test_helpers.BiteEvent
 			getBitesErr := db.Select(&actualBites, `
-				SELECT ilk_identifier, urn_guy, ink, art, tab FROM api.ilk_state_bites(
+				SELECT ilk_identifier, urn_identifier, ink, art, tab FROM api.ilk_state_bites(
 					(SELECT (ilk_identifier, block_height, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated)::api.ilk_state
 					FROM api.get_ilk($1, $2))
 				)`,
@@ -126,7 +126,7 @@ var _ = Describe("Ilk state computed columns", func() {
 
 			expectedBites := []test_helpers.BiteEvent{{
 				IlkIdentifier: test_helpers.FakeIlk.Identifier,
-				UrnGuy:        biteEvent.Urn,
+				UrnIdentifier: biteEvent.Urn,
 				Ink:           biteEvent.Ink,
 				Art:           biteEvent.Art,
 				Tab:           biteEvent.Tab,

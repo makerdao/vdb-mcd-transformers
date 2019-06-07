@@ -69,7 +69,7 @@ var _ = Describe("Bite event computed columns", func() {
 			err := db.Get(&result, `
 				SELECT ilk_identifier, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated
 				FROM api.bite_event_ilk(
-					(SELECT (ilk_identifier, urn_guy, ink, art, tab, block_height, tx_idx)::api.bite_event FROM api.all_bites($1))
+					(SELECT (ilk_identifier, urn_identifier, ink, art, tab, block_height, tx_idx)::api.bite_event FROM api.all_bites($1))
 				)`, test_helpers.FakeIlk.Identifier)
 
 			Expect(err).NotTo(HaveOccurred())
@@ -87,13 +87,13 @@ var _ = Describe("Bite event computed columns", func() {
 
 			var actualUrn test_helpers.UrnState
 			err := db.Get(&actualUrn, `
-				SELECT urn_guy, ilk_identifier FROM api.bite_event_urn(
-					(SELECT (ilk_identifier, urn_guy, ink, art, tab, block_height, tx_idx)::api.bite_event FROM api.all_bites($1)))`,
+				SELECT urn_identifier, ilk_identifier FROM api.bite_event_urn(
+					(SELECT (ilk_identifier, urn_identifier, ink, art, tab, block_height, tx_idx)::api.bite_event FROM api.all_bites($1)))`,
 				test_helpers.FakeIlk.Identifier)
 			Expect(err).NotTo(HaveOccurred())
 
 			expectedUrn := test_helpers.UrnState{
-				UrnGuy:        fakeGuy,
+				UrnIdentifier: fakeGuy,
 				IlkIdentifier: test_helpers.FakeIlk.Identifier,
 			}
 
@@ -120,7 +120,7 @@ var _ = Describe("Bite event computed columns", func() {
 			var actualTx Tx
 			err = db.Get(&actualTx, `
 				SELECT * FROM api.bite_event_tx(
-					(SELECT (ilk_identifier, urn_guy, ink, art, tab, block_height, tx_idx)::api.bite_event FROM api.all_bites($1)))`,
+					(SELECT (ilk_identifier, urn_identifier, ink, art, tab, block_height, tx_idx)::api.bite_event FROM api.all_bites($1)))`,
 				test_helpers.FakeIlk.Identifier)
 
 			Expect(err).NotTo(HaveOccurred())
@@ -148,7 +148,7 @@ var _ = Describe("Bite event computed columns", func() {
 			var actualTx Tx
 			err := db.Get(&actualTx, `
 				SELECT * FROM api.bite_event_tx(
-					(SELECT (ilk_identifier, urn_guy, ink, art, tab, block_height, tx_idx)::api.bite_event FROM api.all_bites($1)))`,
+					(SELECT (ilk_identifier, urn_identifier, ink, art, tab, block_height, tx_idx)::api.bite_event FROM api.all_bites($1)))`,
 				test_helpers.FakeIlk.Identifier)
 
 			Expect(err).NotTo(HaveOccurred())
