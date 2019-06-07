@@ -3,7 +3,7 @@ CREATE TABLE maker.vat_file_ilk
 (
     id        SERIAL PRIMARY KEY,
     header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
-    ilk_id    INTEGER NOT NULL REFERENCES maker.ilks (id),
+    ilk_id    INTEGER NOT NULL REFERENCES maker.ilks (id) ON DELETE CASCADE,
     what      TEXT,
     data      NUMERIC,
     log_idx   INTEGER NOT NULL,

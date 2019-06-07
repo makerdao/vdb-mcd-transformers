@@ -4,7 +4,7 @@ CREATE TABLE maker.jug_ilk_rho
     id           SERIAL PRIMARY KEY,
     block_number BIGINT,
     block_hash   TEXT,
-    ilk_id       INTEGER NOT NULL REFERENCES maker.ilks (id),
+    ilk_id       INTEGER NOT NULL REFERENCES maker.ilks (id) ON DELETE CASCADE,
     rho          NUMERIC NOT NULL,
     UNIQUE (block_number, block_hash, ilk_id, rho)
 );
@@ -14,7 +14,7 @@ CREATE TABLE maker.jug_ilk_duty
     id           SERIAL PRIMARY KEY,
     block_number BIGINT,
     block_hash   TEXT,
-    ilk_id       INTEGER NOT NULL REFERENCES maker.ilks (id),
+    ilk_id       INTEGER NOT NULL REFERENCES maker.ilks (id) ON DELETE CASCADE,
     duty         NUMERIC NOT NULL,
     UNIQUE (block_number, block_hash, ilk_id, duty)
 );

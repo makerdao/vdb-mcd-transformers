@@ -22,7 +22,7 @@ CREATE TABLE maker.vat_ilk_art
     id           SERIAL PRIMARY KEY,
     block_number BIGINT,
     block_hash   TEXT,
-    ilk_id       INTEGER NOT NULL REFERENCES maker.ilks (id),
+    ilk_id       INTEGER NOT NULL REFERENCES maker.ilks (id) ON DELETE CASCADE,
     art          NUMERIC NOT NULL,
     UNIQUE (block_number, block_hash, ilk_id, art)
 );
@@ -32,7 +32,7 @@ CREATE TABLE maker.vat_ilk_dust
     id           SERIAL PRIMARY KEY,
     block_number BIGINT,
     block_hash   TEXT,
-    ilk_id       INTEGER NOT NULL REFERENCES maker.ilks (id),
+    ilk_id       INTEGER NOT NULL REFERENCES maker.ilks (id) ON DELETE CASCADE,
     dust         NUMERIC NOT NULL,
     UNIQUE (block_number, block_hash, ilk_id, dust)
 );
@@ -42,7 +42,7 @@ CREATE TABLE maker.vat_ilk_line
     id           SERIAL PRIMARY KEY,
     block_number BIGINT,
     block_hash   TEXT,
-    ilk_id       INTEGER NOT NULL REFERENCES maker.ilks (id),
+    ilk_id       INTEGER NOT NULL REFERENCES maker.ilks (id) ON DELETE CASCADE,
     line         NUMERIC NOT NULL,
     UNIQUE (block_number, block_hash, ilk_id, line)
 );
@@ -52,7 +52,7 @@ CREATE TABLE maker.vat_ilk_spot
     id           SERIAL PRIMARY KEY,
     block_number BIGINT,
     block_hash   TEXT,
-    ilk_id       INTEGER NOT NULL REFERENCES maker.ilks (id),
+    ilk_id       INTEGER NOT NULL REFERENCES maker.ilks (id) ON DELETE CASCADE,
     spot         NUMERIC NOT NULL,
     UNIQUE (block_number, block_hash, ilk_id, spot)
 );
@@ -62,7 +62,7 @@ CREATE TABLE maker.vat_ilk_rate
     id           SERIAL PRIMARY KEY,
     block_number BIGINT,
     block_hash   TEXT,
-    ilk_id       INTEGER NOT NULL REFERENCES maker.ilks (id),
+    ilk_id       INTEGER NOT NULL REFERENCES maker.ilks (id) ON DELETE CASCADE,
     rate         NUMERIC NOT NULL,
     UNIQUE (block_number, block_hash, ilk_id, rate)
 );
@@ -72,7 +72,7 @@ CREATE TABLE maker.vat_urn_art
     id           SERIAL PRIMARY KEY,
     block_number BIGINT,
     block_hash   TEXT,
-    urn_id       INTEGER NOT NULL REFERENCES maker.urns (id),
+    urn_id       INTEGER NOT NULL REFERENCES maker.urns (id) ON DELETE CASCADE,
     art          NUMERIC NOT NULL,
     UNIQUE (block_number, block_hash, urn_id, art)
 );
@@ -82,7 +82,7 @@ CREATE TABLE maker.vat_urn_ink
     id           SERIAL PRIMARY KEY,
     block_number BIGINT,
     block_hash   TEXT,
-    urn_id       INTEGER NOT NULL REFERENCES maker.urns (id),
+    urn_id       INTEGER NOT NULL REFERENCES maker.urns (id) ON DELETE CASCADE,
     ink          NUMERIC NOT NULL,
     UNIQUE (block_number, block_hash, urn_id, ink)
 );
@@ -92,7 +92,7 @@ CREATE TABLE maker.vat_gem
     id           SERIAL PRIMARY KEY,
     block_number BIGINT,
     block_hash   TEXT,
-    ilk_id       INTEGER NOT NULL REFERENCES maker.ilks (id),
+    ilk_id       INTEGER NOT NULL REFERENCES maker.ilks (id) ON DELETE CASCADE,
     guy          TEXT,
     gem          NUMERIC NOT NULL,
     UNIQUE (block_number, block_hash, ilk_id, guy, gem)

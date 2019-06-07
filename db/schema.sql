@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 11.3
--- Dumped by pg_dump version 11.3
+-- Dumped from database version 11.2
+-- Dumped by pg_dump version 11.2
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -12,7 +12,6 @@ SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 SELECT pg_catalog.set_config('search_path', '', false);
 SET check_function_bodies = false;
-SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
@@ -2600,8 +2599,6 @@ ALTER SEQUENCE maker.vat_grab_id_seq OWNED BY maker.vat_grab.id;
 CREATE TABLE maker.vat_heal (
     id integer NOT NULL,
     header_id integer NOT NULL,
-    urn text,
-    v text,
     rad numeric,
     log_idx integer NOT NULL,
     tx_idx integer NOT NULL,
@@ -5982,7 +5979,7 @@ ALTER TABLE ONLY maker.bite
 --
 
 ALTER TABLE ONLY maker.bite
-    ADD CONSTRAINT bite_urn_id_fkey FOREIGN KEY (urn_id) REFERENCES maker.urns(id);
+    ADD CONSTRAINT bite_urn_id_fkey FOREIGN KEY (urn_id) REFERENCES maker.urns(id) ON DELETE CASCADE;
 
 
 --
@@ -5998,7 +5995,7 @@ ALTER TABLE ONLY maker.cat_file_chop_lump
 --
 
 ALTER TABLE ONLY maker.cat_file_chop_lump
-    ADD CONSTRAINT cat_file_chop_lump_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id);
+    ADD CONSTRAINT cat_file_chop_lump_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id) ON DELETE CASCADE;
 
 
 --
@@ -6014,7 +6011,7 @@ ALTER TABLE ONLY maker.cat_file_flip
 --
 
 ALTER TABLE ONLY maker.cat_file_flip
-    ADD CONSTRAINT cat_file_flip_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id);
+    ADD CONSTRAINT cat_file_flip_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id) ON DELETE CASCADE;
 
 
 --
@@ -6030,7 +6027,7 @@ ALTER TABLE ONLY maker.cat_file_vow
 --
 
 ALTER TABLE ONLY maker.cat_ilk_chop
-    ADD CONSTRAINT cat_ilk_chop_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id);
+    ADD CONSTRAINT cat_ilk_chop_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id) ON DELETE CASCADE;
 
 
 --
@@ -6038,7 +6035,7 @@ ALTER TABLE ONLY maker.cat_ilk_chop
 --
 
 ALTER TABLE ONLY maker.cat_ilk_flip
-    ADD CONSTRAINT cat_ilk_flip_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id);
+    ADD CONSTRAINT cat_ilk_flip_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id) ON DELETE CASCADE;
 
 
 --
@@ -6046,7 +6043,7 @@ ALTER TABLE ONLY maker.cat_ilk_flip
 --
 
 ALTER TABLE ONLY maker.cat_ilk_lump
-    ADD CONSTRAINT cat_ilk_lump_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id);
+    ADD CONSTRAINT cat_ilk_lump_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id) ON DELETE CASCADE;
 
 
 --
@@ -6102,7 +6099,7 @@ ALTER TABLE ONLY maker.jug_drip
 --
 
 ALTER TABLE ONLY maker.jug_drip
-    ADD CONSTRAINT jug_drip_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id);
+    ADD CONSTRAINT jug_drip_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id) ON DELETE CASCADE;
 
 
 --
@@ -6126,7 +6123,7 @@ ALTER TABLE ONLY maker.jug_file_ilk
 --
 
 ALTER TABLE ONLY maker.jug_file_ilk
-    ADD CONSTRAINT jug_file_ilk_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id);
+    ADD CONSTRAINT jug_file_ilk_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id) ON DELETE CASCADE;
 
 
 --
@@ -6142,7 +6139,7 @@ ALTER TABLE ONLY maker.jug_file_vow
 --
 
 ALTER TABLE ONLY maker.jug_ilk_duty
-    ADD CONSTRAINT jug_ilk_duty_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id);
+    ADD CONSTRAINT jug_ilk_duty_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id) ON DELETE CASCADE;
 
 
 --
@@ -6150,7 +6147,7 @@ ALTER TABLE ONLY maker.jug_ilk_duty
 --
 
 ALTER TABLE ONLY maker.jug_ilk_rho
-    ADD CONSTRAINT jug_ilk_rho_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id);
+    ADD CONSTRAINT jug_ilk_rho_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id) ON DELETE CASCADE;
 
 
 --
@@ -6174,7 +6171,7 @@ ALTER TABLE ONLY maker.tend
 --
 
 ALTER TABLE ONLY maker.urns
-    ADD CONSTRAINT urns_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id);
+    ADD CONSTRAINT urns_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id) ON DELETE CASCADE;
 
 
 --
@@ -6198,7 +6195,7 @@ ALTER TABLE ONLY maker.vat_file_ilk
 --
 
 ALTER TABLE ONLY maker.vat_file_ilk
-    ADD CONSTRAINT vat_file_ilk_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id);
+    ADD CONSTRAINT vat_file_ilk_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id) ON DELETE CASCADE;
 
 
 --
@@ -6214,7 +6211,7 @@ ALTER TABLE ONLY maker.vat_flux
 --
 
 ALTER TABLE ONLY maker.vat_flux
-    ADD CONSTRAINT vat_flux_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id);
+    ADD CONSTRAINT vat_flux_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id) ON DELETE CASCADE;
 
 
 --
@@ -6230,7 +6227,7 @@ ALTER TABLE ONLY maker.vat_fold
 --
 
 ALTER TABLE ONLY maker.vat_fold
-    ADD CONSTRAINT vat_fold_urn_id_fkey FOREIGN KEY (urn_id) REFERENCES maker.urns(id);
+    ADD CONSTRAINT vat_fold_urn_id_fkey FOREIGN KEY (urn_id) REFERENCES maker.urns(id) ON DELETE CASCADE;
 
 
 --
@@ -6246,7 +6243,7 @@ ALTER TABLE ONLY maker.vat_frob
 --
 
 ALTER TABLE ONLY maker.vat_frob
-    ADD CONSTRAINT vat_frob_urn_id_fkey FOREIGN KEY (urn_id) REFERENCES maker.urns(id);
+    ADD CONSTRAINT vat_frob_urn_id_fkey FOREIGN KEY (urn_id) REFERENCES maker.urns(id) ON DELETE CASCADE;
 
 
 --
@@ -6254,7 +6251,7 @@ ALTER TABLE ONLY maker.vat_frob
 --
 
 ALTER TABLE ONLY maker.vat_gem
-    ADD CONSTRAINT vat_gem_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id);
+    ADD CONSTRAINT vat_gem_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id) ON DELETE CASCADE;
 
 
 --
@@ -6270,7 +6267,7 @@ ALTER TABLE ONLY maker.vat_grab
 --
 
 ALTER TABLE ONLY maker.vat_grab
-    ADD CONSTRAINT vat_grab_urn_id_fkey FOREIGN KEY (urn_id) REFERENCES maker.urns(id);
+    ADD CONSTRAINT vat_grab_urn_id_fkey FOREIGN KEY (urn_id) REFERENCES maker.urns(id) ON DELETE CASCADE;
 
 
 --
@@ -6286,7 +6283,7 @@ ALTER TABLE ONLY maker.vat_heal
 --
 
 ALTER TABLE ONLY maker.vat_ilk_art
-    ADD CONSTRAINT vat_ilk_art_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id);
+    ADD CONSTRAINT vat_ilk_art_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id) ON DELETE CASCADE;
 
 
 --
@@ -6294,7 +6291,7 @@ ALTER TABLE ONLY maker.vat_ilk_art
 --
 
 ALTER TABLE ONLY maker.vat_ilk_dust
-    ADD CONSTRAINT vat_ilk_dust_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id);
+    ADD CONSTRAINT vat_ilk_dust_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id) ON DELETE CASCADE;
 
 
 --
@@ -6302,7 +6299,7 @@ ALTER TABLE ONLY maker.vat_ilk_dust
 --
 
 ALTER TABLE ONLY maker.vat_ilk_line
-    ADD CONSTRAINT vat_ilk_line_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id);
+    ADD CONSTRAINT vat_ilk_line_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id) ON DELETE CASCADE;
 
 
 --
@@ -6310,7 +6307,7 @@ ALTER TABLE ONLY maker.vat_ilk_line
 --
 
 ALTER TABLE ONLY maker.vat_ilk_rate
-    ADD CONSTRAINT vat_ilk_rate_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id);
+    ADD CONSTRAINT vat_ilk_rate_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id) ON DELETE CASCADE;
 
 
 --
@@ -6318,7 +6315,7 @@ ALTER TABLE ONLY maker.vat_ilk_rate
 --
 
 ALTER TABLE ONLY maker.vat_ilk_spot
-    ADD CONSTRAINT vat_ilk_spot_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id);
+    ADD CONSTRAINT vat_ilk_spot_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id) ON DELETE CASCADE;
 
 
 --
@@ -6334,7 +6331,7 @@ ALTER TABLE ONLY maker.vat_init
 --
 
 ALTER TABLE ONLY maker.vat_init
-    ADD CONSTRAINT vat_init_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id);
+    ADD CONSTRAINT vat_init_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id) ON DELETE CASCADE;
 
 
 --
@@ -6358,7 +6355,7 @@ ALTER TABLE ONLY maker.vat_slip
 --
 
 ALTER TABLE ONLY maker.vat_slip
-    ADD CONSTRAINT vat_slip_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id);
+    ADD CONSTRAINT vat_slip_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id) ON DELETE CASCADE;
 
 
 --
@@ -6374,7 +6371,7 @@ ALTER TABLE ONLY maker.vat_suck
 --
 
 ALTER TABLE ONLY maker.vat_urn_art
-    ADD CONSTRAINT vat_urn_art_urn_id_fkey FOREIGN KEY (urn_id) REFERENCES maker.urns(id);
+    ADD CONSTRAINT vat_urn_art_urn_id_fkey FOREIGN KEY (urn_id) REFERENCES maker.urns(id) ON DELETE CASCADE;
 
 
 --
@@ -6382,7 +6379,7 @@ ALTER TABLE ONLY maker.vat_urn_art
 --
 
 ALTER TABLE ONLY maker.vat_urn_ink
-    ADD CONSTRAINT vat_urn_ink_urn_id_fkey FOREIGN KEY (urn_id) REFERENCES maker.urns(id);
+    ADD CONSTRAINT vat_urn_ink_urn_id_fkey FOREIGN KEY (urn_id) REFERENCES maker.urns(id) ON DELETE CASCADE;
 
 
 --

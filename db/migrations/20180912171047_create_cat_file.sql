@@ -3,7 +3,7 @@ CREATE TABLE maker.cat_file_chop_lump
 (
     id        SERIAL PRIMARY KEY,
     header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
-    ilk_id    INTEGER NOT NULL REFERENCES maker.ilks (id),
+    ilk_id    INTEGER NOT NULL REFERENCES maker.ilks (id) ON DELETE CASCADE,
     what      TEXT,
     data      NUMERIC,
     tx_idx    INTEGER NOT NULL,
@@ -16,7 +16,7 @@ CREATE TABLE maker.cat_file_flip
 (
     id        SERIAL PRIMARY KEY,
     header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
-    ilk_id    INTEGER NOT NULL REFERENCES maker.ilks (id),
+    ilk_id    INTEGER NOT NULL REFERENCES maker.ilks (id) ON DELETE CASCADE,
     what      TEXT,
     flip      TEXT,
     tx_idx    INTEGER NOT NULL,

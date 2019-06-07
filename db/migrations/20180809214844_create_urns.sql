@@ -2,7 +2,7 @@
 CREATE TABLE maker.urns
 (
     id     SERIAL PRIMARY KEY,
-    ilk_id INTEGER NOT NULL REFERENCES maker.ilks (id),
+    ilk_id INTEGER NOT NULL REFERENCES maker.ilks (id)ON DELETE CASCADE,
     guy    TEXT,
     UNIQUE (ilk_id, guy)
 );

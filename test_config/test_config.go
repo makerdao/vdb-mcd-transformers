@@ -34,6 +34,7 @@ var TestClient config.Client
 var Infura *viper.Viper
 var InfuraClient config.Client
 var ABIFilePath string
+var wipeTableQueries []string
 
 func init() {
 	setTestConfig()
@@ -75,84 +76,25 @@ func NewTestDB(node core.Node) *postgres.DB {
 	return db
 }
 
+// Cleans all tables in the DB. Note that this requires cascade constraints to be in place,
+// so deletion can be run in any order.
 func CleanTestDB(db *postgres.DB) {
-	db.MustExec("DELETE FROM blocks")
-	db.MustExec("DELETE FROM checked_headers")
-	db.MustExec("DELETE FROM full_sync_receipts")
-	db.MustExec("DELETE FROM full_sync_transactions")
-	db.MustExec("DELETE FROM headers")
-	db.MustExec("DELETE FROM header_sync_receipts")
-	db.MustExec("DELETE FROM header_sync_transactions")
-	db.MustExec("DELETE FROM log_filters")
-	db.MustExec("DELETE FROM logs")
-	db.MustExec("DELETE FROM maker.bite")
-	db.MustExec("DELETE FROM maker.cat_file_chop_lump")
-	db.MustExec("DELETE FROM maker.cat_file_flip")
-	db.MustExec("DELETE FROM maker.cat_file_vow")
-	db.MustExec("DELETE FROM maker.cat_ilk_chop")
-	db.MustExec("DELETE FROM maker.cat_ilk_flip")
-	db.MustExec("DELETE FROM maker.cat_ilk_lump")
-	db.MustExec("DELETE FROM maker.cat_live")
-	db.MustExec("DELETE FROM maker.cat_vat")
-	db.MustExec("DELETE FROM maker.cat_vow")
-	db.MustExec("DELETE FROM maker.deal")
-	db.MustExec("DELETE FROM maker.dent")
-	db.MustExec("DELETE FROM maker.flap_kick")
-	db.MustExec("DELETE FROM maker.flip_kick")
-	db.MustExec("DELETE FROM maker.flop_kick")
-	db.MustExec("DELETE FROM maker.jug_drip")
-	db.MustExec("DELETE FROM maker.jug_file_base")
-	db.MustExec("DELETE FROM maker.jug_file_ilk")
-	db.MustExec("DELETE FROM maker.jug_file_vow")
-	db.MustExec("DELETE FROM maker.jug_ilk_rho")
-	db.MustExec("DELETE FROM maker.jug_ilk_duty")
-	db.MustExec("DELETE FROM maker.jug_base")
-	db.MustExec("DELETE FROM maker.jug_vat")
-	db.MustExec("DELETE FROM maker.jug_vow")
-	db.MustExec("DELETE FROM maker.pip_log_value")
-	db.MustExec("DELETE FROM maker.tend")
-	db.MustExec("DELETE FROM maker.vat_dai")
-	db.MustExec("DELETE FROM maker.vat_debt")
-	db.MustExec("DELETE FROM maker.vat_file_debt_ceiling")
-	db.MustExec("DELETE FROM maker.vat_file_ilk")
-	db.MustExec("DELETE FROM maker.vat_flux")
-	db.MustExec("DELETE FROM maker.vat_fold")
-	db.MustExec("DELETE FROM maker.vat_frob")
-	db.MustExec("DELETE FROM maker.vat_gem")
-	db.MustExec("DELETE FROM maker.vat_grab")
-	db.MustExec("DELETE FROM maker.vat_heal")
-	db.MustExec("DELETE FROM maker.vat_ilk_art")
-	db.MustExec("DELETE FROM maker.vat_ilk_dust")
-	db.MustExec("DELETE FROM maker.vat_ilk_line")
-	db.MustExec("DELETE FROM maker.vat_ilk_rate")
-	db.MustExec("DELETE FROM maker.vat_ilk_spot")
-	db.MustExec("DELETE FROM maker.vat_init")
-	db.MustExec("DELETE FROM maker.vat_line")
-	db.MustExec("DELETE FROM maker.vat_live")
-	db.MustExec("DELETE FROM maker.vat_move")
-	db.MustExec("DELETE FROM maker.vat_sin")
-	db.MustExec("DELETE FROM maker.vat_slip")
-	db.MustExec("DELETE FROM maker.vat_suck")
-	db.MustExec("DELETE FROM maker.vat_urn_art")
-	db.MustExec("DELETE FROM maker.vat_urn_ink")
-	db.MustExec("DELETE FROM maker.vat_vice")
-	db.MustExec("DELETE FROM maker.vow_ash")
-	db.MustExec("DELETE FROM maker.vow_bump")
-	db.MustExec("DELETE FROM maker.vow_flapper")
-	db.MustExec("DELETE FROM maker.vow_fess")
-	db.MustExec("DELETE FROM maker.vow_file")
-	db.MustExec("DELETE FROM maker.vow_flog")
-	db.MustExec("DELETE FROM maker.vow_hump")
-	db.MustExec("DELETE FROM maker.vow_flopper")
-	db.MustExec("DELETE FROM maker.vow_sin_integer")
-	db.MustExec("DELETE FROM maker.vow_sin_mapping")
-	db.MustExec("DELETE FROM maker.vow_sump")
-	db.MustExec("DELETE FROM maker.vow_vat")
-	db.MustExec("DELETE FROM maker.vow_wait")
-	db.MustExec("DELETE FROM watched_contracts")
-	// TODO: add ON DELETE CASCADE? otherwise these need to come after deleting tables that reference it
-	db.MustExec("DELETE FROM maker.urns")
-	db.MustExec("DELETE FROM maker.ilks")
+	if len(wipeTableQueries) == 0 {
+		// The generated queries delete from all tables in the public and maker schemas,
+		// except eth_nodes and goose_db_version.
+		err := db.Select(&wipeTableQueries,
+			`SELECT 'DELETE FROM ' || schemaname || '.' || relname || ';'
+			FROM pg_stat_user_tables
+			WHERE schemaname IN ('public', 'maker', 'api')
+			AND relname NOT IN ('eth_nodes', 'goose_db_version');`)
+		if err != nil {
+			panic("Failed to generate DB cleaning query: " + err.Error())
+		}
+	}
+
+	for _, query := range wipeTableQueries {
+		db.MustExec(query)
+	}
 }
 
 // Returns a new test node, with the same ID

@@ -3,7 +3,7 @@ CREATE TABLE maker.vat_frob
 (
     id        SERIAL PRIMARY KEY,
     header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
-    urn_id    INTEGER NOT NULL REFERENCES maker.urns (id),
+    urn_id    INTEGER NOT NULL REFERENCES maker.urns (id) ON DELETE CASCADE,
     v         TEXT,
     w         TEXT,
     dink      NUMERIC,
