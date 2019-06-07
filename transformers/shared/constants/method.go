@@ -30,6 +30,7 @@ func jugDripMethod() string         { return getSolidityFunctionSignature(JugABI
 func jugFileBaseMethod() string     { return "file(bytes32,uint256)" }
 func jugFileIlkMethod() string      { return "file(bytes32,bytes32,uint256)" }
 func jugFileVowMethod() string      { return "file(bytes32,address)" }
+func jugInitMethod() string         { return getSolidityFunctionSignature(JugABI(), "init") }
 func pipLogValueMethod() string {
 	return getSolidityFunctionSignature(PipABI(), "LogValue")
 }
