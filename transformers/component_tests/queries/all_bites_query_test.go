@@ -193,5 +193,6 @@ func generateBite(ilk, urn string) bite.BiteModel {
 	biteEvent.Ink = strconv.Itoa(rand.Int())
 	biteEvent.Art = strconv.Itoa(rand.Int())
 	biteEvent.Tab = strconv.Itoa(rand.Int())
+	biteEvent.Id = strconv.Itoa(rand.Int())
 	return biteEvent
 }

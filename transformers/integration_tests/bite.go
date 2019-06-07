@@ -79,7 +79,7 @@ var _ = Describe("Bite Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []bite.BiteModel
-		err = db.Select(&dbResult, `SELECT art, ink, flip, tab, urn_id from maker.bite`)
+		err = db.Select(&dbResult, `SELECT art, ink, flip, tab, urn_id, bite_identifier from maker.bite`)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))
@@ -92,6 +92,7 @@ var _ = Describe("Bite Transformer", func() {
 		Expect(dbResult[0].Ink).To(Equal("1000000000000000000"))
 		Expect(dbResult[0].Flip).To(Equal("2"))
 		Expect(dbResult[0].Tab).To(Equal("149846666666666655744"))
+		Expect(dbResult[0].Id).To(Equal(""))
 	})
 
 	It("rechecks header for bite event", func() {
@@ -158,5 +159,6 @@ var _ = Describe("Bite Transformer", func() {
 		Expect(entity.Art).To(Equal(expectedEntity.Art))
 		Expect(entity.Ilk).To(Equal(expectedEntity.Ilk))
 		Expect(entity.Ink).To(Equal(expectedEntity.Ink))
+		Expect(entity.Id).To(Equal(expectedEntity.Id))
 	})
 })

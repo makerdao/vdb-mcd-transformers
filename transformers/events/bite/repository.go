@@ -71,10 +71,10 @@ func (repository BiteRepository) Create(headerID int64, models []interface{}) er
 		}
 
 		_, execErr := tx.Exec(
-			`INSERT into maker.bite (header_id, urn_id, ink, art, tab, flip, log_idx, tx_idx, raw_log)
-					VALUES($1, $2, $3::NUMERIC, $4::NUMERIC, $5::NUMERIC, $6, $7, $8, $9)
-					ON CONFLICT (header_id, tx_idx, log_idx) DO UPDATE SET urn_id = $2, ink = $3, art = $4, tab = $5, flip = $6, raw_log = $9;`,
-			headerID, urnID, biteModel.Ink, biteModel.Art, biteModel.Tab, biteModel.Flip, biteModel.LogIndex, biteModel.TransactionIndex, biteModel.Raw,
+			`INSERT into maker.bite (header_id, urn_id, ink, art, tab, flip, bite_identifier, log_idx, tx_idx, raw_log)
+					VALUES($1, $2, $3::NUMERIC, $4::NUMERIC, $5::NUMERIC, $6, $7::NUMERIC, $8, $9, $10)
+					ON CONFLICT (header_id, tx_idx, log_idx) DO UPDATE SET urn_id = $2, ink = $3, art = $4, tab = $5, flip = $6, bite_identifier = $7, raw_log = $10`,
+			headerID, urnID, biteModel.Ink, biteModel.Art, biteModel.Tab, biteModel.Flip, biteModel.Id, biteModel.LogIndex, biteModel.TransactionIndex, biteModel.Raw,
 		)
 		if execErr != nil {
 			rollbackErr := tx.Rollback()
