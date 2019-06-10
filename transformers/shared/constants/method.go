@@ -34,6 +34,7 @@ func jugInitMethod() string         { return getSolidityFunctionSignature(JugABI
 func pipLogValueMethod() string {
 	return getSolidityFunctionSignature(PipABI(), "LogValue")
 }
+func spotFileMatMethod() string        { return "file(bytes32,bytes32,uint256)" }
 func spotFilePipMethod() string        { return "file(bytes32,address)" }
 func tendMethod() string               { return getSolidityFunctionSignature(FlipperABI(), "tend") }
 func vatFileDebtCeilingMethod() string { return "file(bytes32,uint256)" }

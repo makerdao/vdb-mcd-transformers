@@ -20,6 +20,7 @@ import (
 	"strconv"
 
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/constants"
@@ -29,18 +30,16 @@ import (
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 
 	"github.com/vulcanize/mcd_transformers/test_config"
+	"github.com/vulcanize/mcd_transformers/transformers/events/spot_file/mat"
 	"github.com/vulcanize/mcd_transformers/transformers/events/spot_file/pip"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
-var _ = Describe("SpotFilePip LogNoteTransforer", func() {
+var _ = Describe("SpotFile LogNoteTransformers", func() {
 	var (
-		db          *postgres.DB
-		blockChain  core.BlockChain
-		initializer shared.LogNoteTransformer
-		addresses   []common.Address
-		topics      []common.Hash
+		db         *postgres.DB
+		blockChain core.BlockChain
 	)
 
 	BeforeEach(func() {
@@ -50,77 +49,150 @@ var _ = Describe("SpotFilePip LogNoteTransforer", func() {
 		Expect(err).NotTo(HaveOccurred())
 		db = test_config.NewTestDB(blockChain.Node())
 		test_config.CleanTestDB(db)
-		spotFilePipConfig := transformer.EventTransformerConfig{
-			TransformerName:   mcdConstants.SpotFilePipLabel,
-			ContractAddresses: []string{mcdConstants.SpotContractAddress()},
-			ContractAbi:       mcdConstants.SpotABI(),
-			Topic:             mcdConstants.SpotFilePipSignature(),
-		}
-
-		addresses = transformer.HexStringsToAddresses(spotFilePipConfig.ContractAddresses)
-		topics = []common.Hash{common.HexToHash(spotFilePipConfig.Topic)}
-
-		initializer = shared.LogNoteTransformer{
-			Config:     spotFilePipConfig,
-			Converter:  pip.SpotFilePipConverter{},
-			Repository: &pip.SpotFilePipRepository{},
-		}
 	})
 
-	It("fetches and transforms a Spot.file pip event from Kovan", func() {
-		blockNumber := int64(11257235)
-		initializer.Config.StartingBlockNumber = blockNumber
-		initializer.Config.EndingBlockNumber = blockNumber
+	Describe("Spot file mat", func() {
+		var (
+			addresses   []common.Address
+			blockNumber int64
+			header      core.Header
+			initializer shared.LogNoteTransformer
+			logs        []types.Log
+			topics      []common.Hash
+			tr          transformer.EventTransformer
+		)
 
-		header, err := persistHeader(db, blockNumber, blockChain)
-		Expect(err).NotTo(HaveOccurred())
+		BeforeEach(func() {
+			blockNumber = int64(11257385)
+			var insertHeaderErr error
+			header, insertHeaderErr = persistHeader(db, blockNumber, blockChain)
+			Expect(insertHeaderErr).NotTo(HaveOccurred())
 
-		logFetcher := fetcher.NewLogFetcher(blockChain)
-		logs, err := logFetcher.FetchLogs(addresses, topics, header)
-		Expect(err).NotTo(HaveOccurred())
+			spotFileMatConfig := transformer.EventTransformerConfig{
+				TransformerName:     mcdConstants.SpotFileMatLabel,
+				ContractAddresses:   []string{mcdConstants.SpotContractAddress()},
+				ContractAbi:         mcdConstants.SpotABI(),
+				Topic:               mcdConstants.SpotFileMatSignature(),
+				StartingBlockNumber: blockNumber,
+				EndingBlockNumber:   blockNumber,
+			}
 
-		tr := initializer.NewLogNoteTransformer(db)
-		err = tr.Execute(logs, header, constants.HeaderMissing)
-		Expect(err).NotTo(HaveOccurred())
+			addresses = transformer.HexStringsToAddresses(spotFileMatConfig.ContractAddresses)
+			topics = []common.Hash{common.HexToHash(spotFileMatConfig.Topic)}
 
-		var dbResult []pip.SpotFilePipModel
-		err = db.Select(&dbResult, `SELECT ilk_id, pip from maker.spot_file_pip`)
-		Expect(err).NotTo(HaveOccurred())
+			initializer = shared.LogNoteTransformer{
+				Config:     spotFileMatConfig,
+				Converter:  mat.SpotFileMatConverter{},
+				Repository: &mat.SpotFileMatRepository{},
+			}
 
-		Expect(len(dbResult)).To(Equal(1))
-		ilkID, ilkErr := shared.GetOrCreateIlk("434f4c332d410000000000000000000000000000000000000000000000000000", db)
-		Expect(ilkErr).NotTo(HaveOccurred())
-		Expect(dbResult[0].Ilk).To(Equal(strconv.Itoa(ilkID)))
-		Expect(dbResult[0].Pip).To(Equal("0xaa32EB42CBf3Bdb746b659c8DAF443f710497d80"))
+			logFetcher := fetcher.NewLogFetcher(blockChain)
+			var fetcherErr error
+			logs, fetcherErr = logFetcher.FetchLogs(addresses, topics, header)
+			Expect(fetcherErr).NotTo(HaveOccurred())
+
+			tr = initializer.NewLogNoteTransformer(db)
+			executeErr := tr.Execute(logs, header, constants.HeaderMissing)
+			Expect(executeErr).NotTo(HaveOccurred())
+		})
+
+		It("fetches and transforms a Spot.file mat event from Kovan", func() {
+			var dbResult mat.SpotFileMatModel
+			getSpotErr := db.Get(&dbResult, `SELECT ilk_id, what, data FROM maker.spot_file_mat`)
+			Expect(getSpotErr).NotTo(HaveOccurred())
+
+			ilkID, ilkErr := shared.GetOrCreateIlk("4554482d41000000000000000000000000000000000000000000000000000000", db)
+			Expect(ilkErr).NotTo(HaveOccurred())
+			Expect(dbResult.Ilk).To(Equal(strconv.Itoa(ilkID)))
+			Expect(dbResult.What).To(Equal("mat"))
+			Expect(dbResult.Data).To(Equal("1500000000000000000000000000"))
+		})
+
+		It("rechecks Spot.file mat event", func() {
+			recheckErr := tr.Execute(logs, header, constants.HeaderRecheck)
+			Expect(recheckErr).NotTo(HaveOccurred())
+
+			var headerID int64
+			getHeaderErr := db.Get(&headerID, `SELECT id FROM public.headers WHERE block_number = $1`, blockNumber)
+			Expect(getHeaderErr).NotTo(HaveOccurred())
+
+			var spotFileMatChecked int
+			getSpotCheckedErr := db.Get(&spotFileMatChecked, `SELECT spot_file_mat_checked FROM public.checked_headers WHERE header_id = $1`, headerID)
+			Expect(getSpotCheckedErr).NotTo(HaveOccurred())
+
+			Expect(spotFileMatChecked).To(Equal(2))
+		})
 	})
 
-	It("rechecks Spot.file pip event", func() {
-		blockNumber := int64(11257235)
-		initializer.Config.StartingBlockNumber = blockNumber
-		initializer.Config.EndingBlockNumber = blockNumber
+	Describe("Spot file pip", func() {
+		var (
+			addresses   []common.Address
+			blockNumber int64
+			header      core.Header
+			initializer shared.LogNoteTransformer
+			logs        []types.Log
+			topics      []common.Hash
+			tr          transformer.EventTransformer
+		)
 
-		header, err := persistHeader(db, blockNumber, blockChain)
-		Expect(err).NotTo(HaveOccurred())
+		BeforeEach(func() {
+			blockNumber = int64(11257235)
+			var insertHeaderErr error
+			header, insertHeaderErr = persistHeader(db, blockNumber, blockChain)
+			Expect(insertHeaderErr).NotTo(HaveOccurred())
 
-		logFetcher := fetcher.NewLogFetcher(blockChain)
-		logs, err := logFetcher.FetchLogs(addresses, topics, header)
-		Expect(err).NotTo(HaveOccurred())
+			spotFilePipConfig := transformer.EventTransformerConfig{
+				TransformerName:     mcdConstants.SpotFilePipLabel,
+				ContractAddresses:   []string{mcdConstants.SpotContractAddress()},
+				ContractAbi:         mcdConstants.SpotABI(),
+				Topic:               mcdConstants.SpotFilePipSignature(),
+				StartingBlockNumber: blockNumber,
+				EndingBlockNumber:   blockNumber,
+			}
 
-		tr := initializer.NewLogNoteTransformer(db)
-		err = tr.Execute(logs, header, constants.HeaderMissing)
-		Expect(err).NotTo(HaveOccurred())
+			addresses = transformer.HexStringsToAddresses(spotFilePipConfig.ContractAddresses)
+			topics = []common.Hash{common.HexToHash(spotFilePipConfig.Topic)}
 
-		err = tr.Execute(logs, header, constants.HeaderRecheck)
-		Expect(err).NotTo(HaveOccurred())
+			initializer = shared.LogNoteTransformer{
+				Config:     spotFilePipConfig,
+				Converter:  pip.SpotFilePipConverter{},
+				Repository: &pip.SpotFilePipRepository{},
+			}
 
-		var headerID int64
-		err = db.Get(&headerID, `SELECT id FROM public.headers WHERE block_number = $1`, blockNumber)
-		Expect(err).NotTo(HaveOccurred())
+			logFetcher := fetcher.NewLogFetcher(blockChain)
+			var fetcherErr error
+			logs, fetcherErr = logFetcher.FetchLogs(addresses, topics, header)
+			Expect(fetcherErr).NotTo(HaveOccurred())
 
-		var spotFilePipChecked []int
-		err = db.Select(&spotFilePipChecked, `SELECT spot_file_pip_checked FROM public.checked_headers WHERE header_id = $1`, headerID)
-		Expect(err).NotTo(HaveOccurred())
+			tr = initializer.NewLogNoteTransformer(db)
+			executeErr := tr.Execute(logs, header, constants.HeaderMissing)
+			Expect(executeErr).NotTo(HaveOccurred())
+		})
 
-		Expect(spotFilePipChecked[0]).To(Equal(2))
+		It("fetches and transforms a Spot.file pip event from Kovan", func() {
+			var dbResult pip.SpotFilePipModel
+			getSpotErr := db.Get(&dbResult, `SELECT ilk_id, pip from maker.spot_file_pip`)
+			Expect(getSpotErr).NotTo(HaveOccurred())
+
+			ilkID, ilkErr := shared.GetOrCreateIlk("434f4c332d410000000000000000000000000000000000000000000000000000", db)
+			Expect(ilkErr).NotTo(HaveOccurred())
+			Expect(dbResult.Ilk).To(Equal(strconv.Itoa(ilkID)))
+			Expect(dbResult.Pip).To(Equal("0xaa32EB42CBf3Bdb746b659c8DAF443f710497d80"))
+		})
+
+		It("rechecks Spot.file pip event", func() {
+			recheckErr := tr.Execute(logs, header, constants.HeaderRecheck)
+			Expect(recheckErr).NotTo(HaveOccurred())
+
+			var headerID int64
+			getHeaderErr := db.Get(&headerID, `SELECT id FROM public.headers WHERE block_number = $1`, blockNumber)
+			Expect(getHeaderErr).NotTo(HaveOccurred())
+
+			var spotFilePipChecked int
+			getSpotCheckedErr := db.Get(&spotFilePipChecked, `SELECT spot_file_pip_checked FROM public.checked_headers WHERE header_id = $1`, headerID)
+			Expect(getSpotCheckedErr).NotTo(HaveOccurred())
+
+			Expect(spotFilePipChecked).To(Equal(2))
+		})
 	})
 })

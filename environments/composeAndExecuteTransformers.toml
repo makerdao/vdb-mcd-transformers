@@ -32,6 +32,7 @@
         "jug_file_vow",
         "jug_init",
         "pip_log_value",
+        "spot_file_mat",
         "spot_file_pip",
         "tend",
         "vat_file_debt_ceiling",
@@ -161,6 +162,12 @@
         rank = "0"
     [exporter.pip_log_value]
         path = "transformers/events/pip_log_value/initializer"
+        type = "eth_event"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        rank = "0"
+    [exporter.spot_file_mat]
+        path = "transformers/events/spot_file/mat/initializer"
         type = "eth_event"
         repository = "github.com/vulcanize/mcd_transformers"
         migrations = "db/migrations"

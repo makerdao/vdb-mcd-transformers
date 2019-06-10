@@ -32,6 +32,7 @@ var (
 	JugFileVowChecked         = "jug_file_vow_checked"
 	JugInitChecked            = "jug_init_checked"
 	PipLogValueChecked        = "pip_log_value_checked"
+	SpotFileMatChecked        = "spot_file_mat_checked"
 	SpotFilePipChecked        = "spot_file_pip_checked"
 	TendChecked               = "tend_checked"
 	VatFileDebtCeilingChecked = "vat_file_debt_ceiling_checked"
