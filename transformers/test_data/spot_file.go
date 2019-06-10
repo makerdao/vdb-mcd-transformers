@@ -5,9 +5,37 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/vulcanize/mcd_transformers/transformers/events/spot_file/mat"
 	"github.com/vulcanize/mcd_transformers/transformers/events/spot_file/pip"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
+
+var EthSpotFileMatLog = types.Log{
+	Address: common.HexToAddress(constants.SpotContractAddress()),
+	Topics: []common.Hash{
+		common.HexToHash(constants.SpotFileMatSignature()),
+		common.HexToHash("0x00000000000000000000000071ce79fcfec71760d51f6b3589c0d9ec0ccb64a8"),
+		common.HexToHash("0x4554482d41000000000000000000000000000000000000000000000000000000"),
+		common.HexToHash("0x6d61740000000000000000000000000000000000000000000000000000000000"),
+	},
+	Data:        hexutil.MustDecode("0x000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000e01a0b287e4554482d410000000000000000000000000000000000000000000000000000006d61740000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000004d8c55aefb8c05b5c00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"),
+	BlockNumber: 11257385,
+	TxHash:      common.HexToHash("0xb4d19aaf5be5077db65aeeb16906a5498cfa94836952191258cc45966e1d7198"),
+	TxIndex:     2,
+	BlockHash:   common.HexToHash("0x968cd16acb356de42e9f3ab17583988b49173c0339af5afa3f79cecdbc111d69"),
+	Index:       3,
+	Removed:     false,
+}
+
+var rawSpotFileMatLog, _ = json.Marshal(EthSpotFileMatLog)
+var SpotFileMatModel = mat.SpotFileMatModel{
+	Ilk:              "4554482d41000000000000000000000000000000000000000000000000000000",
+	What:             "mat",
+	Data:             "1500000000000000000000000000",
+	LogIndex:         EthSpotFileMatLog.Index,
+	TransactionIndex: EthSpotFileMatLog.TxIndex,
+	Raw:              rawSpotFileMatLog,
+}
 
 var EthSpotFilePipLog = types.Log{
 	Address: common.HexToAddress(constants.SpotContractAddress()),
