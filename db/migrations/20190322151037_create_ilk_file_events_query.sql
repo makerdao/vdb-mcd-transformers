@@ -38,6 +38,16 @@ FROM maker.jug_file_ilk
 WHERE jug_file_ilk.ilk_id = (SELECT id FROM ilk)
 UNION
 SELECT ilk_identifier, what, data :: text, block_number, tx_idx
+FROM maker.spot_file_mat
+         LEFT JOIN headers ON spot_file_mat.header_id = headers.id
+WHERE spot_file_mat.ilk_id = (SELECT id FROM ilk)
+UNION
+SELECT ilk_identifier, 'pip' AS what, pip AS data, block_number, tx_idx
+FROM maker.spot_file_pip
+         LEFT JOIN headers ON spot_file_pip.header_id = headers.id
+WHERE spot_file_pip.ilk_id = (SELECT id FROM ilk)
+UNION
+SELECT ilk_identifier, what, data :: text, block_number, tx_idx
 FROM maker.vat_file_ilk
          LEFT JOIN headers ON vat_file_ilk.header_id = headers.id
 WHERE vat_file_ilk.ilk_id = (SELECT id FROM ilk)
