@@ -1299,6 +1299,7 @@ CREATE TABLE maker.bite (
     art numeric,
     tab numeric,
     flip text,
+    bite_identifier numeric,
     tx_idx integer NOT NULL,
     log_idx integer NOT NULL,
     raw_log jsonb
@@ -1310,6 +1311,13 @@ CREATE TABLE maker.bite (
 --
 
 COMMENT ON TABLE maker.bite IS '@name raw_bites';
+
+
+--
+-- Name: COLUMN bite.bite_identifier; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON COLUMN maker.bite.bite_identifier IS '@name id';
 
 
 --
