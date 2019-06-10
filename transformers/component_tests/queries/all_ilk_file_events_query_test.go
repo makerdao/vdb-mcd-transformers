@@ -16,6 +16,8 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/events/cat_file/chop_lump"
 	"github.com/vulcanize/mcd_transformers/transformers/events/cat_file/flip"
 	ilk2 "github.com/vulcanize/mcd_transformers/transformers/events/jug_file/ilk"
+	"github.com/vulcanize/mcd_transformers/transformers/events/spot_file/mat"
+	"github.com/vulcanize/mcd_transformers/transformers/events/spot_file/pip"
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_file/ilk"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
@@ -30,6 +32,8 @@ var _ = Describe("Ilk File Events Query", func() {
 		headerRepo            datastore.HeaderRepository
 		jugFileRepo           ilk2.JugFileIlkRepository
 		relevantIlkIdentifier = test_helpers.GetValidNullString(test_helpers.FakeIlk.Identifier)
+		spotFileMatRepo       mat.SpotFileMatRepository
+		spotFilePipRepo       pip.SpotFilePipRepository
 		vatFileRepo           ilk.VatFileIlkRepository
 	)
 
@@ -46,6 +50,10 @@ var _ = Describe("Ilk File Events Query", func() {
 		Expect(err).NotTo(HaveOccurred())
 		jugFileRepo = ilk2.JugFileIlkRepository{}
 		jugFileRepo.SetDB(db)
+		spotFileMatRepo = mat.SpotFileMatRepository{}
+		spotFileMatRepo.SetDB(db)
+		spotFilePipRepo = pip.SpotFilePipRepository{}
+		spotFilePipRepo.SetDB(db)
 		vatFileRepo = ilk.VatFileIlkRepository{}
 		vatFileRepo.SetDB(db)
 	})
@@ -65,6 +73,16 @@ var _ = Describe("Ilk File Events Query", func() {
 		jugFile.Ilk = test_helpers.FakeIlk.Hex
 		jugErr := jugFileRepo.Create(headerOneId, []interface{}{jugFile})
 		Expect(jugErr).NotTo(HaveOccurred())
+
+		spotFileMat := test_data.SpotFileMatModel
+		spotFileMat.Ilk = test_helpers.FakeIlk.Hex
+		spotFileMatErr := spotFileMatRepo.Create(headerOneId, []interface{}{spotFileMat})
+		Expect(spotFileMatErr).NotTo(HaveOccurred())
+
+		spotFilePip := test_data.SpotFilePipModel
+		spotFilePip.Ilk = test_helpers.FakeIlk.Hex
+		spotFilePipErr := spotFilePipRepo.Create(headerOneId, []interface{}{spotFilePip})
+		Expect(spotFilePipErr).NotTo(HaveOccurred())
 
 		vatFile := test_data.VatFileIlkDustModel
 		vatFile.Ilk = test_helpers.FakeIlk.Hex
@@ -90,6 +108,16 @@ var _ = Describe("Ilk File Events Query", func() {
 				IlkIdentifier: relevantIlkIdentifier,
 				What:          jugFile.What,
 				Data:          jugFile.Data,
+			},
+			test_helpers.IlkFileEvent{
+				IlkIdentifier: relevantIlkIdentifier,
+				What:          spotFileMat.What,
+				Data:          spotFileMat.Data,
+			},
+			test_helpers.IlkFileEvent{
+				IlkIdentifier: relevantIlkIdentifier,
+				What:          "pip",
+				Data:          spotFilePip.Pip,
 			},
 			test_helpers.IlkFileEvent{
 				IlkIdentifier: relevantIlkIdentifier,
