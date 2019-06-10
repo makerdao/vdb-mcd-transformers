@@ -69,7 +69,7 @@ var _ = Describe("Bite repository", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			var dbBite bite.BiteModel
-			err = db.Get(&dbBite, `SELECT urn_id, ink, art, tab, flip, log_idx, tx_idx, raw_log FROM maker.bite WHERE header_id = $1`, headerID)
+			err = db.Get(&dbBite, `SELECT urn_id, ink, art, tab, flip, bite_identifier, log_idx, tx_idx, raw_log FROM maker.bite WHERE header_id = $1`, headerID)
 			Expect(err).NotTo(HaveOccurred())
 			ilkID, err := shared.GetOrCreateIlk(test_data.BiteModel.Ilk, db)
 			Expect(err).NotTo(HaveOccurred())
@@ -80,6 +80,7 @@ var _ = Describe("Bite repository", func() {
 			Expect(dbBite.Art).To(Equal(test_data.BiteModel.Art))
 			Expect(dbBite.Tab).To(Equal(test_data.BiteModel.Tab))
 			Expect(dbBite.Flip).To(Equal(test_data.BiteModel.Flip))
+			Expect(dbBite.Id).To(Equal(test_data.BiteModel.Id))
 			Expect(dbBite.LogIndex).To(Equal(test_data.BiteModel.LogIndex))
 			Expect(dbBite.TransactionIndex).To(Equal(test_data.BiteModel.TransactionIndex))
 			Expect(dbBite.Raw).To(MatchJSON(test_data.BiteModel.Raw))
