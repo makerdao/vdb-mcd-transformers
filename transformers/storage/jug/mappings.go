@@ -108,5 +108,5 @@ func getRhoKey(ilk string) common.Hash {
 
 func getRhoMetadata(ilk string) utils.StorageValueMetadata {
 	keys := map[utils.Key]string{constants.Ilk: ilk}
-	return utils.GetStorageValueMetadata(IlkRho, keys, utils.Uint48)
+	return utils.GetStorageValueMetadata(IlkRho, keys, utils.Uint256)
 }
