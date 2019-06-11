@@ -90,7 +90,7 @@ var _ = Describe("jug storage mappings", func() {
 			expectedMetadata := utils.StorageValueMetadata{
 				Name: jug.IlkRho,
 				Keys: map[utils.Key]string{constants.Ilk: fakeIlk},
-				Type: utils.Uint48,
+				Type: utils.Uint256,
 			}
 
 			Expect(mappings.Lookup(ilkRhoKey)).To(Equal(expectedMetadata))
