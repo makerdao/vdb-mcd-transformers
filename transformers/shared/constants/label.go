@@ -37,6 +37,7 @@ const (
 	VatFileIlkLabel         = "vatFileIlk"
 	VatFluxLabel            = "vatFlux"
 	VatFoldLabel            = "vatFold"
+	VatForkLabel            = "vatFork"
 	VatFrobLabel            = "vatFrob"
 	VatGrabLabel            = "vatGrab"
 	VatHealLabel            = "vatHeal"
