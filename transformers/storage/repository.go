@@ -126,7 +126,15 @@ func (repository *MakerStorageRepository) GetUrns() ([]Urn, error) {
 	err := repository.db.Select(&urns, `
 		SELECT DISTINCT ilks.ilk, urns.identifier
 		FROM maker.urns
-		JOIN maker.ilks on maker.ilks.id = maker.urns.ilk_id`)
+		JOIN maker.ilks on maker.ilks.id = maker.urns.ilk_id
+		UNION
+		SELECT DISTINCT ilks.ilk, fork.src AS identifier
+		FROM maker.vat_fork fork
+		INNER JOIN maker.ilks ilks ON ilks.id = fork.ilk_id
+		UNION
+		SELECT DISTINCT ilks.ilk, fork.dst AS identifier
+		FROM maker.vat_fork fork
+		INNER JOIN maker.ilks ilks ON ilks.id = fork.ilk_id`)
 	return urns, err
 }
 

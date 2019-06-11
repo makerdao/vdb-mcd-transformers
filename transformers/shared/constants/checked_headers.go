@@ -37,6 +37,7 @@ var (
 	VatFileIlkChecked         = "vat_file_ilk_checked"
 	VatFluxChecked            = "vat_flux_checked"
 	VatFoldChecked            = "vat_fold_checked"
+	VatForkChecked            = "vat_fork_checked"
 	VatFrobChecked            = "vat_frob_checked"
 	VatGrabChecked            = "vat_grab_checked"
 	VatHealChecked            = "vat_heal_checked"

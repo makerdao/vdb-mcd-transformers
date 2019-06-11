@@ -37,6 +37,7 @@
         "vat_file_ilk",
         "vat_flux",
         "vat_fold",
+        "vat_fork",
         "vat_frob",
         "vat_grab",
         "vat_heal",
@@ -189,6 +190,12 @@
         rank = "0"
     [exporter.vat_fold]
         path = "transformers/events/vat_fold/initializer"
+        type = "eth_event"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        rank = "0"
+    [exporter.vat_fork]
+        path = "transformers/events/vat_fork/initializer"
         type = "eth_event"
         repository = "github.com/vulcanize/mcd_transformers"
         migrations = "db/migrations"
