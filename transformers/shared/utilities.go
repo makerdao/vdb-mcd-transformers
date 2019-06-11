@@ -18,15 +18,12 @@ package shared
 
 import (
 	"bytes"
-	"encoding/binary"
 	"errors"
 	"fmt"
 	"math/big"
-	"strconv"
 
 	"github.com/ethereum/go-ethereum/common"
 	math2 "github.com/ethereum/go-ethereum/common/math"
-
 	"github.com/vulcanize/vulcanizedb/libraries/shared/constants"
 )
 
@@ -52,18 +49,10 @@ func BigIntToString(value *big.Int) string {
 }
 
 func ConvertIntStringToHex(n string) (string, error) {
-	strAsInt, err := strconv.Atoi(n)
-	if err != nil {
-		return "", err
-	}
-	return ConvertIntToHex(strAsInt)
-}
-
-func ConvertIntToHex(n int) (string, error) {
-	b := new(bytes.Buffer)
-	err := binary.Write(b, binary.BigEndian, uint64(n))
-	if err != nil {
-		return "", err
+	b := big.NewInt(0)
+	b, ok := b.SetString(n, 10)
+	if !ok {
+		return "", errors.New("error converting int to hex")
 	}
 	leftPaddedBytes := common.LeftPadBytes(b.Bytes(), 32)
 	hex := common.Bytes2Hex(leftPaddedBytes)
