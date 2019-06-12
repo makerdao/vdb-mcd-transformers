@@ -189,7 +189,7 @@ var _ = Describe("Plugin test", func() {
 			It("Loads our generated Exporter and uses it to import an arbitrary set of TransformerInitializers that we can execute over", func() {
 				db, bc := SetupDBandBC()
 				hr = repositories.NewHeaderRepository(db)
-				header1, err := bc.GetHeaderByNumber(10980036)
+				header1, err := bc.GetHeaderByNumber(11257255)
 				Expect(err).ToNot(HaveOccurred())
 				headerID, err = hr.CreateOrUpdateHeader(header1)
 				Expect(err).ToNot(HaveOccurred())
@@ -223,13 +223,13 @@ var _ = Describe("Plugin test", func() {
 				err = db.Get(&returned, `SELECT * FROM maker.cat_file_flip WHERE header_id = $1`, headerID)
 				Expect(err).ToNot(HaveOccurred())
 
-				ilkID, err := shared.GetOrCreateIlk("4554482d41000000000000000000000000000000000000000000000000000000", db)
+				ilkID, err := shared.GetOrCreateIlk("434f4c352d410000000000000000000000000000000000000000000000000000", db)
 				Expect(err).NotTo(HaveOccurred())
 				Expect(returned.Ilk).To(Equal(strconv.Itoa(ilkID)))
 				Expect(returned.What).To(Equal("flip"))
-				Expect(returned.Flip).To(Equal("0xB88d2655abA486A06e638707FBEbD858D430AC6E"))
-				Expect(returned.TransactionIndex).To(Equal(uint(1)))
-				Expect(returned.LogIndex).To(Equal(uint(2)))
+				Expect(returned.Flip).To(Equal("0x3fd71145A9597335DeECB3823286d8d5f0d29B82"))
+				Expect(returned.TransactionIndex).To(Equal(uint(0)))
+				Expect(returned.LogIndex).To(Equal(uint(3)))
 			})
 		})
 	})
@@ -314,7 +314,7 @@ var _ = Describe("Plugin test", func() {
 			It("Loads our generated Exporter and uses it to import an arbitrary set of TransformerInitializers and StorageTransformerInitializers that we can execute over", func() {
 				db, bc := SetupDBandBC()
 				hr = repositories.NewHeaderRepository(db)
-				header1, err := bc.GetHeaderByNumber(10980036)
+				header1, err := bc.GetHeaderByNumber(11257255)
 				Expect(err).ToNot(HaveOccurred())
 				headerID, err = hr.CreateOrUpdateHeader(header1)
 				Expect(err).ToNot(HaveOccurred())
@@ -348,13 +348,13 @@ var _ = Describe("Plugin test", func() {
 				err = db.Get(&returned, `SELECT * FROM maker.cat_file_flip WHERE header_id = $1`, headerID)
 				Expect(err).ToNot(HaveOccurred())
 
-				ilkID, err := shared.GetOrCreateIlk("4554482d41000000000000000000000000000000000000000000000000000000", db)
+				ilkID, err := shared.GetOrCreateIlk("434f4c352d410000000000000000000000000000000000000000000000000000", db)
 				Expect(err).NotTo(HaveOccurred())
 				Expect(returned.Ilk).To(Equal(strconv.Itoa(ilkID)))
 				Expect(returned.What).To(Equal("flip"))
-				Expect(returned.Flip).To(Equal("0xB88d2655abA486A06e638707FBEbD858D430AC6E"))
-				Expect(returned.TransactionIndex).To(Equal(uint(1)))
-				Expect(returned.LogIndex).To(Equal(uint(2)))
+				Expect(returned.Flip).To(Equal("0x3fd71145A9597335DeECB3823286d8d5f0d29B82"))
+				Expect(returned.TransactionIndex).To(Equal(uint(0)))
+				Expect(returned.LogIndex).To(Equal(uint(3)))
 
 				tailer := fs.FileTailer{Path: viper.GetString("filesystem.storageDiffsPath")}
 				storageFetcher := fetcher.NewCsvTailStorageFetcher(tailer)

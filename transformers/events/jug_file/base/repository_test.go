@@ -17,8 +17,11 @@
 package base_test
 
 import (
+	"encoding/json"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"math/big"
+	"math/rand"
 
 	"github.com/vulcanize/vulcanizedb/pkg/datastore"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
@@ -69,11 +72,28 @@ var _ = Describe("Jug file base repository", func() {
 			var jugFileBase base.JugFileBaseModel
 			err = db.Get(&jugFileBase, `SELECT what, data, log_idx, tx_idx, raw_log FROM maker.jug_file_base WHERE header_id = $1`, headerID)
 			Expect(err).NotTo(HaveOccurred())
-			Expect(jugFileBase.What).To(Equal(test_data.JugFileBaseModel.What))
-			Expect(jugFileBase.Data).To(Equal(test_data.JugFileBaseModel.Data))
-			Expect(jugFileBase.LogIndex).To(Equal(test_data.JugFileBaseModel.LogIndex))
-			Expect(jugFileBase.TransactionIndex).To(Equal(test_data.JugFileBaseModel.TransactionIndex))
-			Expect(jugFileBase.Raw).To(MatchJSON(test_data.JugFileBaseModel.Raw))
+			assertJugFileBase(jugFileBase, test_data.JugFileBaseModel)
+		})
+
+		It("updates the what, data and raw_log when the header_id, tx_idx, log_idx unique constraint is violated", func() {
+			headerID, err := headerRepository.CreateOrUpdateHeader(fakes.FakeHeader)
+			Expect(err).NotTo(HaveOccurred())
+			err = jugFileBaseRepository.Create(headerID, []interface{}{test_data.JugFileBaseModel})
+			Expect(err).NotTo(HaveOccurred())
+
+			var jugFileBase base.JugFileBaseModel
+			err = db.Get(&jugFileBase, `SELECT what, data, log_idx, tx_idx, raw_log FROM maker.jug_file_base WHERE header_id = $1`, headerID)
+			Expect(err).NotTo(HaveOccurred())
+			assertJugFileBase(jugFileBase, test_data.JugFileBaseModel)
+
+			updatedJugFileBase := updatedJugFileBase()
+			err = jugFileBaseRepository.Create(headerID, []interface{}{updatedJugFileBase})
+			Expect(err).NotTo(HaveOccurred())
+
+			var updatedJugFileBaseRecord base.JugFileBaseModel
+			err = db.Get(&updatedJugFileBaseRecord, `SELECT what, data, log_idx, tx_idx, raw_log FROM maker.jug_file_base WHERE header_id = $1`, headerID)
+			Expect(err).NotTo(HaveOccurred())
+			assertJugFileBase(updatedJugFileBaseRecord, updatedJugFileBase)
 		})
 	})
 
@@ -86,3 +106,24 @@ var _ = Describe("Jug file base repository", func() {
 		shared_behaviors.SharedRepositoryMarkHeaderCheckedBehaviors(&inputs)
 	})
 })
+
+func assertJugFileBase(actual, expected base.JugFileBaseModel) {
+	Expect(actual.What).To(Equal(expected.What))
+	Expect(actual.Data).To(Equal(expected.Data))
+	Expect(actual.LogIndex).To(Equal(expected.LogIndex))
+	Expect(actual.TransactionIndex).To(Equal(expected.TransactionIndex))
+	Expect(actual.Raw).To(MatchJSON(expected.Raw))
+}
+
+func updatedJugFileBase() base.JugFileBaseModel {
+	updatedJugFileBase := test_data.JugFileBaseModel
+	updatedJugFileBase.What = "base"
+	updatedJugFileBase.Data = big.NewInt(rand.Int63()).String()
+
+	rawLog := test_data.EthJugFileBaseLog
+	rawLog.Index = 1
+	rawLogJson, _ := json.Marshal(rawLog)
+	updatedJugFileBase.Raw = rawLogJson
+
+	return updatedJugFileBase
+}

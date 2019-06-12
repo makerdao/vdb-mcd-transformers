@@ -17,6 +17,7 @@
 package vow_file_test
 
 import (
+	"encoding/json"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
@@ -64,16 +65,33 @@ var _ = Describe("Vow file repository", func() {
 			headerID, err := headerRepository.CreateOrUpdateHeader(fakes.FakeHeader)
 			Expect(err).NotTo(HaveOccurred())
 			err = vowFileRepository.Create(headerID, []interface{}{test_data.VowFileModel})
-
 			Expect(err).NotTo(HaveOccurred())
+
 			var vowFile vow_file.VowFileModel
 			err = db.Get(&vowFile, `SELECT what, data, log_idx, tx_idx, raw_log FROM maker.vow_file WHERE header_id = $1`, headerID)
 			Expect(err).NotTo(HaveOccurred())
-			Expect(vowFile.What).To(Equal(test_data.VowFileModel.What))
-			Expect(vowFile.Data).To(Equal(test_data.VowFileModel.Data))
-			Expect(vowFile.LogIndex).To(Equal(test_data.VowFileModel.LogIndex))
-			Expect(vowFile.TransactionIndex).To(Equal(test_data.VowFileModel.TransactionIndex))
-			Expect(vowFile.Raw).To(MatchJSON(test_data.VowFileModel.Raw))
+			assertVowFile(vowFile, test_data.VowFileModel)
+		})
+
+		It("updates the what, data and raw_log when the header_id, tx_idx, log_idx unique constraint is violated", func() {
+			headerID, err := headerRepository.CreateOrUpdateHeader(fakes.FakeHeader)
+			Expect(err).NotTo(HaveOccurred())
+			err = vowFileRepository.Create(headerID, []interface{}{test_data.VowFileModel})
+			Expect(err).NotTo(HaveOccurred())
+
+			var vowFile vow_file.VowFileModel
+			err = db.Get(&vowFile, `SELECT what, data, log_idx, tx_idx, raw_log FROM maker.vow_file WHERE header_id = $1`, headerID)
+			Expect(err).NotTo(HaveOccurred())
+			assertVowFile(vowFile, test_data.VowFileModel)
+
+			updatedVowFile := updatedVowFile()
+			err = vowFileRepository.Create(headerID, []interface{}{updatedVowFile})
+			Expect(err).NotTo(HaveOccurred())
+
+			var newVowFile vow_file.VowFileModel
+			err = db.Get(&newVowFile, `SELECT what, data, log_idx, tx_idx, raw_log FROM maker.vow_file WHERE header_id = $1`, headerID)
+			Expect(err).NotTo(HaveOccurred())
+			assertVowFile(newVowFile, updatedVowFile)
 		})
 	})
 
@@ -86,3 +104,24 @@ var _ = Describe("Vow file repository", func() {
 		shared_behaviors.SharedRepositoryMarkHeaderCheckedBehaviors(&inputs)
 	})
 })
+
+func assertVowFile(actual, expected vow_file.VowFileModel) {
+	Expect(actual.What).To(Equal(expected.What))
+	Expect(actual.Data).To(Equal(expected.Data))
+	Expect(actual.LogIndex).To(Equal(expected.LogIndex))
+	Expect(actual.TransactionIndex).To(Equal(expected.TransactionIndex))
+	Expect(actual.Raw).To(MatchJSON(expected.Raw))
+}
+
+func updatedVowFile() vow_file.VowFileModel {
+	updatedVowFileModel := test_data.VowFileModel
+	updatedVowFileModel.What = "bump"
+	updatedVowFileModel.Data = "1"
+
+	rawLog := test_data.EthVowFileLog
+	rawLog.Index = 1
+	rawLogJson, _ := json.Marshal(rawLog)
+	updatedVowFileModel.Raw = rawLogJson
+
+	return updatedVowFileModel
+}

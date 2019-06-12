@@ -32,7 +32,7 @@ import (
 	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
-var _ = Describe("VatFlux LogNoteTransformer", func() {
+var _ = XDescribe("VatFlux LogNoteTransformer", func() {
 	vatFluxConfig := transformer.EventTransformerConfig{
 		TransformerName:   mcdConstants.VatFluxLabel,
 		ContractAddresses: []string{mcdConstants.VatContractAddress()},
@@ -41,7 +41,7 @@ var _ = Describe("VatFlux LogNoteTransformer", func() {
 	}
 
 	// TODO: Replace block number once there's a flux event on the updated Vat
-	XIt("transforms VatFlux log events", func() {
+	It("transforms VatFlux log events", func() {
 		blockNumber := int64(9004474)
 		vatFluxConfig.StartingBlockNumber = blockNumber
 		vatFluxConfig.EndingBlockNumber = blockNumber
@@ -89,7 +89,7 @@ var _ = Describe("VatFlux LogNoteTransformer", func() {
 	})
 
 	// TODO: Replace block number once there's a flux event on the updated Vat
-	XIt("rechecks vat flux event", func() {
+	It("rechecks vat flux event", func() {
 		blockNumber := int64(9004474)
 		vatFluxConfig.StartingBlockNumber = blockNumber
 		vatFluxConfig.EndingBlockNumber = blockNumber

@@ -69,7 +69,7 @@ var _ = Describe("VatFileIlk LogNoteTransformer", func() {
 	})
 
 	It("fetches and transforms a Vat.file ilk 'spot' event from Kovan", func() {
-		blockNumber := int64(10980360)
+		blockNumber := int64(11257491)
 		initializer.Config.StartingBlockNumber = blockNumber
 		initializer.Config.EndingBlockNumber = blockNumber
 
@@ -89,15 +89,15 @@ var _ = Describe("VatFileIlk LogNoteTransformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))
-		ilkID, err := shared.GetOrCreateIlk("4554482d42000000000000000000000000000000000000000000000000000000", db)
+		ilkID, err := shared.GetOrCreateIlk("434f4c352d410000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(dbResult[0].Ilk).To(Equal(strconv.Itoa(ilkID)))
 		Expect(dbResult[0].What).To(Equal("spot"))
-		Expect(dbResult[0].Data).To(Equal("129705000000000000000000000000"))
+		Expect(dbResult[0].Data).To(Equal("46877063947368421052631578"))
 	})
 
 	It("fetches and transforms a Vat.file ilk 'line' event from Kovan", func() {
-		blockNumber := int64(10980302)
+		blockNumber := int64(11257434)
 		initializer.Config.StartingBlockNumber = blockNumber
 		initializer.Config.EndingBlockNumber = blockNumber
 
@@ -117,17 +117,17 @@ var _ = Describe("VatFileIlk LogNoteTransformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResults)).To(Equal(1))
-		ilkID, err := shared.GetOrCreateIlk("4554482d41000000000000000000000000000000000000000000000000000000", db)
+		ilkID, err := shared.GetOrCreateIlk("434f4c352d410000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
 		sort.Sort(byLogIndexVatFileIlk(dbResults))
 		dbResult := dbResults[0]
 		Expect(dbResult.Ilk).To(Equal(strconv.Itoa(ilkID)))
 		Expect(dbResult.What).To(Equal("line"))
-		Expect(dbResult.Data).To(Equal("300000000000000000000000000000000000000000000000000"))
+		Expect(dbResult.Data).To(Equal("200000000000000000000000000000000000000000000000000"))
 	})
 
 	It("rechecks vat file ilk event", func() {
-		blockNumber := int64(10980302)
+		blockNumber := int64(11257434)
 		initializer.Config.StartingBlockNumber = blockNumber
 		initializer.Config.EndingBlockNumber = blockNumber
 
@@ -160,11 +160,11 @@ var _ = Describe("VatFileIlk LogNoteTransformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))
-		ilkID, err := shared.GetOrCreateIlk("4554482d41000000000000000000000000000000000000000000000000000000", db)
+		ilkID, err := shared.GetOrCreateIlk("434f4c352d410000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(dbResult[0].Ilk).To(Equal(strconv.Itoa(ilkID)))
 		Expect(dbResult[0].What).To(Equal("line"))
-		Expect(dbResult[0].Data).To(Equal("300000000000000000000000000000000000000000000000000"))
+		Expect(dbResult[0].Data).To(Equal("200000000000000000000000000000000000000000000000000"))
 	})
 })
 
