@@ -32,7 +32,7 @@ import (
 	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
-var _ = Describe("VowFess LogNoteTransformer", func() {
+var _ = XDescribe("VowFess LogNoteTransformer", func() {
 	var (
 		db         *postgres.DB
 		blockChain core.BlockChain
@@ -55,7 +55,7 @@ var _ = Describe("VowFess LogNoteTransformer", func() {
 	}
 
 	// TODO: replace block number when there is a fess event on the updated Vow
-	XIt("transforms VowFess log events", func() {
+	It("transforms VowFess log events", func() {
 		blockNumber := int64(9377319)
 		vowFessConfig.StartingBlockNumber = blockNumber
 		vowFessConfig.EndingBlockNumber = blockNumber
@@ -90,7 +90,7 @@ var _ = Describe("VowFess LogNoteTransformer", func() {
 	})
 
 	// TODO: replace block number when there is a fess event on the updated Vow
-	XIt("rechecks vow fess event", func() {
+	It("rechecks vow fess event", func() {
 		blockNumber := int64(9377319)
 		vowFessConfig.StartingBlockNumber = blockNumber
 		vowFessConfig.EndingBlockNumber = blockNumber

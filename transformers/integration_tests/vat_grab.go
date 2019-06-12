@@ -33,7 +33,7 @@ import (
 	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
-var _ = Describe("Vat Grab Transformer", func() {
+var _ = XDescribe("Vat Grab Transformer", func() {
 	vatGrabConfig := transformer.EventTransformerConfig{
 		TransformerName:   mcdConstants.VatGrabLabel,
 		ContractAddresses: []string{mcdConstants.VatContractAddress()},
@@ -42,7 +42,7 @@ var _ = Describe("Vat Grab Transformer", func() {
 	}
 
 	// TODO: Replace block number once there's a grab event on the updated Vat
-	XIt("transforms VatGrab log events", func() {
+	It("transforms VatGrab log events", func() {
 		blockNumber := int64(8958230)
 		vatGrabConfig.StartingBlockNumber = blockNumber
 		vatGrabConfig.EndingBlockNumber = blockNumber
@@ -96,7 +96,7 @@ var _ = Describe("Vat Grab Transformer", func() {
 	})
 
 	// TODO: Replace block number once there's a grab event on the updated Vat
-	XIt("rechecks vat grab event", func() {
+	It("rechecks vat grab event", func() {
 		blockNumber := int64(8958230)
 		vatGrabConfig.StartingBlockNumber = blockNumber
 		vatGrabConfig.EndingBlockNumber = blockNumber

@@ -34,7 +34,7 @@ import (
 	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
-var _ = Describe("VatFold Transformer", func() {
+var _ = XDescribe("VatFold Transformer", func() {
 	var (
 		db         *postgres.DB
 		blockChain core.BlockChain

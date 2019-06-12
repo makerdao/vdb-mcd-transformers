@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -20,22 +20,25 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/vulcanize/mcd_transformers/transformers/events/vow_file"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/constants"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
-	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 
 	"github.com/vulcanize/mcd_transformers/test_config"
-	"github.com/vulcanize/mcd_transformers/transformers/events/jug_file/vow"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
+	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 )
 
-var _ = Describe("Jug File Vow LogNoteTransformer", func() {
+var _ = Describe("VowFile LogNoteTransforer", func() {
 	var (
-		db         *postgres.DB
-		blockChain core.BlockChain
+		db          *postgres.DB
+		blockChain  core.BlockChain
+		initializer shared.LogNoteTransformer
+		addresses   []common.Address
+		topics      []common.Hash
 	)
 
 	BeforeEach(func() {
@@ -45,71 +48,61 @@ var _ = Describe("Jug File Vow LogNoteTransformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 		db = test_config.NewTestDB(blockChain.Node())
 		test_config.CleanTestDB(db)
+		vowFileConfig := transformer.EventTransformerConfig{
+			TransformerName:   mcdConstants.VowFileLabel,
+			ContractAddresses: []string{mcdConstants.VowContractAddress()},
+			ContractAbi:       mcdConstants.VowABI(),
+			Topic:             mcdConstants.VowFileSignature(),
+		}
+
+		addresses = transformer.HexStringsToAddresses(vowFileConfig.ContractAddresses)
+		topics = []common.Hash{common.HexToHash(vowFileConfig.Topic)}
+
+		initializer = shared.LogNoteTransformer{
+			Config:     vowFileConfig,
+			Converter:  vow_file.VowFileConverter{},
+			Repository: &vow_file.VowFileRepository{},
+		}
 	})
 
-	jugFileVowConfig := transformer.EventTransformerConfig{
-		TransformerName:   mcdConstants.JugFileVowLabel,
-		ContractAddresses: []string{mcdConstants.JugContractAddress()},
-		ContractAbi:       mcdConstants.JugABI(),
-		Topic:             mcdConstants.JugFileVowSignature(),
-	}
-
-	It("transforms JugFileVow log events", func() {
-		blockNumber := int64(11257173)
-		jugFileVowConfig.StartingBlockNumber = blockNumber
-		jugFileVowConfig.EndingBlockNumber = blockNumber
+	It("fetches and transforms a Vow.file event from Kovan", func() {
+		blockNumber := int64(11257345)
+		initializer.Config.StartingBlockNumber = blockNumber
+		initializer.Config.EndingBlockNumber = blockNumber
 
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		initializer := shared.LogNoteTransformer{
-			Config:     jugFileVowConfig,
-			Converter:  &vow.JugFileVowConverter{},
-			Repository: &vow.JugFileVowRepository{},
-		}
-		tr := initializer.NewLogNoteTransformer(db)
-
-		f := fetcher.NewLogFetcher(blockChain)
-		logs, err := f.FetchLogs(
-			transformer.HexStringsToAddresses(jugFileVowConfig.ContractAddresses),
-			[]common.Hash{common.HexToHash(jugFileVowConfig.Topic)},
-			header)
+		logFetcher := fetcher.NewLogFetcher(blockChain)
+		logs, err := logFetcher.FetchLogs(addresses, topics, header)
 		Expect(err).NotTo(HaveOccurred())
 
+		tr := initializer.NewLogNoteTransformer(db)
 		err = tr.Execute(logs, header, constants.HeaderMissing)
 		Expect(err).NotTo(HaveOccurred())
 
-		var dbResult []vow.JugFileVowModel
-		err = db.Select(&dbResult, `SELECT what, data FROM maker.jug_file_vow`)
+		var dbResult []vow_file.VowFileModel
+		err = db.Select(&dbResult, `SELECT what, data from maker.vow_file`)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))
-		Expect(dbResult[0].What).To(Equal("vow"))
-		Expect(dbResult[0].Data).To(Equal("0x528C10D35D9612d1667D2D9b8915f80A573a800B"))
+		Expect(dbResult[0].What).To(Equal("sump"))
+		Expect(dbResult[0].Data).To(Equal("100000000000000000000000000000000000000000000"))
 	})
 
-	It("rechecks jug file vow event", func() {
-		blockNumber := int64(11257173)
-		jugFileVowConfig.StartingBlockNumber = blockNumber
-		jugFileVowConfig.EndingBlockNumber = blockNumber
+	It("rechecks vow file event", func() {
+		blockNumber := int64(11257345)
+		initializer.Config.StartingBlockNumber = blockNumber
+		initializer.Config.EndingBlockNumber = blockNumber
 
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		initializer := shared.LogNoteTransformer{
-			Config:     jugFileVowConfig,
-			Converter:  &vow.JugFileVowConverter{},
-			Repository: &vow.JugFileVowRepository{},
-		}
-		tr := initializer.NewLogNoteTransformer(db)
-
-		f := fetcher.NewLogFetcher(blockChain)
-		logs, err := f.FetchLogs(
-			transformer.HexStringsToAddresses(jugFileVowConfig.ContractAddresses),
-			[]common.Hash{common.HexToHash(jugFileVowConfig.Topic)},
-			header)
+		logFetcher := fetcher.NewLogFetcher(blockChain)
+		logs, err := logFetcher.FetchLogs(addresses, topics, header)
 		Expect(err).NotTo(HaveOccurred())
 
+		tr := initializer.NewLogNoteTransformer(db)
 		err = tr.Execute(logs, header, constants.HeaderMissing)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -120,10 +113,10 @@ var _ = Describe("Jug File Vow LogNoteTransformer", func() {
 		err = db.Get(&headerID, `SELECT id FROM public.headers WHERE block_number = $1`, blockNumber)
 		Expect(err).NotTo(HaveOccurred())
 
-		var jugFileVowChecked []int
-		err = db.Select(&jugFileVowChecked, `SELECT jug_file_vow_checked FROM public.checked_headers WHERE header_id = $1`, headerID)
+		var vowFileChecked []int
+		err = db.Select(&vowFileChecked, `SELECT vow_file_checked FROM public.checked_headers WHERE header_id = $1`, headerID)
 		Expect(err).NotTo(HaveOccurred())
 
-		Expect(jugFileVowChecked[0]).To(Equal(2))
+		Expect(vowFileChecked[0]).To(Equal(2))
 	})
 })

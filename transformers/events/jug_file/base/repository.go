@@ -50,7 +50,8 @@ func (repository JugFileBaseRepository) Create(headerID int64, models []interfac
 
 		_, execErr := tx.Exec(
 			`INSERT into maker.jug_file_base (header_id, what, data, log_idx, tx_idx, raw_log)
-        	VALUES($1, $2, $3::NUMERIC, $4, $5, $6)`,
+			VALUES($1, $2, $3::NUMERIC, $4, $5, $6)
+			ON CONFLICT (header_id, tx_idx, log_idx) DO UPDATE SET what = $2, data = $3, raw_log = $6`,
 			headerID, baseModel.What, baseModel.Data, baseModel.LogIndex, baseModel.TransactionIndex, baseModel.Raw,
 		)
 

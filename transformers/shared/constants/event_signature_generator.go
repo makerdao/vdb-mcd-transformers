@@ -34,7 +34,7 @@ func getEventTopicZero(solidityEventSignature string) string {
 
 func getLogNoteTopicZero(solidityFunctionSignature string) string {
 	rawSignature := getEventTopicZero(solidityFunctionSignature)
-	return "0x00000000000000000000000000000000000000000000000000000000" + rawSignature[2:10]
+	return "0x" + rawSignature[2:10] + "00000000000000000000000000000000000000000000000000000000"
 }
 
 func getSolidityFunctionSignature(abi, name string) string {

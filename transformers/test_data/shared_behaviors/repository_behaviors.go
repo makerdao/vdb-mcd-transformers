@@ -100,6 +100,14 @@ func SharedRepositoryCreateBehaviors(inputs *CreateBehaviorInputs) {
 			Expect(err).NotTo(HaveOccurred())
 		})
 
+		It("handles events with the same header_id, tx_idx, log_idx combo by upserting", func() {
+			err = repository.Create(headerID, []interface{}{logEventModel})
+			Expect(err).NotTo(HaveOccurred())
+
+			err = repository.Create(headerID, []interface{}{logEventModel})
+			Expect(err).NotTo(HaveOccurred())
+		})
+
 		It("removes the log event record if the corresponding header is deleted", func() {
 			err = repository.Create(headerID, []interface{}{logEventModel})
 			Expect(err).NotTo(HaveOccurred())
