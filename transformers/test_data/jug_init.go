@@ -47,7 +47,7 @@ var EthJugInitLog = types.Log{
 
 var rawJugInitLog, _ = json.Marshal(EthJugInitLog)
 var JugInitModel = jug_init.JugInitModel{
-	Ilk:              "434f4c352d410000000000000000000000000000000000000000000000000000",
+	Ilk:              "0x434f4c352d410000000000000000000000000000000000000000000000000000",
 	LogIndex:         EthJugInitLog.Index,
 	TransactionIndex: EthJugInitLog.TxIndex,
 	Raw:              rawJugInitLog,

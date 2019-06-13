@@ -38,11 +38,11 @@ var _ = Describe("Maker storage repository", func() {
 	var (
 		db                  *postgres.DB
 		repository          storage.IMakerStorageRepository
-		ilk1                = "494c4b31" // ILK1
-		ilk2                = "494c4b32" // ILK2
-		guy1                = "47555931" // GUY1
-		guy2                = "47555932" // GUY2
-		guy3                = "47555933" // GUY3
+		ilk1                = "0x494c4b31" // ILK1
+		ilk2                = "0x494c4b32" // ILK2
+		guy1                = "0x47555931" // GUY1
+		guy2                = "0x47555932" // GUY2
+		guy3                = "0x47555933" // GUY3
 		era                 = big.NewInt(0).SetBytes(common.FromHex("0x000000000000000000000000000000000000000000000000000000005bb48864")).String()
 		tab                 = big.NewInt(0).SetBytes(common.FromHex("0x0000000000000000000000000000000000000000000002544faa778090e00000")).String()
 		timestamp           = int64(1538558053)

@@ -94,14 +94,6 @@ var _ = Describe("Shared utilities", func() {
 		})
 	})
 
-	Describe("getting hex without prefix", func() {
-		It("returns bytes as hex without 0x prefix", func() {
-			raw := common.HexToHash("0x4554480000000000000000000000000000000000000000000000000000000000").Bytes()
-			result := shared.GetHexWithoutPrefix(raw)
-			Expect(result).To(Equal("4554480000000000000000000000000000000000000000000000000000000000"))
-		})
-	})
-
 	Describe("converting int256 hex to big int", func() {
 		It("correctly converts positive number", func() {
 			result := shared.ConvertInt256HexToBigInt("0x00000000000000000000000000000000000000000000000007a1fe1602770000")
@@ -123,14 +115,14 @@ var _ = Describe("Shared utilities", func() {
 	})
 
 	Describe("decoding ilk name", func() {
-		It("handles hex ilk", func() {
+		It("handles hex ilk with leading 0x", func() {
 			actualIlkIdentifier := shared.DecodeHexToText(test_helpers.FakeIlk.Hex)
 
 			Expect(actualIlkIdentifier).To(Equal(test_helpers.FakeIlk.Identifier))
 		})
 
-		It("handles hex ilk with leading 0x", func() {
-			hexIlk := "0x" + test_helpers.FakeIlk.Hex
+		It("handles hex ilk without leading 0x", func() {
+			hexIlk := test_helpers.FakeIlk.Hex[2:]
 			actualIlkIdentifier := shared.DecodeHexToText(hexIlk)
 
 			Expect(actualIlkIdentifier).To(Equal(test_helpers.FakeIlk.Identifier))

@@ -75,7 +75,7 @@ var EthVatFileIlkDustLog = types.Log{
 
 var rawVatFileIlkDustLog, _ = json.Marshal(EthVatFileIlkDustLog)
 var VatFileIlkDustModel = ilk2.VatFileIlkModel{
-	Ilk:              "5245500000000000000000000000000000000000000000000000000000000000",
+	Ilk:              "0x5245500000000000000000000000000000000000000000000000000000000000",
 	What:             "dust",
 	Data:             "10390649719961925488562719249749",
 	LogIndex:         EthVatFileIlkDustLog.Index,
@@ -103,7 +103,7 @@ var EthVatFileIlkLineLog = types.Log{
 
 var rawVatFileIlkLineLog, _ = json.Marshal(EthVatFileIlkLineLog)
 var VatFileIlkLineModel = ilk2.VatFileIlkModel{
-	Ilk:              "5245500000000000000000000000000000000000000000000000000000000000",
+	Ilk:              "0x5245500000000000000000000000000000000000000000000000000000000000",
 	What:             "line",
 	Data:             "220086151196920075605",
 	LogIndex:         EthVatFileIlkLineLog.Index,
@@ -130,7 +130,7 @@ var EthVatFileIlkSpotLog = types.Log{
 
 var rawVatFileIlkSpotLog, _ = json.Marshal(EthVatFileIlkSpotLog)
 var VatFileIlkSpotModel = ilk2.VatFileIlkModel{
-	Ilk:              "4554480000000000000000000000000000000000000000000000000000000000",
+	Ilk:              "0x4554480000000000000000000000000000000000000000000000000000000000",
 	What:             "spot",
 	Data:             "91323333333333333333333333333",
 	LogIndex:         EthVatFileIlkSpotLog.Index,

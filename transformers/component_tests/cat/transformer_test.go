@@ -98,7 +98,7 @@ var _ = Describe("Executing the transformer", func() {
 		)
 
 		BeforeEach(func() {
-			ilk = "4554482d41000000000000000000000000000000000000000000000000000000"
+			ilk = "0x4554482d41000000000000000000000000000000000000000000000000000000"
 			ilkID, ilkErr = shared.GetOrCreateIlk(ilk, db)
 			Expect(ilkErr).NotTo(HaveOccurred())
 		})

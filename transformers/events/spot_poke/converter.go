@@ -20,6 +20,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/vulcanizedb/pkg/geth"
@@ -67,7 +68,7 @@ func (s SpotPokeConverter) ToModels(entities []interface{}) ([]interface{}, erro
 			return nil, err
 		}
 		spotPokeModel := SpotPokeModel{
-			Ilk:              shared.GetHexWithoutPrefix(spotPokeEntity.Ilk[:]),
+			Ilk:              hexutil.Encode(spotPokeEntity.Ilk[:]),
 			Value:            bytesToFloatString(spotPokeEntity.Val[:], 6),
 			Spot:             shared.BigIntToString(spotPokeEntity.Spot),
 			LogIndex:         spotPokeEntity.LogIndex,

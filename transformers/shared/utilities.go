@@ -94,10 +94,6 @@ func getDataWithIndexOffset(offset int, logData []byte) []byte {
 	return logData[dataBegin:dataEnd]
 }
 
-func GetHexWithoutPrefix(raw []byte) string {
-	return common.Bytes2Hex(raw)
-}
-
 func MinInt64(ints []int64) (min int64) {
 	if len(ints) == 0 {
 		return 0

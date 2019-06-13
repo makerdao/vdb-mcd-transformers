@@ -247,7 +247,7 @@ var _ = Describe("All Ilks query", func() {
 		Expect(headerErr).NotTo(HaveOccurred())
 
 		//updating fakeIlk spot value at block 3
-		newIlk := test_helpers.TestIlk{Identifier: "newIlk", Hex: "6e6577496c6b0000000000000000000000000000000000000000000000000000"}
+		newIlk := test_helpers.TestIlk{Identifier: "newIlk", Hex: "0x6e6577496c6b0000000000000000000000000000000000000000000000000000"}
 		newIlkStateBlock4 := test_helpers.GetIlkValues(4)
 		metadata := []utils.StorageValueMetadata{{
 			Name: vat.IlkRate,

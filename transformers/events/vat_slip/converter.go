@@ -35,7 +35,7 @@ func (VatSlipConverter) ToModels(ethLogs []types.Log) ([]interface{}, error) {
 		if err != nil {
 			return nil, err
 		}
-		ilk := shared.GetHexWithoutPrefix(ethLog.Topics[1].Bytes())
+		ilk := ethLog.Topics[1].Hex()
 		usr := common.BytesToAddress(ethLog.Topics[2].Bytes()).String()
 		wad := shared.ConvertInt256HexToBigInt(ethLog.Topics[3].Hex())
 

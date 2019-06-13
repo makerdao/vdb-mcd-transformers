@@ -35,7 +35,7 @@ func (VatFrobConverter) ToModels(ethLogs []types.Log) ([]interface{}, error) {
 		if err != nil {
 			return nil, err
 		}
-		ilk := shared.GetHexWithoutPrefix(ethLog.Topics[1].Bytes())
+		ilk := ethLog.Topics[1].Hex()
 		urn := common.BytesToAddress(ethLog.Topics[2].Bytes()).String()
 		v := common.BytesToAddress(ethLog.Topics[3].Bytes()).String()
 		wBytes, wErr := shared.GetLogNoteArgumentAtIndex(3, ethLog.Data)

@@ -65,13 +65,12 @@ var _ = Describe("jug storage mappings", func() {
 
 		It("returns value metadata for tax when ilk in the DB", func() {
 			storageRepository := &test_helpers.MockMakerStorageRepository{}
-			fakeIlk := "fakeIlk"
-			storageRepository.Ilks = []string{fakeIlk}
+			storageRepository.Ilks = []string{test_helpers.FakeIlk}
 			mappings := jug.JugMappings{StorageRepository: storageRepository}
-			ilkTaxKey := common.BytesToHash(crypto.Keccak256(common.FromHex("0x" + fakeIlk + jug.IlkMappingIndex)))
+			ilkTaxKey := common.BytesToHash(crypto.Keccak256(common.FromHex(test_helpers.FakeIlk + jug.IlkMappingIndex)))
 			expectedMetadata := utils.StorageValueMetadata{
 				Name: jug.IlkDuty,
-				Keys: map[utils.Key]string{constants.Ilk: fakeIlk},
+				Keys: map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk},
 				Type: utils.Uint256,
 			}
 
@@ -80,16 +79,15 @@ var _ = Describe("jug storage mappings", func() {
 
 		It("returns value metadata for rho when ilk in the DB", func() {
 			storageRepository := &test_helpers.MockMakerStorageRepository{}
-			fakeIlk := "fakeIlk"
-			storageRepository.Ilks = []string{fakeIlk}
+			storageRepository.Ilks = []string{test_helpers.FakeIlk}
 			mappings := jug.JugMappings{StorageRepository: storageRepository}
-			ilkTaxKeyBytes := crypto.Keccak256(common.FromHex("0x" + fakeIlk + jug.IlkMappingIndex))
+			ilkTaxKeyBytes := crypto.Keccak256(common.FromHex(test_helpers.FakeIlk + jug.IlkMappingIndex))
 			ilkTaxAsInt := big.NewInt(0).SetBytes(ilkTaxKeyBytes)
 			incrementedIlkTax := big.NewInt(0).Add(ilkTaxAsInt, big.NewInt(1))
 			ilkRhoKey := common.BytesToHash(incrementedIlkTax.Bytes())
 			expectedMetadata := utils.StorageValueMetadata{
 				Name: jug.IlkRho,
-				Keys: map[utils.Key]string{constants.Ilk: fakeIlk},
+				Keys: map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk},
 				Type: utils.Uint256,
 			}
 

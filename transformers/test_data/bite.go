@@ -76,7 +76,7 @@ var BiteEntity = bite.BiteEntity{
 }
 
 var BiteModel = bite.BiteModel{
-	Ilk:              "4554480000000000000000000000000000000000000000000000000000000000",
+	Ilk:              "0x4554480000000000000000000000000000000000000000000000000000000000",
 	Urn:              "0x7d7bEe5fCfD8028cf7b00876C5b1421c800561A6",
 	Ink:              biteInk.String(),
 	Art:              biteArt.String(),

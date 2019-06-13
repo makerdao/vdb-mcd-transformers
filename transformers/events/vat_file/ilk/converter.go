@@ -36,7 +36,7 @@ func (VatFileIlkConverter) ToModels(ethLogs []types.Log) ([]interface{}, error) 
 		if err != nil {
 			return nil, err
 		}
-		ilk := shared.GetHexWithoutPrefix(ethLog.Topics[1].Bytes())
+		ilk := ethLog.Topics[1].Hex()
 		what := shared.DecodeHexToText(ethLog.Topics[2].Hex())
 		data := ethLog.Topics[3].Big().String()
 		if err != nil {

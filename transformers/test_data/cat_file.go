@@ -49,7 +49,7 @@ var EthCatFileChopLog = types.Log{
 
 var rawCatFileChopLog, _ = json.Marshal(EthCatFileChopLog)
 var CatFileChopModel = chop_lump.CatFileChopLumpModel{
-	Ilk:              "434f4c342d410000000000000000000000000000000000000000000000000000",
+	Ilk:              "0x434f4c342d410000000000000000000000000000000000000000000000000000",
 	What:             "chop",
 	Data:             "1000000000000000000000000000",
 	TransactionIndex: EthCatFileChopLog.TxIndex,
@@ -76,7 +76,7 @@ var EthCatFileLumpLog = types.Log{
 
 var rawCatFileLumpLog, _ = json.Marshal(EthCatFileLumpLog)
 var CatFileLumpModel = chop_lump.CatFileChopLumpModel{
-	Ilk:              "434f4c342d410000000000000000000000000000000000000000000000000000",
+	Ilk:              "0x434f4c342d410000000000000000000000000000000000000000000000000000",
 	What:             "lump",
 	Data:             "10000000000000000000000000000000000000000000000000",
 	TransactionIndex: EthCatFileLumpLog.TxIndex,
@@ -103,7 +103,7 @@ var EthCatFileFlipLog = types.Log{
 
 var rawCatFileFlipLog, _ = json.Marshal(EthCatFileFlipLog)
 var CatFileFlipModel = flip.CatFileFlipModel{
-	Ilk:              "434f4c312d410000000000000000000000000000000000000000000000000000",
+	Ilk:              "0x434f4c312d410000000000000000000000000000000000000000000000000000",
 	What:             "flip",
 	Flip:             "0x6E8032435c84B08E30F27bfbb812Ee365A095b31",
 	TransactionIndex: EthCatFileFlipLog.TxIndex,

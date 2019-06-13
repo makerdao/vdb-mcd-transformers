@@ -85,7 +85,7 @@ var _ = Describe("Vat slip transformer", func() {
 		var model vat_slip.VatSlipModel
 		err = db.Get(&model, `SELECT ilk_id, usr, wad, tx_idx FROM maker.vat_slip WHERE header_id = $1`, headerID)
 		Expect(err).NotTo(HaveOccurred())
-		ilkID, err := shared.GetOrCreateIlk("4554482d41000000000000000000000000000000000000000000000000000000", db)
+		ilkID, err := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(model.Ilk).To(Equal(strconv.Itoa(ilkID)))
 		Expect(model.Usr).To(Equal("0xFc7440E2Ed4A3AEb14d40c00f02a14221Be0474d"))
@@ -139,7 +139,7 @@ var _ = Describe("Vat slip transformer", func() {
 		var model vat_slip.VatSlipModel
 		err = db.Get(&model, `SELECT ilk_id, usr, wad, tx_idx FROM maker.vat_slip WHERE header_id = $1`, headerID)
 		Expect(err).NotTo(HaveOccurred())
-		ilkID, err := shared.GetOrCreateIlk("4554482d41000000000000000000000000000000000000000000000000000000", db)
+		ilkID, err := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(model.Ilk).To(Equal(strconv.Itoa(ilkID)))
 		Expect(model.Usr).To(Equal("0xFc7440E2Ed4A3AEb14d40c00f02a14221Be0474d"))

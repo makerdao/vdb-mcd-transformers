@@ -51,7 +51,7 @@ var EthVatFrobLogWithPositiveDart = types.Log{
 
 var rawVatFrobLogWithPositiveDart, _ = json.Marshal(EthVatFrobLogWithPositiveDart)
 var VatFrobModelWithPositiveDart = vat_frob.VatFrobModel{
-	Ilk:              "4554480000000000000000000000000000000000000000000000000000000000",
+	Ilk:              "0x4554480000000000000000000000000000000000000000000000000000000000",
 	Urn:              "0xEEec867B3F51ab5b619d582481BF53eea930b074",
 	V:                "0xFc7440E2Ed4A3AEb14d40c00f02a14221Be0474d",
 	W:                "0xEEec867B3F51ab5b619d582481BF53eea930b074",
@@ -81,7 +81,7 @@ var EthVatFrobLogWithNegativeDink = types.Log{
 
 var rawVatFrobLogWithNegativeDink, _ = json.Marshal(EthVatFrobLogWithNegativeDink)
 var VatFrobModelWithNegativeDink = vat_frob.VatFrobModel{
-	Ilk:              "4554482d41000000000000000000000000000000000000000000000000000000",
+	Ilk:              "0x4554482d41000000000000000000000000000000000000000000000000000000",
 	Urn:              "0x5c8c8e5895B9cCf34ACF391C99E13C79EE2eFb46",
 	V:                "0xFc7440E2Ed4A3AEb14d40c00f02a14221Be0474d",
 	W:                "0x5c8c8e5895B9cCf34ACF391C99E13C79EE2eFb46",

@@ -38,7 +38,7 @@ func (VatForkConverter) ToModels(ethLogs []types.Log) ([]interface{}, error) {
 			return nil, err
 		}
 
-		ilk := shared.GetHexWithoutPrefix(ethLog.Topics[1].Bytes())
+		ilk := ethLog.Topics[1].Hex()
 		src := common.BytesToAddress(ethLog.Topics[2].Bytes()).String()
 		dst := common.BytesToAddress(ethLog.Topics[3].Bytes()).String()
 

@@ -47,7 +47,7 @@ var EthVatSlipLogWithPositiveWad = types.Log{
 
 var rawVatSlipLogWithPositiveWad, _ = json.Marshal(EthVatSlipLogWithPositiveWad)
 var VatSlipModelWithPositiveWad = vat_slip.VatSlipModel{
-	Ilk:              "4554482d41000000000000000000000000000000000000000000000000000000",
+	Ilk:              "0x4554482d41000000000000000000000000000000000000000000000000000000",
 	Usr:              "0x5c8c8e5895B9cCf34ACF391C99E13C79EE2eFb46",
 	Wad:              "10000000000000000",
 	TransactionIndex: 0,
@@ -74,7 +74,7 @@ var EthVatSlipLogWithNegativeWad = types.Log{
 
 var rawVatSlipLogWithNegativeWad, _ = json.Marshal(EthVatSlipLogWithNegativeWad)
 var VatSlipModelWithNegativeWad = vat_slip.VatSlipModel{
-	Ilk:              "4554482d41000000000000000000000000000000000000000000000000000000",
+	Ilk:              "0x4554482d41000000000000000000000000000000000000000000000000000000",
 	Usr:              "0xFc7440E2Ed4A3AEb14d40c00f02a14221Be0474d",
 	Wad:              "-5000000000000000",
 	TransactionIndex: EthVatSlipLogWithNegativeWad.TxIndex,

@@ -30,7 +30,7 @@ var EthVatGrabLogWithPositiveDink = types.Log{
 
 var rawVatGrabLogWithPositiveDink, _ = json.Marshal(EthVatGrabLogWithPositiveDink)
 var VatGrabModelWithPositiveDink = vat_grab.VatGrabModel{
-	Ilk:              "66616b6520696c6b000000000000000000000000000000000000000000000000",
+	Ilk:              "0x66616b6520696c6b000000000000000000000000000000000000000000000000",
 	Urn:              "0x07Fa9eF6609cA7921112231F8f195138ebbA2977",
 	V:                "0x7340e006f4135BA6970D43bf43d88DCAD4e7a8CA",
 	W:                "0x7526EB4f95e2a1394797Cb38a921Fb1EbA09291B",
@@ -60,7 +60,7 @@ var EthVatGrabLogWithNegativeDink = types.Log{
 
 var rawVatGrabLogWithNegativeDink, _ = json.Marshal(EthVatGrabLogWithNegativeDink)
 var VatGrabModelWithNegativeDink = vat_grab.VatGrabModel{
-	Ilk:              "66616b6520696c6b000000000000000000000000000000000000000000000000",
+	Ilk:              "0x66616b6520696c6b000000000000000000000000000000000000000000000000",
 	Urn:              "0x07Fa9eF6609cA7921112231F8f195138ebbA2977",
 	V:                "0x7340e006f4135BA6970D43bf43d88DCAD4e7a8CA",
 	W:                "0x7526EB4f95e2a1394797Cb38a921Fb1EbA09291B",
