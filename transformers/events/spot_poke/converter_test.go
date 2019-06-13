@@ -64,7 +64,7 @@ var _ = Describe("SpotPoke Converter", func() {
 			emptyLog, err := json.Marshal(types.Log{})
 			Expect(err).NotTo(HaveOccurred())
 			expectedModel := spot_poke.SpotPokeModel{
-				Ilk:              "0000000000000000000000000000000000000000000000000000000000000000",
+				Ilk:              "0x0000000000000000000000000000000000000000000000000000000000000000",
 				Value:            "0.000000",
 				Spot:             "",
 				LogIndex:         0,

@@ -19,14 +19,15 @@ package vat
 import (
 	"errors"
 	"fmt"
-	"github.com/ethereum/go-ethereum/common"
 
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/storage"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	s2 "github.com/vulcanize/mcd_transformers/transformers/storage"
+	"github.com/vulcanize/mcd_transformers/transformers/storage/utilities"
 )
 
 const (
@@ -148,7 +149,7 @@ func (mappings *VatMappings) loadDaiKeys() error {
 		return err
 	}
 	for _, d := range daiKeys {
-		paddedDai, padErr := padAddressTo32ByteHex(d)
+		paddedDai, padErr := utilities.PadAddress(d)
 		if padErr != nil {
 			return padErr
 		}
@@ -163,7 +164,7 @@ func (mappings *VatMappings) loadGemKeys() error {
 		return err
 	}
 	for _, gem := range gemKeys {
-		paddedGem, padErr := padAddressTo32ByteHex(gem.Identifier)
+		paddedGem, padErr := utilities.PadAddress(gem.Identifier)
 		if padErr != nil {
 			return padErr
 		}
@@ -193,7 +194,7 @@ func (mappings *VatMappings) loadSinKeys() error {
 		return err
 	}
 	for _, s := range sinKeys {
-		paddedSin, padErr := padAddressTo32ByteHex(s)
+		paddedSin, padErr := utilities.PadAddress(s)
 		if padErr != nil {
 			return padErr
 		}
@@ -208,7 +209,7 @@ func (mappings *VatMappings) loadUrnKeys() error {
 		return err
 	}
 	for _, urn := range urns {
-		paddedGuy, padErr := padAddressTo32ByteHex(urn.Identifier)
+		paddedGuy, padErr := utilities.PadAddress(urn.Identifier)
 		if padErr != nil {
 			return padErr
 		}
@@ -306,14 +307,4 @@ func getSinKey(guy string) common.Hash {
 func getSinMetadata(guy string) utils.StorageValueMetadata {
 	keys := map[utils.Key]string{constants.Guy: guy}
 	return utils.GetStorageValueMetadata(Sin, keys, utils.Uint256)
-}
-
-func padAddressTo32ByteHex(addr string) (string, error) {
-	var validAddrWithPrefixLen = 42
-	if len(addr) != validAddrWithPrefixLen {
-		return "", ErrAddressLengthInvalid(len(addr))
-	}
-	addrWithoutPrefix := addr[2:]
-	paddedAddr := "000000000000000000000000" + addrWithoutPrefix
-	return paddedAddr, nil
 }

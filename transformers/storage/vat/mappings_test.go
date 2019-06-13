@@ -35,8 +35,6 @@ import (
 
 var _ = Describe("Vat storage mappings", func() {
 	var (
-		fakeIlk           = "fakeIlk"
-		fakeGuy           = "0x0123456789abcdef0123456789abcdef01234567"
 		storageRepository *test_helpers.MockMakerStorageRepository
 		mappings          vat.VatMappings
 	)
@@ -131,15 +129,15 @@ var _ = Describe("Vat storage mappings", func() {
 			var ilkArtAsInt *big.Int
 
 			BeforeEach(func() {
-				storageRepository.Ilks = []string{fakeIlk}
-				ilkArtKey = common.BytesToHash(crypto.Keccak256(common.FromHex("0x" + fakeIlk + vat.IlksMappingIndex)))
+				storageRepository.Ilks = []string{test_helpers.FakeIlk}
+				ilkArtKey = common.BytesToHash(crypto.Keccak256(common.FromHex(test_helpers.FakeIlk + vat.IlksMappingIndex)))
 				ilkArtAsInt = big.NewInt(0).SetBytes(ilkArtKey.Bytes())
 			})
 
 			It("returns value metadata for ilk Art", func() {
 				expectedMetadata := utils.StorageValueMetadata{
 					Name: vat.IlkArt,
-					Keys: map[utils.Key]string{constants.Ilk: fakeIlk},
+					Keys: map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk},
 					Type: utils.Uint256,
 				}
 
@@ -151,7 +149,7 @@ var _ = Describe("Vat storage mappings", func() {
 				ilkRateKey := common.BytesToHash(incrementedIlkArt.Bytes())
 				expectedMetadata := utils.StorageValueMetadata{
 					Name: vat.IlkRate,
-					Keys: map[utils.Key]string{constants.Ilk: fakeIlk},
+					Keys: map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk},
 					Type: utils.Uint256,
 				}
 
@@ -163,7 +161,7 @@ var _ = Describe("Vat storage mappings", func() {
 				ilkSpotKey := common.BytesToHash(incrementedIlkArt.Bytes())
 				expectedMetadata := utils.StorageValueMetadata{
 					Name: vat.IlkSpot,
-					Keys: map[utils.Key]string{constants.Ilk: fakeIlk},
+					Keys: map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk},
 					Type: utils.Uint256,
 				}
 
@@ -175,7 +173,7 @@ var _ = Describe("Vat storage mappings", func() {
 				ilkLineKey := common.BytesToHash(incrementedIlkArt.Bytes())
 				expectedMetadata := utils.StorageValueMetadata{
 					Name: vat.IlkLine,
-					Keys: map[utils.Key]string{constants.Ilk: fakeIlk},
+					Keys: map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk},
 					Type: utils.Uint256,
 				}
 
@@ -187,7 +185,7 @@ var _ = Describe("Vat storage mappings", func() {
 				ilkDustKey := common.BytesToHash(incrementedIlkArt.Bytes())
 				expectedMetadata := utils.StorageValueMetadata{
 					Name: vat.IlkDust,
-					Keys: map[utils.Key]string{constants.Ilk: fakeIlk},
+					Keys: map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk},
 					Type: utils.Uint256,
 				}
 
@@ -197,13 +195,14 @@ var _ = Describe("Vat storage mappings", func() {
 
 		Describe("urn", func() {
 			It("returns value metadata for urn ink", func() {
-				storageRepository.Urns = []storage.Urn{{Ilk: fakeIlk, Identifier: fakeGuy}}
-				encodedPrimaryMapIndex := crypto.Keccak256(common.FromHex("0x" + fakeIlk + vat.UrnsMappingIndex))
-				encodedSecondaryMapIndex := crypto.Keccak256(common.FromHex("0x000000000000000000000000"+fakeGuy[2:]), encodedPrimaryMapIndex)
+				storageRepository.Urns = []storage.Urn{{Ilk: test_helpers.FakeIlk, Identifier: test_helpers.FakeAddress}}
+				encodedPrimaryMapIndex := crypto.Keccak256(common.FromHex(test_helpers.FakeIlk + vat.UrnsMappingIndex))
+				paddedUrnGuy := common.FromHex("0x000000000000000000000000" + test_helpers.FakeAddress[2:])
+				encodedSecondaryMapIndex := crypto.Keccak256(paddedUrnGuy, encodedPrimaryMapIndex)
 				urnInkKey := common.BytesToHash(encodedSecondaryMapIndex)
 				expectedMetadata := utils.StorageValueMetadata{
 					Name: vat.UrnInk,
-					Keys: map[utils.Key]string{constants.Ilk: fakeIlk, constants.Guy: fakeGuy},
+					Keys: map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk, constants.Guy: test_helpers.FakeAddress},
 					Type: utils.Uint256,
 				}
 
@@ -211,14 +210,16 @@ var _ = Describe("Vat storage mappings", func() {
 			})
 
 			It("returns value metadata for urn art", func() {
-				storageRepository.Urns = []storage.Urn{{Ilk: fakeIlk, Identifier: fakeGuy}}
-				encodedPrimaryMapIndex := crypto.Keccak256(common.FromHex("0x" + fakeIlk + vat.UrnsMappingIndex))
-				urnInkAsInt := big.NewInt(0).SetBytes(crypto.Keccak256(common.FromHex("0x000000000000000000000000"+fakeGuy[2:]), encodedPrimaryMapIndex))
+				storageRepository.Urns = []storage.Urn{{Ilk: test_helpers.FakeIlk, Identifier: test_helpers.FakeAddress}}
+				encodedPrimaryMapIndex := crypto.Keccak256(common.FromHex(test_helpers.FakeIlk + vat.UrnsMappingIndex))
+				paddedUrnGuy := common.FromHex("0x000000000000000000000000" + test_helpers.FakeAddress[2:])
+				urnInkKey := crypto.Keccak256(paddedUrnGuy, encodedPrimaryMapIndex)
+				urnInkAsInt := big.NewInt(0).SetBytes(urnInkKey)
 				incrementedUrnInk := big.NewInt(0).Add(urnInkAsInt, big.NewInt(1))
 				urnArtKey := common.BytesToHash(incrementedUrnInk.Bytes())
 				expectedMetadata := utils.StorageValueMetadata{
 					Name: vat.UrnArt,
-					Keys: map[utils.Key]string{constants.Ilk: fakeIlk, constants.Guy: fakeGuy},
+					Keys: map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk, constants.Guy: test_helpers.FakeAddress},
 					Type: utils.Uint256,
 				}
 
@@ -228,13 +229,14 @@ var _ = Describe("Vat storage mappings", func() {
 
 		Describe("gem", func() {
 			It("returns value metadata for gem", func() {
-				storageRepository.GemKeys = []storage.Urn{{Ilk: fakeIlk, Identifier: fakeGuy}}
-				encodedPrimaryMapIndex := crypto.Keccak256(common.FromHex("0x" + fakeIlk + vat.GemsMappingIndex))
-				encodedSecondaryMapIndex := crypto.Keccak256(common.FromHex("0x000000000000000000000000"+fakeGuy[2:]), encodedPrimaryMapIndex)
+				storageRepository.GemKeys = []storage.Urn{{Ilk: test_helpers.FakeIlk, Identifier: test_helpers.FakeAddress}}
+				encodedPrimaryMapIndex := crypto.Keccak256(common.FromHex(test_helpers.FakeIlk + vat.GemsMappingIndex))
+				paddedGemAddress := common.FromHex("0x000000000000000000000000" + test_helpers.FakeAddress[2:])
+				encodedSecondaryMapIndex := crypto.Keccak256(paddedGemAddress, encodedPrimaryMapIndex)
 				gemKey := common.BytesToHash(encodedSecondaryMapIndex)
 				expectedMetadata := utils.StorageValueMetadata{
 					Name: vat.Gem,
-					Keys: map[utils.Key]string{constants.Ilk: fakeIlk, constants.Guy: fakeGuy},
+					Keys: map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk, constants.Guy: test_helpers.FakeAddress},
 					Type: utils.Uint256,
 				}
 
@@ -244,11 +246,12 @@ var _ = Describe("Vat storage mappings", func() {
 
 		Describe("dai", func() {
 			It("returns value metadata for dai", func() {
-				storageRepository.DaiKeys = []string{fakeGuy}
-				daiKey := common.BytesToHash(crypto.Keccak256(common.FromHex("0x000000000000000000000000" + fakeGuy[2:] + vat.DaiMappingIndex)))
+				storageRepository.DaiKeys = []string{test_helpers.FakeAddress}
+				paddedDaiAddress := "0x000000000000000000000000" + test_helpers.FakeAddress[2:]
+				daiKey := common.BytesToHash(crypto.Keccak256(common.FromHex(paddedDaiAddress + vat.DaiMappingIndex)))
 				expectedMetadata := utils.StorageValueMetadata{
 					Name: vat.Dai,
-					Keys: map[utils.Key]string{constants.Guy: fakeGuy},
+					Keys: map[utils.Key]string{constants.Guy: test_helpers.FakeAddress},
 					Type: utils.Uint256,
 				}
 
@@ -258,11 +261,12 @@ var _ = Describe("Vat storage mappings", func() {
 
 		Describe("sin", func() {
 			It("returns value metadata for sin", func() {
-				storageRepository.SinKeys = []string{fakeGuy}
-				sinKey := common.BytesToHash(crypto.Keccak256(common.FromHex("0x000000000000000000000000" + fakeGuy[2:] + vat.SinMappingIndex)))
+				storageRepository.SinKeys = []string{test_helpers.FakeAddress}
+				paddedSinAddress := "0x000000000000000000000000" + test_helpers.FakeAddress[2:]
+				sinKey := common.BytesToHash(crypto.Keccak256(common.FromHex(paddedSinAddress + vat.SinMappingIndex)))
 				expectedMetadata := utils.StorageValueMetadata{
 					Name: vat.Sin,
-					Keys: map[utils.Key]string{constants.Guy: fakeGuy},
+					Keys: map[utils.Key]string{constants.Guy: test_helpers.FakeAddress},
 					Type: utils.Uint256,
 				}
 

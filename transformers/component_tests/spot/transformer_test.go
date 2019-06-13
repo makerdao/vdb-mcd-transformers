@@ -35,7 +35,7 @@ var _ = Describe("Executing the transformer", func() {
 		db = test_config.NewTestDB(test_config.NewTestNode())
 		test_config.CleanTestDB(db)
 		transformer.NewTransformer(db)
-		ilk := "434f4c352d410000000000000000000000000000000000000000000000000000"
+		ilk := "0x434f4c352d410000000000000000000000000000000000000000000000000000"
 		ilkID, err = shared.GetOrCreateIlk(ilk, db)
 		Expect(err).NotTo(HaveOccurred())
 	})

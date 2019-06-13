@@ -36,7 +36,7 @@ func (SpotFileMatConverter) ToModels(ethLogs []types.Log) ([]interface{}, error)
 		if err != nil {
 			return nil, err
 		}
-		ilk := shared.GetHexWithoutPrefix(ethLog.Topics[2].Bytes())
+		ilk := ethLog.Topics[2].Hex()
 		what := shared.DecodeHexToText(ethLog.Topics[3].Hex())
 		dataBytes, dataErr := shared.GetLogNoteArgumentAtIndex(2, ethLog.Data)
 		if dataErr != nil {

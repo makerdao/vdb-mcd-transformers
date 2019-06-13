@@ -223,7 +223,7 @@ var _ = Describe("Plugin test", func() {
 				err = db.Get(&returned, `SELECT * FROM maker.cat_file_flip WHERE header_id = $1`, headerID)
 				Expect(err).ToNot(HaveOccurred())
 
-				ilkID, err := shared.GetOrCreateIlk("434f4c352d410000000000000000000000000000000000000000000000000000", db)
+				ilkID, err := shared.GetOrCreateIlk("0x434f4c352d410000000000000000000000000000000000000000000000000000", db)
 				Expect(err).NotTo(HaveOccurred())
 				Expect(returned.Ilk).To(Equal(strconv.Itoa(ilkID)))
 				Expect(returned.What).To(Equal("flip"))
@@ -348,7 +348,7 @@ var _ = Describe("Plugin test", func() {
 				err = db.Get(&returned, `SELECT * FROM maker.cat_file_flip WHERE header_id = $1`, headerID)
 				Expect(err).ToNot(HaveOccurred())
 
-				ilkID, err := shared.GetOrCreateIlk("434f4c352d410000000000000000000000000000000000000000000000000000", db)
+				ilkID, err := shared.GetOrCreateIlk("0x434f4c352d410000000000000000000000000000000000000000000000000000", db)
 				Expect(err).NotTo(HaveOccurred())
 				Expect(returned.Ilk).To(Equal(strconv.Itoa(ilkID)))
 				Expect(returned.What).To(Equal("flip"))

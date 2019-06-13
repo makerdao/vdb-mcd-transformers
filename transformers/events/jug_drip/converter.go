@@ -21,8 +21,6 @@ import (
 	"errors"
 
 	"github.com/ethereum/go-ethereum/core/types"
-
-	"github.com/vulcanize/mcd_transformers/transformers/shared"
 )
 
 type JugDripConverter struct{}
@@ -34,7 +32,7 @@ func (JugDripConverter) ToModels(ethLogs []types.Log) ([]interface{}, error) {
 		if err != nil {
 			return nil, err
 		}
-		ilk := shared.GetHexWithoutPrefix(ethLog.Topics[2].Bytes())
+		ilk := ethLog.Topics[2].Hex()
 		raw, err := json.Marshal(ethLog)
 		if err != nil {
 			return nil, err

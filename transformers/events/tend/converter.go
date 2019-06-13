@@ -21,9 +21,8 @@ import (
 	"errors"
 	"math/big"
 
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
-
-	"github.com/vulcanize/mcd_transformers/transformers/shared"
 )
 
 type TendConverter struct{}
@@ -36,7 +35,7 @@ func (TendConverter) ToModels(ethLogs []types.Log) (results []interface{}, err e
 		}
 
 		bidId := ethLog.Topics[2].Big()
-		guy := shared.GetHexWithoutPrefix(ethLog.Topics[1].Bytes())
+		guy := common.BytesToAddress(ethLog.Topics[1].Bytes())
 		lot := ethLog.Topics[3].Big().String()
 
 		lastDataItemStartIndex := len(ethLog.Data) - 32
@@ -55,7 +54,7 @@ func (TendConverter) ToModels(ethLogs []types.Log) (results []interface{}, err e
 			BidId:            bidId.String(),
 			Lot:              lot,
 			Bid:              bidValue,
-			Guy:              guy,
+			Guy:              guy.Hex(),
 			LogIndex:         logIndex,
 			TransactionIndex: transactionIndex,
 			Raw:              rawLog,

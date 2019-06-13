@@ -103,7 +103,7 @@ var _ = Describe("Executing the transformer", func() {
 		)
 
 		BeforeEach(func() {
-			ilk := "4554482d41000000000000000000000000000000000000000000000000000000"
+			ilk := "0x4554482d41000000000000000000000000000000000000000000000000000000"
 			ilkId, ilkErr = shared.GetOrCreateIlk(ilk, db)
 			Expect(ilkErr).NotTo(HaveOccurred())
 		})
@@ -192,7 +192,7 @@ var _ = Describe("Executing the transformer", func() {
 		)
 
 		BeforeEach(func() {
-			ilk := "434f4c312d410000000000000000000000000000000000000000000000000000"
+			ilk := "0x434f4c312d410000000000000000000000000000000000000000000000000000"
 			ilkID, ilkErr = shared.GetOrCreateIlk(ilk, db)
 			Expect(ilkErr).NotTo(HaveOccurred())
 			urn := "0x118D6a283f9044Ce17b95226822e5c73F50e0B90"
@@ -242,7 +242,7 @@ var _ = Describe("Executing the transformer", func() {
 	Describe("gem", func() {
 		var (
 			guy = "0x118D6a283f9044Ce17b95226822e5c73F50e0B90"
-			ilk = "434f4c312d410000000000000000000000000000000000000000000000000000"
+			ilk = "0x434f4c312d410000000000000000000000000000000000000000000000000000"
 		)
 
 		BeforeEach(func() {

@@ -30,7 +30,7 @@ var EthVatForkLogWithNegativeDinkDart = types.Log{
 
 var rawVatForkLogWithNegativeDinkDart, _ = json.Marshal(EthVatForkLogWithNegativeDinkDart)
 var VatForkModelWithNegativeDinkDart = vat_fork.VatForkModel{
-	Ilk:              "66616b6520696c6b000000000000000000000000000000000000000000000000",
+	Ilk:              "0x66616b6520696c6b000000000000000000000000000000000000000000000000",
 	Src:              "0x07Fa9eF6609cA7921112231F8f195138ebbA2977",
 	Dst:              "0x7526EB4f95e2a1394797Cb38a921Fb1EbA09291B",
 	Dink:             "-1000000000000000000000",
@@ -59,7 +59,7 @@ var EthVatForkLogWithPositiveDinkDart = types.Log{
 
 var rawVatForkLogWithPositiveDinkDart, _ = json.Marshal(EthVatForkLogWithPositiveDinkDart)
 var VatForkModelWithPositiveDinkDart = vat_fork.VatForkModel{
-	Ilk:              "66616b6520696c6b000000000000000000000000000000000000000000000000",
+	Ilk:              "0x66616b6520696c6b000000000000000000000000000000000000000000000000",
 	Src:              "0x07Fa9eF6609cA7921112231F8f195138ebbA2977",
 	Dst:              "0x7526EB4f95e2a1394797Cb38a921Fb1EbA09291B",
 	Dink:             "100000000000000",

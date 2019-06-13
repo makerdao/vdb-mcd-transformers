@@ -29,7 +29,7 @@ var EthSpotFileMatLog = types.Log{
 
 var rawSpotFileMatLog, _ = json.Marshal(EthSpotFileMatLog)
 var SpotFileMatModel = mat.SpotFileMatModel{
-	Ilk:              "4554482d41000000000000000000000000000000000000000000000000000000",
+	Ilk:              "0x4554482d41000000000000000000000000000000000000000000000000000000",
 	What:             "mat",
 	Data:             "1500000000000000000000000000",
 	LogIndex:         EthSpotFileMatLog.Index,
@@ -56,7 +56,7 @@ var EthSpotFilePipLog = types.Log{
 
 var rawSpotFilePipLog, _ = json.Marshal(EthSpotFilePipLog)
 var SpotFilePipModel = pip.SpotFilePipModel{
-	Ilk:              "4554482d41000000000000000000000000000000000000000000000000000000",
+	Ilk:              "0x4554482d41000000000000000000000000000000000000000000000000000000",
 	Pip:              "0x8C73Ec0fBCdEC6b8C060BC224D94740FD41f3774",
 	LogIndex:         EthSpotFilePipLog.Index,
 	TransactionIndex: EthSpotFilePipLog.TxIndex,

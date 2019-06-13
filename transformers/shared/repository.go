@@ -20,9 +20,9 @@ import (
 	"database/sql"
 
 	"github.com/jmoiron/sqlx"
+	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
-	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 )
 
 const (

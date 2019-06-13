@@ -47,7 +47,7 @@ var EthJugDripLog = types.Log{
 
 var rawJugDripLog, _ = json.Marshal(EthJugDripLog)
 var JugDripModel = jug_drip.JugDripModel{
-	Ilk:              "66616b6520696c6b000000000000000000000000000000000000000000000000",
+	Ilk:              "0x66616b6520696c6b000000000000000000000000000000000000000000000000",
 	LogIndex:         EthJugDripLog.Index,
 	TransactionIndex: EthJugDripLog.TxIndex,
 	Raw:              rawJugDripLog,

@@ -15,9 +15,6 @@ import (
 )
 
 var _ = Describe("Cat storage mappings", func() {
-	const (
-		fakeIlk = "fakeIlk"
-	)
 
 	var (
 		storageRepository *test_helpers.MockMakerStorageRepository
@@ -61,16 +58,16 @@ var _ = Describe("Cat storage mappings", func() {
 		})
 
 		Describe("ilk", func() {
-			var ilkFlipKey = common.BytesToHash(crypto.Keccak256(common.FromHex(fakeIlk + cat.IlksMappingIndex)))
+			var ilkFlipKey = common.BytesToHash(crypto.Keccak256(common.FromHex(test_helpers.FakeIlk + cat.IlksMappingIndex)))
 
 			BeforeEach(func() {
-				storageRepository.Ilks = []string{fakeIlk}
+				storageRepository.Ilks = []string{test_helpers.FakeIlk}
 			})
 
 			It("returns value metadata for ilk flip", func() {
 				expectedMetadata := utils.StorageValueMetadata{
 					Name: cat.IlkFlip,
-					Keys: map[utils.Key]string{constants.Ilk: fakeIlk},
+					Keys: map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk},
 					Type: utils.Address,
 				}
 				Expect(mappings.Lookup(ilkFlipKey)).To(Equal(expectedMetadata))
@@ -80,7 +77,7 @@ var _ = Describe("Cat storage mappings", func() {
 				ilkChopKey := storage.GetIncrementedKey(ilkFlipKey, 1)
 				expectedMetadata := utils.StorageValueMetadata{
 					Name: cat.IlkChop,
-					Keys: map[utils.Key]string{constants.Ilk: fakeIlk},
+					Keys: map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk},
 					Type: utils.Uint256,
 				}
 				Expect(mappings.Lookup(ilkChopKey)).To(Equal(expectedMetadata))
@@ -90,7 +87,7 @@ var _ = Describe("Cat storage mappings", func() {
 				ilkLumpKey := storage.GetIncrementedKey(ilkFlipKey, 2)
 				expectedMetadata := utils.StorageValueMetadata{
 					Name: cat.IlkLump,
-					Keys: map[utils.Key]string{constants.Ilk: fakeIlk},
+					Keys: map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk},
 					Type: utils.Uint256,
 				}
 				Expect(mappings.Lookup(ilkLumpKey)).To(Equal(expectedMetadata))

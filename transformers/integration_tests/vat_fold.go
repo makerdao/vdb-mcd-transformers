@@ -85,7 +85,7 @@ var _ = XDescribe("VatFold Transformer", func() {
 
 		Expect(len(dbResults)).To(Equal(1))
 		dbResult := dbResults[0]
-		ilkID, err := shared.GetOrCreateIlk("434f4c312d410000000000000000000000000000000000000000000000000000", db)
+		ilkID, err := shared.GetOrCreateIlk("0x434f4c312d410000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
 		urnID, err := shared.GetOrCreateUrn("0x21444AC712cCD21ce82AF24eA1aEc64Cf07361D2", ilkID, db)
 		Expect(err).NotTo(HaveOccurred())
@@ -136,7 +136,7 @@ var _ = XDescribe("VatFold Transformer", func() {
 
 		Expect(len(dbResults)).To(Equal(1))
 		dbResult := dbResults[0]
-		ilkID, err := shared.GetOrCreateIlk("434f4c312d410000000000000000000000000000000000000000000000000000", db)
+		ilkID, err := shared.GetOrCreateIlk("0x434f4c312d410000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
 		urnID, err := shared.GetOrCreateUrn("0x21444AC712cCD21ce82AF24eA1aEc64Cf07361D2", ilkID, db)
 		Expect(err).NotTo(HaveOccurred())

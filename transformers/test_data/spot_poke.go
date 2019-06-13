@@ -57,7 +57,7 @@ var SpotPokeEntity = spot_poke.SpotPokeEntity{
 
 var rawLogJson, _ = json.Marshal(EthSpotPokeLog)
 var SpotPokeModel = spot_poke.SpotPokeModel{
-	Ilk:              "434f4c352d410000000000000000000000000000000000000000000000000000",
+	Ilk:              "0x434f4c352d410000000000000000000000000000000000000000000000000000",
 	Value:            "89066421500000000.000000",
 	Spot:             "46877063947368421052631578",
 	TransactionIndex: 1,

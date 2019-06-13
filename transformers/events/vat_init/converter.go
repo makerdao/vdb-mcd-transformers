@@ -21,8 +21,6 @@ import (
 	"errors"
 
 	"github.com/ethereum/go-ethereum/core/types"
-
-	"github.com/vulcanize/mcd_transformers/transformers/shared"
 )
 
 type VatInitConverter struct{}
@@ -34,7 +32,7 @@ func (VatInitConverter) ToModels(ethLogs []types.Log) ([]interface{}, error) {
 		if err != nil {
 			return nil, err
 		}
-		ilk := shared.GetHexWithoutPrefix(ethLog.Topics[1].Bytes())
+		ilk := ethLog.Topics[1].Hex()
 		raw, err := json.Marshal(ethLog)
 		if err != nil {
 			return nil, err

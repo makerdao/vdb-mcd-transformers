@@ -50,7 +50,7 @@ var EthJugFileIlkLog = types.Log{
 
 var rawJugFileIlkLog, _ = json.Marshal(EthJugFileIlkLog)
 var JugFileIlkModel = ilk2.JugFileIlkModel{
-	Ilk:              "434f4c322d410000000000000000000000000000000000000000000000000000",
+	Ilk:              "0x434f4c322d410000000000000000000000000000000000000000000000000000",
 	What:             "duty",
 	Data:             "1000000000937303470807876289",
 	LogIndex:         EthJugFileIlkLog.Index,

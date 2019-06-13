@@ -100,7 +100,7 @@ var _ = Describe("SpotFile LogNoteTransformers", func() {
 			getSpotErr := db.Get(&dbResult, `SELECT ilk_id, what, data FROM maker.spot_file_mat`)
 			Expect(getSpotErr).NotTo(HaveOccurred())
 
-			ilkID, ilkErr := shared.GetOrCreateIlk("4554482d41000000000000000000000000000000000000000000000000000000", db)
+			ilkID, ilkErr := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
 			Expect(ilkErr).NotTo(HaveOccurred())
 			Expect(dbResult.Ilk).To(Equal(strconv.Itoa(ilkID)))
 			Expect(dbResult.What).To(Equal("mat"))
@@ -173,7 +173,7 @@ var _ = Describe("SpotFile LogNoteTransformers", func() {
 			getSpotErr := db.Get(&dbResult, `SELECT ilk_id, pip from maker.spot_file_pip`)
 			Expect(getSpotErr).NotTo(HaveOccurred())
 
-			ilkID, ilkErr := shared.GetOrCreateIlk("434f4c332d410000000000000000000000000000000000000000000000000000", db)
+			ilkID, ilkErr := shared.GetOrCreateIlk("0x434f4c332d410000000000000000000000000000000000000000000000000000", db)
 			Expect(ilkErr).NotTo(HaveOccurred())
 			Expect(dbResult.Ilk).To(Equal(strconv.Itoa(ilkID)))
 			Expect(dbResult.Pip).To(Equal("0xaa32EB42CBf3Bdb746b659c8DAF443f710497d80"))
