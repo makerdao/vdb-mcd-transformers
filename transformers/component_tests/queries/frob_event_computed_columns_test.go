@@ -60,13 +60,13 @@ var _ = Describe("Frob event computed columns", func() {
 		It("returns ilk_state for a frob_event", func() {
 			ilkValues := test_helpers.GetIlkValues(0)
 			test_helpers.CreateIlk(db, fakeHeader, ilkValues, test_helpers.FakeIlkVatMetadatas,
-				test_helpers.FakeIlkCatMetadatas, test_helpers.FakeIlkJugMetadatas)
+				test_helpers.FakeIlkCatMetadatas, test_helpers.FakeIlkJugMetadatas, test_helpers.FakeIlkSpotMetadatas)
 
 			expectedIlk := test_helpers.IlkStateFromValues(test_helpers.FakeIlk.Hex, fakeHeader.Timestamp, fakeHeader.Timestamp, ilkValues)
 
 			var result test_helpers.IlkState
 			getIlkErr := db.Get(&result,
-				`SELECT ilk_identifier, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated
+				`SELECT ilk_identifier, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated
                     FROM api.frob_event_ilk(
                         (SELECT (ilk_identifier, urn_identifier, dink, dart, block_height, tx_idx)::api.frob_event FROM api.all_frobs($1))
                     )`, test_helpers.FakeIlk.Identifier)

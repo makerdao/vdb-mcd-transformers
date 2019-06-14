@@ -7,6 +7,7 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/component_tests/queries/test_helpers"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/cat"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/jug"
+	"github.com/vulcanize/mcd_transformers/transformers/storage/spot"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/vat"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
@@ -28,6 +29,7 @@ var _ = Describe("Ilk State Query", func() {
 		vatRepository    vat.VatStorageRepository
 		catRepository    cat.CatStorageRepository
 		jugRepository    jug.JugStorageRepository
+		spotRepository   spot.SpotStorageRepository
 		headerRepository repositories.HeaderRepository
 	)
 
@@ -37,6 +39,7 @@ var _ = Describe("Ilk State Query", func() {
 		vatRepository.SetDB(db)
 		catRepository.SetDB(db)
 		jugRepository.SetDB(db)
+		spotRepository.SetDB(db)
 		headerRepository = repositories.NewHeaderRepository(db)
 
 		blockOneHeader = fakes.GetFakeHeaderWithTimestamp(int64(111111111), int64(blockOne))
@@ -64,11 +67,11 @@ var _ = Describe("Ilk State Query", func() {
 	It("gets an ilk", func() {
 		ilkValues := test_helpers.GetIlkValues(0)
 		test_helpers.CreateIlk(db, blockOneHeader, ilkValues, test_helpers.FakeIlkVatMetadatas,
-			test_helpers.FakeIlkCatMetadatas, test_helpers.FakeIlkJugMetadatas)
+			test_helpers.FakeIlkCatMetadatas, test_helpers.FakeIlkJugMetadatas, test_helpers.FakeIlkSpotMetadatas)
 
 		var dbResult test_helpers.IlkState
 		err := db.Get(&dbResult,
-			`SELECT ilk_identifier, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated from api.get_ilk($1, $2)`,
+			`SELECT ilk_identifier, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated from api.get_ilk($1, $2)`,
 			test_helpers.FakeIlk.Identifier, blockOne)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -81,19 +84,19 @@ var _ = Describe("Ilk State Query", func() {
 		ilkValues := test_helpers.GetIlkValues(1)
 		anotherIlkValues := test_helpers.GetIlkValues(2)
 		test_helpers.CreateIlk(db, blockOneHeader, ilkValues, test_helpers.FakeIlkVatMetadatas,
-			test_helpers.FakeIlkCatMetadatas, test_helpers.FakeIlkJugMetadatas)
+			test_helpers.FakeIlkCatMetadatas, test_helpers.FakeIlkJugMetadatas, test_helpers.FakeIlkSpotMetadatas)
 		test_helpers.CreateIlk(db, blockOneHeader, anotherIlkValues, test_helpers.AnotherFakeIlkVatMetadatas,
-			test_helpers.AnotherFakeIlkCatMetadatas, test_helpers.AnotherFakeIlkJugMetadatas)
+			test_helpers.AnotherFakeIlkCatMetadatas, test_helpers.AnotherFakeIlkJugMetadatas, test_helpers.AnotherFakeIlkSpotMetadatas)
 
 		var fakeIlkResult test_helpers.IlkState
 		err := db.Get(&fakeIlkResult,
-			`SELECT ilk_identifier, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated from api.get_ilk($1, $2)`,
+			`SELECT ilk_identifier, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated from api.get_ilk($1, $2)`,
 			test_helpers.FakeIlk.Identifier, blockOne)
 		Expect(err).NotTo(HaveOccurred())
 
 		var anotherFakeIlkResult test_helpers.IlkState
 		err = db.Get(&anotherFakeIlkResult,
-			`SELECT ilk_identifier, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated from api.get_ilk($1, $2)`,
+			`SELECT ilk_identifier, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated from api.get_ilk($1, $2)`,
 			test_helpers.AnotherFakeIlk.Identifier, blockOne)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -121,10 +124,10 @@ var _ = Describe("Ilk State Query", func() {
 		It("gets the Ilk for block one", func() {
 			fakeIlkvalues := test_helpers.GetIlkValues(0)
 			test_helpers.CreateIlk(db, blockOneHeader, fakeIlkvalues, test_helpers.FakeIlkVatMetadatas,
-				test_helpers.FakeIlkCatMetadatas, test_helpers.FakeIlkJugMetadatas)
+				test_helpers.FakeIlkCatMetadatas, test_helpers.FakeIlkJugMetadatas, test_helpers.FakeIlkSpotMetadatas)
 
 			var blockOneDbResult test_helpers.IlkState
-			err := db.Get(&blockOneDbResult, `SELECT ilk_identifier, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated from api.get_ilk($1, $2)`,
+			err := db.Get(&blockOneDbResult, `SELECT ilk_identifier, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated from api.get_ilk($1, $2)`,
 				test_helpers.FakeIlk.Identifier, blockOne)
 			Expect(err).NotTo(HaveOccurred())
 
@@ -136,12 +139,12 @@ var _ = Describe("Ilk State Query", func() {
 		It("gets the Ilk for block two", func() {
 			blockOneFakeIlkValues := test_helpers.GetIlkValues(1)
 			test_helpers.CreateIlk(db, blockOneHeader, blockOneFakeIlkValues, test_helpers.FakeIlkVatMetadatas,
-				test_helpers.EmptyMetadatas, test_helpers.EmptyMetadatas)
+				test_helpers.EmptyMetadatas, test_helpers.EmptyMetadatas, test_helpers.EmptyMetadatas)
 			// block two doesn't update rate or art
 			blockTwoFakeIlkValues := test_helpers.GetIlkValues(2)
 			vatMetadatasWithoutRateOrArt := []utils.StorageValueMetadata{test_helpers.FakeIlkSpotMetadata, test_helpers.FakeIlkLineMetadata}
 			test_helpers.CreateIlk(db, blockTwoHeader, blockTwoFakeIlkValues, vatMetadatasWithoutRateOrArt,
-				test_helpers.EmptyMetadatas, test_helpers.EmptyMetadatas)
+				test_helpers.EmptyMetadatas, test_helpers.EmptyMetadatas, test_helpers.EmptyMetadatas)
 
 			var blockTwoDbResult test_helpers.IlkState
 			err := db.Get(&blockTwoDbResult, `SELECT rate, art, spot, line from api.get_ilk($1, $2)`,
@@ -161,17 +164,17 @@ var _ = Describe("Ilk State Query", func() {
 			//no updates to ink
 			blockOneFakeIlkValues := test_helpers.GetIlkValues(1)
 			test_helpers.CreateIlk(db, blockOneHeader, blockOneFakeIlkValues, test_helpers.FakeIlkVatMetadatas,
-				test_helpers.EmptyMetadatas, test_helpers.EmptyMetadatas)
+				test_helpers.EmptyMetadatas, test_helpers.EmptyMetadatas, test_helpers.EmptyMetadatas)
 			// block two doesn't update rate or art
 			blockTwoFakeIlkValues := test_helpers.GetIlkValues(1)
 			vatMetadatasWithoutRateOrArt := []utils.StorageValueMetadata{test_helpers.FakeIlkSpotMetadata, test_helpers.FakeIlkLineMetadata}
 			test_helpers.CreateIlk(db, blockTwoHeader, blockTwoFakeIlkValues, vatMetadatasWithoutRateOrArt,
-				test_helpers.EmptyMetadatas, test_helpers.EmptyMetadatas)
+				test_helpers.EmptyMetadatas, test_helpers.EmptyMetadatas, test_helpers.EmptyMetadatas)
 			// block three doesn't update art
 			blockThreeFakeIlkValues := test_helpers.GetIlkValues(3)
 			vatMetadatasWithoutArt := []utils.StorageValueMetadata{test_helpers.FakeIlkRateMetadata, test_helpers.FakeIlkSpotMetadata, test_helpers.FakeIlkLineMetadata}
 			test_helpers.CreateIlk(db, blockThreeHeader, blockThreeFakeIlkValues, vatMetadatasWithoutArt,
-				test_helpers.EmptyMetadatas, test_helpers.EmptyMetadatas)
+				test_helpers.EmptyMetadatas, test_helpers.EmptyMetadatas, test_helpers.EmptyMetadatas)
 
 			var blockThreeDbResult test_helpers.IlkState
 			err := db.Get(&blockThreeDbResult, `SELECT rate, art, spot, line from api.get_ilk($1, $2)`,
@@ -190,22 +193,22 @@ var _ = Describe("Ilk State Query", func() {
 		It("gets more than one ilk as of block three", func() {
 			blockOneFakeIlkValues := test_helpers.GetIlkValues(1)
 			test_helpers.CreateIlk(db, blockOneHeader, blockOneFakeIlkValues, test_helpers.FakeIlkVatMetadatas,
-				test_helpers.EmptyMetadatas, test_helpers.EmptyMetadatas)
+				test_helpers.EmptyMetadatas, test_helpers.EmptyMetadatas, test_helpers.EmptyMetadatas)
 			blockOneAnotherFakeIlkState := test_helpers.GetIlkValues(2)
 			test_helpers.CreateIlk(db, blockOneHeader, blockOneAnotherFakeIlkState, test_helpers.AnotherFakeIlkVatMetadatas,
-				test_helpers.EmptyMetadatas, test_helpers.EmptyMetadatas)
+				test_helpers.EmptyMetadatas, test_helpers.EmptyMetadatas, test_helpers.EmptyMetadatas)
 			// block two doesn't update rate or art for fakeIlk
 			// and doesn't update rate, art or line for anotherFakeIlk
 			blockTwoFakeIlkValues := test_helpers.GetIlkValues(1)
 			vatMetadatasWithoutRateOrArt := []utils.StorageValueMetadata{test_helpers.FakeIlkSpotMetadata, test_helpers.FakeIlkLineMetadata}
 			test_helpers.CreateIlk(db, blockTwoHeader, blockTwoFakeIlkValues, vatMetadatasWithoutRateOrArt,
-				test_helpers.EmptyMetadatas, test_helpers.EmptyMetadatas)
+				test_helpers.EmptyMetadatas, test_helpers.EmptyMetadatas, test_helpers.EmptyMetadatas)
 			// block three doesn't update ink
 			// and doesn't update take, rate or ink for anotherFakeIlk
 			blockThreeFakeIlkValues := test_helpers.GetIlkValues(3)
 			vatMetadatasWithoutRate := []utils.StorageValueMetadata{test_helpers.FakeIlkArtMetadata, test_helpers.FakeIlkSpotMetadata, test_helpers.FakeIlkLineMetadata}
 			test_helpers.CreateIlk(db, blockThreeHeader, blockThreeFakeIlkValues, vatMetadatasWithoutRate,
-				test_helpers.EmptyMetadatas, test_helpers.EmptyMetadatas)
+				test_helpers.EmptyMetadatas, test_helpers.EmptyMetadatas, test_helpers.EmptyMetadatas)
 
 			var fakeIlkResult test_helpers.IlkState
 			err := db.Get(&fakeIlkResult, `SELECT ilk_identifier, rate, art, spot, line from api.get_ilk($1, $2)`,
@@ -241,10 +244,10 @@ var _ = Describe("Ilk State Query", func() {
 		blockOneFakeIlkValues := test_helpers.GetIlkValues(1)
 		blockOneFakeIlkValues[vat.IlkRate] = ""
 		test_helpers.CreateIlk(db, blockOneHeader, blockOneFakeIlkValues, vatMetadatasWithoutRate,
-			test_helpers.FakeIlkCatMetadatas, test_helpers.FakeIlkJugMetadatas)
+			test_helpers.FakeIlkCatMetadatas, test_helpers.FakeIlkJugMetadatas, test_helpers.FakeIlkSpotMetadatas)
 
 		var blockOneDbResult test_helpers.IlkState
-		err := db.Get(&blockOneDbResult, `SELECT ilk_identifier, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated from api.get_ilk($1, $2)`,
+		err := db.Get(&blockOneDbResult, `SELECT ilk_identifier, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated from api.get_ilk($1, $2)`,
 			test_helpers.FakeIlk.Identifier, blockOne)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -258,15 +261,15 @@ var _ = Describe("Ilk State Query", func() {
 		// anotherFakeIlk created at block2
 		blockOneFakeIlkValues := test_helpers.GetIlkValues(0)
 		test_helpers.CreateIlk(db, blockOneHeader, blockOneFakeIlkValues, test_helpers.FakeIlkVatMetadatas,
-			test_helpers.EmptyMetadatas, test_helpers.EmptyMetadatas)
+			test_helpers.EmptyMetadatas, test_helpers.EmptyMetadatas, test_helpers.EmptyMetadatas)
 
 		blockTwoFakeIlkValues := test_helpers.GetIlkValues(1)
 		test_helpers.CreateIlk(db, blockTwoHeader, blockTwoFakeIlkValues, test_helpers.EmptyMetadatas,
-			test_helpers.EmptyMetadatas, test_helpers.FakeIlkJugMetadatas)
+			test_helpers.EmptyMetadatas, test_helpers.FakeIlkJugMetadatas, test_helpers.EmptyMetadatas)
 
 		blockTwoAnotherFakeIlkValues := test_helpers.GetIlkValues(2)
 		test_helpers.CreateIlk(db, blockTwoHeader, blockTwoAnotherFakeIlkValues, test_helpers.EmptyMetadatas,
-			test_helpers.EmptyMetadatas, test_helpers.AnotherFakeIlkJugMetadatas)
+			test_helpers.EmptyMetadatas, test_helpers.AnotherFakeIlkJugMetadatas, test_helpers.EmptyMetadatas)
 
 		var fakeIlkBlockOneDbResult test_helpers.IlkState
 		err := db.Get(&fakeIlkBlockOneDbResult, `SELECT ilk_identifier, created, updated from api.get_ilk($1, $2)`,

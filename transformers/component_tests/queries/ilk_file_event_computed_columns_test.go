@@ -55,13 +55,13 @@ var _ = Describe("Ilk file event computed columns", func() {
 		It("returns ilk_state for an ilk_file_event", func() {
 			ilkValues := test_helpers.GetIlkValues(0)
 			test_helpers.CreateIlk(db, fakeHeader, ilkValues, test_helpers.FakeIlkVatMetadatas,
-				test_helpers.FakeIlkCatMetadatas, test_helpers.FakeIlkJugMetadatas)
+				test_helpers.FakeIlkCatMetadatas, test_helpers.FakeIlkJugMetadatas, test_helpers.FakeIlkSpotMetadatas)
 
 			expectedIlk := test_helpers.IlkStateFromValues(test_helpers.FakeIlk.Hex, fakeHeader.Timestamp, fakeHeader.Timestamp, ilkValues)
 
 			var result test_helpers.IlkState
 			err := db.Get(&result,
-				`SELECT ilk_identifier, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated
+				`SELECT ilk_identifier, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated
                     FROM api.ilk_file_event_ilk(
                         (SELECT (ilk_identifier, what, data, block_height, tx_idx)::api.ilk_file_event FROM api.all_ilk_file_events($1))
                     )`, test_helpers.FakeIlk.Identifier)

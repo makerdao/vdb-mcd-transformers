@@ -148,6 +148,8 @@ CREATE TYPE api.ilk_state AS (
 	flip text,
 	rho numeric,
 	duty numeric,
+	pip text,
+	mat numeric,
 	created timestamp without time zone,
 	updated timestamp without time zone
 );
@@ -426,7 +428,15 @@ WITH rates AS (SELECT DISTINCT ON (ilk_id) rate, ilk_id, block_hash
      duties AS (SELECT DISTINCT ON (ilk_id) duty, ilk_id, block_hash
                 FROM maker.jug_ilk_duty
                 WHERE block_number <= all_ilks.block_height
-                ORDER BY ilk_id, block_number DESC)
+                ORDER BY ilk_id, block_number DESC),
+     pips AS (SELECT DISTINCT ON (ilk_id) pip, ilk_id, block_hash
+              FROM maker.spot_ilk_pip
+              WHERE block_number <= all_ilks.block_height
+              ORDER BY ilk_id, block_number DESC),
+     mats AS (SELECT DISTINCT ON (ilk_id) mat, ilk_id, block_hash
+              FROM maker.spot_ilk_mat
+              WHERE block_number <= all_ilks.block_height
+              ORDER BY ilk_id, block_number DESC)
 SELECT ilks.identifier,
        all_ilks.block_height,
        rates.rate,
@@ -439,6 +449,8 @@ SELECT ilks.identifier,
        flips.flip,
        rhos.rho,
        duties.duty,
+       pips.pip,
+       mats.mat,
        (SELECT api.epoch_to_datetime(h.block_timestamp) AS created
         FROM api.get_ilk_blocks_before(ilks.identifier, all_ilks.block_height) b
                  JOIN headers h on h.block_number = b.block_height
@@ -460,6 +472,8 @@ FROM maker.ilks AS ilks
          LEFT JOIN flips on flips.ilk_id = ilks.id
          LEFT JOIN rhos on rhos.ilk_id = ilks.id
          LEFT JOIN duties on duties.ilk_id = ilks.id
+         LEFT JOIN pips on pips.ilk_id = ilks.id
+         LEFT JOIN mats on mats.ilk_id = ilks.id
 WHERE (
               rates.rate is not null OR
               arts.art is not null OR
@@ -470,7 +484,9 @@ WHERE (
               lumps.lump is not null OR
               flips.flip is not null OR
               rhos.rho is not null OR
-              duties.duty is not null
+              duties.duty is not null OR
+              pips.pip is not null OR
+              mats.mat is not null
           )
 $$;
 
@@ -803,6 +819,18 @@ WITH ilk AS (SELECT id FROM maker.ilks WHERE identifier = ilk_identifier),
                   AND block_number <= get_ilk.block_height
                 ORDER BY ilk_id, block_number DESC
                 LIMIT 1),
+     pips AS (SELECT pip, ilk_id, block_hash
+              FROM maker.spot_ilk_pip
+              WHERE ilk_id = (SELECT id FROM ilk)
+                AND block_number <= get_ilk.block_height
+              ORDER BY ilk_id, block_number DESC
+              LIMIT 1),
+     mats AS (SELECT mat, ilk_id, block_hash
+              FROM maker.spot_ilk_mat
+              WHERE ilk_id = (SELECT id FROM ilk)
+                AND block_number <= get_ilk.block_height
+              ORDER BY ilk_id, block_number DESC
+              LIMIT 1),
      relevant_blocks AS (SELECT * FROM api.get_ilk_blocks_before(ilk_identifier, get_ilk.block_height)),
      created AS (SELECT DISTINCT ON (relevant_blocks.ilk_id,
          relevant_blocks.block_height) relevant_blocks.block_height,
@@ -835,6 +863,8 @@ SELECT ilks.identifier,
        flips.flip,
        rhos.rho,
        duties.duty,
+       pips.pip,
+       mats.mat,
        created.datetime,
        updated.datetime
 FROM maker.ilks AS ilks
@@ -848,6 +878,8 @@ FROM maker.ilks AS ilks
          LEFT JOIN flips ON flips.ilk_id = ilks.id
          LEFT JOIN rhos ON rhos.ilk_id = ilks.id
          LEFT JOIN duties ON duties.ilk_id = ilks.id
+         LEFT JOIN pips ON pips.ilk_id = ilks.id
+         LEFT JOIN mats ON mats.ilk_id = ilks.id
          LEFT JOIN created ON created.ilk_id = ilks.id
          LEFT JOIN updated ON updated.ilk_id = ilks.id
 WHERE (
@@ -860,7 +892,9 @@ WHERE (
               lumps.lump is not null OR
               flips.flip is not null OR
               rhos.rho is not null OR
-              duties.duty is not null
+              duties.duty is not null OR
+              pips.pip is not null OR
+              mats.mat is not null
           )
 $$;
 
