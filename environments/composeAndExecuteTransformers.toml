@@ -15,6 +15,7 @@
     transformerNames = [
         "cat",
         "jug",
+        "spot",
         "vat",
         "vow",
         "bite",
@@ -61,6 +62,12 @@
         rank = "0"
     [exporter.jug]
         path = "transformers/storage/jug/initializer"
+        type = "eth_storage"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        rank = "0"
+    [exporter.spot]
+        path = "transformers/storage/spot/initializer"
         type = "eth_storage"
         repository = "github.com/vulcanize/mcd_transformers"
         migrations = "db/migrations"
