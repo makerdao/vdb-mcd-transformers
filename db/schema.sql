@@ -2331,6 +2331,104 @@ ALTER SEQUENCE maker.spot_file_pip_id_seq OWNED BY maker.spot_file_pip.id;
 
 
 --
+-- Name: spot_ilk_mat; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.spot_ilk_mat (
+    id integer NOT NULL,
+    block_number bigint,
+    block_hash text,
+    ilk_id integer NOT NULL,
+    mat numeric NOT NULL
+);
+
+
+--
+-- Name: spot_ilk_mat_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.spot_ilk_mat_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: spot_ilk_mat_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.spot_ilk_mat_id_seq OWNED BY maker.spot_ilk_mat.id;
+
+
+--
+-- Name: spot_ilk_pip; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.spot_ilk_pip (
+    id integer NOT NULL,
+    block_number bigint,
+    block_hash text,
+    ilk_id integer NOT NULL,
+    pip text
+);
+
+
+--
+-- Name: spot_ilk_pip_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.spot_ilk_pip_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: spot_ilk_pip_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.spot_ilk_pip_id_seq OWNED BY maker.spot_ilk_pip.id;
+
+
+--
+-- Name: spot_par; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.spot_par (
+    id integer NOT NULL,
+    block_number bigint,
+    block_hash text,
+    par numeric NOT NULL
+);
+
+
+--
+-- Name: spot_par_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.spot_par_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: spot_par_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.spot_par_id_seq OWNED BY maker.spot_par.id;
+
+
+--
 -- Name: spot_poke; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -2364,6 +2462,38 @@ CREATE SEQUENCE maker.spot_poke_id_seq
 --
 
 ALTER SEQUENCE maker.spot_poke_id_seq OWNED BY maker.spot_poke.id;
+
+
+--
+-- Name: spot_vat; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.spot_vat (
+    id integer NOT NULL,
+    block_number bigint,
+    block_hash text,
+    vat text
+);
+
+
+--
+-- Name: spot_vat_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.spot_vat_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: spot_vat_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.spot_vat_id_seq OWNED BY maker.spot_vat.id;
 
 
 --
@@ -4540,10 +4670,38 @@ ALTER TABLE ONLY maker.spot_file_pip ALTER COLUMN id SET DEFAULT nextval('maker.
 
 
 --
+-- Name: spot_ilk_mat id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.spot_ilk_mat ALTER COLUMN id SET DEFAULT nextval('maker.spot_ilk_mat_id_seq'::regclass);
+
+
+--
+-- Name: spot_ilk_pip id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.spot_ilk_pip ALTER COLUMN id SET DEFAULT nextval('maker.spot_ilk_pip_id_seq'::regclass);
+
+
+--
+-- Name: spot_par id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.spot_par ALTER COLUMN id SET DEFAULT nextval('maker.spot_par_id_seq'::regclass);
+
+
+--
 -- Name: spot_poke id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.spot_poke ALTER COLUMN id SET DEFAULT nextval('maker.spot_poke_id_seq'::regclass);
+
+
+--
+-- Name: spot_vat id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.spot_vat ALTER COLUMN id SET DEFAULT nextval('maker.spot_vat_id_seq'::regclass);
 
 
 --
@@ -5404,6 +5562,54 @@ ALTER TABLE ONLY maker.spot_file_pip
 
 
 --
+-- Name: spot_ilk_mat spot_ilk_mat_block_number_block_hash_ilk_id_mat_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.spot_ilk_mat
+    ADD CONSTRAINT spot_ilk_mat_block_number_block_hash_ilk_id_mat_key UNIQUE (block_number, block_hash, ilk_id, mat);
+
+
+--
+-- Name: spot_ilk_mat spot_ilk_mat_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.spot_ilk_mat
+    ADD CONSTRAINT spot_ilk_mat_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: spot_ilk_pip spot_ilk_pip_block_number_block_hash_ilk_id_pip_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.spot_ilk_pip
+    ADD CONSTRAINT spot_ilk_pip_block_number_block_hash_ilk_id_pip_key UNIQUE (block_number, block_hash, ilk_id, pip);
+
+
+--
+-- Name: spot_ilk_pip spot_ilk_pip_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.spot_ilk_pip
+    ADD CONSTRAINT spot_ilk_pip_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: spot_par spot_par_block_number_block_hash_par_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.spot_par
+    ADD CONSTRAINT spot_par_block_number_block_hash_par_key UNIQUE (block_number, block_hash, par);
+
+
+--
+-- Name: spot_par spot_par_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.spot_par
+    ADD CONSTRAINT spot_par_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: spot_poke spot_poke_header_id_tx_idx_log_idx_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -5417,6 +5623,22 @@ ALTER TABLE ONLY maker.spot_poke
 
 ALTER TABLE ONLY maker.spot_poke
     ADD CONSTRAINT spot_poke_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: spot_vat spot_vat_block_number_block_hash_vat_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.spot_vat
+    ADD CONSTRAINT spot_vat_block_number_block_hash_vat_key UNIQUE (block_number, block_hash, vat);
+
+
+--
+-- Name: spot_vat spot_vat_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.spot_vat
+    ADD CONSTRAINT spot_vat_pkey PRIMARY KEY (id);
 
 
 --
@@ -6530,6 +6752,22 @@ ALTER TABLE ONLY maker.spot_file_pip
 
 ALTER TABLE ONLY maker.spot_file_pip
     ADD CONSTRAINT spot_file_pip_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id) ON DELETE CASCADE;
+
+
+--
+-- Name: spot_ilk_mat spot_ilk_mat_ilk_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.spot_ilk_mat
+    ADD CONSTRAINT spot_ilk_mat_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id) ON DELETE CASCADE;
+
+
+--
+-- Name: spot_ilk_pip spot_ilk_pip_ilk_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.spot_ilk_pip
+    ADD CONSTRAINT spot_ilk_pip_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id) ON DELETE CASCADE;
 
 
 --
