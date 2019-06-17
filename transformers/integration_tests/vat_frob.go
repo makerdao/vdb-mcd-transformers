@@ -90,7 +90,7 @@ var _ = Describe("Vat frob Transformer", func() {
 		Expect(len(dbResult)).To(Equal(1))
 		ilkID, err := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
-		urnID, err := shared.GetOrCreateUrn("0xA09408f055A8F7AFD33e9F17f82f33739bE2693c", ilkID, db)
+		urnID, err := shared.GetOrCreateUrn("0xa09408f055a8F7aFD33e9F17f82f33739bE2693c", ilkID, db)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(dbResult[0].Urn).To(Equal(strconv.Itoa(urnID)))

@@ -31,6 +31,20 @@ CREATE SCHEMA maker;
 
 
 --
+-- Name: citext; Type: EXTENSION; Schema: -; Owner: -
+--
+
+CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA public;
+
+
+--
+-- Name: EXTENSION citext; Type: COMMENT; Schema: -; Owner: -
+--
+
+COMMENT ON EXTENSION citext IS 'data type for case-insensitive character strings';
+
+
+--
 -- Name: bite_event; Type: TYPE; Schema: api; Owner: -
 --
 
@@ -2550,7 +2564,7 @@ ALTER SEQUENCE maker.tend_id_seq OWNED BY maker.tend.id;
 CREATE TABLE maker.urns (
     id integer NOT NULL,
     ilk_id integer NOT NULL,
-    identifier text
+    identifier public.citext
 );
 
 
