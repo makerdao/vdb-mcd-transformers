@@ -27,7 +27,7 @@ import (
 
 func TestFlip(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "Flip Suite")
+	RunSpecs(t, "Cat.file Flip Suite")
 }
 
 var _ = BeforeSuite(func() {

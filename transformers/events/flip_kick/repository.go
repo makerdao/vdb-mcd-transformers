@@ -40,6 +40,10 @@ func (repository FlipKickRepository) Create(headerID int64, models []interface{}
 	for _, model := range models {
 		flipKickModel, ok := model.(FlipKickModel)
 		if !ok {
+			rollbackErr := tx.Rollback()
+			if rollbackErr != nil {
+				log.Error("failed to rollback ", rollbackErr)
+			}
 			return fmt.Errorf("model of type %T, not %T", model, FlipKickModel{})
 		}
 

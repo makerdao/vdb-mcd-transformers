@@ -90,6 +90,10 @@ var _ = Describe("Signature constants", func() {
 		Expect(SpotFilePipSignature()).To(Equal("0xd4e8be8300000000000000000000000000000000000000000000000000000000"))
 	})
 
+	It("generates spot poke signature", func() {
+		Expect(SpotPokeSignature()).To(Equal("0xdfd7467e425a8107cfd368d159957692c25085aacbcf5228ce08f10f2146486e"))
+	})
+
 	It("generates tend signature", func() {
 		Expect(TendSignature()).To(Equal("0x4b43ed1200000000000000000000000000000000000000000000000000000000"))
 	})

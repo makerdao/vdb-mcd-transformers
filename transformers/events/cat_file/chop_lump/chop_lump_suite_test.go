@@ -27,7 +27,7 @@ import (
 
 func TestChopLump(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "ChopLump Suite")
+	RunSpecs(t, "Cat.file ChopLump Suite")
 }
 
 var _ = BeforeSuite(func() {

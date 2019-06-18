@@ -34,6 +34,7 @@
         "pip_log_value",
         "spot_file_mat",
         "spot_file_pip",
+        "spot_poke",
         "tend",
         "vat_file_debt_ceiling",
         "vat_file_ilk",
@@ -156,6 +157,12 @@
         rank = "0"
     [exporter.jug_init]
         path = "transformers/events/jug_init/initializer"
+        type = "eth_event"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        rank = "0"
+    [exporter.spot_poke]
+        path = "transformers/events/spot_poke/initializer"
         type = "eth_event"
         repository = "github.com/vulcanize/mcd_transformers"
         migrations = "db/migrations"
@@ -285,6 +292,7 @@
             mcd_flap = "0x8868BAd8e74FcA4505676D1B5B21EcC23328d132"
             mcd_flop = "0x6191C9b0086c2eBF92300cC507009b53996FbFFa"
             MCD_JUG  = "0xee59115d5e12f1d6e6c580cacd84374fbaa9a484"
+            MCD_SPOT = "0xa57d4123c8a80ac410e924df9d5e47765ffd1375"
             MCD_VAT  = "0x57aa8b02f5d3e28371fedcf672c8668869f9aac7"
             MCD_SPOT = "0xa57d4123c8a80ac410e924df9d5e47765ffd1375"
             MCD_VOW  = "0x528c10d35d9612d1667d2d9b8915f80a573a800b"

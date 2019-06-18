@@ -39,8 +39,11 @@ func (repository FlopKickRepository) Create(headerID int64, models []interface{}
 	}
 	for _, flopKick := range models {
 		flopKickModel, ok := flopKick.(Model)
-
 		if !ok {
+			rollbackErr := tx.Rollback()
+			if rollbackErr != nil {
+				log.Error("failed to rollback ", rollbackErr)
+			}
 			return fmt.Errorf("model of type %T, not %T", flopKick, Model{})
 		}
 

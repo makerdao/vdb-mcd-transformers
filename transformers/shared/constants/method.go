@@ -36,6 +36,7 @@ func pipLogValueMethod() string {
 }
 func spotFileMatMethod() string        { return "file(bytes32,bytes32,uint256)" }
 func spotFilePipMethod() string        { return "file(bytes32,address)" }
+func spotPokeMethod() string           { return getSolidityFunctionSignature(SpotABI(), "Poke") }
 func tendMethod() string               { return getSolidityFunctionSignature(FlipperABI(), "tend") }
 func vatFileDebtCeilingMethod() string { return "file(bytes32,uint256)" }
 func vatFileIlkMethod() string         { return "file(bytes32,bytes32,uint256)" }

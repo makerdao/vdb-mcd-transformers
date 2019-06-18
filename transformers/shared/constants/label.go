@@ -34,6 +34,7 @@ const (
 	PipLogValueLabel        = "pipLogValue"
 	SpotFileMatLabel        = "spotFileMat"
 	SpotFilePipLabel        = "spotFilePip"
+	SpotPokeLabel           = "spotPoke"
 	TendLabel               = "tend"
 	VatFileDebtCeilingLabel = "vatFileDebtCeiling"
 	VatFileIlkLabel         = "vatFileIlk"
