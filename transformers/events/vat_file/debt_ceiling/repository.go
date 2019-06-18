@@ -22,7 +22,6 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	repo "github.com/vulcanize/vulcanizedb/libraries/shared/repository"
-	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
@@ -78,14 +77,6 @@ func (repository VatFileDebtCeilingRepository) Create(headerID int64, models []i
 
 func (repository VatFileDebtCeilingRepository) MarkHeaderChecked(headerID int64) error {
 	return repo.MarkHeaderChecked(headerID, repository.db, constants.VatFileDebtCeilingChecked)
-}
-
-func (repository VatFileDebtCeilingRepository) MissingHeaders(startingBlockNumber, endingBlockNumber int64) ([]core.Header, error) {
-	return repo.MissingHeaders(startingBlockNumber, endingBlockNumber, repository.db, constants.VatFileDebtCeilingChecked)
-}
-
-func (repository VatFileDebtCeilingRepository) RecheckHeaders(startingBlockNumber, endingBlockNumber int64) ([]core.Header, error) {
-	return repo.RecheckHeaders(startingBlockNumber, endingBlockNumber, repository.db, constants.VatFileDebtCeilingChecked)
 }
 
 func (repository *VatFileDebtCeilingRepository) SetDB(db *postgres.DB) {

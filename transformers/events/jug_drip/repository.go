@@ -22,7 +22,6 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	repo "github.com/vulcanize/vulcanizedb/libraries/shared/repository"
-	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
@@ -85,14 +84,6 @@ func (repository JugDripRepository) Create(headerID int64, models []interface{})
 
 func (repository JugDripRepository) MarkHeaderChecked(headerID int64) error {
 	return repo.MarkHeaderChecked(headerID, repository.db, constants.JugDripChecked)
-}
-
-func (repository JugDripRepository) MissingHeaders(startingBlockNumber, endingBlockNumber int64) ([]core.Header, error) {
-	return repo.MissingHeaders(startingBlockNumber, endingBlockNumber, repository.db, constants.JugDripChecked)
-}
-
-func (repository JugDripRepository) RecheckHeaders(startingBlockNumber, endingBlockNumber int64) ([]core.Header, error) {
-	return repo.RecheckHeaders(startingBlockNumber, endingBlockNumber, repository.db, constants.JugDripChecked)
 }
 
 func (repository *JugDripRepository) SetDB(db *postgres.DB) {

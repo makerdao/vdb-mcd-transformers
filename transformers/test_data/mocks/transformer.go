@@ -3,7 +3,6 @@ package mocks
 import (
 	"github.com/ethereum/go-ethereum/core/types"
 
-	"github.com/vulcanize/vulcanizedb/libraries/shared/constants"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
@@ -17,7 +16,7 @@ type MockEventTransformer struct {
 	config           transformer.EventTransformerConfig
 }
 
-func (mh *MockEventTransformer) Execute(logs []types.Log, header core.Header, recheckHeaders constants.TransformerExecution) error {
+func (mh *MockEventTransformer) Execute(logs []types.Log, header core.Header) error {
 	if mh.ExecuteError != nil {
 		return mh.ExecuteError
 	}

@@ -21,7 +21,6 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/vulcanize/mcd_transformers/transformers/events/vow_file"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/constants"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 
@@ -78,7 +77,7 @@ var _ = Describe("VowFile LogNoteTransforer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		tr := initializer.NewLogNoteTransformer(db)
-		err = tr.Execute(logs, header, constants.HeaderMissing)
+		err = tr.Execute(logs, header)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []vow_file.VowFileModel
@@ -103,10 +102,10 @@ var _ = Describe("VowFile LogNoteTransforer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		tr := initializer.NewLogNoteTransformer(db)
-		err = tr.Execute(logs, header, constants.HeaderMissing)
+		err = tr.Execute(logs, header)
 		Expect(err).NotTo(HaveOccurred())
 
-		err = tr.Execute(logs, header, constants.HeaderRecheck)
+		err = tr.Execute(logs, header)
 		Expect(err).NotTo(HaveOccurred())
 
 		var headerID int64

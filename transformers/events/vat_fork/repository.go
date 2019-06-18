@@ -24,7 +24,6 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	repo "github.com/vulcanize/vulcanizedb/libraries/shared/repository"
-	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 )
 
@@ -87,14 +86,6 @@ func (repository VatForkRepository) Create(headerID int64, models []interface{})
 
 func (repository VatForkRepository) MarkHeaderChecked(headerID int64) error {
 	return repo.MarkHeaderChecked(headerID, repository.db, constants.VatForkChecked)
-}
-
-func (repository VatForkRepository) MissingHeaders(startingBlockNumber, endingBlockNumber int64) ([]core.Header, error) {
-	return repo.MissingHeaders(startingBlockNumber, endingBlockNumber, repository.db, constants.VatForkChecked)
-}
-
-func (repository VatForkRepository) RecheckHeaders(startingBlockNumber, endingBlockNumber int64) ([]core.Header, error) {
-	return repo.RecheckHeaders(startingBlockNumber, endingBlockNumber, repository.db, constants.VatForkChecked)
 }
 
 func (repository *VatForkRepository) SetDB(db *postgres.DB) {

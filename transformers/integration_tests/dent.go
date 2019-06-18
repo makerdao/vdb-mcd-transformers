@@ -4,7 +4,6 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/constants"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
@@ -66,7 +65,7 @@ var _ = XDescribe("Dent transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		tr = initializer.NewLogNoteTransformer(db)
-		err = tr.Execute(logs, header, constants.HeaderMissing)
+		err = tr.Execute(logs, header)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []dent.DentModel
@@ -99,10 +98,10 @@ var _ = XDescribe("Dent transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		tr = initializer.NewLogNoteTransformer(db)
-		err = tr.Execute(logs, header, constants.HeaderMissing)
+		err = tr.Execute(logs, header)
 		Expect(err).NotTo(HaveOccurred())
 
-		err = tr.Execute(logs, header, constants.HeaderRecheck)
+		err = tr.Execute(logs, header)
 		Expect(err).NotTo(HaveOccurred())
 
 		var headerID int64

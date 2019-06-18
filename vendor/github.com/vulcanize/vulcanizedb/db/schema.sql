@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 10.6
--- Dumped by pg_dump version 10.6
+-- Dumped from database version 11.3
+-- Dumped by pg_dump version 11.3
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -12,22 +12,9 @@ SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 SELECT pg_catalog.set_config('search_path', '', false);
 SET check_function_bodies = false;
+SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
-
---
--- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: -
---
-
-CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
-
-
---
--- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: -
---
-
-COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
-
 
 SET default_tablespace = '';
 
@@ -801,6 +788,14 @@ ALTER TABLE ONLY public.log_filters
 
 ALTER TABLE ONLY public.eth_nodes
     ADD CONSTRAINT nodes_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: queued_storage queued_storage_block_height_block_hash_contract_storage_key_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.queued_storage
+    ADD CONSTRAINT queued_storage_block_height_block_hash_contract_storage_key_key UNIQUE (block_height, block_hash, contract, storage_key, storage_value);
 
 
 --

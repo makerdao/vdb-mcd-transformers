@@ -21,7 +21,6 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/repository"
-	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 )
 
@@ -75,14 +74,6 @@ func (repo VowFileRepository) Create(headerID int64, models []interface{}) error
 
 func (repo VowFileRepository) MarkHeaderChecked(headerID int64) error {
 	return repository.MarkHeaderChecked(headerID, repo.db, constants.VowFileChecked)
-}
-
-func (repo VowFileRepository) MissingHeaders(startingBlockNumber, endingBlockNumber int64) ([]core.Header, error) {
-	return repository.MissingHeaders(startingBlockNumber, endingBlockNumber, repo.db, constants.VowFileChecked)
-}
-
-func (repo VowFileRepository) RecheckHeaders(startingBlockNumber, endingBlockNumber int64) ([]core.Header, error) {
-	return repository.RecheckHeaders(startingBlockNumber, endingBlockNumber, repo.db, constants.VowFileChecked)
 }
 
 func (repo *VowFileRepository) SetDB(db *postgres.DB) {

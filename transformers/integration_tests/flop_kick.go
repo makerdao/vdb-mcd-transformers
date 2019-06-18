@@ -23,7 +23,6 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/constants"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
@@ -86,7 +85,7 @@ var _ = Describe("FlopKick Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		transformer := initializer.NewTransformer(db)
-		err = transformer.Execute(logs, header, constants.HeaderMissing)
+		err = transformer.Execute(logs, header)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []flop_kick.Model
@@ -114,10 +113,10 @@ var _ = Describe("FlopKick Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		transformer := initializer.NewTransformer(db)
-		err = transformer.Execute(logs, header, constants.HeaderMissing)
+		err = transformer.Execute(logs, header)
 		Expect(err).NotTo(HaveOccurred())
 
-		err = transformer.Execute(logs, header, constants.HeaderRecheck)
+		err = transformer.Execute(logs, header)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []flop_kick.Model
@@ -155,7 +154,7 @@ var _ = Describe("FlopKick Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		transformer := initializer.NewTransformer(db)
-		err = transformer.Execute(logs, header, constants.HeaderMissing)
+		err = transformer.Execute(logs, header)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []flop_kick.Model

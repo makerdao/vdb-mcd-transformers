@@ -21,7 +21,6 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/constants"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 
@@ -67,7 +66,7 @@ var _ = Describe("VatMove LogNoteTransformer", func() {
 			Repository: &vat_move.VatMoveRepository{},
 		}.NewLogNoteTransformer(db)
 
-		err = tr.Execute(logs, header, constants.HeaderMissing)
+		err = tr.Execute(logs, header)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResults []vat_move.VatMoveModel
@@ -110,10 +109,10 @@ var _ = Describe("VatMove LogNoteTransformer", func() {
 			Repository: &vat_move.VatMoveRepository{},
 		}.NewLogNoteTransformer(db)
 
-		err = tr.Execute(logs, header, constants.HeaderMissing)
+		err = tr.Execute(logs, header)
 		Expect(err).NotTo(HaveOccurred())
 
-		err = tr.Execute(logs, header, constants.HeaderRecheck)
+		err = tr.Execute(logs, header)
 		Expect(err).NotTo(HaveOccurred())
 
 		var headerID int64

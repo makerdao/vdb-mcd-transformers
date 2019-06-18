@@ -23,7 +23,6 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/constants"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
@@ -92,7 +91,7 @@ var _ = Describe("SpotFile LogNoteTransformers", func() {
 			Expect(fetcherErr).NotTo(HaveOccurred())
 
 			tr = initializer.NewLogNoteTransformer(db)
-			executeErr := tr.Execute(logs, header, constants.HeaderMissing)
+			executeErr := tr.Execute(logs, header)
 			Expect(executeErr).NotTo(HaveOccurred())
 		})
 
@@ -109,7 +108,7 @@ var _ = Describe("SpotFile LogNoteTransformers", func() {
 		})
 
 		It("rechecks Spot.file mat event", func() {
-			recheckErr := tr.Execute(logs, header, constants.HeaderRecheck)
+			recheckErr := tr.Execute(logs, header)
 			Expect(recheckErr).NotTo(HaveOccurred())
 
 			var headerID int64
@@ -165,7 +164,7 @@ var _ = Describe("SpotFile LogNoteTransformers", func() {
 			Expect(fetcherErr).NotTo(HaveOccurred())
 
 			tr = initializer.NewLogNoteTransformer(db)
-			executeErr := tr.Execute(logs, header, constants.HeaderMissing)
+			executeErr := tr.Execute(logs, header)
 			Expect(executeErr).NotTo(HaveOccurred())
 		})
 
@@ -181,7 +180,7 @@ var _ = Describe("SpotFile LogNoteTransformers", func() {
 		})
 
 		It("rechecks Spot.file pip event", func() {
-			recheckErr := tr.Execute(logs, header, constants.HeaderRecheck)
+			recheckErr := tr.Execute(logs, header)
 			Expect(recheckErr).NotTo(HaveOccurred())
 
 			var headerID int64

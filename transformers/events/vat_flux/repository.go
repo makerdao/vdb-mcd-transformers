@@ -22,7 +22,6 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	repo "github.com/vulcanize/vulcanizedb/libraries/shared/repository"
-	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
@@ -85,14 +84,6 @@ func (repository VatFluxRepository) Create(headerID int64, models []interface{})
 
 func (repository VatFluxRepository) MarkHeaderChecked(headerId int64) error {
 	return repo.MarkHeaderChecked(headerId, repository.db, constants.VatFluxChecked)
-}
-
-func (repository VatFluxRepository) MissingHeaders(startingBlock, endingBlock int64) ([]core.Header, error) {
-	return repo.MissingHeaders(startingBlock, endingBlock, repository.db, constants.VatFluxChecked)
-}
-
-func (repository VatFluxRepository) RecheckHeaders(startingBlock, endingBlock int64) ([]core.Header, error) {
-	return repo.RecheckHeaders(startingBlock, endingBlock, repository.db, constants.VatFluxChecked)
 }
 
 func (repository *VatFluxRepository) SetDB(db *postgres.DB) {

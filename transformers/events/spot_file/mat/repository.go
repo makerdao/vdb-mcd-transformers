@@ -22,7 +22,6 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/repository"
-	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 )
 
@@ -81,14 +80,6 @@ func (repo SpotFileMatRepository) Create(headerID int64, models []interface{}) e
 
 func (repo SpotFileMatRepository) MarkHeaderChecked(headerID int64) error {
 	return repository.MarkHeaderChecked(headerID, repo.db, constants.SpotFileMatChecked)
-}
-
-func (repo SpotFileMatRepository) MissingHeaders(startingBlockNumber, endingBlockNumber int64) ([]core.Header, error) {
-	return repository.MissingHeaders(startingBlockNumber, endingBlockNumber, repo.db, constants.SpotFileMatChecked)
-}
-
-func (repo SpotFileMatRepository) RecheckHeaders(startingBlockNumber, endingBlockNumber int64) ([]core.Header, error) {
-	return repository.RecheckHeaders(startingBlockNumber, endingBlockNumber, repo.db, constants.SpotFileMatChecked)
 }
 
 func (repo *SpotFileMatRepository) SetDB(db *postgres.DB) {

@@ -22,7 +22,6 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	repo "github.com/vulcanize/vulcanizedb/libraries/shared/repository"
-	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
@@ -86,14 +85,6 @@ func (repository CatFileChopLumpRepository) Create(headerID int64, models []inte
 
 func (repository CatFileChopLumpRepository) MarkHeaderChecked(headerID int64) error {
 	return repo.MarkHeaderChecked(headerID, repository.db, constants.CatFileChopLumpChecked)
-}
-
-func (repository CatFileChopLumpRepository) MissingHeaders(startingBlockNumber, endingBlockNumber int64) ([]core.Header, error) {
-	return repo.MissingHeaders(startingBlockNumber, endingBlockNumber, repository.db, constants.CatFileChopLumpChecked)
-}
-
-func (repository CatFileChopLumpRepository) RecheckHeaders(startingBlockNumber, endingBlockNumber int64) ([]core.Header, error) {
-	return repo.RecheckHeaders(startingBlockNumber, endingBlockNumber, repository.db, constants.CatFileChopLumpChecked)
 }
 
 func (repository *CatFileChopLumpRepository) SetDB(db *postgres.DB) {
