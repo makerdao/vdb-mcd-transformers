@@ -2331,6 +2331,42 @@ ALTER SEQUENCE maker.spot_file_pip_id_seq OWNED BY maker.spot_file_pip.id;
 
 
 --
+-- Name: spot_poke; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.spot_poke (
+    id integer NOT NULL,
+    header_id integer NOT NULL,
+    ilk_id integer NOT NULL,
+    value numeric,
+    spot numeric,
+    log_idx integer NOT NULL,
+    tx_idx integer NOT NULL,
+    raw_log jsonb
+);
+
+
+--
+-- Name: spot_poke_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.spot_poke_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: spot_poke_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.spot_poke_id_seq OWNED BY maker.spot_poke.id;
+
+
+--
 -- Name: tend; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -3836,7 +3872,8 @@ CREATE TABLE public.checked_headers (
     vow_file_checked integer DEFAULT 0 NOT NULL,
     vat_suck_checked integer DEFAULT 0 NOT NULL,
     vat_fork_checked integer DEFAULT 0 NOT NULL,
-    jug_init_checked integer DEFAULT 0 NOT NULL
+    jug_init_checked integer DEFAULT 0 NOT NULL,
+    spot_poke_checked integer DEFAULT 0 NOT NULL
 );
 
 
@@ -4500,6 +4537,13 @@ ALTER TABLE ONLY maker.spot_file_mat ALTER COLUMN id SET DEFAULT nextval('maker.
 --
 
 ALTER TABLE ONLY maker.spot_file_pip ALTER COLUMN id SET DEFAULT nextval('maker.spot_file_pip_id_seq'::regclass);
+
+
+--
+-- Name: spot_poke id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.spot_poke ALTER COLUMN id SET DEFAULT nextval('maker.spot_poke_id_seq'::regclass);
 
 
 --
@@ -5357,6 +5401,22 @@ ALTER TABLE ONLY maker.spot_file_pip
 
 ALTER TABLE ONLY maker.spot_file_pip
     ADD CONSTRAINT spot_file_pip_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: spot_poke spot_poke_header_id_tx_idx_log_idx_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.spot_poke
+    ADD CONSTRAINT spot_poke_header_id_tx_idx_log_idx_key UNIQUE (header_id, tx_idx, log_idx);
+
+
+--
+-- Name: spot_poke spot_poke_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.spot_poke
+    ADD CONSTRAINT spot_poke_pkey PRIMARY KEY (id);
 
 
 --
@@ -6470,6 +6530,22 @@ ALTER TABLE ONLY maker.spot_file_pip
 
 ALTER TABLE ONLY maker.spot_file_pip
     ADD CONSTRAINT spot_file_pip_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id) ON DELETE CASCADE;
+
+
+--
+-- Name: spot_poke spot_poke_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.spot_poke
+    ADD CONSTRAINT spot_poke_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: spot_poke spot_poke_ilk_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.spot_poke
+    ADD CONSTRAINT spot_poke_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id) ON DELETE CASCADE;
 
 
 --

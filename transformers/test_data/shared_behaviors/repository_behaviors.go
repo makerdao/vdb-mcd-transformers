@@ -108,6 +108,14 @@ func SharedRepositoryCreateBehaviors(inputs *CreateBehaviorInputs) {
 			Expect(err).NotTo(HaveOccurred())
 		})
 
+		It("handles events with the same header_id, tx_idx, log_idx combo by upserting", func() {
+			err = repository.Create(headerID, []interface{}{logEventModel})
+			Expect(err).NotTo(HaveOccurred())
+
+			err = repository.Create(headerID, []interface{}{logEventModel})
+			Expect(err).NotTo(HaveOccurred())
+		})
+
 		It("removes the log event record if the corresponding header is deleted", func() {
 			err = repository.Create(headerID, []interface{}{logEventModel})
 			Expect(err).NotTo(HaveOccurred())
@@ -127,6 +135,18 @@ func SharedRepositoryCreateBehaviors(inputs *CreateBehaviorInputs) {
 
 			Expect(err).To(HaveOccurred())
 			Expect(err.Error()).To(ContainSubstring("model of type"))
+		})
+
+		It("rolls back the transaciton if the given model is of the wrong type", func() {
+			err = repository.Create(headerID, []interface{}{logEventModel, test_data.WrongModel{}})
+			Expect(err).To(HaveOccurred())
+			Expect(err.Error()).To(ContainSubstring("model of type"))
+
+			var count int
+			query := `SELECT count(*) from ` + inputs.LogEventTableName
+			err = db.QueryRow(query).Scan(&count)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(count).To(Equal(0))
 		})
 	})
 }

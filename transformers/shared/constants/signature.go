@@ -33,6 +33,7 @@ func JugInitSignature() string            { return getLogNoteTopicZero(jugInitMe
 func PipLogValueSignature() string        { return getEventTopicZero(pipLogValueMethod()) }
 func SpotFileMatSignature() string        { return getLogNoteTopicZero(spotFileMatMethod()) }
 func SpotFilePipSignature() string        { return getLogNoteTopicZero(spotFilePipMethod()) }
+func SpotPokeSignature() string           { return getEventTopicZero(spotPokeMethod()) }
 func TendSignature() string               { return getLogNoteTopicZero(tendMethod()) }
 func VatFileDebtCeilingSignature() string { return getLogNoteTopicZero(vatFileDebtCeilingMethod()) }
 func VatFileIlkSignature() string         { return getLogNoteTopicZero(vatFileIlkMethod()) }

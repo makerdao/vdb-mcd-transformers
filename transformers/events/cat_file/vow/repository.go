@@ -47,7 +47,7 @@ func (repository CatFileVowRepository) Create(headerID int64, models []interface
 			return fmt.Errorf("model of type %T, not %T", model, CatFileVowModel{})
 		}
 
-		_, execErr := repository.db.Exec(
+		_, execErr := tx.Exec(
 			`INSERT into maker.cat_file_vow (header_id, what, data, tx_idx, log_idx, raw_log)
 			VALUES($1, $2, $3, $4, $5, $6)
 			ON CONFLICT (header_id, tx_idx, log_idx) DO UPDATE SET what = $2, data = $3, raw_log = $6;`,

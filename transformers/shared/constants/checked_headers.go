@@ -34,6 +34,7 @@ var (
 	PipLogValueChecked        = "pip_log_value_checked"
 	SpotFileMatChecked        = "spot_file_mat_checked"
 	SpotFilePipChecked        = "spot_file_pip_checked"
+	SpotPokeChecked           = "spot_poke_checked"
 	TendChecked               = "tend_checked"
 	VatFileDebtCeilingChecked = "vat_file_debt_ceiling_checked"
 	VatFileIlkChecked         = "vat_file_ilk_checked"
