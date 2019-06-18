@@ -91,25 +91,49 @@ var _ = Describe("Maker storage repository", func() {
 			Expect(keys).To(ConsistOf(guy1))
 		})
 
-		It("fetches unique guys from vat_move + vat_frob + vat_heal + vat_fold", func() {
+		It("fetches guy from v field on vat_suck", func() {
+			insertVatSuck(guy1, guy2, 0, 1, db)
+
+			daiKeys , repoErr := repository.GetDaiKeys()
+
+			Expect(repoErr).NotTo(HaveOccurred())
+			Expect(len(daiKeys)).To(Equal(1))
+			Expect(daiKeys).To(ConsistOf(guy2))
+		})
+
+		It("fetches guy from u field on vat_fold", func() {
+			insertVatFold(guy1, 1, db)
+
+			daiKeys , repoErr := repository.GetDaiKeys()
+
+			Expect(repoErr).NotTo(HaveOccurred())
+			Expect(len(daiKeys)).To(Equal(1))
+			Expect(daiKeys).To(ConsistOf(guy1))
+		})
+
+		It("fetches unique guys from vat_move + vat_frob + vat_heal + vat_fold + vat_suck", func() {
 			guy4 := "47555934"
 			guy5 := "47555935"
+			guy6 := "47555936"
 			transactionFromGuy4 := core.TransactionModel{From: guy4, TxIndex: 4, Value: "0"}
 			insertVatMove(guy1, guy2, 1, db)
 			insertVatFrob(ilk1, guy1, guy1, guy3, 2, db)
 			insertVatHeal(3, transactionFromGuy4, db)
 			insertVatFold(guy5, 4, db)
+			insertVatSuck(guy1, guy6, 0, 5, db)
+
 			// duplicates
-			insertVatMove(guy3, guy1, 5, db)
-			insertVatFrob(ilk2, guy2, guy2, guy5, 6, db)
-			insertVatHeal(7, transactionFromGuy1, db)
-			insertVatFold(guy4, 8, db)
+			insertVatMove(guy3, guy1, 6, db)
+			insertVatFrob(ilk2, guy2, guy2, guy5, 7, db)
+			insertVatHeal(8, transactionFromGuy1, db)
+			insertVatFold(guy4, 9, db)
+			insertVatSuck(guy1, guy1, 0, 10, db)
 
 			keys, err := repository.GetDaiKeys()
 
 			Expect(err).NotTo(HaveOccurred())
-			Expect(len(keys)).To(Equal(5))
-			Expect(keys).To(ConsistOf(guy1, guy2, guy3, guy4, guy5))
+			Expect(len(keys)).To(Equal(6))
+			Expect(keys).To(ConsistOf(guy1, guy2, guy3, guy4, guy5, guy6))
 		})
 
 		It("fetches the correct guy when there are multiple transactions in a block", func() {
@@ -252,6 +276,15 @@ var _ = Describe("Maker storage repository", func() {
 			Expect(sinKeys).To(ConsistOf(guy1))
 		})
 
+		It("fetches guy from u field of vat suck", func() {
+			insertVatSuck(guy1, guy2, 0, 1, db)
+			sinKeys, repoErr := repository.GetVatSinKeys()
+
+			Expect(repoErr).NotTo(HaveOccurred())
+			Expect(len(sinKeys)).To(Equal(1))
+			Expect(sinKeys).To(ConsistOf(guy1))
+		})
+
 		It("fetches the correct guy when there are multiple transactions in a block", func() {
 			insertVatHeal(1, transactionFromGuy1, db)
 			unrelatedTransaction := core.TransactionModel{From: "unrelated guy", TxIndex: 15, Value: "0"}
@@ -264,19 +297,21 @@ var _ = Describe("Maker storage repository", func() {
 			Expect(sinKeys).To(ConsistOf(guy1))
 		})
 
-		It("fetches unique sin keys from vat_grab + vat_heal", func() {
+		It("fetches unique sin keys from vat_grab + vat_heal + vat_suck", func() {
 			transactionFromGuy2 := core.TransactionModel{From: guy2, TxIndex: 2, Value: "0"}
 			insertVatGrab(guy3, guy3, guy3, guy1, 1, db)
 			insertVatHeal(2, transactionFromGuy2, db)
-			// duplicates
-			insertVatGrab(guy2, guy2, guy2, guy2, 3, db)
-			insertVatHeal(4, transactionFromGuy2, db)
+			insertVatSuck(guy3, guy3, 0, 3, db)
+			// duplicate
+			insertVatGrab(guy2, guy2, guy2, guy2, 4, db)
+			insertVatHeal(5, transactionFromGuy2, db)
+			insertVatSuck(guy1, guy2, 0, 6, db)
 
 			sinKeys, err := repository.GetVatSinKeys()
 
 			Expect(err).NotTo(HaveOccurred())
-			Expect(len(sinKeys)).To(Equal(2))
-			Expect(sinKeys).To(ConsistOf(guy1, guy2))
+			Expect(len(sinKeys)).To(Equal(3))
+			Expect(sinKeys).To(ConsistOf(guy1, guy2, guy3))
 		})
 
 		It("does not return error if no matching rows", func() {
@@ -504,6 +539,19 @@ func insertVatGrab(ilk, urn, v, w string, blockNumber int64, db *postgres.DB) {
 		`INSERT INTO maker.vat_grab (header_id, urn_id, v, w, log_idx, tx_idx)
 			VALUES($1, $2, $3, $4, $5, $6)`,
 		headerID, urnID, v, w, 0, 0,
+	)
+	Expect(execErr).NotTo(HaveOccurred())
+}
+
+func insertVatSuck(u, v string, rad int, blockNumber int64, db *postgres.DB) {
+	headerRepository := repositories.NewHeaderRepository(db)
+	headerID, err := headerRepository.CreateOrUpdateHeader(fakes.GetFakeHeader(blockNumber))
+	Expect(err).NotTo(HaveOccurred())
+
+	_, execErr := db.Exec(
+		`INSERT INTO maker.vat_suck (header_id, u, v, rad, log_idx, tx_idx)
+			VALUES($1, $2, $3, $4, $5, $6)`,
+		headerID, u, v, rad, 0, 0,
 	)
 	Expect(execErr).NotTo(HaveOccurred())
 }
