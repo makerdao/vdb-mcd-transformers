@@ -24,7 +24,6 @@ import (
 	. "github.com/onsi/gomega"
 
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/constants"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/mocks"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/test_data"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
@@ -60,14 +59,14 @@ var _ = Describe("LogNoteTransformer", func() {
 	})
 
 	It("marks header checked if no logs are provided", func() {
-		err := t.Execute([]types.Log{}, headerOne, constants.HeaderMissing)
+		err := t.Execute([]types.Log{}, headerOne)
 
 		Expect(err).NotTo(HaveOccurred())
 		repository.AssertMarkHeaderCheckedCalledWith(headerOne.Id)
 	})
 
 	It("doesn't attempt to convert or persist an empty collection when there are no logs", func() {
-		err := t.Execute([]types.Log{}, headerOne, constants.HeaderMissing)
+		err := t.Execute([]types.Log{}, headerOne)
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(converter.ToModelsCalledCounter).To(Equal(0))
@@ -75,7 +74,7 @@ var _ = Describe("LogNoteTransformer", func() {
 	})
 
 	It("does not call repository.MarkCheckedHeader when there are logs", func() {
-		err := t.Execute(logs, headerOne, constants.HeaderMissing)
+		err := t.Execute(logs, headerOne)
 
 		Expect(err).NotTo(HaveOccurred())
 		repository.AssertMarkHeaderCheckedNotCalled()
@@ -84,14 +83,14 @@ var _ = Describe("LogNoteTransformer", func() {
 	It("returns error if marking header checked returns err", func() {
 		repository.SetMarkHeaderCheckedError(fakes.FakeError)
 
-		err := t.Execute([]types.Log{}, headerOne, constants.HeaderMissing)
+		err := t.Execute([]types.Log{}, headerOne)
 
 		Expect(err).To(HaveOccurred())
 		Expect(err).To(MatchError(fakes.FakeError))
 	})
 
 	It("converts matching logs to models", func() {
-		err := t.Execute(logs, headerOne, constants.HeaderMissing)
+		err := t.Execute(logs, headerOne)
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(converter.PassedLogs).To(Equal(logs))
@@ -100,7 +99,7 @@ var _ = Describe("LogNoteTransformer", func() {
 	It("returns error if converter returns error", func() {
 		converter.SetConverterError(fakes.FakeError)
 
-		err := t.Execute(logs, headerOne, constants.HeaderMissing)
+		err := t.Execute(logs, headerOne)
 
 		Expect(err).To(HaveOccurred())
 		Expect(err).To(MatchError(fakes.FakeError))
@@ -108,7 +107,7 @@ var _ = Describe("LogNoteTransformer", func() {
 
 	It("persists the model", func() {
 		converter.SetReturnModels([]interface{}{model})
-		err := t.Execute(logs, headerOne, constants.HeaderMissing)
+		err := t.Execute(logs, headerOne)
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(repository.PassedHeaderID).To(Equal(headerOne.Id))
@@ -118,7 +117,7 @@ var _ = Describe("LogNoteTransformer", func() {
 	It("returns error if repository returns error for create", func() {
 		repository.SetCreateError(fakes.FakeError)
 
-		err := t.Execute(logs, headerOne, constants.HeaderMissing)
+		err := t.Execute(logs, headerOne)
 
 		Expect(err).To(HaveOccurred())
 		Expect(err).To(MatchError(fakes.FakeError))

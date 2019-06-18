@@ -49,11 +49,6 @@ type MarkedHeaderCheckedBehaviorInputs struct {
 	Repository              event.Repository
 }
 
-type MissingHeadersBehaviorInputs struct {
-	Repository    event.Repository
-	RepositoryTwo event.Repository
-}
-
 func SharedRepositoryCreateBehaviors(inputs *CreateBehaviorInputs) {
 	Describe("Create", func() {
 		var headerID int64

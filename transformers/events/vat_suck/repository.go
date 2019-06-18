@@ -21,7 +21,6 @@ import (
 
 	log "github.com/sirupsen/logrus"
 	repo "github.com/vulcanize/vulcanizedb/libraries/shared/repository"
-	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
@@ -73,14 +72,6 @@ func (repository VatSuckRepository) Create(headerID int64, models []interface{})
 		return checkHeaderErr
 	}
 	return tx.Commit()
-}
-
-func (repository VatSuckRepository) MissingHeaders(startingBlock, endingBlock int64) ([]core.Header, error) {
-	return repo.MissingHeaders(startingBlock, endingBlock, repository.db, constants.VatSuckChecked)
-}
-
-func (repository VatSuckRepository) RecheckHeaders(startingBlock, endingBlock int64) ([]core.Header, error) {
-	return repo.RecheckHeaders(startingBlock, endingBlock, repository.db, constants.VatSuckChecked)
 }
 
 func (repository VatSuckRepository) MarkHeaderChecked(headerId int64) error {

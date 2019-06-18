@@ -21,7 +21,6 @@ import (
 	. "github.com/onsi/gomega"
 
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/constants"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 
@@ -69,7 +68,7 @@ var _ = XDescribe("VatSuck Transformer", func() {
 			Repository: &vat_suck.VatSuckRepository{},
 		}.NewLogNoteTransformer(db)
 
-		err = tr.Execute(logs, header, constants.HeaderMissing)
+		err = tr.Execute(logs, header)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResults []vat_suck.VatSuckModel
@@ -112,10 +111,10 @@ var _ = XDescribe("VatSuck Transformer", func() {
 			Repository: &vat_suck.VatSuckRepository{},
 		}.NewLogNoteTransformer(db)
 
-		err = tr.Execute(logs, header, constants.HeaderMissing)
+		err = tr.Execute(logs, header)
 		Expect(err).NotTo(HaveOccurred())
 
-		err = tr.Execute(logs, header, constants.HeaderRecheck)
+		err = tr.Execute(logs, header)
 		Expect(err).NotTo(HaveOccurred())
 		var headerID int64
 		err = db.Get(&headerID, `SELECT id FROM public.headers WHERE block_number = $1`, blockNumber)

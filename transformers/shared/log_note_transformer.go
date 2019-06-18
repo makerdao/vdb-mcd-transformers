@@ -20,7 +20,6 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	log "github.com/sirupsen/logrus"
 
-	"github.com/vulcanize/vulcanizedb/libraries/shared/constants"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
@@ -38,7 +37,7 @@ func (tr LogNoteTransformer) NewLogNoteTransformer(db *postgres.DB) transformer.
 	return tr
 }
 
-func (tr LogNoteTransformer) Execute(logs []types.Log, header core.Header, recheckedHeader constants.TransformerExecution) error {
+func (tr LogNoteTransformer) Execute(logs []types.Log, header core.Header) error {
 	transformerName := tr.Config.TransformerName
 
 	// No matching logs, mark the header as checked for this type of logs

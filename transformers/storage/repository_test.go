@@ -94,7 +94,7 @@ var _ = Describe("Maker storage repository", func() {
 		It("fetches guy from v field on vat_suck", func() {
 			insertVatSuck(guy1, guy2, 0, 1, db)
 
-			daiKeys , repoErr := repository.GetDaiKeys()
+			daiKeys, repoErr := repository.GetDaiKeys()
 
 			Expect(repoErr).NotTo(HaveOccurred())
 			Expect(len(daiKeys)).To(Equal(1))
@@ -104,7 +104,7 @@ var _ = Describe("Maker storage repository", func() {
 		It("fetches guy from u field on vat_fold", func() {
 			insertVatFold(guy1, 1, db)
 
-			daiKeys , repoErr := repository.GetDaiKeys()
+			daiKeys, repoErr := repository.GetDaiKeys()
 
 			Expect(repoErr).NotTo(HaveOccurred())
 			Expect(len(daiKeys)).To(Equal(1))

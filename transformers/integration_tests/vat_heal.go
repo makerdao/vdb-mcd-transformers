@@ -21,7 +21,6 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/constants"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 
@@ -68,7 +67,7 @@ var _ = XDescribe("VatHeal Transformer", func() {
 			Repository: &vat_heal.VatHealRepository{},
 		}.NewLogNoteTransformer(db)
 
-		err = tr.Execute(logs, header, constants.HeaderMissing)
+		err = tr.Execute(logs, header)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResults []vat_heal.VatHealModel
@@ -109,10 +108,10 @@ var _ = XDescribe("VatHeal Transformer", func() {
 			Repository: &vat_heal.VatHealRepository{},
 		}.NewLogNoteTransformer(db)
 
-		err = tr.Execute(logs, header, constants.HeaderMissing)
+		err = tr.Execute(logs, header)
 		Expect(err).NotTo(HaveOccurred())
 
-		err = tr.Execute(logs, header, constants.HeaderRecheck)
+		err = tr.Execute(logs, header)
 		Expect(err).NotTo(HaveOccurred())
 		var headerID int64
 		err = db.Get(&headerID, `SELECT id FROM public.headers WHERE block_number = $1`, blockNumber)

@@ -21,7 +21,6 @@ import (
 	"github.com/ethereum/go-ethereum/ethclient"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/constants"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
 	"sort"
 	"strconv"
@@ -87,7 +86,7 @@ var _ = Describe("Cat File transformer", func() {
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
-		err = transformer.Execute(logs, header, constants.HeaderMissing)
+		err = transformer.Execute(logs, header)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []chop_lump.CatFileChopLumpModel
@@ -127,7 +126,7 @@ var _ = Describe("Cat File transformer", func() {
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
-		err = transformer.Execute(logs, header, constants.HeaderMissing)
+		err = transformer.Execute(logs, header)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []chop_lump.CatFileChopLumpModel
@@ -167,10 +166,10 @@ var _ = Describe("Cat File transformer", func() {
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
-		err = transformer.Execute(logs, header, constants.HeaderMissing)
+		err = transformer.Execute(logs, header)
 		Expect(err).NotTo(HaveOccurred())
 
-		err = transformer.Execute(logs, header, constants.HeaderRecheck)
+		err = transformer.Execute(logs, header)
 		Expect(err).NotTo(HaveOccurred())
 
 		var headerID int64
@@ -207,7 +206,7 @@ var _ = Describe("Cat File transformer", func() {
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
-		err = t.Execute(logs, header, constants.HeaderMissing)
+		err = t.Execute(logs, header)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []flip.CatFileFlipModel
@@ -245,10 +244,10 @@ var _ = Describe("Cat File transformer", func() {
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
-		err = t.Execute(logs, header, constants.HeaderMissing)
+		err = t.Execute(logs, header)
 		Expect(err).NotTo(HaveOccurred())
 
-		err = t.Execute(logs, header, constants.HeaderRecheck)
+		err = t.Execute(logs, header)
 		Expect(err).NotTo(HaveOccurred())
 
 		var headerID int64
@@ -284,10 +283,10 @@ var _ = Describe("Cat File transformer", func() {
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
-		err = t.Execute(logs, header, constants.HeaderMissing)
+		err = t.Execute(logs, header)
 		Expect(err).NotTo(HaveOccurred())
 
-		err = t.Execute(logs, header, constants.HeaderRecheck)
+		err = t.Execute(logs, header)
 		Expect(err).NotTo(HaveOccurred())
 
 		var headerID int64
@@ -323,7 +322,7 @@ var _ = Describe("Cat File transformer", func() {
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
-		err = t.Execute(logs, header, constants.HeaderMissing)
+		err = t.Execute(logs, header)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []vow.CatFileVowModel

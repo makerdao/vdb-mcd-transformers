@@ -21,7 +21,6 @@ import (
 
 	"github.com/sirupsen/logrus"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/repository"
-	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
@@ -83,14 +82,6 @@ func (repo SpotFilePipRepository) Create(headerID int64, models []interface{}) e
 
 func (repo SpotFilePipRepository) MarkHeaderChecked(headerID int64) error {
 	return repository.MarkHeaderChecked(headerID, repo.db, constants.SpotFilePipChecked)
-}
-
-func (repo SpotFilePipRepository) MissingHeaders(startingBlockNumber, endingBlockNumber int64) ([]core.Header, error) {
-	return repository.MissingHeaders(startingBlockNumber, endingBlockNumber, repo.db, constants.SpotFilePipChecked)
-}
-
-func (repo SpotFilePipRepository) RecheckHeaders(startingBlockNumber, endingBlockNumber int64) ([]core.Header, error) {
-	return repository.RecheckHeaders(startingBlockNumber, endingBlockNumber, repo.db, constants.SpotFilePipChecked)
 }
 
 func (repo *SpotFilePipRepository) SetDB(db *postgres.DB) {

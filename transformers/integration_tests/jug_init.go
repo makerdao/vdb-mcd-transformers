@@ -22,7 +22,6 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/constants"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 
@@ -69,7 +68,7 @@ var _ = Describe("JugInit LogNoteTransformer", func() {
 			Repository: &jug_init.JugInitRepository{},
 		}.NewLogNoteTransformer(db)
 
-		err = transformer.Execute(logs, header, constants.HeaderMissing)
+		err = transformer.Execute(logs, header)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResults []jug_init.JugInitModel
@@ -112,10 +111,10 @@ var _ = Describe("JugInit LogNoteTransformer", func() {
 			Repository: &jug_init.JugInitRepository{},
 		}.NewLogNoteTransformer(db)
 
-		err = transformer.Execute(logs, header, constants.HeaderMissing)
+		err = transformer.Execute(logs, header)
 		Expect(err).NotTo(HaveOccurred())
 
-		err = transformer.Execute(logs, header, constants.HeaderMissing)
+		err = transformer.Execute(logs, header)
 		Expect(err).NotTo(HaveOccurred())
 
 		var headerID int64
