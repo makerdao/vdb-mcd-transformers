@@ -7004,6 +7004,13 @@ CREATE INDEX vow_file_header_index ON maker.vow_file USING btree (header_id);
 
 
 --
+-- Name: vow_flog_era_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vow_flog_era_index ON maker.vow_flog USING btree (era);
+
+
+--
 -- Name: vow_flog_header_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -7015,6 +7022,13 @@ CREATE INDEX vow_flog_header_index ON maker.vow_flog USING btree (header_id);
 --
 
 CREATE INDEX vow_sin_mapping_block_number_index ON maker.vow_sin_mapping USING btree (block_number);
+
+
+--
+-- Name: vow_sin_mapping_era_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vow_sin_mapping_era_index ON maker.vow_sin_mapping USING btree (era);
 
 
 --
