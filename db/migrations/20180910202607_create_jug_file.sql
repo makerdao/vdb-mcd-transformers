@@ -49,13 +49,13 @@ CREATE INDEX jug_file_vow_header_index
     ON maker.jug_file_vow (header_id);
 
 ALTER TABLE public.checked_headers
-    ADD COLUMN jug_file_base_checked BOOLEAN NOT NULL DEFAULT FALSE;
+    ADD COLUMN jug_file_base_checked INTEGER NOT NULL DEFAULT 0;
 
 ALTER TABLE public.checked_headers
-    ADD COLUMN jug_file_ilk_checked BOOLEAN NOT NULL DEFAULT FALSE;
+    ADD COLUMN jug_file_ilk_checked INTEGER NOT NULL DEFAULT 0;
 
 ALTER TABLE public.checked_headers
-    ADD COLUMN jug_file_vow_checked BOOLEAN NOT NULL DEFAULT FALSE;
+    ADD COLUMN jug_file_vow_checked INTEGER NOT NULL DEFAULT 0;
 
 -- +goose Down
 DROP INDEX maker.jug_file_base_header_index;

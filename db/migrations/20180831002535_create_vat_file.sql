@@ -34,10 +34,10 @@ CREATE INDEX vat_file_debt_ceiling_header_index
     ON maker.vat_file_debt_ceiling (header_id);
 
 ALTER TABLE public.checked_headers
-    ADD COLUMN vat_file_debt_ceiling_checked BOOLEAN NOT NULL DEFAULT FALSE;
+    ADD COLUMN vat_file_debt_ceiling_checked INTEGER NOT NULL DEFAULT 0;
 
 ALTER TABLE public.checked_headers
-    ADD COLUMN vat_file_ilk_checked BOOLEAN NOT NULL DEFAULT FALSE;
+    ADD COLUMN vat_file_ilk_checked INTEGER NOT NULL DEFAULT 0;
 
 -- +goose Down
 DROP INDEX maker.vat_file_ilk_header_index;

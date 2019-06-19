@@ -21,7 +21,7 @@ CREATE INDEX vat_grab_urn_index
     ON maker.vat_grab (urn_id);
 
 ALTER TABLE public.checked_headers
-    ADD COLUMN vat_grab_checked BOOLEAN NOT NULL DEFAULT FALSE;
+    ADD COLUMN vat_grab_checked INTEGER NOT NULL DEFAULT 0;
 
 -- +goose Down
 DROP INDEX maker.vat_grab_header_index;

@@ -21,7 +21,7 @@ CREATE INDEX vat_frob_urn_index
     ON maker.vat_frob (urn_id);
 
 ALTER TABLE public.checked_headers
-    ADD COLUMN vat_frob_checked BOOLEAN NOT NULL DEFAULT FALSE;
+    ADD COLUMN vat_frob_checked INTEGER NOT NULL DEFAULT 0;
 
 -- +goose Down
 DROP INDEX maker.vat_frob_header_index;

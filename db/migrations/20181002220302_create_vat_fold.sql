@@ -18,7 +18,7 @@ CREATE INDEX vat_fold_urn_index
     ON maker.vat_fold (urn_id);
 
 ALTER TABLE public.checked_headers
-    ADD COLUMN vat_fold_checked BOOLEAN NOT NULL DEFAULT FALSE;
+    ADD COLUMN vat_fold_checked INTEGER NOT NULL DEFAULT 0;
 
 -- +goose Down
 DROP INDEX maker.vat_fold_header_index;

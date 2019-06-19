@@ -19,7 +19,7 @@ CREATE INDEX vat_slip_ilk_index
     ON maker.vat_slip (ilk_id);
 
 ALTER TABLE public.checked_headers
-    ADD COLUMN vat_slip_checked BOOLEAN NOT NULL DEFAULT FALSE;
+    ADD COLUMN vat_slip_checked INTEGER NOT NULL DEFAULT 0;
 
 -- +goose Down
 DROP INDEX maker.vat_slip_header_index;

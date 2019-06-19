@@ -20,7 +20,7 @@ CREATE INDEX flip_kick_header_index
     ON maker.flip_kick (header_id);
 
 ALTER TABLE public.checked_headers
-    ADD COLUMN flip_kick_checked BOOLEAN NOT NULL DEFAULT FALSE;
+    ADD COLUMN flip_kick_checked INTEGER NOT NULL DEFAULT 0;
 
 -- +goose Down
 DROP INDEX maker.flip_kick_header_index;

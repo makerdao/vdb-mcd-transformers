@@ -15,7 +15,7 @@ CREATE INDEX deal_header_index
     ON maker.deal (header_id);
 
 ALTER TABLE public.checked_headers
-    ADD COLUMN deal_checked BOOLEAN NOT NULL DEFAULT FALSE;
+    ADD COLUMN deal_checked INTEGER NOT NULL DEFAULT 0;
 
 -- +goose Down
 DROP INDEX maker.deal_header_index;

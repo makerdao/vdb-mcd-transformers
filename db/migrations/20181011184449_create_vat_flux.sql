@@ -20,7 +20,7 @@ CREATE INDEX vat_flux_ilk_index
     ON maker.vat_flux (ilk_id);
 
 ALTER TABLE public.checked_headers
-    ADD COLUMN vat_flux_checked BOOLEAN NOT NULL DEFAULT FALSE;
+    ADD COLUMN vat_flux_checked INTEGER NOT NULL DEFAULT 0;
 
 -- +goose Down
 DROP INDEX maker.vat_flux_header_index;

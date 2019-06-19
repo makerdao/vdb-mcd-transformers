@@ -29,7 +29,7 @@ CREATE INDEX bite_urn_index
     ON maker.bite (urn_id);
 
 ALTER TABLE public.checked_headers
-    ADD COLUMN bite_checked BOOLEAN NOT NULL DEFAULT FALSE;
+    ADD COLUMN bite_checked INTEGER NOT NULL DEFAULT 0;
 
 -- +goose Down
 DROP INDEX maker.bite_header_index;
