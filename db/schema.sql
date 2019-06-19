@@ -6451,6 +6451,237 @@ ALTER TABLE ONLY public.watched_contracts
 
 
 --
+-- Name: bite_header_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX bite_header_index ON maker.bite USING btree (header_id);
+
+
+--
+-- Name: cat_file_chop_lump_header_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX cat_file_chop_lump_header_index ON maker.cat_file_chop_lump USING btree (header_id);
+
+
+--
+-- Name: cat_file_flip_header_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX cat_file_flip_header_index ON maker.cat_file_flip USING btree (header_id);
+
+
+--
+-- Name: cat_file_vow_header_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX cat_file_vow_header_index ON maker.cat_file_vow USING btree (header_id);
+
+
+--
+-- Name: deal_header_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX deal_header_index ON maker.deal USING btree (header_id);
+
+
+--
+-- Name: dent_header_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX dent_header_index ON maker.dent USING btree (header_id);
+
+
+--
+-- Name: flap_kick_header_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flap_kick_header_index ON maker.flap_kick USING btree (header_id);
+
+
+--
+-- Name: flip_kick_header_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flip_kick_header_index ON maker.flip_kick USING btree (header_id);
+
+
+--
+-- Name: flop_kick_header_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flop_kick_header_index ON maker.flop_kick USING btree (header_id);
+
+
+--
+-- Name: jug_drip_header_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX jug_drip_header_index ON maker.jug_drip USING btree (header_id);
+
+
+--
+-- Name: jug_file_base_header_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX jug_file_base_header_index ON maker.jug_file_base USING btree (header_id);
+
+
+--
+-- Name: jug_file_ilk_header_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX jug_file_ilk_header_index ON maker.jug_file_ilk USING btree (header_id);
+
+
+--
+-- Name: jug_file_vow_header_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX jug_file_vow_header_index ON maker.jug_file_vow USING btree (header_id);
+
+
+--
+-- Name: jug_init_header_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX jug_init_header_index ON maker.jug_init USING btree (header_id);
+
+
+--
+-- Name: spot_file_mat_header_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX spot_file_mat_header_index ON maker.spot_file_mat USING btree (header_id);
+
+
+--
+-- Name: spot_file_pip_header_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX spot_file_pip_header_index ON maker.spot_file_pip USING btree (header_id);
+
+
+--
+-- Name: spot_poke_header_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX spot_poke_header_index ON maker.spot_poke USING btree (header_id);
+
+
+--
+-- Name: tend_header_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX tend_header_index ON maker.tend USING btree (header_id);
+
+
+--
+-- Name: vat_file_debt_ceiling_header_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vat_file_debt_ceiling_header_index ON maker.vat_file_debt_ceiling USING btree (header_id);
+
+
+--
+-- Name: vat_file_ilk_header_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vat_file_ilk_header_index ON maker.vat_file_ilk USING btree (header_id);
+
+
+--
+-- Name: vat_flux_header_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vat_flux_header_index ON maker.vat_flux USING btree (header_id);
+
+
+--
+-- Name: vat_fold_header_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vat_fold_header_index ON maker.vat_fold USING btree (header_id);
+
+
+--
+-- Name: vat_fork_header_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vat_fork_header_index ON maker.vat_fork USING btree (header_id);
+
+
+--
+-- Name: vat_frob_header_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vat_frob_header_index ON maker.vat_frob USING btree (header_id);
+
+
+--
+-- Name: vat_grab_header_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vat_grab_header_index ON maker.vat_grab USING btree (header_id);
+
+
+--
+-- Name: vat_heal_header_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vat_heal_header_index ON maker.vat_heal USING btree (header_id);
+
+
+--
+-- Name: vat_init_header_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vat_init_header_index ON maker.vat_init USING btree (header_id);
+
+
+--
+-- Name: vat_move_header_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vat_move_header_index ON maker.vat_move USING btree (header_id);
+
+
+--
+-- Name: vat_slip_header_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vat_slip_header_index ON maker.vat_slip USING btree (header_id);
+
+
+--
+-- Name: vat_suck_header_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vat_suck_header_index ON maker.vat_suck USING btree (header_id);
+
+
+--
+-- Name: vow_fess_header_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vow_fess_header_index ON maker.vow_fess USING btree (header_id);
+
+
+--
+-- Name: vow_file_header_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vow_file_header_index ON maker.vow_file USING btree (header_id);
+
+
+--
+-- Name: vow_flog_header_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vow_flog_header_index ON maker.vow_flog USING btree (header_id);
+
+
+--
 -- Name: block_id_index; Type: INDEX; Schema: public; Owner: -
 --
 

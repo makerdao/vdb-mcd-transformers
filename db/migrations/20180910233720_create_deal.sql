@@ -11,10 +11,15 @@ CREATE TABLE maker.deal
     UNIQUE (header_id, tx_idx, log_idx)
 );
 
+CREATE INDEX deal_header_index
+    ON maker.deal (header_id);
+
 ALTER TABLE public.checked_headers
     ADD COLUMN deal_checked BOOLEAN NOT NULL DEFAULT FALSE;
 
 -- +goose Down
+DROP INDEX maker.deal_header_index;
+
 DROP TABLE maker.deal;
 
 ALTER TABLE public.checked_headers

@@ -10,10 +10,15 @@ CREATE TABLE maker.jug_init
     UNIQUE (header_id, tx_idx, log_idx)
 );
 
+CREATE INDEX jug_init_header_index
+    ON maker.jug_init (header_id);
+
 ALTER TABLE public.checked_headers
     ADD COLUMN jug_init_checked INTEGER NOT NULL DEFAULT 0;
 
 -- +goose Down
+DROP INDEX maker.jug_init_header_index;
+
 DROP TABLE maker.jug_init;
 
 ALTER TABLE public.checked_headers

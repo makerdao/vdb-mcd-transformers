@@ -13,10 +13,14 @@ CREATE TABLE maker.vat_flux
     UNIQUE (header_id, tx_idx, log_idx)
 );
 
+CREATE INDEX vat_flux_header_index
+    ON maker.vat_flux (header_id);
+
 ALTER TABLE public.checked_headers
     ADD COLUMN vat_flux_checked BOOLEAN NOT NULL DEFAULT FALSE;
 
 -- +goose Down
+DROP INDEX maker.vat_flux_header_index;
 DROP TABLE maker.vat_flux;
 ALTER TABLE public.checked_headers
     DROP COLUMN vat_flux_checked;

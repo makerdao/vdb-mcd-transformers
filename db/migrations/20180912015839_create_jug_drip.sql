@@ -10,10 +10,15 @@ CREATE TABLE maker.jug_drip
     UNIQUE (header_id, tx_idx, log_idx)
 );
 
+CREATE INDEX jug_drip_header_index
+    ON maker.jug_drip (header_id);
+
 ALTER TABLE public.checked_headers
     ADD COLUMN jug_drip_checked BOOLEAN NOT NULL DEFAULT FALSE;
 
 -- +goose Down
+DROP INDEX maker.jug_drip_header_index;
+
 DROP TABLE maker.jug_drip;
 
 ALTER TABLE public.checked_headers

@@ -14,10 +14,14 @@ CREATE TABLE maker.flap_kick
     UNIQUE (header_id, tx_idx, log_idx)
 );
 
+CREATE INDEX flap_kick_header_index
+    ON maker.flap_kick (header_id);
+
 ALTER TABLE public.checked_headers
     ADD COLUMN flap_kick_checked BOOLEAN NOT NULL DEFAULT FALSE;
 
 -- +goose Down
+DROP INDEX maker.flap_kick_header_index;
 DROP TABLE maker.flap_kick;
 ALTER TABLE public.checked_headers
     DROP COLUMN flap_kick_checked;

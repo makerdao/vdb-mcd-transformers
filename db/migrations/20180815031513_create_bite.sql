@@ -22,10 +22,15 @@ COMMENT ON COLUMN maker.bite.bite_identifier
 COMMENT ON COLUMN maker.bite.id
     IS E'@omit';
 
+CREATE INDEX bite_header_index
+    ON maker.bite (header_id);
+
 ALTER TABLE public.checked_headers
     ADD COLUMN bite_checked BOOLEAN NOT NULL DEFAULT FALSE;
 
 -- +goose Down
+DROP INDEX maker.bite_header_index;
+
 DROP TABLE maker.bite;
 
 ALTER TABLE public.checked_headers

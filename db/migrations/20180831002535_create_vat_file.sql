@@ -12,6 +12,9 @@ CREATE TABLE maker.vat_file_ilk
     UNIQUE (header_id, tx_idx, log_idx)
 );
 
+CREATE INDEX vat_file_ilk_header_index
+    ON maker.vat_file_ilk (header_id);
+
 CREATE TABLE maker.vat_file_debt_ceiling
 (
     id        SERIAL PRIMARY KEY,
@@ -24,6 +27,9 @@ CREATE TABLE maker.vat_file_debt_ceiling
     UNIQUE (header_id, tx_idx, log_idx)
 );
 
+CREATE INDEX vat_file_debt_ceiling_header_index
+    ON maker.vat_file_debt_ceiling (header_id);
+
 ALTER TABLE public.checked_headers
     ADD COLUMN vat_file_debt_ceiling_checked BOOLEAN NOT NULL DEFAULT FALSE;
 
@@ -31,6 +37,9 @@ ALTER TABLE public.checked_headers
     ADD COLUMN vat_file_ilk_checked BOOLEAN NOT NULL DEFAULT FALSE;
 
 -- +goose Down
+DROP INDEX maker.vat_file_ilk_header_index;
+DROP INDEX maker.vat_file_debt_ceiling_header_index;
+
 DROP TABLE maker.vat_file_ilk;
 DROP TABLE maker.vat_file_debt_ceiling;
 
