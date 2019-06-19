@@ -9,6 +9,9 @@ CREATE TABLE maker.jug_ilk_rho
     UNIQUE (block_number, block_hash, ilk_id, rho)
 );
 
+CREATE INDEX jug_ilk_rho_block_number_index
+    ON maker.jug_ilk_rho (block_number);
+
 CREATE INDEX jug_ilk_rho_ilk_index
     ON maker.jug_ilk_rho (ilk_id);
 
@@ -21,6 +24,9 @@ CREATE TABLE maker.jug_ilk_duty
     duty         NUMERIC NOT NULL,
     UNIQUE (block_number, block_hash, ilk_id, duty)
 );
+
+CREATE INDEX jug_ilk_duty_block_number_index
+    ON maker.jug_ilk_duty (block_number);
 
 CREATE INDEX jug_ilk_duty_ilk_index
     ON maker.jug_ilk_duty (ilk_id);
@@ -53,7 +59,9 @@ CREATE TABLE maker.jug_base
 );
 
 -- +goose Down
+DROP INDEX maker.jug_ilk_rho_block_number_index;
 DROP INDEX maker.jug_ilk_rho_ilk_index;
+DROP INDEX maker.jug_ilk_duty_block_number_index;
 DROP INDEX maker.jug_ilk_duty_ilk_index;
 
 DROP TABLE maker.jug_ilk_rho;

@@ -13,13 +13,13 @@ CREATE FUNCTION api.get_queued_sin(era NUMERIC)
 $body$
 WITH created AS (SELECT era, vow_sin_mapping.block_number, api.epoch_to_datetime(block_timestamp) AS datetime
                  FROM maker.vow_sin_mapping
-                          LEFT JOIN public.headers ON hash = block_hash
+                          LEFT JOIN public.headers h ON h.block_number = vow_sin_mapping.block_number
                  WHERE era = get_queued_sin.era
                  ORDER BY vow_sin_mapping.block_number ASC
                  LIMIT 1),
      updated AS (SELECT era, vow_sin_mapping.block_number, api.epoch_to_datetime(block_timestamp) AS datetime
                  FROM maker.vow_sin_mapping
-                          LEFT JOIN public.headers ON hash = block_hash
+                          LEFT JOIN public.headers h ON h.block_number = vow_sin_mapping.block_number
                  WHERE era = get_queued_sin.era
                  ORDER BY vow_sin_mapping.block_number DESC
                  LIMIT 1)

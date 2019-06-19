@@ -10,6 +10,9 @@ CREATE TABLE maker.spot_ilk_pip
     UNIQUE (block_number, block_hash, ilk_id, pip)
 );
 
+CREATE INDEX spot_ilk_pip_block_number_index
+    ON maker.spot_ilk_pip (block_number);
+
 CREATE INDEX spot_ilk_pip_ilk_index
     ON maker.spot_ilk_pip (ilk_id);
 
@@ -22,6 +25,9 @@ CREATE TABLE maker.spot_ilk_mat
     mat          NUMERIC NOT NULL,
     UNIQUE (block_number, block_hash, ilk_id, mat)
 );
+
+CREATE INDEX spot_ilk_mat_block_number_index
+    ON maker.spot_ilk_mat (block_number);
 
 CREATE INDEX spot_ilk_mat_ilk_index
     ON maker.spot_ilk_mat (ilk_id);
@@ -46,7 +52,9 @@ CREATE TABLE maker.spot_par
 
 -- +goose Down
 -- SQL in this section is executed when the migration is rolled back.
+DROP INDEX maker.spot_ilk_pip_block_number_index;
 DROP INDEX maker.spot_ilk_pip_ilk_index;
+DROP INDEX maker.spot_ilk_mat_block_number_index;
 DROP INDEX maker.spot_ilk_mat_ilk_index;
 
 DROP TABLE maker.spot_par;

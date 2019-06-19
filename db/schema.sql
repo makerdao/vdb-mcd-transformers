@@ -1017,13 +1017,13 @@ CREATE FUNCTION api.get_queued_sin(era numeric) RETURNS api.queued_sin
     AS $$
 WITH created AS (SELECT era, vow_sin_mapping.block_number, api.epoch_to_datetime(block_timestamp) AS datetime
                  FROM maker.vow_sin_mapping
-                          LEFT JOIN public.headers ON hash = block_hash
+                          LEFT JOIN public.headers h ON h.block_number = vow_sin_mapping.block_number
                  WHERE era = get_queued_sin.era
                  ORDER BY vow_sin_mapping.block_number ASC
                  LIMIT 1),
      updated AS (SELECT era, vow_sin_mapping.block_number, api.epoch_to_datetime(block_timestamp) AS datetime
                  FROM maker.vow_sin_mapping
-                          LEFT JOIN public.headers ON hash = block_hash
+                          LEFT JOIN public.headers h ON h.block_number = vow_sin_mapping.block_number
                  WHERE era = get_queued_sin.era
                  ORDER BY vow_sin_mapping.block_number DESC
                  LIMIT 1)
@@ -6500,6 +6500,13 @@ CREATE INDEX cat_file_vow_header_index ON maker.cat_file_vow USING btree (header
 
 
 --
+-- Name: cat_ilk_chop_block_number_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX cat_ilk_chop_block_number_index ON maker.cat_ilk_chop USING btree (block_number);
+
+
+--
 -- Name: cat_ilk_chop_ilk_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -6507,10 +6514,24 @@ CREATE INDEX cat_ilk_chop_ilk_index ON maker.cat_ilk_chop USING btree (ilk_id);
 
 
 --
+-- Name: cat_ilk_flip_block_number_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX cat_ilk_flip_block_number_index ON maker.cat_ilk_flip USING btree (block_number);
+
+
+--
 -- Name: cat_ilk_flip_ilk_index; Type: INDEX; Schema: maker; Owner: -
 --
 
 CREATE INDEX cat_ilk_flip_ilk_index ON maker.cat_ilk_flip USING btree (ilk_id);
+
+
+--
+-- Name: cat_ilk_lump_block_number_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX cat_ilk_lump_block_number_index ON maker.cat_ilk_lump USING btree (block_number);
 
 
 --
@@ -6598,10 +6619,24 @@ CREATE INDEX jug_file_vow_header_index ON maker.jug_file_vow USING btree (header
 
 
 --
+-- Name: jug_ilk_duty_block_number_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX jug_ilk_duty_block_number_index ON maker.jug_ilk_duty USING btree (block_number);
+
+
+--
 -- Name: jug_ilk_duty_ilk_index; Type: INDEX; Schema: maker; Owner: -
 --
 
 CREATE INDEX jug_ilk_duty_ilk_index ON maker.jug_ilk_duty USING btree (ilk_id);
+
+
+--
+-- Name: jug_ilk_rho_block_number_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX jug_ilk_rho_block_number_index ON maker.jug_ilk_rho USING btree (block_number);
 
 
 --
@@ -6654,10 +6689,24 @@ CREATE INDEX spot_file_pip_ilk_index ON maker.spot_file_pip USING btree (ilk_id)
 
 
 --
+-- Name: spot_ilk_mat_block_number_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX spot_ilk_mat_block_number_index ON maker.spot_ilk_mat USING btree (block_number);
+
+
+--
 -- Name: spot_ilk_mat_ilk_index; Type: INDEX; Schema: maker; Owner: -
 --
 
 CREATE INDEX spot_ilk_mat_ilk_index ON maker.spot_ilk_mat USING btree (ilk_id);
+
+
+--
+-- Name: spot_ilk_pip_block_number_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX spot_ilk_pip_block_number_index ON maker.spot_ilk_pip USING btree (block_number);
 
 
 --
@@ -6801,10 +6850,24 @@ CREATE INDEX vat_heal_header_index ON maker.vat_heal USING btree (header_id);
 
 
 --
+-- Name: vat_ilk_art_block_number_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vat_ilk_art_block_number_index ON maker.vat_ilk_art USING btree (block_number);
+
+
+--
 -- Name: vat_ilk_art_ilk_index; Type: INDEX; Schema: maker; Owner: -
 --
 
 CREATE INDEX vat_ilk_art_ilk_index ON maker.vat_ilk_art USING btree (ilk_id);
+
+
+--
+-- Name: vat_ilk_dust_block_number_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vat_ilk_dust_block_number_index ON maker.vat_ilk_dust USING btree (block_number);
 
 
 --
@@ -6815,6 +6878,13 @@ CREATE INDEX vat_ilk_dust_ilk_index ON maker.vat_ilk_dust USING btree (ilk_id);
 
 
 --
+-- Name: vat_ilk_line_block_number_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vat_ilk_line_block_number_index ON maker.vat_ilk_line USING btree (block_number);
+
+
+--
 -- Name: vat_ilk_line_ilk_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -6822,10 +6892,24 @@ CREATE INDEX vat_ilk_line_ilk_index ON maker.vat_ilk_line USING btree (ilk_id);
 
 
 --
+-- Name: vat_ilk_rate_block_number_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vat_ilk_rate_block_number_index ON maker.vat_ilk_rate USING btree (block_number);
+
+
+--
 -- Name: vat_ilk_rate_ilk_index; Type: INDEX; Schema: maker; Owner: -
 --
 
 CREATE INDEX vat_ilk_rate_ilk_index ON maker.vat_ilk_rate USING btree (ilk_id);
+
+
+--
+-- Name: vat_ilk_spot_block_number_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vat_ilk_spot_block_number_index ON maker.vat_ilk_spot USING btree (block_number);
 
 
 --
@@ -6878,10 +6962,24 @@ CREATE INDEX vat_suck_header_index ON maker.vat_suck USING btree (header_id);
 
 
 --
+-- Name: vat_urn_art_block_number_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vat_urn_art_block_number_index ON maker.vat_urn_art USING btree (block_number);
+
+
+--
 -- Name: vat_urn_art_urn_index; Type: INDEX; Schema: maker; Owner: -
 --
 
 CREATE INDEX vat_urn_art_urn_index ON maker.vat_urn_art USING btree (urn_id);
+
+
+--
+-- Name: vat_urn_ink_block_number_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vat_urn_ink_block_number_index ON maker.vat_urn_ink USING btree (block_number);
 
 
 --
@@ -6910,6 +7008,13 @@ CREATE INDEX vow_file_header_index ON maker.vow_file USING btree (header_id);
 --
 
 CREATE INDEX vow_flog_header_index ON maker.vow_flog USING btree (header_id);
+
+
+--
+-- Name: vow_sin_mapping_block_number_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vow_sin_mapping_block_number_index ON maker.vow_sin_mapping USING btree (block_number);
 
 
 --
