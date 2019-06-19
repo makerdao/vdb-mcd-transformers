@@ -6458,6 +6458,13 @@ CREATE INDEX bite_header_index ON maker.bite USING btree (header_id);
 
 
 --
+-- Name: bite_urn_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX bite_urn_index ON maker.bite USING btree (urn_id);
+
+
+--
 -- Name: cat_file_chop_lump_header_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -6731,6 +6738,13 @@ CREATE INDEX vat_fold_header_index ON maker.vat_fold USING btree (header_id);
 
 
 --
+-- Name: vat_fold_urn_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vat_fold_urn_index ON maker.vat_fold USING btree (urn_id);
+
+
+--
 -- Name: vat_fork_header_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -6752,6 +6766,13 @@ CREATE INDEX vat_frob_header_index ON maker.vat_frob USING btree (header_id);
 
 
 --
+-- Name: vat_frob_urn_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vat_frob_urn_index ON maker.vat_frob USING btree (urn_id);
+
+
+--
 -- Name: vat_gem_ilk_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -6763,6 +6784,13 @@ CREATE INDEX vat_gem_ilk_index ON maker.vat_gem USING btree (ilk_id);
 --
 
 CREATE INDEX vat_grab_header_index ON maker.vat_grab USING btree (header_id);
+
+
+--
+-- Name: vat_grab_urn_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vat_grab_urn_index ON maker.vat_grab USING btree (urn_id);
 
 
 --
@@ -6847,6 +6875,20 @@ CREATE INDEX vat_slip_ilk_index ON maker.vat_slip USING btree (ilk_id);
 --
 
 CREATE INDEX vat_suck_header_index ON maker.vat_suck USING btree (header_id);
+
+
+--
+-- Name: vat_urn_art_urn_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vat_urn_art_urn_index ON maker.vat_urn_art USING btree (urn_id);
+
+
+--
+-- Name: vat_urn_ink_urn_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vat_urn_ink_urn_index ON maker.vat_urn_ink USING btree (urn_id);
 
 
 --

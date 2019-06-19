@@ -25,11 +25,15 @@ COMMENT ON COLUMN maker.bite.id
 CREATE INDEX bite_header_index
     ON maker.bite (header_id);
 
+CREATE INDEX bite_urn_index
+    ON maker.bite (urn_id);
+
 ALTER TABLE public.checked_headers
     ADD COLUMN bite_checked BOOLEAN NOT NULL DEFAULT FALSE;
 
 -- +goose Down
 DROP INDEX maker.bite_header_index;
+DROP INDEX maker.bite_urn_index;
 
 DROP TABLE maker.bite;
 
