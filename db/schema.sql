@@ -156,22 +156,37 @@ CREATE TYPE api.ilk_state AS (
 
 
 --
--- Name: log_value; Type: TYPE; Schema: api; Owner: -
+-- Name: poke_event; Type: TYPE; Schema: api; Owner: -
 --
 
-CREATE TYPE api.log_value AS (
+CREATE TYPE api.poke_event AS (
+	ilk_id integer,
 	val numeric,
-	block_number bigint,
-	tx_idx integer,
-	contract_address text
+	spot numeric,
+	block_height bigint,
+	tx_idx integer
 );
 
 
 --
--- Name: COLUMN log_value.tx_idx; Type: COMMENT; Schema: api; Owner: -
+-- Name: COLUMN poke_event.ilk_id; Type: COMMENT; Schema: api; Owner: -
 --
 
-COMMENT ON COLUMN api.log_value.tx_idx IS '@omit';
+COMMENT ON COLUMN api.poke_event.ilk_id IS '@omit';
+
+
+--
+-- Name: COLUMN poke_event.block_height; Type: COMMENT; Schema: api; Owner: -
+--
+
+COMMENT ON COLUMN api.poke_event.block_height IS '@omit';
+
+
+--
+-- Name: COLUMN poke_event.tx_idx; Type: COMMENT; Schema: api; Owner: -
+--
+
+COMMENT ON COLUMN api.poke_event.tx_idx IS '@omit';
 
 
 --
@@ -488,6 +503,32 @@ WHERE (
               pips.pip is not null OR
               mats.mat is not null
           )
+$$;
+
+
+--
+-- Name: max_timestamp(); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.max_timestamp() RETURNS numeric
+    LANGUAGE sql STABLE
+    AS $$
+SELECT max(block_timestamp)
+FROM public.headers
+$$;
+
+
+--
+-- Name: all_poke_events(numeric, numeric); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.all_poke_events(begintime numeric DEFAULT 0, endtime numeric DEFAULT api.max_timestamp()) RETURNS SETOF api.poke_event
+    LANGUAGE sql STABLE
+    AS $$
+SELECT ilk_id, "value" AS val, spot, block_number AS block_height, tx_idx
+FROM maker.spot_poke
+         LEFT JOIN public.headers ON spot_poke.header_id = headers.id
+WHERE block_timestamp BETWEEN beginTime AND endTime
 $$;
 
 
@@ -1148,45 +1189,32 @@ $$;
 
 
 --
--- Name: log_value_tx(api.log_value); Type: FUNCTION; Schema: api; Owner: -
+-- Name: poke_event_ilk(api.poke_event); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.log_value_tx(priceupdate api.log_value) RETURNS api.tx
+CREATE FUNCTION api.poke_event_ilk(priceupdate api.poke_event) RETURNS api.ilk_state
+    LANGUAGE sql STABLE
+    AS $$
+WITH raw_ilk AS (SELECT * FROM maker.ilks WHERE ilks.id = priceUpdate.ilk_id)
+
+SELECT *
+FROM api.get_ilk((SELECT identifier FROM raw_ilk), priceUpdate.block_height)
+$$;
+
+
+--
+-- Name: poke_event_tx(api.poke_event); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.poke_event_tx(priceupdate api.poke_event) RETURNS api.tx
     LANGUAGE sql STABLE
     AS $$
 SELECT txs.hash, txs.tx_index, headers.block_number, headers.hash, txs.tx_from, txs.tx_to
-FROM maker.pip_log_value plv
-         LEFT JOIN public.header_sync_transactions txs ON plv.header_id = txs.header_id
-         LEFT JOIN headers ON plv.header_id = headers.id
-WHERE headers.block_number = priceUpdate.block_number
-  AND priceUpdate.tx_idx = txs.tx_index
+FROM public.header_sync_transactions txs
+         LEFT JOIN headers ON txs.header_id = headers.id
+WHERE headers.block_number = priceUpdate.block_height
+  AND txs.tx_index = priceUpdate.tx_idx
 ORDER BY headers.block_number DESC
-$$;
-
-
---
--- Name: max_timestamp(); Type: FUNCTION; Schema: api; Owner: -
---
-
-CREATE FUNCTION api.max_timestamp() RETURNS numeric
-    LANGUAGE sql STABLE
-    AS $$
-SELECT max(block_timestamp)
-FROM public.headers
-$$;
-
-
---
--- Name: log_values(numeric, numeric); Type: FUNCTION; Schema: api; Owner: -
---
-
-CREATE FUNCTION api.log_values(begintime numeric DEFAULT 0, endtime numeric DEFAULT api.max_timestamp()) RETURNS SETOF api.log_value
-    LANGUAGE sql STABLE STRICT
-    AS $$
-SELECT val, pip_log_value.block_number, tx_idx, contract_address
-FROM maker.pip_log_value
-         LEFT JOIN public.headers ON pip_log_value.header_id = headers.id
-WHERE block_timestamp BETWEEN beginTime AND endTime
 $$;
 
 
@@ -4033,11 +4061,11 @@ CREATE TABLE public.checked_headers (
     vow_fess_checked integer DEFAULT 0 NOT NULL,
     spot_file_mat_checked integer DEFAULT 0 NOT NULL,
     spot_file_pip_checked integer DEFAULT 0 NOT NULL,
+    spot_poke_checked integer DEFAULT 0 NOT NULL,
     vow_file_checked integer DEFAULT 0 NOT NULL,
     vat_suck_checked integer DEFAULT 0 NOT NULL,
     vat_fork_checked integer DEFAULT 0 NOT NULL,
-    jug_init_checked integer DEFAULT 0 NOT NULL,
-    spot_poke_checked integer DEFAULT 0 NOT NULL
+    jug_init_checked integer DEFAULT 0 NOT NULL
 );
 
 
