@@ -14,10 +14,15 @@ CREATE TABLE maker.tend
     UNIQUE (header_id, tx_idx, log_idx)
 );
 
+CREATE INDEX tend_header_index
+    ON maker.tend (header_id);
+
 ALTER TABLE public.checked_headers
     ADD COLUMN tend_checked BOOLEAN NOT NULL DEFAULT FALSE;
 
 -- +goose Down
+DROP INDEX maker.tend_header_index;
+
 DROP TABLE maker.tend;
 
 ALTER TABLE public.checked_headers

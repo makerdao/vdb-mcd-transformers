@@ -11,6 +11,9 @@ CREATE TABLE maker.jug_file_base
     UNIQUE (header_id, tx_idx, log_idx)
 );
 
+CREATE INDEX jug_file_base_header_index
+    ON maker.jug_file_base (header_id);
+
 CREATE TABLE maker.jug_file_ilk
 (
     id        SERIAL PRIMARY KEY,
@@ -24,6 +27,9 @@ CREATE TABLE maker.jug_file_ilk
     UNIQUE (header_id, tx_idx, log_idx)
 );
 
+CREATE INDEX jug_file_ilk_header_index
+    ON maker.jug_file_ilk (header_id);
+
 CREATE TABLE maker.jug_file_vow
 (
     id        SERIAL PRIMARY KEY,
@@ -36,6 +42,9 @@ CREATE TABLE maker.jug_file_vow
     UNIQUE (header_id, tx_idx, log_idx)
 );
 
+CREATE INDEX jug_file_vow_header_index
+    ON maker.jug_file_vow (header_id);
+
 ALTER TABLE public.checked_headers
     ADD COLUMN jug_file_base_checked BOOLEAN NOT NULL DEFAULT FALSE;
 
@@ -46,6 +55,10 @@ ALTER TABLE public.checked_headers
     ADD COLUMN jug_file_vow_checked BOOLEAN NOT NULL DEFAULT FALSE;
 
 -- +goose Down
+DROP INDEX maker.jug_file_base_header_index;
+DROP INDEX maker.jug_file_ilk_header_index;
+DROP INDEX maker.jug_file_vow_header_index;
+
 DROP TABLE maker.jug_file_ilk;
 DROP TABLE maker.jug_file_base;
 DROP TABLE maker.jug_file_vow;

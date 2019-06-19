@@ -12,6 +12,9 @@ CREATE TABLE maker.cat_file_chop_lump
     UNIQUE (header_id, tx_idx, log_idx)
 );
 
+CREATE INDEX cat_file_chop_lump_header_index
+    ON maker.cat_file_chop_lump (header_id);
+
 CREATE TABLE maker.cat_file_flip
 (
     id        SERIAL PRIMARY KEY,
@@ -25,6 +28,9 @@ CREATE TABLE maker.cat_file_flip
     UNIQUE (header_id, tx_idx, log_idx)
 );
 
+CREATE INDEX cat_file_flip_header_index
+    ON maker.cat_file_flip (header_id);
+
 CREATE TABLE maker.cat_file_vow
 (
     id        SERIAL PRIMARY KEY,
@@ -37,6 +43,9 @@ CREATE TABLE maker.cat_file_vow
     UNIQUE (header_id, tx_idx, log_idx)
 );
 
+CREATE INDEX cat_file_vow_header_index
+    ON maker.cat_file_vow (header_id);
+
 ALTER TABLE public.checked_headers
     ADD COLUMN cat_file_chop_lump_checked BOOLEAN NOT NULL DEFAULT FALSE;
 
@@ -47,6 +56,10 @@ ALTER TABLE public.checked_headers
     ADD COLUMN cat_file_vow_checked BOOLEAN NOT NULL DEFAULT FALSE;
 
 -- +goose Down
+DROP INDEX maker.cat_file_chop_lump_header_index;
+DROP INDEX maker.cat_file_flip_header_index;
+DROP INDEX maker.cat_file_vow_header_index;
+
 DROP TABLE maker.cat_file_chop_lump;
 DROP TABLE maker.cat_file_flip;
 DROP TABLE maker.cat_file_vow;

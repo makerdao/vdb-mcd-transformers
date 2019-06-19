@@ -11,10 +11,14 @@ CREATE TABLE maker.vat_fold
     UNIQUE (header_id, tx_idx, log_idx)
 );
 
+CREATE INDEX vat_fold_header_index
+    ON maker.vat_fold (header_id);
+
 ALTER TABLE public.checked_headers
     ADD COLUMN vat_fold_checked BOOLEAN NOT NULL DEFAULT FALSE;
 
 -- +goose Down
+DROP INDEX maker.vat_fold_header_index;
 DROP TABLE maker.vat_fold;
 ALTER TABLE public.checked_headers
     DROP COLUMN vat_fold_checked;

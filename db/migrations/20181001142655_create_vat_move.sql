@@ -12,10 +12,14 @@ CREATE TABLE maker.vat_move
     UNIQUE (header_id, tx_idx, log_idx)
 );
 
+CREATE INDEX vat_move_header_index
+    ON maker.vat_move (header_id);
+
 ALTER TABLE public.checked_headers
     ADD COLUMN vat_move_checked BOOLEAN NOT NULL DEFAULT FALSE;
 
 -- +goose Down
+DROP INDEX maker.vat_move_header_index;
 DROP TABLE maker.vat_move;
 ALTER TABLE public.checked_headers
     DROP COLUMN vat_move_checked;

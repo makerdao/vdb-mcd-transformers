@@ -12,6 +12,9 @@ CREATE TABLE maker.spot_file_mat
     UNIQUE (header_id, tx_idx, log_idx)
 );
 
+CREATE INDEX spot_file_mat_header_index
+    ON maker.spot_file_mat (header_id);
+
 CREATE TABLE maker.spot_file_pip
 (
     id        SERIAL PRIMARY KEY,
@@ -24,6 +27,9 @@ CREATE TABLE maker.spot_file_pip
     UNIQUE (header_id, tx_idx, log_idx)
 );
 
+CREATE INDEX spot_file_pip_header_index
+    ON maker.spot_file_pip (header_id);
+
 ALTER TABLE public.checked_headers
     ADD COLUMN spot_file_mat_checked INTEGER NOT NULL DEFAULT 0;
 
@@ -32,8 +38,12 @@ ALTER TABLE public.checked_headers
 
 
 -- +goose Down
+DROP INDEX maker.spot_file_mat_header_index;
+DROP INDEX maker.spot_file_pip_header_index;
+
 DROP TABLE maker.spot_file_mat;
 DROP TABLE maker.spot_file_pip;
+
 ALTER TABLE public.checked_headers
     DROP COLUMN spot_file_mat_checked;
 ALTER TABLE public.checked_headers

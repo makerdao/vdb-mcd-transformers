@@ -11,10 +11,15 @@ CREATE TABLE maker.vow_file
     UNIQUE (header_id, tx_idx, log_idx)
 );
 
+CREATE INDEX vow_file_header_index
+    ON maker.vow_file (header_id);
+
 ALTER TABLE public.checked_headers
     ADD COLUMN vow_file_checked INTEGER NOT NULL DEFAULT 0;
 
 -- +goose Down
+DROP INDEX maker.vow_file_header_index;
+
 DROP TABLE maker.vow_file;
 
 ALTER TABLE public.checked_headers
