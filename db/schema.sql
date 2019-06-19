@@ -1339,23 +1339,6 @@ FROM api.get_ilk(state.ilk_identifier, state.block_height)
 $$;
 
 
---
--- Name: notify_pip_log_value(); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION public.notify_pip_log_value() RETURNS trigger
-    LANGUAGE plpgsql
-    AS $$
-BEGIN
-    PERFORM pg_notify(
-                    CAST('postgraphile:pip_log_value' AS text),
-                    json_build_object('__node__', json_build_array('pip_log_value', NEW.id)) :: text
-                );
-    RETURN NEW;
-END;
-$$;
-
-
 SET default_tablespace = '';
 
 SET default_with_oids = false;
@@ -2283,42 +2266,6 @@ CREATE SEQUENCE maker.jug_vow_id_seq
 --
 
 ALTER SEQUENCE maker.jug_vow_id_seq OWNED BY maker.jug_vow.id;
-
-
---
--- Name: pip_log_value; Type: TABLE; Schema: maker; Owner: -
---
-
-CREATE TABLE maker.pip_log_value (
-    id integer NOT NULL,
-    block_number bigint NOT NULL,
-    header_id integer NOT NULL,
-    contract_address text,
-    val numeric,
-    log_idx integer NOT NULL,
-    tx_idx integer NOT NULL,
-    raw_log jsonb
-);
-
-
---
--- Name: pip_log_value_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
---
-
-CREATE SEQUENCE maker.pip_log_value_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: pip_log_value_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
---
-
-ALTER SEQUENCE maker.pip_log_value_id_seq OWNED BY maker.pip_log_value.id;
 
 
 --
@@ -4034,7 +3981,6 @@ CREATE TABLE public.checked_headers (
     header_id integer NOT NULL,
     flip_kick_checked integer DEFAULT 0 NOT NULL,
     vat_frob_checked integer DEFAULT 0 NOT NULL,
-    pip_log_value_checked integer DEFAULT 0 NOT NULL,
     tend_checked integer DEFAULT 0 NOT NULL,
     bite_checked integer DEFAULT 0 NOT NULL,
     dent_checked integer DEFAULT 0 NOT NULL,
@@ -4708,13 +4654,6 @@ ALTER TABLE ONLY maker.jug_vat ALTER COLUMN id SET DEFAULT nextval('maker.jug_va
 --
 
 ALTER TABLE ONLY maker.jug_vow ALTER COLUMN id SET DEFAULT nextval('maker.jug_vow_id_seq'::regclass);
-
-
---
--- Name: pip_log_value id; Type: DEFAULT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.pip_log_value ALTER COLUMN id SET DEFAULT nextval('maker.pip_log_value_id_seq'::regclass);
 
 
 --
@@ -5573,22 +5512,6 @@ ALTER TABLE ONLY maker.jug_vow
 
 ALTER TABLE ONLY maker.jug_vow
     ADD CONSTRAINT jug_vow_pkey PRIMARY KEY (id);
-
-
---
--- Name: pip_log_value pip_log_value_header_id_contract_address_tx_idx_log_idx_key; Type: CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.pip_log_value
-    ADD CONSTRAINT pip_log_value_header_id_contract_address_tx_idx_log_idx_key UNIQUE (header_id, contract_address, tx_idx, log_idx);
-
-
---
--- Name: pip_log_value pip_log_value_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.pip_log_value
-    ADD CONSTRAINT pip_log_value_pkey PRIMARY KEY (id);
 
 
 --
@@ -6570,13 +6493,6 @@ CREATE INDEX tx_to_index ON public.full_sync_transactions USING btree (tx_to);
 
 
 --
--- Name: pip_log_value notify_pip_log_value; Type: TRIGGER; Schema: maker; Owner: -
---
-
-CREATE TRIGGER notify_pip_log_value AFTER INSERT ON maker.pip_log_value FOR EACH ROW EXECUTE PROCEDURE public.notify_pip_log_value();
-
-
---
 -- Name: bite bite_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -6774,14 +6690,6 @@ ALTER TABLE ONLY maker.jug_init
 
 ALTER TABLE ONLY maker.jug_init
     ADD CONSTRAINT jug_init_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id) ON DELETE CASCADE;
-
-
---
--- Name: pip_log_value pip_log_value_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.pip_log_value
-    ADD CONSTRAINT pip_log_value_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
 
 
 --

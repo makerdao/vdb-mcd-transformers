@@ -5,7 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/jmoiron/sqlx"
-	"github.com/vulcanize/mcd_transformers/transformers/events/pip_log_value"
+	"github.com/vulcanize/mcd_transformers/transformers/events/spot_poke"
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_frob"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/cat"
@@ -226,8 +226,8 @@ func (state *GeneratorState) updateIlk() error {
 		// Rate is changed in fold, event which isn't included in spec
 	} else {
 		_, storageErr = state.pgTx.Exec(vat.InsertIlkSpotQuery, blockNumber, blockHash, randomIlkId, newValue)
-		_, eventErr = state.pgTx.Exec(pip_log_value.InsertPipLogValueQuery,
-			blockNumber, state.currentHeader.Id, getRandomAddress(), newValue, 0, 0, emptyRaw) // tx_idx 0 to match tx
+		_, eventErr = state.pgTx.Exec(spot_poke.InsertSpotPokeQuery,
+			state.currentHeader.Id, randomIlkId, newValue, newValue, 0, 0, emptyRaw) // tx_idx 0 to match tx
 
 		txErr := state.insertCurrentBlockTx()
 		if txErr != nil {

@@ -2,7 +2,6 @@ package queries
 
 import (
 	"database/sql"
-	"github.com/vulcanize/mcd_transformers/transformers/storage/vat"
 	"math/rand"
 
 	. "github.com/onsi/ginkgo"
@@ -15,6 +14,7 @@ import (
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/component_tests/queries/test_helpers"
 	"github.com/vulcanize/mcd_transformers/transformers/events/bite"
+	"github.com/vulcanize/mcd_transformers/transformers/storage/vat"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
