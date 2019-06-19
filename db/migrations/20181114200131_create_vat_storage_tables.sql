@@ -92,6 +92,9 @@ CREATE TABLE maker.vat_urn_art
     UNIQUE (block_number, block_hash, urn_id, art)
 );
 
+CREATE INDEX vat_urn_art_urn_index
+    ON maker.vat_urn_art (urn_id);
+
 CREATE TABLE maker.vat_urn_ink
 (
     id           SERIAL PRIMARY KEY,
@@ -101,6 +104,9 @@ CREATE TABLE maker.vat_urn_ink
     ink          NUMERIC NOT NULL,
     UNIQUE (block_number, block_hash, urn_id, ink)
 );
+
+CREATE INDEX vat_urn_ink_urn_index
+    ON maker.vat_urn_ink (urn_id);
 
 CREATE TABLE maker.vat_gem
 (
@@ -160,6 +166,8 @@ DROP INDEX maker.vat_ilk_dust_ilk_index;
 DROP INDEX maker.vat_ilk_line_ilk_index;
 DROP INDEX maker.vat_ilk_spot_ilk_index;
 DROP INDEX maker.vat_ilk_rate_ilk_index;
+DROP INDEX maker.vat_urn_art_urn_index;
+DROP INDEX maker.vat_urn_ink_urn_index;
 DROP INDEX maker.vat_gem_ilk_index;
 
 DROP TABLE maker.vat_debt;
