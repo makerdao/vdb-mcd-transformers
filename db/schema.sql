@@ -148,6 +148,8 @@ CREATE TYPE api.ilk_state AS (
 	flip text,
 	rho numeric,
 	duty numeric,
+	pip text,
+	mat numeric,
 	created timestamp without time zone,
 	updated timestamp without time zone
 );
@@ -426,7 +428,15 @@ WITH rates AS (SELECT DISTINCT ON (ilk_id) rate, ilk_id, block_hash
      duties AS (SELECT DISTINCT ON (ilk_id) duty, ilk_id, block_hash
                 FROM maker.jug_ilk_duty
                 WHERE block_number <= all_ilks.block_height
-                ORDER BY ilk_id, block_number DESC)
+                ORDER BY ilk_id, block_number DESC),
+     pips AS (SELECT DISTINCT ON (ilk_id) pip, ilk_id, block_hash
+              FROM maker.spot_ilk_pip
+              WHERE block_number <= all_ilks.block_height
+              ORDER BY ilk_id, block_number DESC),
+     mats AS (SELECT DISTINCT ON (ilk_id) mat, ilk_id, block_hash
+              FROM maker.spot_ilk_mat
+              WHERE block_number <= all_ilks.block_height
+              ORDER BY ilk_id, block_number DESC)
 SELECT ilks.identifier,
        all_ilks.block_height,
        rates.rate,
@@ -439,6 +449,8 @@ SELECT ilks.identifier,
        flips.flip,
        rhos.rho,
        duties.duty,
+       pips.pip,
+       mats.mat,
        (SELECT api.epoch_to_datetime(h.block_timestamp) AS created
         FROM api.get_ilk_blocks_before(ilks.identifier, all_ilks.block_height) b
                  JOIN headers h on h.block_number = b.block_height
@@ -460,6 +472,8 @@ FROM maker.ilks AS ilks
          LEFT JOIN flips on flips.ilk_id = ilks.id
          LEFT JOIN rhos on rhos.ilk_id = ilks.id
          LEFT JOIN duties on duties.ilk_id = ilks.id
+         LEFT JOIN pips on pips.ilk_id = ilks.id
+         LEFT JOIN mats on mats.ilk_id = ilks.id
 WHERE (
               rates.rate is not null OR
               arts.art is not null OR
@@ -470,7 +484,9 @@ WHERE (
               lumps.lump is not null OR
               flips.flip is not null OR
               rhos.rho is not null OR
-              duties.duty is not null
+              duties.duty is not null OR
+              pips.pip is not null OR
+              mats.mat is not null
           )
 $$;
 
@@ -803,6 +819,18 @@ WITH ilk AS (SELECT id FROM maker.ilks WHERE identifier = ilk_identifier),
                   AND block_number <= get_ilk.block_height
                 ORDER BY ilk_id, block_number DESC
                 LIMIT 1),
+     pips AS (SELECT pip, ilk_id, block_hash
+              FROM maker.spot_ilk_pip
+              WHERE ilk_id = (SELECT id FROM ilk)
+                AND block_number <= get_ilk.block_height
+              ORDER BY ilk_id, block_number DESC
+              LIMIT 1),
+     mats AS (SELECT mat, ilk_id, block_hash
+              FROM maker.spot_ilk_mat
+              WHERE ilk_id = (SELECT id FROM ilk)
+                AND block_number <= get_ilk.block_height
+              ORDER BY ilk_id, block_number DESC
+              LIMIT 1),
      relevant_blocks AS (SELECT * FROM api.get_ilk_blocks_before(ilk_identifier, get_ilk.block_height)),
      created AS (SELECT DISTINCT ON (relevant_blocks.ilk_id,
          relevant_blocks.block_height) relevant_blocks.block_height,
@@ -835,6 +863,8 @@ SELECT ilks.identifier,
        flips.flip,
        rhos.rho,
        duties.duty,
+       pips.pip,
+       mats.mat,
        created.datetime,
        updated.datetime
 FROM maker.ilks AS ilks
@@ -848,6 +878,8 @@ FROM maker.ilks AS ilks
          LEFT JOIN flips ON flips.ilk_id = ilks.id
          LEFT JOIN rhos ON rhos.ilk_id = ilks.id
          LEFT JOIN duties ON duties.ilk_id = ilks.id
+         LEFT JOIN pips ON pips.ilk_id = ilks.id
+         LEFT JOIN mats ON mats.ilk_id = ilks.id
          LEFT JOIN created ON created.ilk_id = ilks.id
          LEFT JOIN updated ON updated.ilk_id = ilks.id
 WHERE (
@@ -860,7 +892,9 @@ WHERE (
               lumps.lump is not null OR
               flips.flip is not null OR
               rhos.rho is not null OR
-              duties.duty is not null
+              duties.duty is not null OR
+              pips.pip is not null OR
+              mats.mat is not null
           )
 $$;
 
@@ -2331,6 +2365,104 @@ ALTER SEQUENCE maker.spot_file_pip_id_seq OWNED BY maker.spot_file_pip.id;
 
 
 --
+-- Name: spot_ilk_mat; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.spot_ilk_mat (
+    id integer NOT NULL,
+    block_number bigint,
+    block_hash text,
+    ilk_id integer NOT NULL,
+    mat numeric NOT NULL
+);
+
+
+--
+-- Name: spot_ilk_mat_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.spot_ilk_mat_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: spot_ilk_mat_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.spot_ilk_mat_id_seq OWNED BY maker.spot_ilk_mat.id;
+
+
+--
+-- Name: spot_ilk_pip; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.spot_ilk_pip (
+    id integer NOT NULL,
+    block_number bigint,
+    block_hash text,
+    ilk_id integer NOT NULL,
+    pip text
+);
+
+
+--
+-- Name: spot_ilk_pip_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.spot_ilk_pip_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: spot_ilk_pip_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.spot_ilk_pip_id_seq OWNED BY maker.spot_ilk_pip.id;
+
+
+--
+-- Name: spot_par; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.spot_par (
+    id integer NOT NULL,
+    block_number bigint,
+    block_hash text,
+    par numeric NOT NULL
+);
+
+
+--
+-- Name: spot_par_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.spot_par_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: spot_par_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.spot_par_id_seq OWNED BY maker.spot_par.id;
+
+
+--
 -- Name: spot_poke; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -2364,6 +2496,38 @@ CREATE SEQUENCE maker.spot_poke_id_seq
 --
 
 ALTER SEQUENCE maker.spot_poke_id_seq OWNED BY maker.spot_poke.id;
+
+
+--
+-- Name: spot_vat; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.spot_vat (
+    id integer NOT NULL,
+    block_number bigint,
+    block_hash text,
+    vat text
+);
+
+
+--
+-- Name: spot_vat_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.spot_vat_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: spot_vat_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.spot_vat_id_seq OWNED BY maker.spot_vat.id;
 
 
 --
@@ -4540,10 +4704,38 @@ ALTER TABLE ONLY maker.spot_file_pip ALTER COLUMN id SET DEFAULT nextval('maker.
 
 
 --
+-- Name: spot_ilk_mat id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.spot_ilk_mat ALTER COLUMN id SET DEFAULT nextval('maker.spot_ilk_mat_id_seq'::regclass);
+
+
+--
+-- Name: spot_ilk_pip id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.spot_ilk_pip ALTER COLUMN id SET DEFAULT nextval('maker.spot_ilk_pip_id_seq'::regclass);
+
+
+--
+-- Name: spot_par id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.spot_par ALTER COLUMN id SET DEFAULT nextval('maker.spot_par_id_seq'::regclass);
+
+
+--
 -- Name: spot_poke id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.spot_poke ALTER COLUMN id SET DEFAULT nextval('maker.spot_poke_id_seq'::regclass);
+
+
+--
+-- Name: spot_vat id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.spot_vat ALTER COLUMN id SET DEFAULT nextval('maker.spot_vat_id_seq'::regclass);
 
 
 --
@@ -5404,6 +5596,54 @@ ALTER TABLE ONLY maker.spot_file_pip
 
 
 --
+-- Name: spot_ilk_mat spot_ilk_mat_block_number_block_hash_ilk_id_mat_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.spot_ilk_mat
+    ADD CONSTRAINT spot_ilk_mat_block_number_block_hash_ilk_id_mat_key UNIQUE (block_number, block_hash, ilk_id, mat);
+
+
+--
+-- Name: spot_ilk_mat spot_ilk_mat_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.spot_ilk_mat
+    ADD CONSTRAINT spot_ilk_mat_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: spot_ilk_pip spot_ilk_pip_block_number_block_hash_ilk_id_pip_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.spot_ilk_pip
+    ADD CONSTRAINT spot_ilk_pip_block_number_block_hash_ilk_id_pip_key UNIQUE (block_number, block_hash, ilk_id, pip);
+
+
+--
+-- Name: spot_ilk_pip spot_ilk_pip_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.spot_ilk_pip
+    ADD CONSTRAINT spot_ilk_pip_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: spot_par spot_par_block_number_block_hash_par_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.spot_par
+    ADD CONSTRAINT spot_par_block_number_block_hash_par_key UNIQUE (block_number, block_hash, par);
+
+
+--
+-- Name: spot_par spot_par_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.spot_par
+    ADD CONSTRAINT spot_par_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: spot_poke spot_poke_header_id_tx_idx_log_idx_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -5417,6 +5657,22 @@ ALTER TABLE ONLY maker.spot_poke
 
 ALTER TABLE ONLY maker.spot_poke
     ADD CONSTRAINT spot_poke_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: spot_vat spot_vat_block_number_block_hash_vat_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.spot_vat
+    ADD CONSTRAINT spot_vat_block_number_block_hash_vat_key UNIQUE (block_number, block_hash, vat);
+
+
+--
+-- Name: spot_vat spot_vat_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.spot_vat
+    ADD CONSTRAINT spot_vat_pkey PRIMARY KEY (id);
 
 
 --
@@ -6530,6 +6786,22 @@ ALTER TABLE ONLY maker.spot_file_pip
 
 ALTER TABLE ONLY maker.spot_file_pip
     ADD CONSTRAINT spot_file_pip_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id) ON DELETE CASCADE;
+
+
+--
+-- Name: spot_ilk_mat spot_ilk_mat_ilk_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.spot_ilk_mat
+    ADD CONSTRAINT spot_ilk_mat_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id) ON DELETE CASCADE;
+
+
+--
+-- Name: spot_ilk_pip spot_ilk_pip_ilk_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.spot_ilk_pip
+    ADD CONSTRAINT spot_ilk_pip_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id) ON DELETE CASCADE;
 
 
 --

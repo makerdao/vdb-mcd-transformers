@@ -61,13 +61,13 @@ var _ = Describe("Bite event computed columns", func() {
 		It("returns ilk_state for a bite_event", func() {
 			ilkValues := test_helpers.GetIlkValues(0)
 			test_helpers.CreateIlk(db, fakeHeader, ilkValues, test_helpers.FakeIlkVatMetadatas,
-				test_helpers.FakeIlkCatMetadatas, test_helpers.FakeIlkJugMetadatas)
+				test_helpers.FakeIlkCatMetadatas, test_helpers.FakeIlkJugMetadatas, test_helpers.FakeIlkSpotMetadatas)
 
 			expectedIlk := test_helpers.IlkStateFromValues(test_helpers.FakeIlk.Hex, fakeHeader.Timestamp, fakeHeader.Timestamp, ilkValues)
 
 			var result test_helpers.IlkState
 			err := db.Get(&result, `
-				SELECT ilk_identifier, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated
+				SELECT ilk_identifier, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated
 				FROM api.bite_event_ilk(
 					(SELECT (ilk_identifier, urn_identifier, ink, art, tab, block_height, tx_idx)::api.bite_event FROM api.all_bites($1))
 				)`, test_helpers.FakeIlk.Identifier)

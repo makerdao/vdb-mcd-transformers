@@ -80,6 +80,8 @@ CREATE TYPE api.ilk_state AS (
     flip TEXT,
     rho NUMERIC,
     duty NUMERIC,
+    pip TEXT,
+    mat NUMERIC,
     created TIMESTAMP,
     updated TIMESTAMP
     );
@@ -150,6 +152,18 @@ WITH ilk AS (SELECT id FROM maker.ilks WHERE identifier = ilk_identifier),
                   AND block_number <= get_ilk.block_height
                 ORDER BY ilk_id, block_number DESC
                 LIMIT 1),
+     pips AS (SELECT pip, ilk_id, block_hash
+              FROM maker.spot_ilk_pip
+              WHERE ilk_id = (SELECT id FROM ilk)
+                AND block_number <= get_ilk.block_height
+              ORDER BY ilk_id, block_number DESC
+              LIMIT 1),
+     mats AS (SELECT mat, ilk_id, block_hash
+              FROM maker.spot_ilk_mat
+              WHERE ilk_id = (SELECT id FROM ilk)
+                AND block_number <= get_ilk.block_height
+              ORDER BY ilk_id, block_number DESC
+              LIMIT 1),
      relevant_blocks AS (SELECT * FROM api.get_ilk_blocks_before(ilk_identifier, get_ilk.block_height)),
      created AS (SELECT DISTINCT ON (relevant_blocks.ilk_id,
          relevant_blocks.block_height) relevant_blocks.block_height,
@@ -182,6 +196,8 @@ SELECT ilks.identifier,
        flips.flip,
        rhos.rho,
        duties.duty,
+       pips.pip,
+       mats.mat,
        created.datetime,
        updated.datetime
 FROM maker.ilks AS ilks
@@ -195,6 +211,8 @@ FROM maker.ilks AS ilks
          LEFT JOIN flips ON flips.ilk_id = ilks.id
          LEFT JOIN rhos ON rhos.ilk_id = ilks.id
          LEFT JOIN duties ON duties.ilk_id = ilks.id
+         LEFT JOIN pips ON pips.ilk_id = ilks.id
+         LEFT JOIN mats ON mats.ilk_id = ilks.id
          LEFT JOIN created ON created.ilk_id = ilks.id
          LEFT JOIN updated ON updated.ilk_id = ilks.id
 WHERE (
@@ -207,7 +225,9 @@ WHERE (
               lumps.lump is not null OR
               flips.flip is not null OR
               rhos.rho is not null OR
-              duties.duty is not null
+              duties.duty is not null OR
+              pips.pip is not null OR
+              mats.mat is not null
           )
 $$
     LANGUAGE SQL
