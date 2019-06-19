@@ -8,6 +8,7 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/cat"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/jug"
+	"github.com/vulcanize/mcd_transformers/transformers/storage/spot"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/vat"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
@@ -24,6 +25,7 @@ var _ = Describe("All Ilks query", func() {
 		vatRepository    vat.VatStorageRepository
 		catRepository    cat.CatStorageRepository
 		jugRepository    jug.JugStorageRepository
+		spotRepository   spot.SpotStorageRepository
 		headerRepository repositories.HeaderRepository
 
 		blockOneTimestamp  = int64(111111111)
@@ -44,15 +46,18 @@ var _ = Describe("All Ilks query", func() {
 		vatRepository.SetDB(db)
 		catRepository.SetDB(db)
 		jugRepository.SetDB(db)
+		spotRepository.SetDB(db)
 
 		//creating fakeIlk at block 1
 		test_helpers.CreateVatRecords(blockOneHeader, fakeIlkStateBlock1, test_helpers.FakeIlkVatMetadatas, vatRepository)
 		test_helpers.CreateCatRecords(blockOneHeader, fakeIlkStateBlock1, test_helpers.FakeIlkCatMetadatas, catRepository)
 		test_helpers.CreateJugRecords(blockOneHeader, fakeIlkStateBlock1, test_helpers.FakeIlkJugMetadatas, jugRepository)
+		test_helpers.CreateSpotRecords(blockOneHeader, fakeIlkStateBlock1, test_helpers.FakeIlkSpotMetadatas, spotRepository)
 		//creating anotherFakeIlk at block 2
 		test_helpers.CreateVatRecords(blockTwoHeader, anotherFakeIlkStateBlock2, test_helpers.AnotherFakeIlkVatMetadatas, vatRepository)
 		test_helpers.CreateCatRecords(blockTwoHeader, anotherFakeIlkStateBlock2, test_helpers.AnotherFakeIlkCatMetadatas, catRepository)
 		test_helpers.CreateJugRecords(blockTwoHeader, anotherFakeIlkStateBlock2, test_helpers.AnotherFakeIlkJugMetadatas, jugRepository)
+		test_helpers.CreateSpotRecords(blockTwoHeader, anotherFakeIlkStateBlock2, test_helpers.AnotherFakeIlkSpotMetadatas, spotRepository)
 	})
 
 	AfterEach(func() {
@@ -82,11 +87,13 @@ var _ = Describe("All Ilks query", func() {
 				Flip:          fakeIlkStateBlock1[cat.IlkFlip],
 				Rho:           fakeIlkStateBlock1[jug.IlkRho],
 				Duty:          fakeIlkStateBlock1[jug.IlkDuty],
+				Pip:           fakeIlkStateBlock1[spot.IlkPip],
+				Mat:           fakeIlkStateBlock1[spot.IlkMat],
 				Created:       test_helpers.GetValidNullString(getFormattedTimestamp(blockOneHeader.Timestamp)),
 				Updated:       test_helpers.GetValidNullString(getFormattedTimestamp(blockOneHeader.Timestamp)),
 			}
 			err := db.Select(&dbResult,
-				`SELECT ilk_identifier, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated FROM api.all_ilks($1)`,
+				`SELECT ilk_identifier, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated FROM api.all_ilks($1)`,
 				blockOneHeader.BlockNumber)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(dbResult)).To(Equal(1))
@@ -108,6 +115,8 @@ var _ = Describe("All Ilks query", func() {
 				Flip:          fakeIlkStateBlock1[cat.IlkFlip],
 				Rho:           fakeIlkStateBlock1[jug.IlkRho],
 				Duty:          fakeIlkStateBlock1[jug.IlkDuty],
+				Pip:           fakeIlkStateBlock1[spot.IlkPip],
+				Mat:           fakeIlkStateBlock1[spot.IlkMat],
 				Created:       test_helpers.GetValidNullString(getFormattedTimestamp(blockOneHeader.Timestamp)),
 				Updated:       test_helpers.GetValidNullString(getFormattedTimestamp(blockOneHeader.Timestamp)),
 			}
@@ -124,11 +133,13 @@ var _ = Describe("All Ilks query", func() {
 				Flip:          anotherFakeIlkStateBlock2[cat.IlkFlip],
 				Rho:           anotherFakeIlkStateBlock2[jug.IlkRho],
 				Duty:          anotherFakeIlkStateBlock2[jug.IlkDuty],
+				Pip:           anotherFakeIlkStateBlock2[spot.IlkPip],
+				Mat:           anotherFakeIlkStateBlock2[spot.IlkMat],
 				Created:       test_helpers.GetValidNullString(getFormattedTimestamp(blockTwoHeader.Timestamp)),
 				Updated:       test_helpers.GetValidNullString(getFormattedTimestamp(blockTwoHeader.Timestamp)),
 			}
 			err := db.Select(&dbResult,
-				`SELECT ilk_identifier, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated FROM api.all_ilks($1)`,
+				`SELECT ilk_identifier, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated FROM api.all_ilks($1)`,
 				blockTwoHeader.BlockNumber)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(dbResult)).To(Equal(2))
@@ -152,6 +163,7 @@ var _ = Describe("All Ilks query", func() {
 			test_helpers.CreateVatRecords(blockThreeHeader, anotherFakeIlkStateBlock3, test_helpers.AnotherFakeIlkVatMetadatas, vatRepository)
 			test_helpers.CreateCatRecords(blockThreeHeader, anotherFakeIlkStateBlock3, test_helpers.AnotherFakeIlkCatMetadatas, catRepository)
 			test_helpers.CreateJugRecords(blockThreeHeader, anotherFakeIlkStateBlock3, test_helpers.AnotherFakeIlkJugMetadatas, jugRepository)
+			test_helpers.CreateSpotRecords(blockThreeHeader, anotherFakeIlkStateBlock3, test_helpers.AnotherFakeIlkSpotMetadatas, spotRepository)
 
 			var dbResult []test_helpers.IlkState
 			fakeIlkExpectedResult := test_helpers.IlkState{
@@ -166,6 +178,8 @@ var _ = Describe("All Ilks query", func() {
 				Flip:          fakeIlkStateBlock1[cat.IlkFlip],
 				Rho:           fakeIlkStateBlock1[jug.IlkRho],
 				Duty:          fakeIlkStateBlock1[jug.IlkDuty],
+				Pip:           fakeIlkStateBlock1[spot.IlkPip],
+				Mat:           fakeIlkStateBlock1[spot.IlkMat],
 				Created:       test_helpers.GetValidNullString(getFormattedTimestamp(blockOneHeader.Timestamp)),
 				Updated:       test_helpers.GetValidNullString(getFormattedTimestamp(blockThreeHeader.Timestamp)),
 			}
@@ -181,11 +195,13 @@ var _ = Describe("All Ilks query", func() {
 				Flip:          anotherFakeIlkStateBlock3[cat.IlkFlip],
 				Rho:           anotherFakeIlkStateBlock3[jug.IlkRho],
 				Duty:          anotherFakeIlkStateBlock3[jug.IlkDuty],
+				Pip:           anotherFakeIlkStateBlock3[spot.IlkPip],
+				Mat:           anotherFakeIlkStateBlock3[spot.IlkMat],
 				Created:       test_helpers.GetValidNullString(getFormattedTimestamp(blockTwoHeader.Timestamp)),
 				Updated:       test_helpers.GetValidNullString(getFormattedTimestamp(blockThreeHeader.Timestamp)),
 			}
 			err := db.Select(&dbResult,
-				`SELECT ilk_identifier, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated FROM api.all_ilks($1)`,
+				`SELECT ilk_identifier, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated FROM api.all_ilks($1)`,
 				blockThreeHeader.BlockNumber)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(dbResult)).To(Equal(2))
@@ -212,11 +228,13 @@ var _ = Describe("All Ilks query", func() {
 			Flip:          fakeIlkStateBlock1[cat.IlkFlip],
 			Rho:           fakeIlkStateBlock1[jug.IlkRho],
 			Duty:          fakeIlkStateBlock1[jug.IlkDuty],
+			Pip:           fakeIlkStateBlock1[spot.IlkPip],
+			Mat:           fakeIlkStateBlock1[spot.IlkMat],
 			Created:       test_helpers.GetEmptyNullString(),
 			Updated:       test_helpers.GetEmptyNullString(),
 		}
 		err := db.Select(&dbResult,
-			`SELECT ilk_identifier, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated FROM api.all_ilks($1)`,
+			`SELECT ilk_identifier, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated FROM api.all_ilks($1)`,
 			blockOneHeader.BlockNumber)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(len(dbResult)).To(Equal(1))

@@ -41,7 +41,7 @@ var _ = Describe("Ilk state computed columns", func() {
 
 		ilkValues := test_helpers.GetIlkValues(0)
 		test_helpers.CreateIlk(db, fakeHeader, ilkValues, test_helpers.FakeIlkVatMetadatas,
-			test_helpers.FakeIlkCatMetadatas, test_helpers.FakeIlkJugMetadatas)
+			test_helpers.FakeIlkCatMetadatas, test_helpers.FakeIlkJugMetadatas, test_helpers.FakeIlkSpotMetadatas)
 	})
 
 	AfterEach(func() {
@@ -62,7 +62,7 @@ var _ = Describe("Ilk state computed columns", func() {
 			var actualFrobs []test_helpers.FrobEvent
 			getFrobsErr := db.Select(&actualFrobs,
 				`SELECT ilk_identifier, urn_identifier, dink, dart FROM api.ilk_state_frobs(
-                        (SELECT (ilk_identifier, block_height, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated)::api.ilk_state
+                        (SELECT (ilk_identifier, block_height, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated)::api.ilk_state
                          FROM api.get_ilk($1, $2))
                     )`, test_helpers.FakeIlk.Identifier, fakeBlock)
 			Expect(getFrobsErr).NotTo(HaveOccurred())
@@ -90,7 +90,7 @@ var _ = Describe("Ilk state computed columns", func() {
 			var actualFiles []test_helpers.IlkFileEvent
 			getFilesErr := db.Select(&actualFiles,
 				`SELECT ilk_identifier, what, data FROM api.ilk_state_ilk_file_events(
-                        (SELECT (ilk_identifier, block_height, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated)::api.ilk_state
+                        (SELECT (ilk_identifier, block_height, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated)::api.ilk_state
                          FROM api.get_ilk($1, $2))
                     )`, test_helpers.FakeIlk.Identifier, fakeBlock)
 			Expect(getFilesErr).NotTo(HaveOccurred())
@@ -117,7 +117,7 @@ var _ = Describe("Ilk state computed columns", func() {
 			var actualBites []test_helpers.BiteEvent
 			getBitesErr := db.Select(&actualBites, `
 				SELECT ilk_identifier, urn_identifier, ink, art, tab FROM api.ilk_state_bites(
-					(SELECT (ilk_identifier, block_height, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated)::api.ilk_state
+					(SELECT (ilk_identifier, block_height, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated)::api.ilk_state
 					FROM api.get_ilk($1, $2))
 				)`,
 				test_helpers.FakeIlk.Identifier,

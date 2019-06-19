@@ -44,7 +44,15 @@ WITH rates AS (SELECT DISTINCT ON (ilk_id) rate, ilk_id, block_hash
      duties AS (SELECT DISTINCT ON (ilk_id) duty, ilk_id, block_hash
                 FROM maker.jug_ilk_duty
                 WHERE block_number <= all_ilks.block_height
-                ORDER BY ilk_id, block_number DESC)
+                ORDER BY ilk_id, block_number DESC),
+     pips AS (SELECT DISTINCT ON (ilk_id) pip, ilk_id, block_hash
+              FROM maker.spot_ilk_pip
+              WHERE block_number <= all_ilks.block_height
+              ORDER BY ilk_id, block_number DESC),
+     mats AS (SELECT DISTINCT ON (ilk_id) mat, ilk_id, block_hash
+              FROM maker.spot_ilk_mat
+              WHERE block_number <= all_ilks.block_height
+              ORDER BY ilk_id, block_number DESC)
 SELECT ilks.identifier,
        all_ilks.block_height,
        rates.rate,
@@ -57,6 +65,8 @@ SELECT ilks.identifier,
        flips.flip,
        rhos.rho,
        duties.duty,
+       pips.pip,
+       mats.mat,
        (SELECT api.epoch_to_datetime(h.block_timestamp) AS created
         FROM api.get_ilk_blocks_before(ilks.identifier, all_ilks.block_height) b
                  JOIN headers h on h.block_number = b.block_height
@@ -78,6 +88,8 @@ FROM maker.ilks AS ilks
          LEFT JOIN flips on flips.ilk_id = ilks.id
          LEFT JOIN rhos on rhos.ilk_id = ilks.id
          LEFT JOIN duties on duties.ilk_id = ilks.id
+         LEFT JOIN pips on pips.ilk_id = ilks.id
+         LEFT JOIN mats on mats.ilk_id = ilks.id
 WHERE (
               rates.rate is not null OR
               arts.art is not null OR
@@ -88,7 +100,9 @@ WHERE (
               lumps.lump is not null OR
               flips.flip is not null OR
               rhos.rho is not null OR
-              duties.duty is not null
+              duties.duty is not null OR
+              pips.pip is not null OR
+              mats.mat is not null
           )
 $$
     LANGUAGE SQL

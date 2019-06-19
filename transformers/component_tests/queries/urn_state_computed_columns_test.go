@@ -59,7 +59,7 @@ var _ = Describe("Urn state computed columns", func() {
 		It("returns the ilk for an urn", func() {
 			ilkValues := test_helpers.GetIlkValues(0)
 			test_helpers.CreateIlk(db, fakeHeader, ilkValues, test_helpers.FakeIlkVatMetadatas,
-				test_helpers.FakeIlkCatMetadatas, test_helpers.FakeIlkJugMetadatas)
+				test_helpers.FakeIlkCatMetadatas, test_helpers.FakeIlkJugMetadatas, test_helpers.FakeIlkSpotMetadatas)
 
 			fakeGuy := "fakeAddress"
 			urnSetupData := test_helpers.GetUrnSetupData(fakeBlock, 1)
@@ -77,7 +77,7 @@ var _ = Describe("Urn state computed columns", func() {
 
 			var result test_helpers.IlkState
 			getIlkErr := db.Get(&result,
-				`SELECT ilk_identifier, rate, art, spot, line, dust, chop, lump, flip, rho, duty, created, updated
+				`SELECT ilk_identifier, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated
 					FROM api.urn_state_ilk(
 					(SELECT (urn_identifier, ilk_identifier, block_height, ink, art, ratio, safe, created, updated)::api.urn_state
 					FROM api.get_urn($1, $2, $3)))`, test_helpers.FakeIlk.Identifier, fakeGuy, fakeHeader.BlockNumber)

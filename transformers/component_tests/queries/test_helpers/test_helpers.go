@@ -7,6 +7,7 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/cat"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/jug"
+	"github.com/vulcanize/mcd_transformers/transformers/storage/spot"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/vat"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
@@ -42,6 +43,8 @@ var (
 	fakeIlkFlipMetadata = utils.GetStorageValueMetadata(cat.IlkFlip, map[utils.Key]string{constants.Ilk: FakeIlk.Hex}, utils.Uint256)
 	fakeIlkRhoMetadata  = utils.GetStorageValueMetadata(jug.IlkRho, map[utils.Key]string{constants.Ilk: FakeIlk.Hex}, utils.Uint256)
 	fakeIlkTaxMetadata  = utils.GetStorageValueMetadata(jug.IlkDuty, map[utils.Key]string{constants.Ilk: FakeIlk.Hex}, utils.Uint256)
+	fakeIlkPipMetadata  = utils.GetStorageValueMetadata(spot.IlkPip, map[utils.Key]string{constants.Ilk: FakeIlk.Hex}, utils.Address)
+	fakeIlkMatMetadata  = utils.GetStorageValueMetadata(spot.IlkMat, map[utils.Key]string{constants.Ilk: FakeIlk.Hex}, utils.Uint256)
 
 	FakeIlkVatMetadatas = []utils.StorageValueMetadata{
 		FakeIlkRateMetadata,
@@ -59,6 +62,10 @@ var (
 		fakeIlkRhoMetadata,
 		fakeIlkTaxMetadata,
 	}
+	FakeIlkSpotMetadatas = []utils.StorageValueMetadata{
+		fakeIlkPipMetadata,
+		fakeIlkMatMetadata,
+	}
 
 	anotherFakeIlkRateMetadata = utils.GetStorageValueMetadata(vat.IlkRate, map[utils.Key]string{constants.Ilk: AnotherFakeIlk.Hex}, utils.Uint256)
 	anotherFakeIlkArtMetadata  = utils.GetStorageValueMetadata(vat.IlkArt, map[utils.Key]string{constants.Ilk: AnotherFakeIlk.Hex}, utils.Uint256)
@@ -70,6 +77,8 @@ var (
 	anotherFakeIlkFlipMetadata = utils.GetStorageValueMetadata(cat.IlkFlip, map[utils.Key]string{constants.Ilk: AnotherFakeIlk.Hex}, utils.Address)
 	anotherFakeIlkRhoMetadata  = utils.GetStorageValueMetadata(jug.IlkRho, map[utils.Key]string{constants.Ilk: AnotherFakeIlk.Hex}, utils.Uint256)
 	anotherFakeIlkTaxMetadata  = utils.GetStorageValueMetadata(jug.IlkDuty, map[utils.Key]string{constants.Ilk: AnotherFakeIlk.Hex}, utils.Uint256)
+	anotherFakeIlkPipMetadata  = utils.GetStorageValueMetadata(spot.IlkPip, map[utils.Key]string{constants.Ilk: AnotherFakeIlk.Hex}, utils.Address)
+	anotherFakeIlkMatMetadata  = utils.GetStorageValueMetadata(spot.IlkMat, map[utils.Key]string{constants.Ilk: AnotherFakeIlk.Hex}, utils.Uint256)
 
 	AnotherFakeIlkVatMetadatas = []utils.StorageValueMetadata{
 		anotherFakeIlkRateMetadata,
@@ -86,6 +95,10 @@ var (
 	AnotherFakeIlkJugMetadatas = []utils.StorageValueMetadata{
 		anotherFakeIlkRhoMetadata,
 		anotherFakeIlkTaxMetadata,
+	}
+	AnotherFakeIlkSpotMetadatas = []utils.StorageValueMetadata{
+		anotherFakeIlkPipMetadata,
+		anotherFakeIlkMatMetadata,
 	}
 )
 
@@ -106,6 +119,8 @@ type IlkState struct {
 	Flip          string
 	Rho           string
 	Duty          string
+	Pip           string
+	Mat           string
 	Created       sql.NullString
 	Updated       sql.NullString
 }
@@ -122,6 +137,8 @@ func GetIlkValues(seed int) map[string]string {
 	valuesMap[cat.IlkFlip] = "an address" + strconv.Itoa(seed)
 	valuesMap[jug.IlkRho] = strconv.Itoa(8 + seed)
 	valuesMap[jug.IlkDuty] = strconv.Itoa(9 + seed)
+	valuesMap[spot.IlkPip] = "an address2" + strconv.Itoa(seed)
+	valuesMap[spot.IlkMat] = strconv.Itoa(10 + seed)
 
 	return valuesMap
 }
@@ -145,6 +162,8 @@ func IlkStateFromValues(ilk, updated, created string, ilkValues map[string]strin
 		Flip:          ilkValues[cat.IlkFlip],
 		Rho:           ilkValues[jug.IlkRho],
 		Duty:          ilkValues[jug.IlkDuty],
+		Pip:           ilkValues[spot.IlkPip],
+		Mat:           ilkValues[spot.IlkMat],
 		Created:       sql.NullString{String: createdTimestamp, Valid: true},
 		Updated:       sql.NullString{String: updatedTimestamp, Valid: true},
 	}
@@ -175,6 +194,18 @@ func CreateCatRecords(header core.Header, valuesMap map[string]string, metadatas
 }
 
 func CreateJugRecords(header core.Header, valuesMap map[string]string, metadatas []utils.StorageValueMetadata, repository jug.JugStorageRepository) {
+	blockHash := header.Hash
+	blockNumber := int(header.BlockNumber)
+
+	for _, metadata := range metadatas {
+		value := valuesMap[metadata.Name]
+		err := repository.Create(blockNumber, blockHash, metadata, value)
+
+		Expect(err).NotTo(HaveOccurred())
+	}
+}
+
+func CreateSpotRecords(header core.Header, valuesMap map[string]string, metadatas []utils.StorageValueMetadata, repository spot.SpotStorageRepository) {
 	blockHash := header.Hash
 	blockNumber := int(header.BlockNumber)
 
@@ -218,18 +249,21 @@ func CreateUrn(setupData UrnSetupData, metadata UrnMetadata, vatRepo vat.VatStor
 	Expect(err).NotTo(HaveOccurred())
 }
 
-func CreateIlk(db *postgres.DB, header core.Header, valuesMap map[string]string, vatMetadatas, catMetadatas, jugMetadatas []utils.StorageValueMetadata) {
+func CreateIlk(db *postgres.DB, header core.Header, valuesMap map[string]string, vatMetadatas, catMetadatas, jugMetadatas, spotMetadatas []utils.StorageValueMetadata) {
 	var (
-		vatRepo vat.VatStorageRepository
-		catRepo cat.CatStorageRepository
-		jugRepo jug.JugStorageRepository
+		vatRepo  vat.VatStorageRepository
+		catRepo  cat.CatStorageRepository
+		jugRepo  jug.JugStorageRepository
+		spotRepo spot.SpotStorageRepository
 	)
 	vatRepo.SetDB(db)
 	catRepo.SetDB(db)
 	jugRepo.SetDB(db)
+	spotRepo.SetDB(db)
 	CreateVatRecords(header, valuesMap, vatMetadatas, vatRepo)
 	CreateCatRecords(header, valuesMap, catMetadatas, catRepo)
 	CreateJugRecords(header, valuesMap, jugMetadatas, jugRepo)
+	CreateSpotRecords(header, valuesMap, spotMetadatas, spotRepo)
 }
 
 // Does not return values computed by the query (ratio, safe, updated, created)
