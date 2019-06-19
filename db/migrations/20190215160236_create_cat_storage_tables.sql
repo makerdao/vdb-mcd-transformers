@@ -36,6 +36,9 @@ CREATE TABLE maker.cat_ilk_flip
     UNIQUE (block_number, block_hash, ilk_id, flip)
 );
 
+CREATE INDEX cat_ilk_flip_block_number_index
+    ON maker.cat_ilk_flip (block_number);
+
 CREATE INDEX cat_ilk_flip_ilk_index
     ON maker.cat_ilk_flip (ilk_id);
 
@@ -48,6 +51,9 @@ CREATE TABLE maker.cat_ilk_chop
     chop         NUMERIC NOT NULL,
     UNIQUE (block_number, block_hash, ilk_id, chop)
 );
+
+CREATE INDEX cat_ilk_chop_block_number_index
+    ON maker.cat_ilk_chop (block_number);
 
 CREATE INDEX cat_ilk_chop_ilk_index
     ON maker.cat_ilk_chop (ilk_id);
@@ -62,13 +68,19 @@ CREATE TABLE maker.cat_ilk_lump
     UNIQUE (block_number, block_hash, ilk_id, lump)
 );
 
+CREATE INDEX cat_ilk_lump_block_number_index
+    ON maker.cat_ilk_lump (block_number);
+
 CREATE INDEX cat_ilk_lump_ilk_index
     ON maker.cat_ilk_lump (ilk_id);
 
 
 -- +goose Down
+DROP INDEX maker.cat_ilk_flip_block_number_index;
 DROP INDEX maker.cat_ilk_flip_ilk_index;
+DROP INDEX maker.cat_ilk_chop_block_number_index;
 DROP INDEX maker.cat_ilk_chop_ilk_index;
+DROP INDEX maker.cat_ilk_lump_block_number_index;
 DROP INDEX maker.cat_ilk_lump_ilk_index;
 
 DROP TABLE maker.cat_live;

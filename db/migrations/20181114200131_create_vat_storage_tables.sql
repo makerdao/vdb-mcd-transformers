@@ -27,6 +27,9 @@ CREATE TABLE maker.vat_ilk_art
     UNIQUE (block_number, block_hash, ilk_id, art)
 );
 
+CREATE INDEX vat_ilk_art_block_number_index
+    ON maker.vat_ilk_art (block_number);
+
 CREATE INDEX vat_ilk_art_ilk_index
     ON maker.vat_ilk_art (ilk_id);
 
@@ -39,6 +42,9 @@ CREATE TABLE maker.vat_ilk_dust
     dust         NUMERIC NOT NULL,
     UNIQUE (block_number, block_hash, ilk_id, dust)
 );
+
+CREATE INDEX vat_ilk_dust_block_number_index
+    ON maker.vat_ilk_dust (block_number);
 
 CREATE INDEX vat_ilk_dust_ilk_index
     ON maker.vat_ilk_dust (ilk_id);
@@ -53,6 +59,9 @@ CREATE TABLE maker.vat_ilk_line
     UNIQUE (block_number, block_hash, ilk_id, line)
 );
 
+CREATE INDEX vat_ilk_line_block_number_index
+    ON maker.vat_ilk_line (block_number);
+
 CREATE INDEX vat_ilk_line_ilk_index
     ON maker.vat_ilk_line (ilk_id);
 
@@ -65,6 +74,9 @@ CREATE TABLE maker.vat_ilk_spot
     spot         NUMERIC NOT NULL,
     UNIQUE (block_number, block_hash, ilk_id, spot)
 );
+
+CREATE INDEX vat_ilk_spot_block_number_index
+    ON maker.vat_ilk_spot (block_number);
 
 CREATE INDEX vat_ilk_spot_ilk_index
     ON maker.vat_ilk_spot (ilk_id);
@@ -79,6 +91,9 @@ CREATE TABLE maker.vat_ilk_rate
     UNIQUE (block_number, block_hash, ilk_id, rate)
 );
 
+CREATE INDEX vat_ilk_rate_block_number_index
+    ON maker.vat_ilk_rate (block_number);
+
 CREATE INDEX vat_ilk_rate_ilk_index
     ON maker.vat_ilk_rate (ilk_id);
 
@@ -92,6 +107,9 @@ CREATE TABLE maker.vat_urn_art
     UNIQUE (block_number, block_hash, urn_id, art)
 );
 
+CREATE INDEX vat_urn_art_block_number_index
+    ON maker.vat_urn_art (block_number);
+
 CREATE INDEX vat_urn_art_urn_index
     ON maker.vat_urn_art (urn_id);
 
@@ -104,6 +122,9 @@ CREATE TABLE maker.vat_urn_ink
     ink          NUMERIC NOT NULL,
     UNIQUE (block_number, block_hash, urn_id, ink)
 );
+
+CREATE INDEX vat_urn_ink_block_number_index
+    ON maker.vat_urn_ink (block_number);
 
 CREATE INDEX vat_urn_ink_urn_index
     ON maker.vat_urn_ink (urn_id);
@@ -161,12 +182,19 @@ CREATE TABLE maker.vat_live
 );
 
 -- +goose Down
+DROP INDEX maker.vat_ilk_art_block_number_index;
 DROP INDEX maker.vat_ilk_art_ilk_index;
+DROP INDEX maker.vat_ilk_dust_block_number_index;
 DROP INDEX maker.vat_ilk_dust_ilk_index;
+DROP INDEX maker.vat_ilk_line_block_number_index;
 DROP INDEX maker.vat_ilk_line_ilk_index;
+DROP INDEX maker.vat_ilk_spot_block_number_index;
 DROP INDEX maker.vat_ilk_spot_ilk_index;
+DROP INDEX maker.vat_ilk_rate_block_number_index;
 DROP INDEX maker.vat_ilk_rate_ilk_index;
+DROP INDEX maker.vat_urn_art_block_number_index;
 DROP INDEX maker.vat_urn_art_urn_index;
+DROP INDEX maker.vat_urn_ink_block_number_index;
 DROP INDEX maker.vat_urn_ink_urn_index;
 DROP INDEX maker.vat_gem_ilk_index;
 

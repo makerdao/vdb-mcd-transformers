@@ -45,6 +45,9 @@ CREATE TABLE maker.vow_sin_mapping
     UNIQUE (block_number, block_hash, era, tab)
 );
 
+CREATE INDEX vow_sin_mapping_block_number_index
+    ON maker.vow_sin_mapping (block_number);
+
 CREATE TABLE maker.vow_ash
 (
     id           SERIAL PRIMARY KEY,
@@ -91,6 +94,8 @@ CREATE TABLE maker.vow_hump
 );
 
 -- +goose Down
+DROP INDEX maker.vow_sin_mapping_block_number_index;
+
 DROP TABLE maker.vow_vat;
 DROP TABLE maker.vow_flapper;
 DROP TABLE maker.vow_flopper;
