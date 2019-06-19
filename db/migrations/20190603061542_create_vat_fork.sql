@@ -17,11 +17,15 @@ CREATE TABLE maker.vat_fork
 CREATE INDEX vat_fork_header_index
     ON maker.vat_fork (header_id);
 
+CREATE INDEX vat_fork_ilk_index
+    ON maker.vat_fork (ilk_id);
+
 ALTER TABLE public.checked_headers
     ADD COLUMN vat_fork_checked INTEGER NOT NULL DEFAULT 0;
 
 -- +goose Down
 DROP INDEX maker.vat_fork_header_index;
+DROP INDEX maker.vat_fork_ilk_index;
 
 DROP TABLE maker.vat_fork;
 

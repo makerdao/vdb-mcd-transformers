@@ -30,6 +30,9 @@ CREATE TABLE maker.jug_file_ilk
 CREATE INDEX jug_file_ilk_header_index
     ON maker.jug_file_ilk (header_id);
 
+CREATE INDEX jug_file_ilk_ilk_index
+    ON maker.jug_file_ilk (ilk_id);
+
 CREATE TABLE maker.jug_file_vow
 (
     id        SERIAL PRIMARY KEY,
@@ -57,6 +60,7 @@ ALTER TABLE public.checked_headers
 -- +goose Down
 DROP INDEX maker.jug_file_base_header_index;
 DROP INDEX maker.jug_file_ilk_header_index;
+DROP INDEX maker.jug_file_ilk_ilk_index;
 DROP INDEX maker.jug_file_vow_header_index;
 
 DROP TABLE maker.jug_file_ilk;

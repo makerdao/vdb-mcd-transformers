@@ -27,6 +27,9 @@ CREATE TABLE maker.vat_ilk_art
     UNIQUE (block_number, block_hash, ilk_id, art)
 );
 
+CREATE INDEX vat_ilk_art_ilk_index
+    ON maker.vat_ilk_art (ilk_id);
+
 CREATE TABLE maker.vat_ilk_dust
 (
     id           SERIAL PRIMARY KEY,
@@ -36,6 +39,9 @@ CREATE TABLE maker.vat_ilk_dust
     dust         NUMERIC NOT NULL,
     UNIQUE (block_number, block_hash, ilk_id, dust)
 );
+
+CREATE INDEX vat_ilk_dust_ilk_index
+    ON maker.vat_ilk_dust (ilk_id);
 
 CREATE TABLE maker.vat_ilk_line
 (
@@ -47,6 +53,9 @@ CREATE TABLE maker.vat_ilk_line
     UNIQUE (block_number, block_hash, ilk_id, line)
 );
 
+CREATE INDEX vat_ilk_line_ilk_index
+    ON maker.vat_ilk_line (ilk_id);
+
 CREATE TABLE maker.vat_ilk_spot
 (
     id           SERIAL PRIMARY KEY,
@@ -57,6 +66,9 @@ CREATE TABLE maker.vat_ilk_spot
     UNIQUE (block_number, block_hash, ilk_id, spot)
 );
 
+CREATE INDEX vat_ilk_spot_ilk_index
+    ON maker.vat_ilk_spot (ilk_id);
+
 CREATE TABLE maker.vat_ilk_rate
 (
     id           SERIAL PRIMARY KEY,
@@ -66,6 +78,9 @@ CREATE TABLE maker.vat_ilk_rate
     rate         NUMERIC NOT NULL,
     UNIQUE (block_number, block_hash, ilk_id, rate)
 );
+
+CREATE INDEX vat_ilk_rate_ilk_index
+    ON maker.vat_ilk_rate (ilk_id);
 
 CREATE TABLE maker.vat_urn_art
 (
@@ -97,6 +112,9 @@ CREATE TABLE maker.vat_gem
     gem          NUMERIC NOT NULL,
     UNIQUE (block_number, block_hash, ilk_id, guy, gem)
 );
+
+CREATE INDEX vat_gem_ilk_index
+    ON maker.vat_gem (ilk_id);
 
 CREATE TABLE maker.vat_dai
 (
@@ -137,6 +155,13 @@ CREATE TABLE maker.vat_live
 );
 
 -- +goose Down
+DROP INDEX maker.vat_ilk_art_ilk_index;
+DROP INDEX maker.vat_ilk_dust_ilk_index;
+DROP INDEX maker.vat_ilk_line_ilk_index;
+DROP INDEX maker.vat_ilk_spot_ilk_index;
+DROP INDEX maker.vat_ilk_rate_ilk_index;
+DROP INDEX maker.vat_gem_ilk_index;
+
 DROP TABLE maker.vat_debt;
 DROP TABLE maker.vat_vice;
 DROP TABLE maker.vat_ilk_art;

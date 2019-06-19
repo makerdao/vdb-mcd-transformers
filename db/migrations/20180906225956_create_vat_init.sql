@@ -13,11 +13,15 @@ CREATE TABLE maker.vat_init
 CREATE INDEX vat_init_header_index
     ON maker.vat_init (header_id);
 
+CREATE INDEX vat_init_ilk_index
+    ON maker.vat_init (ilk_id);
+
 ALTER TABLE public.checked_headers
     ADD COLUMN vat_init_checked BOOLEAN NOT NULL DEFAULT FALSE;
 
 -- +goose Down
 DROP INDEX maker.vat_init_header_index;
+DROP INDEX maker.vat_init_ilk_index;
 
 DROP TABLE maker.vat_init;
 

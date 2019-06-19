@@ -6465,6 +6465,13 @@ CREATE INDEX cat_file_chop_lump_header_index ON maker.cat_file_chop_lump USING b
 
 
 --
+-- Name: cat_file_chop_lump_ilk_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX cat_file_chop_lump_ilk_index ON maker.cat_file_chop_lump USING btree (ilk_id);
+
+
+--
 -- Name: cat_file_flip_header_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -6472,10 +6479,38 @@ CREATE INDEX cat_file_flip_header_index ON maker.cat_file_flip USING btree (head
 
 
 --
+-- Name: cat_file_flip_ilk_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX cat_file_flip_ilk_index ON maker.cat_file_flip USING btree (ilk_id);
+
+
+--
 -- Name: cat_file_vow_header_index; Type: INDEX; Schema: maker; Owner: -
 --
 
 CREATE INDEX cat_file_vow_header_index ON maker.cat_file_vow USING btree (header_id);
+
+
+--
+-- Name: cat_ilk_chop_ilk_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX cat_ilk_chop_ilk_index ON maker.cat_ilk_chop USING btree (ilk_id);
+
+
+--
+-- Name: cat_ilk_flip_ilk_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX cat_ilk_flip_ilk_index ON maker.cat_ilk_flip USING btree (ilk_id);
+
+
+--
+-- Name: cat_ilk_lump_ilk_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX cat_ilk_lump_ilk_index ON maker.cat_ilk_lump USING btree (ilk_id);
 
 
 --
@@ -6521,6 +6556,13 @@ CREATE INDEX jug_drip_header_index ON maker.jug_drip USING btree (header_id);
 
 
 --
+-- Name: jug_drip_ilk_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX jug_drip_ilk_index ON maker.jug_drip USING btree (ilk_id);
+
+
+--
 -- Name: jug_file_base_header_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -6535,10 +6577,31 @@ CREATE INDEX jug_file_ilk_header_index ON maker.jug_file_ilk USING btree (header
 
 
 --
+-- Name: jug_file_ilk_ilk_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX jug_file_ilk_ilk_index ON maker.jug_file_ilk USING btree (ilk_id);
+
+
+--
 -- Name: jug_file_vow_header_index; Type: INDEX; Schema: maker; Owner: -
 --
 
 CREATE INDEX jug_file_vow_header_index ON maker.jug_file_vow USING btree (header_id);
+
+
+--
+-- Name: jug_ilk_duty_ilk_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX jug_ilk_duty_ilk_index ON maker.jug_ilk_duty USING btree (ilk_id);
+
+
+--
+-- Name: jug_ilk_rho_ilk_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX jug_ilk_rho_ilk_index ON maker.jug_ilk_rho USING btree (ilk_id);
 
 
 --
@@ -6549,10 +6612,24 @@ CREATE INDEX jug_init_header_index ON maker.jug_init USING btree (header_id);
 
 
 --
+-- Name: jug_init_ilk_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX jug_init_ilk_index ON maker.jug_init USING btree (ilk_id);
+
+
+--
 -- Name: spot_file_mat_header_index; Type: INDEX; Schema: maker; Owner: -
 --
 
 CREATE INDEX spot_file_mat_header_index ON maker.spot_file_mat USING btree (header_id);
+
+
+--
+-- Name: spot_file_mat_ilk_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX spot_file_mat_ilk_index ON maker.spot_file_mat USING btree (ilk_id);
 
 
 --
@@ -6563,6 +6640,27 @@ CREATE INDEX spot_file_pip_header_index ON maker.spot_file_pip USING btree (head
 
 
 --
+-- Name: spot_file_pip_ilk_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX spot_file_pip_ilk_index ON maker.spot_file_pip USING btree (ilk_id);
+
+
+--
+-- Name: spot_ilk_mat_ilk_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX spot_ilk_mat_ilk_index ON maker.spot_ilk_mat USING btree (ilk_id);
+
+
+--
+-- Name: spot_ilk_pip_ilk_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX spot_ilk_pip_ilk_index ON maker.spot_ilk_pip USING btree (ilk_id);
+
+
+--
 -- Name: spot_poke_header_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -6570,10 +6668,24 @@ CREATE INDEX spot_poke_header_index ON maker.spot_poke USING btree (header_id);
 
 
 --
+-- Name: spot_poke_ilk_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX spot_poke_ilk_index ON maker.spot_poke USING btree (ilk_id);
+
+
+--
 -- Name: tend_header_index; Type: INDEX; Schema: maker; Owner: -
 --
 
 CREATE INDEX tend_header_index ON maker.tend USING btree (header_id);
+
+
+--
+-- Name: urn_ilk_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX urn_ilk_index ON maker.urns USING btree (ilk_id);
 
 
 --
@@ -6591,10 +6703,24 @@ CREATE INDEX vat_file_ilk_header_index ON maker.vat_file_ilk USING btree (header
 
 
 --
+-- Name: vat_file_ilk_ilk_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vat_file_ilk_ilk_index ON maker.vat_file_ilk USING btree (ilk_id);
+
+
+--
 -- Name: vat_flux_header_index; Type: INDEX; Schema: maker; Owner: -
 --
 
 CREATE INDEX vat_flux_header_index ON maker.vat_flux USING btree (header_id);
+
+
+--
+-- Name: vat_flux_ilk_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vat_flux_ilk_index ON maker.vat_flux USING btree (ilk_id);
 
 
 --
@@ -6612,10 +6738,24 @@ CREATE INDEX vat_fork_header_index ON maker.vat_fork USING btree (header_id);
 
 
 --
+-- Name: vat_fork_ilk_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vat_fork_ilk_index ON maker.vat_fork USING btree (ilk_id);
+
+
+--
 -- Name: vat_frob_header_index; Type: INDEX; Schema: maker; Owner: -
 --
 
 CREATE INDEX vat_frob_header_index ON maker.vat_frob USING btree (header_id);
+
+
+--
+-- Name: vat_gem_ilk_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vat_gem_ilk_index ON maker.vat_gem USING btree (ilk_id);
 
 
 --
@@ -6633,10 +6773,52 @@ CREATE INDEX vat_heal_header_index ON maker.vat_heal USING btree (header_id);
 
 
 --
+-- Name: vat_ilk_art_ilk_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vat_ilk_art_ilk_index ON maker.vat_ilk_art USING btree (ilk_id);
+
+
+--
+-- Name: vat_ilk_dust_ilk_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vat_ilk_dust_ilk_index ON maker.vat_ilk_dust USING btree (ilk_id);
+
+
+--
+-- Name: vat_ilk_line_ilk_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vat_ilk_line_ilk_index ON maker.vat_ilk_line USING btree (ilk_id);
+
+
+--
+-- Name: vat_ilk_rate_ilk_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vat_ilk_rate_ilk_index ON maker.vat_ilk_rate USING btree (ilk_id);
+
+
+--
+-- Name: vat_ilk_spot_ilk_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vat_ilk_spot_ilk_index ON maker.vat_ilk_spot USING btree (ilk_id);
+
+
+--
 -- Name: vat_init_header_index; Type: INDEX; Schema: maker; Owner: -
 --
 
 CREATE INDEX vat_init_header_index ON maker.vat_init USING btree (header_id);
+
+
+--
+-- Name: vat_init_ilk_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vat_init_ilk_index ON maker.vat_init USING btree (ilk_id);
 
 
 --
@@ -6651,6 +6833,13 @@ CREATE INDEX vat_move_header_index ON maker.vat_move USING btree (header_id);
 --
 
 CREATE INDEX vat_slip_header_index ON maker.vat_slip USING btree (header_id);
+
+
+--
+-- Name: vat_slip_ilk_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vat_slip_ilk_index ON maker.vat_slip USING btree (ilk_id);
 
 
 --
