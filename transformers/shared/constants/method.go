@@ -17,23 +17,20 @@
 package constants
 
 //TODO: get cat and jug file method signatures directly from the ABI
-func biteMethod() string            { return getSolidityFunctionSignature(CatABI(), "Bite") }
-func catFileChopLumpMethod() string { return "file(bytes32,bytes32,uint256)" }
-func catFileFlipMethod() string     { return getSolidityFunctionSignature(CatABI(), "file") }
-func catFileVowMethod() string      { return "file(bytes32,address)" }
-func dealMethod() string            { return getSolidityFunctionSignature(FlipperABI(), "deal") }
-func dentMethod() string            { return getSolidityFunctionSignature(FlipperABI(), "dent") }
-func flapKickMethod() string        { return getSolidityFunctionSignature(FlapperABI(), "Kick") }
-func flipKickMethod() string        { return getSolidityFunctionSignature(FlipperABI(), "Kick") }
-func flopKickMethod() string        { return getSolidityFunctionSignature(FlopperABI(), "Kick") }
-func jugDripMethod() string         { return getSolidityFunctionSignature(JugABI(), "drip") }
-func jugFileBaseMethod() string     { return "file(bytes32,uint256)" }
-func jugFileIlkMethod() string      { return "file(bytes32,bytes32,uint256)" }
-func jugFileVowMethod() string      { return "file(bytes32,address)" }
-func jugInitMethod() string         { return getSolidityFunctionSignature(JugABI(), "init") }
-func pipLogValueMethod() string {
-	return getSolidityFunctionSignature(PipABI(), "LogValue")
-}
+func biteMethod() string               { return getSolidityFunctionSignature(CatABI(), "Bite") }
+func catFileChopLumpMethod() string    { return "file(bytes32,bytes32,uint256)" }
+func catFileFlipMethod() string        { return getSolidityFunctionSignature(CatABI(), "file") }
+func catFileVowMethod() string         { return "file(bytes32,address)" }
+func dealMethod() string               { return getSolidityFunctionSignature(FlipperABI(), "deal") }
+func dentMethod() string               { return getSolidityFunctionSignature(FlipperABI(), "dent") }
+func flapKickMethod() string           { return getSolidityFunctionSignature(FlapperABI(), "Kick") }
+func flipKickMethod() string           { return getSolidityFunctionSignature(FlipperABI(), "Kick") }
+func flopKickMethod() string           { return getSolidityFunctionSignature(FlopperABI(), "Kick") }
+func jugDripMethod() string            { return getSolidityFunctionSignature(JugABI(), "drip") }
+func jugFileBaseMethod() string        { return "file(bytes32,uint256)" }
+func jugFileIlkMethod() string         { return "file(bytes32,bytes32,uint256)" }
+func jugFileVowMethod() string         { return "file(bytes32,address)" }
+func jugInitMethod() string            { return getSolidityFunctionSignature(JugABI(), "init") }
 func spotFileMatMethod() string        { return "file(bytes32,bytes32,uint256)" }
 func spotFilePipMethod() string        { return "file(bytes32,address)" }
 func spotPokeMethod() string           { return getSolidityFunctionSignature(SpotABI(), "Poke") }

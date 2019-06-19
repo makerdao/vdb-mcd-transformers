@@ -25,6 +25,12 @@ import (
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 )
 
+const (
+	InsertSpotPokeQuery = `INSERT INTO maker.spot_poke (header_id, ilk_id, value, spot, tx_idx, log_idx, raw_log)
+		VALUES($1, $2, $3::NUMERIC, $4::NUMERIC, $5, $6, $7)
+		ON CONFLICT (header_id, tx_idx, log_idx) DO UPDATE SET ilk_id = $2, value = $3, spot = $5, raw_log = $7;`
+)
+
 type SpotPokeRepository struct {
 	db *postgres.DB
 }
@@ -55,9 +61,7 @@ func (repository *SpotPokeRepository) Create(headerID int64, models []interface{
 		}
 
 		_, insertErr := tx.Exec(
-			`INSERT INTO maker.spot_poke (header_id, ilk_id, value, spot, tx_idx, log_idx, raw_log)
-				VALUES($1, $2, $3::NUMERIC, $4::NUMERIC, $5, $6, $7)
-				ON CONFLICT (header_id, tx_idx, log_idx) DO UPDATE SET ilk_id = $2, value = $3, spot = $5, raw_log = $7;`,
+			InsertSpotPokeQuery,
 			headerID, ilkID, spotPokeModel.Value, spotPokeModel.Spot, spotPokeModel.TransactionIndex, spotPokeModel.LogIndex, spotPokeModel.Raw,
 		)
 		if insertErr != nil {
