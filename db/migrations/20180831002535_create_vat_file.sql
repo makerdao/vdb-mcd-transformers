@@ -15,6 +15,9 @@ CREATE TABLE maker.vat_file_ilk
 CREATE INDEX vat_file_ilk_header_index
     ON maker.vat_file_ilk (header_id);
 
+CREATE INDEX vat_file_ilk_ilk_index
+    ON maker.vat_file_ilk (ilk_id);
+
 CREATE TABLE maker.vat_file_debt_ceiling
 (
     id        SERIAL PRIMARY KEY,
@@ -38,6 +41,7 @@ ALTER TABLE public.checked_headers
 
 -- +goose Down
 DROP INDEX maker.vat_file_ilk_header_index;
+DROP INDEX maker.vat_file_ilk_ilk_index;
 DROP INDEX maker.vat_file_debt_ceiling_header_index;
 
 DROP TABLE maker.vat_file_ilk;

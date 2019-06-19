@@ -10,5 +10,9 @@ CREATE TABLE maker.urns
 COMMENT ON TABLE maker.urns
     IS E'@name raw_urns';
 
+CREATE INDEX urn_ilk_index
+    ON maker.urns (ilk_id);
+
 -- +goose Down
+DROP INDEX maker.urn_ilk_index;
 DROP TABLE maker.urns;

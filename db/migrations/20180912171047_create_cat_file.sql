@@ -15,6 +15,9 @@ CREATE TABLE maker.cat_file_chop_lump
 CREATE INDEX cat_file_chop_lump_header_index
     ON maker.cat_file_chop_lump (header_id);
 
+CREATE INDEX cat_file_chop_lump_ilk_index
+    ON maker.cat_file_chop_lump (ilk_id);
+
 CREATE TABLE maker.cat_file_flip
 (
     id        SERIAL PRIMARY KEY,
@@ -30,6 +33,9 @@ CREATE TABLE maker.cat_file_flip
 
 CREATE INDEX cat_file_flip_header_index
     ON maker.cat_file_flip (header_id);
+
+CREATE INDEX cat_file_flip_ilk_index
+    ON maker.cat_file_flip (ilk_id);
 
 CREATE TABLE maker.cat_file_vow
 (
@@ -57,7 +63,9 @@ ALTER TABLE public.checked_headers
 
 -- +goose Down
 DROP INDEX maker.cat_file_chop_lump_header_index;
+DROP INDEX maker.cat_file_chop_lump_ilk_index;
 DROP INDEX maker.cat_file_flip_header_index;
+DROP INDEX maker.cat_file_flip_ilk_index;
 DROP INDEX maker.cat_file_vow_header_index;
 
 DROP TABLE maker.cat_file_chop_lump;

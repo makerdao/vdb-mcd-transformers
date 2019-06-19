@@ -15,6 +15,9 @@ CREATE TABLE maker.spot_file_mat
 CREATE INDEX spot_file_mat_header_index
     ON maker.spot_file_mat (header_id);
 
+CREATE INDEX spot_file_mat_ilk_index
+    ON maker.spot_file_mat (ilk_id);
+
 CREATE TABLE maker.spot_file_pip
 (
     id        SERIAL PRIMARY KEY,
@@ -26,6 +29,9 @@ CREATE TABLE maker.spot_file_pip
     raw_log   JSONB,
     UNIQUE (header_id, tx_idx, log_idx)
 );
+
+CREATE INDEX spot_file_pip_ilk_index
+    ON maker.spot_file_pip (ilk_id);
 
 CREATE INDEX spot_file_pip_header_index
     ON maker.spot_file_pip (header_id);
@@ -39,7 +45,9 @@ ALTER TABLE public.checked_headers
 
 -- +goose Down
 DROP INDEX maker.spot_file_mat_header_index;
+DROP INDEX maker.spot_file_mat_ilk_index;
 DROP INDEX maker.spot_file_pip_header_index;
+DROP INDEX maker.spot_file_pip_ilk_index;
 
 DROP TABLE maker.spot_file_mat;
 DROP TABLE maker.spot_file_pip;
