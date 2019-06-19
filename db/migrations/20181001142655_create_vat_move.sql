@@ -16,7 +16,7 @@ CREATE INDEX vat_move_header_index
     ON maker.vat_move (header_id);
 
 ALTER TABLE public.checked_headers
-    ADD COLUMN vat_move_checked BOOLEAN NOT NULL DEFAULT FALSE;
+    ADD COLUMN vat_move_checked INTEGER NOT NULL DEFAULT 0;
 
 -- +goose Down
 DROP INDEX maker.vat_move_header_index;

@@ -18,7 +18,7 @@ CREATE INDEX tend_header_index
     ON maker.tend (header_id);
 
 ALTER TABLE public.checked_headers
-    ADD COLUMN tend_checked BOOLEAN NOT NULL DEFAULT FALSE;
+    ADD COLUMN tend_checked INTEGER NOT NULL DEFAULT 0;
 
 -- +goose Down
 DROP INDEX maker.tend_header_index;

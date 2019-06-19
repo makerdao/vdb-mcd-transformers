@@ -53,13 +53,13 @@ CREATE INDEX cat_file_vow_header_index
     ON maker.cat_file_vow (header_id);
 
 ALTER TABLE public.checked_headers
-    ADD COLUMN cat_file_chop_lump_checked BOOLEAN NOT NULL DEFAULT FALSE;
+    ADD COLUMN cat_file_chop_lump_checked INTEGER NOT NULL DEFAULT 0;
 
 ALTER TABLE public.checked_headers
-    ADD COLUMN cat_file_flip_checked BOOLEAN NOT NULL DEFAULT FALSE;
+    ADD COLUMN cat_file_flip_checked INTEGER NOT NULL DEFAULT 0;
 
 ALTER TABLE public.checked_headers
-    ADD COLUMN cat_file_vow_checked BOOLEAN NOT NULL DEFAULT FALSE;
+    ADD COLUMN cat_file_vow_checked INTEGER NOT NULL DEFAULT 0;
 
 -- +goose Down
 DROP INDEX maker.cat_file_chop_lump_header_index;

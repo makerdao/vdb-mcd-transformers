@@ -17,7 +17,7 @@ CREATE INDEX jug_drip_ilk_index
     ON maker.jug_drip (ilk_id);
 
 ALTER TABLE public.checked_headers
-    ADD COLUMN jug_drip_checked BOOLEAN NOT NULL DEFAULT FALSE;
+    ADD COLUMN jug_drip_checked INTEGER NOT NULL DEFAULT 0;
 
 -- +goose Down
 DROP INDEX maker.jug_drip_header_index;

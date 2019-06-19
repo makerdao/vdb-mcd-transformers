@@ -17,7 +17,7 @@ CREATE INDEX vat_init_ilk_index
     ON maker.vat_init (ilk_id);
 
 ALTER TABLE public.checked_headers
-    ADD COLUMN vat_init_checked BOOLEAN NOT NULL DEFAULT FALSE;
+    ADD COLUMN vat_init_checked INTEGER NOT NULL DEFAULT 0;
 
 -- +goose Down
 DROP INDEX maker.vat_init_header_index;
