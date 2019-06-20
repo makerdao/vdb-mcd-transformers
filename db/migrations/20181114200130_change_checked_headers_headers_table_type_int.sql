@@ -13,7 +13,6 @@ ALTER TABLE checked_headers
     ALTER jug_file_base_checked SET DEFAULT null,
     ALTER jug_file_ilk_checked SET DEFAULT null,
     ALTER jug_file_vow_checked SET DEFAULT null,
-    ALTER pip_log_value_checked SET DEFAULT null,
     ALTER tend_checked SET DEFAULT null,
     ALTER vat_file_debt_ceiling_checked SET DEFAULT null,
     ALTER vat_file_ilk_checked SET DEFAULT null,
@@ -28,11 +27,6 @@ ALTER TABLE checked_headers
     ALTER vow_flog_checked SET DEFAULT null;
 
 ALTER TABLE checked_headers
-    ALTER COLUMN pip_log_value_checked TYPE integer USING CASE
-                                                              WHEN false
-                                                                  THEN 0
-                                                              ELSE 1 END,
-    ALTER pip_log_value_checked SET DEFAULT 0,
     ALTER COLUMN flip_kick_checked TYPE integer USING CASE
                                                           WHEN false
                                                               THEN 0
@@ -161,12 +155,6 @@ ALTER TABLE checked_headers
 
 -- +goose Down
 ALTER TABLE checked_headers
-    ALTER pip_log_value_checked drop default,
-    ALTER COLUMN pip_log_value_checked SET DATA TYPE boolean USING CASE
-                                                                       WHEN pip_log_value_checked = 0
-                                                                           THEN FALSE
-                                                                       ELSE TRUE END,
-    ALTER pip_log_value_checked SET DEFAULT FALSE,
     ALTER flip_kick_checked drop default,
     ALTER COLUMN flip_kick_checked SET DATA TYPE boolean USING CASE
                                                                    WHEN flip_kick_checked = 0
