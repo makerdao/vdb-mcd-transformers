@@ -369,11 +369,10 @@ type SinQueueEvent struct {
 	Act string
 }
 
-type LogValue struct {
-	Val             string
-	BlockNumber     uint64 `db:"block_number"`
-	TxIdx           uint   `db:"tx_idx"`
-	ContractAddress string `db:"contract_address"`
+type PokeEvent struct {
+	IlkId string `db:"ilk_id"`
+	Val   string
+	Spot  string
 }
 
 func GetExpectedTimestamp(epoch int) string {
