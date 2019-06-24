@@ -124,47 +124,6 @@ var _ = Describe("VatFileIlk LogNoteTransformer", func() {
 		Expect(dbResult.What).To(Equal("line"))
 		Expect(dbResult.Data).To(Equal("200000000000000000000000000000000000000000000000000"))
 	})
-
-	It("rechecks vat file ilk event", func() {
-		blockNumber := int64(11257434)
-		initializer.Config.StartingBlockNumber = blockNumber
-		initializer.Config.EndingBlockNumber = blockNumber
-
-		header, err := persistHeader(db, blockNumber, blockChain)
-		Expect(err).NotTo(HaveOccurred())
-
-		logFetcher := fetcher.NewLogFetcher(blockChain)
-		logs, err := logFetcher.FetchLogs(addresses, topics, header)
-		Expect(err).NotTo(HaveOccurred())
-
-		tr := initializer.NewLogNoteTransformer(db)
-		err = tr.Execute(logs, header)
-		Expect(err).NotTo(HaveOccurred())
-
-		err = tr.Execute(logs, header)
-		Expect(err).NotTo(HaveOccurred())
-
-		var headerID int64
-		err = db.Get(&headerID, `SELECT id FROM public.headers WHERE block_number = $1`, blockNumber)
-		Expect(err).NotTo(HaveOccurred())
-
-		var vatFileIlkChecked []int
-		err = db.Select(&vatFileIlkChecked, `SELECT vat_file_ilk_checked FROM public.checked_headers WHERE header_id = $1`, headerID)
-		Expect(err).NotTo(HaveOccurred())
-
-		Expect(vatFileIlkChecked[0]).To(Equal(2))
-
-		var dbResult []ilk.VatFileIlkModel
-		err = db.Select(&dbResult, `SELECT ilk_id, what, data from maker.vat_file_ilk`)
-		Expect(err).NotTo(HaveOccurred())
-
-		Expect(len(dbResult)).To(Equal(1))
-		ilkID, err := shared.GetOrCreateIlk("0x434f4c352d410000000000000000000000000000000000000000000000000000", db)
-		Expect(err).NotTo(HaveOccurred())
-		Expect(dbResult[0].Ilk).To(Equal(strconv.Itoa(ilkID)))
-		Expect(dbResult[0].What).To(Equal("line"))
-		Expect(dbResult[0].Data).To(Equal("200000000000000000000000000000000000000000000000000"))
-	})
 })
 
 type byLogIndexVatFileIlk []ilk.VatFileIlkModel

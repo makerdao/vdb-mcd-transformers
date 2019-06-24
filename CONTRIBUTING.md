@@ -17,6 +17,12 @@ Goland, please make sure to format new or changed `.sql` files:
 - Reformat the `.sql` file: with the file(s) selected, from the top menu choose `Code` > `Reformat
     Code`.
 
+## Import Ordering
+We follow a standard of including imports in the following order:
+1. core go packages
+1. external library packages
+1. project packages
+
 ## Generating the Changelog
 See documentation in VulcanizeDB repository: https://github.com/vulcanize/vulcanizedb/blob/staging/documentation/contributing.md#generating-the-changelog.
 
