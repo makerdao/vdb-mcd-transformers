@@ -231,6 +231,36 @@ var _ = Describe("Plugin test", func() {
 				Expect(returned.TransactionIndex).To(Equal(uint(0)))
 				Expect(returned.LogIndex).To(Equal(uint(3)))
 			})
+
+			It("rechecks checked headers for event logs", func() {
+				db, bc := SetupDBandBC()
+				hr = repositories.NewHeaderRepository(db)
+				header1, err := bc.GetHeaderByNumber(11257255)
+				Expect(err).ToNot(HaveOccurred())
+				headerID, err = hr.CreateOrUpdateHeader(header1)
+				Expect(err).ToNot(HaveOccurred())
+
+				plug, err := plugin.Open(soPath)
+				Expect(err).ToNot(HaveOccurred())
+				symExporter, err := plug.Lookup("Exporter")
+				Expect(err).ToNot(HaveOccurred())
+				exporter, ok := symExporter.(Exporter)
+				Expect(ok).To(Equal(true))
+				eventTransformerInitializers, _, _ := exporter.Export()
+
+				w := watcher.NewEventWatcher(db, bc)
+				w.AddTransformers(eventTransformerInitializers)
+				err = w.Execute(constants.HeaderMissing)
+				Expect(err).ToNot(HaveOccurred())
+
+				err = w.Execute(constants.HeaderMissing)
+				Expect(err).ToNot(HaveOccurred())
+
+				var catFileFlipChecked int
+				err = db.Get(&catFileFlipChecked, `SELECT cat_file_flip_checked FROM public.checked_headers WHERE header_id = $1`, headerID)
+				Expect(err).ToNot(HaveOccurred())
+				Expect(catFileFlipChecked).To(Equal(2))
+			})
 		})
 	})
 

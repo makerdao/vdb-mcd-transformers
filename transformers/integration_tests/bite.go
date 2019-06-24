@@ -94,53 +94,6 @@ var _ = Describe("Bite Transformer", func() {
 		Expect(dbResult[0].Id).To(Equal(""))
 	})
 
-	It("rechecks header for bite event", func() {
-		blockNumber := int64(8956422)
-		biteConfig.StartingBlockNumber = blockNumber
-		biteConfig.EndingBlockNumber = blockNumber
-
-		rpcClient, ethClient, err := getClients(ipc)
-		Expect(err).NotTo(HaveOccurred())
-		blockChain, err := getBlockChain(rpcClient, ethClient)
-		Expect(err).NotTo(HaveOccurred())
-
-		db := test_config.NewTestDB(blockChain.Node())
-		test_config.CleanTestDB(db)
-
-		header, err := persistHeader(db, blockNumber, blockChain)
-		Expect(err).NotTo(HaveOccurred())
-
-		initializer := event.Transformer{
-			Config:     biteConfig,
-			Converter:  &bite.BiteConverter{},
-			Repository: &bite.BiteRepository{},
-		}
-		transformer := initializer.NewTransformer(db)
-
-		logFetcher := fetcher.NewLogFetcher(blockChain)
-		logs, err := logFetcher.FetchLogs(
-			[]common.Address{common.HexToAddress(biteConfig.ContractAddresses[0])},
-			[]common.Hash{common.HexToHash(biteConfig.Topic)},
-			header)
-		Expect(err).NotTo(HaveOccurred())
-
-		err = transformer.Execute(logs, header)
-		Expect(err).NotTo(HaveOccurred())
-
-		err = transformer.Execute(logs, header)
-		Expect(err).NotTo(HaveOccurred())
-
-		var headerID int64
-		err = db.Get(&headerID, `SELECT id FROM public.headers WHERE block_number = $1`, blockNumber)
-		Expect(err).NotTo(HaveOccurred())
-
-		var biteChecked []int
-		err = db.Select(&biteChecked, `SELECT bite_checked FROM public.checked_headers WHERE header_id = $1`, headerID)
-		Expect(err).NotTo(HaveOccurred())
-
-		Expect(biteChecked[0]).To(Equal(2))
-	})
-
 	It("unpacks an event log", func() {
 		address := common.HexToAddress(mcdConstants.CatContractAddress())
 		abi, err := geth.ParseAbi(mcdConstants.CatABI())

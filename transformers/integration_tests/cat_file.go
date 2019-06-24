@@ -17,14 +17,14 @@
 package integration_tests
 
 import (
+	"sort"
+	"strconv"
+
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
-	"sort"
-	"strconv"
-
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
@@ -142,45 +142,6 @@ var _ = Describe("Cat File transformer", func() {
 		Expect(dbResult[0].What).To(Equal("chop"))
 		Expect(dbResult[0].Data).To(Equal("1050000000000000000000000000"))
 		Expect(dbResult[0].LogIndex).To(Equal(uint(3)))
-	})
-
-	It("rechecks header for chop lump event", func() {
-		chopLumpBlockNumber := int64(11257529)
-		header, err := persistHeader(db, chopLumpBlockNumber, blockChain)
-		Expect(err).NotTo(HaveOccurred())
-		catFileConfig.TransformerName = mcdConstants.CatFileChopLumpLabel
-		catFileConfig.Topic = mcdConstants.CatFileChopLumpSignature()
-		catFileConfig.StartingBlockNumber = chopLumpBlockNumber
-		catFileConfig.EndingBlockNumber = chopLumpBlockNumber
-
-		initializer := shared.LogNoteTransformer{
-			Config:     catFileConfig,
-			Converter:  &chop_lump.CatFileChopLumpConverter{},
-			Repository: &chop_lump.CatFileChopLumpRepository{},
-		}
-		transformer := initializer.NewLogNoteTransformer(db)
-
-		logs, err := logFetcher.FetchLogs(
-			[]common.Address{common.HexToAddress(catFileConfig.ContractAddresses[0])},
-			[]common.Hash{common.HexToHash(catFileConfig.Topic)},
-			header)
-		Expect(err).NotTo(HaveOccurred())
-
-		err = transformer.Execute(logs, header)
-		Expect(err).NotTo(HaveOccurred())
-
-		err = transformer.Execute(logs, header)
-		Expect(err).NotTo(HaveOccurred())
-
-		var headerID int64
-		err = db.Get(&headerID, `SELECT id FROM public.headers WHERE block_number = $1`, chopLumpBlockNumber)
-		Expect(err).NotTo(HaveOccurred())
-
-		var catChopLumpChecked []int
-		err = db.Select(&catChopLumpChecked, `SELECT cat_file_chop_lump_checked FROM public.checked_headers WHERE header_id = $1`, headerID)
-		Expect(err).NotTo(HaveOccurred())
-
-		Expect(catChopLumpChecked[0]).To(Equal(2))
 	})
 
 	It("persists a flip event", func() {

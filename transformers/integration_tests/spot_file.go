@@ -106,21 +106,6 @@ var _ = Describe("SpotFile LogNoteTransformers", func() {
 			Expect(dbResult.What).To(Equal("mat"))
 			Expect(dbResult.Data).To(Equal("1500000000000000000000000000"))
 		})
-
-		It("rechecks Spot.file mat event", func() {
-			recheckErr := tr.Execute(logs, header)
-			Expect(recheckErr).NotTo(HaveOccurred())
-
-			var headerID int64
-			getHeaderErr := db.Get(&headerID, `SELECT id FROM public.headers WHERE block_number = $1`, blockNumber)
-			Expect(getHeaderErr).NotTo(HaveOccurred())
-
-			var spotFileMatChecked int
-			getSpotCheckedErr := db.Get(&spotFileMatChecked, `SELECT spot_file_mat_checked FROM public.checked_headers WHERE header_id = $1`, headerID)
-			Expect(getSpotCheckedErr).NotTo(HaveOccurred())
-
-			Expect(spotFileMatChecked).To(Equal(2))
-		})
 	})
 
 	Describe("Spot file pip", func() {
@@ -177,21 +162,6 @@ var _ = Describe("SpotFile LogNoteTransformers", func() {
 			Expect(ilkErr).NotTo(HaveOccurred())
 			Expect(dbResult.Ilk).To(Equal(strconv.Itoa(ilkID)))
 			Expect(dbResult.Pip).To(Equal("0xaa32EB42CBf3Bdb746b659c8DAF443f710497d80"))
-		})
-
-		It("rechecks Spot.file pip event", func() {
-			recheckErr := tr.Execute(logs, header)
-			Expect(recheckErr).NotTo(HaveOccurred())
-
-			var headerID int64
-			getHeaderErr := db.Get(&headerID, `SELECT id FROM public.headers WHERE block_number = $1`, blockNumber)
-			Expect(getHeaderErr).NotTo(HaveOccurred())
-
-			var spotFilePipChecked int
-			getSpotCheckedErr := db.Get(&spotFilePipChecked, `SELECT spot_file_pip_checked FROM public.checked_headers WHERE header_id = $1`, headerID)
-			Expect(getSpotCheckedErr).NotTo(HaveOccurred())
-
-			Expect(spotFilePipChecked).To(Equal(2))
 		})
 	})
 })

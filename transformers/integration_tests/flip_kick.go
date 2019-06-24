@@ -107,49 +107,4 @@ var _ = Describe("FlipKick Transformer", func() {
 		Expect(dbResult[0].Gal).To(Equal("0x3728e9777B2a0a611ee0F89e00E01044ce4736d1"))
 		Expect(dbResult[0].Lot).To(Equal("1000000000000000000"))
 	})
-
-	It("rechecks flip kick event", func() {
-		blockNumber := int64(8956476)
-		flipKickConfig.StartingBlockNumber = blockNumber
-		flipKickConfig.EndingBlockNumber = blockNumber
-
-		rpcClient, ethClient, err := getClients(ipc)
-		Expect(err).NotTo(HaveOccurred())
-		blockChain, err := getBlockChain(rpcClient, ethClient)
-		Expect(err).NotTo(HaveOccurred())
-		db := test_config.NewTestDB(blockChain.Node())
-		test_config.CleanTestDB(db)
-
-		header, err := persistHeader(db, blockNumber, blockChain)
-		Expect(err).NotTo(HaveOccurred())
-
-		tr := event.Transformer{
-			Config:     flipKickConfig,
-			Converter:  &flip_kick.FlipKickConverter{},
-			Repository: &flip_kick.FlipKickRepository{},
-		}.NewTransformer(db)
-
-		f := fetcher.NewLogFetcher(blockChain)
-		logs, err := f.FetchLogs(
-			transformer.HexStringsToAddresses(flipKickConfig.ContractAddresses),
-			[]common.Hash{common.HexToHash(flipKickConfig.Topic)},
-			header)
-		Expect(err).NotTo(HaveOccurred())
-
-		err = tr.Execute(logs, header)
-		Expect(err).NotTo(HaveOccurred())
-
-		err = tr.Execute(logs, header)
-		Expect(err).NotTo(HaveOccurred())
-
-		var headerID int64
-		err = db.Get(&headerID, `SELECT id FROM public.headers WHERE block_number = $1`, blockNumber)
-		Expect(err).NotTo(HaveOccurred())
-
-		var flipkickChecked []int
-		err = db.Select(&flipkickChecked, `SELECT flip_kick_checked FROM public.checked_headers WHERE header_id = $1`, headerID)
-		Expect(err).NotTo(HaveOccurred())
-
-		Expect(flipkickChecked[0]).To(Equal(2))
-	})
 })

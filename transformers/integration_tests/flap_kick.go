@@ -90,42 +90,4 @@ var _ = Describe("FlapKick Transformer", func() {
 		Expect(dbResult[0].Gal).To(Equal("0x0000d8b4147eDa80Fec7122AE16DA2479Cbd7ffB"))
 		Expect(dbResult[0].Lot).To(Equal("1000000000000000000"))
 	})
-
-	It("rechecks flap kick transformer", func() {
-		blockNumber := int64(9002933)
-		flapKickConfig.StartingBlockNumber = blockNumber
-		flapKickConfig.EndingBlockNumber = blockNumber
-
-		header, err := persistHeader(db, blockNumber, blockChain)
-		Expect(err).NotTo(HaveOccurred())
-
-		tr := event.Transformer{
-			Config:     flapKickConfig,
-			Converter:  &flap_kick.FlapKickConverter{},
-			Repository: &flap_kick.FlapKickRepository{},
-		}.NewTransformer(db)
-
-		f := fetcher.NewLogFetcher(blockChain)
-		logs, err := f.FetchLogs(
-			transformer.HexStringsToAddresses(flapKickConfig.ContractAddresses),
-			[]common.Hash{common.HexToHash(flapKickConfig.Topic)},
-			header)
-		Expect(err).NotTo(HaveOccurred())
-
-		err = tr.Execute(logs, header)
-		Expect(err).NotTo(HaveOccurred())
-
-		err = tr.Execute(logs, header)
-		Expect(err).NotTo(HaveOccurred())
-
-		var headerID int64
-		err = db.Get(&headerID, `SELECT id FROM public.headers WHERE block_number = $1`, blockNumber)
-		Expect(err).NotTo(HaveOccurred())
-
-		var flapkickChecked []int
-		err = db.Select(&flapkickChecked, `SELECT flap_kick_checked FROM public.checked_headers WHERE header_id = $1`, headerID)
-		Expect(err).NotTo(HaveOccurred())
-
-		Expect(flapkickChecked[0]).To(Equal(2))
-	})
 })

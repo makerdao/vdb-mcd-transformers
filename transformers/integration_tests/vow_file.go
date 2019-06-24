@@ -88,34 +88,4 @@ var _ = Describe("VowFile LogNoteTransforer", func() {
 		Expect(dbResult[0].What).To(Equal("sump"))
 		Expect(dbResult[0].Data).To(Equal("100000000000000000000000000000000000000000000"))
 	})
-
-	It("rechecks vow file event", func() {
-		blockNumber := int64(11257345)
-		initializer.Config.StartingBlockNumber = blockNumber
-		initializer.Config.EndingBlockNumber = blockNumber
-
-		header, err := persistHeader(db, blockNumber, blockChain)
-		Expect(err).NotTo(HaveOccurred())
-
-		logFetcher := fetcher.NewLogFetcher(blockChain)
-		logs, err := logFetcher.FetchLogs(addresses, topics, header)
-		Expect(err).NotTo(HaveOccurred())
-
-		tr := initializer.NewLogNoteTransformer(db)
-		err = tr.Execute(logs, header)
-		Expect(err).NotTo(HaveOccurred())
-
-		err = tr.Execute(logs, header)
-		Expect(err).NotTo(HaveOccurred())
-
-		var headerID int64
-		err = db.Get(&headerID, `SELECT id FROM public.headers WHERE block_number = $1`, blockNumber)
-		Expect(err).NotTo(HaveOccurred())
-
-		var vowFileChecked []int
-		err = db.Select(&vowFileChecked, `SELECT vow_file_checked FROM public.checked_headers WHERE header_id = $1`, headerID)
-		Expect(err).NotTo(HaveOccurred())
-
-		Expect(vowFileChecked[0]).To(Equal(2))
-	})
 })
