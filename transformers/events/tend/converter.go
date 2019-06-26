@@ -19,10 +19,11 @@ package tend
 import (
 	"encoding/json"
 	"errors"
-	"math/big"
 
-	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
+
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 )
 
 type TendConverter struct{}
@@ -35,15 +36,15 @@ func (TendConverter) ToModels(ethLogs []types.Log) (results []interface{}, err e
 		}
 
 		bidId := ethLog.Topics[2].Big()
-		guy := common.BytesToAddress(ethLog.Topics[1].Bytes())
 		lot := ethLog.Topics[3].Big().String()
-
-		lastDataItemStartIndex := len(ethLog.Data) - 32
-		lastItem := ethLog.Data[lastDataItemStartIndex:]
-		last := big.NewInt(0).SetBytes(lastItem)
-		bidValue := last.String()
-		transactionIndex := ethLog.TxIndex
+		rawBid, bidErr := shared.GetLogNoteArgumentAtIndex(2, ethLog.Data)
+		if bidErr != nil {
+			return nil, bidErr
+		}
+		bidValue := shared.ConvertUint256HexToBigInt(hexutil.Encode(rawBid)).String()
+		lad := ethLog.Address
 		logIndex := ethLog.Index
+		transactionIndex := ethLog.TxIndex
 
 		rawLog, err := json.Marshal(ethLog)
 		if err != nil {
@@ -54,7 +55,7 @@ func (TendConverter) ToModels(ethLogs []types.Log) (results []interface{}, err e
 			BidId:            bidId.String(),
 			Lot:              lot,
 			Bid:              bidValue,
-			Guy:              guy.Hex(),
+			Lad:              lad.Hex(),
 			LogIndex:         logIndex,
 			TransactionIndex: transactionIndex,
 			Raw:              rawLog,

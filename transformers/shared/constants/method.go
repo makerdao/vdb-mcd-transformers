@@ -26,10 +26,10 @@ func catFileFlipMethod() string {
 func catFileVowMethod() string {
 	return getOverloadedFunctionSignature(CatABI(), "file", []string{"bytes32", "address"})
 }
-func dealMethod() string     { return getSolidityFunctionSignature(FlipperABI(), "deal") }
-func dentMethod() string     { return getSolidityFunctionSignature(FlipperABI(), "dent") }
-func flapKickMethod() string { return getSolidityFunctionSignature(FlapperABI(), "Kick") }
-func flipKickMethod() string { return getSolidityFunctionSignature(FlipperABI(), "Kick") }
+func dealMethod() string     { return getSolidityFunctionSignature(OldFlipperABI(), "deal") }
+func dentMethod() string     { return getSolidityFunctionSignature(OldFlipperABI(), "dent") }
+func flapKickMethod() string { return getSolidityFunctionSignature(OldFlapperABI(), "Kick") }
+func flipKickMethod() string { return getSolidityFunctionSignature(OldFlipperABI(), "Kick") }
 func flopKickMethod() string { return getSolidityFunctionSignature(FlopperABI(), "Kick") }
 func jugDripMethod() string  { return getSolidityFunctionSignature(JugABI(), "drip") }
 func jugFileBaseMethod() string {
