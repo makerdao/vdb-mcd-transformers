@@ -37,8 +37,8 @@ var _ = XDescribe("Dent transformer", func() {
 
 		dentConfig = transformer.EventTransformerConfig{
 			TransformerName:   mcdConstants.DentLabel,
-			ContractAddresses: []string{mcdConstants.FlipperContractAddress(), mcdConstants.FlopperContractAddress()},
-			ContractAbi:       mcdConstants.FlipperABI(),
+			ContractAddresses: []string{mcdConstants.OldFlipperContractAddress(), mcdConstants.FlopperContractAddress()},
+			ContractAbi:       mcdConstants.OldFlipperABI(),
 			Topic:             mcdConstants.DentSignature(),
 		}
 

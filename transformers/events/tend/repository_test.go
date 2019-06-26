@@ -17,8 +17,6 @@
 package tend_test
 
 import (
-	"strconv"
-
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
@@ -73,24 +71,16 @@ var _ = Describe("TendRepository", func() {
 			Expect(count).To(Equal(1))
 
 			dbResult := tend.TendModel{}
-			err = db.Get(&dbResult, `SELECT bid_id, lot, bid, guy, log_idx, tx_idx, raw_log FROM maker.tend WHERE header_id = $1`, headerID)
+			err = db.Get(&dbResult, `SELECT bid_id, lot, bid, lad, log_idx, tx_idx, raw_log FROM maker.tend WHERE header_id = $1`, headerID)
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(dbResult.BidId).To(Equal(test_data.TendModel.BidId))
 			Expect(dbResult.Lot).To(Equal(test_data.TendModel.Lot))
 			Expect(dbResult.Bid).To(Equal(test_data.TendModel.Bid))
-			Expect(dbResult.Guy).To(Equal(test_data.TendModel.Guy))
+			Expect(dbResult.Lad).To(Equal(test_data.TendModel.Lad))
 			Expect(dbResult.LogIndex).To(Equal(test_data.TendModel.LogIndex))
 			Expect(dbResult.TransactionIndex).To(Equal(test_data.TendModel.TransactionIndex))
 			Expect(dbResult.Raw).To(MatchJSON(test_data.TendModel.Raw))
-
-			blockTimestamp, parseIntErr := strconv.Atoi(fakes.FakeHeader.Timestamp)
-			Expect(parseIntErr).NotTo(HaveOccurred())
-			fakeHeaderTic := int64(blockTimestamp) + constants.TTL
-			var dbTic int64
-			err = db.Get(&dbTic, `SELECT tic FROM maker.tend WHERE header_id = $1`, headerID)
-			Expect(err).NotTo(HaveOccurred())
-			Expect(dbTic).To(Equal(fakeHeaderTic))
 		})
 	})
 
