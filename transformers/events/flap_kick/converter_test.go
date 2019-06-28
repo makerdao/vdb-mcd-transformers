@@ -35,7 +35,7 @@ var _ = Describe("Flap kick converter", func() {
 
 	Describe("ToEntity", func() {
 		It("converts an Eth Log to a FlapKickEntity", func() {
-			entities, err := converter.ToEntities(constants.FlapperABI(), []types.Log{test_data.EthFlapKickLog})
+			entities, err := converter.ToEntities(constants.OldFlapperABI(), []types.Log{test_data.EthFlapKickLog})
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(entities)).To(Equal(1))

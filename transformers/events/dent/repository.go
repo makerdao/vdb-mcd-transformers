@@ -19,12 +19,11 @@ package dent
 import (
 	"fmt"
 
+	"github.com/jmoiron/sqlx"
 	log "github.com/sirupsen/logrus"
-
 	repo "github.com/vulcanize/vulcanizedb/libraries/shared/repository"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 
-	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
@@ -38,7 +37,7 @@ func (repository DentRepository) Create(headerID int64, models []interface{}) er
 		return dBaseErr
 	}
 
-	tic, getTicErr := shared.GetTicInTx(headerID, tx)
+	tic, getTicErr := getTicInTx(headerID, tx)
 	if getTicErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
@@ -83,4 +82,15 @@ func (repository DentRepository) MarkHeaderChecked(headerId int64) error {
 
 func (repository *DentRepository) SetDB(db *postgres.DB) {
 	repository.db = db
+}
+
+func getTicInTx(headerID int64, tx *sqlx.Tx) (int64, error) {
+	var blockTimestamp int64
+	err := tx.Get(&blockTimestamp, `SELECT block_timestamp FROM public.headers WHERE id = $1;`, headerID)
+	if err != nil {
+		return 0, err
+	}
+
+	tic := blockTimestamp + constants.TTL
+	return tic, nil
 }

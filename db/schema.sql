@@ -2529,8 +2529,7 @@ CREATE TABLE maker.tend (
     bid_id numeric NOT NULL,
     lot numeric,
     bid numeric,
-    guy text,
-    tic numeric,
+    lad text,
     log_idx integer NOT NULL,
     tx_idx integer NOT NULL,
     raw_log jsonb

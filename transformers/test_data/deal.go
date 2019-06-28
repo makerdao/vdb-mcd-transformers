@@ -29,7 +29,7 @@ import (
 )
 
 var DealLogNote = types.Log{
-	Address: common.HexToAddress(constants.FlipperContractAddress()),
+	Address: common.HexToAddress(constants.OldFlipperContractAddress()),
 	Topics: []common.Hash{
 		common.HexToHash(constants.DealSignature()),
 		common.HexToHash("0x00000000000000000000000064d922894153be9eef7b7218dc565d1d0ce2a092"),
@@ -48,7 +48,7 @@ var dealRawJson, _ = json.Marshal(DealLogNote)
 
 var DealModel = deal.DealModel{
 	BidId:            "123",
-	ContractAddress:  constants.FlipperContractAddress(),
+	ContractAddress:  constants.OldFlipperContractAddress(),
 	LogIndex:         DealLogNote.Index,
 	TransactionIndex: DealLogNote.TxIndex,
 	Raw:              dealRawJson,
