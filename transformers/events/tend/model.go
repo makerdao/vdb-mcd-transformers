@@ -20,7 +20,7 @@ type TendModel struct {
 	BidId            string `db:"bid_id"`
 	Lot              string
 	Bid              string
-	Guy              string
+	Lad              string
 	LogIndex         uint   `db:"log_idx"`
 	TransactionIndex uint   `db:"tx_idx"`
 	Raw              []byte `db:"raw_log"`

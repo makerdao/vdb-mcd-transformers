@@ -15,7 +15,7 @@ import (
 )
 
 var EthFlapKickLog = types.Log{
-	Address: common.HexToAddress(constants.FlapperContractAddress()),
+	Address: common.HexToAddress(constants.OldFlapperContractAddress()),
 	Topics: []common.Hash{
 		common.HexToHash(constants.FlapKickSignature()),
 		common.HexToHash("0x00000000000000000000000000000000000000000000000000000000069f6bc7"),

@@ -26,11 +26,11 @@ import (
 func GetDealConfig() shared_t.EventTransformerConfig {
 	return shared_t.EventTransformerConfig{
 		TransformerName:   constants.DealLabel,
-		ContractAddresses: []string{constants.FlapperContractAddress(), constants.FlipperContractAddress(), constants.FlopperContractAddress()},
-		ContractAbi:       constants.FlipperABI(),
+		ContractAddresses: []string{constants.OldFlapperContractAddress(), constants.OldFlipperContractAddress(), constants.FlopperContractAddress()},
+		ContractAbi:       constants.OldFlipperABI(),
 		Topic:             constants.DealSignature(),
 		StartingBlockNumber: shared.MinInt64([]int64{
-			constants.FlapperDeploymentBlock(), constants.FlipperDeploymentBlock(), constants.FlopperDeploymentBlock()}),
+			constants.OldFlapperDeploymentBlock(), constants.OldFlipperDeploymentBlock(), constants.FlopperDeploymentBlock()}),
 		EndingBlockNumber: -1,
 	}
 }

@@ -37,13 +37,13 @@ import (
 var _ = Describe("FlipKick Transformer", func() {
 	flipKickConfig := transformer.EventTransformerConfig{
 		TransformerName:   mcdConstants.FlipKickLabel,
-		ContractAddresses: []string{mcdConstants.FlipperContractAddress()},
-		ContractAbi:       mcdConstants.FlipperABI(),
+		ContractAddresses: []string{mcdConstants.OldFlipperContractAddress()},
+		ContractAbi:       mcdConstants.OldFlipperABI(),
 		Topic:             mcdConstants.FlipKickSignature(),
 	}
 
 	It("unpacks an event log", func() {
-		address := common.HexToAddress(mcdConstants.FlipperContractAddress())
+		address := common.HexToAddress(mcdConstants.OldFlipperContractAddress())
 		abi, err := geth.ParseAbi(flipKickConfig.ContractAbi)
 		Expect(err).NotTo(HaveOccurred())
 

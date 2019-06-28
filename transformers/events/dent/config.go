@@ -26,10 +26,10 @@ import (
 func GetDentConfig() shared_t.EventTransformerConfig {
 	return shared_t.EventTransformerConfig{
 		TransformerName:     constants.DentLabel,
-		ContractAddresses:   []string{constants.FlipperContractAddress(), constants.FlopperContractAddress()},
-		ContractAbi:         constants.FlipperABI(),
+		ContractAddresses:   []string{constants.OldFlipperContractAddress(), constants.FlopperContractAddress()},
+		ContractAbi:         constants.OldFlipperABI(),
 		Topic:               constants.DentSignature(),
-		StartingBlockNumber: shared.MinInt64([]int64{constants.FlipperDeploymentBlock(), constants.FlopperDeploymentBlock()}),
+		StartingBlockNumber: shared.MinInt64([]int64{constants.OldFlipperDeploymentBlock(), constants.FlopperDeploymentBlock()}),
 		EndingBlockNumber:   -1,
 	}
 }
