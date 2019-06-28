@@ -1764,8 +1764,7 @@ CREATE TABLE maker.dent (
     bid_id numeric NOT NULL,
     lot numeric,
     bid numeric,
-    guy bytea,
-    tic numeric,
+    contract_address text,
     log_idx integer NOT NULL,
     tx_idx integer NOT NULL,
     raw_log jsonb

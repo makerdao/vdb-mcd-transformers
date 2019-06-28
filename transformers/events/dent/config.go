@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -26,10 +26,10 @@ import (
 func GetDentConfig() shared_t.EventTransformerConfig {
 	return shared_t.EventTransformerConfig{
 		TransformerName:     constants.DentLabel,
-		ContractAddresses:   []string{constants.OldFlipperContractAddress(), constants.FlopperContractAddress()},
-		ContractAbi:         constants.OldFlipperABI(),
+		ContractAddresses:   append(constants.FlipperContractAddresses(), constants.FlopperContractAddress()),
+		ContractAbi:         constants.FlipperABI(),
 		Topic:               constants.DentSignature(),
-		StartingBlockNumber: shared.MinInt64([]int64{constants.OldFlipperDeploymentBlock(), constants.FlopperDeploymentBlock()}),
+		StartingBlockNumber: shared.MinInt64([]int64{constants.FlipperDeploymentBlock(), constants.FlopperDeploymentBlock()}),
 		EndingBlockNumber:   -1,
 	}
 }

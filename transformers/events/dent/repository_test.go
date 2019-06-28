@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -17,8 +17,6 @@
 package dent_test
 
 import (
-	"strconv"
-
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
@@ -72,23 +70,15 @@ var _ = Describe("Dent Repository", func() {
 			Expect(count).To(Equal(1))
 
 			var dbResult dent.DentModel
-			err = db.Get(&dbResult, `SELECT bid_id, lot, bid, guy, log_idx, tx_idx, raw_log FROM maker.dent WHERE header_id = $1`, headerID)
+			err = db.Get(&dbResult, `SELECT bid_id, lot, bid, contract_address, log_idx, tx_idx, raw_log FROM maker.dent WHERE header_id = $1`, headerID)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(dbResult.BidId).To(Equal(test_data.DentModel.BidId))
 			Expect(dbResult.Lot).To(Equal(test_data.DentModel.Lot))
 			Expect(dbResult.Bid).To(Equal(test_data.DentModel.Bid))
-			Expect(dbResult.Guy).To(Equal(test_data.DentModel.Guy))
+			Expect(dbResult.ContractAddress).To(Equal(test_data.DentModel.ContractAddress))
 			Expect(dbResult.LogIndex).To(Equal(test_data.DentModel.LogIndex))
 			Expect(dbResult.TransactionIndex).To(Equal(test_data.DentModel.TransactionIndex))
 			Expect(dbResult.Raw).To(MatchJSON(test_data.DentModel.Raw))
-
-			blockTimestamp, parseIntErr := strconv.Atoi(fakes.FakeHeader.Timestamp)
-			Expect(parseIntErr).NotTo(HaveOccurred())
-			fakeHeaderTic := int64(blockTimestamp) + constants.TTL
-			var dbTic int64
-			err = db.Get(&dbTic, `SELECT tic FROM maker.dent WHERE header_id = $1`, headerID)
-			Expect(err).NotTo(HaveOccurred())
-			Expect(dbTic).To(Equal(fakeHeaderTic))
 		})
 	})
 

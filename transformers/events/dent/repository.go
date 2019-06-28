@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -19,9 +19,8 @@ package dent
 import (
 	"fmt"
 
-	"github.com/jmoiron/sqlx"
-	log "github.com/sirupsen/logrus"
-	repo "github.com/vulcanize/vulcanizedb/libraries/shared/repository"
+	"github.com/sirupsen/logrus"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/repository"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
@@ -31,19 +30,10 @@ type DentRepository struct {
 	db *postgres.DB
 }
 
-func (repository DentRepository) Create(headerID int64, models []interface{}) error {
-	tx, dBaseErr := repository.db.Beginx()
+func (repo DentRepository) Create(headerID int64, models []interface{}) error {
+	tx, dBaseErr := repo.db.Beginx()
 	if dBaseErr != nil {
 		return dBaseErr
-	}
-
-	tic, getTicErr := getTicInTx(headerID, tx)
-	if getTicErr != nil {
-		rollbackErr := tx.Rollback()
-		if rollbackErr != nil {
-			log.Error("failed to rollback ", rollbackErr)
-		}
-		return getTicErr
 	}
 
 	for _, model := range models {
@@ -51,46 +41,41 @@ func (repository DentRepository) Create(headerID int64, models []interface{}) er
 		if !ok {
 			rollbackErr := tx.Rollback()
 			if rollbackErr != nil {
-				log.Error("failed to rollback ", rollbackErr)
+				logrus.Error("failed to rollback ", rollbackErr)
 			}
 			return fmt.Errorf("model of type %T, not %T", model, DentModel{})
 		}
 
 		_, execErr := tx.Exec(
-			`INSERT into maker.dent (header_id, bid_id, lot, bid, guy, tic, log_idx, tx_idx, raw_log)
-			VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9)
-			ON CONFLICT (header_id, tx_idx, log_idx) DO UPDATE SET bid_Id = $2, lot = $3, bid = $4, guy = $5, tic = $6, raw_log = $9;`,
-			headerID, dent.BidId, dent.Lot, dent.Bid, dent.Guy, tic, dent.LogIndex, dent.TransactionIndex, dent.Raw,
+			`INSERT into maker.dent (header_id, bid_id, lot, bid, contract_address, log_idx, tx_idx, raw_log)
+			VALUES($1, $2, $3, $4, $5, $6, $7, $8)
+			ON CONFLICT (header_id, tx_idx, log_idx) DO UPDATE SET bid_Id = $2, lot = $3, bid = $4, contract_address = $5, raw_log = $8;`,
+			headerID, dent.BidId, dent.Lot, dent.Bid, dent.ContractAddress, dent.LogIndex, dent.TransactionIndex, dent.Raw,
 		)
 		if execErr != nil {
-			tx.Rollback()
+			rollbackErr := tx.Rollback()
+			if rollbackErr != nil {
+				logrus.Error("failed to rollback ", rollbackErr)
+			}
 			return execErr
 		}
 	}
 
-	err := repo.MarkHeaderCheckedInTransaction(headerID, tx, constants.DentChecked)
+	err := repository.MarkHeaderCheckedInTransaction(headerID, tx, constants.DentChecked)
 	if err != nil {
-		tx.Rollback()
+		rollbackErr := tx.Rollback()
+		if rollbackErr != nil {
+			logrus.Error("failed to rollback ", rollbackErr)
+		}
 		return err
 	}
 	return tx.Commit()
 }
 
-func (repository DentRepository) MarkHeaderChecked(headerId int64) error {
-	return repo.MarkHeaderChecked(headerId, repository.db, constants.DentChecked)
+func (repo DentRepository) MarkHeaderChecked(headerId int64) error {
+	return repository.MarkHeaderChecked(headerId, repo.db, constants.DentChecked)
 }
 
-func (repository *DentRepository) SetDB(db *postgres.DB) {
-	repository.db = db
-}
-
-func getTicInTx(headerID int64, tx *sqlx.Tx) (int64, error) {
-	var blockTimestamp int64
-	err := tx.Get(&blockTimestamp, `SELECT block_timestamp FROM public.headers WHERE id = $1;`, headerID)
-	if err != nil {
-		return 0, err
-	}
-
-	tic := blockTimestamp + constants.TTL
-	return tic, nil
+func (repo *DentRepository) SetDB(db *postgres.DB) {
+	repo.db = db
 }

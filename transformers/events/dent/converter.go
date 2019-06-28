@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -19,30 +19,29 @@ package dent
 import (
 	"encoding/json"
 	"errors"
-	"math/big"
 
-	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
+
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 )
 
 type DentConverter struct{}
 
-func NewDentConverter() DentConverter {
-	return DentConverter{}
-}
-
 func (c DentConverter) ToModels(ethLogs []types.Log) (result []interface{}, err error) {
 	for _, log := range ethLogs {
-		err := validateLog(log)
-		if err != nil {
-			return nil, err
+		validateErr := validateLog(log)
+		if validateErr != nil {
+			return nil, validateErr
 		}
 
 		bidId := log.Topics[2].Big()
-		lot := log.Topics[3].Big().String()
-		bidValue := getBidValue(log)
-		// TODO: verify guy is available on Topics[1] (looks like it may just be an int id)
-		guy := common.HexToAddress(log.Topics[1].Hex()).String()
+		lot := log.Topics[3].Big()
+		bidBytes, dataErr := shared.GetLogNoteArgumentAtIndex(2, log.Data)
+		if dataErr != nil {
+			return nil, dataErr
+		}
+		bid := shared.ConvertUint256HexToBigInt(hexutil.Encode(bidBytes))
 
 		logIndex := log.Index
 		transactionIndex := log.TxIndex
@@ -54,9 +53,9 @@ func (c DentConverter) ToModels(ethLogs []types.Log) (result []interface{}, err 
 
 		model := DentModel{
 			BidId:            bidId.String(),
-			Lot:              lot,
-			Bid:              bidValue,
-			Guy:              guy,
+			Lot:              lot.String(),
+			Bid:              bid.String(),
+			ContractAddress:  log.Address.Hex(),
 			LogIndex:         logIndex,
 			TransactionIndex: transactionIndex,
 			Raw:              raw,
@@ -76,13 +75,4 @@ func validateLog(ethLog types.Log) error {
 	}
 
 	return nil
-}
-
-func getBidValue(ethLog types.Log) string {
-	itemByteLength := 32
-	lastDataItemStartIndex := len(ethLog.Data) - itemByteLength
-	lastItem := ethLog.Data[lastDataItemStartIndex:]
-	lastValue := big.NewInt(0).SetBytes(lastItem)
-
-	return lastValue.String()
 }
