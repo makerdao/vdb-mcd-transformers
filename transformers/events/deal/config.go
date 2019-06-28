@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -25,12 +25,11 @@ import (
 
 func GetDealConfig() shared_t.EventTransformerConfig {
 	return shared_t.EventTransformerConfig{
-		TransformerName:   constants.DealLabel,
-		ContractAddresses: []string{constants.OldFlapperContractAddress(), constants.OldFlipperContractAddress(), constants.FlopperContractAddress()},
-		ContractAbi:       constants.OldFlipperABI(),
-		Topic:             constants.DealSignature(),
-		StartingBlockNumber: shared.MinInt64([]int64{
-			constants.OldFlapperDeploymentBlock(), constants.OldFlipperDeploymentBlock(), constants.FlopperDeploymentBlock()}),
-		EndingBlockNumber: -1,
+		TransformerName:     constants.DealLabel,
+		ContractAddresses:   append(constants.FlipperContractAddresses(), constants.FlapperContractAddress(), constants.FlopperContractAddress()),
+		ContractAbi:         constants.FlipperABI(),
+		Topic:               constants.DealSignature(),
+		StartingBlockNumber: shared.MinInt64([]int64{constants.FlapperDeploymentBlock(), constants.FlipperDeploymentBlock(), constants.FlopperDeploymentBlock()}),
+		EndingBlockNumber:   -1,
 	}
 }

@@ -1727,7 +1727,7 @@ CREATE TABLE maker.deal (
     id integer NOT NULL,
     header_id integer NOT NULL,
     bid_id numeric NOT NULL,
-    contract_address character varying,
+    contract_address text,
     log_idx integer NOT NULL,
     tx_idx integer NOT NULL,
     raw_log jsonb

@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -26,7 +26,7 @@ func catFileFlipMethod() string {
 func catFileVowMethod() string {
 	return getOverloadedFunctionSignature(CatABI(), "file", []string{"bytes32", "address"})
 }
-func dealMethod() string     { return getSolidityFunctionSignature(OldFlipperABI(), "deal") }
+func dealMethod() string     { return getSolidityFunctionSignature(FlipperABI(), "deal") }
 func dentMethod() string     { return getSolidityFunctionSignature(OldFlipperABI(), "dent") }
 func flapKickMethod() string { return getSolidityFunctionSignature(OldFlapperABI(), "Kick") }
 func flipKickMethod() string { return getSolidityFunctionSignature(OldFlipperABI(), "Kick") }
