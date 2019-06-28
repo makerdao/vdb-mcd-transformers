@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -27,15 +27,15 @@ type DealConverter struct{}
 
 func (DealConverter) ToModels(ethLogs []types.Log) (result []interface{}, err error) {
 	for _, log := range ethLogs {
-		err := validateLog(log)
-		if err != nil {
-			return nil, err
+		validationErr := validateLog(log)
+		if validationErr != nil {
+			return nil, validationErr
 		}
 
 		bidId := log.Topics[2].Big()
-		raw, err := json.Marshal(log)
-		if err != nil {
-			return nil, err
+		raw, jsonErr := json.Marshal(log)
+		if jsonErr != nil {
+			return nil, jsonErr
 		}
 
 		model := DealModel{
