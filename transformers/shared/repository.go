@@ -21,16 +21,13 @@ import (
 
 	"github.com/jmoiron/sqlx"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
-
-	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
 const (
-	getBlockTimestampQuery = `SELECT block_timestamp FROM public.headers WHERE id = $1;`
-	getIlkIdQuery          = `SELECT id FROM maker.ilks WHERE ilk = $1`
-	getUrnIdQuery          = `SELECT id FROM maker.urns WHERE identifier = $1 AND ilk_id = $2`
-	InsertIlkQuery         = `INSERT INTO maker.ilks (ilk, identifier) VALUES ($1, $2) RETURNING id`
-	InsertUrnQuery         = `INSERT INTO maker.urns (identifier, ilk_id) VALUES ($1, $2) RETURNING id`
+	getIlkIdQuery  = `SELECT id FROM maker.ilks WHERE ilk = $1`
+	getUrnIdQuery  = `SELECT id FROM maker.urns WHERE identifier = $1 AND ilk_id = $2`
+	InsertIlkQuery = `INSERT INTO maker.ilks (ilk, identifier) VALUES ($1, $2) RETURNING id`
+	InsertUrnQuery = `INSERT INTO maker.urns (identifier, ilk_id) VALUES ($1, $2) RETURNING id`
 )
 
 func GetOrCreateIlk(ilk string, db *postgres.DB) (int, error) {
@@ -53,17 +50,6 @@ func GetOrCreateIlkInTransaction(ilk string, tx *sqlx.Tx) (int, error) {
 		return ilkID, insertErr
 	}
 	return ilkID, err
-}
-
-func GetTicInTx(headerID int64, tx *sqlx.Tx) (int64, error) {
-	var blockTimestamp int64
-	err := tx.Get(&blockTimestamp, getBlockTimestampQuery, headerID)
-	if err != nil {
-		return 0, err
-	}
-
-	tic := blockTimestamp + constants.TTL
-	return tic, nil
 }
 
 func GetOrCreateUrn(guy string, ilkID int, db *postgres.DB) (int, error) {

@@ -25,10 +25,10 @@ import (
 func GetFlapKickConfig() shared_t.EventTransformerConfig {
 	return shared_t.EventTransformerConfig{
 		TransformerName:     constants.FlapKickLabel,
-		ContractAddresses:   []string{constants.FlapperContractAddress()},
-		ContractAbi:         constants.FlapperABI(),
+		ContractAddresses:   []string{constants.OldFlapperContractAddress()},
+		ContractAbi:         constants.OldFlapperABI(),
 		Topic:               constants.FlapKickSignature(),
-		StartingBlockNumber: constants.FlapperDeploymentBlock(),
+		StartingBlockNumber: constants.OldFlapperDeploymentBlock(),
 		EndingBlockNumber:   -1,
 	}
 }
