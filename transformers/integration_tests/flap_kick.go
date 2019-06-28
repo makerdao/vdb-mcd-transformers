@@ -50,8 +50,8 @@ var _ = Describe("FlapKick Transformer", func() {
 
 	flapKickConfig := transformer.EventTransformerConfig{
 		TransformerName:   mcdConstants.FlapKickLabel,
-		ContractAddresses: []string{mcdConstants.FlapperContractAddress()},
-		ContractAbi:       mcdConstants.FlapperABI(),
+		ContractAddresses: []string{mcdConstants.OldFlapperContractAddress()},
+		ContractAbi:       mcdConstants.OldFlapperABI(),
 		Topic:             mcdConstants.FlapKickSignature(),
 	}
 

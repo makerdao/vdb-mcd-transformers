@@ -24,7 +24,6 @@ import (
 	repo "github.com/vulcanize/vulcanizedb/libraries/shared/repository"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 
-	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
@@ -38,15 +37,6 @@ func (repository TendRepository) Create(headerID int64, models []interface{}) er
 		return dBaseErr
 	}
 
-	tic, getTicErr := shared.GetTicInTx(headerID, tx)
-	if getTicErr != nil {
-		rollbackErr := tx.Rollback()
-		if rollbackErr != nil {
-			log.Error("failed to rollback ", rollbackErr)
-		}
-		return getTicErr
-	}
-
 	for _, model := range models {
 		tend, ok := model.(TendModel)
 		if !ok {
@@ -58,10 +48,10 @@ func (repository TendRepository) Create(headerID int64, models []interface{}) er
 		}
 
 		_, execErr := tx.Exec(
-			`INSERT into maker.tend (header_id, bid_id, lot, bid, guy, tic, log_idx, tx_idx, raw_log)
-			VALUES($1, $2, $3::NUMERIC, $4::NUMERIC, $5, $6, $7, $8, $9)
-			ON CONFLICT (header_id, tx_idx, log_idx) DO UPDATE SET bid_id = $2, lot = $3, bid = $4, guy = $5, tic = $6, raw_log = $9;`,
-			headerID, tend.BidId, tend.Lot, tend.Bid, tend.Guy, tic, tend.LogIndex, tend.TransactionIndex, tend.Raw,
+			`INSERT into maker.tend (header_id, bid_id, lot, bid, lad, log_idx, tx_idx, raw_log)
+			VALUES($1, $2, $3::NUMERIC, $4::NUMERIC, $5, $6, $7, $8)
+			ON CONFLICT (header_id, tx_idx, log_idx) DO UPDATE SET bid_id = $2, lot = $3, bid = $4, lad = $5, raw_log = $8;`,
+			headerID, tend.BidId, tend.Lot, tend.Bid, tend.Lad, tend.LogIndex, tend.TransactionIndex, tend.Raw,
 		)
 
 		if execErr != nil {
