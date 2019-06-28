@@ -18,8 +18,6 @@ package test_data
 
 import (
 	"encoding/json"
-	"strconv"
-
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -30,38 +28,38 @@ import (
 )
 
 var (
-	DentData            = "0x0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000645ff3a382000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000098a7d9b8314c000000000000000000000000000000000000000000000000000029a2241af62c0000"
-	DentTransactionHash = "0x5a210319fcd31eea5959fedb4a1b20881c21a21976e23ff19dff3b44cc1c71e8"
-	dentBidId           = int64(1)
-	dentLot             = "11000000000000000000"
-	dentBid             = "3000000000000000000"
+	dentData            = "0x000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000e05ff3a382000000000000000000000000000000000000000000000000002386f26fc1000000000000000000000000000000000000000000000000000000470de4df820000000000000000000000000000000000000000000000000000006a94d74f43000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+	dentTransactionHash = "0x5a210319fcd31eea5959fedb4a1b20881c21a21976e23ff19dff3b44cc1c71e8"
+	dentBidId           = "10000000000000000"
+	dentLot             = "20000000000000000"
+	dentBid             = "30000000000000000"
 	dentGuy             = "0x64d922894153BE9EEf7b7218dc565d1D0Ce2a092"
-	dentRawJson, _      = json.Marshal(DentLog)
 )
 
-var DentLog = types.Log{
+var EthDentLog = types.Log{
 	Address: common.HexToAddress(constants.OldFlipperContractAddress()),
 	Topics: []common.Hash{
 		common.HexToHash(constants.DentSignature()),
 		common.HexToHash("0x00000000000000000000000064d922894153be9eef7b7218dc565d1d0ce2a092"),
-		common.HexToHash("0x0000000000000000000000000000000000000000000000000000000000000001"),
-		common.HexToHash("0x00000000000000000000000000000000000000000000000098a7d9b8314c0000"),
+		common.HexToHash("0x000000000000000000000000000000000000000000000000002386f26fc10000"),
+		common.HexToHash("0x00000000000000000000000000000000000000000000000000470de4df820000"),
 	},
-	Data:        hexutil.MustDecode(DentData),
+	Data:        hexutil.MustDecode(dentData),
 	BlockNumber: 15,
-	TxHash:      common.HexToHash(DentTransactionHash),
+	TxHash:      common.HexToHash(dentTransactionHash),
 	TxIndex:     5,
 	BlockHash:   fakes.FakeHash,
 	Index:       2,
 	Removed:     false,
 }
 
+var dentRawJson, _ = json.Marshal(EthDentLog)
 var DentModel = dent.DentModel{
-	BidId:            strconv.FormatInt(dentBidId, 10),
+	BidId:            dentBidId,
 	Lot:              dentLot,
 	Bid:              dentBid,
-	Guy:              dentGuy,
-	LogIndex:         DentLog.Index,
-	TransactionIndex: DentLog.TxIndex,
+	ContractAddress:  EthDentLog.Address.Hex(),
+	LogIndex:         EthDentLog.Index,
+	TransactionIndex: EthDentLog.TxIndex,
 	Raw:              dentRawJson,
 }

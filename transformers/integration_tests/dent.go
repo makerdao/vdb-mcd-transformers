@@ -1,3 +1,19 @@
+// VulcanizeDB
+// Copyright © 2019 Vulcanize
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 package integration_tests
 
 import (
@@ -37,8 +53,8 @@ var _ = XDescribe("Dent transformer", func() {
 
 		dentConfig = transformer.EventTransformerConfig{
 			TransformerName:   mcdConstants.DentLabel,
-			ContractAddresses: []string{mcdConstants.OldFlipperContractAddress(), mcdConstants.FlopperContractAddress()},
-			ContractAbi:       mcdConstants.OldFlipperABI(),
+			ContractAddresses: append(mcdConstants.FlipperContractAddresses(), mcdConstants.FlopperContractAddress()),
+			ContractAbi:       mcdConstants.FlipperABI(),
 			Topic:             mcdConstants.DentSignature(),
 		}
 
@@ -75,8 +91,8 @@ var _ = XDescribe("Dent transformer", func() {
 		Expect(len(dbResult)).To(Equal(1))
 		Expect(dbResult[0].Bid).To(Equal("10000000000000000000000"))
 		Expect(dbResult[0].BidId).To(Equal("2"))
-		Expect(dbResult[0].Guy).To(Equal("0x0000d8b4147eDa80Fec7122AE16DA2479Cbd7ffB"))
 		Expect(dbResult[0].Lot).To(Equal("1000000000000000000000000000"))
+		Expect(dbResult[0].ContractAddress).To(Equal(""))
 
 		var dbTic int64
 		err = db.Get(&dbTic, `SELECT tic FROM maker.dent`)
