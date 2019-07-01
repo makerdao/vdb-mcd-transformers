@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -20,14 +20,12 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"time"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/vulcanize/vulcanizedb/pkg/geth"
 
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	"github.com/vulcanize/vulcanizedb/pkg/geth"
 )
 
 type FlipKickConverter struct{}
@@ -48,6 +46,7 @@ func (FlipKickConverter) ToEntities(contractAbi string, ethLogs []types.Log) ([]
 		if err != nil {
 			return nil, err
 		}
+		entity.ContractAddress = address
 		entity.Raw = ethLog
 		entity.TransactionIndex = ethLog.TxIndex
 		entity.LogIndex = ethLog.Index
@@ -64,7 +63,6 @@ func (FlipKickConverter) ToModels(entities []interface{}) ([]interface{}, error)
 		if !ok {
 			return nil, fmt.Errorf("entity of type %T, not %T", entity, FlipKickEntity{})
 		}
-
 		if flipKickEntity.Id == nil {
 			return nil, errors.New("FlipKick log ID cannot be nil.")
 		}
@@ -72,11 +70,10 @@ func (FlipKickConverter) ToModels(entities []interface{}) ([]interface{}, error)
 		id := flipKickEntity.Id.String()
 		lot := shared.BigIntToString(flipKickEntity.Lot)
 		bid := shared.BigIntToString(flipKickEntity.Bid)
-		gal := flipKickEntity.Gal.String()
-		endValue := shared.BigIntToInt64(flipKickEntity.End)
-		end := time.Unix(endValue, 0)
-		urn := common.BytesToAddress(flipKickEntity.Urn[:common.AddressLength]).String()
 		tab := shared.BigIntToString(flipKickEntity.Tab)
+		usr := flipKickEntity.Usr.String()
+		gal := flipKickEntity.Gal.String()
+		contractAddress := flipKickEntity.ContractAddress.String()
 		rawLog, err := json.Marshal(flipKickEntity.Raw)
 		if err != nil {
 			return nil, err
@@ -86,10 +83,10 @@ func (FlipKickConverter) ToModels(entities []interface{}) ([]interface{}, error)
 			BidId:            id,
 			Lot:              lot,
 			Bid:              bid,
-			Gal:              gal,
-			End:              end,
-			Urn:              urn,
 			Tab:              tab,
+			Usr:              usr,
+			Gal:              gal,
+			ContractAddress:  contractAddress,
 			TransactionIndex: flipKickEntity.TransactionIndex,
 			LogIndex:         flipKickEntity.LogIndex,
 			Raw:              rawLog,

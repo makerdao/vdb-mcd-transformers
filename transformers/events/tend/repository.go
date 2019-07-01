@@ -48,10 +48,10 @@ func (repository TendRepository) Create(headerID int64, models []interface{}) er
 		}
 
 		_, execErr := tx.Exec(
-			`INSERT into maker.tend (header_id, bid_id, lot, bid, lad, log_idx, tx_idx, raw_log)
+			`INSERT into maker.tend (header_id, bid_id, lot, bid, contract_address, log_idx, tx_idx, raw_log)
 			VALUES($1, $2, $3::NUMERIC, $4::NUMERIC, $5, $6, $7, $8)
-			ON CONFLICT (header_id, tx_idx, log_idx) DO UPDATE SET bid_id = $2, lot = $3, bid = $4, lad = $5, raw_log = $8;`,
-			headerID, tend.BidId, tend.Lot, tend.Bid, tend.Lad, tend.LogIndex, tend.TransactionIndex, tend.Raw,
+			ON CONFLICT (header_id, tx_idx, log_idx) DO UPDATE SET bid_id = $2, lot = $3, bid = $4, contract_address = $5, raw_log = $8;`,
+			headerID, tend.BidId, tend.Lot, tend.Bid, tend.ContractAddress, tend.LogIndex, tend.TransactionIndex, tend.Raw,
 		)
 
 		if execErr != nil {

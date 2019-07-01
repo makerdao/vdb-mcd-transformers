@@ -59,7 +59,7 @@ var TendModel = tend.TendModel{
 	BidId:            strconv.FormatInt(tendBidId, 10),
 	Lot:              tendLot,
 	Bid:              tendBid,
-	Lad:              constants.FlapperContractAddress(),
+	ContractAddress:  constants.FlapperContractAddress(),
 	LogIndex:         TendLogNote.Index,
 	TransactionIndex: TendLogNote.TxIndex,
 	Raw:              rawTendLog,
