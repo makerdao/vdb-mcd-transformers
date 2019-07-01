@@ -54,7 +54,7 @@ var _ = Describe("Jug File Vow LogNoteTransformer", func() {
 	}
 
 	It("transforms JugFileVow log events", func() {
-		blockNumber := int64(11257173)
+		blockNumber := int64(11579860)
 		jugFileVowConfig.StartingBlockNumber = blockNumber
 		jugFileVowConfig.EndingBlockNumber = blockNumber
 
@@ -84,46 +84,7 @@ var _ = Describe("Jug File Vow LogNoteTransformer", func() {
 
 		Expect(len(dbResult)).To(Equal(1))
 		Expect(dbResult[0].What).To(Equal("vow"))
-		Expect(dbResult[0].Data).To(Equal("0x528C10D35D9612d1667D2D9b8915f80A573a800B"))
-	})
-
-	It("rechecks jug file vow event", func() {
-		blockNumber := int64(11257173)
-		jugFileVowConfig.StartingBlockNumber = blockNumber
-		jugFileVowConfig.EndingBlockNumber = blockNumber
-
-		header, err := persistHeader(db, blockNumber, blockChain)
-		Expect(err).NotTo(HaveOccurred())
-
-		initializer := shared.LogNoteTransformer{
-			Config:     jugFileVowConfig,
-			Converter:  &vow.JugFileVowConverter{},
-			Repository: &vow.JugFileVowRepository{},
-		}
-		tr := initializer.NewLogNoteTransformer(db)
-
-		f := fetcher.NewLogFetcher(blockChain)
-		logs, err := f.FetchLogs(
-			transformer.HexStringsToAddresses(jugFileVowConfig.ContractAddresses),
-			[]common.Hash{common.HexToHash(jugFileVowConfig.Topic)},
-			header)
-		Expect(err).NotTo(HaveOccurred())
-
-		err = tr.Execute(logs, header)
-		Expect(err).NotTo(HaveOccurred())
-
-		err = tr.Execute(logs, header)
-		Expect(err).NotTo(HaveOccurred())
-
-		var headerID int64
-		err = db.Get(&headerID, `SELECT id FROM public.headers WHERE block_number = $1`, blockNumber)
-		Expect(err).NotTo(HaveOccurred())
-
-		var jugFileVowChecked []int
-		err = db.Select(&jugFileVowChecked, `SELECT jug_file_vow_checked FROM public.checked_headers WHERE header_id = $1`, headerID)
-		Expect(err).NotTo(HaveOccurred())
-
-		Expect(jugFileVowChecked[0]).To(Equal(2))
+		Expect(dbResult[0].Data).To(Equal("0xdbF8E0d733bB42Ac3A2016d7e579824a8903E10C"))
 	})
 })
 

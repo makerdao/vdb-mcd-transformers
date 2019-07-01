@@ -56,7 +56,7 @@ var _ = Describe("Jug File Ilk LogNoteTransformer", func() {
 	}
 
 	It("transforms jug file ilk log events", func() {
-		blockNumber := int64(11257460)
+		blockNumber := int64(11580105)
 		jugFileIlkConfig.StartingBlockNumber = blockNumber
 		jugFileIlkConfig.EndingBlockNumber = blockNumber
 
@@ -85,50 +85,11 @@ var _ = Describe("Jug File Ilk LogNoteTransformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))
-		ilkID, err := shared.GetOrCreateIlk("0x434f4c352d410000000000000000000000000000000000000000000000000000", db)
+		ilkID, err := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(dbResult[0].Ilk).To(Equal(strconv.Itoa(ilkID)))
 		Expect(dbResult[0].What).To(Equal("duty"))
-		Expect(dbResult[0].Data).To(Equal("1000000000565700093016775172"))
-	})
-
-	It("rechecks jug file ilk event", func() {
-		blockNumber := int64(11257460)
-		jugFileIlkConfig.StartingBlockNumber = blockNumber
-		jugFileIlkConfig.EndingBlockNumber = blockNumber
-
-		header, err := persistHeader(db, blockNumber, blockChain)
-		Expect(err).NotTo(HaveOccurred())
-
-		initializer := shared.LogNoteTransformer{
-			Config:     jugFileIlkConfig,
-			Converter:  &ilk.JugFileIlkConverter{},
-			Repository: &ilk.JugFileIlkRepository{},
-		}
-		tr := initializer.NewLogNoteTransformer(db)
-
-		f := fetcher.NewLogFetcher(blockChain)
-		logs, err := f.FetchLogs(
-			transformer.HexStringsToAddresses(jugFileIlkConfig.ContractAddresses),
-			[]common.Hash{common.HexToHash(jugFileIlkConfig.Topic)},
-			header)
-		Expect(err).NotTo(HaveOccurred())
-
-		err = tr.Execute(logs, header)
-		Expect(err).NotTo(HaveOccurred())
-
-		err = tr.Execute(logs, header)
-		Expect(err).NotTo(HaveOccurred())
-
-		var headerID int64
-		err = db.Get(&headerID, `SELECT id FROM public.headers WHERE block_number = $1`, blockNumber)
-		Expect(err).NotTo(HaveOccurred())
-
-		var jugFileIlkChecked []int
-		err = db.Select(&jugFileIlkChecked, `SELECT jug_file_ilk_checked FROM public.checked_headers WHERE header_id = $1`, headerID)
-		Expect(err).NotTo(HaveOccurred())
-
-		Expect(jugFileIlkChecked[0]).To(Equal(2))
+		Expect(dbResult[0].Data).To(Equal("1000000000782997609082909351"))
 	})
 })
 
