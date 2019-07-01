@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -25,10 +25,10 @@ import (
 func GetFlipKickConfig() shared_t.EventTransformerConfig {
 	return shared_t.EventTransformerConfig{
 		TransformerName:     constants.FlipKickLabel,
-		ContractAddresses:   []string{constants.OldFlipperContractAddress()},
-		ContractAbi:         constants.OldFlipperABI(),
+		ContractAddresses:   constants.FlipperContractAddresses(),
+		ContractAbi:         constants.FlipperABI(),
 		Topic:               constants.FlipKickSignature(),
-		StartingBlockNumber: constants.OldFlipperDeploymentBlock(),
+		StartingBlockNumber: constants.FlipperDeploymentBlock(),
 		EndingBlockNumber:   -1,
 	}
 }
