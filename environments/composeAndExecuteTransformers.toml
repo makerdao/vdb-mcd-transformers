@@ -50,7 +50,8 @@
         "vat_suck",
         "vow_fess",
         "vow_file",
-        "vow_flog"
+        "vow_flog",
+        "yank"
     ]
 
     [exporter.cat]
@@ -281,6 +282,11 @@
         repository = "github.com/vulcanize/mcd_transformers"
         migrations = "db/migrations"
         rank = "0"
+    [exporter.yank]
+        path = "transformers/events/yank/initializer"
+        type = "eth_event"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
 
 [filesystem]
     storageDiffsPath = "INSERT-PATH-TO-STORAGE-DIFFS"
