@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -49,3 +49,4 @@ func VatSuckSignature() string            { return getLogNoteTopicZero(vatSuckMe
 func VowFessSignature() string            { return getLogNoteTopicZero(vowFessMethod()) }
 func VowFileSignature() string            { return getLogNoteTopicZero(vowFileMethod()) }
 func VowFlogSignature() string            { return getLogNoteTopicZero(vowFlogMethod()) }
+func YankSignature() string               { return getLogNoteTopicZero(yankMethod()) }
