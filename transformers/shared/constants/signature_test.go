@@ -47,7 +47,7 @@ var _ = Describe("Signature constants", func() {
 	})
 
 	It("generates flap kick signature", func() {
-		Expect(FlapKickSignature()).To(Equal("0xefa52d9342a199cb30efd2692463f2c2bef63cd7186b50382d4fb94ad207880e"))
+		Expect(FlapKickSignature()).To(Equal("0x7e8881001566f9f89aedb9c5dc3d856a2b81e5235a8196413ed484be91cc0df6"))
 	})
 
 	It("generates flip kick signature", func() {

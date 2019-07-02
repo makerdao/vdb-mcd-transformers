@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -19,7 +19,6 @@ package flap_kick_test
 import (
 	"encoding/json"
 	"math/big"
-	"time"
 
 	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"
@@ -35,7 +34,7 @@ var _ = Describe("Flap kick converter", func() {
 
 	Describe("ToEntity", func() {
 		It("converts an Eth Log to a FlapKickEntity", func() {
-			entities, err := converter.ToEntities(constants.OldFlapperABI(), []types.Log{test_data.EthFlapKickLog})
+			entities, err := converter.ToEntities(constants.FlapperABI(), []types.Log{test_data.EthFlapKickLog})
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(entities)).To(Equal(1))
@@ -50,10 +49,6 @@ var _ = Describe("Flap kick converter", func() {
 	})
 
 	Describe("ToModel", func() {
-
-		BeforeEach(func() {
-		})
-
 		It("converts an Entity to a Model", func() {
 			models, err := converter.ToModels([]interface{}{test_data.FlapKickEntity})
 
@@ -65,7 +60,6 @@ var _ = Describe("Flap kick converter", func() {
 		It("handles nil values", func() {
 			emptyAddressHex := "0x0000000000000000000000000000000000000000"
 			emptyString := ""
-			emptyTime := time.Unix(0, 0)
 			emptyEntity := flap_kick.FlapKickEntity{}
 			emptyEntity.Id = big.NewInt(1)
 			emptyRawLogJson, err := json.Marshal(types.Log{})
@@ -80,7 +74,7 @@ var _ = Describe("Flap kick converter", func() {
 			Expect(model.Lot).To(Equal(emptyString))
 			Expect(model.Bid).To(Equal(emptyString))
 			Expect(model.Gal).To(Equal(emptyAddressHex))
-			Expect(model.End).To(Equal(emptyTime))
+			Expect(model.ContractAddress).To(Equal(emptyAddressHex))
 			Expect(model.Raw).To(Equal(emptyRawLogJson))
 		})
 

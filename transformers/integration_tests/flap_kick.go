@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -17,8 +17,6 @@
 package integration_tests
 
 import (
-	"time"
-
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -33,7 +31,7 @@ import (
 	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
-var _ = Describe("FlapKick Transformer", func() {
+var _ = XDescribe("FlapKick Transformer", func() {
 	var (
 		db         *postgres.DB
 		blockChain core.BlockChain
@@ -50,8 +48,8 @@ var _ = Describe("FlapKick Transformer", func() {
 
 	flapKickConfig := transformer.EventTransformerConfig{
 		TransformerName:   mcdConstants.FlapKickLabel,
-		ContractAddresses: []string{mcdConstants.OldFlapperContractAddress()},
-		ContractAbi:       mcdConstants.OldFlapperABI(),
+		ContractAddresses: []string{mcdConstants.FlapperContractAddress()},
+		ContractAbi:       mcdConstants.FlapperABI(),
 		Topic:             mcdConstants.FlapKickSignature(),
 	}
 
@@ -86,7 +84,7 @@ var _ = Describe("FlapKick Transformer", func() {
 		Expect(len(dbResult)).To(Equal(1))
 		Expect(dbResult[0].Bid).To(Equal("0"))
 		Expect(dbResult[0].BidId).To(Equal("1"))
-		Expect(dbResult[0].End.Equal(time.Unix(1539163860, 0))).To(BeTrue())
+		Expect(dbResult[0].ContractAddress).To(Equal(""))
 		Expect(dbResult[0].Gal).To(Equal("0x0000d8b4147eDa80Fec7122AE16DA2479Cbd7ffB"))
 		Expect(dbResult[0].Lot).To(Equal("1000000000000000000"))
 	})

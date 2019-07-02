@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -20,36 +20,37 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"time"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/vulcanize/vulcanizedb/pkg/geth"
 
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	"github.com/vulcanize/vulcanizedb/pkg/geth"
 )
 
-type FlapKickConverter struct {
-}
+type FlapKickConverter struct{}
 
 func (FlapKickConverter) ToEntities(contractAbi string, ethLogs []types.Log) ([]interface{}, error) {
 	var entities []interface{}
+	abi, parseErr := geth.ParseAbi(contractAbi)
+	if parseErr != nil {
+		return nil, parseErr
+	}
+
 	for _, ethLog := range ethLogs {
-		entity := &FlapKickEntity{}
-		address := ethLog.Address
-		abi, err := geth.ParseAbi(contractAbi)
-		if err != nil {
-			return nil, err
+		contract := bind.NewBoundContract(ethLog.Address, abi, nil, nil, nil)
+
+		var entity FlapKickEntity
+		unpackErr := contract.UnpackLog(&entity, "Kick", ethLog)
+		if unpackErr != nil {
+			return nil, unpackErr
 		}
-		contract := bind.NewBoundContract(address, abi, nil, nil, nil)
-		err = contract.UnpackLog(entity, "Kick", ethLog)
-		if err != nil {
-			return nil, err
-		}
+
 		entity.Raw = ethLog
 		entity.TransactionIndex = ethLog.TxIndex
 		entity.LogIndex = ethLog.Index
-		entities = append(entities, *entity)
+
+		entities = append(entities, entity)
 	}
 	return entities, nil
 }
@@ -63,28 +64,22 @@ func (FlapKickConverter) ToModels(entities []interface{}) ([]interface{}, error)
 		}
 
 		if flapKickEntity.Id == nil {
-			return nil, errors.New("FlapKick log ID cannot be nil.")
+			return nil, errors.New("flapKick log ID cannot be nil")
 		}
 
-		id := flapKickEntity.Id.String()
-		lot := shared.BigIntToString(flapKickEntity.Lot)
-		bid := shared.BigIntToString(flapKickEntity.Bid)
-		gal := flapKickEntity.Gal.String()
-		endValue := shared.BigIntToInt64(flapKickEntity.End)
-		end := time.Unix(endValue, 0)
 		rawLog, err := json.Marshal(flapKickEntity.Raw)
 		if err != nil {
 			return nil, err
 		}
 
 		model := FlapKickModel{
-			BidId:            id,
-			Lot:              lot,
-			Bid:              bid,
-			Gal:              gal,
-			End:              end,
-			TransactionIndex: flapKickEntity.TransactionIndex,
+			BidId:            flapKickEntity.Id.String(),
+			Lot:              shared.BigIntToString(flapKickEntity.Lot),
+			Bid:              shared.BigIntToString(flapKickEntity.Bid),
+			Gal:              flapKickEntity.Gal.String(),
+			ContractAddress:  flapKickEntity.Raw.Address.Hex(),
 			LogIndex:         flapKickEntity.LogIndex,
+			TransactionIndex: flapKickEntity.TransactionIndex,
 			Raw:              rawLog,
 		}
 		models = append(models, model)

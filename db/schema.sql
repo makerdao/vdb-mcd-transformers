@@ -1802,7 +1802,7 @@ CREATE TABLE maker.flap_kick (
     lot numeric NOT NULL,
     bid numeric NOT NULL,
     gal text,
-    "end" timestamp with time zone,
+    contract_address text,
     tx_idx integer NOT NULL,
     log_idx integer NOT NULL,
     raw_log jsonb
