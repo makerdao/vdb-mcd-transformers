@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -18,7 +18,6 @@ package flop_kick_test
 
 import (
 	"encoding/json"
-	"time"
 
 	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"
@@ -30,19 +29,19 @@ import (
 )
 
 var _ = Describe("FlopKick Converter", func() {
+	var converter flop_kick.FlopKickConverter
+
 	Describe("ToEntities", func() {
 		It("converts a log to a FlopKick entity", func() {
-			converter := flop_kick.FlopKickConverter{}
-			entities, err := converter.ToEntities(constants.FlopperABI(), []types.Log{test_data.FlopKickLog})
+			entities, err := converter.ToEntities(constants.FlopperABI(), []types.Log{test_data.EthFlopKickLog})
 
 			Expect(err).NotTo(HaveOccurred())
-			entity := entities[0]
-			Expect(entity).To(Equal(test_data.FlopKickEntity))
+			Expect(len(entities)).To(Equal(1))
+			Expect(entities[0]).To(Equal(test_data.FlopKickEntity))
 		})
 
 		It("returns an error if converting the log to an entity fails", func() {
-			converter := flop_kick.FlopKickConverter{}
-			entities, err := converter.ToEntities("error abi", []types.Log{test_data.FlopKickLog})
+			entities, err := converter.ToEntities("error abi", []types.Log{test_data.EthFlopKickLog})
 
 			Expect(err).To(HaveOccurred())
 			Expect(entities).To(BeNil())
@@ -50,13 +49,7 @@ var _ = Describe("FlopKick Converter", func() {
 	})
 
 	Describe("ToModels", func() {
-		var emptyAddressHex = "0x0000000000000000000000000000000000000000"
-		var emptyString = ""
-		var emptyTime = time.Unix(0, 0)
-		var emptyEntity = flop_kick.Entity{}
-
 		It("converts an Entity to a Model", func() {
-			converter := flop_kick.FlopKickConverter{}
 			models, err := converter.ToModels([]interface{}{test_data.FlopKickEntity})
 
 			Expect(err).NotTo(HaveOccurred())
@@ -64,7 +57,6 @@ var _ = Describe("FlopKick Converter", func() {
 		})
 
 		It("returns error if wrong entity", func() {
-			converter := flop_kick.FlopKickConverter{}
 			_, err := converter.ToModels([]interface{}{test_data.WrongEntity{}})
 
 			Expect(err).To(HaveOccurred())
@@ -72,23 +64,26 @@ var _ = Describe("FlopKick Converter", func() {
 		})
 
 		It("handles nil values", func() {
+			emptyAddressHex := "0x0000000000000000000000000000000000000000"
+			emptyString := ""
+			emptyEntity := flop_kick.Entity{}
 			emptyLog, err := json.Marshal(types.Log{})
-
-			converter := flop_kick.FlopKickConverter{}
 			expectedModel := flop_kick.Model{
 				BidId:            emptyString,
 				Lot:              emptyString,
 				Bid:              emptyString,
 				Gal:              emptyAddressHex,
-				End:              emptyTime,
+				ContractAddress:  emptyAddressHex,
 				TransactionIndex: 0,
+				LogIndex:         0,
 				Raw:              emptyLog,
 			}
 
 			models, err := converter.ToModels([]interface{}{emptyEntity})
-			model := models[0]
+
 			Expect(err).NotTo(HaveOccurred())
-			Expect(model).To(Equal(expectedModel))
+			Expect(len(models)).To(Equal(1))
+			Expect(models[0]).To(Equal(expectedModel))
 		})
 	})
 })

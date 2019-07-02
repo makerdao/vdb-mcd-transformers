@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -25,6 +25,6 @@ import (
 
 var EventTransformerInitializer transformer.EventTransformerInitializer = event.Transformer{
 	Config:     flop_kick.GetFlopKickConfig(),
-	Converter:  &flop_kick.FlopKickConverter{},
+	Converter:  flop_kick.FlopKickConverter{},
 	Repository: &flop_kick.FlopKickRepository{},
 }.NewTransformer

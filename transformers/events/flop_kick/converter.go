@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -19,13 +19,12 @@ package flop_kick
 import (
 	"encoding/json"
 	"fmt"
-	"time"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/vulcanize/vulcanizedb/pkg/geth"
 
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	"github.com/vulcanize/vulcanizedb/pkg/geth"
 )
 
 type FlopKickConverter struct{}
@@ -62,7 +61,6 @@ func (FlopKickConverter) ToModels(entities []interface{}) ([]interface{}, error)
 			return nil, fmt.Errorf("entity of type %T, not %T", entity, Entity{})
 		}
 
-		endValue := shared.BigIntToInt64(flopKickEntity.End)
 		rawLogJson, err := json.Marshal(flopKickEntity.Raw)
 		if err != nil {
 			return nil, err
@@ -73,7 +71,7 @@ func (FlopKickConverter) ToModels(entities []interface{}) ([]interface{}, error)
 			Lot:              shared.BigIntToString(flopKickEntity.Lot),
 			Bid:              shared.BigIntToString(flopKickEntity.Bid),
 			Gal:              flopKickEntity.Gal.String(),
-			End:              time.Unix(endValue, 0),
+			ContractAddress:  flopKickEntity.Raw.Address.Hex(),
 			TransactionIndex: flopKickEntity.TransactionIndex,
 			LogIndex:         flopKickEntity.LogIndex,
 			Raw:              rawLogJson,

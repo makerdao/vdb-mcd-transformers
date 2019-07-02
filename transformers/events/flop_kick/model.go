@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -16,14 +16,12 @@
 
 package flop_kick
 
-import "time"
-
 type Model struct {
 	BidId            string `db:"bid_id"`
 	Lot              string
 	Bid              string
 	Gal              string
-	End              time.Time
+	ContractAddress  string `db:"contract_address"`
 	TransactionIndex uint   `db:"tx_idx"`
 	LogIndex         uint   `db:"log_idx"`
 	Raw              []byte `db:"raw_log"`
