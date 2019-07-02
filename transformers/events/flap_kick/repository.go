@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -27,6 +27,12 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
+const InsertFlapKickQuery = `INSERT into maker.flap_kick
+		(header_id, bid_id, lot, bid, gal, contract_address, tx_idx, log_idx, raw_log)
+		VALUES($1, $2::NUMERIC, $3::NUMERIC, $4::NUMERIC, $5, $6, $7, $8, $9)
+		ON CONFLICT (header_id, tx_idx, log_idx)
+		DO UPDATE SET bid_id = $2, lot = $3, bid = $4, gal = $5, contract_address = $6, raw_log = $9;`
+
 type FlapKickRepository struct {
 	db *postgres.DB
 }
@@ -46,12 +52,9 @@ func (repository *FlapKickRepository) Create(headerID int64, models []interface{
 			return fmt.Errorf("model of type %T, not %T", model, FlapKickModel{})
 		}
 
-		_, execErr := tx.Exec(
-			`INSERT into maker.flap_kick (header_id, bid_id, lot, bid, gal, "end", tx_idx, log_idx, raw_log)
-        VALUES($1, $2::NUMERIC, $3::NUMERIC, $4::NUMERIC, $5, $6, $7, $8, $9)
-		ON CONFLICT (header_id, tx_idx, log_idx) DO UPDATE SET bid_id = $2, lot = $3, bid = $4, gal = $5, "end" = $6, raw_log = $9;`,
-			headerID, flapKickModel.BidId, flapKickModel.Lot, flapKickModel.Bid, flapKickModel.Gal, flapKickModel.End, flapKickModel.TransactionIndex, flapKickModel.LogIndex, flapKickModel.Raw,
-		)
+		_, execErr := tx.Exec(InsertFlapKickQuery, headerID, flapKickModel.BidId, flapKickModel.Lot, flapKickModel.Bid,
+			flapKickModel.Gal, flapKickModel.ContractAddress, flapKickModel.TransactionIndex, flapKickModel.LogIndex,
+			flapKickModel.Raw)
 		if execErr != nil {
 			rollbackErr := tx.Rollback()
 			if rollbackErr != nil {

@@ -53,7 +53,7 @@ var _ = XDescribe("Deal transformer", func() {
 		dealConfig = transformer.EventTransformerConfig{
 			TransformerName: mcdConstants.DealLabel,
 			ContractAddresses: []string{
-				mcdConstants.OldFlapperContractAddress(),
+				mcdConstants.FlapperContractAddress(),
 				mcdConstants.OldFlipperContractAddress(),
 				mcdConstants.FlopperContractAddress(),
 			},
@@ -122,7 +122,7 @@ var _ = XDescribe("Deal transformer", func() {
 
 		Expect(len(dbResult)).To(Equal(1))
 		Expect(dbResult[0].BidId).To(Equal("1"))
-		Expect(dbResult[0].ContractAddress).To(Equal(mcdConstants.OldFlapperContractAddress()))
+		Expect(dbResult[0].ContractAddress).To(Equal(mcdConstants.FlapperContractAddress()))
 	})
 })
 
