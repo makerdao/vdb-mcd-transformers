@@ -1839,10 +1839,10 @@ CREATE TABLE maker.flip_kick (
     bid_id numeric NOT NULL,
     lot numeric,
     bid numeric,
-    gal text,
-    "end" timestamp with time zone,
-    urn text,
     tab numeric,
+    usr text,
+    gal text,
+    contract_address text,
     tx_idx integer NOT NULL,
     log_idx integer NOT NULL,
     raw_log jsonb
@@ -2528,7 +2528,7 @@ CREATE TABLE maker.tend (
     bid_id numeric NOT NULL,
     lot numeric,
     bid numeric,
-    lad text,
+    contract_address text,
     log_idx integer NOT NULL,
     tx_idx integer NOT NULL,
     raw_log jsonb

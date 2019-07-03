@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -27,10 +27,10 @@ type FlipKickEntity struct {
 	Id               *big.Int
 	Lot              *big.Int
 	Bid              *big.Int
-	Gal              common.Address
-	End              *big.Int
-	Urn              [32]byte
 	Tab              *big.Int
+	Usr              common.Address
+	Gal              common.Address
+	ContractAddress  common.Address
 	TransactionIndex uint
 	LogIndex         uint
 	Raw              types.Log

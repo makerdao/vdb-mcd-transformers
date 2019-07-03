@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -72,10 +72,10 @@ var _ = Describe("FlipKick Repository", func() {
 			Expect(dbResult.BidId).To(Equal(test_data.FlipKickModel.BidId))
 			Expect(dbResult.Lot).To(Equal(test_data.FlipKickModel.Lot))
 			Expect(dbResult.Bid).To(Equal(test_data.FlipKickModel.Bid))
-			Expect(dbResult.Gal).To(Equal(test_data.FlipKickModel.Gal))
-			Expect(dbResult.End.Equal(test_data.FlipKickModel.End)).To(BeTrue())
-			Expect(dbResult.Urn).To(Equal(test_data.FlipKickModel.Urn))
 			Expect(dbResult.Tab).To(Equal(test_data.FlipKickModel.Tab))
+			Expect(dbResult.Usr).To(Equal(test_data.FlipKickModel.Usr))
+			Expect(dbResult.Gal).To(Equal(test_data.FlipKickModel.Gal))
+			Expect(dbResult.ContractAddress).To(Equal(test_data.FlipKickModel.ContractAddress))
 			Expect(dbResult.TransactionIndex).To(Equal(test_data.FlipKickModel.TransactionIndex))
 			Expect(dbResult.LogIndex).To(Equal(test_data.FlipKickModel.LogIndex))
 			Expect(dbResult.Raw).To(MatchJSON(test_data.FlipKickModel.Raw))
