@@ -42,7 +42,7 @@ func (TendConverter) ToModels(ethLogs []types.Log) (results []interface{}, err e
 			return nil, bidErr
 		}
 		bidValue := shared.ConvertUint256HexToBigInt(hexutil.Encode(rawBid)).String()
-		lad := ethLog.Address
+		contractAddress := ethLog.Address
 		logIndex := ethLog.Index
 		transactionIndex := ethLog.TxIndex
 
@@ -55,7 +55,7 @@ func (TendConverter) ToModels(ethLogs []types.Log) (results []interface{}, err e
 			BidId:            bidId.String(),
 			Lot:              lot,
 			Bid:              bidValue,
-			Lad:              lad.Hex(),
+			ContractAddress:  contractAddress.Hex(),
 			LogIndex:         logIndex,
 			TransactionIndex: transactionIndex,
 			Raw:              rawLog,

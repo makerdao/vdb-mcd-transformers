@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -19,7 +19,7 @@ package flip_kick_test
 import (
 	"encoding/json"
 	"math/big"
-	"time"
+	"strings"
 
 	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"
@@ -35,7 +35,7 @@ var _ = Describe("FlipKick Converter", func() {
 
 	Describe("ToEntity", func() {
 		It("converts an Eth Log to a FlipKickEntity", func() {
-			entities, err := converter.ToEntities(constants.OldFlipperABI(), []types.Log{test_data.EthFlipKickLog})
+			entities, err := converter.ToEntities(constants.FlipperABI(), []types.Log{test_data.EthFlipKickLog})
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(entities)).To(Equal(1))
@@ -53,7 +53,6 @@ var _ = Describe("FlipKick Converter", func() {
 	Describe("ToModel", func() {
 		var emptyAddressHex = "0x0000000000000000000000000000000000000000"
 		var emptyString = ""
-		var emptyTime = time.Unix(0, 0)
 		var emptyEntity = flip_kick.FlipKickEntity{}
 		var emptyRawLog []byte
 		var err error
@@ -69,7 +68,7 @@ var _ = Describe("FlipKick Converter", func() {
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(models)).To(Equal(1))
-			Expect(models[0]).To(Equal(test_data.FlipKickModel))
+			expectEqualModels(models[0], test_data.FlipKickModel)
 		})
 
 		It("handles nil values", func() {
@@ -81,10 +80,10 @@ var _ = Describe("FlipKick Converter", func() {
 			Expect(model.BidId).To(Equal("1"))
 			Expect(model.Lot).To(Equal(emptyString))
 			Expect(model.Bid).To(Equal(emptyString))
-			Expect(model.Gal).To(Equal(emptyAddressHex))
-			Expect(model.End).To(Equal(emptyTime))
-			Expect(model.Urn).To(Equal(emptyAddressHex))
 			Expect(model.Tab).To(Equal(emptyString))
+			Expect(model.Usr).To(Equal(emptyAddressHex))
+			Expect(model.Gal).To(Equal(emptyAddressHex))
+			Expect(model.ContractAddress).To(Equal(emptyAddressHex))
 			Expect(model.Raw).To(Equal(emptyRawLog))
 		})
 
@@ -103,3 +102,17 @@ var _ = Describe("FlipKick Converter", func() {
 		})
 	})
 })
+
+func expectEqualModels(actual interface{}, expected flip_kick.FlipKickModel) {
+	actualFlipKick := actual.(flip_kick.FlipKickModel)
+	Expect(actualFlipKick.BidId).To(Equal(expected.BidId))
+	Expect(actualFlipKick.Lot).To(Equal(expected.Lot))
+	Expect(actualFlipKick.Bid).To(Equal(expected.Bid))
+	Expect(actualFlipKick.Tab).To(Equal(expected.Tab))
+	Expect(actualFlipKick.Usr).To(Equal(expected.Usr))
+	Expect(actualFlipKick.Gal).To(Equal(expected.Gal))
+	Expect(strings.ToLower(actualFlipKick.ContractAddress)).To(Equal(strings.ToLower(expected.ContractAddress)))
+	Expect(actualFlipKick.TransactionIndex).To(Equal(expected.TransactionIndex))
+	Expect(actualFlipKick.LogIndex).To(Equal(expected.LogIndex))
+	Expect(actualFlipKick.Raw).To(Equal(expected.Raw))
+}

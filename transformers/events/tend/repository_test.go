@@ -71,13 +71,13 @@ var _ = Describe("TendRepository", func() {
 			Expect(count).To(Equal(1))
 
 			dbResult := tend.TendModel{}
-			err = db.Get(&dbResult, `SELECT bid_id, lot, bid, lad, log_idx, tx_idx, raw_log FROM maker.tend WHERE header_id = $1`, headerID)
+			err = db.Get(&dbResult, `SELECT bid_id, lot, bid, contract_address, log_idx, tx_idx, raw_log FROM maker.tend WHERE header_id = $1`, headerID)
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(dbResult.BidId).To(Equal(test_data.TendModel.BidId))
 			Expect(dbResult.Lot).To(Equal(test_data.TendModel.Lot))
 			Expect(dbResult.Bid).To(Equal(test_data.TendModel.Bid))
-			Expect(dbResult.Lad).To(Equal(test_data.TendModel.Lad))
+			Expect(dbResult.ContractAddress).To(Equal(test_data.TendModel.ContractAddress))
 			Expect(dbResult.LogIndex).To(Equal(test_data.TendModel.LogIndex))
 			Expect(dbResult.TransactionIndex).To(Equal(test_data.TendModel.TransactionIndex))
 			Expect(dbResult.Raw).To(MatchJSON(test_data.TendModel.Raw))
