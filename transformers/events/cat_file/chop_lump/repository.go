@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -17,10 +17,6 @@
 package chop_lump
 
 import (
-	"fmt"
-
-	log "github.com/sirupsen/logrus"
-
 	repo "github.com/vulcanize/vulcanizedb/libraries/shared/repository"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 
@@ -32,55 +28,8 @@ type CatFileChopLumpRepository struct {
 	db *postgres.DB
 }
 
-func (repository CatFileChopLumpRepository) Create(headerID int64, models []interface{}) error {
-	tx, dBaseErr := repository.db.Beginx()
-	if dBaseErr != nil {
-		return dBaseErr
-	}
-
-	for _, model := range models {
-		chopLump, ok := model.(CatFileChopLumpModel)
-		if !ok {
-			rollbackErr := tx.Rollback()
-			if rollbackErr != nil {
-				log.Error("failed to rollback ", rollbackErr)
-			}
-			return fmt.Errorf("model of type %T, not %T", model, CatFileChopLumpModel{})
-		}
-
-		ilkID, ilkErr := shared.GetOrCreateIlkInTransaction(chopLump.Ilk, tx)
-		if ilkErr != nil {
-			rollbackErr := tx.Rollback()
-			if rollbackErr != nil {
-				log.Error("failed to rollback ", rollbackErr)
-			}
-			return ilkErr
-		}
-
-		_, execErr := tx.Exec(
-			`INSERT into maker.cat_file_chop_lump (header_id, ilk_id, what, data, tx_idx, log_idx, raw_log)
-			VALUES($1, $2, $3, $4::NUMERIC, $5, $6, $7)
-			ON CONFLICT (header_id, tx_idx, log_idx) DO UPDATE SET ilk_id = $2, what = $3, data = $4, raw_log = $7;`,
-			headerID, ilkID, chopLump.What, chopLump.Data, chopLump.TransactionIndex, chopLump.LogIndex, chopLump.Raw,
-		)
-		if execErr != nil {
-			rollbackErr := tx.Rollback()
-			if rollbackErr != nil {
-				log.Error("failed to rollback ", rollbackErr)
-			}
-			return execErr
-		}
-	}
-
-	checkHeaderErr := repo.MarkHeaderCheckedInTransaction(headerID, tx, constants.CatFileChopLumpChecked)
-	if checkHeaderErr != nil {
-		rollbackErr := tx.Rollback()
-		if rollbackErr != nil {
-			log.Error("failed to rollback ", rollbackErr)
-		}
-		return checkHeaderErr
-	}
-	return tx.Commit()
+func (repository CatFileChopLumpRepository) Create(headerID int64, models []shared.InsertionModel) error {
+	return shared.Create(headerID, models, repository.db)
 }
 
 func (repository CatFileChopLumpRepository) MarkHeaderChecked(headerID int64) error {

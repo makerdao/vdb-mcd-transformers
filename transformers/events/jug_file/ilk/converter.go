@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -19,18 +19,19 @@ package ilk
 import (
 	"encoding/json"
 	"errors"
+
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
-
 	"github.com/vulcanize/vulcanizedb/libraries/shared/constants"
 
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	constants2 "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
 type JugFileIlkConverter struct{}
 
-func (JugFileIlkConverter) ToModels(ethLogs []types.Log) ([]interface{}, error) {
-	var models []interface{}
+func (JugFileIlkConverter) ToModels(ethLogs []types.Log) ([]shared.InsertionModel, error) {
+	var models []shared.InsertionModel
 	for _, ethLog := range ethLogs {
 		verifyErr := verifyLog(ethLog)
 		if verifyErr != nil {
@@ -49,13 +50,21 @@ func (JugFileIlkConverter) ToModels(ethLogs []types.Log) ([]interface{}, error) 
 			return nil, marshalErr
 		}
 
-		model := JugFileIlkModel{
-			Ilk:              ilk,
-			What:             what,
-			Data:             data.String(),
-			LogIndex:         ethLog.Index,
-			TransactionIndex: ethLog.TxIndex,
-			Raw:              raw,
+		model := shared.InsertionModel{
+			TableName: "jug_file_ilk",
+			OrderedColumns: []string{
+				"header_id", string(constants2.IlkFK), "what", "data", "log_idx", "tx_idx", "raw_log",
+			},
+			ColumnValues: shared.ColumnValues{
+				"what":    what,
+				"data":    data.String(),
+				"log_idx": ethLog.Index,
+				"tx_idx":  ethLog.TxIndex,
+				"raw_log": raw,
+			},
+			ForeignKeyValues: shared.ForeignKeyValues{
+				constants2.IlkFK: ilk,
+			},
 		}
 		models = append(models, model)
 	}

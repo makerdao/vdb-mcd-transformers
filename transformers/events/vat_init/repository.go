@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -17,10 +17,6 @@
 package vat_init
 
 import (
-	"fmt"
-
-	log "github.com/sirupsen/logrus"
-
 	repo "github.com/vulcanize/vulcanizedb/libraries/shared/repository"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 
@@ -32,56 +28,8 @@ type VatInitRepository struct {
 	db *postgres.DB
 }
 
-func (repository VatInitRepository) Create(headerID int64, models []interface{}) error {
-	tx, dBaseErr := repository.db.Beginx()
-	if dBaseErr != nil {
-		return dBaseErr
-	}
-
-	for _, model := range models {
-		vatInit, ok := model.(VatInitModel)
-		if !ok {
-			rollbackErr := tx.Rollback()
-			if rollbackErr != nil {
-				log.Error("failed to rollback ", rollbackErr)
-			}
-			return fmt.Errorf("model of type %T, not %T", model, VatInitModel{})
-		}
-
-		ilkID, ilkErr := shared.GetOrCreateIlkInTransaction(vatInit.Ilk, tx)
-		if ilkErr != nil {
-			rollbackErr := tx.Rollback()
-			if rollbackErr != nil {
-				log.Error("failed to rollback ", rollbackErr)
-			}
-			return ilkErr
-		}
-
-		_, execErr := tx.Exec(
-			`INSERT INTO maker.vat_init (header_id, ilk_id, log_idx, tx_idx, raw_log)
-			VALUES($1, $2, $3, $4, $5)
-			ON CONFLICT (header_id, tx_idx, log_idx) DO UPDATE SET ilk_id = $2, raw_log = $5;`,
-			headerID, ilkID, vatInit.LogIndex, vatInit.TransactionIndex, vatInit.Raw,
-		)
-		if execErr != nil {
-			rollbackErr := tx.Rollback()
-			if rollbackErr != nil {
-				log.Error("failed to rollback ", rollbackErr)
-			}
-			return execErr
-		}
-	}
-
-	checkHeaderErr := repo.MarkHeaderCheckedInTransaction(headerID, tx, constants.VatInitChecked)
-	if checkHeaderErr != nil {
-		rollbackErr := tx.Rollback()
-		if rollbackErr != nil {
-			log.Error("failed to rollback ", rollbackErr)
-		}
-		return checkHeaderErr
-	}
-
-	return tx.Commit()
+func (repository VatInitRepository) Create(headerID int64, models []shared.InsertionModel) error {
+	return shared.Create(headerID, models, repository.db)
 }
 
 func (repository VatInitRepository) MarkHeaderChecked(headerID int64) error {

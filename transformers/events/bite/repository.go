@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -19,8 +19,7 @@ package bite
 import (
 	"fmt"
 
-	log "github.com/sirupsen/logrus"
-
+	"github.com/sirupsen/logrus"
 	repo "github.com/vulcanize/vulcanizedb/libraries/shared/repository"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 
@@ -46,25 +45,16 @@ func (repository BiteRepository) Create(headerID int64, models []interface{}) er
 		if !ok {
 			rollbackErr := tx.Rollback()
 			if rollbackErr != nil {
-				log.Error("failed to rollback ", rollbackErr)
+				logrus.Error("failed to rollback ", rollbackErr)
 			}
 			return fmt.Errorf("model of type %T, not %T", model, BiteModel{})
 		}
 
-		ilkID, ilkErr := shared.GetOrCreateIlkInTransaction(biteModel.Ilk, tx)
-		if ilkErr != nil {
-			rollbackErr := tx.Rollback()
-			if rollbackErr != nil {
-				log.Error("failed to rollback ", rollbackErr)
-			}
-			return ilkErr
-		}
-
-		urnID, urnErr := shared.GetOrCreateUrnInTransaction(biteModel.Urn, ilkID, tx)
+		urnID, urnErr := shared.GetOrCreateUrnInTransaction(biteModel.Urn, biteModel.Ilk, tx)
 		if urnErr != nil {
 			rollbackErr := tx.Rollback()
 			if rollbackErr != nil {
-				log.Error("failed to rollback", rollbackErr)
+				logrus.Error("failed to rollback", rollbackErr)
 			}
 			return urnErr
 		}
@@ -78,7 +68,7 @@ func (repository BiteRepository) Create(headerID int64, models []interface{}) er
 		if execErr != nil {
 			rollbackErr := tx.Rollback()
 			if rollbackErr != nil {
-				log.Error("failed to rollback ", rollbackErr)
+				logrus.Error("failed to rollback ", rollbackErr)
 			}
 			return execErr
 		}
@@ -88,7 +78,7 @@ func (repository BiteRepository) Create(headerID int64, models []interface{}) er
 	if checkHeaderErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
-			log.Error("failed to rollback ", rollbackErr)
+			logrus.Error("failed to rollback ", rollbackErr)
 		}
 		return checkHeaderErr
 	}

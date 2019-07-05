@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -24,7 +24,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 
-	"github.com/vulcanize/mcd_transformers/transformers/events/vat_fold"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
@@ -46,13 +46,21 @@ var EthVatFoldLogWithPositiveRate = types.Log{
 }
 
 var rawVatFoldLogWithPositiveRate, _ = json.Marshal(EthVatFoldLogWithPositiveRate)
-var VatFoldModelWithPositiveRate = vat_fold.VatFoldModel{
-	Ilk:              "0x5245500000000000000000000000000000000000000000000000000000000000",
-	Urn:              "0x3728e9777B2a0a611ee0F89e00E01044ce4736d1",
-	Rate:             "2",
-	LogIndex:         EthVatFoldLogWithPositiveRate.Index,
-	TransactionIndex: EthVatFoldLogWithPositiveRate.TxIndex,
-	Raw:              rawVatFoldLogWithPositiveRate,
+var VatFoldModelWithPositiveRate = shared.InsertionModel{
+	TableName: "vat_fold",
+	OrderedColumns: []string{
+		"header_id", string(constants.UrnFK), "rate", "log_idx", "tx_idx", "raw_log",
+	},
+	ColumnValues: shared.ColumnValues{
+		"rate":    "2",
+		"log_idx": EthVatFoldLogWithPositiveRate.Index,
+		"tx_idx":  EthVatFoldLogWithPositiveRate.TxIndex,
+		"raw_log": rawVatFoldLogWithPositiveRate,
+	},
+	ForeignKeyValues: shared.ForeignKeyValues{
+		constants.IlkFK: "0x5245500000000000000000000000000000000000000000000000000000000000",
+		constants.UrnFK: "0x3728e9777B2a0a611ee0F89e00E01044ce4736d1",
+	},
 }
 
 var EthVatFoldLogWithNegativeRate = types.Log{
@@ -73,11 +81,19 @@ var EthVatFoldLogWithNegativeRate = types.Log{
 }
 
 var rawVatFoldLogWithNegativeRate, _ = json.Marshal(EthVatFoldLogWithNegativeRate)
-var VatFoldModelWithNegativeRate = vat_fold.VatFoldModel{
-	Ilk:              "0x66616b6520696c6b000000000000000000000000000000000000000000000000",
-	Urn:              "0x7d7bEe5fCfD8028cf7b00876C5b1421c800561A6",
-	Rate:             "-500000000000000000000",
-	LogIndex:         0,
-	TransactionIndex: 0,
-	Raw:              rawVatFoldLogWithNegativeRate,
+var VatFoldModelWithNegativeRate = shared.InsertionModel{
+	TableName: "vat_fold",
+	OrderedColumns: []string{
+		"header_id", string(constants.UrnFK), "rate", "log_idx", "tx_idx", "raw_log",
+	},
+	ColumnValues: shared.ColumnValues{
+		"rate":    "-500000000000000000000",
+		"log_idx": EthVatFoldLogWithNegativeRate.Index,
+		"tx_idx":  EthVatFoldLogWithNegativeRate.TxIndex,
+		"raw_log": rawVatFoldLogWithNegativeRate,
+	},
+	ForeignKeyValues: shared.ForeignKeyValues{
+		constants.IlkFK: "0x66616b6520696c6b000000000000000000000000000000000000000000000000",
+		constants.UrnFK: "0x7d7bEe5fCfD8028cf7b00876C5b1421c800561A6",
+	},
 }

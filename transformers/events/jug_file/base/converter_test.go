@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -24,29 +24,26 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 
 	"github.com/vulcanize/mcd_transformers/transformers/events/jug_file/base"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
 var _ = Describe("Jug file base converter", func() {
+	var converter = base.JugFileBaseConverter{}
 	It("returns err if log missing topics", func() {
-		converter := base.JugFileBaseConverter{}
 		badLog := types.Log{
 			Topics: []common.Hash{{}},
 			Data:   []byte{1, 1, 1, 1, 1},
 		}
 
 		_, err := converter.ToModels([]types.Log{badLog})
-
 		Expect(err).To(HaveOccurred())
 	})
 
 	It("converts a log to a model", func() {
-		converter := base.JugFileBaseConverter{}
-
 		models, err := converter.ToModels([]types.Log{test_data.EthJugFileBaseLog})
 
 		Expect(err).NotTo(HaveOccurred())
-		Expect(len(models)).To(Equal(1))
-		Expect(models[0].(base.JugFileBaseModel)).To(Equal(test_data.JugFileBaseModel))
+		Expect(models).To(Equal([]shared.InsertionModel{test_data.JugFileBaseModel}))
 	})
 })

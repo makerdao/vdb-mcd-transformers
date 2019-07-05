@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -28,7 +28,7 @@ import (
 
 type TendConverter struct{}
 
-func (TendConverter) ToModels(ethLogs []types.Log) (results []interface{}, err error) {
+func (TendConverter) ToModels(ethLogs []types.Log) (results []shared.InsertionModel, err error) {
 	for _, ethLog := range ethLogs {
 		err := validateLog(ethLog)
 		if err != nil {
@@ -51,14 +51,21 @@ func (TendConverter) ToModels(ethLogs []types.Log) (results []interface{}, err e
 			return nil, err
 		}
 
-		model := TendModel{
-			BidId:            bidId.String(),
-			Lot:              lot,
-			Bid:              bidValue,
-			ContractAddress:  contractAddress.Hex(),
-			LogIndex:         logIndex,
-			TransactionIndex: transactionIndex,
-			Raw:              rawLog,
+		model := shared.InsertionModel{
+			TableName: "tend",
+			OrderedColumns: []string{
+				"header_id", "bid_id", "lot", "bid", "contract_address", "log_idx", "tx_idx", "raw_log",
+			},
+			ColumnValues: shared.ColumnValues{
+				"bid_id":           bidId.String(),
+				"lot":              lot,
+				"bid":              bidValue,
+				"contract_address": contractAddress.Hex(),
+				"log_idx":          logIndex,
+				"tx_idx":           transactionIndex,
+				"raw_log":          rawLog,
+			},
+			ForeignKeyValues: shared.ForeignKeyValues{},
 		}
 		results = append(results, model)
 	}

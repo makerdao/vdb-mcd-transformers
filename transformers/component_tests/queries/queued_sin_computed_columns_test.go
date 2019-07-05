@@ -1,3 +1,19 @@
+// VulcanizeDB
+// Copyright © 2019 Vulcanize
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 package queries
 
 import (
@@ -7,6 +23,7 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/component_tests/queries/test_helpers"
 	"github.com/vulcanize/mcd_transformers/transformers/events/vow_fess"
 	"github.com/vulcanize/mcd_transformers/transformers/events/vow_flog"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/vow"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
@@ -54,14 +71,14 @@ var _ = Describe("Queued sin computed columns", func() {
 			vowFessRepo := vow_fess.VowFessRepository{}
 			vowFessRepo.SetDB(db)
 			vowFessEvent := test_data.VowFessModel
-			insertVowFessErr := vowFessRepo.Create(headerID, []interface{}{vowFessEvent})
+			insertVowFessErr := vowFessRepo.Create(headerID, []shared.InsertionModel{vowFessEvent})
 			Expect(insertVowFessErr).NotTo(HaveOccurred())
 
 			vowFlogRepo := vow_flog.VowFlogRepository{}
 			vowFlogRepo.SetDB(db)
 			vowFlogEvent := test_data.VowFlogModel
-			vowFlogEvent.Era = fakeEra
-			insertVowFlogErr := vowFlogRepo.Create(headerID, []interface{}{vowFlogEvent})
+			vowFlogEvent.ColumnValues["era"] = fakeEra
+			insertVowFlogErr := vowFlogRepo.Create(headerID, []shared.InsertionModel{vowFlogEvent})
 			Expect(insertVowFlogErr).NotTo(HaveOccurred())
 		})
 

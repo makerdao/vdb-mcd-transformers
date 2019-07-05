@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -24,8 +24,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 
-	"github.com/vulcanize/mcd_transformers/transformers/events/vat_file/debt_ceiling"
-	ilk2 "github.com/vulcanize/mcd_transformers/transformers/events/vat_file/ilk"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
@@ -47,12 +46,19 @@ var EthVatFileDebtCeilingLog = types.Log{
 }
 
 var rawVatFileDebtCeilingLog, _ = json.Marshal(EthVatFileDebtCeilingLog)
-var VatFileDebtCeilingModel = debt_ceiling.VatFileDebtCeilingModel{
-	What:             "Line",
-	Data:             "1000000000000000000000000000000000000000000000000000",
-	LogIndex:         EthVatFileDebtCeilingLog.Index,
-	TransactionIndex: EthVatFileDebtCeilingLog.TxIndex,
-	Raw:              rawVatFileDebtCeilingLog,
+var VatFileDebtCeilingModel = shared.InsertionModel{
+	TableName: "vat_file_debt_ceiling",
+	OrderedColumns: []string{
+		"header_id", "what", "data", "log_idx", "tx_idx", "raw_log",
+	},
+	ColumnValues: shared.ColumnValues{
+		"what":    "Line",
+		"data":    "1000000000000000000000000000000000000000000000000000",
+		"log_idx": EthVatFileDebtCeilingLog.Index,
+		"tx_idx":  EthVatFileDebtCeilingLog.TxIndex,
+		"raw_log": rawVatFileDebtCeilingLog,
+	},
+	ForeignKeyValues: shared.ForeignKeyValues{},
 }
 
 var EthVatFileIlkDustLog = types.Log{
@@ -74,13 +80,21 @@ var EthVatFileIlkDustLog = types.Log{
 }
 
 var rawVatFileIlkDustLog, _ = json.Marshal(EthVatFileIlkDustLog)
-var VatFileIlkDustModel = ilk2.VatFileIlkModel{
-	Ilk:              "0x5245500000000000000000000000000000000000000000000000000000000000",
-	What:             "dust",
-	Data:             "10390649719961925488562719249749",
-	LogIndex:         EthVatFileIlkDustLog.Index,
-	TransactionIndex: EthVatFileIlkDustLog.TxIndex,
-	Raw:              rawVatFileIlkDustLog,
+var VatFileIlkDustModel = shared.InsertionModel{
+	TableName: "vat_file_ilk",
+	OrderedColumns: []string{
+		"header_id", string(constants.IlkFK), "what", "data", "log_idx", "tx_idx", "raw_log",
+	},
+	ColumnValues: shared.ColumnValues{
+		"what":    "dust",
+		"data":    "10390649719961925488562719249749",
+		"log_idx": EthVatFileIlkDustLog.Index,
+		"tx_idx":  EthVatFileIlkDustLog.TxIndex,
+		"raw_log": rawVatFileIlkDustLog,
+	},
+	ForeignKeyValues: shared.ForeignKeyValues{
+		constants.IlkFK: "0x5245500000000000000000000000000000000000000000000000000000000000",
+	},
 }
 
 var EthVatFileIlkLineLog = types.Log{
@@ -102,13 +116,21 @@ var EthVatFileIlkLineLog = types.Log{
 }
 
 var rawVatFileIlkLineLog, _ = json.Marshal(EthVatFileIlkLineLog)
-var VatFileIlkLineModel = ilk2.VatFileIlkModel{
-	Ilk:              "0x5245500000000000000000000000000000000000000000000000000000000000",
-	What:             "line",
-	Data:             "220086151196920075605",
-	LogIndex:         EthVatFileIlkLineLog.Index,
-	TransactionIndex: EthVatFileIlkLineLog.TxIndex,
-	Raw:              rawVatFileIlkLineLog,
+var VatFileIlkLineModel = shared.InsertionModel{
+	TableName: "vat_file_ilk",
+	OrderedColumns: []string{
+		"header_id", string(constants.IlkFK), "what", "data", "log_idx", "tx_idx", "raw_log",
+	},
+	ColumnValues: shared.ColumnValues{
+		"what":    "line",
+		"data":    "220086151196920075605",
+		"log_idx": EthVatFileIlkLineLog.Index,
+		"tx_idx":  EthVatFileIlkLineLog.TxIndex,
+		"raw_log": rawVatFileIlkLineLog,
+	},
+	ForeignKeyValues: shared.ForeignKeyValues{
+		constants.IlkFK: "0x5245500000000000000000000000000000000000000000000000000000000000",
+	},
 }
 
 var EthVatFileIlkSpotLog = types.Log{
@@ -129,11 +151,19 @@ var EthVatFileIlkSpotLog = types.Log{
 }
 
 var rawVatFileIlkSpotLog, _ = json.Marshal(EthVatFileIlkSpotLog)
-var VatFileIlkSpotModel = ilk2.VatFileIlkModel{
-	Ilk:              "0x4554480000000000000000000000000000000000000000000000000000000000",
-	What:             "spot",
-	Data:             "91323333333333333333333333333",
-	LogIndex:         EthVatFileIlkSpotLog.Index,
-	TransactionIndex: EthVatFileIlkSpotLog.TxIndex,
-	Raw:              rawVatFileIlkSpotLog,
+var VatFileIlkSpotModel = shared.InsertionModel{
+	TableName: "vat_file_ilk",
+	OrderedColumns: []string{
+		"header_id", string(constants.IlkFK), "what", "data", "log_idx", "tx_idx", "raw_log",
+	},
+	ColumnValues: shared.ColumnValues{
+		"what":    "spot",
+		"data":    "91323333333333333333333333333",
+		"log_idx": EthVatFileIlkSpotLog.Index,
+		"tx_idx":  EthVatFileIlkSpotLog.TxIndex,
+		"raw_log": rawVatFileIlkSpotLog,
+	},
+	ForeignKeyValues: shared.ForeignKeyValues{
+		constants.IlkFK: "0x4554480000000000000000000000000000000000000000000000000000000000",
+	},
 }

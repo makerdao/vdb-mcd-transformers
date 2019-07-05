@@ -1,3 +1,19 @@
+// VulcanizeDB
+// Copyright © 2019 Vulcanize
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 package queries
 
 import (
@@ -14,6 +30,8 @@ import (
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/component_tests/queries/test_helpers"
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_frob"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/vat"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
@@ -25,7 +43,7 @@ var _ = Describe("Frob event computed columns", func() {
 		fakeGuy          = "fakeAddress"
 		fakeHeader       core.Header
 		frobRepo         vat_frob.VatFrobRepository
-		frobEvent        vat_frob.VatFrobModel
+		frobEvent        shared.InsertionModel
 		headerId         int64
 		vatRepository    vat.VatStorageRepository
 		headerRepository repositories.HeaderRepository
@@ -44,10 +62,10 @@ var _ = Describe("Frob event computed columns", func() {
 
 		frobRepo = vat_frob.VatFrobRepository{}
 		frobRepo.SetDB(db)
-		frobEvent = test_data.VatFrobModelWithPositiveDart
-		frobEvent.Urn = fakeGuy
-		frobEvent.Ilk = test_helpers.FakeIlk.Hex
-		insertFrobErr := frobRepo.Create(headerId, []interface{}{frobEvent})
+		frobEvent = test_data.CopyModel(test_data.VatFrobModelWithPositiveDart)
+		frobEvent.ForeignKeyValues[constants.UrnFK] = fakeGuy
+		frobEvent.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
+		insertFrobErr := frobRepo.Create(headerId, []shared.InsertionModel{frobEvent})
 		Expect(insertFrobErr).NotTo(HaveOccurred())
 	})
 
@@ -105,7 +123,7 @@ var _ = Describe("Frob event computed columns", func() {
 			expectedTx := Tx{
 				TransactionHash: test_helpers.GetValidNullString("txHash"),
 				TransactionIndex: sql.NullInt64{
-					Int64: int64(frobEvent.TransactionIndex),
+					Int64: int64(frobEvent.ColumnValues["tx_idx"].(uint)),
 					Valid: true,
 				},
 				BlockHeight: sql.NullInt64{Int64: int64(fakeBlock), Valid: true},
@@ -132,7 +150,7 @@ var _ = Describe("Frob event computed columns", func() {
 			wrongTx := Tx{
 				TransactionHash: test_helpers.GetValidNullString("wrongTxHash"),
 				TransactionIndex: sql.NullInt64{
-					Int64: int64(frobEvent.TransactionIndex) + 1,
+					Int64: int64(frobEvent.ColumnValues["tx_idx"].(uint)) + 1,
 					Valid: true,
 				},
 				BlockHeight: sql.NullInt64{Int64: int64(fakeBlock), Valid: true},

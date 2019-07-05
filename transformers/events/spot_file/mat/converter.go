@@ -25,12 +25,13 @@ import (
 	"github.com/vulcanize/vulcanizedb/libraries/shared/constants"
 
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	constants2 "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
 type SpotFileMatConverter struct{}
 
-func (SpotFileMatConverter) ToModels(ethLogs []types.Log) ([]interface{}, error) {
-	var models []interface{}
+func (SpotFileMatConverter) ToModels(ethLogs []types.Log) ([]shared.InsertionModel, error) {
+	var models []shared.InsertionModel
 	for _, ethLog := range ethLogs {
 		err := verifyLog(ethLog)
 		if err != nil {
@@ -48,13 +49,21 @@ func (SpotFileMatConverter) ToModels(ethLogs []types.Log) ([]interface{}, error)
 		if err != nil {
 			return nil, err
 		}
-		model := SpotFileMatModel{
-			Ilk:              ilk,
-			What:             what,
-			Data:             data.String(),
-			LogIndex:         ethLog.Index,
-			TransactionIndex: ethLog.TxIndex,
-			Raw:              raw,
+		model := shared.InsertionModel{
+			TableName: "spot_file_mat",
+			OrderedColumns: []string{
+				"header_id", string(constants2.IlkFK), "what", "data", "log_idx", "tx_idx", "raw_log",
+			},
+			ColumnValues: shared.ColumnValues{
+				"what":    what,
+				"data":    data.String(),
+				"log_idx": ethLog.Index,
+				"tx_idx":  ethLog.TxIndex,
+				"raw_log": raw,
+			},
+			ForeignKeyValues: shared.ForeignKeyValues{
+				constants2.IlkFK: ilk,
+			},
 		}
 		models = append(models, model)
 	}

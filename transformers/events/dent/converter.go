@@ -28,7 +28,7 @@ import (
 
 type DentConverter struct{}
 
-func (c DentConverter) ToModels(ethLogs []types.Log) (result []interface{}, err error) {
+func (c DentConverter) ToModels(ethLogs []types.Log) (result []shared.InsertionModel, err error) {
 	for _, log := range ethLogs {
 		validateErr := validateLog(log)
 		if validateErr != nil {
@@ -51,14 +51,21 @@ func (c DentConverter) ToModels(ethLogs []types.Log) (result []interface{}, err 
 			return nil, err
 		}
 
-		model := DentModel{
-			BidId:            bidId.String(),
-			Lot:              lot.String(),
-			Bid:              bid.String(),
-			ContractAddress:  log.Address.Hex(),
-			LogIndex:         logIndex,
-			TransactionIndex: transactionIndex,
-			Raw:              raw,
+		model := shared.InsertionModel{
+			TableName: "dent",
+			OrderedColumns: []string{
+				"header_id", "bid_id", "lot", "bid", "contract_address", "tic", "log_idx", "tx_idx", "raw_log",
+			},
+			ColumnValues: shared.ColumnValues{
+				"bid_id":           bidId.String(),
+				"lot":              lot.String(),
+				"bid":              bid.String(),
+				"contract_address": log.Address.Hex(),
+				"log_idx":          logIndex,
+				"tx_idx":           transactionIndex,
+				"raw_log":          raw,
+			},
+			ForeignKeyValues: shared.ForeignKeyValues{},
 		}
 		result = append(result, model)
 	}

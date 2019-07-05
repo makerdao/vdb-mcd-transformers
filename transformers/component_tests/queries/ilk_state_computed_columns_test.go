@@ -1,3 +1,19 @@
+// VulcanizeDB
+// Copyright © 2019 Vulcanize
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 package queries
 
 import (
@@ -15,6 +31,8 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/events/bite"
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_file/ilk"
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_frob"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
@@ -53,10 +71,10 @@ var _ = Describe("Ilk state computed columns", func() {
 		It("returns relevant frobs for an ilk_state", func() {
 			frobRepo := vat_frob.VatFrobRepository{}
 			frobRepo.SetDB(db)
-			frobEvent := test_data.VatFrobModelWithPositiveDart
-			frobEvent.Urn = fakeGuy
-			frobEvent.Ilk = test_helpers.FakeIlk.Hex
-			insertFrobErr := frobRepo.Create(headerId, []interface{}{frobEvent})
+			frobEvent := test_data.CopyModel(test_data.VatFrobModelWithPositiveDart)
+			frobEvent.ForeignKeyValues[constants.UrnFK] = fakeGuy
+			frobEvent.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
+			insertFrobErr := frobRepo.Create(headerId, []shared.InsertionModel{frobEvent})
 			Expect(insertFrobErr).NotTo(HaveOccurred())
 
 			var actualFrobs []test_helpers.FrobEvent
@@ -69,9 +87,9 @@ var _ = Describe("Ilk state computed columns", func() {
 
 			expectedFrobs := []test_helpers.FrobEvent{{
 				IlkIdentifier: test_helpers.FakeIlk.Identifier,
-				UrnIdentifier: frobEvent.Urn,
-				Dink:          frobEvent.Dink,
-				Dart:          frobEvent.Dart,
+				UrnIdentifier: fakeGuy,
+				Dink:          frobEvent.ColumnValues["dink"].(string),
+				Dart:          frobEvent.ColumnValues["dart"].(string),
 			}}
 
 			Expect(actualFrobs).To(Equal(expectedFrobs))
@@ -83,8 +101,8 @@ var _ = Describe("Ilk state computed columns", func() {
 			fileRepo := ilk.VatFileIlkRepository{}
 			fileRepo.SetDB(db)
 			fileEvent := test_data.VatFileIlkDustModel
-			fileEvent.Ilk = test_helpers.FakeIlk.Hex
-			insertFileErr := fileRepo.Create(headerId, []interface{}{fileEvent})
+			fileEvent.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
+			insertFileErr := fileRepo.Create(headerId, []shared.InsertionModel{fileEvent})
 			Expect(insertFileErr).NotTo(HaveOccurred())
 
 			var actualFiles []test_helpers.IlkFileEvent
@@ -97,8 +115,8 @@ var _ = Describe("Ilk state computed columns", func() {
 
 			expectedFiles := []test_helpers.IlkFileEvent{{
 				IlkIdentifier: test_helpers.GetValidNullString(test_helpers.FakeIlk.Identifier),
-				What:          fileEvent.What,
-				Data:          fileEvent.Data,
+				What:          fileEvent.ColumnValues["what"].(string),
+				Data:          fileEvent.ColumnValues["data"].(string),
 			}}
 
 			Expect(actualFiles).To(Equal(expectedFiles))

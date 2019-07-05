@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -54,6 +54,6 @@ var _ = Describe("Vow fess converter", func() {
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(len(models)).To(Equal(1))
-		Expect(models[0].(vow_fess.VowFessModel)).To(Equal(test_data.VowFessModel))
+		Expect(models[0]).To(Equal(test_data.VowFessModel))
 	})
 })

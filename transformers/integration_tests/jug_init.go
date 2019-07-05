@@ -71,7 +71,7 @@ var _ = Describe("JugInit LogNoteTransformer", func() {
 		err = transformer.Execute(logs, header)
 		Expect(err).NotTo(HaveOccurred())
 
-		var dbResults []jug_init.JugInitModel
+		var dbResults []JugInitModel
 		err = db.Select(&dbResults, `SELECT ilk_id from maker.jug_init`)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -127,7 +127,7 @@ var _ = Describe("JugInit LogNoteTransformer", func() {
 
 		Expect(jugInitChecked[0]).To(Equal(2))
 
-		var dbResults []jug_init.JugInitModel
+		var dbResults []JugInitModel
 		err = db.Select(&dbResults, `SELECT ilk_id from maker.jug_init`)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -138,3 +138,10 @@ var _ = Describe("JugInit LogNoteTransformer", func() {
 		Expect(dbResult.Ilk).To(Equal(strconv.Itoa(ilkID)))
 	})
 })
+
+type JugInitModel struct {
+	Ilk              string `db:"ilk_id"`
+	LogIndex         uint   `db:"log_idx"`
+	TransactionIndex uint   `db:"tx_idx"`
+	Raw              []byte `db:"raw_log"`
+}

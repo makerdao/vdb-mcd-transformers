@@ -14,15 +14,25 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package vat_fork
+package test_data
 
-type VatForkModel struct {
-	Ilk              string `db:"ilk_id"`
-	Src              string
-	Dst              string
-	Dink             string
-	Dart             string
-	LogIndex         uint   `db:"log_idx"`
-	TransactionIndex uint   `db:"tx_idx"`
-	Raw              []byte `db:"raw_log"`
+import (
+	"bytes"
+	"encoding/gob"
+	. "github.com/onsi/gomega"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
+)
+
+// Returns a deep copy of the given model, so tests aren't getting the same map/slice references
+func CopyModel(model shared.InsertionModel) shared.InsertionModel {
+	buf := new(bytes.Buffer)
+	encoder := gob.NewEncoder(buf)
+	encErr := encoder.Encode(model)
+	Expect(encErr).NotTo(HaveOccurred())
+
+	var newModel shared.InsertionModel
+	decoder := gob.NewDecoder(buf)
+	decErr := decoder.Decode(&newModel)
+	Expect(decErr).NotTo(HaveOccurred())
+	return newModel
 }

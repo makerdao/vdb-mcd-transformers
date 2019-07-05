@@ -1,20 +1,37 @@
+// VulcanizeDB
+// Copyright © 2019 Vulcanize
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 package queries
 
 import (
 	"math/rand"
 	"strconv"
 
-	"github.com/vulcanize/mcd_transformers/test_config"
-	"github.com/vulcanize/mcd_transformers/transformers/component_tests/queries/test_helpers"
-	"github.com/vulcanize/mcd_transformers/transformers/events/vow_fess"
-	"github.com/vulcanize/mcd_transformers/transformers/events/vow_flog"
-	"github.com/vulcanize/mcd_transformers/transformers/test_data"
-
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
+
+	"github.com/vulcanize/mcd_transformers/test_config"
+	"github.com/vulcanize/mcd_transformers/transformers/component_tests/queries/test_helpers"
+	"github.com/vulcanize/mcd_transformers/transformers/events/vow_fess"
+	"github.com/vulcanize/mcd_transformers/transformers/events/vow_flog"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
 var _ = Describe("Sin queue events query", func() {
@@ -45,7 +62,7 @@ var _ = Describe("Sin queue events query", func() {
 			vowFessRepo := vow_fess.VowFessRepository{}
 			vowFessRepo.SetDB(db)
 			vowFessEvent := test_data.VowFessModel
-			err = vowFessRepo.Create(headerOneId, []interface{}{vowFessEvent})
+			err = vowFessRepo.Create(headerOneId, []shared.InsertionModel{vowFessEvent})
 			Expect(err).NotTo(HaveOccurred())
 
 			var actualEvents []test_helpers.SinQueueEvent
@@ -66,8 +83,8 @@ var _ = Describe("Sin queue events query", func() {
 			vowFlogRepo := vow_flog.VowFlogRepository{}
 			vowFlogRepo.SetDB(db)
 			vowFlogEvent := test_data.VowFlogModel
-			vowFlogEvent.Era = fakeEra
-			err = vowFlogRepo.Create(headerOneId, []interface{}{vowFlogEvent})
+			vowFlogEvent.ColumnValues["era"] = fakeEra
+			err = vowFlogRepo.Create(headerOneId, []shared.InsertionModel{vowFlogEvent})
 			Expect(err).NotTo(HaveOccurred())
 
 			var actualEvents []test_helpers.SinQueueEvent
@@ -88,8 +105,8 @@ var _ = Describe("Sin queue events query", func() {
 			vowFlogRepo.SetDB(db)
 			fakeEra := strconv.Itoa(int(rand.Int31()))
 			vowFlogEvent := test_data.VowFlogModel
-			vowFlogEvent.Era = fakeEra
-			err = vowFlogRepo.Create(headerOneId, []interface{}{vowFlogEvent})
+			vowFlogEvent.ColumnValues["era"] = fakeEra
+			err = vowFlogRepo.Create(headerOneId, []shared.InsertionModel{vowFlogEvent})
 			Expect(err).NotTo(HaveOccurred())
 
 			// New block
@@ -102,7 +119,7 @@ var _ = Describe("Sin queue events query", func() {
 			vowFessRepo := vow_fess.VowFessRepository{}
 			vowFessRepo.SetDB(db)
 			vowFessEvent := test_data.VowFessModel
-			err = vowFessRepo.Create(headerTwoId, []interface{}{vowFessEvent})
+			err = vowFessRepo.Create(headerTwoId, []shared.InsertionModel{vowFessEvent})
 			Expect(err).NotTo(HaveOccurred())
 
 			var actualEvents []test_helpers.SinQueueEvent
@@ -127,8 +144,8 @@ var _ = Describe("Sin queue events query", func() {
 			vowFlogRepo := vow_flog.VowFlogRepository{}
 			vowFlogRepo.SetDB(db)
 			vowFlogEvent := test_data.VowFlogModel
-			vowFlogEvent.Era = fakeEra
-			err = vowFlogRepo.Create(headerOneId, []interface{}{vowFlogEvent})
+			vowFlogEvent.ColumnValues["era"] = fakeEra
+			err = vowFlogRepo.Create(headerOneId, []shared.InsertionModel{vowFlogEvent})
 			Expect(err).NotTo(HaveOccurred())
 
 			var actualEvents []test_helpers.SinQueueEvent

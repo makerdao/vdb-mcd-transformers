@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -19,15 +19,16 @@ package vat_heal
 import (
 	"encoding/json"
 	"errors"
-	"github.com/vulcanize/mcd_transformers/transformers/shared"
 
 	"github.com/ethereum/go-ethereum/core/types"
+
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 )
 
 type VatHealConverter struct{}
 
-func (VatHealConverter) ToModels(ethLogs []types.Log) ([]interface{}, error) {
-	var models []interface{}
+func (VatHealConverter) ToModels(ethLogs []types.Log) ([]shared.InsertionModel, error) {
+	var models []shared.InsertionModel
 	for _, ethLog := range ethLogs {
 		err := verifyLog(ethLog)
 		if err != nil {
@@ -41,13 +42,19 @@ func (VatHealConverter) ToModels(ethLogs []types.Log) ([]interface{}, error) {
 			return nil, err
 		}
 
-		model := VatHealModel{
-			Rad:              radInt.String(),
-			LogIndex:         ethLog.Index,
-			TransactionIndex: ethLog.TxIndex,
-			Raw:              rawLogJson,
+		model := shared.InsertionModel{
+			TableName: "vat_heal",
+			OrderedColumns: []string{
+				"header_id", "rad", "log_idx", "tx_idx", "raw_log",
+			},
+			ColumnValues: shared.ColumnValues{
+				"rad":     radInt.String(),
+				"log_idx": ethLog.Index,
+				"tx_idx":  ethLog.TxIndex,
+				"raw_log": rawLogJson,
+			},
+			ForeignKeyValues: shared.ForeignKeyValues{},
 		}
-
 		models = append(models, model)
 	}
 

@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -20,12 +20,12 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_move"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
@@ -69,7 +69,7 @@ var _ = Describe("VatMove LogNoteTransformer", func() {
 		err = tr.Execute(logs, header)
 		Expect(err).NotTo(HaveOccurred())
 
-		var dbResults []vat_move.VatMoveModel
+		var dbResults []vatMoveModel
 		err = db.Select(&dbResults, `SELECT src, dst, rad from maker.vat_move`)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -80,3 +80,12 @@ var _ = Describe("VatMove LogNoteTransformer", func() {
 		Expect(dbResult.Rad).To(Equal("500000000000000000000000000000000000000000000"))
 	})
 })
+
+type vatMoveModel struct {
+	Src              string
+	Dst              string
+	Rad              string
+	LogIndex         uint   `db:"log_idx"`
+	TransactionIndex uint   `db:"tx_idx"`
+	Raw              []byte `db:"raw_log"`
+}

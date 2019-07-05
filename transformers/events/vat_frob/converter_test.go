@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -22,6 +22,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_frob"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
@@ -34,7 +35,6 @@ var _ = Describe("Frob converter", func() {
 		}
 
 		_, err := converter.ToModels([]types.Log{badLog})
-
 		Expect(err).To(HaveOccurred())
 	})
 
@@ -44,7 +44,6 @@ var _ = Describe("Frob converter", func() {
 		}
 
 		_, err := converter.ToModels([]types.Log{badLog})
-
 		Expect(err).To(HaveOccurred())
 	})
 
@@ -53,7 +52,7 @@ var _ = Describe("Frob converter", func() {
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(len(models)).To(Equal(1))
-		Expect(models[0]).To(Equal(test_data.VatFrobModelWithPositiveDart))
+		Expect(models).To(Equal([]shared.InsertionModel{test_data.VatFrobModelWithPositiveDart}))
 	})
 
 	It("converts a log with negative dink to a model", func() {
@@ -61,6 +60,6 @@ var _ = Describe("Frob converter", func() {
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(len(models)).To(Equal(1))
-		Expect(models[0]).To(Equal(test_data.VatFrobModelWithNegativeDink))
+		Expect(models).To(Equal([]shared.InsertionModel{test_data.VatFrobModelWithNegativeDink}))
 	})
 })

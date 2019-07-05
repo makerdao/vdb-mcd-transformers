@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -22,15 +22,16 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/vulcanize/mcd_transformers/transformers/shared"
-
 	"github.com/vulcanize/vulcanizedb/libraries/shared/constants"
+
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	constants2 "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
 type CatFileFlipConverter struct{}
 
-func (CatFileFlipConverter) ToModels(ethLogs []types.Log) ([]interface{}, error) {
-	var results []interface{}
+func (CatFileFlipConverter) ToModels(ethLogs []types.Log) ([]shared.InsertionModel, error) {
+	var results []shared.InsertionModel
 	for _, ethLog := range ethLogs {
 		verifyErr := verifyLog(ethLog)
 		if verifyErr != nil {
@@ -48,14 +49,24 @@ func (CatFileFlipConverter) ToModels(ethLogs []types.Log) ([]interface{}, error)
 		if marshalErr != nil {
 			return nil, marshalErr
 		}
-		result := CatFileFlipModel{
-			Ilk:              ilk,
-			What:             what,
-			Flip:             flip,
-			TransactionIndex: ethLog.TxIndex,
-			LogIndex:         ethLog.Index,
-			Raw:              raw,
+
+		result := shared.InsertionModel{
+			TableName: "cat_file_flip",
+			OrderedColumns: []string{
+				"header_id", string(constants2.IlkFK), "what", "flip", "tx_idx", "log_idx", "raw_log",
+			},
+			ColumnValues: shared.ColumnValues{
+				"what":    what,
+				"flip":    flip,
+				"tx_idx":  ethLog.TxIndex,
+				"log_idx": ethLog.Index,
+				"raw_log": raw,
+			},
+			ForeignKeyValues: shared.ForeignKeyValues{
+				constants2.IlkFK: ilk,
+			},
 		}
+
 		results = append(results, result)
 	}
 	return results, nil

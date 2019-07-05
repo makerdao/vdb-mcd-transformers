@@ -1,3 +1,19 @@
+// VulcanizeDB
+// Copyright © 2019 Vulcanize
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 package queries
 
 import (
@@ -19,6 +35,8 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/events/spot_file/mat"
 	"github.com/vulcanize/mcd_transformers/transformers/events/spot_file/pip"
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_file/ilk"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
@@ -59,34 +77,34 @@ var _ = Describe("Ilk File Events Query", func() {
 	})
 
 	It("returns all ilk file events for ilk", func() {
-		catFileChopLump := test_data.CatFileChopModel
-		catFileChopLump.Ilk = test_helpers.FakeIlk.Hex
-		chopLumpErr := catFileChopLumpRepo.Create(headerOneId, []interface{}{catFileChopLump})
+		catFileChopLump := test_data.CopyModel(test_data.CatFileChopModel)
+		catFileChopLump.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
+		chopLumpErr := catFileChopLumpRepo.Create(headerOneId, []shared.InsertionModel{catFileChopLump})
 		Expect(chopLumpErr).NotTo(HaveOccurred())
 
 		catFileFlip := test_data.CatFileFlipModel
-		catFileFlip.Ilk = test_helpers.FakeIlk.Hex
-		flipErr := catFileFlipRepo.Create(headerOneId, []interface{}{catFileFlip})
+		catFileFlip.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
+		flipErr := catFileFlipRepo.Create(headerOneId, []shared.InsertionModel{catFileFlip})
 		Expect(flipErr).NotTo(HaveOccurred())
 
-		jugFile := test_data.JugFileIlkModel
-		jugFile.Ilk = test_helpers.FakeIlk.Hex
-		jugErr := jugFileRepo.Create(headerOneId, []interface{}{jugFile})
+		jugFile := test_data.CopyModel(test_data.JugFileIlkModel)
+		jugFile.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
+		jugErr := jugFileRepo.Create(headerOneId, []shared.InsertionModel{jugFile})
 		Expect(jugErr).NotTo(HaveOccurred())
 
-		spotFileMat := test_data.SpotFileMatModel
-		spotFileMat.Ilk = test_helpers.FakeIlk.Hex
-		spotFileMatErr := spotFileMatRepo.Create(headerOneId, []interface{}{spotFileMat})
+		spotFileMat := test_data.CopyModel(test_data.SpotFileMatModel)
+		spotFileMat.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
+		spotFileMatErr := spotFileMatRepo.Create(headerOneId, []shared.InsertionModel{spotFileMat})
 		Expect(spotFileMatErr).NotTo(HaveOccurred())
 
-		spotFilePip := test_data.SpotFilePipModel
-		spotFilePip.Ilk = test_helpers.FakeIlk.Hex
-		spotFilePipErr := spotFilePipRepo.Create(headerOneId, []interface{}{spotFilePip})
+		spotFilePip := test_data.CopyModel(test_data.SpotFilePipModel)
+		spotFilePip.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
+		spotFilePipErr := spotFilePipRepo.Create(headerOneId, []shared.InsertionModel{spotFilePip})
 		Expect(spotFilePipErr).NotTo(HaveOccurred())
 
-		vatFile := test_data.VatFileIlkDustModel
-		vatFile.Ilk = test_helpers.FakeIlk.Hex
-		vatErr := vatFileRepo.Create(headerOneId, []interface{}{vatFile})
+		vatFile := test_data.CopyModel(test_data.VatFileIlkDustModel)
+		vatFile.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
+		vatErr := vatFileRepo.Create(headerOneId, []shared.InsertionModel{vatFile})
 		Expect(vatErr).NotTo(HaveOccurred())
 
 		var actualFiles []test_helpers.IlkFileEvent
@@ -96,42 +114,42 @@ var _ = Describe("Ilk File Events Query", func() {
 		Expect(actualFiles).To(ConsistOf(
 			test_helpers.IlkFileEvent{
 				IlkIdentifier: relevantIlkIdentifier,
-				What:          catFileChopLump.What,
-				Data:          catFileChopLump.Data,
+				What:          catFileChopLump.ColumnValues["what"].(string),
+				Data:          catFileChopLump.ColumnValues["data"].(string),
 			},
 			test_helpers.IlkFileEvent{
 				IlkIdentifier: relevantIlkIdentifier,
-				What:          catFileFlip.What,
-				Data:          catFileFlip.Flip,
+				What:          catFileFlip.ColumnValues["what"].(string),
+				Data:          catFileFlip.ColumnValues["flip"].(string),
 			},
 			test_helpers.IlkFileEvent{
 				IlkIdentifier: relevantIlkIdentifier,
-				What:          jugFile.What,
-				Data:          jugFile.Data,
+				What:          jugFile.ColumnValues["what"].(string),
+				Data:          jugFile.ColumnValues["data"].(string),
 			},
 			test_helpers.IlkFileEvent{
 				IlkIdentifier: relevantIlkIdentifier,
-				What:          spotFileMat.What,
-				Data:          spotFileMat.Data,
+				What:          spotFileMat.ColumnValues["what"].(string),
+				Data:          spotFileMat.ColumnValues["data"].(string),
 			},
 			test_helpers.IlkFileEvent{
 				IlkIdentifier: relevantIlkIdentifier,
 				What:          "pip",
-				Data:          spotFilePip.Pip,
+				Data:          spotFilePip.ColumnValues["pip"].(string),
 			},
 			test_helpers.IlkFileEvent{
 				IlkIdentifier: relevantIlkIdentifier,
-				What:          vatFile.What,
-				Data:          vatFile.Data,
+				What:          vatFile.ColumnValues["what"].(string),
+				Data:          vatFile.ColumnValues["data"].(string),
 			},
 		))
 	})
 
 	It("includes results across blocks", func() {
-		fileBlockOne := test_data.VatFileIlkDustModel
-		fileBlockOne.Ilk = test_helpers.FakeIlk.Hex
-		fileBlockOne.Data = strconv.Itoa(rand.Int())
-		fileBlockOneErr := vatFileRepo.Create(headerOneId, []interface{}{fileBlockOne})
+		fileBlockOne := test_data.CopyModel(test_data.VatFileIlkDustModel)
+		fileBlockOne.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
+		fileBlockOne.ColumnValues["data"] = strconv.Itoa(rand.Int())
+		fileBlockOneErr := vatFileRepo.Create(headerOneId, []shared.InsertionModel{fileBlockOne})
 		Expect(fileBlockOneErr).NotTo(HaveOccurred())
 
 		headerTwo := fakes.GetFakeHeader(2)
@@ -139,10 +157,11 @@ var _ = Describe("Ilk File Events Query", func() {
 		headerTwoId, headerTwoErr := headerRepo.CreateOrUpdateHeader(headerTwo)
 		Expect(headerTwoErr).NotTo(HaveOccurred())
 
-		fileBlockTwo := test_data.VatFileIlkDustModel
-		fileBlockTwo.Ilk = test_helpers.FakeIlk.Hex
-		fileBlockTwo.Data = strconv.Itoa(rand.Int())
-		fileBlockTwoErr := vatFileRepo.Create(headerTwoId, []interface{}{fileBlockTwo})
+		fileBlockTwo := test_data.CopyModel(test_data.VatFileIlkDustModel)
+		fileBlockTwo.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
+
+		fileBlockTwo.ColumnValues["data"] = strconv.Itoa(rand.Int())
+		fileBlockTwoErr := vatFileRepo.Create(headerTwoId, []shared.InsertionModel{fileBlockTwo})
 		Expect(fileBlockTwoErr).NotTo(HaveOccurred())
 
 		var actualFiles []test_helpers.IlkFileEvent
@@ -152,28 +171,29 @@ var _ = Describe("Ilk File Events Query", func() {
 		Expect(actualFiles).To(ConsistOf(
 			test_helpers.IlkFileEvent{
 				IlkIdentifier: relevantIlkIdentifier,
-				What:          fileBlockOne.What,
-				Data:          fileBlockOne.Data,
+				What:          fileBlockOne.ColumnValues["what"].(string),
+				Data:          fileBlockOne.ColumnValues["data"].(string),
 			},
 			test_helpers.IlkFileEvent{
 				IlkIdentifier: relevantIlkIdentifier,
-				What:          fileBlockTwo.What,
-				Data:          fileBlockTwo.Data,
+				What:          fileBlockTwo.ColumnValues["what"].(string),
+				Data:          fileBlockTwo.ColumnValues["data"].(string),
 			},
 		))
 	})
 
 	It("does not include ilk file events for a different ilk", func() {
-		relevantFile := test_data.VatFileIlkDustModel
-		relevantFile.Ilk = test_helpers.FakeIlk.Hex
-		relevantFile.Data = strconv.Itoa(rand.Int())
+		relevantFile := test_data.CopyModel(test_data.VatFileIlkDustModel)
+		relevantFile.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
+		relevantFile.ColumnValues["data"] = strconv.Itoa(rand.Int())
 
-		irrelevantFile := test_data.VatFileIlkDustModel
-		irrelevantFile.Ilk = test_helpers.AnotherFakeIlk.Hex
-		irrelevantFile.Data = strconv.Itoa(rand.Int())
-		irrelevantFile.TransactionIndex = test_data.VatFileIlkDustModel.TransactionIndex + 1
+		irrelevantFile := test_data.CopyModel(test_data.VatFileIlkDustModel)
+		irrelevantFile.ForeignKeyValues[constants.IlkFK] = test_helpers.AnotherFakeIlk.Hex
+		irrelevantFile.ColumnValues["data"] = strconv.Itoa(rand.Int())
+		irrelevantFile.ColumnValues["tx_idx"] = test_data.VatFileIlkDustModel.ColumnValues["tx_idx"].(uint) + 1
 
-		vatBlockOneErr := vatFileRepo.Create(headerOneId, []interface{}{relevantFile, irrelevantFile})
+		models := []shared.InsertionModel{relevantFile, irrelevantFile}
+		vatBlockOneErr := vatFileRepo.Create(headerOneId, models)
 		Expect(vatBlockOneErr).NotTo(HaveOccurred())
 
 		var actualFiles []test_helpers.IlkFileEvent
@@ -183,8 +203,8 @@ var _ = Describe("Ilk File Events Query", func() {
 		Expect(actualFiles).To(ConsistOf(
 			test_helpers.IlkFileEvent{
 				IlkIdentifier: relevantIlkIdentifier,
-				What:          relevantFile.What,
-				Data:          relevantFile.Data,
+				What:          relevantFile.ColumnValues["what"].(string),
+				Data:          relevantFile.ColumnValues["data"].(string),
 			},
 		))
 	})

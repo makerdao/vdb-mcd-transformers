@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -78,7 +78,7 @@ var _ = Describe("VatFileDebtCeiling LogNoteTransformer", func() {
 		err = transformer.Execute(logs, header)
 		Expect(err).NotTo(HaveOccurred())
 
-		var dbResult []debt_ceiling.VatFileDebtCeilingModel
+		var dbResult []vatFileDebtCeilingModel
 		err = db.Select(&dbResult, `SELECT what, data from maker.vat_file_debt_ceiling`)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -87,3 +87,11 @@ var _ = Describe("VatFileDebtCeiling LogNoteTransformer", func() {
 		Expect(dbResult[0].Data).To(Equal("1000000000000000000000000000000000000000000000000000"))
 	})
 })
+
+type vatFileDebtCeilingModel struct {
+	What             string
+	Data             string
+	LogIndex         uint   `db:"log_idx"`
+	TransactionIndex uint   `db:"tx_idx"`
+	Raw              []byte `db:"raw_log"`
+}

@@ -71,7 +71,7 @@ var _ = XDescribe("VatSuck Transformer", func() {
 		err = tr.Execute(logs, header)
 		Expect(err).NotTo(HaveOccurred())
 
-		var dbResults []vat_suck.VatSuckModel
+		var dbResults []vatSuckModel
 		err = db.Select(&dbResults, `SELECT u, v, rad from maker.vat_suck`)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -82,3 +82,12 @@ var _ = XDescribe("VatSuck Transformer", func() {
 		Expect(dbResult.Rad).To(Equal(""))
 	})
 })
+
+type vatSuckModel struct {
+	U                string
+	V                string
+	Rad              string
+	LogIndex         uint   `db:"log_idx"`
+	TransactionIndex uint   `db:"tx_idx"`
+	Raw              []byte `db:"raw_log"`
+}

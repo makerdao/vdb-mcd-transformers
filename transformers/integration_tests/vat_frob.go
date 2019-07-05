@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -83,14 +83,13 @@ var _ = Describe("Vat frob Transformer", func() {
 		err = transformer.Execute(logs, header)
 		Expect(err).NotTo(HaveOccurred())
 
-		var dbResult []vat_frob.VatFrobModel
+		var dbResult []vatFrobModel
 		err = db.Select(&dbResult, `SELECT urn_id, v, w, dink, dart from maker.vat_frob`)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))
-		ilkID, err := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
-		Expect(err).NotTo(HaveOccurred())
-		urnID, err := shared.GetOrCreateUrn("0xa09408f055a8F7aFD33e9F17f82f33739bE2693c", ilkID, db)
+		urnID, err := shared.GetOrCreateUrn("0xa09408f055a8F7aFD33e9F17f82f33739bE2693c",
+			"0x4554482d41000000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(dbResult[0].Urn).To(Equal(strconv.Itoa(urnID)))
@@ -100,3 +99,15 @@ var _ = Describe("Vat frob Transformer", func() {
 		Expect(dbResult[0].Dart).To(Equal("500000000000000000"))
 	})
 })
+
+type vatFrobModel struct {
+	Ilk              string
+	Urn              string `db:"urn_id"`
+	V                string
+	W                string
+	Dink             string
+	Dart             string
+	LogIndex         uint   `db:"log_idx"`
+	TransactionIndex uint   `db:"tx_idx"`
+	Raw              []byte `db:"raw_log"`
+}

@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -29,8 +29,8 @@ import (
 
 type CatFileVowConverter struct{}
 
-func (CatFileVowConverter) ToModels(ethLogs []types.Log) ([]interface{}, error) {
-	var results []interface{}
+func (CatFileVowConverter) ToModels(ethLogs []types.Log) ([]shared.InsertionModel, error) {
+	var results []shared.InsertionModel
 	for _, ethLog := range ethLogs {
 		err := verifyLog(ethLog)
 		if err != nil {
@@ -45,12 +45,19 @@ func (CatFileVowConverter) ToModels(ethLogs []types.Log) ([]interface{}, error) 
 			return nil, err
 		}
 
-		result := CatFileVowModel{
-			What:             what,
-			Data:             data,
-			TransactionIndex: ethLog.TxIndex,
-			LogIndex:         ethLog.Index,
-			Raw:              raw,
+		result := shared.InsertionModel{
+			TableName: "cat_file_vow",
+			OrderedColumns: []string{
+				"header_id", "what", "data", "tx_idx", "log_idx", "raw_log",
+			},
+			ColumnValues: shared.ColumnValues{
+				"what":    what,
+				"data":    data,
+				"tx_idx":  ethLog.TxIndex,
+				"log_idx": ethLog.Index,
+				"raw_log": raw,
+			},
+			ForeignKeyValues: shared.ForeignKeyValues{},
 		}
 		results = append(results, result)
 	}

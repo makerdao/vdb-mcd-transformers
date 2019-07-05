@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -73,7 +73,7 @@ var _ = XDescribe("VatFlux LogNoteTransformer", func() {
 		err = transformer.Execute(logs, header)
 		Expect(err).NotTo(HaveOccurred())
 
-		var dbResult []vat_flux.VatFluxModel
+		var dbResult []vatFluxModel
 		err = db.Select(&dbResult, `SELECT ilk_id, src, dst, rad from maker.vat_flux`)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -87,3 +87,13 @@ var _ = XDescribe("VatFlux LogNoteTransformer", func() {
 		Expect(dbResult[0].TransactionIndex).To(Equal(uint(0)))
 	})
 })
+
+type vatFluxModel struct {
+	Ilk              string `db:"ilk_id"`
+	Src              string
+	Dst              string
+	Wad              string
+	TransactionIndex uint   `db:"tx_idx"`
+	LogIndex         uint   `db:"log_idx"`
+	Raw              []byte `db:"raw_log"`
+}

@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -82,7 +82,7 @@ var _ = Describe("Vat slip transformer", func() {
 		var headerID int64
 		err = db.Get(&headerID, `SELECT id FROM public.headers WHERE block_number = $1`, blockNumber)
 		Expect(err).NotTo(HaveOccurred())
-		var model vat_slip.VatSlipModel
+		var model vatSlipModel
 		err = db.Get(&model, `SELECT ilk_id, usr, wad, tx_idx FROM maker.vat_slip WHERE header_id = $1`, headerID)
 		Expect(err).NotTo(HaveOccurred())
 		ilkID, err := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
@@ -97,3 +97,12 @@ var _ = Describe("Vat slip transformer", func() {
 		Expect(headerChecked).To(BeTrue())
 	})
 })
+
+type vatSlipModel struct {
+	Ilk              string `db:"ilk_id"`
+	Usr              string
+	Wad              string
+	TransactionIndex uint   `db:"tx_idx"`
+	LogIndex         uint   `db:"log_idx"`
+	Raw              []byte `db:"raw_log"`
+}

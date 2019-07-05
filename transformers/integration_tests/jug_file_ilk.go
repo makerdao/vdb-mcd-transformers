@@ -1,3 +1,19 @@
+// VulcanizeDB
+// Copyright © 2019 Vulcanize
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 package integration_tests
 
 import (
@@ -64,7 +80,7 @@ var _ = Describe("Jug File Ilk LogNoteTransformer", func() {
 		err = tr.Execute(logs, header)
 		Expect(err).NotTo(HaveOccurred())
 
-		var dbResult []ilk.JugFileIlkModel
+		var dbResult []jugFileIlkModel
 		err = db.Select(&dbResult, `SELECT ilk_id, what, data FROM maker.jug_file_ilk`)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -115,3 +131,12 @@ var _ = Describe("Jug File Ilk LogNoteTransformer", func() {
 		Expect(jugFileIlkChecked[0]).To(Equal(2))
 	})
 })
+
+type jugFileIlkModel struct {
+	Ilk              string `db:"ilk_id"`
+	What             string
+	Data             string
+	LogIndex         uint   `db:"log_idx"`
+	TransactionIndex uint   `db:"tx_idx"`
+	Raw              []byte `db:"raw_log"`
+}

@@ -20,27 +20,23 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-
 	"github.com/vulcanize/mcd_transformers/transformers/events/jug_init"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
 var _ = Describe("Jug init converter", func() {
+	var converter = jug_init.JugInitConverter{}
+
 	It("returns err if log is missing topics", func() {
-		converter := jug_init.JugInitConverter{}
 		incompleteLog := types.Log{}
-
 		_, err := converter.ToModels([]types.Log{incompleteLog})
-
 		Expect(err).To(HaveOccurred())
 	})
 
-	It("converts log to a model", func() {
-		converter := jug_init.JugInitConverter{}
-
-		model, err := converter.ToModels([]types.Log{test_data.EthJugInitLog})
-
+	It("convert a log to an insertion model", func() {
+		models, err := converter.ToModels([]types.Log{test_data.EthJugInitLog})
 		Expect(err).NotTo(HaveOccurred())
-		Expect(model).To(Equal([]interface{}{test_data.JugInitModel}))
+		Expect(models).To(Equal([]shared.InsertionModel{test_data.JugInitModel}))
 	})
 })

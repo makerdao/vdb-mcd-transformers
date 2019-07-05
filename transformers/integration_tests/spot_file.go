@@ -96,7 +96,7 @@ var _ = Describe("SpotFile LogNoteTransformers", func() {
 		})
 
 		It("fetches and transforms a Spot.file mat event from Kovan", func() {
-			var dbResult mat.SpotFileMatModel
+			var dbResult spotFileMatModel
 			getSpotErr := db.Get(&dbResult, `SELECT ilk_id, what, data FROM maker.spot_file_mat`)
 			Expect(getSpotErr).NotTo(HaveOccurred())
 
@@ -154,7 +154,7 @@ var _ = Describe("SpotFile LogNoteTransformers", func() {
 		})
 
 		It("fetches and transforms a Spot.file pip event from Kovan", func() {
-			var dbResult pip.SpotFilePipModel
+			var dbResult spotFilePipModel
 			getSpotErr := db.Get(&dbResult, `SELECT ilk_id, pip from maker.spot_file_pip`)
 			Expect(getSpotErr).NotTo(HaveOccurred())
 
@@ -165,3 +165,20 @@ var _ = Describe("SpotFile LogNoteTransformers", func() {
 		})
 	})
 })
+
+type spotFileMatModel struct {
+	Ilk              string `db:"ilk_id"`
+	What             string
+	Data             string
+	LogIndex         uint   `db:"log_idx"`
+	TransactionIndex uint   `db:"tx_idx"`
+	Raw              []byte `db:"raw_log"`
+}
+
+type spotFilePipModel struct {
+	Ilk              string `db:"ilk_id"`
+	Pip              string
+	LogIndex         uint   `db:"log_idx"`
+	TransactionIndex uint   `db:"tx_idx"`
+	Raw              []byte `db:"raw_log"`
+}

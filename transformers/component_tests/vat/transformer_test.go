@@ -1,3 +1,19 @@
+// VulcanizeDB
+// Copyright © 2019 Vulcanize
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 package vat
 
 import (
@@ -15,6 +31,7 @@ import (
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_frob"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	storage2 "github.com/vulcanize/mcd_transformers/transformers/storage"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/test_helpers"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/vat"
@@ -187,16 +204,14 @@ var _ = Describe("Executing the transformer", func() {
 
 	Describe("urn", func() {
 		var (
-			ilkID, urnID   int
-			ilkErr, urnErr error
+			urnID  int
+			urnErr error
 		)
 
 		BeforeEach(func() {
 			ilk := "0x434f4c312d410000000000000000000000000000000000000000000000000000"
-			ilkID, ilkErr = shared.GetOrCreateIlk(ilk, db)
-			Expect(ilkErr).NotTo(HaveOccurred())
 			urn := "0x118D6a283f9044Ce17b95226822e5c73F50e0B90"
-			urnID, urnErr = shared.GetOrCreateUrn(urn, ilkID, db)
+			urnID, urnErr = shared.GetOrCreateUrn(urn, ilk, db)
 			Expect(urnErr).NotTo(HaveOccurred())
 		})
 
@@ -251,10 +266,10 @@ var _ = Describe("Executing the transformer", func() {
 			Expect(err).NotTo(HaveOccurred())
 			vatFrobRepository := vat_frob.VatFrobRepository{}
 			vatFrobRepository.SetDB(db)
-			vatFrob := test_data.VatFrobModelWithPositiveDart
-			vatFrob.Ilk = ilk
-			vatFrob.V = guy
-			insertErr := vatFrobRepository.Create(headerID, []interface{}{vatFrob})
+			vatFrob := test_data.CopyModel(test_data.VatFrobModelWithPositiveDart)
+			vatFrob.ForeignKeyValues[constants.IlkFK] = ilk
+			vatFrob.ColumnValues["v"] = guy
+			insertErr := vatFrobRepository.Create(headerID, []shared.InsertionModel{vatFrob})
 			Expect(insertErr).NotTo(HaveOccurred())
 		})
 
@@ -291,9 +306,9 @@ var _ = Describe("Executing the transformer", func() {
 			Expect(err).NotTo(HaveOccurred())
 			vatFrobRepository := vat_frob.VatFrobRepository{}
 			vatFrobRepository.SetDB(db)
-			vatFrob := test_data.VatFrobModelWithPositiveDart
-			vatFrob.W = guy
-			insertErr := vatFrobRepository.Create(headerID, []interface{}{vatFrob})
+			vatFrob := test_data.CopyModel(test_data.VatFrobModelWithPositiveDart)
+			vatFrob.ColumnValues["w"] = guy
+			insertErr := vatFrobRepository.Create(headerID, []shared.InsertionModel{vatFrob})
 			Expect(insertErr).NotTo(HaveOccurred())
 		})
 

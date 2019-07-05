@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -23,6 +23,7 @@ import (
 	. "github.com/onsi/gomega"
 
 	"github.com/vulcanize/mcd_transformers/transformers/events/cat_file/flip"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
@@ -53,8 +54,7 @@ var _ = Describe("Cat file flip converter", func() {
 
 	It("converts a log to an model", func() {
 		models, err := converter.ToModels([]types.Log{test_data.EthCatFileFlipLog})
-
 		Expect(err).NotTo(HaveOccurred())
-		Expect(models).To(Equal([]interface{}{test_data.CatFileFlipModel}))
+		Expect(models).To(Equal([]shared.InsertionModel{test_data.CatFileFlipModel}))
 	})
 })

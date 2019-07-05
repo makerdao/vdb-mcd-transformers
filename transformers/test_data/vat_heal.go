@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -23,7 +23,7 @@ import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
 
-	"github.com/vulcanize/mcd_transformers/transformers/events/vat_heal"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
@@ -45,9 +45,16 @@ var EthVatHealLogWithPositiveRad = types.Log{
 }
 
 var rawVatHealLogWithPositiveRad, _ = json.Marshal(EthVatHealLogWithPositiveRad)
-var VatHealModelWithPositiveRad = vat_heal.VatHealModel{
-	Rad:              "10001",
-	LogIndex:         EthVatHealLogWithPositiveRad.Index,
-	TransactionIndex: EthVatHealLogWithPositiveRad.TxIndex,
-	Raw:              rawVatHealLogWithPositiveRad,
+var VatHealModelWithPositiveRad = shared.InsertionModel{
+	TableName: "vat_heal",
+	OrderedColumns: []string{
+		"header_id", "rad", "log_idx", "tx_idx", "raw_log",
+	},
+	ColumnValues: shared.ColumnValues{
+		"rad":     "10001",
+		"log_idx": EthVatHealLogWithPositiveRad.Index,
+		"tx_idx":  EthVatHealLogWithPositiveRad.TxIndex,
+		"raw_log": rawVatHealLogWithPositiveRad,
+	},
+	ForeignKeyValues: shared.ForeignKeyValues{},
 }

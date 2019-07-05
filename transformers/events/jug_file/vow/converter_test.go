@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -17,19 +17,19 @@
 package vow_test
 
 import (
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
-
 	"github.com/vulcanize/mcd_transformers/transformers/events/jug_file/vow"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
-var _ = Describe("Jug file base converter", func() {
+var _ = Describe("Jug file vow converter", func() {
+	var converter = vow.JugFileVowConverter{}
 	It("returns err if log missing topics", func() {
-		converter := vow.JugFileVowConverter{}
 		badLog := types.Log{
 			Topics: []common.Hash{{}},
 			Data:   []byte{1, 1, 1, 1, 1},
@@ -41,12 +41,9 @@ var _ = Describe("Jug file base converter", func() {
 	})
 
 	It("converts a log to a model", func() {
-		converter := vow.JugFileVowConverter{}
-
 		models, err := converter.ToModels([]types.Log{test_data.EthJugFileVowLog})
 
 		Expect(err).NotTo(HaveOccurred())
-		Expect(len(models)).To(Equal(1))
-		Expect(models[0].(vow.JugFileVowModel)).To(Equal(test_data.JugFileVowModel))
+		Expect(models).To(Equal([]shared.InsertionModel{test_data.JugFileVowModel}))
 	})
 })

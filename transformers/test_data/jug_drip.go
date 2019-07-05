@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -24,7 +24,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 
-	"github.com/vulcanize/mcd_transformers/transformers/events/jug_drip"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
@@ -46,9 +46,17 @@ var EthJugDripLog = types.Log{
 }
 
 var rawJugDripLog, _ = json.Marshal(EthJugDripLog)
-var JugDripModel = jug_drip.JugDripModel{
-	Ilk:              "0x66616b6520696c6b000000000000000000000000000000000000000000000000",
-	LogIndex:         EthJugDripLog.Index,
-	TransactionIndex: EthJugDripLog.TxIndex,
-	Raw:              rawJugDripLog,
+var JugDripModel = shared.InsertionModel{
+	TableName: "jug_drip",
+	OrderedColumns: []string{
+		"header_id", string(constants.IlkFK), "log_idx", "tx_idx", "raw_log",
+	},
+	ColumnValues: shared.ColumnValues{
+		"log_idx": EthJugDripLog.Index,
+		"tx_idx":  EthJugDripLog.TxIndex,
+		"raw_log": rawJugDripLog,
+	},
+	ForeignKeyValues: shared.ForeignKeyValues{
+		constants.IlkFK: "0x66616b6520696c6b000000000000000000000000000000000000000000000000",
+	},
 }

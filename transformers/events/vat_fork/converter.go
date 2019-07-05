@@ -23,15 +23,16 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/constants"
 
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/constants"
+	constants2 "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
 type VatForkConverter struct{}
 
-func (VatForkConverter) ToModels(ethLogs []types.Log) ([]interface{}, error) {
-	var models []interface{}
+func (VatForkConverter) ToModels(ethLogs []types.Log) ([]shared.InsertionModel, error) {
+	var models []shared.InsertionModel
 	for _, ethLog := range ethLogs {
 		err := verifyLog(ethLog)
 		if err != nil {
@@ -59,17 +60,24 @@ func (VatForkConverter) ToModels(ethLogs []types.Log) ([]interface{}, error) {
 			return nil, jsonErr
 		}
 
-		model := VatForkModel{
-			Ilk:              ilk,
-			Src:              src,
-			Dst:              dst,
-			Dink:             dink.String(),
-			Dart:             dart.String(),
-			TransactionIndex: ethLog.TxIndex,
-			LogIndex:         ethLog.Index,
-			Raw:              rawLogJson,
+		model := shared.InsertionModel{
+			TableName: "vat_fork",
+			OrderedColumns: []string{
+				"header_id", string(constants2.IlkFK), "src", "dst", "dink", "dart", "log_idx", "tx_idx", "raw_log",
+			},
+			ColumnValues: shared.ColumnValues{
+				"src":     src,
+				"dst":     dst,
+				"dink":    dink.String(),
+				"dart":    dart.String(),
+				"log_idx": ethLog.Index,
+				"tx_idx":  ethLog.TxIndex,
+				"raw_log": rawLogJson,
+			},
+			ForeignKeyValues: shared.ForeignKeyValues{
+				constants2.IlkFK: ilk,
+			},
 		}
-
 		models = append(models, model)
 	}
 

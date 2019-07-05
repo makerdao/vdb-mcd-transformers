@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -18,28 +18,24 @@ package deal_test
 
 import (
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
-	"github.com/ethereum/go-ethereum/core/types"
-
 	"github.com/vulcanize/mcd_transformers/transformers/events/deal"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
 var _ = Describe("Flip Deal Converter", func() {
+	var converter = deal.DealConverter{}
 	It("converts logs to models", func() {
-		converter := deal.DealConverter{}
-
 		models, err := converter.ToModels([]types.Log{test_data.DealLogNote})
-
 		Expect(err).NotTo(HaveOccurred())
-		Expect(len(models)).To(Equal(1))
-		Expect(models[0]).To(Equal(test_data.DealModel))
+		Expect(models).To(Equal([]shared.InsertionModel{test_data.DealModel}))
 	})
 
 	It("returns an error if the expected amount of topics aren't in the log", func() {
-		converter := deal.DealConverter{}
 		invalidLog := test_data.DealLogNote
 		invalidLog.Topics = []common.Hash{}
 

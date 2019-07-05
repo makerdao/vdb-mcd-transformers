@@ -1,3 +1,19 @@
+// VulcanizeDB
+// Copyright © 2019 Vulcanize
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 package test_data
 
 import (
@@ -5,8 +21,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/vulcanize/mcd_transformers/transformers/events/spot_file/mat"
-	"github.com/vulcanize/mcd_transformers/transformers/events/spot_file/pip"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
@@ -28,13 +43,21 @@ var EthSpotFileMatLog = types.Log{
 }
 
 var rawSpotFileMatLog, _ = json.Marshal(EthSpotFileMatLog)
-var SpotFileMatModel = mat.SpotFileMatModel{
-	Ilk:              "0x4554482d41000000000000000000000000000000000000000000000000000000",
-	What:             "mat",
-	Data:             "1500000000000000000000000000",
-	LogIndex:         EthSpotFileMatLog.Index,
-	TransactionIndex: EthSpotFileMatLog.TxIndex,
-	Raw:              rawSpotFileMatLog,
+var SpotFileMatModel = shared.InsertionModel{
+	TableName: "spot_file_mat",
+	OrderedColumns: []string{
+		"header_id", string(constants.IlkFK), "what", "data", "log_idx", "tx_idx", "raw_log",
+	},
+	ColumnValues: shared.ColumnValues{
+		"what":    "mat",
+		"data":    "1500000000000000000000000000",
+		"log_idx": EthSpotFileMatLog.Index,
+		"tx_idx":  EthSpotFileMatLog.TxIndex,
+		"raw_log": rawSpotFileMatLog,
+	},
+	ForeignKeyValues: shared.ForeignKeyValues{
+		constants.IlkFK: "0x4554482d41000000000000000000000000000000000000000000000000000000",
+	},
 }
 
 var EthSpotFilePipLog = types.Log{
@@ -55,10 +78,18 @@ var EthSpotFilePipLog = types.Log{
 }
 
 var rawSpotFilePipLog, _ = json.Marshal(EthSpotFilePipLog)
-var SpotFilePipModel = pip.SpotFilePipModel{
-	Ilk:              "0x4554482d41000000000000000000000000000000000000000000000000000000",
-	Pip:              "0x8C73Ec0fBCdEC6b8C060BC224D94740FD41f3774",
-	LogIndex:         EthSpotFilePipLog.Index,
-	TransactionIndex: EthSpotFilePipLog.TxIndex,
-	Raw:              rawSpotFilePipLog,
+var SpotFilePipModel = shared.InsertionModel{
+	TableName: "spot_file_pip",
+	OrderedColumns: []string{
+		"header_id", string(constants.IlkFK), "pip", "log_idx", "tx_idx", "raw_log",
+	},
+	ColumnValues: shared.ColumnValues{
+		"pip":     "0x8C73Ec0fBCdEC6b8C060BC224D94740FD41f3774",
+		"log_idx": EthSpotFilePipLog.Index,
+		"tx_idx":  EthSpotFilePipLog.TxIndex,
+		"raw_log": rawSpotFilePipLog,
+	},
+	ForeignKeyValues: shared.ForeignKeyValues{
+		constants.IlkFK: "0x4554482d41000000000000000000000000000000000000000000000000000000",
+	},
 }

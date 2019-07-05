@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -25,9 +25,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 
-	"github.com/vulcanize/mcd_transformers/transformers/events/jug_file/base"
-	ilk2 "github.com/vulcanize/mcd_transformers/transformers/events/jug_file/ilk"
-	"github.com/vulcanize/mcd_transformers/transformers/events/jug_file/vow"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
@@ -49,13 +47,21 @@ var EthJugFileIlkLog = types.Log{
 }
 
 var rawJugFileIlkLog, _ = json.Marshal(EthJugFileIlkLog)
-var JugFileIlkModel = ilk2.JugFileIlkModel{
-	Ilk:              "0x434f4c322d410000000000000000000000000000000000000000000000000000",
-	What:             "duty",
-	Data:             "1000000000937303470807876289",
-	LogIndex:         EthJugFileIlkLog.Index,
-	TransactionIndex: EthJugFileIlkLog.TxIndex,
-	Raw:              rawJugFileIlkLog,
+var JugFileIlkModel = shared.InsertionModel{
+	TableName: "jug_file_ilk",
+	OrderedColumns: []string{
+		"header_id", string(constants.IlkFK), "what", "data", "log_idx", "tx_idx", "raw_log",
+	},
+	ColumnValues: shared.ColumnValues{
+		"what":    "duty",
+		"data":    "1000000000937303470807876289",
+		"log_idx": EthJugFileIlkLog.Index,
+		"tx_idx":  EthJugFileIlkLog.TxIndex,
+		"raw_log": rawJugFileIlkLog,
+	},
+	ForeignKeyValues: shared.ForeignKeyValues{
+		constants.IlkFK: "0x434f4c322d410000000000000000000000000000000000000000000000000000",
+	},
 }
 
 var EthJugFileBaseLog = types.Log{
@@ -76,12 +82,19 @@ var EthJugFileBaseLog = types.Log{
 }
 
 var rawJugFileBaseLog, _ = json.Marshal(EthJugFileBaseLog)
-var JugFileBaseModel = base.JugFileBaseModel{
-	What:             "fake what",
-	Data:             big.NewInt(123).String(),
-	LogIndex:         EthJugFileBaseLog.Index,
-	TransactionIndex: EthJugFileBaseLog.TxIndex,
-	Raw:              rawJugFileBaseLog,
+var JugFileBaseModel = shared.InsertionModel{
+	TableName: "jug_file_base",
+	OrderedColumns: []string{
+		"header_id", "what", "data", "log_idx", "tx_idx", "raw_log",
+	},
+	ColumnValues: shared.ColumnValues{
+		"what":    "fake what",
+		"data":    big.NewInt(123).String(),
+		"log_idx": EthJugFileBaseLog.Index,
+		"tx_idx":  EthJugFileBaseLog.TxIndex,
+		"raw_log": rawJugFileBaseLog,
+	},
+	ForeignKeyValues: shared.ForeignKeyValues{},
 }
 
 var EthJugFileVowLog = types.Log{
@@ -102,10 +115,17 @@ var EthJugFileVowLog = types.Log{
 }
 
 var rawJugFileVowLog, _ = json.Marshal(EthJugFileVowLog)
-var JugFileVowModel = vow.JugFileVowModel{
-	What:             "vow",
-	Data:             "0x17560834075DA3Db54f737db74377E799c865821",
-	LogIndex:         EthJugFileVowLog.Index,
-	TransactionIndex: EthJugFileVowLog.TxIndex,
-	Raw:              rawJugFileVowLog,
+var JugFileVowModel = shared.InsertionModel{
+	TableName: "jug_file_vow",
+	OrderedColumns: []string{
+		"header_id", "what", "data", "log_idx", "tx_idx", "raw_log",
+	},
+	ColumnValues: shared.ColumnValues{
+		"what":    "vow",
+		"data":    "0x17560834075DA3Db54f737db74377E799c865821",
+		"log_idx": EthJugFileVowLog.Index,
+		"tx_idx":  EthJugFileVowLog.TxIndex,
+		"raw_log": rawJugFileVowLog,
+	},
+	ForeignKeyValues: shared.ForeignKeyValues{},
 }

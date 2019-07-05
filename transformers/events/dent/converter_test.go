@@ -23,6 +23,7 @@ import (
 	. "github.com/onsi/gomega"
 
 	"github.com/vulcanize/mcd_transformers/transformers/events/dent"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
@@ -33,8 +34,7 @@ var _ = Describe("Dent Converter", func() {
 		models, err := converter.ToModels([]types.Log{test_data.EthDentLog})
 
 		Expect(err).NotTo(HaveOccurred())
-		Expect(len(models)).To(Equal(1))
-		Expect(models[0].(dent.DentModel)).To(Equal(test_data.DentModel))
+		Expect(models).To(Equal([]shared.InsertionModel{test_data.DentModel}))
 	})
 
 	It("returns an error if the expected amount of topics aren't in the log", func() {
