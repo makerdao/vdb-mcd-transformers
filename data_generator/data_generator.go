@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"github.com/jmoiron/sqlx"
 	"github.com/vulcanize/mcd_transformers/transformers/events/spot_poke"
-	"github.com/vulcanize/mcd_transformers/transformers/events/vat_frob"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/cat"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/jug"
@@ -28,10 +27,10 @@ const (
 	nodeSql = `INSERT INTO public.eth_nodes (genesis_block, network_id, eth_node_id) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
 	txSql   = `INSERT INTO header_sync_transactions (header_id, hash, tx_from, tx_index, tx_to)
 		VALUES ($1, $2, $3, $4, $5)`
-
-	// Event data
-	// TODO add event data
-	// TODO add tx for events
+	insertVatFrobSql = `INSERT INTO maker.vat_frob (header_id, urn_id, v, w, dink, dart, raw_log, log_idx, tx_idx)
+		VALUES($1, $2::NUMERIC, $3, $4, $5::NUMERIC, $6::NUMERIC, $7, $8, $9)
+		ON CONFLICT (header_id, tx_idx, log_idx)
+		DO UPDATE SET urn_id = $2, v = $3, w = $4, dink = $5, dart = $6, raw_log = $7;`
 )
 
 var (
@@ -270,7 +269,7 @@ func (state *GeneratorState) createUrn() error {
 	art := rand.Int()
 	_, artErr := state.pgTx.Exec(vat.InsertUrnArtQuery, blockNumber, blockHash, urnId, art)
 	_, inkErr := state.pgTx.Exec(vat.InsertUrnInkQuery, blockNumber, blockHash, urnId, ink)
-	_, frobErr := state.pgTx.Exec(vat_frob.InsertVatFrobQuery,
+	_, frobErr := state.pgTx.Exec(insertVatFrobSql,
 		state.currentHeader.Id, urnId, guy, guy, ink, art, emptyRaw, 0, 0) // txIx 0 to match tx
 
 	if artErr != nil || inkErr != nil || frobErr != nil {
@@ -302,12 +301,12 @@ func (state *GeneratorState) updateUrn() error {
 	if p < 0.5 {
 		// Update ink
 		_, updateErr = state.pgTx.Exec(vat.InsertUrnInkQuery, blockNumber, blockHash, randomUrnId, newValue)
-		_, frobErr = state.pgTx.Exec(vat_frob.InsertVatFrobQuery,
+		_, frobErr = state.pgTx.Exec(insertVatFrobSql,
 			state.currentHeader.Id, randomUrnId, randomGuy, randomGuy, newValue, 0, emptyRaw, 0, 0) // txIx 0 to match tx
 	} else {
 		// Update art
 		_, updateErr = state.pgTx.Exec(vat.InsertUrnArtQuery, blockNumber, blockHash, randomUrnId, newValue)
-		_, frobErr = state.pgTx.Exec(vat_frob.InsertVatFrobQuery,
+		_, frobErr = state.pgTx.Exec(insertVatFrobSql,
 			state.currentHeader.Id, randomUrnId, randomGuy, randomGuy, 0, newValue, emptyRaw, 0, 0) // txIx 0 to match tx
 	}
 

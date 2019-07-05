@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -21,7 +21,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/vulcanize/mcd_transformers/transformers/events/vow_fess"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 )
@@ -44,9 +44,16 @@ var EthVowFessLog = types.Log{
 }
 
 var rawVowFessLog, _ = json.Marshal(EthVowFessLog)
-var VowFessModel = vow_fess.VowFessModel{
-	Tab:              "1337",
-	LogIndex:         EthVowFessLog.Index,
-	TransactionIndex: EthVowFessLog.TxIndex,
-	Raw:              rawVowFessLog,
+var VowFessModel = shared.InsertionModel{
+	TableName: "vow_fess",
+	OrderedColumns: []string{
+		"header_id", "tab", "log_idx", "tx_idx", "raw_log",
+	},
+	ColumnValues: shared.ColumnValues{
+		"tab":     "1337",
+		"log_idx": EthVowFessLog.Index,
+		"tx_idx":  EthVowFessLog.TxIndex,
+		"raw_log": rawVowFessLog,
+	},
+	ForeignKeyValues: shared.ForeignKeyValues{},
 }

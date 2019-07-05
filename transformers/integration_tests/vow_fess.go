@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -79,7 +79,7 @@ var _ = XDescribe("VowFess LogNoteTransformer", func() {
 		err = tr.Execute(logs, header)
 		Expect(err).NotTo(HaveOccurred())
 
-		var dbResult []vow_fess.VowFessModel
+		var dbResult []vowFessModel
 		err = db.Select(&dbResult, `SELECT tab, log_idx, tx_idx from maker.vow_fess`)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -88,3 +88,10 @@ var _ = XDescribe("VowFess LogNoteTransformer", func() {
 		Expect(dbResult[0].TransactionIndex).To(Equal(uint(1)))
 	})
 })
+
+type vowFessModel struct {
+	Tab              string
+	LogIndex         uint   `db:"log_idx"`
+	TransactionIndex uint   `db:"tx_idx"`
+	Raw              []byte `db:"raw_log"`
+}

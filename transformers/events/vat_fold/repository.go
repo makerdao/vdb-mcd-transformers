@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -17,10 +17,6 @@
 package vat_fold
 
 import (
-	"fmt"
-
-	log "github.com/sirupsen/logrus"
-
 	repo "github.com/vulcanize/vulcanizedb/libraries/shared/repository"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 
@@ -32,64 +28,8 @@ type VatFoldRepository struct {
 	db *postgres.DB
 }
 
-func (repository VatFoldRepository) Create(headerID int64, models []interface{}) error {
-	tx, dBaseErr := repository.db.Beginx()
-	if dBaseErr != nil {
-		return dBaseErr
-	}
-	for _, model := range models {
-		vatFold, ok := model.(VatFoldModel)
-		if !ok {
-			rollbackErr := tx.Rollback()
-			if rollbackErr != nil {
-				log.Error("failed to rollback ", rollbackErr)
-			}
-			return fmt.Errorf("model of type %T, not %T", model, VatFoldModel{})
-		}
-
-		ilkID, ilkErr := shared.GetOrCreateIlkInTransaction(vatFold.Ilk, tx)
-		if ilkErr != nil {
-			rollbackErr := tx.Rollback()
-			if rollbackErr != nil {
-				log.Error("failed to rollback ", rollbackErr)
-			}
-			return ilkErr
-		}
-
-		urnID, urnErr := shared.GetOrCreateUrnInTransaction(vatFold.Urn, ilkID, tx)
-		if urnErr != nil {
-			rollbackErr := tx.Rollback()
-			if rollbackErr != nil {
-				log.Error("failed to rollback", rollbackErr)
-			}
-			return urnErr
-		}
-
-		_, execErr := tx.Exec(
-			`INSERT into maker.vat_fold (header_id, urn_id, rate, log_idx, tx_idx, raw_log)
-				VALUES($1, $2, $3::NUMERIC, $4, $5, $6)
-				ON CONFLICT (header_id, tx_idx, log_idx) DO UPDATE SET urn_id = $2, rate = $3, raw_log = $6;`,
-			headerID, urnID, vatFold.Rate, vatFold.LogIndex, vatFold.TransactionIndex, vatFold.Raw,
-		)
-		if execErr != nil {
-			rollbackErr := tx.Rollback()
-			if rollbackErr != nil {
-				log.Error("failed to rollback ", rollbackErr)
-			}
-			return execErr
-		}
-	}
-
-	checkHeaderErr := repo.MarkHeaderCheckedInTransaction(headerID, tx, constants.VatFoldChecked)
-	if checkHeaderErr != nil {
-		rollbackErr := tx.Rollback()
-		if rollbackErr != nil {
-			log.Error("failed to rollback ", rollbackErr)
-		}
-		return checkHeaderErr
-	}
-
-	return tx.Commit()
+func (repository VatFoldRepository) Create(headerID int64, models []shared.InsertionModel) error {
+	return shared.Create(headerID, models, repository.db)
 }
 
 func (repository VatFoldRepository) MarkHeaderChecked(headerID int64) error {

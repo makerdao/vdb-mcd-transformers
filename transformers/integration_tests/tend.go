@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -83,7 +83,7 @@ var _ = XDescribe("Tend LogNoteTransformer", func() {
 		err = transformer.Execute(logs, header)
 		Expect(err).NotTo(HaveOccurred())
 
-		var dbResult []tend.TendModel
+		var dbResult []tendModel
 		err = db.Select(&dbResult, `SELECT bid_id, lot, bid, contract_address FROM maker.tend`)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -116,7 +116,7 @@ var _ = XDescribe("Tend LogNoteTransformer", func() {
 		err = transformer.Execute(logs, header)
 		Expect(err).NotTo(HaveOccurred())
 
-		var dbResult []tend.TendModel
+		var dbResult []tendModel
 		err = db.Select(&dbResult, `SELECT bid_id, lot, bid, contract_address FROM maker.tend`)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -149,7 +149,7 @@ var _ = XDescribe("Tend LogNoteTransformer", func() {
 		err = transformer.Execute(logs, header)
 		Expect(err).NotTo(HaveOccurred())
 
-		var dbResult []tend.TendModel
+		var dbResult []tendModel
 		err = db.Select(&dbResult, `SELECT bid_id, lot, bid, contract_address FROM maker.tend`)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -167,3 +167,13 @@ var _ = XDescribe("Tend LogNoteTransformer", func() {
 		Expect(dbTic).To(Equal(actualTic))
 	})
 })
+
+type tendModel struct {
+	BidId            string `db:"bid_id"`
+	Lot              string
+	Bid              string
+	ContractAddress  string `db:"contract_address"`
+	LogIndex         uint   `db:"log_idx"`
+	TransactionIndex uint   `db:"tx_idx"`
+	Raw              []byte `db:"raw_log"`
+}

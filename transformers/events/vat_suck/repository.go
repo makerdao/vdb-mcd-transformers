@@ -17,12 +17,10 @@
 package vat_suck
 
 import (
-	"fmt"
-
-	log "github.com/sirupsen/logrus"
 	repo "github.com/vulcanize/vulcanizedb/libraries/shared/repository"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
@@ -34,44 +32,8 @@ func (repository *VatSuckRepository) SetDB(db *postgres.DB) {
 	repository.db = db
 }
 
-func (repository VatSuckRepository) Create(headerID int64, models []interface{}) error {
-	tx, dBaseErr := repository.db.Beginx()
-	if dBaseErr != nil {
-		return dBaseErr
-	}
-
-	for _, model := range models {
-		vatSuck, ok := model.(VatSuckModel)
-		if !ok {
-			rollbackErr := tx.Rollback()
-			if rollbackErr != nil {
-				log.Error("failed to rollback ", rollbackErr)
-			}
-			return fmt.Errorf("model of type %T, not %T", model, VatSuckModel{})
-		}
-
-		_, execErr := tx.Exec(`INSERT INTO maker.vat_suck (header_id, u, v, rad, log_idx, tx_idx, raw_log)
-		VALUES($1, $2, $3, $4::NUMERIC, $5, $6, $7)
-		ON CONFlICT (header_id, tx_idx, log_idx) DO UPDATE SET u = $2, v = $3, rad = $4, raw_log = $7;`,
-			headerID, vatSuck.U, vatSuck.V, vatSuck.Rad, vatSuck.LogIndex, vatSuck.TransactionIndex, vatSuck.Raw)
-		if execErr != nil {
-			rollbackErr := tx.Rollback()
-			if rollbackErr != nil {
-				log.Error("failed to rollback ", rollbackErr)
-			}
-			return execErr
-		}
-	}
-
-	checkHeaderErr := repo.MarkHeaderCheckedInTransaction(headerID, tx, constants.VatSuckChecked)
-	if checkHeaderErr != nil {
-		rollbackErr := tx.Rollback()
-		if rollbackErr != nil {
-			log.Error("failed to rollback ", rollbackErr)
-		}
-		return checkHeaderErr
-	}
-	return tx.Commit()
+func (repository VatSuckRepository) Create(headerID int64, models []shared.InsertionModel) error {
+	return shared.Create(headerID, models, repository.db)
 }
 
 func (repository VatSuckRepository) MarkHeaderChecked(headerId int64) error {

@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -17,10 +17,6 @@
 package jug_drip
 
 import (
-	"fmt"
-
-	log "github.com/sirupsen/logrus"
-
 	repo "github.com/vulcanize/vulcanizedb/libraries/shared/repository"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 
@@ -32,54 +28,8 @@ type JugDripRepository struct {
 	db *postgres.DB
 }
 
-func (repository JugDripRepository) Create(headerID int64, models []interface{}) error {
-	tx, dBaseErr := repository.db.Beginx()
-	if dBaseErr != nil {
-		return dBaseErr
-	}
-	for _, model := range models {
-		jugDrip, ok := model.(JugDripModel)
-		if !ok {
-			rollbackErr := tx.Rollback()
-			if rollbackErr != nil {
-				log.Error("failed to rollback ", rollbackErr)
-			}
-			return fmt.Errorf("model of type %T, not %T", model, JugDripModel{})
-		}
-
-		ilkID, ilkErr := shared.GetOrCreateIlkInTransaction(jugDrip.Ilk, tx)
-		if ilkErr != nil {
-			rollbackErr := tx.Rollback()
-			if rollbackErr != nil {
-				log.Error("failed to rollback ", rollbackErr)
-			}
-			return ilkErr
-		}
-
-		_, execErr := tx.Exec(
-			`INSERT into maker.jug_drip (header_id, ilk_id, log_idx, tx_idx, raw_log)
-        			VALUES($1, $2, $3, $4, $5)
-					ON CONFLICT (header_id, tx_idx, log_idx) DO UPDATE SET ilk_id = $2, raw_log = $5;`,
-			headerID, ilkID, jugDrip.LogIndex, jugDrip.TransactionIndex, jugDrip.Raw,
-		)
-		if execErr != nil {
-			rollbackErr := tx.Rollback()
-			if rollbackErr != nil {
-				log.Error("failed to rollback ", rollbackErr)
-			}
-			return execErr
-		}
-	}
-
-	checkHeaderErr := repo.MarkHeaderCheckedInTransaction(headerID, tx, constants.JugDripChecked)
-	if checkHeaderErr != nil {
-		rollbackErr := tx.Rollback()
-		if rollbackErr != nil {
-			log.Error("failed to rollback ", rollbackErr)
-		}
-		return checkHeaderErr
-	}
-	return tx.Commit()
+func (repository JugDripRepository) Create(headerID int64, models []shared.InsertionModel) error {
+	return shared.Create(headerID, models, repository.db)
 }
 
 func (repository JugDripRepository) MarkHeaderChecked(headerID int64) error {

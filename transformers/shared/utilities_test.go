@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -17,14 +17,14 @@
 package shared_test
 
 import (
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/vulcanize/mcd_transformers/transformers/component_tests/queries/test_helpers"
-	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 
-	"github.com/ethereum/go-ethereum/common"
+	"github.com/vulcanize/mcd_transformers/transformers/component_tests/queries/test_helpers"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
 var _ = Describe("Shared utilities", func() {
@@ -49,7 +49,7 @@ var _ = Describe("Shared utilities", func() {
 
 				Expect(err).NotTo(HaveOccurred())
 				wadInt := shared.ConvertUint256HexToBigInt(hexutil.Encode(wadBytes))
-				Expect(wadInt.String()).To(Equal(test_data.VatFluxModel.Wad))
+				Expect(wadInt.String()).To(Equal(test_data.VatFluxModel.ColumnValues["wad"].(string)))
 			})
 
 			It("extracts fourth of five arguments", func() {
@@ -57,7 +57,7 @@ var _ = Describe("Shared utilities", func() {
 
 				Expect(err).NotTo(HaveOccurred())
 				dinkInt := shared.ConvertInt256HexToBigInt(hexutil.Encode(dinkBytes))
-				Expect(dinkInt.String()).To(Equal(test_data.VatForkModelWithNegativeDinkDart.Dink))
+				Expect(dinkInt.String()).To(Equal(test_data.VatForkModelWithNegativeDinkDart.ColumnValues["dink"].(string)))
 			})
 
 			It("extracts fifth of five arguments", func() {
@@ -65,7 +65,7 @@ var _ = Describe("Shared utilities", func() {
 
 				Expect(err).NotTo(HaveOccurred())
 				dartInt := shared.ConvertInt256HexToBigInt(hexutil.Encode(dartBytes))
-				Expect(dartInt.String()).To(Equal(test_data.VatForkModelWithNegativeDinkDart.Dart))
+				Expect(dartInt.String()).To(Equal(test_data.VatForkModelWithNegativeDinkDart.ColumnValues["dart"].(string)))
 			})
 
 			It("extracts the fourth of six arguments", func() {
@@ -73,7 +73,7 @@ var _ = Describe("Shared utilities", func() {
 
 				Expect(err).NotTo(HaveOccurred())
 				wAddress := common.BytesToAddress(wBytes)
-				Expect(wAddress.String()).To(Equal(test_data.VatGrabModelWithPositiveDink.W))
+				Expect(wAddress.String()).To(Equal(test_data.VatGrabModelWithPositiveDink.ColumnValues["w"]))
 			})
 
 			It("extracts the fifth of six arguments", func() {
@@ -81,7 +81,7 @@ var _ = Describe("Shared utilities", func() {
 
 				Expect(err).NotTo(HaveOccurred())
 				dinkInt := shared.ConvertInt256HexToBigInt(hexutil.Encode(dinkBytes))
-				Expect(dinkInt.String()).To(Equal(test_data.VatGrabModelWithPositiveDink.Dink))
+				Expect(dinkInt.String()).To(Equal(test_data.VatGrabModelWithPositiveDink.ColumnValues["dink"]))
 			})
 
 			It("extracts the sixth of six arguments", func() {
@@ -89,7 +89,7 @@ var _ = Describe("Shared utilities", func() {
 
 				Expect(err).NotTo(HaveOccurred())
 				dartInt := shared.ConvertInt256HexToBigInt(hexutil.Encode(dartBytes))
-				Expect(dartInt.String()).To(Equal(test_data.VatGrabModelWithPositiveDink.Dart))
+				Expect(dartInt.String()).To(Equal(test_data.VatGrabModelWithPositiveDink.ColumnValues["dart"]))
 			})
 		})
 	})

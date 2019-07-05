@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -20,16 +20,17 @@ import (
 	"encoding/json"
 	"errors"
 
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
 type VatSlipConverter struct{}
 
-func (VatSlipConverter) ToModels(ethLogs []types.Log) ([]interface{}, error) {
-	var models []interface{}
+func (VatSlipConverter) ToModels(ethLogs []types.Log) ([]shared.InsertionModel, error) {
+	var models []shared.InsertionModel
 	for _, ethLog := range ethLogs {
 		err := verifyLog(ethLog)
 		if err != nil {
@@ -43,13 +44,21 @@ func (VatSlipConverter) ToModels(ethLogs []types.Log) ([]interface{}, error) {
 		if err != nil {
 			return nil, err
 		}
-		model := VatSlipModel{
-			Ilk:              ilk,
-			Usr:              usr,
-			Wad:              wad.String(),
-			TransactionIndex: ethLog.TxIndex,
-			LogIndex:         ethLog.Index,
-			Raw:              raw,
+		model := shared.InsertionModel{
+			TableName: "vat_slip",
+			OrderedColumns: []string{
+				"header_id", string(constants.IlkFK), "usr", "wad", "tx_idx", "log_idx", "raw_log",
+			},
+			ColumnValues: shared.ColumnValues{
+				"usr":     usr,
+				"wad":     wad.String(),
+				"tx_idx":  ethLog.TxIndex,
+				"log_idx": ethLog.Index,
+				"raw_log": raw,
+			},
+			ForeignKeyValues: shared.ForeignKeyValues{
+				constants.IlkFK: ilk,
+			},
 		}
 		models = append(models, model)
 	}

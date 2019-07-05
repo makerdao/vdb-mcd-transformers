@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -20,16 +20,17 @@ import (
 	"encoding/json"
 	"errors"
 
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
 type VatFoldConverter struct{}
 
-func (VatFoldConverter) ToModels(ethLogs []types.Log) ([]interface{}, error) {
-	var models []interface{}
+func (VatFoldConverter) ToModels(ethLogs []types.Log) ([]shared.InsertionModel, error) {
+	var models []shared.InsertionModel
 	for _, ethLog := range ethLogs {
 		err := verifyLog(ethLog)
 		if err != nil {
@@ -44,15 +45,22 @@ func (VatFoldConverter) ToModels(ethLogs []types.Log) ([]interface{}, error) {
 			return models, err
 		}
 
-		model := VatFoldModel{
-			Ilk:              ilk,
-			Urn:              urn,
-			Rate:             rate.String(),
-			LogIndex:         ethLog.Index,
-			TransactionIndex: ethLog.TxIndex,
-			Raw:              raw,
+		model := shared.InsertionModel{
+			TableName: "vat_fold",
+			OrderedColumns: []string{
+				"header_id", string(constants.UrnFK), "rate", "log_idx", "tx_idx", "raw_log",
+			},
+			ColumnValues: shared.ColumnValues{
+				"rate":    rate.String(),
+				"log_idx": ethLog.Index,
+				"tx_idx":  ethLog.TxIndex,
+				"raw_log": raw,
+			},
+			ForeignKeyValues: shared.ForeignKeyValues{
+				constants.IlkFK: ilk,
+				constants.UrnFK: urn,
+			},
 		}
-
 		models = append(models, model)
 	}
 	return models, nil

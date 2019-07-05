@@ -20,7 +20,6 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	log "github.com/sirupsen/logrus"
 
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
@@ -29,7 +28,7 @@ import (
 type LogNoteTransformer struct {
 	Config     transformer.EventTransformerConfig
 	Converter  LogNoteConverter
-	Repository event.Repository
+	Repository SharedRepository
 }
 
 func (tr LogNoteTransformer) NewLogNoteTransformer(db *postgres.DB) transformer.EventTransformer {

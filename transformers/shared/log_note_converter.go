@@ -19,5 +19,5 @@ package shared
 import "github.com/ethereum/go-ethereum/core/types"
 
 type LogNoteConverter interface {
-	ToModels(ethLog []types.Log) ([]interface{}, error)
+	ToModels(ethLog []types.Log) ([]InsertionModel, error)
 }

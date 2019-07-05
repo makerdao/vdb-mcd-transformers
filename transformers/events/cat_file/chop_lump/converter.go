@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -19,12 +19,13 @@ package chop_lump
 import (
 	"encoding/json"
 	"errors"
+
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
-
 	"github.com/vulcanize/vulcanizedb/libraries/shared/constants"
 
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	constants2 "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
 var (
@@ -34,8 +35,8 @@ var (
 
 type CatFileChopLumpConverter struct{}
 
-func (CatFileChopLumpConverter) ToModels(ethLogs []types.Log) ([]interface{}, error) {
-	var results []interface{}
+func (CatFileChopLumpConverter) ToModels(ethLogs []types.Log) ([]shared.InsertionModel, error) {
+	var results []shared.InsertionModel
 	for _, ethLog := range ethLogs {
 		verifyErr := verifyLog(ethLog)
 		if verifyErr != nil {
@@ -53,13 +54,21 @@ func (CatFileChopLumpConverter) ToModels(ethLogs []types.Log) ([]interface{}, er
 		if marshalErr != nil {
 			return nil, marshalErr
 		}
-		result := CatFileChopLumpModel{
-			Ilk:              ilk,
-			What:             what,
-			Data:             data.String(),
-			TransactionIndex: ethLog.TxIndex,
-			LogIndex:         ethLog.Index,
-			Raw:              raw,
+		result := shared.InsertionModel{
+			TableName: "cat_file_chop_lump",
+			OrderedColumns: []string{
+				"header_id", string(constants2.IlkFK), "what", "data", "tx_idx", "log_idx", "raw_log",
+			},
+			ColumnValues: shared.ColumnValues{
+				"what":    what,
+				"data":    data.String(),
+				"tx_idx":  ethLog.TxIndex,
+				"log_idx": ethLog.Index,
+				"raw_log": raw,
+			},
+			ForeignKeyValues: shared.ForeignKeyValues{
+				constants2.IlkFK: ilk,
+			},
 		}
 		results = append(results, result)
 	}

@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -23,15 +23,15 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
+	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
+	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres/repositories"
+	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/component_tests/queries/test_helpers"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/storage"
-	"github.com/vulcanize/vulcanizedb/pkg/core"
-	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
-	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres/repositories"
-	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 )
 
 var _ = Describe("Maker storage repository", func() {
@@ -413,9 +413,7 @@ func insertVatFold(urn string, blockNumber int64, db *postgres.DB) {
 	headerRepository := repositories.NewHeaderRepository(db)
 	headerID, err := headerRepository.CreateOrUpdateHeader(fakes.GetFakeHeader(blockNumber))
 	Expect(err).NotTo(HaveOccurred())
-	ilkID, err := shared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
-	Expect(err).NotTo(HaveOccurred())
-	urnID, err := shared.GetOrCreateUrn(urn, ilkID, db)
+	urnID, err := shared.GetOrCreateUrn(urn, test_helpers.FakeIlk.Hex, db)
 	Expect(err).NotTo(HaveOccurred())
 
 	_, execErr := db.Exec(
@@ -513,9 +511,7 @@ func insertVatFrob(ilk, urn, v, w string, blockNumber int64, db *postgres.DB) {
 	headerRepository := repositories.NewHeaderRepository(db)
 	headerID, err := headerRepository.CreateOrUpdateHeader(fakes.GetFakeHeader(blockNumber))
 	Expect(err).NotTo(HaveOccurred())
-	ilkID, err := shared.GetOrCreateIlk(ilk, db)
-	Expect(err).NotTo(HaveOccurred())
-	urnID, err := shared.GetOrCreateUrn(urn, ilkID, db)
+	urnID, err := shared.GetOrCreateUrn(urn, ilk, db)
 	Expect(err).NotTo(HaveOccurred())
 
 	_, execErr := db.Exec(
@@ -530,9 +526,7 @@ func insertVatGrab(ilk, urn, v, w string, blockNumber int64, db *postgres.DB) {
 	headerRepository := repositories.NewHeaderRepository(db)
 	headerID, err := headerRepository.CreateOrUpdateHeader(fakes.GetFakeHeader(blockNumber))
 	Expect(err).NotTo(HaveOccurred())
-	ilkID, err := shared.GetOrCreateIlk(ilk, db)
-	Expect(err).NotTo(HaveOccurred())
-	urnID, err := shared.GetOrCreateUrn(urn, ilkID, db)
+	urnID, err := shared.GetOrCreateUrn(urn, ilk, db)
 	Expect(err).NotTo(HaveOccurred())
 
 	_, execErr := db.Exec(

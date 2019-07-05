@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -79,17 +79,25 @@ var _ = XDescribe("VatFold Transformer", func() {
 		err = transformer.Execute(logs, header)
 		Expect(err).NotTo(HaveOccurred())
 
-		var dbResults []vat_fold.VatFoldModel
+		var dbResults []vatFoldModel
 		err = db.Select(&dbResults, `SELECT urn_id, rate from maker.vat_fold`)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResults)).To(Equal(1))
 		dbResult := dbResults[0]
-		ilkID, err := shared.GetOrCreateIlk("0x434f4c312d410000000000000000000000000000000000000000000000000000", db)
-		Expect(err).NotTo(HaveOccurred())
-		urnID, err := shared.GetOrCreateUrn("0x21444AC712cCD21ce82AF24eA1aEc64Cf07361D2", ilkID, db)
+		urnID, err := shared.GetOrCreateUrn("0x21444AC712cCD21ce82AF24eA1aEc64Cf07361D2",
+			"0x434f4c312d410000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(dbResult.Urn).To(Equal(strconv.Itoa(urnID)))
 		Expect(dbResult.Rate).To(Equal("479620379870463446010918"))
 	})
 })
+
+type vatFoldModel struct {
+	Ilk              string
+	Urn              string `db:"urn_id"`
+	Rate             string
+	LogIndex         uint   `db:"log_idx"`
+	TransactionIndex uint   `db:"tx_idx"`
+	Raw              []byte `db:"raw_log"`
+}

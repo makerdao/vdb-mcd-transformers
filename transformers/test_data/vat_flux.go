@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -23,7 +23,7 @@ import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
 
-	"github.com/vulcanize/mcd_transformers/transformers/events/vat_flux"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
@@ -45,12 +45,20 @@ var EthVatFluxLog = types.Log{
 }
 
 var rawFluxLog, _ = json.Marshal(EthVatFluxLog)
-var VatFluxModel = vat_flux.VatFluxModel{
-	Ilk:              "0x66616b6520696c6b000000000000000000000000000000000000000000000000",
-	Src:              "0x07Fa9eF6609cA7921112231F8f195138ebbA2977",
-	Dst:              "0x7340e006f4135BA6970D43bf43d88DCAD4e7a8CA",
-	Wad:              "1000000000000",
-	TransactionIndex: EthVatFluxLog.TxIndex,
-	LogIndex:         EthVatFluxLog.Index,
-	Raw:              rawFluxLog,
+var VatFluxModel = shared.InsertionModel{
+	TableName: "vat_flux",
+	OrderedColumns: []string{
+		"header_id", string(constants.IlkFK), "src", "dst", "wad", "tx_idx", "log_idx", "raw_log",
+	},
+	ColumnValues: shared.ColumnValues{
+		"src":     "0x07Fa9eF6609cA7921112231F8f195138ebbA2977",
+		"dst":     "0x7340e006f4135BA6970D43bf43d88DCAD4e7a8CA",
+		"wad":     "1000000000000",
+		"tx_idx":  EthVatFluxLog.TxIndex,
+		"log_idx": EthVatFluxLog.Index,
+		"raw_log": rawFluxLog,
+	},
+	ForeignKeyValues: shared.ForeignKeyValues{
+		constants.IlkFK: "0x66616b6520696c6b000000000000000000000000000000000000000000000000",
+	},
 }

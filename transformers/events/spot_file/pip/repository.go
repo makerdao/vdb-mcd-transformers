@@ -17,9 +17,6 @@
 package pip
 
 import (
-	"fmt"
-
-	"github.com/sirupsen/logrus"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/repository"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 
@@ -27,57 +24,12 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
-const InsertSpotFilePipQuery = `INSERT INTO maker.spot_file_pip (header_id, ilk_id, pip, log_idx, tx_idx, raw_log)
-	VALUES($1, $2, $3, $4, $5, $6) ON CONFLICT (header_id, tx_idx, log_idx)
-	DO UPDATE SET ilk_id = $2, pip = $3, raw_log = $6;`
-
 type SpotFilePipRepository struct {
 	db *postgres.DB
 }
 
-func (repo SpotFilePipRepository) Create(headerID int64, models []interface{}) error {
-	tx, dBaseErr := repo.db.Beginx()
-	if dBaseErr != nil {
-		return dBaseErr
-	}
-	for _, model := range models {
-		spotFilePipModel, ok := model.(SpotFilePipModel)
-		if !ok {
-			rollbackErr := tx.Rollback()
-			if rollbackErr != nil {
-				logrus.Error("failed to rollback ", rollbackErr)
-			}
-			return fmt.Errorf("model of type %T, not %T", model, SpotFilePipModel{})
-		}
-
-		ilkID, ilkErr := shared.GetOrCreateIlkInTransaction(spotFilePipModel.Ilk, tx)
-		if ilkErr != nil {
-			rollbackErr := tx.Rollback()
-			if rollbackErr != nil {
-				logrus.Error("failed to rollback ", rollbackErr)
-			}
-			return ilkErr
-		}
-
-		_, execErr := tx.Exec(InsertSpotFilePipQuery, headerID, ilkID, spotFilePipModel.Pip, spotFilePipModel.LogIndex,
-			spotFilePipModel.TransactionIndex, spotFilePipModel.Raw)
-		if execErr != nil {
-			rollbackErr := tx.Rollback()
-			if rollbackErr != nil {
-				logrus.Error("failed to rollback ", rollbackErr)
-			}
-			return execErr
-		}
-	}
-	checkHeaderErr := repository.MarkHeaderCheckedInTransaction(headerID, tx, constants.SpotFilePipChecked)
-	if checkHeaderErr != nil {
-		rollbackErr := tx.Rollback()
-		if rollbackErr != nil {
-			logrus.Error("failed to rollback ", rollbackErr)
-		}
-		return checkHeaderErr
-	}
-	return tx.Commit()
+func (repo SpotFilePipRepository) Create(headerID int64, models []shared.InsertionModel) error {
+	return shared.Create(headerID, models, repo.db)
 }
 
 func (repo SpotFilePipRepository) MarkHeaderChecked(headerID int64) error {

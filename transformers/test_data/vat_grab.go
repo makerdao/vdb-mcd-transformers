@@ -1,3 +1,19 @@
+// VulcanizeDB
+// Copyright © 2019 Vulcanize
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 package test_data
 
 import (
@@ -7,7 +23,7 @@ import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
 
-	"github.com/vulcanize/mcd_transformers/transformers/events/vat_grab"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
@@ -29,16 +45,24 @@ var EthVatGrabLogWithPositiveDink = types.Log{
 }
 
 var rawVatGrabLogWithPositiveDink, _ = json.Marshal(EthVatGrabLogWithPositiveDink)
-var VatGrabModelWithPositiveDink = vat_grab.VatGrabModel{
-	Ilk:              "0x66616b6520696c6b000000000000000000000000000000000000000000000000",
-	Urn:              "0x07Fa9eF6609cA7921112231F8f195138ebbA2977",
-	V:                "0x7340e006f4135BA6970D43bf43d88DCAD4e7a8CA",
-	W:                "0x7526EB4f95e2a1394797Cb38a921Fb1EbA09291B",
-	Dink:             "1000000000000000000000",
-	Dart:             "2000000000000000000000",
-	LogIndex:         EthVatGrabLogWithPositiveDink.Index,
-	TransactionIndex: EthVatGrabLogWithPositiveDink.TxIndex,
-	Raw:              rawVatGrabLogWithPositiveDink,
+var VatGrabModelWithPositiveDink = shared.InsertionModel{
+	TableName: "vat_grab",
+	OrderedColumns: []string{
+		"header_id", string(constants.UrnFK), "v", "w", "dink", "dart", "log_idx", "tx_idx", "raw_log",
+	},
+	ColumnValues: shared.ColumnValues{
+		"v":       "0x7340e006f4135BA6970D43bf43d88DCAD4e7a8CA",
+		"w":       "0x7526EB4f95e2a1394797Cb38a921Fb1EbA09291B",
+		"dink":    "1000000000000000000000",
+		"dart":    "2000000000000000000000",
+		"log_idx": EthVatGrabLogWithPositiveDink.Index,
+		"tx_idx":  EthVatGrabLogWithPositiveDink.TxIndex,
+		"raw_log": rawVatGrabLogWithPositiveDink,
+	},
+	ForeignKeyValues: shared.ForeignKeyValues{
+		constants.IlkFK: "0x66616b6520696c6b000000000000000000000000000000000000000000000000",
+		constants.UrnFK: "0x07Fa9eF6609cA7921112231F8f195138ebbA2977",
+	},
 }
 
 var EthVatGrabLogWithNegativeDink = types.Log{
@@ -59,14 +83,22 @@ var EthVatGrabLogWithNegativeDink = types.Log{
 }
 
 var rawVatGrabLogWithNegativeDink, _ = json.Marshal(EthVatGrabLogWithNegativeDink)
-var VatGrabModelWithNegativeDink = vat_grab.VatGrabModel{
-	Ilk:              "0x66616b6520696c6b000000000000000000000000000000000000000000000000",
-	Urn:              "0x07Fa9eF6609cA7921112231F8f195138ebbA2977",
-	V:                "0x7340e006f4135BA6970D43bf43d88DCAD4e7a8CA",
-	W:                "0x7526EB4f95e2a1394797Cb38a921Fb1EbA09291B",
-	Dink:             "-1000000000000000000000",
-	Dart:             "-2000000000000000000000",
-	LogIndex:         0,
-	TransactionIndex: 0,
-	Raw:              rawVatGrabLogWithNegativeDink,
+var VatGrabModelWithNegativeDink = shared.InsertionModel{
+	TableName: "vat_grab",
+	OrderedColumns: []string{
+		"header_id", string(constants.UrnFK), "v", "w", "dink", "dart", "log_idx", "tx_idx", "raw_log",
+	},
+	ColumnValues: shared.ColumnValues{
+		"v":       "0x7340e006f4135BA6970D43bf43d88DCAD4e7a8CA",
+		"w":       "0x7526EB4f95e2a1394797Cb38a921Fb1EbA09291B",
+		"dink":    "-1000000000000000000000",
+		"dart":    "-2000000000000000000000",
+		"log_idx": EthVatGrabLogWithNegativeDink.Index,
+		"tx_idx":  EthVatGrabLogWithNegativeDink.TxIndex,
+		"raw_log": rawVatGrabLogWithNegativeDink,
+	},
+	ForeignKeyValues: shared.ForeignKeyValues{
+		constants.IlkFK: "0x66616b6520696c6b000000000000000000000000000000000000000000000000",
+		constants.UrnFK: "0x07Fa9eF6609cA7921112231F8f195138ebbA2977",
+	},
 }

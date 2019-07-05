@@ -21,11 +21,12 @@ import (
 	"errors"
 
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 )
 
 type DealConverter struct{}
 
-func (DealConverter) ToModels(ethLogs []types.Log) (result []interface{}, err error) {
+func (DealConverter) ToModels(ethLogs []types.Log) (result []shared.InsertionModel, err error) {
 	for _, log := range ethLogs {
 		validationErr := validateLog(log)
 		if validationErr != nil {
@@ -38,12 +39,19 @@ func (DealConverter) ToModels(ethLogs []types.Log) (result []interface{}, err er
 			return nil, jsonErr
 		}
 
-		model := DealModel{
-			BidId:            bidId.String(),
-			ContractAddress:  log.Address.Hex(),
-			LogIndex:         log.Index,
-			TransactionIndex: log.TxIndex,
-			Raw:              raw,
+		model := shared.InsertionModel{
+			TableName: "deal",
+			OrderedColumns: []string{
+				"header_id", "bid_id", "contract_address", "log_idx", "tx_idx", "raw_log",
+			},
+			ColumnValues: shared.ColumnValues{
+				"bid_id":           bidId.String(),
+				"contract_address": log.Address.String(),
+				"log_idx":          log.Index,
+				"tx_idx":           log.TxIndex,
+				"raw_log":          raw,
+			},
+			ForeignKeyValues: shared.ForeignKeyValues{},
 		}
 		result = append(result, model)
 	}

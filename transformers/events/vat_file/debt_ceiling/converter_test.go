@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -17,46 +17,41 @@
 package debt_ceiling_test
 
 import (
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
-
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_file/debt_ceiling"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
 var _ = Describe("Vat file debt ceiling converter", func() {
+	var converter = debt_ceiling.VatFileDebtCeilingConverter{}
 	It("returns err if log is missing topics", func() {
-		converter := debt_ceiling.VatFileDebtCeilingConverter{}
 		badLog := types.Log{
 			Data: []byte{1, 1, 1, 1, 1},
 		}
 
 		_, err := converter.ToModels([]types.Log{badLog})
-
 		Expect(err).To(HaveOccurred())
 	})
 
 	It("returns err if log is missing data", func() {
-		converter := debt_ceiling.VatFileDebtCeilingConverter{}
 		badLog := types.Log{
 			Topics: []common.Hash{{}, {}, {}, {}},
 		}
 
 		_, err := converter.ToModels([]types.Log{badLog})
-
 		Expect(err).To(HaveOccurred())
 	})
 
 	It("converts a log to an model", func() {
-		converter := debt_ceiling.VatFileDebtCeilingConverter{}
-
 		models, err := converter.ToModels([]types.Log{test_data.EthVatFileDebtCeilingLog})
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(len(models)).To(Equal(1))
-		Expect(models[0].(debt_ceiling.VatFileDebtCeilingModel)).To(Equal(test_data.VatFileDebtCeilingModel))
+		Expect(models).To(Equal([]shared.InsertionModel{test_data.VatFileDebtCeilingModel}))
 	})
 })

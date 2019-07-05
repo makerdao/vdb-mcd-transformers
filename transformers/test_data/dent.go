@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -18,12 +18,13 @@ package test_data
 
 import (
 	"encoding/json"
+
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 
-	"github.com/vulcanize/mcd_transformers/transformers/events/dent"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
@@ -33,7 +34,6 @@ var (
 	dentBidId           = "10000000000000000"
 	dentLot             = "20000000000000000"
 	dentBid             = "30000000000000000"
-	dentGuy             = "0x64d922894153BE9EEf7b7218dc565d1D0Ce2a092"
 )
 
 var EthDentLog = types.Log{
@@ -54,12 +54,19 @@ var EthDentLog = types.Log{
 }
 
 var dentRawJson, _ = json.Marshal(EthDentLog)
-var DentModel = dent.DentModel{
-	BidId:            dentBidId,
-	Lot:              dentLot,
-	Bid:              dentBid,
-	ContractAddress:  EthDentLog.Address.Hex(),
-	LogIndex:         EthDentLog.Index,
-	TransactionIndex: EthDentLog.TxIndex,
-	Raw:              dentRawJson,
+var DentModel = shared.InsertionModel{
+	TableName: "dent",
+	OrderedColumns: []string{
+		"header_id", "bid_id", "lot", "bid", "contract_address", "tic", "log_idx", "tx_idx", "raw_log",
+	},
+	ColumnValues: shared.ColumnValues{
+		"bid_id":           dentBidId,
+		"lot":              dentLot,
+		"bid":              dentBid,
+		"contract_address": EthDentLog.Address.Hex(),
+		"log_idx":          EthDentLog.Index,
+		"tx_idx":           EthDentLog.TxIndex,
+		"raw_log":          dentRawJson,
+	},
+	ForeignKeyValues: shared.ForeignKeyValues{},
 }

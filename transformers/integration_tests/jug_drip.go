@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -80,7 +80,7 @@ var _ = XDescribe("JugDrip Transformer", func() {
 		err = tr.Execute(logs, header)
 		Expect(err).NotTo(HaveOccurred())
 
-		var dbResults []jug_drip.JugDripModel
+		var dbResults []jugDripModel
 		err = db.Select(&dbResults, `SELECT ilk_id from maker.jug_drip`)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -128,3 +128,10 @@ var _ = XDescribe("JugDrip Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 	})
 })
+
+type jugDripModel struct {
+	Ilk              string `db:"ilk_id"`
+	LogIndex         uint   `db:"log_idx"`
+	TransactionIndex uint   `db:"tx_idx"`
+	Raw              []byte `db:"raw_log"`
+}

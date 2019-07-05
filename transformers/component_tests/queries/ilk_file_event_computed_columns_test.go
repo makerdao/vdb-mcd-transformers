@@ -1,3 +1,19 @@
+// VulcanizeDB
+// Copyright © 2019 Vulcanize
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 package queries
 
 import (
@@ -14,6 +30,8 @@ import (
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/component_tests/queries/test_helpers"
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_file/ilk"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
@@ -22,7 +40,7 @@ var _ = Describe("Ilk file event computed columns", func() {
 		db               *postgres.DB
 		fakeBlock        int
 		fakeHeader       core.Header
-		fileEvent        ilk.VatFileIlkModel
+		fileEvent        shared.InsertionModel
 		fileRepo         ilk.VatFileIlkRepository
 		headerId         int64
 		headerRepository repositories.HeaderRepository
@@ -42,8 +60,8 @@ var _ = Describe("Ilk file event computed columns", func() {
 		fileRepo = ilk.VatFileIlkRepository{}
 		fileRepo.SetDB(db)
 		fileEvent = test_data.VatFileIlkDustModel
-		fileEvent.Ilk = test_helpers.FakeIlk.Hex
-		insertFileErr := fileRepo.Create(headerId, []interface{}{fileEvent})
+		fileEvent.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
+		insertFileErr := fileRepo.Create(headerId, []shared.InsertionModel{fileEvent})
 		Expect(insertFileErr).NotTo(HaveOccurred())
 	})
 
@@ -76,7 +94,7 @@ var _ = Describe("Ilk file event computed columns", func() {
 			expectedTx := Tx{
 				TransactionHash: test_helpers.GetValidNullString("txHash"),
 				TransactionIndex: sql.NullInt64{
-					Int64: int64(fileEvent.TransactionIndex),
+					Int64: int64(fileEvent.ColumnValues["tx_idx"].(uint)),
 					Valid: true,
 				},
 				BlockHeight: sql.NullInt64{Int64: int64(fakeBlock), Valid: true},
@@ -103,7 +121,7 @@ var _ = Describe("Ilk file event computed columns", func() {
 			wrongTx := Tx{
 				TransactionHash: test_helpers.GetValidNullString("wrongTxHash"),
 				TransactionIndex: sql.NullInt64{
-					Int64: int64(fileEvent.TransactionIndex) + 1,
+					Int64: int64(fileEvent.ColumnValues["tx_idx"].(uint)) + 1,
 					Valid: true,
 				},
 				BlockHeight: sql.NullInt64{Int64: int64(fakeBlock), Valid: true},

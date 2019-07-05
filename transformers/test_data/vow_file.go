@@ -21,7 +21,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/vulcanize/mcd_transformers/transformers/events/vow_file"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
@@ -43,10 +43,17 @@ var EthVowFileLog = types.Log{
 }
 
 var rawVowFileLog, _ = json.Marshal(EthVowFileLog)
-var VowFileModel = vow_file.VowFileModel{
-	What:             "wait",
-	Data:             "100000000000000000000000",
-	LogIndex:         EthVowFileLog.Index,
-	TransactionIndex: EthVowFileLog.TxIndex,
-	Raw:              rawVowFileLog,
+var VowFileModel = shared.InsertionModel{
+	TableName: "vow_file",
+	OrderedColumns: []string{
+		"header_id", "what", "data", "log_idx", "tx_idx", "raw_log",
+	},
+	ColumnValues: shared.ColumnValues{
+		"what":    "wait",
+		"data":    "100000000000000000000000",
+		"log_idx": EthVowFileLog.Index,
+		"tx_idx":  EthVowFileLog.TxIndex,
+		"raw_log": rawVowFileLog,
+	},
+	ForeignKeyValues: shared.ForeignKeyValues{},
 }

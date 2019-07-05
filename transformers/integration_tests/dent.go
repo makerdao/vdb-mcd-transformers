@@ -84,7 +84,7 @@ var _ = XDescribe("Dent transformer", func() {
 		err = tr.Execute(logs, header)
 		Expect(err).NotTo(HaveOccurred())
 
-		var dbResult []dent.DentModel
+		var dbResult []dentModel
 		err = db.Select(&dbResult, `SELECT bid, bid_id, guy, lot FROM maker.dent`)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -106,3 +106,13 @@ var _ = XDescribe("Dent transformer", func() {
 		//TODO: There are currently no Flip.dent events on Kovan
 	})
 })
+
+type dentModel struct {
+	BidId            string `db:"bid_id"`
+	Lot              string
+	Bid              string
+	ContractAddress  string `db:"contract_address"`
+	LogIndex         uint   `db:"log_idx"`
+	TransactionIndex uint   `db:"tx_idx"`
+	Raw              []byte `db:"raw_log"`
+}

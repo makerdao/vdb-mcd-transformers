@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -24,9 +24,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 
-	"github.com/vulcanize/mcd_transformers/transformers/events/cat_file/chop_lump"
-	"github.com/vulcanize/mcd_transformers/transformers/events/cat_file/flip"
-	"github.com/vulcanize/mcd_transformers/transformers/events/cat_file/vow"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
@@ -48,13 +46,21 @@ var EthCatFileChopLog = types.Log{
 }
 
 var rawCatFileChopLog, _ = json.Marshal(EthCatFileChopLog)
-var CatFileChopModel = chop_lump.CatFileChopLumpModel{
-	Ilk:              "0x434f4c342d410000000000000000000000000000000000000000000000000000",
-	What:             "chop",
-	Data:             "1000000000000000000000000000",
-	TransactionIndex: EthCatFileChopLog.TxIndex,
-	LogIndex:         EthCatFileChopLog.Index,
-	Raw:              rawCatFileChopLog,
+var CatFileChopModel = shared.InsertionModel{
+	TableName: "cat_file_chop_lump",
+	OrderedColumns: []string{
+		"header_id", string(constants.IlkFK), "what", "data", "tx_idx", "log_idx", "raw_log",
+	},
+	ColumnValues: shared.ColumnValues{
+		"what":    "chop",
+		"data":    "1000000000000000000000000000",
+		"tx_idx":  EthCatFileChopLog.TxIndex,
+		"log_idx": EthCatFileChopLog.Index,
+		"raw_log": rawCatFileChopLog,
+	},
+	ForeignKeyValues: shared.ForeignKeyValues{
+		constants.IlkFK: "0x434f4c342d410000000000000000000000000000000000000000000000000000",
+	},
 }
 
 var EthCatFileLumpLog = types.Log{
@@ -75,13 +81,21 @@ var EthCatFileLumpLog = types.Log{
 }
 
 var rawCatFileLumpLog, _ = json.Marshal(EthCatFileLumpLog)
-var CatFileLumpModel = chop_lump.CatFileChopLumpModel{
-	Ilk:              "0x434f4c342d410000000000000000000000000000000000000000000000000000",
-	What:             "lump",
-	Data:             "10000000000000000000000000000000000000000000000000",
-	TransactionIndex: EthCatFileLumpLog.TxIndex,
-	LogIndex:         EthCatFileLumpLog.Index,
-	Raw:              rawCatFileLumpLog,
+var CatFileLumpModel = shared.InsertionModel{
+	TableName: "cat_file_chop_lump",
+	OrderedColumns: []string{
+		"header_id", string(constants.IlkFK), "what", "data", "tx_idx", "log_idx", "raw_log",
+	},
+	ColumnValues: shared.ColumnValues{
+		"what":    "lump",
+		"data":    "10000000000000000000000000000000000000000000000000",
+		"tx_idx":  EthCatFileLumpLog.TxIndex,
+		"log_idx": EthCatFileLumpLog.Index,
+		"raw_log": rawCatFileLumpLog,
+	},
+	ForeignKeyValues: shared.ForeignKeyValues{
+		constants.IlkFK: "0x434f4c342d410000000000000000000000000000000000000000000000000000",
+	},
 }
 
 var EthCatFileFlipLog = types.Log{
@@ -102,13 +116,21 @@ var EthCatFileFlipLog = types.Log{
 }
 
 var rawCatFileFlipLog, _ = json.Marshal(EthCatFileFlipLog)
-var CatFileFlipModel = flip.CatFileFlipModel{
-	Ilk:              "0x434f4c312d410000000000000000000000000000000000000000000000000000",
-	What:             "flip",
-	Flip:             "0x6E8032435c84B08E30F27bfbb812Ee365A095b31",
-	TransactionIndex: EthCatFileFlipLog.TxIndex,
-	LogIndex:         EthCatFileFlipLog.Index,
-	Raw:              rawCatFileFlipLog,
+var CatFileFlipModel = shared.InsertionModel{
+	TableName: "cat_file_flip",
+	OrderedColumns: []string{
+		"header_id", string(constants.IlkFK), "what", "flip", "tx_idx", "log_idx", "raw_log",
+	},
+	ColumnValues: shared.ColumnValues{
+		"what":    "flip",
+		"flip":    "0x6E8032435c84B08E30F27bfbb812Ee365A095b31",
+		"tx_idx":  EthCatFileFlipLog.TxIndex,
+		"log_idx": EthCatFileFlipLog.Index,
+		"raw_log": rawCatFileFlipLog,
+	},
+	ForeignKeyValues: shared.ForeignKeyValues{
+		constants.IlkFK: "0x434f4c312d410000000000000000000000000000000000000000000000000000",
+	},
 }
 
 var EthCatFileVowLog = types.Log{
@@ -129,10 +151,17 @@ var EthCatFileVowLog = types.Log{
 }
 
 var rawCatFileVowLog, _ = json.Marshal(EthCatFileVowLog)
-var CatFileVowModel = vow.CatFileVowModel{
-	What:             "vow",
-	Data:             "0x17560834075DA3Db54f737db74377E799c865821",
-	TransactionIndex: EthCatFileVowLog.TxIndex,
-	LogIndex:         EthCatFileVowLog.Index,
-	Raw:              rawCatFileVowLog,
+var CatFileVowModel = shared.InsertionModel{
+	TableName: "cat_file_vow",
+	OrderedColumns: []string{
+		"header_id", "what", "data", "tx_idx", "log_idx", "raw_log",
+	},
+	ColumnValues: shared.ColumnValues{
+		"what":    "vow",
+		"data":    "0x17560834075DA3Db54f737db74377E799c865821",
+		"tx_idx":  EthCatFileVowLog.TxIndex,
+		"log_idx": EthCatFileVowLog.Index,
+		"raw_log": rawCatFileVowLog,
+	},
+	ForeignKeyValues: shared.ForeignKeyValues{},
 }

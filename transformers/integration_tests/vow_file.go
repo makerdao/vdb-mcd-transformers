@@ -20,15 +20,15 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/vulcanize/mcd_transformers/transformers/events/vow_file"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
+	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 
 	"github.com/vulcanize/mcd_transformers/test_config"
+	"github.com/vulcanize/mcd_transformers/transformers/events/vow_file"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
-	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 )
 
 var _ = Describe("VowFile LogNoteTransforer", func() {
@@ -80,7 +80,7 @@ var _ = Describe("VowFile LogNoteTransforer", func() {
 		err = tr.Execute(logs, header)
 		Expect(err).NotTo(HaveOccurred())
 
-		var dbResult []vow_file.VowFileModel
+		var dbResult []vowFileModel
 		err = db.Select(&dbResult, `SELECT what, data from maker.vow_file`)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -89,3 +89,11 @@ var _ = Describe("VowFile LogNoteTransforer", func() {
 		Expect(dbResult[0].Data).To(Equal("100000000000000000000000000000000000000000000"))
 	})
 })
+
+type vowFileModel struct {
+	What             string
+	Data             string
+	LogIndex         uint   `db:"log_idx"`
+	TransactionIndex uint   `db:"tx_idx"`
+	Raw              []byte `db:"raw_log"`
+}

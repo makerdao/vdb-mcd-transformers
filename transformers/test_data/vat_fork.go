@@ -1,3 +1,19 @@
+// VulcanizeDB
+// Copyright © 2019 Vulcanize
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 package test_data
 
 import (
@@ -7,7 +23,7 @@ import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
 
-	"github.com/vulcanize/mcd_transformers/transformers/events/vat_fork"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
@@ -29,15 +45,23 @@ var EthVatForkLogWithNegativeDinkDart = types.Log{
 }
 
 var rawVatForkLogWithNegativeDinkDart, _ = json.Marshal(EthVatForkLogWithNegativeDinkDart)
-var VatForkModelWithNegativeDinkDart = vat_fork.VatForkModel{
-	Ilk:              "0x66616b6520696c6b000000000000000000000000000000000000000000000000",
-	Src:              "0x07Fa9eF6609cA7921112231F8f195138ebbA2977",
-	Dst:              "0x7526EB4f95e2a1394797Cb38a921Fb1EbA09291B",
-	Dink:             "-1000000000000000000000",
-	Dart:             "-2000000000000000000000",
-	LogIndex:         EthVatForkLogWithNegativeDinkDart.Index,
-	TransactionIndex: EthVatForkLogWithNegativeDinkDart.TxIndex,
-	Raw:              rawVatForkLogWithNegativeDinkDart,
+var VatForkModelWithNegativeDinkDart = shared.InsertionModel{
+	TableName: "vat_fork",
+	OrderedColumns: []string{
+		"header_id", string(constants.IlkFK), "src", "dst", "dink", "dart", "log_idx", "tx_idx", "raw_log",
+	},
+	ColumnValues: shared.ColumnValues{
+		"src":     "0x07Fa9eF6609cA7921112231F8f195138ebbA2977",
+		"dst":     "0x7526EB4f95e2a1394797Cb38a921Fb1EbA09291B",
+		"dink":    "-1000000000000000000000",
+		"dart":    "-2000000000000000000000",
+		"log_idx": EthVatForkLogWithNegativeDinkDart.Index,
+		"tx_idx":  EthVatForkLogWithNegativeDinkDart.TxIndex,
+		"raw_log": rawVatForkLogWithNegativeDinkDart,
+	},
+	ForeignKeyValues: shared.ForeignKeyValues{
+		constants.IlkFK: "0x66616b6520696c6b000000000000000000000000000000000000000000000000",
+	},
 }
 
 var EthVatForkLogWithPositiveDinkDart = types.Log{
@@ -58,13 +82,21 @@ var EthVatForkLogWithPositiveDinkDart = types.Log{
 }
 
 var rawVatForkLogWithPositiveDinkDart, _ = json.Marshal(EthVatForkLogWithPositiveDinkDart)
-var VatForkModelWithPositiveDinkDart = vat_fork.VatForkModel{
-	Ilk:              "0x66616b6520696c6b000000000000000000000000000000000000000000000000",
-	Src:              "0x07Fa9eF6609cA7921112231F8f195138ebbA2977",
-	Dst:              "0x7526EB4f95e2a1394797Cb38a921Fb1EbA09291B",
-	Dink:             "100000000000000",
-	Dart:             "2000000000000000",
-	LogIndex:         EthVatForkLogWithPositiveDinkDart.Index,
-	TransactionIndex: EthVatForkLogWithPositiveDinkDart.TxIndex,
-	Raw:              rawVatForkLogWithPositiveDinkDart,
+var VatForkModelWithPositiveDinkDart = shared.InsertionModel{
+	TableName: "vat_fork",
+	OrderedColumns: []string{
+		"header_id", string(constants.IlkFK), "src", "dst", "dink", "dart", "log_idx", "tx_idx", "raw_log",
+	},
+	ColumnValues: shared.ColumnValues{
+		"src":     "0x07Fa9eF6609cA7921112231F8f195138ebbA2977",
+		"dst":     "0x7526EB4f95e2a1394797Cb38a921Fb1EbA09291B",
+		"dink":    "100000000000000",
+		"dart":    "2000000000000000",
+		"log_idx": EthVatForkLogWithPositiveDinkDart.Index,
+		"tx_idx":  EthVatForkLogWithPositiveDinkDart.TxIndex,
+		"raw_log": rawVatForkLogWithPositiveDinkDart,
+	},
+	ForeignKeyValues: shared.ForeignKeyValues{
+		constants.IlkFK: "0x66616b6520696c6b000000000000000000000000000000000000000000000000",
+	},
 }

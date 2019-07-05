@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -83,7 +83,7 @@ var _ = Describe("VatFileIlk LogNoteTransformer", func() {
 		err = tr.Execute(logs, header)
 		Expect(err).NotTo(HaveOccurred())
 
-		var dbResult []ilk.VatFileIlkModel
+		var dbResult []vatFileIlkModel
 		err = db.Select(&dbResult, `SELECT ilk_id, what, data from maker.vat_file_ilk`)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -111,7 +111,7 @@ var _ = Describe("VatFileIlk LogNoteTransformer", func() {
 		err = tr.Execute(logs, header)
 		Expect(err).NotTo(HaveOccurred())
 
-		var dbResults []ilk.VatFileIlkModel
+		var dbResults []vatFileIlkModel
 		err = db.Select(&dbResults, `SELECT ilk_id, what, data from maker.vat_file_ilk`)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -126,7 +126,16 @@ var _ = Describe("VatFileIlk LogNoteTransformer", func() {
 	})
 })
 
-type byLogIndexVatFileIlk []ilk.VatFileIlkModel
+type vatFileIlkModel struct {
+	Ilk              string `db:"ilk_id"`
+	What             string
+	Data             string
+	LogIndex         uint   `db:"log_idx"`
+	TransactionIndex uint   `db:"tx_idx"`
+	Raw              []byte `db:"raw_log"`
+}
+
+type byLogIndexVatFileIlk []vatFileIlkModel
 
 func (c byLogIndexVatFileIlk) Len() int           { return len(c) }
 func (c byLogIndexVatFileIlk) Less(i, j int) bool { return c[i].LogIndex < c[j].LogIndex }

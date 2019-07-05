@@ -22,6 +22,7 @@ import (
 	. "github.com/onsi/gomega"
 
 	"github.com/vulcanize/mcd_transformers/transformers/events/spot_file/pip"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
@@ -34,7 +35,6 @@ var _ = Describe("Spot file pip converter", func() {
 		}
 
 		_, err := converter.ToModels([]types.Log{badLog})
-
 		Expect(err).To(HaveOccurred())
 	})
 
@@ -42,7 +42,6 @@ var _ = Describe("Spot file pip converter", func() {
 		models, err := converter.ToModels([]types.Log{test_data.EthSpotFilePipLog})
 
 		Expect(err).NotTo(HaveOccurred())
-		Expect(len(models)).To(Equal(1))
-		Expect(models[0]).To(Equal(test_data.SpotFilePipModel))
+		Expect(models).To(Equal([]shared.InsertionModel{test_data.SpotFilePipModel}))
 	})
 })

@@ -23,11 +23,12 @@ import (
 	. "github.com/onsi/gomega"
 
 	"github.com/vulcanize/mcd_transformers/transformers/events/spot_file/mat"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
 var _ = Describe("Spot file mat converter", func() {
-	converter := mat.SpotFileMatConverter{}
+	var converter = mat.SpotFileMatConverter{}
 
 	It("returns err if log is missing topics", func() {
 		badLog := types.Log{
@@ -35,7 +36,6 @@ var _ = Describe("Spot file mat converter", func() {
 		}
 
 		_, err := converter.ToModels([]types.Log{badLog})
-
 		Expect(err).To(HaveOccurred())
 	})
 
@@ -45,7 +45,6 @@ var _ = Describe("Spot file mat converter", func() {
 		}
 
 		_, err := converter.ToModels([]types.Log{badLog})
-
 		Expect(err).To(HaveOccurred())
 	})
 
@@ -53,7 +52,6 @@ var _ = Describe("Spot file mat converter", func() {
 		models, err := converter.ToModels([]types.Log{test_data.EthSpotFileMatLog})
 
 		Expect(err).NotTo(HaveOccurred())
-		Expect(len(models)).To(Equal(1))
-		Expect(models[0]).To(Equal(test_data.SpotFileMatModel))
+		Expect(models).To(Equal([]shared.InsertionModel{test_data.SpotFileMatModel}))
 	})
 })

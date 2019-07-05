@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -17,13 +17,10 @@
 package base
 
 import (
-	"fmt"
-
-	log "github.com/sirupsen/logrus"
-
 	repo "github.com/vulcanize/vulcanizedb/libraries/shared/repository"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
@@ -31,48 +28,8 @@ type JugFileBaseRepository struct {
 	db *postgres.DB
 }
 
-func (repository JugFileBaseRepository) Create(headerID int64, models []interface{}) error {
-	tx, dBaseErr := repository.db.Beginx()
-	if dBaseErr != nil {
-		return dBaseErr
-	}
-
-	for _, model := range models {
-		baseModel, ok := model.(JugFileBaseModel)
-		if !ok {
-			rollbackErr := tx.Rollback()
-			if rollbackErr != nil {
-				log.Error("failed to rollback ", rollbackErr)
-			}
-			return fmt.Errorf("model of type %T, not %T", model, JugFileBaseModel{})
-		}
-
-		_, execErr := tx.Exec(
-			`INSERT into maker.jug_file_base (header_id, what, data, log_idx, tx_idx, raw_log)
-			VALUES($1, $2, $3::NUMERIC, $4, $5, $6)
-			ON CONFLICT (header_id, tx_idx, log_idx) DO UPDATE SET what = $2, data = $3, raw_log = $6`,
-			headerID, baseModel.What, baseModel.Data, baseModel.LogIndex, baseModel.TransactionIndex, baseModel.Raw,
-		)
-
-		if execErr != nil {
-			rollbackErr := tx.Rollback()
-			if rollbackErr != nil {
-				log.Error("failed to rollback ", rollbackErr)
-			}
-			return execErr
-		}
-	}
-
-	checkHeaderErr := repo.MarkHeaderCheckedInTransaction(headerID, tx, constants.JugFileBaseChecked)
-	if checkHeaderErr != nil {
-		rollbackErr := tx.Rollback()
-		if rollbackErr != nil {
-			log.Error("failed to rollback ", rollbackErr)
-		}
-		return checkHeaderErr
-	}
-
-	return tx.Commit()
+func (repository JugFileBaseRepository) Create(headerID int64, models []shared.InsertionModel) error {
+	return shared.Create(headerID, models, repository.db)
 }
 
 func (repository JugFileBaseRepository) MarkHeaderChecked(headerID int64) error {

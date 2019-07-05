@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -24,7 +24,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 
-	"github.com/vulcanize/mcd_transformers/transformers/events/vat_init"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
@@ -46,9 +46,17 @@ var EthVatInitLog = types.Log{
 }
 
 var rawVatInitLog, _ = json.Marshal(EthVatInitLog)
-var VatInitModel = vat_init.VatInitModel{
-	Ilk:              "0x66616b6520696c6b000000000000000000000000000000000000000000000000",
-	LogIndex:         EthVatInitLog.Index,
-	TransactionIndex: EthVatInitLog.TxIndex,
-	Raw:              rawVatInitLog,
+var VatInitModel = shared.InsertionModel{
+	TableName: "vat_init",
+	OrderedColumns: []string{
+		"header_id", string(constants.IlkFK), "log_idx", "tx_idx", "raw_log",
+	},
+	ColumnValues: shared.ColumnValues{
+		"log_idx": EthVatInitLog.Index,
+		"tx_idx":  EthVatInitLog.TxIndex,
+		"raw_log": rawVatInitLog,
+	},
+	ForeignKeyValues: shared.ForeignKeyValues{
+		constants.IlkFK: "0x66616b6520696c6b000000000000000000000000000000000000000000000000",
+	},
 }

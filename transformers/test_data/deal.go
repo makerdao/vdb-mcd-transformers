@@ -24,7 +24,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 
-	"github.com/vulcanize/mcd_transformers/transformers/events/deal"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
@@ -45,11 +45,17 @@ var DealLogNote = types.Log{
 	Removed:     false,
 }
 var dealRawJson, _ = json.Marshal(DealLogNote)
-
-var DealModel = deal.DealModel{
-	BidId:            "10000000000000000",
-	ContractAddress:  common.HexToAddress(constants.EthFlipContractAddressA()).Hex(),
-	LogIndex:         DealLogNote.Index,
-	TransactionIndex: DealLogNote.TxIndex,
-	Raw:              dealRawJson,
+var DealModel = shared.InsertionModel{
+	TableName: "deal",
+	OrderedColumns: []string{
+		"header_id", "bid_id", "contract_address", "log_idx", "tx_idx", "raw_log",
+	},
+	ColumnValues: shared.ColumnValues{
+		"bid_id":           "10000000000000000",
+		"contract_address": common.HexToAddress(constants.EthFlipContractAddressA()).Hex(),
+		"log_idx":          DealLogNote.Index,
+		"tx_idx":           DealLogNote.TxIndex,
+		"raw_log":          dealRawJson,
+	},
+	ForeignKeyValues: shared.ForeignKeyValues{},
 }

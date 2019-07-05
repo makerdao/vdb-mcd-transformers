@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -19,21 +19,21 @@ package vat_move
 import (
 	"encoding/json"
 	"errors"
-	"github.com/vulcanize/mcd_transformers/transformers/shared"
-
-	"github.com/ethereum/go-ethereum/core/types"
 
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
+
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 )
 
 type VatMoveConverter struct{}
 
-func (VatMoveConverter) ToModels(ethLogs []types.Log) ([]interface{}, error) {
-	var models []interface{}
+func (VatMoveConverter) ToModels(ethLogs []types.Log) ([]shared.InsertionModel, error) {
+	var models []shared.InsertionModel
 	for _, ethLog := range ethLogs {
 		err := verifyLog(ethLog)
 		if err != nil {
-			return []interface{}{}, err
+			return []shared.InsertionModel{}, err
 		}
 
 		src := common.BytesToAddress(ethLog.Topics[1].Bytes()).String()
@@ -41,17 +41,25 @@ func (VatMoveConverter) ToModels(ethLogs []types.Log) ([]interface{}, error) {
 		rad := shared.ConvertUint256HexToBigInt(ethLog.Topics[3].Hex())
 		raw, err := json.Marshal(ethLog)
 		if err != nil {
-			return []interface{}{}, err
+			return []shared.InsertionModel{}, err
 		}
 
-		models = append(models, VatMoveModel{
-			Src:              src,
-			Dst:              dst,
-			Rad:              rad.String(),
-			LogIndex:         ethLog.Index,
-			TransactionIndex: ethLog.TxIndex,
-			Raw:              raw,
-		})
+		model := shared.InsertionModel{
+			TableName: "vat_move",
+			OrderedColumns: []string{
+				"header_id", "src", "dst", "rad", "log_idx", "tx_idx", "raw_log",
+			},
+			ColumnValues: shared.ColumnValues{
+				"src":     src,
+				"dst":     dst,
+				"rad":     rad.String(),
+				"log_idx": ethLog.Index,
+				"tx_idx":  ethLog.TxIndex,
+				"raw_log": raw,
+			},
+			ForeignKeyValues: shared.ForeignKeyValues{},
+		}
+		models = append(models, model)
 	}
 
 	return models, nil

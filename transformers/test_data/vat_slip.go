@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -24,7 +24,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 
-	"github.com/vulcanize/mcd_transformers/transformers/events/vat_slip"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
@@ -46,13 +46,21 @@ var EthVatSlipLogWithPositiveWad = types.Log{
 }
 
 var rawVatSlipLogWithPositiveWad, _ = json.Marshal(EthVatSlipLogWithPositiveWad)
-var VatSlipModelWithPositiveWad = vat_slip.VatSlipModel{
-	Ilk:              "0x4554482d41000000000000000000000000000000000000000000000000000000",
-	Usr:              "0x5c8c8e5895B9cCf34ACF391C99E13C79EE2eFb46",
-	Wad:              "10000000000000000",
-	TransactionIndex: 0,
-	LogIndex:         5,
-	Raw:              rawVatSlipLogWithPositiveWad,
+var VatSlipModelWithPositiveWad = shared.InsertionModel{
+	TableName: "vat_slip",
+	OrderedColumns: []string{
+		"header_id", string(constants.IlkFK), "usr", "wad", "tx_idx", "log_idx", "raw_log",
+	},
+	ColumnValues: shared.ColumnValues{
+		"usr":     "0x5c8c8e5895B9cCf34ACF391C99E13C79EE2eFb46",
+		"wad":     "10000000000000000",
+		"tx_idx":  EthVatSlipLogWithPositiveWad.TxIndex,
+		"log_idx": EthVatSlipLogWithPositiveWad.Index,
+		"raw_log": rawVatSlipLogWithPositiveWad,
+	},
+	ForeignKeyValues: shared.ForeignKeyValues{
+		constants.IlkFK: "0x4554482d41000000000000000000000000000000000000000000000000000000",
+	},
 }
 
 var EthVatSlipLogWithNegativeWad = types.Log{
@@ -73,11 +81,19 @@ var EthVatSlipLogWithNegativeWad = types.Log{
 }
 
 var rawVatSlipLogWithNegativeWad, _ = json.Marshal(EthVatSlipLogWithNegativeWad)
-var VatSlipModelWithNegativeWad = vat_slip.VatSlipModel{
-	Ilk:              "0x4554482d41000000000000000000000000000000000000000000000000000000",
-	Usr:              "0xFc7440E2Ed4A3AEb14d40c00f02a14221Be0474d",
-	Wad:              "-5000000000000000",
-	TransactionIndex: EthVatSlipLogWithNegativeWad.TxIndex,
-	LogIndex:         EthVatSlipLogWithNegativeWad.Index,
-	Raw:              rawVatSlipLogWithNegativeWad,
+var VatSlipModelWithNegativeWad = shared.InsertionModel{
+	TableName: "vat_slip",
+	OrderedColumns: []string{
+		"header_id", string(constants.IlkFK), "usr", "wad", "tx_idx", "log_idx", "raw_log",
+	},
+	ColumnValues: shared.ColumnValues{
+		"usr":     "0xFc7440E2Ed4A3AEb14d40c00f02a14221Be0474d",
+		"wad":     "-5000000000000000",
+		"tx_idx":  EthVatSlipLogWithNegativeWad.TxIndex,
+		"log_idx": EthVatSlipLogWithNegativeWad.Index,
+		"raw_log": rawVatSlipLogWithNegativeWad,
+	},
+	ForeignKeyValues: shared.ForeignKeyValues{
+		constants.IlkFK: "0x4554482d41000000000000000000000000000000000000000000000000000000",
+	},
 }

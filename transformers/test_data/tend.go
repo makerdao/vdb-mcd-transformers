@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -25,7 +25,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 
-	"github.com/vulcanize/mcd_transformers/transformers/events/tend"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
@@ -55,12 +55,19 @@ var TendLogNote = types.Log{
 }
 
 var rawTendLog, _ = json.Marshal(TendLogNote)
-var TendModel = tend.TendModel{
-	BidId:            strconv.FormatInt(tendBidId, 10),
-	Lot:              tendLot,
-	Bid:              tendBid,
-	ContractAddress:  constants.FlapperContractAddress(),
-	LogIndex:         TendLogNote.Index,
-	TransactionIndex: TendLogNote.TxIndex,
-	Raw:              rawTendLog,
+var TendModel = shared.InsertionModel{
+	TableName: "tend",
+	OrderedColumns: []string{
+		"header_id", "bid_id", "lot", "bid", "contract_address", "log_idx", "tx_idx", "raw_log",
+	},
+	ColumnValues: shared.ColumnValues{
+		"bid_id":           strconv.FormatInt(tendBidId, 10),
+		"lot":              tendLot,
+		"bid":              tendBid,
+		"contract_address": constants.FlapperContractAddress(),
+		"log_idx":          TendLogNote.Index,
+		"tx_idx":           TendLogNote.TxIndex,
+		"raw_log":          rawTendLog,
+	},
+	ForeignKeyValues: shared.ForeignKeyValues{},
 }
