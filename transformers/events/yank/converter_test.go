@@ -23,6 +23,7 @@ import (
 	. "github.com/onsi/gomega"
 
 	"github.com/vulcanize/mcd_transformers/transformers/events/yank"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
@@ -33,8 +34,7 @@ var _ = Describe("Yank Converter", func() {
 		models, err := converter.ToModels([]types.Log{test_data.EthYankLog})
 
 		Expect(err).NotTo(HaveOccurred())
-		Expect(len(models)).To(Equal(1))
-		Expect(models[0]).To(Equal(test_data.YankModel))
+		Expect(models).To(Equal([]shared.InsertionModel{test_data.YankModel}))
 	})
 
 	It("returns an error if the expected topics aren't in the log", func() {
