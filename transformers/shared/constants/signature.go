@@ -24,6 +24,7 @@ func DealSignature() string               { return getLogNoteTopicZero(dealMetho
 func DentSignature() string               { return getLogNoteTopicZero(dentMethod()) }
 func FlapKickSignature() string           { return getEventTopicZero(flapKickMethod()) }
 func FlipKickSignature() string           { return getEventTopicZero(flipKickMethod()) }
+func FlipTickSignature() string           { return getEventTopicZero(flipTickMethod()) }
 func FlopKickSignature() string           { return getEventTopicZero(flopKickMethod()) }
 func JugDripSignature() string            { return getLogNoteTopicZero(jugDripMethod()) }
 func JugFileBaseSignature() string        { return getLogNoteTopicZero(jugFileBaseMethod()) }
