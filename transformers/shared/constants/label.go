@@ -25,6 +25,7 @@ const (
 	DentLabel               = "dent"
 	FlapKickLabel           = "flapKick"
 	FlipKickLabel           = "flipKick"
+	FlipTickLabel           = "flipTick"
 	FlopKickLabel           = "flopKick"
 	JugDripLabel            = "jugDrip"
 	JugFileBaseLabel        = "jugFileBase"

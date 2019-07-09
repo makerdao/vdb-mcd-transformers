@@ -26,6 +26,7 @@
         "dent",
         "flap_kick",
         "flip_kick",
+        "flip_tick",
         "flop_kick",
         "jug_drip",
         "jug_file_base",
@@ -128,6 +129,12 @@
         rank = "0"
     [exporter.flip_kick]
         path = "transformers/events/flip_kick/initializer"
+        type = "eth_event"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        rank = "0"
+    [exporter.flip_tick]
+        path = "transformers/events/flip_tick/initializer"
         type = "eth_event"
         repository = "github.com/vulcanize/mcd_transformers"
         migrations = "db/migrations"

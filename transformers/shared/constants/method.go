@@ -29,7 +29,8 @@ func catFileVowMethod() string {
 func dealMethod() string     { return getSolidityFunctionSignature(FlipperABI(), "deal") }
 func dentMethod() string     { return getSolidityFunctionSignature(FlipperABI(), "dent") }
 func flapKickMethod() string { return getSolidityFunctionSignature(OldFlapperABI(), "Kick") }
-func flipKickMethod() string { return getSolidityFunctionSignature(OldFlipperABI(), "Kick") }
+func flipKickMethod() string { return getSolidityFunctionSignature(FlipperABI(), "Kick") }
+func flipTickMethod() string { return getSolidityFunctionSignature(FlipperABI(), "tick") }
 func flopKickMethod() string { return getSolidityFunctionSignature(FlopperABI(), "Kick") }
 func jugDripMethod() string  { return getSolidityFunctionSignature(JugABI(), "drip") }
 func jugFileBaseMethod() string {

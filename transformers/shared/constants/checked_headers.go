@@ -25,6 +25,7 @@ var (
 	DentChecked               = "dent_checked"
 	FlapKickChecked           = "flap_kick_checked"
 	FlipKickChecked           = "flip_kick_checked"
+	FlipTickChecked           = "flip_tick_checked"
 	FlopKickChecked           = "flop_kick_checked"
 	JugDripChecked            = "jug_drip_checked"
 	JugFileBaseChecked        = "jug_file_base_checked"
