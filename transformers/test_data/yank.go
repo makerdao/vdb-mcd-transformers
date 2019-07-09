@@ -18,12 +18,11 @@ package test_data
 
 import (
 	"encoding/json"
-
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
 
-	"github.com/vulcanize/mcd_transformers/transformers/events/yank"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
@@ -45,10 +44,17 @@ var EthYankLog = types.Log{
 }
 
 var rawYank, _ = json.Marshal(EthYankLog)
-var YankModel = yank.YankModel{
-	BidId:            "10000000000000000",
-	ContractAddress:  EthYankLog.Address.Hex(),
-	LogIndex:         EthYankLog.Index,
-	TransactionIndex: EthYankLog.TxIndex,
-	Raw:              rawYank,
+var YankModel = shared.InsertionModel{
+	TableName: "yank",
+	OrderedColumns: []string{
+		"header_id", "bid_id", "contract_address", "log_idx", "tx_idx", "raw_log",
+	},
+	ColumnValues: shared.ColumnValues{
+		"bid_id":           "10000000000000000",
+		"contract_address": EthYankLog.Address.Hex(),
+		"log_idx":          EthYankLog.Index,
+		"tx_idx":           EthYankLog.TxIndex,
+		"raw_log":          rawYank,
+	},
+	ForeignKeyValues: shared.ForeignKeyValues{},
 }

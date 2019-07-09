@@ -42,10 +42,6 @@ func (TendConverter) ToModels(ethLogs []types.Log) (results []shared.InsertionMo
 			return nil, bidErr
 		}
 		bidValue := shared.ConvertUint256HexToBigInt(hexutil.Encode(rawBid)).String()
-		contractAddress := ethLog.Address
-		logIndex := ethLog.Index
-		transactionIndex := ethLog.TxIndex
-
 		rawLog, err := json.Marshal(ethLog)
 		if err != nil {
 			return nil, err
@@ -60,9 +56,9 @@ func (TendConverter) ToModels(ethLogs []types.Log) (results []shared.InsertionMo
 				"bid_id":           bidId.String(),
 				"lot":              lot,
 				"bid":              bidValue,
-				"contract_address": contractAddress.Hex(),
-				"log_idx":          logIndex,
-				"tx_idx":           transactionIndex,
+				"contract_address": ethLog.Address.Hex(),
+				"log_idx":          ethLog.Index,
+				"tx_idx":           ethLog.TxIndex,
 				"raw_log":          rawLog,
 			},
 			ForeignKeyValues: shared.ForeignKeyValues{},

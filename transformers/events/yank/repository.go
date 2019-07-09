@@ -17,58 +17,19 @@
 package yank
 
 import (
-	"fmt"
-
-	"github.com/sirupsen/logrus"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/repository"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
-
-const InsertYankQuery = `INSERT INTO maker.yank (header_id, bid_id, contract_address, raw_log, log_idx, tx_idx)
-		VALUES($1, $2::NUMERIC, $3, $4, $5::NUMERIC, $6::NUMERIC)
-		ON CONFLICT (header_id, tx_idx, log_idx)
-		DO UPDATE SET bid_id = $2, contract_address = $3, raw_log = $4;`
 
 type YankRepository struct {
 	db *postgres.DB
 }
 
-func (repo YankRepository) Create(headerID int64, models []interface{}) error {
-	tx, dBaseErr := repo.db.Beginx()
-	if dBaseErr != nil {
-		return dBaseErr
-	}
-	for _, model := range models {
-		yankModel, ok := model.(YankModel)
-		if !ok {
-			rollbackErr := tx.Rollback()
-			if rollbackErr != nil {
-				logrus.Error("failed to rollback ", rollbackErr)
-			}
-			return fmt.Errorf("model of type %T, not %T", model, YankModel{})
-		}
-
-		_, execErr := tx.Exec(InsertYankQuery, headerID, yankModel.BidId, yankModel.ContractAddress, yankModel.Raw,
-			yankModel.LogIndex, yankModel.TransactionIndex)
-		if execErr != nil {
-			rollbackErr := tx.Rollback()
-			if rollbackErr != nil {
-				logrus.Error("failed to rollback ", rollbackErr)
-			}
-			return execErr
-		}
-	}
-	checkHeaderErr := repository.MarkHeaderCheckedInTransaction(headerID, tx, constants.YankChecked)
-	if checkHeaderErr != nil {
-		rollbackErr := tx.Rollback()
-		if rollbackErr != nil {
-			logrus.Error("failed to rollback ", rollbackErr)
-		}
-		return checkHeaderErr
-	}
-	return tx.Commit()
+func (repo YankRepository) Create(headerID int64, models []shared.InsertionModel) error {
+	return shared.Create(headerID, models, repo.db)
 }
 
 func (repo YankRepository) MarkHeaderChecked(headerID int64) error {
