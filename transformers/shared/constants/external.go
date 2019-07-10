@@ -62,7 +62,7 @@ func getEnvironmentInt64(key string) int64 {
 func CatContractAddress() string        { return getEnvironmentString("contract.address.MCD_CAT") }
 func FlapperContractAddress() string    { return getEnvironmentString("contract.address.MCD_FLAP") }
 func OldFlipperContractAddress() string { return getEnvironmentString("contract.address.ETH_FLIP_OLD") }
-func FlopperContractAddress() string    { return getEnvironmentString("contract.address.MCD_FLOP_OLD") }
+func FlopperContractAddress() string    { return getEnvironmentString("contract.address.MCD_FLOP") }
 func JugContractAddress() string        { return getEnvironmentString("contract.address.MCD_JUG") }
 func SpotContractAddress() string       { return getEnvironmentString("contract.address.MCD_SPOT") }
 func VatContractAddress() string        { return getEnvironmentString("contract.address.MCD_VAT") }
@@ -83,7 +83,7 @@ func CatABI() string        { return getEnvironmentString("contract.abi.MCD_CAT"
 func FlapperABI() string    { return getEnvironmentString("contract.abi.MCD_FLAP") }
 func OldFlipperABI() string { return getEnvironmentString("contract.abi.ETH_FLIP_OLD") }
 func FlipperABI() string    { return getEnvironmentString("contract.abi.MCD_FLIP") }
-func FlopperABI() string    { return getEnvironmentString("contract.abi.MCD_FLOP_OLD") }
+func FlopperABI() string    { return getEnvironmentString("contract.abi.MCD_FLOP") }
 func JugABI() string        { return getEnvironmentString("contract.abi.MCD_JUG") }
 func SpotABI() string       { return getEnvironmentString("contract.abi.MCD_SPOT") }
 func VatABI() string        { return getEnvironmentString("contract.abi.MCD_VAT") }

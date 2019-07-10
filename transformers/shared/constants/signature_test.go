@@ -55,11 +55,11 @@ var _ = Describe("Signature constants", func() {
 	})
 
 	It("generates flip tick signature", func() {
-		Expect(FlipTickSignature()).To(Equal("0xfc7b6aeec029dbed25e23d70edf7c7e2608994c0ea63ebc04f5e5de02be20d98"))
+		Expect(FlipTickSignature()).To(Equal("0xfc7b6aee00000000000000000000000000000000000000000000000000000000"))
 	})
 
 	It("generates flop kick signature", func() {
-		Expect(FlopKickSignature()).To(Equal("0xefa52d9342a199cb30efd2692463f2c2bef63cd7186b50382d4fb94ad207880e"))
+		Expect(FlopKickSignature()).To(Equal("0x7e8881001566f9f89aedb9c5dc3d856a2b81e5235a8196413ed484be91cc0df6"))
 	})
 
 	It("generates jug drip signature", func() {

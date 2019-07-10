@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -19,7 +19,6 @@ package flop_kick_test
 import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
@@ -65,15 +64,15 @@ var _ = Describe("FlopRepository", func() {
 			err = repository.Create(headerId, []interface{}{test_data.FlopKickModel})
 			Expect(err).NotTo(HaveOccurred())
 
-			dbResult := test_data.FlopKickDBResult{}
-			err = db.QueryRowx(`SELECT * FROM maker.flop_kick WHERE header_id = $1`, headerId).StructScan(&dbResult)
+			var dbResult test_data.FlopKickDBResult
+			err = db.Get(&dbResult, `SELECT * FROM maker.flop_kick WHERE header_id = $1`, headerId)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(dbResult.HeaderId).To(Equal(headerId))
 			Expect(dbResult.BidId).To(Equal(test_data.FlopKickModel.BidId))
 			Expect(dbResult.Lot).To(Equal(test_data.FlopKickModel.Lot))
 			Expect(dbResult.Bid).To(Equal(test_data.FlopKickModel.Bid))
 			Expect(dbResult.Gal).To(Equal(test_data.FlopKickModel.Gal))
-			Expect(dbResult.End.Equal(test_data.FlopKickModel.End)).To(BeTrue())
+			Expect(dbResult.ContractAddress).To(Equal(test_data.FlopKickModel.ContractAddress))
 			Expect(dbResult.TransactionIndex).To(Equal(test_data.FlopKickModel.TransactionIndex))
 			Expect(dbResult.LogIndex).To(Equal(test_data.FlopKickModel.LogIndex))
 			Expect(dbResult.Raw).To(MatchJSON(test_data.FlopKickModel.Raw))
