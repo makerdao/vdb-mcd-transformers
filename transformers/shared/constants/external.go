@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -60,7 +60,6 @@ func getEnvironmentInt64(key string) int64 {
 
 // Getters for contract addresses from environment files
 func CatContractAddress() string        { return getEnvironmentString("contract.address.MCD_CAT") }
-func OldFlapperContractAddress() string { return getEnvironmentString("contract.address.MCD_FLAP_OLD") }
 func FlapperContractAddress() string    { return getEnvironmentString("contract.address.MCD_FLAP") }
 func OldFlipperContractAddress() string { return getEnvironmentString("contract.address.ETH_FLIP_OLD") }
 func FlopperContractAddress() string    { return getEnvironmentString("contract.address.MCD_FLOP_OLD") }
@@ -81,7 +80,6 @@ func FlipperContractAddresses() []string {
 }
 
 func CatABI() string        { return getEnvironmentString("contract.abi.MCD_CAT") }
-func OldFlapperABI() string { return getEnvironmentString("contract.abi.MCD_FLAP_OLD") }
 func FlapperABI() string    { return getEnvironmentString("contract.abi.MCD_FLAP") }
 func OldFlipperABI() string { return getEnvironmentString("contract.abi.ETH_FLIP_OLD") }
 func FlipperABI() string    { return getEnvironmentString("contract.abi.MCD_FLIP") }

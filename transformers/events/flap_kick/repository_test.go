@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -62,20 +62,23 @@ var _ = Describe("Flap Kick Repository", func() {
 		It("persists a flap kick record", func() {
 			headerId, err := headerRepository.CreateOrUpdateHeader(fakes.FakeHeader)
 			Expect(err).NotTo(HaveOccurred())
-			err = flapKickRepository.Create(headerId, []interface{}{test_data.FlapKickModel})
 
+			err = flapKickRepository.Create(headerId, []interface{}{test_data.FlapKickModel})
 			Expect(err).NotTo(HaveOccurred())
+
 			var count int
-			db.QueryRow(`SELECT count(*) FROM maker.flap_kick`).Scan(&count)
+			countErr := db.Get(&count, `SELECT count(*) FROM maker.flap_kick`)
+			Expect(countErr).NotTo(HaveOccurred())
 			Expect(count).To(Equal(1))
+
 			var dbResult flap_kick.FlapKickModel
-			err = db.Get(&dbResult, `SELECT bid, bid_id, "end", gal, lot, log_idx, tx_idx, raw_log FROM maker.flap_kick WHERE header_id = $1`, headerId)
-			Expect(err).NotTo(HaveOccurred())
+			getErr := db.Get(&dbResult, `SELECT bid, bid_id, gal, lot, contract_address, log_idx, tx_idx, raw_log FROM maker.flap_kick WHERE header_id = $1`, headerId)
+			Expect(getErr).NotTo(HaveOccurred())
 			Expect(dbResult.Bid).To(Equal(test_data.FlapKickModel.Bid))
 			Expect(dbResult.BidId).To(Equal(test_data.FlapKickModel.BidId))
-			Expect(dbResult.End.Equal(test_data.FlapKickModel.End)).To(BeTrue())
 			Expect(dbResult.Gal).To(Equal(test_data.FlapKickModel.Gal))
 			Expect(dbResult.Lot).To(Equal(test_data.FlapKickModel.Lot))
+			Expect(dbResult.ContractAddress).To(Equal(test_data.FlapKickModel.ContractAddress))
 			Expect(dbResult.LogIndex).To(Equal(test_data.FlapKickModel.LogIndex))
 			Expect(dbResult.TransactionIndex).To(Equal(test_data.FlapKickModel.TransactionIndex))
 			Expect(dbResult.Raw).To(MatchJSON(test_data.FlapKickModel.Raw))
