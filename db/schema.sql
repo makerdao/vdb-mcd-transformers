@@ -3910,6 +3910,41 @@ ALTER SEQUENCE maker.vow_wait_id_seq OWNED BY maker.vow_wait.id;
 
 
 --
+-- Name: yank; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.yank (
+    id integer NOT NULL,
+    header_id integer NOT NULL,
+    bid_id numeric NOT NULL,
+    contract_address text,
+    log_idx integer NOT NULL,
+    tx_idx integer NOT NULL,
+    raw_log jsonb
+);
+
+
+--
+-- Name: yank_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.yank_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: yank_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.yank_id_seq OWNED BY maker.yank.id;
+
+
+--
 -- Name: logs; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -4023,7 +4058,8 @@ CREATE TABLE public.checked_headers (
     vow_file_checked integer DEFAULT 0 NOT NULL,
     vat_suck_checked integer DEFAULT 0 NOT NULL,
     vat_fork_checked integer DEFAULT 0 NOT NULL,
-    jug_init_checked integer DEFAULT 0 NOT NULL
+    jug_init_checked integer DEFAULT 0 NOT NULL,
+    yank_checked integer DEFAULT 0 NOT NULL
 );
 
 
@@ -5002,6 +5038,13 @@ ALTER TABLE ONLY maker.vow_vat ALTER COLUMN id SET DEFAULT nextval('maker.vow_va
 --
 
 ALTER TABLE ONLY maker.vow_wait ALTER COLUMN id SET DEFAULT nextval('maker.vow_wait_id_seq'::regclass);
+
+
+--
+-- Name: yank id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.yank ALTER COLUMN id SET DEFAULT nextval('maker.yank_id_seq'::regclass);
 
 
 --
@@ -6295,6 +6338,22 @@ ALTER TABLE ONLY maker.vow_wait
 
 
 --
+-- Name: yank yank_header_id_tx_idx_log_idx_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.yank
+    ADD CONSTRAINT yank_header_id_tx_idx_log_idx_key UNIQUE (header_id, tx_idx, log_idx);
+
+
+--
+-- Name: yank yank_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.yank
+    ADD CONSTRAINT yank_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: blocks blocks_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -7044,6 +7103,13 @@ CREATE INDEX vow_sin_mapping_era_index ON maker.vow_sin_mapping USING btree (era
 
 
 --
+-- Name: yank_header_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX yank_header_index ON maker.yank USING btree (header_id);
+
+
+--
 -- Name: block_id_index; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -7611,6 +7677,14 @@ ALTER TABLE ONLY maker.vow_file
 
 ALTER TABLE ONLY maker.vow_flog
     ADD CONSTRAINT vow_flog_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: yank yank_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.yank
+    ADD CONSTRAINT yank_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
 
 
 --

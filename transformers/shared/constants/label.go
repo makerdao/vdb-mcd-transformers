@@ -50,4 +50,5 @@ const (
 	VowFessLabel            = "vowFess"
 	VowFileLabel            = "vowFile"
 	VowFlogLabel            = "vowFlog"
+	YankLabel               = "yank"
 )

@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -152,5 +152,9 @@ var _ = Describe("Signature constants", func() {
 
 	It("generates vow flog signature", func() {
 		Expect(VowFlogSignature()).To(Equal("0xd7ee674b00000000000000000000000000000000000000000000000000000000"))
+	})
+
+	It("generates yank signature", func() {
+		Expect(YankSignature()).To(Equal("0x26e027f100000000000000000000000000000000000000000000000000000000"))
 	})
 })
