@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -17,16 +17,16 @@
 package flap_kick
 
 import (
-	shared_t "github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
-func GetFlapKickConfig() shared_t.EventTransformerConfig {
-	return shared_t.EventTransformerConfig{
+func GetFlapKickConfig() transformer.EventTransformerConfig {
+	return transformer.EventTransformerConfig{
 		TransformerName:     constants.FlapKickLabel,
-		ContractAddresses:   []string{constants.OldFlapperContractAddress()},
-		ContractAbi:         constants.OldFlapperABI(),
+		ContractAddresses:   []string{constants.FlapperContractAddress()},
+		ContractAbi:         constants.FlapperABI(),
 		Topic:               constants.FlapKickSignature(),
 		StartingBlockNumber: constants.OldFlapperDeploymentBlock(),
 		EndingBlockNumber:   -1,
