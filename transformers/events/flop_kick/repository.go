@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -19,20 +19,25 @@ package flop_kick
 import (
 	"fmt"
 
-	log "github.com/sirupsen/logrus"
-
-	repo "github.com/vulcanize/vulcanizedb/libraries/shared/repository"
+	"github.com/sirupsen/logrus"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/repository"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
+const InsertFlopKickQuery = `INSERT into maker.flop_kick
+	(header_id, bid_id, lot, bid, gal, contract_address, tx_idx, log_idx, raw_log)
+	VALUES($1, $2::NUMERIC, $3::NUMERIC, $4::NUMERIC, $5, $6, $7, $8, $9)
+	ON CONFLICT (header_id, tx_idx, log_idx)
+	DO UPDATE SET bid_id = $2, lot = $3, bid = $4, gal = $5, contract_address = $6, raw_log = $9;`
+
 type FlopKickRepository struct {
 	db *postgres.DB
 }
 
-func (repository FlopKickRepository) Create(headerID int64, models []interface{}) error {
-	tx, dBaseErr := repository.db.Beginx()
+func (repo FlopKickRepository) Create(headerID int64, models []interface{}) error {
+	tx, dBaseErr := repo.db.Beginx()
 	if dBaseErr != nil {
 		return dBaseErr
 	}
@@ -41,31 +46,28 @@ func (repository FlopKickRepository) Create(headerID int64, models []interface{}
 		if !ok {
 			rollbackErr := tx.Rollback()
 			if rollbackErr != nil {
-				log.Error("failed to rollback ", rollbackErr)
+				logrus.Error("failed to rollback ", rollbackErr)
 			}
 			return fmt.Errorf("model of type %T, not %T", flopKick, Model{})
 		}
 
-		_, execErr := tx.Exec(
-			`INSERT into maker.flop_kick (header_id, bid_id, lot, bid, gal, "end", tx_idx, log_idx, raw_log)
-        VALUES($1, $2::NUMERIC, $3::NUMERIC, $4::NUMERIC, $5, $6, $7, $8, $9)
-		ON CONFLICT (header_id, tx_idx, log_idx) DO UPDATE SET bid_id = $2, lot = $3, bid = $4, gal = $5, "end" = $6, raw_log = $9;`,
-			headerID, flopKickModel.BidId, flopKickModel.Lot, flopKickModel.Bid, flopKickModel.Gal, flopKickModel.End, flopKickModel.TransactionIndex, flopKickModel.LogIndex, flopKickModel.Raw,
-		)
+		_, execErr := tx.Exec(InsertFlopKickQuery, headerID, flopKickModel.BidId, flopKickModel.Lot, flopKickModel.Bid,
+			flopKickModel.Gal, flopKickModel.ContractAddress, flopKickModel.TransactionIndex, flopKickModel.LogIndex,
+			flopKickModel.Raw)
 		if execErr != nil {
 			rollbackErr := tx.Rollback()
 			if rollbackErr != nil {
-				log.Error("failed to rollback ", rollbackErr)
+				logrus.Error("failed to rollback ", rollbackErr)
 			}
 			return execErr
 		}
 	}
 
-	checkHeaderErr := repo.MarkHeaderCheckedInTransaction(headerID, tx, constants.FlopKickChecked)
+	checkHeaderErr := repository.MarkHeaderCheckedInTransaction(headerID, tx, constants.FlopKickChecked)
 	if checkHeaderErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
-			log.Error("failed to rollback ", rollbackErr)
+			logrus.Error("failed to rollback ", rollbackErr)
 		}
 		return checkHeaderErr
 	}
@@ -73,10 +75,10 @@ func (repository FlopKickRepository) Create(headerID int64, models []interface{}
 	return tx.Commit()
 }
 
-func (repository FlopKickRepository) MarkHeaderChecked(headerId int64) error {
-	return repo.MarkHeaderChecked(headerId, repository.db, constants.FlopKickChecked)
+func (repo FlopKickRepository) MarkHeaderChecked(headerId int64) error {
+	return repository.MarkHeaderChecked(headerId, repo.db, constants.FlopKickChecked)
 }
 
-func (repository *FlopKickRepository) SetDB(db *postgres.DB) {
-	repository.db = db
+func (repo *FlopKickRepository) SetDB(db *postgres.DB) {
+	repo.db = db
 }
