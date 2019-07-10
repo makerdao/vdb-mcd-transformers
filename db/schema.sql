@@ -1870,6 +1870,41 @@ ALTER SEQUENCE maker.flip_kick_id_seq OWNED BY maker.flip_kick.id;
 
 
 --
+-- Name: flip_tick; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.flip_tick (
+    id integer NOT NULL,
+    header_id integer NOT NULL,
+    bid_id numeric NOT NULL,
+    contract_address text,
+    log_idx integer NOT NULL,
+    tx_idx integer NOT NULL,
+    raw_log jsonb
+);
+
+
+--
+-- Name: flip_tick_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.flip_tick_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: flip_tick_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.flip_tick_id_seq OWNED BY maker.flip_tick.id;
+
+
+--
 -- Name: flop_kick; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -4059,7 +4094,8 @@ CREATE TABLE public.checked_headers (
     vat_suck_checked integer DEFAULT 0 NOT NULL,
     vat_fork_checked integer DEFAULT 0 NOT NULL,
     jug_init_checked integer DEFAULT 0 NOT NULL,
-    yank_checked integer DEFAULT 0 NOT NULL
+    yank_checked integer DEFAULT 0 NOT NULL,
+    flip_tick_checked integer DEFAULT 0 NOT NULL
 );
 
 
@@ -4618,6 +4654,13 @@ ALTER TABLE ONLY maker.flap_kick ALTER COLUMN id SET DEFAULT nextval('maker.flap
 --
 
 ALTER TABLE ONLY maker.flip_kick ALTER COLUMN id SET DEFAULT nextval('maker.flip_kick_id_seq'::regclass);
+
+
+--
+-- Name: flip_tick id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_tick ALTER COLUMN id SET DEFAULT nextval('maker.flip_tick_id_seq'::regclass);
 
 
 --
@@ -5367,6 +5410,22 @@ ALTER TABLE ONLY maker.flip_kick
 
 ALTER TABLE ONLY maker.flip_kick
     ADD CONSTRAINT flip_kick_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: flip_tick flip_tick_header_id_tx_idx_log_idx_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_tick
+    ADD CONSTRAINT flip_tick_header_id_tx_idx_log_idx_key UNIQUE (header_id, tx_idx, log_idx);
+
+
+--
+-- Name: flip_tick flip_tick_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_tick
+    ADD CONSTRAINT flip_tick_pkey PRIMARY KEY (id);
 
 
 --
@@ -6641,6 +6700,13 @@ CREATE INDEX flip_kick_header_index ON maker.flip_kick USING btree (header_id);
 
 
 --
+-- Name: flip_tick_header_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flip_tick_header_index ON maker.flip_tick USING btree (header_id);
+
+
+--
 -- Name: flop_kick_header_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -7261,6 +7327,14 @@ ALTER TABLE ONLY maker.flap_kick
 
 ALTER TABLE ONLY maker.flip_kick
     ADD CONSTRAINT flip_kick_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: flip_tick flip_tick_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_tick
+    ADD CONSTRAINT flip_tick_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
 
 
 --
