@@ -20,65 +20,67 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 
 	"github.com/vulcanize/mcd_transformers/test_config"
-	"github.com/vulcanize/mcd_transformers/transformers/events/flip_kick"
+	"github.com/vulcanize/mcd_transformers/transformers/events/flip_tick"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
-var _ = Describe("FlipKick Transformer", func() {
-	flipKickConfig := transformer.EventTransformerConfig{
-		TransformerName:   mcdConstants.FlipKickLabel,
-		ContractAddresses: []string{mcdConstants.EthFlipContractAddressA()},
+// Update when auction events are in kovan
+var _ = XDescribe("Flip tick LogNoteTransformer", func() {
+	flipTickConfig := transformer.EventTransformerConfig{
+		TransformerName:   mcdConstants.FlipTickLabel,
+		ContractAddresses: mcdConstants.FlipperContractAddresses(),
 		ContractAbi:       mcdConstants.FlipperABI(),
-		Topic:             mcdConstants.FlipKickSignature(),
+		Topic:             mcdConstants.FlipTickSignature(),
 	}
 
-	// TODO: Update when updated kick event exists in kovan
-	XIt("fetches and transforms a FlipKick event from Kovan chain", func() {
-		blockNumber := int64(8956476)
-		flipKickConfig.StartingBlockNumber = blockNumber
-		flipKickConfig.EndingBlockNumber = blockNumber
+	It("fetches and transforms a Flip tick event from Kovan chain", func() {
+		blockNumber := int64(8935601)
+		flipTickConfig.StartingBlockNumber = blockNumber
+		flipTickConfig.EndingBlockNumber = blockNumber
 
 		rpcClient, ethClient, err := getClients(ipc)
 		Expect(err).NotTo(HaveOccurred())
 		blockChain, err := getBlockChain(rpcClient, ethClient)
 		Expect(err).NotTo(HaveOccurred())
+
 		db := test_config.NewTestDB(blockChain.Node())
 		test_config.CleanTestDB(db)
 
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		tr := event.Transformer{
-			Config:     flipKickConfig,
-			Converter:  &flip_kick.FlipKickConverter{},
-			Repository: &flip_kick.FlipKickRepository{},
-		}.NewTransformer(db)
-
-		f := fetcher.NewLogFetcher(blockChain)
-		logs, err := f.FetchLogs(
-			transformer.HexStringsToAddresses(flipKickConfig.ContractAddresses),
-			[]common.Hash{common.HexToHash(flipKickConfig.Topic)},
-			header)
+		logFetcher := fetcher.NewLogFetcher(blockChain)
+		logs, err := logFetcher.FetchLogs(transformer.HexStringsToAddresses(flipTickConfig.ContractAddresses), []common.Hash{common.HexToHash(flipTickConfig.Topic)}, header)
 		Expect(err).NotTo(HaveOccurred())
 
-		err = tr.Execute(logs, header)
+		transformer := shared.LogNoteTransformer{
+			Config:     flipTickConfig,
+			Converter:  &flip_tick.FlipTickConverter{},
+			Repository: &flip_tick.FlipTickRepository{},
+		}.NewLogNoteTransformer(db)
+
+		err = transformer.Execute(logs, header)
 		Expect(err).NotTo(HaveOccurred())
 
-		var dbResult []flip_kick.FlipKickModel
-		err = db.Select(&dbResult, `SELECT bid_id, lot, bid, tab, usr, gal, contract_address FROM maker.flip_kick`)
+		var dbResult []flipTickModel
+		err = db.Select(&dbResult, `SELECT bid_id, contract_address FROM maker.flip_tick`)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))
-		Expect(dbResult[0].Bid).To(Equal("0"))
-		Expect(dbResult[0].Lot).To(Equal("1000000000000000000"))
-		Expect(dbResult[0].Tab).To(Equal(""))
-		Expect(dbResult[0].Usr).To(Equal(""))
-		Expect(dbResult[0].Gal).To(Equal("0x3728e9777B2a0a611ee0F89e00E01044ce4736d1"))
 		Expect(dbResult[0].ContractAddress).To(Equal(""))
+		Expect(dbResult[0].BidId).To(Equal(""))
 	})
 })
+
+type flipTickModel struct {
+	BidId            string `db:"bid_id"`
+	ContractAddress  string `db:"contract_address"`
+	LogIndex         uint   `db:"log_idx"`
+	TransactionIndex uint   `db:"tx_idx"`
+	Raw              []byte `db:"raw_log"`
+}
