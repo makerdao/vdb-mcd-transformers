@@ -62,7 +62,7 @@ var _ = Describe("SpotFile LogNoteTransformers", func() {
 		)
 
 		BeforeEach(func() {
-			blockNumber = int64(11257385)
+			blockNumber = int64(11580065)
 			var insertHeaderErr error
 			header, insertHeaderErr = persistHeader(db, blockNumber, blockChain)
 			Expect(insertHeaderErr).NotTo(HaveOccurred())
@@ -120,7 +120,7 @@ var _ = Describe("SpotFile LogNoteTransformers", func() {
 		)
 
 		BeforeEach(func() {
-			blockNumber = int64(11257235)
+			blockNumber = int64(11579891)
 			var insertHeaderErr error
 			header, insertHeaderErr = persistHeader(db, blockNumber, blockChain)
 			Expect(insertHeaderErr).NotTo(HaveOccurred())
@@ -158,10 +158,10 @@ var _ = Describe("SpotFile LogNoteTransformers", func() {
 			getSpotErr := db.Get(&dbResult, `SELECT ilk_id, pip from maker.spot_file_pip`)
 			Expect(getSpotErr).NotTo(HaveOccurred())
 
-			ilkID, ilkErr := shared.GetOrCreateIlk("0x434f4c332d410000000000000000000000000000000000000000000000000000", db)
+			ilkID, ilkErr := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
 			Expect(ilkErr).NotTo(HaveOccurred())
 			Expect(dbResult.Ilk).To(Equal(strconv.Itoa(ilkID)))
-			Expect(dbResult.Pip).To(Equal("0xaa32EB42CBf3Bdb746b659c8DAF443f710497d80"))
+			Expect(dbResult.Pip).To(Equal("0x8C73Ec0fBCdEC6b8C060BC224D94740FD41f3774"))
 		})
 	})
 })

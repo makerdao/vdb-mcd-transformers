@@ -168,6 +168,7 @@ var _ = Describe("Plugin test", func() {
 			err = g.GenerateExporterPlugin()
 			Expect(err).ToNot(HaveOccurred())
 		})
+
 		AfterEach(func() {
 			err := helpers.ClearFiles(goPath, soPath)
 			Expect(err).ToNot(HaveOccurred())
@@ -189,7 +190,7 @@ var _ = Describe("Plugin test", func() {
 			It("Loads our generated Exporter and uses it to import an arbitrary set of TransformerInitializers that we can execute over", func() {
 				db, bc := SetupDBandBC()
 				hr = repositories.NewHeaderRepository(db)
-				header1, err := bc.GetHeaderByNumber(11257255)
+				header1, err := bc.GetHeaderByNumber(11579891)
 				Expect(err).ToNot(HaveOccurred())
 				headerID, err = hr.CreateOrUpdateHeader(header1)
 				Expect(err).ToNot(HaveOccurred())
@@ -223,11 +224,11 @@ var _ = Describe("Plugin test", func() {
 				err = db.Get(&returned, `SELECT * FROM maker.cat_file_flip WHERE header_id = $1`, headerID)
 				Expect(err).ToNot(HaveOccurred())
 
-				ilkID, err := shared.GetOrCreateIlk("0x434f4c352d410000000000000000000000000000000000000000000000000000", db)
+				ilkID, err := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
 				Expect(err).NotTo(HaveOccurred())
 				Expect(returned.Ilk).To(Equal(strconv.Itoa(ilkID)))
 				Expect(returned.What).To(Equal("flip"))
-				Expect(returned.Flip).To(Equal("0x3fd71145A9597335DeECB3823286d8d5f0d29B82"))
+				Expect(returned.Flip).To(Equal("0x43C331C0389a92af62ee726d5AE0c8a424320c31"))
 				Expect(returned.TransactionIndex).To(Equal(uint(0)))
 				Expect(returned.LogIndex).To(Equal(uint(3)))
 			})
@@ -278,8 +279,8 @@ var _ = Describe("Plugin test", func() {
 			err := helpers.ClearFiles(goPath, soPath)
 			Expect(err).ToNot(HaveOccurred())
 		})
-		Describe("GenerateTransformerPlugin", func() {
 
+		Describe("GenerateTransformerPlugin", func() {
 			It("It bundles the specified StorageTransformerInitializers into a Exporter object and creates .so", func() {
 				plug, err := plugin.Open(soPath)
 				Expect(err).ToNot(HaveOccurred())
@@ -327,8 +328,8 @@ var _ = Describe("Plugin test", func() {
 			err := helpers.ClearFiles(goPath, soPath)
 			Expect(err).ToNot(HaveOccurred())
 		})
-		Describe("GenerateTransformerPlugin", func() {
 
+		Describe("GenerateTransformerPlugin", func() {
 			It("It bundles the specified TransformerInitializers and StorageTransformerInitializers into a Exporter object and creates .so", func() {
 				plug, err := plugin.Open(soPath)
 				Expect(err).ToNot(HaveOccurred())
@@ -344,7 +345,7 @@ var _ = Describe("Plugin test", func() {
 			It("Loads our generated Exporter and uses it to import an arbitrary set of TransformerInitializers and StorageTransformerInitializers that we can execute over", func() {
 				db, bc := SetupDBandBC()
 				hr = repositories.NewHeaderRepository(db)
-				header1, err := bc.GetHeaderByNumber(11257255)
+				header1, err := bc.GetHeaderByNumber(11579891)
 				Expect(err).ToNot(HaveOccurred())
 				headerID, err = hr.CreateOrUpdateHeader(header1)
 				Expect(err).ToNot(HaveOccurred())
@@ -378,11 +379,11 @@ var _ = Describe("Plugin test", func() {
 				err = db.Get(&returned, `SELECT * FROM maker.cat_file_flip WHERE header_id = $1`, headerID)
 				Expect(err).ToNot(HaveOccurred())
 
-				ilkID, err := shared.GetOrCreateIlk("0x434f4c352d410000000000000000000000000000000000000000000000000000", db)
+				ilkID, err := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
 				Expect(err).NotTo(HaveOccurred())
 				Expect(returned.Ilk).To(Equal(strconv.Itoa(ilkID)))
 				Expect(returned.What).To(Equal("flip"))
-				Expect(returned.Flip).To(Equal("0x3fd71145A9597335DeECB3823286d8d5f0d29B82"))
+				Expect(returned.Flip).To(Equal("0x43C331C0389a92af62ee726d5AE0c8a424320c31"))
 				Expect(returned.TransactionIndex).To(Equal(uint(0)))
 				Expect(returned.LogIndex).To(Equal(uint(3)))
 

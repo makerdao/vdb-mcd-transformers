@@ -56,8 +56,8 @@ var _ = Describe("SpotPoke Transformer", func() {
 		Topic:             mcdConstants.SpotPokeSignature(),
 	}
 
-	It("transforms jug file ilk log events", func() {
-		blockNumber := int64(11257488)
+	It("transforms spot poke log events", func() {
+		blockNumber := int64(11580139)
 		spotPokeConfig.StartingBlockNumber = blockNumber
 		spotPokeConfig.EndingBlockNumber = blockNumber
 
@@ -86,49 +86,10 @@ var _ = Describe("SpotPoke Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))
-		ilkID, err := shared.GetOrCreateIlk("0x434f4c342d410000000000000000000000000000000000000000000000000000", db)
+		ilkID, err := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(dbResult[0].Ilk).To(Equal(strconv.Itoa(ilkID)))
-		Expect(dbResult[0].Value).To(Equal("96885855920000000000.000000"))
-		Expect(dbResult[0].Spot).To(Equal("48442927960000000000000000000"))
-	})
-
-	It("rechecks jug file ilk event", func() {
-		blockNumber := int64(11257488)
-		spotPokeConfig.StartingBlockNumber = blockNumber
-		spotPokeConfig.EndingBlockNumber = blockNumber
-
-		header, err := persistHeader(db, blockNumber, blockChain)
-		Expect(err).NotTo(HaveOccurred())
-
-		initializer := event.Transformer{
-			Config:     spotPokeConfig,
-			Converter:  &spot_poke.SpotPokeConverter{},
-			Repository: &spot_poke.SpotPokeRepository{},
-		}
-		tr := initializer.NewTransformer(db)
-
-		f := fetcher.NewLogFetcher(blockChain)
-		logs, err := f.FetchLogs(
-			transformer.HexStringsToAddresses(spotPokeConfig.ContractAddresses),
-			[]common.Hash{common.HexToHash(spotPokeConfig.Topic)},
-			header)
-		Expect(err).NotTo(HaveOccurred())
-
-		err = tr.Execute(logs, header)
-		Expect(err).NotTo(HaveOccurred())
-
-		err = tr.Execute(logs, header)
-		Expect(err).NotTo(HaveOccurred())
-
-		var headerID int64
-		err = db.Get(&headerID, `SELECT id FROM public.headers WHERE block_number = $1`, blockNumber)
-		Expect(err).NotTo(HaveOccurred())
-
-		var spotPokeChecked []int
-		err = db.Select(&spotPokeChecked, `SELECT spot_poke_checked FROM public.checked_headers WHERE header_id = $1`, headerID)
-		Expect(err).NotTo(HaveOccurred())
-
-		Expect(spotPokeChecked[0]).To(Equal(2))
+		Expect(dbResult[0].Value).To(Equal("267220000000000000000.000000"))
+		Expect(dbResult[0].Spot).To(Equal("178146666666666666666666666666"))
 	})
 })
