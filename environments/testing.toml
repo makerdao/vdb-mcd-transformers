@@ -27,7 +27,7 @@
         MCD_FLAP_OLD = "0x8868BAd8e74FcA4505676D1B5B21EcC23328d132"
         MCD_FLOP     = "0x668001c75a9c02d6b10c7a17dbd8aa4afff95037"
         MCD_FLOP_OLD = "0x6191C9b0086c2eBF92300cC507009b53996FbFFa"
-        MCD_JUG      = "0x92da9b203523bd9bd877ec57cce308dd493b85f2"
+        MCD_JUG      = "0x2a7cc8771aeaff4f5f5d9f9ec4b0e1cf3f3dce13"
         MCD_SPOT     = "0xee4b1f689251f70b05cdcceff2dbe144fc596922"
         MCD_VAT      = "0x284ecb5880cdc3362d979d07d162bf1d8488975d"
         MCD_VOW      = "0xdbf8e0d733bb42ac3a2016d7e579824a8903e10c"
@@ -50,7 +50,7 @@
         MCD_FLAP_OLD = 8535544
         MCD_FLIP     = 11579891
         MCD_FLOP_OLD = 8535545
-        MCD_JUG      = 11579860
+        MCD_JUG      = 11861443
         MCD_SPOT     = 11579856
         MCD_VAT      = 11579856
         MCD_VOW      = 11579860
