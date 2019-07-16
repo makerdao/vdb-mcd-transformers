@@ -316,7 +316,7 @@
             MCD_FLOP     = "0x668001c75a9c02d6b10c7a17dbd8aa4afff95037"
             MCD_FLOP_OLD = "0x6191C9b0086c2eBF92300cC507009b53996FbFFa"
             MCD_JUG      = "0x2a7cc8771aeaff4f5f5d9f9ec4b0e1cf3f3dce13"
-            MCD_SPOT     = "0xee4b1f689251f70b05cdcceff2dbe144fc596922"
+            MCD_SPOT     = "0x0eff7d0d5dacbf86460ecd6ccdbbd7b6d81a8588"
             MCD_VAT      = "0x284ecb5880cdc3362d979d07d162bf1d8488975d"
             MCD_VOW      = "0xdbf8e0d733bb42ac3a2016d7e579824a8903e10c"
     [contract.abi]
@@ -339,6 +339,6 @@
             MCD_FLIP     = 11579891 # deployment block of ETH_FLIP_A contract-- on update, ensure that it's still the first one deployed
             MCD_FLOP_OLD = 8535545
             MCD_JUG      = 11861443
-            MCD_SPOT     = 11579856
+            MCD_SPOT     = 11861438
             MCD_VAT      = 11579856
             MCD_VOW      = 11579860
