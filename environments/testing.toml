@@ -25,7 +25,7 @@
         MCD_CAT      = "0x05d371b20cd593d0b04756d196dae4fa99f98d38"
         MCD_FLAP     = "0x72a758542bcb375d3275A2F65A03aE27dA48Ff30"
         MCD_FLAP_OLD = "0x8868BAd8e74FcA4505676D1B5B21EcC23328d132"
-        MCD_FLOP     = "0x668001c75a9c02d6b10c7a17dbd8aa4afff95037"
+        MCD_FLOP     = "0x70b1a0fa8cc13cd3ce3cd65064c226dd9bc65f49"
         MCD_FLOP_OLD = "0x6191C9b0086c2eBF92300cC507009b53996FbFFa"
         MCD_JUG      = "0x2a7cc8771aeaff4f5f5d9f9ec4b0e1cf3f3dce13"
         MCD_SPOT     = "0x0eff7d0d5dacbf86460ecd6ccdbbd7b6d81a8588"
@@ -49,6 +49,7 @@
         MCD_FLAP     = 11861443
         MCD_FLAP_OLD = 8535544
         MCD_FLIP     = 11579891
+        MCD_FLOP     = 11861443
         MCD_FLOP_OLD = 8535545
         MCD_JUG      = 11861443
         MCD_SPOT     = 11861438
