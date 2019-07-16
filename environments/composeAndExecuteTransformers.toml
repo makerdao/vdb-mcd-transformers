@@ -311,7 +311,7 @@
             ETH_FLIP_C   = "0xf4d49a91a37ba0eeada456977e18f2f23f1b3ebc"
             ETH_FLIP_OLD = "0x32D496Ad866D110060866B7125981C73642cc509"
             MCD_CAT      = "0x05d371b20cd593d0b04756d196dae4fa99f98d38"
-            MCD_FLAP     = "0x164a942d9d7A269B2Dc8551C8dFad32e8fFd0b80"
+            MCD_FLAP     = "0x72a758542bcb375d3275A2F65A03aE27dA48Ff30"
             MCD_FLAP_OLD = "0x8868BAd8e74FcA4505676D1B5B21EcC23328d132"
             MCD_FLOP     = "0x668001c75a9c02d6b10c7a17dbd8aa4afff95037"
             MCD_FLOP_OLD = "0x6191C9b0086c2eBF92300cC507009b53996FbFFa"
@@ -334,7 +334,7 @@
     [contract.deployment-block]
             ETH_FLIP_OLD = 8535561
             MCD_CAT      = 11861446
-            MCD_FLAP     = 11579860
+            MCD_FLAP     = 11861443
             MCD_FLAP_OLD = 8535544
             MCD_FLIP     = 11579891 # deployment block of ETH_FLIP_A contract-- on update, ensure that it's still the first one deployed
             MCD_FLOP_OLD = 8535545
