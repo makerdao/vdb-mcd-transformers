@@ -68,7 +68,7 @@ var _ = Describe("VatFileIlk LogNoteTransformer", func() {
 	})
 
 	It("fetches and transforms a Vat.file ilk 'spot' event from Kovan", func() {
-		blockNumber := int64(11580139)
+		blockNumber := int64(11861813)
 		initializer.Config.StartingBlockNumber = blockNumber
 		initializer.Config.EndingBlockNumber = blockNumber
 
@@ -91,12 +91,12 @@ var _ = Describe("VatFileIlk LogNoteTransformer", func() {
 		ilkID, err := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(dbResult[0].Ilk).To(Equal(strconv.Itoa(ilkID)))
-		Expect(dbResult[0].What).To(Equal("spot"))
-		Expect(dbResult[0].Data).To(Equal("178146666666666666666666666666"))
+		Expect(dbResult[0].What).To(Equal("line"))
+		Expect(dbResult[0].Data).To(Equal("100000000000000000000000000000000000000000000000000"))
 	})
 
 	It("fetches and transforms a Vat.file ilk 'line' event from Kovan", func() {
-		blockNumber := int64(11580085)
+		blockNumber := int64(11861813)
 		initializer.Config.StartingBlockNumber = blockNumber
 		initializer.Config.EndingBlockNumber = blockNumber
 
@@ -122,7 +122,7 @@ var _ = Describe("VatFileIlk LogNoteTransformer", func() {
 		dbResult := dbResults[0]
 		Expect(dbResult.Ilk).To(Equal(strconv.Itoa(ilkID)))
 		Expect(dbResult.What).To(Equal("line"))
-		Expect(dbResult.Data).To(Equal("300000000000000000000000000000000000000000000000000"))
+		Expect(dbResult.Data).To(Equal("100000000000000000000000000000000000000000000000000"))
 	})
 })
 
