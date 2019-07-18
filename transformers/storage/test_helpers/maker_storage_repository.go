@@ -7,26 +7,29 @@ import (
 )
 
 type MockMakerStorageRepository struct {
-	DaiKeys             []string
-	FlapBidIds          []string
-	GemKeys             []storage.Urn
-	GetDaiKeysCalled    bool
-	GetDaiKeysError     error
-	GetGemKeysCalled    bool
-	GetGemKeysError     error
-	GetFlapBidIdsCalled bool
-	GetFlapBidIdsError  error
-	GetIlksCalled       bool
-	GetIlksError        error
-	GetVatSinKeysCalled bool
-	GetVatSinKeysError  error
-	GetVowSinKeysCalled bool
-	GetVowSinKeysError  error
-	GetUrnsCalled       bool
-	GetUrnsError        error
-	Ilks                []string
-	SinKeys             []string
-	Urns                []storage.Urn
+	DaiKeys                 []string
+	FlapBidIds              []string
+	FlipBidIds              []string
+	GemKeys                 []storage.Urn
+	GetDaiKeysCalled        bool
+	GetDaiKeysError         error
+	GetGemKeysCalled        bool
+	GetGemKeysError         error
+	GetFlapBidIdsCalled     bool
+	GetFlipBidIdsCalledWith string
+	GetFlapBidIdsError      error
+	GetFlipBidIdsError      error
+	GetIlksCalled           bool
+	GetIlksError            error
+	GetVatSinKeysCalled     bool
+	GetVatSinKeysError      error
+	GetVowSinKeysCalled     bool
+	GetVowSinKeysError      error
+	GetUrnsCalled           bool
+	GetUrnsError            error
+	Ilks                    []string
+	SinKeys                 []string
+	Urns                    []storage.Urn
 }
 
 func (repository *MockMakerStorageRepository) GetFlapBidIds(string) ([]string, error) {
@@ -62,6 +65,11 @@ func (repository *MockMakerStorageRepository) GetVowSinKeys() ([]string, error) 
 func (repository *MockMakerStorageRepository) GetUrns() ([]storage.Urn, error) {
 	repository.GetUrnsCalled = true
 	return repository.Urns, repository.GetUrnsError
+}
+
+func (repository *MockMakerStorageRepository) GetFlipBidIds(contractAddress string) ([]string, error) {
+	repository.GetFlipBidIdsCalledWith = contractAddress
+	return repository.FlipBidIds, repository.GetFlipBidIdsError
 }
 
 func (repository *MockMakerStorageRepository) SetDB(db *postgres.DB) {}

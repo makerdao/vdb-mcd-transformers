@@ -236,7 +236,7 @@ var _ = Describe("Plugin test", func() {
 			It("rechecks checked headers for event logs", func() {
 				db, bc := SetupDBandBC()
 				hr = repositories.NewHeaderRepository(db)
-				header1, err := bc.GetHeaderByNumber(11257255)
+				header1, err := bc.GetHeaderByNumber(11861443)
 				Expect(err).ToNot(HaveOccurred())
 				headerID, err = hr.CreateOrUpdateHeader(header1)
 				Expect(err).ToNot(HaveOccurred())
