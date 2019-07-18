@@ -259,7 +259,7 @@ var _ = Describe("Flip storage repository", func() {
 				badValues[1] = ""
 				err := repo.Create(fakeBlockNumber, fakeBlockHash, bidGuyTicEndMetadata, badValues)
 				Expect(err).To(HaveOccurred())
-				Expect(err.Error()).To(MatchRegexp("pq: invalid input syntax for type numeric"))
+				Expect(err.Error()).To(MatchRegexp("pq: invalid input syntax for integer"))
 			})
 		})
 
