@@ -33,7 +33,7 @@ func (repo SpotFilePipRepository) Create(headerID int64, models []shared.Inserti
 }
 
 func (repo SpotFilePipRepository) MarkHeaderChecked(headerID int64) error {
-	return repository.MarkHeaderChecked(headerID, repo.db, constants.SpotFilePipChecked)
+	return repository.MarkHeaderChecked(headerID, repo.db, constants.SpotFilePipLabel)
 }
 
 func (repo *SpotFilePipRepository) SetDB(db *postgres.DB) {

@@ -73,7 +73,7 @@ func (repository *SpotPokeRepository) Create(headerID int64, models []interface{
 		}
 	}
 
-	checkHeaderErr := shared_repo.MarkHeaderChecked(headerID, repository.db, constants.SpotPokeChecked)
+	checkHeaderErr := shared_repo.MarkHeaderChecked(headerID, repository.db, constants.SpotPokeLabel)
 	if checkHeaderErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
@@ -86,7 +86,7 @@ func (repository *SpotPokeRepository) Create(headerID int64, models []interface{
 }
 
 func (repository SpotPokeRepository) MarkHeaderChecked(headerID int64) error {
-	return shared_repo.MarkHeaderChecked(headerID, repository.db, constants.BiteChecked)
+	return shared_repo.MarkHeaderChecked(headerID, repository.db, constants.BiteLabel)
 }
 
 func (repository *SpotPokeRepository) SetDB(db *postgres.DB) {

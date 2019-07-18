@@ -15,11 +15,11 @@ CREATE INDEX flip_tick_header_index
     ON maker.flip_tick (header_id);
 
 ALTER TABLE public.checked_headers
-    ADD COLUMN flip_tick_checked INTEGER NOT NULL DEFAULT 0;
+    ADD COLUMN flip_tick INTEGER NOT NULL DEFAULT 0;
 
 -- +goose Down
 ALTER TABLE public.checked_headers
-    DROP COLUMN flip_tick_checked;
+    DROP COLUMN flip_tick;
 
 DROP INDEX maker.flip_tick_header_index;
 DROP TABLE maker.flip_tick;

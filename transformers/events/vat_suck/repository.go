@@ -37,5 +37,5 @@ func (repository VatSuckRepository) Create(headerID int64, models []shared.Inser
 }
 
 func (repository VatSuckRepository) MarkHeaderChecked(headerId int64) error {
-	return repo.MarkHeaderChecked(headerId, repository.db, constants.VatSuckChecked)
+	return repo.MarkHeaderChecked(headerId, repository.db, constants.VatSuckLabel)
 }

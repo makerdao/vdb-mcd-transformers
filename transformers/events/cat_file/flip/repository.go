@@ -33,7 +33,7 @@ func (repository CatFileFlipRepository) Create(headerID int64, models []shared.I
 }
 
 func (repository CatFileFlipRepository) MarkHeaderChecked(headerID int64) error {
-	return repo.MarkHeaderChecked(headerID, repository.db, constants.CatFileFlipChecked)
+	return repo.MarkHeaderChecked(headerID, repository.db, constants.CatFileFlipLabel)
 }
 
 func (repository *CatFileFlipRepository) SetDB(db *postgres.DB) {

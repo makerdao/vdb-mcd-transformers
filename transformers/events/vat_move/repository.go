@@ -33,7 +33,7 @@ func (repository VatMoveRepository) Create(headerID int64, models []shared.Inser
 }
 
 func (repository VatMoveRepository) MarkHeaderChecked(headerID int64) error {
-	return repo.MarkHeaderChecked(headerID, repository.db, constants.VatMoveChecked)
+	return repo.MarkHeaderChecked(headerID, repository.db, constants.VatMoveLabel)
 }
 
 func (repository *VatMoveRepository) SetDB(db *postgres.DB) {

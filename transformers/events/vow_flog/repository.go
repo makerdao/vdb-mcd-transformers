@@ -33,7 +33,7 @@ func (repository VowFlogRepository) Create(headerID int64, models []shared.Inser
 }
 
 func (repository VowFlogRepository) MarkHeaderChecked(headerID int64) error {
-	return repo.MarkHeaderChecked(headerID, repository.db, constants.VowFlogChecked)
+	return repo.MarkHeaderChecked(headerID, repository.db, constants.VowFlogLabel)
 }
 
 func (repository *VowFlogRepository) SetDB(db *postgres.DB) {

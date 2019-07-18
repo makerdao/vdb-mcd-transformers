@@ -40,7 +40,7 @@ var _ = Describe("Create function", func() {
 		UNIQUE (header_id, tx_idx, log_idx)
 		);`
 	const addCheckedColumnQuery = `ALTER TABLE public.checked_headers
-		ADD COLUMN testevent_checked INTEGER NOT NULL DEFAULT 0;`
+		ADD COLUMN testevent INTEGER NOT NULL DEFAULT 0;`
 
 	const hexIlk = "0x464b450000000000000000000000000000000000000000000000000000000000"
 
@@ -78,7 +78,7 @@ var _ = Describe("Create function", func() {
 
 	AfterEach(func() {
 		db.MustExec(`DROP TABLE maker.testEvent;`)
-		db.MustExec(`ALTER TABLE public.checked_headers DROP COLUMN testevent_checked;`)
+		db.MustExec(`ALTER TABLE public.checked_headers DROP COLUMN testevent;`)
 	})
 
 	// Needs to run before the other tests, since those insert keys in map
@@ -202,7 +202,7 @@ var _ = Describe("Create function", func() {
 		Expect(createErr).NotTo(HaveOccurred())
 
 		var checked int
-		dbErr := db.Get(&checked, `SELECT testevent_checked FROM public.checked_headers;`)
+		dbErr := db.Get(&checked, `SELECT testevent FROM public.checked_headers;`)
 		Expect(dbErr).NotTo(HaveOccurred())
 		Expect(checked).To(Equal(1))
 	})

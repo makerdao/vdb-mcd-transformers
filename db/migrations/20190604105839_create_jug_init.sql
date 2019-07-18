@@ -17,7 +17,7 @@ CREATE INDEX jug_init_ilk_index
     ON maker.jug_init (ilk_id);
 
 ALTER TABLE public.checked_headers
-    ADD COLUMN jug_init_checked INTEGER NOT NULL DEFAULT 0;
+    ADD COLUMN jug_init INTEGER NOT NULL DEFAULT 0;
 
 -- +goose Down
 DROP INDEX maker.jug_init_header_index;
@@ -26,4 +26,4 @@ DROP INDEX maker.jug_init_ilk_index;
 DROP TABLE maker.jug_init;
 
 ALTER TABLE public.checked_headers
-    DROP COLUMN jug_init_checked;
+    DROP COLUMN jug_init;

@@ -215,7 +215,7 @@ var _ = Describe("Cat File transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		var catVowChecked []int
-		err = db.Select(&catVowChecked, `SELECT cat_file_vow_checked FROM public.checked_headers WHERE header_id = $1`, headerID)
+		err = db.Select(&catVowChecked, `SELECT cat_file_vow FROM public.checked_headers WHERE header_id = $1`, headerID)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(catVowChecked[0]).To(Equal(2))

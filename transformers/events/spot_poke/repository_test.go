@@ -48,7 +48,7 @@ var _ = Describe("Spot Poke repository", func() {
 		modelWithDifferentLogIdx := test_data.SpotPokeModel
 		modelWithDifferentLogIdx.LogIndex++
 		inputs := shared_behaviors.CreateBehaviorInputs{
-			CheckedHeaderColumnName:  constants.SpotPokeChecked,
+			CheckedHeaderColumnName:  constants.SpotPokeLabel,
 			LogEventTableName:        "maker.spot_poke",
 			TestModel:                test_data.SpotPokeModel,
 			ModelWithDifferentLogIdx: modelWithDifferentLogIdx,
@@ -104,7 +104,7 @@ var _ = Describe("Spot Poke repository", func() {
 
 	Describe("MarkHeaderChecked", func() {
 		inputs := shared_behaviors.MarkedHeaderCheckedBehaviorInputs{
-			CheckedHeaderColumnName: constants.BiteChecked,
+			CheckedHeaderColumnName: constants.BiteLabel,
 			Repository:              &repository,
 		}
 

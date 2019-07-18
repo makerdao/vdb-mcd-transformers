@@ -92,7 +92,7 @@ var _ = Describe("Vat slip transformer", func() {
 		Expect(model.Wad).To(Equal("10000000000000000"))
 		Expect(model.TransactionIndex).To(Equal(uint(0)))
 		var headerChecked bool
-		err = db.Get(&headerChecked, `SELECT vat_slip_checked FROM public.checked_headers WHERE header_id = $1`, headerID)
+		err = db.Get(&headerChecked, `SELECT vat_slip FROM public.checked_headers WHERE header_id = $1`, headerID)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(headerChecked).To(BeTrue())
 	})

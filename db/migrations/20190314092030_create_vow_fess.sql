@@ -14,11 +14,11 @@ CREATE INDEX vow_fess_header_index
     ON maker.vow_fess (header_id);
 
 ALTER TABLE public.checked_headers
-    ADD COLUMN vow_fess_checked INTEGER NOT NULL DEFAULT 0;
+    ADD COLUMN vow_fess INTEGER NOT NULL DEFAULT 0;
 
 -- +goose Down
 DROP INDEX maker.vow_fess_header_index;
 DROP TABLE maker.vow_fess;
 ALTER TABLE public.checked_headers
-    DROP COLUMN vow_fess_checked;
+    DROP COLUMN vow_fess;
 

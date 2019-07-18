@@ -124,7 +124,7 @@ var _ = XDescribe("JugDrip Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		var jugDripChecked []int
-		err = db.Select(&jugDripChecked, `SELECT jug_drip_checked FROM public.checked_headers WHERE header_id = $1`, headerID)
+		err = db.Select(&jugDripChecked, `SELECT jug_drip FROM public.checked_headers WHERE header_id = $1`, headerID)
 		Expect(err).NotTo(HaveOccurred())
 	})
 })

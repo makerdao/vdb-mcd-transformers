@@ -33,7 +33,7 @@ func (repository DealRepository) Create(headerID int64, models []shared.Insertio
 }
 
 func (repository DealRepository) MarkHeaderChecked(headerID int64) error {
-	return repo.MarkHeaderChecked(headerID, repository.db, constants.DealChecked)
+	return repo.MarkHeaderChecked(headerID, repository.db, constants.DealLabel)
 }
 
 func (repository *DealRepository) SetDB(db *postgres.DB) {
