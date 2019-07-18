@@ -14,21 +14,11 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package flap_kick
+package zrx_flip
 
 import (
-	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
-
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/mcd_transformers/transformers/storage/flip/initializers"
 )
 
-func GetFlapKickConfig() transformer.EventTransformerConfig {
-	return transformer.EventTransformerConfig{
-		TransformerName:     constants.FlapKickLabel,
-		ContractAddresses:   []string{constants.FlapperContractAddress()},
-		ContractAbi:         constants.FlapperABI(),
-		Topic:               constants.FlapKickSignature(),
-		StartingBlockNumber: constants.FlapperDeploymentBlock(),
-		EndingBlockNumber:   -1,
-	}
-}
+var StorageTransformerInitializer = initializers.GenerateStorageTransformerInitializer(constants.ZrxFlipContractAddress())

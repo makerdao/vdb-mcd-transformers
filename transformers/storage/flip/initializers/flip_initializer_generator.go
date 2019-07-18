@@ -14,21 +14,22 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package flap_kick
+package initializers
 
 import (
+	"github.com/ethereum/go-ethereum/common"
+
+	s2 "github.com/vulcanize/vulcanizedb/libraries/shared/factories/storage"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 
-	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/mcd_transformers/transformers/storage"
+	"github.com/vulcanize/mcd_transformers/transformers/storage/flip"
 )
 
-func GetFlapKickConfig() transformer.EventTransformerConfig {
-	return transformer.EventTransformerConfig{
-		TransformerName:     constants.FlapKickLabel,
-		ContractAddresses:   []string{constants.FlapperContractAddress()},
-		ContractAbi:         constants.FlapperABI(),
-		Topic:               constants.FlapKickSignature(),
-		StartingBlockNumber: constants.FlapperDeploymentBlock(),
-		EndingBlockNumber:   -1,
-	}
+func GenerateStorageTransformerInitializer(contractAddress string) transformer.StorageTransformerInitializer {
+	return s2.Transformer{
+		Address:    common.HexToAddress(contractAddress),
+		Mappings:   &flip.StorageKeysLookup{StorageRepository: &storage.MakerStorageRepository{}, ContractAddress: contractAddress},
+		Repository: &flip.FlipStorageRepository{ContractAddress: contractAddress},
+	}.NewTransformer
 }
