@@ -108,7 +108,46 @@ func FlapperDeploymentBlock() int64 { return getEnvironmentInt64("contract.deplo
 func OldFlipperDeploymentBlock() int64 {
 	return getEnvironmentInt64("contract.deployment-block.ETH_FLIP_OLD")
 }
-func FlipperDeploymentBlock() int64 { return getEnvironmentInt64("contract.deployment-block.MCD_FLIP") }
+func EthFlipADeploymentBlock() int64 {
+	return getEnvironmentInt64("contract.deployment-block.ETH_FLIP_A")
+}
+func EthFlipBDeploymentBlock() int64 {
+	return getEnvironmentInt64("contract.deployment-block.ETH_FLIP_B")
+}
+func EthFlipCDeploymentBlock() int64 {
+	return getEnvironmentInt64("contract.deployment-block.ETH_FLIP_C")
+}
+func FlipRepDeploymentBlock() int64 {
+	return getEnvironmentInt64("contract.deployment-block.MCD_FLIP_REP_A")
+}
+func FlipZrxDeploymentBlock() int64 {
+	return getEnvironmentInt64("contract.deployment-block.MCD_FLIP_ZRX_A")
+}
+func FlipOmgDeploymentBlock() int64 {
+	return getEnvironmentInt64("contract.deployment-block.MCD_FLIP_OMG_A")
+}
+func FlipBatDeploymentBlock() int64 {
+	return getEnvironmentInt64("contract.deployment-block.MCD_FLIP_BAT_A")
+}
+func FlipDgdDeploymentBlock() int64 {
+	return getEnvironmentInt64("contract.deployment-block.MCD_FLIP_DGD_A")
+}
+func FlipGntDeploymentBlock() int64 {
+	return getEnvironmentInt64("contract.deployment-block.MCD_FLIP_GNT_A")
+}
+func FlipperDeploymentBlocks() []int64 {
+	return []int64{
+		EthFlipADeploymentBlock(),
+		EthFlipBDeploymentBlock(),
+		EthFlipCDeploymentBlock(),
+		FlipRepDeploymentBlock(),
+		FlipZrxDeploymentBlock(),
+		FlipOmgDeploymentBlock(),
+		FlipBatDeploymentBlock(),
+		FlipDgdDeploymentBlock(),
+		FlipGntDeploymentBlock(),
+	}
+}
 func FlopperDeploymentBlock() int64 {
 	return getEnvironmentInt64("contract.deployment-block.MCD_FLOP_OLD")
 }

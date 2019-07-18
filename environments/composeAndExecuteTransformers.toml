@@ -346,7 +346,6 @@
             MCD_CAT        = 11861446
             MCD_FLAP       = 11861443
             MCD_FLAP_OLD   = 8535544
-            MCD_FLIP       = 11579891 # deployment block of ETH_FLIP_A contract-- on update, ensure that it's still the first one deployed
             MCD_FLOP       = 11861443
             MCD_FLOP_OLD   = 8535545
             MCD_JUG        = 11861443
