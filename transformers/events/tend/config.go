@@ -29,7 +29,7 @@ func GetTendConfig() shared_t.EventTransformerConfig {
 		ContractAddresses:   append(constants.FlipperContractAddresses(), constants.FlapperContractAddress()),
 		ContractAbi:         constants.FlipperABI(),
 		Topic:               constants.TendSignature(),
-		StartingBlockNumber: shared.MinInt64([]int64{constants.FlapperDeploymentBlock(), constants.FlipperDeploymentBlock()}),
+		StartingBlockNumber: shared.MinInt64(append(constants.FlipperDeploymentBlocks(), constants.FlapperDeploymentBlock())),
 		EndingBlockNumber:   -1,
 	}
 }

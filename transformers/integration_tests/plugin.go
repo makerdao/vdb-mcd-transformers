@@ -190,7 +190,7 @@ var _ = Describe("Plugin test", func() {
 			It("Loads our generated Exporter and uses it to import an arbitrary set of TransformerInitializers that we can execute over", func() {
 				db, bc := SetupDBandBC()
 				hr = repositories.NewHeaderRepository(db)
-				header1, err := bc.GetHeaderByNumber(11579891)
+				header1, err := bc.GetHeaderByNumber(11861469)
 				Expect(err).ToNot(HaveOccurred())
 				headerID, err = hr.CreateOrUpdateHeader(header1)
 				Expect(err).ToNot(HaveOccurred())
@@ -228,7 +228,7 @@ var _ = Describe("Plugin test", func() {
 				Expect(err).NotTo(HaveOccurred())
 				Expect(returned.Ilk).To(Equal(strconv.Itoa(ilkID)))
 				Expect(returned.What).To(Equal("flip"))
-				Expect(returned.Flip).To(Equal("0x43C331C0389a92af62ee726d5AE0c8a424320c31"))
+				Expect(returned.Flip).To(Equal("0xc12C2813EcC2941FcA50c09a8a514FDbECC72056"))
 				Expect(returned.TransactionIndex).To(Equal(uint(0)))
 				Expect(returned.LogIndex).To(Equal(uint(3)))
 			})
@@ -345,7 +345,7 @@ var _ = Describe("Plugin test", func() {
 			It("Loads our generated Exporter and uses it to import an arbitrary set of TransformerInitializers and StorageTransformerInitializers that we can execute over", func() {
 				db, bc := SetupDBandBC()
 				hr = repositories.NewHeaderRepository(db)
-				header1, err := bc.GetHeaderByNumber(11579891)
+				header1, err := bc.GetHeaderByNumber(11861469)
 				Expect(err).ToNot(HaveOccurred())
 				headerID, err = hr.CreateOrUpdateHeader(header1)
 				Expect(err).ToNot(HaveOccurred())
@@ -383,7 +383,7 @@ var _ = Describe("Plugin test", func() {
 				Expect(err).NotTo(HaveOccurred())
 				Expect(returned.Ilk).To(Equal(strconv.Itoa(ilkID)))
 				Expect(returned.What).To(Equal("flip"))
-				Expect(returned.Flip).To(Equal("0x43C331C0389a92af62ee726d5AE0c8a424320c31"))
+				Expect(returned.Flip).To(Equal("0xc12C2813EcC2941FcA50c09a8a514FDbECC72056"))
 				Expect(returned.TransactionIndex).To(Equal(uint(0)))
 				Expect(returned.LogIndex).To(Equal(uint(3)))
 
