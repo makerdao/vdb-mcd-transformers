@@ -49,7 +49,7 @@ CREATE TABLE maker.flip_bid_tic
     block_hash       TEXT,
     contract_address TEXT,
     bid_id           NUMERIC NOT NULL,
-    tic              NUMERIC NOT NULL,
+    tic              BIGINT NOT NULL,
     UNIQUE (block_number, block_hash, bid_id, contract_address, tic)
 );
 
@@ -63,7 +63,7 @@ CREATE TABLE maker.flip_bid_end
     block_hash       TEXT,
     contract_address TEXT,
     bid_id           NUMERIC NOT NULL,
-    "end"            NUMERIC NOT NULL,
+    "end"            BIGINT NOT NULL,
     UNIQUE (block_number, block_hash, bid_id, contract_address, "end")
 );
 
