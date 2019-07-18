@@ -33,7 +33,7 @@ func (repository VatFileDebtCeilingRepository) Create(headerID int64, models []s
 }
 
 func (repository VatFileDebtCeilingRepository) MarkHeaderChecked(headerID int64) error {
-	return repo.MarkHeaderChecked(headerID, repository.db, constants.VatFileDebtCeilingChecked)
+	return repo.MarkHeaderChecked(headerID, repository.db, constants.VatFileDebtCeilingLabel)
 }
 
 func (repository *VatFileDebtCeilingRepository) SetDB(db *postgres.DB) {

@@ -19,7 +19,7 @@ CREATE INDEX vat_slip_ilk_index
     ON maker.vat_slip (ilk_id);
 
 ALTER TABLE public.checked_headers
-    ADD COLUMN vat_slip_checked INTEGER NOT NULL DEFAULT 0;
+    ADD COLUMN vat_slip INTEGER NOT NULL DEFAULT 0;
 
 -- +goose Down
 DROP INDEX maker.vat_slip_header_index;
@@ -28,4 +28,4 @@ DROP INDEX maker.vat_slip_ilk_index;
 DROP TABLE maker.vat_slip;
 
 ALTER TABLE public.checked_headers
-    DROP COLUMN vat_slip_checked;
+    DROP COLUMN vat_slip;

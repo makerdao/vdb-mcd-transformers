@@ -21,10 +21,10 @@ CREATE INDEX flap_kick_header_index
     ON maker.flap_kick (header_id);
 
 ALTER TABLE public.checked_headers
-    ADD COLUMN flap_kick_checked INTEGER NOT NULL DEFAULT 0;
+    ADD COLUMN flap_kick INTEGER NOT NULL DEFAULT 0;
 
 -- +goose Down
 DROP INDEX maker.flap_kick_header_index;
 DROP TABLE maker.flap_kick;
 ALTER TABLE public.checked_headers
-    DROP COLUMN flap_kick_checked;
+    DROP COLUMN flap_kick;

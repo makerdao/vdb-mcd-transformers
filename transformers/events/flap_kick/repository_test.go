@@ -50,7 +50,7 @@ var _ = Describe("Flap Kick Repository", func() {
 		modelWithDifferentLogIdx := test_data.FlapKickModel
 		modelWithDifferentLogIdx.LogIndex = modelWithDifferentLogIdx.LogIndex + 1
 		inputs := shared_behaviors.CreateBehaviorInputs{
-			CheckedHeaderColumnName:  constants.FlapKickChecked,
+			CheckedHeaderColumnName:  constants.FlapKickLabel,
 			LogEventTableName:        "maker.flap_kick",
 			TestModel:                test_data.FlapKickModel,
 			ModelWithDifferentLogIdx: modelWithDifferentLogIdx,
@@ -87,7 +87,7 @@ var _ = Describe("Flap Kick Repository", func() {
 
 	Describe("MarkHeaderChecked", func() {
 		inputs := shared_behaviors.MarkedHeaderCheckedBehaviorInputs{
-			CheckedHeaderColumnName: constants.FlapKickChecked,
+			CheckedHeaderColumnName: constants.FlapKickLabel,
 			Repository:              &flapKickRepository,
 		}
 

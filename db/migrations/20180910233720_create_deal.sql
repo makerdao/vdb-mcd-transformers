@@ -15,7 +15,7 @@ CREATE INDEX deal_header_index
     ON maker.deal (header_id);
 
 ALTER TABLE public.checked_headers
-    ADD COLUMN deal_checked INTEGER NOT NULL DEFAULT 0;
+    ADD COLUMN deal INTEGER NOT NULL DEFAULT 0;
 
 -- +goose Down
 DROP INDEX maker.deal_header_index;
@@ -23,4 +23,4 @@ DROP INDEX maker.deal_header_index;
 DROP TABLE maker.deal;
 
 ALTER TABLE public.checked_headers
-    DROP COLUMN deal_checked;
+    DROP COLUMN deal;

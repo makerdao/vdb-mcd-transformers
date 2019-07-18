@@ -50,7 +50,7 @@ var _ = Describe("Bite repository", func() {
 		modelWithDifferentLogIdx := test_data.BiteModel
 		modelWithDifferentLogIdx.LogIndex++
 		inputs := shared_behaviors.CreateBehaviorInputs{
-			CheckedHeaderColumnName:  constants.BiteChecked,
+			CheckedHeaderColumnName:  constants.BiteLabel,
 			LogEventTableName:        "maker.bite",
 			TestModel:                test_data.BiteModel,
 			ModelWithDifferentLogIdx: modelWithDifferentLogIdx,
@@ -86,7 +86,7 @@ var _ = Describe("Bite repository", func() {
 
 	Describe("MarkHeaderChecked", func() {
 		inputs := shared_behaviors.MarkedHeaderCheckedBehaviorInputs{
-			CheckedHeaderColumnName: constants.BiteChecked,
+			CheckedHeaderColumnName: constants.BiteLabel,
 			Repository:              &biteRepository,
 		}
 

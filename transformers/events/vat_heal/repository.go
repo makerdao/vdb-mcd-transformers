@@ -37,5 +37,5 @@ func (repository VatHealRepository) Create(headerID int64, models []shared.Inser
 }
 
 func (repository VatHealRepository) MarkHeaderChecked(headerId int64) error {
-	return repo.MarkHeaderChecked(headerId, repository.db, constants.VatHealChecked)
+	return repo.MarkHeaderChecked(headerId, repository.db, constants.VatHealLabel)
 }
