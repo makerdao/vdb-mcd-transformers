@@ -70,13 +70,24 @@ func VowContractAddress() string        { return getEnvironmentString("contract.
 func EthFlipContractAddressA() string   { return getEnvironmentString("contract.address.ETH_FLIP_A") }
 func EthFlipContractAddressB() string   { return getEnvironmentString("contract.address.ETH_FLIP_B") }
 func EthFlipContractAddressC() string   { return getEnvironmentString("contract.address.ETH_FLIP_C") }
-func Col1FlipContractAddress() string   { return getEnvironmentString("contract.address.COL1_FLIP") }
-func Col2FlipContractAddress() string   { return getEnvironmentString("contract.address.COL2_FLIP") }
-func Col3FlipContractAddress() string   { return getEnvironmentString("contract.address.COL3_FLIP") }
-func Col4FlipContractAddress() string   { return getEnvironmentString("contract.address.COL4_FLIP") }
-func Col5FlipContractAddress() string   { return getEnvironmentString("contract.address.COL5_FLIP") }
+func RepFlipContractAddress() string    { return getEnvironmentString("contract.address.MCD_FLIP_REP_A") }
+func ZrxFlipContractAddress() string    { return getEnvironmentString("contract.address.MCD_FLIP_ZRX_A") }
+func OmgFlipContractAddress() string    { return getEnvironmentString("contract.address.MCD_FLIP_OMG_A") }
+func BatFlipContractAddress() string    { return getEnvironmentString("contract.address.MCD_FLIP_BAT_A") }
+func DgdFlipContractAddress() string    { return getEnvironmentString("contract.address.MCD_FLIP_DGD_A") }
+func GntFlipContractAddress() string    { return getEnvironmentString("contract.address.MCD_FLIP_GNT_A") }
 func FlipperContractAddresses() []string {
-	return []string{EthFlipContractAddressA(), EthFlipContractAddressB(), EthFlipContractAddressC(), Col1FlipContractAddress(), Col2FlipContractAddress(), Col3FlipContractAddress(), Col4FlipContractAddress(), Col5FlipContractAddress()}
+	return []string{
+		EthFlipContractAddressA(),
+		EthFlipContractAddressB(),
+		EthFlipContractAddressC(),
+		RepFlipContractAddress(),
+		ZrxFlipContractAddress(),
+		OmgFlipContractAddress(),
+		BatFlipContractAddress(),
+		DgdFlipContractAddress(),
+		GntFlipContractAddress(),
+	}
 }
 
 func CatABI() string        { return getEnvironmentString("contract.abi.MCD_CAT") }
