@@ -58,7 +58,6 @@
         MCD_CAT        = 11861446
         MCD_FLAP       = 11861443
         MCD_FLAP_OLD   = 8535544
-        MCD_FLIP       = 11579891
         MCD_FLOP       = 11861443
         MCD_FLOP_OLD   = 8535545
         MCD_JUG        = 11861443

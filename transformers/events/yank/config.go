@@ -29,7 +29,7 @@ func GetYankConfig() transformer.EventTransformerConfig {
 		ContractAddresses:   append(constants.FlipperContractAddresses(), constants.FlapperContractAddress(), constants.FlopperContractAddress()),
 		ContractAbi:         constants.FlipperABI(),
 		Topic:               constants.YankSignature(),
-		StartingBlockNumber: shared.MinInt64([]int64{constants.FlapperDeploymentBlock(), constants.FlipperDeploymentBlock(), constants.FlopperDeploymentBlock()}),
+		StartingBlockNumber: shared.MinInt64(append(constants.FlipperDeploymentBlocks(), constants.FlapperDeploymentBlock(), constants.FlopperDeploymentBlock())),
 		EndingBlockNumber:   -1,
 	}
 }

@@ -17,6 +17,7 @@
 package flip_tick
 
 import (
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
@@ -28,7 +29,7 @@ func GetFlipTickConfig() transformer.EventTransformerConfig {
 		ContractAddresses:   constants.FlipperContractAddresses(),
 		ContractAbi:         constants.FlipperABI(),
 		Topic:               constants.FlipTickSignature(),
-		StartingBlockNumber: constants.FlipperDeploymentBlock(),
+		StartingBlockNumber: shared.MinInt64(constants.FlipperDeploymentBlocks()),
 		EndingBlockNumber:   -1,
 	}
 }
