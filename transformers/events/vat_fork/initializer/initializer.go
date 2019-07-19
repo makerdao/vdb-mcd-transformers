@@ -19,11 +19,12 @@ package initializer
 import (
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_fork"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 )
 
 var EventTransformerInitializer transformer.EventTransformerInitializer = shared.LogNoteTransformer{
-	Config:     vat_fork.GetVatForkConfig(),
+	Config:     shared.GetEventTransformerConfig(constants.VatForkLabel, constants.VatForkSignature()),
 	Converter:  &vat_fork.VatForkConverter{},
 	Repository: &vat_fork.VatForkRepository{},
 }.NewLogNoteTransformer

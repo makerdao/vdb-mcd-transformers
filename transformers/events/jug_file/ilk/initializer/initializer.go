@@ -17,6 +17,7 @@
 package initializer
 
 import (
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 
 	"github.com/vulcanize/mcd_transformers/transformers/events/jug_file/ilk"
@@ -24,7 +25,7 @@ import (
 )
 
 var EventTransformerInitializer transformer.EventTransformerInitializer = shared.LogNoteTransformer{
-	Config:     ilk.GetJugFileIlkConfig(),
+	Config:     shared.GetEventTransformerConfig(constants.JugFileIlkLabel, constants.JugFileIlkSignature()),
 	Converter:  &ilk.JugFileIlkConverter{},
 	Repository: &ilk.JugFileIlkRepository{},
 }.NewLogNoteTransformer

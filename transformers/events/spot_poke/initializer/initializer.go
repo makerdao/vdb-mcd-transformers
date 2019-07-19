@@ -18,12 +18,14 @@ package initializer
 
 import (
 	"github.com/vulcanize/mcd_transformers/transformers/events/spot_poke"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 )
 
 var EventTransformerInitializer transformer.EventTransformerInitializer = event.Transformer{
-	Config:     spot_poke.GetSpotPokeConfig(),
+	Config:     shared.GetEventTransformerConfig(constants.SpotPokeLabel, constants.SpotPokeSignature()),
 	Converter:  spot_poke.SpotPokeConverter{},
 	Repository: &spot_poke.SpotPokeRepository{},
 }.NewTransformer

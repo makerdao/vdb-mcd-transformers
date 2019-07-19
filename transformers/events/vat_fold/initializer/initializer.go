@@ -17,6 +17,7 @@
 package initializer
 
 import (
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_fold"
@@ -24,7 +25,7 @@ import (
 )
 
 var EventTransformerInitializer transformer.EventTransformerInitializer = shared.LogNoteTransformer{
-	Config:     vat_fold.GetVatFoldConfig(),
+	Config:     shared.GetEventTransformerConfig(constants.VatFoldLabel, constants.VatFoldSignature()),
 	Converter:  &vat_fold.VatFoldConverter{},
 	Repository: &vat_fold.VatFoldRepository{},
 }.NewLogNoteTransformer
