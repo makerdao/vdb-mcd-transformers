@@ -114,7 +114,7 @@ func getDeploymentBlock(contractName string) int64 {
 	configKey := "contract." + contractName + ".deployed"
 	value := viper.GetInt64(configKey)
 	if value == -1 {
-		log.Info("No deployment block configured for contract \"%v\", defaulting to 0.")
+		log.Infof("No deployment block configured for contract \"%v\", defaulting to 0.", contractName)
 		return 0
 	}
 	return value
@@ -127,11 +127,11 @@ func GetContractAddresses(contractNames []string) (addresses []string) {
 	}
 	initConfig()
 	for _, contractName := range contractNames {
-		addresses = append(addresses, getContractAddress(contractName))
+		addresses = append(addresses, GetContractAddress(contractName))
 	}
 	return
 }
 
-func getContractAddress(contract string) string {
+func GetContractAddress(contract string) string {
 	return getEnvironmentString("contract." + contract + ".address")
 }

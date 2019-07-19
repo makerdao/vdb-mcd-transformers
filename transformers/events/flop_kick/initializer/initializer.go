@@ -17,6 +17,8 @@
 package initializer
 
 import (
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 
@@ -24,7 +26,7 @@ import (
 )
 
 var EventTransformerInitializer transformer.EventTransformerInitializer = event.Transformer{
-	Config:     flop_kick.GetFlopKickConfig(),
+	Config:     shared.GetEventTransformerConfig(constants.FlopKickLabel, constants.FlopKickSignature()),
 	Converter:  flop_kick.FlopKickConverter{},
 	Repository: &flop_kick.FlopKickRepository{},
 }.NewTransformer

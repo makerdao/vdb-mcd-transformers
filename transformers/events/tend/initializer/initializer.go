@@ -17,6 +17,7 @@
 package initializer
 
 import (
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 
 	"github.com/vulcanize/mcd_transformers/transformers/events/tend"
@@ -24,7 +25,7 @@ import (
 )
 
 var EventTransformerInitializer transformer.EventTransformerInitializer = shared.LogNoteTransformer{
-	Config:     tend.GetTendConfig(),
+	Config:     shared.GetEventTransformerConfig(constants.TendLabel, constants.TendSignature()),
 	Converter:  &tend.TendConverter{},
 	Repository: &tend.TendRepository{},
 }.NewLogNoteTransformer

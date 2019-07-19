@@ -17,6 +17,7 @@
 package initializer
 
 import (
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 
 	"github.com/vulcanize/mcd_transformers/transformers/events/jug_drip"
@@ -24,7 +25,7 @@ import (
 )
 
 var EventTransformerInitializer transformer.EventTransformerInitializer = shared.LogNoteTransformer{
-	Config:     jug_drip.GetJugDripConfig(),
+	Config:     shared.GetEventTransformerConfig(constants.JugDripLabel, constants.JugDripSignature()),
 	Converter:  &jug_drip.JugDripConverter{},
 	Repository: &jug_drip.JugDripRepository{},
 }.NewLogNoteTransformer

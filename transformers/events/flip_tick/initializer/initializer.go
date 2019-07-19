@@ -17,6 +17,7 @@
 package initializer
 
 import (
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 
 	"github.com/vulcanize/mcd_transformers/transformers/events/flip_tick"
@@ -24,7 +25,7 @@ import (
 )
 
 var EventTransformerInitializer transformer.EventTransformerInitializer = shared.LogNoteTransformer{
-	Config:     flip_tick.GetFlipTickConfig(),
+	Config:     shared.GetEventTransformerConfig(constants.FlipTickLabel, constants.FlipTickSignature()),
 	Converter:  flip_tick.FlipTickConverter{},
 	Repository: &flip_tick.FlipTickRepository{},
 }.NewLogNoteTransformer
