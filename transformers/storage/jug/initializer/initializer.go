@@ -12,7 +12,7 @@ import (
 )
 
 var StorageTransformerInitializer transformer.StorageTransformerInitializer = storage.Transformer{
-	Address:    common.HexToAddress(constants.JugContractAddress()),
+	Address:    common.HexToAddress(constants.GetContractAddress("MCD_JUG")),
 	Mappings:   &jug.JugMappings{StorageRepository: &storage2.MakerStorageRepository{}},
 	Repository: &jug.JugStorageRepository{},
 }.NewTransformer

@@ -36,7 +36,7 @@ var (
 )
 
 var FlipTickLogNote = types.Log{
-	Address: common.HexToAddress(constants.EthFlipContractAddressA()),
+	Address: common.HexToAddress(constants.GetContractAddress("ETH_FLIP_A")),
 	Topics: []common.Hash{
 		common.HexToHash(constants.FlipTickSignature()),
 		common.HexToHash("0x000000000000000000000000da198bfdd2671d7ad4614c9cf2beb87cdfec1460"),

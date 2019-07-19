@@ -17,24 +17,25 @@
 package integration_tests
 
 import (
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
+    . "github.com/onsi/ginkgo"
+    . "github.com/onsi/gomega"
+    "github.com/vulcanize/mcd_transformers/transformers/test_data"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
+    "github.com/ethereum/go-ethereum/common"
+    "github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
+    "github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 
-	"github.com/vulcanize/mcd_transformers/test_config"
-	"github.com/vulcanize/mcd_transformers/transformers/events/vat_suck"
-	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+    "github.com/vulcanize/mcd_transformers/test_config"
+    "github.com/vulcanize/mcd_transformers/transformers/events/vat_suck"
+    "github.com/vulcanize/mcd_transformers/transformers/shared"
+    mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
 // TODO: Replace block number once there's a suck event on the updated Vat
 var _ = XDescribe("VatSuck Transformer", func() {
 	vatSuckConfig := transformer.EventTransformerConfig{
 		TransformerName:   mcdConstants.VatSuckLabel,
-		ContractAddresses: []string{mcdConstants.VatContractAddress()},
+		ContractAddresses: []string{test_data.VatAddress()},
 		ContractAbi:       mcdConstants.VatABI(),
 		Topic:             mcdConstants.VatSuckSignature(),
 	}

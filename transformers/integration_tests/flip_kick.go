@@ -32,8 +32,8 @@ import (
 var _ = Describe("FlipKick Transformer", func() {
 	flipKickConfig := transformer.EventTransformerConfig{
 		TransformerName:   mcdConstants.FlipKickLabel,
-		ContractAddresses: []string{mcdConstants.EthFlipContractAddressA()},
-		ContractAbi:       mcdConstants.FlipperABI(),
+		ContractAddresses: []string{mcdConstants.GetContractAddress("ETH_FLIP_A")},
+		ContractAbi:       mcdConstants.FlipABI(),
 		Topic:             mcdConstants.FlipKickSignature(),
 	}
 

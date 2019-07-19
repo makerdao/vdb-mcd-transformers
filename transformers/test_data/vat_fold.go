@@ -29,7 +29,7 @@ import (
 )
 
 var EthVatFoldLogWithPositiveRate = types.Log{
-	Address: common.HexToAddress(constants.VatContractAddress()),
+	Address: common.HexToAddress(constants.GetContractAddress("MCD_VAT")),
 	Topics: []common.Hash{
 		common.HexToHash(constants.VatFoldSignature()),
 		common.HexToHash("0x5245500000000000000000000000000000000000000000000000000000000000"),
@@ -64,7 +64,7 @@ var VatFoldModelWithPositiveRate = shared.InsertionModel{
 }
 
 var EthVatFoldLogWithNegativeRate = types.Log{
-	Address: common.HexToAddress(constants.VatContractAddress()),
+	Address: common.HexToAddress(constants.GetContractAddress("MCD_VAT")),
 	Topics: []common.Hash{
 		common.HexToHash(constants.VatFoldSignature()),
 		common.HexToHash("0x66616b6520696c6b000000000000000000000000000000000000000000000000"),

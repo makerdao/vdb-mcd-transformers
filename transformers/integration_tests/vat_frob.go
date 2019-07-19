@@ -17,20 +17,21 @@
 package integration_tests
 
 import (
-	"strconv"
+    "github.com/vulcanize/mcd_transformers/transformers/test_data"
+    "strconv"
 
-	"github.com/ethereum/go-ethereum/common"
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
-	"github.com/vulcanize/vulcanizedb/pkg/core"
-	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
+    "github.com/ethereum/go-ethereum/common"
+    . "github.com/onsi/ginkgo"
+    . "github.com/onsi/gomega"
+    "github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
+    "github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
+    "github.com/vulcanize/vulcanizedb/pkg/core"
+    "github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 
-	"github.com/vulcanize/mcd_transformers/test_config"
-	"github.com/vulcanize/mcd_transformers/transformers/events/vat_frob"
-	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+    "github.com/vulcanize/mcd_transformers/test_config"
+    "github.com/vulcanize/mcd_transformers/transformers/events/vat_frob"
+    "github.com/vulcanize/mcd_transformers/transformers/shared"
+    mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
 var _ = Describe("Vat frob Transformer", func() {
@@ -53,7 +54,7 @@ var _ = Describe("Vat frob Transformer", func() {
 		logFetcher = fetcher.NewLogFetcher(blockChain)
 		vatFrobConfig = transformer.EventTransformerConfig{
 			TransformerName:   mcdConstants.VatFrobLabel,
-			ContractAddresses: []string{mcdConstants.VatContractAddress()},
+			ContractAddresses: []string{test_data.VatAddress()},
 			ContractAbi:       mcdConstants.VatABI(),
 			Topic:             mcdConstants.VatFrobSignature(),
 		}

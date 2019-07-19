@@ -29,7 +29,7 @@ import (
 )
 
 var EthVatSlipLogWithPositiveWad = types.Log{
-	Address: common.HexToAddress(constants.VatContractAddress()),
+	Address: common.HexToAddress(constants.GetContractAddress("MCD_VAT")),
 	Topics: []common.Hash{
 		common.HexToHash(constants.VatSlipSignature()),
 		common.HexToHash("0x4554482d41000000000000000000000000000000000000000000000000000000"),
@@ -64,7 +64,7 @@ var VatSlipModelWithPositiveWad = shared.InsertionModel{
 }
 
 var EthVatSlipLogWithNegativeWad = types.Log{
-	Address: common.HexToAddress(constants.VatContractAddress()),
+	Address: common.HexToAddress(constants.GetContractAddress("MCD_VAT")),
 	Topics: []common.Hash{
 		common.HexToHash(constants.VatSlipSignature()),
 		common.HexToHash("0x4554482d41000000000000000000000000000000000000000000000000000000"),

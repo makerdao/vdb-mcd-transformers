@@ -28,7 +28,7 @@ import (
 )
 
 var EthVatHealLogWithPositiveRad = types.Log{
-	Address: common.HexToAddress(constants.VatContractAddress()),
+	Address: common.HexToAddress(constants.GetContractAddress("MCD_VAT")),
 	Topics: []common.Hash{
 		common.HexToHash("0x00000000000000000000000000000000000000000000000000000000f37ac61c"),
 		common.HexToHash("0x0000000000000000000000000000000000000000000000000000000000002711"),

@@ -18,6 +18,7 @@ package flip_kick_test
 
 import (
 	"encoding/json"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"math/big"
 	"strings"
 
@@ -26,7 +27,6 @@ import (
 	. "github.com/onsi/gomega"
 
 	"github.com/vulcanize/mcd_transformers/transformers/events/flip_kick"
-	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
@@ -35,7 +35,7 @@ var _ = Describe("FlipKick Converter", func() {
 
 	Describe("ToEntity", func() {
 		It("converts an Eth Log to a FlipKickEntity", func() {
-			entities, err := converter.ToEntities(constants.FlipperABI(), []types.Log{test_data.EthFlipKickLog})
+			entities, err := converter.ToEntities(constants.FlipABI(), []types.Log{test_data.EthFlipKickLog})
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(entities)).To(Equal(1))

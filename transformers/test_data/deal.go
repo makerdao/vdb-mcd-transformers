@@ -29,7 +29,7 @@ import (
 )
 
 var DealLogNote = types.Log{
-	Address: common.HexToAddress(constants.EthFlipContractAddressA()),
+	Address: common.HexToAddress(constants.GetContractAddress("ETH_FLIP_A")),
 	Topics: []common.Hash{
 		common.HexToHash(constants.DealSignature()),
 		common.HexToHash("0x00000000000000000000000064d922894153be9eef7b7218dc565d1d0ce2a092"),
@@ -52,7 +52,7 @@ var DealModel = shared.InsertionModel{
 	},
 	ColumnValues: shared.ColumnValues{
 		"bid_id":           "10000000000000000",
-		"contract_address": common.HexToAddress(constants.EthFlipContractAddressA()).Hex(),
+		"contract_address": common.HexToAddress(constants.GetContractAddress("ETH_FLIP_A")).Hex(),
 		"log_idx":          DealLogNote.Index,
 		"tx_idx":           DealLogNote.TxIndex,
 		"raw_log":          dealRawJson,

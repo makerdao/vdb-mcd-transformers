@@ -29,7 +29,7 @@ import (
 )
 
 var EthJugInitLog = types.Log{
-	Address: common.HexToAddress(constants.JugContractAddress()),
+	Address: common.HexToAddress(constants.GetContractAddress("MCD_JUG")),
 	Topics: []common.Hash{
 		common.HexToHash(constants.JugInitSignature()),
 		common.HexToHash("0x000000000000000000000000dc984d513a0f9ca9aa602d4df8517677918936e3"),

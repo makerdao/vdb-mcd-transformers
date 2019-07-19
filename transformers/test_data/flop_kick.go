@@ -29,7 +29,7 @@ import (
 
 var (
 	EthFlopKickLog = types.Log{
-		Address: common.HexToAddress(constants.FlopperContractAddress()),
+		Address: common.HexToAddress(constants.GetContractAddress("MCD_FLOP")),
 		Topics: []common.Hash{
 			common.HexToHash(constants.FlopKickSignature()),
 			common.HexToHash("0x0000000000000000000000007d7bee5fcfd8028cf7b00876c5b1421c800561a6"),

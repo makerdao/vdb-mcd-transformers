@@ -37,7 +37,7 @@ var (
 )
 
 var EthDentLog = types.Log{
-	Address: common.HexToAddress(constants.EthFlipContractAddressA()),
+	Address: common.HexToAddress(constants.GetContractAddress("ETH_FLIP_A")),
 	Topics: []common.Hash{
 		common.HexToHash(constants.DentSignature()),
 		common.HexToHash("0x00000000000000000000000064d922894153be9eef7b7218dc565d1d0ce2a092"),

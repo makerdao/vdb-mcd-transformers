@@ -17,22 +17,23 @@
 package integration_tests
 
 import (
-	"strconv"
+    "github.com/vulcanize/mcd_transformers/transformers/test_data"
+    "strconv"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
-	"github.com/vulcanize/vulcanizedb/pkg/core"
-	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
+    "github.com/ethereum/go-ethereum/common"
+    "github.com/ethereum/go-ethereum/core/types"
+    . "github.com/onsi/ginkgo"
+    . "github.com/onsi/gomega"
+    "github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
+    "github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
+    "github.com/vulcanize/vulcanizedb/pkg/core"
+    "github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 
-	"github.com/vulcanize/mcd_transformers/test_config"
-	"github.com/vulcanize/mcd_transformers/transformers/events/spot_file/mat"
-	"github.com/vulcanize/mcd_transformers/transformers/events/spot_file/pip"
-	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+    "github.com/vulcanize/mcd_transformers/test_config"
+    "github.com/vulcanize/mcd_transformers/transformers/events/spot_file/mat"
+    "github.com/vulcanize/mcd_transformers/transformers/events/spot_file/pip"
+    "github.com/vulcanize/mcd_transformers/transformers/shared"
+    mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
 var _ = Describe("SpotFile LogNoteTransformers", func() {
@@ -69,7 +70,7 @@ var _ = Describe("SpotFile LogNoteTransformers", func() {
 
 			spotFileMatConfig := transformer.EventTransformerConfig{
 				TransformerName:     mcdConstants.SpotFileMatLabel,
-				ContractAddresses:   []string{mcdConstants.SpotContractAddress()},
+				ContractAddresses:   []string{test_data.SpotAddress()},
 				ContractAbi:         mcdConstants.SpotABI(),
 				Topic:               mcdConstants.SpotFileMatSignature(),
 				StartingBlockNumber: blockNumber,
@@ -127,7 +128,7 @@ var _ = Describe("SpotFile LogNoteTransformers", func() {
 
 			spotFilePipConfig := transformer.EventTransformerConfig{
 				TransformerName:     mcdConstants.SpotFilePipLabel,
-				ContractAddresses:   []string{mcdConstants.SpotContractAddress()},
+				ContractAddresses:   []string{test_data.SpotAddress()},
 				ContractAbi:         mcdConstants.SpotABI(),
 				Topic:               mcdConstants.SpotFilePipSignature(),
 				StartingBlockNumber: blockNumber,

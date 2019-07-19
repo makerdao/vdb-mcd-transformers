@@ -33,7 +33,7 @@ var (
 )
 
 var EthVatFrobLogWithPositiveDart = types.Log{
-	Address: common.HexToAddress(constants.VatContractAddress()),
+	Address: common.HexToAddress(constants.GetContractAddress("MCD_VAT")),
 	Topics: []common.Hash{
 		common.HexToHash(constants.VatFrobSignature()),
 		common.HexToHash("0x4554480000000000000000000000000000000000000000000000000000000000"),
@@ -71,7 +71,7 @@ var VatFrobModelWithPositiveDart = shared.InsertionModel{
 }
 
 var EthVatFrobLogWithNegativeDink = types.Log{
-	Address: common.HexToAddress(constants.VatContractAddress()),
+	Address: common.HexToAddress(constants.GetContractAddress("MCD_VAT")),
 	Topics: []common.Hash{
 		common.HexToHash(constants.VatFrobSignature()),
 		common.HexToHash("0x4554482d41000000000000000000000000000000000000000000000000000000"),

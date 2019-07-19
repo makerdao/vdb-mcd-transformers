@@ -29,7 +29,7 @@ import (
 )
 
 var EthCatFileChopLog = types.Log{
-	Address: common.HexToAddress(constants.CatContractAddress()),
+	Address: common.HexToAddress(constants.GetContractAddress("MCD_CAT")),
 	Topics: []common.Hash{
 		common.HexToHash(constants.CatFileChopLumpSignature()),
 		common.HexToHash("0x000000000000000000000000dc984d513a0f9ca9aa602d4df8517677918936e3"),
@@ -64,7 +64,7 @@ var CatFileChopModel = shared.InsertionModel{
 }
 
 var EthCatFileLumpLog = types.Log{
-	Address: common.HexToAddress(constants.CatContractAddress()),
+	Address: common.HexToAddress(constants.GetContractAddress("MCD_CAT")),
 	Topics: []common.Hash{
 		common.HexToHash(constants.CatFileChopLumpSignature()),
 		common.HexToHash("0x000000000000000000000000dc984d513a0f9ca9aa602d4df8517677918936e3"),
@@ -99,7 +99,7 @@ var CatFileLumpModel = shared.InsertionModel{
 }
 
 var EthCatFileFlipLog = types.Log{
-	Address: common.HexToAddress(constants.CatContractAddress()),
+	Address: common.HexToAddress(constants.GetContractAddress("MCD_CAT")),
 	Topics: []common.Hash{
 		common.HexToHash(constants.CatFileFlipSignature()),
 		common.HexToHash("0x000000000000000000000000dc984d513a0f9ca9aa602d4df8517677918936e3"),
@@ -134,7 +134,7 @@ var CatFileFlipModel = shared.InsertionModel{
 }
 
 var EthCatFileVowLog = types.Log{
-	Address: common.HexToAddress(constants.CatContractAddress()),
+	Address: common.HexToAddress(constants.GetContractAddress("MCD_CAT")),
 	Topics: []common.Hash{
 		common.HexToHash(constants.CatFileVowSignature()),
 		common.HexToHash("0x0000000000000000000000003652c2af10cbbdb753c3b46489db5226b73e6497"),
