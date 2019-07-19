@@ -36,7 +36,7 @@ var (
 	tab             = big.NewInt(50)
 	usr             = "0x7340e006f4135BA6970D43bf43d88DCAD4e7a8CA"
 	gal             = "0x07Fa9eF6609cA7921112231F8f195138ebbA2977"
-	contractAddress = constants.EthFlipContractAddressA()
+	contractAddress = constants.GetContractAddress("ETH_FLIP_A")
 	rawLog, _       = json.Marshal(EthFlipKickLog)
 )
 
@@ -47,7 +47,7 @@ var (
 )
 
 var EthFlipKickLog = types.Log{
-	Address: common.HexToAddress(constants.EthFlipContractAddressA()),
+	Address: common.HexToAddress(constants.GetContractAddress("ETH_FLIP_A")),
 	Topics: []common.Hash{
 		common.HexToHash(constants.FlipKickSignature()),
 		common.HexToHash("0x0000000000000000000000007340e006f4135ba6970d43bf43d88dcad4e7a8ca"),

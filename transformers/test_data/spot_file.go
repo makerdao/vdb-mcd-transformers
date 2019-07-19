@@ -26,7 +26,7 @@ import (
 )
 
 var EthSpotFileMatLog = types.Log{
-	Address: common.HexToAddress(constants.SpotContractAddress()),
+	Address: common.HexToAddress(constants.GetContractAddress("MCD_SPOT")),
 	Topics: []common.Hash{
 		common.HexToHash(constants.SpotFileMatSignature()),
 		common.HexToHash("0x00000000000000000000000071ce79fcfec71760d51f6b3589c0d9ec0ccb64a8"),
@@ -61,7 +61,7 @@ var SpotFileMatModel = shared.InsertionModel{
 }
 
 var EthSpotFilePipLog = types.Log{
-	Address: common.HexToAddress(constants.SpotContractAddress()),
+	Address: common.HexToAddress(constants.GetContractAddress("MCD_SPOT")),
 	Topics: []common.Hash{
 		common.HexToHash(constants.SpotFilePipSignature()),
 		common.HexToHash("0x0000000000000000000000004ba936a9338ae211300ea47899fbd111fd5dca31"),

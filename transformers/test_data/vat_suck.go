@@ -28,7 +28,7 @@ import (
 )
 
 var EthVatSuckLog = types.Log{
-	Address: common.HexToAddress(constants.VatContractAddress()),
+	Address: common.HexToAddress(constants.GetContractAddress("MCD_VAT")),
 	Topics: []common.Hash{
 		common.HexToHash(constants.VatSuckSignature()),
 		common.HexToHash("0x00000000000000000000000007fa9ef6609ca7921112231f8f195138ebba2977"),

@@ -29,7 +29,7 @@ import (
 )
 
 var EthVatMoveLog = types.Log{
-	Address: common.HexToAddress(constants.VatContractAddress()),
+	Address: common.HexToAddress(constants.GetContractAddress("MCD_VAT")),
 	Topics: []common.Hash{
 		common.HexToHash(constants.VatMoveSignature()),
 		common.HexToHash("0x000000000000000000000000a730d1ff8b6bc74a26d54c20a9dda539909bab0e"),

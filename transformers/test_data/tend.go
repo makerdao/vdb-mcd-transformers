@@ -38,7 +38,7 @@ var (
 )
 
 var TendLogNote = types.Log{
-	Address: common.HexToAddress(constants.FlapperContractAddress()),
+	Address: common.HexToAddress(constants.GetContractAddress("MCD_FLAP")),
 	Topics: []common.Hash{
 		common.HexToHash(constants.TendSignature()),
 		common.HexToHash("0x0000000000000000000000003a673843d27d037b206bb05eb1abbc7288d95e66"),
@@ -64,7 +64,7 @@ var TendModel = shared.InsertionModel{
 		"bid_id":           strconv.FormatInt(tendBidId, 10),
 		"lot":              tendLot,
 		"bid":              tendBid,
-		"contract_address": constants.FlapperContractAddress(),
+		"contract_address": constants.GetContractAddress("MCD_FLAP"),
 		"log_idx":          TendLogNote.Index,
 		"tx_idx":           TendLogNote.TxIndex,
 		"raw_log":          rawTendLog,

@@ -20,6 +20,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 
@@ -33,7 +34,7 @@ import (
 var _ = XDescribe("VatHeal Transformer", func() {
 	vatHealConfig := transformer.EventTransformerConfig{
 		TransformerName:   mcdConstants.VatHealLabel,
-		ContractAddresses: []string{mcdConstants.VatContractAddress()},
+		ContractAddresses: []string{test_data.VatAddress()},
 		ContractAbi:       mcdConstants.VatABI(),
 		Topic:             mcdConstants.VatHealSignature(),
 	}

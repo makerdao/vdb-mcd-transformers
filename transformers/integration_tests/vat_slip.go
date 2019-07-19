@@ -17,6 +17,7 @@
 package integration_tests
 
 import (
+	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 	"strconv"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -50,7 +51,7 @@ var _ = Describe("Vat slip transformer", func() {
 
 	vatSlipConfig := transformer.EventTransformerConfig{
 		TransformerName:   mcdConstants.VatSlipLabel,
-		ContractAddresses: []string{mcdConstants.VatContractAddress()},
+		ContractAddresses: []string{test_data.VatAddress()},
 		ContractAbi:       mcdConstants.VatABI(),
 		Topic:             mcdConstants.VatSlipSignature(),
 	}

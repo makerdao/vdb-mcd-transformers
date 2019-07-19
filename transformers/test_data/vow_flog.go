@@ -27,7 +27,7 @@ import (
 )
 
 var EthVowFlogLog = types.Log{
-	Address: common.HexToAddress(constants.VowContractAddress()),
+	Address: common.HexToAddress(constants.GetContractAddress("MCD_VOW")),
 	Topics: []common.Hash{
 		common.HexToHash(constants.VowFlogSignature()),
 		common.HexToHash("0x0000000000000000000000008e84a1e068d77059cbe263c43ad0cdc130863313"),

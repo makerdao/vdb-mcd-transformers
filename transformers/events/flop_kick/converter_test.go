@@ -18,13 +18,12 @@ package flop_kick_test
 
 import (
 	"encoding/json"
-
 	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 
 	"github.com/vulcanize/mcd_transformers/transformers/events/flop_kick"
-	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
@@ -33,7 +32,7 @@ var _ = Describe("FlopKick Converter", func() {
 
 	Describe("ToEntities", func() {
 		It("converts a log to a FlopKick entity", func() {
-			entities, err := converter.ToEntities(constants.FlopperABI(), []types.Log{test_data.EthFlopKickLog})
+			entities, err := converter.ToEntities(constants.FlopABI(), []types.Log{test_data.EthFlopKickLog})
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(entities)).To(Equal(1))

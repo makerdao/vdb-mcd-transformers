@@ -29,7 +29,7 @@ import (
 )
 
 var EthVatFileDebtCeilingLog = types.Log{
-	Address: common.HexToAddress(constants.VatContractAddress()),
+	Address: common.HexToAddress(constants.GetContractAddress("MCD_VAT")),
 	Topics: []common.Hash{
 		common.HexToHash(constants.VatFileDebtCeilingSignature()),
 		common.HexToHash("0x4c696e6500000000000000000000000000000000000000000000000000000000"),
@@ -62,7 +62,7 @@ var VatFileDebtCeilingModel = shared.InsertionModel{
 }
 
 var EthVatFileIlkDustLog = types.Log{
-	Address: common.HexToAddress(constants.VatContractAddress()),
+	Address: common.HexToAddress(constants.GetContractAddress("MCD_VAT")),
 	Topics: []common.Hash{
 		common.HexToHash(constants.VatFileIlkSignature()),                                       //sig
 		common.HexToHash("0x5245500000000000000000000000000000000000000000000000000000000000"),  //ilk
@@ -98,7 +98,7 @@ var VatFileIlkDustModel = shared.InsertionModel{
 }
 
 var EthVatFileIlkLineLog = types.Log{
-	Address: common.HexToAddress(constants.VatContractAddress()),
+	Address: common.HexToAddress(constants.GetContractAddress("MCD_VAT")),
 	Topics: []common.Hash{
 		common.HexToHash(constants.VatFileIlkSignature()),
 		common.HexToHash("0x5245500000000000000000000000000000000000000000000000000000000000"),
@@ -134,7 +134,7 @@ var VatFileIlkLineModel = shared.InsertionModel{
 }
 
 var EthVatFileIlkSpotLog = types.Log{
-	Address: common.HexToAddress(constants.VatContractAddress()),
+	Address: common.HexToAddress(constants.GetContractAddress("MCD_VAT")),
 	Topics: []common.Hash{
 		common.HexToHash(constants.VatFileIlkSignature()),
 		common.HexToHash("0x4554480000000000000000000000000000000000000000000000000000000000"),

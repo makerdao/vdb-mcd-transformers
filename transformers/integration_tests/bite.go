@@ -38,7 +38,7 @@ import (
 var _ = Describe("Bite Transformer", func() {
 	biteConfig := transformer.EventTransformerConfig{
 		TransformerName:   mcdConstants.BiteLabel,
-		ContractAddresses: []string{mcdConstants.CatContractAddress()},
+		ContractAddresses: []string{test_data.CatAddress()},
 		ContractAbi:       mcdConstants.CatABI(),
 		Topic:             mcdConstants.BiteSignature(),
 	}
@@ -94,7 +94,7 @@ var _ = Describe("Bite Transformer", func() {
 	})
 
 	It("unpacks an event log", func() {
-		address := common.HexToAddress(mcdConstants.CatContractAddress())
+		address := common.HexToAddress(mcdConstants.GetContractAddress("MCD_CAT"))
 		abi, err := geth.ParseAbi(mcdConstants.CatABI())
 		Expect(err).NotTo(HaveOccurred())
 

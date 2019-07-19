@@ -17,20 +17,20 @@
 package shared
 
 import (
-    "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
-    "github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 )
 
 // Creates a transformer config by pulling values from configuration environment
 // TODO How can we get signatures in a general way?
 func GetEventTransformerConfig(transformerLabel, signature string) transformer.EventTransformerConfig {
-    contractNames := constants.GetTransformerContractNames(transformerLabel)
-    return transformer.EventTransformerConfig{
-        TransformerName:     transformerLabel,
-        ContractAddresses:   constants.GetContractAddresses(contractNames),
-        ContractAbi:         constants.GetContractsABI(contractNames),
-        Topic:               signature,
-        StartingBlockNumber: constants.GetMinDeploymentBlock(contractNames),
-        EndingBlockNumber:   -1, // TODO Generalise endingBlockNumber
-    }
+	contractNames := constants.GetTransformerContractNames(transformerLabel)
+	return transformer.EventTransformerConfig{
+		TransformerName:     transformerLabel,
+		ContractAddresses:   constants.GetContractAddresses(contractNames),
+		ContractAbi:         constants.GetContractsABI(contractNames),
+		Topic:               signature,
+		StartingBlockNumber: constants.GetMinDeploymentBlock(contractNames),
+		EndingBlockNumber:   -1, // TODO Generalise endingBlockNumber
+	}
 }

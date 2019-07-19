@@ -17,6 +17,7 @@
 package integration_tests
 
 import (
+	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 	"strconv"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -34,7 +35,7 @@ import (
 var _ = XDescribe("VatFlux LogNoteTransformer", func() {
 	vatFluxConfig := transformer.EventTransformerConfig{
 		TransformerName:   mcdConstants.VatFluxLabel,
-		ContractAddresses: []string{mcdConstants.VatContractAddress()},
+		ContractAddresses: []string{test_data.VatAddress()},
 		ContractAbi:       mcdConstants.VatABI(),
 		Topic:             mcdConstants.VatFluxSignature(),
 	}

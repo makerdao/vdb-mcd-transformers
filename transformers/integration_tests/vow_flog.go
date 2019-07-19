@@ -20,6 +20,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
@@ -49,7 +50,7 @@ var _ = XDescribe("VowFlog LogNoteTransformer", func() {
 
 	vowFlogConfig := transformer.EventTransformerConfig{
 		TransformerName:   mcdConstants.VowFlogLabel,
-		ContractAddresses: []string{mcdConstants.VowContractAddress()},
+		ContractAddresses: []string{test_data.VowAddress()},
 		ContractAbi:       mcdConstants.VowABI(),
 		Topic:             mcdConstants.VowFlogSignature(),
 	}

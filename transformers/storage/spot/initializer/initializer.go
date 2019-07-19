@@ -11,7 +11,7 @@ import (
 )
 
 var StorageTransformerInitializer transformer.StorageTransformerInitializer = storage.Transformer{
-	Address:    common.HexToAddress(constants.SpotContractAddress()),
+	Address:    common.HexToAddress(constants.GetContractAddress("MCD_SPOT")),
 	Mappings:   &spot.SpotMappings{StorageRepository: &storage2.MakerStorageRepository{}},
 	Repository: &spot.SpotStorageRepository{},
 }.NewTransformer

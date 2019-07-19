@@ -49,7 +49,7 @@ var _ = Describe("Cat File transformer", func() {
 	)
 
 	var catFileConfig = transformer.EventTransformerConfig{
-		ContractAddresses: []string{mcdConstants.CatContractAddress()},
+		ContractAddresses: []string{mcdConstants.GetContractAddress("MCD_CAT")},
 		ContractAbi:       mcdConstants.CatABI(),
 	}
 
