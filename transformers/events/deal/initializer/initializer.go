@@ -17,6 +17,7 @@
 package initializer
 
 import (
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 
 	"github.com/vulcanize/mcd_transformers/transformers/events/deal"
@@ -24,7 +25,7 @@ import (
 )
 
 var EventTransformerInitializer transformer.EventTransformerInitializer = shared.LogNoteTransformer{
-	Config:     deal.GetDealConfig(),
+	Config:     shared.GetEventTransformerConfig(constants.DealLabel, constants.DealSignature()),
 	Converter:  &deal.DealConverter{},
 	Repository: &deal.DealRepository{},
 }.NewLogNoteTransformer

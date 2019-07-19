@@ -23,12 +23,13 @@ import (
 )
 
 func GetFlopKickConfig() shared_t.EventTransformerConfig {
+	contracts := constants.GetTransformerContractNames(constants.FlopKickLabel)
 	return shared_t.EventTransformerConfig{
 		TransformerName:     constants.FlopKickLabel,
-		ContractAddresses:   []string{constants.FlopperContractAddress()},
-		ContractAbi:         constants.FlopperABI(),
+		ContractAddresses:   contracts,
+		ContractAbi:         constants.GetContractABI(contracts),
 		Topic:               constants.FlopKickSignature(),
-		StartingBlockNumber: constants.FlopperDeploymentBlock(),
+		StartingBlockNumber: constants.GetMinDeploymentBlock(contracts),
 		EndingBlockNumber:   -1,
 	}
 }
