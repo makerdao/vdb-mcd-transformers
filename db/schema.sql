@@ -1792,6 +1792,276 @@ ALTER SEQUENCE maker.dent_id_seq OWNED BY maker.dent.id;
 
 
 --
+-- Name: flap_beg; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.flap_beg (
+    id integer NOT NULL,
+    block_number bigint,
+    block_hash text,
+    contract_address text,
+    beg numeric NOT NULL
+);
+
+
+--
+-- Name: flap_beg_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.flap_beg_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: flap_beg_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.flap_beg_id_seq OWNED BY maker.flap_beg.id;
+
+
+--
+-- Name: flap_bid_bid; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.flap_bid_bid (
+    id integer NOT NULL,
+    block_number bigint,
+    block_hash text,
+    contract_address text,
+    bid_id numeric NOT NULL,
+    bid numeric NOT NULL
+);
+
+
+--
+-- Name: flap_bid_bid_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.flap_bid_bid_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: flap_bid_bid_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.flap_bid_bid_id_seq OWNED BY maker.flap_bid_bid.id;
+
+
+--
+-- Name: flap_bid_end; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.flap_bid_end (
+    id integer NOT NULL,
+    block_number bigint,
+    block_hash text,
+    contract_address text,
+    bid_id numeric NOT NULL,
+    "end" bigint NOT NULL
+);
+
+
+--
+-- Name: flap_bid_end_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.flap_bid_end_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: flap_bid_end_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.flap_bid_end_id_seq OWNED BY maker.flap_bid_end.id;
+
+
+--
+-- Name: flap_bid_gal; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.flap_bid_gal (
+    id integer NOT NULL,
+    block_number bigint,
+    block_hash text,
+    contract_address text,
+    bid_id numeric NOT NULL,
+    gal text NOT NULL
+);
+
+
+--
+-- Name: flap_bid_gal_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.flap_bid_gal_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: flap_bid_gal_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.flap_bid_gal_id_seq OWNED BY maker.flap_bid_gal.id;
+
+
+--
+-- Name: flap_bid_guy; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.flap_bid_guy (
+    id integer NOT NULL,
+    block_number bigint,
+    block_hash text,
+    contract_address text,
+    bid_id numeric NOT NULL,
+    guy text NOT NULL
+);
+
+
+--
+-- Name: flap_bid_guy_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.flap_bid_guy_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: flap_bid_guy_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.flap_bid_guy_id_seq OWNED BY maker.flap_bid_guy.id;
+
+
+--
+-- Name: flap_bid_lot; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.flap_bid_lot (
+    id integer NOT NULL,
+    block_number bigint,
+    block_hash text,
+    contract_address text,
+    bid_id numeric NOT NULL,
+    lot numeric NOT NULL
+);
+
+
+--
+-- Name: flap_bid_lot_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.flap_bid_lot_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: flap_bid_lot_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.flap_bid_lot_id_seq OWNED BY maker.flap_bid_lot.id;
+
+
+--
+-- Name: flap_bid_tic; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.flap_bid_tic (
+    id integer NOT NULL,
+    block_number bigint,
+    block_hash text,
+    contract_address text,
+    bid_id numeric NOT NULL,
+    tic bigint NOT NULL
+);
+
+
+--
+-- Name: flap_bid_tic_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.flap_bid_tic_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: flap_bid_tic_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.flap_bid_tic_id_seq OWNED BY maker.flap_bid_tic.id;
+
+
+--
+-- Name: flap_gem; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.flap_gem (
+    id integer NOT NULL,
+    block_number bigint,
+    block_hash text,
+    contract_address text,
+    gem text NOT NULL
+);
+
+
+--
+-- Name: flap_gem_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.flap_gem_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: flap_gem_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.flap_gem_id_seq OWNED BY maker.flap_gem.id;
+
+
+--
 -- Name: flap_kick; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -1827,6 +2097,171 @@ CREATE SEQUENCE maker.flap_kick_id_seq
 --
 
 ALTER SEQUENCE maker.flap_kick_id_seq OWNED BY maker.flap_kick.id;
+
+
+--
+-- Name: flap_kicks; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.flap_kicks (
+    id integer NOT NULL,
+    block_number bigint,
+    block_hash text,
+    contract_address text,
+    kicks numeric NOT NULL
+);
+
+
+--
+-- Name: flap_kicks_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.flap_kicks_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: flap_kicks_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.flap_kicks_id_seq OWNED BY maker.flap_kicks.id;
+
+
+--
+-- Name: flap_live; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.flap_live (
+    id integer NOT NULL,
+    block_number bigint,
+    block_hash text,
+    contract_address text,
+    live numeric NOT NULL
+);
+
+
+--
+-- Name: flap_live_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.flap_live_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: flap_live_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.flap_live_id_seq OWNED BY maker.flap_live.id;
+
+
+--
+-- Name: flap_tau; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.flap_tau (
+    id integer NOT NULL,
+    block_number bigint,
+    block_hash text,
+    contract_address text,
+    tau integer NOT NULL
+);
+
+
+--
+-- Name: flap_tau_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.flap_tau_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: flap_tau_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.flap_tau_id_seq OWNED BY maker.flap_tau.id;
+
+
+--
+-- Name: flap_ttl; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.flap_ttl (
+    id integer NOT NULL,
+    block_number bigint,
+    block_hash text,
+    contract_address text,
+    ttl integer NOT NULL
+);
+
+
+--
+-- Name: flap_ttl_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.flap_ttl_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: flap_ttl_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.flap_ttl_id_seq OWNED BY maker.flap_ttl.id;
+
+
+--
+-- Name: flap_vat; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.flap_vat (
+    id integer NOT NULL,
+    block_number bigint,
+    block_hash text,
+    contract_address text,
+    vat text NOT NULL
+);
+
+
+--
+-- Name: flap_vat_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.flap_vat_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: flap_vat_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.flap_vat_id_seq OWNED BY maker.flap_vat.id;
 
 
 --
@@ -4643,10 +5078,101 @@ ALTER TABLE ONLY maker.dent ALTER COLUMN id SET DEFAULT nextval('maker.dent_id_s
 
 
 --
+-- Name: flap_beg id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flap_beg ALTER COLUMN id SET DEFAULT nextval('maker.flap_beg_id_seq'::regclass);
+
+
+--
+-- Name: flap_bid_bid id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flap_bid_bid ALTER COLUMN id SET DEFAULT nextval('maker.flap_bid_bid_id_seq'::regclass);
+
+
+--
+-- Name: flap_bid_end id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flap_bid_end ALTER COLUMN id SET DEFAULT nextval('maker.flap_bid_end_id_seq'::regclass);
+
+
+--
+-- Name: flap_bid_gal id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flap_bid_gal ALTER COLUMN id SET DEFAULT nextval('maker.flap_bid_gal_id_seq'::regclass);
+
+
+--
+-- Name: flap_bid_guy id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flap_bid_guy ALTER COLUMN id SET DEFAULT nextval('maker.flap_bid_guy_id_seq'::regclass);
+
+
+--
+-- Name: flap_bid_lot id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flap_bid_lot ALTER COLUMN id SET DEFAULT nextval('maker.flap_bid_lot_id_seq'::regclass);
+
+
+--
+-- Name: flap_bid_tic id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flap_bid_tic ALTER COLUMN id SET DEFAULT nextval('maker.flap_bid_tic_id_seq'::regclass);
+
+
+--
+-- Name: flap_gem id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flap_gem ALTER COLUMN id SET DEFAULT nextval('maker.flap_gem_id_seq'::regclass);
+
+
+--
 -- Name: flap_kick id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.flap_kick ALTER COLUMN id SET DEFAULT nextval('maker.flap_kick_id_seq'::regclass);
+
+
+--
+-- Name: flap_kicks id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flap_kicks ALTER COLUMN id SET DEFAULT nextval('maker.flap_kicks_id_seq'::regclass);
+
+
+--
+-- Name: flap_live id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flap_live ALTER COLUMN id SET DEFAULT nextval('maker.flap_live_id_seq'::regclass);
+
+
+--
+-- Name: flap_tau id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flap_tau ALTER COLUMN id SET DEFAULT nextval('maker.flap_tau_id_seq'::regclass);
+
+
+--
+-- Name: flap_ttl id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flap_ttl ALTER COLUMN id SET DEFAULT nextval('maker.flap_ttl_id_seq'::regclass);
+
+
+--
+-- Name: flap_vat id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flap_vat ALTER COLUMN id SET DEFAULT nextval('maker.flap_vat_id_seq'::regclass);
 
 
 --
@@ -5381,6 +5907,134 @@ ALTER TABLE ONLY maker.dent
 
 
 --
+-- Name: flap_beg flap_beg_block_number_block_hash_contract_address_beg_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flap_beg
+    ADD CONSTRAINT flap_beg_block_number_block_hash_contract_address_beg_key UNIQUE (block_number, block_hash, contract_address, beg);
+
+
+--
+-- Name: flap_beg flap_beg_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flap_beg
+    ADD CONSTRAINT flap_beg_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: flap_bid_bid flap_bid_bid_block_number_block_hash_contract_address_bid_i_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flap_bid_bid
+    ADD CONSTRAINT flap_bid_bid_block_number_block_hash_contract_address_bid_i_key UNIQUE (block_number, block_hash, contract_address, bid_id, bid);
+
+
+--
+-- Name: flap_bid_bid flap_bid_bid_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flap_bid_bid
+    ADD CONSTRAINT flap_bid_bid_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: flap_bid_end flap_bid_end_block_number_block_hash_contract_address_bid_i_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flap_bid_end
+    ADD CONSTRAINT flap_bid_end_block_number_block_hash_contract_address_bid_i_key UNIQUE (block_number, block_hash, contract_address, bid_id, "end");
+
+
+--
+-- Name: flap_bid_end flap_bid_end_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flap_bid_end
+    ADD CONSTRAINT flap_bid_end_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: flap_bid_gal flap_bid_gal_block_number_block_hash_contract_address_bid_i_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flap_bid_gal
+    ADD CONSTRAINT flap_bid_gal_block_number_block_hash_contract_address_bid_i_key UNIQUE (block_number, block_hash, contract_address, bid_id, gal);
+
+
+--
+-- Name: flap_bid_gal flap_bid_gal_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flap_bid_gal
+    ADD CONSTRAINT flap_bid_gal_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: flap_bid_guy flap_bid_guy_block_number_block_hash_contract_address_bid_i_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flap_bid_guy
+    ADD CONSTRAINT flap_bid_guy_block_number_block_hash_contract_address_bid_i_key UNIQUE (block_number, block_hash, contract_address, bid_id, guy);
+
+
+--
+-- Name: flap_bid_guy flap_bid_guy_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flap_bid_guy
+    ADD CONSTRAINT flap_bid_guy_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: flap_bid_lot flap_bid_lot_block_number_block_hash_contract_address_bid_i_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flap_bid_lot
+    ADD CONSTRAINT flap_bid_lot_block_number_block_hash_contract_address_bid_i_key UNIQUE (block_number, block_hash, contract_address, bid_id, lot);
+
+
+--
+-- Name: flap_bid_lot flap_bid_lot_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flap_bid_lot
+    ADD CONSTRAINT flap_bid_lot_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: flap_bid_tic flap_bid_tic_block_number_block_hash_contract_address_bid_i_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flap_bid_tic
+    ADD CONSTRAINT flap_bid_tic_block_number_block_hash_contract_address_bid_i_key UNIQUE (block_number, block_hash, contract_address, bid_id, tic);
+
+
+--
+-- Name: flap_bid_tic flap_bid_tic_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flap_bid_tic
+    ADD CONSTRAINT flap_bid_tic_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: flap_gem flap_gem_block_number_block_hash_contract_address_gem_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flap_gem
+    ADD CONSTRAINT flap_gem_block_number_block_hash_contract_address_gem_key UNIQUE (block_number, block_hash, contract_address, gem);
+
+
+--
+-- Name: flap_gem flap_gem_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flap_gem
+    ADD CONSTRAINT flap_gem_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: flap_kick flap_kick_header_id_tx_idx_log_idx_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -5394,6 +6048,86 @@ ALTER TABLE ONLY maker.flap_kick
 
 ALTER TABLE ONLY maker.flap_kick
     ADD CONSTRAINT flap_kick_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: flap_kicks flap_kicks_block_number_block_hash_contract_address_kicks_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flap_kicks
+    ADD CONSTRAINT flap_kicks_block_number_block_hash_contract_address_kicks_key UNIQUE (block_number, block_hash, contract_address, kicks);
+
+
+--
+-- Name: flap_kicks flap_kicks_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flap_kicks
+    ADD CONSTRAINT flap_kicks_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: flap_live flap_live_block_number_block_hash_contract_address_live_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flap_live
+    ADD CONSTRAINT flap_live_block_number_block_hash_contract_address_live_key UNIQUE (block_number, block_hash, contract_address, live);
+
+
+--
+-- Name: flap_live flap_live_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flap_live
+    ADD CONSTRAINT flap_live_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: flap_tau flap_tau_block_number_block_hash_contract_address_tau_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flap_tau
+    ADD CONSTRAINT flap_tau_block_number_block_hash_contract_address_tau_key UNIQUE (block_number, block_hash, contract_address, tau);
+
+
+--
+-- Name: flap_tau flap_tau_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flap_tau
+    ADD CONSTRAINT flap_tau_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: flap_ttl flap_ttl_block_number_block_hash_contract_address_ttl_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flap_ttl
+    ADD CONSTRAINT flap_ttl_block_number_block_hash_contract_address_ttl_key UNIQUE (block_number, block_hash, contract_address, ttl);
+
+
+--
+-- Name: flap_ttl flap_ttl_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flap_ttl
+    ADD CONSTRAINT flap_ttl_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: flap_vat flap_vat_block_number_block_hash_contract_address_vat_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flap_vat
+    ADD CONSTRAINT flap_vat_block_number_block_hash_contract_address_vat_key UNIQUE (block_number, block_hash, contract_address, vat);
+
+
+--
+-- Name: flap_vat flap_vat_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flap_vat
+    ADD CONSTRAINT flap_vat_pkey PRIMARY KEY (id);
 
 
 --
@@ -6683,6 +7417,48 @@ CREATE INDEX deal_header_index ON maker.deal USING btree (header_id);
 --
 
 CREATE INDEX dent_header_index ON maker.dent USING btree (header_id);
+
+
+--
+-- Name: flap_bid_bid_block_number_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flap_bid_bid_block_number_index ON maker.flap_bid_bid USING btree (block_number);
+
+
+--
+-- Name: flap_bid_end_block_number_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flap_bid_end_block_number_index ON maker.flap_bid_end USING btree (block_number);
+
+
+--
+-- Name: flap_bid_gal_block_number_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flap_bid_gal_block_number_index ON maker.flap_bid_gal USING btree (block_number);
+
+
+--
+-- Name: flap_bid_guy_block_number_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flap_bid_guy_block_number_index ON maker.flap_bid_guy USING btree (block_number);
+
+
+--
+-- Name: flap_bid_lot_block_number_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flap_bid_lot_block_number_index ON maker.flap_bid_lot USING btree (block_number);
+
+
+--
+-- Name: flap_bid_tic_block_number_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flap_bid_tic_block_number_index ON maker.flap_bid_tic USING btree (block_number);
 
 
 --

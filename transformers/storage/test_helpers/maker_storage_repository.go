@@ -8,11 +8,14 @@ import (
 
 type MockMakerStorageRepository struct {
 	DaiKeys             []string
+	FlapBidIds          []string
 	GemKeys             []storage.Urn
 	GetDaiKeysCalled    bool
 	GetDaiKeysError     error
 	GetGemKeysCalled    bool
 	GetGemKeysError     error
+	GetFlapBidIdsCalled bool
+	GetFlapBidIdsError  error
 	GetIlksCalled       bool
 	GetIlksError        error
 	GetVatSinKeysCalled bool
@@ -24,6 +27,11 @@ type MockMakerStorageRepository struct {
 	Ilks                []string
 	SinKeys             []string
 	Urns                []storage.Urn
+}
+
+func (repository *MockMakerStorageRepository) GetFlapBidIds(string) ([]string, error) {
+	repository.GetFlapBidIdsCalled = true
+	return repository.FlapBidIds, repository.GetFlapBidIdsError
 }
 
 func (repository *MockMakerStorageRepository) GetDaiKeys() ([]string, error) {

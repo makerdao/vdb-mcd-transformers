@@ -17,7 +17,11 @@
 package storage_test
 
 import (
+	"encoding/json"
+	"github.com/vulcanize/mcd_transformers/transformers/events/flap_kick"
+	"github.com/vulcanize/mcd_transformers/transformers/storage/flap"
 	"math/big"
+	"math/rand"
 	"strconv"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -58,6 +62,68 @@ var _ = Describe("Maker storage repository", func() {
 		test_config.CleanTestDB(db)
 		repository = &storage.MakerStorageRepository{}
 		repository.SetDB(db)
+	})
+
+	Describe("getting flap bid ids", func() {
+		var (
+			bidId1, bidId2, bidId3, bidId4, bidId5, bidId6 string
+			address                                        = fakes.FakeAddress.Hex()
+		)
+		BeforeEach(func() {
+			bidId1 = strconv.FormatInt(rand.Int63(), 10)
+			bidId2 = strconv.FormatInt(rand.Int63(), 10)
+			bidId3 = strconv.FormatInt(rand.Int63(), 10)
+			bidId4 = strconv.FormatInt(rand.Int63(), 10)
+			bidId5 = strconv.FormatInt(rand.Int63(), 10)
+			bidId6 = strconv.FormatInt(rand.Int63(), 10)
+		})
+
+		It("fetches unique bid ids from Flap methods", func() {
+			insertFlapKick(1, bidId1, address, db)
+			insertFlapKick(2, bidId1, address, db)
+
+			bidIds, err := repository.GetFlapBidIds(address)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(len(bidIds)).To(Equal(1))
+			Expect(bidIds[0]).To(Equal(bidId1))
+		})
+
+		It("fetches unique bid ids from flap_kick, tend, deal and yank", func() {
+			duplicateBidId := bidId1
+			insertFlapKick(1, bidId1, address, db)
+			insertFlapKicks(2, bidId2, address, db)
+			insertTend(3, bidId3, address, db)
+			insertDeal(4, bidId4, address, db)
+			insertYank(5, bidId5, address, db)
+			insertYank(6, duplicateBidId, address, db)
+
+			bidIds, err := repository.GetFlapBidIds(address)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(len(bidIds)).To(Equal(5))
+			Expect(bidIds).To(ConsistOf(bidId1, bidId2, bidId3, bidId4, bidId5))
+		})
+
+		It("fetches bid ids only for the given contract address", func() {
+			anotherAddress := address + "1"
+			insertFlapKick(1, bidId1, address, db)
+			insertFlapKick(2, bidId2, address, db)
+			insertTend(3, bidId3, address, db)
+			insertDeal(4, bidId4, address, db)
+			insertYank(5, bidId5, address, db)
+			insertYank(6, bidId6, anotherAddress, db)
+
+			bidIds, err := repository.GetFlapBidIds(address)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(len(bidIds)).To(Equal(5))
+			Expect(bidIds).To(ConsistOf(bidId1, bidId2, bidId3, bidId4, bidId5))
+		})
+
+		It("does not return error if no matching rows", func() {
+			bidIds, err := repository.GetFlapBidIds(fakes.FakeAddress.Hex())
+
+			Expect(err).NotTo(HaveOccurred())
+			Expect(len(bidIds)).To(BeZero())
+		})
 	})
 
 	Describe("getting dai keys", func() {
@@ -409,10 +475,56 @@ var _ = Describe("Maker storage repository", func() {
 	})
 })
 
-func insertVatFold(urn string, blockNumber int64, db *postgres.DB) {
-	headerRepository := repositories.NewHeaderRepository(db)
-	headerID, err := headerRepository.CreateOrUpdateHeader(fakes.GetFakeHeader(blockNumber))
+func insertFlapKick(blockNumber int64, bidId, contractAddress string, db *postgres.DB) {
+	//inserting a flap kick log event record
+	emptyRawJson, jsonErr := json.Marshal("")
+	Expect(jsonErr).NotTo(HaveOccurred())
+	headerID := insertHeader(db, blockNumber)
+	_, insertErr := db.Exec(flap_kick.InsertFlapKickQuery,
+		headerID, bidId, 0, 0, "", contractAddress, 0, 0, emptyRawJson,
+	)
+	Expect(insertErr).NotTo(HaveOccurred())
+}
+
+func insertFlapKicks(blockNumber int64, kicks, contractAddress string, db *postgres.DB) {
+	//inserting a flap kicks storage record
+	_, insertErr := db.Exec(flap.InsertKicksQuery,
+		blockNumber, fakes.FakeHash.Hex(), contractAddress, kicks,
+	)
+	Expect(insertErr).NotTo(HaveOccurred())
+}
+
+func insertTend(blockNumber int64, bidId, contractAddress string, db *postgres.DB) {
+	headerID := insertHeader(db, blockNumber)
+
+	_, err := db.Exec(`INSERT into maker.tend (header_id, bid_id, lot, bid, contract_address, log_idx, tx_idx)
+		VALUES($1, $2::NUMERIC, $3::NUMERIC, $4::NUMERIC, $5, $6, $7)`,
+		headerID, bidId, 0, 0, contractAddress, 0, 0,
+	)
 	Expect(err).NotTo(HaveOccurred())
+}
+
+func insertDeal(blockNumber int64, bidId, contractAddress string, db *postgres.DB) {
+	headerID := insertHeader(db, blockNumber)
+
+	_, err := db.Exec(`INSERT into maker.deal (header_id, bid_id, contract_address, log_idx, tx_idx)
+		VALUES($1, $2::NUMERIC, $3, $4, $5)`,
+		headerID, bidId, contractAddress, 0, 0,
+	)
+	Expect(err).NotTo(HaveOccurred())
+}
+
+func insertYank(blockNumber int64, bidId, contractAddress string, db *postgres.DB) {
+	headerID := insertHeader(db, blockNumber)
+
+	_, err := db.Exec(`INSERT into maker.yank (header_id, bid_id, contract_address, log_idx, tx_idx)
+		VALUES($1, $2::NUMERIC, $3, $4, $5)`,
+		headerID, bidId, contractAddress, 0, 0,
+	)
+	Expect(err).NotTo(HaveOccurred())
+}
+func insertVatFold(urn string, blockNumber int64, db *postgres.DB) {
+	headerID := insertHeader(db, blockNumber)
 	urnID, err := shared.GetOrCreateUrn(urn, test_helpers.FakeIlk.Hex, db)
 	Expect(err).NotTo(HaveOccurred())
 
@@ -425,10 +537,7 @@ func insertVatFold(urn string, blockNumber int64, db *postgres.DB) {
 }
 
 func insertVowFlog(era string, blockNumber int64, db *postgres.DB) {
-	headerRepository := repositories.NewHeaderRepository(db)
-	headerID, err := headerRepository.CreateOrUpdateHeader(fakes.GetFakeHeader(blockNumber))
-
-	Expect(err).NotTo(HaveOccurred())
+	headerID := insertHeader(db, blockNumber)
 	_, execErr := db.Exec(
 		`INSERT INTO maker.vow_flog (header_id, era, log_idx, tx_idx)
 			VALUES($1, $2, $3, $4)`,
@@ -439,9 +548,7 @@ func insertVowFlog(era string, blockNumber int64, db *postgres.DB) {
 
 func insertVowFess(tab string, timestamp, blockNumber int64, db *postgres.DB) {
 	headerRepository := repositories.NewHeaderRepository(db)
-	fakeHeader := fakes.GetFakeHeader(blockNumber)
-	fakeHeader.Timestamp = strconv.FormatInt(timestamp, 10)
-	// TODO: replace above 2 lines with fakes.GetFakeHeaderWithTimestamp once it's in a versioned release
+	fakeHeader := fakes.GetFakeHeaderWithTimestamp(timestamp, blockNumber)
 	headerID, err := headerRepository.CreateOrUpdateHeader(fakeHeader)
 
 	Expect(err).NotTo(HaveOccurred())
@@ -453,20 +560,8 @@ func insertVowFess(tab string, timestamp, blockNumber int64, db *postgres.DB) {
 	Expect(execErr).NotTo(HaveOccurred())
 }
 
-func insertTransaction(blockNumber int64, transaction core.TransactionModel, db *postgres.DB) {
-	var headerID int64
-	err := db.Get(&headerID, `SELECT id FROM public.headers WHERE block_number = $1`, blockNumber)
-	Expect(err).NotTo(HaveOccurred())
-
-	headerRepository := repositories.NewHeaderRepository(db)
-	err = headerRepository.CreateTransactions(headerID, []core.TransactionModel{transaction})
-	Expect(err).NotTo(HaveOccurred())
-}
-
 func insertVatInit(ilk string, blockNumber int64, db *postgres.DB) {
-	headerRepository := repositories.NewHeaderRepository(db)
-	headerID, err := headerRepository.CreateOrUpdateHeader(fakes.GetFakeHeader(blockNumber))
-	Expect(err).NotTo(HaveOccurred())
+	headerID := insertHeader(db, blockNumber)
 	ilkID, err := shared.GetOrCreateIlk(ilk, db)
 	Expect(err).NotTo(HaveOccurred())
 	_, execErr := db.Exec(
@@ -478,9 +573,7 @@ func insertVatInit(ilk string, blockNumber int64, db *postgres.DB) {
 }
 
 func insertVatFlux(ilk, src, dst string, blockNumber int64, db *postgres.DB) {
-	headerRepository := repositories.NewHeaderRepository(db)
-	headerID, err := headerRepository.CreateOrUpdateHeader(fakes.GetFakeHeader(blockNumber))
-	Expect(err).NotTo(HaveOccurred())
+	headerID := insertHeader(db, blockNumber)
 	ilkID, err := shared.GetOrCreateIlk(ilk, db)
 	Expect(err).NotTo(HaveOccurred())
 
@@ -493,9 +586,7 @@ func insertVatFlux(ilk, src, dst string, blockNumber int64, db *postgres.DB) {
 }
 
 func insertVatFork(ilk, src, dst string, blockNumber int64, db *postgres.DB) {
-	headerRepository := repositories.NewHeaderRepository(db)
-	headerID, err := headerRepository.CreateOrUpdateHeader(fakes.GetFakeHeader(blockNumber))
-	Expect(err).NotTo(HaveOccurred())
+	headerID := insertHeader(db, blockNumber)
 	ilkID, err := shared.GetOrCreateIlk(ilk, db)
 	Expect(err).NotTo(HaveOccurred())
 
@@ -508,9 +599,7 @@ func insertVatFork(ilk, src, dst string, blockNumber int64, db *postgres.DB) {
 }
 
 func insertVatFrob(ilk, urn, v, w string, blockNumber int64, db *postgres.DB) {
-	headerRepository := repositories.NewHeaderRepository(db)
-	headerID, err := headerRepository.CreateOrUpdateHeader(fakes.GetFakeHeader(blockNumber))
-	Expect(err).NotTo(HaveOccurred())
+	headerID := insertHeader(db, blockNumber)
 	urnID, err := shared.GetOrCreateUrn(urn, ilk, db)
 	Expect(err).NotTo(HaveOccurred())
 
@@ -523,9 +612,7 @@ func insertVatFrob(ilk, urn, v, w string, blockNumber int64, db *postgres.DB) {
 }
 
 func insertVatGrab(ilk, urn, v, w string, blockNumber int64, db *postgres.DB) {
-	headerRepository := repositories.NewHeaderRepository(db)
-	headerID, err := headerRepository.CreateOrUpdateHeader(fakes.GetFakeHeader(blockNumber))
-	Expect(err).NotTo(HaveOccurred())
+	headerID := insertHeader(db, blockNumber)
 	urnID, err := shared.GetOrCreateUrn(urn, ilk, db)
 	Expect(err).NotTo(HaveOccurred())
 
@@ -538,10 +625,7 @@ func insertVatGrab(ilk, urn, v, w string, blockNumber int64, db *postgres.DB) {
 }
 
 func insertVatSuck(u, v string, rad int, blockNumber int64, db *postgres.DB) {
-	headerRepository := repositories.NewHeaderRepository(db)
-	headerID, err := headerRepository.CreateOrUpdateHeader(fakes.GetFakeHeader(blockNumber))
-	Expect(err).NotTo(HaveOccurred())
-
+	headerID := insertHeader(db, blockNumber)
 	_, execErr := db.Exec(
 		`INSERT INTO maker.vat_suck (header_id, u, v, rad, log_idx, tx_idx)
 			VALUES($1, $2, $3, $4, $5, $6)`,
@@ -551,11 +635,8 @@ func insertVatSuck(u, v string, rad int, blockNumber int64, db *postgres.DB) {
 }
 
 func insertVatHeal(blockNumber int64, transaction core.TransactionModel, db *postgres.DB) {
-	headerRepository := repositories.NewHeaderRepository(db)
-	headerID, err := headerRepository.CreateOrUpdateHeader(fakes.GetFakeHeader(blockNumber))
-	Expect(err).NotTo(HaveOccurred())
-	err = headerRepository.CreateTransactions(headerID, []core.TransactionModel{transaction})
-	Expect(err).NotTo(HaveOccurred())
+	headerID := insertHeader(db, blockNumber)
+	insertTransaction(blockNumber, transaction, db)
 	_, execErr := db.Exec(
 		`INSERT INTO maker.vat_heal (header_id, log_idx, tx_idx)
 			VALUES($1, $2, $3)`,
@@ -565,9 +646,7 @@ func insertVatHeal(blockNumber int64, transaction core.TransactionModel, db *pos
 }
 
 func insertVatMove(src, dst string, blockNumber int64, db *postgres.DB) {
-	headerRepository := repositories.NewHeaderRepository(db)
-	headerID, err := headerRepository.CreateOrUpdateHeader(fakes.GetFakeHeader(blockNumber))
-	Expect(err).NotTo(HaveOccurred())
+	headerID := insertHeader(db, blockNumber)
 	_, execErr := db.Exec(
 		`INSERT INTO maker.vat_move (header_id, src, dst, rad, log_idx, tx_idx)
 			VALUES($1, $2, $3, $4, $5, $6)`,
@@ -577,15 +656,30 @@ func insertVatMove(src, dst string, blockNumber int64, db *postgres.DB) {
 }
 
 func insertVatSlip(ilk, usr string, blockNumber int64, db *postgres.DB) {
-	headerRepository := repositories.NewHeaderRepository(db)
-	headerID, err := headerRepository.CreateOrUpdateHeader(fakes.GetFakeHeader(blockNumber))
-	Expect(err).NotTo(HaveOccurred())
+	headerID := insertHeader(db, blockNumber)
 	ilkID, err := shared.GetOrCreateIlk(ilk, db)
 	Expect(err).NotTo(HaveOccurred())
 	_, execErr := db.Exec(
 		`INSERT INTO maker.vat_slip (header_id, ilk_id, usr, log_idx, tx_idx)
-			VALUES($1, $2, $3, $4, $5)`,
+				VALUES($1, $2, $3, $4, $5)`,
 		headerID, ilkID, usr, 0, 0,
 	)
 	Expect(execErr).NotTo(HaveOccurred())
+}
+
+func insertHeader(db *postgres.DB, blockNumber int64) int64 {
+	headerRepository := repositories.NewHeaderRepository(db)
+	headerID, err := headerRepository.CreateOrUpdateHeader(fakes.GetFakeHeader(blockNumber))
+	Expect(err).NotTo(HaveOccurred())
+	return headerID
+}
+
+func insertTransaction(blockNumber int64, transaction core.TransactionModel, db *postgres.DB) {
+	var headerID int64
+	err := db.Get(&headerID, `SELECT id FROM public.headers WHERE block_number = $1`, blockNumber)
+	Expect(err).NotTo(HaveOccurred())
+
+	headerRepository := repositories.NewHeaderRepository(db)
+	err = headerRepository.CreateTransactions(headerID, []core.TransactionModel{transaction})
+	Expect(err).NotTo(HaveOccurred())
 }

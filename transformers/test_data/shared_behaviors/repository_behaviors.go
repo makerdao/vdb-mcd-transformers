@@ -28,13 +28,6 @@ import (
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 )
 
-var (
-	db               *postgres.DB
-	headerRepository datastore.HeaderRepository
-	err              error
-	headerId         int64
-)
-
 type CreateBehaviorInputs struct {
 	CheckedHeaderColumnName  string
 	LogEventTableName        string
@@ -51,13 +44,19 @@ type MarkedHeaderCheckedBehaviorInputs struct {
 
 func SharedRepositoryCreateBehaviors(inputs *CreateBehaviorInputs) {
 	Describe("Create", func() {
-		var headerID int64
-		var repository = inputs.Repository
-		var checkedHeaderColumn = inputs.CheckedHeaderColumnName
-		var logEventModel = inputs.TestModel
+		var (
+			db                  *postgres.DB
+			headerRepository    datastore.HeaderRepository
+			err                 error
+			headerID            int64
+			repository          = inputs.Repository
+			checkedHeaderColumn = inputs.CheckedHeaderColumnName
+			logEventModel       = inputs.TestModel
+		)
 
 		BeforeEach(func() {
-			headerRepository = getHeaderRepository()
+			db = test_config.NewTestDB(test_config.NewTestNode())
+			headerRepository = getHeaderRepository(db)
 			headerID, err = headerRepository.CreateOrUpdateHeader(fakes.FakeHeader)
 			Expect(err).NotTo(HaveOccurred())
 		})
@@ -147,36 +146,43 @@ func SharedRepositoryCreateBehaviors(inputs *CreateBehaviorInputs) {
 }
 
 func SharedRepositoryMarkHeaderCheckedBehaviors(inputs *MarkedHeaderCheckedBehaviorInputs) {
-	var repository = inputs.Repository
-	var checkedHeaderColumn = inputs.CheckedHeaderColumnName
+	var (
+		db                  *postgres.DB
+		headerRepository    datastore.HeaderRepository
+		err                 error
+		headerID            int64
+		repository          = inputs.Repository
+		checkedHeaderColumn = inputs.CheckedHeaderColumnName
+	)
 
 	Describe("MarkHeaderChecked", func() {
 		BeforeEach(func() {
-			headerRepository = getHeaderRepository()
-			headerId, err = headerRepository.CreateOrUpdateHeader(fakes.FakeHeader)
+			db = test_config.NewTestDB(test_config.NewTestNode())
+			headerRepository = getHeaderRepository(db)
+			headerID, err = headerRepository.CreateOrUpdateHeader(fakes.FakeHeader)
 			Expect(err).NotTo(HaveOccurred())
 		})
 
 		It("creates a row for a new headerId", func() {
-			err = repository.MarkHeaderChecked(headerId)
+			err = repository.MarkHeaderChecked(headerID)
 
 			Expect(err).NotTo(HaveOccurred())
 			var headerChecked int
 			query := `SELECT ` + checkedHeaderColumn + ` FROM public.checked_headers WHERE header_id = $1`
-			err = db.Get(&headerChecked, query, headerId)
+			err = db.Get(&headerChecked, query, headerID)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(headerChecked).To(Equal(1))
 		})
 
 		It("updates row when headerID already exists", func() {
-			_, err = db.Exec(`INSERT INTO public.checked_headers (header_id) VALUES ($1)`, headerId)
+			_, err = db.Exec(`INSERT INTO public.checked_headers (header_id) VALUES ($1)`, headerID)
 
-			err = repository.MarkHeaderChecked(headerId)
+			err = repository.MarkHeaderChecked(headerID)
 
 			Expect(err).NotTo(HaveOccurred())
 			var headerChecked int
 			query := `SELECT ` + checkedHeaderColumn + ` FROM public.checked_headers WHERE header_id = $1`
-			err = db.Get(&headerChecked, query, headerId)
+			err = db.Get(&headerChecked, query, headerID)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(headerChecked).To(Equal(1))
 		})
@@ -189,20 +195,20 @@ func SharedRepositoryMarkHeaderCheckedBehaviors(inputs *MarkedHeaderCheckedBehav
 		})
 
 		It("increments header checked", func() {
-			err = repository.MarkHeaderChecked(headerId)
-			err = repository.MarkHeaderChecked(headerId)
+			err = repository.MarkHeaderChecked(headerID)
+			err = repository.MarkHeaderChecked(headerID)
 
 			Expect(err).NotTo(HaveOccurred())
 			var headerChecked int
 			query := `SELECT ` + checkedHeaderColumn + ` FROM public.checked_headers WHERE header_id = $1`
-			err = db.Get(&headerChecked, query, headerId)
+			err = db.Get(&headerChecked, query, headerID)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(headerChecked).To(Equal(2))
 		})
 	})
 }
 
-func getHeaderRepository() repositories.HeaderRepository {
+func getHeaderRepository(db *postgres.DB) repositories.HeaderRepository {
 	db = test_config.NewTestDB(test_config.NewTestNode())
 	test_config.CleanTestDB(db)
 
