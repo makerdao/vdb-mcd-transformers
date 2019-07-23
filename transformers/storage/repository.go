@@ -30,6 +30,7 @@ var ErrNoFlips = errors.New("no flips exist in db")
 
 type IMakerStorageRepository interface {
 	GetDaiKeys() ([]string, error)
+	GetFlapBidIds(string) ([]string, error)
 	GetGemKeys() ([]Urn, error)
 	GetIlks() ([]string, error)
 	GetVatSinKeys() ([]string, error)
@@ -40,6 +41,21 @@ type IMakerStorageRepository interface {
 
 type MakerStorageRepository struct {
 	db *postgres.DB
+}
+
+func (repository *MakerStorageRepository) GetFlapBidIds(contractAddress string) ([]string, error) {
+	var bidIds []string
+	err := repository.db.Select(&bidIds, `
+		SELECT bid_id FROM maker.flap_kick WHERE contract_address = $1
+		UNION
+		SELECT kicks FROM maker.flap_kicks WHERE contract_address = $1
+		UNION
+		SELECT bid_id from maker.tend WHERE contract_address = $1
+		UNION
+		SELECT bid_id from maker.deal WHERE contract_address = $1
+		UNION
+		SELECT bid_id from maker.yank WHERE contract_address = $1`, contractAddress)
+	return bidIds, err
 }
 
 func (repository *MakerStorageRepository) GetDaiKeys() ([]string, error) {

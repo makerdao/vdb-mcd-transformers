@@ -243,6 +243,18 @@
   version = "v1.2.0"
 
 [[projects]]
+  name = "github.com/pkg/errors"
+  packages = ["."]
+  revision = "ba968bfe8b2f7e042a574c888954fccecfa385b4"
+  version = "v0.8.1"
+
+[[projects]]
+  name = "github.com/pressly/goose"
+  packages = ["."]
+  revision = "e4b98955473e91a12fc7d8816c28d06376d1d92c"
+  version = "v2.6.0"
+
+[[projects]]
   name = "github.com/rjeczalik/notify"
   packages = ["."]
   revision = "69d839f37b13a8cb7a78366f7633a4071cb43be7"
@@ -320,11 +332,9 @@
     "libraries/shared/factories/event",
     "libraries/shared/factories/storage",
     "libraries/shared/fetcher",
-    "libraries/shared/mocks",
     "libraries/shared/repository",
     "libraries/shared/storage",
     "libraries/shared/storage/utils",
-    "libraries/shared/test_data",
     "libraries/shared/transactions",
     "libraries/shared/transformer",
     "libraries/shared/watcher",
@@ -349,8 +359,8 @@
     "pkg/plugin/manager",
     "pkg/plugin/writer"
   ]
-  revision = "f0a7a7d999c3b1633aa2ef628ef9aaf93559b966"
-  version = "v0.0.3"
+  revision = "85aba29cf212ca806473949967312c1b70488b21"
+  version = "v0.0.4"
 
 [[projects]]
   branch = "master"
@@ -445,6 +455,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "a655f6271760459f4568169e853f55477edb4812b31843adb7f870f0687bcf34"
+  inputs-digest = "8e1024fbb11d45e3b28c41d8d61d91d299377b4e0f38a02845b4d863cd81c046"
   solver-name = "gps-cdcl"
   solver-version = 1
