@@ -2265,6 +2265,344 @@ ALTER SEQUENCE maker.flap_vat_id_seq OWNED BY maker.flap_vat.id;
 
 
 --
+-- Name: flip_beg; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.flip_beg (
+    id integer NOT NULL,
+    block_number bigint,
+    block_hash text,
+    contract_address text,
+    beg numeric NOT NULL
+);
+
+
+--
+-- Name: flip_beg_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.flip_beg_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: flip_beg_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.flip_beg_id_seq OWNED BY maker.flip_beg.id;
+
+
+--
+-- Name: flip_bid_bid; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.flip_bid_bid (
+    id integer NOT NULL,
+    block_number bigint,
+    block_hash text,
+    contract_address text,
+    bid_id numeric NOT NULL,
+    bid numeric NOT NULL
+);
+
+
+--
+-- Name: flip_bid_bid_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.flip_bid_bid_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: flip_bid_bid_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.flip_bid_bid_id_seq OWNED BY maker.flip_bid_bid.id;
+
+
+--
+-- Name: flip_bid_end; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.flip_bid_end (
+    id integer NOT NULL,
+    block_number bigint,
+    block_hash text,
+    contract_address text,
+    bid_id numeric NOT NULL,
+    "end" numeric NOT NULL
+);
+
+
+--
+-- Name: flip_bid_end_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.flip_bid_end_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: flip_bid_end_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.flip_bid_end_id_seq OWNED BY maker.flip_bid_end.id;
+
+
+--
+-- Name: flip_bid_gal; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.flip_bid_gal (
+    id integer NOT NULL,
+    block_number bigint,
+    block_hash text,
+    contract_address text,
+    bid_id numeric NOT NULL,
+    gal text
+);
+
+
+--
+-- Name: flip_bid_gal_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.flip_bid_gal_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: flip_bid_gal_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.flip_bid_gal_id_seq OWNED BY maker.flip_bid_gal.id;
+
+
+--
+-- Name: flip_bid_guy; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.flip_bid_guy (
+    id integer NOT NULL,
+    block_number bigint,
+    block_hash text,
+    contract_address text,
+    bid_id numeric NOT NULL,
+    guy text
+);
+
+
+--
+-- Name: flip_bid_guy_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.flip_bid_guy_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: flip_bid_guy_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.flip_bid_guy_id_seq OWNED BY maker.flip_bid_guy.id;
+
+
+--
+-- Name: flip_bid_lot; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.flip_bid_lot (
+    id integer NOT NULL,
+    block_number bigint,
+    block_hash text,
+    contract_address text,
+    bid_id numeric NOT NULL,
+    lot numeric NOT NULL
+);
+
+
+--
+-- Name: flip_bid_lot_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.flip_bid_lot_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: flip_bid_lot_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.flip_bid_lot_id_seq OWNED BY maker.flip_bid_lot.id;
+
+
+--
+-- Name: flip_bid_tab; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.flip_bid_tab (
+    id integer NOT NULL,
+    block_number bigint,
+    block_hash text,
+    contract_address text,
+    bid_id numeric NOT NULL,
+    tab numeric NOT NULL
+);
+
+
+--
+-- Name: flip_bid_tab_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.flip_bid_tab_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: flip_bid_tab_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.flip_bid_tab_id_seq OWNED BY maker.flip_bid_tab.id;
+
+
+--
+-- Name: flip_bid_tic; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.flip_bid_tic (
+    id integer NOT NULL,
+    block_number bigint,
+    block_hash text,
+    contract_address text,
+    bid_id numeric NOT NULL,
+    tic numeric NOT NULL
+);
+
+
+--
+-- Name: flip_bid_tic_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.flip_bid_tic_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: flip_bid_tic_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.flip_bid_tic_id_seq OWNED BY maker.flip_bid_tic.id;
+
+
+--
+-- Name: flip_bid_usr; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.flip_bid_usr (
+    id integer NOT NULL,
+    block_number bigint,
+    block_hash text,
+    contract_address text,
+    bid_id numeric NOT NULL,
+    usr text
+);
+
+
+--
+-- Name: flip_bid_usr_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.flip_bid_usr_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: flip_bid_usr_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.flip_bid_usr_id_seq OWNED BY maker.flip_bid_usr.id;
+
+
+--
+-- Name: flip_ilk; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.flip_ilk (
+    id integer NOT NULL,
+    block_number bigint,
+    block_hash text,
+    contract_address text,
+    ilk text
+);
+
+
+--
+-- Name: flip_ilk_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.flip_ilk_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: flip_ilk_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.flip_ilk_id_seq OWNED BY maker.flip_ilk.id;
+
+
+--
 -- Name: flip_kick; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -2305,6 +2643,72 @@ ALTER SEQUENCE maker.flip_kick_id_seq OWNED BY maker.flip_kick.id;
 
 
 --
+-- Name: flip_kicks; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.flip_kicks (
+    id integer NOT NULL,
+    block_number bigint,
+    block_hash text,
+    contract_address text,
+    kicks numeric NOT NULL
+);
+
+
+--
+-- Name: flip_kicks_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.flip_kicks_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: flip_kicks_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.flip_kicks_id_seq OWNED BY maker.flip_kicks.id;
+
+
+--
+-- Name: flip_tau; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.flip_tau (
+    id integer NOT NULL,
+    block_number bigint,
+    block_hash text,
+    contract_address text,
+    tau numeric NOT NULL
+);
+
+
+--
+-- Name: flip_tau_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.flip_tau_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: flip_tau_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.flip_tau_id_seq OWNED BY maker.flip_tau.id;
+
+
+--
 -- Name: flip_tick; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -2337,6 +2741,72 @@ CREATE SEQUENCE maker.flip_tick_id_seq
 --
 
 ALTER SEQUENCE maker.flip_tick_id_seq OWNED BY maker.flip_tick.id;
+
+
+--
+-- Name: flip_ttl; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.flip_ttl (
+    id integer NOT NULL,
+    block_number bigint,
+    block_hash text,
+    contract_address text,
+    ttl numeric NOT NULL
+);
+
+
+--
+-- Name: flip_ttl_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.flip_ttl_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: flip_ttl_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.flip_ttl_id_seq OWNED BY maker.flip_ttl.id;
+
+
+--
+-- Name: flip_vat; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.flip_vat (
+    id integer NOT NULL,
+    block_number bigint,
+    block_hash text,
+    contract_address text,
+    vat text
+);
+
+
+--
+-- Name: flip_vat_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.flip_vat_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: flip_vat_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.flip_vat_id_seq OWNED BY maker.flip_vat.id;
 
 
 --
@@ -5176,6 +5646,76 @@ ALTER TABLE ONLY maker.flap_vat ALTER COLUMN id SET DEFAULT nextval('maker.flap_
 
 
 --
+-- Name: flip_beg id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_beg ALTER COLUMN id SET DEFAULT nextval('maker.flip_beg_id_seq'::regclass);
+
+
+--
+-- Name: flip_bid_bid id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_bid_bid ALTER COLUMN id SET DEFAULT nextval('maker.flip_bid_bid_id_seq'::regclass);
+
+
+--
+-- Name: flip_bid_end id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_bid_end ALTER COLUMN id SET DEFAULT nextval('maker.flip_bid_end_id_seq'::regclass);
+
+
+--
+-- Name: flip_bid_gal id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_bid_gal ALTER COLUMN id SET DEFAULT nextval('maker.flip_bid_gal_id_seq'::regclass);
+
+
+--
+-- Name: flip_bid_guy id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_bid_guy ALTER COLUMN id SET DEFAULT nextval('maker.flip_bid_guy_id_seq'::regclass);
+
+
+--
+-- Name: flip_bid_lot id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_bid_lot ALTER COLUMN id SET DEFAULT nextval('maker.flip_bid_lot_id_seq'::regclass);
+
+
+--
+-- Name: flip_bid_tab id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_bid_tab ALTER COLUMN id SET DEFAULT nextval('maker.flip_bid_tab_id_seq'::regclass);
+
+
+--
+-- Name: flip_bid_tic id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_bid_tic ALTER COLUMN id SET DEFAULT nextval('maker.flip_bid_tic_id_seq'::regclass);
+
+
+--
+-- Name: flip_bid_usr id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_bid_usr ALTER COLUMN id SET DEFAULT nextval('maker.flip_bid_usr_id_seq'::regclass);
+
+
+--
+-- Name: flip_ilk id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_ilk ALTER COLUMN id SET DEFAULT nextval('maker.flip_ilk_id_seq'::regclass);
+
+
+--
 -- Name: flip_kick id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
@@ -5183,10 +5723,38 @@ ALTER TABLE ONLY maker.flip_kick ALTER COLUMN id SET DEFAULT nextval('maker.flip
 
 
 --
+-- Name: flip_kicks id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_kicks ALTER COLUMN id SET DEFAULT nextval('maker.flip_kicks_id_seq'::regclass);
+
+
+--
+-- Name: flip_tau id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_tau ALTER COLUMN id SET DEFAULT nextval('maker.flip_tau_id_seq'::regclass);
+
+
+--
 -- Name: flip_tick id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.flip_tick ALTER COLUMN id SET DEFAULT nextval('maker.flip_tick_id_seq'::regclass);
+
+
+--
+-- Name: flip_ttl id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_ttl ALTER COLUMN id SET DEFAULT nextval('maker.flip_ttl_id_seq'::regclass);
+
+
+--
+-- Name: flip_vat id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_vat ALTER COLUMN id SET DEFAULT nextval('maker.flip_vat_id_seq'::regclass);
 
 
 --
@@ -6131,6 +6699,166 @@ ALTER TABLE ONLY maker.flap_vat
 
 
 --
+-- Name: flip_beg flip_beg_block_number_block_hash_contract_address_beg_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_beg
+    ADD CONSTRAINT flip_beg_block_number_block_hash_contract_address_beg_key UNIQUE (block_number, block_hash, contract_address, beg);
+
+
+--
+-- Name: flip_beg flip_beg_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_beg
+    ADD CONSTRAINT flip_beg_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: flip_bid_bid flip_bid_bid_block_number_block_hash_bid_id_contract_addres_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_bid_bid
+    ADD CONSTRAINT flip_bid_bid_block_number_block_hash_bid_id_contract_addres_key UNIQUE (block_number, block_hash, bid_id, contract_address, bid);
+
+
+--
+-- Name: flip_bid_bid flip_bid_bid_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_bid_bid
+    ADD CONSTRAINT flip_bid_bid_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: flip_bid_end flip_bid_end_block_number_block_hash_bid_id_contract_addres_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_bid_end
+    ADD CONSTRAINT flip_bid_end_block_number_block_hash_bid_id_contract_addres_key UNIQUE (block_number, block_hash, bid_id, contract_address, "end");
+
+
+--
+-- Name: flip_bid_end flip_bid_end_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_bid_end
+    ADD CONSTRAINT flip_bid_end_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: flip_bid_gal flip_bid_gal_block_number_block_hash_bid_id_contract_addres_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_bid_gal
+    ADD CONSTRAINT flip_bid_gal_block_number_block_hash_bid_id_contract_addres_key UNIQUE (block_number, block_hash, bid_id, contract_address, gal);
+
+
+--
+-- Name: flip_bid_gal flip_bid_gal_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_bid_gal
+    ADD CONSTRAINT flip_bid_gal_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: flip_bid_guy flip_bid_guy_block_number_block_hash_bid_id_contract_addres_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_bid_guy
+    ADD CONSTRAINT flip_bid_guy_block_number_block_hash_bid_id_contract_addres_key UNIQUE (block_number, block_hash, bid_id, contract_address, guy);
+
+
+--
+-- Name: flip_bid_guy flip_bid_guy_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_bid_guy
+    ADD CONSTRAINT flip_bid_guy_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: flip_bid_lot flip_bid_lot_block_number_block_hash_bid_id_contract_addres_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_bid_lot
+    ADD CONSTRAINT flip_bid_lot_block_number_block_hash_bid_id_contract_addres_key UNIQUE (block_number, block_hash, bid_id, contract_address, lot);
+
+
+--
+-- Name: flip_bid_lot flip_bid_lot_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_bid_lot
+    ADD CONSTRAINT flip_bid_lot_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: flip_bid_tab flip_bid_tab_block_number_block_hash_bid_id_contract_addres_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_bid_tab
+    ADD CONSTRAINT flip_bid_tab_block_number_block_hash_bid_id_contract_addres_key UNIQUE (block_number, block_hash, bid_id, contract_address, tab);
+
+
+--
+-- Name: flip_bid_tab flip_bid_tab_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_bid_tab
+    ADD CONSTRAINT flip_bid_tab_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: flip_bid_tic flip_bid_tic_block_number_block_hash_bid_id_contract_addres_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_bid_tic
+    ADD CONSTRAINT flip_bid_tic_block_number_block_hash_bid_id_contract_addres_key UNIQUE (block_number, block_hash, bid_id, contract_address, tic);
+
+
+--
+-- Name: flip_bid_tic flip_bid_tic_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_bid_tic
+    ADD CONSTRAINT flip_bid_tic_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: flip_bid_usr flip_bid_usr_block_number_block_hash_bid_id_contract_addres_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_bid_usr
+    ADD CONSTRAINT flip_bid_usr_block_number_block_hash_bid_id_contract_addres_key UNIQUE (block_number, block_hash, bid_id, contract_address, usr);
+
+
+--
+-- Name: flip_bid_usr flip_bid_usr_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_bid_usr
+    ADD CONSTRAINT flip_bid_usr_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: flip_ilk flip_ilk_block_number_block_hash_contract_address_ilk_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_ilk
+    ADD CONSTRAINT flip_ilk_block_number_block_hash_contract_address_ilk_key UNIQUE (block_number, block_hash, contract_address, ilk);
+
+
+--
+-- Name: flip_ilk flip_ilk_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_ilk
+    ADD CONSTRAINT flip_ilk_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: flip_kick flip_kick_header_id_tx_idx_log_idx_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -6147,6 +6875,38 @@ ALTER TABLE ONLY maker.flip_kick
 
 
 --
+-- Name: flip_kicks flip_kicks_block_number_block_hash_contract_address_kicks_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_kicks
+    ADD CONSTRAINT flip_kicks_block_number_block_hash_contract_address_kicks_key UNIQUE (block_number, block_hash, contract_address, kicks);
+
+
+--
+-- Name: flip_kicks flip_kicks_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_kicks
+    ADD CONSTRAINT flip_kicks_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: flip_tau flip_tau_block_number_block_hash_contract_address_tau_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_tau
+    ADD CONSTRAINT flip_tau_block_number_block_hash_contract_address_tau_key UNIQUE (block_number, block_hash, contract_address, tau);
+
+
+--
+-- Name: flip_tau flip_tau_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_tau
+    ADD CONSTRAINT flip_tau_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: flip_tick flip_tick_header_id_tx_idx_log_idx_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -6160,6 +6920,38 @@ ALTER TABLE ONLY maker.flip_tick
 
 ALTER TABLE ONLY maker.flip_tick
     ADD CONSTRAINT flip_tick_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: flip_ttl flip_ttl_block_number_block_hash_contract_address_ttl_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_ttl
+    ADD CONSTRAINT flip_ttl_block_number_block_hash_contract_address_ttl_key UNIQUE (block_number, block_hash, contract_address, ttl);
+
+
+--
+-- Name: flip_ttl flip_ttl_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_ttl
+    ADD CONSTRAINT flip_ttl_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: flip_vat flip_vat_block_number_block_hash_contract_address_vat_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_vat
+    ADD CONSTRAINT flip_vat_block_number_block_hash_contract_address_vat_key UNIQUE (block_number, block_hash, contract_address, vat);
+
+
+--
+-- Name: flip_vat flip_vat_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_vat
+    ADD CONSTRAINT flip_vat_pkey PRIMARY KEY (id);
 
 
 --
@@ -7466,6 +8258,62 @@ CREATE INDEX flap_bid_tic_block_number_index ON maker.flap_bid_tic USING btree (
 --
 
 CREATE INDEX flap_kick_header_index ON maker.flap_kick USING btree (header_id);
+
+
+--
+-- Name: flip_bid_bid_block_number_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flip_bid_bid_block_number_index ON maker.flip_bid_bid USING btree (block_number);
+
+
+--
+-- Name: flip_bid_end_block_number_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flip_bid_end_block_number_index ON maker.flip_bid_end USING btree (block_number);
+
+
+--
+-- Name: flip_bid_gal_block_number_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flip_bid_gal_block_number_index ON maker.flip_bid_gal USING btree (block_number);
+
+
+--
+-- Name: flip_bid_guy_block_number_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flip_bid_guy_block_number_index ON maker.flip_bid_guy USING btree (block_number);
+
+
+--
+-- Name: flip_bid_lot_block_number_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flip_bid_lot_block_number_index ON maker.flip_bid_lot USING btree (block_number);
+
+
+--
+-- Name: flip_bid_tab_block_number_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flip_bid_tab_block_number_index ON maker.flip_bid_tab USING btree (block_number);
+
+
+--
+-- Name: flip_bid_tic_block_number_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flip_bid_tic_block_number_index ON maker.flip_bid_tic USING btree (block_number);
+
+
+--
+-- Name: flip_bid_usr_block_number_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flip_bid_usr_block_number_index ON maker.flip_bid_usr USING btree (block_number);
 
 
 --

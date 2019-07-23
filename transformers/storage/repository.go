@@ -36,6 +36,7 @@ type IMakerStorageRepository interface {
 	GetVatSinKeys() ([]string, error)
 	GetVowSinKeys() ([]string, error)
 	GetUrns() ([]Urn, error)
+	GetFlipBidIds(contractAddress string) ([]string, error)
 	SetDB(db *postgres.DB)
 }
 
@@ -152,6 +153,32 @@ func (repository *MakerStorageRepository) GetUrns() ([]Urn, error) {
 		FROM maker.vat_fork fork
 		INNER JOIN maker.ilks ilks ON ilks.id = fork.ilk_id`)
 	return urns, err
+}
+
+func (repository *MakerStorageRepository) GetFlipBidIds(contractAddress string) ([]string, error) {
+	var bidIds []string
+	err := repository.db.Select(&bidIds, `
+   		SELECT DISTINCT bid_id FROM maker.flip_tick
+		WHERE contract_address = $1
+		UNION
+   		SELECT DISTINCT bid_id FROM maker.flip_kick
+		WHERE contract_address = $1
+		UNION
+		SELECT DISTINCT bid_id FROM maker.tend
+		WHERE contract_address = $1
+		UNION
+		SELECT DISTINCT bid_id FROM maker.dent
+		WHERE contract_address = $1
+		UNION
+		SELECT DISTINCT bid_id FROM maker.deal
+		WHERE contract_address = $1
+		UNION
+		SELECT DISTINCT bid_id FROM maker.yank
+		WHERE contract_address = $1
+		UNION
+		SELECT DISTINCT kicks FROM maker.flip_kicks
+		WHERE contract_address = $1`, contractAddress)
+	return bidIds, err
 }
 
 func (repository *MakerStorageRepository) SetDB(db *postgres.DB) {

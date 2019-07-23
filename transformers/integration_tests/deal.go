@@ -54,7 +54,7 @@ var _ = XDescribe("Deal transformer", func() {
 			TransformerName: mcdConstants.DealLabel,
 			ContractAddresses: []string{
 				mcdConstants.FlapperContractAddress(),
-				mcdConstants.OldFlipperContractAddress(),
+				mcdConstants.EthFlipContractAddressA(),
 				mcdConstants.FlopperContractAddress(),
 			},
 			Topic: mcdConstants.DealSignature(),
@@ -94,7 +94,7 @@ var _ = XDescribe("Deal transformer", func() {
 
 		Expect(len(dbResult)).To(Equal(1))
 		Expect(dbResult[0].BidId).To(Equal("6"))
-		Expect(dbResult[0].ContractAddress).To(Equal(mcdConstants.OldFlipperContractAddress()))
+		Expect(dbResult[0].ContractAddress).To(Equal(mcdConstants.EthFlipContractAddressA()))
 	})
 
 	It("persists a flop deal log event", func() {

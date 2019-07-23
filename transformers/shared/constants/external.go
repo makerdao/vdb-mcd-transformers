@@ -59,23 +59,22 @@ func getEnvironmentInt64(key string) int64 {
 }
 
 // Getters for contract addresses from environment files
-func CatContractAddress() string        { return getEnvironmentString("contract.address.MCD_CAT") }
-func FlapperContractAddress() string    { return getEnvironmentString("contract.address.MCD_FLAP") }
-func OldFlipperContractAddress() string { return getEnvironmentString("contract.address.ETH_FLIP_OLD") }
-func FlopperContractAddress() string    { return getEnvironmentString("contract.address.MCD_FLOP") }
-func JugContractAddress() string        { return getEnvironmentString("contract.address.MCD_JUG") }
-func SpotContractAddress() string       { return getEnvironmentString("contract.address.MCD_SPOT") }
-func VatContractAddress() string        { return getEnvironmentString("contract.address.MCD_VAT") }
-func VowContractAddress() string        { return getEnvironmentString("contract.address.MCD_VOW") }
-func EthFlipContractAddressA() string   { return getEnvironmentString("contract.address.ETH_FLIP_A") }
-func EthFlipContractAddressB() string   { return getEnvironmentString("contract.address.ETH_FLIP_B") }
-func EthFlipContractAddressC() string   { return getEnvironmentString("contract.address.ETH_FLIP_C") }
-func RepFlipContractAddress() string    { return getEnvironmentString("contract.address.MCD_FLIP_REP_A") }
-func ZrxFlipContractAddress() string    { return getEnvironmentString("contract.address.MCD_FLIP_ZRX_A") }
-func OmgFlipContractAddress() string    { return getEnvironmentString("contract.address.MCD_FLIP_OMG_A") }
-func BatFlipContractAddress() string    { return getEnvironmentString("contract.address.MCD_FLIP_BAT_A") }
-func DgdFlipContractAddress() string    { return getEnvironmentString("contract.address.MCD_FLIP_DGD_A") }
-func GntFlipContractAddress() string    { return getEnvironmentString("contract.address.MCD_FLIP_GNT_A") }
+func CatContractAddress() string      { return getEnvironmentString("contract.address.MCD_CAT") }
+func FlapperContractAddress() string  { return getEnvironmentString("contract.address.MCD_FLAP") }
+func FlopperContractAddress() string  { return getEnvironmentString("contract.address.MCD_FLOP") }
+func JugContractAddress() string      { return getEnvironmentString("contract.address.MCD_JUG") }
+func SpotContractAddress() string     { return getEnvironmentString("contract.address.MCD_SPOT") }
+func VatContractAddress() string      { return getEnvironmentString("contract.address.MCD_VAT") }
+func VowContractAddress() string      { return getEnvironmentString("contract.address.MCD_VOW") }
+func EthFlipContractAddressA() string { return getEnvironmentString("contract.address.ETH_FLIP_A") }
+func EthFlipContractAddressB() string { return getEnvironmentString("contract.address.ETH_FLIP_B") }
+func EthFlipContractAddressC() string { return getEnvironmentString("contract.address.ETH_FLIP_C") }
+func RepFlipContractAddress() string  { return getEnvironmentString("contract.address.MCD_FLIP_REP_A") }
+func ZrxFlipContractAddress() string  { return getEnvironmentString("contract.address.MCD_FLIP_ZRX_A") }
+func OmgFlipContractAddress() string  { return getEnvironmentString("contract.address.MCD_FLIP_OMG_A") }
+func BatFlipContractAddress() string  { return getEnvironmentString("contract.address.MCD_FLIP_BAT_A") }
+func DgdFlipContractAddress() string  { return getEnvironmentString("contract.address.MCD_FLIP_DGD_A") }
+func GntFlipContractAddress() string  { return getEnvironmentString("contract.address.MCD_FLIP_GNT_A") }
 func FlipperContractAddresses() []string {
 	return []string{
 		EthFlipContractAddressA(),
@@ -90,24 +89,17 @@ func FlipperContractAddresses() []string {
 	}
 }
 
-func CatABI() string        { return getEnvironmentString("contract.abi.MCD_CAT") }
-func FlapperABI() string    { return getEnvironmentString("contract.abi.MCD_FLAP") }
-func OldFlipperABI() string { return getEnvironmentString("contract.abi.ETH_FLIP_OLD") }
-func FlipperABI() string    { return getEnvironmentString("contract.abi.MCD_FLIP") }
-func FlopperABI() string    { return getEnvironmentString("contract.abi.MCD_FLOP") }
-func JugABI() string        { return getEnvironmentString("contract.abi.MCD_JUG") }
-func SpotABI() string       { return getEnvironmentString("contract.abi.MCD_SPOT") }
-func VatABI() string        { return getEnvironmentString("contract.abi.MCD_VAT") }
-func VowABI() string        { return getEnvironmentString("contract.abi.MCD_VOW") }
+func CatABI() string     { return getEnvironmentString("contract.abi.MCD_CAT") }
+func FlapperABI() string { return getEnvironmentString("contract.abi.MCD_FLAP") }
+func FlipperABI() string { return getEnvironmentString("contract.abi.MCD_FLIP") }
+func FlopperABI() string { return getEnvironmentString("contract.abi.MCD_FLOP") }
+func JugABI() string     { return getEnvironmentString("contract.abi.MCD_JUG") }
+func SpotABI() string    { return getEnvironmentString("contract.abi.MCD_SPOT") }
+func VatABI() string     { return getEnvironmentString("contract.abi.MCD_VAT") }
+func VowABI() string     { return getEnvironmentString("contract.abi.MCD_VOW") }
 
-func CatDeploymentBlock() int64 { return getEnvironmentInt64("contract.deployment-block.MCD_CAT") }
-func OldFlapperDeploymentBlock() int64 {
-	return getEnvironmentInt64("contract.deployment-block.MCD_FLAP_OLD")
-}
+func CatDeploymentBlock() int64     { return getEnvironmentInt64("contract.deployment-block.MCD_CAT") }
 func FlapperDeploymentBlock() int64 { return getEnvironmentInt64("contract.deployment-block.MCD_FLAP") }
-func OldFlipperDeploymentBlock() int64 {
-	return getEnvironmentInt64("contract.deployment-block.ETH_FLIP_OLD")
-}
 func EthFlipADeploymentBlock() int64 {
 	return getEnvironmentInt64("contract.deployment-block.ETH_FLIP_A")
 }
@@ -148,10 +140,8 @@ func FlipperDeploymentBlocks() []int64 {
 		FlipGntDeploymentBlock(),
 	}
 }
-func FlopperDeploymentBlock() int64 {
-	return getEnvironmentInt64("contract.deployment-block.MCD_FLOP_OLD")
-}
-func JugDeploymentBlock() int64  { return getEnvironmentInt64("contract.deployment-block.MCD_JUG") }
-func SpotDeploymentBlock() int64 { return getEnvironmentInt64("contract.deployment-block.MCD_SPOT") }
-func VatDeploymentBlock() int64  { return getEnvironmentInt64("contract.deployment-block.MCD_VAT") }
-func VowDeploymentBlock() int64  { return getEnvironmentInt64("contract.deployment-block.MCD_VOW") }
+func FlopperDeploymentBlock() int64 { return getEnvironmentInt64("contract.deployment-block.MCD_FLOP") }
+func JugDeploymentBlock() int64     { return getEnvironmentInt64("contract.deployment-block.MCD_JUG") }
+func SpotDeploymentBlock() int64    { return getEnvironmentInt64("contract.deployment-block.MCD_SPOT") }
+func VatDeploymentBlock() int64     { return getEnvironmentInt64("contract.deployment-block.MCD_VAT") }
+func VowDeploymentBlock() int64     { return getEnvironmentInt64("contract.deployment-block.MCD_VOW") }
