@@ -83,7 +83,7 @@ var _ = Describe("Flip storage repository", func() {
 			shared_behaviors.SharedStorageRepositoryVariableBehaviors(&inputs)
 		})
 
-		Describe ("Ttl and Tau", func() {
+		Describe("Ttl and Tau", func() {
 			packedNames := make(map[int]string)
 			packedNames[0] = flip.Ttl
 			packedNames[1] = flip.Tau
@@ -253,7 +253,7 @@ var _ = Describe("Flip storage repository", func() {
 				Type: utils.Uint48,
 			}
 			inputs := shared_behaviors.StorageVariableBehaviorInputs{
-				FieldName:    	  "\"end\"",
+				FieldName:        "\"end\"",
 				Value:            fakeEndValue,
 				BidId:            fakeBidId,
 				IsAMapping:       true,

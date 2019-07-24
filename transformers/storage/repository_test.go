@@ -34,10 +34,12 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/component_tests/queries/test_helpers"
 	"github.com/vulcanize/mcd_transformers/transformers/events/flap_kick"
 	"github.com/vulcanize/mcd_transformers/transformers/events/flip_kick"
+	"github.com/vulcanize/mcd_transformers/transformers/events/flop_kick"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/storage"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/flap"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/flip"
+	"github.com/vulcanize/mcd_transformers/transformers/storage/flop"
 )
 
 var _ = Describe("Maker storage repository", func() {
@@ -525,6 +527,75 @@ var _ = Describe("Maker storage repository", func() {
 			Expect(bidIds).To(ConsistOf(bidId1, bidId2, bidId3, bidId4, bidId5, bidId6, bidId7))
 		})
 	})
+
+	Describe("getting flop bid ids", func() {
+		var (
+			bidId1  string
+			bidId2  string
+			bidId3  string
+			bidId4  string
+			bidId5  string
+			bidId6  string
+			address = fakes.FakeAddress.Hex()
+		)
+
+		BeforeEach(func() {
+			bidId1 = strconv.FormatInt(rand.Int63(), 10)
+			bidId2 = strconv.FormatInt(rand.Int63(), 10)
+			bidId3 = strconv.FormatInt(rand.Int63(), 10)
+			bidId4 = strconv.FormatInt(rand.Int63(), 10)
+			bidId5 = strconv.FormatInt(rand.Int63(), 10)
+			bidId6 = strconv.FormatInt(rand.Int63(), 10)
+		})
+
+		It("fetches unique flop bid ids from flop methods", func() {
+			insertFlopKick(1, bidId1, address, db)
+			insertFlopKick(2, bidId1, address, db)
+
+			bidIds, err := repository.GetFlopBidIds(address)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(len(bidIds)).To(Equal(1))
+			Expect(bidIds[0]).To(Equal(bidId1))
+		})
+
+		It("fetches unique bid ids from flop_kick, dent, deal, and yank", func() {
+			duplicateBidId := bidId1
+			insertFlopKick(1, bidId1, address, db)
+			insertFlopKicks(2, bidId2, address, db)
+			insertDent(3, bidId3, address, db)
+			insertDeal(4, bidId4, address, db)
+			insertYank(5, bidId5, address, db)
+			insertYank(6, duplicateBidId, address, db)
+
+			bidIds, err := repository.GetFlopBidIds(address)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(len(bidIds)).To(Equal(5))
+			Expect(bidIds).To(ConsistOf(bidId1, bidId2, bidId3, bidId4, bidId5))
+		})
+
+		It("fetches bid ids only for the given contract address", func() {
+			anotherAddress := address + "1"
+			insertFlopKick(1, bidId1, address, db)
+			insertFlopKick(2, bidId2, address, db)
+			insertDent(3, bidId3, address, db)
+			insertDeal(4, bidId4, address, db)
+			insertYank(5, bidId5, address, db)
+			insertYank(6, bidId6, anotherAddress, db)
+
+			bidIds, err := repository.GetFlopBidIds(address)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(len(bidIds)).To(Equal(5))
+			Expect(bidIds).To(ConsistOf(bidId1, bidId2, bidId3, bidId4, bidId5))
+		})
+
+		It("does not return error if no matching rows", func() {
+			bidIds, err := repository.GetFlopBidIds(fakes.FakeAddress.Hex())
+
+			Expect(err).NotTo(HaveOccurred())
+			Expect(len(bidIds)).To(BeZero())
+		})
+
+	})
 })
 
 func insertFlapKick(blockNumber int64, bidId, contractAddress string, db *postgres.DB) {
@@ -574,6 +645,21 @@ func insertFlipKicks(blockNumber int64, kicks, contractAddress string, db *postg
 	_, insertErr := db.Exec(flip.InsertFlipKicksQuery,
 		blockNumber, fakes.FakeHash.Hex(), contractAddress, kicks,
 	)
+	Expect(insertErr).NotTo(HaveOccurred())
+}
+
+func insertFlopKick(blockNumber int64, bidId, contractAddress string, db *postgres.DB) {
+	// inserting a flop kick log event record
+	emptyRawJson, jsonErr := json.Marshal("")
+	Expect(jsonErr).NotTo(HaveOccurred())
+	headerId := insertHeader(db, blockNumber)
+	_, insertErr := db.Exec(flop_kick.InsertFlopKickQuery, headerId, bidId, 0, 0, "", contractAddress, 0, 0, emptyRawJson)
+	Expect(insertErr).NotTo(HaveOccurred())
+}
+
+func insertFlopKicks(blockNumber int64, kicks, contractAddress string, db *postgres.DB) {
+	// inserting a flop kicks storage record
+	_, insertErr := db.Exec(flop.InsertFlopKicksQuery, blockNumber, fakes.FakeHash.Hex(), contractAddress, kicks)
 	Expect(insertErr).NotTo(HaveOccurred())
 }
 
