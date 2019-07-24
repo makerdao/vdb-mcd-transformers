@@ -10,6 +10,7 @@ type MockMakerStorageRepository struct {
 	DaiKeys                 []string
 	FlapBidIds              []string
 	FlipBidIds              []string
+	FlopBidIds              []string
 	GemKeys                 []storage.Urn
 	GetDaiKeysCalled        bool
 	GetDaiKeysError         error
@@ -17,8 +18,10 @@ type MockMakerStorageRepository struct {
 	GetGemKeysError         error
 	GetFlapBidIdsCalled     bool
 	GetFlipBidIdsCalledWith string
+	GetFlopBidIdsCalledWith string
 	GetFlapBidIdsError      error
 	GetFlipBidIdsError      error
+	GetFlopBidIdsError      error
 	GetIlksCalled           bool
 	GetIlksError            error
 	GetVatSinKeysCalled     bool
@@ -70,6 +73,11 @@ func (repository *MockMakerStorageRepository) GetUrns() ([]storage.Urn, error) {
 func (repository *MockMakerStorageRepository) GetFlipBidIds(contractAddress string) ([]string, error) {
 	repository.GetFlipBidIdsCalledWith = contractAddress
 	return repository.FlipBidIds, repository.GetFlipBidIdsError
+}
+
+func (repository *MockMakerStorageRepository) GetFlopBidIds(contractAddress string) ([]string, error) {
+	repository.GetFlopBidIdsCalledWith = contractAddress
+	return repository.FlopBidIds, repository.GetFlopBidIdsError
 }
 
 func (repository *MockMakerStorageRepository) SetDB(db *postgres.DB) {}

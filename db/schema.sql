@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 11.3
--- Dumped by pg_dump version 11.3
+-- Dumped from database version 11.4
+-- Dumped by pg_dump version 11.4
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -302,7 +302,6 @@ CREATE FUNCTION api.all_bites(ilk_identifier text) RETURNS SETOF api.bite_event
     LANGUAGE sql STABLE STRICT
     AS $$
 WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier)
-
 SELECT ilk_identifier, identifier AS urn_identifier, ink, art, tab, block_number, tx_idx
 FROM maker.bite
          LEFT JOIN maker.urns ON bite.urn_id = urns.id
@@ -320,7 +319,6 @@ CREATE FUNCTION api.all_frobs(ilk_identifier text) RETURNS SETOF api.frob_event
     LANGUAGE sql STABLE STRICT
     AS $$
 WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier)
-
 SELECT ilk_identifier, identifier AS urn_identifier, dink, dart, block_number, tx_idx
 FROM maker.vat_frob
          LEFT JOIN maker.urns ON vat_frob.urn_id = urns.id
@@ -338,7 +336,6 @@ CREATE FUNCTION api.all_ilk_file_events(ilk_identifier text) RETURNS SETOF api.i
     LANGUAGE sql STABLE STRICT
     AS $$
 WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier)
-
 SELECT ilk_identifier, what, data :: text, block_number, tx_idx
 FROM maker.cat_file_chop_lump
          LEFT JOIN headers ON cat_file_chop_lump.header_id = headers.id
@@ -606,7 +603,6 @@ BEGIN
     FROM maker.urns
     WHERE urns.identifier = urn_identifier
       AND urns.ilk_id = _ilk_id INTO _urn_id;
-
     blocks := ARRAY(
             SELECT block_number
             FROM (SELECT block_number
@@ -620,7 +616,6 @@ BEGIN
                     AND block_number <= all_urn_states.block_height) inks_and_arts
             ORDER BY block_number DESC
         );
-
     FOREACH i IN ARRAY blocks
         LOOP
             RETURN QUERY
@@ -686,7 +681,6 @@ WITH urns AS (SELECT urns.id AS urn_id, ilks.id AS ilk_id, ilks.ilk, urns.identi
                         ORDER BY urn_id, block_number DESC)) last_blocks
                           LEFT JOIN public.headers ON headers.hash = last_blocks.block_hash
                  ORDER BY urn_id, headers.block_timestamp DESC)
-
 SELECT urns.identifier,
        ilks.identifier,
        all_urns.block_height,
@@ -905,7 +899,6 @@ WITH ilk AS (SELECT id FROM maker.ilks WHERE identifier = ilk_identifier),
                           LEFT JOIN public.headers AS headers on headers.hash = relevant_blocks.block_hash
                  ORDER BY relevant_blocks.block_height DESC
                  LIMIT 1)
-
 SELECT ilks.identifier,
        get_ilk.block_height,
        rates.rate,
@@ -1041,7 +1034,6 @@ WITH created AS (SELECT era, vow_sin_mapping.block_number, api.epoch_to_datetime
                  WHERE era = get_queued_sin.era
                  ORDER BY vow_sin_mapping.block_number DESC
                  LIMIT 1)
-
 SELECT get_queued_sin.era,
        tab,
        (SELECT EXISTS(SELECT id FROM maker.vow_flog WHERE vow_flog.era = get_queued_sin.era)) AS flogged,
@@ -1113,7 +1105,6 @@ WITH urn AS (SELECT urns.id AS urn_id, ilks.id AS ilk_id, ilks.ilk, urns.identif
                        FROM art) last_blocks
                           LEFT JOIN public.headers ON headers.block_number = last_blocks.block_number
                  ORDER BY urn_id, block_timestamp DESC)
-
 SELECT get_urn.urn_identifier,
        ilk_identifier,
        $3,
@@ -1210,7 +1201,6 @@ CREATE FUNCTION api.poke_event_ilk(priceupdate api.poke_event) RETURNS api.ilk_s
     LANGUAGE sql STABLE
     AS $$
 WITH raw_ilk AS (SELECT * FROM maker.ilks WHERE ilks.id = priceUpdate.ilk_id)
-
 SELECT *
 FROM api.get_ilk((SELECT identifier FROM raw_ilk), priceUpdate.block_height)
 $$;
@@ -1285,7 +1275,6 @@ WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier),
              FROM maker.urns
              WHERE ilk_id = (SELECT id FROM ilk)
                AND identifier = urn_bites.urn_identifier)
-
 SELECT ilk_identifier, urn_bites.urn_identifier, ink, art, tab, block_number, tx_idx
 FROM maker.bite
          LEFT JOIN headers ON bite.header_id = headers.id
@@ -1306,7 +1295,6 @@ WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier),
              FROM maker.urns
              WHERE ilk_id = (SELECT id FROM ilk)
                AND identifier = urn_identifier)
-
 SELECT ilk_identifier, urn_identifier, dink, dart, block_number, tx_idx
 FROM maker.vat_frob
          LEFT JOIN headers ON vat_frob.header_id = headers.id
@@ -2810,6 +2798,242 @@ ALTER SEQUENCE maker.flip_vat_id_seq OWNED BY maker.flip_vat.id;
 
 
 --
+-- Name: flop_beg; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.flop_beg (
+    id integer NOT NULL,
+    block_number bigint,
+    block_hash text,
+    contract_address text,
+    beg numeric NOT NULL
+);
+
+
+--
+-- Name: flop_beg_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.flop_beg_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: flop_beg_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.flop_beg_id_seq OWNED BY maker.flop_beg.id;
+
+
+--
+-- Name: flop_bid_bid; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.flop_bid_bid (
+    id integer NOT NULL,
+    block_number bigint,
+    block_hash text,
+    contract_address text,
+    bid_id numeric NOT NULL,
+    bid numeric NOT NULL
+);
+
+
+--
+-- Name: flop_bid_bid_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.flop_bid_bid_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: flop_bid_bid_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.flop_bid_bid_id_seq OWNED BY maker.flop_bid_bid.id;
+
+
+--
+-- Name: flop_bid_end; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.flop_bid_end (
+    id integer NOT NULL,
+    block_number bigint,
+    block_hash text,
+    contract_address text,
+    bid_id numeric NOT NULL,
+    "end" numeric NOT NULL
+);
+
+
+--
+-- Name: flop_bid_end_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.flop_bid_end_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: flop_bid_end_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.flop_bid_end_id_seq OWNED BY maker.flop_bid_end.id;
+
+
+--
+-- Name: flop_bid_guy; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.flop_bid_guy (
+    id integer NOT NULL,
+    block_number bigint,
+    block_hash text,
+    contract_address text,
+    bid_id numeric NOT NULL,
+    guy text
+);
+
+
+--
+-- Name: flop_bid_guy_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.flop_bid_guy_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: flop_bid_guy_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.flop_bid_guy_id_seq OWNED BY maker.flop_bid_guy.id;
+
+
+--
+-- Name: flop_bid_lot; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.flop_bid_lot (
+    id integer NOT NULL,
+    block_number bigint,
+    block_hash text,
+    contract_address text,
+    bid_id numeric NOT NULL,
+    lot numeric NOT NULL
+);
+
+
+--
+-- Name: flop_bid_lot_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.flop_bid_lot_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: flop_bid_lot_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.flop_bid_lot_id_seq OWNED BY maker.flop_bid_lot.id;
+
+
+--
+-- Name: flop_bid_tic; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.flop_bid_tic (
+    id integer NOT NULL,
+    block_number bigint,
+    block_hash text,
+    contract_address text,
+    bid_id numeric NOT NULL,
+    tic numeric NOT NULL
+);
+
+
+--
+-- Name: flop_bid_tic_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.flop_bid_tic_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: flop_bid_tic_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.flop_bid_tic_id_seq OWNED BY maker.flop_bid_tic.id;
+
+
+--
+-- Name: flop_gem; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.flop_gem (
+    id integer NOT NULL,
+    block_number bigint,
+    block_hash text,
+    contract_address text,
+    gem text
+);
+
+
+--
+-- Name: flop_gem_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.flop_gem_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: flop_gem_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.flop_gem_id_seq OWNED BY maker.flop_gem.id;
+
+
+--
 -- Name: flop_kick; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -2845,6 +3069,171 @@ CREATE SEQUENCE maker.flop_kick_id_seq
 --
 
 ALTER SEQUENCE maker.flop_kick_id_seq OWNED BY maker.flop_kick.id;
+
+
+--
+-- Name: flop_kicks; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.flop_kicks (
+    id integer NOT NULL,
+    block_number bigint,
+    block_hash text,
+    contract_address text,
+    kicks numeric NOT NULL
+);
+
+
+--
+-- Name: flop_kicks_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.flop_kicks_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: flop_kicks_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.flop_kicks_id_seq OWNED BY maker.flop_kicks.id;
+
+
+--
+-- Name: flop_live; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.flop_live (
+    id integer NOT NULL,
+    block_number bigint,
+    block_hash text,
+    contract_address text,
+    live numeric NOT NULL
+);
+
+
+--
+-- Name: flop_live_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.flop_live_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: flop_live_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.flop_live_id_seq OWNED BY maker.flop_live.id;
+
+
+--
+-- Name: flop_tau; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.flop_tau (
+    id integer NOT NULL,
+    block_number bigint,
+    block_hash text,
+    contract_address text,
+    tau numeric NOT NULL
+);
+
+
+--
+-- Name: flop_tau_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.flop_tau_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: flop_tau_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.flop_tau_id_seq OWNED BY maker.flop_tau.id;
+
+
+--
+-- Name: flop_ttl; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.flop_ttl (
+    id integer NOT NULL,
+    block_number bigint,
+    block_hash text,
+    contract_address text,
+    ttl numeric NOT NULL
+);
+
+
+--
+-- Name: flop_ttl_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.flop_ttl_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: flop_ttl_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.flop_ttl_id_seq OWNED BY maker.flop_ttl.id;
+
+
+--
+-- Name: flop_vat; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.flop_vat (
+    id integer NOT NULL,
+    block_number bigint,
+    block_hash text,
+    contract_address text,
+    vat text
+);
+
+
+--
+-- Name: flop_vat_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.flop_vat_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: flop_vat_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.flop_vat_id_seq OWNED BY maker.flop_vat.id;
 
 
 --
@@ -5758,10 +6147,94 @@ ALTER TABLE ONLY maker.flip_vat ALTER COLUMN id SET DEFAULT nextval('maker.flip_
 
 
 --
+-- Name: flop_beg id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flop_beg ALTER COLUMN id SET DEFAULT nextval('maker.flop_beg_id_seq'::regclass);
+
+
+--
+-- Name: flop_bid_bid id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flop_bid_bid ALTER COLUMN id SET DEFAULT nextval('maker.flop_bid_bid_id_seq'::regclass);
+
+
+--
+-- Name: flop_bid_end id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flop_bid_end ALTER COLUMN id SET DEFAULT nextval('maker.flop_bid_end_id_seq'::regclass);
+
+
+--
+-- Name: flop_bid_guy id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flop_bid_guy ALTER COLUMN id SET DEFAULT nextval('maker.flop_bid_guy_id_seq'::regclass);
+
+
+--
+-- Name: flop_bid_lot id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flop_bid_lot ALTER COLUMN id SET DEFAULT nextval('maker.flop_bid_lot_id_seq'::regclass);
+
+
+--
+-- Name: flop_bid_tic id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flop_bid_tic ALTER COLUMN id SET DEFAULT nextval('maker.flop_bid_tic_id_seq'::regclass);
+
+
+--
+-- Name: flop_gem id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flop_gem ALTER COLUMN id SET DEFAULT nextval('maker.flop_gem_id_seq'::regclass);
+
+
+--
 -- Name: flop_kick id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.flop_kick ALTER COLUMN id SET DEFAULT nextval('maker.flop_kick_id_seq'::regclass);
+
+
+--
+-- Name: flop_kicks id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flop_kicks ALTER COLUMN id SET DEFAULT nextval('maker.flop_kicks_id_seq'::regclass);
+
+
+--
+-- Name: flop_live id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flop_live ALTER COLUMN id SET DEFAULT nextval('maker.flop_live_id_seq'::regclass);
+
+
+--
+-- Name: flop_tau id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flop_tau ALTER COLUMN id SET DEFAULT nextval('maker.flop_tau_id_seq'::regclass);
+
+
+--
+-- Name: flop_ttl id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flop_ttl ALTER COLUMN id SET DEFAULT nextval('maker.flop_ttl_id_seq'::regclass);
+
+
+--
+-- Name: flop_vat id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flop_vat ALTER COLUMN id SET DEFAULT nextval('maker.flop_vat_id_seq'::regclass);
 
 
 --
@@ -6955,6 +7428,118 @@ ALTER TABLE ONLY maker.flip_vat
 
 
 --
+-- Name: flop_beg flop_beg_block_number_block_hash_contract_address_beg_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flop_beg
+    ADD CONSTRAINT flop_beg_block_number_block_hash_contract_address_beg_key UNIQUE (block_number, block_hash, contract_address, beg);
+
+
+--
+-- Name: flop_beg flop_beg_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flop_beg
+    ADD CONSTRAINT flop_beg_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: flop_bid_bid flop_bid_bid_block_number_block_hash_bid_id_contract_addres_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flop_bid_bid
+    ADD CONSTRAINT flop_bid_bid_block_number_block_hash_bid_id_contract_addres_key UNIQUE (block_number, block_hash, bid_id, contract_address, bid);
+
+
+--
+-- Name: flop_bid_bid flop_bid_bid_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flop_bid_bid
+    ADD CONSTRAINT flop_bid_bid_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: flop_bid_end flop_bid_end_block_number_block_hash_bid_id_contract_addres_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flop_bid_end
+    ADD CONSTRAINT flop_bid_end_block_number_block_hash_bid_id_contract_addres_key UNIQUE (block_number, block_hash, bid_id, contract_address, "end");
+
+
+--
+-- Name: flop_bid_end flop_bid_end_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flop_bid_end
+    ADD CONSTRAINT flop_bid_end_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: flop_bid_guy flop_bid_guy_block_number_block_hash_bid_id_contract_addres_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flop_bid_guy
+    ADD CONSTRAINT flop_bid_guy_block_number_block_hash_bid_id_contract_addres_key UNIQUE (block_number, block_hash, bid_id, contract_address, guy);
+
+
+--
+-- Name: flop_bid_guy flop_bid_guy_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flop_bid_guy
+    ADD CONSTRAINT flop_bid_guy_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: flop_bid_lot flop_bid_lot_block_number_block_hash_bid_id_contract_addres_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flop_bid_lot
+    ADD CONSTRAINT flop_bid_lot_block_number_block_hash_bid_id_contract_addres_key UNIQUE (block_number, block_hash, bid_id, contract_address, lot);
+
+
+--
+-- Name: flop_bid_lot flop_bid_lot_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flop_bid_lot
+    ADD CONSTRAINT flop_bid_lot_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: flop_bid_tic flop_bid_tic_block_number_block_hash_bid_id_contract_addres_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flop_bid_tic
+    ADD CONSTRAINT flop_bid_tic_block_number_block_hash_bid_id_contract_addres_key UNIQUE (block_number, block_hash, bid_id, contract_address, tic);
+
+
+--
+-- Name: flop_bid_tic flop_bid_tic_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flop_bid_tic
+    ADD CONSTRAINT flop_bid_tic_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: flop_gem flop_gem_block_number_block_hash_contract_address_gem_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flop_gem
+    ADD CONSTRAINT flop_gem_block_number_block_hash_contract_address_gem_key UNIQUE (block_number, block_hash, contract_address, gem);
+
+
+--
+-- Name: flop_gem flop_gem_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flop_gem
+    ADD CONSTRAINT flop_gem_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: flop_kick flop_kick_header_id_tx_idx_log_idx_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -6968,6 +7553,86 @@ ALTER TABLE ONLY maker.flop_kick
 
 ALTER TABLE ONLY maker.flop_kick
     ADD CONSTRAINT flop_kick_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: flop_kicks flop_kicks_block_number_block_hash_contract_address_kicks_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flop_kicks
+    ADD CONSTRAINT flop_kicks_block_number_block_hash_contract_address_kicks_key UNIQUE (block_number, block_hash, contract_address, kicks);
+
+
+--
+-- Name: flop_kicks flop_kicks_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flop_kicks
+    ADD CONSTRAINT flop_kicks_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: flop_live flop_live_block_number_block_hash_contract_address_live_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flop_live
+    ADD CONSTRAINT flop_live_block_number_block_hash_contract_address_live_key UNIQUE (block_number, block_hash, contract_address, live);
+
+
+--
+-- Name: flop_live flop_live_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flop_live
+    ADD CONSTRAINT flop_live_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: flop_tau flop_tau_block_number_block_hash_contract_address_tau_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flop_tau
+    ADD CONSTRAINT flop_tau_block_number_block_hash_contract_address_tau_key UNIQUE (block_number, block_hash, contract_address, tau);
+
+
+--
+-- Name: flop_tau flop_tau_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flop_tau
+    ADD CONSTRAINT flop_tau_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: flop_ttl flop_ttl_block_number_block_hash_contract_address_ttl_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flop_ttl
+    ADD CONSTRAINT flop_ttl_block_number_block_hash_contract_address_ttl_key UNIQUE (block_number, block_hash, contract_address, ttl);
+
+
+--
+-- Name: flop_ttl flop_ttl_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flop_ttl
+    ADD CONSTRAINT flop_ttl_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: flop_vat flop_vat_block_number_block_hash_contract_address_vat_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flop_vat
+    ADD CONSTRAINT flop_vat_block_number_block_hash_contract_address_vat_key UNIQUE (block_number, block_hash, contract_address, vat);
+
+
+--
+-- Name: flop_vat flop_vat_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flop_vat
+    ADD CONSTRAINT flop_vat_pkey PRIMARY KEY (id);
 
 
 --
@@ -8328,6 +8993,41 @@ CREATE INDEX flip_kick_header_index ON maker.flip_kick USING btree (header_id);
 --
 
 CREATE INDEX flip_tick_header_index ON maker.flip_tick USING btree (header_id);
+
+
+--
+-- Name: flop_bid_bid_block_number_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flop_bid_bid_block_number_index ON maker.flop_bid_bid USING btree (block_number);
+
+
+--
+-- Name: flop_bid_end_block_number_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flop_bid_end_block_number_index ON maker.flop_bid_end USING btree (block_number);
+
+
+--
+-- Name: flop_bid_guy_block_number_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flop_bid_guy_block_number_index ON maker.flop_bid_guy USING btree (block_number);
+
+
+--
+-- Name: flop_bid_lot_block_number_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flop_bid_lot_block_number_index ON maker.flop_bid_lot USING btree (block_number);
+
+
+--
+-- Name: flop_bid_tic_block_number_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flop_bid_tic_block_number_index ON maker.flop_bid_tic USING btree (block_number);
 
 
 --
