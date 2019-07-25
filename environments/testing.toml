@@ -11,6 +11,343 @@
 [filesystem]
     storageDiffsPath = "INSERT-PATH-TO-STORAGE-DIFFS"
 
+[exporter]
+    home     = "github.com/vulcanize/vulcanizedb"
+    name     = "transformerExporter"
+    save     = false
+    transformerNames = [
+        "cat",
+        "jug",
+        "spot",
+        "vat",
+        "vow",
+        "bite",
+        "cat_file_chop_lump",
+        "cat_file_flip",
+        "cat_file_vow",
+        "deal",
+        "dent",
+        "flap_kick",
+        "flip_kick",
+        "flip_tick",
+        "flop_kick",
+        "jug_drip",
+        "jug_file_base",
+        "jug_file_ilk",
+        "jug_file_vow",
+        "jug_init",
+        "spot_file_mat",
+        "spot_file_pip",
+        "spot_poke",
+        "tend",
+        "vat_file_debt_ceiling",
+        "vat_file_ilk",
+        "vat_flux",
+        "vat_fold",
+        "vat_fork",
+        "vat_frob",
+        "vat_grab",
+        "vat_heal",
+        "vat_init",
+        "vat_move",
+        "vat_slip",
+        "vat_suck",
+        "vow_fess",
+        "vow_file",
+        "vow_flog",
+        "yank"
+    ]
+
+    [exporter.cat]
+        path = "transformers/storage/cat/initializer"
+        type = "eth_storage"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        rank = "0"
+    [exporter.jug]
+        path = "transformers/storage/jug/initializer"
+        type = "eth_storage"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        rank = "0"
+    [exporter.spot]
+        path = "transformers/storage/spot/initializer"
+        type = "eth_storage"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        rank = "0"
+    [exporter.vat]
+        path = "transformers/storage/vat/initializer"
+        type = "eth_storage"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        rank = "0"
+    [exporter.vow]
+        path = "transformers/storage/vow/initializer"
+        type = "eth_storage"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        rank = "0"
+    [exporter.bite]
+        path = "transformers/events/bite/initializer"
+        type = "eth_event"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        contracts = ["MCD_CAT"]
+        rank = "0"
+    [exporter.cat_file_chop_lump]
+        path = "transformers/events/cat_file/chop_lump/initializer"
+        type = "eth_event"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        contracts = ["MCD_CAT"]
+        rank = "0"
+    [exporter.cat_file_flip]
+        path = "transformers/events/cat_file/flip/initializer"
+        type = "eth_event"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        contracts = ["MCD_CAT"]
+        rank = "0"
+    [exporter.cat_file_vow]
+        path = "transformers/events/cat_file/vow/initializer"
+        type = "eth_event"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        contracts = ["MCD_CAT"]
+        rank = "0"
+    [exporter.deal]
+        path = "transformers/events/deal/initializer"
+        type = "eth_event"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        contracts = [ "ETH_FLIP_A", "ETH_FLIP_B", "ETH_FLIP_C",
+                      "COL1_FLIP", "COL2_FLIP", "COL3_FLIP", "COL4_FLIP", "COL5_FLIP",
+                      "MCD_FLAP", "MCD_FLOP"
+                    ]
+        rank = "0"
+    [exporter.dent]
+        path = "transformers/events/dent/initializer"
+        type = "eth_event"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        contracts = [ "ETH_FLIP_A", "ETH_FLIP_B", "ETH_FLIP_C",
+                      "COL1_FLIP", "COL2_FLIP", "COL3_FLIP", "COL4_FLIP", "COL5_FLIP",
+                      "MCD_FLOP"
+                    ]
+        rank = "0"
+    [exporter.flap_kick]
+        path = "transformers/events/flap_kick/initializer"
+        type = "eth_event"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        contracts = ["MCD_FLAP"]
+        rank = "0"
+    [exporter.flip_kick]
+        path = "transformers/events/flip_kick/initializer"
+        type = "eth_event"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        contracts = [ "ETH_FLIP_A", "ETH_FLIP_B", "ETH_FLIP_C",
+                      "COL1_FLIP", "COL2_FLIP", "COL3_FLIP", "COL4_FLIP", "COL5_FLIP",
+                    ]
+        rank = "0"
+    [exporter.flip_tick]
+        path = "transformers/events/flip_tick/initializer"
+        type = "eth_event"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        contracts = [ "ETH_FLIP_A", "ETH_FLIP_B", "ETH_FLIP_C",
+                      "COL1_FLIP", "COL2_FLIP", "COL3_FLIP", "COL4_FLIP", "COL5_FLIP",
+                    ]
+        rank = "0"
+    [exporter.flop_kick]
+        path = "transformers/events/flop_kick/initializer"
+        type = "eth_event"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        contracts = ["MCD_FLOP"]
+        rank = "0"
+    [exporter.jug_drip]
+        path = "transformers/events/jug_drip/initializer"
+        type = "eth_event"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        contracts = ["MCD_JUG"]
+        rank = "0"
+    [exporter.jug_file_base]
+        path = "transformers/events/jug_file/base/initializer"
+        type = "eth_event"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        contracts = ["MCD_JUG"]
+        rank = "0"
+    [exporter.jug_file_ilk]
+        path = "transformers/events/jug_file/ilk/initializer"
+        type = "eth_event"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        contracts = ["MCD_JUG"]
+        rank = "0"
+    [exporter.jug_file_vow]
+        path = "transformers/events/jug_file/vow/initializer"
+        type = "eth_event"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        contracts = ["MCD_JUG"]
+        rank = "0"
+    [exporter.jug_init]
+        path = "transformers/events/jug_init/initializer"
+        type = "eth_event"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        contracts = ["MCD_JUG"]
+        rank = "0"
+    [exporter.spot_poke]
+        path = "transformers/events/spot_poke/initializer"
+        type = "eth_event"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        contracts = ["MCD_SPOT"]
+        rank = "0"
+    [exporter.spot_file_mat]
+        path = "transformers/events/spot_file/mat/initializer"
+        type = "eth_event"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        contracts = ["MCD_SPOT"]
+        rank = "0"
+    [exporter.spot_file_pip]
+        path = "transformers/events/spot_file/pip/initializer"
+        type = "eth_event"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        contracts = ["MCD_SPOT"]
+        rank = "0"
+    [exporter.tend]
+        path = "transformers/events/tend/initializer"
+        type = "eth_event"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        contracts = [ "ETH_FLIP_A", "ETH_FLIP_B", "ETH_FLIP_C",
+                      "COL1_FLIP", "COL2_FLIP", "COL3_FLIP", "COL4_FLIP", "COL5_FLIP",
+                    ]
+        rank = "0"
+    [exporter.vat_file_debt_ceiling]
+        path = "transformers/events/vat_file/debt_ceiling/initializer"
+        type = "eth_event"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        contracts = ["MCD_VAT"]
+        rank = "0"
+    [exporter.vat_file_ilk]
+        path = "transformers/events/vat_file/ilk/initializer"
+        type = "eth_event"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        contracts = ["MCD_VAT"]
+        rank = "0"
+    [exporter.vat_flux]
+        path = "transformers/events/vat_flux/initializer"
+        type = "eth_event"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        contracts = ["MCD_VAT"]
+        rank = "0"
+    [exporter.vat_fold]
+        path = "transformers/events/vat_fold/initializer"
+        type = "eth_event"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        contracts = ["MCD_VAT"]
+        rank = "0"
+    [exporter.vat_fork]
+        path = "transformers/events/vat_fork/initializer"
+        type = "eth_event"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        contracts = ["MCD_VAT"]
+        rank = "0"
+    [exporter.vat_frob]
+        path = "transformers/events/vat_frob/initializer"
+        type = "eth_event"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        contracts = ["MCD_VAT"]
+        rank = "0"
+    [exporter.vat_grab]
+        path = "transformers/events/vat_grab/initializer"
+        type = "eth_event"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        contracts = ["MCD_VAT"]
+        rank = "0"
+    [exporter.vat_heal]
+        path = "transformers/events/vat_heal/initializer"
+        type = "eth_event"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        contracts = ["MCD_VAT"]
+        rank = "0"
+    [exporter.vat_init]
+        path = "transformers/events/vat_init/initializer"
+        type = "eth_event"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        contracts = ["MCD_VAT"]
+        rank = "0"
+    [exporter.vat_move]
+        path = "transformers/events/vat_move/initializer"
+        type = "eth_event"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        contracts = ["MCD_VAT"]
+        rank = "0"
+    [exporter.vat_slip]
+        path = "transformers/events/vat_slip/initializer"
+        type = "eth_event"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        contracts = ["MCD_VAT"]
+        rank = "0"
+    [exporter.vat_suck]
+        path = "transformers/events/vat_suck/initializer"
+        type = "eth_event"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        contracts = ["MCD_VAT"]
+        rank = "0"
+    [exporter.vow_fess]
+        path = "transformers/events/vow_fess/initializer"
+        type = "eth_event"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        contracts = ["MCD_VOW"]
+        rank = "0"
+    [exporter.vow_file]
+        path = "transformers/events/vow_file/initializer"
+        type = "eth_event"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        contracts = ["MCD_VOW"]
+        rank = "0"
+    [exporter.vow_flog]
+        path = "transformers/events/vow_flog/initializer"
+        type = "eth_event"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        contracts = ["MCD_VOW"]
+        rank = "0"
+    [exporter.yank]
+        path = "transformers/events/yank/initializer"
+        type = "eth_event"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        contracts = [ "ETH_FLIP_A", "ETH_FLIP_B", "ETH_FLIP_C",
+                      "COL1_FLIP", "COL2_FLIP", "COL3_FLIP", "COL4_FLIP", "COL5_FLIP",
+                    ]
+        rank = "0"
+
 [contract]
        #######
        # NOTE: The FLIP contracts could have different deployment blocks, I'm just lazy to look them up since it's fixed in 0.2.9 patch

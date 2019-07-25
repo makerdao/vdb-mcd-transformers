@@ -19,9 +19,9 @@
         "vat",
         "vow",
         "bite",
-        "cat_chop_lump",
-        "cat_flip",
-        "cat_vow",
+        "cat_file_chop_lump",
+        "cat_file_flip",
+        "cat_file_vow",
         "deal",
         "dent",
         "flap_kick",
@@ -92,21 +92,21 @@
         migrations = "db/migrations"
         contracts = ["MCD_CAT"]
         rank = "0"
-    [exporter.cat_chop_lump]
+    [exporter.cat_file_chop_lump]
         path = "transformers/events/cat_file/chop_lump/initializer"
         type = "eth_event"
         repository = "github.com/vulcanize/mcd_transformers"
         migrations = "db/migrations"
         contracts = ["MCD_CAT"]
         rank = "0"
-    [exporter.cat_flip]
+    [exporter.cat_file_flip]
         path = "transformers/events/cat_file/flip/initializer"
         type = "eth_event"
         repository = "github.com/vulcanize/mcd_transformers"
         migrations = "db/migrations"
         contracts = ["MCD_CAT"]
         rank = "0"
-    [exporter.cat_vow]
+    [exporter.cat_file_vow]
         path = "transformers/events/cat_file/vow/initializer"
         type = "eth_event"
         repository = "github.com/vulcanize/mcd_transformers"
@@ -346,7 +346,7 @@
         rank = "0"
 
 [filesystem]
-    storageDiffsPath = "INSERT-PATH-TO-STORAGE-DIFFS"
+    storageDiffsPath = ""
 
 [contract]
        #######
