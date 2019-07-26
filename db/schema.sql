@@ -438,6 +438,33 @@ $$;
 
 
 --
+-- Name: all_flips(text); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.all_flips(ilk text) RETURNS SETOF api.flip_state
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+    bid_id NUMERIC;
+BEGIN
+    FOR bid_id IN
+        WITH address AS (SELECT DISTINCT contract_address
+                         FROM maker.flip_ilk
+                         WHERE flip_ilk.ilk = all_flips.ilk
+                         LIMIT 1)
+        SELECT DISTINCT flip_bid_guy.bid_id
+        FROM maker.flip_bid_guy
+        WHERE contract_address = (SELECT contract_address FROM address)
+        ORDER BY flip_bid_guy.bid_id
+        LOOP
+            RETURN NEXT api.get_flip(bid_id, ilk);
+        END LOOP;
+    RETURN;
+END
+$$;
+
+
+--
 -- Name: all_flops(); Type: FUNCTION; Schema: api; Owner: -
 --
 
@@ -1164,7 +1191,7 @@ $$;
 CREATE FUNCTION api.get_flip(bid_id numeric, ilk text, block_height bigint DEFAULT api.max_block()) RETURNS api.flip_state
     LANGUAGE sql STABLE STRICT
     AS $$
-WITH ilk_ids AS (SELECT id FROM maker.ilks WHERE ilks.ilk = get_flip.ilk),
+WITH ilk_id AS (SELECT id FROM maker.ilks WHERE ilks.ilk = get_flip.ilk),
      address AS (SELECT contract_address
                  FROM maker.flip_ilk
                  WHERE flip_ilk.ilk = get_flip.ilk
@@ -1173,57 +1200,57 @@ WITH ilk_ids AS (SELECT id FROM maker.ilks WHERE ilks.ilk = get_flip.ilk),
      kicks AS (SELECT usr
                FROM maker.flip_kick
                WHERE flip_kick.bid_id = get_flip.bid_id
-                 AND contract_address IN (SELECT * FROM address)),
-     urn_ids AS (SELECT id
-                 FROM maker.urns
-                 WHERE urns.ilk_id IN (SELECT * FROM ilk_ids)
-                   AND urns.identifier IN (SELECT usr FROM kicks)),
+                 AND contract_address = (SELECT * FROM address)),
+     urn_id AS (SELECT id
+                FROM maker.urns
+                WHERE urns.ilk_id = (SELECT * FROM ilk_id)
+                  AND urns.identifier IN (SELECT usr FROM kicks)),
      guys AS (SELECT flip_bid_guy.bid_id, guy
               FROM maker.flip_bid_guy
               WHERE flip_bid_guy.bid_id = get_flip.bid_id
-                AND contract_address IN (SELECT * FROM address)
+                AND contract_address = (SELECT * FROM address)
                 AND block_number <= block_height
               ORDER BY flip_bid_guy.bid_id, block_number DESC
               LIMIT 1),
      tics AS (SELECT flip_bid_tic.bid_id, tic
               FROM maker.flip_bid_tic
               WHERE flip_bid_tic.bid_id = get_flip.bid_id
-                AND contract_address IN (SELECT * FROM address)
+                AND contract_address = (SELECT * FROM address)
                 AND block_number <= block_height
               ORDER BY block_number DESC
               LIMIT 1),
      ends AS (SELECT flip_bid_end.bid_id, "end"
               FROM maker.flip_bid_end
               WHERE flip_bid_end.bid_id = get_flip.bid_id
-                AND contract_address IN (SELECT * FROM address)
+                AND contract_address = (SELECT * FROM address)
                 AND block_number <= block_height
               ORDER BY block_number DESC
               LIMIT 1),
      lots AS (SELECT flip_bid_lot.bid_id, lot
               FROM maker.flip_bid_lot
               WHERE flip_bid_lot.bid_id = get_flip.bid_id
-                AND contract_address IN (SELECT * FROM address)
+                AND contract_address = (SELECT * FROM address)
                 AND block_number <= block_height
               ORDER BY block_number DESC
               LIMIT 1),
      bids AS (SELECT flip_bid_bid.bid_id, bid
               FROM maker.flip_bid_bid
               WHERE flip_bid_bid.bid_id = get_flip.bid_id
-                AND contract_address IN (SELECT * FROM address)
+                AND contract_address = (SELECT * FROM address)
                 AND block_number <= block_height
               ORDER BY block_number DESC
               LIMIT 1),
      gals AS (SELECT flip_bid_gal.bid_id, gal
               FROM maker.flip_bid_gal
               WHERE flip_bid_gal.bid_id = get_flip.bid_id
-                AND contract_address IN (SELECT * FROM address)
+                AND contract_address = (SELECT * FROM address)
                 AND block_number <= block_height
               ORDER BY block_number DESC
               LIMIT 1),
      tabs AS (SELECT flip_bid_tab.bid_id, tab
               FROM maker.flip_bid_tab
               WHERE flip_bid_tab.bid_id = get_flip.bid_id
-                AND contract_address IN (SELECT * FROM address)
+                AND contract_address = (SELECT * FROM address)
                 AND block_number <= block_height
               ORDER BY block_number DESC
               LIMIT 1),
@@ -1231,7 +1258,7 @@ WITH ilk_ids AS (SELECT id FROM maker.ilks WHERE ilks.ilk = get_flip.ilk),
                FROM maker.deal
                         LEFT JOIN public.headers ON deal.header_id = headers.id
                WHERE deal.bid_id = get_flip.bid_id
-                 AND deal.contract_address IN (SELECT * FROM address)
+                 AND deal.contract_address = (SELECT * FROM address)
                  AND headers.block_number <= block_height),
      relevant_blocks AS (SELECT *
                          FROM api.get_flip_blocks_before(bid_id, (SELECT * FROM address), get_flip.block_height)),
@@ -1279,8 +1306,8 @@ SELECT (CASE
                 OR latest_bid_state.tab <> 0)
                 THEN (SELECT (get_flip.block_height,
                               get_flip.bid_id,
-                              (SELECT id from ilk_ids),
-                              (SELECT id from urn_ids),
+                              (SELECT id FROM ilk_id),
+                              (SELECT id FROM urn_id),
                               guy,
                               tic,
                               "end",
@@ -1334,20 +1361,6 @@ FROM maker.flip_kicks
 WHERE block_number <= get_flip_blocks_before.block_height
   AND kicks = get_flip_blocks_before.bid_id
   AND flip_kicks.contract_address = get_flip_blocks_before.contract_address
-UNION
-SELECT headers.block_number AS block_height, headers.hash AS block_hash, flip_kick.bid_id
-FROM maker.flip_kick
-         LEFT JOIN public.headers ON flip_kick.header_id = headers.id
-WHERE headers.block_number <= get_flip_blocks_before.block_height
-  AND flip_kick.bid_id = get_flip_blocks_before.bid_id
-  AND flip_kick.contract_address = get_flip_blocks_before.contract_address
-UNION
-SELECT headers.block_number AS block_height, headers.hash AS block_hash, deal.bid_id
-FROM maker.deal
-         LEFT JOIN public.headers ON deal.header_id = headers.id
-WHERE headers.block_number <= get_flip_blocks_before.block_height
-  AND deal.bid_id = get_flip_blocks_before.bid_id
-  AND deal.contract_address = get_flip_blocks_before.contract_address
 UNION
 SELECT block_number AS block_height, block_hash, flip_bid_bid.bid_id
 FROM maker.flip_bid_bid
@@ -9669,6 +9682,20 @@ CREATE INDEX cat_ilk_lump_ilk_index ON maker.cat_ilk_lump USING btree (ilk_id);
 
 
 --
+-- Name: deal_bid_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX deal_bid_id_index ON maker.deal USING btree (bid_id);
+
+
+--
+-- Name: deal_contract_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX deal_contract_address_index ON maker.deal USING btree (contract_address);
+
+
+--
 -- Name: deal_header_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -9837,10 +9864,31 @@ CREATE INDEX flap_kicks_kicks_index ON maker.flap_kicks USING btree (kicks);
 
 
 --
+-- Name: flip_bid_bid_bid_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flip_bid_bid_bid_id_index ON maker.flip_bid_bid USING btree (bid_id);
+
+
+--
 -- Name: flip_bid_bid_block_number_index; Type: INDEX; Schema: maker; Owner: -
 --
 
 CREATE INDEX flip_bid_bid_block_number_index ON maker.flip_bid_bid USING btree (block_number);
+
+
+--
+-- Name: flip_bid_bid_contract_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flip_bid_bid_contract_address_index ON maker.flip_bid_bid USING btree (contract_address);
+
+
+--
+-- Name: flip_bid_end_bid_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flip_bid_end_bid_id_index ON maker.flip_bid_end USING btree (bid_id);
 
 
 --
@@ -9851,10 +9899,38 @@ CREATE INDEX flip_bid_end_block_number_index ON maker.flip_bid_end USING btree (
 
 
 --
+-- Name: flip_bid_end_contract_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flip_bid_end_contract_address_index ON maker.flip_bid_end USING btree (contract_address);
+
+
+--
+-- Name: flip_bid_gal_bid_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flip_bid_gal_bid_id_index ON maker.flip_bid_gal USING btree (bid_id);
+
+
+--
 -- Name: flip_bid_gal_block_number_index; Type: INDEX; Schema: maker; Owner: -
 --
 
 CREATE INDEX flip_bid_gal_block_number_index ON maker.flip_bid_gal USING btree (block_number);
+
+
+--
+-- Name: flip_bid_gal_contract_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flip_bid_gal_contract_address_index ON maker.flip_bid_gal USING btree (contract_address);
+
+
+--
+-- Name: flip_bid_guy_bid_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flip_bid_guy_bid_id_index ON maker.flip_bid_guy USING btree (bid_id);
 
 
 --
@@ -9865,10 +9941,38 @@ CREATE INDEX flip_bid_guy_block_number_index ON maker.flip_bid_guy USING btree (
 
 
 --
+-- Name: flip_bid_guy_contract_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flip_bid_guy_contract_address_index ON maker.flip_bid_guy USING btree (contract_address);
+
+
+--
+-- Name: flip_bid_lot_bid_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flip_bid_lot_bid_id_index ON maker.flip_bid_lot USING btree (bid_id);
+
+
+--
 -- Name: flip_bid_lot_block_number_index; Type: INDEX; Schema: maker; Owner: -
 --
 
 CREATE INDEX flip_bid_lot_block_number_index ON maker.flip_bid_lot USING btree (block_number);
+
+
+--
+-- Name: flip_bid_lot_contract_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flip_bid_lot_contract_address_index ON maker.flip_bid_lot USING btree (contract_address);
+
+
+--
+-- Name: flip_bid_tab_bid_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flip_bid_tab_bid_id_index ON maker.flip_bid_tab USING btree (bid_id);
 
 
 --
@@ -9879,10 +9983,38 @@ CREATE INDEX flip_bid_tab_block_number_index ON maker.flip_bid_tab USING btree (
 
 
 --
+-- Name: flip_bid_tab_contract_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flip_bid_tab_contract_address_index ON maker.flip_bid_tab USING btree (contract_address);
+
+
+--
+-- Name: flip_bid_tic_bid_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flip_bid_tic_bid_id_index ON maker.flip_bid_tic USING btree (bid_id);
+
+
+--
 -- Name: flip_bid_tic_block_number_index; Type: INDEX; Schema: maker; Owner: -
 --
 
 CREATE INDEX flip_bid_tic_block_number_index ON maker.flip_bid_tic USING btree (block_number);
+
+
+--
+-- Name: flip_bid_tic_contract_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flip_bid_tic_contract_address_index ON maker.flip_bid_tic USING btree (contract_address);
+
+
+--
+-- Name: flip_bid_usr_bid_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flip_bid_usr_bid_id_index ON maker.flip_bid_usr USING btree (bid_id);
 
 
 --
@@ -9893,10 +10025,66 @@ CREATE INDEX flip_bid_usr_block_number_index ON maker.flip_bid_usr USING btree (
 
 
 --
+-- Name: flip_bid_usr_contract_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flip_bid_usr_contract_address_index ON maker.flip_bid_usr USING btree (contract_address);
+
+
+--
+-- Name: flip_ilk_block_number_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flip_ilk_block_number_index ON maker.flip_ilk USING btree (block_number);
+
+
+--
+-- Name: flip_ilk_ilk_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flip_ilk_ilk_index ON maker.flip_ilk USING btree (ilk);
+
+
+--
+-- Name: flip_kick_bid_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flip_kick_bid_id_index ON maker.flip_kick USING btree (bid_id);
+
+
+--
+-- Name: flip_kick_contract_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flip_kick_contract_address_index ON maker.flip_kick USING btree (contract_address);
+
+
+--
 -- Name: flip_kick_header_index; Type: INDEX; Schema: maker; Owner: -
 --
 
 CREATE INDEX flip_kick_header_index ON maker.flip_kick USING btree (header_id);
+
+
+--
+-- Name: flip_kicks_block_number_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flip_kicks_block_number_index ON maker.flip_kicks USING btree (block_number);
+
+
+--
+-- Name: flip_kicks_contract_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flip_kicks_contract_address_index ON maker.flip_kicks USING btree (contract_address);
+
+
+--
+-- Name: flip_kicks_kicks_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flip_kicks_kicks_index ON maker.flip_kicks USING btree (kicks);
 
 
 --

@@ -583,10 +583,7 @@ func SetUpFlipBidBackgroundData(setupData FlipBidSetupData) (ilkId, urnId int, e
 		return 0, 0, urnErr
 	}
 
-	flipKickModel := test_data.FlipKickModel
-	flipKickModel.ContractAddress = setupData.ContractAddress
-	flipKickModel.BidId = strconv.Itoa(setupData.BidId)
-	flipKickErr := setupData.FlipKickRepo.Create(setupData.FlipKickHeaderId, []interface{}{flipKickModel})
+	flipKickErr := CreateFlipKick(setupData.ContractAddress, setupData.BidId, setupData.FlipKickHeaderId, setupData.FlipKickRepo)
 	if flipKickErr != nil {
 		return 0, 0, flipKickErr
 	}
@@ -603,6 +600,13 @@ func SetUpFlipBidBackgroundData(setupData FlipBidSetupData) (ilkId, urnId int, e
 	}
 
 	return ilkId, urnId, nil
+}
+
+func CreateFlipKick(contractAddress string, bidId int, headerId int64, repo flip_kick.FlipKickRepository) error {
+	flipKickModel := test_data.FlipKickModel
+	flipKickModel.ContractAddress = contractAddress
+	flipKickModel.BidId = strconv.Itoa(bidId)
+	return repo.Create(headerId, []interface{}{flipKickModel})
 }
 
 type FlipBidSetupData struct {

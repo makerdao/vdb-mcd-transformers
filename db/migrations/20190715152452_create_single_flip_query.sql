@@ -15,20 +15,6 @@ WHERE block_number <= get_flip_blocks_before.block_height
   AND kicks = get_flip_blocks_before.bid_id
   AND flip_kicks.contract_address = get_flip_blocks_before.contract_address
 UNION
-SELECT headers.block_number AS block_height, headers.hash AS block_hash, flip_kick.bid_id
-FROM maker.flip_kick
-         LEFT JOIN public.headers ON flip_kick.header_id = headers.id
-WHERE headers.block_number <= get_flip_blocks_before.block_height
-  AND flip_kick.bid_id = get_flip_blocks_before.bid_id
-  AND flip_kick.contract_address = get_flip_blocks_before.contract_address
-UNION
-SELECT headers.block_number AS block_height, headers.hash AS block_hash, deal.bid_id
-FROM maker.deal
-         LEFT JOIN public.headers ON deal.header_id = headers.id
-WHERE headers.block_number <= get_flip_blocks_before.block_height
-  AND deal.bid_id = get_flip_blocks_before.bid_id
-  AND deal.contract_address = get_flip_blocks_before.contract_address
-UNION
 SELECT block_number AS block_height, block_hash, flip_bid_bid.bid_id
 FROM maker.flip_bid_bid
 WHERE block_number <= get_flip_blocks_before.block_height
@@ -109,7 +95,7 @@ CREATE FUNCTION api.get_flip(bid_id NUMERIC, ilk TEXT, block_height BIGINT DEFAU
     RETURNS api.flip_state
 AS
 $$
-WITH ilk_ids AS (SELECT id FROM maker.ilks WHERE ilks.ilk = get_flip.ilk),
+WITH ilk_id AS (SELECT id FROM maker.ilks WHERE ilks.ilk = get_flip.ilk),
      address AS (SELECT contract_address
                  FROM maker.flip_ilk
                  WHERE flip_ilk.ilk = get_flip.ilk
@@ -118,57 +104,57 @@ WITH ilk_ids AS (SELECT id FROM maker.ilks WHERE ilks.ilk = get_flip.ilk),
      kicks AS (SELECT usr
                FROM maker.flip_kick
                WHERE flip_kick.bid_id = get_flip.bid_id
-                 AND contract_address IN (SELECT * FROM address)),
-     urn_ids AS (SELECT id
-                 FROM maker.urns
-                 WHERE urns.ilk_id IN (SELECT * FROM ilk_ids)
-                   AND urns.identifier IN (SELECT usr FROM kicks)),
+                 AND contract_address = (SELECT * FROM address)),
+     urn_id AS (SELECT id
+                FROM maker.urns
+                WHERE urns.ilk_id = (SELECT * FROM ilk_id)
+                  AND urns.identifier IN (SELECT usr FROM kicks)),
      guys AS (SELECT flip_bid_guy.bid_id, guy
               FROM maker.flip_bid_guy
               WHERE flip_bid_guy.bid_id = get_flip.bid_id
-                AND contract_address IN (SELECT * FROM address)
+                AND contract_address = (SELECT * FROM address)
                 AND block_number <= block_height
               ORDER BY flip_bid_guy.bid_id, block_number DESC
               LIMIT 1),
      tics AS (SELECT flip_bid_tic.bid_id, tic
               FROM maker.flip_bid_tic
               WHERE flip_bid_tic.bid_id = get_flip.bid_id
-                AND contract_address IN (SELECT * FROM address)
+                AND contract_address = (SELECT * FROM address)
                 AND block_number <= block_height
               ORDER BY block_number DESC
               LIMIT 1),
      ends AS (SELECT flip_bid_end.bid_id, "end"
               FROM maker.flip_bid_end
               WHERE flip_bid_end.bid_id = get_flip.bid_id
-                AND contract_address IN (SELECT * FROM address)
+                AND contract_address = (SELECT * FROM address)
                 AND block_number <= block_height
               ORDER BY block_number DESC
               LIMIT 1),
      lots AS (SELECT flip_bid_lot.bid_id, lot
               FROM maker.flip_bid_lot
               WHERE flip_bid_lot.bid_id = get_flip.bid_id
-                AND contract_address IN (SELECT * FROM address)
+                AND contract_address = (SELECT * FROM address)
                 AND block_number <= block_height
               ORDER BY block_number DESC
               LIMIT 1),
      bids AS (SELECT flip_bid_bid.bid_id, bid
               FROM maker.flip_bid_bid
               WHERE flip_bid_bid.bid_id = get_flip.bid_id
-                AND contract_address IN (SELECT * FROM address)
+                AND contract_address = (SELECT * FROM address)
                 AND block_number <= block_height
               ORDER BY block_number DESC
               LIMIT 1),
      gals AS (SELECT flip_bid_gal.bid_id, gal
               FROM maker.flip_bid_gal
               WHERE flip_bid_gal.bid_id = get_flip.bid_id
-                AND contract_address IN (SELECT * FROM address)
+                AND contract_address = (SELECT * FROM address)
                 AND block_number <= block_height
               ORDER BY block_number DESC
               LIMIT 1),
      tabs AS (SELECT flip_bid_tab.bid_id, tab
               FROM maker.flip_bid_tab
               WHERE flip_bid_tab.bid_id = get_flip.bid_id
-                AND contract_address IN (SELECT * FROM address)
+                AND contract_address = (SELECT * FROM address)
                 AND block_number <= block_height
               ORDER BY block_number DESC
               LIMIT 1),
@@ -176,7 +162,7 @@ WITH ilk_ids AS (SELECT id FROM maker.ilks WHERE ilks.ilk = get_flip.ilk),
                FROM maker.deal
                         LEFT JOIN public.headers ON deal.header_id = headers.id
                WHERE deal.bid_id = get_flip.bid_id
-                 AND deal.contract_address IN (SELECT * FROM address)
+                 AND deal.contract_address = (SELECT * FROM address)
                  AND headers.block_number <= block_height),
      relevant_blocks AS (SELECT *
                          FROM api.get_flip_blocks_before(bid_id, (SELECT * FROM address), get_flip.block_height)),
@@ -224,8 +210,8 @@ SELECT (CASE
                 OR latest_bid_state.tab <> 0)
                 THEN (SELECT (get_flip.block_height,
                               get_flip.bid_id,
-                              (SELECT id from ilk_ids),
-                              (SELECT id from urn_ids),
+                              (SELECT id FROM ilk_id),
+                              (SELECT id FROM urn_id),
                               guy,
                               tic,
                               "end",

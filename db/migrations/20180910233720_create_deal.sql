@@ -13,11 +13,17 @@ CREATE TABLE maker.deal
 
 CREATE INDEX deal_header_index
     ON maker.deal (header_id);
+CREATE INDEX deal_bid_id_index
+    ON maker.deal (bid_id);
+CREATE INDEX deal_contract_address_index
+    ON maker.deal (contract_address);
 
 ALTER TABLE public.checked_headers
     ADD COLUMN deal INTEGER NOT NULL DEFAULT 0;
 
 -- +goose Down
+DROP INDEX maker.deal_contract_address_index;
+DROP INDEX maker.deal_bid_id_index;
 DROP INDEX maker.deal_header_index;
 
 DROP TABLE maker.deal;
