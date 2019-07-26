@@ -13,6 +13,10 @@ CREATE TABLE maker.flip_bid_bid
 
 CREATE INDEX flip_bid_bid_block_number_index
     ON maker.flip_bid_bid (block_number);
+CREATE INDEX flip_bid_bid_bid_id_index
+    ON maker.flip_bid_bid (bid_id);
+CREATE INDEX flip_bid_bid_contract_address_index
+    ON maker.flip_bid_bid (contract_address);
 
 CREATE TABLE maker.flip_bid_lot
 (
@@ -27,6 +31,10 @@ CREATE TABLE maker.flip_bid_lot
 
 CREATE INDEX flip_bid_lot_block_number_index
     ON maker.flip_bid_lot (block_number);
+CREATE INDEX flip_bid_lot_bid_id_index
+    ON maker.flip_bid_lot (bid_id);
+CREATE INDEX flip_bid_lot_contract_address_index
+    ON maker.flip_bid_lot (contract_address);
 
 CREATE TABLE maker.flip_bid_guy
 (
@@ -41,6 +49,10 @@ CREATE TABLE maker.flip_bid_guy
 
 CREATE INDEX flip_bid_guy_block_number_index
     ON maker.flip_bid_guy (block_number);
+CREATE INDEX flip_bid_guy_bid_id_index
+    ON maker.flip_bid_guy (bid_id);
+CREATE INDEX flip_bid_guy_contract_address_index
+    ON maker.flip_bid_guy (contract_address);
 
 CREATE TABLE maker.flip_bid_tic
 (
@@ -55,6 +67,10 @@ CREATE TABLE maker.flip_bid_tic
 
 CREATE INDEX flip_bid_tic_block_number_index
     ON maker.flip_bid_tic (block_number);
+CREATE INDEX flip_bid_tic_bid_id_index
+    ON maker.flip_bid_tic (bid_id);
+CREATE INDEX flip_bid_tic_contract_address_index
+    ON maker.flip_bid_tic (contract_address);
 
 CREATE TABLE maker.flip_bid_end
 (
@@ -69,6 +85,10 @@ CREATE TABLE maker.flip_bid_end
 
 CREATE INDEX flip_bid_end_block_number_index
     ON maker.flip_bid_end (block_number);
+CREATE INDEX flip_bid_end_bid_id_index
+    ON maker.flip_bid_end (bid_id);
+CREATE INDEX flip_bid_end_contract_address_index
+    ON maker.flip_bid_end (contract_address);
 
 CREATE TABLE maker.flip_bid_usr
 (
@@ -83,6 +103,10 @@ CREATE TABLE maker.flip_bid_usr
 
 CREATE INDEX flip_bid_usr_block_number_index
     ON maker.flip_bid_usr (block_number);
+CREATE INDEX flip_bid_usr_bid_id_index
+    ON maker.flip_bid_usr (bid_id);
+CREATE INDEX flip_bid_usr_contract_address_index
+    ON maker.flip_bid_usr (contract_address);
 
 CREATE TABLE maker.flip_bid_gal
 (
@@ -97,6 +121,10 @@ CREATE TABLE maker.flip_bid_gal
 
 CREATE INDEX flip_bid_gal_block_number_index
     ON maker.flip_bid_gal (block_number);
+CREATE INDEX flip_bid_gal_bid_id_index
+    ON maker.flip_bid_gal (bid_id);
+CREATE INDEX flip_bid_gal_contract_address_index
+    ON maker.flip_bid_gal (contract_address);
 
 CREATE TABLE maker.flip_bid_tab
 (
@@ -111,6 +139,10 @@ CREATE TABLE maker.flip_bid_tab
 
 CREATE INDEX flip_bid_tab_block_number_index
     ON maker.flip_bid_tab (block_number);
+CREATE INDEX flip_bid_tab_bid_id_index
+    ON maker.flip_bid_tab (bid_id);
+CREATE INDEX flip_bid_tab_contract_address_index
+    ON maker.flip_bid_tab (contract_address);
 
 CREATE TABLE maker.flip_vat
 (
@@ -131,6 +163,11 @@ CREATE TABLE maker.flip_ilk
     ilk              TEXT,
     UNIQUE (block_number, block_hash, contract_address, ilk)
 );
+
+CREATE INDEX flip_ilk_ilk_index
+    ON maker.flip_ilk (ilk);
+CREATE INDEX flip_ilk_block_number_index
+    ON maker.flip_ilk (block_number);
 
 CREATE TABLE maker.flip_beg
 (
@@ -172,18 +209,46 @@ CREATE TABLE maker.flip_kicks
     UNIQUE (block_number, block_hash, contract_address, kicks)
 );
 
+CREATE INDEX flip_kicks_block_number_index
+    ON maker.flip_kicks (block_number);
+CREATE INDEX flip_kicks_kicks_index
+    ON maker.flip_kicks (kicks);
+CREATE INDEX flip_kicks_contract_address_index
+    ON maker.flip_kicks (contract_address);
+
 -- prevent naming conflict with maker.flip_kick in postgraphile
 COMMENT ON TABLE maker.flip_kicks IS E'@name flipKicksStorage';
 
 -- +goose Down
 -- SQL in this section is executed when the migration is rolled back.
+DROP INDEX maker.flip_kicks_contract_address_index;
+DROP INDEX maker.flip_kicks_kicks_index;
+DROP INDEX maker.flip_kicks_block_number_index;
+DROP INDEX maker.flip_ilk_block_number_index;
+DROP INDEX maker.flip_ilk_ilk_index;
+DROP INDEX maker.flip_bid_tab_contract_address_index;
+DROP INDEX maker.flip_bid_tab_bid_id_index;
 DROP INDEX maker.flip_bid_tab_block_number_index;
+DROP INDEX maker.flip_bid_gal_contract_address_index;
+DROP INDEX maker.flip_bid_gal_bid_id_index;
 DROP INDEX maker.flip_bid_gal_block_number_index;
+DROP INDEX maker.flip_bid_usr_contract_address_index;
+DROP INDEX maker.flip_bid_usr_bid_id_index;
 DROP INDEX maker.flip_bid_usr_block_number_index;
+DROP INDEX maker.flip_bid_end_contract_address_index;
+DROP INDEX maker.flip_bid_end_bid_id_index;
 DROP INDEX maker.flip_bid_end_block_number_index;
+DROP INDEX maker.flip_bid_tic_contract_address_index;
+DROP INDEX maker.flip_bid_tic_bid_id_index;
 DROP INDEX maker.flip_bid_tic_block_number_index;
+DROP INDEX maker.flip_bid_guy_contract_address_index;
+DROP INDEX maker.flip_bid_guy_bid_id_index;
 DROP INDEX maker.flip_bid_guy_block_number_index;
+DROP INDEX maker.flip_bid_lot_contract_address_index;
+DROP INDEX maker.flip_bid_lot_bid_id_index;
 DROP INDEX maker.flip_bid_lot_block_number_index;
+DROP INDEX maker.flip_bid_bid_contract_address_index;
+DROP INDEX maker.flip_bid_bid_bid_id_index;
 DROP INDEX maker.flip_bid_bid_block_number_index;
 
 DROP TABLE maker.flip_kicks;

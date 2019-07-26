@@ -21,11 +21,17 @@ COMMENT ON TABLE maker.flip_kick IS E'@name flipKickEvent';
 
 CREATE INDEX flip_kick_header_index
     ON maker.flip_kick (header_id);
+CREATE INDEX flip_kick_bid_id_index
+    ON maker.flip_kick (bid_id);
+CREATE INDEX flip_kick_contract_address_index
+    ON maker.flip_kick (contract_address);
 
 ALTER TABLE public.checked_headers
     ADD COLUMN flip_kick INTEGER NOT NULL DEFAULT 0;
 
 -- +goose Down
+DROP INDEX maker.flip_kick_contract_address_index;
+DROP INDEX maker.flip_kick_bid_id_index;
 DROP INDEX maker.flip_kick_header_index;
 
 DROP TABLE maker.flip_kick;
