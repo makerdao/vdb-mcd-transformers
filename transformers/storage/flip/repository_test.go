@@ -254,7 +254,6 @@ var _ = Describe("Flip storage repository", func() {
 					AssertMapping(endResult, fakeBlockNumber, fakeBlockHash, fakeBidId, fakeEnd)
 				})
 			})
-
 			It("returns an error if inserting fails", func() {
 				badValues := make(map[int]string)
 				badValues[1] = ""
