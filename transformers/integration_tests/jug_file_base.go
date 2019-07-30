@@ -20,72 +20,78 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/vulcanize/mcd_transformers/transformers/events/jug_file/base"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
+	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 
 	"github.com/vulcanize/mcd_transformers/test_config"
-	"github.com/vulcanize/mcd_transformers/transformers/events/vat_move"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
-var _ = Describe("VatMove LogNoteTransformer", func() {
-	vatMoveConfig := transformer.EventTransformerConfig{
-		TransformerName:   mcdConstants.VatMoveLabel,
-		ContractAddresses: []string{test_data.VatAddress()},
-		ContractAbi:       mcdConstants.VatABI(),
-		Topic:             mcdConstants.VatMoveSignature(),
-	}
+var _ = Describe("Jug File Base LogNoteTransformer", func() {
+	var (
+		db         *postgres.DB
+		blockChain core.BlockChain
+	)
 
-	It("transforms VatMove log events", func() {
-		blockNumber := int64(12373489)
-		vatMoveConfig.StartingBlockNumber = blockNumber
-		vatMoveConfig.EndingBlockNumber = blockNumber
-
+	BeforeEach(func() {
 		rpcClient, ethClient, err := getClients(ipc)
 		Expect(err).NotTo(HaveOccurred())
-		blockChain, err := getBlockChain(rpcClient, ethClient)
+		blockChain, err = getBlockChain(rpcClient, ethClient)
 		Expect(err).NotTo(HaveOccurred())
-
-		db := test_config.NewTestDB(blockChain.Node())
+		db = test_config.NewTestDB(blockChain.Node())
 		test_config.CleanTestDB(db)
+	})
+
+	jugFileBaseConfig := transformer.EventTransformerConfig{
+		TransformerName:   mcdConstants.JugFileBaseLabel,
+		ContractAddresses: []string{test_data.JugAddress()},
+		ContractAbi:       mcdConstants.JugABI(),
+		Topic:             mcdConstants.JugFileBaseSignature(),
+	}
+
+	It("transforms jug file base log events", func() {
+		blockNumber := int64(12176174)
+		jugFileBaseConfig.StartingBlockNumber = blockNumber
+		jugFileBaseConfig.EndingBlockNumber = blockNumber
 
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		logFetcher := fetcher.NewLogFetcher(blockChain)
-		logs, err := logFetcher.FetchLogs(
-			transformer.HexStringsToAddresses(vatMoveConfig.ContractAddresses),
-			[]common.Hash{common.HexToHash(vatMoveConfig.Topic)},
+		initializer := shared.LogNoteTransformer{
+			Config:     jugFileBaseConfig,
+			Converter:  base.JugFileBaseConverter{},
+			Repository: &base.JugFileBaseRepository{},
+		}
+		tr := initializer.NewLogNoteTransformer(db)
+
+		f := fetcher.NewLogFetcher(blockChain)
+		logs, err := f.FetchLogs(
+			transformer.HexStringsToAddresses(jugFileBaseConfig.ContractAddresses),
+			[]common.Hash{common.HexToHash(jugFileBaseConfig.Topic)},
 			header)
 		Expect(err).NotTo(HaveOccurred())
-
-		tr := shared.LogNoteTransformer{
-			Config:     vatMoveConfig,
-			Converter:  &vat_move.VatMoveConverter{},
-			Repository: &vat_move.VatMoveRepository{},
-		}.NewLogNoteTransformer(db)
 
 		err = tr.Execute(logs, header)
 		Expect(err).NotTo(HaveOccurred())
 
-		var dbResults []vatMoveModel
-		err = db.Select(&dbResults, `SELECT src, dst, rad from maker.vat_move`)
+		var dbResult []jugFileBaseModel
+		err = db.Select(&dbResult, `SELECT what, data FROM maker.jug_file_base`)
 		Expect(err).NotTo(HaveOccurred())
 
-		Expect(len(dbResults)).To(Equal(1))
-		dbResult := dbResults[0]
-		Expect(dbResult.Src).To(Equal("0x23E91332984eEd55C88131C58295C8Dce379E2aB"))
-		Expect(dbResult.Dst).To(Equal("0xe70A5307f5132eE3A6a056c5eFb7D5a53F3CDBD7"))
-		Expect(dbResult.Rad).To(Equal("1000000000000000000000000000000000000000000000"))
+		Expect(len(dbResult)).To(Equal(1))
+		Expect(dbResult[0].What).To(Equal("base"))
+		Expect(dbResult[0].Data).To(Equal("0"))
 	})
 })
 
-type vatMoveModel struct {
-	Src              string
-	Dst              string
-	Rad              string
+type jugFileBaseModel struct {
+	What             string
+	Data             string
 	LogIndex         uint   `db:"log_idx"`
 	TransactionIndex uint   `db:"tx_idx"`
 	Raw              []byte `db:"raw_log"`
