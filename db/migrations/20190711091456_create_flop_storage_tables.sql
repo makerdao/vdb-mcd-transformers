@@ -130,6 +130,9 @@ CREATE TABLE  maker.flop_kicks
     UNIQUE (block_number, block_hash, contract_address, kicks)
 );
 
+-- prevent naming conflict with maker.flop_kick in postgraphile
+COMMENT ON TABLE maker.flop_kicks IS E'@name flopKicksStorage';
+
 CREATE TABLE  maker.flop_live
 (
     id SERIAL PRIMARY KEY ,
