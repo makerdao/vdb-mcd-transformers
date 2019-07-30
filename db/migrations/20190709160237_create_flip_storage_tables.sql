@@ -172,6 +172,9 @@ CREATE TABLE maker.flip_kicks
     UNIQUE (block_number, block_hash, contract_address, kicks)
 );
 
+-- prevent naming conflict with maker.flip_kick in postgraphile
+COMMENT ON TABLE maker.flip_kicks IS E'@name flipKicksStorage';
+
 -- +goose Down
 -- SQL in this section is executed when the migration is rolled back.
 DROP INDEX maker.flip_bid_tab_block_number_index;
