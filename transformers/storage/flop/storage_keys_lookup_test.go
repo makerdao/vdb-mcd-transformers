@@ -5,14 +5,15 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	vdbStorage "github.com/vulcanize/vulcanizedb/libraries/shared/storage"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
+	"github.com/vulcanize/vulcanizedb/pkg/fakes"
+
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/storage"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/flop"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/test_helpers"
-	vdbStorage "github.com/vulcanize/vulcanizedb/libraries/shared/storage"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
-	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 )
 
 var _ = Describe("Flop storage mappings", func() {
@@ -94,34 +95,16 @@ var _ = Describe("Flop storage mappings", func() {
 			Expect(mappings.Lookup(bidLotKey)).To(Equal(expectedMetadata))
 		})
 
-		It("returns value metadata for bid guy", func() {
+		It("returns value metadata for bid guy + tic + end packed slot", func() {
 			bidGuyKey := vdbStorage.GetIncrementedKey(bidBidKey, 2)
 			expectedMetadata := utils.StorageValueMetadata{
-				Name: storage.BidGuy,
-				Keys: map[utils.Key]string{constants.BidId: fakeBidId},
-				Type: utils.Address,
+				Name:        storage.Packed,
+				Keys:        map[utils.Key]string{constants.BidId: fakeBidId},
+				Type:        utils.PackedSlot,
+				PackedTypes: map[int]utils.ValueType{0: utils.Address, 1: utils.Uint48, 2: utils.Uint48},
+				PackedNames: map[int]string{0: storage.BidGuy, 1: storage.BidTic, 2: storage.BidEnd},
 			}
 			Expect(mappings.Lookup(bidGuyKey)).To(Equal(expectedMetadata))
-		})
-
-		It("returns value metadata for bid tic", func() {
-			bidTicKey := vdbStorage.GetIncrementedKey(bidBidKey, 3)
-			expectedMetadata := utils.StorageValueMetadata{
-				Name: storage.BidTic,
-				Keys: map[utils.Key]string{constants.BidId: fakeBidId},
-				Type: utils.Uint48,
-			}
-			Expect(mappings.Lookup(bidTicKey)).To(Equal(expectedMetadata))
-		})
-
-		It("returns value metadata for bid end", func() {
-			bidEndKey := vdbStorage.GetIncrementedKey(bidBidKey, 4)
-			expectedMetadata := utils.StorageValueMetadata{
-				Name: storage.BidEnd,
-				Keys: map[utils.Key]string{constants.BidId: fakeBidId},
-				Type: utils.Uint48,
-			}
-			Expect(mappings.Lookup(bidEndKey)).To(Equal(expectedMetadata))
 		})
 	})
 })

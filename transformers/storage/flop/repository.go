@@ -2,10 +2,12 @@ package flop
 
 import (
 	"fmt"
-	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
-	"github.com/vulcanize/mcd_transformers/transformers/storage"
+
 	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
+
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/mcd_transformers/transformers/storage"
 )
 
 const (
@@ -47,12 +49,6 @@ func (repository *FlopStorageRepository) Create(blockNumber int, blockHash strin
 		return repository.insertBidBid(blockNumber, blockHash, metadata, value.(string))
 	case storage.BidLot:
 		return repository.insertBidLot(blockNumber, blockHash, metadata, value.(string))
-	case storage.BidGuy:
-		return repository.insertBidGuy(blockNumber, blockHash, metadata, value.(string))
-	case storage.BidTic:
-		return repository.insertBidTic(blockNumber, blockHash, metadata, value.(string))
-	case storage.BidEnd:
-		return repository.insertBidEnd(blockNumber, blockHash, metadata, value.(string))
 	default:
 		panic(fmt.Sprintf("unrecognized flop contract storage name: %s", metadata.Name))
 	}
@@ -143,20 +139,24 @@ func (repository *FlopStorageRepository) insertBidEnd(blockNumber int, blockHash
 }
 
 func (repository *FlopStorageRepository) insertPackedValueRecord(blockNumber int, blockHash string, metadata utils.StorageValueMetadata, packedValues map[int]string) error {
+	var insertErr error
 	for order, value := range packedValues {
 		switch metadata.PackedNames[order] {
 		case storage.Ttl:
-			ttlErr := repository.insertTtl(blockNumber, blockHash, value)
-			if ttlErr != nil {
-				return ttlErr
-			}
+			insertErr = repository.insertTtl(blockNumber, blockHash, value)
 		case storage.Tau:
-			tauErr := repository.insertTau(blockNumber, blockHash, value)
-			if tauErr != nil {
-				return tauErr
-			}
+			insertErr = repository.insertTau(blockNumber, blockHash, value)
+		case storage.BidGuy:
+			insertErr = repository.insertBidGuy(blockNumber, blockHash, metadata, value)
+		case storage.BidTic:
+			insertErr = repository.insertBidTic(blockNumber, blockHash, metadata, value)
+		case storage.BidEnd:
+			insertErr = repository.insertBidEnd(blockNumber, blockHash, metadata, value)
 		default:
 			panic(fmt.Sprintf("unrecognized flop contract storage name in packed values: %s", metadata.Name))
+		}
+		if insertErr != nil {
+			return insertErr
 		}
 	}
 	return nil

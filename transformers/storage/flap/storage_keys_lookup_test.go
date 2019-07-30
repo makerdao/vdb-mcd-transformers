@@ -8,7 +8,6 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-
 	vdbStorage "github.com/vulcanize/vulcanizedb/libraries/shared/storage"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
@@ -131,44 +130,20 @@ var _ = Describe("Flap storage mappings", func() {
 				}))
 			})
 
-			It("gets guy metadata", func() {
-				flapBidGuyKey := vdbStorage.GetIncrementedKey(flapBidBidKey, 2)
-				metadata, err := mapping.Lookup(flapBidGuyKey)
-				Expect(err).NotTo(HaveOccurred())
-
-				Expect(metadata).To(Equal(utils.StorageValueMetadata{
-					Name: storage.BidGuy,
-					Keys: map[utils.Key]string{constants.BidId: bidId},
-					Type: utils.Address,
-				}))
-			})
-
-			It("gets tic metadata", func() {
-				flapBidTicKey := vdbStorage.GetIncrementedKey(flapBidBidKey, 3)
-				metadata, err := mapping.Lookup(flapBidTicKey)
-				Expect(err).NotTo(HaveOccurred())
-
-				Expect(metadata).To(Equal(utils.StorageValueMetadata{
-					Name: storage.BidTic,
-					Keys: map[utils.Key]string{constants.BidId: bidId},
-					Type: utils.Uint48,
-				}))
-			})
-
-			It("gets end metadata", func() {
-				flapBidEndKey := vdbStorage.GetIncrementedKey(flapBidBidKey, 4)
-				metadata, err := mapping.Lookup(flapBidEndKey)
-				Expect(err).NotTo(HaveOccurred())
-
-				Expect(metadata).To(Equal(utils.StorageValueMetadata{
-					Name: storage.BidEnd,
-					Keys: map[utils.Key]string{constants.BidId: bidId},
-					Type: utils.Uint48,
-				}))
+			It("returns value metadata for bid guy + tic + end packed slot", func() {
+				bidGuyKey := vdbStorage.GetIncrementedKey(flapBidBidKey, 2)
+				expectedMetadata := utils.StorageValueMetadata{
+					Name:        storage.Packed,
+					Keys:        map[utils.Key]string{constants.BidId: bidId},
+					Type:        utils.PackedSlot,
+					PackedTypes: map[int]utils.ValueType{0: utils.Address, 1: utils.Uint48, 2: utils.Uint48},
+					PackedNames: map[int]string{0: storage.BidGuy, 1: storage.BidTic, 2: storage.BidEnd},
+				}
+				Expect(mapping.Lookup(bidGuyKey)).To(Equal(expectedMetadata))
 			})
 
 			It("gets gal metadata", func() {
-				flapBidGalKey := vdbStorage.GetIncrementedKey(flapBidBidKey, 5)
+				flapBidGalKey := vdbStorage.GetIncrementedKey(flapBidBidKey, 3)
 				metadata, err := mapping.Lookup(flapBidGalKey)
 				Expect(err).NotTo(HaveOccurred())
 

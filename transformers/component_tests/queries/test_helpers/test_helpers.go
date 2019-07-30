@@ -349,55 +349,53 @@ func AssertUrn(actual, expected UrnState) {
 
 func GetFlopMetadatas(bidId string) []utils.StorageValueMetadata {
 	keys := map[utils.Key]string{constants.BidId: bidId}
+	packedNames := map[int]string{0: storage.BidGuy, 1: storage.BidTic, 2: storage.BidEnd}
+	packedTypes := map[int]utils.ValueType{0: utils.Address, 1: utils.Uint48, 2: utils.Uint48}
 	return []utils.StorageValueMetadata{
 		utils.GetStorageValueMetadata(storage.Kicks, nil, utils.Uint256),
 		utils.GetStorageValueMetadata(storage.BidBid, keys, utils.Uint256),
 		utils.GetStorageValueMetadata(storage.BidLot, keys, utils.Uint256),
-		utils.GetStorageValueMetadata(storage.BidGuy, keys, utils.Address),
-		utils.GetStorageValueMetadata(storage.BidTic, keys, utils.Uint48),
-		utils.GetStorageValueMetadata(storage.BidEnd, keys, utils.Uint48),
+		utils.GetStorageValueMetadataForPackedSlot(storage.Packed, keys, utils.PackedSlot, packedNames, packedTypes),
 	}
 }
 
 func GetFlapMetadatas(bidId string) []utils.StorageValueMetadata {
 	keys := map[utils.Key]string{constants.BidId: bidId}
+	packedNames := map[int]string{0: storage.BidGuy, 1: storage.BidTic, 2: storage.BidEnd}
+	packedTypes := map[int]utils.ValueType{0: utils.Address, 1: utils.Uint48, 2: utils.Uint48}
 	return []utils.StorageValueMetadata{
 		utils.GetStorageValueMetadata(storage.Kicks, nil, utils.Uint256),
 		utils.GetStorageValueMetadata(storage.BidBid, keys, utils.Uint256),
 		utils.GetStorageValueMetadata(storage.BidLot, keys, utils.Uint256),
-		utils.GetStorageValueMetadata(storage.BidGuy, keys, utils.Address),
-		utils.GetStorageValueMetadata(storage.BidTic, keys, utils.Uint48),
-		utils.GetStorageValueMetadata(storage.BidEnd, keys, utils.Uint48),
+		utils.GetStorageValueMetadataForPackedSlot(storage.Packed, keys, utils.PackedSlot, packedNames, packedTypes),
 		utils.GetStorageValueMetadata(storage.BidGal, keys, utils.Address),
 	}
 }
 
-func GetFlopStorageValues(seed int, bidId int) map[string]string {
-	valuesMap := make(map[string]string)
+func GetFlopStorageValues(seed int, bidId int) map[string]interface{} {
+	packedValues := map[int]string{0: "address1" + strconv.Itoa(seed), 1: strconv.Itoa(1 + seed), 2: strconv.Itoa(2 + seed)}
+	valuesMap := make(map[string]interface{})
 	valuesMap[storage.Kicks] = strconv.Itoa(bidId)
-	valuesMap[storage.BidBid] = strconv.Itoa(1 + seed)
-	valuesMap[storage.BidLot] = strconv.Itoa(2 + seed)
-	valuesMap[storage.BidGuy] = "address1" + strconv.Itoa(seed)
-	valuesMap[storage.BidTic] = strconv.Itoa(3 + seed)
-	valuesMap[storage.BidEnd] = strconv.Itoa(4 + seed)
+	valuesMap[storage.BidBid] = strconv.Itoa(3 + seed)
+	valuesMap[storage.BidLot] = strconv.Itoa(4 + seed)
+	valuesMap[storage.Packed] = packedValues
 
 	return valuesMap
 }
 
-func GetFlapStorageValues(seed int, bidId int) map[string]string {
-	valuesMap := make(map[string]string)
+func GetFlapStorageValues(seed int, bidId int) map[string]interface{} {
+	packedValues := map[int]string{0: "address1" + strconv.Itoa(seed), 1: strconv.Itoa(1 + seed), 2: strconv.Itoa(2 + seed)}
+	valuesMap := make(map[string]interface{})
 	valuesMap[storage.Kicks] = strconv.Itoa(bidId)
-	valuesMap[storage.BidBid] = strconv.Itoa(1 + seed)
-	valuesMap[storage.BidLot] = strconv.Itoa(2 + seed)
-	valuesMap[storage.BidGuy] = "address1" + strconv.Itoa(seed)
-	valuesMap[storage.BidTic] = strconv.Itoa(3 + seed)
-	valuesMap[storage.BidEnd] = strconv.Itoa(4 + seed)
+	valuesMap[storage.BidBid] = strconv.Itoa(3 + seed)
+	valuesMap[storage.BidLot] = strconv.Itoa(4 + seed)
+	valuesMap[storage.Packed] = packedValues
 	valuesMap[storage.BidGal] = "address2" + strconv.Itoa(seed)
 
 	return valuesMap
 }
 
-func CreateFlop(db *postgres.DB, header core.Header, valuesMap map[string]string, flopMetadatas []utils.StorageValueMetadata, contractAddress string) {
+func CreateFlop(db *postgres.DB, header core.Header, valuesMap map[string]interface{}, flopMetadatas []utils.StorageValueMetadata, contractAddress string) {
 	flopRepo := flop.FlopStorageRepository{ContractAddress: contractAddress}
 	flopRepo.SetDB(db)
 	blockHash := header.Hash
@@ -411,7 +409,7 @@ func CreateFlop(db *postgres.DB, header core.Header, valuesMap map[string]string
 	}
 }
 
-func CreateFlap(db *postgres.DB, header core.Header, valuesMap map[string]string, flapMetadatas []utils.StorageValueMetadata, contractAddress string) {
+func CreateFlap(db *postgres.DB, header core.Header, valuesMap map[string]interface{}, flapMetadatas []utils.StorageValueMetadata, contractAddress string) {
 	flapRepo := flap.FlapStorageRepository{ContractAddress: contractAddress}
 	flapRepo.SetDB(db)
 	blockHash := header.Hash
@@ -425,24 +423,30 @@ func CreateFlap(db *postgres.DB, header core.Header, valuesMap map[string]string
 	}
 }
 
-func BidFromValues(bidId, dealt, updated, created string, bidValues map[string]string) Bid {
+func BidFromValues(bidId, dealt, updated, created string, bidValues map[string]interface{}) Bid {
 	parsedCreated, _ := strconv.ParseInt(created, 10, 64)
 	parsedUpdated, _ := strconv.ParseInt(updated, 10, 64)
 	createdTimestamp := time.Unix(parsedCreated, 0).UTC().Format(time.RFC3339)
 	updatedTimestamp := time.Unix(parsedUpdated, 0).UTC().Format(time.RFC3339)
+	packedValues := bidValues[storage.Packed].(map[int]string)
 
-	return Bid{
+	bid := Bid{
 		BidId:   bidId,
-		Guy:     bidValues[storage.BidGuy],
-		Tic:     bidValues[storage.BidTic],
-		End:     bidValues[storage.BidEnd],
-		Lot:     bidValues[storage.BidLot],
-		Bid:     bidValues[storage.BidBid],
-		Gal:     bidValues[storage.BidGal],
+		Guy:     packedValues[0],
+		Tic:     packedValues[1],
+		End:     packedValues[2],
+		Lot:     bidValues[storage.BidLot].(string),
+		Bid:     bidValues[storage.BidBid].(string),
 		Dealt:   dealt,
 		Created: sql.NullString{String: createdTimestamp, Valid: true},
 		Updated: sql.NullString{String: updatedTimestamp, Valid: true},
 	}
+	gal := bidValues[storage.BidGal]
+	if gal != nil {
+		bid.Gal = gal.(string)
+	}
+
+	return bid
 }
 
 func SetUpBidContext(setupData BidSetupData) (err error) {
