@@ -1,31 +1,35 @@
 package flop
 
 import (
+	"strconv"
+	"strings"
+
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	storageFactory "github.com/vulcanize/vulcanizedb/libraries/shared/factories/storage"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
+	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
+
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/storage"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/flop"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/test_helpers"
-	storage_factory "github.com/vulcanize/vulcanizedb/libraries/shared/factories/storage"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
-	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 )
 
 var _ = Describe("Executing the flop transformer", func() {
 	var (
-		db               *postgres.DB
-		storageKeyLookup = flop.StorageKeysLookup{StorageRepository: &storage.MakerStorageRepository{}}
-		repository       = flop.FlopStorageRepository{}
-		transformer      storage_factory.Transformer
+		db                     *postgres.DB
+		transformer            storageFactory.Transformer
+		flopperContractAddress = "0x70b1a0fa8cc13cd3ce3cd65064c226dd9bc65f49"
+		repository             = flop.FlopStorageRepository{ContractAddress: flopperContractAddress}
+		storageKeyLookup       = flop.StorageKeysLookup{StorageRepository: &storage.MakerStorageRepository{}, ContractAddress: flopperContractAddress}
 	)
 
 	BeforeEach(func() {
-		flopperContractAddress := "0x70b1a0fa8cc13cd3ce3cd65064c226dd9bc65f49"
 		db = test_config.NewTestDB(test_config.NewTestNode())
 		test_config.CleanTestDB(db)
-		transformer = storage_factory.Transformer{
+		transformer = storageFactory.Transformer{
 			Address:    common.HexToAddress(flopperContractAddress),
 			Mappings:   &storageKeyLookup,
 			Repository: &repository,
@@ -149,5 +153,50 @@ var _ = Describe("Executing the flop transformer", func() {
 		err = db.Get(&liveResult, `SELECT block_number, block_hash, live AS value from maker.flop_live`)
 		Expect(err).NotTo(HaveOccurred())
 		test_helpers.AssertVariable(liveResult, blockNumber, blockHash.Hex(), "1")
+	})
+
+	Describe("bids", func() {
+		//TODO: update when we get real flop bid storage diffs
+		Describe("guy + tic + end packed slot", func() {
+			bidId := 1
+			blockNumber := 11579891
+			blockHash := common.HexToHash("5f2be3f6566f39dddfcfcf29784866280399ed9070af0b4fccd465509260349d")
+			diff := utils.StorageDiffRow{
+				Contract:     transformer.Address,
+				BlockHash:    blockHash,
+				BlockHeight:  blockNumber,
+				StorageKey:   common.HexToHash("cc69885fda6bcc1a4ace058b4a62bf5e179ea78fd58a1ccd71c22cc9b6887931"),
+				StorageValue: common.HexToHash("00000002a300000000002a30284ecb5880cdc3362d979d07d162bf1d8488975d"),
+			}
+
+			BeforeEach(func() {
+				_, writeErr := db.Exec(flop.InsertFlopKicksQuery, blockNumber, blockHash.Hex(), strings.ToLower(transformer.Address.Hex()), bidId)
+				Expect(writeErr).NotTo(HaveOccurred())
+
+				executeErr := transformer.Execute(diff)
+				Expect(executeErr).NotTo(HaveOccurred())
+			})
+
+			It("reads and persists a guy diff", func() {
+				var bidGuyResult test_helpers.MappingRes
+				dbErr := db.Get(&bidGuyResult, `SELECT block_number, block_hash, bid_id AS key, guy AS value FROM maker.flop_bid_guy`)
+				Expect(dbErr).NotTo(HaveOccurred())
+				test_helpers.AssertMapping(bidGuyResult, blockNumber, blockHash.Hex(), strconv.Itoa(bidId), "0x284ecB5880CdC3362D979D07D162bf1d8488975D")
+			})
+
+			It("reads and persists a tic diff", func() {
+				var bidTicResult test_helpers.MappingRes
+				dbErr := db.Get(&bidTicResult, `SELECT block_number, block_hash, bid_id AS key, tic AS value FROM maker.flop_bid_tic`)
+				Expect(dbErr).NotTo(HaveOccurred())
+				test_helpers.AssertMapping(bidTicResult, blockNumber, blockHash.Hex(), strconv.Itoa(bidId), "10800")
+			})
+
+			It("reads and persists an end diff", func() {
+				var bidEndResult test_helpers.MappingRes
+				dbErr := db.Get(&bidEndResult, `SELECT block_number, block_hash, bid_id AS key, "end" AS value FROM maker.flop_bid_end`)
+				Expect(dbErr).NotTo(HaveOccurred())
+				test_helpers.AssertMapping(bidEndResult, blockNumber, blockHash.Hex(), strconv.Itoa(bidId), "172800")
+			})
+		})
 	})
 })
