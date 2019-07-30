@@ -9,7 +9,7 @@ func FlapperAddress() string { return constants.GetContractAddress("MCD_FLAP") }
 func FlipperAddresses() []string {
 	return constants.GetContractAddresses([]string{
 		"ETH_FLIP_A", "ETH_FLIP_B", "ETH_FLIP_C",
-		"COL1_FLIP", "COL2_FLIP", "COL3_FLIP", "COL4_FLIP", "COL5_FLIP",
+		"MCD_FLIP_REP_A", "MCD_FLIP_ZRX_A", "MCD_FLIP_OMG_A", "MCD_FLIP_BAT_A", "MCD_FLIP_DGD_A", "MCD_FLIP_GNT_A",
 	})
 }
 func FlopperAddress() string { return constants.GetContractAddress("MCD_FLOP") }

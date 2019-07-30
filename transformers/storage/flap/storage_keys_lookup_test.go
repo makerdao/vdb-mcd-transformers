@@ -29,7 +29,7 @@ var _ = Describe("Flap storage mappings", func() {
 		storageRepository = &test_helpers.MockMakerStorageRepository{}
 		mapping = flap.StorageKeysLookup{
 			StorageRepository: storageRepository,
-			ContractAddress:   constants.FlapperContractAddress(),
+			ContractAddress:   constants.GetContractAddress("MCD_JUG"),
 		}
 	})
 
