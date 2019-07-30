@@ -2,20 +2,17 @@ package initializer
 
 import (
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/vulcanize/mcd_transformers/transformers/storage"
-	"github.com/vulcanize/mcd_transformers/transformers/storage/flap"
 
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/storage"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
-	s2 "github.com/vulcanize/vulcanizedb/libraries/shared/factories/storage"
+	storage2 "github.com/vulcanize/mcd_transformers/transformers/storage"
+	"github.com/vulcanize/mcd_transformers/transformers/storage/flap"
 )
 
-var StorageTransformerInitializer transformer.StorageTransformerInitializer = s2.Transformer{
-	Address: common.HexToAddress(constants.FlapperContractAddress()),
-	Mappings: &flap.StorageKeysLookup{
-		StorageRepository: &storage.MakerStorageRepository{},
-		ContractAddress:   constants.FlapperContractAddress(),
-	},
-	Repository: &flap.FlapStorageRepository{ContractAddress: constants.FlapperContractAddress()},
+var StorageTransformerInitializer transformer.StorageTransformerInitializer = storage.Transformer{
+	Address:    common.HexToAddress(constants.GetContractAddress("MCD_FLAP")),
+	Mappings:   &flap.StorageKeysLookup{StorageRepository: &storage2.MakerStorageRepository{}},
+	Repository: &flap.FlapStorageRepository{},
 }.NewTransformer
