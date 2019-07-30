@@ -3,9 +3,11 @@ package test_helpers
 import (
 	"database/sql"
 	. "github.com/onsi/gomega"
+	"github.com/vulcanize/mcd_transformers/transformers/events/deal"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/cat"
+	"github.com/vulcanize/mcd_transformers/transformers/storage/flop"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/jug"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/spot"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/vat"
@@ -341,6 +343,98 @@ func AssertUrn(actual, expected UrnState) {
 	Expect(actual.Safe).To(Equal(expected.Safe))
 	Expect(actual.Created).To(Equal(expected.Created))
 	Expect(actual.Updated).To(Equal(expected.Updated))
+}
+
+type FlopBid struct {
+	BidId   string `db:"bid_id"`
+	Guy     string
+	Tic     string
+	End     string
+	Lot     string
+	Bid     string
+	Dealt   string
+	Created sql.NullString
+	Updated sql.NullString
+}
+
+func GetFlopMetadatas(bidId string) []utils.StorageValueMetadata {
+	keys := map[utils.Key]string{constants.BidId: bidId}
+	return []utils.StorageValueMetadata{
+		utils.GetStorageValueMetadata(flop.Kicks, nil, utils.Uint256),
+		utils.GetStorageValueMetadata(flop.BidBid, keys, utils.Uint256),
+		utils.GetStorageValueMetadata(flop.BidLot, keys, utils.Uint256),
+		utils.GetStorageValueMetadata(flop.BidGuy, keys, utils.Address),
+		utils.GetStorageValueMetadata(flop.BidTic, keys, utils.Uint48),
+		utils.GetStorageValueMetadata(flop.BidEnd, keys, utils.Uint48),
+	}
+}
+
+func GetFlopStorageValues(seed int, bidId int) map[string]string {
+	valuesMap := make(map[string]string)
+	valuesMap[flop.Kicks] = strconv.Itoa(bidId)
+	valuesMap[flop.BidBid] = strconv.Itoa(1 + seed)
+	valuesMap[flop.BidLot] = strconv.Itoa(2 + seed)
+	valuesMap[flop.BidGuy] = "address1" + strconv.Itoa(seed)
+	valuesMap[flop.BidTic] = strconv.Itoa(3 + seed)
+	valuesMap[flop.BidEnd] = strconv.Itoa(4 + seed)
+
+	return valuesMap
+}
+
+func CreateFlop(db *postgres.DB, header core.Header, valuesMap map[string]string, flopMetadatas []utils.StorageValueMetadata, contractAddress string) {
+	flopRepo := flop.FlopStorageRepository{ContractAddress: contractAddress}
+	flopRepo.SetDB(db)
+	blockHash := header.Hash
+	blockNumber := int(header.BlockNumber)
+
+	for _, metadata := range flopMetadatas {
+		value := valuesMap[metadata.Name]
+		err := flopRepo.Create(blockNumber, blockHash, metadata, value)
+
+		Expect(err).NotTo(HaveOccurred())
+	}
+}
+
+func FlopBidFromValues(bidId, dealt, updated, created string, flopBidValues map[string]string) FlopBid {
+	parsedCreated, _ := strconv.ParseInt(created, 10, 64)
+	parsedUpdated, _ := strconv.ParseInt(updated, 10, 64)
+	createdTimestamp := time.Unix(parsedCreated, 0).UTC().Format(time.RFC3339)
+	updatedTimestamp := time.Unix(parsedUpdated, 0).UTC().Format(time.RFC3339)
+
+	return FlopBid{
+		BidId:   bidId,
+		Guy:     flopBidValues[flop.BidGuy],
+		Tic:     flopBidValues[flop.BidTic],
+		End:     flopBidValues[flop.BidEnd],
+		Lot:     flopBidValues[flop.BidLot],
+		Bid:     flopBidValues[flop.BidBid],
+		Dealt:   dealt,
+		Created: sql.NullString{String: createdTimestamp, Valid: true},
+		Updated: sql.NullString{String: updatedTimestamp, Valid: true},
+	}
+}
+
+func SetUpFlopBidContext(setupData FlopBidSetupData) (err error) {
+	if setupData.Dealt {
+		flopDealModel := test_data.DealModel
+		flopDealModel.ColumnValues["contract_address"] = setupData.ContractAddress
+		flopDealModel.ColumnValues["bid_id"] = strconv.Itoa(setupData.BidId)
+		deals := []shared.InsertionModel{flopDealModel}
+		dealErr := setupData.DealRepo.Create(setupData.DealHeaderId, deals)
+		if dealErr != nil {
+			return dealErr
+		}
+	}
+	return nil
+}
+
+type FlopBidSetupData struct {
+	Db              *postgres.DB
+	BidId           int
+	ContractAddress string
+	DealRepo        deal.DealRepository
+	DealHeaderId    int64
+	Dealt           bool
 }
 
 type IlkFileEvent struct {
