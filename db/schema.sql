@@ -1028,6 +1028,7 @@ WITH address AS (
          ORDER BY relevant_blocks.block_height DESC
          LIMIT 1
      )
+
 SELECT get_flap.bid_id,
        guy.guy,
        tic.tic,

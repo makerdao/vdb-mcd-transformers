@@ -2,7 +2,8 @@ package integration_tests
 
 import (
 	"errors"
-	log "github.com/sirupsen/logrus"
+	"github.com/sirupsen/logrus"
+	"log"
 	"testing"
 
 	. "github.com/onsi/ginkgo"
@@ -23,7 +24,7 @@ var _ = BeforeSuite(func() {
 	err := testConfig.ReadInConfig()
 	ipc = testConfig.GetString("client.ipcPath")
 	if err != nil {
-		log.Fatal(err)
+		logrus.Fatal(err)
 	}
 	// If we don't have an ipc path in the config file, check the env variable
 	if ipc == "" {
@@ -31,7 +32,10 @@ var _ = BeforeSuite(func() {
 		ipc = testConfig.GetString("url")
 	}
 	if ipc == "" {
-		log.Fatal(errors.New("infura.toml IPC path or $INFURA_URL env variable need to be set"))
+		logrus.Fatal(errors.New("infura.toml IPC path or $INFURA_URL env variable need to be set"))
 	}
+	// Set log to discard logs emitted by dependencies
 	log.SetOutput(ioutil.Discard)
+	// Set logrus to discard logs emitted by mcd_transformers
+	logrus.SetOutput(ioutil.Discard)
 })

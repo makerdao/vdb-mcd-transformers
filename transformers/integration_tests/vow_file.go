@@ -66,7 +66,7 @@ var _ = Describe("VowFile LogNoteTransforer", func() {
 	})
 
 	It("fetches and transforms a Vow.file event from Kovan", func() {
-		blockNumber := int64(11861722)
+		blockNumber := int64(12176180)
 		initializer.Config.StartingBlockNumber = blockNumber
 		initializer.Config.EndingBlockNumber = blockNumber
 

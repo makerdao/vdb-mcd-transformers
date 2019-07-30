@@ -57,7 +57,7 @@ var _ = Describe("Jug File Ilk LogNoteTransformer", func() {
 	}
 
 	It("transforms jug file ilk log events", func() {
-		blockNumber := int64(11861841)
+		blockNumber := int64(12176273)
 		jugFileIlkConfig.StartingBlockNumber = blockNumber
 		jugFileIlkConfig.EndingBlockNumber = blockNumber
 

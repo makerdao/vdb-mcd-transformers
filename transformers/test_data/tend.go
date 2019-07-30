@@ -30,6 +30,7 @@ import (
 )
 
 var (
+	tendAddress         = common.HexToAddress(FlapAddress())
 	tendBidId           = int64(10)
 	tendLot             = "8500000000000"
 	tendBid             = "100000000000"
@@ -38,7 +39,7 @@ var (
 )
 
 var TendLogNote = types.Log{
-	Address: common.HexToAddress(FlapAddress()),
+	Address: tendAddress,
 	Topics: []common.Hash{
 		common.HexToHash(constants.TendSignature()),
 		common.HexToHash("0x0000000000000000000000003a673843d27d037b206bb05eb1abbc7288d95e66"),
@@ -64,7 +65,7 @@ var TendModel = shared.InsertionModel{
 		"bid_id":           strconv.FormatInt(tendBidId, 10),
 		"lot":              tendLot,
 		"bid":              tendBid,
-		"contract_address": FlapAddress(),
+		"contract_address": tendAddress.Hex(),
 		"log_idx":          TendLogNote.Index,
 		"tx_idx":           TendLogNote.TxIndex,
 		"raw_log":          rawTendLog,

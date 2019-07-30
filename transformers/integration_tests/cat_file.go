@@ -66,7 +66,7 @@ var _ = Describe("Cat File transformer", func() {
 	})
 
 	It("persists a chop lump event (lump)", func() {
-		chopLumpBlockNumber := int64(11861924)
+		chopLumpBlockNumber := int64(12176330)
 		header, err := persistHeader(db, chopLumpBlockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 		catFileConfig.TransformerName = mcdConstants.CatFileChopLumpLabel
@@ -106,7 +106,7 @@ var _ = Describe("Cat File transformer", func() {
 	})
 
 	It("persists a chop lump event (chop)", func() {
-		chopLumpBlockNumber := int64(11861897)
+		chopLumpBlockNumber := int64(12176309)
 		header, err := persistHeader(db, chopLumpBlockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 		catFileConfig.TransformerName = mcdConstants.CatFileChopLumpLabel
@@ -146,7 +146,7 @@ var _ = Describe("Cat File transformer", func() {
 	})
 
 	It("persists a flip event", func() {
-		flipBlockNumber := int64(11861469)
+		flipBlockNumber := int64(12176066)
 		header, err := persistHeader(db, flipBlockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 		catFileConfig.TransformerName = mcdConstants.CatFileFlipLabel
@@ -180,11 +180,11 @@ var _ = Describe("Cat File transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 		Expect(dbResult[0].Ilk).To(Equal(strconv.Itoa(ilkID)))
 		Expect(dbResult[0].What).To(Equal("flip"))
-		Expect(dbResult[0].Flip).To(Equal("0xc12C2813EcC2941FcA50c09a8a514FDbECC72056"))
+		Expect(dbResult[0].Flip).To(Equal("0x9d18E462B23FFC45ce6136a76DfF82C4C55702Be"))
 	})
 
 	It("persists a vow event", func() {
-		vowBlockNumber := int64(11579862)
+		vowBlockNumber := int64(12176051)
 		header, err := persistHeader(db, vowBlockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 		catFileConfig.TransformerName = mcdConstants.CatFileVowLabel
@@ -215,6 +215,12 @@ var _ = Describe("Cat File transformer", func() {
 		err = db.Get(&headerID, `SELECT id FROM public.headers WHERE block_number = $1`, vowBlockNumber)
 		Expect(err).NotTo(HaveOccurred())
 
+		var dbResult catFileVowModel
+		err = db.Get(&dbResult, `SELECT what, data FROM maker.cat_file_vow`)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(dbResult.What).To(Equal("vow"))
+		Expect(dbResult.Data).To(Equal("0x43D3fA1C52933C4FF13628e43279f17D97CBbe9A"))
+
 		var catVowChecked []int
 		err = db.Select(&catVowChecked, `SELECT cat_file_vow FROM public.checked_headers WHERE header_id = $1`, headerID)
 		Expect(err).NotTo(HaveOccurred())
@@ -242,11 +248,8 @@ type catFileFlipModel struct {
 }
 
 type catFileVowModel struct {
-	What             string
-	Data             string
-	TransactionIndex uint   `db:"tx_idx"`
-	LogIndex         uint   `db:"log_idx"`
-	Raw              []byte `db:"raw_log"`
+	What string
+	Data string
 }
 
 type byLogIndexChopLump []catFileChopLumpModel
