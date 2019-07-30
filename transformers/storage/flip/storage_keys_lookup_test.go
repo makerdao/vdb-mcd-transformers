@@ -25,7 +25,7 @@ var _ = Describe("Flip storage mappings", func() {
 
 	BeforeEach(func() {
 		storageRepository = &test_helpers.MockMakerStorageRepository{}
-		mappings = flip.StorageKeysLookup{StorageRepository: storageRepository, ContractAddress: constants.GetContractAddress("ETH_FLIP_A")}
+		mappings = flip.StorageKeysLookup{StorageRepository: storageRepository, ContractAddress: constants.GetContractAddress("MCD_FLIP_ETH_A")}
 	})
 
 	Describe("looking up static keys", func() {
