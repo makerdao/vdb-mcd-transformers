@@ -104,7 +104,7 @@ var _ = Describe("Spot Poke repository", func() {
 
 	Describe("MarkHeaderChecked", func() {
 		inputs := shared_behaviors.MarkedHeaderCheckedBehaviorInputs{
-			CheckedHeaderColumnName: constants.BiteLabel,
+			CheckedHeaderColumnName: constants.SpotPokeLabel,
 			Repository:              &repository,
 		}
 

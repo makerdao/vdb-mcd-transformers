@@ -94,7 +94,7 @@ var _ = Describe("Bite Transformer", func() {
 	})
 
 	It("unpacks an event log", func() {
-		address := common.HexToAddress(mcdConstants.GetContractAddress("MCD_CAT"))
+		address := common.HexToAddress(test_data.CatAddress())
 		abi, err := geth.ParseAbi(mcdConstants.CatABI())
 		Expect(err).NotTo(HaveOccurred())
 

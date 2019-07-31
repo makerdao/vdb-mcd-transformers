@@ -233,7 +233,7 @@ var _ = Describe("Plugin test", func() {
 				Expect(returned.LogIndex).To(Equal(uint(3)))
 			})
 
-			XIt("rechecks checked headers for event logs", func() {
+			It("rechecks checked headers for event logs", func() {
 				db, bc := SetupDBandBC()
 				hr = repositories.NewHeaderRepository(db)
 				header1, err := bc.GetHeaderByNumber(11861443)

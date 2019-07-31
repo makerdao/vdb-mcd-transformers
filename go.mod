@@ -26,6 +26,6 @@ require (
 	github.com/spf13/cobra v0.0.5 // indirect
 	github.com/spf13/viper v1.3.2
 	github.com/syndtr/goleveldb v0.0.0-20181128100959-b001fa50d6b2 // indirect
-	github.com/vulcanize/vulcanizedb v0.0.5-0.20190729200437-f2547b5a4276
+	github.com/vulcanize/vulcanizedb v0.0.5-0.20190731011842-65e762f80b75
 	golang.org/x/crypto v0.0.0-20190605123033-f99c8df09eb5
 )

@@ -86,7 +86,7 @@ func (repository *SpotPokeRepository) Create(headerID int64, models []interface{
 }
 
 func (repository SpotPokeRepository) MarkHeaderChecked(headerID int64) error {
-	return shared_repo.MarkHeaderChecked(headerID, repository.db, constants.BiteLabel)
+	return shared_repo.MarkHeaderChecked(headerID, repository.db, constants.SpotPokeLabel)
 }
 
 func (repository *SpotPokeRepository) SetDB(db *postgres.DB) {
