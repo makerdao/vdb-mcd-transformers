@@ -29,7 +29,7 @@ var _ = Describe("Flip storage repository", func() {
 		fakeBlockNumber = rand.Int()
 		db = test_config.NewTestDB(test_config.NewTestNode())
 		test_config.CleanTestDB(db)
-		repo = flip.FlipStorageRepository{ContractAddress: constants.EthFlipContractAddressA()}
+		repo = flip.FlipStorageRepository{ContractAddress: constants.GetContractAddress("ETH_FLIP_A")}
 		repo.SetDB(db)
 	})
 
