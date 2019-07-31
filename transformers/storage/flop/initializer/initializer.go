@@ -10,9 +10,9 @@ import (
 )
 
 var StorageTransformerInitializer transformer.StorageTransformerInitializer = s2.Transformer{
-	Address: common.HexToAddress(constants.FlopperContractAddress()),
+	Address: common.HexToAddress(constants.GetContractAddress("MCD_FLOP")),
 	Mappings: &flop.StorageKeysLookup{
 		StorageRepository: &storage.MakerStorageRepository{},
-		ContractAddress:   constants.FlopperContractAddress()},
-	Repository: &flop.FlopStorageRepository{ContractAddress: constants.FlopperContractAddress()},
+		ContractAddress:   constants.GetContractAddress("MCD_FLOP")},
+	Repository: &flop.FlopStorageRepository{ContractAddress: constants.GetContractAddress("MCD_FLOP")},
 }.NewTransformer
