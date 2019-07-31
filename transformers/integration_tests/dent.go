@@ -54,7 +54,7 @@ var _ = XDescribe("Dent transformer", func() {
 
 		dentConfig = transformer.EventTransformerConfig{
 			TransformerName:   mcdConstants.DentLabel,
-			ContractAddresses: append(test_data.FlipperAddresses(), test_data.FlopperAddress()),
+			ContractAddresses: append(test_data.FlipAddresses(), test_data.FlopAddress()),
 			ContractAbi:       mcdConstants.FlipABI(),
 			Topic:             mcdConstants.DentSignature(),
 		}

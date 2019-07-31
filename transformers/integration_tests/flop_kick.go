@@ -52,7 +52,7 @@ var _ = XDescribe("FlopKick Transformer", func() {
 
 		flopKickConfig = transformer.EventTransformerConfig{
 			TransformerName:   mcdConstants.FlopKickLabel,
-			ContractAddresses: []string{test_data.FlopperAddress()},
+			ContractAddresses: []string{test_data.FlopAddress()},
 			ContractAbi:       mcdConstants.FlopABI(),
 			Topic:             mcdConstants.FlopKickSignature(),
 		}

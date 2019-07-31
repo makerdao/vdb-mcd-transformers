@@ -11,6 +11,7 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/storage"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/flip"
 	. "github.com/vulcanize/mcd_transformers/transformers/storage/test_helpers"
+	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data/shared_behaviors"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
@@ -29,7 +30,7 @@ var _ = Describe("Flip storage repository", func() {
 		fakeBlockNumber = rand.Int()
 		db = test_config.NewTestDB(test_config.NewTestNode())
 		test_config.CleanTestDB(db)
-		repo = flip.FlipStorageRepository{ContractAddress: constants.GetContractAddress("ETH_FLIP_A")}
+		repo = flip.FlipStorageRepository{ContractAddress: test_data.EthFlipAddress()}
 		repo.SetDB(db)
 	})
 

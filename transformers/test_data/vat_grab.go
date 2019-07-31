@@ -28,7 +28,7 @@ import (
 )
 
 var EthVatGrabLogWithPositiveDink = types.Log{
-	Address: common.HexToAddress(constants.GetContractAddress("MCD_VAT")),
+	Address: common.HexToAddress(VatAddress()),
 	Topics: []common.Hash{
 		common.HexToHash(constants.VatGrabSignature()),
 		common.HexToHash("0x66616b6520696c6b000000000000000000000000000000000000000000000000"),
@@ -66,7 +66,7 @@ var VatGrabModelWithPositiveDink = shared.InsertionModel{
 }
 
 var EthVatGrabLogWithNegativeDink = types.Log{
-	Address: common.HexToAddress(constants.GetContractAddress("MCD_VAT")),
+	Address: common.HexToAddress(VatAddress()),
 	Topics: []common.Hash{
 		common.HexToHash(constants.VatGrabSignature()),
 		common.HexToHash("0x66616b6520696c6b000000000000000000000000000000000000000000000000"),

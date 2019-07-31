@@ -24,11 +24,10 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
 var EthVatHealLogWithPositiveRad = types.Log{
-	Address: common.HexToAddress(constants.GetContractAddress("MCD_VAT")),
+	Address: common.HexToAddress(VatAddress()),
 	Topics: []common.Hash{
 		common.HexToHash("0x00000000000000000000000000000000000000000000000000000000f37ac61c"),
 		common.HexToHash("0x0000000000000000000000000000000000000000000000000000000000002711"),

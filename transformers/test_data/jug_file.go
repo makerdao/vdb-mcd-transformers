@@ -30,7 +30,7 @@ import (
 )
 
 var EthJugFileIlkLog = types.Log{
-	Address: common.HexToAddress(constants.GetContractAddress("MCD_JUG")),
+	Address: common.HexToAddress(JugAddress()),
 	Topics: []common.Hash{
 		common.HexToHash(constants.JugFileIlkSignature()),
 		common.HexToHash("0x000000000000000000000000127232c33f9b051e3703294de3c1e03e15f8a33f"),
@@ -65,7 +65,7 @@ var JugFileIlkModel = shared.InsertionModel{
 }
 
 var EthJugFileBaseLog = types.Log{
-	Address: common.HexToAddress(constants.GetContractAddress("MCD_JUG")),
+	Address: common.HexToAddress(JugAddress()),
 	Topics: []common.Hash{
 		common.HexToHash(constants.JugFileBaseSignature()),
 		common.HexToHash("0x00000000000000000000000064d922894153be9eef7b7218dc565d1d0ce2a092"),
@@ -98,7 +98,7 @@ var JugFileBaseModel = shared.InsertionModel{
 }
 
 var EthJugFileVowLog = types.Log{
-	Address: common.HexToAddress(constants.GetContractAddress("MCD_JUG")),
+	Address: common.HexToAddress(JugAddress()),
 	Topics: []common.Hash{
 		common.HexToHash(constants.JugFileVowSignature()),
 		common.HexToHash("0x0000000000000000000000003652c2af10cbbdb753c3b46489db5226b73e6497"),
