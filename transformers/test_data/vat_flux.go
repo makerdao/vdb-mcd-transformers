@@ -28,7 +28,7 @@ import (
 )
 
 var EthVatFluxLog = types.Log{
-	Address: common.HexToAddress(constants.GetContractAddress("MCD_VAT")),
+	Address: common.HexToAddress(VatAddress()),
 	Topics: []common.Hash{
 		common.HexToHash(constants.VatFluxSignature()),
 		common.HexToHash("0x66616b6520696c6b000000000000000000000000000000000000000000000000"),

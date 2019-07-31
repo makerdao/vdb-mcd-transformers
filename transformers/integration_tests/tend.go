@@ -20,7 +20,6 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
@@ -30,6 +29,7 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/events/tend"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
 var _ = XDescribe("Tend LogNoteTransformer", func() {
@@ -53,7 +53,7 @@ var _ = XDescribe("Tend LogNoteTransformer", func() {
 
 		tendConfig = transformer.EventTransformerConfig{
 			TransformerName:   mcdConstants.TendLabel,
-			ContractAddresses: append(test_data.FlipperAddresses(), test_data.FlapperAddress()),
+			ContractAddresses: append(test_data.FlipAddresses(), test_data.FlapAddress()),
 			ContractAbi:       mcdConstants.FlipABI(),
 			Topic:             mcdConstants.TendSignature(),
 		}

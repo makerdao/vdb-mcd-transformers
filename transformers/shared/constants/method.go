@@ -46,7 +46,7 @@ func dentMethod() string     { return getSolidityFunctionSignature(FlipABI(), "d
 func flapKickMethod() string { return getSolidityFunctionSignature(FlapABI(), "Kick") }
 func flipKickMethod() string { return getSolidityFunctionSignature(FlipABI(), "Kick") }
 func flipTickMethod() string { return getSolidityFunctionSignature(FlipABI(), "tick") }
-func flopKickMethod() string { return getSolidityFunctionSignature(FlapABI(), "Kick") }
+func flopKickMethod() string { return getSolidityFunctionSignature(FlopABI(), "Kick") }
 func jugDripMethod() string  { return getSolidityFunctionSignature(JugABI(), "drip") }
 func jugFileBaseMethod() string {
 	return getOverloadedFunctionSignature(JugABI(), "file", []string{"bytes32", "uint256"})

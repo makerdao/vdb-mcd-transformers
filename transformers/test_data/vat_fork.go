@@ -28,7 +28,7 @@ import (
 )
 
 var EthVatForkLogWithNegativeDinkDart = types.Log{
-	Address: common.HexToAddress(constants.GetContractAddress("MCD_VAT")),
+	Address: common.HexToAddress(VatAddress()),
 	Topics: []common.Hash{
 		common.HexToHash("0x00000000000000000000000000000000000000000000000000000000870c616d"),
 		common.HexToHash("0x66616b6520696c6b000000000000000000000000000000000000000000000000"),
@@ -65,7 +65,7 @@ var VatForkModelWithNegativeDinkDart = shared.InsertionModel{
 }
 
 var EthVatForkLogWithPositiveDinkDart = types.Log{
-	Address: common.HexToAddress(constants.GetContractAddress("MCD_VAT")),
+	Address: common.HexToAddress(VatAddress()),
 	Topics: []common.Hash{
 		common.HexToHash("0x00000000000000000000000000000000000000000000000000000000870c616d"),
 		common.HexToHash("0x66616b6520696c6b000000000000000000000000000000000000000000000000"),

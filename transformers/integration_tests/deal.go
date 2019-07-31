@@ -20,7 +20,6 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
@@ -30,6 +29,7 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/events/deal"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
 var _ = XDescribe("Deal transformer", func() {
@@ -54,9 +54,9 @@ var _ = XDescribe("Deal transformer", func() {
 		dealConfig = transformer.EventTransformerConfig{
 			TransformerName: mcdConstants.DealLabel,
 			ContractAddresses: []string{
-				test_data.FlapperAddress(),
-				test_data.OldFlipperAddress(),
-				test_data.FlopperAddress(),
+				test_data.FlapAddress(),
+				test_data.EthFlipAddress(),
+				test_data.FlopAddress(),
 			},
 			Topic: mcdConstants.DealSignature(),
 		}
@@ -95,7 +95,7 @@ var _ = XDescribe("Deal transformer", func() {
 
 		Expect(len(dbResult)).To(Equal(1))
 		Expect(dbResult[0].BidId).To(Equal("6"))
-		Expect(dbResult[0].ContractAddress).To(Equal(test_data.OldFlipperAddress()))
+		Expect(dbResult[0].ContractAddress).To(Equal(test_data.EthFlipAddress()))
 	})
 
 	It("persists a flop deal log event", func() {
@@ -123,7 +123,7 @@ var _ = XDescribe("Deal transformer", func() {
 
 		Expect(len(dbResult)).To(Equal(1))
 		Expect(dbResult[0].BidId).To(Equal("1"))
-		Expect(dbResult[0].ContractAddress).To(Equal(test_data.FlapperAddress()))
+		Expect(dbResult[0].ContractAddress).To(Equal(test_data.FlapAddress()))
 	})
 })
 

@@ -34,7 +34,7 @@ import (
 var _ = XDescribe("Flip tick LogNoteTransformer", func() {
 	flipTickConfig := transformer.EventTransformerConfig{
 		TransformerName:   mcdConstants.FlipTickLabel,
-		ContractAddresses: test_data.FlipperAddresses(),
+		ContractAddresses: test_data.FlipAddresses(),
 		ContractAbi:       mcdConstants.FlipABI(),
 		Topic:             mcdConstants.FlipTickSignature(),
 	}

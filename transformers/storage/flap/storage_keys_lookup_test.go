@@ -1,8 +1,6 @@
 package flap_test
 
 import (
-	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	"github.com/vulcanize/mcd_transformers/transformers/storage"
 	"math/rand"
 	"strconv"
 
@@ -10,13 +8,17 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+
 	vdbStorage "github.com/vulcanize/vulcanizedb/libraries/shared/storage"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/mcd_transformers/transformers/storage"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/flap"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/test_helpers"
+	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
 var _ = Describe("Flap storage mappings", func() {
@@ -29,7 +31,7 @@ var _ = Describe("Flap storage mappings", func() {
 		storageRepository = &test_helpers.MockMakerStorageRepository{}
 		mapping = flap.StorageKeysLookup{
 			StorageRepository: storageRepository,
-			ContractAddress:   constants.GetContractAddress("MCD_JUG"),
+			ContractAddress:   test_data.FlapAddress(),
 		}
 	})
 

@@ -27,7 +27,7 @@ import (
 )
 
 var EthSpotPokeLog = types.Log{
-	Address: common.HexToAddress(constants.GetContractAddress("MCD_SPOT")),
+	Address: common.HexToAddress(SpotAddress()),
 	Topics: []common.Hash{
 		common.HexToHash(constants.SpotPokeSignature()),
 	},

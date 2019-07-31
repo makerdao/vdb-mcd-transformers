@@ -36,6 +36,7 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/events/cat_file/vow"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
 var _ = Describe("Cat File transformer", func() {
@@ -49,7 +50,7 @@ var _ = Describe("Cat File transformer", func() {
 	)
 
 	var catFileConfig = transformer.EventTransformerConfig{
-		ContractAddresses: []string{mcdConstants.GetContractAddress("MCD_CAT")},
+		ContractAddresses: []string{test_data.CatAddress()},
 		ContractAbi:       mcdConstants.CatABI(),
 	}
 
