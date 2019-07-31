@@ -87,63 +87,54 @@
         repository = "github.com/vulcanize/mcd_transformers"
         migrations = "db/migrations"
         rank = "0"
-        contracts = ["MCD_FLIP"]
     [exporter.zrx_flip]
         path = "transformers/storage/flip/initializers/zrx_flip"
         type = "eth_storage"
         repository = "github.com/vulcanize/mcd_transformers"
         migrations = "db/migrations"
         rank = "0"
-        contracts = ["MCD_FLIP"]
     [exporter.omg_flip]
         path = "transformers/storage/flip/initializers/omg_flip"
         type = "eth_storage"
         repository = "github.com/vulcanize/mcd_transformers"
         migrations = "db/migrations"
         rank = "0"
-        contracts = ["MCD_FLIP"]
     [exporter.bat_flip]
         path = "transformers/storage/flip/initializers/bat_flip"
         type = "eth_storage"
         repository = "github.com/vulcanize/mcd_transformers"
         migrations = "db/migrations"
         rank = "0"
-        contracts = ["MCD_FLIP"]
     [exporter.dgd_flip]
         path = "transformers/storage/flip/initializers/dgd_flip"
         type = "eth_storage"
         repository = "github.com/vulcanize/mcd_transformers"
         migrations = "db/migrations"
         rank = "0"
-        contracts = ["MCD_FLIP"]
     [exporter.gnt_flip]
         path = "transformers/storage/flip/initializers/gnt_flip"
         type = "eth_storage"
         repository = "github.com/vulcanize/mcd_transformers"
         migrations = "db/migrations"
         rank = "0"
-        contracts = ["MCD_FLIP"]
     [exporter.eth_flip_a]
         path = "transformers/storage/flip/initializers/eth_flip_a"
         type = "eth_storage"
         repository = "github.com/vulcanize/mcd_transformers"
         migrations = "db/migrations"
         rank = "0"
-        contracts = ["MCD_FLIP"]
     [exporter.eth_flip_b]
         path = "transformers/storage/flip/initializers/eth_flip_b"
         type = "eth_storage"
         repository = "github.com/vulcanize/mcd_transformers"
         migrations = "db/migrations"
         rank = "0"
-        contracts = ["MCD_FLIP"]
     [exporter.eth_flip_c]
         path = "transformers/storage/flip/initializers/eth_flip_c"
         type = "eth_storage"
         repository = "github.com/vulcanize/mcd_transformers"
         migrations = "db/migrations"
         rank = "0"
-        contracts = ["MCD_FLIP"]
     [exporter.jug]
         path = "transformers/storage/jug/initializer"
         type = "eth_storage"
