@@ -3,6 +3,7 @@ package flop
 import (
 	"fmt"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/mcd_transformers/transformers/storage"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 )
@@ -30,27 +31,27 @@ type FlopStorageRepository struct {
 
 func (repository *FlopStorageRepository) Create(blockNumber int, blockHash string, metadata utils.StorageValueMetadata, value interface{}) error {
 	switch metadata.Name {
-	case Vat:
+	case storage.Vat:
 		return repository.insertVat(blockNumber, blockHash, value.(string))
-	case Gem:
+	case storage.Gem:
 		return repository.insertGem(blockNumber, blockHash, value.(string))
-	case Beg:
+	case storage.Beg:
 		return repository.insertBeg(blockNumber, blockHash, value.(string))
-	case Kicks:
+	case storage.Kicks:
 		return repository.insertKicks(blockNumber, blockHash, value.(string))
-	case Live:
+	case storage.Live:
 		return repository.insertLive(blockNumber, blockHash, value.(string))
-	case Packed:
+	case storage.Packed:
 		return repository.insertPackedValueRecord(blockNumber, blockHash, metadata, value.(map[int]string))
-	case BidBid:
+	case storage.BidBid:
 		return repository.insertBidBid(blockNumber, blockHash, metadata, value.(string))
-	case BidLot:
+	case storage.BidLot:
 		return repository.insertBidLot(blockNumber, blockHash, metadata, value.(string))
-	case BidGuy:
+	case storage.BidGuy:
 		return repository.insertBidGuy(blockNumber, blockHash, metadata, value.(string))
-	case BidTic:
+	case storage.BidTic:
 		return repository.insertBidTic(blockNumber, blockHash, metadata, value.(string))
-	case BidEnd:
+	case storage.BidEnd:
 		return repository.insertBidEnd(blockNumber, blockHash, metadata, value.(string))
 	default:
 		panic(fmt.Sprintf("unrecognized flop contract storage name: %s", metadata.Name))
@@ -144,12 +145,12 @@ func (repository *FlopStorageRepository) insertBidEnd(blockNumber int, blockHash
 func (repository *FlopStorageRepository) insertPackedValueRecord(blockNumber int, blockHash string, metadata utils.StorageValueMetadata, packedValues map[int]string) error {
 	for order, value := range packedValues {
 		switch metadata.PackedNames[order] {
-		case Ttl:
+		case storage.Ttl:
 			ttlErr := repository.insertTtl(blockNumber, blockHash, value)
 			if ttlErr != nil {
 				return ttlErr
 			}
-		case Tau:
+		case storage.Tau:
 			tauErr := repository.insertTau(blockNumber, blockHash, value)
 			if tauErr != nil {
 				return tauErr

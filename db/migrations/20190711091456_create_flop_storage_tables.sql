@@ -2,12 +2,12 @@
 -- SQL in this section is executed when the migration is applied.
 CREATE TABLE maker.flop_bid_bid
 (
-    id SERIAL PRIMARY KEY,
-    block_number BIGINT,
-    block_hash TEXT,
+    id               SERIAL PRIMARY KEY,
+    block_number     BIGINT,
+    block_hash       TEXT,
     contract_address TEXT,
-    bid_id NUMERIC NOT NULL,
-    bid NUMERIC NOT NULL,
+    bid_id           NUMERIC NOT NULL,
+    bid              NUMERIC NOT NULL,
     UNIQUE (block_number, block_hash, bid_id, contract_address, bid)
 );
 
@@ -16,12 +16,12 @@ CREATE INDEX flop_bid_bid_block_number_index
 
 CREATE TABLE maker.flop_bid_lot
 (
-    id SERIAL PRIMARY KEY,
-    block_number BIGINT,
-    block_hash TEXT,
+    id               SERIAL PRIMARY KEY,
+    block_number     BIGINT,
+    block_hash       TEXT,
     contract_address TEXT,
-    bid_id NUMERIC NOT NULL,
-    lot NUMERIC NOT NULL,
+    bid_id           NUMERIC NOT NULL,
+    lot              NUMERIC NOT NULL,
     UNIQUE (block_number, block_hash, bid_id, contract_address, lot)
 );
 
@@ -30,12 +30,12 @@ CREATE INDEX flop_bid_lot_block_number_index
 
 CREATE TABLE maker.flop_bid_guy
 (
-    id SERIAL PRIMARY KEY,
-    block_number BIGINT,
-    block_hash TEXT,
+    id               SERIAL PRIMARY KEY,
+    block_number     BIGINT,
+    block_hash       TEXT,
     contract_address TEXT,
-    bid_id NUMERIC NOT NULL,
-    guy TEXT,
+    bid_id           NUMERIC NOT NULL,
+    guy              TEXT,
     UNIQUE (block_number, block_hash, bid_id, contract_address, guy)
 );
 
@@ -44,9 +44,9 @@ CREATE INDEX flop_bid_guy_block_number_index
 
 CREATE TABLE maker.flop_bid_tic
 (
-    id SERIAL PRIMARY KEY,
-    block_number BIGINT,
-    block_hash TEXT,
+    id               SERIAL PRIMARY KEY,
+    block_number     BIGINT,
+    block_hash       TEXT,
     contract_address TEXT,
     bid_id NUMERIC NOT NULL,
     tic BIGINT NOT NULL,
@@ -58,9 +58,9 @@ CREATE INDEX flop_bid_tic_block_number_index
 
 CREATE TABLE maker.flop_bid_end
 (
-    id SERIAL PRIMARY KEY,
-    block_number BIGINT,
-    block_hash TEXT,
+    id               SERIAL PRIMARY KEY,
+    block_number     BIGINT,
+    block_hash       TEXT,
     contract_address TEXT,
     bid_id NUMERIC NOT NULL,
     "end" BIGINT NOT NULL,
@@ -72,61 +72,61 @@ CREATE INDEX flop_bid_end_block_number_index
 
 CREATE TABLE maker.flop_vat
 (
-    id SERIAL PRIMARY KEY,
-    block_number BIGINT,
-    block_hash TEXT,
+    id               SERIAL PRIMARY KEY,
+    block_number     BIGINT,
+    block_hash       TEXT,
     contract_address TEXT,
-    vat TEXT,
+    vat              TEXT,
     UNIQUE (block_number, block_hash, contract_address, vat)
 );
 
 CREATE TABLE maker.flop_gem
 (
-    id SERIAL PRIMARY KEY,
-    block_number BIGINT,
-    block_hash TEXT,
+    id               SERIAL PRIMARY KEY,
+    block_number     BIGINT,
+    block_hash       TEXT,
     contract_address TEXT,
-    gem TEXT,
+    gem              TEXT,
     UNIQUE (block_number, block_hash, contract_address, gem)
 );
 
-CREATE TABLE  maker.flop_beg
+CREATE TABLE maker.flop_beg
 (
-    id SERIAL PRIMARY KEY ,
-    block_number BIGINT,
-    block_hash TEXT,
+    id               SERIAL PRIMARY KEY,
+    block_number     BIGINT,
+    block_hash       TEXT,
     contract_address TEXT,
-    beg NUMERIC NOT NULL,
+    beg              NUMERIC NOT NULL,
     UNIQUE (block_number, block_hash, contract_address, beg)
 );
 
-CREATE TABLE  maker.flop_ttl
+CREATE TABLE maker.flop_ttl
 (
-    id SERIAL PRIMARY KEY ,
-    block_number BIGINT,
-    block_hash TEXT,
+    id               SERIAL PRIMARY KEY,
+    block_number     BIGINT,
+    block_hash       TEXT,
     contract_address TEXT,
-    ttl NUMERIC NOT NULL,
+    ttl              NUMERIC NOT NULL,
     UNIQUE (block_number, block_hash, contract_address, ttl)
 );
 
-CREATE TABLE  maker.flop_tau
+CREATE TABLE maker.flop_tau
 (
-    id SERIAL PRIMARY KEY ,
-    block_number BIGINT,
-    block_hash TEXT,
+    id               SERIAL PRIMARY KEY,
+    block_number     BIGINT,
+    block_hash       TEXT,
     contract_address TEXT,
-    tau NUMERIC NOT NULL,
+    tau              NUMERIC NOT NULL,
     UNIQUE (block_number, block_hash, contract_address, tau)
 );
 
-CREATE TABLE  maker.flop_kicks
+CREATE TABLE maker.flop_kicks
 (
-    id SERIAL PRIMARY KEY ,
-    block_number BIGINT,
-    block_hash TEXT,
+    id               SERIAL PRIMARY KEY,
+    block_number     BIGINT,
+    block_hash       TEXT,
     contract_address TEXT,
-    kicks NUMERIC NOT NULL,
+    kicks            NUMERIC NOT NULL,
     UNIQUE (block_number, block_hash, contract_address, kicks)
 );
 
@@ -135,11 +135,11 @@ COMMENT ON TABLE maker.flop_kicks IS E'@name flopKicksStorage';
 
 CREATE TABLE  maker.flop_live
 (
-    id SERIAL PRIMARY KEY ,
-    block_number BIGINT,
-    block_hash TEXT,
+    id               SERIAL PRIMARY KEY,
+    block_number     BIGINT,
+    block_hash       TEXT,
     contract_address TEXT,
-    live NUMERIC NOT NULL,
+    live             NUMERIC NOT NULL,
     UNIQUE (block_number, block_hash, contract_address, live)
 );
 

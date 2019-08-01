@@ -5,6 +5,7 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/mcd_transformers/transformers/storage"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/flop"
 	. "github.com/vulcanize/mcd_transformers/transformers/storage/test_helpers"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data/shared_behaviors"
@@ -41,10 +42,10 @@ var _ = Describe("Flop storage repository", func() {
 		Expect(flopCreate).Should(Panic())
 	})
 	Describe("Vat", func() {
-		vatMetadata := utils.StorageValueMetadata{Name: flop.Vat}
+		vatMetadata := utils.StorageValueMetadata{Name: storage.Vat}
 
 		inputs := shared_behaviors.StorageVariableBehaviorInputs{
-			FieldName:        flop.Vat,
+			FieldName:        storage.Vat,
 			Value:            FakeAddress,
 			StorageTableName: "maker.flop_vat",
 			Repository:       &repo,
@@ -55,9 +56,9 @@ var _ = Describe("Flop storage repository", func() {
 	})
 
 	Describe("Gem", func() {
-		gemMetadata := utils.StorageValueMetadata{Name: flop.Gem}
+		gemMetadata := utils.StorageValueMetadata{Name: storage.Gem}
 		inputs := shared_behaviors.StorageVariableBehaviorInputs{
-			FieldName:        flop.Gem,
+			FieldName:        storage.Gem,
 			Value:            FakeAddress,
 			StorageTableName: "maker.flop_gem",
 			Repository:       &repo,
@@ -68,11 +69,11 @@ var _ = Describe("Flop storage repository", func() {
 	})
 
 	Describe("Beg", func() {
-		begMetadata := utils.StorageValueMetadata{Name: flop.Beg}
+		begMetadata := utils.StorageValueMetadata{Name: storage.Beg}
 		fakeBeg := strconv.Itoa(rand.Int())
 
 		inputs := shared_behaviors.StorageVariableBehaviorInputs{
-			FieldName:        flop.Beg,
+			FieldName:        storage.Beg,
 			Value:            fakeBeg,
 			StorageTableName: "maker.flop_beg",
 			Repository:       &repo,
@@ -90,10 +91,10 @@ var _ = Describe("Flop storage repository", func() {
 
 	Describe("Ttl and Tau", func() {
 		packedNames := make(map[int]string)
-		packedNames[0] = flop.Ttl
-		packedNames[1] = flop.Tau
+		packedNames[0] = storage.Ttl
+		packedNames[1] = storage.Tau
 		var ttlAndTauMetadata = utils.StorageValueMetadata{
-			Name:        flop.Packed,
+			Name:        storage.Packed,
 			PackedNames: packedNames,
 		}
 
@@ -128,7 +129,7 @@ var _ = Describe("Flop storage repository", func() {
 			packedNames[0] = "notRecognized"
 
 			var badMetadata = utils.StorageValueMetadata{
-				Name:        flop.Packed,
+				Name:        storage.Packed,
 				PackedNames: packedNames,
 			}
 
@@ -148,10 +149,10 @@ var _ = Describe("Flop storage repository", func() {
 	})
 
 	Describe("Kicks", func() {
-		var kicksMetadata = utils.StorageValueMetadata{Name: flop.Kicks}
+		var kicksMetadata = utils.StorageValueMetadata{Name: storage.Kicks}
 		var fakeKicks = strconv.Itoa(rand.Int())
 		inputs := shared_behaviors.StorageVariableBehaviorInputs{
-			FieldName:        flop.Kicks,
+			FieldName:        storage.Kicks,
 			StorageTableName: "maker.flop_kicks",
 			Repository:       &repo,
 			Metadata:         kicksMetadata,
@@ -162,10 +163,10 @@ var _ = Describe("Flop storage repository", func() {
 	})
 
 	Describe("Live", func() {
-		var liveMetadata = utils.StorageValueMetadata{Name: flop.Live}
+		var liveMetadata = utils.StorageValueMetadata{Name: storage.Live}
 		var fakeKicks = strconv.Itoa(rand.Intn(100))
 		inputs := shared_behaviors.StorageVariableBehaviorInputs{
-			FieldName:        flop.Live,
+			FieldName:        storage.Live,
 			StorageTableName: "maker.flop_live",
 			Repository:       &repo,
 			Metadata:         liveMetadata,
@@ -180,7 +181,7 @@ var _ = Describe("Flop storage repository", func() {
 
 		It("mappings returns an error if the metadata is missing the bid_id", func() {
 			badMetadata := utils.StorageValueMetadata{
-				Name: flop.BidBid,
+				Name: storage.BidBid,
 				Keys: map[utils.Key]string{},
 				Type: utils.Uint256,
 			}
@@ -191,7 +192,7 @@ var _ = Describe("Flop storage repository", func() {
 		Describe("bid_bid", func() {
 			var fakeBidValue = strconv.Itoa(rand.Int())
 			var bidBidMetadata = utils.StorageValueMetadata{
-				Name: flop.BidBid,
+				Name: storage.BidBid,
 				Keys: map[utils.Key]string{constants.BidId: fakeBidId},
 				Type: utils.Uint256,
 			}
@@ -211,7 +212,7 @@ var _ = Describe("Flop storage repository", func() {
 		Describe("bid_lot", func() {
 			var fakeLotValue = strconv.Itoa(rand.Int())
 			var bidLotMetadata = utils.StorageValueMetadata{
-				Name: flop.BidLot,
+				Name: storage.BidLot,
 				Keys: map[utils.Key]string{constants.BidId: fakeBidId},
 				Type: utils.Uint256,
 			}
@@ -231,7 +232,7 @@ var _ = Describe("Flop storage repository", func() {
 		Describe("bid_guy", func() {
 			var fakeGuyValue = FakeAddress
 			var bidGuyMetadata = utils.StorageValueMetadata{
-				Name: flop.BidGuy,
+				Name: storage.BidGuy,
 				Keys: map[utils.Key]string{constants.BidId: fakeBidId},
 				Type: utils.Address,
 			}
@@ -251,7 +252,7 @@ var _ = Describe("Flop storage repository", func() {
 		Describe("bid_tic", func() {
 			var fakeTicValue = strconv.Itoa(rand.Intn(100))
 			var bidTicMetadata = utils.StorageValueMetadata{
-				Name: flop.BidTic,
+				Name: storage.BidTic,
 				Keys: map[utils.Key]string{constants.BidId: fakeBidId},
 				Type: utils.Uint48,
 			}
@@ -271,7 +272,7 @@ var _ = Describe("Flop storage repository", func() {
 		Describe("bid_end", func() {
 			var fakeEndValue = strconv.Itoa(rand.Intn(100))
 			var bidEndMetadata = utils.StorageValueMetadata{
-				Name: flop.BidEnd,
+				Name: storage.BidEnd,
 				Keys: map[utils.Key]string{constants.BidId: fakeBidId},
 				Type: utils.Uint48,
 			}

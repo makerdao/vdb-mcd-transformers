@@ -84,6 +84,24 @@ CREATE TYPE api.era AS (
 
 
 --
+-- Name: flap; Type: TYPE; Schema: api; Owner: -
+--
+
+CREATE TYPE api.flap AS (
+	bid_id numeric,
+	guy text,
+	tic bigint,
+	"end" bigint,
+	lot numeric,
+	bid numeric,
+	gal text,
+	dealt boolean,
+	created timestamp without time zone,
+	updated timestamp without time zone
+);
+
+
+--
 -- Name: flop; Type: TYPE; Schema: api; Owner: -
 --
 
@@ -245,6 +263,17 @@ CREATE TYPE api.relevant_block AS (
 
 
 --
+-- Name: relevant_flap_block; Type: TYPE; Schema: api; Owner: -
+--
+
+CREATE TYPE api.relevant_flap_block AS (
+	block_height bigint,
+	block_hash text,
+	bid_id numeric
+);
+
+
+--
 -- Name: relevant_flop_block; Type: TYPE; Schema: api; Owner: -
 --
 
@@ -337,6 +366,42 @@ FROM maker.bite
          LEFT JOIN headers ON bite.header_id = headers.id
 WHERE urns.ilk_id = (SELECT id FROM ilk)
 ORDER BY urn_identifier, block_number DESC
+$$;
+
+
+--
+-- Name: all_flaps(); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.all_flaps() RETURNS SETOF api.flap
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    RETURN QUERY (
+        WITH bid_ids AS (
+            SELECT DISTINCT flap_bid_guy.bid_id
+            FROM maker.flap_bid_guy
+            UNION
+            SELECT DISTINCT flap_bid_tic.bid_id
+            FROM maker.flap_bid_tic
+            UNION
+            SELECT DISTINCT flap_bid_bid.bid_id
+            FROM maker.flap_bid_bid
+            UNION
+            SELECT DISTINCT flap_bid_lot.bid_id
+            FROM maker.flap_bid_lot
+            UNION
+            SELECT DISTINCT flap_bid_end.bid_id
+            FROM maker.flap_bid_end
+            UNION
+            SELECT DISTINCT flap_bid_gal.bid_id
+            FROM maker.flap_bid_gal
+        )
+        SELECT f.*
+        FROM bid_ids,
+             LATERAL api.get_flap(bid_ids.bid_id) f
+    );
+END
 $$;
 
 
@@ -864,6 +929,178 @@ CREATE FUNCTION api.frob_event_urn(event api.frob_event) RETURNS SETOF api.urn_s
     AS $$
 SELECT *
 FROM api.get_urn(event.ilk_identifier, event.urn_identifier, event.block_height)
+$$;
+
+
+--
+-- Name: get_flap(numeric, bigint); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.get_flap(bid_id numeric, block_height bigint DEFAULT api.max_block()) RETURNS api.flap
+    LANGUAGE sql STABLE
+    AS $$
+WITH address AS (
+    SELECT contract_address
+    FROM maker.flap_bid_bid
+    WHERE flap_bid_bid.bid_id = get_flap.bid_id
+      AND block_number <= block_height
+    LIMIT 1
+),
+     guy AS (
+         SELECT guy, bid_id
+         FROM maker.flap_bid_guy
+         WHERE flap_bid_guy.bid_id = get_flap.bid_id
+           AND block_number <= block_height
+         ORDER BY flap_bid_guy.bid_id, block_number DESC
+         LIMIT 1
+     ),
+     tic AS (
+         SELECT tic, bid_id
+         FROM maker.flap_bid_tic
+         WHERE flap_bid_tic.bid_id = get_flap.bid_id
+           AND block_number <= block_height
+         ORDER BY flap_bid_tic.bid_id, block_number DESC
+         LIMIT 1
+     ),
+     "end" AS (
+         SELECT "end", bid_id
+         FROM maker.flap_bid_end
+         WHERE flap_bid_end.bid_id = get_flap.bid_id
+           AND block_number <= block_height
+         ORDER BY flap_bid_end.bid_id, block_number DESC
+         LIMIT 1
+     ),
+     lot AS (
+         SELECT lot, bid_id
+         FROM maker.flap_bid_lot
+         WHERE flap_bid_lot.bid_id = get_flap.bid_id
+           AND block_number <= block_height
+         ORDER BY flap_bid_lot.bid_id, block_number DESC
+         LIMIT 1
+     ),
+     bid AS (
+         SELECT bid, bid_id
+         FROM maker.flap_bid_bid
+         WHERE flap_bid_bid.bid_id = get_flap.bid_id
+           AND block_number <= block_height
+         ORDER BY flap_bid_bid.bid_id, block_number DESC
+         LIMIT 1
+     ),
+     gal AS (
+         SELECT gal, bid_id
+         FROM maker.flap_bid_gal
+         WHERE flap_bid_gal.bid_id = get_flap.bid_id
+           AND block_number <= block_height
+         ORDER BY flap_bid_gal.bid_id, block_number DESC
+         LIMIT 1
+     ),
+     deal AS (
+         SELECT deal, bid_id
+         FROM maker.deal
+                  LEFT JOIN public.headers ON deal.header_id = headers.id
+         WHERE deal.bid_id = get_flap.bid_id
+           AND deal.contract_address IN (SELECT * FROM address)
+           AND headers.block_number <= block_height
+         ORDER BY bid_id, block_number DESC
+         LIMIT 1
+     ),
+     relevant_blocks AS (
+         SELECT *
+         FROM api.get_flap_blocks_before(bid_id, (SELECT * FROM address), get_flap.block_height)
+     ),
+     created AS (
+         SELECT DISTINCT ON (relevant_blocks.bid_id, relevant_blocks.block_height) relevant_blocks.block_height,
+                                                                                   relevant_blocks.block_hash,
+                                                                                   relevant_blocks.bid_id,
+                                                                                   api.epoch_to_datetime(headers.block_timestamp) AS datetime
+         FROM relevant_blocks
+                  LEFT JOIN public.headers AS headers on headers.hash = relevant_blocks.block_hash
+         ORDER BY relevant_blocks.block_height ASC
+         LIMIT 1
+     ),
+     updated AS (
+         SELECT DISTINCT ON (relevant_blocks.bid_id, relevant_blocks.block_height) relevant_blocks.block_height,
+                                                                                   relevant_blocks.block_hash,
+                                                                                   relevant_blocks.bid_id,
+                                                                                   api.epoch_to_datetime(headers.block_timestamp) AS datetime
+         FROM relevant_blocks
+                  LEFT JOIN public.headers AS headers on headers.hash = relevant_blocks.block_hash
+         ORDER BY relevant_blocks.block_height DESC
+         LIMIT 1
+     )
+SELECT get_flap.bid_id,
+       guy.guy,
+       tic.tic,
+       "end"."end",
+       lot.lot,
+       bid.bid,
+       gal.gal,
+       CASE (SELECT COUNT(*) FROM deal)
+           WHEN 0 THEN FALSE
+           ELSE TRUE
+           END AS dealt,
+       created.datetime,
+       updated.datetime
+FROM guy
+         LEFT JOIN tic ON tic.bid_id = guy.bid_id
+         JOIN "end" ON "end".bid_id = guy.bid_id
+         JOIN lot ON lot.bid_id = guy.bid_id
+         JOIN bid ON bid.bid_id = guy.bid_id
+         JOIN gal ON gal.bid_id = guy.bid_id
+         JOIN created ON created.bid_id = guy.bid_id
+         JOIN updated ON updated.bid_id = guy.bid_id
+$$;
+
+
+--
+-- Name: get_flap_blocks_before(numeric, text, bigint); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.get_flap_blocks_before(bid_id numeric, contract_address text, block_height bigint) RETURNS SETOF api.relevant_flap_block
+    LANGUAGE sql STABLE
+    AS $$
+SELECT block_number AS block_height, block_hash, kicks AS bid_id
+FROM maker.flap_kicks
+WHERE block_number <= get_flap_blocks_before.block_height
+  AND kicks = get_flap_blocks_before.bid_id
+  AND flap_kicks.contract_address = get_flap_blocks_before.contract_address
+UNION
+SELECT block_number AS block_height, block_hash, flap_bid_bid.bid_id
+FROM maker.flap_bid_bid
+WHERE block_number <= get_flap_blocks_before.block_height
+  AND flap_bid_bid.bid_id = get_flap_blocks_before.bid_id
+  AND flap_bid_bid.contract_address = get_flap_blocks_before.contract_address
+UNION
+SELECT block_number AS block_height, block_hash, flap_bid_lot.bid_id
+FROM maker.flap_bid_lot
+WHERE block_number <= get_flap_blocks_before.block_height
+  AND flap_bid_lot.bid_id = get_flap_blocks_before.bid_id
+  AND flap_bid_lot.contract_address = get_flap_blocks_before.contract_address
+UNION
+SELECT block_number AS block_height, block_hash, flap_bid_guy.bid_id
+FROM maker.flap_bid_guy
+WHERE block_number <= get_flap_blocks_before.block_height
+  AND flap_bid_guy.bid_id = get_flap_blocks_before.bid_id
+  AND flap_bid_guy.contract_address = get_flap_blocks_before.contract_address
+UNION
+SELECT block_number AS block_height, block_hash, flap_bid_tic.bid_id
+FROM maker.flap_bid_tic
+WHERE block_number <= get_flap_blocks_before.block_height
+  AND flap_bid_tic.bid_id = get_flap_blocks_before.bid_id
+  AND flap_bid_tic.contract_address = get_flap_blocks_before.contract_address
+UNION
+SELECT block_number AS block_height, block_hash, flap_bid_end.bid_id
+FROM maker.flap_bid_end
+WHERE block_number <= get_flap_blocks_before.block_height
+  AND flap_bid_end.bid_id = get_flap_blocks_before.bid_id
+  AND flap_bid_end.contract_address = get_flap_blocks_before.contract_address
+UNION
+SELECT block_number AS block_height, block_hash, flap_bid_gal.bid_id
+FROM maker.flap_bid_gal
+WHERE block_number <= get_flap_blocks_before.block_height
+  AND flap_bid_gal.bid_id = get_flap_blocks_before.bid_id
+  AND flap_bid_gal.contract_address = get_flap_blocks_before.contract_address
+ORDER BY block_height DESC
 $$;
 
 

@@ -5,12 +5,13 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/storage"
+	vdbStorage "github.com/vulcanize/vulcanizedb/libraries/shared/storage"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/mcd_transformers/transformers/storage"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/flip"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/test_helpers"
 )
@@ -71,7 +72,7 @@ var _ = Describe("Flip storage mappings", func() {
 
 			It("returns value metadata for bid bid", func() {
 				expectedMetadata := utils.StorageValueMetadata{
-					Name: flip.BidBid,
+					Name: storage.BidBid,
 					Keys: map[utils.Key]string{constants.BidId: fakeBidId},
 					Type: utils.Uint256,
 				}
@@ -79,9 +80,9 @@ var _ = Describe("Flip storage mappings", func() {
 			})
 
 			It("returns value metadata for bid lot", func() {
-				bidLotKey := storage.GetIncrementedKey(bidBidKey, 1)
+				bidLotKey := vdbStorage.GetIncrementedKey(bidBidKey, 1)
 				expectedMetadata := utils.StorageValueMetadata{
-					Name: flip.BidLot,
+					Name: storage.BidLot,
 					Keys: map[utils.Key]string{constants.BidId: fakeBidId},
 					Type: utils.Uint256,
 				}
@@ -89,9 +90,9 @@ var _ = Describe("Flip storage mappings", func() {
 			})
 
 			It("returns value metadata for bid guy", func() {
-				bidGuyKey := storage.GetIncrementedKey(bidBidKey, 2)
+				bidGuyKey := vdbStorage.GetIncrementedKey(bidBidKey, 2)
 				expectedMetadata := utils.StorageValueMetadata{
-					Name: flip.BidGuy,
+					Name: storage.BidGuy,
 					Keys: map[utils.Key]string{constants.BidId: fakeBidId},
 					Type: utils.Address,
 				}
@@ -99,9 +100,9 @@ var _ = Describe("Flip storage mappings", func() {
 			})
 
 			It("returns value metadata for bid tic", func() {
-				bidTicKey := storage.GetIncrementedKey(bidBidKey, 3)
+				bidTicKey := vdbStorage.GetIncrementedKey(bidBidKey, 3)
 				expectedMetadata := utils.StorageValueMetadata{
-					Name: flip.BidTic,
+					Name: storage.BidTic,
 					Keys: map[utils.Key]string{constants.BidId: fakeBidId},
 					Type: utils.Uint48,
 				}
@@ -109,9 +110,9 @@ var _ = Describe("Flip storage mappings", func() {
 			})
 
 			It("returns value metadata for bid end", func() {
-				bidEndKey := storage.GetIncrementedKey(bidBidKey, 4)
+				bidEndKey := vdbStorage.GetIncrementedKey(bidBidKey, 4)
 				expectedMetadata := utils.StorageValueMetadata{
-					Name: flip.BidEnd,
+					Name: storage.BidEnd,
 					Keys: map[utils.Key]string{constants.BidId: fakeBidId},
 					Type: utils.Uint48,
 				}
@@ -119,9 +120,9 @@ var _ = Describe("Flip storage mappings", func() {
 			})
 
 			It("returns value metadata for bid usr", func() {
-				bidUsrKey := storage.GetIncrementedKey(bidBidKey, 5)
+				bidUsrKey := vdbStorage.GetIncrementedKey(bidBidKey, 5)
 				expectedMetadata := utils.StorageValueMetadata{
-					Name: flip.BidUsr,
+					Name: storage.BidUsr,
 					Keys: map[utils.Key]string{constants.BidId: fakeBidId},
 					Type: utils.Address,
 				}
@@ -129,9 +130,9 @@ var _ = Describe("Flip storage mappings", func() {
 			})
 
 			It("returns value metadata for bid gal", func() {
-				bidGalKey := storage.GetIncrementedKey(bidBidKey, 6)
+				bidGalKey := vdbStorage.GetIncrementedKey(bidBidKey, 6)
 				expectedMetadata := utils.StorageValueMetadata{
-					Name: flip.BidGal,
+					Name: storage.BidGal,
 					Keys: map[utils.Key]string{constants.BidId: fakeBidId},
 					Type: utils.Address,
 				}
@@ -139,9 +140,9 @@ var _ = Describe("Flip storage mappings", func() {
 			})
 
 			It("returns value metadata for bid tab", func() {
-				bidTabKey := storage.GetIncrementedKey(bidBidKey, 7)
+				bidTabKey := vdbStorage.GetIncrementedKey(bidBidKey, 7)
 				expectedMetadata := utils.StorageValueMetadata{
-					Name: flip.BidTab,
+					Name: storage.BidTab,
 					Keys: map[utils.Key]string{constants.BidId: fakeBidId},
 					Type: utils.Uint256,
 				}
