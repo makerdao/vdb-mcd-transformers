@@ -6,15 +6,15 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
-	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
-	"github.com/vulcanize/vulcanizedb/pkg/fakes"
-
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/mcd_transformers/transformers/storage"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/flap"
 	. "github.com/vulcanize/mcd_transformers/transformers/storage/test_helpers"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data/shared_behaviors"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
+	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
+	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 )
 
 var _ = Describe("Flap storage repository", func() {
@@ -44,11 +44,11 @@ var _ = Describe("Flap storage repository", func() {
 	})
 
 	Describe("vat", func() {
-		var vatMetadata = utils.StorageValueMetadata{Name: flap.Vat}
+		var vatMetadata = utils.StorageValueMetadata{Name: storage.Vat}
 		var fakeAddress = FakeAddress
 
 		inputs := shared_behaviors.StorageVariableBehaviorInputs{
-			FieldName:        flap.Vat,
+			FieldName:        storage.Vat,
 			Value:            fakeAddress,
 			StorageTableName: "maker.flap_vat",
 			Repository:       &repository,
@@ -59,10 +59,10 @@ var _ = Describe("Flap storage repository", func() {
 	})
 
 	Describe("gem", func() {
-		var gemMetadata = utils.StorageValueMetadata{Name: flap.Gem}
+		var gemMetadata = utils.StorageValueMetadata{Name: storage.Gem}
 		var fakeAddress = FakeAddress
 		inputs := shared_behaviors.StorageVariableBehaviorInputs{
-			FieldName:        flap.Gem,
+			FieldName:        storage.Gem,
 			Value:            fakeAddress,
 			StorageTableName: "maker.flap_gem",
 			Repository:       &repository,
@@ -73,10 +73,10 @@ var _ = Describe("Flap storage repository", func() {
 	})
 
 	Describe("beg", func() {
-		var begMetadata = utils.StorageValueMetadata{Name: flap.Beg}
+		var begMetadata = utils.StorageValueMetadata{Name: storage.Beg}
 		var fakeBeg = strconv.Itoa(rand.Int())
 		inputs := shared_behaviors.StorageVariableBehaviorInputs{
-			FieldName:        flap.Beg,
+			FieldName:        storage.Beg,
 			StorageTableName: "maker.flap_beg",
 			Repository:       &repository,
 			Metadata:         begMetadata,
@@ -94,10 +94,10 @@ var _ = Describe("Flap storage repository", func() {
 
 	Describe("ttl and tau", func() {
 		packedNames := make(map[int]string)
-		packedNames[0] = flap.Ttl
-		packedNames[1] = flap.Tau
+		packedNames[0] = storage.Ttl
+		packedNames[1] = storage.Tau
 		var ttlAndTauMetadata = utils.StorageValueMetadata{
-			Name:        flap.Packed,
+			Name:        storage.Packed,
 			PackedNames: packedNames,
 		}
 
@@ -127,7 +127,7 @@ var _ = Describe("Flap storage repository", func() {
 			packedNames[0] = "notRecognized"
 
 			var badMetadata = utils.StorageValueMetadata{
-				Name:        flap.Packed,
+				Name:        storage.Packed,
 				PackedNames: packedNames,
 			}
 
@@ -147,10 +147,10 @@ var _ = Describe("Flap storage repository", func() {
 	})
 
 	Describe("kicks", func() {
-		var kicksMetadata = utils.StorageValueMetadata{Name: flap.Kicks}
+		var kicksMetadata = utils.StorageValueMetadata{Name: storage.Kicks}
 		var fakeKicks = strconv.Itoa(rand.Intn(100))
 		inputs := shared_behaviors.StorageVariableBehaviorInputs{
-			FieldName:        flap.Kicks,
+			FieldName:        storage.Kicks,
 			StorageTableName: "maker.flap_kicks",
 			Repository:       &repository,
 			Metadata:         kicksMetadata,
@@ -167,10 +167,10 @@ var _ = Describe("Flap storage repository", func() {
 	})
 
 	Describe("live", func() {
-		var liveMetadata = utils.StorageValueMetadata{Name: flap.Live}
+		var liveMetadata = utils.StorageValueMetadata{Name: storage.Live}
 		var fakeLive = strconv.Itoa(rand.Intn(100))
 		inputs := shared_behaviors.StorageVariableBehaviorInputs{
-			FieldName:        flap.Live,
+			FieldName:        storage.Live,
 			StorageTableName: "maker.flap_live",
 			Repository:       &repository,
 			Metadata:         liveMetadata,
@@ -191,7 +191,7 @@ var _ = Describe("Flap storage repository", func() {
 
 		It("for mappings returns an error if the metadata is missing the bid_id", func() {
 			badMetadata := utils.StorageValueMetadata{
-				Name: flap.BidBid,
+				Name: storage.BidBid,
 				Keys: map[utils.Key]string{},
 				Type: utils.Uint256,
 			}
@@ -202,7 +202,7 @@ var _ = Describe("Flap storage repository", func() {
 		Describe("bid_bid", func() {
 			var fakeBidValue = strconv.Itoa(rand.Int())
 			var bidBidMetadata = utils.StorageValueMetadata{
-				Name: flap.BidBid,
+				Name: storage.BidBid,
 				Keys: map[utils.Key]string{constants.BidId: fakeBidId},
 				Type: utils.Uint256,
 			}
@@ -222,7 +222,7 @@ var _ = Describe("Flap storage repository", func() {
 		Describe("bid_lot", func() {
 			var fakeLotValue = strconv.Itoa(rand.Int())
 			var bidLotMetadata = utils.StorageValueMetadata{
-				Name: flap.BidLot,
+				Name: storage.BidLot,
 				Keys: map[utils.Key]string{constants.BidId: fakeBidId},
 				Type: utils.Uint256,
 			}
@@ -242,7 +242,7 @@ var _ = Describe("Flap storage repository", func() {
 		Describe("bid_guy", func() {
 			var fakeGuyValue = FakeAddress
 			var bidGuyMetadata = utils.StorageValueMetadata{
-				Name: flap.BidGuy,
+				Name: storage.BidGuy,
 				Keys: map[utils.Key]string{constants.BidId: fakeBidId},
 				Type: utils.Address,
 			}
@@ -262,7 +262,7 @@ var _ = Describe("Flap storage repository", func() {
 		Describe("bid_tic", func() {
 			var fakeTicValue = strconv.Itoa(rand.Intn(100))
 			var bidTicMetadata = utils.StorageValueMetadata{
-				Name: flap.BidTic,
+				Name: storage.BidTic,
 				Keys: map[utils.Key]string{constants.BidId: fakeBidId},
 				Type: utils.Uint48,
 			}
@@ -282,7 +282,7 @@ var _ = Describe("Flap storage repository", func() {
 		Describe("bid_end", func() {
 			var fakeEndValue = strconv.Itoa(rand.Intn(100))
 			var bidEndMetadata = utils.StorageValueMetadata{
-				Name: flap.BidEnd,
+				Name: storage.BidEnd,
 				Keys: map[utils.Key]string{constants.BidId: fakeBidId},
 				Type: utils.Uint48,
 			}
@@ -302,7 +302,7 @@ var _ = Describe("Flap storage repository", func() {
 		Describe("bid_gal", func() {
 			var fakeGalValue = FakeAddress
 			var bidGalMetadata = utils.StorageValueMetadata{
-				Name: flap.BidGal,
+				Name: storage.BidGal,
 				Keys: map[utils.Key]string{constants.BidId: fakeBidId},
 				Type: utils.Address,
 			}

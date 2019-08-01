@@ -4,56 +4,38 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/storage"
+	"github.com/vulcanize/mcd_transformers/transformers/storage"
+	vdbStorage "github.com/vulcanize/vulcanizedb/libraries/shared/storage"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
-
-	s2 "github.com/vulcanize/mcd_transformers/transformers/storage"
-)
-
-const (
-	Vat    = "vat"
-	Gem    = "gem"
-	Beg    = "beg"
-	Ttl    = "ttl"
-	Tau    = "tau"
-	Kicks  = "kicks"
-	Live   = "live"
-	Packed = "packed_storage_values"
-
-	BidBid = "bid"
-	BidLot = "lot"
-	BidGuy = "guy"
-	BidTic = "tic"
-	BidEnd = "end"
 )
 
 var (
-	BidsIndex = storage.IndexOne
+	BidsIndex = vdbStorage.IndexOne
 
-	VatKey      = common.HexToHash(storage.IndexTwo)
-	VatMetadata = utils.GetStorageValueMetadata(Vat, nil, utils.Address)
+	VatKey      = common.HexToHash(vdbStorage.IndexTwo)
+	VatMetadata = utils.GetStorageValueMetadata(storage.Vat, nil, utils.Address)
 
-	GemKey      = common.HexToHash(storage.IndexThree)
-	GemMetadata = utils.GetStorageValueMetadata(Gem, nil, utils.Address)
+	GemKey      = common.HexToHash(vdbStorage.IndexThree)
+	GemMetadata = utils.GetStorageValueMetadata(storage.Gem, nil, utils.Address)
 
-	BegKey      = common.HexToHash(storage.IndexFour)
-	BegMetadata = utils.GetStorageValueMetadata(Beg, nil, utils.Uint256)
+	BegKey      = common.HexToHash(vdbStorage.IndexFour)
+	BegMetadata = utils.GetStorageValueMetadata(storage.Beg, nil, utils.Uint256)
 
-	TtlAndTauKey      = common.HexToHash(storage.IndexFive)
+	TtlAndTauKey      = common.HexToHash(vdbStorage.IndexFive)
 	packedTypes       = map[int]utils.ValueType{0: utils.Uint48, 1: utils.Uint48}
-	packedNames       = map[int]string{0: Ttl, 1: Tau}
-	TtlAndTauMetadata = utils.GetStorageValueMetadataForPackedSlot(Packed, nil, utils.PackedSlot, packedNames, packedTypes)
+	packedNames       = map[int]string{0: storage.Ttl, 1: storage.Tau}
+	TtlAndTauMetadata = utils.GetStorageValueMetadataForPackedSlot(storage.Packed, nil, utils.PackedSlot, packedNames, packedTypes)
 
-	KicksKey      = common.HexToHash(storage.IndexSix)
-	KicksMetadata = utils.GetStorageValueMetadata(Kicks, nil, utils.Uint256)
+	KicksKey      = common.HexToHash(vdbStorage.IndexSix)
+	KicksMetadata = utils.GetStorageValueMetadata(storage.Kicks, nil, utils.Uint256)
 
-	LiveKey      = common.HexToHash(storage.IndexSeven)
-	LiveMetadata = utils.GetStorageValueMetadata(Live, nil, utils.Uint256)
+	LiveKey      = common.HexToHash(vdbStorage.IndexSeven)
+	LiveMetadata = utils.GetStorageValueMetadata(storage.Live, nil, utils.Uint256)
 )
 
 type StorageKeysLookup struct {
-	StorageRepository s2.IMakerStorageRepository
+	StorageRepository storage.IMakerStorageRepository
 	ContractAddress   string
 	mappings          map[common.Hash]utils.StorageValueMetadata
 }
@@ -113,46 +95,46 @@ func (mappings *StorageKeysLookup) loadBidKeys() error {
 }
 
 func getBidBidKey(hexBidId string) common.Hash {
-	return storage.GetMapping(BidsIndex, hexBidId)
+	return vdbStorage.GetMapping(BidsIndex, hexBidId)
 }
 
 func getBidBidMetadata(bidId string) utils.StorageValueMetadata {
 	keys := map[utils.Key]string{constants.BidId: bidId}
-	return utils.GetStorageValueMetadata(BidBid, keys, utils.Uint256)
+	return utils.GetStorageValueMetadata(storage.BidBid, keys, utils.Uint256)
 }
 
 func getBidLotKey(hexBidId string) common.Hash {
-	return storage.GetIncrementedKey(getBidBidKey(hexBidId), 1)
+	return vdbStorage.GetIncrementedKey(getBidBidKey(hexBidId), 1)
 }
 
 func getBidLotMetadata(bidId string) utils.StorageValueMetadata {
 	keys := map[utils.Key]string{constants.BidId: bidId}
-	return utils.GetStorageValueMetadata(BidLot, keys, utils.Uint256)
+	return utils.GetStorageValueMetadata(storage.BidLot, keys, utils.Uint256)
 }
 
 func getBidGuyKey(hexBidId string) common.Hash {
-	return storage.GetIncrementedKey(getBidBidKey(hexBidId), 2)
+	return vdbStorage.GetIncrementedKey(getBidBidKey(hexBidId), 2)
 }
 
 func getBidGuyMetadata(bidId string) utils.StorageValueMetadata {
 	keys := map[utils.Key]string{constants.BidId: bidId}
-	return utils.GetStorageValueMetadata(BidGuy, keys, utils.Address)
+	return utils.GetStorageValueMetadata(storage.BidGuy, keys, utils.Address)
 }
 
 func getBidTicKey(hexBidId string) common.Hash {
-	return storage.GetIncrementedKey(getBidBidKey(hexBidId), 3)
+	return vdbStorage.GetIncrementedKey(getBidBidKey(hexBidId), 3)
 }
 
 func getBidTicMetadata(bidId string) utils.StorageValueMetadata {
 	keys := map[utils.Key]string{constants.BidId: bidId}
-	return utils.GetStorageValueMetadata(BidTic, keys, utils.Uint48)
+	return utils.GetStorageValueMetadata(storage.BidTic, keys, utils.Uint48)
 }
 
 func getBidEndKey(hexBidId string) common.Hash {
-	return storage.GetIncrementedKey(getBidBidKey(hexBidId), 4)
+	return vdbStorage.GetIncrementedKey(getBidBidKey(hexBidId), 4)
 }
 
 func getBidEndMetadata(bidId string) utils.StorageValueMetadata {
 	keys := map[utils.Key]string{constants.BidId: bidId}
-	return utils.GetStorageValueMetadata(BidEnd, keys, utils.Uint48)
+	return utils.GetStorageValueMetadata(storage.BidEnd, keys, utils.Uint48)
 }

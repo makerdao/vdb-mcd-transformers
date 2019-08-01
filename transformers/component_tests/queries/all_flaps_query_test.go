@@ -6,7 +6,6 @@ import (
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/component_tests/queries/test_helpers"
 	"github.com/vulcanize/mcd_transformers/transformers/events/deal"
-	"github.com/vulcanize/mcd_transformers/transformers/storage/flop"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
@@ -14,10 +13,9 @@ import (
 	"strconv"
 )
 
-var _ = Describe("All flops query", func() {
+var _ = Describe("All flaps query", func() {
 	var (
 		db              *postgres.DB
-		flopRepo        flop.FlopStorageRepository
 		dealRepo        deal.DealRepository
 		headerRepo      repositories.HeaderRepository
 		contractAddress = "contract address"
@@ -32,8 +30,7 @@ var _ = Describe("All flops query", func() {
 	BeforeEach(func() {
 		db = test_config.NewTestDB(test_config.NewTestNode())
 		test_config.CleanTestDB(db)
-		flopRepo = flop.FlopStorageRepository{}
-		flopRepo.SetDB(db)
+
 		dealRepo = deal.DealRepository{}
 		dealRepo.SetDB(db)
 		headerRepo = repositories.NewHeaderRepository(db)
@@ -44,7 +41,7 @@ var _ = Describe("All flops query", func() {
 		Expect(closeErr).NotTo(HaveOccurred())
 	})
 
-	It("gets the most recent flop for every bid id", func() {
+	It("gets the most recent flap for every bid id", func() {
 		fakeBidIdOne := rand.Int()
 		fakeBidIdTwo := fakeBidIdOne + 1
 
@@ -57,29 +54,29 @@ var _ = Describe("All flops query", func() {
 		_, headerTwoErr := headerRepo.CreateOrUpdateHeader(blockTwoHeader)
 		Expect(headerTwoErr).NotTo(HaveOccurred())
 
-		initialFlopOneStorageValues := test_helpers.GetFlopStorageValues(1, fakeBidIdOne)
-		test_helpers.CreateFlop(db, blockOneHeader, initialFlopOneStorageValues, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidIdOne)), contractAddress)
+		flapStorageValuesOne := test_helpers.GetFlapStorageValues(1, fakeBidIdOne)
+		test_helpers.CreateFlap(db, blockOneHeader, flapStorageValuesOne, test_helpers.GetFlapMetadatas(strconv.Itoa(fakeBidIdOne)), contractAddress)
 
-		updatedFlopOneStorageValues := test_helpers.GetFlopStorageValues(2, fakeBidIdOne)
-		test_helpers.CreateFlop(db, blockTwoHeader, updatedFlopOneStorageValues, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidIdOne)), contractAddress)
+		flapStorageValuesTwo := test_helpers.GetFlapStorageValues(2, fakeBidIdOne)
+		test_helpers.CreateFlap(db, blockTwoHeader, flapStorageValuesTwo, test_helpers.GetFlapMetadatas(strconv.Itoa(fakeBidIdOne)), contractAddress)
 
-		flopBidContextErr := test_helpers.SetUpBidContext(test_helpers.BidSetupData{
+		flapBidContextErr := test_helpers.SetUpBidContext(test_helpers.BidSetupData{
 			Db:              db,
 			BidId:           fakeBidIdOne,
 			ContractAddress: contractAddress,
 			Dealt:           false,
 		})
-		Expect(flopBidContextErr).NotTo(HaveOccurred())
+		Expect(flapBidContextErr).NotTo(HaveOccurred())
 
-		flopStorageValuesTwo := test_helpers.GetFlopStorageValues(3, fakeBidIdTwo)
-		test_helpers.CreateFlop(db, blockTwoHeader, flopStorageValuesTwo, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidIdTwo)), contractAddress)
+		flapStorageValuesThree := test_helpers.GetFlapStorageValues(3, fakeBidIdTwo)
+		test_helpers.CreateFlap(db, blockTwoHeader, flapStorageValuesThree, test_helpers.GetFlapMetadatas(strconv.Itoa(fakeBidIdTwo)), contractAddress)
 
 		var actualBids []test_helpers.Bid
-		queryErr := db.Select(&actualBids, `SELECT bid_id, guy, tic, "end", lot, bid, dealt, created, updated FROM api.all_flops()`)
+		queryErr := db.Select(&actualBids, `SELECT bid_id, guy, tic, "end", lot, bid, gal, dealt, created, updated FROM api.all_flaps()`)
 		Expect(queryErr).NotTo(HaveOccurred())
 
-		expectedBidOne := test_helpers.BidFromValues(strconv.Itoa(fakeBidIdOne), "false", blockTwoHeader.Timestamp, blockOneHeader.Timestamp, updatedFlopOneStorageValues)
-		expectedBidTwo := test_helpers.BidFromValues(strconv.Itoa(fakeBidIdTwo), "false", blockTwoHeader.Timestamp, blockTwoHeader.Timestamp, flopStorageValuesTwo)
+		expectedBidOne := test_helpers.BidFromValues(strconv.Itoa(fakeBidIdOne), "false", blockTwoHeader.Timestamp, blockOneHeader.Timestamp, flapStorageValuesTwo)
+		expectedBidTwo := test_helpers.BidFromValues(strconv.Itoa(fakeBidIdTwo), "false", blockTwoHeader.Timestamp, blockTwoHeader.Timestamp, flapStorageValuesThree)
 
 		Expect(len(actualBids)).To(Equal(2))
 		Expect(actualBids).To(ConsistOf([]test_helpers.Bid{
@@ -87,5 +84,4 @@ var _ = Describe("All flops query", func() {
 			expectedBidTwo,
 		}))
 	})
-
 })

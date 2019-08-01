@@ -7,9 +7,10 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/mcd_transformers/transformers/storage"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/flop"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/test_helpers"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/storage"
+	vdbStorage "github.com/vulcanize/vulcanizedb/libraries/shared/storage"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 )
@@ -76,7 +77,7 @@ var _ = Describe("Flop storage mappings", func() {
 
 		It("returns value metadata for bid bid", func() {
 			expectedMetadata := utils.StorageValueMetadata{
-				Name: flop.BidBid,
+				Name: storage.BidBid,
 				Keys: map[utils.Key]string{constants.BidId: fakeBidId},
 				Type: utils.Uint256,
 			}
@@ -84,9 +85,9 @@ var _ = Describe("Flop storage mappings", func() {
 		})
 
 		It("returns value metadata for bid lot", func() {
-			bidLotKey := storage.GetIncrementedKey(bidBidKey, 1)
+			bidLotKey := vdbStorage.GetIncrementedKey(bidBidKey, 1)
 			expectedMetadata := utils.StorageValueMetadata{
-				Name: flop.BidLot,
+				Name: storage.BidLot,
 				Keys: map[utils.Key]string{constants.BidId: fakeBidId},
 				Type: utils.Uint256,
 			}
@@ -94,9 +95,9 @@ var _ = Describe("Flop storage mappings", func() {
 		})
 
 		It("returns value metadata for bid guy", func() {
-			bidGuyKey := storage.GetIncrementedKey(bidBidKey, 2)
+			bidGuyKey := vdbStorage.GetIncrementedKey(bidBidKey, 2)
 			expectedMetadata := utils.StorageValueMetadata{
-				Name: flop.BidGuy,
+				Name: storage.BidGuy,
 				Keys: map[utils.Key]string{constants.BidId: fakeBidId},
 				Type: utils.Address,
 			}
@@ -104,9 +105,9 @@ var _ = Describe("Flop storage mappings", func() {
 		})
 
 		It("returns value metadata for bid tic", func() {
-			bidTicKey := storage.GetIncrementedKey(bidBidKey, 3)
+			bidTicKey := vdbStorage.GetIncrementedKey(bidBidKey, 3)
 			expectedMetadata := utils.StorageValueMetadata{
-				Name: flop.BidTic,
+				Name: storage.BidTic,
 				Keys: map[utils.Key]string{constants.BidId: fakeBidId},
 				Type: utils.Uint48,
 			}
@@ -114,9 +115,9 @@ var _ = Describe("Flop storage mappings", func() {
 		})
 
 		It("returns value metadata for bid end", func() {
-			bidEndKey := storage.GetIncrementedKey(bidBidKey, 4)
+			bidEndKey := vdbStorage.GetIncrementedKey(bidBidKey, 4)
 			expectedMetadata := utils.StorageValueMetadata{
-				Name: flop.BidEnd,
+				Name: storage.BidEnd,
 				Keys: map[utils.Key]string{constants.BidId: fakeBidId},
 				Type: utils.Uint48,
 			}

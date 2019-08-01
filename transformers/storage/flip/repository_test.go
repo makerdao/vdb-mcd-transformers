@@ -6,15 +6,15 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
-	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
-	"github.com/vulcanize/vulcanizedb/pkg/fakes"
-
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/mcd_transformers/transformers/storage"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/flip"
 	. "github.com/vulcanize/mcd_transformers/transformers/storage/test_helpers"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data/shared_behaviors"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
+	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
+	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 )
 
 var _ = Describe("Flip storage repository", func() {
@@ -44,9 +44,9 @@ var _ = Describe("Flip storage repository", func() {
 
 	Describe("Variable", func() {
 		Describe("Vat", func() {
-			vatMetadata := utils.StorageValueMetadata{Name: flip.Vat}
+			vatMetadata := utils.StorageValueMetadata{Name: storage.Vat}
 			inputs := shared_behaviors.StorageVariableBehaviorInputs{
-				FieldName:        flip.Vat,
+				FieldName:        storage.Vat,
 				Value:            FakeAddress,
 				StorageTableName: "maker.flip_vat",
 				Repository:       &repo,
@@ -57,9 +57,9 @@ var _ = Describe("Flip storage repository", func() {
 		})
 
 		Describe("Ilk", func() {
-			ilkMetadata := utils.StorageValueMetadata{Name: flip.Ilk}
+			ilkMetadata := utils.StorageValueMetadata{Name: storage.Ilk}
 			inputs := shared_behaviors.StorageVariableBehaviorInputs{
-				FieldName:        flip.Ilk,
+				FieldName:        storage.Ilk,
 				Value:            FakeAddress,
 				StorageTableName: "maker.flip_ilk",
 				Repository:       &repo,
@@ -70,10 +70,10 @@ var _ = Describe("Flip storage repository", func() {
 		})
 
 		Describe("Beg", func() {
-			begMetadata := utils.StorageValueMetadata{Name: flip.Beg}
+			begMetadata := utils.StorageValueMetadata{Name: storage.Beg}
 			fakeBeg := strconv.Itoa(rand.Int())
 			inputs := shared_behaviors.StorageVariableBehaviorInputs{
-				FieldName:        flip.Beg,
+				FieldName:        storage.Beg,
 				Value:            fakeBeg,
 				StorageTableName: "maker.flip_beg",
 				Repository:       &repo,
@@ -85,10 +85,10 @@ var _ = Describe("Flip storage repository", func() {
 
 		Describe("Ttl and Tau", func() {
 			packedNames := make(map[int]string)
-			packedNames[0] = flip.Ttl
-			packedNames[1] = flip.Tau
+			packedNames[0] = storage.Ttl
+			packedNames[1] = storage.Tau
 			var ttlAndTauMetadata = utils.StorageValueMetadata{
-				Name:        flip.Packed,
+				Name:        storage.Packed,
 				PackedNames: packedNames,
 			}
 
@@ -118,7 +118,7 @@ var _ = Describe("Flip storage repository", func() {
 				packedNames[0] = "notRecognized"
 
 				var badMetadata = utils.StorageValueMetadata{
-					Name:        flip.Packed,
+					Name:        storage.Packed,
 					PackedNames: packedNames,
 				}
 
@@ -139,10 +139,10 @@ var _ = Describe("Flip storage repository", func() {
 		})
 
 		Describe("Kicks", func() {
-			kicksMetadata := utils.StorageValueMetadata{Name: flip.Kicks}
+			kicksMetadata := utils.StorageValueMetadata{Name: storage.Kicks}
 			fakeKicks := strconv.Itoa(rand.Int())
 			inputs := shared_behaviors.StorageVariableBehaviorInputs{
-				FieldName:        flip.Kicks,
+				FieldName:        storage.Kicks,
 				Value:            fakeKicks,
 				StorageTableName: "maker.flip_kicks",
 				Repository:       &repo,
@@ -158,7 +158,7 @@ var _ = Describe("Flip storage repository", func() {
 
 		It("mappings returns an error if the metadata is missing the bid_id", func() {
 			badMetadata := utils.StorageValueMetadata{
-				Name: flip.BidBid,
+				Name: storage.BidBid,
 				Keys: map[utils.Key]string{},
 				Type: utils.Uint256,
 			}
@@ -169,7 +169,7 @@ var _ = Describe("Flip storage repository", func() {
 		Describe("BidBid", func() {
 			fakeBidValue := strconv.Itoa(rand.Int())
 			bidBidMetadata := utils.StorageValueMetadata{
-				Name: flip.BidBid,
+				Name: storage.BidBid,
 				Keys: map[utils.Key]string{constants.BidId: fakeBidId},
 				Type: utils.Uint256,
 			}
@@ -189,7 +189,7 @@ var _ = Describe("Flip storage repository", func() {
 		Describe("BidLot", func() {
 			fakeLotValue := strconv.Itoa(rand.Int())
 			bidLotMetadata := utils.StorageValueMetadata{
-				Name: flip.BidLot,
+				Name: storage.BidLot,
 				Keys: map[utils.Key]string{constants.BidId: fakeBidId},
 				Type: utils.Uint256,
 			}
@@ -208,7 +208,7 @@ var _ = Describe("Flip storage repository", func() {
 
 		Describe("BidGuy", func() {
 			bidGuyMetadata := utils.StorageValueMetadata{
-				Name: flip.BidGuy,
+				Name: storage.BidGuy,
 				Keys: map[utils.Key]string{constants.BidId: fakeBidId},
 				Type: utils.Address,
 			}
@@ -228,7 +228,7 @@ var _ = Describe("Flip storage repository", func() {
 		Describe("BidTic", func() {
 			fakeTicValue := strconv.Itoa(rand.Intn(100))
 			bidTicMetadata := utils.StorageValueMetadata{
-				Name: flip.BidTic,
+				Name: storage.BidTic,
 				Keys: map[utils.Key]string{constants.BidId: fakeBidId},
 				Type: utils.Uint48,
 			}
@@ -248,7 +248,7 @@ var _ = Describe("Flip storage repository", func() {
 		Describe("BidEnd", func() {
 			fakeEndValue := strconv.Itoa(rand.Intn(100))
 			bidEndMetadata := utils.StorageValueMetadata{
-				Name: flip.BidEnd,
+				Name: storage.BidEnd,
 				Keys: map[utils.Key]string{constants.BidId: fakeBidId},
 				Type: utils.Uint48,
 			}
@@ -267,7 +267,7 @@ var _ = Describe("Flip storage repository", func() {
 
 		Describe("BidUsr", func() {
 			bidUsrMetadata := utils.StorageValueMetadata{
-				Name: flip.BidUsr,
+				Name: storage.BidUsr,
 				Keys: map[utils.Key]string{constants.BidId: fakeBidId},
 				Type: utils.Address,
 			}
@@ -286,7 +286,7 @@ var _ = Describe("Flip storage repository", func() {
 
 		Describe("BidGal", func() {
 			bidGalMetadata := utils.StorageValueMetadata{
-				Name: flip.BidGal,
+				Name: storage.BidGal,
 				Keys: map[utils.Key]string{constants.BidId: fakeBidId},
 				Type: utils.Address,
 			}
@@ -306,7 +306,7 @@ var _ = Describe("Flip storage repository", func() {
 		Describe("BidTab", func() {
 			fakeTabValue := strconv.Itoa(rand.Int())
 			bidTabMetadata := utils.StorageValueMetadata{
-				Name: flip.BidTab,
+				Name: storage.BidTab,
 				Keys: map[utils.Key]string{constants.BidId: fakeBidId},
 				Type: utils.Uint256,
 			}

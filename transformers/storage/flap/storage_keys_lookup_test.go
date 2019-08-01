@@ -2,6 +2,7 @@ package flap_test
 
 import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/mcd_transformers/transformers/storage"
 	"math/rand"
 	"strconv"
 
@@ -9,7 +10,7 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/storage"
+	vdbStorage "github.com/vulcanize/vulcanizedb/libraries/shared/storage"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 
@@ -35,33 +36,33 @@ var _ = Describe("Flap storage mappings", func() {
 	Describe("looks up static keys", func() {
 		It("returns storage value mapping if storage key exists", func() {
 			Expect(mapping.Lookup(flap.VatStorageKey)).To(Equal(utils.StorageValueMetadata{
-				Name: flap.Vat,
+				Name: storage.Vat,
 				Keys: nil,
 				Type: utils.Address,
 			}))
 			Expect(mapping.Lookup(flap.GemStorageKey)).To(Equal(utils.StorageValueMetadata{
-				Name: flap.Gem,
+				Name: storage.Gem,
 				Keys: nil,
 				Type: utils.Address,
 			}))
 			Expect(mapping.Lookup(flap.BegStorageKey)).To(Equal(utils.StorageValueMetadata{
-				Name: flap.Beg,
+				Name: storage.Beg,
 				Keys: nil,
 				Type: utils.Uint256,
 			}))
 			Expect(mapping.Lookup(flap.TtlAndTauStorageKey)).To(Equal(utils.StorageValueMetadata{
-				Name:        flap.Packed,
+				Name:        storage.Packed,
 				Type:        utils.PackedSlot,
 				PackedTypes: map[int]utils.ValueType{0: utils.Uint48, 1: utils.Uint48},
-				PackedNames: map[int]string{0: flap.Ttl, 1: flap.Tau},
+				PackedNames: map[int]string{0: storage.Ttl, 1: storage.Tau},
 			}))
 			Expect(mapping.Lookup(flap.KicksStorageKey)).To(Equal(utils.StorageValueMetadata{
-				Name: flap.Kicks,
+				Name: storage.Kicks,
 				Keys: nil,
 				Type: utils.Uint256,
 			}))
 			Expect(mapping.Lookup(flap.LiveStorageKey)).To(Equal(utils.StorageValueMetadata{
-				Name: flap.Live,
+				Name: storage.Live,
 				Keys: nil,
 				Type: utils.Uint256,
 			}))
@@ -110,67 +111,67 @@ var _ = Describe("Flap storage mappings", func() {
 				Expect(err).NotTo(HaveOccurred())
 
 				Expect(metadata).To(Equal(utils.StorageValueMetadata{
-					Name: flap.BidBid,
+					Name: storage.BidBid,
 					Keys: map[utils.Key]string{constants.BidId: bidId},
 					Type: utils.Uint256,
 				}))
 			})
 
 			It("gets lot metadata", func() {
-				flapBidLotKey := storage.GetIncrementedKey(flapBidBidKey, 1)
+				flapBidLotKey := vdbStorage.GetIncrementedKey(flapBidBidKey, 1)
 				metadata, err := mapping.Lookup(flapBidLotKey)
 				Expect(err).NotTo(HaveOccurred())
 
 				Expect(metadata).To(Equal(utils.StorageValueMetadata{
-					Name: flap.BidLot,
+					Name: storage.BidLot,
 					Keys: map[utils.Key]string{constants.BidId: bidId},
 					Type: utils.Uint256,
 				}))
 			})
 
 			It("gets guy metadata", func() {
-				flapBidGuyKey := storage.GetIncrementedKey(flapBidBidKey, 2)
+				flapBidGuyKey := vdbStorage.GetIncrementedKey(flapBidBidKey, 2)
 				metadata, err := mapping.Lookup(flapBidGuyKey)
 				Expect(err).NotTo(HaveOccurred())
 
 				Expect(metadata).To(Equal(utils.StorageValueMetadata{
-					Name: flap.BidGuy,
+					Name: storage.BidGuy,
 					Keys: map[utils.Key]string{constants.BidId: bidId},
 					Type: utils.Address,
 				}))
 			})
 
 			It("gets tic metadata", func() {
-				flapBidTicKey := storage.GetIncrementedKey(flapBidBidKey, 3)
+				flapBidTicKey := vdbStorage.GetIncrementedKey(flapBidBidKey, 3)
 				metadata, err := mapping.Lookup(flapBidTicKey)
 				Expect(err).NotTo(HaveOccurred())
 
 				Expect(metadata).To(Equal(utils.StorageValueMetadata{
-					Name: flap.BidTic,
+					Name: storage.BidTic,
 					Keys: map[utils.Key]string{constants.BidId: bidId},
 					Type: utils.Uint48,
 				}))
 			})
 
 			It("gets end metadata", func() {
-				flapBidEndKey := storage.GetIncrementedKey(flapBidBidKey, 4)
+				flapBidEndKey := vdbStorage.GetIncrementedKey(flapBidBidKey, 4)
 				metadata, err := mapping.Lookup(flapBidEndKey)
 				Expect(err).NotTo(HaveOccurred())
 
 				Expect(metadata).To(Equal(utils.StorageValueMetadata{
-					Name: flap.BidEnd,
+					Name: storage.BidEnd,
 					Keys: map[utils.Key]string{constants.BidId: bidId},
 					Type: utils.Uint48,
 				}))
 			})
 
 			It("gets gal metadata", func() {
-				flapBidGalKey := storage.GetIncrementedKey(flapBidBidKey, 5)
+				flapBidGalKey := vdbStorage.GetIncrementedKey(flapBidBidKey, 5)
 				metadata, err := mapping.Lookup(flapBidGalKey)
 				Expect(err).NotTo(HaveOccurred())
 
 				Expect(metadata).To(Equal(utils.StorageValueMetadata{
-					Name: flap.BidGal,
+					Name: storage.BidGal,
 					Keys: map[utils.Key]string{constants.BidId: bidId},
 					Type: utils.Address,
 				}))
