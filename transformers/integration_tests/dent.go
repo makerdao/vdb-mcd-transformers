@@ -20,6 +20,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
@@ -53,8 +54,8 @@ var _ = XDescribe("Dent transformer", func() {
 
 		dentConfig = transformer.EventTransformerConfig{
 			TransformerName:   mcdConstants.DentLabel,
-			ContractAddresses: append(mcdConstants.FlipperContractAddresses(), mcdConstants.FlopperContractAddress()),
-			ContractAbi:       mcdConstants.FlipperABI(),
+			ContractAddresses: append(test_data.FlipAddresses(), test_data.FlopAddress()),
+			ContractAbi:       mcdConstants.FlipABI(),
 			Topic:             mcdConstants.DentSignature(),
 		}
 

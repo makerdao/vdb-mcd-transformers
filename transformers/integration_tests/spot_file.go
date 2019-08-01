@@ -17,6 +17,7 @@
 package integration_tests
 
 import (
+	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 	"strconv"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -69,7 +70,7 @@ var _ = Describe("SpotFile LogNoteTransformers", func() {
 
 			spotFileMatConfig := transformer.EventTransformerConfig{
 				TransformerName:     mcdConstants.SpotFileMatLabel,
-				ContractAddresses:   []string{mcdConstants.SpotContractAddress()},
+				ContractAddresses:   []string{test_data.SpotAddress()},
 				ContractAbi:         mcdConstants.SpotABI(),
 				Topic:               mcdConstants.SpotFileMatSignature(),
 				StartingBlockNumber: blockNumber,
@@ -127,7 +128,7 @@ var _ = Describe("SpotFile LogNoteTransformers", func() {
 
 			spotFilePipConfig := transformer.EventTransformerConfig{
 				TransformerName:     mcdConstants.SpotFilePipLabel,
-				ContractAddresses:   []string{mcdConstants.SpotContractAddress()},
+				ContractAddresses:   []string{test_data.SpotAddress()},
 				ContractAbi:         mcdConstants.SpotABI(),
 				Topic:               mcdConstants.SpotFilePipSignature(),
 				StartingBlockNumber: blockNumber,

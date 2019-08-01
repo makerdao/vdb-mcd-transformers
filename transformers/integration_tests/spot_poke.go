@@ -18,6 +18,7 @@ package integration_tests
 
 import (
 	"github.com/vulcanize/mcd_transformers/transformers/events/spot_poke"
+	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 	"strconv"
 
@@ -51,7 +52,7 @@ var _ = Describe("SpotPoke Transformer", func() {
 
 	spotPokeConfig := transformer.EventTransformerConfig{
 		TransformerName:   mcdConstants.SpotPokeLabel,
-		ContractAddresses: []string{mcdConstants.SpotContractAddress()},
+		ContractAddresses: []string{test_data.SpotAddress()},
 		ContractAbi:       mcdConstants.SpotABI(),
 		Topic:             mcdConstants.SpotPokeSignature(),
 	}

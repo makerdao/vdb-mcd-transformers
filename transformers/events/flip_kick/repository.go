@@ -61,7 +61,7 @@ func (repository FlipKickRepository) Create(headerID int64, models []interface{}
 			return execErr
 		}
 	}
-	checkHeaderErr := repo.MarkHeaderCheckedInTransaction(headerID, tx, constants.FlipKickChecked)
+	checkHeaderErr := repo.MarkHeaderCheckedInTransaction(headerID, tx, constants.FlipKickLabel)
 	if checkHeaderErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
@@ -73,7 +73,7 @@ func (repository FlipKickRepository) Create(headerID int64, models []interface{}
 }
 
 func (repository FlipKickRepository) MarkHeaderChecked(headerId int64) error {
-	return repo.MarkHeaderChecked(headerId, repository.db, constants.FlipKickChecked)
+	return repo.MarkHeaderChecked(headerId, repository.db, constants.FlipKickLabel)
 }
 
 func (repository *FlipKickRepository) SetDB(db *postgres.DB) {

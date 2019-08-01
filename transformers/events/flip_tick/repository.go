@@ -33,7 +33,7 @@ func (repository FlipTickRepository) Create(headerID int64, models []shared.Inse
 }
 
 func (repository FlipTickRepository) MarkHeaderChecked(headerId int64) error {
-	return repo.MarkHeaderChecked(headerId, repository.db, constants.FlipTickChecked)
+	return repo.MarkHeaderChecked(headerId, repository.db, constants.FlipTickLabel)
 }
 
 func (repository *FlipTickRepository) SetDB(db *postgres.DB) {

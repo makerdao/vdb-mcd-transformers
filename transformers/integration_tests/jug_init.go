@@ -17,6 +17,7 @@
 package integration_tests
 
 import (
+	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 	"strconv"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -34,7 +35,7 @@ import (
 var _ = Describe("JugInit LogNoteTransformer", func() {
 	jugInitConfig := transformer.EventTransformerConfig{
 		TransformerName:   mcdConstants.JugInitLabel,
-		ContractAddresses: []string{mcdConstants.JugContractAddress()},
+		ContractAddresses: []string{test_data.JugAddress()},
 		ContractAbi:       mcdConstants.JugABI(),
 		Topic:             mcdConstants.JugInitSignature(),
 	}

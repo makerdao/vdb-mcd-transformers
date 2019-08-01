@@ -23,6 +23,7 @@ import (
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/events/flop_kick"
 	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
@@ -51,8 +52,8 @@ var _ = XDescribe("FlopKick Transformer", func() {
 
 		flopKickConfig = transformer.EventTransformerConfig{
 			TransformerName:   mcdConstants.FlopKickLabel,
-			ContractAddresses: []string{mcdConstants.FlopperContractAddress()},
-			ContractAbi:       mcdConstants.FlopperABI(),
+			ContractAddresses: []string{test_data.FlopAddress()},
+			ContractAbi:       mcdConstants.FlopABI(),
 			Topic:             mcdConstants.FlopKickSignature(),
 		}
 

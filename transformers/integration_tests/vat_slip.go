@@ -17,6 +17,7 @@
 package integration_tests
 
 import (
+	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 	"strconv"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -50,7 +51,7 @@ var _ = Describe("Vat slip transformer", func() {
 
 	vatSlipConfig := transformer.EventTransformerConfig{
 		TransformerName:   mcdConstants.VatSlipLabel,
-		ContractAddresses: []string{mcdConstants.VatContractAddress()},
+		ContractAddresses: []string{test_data.VatAddress()},
 		ContractAbi:       mcdConstants.VatABI(),
 		Topic:             mcdConstants.VatSlipSignature(),
 	}
@@ -92,7 +93,7 @@ var _ = Describe("Vat slip transformer", func() {
 		Expect(model.Wad).To(Equal("10000000000000000"))
 		Expect(model.TransactionIndex).To(Equal(uint(0)))
 		var headerChecked bool
-		err = db.Get(&headerChecked, `SELECT vat_slip_checked FROM public.checked_headers WHERE header_id = $1`, headerID)
+		err = db.Get(&headerChecked, `SELECT vat_slip FROM public.checked_headers WHERE header_id = $1`, headerID)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(headerChecked).To(BeTrue())
 	})

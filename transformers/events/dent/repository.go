@@ -33,7 +33,7 @@ func (repository DentRepository) Create(headerID int64, models []shared.Insertio
 }
 
 func (repo DentRepository) MarkHeaderChecked(headerId int64) error {
-	return repository.MarkHeaderChecked(headerId, repo.db, constants.DentChecked)
+	return repository.MarkHeaderChecked(headerId, repo.db, constants.DentLabel)
 }
 
 func (repo *DentRepository) SetDB(db *postgres.DB) {

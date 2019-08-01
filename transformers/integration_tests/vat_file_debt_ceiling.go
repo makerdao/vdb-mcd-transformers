@@ -20,6 +20,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
@@ -48,7 +49,7 @@ var _ = Describe("VatFileDebtCeiling LogNoteTransformer", func() {
 
 	vatFileDebtCeilingConfig := transformer.EventTransformerConfig{
 		TransformerName:   mcdConstants.VatFileDebtCeilingLabel,
-		ContractAddresses: []string{mcdConstants.VatContractAddress()},
+		ContractAddresses: []string{test_data.VatAddress()},
 		ContractAbi:       mcdConstants.VatABI(),
 		Topic:             mcdConstants.VatFileDebtCeilingSignature(),
 	}

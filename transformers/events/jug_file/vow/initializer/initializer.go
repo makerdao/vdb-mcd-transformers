@@ -17,6 +17,7 @@
 package initializer
 
 import (
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 
 	"github.com/vulcanize/mcd_transformers/transformers/events/jug_file/vow"
@@ -24,7 +25,7 @@ import (
 )
 
 var EventTransformerInitializer transformer.EventTransformerInitializer = shared.LogNoteTransformer{
-	Config:     vow.GetJugFileVowConfig(),
+	Config:     shared.GetEventTransformerConfig(constants.JugFileVowLabel, constants.JugFileVowSignature()),
 	Converter:  &vow.JugFileVowConverter{},
 	Repository: &vow.JugFileVowRepository{},
 }.NewLogNoteTransformer

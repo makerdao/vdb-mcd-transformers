@@ -33,7 +33,7 @@ func (repository JugFileIlkRepository) Create(headerID int64, models []shared.In
 }
 
 func (repository JugFileIlkRepository) MarkHeaderChecked(headerID int64) error {
-	return repo.MarkHeaderChecked(headerID, repository.db, constants.JugFileIlkChecked)
+	return repo.MarkHeaderChecked(headerID, repository.db, constants.JugFileIlkLabel)
 }
 
 func (repository *JugFileIlkRepository) SetDB(db *postgres.DB) {

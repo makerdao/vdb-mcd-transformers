@@ -17,6 +17,7 @@
 package initializer
 
 import (
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_file/debt_ceiling"
@@ -24,7 +25,7 @@ import (
 )
 
 var EventTransformerInitializer transformer.EventTransformerInitializer = shared.LogNoteTransformer{
-	Config:     debt_ceiling.GetDebtCeilingFileConfig(),
+	Config:     shared.GetEventTransformerConfig(constants.VatFileDebtCeilingLabel, constants.VatFileDebtCeilingSignature()),
 	Converter:  &debt_ceiling.VatFileDebtCeilingConverter{},
 	Repository: &debt_ceiling.VatFileDebtCeilingRepository{},
 }.NewLogNoteTransformer

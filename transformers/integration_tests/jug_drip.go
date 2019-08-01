@@ -17,6 +17,7 @@
 package integration_tests
 
 import (
+	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 	"strconv"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -49,7 +50,7 @@ var _ = XDescribe("JugDrip Transformer", func() {
 		test_config.CleanTestDB(db)
 
 		jugDripConfig = transformer.EventTransformerConfig{
-			ContractAddresses: []string{mcdConstants.JugContractAddress()},
+			ContractAddresses: []string{test_data.JugAddress()},
 			ContractAbi:       mcdConstants.JugABI(),
 			Topic:             mcdConstants.JugDripSignature(),
 		}
@@ -124,7 +125,7 @@ var _ = XDescribe("JugDrip Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		var jugDripChecked []int
-		err = db.Select(&jugDripChecked, `SELECT jug_drip_checked FROM public.checked_headers WHERE header_id = $1`, headerID)
+		err = db.Select(&jugDripChecked, `SELECT jug_drip FROM public.checked_headers WHERE header_id = $1`, headerID)
 		Expect(err).NotTo(HaveOccurred())
 	})
 })

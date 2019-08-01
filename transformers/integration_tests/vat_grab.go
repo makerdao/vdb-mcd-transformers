@@ -17,6 +17,7 @@
 package integration_tests
 
 import (
+	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 	"math/big"
 	"strconv"
 
@@ -35,7 +36,7 @@ import (
 var _ = XDescribe("Vat Grab Transformer", func() {
 	vatGrabConfig := transformer.EventTransformerConfig{
 		TransformerName:   mcdConstants.VatGrabLabel,
-		ContractAddresses: []string{mcdConstants.VatContractAddress()},
+		ContractAddresses: []string{test_data.VatAddress()},
 		ContractAbi:       mcdConstants.VatABI(),
 		Topic:             mcdConstants.VatGrabSignature(),
 	}
