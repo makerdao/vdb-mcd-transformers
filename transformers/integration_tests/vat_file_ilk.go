@@ -17,6 +17,7 @@
 package integration_tests
 
 import (
+	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 	"sort"
 	"strconv"
 
@@ -52,7 +53,7 @@ var _ = Describe("VatFileIlk LogNoteTransformer", func() {
 		test_config.CleanTestDB(db)
 		vatFileIlkConfig := transformer.EventTransformerConfig{
 			TransformerName:   mcdConstants.VatFileIlkLabel,
-			ContractAddresses: []string{mcdConstants.VatContractAddress()},
+			ContractAddresses: []string{test_data.VatAddress()},
 			ContractAbi:       mcdConstants.VatABI(),
 			Topic:             mcdConstants.VatFileIlkSignature(),
 		}

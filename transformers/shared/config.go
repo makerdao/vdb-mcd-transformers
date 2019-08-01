@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -14,21 +14,23 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package bite
+package shared
 
 import (
-	shared_t "github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
-func GetBiteConfig() shared_t.EventTransformerConfig {
-	return shared_t.EventTransformerConfig{
-		TransformerName:     constants.BiteLabel,
-		ContractAddresses:   []string{constants.CatContractAddress()},
-		ContractAbi:         constants.CatABI(),
-		Topic:               constants.BiteSignature(),
-		StartingBlockNumber: constants.CatDeploymentBlock(),
-		EndingBlockNumber:   -1,
+// Creates a transformer config by pulling values from configuration environment
+func GetEventTransformerConfig(transformerLabel, signature string) transformer.EventTransformerConfig {
+	contractNames := constants.GetTransformerContractNames(transformerLabel)
+	return transformer.EventTransformerConfig{
+		TransformerName:     transformerLabel,
+		ContractAddresses:   constants.GetContractAddresses(contractNames),
+		ContractAbi:         constants.GetContractsABI(contractNames),
+		Topic:               signature,
+		StartingBlockNumber: constants.GetMinDeploymentBlock(contractNames),
+		EndingBlockNumber:   -1, // TODO Generalise endingBlockNumber
 	}
 }

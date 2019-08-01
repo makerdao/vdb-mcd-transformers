@@ -17,7 +17,7 @@ CREATE INDEX dent_header_index
     ON maker.dent (header_id);
 
 ALTER TABLE public.checked_headers
-    ADD COLUMN dent_checked INTEGER NOT NULL DEFAULT 0;
+    ADD COLUMN dent INTEGER NOT NULL DEFAULT 0;
 
 -- +goose Down
 DROP INDEX maker.dent_header_index;
@@ -25,4 +25,4 @@ DROP INDEX maker.dent_header_index;
 DROP TABLE maker.dent;
 
 ALTER TABLE public.checked_headers
-    DROP COLUMN dent_checked;
+    DROP COLUMN dent;

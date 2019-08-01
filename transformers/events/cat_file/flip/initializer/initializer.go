@@ -17,6 +17,7 @@
 package initializer
 
 import (
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 
 	"github.com/vulcanize/mcd_transformers/transformers/events/cat_file/flip"
@@ -24,7 +25,7 @@ import (
 )
 
 var EventTransformerInitializer transformer.EventTransformerInitializer = shared.LogNoteTransformer{
-	Config:     flip.GetCatFileFlipConfig(),
+	Config:     shared.GetEventTransformerConfig(constants.CatFileFlipLabel, constants.CatFileFlipSignature()),
 	Converter:  &flip.CatFileFlipConverter{},
 	Repository: &flip.CatFileFlipRepository{},
 }.NewLogNoteTransformer

@@ -33,7 +33,7 @@ func (repository CatFileChopLumpRepository) Create(headerID int64, models []shar
 }
 
 func (repository CatFileChopLumpRepository) MarkHeaderChecked(headerID int64) error {
-	return repo.MarkHeaderChecked(headerID, repository.db, constants.CatFileChopLumpChecked)
+	return repo.MarkHeaderChecked(headerID, repository.db, constants.CatFileChopLumpLabel)
 }
 
 func (repository *CatFileChopLumpRepository) SetDB(db *postgres.DB) {

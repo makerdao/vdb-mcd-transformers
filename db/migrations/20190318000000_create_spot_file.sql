@@ -37,10 +37,10 @@ CREATE INDEX spot_file_pip_header_index
     ON maker.spot_file_pip (header_id);
 
 ALTER TABLE public.checked_headers
-    ADD COLUMN spot_file_mat_checked INTEGER NOT NULL DEFAULT 0;
+    ADD COLUMN spot_file_mat INTEGER NOT NULL DEFAULT 0;
 
 ALTER TABLE public.checked_headers
-    ADD COLUMN spot_file_pip_checked INTEGER NOT NULL DEFAULT 0;
+    ADD COLUMN spot_file_pip INTEGER NOT NULL DEFAULT 0;
 
 
 -- +goose Down
@@ -53,7 +53,7 @@ DROP TABLE maker.spot_file_mat;
 DROP TABLE maker.spot_file_pip;
 
 ALTER TABLE public.checked_headers
-    DROP COLUMN spot_file_mat_checked;
+    DROP COLUMN spot_file_mat;
 ALTER TABLE public.checked_headers
-    DROP COLUMN spot_file_pip_checked;
+    DROP COLUMN spot_file_pip;
 

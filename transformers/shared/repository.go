@@ -113,8 +113,7 @@ func Create(headerID int64, models []InsertionModel, db *postgres.DB) error {
 
 	// Quick 'n' dirty solution to these not being declared in config.
 	// a) Couldn't we somewhere create the table and add a checked column inside the plugin, instead of a migration?
-	// b) By defining the checked column to be tableName_checked, we can do away with all the strings anyway :)
-	checkedHeaderColumn := models[0].TableName + "_checked"
+	checkedHeaderColumn := models[0].TableName
 
 	tx, dbErr := db.Beginx()
 	if dbErr != nil {

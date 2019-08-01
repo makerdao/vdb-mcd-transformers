@@ -27,13 +27,14 @@ import (
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/events/flip_kick"
 	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
 var _ = Describe("FlipKick Transformer", func() {
 	flipKickConfig := transformer.EventTransformerConfig{
 		TransformerName:   mcdConstants.FlipKickLabel,
-		ContractAddresses: []string{mcdConstants.EthFlipContractAddressA()},
-		ContractAbi:       mcdConstants.FlipperABI(),
+		ContractAddresses: []string{test_data.EthFlipAddress()},
+		ContractAbi:       mcdConstants.FlipABI(),
 		Topic:             mcdConstants.FlipKickSignature(),
 	}
 

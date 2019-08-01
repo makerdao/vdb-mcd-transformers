@@ -258,7 +258,7 @@ var _ = Describe("Plugin test", func() {
 				Expect(err).ToNot(HaveOccurred())
 
 				var catFileFlipChecked int
-				err = db.Get(&catFileFlipChecked, `SELECT cat_file_flip_checked FROM public.checked_headers WHERE header_id = $1`, headerID)
+				err = db.Get(&catFileFlipChecked, `SELECT cat_file_flip FROM public.checked_headers WHERE header_id = $1`, headerID)
 				Expect(err).ToNot(HaveOccurred())
 				Expect(catFileFlipChecked).To(Equal(2))
 			})

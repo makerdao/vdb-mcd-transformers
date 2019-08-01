@@ -28,7 +28,7 @@ import (
 )
 
 var StorageTransformerInitializer transformer.StorageTransformerInitializer = s2.Transformer{
-	Address:    common.HexToAddress(constants.VowContractAddress()),
+	Address:    common.HexToAddress(constants.GetContractAddress("MCD_VOW")),
 	Mappings:   &vow.VowMappings{StorageRepository: &storage.MakerStorageRepository{}},
 	Repository: &vow.VowStorageRepository{},
 }.NewTransformer

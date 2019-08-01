@@ -28,7 +28,7 @@ import (
 )
 
 var StorageTransformerInitializer transformer.StorageTransformerInitializer = s2.Transformer{
-	Address:    common.HexToAddress(constants.VatContractAddress()),
+	Address:    common.HexToAddress(constants.GetContractAddress("MCD_VAT")),
 	Mappings:   &vat.VatMappings{StorageRepository: &storage.MakerStorageRepository{}},
 	Repository: &vat.VatStorageRepository{},
 }.NewTransformer

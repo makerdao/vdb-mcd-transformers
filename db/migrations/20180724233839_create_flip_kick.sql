@@ -23,7 +23,7 @@ CREATE INDEX flip_kick_header_index
     ON maker.flip_kick (header_id);
 
 ALTER TABLE public.checked_headers
-    ADD COLUMN flip_kick_checked INTEGER NOT NULL DEFAULT 0;
+    ADD COLUMN flip_kick INTEGER NOT NULL DEFAULT 0;
 
 -- +goose Down
 DROP INDEX maker.flip_kick_header_index;
@@ -31,4 +31,4 @@ DROP INDEX maker.flip_kick_header_index;
 DROP TABLE maker.flip_kick;
 
 ALTER TABLE public.checked_headers
-    DROP COLUMN flip_kick_checked;
+    DROP COLUMN flip_kick;

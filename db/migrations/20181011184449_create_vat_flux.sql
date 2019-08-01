@@ -20,7 +20,7 @@ CREATE INDEX vat_flux_ilk_index
     ON maker.vat_flux (ilk_id);
 
 ALTER TABLE public.checked_headers
-    ADD COLUMN vat_flux_checked INTEGER NOT NULL DEFAULT 0;
+    ADD COLUMN vat_flux INTEGER NOT NULL DEFAULT 0;
 
 -- +goose Down
 DROP INDEX maker.vat_flux_header_index;
@@ -29,4 +29,4 @@ DROP INDEX maker.vat_flux_ilk_index;
 DROP TABLE maker.vat_flux;
 
 ALTER TABLE public.checked_headers
-    DROP COLUMN vat_flux_checked;
+    DROP COLUMN vat_flux;

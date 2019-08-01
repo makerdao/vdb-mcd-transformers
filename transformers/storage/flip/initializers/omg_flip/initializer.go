@@ -21,4 +21,4 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/storage/flip/initializers"
 )
 
-var StorageTransformerInitializer = initializers.GenerateStorageTransformerInitializer(constants.OmgFlipContractAddress())
+var StorageTransformerInitializer = initializers.GenerateStorageTransformerInitializer(constants.GetContractAddress("MCD_FLIP_OMG_A"))

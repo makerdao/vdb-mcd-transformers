@@ -33,7 +33,7 @@ func (repo YankRepository) Create(headerID int64, models []shared.InsertionModel
 }
 
 func (repo YankRepository) MarkHeaderChecked(headerID int64) error {
-	return repository.MarkHeaderChecked(headerID, repo.db, constants.YankChecked)
+	return repository.MarkHeaderChecked(headerID, repo.db, constants.YankLabel)
 }
 
 func (repo *YankRepository) SetDB(db *postgres.DB) {
