@@ -68,15 +68,17 @@ var _ = Describe("Flip state computed columns", func() {
 		flipStorageValues := test_helpers.GetFlipStorageValues(1, test_helpers.FakeIlk.Hex, fakeBidId)
 		test_helpers.CreateFlip(db, fakeHeader, flipStorageValues, test_helpers.GetFlipMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
 
-		_, _, err := test_helpers.SetUpFlipBidBackgroundData(test_helpers.FlipBidSetupData{
-			Db:               db,
-			BidId:            fakeBidId,
+		_, _, err := test_helpers.SetUpFlipBidContext(test_helpers.FlipBidCreationInput{
+			DealCreationInput: test_helpers.DealCreationInput{
+				Db:              db,
+				BidId:           fakeBidId,
+				ContractAddress: contractAddress,
+			},
+			Dealt:            false,
 			IlkHex:           fakeIlk,
 			UrnGuy:           fakeUrn,
-			ContractAddress:  contractAddress,
 			FlipKickRepo:     flipKickRepo,
 			FlipKickHeaderId: headerId,
-			Dealt:            false,
 		})
 		Expect(err).NotTo(HaveOccurred())
 	})

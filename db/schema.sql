@@ -444,22 +444,22 @@ $$;
 CREATE FUNCTION api.all_flips(ilk text) RETURNS SETOF api.flip_state
     LANGUAGE plpgsql
     AS $$
-DECLARE
-    bid_id NUMERIC;
 BEGIN
-    FOR bid_id IN
-        WITH address AS (SELECT DISTINCT contract_address
-                         FROM maker.flip_ilk
-                         WHERE flip_ilk.ilk = all_flips.ilk
-                         LIMIT 1)
-        SELECT DISTINCT flip_bid_guy.bid_id
-        FROM maker.flip_bid_guy
-        WHERE contract_address = (SELECT contract_address FROM address)
-        ORDER BY flip_bid_guy.bid_id
-        LOOP
-            RETURN NEXT api.get_flip(bid_id, ilk);
-        END LOOP;
-    RETURN;
+    RETURN QUERY (
+        WITH address AS (
+            SELECT DISTINCT contract_address
+            FROM maker.flip_ilk
+            WHERE flip_ilk.ilk = all_flips.ilk
+            LIMIT 1),
+             bid_ids AS (
+                 SELECT DISTINCT flip_kicks.kicks
+                 FROM maker.flip_kicks
+                 WHERE contract_address = (SELECT * FROM address)
+                 ORDER BY flip_kicks.kicks)
+        SELECT f.*
+        FROM bid_ids,
+             LATERAL api.get_flip(bid_ids.kicks, ilk) f
+    );
 END
 $$;
 
@@ -1200,17 +1200,18 @@ WITH ilk_id AS (SELECT id FROM maker.ilks WHERE ilks.ilk = get_flip.ilk),
      kicks AS (SELECT usr
                FROM maker.flip_kick
                WHERE flip_kick.bid_id = get_flip.bid_id
-                 AND contract_address = (SELECT * FROM address)),
+                 AND contract_address = (SELECT * FROM address)
+               LIMIT 1),
      urn_id AS (SELECT id
                 FROM maker.urns
                 WHERE urns.ilk_id = (SELECT * FROM ilk_id)
-                  AND urns.identifier IN (SELECT usr FROM kicks)),
+                  AND urns.identifier = (SELECT usr FROM kicks)),
      guys AS (SELECT flip_bid_guy.bid_id, guy
               FROM maker.flip_bid_guy
               WHERE flip_bid_guy.bid_id = get_flip.bid_id
                 AND contract_address = (SELECT * FROM address)
                 AND block_number <= block_height
-              ORDER BY flip_bid_guy.bid_id, block_number DESC
+              ORDER BY block_number DESC
               LIMIT 1),
      tics AS (SELECT flip_bid_tic.bid_id, tic
               FROM maker.flip_bid_tic

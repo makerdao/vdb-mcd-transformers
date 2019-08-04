@@ -63,26 +63,18 @@ var _ = Describe("All flops query", func() {
 		updatedFlopOneStorageValues := test_helpers.GetFlopStorageValues(2, fakeBidIdOne)
 		test_helpers.CreateFlop(db, blockTwoHeader, updatedFlopOneStorageValues, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidIdOne)), contractAddress)
 
-		flopBidContextErr := test_helpers.SetUpBidContext(test_helpers.BidSetupData{
-			Db:              db,
-			BidId:           fakeBidIdOne,
-			ContractAddress: contractAddress,
-			Dealt:           false,
-		})
-		Expect(flopBidContextErr).NotTo(HaveOccurred())
-
 		flopStorageValuesTwo := test_helpers.GetFlopStorageValues(3, fakeBidIdTwo)
 		test_helpers.CreateFlop(db, blockTwoHeader, flopStorageValuesTwo, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidIdTwo)), contractAddress)
 
-		var actualBids []test_helpers.Bid
+		var actualBids []test_helpers.FlopBid
 		queryErr := db.Select(&actualBids, `SELECT bid_id, guy, tic, "end", lot, bid, dealt, created, updated FROM api.all_flops()`)
 		Expect(queryErr).NotTo(HaveOccurred())
 
-		expectedBidOne := test_helpers.BidFromValues(strconv.Itoa(fakeBidIdOne), "false", blockTwoHeader.Timestamp, blockOneHeader.Timestamp, updatedFlopOneStorageValues)
-		expectedBidTwo := test_helpers.BidFromValues(strconv.Itoa(fakeBidIdTwo), "false", blockTwoHeader.Timestamp, blockTwoHeader.Timestamp, flopStorageValuesTwo)
+		expectedBidOne := test_helpers.FlopBidFromValues(strconv.Itoa(fakeBidIdOne), "false", blockTwoHeader.Timestamp, blockOneHeader.Timestamp, updatedFlopOneStorageValues)
+		expectedBidTwo := test_helpers.FlopBidFromValues(strconv.Itoa(fakeBidIdTwo), "false", blockTwoHeader.Timestamp, blockTwoHeader.Timestamp, flopStorageValuesTwo)
 
 		Expect(len(actualBids)).To(Equal(2))
-		Expect(actualBids).To(ConsistOf([]test_helpers.Bid{
+		Expect(actualBids).To(ConsistOf([]test_helpers.FlopBid{
 			expectedBidOne,
 			expectedBidTwo,
 		}))
