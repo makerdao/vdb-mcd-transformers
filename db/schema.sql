@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 11.3
--- Dumped by pg_dump version 11.3
+-- Dumped from database version 11.4
+-- Dumped by pg_dump version 11.4
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -359,7 +359,6 @@ CREATE FUNCTION api.all_bites(ilk_identifier text) RETURNS SETOF api.bite_event
     LANGUAGE sql STABLE STRICT
     AS $$
 WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier)
-
 SELECT ilk_identifier, identifier AS urn_identifier, ink, art, tab, block_number, tx_idx
 FROM maker.bite
          LEFT JOIN maker.urns ON bite.urn_id = urns.id
@@ -446,7 +445,6 @@ CREATE FUNCTION api.all_frobs(ilk_identifier text) RETURNS SETOF api.frob_event
     LANGUAGE sql STABLE STRICT
     AS $$
 WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier)
-
 SELECT ilk_identifier, identifier AS urn_identifier, dink, dart, block_number, tx_idx
 FROM maker.vat_frob
          LEFT JOIN maker.urns ON vat_frob.urn_id = urns.id
@@ -464,7 +462,6 @@ CREATE FUNCTION api.all_ilk_file_events(ilk_identifier text) RETURNS SETOF api.i
     LANGUAGE sql STABLE STRICT
     AS $$
 WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier)
-
 SELECT ilk_identifier, what, data :: text, block_number, tx_idx
 FROM maker.cat_file_chop_lump
          LEFT JOIN headers ON cat_file_chop_lump.header_id = headers.id
@@ -732,7 +729,6 @@ BEGIN
     FROM maker.urns
     WHERE urns.identifier = urn_identifier
       AND urns.ilk_id = _ilk_id INTO _urn_id;
-
     blocks := ARRAY(
             SELECT block_number
             FROM (SELECT block_number
@@ -746,7 +742,6 @@ BEGIN
                     AND block_number <= all_urn_states.block_height) inks_and_arts
             ORDER BY block_number DESC
         );
-
     FOREACH i IN ARRAY blocks
         LOOP
             RETURN QUERY
@@ -812,7 +807,6 @@ WITH urns AS (SELECT urns.id AS urn_id, ilks.id AS ilk_id, ilks.ilk, urns.identi
                         ORDER BY urn_id, block_number DESC)) last_blocks
                           LEFT JOIN public.headers ON headers.hash = last_blocks.block_hash
                  ORDER BY urn_id, headers.block_timestamp DESC)
-
 SELECT urns.identifier,
        ilks.identifier,
        all_urns.block_height,
@@ -1361,7 +1355,6 @@ WITH ilk AS (SELECT id FROM maker.ilks WHERE identifier = ilk_identifier),
                           LEFT JOIN public.headers AS headers on headers.hash = relevant_blocks.block_hash
                  ORDER BY relevant_blocks.block_height DESC
                  LIMIT 1)
-
 SELECT ilks.identifier,
        get_ilk.block_height,
        rates.rate,
@@ -1497,7 +1490,6 @@ WITH created AS (SELECT era, vow_sin_mapping.block_number, api.epoch_to_datetime
                  WHERE era = get_queued_sin.era
                  ORDER BY vow_sin_mapping.block_number DESC
                  LIMIT 1)
-
 SELECT get_queued_sin.era,
        tab,
        (SELECT EXISTS(SELECT id FROM maker.vow_flog WHERE vow_flog.era = get_queued_sin.era)) AS flogged,
@@ -1569,7 +1561,6 @@ WITH urn AS (SELECT urns.id AS urn_id, ilks.id AS ilk_id, ilks.ilk, urns.identif
                        FROM art) last_blocks
                           LEFT JOIN public.headers ON headers.block_number = last_blocks.block_number
                  ORDER BY urn_id, block_timestamp DESC)
-
 SELECT get_urn.urn_identifier,
        ilk_identifier,
        $3,
@@ -1666,7 +1657,6 @@ CREATE FUNCTION api.poke_event_ilk(priceupdate api.poke_event) RETURNS api.ilk_s
     LANGUAGE sql STABLE
     AS $$
 WITH raw_ilk AS (SELECT * FROM maker.ilks WHERE ilks.id = priceUpdate.ilk_id)
-
 SELECT *
 FROM api.get_ilk((SELECT identifier FROM raw_ilk), priceUpdate.block_height)
 $$;
@@ -1741,7 +1731,6 @@ WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier),
              FROM maker.urns
              WHERE ilk_id = (SELECT id FROM ilk)
                AND identifier = urn_bites.urn_identifier)
-
 SELECT ilk_identifier, urn_bites.urn_identifier, ink, art, tab, block_number, tx_idx
 FROM maker.bite
          LEFT JOIN headers ON bite.header_id = headers.id
@@ -1762,7 +1751,6 @@ WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier),
              FROM maker.urns
              WHERE ilk_id = (SELECT id FROM ilk)
                AND identifier = urn_identifier)
-
 SELECT ilk_identifier, urn_identifier, dink, dart, block_number, tx_idx
 FROM maker.vat_frob
          LEFT JOIN headers ON vat_frob.header_id = headers.id
@@ -9387,10 +9375,38 @@ CREATE INDEX dent_header_index ON maker.dent USING btree (header_id);
 
 
 --
+-- Name: flap_bid_bid_bid_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flap_bid_bid_bid_id_index ON maker.flap_bid_bid USING btree (bid_id);
+
+
+--
 -- Name: flap_bid_bid_block_number_index; Type: INDEX; Schema: maker; Owner: -
 --
 
 CREATE INDEX flap_bid_bid_block_number_index ON maker.flap_bid_bid USING btree (block_number);
+
+
+--
+-- Name: flap_bid_bid_contract_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flap_bid_bid_contract_address_index ON maker.flap_bid_bid USING btree (contract_address);
+
+
+--
+-- Name: flap_bid_end_bid_contract_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flap_bid_end_bid_contract_address_index ON maker.flap_bid_end USING btree (contract_address);
+
+
+--
+-- Name: flap_bid_end_bid_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flap_bid_end_bid_id_index ON maker.flap_bid_end USING btree (bid_id);
 
 
 --
@@ -9401,10 +9417,38 @@ CREATE INDEX flap_bid_end_block_number_index ON maker.flap_bid_end USING btree (
 
 
 --
+-- Name: flap_bid_gal_bid_contract_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flap_bid_gal_bid_contract_address_index ON maker.flap_bid_gal USING btree (contract_address);
+
+
+--
+-- Name: flap_bid_gal_bid_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flap_bid_gal_bid_id_index ON maker.flap_bid_gal USING btree (bid_id);
+
+
+--
 -- Name: flap_bid_gal_block_number_index; Type: INDEX; Schema: maker; Owner: -
 --
 
 CREATE INDEX flap_bid_gal_block_number_index ON maker.flap_bid_gal USING btree (block_number);
+
+
+--
+-- Name: flap_bid_guy_bid_contract_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flap_bid_guy_bid_contract_address_index ON maker.flap_bid_guy USING btree (contract_address);
+
+
+--
+-- Name: flap_bid_guy_bid_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flap_bid_guy_bid_id_index ON maker.flap_bid_guy USING btree (bid_id);
 
 
 --
@@ -9415,10 +9459,38 @@ CREATE INDEX flap_bid_guy_block_number_index ON maker.flap_bid_guy USING btree (
 
 
 --
+-- Name: flap_bid_lot_bid_contract_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flap_bid_lot_bid_contract_address_index ON maker.flap_bid_lot USING btree (contract_address);
+
+
+--
+-- Name: flap_bid_lot_bid_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flap_bid_lot_bid_id_index ON maker.flap_bid_lot USING btree (bid_id);
+
+
+--
 -- Name: flap_bid_lot_block_number_index; Type: INDEX; Schema: maker; Owner: -
 --
 
 CREATE INDEX flap_bid_lot_block_number_index ON maker.flap_bid_lot USING btree (block_number);
+
+
+--
+-- Name: flap_bid_tic_bid_contract_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flap_bid_tic_bid_contract_address_index ON maker.flap_bid_tic USING btree (contract_address);
+
+
+--
+-- Name: flap_bid_tic_bid_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flap_bid_tic_bid_id_index ON maker.flap_bid_tic USING btree (bid_id);
 
 
 --
@@ -9433,6 +9505,27 @@ CREATE INDEX flap_bid_tic_block_number_index ON maker.flap_bid_tic USING btree (
 --
 
 CREATE INDEX flap_kick_header_index ON maker.flap_kick USING btree (header_id);
+
+
+--
+-- Name: flap_kicks_block_number_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flap_kicks_block_number_index ON maker.flap_kicks USING btree (block_number);
+
+
+--
+-- Name: flap_kicks_contract_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flap_kicks_contract_address_index ON maker.flap_kicks USING btree (contract_address);
+
+
+--
+-- Name: flap_kicks_kicks_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flap_kicks_kicks_index ON maker.flap_kicks USING btree (kicks);
 
 
 --
@@ -9506,10 +9599,38 @@ CREATE INDEX flip_tick_header_index ON maker.flip_tick USING btree (header_id);
 
 
 --
+-- Name: flop_bid_bid_bid_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flop_bid_bid_bid_id_index ON maker.flop_bid_bid USING btree (bid_id);
+
+
+--
 -- Name: flop_bid_bid_block_number_index; Type: INDEX; Schema: maker; Owner: -
 --
 
 CREATE INDEX flop_bid_bid_block_number_index ON maker.flop_bid_bid USING btree (block_number);
+
+
+--
+-- Name: flop_bid_bid_contract_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flop_bid_bid_contract_address_index ON maker.flop_bid_bid USING btree (contract_address);
+
+
+--
+-- Name: flop_bid_end_bid_contract_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flop_bid_end_bid_contract_address_index ON maker.flop_bid_end USING btree (contract_address);
+
+
+--
+-- Name: flop_bid_end_bid_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flop_bid_end_bid_id_index ON maker.flop_bid_end USING btree (bid_id);
 
 
 --
@@ -9520,6 +9641,20 @@ CREATE INDEX flop_bid_end_block_number_index ON maker.flop_bid_end USING btree (
 
 
 --
+-- Name: flop_bid_guy_bid_contract_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flop_bid_guy_bid_contract_address_index ON maker.flop_bid_guy USING btree (contract_address);
+
+
+--
+-- Name: flop_bid_guy_bid_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flop_bid_guy_bid_id_index ON maker.flop_bid_guy USING btree (bid_id);
+
+
+--
 -- Name: flop_bid_guy_block_number_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -9527,10 +9662,38 @@ CREATE INDEX flop_bid_guy_block_number_index ON maker.flop_bid_guy USING btree (
 
 
 --
+-- Name: flop_bid_lot_bid_contract_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flop_bid_lot_bid_contract_address_index ON maker.flop_bid_lot USING btree (contract_address);
+
+
+--
+-- Name: flop_bid_lot_bid_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flop_bid_lot_bid_id_index ON maker.flop_bid_lot USING btree (bid_id);
+
+
+--
 -- Name: flop_bid_lot_block_number_index; Type: INDEX; Schema: maker; Owner: -
 --
 
 CREATE INDEX flop_bid_lot_block_number_index ON maker.flop_bid_lot USING btree (block_number);
+
+
+--
+-- Name: flop_bid_tic_bid_contract_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flop_bid_tic_bid_contract_address_index ON maker.flop_bid_tic USING btree (contract_address);
+
+
+--
+-- Name: flop_bid_tic_bid_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flop_bid_tic_bid_id_index ON maker.flop_bid_tic USING btree (bid_id);
 
 
 --
@@ -9545,6 +9708,27 @@ CREATE INDEX flop_bid_tic_block_number_index ON maker.flop_bid_tic USING btree (
 --
 
 CREATE INDEX flop_kick_header_index ON maker.flop_kick USING btree (header_id);
+
+
+--
+-- Name: flop_kicks_block_number_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flop_kicks_block_number_index ON maker.flop_kicks USING btree (block_number);
+
+
+--
+-- Name: flop_kicks_contract_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flop_kicks_contract_address_index ON maker.flop_kicks USING btree (contract_address);
+
+
+--
+-- Name: flop_kicks_kicks_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flop_kicks_kicks_index ON maker.flop_kicks USING btree (kicks);
 
 
 --
