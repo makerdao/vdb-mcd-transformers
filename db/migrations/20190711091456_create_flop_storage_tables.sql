@@ -13,6 +13,10 @@ CREATE TABLE maker.flop_bid_bid
 
 CREATE INDEX flop_bid_bid_block_number_index
     ON maker.flop_bid_bid (block_number);
+CREATE INDEX flop_bid_bid_bid_id_index
+    ON maker.flop_bid_bid (bid_id);
+CREATE INDEX flop_bid_bid_contract_address_index
+    ON maker.flop_bid_bid (contract_address);
 
 CREATE TABLE maker.flop_bid_lot
 (
@@ -27,6 +31,10 @@ CREATE TABLE maker.flop_bid_lot
 
 CREATE INDEX flop_bid_lot_block_number_index
     ON maker.flop_bid_lot (block_number);
+CREATE INDEX flop_bid_lot_bid_id_index
+    ON maker.flop_bid_lot (bid_id);
+CREATE INDEX flop_bid_lot_bid_contract_address_index
+    ON maker.flop_bid_lot (contract_address);
 
 CREATE TABLE maker.flop_bid_guy
 (
@@ -41,6 +49,10 @@ CREATE TABLE maker.flop_bid_guy
 
 CREATE INDEX flop_bid_guy_block_number_index
     ON maker.flop_bid_guy (block_number);
+CREATE INDEX flop_bid_guy_bid_id_index
+    ON maker.flop_bid_guy (bid_id);
+CREATE INDEX flop_bid_guy_bid_contract_address_index
+    ON maker.flop_bid_guy (contract_address);
 
 CREATE TABLE maker.flop_bid_tic
 (
@@ -55,6 +67,10 @@ CREATE TABLE maker.flop_bid_tic
 
 CREATE INDEX flop_bid_tic_block_number_index
     ON maker.flop_bid_tic (block_number);
+CREATE INDEX flop_bid_tic_bid_id_index
+    ON maker.flop_bid_tic (bid_id);
+CREATE INDEX flop_bid_tic_bid_contract_address_index
+    ON maker.flop_bid_tic (contract_address);
 
 CREATE TABLE maker.flop_bid_end
 (
@@ -69,6 +85,10 @@ CREATE TABLE maker.flop_bid_end
 
 CREATE INDEX flop_bid_end_block_number_index
     ON maker.flop_bid_end (block_number);
+CREATE INDEX flop_bid_end_bid_id_index
+    ON maker.flop_bid_end (bid_id);
+CREATE INDEX flop_bid_end_bid_contract_address_index
+    ON maker.flop_bid_end (contract_address);
 
 CREATE TABLE maker.flop_vat
 (
@@ -130,6 +150,13 @@ CREATE TABLE maker.flop_kicks
     UNIQUE (block_number, block_hash, contract_address, kicks)
 );
 
+CREATE INDEX flop_kicks_block_number_index
+    ON maker.flop_kicks (block_number);
+CREATE INDEX flop_kicks_kicks_index
+    ON maker.flop_kicks (kicks);
+CREATE INDEX flop_kicks_contract_address_index
+    ON maker.flop_kicks (contract_address);
+
 -- prevent naming conflict with maker.flop_kick in postgraphile
 COMMENT ON TABLE maker.flop_kicks IS E'@name flopKicksStorage';
 
@@ -145,11 +172,24 @@ CREATE TABLE  maker.flop_live
 
 -- +goose Down
 -- SQL in this section is executed when the migration is rolled back.
+DROP INDEX maker.flop_kicks_contract_address_index;
+DROP INDEX maker.flop_kicks_kicks_index;
+DROP INDEX maker.flop_kicks_block_number_index;
 DROP INDEX maker.flop_bid_end_block_number_index;
+DROP INDEX maker.flop_bid_end_bid_contract_address_index;
+DROP INDEX maker.flop_bid_end_bid_id_index;
 DROP INDEX maker.flop_bid_tic_block_number_index;
+DROP INDEX maker.flop_bid_tic_bid_contract_address_index;
+DROP INDEX maker.flop_bid_tic_bid_id_index;
 DROP INDEX maker.flop_bid_guy_block_number_index;
+DROP INDEX maker.flop_bid_guy_bid_contract_address_index;
+DROP INDEX maker.flop_bid_guy_bid_id_index;
 DROP INDEX maker.flop_bid_lot_block_number_index;
+DROP INDEX maker.flop_bid_lot_bid_contract_address_index;
+DROP INDEX maker.flop_bid_lot_bid_id_index;
 DROP INDEX maker.flop_bid_bid_block_number_index;
+DROP INDEX maker.flop_bid_bid_contract_address_index;
+DROP INDEX maker.flop_bid_bid_bid_id_index;
 
 DROP TABLE maker.flop_live;
 DROP TABLE maker.flop_kicks;

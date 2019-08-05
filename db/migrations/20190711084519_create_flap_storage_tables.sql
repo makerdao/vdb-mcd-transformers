@@ -11,6 +11,8 @@ CREATE TABLE maker.flap_bid_bid
     UNIQUE (block_number, block_hash, contract_address, bid_id, bid)
 );
 CREATE INDEX flap_bid_bid_block_number_index ON maker.flap_bid_bid (block_number);
+CREATE INDEX flap_bid_bid_bid_id_index ON maker.flap_bid_bid (bid_id);
+CREATE INDEX flap_bid_bid_contract_address_index ON maker.flap_bid_bid (contract_address);
 
 CREATE TABLE maker.flap_bid_lot
 (
@@ -23,6 +25,8 @@ CREATE TABLE maker.flap_bid_lot
     UNIQUE (block_number, block_hash, contract_address, bid_id, lot)
 );
 CREATE INDEX flap_bid_lot_block_number_index ON maker.flap_bid_lot (block_number);
+CREATE INDEX flap_bid_lot_bid_id_index ON maker.flap_bid_lot (bid_id);
+CREATE INDEX flap_bid_lot_bid_contract_address_index ON maker.flap_bid_lot (contract_address);
 
 CREATE TABLE maker.flap_bid_guy
 (
@@ -35,6 +39,8 @@ CREATE TABLE maker.flap_bid_guy
     UNIQUE (block_number, block_hash, contract_address, bid_id, guy)
 );
 CREATE INDEX flap_bid_guy_block_number_index ON maker.flap_bid_guy (block_number);
+CREATE INDEX flap_bid_guy_bid_id_index ON maker.flap_bid_guy (bid_id);
+CREATE INDEX flap_bid_guy_bid_contract_address_index ON maker.flap_bid_guy (contract_address);
 
 CREATE TABLE maker.flap_bid_tic
 (
@@ -47,6 +53,8 @@ CREATE TABLE maker.flap_bid_tic
     UNIQUE (block_number, block_hash, contract_address, bid_id, tic)
 );
 CREATE INDEX flap_bid_tic_block_number_index ON maker.flap_bid_tic (block_number);
+CREATE INDEX flap_bid_tic_bid_id_index ON maker.flap_bid_tic (bid_id);
+CREATE INDEX flap_bid_tic_bid_contract_address_index ON maker.flap_bid_tic (contract_address);
 
 CREATE TABLE maker.flap_bid_end
 (
@@ -59,6 +67,8 @@ CREATE TABLE maker.flap_bid_end
     UNIQUE (block_number, block_hash, contract_address, bid_id, "end")
 );
 CREATE INDEX flap_bid_end_block_number_index ON maker.flap_bid_end (block_number);
+CREATE INDEX flap_bid_end_bid_id_index ON maker.flap_bid_end (bid_id);
+CREATE INDEX flap_bid_end_bid_contract_address_index ON maker.flap_bid_end (contract_address);
 
 CREATE TABLE maker.flap_bid_gal
 (
@@ -71,6 +81,8 @@ CREATE TABLE maker.flap_bid_gal
     UNIQUE (block_number, block_hash, contract_address, bid_id, gal)
 );
 CREATE INDEX flap_bid_gal_block_number_index ON maker.flap_bid_gal (block_number);
+CREATE INDEX flap_bid_gal_bid_id_index ON maker.flap_bid_gal (bid_id);
+CREATE INDEX flap_bid_gal_bid_contract_address_index ON maker.flap_bid_gal (contract_address);
 
 CREATE TABLE maker.flap_vat
 (
@@ -132,6 +144,10 @@ CREATE TABLE maker.flap_kicks
     UNIQUE (block_number, block_hash, contract_address, kicks)
 );
 
+CREATE INDEX flap_kicks_block_number_index ON maker.flap_kicks (block_number);
+CREATE INDEX flap_kicks_kicks_index ON maker.flap_kicks (kicks);
+CREATE INDEX flap_kicks_contract_address_index ON maker.flap_kicks (contract_address);
+
 -- prevent naming conflict with maker.flap_kick in postgraphile
 COMMENT ON TABLE maker.flap_kicks IS E'@name flapKicksStorage';
 
@@ -147,12 +163,27 @@ CREATE TABLE maker.flap_live
 
 -- +goose Down
 -- SQL in this section is executed when the migration is rolled back.
+DROP INDEX maker.flap_kicks_contract_address_index;
+DROP INDEX maker.flap_kicks_kicks_index;
+DROP INDEX maker.flap_kicks_block_number_index;
 DROP INDEX maker.flap_bid_bid_block_number_index;
+DROP INDEX maker.flap_bid_bid_contract_address_index;
+DROP INDEX maker.flap_bid_bid_bid_id_index;
 DROP INDEX maker.flap_bid_lot_block_number_index;
+DROP INDEX maker.flap_bid_lot_bid_contract_address_index;
+DROP INDEX maker.flap_bid_lot_bid_id_index;
 DROP INDEX maker.flap_bid_guy_block_number_index;
+DROP INDEX maker.flap_bid_guy_bid_contract_address_index;
+DROP INDEX maker.flap_bid_guy_bid_id_index;
 DROP INDEX maker.flap_bid_tic_block_number_index;
+DROP INDEX maker.flap_bid_tic_bid_contract_address_index;
+DROP INDEX maker.flap_bid_tic_bid_id_index;
 DROP INDEX maker.flap_bid_end_block_number_index;
+DROP INDEX maker.flap_bid_end_bid_contract_address_index;
+DROP INDEX maker.flap_bid_end_bid_id_index;
 DROP INDEX maker.flap_bid_gal_block_number_index;
+DROP INDEX maker.flap_bid_gal_bid_contract_address_index;
+DROP INDEX maker.flap_bid_gal_bid_id_index;
 
 DROP TABLE maker.flap_bid_bid;
 DROP TABLE maker.flap_bid_lot;
