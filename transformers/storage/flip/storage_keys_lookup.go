@@ -2,11 +2,11 @@ package flip
 
 import (
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	vdbStorage "github.com/vulcanize/vulcanizedb/libraries/shared/storage"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/storage"
 )
@@ -24,9 +24,9 @@ var (
 	BegMetadata = utils.GetStorageValueMetadata(storage.Beg, nil, utils.Uint256)
 
 	TtlAndTauStorageKey = common.HexToHash(vdbStorage.IndexFive)
-	packedTypes         = map[int]utils.ValueType{0: utils.Uint48, 1: utils.Uint48}
-	packedNames         = map[int]string{0: storage.Ttl, 1: storage.Tau}
-	TtlAndTauMetadata   = utils.GetStorageValueMetadataForPackedSlot(storage.Packed, nil, utils.PackedSlot, packedNames, packedTypes)
+	ttlAndTauTypes      = map[int]utils.ValueType{0: utils.Uint48, 1: utils.Uint48}
+	ttlAndTauNames      = map[int]string{0: storage.Ttl, 1: storage.Tau}
+	TtlAndTauMetadata   = utils.GetStorageValueMetadataForPackedSlot(storage.Packed, nil, utils.PackedSlot, ttlAndTauNames, ttlAndTauTypes)
 
 	KicksKey      = common.HexToHash(vdbStorage.IndexSix)
 	KicksMetadata = utils.GetStorageValueMetadata(storage.Kicks, nil, utils.Uint256)
@@ -88,9 +88,7 @@ func (mappings *StorageKeysLookup) loadBidKeys() error {
 		}
 		mappings.mappings[getBidBidKey(hexBidId)] = getBidBidMetadata(bidId)
 		mappings.mappings[getBidLotKey(hexBidId)] = getBidLotMetadata(bidId)
-		mappings.mappings[getBidGuyKey(hexBidId)] = getBidGuyMetadata(bidId)
-		mappings.mappings[getBidTicKey(hexBidId)] = getBidTicMetadata(bidId)
-		mappings.mappings[getBidEndKey(hexBidId)] = getBidEndMetadata(bidId)
+		mappings.mappings[getBidGuyTicEndKey(hexBidId)] = getBidGuyTicEndMetadata(bidId)
 		mappings.mappings[getBidUsrKey(hexBidId)] = getBidUsrMetadata(bidId)
 		mappings.mappings[getBidGalKey(hexBidId)] = getBidGalMetadata(bidId)
 		mappings.mappings[getBidTabKey(hexBidId)] = getBidTabMetadata(bidId)
@@ -116,35 +114,19 @@ func getBidLotMetadata(bidId string) utils.StorageValueMetadata {
 	return utils.GetStorageValueMetadata(storage.BidLot, keys, utils.Uint256)
 }
 
-func getBidGuyKey(hexBidId string) common.Hash {
+func getBidGuyTicEndKey(hexBidId string) common.Hash {
 	return vdbStorage.GetIncrementedKey(getBidBidKey(hexBidId), 2)
 }
 
-func getBidGuyMetadata(bidId string) utils.StorageValueMetadata {
+func getBidGuyTicEndMetadata(bidId string) utils.StorageValueMetadata {
 	keys := map[utils.Key]string{constants.BidId: bidId}
-	return utils.GetStorageValueMetadata(storage.BidGuy, keys, utils.Address)
-}
-
-func getBidTicKey(hexBidId string) common.Hash {
-	return vdbStorage.GetIncrementedKey(getBidBidKey(hexBidId), 3)
-}
-
-func getBidTicMetadata(bidId string) utils.StorageValueMetadata {
-	keys := map[utils.Key]string{constants.BidId: bidId}
-	return utils.GetStorageValueMetadata(storage.BidTic, keys, utils.Uint48)
-}
-
-func getBidEndKey(hexBidId string) common.Hash {
-	return vdbStorage.GetIncrementedKey(getBidBidKey(hexBidId), 4)
-}
-
-func getBidEndMetadata(bidId string) utils.StorageValueMetadata {
-	keys := map[utils.Key]string{constants.BidId: bidId}
-	return utils.GetStorageValueMetadata(storage.BidEnd, keys, utils.Uint48)
+	packedTypes := map[int]utils.ValueType{0: utils.Address, 1: utils.Uint48, 2: utils.Uint48}
+	packedNames := map[int]string{0: storage.BidGuy, 1: storage.BidTic, 2: storage.BidEnd}
+	return utils.GetStorageValueMetadataForPackedSlot(storage.Packed, keys, utils.PackedSlot, packedNames, packedTypes)
 }
 
 func getBidUsrKey(hexBidId string) common.Hash {
-	return vdbStorage.GetIncrementedKey(getBidBidKey(hexBidId), 5)
+	return vdbStorage.GetIncrementedKey(getBidBidKey(hexBidId), 3)
 }
 
 func getBidUsrMetadata(bidId string) utils.StorageValueMetadata {
@@ -153,7 +135,7 @@ func getBidUsrMetadata(bidId string) utils.StorageValueMetadata {
 }
 
 func getBidGalKey(hexBidId string) common.Hash {
-	return vdbStorage.GetIncrementedKey(getBidBidKey(hexBidId), 6)
+	return vdbStorage.GetIncrementedKey(getBidBidKey(hexBidId), 4)
 }
 
 func getBidGalMetadata(bidId string) utils.StorageValueMetadata {
@@ -162,7 +144,7 @@ func getBidGalMetadata(bidId string) utils.StorageValueMetadata {
 }
 
 func getBidTabKey(hexBidId string) common.Hash {
-	return vdbStorage.GetIncrementedKey(getBidBidKey(hexBidId), 7)
+	return vdbStorage.GetIncrementedKey(getBidBidKey(hexBidId), 5)
 }
 
 func getBidTabMetadata(bidId string) utils.StorageValueMetadata {

@@ -2,12 +2,12 @@ package flip
 
 import (
 	"fmt"
-	"github.com/vulcanize/mcd_transformers/transformers/storage"
 
 	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/mcd_transformers/transformers/storage"
 )
 
 const (
@@ -41,22 +41,12 @@ func (repository *FlipStorageRepository) Create(blockNumber int, blockHash strin
 		return repository.insertIlk(blockNumber, blockHash, value.(string))
 	case storage.Beg:
 		return repository.insertBeg(blockNumber, blockHash, value.(string))
-	case storage.Ttl:
-		return repository.insertTtl(blockNumber, blockHash, value.(string))
-	case storage.Tau:
-		return repository.insertTau(blockNumber, blockHash, value.(string))
 	case storage.Kicks:
 		return repository.insertKicks(blockNumber, blockHash, value.(string))
 	case storage.BidBid:
 		return repository.insertBidBid(blockNumber, blockHash, metadata, value.(string))
 	case storage.BidLot:
 		return repository.insertBidLot(blockNumber, blockHash, metadata, value.(string))
-	case storage.BidGuy:
-		return repository.insertBidGuy(blockNumber, blockHash, metadata, value.(string))
-	case storage.BidTic:
-		return repository.insertBidTic(blockNumber, blockHash, metadata, value.(string))
-	case storage.BidEnd:
-		return repository.insertBidEnd(blockNumber, blockHash, metadata, value.(string))
 	case storage.BidUsr:
 		return repository.insertBidUsr(blockNumber, blockHash, metadata, value.(string))
 	case storage.BidGal:
@@ -178,19 +168,23 @@ func (repository *FlipStorageRepository) insertBidTab(blockNumber int, blockHash
 
 func (repository *FlipStorageRepository) insertPackedValueRecord(blockNumber int, blockHash string, metadata utils.StorageValueMetadata, packedValues map[int]string) error {
 	for order, value := range packedValues {
+		var insertErr error
 		switch metadata.PackedNames[order] {
 		case storage.Ttl:
-			ttlErr := repository.insertTtl(blockNumber, blockHash, value)
-			if ttlErr != nil {
-				return ttlErr
-			}
+			insertErr = repository.insertTtl(blockNumber, blockHash, value)
 		case storage.Tau:
-			tauErr := repository.insertTau(blockNumber, blockHash, value)
-			if tauErr != nil {
-				return tauErr
-			}
+			insertErr = repository.insertTau(blockNumber, blockHash, value)
+		case storage.BidGuy:
+			insertErr = repository.insertBidGuy(blockNumber, blockHash, metadata, value)
+		case storage.BidTic:
+			insertErr = repository.insertBidTic(blockNumber, blockHash, metadata, value)
+		case storage.BidEnd:
+			insertErr = repository.insertBidEnd(blockNumber, blockHash, metadata, value)
 		default:
 			panic(fmt.Sprintf("unrecognized flip contract storage name in packed values: %s", metadata.Name))
+		}
+		if insertErr != nil {
+			return insertErr
 		}
 	}
 	return nil
