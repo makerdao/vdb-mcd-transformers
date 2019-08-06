@@ -17,8 +17,8 @@
 package vow
 
 import (
-	"encoding/json"
 	"errors"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -28,32 +28,27 @@ import (
 
 type JugFileVowConverter struct{}
 
-func (JugFileVowConverter) ToModels(ethLogs []types.Log) ([]shared.InsertionModel, error) {
+func (JugFileVowConverter) ToModels(logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
 	var models []shared.InsertionModel
-	for _, ethLog := range ethLogs {
-		err := verifyLog(ethLog)
+	for _, log := range logs {
+		err := verifyLog(log.Log)
 		if err != nil {
 			return nil, err
 		}
 
-		what := shared.DecodeHexToText(ethLog.Topics[2].Hex())
-		data := common.BytesToAddress(ethLog.Topics[3].Bytes()).String()
-		raw, err := json.Marshal(ethLog)
-		if err != nil {
-			return nil, err
-		}
+		what := shared.DecodeHexToText(log.Log.Topics[2].Hex())
+		data := common.BytesToAddress(log.Log.Topics[3].Bytes()).String()
 
 		model := shared.InsertionModel{
 			TableName: "jug_file_vow",
 			OrderedColumns: []string{
-				"header_id", "what", "data", "log_idx", "tx_idx", "raw_log",
+				"header_id", "what", "data", "log_id",
 			},
 			ColumnValues: shared.ColumnValues{
-				"what":    what,
-				"data":    data,
-				"log_idx": ethLog.Index,
-				"tx_idx":  ethLog.TxIndex,
-				"raw_log": raw,
+				"what":      what,
+				"data":      data,
+				"header_id": log.HeaderID,
+				"log_id":    log.ID,
 			},
 			ForeignKeyValues: shared.ForeignKeyValues{},
 		}

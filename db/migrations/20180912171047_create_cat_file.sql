@@ -3,13 +3,11 @@ CREATE TABLE maker.cat_file_chop_lump
 (
     id        SERIAL PRIMARY KEY,
     header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
+    log_id    BIGINT  NOT NULL REFERENCES header_sync_logs (id) ON DELETE CASCADE,
     ilk_id    INTEGER NOT NULL REFERENCES maker.ilks (id) ON DELETE CASCADE,
     what      TEXT,
     data      NUMERIC,
-    tx_idx    INTEGER NOT NULL,
-    log_idx   INTEGER NOT NULL,
-    raw_log   JSONB,
-    UNIQUE (header_id, tx_idx, log_idx)
+    UNIQUE (header_id, log_id)
 );
 
 CREATE INDEX cat_file_chop_lump_header_index
@@ -22,13 +20,11 @@ CREATE TABLE maker.cat_file_flip
 (
     id        SERIAL PRIMARY KEY,
     header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
+    log_id    BIGINT  NOT NULL REFERENCES header_sync_logs (id) ON DELETE CASCADE,
     ilk_id    INTEGER NOT NULL REFERENCES maker.ilks (id) ON DELETE CASCADE,
     what      TEXT,
     flip      TEXT,
-    tx_idx    INTEGER NOT NULL,
-    log_idx   INTEGER NOT NULL,
-    raw_log   JSONB,
-    UNIQUE (header_id, tx_idx, log_idx)
+    UNIQUE (header_id, log_id)
 );
 
 CREATE INDEX cat_file_flip_header_index
@@ -41,12 +37,10 @@ CREATE TABLE maker.cat_file_vow
 (
     id        SERIAL PRIMARY KEY,
     header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
+    log_id    BIGINT  NOT NULL REFERENCES header_sync_logs (id) ON DELETE CASCADE,
     what      TEXT,
     data      TEXT,
-    tx_idx    INTEGER NOT NULL,
-    log_idx   INTEGER NOT NULL,
-    raw_log   JSONB,
-    UNIQUE (header_id, tx_idx, log_idx)
+    UNIQUE (header_id, log_id)
 );
 
 CREATE INDEX cat_file_vow_header_index

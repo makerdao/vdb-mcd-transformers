@@ -17,8 +17,8 @@
 package jug_init
 
 import (
-	"encoding/json"
 	"errors"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 
 	"github.com/ethereum/go-ethereum/core/types"
 
@@ -28,26 +28,22 @@ import (
 
 type JugInitConverter struct{}
 
-func (JugInitConverter) ToModels(ethLogs []types.Log) ([]shared.InsertionModel, error) {
+func (JugInitConverter) ToModels(logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
 	var models []shared.InsertionModel
-	for _, ethLog := range ethLogs {
-		err := verifyLog(ethLog)
-		if err != nil {
-			return nil, err
-		}
-		ilk := ethLog.Topics[2].Hex()
-		raw, err := json.Marshal(ethLog)
+	for _, log := range logs {
+		err := verifyLog(log.Log)
 		if err != nil {
 			return nil, err
 		}
 
+		ilk := log.Log.Topics[2].Hex()
+
 		model := shared.InsertionModel{
 			TableName:      "jug_init",
-			OrderedColumns: []string{"header_id", string(constants.IlkFK), "log_idx", "tx_idx", "raw_log"},
+			OrderedColumns: []string{"header_id", string(constants.IlkFK), "log_id"},
 			ColumnValues: shared.ColumnValues{
-				"log_idx": ethLog.Index,
-				"tx_idx":  ethLog.TxIndex,
-				"raw_log": raw,
+				"header_id": log.HeaderID,
+				"log_id":    log.ID,
 			},
 			ForeignKeyValues: shared.ForeignKeyValues{
 				constants.IlkFK: ilk,

@@ -18,24 +18,23 @@ package spot_poke
 
 import (
 	"fmt"
-	log "github.com/sirupsen/logrus"
+	"github.com/jmoiron/sqlx"
+	"github.com/sirupsen/logrus"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
-	shared_repo "github.com/vulcanize/vulcanizedb/libraries/shared/repository"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 )
 
 const (
-	InsertSpotPokeQuery = `INSERT INTO maker.spot_poke (header_id, ilk_id, value, spot, tx_idx, log_idx, raw_log)
-		VALUES($1, $2, $3::NUMERIC, $4::NUMERIC, $5, $6, $7)
-		ON CONFLICT (header_id, tx_idx, log_idx) DO UPDATE SET ilk_id = $2, value = $3, spot = $5, raw_log = $7;`
+	InsertSpotPokeQuery = `INSERT INTO maker.spot_poke (header_id, ilk_id, value, spot, log_id)
+		VALUES($1, $2, $3::NUMERIC, $4::NUMERIC, $5)
+		ON CONFLICT (header_id, log_id) DO UPDATE SET ilk_id = $2, value = $3, spot = $5;`
 )
 
 type SpotPokeRepository struct {
 	db *postgres.DB
 }
 
-func (repository *SpotPokeRepository) Create(headerID int64, models []interface{}) error {
+func (repository *SpotPokeRepository) Create(models []interface{}) error {
 	tx, dbErr := repository.db.Beginx()
 	if dbErr != nil {
 		return dbErr
@@ -44,51 +43,40 @@ func (repository *SpotPokeRepository) Create(headerID int64, models []interface{
 	for _, model := range models {
 		spotPokeModel, ok := model.(SpotPokeModel)
 		if !ok {
-			rollbackErr := tx.Rollback()
-			if rollbackErr != nil {
-				log.Error("failed to rollback ", rollbackErr)
-			}
-			return fmt.Errorf("model of type %T, not %T", model, SpotPokeModel{})
+			wrongTypeErr := fmt.Errorf("model of type %T, not %T", model, SpotPokeModel{})
+			return rollbackErr(tx, wrongTypeErr)
 		}
 
 		ilkID, ilkErr := shared.GetOrCreateIlkInTransaction(spotPokeModel.Ilk, tx)
 		if ilkErr != nil {
-			rollbackErr := tx.Rollback()
-			if rollbackErr != nil {
-				log.Error("failed to rollback ", rollbackErr)
-			}
-			return ilkErr
+			return rollbackErr(tx, ilkErr)
 		}
 
 		_, insertErr := tx.Exec(
 			InsertSpotPokeQuery,
-			headerID, ilkID, spotPokeModel.Value, spotPokeModel.Spot, spotPokeModel.TransactionIndex, spotPokeModel.LogIndex, spotPokeModel.Raw,
+			spotPokeModel.HeaderID, ilkID, spotPokeModel.Value, spotPokeModel.Spot, spotPokeModel.LogID,
 		)
 		if insertErr != nil {
-			rollbackErr := tx.Rollback()
-			if rollbackErr != nil {
-				log.Error("failed to rollback ", rollbackErr)
-			}
-			return insertErr
+			return rollbackErr(tx, insertErr)
 		}
-	}
 
-	checkHeaderErr := shared_repo.MarkHeaderChecked(headerID, repository.db, constants.SpotPokeLabel)
-	if checkHeaderErr != nil {
-		rollbackErr := tx.Rollback()
-		if rollbackErr != nil {
-			log.Error("failed to rollback ", rollbackErr)
+		_, logErr := tx.Exec(`UPDATE public.header_sync_logs SET transformed = true WHERE id = $1`, spotPokeModel.LogID)
+		if logErr != nil {
+			return rollbackErr(tx, logErr)
 		}
-		return checkHeaderErr
 	}
 
 	return tx.Commit()
 }
 
-func (repository SpotPokeRepository) MarkHeaderChecked(headerID int64) error {
-	return shared_repo.MarkHeaderChecked(headerID, repository.db, constants.SpotPokeLabel)
-}
-
 func (repository *SpotPokeRepository) SetDB(db *postgres.DB) {
 	repository.db = db
+}
+
+func rollbackErr(tx *sqlx.Tx, err error) error {
+	rollbackErr := tx.Rollback()
+	if rollbackErr != nil {
+		logrus.Error("failed to rollback ", rollbackErr)
+	}
+	return err
 }

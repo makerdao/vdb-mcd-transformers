@@ -17,8 +17,9 @@
 package test_data
 
 import (
-	"encoding/json"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"math/big"
+	"math/rand"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
@@ -29,7 +30,7 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
-var EthFlapKickLog = types.Log{
+var rawFlapKickLog = types.Log{
 	Address:     common.HexToAddress(FlapAddress()),
 	Topics:      []common.Hash{common.HexToHash(constants.FlapKickSignature())},
 	Data:        hexutil.MustDecode("0x0000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000003b9aca000000000000000000000000000000000000000000000000000000000001312d00"),
@@ -41,22 +42,27 @@ var EthFlapKickLog = types.Log{
 	Removed:     false,
 }
 
-var FlapKickEntity = flap_kick.FlapKickEntity{
-	Id:               big.NewInt(1),
-	Lot:              big.NewInt(1000000000),
-	Bid:              big.NewInt(20000000),
-	Raw:              EthFlapKickLog,
-	TransactionIndex: EthFlapKickLog.TxIndex,
-	LogIndex:         EthFlapKickLog.Index,
+var FlapKickHeaderSyncLog = core.HeaderSyncLog{
+	ID:          int64(rand.Int31()),
+	HeaderID:    int64(rand.Int31()),
+	Log:         rawFlapKickLog,
+	Transformed: false,
 }
 
-var rawFlapKickLog, _ = json.Marshal(EthFlapKickLog)
+var FlapKickEntity = flap_kick.FlapKickEntity{
+	Id:              big.NewInt(1),
+	Lot:             big.NewInt(1000000000),
+	Bid:             big.NewInt(20000000),
+	ContractAddress: rawFlapKickLog.Address,
+	HeaderID:        FlapKickHeaderSyncLog.HeaderID,
+	LogID:           FlapKickHeaderSyncLog.ID,
+}
+
 var FlapKickModel = flap_kick.FlapKickModel{
-	BidId:            FlapKickEntity.Id.String(),
-	Lot:              FlapKickEntity.Lot.String(),
-	Bid:              FlapKickEntity.Bid.String(),
-	ContractAddress:  EthFlapKickLog.Address.Hex(),
-	LogIndex:         EthFlapKickLog.Index,
-	TransactionIndex: EthFlapKickLog.TxIndex,
-	Raw:              rawFlapKickLog,
+	BidId:           FlapKickEntity.Id.String(),
+	Lot:             FlapKickEntity.Lot.String(),
+	Bid:             FlapKickEntity.Bid.String(),
+	ContractAddress: FlapKickHeaderSyncLog.Log.Address.Hex(),
+	HeaderID:        FlapKickEntity.HeaderID,
+	LogID:           FlapKickEntity.LogID,
 }

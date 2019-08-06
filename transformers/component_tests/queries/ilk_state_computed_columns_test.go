@@ -43,7 +43,7 @@ var _ = Describe("Ilk state computed columns", func() {
 		fakeBlock        int
 		fakeGuy          = "fakeAddress"
 		fakeHeader       core.Header
-		headerId         int64
+		headerId, logID  int64
 		headerRepository repositories.HeaderRepository
 	)
 
@@ -57,6 +57,8 @@ var _ = Describe("Ilk state computed columns", func() {
 		var insertHeaderErr error
 		headerId, insertHeaderErr = headerRepository.CreateOrUpdateHeader(fakeHeader)
 		Expect(insertHeaderErr).NotTo(HaveOccurred())
+		persistedLog := test_data.CreateTestLog(headerId, db)
+		logID = persistedLog.ID
 
 		ilkValues := test_helpers.GetIlkValues(0)
 		test_helpers.CreateIlk(db, fakeHeader, ilkValues, test_helpers.FakeIlkVatMetadatas,
@@ -75,7 +77,9 @@ var _ = Describe("Ilk state computed columns", func() {
 			frobEvent := test_data.CopyModel(test_data.VatFrobModelWithPositiveDart)
 			frobEvent.ForeignKeyValues[constants.UrnFK] = fakeGuy
 			frobEvent.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
-			insertFrobErr := frobRepo.Create(headerId, []shared.InsertionModel{frobEvent})
+			frobEvent.ColumnValues["header_id"] = headerId
+			frobEvent.ColumnValues["log_id"] = logID
+			insertFrobErr := frobRepo.Create([]shared.InsertionModel{frobEvent})
 			Expect(insertFrobErr).NotTo(HaveOccurred())
 
 			var actualFrobs []test_helpers.FrobEvent
@@ -108,18 +112,23 @@ var _ = Describe("Ilk state computed columns", func() {
 				oldFrob = test_data.CopyModel(test_data.VatFrobModelWithPositiveDart)
 				oldFrob.ForeignKeyValues[constants.UrnFK] = fakeGuy
 				oldFrob.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
-				insertOldFrobErr := frobRepo.Create(headerId, []shared.InsertionModel{oldFrob})
+				oldFrob.ColumnValues["header_id"] = headerId
+				oldFrob.ColumnValues["log_id"] = logID
+				insertOldFrobErr := frobRepo.Create([]shared.InsertionModel{oldFrob})
 				Expect(insertOldFrobErr).NotTo(HaveOccurred())
 
 				newBlock = fakeBlock + 1
 				newHeader := fakes.GetFakeHeader(int64(newBlock))
 				newHeaderId, newHeaderErr := headerRepository.CreateOrUpdateHeader(newHeader)
 				Expect(newHeaderErr).NotTo(HaveOccurred())
+				newLogId := test_data.CreateTestLog(newHeaderId, db).ID
 
 				newFrob = test_data.CopyModel(test_data.VatFrobModelWithNegativeDink)
 				newFrob.ForeignKeyValues[constants.UrnFK] = fakeGuy
 				newFrob.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
-				insertNewFrobErr := frobRepo.Create(newHeaderId, []shared.InsertionModel{newFrob})
+				newFrob.ColumnValues["header_id"] = newHeaderId
+				newFrob.ColumnValues["log_id"] = newLogId
+				insertNewFrobErr := frobRepo.Create([]shared.InsertionModel{newFrob})
 				Expect(insertNewFrobErr).NotTo(HaveOccurred())
 			})
 
@@ -170,7 +179,9 @@ var _ = Describe("Ilk state computed columns", func() {
 			fileRepo.SetDB(db)
 			fileEvent := test_data.VatFileIlkDustModel
 			fileEvent.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
-			insertFileErr := fileRepo.Create(headerId, []shared.InsertionModel{fileEvent})
+			fileEvent.ColumnValues["header_id"] = headerId
+			fileEvent.ColumnValues["log_id"] = logID
+			insertFileErr := fileRepo.Create([]shared.InsertionModel{fileEvent})
 			Expect(insertFileErr).NotTo(HaveOccurred())
 
 			var actualFiles []test_helpers.IlkFileEvent
@@ -201,19 +212,24 @@ var _ = Describe("Ilk state computed columns", func() {
 				fileRepo.SetDB(db)
 				fileEvent = test_data.VatFileIlkDustModel
 				fileEvent.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
-				insertFileErr := fileRepo.Create(headerId, []shared.InsertionModel{fileEvent})
+				fileEvent.ColumnValues["header_id"] = headerId
+				fileEvent.ColumnValues["log_id"] = logID
+				insertFileErr := fileRepo.Create([]shared.InsertionModel{fileEvent})
 				Expect(insertFileErr).NotTo(HaveOccurred())
 
 				newBlock = fakeBlock + 1
 				newHeader := fakes.GetFakeHeader(int64(newBlock))
 				newHeaderId, insertNewHeaderErr := headerRepository.CreateOrUpdateHeader(newHeader)
 				Expect(insertNewHeaderErr).NotTo(HaveOccurred())
+				newLogId := test_data.CreateTestLog(newHeaderId, db).ID
 
 				spotFileMatRepo := mat.SpotFileMatRepository{}
 				spotFileMatRepo.SetDB(db)
 				spotFileMat = test_data.SpotFileMatModel
 				spotFileMat.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
-				spotFileMatErr := spotFileMatRepo.Create(newHeaderId, []shared.InsertionModel{spotFileMat})
+				spotFileMat.ColumnValues["header_id"] = newHeaderId
+				spotFileMat.ColumnValues["log_id"] = newLogId
+				spotFileMatErr := spotFileMatRepo.Create([]shared.InsertionModel{spotFileMat})
 				Expect(spotFileMatErr).NotTo(HaveOccurred())
 			})
 
@@ -262,7 +278,9 @@ var _ = Describe("Ilk state computed columns", func() {
 			biteRepo.SetDB(db)
 			biteEvent := test_data.BiteModel
 			biteEvent.Ilk = test_helpers.FakeIlk.Hex
-			insertBiteErr := biteRepo.Create(headerId, []interface{}{biteEvent})
+			biteEvent.HeaderID = headerId
+			biteEvent.LogID = logID
+			insertBiteErr := biteRepo.Create([]interface{}{biteEvent})
 			Expect(insertBiteErr).NotTo(HaveOccurred())
 
 			var actualBites []test_helpers.BiteEvent
@@ -297,18 +315,23 @@ var _ = Describe("Ilk state computed columns", func() {
 				biteRepo.SetDB(db)
 				oldBite = test_data.BiteModel
 				oldBite.Ilk = test_helpers.FakeIlk.Hex
-				insertOldBiteErr := biteRepo.Create(headerId, []interface{}{oldBite})
+				oldBite.HeaderID = headerId
+				oldBite.LogID = logID
+				insertOldBiteErr := biteRepo.Create([]interface{}{oldBite})
 				Expect(insertOldBiteErr).NotTo(HaveOccurred())
 
 				newBlock = fakeBlock + 1
 				newHeader := fakes.GetFakeHeader(int64(newBlock))
 				newHeaderId, insertNewHeaderErr := headerRepository.CreateOrUpdateHeader(newHeader)
 				Expect(insertNewHeaderErr).NotTo(HaveOccurred())
+				newLogId := test_data.CreateTestLog(newHeaderId, db).ID
 
 				newBite = test_data.BiteModel
 				newBite.Ilk = test_helpers.FakeIlk.Hex
 				newBite.Urn = test_data.FakeUrn
-				insertNewBiteErr := biteRepo.Create(newHeaderId, []interface{}{newBite})
+				newBite.HeaderID = newHeaderId
+				newBite.LogID = newLogId
+				insertNewBiteErr := biteRepo.Create([]interface{}{newBite})
 				Expect(insertNewBiteErr).NotTo(HaveOccurred())
 			})
 

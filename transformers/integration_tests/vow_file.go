@@ -77,8 +77,10 @@ var _ = Describe("VowFile LogNoteTransforer", func() {
 		logs, err := logFetcher.FetchLogs(addresses, topics, header)
 		Expect(err).NotTo(HaveOccurred())
 
+		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+
 		tr := initializer.NewLogNoteTransformer(db)
-		err = tr.Execute(logs, header)
+		err = tr.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []vowFileModel
@@ -92,9 +94,7 @@ var _ = Describe("VowFile LogNoteTransforer", func() {
 })
 
 type vowFileModel struct {
-	What             string
-	Data             string
-	LogIndex         uint   `db:"log_idx"`
-	TransactionIndex uint   `db:"tx_idx"`
-	Raw              []byte `db:"raw_log"`
+	What  string
+	Data  string
+	LogID uint `db:"log_id"`
 }

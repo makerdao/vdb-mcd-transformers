@@ -17,16 +17,16 @@
 package test_data
 
 import (
-	"encoding/json"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
-
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
+	"math/rand"
 )
 
-var EthYankLog = types.Log{
+var rawYankLog = types.Log{
 	Address: common.HexToAddress(EthFlipAddress()),
 	Topics: []common.Hash{
 		common.HexToHash(constants.YankSignature()),
@@ -43,19 +43,24 @@ var EthYankLog = types.Log{
 	Removed:     false,
 }
 
-var rawYank, _ = json.Marshal(EthYankLog)
+var YankHeaderSyncLog = core.HeaderSyncLog{
+	ID:          int64(rand.Int31()),
+	HeaderID:    int64(rand.Int31()),
+	Log:         rawYankLog,
+	Transformed: false,
+}
+
 var YankModel = shared.InsertionModel{
 	TableName: "yank",
 	OrderedColumns: []string{
-		"header_id", "bid_id", string(constants.AddressFK), "log_idx", "tx_idx", "raw_log",
+		"header_id", "bid_id", string(constants.AddressFK), "log_id",
 	},
 	ColumnValues: shared.ColumnValues{
-		"bid_id":  "10000000000000000",
-		"log_idx": EthYankLog.Index,
-		"tx_idx":  EthYankLog.TxIndex,
-		"raw_log": rawYank,
+		"bid_id":    "10000000000000000",
+		"header_id": YankHeaderSyncLog.HeaderID,
+		"log_id":    YankHeaderSyncLog.ID,
 	},
 	ForeignKeyValues: shared.ForeignKeyValues{
-		constants.AddressFK: EthYankLog.Address.Hex(),
+		constants.AddressFK: YankHeaderSyncLog.Log.Address.Hex(),
 	},
 }

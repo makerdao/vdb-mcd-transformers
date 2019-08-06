@@ -17,23 +17,17 @@
 package pip
 
 import (
-	"github.com/vulcanize/vulcanizedb/libraries/shared/repository"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
 type SpotFilePipRepository struct {
 	db *postgres.DB
 }
 
-func (repo SpotFilePipRepository) Create(headerID int64, models []shared.InsertionModel) error {
-	return shared.Create(headerID, models, repo.db)
-}
-
-func (repo SpotFilePipRepository) MarkHeaderChecked(headerID int64) error {
-	return repository.MarkHeaderChecked(headerID, repo.db, constants.SpotFilePipLabel)
+func (repo SpotFilePipRepository) Create(models []shared.InsertionModel) error {
+	return shared.Create(models, repo.db)
 }
 
 func (repo *SpotFilePipRepository) SetDB(db *postgres.DB) {

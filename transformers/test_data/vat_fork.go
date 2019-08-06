@@ -17,7 +17,8 @@
 package test_data
 
 import (
-	"encoding/json"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
+	"math/rand"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
@@ -27,7 +28,7 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
-var EthVatForkLogWithNegativeDinkDart = types.Log{
+var rawVatForkLogWithNegativeDinkDart = types.Log{
 	Address: common.HexToAddress(VatAddress()),
 	Topics: []common.Hash{
 		common.HexToHash("0x00000000000000000000000000000000000000000000000000000000870c616d"),
@@ -44,27 +45,32 @@ var EthVatForkLogWithNegativeDinkDart = types.Log{
 	Removed:     false,
 }
 
-var rawVatForkLogWithNegativeDinkDart, _ = json.Marshal(EthVatForkLogWithNegativeDinkDart)
+var VatForkHeaderSyncLogWithNegativeDinkDart = core.HeaderSyncLog{
+	ID:          int64(rand.Int31()),
+	HeaderID:    int64(rand.Int31()),
+	Log:         rawVatForkLogWithNegativeDinkDart,
+	Transformed: false,
+}
+
 var VatForkModelWithNegativeDinkDart = shared.InsertionModel{
 	TableName: "vat_fork",
 	OrderedColumns: []string{
-		"header_id", string(constants.IlkFK), "src", "dst", "dink", "dart", "log_idx", "tx_idx", "raw_log",
+		"header_id", string(constants.IlkFK), "src", "dst", "dink", "dart", "log_id",
 	},
 	ColumnValues: shared.ColumnValues{
-		"src":     "0x07Fa9eF6609cA7921112231F8f195138ebbA2977",
-		"dst":     "0x7526EB4f95e2a1394797Cb38a921Fb1EbA09291B",
-		"dink":    "-1000000000000000000000",
-		"dart":    "-2000000000000000000000",
-		"log_idx": EthVatForkLogWithNegativeDinkDart.Index,
-		"tx_idx":  EthVatForkLogWithNegativeDinkDart.TxIndex,
-		"raw_log": rawVatForkLogWithNegativeDinkDart,
+		"src":       "0x07Fa9eF6609cA7921112231F8f195138ebbA2977",
+		"dst":       "0x7526EB4f95e2a1394797Cb38a921Fb1EbA09291B",
+		"dink":      "-1000000000000000000000",
+		"dart":      "-2000000000000000000000",
+		"header_id": VatForkHeaderSyncLogWithNegativeDinkDart.HeaderID,
+		"log_id":    VatForkHeaderSyncLogWithNegativeDinkDart.ID,
 	},
 	ForeignKeyValues: shared.ForeignKeyValues{
 		constants.IlkFK: "0x66616b6520696c6b000000000000000000000000000000000000000000000000",
 	},
 }
 
-var EthVatForkLogWithPositiveDinkDart = types.Log{
+var rawVatForkLogWithPositiveDinkDart = types.Log{
 	Address: common.HexToAddress(VatAddress()),
 	Topics: []common.Hash{
 		common.HexToHash("0x00000000000000000000000000000000000000000000000000000000870c616d"),
@@ -81,20 +87,25 @@ var EthVatForkLogWithPositiveDinkDart = types.Log{
 	Removed:     false,
 }
 
-var rawVatForkLogWithPositiveDinkDart, _ = json.Marshal(EthVatForkLogWithPositiveDinkDart)
+var VatForkHeaderSyncLogWithPositiveDinkDart = core.HeaderSyncLog{
+	ID:          int64(rand.Int31()),
+	HeaderID:    int64(rand.Int31()),
+	Log:         rawVatForkLogWithPositiveDinkDart,
+	Transformed: false,
+}
+
 var VatForkModelWithPositiveDinkDart = shared.InsertionModel{
 	TableName: "vat_fork",
 	OrderedColumns: []string{
-		"header_id", string(constants.IlkFK), "src", "dst", "dink", "dart", "log_idx", "tx_idx", "raw_log",
+		"header_id", string(constants.IlkFK), "src", "dst", "dink", "dart", "log_id",
 	},
 	ColumnValues: shared.ColumnValues{
-		"src":     "0x07Fa9eF6609cA7921112231F8f195138ebbA2977",
-		"dst":     "0x7526EB4f95e2a1394797Cb38a921Fb1EbA09291B",
-		"dink":    "100000000000000",
-		"dart":    "2000000000000000",
-		"log_idx": EthVatForkLogWithPositiveDinkDart.Index,
-		"tx_idx":  EthVatForkLogWithPositiveDinkDart.TxIndex,
-		"raw_log": rawVatForkLogWithPositiveDinkDart,
+		"src":       "0x07Fa9eF6609cA7921112231F8f195138ebbA2977",
+		"dst":       "0x7526EB4f95e2a1394797Cb38a921Fb1EbA09291B",
+		"dink":      "100000000000000",
+		"dart":      "2000000000000000",
+		"header_id": VatForkHeaderSyncLogWithPositiveDinkDart.HeaderID,
+		"log_id":    VatForkHeaderSyncLogWithPositiveDinkDart.ID,
 	},
 	ForeignKeyValues: shared.ForeignKeyValues{
 		constants.IlkFK: "0x66616b6520696c6b000000000000000000000000000000000000000000000000",

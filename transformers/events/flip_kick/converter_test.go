@@ -17,17 +17,14 @@
 package flip_kick_test
 
 import (
-	"encoding/json"
-	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
-	"math/big"
-	"strings"
-
-	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-
 	"github.com/vulcanize/mcd_transformers/transformers/events/flip_kick"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
+	"math/big"
+	"strings"
 )
 
 var _ = Describe("FlipKick Converter", func() {
@@ -35,7 +32,7 @@ var _ = Describe("FlipKick Converter", func() {
 
 	Describe("ToEntity", func() {
 		It("converts an Eth Log to a FlipKickEntity", func() {
-			entities, err := converter.ToEntities(constants.FlipABI(), []types.Log{test_data.EthFlipKickLog})
+			entities, err := converter.ToEntities(constants.FlipABI(), []core.HeaderSyncLog{test_data.FlipKickHeaderSyncLog})
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(entities)).To(Equal(1))
@@ -44,7 +41,7 @@ var _ = Describe("FlipKick Converter", func() {
 		})
 
 		It("returns an error if converting log to entity fails", func() {
-			_, err := converter.ToEntities("error abi", []types.Log{test_data.EthFlipKickLog})
+			_, err := converter.ToEntities("error abi", []core.HeaderSyncLog{test_data.FlipKickHeaderSyncLog})
 
 			Expect(err).To(HaveOccurred())
 		})
@@ -54,13 +51,9 @@ var _ = Describe("FlipKick Converter", func() {
 		var emptyAddressHex = "0x0000000000000000000000000000000000000000"
 		var emptyString = ""
 		var emptyEntity = flip_kick.FlipKickEntity{}
-		var emptyRawLog []byte
-		var err error
 
 		BeforeEach(func() {
 			emptyEntity.Id = big.NewInt(1)
-			emptyRawLog, err = json.Marshal(types.Log{})
-			Expect(err).NotTo(HaveOccurred())
 		})
 
 		It("converts an Entity to a Model", func() {
@@ -84,7 +77,6 @@ var _ = Describe("FlipKick Converter", func() {
 			Expect(model.Usr).To(Equal(emptyAddressHex))
 			Expect(model.Gal).To(Equal(emptyAddressHex))
 			Expect(model.ContractAddress).To(Equal(emptyAddressHex))
-			Expect(model.Raw).To(Equal(emptyRawLog))
 		})
 
 		It("returns an error if the flip kick event id is nil", func() {
@@ -112,7 +104,5 @@ func expectEqualModels(actual interface{}, expected flip_kick.FlipKickModel) {
 	Expect(actualFlipKick.Usr).To(Equal(expected.Usr))
 	Expect(actualFlipKick.Gal).To(Equal(expected.Gal))
 	Expect(strings.ToLower(actualFlipKick.ContractAddress)).To(Equal(strings.ToLower(expected.ContractAddress)))
-	Expect(actualFlipKick.TransactionIndex).To(Equal(expected.TransactionIndex))
-	Expect(actualFlipKick.LogIndex).To(Equal(expected.LogIndex))
-	Expect(actualFlipKick.Raw).To(Equal(expected.Raw))
+	Expect(actualFlipKick.LogID).To(Equal(expected.LogID))
 }

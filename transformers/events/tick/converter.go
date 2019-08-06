@@ -17,42 +17,34 @@
 package tick
 
 import (
-	"encoding/json"
 	"errors"
-	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
-
 	"github.com/ethereum/go-ethereum/core/types"
-
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 )
 
 type TickConverter struct{}
 
-func (TickConverter) ToModels(ethLogs []types.Log) (results []shared.InsertionModel, err error) {
-	for _, ethLog := range ethLogs {
-		validateErr := validateLog(ethLog)
+func (TickConverter) ToModels(logs []core.HeaderSyncLog) (results []shared.InsertionModel, err error) {
+	for _, log := range logs {
+		validateErr := validateLog(log.Log)
 		if validateErr != nil {
 			return nil, validateErr
-		}
-
-		rawLog, jsonErr := json.Marshal(ethLog)
-		if jsonErr != nil {
-			return nil, jsonErr
 		}
 
 		model := shared.InsertionModel{
 			TableName: "tick",
 			OrderedColumns: []string{
-				"header_id", "bid_id", string(constants.AddressFK), "log_idx", "tx_idx", "raw_log",
+				"header_id", "bid_id", string(constants.AddressFK), "log_id",
 			},
 			ColumnValues: shared.ColumnValues{
-				"bid_id":  ethLog.Topics[2].Big().String(),
-				"log_idx": ethLog.Index,
-				"tx_idx":  ethLog.TxIndex,
-				"raw_log": rawLog,
+				"bid_id":    log.Log.Topics[2].Big().String(),
+				"header_id": log.HeaderID,
+				"log_id":    log.ID,
 			},
 			ForeignKeyValues: shared.ForeignKeyValues{
-				constants.AddressFK: ethLog.Address.String(),
+				constants.AddressFK: log.Log.Address.String(),
 			},
 		}
 		results = append(results, model)

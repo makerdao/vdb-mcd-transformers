@@ -23,6 +23,7 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/vulcanize/mcd_transformers/transformers/events/vow_fess"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 )
 
 var _ = Describe("Vow fess converter", func() {
@@ -32,25 +33,27 @@ var _ = Describe("Vow fess converter", func() {
 	})
 
 	It("returns err if log is missing topics", func() {
-		badLog := types.Log{
-			Data: []byte{1, 1, 1, 1, 1},
-		}
+		badLog := core.HeaderSyncLog{
+			Log: types.Log{
+				Data: []byte{1, 1, 1, 1, 1},
+			}}
 
-		_, err := converter.ToModels([]types.Log{badLog})
+		_, err := converter.ToModels([]core.HeaderSyncLog{badLog})
 		Expect(err).To(HaveOccurred())
 	})
 
 	It("returns err if log is missing data", func() {
-		badLog := types.Log{
-			Topics: []common.Hash{{}, {}, {}, {}},
-		}
+		badLog := core.HeaderSyncLog{
+			Log: types.Log{
+				Topics: []common.Hash{{}, {}, {}, {}},
+			}}
 
-		_, err := converter.ToModels([]types.Log{badLog})
+		_, err := converter.ToModels([]core.HeaderSyncLog{badLog})
 		Expect(err).To(HaveOccurred())
 	})
 
 	It("converts a log to a model", func() {
-		models, err := converter.ToModels([]types.Log{test_data.EthVowFessLog})
+		models, err := converter.ToModels([]core.HeaderSyncLog{test_data.VowFessHeaderSyncLog})
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(len(models)).To(Equal(1))

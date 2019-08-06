@@ -18,18 +18,15 @@ package new_cdp
 
 import (
 	"fmt"
+	"github.com/jmoiron/sqlx"
 	"github.com/sirupsen/logrus"
-
-	repo "github.com/vulcanize/vulcanizedb/libraries/shared/repository"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
-
-	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
 const InsertNewCdpQuery = `INSERT INTO maker.new_cdp
-	(header_id, usr, own, cdp, tx_idx, log_idx, raw_log)
-	VALUES($1, $2, $3, $4::NUMERIC, $5, $6, $7)
-	ON CONFLICT (header_id, tx_idx, log_idx)
+	(header_id, usr, own, cdp, log_id)
+	VALUES($1, $2, $3, $4::NUMERIC, $5)
+	ON CONFLICT (header_id, log_id)
 	DO UPDATE SET usr = $2, own = $3, cdp = $4;`
 
 type NewCdpRepository struct {
@@ -40,7 +37,7 @@ func (repository *NewCdpRepository) SetDB(db *postgres.DB) {
 	repository.db = db
 }
 
-func (repository NewCdpRepository) Create(headerID int64, models []interface{}) error {
+func (repository NewCdpRepository) Create(models []interface{}) error {
 	tx, dbErr := repository.db.Beginx()
 	if dbErr != nil {
 		return dbErr
@@ -48,36 +45,27 @@ func (repository NewCdpRepository) Create(headerID int64, models []interface{}) 
 	for _, model := range models {
 		newCdpModel, ok := model.(NewCdpModel)
 		if !ok {
-			rollbackErr := tx.Rollback()
-			if rollbackErr != nil {
-				logrus.Error("failed to rollback", rollbackErr)
-			}
-			return fmt.Errorf("model of type %T, not %T", model, NewCdpModel{})
+			return rollbackErr(tx, fmt.Errorf("model of type %T, not %T", model, NewCdpModel{}))
 		}
 
-		_, execErr := tx.Exec(InsertNewCdpQuery, headerID, newCdpModel.Usr, newCdpModel.Own, newCdpModel.Cdp,
-			newCdpModel.TransactionIndex, newCdpModel.LogIndex, newCdpModel.Raw)
+		_, execErr := tx.Exec(InsertNewCdpQuery, newCdpModel.HeaderID, newCdpModel.Usr, newCdpModel.Own, newCdpModel.Cdp,
+			newCdpModel.LogID)
 		if execErr != nil {
-			rollbackErr := tx.Rollback()
-			if rollbackErr != nil {
-				logrus.Error("failed to rollback ", rollbackErr)
-			}
-			return execErr
+			return rollbackErr(tx, execErr)
 		}
-	}
-
-	checkHeaderErr := repo.MarkHeaderCheckedInTransaction(headerID, tx, constants.NewCdpLabel)
-	if checkHeaderErr != nil {
-		rollbackErr := tx.Rollback()
-		if rollbackErr != nil {
-			logrus.Error("failed to rollback ", rollbackErr)
+		_, logErr := tx.Exec(`UPDATE public.header_sync_logs SET transformed = true WHERE id = $1`, newCdpModel.LogID)
+		if logErr != nil {
+			return rollbackErr(tx, logErr)
 		}
-		return checkHeaderErr
 	}
 
 	return tx.Commit()
 }
 
-func (repository *NewCdpRepository) MarkHeaderChecked(headerID int64) error {
-	return repo.MarkHeaderChecked(headerID, repository.db, constants.NewCdpLabel)
+func rollbackErr(tx *sqlx.Tx, err error) error {
+	rollbackErr := tx.Rollback()
+	if rollbackErr != nil {
+		logrus.Error("failed to rollback ", rollbackErr)
+	}
+	return err
 }

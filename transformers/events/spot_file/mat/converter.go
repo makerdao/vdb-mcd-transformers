@@ -17,8 +17,8 @@
 package mat
 
 import (
-	"encoding/json"
 	"errors"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -30,36 +30,32 @@ import (
 
 type SpotFileMatConverter struct{}
 
-func (SpotFileMatConverter) ToModels(ethLogs []types.Log) ([]shared.InsertionModel, error) {
+func (SpotFileMatConverter) ToModels(logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
 	var models []shared.InsertionModel
-	for _, ethLog := range ethLogs {
-		err := verifyLog(ethLog)
+	for _, log := range logs {
+		err := verifyLog(log.Log)
 		if err != nil {
 			return nil, err
 		}
-		ilk := ethLog.Topics[2].Hex()
-		what := shared.DecodeHexToText(ethLog.Topics[3].Hex())
-		dataBytes, dataErr := shared.GetLogNoteArgumentAtIndex(2, ethLog.Data)
+
+		ilk := log.Log.Topics[2].Hex()
+		what := shared.DecodeHexToText(log.Log.Topics[3].Hex())
+		dataBytes, dataErr := shared.GetLogNoteArgumentAtIndex(2, log.Log.Data)
 		if dataErr != nil {
 			return nil, dataErr
 		}
 		data := shared.ConvertUint256HexToBigInt(hexutil.Encode(dataBytes))
 
-		raw, err := json.Marshal(ethLog)
-		if err != nil {
-			return nil, err
-		}
 		model := shared.InsertionModel{
 			TableName: "spot_file_mat",
 			OrderedColumns: []string{
-				"header_id", string(constants2.IlkFK), "what", "data", "log_idx", "tx_idx", "raw_log",
+				"header_id", string(constants2.IlkFK), "what", "data", "log_id",
 			},
 			ColumnValues: shared.ColumnValues{
-				"what":    what,
-				"data":    data.String(),
-				"log_idx": ethLog.Index,
-				"tx_idx":  ethLog.TxIndex,
-				"raw_log": raw,
+				"what":      what,
+				"data":      data.String(),
+				"header_id": log.HeaderID,
+				"log_id":    log.ID,
 			},
 			ForeignKeyValues: shared.ForeignKeyValues{
 				constants2.IlkFK: ilk,

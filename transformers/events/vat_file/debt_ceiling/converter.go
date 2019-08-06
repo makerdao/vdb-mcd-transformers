@@ -17,8 +17,8 @@
 package debt_ceiling
 
 import (
-	"encoding/json"
 	"errors"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 
 	"github.com/ethereum/go-ethereum/core/types"
 
@@ -28,31 +28,26 @@ import (
 
 type VatFileDebtCeilingConverter struct{}
 
-func (VatFileDebtCeilingConverter) ToModels(ethLogs []types.Log) ([]shared.InsertionModel, error) {
+func (VatFileDebtCeilingConverter) ToModels(logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
 	var models []shared.InsertionModel
-	for _, ethLog := range ethLogs {
-		err := verifyLog(ethLog)
+	for _, log := range logs {
+		err := verifyLog(log.Log)
 		if err != nil {
 			return nil, err
 		}
-		what := shared.DecodeHexToText(ethLog.Topics[1].Hex())
-		data := shared.ConvertUint256HexToBigInt(ethLog.Topics[2].Hex())
+		what := shared.DecodeHexToText(log.Log.Topics[1].Hex())
+		data := shared.ConvertUint256HexToBigInt(log.Log.Topics[2].Hex())
 
-		raw, err := json.Marshal(ethLog)
-		if err != nil {
-			return nil, err
-		}
 		model := shared.InsertionModel{
 			TableName: "vat_file_debt_ceiling",
 			OrderedColumns: []string{
-				"header_id", "what", "data", "log_idx", "tx_idx", "raw_log",
+				"header_id", "what", "data", "log_id",
 			},
 			ColumnValues: shared.ColumnValues{
-				"what":    what,
-				"data":    data.String(),
-				"log_idx": ethLog.Index,
-				"tx_idx":  ethLog.TxIndex,
-				"raw_log": raw,
+				"what":      what,
+				"data":      data.String(),
+				"header_id": log.HeaderID,
+				"log_id":    log.ID,
 			},
 			ForeignKeyValues: shared.ForeignKeyValues{},
 		}

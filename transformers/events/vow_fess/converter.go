@@ -17,8 +17,8 @@
 package vow_fess
 
 import (
-	"encoding/json"
 	"errors"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/constants"
@@ -28,30 +28,25 @@ import (
 
 type VowFessConverter struct{}
 
-func (VowFessConverter) ToModels(ethLogs []types.Log) ([]shared.InsertionModel, error) {
+func (VowFessConverter) ToModels(logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
 	var models []shared.InsertionModel
-	for _, ethLog := range ethLogs {
-		err := verifyLog(ethLog)
+	for _, log := range logs {
+		err := verifyLog(log.Log)
 		if err != nil {
 			return nil, err
 		}
 
-		tab := ethLog.Topics[2].Big()
+		tab := log.Log.Topics[2].Big()
 
-		raw, err := json.Marshal(ethLog)
-		if err != nil {
-			return nil, err
-		}
 		model := shared.InsertionModel{
 			TableName: "vow_fess",
 			OrderedColumns: []string{
-				"header_id", "tab", "log_idx", "tx_idx", "raw_log",
+				"header_id", "tab", "log_id",
 			},
 			ColumnValues: shared.ColumnValues{
-				"tab":     tab.String(),
-				"log_idx": ethLog.Index,
-				"tx_idx":  ethLog.TxIndex,
-				"raw_log": raw,
+				"tab":       tab.String(),
+				"header_id": log.HeaderID,
+				"log_id":    log.ID,
 			},
 			ForeignKeyValues: shared.ForeignKeyValues{},
 		}

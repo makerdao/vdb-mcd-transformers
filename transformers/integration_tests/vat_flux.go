@@ -63,6 +63,8 @@ var _ = Describe("VatFlux LogNoteTransformer", func() {
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
+		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+
 		initializer := shared.LogNoteTransformer{
 			Config:     vatFluxConfig,
 			Converter:  &vat_flux.VatFluxConverter{},
@@ -70,7 +72,7 @@ var _ = Describe("VatFlux LogNoteTransformer", func() {
 		}
 		transformer := initializer.NewLogNoteTransformer(db)
 
-		err = transformer.Execute(logs, header)
+		err = transformer.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []vatFluxModel
@@ -84,16 +86,13 @@ var _ = Describe("VatFlux LogNoteTransformer", func() {
 		Expect(dbResult[0].Src).To(Equal("0x764B9b6326141C5912eBb6948b2b3d51B408d3E6"))
 		Expect(dbResult[0].Dst).To(Equal("0x6bCc9f143D9C799E2C79DB9C921095130d371A16"))
 		Expect(dbResult[0].Wad).To(Equal("1000000000000000000"))
-		Expect(dbResult[0].TransactionIndex).To(Equal(uint(0)))
 	})
 })
 
 type vatFluxModel struct {
-	Ilk              string `db:"ilk_id"`
-	Src              string
-	Dst              string
-	Wad              string
-	TransactionIndex uint   `db:"tx_idx"`
-	LogIndex         uint   `db:"log_idx"`
-	Raw              []byte `db:"raw_log"`
+	Ilk   string `db:"ilk_id"`
+	Src   string
+	Dst   string
+	Wad   string
+	LogID uint `db:"log_id"`
 }

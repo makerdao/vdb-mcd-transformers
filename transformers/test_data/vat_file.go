@@ -17,7 +17,8 @@
 package test_data
 
 import (
-	"encoding/json"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
+	"math/rand"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
@@ -28,7 +29,7 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
-var EthVatFileDebtCeilingLog = types.Log{
+var rawVatFileDebtCeilingLog = types.Log{
 	Address: common.HexToAddress(VatAddress()),
 	Topics: []common.Hash{
 		common.HexToHash(constants.VatFileDebtCeilingSignature()),
@@ -45,23 +46,28 @@ var EthVatFileDebtCeilingLog = types.Log{
 	Removed:     false,
 }
 
-var rawVatFileDebtCeilingLog, _ = json.Marshal(EthVatFileDebtCeilingLog)
+var VatFileDebtCeilingHeaderSyncLog = core.HeaderSyncLog{
+	ID:          int64(rand.Int31()),
+	HeaderID:    int64(rand.Int31()),
+	Log:         rawVatFileDebtCeilingLog,
+	Transformed: false,
+}
+
 var VatFileDebtCeilingModel = shared.InsertionModel{
 	TableName: "vat_file_debt_ceiling",
 	OrderedColumns: []string{
-		"header_id", "what", "data", "log_idx", "tx_idx", "raw_log",
+		"header_id", "what", "data", "log_id",
 	},
 	ColumnValues: shared.ColumnValues{
-		"what":    "Line",
-		"data":    "1000000000000000000000000000000000000000000000000000",
-		"log_idx": EthVatFileDebtCeilingLog.Index,
-		"tx_idx":  EthVatFileDebtCeilingLog.TxIndex,
-		"raw_log": rawVatFileDebtCeilingLog,
+		"what":      "Line",
+		"data":      "1000000000000000000000000000000000000000000000000000",
+		"header_id": VatFileDebtCeilingHeaderSyncLog.HeaderID,
+		"log_id":    VatFileDebtCeilingHeaderSyncLog.ID,
 	},
 	ForeignKeyValues: shared.ForeignKeyValues{},
 }
 
-var EthVatFileIlkDustLog = types.Log{
+var rawVatFileIlkDustLog = types.Log{
 	Address: common.HexToAddress(VatAddress()),
 	Topics: []common.Hash{
 		common.HexToHash(constants.VatFileIlkSignature()),                                       //sig
@@ -79,25 +85,30 @@ var EthVatFileIlkDustLog = types.Log{
 	Removed:     false,
 }
 
-var rawVatFileIlkDustLog, _ = json.Marshal(EthVatFileIlkDustLog)
+var VatFileIlkDustHeaderSyncLog = core.HeaderSyncLog{
+	ID:          int64(rand.Int31()),
+	HeaderID:    int64(rand.Int31()),
+	Log:         rawVatFileIlkDustLog,
+	Transformed: false,
+}
+
 var VatFileIlkDustModel = shared.InsertionModel{
 	TableName: "vat_file_ilk",
 	OrderedColumns: []string{
-		"header_id", string(constants.IlkFK), "what", "data", "log_idx", "tx_idx", "raw_log",
+		"header_id", string(constants.IlkFK), "what", "data", "log_id",
 	},
 	ColumnValues: shared.ColumnValues{
-		"what":    "dust",
-		"data":    "10390649719961925488562719249749",
-		"log_idx": EthVatFileIlkDustLog.Index,
-		"tx_idx":  EthVatFileIlkDustLog.TxIndex,
-		"raw_log": rawVatFileIlkDustLog,
+		"what":      "dust",
+		"data":      "10390649719961925488562719249749",
+		"header_id": VatFileIlkDustHeaderSyncLog.HeaderID,
+		"log_id":    VatFileIlkDustHeaderSyncLog.ID,
 	},
 	ForeignKeyValues: shared.ForeignKeyValues{
 		constants.IlkFK: "0x5245500000000000000000000000000000000000000000000000000000000000",
 	},
 }
 
-var EthVatFileIlkLineLog = types.Log{
+var rawVatFileIlkLineLog = types.Log{
 	Address: common.HexToAddress(VatAddress()),
 	Topics: []common.Hash{
 		common.HexToHash(constants.VatFileIlkSignature()),
@@ -115,25 +126,30 @@ var EthVatFileIlkLineLog = types.Log{
 	Removed:     false,
 }
 
-var rawVatFileIlkLineLog, _ = json.Marshal(EthVatFileIlkLineLog)
+var VatFileIlkLineHeaderSyncLog = core.HeaderSyncLog{
+	ID:          int64(rand.Int31()),
+	HeaderID:    int64(rand.Int31()),
+	Log:         rawVatFileIlkLineLog,
+	Transformed: false,
+}
+
 var VatFileIlkLineModel = shared.InsertionModel{
 	TableName: "vat_file_ilk",
 	OrderedColumns: []string{
-		"header_id", string(constants.IlkFK), "what", "data", "log_idx", "tx_idx", "raw_log",
+		"header_id", string(constants.IlkFK), "what", "data", "log_id",
 	},
 	ColumnValues: shared.ColumnValues{
-		"what":    "line",
-		"data":    "220086151196920075605",
-		"log_idx": EthVatFileIlkLineLog.Index,
-		"tx_idx":  EthVatFileIlkLineLog.TxIndex,
-		"raw_log": rawVatFileIlkLineLog,
+		"what":      "line",
+		"data":      "220086151196920075605",
+		"header_id": VatFileIlkLineHeaderSyncLog.HeaderID,
+		"log_id":    VatFileIlkLineHeaderSyncLog.ID,
 	},
 	ForeignKeyValues: shared.ForeignKeyValues{
 		constants.IlkFK: "0x5245500000000000000000000000000000000000000000000000000000000000",
 	},
 }
 
-var EthVatFileIlkSpotLog = types.Log{
+var rawVatFileIlkSpotLog = types.Log{
 	Address: common.HexToAddress(VatAddress()),
 	Topics: []common.Hash{
 		common.HexToHash(constants.VatFileIlkSignature()),
@@ -150,18 +166,23 @@ var EthVatFileIlkSpotLog = types.Log{
 	Removed:     false,
 }
 
-var rawVatFileIlkSpotLog, _ = json.Marshal(EthVatFileIlkSpotLog)
+var VatFileIlkSpotHeaderSyncLog = core.HeaderSyncLog{
+	ID:          int64(rand.Int31()),
+	HeaderID:    int64(rand.Int31()),
+	Log:         rawVatFileIlkSpotLog,
+	Transformed: false,
+}
+
 var VatFileIlkSpotModel = shared.InsertionModel{
 	TableName: "vat_file_ilk",
 	OrderedColumns: []string{
-		"header_id", string(constants.IlkFK), "what", "data", "log_idx", "tx_idx", "raw_log",
+		"header_id", string(constants.IlkFK), "what", "data", "log_id",
 	},
 	ColumnValues: shared.ColumnValues{
-		"what":    "spot",
-		"data":    "91323333333333333333333333333",
-		"log_idx": EthVatFileIlkSpotLog.Index,
-		"tx_idx":  EthVatFileIlkSpotLog.TxIndex,
-		"raw_log": rawVatFileIlkSpotLog,
+		"what":      "spot",
+		"data":      "91323333333333333333333333333",
+		"header_id": VatFileIlkSpotHeaderSyncLog.HeaderID,
+		"log_id":    VatFileIlkSpotHeaderSyncLog.ID,
 	},
 	ForeignKeyValues: shared.ForeignKeyValues{
 		constants.IlkFK: "0x4554480000000000000000000000000000000000000000000000000000000000",

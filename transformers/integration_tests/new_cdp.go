@@ -75,8 +75,9 @@ var _ = Describe("NewCdp Transformer", func() {
 			[]common.Hash{common.HexToHash(newCdpConfig.Topic)},
 			header)
 		Expect(err).NotTo(HaveOccurred())
+		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
 
-		err = tr.Execute(logs, header)
+		err = tr.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []new_cdp.NewCdpModel
@@ -97,9 +98,9 @@ var _ = Describe("NewCdp Transformer", func() {
 		contract := bind.NewBoundContract(address, abi, nil, nil, nil)
 		entity := &new_cdp.NewCdpEntity{}
 
-		var eventLog = test_data.EthNewCdpLog
+		var eventLog = test_data.NewCdpHeaderSyncLog
 
-		unpackErr := contract.UnpackLog(entity, "NewCdp", eventLog)
+		unpackErr := contract.UnpackLog(entity, "NewCdp", eventLog.Log)
 		Expect(unpackErr).NotTo(HaveOccurred())
 
 		expectedEntity := test_data.NewCdpEntity

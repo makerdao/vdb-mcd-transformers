@@ -47,7 +47,7 @@ var _ = Describe("QueuedSin", func() {
 		fakeEra            = strconv.Itoa(rawEra)
 		fakeHeader         core.Header
 		fakeTab            = strconv.Itoa(int(rand.Int31()))
-		headerID           int64
+		headerID, logID    int64
 		sinMappingMetadata utils.StorageValueMetadata
 		vowRepository      vow.VowStorageRepository
 		headerRepository   repositories.HeaderRepository
@@ -63,6 +63,8 @@ var _ = Describe("QueuedSin", func() {
 		var insertHeaderErr error
 		headerID, insertHeaderErr = headerRepository.CreateOrUpdateHeader(fakeHeader)
 		Expect(insertHeaderErr).NotTo(HaveOccurred())
+		persistedLog := test_data.CreateTestLog(headerID, db)
+		logID = persistedLog.ID
 
 		vowRepository = vow.VowStorageRepository{}
 		vowRepository.SetDB(db)
@@ -99,7 +101,9 @@ var _ = Describe("QueuedSin", func() {
 			vowFlogRepository.SetDB(db)
 			vowFlogEvent := test_data.VowFlogModel
 			vowFlogEvent.ColumnValues["era"] = fakeEra
-			insertVowFlogErr := vowFlogRepository.Create(headerID, []shared.InsertionModel{vowFlogEvent})
+			vowFlogEvent.ColumnValues["header_id"] = headerID
+			vowFlogEvent.ColumnValues["log_id"] = logID
+			insertVowFlogErr := vowFlogRepository.Create([]shared.InsertionModel{vowFlogEvent})
 			Expect(insertVowFlogErr).NotTo(HaveOccurred())
 
 			var result QueuedSin

@@ -17,23 +17,17 @@
 package dent
 
 import (
-	"github.com/vulcanize/vulcanizedb/libraries/shared/repository"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
 type DentRepository struct {
 	db *postgres.DB
 }
 
-func (repository DentRepository) Create(headerID int64, models []shared.InsertionModel) error {
-	return shared.Create(headerID, models, repository.db)
-}
-
-func (repo DentRepository) MarkHeaderChecked(headerId int64) error {
-	return repository.MarkHeaderChecked(headerId, repo.db, constants.DentLabel)
+func (repository DentRepository) Create(models []shared.InsertionModel) error {
+	return shared.Create(models, repository.db)
 }
 
 func (repo *DentRepository) SetDB(db *postgres.DB) {

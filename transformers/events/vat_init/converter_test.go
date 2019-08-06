@@ -17,9 +17,9 @@
 package vat_init_test
 
 import (
-	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_init"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
@@ -33,14 +33,14 @@ var _ = Describe("Vat init converter", func() {
 	})
 
 	It("returns err if log missing topics", func() {
-		badLog := types.Log{}
-		_, err := converter.ToModels([]types.Log{badLog})
+		badLog := core.HeaderSyncLog{}
+		_, err := converter.ToModels([]core.HeaderSyncLog{badLog})
 
 		Expect(err).To(HaveOccurred())
 	})
 
 	It("converts a log to a model", func() {
-		models, err := converter.ToModels([]types.Log{test_data.EthVatInitLog})
+		models, err := converter.ToModels([]core.HeaderSyncLog{test_data.VatInitHeaderSyncLog})
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(len(models)).To(Equal(1))

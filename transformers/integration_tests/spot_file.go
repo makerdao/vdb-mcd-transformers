@@ -91,8 +91,10 @@ var _ = Describe("SpotFile LogNoteTransformers", func() {
 			logs, fetcherErr = logFetcher.FetchLogs(addresses, topics, header)
 			Expect(fetcherErr).NotTo(HaveOccurred())
 
+			headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+
 			tr = initializer.NewLogNoteTransformer(db)
-			executeErr := tr.Execute(logs, header)
+			executeErr := tr.Execute(headerSyncLogs)
 			Expect(executeErr).NotTo(HaveOccurred())
 		})
 
@@ -149,8 +151,10 @@ var _ = Describe("SpotFile LogNoteTransformers", func() {
 			logs, fetcherErr = logFetcher.FetchLogs(addresses, topics, header)
 			Expect(fetcherErr).NotTo(HaveOccurred())
 
+			headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+
 			tr = initializer.NewLogNoteTransformer(db)
-			executeErr := tr.Execute(logs, header)
+			executeErr := tr.Execute(headerSyncLogs)
 			Expect(executeErr).NotTo(HaveOccurred())
 		})
 
@@ -168,18 +172,14 @@ var _ = Describe("SpotFile LogNoteTransformers", func() {
 })
 
 type spotFileMatModel struct {
-	Ilk              string `db:"ilk_id"`
-	What             string
-	Data             string
-	LogIndex         uint   `db:"log_idx"`
-	TransactionIndex uint   `db:"tx_idx"`
-	Raw              []byte `db:"raw_log"`
+	Ilk   string `db:"ilk_id"`
+	What  string
+	Data  string
+	LogID uint `db:"log_id"`
 }
 
 type spotFilePipModel struct {
-	Ilk              string `db:"ilk_id"`
-	Pip              string
-	LogIndex         uint   `db:"log_idx"`
-	TransactionIndex uint   `db:"tx_idx"`
-	Raw              []byte `db:"raw_log"`
+	Ilk   string `db:"ilk_id"`
+	Pip   string
+	LogID uint `db:"log_id"`
 }

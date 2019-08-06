@@ -85,8 +85,10 @@ var _ = XDescribe("Deal transformer", func() {
 		logs, err := logFetcher.FetchLogs(addresses, topics, header)
 		Expect(err).NotTo(HaveOccurred())
 
+		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+
 		transformer := initializer.NewLogNoteTransformer(db)
-		err = transformer.Execute(logs, header)
+		err = transformer.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []dealModel
@@ -113,8 +115,10 @@ var _ = XDescribe("Deal transformer", func() {
 		logs, err := logFetcher.FetchLogs(addresses, topics, header)
 		Expect(err).NotTo(HaveOccurred())
 
+		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+
 		transformer := initializer.NewLogNoteTransformer(db)
-		err = transformer.Execute(logs, header)
+		err = transformer.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []dealModel
@@ -128,9 +132,7 @@ var _ = XDescribe("Deal transformer", func() {
 })
 
 type dealModel struct {
-	BidId            string `db:"bid_id"`
-	ContractAddress  string `db:"contract_address"`
-	LogIndex         uint   `db:"log_idx"`
-	TransactionIndex uint   `db:"tx_idx"`
-	Raw              []byte `db:"raw_log"`
+	BidId           string `db:"bid_id"`
+	ContractAddress string `db:"contract_address"`
+	LogID           uint   `db:"log_id"`
 }

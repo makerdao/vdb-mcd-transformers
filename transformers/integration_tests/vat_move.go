@@ -61,13 +61,15 @@ var _ = Describe("VatMove LogNoteTransformer", func() {
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
+		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+
 		tr := shared.LogNoteTransformer{
 			Config:     vatMoveConfig,
 			Converter:  &vat_move.VatMoveConverter{},
 			Repository: &vat_move.VatMoveRepository{},
 		}.NewLogNoteTransformer(db)
 
-		err = tr.Execute(logs, header)
+		err = tr.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResults []vatMoveModel
@@ -83,10 +85,8 @@ var _ = Describe("VatMove LogNoteTransformer", func() {
 })
 
 type vatMoveModel struct {
-	Src              string
-	Dst              string
-	Rad              string
-	LogIndex         uint   `db:"log_idx"`
-	TransactionIndex uint   `db:"tx_idx"`
-	Raw              []byte `db:"raw_log"`
+	Src   string
+	Dst   string
+	Rad   string
+	LogID uint `db:"log_id"`
 }

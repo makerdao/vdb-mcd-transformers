@@ -17,8 +17,8 @@
 package vat_init
 
 import (
-	"encoding/json"
 	"errors"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 
 	"github.com/ethereum/go-ethereum/core/types"
 
@@ -28,27 +28,24 @@ import (
 
 type VatInitConverter struct{}
 
-func (VatInitConverter) ToModels(ethLogs []types.Log) ([]shared.InsertionModel, error) {
+func (VatInitConverter) ToModels(logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
 	var models []shared.InsertionModel
-	for _, ethLog := range ethLogs {
-		err := verifyLog(ethLog)
+	for _, log := range logs {
+		err := verifyLog(log.Log)
 		if err != nil {
 			return nil, err
 		}
-		ilk := ethLog.Topics[1].Hex()
-		raw, err := json.Marshal(ethLog)
-		if err != nil {
-			return nil, err
-		}
+
+		ilk := log.Log.Topics[1].Hex()
+
 		model := shared.InsertionModel{
 			TableName: "vat_init",
 			OrderedColumns: []string{
-				"header_id", string(constants.IlkFK), "log_idx", "tx_idx", "raw_log",
+				"header_id", string(constants.IlkFK), "log_id",
 			},
 			ColumnValues: shared.ColumnValues{
-				"log_idx": ethLog.Index,
-				"tx_idx":  ethLog.TxIndex,
-				"raw_log": raw,
+				"header_id": log.HeaderID,
+				"log_id":    log.ID,
 			},
 			ForeignKeyValues: shared.ForeignKeyValues{
 				constants.IlkFK: ilk,

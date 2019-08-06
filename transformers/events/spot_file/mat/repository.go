@@ -18,8 +18,6 @@ package mat
 
 import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/repository"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 )
 
@@ -27,12 +25,8 @@ type SpotFileMatRepository struct {
 	db *postgres.DB
 }
 
-func (repo SpotFileMatRepository) Create(headerID int64, models []shared.InsertionModel) error {
-	return shared.Create(headerID, models, repo.db)
-}
-
-func (repo SpotFileMatRepository) MarkHeaderChecked(headerID int64) error {
-	return repository.MarkHeaderChecked(headerID, repo.db, constants.SpotFileMatLabel)
+func (repo SpotFileMatRepository) Create(models []shared.InsertionModel) error {
+	return shared.Create(models, repo.db)
 }
 
 func (repo *SpotFileMatRepository) SetDB(db *postgres.DB) {

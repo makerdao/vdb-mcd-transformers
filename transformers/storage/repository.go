@@ -82,7 +82,8 @@ func (repository *MakerStorageRepository) GetDaiKeys() ([]string, error) {
 		UNION
 		SELECT DISTINCT tx_from FROM public.header_sync_transactions AS transactions
 			LEFT JOIN maker.vat_heal ON vat_heal.header_id = transactions.header_id
-			WHERE vat_heal.tx_idx = transactions.tx_index
+			LEFT JOIN public.header_sync_logs ON header_sync_logs.id = vat_heal.log_id
+			WHERE header_sync_logs.tx_index = transactions.tx_index
 		UNION
 		SELECT DISTINCT urns.identifier FROM maker.vat_fold
 			INNER JOIN maker.urns on urns.id = maker.vat_fold.urn_id
@@ -133,7 +134,8 @@ func (repository *MakerStorageRepository) GetVatSinKeys() ([]string, error) {
 		UNION
 		SELECT DISTINCT tx_from FROM public.header_sync_transactions AS transactions
 			LEFT JOIN maker.vat_heal ON vat_heal.header_id = transactions.header_id
-			WHERE vat_heal.tx_idx = transactions.tx_index`)
+			LEFT JOIN public.header_sync_logs ON header_sync_logs.id = vat_heal.log_id
+			WHERE header_sync_logs.tx_index = transactions.tx_index`)
 	return sinKeys, err
 }
 

@@ -27,7 +27,7 @@ $$
 CREATE FUNCTION api.frob_event_tx(event api.frob_event)
     RETURNS api.tx AS
 $$
-SELECT * FROM get_tx_data(event.block_height, event.tx_idx)
+SELECT * FROM get_tx_data(event.block_height, event.log_id)
 $$
     LANGUAGE sql
     STABLE;

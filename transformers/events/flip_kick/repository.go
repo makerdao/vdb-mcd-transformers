@@ -19,24 +19,18 @@ package flip_kick
 import (
 	"fmt"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
-
-	log "github.com/sirupsen/logrus"
-
-	repo "github.com/vulcanize/vulcanizedb/libraries/shared/repository"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
-
-	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
-var InsertFlipKickQuery = `INSERT into maker.flip_kick (header_id, bid_id, lot, bid, tab, usr, gal, address_id, tx_idx, log_idx, raw_log)
-				VALUES($1, $2::NUMERIC, $3::NUMERIC, $4::NUMERIC, $5::NUMERIC, $6, $7, $8, $9, $10, $11)
-				ON CONFLICT (header_id, tx_idx, log_idx) DO UPDATE SET bid_id = $2, lot = $3, bid = $4, tab = $5, usr = $6, gal = $7, address_id = $8, raw_log = $11;`
+var InsertFlipKickQuery = `INSERT into maker.flip_kick (header_id, bid_id, lot, bid, tab, usr, gal, address_id, log_id)
+				VALUES($1, $2::NUMERIC, $3::NUMERIC, $4::NUMERIC, $5::NUMERIC, $6, $7, $8, $9)
+				ON CONFLICT (header_id, log_id) DO UPDATE SET bid_id = $2, lot = $3, bid = $4, tab = $5, usr = $6, gal = $7, address_id = $8;`
 
 type FlipKickRepository struct {
 	db *postgres.DB
 }
 
-func (repository FlipKickRepository) Create(headerID int64, models []interface{}) error {
+func (repository FlipKickRepository) Create(models []interface{}) error {
 	tx, dBaseErr := repository.db.Beginx()
 	if dBaseErr != nil {
 		return dBaseErr
@@ -44,46 +38,39 @@ func (repository FlipKickRepository) Create(headerID int64, models []interface{}
 	for _, model := range models {
 		flipKickModel, ok := model.(FlipKickModel)
 		if !ok {
-			rollbackErr := tx.Rollback()
-			if rollbackErr != nil {
-				log.Error("failed to rollback ", rollbackErr)
-			}
-			return fmt.Errorf("model of type %T, not %T", model, FlipKickModel{})
+			wrongTypeErr := fmt.Errorf("model of type %T, not %T", model, FlipKickModel{})
+			return shared.FormatRollbackError("flip kick", wrongTypeErr.Error())
 		}
 
 		addressId, addressErr := shared.GetOrCreateAddressInTransaction(flipKickModel.ContractAddress, tx)
 		if addressErr != nil {
 			rollbackErr := tx.Rollback()
 			if rollbackErr != nil {
-				shared.FormatRollbackError("flip address", addressErr.Error())
+				return shared.FormatRollbackError("flip address", addressErr.Error())
 			}
 			return addressErr
 		}
 
-		_, execErr := tx.Exec(InsertFlipKickQuery, headerID, flipKickModel.BidId, flipKickModel.Lot, flipKickModel.Bid,
-			flipKickModel.Tab, flipKickModel.Usr, flipKickModel.Gal, addressId,
-			flipKickModel.TransactionIndex, flipKickModel.LogIndex, flipKickModel.Raw)
+		_, execErr := tx.Exec(InsertFlipKickQuery, flipKickModel.HeaderID, flipKickModel.BidId, flipKickModel.Lot, flipKickModel.Bid,
+			flipKickModel.Tab, flipKickModel.Usr, flipKickModel.Gal, addressId, flipKickModel.LogID)
 		if execErr != nil {
 			rollbackErr := tx.Rollback()
 			if rollbackErr != nil {
-				log.Error("failed to rollback ", rollbackErr)
+				return shared.FormatRollbackError("flip kick", execErr.Error())
 			}
 			return execErr
 		}
-	}
-	checkHeaderErr := repo.MarkHeaderCheckedInTransaction(headerID, tx, constants.FlipKickLabel)
-	if checkHeaderErr != nil {
-		rollbackErr := tx.Rollback()
-		if rollbackErr != nil {
-			log.Error("failed to rollback ", rollbackErr)
+
+		_, logErr := tx.Exec(`UPDATE public.header_sync_logs SET transformed = true WHERE id = $1`, flipKickModel.LogID)
+		if logErr != nil {
+			rollbackErr := tx.Rollback()
+			if rollbackErr != nil {
+				return shared.FormatRollbackError("flip kick", logErr.Error())
+			}
+			return logErr
 		}
-		return checkHeaderErr
 	}
 	return tx.Commit()
-}
-
-func (repository FlipKickRepository) MarkHeaderChecked(headerId int64) error {
-	return repo.MarkHeaderChecked(headerId, repository.db, constants.FlipKickLabel)
 }
 
 func (repository *FlipKickRepository) SetDB(db *postgres.DB) {

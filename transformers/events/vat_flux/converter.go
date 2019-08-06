@@ -17,8 +17,8 @@
 package vat_flux
 
 import (
-	"encoding/json"
 	"errors"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
@@ -30,40 +30,34 @@ import (
 
 type VatFluxConverter struct{}
 
-func (VatFluxConverter) ToModels(ethLogs []types.Log) ([]shared.InsertionModel, error) {
+func (VatFluxConverter) ToModels(logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
 	var models []shared.InsertionModel
-	for _, ethLog := range ethLogs {
-		err := verifyLog(ethLog)
+	for _, log := range logs {
+		err := verifyLog(log.Log)
 		if err != nil {
 			return nil, err
 		}
 
-		ilk := ethLog.Topics[1].Hex()
-		src := common.BytesToAddress(ethLog.Topics[2].Bytes()).String()
-		dst := common.BytesToAddress(ethLog.Topics[3].Bytes()).String()
-		wadBytes, wadErr := shared.GetLogNoteArgumentAtIndex(3, ethLog.Data)
+		ilk := log.Log.Topics[1].Hex()
+		src := common.BytesToAddress(log.Log.Topics[2].Bytes()).String()
+		dst := common.BytesToAddress(log.Log.Topics[3].Bytes()).String()
+		wadBytes, wadErr := shared.GetLogNoteArgumentAtIndex(3, log.Log.Data)
 		if wadErr != nil {
 			return nil, wadErr
 		}
 		wad := shared.ConvertUint256HexToBigInt(hexutil.Encode(wadBytes))
 
-		rawLogJson, jsonErr := json.Marshal(ethLog)
-		if jsonErr != nil {
-			return nil, jsonErr
-		}
-
 		model := shared.InsertionModel{
 			TableName: "vat_flux",
 			OrderedColumns: []string{
-				"header_id", string(constants.IlkFK), "src", "dst", "wad", "tx_idx", "log_idx", "raw_log",
+				"header_id", string(constants.IlkFK), "src", "dst", "wad", "log_id",
 			},
 			ColumnValues: shared.ColumnValues{
-				"src":     src,
-				"dst":     dst,
-				"wad":     wad.String(),
-				"tx_idx":  ethLog.TxIndex,
-				"log_idx": ethLog.Index,
-				"raw_log": rawLogJson,
+				"src":       src,
+				"dst":       dst,
+				"wad":       wad.String(),
+				"header_id": log.HeaderID,
+				"log_id":    log.ID,
 			},
 			ForeignKeyValues: shared.ForeignKeyValues{
 				constants.IlkFK: ilk,

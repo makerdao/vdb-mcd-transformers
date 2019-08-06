@@ -21,7 +21,7 @@ var _ = Describe("Transaction computed columns", func() {
 
 			headerRepository := repositories.NewHeaderRepository(db)
 			fakeBlock := rand.Int()
-			fakeHeader := fakes.GetFakeHeader(int64(fakeBlock))
+			fakeHeader := fakes.GetFakeHeaderWithTimestamp(int64(111111111), int64(fakeBlock))
 			headerId, insertHeaderErr := headerRepository.CreateOrUpdateHeader(fakeHeader)
 			Expect(insertHeaderErr).NotTo(HaveOccurred())
 

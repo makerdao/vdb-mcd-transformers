@@ -17,8 +17,8 @@
 package vow_flog
 
 import (
-	"encoding/json"
 	"errors"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/constants"
@@ -28,30 +28,25 @@ import (
 
 type VowFlogConverter struct{}
 
-func (VowFlogConverter) ToModels(ethLogs []types.Log) ([]shared.InsertionModel, error) {
+func (VowFlogConverter) ToModels(logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
 	var models []shared.InsertionModel
-	for _, ethLog := range ethLogs {
-		err := verifyLog(ethLog)
+	for _, log := range logs {
+		err := verifyLog(log.Log)
 		if err != nil {
 			return nil, err
 		}
 
-		era := ethLog.Topics[2].Big()
+		era := log.Log.Topics[2].Big()
 
-		raw, err := json.Marshal(ethLog)
-		if err != nil {
-			return nil, err
-		}
 		model := shared.InsertionModel{
 			TableName: "vow_flog",
 			OrderedColumns: []string{
-				"header_id", "era", "log_idx", "tx_idx", "raw_log",
+				"header_id", "era", "log_id",
 			},
 			ColumnValues: shared.ColumnValues{
-				"era":     era.String(),
-				"log_idx": ethLog.Index,
-				"tx_idx":  ethLog.TxIndex,
-				"raw_log": raw,
+				"era":       era.String(),
+				"header_id": log.HeaderID,
+				"log_id":    log.ID,
 			},
 			ForeignKeyValues: shared.ForeignKeyValues{},
 		}

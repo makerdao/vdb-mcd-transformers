@@ -7,8 +7,10 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/vulcanize/mcd_transformers/transformers/events/new_cdp"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 	"math/big"
+	"math/rand"
 )
 
 const (
@@ -21,10 +23,10 @@ var (
 	newCdpUsr        = common.HexToAddress("0x000000000000000000000000a9fccb07dd3f774d5b9d02e99de1a27f47f91189")
 	newCdpOwn        = common.HexToAddress("0x000000000000000000000000a9fccb07dd3f774d5b9d02e99de1a27f47f91189")
 	newCdpCdp        = big.NewInt(21)
-	newCdpRawJson, _ = json.Marshal(EthNewCdpLog)
+	newCdpRawJson, _ = json.Marshal(NewCdpHeaderSyncLog)
 )
 
-var EthNewCdpLog = types.Log{
+var rawNewCdpLog = types.Log{
 	Address: common.HexToAddress(CdpManagerAddress()),
 	Topics: []common.Hash{
 		common.HexToHash(constants.NewCdpSignature()),
@@ -40,20 +42,25 @@ var EthNewCdpLog = types.Log{
 	Removed:     false,
 }
 
+var NewCdpHeaderSyncLog = core.HeaderSyncLog{
+	ID:          int64(rand.Int31()),
+	HeaderID:    int64(rand.Int31()),
+	Log:         rawNewCdpLog,
+	Transformed: false,
+}
+
 var NewCdpEntity = new_cdp.NewCdpEntity{
-	Usr:              newCdpUsr,
-	Own:              newCdpOwn,
-	Cdp:              newCdpCdp,
-	LogIndex:         EthNewCdpLog.Index,
-	TransactionIndex: EthNewCdpLog.TxIndex,
-	Raw:              EthNewCdpLog,
+	Usr:      newCdpUsr,
+	Own:      newCdpOwn,
+	Cdp:      newCdpCdp,
+	LogID:    NewCdpHeaderSyncLog.ID,
+	HeaderID: NewCdpHeaderSyncLog.HeaderID,
 }
 
 var NewCdpModel = new_cdp.NewCdpModel{
-	Usr:              "0xA9fCcB07DD3f774d5b9d02e99DE1a27f47F91189",
-	Own:              "0xA9fCcB07DD3f774d5b9d02e99DE1a27f47F91189",
-	Cdp:              newCdpCdp.String(),
-	LogIndex:         EthNewCdpLog.Index,
-	TransactionIndex: EthNewCdpLog.TxIndex,
-	Raw:              newCdpRawJson,
+	Usr:      "0xA9fCcB07DD3f774d5b9d02e99DE1a27f47F91189",
+	Own:      "0xA9fCcB07DD3f774d5b9d02e99DE1a27f47F91189",
+	Cdp:      newCdpCdp.String(),
+	LogID:    NewCdpHeaderSyncLog.ID,
+	HeaderID: NewCdpHeaderSyncLog.HeaderID,
 }

@@ -17,8 +17,8 @@
 package vat_fold
 
 import (
-	"encoding/json"
 	"errors"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -29,32 +29,27 @@ import (
 
 type VatFoldConverter struct{}
 
-func (VatFoldConverter) ToModels(ethLogs []types.Log) ([]shared.InsertionModel, error) {
+func (VatFoldConverter) ToModels(logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
 	var models []shared.InsertionModel
-	for _, ethLog := range ethLogs {
-		err := verifyLog(ethLog)
+	for _, log := range logs {
+		err := verifyLog(log.Log)
 		if err != nil {
 			return nil, err
 		}
 
-		ilk := ethLog.Topics[1].Hex()
-		urn := common.BytesToAddress(ethLog.Topics[2].Bytes()).String()
-		rate := shared.ConvertInt256HexToBigInt(ethLog.Topics[3].Hex())
-		raw, err := json.Marshal(ethLog)
-		if err != nil {
-			return models, err
-		}
+		ilk := log.Log.Topics[1].Hex()
+		urn := common.BytesToAddress(log.Log.Topics[2].Bytes()).String()
+		rate := shared.ConvertInt256HexToBigInt(log.Log.Topics[3].Hex())
 
 		model := shared.InsertionModel{
 			TableName: "vat_fold",
 			OrderedColumns: []string{
-				"header_id", string(constants.UrnFK), "rate", "log_idx", "tx_idx", "raw_log",
+				"header_id", string(constants.UrnFK), "rate", "log_id",
 			},
 			ColumnValues: shared.ColumnValues{
-				"rate":    rate.String(),
-				"log_idx": ethLog.Index,
-				"tx_idx":  ethLog.TxIndex,
-				"raw_log": raw,
+				"rate":      rate.String(),
+				"header_id": log.HeaderID,
+				"log_id":    log.ID,
 			},
 			ForeignKeyValues: shared.ForeignKeyValues{
 				constants.IlkFK: ilk,

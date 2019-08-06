@@ -17,52 +17,45 @@
 package tend
 
 import (
-	"encoding/json"
 	"errors"
-	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
-
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
-
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 )
 
 type TendConverter struct{}
 
-func (TendConverter) ToModels(ethLogs []types.Log) (results []shared.InsertionModel, err error) {
-	for _, ethLog := range ethLogs {
-		err := validateLog(ethLog)
+func (TendConverter) ToModels(logs []core.HeaderSyncLog) (results []shared.InsertionModel, err error) {
+	for _, log := range logs {
+		err := validateLog(log.Log)
 		if err != nil {
 			return nil, err
 		}
 
-		bidId := ethLog.Topics[2].Big()
-		lot := ethLog.Topics[3].Big().String()
-		rawBid, bidErr := shared.GetLogNoteArgumentAtIndex(2, ethLog.Data)
+		bidId := log.Log.Topics[2].Big()
+		lot := log.Log.Topics[3].Big().String()
+		rawBid, bidErr := shared.GetLogNoteArgumentAtIndex(2, log.Log.Data)
 		if bidErr != nil {
 			return nil, bidErr
 		}
 		bidValue := shared.ConvertUint256HexToBigInt(hexutil.Encode(rawBid)).String()
-		rawLog, err := json.Marshal(ethLog)
-		if err != nil {
-			return nil, err
-		}
 
 		model := shared.InsertionModel{
 			TableName: "tend",
 			OrderedColumns: []string{
-				"header_id", "bid_id", "lot", "bid", string(constants.AddressFK), "log_idx", "tx_idx", "raw_log",
+				"header_id", "bid_id", "lot", "bid", string(constants.AddressFK), "log_id",
 			},
 			ColumnValues: shared.ColumnValues{
-				"bid_id":  bidId.String(),
-				"lot":     lot,
-				"bid":     bidValue,
-				"log_idx": ethLog.Index,
-				"tx_idx":  ethLog.TxIndex,
-				"raw_log": rawLog,
+				"bid_id":    bidId.String(),
+				"lot":       lot,
+				"bid":       bidValue,
+				"header_id": log.HeaderID,
+				"log_id":    log.ID,
 			},
 			ForeignKeyValues: shared.ForeignKeyValues{
-				constants.AddressFK: ethLog.Address.Hex(),
+				constants.AddressFK: log.Log.Address.Hex(),
 			},
 		}
 		results = append(results, model)

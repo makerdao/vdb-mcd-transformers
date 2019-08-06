@@ -81,8 +81,10 @@ var _ = XDescribe("Dent transformer", func() {
 		logs, err := logFetcher.FetchLogs(addresses, topics, header)
 		Expect(err).NotTo(HaveOccurred())
 
+		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+
 		tr = initializer.NewLogNoteTransformer(db)
-		err = tr.Execute(logs, header)
+		err = tr.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []dentModel
@@ -109,11 +111,9 @@ var _ = XDescribe("Dent transformer", func() {
 })
 
 type dentModel struct {
-	BidId            string `db:"bid_id"`
-	Lot              string
-	Bid              string
-	ContractAddress  string `db:"contract_address"`
-	LogIndex         uint   `db:"log_idx"`
-	TransactionIndex uint   `db:"tx_idx"`
-	Raw              []byte `db:"raw_log"`
+	BidId           string `db:"bid_id"`
+	Lot             string
+	Bid             string
+	ContractAddress string `db:"contract_address"`
+	LogID           uint   `db:"log_id"`
 }

@@ -17,8 +17,8 @@
 package vow
 
 import (
-	"encoding/json"
 	"errors"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -29,33 +29,27 @@ import (
 
 type CatFileVowConverter struct{}
 
-func (CatFileVowConverter) ToModels(ethLogs []types.Log) ([]shared.InsertionModel, error) {
+func (CatFileVowConverter) ToModels(logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
 	var results []shared.InsertionModel
-	for _, ethLog := range ethLogs {
-		err := verifyLog(ethLog)
+	for _, log := range logs {
+		err := verifyLog(log.Log)
 		if err != nil {
 			return nil, err
 		}
 
-		what := shared.DecodeHexToText(ethLog.Topics[2].Hex())
-		data := common.BytesToAddress(ethLog.Topics[3].Bytes()).String()
-
-		raw, err := json.Marshal(ethLog)
-		if err != nil {
-			return nil, err
-		}
+		what := shared.DecodeHexToText(log.Log.Topics[2].Hex())
+		data := common.BytesToAddress(log.Log.Topics[3].Bytes()).String()
 
 		result := shared.InsertionModel{
 			TableName: "cat_file_vow",
 			OrderedColumns: []string{
-				"header_id", "what", "data", "tx_idx", "log_idx", "raw_log",
+				"header_id", "what", "data", "log_id",
 			},
 			ColumnValues: shared.ColumnValues{
-				"what":    what,
-				"data":    data,
-				"tx_idx":  ethLog.TxIndex,
-				"log_idx": ethLog.Index,
-				"raw_log": raw,
+				"what":      what,
+				"data":      data,
+				"header_id": log.HeaderID,
+				"log_id":    log.ID,
 			},
 			ForeignKeyValues: shared.ForeignKeyValues{},
 		}

@@ -17,13 +17,12 @@
 package spot_poke_test
 
 import (
-	"encoding/json"
-	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/vulcanize/mcd_transformers/transformers/events/spot_poke"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 )
 
 var _ = Describe("SpotPoke Converter", func() {
@@ -31,7 +30,7 @@ var _ = Describe("SpotPoke Converter", func() {
 
 	Describe("ToEntities", func() {
 		It("converts eth logs into spot poke entities", func() {
-			entities, err := converter.ToEntities(constants.SpotABI(), []types.Log{test_data.EthSpotPokeLog})
+			entities, err := converter.ToEntities(constants.SpotABI(), []core.HeaderSyncLog{test_data.SpotPokeHeaderSyncLog})
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(len(entities)).To(Equal(1))
@@ -39,7 +38,7 @@ var _ = Describe("SpotPoke Converter", func() {
 		})
 
 		It("returns an error converting a log to an entity fails", func() {
-			_, err := converter.ToEntities("error abi", []types.Log{test_data.EthSpotPokeLog})
+			_, err := converter.ToEntities("error abi", []core.HeaderSyncLog{test_data.SpotPokeHeaderSyncLog})
 
 			Expect(err).To(HaveOccurred())
 		})
@@ -61,15 +60,10 @@ var _ = Describe("SpotPoke Converter", func() {
 		})
 
 		It("handles nil values", func() {
-			emptyLog, err := json.Marshal(types.Log{})
-			Expect(err).NotTo(HaveOccurred())
 			expectedModel := spot_poke.SpotPokeModel{
-				Ilk:              "0x0000000000000000000000000000000000000000000000000000000000000000",
-				Value:            "0.000000",
-				Spot:             "",
-				LogIndex:         0,
-				TransactionIndex: 0,
-				Raw:              emptyLog,
+				Ilk:   "0x0000000000000000000000000000000000000000000000000000000000000000",
+				Value: "0.000000",
+				Spot:  "",
 			}
 			models, err := converter.ToModels([]interface{}{spot_poke.SpotPokeEntity{}})
 

@@ -4,13 +4,11 @@ CREATE TABLE maker.spot_poke
 (
     id        SERIAL PRIMARY KEY,
     header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
+    log_id    BIGINT  NOT NULL REFERENCES header_sync_logs (id) ON DELETE CASCADE,
     ilk_id    INTEGER NOT NULL REFERENCES maker.ilks (id) ON DELETE CASCADE,
     value     NUMERIC,
     spot      NUMERIC,
-    log_idx   INTEGER NOT NULL,
-    tx_idx    INTEGER NOT NULL,
-    raw_log   JSONB,
-    UNIQUE (header_id, tx_idx, log_idx)
+    UNIQUE (header_id, log_id)
 );
 
 CREATE INDEX spot_poke_header_index

@@ -17,8 +17,8 @@
 package pip
 
 import (
-	"encoding/json"
 	"errors"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -29,29 +29,26 @@ import (
 
 type SpotFilePipConverter struct{}
 
-func (SpotFilePipConverter) ToModels(ethLogs []types.Log) ([]shared.InsertionModel, error) {
+func (SpotFilePipConverter) ToModels(logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
 	var models []shared.InsertionModel
-	for _, ethLog := range ethLogs {
-		err := verifyLog(ethLog)
+	for _, log := range logs {
+		err := verifyLog(log.Log)
 		if err != nil {
 			return nil, err
 		}
-		ilk := ethLog.Topics[2].Hex()
-		pip := common.BytesToAddress(ethLog.Topics[3].Bytes()).String()
-		raw, err := json.Marshal(ethLog)
-		if err != nil {
-			return nil, err
-		}
+
+		ilk := log.Log.Topics[2].Hex()
+		pip := common.BytesToAddress(log.Log.Topics[3].Bytes()).String()
+
 		model := shared.InsertionModel{
 			TableName: "spot_file_pip",
 			OrderedColumns: []string{
-				"header_id", string(constants.IlkFK), "pip", "log_idx", "tx_idx", "raw_log",
+				"header_id", string(constants.IlkFK), "pip", "log_id",
 			},
 			ColumnValues: shared.ColumnValues{
-				"pip":     pip,
-				"log_idx": ethLog.Index,
-				"tx_idx":  ethLog.TxIndex,
-				"raw_log": raw,
+				"pip":       pip,
+				"header_id": log.HeaderID,
+				"log_id":    log.ID,
 			},
 			ForeignKeyValues: shared.ForeignKeyValues{
 				constants.IlkFK: ilk,

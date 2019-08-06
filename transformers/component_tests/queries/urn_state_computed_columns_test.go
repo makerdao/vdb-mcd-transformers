@@ -46,7 +46,7 @@ var _ = Describe("Urn state computed columns", func() {
 		fakeBlock        int
 		fakeGuy          = "fakeAddress"
 		fakeHeader       core.Header
-		headerId         int64
+		headerID, logID  int64
 		vatRepository    vat.VatStorageRepository
 		catRepository    cat.CatStorageRepository
 		jugRepository    jug.JugStorageRepository
@@ -61,8 +61,10 @@ var _ = Describe("Urn state computed columns", func() {
 		fakeBlock = rand.Int()
 		fakeHeader = fakes.GetFakeHeader(int64(fakeBlock))
 		var insertHeaderErr error
-		headerId, insertHeaderErr = headerRepository.CreateOrUpdateHeader(fakeHeader)
+		headerID, insertHeaderErr = headerRepository.CreateOrUpdateHeader(fakeHeader)
 		Expect(insertHeaderErr).NotTo(HaveOccurred())
+		persistedLog := test_data.CreateTestLog(headerID, db)
+		logID = persistedLog.ID
 
 		vatRepository.SetDB(db)
 		catRepository.SetDB(db)
@@ -118,7 +120,9 @@ var _ = Describe("Urn state computed columns", func() {
 			frobEvent := test_data.CopyModel(test_data.VatFrobModelWithPositiveDart)
 			frobEvent.ForeignKeyValues[constants.UrnFK] = fakeGuy
 			frobEvent.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
-			insertFrobErr := frobRepo.Create(headerId, []shared.InsertionModel{frobEvent})
+			frobEvent.ColumnValues["header_id"] = headerID
+			frobEvent.ColumnValues["log_id"] = logID
+			insertFrobErr := frobRepo.Create([]shared.InsertionModel{frobEvent})
 			Expect(insertFrobErr).NotTo(HaveOccurred())
 
 			var actualFrobs test_helpers.FrobEvent
@@ -154,7 +158,9 @@ var _ = Describe("Urn state computed columns", func() {
 				frobEventOne = test_data.CopyModel(test_data.VatFrobModelWithPositiveDart)
 				frobEventOne.ForeignKeyValues[constants.UrnFK] = fakeGuy
 				frobEventOne.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
-				insertFrobErrOne := frobRepo.Create(headerId, []shared.InsertionModel{frobEventOne})
+				frobEventOne.ColumnValues["header_id"] = headerID
+				frobEventOne.ColumnValues["log_id"] = logID
+				insertFrobErrOne := frobRepo.Create([]shared.InsertionModel{frobEventOne})
 				Expect(insertFrobErrOne).NotTo(HaveOccurred())
 
 				// insert more recent frob for same urn
@@ -162,11 +168,14 @@ var _ = Describe("Urn state computed columns", func() {
 				fakeHeaderTwo := fakes.GetFakeHeader(int64(laterBlock))
 				headerTwoId, insertHeaderTwoErr := headerRepository.CreateOrUpdateHeader(fakeHeaderTwo)
 				Expect(insertHeaderTwoErr).NotTo(HaveOccurred())
+				logTwoId := test_data.CreateTestLog(headerTwoId, db).ID
 
 				frobEventTwo = test_data.CopyModel(test_data.VatFrobModelWithNegativeDink)
 				frobEventTwo.ForeignKeyValues[constants.UrnFK] = fakeGuy
 				frobEventTwo.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
-				insertFrobErrTwo := frobRepo.Create(headerTwoId, []shared.InsertionModel{frobEventTwo})
+				frobEventTwo.ColumnValues["header_id"] = headerTwoId
+				frobEventTwo.ColumnValues["log_id"] = logTwoId
+				insertFrobErrTwo := frobRepo.Create([]shared.InsertionModel{frobEventTwo})
 				Expect(insertFrobErrTwo).NotTo(HaveOccurred())
 			})
 
@@ -222,7 +231,9 @@ var _ = Describe("Urn state computed columns", func() {
 			biteEvent := randomizeBite(test_data.BiteModel)
 			biteEvent.Urn = fakeGuy
 			biteEvent.Ilk = test_helpers.FakeIlk.Hex
-			insertBiteErr := biteRepo.Create(headerId, []interface{}{biteEvent})
+			biteEvent.HeaderID = headerID
+			biteEvent.LogID = logID
+			insertBiteErr := biteRepo.Create([]interface{}{biteEvent})
 			Expect(insertBiteErr).NotTo(HaveOccurred())
 
 			var actualBites test_helpers.BiteEvent
@@ -259,7 +270,9 @@ var _ = Describe("Urn state computed columns", func() {
 				biteEventOne = randomizeBite(test_data.BiteModel)
 				biteEventOne.Urn = fakeGuy
 				biteEventOne.Ilk = test_helpers.FakeIlk.Hex
-				insertBiteOneErr := biteRepo.Create(headerId, []interface{}{biteEventOne})
+				biteEventOne.HeaderID = headerID
+				biteEventOne.LogID = logID
+				insertBiteOneErr := biteRepo.Create([]interface{}{biteEventOne})
 				Expect(insertBiteOneErr).NotTo(HaveOccurred())
 
 				// insert more recent bite for same urn
@@ -267,11 +280,14 @@ var _ = Describe("Urn state computed columns", func() {
 				fakeHeaderTwo := fakes.GetFakeHeader(int64(laterBlock))
 				headerTwoId, insertHeaderTwoErr := headerRepository.CreateOrUpdateHeader(fakeHeaderTwo)
 				Expect(insertHeaderTwoErr).NotTo(HaveOccurred())
+				logTwoId := test_data.CreateTestLog(headerTwoId, db).ID
 
 				biteEventTwo = randomizeBite(test_data.BiteModel)
 				biteEventTwo.Urn = fakeGuy
 				biteEventTwo.Ilk = test_helpers.FakeIlk.Hex
-				insertBiteTwoErr := biteRepo.Create(headerTwoId, []interface{}{biteEventTwo})
+				biteEventTwo.HeaderID = headerTwoId
+				biteEventTwo.LogID = logTwoId
+				insertBiteTwoErr := biteRepo.Create([]interface{}{biteEventTwo})
 				Expect(insertBiteTwoErr).NotTo(HaveOccurred())
 			})
 

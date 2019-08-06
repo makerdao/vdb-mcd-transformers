@@ -78,7 +78,9 @@ var _ = Describe("Jug File Ilk LogNoteTransformer", func() {
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
-		err = tr.Execute(logs, header)
+		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+
+		err = tr.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []jugFileIlkModel
@@ -95,10 +97,8 @@ var _ = Describe("Jug File Ilk LogNoteTransformer", func() {
 })
 
 type jugFileIlkModel struct {
-	Ilk              string `db:"ilk_id"`
-	What             string
-	Data             string
-	LogIndex         uint   `db:"log_idx"`
-	TransactionIndex uint   `db:"tx_idx"`
-	Raw              []byte `db:"raw_log"`
+	Ilk   string `db:"ilk_id"`
+	What  string
+	Data  string
+	LogID uint `db:"log_id"`
 }

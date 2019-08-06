@@ -17,11 +17,10 @@
 package flap_kick_test
 
 import (
-	"encoding/json"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"math/big"
 
-	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
@@ -34,7 +33,7 @@ var _ = Describe("Flap kick converter", func() {
 
 	Describe("ToEntity", func() {
 		It("converts an Eth Log to a FlapKickEntity", func() {
-			entities, err := converter.ToEntities(constants.FlapABI(), []types.Log{test_data.EthFlapKickLog})
+			entities, err := converter.ToEntities(constants.FlapABI(), []core.HeaderSyncLog{test_data.FlapKickHeaderSyncLog})
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(entities)).To(Equal(1))
@@ -42,7 +41,7 @@ var _ = Describe("Flap kick converter", func() {
 		})
 
 		It("returns an error if converting log to entity fails", func() {
-			_, err := converter.ToEntities("error abi", []types.Log{test_data.EthFlapKickLog})
+			_, err := converter.ToEntities("error abi", []core.HeaderSyncLog{test_data.FlapKickHeaderSyncLog})
 
 			Expect(err).To(HaveOccurred())
 		})
@@ -62,8 +61,6 @@ var _ = Describe("Flap kick converter", func() {
 			emptyString := ""
 			emptyEntity := flap_kick.FlapKickEntity{}
 			emptyEntity.Id = big.NewInt(1)
-			emptyRawLogJson, err := json.Marshal(types.Log{})
-			Expect(err).NotTo(HaveOccurred())
 
 			models, err := converter.ToModels([]interface{}{emptyEntity})
 
@@ -74,7 +71,6 @@ var _ = Describe("Flap kick converter", func() {
 			Expect(model.Lot).To(Equal(emptyString))
 			Expect(model.Bid).To(Equal(emptyString))
 			Expect(model.ContractAddress).To(Equal(emptyAddressHex))
-			Expect(model.Raw).To(Equal(emptyRawLogJson))
 		})
 
 		It("returns an error if the flap kick event id is nil", func() {

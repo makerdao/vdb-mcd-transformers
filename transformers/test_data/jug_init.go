@@ -17,7 +17,8 @@
 package test_data
 
 import (
-	"encoding/json"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
+	"math/rand"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
@@ -28,7 +29,7 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
-var EthJugInitLog = types.Log{
+var rawJugInitLog = types.Log{
 	Address: common.HexToAddress(JugAddress()),
 	Topics: []common.Hash{
 		common.HexToHash(constants.JugInitSignature()),
@@ -45,16 +46,21 @@ var EthJugInitLog = types.Log{
 	Removed:     false,
 }
 
-var rawJugInitLog, _ = json.Marshal(EthJugInitLog)
+var JugInitHeaderSyncLog = core.HeaderSyncLog{
+	ID:          int64(rand.Int31()),
+	HeaderID:    int64(rand.Int31()),
+	Log:         rawJugInitLog,
+	Transformed: false,
+}
+
 var JugInitModel = shared.InsertionModel{
 	TableName: "jug_init",
 	OrderedColumns: []string{
-		"header_id", string(constants.IlkFK), "log_idx", "tx_idx", "raw_log",
+		"header_id", string(constants.IlkFK), "log_id",
 	},
 	ColumnValues: shared.ColumnValues{
-		"log_idx": EthJugInitLog.Index,
-		"tx_idx":  EthJugInitLog.TxIndex,
-		"raw_log": rawJugInitLog,
+		"header_id": JugInitHeaderSyncLog.HeaderID,
+		"log_id":    JugInitHeaderSyncLog.ID,
 	},
 	ForeignKeyValues: shared.ForeignKeyValues{
 		constants.IlkFK: "0x434f4c352d410000000000000000000000000000000000000000000000000000",

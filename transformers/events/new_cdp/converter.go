@@ -17,22 +17,21 @@
 package new_cdp
 
 import (
-	"encoding/json"
 	"fmt"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
-	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/vulcanizedb/pkg/geth"
 )
 
 type NewCdpConverter struct{}
 
-func (NewCdpConverter) ToEntities(contractAbi string, ethLogs []types.Log) ([]interface{}, error) {
+func (NewCdpConverter) ToEntities(contractAbi string, logs []core.HeaderSyncLog) ([]interface{}, error) {
 	var entities []interface{}
-	for _, ethLog := range ethLogs {
+	for _, log := range logs {
 		entity := &NewCdpEntity{}
-		address := ethLog.Address
+		address := log.Log.Address
 		abi, err := geth.ParseAbi(contractAbi)
 		if err != nil {
 			return nil, err
@@ -40,14 +39,13 @@ func (NewCdpConverter) ToEntities(contractAbi string, ethLogs []types.Log) ([]in
 
 		contract := bind.NewBoundContract(address, abi, nil, nil, nil)
 
-		err = contract.UnpackLog(entity, "NewCdp", ethLog)
+		err = contract.UnpackLog(entity, "NewCdp", log.Log)
 		if err != nil {
 			return nil, err
 		}
 
-		entity.Raw = ethLog
-		entity.LogIndex = ethLog.Index
-		entity.TransactionIndex = ethLog.TxIndex
+		entity.LogID = log.ID
+		entity.HeaderID = log.HeaderID
 
 		entities = append(entities, *entity)
 	}
@@ -66,20 +64,13 @@ func (converter NewCdpConverter) ToModels(entities []interface{}) ([]interface{}
 		usr := newCdpEntity.Usr.Hex()
 		own := newCdpEntity.Own.Hex()
 		cdp := newCdpEntity.Cdp
-		logIdx := newCdpEntity.LogIndex
-		txIdx := newCdpEntity.TransactionIndex
-		rawLog, err := json.Marshal(newCdpEntity.Raw)
-		if err != nil {
-			return nil, err
-		}
 
 		model := NewCdpModel{
-			Usr:              usr,
-			Own:              own,
-			Cdp:              shared.BigIntToString(cdp),
-			LogIndex:         logIdx,
-			TransactionIndex: txIdx,
-			Raw:              rawLog,
+			Usr:      usr,
+			Own:      own,
+			Cdp:      shared.BigIntToString(cdp),
+			LogID:    newCdpEntity.LogID,
+			HeaderID: newCdpEntity.HeaderID,
 		}
 		models = append(models, model)
 	}

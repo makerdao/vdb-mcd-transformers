@@ -17,15 +17,16 @@
 package test_data
 
 import (
-	"encoding/json"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
+	"math/rand"
 )
 
-var EthSpotFileMatLog = types.Log{
+var rawSpotFileMatLog = types.Log{
 	Address: common.HexToAddress(SpotAddress()),
 	Topics: []common.Hash{
 		common.HexToHash(constants.SpotFileMatSignature()),
@@ -42,25 +43,30 @@ var EthSpotFileMatLog = types.Log{
 	Removed:     false,
 }
 
-var rawSpotFileMatLog, _ = json.Marshal(EthSpotFileMatLog)
+var SpotFileMatHeaderSyncLog = core.HeaderSyncLog{
+	ID:          int64(rand.Int31()),
+	HeaderID:    int64(rand.Int31()),
+	Log:         rawSpotFileMatLog,
+	Transformed: false,
+}
+
 var SpotFileMatModel = shared.InsertionModel{
 	TableName: "spot_file_mat",
 	OrderedColumns: []string{
-		"header_id", string(constants.IlkFK), "what", "data", "log_idx", "tx_idx", "raw_log",
+		"header_id", string(constants.IlkFK), "what", "data", "log_id",
 	},
 	ColumnValues: shared.ColumnValues{
-		"what":    "mat",
-		"data":    "1500000000000000000000000000",
-		"log_idx": EthSpotFileMatLog.Index,
-		"tx_idx":  EthSpotFileMatLog.TxIndex,
-		"raw_log": rawSpotFileMatLog,
+		"what":      "mat",
+		"data":      "1500000000000000000000000000",
+		"header_id": SpotFileMatHeaderSyncLog.HeaderID,
+		"log_id":    SpotFileMatHeaderSyncLog.ID,
 	},
 	ForeignKeyValues: shared.ForeignKeyValues{
 		constants.IlkFK: "0x4554482d41000000000000000000000000000000000000000000000000000000",
 	},
 }
 
-var EthSpotFilePipLog = types.Log{
+var rawSpotFilePipLog = types.Log{
 	Address: common.HexToAddress(SpotAddress()),
 	Topics: []common.Hash{
 		common.HexToHash(constants.SpotFilePipSignature()),
@@ -77,17 +83,22 @@ var EthSpotFilePipLog = types.Log{
 	Removed:     false,
 }
 
-var rawSpotFilePipLog, _ = json.Marshal(EthSpotFilePipLog)
+var SpotFilePipHeaderSyncLog = core.HeaderSyncLog{
+	ID:          int64(rand.Int31()),
+	HeaderID:    int64(rand.Int31()),
+	Log:         rawSpotFilePipLog,
+	Transformed: false,
+}
+
 var SpotFilePipModel = shared.InsertionModel{
 	TableName: "spot_file_pip",
 	OrderedColumns: []string{
-		"header_id", string(constants.IlkFK), "pip", "log_idx", "tx_idx", "raw_log",
+		"header_id", string(constants.IlkFK), "pip", "log_id",
 	},
 	ColumnValues: shared.ColumnValues{
-		"pip":     "0x8C73Ec0fBCdEC6b8C060BC224D94740FD41f3774",
-		"log_idx": EthSpotFilePipLog.Index,
-		"tx_idx":  EthSpotFilePipLog.TxIndex,
-		"raw_log": rawSpotFilePipLog,
+		"pip":       "0x8C73Ec0fBCdEC6b8C060BC224D94740FD41f3774",
+		"header_id": SpotFilePipHeaderSyncLog.HeaderID,
+		"log_id":    SpotFilePipHeaderSyncLog.ID,
 	},
 	ForeignKeyValues: shared.ForeignKeyValues{
 		constants.IlkFK: "0x4554482d41000000000000000000000000000000000000000000000000000000",

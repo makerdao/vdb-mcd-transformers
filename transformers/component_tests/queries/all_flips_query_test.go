@@ -100,7 +100,8 @@ var _ = Describe("All flips view", func() {
 		Expect(queryErr1).NotTo(HaveOccurred())
 		Expect(expectedBid1).To(Equal(actualBid1))
 
-		flipKickErr := test_helpers.CreateFlipKick(contractAddress, fakeBidId2, headerTwoId, test_data.FlipKickModel.Usr, flipKickRepo)
+		flipKickLog := test_data.CreateTestLog(headerTwoId, db)
+		flipKickErr := test_helpers.CreateFlipKick(contractAddress, fakeBidId2, headerTwoId, flipKickLog.ID, test_data.FlipKickModel.Usr, flipKickRepo)
 		Expect(flipKickErr).NotTo(HaveOccurred())
 
 		expectedBid2 := test_helpers.FlipBidFromValues(strconv.Itoa(fakeBidId2), strconv.FormatInt(ilkId, 10),
@@ -252,7 +253,7 @@ var _ = Describe("All flips view", func() {
 	Describe("result pagination", func() {
 		var (
 			header                                     core.Header
-			headerId                                   int64
+			headerId, logId                            int64
 			fakeBidIdOne, fakeBidIdTwo                 int
 			ilkId, urnId                               int64
 			flipOneStorageValues, flipTwoStorageValues map[string]interface{}
@@ -268,6 +269,7 @@ var _ = Describe("All flips view", func() {
 			var headerErr error
 			headerId, headerErr = headerRepo.CreateOrUpdateHeader(header)
 			Expect(headerErr).NotTo(HaveOccurred())
+			logId = test_data.CreateTestLog(headerId, db).ID
 
 			var setupErr error
 			ilkId, urnId, setupErr = test_helpers.SetUpFlipBidContext(test_helpers.FlipBidContextInput{
@@ -295,7 +297,7 @@ var _ = Describe("All flips view", func() {
 		})
 
 		It("limits results if max_results argument is provided", func() {
-			flipKickErr := test_helpers.CreateFlipKick(contractAddress, fakeBidIdTwo, headerId, test_data.FlipKickModel.Usr, flipKickRepo)
+			flipKickErr := test_helpers.CreateFlipKick(contractAddress, fakeBidIdTwo, headerId, logId, test_data.FlipKickModel.Usr, flipKickRepo)
 			Expect(flipKickErr).NotTo(HaveOccurred())
 
 			maxResults := 1
@@ -312,7 +314,7 @@ var _ = Describe("All flips view", func() {
 		})
 
 		It("offsets results if offset is provided", func() {
-			flipKickErr := test_helpers.CreateFlipKick(contractAddress, fakeBidIdOne, headerId, test_data.FlipKickModel.Usr, flipKickRepo)
+			flipKickErr := test_helpers.CreateFlipKick(contractAddress, fakeBidIdOne, headerId, logId, test_data.FlipKickModel.Usr, flipKickRepo)
 			Expect(flipKickErr).NotTo(HaveOccurred())
 
 			maxResults := 1

@@ -18,25 +18,21 @@ package flap_kick
 
 import (
 	"fmt"
-	"github.com/ethereum/go-ethereum/log"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	repo "github.com/vulcanize/vulcanizedb/libraries/shared/repository"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
-
-	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
 const InsertFlapKickQuery = `INSERT into maker.flap_kick
-		(header_id, bid_id, lot, bid, address_id, tx_idx, log_idx, raw_log)
-		VALUES($1, $2::NUMERIC, $3::NUMERIC, $4::NUMERIC, $5, $6, $7, $8)
-		ON CONFLICT (header_id, tx_idx, log_idx)
-		DO UPDATE SET bid_id = $2, lot = $3, bid = $4, address_id = $5, raw_log = $8;`
+		(header_id, bid_id, lot, bid, address_id, log_id)
+		VALUES($1, $2::NUMERIC, $3::NUMERIC, $4::NUMERIC, $5, $6)
+		ON CONFLICT (header_id, log_id)
+		DO UPDATE SET bid_id = $2, lot = $3, bid = $4, address_id = $5;`
 
 type FlapKickRepository struct {
 	db *postgres.DB
 }
 
-func (repository *FlapKickRepository) Create(headerID int64, models []interface{}) error {
+func (repository *FlapKickRepository) Create(models []interface{}) error {
 	tx, dBaseErr := repository.db.Beginx()
 	if dBaseErr != nil {
 		return dBaseErr
@@ -44,47 +40,40 @@ func (repository *FlapKickRepository) Create(headerID int64, models []interface{
 	for _, model := range models {
 		flapKickModel, ok := model.(FlapKickModel)
 		if !ok {
-			rollbackErr := tx.Rollback()
-			if rollbackErr != nil {
-				log.Error("failed to rollback ", rollbackErr)
-			}
-			return fmt.Errorf("model of type %T, not %T", model, FlapKickModel{})
+			wrongTypeErr := fmt.Errorf("model of type %T, not %T", model, FlapKickModel{})
+			return shared.FormatRollbackError("flap kick", wrongTypeErr.Error())
 		}
 
 		addressId, addressErr := shared.GetOrCreateAddressInTransaction(flapKickModel.ContractAddress, tx)
 		if addressErr != nil {
 			rollbackErr := tx.Rollback()
 			if rollbackErr != nil {
-				shared.FormatRollbackError("flap address", addressErr.Error())
+				return shared.FormatRollbackError("flap address", addressErr.Error())
 			}
 			return addressErr
 		}
 
-		_, execErr := tx.Exec(InsertFlapKickQuery, headerID, flapKickModel.BidId, flapKickModel.Lot, flapKickModel.Bid,
-			addressId, flapKickModel.TransactionIndex, flapKickModel.LogIndex,
-			flapKickModel.Raw)
+		_, execErr := tx.Exec(InsertFlapKickQuery, flapKickModel.HeaderID, flapKickModel.BidId, flapKickModel.Lot, flapKickModel.Bid,
+			addressId, flapKickModel.LogID)
 		if execErr != nil {
 			rollbackErr := tx.Rollback()
 			if rollbackErr != nil {
-				shared.FormatRollbackError("flap kick", execErr.Error())
+				return shared.FormatRollbackError("flap kick", execErr.Error())
 			}
 			return execErr
 		}
-	}
 
-	checkHeaderErr := repo.MarkHeaderCheckedInTransaction(headerID, tx, constants.FlapKickLabel)
-	if checkHeaderErr != nil {
-		rollbackErr := tx.Rollback()
-		if rollbackErr != nil {
-			log.Error("failed to rollback ", rollbackErr)
+		_, logErr := tx.Exec(`UPDATE public.header_sync_logs SET transformed = true WHERE id = $1`, flapKickModel.LogID)
+		if logErr != nil {
+			rollbackErr := tx.Rollback()
+			if rollbackErr != nil {
+				return shared.FormatRollbackError("flap kick", logErr.Error())
+			}
+			return logErr
 		}
-		return checkHeaderErr
 	}
-	return tx.Commit()
-}
 
-func (repository *FlapKickRepository) MarkHeaderChecked(headerID int64) error {
-	return repo.MarkHeaderChecked(headerID, repository.db, constants.FlapKickLabel)
+	return tx.Commit()
 }
 
 func (repository *FlapKickRepository) SetDB(db *postgres.DB) {

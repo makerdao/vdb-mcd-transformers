@@ -74,8 +74,9 @@ var _ = Describe("Vat fork transformer", func() {
 			[]common.Hash{common.HexToHash(vatForkConfig.Topic)},
 			header)
 		Expect(err).NotTo(HaveOccurred())
+		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
 
-		err = tr.Execute(logs, header)
+		err = tr.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult vatForkModel

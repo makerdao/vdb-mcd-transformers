@@ -44,6 +44,7 @@ var _ = Describe("Flap computed columns", func() {
 		It("returns the bid events for a flap", func() {
 			headerId, headerErr := headerRepo.CreateOrUpdateHeader(blockOneHeader)
 			Expect(headerErr).NotTo(HaveOccurred())
+			flapKickLog := test_data.CreateTestLog(headerId, db)
 
 			flapStorageValues := test_helpers.GetFlapStorageValues(1, fakeBidId)
 			test_helpers.CreateFlap(db, blockOneHeader, flapStorageValues, test_helpers.GetFlapMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
@@ -51,7 +52,9 @@ var _ = Describe("Flap computed columns", func() {
 			flapKickEvent := test_data.FlapKickModel
 			flapKickEvent.ContractAddress = contractAddress
 			flapKickEvent.BidId = strconv.Itoa(fakeBidId)
-			flapKickErr := flapKickRepo.Create(headerId, []interface{}{flapKickEvent})
+			flapKickEvent.HeaderID = headerId
+			flapKickEvent.LogID = flapKickLog.ID
+			flapKickErr := flapKickRepo.Create([]interface{}{flapKickEvent})
 			Expect(flapKickErr).NotTo(HaveOccurred())
 
 			expectedBidEvents := test_helpers.BidEvent{
@@ -73,6 +76,7 @@ var _ = Describe("Flap computed columns", func() {
 		It("does not include bid events for a different flap", func() {
 			headerId, headerErr := headerRepo.CreateOrUpdateHeader(blockOneHeader)
 			Expect(headerErr).NotTo(HaveOccurred())
+			flapKickLog := test_data.CreateTestLog(headerId, db)
 
 			flapStorageValues := test_helpers.GetFlapStorageValues(1, fakeBidId)
 			test_helpers.CreateFlap(db, blockOneHeader, flapStorageValues, test_helpers.GetFlapMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
@@ -80,13 +84,16 @@ var _ = Describe("Flap computed columns", func() {
 			flapKickEvent := test_data.FlapKickModel
 			flapKickEvent.ContractAddress = contractAddress
 			flapKickEvent.BidId = strconv.Itoa(fakeBidId)
-			flapKickErr := flapKickRepo.Create(headerId, []interface{}{flapKickEvent})
+			flapKickEvent.HeaderID = headerId
+			flapKickEvent.LogID = flapKickLog.ID
+			flapKickErr := flapKickRepo.Create([]interface{}{flapKickEvent})
 			Expect(flapKickErr).NotTo(HaveOccurred())
 
 			blockTwo := blockOne + 1
 			blockTwoHeader := fakes.GetFakeHeader(int64(blockTwo))
 			headerTwoId, headerTwoErr := headerRepo.CreateOrUpdateHeader(blockTwoHeader)
 			Expect(headerTwoErr).NotTo(HaveOccurred())
+			irrelevantFlipKickLog := test_data.CreateTestLog(headerTwoId, db)
 
 			irrelevantBidId := fakeBidId + 9999999999999
 			irrelevantFlapStorageValues := test_helpers.GetFlapStorageValues(2, irrelevantBidId)
@@ -95,8 +102,10 @@ var _ = Describe("Flap computed columns", func() {
 			irrelevantFlapKickEvent := test_data.FlapKickModel
 			irrelevantFlapKickEvent.ContractAddress = contractAddress
 			irrelevantFlapKickEvent.BidId = strconv.Itoa(irrelevantBidId)
+			irrelevantFlapKickEvent.HeaderID = headerTwoId
+			irrelevantFlapKickEvent.LogID = irrelevantFlipKickLog.ID
 
-			flapKickErr = flapKickRepo.Create(headerTwoId, []interface{}{irrelevantFlapKickEvent})
+			flapKickErr = flapKickRepo.Create([]interface{}{irrelevantFlapKickEvent})
 			Expect(flapKickErr).NotTo(HaveOccurred())
 
 			expectedBidEvents := test_helpers.BidEvent{
@@ -126,6 +135,7 @@ var _ = Describe("Flap computed columns", func() {
 			BeforeEach(func() {
 				headerId, headerErr := headerRepo.CreateOrUpdateHeader(blockOneHeader)
 				Expect(headerErr).NotTo(HaveOccurred())
+				logId := test_data.CreateTestLog(headerId, db).ID
 
 				flapStorageValues := test_helpers.GetFlapStorageValues(1, fakeBidId)
 				test_helpers.CreateFlap(db, blockOneHeader, flapStorageValues, test_helpers.GetFlapMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
@@ -133,13 +143,16 @@ var _ = Describe("Flap computed columns", func() {
 				flapKickEvent = test_data.FlapKickModel
 				flapKickEvent.ContractAddress = contractAddress
 				flapKickEvent.BidId = strconv.Itoa(fakeBidId)
-				flapKickErr := flapKickRepo.Create(headerId, []interface{}{flapKickEvent})
+				flapKickEvent.HeaderID = headerId
+				flapKickEvent.LogID = logId
+				flapKickErr := flapKickRepo.Create([]interface{}{flapKickEvent})
 				Expect(flapKickErr).NotTo(HaveOccurred())
 
 				blockTwo := blockOne + 1
 				blockTwoHeader := fakes.GetFakeHeader(int64(blockTwo))
 				headerTwoId, headerTwoErr := headerRepo.CreateOrUpdateHeader(blockTwoHeader)
 				Expect(headerTwoErr).NotTo(HaveOccurred())
+				logTwoId := test_data.CreateTestLog(headerTwoId, db).ID
 
 				tendBid = rand.Int()
 				tendLot = rand.Int()
@@ -152,6 +165,7 @@ var _ = Describe("Flap computed columns", func() {
 					BidAmount:       tendBid,
 					TendRepo:        tendRepo,
 					TendHeaderId:    headerTwoId,
+					TendLogID:       logTwoId,
 				})
 				Expect(flapTendErr).NotTo(HaveOccurred())
 			})

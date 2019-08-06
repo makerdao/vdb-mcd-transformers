@@ -17,15 +17,12 @@
 package bite_test
 
 import (
-	"encoding/json"
-
-	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-
 	"github.com/vulcanize/mcd_transformers/transformers/events/bite"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 )
 
 var _ = Describe("Bite Converter", func() {
@@ -33,7 +30,7 @@ var _ = Describe("Bite Converter", func() {
 
 	Describe("ToEntity", func() {
 		It("converts an eth log to a bite entity", func() {
-			entities, err := converter.ToEntities(constants.CatABI(), []types.Log{test_data.EthBiteLog})
+			entities, err := converter.ToEntities(constants.CatABI(), []core.HeaderSyncLog{test_data.BiteHeaderSyncLog})
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(entities)).To(Equal(1))
@@ -42,7 +39,7 @@ var _ = Describe("Bite Converter", func() {
 		})
 
 		It("returns an error if converting log to entity fails", func() {
-			_, err := converter.ToEntities("error abi", []types.Log{test_data.EthBiteLog})
+			_, err := converter.ToEntities("error abi", []core.HeaderSyncLog{test_data.BiteHeaderSyncLog})
 
 			Expect(err).To(HaveOccurred())
 		})
@@ -68,18 +65,14 @@ var _ = Describe("Bite Converter", func() {
 		})
 
 		It("handles nil values", func() {
-			emptyLog, err := json.Marshal(types.Log{})
-			Expect(err).NotTo(HaveOccurred())
 			expectedModel := bite.BiteModel{
-				Ilk:              "0x0000000000000000000000000000000000000000000000000000000000000000",
-				Urn:              "0x0000000000000000000000000000000000000000",
-				Ink:              "",
-				Art:              "",
-				Tab:              "",
-				Flip:             "0x0000000000000000000000000000000000000000",
-				Id:               "",
-				TransactionIndex: 0,
-				Raw:              emptyLog,
+				Ilk:  "0x0000000000000000000000000000000000000000000000000000000000000000",
+				Urn:  "0x0000000000000000000000000000000000000000",
+				Ink:  "",
+				Art:  "",
+				Tab:  "",
+				Flip: "0x0000000000000000000000000000000000000000",
+				Id:   "",
 			}
 			models, err := converter.ToModels([]interface{}{emptyEntity})
 

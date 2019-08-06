@@ -17,8 +17,8 @@
 package flip
 
 import (
-	"encoding/json"
 	"errors"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -30,37 +30,31 @@ import (
 
 type CatFileFlipConverter struct{}
 
-func (CatFileFlipConverter) ToModels(ethLogs []types.Log) ([]shared.InsertionModel, error) {
+func (CatFileFlipConverter) ToModels(logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
 	var results []shared.InsertionModel
-	for _, ethLog := range ethLogs {
-		verifyErr := verifyLog(ethLog)
+	for _, log := range logs {
+		verifyErr := verifyLog(log.Log)
 		if verifyErr != nil {
 			return nil, verifyErr
 		}
-		ilk := ethLog.Topics[2].Hex()
-		what := shared.DecodeHexToText(ethLog.Topics[3].Hex())
-		flipBytes, parseErr := shared.GetLogNoteArgumentAtIndex(2, ethLog.Data)
+		ilk := log.Log.Topics[2].Hex()
+		what := shared.DecodeHexToText(log.Log.Topics[3].Hex())
+		flipBytes, parseErr := shared.GetLogNoteArgumentAtIndex(2, log.Log.Data)
 		if parseErr != nil {
 			return nil, parseErr
 		}
 		flip := common.BytesToAddress(flipBytes).String()
 
-		raw, marshalErr := json.Marshal(ethLog)
-		if marshalErr != nil {
-			return nil, marshalErr
-		}
-
 		result := shared.InsertionModel{
 			TableName: "cat_file_flip",
 			OrderedColumns: []string{
-				"header_id", string(constants2.IlkFK), "what", "flip", "tx_idx", "log_idx", "raw_log",
+				"header_id", string(constants2.IlkFK), "what", "flip", "log_id",
 			},
 			ColumnValues: shared.ColumnValues{
-				"what":    what,
-				"flip":    flip,
-				"tx_idx":  ethLog.TxIndex,
-				"log_idx": ethLog.Index,
-				"raw_log": raw,
+				"what":      what,
+				"flip":      flip,
+				"header_id": log.HeaderID,
+				"log_id":    log.ID,
 			},
 			ForeignKeyValues: shared.ForeignKeyValues{
 				constants2.IlkFK: ilk,

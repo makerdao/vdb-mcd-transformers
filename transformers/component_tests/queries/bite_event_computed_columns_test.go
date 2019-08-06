@@ -2,6 +2,7 @@ package queries
 
 import (
 	"database/sql"
+	"github.com/ethereum/go-ethereum/core/types"
 	"math/rand"
 	"strconv"
 
@@ -26,6 +27,7 @@ var _ = Describe("Bite event computed columns", func() {
 		fakeBlock        int
 		fakeGuy          string
 		fakeHeader       core.Header
+		fakeLog          types.Log
 		biteEvent        bite.BiteModel
 		biteRepo         bite.BiteRepository
 		headerId         int64
@@ -45,12 +47,17 @@ var _ = Describe("Bite event computed columns", func() {
 		headerId, insertHeaderErr = headerRepository.CreateOrUpdateHeader(fakeHeader)
 		Expect(insertHeaderErr).NotTo(HaveOccurred())
 
+		insertedLog := test_data.CreateTestLog(headerId, db)
+		fakeLog = insertedLog.Log
+
 		biteRepo = bite.BiteRepository{}
 		biteRepo.SetDB(db)
 		biteEvent = test_data.BiteModel
 		biteEvent.Ilk = test_helpers.FakeIlk.Hex
 		biteEvent.Urn = fakeGuy
-		insertBiteErr := biteRepo.Create(headerId, []interface{}{biteEvent})
+		biteEvent.HeaderID = headerId
+		biteEvent.LogID = insertedLog.ID
+		insertBiteErr := biteRepo.Create([]interface{}{biteEvent})
 		Expect(insertBiteErr).NotTo(HaveOccurred())
 	})
 
@@ -71,7 +78,7 @@ var _ = Describe("Bite event computed columns", func() {
 			err := db.Get(&result, `
 				SELECT ilk_identifier, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated
 				FROM api.bite_event_ilk(
-					(SELECT (ilk_identifier, urn_identifier, bid_id, ink, art, tab, block_height, tx_idx)::api.bite_event FROM api.all_bites($1))
+					(SELECT (ilk_identifier, urn_identifier, bid_id, ink, art, tab, block_height, log_id)::api.bite_event FROM api.all_bites($1))
 				)`, test_helpers.FakeIlk.Identifier)
 
 			Expect(err).NotTo(HaveOccurred())
@@ -90,7 +97,7 @@ var _ = Describe("Bite event computed columns", func() {
 			var actualUrn test_helpers.UrnState
 			err := db.Get(&actualUrn, `
 				SELECT urn_identifier, ilk_identifier FROM api.bite_event_urn(
-					(SELECT (ilk_identifier, urn_identifier, bid_id, ink, art, tab, block_height, tx_idx)::api.bite_event FROM api.all_bites($1)))`,
+					(SELECT (ilk_identifier, urn_identifier, bid_id, ink, art, tab, block_height, log_id)::api.bite_event FROM api.all_bites($1)))`,
 				test_helpers.FakeIlk.Identifier)
 			Expect(err).NotTo(HaveOccurred())
 
@@ -132,7 +139,7 @@ var _ = Describe("Bite event computed columns", func() {
 			var actualBid test_helpers.FlipBid
 			err := db.Get(&actualBid, `
 				SELECT bid_id, ilk_id, urn_id, bid, lot, guy, tic, "end", gal, tab, dealt, created, updated FROM api.bite_event_bid(
-					(SELECT (ilk_identifier, urn_identifier, bid_id, ink, art, tab, block_height, tx_idx)::api.bite_event FROM api.all_bites($1)))`,
+					(SELECT (ilk_identifier, urn_identifier, bid_id, ink, art, tab, block_height, log_id)::api.bite_event FROM api.all_bites($1)))`,
 				test_helpers.FakeIlk.Identifier)
 			Expect(err).NotTo(HaveOccurred())
 
@@ -146,7 +153,7 @@ var _ = Describe("Bite event computed columns", func() {
 		It("returns transaction for a bite_event", func() {
 			expectedTx := Tx{
 				TransactionHash:  test_helpers.GetValidNullString("txHash"),
-				TransactionIndex: sql.NullInt64{Int64: int64(biteEvent.TransactionIndex), Valid: true},
+				TransactionIndex: sql.NullInt64{Int64: int64(fakeLog.TxIndex), Valid: true},
 				BlockHeight:      sql.NullInt64{Int64: int64(fakeBlock), Valid: true},
 				BlockHash:        test_helpers.GetValidNullString(fakeHeader.Hash),
 				TxFrom:           test_helpers.GetValidNullString("fromAddress"),
@@ -161,7 +168,7 @@ var _ = Describe("Bite event computed columns", func() {
 			var actualTx Tx
 			err = db.Get(&actualTx, `
 				SELECT * FROM api.bite_event_tx(
-					(SELECT (ilk_identifier, urn_identifier, bid_id, ink, art, tab, block_height, tx_idx)::api.bite_event FROM api.all_bites($1)))`,
+					(SELECT (ilk_identifier, urn_identifier, bid_id, ink, art, tab, block_height, log_id)::api.bite_event FROM api.all_bites($1)))`,
 				test_helpers.FakeIlk.Identifier)
 
 			Expect(err).NotTo(HaveOccurred())
@@ -172,7 +179,7 @@ var _ = Describe("Bite event computed columns", func() {
 			wrongTx := Tx{
 				TransactionHash: test_helpers.GetValidNullString("wrongTxHash"),
 				TransactionIndex: sql.NullInt64{
-					Int64: int64(biteEvent.TransactionIndex) + 1,
+					Int64: int64(fakeLog.TxIndex) + 1,
 					Valid: true,
 				},
 				BlockHeight: sql.NullInt64{Int64: int64(fakeBlock), Valid: true},
@@ -189,7 +196,7 @@ var _ = Describe("Bite event computed columns", func() {
 			var actualTx Tx
 			err := db.Get(&actualTx, `
 				SELECT * FROM api.bite_event_tx(
-					(SELECT (ilk_identifier, urn_identifier, bid_id, ink, art, tab, block_height, tx_idx)::api.bite_event FROM api.all_bites($1)))`,
+					(SELECT (ilk_identifier, urn_identifier, bid_id, ink, art, tab, block_height, log_id)::api.bite_event FROM api.all_bites($1)))`,
 				test_helpers.FakeIlk.Identifier)
 
 			Expect(err).NotTo(HaveOccurred())

@@ -62,13 +62,15 @@ var _ = Describe("VatSuck Transformer", func() {
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
+		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+
 		tr := shared.LogNoteTransformer{
 			Config:     vatSuckConfig,
 			Converter:  &vat_suck.VatSuckConverter{},
 			Repository: &vat_suck.VatSuckRepository{},
 		}.NewLogNoteTransformer(db)
 
-		err = tr.Execute(logs, header)
+		err = tr.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResults []vatSuckModel
@@ -84,10 +86,8 @@ var _ = Describe("VatSuck Transformer", func() {
 })
 
 type vatSuckModel struct {
-	U                string
-	V                string
-	Rad              string
-	LogIndex         uint   `db:"log_idx"`
-	TransactionIndex uint   `db:"tx_idx"`
-	Raw              []byte `db:"raw_log"`
+	U     string
+	V     string
+	Rad   string
+	LogID uint `db:"log_id"`
 }

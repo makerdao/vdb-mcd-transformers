@@ -78,7 +78,9 @@ var _ = Describe("JugDrip Transformer", func() {
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
-		err = tr.Execute(logs, header)
+		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+
+		err = tr.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResults []jugDripModel
@@ -94,8 +96,6 @@ var _ = Describe("JugDrip Transformer", func() {
 })
 
 type jugDripModel struct {
-	Ilk              string `db:"ilk_id"`
-	LogIndex         uint   `db:"log_idx"`
-	TransactionIndex uint   `db:"tx_idx"`
-	Raw              []byte `db:"raw_log"`
+	Ilk   string `db:"ilk_id"`
+	LogID uint   `db:"log_id"`
 }

@@ -65,13 +65,15 @@ var _ = XDescribe("Vat Grab Transformer", func() {
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
+		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+
 		tr := shared.LogNoteTransformer{
 			Config:     vatGrabConfig,
 			Converter:  &vat_grab.VatGrabConverter{},
 			Repository: &vat_grab.VatGrabRepository{},
 		}.NewLogNoteTransformer(db)
 
-		err = tr.Execute(logs, header)
+		err = tr.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []vatGrabModel
@@ -91,18 +93,15 @@ var _ = XDescribe("Vat Grab Transformer", func() {
 		expectedDart := new(big.Int)
 		expectedDart.SetString("115792089237316195423570985008687907853269984665640564039441803007913129639936", 10)
 		Expect(dbResult[0].Dart).To(Equal(expectedDart.String()))
-		Expect(dbResult[0].TransactionIndex).To(Equal(uint(0)))
 	})
 })
 
 type vatGrabModel struct {
-	Ilk              string
-	Urn              string `db:"urn_id"`
-	V                string
-	W                string
-	Dink             string
-	Dart             string
-	LogIndex         uint   `db:"log_idx"`
-	TransactionIndex uint   `db:"tx_idx"`
-	Raw              []byte `db:"raw_log"`
+	Ilk   string
+	Urn   string `db:"urn_id"`
+	V     string
+	W     string
+	Dink  string
+	Dart  string
+	LogID uint `db:"log_id"`
 }

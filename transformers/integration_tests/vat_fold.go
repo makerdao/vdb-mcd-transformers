@@ -71,13 +71,15 @@ var _ = Describe("VatFold Transformer", func() {
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
+		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+
 		transformer := shared.LogNoteTransformer{
 			Config:     vatFoldConfig,
 			Converter:  &vat_fold.VatFoldConverter{},
 			Repository: &vat_fold.VatFoldRepository{},
 		}.NewLogNoteTransformer(db)
 
-		err = transformer.Execute(logs, header)
+		err = transformer.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResults []vatFoldModel
@@ -95,10 +97,8 @@ var _ = Describe("VatFold Transformer", func() {
 })
 
 type vatFoldModel struct {
-	Ilk              string
-	Urn              string `db:"urn_id"`
-	Rate             string
-	LogIndex         uint   `db:"log_idx"`
-	TransactionIndex uint   `db:"tx_idx"`
-	Raw              []byte `db:"raw_log"`
+	Ilk   string
+	Urn   string `db:"urn_id"`
+	Rate  string
+	LogID uint `db:"log_id"`
 }

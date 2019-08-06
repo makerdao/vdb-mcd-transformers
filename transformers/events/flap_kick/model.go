@@ -17,11 +17,10 @@
 package flap_kick
 
 type FlapKickModel struct {
-	BidId            string `db:"bid_id"`
-	Lot              string
-	Bid              string
-	ContractAddress  string `db:"address_id"`
-	LogIndex         uint   `db:"log_idx"`
-	TransactionIndex uint   `db:"tx_idx"`
-	Raw              []byte `db:"raw_log"`
+	BidId           string `db:"bid_id"`
+	Lot             string
+	Bid             string
+	ContractAddress string `db:"address_id"`
+	HeaderID        int64  `db:"header_id"`
+	LogID           int64  `db:"log_id"`
 }

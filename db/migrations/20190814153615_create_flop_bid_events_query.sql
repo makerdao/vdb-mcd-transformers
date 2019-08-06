@@ -5,13 +5,13 @@ CREATE TYPE api.flop_bid_event AS (
     bid_amount NUMERIC,
     act api.bid_act,
     block_height BIGINT,
-    tx_idx INTEGER,
+    log_id BIGINT,
     contract_address TEXT
     );
 
 COMMENT ON COLUMN api.flop_bid_event.block_height
     IS E'@omit';
-COMMENT ON COLUMN api.flop_bid_event.tx_idx
+COMMENT ON COLUMN api.flop_bid_event.log_id
     IS E'@omit';
 COMMENT ON COLUMN api.flop_bid_event.contract_address
     IS E'@omit';
@@ -27,16 +27,16 @@ WITH address_id AS (
      flop_address AS (
          SELECT address
          FROM maker.flop_kick
-         JOIN addresses on addresses.id = flop_kick.address_id
+                  JOIN addresses on addresses.id = flop_kick.address_id
          LIMIT 1
      ),
      deals AS (
          SELECT deal.bid_id,
                 flop_bid_lot.lot,
-                flop_bid_bid.bid                                           AS bid_amount,
-                'deal'::api.bid_act                                        AS act,
-                headers.block_number                                       AS block_height,
-                tx_idx,
+                flop_bid_bid.bid             AS bid_amount,
+                'deal'::api.bid_act          AS act,
+                headers.block_number         AS block_height,
+                deal.log_id,
                 (SELECT * FROM flop_address) AS contract_address
          FROM maker.deal
                   LEFT JOIN headers ON deal.header_id = headers.id
@@ -51,10 +51,10 @@ WITH address_id AS (
      yanks AS (
          SELECT yank.bid_id,
                 flop_bid_lot.lot,
-                flop_bid_bid.bid                                           AS bid_amount,
-                'yank'::api.bid_act                                        AS act,
-                headers.block_number                                       AS block_height,
-                tx_idx,
+                flop_bid_bid.bid             AS bid_amount,
+                'yank'::api.bid_act          AS act,
+                headers.block_number         AS block_height,
+                yank.log_id,
                 (SELECT * FROM flop_address) AS contract_address
          FROM maker.yank
                   LEFT JOIN headers ON yank.header_id = headers.id
@@ -70,10 +70,10 @@ WITH address_id AS (
      ticks AS (
          SELECT tick.bid_id,
                 flop_bid_lot.lot,
-                flop_bid_bid.bid                                           AS bid_amount,
-                'tick'::api.bid_act                                        AS act,
-                headers.block_number                                       AS block_height,
-                tx_idx,
+                flop_bid_bid.bid             AS bid_amount,
+                'tick'::api.bid_act          AS act,
+                headers.block_number         AS block_height,
+                log_id,
                 (SELECT * FROM flop_address) AS contract_address
          FROM maker.tick
                   LEFT JOIN headers on tick.header_id = headers.id
@@ -88,20 +88,20 @@ WITH address_id AS (
 
 SELECT flop_kick.bid_id,
        lot,
-       bid                                                             AS bid_amount,
-       'kick'::api.bid_act                                             AS act,
-       block_number                                                    AS block_height,
-       tx_idx,
+       bid                          AS bid_amount,
+       'kick'::api.bid_act          AS act,
+       block_number                 AS block_height,
+       log_id,
        (SELECT * FROM flop_address) AS contract_address
 FROM maker.flop_kick
          LEFT JOIN headers ON flop_kick.header_id = headers.id
 UNION
 SELECT bid_id,
        lot,
-       bid                                                        AS bid_amount,
-       'dent'::api.bid_act                                        AS act,
-       block_number                                               AS block_height,
-       tx_idx,
+       bid                          AS bid_amount,
+       'dent'::api.bid_act          AS act,
+       block_number                 AS block_height,
+       log_id,
        (SELECT * FROM flop_address) AS contract_address
 FROM maker.dent
          LEFT JOIN headers ON dent.header_id = headers.id

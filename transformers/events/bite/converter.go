@@ -17,14 +17,12 @@
 package bite
 
 import (
-	"encoding/json"
 	"fmt"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/ethereum/go-ethereum/core/types"
-
 	"github.com/vulcanize/vulcanizedb/pkg/geth"
 
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
@@ -32,28 +30,25 @@ import (
 
 type BiteConverter struct{}
 
-func (BiteConverter) ToEntities(contractAbi string, ethLogs []types.Log) ([]interface{}, error) {
+func (BiteConverter) ToEntities(contractAbi string, logs []core.HeaderSyncLog) ([]interface{}, error) {
 	var entities []interface{}
-	for _, ethLog := range ethLogs {
-		entity := &BiteEntity{}
-		address := ethLog.Address
-		abi, err := geth.ParseAbi(contractAbi)
-		if err != nil {
-			return nil, err
+	for _, log := range logs {
+		var entity BiteEntity
+		address := log.Log.Address
+		abi, parseErr := geth.ParseAbi(contractAbi)
+		if parseErr != nil {
+			return nil, parseErr
 		}
 
 		contract := bind.NewBoundContract(address, abi, nil, nil, nil)
-
-		err = contract.UnpackLog(entity, "Bite", ethLog)
-		if err != nil {
-			return nil, err
+		unpackErr := contract.UnpackLog(&entity, "Bite", log.Log)
+		if unpackErr != nil {
+			return nil, unpackErr
 		}
 
-		entity.Raw = ethLog
-		entity.LogIndex = ethLog.Index
-		entity.TransactionIndex = ethLog.TxIndex
-
-		entities = append(entities, *entity)
+		entity.HeaderID = log.HeaderID
+		entity.LogID = log.ID
+		entities = append(entities, entity)
 	}
 
 	return entities, nil
@@ -74,24 +69,18 @@ func (converter BiteConverter) ToModels(entities []interface{}) ([]interface{}, 
 		tab := biteEntity.Tab
 		flip := common.BytesToAddress(biteEntity.Flip.Bytes()).Hex()
 		id := biteEntity.Id
-		logIdx := biteEntity.LogIndex
-		txIdx := biteEntity.TransactionIndex
-		rawLog, err := json.Marshal(biteEntity.Raw)
-		if err != nil {
-			return nil, err
-		}
+		logId := biteEntity.LogID
 
 		model := BiteModel{
-			Ilk:              ilk,
-			Urn:              urn,
-			Ink:              shared.BigIntToString(ink),
-			Art:              shared.BigIntToString(art),
-			Tab:              shared.BigIntToString(tab),
-			Flip:             flip,
-			Id:               shared.BigIntToString(id),
-			LogIndex:         logIdx,
-			TransactionIndex: txIdx,
-			Raw:              rawLog,
+			Ilk:      ilk,
+			Urn:      urn,
+			Ink:      shared.BigIntToString(ink),
+			Art:      shared.BigIntToString(art),
+			Tab:      shared.BigIntToString(tab),
+			Flip:     flip,
+			Id:       shared.BigIntToString(id),
+			HeaderID: biteEntity.HeaderID,
+			LogID:    logId,
 		}
 		models = append(models, model)
 	}

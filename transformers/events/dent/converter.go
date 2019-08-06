@@ -17,56 +17,45 @@
 package dent
 
 import (
-	"encoding/json"
 	"errors"
-	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
-
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
-
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 )
 
 type DentConverter struct{}
 
-func (c DentConverter) ToModels(ethLogs []types.Log) (result []shared.InsertionModel, err error) {
-	for _, log := range ethLogs {
-		validateErr := validateLog(log)
+func (c DentConverter) ToModels(logs []core.HeaderSyncLog) (result []shared.InsertionModel, err error) {
+	for _, log := range logs {
+		validateErr := validateLog(log.Log)
 		if validateErr != nil {
 			return nil, validateErr
 		}
 
-		bidId := log.Topics[2].Big()
-		lot := log.Topics[3].Big()
-		bidBytes, dataErr := shared.GetLogNoteArgumentAtIndex(2, log.Data)
+		bidId := log.Log.Topics[2].Big()
+		lot := log.Log.Topics[3].Big()
+		bidBytes, dataErr := shared.GetLogNoteArgumentAtIndex(2, log.Log.Data)
 		if dataErr != nil {
 			return nil, dataErr
 		}
 		bid := shared.ConvertUint256HexToBigInt(hexutil.Encode(bidBytes))
 
-		logIndex := log.Index
-		transactionIndex := log.TxIndex
-
-		raw, err := json.Marshal(log)
-		if err != nil {
-			return nil, err
-		}
-
 		model := shared.InsertionModel{
 			TableName: "dent",
 			OrderedColumns: []string{
-				"header_id", "bid_id", "lot", "bid", string(constants.AddressFK), "log_idx", "tx_idx", "raw_log",
+				"header_id", "bid_id", "lot", "bid", string(constants.AddressFK), "log_id",
 			},
 			ColumnValues: shared.ColumnValues{
-				"bid_id":  bidId.String(),
-				"lot":     lot.String(),
-				"bid":     bid.String(),
-				"log_idx": logIndex,
-				"tx_idx":  transactionIndex,
-				"raw_log": raw,
+				"bid_id":    bidId.String(),
+				"lot":       lot.String(),
+				"bid":       bid.String(),
+				"header_id": log.HeaderID,
+				"log_id":    log.ID,
 			},
 			ForeignKeyValues: shared.ForeignKeyValues{
-				constants.AddressFK: log.Address.String(),
+				constants.AddressFK: log.Log.Address.String(),
 			},
 		}
 		result = append(result, model)

@@ -20,15 +20,14 @@ import (
 	"math/big"
 
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
 )
 
 type Entity struct {
-	Id               *big.Int
-	Lot              *big.Int
-	Bid              *big.Int
-	Gal              common.Address
-	TransactionIndex uint
-	LogIndex         uint
-	Raw              types.Log
+	Id              *big.Int
+	Lot             *big.Int
+	Bid             *big.Int
+	Gal             common.Address
+	ContractAddress common.Address
+	HeaderID        int64
+	LogID           int64
 }

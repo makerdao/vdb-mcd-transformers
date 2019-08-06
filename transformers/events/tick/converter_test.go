@@ -18,13 +18,12 @@ package tick_test
 
 import (
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-
 	"github.com/vulcanize/mcd_transformers/transformers/events/tick"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 )
 
 var _ = Describe("TickConverter", func() {
@@ -32,16 +31,16 @@ var _ = Describe("TickConverter", func() {
 
 	Describe("ToModels", func() {
 		It("converts an eth log to a db model", func() {
-			models, err := converter.ToModels([]types.Log{test_data.TickLogNote})
+			models, err := converter.ToModels([]core.HeaderSyncLog{test_data.FlipTickHeaderSyncLog})
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(models).To(Equal([]shared.InsertionModel{test_data.TickModel}))
 		})
 
 		It("returns an error if the expected amount of topics aren't in the log", func() {
-			invalidLog := test_data.TickLogNote
-			invalidLog.Topics = []common.Hash{}
-			_, err := converter.ToModels([]types.Log{invalidLog})
+			invalidLog := test_data.FlipTickHeaderSyncLog
+			invalidLog.Log.Topics = []common.Hash{}
+			_, err := converter.ToModels([]core.HeaderSyncLog{invalidLog})
 
 			Expect(err).To(MatchError("flip tick log does not contain expected topics"))
 		})

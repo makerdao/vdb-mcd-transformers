@@ -17,8 +17,8 @@
 package vat_heal
 
 import (
-	"encoding/json"
 	"errors"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 
 	"github.com/ethereum/go-ethereum/core/types"
 
@@ -27,31 +27,25 @@ import (
 
 type VatHealConverter struct{}
 
-func (VatHealConverter) ToModels(ethLogs []types.Log) ([]shared.InsertionModel, error) {
+func (VatHealConverter) ToModels(logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
 	var models []shared.InsertionModel
-	for _, ethLog := range ethLogs {
-		err := verifyLog(ethLog)
+	for _, log := range logs {
+		err := verifyLog(log.Log)
 		if err != nil {
 			return nil, err
 		}
 
-		radInt := shared.ConvertUint256HexToBigInt(ethLog.Topics[1].Hex())
-
-		rawLogJson, err := json.Marshal(ethLog)
-		if err != nil {
-			return nil, err
-		}
+		radInt := shared.ConvertUint256HexToBigInt(log.Log.Topics[1].Hex())
 
 		model := shared.InsertionModel{
 			TableName: "vat_heal",
 			OrderedColumns: []string{
-				"header_id", "rad", "log_idx", "tx_idx", "raw_log",
+				"header_id", "rad", "log_id",
 			},
 			ColumnValues: shared.ColumnValues{
-				"rad":     radInt.String(),
-				"log_idx": ethLog.Index,
-				"tx_idx":  ethLog.TxIndex,
-				"raw_log": rawLogJson,
+				"rad":       radInt.String(),
+				"header_id": log.HeaderID,
+				"log_id":    log.ID,
 			},
 			ForeignKeyValues: shared.ForeignKeyValues{},
 		}

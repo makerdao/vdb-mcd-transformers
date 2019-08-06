@@ -18,7 +18,9 @@ package test_data
 
 import (
 	"encoding/json"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"math/big"
+	"math/rand"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
@@ -37,7 +39,7 @@ var (
 	FakeUrn         = "0x7340e006f4135BA6970D43bf43d88DCAD4e7a8CA"
 	gal             = "0x07Fa9eF6609cA7921112231F8f195138ebbA2977"
 	contractAddress = EthFlipAddress()
-	rawLog, _       = json.Marshal(EthFlipKickLog)
+	rawLog, _       = json.Marshal(FlipKickHeaderSyncLog)
 )
 
 var (
@@ -46,7 +48,7 @@ var (
 	FlipKickBlockNumber     = int64(10)
 )
 
-var EthFlipKickLog = types.Log{
+var rawFlipKickLog = types.Log{
 	Address: common.HexToAddress(EthFlipAddress()),
 	Topics: []common.Hash{
 		common.HexToHash(constants.FlipKickSignature()),
@@ -62,34 +64,38 @@ var EthFlipKickLog = types.Log{
 	Removed:     false,
 }
 
+var FlipKickHeaderSyncLog = core.HeaderSyncLog{
+	ID:          int64(rand.Int31()),
+	HeaderID:    int64(rand.Int31()),
+	Log:         rawFlipKickLog,
+	Transformed: false,
+}
+
 var FlipKickEntity = flip_kick.FlipKickEntity{
-	Id:               flipID,
-	Lot:              lot,
-	Bid:              bid,
-	Tab:              tab,
-	Usr:              common.HexToAddress(FakeUrn),
-	Gal:              common.HexToAddress(gal),
-	ContractAddress:  common.HexToAddress(contractAddress),
-	TransactionIndex: EthFlipKickLog.TxIndex,
-	LogIndex:         EthFlipKickLog.Index,
-	Raw:              EthFlipKickLog,
+	Id:              flipID,
+	Lot:             lot,
+	Bid:             bid,
+	Tab:             tab,
+	Usr:             common.HexToAddress(FakeUrn),
+	Gal:             common.HexToAddress(gal),
+	ContractAddress: common.HexToAddress(contractAddress),
+	HeaderID:        FlipKickHeaderSyncLog.HeaderID,
+	LogID:           FlipKickHeaderSyncLog.ID,
 }
 
 var FlipKickModel = flip_kick.FlipKickModel{
-	BidId:            flipID.String(),
-	Lot:              lot.String(),
-	Bid:              bid.String(),
-	Tab:              tab.String(),
-	Usr:              FakeUrn,
-	Gal:              gal,
-	ContractAddress:  contractAddress,
-	TransactionIndex: EthFlipKickLog.TxIndex,
-	LogIndex:         EthFlipKickLog.Index,
-	Raw:              rawLog,
+	BidId:           flipID.String(),
+	Lot:             lot.String(),
+	Bid:             bid.String(),
+	Tab:             tab.String(),
+	Usr:             FakeUrn,
+	Gal:             gal,
+	ContractAddress: contractAddress,
+	HeaderID:        FlipKickEntity.HeaderID,
+	LogID:           FlipKickEntity.LogID,
 }
 
 type FlipKickDBRow struct {
-	ID       int64
-	HeaderId int64 `db:"header_id"`
+	ID int64
 	flip_kick.FlipKickModel
 }

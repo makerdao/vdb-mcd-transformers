@@ -17,54 +17,41 @@
 package flap_kick_test
 
 import (
+	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-
-	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
-	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres/repositories"
-	"github.com/vulcanize/vulcanizedb/pkg/fakes"
-
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/events/flap_kick"
-	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
-	"github.com/vulcanize/mcd_transformers/transformers/test_data/shared_behaviors"
+	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 )
 
 var _ = Describe("Flap Kick Repository", func() {
-	var (
-		db                 *postgres.DB
-		flapKickRepository flap_kick.FlapKickRepository
-		headerRepository   repositories.HeaderRepository
-	)
-
-	BeforeEach(func() {
-		db = test_config.NewTestDB(test_config.NewTestNode())
-		test_config.CleanTestDB(db)
-		flapKickRepository = flap_kick.FlapKickRepository{}
-		flapKickRepository.SetDB(db)
-		headerRepository = repositories.NewHeaderRepository(db)
-	})
-
 	Describe("Create", func() {
-		modelWithDifferentLogIdx := test_data.FlapKickModel
-		modelWithDifferentLogIdx.LogIndex = modelWithDifferentLogIdx.LogIndex + 1
-		inputs := shared_behaviors.CreateBehaviorInputs{
-			CheckedHeaderColumnName:  constants.FlapKickLabel,
-			LogEventTableName:        "maker.flap_kick",
-			TestModel:                test_data.FlapKickModel,
-			ModelWithDifferentLogIdx: modelWithDifferentLogIdx,
-			Repository:               &flapKickRepository,
-		}
+		var (
+			db                 *postgres.DB
+			flapKickRepository flap_kick.FlapKickRepository
+			headerID, logID    int64
+			model              flap_kick.FlapKickModel
+		)
 
-		shared_behaviors.SharedRepositoryCreateBehaviors(&inputs)
+		BeforeEach(func() {
+			db = test_config.NewTestDB(test_config.NewTestNode())
+			test_config.CleanTestDB(db)
+			flapKickRepository = flap_kick.FlapKickRepository{}
+			flapKickRepository.SetDB(db)
+			headerID = test_data.CreateTestHeader(db)
+			persistedLogs := test_data.CreateLogs(headerID, []types.Log{test_data.FlapKickHeaderSyncLog.Log}, db)
+			Expect(len(persistedLogs)).To(Equal(1))
+			logID = persistedLogs[0].ID
+			model = test_data.FlapKickModel
+			model.HeaderID = headerID
+			model.LogID = logID
+		})
 
 		It("persists a flap kick record", func() {
-			headerId, err := headerRepository.CreateOrUpdateHeader(fakes.FakeHeader)
-			Expect(err).NotTo(HaveOccurred())
-
-			err = flapKickRepository.Create(headerId, []interface{}{test_data.FlapKickModel})
-			Expect(err).NotTo(HaveOccurred())
+			insertErr := flapKickRepository.Create([]interface{}{model})
+			Expect(insertErr).NotTo(HaveOccurred())
 
 			test_data.AssertDBRecordCount(db, "maker.flap_kick", 1)
 			test_data.AssertDBRecordCount(db, "addresses", 1)
@@ -74,37 +61,88 @@ var _ = Describe("Flap Kick Repository", func() {
 			Expect(addressErr).NotTo(HaveOccurred())
 
 			var dbResult flap_kick.FlapKickModel
-			getErr := db.Get(&dbResult, `SELECT bid, bid_id, lot, address_id, log_idx, tx_idx, raw_log FROM maker.flap_kick WHERE header_id = $1`, headerId)
+			getErr := db.Get(&dbResult, `SELECT log_id, bid, bid_id, lot, address_id FROM maker.flap_kick WHERE header_id = $1`, headerID)
+
 			Expect(getErr).NotTo(HaveOccurred())
 			Expect(dbResult.Bid).To(Equal(test_data.FlapKickModel.Bid))
 			Expect(dbResult.BidId).To(Equal(test_data.FlapKickModel.BidId))
 			Expect(dbResult.Lot).To(Equal(test_data.FlapKickModel.Lot))
+			Expect(dbResult.LogID).To(Equal(logID))
 			Expect(dbResult.ContractAddress).To(Equal(addressId))
-			Expect(dbResult.LogIndex).To(Equal(test_data.FlapKickModel.LogIndex))
-			Expect(dbResult.TransactionIndex).To(Equal(test_data.FlapKickModel.TransactionIndex))
-			Expect(dbResult.Raw).To(MatchJSON(test_data.FlapKickModel.Raw))
 		})
 
 		It("doesn't insert a new address if the flap kick insertion fails", func() {
-			headerId, err := headerRepository.CreateOrUpdateHeader(fakes.FakeHeader)
-			Expect(err).NotTo(HaveOccurred())
-
 			badFlapKick := test_data.FlapKickModel
 			badFlapKick.Bid = ""
-			err = flapKickRepository.Create(headerId, []interface{}{test_data.FlapKickModel, badFlapKick})
+			err := flapKickRepository.Create([]interface{}{model, badFlapKick})
 			Expect(err).To(HaveOccurred())
 			Expect(err.Error()).To(MatchRegexp("invalid input syntax for type numeric"))
 			test_data.AssertDBRecordCount(db, "maker.flap_kick", 0)
-			test_data.AssertDBRecordCount(db, "addresses", 0)
+			// address is inserted with the header_sync_log
+			// TODO: include address_id on the header_sync_log?
+			test_data.AssertDBRecordCount(db, "addresses", 1)
 		})
-	})
 
-	Describe("MarkHeaderChecked", func() {
-		inputs := shared_behaviors.MarkedHeaderCheckedBehaviorInputs{
-			CheckedHeaderColumnName: constants.FlapKickLabel,
-			Repository:              &flapKickRepository,
-		}
+		It("marks log as transformed", func() {
+			insertErr := flapKickRepository.Create([]interface{}{model})
+			Expect(insertErr).NotTo(HaveOccurred())
 
-		shared_behaviors.SharedRepositoryMarkHeaderCheckedBehaviors(&inputs)
+			var logTransformed bool
+			getErr := db.Get(&logTransformed, `SELECT transformed FROM public.header_sync_logs WHERE id = $1`, logID)
+			Expect(getErr).NotTo(HaveOccurred())
+			Expect(logTransformed).To(BeTrue())
+		})
+
+		It("allows for multiple log events of the same type in one transaction if they have different log indexes", func() {
+			persistedLogTwo := test_data.CreateTestLog(headerID, db)
+			modelWithDifferentLogID := test_data.FlapKickModel
+			modelWithDifferentLogID.HeaderID = headerID
+			modelWithDifferentLogID.LogID = persistedLogTwo.ID
+
+			insertOneErr := flapKickRepository.Create([]interface{}{model})
+			Expect(insertOneErr).NotTo(HaveOccurred())
+
+			insertTwoErr := flapKickRepository.Create([]interface{}{modelWithDifferentLogID})
+			Expect(insertTwoErr).NotTo(HaveOccurred())
+		})
+
+		It("handles events with the same header_id + log_id combo by upserting", func() {
+			insertOneErr := flapKickRepository.Create([]interface{}{model})
+			Expect(insertOneErr).NotTo(HaveOccurred())
+
+			insertTwoErr := flapKickRepository.Create([]interface{}{model})
+			Expect(insertTwoErr).NotTo(HaveOccurred())
+		})
+
+		It("removes the log event record if the corresponding header is deleted", func() {
+			insertErr := flapKickRepository.Create([]interface{}{model})
+			Expect(insertErr).NotTo(HaveOccurred())
+
+			_, deleteErr := db.Exec(`DELETE FROM headers WHERE id = $1`, headerID)
+			Expect(deleteErr).NotTo(HaveOccurred())
+
+			var count int
+			getErr := db.QueryRow(`SELECT count(*) FROM maker.flap_kick`).Scan(&count)
+			Expect(getErr).NotTo(HaveOccurred())
+			Expect(count).To(Equal(0))
+		})
+
+		It("returns an error if model is of wrong type", func() {
+			insertErr := flapKickRepository.Create([]interface{}{test_data.WrongModel{}})
+
+			Expect(insertErr).To(HaveOccurred())
+			Expect(insertErr.Error()).To(ContainSubstring("model of type"))
+		})
+
+		It("rolls back the transaction if the given model is of the wrong type", func() {
+			insertErr := flapKickRepository.Create([]interface{}{model, test_data.WrongModel{}})
+			Expect(insertErr).To(HaveOccurred())
+			Expect(insertErr.Error()).To(ContainSubstring("model of type"))
+
+			var count int
+			getErr := db.QueryRow(`SELECT count(*) FROM maker.flap_kick`).Scan(&count)
+			Expect(getErr).NotTo(HaveOccurred())
+			Expect(count).To(Equal(0))
+		})
 	})
 })

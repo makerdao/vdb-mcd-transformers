@@ -40,8 +40,7 @@ import (
 
 var _ = Describe("Executing the transformer", func() {
 	var (
-		db *postgres.DB
-
+		db          *postgres.DB
 		mappings    = vat.VatMappings{StorageRepository: &storage2.MakerStorageRepository{}}
 		repository  = vat.VatStorageRepository{}
 		transformer = storage.Transformer{
@@ -264,12 +263,15 @@ var _ = Describe("Executing the transformer", func() {
 			headerRepository := repositories.NewHeaderRepository(db)
 			headerID, err := headerRepository.CreateOrUpdateHeader(fakes.FakeHeader)
 			Expect(err).NotTo(HaveOccurred())
+			persistedLog := test_data.CreateTestLog(headerID, db)
 			vatFrobRepository := vat_frob.VatFrobRepository{}
 			vatFrobRepository.SetDB(db)
 			vatFrob := test_data.CopyModel(test_data.VatFrobModelWithPositiveDart)
 			vatFrob.ForeignKeyValues[constants.IlkFK] = ilk
 			vatFrob.ColumnValues["v"] = guy
-			insertErr := vatFrobRepository.Create(headerID, []shared.InsertionModel{vatFrob})
+			vatFrob.ColumnValues["header_id"] = headerID
+			vatFrob.ColumnValues["log_id"] = persistedLog.ID
+			insertErr := vatFrobRepository.Create([]shared.InsertionModel{vatFrob})
 			Expect(insertErr).NotTo(HaveOccurred())
 		})
 
@@ -304,11 +306,14 @@ var _ = Describe("Executing the transformer", func() {
 			headerRepository := repositories.NewHeaderRepository(db)
 			headerID, err := headerRepository.CreateOrUpdateHeader(fakes.FakeHeader)
 			Expect(err).NotTo(HaveOccurred())
+			persistedLog := test_data.CreateTestLog(headerID, db)
 			vatFrobRepository := vat_frob.VatFrobRepository{}
 			vatFrobRepository.SetDB(db)
 			vatFrob := test_data.CopyModel(test_data.VatFrobModelWithPositiveDart)
 			vatFrob.ColumnValues["w"] = guy
-			insertErr := vatFrobRepository.Create(headerID, []shared.InsertionModel{vatFrob})
+			vatFrob.ColumnValues["header_id"] = headerID
+			vatFrob.ColumnValues["log_id"] = persistedLog.ID
+			insertErr := vatFrobRepository.Create([]shared.InsertionModel{vatFrob})
 			Expect(insertErr).NotTo(HaveOccurred())
 		})
 

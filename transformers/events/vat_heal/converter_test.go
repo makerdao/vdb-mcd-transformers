@@ -21,6 +21,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_heal"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
@@ -29,23 +30,24 @@ import (
 var _ = Describe("VatHeal converter", func() {
 	It("Convert log with positive rad to a model", func() {
 		converter := vat_heal.VatHealConverter{}
-		models, err := converter.ToModels([]types.Log{test_data.EthVatHealLogWithPositiveRad})
+		models, err := converter.ToModels([]core.HeaderSyncLog{test_data.VatHealHeaderSyncLog})
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(len(models)).To(Equal(1))
-		Expect(models[0]).To(Equal(test_data.VatHealModelWithPositiveRad))
+		Expect(models[0]).To(Equal(test_data.VatHealModel))
 	})
 
 	It("Returns an error there are missing topics", func() {
 		converter := vat_heal.VatHealConverter{}
-		badLog := types.Log{
-			Topics: []common.Hash{
-				common.HexToHash("0x"),
-				common.HexToHash("0x"),
-				common.HexToHash("0x"),
-			},
+		badLog := core.HeaderSyncLog{
+			Log: types.Log{
+				Topics: []common.Hash{
+					common.HexToHash("0x"),
+					common.HexToHash("0x"),
+					common.HexToHash("0x"),
+				}},
 		}
-		_, err := converter.ToModels([]types.Log{badLog})
+		_, err := converter.ToModels([]core.HeaderSyncLog{badLog})
 
 		Expect(err).To(HaveOccurred())
 	})

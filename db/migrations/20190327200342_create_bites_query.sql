@@ -11,13 +11,13 @@ CREATE TYPE api.bite_event AS (
     art NUMERIC,
     tab NUMERIC,
     block_height BIGINT,
-    tx_idx INTEGER
+    log_id BIGINT
     -- tx
     );
 
 COMMENT ON COLUMN api.bite_event.block_height
     IS E'@omit';
-COMMENT ON COLUMN api.bite_event.tx_idx
+COMMENT ON COLUMN api.bite_event.log_id
     IS E'@omit';
 
 CREATE FUNCTION api.all_bites(ilk_identifier TEXT, max_results INTEGER DEFAULT NULL, result_offset INTEGER DEFAULT 0)
@@ -25,7 +25,7 @@ CREATE FUNCTION api.all_bites(ilk_identifier TEXT, max_results INTEGER DEFAULT N
 $$
 WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier)
 
-SELECT ilk_identifier, identifier AS urn_identifier, bite_identifier AS bid_id, ink, art, tab, block_number, tx_idx
+SELECT ilk_identifier, identifier AS urn_identifier, bite_identifier AS bid_id, ink, art, tab, block_number, log_id
 FROM maker.bite
          LEFT JOIN maker.urns ON bite.urn_id = urns.id
          LEFT JOIN headers ON bite.header_id = headers.id
@@ -47,7 +47,7 @@ WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier),
              WHERE ilk_id = (SELECT id FROM ilk)
                AND identifier = urn_bites.urn_identifier)
 
-SELECT ilk_identifier, urn_bites.urn_identifier, bite_identifier AS bid_id, ink, art, tab, block_number, tx_idx
+SELECT ilk_identifier, urn_bites.urn_identifier, bite_identifier AS bid_id, ink, art, tab, block_number, log_id
 FROM maker.bite
          LEFT JOIN headers ON bite.header_id = headers.id
 WHERE bite.urn_id = (SELECT id FROM urn)

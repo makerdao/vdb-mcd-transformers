@@ -63,13 +63,15 @@ var _ = Describe("VatInit LogNoteTransformer", func() {
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
+		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+
 		transformer := shared.LogNoteTransformer{
 			Config:     vatInitConfig,
 			Converter:  &vat_init.VatInitConverter{},
 			Repository: &vat_init.VatInitRepository{},
 		}.NewLogNoteTransformer(db)
 
-		err = transformer.Execute(logs, header)
+		err = transformer.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResults []vatInitModel
@@ -85,8 +87,6 @@ var _ = Describe("VatInit LogNoteTransformer", func() {
 })
 
 type vatInitModel struct {
-	Ilk              string `db:"ilk_id"`
-	LogIndex         uint   `db:"log_idx"`
-	TransactionIndex uint   `db:"tx_idx"`
-	Raw              []byte `db:"raw_log"`
+	Ilk   string `db:"ilk_id"`
+	LogID uint   `db:"log_id"`
 }

@@ -10,10 +10,8 @@ CREATE TABLE maker.flip_kick
     usr        TEXT,
     gal        TEXT,
     address_id INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
-    tx_idx     INTEGER NOT NULL,
-    log_idx    INTEGER NOT NULL,
-    raw_log    JSONB,
-    UNIQUE (header_id, tx_idx, log_idx)
+    log_id     BIGINT NOT NULL REFERENCES header_sync_logs (id) ON DELETE CASCADE,
+    UNIQUE (header_id, log_id)
 );
 
 -- prevent naming conflict with maker.flip_kicks in postgraphile

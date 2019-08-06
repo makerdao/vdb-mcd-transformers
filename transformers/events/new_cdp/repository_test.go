@@ -21,21 +21,18 @@ import (
 	. "github.com/onsi/gomega"
 
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
-	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres/repositories"
-	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/events/new_cdp"
-	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
-	"github.com/vulcanize/mcd_transformers/transformers/test_data/shared_behaviors"
 )
 
 var _ = Describe("NewCdp Repository", func() {
 	var (
 		db               *postgres.DB
 		newCdpRepository new_cdp.NewCdpRepository
-		headerRepository repositories.HeaderRepository
+		headerID, logID  int64
+		model            new_cdp.NewCdpModel
 	)
 
 	BeforeEach(func() {
@@ -43,27 +40,17 @@ var _ = Describe("NewCdp Repository", func() {
 		test_config.CleanTestDB(db)
 		newCdpRepository = new_cdp.NewCdpRepository{}
 		newCdpRepository.SetDB(db)
-		headerRepository = repositories.NewHeaderRepository(db)
+		headerID = test_data.CreateTestHeader(db)
+		persistedLog := test_data.CreateTestLog(headerID, db)
+		logID = persistedLog.ID
+		model = test_data.NewCdpModel
+		model.HeaderID = headerID
+		model.LogID = logID
 	})
 
 	Describe("Create", func() {
-		modelWithDifferentLogIdx := test_data.NewCdpModel
-		modelWithDifferentLogIdx.LogIndex = modelWithDifferentLogIdx.LogIndex + 1
-		inputs := shared_behaviors.CreateBehaviorInputs{
-			CheckedHeaderColumnName:  constants.NewCdpLabel,
-			LogEventTableName:        "maker.new_cdp",
-			TestModel:                test_data.NewCdpModel,
-			ModelWithDifferentLogIdx: modelWithDifferentLogIdx,
-			Repository:               &newCdpRepository,
-		}
-
-		shared_behaviors.SharedRepositoryCreateBehaviors(&inputs)
-
 		It("persists a new_cdp record", func() {
-			headerId, err := headerRepository.CreateOrUpdateHeader(fakes.FakeHeader)
-			Expect(err).NotTo(HaveOccurred())
-
-			err = newCdpRepository.Create(headerId, []interface{}{test_data.NewCdpModel})
+			err := newCdpRepository.Create([]interface{}{model})
 			Expect(err).NotTo(HaveOccurred())
 
 			var count int
@@ -72,24 +59,88 @@ var _ = Describe("NewCdp Repository", func() {
 			Expect(count).To(Equal(1))
 
 			var dbNewCdp new_cdp.NewCdpModel
-			newCdpQuery := `SELECT usr, own, cdp, tx_idx, log_idx, raw_log FROM maker.new_cdp WHERE header_id = $1`
-			getErr := db.Get(&dbNewCdp, newCdpQuery, headerId)
+			newCdpQuery := `SELECT usr, own, cdp, log_id FROM maker.new_cdp WHERE header_id = $1`
+			getErr := db.Get(&dbNewCdp, newCdpQuery, headerID)
 			Expect(getErr).NotTo(HaveOccurred())
 			Expect(dbNewCdp.Usr).To(Equal(test_data.NewCdpModel.Usr))
 			Expect(dbNewCdp.Own).To(Equal(test_data.NewCdpModel.Own))
 			Expect(dbNewCdp.Cdp).To(Equal(test_data.NewCdpModel.Cdp))
-			Expect(dbNewCdp.LogIndex).To(Equal(test_data.NewCdpModel.LogIndex))
-			Expect(dbNewCdp.TransactionIndex).To(Equal(test_data.NewCdpModel.TransactionIndex))
-			Expect(dbNewCdp.Raw).To(MatchJSON(test_data.NewCdpModel.Raw))
+			Expect(dbNewCdp.LogID).To(Equal(logID))
 		})
-	})
 
-	Describe("MarkHeaderChecked", func() {
-		inputs := shared_behaviors.MarkedHeaderCheckedBehaviorInputs{
-			CheckedHeaderColumnName: constants.NewCdpLabel,
-			Repository:              &newCdpRepository,
-		}
+		It("marks log as transformed", func() {
+			insertErr := newCdpRepository.Create([]interface{}{model})
+			Expect(insertErr).NotTo(HaveOccurred())
 
-		shared_behaviors.SharedRepositoryMarkHeaderCheckedBehaviors(&inputs)
+			var logTransformed bool
+			getErr := db.Get(&logTransformed, `SELECT transformed FROM public.header_sync_logs WHERE id = $1`, logID)
+			Expect(getErr).NotTo(HaveOccurred())
+			Expect(logTransformed).To(BeTrue())
+		})
+
+		It("allows for multiple log events of the same type in one transaction if they have different log indexes", func() {
+			persistedLogTwo := test_data.CreateTestLog(headerID, db)
+			modelWithDifferentLogID := test_data.NewCdpModel
+			modelWithDifferentLogID.HeaderID = headerID
+			modelWithDifferentLogID.LogID = persistedLogTwo.ID
+
+			insertOneErr := newCdpRepository.Create([]interface{}{model})
+			Expect(insertOneErr).NotTo(HaveOccurred())
+
+			insertTwoErr := newCdpRepository.Create([]interface{}{modelWithDifferentLogID})
+			Expect(insertTwoErr).NotTo(HaveOccurred())
+		})
+
+		It("handles events with the same header_id + log_id combo by upserting", func() {
+			insertOneErr := newCdpRepository.Create([]interface{}{model})
+			Expect(insertOneErr).NotTo(HaveOccurred())
+
+			insertTwoErr := newCdpRepository.Create([]interface{}{model})
+			Expect(insertTwoErr).NotTo(HaveOccurred())
+		})
+
+		It("removes the log event record if the corresponding header is deleted", func() {
+			insertErr := newCdpRepository.Create([]interface{}{model})
+			Expect(insertErr).NotTo(HaveOccurred())
+
+			_, deleteErr := db.Exec(`DELETE FROM headers WHERE id = $1`, headerID)
+			Expect(deleteErr).NotTo(HaveOccurred())
+
+			var count int
+			getErr := db.QueryRow(`SELECT count(*) FROM maker.bite`).Scan(&count)
+			Expect(getErr).NotTo(HaveOccurred())
+			Expect(count).To(Equal(0))
+		})
+
+		It("removes the log event record if the corresponding log is deleted", func() {
+			insertErr := newCdpRepository.Create([]interface{}{model})
+			Expect(insertErr).NotTo(HaveOccurred())
+
+			_, deleteErr := db.Exec(`DELETE FROM public.header_sync_logs WHERE id = $1`, logID)
+			Expect(deleteErr).NotTo(HaveOccurred())
+
+			var count int
+			getErr := db.QueryRow(`SELECT count(*) FROM maker.bite`).Scan(&count)
+			Expect(getErr).NotTo(HaveOccurred())
+			Expect(count).To(Equal(0))
+		})
+
+		It("returns an error if model is of wrong type", func() {
+			insertErr := newCdpRepository.Create([]interface{}{test_data.WrongModel{}})
+
+			Expect(insertErr).To(HaveOccurred())
+			Expect(insertErr.Error()).To(ContainSubstring("model of type"))
+		})
+
+		It("rolls back the transaction if the given model is of the wrong type", func() {
+			insertErr := newCdpRepository.Create([]interface{}{model, test_data.WrongModel{}})
+			Expect(insertErr).To(HaveOccurred())
+			Expect(insertErr.Error()).To(ContainSubstring("model of type"))
+
+			var count int
+			getErr := db.QueryRow(`SELECT count(*) FROM maker.bite`).Scan(&count)
+			Expect(getErr).NotTo(HaveOccurred())
+			Expect(count).To(Equal(0))
+		})
 	})
 })

@@ -17,7 +17,8 @@
 package test_data
 
 import (
-	"encoding/json"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
+	"math/rand"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
@@ -28,7 +29,7 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
-var EthVatFoldLogWithPositiveRate = types.Log{
+var rawVatFoldLogWithPositiveRate = types.Log{
 	Address: common.HexToAddress(VatAddress()),
 	Topics: []common.Hash{
 		common.HexToHash(constants.VatFoldSignature()),
@@ -45,17 +46,22 @@ var EthVatFoldLogWithPositiveRate = types.Log{
 	Removed:     false,
 }
 
-var rawVatFoldLogWithPositiveRate, _ = json.Marshal(EthVatFoldLogWithPositiveRate)
+var VatFoldHeaderSyncLogWithPositiveRate = core.HeaderSyncLog{
+	ID:          int64(rand.Int31()),
+	HeaderID:    int64(rand.Int31()),
+	Log:         rawVatFoldLogWithPositiveRate,
+	Transformed: false,
+}
+
 var VatFoldModelWithPositiveRate = shared.InsertionModel{
 	TableName: "vat_fold",
 	OrderedColumns: []string{
-		"header_id", string(constants.UrnFK), "rate", "log_idx", "tx_idx", "raw_log",
+		"header_id", string(constants.UrnFK), "rate", "log_id",
 	},
 	ColumnValues: shared.ColumnValues{
-		"rate":    "2",
-		"log_idx": EthVatFoldLogWithPositiveRate.Index,
-		"tx_idx":  EthVatFoldLogWithPositiveRate.TxIndex,
-		"raw_log": rawVatFoldLogWithPositiveRate,
+		"rate":      "2",
+		"header_id": VatFoldHeaderSyncLogWithPositiveRate.HeaderID,
+		"log_id":    VatFoldHeaderSyncLogWithPositiveRate.ID,
 	},
 	ForeignKeyValues: shared.ForeignKeyValues{
 		constants.IlkFK: "0x5245500000000000000000000000000000000000000000000000000000000000",
@@ -63,7 +69,7 @@ var VatFoldModelWithPositiveRate = shared.InsertionModel{
 	},
 }
 
-var EthVatFoldLogWithNegativeRate = types.Log{
+var rawVatFoldLogWithNegativeRate = types.Log{
 	Address: common.HexToAddress(VatAddress()),
 	Topics: []common.Hash{
 		common.HexToHash(constants.VatFoldSignature()),
@@ -80,17 +86,22 @@ var EthVatFoldLogWithNegativeRate = types.Log{
 	Removed:     false,
 }
 
-var rawVatFoldLogWithNegativeRate, _ = json.Marshal(EthVatFoldLogWithNegativeRate)
+var VatFoldHeaderSyncLogWithNegativeRate = core.HeaderSyncLog{
+	ID:          int64(rand.Int31()),
+	HeaderID:    int64(rand.Int31()),
+	Log:         rawVatFoldLogWithNegativeRate,
+	Transformed: false,
+}
+
 var VatFoldModelWithNegativeRate = shared.InsertionModel{
 	TableName: "vat_fold",
 	OrderedColumns: []string{
-		"header_id", string(constants.UrnFK), "rate", "log_idx", "tx_idx", "raw_log",
+		"header_id", string(constants.UrnFK), "rate", "log_id",
 	},
 	ColumnValues: shared.ColumnValues{
-		"rate":    "-500000000000000000000",
-		"log_idx": EthVatFoldLogWithNegativeRate.Index,
-		"tx_idx":  EthVatFoldLogWithNegativeRate.TxIndex,
-		"raw_log": rawVatFoldLogWithNegativeRate,
+		"rate":      "-500000000000000000000",
+		"header_id": VatFoldHeaderSyncLogWithNegativeRate.HeaderID,
+		"log_id":    VatFoldHeaderSyncLogWithNegativeRate.ID,
 	},
 	ForeignKeyValues: shared.ForeignKeyValues{
 		constants.IlkFK: "0x66616b6520696c6b000000000000000000000000000000000000000000000000",

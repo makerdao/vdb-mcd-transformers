@@ -2,6 +2,7 @@ package queries
 
 import (
 	"database/sql"
+	"github.com/ethereum/go-ethereum/core/types"
 	"math/rand"
 
 	. "github.com/onsi/ginkgo"
@@ -22,6 +23,7 @@ var _ = Describe("all poke events query", func() {
 		db               *postgres.DB
 		fakeBlock        int
 		fakeHeader       core.Header
+		fakeLog          types.Log
 		spotPokeEvent    spot_poke.SpotPokeModel
 		spotPokeRepo     spot_poke.SpotPokeRepository
 		headerId         int64
@@ -39,11 +41,16 @@ var _ = Describe("all poke events query", func() {
 		headerId, insertHeaderErr = headerRepository.CreateOrUpdateHeader(fakeHeader)
 		Expect(insertHeaderErr).NotTo(HaveOccurred())
 
+		insertedLog := test_data.CreateTestLog(headerId, db)
+		fakeLog = insertedLog.Log
+
 		spotPokeRepo = spot_poke.SpotPokeRepository{}
 		spotPokeRepo.SetDB(db)
 		spotPokeEvent = test_data.SpotPokeModel
 		spotPokeEvent.Ilk = test_helpers.FakeIlk.Hex
-		insertSpotPokeErr := spotPokeRepo.Create(headerId, []interface{}{spotPokeEvent})
+		spotPokeEvent.HeaderID = headerId
+		spotPokeEvent.LogID = insertedLog.ID
+		insertSpotPokeErr := spotPokeRepo.Create([]interface{}{spotPokeEvent})
 		Expect(insertSpotPokeErr).NotTo(HaveOccurred())
 	})
 
@@ -63,7 +70,7 @@ var _ = Describe("all poke events query", func() {
 			err := db.Get(&result, `
 				SELECT ilk_identifier, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated
 				FROM api.poke_event_ilk(
-					(SELECT (ilk_id, val, spot, block_height, tx_idx)::api.poke_event FROM api.all_poke_events()))`)
+					(SELECT (ilk_id, val, spot, block_height, log_id)::api.poke_event FROM api.all_poke_events()))`)
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(result).To(Equal(expectedIlk))
@@ -74,7 +81,7 @@ var _ = Describe("all poke events query", func() {
 		It("returns transaction for a poke_event", func() {
 			expectedTx := Tx{
 				TransactionHash:  test_helpers.GetValidNullString("txHash"),
-				TransactionIndex: sql.NullInt64{Int64: int64(spotPokeEvent.TransactionIndex), Valid: true},
+				TransactionIndex: sql.NullInt64{Int64: int64(fakeLog.TxIndex), Valid: true},
 				BlockHeight:      sql.NullInt64{Int64: int64(fakeBlock), Valid: true},
 				BlockHash:        test_helpers.GetValidNullString(fakeHeader.Hash),
 				TxFrom:           test_helpers.GetValidNullString("fromAddress"),
@@ -89,7 +96,7 @@ var _ = Describe("all poke events query", func() {
 			var actualTx Tx
 			err = db.Get(&actualTx, `
 				SELECT * FROM api.poke_event_tx(
-					(SELECT (ilk_id, val, spot, block_height, tx_idx)::api.poke_event FROM api.all_poke_events()))`)
+					(SELECT (ilk_id, val, spot, block_height, log_id)::api.poke_event FROM api.all_poke_events()))`)
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(actualTx).To(Equal(expectedTx))
@@ -99,7 +106,7 @@ var _ = Describe("all poke events query", func() {
 			wrongTx := Tx{
 				TransactionHash: test_helpers.GetValidNullString("wrongTxHash"),
 				TransactionIndex: sql.NullInt64{
-					Int64: int64(spotPokeEvent.TransactionIndex) + 1,
+					Int64: int64(fakeLog.TxIndex) + 1,
 					Valid: true,
 				},
 				BlockHeight: sql.NullInt64{Int64: int64(fakeBlock), Valid: true},
@@ -116,7 +123,7 @@ var _ = Describe("all poke events query", func() {
 			var actualTx Tx
 			err := db.Get(&actualTx, `
 				SELECT * FROM api.poke_event_tx(
-					(SELECT (ilk_id, val, spot, block_height, tx_idx)::api.poke_event FROM api.all_poke_events()))`)
+					(SELECT (ilk_id, val, spot, block_height, log_id)::api.poke_event FROM api.all_poke_events()))`)
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(actualTx).To(BeZero())

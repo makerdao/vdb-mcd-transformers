@@ -40,7 +40,7 @@ WITH address_ids AS ( -- get the contract address from flip_ilk table using the 
          FROM public.addresses
          WHERE id = (SELECT address_id FROM address_ids)
      )
-SELECT bid_id, lot, bid_amount, act, block_height, tx_idx, events.contract_address
+SELECT bid_id, lot, bid_amount, act, block_height, events.log_id, events.contract_address
 FROM api.all_flip_bid_events() AS events
 WHERE bid_id = flip.bid_id
   AND contract_address = (SELECT address FROM addresses)

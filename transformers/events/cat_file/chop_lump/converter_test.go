@@ -21,6 +21,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 
 	"github.com/vulcanize/mcd_transformers/transformers/events/cat_file/chop_lump"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
@@ -36,7 +37,7 @@ var _ = Describe("Cat file chop lump converter", func() {
 
 	Context("chop events", func() {
 		It("converts a chop log to a model", func() {
-			models, err := converter.ToModels([]types.Log{test_data.EthCatFileChopLog})
+			models, err := converter.ToModels([]core.HeaderSyncLog{test_data.CatFileChopHeaderSyncLog})
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(models).To(Equal([]shared.InsertionModel{test_data.CatFileChopModel}))
@@ -45,7 +46,7 @@ var _ = Describe("Cat file chop lump converter", func() {
 
 	Context("lump events", func() {
 		It("converts a lump log to a model", func() {
-			models, err := converter.ToModels([]types.Log{test_data.EthCatFileLumpLog})
+			models, err := converter.ToModels([]core.HeaderSyncLog{test_data.CatFileLumpHeaderSyncLog})
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(models).To(Equal([]shared.InsertionModel{test_data.CatFileLumpModel}))
@@ -53,20 +54,24 @@ var _ = Describe("Cat file chop lump converter", func() {
 	})
 
 	It("returns err if log is missing topics", func() {
-		badLog := types.Log{
-			Data: []byte{1, 1, 1, 1, 1},
+		badLog := core.HeaderSyncLog{
+			Log: types.Log{
+				Data: []byte{1, 1, 1, 1, 1},
+			},
 		}
 
-		_, err := converter.ToModels([]types.Log{badLog})
+		_, err := converter.ToModels([]core.HeaderSyncLog{badLog})
 		Expect(err).To(HaveOccurred())
 	})
 
 	It("returns err if log is missing data", func() {
-		badLog := types.Log{
-			Topics: []common.Hash{{}, {}, {}, {}},
+		badLog := core.HeaderSyncLog{
+			Log: types.Log{
+				Topics: []common.Hash{{}, {}, {}, {}},
+			},
 		}
 
-		_, err := converter.ToModels([]types.Log{badLog})
+		_, err := converter.ToModels([]core.HeaderSyncLog{badLog})
 		Expect(err).To(HaveOccurred())
 	})
 })

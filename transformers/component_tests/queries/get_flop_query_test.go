@@ -7,6 +7,7 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/component_tests/queries/test_helpers"
 	"github.com/vulcanize/mcd_transformers/transformers/events/deal"
 	"github.com/vulcanize/mcd_transformers/transformers/events/flop_kick"
+	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
@@ -59,6 +60,7 @@ var _ = Describe("get flop query", func() {
 	It("gets the specified flop", func() {
 		headerId, headerOneErr := headerRepo.CreateOrUpdateHeader(blockOneHeader)
 		Expect(headerOneErr).NotTo(HaveOccurred())
+		persistedLog := test_data.CreateTestLog(headerId, db)
 
 		err := test_helpers.SetUpFlopBidContext(test_helpers.FlopBidCreationInput{
 			DealCreationInput: test_helpers.DealCreationInput{
@@ -67,6 +69,7 @@ var _ = Describe("get flop query", func() {
 				ContractAddress: contractAddress,
 				DealRepo:        dealRepo,
 				DealHeaderId:    headerId,
+				DealLogID:       persistedLog.ID,
 			},
 			Dealt:            true,
 			FlopKickRepo:     flopKickRepo,
@@ -96,6 +99,7 @@ var _ = Describe("get flop query", func() {
 
 		headerTwoId, headerTwoErr := headerRepo.CreateOrUpdateHeader(blockTwoHeader)
 		Expect(headerTwoErr).NotTo(HaveOccurred())
+		persistedLog := test_data.CreateTestLog(headerTwoId, db)
 
 		err := test_helpers.SetUpFlopBidContext(test_helpers.FlopBidCreationInput{
 			DealCreationInput: test_helpers.DealCreationInput{
@@ -104,6 +108,7 @@ var _ = Describe("get flop query", func() {
 				ContractAddress: contractAddress,
 				DealRepo:        dealRepo,
 				DealHeaderId:    headerTwoId,
+				DealLogID:       persistedLog.ID,
 			},
 			Dealt:            true,
 			FlopKickRepo:     flopKickRepo,
@@ -168,6 +173,7 @@ var _ = Describe("get flop query", func() {
 
 			headerTwoId, headerTwoErr := headerRepo.CreateOrUpdateHeader(blockTwoHeader)
 			Expect(headerTwoErr).NotTo(HaveOccurred())
+			persistedLog := test_data.CreateTestLog(headerTwoId, db)
 
 			err := test_helpers.SetUpFlopBidContext(test_helpers.FlopBidCreationInput{
 				DealCreationInput: test_helpers.DealCreationInput{
@@ -176,6 +182,7 @@ var _ = Describe("get flop query", func() {
 					ContractAddress: contractAddress,
 					DealRepo:        dealRepo,
 					DealHeaderId:    headerTwoId,
+					DealLogID:       persistedLog.ID,
 				},
 				Dealt:            true,
 				FlopKickRepo:     flopKickRepo,

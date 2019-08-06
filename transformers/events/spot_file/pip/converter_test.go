@@ -20,6 +20,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 
 	"github.com/vulcanize/mcd_transformers/transformers/events/spot_file/pip"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
@@ -30,16 +31,17 @@ var _ = Describe("Spot file pip converter", func() {
 	converter := pip.SpotFilePipConverter{}
 
 	It("returns err if log is missing topics", func() {
-		badLog := types.Log{
-			Data: []byte{1, 1, 1, 1, 1},
-		}
+		badLog := core.HeaderSyncLog{
+			Log: types.Log{
+				Data: []byte{1, 1, 1, 1, 1},
+			}}
 
-		_, err := converter.ToModels([]types.Log{badLog})
+		_, err := converter.ToModels([]core.HeaderSyncLog{badLog})
 		Expect(err).To(HaveOccurred())
 	})
 
 	It("converts a log to a model", func() {
-		models, err := converter.ToModels([]types.Log{test_data.EthSpotFilePipLog})
+		models, err := converter.ToModels([]core.HeaderSyncLog{test_data.SpotFilePipHeaderSyncLog})
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(models).To(Equal([]shared.InsertionModel{test_data.SpotFilePipModel}))

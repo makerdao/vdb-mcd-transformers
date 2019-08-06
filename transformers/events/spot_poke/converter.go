@@ -17,39 +17,36 @@
 package spot_poke
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/geth"
 	"math/big"
 )
 
 type SpotPokeConverter struct{}
 
-func (s SpotPokeConverter) ToEntities(contractAbi string, ethLogs []types.Log) ([]interface{}, error) {
+func (s SpotPokeConverter) ToEntities(contractAbi string, logs []core.HeaderSyncLog) ([]interface{}, error) {
 	var entities []interface{}
-	for _, ethLog := range ethLogs {
-		entity := &SpotPokeEntity{}
-		address := ethLog.Address
-		abi, err := geth.ParseAbi(contractAbi)
-		if err != nil {
-			return nil, err
+	for _, log := range logs {
+		var entity SpotPokeEntity
+		address := log.Log.Address
+		abi, parseErr := geth.ParseAbi(contractAbi)
+		if parseErr != nil {
+			return nil, parseErr
 		}
 
 		contract := bind.NewBoundContract(address, abi, nil, nil, nil)
-
-		err = contract.UnpackLog(entity, "Poke", ethLog)
-		if err != nil {
-			return nil, err
+		unpackErr := contract.UnpackLog(&entity, "Poke", log.Log)
+		if unpackErr != nil {
+			return nil, unpackErr
 		}
 
-		entity.LogIndex = ethLog.Index
-		entity.TransactionIndex = ethLog.TxIndex
-		entity.Raw = ethLog
-		entities = append(entities, *entity)
+		entity.HeaderID = log.HeaderID
+		entity.LogID = log.ID
+		entities = append(entities, entity)
 	}
 
 	return entities, nil
@@ -63,17 +60,12 @@ func (s SpotPokeConverter) ToModels(entities []interface{}) ([]interface{}, erro
 			return nil, fmt.Errorf("entity of type %T, not %T", entity, SpotPokeEntity{})
 		}
 
-		rawLog, err := json.Marshal(spotPokeEntity.Raw)
-		if err != nil {
-			return nil, err
-		}
 		spotPokeModel := SpotPokeModel{
-			Ilk:              hexutil.Encode(spotPokeEntity.Ilk[:]),
-			Value:            bytesToFloatString(spotPokeEntity.Val[:], 6),
-			Spot:             shared.BigIntToString(spotPokeEntity.Spot),
-			LogIndex:         spotPokeEntity.LogIndex,
-			TransactionIndex: spotPokeEntity.TransactionIndex,
-			Raw:              rawLog,
+			Ilk:      hexutil.Encode(spotPokeEntity.Ilk[:]),
+			Value:    bytesToFloatString(spotPokeEntity.Val[:], 6),
+			Spot:     shared.BigIntToString(spotPokeEntity.Spot),
+			HeaderID: spotPokeEntity.HeaderID,
+			LogID:    spotPokeEntity.LogID,
 		}
 		models = append(models, spotPokeModel)
 	}

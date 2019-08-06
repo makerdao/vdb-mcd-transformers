@@ -9,7 +9,7 @@
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU Affero General Public License for more details.
+//d GNU Affero General Public License for more details.
 
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
@@ -18,15 +18,16 @@ package test_data
 
 import (
 	"encoding/json"
-	"math/big"
-
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/vulcanize/vulcanizedb/pkg/fakes"
-
-	"github.com/vulcanize/mcd_transformers/transformers/events/bite"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
+	"github.com/vulcanize/vulcanizedb/pkg/fakes"
+	"math/big"
+	"math/rand"
+
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/vulcanize/mcd_transformers/transformers/events/bite"
 )
 
 const (
@@ -41,12 +42,12 @@ var (
 	biteTab        = big.NewInt(30000000000)
 	biteFlip       = common.HexToAddress("0x7d7bEe5fCfD8028cf7b00876C5b1421c800561A6")
 	biteID         = big.NewInt(40000000000)
-	biteRawJson, _ = json.Marshal(EthBiteLog)
+	biteRawJson, _ = json.Marshal(BiteHeaderSyncLog)
 	biteIlk        = [32]byte{69, 84, 72, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
 	biteUrn        = common.HexToAddress("0x7d7bEe5fCfD8028cf7b00876C5b1421c800561A6")
 )
 
-var EthBiteLog = types.Log{
+var rawBiteLog = types.Log{
 	Address: common.HexToAddress(CatAddress()),
 	Topics: []common.Hash{
 		common.HexToHash(constants.BiteSignature()),
@@ -61,29 +62,33 @@ var EthBiteLog = types.Log{
 	Index:       7,
 	Removed:     false,
 }
+var BiteHeaderSyncLog = core.HeaderSyncLog{
+	ID:          int64(rand.Int31()),
+	HeaderID:    int64(rand.Int31()),
+	Log:         rawBiteLog,
+	Transformed: false,
+}
 
 var BiteEntity = bite.BiteEntity{
-	Ilk:              biteIlk,
-	Urn:              biteUrn,
-	Ink:              biteInk,
-	Art:              biteArt,
-	Tab:              biteTab,
-	Flip:             biteFlip,
-	Id:               biteID,
-	LogIndex:         EthBiteLog.Index,
-	TransactionIndex: EthBiteLog.TxIndex,
-	Raw:              EthBiteLog,
+	Ilk:      biteIlk,
+	Urn:      biteUrn,
+	Ink:      biteInk,
+	Art:      biteArt,
+	Tab:      biteTab,
+	Flip:     biteFlip,
+	Id:       biteID,
+	HeaderID: BiteHeaderSyncLog.HeaderID,
+	LogID:    BiteHeaderSyncLog.ID,
 }
 
 var BiteModel = bite.BiteModel{
-	Ilk:              "0x4554480000000000000000000000000000000000000000000000000000000000",
-	Urn:              "0x7d7bEe5fCfD8028cf7b00876C5b1421c800561A6",
-	Ink:              biteInk.String(),
-	Art:              biteArt.String(),
-	Tab:              biteTab.String(),
-	Flip:             "0x7d7bEe5fCfD8028cf7b00876C5b1421c800561A6",
-	Id:               biteID.String(),
-	LogIndex:         EthBiteLog.Index,
-	TransactionIndex: EthBiteLog.TxIndex,
-	Raw:              biteRawJson,
+	Ilk:      "0x4554480000000000000000000000000000000000000000000000000000000000",
+	Urn:      "0x7d7bEe5fCfD8028cf7b00876C5b1421c800561A6",
+	Ink:      biteInk.String(),
+	Art:      biteArt.String(),
+	Tab:      biteTab.String(),
+	Flip:     "0x7d7bEe5fCfD8028cf7b00876C5b1421c800561A6",
+	Id:       biteID.String(),
+	HeaderID: BiteEntity.HeaderID,
+	LogID:    BiteEntity.LogID,
 }

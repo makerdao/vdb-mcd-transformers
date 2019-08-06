@@ -69,6 +69,8 @@ var _ = Describe("VatFileDebtCeiling LogNoteTransformer", func() {
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
+		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+
 		initializer := shared.LogNoteTransformer{
 			Config:     vatFileDebtCeilingConfig,
 			Converter:  &debt_ceiling.VatFileDebtCeilingConverter{},
@@ -76,7 +78,7 @@ var _ = Describe("VatFileDebtCeiling LogNoteTransformer", func() {
 		}
 		transformer := initializer.NewLogNoteTransformer(db)
 
-		err = transformer.Execute(logs, header)
+		err = transformer.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []vatFileDebtCeilingModel
@@ -90,9 +92,7 @@ var _ = Describe("VatFileDebtCeiling LogNoteTransformer", func() {
 })
 
 type vatFileDebtCeilingModel struct {
-	What             string
-	Data             string
-	LogIndex         uint   `db:"log_idx"`
-	TransactionIndex uint   `db:"tx_idx"`
-	Raw              []byte `db:"raw_log"`
+	What  string
+	Data  string
+	LogID uint `db:"log_id"`
 }

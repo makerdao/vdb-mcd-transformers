@@ -63,13 +63,15 @@ var _ = Describe("JugInit LogNoteTransformer", func() {
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
+		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+
 		transformer := shared.LogNoteTransformer{
 			Config:     jugInitConfig,
 			Converter:  &jug_init.JugInitConverter{},
 			Repository: &jug_init.JugInitRepository{},
 		}.NewLogNoteTransformer(db)
 
-		err = transformer.Execute(logs, header)
+		err = transformer.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResults []JugInitModel
@@ -85,8 +87,6 @@ var _ = Describe("JugInit LogNoteTransformer", func() {
 })
 
 type JugInitModel struct {
-	Ilk              string `db:"ilk_id"`
-	LogIndex         uint   `db:"log_idx"`
-	TransactionIndex uint   `db:"tx_idx"`
-	Raw              []byte `db:"raw_log"`
+	Ilk   string `db:"ilk_id"`
+	LogID uint   `db:"log_id"`
 }

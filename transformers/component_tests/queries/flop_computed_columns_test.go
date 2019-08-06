@@ -48,6 +48,7 @@ var _ = Describe("Flop computed columns", func() {
 		It("returns the bid events for flop", func() {
 			headerId, headerErr := headerRepo.CreateOrUpdateHeader(blockOneHeader)
 			Expect(headerErr).NotTo(HaveOccurred())
+			insertedLog := test_data.CreateTestLog(headerId, db)
 
 			flopStorageValues := test_helpers.GetFlopStorageValues(1, fakeBidId)
 			test_helpers.CreateFlop(db, blockOneHeader, flopStorageValues, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
@@ -55,7 +56,9 @@ var _ = Describe("Flop computed columns", func() {
 			flopKickEvent := test_data.FlopKickModel
 			flopKickEvent.ContractAddress = contractAddress
 			flopKickEvent.BidId = strconv.Itoa(fakeBidId)
-			flopKickErr := flopKickRepo.Create(headerId, []interface{}{flopKickEvent})
+			flopKickEvent.HeaderID = headerId
+			flopKickEvent.LogID = insertedLog.ID
+			flopKickErr := flopKickRepo.Create([]interface{}{flopKickEvent})
 			Expect(flopKickErr).NotTo(HaveOccurred())
 
 			expectedBidEvents := test_helpers.BidEvent{
@@ -76,6 +79,7 @@ var _ = Describe("Flop computed columns", func() {
 		It("does not include bid events for a different flop", func() {
 			headerId, headerErr := headerRepo.CreateOrUpdateHeader(blockOneHeader)
 			Expect(headerErr).NotTo(HaveOccurred())
+			insertedLog := test_data.CreateTestLog(headerId, db)
 
 			flopStorageValues := test_helpers.GetFlopStorageValues(1, fakeBidId)
 			test_helpers.CreateFlop(db, blockOneHeader, flopStorageValues, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
@@ -83,7 +87,9 @@ var _ = Describe("Flop computed columns", func() {
 			flopKickEvent := test_data.FlopKickModel
 			flopKickEvent.ContractAddress = contractAddress
 			flopKickEvent.BidId = strconv.Itoa(fakeBidId)
-			flopKickErr := flopKickRepo.Create(headerId, []interface{}{flopKickEvent})
+			flopKickEvent.HeaderID = headerId
+			flopKickEvent.LogID = insertedLog.ID
+			flopKickErr := flopKickRepo.Create([]interface{}{flopKickEvent})
 			Expect(flopKickErr).NotTo(HaveOccurred())
 
 			blockTwo := blockOne + 1
@@ -91,6 +97,7 @@ var _ = Describe("Flop computed columns", func() {
 			blockTwoHeader := fakes.GetFakeHeaderWithTimestamp(int64(timestampTwo), int64(blockTwo))
 			headerTwoId, headerTwoErr := headerRepo.CreateOrUpdateHeader(blockTwoHeader)
 			Expect(headerTwoErr).NotTo(HaveOccurred())
+			insertedLogTwo := test_data.CreateTestLog(headerId, db)
 
 			irrelevantBidId := fakeBidId + 9999999999999
 			irrelevantFlopStorageValues := test_helpers.GetFlopStorageValues(2, irrelevantBidId)
@@ -99,8 +106,10 @@ var _ = Describe("Flop computed columns", func() {
 			irrelevantFlopKickEvent := test_data.FlopKickModel
 			irrelevantFlopKickEvent.ContractAddress = contractAddress
 			irrelevantFlopKickEvent.BidId = strconv.Itoa(irrelevantBidId)
+			irrelevantFlopKickEvent.HeaderID = headerTwoId
+			irrelevantFlopKickEvent.LogID = insertedLogTwo.ID
 
-			flopKickErr = flopKickRepo.Create(headerTwoId, []interface{}{irrelevantFlopKickEvent})
+			flopKickErr = flopKickRepo.Create([]interface{}{irrelevantFlopKickEvent})
 			Expect(flopKickErr).NotTo(HaveOccurred())
 
 			expectedBidEvents := test_helpers.BidEvent{
@@ -129,6 +138,7 @@ var _ = Describe("Flop computed columns", func() {
 			BeforeEach(func() {
 				headerId, headerErr := headerRepo.CreateOrUpdateHeader(blockOneHeader)
 				Expect(headerErr).NotTo(HaveOccurred())
+				logId := test_data.CreateTestLog(headerId, db).ID
 
 				flopStorageValues := test_helpers.GetFlopStorageValues(1, fakeBidId)
 				test_helpers.CreateFlop(db, blockOneHeader, flopStorageValues, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
@@ -136,7 +146,9 @@ var _ = Describe("Flop computed columns", func() {
 				flopKickEvent = test_data.FlopKickModel
 				flopKickEvent.ContractAddress = contractAddress
 				flopKickEvent.BidId = strconv.Itoa(fakeBidId)
-				flopKickErr := flopKickRepo.Create(headerId, []interface{}{flopKickEvent})
+				flopKickEvent.HeaderID = headerId
+				flopKickEvent.LogID = logId
+				flopKickErr := flopKickRepo.Create([]interface{}{flopKickEvent})
 				Expect(flopKickErr).NotTo(HaveOccurred())
 
 				blockTwo := blockOne + 1
@@ -144,6 +156,7 @@ var _ = Describe("Flop computed columns", func() {
 				blockTwoHeader := fakes.GetFakeHeaderWithTimestamp(int64(timestampTwo), int64(blockTwo))
 				headerTwoId, headerTwoErr := headerRepo.CreateOrUpdateHeader(blockTwoHeader)
 				Expect(headerTwoErr).NotTo(HaveOccurred())
+				logTwoId := test_data.CreateTestLog(headerTwoId, db).ID
 
 				dentLot = rand.Int()
 				dentBid = rand.Int()
@@ -156,6 +169,7 @@ var _ = Describe("Flop computed columns", func() {
 					BidAmount:       dentBid,
 					DentRepo:        dentRepo,
 					DentHeaderId:    headerTwoId,
+					DentLogID:       logTwoId,
 				})
 				Expect(flopDentErr).NotTo(HaveOccurred())
 			})

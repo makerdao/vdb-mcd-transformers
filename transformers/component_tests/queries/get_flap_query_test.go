@@ -7,6 +7,7 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/component_tests/queries/test_helpers"
 	"github.com/vulcanize/mcd_transformers/transformers/events/deal"
 	"github.com/vulcanize/mcd_transformers/transformers/events/flap_kick"
+	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
@@ -57,6 +58,7 @@ var _ = Describe("Get flap query", func() {
 	It("gets the specified flap", func() {
 		headerId, headerOneErr := headerRepo.CreateOrUpdateHeader(blockOneHeader)
 		Expect(headerOneErr).NotTo(HaveOccurred())
+		dealLog := test_data.CreateTestLog(headerId, db)
 
 		err := test_helpers.SetUpFlapBidContext(test_helpers.FlapBidCreationInput{
 			DealCreationInput: test_helpers.DealCreationInput{
@@ -65,10 +67,11 @@ var _ = Describe("Get flap query", func() {
 				ContractAddress: contractAddress,
 				DealRepo:        dealRepo,
 				DealHeaderId:    headerId,
+				DealLogID:       dealLog.ID,
 			},
 			Dealt:            true,
 			FlapKickRepo:     flapKickRepo,
-			FlapKickHeaderId: headerId,
+			FlapKickHeaderID: headerId,
 		})
 		Expect(err).NotTo(HaveOccurred())
 
@@ -95,6 +98,7 @@ var _ = Describe("Get flap query", func() {
 
 		headerTwoId, headerTwoErr := headerRepo.CreateOrUpdateHeader(blockTwoHeader)
 		Expect(headerTwoErr).NotTo(HaveOccurred())
+		dealLog := test_data.CreateTestLog(headerTwoId, db)
 
 		err := test_helpers.SetUpFlapBidContext(test_helpers.FlapBidCreationInput{
 			DealCreationInput: test_helpers.DealCreationInput{
@@ -103,10 +107,11 @@ var _ = Describe("Get flap query", func() {
 				ContractAddress: contractAddress,
 				DealRepo:        dealRepo,
 				DealHeaderId:    headerTwoId,
+				DealLogID:       dealLog.ID,
 			},
 			Dealt:            true,
 			FlapKickRepo:     flapKickRepo,
-			FlapKickHeaderId: headerOneId,
+			FlapKickHeaderID: headerOneId,
 		})
 		Expect(err).NotTo(HaveOccurred())
 
@@ -146,7 +151,7 @@ var _ = Describe("Get flap query", func() {
 				},
 				Dealt:            false,
 				FlapKickRepo:     flapKickRepo,
-				FlapKickHeaderId: headerId,
+				FlapKickHeaderID: headerId,
 			})
 			Expect(err).NotTo(HaveOccurred())
 
@@ -169,6 +174,7 @@ var _ = Describe("Get flap query", func() {
 			headerTwoId, headerTwoErr := headerRepo.CreateOrUpdateHeader(blockTwoHeader)
 			Expect(headerTwoErr).NotTo(HaveOccurred())
 
+			dealLog := test_data.CreateTestLog(headerTwoId, db)
 			// todo: change how created timestamp is retrieved so this test can pass if we set up flap bid context after storage vals are created
 			err := test_helpers.SetUpFlapBidContext(test_helpers.FlapBidCreationInput{
 				DealCreationInput: test_helpers.DealCreationInput{
@@ -177,10 +183,11 @@ var _ = Describe("Get flap query", func() {
 					ContractAddress: contractAddress,
 					DealRepo:        dealRepo,
 					DealHeaderId:    headerTwoId,
+					DealLogID:       dealLog.ID,
 				},
 				Dealt:            true,
 				FlapKickRepo:     flapKickRepo,
-				FlapKickHeaderId: headerId,
+				FlapKickHeaderID: headerId,
 			})
 			Expect(err).NotTo(HaveOccurred())
 

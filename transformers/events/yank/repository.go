@@ -17,23 +17,17 @@
 package yank
 
 import (
-	"github.com/vulcanize/vulcanizedb/libraries/shared/repository"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
 type YankRepository struct {
 	db *postgres.DB
 }
 
-func (repo YankRepository) Create(headerID int64, models []shared.InsertionModel) error {
-	return shared.Create(headerID, models, repo.db)
-}
-
-func (repo YankRepository) MarkHeaderChecked(headerID int64) error {
-	return repository.MarkHeaderChecked(headerID, repo.db, constants.YankLabel)
+func (repo YankRepository) Create(models []shared.InsertionModel) error {
+	return shared.Create(models, repo.db)
 }
 
 func (repo *YankRepository) SetDB(db *postgres.DB) {

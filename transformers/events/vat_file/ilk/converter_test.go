@@ -21,6 +21,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_file/ilk"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
@@ -30,33 +31,35 @@ import (
 var _ = Describe("Vat file ilk converter", func() {
 	var converter = ilk.VatFileIlkConverter{}
 	It("returns err if log is missing topics", func() {
-		badLog := types.Log{
-			Data: []byte{1, 1, 1, 1, 1},
-		}
+		badLog := core.HeaderSyncLog{
+			Log: types.Log{
+				Data: []byte{1, 1, 1, 1, 1},
+			}}
 
-		_, err := converter.ToModels([]types.Log{badLog})
+		_, err := converter.ToModels([]core.HeaderSyncLog{badLog})
 		Expect(err).To(HaveOccurred())
 	})
 
 	It("returns err if log is missing data", func() {
-		badLog := types.Log{
-			Topics: []common.Hash{{}, {}, {}, {}},
-		}
+		badLog := core.HeaderSyncLog{
+			Log: types.Log{
+				Topics: []common.Hash{{}, {}, {}, {}},
+			}}
 
-		_, err := converter.ToModels([]types.Log{badLog})
+		_, err := converter.ToModels([]core.HeaderSyncLog{badLog})
 		Expect(err).To(HaveOccurred())
 	})
 
 	Describe("when log is valid", func() {
 		It("converts to model with data converted to ray when what is 'spot'", func() {
-			models, err := converter.ToModels([]types.Log{test_data.EthVatFileIlkSpotLog})
+			models, err := converter.ToModels([]core.HeaderSyncLog{test_data.VatFileIlkSpotHeaderSyncLog})
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(models).To(Equal([]shared.InsertionModel{test_data.VatFileIlkSpotModel}))
 		})
 
 		It("converts to model with data converted to wad when what is 'line'", func() {
-			models, err := converter.ToModels([]types.Log{test_data.EthVatFileIlkLineLog})
+			models, err := converter.ToModels([]core.HeaderSyncLog{test_data.VatFileIlkLineHeaderSyncLog})
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(models)).To(Equal(1))
@@ -64,7 +67,7 @@ var _ = Describe("Vat file ilk converter", func() {
 		})
 
 		It("converts to model with data converted to rad when what is 'dust'", func() {
-			models, err := converter.ToModels([]types.Log{test_data.EthVatFileIlkDustLog})
+			models, err := converter.ToModels([]core.HeaderSyncLog{test_data.VatFileIlkDustHeaderSyncLog})
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(models)).To(Equal(1))

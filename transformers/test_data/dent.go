@@ -17,15 +17,14 @@
 package test_data
 
 import (
-	"encoding/json"
-
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/vulcanize/vulcanizedb/pkg/fakes"
-
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
+	"github.com/vulcanize/vulcanizedb/pkg/fakes"
+	"math/rand"
 )
 
 var (
@@ -36,7 +35,7 @@ var (
 	dentBid             = "30000000000000000"
 )
 
-var EthDentLog = types.Log{
+var rawDentLog = types.Log{
 	Address: common.HexToAddress(EthFlipAddress()),
 	Topics: []common.Hash{
 		common.HexToHash(constants.DentSignature()),
@@ -53,21 +52,26 @@ var EthDentLog = types.Log{
 	Removed:     false,
 }
 
-var dentRawJson, _ = json.Marshal(EthDentLog)
+var DentHeaderSyncLog = core.HeaderSyncLog{
+	ID:          int64(rand.Int31()),
+	HeaderID:    int64(rand.Int31()),
+	Log:         rawDentLog,
+	Transformed: false,
+}
+
 var DentModel = shared.InsertionModel{
 	TableName: "dent",
 	OrderedColumns: []string{
-		"header_id", "bid_id", "lot", "bid", string(constants.AddressFK), "log_idx", "tx_idx", "raw_log",
+		"header_id", "bid_id", "lot", "bid", string(constants.AddressFK), "log_id",
 	},
 	ColumnValues: shared.ColumnValues{
-		"bid_id":  dentBidId,
-		"lot":     dentLot,
-		"bid":     dentBid,
-		"log_idx": EthDentLog.Index,
-		"tx_idx":  EthDentLog.TxIndex,
-		"raw_log": dentRawJson,
+		"bid_id":    dentBidId,
+		"lot":       dentLot,
+		"bid":       dentBid,
+		"header_id": DentHeaderSyncLog.HeaderID,
+		"log_id":    DentHeaderSyncLog.ID,
 	},
 	ForeignKeyValues: shared.ForeignKeyValues{
-		constants.AddressFK: EthDentLog.Address.Hex(),
+		constants.AddressFK: DentHeaderSyncLog.Log.Address.Hex(),
 	},
 }

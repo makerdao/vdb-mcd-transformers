@@ -17,8 +17,8 @@
 package ilk
 
 import (
-	"encoding/json"
 	"errors"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -30,37 +30,32 @@ import (
 
 type JugFileIlkConverter struct{}
 
-func (JugFileIlkConverter) ToModels(ethLogs []types.Log) ([]shared.InsertionModel, error) {
+func (JugFileIlkConverter) ToModels(logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
 	var models []shared.InsertionModel
-	for _, ethLog := range ethLogs {
-		verifyErr := verifyLog(ethLog)
+	for _, log := range logs {
+		verifyErr := verifyLog(log.Log)
 		if verifyErr != nil {
 			return nil, verifyErr
 		}
 
-		ilk := ethLog.Topics[2].Hex()
-		what := shared.DecodeHexToText(ethLog.Topics[3].Hex())
-		dataBytes, parseErr := shared.GetLogNoteArgumentAtIndex(2, ethLog.Data)
+		ilk := log.Log.Topics[2].Hex()
+		what := shared.DecodeHexToText(log.Log.Topics[3].Hex())
+		dataBytes, parseErr := shared.GetLogNoteArgumentAtIndex(2, log.Log.Data)
 		if parseErr != nil {
 			return nil, parseErr
 		}
 		data := shared.ConvertUint256HexToBigInt(hexutil.Encode(dataBytes))
-		raw, marshalErr := json.Marshal(ethLog)
-		if marshalErr != nil {
-			return nil, marshalErr
-		}
 
 		model := shared.InsertionModel{
 			TableName: "jug_file_ilk",
 			OrderedColumns: []string{
-				"header_id", string(constants2.IlkFK), "what", "data", "log_idx", "tx_idx", "raw_log",
+				"header_id", string(constants2.IlkFK), "what", "data", "log_id",
 			},
 			ColumnValues: shared.ColumnValues{
-				"what":    what,
-				"data":    data.String(),
-				"log_idx": ethLog.Index,
-				"tx_idx":  ethLog.TxIndex,
-				"raw_log": raw,
+				"what":      what,
+				"data":      data.String(),
+				"header_id": log.HeaderID,
+				"log_id":    log.ID,
 			},
 			ForeignKeyValues: shared.ForeignKeyValues{
 				constants2.IlkFK: ilk,

@@ -67,7 +67,7 @@ var _ = Describe("All flaps query", func() {
 			},
 			Dealt:            false,
 			FlapKickRepo:     flapKickRepo,
-			FlapKickHeaderId: headerOneId,
+			FlapKickHeaderID: headerOneId,
 		})
 		Expect(contextErr).NotTo(HaveOccurred())
 
@@ -85,7 +85,7 @@ var _ = Describe("All flaps query", func() {
 			},
 			Dealt:            false,
 			FlapKickRepo:     flapKickRepo,
-			FlapKickHeaderId: headerTwoId,
+			FlapKickHeaderID: headerTwoId,
 		})
 		Expect(contextErr).NotTo(HaveOccurred())
 		flapStorageValuesThree := test_helpers.GetFlapStorageValues(3, fakeBidIdTwo)
@@ -128,7 +128,7 @@ var _ = Describe("All flaps query", func() {
 				},
 				Dealt:            false,
 				FlapKickRepo:     flapKickRepo,
-				FlapKickHeaderId: headerOneId,
+				FlapKickHeaderID: headerOneId,
 			})
 			Expect(contextErr).NotTo(HaveOccurred())
 
@@ -148,7 +148,7 @@ var _ = Describe("All flaps query", func() {
 				},
 				Dealt:            false,
 				FlapKickRepo:     flapKickRepo,
-				FlapKickHeaderId: headerTwoId,
+				FlapKickHeaderID: headerTwoId,
 			})
 			Expect(contextErr).NotTo(HaveOccurred())
 

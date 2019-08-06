@@ -80,8 +80,10 @@ var _ = Describe("VatFileIlk LogNoteTransformer", func() {
 		logs, err := logFetcher.FetchLogs(addresses, topics, header)
 		Expect(err).NotTo(HaveOccurred())
 
+		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+
 		tr := initializer.NewLogNoteTransformer(db)
-		err = tr.Execute(logs, header)
+		err = tr.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []vatFileIlkModel
@@ -108,8 +110,10 @@ var _ = Describe("VatFileIlk LogNoteTransformer", func() {
 		logs, err := logFetcher.FetchLogs(addresses, topics, header)
 		Expect(err).NotTo(HaveOccurred())
 
+		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+
 		tr := initializer.NewLogNoteTransformer(db)
-		err = tr.Execute(logs, header)
+		err = tr.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResults []vatFileIlkModel
@@ -138,8 +142,10 @@ var _ = Describe("VatFileIlk LogNoteTransformer", func() {
 		logs, err := logFetcher.FetchLogs(addresses, topics, header)
 		Expect(err).NotTo(HaveOccurred())
 
+		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+
 		tr := initializer.NewLogNoteTransformer(db)
-		err = tr.Execute(logs, header)
+		err = tr.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResults []vatFileIlkModel
@@ -158,16 +164,14 @@ var _ = Describe("VatFileIlk LogNoteTransformer", func() {
 })
 
 type vatFileIlkModel struct {
-	Ilk              string `db:"ilk_id"`
-	What             string
-	Data             string
-	LogIndex         uint   `db:"log_idx"`
-	TransactionIndex uint   `db:"tx_idx"`
-	Raw              []byte `db:"raw_log"`
+	Ilk   string `db:"ilk_id"`
+	What  string
+	Data  string
+	LogID uint `db:"log_id"`
 }
 
 type byLogIndexVatFileIlk []vatFileIlkModel
 
 func (c byLogIndexVatFileIlk) Len() int           { return len(c) }
-func (c byLogIndexVatFileIlk) Less(i, j int) bool { return c[i].LogIndex < c[j].LogIndex }
+func (c byLogIndexVatFileIlk) Less(i, j int) bool { return c[i].LogID < c[j].LogID }
 func (c byLogIndexVatFileIlk) Swap(i, j int)      { c[i], c[j] = c[j], c[i] }

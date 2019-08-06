@@ -21,6 +21,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 
 	"github.com/vulcanize/mcd_transformers/transformers/events/jug_file/vow"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
@@ -30,18 +31,19 @@ import (
 var _ = Describe("Jug file vow converter", func() {
 	var converter = vow.JugFileVowConverter{}
 	It("returns err if log missing topics", func() {
-		badLog := types.Log{
-			Topics: []common.Hash{{}},
-			Data:   []byte{1, 1, 1, 1, 1},
-		}
+		badLog := core.HeaderSyncLog{
+			Log: types.Log{
+				Topics: []common.Hash{{}},
+				Data:   []byte{1, 1, 1, 1, 1},
+			}}
 
-		_, err := converter.ToModels([]types.Log{badLog})
+		_, err := converter.ToModels([]core.HeaderSyncLog{badLog})
 
 		Expect(err).To(HaveOccurred())
 	})
 
 	It("converts a log to a model", func() {
-		models, err := converter.ToModels([]types.Log{test_data.EthJugFileVowLog})
+		models, err := converter.ToModels([]core.HeaderSyncLog{test_data.JugFileVowHeaderSyncLog})
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(models).To(Equal([]shared.InsertionModel{test_data.JugFileVowModel}))

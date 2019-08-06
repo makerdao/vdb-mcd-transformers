@@ -17,15 +17,13 @@
 package spot_poke
 
 import (
-	"github.com/ethereum/go-ethereum/core/types"
 	"math/big"
 )
 
 type SpotPokeEntity struct {
-	Ilk              [32]byte
-	Val              [32]byte
-	Spot             *big.Int
-	LogIndex         uint
-	TransactionIndex uint
-	Raw              types.Log
+	Ilk      [32]byte
+	Val      [32]byte
+	Spot     *big.Int
+	LogID    int64
+	HeaderID int64
 }

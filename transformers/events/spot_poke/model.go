@@ -17,10 +17,9 @@
 package spot_poke
 
 type SpotPokeModel struct {
-	Ilk              string `db:"ilk_id"`
-	Value            string
-	Spot             string
-	LogIndex         uint   `db:"log_idx"`
-	TransactionIndex uint   `db:"tx_idx"`
-	Raw              []byte `db:"raw_log"`
+	Ilk      string `db:"ilk_id"`
+	Value    string
+	Spot     string
+	HeaderID int64 `db:"header_id"`
+	LogID    int64 `db:"log_id"`
 }

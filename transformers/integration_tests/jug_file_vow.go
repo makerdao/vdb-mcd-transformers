@@ -76,7 +76,9 @@ var _ = Describe("Jug File Vow LogNoteTransformer", func() {
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
-		err = tr.Execute(logs, header)
+		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+
+		err = tr.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []jugFileVowModel
@@ -90,9 +92,7 @@ var _ = Describe("Jug File Vow LogNoteTransformer", func() {
 })
 
 type jugFileVowModel struct {
-	What             string
-	Data             string
-	LogIndex         uint   `db:"log_idx"`
-	TransactionIndex uint   `db:"tx_idx"`
-	Raw              []byte `db:"raw_log"`
+	What  string
+	Data  string
+	LogID uint `db:"log_id"`
 }

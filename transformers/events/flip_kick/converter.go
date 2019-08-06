@@ -17,12 +17,11 @@
 package flip_kick
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
-	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/vulcanize/vulcanizedb/pkg/geth"
 
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
@@ -30,27 +29,25 @@ import (
 
 type FlipKickConverter struct{}
 
-func (FlipKickConverter) ToEntities(contractAbi string, ethLogs []types.Log) ([]interface{}, error) {
+func (FlipKickConverter) ToEntities(contractAbi string, logs []core.HeaderSyncLog) ([]interface{}, error) {
 	var entities []interface{}
-	for _, ethLog := range ethLogs {
-		entity := &FlipKickEntity{}
-		address := ethLog.Address
-		abi, err := geth.ParseAbi(contractAbi)
-		if err != nil {
-			return nil, err
+	for _, log := range logs {
+		var entity FlipKickEntity
+		address := log.Log.Address
+		abi, parseErr := geth.ParseAbi(contractAbi)
+		if parseErr != nil {
+			return nil, parseErr
 		}
 
 		contract := bind.NewBoundContract(address, abi, nil, nil, nil)
-
-		err = contract.UnpackLog(entity, "Kick", ethLog)
-		if err != nil {
-			return nil, err
+		unpackErr := contract.UnpackLog(&entity, "Kick", log.Log)
+		if unpackErr != nil {
+			return nil, unpackErr
 		}
 		entity.ContractAddress = address
-		entity.Raw = ethLog
-		entity.TransactionIndex = ethLog.TxIndex
-		entity.LogIndex = ethLog.Index
-		entities = append(entities, *entity)
+		entity.HeaderID = log.HeaderID
+		entity.LogID = log.ID
+		entities = append(entities, entity)
 	}
 
 	return entities, nil
@@ -64,7 +61,7 @@ func (FlipKickConverter) ToModels(entities []interface{}) ([]interface{}, error)
 			return nil, fmt.Errorf("entity of type %T, not %T", entity, FlipKickEntity{})
 		}
 		if flipKickEntity.Id == nil {
-			return nil, errors.New("FlipKick log ID cannot be nil.")
+			return nil, errors.New("flip kick bid ID cannot be nil")
 		}
 
 		id := flipKickEntity.Id.String()
@@ -74,22 +71,17 @@ func (FlipKickConverter) ToModels(entities []interface{}) ([]interface{}, error)
 		usr := flipKickEntity.Usr.String()
 		gal := flipKickEntity.Gal.String()
 		contractAddress := flipKickEntity.ContractAddress.String()
-		rawLog, err := json.Marshal(flipKickEntity.Raw)
-		if err != nil {
-			return nil, err
-		}
 
 		model := FlipKickModel{
-			BidId:            id,
-			Lot:              lot,
-			Bid:              bid,
-			Tab:              tab,
-			Usr:              usr,
-			Gal:              gal,
-			ContractAddress:  contractAddress,
-			TransactionIndex: flipKickEntity.TransactionIndex,
-			LogIndex:         flipKickEntity.LogIndex,
-			Raw:              rawLog,
+			BidId:           id,
+			Lot:             lot,
+			Bid:             bid,
+			Tab:             tab,
+			Usr:             usr,
+			Gal:             gal,
+			ContractAddress: contractAddress,
+			HeaderID:        flipKickEntity.HeaderID,
+			LogID:           flipKickEntity.LogID,
 		}
 		models = append(models, model)
 	}

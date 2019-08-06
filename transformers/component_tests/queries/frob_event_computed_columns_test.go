@@ -18,6 +18,7 @@ package queries
 
 import (
 	"database/sql"
+	"github.com/ethereum/go-ethereum/core/types"
 	"math/rand"
 
 	. "github.com/onsi/ginkgo"
@@ -42,6 +43,7 @@ var _ = Describe("Frob event computed columns", func() {
 		fakeBlock        int
 		fakeGuy          = "fakeAddress"
 		fakeHeader       core.Header
+		fakeLog          types.Log
 		frobRepo         vat_frob.VatFrobRepository
 		frobEvent        shared.InsertionModel
 		headerId         int64
@@ -60,12 +62,17 @@ var _ = Describe("Frob event computed columns", func() {
 		headerId, insertHeaderErr = headerRepository.CreateOrUpdateHeader(fakeHeader)
 		Expect(insertHeaderErr).NotTo(HaveOccurred())
 
+		insertedLog := test_data.CreateTestLog(headerId, db)
+		fakeLog = insertedLog.Log
+
 		frobRepo = vat_frob.VatFrobRepository{}
 		frobRepo.SetDB(db)
 		frobEvent = test_data.CopyModel(test_data.VatFrobModelWithPositiveDart)
 		frobEvent.ForeignKeyValues[constants.UrnFK] = fakeGuy
 		frobEvent.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
-		insertFrobErr := frobRepo.Create(headerId, []shared.InsertionModel{frobEvent})
+		frobEvent.ColumnValues["header_id"] = headerId
+		frobEvent.ColumnValues["log_id"] = insertedLog.ID
+		insertFrobErr := frobRepo.Create([]shared.InsertionModel{frobEvent})
 		Expect(insertFrobErr).NotTo(HaveOccurred())
 	})
 
@@ -86,7 +93,7 @@ var _ = Describe("Frob event computed columns", func() {
 			getIlkErr := db.Get(&result,
 				`SELECT ilk_identifier, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated
                     FROM api.frob_event_ilk(
-                        (SELECT (ilk_identifier, urn_identifier, dink, dart, ilk_rate, block_height, tx_idx)::api.frob_event FROM api.all_frobs($1))
+                        (SELECT (ilk_identifier, urn_identifier, dink, dart, ilk_rate, block_height, log_id)::api.frob_event FROM api.all_frobs($1))
                     )`, test_helpers.FakeIlk.Identifier)
 
 			Expect(getIlkErr).NotTo(HaveOccurred())
@@ -105,7 +112,7 @@ var _ = Describe("Frob event computed columns", func() {
 			var actualUrn test_helpers.UrnState
 			getUrnErr := db.Get(&actualUrn,
 				`SELECT urn_identifier, ilk_identifier FROM api.frob_event_urn(
-                        (SELECT (ilk_identifier, urn_identifier, dink, dart, ilk_rate, block_height, tx_idx)::api.frob_event FROM api.all_frobs($1)))`,
+                        (SELECT (ilk_identifier, urn_identifier, dink, dart, ilk_rate, block_height, log_id)::api.frob_event FROM api.all_frobs($1)))`,
 				test_helpers.FakeIlk.Identifier)
 			Expect(getUrnErr).NotTo(HaveOccurred())
 
@@ -123,7 +130,7 @@ var _ = Describe("Frob event computed columns", func() {
 			expectedTx := Tx{
 				TransactionHash: test_helpers.GetValidNullString("txHash"),
 				TransactionIndex: sql.NullInt64{
-					Int64: int64(frobEvent.ColumnValues["tx_idx"].(uint)),
+					Int64: int64(fakeLog.TxIndex),
 					Valid: true,
 				},
 				BlockHeight: sql.NullInt64{Int64: int64(fakeBlock), Valid: true},
@@ -139,7 +146,7 @@ var _ = Describe("Frob event computed columns", func() {
 
 			var actualTx Tx
 			getTxErr := db.Get(&actualTx, `SELECT * FROM api.frob_event_tx(
-			    (SELECT (ilk_identifier, urn_identifier, dink, dart, ilk_rate, block_height, tx_idx)::api.frob_event FROM api.all_frobs($1)))`,
+			    (SELECT (ilk_identifier, urn_identifier, dink, dart, ilk_rate, block_height, log_id)::api.frob_event FROM api.all_frobs($1)))`,
 				test_helpers.FakeIlk.Identifier)
 
 			Expect(getTxErr).NotTo(HaveOccurred())
@@ -150,7 +157,7 @@ var _ = Describe("Frob event computed columns", func() {
 			wrongTx := Tx{
 				TransactionHash: test_helpers.GetValidNullString("wrongTxHash"),
 				TransactionIndex: sql.NullInt64{
-					Int64: int64(frobEvent.ColumnValues["tx_idx"].(uint)) + 1,
+					Int64: int64(fakeLog.TxIndex) + 1,
 					Valid: true,
 				},
 				BlockHeight: sql.NullInt64{Int64: int64(fakeBlock), Valid: true},
@@ -166,7 +173,7 @@ var _ = Describe("Frob event computed columns", func() {
 
 			var actualTx Tx
 			getTxErr := db.Get(&actualTx, `SELECT * FROM api.frob_event_tx(
-			    (SELECT (ilk_identifier, urn_identifier, dink, dart, ilk_rate, block_height, tx_idx)::api.frob_event FROM api.all_frobs($1)))`,
+			    (SELECT (ilk_identifier, urn_identifier, dink, dart, ilk_rate, block_height, log_id)::api.frob_event FROM api.all_frobs($1)))`,
 				test_helpers.FakeIlk.Identifier)
 
 			Expect(getTxErr).NotTo(HaveOccurred())

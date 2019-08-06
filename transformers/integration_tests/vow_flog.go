@@ -70,29 +70,27 @@ var _ = XDescribe("VowFlog LogNoteTransformer", func() {
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
+		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+
 		tr := shared.LogNoteTransformer{
 			Config:     vowFlogConfig,
 			Converter:  &vow_flog.VowFlogConverter{},
 			Repository: &vow_flog.VowFlogRepository{},
 		}.NewLogNoteTransformer(db)
 
-		err = tr.Execute(logs, header)
+		err = tr.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []vowFlogModel
-		err = db.Select(&dbResult, `SELECT era, log_idx, tx_idx from maker.vow_flog`)
+		err = db.Select(&dbResult, `SELECT era, log_id from maker.vow_flog`)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))
 		Expect(dbResult[0].Era).To(Equal("0"))
-		Expect(dbResult[0].LogIndex).To(Equal(uint(1)))
-		Expect(dbResult[0].TransactionIndex).To(Equal(uint(8)))
 	})
 })
 
 type vowFlogModel struct {
-	Era              string
-	LogIndex         uint   `db:"log_idx"`
-	TransactionIndex uint   `db:"tx_idx"`
-	Raw              []byte `db:"raw_log"`
+	Era   string
+	LogID uint `db:"log_id"`
 }

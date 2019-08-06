@@ -74,7 +74,9 @@ var _ = Describe("Bite Transformer", func() {
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
-		err = transformer.Execute(logs, header)
+		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+
+		err = transformer.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []bite.BiteModel
@@ -101,9 +103,9 @@ var _ = Describe("Bite Transformer", func() {
 		contract := bind.NewBoundContract(address, abi, nil, nil, nil)
 		entity := &bite.BiteEntity{}
 
-		var eventLog = test_data.EthBiteLog
+		var eventLog = test_data.BiteHeaderSyncLog
 
-		err = contract.UnpackLog(entity, "Bite", eventLog)
+		err = contract.UnpackLog(entity, "Bite", eventLog.Log)
 		Expect(err).NotTo(HaveOccurred())
 
 		expectedEntity := test_data.BiteEntity

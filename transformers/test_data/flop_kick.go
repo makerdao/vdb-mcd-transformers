@@ -17,18 +17,19 @@
 package test_data
 
 import (
-	"encoding/json"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/vulcanize/mcd_transformers/transformers/events/flop_kick"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 	"math/big"
+	"math/rand"
 )
 
 var (
-	EthFlopKickLog = types.Log{
+	rawFlopKickLog = types.Log{
 		Address: common.HexToAddress(FlopAddress()),
 		Topics: []common.Hash{
 			common.HexToHash(constants.FlopKickSignature()),
@@ -43,31 +44,35 @@ var (
 		Removed:     false,
 	}
 
-	FlopKickEntity = flop_kick.Entity{
-		Id:               big.NewInt(30000000000000000),
-		Lot:              big.NewInt(1000000000000000000),
-		Bid:              big.NewInt(2000000000000000000),
-		Gal:              common.HexToAddress("0x7d7bEe5fCfD8028cf7b00876C5b1421c800561A6"),
-		TransactionIndex: EthFlopKickLog.TxIndex,
-		LogIndex:         EthFlopKickLog.Index,
-		Raw:              EthFlopKickLog,
+	FlopKickHeaderSyncLog = core.HeaderSyncLog{
+		ID:          int64(rand.Int31()),
+		HeaderID:    int64(rand.Int31()),
+		Log:         rawFlopKickLog,
+		Transformed: false,
 	}
 
-	rawFlopLogJson, _ = json.Marshal(EthFlopKickLog)
-	FlopKickModel     = flop_kick.Model{
-		BidId:            FlopKickEntity.Id.String(),
-		Lot:              FlopKickEntity.Lot.String(),
-		Bid:              FlopKickEntity.Bid.String(),
-		Gal:              FlopKickEntity.Gal.Hex(),
-		ContractAddress:  EthFlopKickLog.Address.Hex(),
-		TransactionIndex: EthFlopKickLog.TxIndex,
-		LogIndex:         EthFlopKickLog.Index,
-		Raw:              rawFlopLogJson,
+	FlopKickEntity = flop_kick.Entity{
+		Id:              big.NewInt(30000000000000000),
+		Lot:             big.NewInt(1000000000000000000),
+		Bid:             big.NewInt(2000000000000000000),
+		Gal:             common.HexToAddress("0x7d7bEe5fCfD8028cf7b00876C5b1421c800561A6"),
+		ContractAddress: rawFlopKickLog.Address,
+		HeaderID:        FlopKickHeaderSyncLog.HeaderID,
+		LogID:           FlopKickHeaderSyncLog.ID,
+	}
+
+	FlopKickModel = flop_kick.Model{
+		BidId:           FlopKickEntity.Id.String(),
+		Lot:             FlopKickEntity.Lot.String(),
+		Bid:             FlopKickEntity.Bid.String(),
+		Gal:             FlopKickEntity.Gal.Hex(),
+		ContractAddress: FlopKickHeaderSyncLog.Log.Address.Hex(),
+		HeaderID:        FlopKickEntity.HeaderID,
+		LogID:           FlopKickEntity.LogID,
 	}
 )
 
 type FlopKickDBResult struct {
-	Id       int64
-	HeaderId int64 `db:"header_id"`
+	Id int64
 	flop_kick.Model
 }

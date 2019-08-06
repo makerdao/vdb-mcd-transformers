@@ -17,7 +17,8 @@
 package test_data
 
 import (
-	"encoding/json"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
+	"math/rand"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
@@ -28,7 +29,7 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
-var EthVatMoveLog = types.Log{
+var rawVatMoveLog = types.Log{
 	Address: common.HexToAddress(VatAddress()),
 	Topics: []common.Hash{
 		common.HexToHash(constants.VatMoveSignature()),
@@ -45,19 +46,24 @@ var EthVatMoveLog = types.Log{
 	Removed:     false,
 }
 
-var rawVatMoveLog, _ = json.Marshal(EthVatMoveLog)
+var VatMoveHeaderSyncLog = core.HeaderSyncLog{
+	ID:          int64(rand.Int31()),
+	HeaderID:    int64(rand.Int31()),
+	Log:         rawVatMoveLog,
+	Transformed: false,
+}
+
 var VatMoveModel = shared.InsertionModel{
 	TableName: "vat_move",
 	OrderedColumns: []string{
-		"header_id", "src", "dst", "rad", "log_idx", "tx_idx", "raw_log",
+		"header_id", "src", "dst", "rad", "log_id",
 	},
 	ColumnValues: shared.ColumnValues{
-		"src":     "0xA730d1FF8B6Bc74a26d54c20a9dda539909BaB0e",
-		"dst":     "0xB730D1fF8b6BC74a26D54c20a9ddA539909BAb0e",
-		"rad":     "42",
-		"log_idx": EthVatMoveLog.Index,
-		"tx_idx":  EthVatMoveLog.TxIndex,
-		"raw_log": rawVatMoveLog,
+		"src":       "0xA730d1FF8B6Bc74a26d54c20a9dda539909BaB0e",
+		"dst":       "0xB730D1fF8b6BC74a26D54c20a9ddA539909BAb0e",
+		"rad":       "42",
+		"header_id": VatMoveHeaderSyncLog.HeaderID,
+		"log_id":    VatMoveHeaderSyncLog.ID,
 	},
 	ForeignKeyValues: shared.ForeignKeyValues{},
 }

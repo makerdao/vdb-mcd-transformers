@@ -17,14 +17,12 @@
 package flop_kick_test
 
 import (
-	"encoding/json"
-	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
-
 	"github.com/vulcanize/mcd_transformers/transformers/events/flop_kick"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 )
 
 var _ = Describe("FlopKick Converter", func() {
@@ -32,7 +30,7 @@ var _ = Describe("FlopKick Converter", func() {
 
 	Describe("ToEntities", func() {
 		It("converts a log to a FlopKick entity", func() {
-			entities, err := converter.ToEntities(constants.FlopABI(), []types.Log{test_data.EthFlopKickLog})
+			entities, err := converter.ToEntities(constants.FlopABI(), []core.HeaderSyncLog{test_data.FlopKickHeaderSyncLog})
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(entities)).To(Equal(1))
@@ -40,7 +38,7 @@ var _ = Describe("FlopKick Converter", func() {
 		})
 
 		It("returns an error if converting the log to an entity fails", func() {
-			entities, err := converter.ToEntities("error abi", []types.Log{test_data.EthFlopKickLog})
+			entities, err := converter.ToEntities("error abi", []core.HeaderSyncLog{test_data.FlopKickHeaderSyncLog})
 
 			Expect(err).To(HaveOccurred())
 			Expect(entities).To(BeNil())
@@ -66,16 +64,13 @@ var _ = Describe("FlopKick Converter", func() {
 			emptyAddressHex := "0x0000000000000000000000000000000000000000"
 			emptyString := ""
 			emptyEntity := flop_kick.Entity{}
-			emptyLog, err := json.Marshal(types.Log{})
 			expectedModel := flop_kick.Model{
-				BidId:            emptyString,
-				Lot:              emptyString,
-				Bid:              emptyString,
-				Gal:              emptyAddressHex,
-				ContractAddress:  emptyAddressHex,
-				TransactionIndex: 0,
-				LogIndex:         0,
-				Raw:              emptyLog,
+				BidId:           emptyString,
+				Lot:             emptyString,
+				Bid:             emptyString,
+				Gal:             emptyAddressHex,
+				ContractAddress: emptyAddressHex,
+				LogID:           0,
 			}
 
 			models, err := converter.ToModels([]interface{}{emptyEntity})

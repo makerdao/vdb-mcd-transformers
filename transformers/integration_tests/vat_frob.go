@@ -80,8 +80,10 @@ var _ = Describe("Vat frob Transformer", func() {
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
+		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+
 		transformer := initializer.NewLogNoteTransformer(db)
-		err = transformer.Execute(logs, header)
+		err = transformer.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []vatFrobModel
@@ -103,13 +105,11 @@ var _ = Describe("Vat frob Transformer", func() {
 })
 
 type vatFrobModel struct {
-	Ilk              string
-	Urn              string `db:"urn_id"`
-	V                string
-	W                string
-	Dink             string
-	Dart             string
-	LogIndex         uint   `db:"log_idx"`
-	TransactionIndex uint   `db:"tx_idx"`
-	Raw              []byte `db:"raw_log"`
+	Ilk   string
+	Urn   string `db:"urn_id"`
+	V     string
+	W     string
+	Dink  string
+	Dart  string
+	LogID uint `db:"log_id"`
 }
