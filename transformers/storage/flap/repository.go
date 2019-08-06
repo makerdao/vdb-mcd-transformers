@@ -39,8 +39,6 @@ func (repository *FlapStorageRepository) Create(blockNumber int, blockHash strin
 		return repository.insertGem(blockNumber, blockHash, value.(string))
 	case storage.Beg:
 		return repository.insertBeg(blockNumber, blockHash, value.(string))
-	case storage.Tau:
-		return repository.insertTau(blockNumber, blockHash, value.(string))
 	case storage.Kicks:
 		return repository.insertKicks(blockNumber, blockHash, value.(string))
 	case storage.Live:
@@ -49,12 +47,6 @@ func (repository *FlapStorageRepository) Create(blockNumber int, blockHash strin
 		return repository.insertBidBid(blockNumber, blockHash, metadata, value.(string))
 	case storage.BidLot:
 		return repository.insertBidLot(blockNumber, blockHash, metadata, value.(string))
-	case storage.BidGuy:
-		return repository.insertBidGuy(blockNumber, blockHash, metadata, value.(string))
-	case storage.BidTic:
-		return repository.insertBidTic(blockNumber, blockHash, metadata, value.(string))
-	case storage.BidEnd:
-		return repository.insertBidEnd(blockNumber, blockHash, metadata, value.(string))
 	case storage.BidGal:
 		return repository.insertBidGal(blockNumber, blockHash, metadata, value.(string))
 	case storage.Packed:
@@ -84,13 +76,13 @@ func (repository *FlapStorageRepository) insertBeg(blockNumber int, blockHash st
 }
 
 func (repository *FlapStorageRepository) insertTtl(blockNumber int, blockHash string, ttl string) error {
-	_, err := repository.db.Exec(insertTtlQuery, blockNumber, blockHash, repository.ContractAddress, ttl)
-	return err
+	_, writeErr := repository.db.Exec(insertTtlQuery, blockNumber, blockHash, repository.ContractAddress, ttl)
+	return writeErr
 }
 
 func (repository *FlapStorageRepository) insertTau(blockNumber int, blockHash string, tau string) error {
-	_, err := repository.db.Exec(insertTauQuery, blockNumber, blockHash, repository.ContractAddress, tau)
-	return err
+	_, writeErr := repository.db.Exec(insertTauQuery, blockNumber, blockHash, repository.ContractAddress, tau)
+	return writeErr
 }
 
 func (repository *FlapStorageRepository) insertKicks(blockNumber int, blockHash string, kicks string) error {
@@ -135,8 +127,8 @@ func (repository *FlapStorageRepository) insertBidTic(blockNumber int, blockHash
 	if err != nil {
 		return err
 	}
-	_, err = repository.db.Exec(insertBidTicQuery, blockNumber, blockHash, repository.ContractAddress, bidId, tic)
-	return err
+	_, writeErr := repository.db.Exec(insertBidTicQuery, blockNumber, blockHash, repository.ContractAddress, bidId, tic)
+	return writeErr
 }
 
 func (repository *FlapStorageRepository) insertBidEnd(blockNumber int, blockHash string, metadata utils.StorageValueMetadata, end string) error {
@@ -144,8 +136,8 @@ func (repository *FlapStorageRepository) insertBidEnd(blockNumber int, blockHash
 	if err != nil {
 		return err
 	}
-	_, err = repository.db.Exec(insertBidEndQuery, blockNumber, blockHash, repository.ContractAddress, bidId, end)
-	return err
+	_, writeErr := repository.db.Exec(insertBidEndQuery, blockNumber, blockHash, repository.ContractAddress, bidId, end)
+	return writeErr
 }
 
 func (repository *FlapStorageRepository) insertBidGal(blockNumber int, blockHash string, metadata utils.StorageValueMetadata, gal string) error {
@@ -153,25 +145,29 @@ func (repository *FlapStorageRepository) insertBidGal(blockNumber int, blockHash
 	if err != nil {
 		return err
 	}
-	_, err = repository.db.Exec(insertBidGalQuery, blockNumber, blockHash, repository.ContractAddress, bidId, gal)
-	return err
+	_, writeErr := repository.db.Exec(insertBidGalQuery, blockNumber, blockHash, repository.ContractAddress, bidId, gal)
+	return writeErr
 }
 
 func (repository *FlapStorageRepository) insertPackedValueRecord(blockNumber int, blockHash string, metadata utils.StorageValueMetadata, packedValues map[int]string) error {
 	for order, value := range packedValues {
+		var insertErr error
 		switch metadata.PackedNames[order] {
 		case storage.Ttl:
-			ttlErr := repository.insertTtl(blockNumber, blockHash, value)
-			if ttlErr != nil {
-				return ttlErr
-			}
+			insertErr = repository.insertTtl(blockNumber, blockHash, value)
 		case storage.Tau:
-			tauErr := repository.insertTau(blockNumber, blockHash, value)
-			if tauErr != nil {
-				return tauErr
-			}
+			insertErr = repository.insertTau(blockNumber, blockHash, value)
+		case storage.BidGuy:
+			insertErr = repository.insertBidGuy(blockNumber, blockHash, metadata, value)
+		case storage.BidTic:
+			insertErr = repository.insertBidTic(blockNumber, blockHash, metadata, value)
+		case storage.BidEnd:
+			insertErr = repository.insertBidEnd(blockNumber, blockHash, metadata, value)
 		default:
 			panic(fmt.Sprintf("unrecognized flap contract storage name in packed values: %s", metadata.Name))
+		}
+		if insertErr != nil {
+			return insertErr
 		}
 	}
 	return nil

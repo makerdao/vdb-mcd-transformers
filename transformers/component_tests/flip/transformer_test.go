@@ -17,11 +17,13 @@
 package flip
 
 import (
+	"strconv"
+	"strings"
+
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-
-	storage_factory "github.com/vulcanize/vulcanizedb/libraries/shared/factories/storage"
+	storageFactory "github.com/vulcanize/vulcanizedb/libraries/shared/factories/storage"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 
@@ -34,16 +36,17 @@ import (
 var _ = Describe("Executing the flip transformer", func() {
 	var (
 		db               *postgres.DB
-		storageKeyLookup = flip.StorageKeysLookup{StorageRepository: &storage.MakerStorageRepository{}}
 		repository       = flip.FlipStorageRepository{}
-		transformer      storage_factory.Transformer
+		transformer      storageFactory.Transformer
+		contractAddress  = "0x43c331c0389a92af62ee726d5ae0c8a424320c31"
+		storageKeyLookup = flip.StorageKeysLookup{StorageRepository: &storage.MakerStorageRepository{}, ContractAddress: contractAddress}
 	)
 
 	BeforeEach(func() {
 		db = test_config.NewTestDB(test_config.NewTestNode())
 		test_config.CleanTestDB(db)
-		transformer = storage_factory.Transformer{
-			Address:    common.HexToAddress("0x43c331c0389a92af62ee726d5ae0c8a424320c31"),
+		transformer = storageFactory.Transformer{
+			Address:    common.HexToAddress(contractAddress),
 			Mappings:   &storageKeyLookup,
 			Repository: &repository,
 		}
@@ -154,8 +157,48 @@ var _ = Describe("Executing the flip transformer", func() {
 		//TODO: update this when we get a storage diff row for Flap kicks
 	})
 
-	XDescribe("bids", func() {
-		//TODO: update this when we get a storage diff row for Flap bids mapping
-		//storage keys for bids with bid_id 0 will likely start with 0xc13ad76448cbefd1ee83b801bcd8f33061f2577d6118395e7b44ea21c7ef62e0
+	Describe("bids", func() {
+		//TODO: update when we get real flip bid storage diffs
+		Describe("guy + tic + end packed slot", func() {
+			bidId := 1
+			blockNumber := 11579891
+			blockHash := common.HexToHash("5f2be3f6566f39dddfcfcf29784866280399ed9070af0b4fccd465509260349d")
+			diff := utils.StorageDiffRow{
+				Contract:     transformer.Address,
+				BlockHash:    blockHash,
+				BlockHeight:  blockNumber,
+				StorageKey:   common.HexToHash("cc69885fda6bcc1a4ace058b4a62bf5e179ea78fd58a1ccd71c22cc9b6887931"),
+				StorageValue: common.HexToHash("00000002a300000000002a30284ecb5880cdc3362d979d07d162bf1d8488975d"),
+			}
+
+			BeforeEach(func() {
+				_, writeErr := db.Exec(flip.InsertFlipKicksQuery, blockNumber, blockHash.Hex(), strings.ToLower(transformer.Address.Hex()), bidId)
+				Expect(writeErr).NotTo(HaveOccurred())
+
+				executeErr := transformer.Execute(diff)
+				Expect(executeErr).NotTo(HaveOccurred())
+			})
+
+			It("reads and persists a guy diff", func() {
+				var bidGuyResult test_helpers.MappingRes
+				dbErr := db.Get(&bidGuyResult, `SELECT block_number, block_hash, bid_id AS key, guy AS value FROM maker.flip_bid_guy`)
+				Expect(dbErr).NotTo(HaveOccurred())
+				test_helpers.AssertMapping(bidGuyResult, blockNumber, blockHash.Hex(), strconv.Itoa(bidId), "0x284ecB5880CdC3362D979D07D162bf1d8488975D")
+			})
+
+			It("reads and persists a tic diff", func() {
+				var bidTicResult test_helpers.MappingRes
+				dbErr := db.Get(&bidTicResult, `SELECT block_number, block_hash, bid_id AS key, tic AS value FROM maker.flip_bid_tic`)
+				Expect(dbErr).NotTo(HaveOccurred())
+				test_helpers.AssertMapping(bidTicResult, blockNumber, blockHash.Hex(), strconv.Itoa(bidId), "10800")
+			})
+
+			It("reads and persists an end diff", func() {
+				var bidEndResult test_helpers.MappingRes
+				dbErr := db.Get(&bidEndResult, `SELECT block_number, block_hash, bid_id AS key, "end" AS value FROM maker.flip_bid_end`)
+				Expect(dbErr).NotTo(HaveOccurred())
+				test_helpers.AssertMapping(bidEndResult, blockNumber, blockHash.Hex(), strconv.Itoa(bidId), "172800")
+			})
+		})
 	})
 })

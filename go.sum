@@ -216,8 +216,8 @@ github.com/syndtr/goleveldb v0.0.0-20181128100959-b001fa50d6b2/go.mod h1:Z4AUp2K
 github.com/tyler-smith/go-bip39 v1.0.0 h1:FOHg9gaQLeBBRbHE/QrTLfEiBHy5pQ/yXzf9JG5pYFM=
 github.com/tyler-smith/go-bip39 v1.0.0/go.mod h1:sJ5fKU0s6JVwZjjcUEX2zFOnvq0ASQ2K9Zr6cf67kNs=
 github.com/ugorji/go/codec v0.0.0-20181204163529-d75b2dcb6bc8/go.mod h1:VFNgLljTbGfSG7qAOspJ7OScBnGdDN/yBr0sguwnwf0=
-github.com/vulcanize/vulcanizedb v0.0.5-0.20190731011842-65e762f80b75 h1:U8x/VlVLeR16sdoss4PTSsHec9Ex3BfNu9c0iAI07p4=
-github.com/vulcanize/vulcanizedb v0.0.5-0.20190731011842-65e762f80b75/go.mod h1:utXkheCL9VjTfmuivuvRiAAyHh54GSN9XRQNEbFCA8k=
+github.com/vulcanize/vulcanizedb v0.0.5-0.20190806024015-baea9740c187 h1:16q7yYjmfXFsz2m3aRB++wzcW5ljHSKJSRBr0Bw7hQ8=
+github.com/vulcanize/vulcanizedb v0.0.5-0.20190806024015-baea9740c187/go.mod h1:utXkheCL9VjTfmuivuvRiAAyHh54GSN9XRQNEbFCA8k=
 github.com/wsddn/go-ecdh v0.0.0-20161211032359-48726bab9208 h1:1cngl9mPEoITZG8s8cVcUy5CeIBYhEESkOB7m6Gmkrk=
 github.com/wsddn/go-ecdh v0.0.0-20161211032359-48726bab9208/go.mod h1:IotVbo4F+mw0EzQ08zFqg7pK3FebNXpaMsRy2RT+Ees=
 github.com/xordataexchange/crypt v0.0.3-0.20170626215501-b2862e3d0a77/go.mod h1:aYKd//L2LvnjZzWKhF00oedf4jCCReLcmhLdhm1A27Q=
