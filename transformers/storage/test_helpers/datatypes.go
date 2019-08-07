@@ -43,13 +43,6 @@ func AssertVariable(res VariableRes, blockNumber int, blockHash, value string) {
 	Expect(res.Value).To(Equal(value))
 }
 
-func AssertAuctionVariable(res AuctionVariableRes, blockNumber int, blockHash, contractAddress, value string) {
-	Expect(res.BlockNumber).To(Equal(blockNumber))
-	Expect(res.BlockHash).To(Equal(blockHash))
-	Expect(res.ContractAddress).To(Equal(contractAddress))
-	Expect(res.Value).To(Equal(value))
-}
-
 func AssertMapping(res MappingRes, blockNumber int, blockHash, key, value string) {
 	Expect(res.BlockNumber).To(Equal(blockNumber))
 	Expect(res.BlockHash).To(Equal(blockHash))
@@ -62,13 +55,5 @@ func AssertDoubleMapping(res DoubleMappingRes, blockNumber int, blockHash, keyOn
 	Expect(res.BlockHash).To(Equal(blockHash))
 	Expect(res.KeyOne).To(Equal(keyOne))
 	Expect(res.KeyTwo).To(Equal(keyTwo))
-	Expect(res.Value).To(Equal(value))
-}
-
-func AssertAuctionMapping(res AuctionMappingRes, blockNumber int, blockHash, contractAddress, key, value string) {
-	Expect(res.BlockNumber).To(Equal(blockNumber))
-	Expect(res.BlockHash).To(Equal(blockHash))
-	Expect(res.ContractAddress).To(Equal(contractAddress))
-	Expect(res.Key).To(Equal(key))
 	Expect(res.Value).To(Equal(value))
 }

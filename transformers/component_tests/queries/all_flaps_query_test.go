@@ -60,26 +60,18 @@ var _ = Describe("All flaps query", func() {
 		flapStorageValuesTwo := test_helpers.GetFlapStorageValues(2, fakeBidIdOne)
 		test_helpers.CreateFlap(db, blockTwoHeader, flapStorageValuesTwo, test_helpers.GetFlapMetadatas(strconv.Itoa(fakeBidIdOne)), contractAddress)
 
-		flapBidContextErr := test_helpers.SetUpBidContext(test_helpers.BidSetupData{
-			Db:              db,
-			BidId:           fakeBidIdOne,
-			ContractAddress: contractAddress,
-			Dealt:           false,
-		})
-		Expect(flapBidContextErr).NotTo(HaveOccurred())
-
 		flapStorageValuesThree := test_helpers.GetFlapStorageValues(3, fakeBidIdTwo)
 		test_helpers.CreateFlap(db, blockTwoHeader, flapStorageValuesThree, test_helpers.GetFlapMetadatas(strconv.Itoa(fakeBidIdTwo)), contractAddress)
 
-		var actualBids []test_helpers.Bid
+		var actualBids []test_helpers.FlapBid
 		queryErr := db.Select(&actualBids, `SELECT bid_id, guy, tic, "end", lot, bid, gal, dealt, created, updated FROM api.all_flaps()`)
 		Expect(queryErr).NotTo(HaveOccurred())
 
-		expectedBidOne := test_helpers.BidFromValues(strconv.Itoa(fakeBidIdOne), "false", blockTwoHeader.Timestamp, blockOneHeader.Timestamp, flapStorageValuesTwo)
-		expectedBidTwo := test_helpers.BidFromValues(strconv.Itoa(fakeBidIdTwo), "false", blockTwoHeader.Timestamp, blockTwoHeader.Timestamp, flapStorageValuesThree)
+		expectedBidOne := test_helpers.FlapBidFromValues(strconv.Itoa(fakeBidIdOne), "false", blockTwoHeader.Timestamp, blockOneHeader.Timestamp, flapStorageValuesTwo)
+		expectedBidTwo := test_helpers.FlapBidFromValues(strconv.Itoa(fakeBidIdTwo), "false", blockTwoHeader.Timestamp, blockTwoHeader.Timestamp, flapStorageValuesThree)
 
 		Expect(len(actualBids)).To(Equal(2))
-		Expect(actualBids).To(ConsistOf([]test_helpers.Bid{
+		Expect(actualBids).To(ConsistOf([]test_helpers.FlapBid{
 			expectedBidOne,
 			expectedBidTwo,
 		}))

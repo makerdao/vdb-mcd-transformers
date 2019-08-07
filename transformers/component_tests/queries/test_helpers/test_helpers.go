@@ -4,16 +4,19 @@ import (
 	"database/sql"
 	. "github.com/onsi/gomega"
 	"github.com/vulcanize/mcd_transformers/transformers/events/deal"
+	"github.com/vulcanize/mcd_transformers/transformers/events/flip_kick"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/storage"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/cat"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/flap"
+	"github.com/vulcanize/mcd_transformers/transformers/storage/flip"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/flop"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/jug"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/spot"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/vat"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/repository"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
@@ -361,15 +364,15 @@ func GetFlopMetadatas(bidId string) []utils.StorageValueMetadata {
 
 func GetFlapMetadatas(bidId string) []utils.StorageValueMetadata {
 	keys := map[utils.Key]string{constants.BidId: bidId}
-	packedNames := map[int]string{0: storage.BidGuy, 1: storage.BidTic, 2: storage.BidEnd}
-	packedTypes := map[int]utils.ValueType{0: utils.Address, 1: utils.Uint48, 2: utils.Uint48}
-	return []utils.StorageValueMetadata{
-		utils.GetStorageValueMetadata(storage.Kicks, nil, utils.Uint256),
-		utils.GetStorageValueMetadata(storage.BidBid, keys, utils.Uint256),
-		utils.GetStorageValueMetadata(storage.BidLot, keys, utils.Uint256),
-		utils.GetStorageValueMetadataForPackedSlot(storage.Packed, keys, utils.PackedSlot, packedNames, packedTypes),
-		utils.GetStorageValueMetadata(storage.BidGal, keys, utils.Address),
-	}
+	return append(GetFlopMetadatas(bidId), utils.GetStorageValueMetadata(storage.BidGal, keys, utils.Address))
+}
+
+func GetFlipMetadatas(bidId string) []utils.StorageValueMetadata {
+	keys := map[utils.Key]string{constants.BidId: bidId}
+	return append(GetFlapMetadatas(bidId),
+		utils.GetStorageValueMetadata(storage.Ilk, nil, utils.Bytes32),
+		utils.GetStorageValueMetadata(storage.BidUsr, keys, utils.Address),
+		utils.GetStorageValueMetadata(storage.BidTab, keys, utils.Uint256))
 }
 
 func GetFlopStorageValues(seed int, bidId int) map[string]interface{} {
@@ -384,53 +387,57 @@ func GetFlopStorageValues(seed int, bidId int) map[string]interface{} {
 }
 
 func GetFlapStorageValues(seed int, bidId int) map[string]interface{} {
-	packedValues := map[int]string{0: "address1" + strconv.Itoa(seed), 1: strconv.Itoa(1 + seed), 2: strconv.Itoa(2 + seed)}
-	valuesMap := make(map[string]interface{})
-	valuesMap[storage.Kicks] = strconv.Itoa(bidId)
-	valuesMap[storage.BidBid] = strconv.Itoa(3 + seed)
-	valuesMap[storage.BidLot] = strconv.Itoa(4 + seed)
-	valuesMap[storage.Packed] = packedValues
+	valuesMap := GetFlopStorageValues(seed, bidId)
 	valuesMap[storage.BidGal] = "address2" + strconv.Itoa(seed)
-
 	return valuesMap
+}
+
+func GetFlipStorageValues(seed int, ilk string, bidId int) map[string]interface{} {
+	valuesMap := GetFlapStorageValues(seed, bidId)
+	valuesMap[storage.Ilk] = ilk
+	valuesMap[storage.BidUsr] = "address2" + strconv.Itoa(seed)
+	valuesMap[storage.BidTab] = strconv.Itoa(5 + seed)
+	return valuesMap
+}
+
+func createBid(repo repository.StorageRepository, header core.Header, valuesMap map[string]interface{}, metadatas []utils.StorageValueMetadata) {
+	blockHash := header.Hash
+	blockNumber := int(header.BlockNumber)
+
+	for _, metadata := range metadatas {
+		value := valuesMap[metadata.Name]
+		err := repo.Create(blockNumber, blockHash, metadata, value)
+
+		Expect(err).NotTo(HaveOccurred())
+	}
 }
 
 func CreateFlop(db *postgres.DB, header core.Header, valuesMap map[string]interface{}, flopMetadatas []utils.StorageValueMetadata, contractAddress string) {
 	flopRepo := flop.FlopStorageRepository{ContractAddress: contractAddress}
 	flopRepo.SetDB(db)
-	blockHash := header.Hash
-	blockNumber := int(header.BlockNumber)
-
-	for _, metadata := range flopMetadatas {
-		value := valuesMap[metadata.Name]
-		err := flopRepo.Create(blockNumber, blockHash, metadata, value)
-
-		Expect(err).NotTo(HaveOccurred())
-	}
+	createBid(&flopRepo, header, valuesMap, flopMetadatas)
 }
 
 func CreateFlap(db *postgres.DB, header core.Header, valuesMap map[string]interface{}, flapMetadatas []utils.StorageValueMetadata, contractAddress string) {
 	flapRepo := flap.FlapStorageRepository{ContractAddress: contractAddress}
 	flapRepo.SetDB(db)
-	blockHash := header.Hash
-	blockNumber := int(header.BlockNumber)
-
-	for _, metadata := range flapMetadatas {
-		value := valuesMap[metadata.Name]
-		err := flapRepo.Create(blockNumber, blockHash, metadata, value)
-
-		Expect(err).NotTo(HaveOccurred())
-	}
+	createBid(&flapRepo, header, valuesMap, flapMetadatas)
 }
 
-func BidFromValues(bidId, dealt, updated, created string, bidValues map[string]interface{}) Bid {
+func CreateFlip(db *postgres.DB, header core.Header, valuesMap map[string]interface{}, flipMetadatas []utils.StorageValueMetadata, contractAddress string) {
+	flipRepo := flip.FlipStorageRepository{ContractAddress: contractAddress}
+	flipRepo.SetDB(db)
+	createBid(&flipRepo, header, valuesMap, flipMetadatas)
+}
+
+func FlopBidFromValues(bidId, dealt, updated, created string, bidValues map[string]interface{}) FlopBid {
 	parsedCreated, _ := strconv.ParseInt(created, 10, 64)
 	parsedUpdated, _ := strconv.ParseInt(updated, 10, 64)
 	createdTimestamp := time.Unix(parsedCreated, 0).UTC().Format(time.RFC3339)
 	updatedTimestamp := time.Unix(parsedUpdated, 0).UTC().Format(time.RFC3339)
 	packedValues := bidValues[storage.Packed].(map[int]string)
 
-	bid := Bid{
+	return FlopBid{
 		BidId:   bidId,
 		Guy:     packedValues[0],
 		Tic:     packedValues[1],
@@ -441,48 +448,104 @@ func BidFromValues(bidId, dealt, updated, created string, bidValues map[string]i
 		Created: sql.NullString{String: createdTimestamp, Valid: true},
 		Updated: sql.NullString{String: updatedTimestamp, Valid: true},
 	}
-	gal := bidValues[storage.BidGal]
-	if gal != nil {
-		bid.Gal = gal.(string)
-	}
-
-	return bid
 }
 
-func SetUpBidContext(setupData BidSetupData) (err error) {
-	if setupData.Dealt {
-		dealModel := test_data.DealModel
-		dealModel.ColumnValues["contract_address"] = setupData.ContractAddress
-		dealModel.ColumnValues["bid_id"] = strconv.Itoa(setupData.BidId)
-		deals := []shared.InsertionModel{dealModel}
-		dealErr := setupData.DealRepo.Create(setupData.DealHeaderId, deals)
-		if dealErr != nil {
-			return dealErr
-		}
+func FlapBidFromValues(bidId, dealt, updated, created string, bidValues map[string]interface{}) FlapBid {
+	return FlapBid{
+		FlopBid: FlopBidFromValues(bidId, dealt, updated, created, bidValues),
+		Gal:     bidValues[storage.BidGal].(string),
 	}
-	return nil
 }
 
-type Bid struct {
+func FlipBidFromValues(bidId, ilkId, urnId, dealt, updated, created string, bidValues map[string]interface{}) FlipBid {
+	return FlipBid{
+		FlapBid: FlapBidFromValues(bidId, dealt, updated, created, bidValues),
+		IlkId:   ilkId,
+		UrnId:   urnId,
+		Tab:     bidValues[storage.BidTab].(string),
+	}
+}
+
+type FlopBid struct {
 	BidId   string `db:"bid_id"`
 	Guy     string
 	Tic     string
 	End     string
 	Lot     string
 	Bid     string
-	Gal     string
 	Dealt   string
 	Created sql.NullString
 	Updated sql.NullString
 }
 
-type BidSetupData struct {
+type FlapBid struct {
+	FlopBid
+	Gal string
+}
+
+type FlipBid struct {
+	FlapBid
+	IlkId string `db:"ilk_id"`
+	UrnId string `db:"urn_id"`
+	Tab   string
+}
+
+func SetUpFlipBidContext(setupData FlipBidCreationInput) (ilkId, urnId int, err error) {
+	ilkId, ilkErr := shared.GetOrCreateIlk(setupData.IlkHex, setupData.Db)
+	if ilkErr != nil {
+		return 0, 0, ilkErr
+	}
+
+	urnId, urnErr := shared.GetOrCreateUrn(setupData.UrnGuy, setupData.IlkHex, setupData.Db)
+	if urnErr != nil {
+		return 0, 0, urnErr
+	}
+
+	flipKickErr := CreateFlipKick(setupData.ContractAddress, setupData.BidId, setupData.FlipKickHeaderId, setupData.FlipKickRepo)
+	if flipKickErr != nil {
+		return 0, 0, flipKickErr
+	}
+
+	if setupData.Dealt {
+		dealErr := CreateDeal(setupData.DealCreationInput)
+		if dealErr != nil {
+			return 0, 0, dealErr
+		}
+	}
+
+	return ilkId, urnId, nil
+}
+
+func CreateDeal(input DealCreationInput) (err error) {
+	dealModel := test_data.DealModel
+	dealModel.ColumnValues["contract_address"] = input.ContractAddress
+	dealModel.ColumnValues["bid_id"] = strconv.Itoa(input.BidId)
+	deals := []shared.InsertionModel{dealModel}
+	return input.DealRepo.Create(input.DealHeaderId, deals)
+}
+
+func CreateFlipKick(contractAddress string, bidId int, headerId int64, repo flip_kick.FlipKickRepository) error {
+	flipKickModel := test_data.FlipKickModel
+	flipKickModel.ContractAddress = contractAddress
+	flipKickModel.BidId = strconv.Itoa(bidId)
+	return repo.Create(headerId, []interface{}{flipKickModel})
+}
+
+type DealCreationInput struct {
 	Db              *postgres.DB
 	BidId           int
 	ContractAddress string
 	DealRepo        deal.DealRepository
 	DealHeaderId    int64
-	Dealt           bool
+}
+
+type FlipBidCreationInput struct {
+	DealCreationInput
+	Dealt            bool
+	IlkHex           string
+	UrnGuy           string
+	FlipKickRepo     flip_kick.FlipKickRepository
+	FlipKickHeaderId int64
 }
 
 type IlkFileEvent struct {
