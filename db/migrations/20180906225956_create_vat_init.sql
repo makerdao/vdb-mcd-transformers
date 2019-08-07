@@ -14,14 +14,9 @@ CREATE INDEX vat_init_header_index
 CREATE INDEX vat_init_ilk_index
     ON maker.vat_init (ilk_id);
 
-ALTER TABLE public.checked_headers
-    ADD COLUMN vat_init INTEGER NOT NULL DEFAULT 0;
 
 -- +goose Down
 DROP INDEX maker.vat_init_header_index;
 DROP INDEX maker.vat_init_ilk_index;
 
 DROP TABLE maker.vat_init;
-
-ALTER TABLE public.checked_headers
-    DROP COLUMN vat_init;

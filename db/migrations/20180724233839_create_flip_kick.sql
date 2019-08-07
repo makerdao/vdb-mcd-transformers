@@ -24,8 +24,6 @@ CREATE INDEX flip_kick_bid_id_index
 CREATE INDEX flip_kick_address_id_index
     ON maker.flip_kick (address_id);
 
-ALTER TABLE public.checked_headers
-    ADD COLUMN flip_kick INTEGER NOT NULL DEFAULT 0;
 
 -- +goose Down
 DROP INDEX maker.flip_kick_address_id_index;
@@ -33,6 +31,3 @@ DROP INDEX maker.flip_kick_bid_id_index;
 DROP INDEX maker.flip_kick_header_index;
 
 DROP TABLE maker.flip_kick;
-
-ALTER TABLE public.checked_headers
-    DROP COLUMN flip_kick;

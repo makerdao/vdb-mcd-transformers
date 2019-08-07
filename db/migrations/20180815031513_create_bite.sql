@@ -26,14 +26,9 @@ CREATE INDEX bite_header_index
 CREATE INDEX bite_urn_index
     ON maker.bite (urn_id);
 
-ALTER TABLE public.checked_headers
-    ADD COLUMN bite INTEGER NOT NULL DEFAULT 0;
 
 -- +goose Down
 DROP INDEX maker.bite_header_index;
 DROP INDEX maker.bite_urn_index;
 
 DROP TABLE maker.bite;
-
-ALTER TABLE public.checked_headers
-    DROP COLUMN bite;

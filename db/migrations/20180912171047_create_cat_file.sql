@@ -46,14 +46,6 @@ CREATE TABLE maker.cat_file_vow
 CREATE INDEX cat_file_vow_header_index
     ON maker.cat_file_vow (header_id);
 
-ALTER TABLE public.checked_headers
-    ADD COLUMN cat_file_chop_lump INTEGER NOT NULL DEFAULT 0;
-
-ALTER TABLE public.checked_headers
-    ADD COLUMN cat_file_flip INTEGER NOT NULL DEFAULT 0;
-
-ALTER TABLE public.checked_headers
-    ADD COLUMN cat_file_vow INTEGER NOT NULL DEFAULT 0;
 
 -- +goose Down
 DROP INDEX maker.cat_file_chop_lump_header_index;
@@ -65,12 +57,3 @@ DROP INDEX maker.cat_file_vow_header_index;
 DROP TABLE maker.cat_file_chop_lump;
 DROP TABLE maker.cat_file_flip;
 DROP TABLE maker.cat_file_vow;
-
-ALTER TABLE public.checked_headers
-    DROP COLUMN cat_file_chop_lump;
-
-ALTER TABLE public.checked_headers
-    DROP COLUMN cat_file_flip;
-
-ALTER TABLE public.checked_headers
-    DROP COLUMN cat_file_vow;

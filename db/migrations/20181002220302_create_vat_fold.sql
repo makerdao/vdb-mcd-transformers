@@ -15,14 +15,9 @@ CREATE INDEX vat_fold_header_index
 CREATE INDEX vat_fold_urn_index
     ON maker.vat_fold (urn_id);
 
-ALTER TABLE public.checked_headers
-    ADD COLUMN vat_fold INTEGER NOT NULL DEFAULT 0;
 
 -- +goose Down
 DROP INDEX maker.vat_fold_header_index;
 DROP INDEX maker.vat_fold_urn_index;
 
 DROP TABLE maker.vat_fold;
-
-ALTER TABLE public.checked_headers
-    DROP COLUMN vat_fold;

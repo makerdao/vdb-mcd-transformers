@@ -25,6 +25,3 @@ DROP INDEX maker.yank_header_index;
 DROP INDEX maker.yank_bid_id_index;
 
 DROP TABLE maker.yank;
-
-ALTER TABLE public.checked_headers
-    DROP COLUMN yank;

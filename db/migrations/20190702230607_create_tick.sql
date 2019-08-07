@@ -12,16 +12,11 @@ CREATE TABLE maker.tick
 CREATE INDEX tick_header_index
     ON maker.tick (header_id);
 
-ALTER TABLE public.checked_headers
-    ADD COLUMN tick INTEGER NOT NULL DEFAULT 0;
 
 CREATE INDEX tick_bid_id_index
     ON maker.tick (bid_id);
 
 -- +goose Down
-ALTER TABLE public.checked_headers
-    DROP COLUMN tick;
-
 DROP INDEX maker.tick_header_index;
 DROP INDEX maker.tick_bid_id_index;
 DROP TABLE maker.tick;

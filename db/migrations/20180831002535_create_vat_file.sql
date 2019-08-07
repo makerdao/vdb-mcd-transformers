@@ -29,11 +29,6 @@ CREATE TABLE maker.vat_file_debt_ceiling
 CREATE INDEX vat_file_debt_ceiling_header_index
     ON maker.vat_file_debt_ceiling (header_id);
 
-ALTER TABLE public.checked_headers
-    ADD COLUMN vat_file_debt_ceiling INTEGER NOT NULL DEFAULT 0;
-
-ALTER TABLE public.checked_headers
-    ADD COLUMN vat_file_ilk INTEGER NOT NULL DEFAULT 0;
 
 -- +goose Down
 DROP INDEX maker.vat_file_ilk_header_index;
@@ -42,9 +37,3 @@ DROP INDEX maker.vat_file_debt_ceiling_header_index;
 
 DROP TABLE maker.vat_file_ilk;
 DROP TABLE maker.vat_file_debt_ceiling;
-
-ALTER TABLE public.checked_headers
-    DROP COLUMN vat_file_debt_ceiling;
-
-ALTER TABLE public.checked_headers
-    DROP COLUMN vat_file_ilk;

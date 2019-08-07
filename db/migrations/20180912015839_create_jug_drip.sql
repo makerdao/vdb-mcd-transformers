@@ -14,14 +14,9 @@ CREATE INDEX jug_drip_header_index
 CREATE INDEX jug_drip_ilk_index
     ON maker.jug_drip (ilk_id);
 
-ALTER TABLE public.checked_headers
-    ADD COLUMN jug_drip INTEGER NOT NULL DEFAULT 0;
 
 -- +goose Down
 DROP INDEX maker.jug_drip_header_index;
 DROP INDEX maker.jug_drip_ilk_index;
 
 DROP TABLE maker.jug_drip;
-
-ALTER TABLE public.checked_headers
-    DROP COLUMN jug_drip;
