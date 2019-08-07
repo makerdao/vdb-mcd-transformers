@@ -1278,75 +1278,33 @@ WITH ilk_id AS (SELECT id FROM maker.ilks WHERE ilks.ilk = get_flip.ilk),
                  FROM relevant_blocks
                           LEFT JOIN public.headers AS headers on headers.hash = relevant_blocks.block_hash
                  ORDER BY relevant_blocks.block_height DESC
-                 LIMIT 1),
-     latest_bid_state AS (
-         SELECT get_flip.bid_id,
-                guys.guy,
-                tics.tic,
-                ends.end,
-                lots.lot,
-                bids.bid,
-                gals.gal,
-                tabs.tab,
-                updated.block_height
-         FROM guys
-                  LEFT JOIN tics ON tics.bid_id = guys.bid_id
-                  LEFT JOIN ends ON ends.bid_id = guys.bid_id
-                  LEFT JOIN lots ON lots.bid_id = guys.bid_id
-                  LEFT JOIN bids ON bids.bid_id = guys.bid_id
-                  LEFT JOIN gals ON gals.bid_id = guys.bid_id
-                  LEFT JOIN tabs ON tabs.bid_id = guys.bid_id
-                  LEFT JOIN updated ON updated.bid_id = guys.bid_id)
-SELECT (CASE
-            WHEN (latest_bid_state.guy <> '0x0000000000000000000000000000000000000000'
-                OR latest_bid_state.tic <> 0
-                OR latest_bid_state."end" <> 0
-                OR latest_bid_state.lot <> 0
-                OR latest_bid_state.bid <> 0
-                OR latest_bid_state.gal <> '0x0000000000000000000000000000000000000000'
-                OR latest_bid_state.tab <> 0)
-                THEN (SELECT (get_flip.block_height,
-                              get_flip.bid_id,
-                              (SELECT id FROM ilk_id),
-                              (SELECT id FROM urn_id),
-                              guy,
-                              tic,
-                              "end",
-                              lot,
-                              bid,
-                              gal,
-                              CASE (SELECT COUNT(*) FROM deals)
-                                  WHEN 0 THEN FALSE
-                                  ELSE TRUE
-                                  END,
-                              tab,
-                              created.datetime,
-                              updated.datetime)::api.flip_state
-                      FROM latest_bid_state
-                               LEFT JOIN created ON created.bid_id = latest_bid_state.bid_id
-                               LEFT JOIN updated ON updated.bid_id = latest_bid_state.bid_id)
-            ELSE (SELECT (get_flip.block_height,
-                          get_flip.bid_id,
-                          prev_state.ilk_id,
-                          prev_state.urn_id,
-                          prev_state.guy,
-                          prev_state.tic,
-                          prev_state."end",
-                          prev_state.lot,
-                          prev_state.bid,
-                          prev_state.gal,
-                          CASE (SELECT COUNT(*) FROM deals)
-                              WHEN 0 THEN FALSE
-                              ELSE TRUE
-                              END,
-                          prev_state.tab,
-                          created.datetime,
-                          updated.datetime)::api.flip_state
-                  FROM api.get_flip(get_flip.bid_id, get_flip.ilk,
-                                    (SELECT block_height FROM latest_bid_state) - 1) prev_state
-                           LEFT JOIN created ON created.bid_id = get_flip.bid_id
-                           LEFT JOIN updated ON updated.bid_id = get_flip.bid_id) END)
-FROM latest_bid_state
+                 LIMIT 1)
+SELECT (get_flip.block_height,
+        get_flip.bid_id,
+        (SELECT id FROM ilk_id),
+        (SELECT id FROM urn_id),
+        guys.guy,
+        tics.tic,
+        ends."end",
+        lots.lot,
+        bids.bid,
+        gals.gal,
+        CASE (SELECT COUNT(*) FROM deals)
+            WHEN 0 THEN FALSE
+            ELSE TRUE
+            END,
+        tabs.tab,
+        created.datetime,
+        updated.datetime)::api.flip_state
+FROM guys
+         LEFT JOIN tics ON tics.bid_id = guys.bid_id
+         LEFT JOIN ends ON ends.bid_id = guys.bid_id
+         LEFT JOIN lots ON lots.bid_id = guys.bid_id
+         LEFT JOIN bids ON bids.bid_id = guys.bid_id
+         LEFT JOIN gals ON gals.bid_id = guys.bid_id
+         LEFT JOIN tabs ON tabs.bid_id = guys.bid_id
+         LEFT JOIN created ON created.bid_id = guys.bid_id
+         LEFT JOIN updated ON updated.bid_id = guys.bid_id
 $$;
 
 
