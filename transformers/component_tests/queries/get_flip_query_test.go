@@ -16,7 +16,6 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/component_tests/queries/test_helpers"
 	"github.com/vulcanize/mcd_transformers/transformers/events/deal"
 	"github.com/vulcanize/mcd_transformers/transformers/events/flip_kick"
-	"github.com/vulcanize/mcd_transformers/transformers/storage"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
@@ -236,72 +235,4 @@ var _ = Describe("Single flip view", func() {
 		Expect(expectedBid.Created).To(Equal(actualBid.Created))
 		Expect(expectedBid.Updated).To(Equal(actualBid.Updated))
 	})
-
-	It("returns bid state prior to deletion if bid is deleted", func() {
-		fakeBidId := rand.Int()
-		blockOne := rand.Int()
-		timestampOne := int(rand.Int31())
-		blockTwo := blockOne + 1
-		timestampTwo := timestampOne + 1000
-
-		blockOneHeader := fakes.GetFakeHeaderWithTimestamp(int64(timestampOne), int64(blockOne))
-		headerOneId, headerOneErr := headerRepo.CreateOrUpdateHeader(blockOneHeader)
-		Expect(headerOneErr).NotTo(HaveOccurred())
-
-		flipStorageValuesOne := test_helpers.GetFlipStorageValues(1, test_helpers.FakeIlk.Hex, fakeBidId)
-		test_helpers.CreateFlip(db, blockOneHeader, flipStorageValuesOne,
-			test_helpers.GetFlipMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
-
-		blockTwoHeader := fakes.GetFakeHeaderWithTimestamp(int64(timestampTwo), int64(blockTwo))
-		blockTwoHeader.Hash = common.BytesToHash([]byte{5, 4, 3, 2, 1}).String()
-		headerTwoId, headerTwoErr := headerRepo.CreateOrUpdateHeader(blockTwoHeader)
-		Expect(headerTwoErr).NotTo(HaveOccurred())
-		flipStorageValuesTwo := getDealtFlipStorageValues(test_helpers.FakeIlk.Hex, fakeBidId)
-		test_helpers.CreateFlip(db, blockTwoHeader, flipStorageValuesTwo,
-			test_helpers.GetFlipMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
-
-		ilkId, urnId, err := test_helpers.SetUpFlipBidContext(test_helpers.FlipBidCreationInput{
-			DealCreationInput: test_helpers.DealCreationInput{
-				Db:              db,
-				BidId:           fakeBidId,
-				ContractAddress: contractAddress,
-				DealRepo:        dealRepo,
-				DealHeaderId:    headerTwoId,
-			},
-			Dealt:            true,
-			IlkHex:           test_helpers.FakeIlk.Hex,
-			UrnGuy:           test_data.FlipKickModel.Usr,
-			FlipKickRepo:     flipKickRepo,
-			FlipKickHeaderId: headerOneId,
-		})
-		Expect(err).NotTo(HaveOccurred())
-
-		expectedBid := test_helpers.FlipBidFromValues(strconv.Itoa(fakeBidId), strconv.Itoa(ilkId),
-			strconv.Itoa(urnId), "true", blockTwoHeader.Timestamp, blockOneHeader.Timestamp, flipStorageValuesOne)
-
-		var actualBid test_helpers.FlipBid
-		queryErr := db.Get(&actualBid, `SELECT bid_id, ilk_id, urn_id, guy, tic, "end", lot, bid, gal, dealt, tab, created, updated FROM api.get_flip($1, $2, $3)`,
-			fakeBidId, test_helpers.FakeIlk.Hex, blockTwo)
-		Expect(queryErr).NotTo(HaveOccurred())
-
-		Expect(expectedBid).To(Equal(actualBid))
-	})
 })
-
-func getDealtFlipStorageValues(ilk string, bidId int) map[string]interface{} {
-	emptyAddress := "0x0000000000000000000000000000000000000000"
-	zeroStr := strconv.Itoa(0)
-	packedValues := map[int]string{0: emptyAddress, 1: zeroStr, 2: zeroStr}
-
-	valuesMap := make(map[string]interface{})
-	valuesMap[storage.Ilk] = ilk
-	valuesMap[storage.Kicks] = strconv.Itoa(bidId)
-	valuesMap[storage.BidBid] = zeroStr
-	valuesMap[storage.BidLot] = zeroStr
-	valuesMap[storage.BidUsr] = emptyAddress
-	valuesMap[storage.BidGal] = emptyAddress
-	valuesMap[storage.BidTab] = zeroStr
-	valuesMap[storage.Packed] = packedValues
-
-	return valuesMap
-}
