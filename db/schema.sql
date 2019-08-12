@@ -102,6 +102,34 @@ CREATE TYPE api.flap AS (
 
 
 --
+-- Name: flap_bid_event; Type: TYPE; Schema: api; Owner: -
+--
+
+CREATE TYPE api.flap_bid_event AS (
+	bid_id numeric,
+	lot numeric,
+	bid_amount numeric,
+	act text,
+	block_height bigint,
+	tx_idx integer
+);
+
+
+--
+-- Name: COLUMN flap_bid_event.block_height; Type: COMMENT; Schema: api; Owner: -
+--
+
+COMMENT ON COLUMN api.flap_bid_event.block_height IS '@omit';
+
+
+--
+-- Name: COLUMN flap_bid_event.tx_idx; Type: COMMENT; Schema: api; Owner: -
+--
+
+COMMENT ON COLUMN api.flap_bid_event.tx_idx IS '@omit';
+
+
+--
 -- Name: flip_state; Type: TYPE; Schema: api; Owner: -
 --
 
@@ -398,6 +426,71 @@ FROM maker.bite
          LEFT JOIN headers ON bite.header_id = headers.id
 WHERE urns.ilk_id = (SELECT id FROM ilk)
 ORDER BY urn_identifier, block_number DESC
+$$;
+
+
+--
+-- Name: all_flap_bid_events(); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.all_flap_bid_events() RETURNS SETOF api.flap_bid_event
+    LANGUAGE sql STABLE
+    AS $$
+WITH address AS (
+    SELECT contract_address
+    FROM maker.flap_kick
+    LIMIT 1
+),
+     deals AS (
+         SELECT deal.bid_id,
+                flap_bid_lot.lot,
+                flap_bid_bid.bid     AS bid_amount,
+                'deal'               AS act,
+                headers.block_number AS block_height,
+                tx_idx
+         FROM maker.deal
+                  LEFT JOIN headers ON deal.header_id = headers.id
+                  LEFT JOIN maker.flap_bid_bid
+                            ON deal.bid_id = flap_bid_bid.bid_id
+                                AND flap_bid_bid.block_number = headers.block_number
+                  LEFT JOIN maker.flap_bid_lot
+                            ON deal.bid_id = flap_bid_lot.bid_id
+                                AND flap_bid_lot.block_number = headers.block_number
+         WHERE deal.contract_address = (SELECT * FROM address)
+         ORDER BY block_height DESC
+     ),
+     yanks AS (
+         SELECT yank.bid_id,
+                flap_bid_lot.lot,
+                flap_bid_bid.bid     AS bid_amount,
+                'yank'               AS act,
+                headers.block_number AS block_height,
+                tx_idx
+         FROM maker.yank
+                  LEFT JOIN headers ON yank.header_id = headers.id
+                  LEFT JOIN maker.flap_bid_bid
+                            ON yank.bid_id = flap_bid_bid.bid_id
+                                AND flap_bid_bid.block_number = headers.block_number
+                  LEFT JOIN maker.flap_bid_lot
+                            ON yank.bid_id = flap_bid_lot.bid_id
+                                AND flap_bid_lot.block_number = headers.block_number
+         WHERE yank.contract_address = (SELECT * FROM address)
+         ORDER BY block_height DESC
+     )
+SELECT flap_kick.bid_id, lot, bid AS bid_amount, 'kick' AS act, block_number AS block_height, tx_idx
+FROM maker.flap_kick
+         LEFT JOIN headers ON flap_kick.header_id = headers.id
+UNION
+SELECT bid_id, lot, bid AS bid_amount, 'tend' AS act, block_number AS block_height, tx_idx
+FROM maker.tend
+         LEFT JOIN headers ON tend.header_id = headers.id
+WHERE tend.contract_address = (SELECT * FROM address)
+UNION
+SELECT *
+FROM deals
+UNION
+SELECT *
+FROM yanks
 $$;
 
 
@@ -946,6 +1039,47 @@ COMMENT ON FUNCTION api.epoch_to_datetime(epoch numeric) IS '@omit';
 
 
 --
+-- Name: flap_bid_event_bid(api.flap_bid_event); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.flap_bid_event_bid(event api.flap_bid_event) RETURNS SETOF api.flap
+    LANGUAGE sql STABLE
+    AS $$
+SELECT *
+FROM api.get_flap(event.bid_id, event.block_height)
+$$;
+
+
+--
+-- Name: flap_bid_event_tx(api.flap_bid_event); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.flap_bid_event_tx(event api.flap_bid_event) RETURNS SETOF api.tx
+    LANGUAGE sql STABLE
+    AS $$
+SELECT txs.hash, txs.tx_index, headers.block_number, headers.hash, tx_from, tx_to
+FROM public.header_sync_transactions txs
+         LEFT JOIN headers ON txs.header_id = headers.id
+WHERE block_number <= event.block_height
+  AND txs.tx_index <= event.tx_idx
+ORDER BY block_number DESC
+$$;
+
+
+--
+-- Name: flap_bid_events(api.flap); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.flap_bid_events(flap api.flap) RETURNS SETOF api.flap_bid_event
+    LANGUAGE sql STABLE
+    AS $$
+    SELECT *
+    FROM api.all_flap_bid_events()
+    WHERE bid_id = flap.bid_id
+    $$;
+
+
+--
 -- Name: flip_state_ilk(api.flip_state); Type: FUNCTION; Schema: api; Owner: -
 --
 
@@ -1107,7 +1241,6 @@ WITH address AS (
          ORDER BY relevant_blocks.block_height DESC
          LIMIT 1
      )
-
 SELECT get_flap.bid_id,
        guy.guy,
        tic.tic,
@@ -1467,7 +1600,6 @@ WITH address AS (
          ORDER BY relevant_blocks.block_height DESC
          LIMIT 1
      )
-
 SELECT get_flop.bid_id,
        guy.guy,
        tic.tic,
