@@ -202,14 +202,12 @@ var _ = Describe("All flip bid events query", func() {
 			})
 			Expect(flipDentErr).NotTo(HaveOccurred())
 
-			flipDealLog := test_data.CreateTestLog(headerThreeId, db)
 			flipDealErr := test_helpers.CreateDeal(test_helpers.DealCreationInput{
 				Db:              db,
 				BidId:           bidId,
 				ContractAddress: contractAddress,
 				DealRepo:        dealRepo,
-				DealHeaderId:    headerThreeId,
-				DealLogID:       flipDealLog.ID,
+				DealHeaderID:    headerThreeId,
 			})
 			Expect(flipDealErr).NotTo(HaveOccurred())
 

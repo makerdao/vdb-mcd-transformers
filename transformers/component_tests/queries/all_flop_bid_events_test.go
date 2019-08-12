@@ -101,14 +101,12 @@ var _ = Describe("Flop bid events query", func() {
 			headerTwoID, headerTwoErr := headerRepo.CreateOrUpdateHeader(headerTwo)
 			Expect(headerTwoErr).NotTo(HaveOccurred())
 
-			flopDealLog := test_data.CreateTestLog(headerTwoID, db)
 			flopDealErr := test_helpers.CreateDeal(test_helpers.DealCreationInput{
 				Db:              db,
 				BidId:           fakeBidId,
 				ContractAddress: contractAddress,
 				DealRepo:        dealRepo,
-				DealHeaderId:    headerTwoID,
-				DealLogID:       flopDealLog.ID,
+				DealHeaderID:    headerTwoID,
 			})
 			Expect(flopDealErr).NotTo(HaveOccurred())
 
@@ -290,14 +288,12 @@ var _ = Describe("Flop bid events query", func() {
 			headerThreeId, headerThreeErr := headerRepo.CreateOrUpdateHeader(headerThree)
 			Expect(headerThreeErr).NotTo(HaveOccurred())
 
-			dealLog := test_data.CreateTestLog(headerThreeId, db)
 			flopDealErr := test_helpers.CreateDeal(test_helpers.DealCreationInput{
 				Db:              db,
 				BidId:           fakeBidId,
 				ContractAddress: contractAddress,
 				DealRepo:        dealRepo,
-				DealHeaderId:    headerThreeId,
-				DealLogID:       dealLog.ID,
+				DealHeaderID:    headerThreeId,
 			})
 			Expect(flopDealErr).NotTo(HaveOccurred())
 

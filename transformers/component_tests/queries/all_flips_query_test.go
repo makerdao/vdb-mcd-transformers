@@ -70,7 +70,7 @@ var _ = Describe("All flips view", func() {
 			IlkHex:           test_helpers.FakeIlk.Hex,
 			UrnGuy:           test_data.FlipKickModel.Usr,
 			FlipKickRepo:     flipKickRepo,
-			FlipKickHeaderId: headerId,
+			FlipKickHeaderID: headerId,
 		})
 		Expect(setupErr).NotTo(HaveOccurred())
 
@@ -138,7 +138,7 @@ var _ = Describe("All flips view", func() {
 			IlkHex:           test_helpers.FakeIlk.Hex,
 			UrnGuy:           test_data.FlipKickModel.Usr,
 			FlipKickRepo:     flipKickRepo,
-			FlipKickHeaderId: headerId,
+			FlipKickHeaderID: headerId,
 		})
 		Expect(setupErr1).NotTo(HaveOccurred())
 		flipStorageValues := test_helpers.GetFlipStorageValues(1, test_helpers.FakeIlk.Hex, fakeBidId)
@@ -159,7 +159,7 @@ var _ = Describe("All flips view", func() {
 			IlkHex:           irrelevantIlkHex,
 			UrnGuy:           irrelevantUrn,
 			FlipKickRepo:     flipKickRepo,
-			FlipKickHeaderId: headerId,
+			FlipKickHeaderID: headerId,
 		})
 		Expect(setupErr2).NotTo(HaveOccurred())
 		irrelevantFlipValues := test_helpers.GetFlipStorageValues(2, irrelevantIlkHex, irrelevantBidId)
@@ -197,7 +197,7 @@ var _ = Describe("All flips view", func() {
 			IlkHex:           ilkOne.Hex,
 			UrnGuy:           test_data.FlipKickModel.Usr,
 			FlipKickRepo:     flipKickRepo,
-			FlipKickHeaderId: headerId,
+			FlipKickHeaderID: headerId,
 		})
 		Expect(setupErr).NotTo(HaveOccurred())
 
@@ -227,7 +227,7 @@ var _ = Describe("All flips view", func() {
 			IlkHex:           ilkTwo.Hex,
 			UrnGuy:           test_data.FlipKickModel.Gal,
 			FlipKickRepo:     flipKickRepo,
-			FlipKickHeaderId: headerTwoId,
+			FlipKickHeaderID: headerTwoId,
 		})
 		Expect(setupErr).NotTo(HaveOccurred())
 
@@ -282,7 +282,7 @@ var _ = Describe("All flips view", func() {
 				IlkHex:           test_helpers.FakeIlk.Hex,
 				UrnGuy:           test_data.FlipKickModel.Usr,
 				FlipKickRepo:     flipKickRepo,
-				FlipKickHeaderId: headerId,
+				FlipKickHeaderID: headerId,
 			})
 			Expect(setupErr).NotTo(HaveOccurred())
 

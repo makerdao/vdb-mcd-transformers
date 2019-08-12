@@ -41,9 +41,9 @@ var _ = Describe("Flap Kick Repository", func() {
 			flapKickRepository = flap_kick.FlapKickRepository{}
 			flapKickRepository.SetDB(db)
 			headerID = test_data.CreateTestHeader(db)
-			persistedLogs := test_data.CreateLogs(headerID, []types.Log{test_data.FlapKickHeaderSyncLog.Log}, db)
-			Expect(len(persistedLogs)).To(Equal(1))
-			logID = persistedLogs[0].ID
+			flapKickLogs := test_data.CreateLogs(headerID, []types.Log{test_data.FlapKickHeaderSyncLog.Log}, db)
+			Expect(len(flapKickLogs)).To(Equal(1))
+			logID = flapKickLogs[0].ID
 			model = test_data.FlapKickModel
 			model.HeaderID = headerID
 			model.LogID = logID
@@ -94,10 +94,10 @@ var _ = Describe("Flap Kick Repository", func() {
 		})
 
 		It("allows for multiple log events of the same type in one transaction if they have different log indexes", func() {
-			persistedLogTwo := test_data.CreateTestLog(headerID, db)
+			flapKickLogTwo := test_data.CreateTestLog(headerID, db)
 			modelWithDifferentLogID := test_data.FlapKickModel
 			modelWithDifferentLogID.HeaderID = headerID
-			modelWithDifferentLogID.LogID = persistedLogTwo.ID
+			modelWithDifferentLogID.LogID = flapKickLogTwo.ID
 
 			insertOneErr := flapKickRepository.Create([]interface{}{model})
 			Expect(insertOneErr).NotTo(HaveOccurred())

@@ -58,13 +58,13 @@ var _ = Describe("Sin queue events query", func() {
 			headerOne.Timestamp = fakeEra
 			headerOneId, err := headerRepo.CreateOrUpdateHeader(headerOne)
 			Expect(err).NotTo(HaveOccurred())
-			persistedLog := test_data.CreateTestLog(headerOneId, db)
+			vowFessLog := test_data.CreateTestLog(headerOneId, db)
 
 			vowFessRepo := vow_fess.VowFessRepository{}
 			vowFessRepo.SetDB(db)
 			vowFessEvent := test_data.VowFessModel
 			vowFessEvent.ColumnValues["header_id"] = headerOneId
-			vowFessEvent.ColumnValues["log_id"] = persistedLog.ID
+			vowFessEvent.ColumnValues["log_id"] = vowFessLog.ID
 			err = vowFessRepo.Create([]shared.InsertionModel{vowFessEvent})
 			Expect(err).NotTo(HaveOccurred())
 
@@ -81,7 +81,7 @@ var _ = Describe("Sin queue events query", func() {
 			headerOne := fakes.GetFakeHeader(1)
 			headerOneId, err := headerRepo.CreateOrUpdateHeader(headerOne)
 			Expect(err).NotTo(HaveOccurred())
-			persistedLog := test_data.CreateTestLog(headerOneId, db)
+			vowFlogLog := test_data.CreateTestLog(headerOneId, db)
 
 			fakeEra := strconv.Itoa(int(rand.Int31()))
 			vowFlogRepo := vow_flog.VowFlogRepository{}
@@ -89,7 +89,7 @@ var _ = Describe("Sin queue events query", func() {
 			vowFlogEvent := test_data.VowFlogModel
 			vowFlogEvent.ColumnValues["era"] = fakeEra
 			vowFlogEvent.ColumnValues["header_id"] = headerOneId
-			vowFlogEvent.ColumnValues["log_id"] = persistedLog.ID
+			vowFlogEvent.ColumnValues["log_id"] = vowFlogLog.ID
 			err = vowFlogRepo.Create([]shared.InsertionModel{vowFlogEvent})
 			Expect(err).NotTo(HaveOccurred())
 
@@ -106,7 +106,7 @@ var _ = Describe("Sin queue events query", func() {
 			headerOne := fakes.GetFakeHeader(1)
 			headerOneId, err := headerRepo.CreateOrUpdateHeader(headerOne)
 			Expect(err).NotTo(HaveOccurred())
-			headerOnePersistedLog := test_data.CreateTestLog(headerOneId, db)
+			vowFlogLog := test_data.CreateTestLog(headerOneId, db)
 
 			vowFlogRepo := vow_flog.VowFlogRepository{}
 			vowFlogRepo.SetDB(db)
@@ -114,7 +114,7 @@ var _ = Describe("Sin queue events query", func() {
 			vowFlogEvent := test_data.VowFlogModel
 			vowFlogEvent.ColumnValues["era"] = fakeEra
 			vowFlogEvent.ColumnValues["header_id"] = headerOneId
-			vowFlogEvent.ColumnValues["log_id"] = headerOnePersistedLog.ID
+			vowFlogEvent.ColumnValues["log_id"] = vowFlogLog.ID
 			err = vowFlogRepo.Create([]shared.InsertionModel{vowFlogEvent})
 			Expect(err).NotTo(HaveOccurred())
 
@@ -124,13 +124,13 @@ var _ = Describe("Sin queue events query", func() {
 			headerTwo.Timestamp = fakeEra
 			headerTwoId, err := headerRepo.CreateOrUpdateHeader(headerTwo)
 			Expect(err).NotTo(HaveOccurred())
-			headerTwoPersistedLog := test_data.CreateTestLog(headerTwoId, db)
+			vowFessLog := test_data.CreateTestLog(headerTwoId, db)
 
 			vowFessRepo := vow_fess.VowFessRepository{}
 			vowFessRepo.SetDB(db)
 			vowFessEvent := test_data.VowFessModel
 			vowFessEvent.ColumnValues["header_id"] = headerTwoId
-			vowFessEvent.ColumnValues["log_id"] = headerTwoPersistedLog.ID
+			vowFessEvent.ColumnValues["log_id"] = vowFessLog.ID
 			err = vowFessRepo.Create([]shared.InsertionModel{vowFessEvent})
 			Expect(err).NotTo(HaveOccurred())
 
@@ -148,7 +148,7 @@ var _ = Describe("Sin queue events query", func() {
 			headerOne := fakes.GetFakeHeader(1)
 			headerOneId, err := headerRepo.CreateOrUpdateHeader(headerOne)
 			Expect(err).NotTo(HaveOccurred())
-			persistedLog := test_data.CreateTestLog(headerOneId, db)
+			vowFlogLog := test_data.CreateTestLog(headerOneId, db)
 
 			rawEra := int(rand.Int31())
 			fakeEra := strconv.Itoa(rawEra)
@@ -159,7 +159,7 @@ var _ = Describe("Sin queue events query", func() {
 			vowFlogEvent := test_data.VowFlogModel
 			vowFlogEvent.ColumnValues["era"] = fakeEra
 			vowFlogEvent.ColumnValues["header_id"] = headerOneId
-			vowFlogEvent.ColumnValues["log_id"] = persistedLog.ID
+			vowFlogEvent.ColumnValues["log_id"] = vowFlogLog.ID
 			err = vowFlogRepo.Create([]shared.InsertionModel{vowFlogEvent})
 			Expect(err).NotTo(HaveOccurred())
 

@@ -82,7 +82,7 @@ var _ = Describe("Flip bid event computed columns", func() {
 				IlkHex:           test_helpers.FakeIlk.Hex,
 				UrnGuy:           test_data.FlipKickModel.Usr,
 				FlipKickRepo:     flipKickRepo,
-				FlipKickHeaderId: headerId,
+				FlipKickHeaderID: headerId,
 			})
 			Expect(err).NotTo(HaveOccurred())
 
@@ -116,7 +116,7 @@ var _ = Describe("Flip bid event computed columns", func() {
 				IlkHex:           test_helpers.AnotherFakeIlk.Hex,
 				UrnGuy:           test_data.FakeUrn,
 				FlipKickRepo:     flipKickRepo,
-				FlipKickHeaderId: headerId,
+				FlipKickHeaderID: headerId,
 			})
 			Expect(irrelevantFlipContextErr).NotTo(HaveOccurred())
 
@@ -134,7 +134,7 @@ var _ = Describe("Flip bid event computed columns", func() {
 				IlkHex:           test_helpers.FakeIlk.Hex,
 				UrnGuy:           test_data.FakeUrn,
 				FlipKickRepo:     flipKickRepo,
-				FlipKickHeaderId: headerId,
+				FlipKickHeaderID: headerId,
 			})
 			Expect(flipContextErr).NotTo(HaveOccurred())
 

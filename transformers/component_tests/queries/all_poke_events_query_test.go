@@ -47,9 +47,9 @@ var _ = Describe("all poke events query", func() {
 		fakeHeaderOne := fakes.GetFakeHeaderWithTimestamp(beginningTimeRange, rand.Int63())
 		headerID, err := headerRepo.CreateOrUpdateHeader(fakeHeaderOne)
 		Expect(err).NotTo(HaveOccurred())
-		persistedLog := test_data.CreateTestLog(headerID, db)
+		spotPokeLog := test_data.CreateTestLog(headerID, db)
 
-		spotPoke := generateSpotPoke(test_helpers.FakeIlk.Hex, 1, headerID, persistedLog.ID)
+		spotPoke := generateSpotPoke(test_helpers.FakeIlk.Hex, 1, headerID, spotPokeLog.ID)
 		ilkIdBlockOne, err := shared.GetOrCreateIlk(spotPoke.Ilk, db)
 		err = spotPokeRepo.Create([]interface{}{spotPoke})
 		Expect(err).NotTo(HaveOccurred())
@@ -57,9 +57,9 @@ var _ = Describe("all poke events query", func() {
 		fakeHeaderTwo := fakes.GetFakeHeaderWithTimestamp(endingTimeRange, fakeHeaderOne.BlockNumber+1)
 		anotherHeaderID, err := headerRepo.CreateOrUpdateHeader(fakeHeaderTwo)
 		Expect(err).NotTo(HaveOccurred())
-		anotherPersistedLog := test_data.CreateTestLog(anotherHeaderID, db)
+		anotherSpotPokeLog := test_data.CreateTestLog(anotherHeaderID, db)
 
-		anotherSpotPoke := generateSpotPoke(test_helpers.AnotherFakeIlk.Hex, 1, anotherHeaderID, anotherPersistedLog.ID)
+		anotherSpotPoke := generateSpotPoke(test_helpers.AnotherFakeIlk.Hex, 1, anotherHeaderID, anotherSpotPokeLog.ID)
 		anotherIlkId, err := shared.GetOrCreateIlk(anotherSpotPoke.Ilk, db)
 		Expect(err).NotTo(HaveOccurred())
 		err = spotPokeRepo.Create([]interface{}{anotherSpotPoke})
@@ -88,15 +88,15 @@ var _ = Describe("all poke events query", func() {
 		fakeHeaderOne := fakes.GetFakeHeaderWithTimestamp(beginningTimeRange, rand.Int63())
 		headerID, err := headerRepo.CreateOrUpdateHeader(fakeHeaderOne)
 		Expect(err).NotTo(HaveOccurred())
-		persistedLog := test_data.CreateTestLog(headerID, db)
-		anotherPersistedLog := test_data.CreateTestLog(headerID, db)
+		spotPokeLog := test_data.CreateTestLog(headerID, db)
 
-		spotPoke := generateSpotPoke(test_helpers.FakeIlk.Hex, 1, headerID, persistedLog.ID)
+		spotPoke := generateSpotPoke(test_helpers.FakeIlk.Hex, 1, headerID, spotPokeLog.ID)
 		ilkIdBlockOne, err := shared.GetOrCreateIlk(spotPoke.Ilk, db)
 		err = spotPokeRepo.Create([]interface{}{spotPoke})
 		Expect(err).NotTo(HaveOccurred())
+		anotherSpotPokeLog := test_data.CreateTestLog(headerID, db)
 
-		anotherSpotPoke := generateSpotPoke(test_helpers.AnotherFakeIlk.Hex, 1, headerID, anotherPersistedLog.ID)
+		anotherSpotPoke := generateSpotPoke(test_helpers.AnotherFakeIlk.Hex, 1, headerID, anotherSpotPokeLog.ID)
 		anotherIlkId, err := shared.GetOrCreateIlk(anotherSpotPoke.Ilk, db)
 		Expect(err).NotTo(HaveOccurred())
 		err = spotPokeRepo.Create([]interface{}{anotherSpotPoke})
@@ -125,9 +125,8 @@ var _ = Describe("all poke events query", func() {
 		fakeHeaderOne := fakes.GetFakeHeaderWithTimestamp(beginningTimeRange, rand.Int63())
 		headerID, err := headerRepo.CreateOrUpdateHeader(fakeHeaderOne)
 		Expect(err).NotTo(HaveOccurred())
-		persistedLogID := test_data.CreateTestLog(headerID, db).ID
-
-		spotPoke := generateSpotPoke(test_helpers.FakeIlk.Hex, 1, headerID, persistedLogID)
+		spotPokeLog := test_data.CreateTestLog(headerID, db)
+		spotPoke := generateSpotPoke(test_helpers.FakeIlk.Hex, 1, headerID, spotPokeLog.ID)
 		ilkIdBlockOne, err := shared.GetOrCreateIlk(spotPoke.Ilk, db)
 		err = spotPokeRepo.Create([]interface{}{spotPoke})
 		Expect(err).NotTo(HaveOccurred())
@@ -135,9 +134,9 @@ var _ = Describe("all poke events query", func() {
 		fakeHeaderTwo := fakes.GetFakeHeaderWithTimestamp(endingTimeRange+1, fakeHeaderOne.BlockNumber+1)
 		anotherHeaderID, err := headerRepo.CreateOrUpdateHeader(fakeHeaderTwo)
 		Expect(err).NotTo(HaveOccurred())
-		anotherPersistedLogID := test_data.CreateTestLog(anotherHeaderID, db).ID
+		anotherSpotPokeLog := test_data.CreateTestLog(anotherHeaderID, db)
+		anotherSpotPoke := generateSpotPoke(test_helpers.AnotherFakeIlk.Hex, 1, anotherHeaderID, anotherSpotPokeLog.ID)
 
-		anotherSpotPoke := generateSpotPoke(test_helpers.AnotherFakeIlk.Hex, 1, anotherHeaderID, anotherPersistedLogID)
 		_, err = shared.GetOrCreateIlk(anotherSpotPoke.Ilk, db)
 		Expect(err).NotTo(HaveOccurred())
 		err = spotPokeRepo.Create([]interface{}{anotherSpotPoke})

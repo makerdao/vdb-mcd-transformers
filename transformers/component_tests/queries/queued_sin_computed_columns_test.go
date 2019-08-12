@@ -62,8 +62,6 @@ var _ = Describe("Queued sin computed columns", func() {
 			var insertHeaderErr error
 			headerID, insertHeaderErr = headerRepository.CreateOrUpdateHeader(fakeHeader)
 			Expect(insertHeaderErr).NotTo(HaveOccurred())
-			persistedLogOne := test_data.CreateTestLog(headerID, db)
-			persistedLogTwo := test_data.CreateTestLog(headerID, db)
 
 			vowRepository = vow.VowStorageRepository{}
 			vowRepository.SetDB(db)
@@ -72,20 +70,22 @@ var _ = Describe("Queued sin computed columns", func() {
 			insertSinMappingErr := vowRepository.Create(int(fakeHeader.BlockNumber), fakeHeader.Hash, sinMappingMetadata, fakeTab)
 			Expect(insertSinMappingErr).NotTo(HaveOccurred())
 
+			vowFessLog := test_data.CreateTestLog(headerID, db)
 			vowFessRepo := vow_fess.VowFessRepository{}
 			vowFessRepo.SetDB(db)
 			vowFessEvent := test_data.VowFessModel
 			vowFessEvent.ColumnValues["header_id"] = headerID
-			vowFessEvent.ColumnValues["log_id"] = persistedLogOne.ID
+			vowFessEvent.ColumnValues["log_id"] = vowFessLog.ID
 			insertVowFessErr := vowFessRepo.Create([]shared.InsertionModel{vowFessEvent})
 			Expect(insertVowFessErr).NotTo(HaveOccurred())
 
+			vowFlogLog := test_data.CreateTestLog(headerID, db)
 			vowFlogRepo = vow_flog.VowFlogRepository{}
 			vowFlogRepo.SetDB(db)
 			vowFlogEvent := test_data.VowFlogModel
 			vowFlogEvent.ColumnValues["era"] = fakeEra
 			vowFlogEvent.ColumnValues["header_id"] = headerID
-			vowFlogEvent.ColumnValues["log_id"] = persistedLogTwo.ID
+			vowFlogEvent.ColumnValues["log_id"] = vowFlogLog.ID
 			insertVowFlogErr := vowFlogRepo.Create([]shared.InsertionModel{vowFlogEvent})
 			Expect(insertVowFlogErr).NotTo(HaveOccurred())
 		})
@@ -128,16 +128,20 @@ var _ = Describe("Queued sin computed columns", func() {
 				Expect(headerTwoError).NotTo(HaveOccurred())
 
 				// add flog event for same sin in later block
+				vowFlogLog := test_data.CreateTestLog(headerOneId, db)
 				vowFlogEventOne := test_data.VowFlogModel
 				vowFlogEventOne.ColumnValues["era"] = fakeEra
 				vowFlogEventOne.ColumnValues["header_id"] = headerOneId
+				vowFlogEventOne.ColumnValues["log_id"] = vowFlogLog.ID
 				vowFlogOneErr := vowFlogRepo.Create([]shared.InsertionModel{vowFlogEventOne})
 				Expect(vowFlogOneErr).NotTo(HaveOccurred())
 
 				// add flog event for same sin in later block
+				vowFlogLogTwo := test_data.CreateTestLog(headerTwoId, db)
 				vowFlogEventTwo := test_data.VowFlogModel
 				vowFlogEventTwo.ColumnValues["era"] = fakeEra
 				vowFlogEventTwo.ColumnValues["header_id"] = headerTwoId
+				vowFlogEventTwo.ColumnValues["log_id"] = vowFlogLogTwo.ID
 				vowFlogTwoErr := vowFlogRepo.Create([]shared.InsertionModel{vowFlogEventTwo})
 				Expect(vowFlogTwoErr).NotTo(HaveOccurred())
 			})

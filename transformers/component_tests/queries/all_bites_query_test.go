@@ -42,9 +42,9 @@ var _ = Describe("Bites query", func() {
 			headerOne := fakes.GetFakeHeader(1)
 			headerOneId, err := headerRepo.CreateOrUpdateHeader(headerOne)
 			Expect(err).NotTo(HaveOccurred())
-			persistedLog := test_data.CreateTestLog(headerOneId, db)
+			biteLog := test_data.CreateTestLog(headerOneId, db)
 
-			biteOne := generateBite(test_helpers.FakeIlk.Hex, fakeUrn, headerOneId, persistedLog.ID)
+			biteOne := generateBite(test_helpers.FakeIlk.Hex, fakeUrn, headerOneId, biteLog.ID)
 			err = biteRepo.Create([]interface{}{biteOne})
 			Expect(err).NotTo(HaveOccurred())
 
@@ -62,9 +62,9 @@ var _ = Describe("Bites query", func() {
 			headerOne := fakes.GetFakeHeaderWithTimestamp(int64(111111111), 1)
 			headerOneId, err := headerRepo.CreateOrUpdateHeader(headerOne)
 			Expect(err).NotTo(HaveOccurred())
-			persistedLogOne := test_data.CreateTestLog(headerOneId, db)
+			biteBlockOneLog := test_data.CreateTestLog(headerOneId, db)
 
-			biteBlockOne := generateBite(test_helpers.FakeIlk.Hex, fakeUrn, headerOneId, persistedLogOne.ID)
+			biteBlockOne := generateBite(test_helpers.FakeIlk.Hex, fakeUrn, headerOneId, biteBlockOneLog.ID)
 			err = biteRepo.Create([]interface{}{biteBlockOne})
 			Expect(err).NotTo(HaveOccurred())
 
@@ -73,9 +73,9 @@ var _ = Describe("Bites query", func() {
 			headerTwo.Hash = "anotherHash"
 			headerTwoId, err := headerRepo.CreateOrUpdateHeader(headerTwo)
 			Expect(err).NotTo(HaveOccurred())
-			persistedLogTwo := test_data.CreateTestLog(headerTwoId, db)
+			biteBlockTwoLog := test_data.CreateTestLog(headerTwoId, db)
 
-			biteBlockTwo := generateBite(test_helpers.FakeIlk.Hex, fakeUrn, headerTwoId, persistedLogTwo.ID)
+			biteBlockTwo := generateBite(test_helpers.FakeIlk.Hex, fakeUrn, headerTwoId, biteBlockTwoLog.ID)
 			err = biteRepo.Create([]interface{}{biteBlockTwo})
 			Expect(err).NotTo(HaveOccurred())
 
@@ -93,11 +93,11 @@ var _ = Describe("Bites query", func() {
 			headerOne := fakes.GetFakeHeader(1)
 			headerOneId, err := headerRepo.CreateOrUpdateHeader(headerOne)
 			Expect(err).NotTo(HaveOccurred())
-			persistedLogOne := test_data.CreateTestLog(headerOneId, db)
-			persistedLogTwo := test_data.CreateTestLog(headerOneId, db)
+			biteLog := test_data.CreateTestLog(headerOneId, db)
+			irrelevantBiteLog := test_data.CreateTestLog(headerOneId, db)
 
-			bite := generateBite(test_helpers.FakeIlk.Hex, fakeUrn, headerOneId, persistedLogOne.ID)
-			irrelevantBite := generateBite(test_helpers.AnotherFakeIlk.Hex, fakeUrn, headerOneId, persistedLogTwo.ID)
+			bite := generateBite(test_helpers.FakeIlk.Hex, fakeUrn, headerOneId, biteLog.ID)
+			irrelevantBite := generateBite(test_helpers.AnotherFakeIlk.Hex, fakeUrn, headerOneId, irrelevantBiteLog.ID)
 
 			err = biteRepo.Create([]interface{}{bite, irrelevantBite})
 			Expect(err).NotTo(HaveOccurred())
@@ -186,9 +186,9 @@ var _ = Describe("Bites query", func() {
 			headerOne := fakes.GetFakeHeader(1)
 			headerOneId, err := headerRepo.CreateOrUpdateHeader(headerOne)
 			Expect(err).NotTo(HaveOccurred())
-			persistedLog := test_data.CreateTestLog(headerOneId, db)
+			biteOneLog := test_data.CreateTestLog(headerOneId, db)
 
-			biteOne := generateBite(test_helpers.FakeIlk.Hex, fakeUrn, headerOneId, persistedLog.ID)
+			biteOne := generateBite(test_helpers.FakeIlk.Hex, fakeUrn, headerOneId, biteOneLog.ID)
 			err = biteRepo.Create([]interface{}{biteOne})
 			Expect(err).NotTo(HaveOccurred())
 
@@ -205,9 +205,9 @@ var _ = Describe("Bites query", func() {
 			headerOne := fakes.GetFakeHeaderWithTimestamp(int64(111111111), 1)
 			headerOneId, err := headerRepo.CreateOrUpdateHeader(headerOne)
 			Expect(err).NotTo(HaveOccurred())
-			persistedLogOne := test_data.CreateTestLog(headerOneId, db)
+			biteOneLog := test_data.CreateTestLog(headerOneId, db)
 
-			biteBlockOne := generateBite(test_helpers.FakeIlk.Hex, fakeUrn, headerOneId, persistedLogOne.ID)
+			biteBlockOne := generateBite(test_helpers.FakeIlk.Hex, fakeUrn, headerOneId, biteOneLog.ID)
 			err = biteRepo.Create([]interface{}{biteBlockOne})
 			Expect(err).NotTo(HaveOccurred())
 
@@ -216,9 +216,9 @@ var _ = Describe("Bites query", func() {
 			headerTwo.Hash = "anotherHash"
 			headerTwoId, err := headerRepo.CreateOrUpdateHeader(headerTwo)
 			Expect(err).NotTo(HaveOccurred())
-			persistedLogTwo := test_data.CreateTestLog(headerTwoId, db)
+			biteBlockTwoLog := test_data.CreateTestLog(headerTwoId, db)
 
-			biteBlockTwo := generateBite(test_helpers.FakeIlk.Hex, fakeUrn, headerTwoId, persistedLogTwo.ID)
+			biteBlockTwo := generateBite(test_helpers.FakeIlk.Hex, fakeUrn, headerTwoId, biteBlockTwoLog.ID)
 			err = biteRepo.Create([]interface{}{biteBlockTwo})
 			Expect(err).NotTo(HaveOccurred())
 
@@ -287,11 +287,11 @@ var _ = Describe("Bites query", func() {
 			headerOne := fakes.GetFakeHeader(1)
 			headerOneId, err := headerRepo.CreateOrUpdateHeader(headerOne)
 			Expect(err).NotTo(HaveOccurred())
-			persistedLogOne := test_data.CreateTestLog(headerOneId, db)
-			persistedLogTwo := test_data.CreateTestLog(headerOneId, db)
+			biteLog := test_data.CreateTestLog(headerOneId, db)
+			irrelevantBiteLog := test_data.CreateTestLog(headerOneId, db)
 
-			bite := generateBite(test_helpers.FakeIlk.Hex, fakeUrn, headerOneId, persistedLogOne.ID)
-			irrelevantBite := generateBite(test_helpers.FakeIlk.Hex, "irrelevantUrn", headerOneId, persistedLogTwo.ID)
+			bite := generateBite(test_helpers.FakeIlk.Hex, fakeUrn, headerOneId, biteLog.ID)
+			irrelevantBite := generateBite(test_helpers.FakeIlk.Hex, "irrelevantUrn", headerOneId, irrelevantBiteLog.ID)
 
 			err = biteRepo.Create([]interface{}{bite, irrelevantBite})
 			Expect(err).NotTo(HaveOccurred())

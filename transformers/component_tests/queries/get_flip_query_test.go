@@ -52,7 +52,6 @@ var _ = Describe("Single flip view", func() {
 		blockOneHeader := fakes.GetFakeHeaderWithTimestamp(int64(timestampOne), int64(blockOne))
 		headerId, headerOneErr := headerRepo.CreateOrUpdateHeader(blockOneHeader)
 		Expect(headerOneErr).NotTo(HaveOccurred())
-		dealLog := test_data.CreateTestLog(headerId, db)
 
 		flipStorageValuesOne := test_helpers.GetFlipStorageValues(1, test_helpers.FakeIlk.Hex, fakeBidId)
 		test_helpers.CreateFlip(db, blockOneHeader, flipStorageValuesOne,
@@ -64,14 +63,13 @@ var _ = Describe("Single flip view", func() {
 				BidId:           fakeBidId,
 				ContractAddress: contractAddress,
 				DealRepo:        dealRepo,
-				DealHeaderId:    headerId,
-				DealLogID:       dealLog.ID,
+				DealHeaderID:    headerId,
 			},
 			Dealt:            true,
 			IlkHex:           test_helpers.FakeIlk.Hex,
 			UrnGuy:           test_data.FlipKickModel.Usr,
 			FlipKickRepo:     flipKickRepo,
-			FlipKickHeaderId: headerId,
+			FlipKickHeaderID: headerId,
 		})
 		Expect(err).NotTo(HaveOccurred())
 
@@ -103,7 +101,6 @@ var _ = Describe("Single flip view", func() {
 			header := fakes.GetFakeHeaderWithTimestamp(int64(timestamp), int64(blockNumber))
 			headerId, headerOneErr := headerRepo.CreateOrUpdateHeader(header)
 			Expect(headerOneErr).NotTo(HaveOccurred())
-			dealLog := test_data.CreateTestLog(headerId, db)
 
 			flipStorageValues := test_helpers.GetFlipStorageValues(1, test_helpers.FakeIlk.Hex, fakeBidId)
 			test_helpers.CreateFlip(db, header, flipStorageValues,
@@ -114,13 +111,12 @@ var _ = Describe("Single flip view", func() {
 					Db:              db,
 					BidId:           fakeBidId,
 					ContractAddress: contractAddress,
-					DealLogID:       dealLog.ID,
 				},
 				Dealt:            false,
 				IlkHex:           test_helpers.FakeIlk.Hex,
 				UrnGuy:           test_data.FlipKickModel.Usr,
 				FlipKickRepo:     flipKickRepo,
-				FlipKickHeaderId: headerId,
+				FlipKickHeaderID: headerId,
 			})
 			Expect(err).NotTo(HaveOccurred())
 
@@ -154,7 +150,6 @@ var _ = Describe("Single flip view", func() {
 			blockTwoHeader.Hash = common.BytesToHash([]byte{5, 4, 3, 2, 1}).String()
 			headerTwoId, headerTwoErr := headerRepo.CreateOrUpdateHeader(blockTwoHeader)
 			Expect(headerTwoErr).NotTo(HaveOccurred())
-			dealLog := test_data.CreateTestLog(headerTwoId, db)
 
 			flipStorageValuesTwo := test_helpers.GetFlipStorageValues(2, test_helpers.FakeIlk.Hex, fakeBidId)
 			test_helpers.CreateFlip(db, blockTwoHeader, flipStorageValuesTwo,
@@ -166,14 +161,13 @@ var _ = Describe("Single flip view", func() {
 					BidId:           fakeBidId,
 					ContractAddress: contractAddress,
 					DealRepo:        dealRepo,
-					DealHeaderId:    headerTwoId,
-					DealLogID:       dealLog.ID,
+					DealHeaderID:    headerTwoId,
 				},
 				Dealt:            true,
 				IlkHex:           test_helpers.FakeIlk.Hex,
 				UrnGuy:           test_data.FlipKickModel.Usr,
 				FlipKickRepo:     flipKickRepo,
-				FlipKickHeaderId: headerOneId,
+				FlipKickHeaderID: headerOneId,
 			})
 			Expect(err).NotTo(HaveOccurred())
 
@@ -200,7 +194,6 @@ var _ = Describe("Single flip view", func() {
 		blockOneHeader := fakes.GetFakeHeaderWithTimestamp(int64(timestampOne), int64(blockOne))
 		headerId, headerOneErr := headerRepo.CreateOrUpdateHeader(blockOneHeader)
 		Expect(headerOneErr).NotTo(HaveOccurred())
-		dealLog := test_data.CreateTestLog(headerId, db)
 
 		flipStorageValuesOne := test_helpers.GetFlipStorageValues(1, test_helpers.FakeIlk.Hex, fakeBidId)
 		test_helpers.CreateFlip(db, blockOneHeader, flipStorageValuesOne,
@@ -212,14 +205,13 @@ var _ = Describe("Single flip view", func() {
 				BidId:           fakeBidId,
 				ContractAddress: contractAddress,
 				DealRepo:        dealRepo,
-				DealHeaderId:    headerId,
-				DealLogID:       dealLog.ID,
+				DealHeaderID:    headerId,
 			},
 			Dealt:            true,
 			IlkHex:           test_helpers.FakeIlk.Hex,
 			UrnGuy:           test_data.FlipKickModel.Usr,
 			FlipKickRepo:     flipKickRepo,
-			FlipKickHeaderId: headerId,
+			FlipKickHeaderID: headerId,
 		})
 		Expect(err).NotTo(HaveOccurred())
 

@@ -42,8 +42,8 @@ var _ = Describe("Bite repository", func() {
 			biteRepository = &bite.BiteRepository{}
 			biteRepository.SetDB(db)
 			headerID = test_data.CreateTestHeader(db)
-			persistedLog := test_data.CreateTestLog(headerID, db)
-			logID = persistedLog.ID
+			biteLog := test_data.CreateTestLog(headerID, db)
+			logID = biteLog.ID
 			model = test_data.BiteModel
 			model.HeaderID = headerID
 			model.LogID = logID
@@ -77,10 +77,10 @@ var _ = Describe("Bite repository", func() {
 		})
 
 		It("allows for multiple log events of the same type in one transaction if they have different log indexes", func() {
-			persistedLogTwo := test_data.CreateTestLog(headerID, db)
+			biteLogTwo := test_data.CreateTestLog(headerID, db)
 			modelWithDifferentLogID := test_data.BiteModel
 			modelWithDifferentLogID.HeaderID = headerID
-			modelWithDifferentLogID.LogID = persistedLogTwo.ID
+			modelWithDifferentLogID.LogID = biteLogTwo.ID
 
 			insertOneErr := biteRepository.Create([]interface{}{model})
 			Expect(insertOneErr).NotTo(HaveOccurred())

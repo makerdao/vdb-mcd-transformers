@@ -576,8 +576,8 @@ func SetUpFlipBidContext(setupData FlipBidContextInput) (ilkId, urnId int64, err
 		return 0, 0, urnErr
 	}
 
-	flipKickLog := test_data.CreateTestLog(setupData.FlipKickHeaderId, setupData.Db)
-	flipKickErr := CreateFlipKick(setupData.ContractAddress, setupData.BidId, setupData.FlipKickHeaderId, flipKickLog.ID, setupData.UrnGuy, setupData.FlipKickRepo)
+	flipKickLog := test_data.CreateTestLog(setupData.FlipKickHeaderID, setupData.Db)
+	flipKickErr := CreateFlipKick(setupData.ContractAddress, setupData.BidId, setupData.FlipKickHeaderID, flipKickLog.ID, setupData.UrnGuy, setupData.FlipKickRepo)
 	if flipKickErr != nil {
 		return 0, 0, flipKickErr
 	}
@@ -626,12 +626,13 @@ func SetUpFlopBidContext(setupData FlopBidCreationInput) (err error) {
 }
 
 func CreateDeal(input DealCreationInput) (err error) {
+	dealLog := test_data.CreateTestLog(input.DealHeaderID, input.Db)
 	dealModel := test_data.DealModel
 	dealModel.ColumnValues["bid_id"] = strconv.Itoa(input.BidId)
 	dealModel.ColumnValues["tx_idx"] = rand.Int31()
 	dealModel.ForeignKeyValues[constants.AddressFK] = input.ContractAddress
-	dealModel.ColumnValues["header_id"] = input.DealHeaderId
-	dealModel.ColumnValues["log_id"] = input.DealLogID
+	dealModel.ColumnValues["header_id"] = input.DealHeaderID
+	dealModel.ColumnValues["log_id"] = dealLog.ID
 	deals := []shared.InsertionModel{dealModel}
 	return input.DealRepo.Create(deals)
 }
@@ -739,8 +740,7 @@ type DealCreationInput struct {
 	BidId           int
 	ContractAddress string
 	DealRepo        deal.DealRepository
-	DealHeaderId    int64
-	DealLogID       int64
+	DealHeaderID    int64
 }
 
 type FlipBidContextInput struct {
@@ -749,7 +749,7 @@ type FlipBidContextInput struct {
 	IlkHex           string
 	UrnGuy           string
 	FlipKickRepo     flip_kick.FlipKickRepository
-	FlipKickHeaderId int64
+	FlipKickHeaderID int64
 }
 
 type FlapBidCreationInput struct {

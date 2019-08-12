@@ -129,7 +129,7 @@ var _ = Describe("Bite event computed columns", func() {
 					IlkHex:           biteEvent.Ilk,
 					UrnGuy:           biteEvent.Urn,
 					FlipKickRepo:     flipKickRepo,
-					FlipKickHeaderId: headerId,
+					FlipKickHeaderID: headerId,
 				})
 			Expect(ctxErr).NotTo(HaveOccurred())
 			flipValues := test_helpers.GetFlipStorageValues(0, biteEvent.Ilk, bidId)

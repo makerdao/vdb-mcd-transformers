@@ -90,14 +90,12 @@ var _ = Describe("Flap bid events query", func() {
 			})
 			Expect(flapTendErr).NotTo(HaveOccurred())
 
-			flapDealLog := test_data.CreateTestLog(headerOneId, db)
 			flapDealErr := test_helpers.CreateDeal(test_helpers.DealCreationInput{
 				Db:              db,
 				BidId:           fakeBidId,
 				ContractAddress: contractAddress,
 				DealRepo:        dealRepo,
-				DealHeaderId:    headerOneId,
-				DealLogID:       flapDealLog.ID,
+				DealHeaderID:    headerOneId,
 			})
 			Expect(flapDealErr).NotTo(HaveOccurred())
 
@@ -352,15 +350,13 @@ var _ = Describe("Flap bid events query", func() {
 			headerThree := fakes.GetFakeHeader(int64(blockThree))
 			headerThreeId, headerThreeErr := headerRepo.CreateOrUpdateHeader(headerThree)
 			Expect(headerThreeErr).NotTo(HaveOccurred())
-			dealLog := test_data.CreateTestLog(headerThreeId, db)
 
 			flapDealErr := test_helpers.CreateDeal(test_helpers.DealCreationInput{
 				Db:              db,
 				BidId:           fakeBidId,
 				ContractAddress: contractAddress,
 				DealRepo:        dealRepo,
-				DealHeaderId:    headerThreeId,
-				DealLogID:       dealLog.ID,
+				DealHeaderID:    headerThreeId,
 			})
 			Expect(flapDealErr).NotTo(HaveOccurred())
 
