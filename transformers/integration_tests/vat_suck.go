@@ -17,26 +17,24 @@
 package integration_tests
 
 import (
+	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/vulcanize/mcd_transformers/transformers/test_data"
-
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
-
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_suck"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/mcd_transformers/transformers/test_data"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 )
 
 var _ = Describe("VatSuck Transformer", func() {
 	vatSuckConfig := transformer.EventTransformerConfig{
-		TransformerName:   mcdConstants.VatSuckLabel,
+		TransformerName:   constants.VatSuckLabel,
 		ContractAddresses: []string{test_data.VatAddress()},
-		ContractAbi:       mcdConstants.VatABI(),
-		Topic:             mcdConstants.VatSuckSignature(),
+		ContractAbi:       constants.VatABI(),
+		Topic:             constants.VatSuckSignature(),
 	}
 
 	It("transforms VatSuck log events", func() {

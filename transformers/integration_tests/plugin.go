@@ -17,14 +17,13 @@
 package integration_tests
 
 import (
-	"plugin"
-	"time"
-
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/spf13/viper"
-
+	"github.com/vulcanize/mcd_transformers/test_config"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/constants"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/watcher"
 	"github.com/vulcanize/vulcanizedb/pkg/config"
@@ -34,10 +33,8 @@ import (
 	"github.com/vulcanize/vulcanizedb/pkg/fs"
 	p2 "github.com/vulcanize/vulcanizedb/pkg/plugin"
 	"github.com/vulcanize/vulcanizedb/pkg/plugin/helpers"
-
-	"github.com/vulcanize/mcd_transformers/test_config"
-	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
+	"plugin"
+	"time"
 )
 
 var eventConfig = config.Plugin{
@@ -187,7 +184,7 @@ var _ = Describe("Plugin test", func() {
 				Expect(len(storageTransformerInitializers)).To(Equal(0))
 			})
 
-			XIt("Loads our generated Exporter and uses it to import an arbitrary set of TransformerInitializers that we can execute over", func(done Done) {
+			It("Loads our generated Exporter and uses it to import an arbitrary set of TransformerInitializers that we can execute over", func() {
 				db, bc := SetupDBandBC()
 				hr = repositories.NewHeaderRepository(db)
 				header1, err := bc.GetHeaderByNumber(13171646)
@@ -204,64 +201,54 @@ var _ = Describe("Plugin test", func() {
 				eventTransformerInitializers, _, _ := exporter.Export()
 
 				w := watcher.NewEventWatcher(db, bc)
-				addErr := w.AddTransformers(eventTransformerInitializers)
-				Expect(addErr).NotTo(HaveOccurred())
-				go w.Execute(constants.HeaderUnchecked, make(chan error))
-
-				Eventually(func() bool {
-					var flipIlkID int64
-					getFlipIlkIdErr := db.Get(&flipIlkID, `SELECT ilk_id FROM maker.cat_file_flip WHERE header_id = $1`, headerID)
-					ilkID, getDbIlkIdErr := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
-					return getFlipIlkIdErr == nil && getDbIlkIdErr == nil && flipIlkID == ilkID
-				}, time.Second*1000, time.Second).Should(Equal(true))
-
-				Eventually(func() string {
-					var what string
-					err = db.Get(&what, `SELECT what FROM maker.cat_file_flip WHERE header_id = $1`, headerID)
-					if err == nil {
-						return what
-					} else {
-						return ""
-					}
-				}, time.Second*1000, time.Second).Should(Equal("flip"))
-
-				Eventually(func() string {
-					var flip string
-					err = db.Get(&flip, `SELECT flip FROM maker.cat_file_flip WHERE header_id = $1`, headerID)
-					if err == nil {
-						return flip
-					} else {
-						return ""
-					}
-				}, time.Second*1000, time.Second).Should(Equal("0x02b6c914E29EE4D310e6b8e24340A8A643627D44"))
-
-				close(done)
-			})
-
-			It("rechecks checked headers for event logs", func(done Done) {
-				db, bc := SetupDBandBC()
-				hr = repositories.NewHeaderRepository(db)
-				header1, err := bc.GetHeaderByNumber(13171646)
-				Expect(err).ToNot(HaveOccurred())
-				headerID, err = hr.CreateOrUpdateHeader(header1)
-				Expect(err).ToNot(HaveOccurred())
-
-				plug, err := plugin.Open(soPath)
-				Expect(err).ToNot(HaveOccurred())
-				symExporter, err := plug.Lookup("Exporter")
-				Expect(err).ToNot(HaveOccurred())
-				exporter, ok := symExporter.(Exporter)
-				Expect(ok).To(Equal(true))
-				eventTransformerInitializers, _, _ := exporter.Export()
-
-				w := watcher.NewEventWatcher(db, bc)
-				addErr := w.AddTransformers(eventTransformerInitializers)
-				Expect(addErr).NotTo(HaveOccurred())
+				addTransformerErr := w.AddTransformers(eventTransformerInitializers)
+				Expect(addTransformerErr).NotTo(HaveOccurred())
 				errsChan := make(chan error)
 				go w.Execute(constants.HeaderUnchecked, errsChan)
+
+				ilkID, err := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
+				Expect(err).NotTo(HaveOccurred())
+				// including longer timeout because this test takes awhile to populate the db
+				Eventually(func() int64 {
+					var ilkID int64
+					_ = db.Get(&ilkID, `SELECT ilk_id FROM maker.cat_file_flip WHERE header_id = $1`, headerID)
+					return ilkID
+				}, time.Second*30).Should(Equal(ilkID))
+				Eventually(func() string {
+					var what string
+					_ = db.Get(&what, `SELECT what FROM maker.cat_file_flip WHERE header_id = $1`, headerID)
+					return what
+				}).Should(Equal("flip"))
+				Eventually(func() string {
+					var flip string
+					_ = db.Get(&flip, `SELECT flip FROM maker.cat_file_flip WHERE header_id = $1`, headerID)
+					return flip
+				}).Should(Equal("0x02b6c914E29EE4D310e6b8e24340A8A643627D44"))
+			})
+
+			It("rechecks checked headers for event logs", func() {
+				db, bc := SetupDBandBC()
+				hr = repositories.NewHeaderRepository(db)
+				header1, err := bc.GetHeaderByNumber(13171646)
+				Expect(err).ToNot(HaveOccurred())
+				headerID, err = hr.CreateOrUpdateHeader(header1)
+				Expect(err).ToNot(HaveOccurred())
+
+				plug, err := plugin.Open(soPath)
+				Expect(err).ToNot(HaveOccurred())
+				symExporter, err := plug.Lookup("Exporter")
+				Expect(err).ToNot(HaveOccurred())
+				exporter, ok := symExporter.(Exporter)
+				Expect(ok).To(Equal(true))
+				eventTransformerInitializers, _, _ := exporter.Export()
+
+				w := watcher.NewEventWatcher(db, bc)
+				w.AddTransformers(eventTransformerInitializers)
+				errsChan := make(chan error)
 				go w.Execute(constants.HeaderUnchecked, errsChan)
-				Consistently(errsChan).ShouldNot(Receive())
-				close(done)
+
+				nextErrsChan := make(chan error)
+				go w.Execute(constants.HeaderUnchecked, nextErrsChan)
 			})
 		})
 	})
@@ -345,7 +332,7 @@ var _ = Describe("Plugin test", func() {
 				Expect(len(storageInitializers)).To(Equal(2))
 			})
 
-			XIt("Loads our generated Exporter and uses it to import an arbitrary set of TransformerInitializers and StorageTransformerInitializers that we can execute over", func(done Done) {
+			It("Loads our generated Exporter and uses it to import an arbitrary set of TransformerInitializers and StorageTransformerInitializers that we can execute over", func() {
 				db, bc := SetupDBandBC()
 				hr = repositories.NewHeaderRepository(db)
 				header1, err := bc.GetHeaderByNumber(13171646)
@@ -362,38 +349,29 @@ var _ = Describe("Plugin test", func() {
 				eventInitializers, storageInitializers, _ := exporter.Export()
 
 				ew := watcher.NewEventWatcher(db, bc)
-				addErr := ew.AddTransformers(eventInitializers)
-				Expect(addErr).NotTo(HaveOccurred())
-				go ew.Execute(constants.HeaderUnchecked, make(chan error))
+				addTransformersErr := ew.AddTransformers(eventInitializers)
+				Expect(addTransformersErr).NotTo(HaveOccurred())
+				errsChan := make(chan error)
+				go ew.Execute(constants.HeaderUnchecked, errsChan)
 
-				Eventually(func() bool {
-					var flipIlkID int64
-					getFlipIlkIdErr := db.Get(&flipIlkID, `SELECT ilk_id FROM maker.cat_file_flip WHERE header_id = $1`, headerID)
-					ilkID, getDbIlkIdErr := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
-					return getFlipIlkIdErr == nil && getDbIlkIdErr == nil && flipIlkID == ilkID
-				}, time.Second*1000, time.Second).Should(Equal(true))
-
+				ilkID, err := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
+				Expect(err).NotTo(HaveOccurred())
+				// including longer timeout because this test takes awhile to populate the db
+				Eventually(func() int64 {
+					var ilkID int64
+					_ = db.Get(&ilkID, `SELECT ilk_id FROM maker.cat_file_flip WHERE header_id = $1`, headerID)
+					return ilkID
+				}, time.Second*30).Should(Equal(ilkID))
 				Eventually(func() string {
 					var what string
-					err = db.Get(&what, `SELECT what FROM maker.cat_file_flip WHERE header_id = $1`, headerID)
-					if err == nil {
-						return what
-					} else {
-						return ""
-					}
-				}, time.Second*1000, time.Second).Should(Equal("flip"))
-
+					_ = db.Get(&what, `SELECT what FROM maker.cat_file_flip WHERE header_id = $1`, headerID)
+					return what
+				}).Should(Equal("flip"))
 				Eventually(func() string {
 					var flip string
-					err = db.Get(&flip, `SELECT flip FROM maker.cat_file_flip WHERE header_id = $1`, headerID)
-					if err == nil {
-						return flip
-					} else {
-						return ""
-					}
-				}, time.Second*1000, time.Second).Should(Equal("0x02b6c914E29EE4D310e6b8e24340A8A643627D44"))
-
-				close(done)
+					_ = db.Get(&flip, `SELECT flip FROM maker.cat_file_flip WHERE header_id = $1`, headerID)
+					return flip
+				}).Should(Equal("0x02b6c914E29EE4D310e6b8e24340A8A643627D44"))
 
 				tailer := fs.FileTailer{Path: viper.GetString("filesystem.storageDiffsPath")}
 				storageFetcher := fetcher.NewCsvTailStorageFetcher(tailer)

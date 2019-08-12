@@ -17,21 +17,19 @@
 package integration_tests
 
 import (
-	"github.com/vulcanize/mcd_transformers/transformers/test_data"
-	"strconv"
-
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/vulcanize/mcd_transformers/test_config"
+	"github.com/vulcanize/mcd_transformers/transformers/events/vat_fold"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
-
-	"github.com/vulcanize/mcd_transformers/test_config"
-	"github.com/vulcanize/mcd_transformers/transformers/events/vat_fold"
-	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"strconv"
 )
 
 var _ = Describe("VatFold Transformer", func() {
@@ -50,10 +48,10 @@ var _ = Describe("VatFold Transformer", func() {
 	})
 
 	vatFoldConfig := transformer.EventTransformerConfig{
-		TransformerName:   mcdConstants.VatFoldLabel,
+		TransformerName:   constants.VatFoldLabel,
 		ContractAddresses: []string{test_data.VatAddress()},
-		ContractAbi:       mcdConstants.VatABI(),
-		Topic:             mcdConstants.VatFoldSignature(),
+		ContractAbi:       constants.VatABI(),
+		Topic:             constants.VatFoldSignature(),
 	}
 
 	It("transforms VatFold log events", func() {

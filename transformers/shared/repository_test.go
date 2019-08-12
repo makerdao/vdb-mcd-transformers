@@ -17,8 +17,6 @@
 package shared_test
 
 import (
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/vulcanize/mcd_transformers/test_config"
@@ -28,21 +26,19 @@ import (
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
-	"math/rand"
 	"strconv"
 )
 
 var _ = Describe("Shared repository", func() {
 	var db *postgres.DB
+	const hexIlk = "0x464b450000000000000000000000000000000000000000000000000000000000"
 
 	BeforeEach(func() {
 		db = test_config.NewTestDB(test_config.NewTestNode())
 		test_config.CleanTestDB(db)
 	})
 
-	const hexIlk = "0x464b450000000000000000000000000000000000000000000000000000000000"
-
-	Describe("Create function", func() {
+	Describe("Create", func() {
 		const createTestEventTableQuery = `CREATE TABLE maker.testEvent(
 		id        SERIAL PRIMARY KEY,
 		header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
@@ -59,19 +55,22 @@ var _ = Describe("Shared repository", func() {
 			headerID, logID  int64
 			headerRepository repositories.HeaderRepository
 			testModel        shared.InsertionModel
-			db               *postgres.DB
 		)
 
 		BeforeEach(func() {
 			db = test_config.NewTestDB(test_config.NewTestNode())
 			test_config.CleanTestDB(db)
+		})
+
+		BeforeEach(func() {
 			_, _ = db.Exec(createTestEventTableQuery)
 			_, _ = db.Exec(addCheckedColumnQuery)
 			headerRepository = repositories.NewHeaderRepository(db)
 			var insertHeaderErr error
 			headerID, insertHeaderErr = headerRepository.CreateOrUpdateHeader(fakes.FakeHeader)
 			Expect(insertHeaderErr).NotTo(HaveOccurred())
-			logID = createLog(headerID, db)
+			headerSyncLog := test_data.CreateTestLog(headerID, db)
+			logID = headerSyncLog.ID
 
 			testModel = shared.InsertionModel{
 				TableName: "testEvent",
@@ -109,8 +108,7 @@ var _ = Describe("Shared repository", func() {
 			Expect(createErr).NotTo(HaveOccurred())
 
 			var res TestEvent
-			dbErr := db.Get(&res, `SELECT log_id, variable1
-           FROM maker.testEvent;`)
+			dbErr := db.Get(&res, `SELECT log_id, variable1 FROM maker.testEvent;`)
 			Expect(dbErr).NotTo(HaveOccurred())
 
 			Expect(res.LogID).To(Equal(testModel.ColumnValues["log_id"]))
@@ -159,14 +157,14 @@ var _ = Describe("Shared repository", func() {
 					},
 				}
 
-				createErr := shared.Create([]shared.InsertionModel{testModel, conflictingModel}, db)
-				Expect(createErr).NotTo(HaveOccurred())
+				// Remove cached queries, or we won't generate a new (incorrect) one
+				delete(shared.ModelToQuery, "testEvent")
+				conflictingModel.ColumnValues["header_id"] = headerID
 
-				var res TestEvent
-				dbErr := db.Get(&res, `SELECT log_id, variable1
-           FROM maker.testEvent;`)
-				Expect(dbErr).NotTo(HaveOccurred())
-				Expect(res.Variable1).To(Equal(conflictingModel.ColumnValues["variable1"]))
+				createErr := shared.Create([]shared.InsertionModel{conflictingModel}, db)
+				Expect(createErr).To(HaveOccurred())
+				// Remove incorrect query, so other tests won't get it
+				delete(shared.ModelToQuery, "testEvent")
 			})
 		})
 
@@ -191,8 +189,7 @@ var _ = Describe("Shared repository", func() {
 			Expect(createErr).NotTo(HaveOccurred())
 
 			var res TestEvent
-			dbErr := db.Get(&res, `SELECT log_id, variable1
-           FROM maker.testEvent;`)
+			dbErr := db.Get(&res, `SELECT log_id, variable1 FROM maker.testEvent;`)
 			Expect(dbErr).NotTo(HaveOccurred())
 			Expect(res.Variable1).To(Equal(conflictingModel.ColumnValues["variable1"]))
 		})
@@ -274,40 +271,33 @@ var _ = Describe("Shared repository", func() {
 	})
 
 	Describe("GetOrCreateIlk", func() {
-		It("returns same ilk id for value with and without hex prefix", func() {
-			ilkWithPrefix := hexIlk
-			ilkWithoutPrefix := ilkWithPrefix[2:]
+		It("returns ID for same ilk with or without hex prefix", func() {
+			ilkIDOne, insertErrOne := shared.GetOrCreateIlk(hexIlk, db)
+			Expect(insertErrOne).NotTo(HaveOccurred())
 
-			ilkIdOne, ilkErrOne := shared.GetOrCreateIlk(ilkWithPrefix, db)
-			Expect(ilkErrOne).NotTo(HaveOccurred())
+			ilkIDTwo, insertErrTwo := shared.GetOrCreateIlk(hexIlk[2:], db)
+			Expect(insertErrTwo).NotTo(HaveOccurred())
 
-			ilkIdTwo, ilkErrTwo := shared.GetOrCreateIlk(ilkWithoutPrefix, db)
-			Expect(ilkErrTwo).NotTo(HaveOccurred())
-
-			Expect(ilkIdOne).NotTo(BeZero())
-			Expect(ilkIdOne).To(Equal(ilkIdTwo))
+			Expect(ilkIDOne).To(Equal(ilkIDTwo))
 		})
 	})
 
 	Describe("GetOrCreateIlkInTransaction", func() {
-		It("returns same ilk id for value with and without hex prefix", func() {
-			ilkWithPrefix := hexIlk
-			ilkWithoutPrefix := ilkWithPrefix[2:]
-
+		It("returns ID for same ilk with or without hex prefix", func() {
 			tx, txErr := db.Beginx()
 			Expect(txErr).NotTo(HaveOccurred())
 
-			ilkIdOne, ilkErrOne := shared.GetOrCreateIlkInTransaction(ilkWithPrefix, tx)
-			Expect(ilkErrOne).NotTo(HaveOccurred())
+			ilkIDOne, insertErrOne := shared.GetOrCreateIlkInTransaction(hexIlk, tx)
+			Expect(insertErrOne).NotTo(HaveOccurred())
 
-			ilkIdTwo, ilkErrTwo := shared.GetOrCreateIlkInTransaction(ilkWithoutPrefix, tx)
-			Expect(ilkErrTwo).NotTo(HaveOccurred())
+			ilkIDTwo, insertErrTwo := shared.GetOrCreateIlkInTransaction(hexIlk[2:], tx)
+			Expect(insertErrTwo).NotTo(HaveOccurred())
 
 			commitErr := tx.Commit()
 			Expect(commitErr).NotTo(HaveOccurred())
 
-			Expect(ilkIdOne).NotTo(BeZero())
-			Expect(ilkIdOne).To(Equal(ilkIdTwo))
+			Expect(ilkIDOne).NotTo(BeZero())
+			Expect(ilkIDOne).To(Equal(ilkIDTwo))
 		})
 	})
 
@@ -396,20 +386,4 @@ var _ = Describe("Shared repository", func() {
 type TestEvent struct {
 	LogID     string `db:"log_id"`
 	Variable1 string
-}
-
-func createLog(headerID int64, db *postgres.DB) int64 {
-	log := types.Log{
-		Address:     common.Address{},
-		Topics:      nil,
-		Data:        nil,
-		BlockNumber: 0,
-		TxHash:      common.Hash{},
-		TxIndex:     uint(rand.Int31()),
-		BlockHash:   common.Hash{},
-		Index:       0,
-		Removed:     false,
-	}
-	headerSyncLogs := test_data.CreateLogs(headerID, []types.Log{log}, db)
-	return headerSyncLogs[0].ID
 }

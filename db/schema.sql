@@ -7919,37 +7919,6 @@ ALTER SEQUENCE public.checked_headers_id_seq OWNED BY public.checked_headers.id;
 
 
 --
--- Name: checked_logs; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.checked_logs (
-    id integer NOT NULL,
-    contract_address character varying(42),
-    topic_zero character varying(66)
-);
-
-
---
--- Name: checked_logs_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.checked_logs_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: checked_logs_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.checked_logs_id_seq OWNED BY public.checked_logs.id;
-
-
---
 -- Name: eth_nodes; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -7988,7 +7957,7 @@ ALTER SEQUENCE public.full_sync_logs_id_seq OWNED BY public.full_sync_logs.id;
 
 CREATE TABLE public.full_sync_receipts (
     id integer NOT NULL,
-    address_id integer NOT NULL,
+    contract_address_id integer NOT NULL,
     cumulative_gas_used numeric,
     gas_used numeric,
     state_root character varying(66),
@@ -8138,7 +8107,7 @@ CREATE TABLE public.header_sync_receipts (
     id integer NOT NULL,
     transaction_id integer NOT NULL,
     header_id integer NOT NULL,
-    address_id integer NOT NULL,
+    contract_address_id integer NOT NULL,
     cumulative_gas_used numeric,
     gas_used numeric,
     state_root character varying(66),
@@ -8427,6 +8396,37 @@ CREATE VIEW public.watched_event_logs AS
      CROSS JOIN public.block_stats)
      JOIN public.full_sync_logs ON ((((full_sync_logs.address)::text = (log_filters.address)::text) AND (full_sync_logs.block_number >= COALESCE(log_filters.from_block, block_stats.min_block)) AND (full_sync_logs.block_number <= COALESCE(log_filters.to_block, block_stats.max_block)))))
   WHERE ((((log_filters.topic0)::text = (full_sync_logs.topic0)::text) OR (log_filters.topic0 IS NULL)) AND (((log_filters.topic1)::text = (full_sync_logs.topic1)::text) OR (log_filters.topic1 IS NULL)) AND (((log_filters.topic2)::text = (full_sync_logs.topic2)::text) OR (log_filters.topic2 IS NULL)) AND (((log_filters.topic3)::text = (full_sync_logs.topic3)::text) OR (log_filters.topic3 IS NULL)));
+
+
+--
+-- Name: watched_logs; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.watched_logs (
+    id integer NOT NULL,
+    contract_address character varying(42),
+    topic_zero character varying(66)
+);
+
+
+--
+-- Name: watched_logs_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.watched_logs_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: watched_logs_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.watched_logs_id_seq OWNED BY public.watched_logs.id;
 
 
 --
@@ -9354,13 +9354,6 @@ ALTER TABLE ONLY public.checked_headers ALTER COLUMN id SET DEFAULT nextval('pub
 
 
 --
--- Name: checked_logs id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.checked_logs ALTER COLUMN id SET DEFAULT nextval('public.checked_logs_id_seq'::regclass);
-
-
---
 -- Name: eth_nodes id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -9449,6 +9442,13 @@ ALTER TABLE ONLY public.uncles ALTER COLUMN id SET DEFAULT nextval('public.uncle
 --
 
 ALTER TABLE ONLY public.watched_contracts ALTER COLUMN contract_id SET DEFAULT nextval('public.watched_contracts_contract_id_seq'::regclass);
+
+
+--
+-- Name: watched_logs id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.watched_logs ALTER COLUMN id SET DEFAULT nextval('public.watched_logs_id_seq'::regclass);
 
 
 --
@@ -11564,14 +11564,6 @@ ALTER TABLE ONLY public.checked_headers
 
 
 --
--- Name: checked_logs checked_logs_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.checked_logs
-    ADD CONSTRAINT checked_logs_pkey PRIMARY KEY (id);
-
-
---
 -- Name: blocks eth_node_id_block_number_uc; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -11737,6 +11729,14 @@ ALTER TABLE ONLY public.watched_contracts
 
 ALTER TABLE ONLY public.watched_contracts
     ADD CONSTRAINT watched_contracts_pkey PRIMARY KEY (contract_id);
+
+
+--
+-- Name: watched_logs watched_logs_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.watched_logs
+    ADD CONSTRAINT watched_logs_pkey PRIMARY KEY (id);
 
 
 --
@@ -14369,11 +14369,11 @@ ALTER TABLE ONLY public.checked_headers
 
 
 --
--- Name: full_sync_receipts full_sync_receipts_address_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: full_sync_receipts full_sync_receipts_contract_address_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.full_sync_receipts
-    ADD CONSTRAINT full_sync_receipts_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+    ADD CONSTRAINT full_sync_receipts_contract_address_id_fkey FOREIGN KEY (contract_address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --
@@ -14401,11 +14401,11 @@ ALTER TABLE ONLY public.header_sync_logs
 
 
 --
--- Name: header_sync_receipts header_sync_receipts_address_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: header_sync_receipts header_sync_receipts_contract_address_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.header_sync_receipts
-    ADD CONSTRAINT header_sync_receipts_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+    ADD CONSTRAINT header_sync_receipts_contract_address_id_fkey FOREIGN KEY (contract_address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --

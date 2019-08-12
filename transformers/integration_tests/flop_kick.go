@@ -22,7 +22,7 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/events/flop_kick"
-	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
@@ -51,10 +51,10 @@ var _ = XDescribe("FlopKick Transformer", func() {
 		test_config.CleanTestDB(db)
 
 		flopKickConfig = transformer.EventTransformerConfig{
-			TransformerName:   mcdConstants.FlopKickLabel,
+			TransformerName:   constants.FlopKickLabel,
 			ContractAddresses: []string{test_data.FlopAddress()},
-			ContractAbi:       mcdConstants.FlopABI(),
-			Topic:             mcdConstants.FlopKickSignature(),
+			ContractAbi:       constants.FlopABI(),
+			Topic:             constants.FlopKickSignature(),
 		}
 
 		initializer = event.Transformer{

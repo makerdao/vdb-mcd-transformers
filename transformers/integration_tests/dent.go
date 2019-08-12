@@ -20,16 +20,15 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/vulcanize/mcd_transformers/test_config"
+	"github.com/vulcanize/mcd_transformers/transformers/events/dent"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
-
-	"github.com/vulcanize/mcd_transformers/test_config"
-	"github.com/vulcanize/mcd_transformers/transformers/events/dent"
-	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
 var _ = XDescribe("Dent transformer", func() {
@@ -53,10 +52,10 @@ var _ = XDescribe("Dent transformer", func() {
 		test_config.CleanTestDB(db)
 
 		dentConfig = transformer.EventTransformerConfig{
-			TransformerName:   mcdConstants.DentLabel,
+			TransformerName:   constants.DentLabel,
 			ContractAddresses: append(test_data.FlipAddresses(), test_data.FlopAddress()),
-			ContractAbi:       mcdConstants.FlipABI(),
-			Topic:             mcdConstants.DentSignature(),
+			ContractAbi:       constants.FlipABI(),
+			Topic:             constants.DentSignature(),
 		}
 
 		addresses = transformer.HexStringsToAddresses(dentConfig.ContractAddresses)
@@ -101,7 +100,7 @@ var _ = XDescribe("Dent transformer", func() {
 		err = db.Get(&dbTic, `SELECT tic FROM maker.dent`)
 		Expect(err).NotTo(HaveOccurred())
 
-		actualTic := 1538637780 + mcdConstants.TTL
+		actualTic := 1538637780 + constants.TTL
 		Expect(dbTic).To(Equal(actualTic))
 	})
 

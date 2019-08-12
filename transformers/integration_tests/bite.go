@@ -17,30 +17,28 @@
 package integration_tests
 
 import (
-	"strconv"
-
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/vulcanize/mcd_transformers/test_config"
+	"github.com/vulcanize/mcd_transformers/transformers/events/bite"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 	"github.com/vulcanize/vulcanizedb/pkg/geth"
-
-	"github.com/vulcanize/mcd_transformers/test_config"
-	"github.com/vulcanize/mcd_transformers/transformers/events/bite"
-	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
-	"github.com/vulcanize/mcd_transformers/transformers/test_data"
+	"strconv"
 )
 
 var _ = Describe("Bite Transformer", func() {
 	biteConfig := transformer.EventTransformerConfig{
-		TransformerName:   mcdConstants.BiteLabel,
+		TransformerName:   constants.BiteLabel,
 		ContractAddresses: []string{test_data.CatAddress()},
-		ContractAbi:       mcdConstants.CatABI(),
-		Topic:             mcdConstants.BiteSignature(),
+		ContractAbi:       constants.CatABI(),
+		Topic:             constants.BiteSignature(),
 	}
 
 	// TODO: replace block number when there is an updated Cat bite event
@@ -97,7 +95,7 @@ var _ = Describe("Bite Transformer", func() {
 
 	It("unpacks an event log", func() {
 		address := common.HexToAddress(test_data.CatAddress())
-		abi, err := geth.ParseAbi(mcdConstants.CatABI())
+		abi, err := geth.ParseAbi(constants.CatABI())
 		Expect(err).NotTo(HaveOccurred())
 
 		contract := bind.NewBoundContract(address, abi, nil, nil, nil)

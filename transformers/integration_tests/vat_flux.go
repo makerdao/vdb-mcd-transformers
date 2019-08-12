@@ -17,27 +17,25 @@
 package integration_tests
 
 import (
-	"github.com/vulcanize/mcd_transformers/transformers/test_data"
-	"strconv"
-
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
-
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_flux"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/mcd_transformers/transformers/test_data"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
+	"strconv"
 )
 
 var _ = Describe("VatFlux LogNoteTransformer", func() {
 	vatFluxConfig := transformer.EventTransformerConfig{
-		TransformerName:   mcdConstants.VatFluxLabel,
+		TransformerName:   constants.VatFluxLabel,
 		ContractAddresses: []string{test_data.VatAddress()},
-		ContractAbi:       mcdConstants.VatABI(),
-		Topic:             mcdConstants.VatFluxSignature(),
+		ContractAbi:       constants.VatABI(),
+		Topic:             constants.VatFluxSignature(),
 	}
 
 	It("transforms VatFlux log events", func() {

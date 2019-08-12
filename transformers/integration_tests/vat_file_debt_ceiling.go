@@ -20,16 +20,15 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/vulcanize/mcd_transformers/test_config"
+	"github.com/vulcanize/mcd_transformers/transformers/events/vat_file/debt_ceiling"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
-
-	"github.com/vulcanize/mcd_transformers/test_config"
-	"github.com/vulcanize/mcd_transformers/transformers/events/vat_file/debt_ceiling"
-	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
 var _ = Describe("VatFileDebtCeiling LogNoteTransformer", func() {
@@ -48,10 +47,10 @@ var _ = Describe("VatFileDebtCeiling LogNoteTransformer", func() {
 	})
 
 	vatFileDebtCeilingConfig := transformer.EventTransformerConfig{
-		TransformerName:   mcdConstants.VatFileDebtCeilingLabel,
+		TransformerName:   constants.VatFileDebtCeilingLabel,
 		ContractAddresses: []string{test_data.VatAddress()},
-		ContractAbi:       mcdConstants.VatABI(),
-		Topic:             mcdConstants.VatFileDebtCeilingSignature(),
+		ContractAbi:       constants.VatABI(),
+		Topic:             constants.VatFileDebtCeilingSignature(),
 	}
 
 	It("fetches and transforms a VatFileDebtCeiling event from Kovan chain", func() {

@@ -20,16 +20,15 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/vulcanize/mcd_transformers/test_config"
+	"github.com/vulcanize/mcd_transformers/transformers/events/tend"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
-
-	"github.com/vulcanize/mcd_transformers/test_config"
-	"github.com/vulcanize/mcd_transformers/transformers/events/tend"
-	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
-	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
 var _ = XDescribe("Tend LogNoteTransformer", func() {
@@ -52,10 +51,10 @@ var _ = XDescribe("Tend LogNoteTransformer", func() {
 		test_config.CleanTestDB(db)
 
 		tendConfig = transformer.EventTransformerConfig{
-			TransformerName:   mcdConstants.TendLabel,
+			TransformerName:   constants.TendLabel,
 			ContractAddresses: append(test_data.FlipAddresses(), test_data.FlapAddress()),
-			ContractAbi:       mcdConstants.FlipABI(),
-			Topic:             mcdConstants.TendSignature(),
+			ContractAbi:       constants.FlipABI(),
+			Topic:             constants.TendSignature(),
 		}
 
 		logFetcher = fetcher.NewLogFetcher(blockChain)
@@ -100,7 +99,7 @@ var _ = XDescribe("Tend LogNoteTransformer", func() {
 		err = db.Get(&dbTic, `SELECT tic FROM maker.tend`)
 		Expect(err).NotTo(HaveOccurred())
 
-		actualTic := 1538490276 + mcdConstants.TTL
+		actualTic := 1538490276 + constants.TTL
 		Expect(dbTic).To(Equal(actualTic))
 	})
 
@@ -135,7 +134,7 @@ var _ = XDescribe("Tend LogNoteTransformer", func() {
 		err = db.Get(&dbTic, `SELECT tic FROM maker.tend`)
 		Expect(err).NotTo(HaveOccurred())
 
-		actualTic := 1538491224 + mcdConstants.TTL
+		actualTic := 1538491224 + constants.TTL
 		Expect(dbTic).To(Equal(actualTic))
 	})
 
@@ -170,7 +169,7 @@ var _ = XDescribe("Tend LogNoteTransformer", func() {
 		err = db.Get(&dbTic, `SELECT tic FROM maker.tend`)
 		Expect(err).NotTo(HaveOccurred())
 
-		actualTic := 1538992860 + mcdConstants.TTL
+		actualTic := 1538992860 + constants.TTL
 		Expect(dbTic).To(Equal(actualTic))
 	})
 })

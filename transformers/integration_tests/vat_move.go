@@ -20,22 +20,21 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/vulcanize/mcd_transformers/transformers/test_data"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
-
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_move"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/mcd_transformers/transformers/test_data"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 )
 
 var _ = Describe("VatMove LogNoteTransformer", func() {
 	vatMoveConfig := transformer.EventTransformerConfig{
-		TransformerName:   mcdConstants.VatMoveLabel,
+		TransformerName:   constants.VatMoveLabel,
 		ContractAddresses: []string{test_data.VatAddress()},
-		ContractAbi:       mcdConstants.VatABI(),
-		Topic:             mcdConstants.VatMoveSignature(),
+		ContractAbi:       constants.VatABI(),
+		Topic:             constants.VatMoveSignature(),
 	}
 
 	It("transforms VatMove log events", func() {

@@ -20,17 +20,15 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-
+	"github.com/vulcanize/mcd_transformers/test_config"
+	"github.com/vulcanize/mcd_transformers/transformers/events/flap_kick"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
-
-	"github.com/vulcanize/mcd_transformers/test_config"
-	"github.com/vulcanize/mcd_transformers/transformers/events/flap_kick"
-	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
-	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
 var _ = XDescribe("FlapKick Transformer", func() {
@@ -49,10 +47,10 @@ var _ = XDescribe("FlapKick Transformer", func() {
 	})
 
 	flapKickConfig := transformer.EventTransformerConfig{
-		TransformerName:   mcdConstants.FlapKickLabel,
+		TransformerName:   constants.FlapKickLabel,
 		ContractAddresses: []string{test_data.FlapAddress()},
-		ContractAbi:       mcdConstants.FlapABI(),
-		Topic:             mcdConstants.FlapKickSignature(),
+		ContractAbi:       constants.FlapABI(),
+		Topic:             constants.FlapKickSignature(),
 	}
 
 	It("fetches and transforms a FlapKick event from Kovan chain", func() {

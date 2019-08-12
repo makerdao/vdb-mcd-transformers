@@ -17,23 +17,21 @@
 package integration_tests
 
 import (
-	"github.com/vulcanize/mcd_transformers/transformers/test_data"
-	"strconv"
-
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
-	"github.com/vulcanize/vulcanizedb/pkg/core"
-	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
-
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/events/spot_file/mat"
 	"github.com/vulcanize/mcd_transformers/transformers/events/spot_file/pip"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/mcd_transformers/transformers/test_data"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
+	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
+	"strconv"
 )
 
 var _ = Describe("SpotFile LogNoteTransformers", func() {
@@ -69,10 +67,10 @@ var _ = Describe("SpotFile LogNoteTransformers", func() {
 			Expect(insertHeaderErr).NotTo(HaveOccurred())
 
 			spotFileMatConfig := transformer.EventTransformerConfig{
-				TransformerName:     mcdConstants.SpotFileMatLabel,
+				TransformerName:     constants.SpotFileMatLabel,
 				ContractAddresses:   []string{test_data.SpotAddress()},
-				ContractAbi:         mcdConstants.SpotABI(),
-				Topic:               mcdConstants.SpotFileMatSignature(),
+				ContractAbi:         constants.SpotABI(),
+				Topic:               constants.SpotFileMatSignature(),
 				StartingBlockNumber: blockNumber,
 				EndingBlockNumber:   blockNumber,
 			}
@@ -129,10 +127,10 @@ var _ = Describe("SpotFile LogNoteTransformers", func() {
 			Expect(insertHeaderErr).NotTo(HaveOccurred())
 
 			spotFilePipConfig := transformer.EventTransformerConfig{
-				TransformerName:     mcdConstants.SpotFilePipLabel,
+				TransformerName:     constants.SpotFilePipLabel,
 				ContractAddresses:   []string{test_data.SpotAddress()},
-				ContractAbi:         mcdConstants.SpotABI(),
-				Topic:               mcdConstants.SpotFilePipSignature(),
+				ContractAbi:         constants.SpotABI(),
+				Topic:               constants.SpotFilePipSignature(),
 				StartingBlockNumber: blockNumber,
 				EndingBlockNumber:   blockNumber,
 			}

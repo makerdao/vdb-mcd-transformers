@@ -17,28 +17,26 @@
 package integration_tests
 
 import (
-	"github.com/vulcanize/mcd_transformers/transformers/test_data"
-	"math/big"
-	"strconv"
-
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
-
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_grab"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/mcd_transformers/transformers/test_data"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
+	"math/big"
+	"strconv"
 )
 
 var _ = XDescribe("Vat Grab Transformer", func() {
 	vatGrabConfig := transformer.EventTransformerConfig{
-		TransformerName:   mcdConstants.VatGrabLabel,
+		TransformerName:   constants.VatGrabLabel,
 		ContractAddresses: []string{test_data.VatAddress()},
-		ContractAbi:       mcdConstants.VatABI(),
-		Topic:             mcdConstants.VatGrabSignature(),
+		ContractAbi:       constants.VatABI(),
+		Topic:             constants.VatGrabSignature(),
 	}
 
 	// TODO: Replace block number once there's a grab event on the updated Vat

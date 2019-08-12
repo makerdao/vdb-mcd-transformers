@@ -17,27 +17,25 @@
 package integration_tests
 
 import (
-	"github.com/vulcanize/mcd_transformers/transformers/test_data"
-	"strconv"
-
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
-
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/events/jug_init"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/mcd_transformers/transformers/test_data"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
+	"strconv"
 )
 
 var _ = Describe("JugInit LogNoteTransformer", func() {
 	jugInitConfig := transformer.EventTransformerConfig{
-		TransformerName:   mcdConstants.JugInitLabel,
+		TransformerName:   constants.JugInitLabel,
 		ContractAddresses: []string{test_data.JugAddress()},
-		ContractAbi:       mcdConstants.JugABI(),
-		Topic:             mcdConstants.JugInitSignature(),
+		ContractAbi:       constants.JugABI(),
+		Topic:             constants.JugInitSignature(),
 	}
 
 	It("transforms jug init log events", func() {

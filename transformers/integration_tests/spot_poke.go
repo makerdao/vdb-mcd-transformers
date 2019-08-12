@@ -17,22 +17,20 @@
 package integration_tests
 
 import (
-	"github.com/vulcanize/mcd_transformers/transformers/events/spot_poke"
-	"github.com/vulcanize/mcd_transformers/transformers/test_data"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
-	"strconv"
-
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/vulcanize/mcd_transformers/test_config"
+	"github.com/vulcanize/mcd_transformers/transformers/events/spot_poke"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/mcd_transformers/transformers/test_data"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
-
-	"github.com/vulcanize/mcd_transformers/test_config"
-	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"strconv"
 )
 
 var _ = Describe("SpotPoke Transformer", func() {
@@ -51,10 +49,10 @@ var _ = Describe("SpotPoke Transformer", func() {
 	})
 
 	spotPokeConfig := transformer.EventTransformerConfig{
-		TransformerName:   mcdConstants.SpotPokeLabel,
+		TransformerName:   constants.SpotPokeLabel,
 		ContractAddresses: []string{test_data.SpotAddress()},
-		ContractAbi:       mcdConstants.SpotABI(),
-		Topic:             mcdConstants.SpotPokeSignature(),
+		ContractAbi:       constants.SpotABI(),
+		Topic:             constants.SpotPokeSignature(),
 	}
 
 	It("transforms spot poke log events", func() {
