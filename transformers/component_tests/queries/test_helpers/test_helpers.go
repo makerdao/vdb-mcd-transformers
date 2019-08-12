@@ -5,6 +5,8 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/vulcanize/mcd_transformers/transformers/events/deal"
 	"github.com/vulcanize/mcd_transformers/transformers/events/flip_kick"
+	"github.com/vulcanize/mcd_transformers/transformers/events/tend"
+	"github.com/vulcanize/mcd_transformers/transformers/events/yank"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/storage"
@@ -531,6 +533,46 @@ func CreateFlipKick(contractAddress string, bidId int, headerId int64, repo flip
 	return repo.Create(headerId, []interface{}{flipKickModel})
 }
 
+func CreateTend(input TendCreationInput) (err error) {
+	tendModel := test_data.TendModel
+	tendModel.ColumnValues["contract_address"] = input.ContractAddress
+	tendModel.ColumnValues["bid_id"] = strconv.Itoa(input.BidId)
+	tendModel.ColumnValues["lot"] = strconv.Itoa(input.Lot)
+	tendModel.ColumnValues["bid"] = strconv.Itoa(input.BidAmount)
+	if input.LogIndex != 0 {
+		tendModel.ColumnValues["log_idx"] = input.LogIndex
+	}
+	if input.TxIndex != 0 {
+		tendModel.ColumnValues["tx_idx"] = input.TxIndex
+	}
+	return input.TendRepo.Create(input.TendHeaderId, []shared.InsertionModel{tendModel})
+}
+
+func CreateYank(input YankCreationInput) (err error) {
+	yankModel := test_data.YankModel
+	yankModel.ColumnValues["contract_address"] = input.ContractAddress
+	yankModel.ColumnValues["bid_id"] = strconv.Itoa(input.BidId)
+	return input.YankRepo.Create(input.YankHeaderId, []shared.InsertionModel{yankModel})
+}
+
+type YankCreationInput struct {
+	ContractAddress string
+	BidId           int
+	YankRepo        yank.YankRepository
+	YankHeaderId    int64
+}
+
+type TendCreationInput struct {
+	ContractAddress string
+	BidId           int
+	Lot             int
+	BidAmount       int
+	TxIndex         int
+	LogIndex        int
+	TendRepo        tend.TendRepository
+	TendHeaderId    int64
+}
+
 type DealCreationInput struct {
 	Db              *postgres.DB
 	BidId           int
@@ -546,6 +588,13 @@ type FlipBidCreationInput struct {
 	UrnGuy           string
 	FlipKickRepo     flip_kick.FlipKickRepository
 	FlipKickHeaderId int64
+}
+
+type BidEvent struct {
+	BidId     string `db:"bid_id"`
+	Lot       string
+	BidAmount string `db:"bid_amount"`
+	Act       string
 }
 
 type IlkFileEvent struct {
