@@ -7,32 +7,38 @@ import (
 )
 
 type MockMakerStorageRepository struct {
+	Cdpis                   []string
 	DaiKeys                 []string
 	FlapBidIds              []string
 	FlipBidIds              []string
 	FlopBidIds              []string
 	GemKeys                 []storage.Urn
+	Ilks                    []string
+	Owners                  []string
+	SinKeys                 []string
+	Urns                    []storage.Urn
+	GetCdpisCalled          bool
+	GetCdpisError           error
 	GetDaiKeysCalled        bool
 	GetDaiKeysError         error
 	GetGemKeysCalled        bool
 	GetGemKeysError         error
 	GetFlapBidIdsCalled     bool
-	GetFlipBidIdsCalledWith string
-	GetFlopBidIdsCalledWith string
 	GetFlapBidIdsError      error
+	GetFlipBidIdsCalledWith string
 	GetFlipBidIdsError      error
+	GetFlopBidIdsCalledWith string
 	GetFlopBidIdsError      error
 	GetIlksCalled           bool
 	GetIlksError            error
+	GetOwnersCalled         bool
+	GetOwnersError          error
 	GetVatSinKeysCalled     bool
 	GetVatSinKeysError      error
 	GetVowSinKeysCalled     bool
 	GetVowSinKeysError      error
 	GetUrnsCalled           bool
 	GetUrnsError            error
-	Ilks                    []string
-	SinKeys                 []string
-	Urns                    []storage.Urn
 }
 
 func (repository *MockMakerStorageRepository) GetFlapBidIds(string) ([]string, error) {
@@ -78,6 +84,16 @@ func (repository *MockMakerStorageRepository) GetFlipBidIds(contractAddress stri
 func (repository *MockMakerStorageRepository) GetFlopBidIds(contractAddress string) ([]string, error) {
 	repository.GetFlopBidIdsCalledWith = contractAddress
 	return repository.FlopBidIds, repository.GetFlopBidIdsError
+}
+
+func (repository *MockMakerStorageRepository) GetCdpis() ([]string, error) {
+	repository.GetCdpisCalled = true
+	return repository.Cdpis, repository.GetCdpisError
+}
+
+func (repository *MockMakerStorageRepository) GetOwners() ([]string, error) {
+	repository.GetOwnersCalled = true
+	return repository.Owners, repository.GetOwnersError
 }
 
 func (repository *MockMakerStorageRepository) SetDB(db *postgres.DB) {}
