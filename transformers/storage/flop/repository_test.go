@@ -47,7 +47,7 @@ var _ = Describe("Flop storage repository", func() {
 		vatMetadata := utils.StorageValueMetadata{Name: storage.Vat}
 
 		inputs := shared_behaviors.StorageVariableBehaviorInputs{
-			FieldName:        storage.Vat,
+			ValueFieldName:   storage.Vat,
 			Value:            FakeAddress,
 			StorageTableName: "maker.flop_vat",
 			Repository:       &repo,
@@ -60,7 +60,7 @@ var _ = Describe("Flop storage repository", func() {
 	Describe("Gem", func() {
 		gemMetadata := utils.StorageValueMetadata{Name: storage.Gem}
 		inputs := shared_behaviors.StorageVariableBehaviorInputs{
-			FieldName:        storage.Gem,
+			ValueFieldName:   storage.Gem,
 			Value:            FakeAddress,
 			StorageTableName: "maker.flop_gem",
 			Repository:       &repo,
@@ -75,7 +75,7 @@ var _ = Describe("Flop storage repository", func() {
 		fakeBeg := strconv.Itoa(rand.Int())
 
 		inputs := shared_behaviors.StorageVariableBehaviorInputs{
-			FieldName:        storage.Beg,
+			ValueFieldName:   storage.Beg,
 			Value:            fakeBeg,
 			StorageTableName: "maker.flop_beg",
 			Repository:       &repo,
@@ -154,7 +154,7 @@ var _ = Describe("Flop storage repository", func() {
 		var kicksMetadata = utils.StorageValueMetadata{Name: storage.Kicks}
 		var fakeKicks = strconv.Itoa(rand.Int())
 		inputs := shared_behaviors.StorageVariableBehaviorInputs{
-			FieldName:        storage.Kicks,
+			ValueFieldName:   storage.Kicks,
 			StorageTableName: "maker.flop_kicks",
 			Repository:       &repo,
 			Metadata:         kicksMetadata,
@@ -168,7 +168,7 @@ var _ = Describe("Flop storage repository", func() {
 		var liveMetadata = utils.StorageValueMetadata{Name: storage.Live}
 		var fakeKicks = strconv.Itoa(rand.Intn(100))
 		inputs := shared_behaviors.StorageVariableBehaviorInputs{
-			FieldName:        storage.Live,
+			ValueFieldName:   storage.Live,
 			StorageTableName: "maker.flop_live",
 			Repository:       &repo,
 			Metadata:         liveMetadata,
@@ -199,9 +199,10 @@ var _ = Describe("Flop storage repository", func() {
 				Type: utils.Uint256,
 			}
 			inputs := shared_behaviors.StorageVariableBehaviorInputs{
-				FieldName:        "bid",
+				KeyFieldName:     string(constants.BidId),
+				ValueFieldName:   "bid",
 				Value:            fakeBidValue,
-				BidId:            fakeBidId,
+				Key:              fakeBidId,
 				IsAMapping:       true,
 				StorageTableName: "maker.flop_bid_bid",
 				Repository:       &repo,
@@ -219,9 +220,10 @@ var _ = Describe("Flop storage repository", func() {
 				Type: utils.Uint256,
 			}
 			inputs := shared_behaviors.StorageVariableBehaviorInputs{
-				FieldName:        "lot",
+				KeyFieldName:     string(constants.BidId),
+				ValueFieldName:   "lot",
 				Value:            fakeLotValue,
-				BidId:            fakeBidId,
+				Key:              fakeBidId,
 				IsAMapping:       true,
 				StorageTableName: "maker.flop_bid_lot",
 				Repository:       &repo,

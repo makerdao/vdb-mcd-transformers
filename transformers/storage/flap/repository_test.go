@@ -49,7 +49,7 @@ var _ = Describe("Flap storage repository", func() {
 		var fakeAddress = FakeAddress
 
 		inputs := shared_behaviors.StorageVariableBehaviorInputs{
-			FieldName:        storage.Vat,
+			ValueFieldName:   storage.Vat,
 			Value:            fakeAddress,
 			StorageTableName: "maker.flap_vat",
 			Repository:       &repository,
@@ -63,7 +63,7 @@ var _ = Describe("Flap storage repository", func() {
 		var gemMetadata = utils.StorageValueMetadata{Name: storage.Gem}
 		var fakeAddress = FakeAddress
 		inputs := shared_behaviors.StorageVariableBehaviorInputs{
-			FieldName:        storage.Gem,
+			ValueFieldName:   storage.Gem,
 			Value:            fakeAddress,
 			StorageTableName: "maker.flap_gem",
 			Repository:       &repository,
@@ -77,7 +77,7 @@ var _ = Describe("Flap storage repository", func() {
 		var begMetadata = utils.StorageValueMetadata{Name: storage.Beg}
 		var fakeBeg = strconv.Itoa(rand.Int())
 		inputs := shared_behaviors.StorageVariableBehaviorInputs{
-			FieldName:        storage.Beg,
+			ValueFieldName:   storage.Beg,
 			StorageTableName: "maker.flap_beg",
 			Repository:       &repository,
 			Metadata:         begMetadata,
@@ -151,7 +151,7 @@ var _ = Describe("Flap storage repository", func() {
 		var kicksMetadata = utils.StorageValueMetadata{Name: storage.Kicks}
 		var fakeKicks = strconv.Itoa(rand.Intn(100))
 		inputs := shared_behaviors.StorageVariableBehaviorInputs{
-			FieldName:        storage.Kicks,
+			ValueFieldName:   storage.Kicks,
 			StorageTableName: "maker.flap_kicks",
 			Repository:       &repository,
 			Metadata:         kicksMetadata,
@@ -171,7 +171,7 @@ var _ = Describe("Flap storage repository", func() {
 		var liveMetadata = utils.StorageValueMetadata{Name: storage.Live}
 		var fakeLive = strconv.Itoa(rand.Intn(100))
 		inputs := shared_behaviors.StorageVariableBehaviorInputs{
-			FieldName:        storage.Live,
+			ValueFieldName:   storage.Live,
 			StorageTableName: "maker.flap_live",
 			Repository:       &repository,
 			Metadata:         liveMetadata,
@@ -208,9 +208,10 @@ var _ = Describe("Flap storage repository", func() {
 				Type: utils.Uint256,
 			}
 			inputs := shared_behaviors.StorageVariableBehaviorInputs{
-				FieldName:        "bid",
+				KeyFieldName:     string(constants.BidId),
+				ValueFieldName:   "bid",
 				Value:            fakeBidValue,
-				BidId:            fakeBidId,
+				Key:              fakeBidId,
 				IsAMapping:       true,
 				StorageTableName: "maker.flap_bid_bid",
 				Repository:       &repository,
@@ -228,9 +229,10 @@ var _ = Describe("Flap storage repository", func() {
 				Type: utils.Uint256,
 			}
 			inputs := shared_behaviors.StorageVariableBehaviorInputs{
-				FieldName:        "lot",
+				KeyFieldName:     string(constants.BidId),
+				ValueFieldName:   "lot",
 				Value:            fakeLotValue,
-				BidId:            fakeBidId,
+				Key:              fakeBidId,
 				IsAMapping:       true,
 				StorageTableName: "maker.flap_bid_lot",
 				Repository:       &repository,
@@ -304,9 +306,10 @@ var _ = Describe("Flap storage repository", func() {
 				Type: utils.Address,
 			}
 			inputs := shared_behaviors.StorageVariableBehaviorInputs{
-				FieldName:        "gal",
+				KeyFieldName:     string(constants.BidId),
+				ValueFieldName:   "gal",
 				Value:            fakeGalValue,
-				BidId:            fakeBidId,
+				Key:              fakeBidId,
 				IsAMapping:       true,
 				StorageTableName: "maker.flap_bid_gal",
 				Repository:       &repository,

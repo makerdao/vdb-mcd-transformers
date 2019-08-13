@@ -47,7 +47,7 @@ var _ = Describe("Flip storage repository", func() {
 		Describe("Vat", func() {
 			vatMetadata := utils.StorageValueMetadata{Name: storage.Vat}
 			inputs := shared_behaviors.StorageVariableBehaviorInputs{
-				FieldName:        storage.Vat,
+				ValueFieldName:   storage.Vat,
 				Value:            FakeAddress,
 				StorageTableName: "maker.flip_vat",
 				Repository:       &repo,
@@ -92,7 +92,7 @@ var _ = Describe("Flip storage repository", func() {
 			begMetadata := utils.StorageValueMetadata{Name: storage.Beg}
 			fakeBeg := strconv.Itoa(rand.Int())
 			inputs := shared_behaviors.StorageVariableBehaviorInputs{
-				FieldName:        storage.Beg,
+				ValueFieldName:   storage.Beg,
 				Value:            fakeBeg,
 				StorageTableName: "maker.flip_beg",
 				Repository:       &repo,
@@ -161,7 +161,7 @@ var _ = Describe("Flip storage repository", func() {
 			kicksMetadata := utils.StorageValueMetadata{Name: storage.Kicks}
 			fakeKicks := strconv.Itoa(rand.Int())
 			inputs := shared_behaviors.StorageVariableBehaviorInputs{
-				FieldName:        storage.Kicks,
+				ValueFieldName:   storage.Kicks,
 				Value:            fakeKicks,
 				StorageTableName: "maker.flip_kicks",
 				Repository:       &repo,
@@ -193,9 +193,10 @@ var _ = Describe("Flip storage repository", func() {
 				Type: utils.Uint256,
 			}
 			inputs := shared_behaviors.StorageVariableBehaviorInputs{
-				FieldName:        "bid",
+				KeyFieldName:     string(constants.BidId),
+				ValueFieldName:   "bid",
 				Value:            fakeBidValue,
-				BidId:            fakeBidId,
+				Key:              fakeBidId,
 				IsAMapping:       true,
 				StorageTableName: "maker.flip_bid_bid",
 				Repository:       &repo,
@@ -213,9 +214,10 @@ var _ = Describe("Flip storage repository", func() {
 				Type: utils.Uint256,
 			}
 			inputs := shared_behaviors.StorageVariableBehaviorInputs{
-				FieldName:        "lot",
+				KeyFieldName:     string(constants.BidId),
+				ValueFieldName:   "lot",
 				Value:            fakeLotValue,
-				BidId:            fakeBidId,
+				Key:              fakeBidId,
 				IsAMapping:       true,
 				StorageTableName: "maker.flip_bid_lot",
 				Repository:       &repo,
@@ -287,9 +289,10 @@ var _ = Describe("Flip storage repository", func() {
 				Type: utils.Address,
 			}
 			inputs := shared_behaviors.StorageVariableBehaviorInputs{
-				FieldName:        "usr",
+				KeyFieldName:     string(constants.BidId),
+				ValueFieldName:   "usr",
 				Value:            FakeAddress,
-				BidId:            fakeBidId,
+				Key:              fakeBidId,
 				IsAMapping:       true,
 				StorageTableName: "maker.flip_bid_usr",
 				Repository:       &repo,
@@ -306,9 +309,10 @@ var _ = Describe("Flip storage repository", func() {
 				Type: utils.Address,
 			}
 			inputs := shared_behaviors.StorageVariableBehaviorInputs{
-				FieldName:        "gal",
+				KeyFieldName:     string(constants.BidId),
+				ValueFieldName:   "gal",
 				Value:            FakeAddress,
-				BidId:            fakeBidId,
+				Key:              fakeBidId,
 				IsAMapping:       true,
 				StorageTableName: "maker.flip_bid_gal",
 				Repository:       &repo,
@@ -326,9 +330,10 @@ var _ = Describe("Flip storage repository", func() {
 				Type: utils.Uint256,
 			}
 			inputs := shared_behaviors.StorageVariableBehaviorInputs{
-				FieldName:        "tab",
+				KeyFieldName:     string(constants.BidId),
+				ValueFieldName:   "tab",
 				Value:            fakeTabValue,
-				BidId:            fakeBidId,
+				Key:              fakeBidId,
 				IsAMapping:       true,
 				StorageTableName: "maker.flip_bid_tab",
 				Repository:       &repo,
