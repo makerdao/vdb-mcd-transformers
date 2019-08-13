@@ -17,7 +17,6 @@
 package vow_fess_test
 
 import (
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -36,16 +35,6 @@ var _ = Describe("Vow fess converter", func() {
 		badLog := core.HeaderSyncLog{
 			Log: types.Log{
 				Data: []byte{1, 1, 1, 1, 1},
-			}}
-
-		_, err := converter.ToModels([]core.HeaderSyncLog{badLog})
-		Expect(err).To(HaveOccurred())
-	})
-
-	It("returns err if log is missing data", func() {
-		badLog := core.HeaderSyncLog{
-			Log: types.Log{
-				Topics: []common.Hash{{}, {}, {}, {}},
 			}}
 
 		_, err := converter.ToModels([]core.HeaderSyncLog{badLog})

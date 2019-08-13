@@ -17,24 +17,24 @@
 package vat_frob
 
 import (
-	"errors"
-	"github.com/vulcanize/vulcanizedb/pkg/core"
-
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/constants"
-
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	constants2 "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 )
 
 type VatFrobConverter struct{}
 
+const (
+	logDataRequired   = true
+	numTopicsRequired = 4
+)
+
 func (VatFrobConverter) ToModels(logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
 	var models []shared.InsertionModel
 	for _, log := range logs {
-		err := verifyLog(log.Log)
+		err := shared.VerifyLog(log.Log, numTopicsRequired, logDataRequired)
 		if err != nil {
 			return nil, err
 		}
@@ -60,7 +60,7 @@ func (VatFrobConverter) ToModels(logs []core.HeaderSyncLog) ([]shared.InsertionM
 		model := shared.InsertionModel{
 			TableName: "vat_frob",
 			OrderedColumns: []string{
-				"header_id", string(constants2.UrnFK), "v", "w", "dink", "dart", "log_id",
+				"header_id", string(constants.UrnFK), "v", "w", "dink", "dart", "log_id",
 			},
 			ColumnValues: shared.ColumnValues{
 				"v":         v,
@@ -71,21 +71,11 @@ func (VatFrobConverter) ToModels(logs []core.HeaderSyncLog) ([]shared.InsertionM
 				"log_id":    log.ID,
 			},
 			ForeignKeyValues: shared.ForeignKeyValues{
-				constants2.IlkFK: ilk,
-				constants2.UrnFK: urn,
+				constants.IlkFK: ilk,
+				constants.UrnFK: urn,
 			},
 		}
 		models = append(models, model)
 	}
 	return models, nil
-}
-
-func verifyLog(log types.Log) error {
-	if len(log.Topics) < 4 {
-		return errors.New("log missing topics")
-	}
-	if len(log.Data) < constants.DataItemLength {
-		return errors.New("log missing data")
-	}
-	return nil
 }

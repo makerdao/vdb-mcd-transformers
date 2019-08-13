@@ -17,9 +17,7 @@
 package dent
 
 import (
-	"errors"
 	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
@@ -27,9 +25,14 @@ import (
 
 type DentConverter struct{}
 
+const (
+	logDataRequired   = true
+	numTopicsRequired = 4
+)
+
 func (c DentConverter) ToModels(logs []core.HeaderSyncLog) (result []shared.InsertionModel, err error) {
 	for _, log := range logs {
-		validateErr := validateLog(log.Log)
+		validateErr := shared.VerifyLog(log.Log, numTopicsRequired, logDataRequired)
 		if validateErr != nil {
 			return nil, validateErr
 		}
@@ -61,16 +64,4 @@ func (c DentConverter) ToModels(logs []core.HeaderSyncLog) (result []shared.Inse
 		result = append(result, model)
 	}
 	return result, err
-}
-
-func validateLog(ethLog types.Log) error {
-	if len(ethLog.Data) <= 0 {
-		return errors.New("dent log data is empty")
-	}
-
-	if len(ethLog.Topics) < 4 {
-		return errors.New("dent log does not contain expected topics")
-	}
-
-	return nil
 }

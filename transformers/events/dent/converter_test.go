@@ -20,11 +20,10 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/vulcanize/vulcanizedb/pkg/core"
-
 	"github.com/vulcanize/mcd_transformers/transformers/events/dent"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 )
 
 var _ = Describe("Dent Converter", func() {
@@ -42,7 +41,7 @@ var _ = Describe("Dent Converter", func() {
 		invalidLog.Log.Topics = []common.Hash{}
 		_, err := converter.ToModels([]core.HeaderSyncLog{invalidLog})
 		Expect(err).To(HaveOccurred())
-		Expect(err).To(MatchError("dent log does not contain expected topics"))
+		Expect(err).To(MatchError(shared.ErrLogMissingTopics(4, 0)))
 	})
 
 	It("returns an error if the log data is empty", func() {
@@ -50,6 +49,6 @@ var _ = Describe("Dent Converter", func() {
 		emptyDataLog.Log.Data = []byte{}
 		_, err := converter.ToModels([]core.HeaderSyncLog{emptyDataLog})
 		Expect(err).To(HaveOccurred())
-		Expect(err).To(MatchError("dent log data is empty"))
+		Expect(err).To(MatchError(shared.ErrLogMissingData))
 	})
 })

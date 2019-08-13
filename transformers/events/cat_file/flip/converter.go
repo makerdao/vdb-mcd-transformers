@@ -17,23 +17,23 @@
 package flip
 
 import (
-	"errors"
-	"github.com/vulcanize/vulcanizedb/pkg/core"
-
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/constants"
-
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	constants2 "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 )
 
 type CatFileFlipConverter struct{}
 
+const (
+	logDataRequired   = true
+	numTopicsRequired = 4
+)
+
 func (CatFileFlipConverter) ToModels(logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
 	var results []shared.InsertionModel
 	for _, log := range logs {
-		verifyErr := verifyLog(log.Log)
+		verifyErr := shared.VerifyLog(log.Log, numTopicsRequired, logDataRequired)
 		if verifyErr != nil {
 			return nil, verifyErr
 		}
@@ -48,7 +48,7 @@ func (CatFileFlipConverter) ToModels(logs []core.HeaderSyncLog) ([]shared.Insert
 		result := shared.InsertionModel{
 			TableName: "cat_file_flip",
 			OrderedColumns: []string{
-				"header_id", string(constants2.IlkFK), "what", "flip", "log_id",
+				"header_id", string(constants.IlkFK), "what", "flip", "log_id",
 			},
 			ColumnValues: shared.ColumnValues{
 				"what":      what,
@@ -57,21 +57,11 @@ func (CatFileFlipConverter) ToModels(logs []core.HeaderSyncLog) ([]shared.Insert
 				"log_id":    log.ID,
 			},
 			ForeignKeyValues: shared.ForeignKeyValues{
-				constants2.IlkFK: ilk,
+				constants.IlkFK: ilk,
 			},
 		}
 
 		results = append(results, result)
 	}
 	return results, nil
-}
-
-func verifyLog(log types.Log) error {
-	if len(log.Topics) < 4 {
-		return errors.New("log missing topics")
-	}
-	if len(log.Data) < constants.DataItemLength {
-		return errors.New("log missing data")
-	}
-	return nil
 }

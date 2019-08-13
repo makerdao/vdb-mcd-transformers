@@ -17,8 +17,6 @@
 package tick
 
 import (
-	"errors"
-	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
@@ -26,9 +24,14 @@ import (
 
 type TickConverter struct{}
 
+const (
+	logDataRequired   = false
+	numTopicsRequired = 3
+)
+
 func (TickConverter) ToModels(logs []core.HeaderSyncLog) (results []shared.InsertionModel, err error) {
 	for _, log := range logs {
-		validateErr := validateLog(log.Log)
+		validateErr := shared.VerifyLog(log.Log, numTopicsRequired, logDataRequired)
 		if validateErr != nil {
 			return nil, validateErr
 		}
@@ -50,12 +53,4 @@ func (TickConverter) ToModels(logs []core.HeaderSyncLog) (results []shared.Inser
 		results = append(results, model)
 	}
 	return results, err
-}
-
-func validateLog(ethLog types.Log) error {
-	if len(ethLog.Topics) < 3 {
-		return errors.New("flip tick log does not contain expected topics")
-	}
-
-	return nil
 }

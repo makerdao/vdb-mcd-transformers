@@ -17,18 +17,21 @@
 package base
 
 import (
-	"errors"
-	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 )
 
 type JugFileBaseConverter struct{}
 
+const (
+	logDataRequired   = false
+	numTopicsRequired = 4
+)
+
 func (JugFileBaseConverter) ToModels(logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
 	var models []shared.InsertionModel
 	for _, log := range logs {
-		err := verifyLog(log.Log)
+		err := shared.VerifyLog(log.Log, numTopicsRequired, logDataRequired)
 		if err != nil {
 			return nil, err
 		}
@@ -52,11 +55,4 @@ func (JugFileBaseConverter) ToModels(logs []core.HeaderSyncLog) ([]shared.Insert
 		models = append(models, model)
 	}
 	return models, nil
-}
-
-func verifyLog(log types.Log) error {
-	if len(log.Topics) < 4 {
-		return errors.New("log missing topics")
-	}
-	return nil
 }

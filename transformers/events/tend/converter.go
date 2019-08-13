@@ -17,9 +17,7 @@
 package tend
 
 import (
-	"errors"
 	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
@@ -27,9 +25,14 @@ import (
 
 type TendConverter struct{}
 
+const (
+	logDataRequired   = true
+	numTopicsRequired = 4
+)
+
 func (TendConverter) ToModels(logs []core.HeaderSyncLog) (results []shared.InsertionModel, err error) {
 	for _, log := range logs {
-		err := validateLog(log.Log)
+		err := shared.VerifyLog(log.Log, numTopicsRequired, logDataRequired)
 		if err != nil {
 			return nil, err
 		}
@@ -61,16 +64,4 @@ func (TendConverter) ToModels(logs []core.HeaderSyncLog) (results []shared.Inser
 		results = append(results, model)
 	}
 	return results, err
-}
-
-func validateLog(ethLog types.Log) error {
-	if len(ethLog.Data) <= 0 {
-		return errors.New("tend log note data is empty")
-	}
-
-	if len(ethLog.Topics) < 4 {
-		return errors.New("tend log does not contain expected topics")
-	}
-
-	return nil
 }

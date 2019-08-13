@@ -17,14 +17,12 @@
 package vow_flog_test
 
 import (
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/vulcanize/vulcanizedb/pkg/core"
-
 	"github.com/vulcanize/mcd_transformers/transformers/events/vow_flog"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 )
 
 var _ = Describe("Vow flog converter", func() {
@@ -37,16 +35,6 @@ var _ = Describe("Vow flog converter", func() {
 		badLog := core.HeaderSyncLog{
 			Log: types.Log{
 				Data: []byte{1, 1, 1, 1, 1},
-			}}
-
-		_, err := converter.ToModels([]core.HeaderSyncLog{badLog})
-		Expect(err).To(HaveOccurred())
-	})
-
-	It("returns err if log is missing data", func() {
-		badLog := core.HeaderSyncLog{
-			Log: types.Log{
-				Topics: []common.Hash{{}, {}, {}, {}},
 			}}
 
 		_, err := converter.ToModels([]core.HeaderSyncLog{badLog})

@@ -17,22 +17,23 @@
 package pip
 
 import (
-	"errors"
-	"github.com/vulcanize/vulcanizedb/pkg/core"
-
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
-
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 )
 
 type SpotFilePipConverter struct{}
 
+const (
+	logDataRequired   = false
+	numTopicsRequired = 4
+)
+
 func (SpotFilePipConverter) ToModels(logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
 	var models []shared.InsertionModel
 	for _, log := range logs {
-		err := verifyLog(log.Log)
+		err := shared.VerifyLog(log.Log, numTopicsRequired, logDataRequired)
 		if err != nil {
 			return nil, err
 		}
@@ -57,11 +58,4 @@ func (SpotFilePipConverter) ToModels(logs []core.HeaderSyncLog) ([]shared.Insert
 		models = append(models, model)
 	}
 	return models, nil
-}
-
-func verifyLog(log types.Log) error {
-	if len(log.Topics) < 4 {
-		return errors.New("log missing topics")
-	}
-	return nil
 }

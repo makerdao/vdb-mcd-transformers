@@ -42,7 +42,7 @@ var _ = Describe("TickConverter", func() {
 			invalidLog.Log.Topics = []common.Hash{}
 			_, err := converter.ToModels([]core.HeaderSyncLog{invalidLog})
 
-			Expect(err).To(MatchError("flip tick log does not contain expected topics"))
+			Expect(err).To(MatchError(shared.ErrLogMissingTopics(3, 0)))
 		})
 	})
 })

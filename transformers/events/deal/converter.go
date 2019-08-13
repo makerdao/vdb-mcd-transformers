@@ -17,8 +17,6 @@
 package deal
 
 import (
-	"errors"
-	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
@@ -26,9 +24,14 @@ import (
 
 type DealConverter struct{}
 
+const (
+	logDataRequired   = true
+	numTopicsRequired = 3
+)
+
 func (DealConverter) ToModels(logs []core.HeaderSyncLog) (result []shared.InsertionModel, err error) {
 	for _, log := range logs {
-		validationErr := validateLog(log.Log)
+		validationErr := shared.VerifyLog(log.Log, numTopicsRequired, logDataRequired)
 		if validationErr != nil {
 			return nil, validationErr
 		}
@@ -53,11 +56,4 @@ func (DealConverter) ToModels(logs []core.HeaderSyncLog) (result []shared.Insert
 	}
 
 	return result, nil
-}
-
-func validateLog(ethLog types.Log) error {
-	if len(ethLog.Topics) < 3 {
-		return errors.New("deal log does not contain expected topics")
-	}
-	return nil
 }

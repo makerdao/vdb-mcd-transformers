@@ -17,22 +17,22 @@
 package vow
 
 import (
-	"errors"
-	"github.com/vulcanize/vulcanizedb/pkg/core"
-
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/constants"
-
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 )
 
 type CatFileVowConverter struct{}
 
+const (
+	logDataRequired   = true
+	numTopicsRequired = 4
+)
+
 func (CatFileVowConverter) ToModels(logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
 	var results []shared.InsertionModel
 	for _, log := range logs {
-		err := verifyLog(log.Log)
+		err := shared.VerifyLog(log.Log, numTopicsRequired, logDataRequired)
 		if err != nil {
 			return nil, err
 		}
@@ -56,14 +56,4 @@ func (CatFileVowConverter) ToModels(logs []core.HeaderSyncLog) ([]shared.Inserti
 		results = append(results, result)
 	}
 	return results, nil
-}
-
-func verifyLog(log types.Log) error {
-	if len(log.Topics) < 4 {
-		return errors.New("log missing topics")
-	}
-	if len(log.Data) < constants.DataItemLength {
-		return errors.New("log missing data")
-	}
-	return nil
 }

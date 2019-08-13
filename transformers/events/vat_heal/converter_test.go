@@ -21,10 +21,9 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/vulcanize/vulcanizedb/pkg/core"
-
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_heal"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 )
 
 var _ = Describe("VatHeal converter", func() {
@@ -42,8 +41,6 @@ var _ = Describe("VatHeal converter", func() {
 		badLog := core.HeaderSyncLog{
 			Log: types.Log{
 				Topics: []common.Hash{
-					common.HexToHash("0x"),
-					common.HexToHash("0x"),
 					common.HexToHash("0x"),
 				}},
 		}
