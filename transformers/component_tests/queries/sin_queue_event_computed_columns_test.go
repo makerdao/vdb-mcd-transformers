@@ -25,6 +25,7 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/component_tests/queries/test_helpers"
 	"github.com/vulcanize/mcd_transformers/transformers/events/vow_fess"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
@@ -66,8 +67,8 @@ var _ = Describe("Sin queue event computed columns", func() {
 		vowFessRepo = vow_fess.VowFessRepository{}
 		vowFessRepo.SetDB(db)
 		vowFessEvent = test_data.VowFessModel
-		vowFessEvent.ColumnValues["header_id"] = headerId
-		vowFessEvent.ColumnValues["log_id"] = insertedLog.ID
+		vowFessEvent.ColumnValues[constants.HeaderFK] = headerId
+		vowFessEvent.ColumnValues[constants.LogFK] = insertedLog.ID
 		insertErr := vowFessRepo.Create([]shared.InsertionModel{vowFessEvent})
 		Expect(insertErr).NotTo(HaveOccurred())
 	})

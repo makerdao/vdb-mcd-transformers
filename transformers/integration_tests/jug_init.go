@@ -85,6 +85,5 @@ var _ = Describe("JugInit LogNoteTransformer", func() {
 })
 
 type JugInitModel struct {
-	Ilk   string `db:"ilk_id"`
-	LogID uint   `db:"log_id"`
+	Ilk string `db:"ilk_id"`
 }

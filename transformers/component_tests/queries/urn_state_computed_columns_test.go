@@ -120,8 +120,8 @@ var _ = Describe("Urn state computed columns", func() {
 			frobEvent := test_data.CopyModel(test_data.VatFrobModelWithPositiveDart)
 			frobEvent.ForeignKeyValues[constants.UrnFK] = fakeGuy
 			frobEvent.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
-			frobEvent.ColumnValues["header_id"] = headerID
-			frobEvent.ColumnValues["log_id"] = logID
+			frobEvent.ColumnValues[constants.HeaderFK] = headerID
+			frobEvent.ColumnValues[constants.LogFK] = logID
 			insertFrobErr := frobRepo.Create([]shared.InsertionModel{frobEvent})
 			Expect(insertFrobErr).NotTo(HaveOccurred())
 
@@ -158,8 +158,8 @@ var _ = Describe("Urn state computed columns", func() {
 				frobEventOne = test_data.CopyModel(test_data.VatFrobModelWithPositiveDart)
 				frobEventOne.ForeignKeyValues[constants.UrnFK] = fakeGuy
 				frobEventOne.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
-				frobEventOne.ColumnValues["header_id"] = headerID
-				frobEventOne.ColumnValues["log_id"] = logID
+				frobEventOne.ColumnValues[constants.HeaderFK] = headerID
+				frobEventOne.ColumnValues[constants.LogFK] = logID
 				insertFrobErrOne := frobRepo.Create([]shared.InsertionModel{frobEventOne})
 				Expect(insertFrobErrOne).NotTo(HaveOccurred())
 
@@ -173,8 +173,8 @@ var _ = Describe("Urn state computed columns", func() {
 				frobEventTwo = test_data.CopyModel(test_data.VatFrobModelWithNegativeDink)
 				frobEventTwo.ForeignKeyValues[constants.UrnFK] = fakeGuy
 				frobEventTwo.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
-				frobEventTwo.ColumnValues["header_id"] = headerTwoId
-				frobEventTwo.ColumnValues["log_id"] = logTwoId
+				frobEventTwo.ColumnValues[constants.HeaderFK] = headerTwoId
+				frobEventTwo.ColumnValues[constants.LogFK] = logTwoId
 				insertFrobErrTwo := frobRepo.Create([]shared.InsertionModel{frobEventTwo})
 				Expect(insertFrobErrTwo).NotTo(HaveOccurred())
 			})

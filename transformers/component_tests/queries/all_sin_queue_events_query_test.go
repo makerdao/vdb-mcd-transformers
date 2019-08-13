@@ -17,6 +17,7 @@
 package queries
 
 import (
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"math/rand"
 	"strconv"
 
@@ -63,8 +64,8 @@ var _ = Describe("Sin queue events query", func() {
 			vowFessRepo := vow_fess.VowFessRepository{}
 			vowFessRepo.SetDB(db)
 			vowFessEvent := test_data.VowFessModel
-			vowFessEvent.ColumnValues["header_id"] = headerOneId
-			vowFessEvent.ColumnValues["log_id"] = vowFessLog.ID
+			vowFessEvent.ColumnValues[constants.HeaderFK] = headerOneId
+			vowFessEvent.ColumnValues[constants.LogFK] = vowFessLog.ID
 			err = vowFessRepo.Create([]shared.InsertionModel{vowFessEvent})
 			Expect(err).NotTo(HaveOccurred())
 
@@ -88,8 +89,8 @@ var _ = Describe("Sin queue events query", func() {
 			vowFlogRepo.SetDB(db)
 			vowFlogEvent := test_data.VowFlogModel
 			vowFlogEvent.ColumnValues["era"] = fakeEra
-			vowFlogEvent.ColumnValues["header_id"] = headerOneId
-			vowFlogEvent.ColumnValues["log_id"] = vowFlogLog.ID
+			vowFlogEvent.ColumnValues[constants.HeaderFK] = headerOneId
+			vowFlogEvent.ColumnValues[constants.LogFK] = vowFlogLog.ID
 			err = vowFlogRepo.Create([]shared.InsertionModel{vowFlogEvent})
 			Expect(err).NotTo(HaveOccurred())
 
@@ -113,8 +114,8 @@ var _ = Describe("Sin queue events query", func() {
 			fakeEra := strconv.Itoa(int(rand.Int31()))
 			vowFlogEvent := test_data.VowFlogModel
 			vowFlogEvent.ColumnValues["era"] = fakeEra
-			vowFlogEvent.ColumnValues["header_id"] = headerOneId
-			vowFlogEvent.ColumnValues["log_id"] = vowFlogLog.ID
+			vowFlogEvent.ColumnValues[constants.HeaderFK] = headerOneId
+			vowFlogEvent.ColumnValues[constants.LogFK] = vowFlogLog.ID
 			err = vowFlogRepo.Create([]shared.InsertionModel{vowFlogEvent})
 			Expect(err).NotTo(HaveOccurred())
 
@@ -129,8 +130,8 @@ var _ = Describe("Sin queue events query", func() {
 			vowFessRepo := vow_fess.VowFessRepository{}
 			vowFessRepo.SetDB(db)
 			vowFessEvent := test_data.VowFessModel
-			vowFessEvent.ColumnValues["header_id"] = headerTwoId
-			vowFessEvent.ColumnValues["log_id"] = vowFessLog.ID
+			vowFessEvent.ColumnValues[constants.HeaderFK] = headerTwoId
+			vowFessEvent.ColumnValues[constants.LogFK] = vowFessLog.ID
 			err = vowFessRepo.Create([]shared.InsertionModel{vowFessEvent})
 			Expect(err).NotTo(HaveOccurred())
 
@@ -158,8 +159,8 @@ var _ = Describe("Sin queue events query", func() {
 			vowFlogRepo.SetDB(db)
 			vowFlogEvent := test_data.VowFlogModel
 			vowFlogEvent.ColumnValues["era"] = fakeEra
-			vowFlogEvent.ColumnValues["header_id"] = headerOneId
-			vowFlogEvent.ColumnValues["log_id"] = vowFlogLog.ID
+			vowFlogEvent.ColumnValues[constants.HeaderFK] = headerOneId
+			vowFlogEvent.ColumnValues[constants.LogFK] = vowFlogLog.ID
 			err = vowFlogRepo.Create([]shared.InsertionModel{vowFlogEvent})
 			Expect(err).NotTo(HaveOccurred())
 
@@ -184,8 +185,8 @@ var _ = Describe("Sin queue events query", func() {
 				fakeEra = strconv.Itoa(int(rand.Int31()))
 				vowFlogEvent := test_data.VowFlogModel
 				vowFlogEvent.ColumnValues["era"] = fakeEra
-				vowFlogEvent.ColumnValues["header_id"] = headerOneId
-				vowFlogEvent.ColumnValues["log_id"] = logId
+				vowFlogEvent.ColumnValues[constants.HeaderFK] = headerOneId
+				vowFlogEvent.ColumnValues[constants.LogFK] = logId
 				vowFlogErr := vowFlogRepo.Create([]shared.InsertionModel{vowFlogEvent})
 				Expect(vowFlogErr).NotTo(HaveOccurred())
 
@@ -200,8 +201,8 @@ var _ = Describe("Sin queue events query", func() {
 				vowFessRepo := vow_fess.VowFessRepository{}
 				vowFessRepo.SetDB(db)
 				vowFessEvent := test_data.VowFessModel
-				vowFessEvent.ColumnValues["header_id"] = headerTwoId
-				vowFessEvent.ColumnValues["log_id"] = logTwoId
+				vowFessEvent.ColumnValues[constants.HeaderFK] = headerTwoId
+				vowFessEvent.ColumnValues[constants.LogFK] = logTwoId
 				vowFessErr := vowFessRepo.Create([]shared.InsertionModel{vowFessEvent})
 				Expect(vowFessErr).NotTo(HaveOccurred())
 			})

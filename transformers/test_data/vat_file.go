@@ -56,13 +56,13 @@ var VatFileDebtCeilingHeaderSyncLog = core.HeaderSyncLog{
 var VatFileDebtCeilingModel = shared.InsertionModel{
 	TableName: "vat_file_debt_ceiling",
 	OrderedColumns: []string{
-		"header_id", "what", "data", "log_id",
+		constants.HeaderFK, "what", "data", constants.LogFK,
 	},
 	ColumnValues: shared.ColumnValues{
-		"what":      "Line",
-		"data":      "1000000000000000000000000000000000000000000000000000",
-		"header_id": VatFileDebtCeilingHeaderSyncLog.HeaderID,
-		"log_id":    VatFileDebtCeilingHeaderSyncLog.ID,
+		"what":             "Line",
+		"data":             "1000000000000000000000000000000000000000000000000000",
+		constants.HeaderFK: VatFileDebtCeilingHeaderSyncLog.HeaderID,
+		constants.LogFK:    VatFileDebtCeilingHeaderSyncLog.ID,
 	},
 	ForeignKeyValues: shared.ForeignKeyValues{},
 }
@@ -95,13 +95,13 @@ var VatFileIlkDustHeaderSyncLog = core.HeaderSyncLog{
 var VatFileIlkDustModel = shared.InsertionModel{
 	TableName: "vat_file_ilk",
 	OrderedColumns: []string{
-		"header_id", string(constants.IlkFK), "what", "data", "log_id",
+		constants.HeaderFK, string(constants.IlkFK), "what", "data", constants.LogFK,
 	},
 	ColumnValues: shared.ColumnValues{
-		"what":      "dust",
-		"data":      "10390649719961925488562719249749",
-		"header_id": VatFileIlkDustHeaderSyncLog.HeaderID,
-		"log_id":    VatFileIlkDustHeaderSyncLog.ID,
+		"what":             "dust",
+		"data":             "10390649719961925488562719249749",
+		constants.HeaderFK: VatFileIlkDustHeaderSyncLog.HeaderID,
+		constants.LogFK:    VatFileIlkDustHeaderSyncLog.ID,
 	},
 	ForeignKeyValues: shared.ForeignKeyValues{
 		constants.IlkFK: "0x5245500000000000000000000000000000000000000000000000000000000000",
@@ -136,13 +136,13 @@ var VatFileIlkLineHeaderSyncLog = core.HeaderSyncLog{
 var VatFileIlkLineModel = shared.InsertionModel{
 	TableName: "vat_file_ilk",
 	OrderedColumns: []string{
-		"header_id", string(constants.IlkFK), "what", "data", "log_id",
+		constants.HeaderFK, string(constants.IlkFK), "what", "data", constants.LogFK,
 	},
 	ColumnValues: shared.ColumnValues{
-		"what":      "line",
-		"data":      "220086151196920075605",
-		"header_id": VatFileIlkLineHeaderSyncLog.HeaderID,
-		"log_id":    VatFileIlkLineHeaderSyncLog.ID,
+		"what":             "line",
+		"data":             "220086151196920075605",
+		constants.HeaderFK: VatFileIlkLineHeaderSyncLog.HeaderID,
+		constants.LogFK:    VatFileIlkLineHeaderSyncLog.ID,
 	},
 	ForeignKeyValues: shared.ForeignKeyValues{
 		constants.IlkFK: "0x5245500000000000000000000000000000000000000000000000000000000000",
@@ -176,13 +176,13 @@ var VatFileIlkSpotHeaderSyncLog = core.HeaderSyncLog{
 var VatFileIlkSpotModel = shared.InsertionModel{
 	TableName: "vat_file_ilk",
 	OrderedColumns: []string{
-		"header_id", string(constants.IlkFK), "what", "data", "log_id",
+		constants.HeaderFK, string(constants.IlkFK), "what", "data", constants.LogFK,
 	},
 	ColumnValues: shared.ColumnValues{
-		"what":      "spot",
-		"data":      "91323333333333333333333333333",
-		"header_id": VatFileIlkSpotHeaderSyncLog.HeaderID,
-		"log_id":    VatFileIlkSpotHeaderSyncLog.ID,
+		"what":             "spot",
+		"data":             "91323333333333333333333333333",
+		constants.HeaderFK: VatFileIlkSpotHeaderSyncLog.HeaderID,
+		constants.LogFK:    VatFileIlkSpotHeaderSyncLog.ID,
 	},
 	ForeignKeyValues: shared.ForeignKeyValues{
 		constants.IlkFK: "0x4554480000000000000000000000000000000000000000000000000000000000",

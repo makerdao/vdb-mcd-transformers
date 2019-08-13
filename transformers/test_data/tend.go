@@ -66,14 +66,14 @@ var TendHeaderSyncLog = core.HeaderSyncLog{
 var TendModel = shared.InsertionModel{
 	TableName: "tend",
 	OrderedColumns: []string{
-		"header_id", "bid_id", "lot", "bid", string(constants.AddressFK), "log_id",
+		constants.HeaderFK, "bid_id", "lot", "bid", string(constants.AddressFK), constants.LogFK,
 	},
 	ColumnValues: shared.ColumnValues{
-		"bid_id":    strconv.FormatInt(tendBidId, 10),
-		"lot":       tendLot,
-		"bid":       tendBid,
-		"header_id": TendHeaderSyncLog.HeaderID,
-		"log_id":    TendHeaderSyncLog.ID,
+		"bid_id":           strconv.FormatInt(tendBidId, 10),
+		"lot":              tendLot,
+		"bid":              tendBid,
+		constants.HeaderFK: TendHeaderSyncLog.HeaderID,
+		constants.LogFK:    TendHeaderSyncLog.ID,
 	},
 	ForeignKeyValues: shared.ForeignKeyValues{
 		constants.AddressFK: tendAddress.Hex(),

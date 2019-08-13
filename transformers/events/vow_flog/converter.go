@@ -18,6 +18,7 @@ package vow_flog
 
 import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 )
 
@@ -41,12 +42,12 @@ func (VowFlogConverter) ToModels(logs []core.HeaderSyncLog) ([]shared.InsertionM
 		model := shared.InsertionModel{
 			TableName: "vow_flog",
 			OrderedColumns: []string{
-				"header_id", "era", "log_id",
+				constants.HeaderFK, "era", constants.LogFK,
 			},
 			ColumnValues: shared.ColumnValues{
-				"era":       era.String(),
-				"header_id": log.HeaderID,
-				"log_id":    log.ID,
+				"era":              era.String(),
+				constants.HeaderFK: log.HeaderID,
+				constants.LogFK:    log.ID,
 			},
 			ForeignKeyValues: shared.ForeignKeyValues{},
 		}

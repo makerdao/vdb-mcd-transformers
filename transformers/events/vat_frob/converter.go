@@ -60,15 +60,15 @@ func (VatFrobConverter) ToModels(logs []core.HeaderSyncLog) ([]shared.InsertionM
 		model := shared.InsertionModel{
 			TableName: "vat_frob",
 			OrderedColumns: []string{
-				"header_id", string(constants.UrnFK), "v", "w", "dink", "dart", "log_id",
+				constants.HeaderFK, string(constants.UrnFK), "v", "w", "dink", "dart", constants.LogFK,
 			},
 			ColumnValues: shared.ColumnValues{
-				"v":         v,
-				"w":         w,
-				"dink":      dink.String(),
-				"dart":      dart.String(),
-				"header_id": log.HeaderID,
-				"log_id":    log.ID,
+				"v":                v,
+				"w":                w,
+				"dink":             dink.String(),
+				"dart":             dart.String(),
+				constants.HeaderFK: log.HeaderID,
+				constants.LogFK:    log.ID,
 			},
 			ForeignKeyValues: shared.ForeignKeyValues{
 				constants.IlkFK: ilk,

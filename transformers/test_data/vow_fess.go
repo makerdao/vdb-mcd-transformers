@@ -54,12 +54,12 @@ var VowFessHeaderSyncLog = core.HeaderSyncLog{
 var VowFessModel = shared.InsertionModel{
 	TableName: "vow_fess",
 	OrderedColumns: []string{
-		"header_id", "tab", "log_id",
+		constants.HeaderFK, "tab", constants.LogFK,
 	},
 	ColumnValues: shared.ColumnValues{
-		"tab":       "1337",
-		"header_id": VowFessHeaderSyncLog.HeaderID,
-		"log_id":    VowFessHeaderSyncLog.ID,
+		"tab":              "1337",
+		constants.HeaderFK: VowFessHeaderSyncLog.HeaderID,
+		constants.LogFK:    VowFessHeaderSyncLog.ID,
 	},
 	ForeignKeyValues: shared.ForeignKeyValues{},
 }

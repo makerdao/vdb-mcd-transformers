@@ -75,12 +75,12 @@ var _ = Describe("Shared repository", func() {
 			testModel = shared.InsertionModel{
 				TableName: "testEvent",
 				OrderedColumns: []string{
-					"header_id", "log_id", string(constants.IlkFK), string(constants.UrnFK), "variable1",
+					constants.HeaderFK, constants.LogFK, string(constants.IlkFK), string(constants.UrnFK), "variable1",
 				},
 				ColumnValues: shared.ColumnValues{
-					"header_id": headerID,
-					"log_id":    strconv.FormatInt(logID, 10),
-					"variable1": "value1",
+					constants.HeaderFK: headerID,
+					constants.LogFK:    strconv.FormatInt(logID, 10),
+					"variable1":        "value1",
 				},
 				ForeignKeyValues: shared.ForeignKeyValues{
 					constants.IlkFK: hexIlk,
@@ -111,7 +111,7 @@ var _ = Describe("Shared repository", func() {
 			dbErr := db.Get(&res, `SELECT log_id, variable1 FROM maker.testEvent;`)
 			Expect(dbErr).NotTo(HaveOccurred())
 
-			Expect(res.LogID).To(Equal(testModel.ColumnValues["log_id"]))
+			Expect(res.LogID).To(Equal(testModel.ColumnValues[constants.LogFK]))
 			Expect(res.Variable1).To(Equal(testModel.ColumnValues["variable1"]))
 		})
 
@@ -125,7 +125,7 @@ var _ = Describe("Shared repository", func() {
 				brokenModel := shared.InsertionModel{
 					TableName:      "testEvent",
 					OrderedColumns: nil,
-					ColumnValues:   shared.ColumnValues{"header_id": 0},
+					ColumnValues:   shared.ColumnValues{constants.HeaderFK: 0},
 					ForeignKeyValues: shared.ForeignKeyValues{
 						"unknownFK": "value",
 					},
@@ -144,12 +144,12 @@ var _ = Describe("Shared repository", func() {
 				conflictingModel := shared.InsertionModel{
 					TableName: "testEvent",
 					OrderedColumns: []string{
-						"header_id", "log_id", string(constants.IlkFK), string(constants.UrnFK), "variable2",
+						constants.HeaderFK, constants.LogFK, string(constants.IlkFK), string(constants.UrnFK), "variable2",
 					},
 					ColumnValues: shared.ColumnValues{
-						"header_id": headerID,
-						"log_id":    logID,
-						"variable1": "value1",
+						constants.HeaderFK: headerID,
+						constants.LogFK:    logID,
+						"variable1":        "value1",
 					},
 					ForeignKeyValues: shared.ForeignKeyValues{
 						constants.IlkFK: hexIlk,
@@ -159,7 +159,7 @@ var _ = Describe("Shared repository", func() {
 
 				// Remove cached queries, or we won't generate a new (incorrect) one
 				delete(shared.ModelToQuery, "testEvent")
-				conflictingModel.ColumnValues["header_id"] = headerID
+				conflictingModel.ColumnValues[constants.HeaderFK] = headerID
 
 				createErr := shared.Create([]shared.InsertionModel{conflictingModel}, db)
 				Expect(createErr).To(HaveOccurred())
@@ -172,12 +172,12 @@ var _ = Describe("Shared repository", func() {
 			conflictingModel := shared.InsertionModel{
 				TableName: "testEvent",
 				OrderedColumns: []string{
-					"header_id", "log_id", string(constants.IlkFK), string(constants.UrnFK), "variable1",
+					constants.HeaderFK, constants.LogFK, string(constants.IlkFK), string(constants.UrnFK), "variable1",
 				},
 				ColumnValues: shared.ColumnValues{
-					"header_id": headerID,
-					"log_id":    logID,
-					"variable1": "conflictingValue",
+					constants.HeaderFK: headerID,
+					constants.LogFK:    logID,
+					"variable1":        "conflictingValue",
 				},
 				ForeignKeyValues: shared.ForeignKeyValues{
 					constants.IlkFK: hexIlk,

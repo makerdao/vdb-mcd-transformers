@@ -62,12 +62,12 @@ var FlipTickHeaderSyncLog = core.HeaderSyncLog{
 var TickModel = shared.InsertionModel{
 	TableName: "tick",
 	OrderedColumns: []string{
-		"header_id", "bid_id", string(constants.AddressFK), "log_id",
+		constants.HeaderFK, "bid_id", string(constants.AddressFK), constants.LogFK,
 	},
 	ColumnValues: shared.ColumnValues{
-		"bid_id":    strconv.FormatInt(tickBidId, 10),
-		"header_id": FlipTickHeaderSyncLog.HeaderID,
-		"log_id":    FlipTickHeaderSyncLog.ID,
+		"bid_id":           strconv.FormatInt(tickBidId, 10),
+		constants.HeaderFK: FlipTickHeaderSyncLog.HeaderID,
+		constants.LogFK:    FlipTickHeaderSyncLog.ID,
 	},
 	ForeignKeyValues: shared.ForeignKeyValues{
 		constants.AddressFK: FlipTickHeaderSyncLog.Log.Address.Hex(),

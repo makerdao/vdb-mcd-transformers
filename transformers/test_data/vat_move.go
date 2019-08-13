@@ -56,14 +56,14 @@ var VatMoveHeaderSyncLog = core.HeaderSyncLog{
 var VatMoveModel = shared.InsertionModel{
 	TableName: "vat_move",
 	OrderedColumns: []string{
-		"header_id", "src", "dst", "rad", "log_id",
+		constants.HeaderFK, "src", "dst", "rad", constants.LogFK,
 	},
 	ColumnValues: shared.ColumnValues{
-		"src":       "0xA730d1FF8B6Bc74a26d54c20a9dda539909BaB0e",
-		"dst":       "0xB730D1fF8b6BC74a26D54c20a9ddA539909BAb0e",
-		"rad":       "42",
-		"header_id": VatMoveHeaderSyncLog.HeaderID,
-		"log_id":    VatMoveHeaderSyncLog.ID,
+		"src":              "0xA730d1FF8B6Bc74a26d54c20a9dda539909BaB0e",
+		"dst":              "0xB730D1fF8b6BC74a26D54c20a9ddA539909BAb0e",
+		"rad":              "42",
+		constants.HeaderFK: VatMoveHeaderSyncLog.HeaderID,
+		constants.LogFK:    VatMoveHeaderSyncLog.ID,
 	},
 	ForeignKeyValues: shared.ForeignKeyValues{},
 }

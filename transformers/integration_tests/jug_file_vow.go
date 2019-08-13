@@ -91,7 +91,6 @@ var _ = Describe("Jug File Vow LogNoteTransformer", func() {
 })
 
 type jugFileVowModel struct {
-	What  string
-	Data  string
-	LogID uint `db:"log_id"`
+	What string
+	Data string
 }

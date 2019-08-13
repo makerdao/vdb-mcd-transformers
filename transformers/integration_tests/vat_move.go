@@ -84,8 +84,7 @@ var _ = Describe("VatMove LogNoteTransformer", func() {
 })
 
 type vatMoveModel struct {
-	Src   string
-	Dst   string
-	Rad   string
-	LogID uint `db:"log_id"`
+	Src string
+	Dst string
+	Rad string
 }

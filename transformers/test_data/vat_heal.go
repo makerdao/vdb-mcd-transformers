@@ -17,6 +17,7 @@
 package test_data
 
 import (
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"math/rand"
 
@@ -54,12 +55,12 @@ var VatHealHeaderSyncLog = core.HeaderSyncLog{
 var VatHealModel = shared.InsertionModel{
 	TableName: "vat_heal",
 	OrderedColumns: []string{
-		"header_id", "rad", "log_id",
+		constants.HeaderFK, "rad", constants.LogFK,
 	},
 	ColumnValues: shared.ColumnValues{
-		"rad":       "10001",
-		"header_id": VatHealHeaderSyncLog.HeaderID,
-		"log_id":    VatHealHeaderSyncLog.ID,
+		"rad":              "10001",
+		constants.HeaderFK: VatHealHeaderSyncLog.HeaderID,
+		constants.LogFK:    VatHealHeaderSyncLog.ID,
 	},
 	ForeignKeyValues: shared.ForeignKeyValues{},
 }

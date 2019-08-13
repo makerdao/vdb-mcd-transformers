@@ -56,11 +56,11 @@ var JugDripHeaderSyncLog = core.HeaderSyncLog{
 var JugDripModel = shared.InsertionModel{
 	TableName: "jug_drip",
 	OrderedColumns: []string{
-		"header_id", string(constants.IlkFK), "log_id",
+		constants.HeaderFK, string(constants.IlkFK), constants.LogFK,
 	},
 	ColumnValues: shared.ColumnValues{
-		"header_id": JugDripHeaderSyncLog.HeaderID,
-		"log_id":    JugDripHeaderSyncLog.ID,
+		constants.HeaderFK: JugDripHeaderSyncLog.HeaderID,
+		constants.LogFK:    JugDripHeaderSyncLog.ID,
 	},
 	ForeignKeyValues: shared.ForeignKeyValues{
 		constants.IlkFK: "0x66616b6520696c6b000000000000000000000000000000000000000000000000",

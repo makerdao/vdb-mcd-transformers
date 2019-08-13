@@ -500,8 +500,8 @@ func getFakeVatFrobEvent(ilk, urn string, headerID, logID int64) shared.Insertio
 	vatFrobEvent.ForeignKeyValues[constants.UrnFK] = urn
 	vatFrobEvent.ColumnValues["dink"] = strconv.Itoa(rand.Int())
 	vatFrobEvent.ColumnValues["dart"] = strconv.Itoa(rand.Int())
-	vatFrobEvent.ColumnValues["header_id"] = headerID
-	vatFrobEvent.ColumnValues["log_id"] = logID
+	vatFrobEvent.ColumnValues[constants.HeaderFK] = headerID
+	vatFrobEvent.ColumnValues[constants.LogFK] = logID
 	return vatFrobEvent
 }
 

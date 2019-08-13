@@ -44,12 +44,12 @@ func (SpotFilePipConverter) ToModels(logs []core.HeaderSyncLog) ([]shared.Insert
 		model := shared.InsertionModel{
 			TableName: "spot_file_pip",
 			OrderedColumns: []string{
-				"header_id", string(constants.IlkFK), "pip", "log_id",
+				constants.HeaderFK, string(constants.IlkFK), "pip", constants.LogFK,
 			},
 			ColumnValues: shared.ColumnValues{
-				"pip":       pip,
-				"header_id": log.HeaderID,
-				"log_id":    log.ID,
+				"pip":              pip,
+				constants.HeaderFK: log.HeaderID,
+				constants.LogFK:    log.ID,
 			},
 			ForeignKeyValues: shared.ForeignKeyValues{
 				constants.IlkFK: ilk,

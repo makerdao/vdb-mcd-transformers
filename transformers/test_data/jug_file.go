@@ -57,13 +57,13 @@ var JugFileIlkHeaderSyncLog = core.HeaderSyncLog{
 var JugFileIlkModel = shared.InsertionModel{
 	TableName: "jug_file_ilk",
 	OrderedColumns: []string{
-		"header_id", string(constants.IlkFK), "what", "data", "log_id",
+		constants.HeaderFK, string(constants.IlkFK), "what", "data", constants.LogFK,
 	},
 	ColumnValues: shared.ColumnValues{
-		"what":      "duty",
-		"data":      "1000000000937303470807876289",
-		"header_id": JugFileIlkHeaderSyncLog.HeaderID,
-		"log_id":    JugFileIlkHeaderSyncLog.ID,
+		"what":             "duty",
+		"data":             "1000000000937303470807876289",
+		constants.HeaderFK: JugFileIlkHeaderSyncLog.HeaderID,
+		constants.LogFK:    JugFileIlkHeaderSyncLog.ID,
 	},
 	ForeignKeyValues: shared.ForeignKeyValues{
 		constants.IlkFK: "0x434f4c322d410000000000000000000000000000000000000000000000000000",
@@ -97,13 +97,13 @@ var JugFileBaseHeaderSyncLog = core.HeaderSyncLog{
 var JugFileBaseModel = shared.InsertionModel{
 	TableName: "jug_file_base",
 	OrderedColumns: []string{
-		"header_id", "what", "data", "log_id",
+		constants.HeaderFK, "what", "data", constants.LogFK,
 	},
 	ColumnValues: shared.ColumnValues{
-		"what":      "fake what",
-		"data":      big.NewInt(123).String(),
-		"header_id": JugFileBaseHeaderSyncLog.HeaderID,
-		"log_id":    JugFileBaseHeaderSyncLog.ID,
+		"what":             "fake what",
+		"data":             big.NewInt(123).String(),
+		constants.HeaderFK: JugFileBaseHeaderSyncLog.HeaderID,
+		constants.LogFK:    JugFileBaseHeaderSyncLog.ID,
 	},
 	ForeignKeyValues: shared.ForeignKeyValues{},
 }
@@ -135,13 +135,13 @@ var JugFileVowHeaderSyncLog = core.HeaderSyncLog{
 var JugFileVowModel = shared.InsertionModel{
 	TableName: "jug_file_vow",
 	OrderedColumns: []string{
-		"header_id", "what", "data", "log_id",
+		constants.HeaderFK, "what", "data", constants.LogFK,
 	},
 	ColumnValues: shared.ColumnValues{
-		"what":      "vow",
-		"data":      "0x17560834075DA3Db54f737db74377E799c865821",
-		"header_id": JugFileVowHeaderSyncLog.HeaderID,
-		"log_id":    JugFileVowHeaderSyncLog.ID,
+		"what":             "vow",
+		"data":             "0x17560834075DA3Db54f737db74377E799c865821",
+		constants.HeaderFK: JugFileVowHeaderSyncLog.HeaderID,
+		constants.LogFK:    JugFileVowHeaderSyncLog.ID,
 	},
 	ForeignKeyValues: shared.ForeignKeyValues{},
 }

@@ -39,12 +39,12 @@ func (TickConverter) ToModels(logs []core.HeaderSyncLog) (results []shared.Inser
 		model := shared.InsertionModel{
 			TableName: "tick",
 			OrderedColumns: []string{
-				"header_id", "bid_id", string(constants.AddressFK), "log_id",
+				constants.HeaderFK, "bid_id", string(constants.AddressFK), constants.LogFK,
 			},
 			ColumnValues: shared.ColumnValues{
-				"bid_id":    log.Log.Topics[2].Big().String(),
-				"header_id": log.HeaderID,
-				"log_id":    log.ID,
+				"bid_id":           log.Log.Topics[2].Big().String(),
+				constants.HeaderFK: log.HeaderID,
+				constants.LogFK:    log.ID,
 			},
 			ForeignKeyValues: shared.ForeignKeyValues{
 				constants.AddressFK: log.Log.Address.String(),

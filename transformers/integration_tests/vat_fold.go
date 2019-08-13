@@ -95,8 +95,7 @@ var _ = Describe("VatFold Transformer", func() {
 })
 
 type vatFoldModel struct {
-	Ilk   string
-	Urn   string `db:"urn_id"`
-	Rate  string
-	LogID uint `db:"log_id"`
+	Ilk  string
+	Urn  string `db:"urn_id"`
+	Rate string
 }

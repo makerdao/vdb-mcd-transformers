@@ -48,13 +48,13 @@ func (CatFileFlipConverter) ToModels(logs []core.HeaderSyncLog) ([]shared.Insert
 		result := shared.InsertionModel{
 			TableName: "cat_file_flip",
 			OrderedColumns: []string{
-				"header_id", string(constants.IlkFK), "what", "flip", "log_id",
+				constants.HeaderFK, string(constants.IlkFK), "what", "flip", constants.LogFK,
 			},
 			ColumnValues: shared.ColumnValues{
-				"what":      what,
-				"flip":      flip,
-				"header_id": log.HeaderID,
-				"log_id":    log.ID,
+				"what":             what,
+				"flip":             flip,
+				constants.HeaderFK: log.HeaderID,
+				constants.LogFK:    log.ID,
 			},
 			ForeignKeyValues: shared.ForeignKeyValues{
 				constants.IlkFK: ilk,

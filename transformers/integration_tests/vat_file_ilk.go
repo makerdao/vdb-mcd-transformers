@@ -29,7 +29,6 @@ import (
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
-	"sort"
 	"strconv"
 )
 
@@ -121,7 +120,6 @@ var _ = Describe("VatFileIlk LogNoteTransformer", func() {
 		Expect(len(dbResults)).To(Equal(1))
 		ilkID, err := shared.GetOrCreateIlk("0x5a52582d41000000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
-		sort.Sort(byLogIndexVatFileIlk(dbResults))
 		dbResult := dbResults[0]
 		Expect(dbResult.Ilk).To(Equal(strconv.FormatInt(ilkID, 10)))
 		Expect(dbResult.What).To(Equal("line"))
@@ -153,7 +151,6 @@ var _ = Describe("VatFileIlk LogNoteTransformer", func() {
 		Expect(len(dbResults)).To(Equal(1))
 		ilkID, err := shared.GetOrCreateIlk("0x474e542d41000000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
-		sort.Sort(byLogIndexVatFileIlk(dbResults))
 		dbResult := dbResults[0]
 		Expect(dbResult.Ilk).To(Equal(strconv.FormatInt(ilkID, 10)))
 		Expect(dbResult.What).To(Equal("dust"))
@@ -162,14 +159,7 @@ var _ = Describe("VatFileIlk LogNoteTransformer", func() {
 })
 
 type vatFileIlkModel struct {
-	Ilk   string `db:"ilk_id"`
-	What  string
-	Data  string
-	LogID uint `db:"log_id"`
+	Ilk  string `db:"ilk_id"`
+	What string
+	Data string
 }
-
-type byLogIndexVatFileIlk []vatFileIlkModel
-
-func (c byLogIndexVatFileIlk) Len() int           { return len(c) }
-func (c byLogIndexVatFileIlk) Less(i, j int) bool { return c[i].LogID < c[j].LogID }
-func (c byLogIndexVatFileIlk) Swap(i, j int)      { c[i], c[j] = c[j], c[i] }

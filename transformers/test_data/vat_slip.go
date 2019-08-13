@@ -56,13 +56,13 @@ var VatSlipHeaderSyncLogWithPositiveWad = core.HeaderSyncLog{
 var VatSlipModelWithPositiveWad = shared.InsertionModel{
 	TableName: "vat_slip",
 	OrderedColumns: []string{
-		"header_id", string(constants.IlkFK), "usr", "wad", "log_id",
+		constants.HeaderFK, string(constants.IlkFK), "usr", "wad", constants.LogFK,
 	},
 	ColumnValues: shared.ColumnValues{
-		"usr":       "0x5c8c8e5895B9cCf34ACF391C99E13C79EE2eFb46",
-		"wad":       "10000000000000000",
-		"header_id": VatSlipHeaderSyncLogWithPositiveWad.HeaderID,
-		"log_id":    VatSlipHeaderSyncLogWithPositiveWad.ID,
+		"usr":              "0x5c8c8e5895B9cCf34ACF391C99E13C79EE2eFb46",
+		"wad":              "10000000000000000",
+		constants.HeaderFK: VatSlipHeaderSyncLogWithPositiveWad.HeaderID,
+		constants.LogFK:    VatSlipHeaderSyncLogWithPositiveWad.ID,
 	},
 	ForeignKeyValues: shared.ForeignKeyValues{
 		constants.IlkFK: "0x4554482d41000000000000000000000000000000000000000000000000000000",
@@ -96,13 +96,13 @@ var VatSlipHeaderSyncLogWithNegativeWad = core.HeaderSyncLog{
 var VatSlipModelWithNegativeWad = shared.InsertionModel{
 	TableName: "vat_slip",
 	OrderedColumns: []string{
-		"header_id", string(constants.IlkFK), "usr", "wad", "log_id",
+		constants.HeaderFK, string(constants.IlkFK), "usr", "wad", constants.LogFK,
 	},
 	ColumnValues: shared.ColumnValues{
-		"usr":       "0xFc7440E2Ed4A3AEb14d40c00f02a14221Be0474d",
-		"wad":       "-5000000000000000",
-		"header_id": VatSlipHeaderSyncLogWithNegativeWad.HeaderID,
-		"log_id":    VatSlipHeaderSyncLogWithNegativeWad.ID,
+		"usr":              "0xFc7440E2Ed4A3AEb14d40c00f02a14221Be0474d",
+		"wad":              "-5000000000000000",
+		constants.HeaderFK: VatSlipHeaderSyncLogWithNegativeWad.HeaderID,
+		constants.LogFK:    VatSlipHeaderSyncLogWithNegativeWad.ID,
 	},
 	ForeignKeyValues: shared.ForeignKeyValues{
 		constants.IlkFK: "0x4554482d41000000000000000000000000000000000000000000000000000000",

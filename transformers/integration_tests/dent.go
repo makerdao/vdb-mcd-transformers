@@ -114,5 +114,4 @@ type dentModel struct {
 	Lot             string
 	Bid             string
 	ContractAddress string `db:"contract_address"`
-	LogID           uint   `db:"log_id"`
 }

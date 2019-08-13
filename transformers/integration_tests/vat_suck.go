@@ -84,8 +84,7 @@ var _ = Describe("VatSuck Transformer", func() {
 })
 
 type vatSuckModel struct {
-	U     string
-	V     string
-	Rad   string
-	LogID uint `db:"log_id"`
+	U   string
+	V   string
+	Rad string
 }

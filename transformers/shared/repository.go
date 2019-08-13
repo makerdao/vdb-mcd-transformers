@@ -126,10 +126,6 @@ func Create(models []InsertionModel, db *postgres.DB) error {
 			return fmt.Errorf("error gettings FK ids: %s", fkErr.Error())
 		}
 
-		// TODO: remove (should no longer be necessary if header_id in column_values
-		// Save headerId in mapping for insertion query
-		//model.ColumnValues["header_id"] = model.ColumnValues["header_id"].(string)
-
 		// Maps can't be iterated over in a reliable manner, so we rely on OrderedColumns to define the order to insert
 		// tx.Exec is variadically typed in the args, so if we wrap in []interface{} we can apply them all automatically
 		var args []interface{}
@@ -148,7 +144,7 @@ func Create(models []InsertionModel, db *postgres.DB) error {
 			return execErr
 		}
 
-		_, logErr := tx.Exec(`UPDATE public.header_sync_logs SET transformed = true WHERE id = $1`, model.ColumnValues["log_id"])
+		_, logErr := tx.Exec(`UPDATE public.header_sync_logs SET transformed = true WHERE id = $1`, model.ColumnValues[constants.LogFK])
 
 		if logErr != nil {
 			rollbackErr := tx.Rollback()

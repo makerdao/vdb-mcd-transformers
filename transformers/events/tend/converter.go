@@ -48,14 +48,14 @@ func (TendConverter) ToModels(logs []core.HeaderSyncLog) (results []shared.Inser
 		model := shared.InsertionModel{
 			TableName: "tend",
 			OrderedColumns: []string{
-				"header_id", "bid_id", "lot", "bid", string(constants.AddressFK), "log_id",
+				constants.HeaderFK, "bid_id", "lot", "bid", string(constants.AddressFK), constants.LogFK,
 			},
 			ColumnValues: shared.ColumnValues{
-				"bid_id":    bidId.String(),
-				"lot":       lot,
-				"bid":       bidValue,
-				"header_id": log.HeaderID,
-				"log_id":    log.ID,
+				"bid_id":           bidId.String(),
+				"lot":              lot,
+				"bid":              bidValue,
+				constants.HeaderFK: log.HeaderID,
+				constants.LogFK:    log.ID,
 			},
 			ForeignKeyValues: shared.ForeignKeyValues{
 				constants.AddressFK: log.Log.Address.Hex(),

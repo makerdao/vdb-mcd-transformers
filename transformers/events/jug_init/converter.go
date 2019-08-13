@@ -41,10 +41,10 @@ func (JugInitConverter) ToModels(logs []core.HeaderSyncLog) ([]shared.InsertionM
 
 		model := shared.InsertionModel{
 			TableName:      "jug_init",
-			OrderedColumns: []string{"header_id", string(constants.IlkFK), "log_id"},
+			OrderedColumns: []string{constants.HeaderFK, string(constants.IlkFK), constants.LogFK},
 			ColumnValues: shared.ColumnValues{
-				"header_id": log.HeaderID,
-				"log_id":    log.ID,
+				constants.HeaderFK: log.HeaderID,
+				constants.LogFK:    log.ID,
 			},
 			ForeignKeyValues: shared.ForeignKeyValues{
 				constants.IlkFK: ilk,

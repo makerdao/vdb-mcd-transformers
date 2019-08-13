@@ -93,7 +93,6 @@ var _ = Describe("VowFile LogNoteTransforer", func() {
 })
 
 type vowFileModel struct {
-	What  string
-	Data  string
-	LogID uint `db:"log_id"`
+	What string
+	Data string
 }

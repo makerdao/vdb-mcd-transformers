@@ -56,13 +56,13 @@ var CatFileChopHeaderSyncLog = core.HeaderSyncLog{
 var CatFileChopModel = shared.InsertionModel{
 	TableName: "cat_file_chop_lump",
 	OrderedColumns: []string{
-		"header_id", string(constants.IlkFK), "what", "data", "log_id",
+		constants.HeaderFK, string(constants.IlkFK), "what", "data", constants.LogFK,
 	},
 	ColumnValues: shared.ColumnValues{
-		"what":      "chop",
-		"data":      "1000000000000000000000000000",
-		"header_id": CatFileChopHeaderSyncLog.HeaderID,
-		"log_id":    CatFileChopHeaderSyncLog.ID,
+		"what":             "chop",
+		"data":             "1000000000000000000000000000",
+		constants.HeaderFK: CatFileChopHeaderSyncLog.HeaderID,
+		constants.LogFK:    CatFileChopHeaderSyncLog.ID,
 	},
 	ForeignKeyValues: shared.ForeignKeyValues{
 		constants.IlkFK: "0x434f4c342d410000000000000000000000000000000000000000000000000000",
@@ -96,13 +96,13 @@ var CatFileLumpHeaderSyncLog = core.HeaderSyncLog{
 var CatFileLumpModel = shared.InsertionModel{
 	TableName: "cat_file_chop_lump",
 	OrderedColumns: []string{
-		"header_id", string(constants.IlkFK), "what", "data", "log_id",
+		constants.HeaderFK, string(constants.IlkFK), "what", "data", constants.LogFK,
 	},
 	ColumnValues: shared.ColumnValues{
-		"what":      "lump",
-		"data":      "10000000000000000000000000000000000000000000000000",
-		"header_id": CatFileLumpHeaderSyncLog.HeaderID,
-		"log_id":    CatFileLumpHeaderSyncLog.ID,
+		"what":             "lump",
+		"data":             "10000000000000000000000000000000000000000000000000",
+		constants.HeaderFK: CatFileLumpHeaderSyncLog.HeaderID,
+		constants.LogFK:    CatFileLumpHeaderSyncLog.ID,
 	},
 	ForeignKeyValues: shared.ForeignKeyValues{
 		constants.IlkFK: "0x434f4c342d410000000000000000000000000000000000000000000000000000",
@@ -136,13 +136,13 @@ var CatFileFlipHeaderSyncLog = core.HeaderSyncLog{
 var CatFileFlipModel = shared.InsertionModel{
 	TableName: "cat_file_flip",
 	OrderedColumns: []string{
-		"header_id", string(constants.IlkFK), "what", "flip", "log_id",
+		constants.HeaderFK, string(constants.IlkFK), "what", "flip", constants.LogFK,
 	},
 	ColumnValues: shared.ColumnValues{
-		"what":      "flip",
-		"flip":      "0x6E8032435c84B08E30F27bfbb812Ee365A095b31",
-		"header_id": CatFileFlipHeaderSyncLog.HeaderID,
-		"log_id":    CatFileFlipHeaderSyncLog.ID,
+		"what":             "flip",
+		"flip":             "0x6E8032435c84B08E30F27bfbb812Ee365A095b31",
+		constants.HeaderFK: CatFileFlipHeaderSyncLog.HeaderID,
+		constants.LogFK:    CatFileFlipHeaderSyncLog.ID,
 	},
 	ForeignKeyValues: shared.ForeignKeyValues{
 		constants.IlkFK: "0x434f4c312d410000000000000000000000000000000000000000000000000000",
@@ -176,13 +176,13 @@ var CatFileVowHeaderSyncLog = core.HeaderSyncLog{
 var CatFileVowModel = shared.InsertionModel{
 	TableName: "cat_file_vow",
 	OrderedColumns: []string{
-		"header_id", "what", "data", "log_id",
+		constants.HeaderFK, "what", "data", constants.LogFK,
 	},
 	ColumnValues: shared.ColumnValues{
-		"what":      "vow",
-		"data":      "0x17560834075DA3Db54f737db74377E799c865821",
-		"header_id": CatFileVowHeaderSyncLog.HeaderID,
-		"log_id":    CatFileVowHeaderSyncLog.ID,
+		"what":             "vow",
+		"data":             "0x17560834075DA3Db54f737db74377E799c865821",
+		constants.HeaderFK: CatFileVowHeaderSyncLog.HeaderID,
+		constants.LogFK:    CatFileVowHeaderSyncLog.ID,
 	},
 	ForeignKeyValues: shared.ForeignKeyValues{},
 }

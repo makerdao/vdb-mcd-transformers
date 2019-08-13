@@ -56,11 +56,11 @@ var JugInitHeaderSyncLog = core.HeaderSyncLog{
 var JugInitModel = shared.InsertionModel{
 	TableName: "jug_init",
 	OrderedColumns: []string{
-		"header_id", string(constants.IlkFK), "log_id",
+		constants.HeaderFK, string(constants.IlkFK), constants.LogFK,
 	},
 	ColumnValues: shared.ColumnValues{
-		"header_id": JugInitHeaderSyncLog.HeaderID,
-		"log_id":    JugInitHeaderSyncLog.ID,
+		constants.HeaderFK: JugInitHeaderSyncLog.HeaderID,
+		constants.LogFK:    JugInitHeaderSyncLog.ID,
 	},
 	ForeignKeyValues: shared.ForeignKeyValues{
 		constants.IlkFK: "0x434f4c352d410000000000000000000000000000000000000000000000000000",

@@ -101,8 +101,8 @@ var _ = Describe("QueuedSin", func() {
 			vowFlogRepository.SetDB(db)
 			vowFlogEvent := test_data.VowFlogModel
 			vowFlogEvent.ColumnValues["era"] = fakeEra
-			vowFlogEvent.ColumnValues["header_id"] = headerID
-			vowFlogEvent.ColumnValues["log_id"] = logID
+			vowFlogEvent.ColumnValues[constants.HeaderFK] = headerID
+			vowFlogEvent.ColumnValues[constants.LogFK] = logID
 			insertVowFlogErr := vowFlogRepository.Create([]shared.InsertionModel{vowFlogEvent})
 			Expect(insertVowFlogErr).NotTo(HaveOccurred())
 

@@ -82,7 +82,7 @@ var _ = XDescribe("VowFess LogNoteTransformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []vowFessModel
-		err = db.Select(&dbResult, `SELECT tab, log_id from maker.vow_fess`)
+		err = db.Select(&dbResult, `SELECT tab from maker.vow_fess`)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(dbResult[0].Tab).To(Equal("11000000000000000000000"))
@@ -90,6 +90,5 @@ var _ = XDescribe("VowFess LogNoteTransformer", func() {
 })
 
 type vowFessModel struct {
-	Tab   string
-	LogID uint `db:"log_id"`
+	Tab string
 }

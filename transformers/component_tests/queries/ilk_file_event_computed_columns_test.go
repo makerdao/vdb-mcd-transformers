@@ -66,8 +66,8 @@ var _ = Describe("Ilk file event computed columns", func() {
 		fileRepo.SetDB(db)
 		fileEvent = test_data.VatFileIlkDustModel
 		fileEvent.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
-		fileEvent.ColumnValues["header_id"] = headerId
-		fileEvent.ColumnValues["log_id"] = insertedLog.ID
+		fileEvent.ColumnValues[constants.HeaderFK] = headerId
+		fileEvent.ColumnValues[constants.LogFK] = insertedLog.ID
 		insertFileErr := fileRepo.Create([]shared.InsertionModel{fileEvent})
 		Expect(insertFileErr).NotTo(HaveOccurred())
 	})

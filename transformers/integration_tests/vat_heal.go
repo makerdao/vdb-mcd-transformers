@@ -80,6 +80,5 @@ var _ = Describe("VatHeal Transformer", func() {
 })
 
 type vatHealModel struct {
-	Rad   string
-	LogID uint `db:"log_id"`
+	Rad string
 }

@@ -91,7 +91,6 @@ var _ = Describe("VatFileDebtCeiling LogNoteTransformer", func() {
 })
 
 type vatFileDebtCeilingModel struct {
-	What  string
-	Data  string
-	LogID uint `db:"log_id"`
+	What string
+	Data string
 }

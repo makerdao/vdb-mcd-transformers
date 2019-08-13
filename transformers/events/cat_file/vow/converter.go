@@ -19,6 +19,7 @@ package vow
 import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 )
 
@@ -43,13 +44,13 @@ func (CatFileVowConverter) ToModels(logs []core.HeaderSyncLog) ([]shared.Inserti
 		result := shared.InsertionModel{
 			TableName: "cat_file_vow",
 			OrderedColumns: []string{
-				"header_id", "what", "data", "log_id",
+				constants.HeaderFK, "what", "data", constants.LogFK,
 			},
 			ColumnValues: shared.ColumnValues{
-				"what":      what,
-				"data":      data,
-				"header_id": log.HeaderID,
-				"log_id":    log.ID,
+				"what":             what,
+				"data":             data,
+				constants.HeaderFK: log.HeaderID,
+				constants.LogFK:    log.ID,
 			},
 			ForeignKeyValues: shared.ForeignKeyValues{},
 		}

@@ -53,13 +53,13 @@ func (CatFileChopLumpConverter) ToModels(logs []core.HeaderSyncLog) ([]shared.In
 		result := shared.InsertionModel{
 			TableName: "cat_file_chop_lump",
 			OrderedColumns: []string{
-				"header_id", string(constants.IlkFK), "what", "data", "log_id",
+				constants.HeaderFK, string(constants.IlkFK), "what", "data", constants.LogFK,
 			},
 			ColumnValues: shared.ColumnValues{
-				"what":      what,
-				"data":      data.String(),
-				"header_id": log.HeaderID,
-				"log_id":    log.ID,
+				"what":             what,
+				"data":             data.String(),
+				constants.HeaderFK: log.HeaderID,
+				constants.LogFK:    log.ID,
 			},
 			ForeignKeyValues: shared.ForeignKeyValues{
 				constants.IlkFK: ilk,

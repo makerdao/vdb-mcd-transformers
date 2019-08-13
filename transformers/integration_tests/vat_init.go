@@ -85,6 +85,5 @@ var _ = Describe("VatInit LogNoteTransformer", func() {
 })
 
 type vatInitModel struct {
-	Ilk   string `db:"ilk_id"`
-	LogID uint   `db:"log_id"`
+	Ilk string `db:"ilk_id"`
 }

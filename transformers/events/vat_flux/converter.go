@@ -51,14 +51,14 @@ func (VatFluxConverter) ToModels(logs []core.HeaderSyncLog) ([]shared.InsertionM
 		model := shared.InsertionModel{
 			TableName: "vat_flux",
 			OrderedColumns: []string{
-				"header_id", string(constants.IlkFK), "src", "dst", "wad", "log_id",
+				constants.HeaderFK, string(constants.IlkFK), "src", "dst", "wad", constants.LogFK,
 			},
 			ColumnValues: shared.ColumnValues{
-				"src":       src,
-				"dst":       dst,
-				"wad":       wad.String(),
-				"header_id": log.HeaderID,
-				"log_id":    log.ID,
+				"src":              src,
+				"dst":              dst,
+				"wad":              wad.String(),
+				constants.HeaderFK: log.HeaderID,
+				constants.LogFK:    log.ID,
 			},
 			ForeignKeyValues: shared.ForeignKeyValues{
 				constants.IlkFK: ilk,

@@ -53,13 +53,13 @@ var SpotFileMatHeaderSyncLog = core.HeaderSyncLog{
 var SpotFileMatModel = shared.InsertionModel{
 	TableName: "spot_file_mat",
 	OrderedColumns: []string{
-		"header_id", string(constants.IlkFK), "what", "data", "log_id",
+		constants.HeaderFK, string(constants.IlkFK), "what", "data", constants.LogFK,
 	},
 	ColumnValues: shared.ColumnValues{
-		"what":      "mat",
-		"data":      "1500000000000000000000000000",
-		"header_id": SpotFileMatHeaderSyncLog.HeaderID,
-		"log_id":    SpotFileMatHeaderSyncLog.ID,
+		"what":             "mat",
+		"data":             "1500000000000000000000000000",
+		constants.HeaderFK: SpotFileMatHeaderSyncLog.HeaderID,
+		constants.LogFK:    SpotFileMatHeaderSyncLog.ID,
 	},
 	ForeignKeyValues: shared.ForeignKeyValues{
 		constants.IlkFK: "0x4554482d41000000000000000000000000000000000000000000000000000000",
@@ -93,12 +93,12 @@ var SpotFilePipHeaderSyncLog = core.HeaderSyncLog{
 var SpotFilePipModel = shared.InsertionModel{
 	TableName: "spot_file_pip",
 	OrderedColumns: []string{
-		"header_id", string(constants.IlkFK), "pip", "log_id",
+		constants.HeaderFK, string(constants.IlkFK), "pip", constants.LogFK,
 	},
 	ColumnValues: shared.ColumnValues{
-		"pip":       "0x8C73Ec0fBCdEC6b8C060BC224D94740FD41f3774",
-		"header_id": SpotFilePipHeaderSyncLog.HeaderID,
-		"log_id":    SpotFilePipHeaderSyncLog.ID,
+		"pip":              "0x8C73Ec0fBCdEC6b8C060BC224D94740FD41f3774",
+		constants.HeaderFK: SpotFilePipHeaderSyncLog.HeaderID,
+		constants.LogFK:    SpotFilePipHeaderSyncLog.ID,
 	},
 	ForeignKeyValues: shared.ForeignKeyValues{
 		constants.IlkFK: "0x4554482d41000000000000000000000000000000000000000000000000000000",

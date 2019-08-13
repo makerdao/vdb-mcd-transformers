@@ -53,12 +53,12 @@ var YankHeaderSyncLog = core.HeaderSyncLog{
 var YankModel = shared.InsertionModel{
 	TableName: "yank",
 	OrderedColumns: []string{
-		"header_id", "bid_id", string(constants.AddressFK), "log_id",
+		constants.HeaderFK, "bid_id", string(constants.AddressFK), constants.LogFK,
 	},
 	ColumnValues: shared.ColumnValues{
-		"bid_id":    "10000000000000000",
-		"header_id": YankHeaderSyncLog.HeaderID,
-		"log_id":    YankHeaderSyncLog.ID,
+		"bid_id":           "10000000000000000",
+		constants.HeaderFK: YankHeaderSyncLog.HeaderID,
+		constants.LogFK:    YankHeaderSyncLog.ID,
 	},
 	ForeignKeyValues: shared.ForeignKeyValues{
 		constants.AddressFK: YankHeaderSyncLog.Log.Address.Hex(),

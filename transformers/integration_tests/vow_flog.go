@@ -81,7 +81,7 @@ var _ = XDescribe("VowFlog LogNoteTransformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []vowFlogModel
-		err = db.Select(&dbResult, `SELECT era, log_id from maker.vow_flog`)
+		err = db.Select(&dbResult, `SELECT era from maker.vow_flog`)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))
@@ -90,6 +90,5 @@ var _ = XDescribe("VowFlog LogNoteTransformer", func() {
 })
 
 type vowFlogModel struct {
-	Era   string
-	LogID uint `db:"log_id"`
+	Era string
 }

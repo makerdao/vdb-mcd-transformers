@@ -56,12 +56,12 @@ var VatFoldHeaderSyncLogWithPositiveRate = core.HeaderSyncLog{
 var VatFoldModelWithPositiveRate = shared.InsertionModel{
 	TableName: "vat_fold",
 	OrderedColumns: []string{
-		"header_id", string(constants.UrnFK), "rate", "log_id",
+		constants.HeaderFK, string(constants.UrnFK), "rate", constants.LogFK,
 	},
 	ColumnValues: shared.ColumnValues{
-		"rate":      "2",
-		"header_id": VatFoldHeaderSyncLogWithPositiveRate.HeaderID,
-		"log_id":    VatFoldHeaderSyncLogWithPositiveRate.ID,
+		"rate":             "2",
+		constants.HeaderFK: VatFoldHeaderSyncLogWithPositiveRate.HeaderID,
+		constants.LogFK:    VatFoldHeaderSyncLogWithPositiveRate.ID,
 	},
 	ForeignKeyValues: shared.ForeignKeyValues{
 		constants.IlkFK: "0x5245500000000000000000000000000000000000000000000000000000000000",
@@ -96,12 +96,12 @@ var VatFoldHeaderSyncLogWithNegativeRate = core.HeaderSyncLog{
 var VatFoldModelWithNegativeRate = shared.InsertionModel{
 	TableName: "vat_fold",
 	OrderedColumns: []string{
-		"header_id", string(constants.UrnFK), "rate", "log_id",
+		constants.HeaderFK, string(constants.UrnFK), "rate", constants.LogFK,
 	},
 	ColumnValues: shared.ColumnValues{
-		"rate":      "-500000000000000000000",
-		"header_id": VatFoldHeaderSyncLogWithNegativeRate.HeaderID,
-		"log_id":    VatFoldHeaderSyncLogWithNegativeRate.ID,
+		"rate":             "-500000000000000000000",
+		constants.HeaderFK: VatFoldHeaderSyncLogWithNegativeRate.HeaderID,
+		constants.LogFK:    VatFoldHeaderSyncLogWithNegativeRate.ID,
 	},
 	ForeignKeyValues: shared.ForeignKeyValues{
 		constants.IlkFK: "0x66616b6520696c6b000000000000000000000000000000000000000000000000",

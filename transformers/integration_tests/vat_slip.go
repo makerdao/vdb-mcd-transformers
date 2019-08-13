@@ -95,8 +95,7 @@ var _ = Describe("Vat slip transformer", func() {
 })
 
 type vatSlipModel struct {
-	Ilk   string `db:"ilk_id"`
-	Usr   string
-	Wad   string
-	LogID uint `db:"log_id"`
+	Ilk string `db:"ilk_id"`
+	Usr string
+	Wad string
 }

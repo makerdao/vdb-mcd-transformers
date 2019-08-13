@@ -70,8 +70,8 @@ var _ = Describe("Frob event computed columns", func() {
 		frobEvent = test_data.CopyModel(test_data.VatFrobModelWithPositiveDart)
 		frobEvent.ForeignKeyValues[constants.UrnFK] = fakeGuy
 		frobEvent.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
-		frobEvent.ColumnValues["header_id"] = headerId
-		frobEvent.ColumnValues["log_id"] = insertedLog.ID
+		frobEvent.ColumnValues[constants.HeaderFK] = headerId
+		frobEvent.ColumnValues[constants.LogFK] = insertedLog.ID
 		insertFrobErr := frobRepo.Create([]shared.InsertionModel{frobEvent})
 		Expect(insertFrobErr).NotTo(HaveOccurred())
 	})

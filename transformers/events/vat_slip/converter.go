@@ -45,13 +45,13 @@ func (VatSlipConverter) ToModels(logs []core.HeaderSyncLog) ([]shared.InsertionM
 		model := shared.InsertionModel{
 			TableName: "vat_slip",
 			OrderedColumns: []string{
-				"header_id", string(constants.IlkFK), "usr", "wad", "log_id",
+				constants.HeaderFK, string(constants.IlkFK), "usr", "wad", constants.LogFK,
 			},
 			ColumnValues: shared.ColumnValues{
-				"usr":       usr,
-				"wad":       wad.String(),
-				"header_id": log.HeaderID,
-				"log_id":    log.ID,
+				"usr":              usr,
+				"wad":              wad.String(),
+				constants.HeaderFK: log.HeaderID,
+				constants.LogFK:    log.ID,
 			},
 			ForeignKeyValues: shared.ForeignKeyValues{
 				constants.IlkFK: ilk,

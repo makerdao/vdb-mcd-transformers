@@ -133,5 +133,4 @@ var _ = XDescribe("Deal transformer", func() {
 type dealModel struct {
 	BidId           string `db:"bid_id"`
 	ContractAddress string `db:"contract_address"`
-	LogID           uint   `db:"log_id"`
 }

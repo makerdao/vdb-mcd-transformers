@@ -62,14 +62,14 @@ var DentHeaderSyncLog = core.HeaderSyncLog{
 var DentModel = shared.InsertionModel{
 	TableName: "dent",
 	OrderedColumns: []string{
-		"header_id", "bid_id", "lot", "bid", string(constants.AddressFK), "log_id",
+		constants.HeaderFK, "bid_id", "lot", "bid", string(constants.AddressFK), constants.LogFK,
 	},
 	ColumnValues: shared.ColumnValues{
-		"bid_id":    dentBidId,
-		"lot":       dentLot,
-		"bid":       dentBid,
-		"header_id": DentHeaderSyncLog.HeaderID,
-		"log_id":    DentHeaderSyncLog.ID,
+		"bid_id":           dentBidId,
+		"lot":              dentLot,
+		"bid":              dentBid,
+		constants.HeaderFK: DentHeaderSyncLog.HeaderID,
+		constants.LogFK:    DentHeaderSyncLog.ID,
 	},
 	ForeignKeyValues: shared.ForeignKeyValues{
 		constants.AddressFK: DentHeaderSyncLog.Log.Address.Hex(),

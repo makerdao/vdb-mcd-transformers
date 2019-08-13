@@ -56,11 +56,11 @@ var VatInitHeaderSyncLog = core.HeaderSyncLog{
 var VatInitModel = shared.InsertionModel{
 	TableName: "vat_init",
 	OrderedColumns: []string{
-		"header_id", string(constants.IlkFK), "log_id",
+		constants.HeaderFK, string(constants.IlkFK), constants.LogFK,
 	},
 	ColumnValues: shared.ColumnValues{
-		"header_id": VatInitHeaderSyncLog.HeaderID,
-		"log_id":    VatInitHeaderSyncLog.ID,
+		constants.HeaderFK: VatInitHeaderSyncLog.HeaderID,
+		constants.LogFK:    VatInitHeaderSyncLog.ID,
 	},
 	ForeignKeyValues: shared.ForeignKeyValues{
 		constants.IlkFK: "0x66616b6520696c6b000000000000000000000000000000000000000000000000",

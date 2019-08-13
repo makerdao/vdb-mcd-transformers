@@ -95,11 +95,10 @@ var _ = XDescribe("Vat Grab Transformer", func() {
 })
 
 type vatGrabModel struct {
-	Ilk   string
-	Urn   string `db:"urn_id"`
-	V     string
-	W     string
-	Dink  string
-	Dart  string
-	LogID uint `db:"log_id"`
+	Ilk  string
+	Urn  string `db:"urn_id"`
+	V    string
+	W    string
+	Dink string
+	Dart string
 }

@@ -41,12 +41,12 @@ func (DealConverter) ToModels(logs []core.HeaderSyncLog) (result []shared.Insert
 		model := shared.InsertionModel{
 			TableName: "deal",
 			OrderedColumns: []string{
-				"header_id", "bid_id", string(constants.AddressFK), "log_id",
+				constants.HeaderFK, "bid_id", string(constants.AddressFK), constants.LogFK,
 			},
 			ColumnValues: shared.ColumnValues{
-				"bid_id":    bidId.String(),
-				"header_id": log.HeaderID,
-				"log_id":    log.ID,
+				"bid_id":           bidId.String(),
+				constants.HeaderFK: log.HeaderID,
+				constants.LogFK:    log.ID,
 			},
 			ForeignKeyValues: shared.ForeignKeyValues{
 				constants.AddressFK: log.Log.Address.String(),

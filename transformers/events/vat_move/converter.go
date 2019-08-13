@@ -19,6 +19,7 @@ package vat_move
 import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 )
 
@@ -44,14 +45,14 @@ func (VatMoveConverter) ToModels(logs []core.HeaderSyncLog) ([]shared.InsertionM
 		model := shared.InsertionModel{
 			TableName: "vat_move",
 			OrderedColumns: []string{
-				"header_id", "src", "dst", "rad", "log_id",
+				constants.HeaderFK, "src", "dst", "rad", constants.LogFK,
 			},
 			ColumnValues: shared.ColumnValues{
-				"src":       src,
-				"dst":       dst,
-				"rad":       rad.String(),
-				"header_id": log.HeaderID,
-				"log_id":    log.ID,
+				"src":              src,
+				"dst":              dst,
+				"rad":              rad.String(),
+				constants.HeaderFK: log.HeaderID,
+				constants.LogFK:    log.ID,
 			},
 			ForeignKeyValues: shared.ForeignKeyValues{},
 		}

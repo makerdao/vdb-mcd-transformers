@@ -45,12 +45,12 @@ func (VatFoldConverter) ToModels(logs []core.HeaderSyncLog) ([]shared.InsertionM
 		model := shared.InsertionModel{
 			TableName: "vat_fold",
 			OrderedColumns: []string{
-				"header_id", string(constants.UrnFK), "rate", "log_id",
+				constants.HeaderFK, string(constants.UrnFK), "rate", constants.LogFK,
 			},
 			ColumnValues: shared.ColumnValues{
-				"rate":      rate.String(),
-				"header_id": log.HeaderID,
-				"log_id":    log.ID,
+				"rate":             rate.String(),
+				constants.HeaderFK: log.HeaderID,
+				constants.LogFK:    log.ID,
 			},
 			ForeignKeyValues: shared.ForeignKeyValues{
 				constants.IlkFK: ilk,

@@ -18,6 +18,7 @@ package vat_heal
 
 import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 )
 
@@ -41,12 +42,12 @@ func (VatHealConverter) ToModels(logs []core.HeaderSyncLog) ([]shared.InsertionM
 		model := shared.InsertionModel{
 			TableName: "vat_heal",
 			OrderedColumns: []string{
-				"header_id", "rad", "log_id",
+				constants.HeaderFK, "rad", constants.LogFK,
 			},
 			ColumnValues: shared.ColumnValues{
-				"rad":       radInt.String(),
-				"header_id": log.HeaderID,
-				"log_id":    log.ID,
+				"rad":              radInt.String(),
+				constants.HeaderFK: log.HeaderID,
+				constants.LogFK:    log.ID,
 			},
 			ForeignKeyValues: shared.ForeignKeyValues{},
 		}

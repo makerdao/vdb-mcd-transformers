@@ -18,6 +18,7 @@ package vow_fess
 
 import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 )
 
@@ -41,12 +42,12 @@ func (VowFessConverter) ToModels(logs []core.HeaderSyncLog) ([]shared.InsertionM
 		model := shared.InsertionModel{
 			TableName: "vow_fess",
 			OrderedColumns: []string{
-				"header_id", "tab", "log_id",
+				constants.HeaderFK, "tab", constants.LogFK,
 			},
 			ColumnValues: shared.ColumnValues{
-				"tab":       tab.String(),
-				"header_id": log.HeaderID,
-				"log_id":    log.ID,
+				"tab":              tab.String(),
+				constants.HeaderFK: log.HeaderID,
+				constants.LogFK:    log.ID,
 			},
 			ForeignKeyValues: shared.ForeignKeyValues{},
 		}

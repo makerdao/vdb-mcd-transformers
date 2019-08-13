@@ -269,8 +269,8 @@ var _ = Describe("Executing the transformer", func() {
 			vatFrob := test_data.CopyModel(test_data.VatFrobModelWithPositiveDart)
 			vatFrob.ForeignKeyValues[constants.IlkFK] = ilk
 			vatFrob.ColumnValues["v"] = guy
-			vatFrob.ColumnValues["header_id"] = headerID
-			vatFrob.ColumnValues["log_id"] = vatFrobLog.ID
+			vatFrob.ColumnValues[constants.HeaderFK] = headerID
+			vatFrob.ColumnValues[constants.LogFK] = vatFrobLog.ID
 			insertErr := vatFrobRepository.Create([]shared.InsertionModel{vatFrob})
 			Expect(insertErr).NotTo(HaveOccurred())
 		})
@@ -311,8 +311,8 @@ var _ = Describe("Executing the transformer", func() {
 			vatFrobRepository.SetDB(db)
 			vatFrob := test_data.CopyModel(test_data.VatFrobModelWithPositiveDart)
 			vatFrob.ColumnValues["w"] = guy
-			vatFrob.ColumnValues["header_id"] = headerID
-			vatFrob.ColumnValues["log_id"] = vatFrobLog.ID
+			vatFrob.ColumnValues[constants.HeaderFK] = headerID
+			vatFrob.ColumnValues[constants.LogFK] = vatFrobLog.ID
 			insertErr := vatFrobRepository.Create([]shared.InsertionModel{vatFrob})
 			Expect(insertErr).NotTo(HaveOccurred())
 		})

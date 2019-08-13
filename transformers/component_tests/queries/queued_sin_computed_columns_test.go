@@ -74,8 +74,8 @@ var _ = Describe("Queued sin computed columns", func() {
 			vowFessRepo := vow_fess.VowFessRepository{}
 			vowFessRepo.SetDB(db)
 			vowFessEvent := test_data.VowFessModel
-			vowFessEvent.ColumnValues["header_id"] = headerID
-			vowFessEvent.ColumnValues["log_id"] = vowFessLog.ID
+			vowFessEvent.ColumnValues[constants.HeaderFK] = headerID
+			vowFessEvent.ColumnValues[constants.LogFK] = vowFessLog.ID
 			insertVowFessErr := vowFessRepo.Create([]shared.InsertionModel{vowFessEvent})
 			Expect(insertVowFessErr).NotTo(HaveOccurred())
 
@@ -84,8 +84,8 @@ var _ = Describe("Queued sin computed columns", func() {
 			vowFlogRepo.SetDB(db)
 			vowFlogEvent := test_data.VowFlogModel
 			vowFlogEvent.ColumnValues["era"] = fakeEra
-			vowFlogEvent.ColumnValues["header_id"] = headerID
-			vowFlogEvent.ColumnValues["log_id"] = vowFlogLog.ID
+			vowFlogEvent.ColumnValues[constants.HeaderFK] = headerID
+			vowFlogEvent.ColumnValues[constants.LogFK] = vowFlogLog.ID
 			insertVowFlogErr := vowFlogRepo.Create([]shared.InsertionModel{vowFlogEvent})
 			Expect(insertVowFlogErr).NotTo(HaveOccurred())
 		})
@@ -131,8 +131,8 @@ var _ = Describe("Queued sin computed columns", func() {
 				vowFlogLog := test_data.CreateTestLog(headerOneId, db)
 				vowFlogEventOne := test_data.VowFlogModel
 				vowFlogEventOne.ColumnValues["era"] = fakeEra
-				vowFlogEventOne.ColumnValues["header_id"] = headerOneId
-				vowFlogEventOne.ColumnValues["log_id"] = vowFlogLog.ID
+				vowFlogEventOne.ColumnValues[constants.HeaderFK] = headerOneId
+				vowFlogEventOne.ColumnValues[constants.LogFK] = vowFlogLog.ID
 				vowFlogOneErr := vowFlogRepo.Create([]shared.InsertionModel{vowFlogEventOne})
 				Expect(vowFlogOneErr).NotTo(HaveOccurred())
 
@@ -140,8 +140,8 @@ var _ = Describe("Queued sin computed columns", func() {
 				vowFlogLogTwo := test_data.CreateTestLog(headerTwoId, db)
 				vowFlogEventTwo := test_data.VowFlogModel
 				vowFlogEventTwo.ColumnValues["era"] = fakeEra
-				vowFlogEventTwo.ColumnValues["header_id"] = headerTwoId
-				vowFlogEventTwo.ColumnValues["log_id"] = vowFlogLogTwo.ID
+				vowFlogEventTwo.ColumnValues[constants.HeaderFK] = headerTwoId
+				vowFlogEventTwo.ColumnValues[constants.LogFK] = vowFlogLogTwo.ID
 				vowFlogTwoErr := vowFlogRepo.Create([]shared.InsertionModel{vowFlogEventTwo})
 				Expect(vowFlogTwoErr).NotTo(HaveOccurred())
 			})

@@ -58,15 +58,15 @@ func (VatForkConverter) ToModels(logs []core.HeaderSyncLog) ([]shared.InsertionM
 		model := shared.InsertionModel{
 			TableName: "vat_fork",
 			OrderedColumns: []string{
-				"header_id", string(constants.IlkFK), "src", "dst", "dink", "dart", "log_id",
+				constants.HeaderFK, string(constants.IlkFK), "src", "dst", "dink", "dart", constants.LogFK,
 			},
 			ColumnValues: shared.ColumnValues{
-				"src":       src,
-				"dst":       dst,
-				"dink":      dink.String(),
-				"dart":      dart.String(),
-				"header_id": log.HeaderID,
-				"log_id":    log.ID,
+				"src":              src,
+				"dst":              dst,
+				"dink":             dink.String(),
+				"dart":             dart.String(),
+				constants.HeaderFK: log.HeaderID,
+				constants.LogFK:    log.ID,
 			},
 			ForeignKeyValues: shared.ForeignKeyValues{
 				constants.IlkFK: ilk,

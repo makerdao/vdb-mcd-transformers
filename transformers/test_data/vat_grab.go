@@ -55,15 +55,15 @@ var VatGrabHeaderSyncLogWithPositiveDink = core.HeaderSyncLog{
 var VatGrabModelWithPositiveDink = shared.InsertionModel{
 	TableName: "vat_grab",
 	OrderedColumns: []string{
-		"header_id", string(constants.UrnFK), "v", "w", "dink", "dart", "log_id",
+		constants.HeaderFK, string(constants.UrnFK), "v", "w", "dink", "dart", constants.LogFK,
 	},
 	ColumnValues: shared.ColumnValues{
-		"v":         "0x7340e006f4135BA6970D43bf43d88DCAD4e7a8CA",
-		"w":         "0x7526EB4f95e2a1394797Cb38a921Fb1EbA09291B",
-		"dink":      "1000000000000000000000",
-		"dart":      "2000000000000000000000",
-		"header_id": VatGrabHeaderSyncLogWithPositiveDink.HeaderID,
-		"log_id":    VatGrabHeaderSyncLogWithPositiveDink.ID,
+		"v":                "0x7340e006f4135BA6970D43bf43d88DCAD4e7a8CA",
+		"w":                "0x7526EB4f95e2a1394797Cb38a921Fb1EbA09291B",
+		"dink":             "1000000000000000000000",
+		"dart":             "2000000000000000000000",
+		constants.HeaderFK: VatGrabHeaderSyncLogWithPositiveDink.HeaderID,
+		constants.LogFK:    VatGrabHeaderSyncLogWithPositiveDink.ID,
 	},
 	ForeignKeyValues: shared.ForeignKeyValues{
 		constants.IlkFK: "0x66616b6520696c6b000000000000000000000000000000000000000000000000",
@@ -98,15 +98,15 @@ var VatGrabHeaderSyncLogWithNegativeDink = core.HeaderSyncLog{
 var VatGrabModelWithNegativeDink = shared.InsertionModel{
 	TableName: "vat_grab",
 	OrderedColumns: []string{
-		"header_id", string(constants.UrnFK), "v", "w", "dink", "dart", "log_id",
+		constants.HeaderFK, string(constants.UrnFK), "v", "w", "dink", "dart", constants.LogFK,
 	},
 	ColumnValues: shared.ColumnValues{
-		"v":         "0x7340e006f4135BA6970D43bf43d88DCAD4e7a8CA",
-		"w":         "0x7526EB4f95e2a1394797Cb38a921Fb1EbA09291B",
-		"dink":      "-1000000000000000000000",
-		"dart":      "-2000000000000000000000",
-		"header_id": VatGrabHeaderSyncLogWithNegativeDink.HeaderID,
-		"log_id":    VatGrabHeaderSyncLogWithNegativeDink.ID,
+		"v":                "0x7340e006f4135BA6970D43bf43d88DCAD4e7a8CA",
+		"w":                "0x7526EB4f95e2a1394797Cb38a921Fb1EbA09291B",
+		"dink":             "-1000000000000000000000",
+		"dart":             "-2000000000000000000000",
+		constants.HeaderFK: VatGrabHeaderSyncLogWithNegativeDink.HeaderID,
+		constants.LogFK:    VatGrabHeaderSyncLogWithNegativeDink.ID,
 	},
 	ForeignKeyValues: shared.ForeignKeyValues{
 		constants.IlkFK: "0x66616b6520696c6b000000000000000000000000000000000000000000000000",

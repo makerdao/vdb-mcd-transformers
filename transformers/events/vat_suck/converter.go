@@ -19,6 +19,7 @@ package vat_suck
 import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 )
 
@@ -44,14 +45,14 @@ func (VatSuckConverter) ToModels(logs []core.HeaderSyncLog) ([]shared.InsertionM
 		model := shared.InsertionModel{
 			TableName: "vat_suck",
 			OrderedColumns: []string{
-				"header_id", "u", "v", "rad", "log_id",
+				constants.HeaderFK, "u", "v", "rad", constants.LogFK,
 			},
 			ColumnValues: shared.ColumnValues{
-				"u":         u,
-				"v":         v,
-				"rad":       radInt.String(),
-				"header_id": log.HeaderID,
-				"log_id":    log.ID,
+				"u":                u,
+				"v":                v,
+				"rad":              radInt.String(),
+				constants.HeaderFK: log.HeaderID,
+				constants.LogFK:    log.ID,
 			},
 			ForeignKeyValues: shared.ForeignKeyValues{},
 		}

@@ -170,14 +170,12 @@ var _ = Describe("SpotFile LogNoteTransformers", func() {
 })
 
 type spotFileMatModel struct {
-	Ilk   string `db:"ilk_id"`
-	What  string
-	Data  string
-	LogID uint `db:"log_id"`
+	Ilk  string `db:"ilk_id"`
+	What string
+	Data string
 }
 
 type spotFilePipModel struct {
-	Ilk   string `db:"ilk_id"`
-	Pip   string
-	LogID uint `db:"log_id"`
+	Ilk string `db:"ilk_id"`
+	Pip string
 }

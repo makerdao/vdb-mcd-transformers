@@ -77,8 +77,8 @@ var _ = Describe("Ilk state computed columns", func() {
 			frobEvent := test_data.CopyModel(test_data.VatFrobModelWithPositiveDart)
 			frobEvent.ForeignKeyValues[constants.UrnFK] = fakeGuy
 			frobEvent.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
-			frobEvent.ColumnValues["header_id"] = headerId
-			frobEvent.ColumnValues["log_id"] = logID
+			frobEvent.ColumnValues[constants.HeaderFK] = headerId
+			frobEvent.ColumnValues[constants.LogFK] = logID
 			insertFrobErr := frobRepo.Create([]shared.InsertionModel{frobEvent})
 			Expect(insertFrobErr).NotTo(HaveOccurred())
 
@@ -112,8 +112,8 @@ var _ = Describe("Ilk state computed columns", func() {
 				oldFrob = test_data.CopyModel(test_data.VatFrobModelWithPositiveDart)
 				oldFrob.ForeignKeyValues[constants.UrnFK] = fakeGuy
 				oldFrob.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
-				oldFrob.ColumnValues["header_id"] = headerId
-				oldFrob.ColumnValues["log_id"] = logID
+				oldFrob.ColumnValues[constants.HeaderFK] = headerId
+				oldFrob.ColumnValues[constants.LogFK] = logID
 				insertOldFrobErr := frobRepo.Create([]shared.InsertionModel{oldFrob})
 				Expect(insertOldFrobErr).NotTo(HaveOccurred())
 
@@ -126,8 +126,8 @@ var _ = Describe("Ilk state computed columns", func() {
 				newFrob = test_data.CopyModel(test_data.VatFrobModelWithNegativeDink)
 				newFrob.ForeignKeyValues[constants.UrnFK] = fakeGuy
 				newFrob.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
-				newFrob.ColumnValues["header_id"] = newHeaderId
-				newFrob.ColumnValues["log_id"] = newLogId
+				newFrob.ColumnValues[constants.HeaderFK] = newHeaderId
+				newFrob.ColumnValues[constants.LogFK] = newLogId
 				insertNewFrobErr := frobRepo.Create([]shared.InsertionModel{newFrob})
 				Expect(insertNewFrobErr).NotTo(HaveOccurred())
 			})
@@ -179,8 +179,8 @@ var _ = Describe("Ilk state computed columns", func() {
 			fileRepo.SetDB(db)
 			fileEvent := test_data.VatFileIlkDustModel
 			fileEvent.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
-			fileEvent.ColumnValues["header_id"] = headerId
-			fileEvent.ColumnValues["log_id"] = logID
+			fileEvent.ColumnValues[constants.HeaderFK] = headerId
+			fileEvent.ColumnValues[constants.LogFK] = logID
 			insertFileErr := fileRepo.Create([]shared.InsertionModel{fileEvent})
 			Expect(insertFileErr).NotTo(HaveOccurred())
 
@@ -212,8 +212,8 @@ var _ = Describe("Ilk state computed columns", func() {
 				fileRepo.SetDB(db)
 				fileEvent = test_data.VatFileIlkDustModel
 				fileEvent.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
-				fileEvent.ColumnValues["header_id"] = headerId
-				fileEvent.ColumnValues["log_id"] = logID
+				fileEvent.ColumnValues[constants.HeaderFK] = headerId
+				fileEvent.ColumnValues[constants.LogFK] = logID
 				insertFileErr := fileRepo.Create([]shared.InsertionModel{fileEvent})
 				Expect(insertFileErr).NotTo(HaveOccurred())
 
@@ -227,8 +227,8 @@ var _ = Describe("Ilk state computed columns", func() {
 				spotFileMatRepo.SetDB(db)
 				spotFileMat = test_data.SpotFileMatModel
 				spotFileMat.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
-				spotFileMat.ColumnValues["header_id"] = newHeaderId
-				spotFileMat.ColumnValues["log_id"] = newLogId
+				spotFileMat.ColumnValues[constants.HeaderFK] = newHeaderId
+				spotFileMat.ColumnValues[constants.LogFK] = newLogId
 				spotFileMatErr := spotFileMatRepo.Create([]shared.InsertionModel{spotFileMat})
 				Expect(spotFileMatErr).NotTo(HaveOccurred())
 			})

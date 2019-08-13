@@ -53,13 +53,13 @@ var VowFileHeaderSyncLog = core.HeaderSyncLog{
 var VowFileModel = shared.InsertionModel{
 	TableName: "vow_file",
 	OrderedColumns: []string{
-		"header_id", "what", "data", "log_id",
+		constants.HeaderFK, "what", "data", constants.LogFK,
 	},
 	ColumnValues: shared.ColumnValues{
-		"what":      "wait",
-		"data":      "100000000000000000000000",
-		"header_id": VowFileHeaderSyncLog.HeaderID,
-		"log_id":    VowFileHeaderSyncLog.ID,
+		"what":             "wait",
+		"data":             "100000000000000000000000",
+		constants.HeaderFK: VowFileHeaderSyncLog.HeaderID,
+		constants.LogFK:    VowFileHeaderSyncLog.ID,
 	},
 	ForeignKeyValues: shared.ForeignKeyValues{},
 }

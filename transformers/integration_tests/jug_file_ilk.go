@@ -95,8 +95,7 @@ var _ = Describe("Jug File Ilk LogNoteTransformer", func() {
 })
 
 type jugFileIlkModel struct {
-	Ilk   string `db:"ilk_id"`
-	What  string
-	Data  string
-	LogID uint `db:"log_id"`
+	Ilk  string `db:"ilk_id"`
+	What string
+	Data string
 }

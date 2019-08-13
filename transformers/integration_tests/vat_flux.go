@@ -88,9 +88,8 @@ var _ = Describe("VatFlux LogNoteTransformer", func() {
 })
 
 type vatFluxModel struct {
-	Ilk   string `db:"ilk_id"`
-	Src   string
-	Dst   string
-	Wad   string
-	LogID uint `db:"log_id"`
+	Ilk string `db:"ilk_id"`
+	Src string
+	Dst string
+	Wad string
 }

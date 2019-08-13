@@ -56,12 +56,12 @@ var DealHeaderSyncLog = core.HeaderSyncLog{
 var DealModel = shared.InsertionModel{
 	TableName: "deal",
 	OrderedColumns: []string{
-		"header_id", "bid_id", string(constants.AddressFK), "log_id",
+		constants.HeaderFK, "bid_id", string(constants.AddressFK), constants.LogFK,
 	},
 	ColumnValues: shared.ColumnValues{
-		"bid_id":    "10000000000000000",
-		"header_id": DealHeaderSyncLog.HeaderID,
-		"log_id":    DealHeaderSyncLog.ID,
+		"bid_id":           "10000000000000000",
+		constants.HeaderFK: DealHeaderSyncLog.HeaderID,
+		constants.LogFK:    DealHeaderSyncLog.ID,
 	},
 	ForeignKeyValues: shared.ForeignKeyValues{
 		constants.AddressFK: rawDealLog.Address.Hex(),
