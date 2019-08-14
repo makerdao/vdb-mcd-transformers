@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 11.4
--- Dumped by pg_dump version 11.4
+-- Dumped from database version 11.3
+-- Dumped by pg_dump version 11.3
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -535,6 +535,7 @@ WITH address AS (
          WHERE yank.contract_address = (SELECT * FROM address)
          ORDER BY block_height DESC
      )
+
 SELECT flap_kick.bid_id, lot, bid AS bid_amount, 'kick' AS act, block_number AS block_height, tx_idx
 FROM maker.flap_kick
          LEFT JOIN headers ON flap_kick.header_id = headers.id
@@ -549,6 +550,7 @@ FROM deals
 UNION
 SELECT *
 FROM yanks
+
 $$;
 
 
@@ -750,6 +752,7 @@ CREATE FUNCTION api.all_frobs(ilk_identifier text) RETURNS SETOF api.frob_event
     LANGUAGE sql STABLE STRICT
     AS $$
 WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier)
+
 SELECT ilk_identifier, identifier AS urn_identifier, dink, dart, block_number, tx_idx
 FROM maker.vat_frob
          LEFT JOIN maker.urns ON vat_frob.urn_id = urns.id
@@ -767,6 +770,7 @@ CREATE FUNCTION api.all_ilk_file_events(ilk_identifier text) RETURNS SETOF api.i
     LANGUAGE sql STABLE STRICT
     AS $$
 WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier)
+
 SELECT ilk_identifier, what, data :: text, block_number, tx_idx
 FROM maker.cat_file_chop_lump
          LEFT JOIN headers ON cat_file_chop_lump.header_id = headers.id
@@ -1034,6 +1038,7 @@ BEGIN
     FROM maker.urns
     WHERE urns.identifier = urn_identifier
       AND urns.ilk_id = _ilk_id INTO _urn_id;
+
     blocks := ARRAY(
             SELECT block_number
             FROM (SELECT block_number
@@ -1047,6 +1052,7 @@ BEGIN
                     AND block_number <= all_urn_states.block_height) inks_and_arts
             ORDER BY block_number DESC
         );
+
     FOREACH i IN ARRAY blocks
         LOOP
             RETURN QUERY
@@ -1112,6 +1118,7 @@ WITH urns AS (SELECT urns.id AS urn_id, ilks.id AS ilk_id, ilks.ilk, urns.identi
                         ORDER BY urn_id, block_number DESC)) last_blocks
                           LEFT JOIN public.headers ON headers.hash = last_blocks.block_hash
                  ORDER BY urn_id, headers.block_timestamp DESC)
+
 SELECT urns.identifier,
        ilks.identifier,
        all_urns.block_height,
@@ -1452,6 +1459,7 @@ WITH address AS (
          ORDER BY relevant_blocks.block_height DESC
          LIMIT 1
      )
+
 SELECT get_flap.bid_id,
        guy.guy,
        tic.tic,
@@ -1811,6 +1819,7 @@ WITH address AS (
          ORDER BY relevant_blocks.block_height DESC
          LIMIT 1
      )
+
 SELECT get_flop.bid_id,
        guy.guy,
        tic.tic,
@@ -1978,6 +1987,7 @@ WITH ilk AS (SELECT id FROM maker.ilks WHERE identifier = ilk_identifier),
                           LEFT JOIN public.headers AS headers on headers.hash = relevant_blocks.block_hash
                  ORDER BY relevant_blocks.block_height DESC
                  LIMIT 1)
+
 SELECT ilks.identifier,
        get_ilk.block_height,
        rates.rate,
@@ -2113,6 +2123,7 @@ WITH created AS (SELECT era, vow_sin_mapping.block_number, api.epoch_to_datetime
                  WHERE era = get_queued_sin.era
                  ORDER BY vow_sin_mapping.block_number DESC
                  LIMIT 1)
+
 SELECT get_queued_sin.era,
        tab,
        (SELECT EXISTS(SELECT id FROM maker.vow_flog WHERE vow_flog.era = get_queued_sin.era)) AS flogged,
@@ -2184,6 +2195,7 @@ WITH urn AS (SELECT urns.id AS urn_id, ilks.id AS ilk_id, ilks.ilk, urns.identif
                        FROM art) last_blocks
                           LEFT JOIN public.headers ON headers.block_number = last_blocks.block_number
                  ORDER BY urn_id, block_timestamp DESC)
+
 SELECT get_urn.urn_identifier,
        ilk_identifier,
        $3,
@@ -2280,6 +2292,7 @@ CREATE FUNCTION api.poke_event_ilk(priceupdate api.poke_event) RETURNS api.ilk_s
     LANGUAGE sql STABLE
     AS $$
 WITH raw_ilk AS (SELECT * FROM maker.ilks WHERE ilks.id = priceUpdate.ilk_id)
+
 SELECT *
 FROM api.get_ilk((SELECT identifier FROM raw_ilk), priceUpdate.block_height)
 $$;
@@ -2374,6 +2387,7 @@ WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier),
              FROM maker.urns
              WHERE ilk_id = (SELECT id FROM ilk)
                AND identifier = urn_identifier)
+
 SELECT ilk_identifier, urn_identifier, dink, dart, block_number, tx_idx
 FROM maker.vat_frob
          LEFT JOIN headers ON vat_frob.header_id = headers.id
