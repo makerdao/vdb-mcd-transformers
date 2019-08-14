@@ -22,8 +22,8 @@ import (
 
 var _ = Describe("Flop bid events query", func() {
 	var (
-		db           *postgres.DB
-		flopKickRepo flop_kick.FlopKickRepository
+		db              *postgres.DB
+		flopKickRepo    flop_kick.FlopKickRepository
 		dentRepo        dent.DentRepository
 		dealRepo        deal.DealRepository
 		yankRepo        yank.YankRepository

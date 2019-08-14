@@ -1,0 +1,84 @@
+-- +goose Up
+-- +goose StatementBegin
+CREATE TYPE api.flop_bid_event AS (
+    bid_id NUMERIC,
+    lot NUMERIC,
+    bid_amount NUMERIC,
+    act TEXT,
+    block_height BIGINT,
+    tx_idx INTEGER
+    );
+
+COMMENT ON COLUMN api.flop_bid_event.block_height
+    IS E'@omit';
+COMMENT ON COLUMN api.flop_bid_event.tx_idx
+    IS E'@omit';
+
+CREATE FUNCTION api.all_flop_bid_events()
+    RETURNS SETOF api.flop_bid_event AS
+$$
+WITH address AS (
+    SELECT contract_address
+    FROM maker.flop_kick
+    LIMIT 1
+),
+     deals AS (
+         SELECT deal.bid_id,
+                flop_bid_lot.lot,
+                flop_bid_bid.bid     AS bid_amount,
+                'deal'               AS act,
+                headers.block_number AS block_height,
+                tx_idx
+         FROM maker.deal
+                  LEFT JOIN headers ON deal.header_id = headers.id
+                  LEFT JOIN maker.flop_bid_bid
+                            ON deal.bid_id = flop_bid_bid.bid_id
+                                AND flop_bid_bid.block_number = headers.block_number
+                  LEFT JOIN maker.flop_bid_lot
+                            ON deal.bid_id = flop_bid_lot.bid_id
+                                AND flop_bid_lot.block_number = headers.block_number
+         WHERE deal.contract_address = (SELECT * FROM address)
+         ORDER BY block_height DESC
+     ),
+     yanks AS (
+         SELECT yank.bid_id,
+                flop_bid_lot.lot,
+                flop_bid_bid.bid     AS bid_amount,
+                'yank'               AS act,
+                headers.block_number AS block_height,
+                tx_idx
+         FROM maker.yank
+                  LEFT JOIN headers ON yank.header_id = headers.id
+                  LEFT JOIN maker.flop_bid_bid
+                            ON yank.bid_id = flop_bid_bid.bid_id
+                                AND flop_bid_bid.block_number = headers.block_number
+                  LEFT JOIN maker.flop_bid_lot
+                            ON yank.bid_id = flop_bid_lot.bid_id
+                                AND flop_bid_lot.block_number = headers.block_number
+         WHERE yank.contract_address = (SELECT * FROM address)
+         ORDER BY block_height DESC
+     )
+
+SELECT flop_kick.bid_id, lot, bid AS bid_amount, 'kick' AS act, block_number AS block_height, tx_idx
+FROM maker.flop_kick
+         LEFT JOIN headers ON flop_kick.header_id = headers.id
+UNION
+SELECT bid_id, lot, bid AS bid_amount, 'dent' AS act, block_number AS block_height, tx_idx
+FROM maker.dent
+         LEFT JOIN headers ON dent.header_id = headers.id
+WHERE dent.contract_address = (SELECT * FROM address)
+UNION
+SELECT *
+FROM deals
+UNION
+SELECT *
+FROM yanks
+
+$$
+    LANGUAGE sql
+    STABLE;
+
+-- +goose StatementEnd
+-- +goose Down
+DROP FUNCTION api.all_flop_bid_events();
+DROP TYPE api.flop_bid_event CASCADE;
