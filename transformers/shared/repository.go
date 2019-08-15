@@ -19,6 +19,7 @@ package shared
 import (
 	"database/sql"
 	"fmt"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/jmoiron/sqlx"
 	log "github.com/sirupsen/logrus"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
@@ -190,10 +191,11 @@ func populateForeignKeyIDs(fkToValue ForeignKeyValues, columnToValue ColumnValue
 
 func GetOrCreateIlk(ilk string, db *postgres.DB) (int, error) {
 	var ilkID int
-	err := db.Get(&ilkID, getIlkIdQuery, ilk)
+	uniformIlk := common.HexToHash(ilk).Hex()
+	err := db.Get(&ilkID, getIlkIdQuery, uniformIlk)
 	if err == sql.ErrNoRows {
-		ilkIdentifier := DecodeHexToText(ilk)
-		insertErr := db.QueryRow(InsertIlkQuery, ilk, ilkIdentifier).Scan(&ilkID)
+		ilkIdentifier := DecodeHexToText(uniformIlk)
+		insertErr := db.QueryRow(InsertIlkQuery, uniformIlk, ilkIdentifier).Scan(&ilkID)
 		return ilkID, insertErr
 	}
 	return ilkID, err
@@ -201,10 +203,11 @@ func GetOrCreateIlk(ilk string, db *postgres.DB) (int, error) {
 
 func GetOrCreateIlkInTransaction(ilk string, tx *sqlx.Tx) (int, error) {
 	var ilkID int
-	err := tx.Get(&ilkID, getIlkIdQuery, ilk)
+	uniformIlk := common.HexToHash(ilk).Hex()
+	err := tx.Get(&ilkID, getIlkIdQuery, uniformIlk)
 	if err == sql.ErrNoRows {
-		ilkIdentifier := DecodeHexToText(ilk)
-		insertErr := tx.QueryRow(InsertIlkQuery, ilk, ilkIdentifier).Scan(&ilkID)
+		ilkIdentifier := DecodeHexToText(uniformIlk)
+		insertErr := tx.QueryRow(InsertIlkQuery, uniformIlk, ilkIdentifier).Scan(&ilkID)
 		return ilkID, insertErr
 	}
 	return ilkID, err
