@@ -1,5 +1,4 @@
 -- +goose Up
--- +goose StatementBegin
 CREATE TYPE api.flop_bid_event AS (
     bid_id NUMERIC,
     lot NUMERIC,
@@ -78,7 +77,6 @@ $$
     LANGUAGE sql
     STABLE;
 
--- +goose StatementEnd
 -- +goose Down
 DROP FUNCTION api.all_flop_bid_events();
 DROP TYPE api.flop_bid_event CASCADE;

@@ -685,6 +685,7 @@ WITH addresses AS (
                                 AND flip_bid_lot.block_number = headers.block_number
          ORDER BY block_height DESC
      )
+
 SELECT flip_kick.bid_id, lot, bid AS bid_amount, 'kick' AS act, block_number AS block_height, tx_idx, contract_address
 FROM maker.flip_kick
          LEFT JOIN headers ON flip_kick.header_id = headers.id
@@ -1414,6 +1415,34 @@ CREATE FUNCTION api.flip_state_urn(flip api.flip_state) RETURNS SETOF api.urn_st
 SELECT *
 FROM api.get_urn((SELECT identifier FROM maker.ilks WHERE ilks.id = flip.ilk_id),
                  (SELECT identifier FROM maker.urns WHERE urns.id = flip.urn_id), flip.block_height)
+$$;
+
+
+--
+-- Name: flop_bid_event_bid(api.flop_bid_event); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.flop_bid_event_bid(event api.flop_bid_event) RETURNS SETOF api.flop
+    LANGUAGE sql STABLE
+    AS $$
+SELECT *
+FROM api.get_flop(event.bid_id, event.block_height)
+$$;
+
+
+--
+-- Name: flop_bid_event_tx(api.flop_bid_event); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.flop_bid_event_tx(event api.flop_bid_event) RETURNS SETOF api.tx
+    LANGUAGE sql STABLE
+    AS $$
+SELECT txs.hash, txs.tx_index, headers.block_number, headers.hash, tx_from, tx_to
+FROM public.header_sync_transactions txs
+         LEFT JOIN headers ON txs.header_id = headers.id
+WHERE block_number <= event.block_height
+  AND txs.tx_index <= event.tx_idx
+ORDER BY block_number DESC
 $$;
 
 

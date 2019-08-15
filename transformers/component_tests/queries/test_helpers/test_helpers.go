@@ -580,24 +580,6 @@ func CreateFlipTick(input FlipTickCreationInput) (err error) {
 	return input.FlipTickRepo.Create(input.FlipTickHeaderId, []shared.InsertionModel{flipTickModel})
 }
 
-func CreateDent(input DentCreationInput) (err error) {
-	dentModel := test_data.DentModel
-	dentModel.ColumnValues["contract_address"] = input.ContractAddress
-	dentModel.ColumnValues["bid_id"] = strconv.Itoa(input.BidId)
-	dentModel.ColumnValues["bid"] = strconv.Itoa(input.BidAmount)
-	dentModel.ColumnValues["lot"] = strconv.Itoa(input.Lot)
-	return input.DentRepo.Create(input.DentHeaderId, []shared.InsertionModel{dentModel})
-}
-
-type DentCreationInput struct {
-	ContractAddress string
-	BidId           int
-	Lot             int
-	BidAmount       int
-	DentRepo        dent.DentRepository
-	DentHeaderId    int64
-}
-
 type YankCreationInput struct {
 	ContractAddress string
 	BidId           int

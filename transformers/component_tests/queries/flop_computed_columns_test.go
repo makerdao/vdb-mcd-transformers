@@ -1,17 +1,20 @@
 package queries
 
 import (
+	"math/rand"
+	"strconv"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/component_tests/queries/test_helpers"
 	"github.com/vulcanize/mcd_transformers/transformers/events/flop_kick"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
+
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
-	"math/rand"
-	"strconv"
 )
 
 var _ = Describe("Flop computed columns", func() {
@@ -19,7 +22,7 @@ var _ = Describe("Flop computed columns", func() {
 		db              *postgres.DB
 		flopKickRepo    flop_kick.FlopKickRepository
 		headerRepo      repositories.HeaderRepository
-		contractAddress = "flop contract address"
+		contractAddress = "0x763ztv6x68exwqrgtl325e7hrcvavid4e3fcb4g"
 
 		fakeBidId      = rand.Int()
 		blockOne       = rand.Int()

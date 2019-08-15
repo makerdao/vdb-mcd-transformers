@@ -1,8 +1,13 @@
 package queries
 
 import (
+	"math/rand"
+	"strconv"
+	"time"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/component_tests/queries/test_helpers"
 	"github.com/vulcanize/mcd_transformers/transformers/events/deal"
@@ -12,12 +17,10 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/events/yank"
 	"github.com/vulcanize/mcd_transformers/transformers/storage"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
+
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
-	"math/rand"
-	"strconv"
-	"time"
 )
 
 var _ = Describe("Flop bid events query", func() {
@@ -28,7 +31,7 @@ var _ = Describe("Flop bid events query", func() {
 		dealRepo        deal.DealRepository
 		yankRepo        yank.YankRepository
 		headerRepo      repositories.HeaderRepository
-		contractAddress = "flop contract address"
+		contractAddress = "0x763ztv6x68exwqrgtl325e7hrcvavid4e3fcb4g"
 	)
 
 	BeforeEach(func() {
@@ -126,7 +129,7 @@ var _ = Describe("Flop bid events query", func() {
 			flopKickEventTwo := test_data.FlopKickModel
 			flopKickEventTwo.ContractAddress = contractAddress
 			flopKickEventTwo.BidId = strconv.Itoa(bidIdTwo)
-			flopKickEventTwo.TransactionIndex = 11
+			flopKickEventTwo.TransactionIndex = flopKickEventOne.TransactionIndex + 1
 			flopKickEventTwo.LogIndex = 12
 			flopKickErr = flopKickRepo.Create(headerId, []interface{}{flopKickEventTwo})
 			Expect(flopKickErr).NotTo(HaveOccurred())
@@ -231,7 +234,7 @@ var _ = Describe("Flop bid events query", func() {
 			headerThreeId, headerThreeErr := headerRepo.CreateOrUpdateHeader(headerThree)
 			Expect(headerThreeErr).NotTo(HaveOccurred())
 
-			// create irrelevant flap tend
+			// create irrelevant flap dent
 			flapDentErr := test_helpers.CreateDent(test_helpers.DentCreationInput{
 				BidId:           fakeBidId,
 				ContractAddress: "flap contract address",
