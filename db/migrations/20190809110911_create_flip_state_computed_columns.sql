@@ -31,7 +31,7 @@ $$
 WITH addresses AS ( -- get the contract address from flip_ilk table using the ilk_id from flip
     SELECT contract_address
     FROM maker.flip_ilk
-             LEFT JOIN maker.ilks ON ilks.ilk = flip_ilk.ilk
+             LEFT JOIN maker.ilks ON ilks.id = flip_ilk.ilk_id
     WHERE ilks.id = flip.ilk_id
     ORDER BY block_number DESC
     LIMIT 1

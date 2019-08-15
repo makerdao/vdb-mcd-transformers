@@ -61,7 +61,7 @@ CREATE TABLE maker.flip_bid_tic
     block_hash       TEXT,
     contract_address TEXT,
     bid_id           NUMERIC NOT NULL,
-    tic              BIGINT NOT NULL,
+    tic              BIGINT  NOT NULL,
     UNIQUE (block_number, block_hash, bid_id, contract_address, tic)
 );
 
@@ -79,7 +79,7 @@ CREATE TABLE maker.flip_bid_end
     block_hash       TEXT,
     contract_address TEXT,
     bid_id           NUMERIC NOT NULL,
-    "end"            BIGINT NOT NULL,
+    "end"            BIGINT  NOT NULL,
     UNIQUE (block_number, block_hash, bid_id, contract_address, "end")
 );
 
@@ -160,12 +160,12 @@ CREATE TABLE maker.flip_ilk
     block_number     BIGINT,
     block_hash       TEXT,
     contract_address TEXT,
-    ilk              TEXT,
-    UNIQUE (block_number, block_hash, contract_address, ilk)
+    ilk_id           INTEGER NOT NULL REFERENCES maker.ilks (id) ON DELETE CASCADE,
+    UNIQUE (block_number, block_hash, contract_address, ilk_id)
 );
 
-CREATE INDEX flip_ilk_ilk_index
-    ON maker.flip_ilk (ilk);
+CREATE INDEX flip_ilk_ilk_id_index
+    ON maker.flip_ilk (ilk_id);
 CREATE INDEX flip_ilk_block_number_index
     ON maker.flip_ilk (block_number);
 
@@ -225,7 +225,7 @@ DROP INDEX maker.flip_kicks_contract_address_index;
 DROP INDEX maker.flip_kicks_kicks_index;
 DROP INDEX maker.flip_kicks_block_number_index;
 DROP INDEX maker.flip_ilk_block_number_index;
-DROP INDEX maker.flip_ilk_ilk_index;
+DROP INDEX maker.flip_ilk_ilk_id_index;
 DROP INDEX maker.flip_bid_tab_contract_address_index;
 DROP INDEX maker.flip_bid_tab_bid_id_index;
 DROP INDEX maker.flip_bid_tab_block_number_index;

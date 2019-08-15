@@ -95,10 +95,10 @@ CREATE FUNCTION api.get_flip(bid_id NUMERIC, ilk TEXT, block_height BIGINT DEFAU
     RETURNS api.flip_state
 AS
 $$
-WITH ilk_id AS (SELECT id FROM maker.ilks WHERE ilks.ilk = get_flip.ilk),
+WITH ilk_ids AS (SELECT id FROM maker.ilks WHERE ilks.identifier = get_flip.ilk),
      address AS (SELECT contract_address
                  FROM maker.flip_ilk
-                 WHERE flip_ilk.ilk = get_flip.ilk
+                 WHERE flip_ilk.ilk_id = (SELECT id FROM ilk_ids)
                    AND block_number <= block_height
                  LIMIT 1),
      kicks AS (SELECT usr
@@ -108,7 +108,7 @@ WITH ilk_id AS (SELECT id FROM maker.ilks WHERE ilks.ilk = get_flip.ilk),
                LIMIT 1),
      urn_id AS (SELECT id
                 FROM maker.urns
-                WHERE urns.ilk_id = (SELECT * FROM ilk_id)
+                WHERE urns.ilk_id = (SELECT id FROM ilk_ids)
                   AND urns.identifier = (SELECT usr FROM kicks)),
      guys AS (SELECT flip_bid_guy.bid_id, guy
               FROM maker.flip_bid_guy
@@ -185,7 +185,7 @@ WITH ilk_id AS (SELECT id FROM maker.ilks WHERE ilks.ilk = get_flip.ilk),
                  LIMIT 1)
 SELECT (get_flip.block_height,
         get_flip.bid_id,
-        (SELECT id FROM ilk_id),
+        (SELECT id FROM ilk_ids),
         (SELECT id FROM urn_id),
         guys.guy,
         tics.tic,

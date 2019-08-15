@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 11.4
--- Dumped by pg_dump version 11.4
+-- Dumped from database version 11.3
+-- Dumped by pg_dump version 11.3
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -456,6 +456,7 @@ CREATE FUNCTION api.all_bites(ilk_identifier text) RETURNS SETOF api.bite_event
     LANGUAGE sql STABLE STRICT
     AS $$
 WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier)
+
 SELECT ilk_identifier, identifier AS urn_identifier, ink, art, tab, block_number, tx_idx
 FROM maker.bite
          LEFT JOIN maker.urns ON bite.urn_id = urns.id
@@ -513,6 +514,7 @@ WITH address AS (
          WHERE yank.contract_address = (SELECT * FROM address)
          ORDER BY block_height DESC
      )
+
 SELECT flap_kick.bid_id, lot, bid AS bid_amount, 'kick' AS act, block_number AS block_height, tx_idx
 FROM maker.flap_kick
          LEFT JOIN headers ON flap_kick.header_id = headers.id
@@ -527,6 +529,7 @@ FROM deals
 UNION
 SELECT *
 FROM yanks
+
 $$;
 
 
@@ -633,6 +636,7 @@ WITH addresses AS (
                                 AND flip_bid_lot.block_number = headers.block_number
          ORDER BY block_height DESC
      )
+
 SELECT flip_kick.bid_id, lot, bid AS bid_amount, 'kick' AS act, block_number AS block_height, tx_idx, contract_address
 FROM maker.flip_kick
          LEFT JOIN headers ON flip_kick.header_id = headers.id
@@ -666,11 +670,14 @@ CREATE FUNCTION api.all_flips(ilk text) RETURNS SETOF api.flip_state
     AS $$
 BEGIN
     RETURN QUERY (
-        WITH address AS (
-            SELECT DISTINCT contract_address
-            FROM maker.flip_ilk
-            WHERE flip_ilk.ilk = all_flips.ilk
-            LIMIT 1),
+        WITH ilk_ids AS (SELECT id
+                        FROM maker.ilks
+                        WHERE identifier = all_flips.ilk),
+             address AS (
+                 SELECT DISTINCT contract_address
+                 FROM maker.flip_ilk
+                 WHERE flip_ilk.ilk_id = (SELECT id FROM ilk_ids)
+                 LIMIT 1),
              bid_ids AS (
                  SELECT DISTINCT flip_kicks.kicks
                  FROM maker.flip_kicks
@@ -678,7 +685,7 @@ BEGIN
                  ORDER BY flip_kicks.kicks)
         SELECT f.*
         FROM bid_ids,
-             LATERAL api.get_flip(bid_ids.kicks, ilk) f
+             LATERAL api.get_flip(bid_ids.kicks, all_flips.ilk) f
     );
 END
 $$;
@@ -725,6 +732,7 @@ CREATE FUNCTION api.all_frobs(ilk_identifier text) RETURNS SETOF api.frob_event
     LANGUAGE sql STABLE STRICT
     AS $$
 WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier)
+
 SELECT ilk_identifier, identifier AS urn_identifier, dink, dart, block_number, tx_idx
 FROM maker.vat_frob
          LEFT JOIN maker.urns ON vat_frob.urn_id = urns.id
@@ -742,6 +750,7 @@ CREATE FUNCTION api.all_ilk_file_events(ilk_identifier text) RETURNS SETOF api.i
     LANGUAGE sql STABLE STRICT
     AS $$
 WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier)
+
 SELECT ilk_identifier, what, data :: text, block_number, tx_idx
 FROM maker.cat_file_chop_lump
          LEFT JOIN headers ON cat_file_chop_lump.header_id = headers.id
@@ -1009,6 +1018,7 @@ BEGIN
     FROM maker.urns
     WHERE urns.identifier = urn_identifier
       AND urns.ilk_id = _ilk_id INTO _urn_id;
+
     blocks := ARRAY(
             SELECT block_number
             FROM (SELECT block_number
@@ -1022,6 +1032,7 @@ BEGIN
                     AND block_number <= all_urn_states.block_height) inks_and_arts
             ORDER BY block_number DESC
         );
+
     FOREACH i IN ARRAY blocks
         LOOP
             RETURN QUERY
@@ -1087,6 +1098,7 @@ WITH urns AS (SELECT urns.id AS urn_id, ilks.id AS ilk_id, ilks.ilk, urns.identi
                         ORDER BY urn_id, block_number DESC)) last_blocks
                           LEFT JOIN public.headers ON headers.hash = last_blocks.block_hash
                  ORDER BY urn_id, headers.block_timestamp DESC)
+
 SELECT urns.identifier,
        ilks.identifier,
        all_urns.block_height,
@@ -1209,12 +1221,14 @@ CREATE FUNCTION api.flip_bid_event_bid(event api.flip_bid_event) RETURNS SETOF a
     LANGUAGE sql STABLE
     AS $$
 WITH ilks AS (
-    SELECT ilk, contract_address
+    SELECT ilks.identifier
     FROM maker.flip_ilk
+       LEFT JOIN maker.ilks ON ilks.id = flip_ilk.ilk_id
     WHERE contract_address = event.contract_address
+    LIMIT 1
 )
 SELECT *
-FROM api.get_flip(event.bid_id, (SELECT ilk FROM ilks))
+FROM api.get_flip(event.bid_id, (SELECT identifier FROM ilks))
 $$;
 
 
@@ -1239,7 +1253,7 @@ CREATE FUNCTION api.flip_state_bid_events(flip api.flip_state) RETURNS SETOF api
 WITH addresses AS ( -- get the contract address from flip_ilk table using the ilk_id from flip
     SELECT contract_address
     FROM maker.flip_ilk
-             LEFT JOIN maker.ilks ON ilks.ilk = flip_ilk.ilk
+             LEFT JOIN maker.ilks ON ilks.id = flip_ilk.ilk_id
     WHERE ilks.id = flip.ilk_id
     ORDER BY block_number DESC
     LIMIT 1
@@ -1413,6 +1427,7 @@ WITH address AS (
          ORDER BY relevant_blocks.block_height DESC
          LIMIT 1
      )
+
 SELECT get_flap.bid_id,
        guy.guy,
        tic.tic,
@@ -1496,10 +1511,10 @@ $$;
 CREATE FUNCTION api.get_flip(bid_id numeric, ilk text, block_height bigint DEFAULT api.max_block()) RETURNS api.flip_state
     LANGUAGE sql STABLE STRICT
     AS $$
-WITH ilk_id AS (SELECT id FROM maker.ilks WHERE ilks.ilk = get_flip.ilk),
+WITH ilk_ids AS (SELECT id FROM maker.ilks WHERE ilks.identifier = get_flip.ilk),
      address AS (SELECT contract_address
                  FROM maker.flip_ilk
-                 WHERE flip_ilk.ilk = get_flip.ilk
+                 WHERE flip_ilk.ilk_id = (SELECT id FROM ilk_ids)
                    AND block_number <= block_height
                  LIMIT 1),
      kicks AS (SELECT usr
@@ -1509,7 +1524,7 @@ WITH ilk_id AS (SELECT id FROM maker.ilks WHERE ilks.ilk = get_flip.ilk),
                LIMIT 1),
      urn_id AS (SELECT id
                 FROM maker.urns
-                WHERE urns.ilk_id = (SELECT * FROM ilk_id)
+                WHERE urns.ilk_id = (SELECT id FROM ilk_ids)
                   AND urns.identifier = (SELECT usr FROM kicks)),
      guys AS (SELECT flip_bid_guy.bid_id, guy
               FROM maker.flip_bid_guy
@@ -1586,7 +1601,7 @@ WITH ilk_id AS (SELECT id FROM maker.ilks WHERE ilks.ilk = get_flip.ilk),
                  LIMIT 1)
 SELECT (get_flip.block_height,
         get_flip.bid_id,
-        (SELECT id FROM ilk_id),
+        (SELECT id FROM ilk_ids),
         (SELECT id FROM urn_id),
         guys.guy,
         tics.tic,
@@ -1772,6 +1787,7 @@ WITH address AS (
          ORDER BY relevant_blocks.block_height DESC
          LIMIT 1
      )
+
 SELECT get_flop.bid_id,
        guy.guy,
        tic.tic,
@@ -1939,6 +1955,7 @@ WITH ilk AS (SELECT id FROM maker.ilks WHERE identifier = ilk_identifier),
                           LEFT JOIN public.headers AS headers on headers.hash = relevant_blocks.block_hash
                  ORDER BY relevant_blocks.block_height DESC
                  LIMIT 1)
+
 SELECT ilks.identifier,
        get_ilk.block_height,
        rates.rate,
@@ -2074,6 +2091,7 @@ WITH created AS (SELECT era, vow_sin_mapping.block_number, api.epoch_to_datetime
                  WHERE era = get_queued_sin.era
                  ORDER BY vow_sin_mapping.block_number DESC
                  LIMIT 1)
+
 SELECT get_queued_sin.era,
        tab,
        (SELECT EXISTS(SELECT id FROM maker.vow_flog WHERE vow_flog.era = get_queued_sin.era)) AS flogged,
@@ -2145,6 +2163,7 @@ WITH urn AS (SELECT urns.id AS urn_id, ilks.id AS ilk_id, ilks.ilk, urns.identif
                        FROM art) last_blocks
                           LEFT JOIN public.headers ON headers.block_number = last_blocks.block_number
                  ORDER BY urn_id, block_timestamp DESC)
+
 SELECT get_urn.urn_identifier,
        ilk_identifier,
        $3,
@@ -2241,6 +2260,7 @@ CREATE FUNCTION api.poke_event_ilk(priceupdate api.poke_event) RETURNS api.ilk_s
     LANGUAGE sql STABLE
     AS $$
 WITH raw_ilk AS (SELECT * FROM maker.ilks WHERE ilks.id = priceUpdate.ilk_id)
+
 SELECT *
 FROM api.get_ilk((SELECT identifier FROM raw_ilk), priceUpdate.block_height)
 $$;
@@ -2315,6 +2335,7 @@ WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier),
              FROM maker.urns
              WHERE ilk_id = (SELECT id FROM ilk)
                AND identifier = urn_bites.urn_identifier)
+
 SELECT ilk_identifier, urn_bites.urn_identifier, ink, art, tab, block_number, tx_idx
 FROM maker.bite
          LEFT JOIN headers ON bite.header_id = headers.id
@@ -2335,6 +2356,7 @@ WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier),
              FROM maker.urns
              WHERE ilk_id = (SELECT id FROM ilk)
                AND identifier = urn_identifier)
+
 SELECT ilk_identifier, urn_identifier, dink, dart, block_number, tx_idx
 FROM maker.vat_frob
          LEFT JOIN headers ON vat_frob.header_id = headers.id
@@ -3636,7 +3658,7 @@ CREATE TABLE maker.flip_ilk (
     block_number bigint,
     block_hash text,
     contract_address text,
-    ilk text
+    ilk_id integer NOT NULL
 );
 
 
@@ -8414,11 +8436,11 @@ ALTER TABLE ONLY maker.flip_bid_usr
 
 
 --
--- Name: flip_ilk flip_ilk_block_number_block_hash_contract_address_ilk_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: flip_ilk flip_ilk_block_number_block_hash_contract_address_ilk_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.flip_ilk
-    ADD CONSTRAINT flip_ilk_block_number_block_hash_contract_address_ilk_key UNIQUE (block_number, block_hash, contract_address, ilk);
+    ADD CONSTRAINT flip_ilk_block_number_block_hash_contract_address_ilk_id_key UNIQUE (block_number, block_hash, contract_address, ilk_id);
 
 
 --
@@ -10318,10 +10340,10 @@ CREATE INDEX flip_ilk_block_number_index ON maker.flip_ilk USING btree (block_nu
 
 
 --
--- Name: flip_ilk_ilk_index; Type: INDEX; Schema: maker; Owner: -
+-- Name: flip_ilk_ilk_id_index; Type: INDEX; Schema: maker; Owner: -
 --
 
-CREATE INDEX flip_ilk_ilk_index ON maker.flip_ilk USING btree (ilk);
+CREATE INDEX flip_ilk_ilk_id_index ON maker.flip_ilk USING btree (ilk_id);
 
 
 --
@@ -11119,6 +11141,14 @@ ALTER TABLE ONLY maker.dent
 
 ALTER TABLE ONLY maker.flap_kick
     ADD CONSTRAINT flap_kick_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: flip_ilk flip_ilk_ilk_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_ilk
+    ADD CONSTRAINT flip_ilk_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id) ON DELETE CASCADE;
 
 
 --

@@ -1,22 +1,20 @@
 package queries
 
 import (
-	"math/rand"
-	"strconv"
-	"time"
-
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
-	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres/repositories"
-	"github.com/vulcanize/vulcanizedb/pkg/fakes"
-
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/component_tests/queries/test_helpers"
 	"github.com/vulcanize/mcd_transformers/transformers/events/deal"
 	"github.com/vulcanize/mcd_transformers/transformers/events/flip_kick"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
+	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
+	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres/repositories"
+	"github.com/vulcanize/vulcanizedb/pkg/fakes"
+	"math/rand"
+	"strconv"
+	"time"
 )
 
 var _ = Describe("Single flip view", func() {
@@ -88,7 +86,7 @@ var _ = Describe("Single flip view", func() {
 
 		var actualBid test_helpers.FlipBid
 		queryErr := db.Get(&actualBid, `SELECT bid_id, ilk_id, urn_id, guy, tic, "end", lot, bid, gal, dealt, tab, created, updated FROM api.get_flip($1, $2, $3)`,
-			fakeBidId, test_helpers.FakeIlk.Hex, blockOne)
+			fakeBidId, test_helpers.FakeIlk.Identifier, blockOne)
 		Expect(queryErr).NotTo(HaveOccurred())
 
 		Expect(expectedBid).To(Equal(actualBid))
@@ -127,7 +125,7 @@ var _ = Describe("Single flip view", func() {
 
 			var actualBid test_helpers.FlipBid
 			queryErr := db.Get(&actualBid, `SELECT bid_id, ilk_id, urn_id, guy, tic, "end", lot, bid, gal, dealt, tab, created, updated FROM api.get_flip($1, $2, $3)`,
-				fakeBidId, test_helpers.FakeIlk.Hex, blockNumber)
+				fakeBidId, test_helpers.FakeIlk.Identifier, blockNumber)
 			Expect(queryErr).NotTo(HaveOccurred())
 
 			Expect(expectedBid).To(Equal(actualBid))
@@ -178,7 +176,7 @@ var _ = Describe("Single flip view", func() {
 
 			var actualBid test_helpers.FlipBid
 			queryErr := db.Get(&actualBid, `SELECT bid_id, ilk_id, urn_id, guy, tic, "end", lot, bid, gal, dealt, tab, created, updated FROM api.get_flip($1, $2, $3)`,
-				fakeBidId, test_helpers.FakeIlk.Hex, blockOne)
+				fakeBidId, test_helpers.FakeIlk.Identifier, blockOne)
 			Expect(queryErr).NotTo(HaveOccurred())
 
 			Expect(expectedBid).To(Equal(actualBid))
@@ -229,7 +227,7 @@ var _ = Describe("Single flip view", func() {
 
 		var actualBid test_helpers.FlipBid
 		queryErr := db.Get(&actualBid, `SELECT bid_id, ilk_id, urn_id, guy, tic, "end", lot, bid, gal, dealt, tab, created, updated FROM api.get_flip($1, $2, $3)`,
-			fakeBidId, test_helpers.FakeIlk.Hex, blockTwo)
+			fakeBidId, test_helpers.FakeIlk.Identifier, blockTwo)
 		Expect(queryErr).NotTo(HaveOccurred())
 
 		Expect(expectedBid.Created).To(Equal(actualBid.Created))
