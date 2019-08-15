@@ -130,6 +130,42 @@ COMMENT ON COLUMN api.flap_bid_event.tx_idx IS '@omit';
 
 
 --
+-- Name: flip_bid_event; Type: TYPE; Schema: api; Owner: -
+--
+
+CREATE TYPE api.flip_bid_event AS (
+	bid_id numeric,
+	lot numeric,
+	bid_amount numeric,
+	act text,
+	block_height bigint,
+	tx_idx integer,
+	contract_address text
+);
+
+
+--
+-- Name: COLUMN flip_bid_event.block_height; Type: COMMENT; Schema: api; Owner: -
+--
+
+COMMENT ON COLUMN api.flip_bid_event.block_height IS '@omit';
+
+
+--
+-- Name: COLUMN flip_bid_event.tx_idx; Type: COMMENT; Schema: api; Owner: -
+--
+
+COMMENT ON COLUMN api.flip_bid_event.tx_idx IS '@omit';
+
+
+--
+-- Name: COLUMN flip_bid_event.contract_address; Type: COMMENT; Schema: api; Owner: -
+--
+
+COMMENT ON COLUMN api.flip_bid_event.contract_address IS '@omit';
+
+
+--
 -- Name: flip_state; Type: TYPE; Schema: api; Owner: -
 --
 
@@ -527,6 +563,97 @@ BEGIN
              LATERAL api.get_flap(bid_ids.bid_id) f
     );
 END
+$$;
+
+
+--
+-- Name: all_flip_bid_events(); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.all_flip_bid_events() RETURNS SETOF api.flip_bid_event
+    LANGUAGE sql STABLE
+    AS $$
+WITH addresses AS (
+    SELECT distinct contract_address
+    FROM maker.flip_kick
+),
+     deals AS (
+         SELECT deal.bid_id,
+                flip_bid_lot.lot,
+                flip_bid_bid.bid     AS bid_amount,
+                'deal'               AS act,
+                headers.block_number AS block_height,
+                tx_idx,
+                deal.contract_address
+         FROM maker.deal
+                  LEFT JOIN headers ON deal.header_id = headers.id
+                  LEFT JOIN maker.flip_bid_bid
+                            ON deal.bid_id = flip_bid_bid.bid_id
+                                AND flip_bid_bid.block_number = headers.block_number
+                  LEFT JOIN maker.flip_bid_lot
+                            ON deal.bid_id = flip_bid_lot.bid_id
+                                AND flip_bid_lot.block_number = headers.block_number
+         WHERE deal.contract_address IN (SELECT * FROM addresses)
+         ORDER BY block_height DESC
+     ),
+     yanks AS (
+         SELECT yank.bid_id,
+                flip_bid_lot.lot,
+                flip_bid_bid.bid     AS bid_amount,
+                'yank'               AS act,
+                headers.block_number AS block_height,
+                tx_idx,
+                yank.contract_address
+         FROM maker.yank
+                  LEFT JOIN headers ON yank.header_id = headers.id
+                  LEFT JOIN maker.flip_bid_bid
+                            ON yank.bid_id = flip_bid_bid.bid_id
+                                AND flip_bid_bid.block_number = headers.block_number
+                  LEFT JOIN maker.flip_bid_lot
+                            ON yank.bid_id = flip_bid_lot.bid_id
+                                AND flip_bid_lot.block_number = headers.block_number
+         WHERE yank.contract_address IN (SELECT * FROM addresses)
+         ORDER BY block_height DESC
+     ),
+     ticks AS (
+         SELECT flip_tick.bid_id,
+                flip_bid_lot.lot,
+                flip_bid_bid.bid     AS bid_amount,
+                'tick'               AS act,
+                headers.block_number AS block_height,
+                tx_idx,
+                flip_tick.contract_address
+         FROM maker.flip_tick
+                  LEFT JOIN headers on flip_tick.header_id = headers.id
+                  LEFT JOIN maker.flip_bid_bid
+                            ON flip_tick.bid_id = flip_bid_bid.bid_id
+                                AND flip_bid_bid.block_number = headers.block_number
+                  LEFT JOIN maker.flip_bid_lot
+                            ON flip_tick.bid_id = flip_bid_lot.bid_id
+                                AND flip_bid_lot.block_number = headers.block_number
+         ORDER BY block_height DESC
+     )
+SELECT flip_kick.bid_id, lot, bid AS bid_amount, 'kick' AS act, block_number AS block_height, tx_idx, contract_address
+FROM maker.flip_kick
+         LEFT JOIN headers ON flip_kick.header_id = headers.id
+UNION
+SELECT bid_id, lot, bid AS bid_amount, 'tend' AS act, block_number AS block_height, tx_idx, contract_address
+FROM maker.tend
+         LEFT JOIN headers on tend.header_id = headers.id
+WHERE tend.contract_address IN (SELECT * FROM addresses)
+UNION
+SELECT bid_id, lot, bid AS bid_amount, 'dent' AS act, block_number AS block_height, tx_idx, dent.contract_address
+FROM maker.dent
+         LEFT JOIN headers on dent.header_id = headers.id
+WHERE dent.contract_address IN (SELECT * FROM addresses)
+UNION
+SELECT *
+from deals
+UNION
+SELECT *
+from yanks
+UNION
+SELECT * FROM ticks
 $$;
 
 
@@ -1057,12 +1184,7 @@ $$;
 CREATE FUNCTION api.flap_bid_event_tx(event api.flap_bid_event) RETURNS SETOF api.tx
     LANGUAGE sql STABLE
     AS $$
-SELECT txs.hash, txs.tx_index, headers.block_number, headers.hash, tx_from, tx_to
-FROM public.header_sync_transactions txs
-         LEFT JOIN headers ON txs.header_id = headers.id
-WHERE block_number <= event.block_height
-  AND txs.tx_index <= event.tx_idx
-ORDER BY block_number DESC
+    SELECT * FROM get_tx_data(event.block_height, event.tx_idx)
 $$;
 
 
@@ -1077,6 +1199,56 @@ CREATE FUNCTION api.flap_bid_events(flap api.flap) RETURNS SETOF api.flap_bid_ev
     FROM api.all_flap_bid_events()
     WHERE bid_id = flap.bid_id
     $$;
+
+
+--
+-- Name: flip_bid_event_bid(api.flip_bid_event); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.flip_bid_event_bid(event api.flip_bid_event) RETURNS SETOF api.flip_state
+    LANGUAGE sql STABLE
+    AS $$
+WITH ilks AS (
+    SELECT ilk, contract_address
+    FROM maker.flip_ilk
+    WHERE contract_address = event.contract_address
+)
+SELECT *
+FROM api.get_flip(event.bid_id, (SELECT ilk FROM ilks))
+$$;
+
+
+--
+-- Name: flip_bid_event_tx(api.flip_bid_event); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.flip_bid_event_tx(event api.flip_bid_event) RETURNS SETOF api.tx
+    LANGUAGE sql STABLE
+    AS $$
+    SELECT * FROM get_tx_data(event.block_height, event.tx_idx)
+$$;
+
+
+--
+-- Name: flip_state_bid_events(api.flip_state); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.flip_state_bid_events(flip api.flip_state) RETURNS SETOF api.flip_bid_event
+    LANGUAGE sql STABLE
+    AS $$
+WITH addresses AS ( -- get the contract address from flip_ilk table using the ilk_id from flip
+    SELECT contract_address
+    FROM maker.flip_ilk
+             LEFT JOIN maker.ilks ON ilks.ilk = flip_ilk.ilk
+    WHERE ilks.id = flip.ilk_id
+    ORDER BY block_number DESC
+    LIMIT 1
+)
+SELECT bid_id, lot, bid_amount, act, block_height, tx_idx, events.contract_address
+FROM api.all_flip_bid_events() AS events
+         LEFT JOIN addresses ON events.contract_address = addresses.contract_address
+WHERE bid_id = flip.bid_id
+$$;
 
 
 --
@@ -2206,6 +2378,22 @@ CREATE FUNCTION api.urn_state_ilk(state api.urn_state) RETURNS api.ilk_state
     AS $$
 SELECT *
 FROM api.get_ilk(state.ilk_identifier, state.block_height)
+$$;
+
+
+--
+-- Name: get_tx_data(bigint, integer); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.get_tx_data(block_height bigint, tx_idx integer) RETURNS SETOF api.tx
+    LANGUAGE sql STABLE
+    AS $$
+SELECT txs.hash, txs.tx_index, headers.block_number, headers.hash, tx_from, tx_to
+FROM header_sync_transactions txs
+         LEFT JOIN headers ON txs.header_id = headers.id
+WHERE block_number <= block_height
+  AND txs.tx_index <= tx_idx
+ORDER BY block_number DESC
 $$;
 
 
@@ -10176,6 +10364,13 @@ CREATE INDEX flip_kicks_contract_address_index ON maker.flip_kicks USING btree (
 --
 
 CREATE INDEX flip_kicks_kicks_index ON maker.flip_kicks USING btree (kicks);
+
+
+--
+-- Name: flip_tick_bid_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flip_tick_bid_id_index ON maker.flip_tick USING btree (bid_id);
 
 
 --

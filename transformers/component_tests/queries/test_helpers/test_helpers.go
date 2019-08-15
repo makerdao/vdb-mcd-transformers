@@ -4,7 +4,9 @@ import (
 	"database/sql"
 	. "github.com/onsi/gomega"
 	"github.com/vulcanize/mcd_transformers/transformers/events/deal"
+	"github.com/vulcanize/mcd_transformers/transformers/events/dent"
 	"github.com/vulcanize/mcd_transformers/transformers/events/flip_kick"
+	"github.com/vulcanize/mcd_transformers/transformers/events/flip_tick"
 	"github.com/vulcanize/mcd_transformers/transformers/events/tend"
 	"github.com/vulcanize/mcd_transformers/transformers/events/yank"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
@@ -555,6 +557,31 @@ func CreateYank(input YankCreationInput) (err error) {
 	return input.YankRepo.Create(input.YankHeaderId, []shared.InsertionModel{yankModel})
 }
 
+func CreateFlipTick(input FlipTickCreationInput) (err error) {
+	flipTickModel := test_data.FlipTickModel
+	flipTickModel.ColumnValues["contract_address"] = input.ContractAddress
+	flipTickModel.ColumnValues["bid_id"] = strconv.Itoa(input.BidId)
+	return input.FlipTickRepo.Create(input.FlipTickHeaderId, []shared.InsertionModel{flipTickModel})
+}
+
+func CreateDent(input DentCreationInput) (err error) {
+	dentModel := test_data.DentModel
+	dentModel.ColumnValues["contract_address"] = input.ContractAddress
+	dentModel.ColumnValues["bid_id"] = strconv.Itoa(input.BidId)
+	dentModel.ColumnValues["bid"] = strconv.Itoa(input.BidAmount)
+	dentModel.ColumnValues["lot"] = strconv.Itoa(input.Lot)
+	return input.DentRepo.Create(input.DentHeaderId, []shared.InsertionModel{dentModel})
+}
+
+type DentCreationInput struct {
+	ContractAddress string
+	BidId           int
+	Lot             int
+	BidAmount       int
+	DentRepo        dent.DentRepository
+	DentHeaderId    int64
+}
+
 type YankCreationInput struct {
 	ContractAddress string
 	BidId           int
@@ -590,11 +617,23 @@ type FlipBidCreationInput struct {
 	FlipKickHeaderId int64
 }
 
+type FlipTickCreationInput struct {
+	BidId            int
+	ContractAddress  string
+	FlipTickRepo     flip_tick.FlipTickRepository
+	FlipTickHeaderId int64
+}
+
 type BidEvent struct {
 	BidId     string `db:"bid_id"`
 	Lot       string
 	BidAmount string `db:"bid_amount"`
 	Act       string
+}
+
+type FlipBidEvent struct {
+	BidEvent
+	ContractAddress string `db:"contract_address"`
 }
 
 type IlkFileEvent struct {

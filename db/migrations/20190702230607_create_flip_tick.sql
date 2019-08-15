@@ -17,9 +17,13 @@ CREATE INDEX flip_tick_header_index
 ALTER TABLE public.checked_headers
     ADD COLUMN flip_tick INTEGER NOT NULL DEFAULT 0;
 
+CREATE INDEX flip_tick_bid_id_index
+    ON maker.flip_tick (bid_id);
+
 -- +goose Down
 ALTER TABLE public.checked_headers
     DROP COLUMN flip_tick;
 
 DROP INDEX maker.flip_tick_header_index;
+DROP INDEX maker.flip_tick_bid_id_index;
 DROP TABLE maker.flip_tick;

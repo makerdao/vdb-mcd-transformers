@@ -57,7 +57,7 @@ var dentRawJson, _ = json.Marshal(EthDentLog)
 var DentModel = shared.InsertionModel{
 	TableName: "dent",
 	OrderedColumns: []string{
-		"header_id", "bid_id", "lot", "bid", "contract_address", "tic", "log_idx", "tx_idx", "raw_log",
+		"header_id", "bid_id", "lot", "bid", "contract_address", "log_idx", "tx_idx", "raw_log",
 	},
 	ColumnValues: shared.ColumnValues{
 		"bid_id":           dentBidId,
