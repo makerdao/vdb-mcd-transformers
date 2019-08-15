@@ -94,7 +94,7 @@ var _ = Describe("All flips view", func() {
 			strconv.Itoa(urnId), "false", blockTwoHeader.Timestamp, blockOneHeader.Timestamp, flipStorageValuesTwo)
 		var actualBid1 test_helpers.FlipBid
 		queryErr1 := db.Get(&actualBid1, `SELECT bid_id, ilk_id, urn_id, guy, tic, "end", lot, bid, gal, dealt, tab, created, updated FROM api.all_flips($1) WHERE bid_id = $2`,
-			test_helpers.FakeIlk.Hex, fakeBidId)
+			test_helpers.FakeIlk.Identifier, fakeBidId)
 		Expect(queryErr1).NotTo(HaveOccurred())
 		Expect(expectedBid1).To(Equal(actualBid1))
 
@@ -105,12 +105,12 @@ var _ = Describe("All flips view", func() {
 			strconv.Itoa(urnId), "false", blockTwoHeader.Timestamp, blockTwoHeader.Timestamp, flipStorageValuesThree)
 		var actualBid2 test_helpers.FlipBid
 		queryErr2 := db.Get(&actualBid2, `SELECT bid_id, ilk_id, urn_id, guy, tic, "end", lot, bid, gal, dealt, tab, created, updated FROM api.all_flips($1) WHERE bid_id = $2`,
-			test_helpers.FakeIlk.Hex, fakeBidId2)
+			test_helpers.FakeIlk.Identifier, fakeBidId2)
 		Expect(queryErr2).NotTo(HaveOccurred())
 		Expect(expectedBid2).To(Equal(actualBid2))
 
 		var bidCount int
-		countQueryErr := db.Get(&bidCount, `SELECT COUNT(*) FROM api.all_flips($1)`, test_helpers.FakeIlk.Hex)
+		countQueryErr := db.Get(&bidCount, `SELECT COUNT(*) FROM api.all_flips($1)`, test_helpers.FakeIlk.Identifier)
 		Expect(countQueryErr).NotTo(HaveOccurred())
 		Expect(bidCount).To(Equal(2))
 	})
@@ -144,9 +144,9 @@ var _ = Describe("All flips view", func() {
 
 		irrelevantBidId := fakeBidId + 1
 		irrelevantAddress := "contract address2"
-		irrelevantIlk := test_helpers.AnotherFakeIlk.Hex
+		irrelevantIlkHex := test_helpers.AnotherFakeIlk.Hex
 		irrelevantUrn := test_data.FlipKickModel.Gal
-		irrelevantFlipValues := test_helpers.GetFlipStorageValues(2, irrelevantIlk, irrelevantBidId)
+		irrelevantFlipValues := test_helpers.GetFlipStorageValues(2, irrelevantIlkHex, irrelevantBidId)
 		test_helpers.CreateFlip(db, header, irrelevantFlipValues,
 			test_helpers.GetFlipMetadatas(strconv.Itoa(irrelevantBidId)), irrelevantAddress)
 
@@ -157,7 +157,7 @@ var _ = Describe("All flips view", func() {
 				ContractAddress: irrelevantAddress,
 			},
 			Dealt:            false,
-			IlkHex:           irrelevantIlk,
+			IlkHex:           irrelevantIlkHex,
 			UrnGuy:           irrelevantUrn,
 			FlipKickRepo:     flipKickRepo,
 			FlipKickHeaderId: headerId,
@@ -165,7 +165,7 @@ var _ = Describe("All flips view", func() {
 		Expect(setupErr2).NotTo(HaveOccurred())
 
 		var bidCount int
-		countQueryErr := db.Get(&bidCount, `SELECT COUNT(*) FROM api.all_flips($1)`, test_helpers.FakeIlk.Hex)
+		countQueryErr := db.Get(&bidCount, `SELECT COUNT(*) FROM api.all_flips($1)`, test_helpers.FakeIlk.Identifier)
 		Expect(countQueryErr).NotTo(HaveOccurred())
 		Expect(bidCount).To(Equal(1))
 	})

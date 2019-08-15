@@ -5,12 +5,14 @@ CREATE FUNCTION api.flip_bid_event_bid(event api.flip_bid_event)
     RETURNS SETOF api.flip_state AS
 $$
 WITH ilks AS (
-    SELECT ilk, contract_address
+    SELECT ilks.identifier
     FROM maker.flip_ilk
+       LEFT JOIN maker.ilks ON ilks.id = flip_ilk.ilk_id
     WHERE contract_address = event.contract_address
+    LIMIT 1
 )
 SELECT *
-FROM api.get_flip(event.bid_id, (SELECT ilk FROM ilks))
+FROM api.get_flip(event.bid_id, (SELECT identifier FROM ilks))
 $$
     LANGUAGE sql
     STABLE;

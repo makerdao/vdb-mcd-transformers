@@ -2,17 +2,16 @@ package flip
 
 import (
 	"fmt"
-
-	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
-	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
-
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/storage"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
+	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 )
 
 const (
 	insertFlipVatQuery   = `INSERT INTO maker.flip_vat (block_number, block_hash, contract_address, vat) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
-	insertFlipIlkQuery   = `INSERT INTO maker.flip_ilk (block_number, block_hash, contract_address, ilk) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
+	insertFlipIlkQuery   = `INSERT INTO maker.flip_ilk (block_number, block_hash, contract_address, ilk_id) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
 	insertFlipBegQuery   = `INSERT INTO maker.flip_beg (block_number, block_hash, contract_address, beg) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
 	insertFlipTtlQuery   = `INSERT INTO maker.flip_ttl (block_number, block_hash, contract_address, ttl) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
 	insertFlipTauQuery   = `INSERT INTO maker.flip_tau (block_number, block_hash, contract_address, tau) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
@@ -70,7 +69,11 @@ func (repository *FlipStorageRepository) insertVat(blockNumber int, blockHash st
 }
 
 func (repository *FlipStorageRepository) insertIlk(blockNumber int, blockHash string, ilk string) error {
-	_, writeErr := repository.db.Exec(insertFlipIlkQuery, blockNumber, blockHash, repository.ContractAddress, ilk)
+	ilkID, ilkErr := shared.GetOrCreateIlk(ilk, repository.db)
+	if ilkErr != nil {
+		return ilkErr
+	}
+	_, writeErr := repository.db.Exec(insertFlipIlkQuery, blockNumber, blockHash, repository.ContractAddress, ilkID)
 	return writeErr
 }
 

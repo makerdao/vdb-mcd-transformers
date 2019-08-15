@@ -1,22 +1,21 @@
 package flip_test
 
 import (
-	"math/rand"
-	"strconv"
-
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
-	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
-	"github.com/vulcanize/vulcanizedb/pkg/fakes"
-
 	"github.com/vulcanize/mcd_transformers/test_config"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/storage"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/flip"
 	. "github.com/vulcanize/mcd_transformers/transformers/storage/test_helpers"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data/shared_behaviors"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
+	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
+	"github.com/vulcanize/vulcanizedb/pkg/fakes"
+	"math/rand"
+	"strconv"
 )
 
 var _ = Describe("Flip storage repository", func() {
@@ -59,16 +58,34 @@ var _ = Describe("Flip storage repository", func() {
 		})
 
 		Describe("Ilk", func() {
-			ilkMetadata := utils.StorageValueMetadata{Name: storage.Ilk}
-			inputs := shared_behaviors.StorageVariableBehaviorInputs{
-				FieldName:        storage.Ilk,
-				Value:            FakeAddress,
-				StorageTableName: "maker.flip_ilk",
-				Repository:       &repo,
-				Metadata:         ilkMetadata,
-			}
+			It("writes row", func() {
+				ilkMetadata := utils.StorageValueMetadata{Name: storage.Ilk}
 
-			shared_behaviors.SharedStorageRepositoryVariableBehaviors(&inputs)
+				insertErr := repo.Create(fakeBlockNumber, fakeBlockHash, ilkMetadata, FakeIlk)
+
+				Expect(insertErr).NotTo(HaveOccurred())
+
+				var result VariableRes
+				getErr := db.Get(&result, `SELECT block_number, block_hash, ilk_id AS value FROM maker.flip_ilk`)
+				Expect(getErr).NotTo(HaveOccurred())
+				ilkID, ilkErr := shared.GetOrCreateIlk(FakeIlk, db)
+				Expect(ilkErr).NotTo(HaveOccurred())
+				AssertVariable(result, fakeBlockNumber, fakeBlockHash, strconv.Itoa(ilkID))
+			})
+
+			It("does not duplicate row", func() {
+				ilkMetadata := utils.StorageValueMetadata{Name: storage.Ilk}
+				insertOneErr := repo.Create(fakeBlockNumber, fakeBlockHash, ilkMetadata, FakeIlk)
+				Expect(insertOneErr).NotTo(HaveOccurred())
+
+				insertTwoErr := repo.Create(fakeBlockNumber, fakeBlockHash, ilkMetadata, FakeIlk)
+
+				Expect(insertTwoErr).NotTo(HaveOccurred())
+				var count int
+				getCountErr := db.Get(&count, `SELECT count(*) FROM maker.flip_ilk`)
+				Expect(getCountErr).NotTo(HaveOccurred())
+				Expect(count).To(Equal(1))
+			})
 		})
 
 		Describe("Beg", func() {

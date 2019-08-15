@@ -47,7 +47,6 @@ var _ = Describe("Flip state computed columns", func() {
 		tendRepo          tend.TendRepository
 		contractAddress   = "ContractAddress"
 		flipStorageValues map[string]interface{}
-		fakeIlk           = test_helpers.FakeIlk.Hex
 		fakeUrn           = test_data.FlipKickModel.Usr
 		fakeBidId         int
 		blockNumber       int
@@ -84,7 +83,7 @@ var _ = Describe("Flip state computed columns", func() {
 				ContractAddress: contractAddress,
 			},
 			Dealt:            false,
-			IlkHex:           fakeIlk,
+			IlkHex:           test_helpers.FakeIlk.Hex,
 			UrnGuy:           fakeUrn,
 			FlipKickRepo:     flipKickRepo,
 			FlipKickHeaderId: headerId,
@@ -103,7 +102,7 @@ var _ = Describe("Flip state computed columns", func() {
 			test_helpers.CreateIlk(db, fakeHeader, ilkValues, test_helpers.FakeIlkVatMetadatas,
 				test_helpers.FakeIlkCatMetadatas, test_helpers.FakeIlkJugMetadatas, test_helpers.FakeIlkSpotMetadatas)
 
-			expectedIlk := test_helpers.IlkStateFromValues(fakeIlk, fakeHeader.Timestamp, fakeHeader.Timestamp, ilkValues)
+			expectedIlk := test_helpers.IlkStateFromValues(test_helpers.FakeIlk.Hex, fakeHeader.Timestamp, fakeHeader.Timestamp, ilkValues)
 
 			var result test_helpers.IlkState
 			getIlkErr := db.Get(&result, `
@@ -111,7 +110,7 @@ var _ = Describe("Flip state computed columns", func() {
 				FROM api.flip_state_ilk(
 					(SELECT (block_height, bid_id, ilk_id, urn_id, guy, tic, "end", lot, bid, gal, dealt, tab, created, updated)::api.flip_state
 					 FROM api.get_flip($1, $2, $3))
-			)`, fakeBidId, fakeIlk, blockNumber)
+			)`, fakeBidId, test_helpers.FakeIlk.Identifier, blockNumber)
 
 			Expect(getIlkErr).NotTo(HaveOccurred())
 			Expect(result).To(Equal(expectedIlk))
@@ -122,7 +121,7 @@ var _ = Describe("Flip state computed columns", func() {
 		It("returns urn_state for a flip_state", func() {
 			urnSetupData := test_helpers.GetUrnSetupData(blockNumber, 1)
 			urnSetupData.Header.Hash = fakeHeader.Hash
-			urnMetadata := test_helpers.GetUrnMetadata(fakeIlk, fakeUrn)
+			urnMetadata := test_helpers.GetUrnMetadata(test_helpers.FakeIlk.Hex, fakeUrn)
 			vatRepository := vat.VatStorageRepository{}
 			vatRepository.SetDB(db)
 			test_helpers.CreateUrn(urnSetupData, urnMetadata, vatRepository, headerRepository)
@@ -132,8 +131,8 @@ var _ = Describe("Flip state computed columns", func() {
 				SELECT urn_identifier, ilk_identifier
 				FROM api.flip_state_urn(
 					(SELECT (block_height, bid_id, ilk_id, urn_id, guy, tic, "end", lot, bid, gal, dealt, tab, created, updated)::api.flip_state
-					 FROM api.get_flip($1, $2, $3))
-			)`, fakeBidId, fakeIlk, blockNumber)
+					FROM api.get_flip($1, $2, $3))
+			)`, fakeBidId, test_helpers.FakeIlk.Identifier, blockNumber)
 
 			Expect(getUrnErr).NotTo(HaveOccurred())
 
@@ -190,14 +189,14 @@ var _ = Describe("Flip state computed columns", func() {
 			queryErr := db.Select(&actualBidEvents,
 				`SELECT bid_id, bid_amount, lot, act, contract_address FROM api.flip_state_bid_events(
     					(SELECT (block_height, bid_id, ilk_id, urn_id, guy, tic, "end", lot, bid, gal, dealt, tab, created, updated)::api.flip_state 
-    					FROM api.get_flip($1, $2)))`, fakeBidId, fakeIlk)
+    					FROM api.get_flip($1, $2)))`, fakeBidId, test_helpers.FakeIlk.Identifier)
 			Expect(queryErr).NotTo(HaveOccurred())
 			Expect(actualBidEvents).To(ConsistOf(expectedFlipKickEvent, expectedTendEvent))
 		})
 
 		It("ignores bid events for a flip with a different contract address", func() {
 			irrelevantContractAddress := "different flipper"
-			irrelevantFlipStorageValues := test_helpers.GetFlipStorageValues(2, fakeIlk, fakeBidId)
+			irrelevantFlipStorageValues := test_helpers.GetFlipStorageValues(2, test_helpers.FakeIlk.Identifier, fakeBidId)
 			irrelevantFlipMetadatas := test_helpers.GetFlipMetadatas(strconv.Itoa(fakeBidId))
 			test_helpers.CreateFlip(db, fakeHeader, irrelevantFlipStorageValues, irrelevantFlipMetadatas, irrelevantContractAddress)
 
@@ -208,7 +207,7 @@ var _ = Describe("Flip state computed columns", func() {
 					ContractAddress: irrelevantContractAddress,
 				},
 				Dealt:            false,
-				IlkHex:           fakeIlk,
+				IlkHex:           test_helpers.FakeIlk.Hex,
 				UrnGuy:           fakeUrn,
 				FlipKickRepo:     flipKickRepo,
 				FlipKickHeaderId: headerId,
@@ -241,7 +240,7 @@ var _ = Describe("Flip state computed columns", func() {
 			queryErr := db.Select(&actualBidEvents,
 				`SELECT bid_id, bid_amount, lot, act, contract_address FROM api.flip_state_bid_events(
     					(SELECT (block_height, bid_id, ilk_id, urn_id, guy, tic, "end", lot, bid, gal, dealt, tab, created, updated)::api.flip_state 
-    					FROM api.get_flip($1, $2)))`, fakeBidId, fakeIlk)
+    					FROM api.get_flip($1, $2)))`, fakeBidId, test_helpers.FakeIlk.Identifier)
 			Expect(queryErr).NotTo(HaveOccurred())
 			Expect(actualBidEvents).To(ConsistOf(expectedBidEvent))
 		})
@@ -249,7 +248,7 @@ var _ = Describe("Flip state computed columns", func() {
 		It("returns nothing when no bid events match", func() {
 			irrelevantBidId := fakeBidId + 1
 			irrelevantContractAddress := "DifferentFlipper"
-			irrelevantFlipStorageValues := test_helpers.GetFlipStorageValues(2, fakeIlk, fakeBidId)
+			irrelevantFlipStorageValues := test_helpers.GetFlipStorageValues(2, test_helpers.FakeIlk.Identifier, fakeBidId)
 			irrelevantFlipMetadatas := test_helpers.GetFlipMetadatas(strconv.Itoa(fakeBidId))
 			test_helpers.CreateFlip(db, fakeHeader, irrelevantFlipStorageValues, irrelevantFlipMetadatas, irrelevantContractAddress)
 
@@ -262,7 +261,7 @@ var _ = Describe("Flip state computed columns", func() {
 					ContractAddress: irrelevantContractAddress,
 				},
 				Dealt:            false,
-				IlkHex:           fakeIlk,
+				IlkHex:           test_helpers.FakeIlk.Hex,
 				UrnGuy:           fakeUrn,
 				FlipKickRepo:     flipKickRepo,
 				FlipKickHeaderId: headerId,
@@ -273,7 +272,7 @@ var _ = Describe("Flip state computed columns", func() {
 			queryErr := db.Select(&actualBidEvents,
 				`SELECT bid_id, bid_amount, lot, act, contract_address FROM api.flip_state_bid_events(
     					(SELECT (block_height, bid_id, ilk_id, urn_id, guy, tic, "end", lot, bid, gal, dealt, tab, created, updated)::api.flip_state 
-    					FROM api.get_flip($1, $2)))`, irrelevantBidId, fakeIlk)
+    					FROM api.get_flip($1, $2)))`, irrelevantBidId, test_helpers.FakeIlk.Identifier)
 			Expect(queryErr).NotTo(HaveOccurred())
 			Expect(actualBidEvents).To(BeZero())
 		})

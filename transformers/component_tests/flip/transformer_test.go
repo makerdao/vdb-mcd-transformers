@@ -17,20 +17,19 @@
 package flip
 
 import (
-	"strconv"
-	"strings"
-
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	storageFactory "github.com/vulcanize/vulcanizedb/libraries/shared/factories/storage"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
-	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
-
 	"github.com/vulcanize/mcd_transformers/test_config"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/storage"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/flip"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/test_helpers"
+	storageFactory "github.com/vulcanize/vulcanizedb/libraries/shared/factories/storage"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
+	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
+	"strconv"
+	"strings"
 )
 
 var _ = Describe("Executing the flip transformer", func() {
@@ -76,21 +75,24 @@ var _ = Describe("Executing the flip transformer", func() {
 	It("reads in an ilk storage diff and persists it", func() {
 		blockNumber := 11579891
 		blockHash := common.HexToHash("5f2be3f6566f39dddfcfcf29784866280399ed9070af0b4fccd465509260349d")
+		ilk := "4554482d41000000000000000000000000000000000000000000000000000000"
 		diff := utils.StorageDiffRow{
 			Contract:     transformer.Address,
 			BlockHash:    blockHash,
 			BlockHeight:  blockNumber,
 			StorageKey:   common.HexToHash("0000000000000000000000000000000000000000000000000000000000000003"),
-			StorageValue: common.HexToHash("4554482d41000000000000000000000000000000000000000000000000000000"),
+			StorageValue: common.HexToHash(ilk),
 		}
 		err := transformer.Execute(diff)
 		Expect(err).NotTo(HaveOccurred())
 
 		var ilkResult test_helpers.VariableRes
 		err = db.Get(&ilkResult,
-			`SELECT block_number, block_hash, ilk AS value FROM maker.flip_ilk`)
+			`SELECT block_number, block_hash, ilk_id AS value FROM maker.flip_ilk`)
 		Expect(err).NotTo(HaveOccurred())
-		test_helpers.AssertVariable(ilkResult, blockNumber, blockHash.Hex(), "0x4554482d41000000000000000000000000000000000000000000000000000000")
+		ilkID, ilkErr := shared.GetOrCreateIlk(ilk, db)
+		Expect(ilkErr).NotTo(HaveOccurred())
+		test_helpers.AssertVariable(ilkResult, blockNumber, blockHash.Hex(), strconv.Itoa(ilkID))
 	})
 
 	It("reads in a beg storage diff and persists it", func() {
