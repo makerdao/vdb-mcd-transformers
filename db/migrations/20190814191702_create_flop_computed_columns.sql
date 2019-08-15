@@ -1,5 +1,4 @@
 -- +goose Up
--- +goose StatementBegin
 
 --Extend flop with bid events
 CREATE FUNCTION api.flop_bid_events(flop api.flop)
@@ -12,7 +11,6 @@ $$
     LANGUAGE sql
     STABLE;
 
--- +goose StatementEnd
 -- +goose Down
 
 DROP FUNCTION api.flop_bid_events(api.flop);
