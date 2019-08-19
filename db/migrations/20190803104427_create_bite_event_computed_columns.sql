@@ -27,23 +27,8 @@ $$
 CREATE FUNCTION api.bite_event_bid(event api.bite_event)
     RETURNS SETOF api.flip_state AS
 $$
-WITH ilk AS (
-    SELECT id, identifier
-    FROM maker.ilks
-    WHERE ilks.identifier = event.ilk_identifier),
-     address AS (
-         SELECT contract_address
-         FROM maker.flip_ilk
-         WHERE flip_ilk.ilk_id = (SELECT id FROM ilk)
-         LIMIT 1),
-     bid_id AS (
-         SELECT flip_kick.bid_id
-         FROM maker.flip_kick
-         WHERE contract_address = (SELECT * FROM address)
-           AND flip_kick.usr = event.urn_identifier
-         LIMIT 1)
 SELECT *
-FROM api.get_flip((SELECT * FROM bid_id), (SELECT identifier FROM ilk), event.block_height)
+FROM api.get_flip(event.bid_id, event.ilk_identifier, event.block_height)
 $$
     LANGUAGE sql
     STABLE;
