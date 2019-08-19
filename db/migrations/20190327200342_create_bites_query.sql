@@ -5,6 +5,8 @@ CREATE TYPE api.bite_event AS (
     -- ilk object
     urn_identifier TEXT,
     -- urn object
+    bid_id NUMERIC,
+    -- bid object
     ink NUMERIC,
     art NUMERIC,
     tab NUMERIC,
@@ -23,7 +25,7 @@ CREATE FUNCTION api.all_bites(ilk_identifier TEXT)
 $$
 WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier)
 
-SELECT ilk_identifier, identifier AS urn_identifier, ink, art, tab, block_number, tx_idx
+SELECT ilk_identifier, identifier AS urn_identifier, bite_identifier AS bid_id, ink, art, tab, block_number, tx_idx
 FROM maker.bite
          LEFT JOIN maker.urns ON bite.urn_id = urns.id
          LEFT JOIN headers ON bite.header_id = headers.id
@@ -44,7 +46,7 @@ WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier),
              WHERE ilk_id = (SELECT id FROM ilk)
                AND identifier = urn_bites.urn_identifier)
 
-SELECT ilk_identifier, urn_bites.urn_identifier, ink, art, tab, block_number, tx_idx
+SELECT ilk_identifier, urn_bites.urn_identifier, bite_identifier AS bid_id, ink, art, tab, block_number, tx_idx
 FROM maker.bite
          LEFT JOIN headers ON bite.header_id = headers.id
 WHERE bite.urn_id = (SELECT id FROM urn)

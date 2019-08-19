@@ -71,7 +71,7 @@ var _ = Describe("Bite event computed columns", func() {
 			err := db.Get(&result, `
 				SELECT ilk_identifier, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated
 				FROM api.bite_event_ilk(
-					(SELECT (ilk_identifier, urn_identifier, ink, art, tab, block_height, tx_idx)::api.bite_event FROM api.all_bites($1))
+					(SELECT (ilk_identifier, urn_identifier, bid_id, ink, art, tab, block_height, tx_idx)::api.bite_event FROM api.all_bites($1))
 				)`, test_helpers.FakeIlk.Identifier)
 
 			Expect(err).NotTo(HaveOccurred())
@@ -90,7 +90,7 @@ var _ = Describe("Bite event computed columns", func() {
 			var actualUrn test_helpers.UrnState
 			err := db.Get(&actualUrn, `
 				SELECT urn_identifier, ilk_identifier FROM api.bite_event_urn(
-					(SELECT (ilk_identifier, urn_identifier, ink, art, tab, block_height, tx_idx)::api.bite_event FROM api.all_bites($1)))`,
+					(SELECT (ilk_identifier, urn_identifier, bid_id, ink, art, tab, block_height, tx_idx)::api.bite_event FROM api.all_bites($1)))`,
 				test_helpers.FakeIlk.Identifier)
 			Expect(err).NotTo(HaveOccurred())
 
@@ -105,7 +105,8 @@ var _ = Describe("Bite event computed columns", func() {
 
 	Describe("bite_event_bid", func() {
 		It("returns flip_state for a bite_event", func() {
-			bidId := rand.Int()
+			bidId, convErr := strconv.Atoi(biteEvent.Id)
+			Expect(convErr).NotTo(HaveOccurred())
 			address := fakes.FakeAddress
 			dealt := false
 			flipKickRepo := flip_kick.FlipKickRepository{}
@@ -131,7 +132,7 @@ var _ = Describe("Bite event computed columns", func() {
 			var actualBid test_helpers.FlipBid
 			err := db.Get(&actualBid, `
 				SELECT bid_id, ilk_id, urn_id, bid, lot, guy, tic, "end", gal, tab, dealt, created, updated FROM api.bite_event_bid(
-					(SELECT (ilk_identifier, urn_identifier, ink, art, tab, block_height, tx_idx)::api.bite_event FROM api.all_bites($1)))`,
+					(SELECT (ilk_identifier, urn_identifier, bid_id, ink, art, tab, block_height, tx_idx)::api.bite_event FROM api.all_bites($1)))`,
 				test_helpers.FakeIlk.Identifier)
 			Expect(err).NotTo(HaveOccurred())
 
@@ -160,7 +161,7 @@ var _ = Describe("Bite event computed columns", func() {
 			var actualTx Tx
 			err = db.Get(&actualTx, `
 				SELECT * FROM api.bite_event_tx(
-					(SELECT (ilk_identifier, urn_identifier, ink, art, tab, block_height, tx_idx)::api.bite_event FROM api.all_bites($1)))`,
+					(SELECT (ilk_identifier, urn_identifier, bid_id, ink, art, tab, block_height, tx_idx)::api.bite_event FROM api.all_bites($1)))`,
 				test_helpers.FakeIlk.Identifier)
 
 			Expect(err).NotTo(HaveOccurred())
@@ -188,7 +189,7 @@ var _ = Describe("Bite event computed columns", func() {
 			var actualTx Tx
 			err := db.Get(&actualTx, `
 				SELECT * FROM api.bite_event_tx(
-					(SELECT (ilk_identifier, urn_identifier, ink, art, tab, block_height, tx_idx)::api.bite_event FROM api.all_bites($1)))`,
+					(SELECT (ilk_identifier, urn_identifier, bid_id, ink, art, tab, block_height, tx_idx)::api.bite_event FROM api.all_bites($1)))`,
 				test_helpers.FakeIlk.Identifier)
 
 			Expect(err).NotTo(HaveOccurred())

@@ -34,11 +34,11 @@ import (
 
 var _ = Describe("Flip bid event computed columns", func() {
 	var (
-		db              *postgres.DB
 		blockNumber     = rand.Int()
-		header          core.Header
+		bidId           = rand.Int()
 		contractAddress = "ContractAddress"
-		bidId           int
+		db              *postgres.DB
+		header          core.Header
 		flipKickRepo    flip_kick.FlipKickRepository
 		flipKickEvent   flip_kick.FlipKickModel
 		headerId        int64

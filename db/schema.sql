@@ -51,6 +51,7 @@ COMMENT ON EXTENSION citext IS 'data type for case-insensitive character strings
 CREATE TYPE api.bite_event AS (
 	ilk_identifier text,
 	urn_identifier text,
+	bid_id numeric,
 	ink numeric,
 	art numeric,
 	tab numeric,
@@ -478,7 +479,7 @@ CREATE FUNCTION api.all_bites(ilk_identifier text) RETURNS SETOF api.bite_event
     AS $$
 WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier)
 
-SELECT ilk_identifier, identifier AS urn_identifier, ink, art, tab, block_number, tx_idx
+SELECT ilk_identifier, identifier AS urn_identifier, bite_identifier AS bid_id, ink, art, tab, block_number, tx_idx
 FROM maker.bite
          LEFT JOIN maker.urns ON bite.urn_id = urns.id
          LEFT JOIN headers ON bite.header_id = headers.id
@@ -1147,23 +1148,8 @@ $$;
 CREATE FUNCTION api.bite_event_bid(event api.bite_event) RETURNS SETOF api.flip_state
     LANGUAGE sql STABLE
     AS $$
-WITH ilk AS (
-    SELECT id, identifier
-    FROM maker.ilks
-    WHERE ilks.identifier = event.ilk_identifier),
-     address AS (
-         SELECT contract_address
-         FROM maker.flip_ilk
-         WHERE flip_ilk.ilk_id = (SELECT id FROM ilk)
-         LIMIT 1),
-     bid_id AS (
-         SELECT flip_kick.bid_id
-         FROM maker.flip_kick
-         WHERE contract_address = (SELECT * FROM address)
-           AND flip_kick.usr = event.urn_identifier
-         LIMIT 1)
 SELECT *
-FROM api.get_flip((SELECT * FROM bid_id), (SELECT identifier FROM ilk), event.block_height)
+FROM api.get_flip(event.bid_id, event.ilk_identifier, event.block_height)
 $$;
 
 
@@ -2384,7 +2370,7 @@ WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier),
              WHERE ilk_id = (SELECT id FROM ilk)
                AND identifier = urn_bites.urn_identifier)
 
-SELECT ilk_identifier, urn_bites.urn_identifier, ink, art, tab, block_number, tx_idx
+SELECT ilk_identifier, urn_bites.urn_identifier, bite_identifier AS bid_id, ink, art, tab, block_number, tx_idx
 FROM maker.bite
          LEFT JOIN headers ON bite.header_id = headers.id
 WHERE bite.urn_id = (SELECT id FROM urn)
