@@ -23,6 +23,32 @@ $$
     STABLE;
 
 
+-- Extend type bite_event with bid field
+CREATE FUNCTION api.bite_event_bid(event api.bite_event)
+    RETURNS SETOF api.flip_state AS
+$$
+WITH ilk AS (
+    SELECT id, identifier
+    FROM maker.ilks
+    WHERE ilks.identifier = event.ilk_identifier),
+     address AS (
+         SELECT contract_address
+         FROM maker.flip_ilk
+         WHERE flip_ilk.ilk_id = (SELECT id FROM ilk)
+         LIMIT 1),
+     bid_id AS (
+         SELECT flip_kick.bid_id
+         FROM maker.flip_kick
+         WHERE contract_address = (SELECT * FROM address)
+           AND flip_kick.usr = event.urn_identifier
+         LIMIT 1)
+SELECT *
+FROM api.get_flip((SELECT * FROM bid_id), (SELECT identifier FROM ilk), event.block_height)
+$$
+    LANGUAGE sql
+    STABLE;
+
+
 -- Extend type bite_event with txs field
 CREATE FUNCTION api.bite_event_tx(event api.bite_event)
     RETURNS api.tx AS
@@ -40,5 +66,6 @@ $$
 -- +goose Down
 -- SQL in this section is executed when the migration is rolled back.
 DROP FUNCTION api.bite_event_tx(api.bite_event);
+DROP FUNCTION api.bite_event_bid(api.bite_event);
 DROP FUNCTION api.bite_event_urn(api.bite_event);
 DROP FUNCTION api.bite_event_ilk(api.bite_event);

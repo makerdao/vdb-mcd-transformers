@@ -89,6 +89,13 @@ CREATE TYPE api.flip_state AS (
     updated TIMESTAMP
     );
 
+COMMENT ON COLUMN api.flip_state.block_height
+    IS E'@omit';
+COMMENT ON COLUMN api.flip_state.ilk_id
+    IS E'@omit';
+COMMENT ON COLUMN api.flip_state.urn_id
+    IS E'@omit';
+
 
 -- Function returning the state for a single flip as of the given block height and ilk
 CREATE FUNCTION api.get_flip(bid_id NUMERIC, ilk TEXT, block_height BIGINT DEFAULT api.max_block())

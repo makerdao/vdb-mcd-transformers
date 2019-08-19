@@ -57,7 +57,7 @@ var _ = Describe("Single flip view", func() {
 		test_helpers.CreateFlip(db, blockOneHeader, flipStorageValuesOne,
 			test_helpers.GetFlipMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
 
-		ilkId, urnId, err := test_helpers.SetUpFlipBidContext(test_helpers.FlipBidCreationInput{
+		ilkId, urnId, err := test_helpers.SetUpFlipBidContext(test_helpers.FlipBidContextInput{
 			DealCreationInput: test_helpers.DealCreationInput{
 				Db:              db,
 				BidId:           fakeBidId,
@@ -106,7 +106,7 @@ var _ = Describe("Single flip view", func() {
 			test_helpers.CreateFlip(db, header, flipStorageValues,
 				test_helpers.GetFlipMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
 
-			ilkId, urnId, err := test_helpers.SetUpFlipBidContext(test_helpers.FlipBidCreationInput{
+			ilkId, urnId, err := test_helpers.SetUpFlipBidContext(test_helpers.FlipBidContextInput{
 				DealCreationInput: test_helpers.DealCreationInput{
 					Db:              db,
 					BidId:           fakeBidId,
@@ -154,7 +154,7 @@ var _ = Describe("Single flip view", func() {
 			test_helpers.CreateFlip(db, blockTwoHeader, flipStorageValuesTwo,
 				test_helpers.GetFlipMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
 
-			ilkId, urnId, err := test_helpers.SetUpFlipBidContext(test_helpers.FlipBidCreationInput{
+			ilkId, urnId, err := test_helpers.SetUpFlipBidContext(test_helpers.FlipBidContextInput{
 				DealCreationInput: test_helpers.DealCreationInput{
 					Db:              db,
 					BidId:           fakeBidId,
@@ -198,7 +198,7 @@ var _ = Describe("Single flip view", func() {
 		test_helpers.CreateFlip(db, blockOneHeader, flipStorageValuesOne,
 			test_helpers.GetFlipMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
 
-		ilkId, urnId, err := test_helpers.SetUpFlipBidContext(test_helpers.FlipBidCreationInput{
+		ilkId, urnId, err := test_helpers.SetUpFlipBidContext(test_helpers.FlipBidContextInput{
 			DealCreationInput: test_helpers.DealCreationInput{
 				Db:              db,
 				BidId:           fakeBidId,

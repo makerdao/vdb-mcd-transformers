@@ -188,6 +188,27 @@ CREATE TYPE api.flip_state AS (
 
 
 --
+-- Name: COLUMN flip_state.block_height; Type: COMMENT; Schema: api; Owner: -
+--
+
+COMMENT ON COLUMN api.flip_state.block_height IS '@omit';
+
+
+--
+-- Name: COLUMN flip_state.ilk_id; Type: COMMENT; Schema: api; Owner: -
+--
+
+COMMENT ON COLUMN api.flip_state.ilk_id IS '@omit';
+
+
+--
+-- Name: COLUMN flip_state.urn_id; Type: COMMENT; Schema: api; Owner: -
+--
+
+COMMENT ON COLUMN api.flip_state.urn_id IS '@omit';
+
+
+--
 -- Name: flop; Type: TYPE; Schema: api; Owner: -
 --
 
@@ -1116,6 +1137,33 @@ FROM inks
          LEFT JOIN created ON created.urn_id = urns.urn_id
          LEFT JOIN updated ON updated.urn_id = urns.urn_id
          LEFT JOIN maker.ilks ON ilks.id = urns.ilk_id
+$$;
+
+
+--
+-- Name: bite_event_bid(api.bite_event); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.bite_event_bid(event api.bite_event) RETURNS SETOF api.flip_state
+    LANGUAGE sql STABLE
+    AS $$
+WITH ilk AS (
+    SELECT id, identifier
+    FROM maker.ilks
+    WHERE ilks.identifier = event.ilk_identifier),
+     address AS (
+         SELECT contract_address
+         FROM maker.flip_ilk
+         WHERE flip_ilk.ilk_id = (SELECT id FROM ilk)
+         LIMIT 1),
+     bid_id AS (
+         SELECT flip_kick.bid_id
+         FROM maker.flip_kick
+         WHERE contract_address = (SELECT * FROM address)
+           AND flip_kick.usr = event.urn_identifier
+         LIMIT 1)
+SELECT *
+FROM api.get_flip((SELECT * FROM bid_id), (SELECT identifier FROM ilk), event.block_height)
 $$;
 
 
