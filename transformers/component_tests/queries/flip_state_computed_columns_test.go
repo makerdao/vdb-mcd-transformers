@@ -76,7 +76,7 @@ var _ = Describe("Flip state computed columns", func() {
 		flipStorageValues = test_helpers.GetFlipStorageValues(1, test_helpers.FakeIlk.Hex, fakeBidId)
 		test_helpers.CreateFlip(db, fakeHeader, flipStorageValues, test_helpers.GetFlipMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
 
-		_, _, err := test_helpers.SetUpFlipBidContext(test_helpers.FlipBidCreationInput{
+		_, _, err := test_helpers.SetUpFlipBidContext(test_helpers.FlipBidContextInput{
 			DealCreationInput: test_helpers.DealCreationInput{
 				Db:              db,
 				BidId:           fakeBidId,
@@ -200,7 +200,7 @@ var _ = Describe("Flip state computed columns", func() {
 			irrelevantFlipMetadatas := test_helpers.GetFlipMetadatas(strconv.Itoa(fakeBidId))
 			test_helpers.CreateFlip(db, fakeHeader, irrelevantFlipStorageValues, irrelevantFlipMetadatas, irrelevantContractAddress)
 
-			_, _, err := test_helpers.SetUpFlipBidContext(test_helpers.FlipBidCreationInput{
+			_, _, err := test_helpers.SetUpFlipBidContext(test_helpers.FlipBidContextInput{
 				DealCreationInput: test_helpers.DealCreationInput{
 					Db:              db,
 					BidId:           fakeBidId,
@@ -254,7 +254,7 @@ var _ = Describe("Flip state computed columns", func() {
 
 			// this function creates a flip kick but we are going to use a different bid id in the select query
 			// so the test should return nothing
-			_, _, err := test_helpers.SetUpFlipBidContext(test_helpers.FlipBidCreationInput{
+			_, _, err := test_helpers.SetUpFlipBidContext(test_helpers.FlipBidContextInput{
 				DealCreationInput: test_helpers.DealCreationInput{
 					Db:              db,
 					BidId:           fakeBidId,
