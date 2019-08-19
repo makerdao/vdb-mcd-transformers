@@ -39,7 +39,7 @@ var _ = Describe("VatMove LogNoteTransformer", func() {
 	}
 
 	It("transforms VatMove log events", func() {
-		blockNumber := int64(12373489)
+		blockNumber := int64(12842696)
 		vatMoveConfig.StartingBlockNumber = blockNumber
 		vatMoveConfig.EndingBlockNumber = blockNumber
 
@@ -76,9 +76,9 @@ var _ = Describe("VatMove LogNoteTransformer", func() {
 
 		Expect(len(dbResults)).To(Equal(1))
 		dbResult := dbResults[0]
-		Expect(dbResult.Src).To(Equal("0x23E91332984eEd55C88131C58295C8Dce379E2aB"))
-		Expect(dbResult.Dst).To(Equal("0xe70A5307f5132eE3A6a056c5eFb7D5a53F3CDBD7"))
-		Expect(dbResult.Rad).To(Equal("1000000000000000000000000000000000000000000000"))
+		Expect(dbResult.Src).To(Equal("0x16Fb96a5fa0427Af0C8F7cF1eB4870231c8154B6"))
+		Expect(dbResult.Dst).To(Equal("0xEAf1475440f06d53B0C2A51896a52A63b7966C8d"))
+		Expect(dbResult.Rad).To(Equal("20000000000000000000000000000000000000000000000"))
 	})
 })
 
