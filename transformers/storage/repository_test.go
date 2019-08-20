@@ -594,7 +594,27 @@ var _ = Describe("Maker storage repository", func() {
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(bidIds)).To(BeZero())
 		})
+	})
 
+	Describe("getting CDPIs", func() {
+		It("returns string version of ints ranging from 1 to the max CDPI in the table", func() {
+			insertCdpManagerCdpi(int64(rand.Int()), 2, db)
+			insertCdpManagerCdpi(int64(rand.Int()), 5, db)
+			insertCdpManagerCdpi(int64(rand.Int()), 3, db)
+
+			cdpis, err := repository.GetCdpis()
+			Expect(err).NotTo(HaveOccurred())
+
+			Expect(len(cdpis)).To(Equal(5))
+			Expect(cdpis).To(ConsistOf([]string{"1", "2", "3", "4", "5"}))
+		})
+
+		It("returns empty slice if table is empty", func() {
+			cdpis, err := repository.GetCdpis()
+			Expect(err).NotTo(HaveOccurred())
+
+			Expect(cdpis).To(BeEmpty())
+		})
 	})
 })
 
@@ -700,6 +720,13 @@ func insertYank(blockNumber int64, bidId, contractAddress string, db *postgres.D
 		VALUES($1, $2::NUMERIC, $3, $4, $5)`,
 		headerID, bidId, contractAddress, 0, 0,
 	)
+	Expect(err).NotTo(HaveOccurred())
+}
+
+func insertCdpManagerCdpi(blockNumber int64, cdpi int, db *postgres.DB) {
+	_, err := db.Exec(`INSERT INTO maker.cdp_manager_cdpi (block_number, block_hash, cdpi)
+		VALUES($1, '', $2::NUMERIC)`,
+		blockNumber, cdpi)
 	Expect(err).NotTo(HaveOccurred())
 }
 
