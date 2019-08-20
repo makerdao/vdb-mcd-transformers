@@ -17,9 +17,6 @@
 package vat
 
 import (
-	"errors"
-	"fmt"
-
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/storage"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
@@ -48,8 +45,6 @@ const (
 )
 
 var (
-	ErrAddressLengthInvalid = func(len int) error { return errors.New(fmt.Sprintf("address length invalid: %d", len)) }
-
 	IlksMappingIndex = storage.IndexTwo
 	UrnsMappingIndex = storage.IndexThree
 	GemsMappingIndex = storage.IndexFour

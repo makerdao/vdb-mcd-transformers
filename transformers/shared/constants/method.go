@@ -17,8 +17,9 @@
 package constants
 
 // TODO Figure out signatures automatically from config somehow :(
-func CatABI() string  { return getContractABI("MCD_CAT") }
-func FlapABI() string { return getContractABI("MCD_FLAP") }
+func CatABI() string        { return getContractABI("MCD_CAT") }
+func CdpManagerABI() string { return getContractABI("CDP_MANAGER") }
+func FlapABI() string       { return getContractABI("MCD_FLAP") }
 func FlipABI() string {
 	return GetContractsABI([]string{
 		"MCD_FLIP_ETH_A", "MCD_FLIP_ETH_B", "MCD_FLIP_ETH_C",

@@ -2786,6 +2786,334 @@ ALTER SEQUENCE maker.cat_vow_id_seq OWNED BY maker.cat_vow.id;
 
 
 --
+-- Name: cdp_manager_cdpi; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.cdp_manager_cdpi (
+    id integer NOT NULL,
+    block_number bigint,
+    block_hash text,
+    cdpi numeric NOT NULL
+);
+
+
+--
+-- Name: cdp_manager_cdpi_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.cdp_manager_cdpi_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: cdp_manager_cdpi_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.cdp_manager_cdpi_id_seq OWNED BY maker.cdp_manager_cdpi.id;
+
+
+--
+-- Name: cdp_manager_count; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.cdp_manager_count (
+    id integer NOT NULL,
+    block_number bigint,
+    block_hash text,
+    owner text,
+    count numeric NOT NULL
+);
+
+
+--
+-- Name: cdp_manager_count_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.cdp_manager_count_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: cdp_manager_count_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.cdp_manager_count_id_seq OWNED BY maker.cdp_manager_count.id;
+
+
+--
+-- Name: cdp_manager_first; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.cdp_manager_first (
+    id integer NOT NULL,
+    block_number bigint,
+    block_hash text,
+    owner text,
+    first numeric NOT NULL
+);
+
+
+--
+-- Name: cdp_manager_first_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.cdp_manager_first_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: cdp_manager_first_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.cdp_manager_first_id_seq OWNED BY maker.cdp_manager_first.id;
+
+
+--
+-- Name: cdp_manager_ilks; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.cdp_manager_ilks (
+    id integer NOT NULL,
+    block_number bigint,
+    block_hash text,
+    cdpi numeric NOT NULL,
+    ilk_id integer NOT NULL
+);
+
+
+--
+-- Name: cdp_manager_ilks_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.cdp_manager_ilks_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: cdp_manager_ilks_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.cdp_manager_ilks_id_seq OWNED BY maker.cdp_manager_ilks.id;
+
+
+--
+-- Name: cdp_manager_last; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.cdp_manager_last (
+    id integer NOT NULL,
+    block_number bigint,
+    block_hash text,
+    owner text,
+    last numeric NOT NULL
+);
+
+
+--
+-- Name: cdp_manager_last_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.cdp_manager_last_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: cdp_manager_last_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.cdp_manager_last_id_seq OWNED BY maker.cdp_manager_last.id;
+
+
+--
+-- Name: cdp_manager_list_next; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.cdp_manager_list_next (
+    id integer NOT NULL,
+    block_number bigint,
+    block_hash text,
+    cdpi numeric NOT NULL,
+    next numeric NOT NULL
+);
+
+
+--
+-- Name: cdp_manager_list_next_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.cdp_manager_list_next_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: cdp_manager_list_next_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.cdp_manager_list_next_id_seq OWNED BY maker.cdp_manager_list_next.id;
+
+
+--
+-- Name: cdp_manager_list_prev; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.cdp_manager_list_prev (
+    id integer NOT NULL,
+    block_number bigint,
+    block_hash text,
+    cdpi numeric NOT NULL,
+    prev numeric NOT NULL
+);
+
+
+--
+-- Name: cdp_manager_list_prev_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.cdp_manager_list_prev_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: cdp_manager_list_prev_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.cdp_manager_list_prev_id_seq OWNED BY maker.cdp_manager_list_prev.id;
+
+
+--
+-- Name: cdp_manager_owns; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.cdp_manager_owns (
+    id integer NOT NULL,
+    block_number bigint,
+    block_hash text,
+    cdpi numeric NOT NULL,
+    owner text
+);
+
+
+--
+-- Name: cdp_manager_owns_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.cdp_manager_owns_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: cdp_manager_owns_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.cdp_manager_owns_id_seq OWNED BY maker.cdp_manager_owns.id;
+
+
+--
+-- Name: cdp_manager_urns; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.cdp_manager_urns (
+    id integer NOT NULL,
+    block_number bigint,
+    block_hash text,
+    cdpi numeric NOT NULL,
+    urn text
+);
+
+
+--
+-- Name: cdp_manager_urns_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.cdp_manager_urns_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: cdp_manager_urns_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.cdp_manager_urns_id_seq OWNED BY maker.cdp_manager_urns.id;
+
+
+--
+-- Name: cdp_manager_vat; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.cdp_manager_vat (
+    id integer NOT NULL,
+    block_number bigint,
+    block_hash text,
+    vat text
+);
+
+
+--
+-- Name: cdp_manager_vat_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.cdp_manager_vat_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: cdp_manager_vat_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.cdp_manager_vat_id_seq OWNED BY maker.cdp_manager_vat.id;
+
+
+--
 -- Name: deal; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -7043,6 +7371,76 @@ ALTER TABLE ONLY maker.cat_vow ALTER COLUMN id SET DEFAULT nextval('maker.cat_vo
 
 
 --
+-- Name: cdp_manager_cdpi id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cdp_manager_cdpi ALTER COLUMN id SET DEFAULT nextval('maker.cdp_manager_cdpi_id_seq'::regclass);
+
+
+--
+-- Name: cdp_manager_count id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cdp_manager_count ALTER COLUMN id SET DEFAULT nextval('maker.cdp_manager_count_id_seq'::regclass);
+
+
+--
+-- Name: cdp_manager_first id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cdp_manager_first ALTER COLUMN id SET DEFAULT nextval('maker.cdp_manager_first_id_seq'::regclass);
+
+
+--
+-- Name: cdp_manager_ilks id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cdp_manager_ilks ALTER COLUMN id SET DEFAULT nextval('maker.cdp_manager_ilks_id_seq'::regclass);
+
+
+--
+-- Name: cdp_manager_last id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cdp_manager_last ALTER COLUMN id SET DEFAULT nextval('maker.cdp_manager_last_id_seq'::regclass);
+
+
+--
+-- Name: cdp_manager_list_next id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cdp_manager_list_next ALTER COLUMN id SET DEFAULT nextval('maker.cdp_manager_list_next_id_seq'::regclass);
+
+
+--
+-- Name: cdp_manager_list_prev id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cdp_manager_list_prev ALTER COLUMN id SET DEFAULT nextval('maker.cdp_manager_list_prev_id_seq'::regclass);
+
+
+--
+-- Name: cdp_manager_owns id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cdp_manager_owns ALTER COLUMN id SET DEFAULT nextval('maker.cdp_manager_owns_id_seq'::regclass);
+
+
+--
+-- Name: cdp_manager_urns id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cdp_manager_urns ALTER COLUMN id SET DEFAULT nextval('maker.cdp_manager_urns_id_seq'::regclass);
+
+
+--
+-- Name: cdp_manager_vat id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cdp_manager_vat ALTER COLUMN id SET DEFAULT nextval('maker.cdp_manager_vat_id_seq'::regclass);
+
+
+--
 -- Name: deal id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
@@ -8033,6 +8431,166 @@ ALTER TABLE ONLY maker.cat_vow
 
 ALTER TABLE ONLY maker.cat_vow
     ADD CONSTRAINT cat_vow_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: cdp_manager_cdpi cdp_manager_cdpi_block_number_block_hash_cdpi_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cdp_manager_cdpi
+    ADD CONSTRAINT cdp_manager_cdpi_block_number_block_hash_cdpi_key UNIQUE (block_number, block_hash, cdpi);
+
+
+--
+-- Name: cdp_manager_cdpi cdp_manager_cdpi_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cdp_manager_cdpi
+    ADD CONSTRAINT cdp_manager_cdpi_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: cdp_manager_count cdp_manager_count_block_number_block_hash_owner_count_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cdp_manager_count
+    ADD CONSTRAINT cdp_manager_count_block_number_block_hash_owner_count_key UNIQUE (block_number, block_hash, owner, count);
+
+
+--
+-- Name: cdp_manager_count cdp_manager_count_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cdp_manager_count
+    ADD CONSTRAINT cdp_manager_count_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: cdp_manager_first cdp_manager_first_block_number_block_hash_owner_first_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cdp_manager_first
+    ADD CONSTRAINT cdp_manager_first_block_number_block_hash_owner_first_key UNIQUE (block_number, block_hash, owner, first);
+
+
+--
+-- Name: cdp_manager_first cdp_manager_first_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cdp_manager_first
+    ADD CONSTRAINT cdp_manager_first_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: cdp_manager_ilks cdp_manager_ilks_block_number_block_hash_cdpi_ilk_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cdp_manager_ilks
+    ADD CONSTRAINT cdp_manager_ilks_block_number_block_hash_cdpi_ilk_id_key UNIQUE (block_number, block_hash, cdpi, ilk_id);
+
+
+--
+-- Name: cdp_manager_ilks cdp_manager_ilks_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cdp_manager_ilks
+    ADD CONSTRAINT cdp_manager_ilks_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: cdp_manager_last cdp_manager_last_block_number_block_hash_owner_last_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cdp_manager_last
+    ADD CONSTRAINT cdp_manager_last_block_number_block_hash_owner_last_key UNIQUE (block_number, block_hash, owner, last);
+
+
+--
+-- Name: cdp_manager_last cdp_manager_last_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cdp_manager_last
+    ADD CONSTRAINT cdp_manager_last_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: cdp_manager_list_next cdp_manager_list_next_block_number_block_hash_cdpi_next_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cdp_manager_list_next
+    ADD CONSTRAINT cdp_manager_list_next_block_number_block_hash_cdpi_next_key UNIQUE (block_number, block_hash, cdpi, next);
+
+
+--
+-- Name: cdp_manager_list_next cdp_manager_list_next_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cdp_manager_list_next
+    ADD CONSTRAINT cdp_manager_list_next_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: cdp_manager_list_prev cdp_manager_list_prev_block_number_block_hash_cdpi_prev_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cdp_manager_list_prev
+    ADD CONSTRAINT cdp_manager_list_prev_block_number_block_hash_cdpi_prev_key UNIQUE (block_number, block_hash, cdpi, prev);
+
+
+--
+-- Name: cdp_manager_list_prev cdp_manager_list_prev_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cdp_manager_list_prev
+    ADD CONSTRAINT cdp_manager_list_prev_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: cdp_manager_owns cdp_manager_owns_block_number_block_hash_cdpi_owner_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cdp_manager_owns
+    ADD CONSTRAINT cdp_manager_owns_block_number_block_hash_cdpi_owner_key UNIQUE (block_number, block_hash, cdpi, owner);
+
+
+--
+-- Name: cdp_manager_owns cdp_manager_owns_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cdp_manager_owns
+    ADD CONSTRAINT cdp_manager_owns_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: cdp_manager_urns cdp_manager_urns_block_number_block_hash_cdpi_urn_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cdp_manager_urns
+    ADD CONSTRAINT cdp_manager_urns_block_number_block_hash_cdpi_urn_key UNIQUE (block_number, block_hash, cdpi, urn);
+
+
+--
+-- Name: cdp_manager_urns cdp_manager_urns_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cdp_manager_urns
+    ADD CONSTRAINT cdp_manager_urns_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: cdp_manager_vat cdp_manager_vat_block_number_block_hash_vat_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cdp_manager_vat
+    ADD CONSTRAINT cdp_manager_vat_block_number_block_hash_vat_key UNIQUE (block_number, block_hash, vat);
+
+
+--
+-- Name: cdp_manager_vat cdp_manager_vat_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cdp_manager_vat
+    ADD CONSTRAINT cdp_manager_vat_pkey PRIMARY KEY (id);
 
 
 --
@@ -11117,6 +11675,14 @@ ALTER TABLE ONLY maker.cat_ilk_flip
 
 ALTER TABLE ONLY maker.cat_ilk_lump
     ADD CONSTRAINT cat_ilk_lump_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id) ON DELETE CASCADE;
+
+
+--
+-- Name: cdp_manager_ilks cdp_manager_ilks_ilk_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cdp_manager_ilks
+    ADD CONSTRAINT cdp_manager_ilks_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id) ON DELETE CASCADE;
 
 
 --

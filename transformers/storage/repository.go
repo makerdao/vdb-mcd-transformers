@@ -18,6 +18,8 @@ package storage
 
 import (
 	"errors"
+	"strconv"
+
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 )
 
@@ -36,6 +38,8 @@ type IMakerStorageRepository interface {
 	GetVatSinKeys() ([]string, error)
 	GetVowSinKeys() ([]string, error)
 	GetUrns() ([]Urn, error)
+	GetCdpis() ([]string, error)
+	GetOwners() ([]string, error)
 	GetFlipBidIds(contractAddress string) ([]string, error)
 	GetFlopBidIds(contractAddress string) ([]string, error)
 	SetDB(db *postgres.DB)
@@ -156,6 +160,29 @@ func (repository *MakerStorageRepository) GetUrns() ([]Urn, error) {
 	return urns, err
 }
 
+func (repository *MakerStorageRepository) GetCdpis() ([]string, error) {
+	nullValue := 0
+	var maxCdpi int
+	readErr := repository.db.Get(&maxCdpi, `
+		SELECT COALESCE(MAX(cdpi), $1)
+		FROM maker.cdp_manager_cdpi`, nullValue)
+	if readErr != nil {
+		return nil, readErr
+	}
+	if maxCdpi == nullValue {
+		return []string{}, nil
+	}
+	return rangeIntsAsStrings(1, maxCdpi), readErr
+}
+
+func (repository *MakerStorageRepository) GetOwners() ([]string, error) {
+	var owners []string
+	err := repository.db.Select(&owners, `
+		SELECT DISTINCT owner
+		FROM maker.cdp_manager_owns`)
+	return owners, err
+}
+
 func (repository *MakerStorageRepository) GetFlipBidIds(contractAddress string) ([]string, error) {
 	var bidIds []string
 	err := repository.db.Select(&bidIds, `
@@ -204,4 +231,12 @@ func (repository *MakerStorageRepository) GetFlopBidIds(contractAddress string) 
 
 func (repository *MakerStorageRepository) SetDB(db *postgres.DB) {
 	repository.db = db
+}
+
+func rangeIntsAsStrings(start, end int) []string {
+	var strSlice []string
+	for i := start; i <= end; i++ {
+		strSlice = append(strSlice, strconv.Itoa(i))
+	}
+	return strSlice
 }

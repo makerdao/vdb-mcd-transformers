@@ -24,6 +24,8 @@ const (
 	Guy       utils.Key = "guy"
 	Flip      utils.Key = "flip"
 	Timestamp utils.Key = "timestamp"
+	Cdpi      utils.Key = "cdpi"
+	Owner     utils.Key = "owner"
 )
 
 type ForeignKeyField string
