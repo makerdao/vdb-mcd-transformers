@@ -399,7 +399,7 @@ func GetFlapStorageValues(seed int, bidId int) map[string]interface{} {
 func GetFlipStorageValues(seed int, ilk string, bidId int) map[string]interface{} {
 	valuesMap := GetFlapStorageValues(seed, bidId)
 	valuesMap[storage.Ilk] = ilk
-	valuesMap[storage.BidUsr] = "address2" + strconv.Itoa(seed)
+	valuesMap[storage.BidUsr] = "address3" + strconv.Itoa(seed)
 	valuesMap[storage.BidTab] = strconv.Itoa(5 + seed)
 	return valuesMap
 }
@@ -494,7 +494,7 @@ type FlipBid struct {
 	Tab   string
 }
 
-func SetUpFlipBidContext(setupData FlipBidCreationInput) (ilkId, urnId int, err error) {
+func SetUpFlipBidContext(setupData FlipBidContextInput) (ilkId, urnId int, err error) {
 	ilkId, ilkErr := shared.GetOrCreateIlk(setupData.IlkHex, setupData.Db)
 	if ilkErr != nil {
 		return 0, 0, ilkErr
@@ -505,7 +505,7 @@ func SetUpFlipBidContext(setupData FlipBidCreationInput) (ilkId, urnId int, err 
 		return 0, 0, urnErr
 	}
 
-	flipKickErr := CreateFlipKick(setupData.ContractAddress, setupData.BidId, setupData.FlipKickHeaderId, setupData.FlipKickRepo)
+	flipKickErr := CreateFlipKick(setupData.ContractAddress, setupData.BidId, setupData.FlipKickHeaderId, setupData.UrnGuy, setupData.FlipKickRepo)
 	if flipKickErr != nil {
 		return 0, 0, flipKickErr
 	}
@@ -528,10 +528,11 @@ func CreateDeal(input DealCreationInput) (err error) {
 	return input.DealRepo.Create(input.DealHeaderId, deals)
 }
 
-func CreateFlipKick(contractAddress string, bidId int, headerId int64, repo flip_kick.FlipKickRepository) error {
+func CreateFlipKick(contractAddress string, bidId int, headerId int64, usr string, repo flip_kick.FlipKickRepository) error {
 	flipKickModel := test_data.FlipKickModel
 	flipKickModel.ContractAddress = contractAddress
 	flipKickModel.BidId = strconv.Itoa(bidId)
+	flipKickModel.Usr = usr
 	return repo.Create(headerId, []interface{}{flipKickModel})
 }
 
@@ -608,7 +609,7 @@ type DealCreationInput struct {
 	DealHeaderId    int64
 }
 
-type FlipBidCreationInput struct {
+type FlipBidContextInput struct {
 	DealCreationInput
 	Dealt            bool
 	IlkHex           string

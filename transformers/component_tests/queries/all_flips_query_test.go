@@ -70,7 +70,7 @@ var _ = Describe("All flips view", func() {
 		test_helpers.CreateFlip(db, blockTwoHeader, flipStorageValuesTwo,
 			test_helpers.GetFlipMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
 
-		ilkId, urnId, setupErr := test_helpers.SetUpFlipBidContext(test_helpers.FlipBidCreationInput{
+		ilkId, urnId, setupErr := test_helpers.SetUpFlipBidContext(test_helpers.FlipBidContextInput{
 			DealCreationInput: test_helpers.DealCreationInput{
 				Db:              db,
 				BidId:           fakeBidId,
@@ -98,7 +98,7 @@ var _ = Describe("All flips view", func() {
 		Expect(queryErr1).NotTo(HaveOccurred())
 		Expect(expectedBid1).To(Equal(actualBid1))
 
-		flipKickErr := test_helpers.CreateFlipKick(contractAddress, fakeBidId2, headerTwoId, flipKickRepo)
+		flipKickErr := test_helpers.CreateFlipKick(contractAddress, fakeBidId2, headerTwoId, test_data.FlipKickModel.Usr, flipKickRepo)
 		Expect(flipKickErr).NotTo(HaveOccurred())
 
 		expectedBid2 := test_helpers.FlipBidFromValues(strconv.Itoa(fakeBidId2), strconv.Itoa(ilkId),
@@ -128,7 +128,7 @@ var _ = Describe("All flips view", func() {
 		test_helpers.CreateFlip(
 			db, header, flipStorageValues, test_helpers.GetFlipMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
 
-		_, _, setupErr1 := test_helpers.SetUpFlipBidContext(test_helpers.FlipBidCreationInput{
+		_, _, setupErr1 := test_helpers.SetUpFlipBidContext(test_helpers.FlipBidContextInput{
 			DealCreationInput: test_helpers.DealCreationInput{
 				Db:              db,
 				BidId:           fakeBidId,
@@ -150,7 +150,7 @@ var _ = Describe("All flips view", func() {
 		test_helpers.CreateFlip(db, header, irrelevantFlipValues,
 			test_helpers.GetFlipMetadatas(strconv.Itoa(irrelevantBidId)), irrelevantAddress)
 
-		_, _, setupErr2 := test_helpers.SetUpFlipBidContext(test_helpers.FlipBidCreationInput{
+		_, _, setupErr2 := test_helpers.SetUpFlipBidContext(test_helpers.FlipBidContextInput{
 			DealCreationInput: test_helpers.DealCreationInput{
 				Db:              db,
 				BidId:           irrelevantBidId,
