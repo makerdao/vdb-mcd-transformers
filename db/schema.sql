@@ -51,6 +51,7 @@ COMMENT ON EXTENSION citext IS 'data type for case-insensitive character strings
 CREATE TYPE api.bite_event AS (
 	ilk_identifier text,
 	urn_identifier text,
+	bid_id numeric,
 	ink numeric,
 	art numeric,
 	tab numeric,
@@ -185,6 +186,27 @@ CREATE TYPE api.flip_state AS (
 	created timestamp without time zone,
 	updated timestamp without time zone
 );
+
+
+--
+-- Name: COLUMN flip_state.block_height; Type: COMMENT; Schema: api; Owner: -
+--
+
+COMMENT ON COLUMN api.flip_state.block_height IS '@omit';
+
+
+--
+-- Name: COLUMN flip_state.ilk_id; Type: COMMENT; Schema: api; Owner: -
+--
+
+COMMENT ON COLUMN api.flip_state.ilk_id IS '@omit';
+
+
+--
+-- Name: COLUMN flip_state.urn_id; Type: COMMENT; Schema: api; Owner: -
+--
+
+COMMENT ON COLUMN api.flip_state.urn_id IS '@omit';
 
 
 --
@@ -457,7 +479,7 @@ CREATE FUNCTION api.all_bites(ilk_identifier text) RETURNS SETOF api.bite_event
     AS $$
 WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier)
 
-SELECT ilk_identifier, identifier AS urn_identifier, ink, art, tab, block_number, tx_idx
+SELECT ilk_identifier, identifier AS urn_identifier, bite_identifier AS bid_id, ink, art, tab, block_number, tx_idx
 FROM maker.bite
          LEFT JOIN maker.urns ON bite.urn_id = urns.id
          LEFT JOIN headers ON bite.header_id = headers.id
@@ -1116,6 +1138,18 @@ FROM inks
          LEFT JOIN created ON created.urn_id = urns.urn_id
          LEFT JOIN updated ON updated.urn_id = urns.urn_id
          LEFT JOIN maker.ilks ON ilks.id = urns.ilk_id
+$$;
+
+
+--
+-- Name: bite_event_bid(api.bite_event); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.bite_event_bid(event api.bite_event) RETURNS SETOF api.flip_state
+    LANGUAGE sql STABLE
+    AS $$
+SELECT *
+FROM api.get_flip(event.bid_id, event.ilk_identifier, event.block_height)
 $$;
 
 
@@ -2336,7 +2370,7 @@ WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier),
              WHERE ilk_id = (SELECT id FROM ilk)
                AND identifier = urn_bites.urn_identifier)
 
-SELECT ilk_identifier, urn_bites.urn_identifier, ink, art, tab, block_number, tx_idx
+SELECT ilk_identifier, urn_bites.urn_identifier, bite_identifier AS bid_id, ink, art, tab, block_number, tx_idx
 FROM maker.bite
          LEFT JOIN headers ON bite.header_id = headers.id
 WHERE bite.urn_id = (SELECT id FROM urn)

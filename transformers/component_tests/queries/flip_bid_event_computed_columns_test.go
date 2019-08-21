@@ -34,11 +34,11 @@ import (
 
 var _ = Describe("Flip bid event computed columns", func() {
 	var (
-		db              *postgres.DB
 		blockNumber     = rand.Int()
-		header          core.Header
+		bidId           = rand.Int()
 		contractAddress = "ContractAddress"
-		bidId           int
+		db              *postgres.DB
+		header          core.Header
 		flipKickRepo    flip_kick.FlipKickRepository
 		flipKickEvent   flip_kick.FlipKickModel
 		headerId        int64
@@ -76,7 +76,7 @@ var _ = Describe("Flip bid event computed columns", func() {
 			flipMetadatas := test_helpers.GetFlipMetadatas(strconv.Itoa(bidId))
 			test_helpers.CreateFlip(db, header, flipStorageValues, flipMetadatas, contractAddress)
 
-			ilkId, urnId, err := test_helpers.SetUpFlipBidContext(test_helpers.FlipBidCreationInput{
+			ilkId, urnId, err := test_helpers.SetUpFlipBidContext(test_helpers.FlipBidContextInput{
 				DealCreationInput: test_helpers.DealCreationInput{
 					Db:              db,
 					BidId:           bidId,
@@ -110,7 +110,7 @@ var _ = Describe("Flip bid event computed columns", func() {
 			irrelevantFlipMetadatas := test_helpers.GetFlipMetadatas(strconv.Itoa(bidId))
 			test_helpers.CreateFlip(db, header, irrelevantFlipStorageValues, irrelevantFlipMetadatas, irrelevantContractAddress)
 
-			_, _, err := test_helpers.SetUpFlipBidContext(test_helpers.FlipBidCreationInput{
+			_, _, err := test_helpers.SetUpFlipBidContext(test_helpers.FlipBidContextInput{
 				DealCreationInput: test_helpers.DealCreationInput{
 					Db:              db,
 					BidId:           bidId,
@@ -128,7 +128,7 @@ var _ = Describe("Flip bid event computed columns", func() {
 			flipMetadatas := test_helpers.GetFlipMetadatas(strconv.Itoa(bidId))
 			test_helpers.CreateFlip(db, header, flipStorageValues, flipMetadatas, contractAddress)
 
-			ilkId, urnId, err := test_helpers.SetUpFlipBidContext(test_helpers.FlipBidCreationInput{
+			ilkId, urnId, err := test_helpers.SetUpFlipBidContext(test_helpers.FlipBidContextInput{
 				DealCreationInput: test_helpers.DealCreationInput{
 					Db:              db,
 					BidId:           bidId,
