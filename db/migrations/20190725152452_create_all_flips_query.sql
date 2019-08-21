@@ -25,7 +25,8 @@ BEGIN
     );
 END
 $BODY$
-    LANGUAGE plpgsql;
+    LANGUAGE plpgsql
+    STABLE;;
 -- +goose StatementEnd
 
 -- +goose Down

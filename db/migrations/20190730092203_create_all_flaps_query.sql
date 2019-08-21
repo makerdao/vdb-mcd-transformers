@@ -30,7 +30,8 @@ BEGIN
     );
 END
 $BODY$
-    LANGUAGE plpgsql;
+    LANGUAGE plpgsql
+    STABLE;
 -- +goose StatementEnd
 -- +goose Down
 DROP FUNCTION api.all_flaps();
