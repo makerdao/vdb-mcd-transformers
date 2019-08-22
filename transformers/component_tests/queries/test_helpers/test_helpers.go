@@ -551,6 +551,21 @@ func CreateTend(input TendCreationInput) (err error) {
 	return input.TendRepo.Create(input.TendHeaderId, []shared.InsertionModel{tendModel})
 }
 
+func CreateDent(input DentCreationInput) (err error) {
+	dentModel := test_data.DentModel
+	dentModel.ColumnValues["contract_address"] = input.ContractAddress
+	dentModel.ColumnValues["bid_id"] = strconv.Itoa(input.BidId)
+	dentModel.ColumnValues["lot"] = strconv.Itoa(input.Lot)
+	dentModel.ColumnValues["bid"] = strconv.Itoa(input.BidAmount)
+	if input.LogIndex != 0 {
+		dentModel.ColumnValues["log_idx"] = input.LogIndex
+	}
+	if input.TxIndex != 0 {
+		dentModel.ColumnValues["tx_idx"] = input.TxIndex
+	}
+	return input.DentRepo.Create(input.DentHeaderId, []shared.InsertionModel{dentModel})
+}
+
 func CreateYank(input YankCreationInput) (err error) {
 	yankModel := test_data.YankModel
 	yankModel.ColumnValues["contract_address"] = input.ContractAddress
@@ -563,24 +578,6 @@ func CreateFlipTick(input FlipTickCreationInput) (err error) {
 	flipTickModel.ColumnValues["contract_address"] = input.ContractAddress
 	flipTickModel.ColumnValues["bid_id"] = strconv.Itoa(input.BidId)
 	return input.FlipTickRepo.Create(input.FlipTickHeaderId, []shared.InsertionModel{flipTickModel})
-}
-
-func CreateDent(input DentCreationInput) (err error) {
-	dentModel := test_data.DentModel
-	dentModel.ColumnValues["contract_address"] = input.ContractAddress
-	dentModel.ColumnValues["bid_id"] = strconv.Itoa(input.BidId)
-	dentModel.ColumnValues["bid"] = strconv.Itoa(input.BidAmount)
-	dentModel.ColumnValues["lot"] = strconv.Itoa(input.Lot)
-	return input.DentRepo.Create(input.DentHeaderId, []shared.InsertionModel{dentModel})
-}
-
-type DentCreationInput struct {
-	ContractAddress string
-	BidId           int
-	Lot             int
-	BidAmount       int
-	DentRepo        dent.DentRepository
-	DentHeaderId    int64
 }
 
 type YankCreationInput struct {
@@ -599,6 +596,17 @@ type TendCreationInput struct {
 	LogIndex        int
 	TendRepo        tend.TendRepository
 	TendHeaderId    int64
+}
+
+type DentCreationInput struct {
+	ContractAddress string
+	BidId           int
+	Lot             int
+	BidAmount       int
+	TxIndex         int
+	LogIndex        int
+	DentRepo        dent.DentRepository
+	DentHeaderId    int64
 }
 
 type DealCreationInput struct {
