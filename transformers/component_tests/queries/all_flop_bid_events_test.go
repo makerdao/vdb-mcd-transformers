@@ -3,7 +3,6 @@ package queries
 import (
 	"math/rand"
 	"strconv"
-	"time"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -46,7 +45,6 @@ var _ = Describe("Flop bid events query", func() {
 		dealRepo.SetDB(db)
 		yankRepo = yank.YankRepository{}
 		yankRepo.SetDB(db)
-		rand.Seed(time.Now().UnixNano())
 	})
 
 	AfterEach(func() {
@@ -107,7 +105,7 @@ var _ = Describe("Flop bid events query", func() {
 			))
 		})
 
-		It("returns bid events from multiple floppers", func() {
+		It("returns bid events from floppers that have different bid ids", func() {
 			bidIdOne := rand.Int()
 			lotOne := rand.Int()
 			bidAmountOne := rand.Int()
@@ -181,10 +179,10 @@ var _ = Describe("Flop bid events query", func() {
 			flapKickErr := flapKickRepo.Create(headerId, []interface{}{flapKickEvent})
 			Expect(flapKickErr).NotTo(HaveOccurred())
 
-			var actualBidEvents []test_helpers.BidEvent
-			queryErr := db.Select(&actualBidEvents, `SELECT bid_id, bid_amount, lot, act FROM api.all_flop_bid_events()`)
+			var flopBidCount int
+			queryErr := db.Get(&flopBidCount, `SELECT COUNT(*) FROM api.all_flop_bid_events()`)
 			Expect(queryErr).NotTo(HaveOccurred())
-			Expect(len(actualBidEvents)).To(Equal(0))
+			Expect(flopBidCount).To(BeZero())
 		})
 	})
 
