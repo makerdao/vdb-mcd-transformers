@@ -39,9 +39,8 @@ var _ = Describe("Get managed CDP by ID query", func() {
 		fakeIlk := test_helpers.FakeIlk.Hex
 		fakeUrn := test_data.FakeUrn
 		headerBlock := rand.Int()
-		timestamp := int(rand.Int31())
 
-		header := fakes.GetFakeHeaderWithTimestamp(int64(timestamp), int64(headerBlock))
+		header := fakes.GetFakeHeader(int64(headerBlock))
 		_, headerErr := headerRepo.CreateOrUpdateHeader(header)
 		Expect(headerErr).NotTo(HaveOccurred())
 
@@ -56,7 +55,7 @@ var _ = Describe("Get managed CDP by ID query", func() {
 			test_helpers.GetCdpManagerMetadatas(strconv.Itoa(irrelevantCdpi)))
 		Expect(cdpErr2).NotTo(HaveOccurred())
 
-		expectedCdp := test_helpers.ManagedCdpFromValues(strconv.Itoa(fakeCdpi),
+		expectedCdp := test_helpers.ManagedCdpFromValues(
 			test_helpers.FakeIlk.Identifier, header.Timestamp, cdpManagerStorageValues)
 
 		var actualCdp test_helpers.ManagedCdp
@@ -92,7 +91,7 @@ var _ = Describe("Get managed CDP by ID query", func() {
 		Expect(ownsErr).NotTo(HaveOccurred())
 
 		cdpManagerStorageValues[cdp_manager.CdpManagerOwns] = newOwner
-		expectedCdp := test_helpers.ManagedCdpFromValues(strconv.Itoa(fakeCdpi),
+		expectedCdp := test_helpers.ManagedCdpFromValues(
 			test_helpers.FakeIlk.Identifier, headerOne.Timestamp, cdpManagerStorageValues)
 
 		var actualCdp test_helpers.ManagedCdp
@@ -127,7 +126,7 @@ var _ = Describe("Get managed CDP by ID query", func() {
 			test_helpers.GetCdpManagerMetadatas(strconv.Itoa(fakeCdpi)))
 		Expect(cdpErr).NotTo(HaveOccurred())
 
-		expectedCdp := test_helpers.ManagedCdpFromValues(strconv.Itoa(fakeCdpi),
+		expectedCdp := test_helpers.ManagedCdpFromValues(
 			test_helpers.FakeIlk.Identifier, headerOne.Timestamp, cdpManagerStorageValues)
 
 		var actualCdp test_helpers.ManagedCdp

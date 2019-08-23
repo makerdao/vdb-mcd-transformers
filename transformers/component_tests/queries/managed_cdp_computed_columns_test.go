@@ -45,14 +45,13 @@ var _ = Describe("Managed CDP computed columns", func() {
 
 	BeforeEach(func() {
 		blockNumber = rand.Int()
-		timestamp := int(rand.Int31())
 		fakeCdpi = rand.Int()
 
 		db = test_config.NewTestDB(test_config.NewTestNode())
 		test_config.CleanTestDB(db)
 
 		headerRepository = repositories.NewHeaderRepository(db)
-		fakeHeader = fakes.GetFakeHeaderWithTimestamp(int64(timestamp), int64(blockNumber))
+		fakeHeader = fakes.GetFakeHeader(int64(blockNumber))
 		_, headerOneErr := headerRepository.CreateOrUpdateHeader(fakeHeader)
 		Expect(headerOneErr).NotTo(HaveOccurred())
 

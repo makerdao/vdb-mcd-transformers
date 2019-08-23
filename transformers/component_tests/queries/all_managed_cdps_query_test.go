@@ -12,6 +12,7 @@ import (
 
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/component_tests/queries/test_helpers"
+	"github.com/vulcanize/mcd_transformers/transformers/storage/cdp_manager"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
@@ -36,19 +37,19 @@ var _ = Describe("All managed CDPS", func() {
 		fakeCdpiOne := rand.Int()
 		fakeCdpiTwo := fakeCdpiOne + 1
 		blockNumber := rand.Int()
-		timestamp := int(rand.Int31())
 
-		header := fakes.GetFakeHeaderWithTimestamp(int64(timestamp), int64(blockNumber))
+		header := fakes.GetFakeHeader(int64(blockNumber))
 		_, headerErr := headerRepo.CreateOrUpdateHeader(header)
 		Expect(headerErr).NotTo(HaveOccurred())
+
 		cdpStorageValuesOne := test_helpers.GetCdpManagerStorageValues(1, test_helpers.FakeIlk.Hex,
 			test_data.FakeUrn, fakeCdpiOne)
 		cdpErr1 := test_helpers.CreateManagedCdp(db, header, cdpStorageValuesOne,
 			test_helpers.GetCdpManagerMetadatas(strconv.Itoa(fakeCdpiOne)))
 		Expect(cdpErr1).NotTo(HaveOccurred())
 
-		cdpStorageValuesTwo := test_helpers.GetCdpManagerStorageValues(2, test_helpers.AnotherFakeIlk.Hex,
-			test_data.FakeUrn, fakeCdpiTwo)
+		cdpStorageValuesTwo := test_helpers.GetCdpManagerStorageValues(2, test_helpers.FakeIlk.Hex,
+			fakes.FakeAddress.Hex(), fakeCdpiTwo)
 		cdpErr2 := test_helpers.CreateManagedCdp(db, header, cdpStorageValuesTwo,
 			test_helpers.GetCdpManagerMetadatas(strconv.Itoa(fakeCdpiTwo)))
 		Expect(cdpErr2).NotTo(HaveOccurred())
@@ -58,10 +59,10 @@ var _ = Describe("All managed CDPS", func() {
 			`SELECT usr, id, urn_identifier, ilk_identifier, created FROM api.all_managed_cdps()`)
 		Expect(queryErr).NotTo(HaveOccurred())
 
-		expectedCdpOne := test_helpers.ManagedCdpFromValues(strconv.Itoa(fakeCdpiOne), test_helpers.FakeIlk.Identifier,
+		expectedCdpOne := test_helpers.ManagedCdpFromValues(test_helpers.FakeIlk.Identifier,
 			header.Timestamp, cdpStorageValuesOne)
-		expectedCdpTwo := test_helpers.ManagedCdpFromValues(strconv.Itoa(fakeCdpiTwo),
-			test_helpers.AnotherFakeIlk.Identifier, header.Timestamp, cdpStorageValuesTwo)
+		expectedCdpTwo := test_helpers.ManagedCdpFromValues(test_helpers.FakeIlk.Identifier,
+			header.Timestamp, cdpStorageValuesTwo)
 		Expect(actualCdps).To(Equal([]test_helpers.ManagedCdp{expectedCdpOne, expectedCdpTwo}))
 	})
 
@@ -96,10 +97,45 @@ var _ = Describe("All managed CDPS", func() {
 			`SELECT usr, id, urn_identifier, ilk_identifier, created FROM api.all_managed_cdps()`)
 		Expect(queryErr).NotTo(HaveOccurred())
 
-		expectedCdpOne := test_helpers.ManagedCdpFromValues(strconv.Itoa(fakeCdpiOne), test_helpers.FakeIlk.Identifier,
+		expectedCdpOne := test_helpers.ManagedCdpFromValues(test_helpers.FakeIlk.Identifier,
 			blockOneHeader.Timestamp, cdpStorageValuesOne)
-		expectedCdpTwo := test_helpers.ManagedCdpFromValues(strconv.Itoa(fakeCdpiTwo),
-			test_helpers.AnotherFakeIlk.Identifier, blockTwoHeader.Timestamp, cdpStorageValuesTwo)
+		expectedCdpTwo := test_helpers.ManagedCdpFromValues(test_helpers.AnotherFakeIlk.Identifier,
+			blockTwoHeader.Timestamp, cdpStorageValuesTwo)
 		Expect(actualCdps).To(Equal([]test_helpers.ManagedCdp{expectedCdpOne, expectedCdpTwo}))
+	})
+
+	It("optionally accepts a usr argument", func() {
+		fakeCdpiOne := rand.Int()
+		fakeCdpiTwo := fakeCdpiOne + 1
+		blockNumber := rand.Int()
+
+		header := fakes.GetFakeHeader(int64(blockNumber))
+		_, headerErr := headerRepo.CreateOrUpdateHeader(header)
+		Expect(headerErr).NotTo(HaveOccurred())
+
+		ownerOne := "fakeUsr1"
+		cdpStorageValuesOne := test_helpers.GetCdpManagerStorageValues(1, test_helpers.FakeIlk.Hex,
+			test_data.FakeUrn, fakeCdpiOne)
+		cdpStorageValuesOne[cdp_manager.CdpManagerOwns] = ownerOne
+		cdpErr1 := test_helpers.CreateManagedCdp(db, header, cdpStorageValuesOne,
+			test_helpers.GetCdpManagerMetadatas(strconv.Itoa(fakeCdpiOne)))
+		Expect(cdpErr1).NotTo(HaveOccurred())
+
+		ownerTwo := "fakeUsr2"
+		cdpStorageValuesTwo := test_helpers.GetCdpManagerStorageValues(1, test_helpers.FakeIlk.Hex,
+			test_data.FakeUrn, fakeCdpiTwo)
+		cdpStorageValuesTwo[cdp_manager.CdpManagerOwns] = ownerTwo
+		cdpErr2 := test_helpers.CreateManagedCdp(db, header, cdpStorageValuesTwo,
+			test_helpers.GetCdpManagerMetadatas(strconv.Itoa(fakeCdpiTwo)))
+		Expect(cdpErr2).NotTo(HaveOccurred())
+
+		var actualCdps []test_helpers.ManagedCdp
+		queryErr := db.Select(&actualCdps,
+			`SELECT usr, id, urn_identifier, ilk_identifier, created FROM api.all_managed_cdps($1)`, ownerOne)
+		Expect(queryErr).NotTo(HaveOccurred())
+
+		expectedCdp := test_helpers.ManagedCdpFromValues(test_helpers.FakeIlk.Identifier, header.Timestamp,
+			cdpStorageValuesOne)
+		Expect(actualCdps).To(Equal([]test_helpers.ManagedCdp{expectedCdp}))
 	})
 })

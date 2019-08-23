@@ -466,13 +466,13 @@ func CreateManagedCdp(db *postgres.DB, header core.Header, valuesMap map[string]
 	return nil
 }
 
-func ManagedCdpFromValues(cdpi, ilkIdentifier, created string, cdpValues map[string]interface{}) ManagedCdp {
+func ManagedCdpFromValues(ilkIdentifier, created string, cdpValues map[string]interface{}) ManagedCdp {
 	parsedCreated, _ := strconv.ParseInt(created, 10, 64)
 	createdTimestamp := time.Unix(parsedCreated, 0).UTC().Format(time.RFC3339)
 
 	return ManagedCdp{
 		Usr:           cdpValues[cdp_manager.CdpManagerOwns].(string),
-		Id:            cdpi,
+		Id:            cdpValues[cdp_manager.CdpManagerCdpi].(string),
 		UrnIdentifier: cdpValues[cdp_manager.CdpManagerUrns].(string),
 		IlkIdentifier: ilkIdentifier,
 		Created:       sql.NullString{String: createdTimestamp, Valid: true},

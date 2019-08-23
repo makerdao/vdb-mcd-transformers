@@ -103,6 +103,7 @@ CREATE FUNCTION api.get_flip(bid_id NUMERIC, ilk TEXT, block_height BIGINT DEFAU
 AS
 $$
 WITH ilk_ids AS (SELECT id FROM maker.ilks WHERE ilks.identifier = get_flip.ilk),
+     -- there should only ever be 1 address for a given ilk, which is why there's a LIMIT with no ORDER BY
      address AS (SELECT contract_address
                  FROM maker.flip_ilk
                  WHERE flip_ilk.ilk_id = (SELECT id FROM ilk_ids)
