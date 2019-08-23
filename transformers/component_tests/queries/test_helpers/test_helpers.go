@@ -752,6 +752,7 @@ type FrobEvent struct {
 	UrnIdentifier string `db:"urn_identifier"`
 	Dink          string
 	Dart          string
+	Rate          string `db:"ilk_rate"`
 }
 
 type BiteEvent struct {
