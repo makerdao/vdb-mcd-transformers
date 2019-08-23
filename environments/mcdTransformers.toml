@@ -6,7 +6,7 @@
     port     = 5432
 
 [client]
-    ipcPath = "https://kovan.infura.io/v3/e791b3281d304197b38d85a741efebb6"
+    ipcPath = ""
 
 [filesystem]
     storageDiffsPath = "INSERT-PATH-TO-STORAGE-DIFFS"
