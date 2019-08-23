@@ -72,6 +72,8 @@ CREATE INDEX cdp_manager_owns_block_number_index
     ON maker.cdp_manager_owns (block_number);
 CREATE INDEX cdp_manager_owns_cdpi_index
     ON maker.cdp_manager_owns (cdpi);
+CREATE INDEX cdp_manager_owns_owner_index
+    ON maker.cdp_manager_owns (owner);
 
 CREATE TABLE maker.cdp_manager_ilks
 (
@@ -124,6 +126,7 @@ DROP INDEX maker.cdp_manager_ilks_cdpi_index;
 DROP INDEX maker.cdp_manager_ilks_ilk_id_index;
 DROP INDEX maker.cdp_manager_owns_cdpi_index;
 DROP INDEX maker.cdp_manager_owns_block_number_index;
+DROP INDEX maker.cdp_manager_owns_owner_index;
 DROP INDEX maker.cdp_manager_urns_urn_index;
 DROP INDEX maker.cdp_manager_urns_cdpi_index;
 DROP INDEX maker.cdp_manager_cdpi_block_number_index;

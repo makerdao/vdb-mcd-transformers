@@ -1,14 +1,15 @@
 -- +goose Up
 -- SQL in this section is executed when the migration is applied.
 
-CREATE OR REPLACE FUNCTION api.all_managed_cdps() RETURNS SETOF api.managed_cdp AS
+CREATE OR REPLACE FUNCTION api.all_managed_cdps(usr TEXT DEFAULT NULL) RETURNS SETOF api.managed_cdp AS
 -- +goose StatementBegin
 $BODY$
 BEGIN
     RETURN QUERY (
         WITH cdpis AS (
             SELECT DISTINCT cdpi
-            FROM maker.cdp_manager_cdpi
+            FROM maker.cdp_manager_owns
+            WHERE (all_managed_cdps.usr IS NULL OR cdp_manager_owns.owner = all_managed_cdps.usr)
             ORDER BY cdpi)
         SELECT cdp.*
         FROM cdpis,
@@ -21,4 +22,4 @@ $BODY$
 -- +goose StatementEnd
 
 -- +goose Down
-DROP FUNCTION api.all_managed_cdps();
+DROP FUNCTION api.all_managed_cdps(TEXT);

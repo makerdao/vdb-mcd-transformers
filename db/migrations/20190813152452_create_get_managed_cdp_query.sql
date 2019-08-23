@@ -26,17 +26,15 @@ WITH owners AS (
     ORDER BY cdp_manager_owns.block_number DESC
     LIMIT 1),
      ilk AS (
-         SELECT ilks.id, ilks.identifier, cdpi
+         SELECT ilks.identifier, cdp_manager_ilks.cdpi
          FROM maker.cdp_manager_ilks
                   LEFT JOIN maker.ilks ON ilks.id = cdp_manager_ilks.ilk_id
-         WHERE cdpi = get_managed_cdp.id
+         WHERE cdp_manager_ilks.cdpi = get_managed_cdp.id
          ORDER BY cdp_manager_ilks.block_number DESC
          LIMIT 1),
      urn AS (
-         SELECT urns.identifier, cdp_manager_urns.cdpi
-         FROM maker.urns
-                  INNER JOIN ilk ON ilk.id = urns.ilk_id
-                  INNER JOIN maker.cdp_manager_urns ON cdp_manager_urns.urn = urns.identifier
+         SELECT cdp_manager_urns.urn AS identifier, cdp_manager_urns.cdpi
+         FROM maker.cdp_manager_urns
          WHERE cdp_manager_urns.cdpi = get_managed_cdp.id
          ORDER BY cdp_manager_urns.block_number DESC
          LIMIT 1),
