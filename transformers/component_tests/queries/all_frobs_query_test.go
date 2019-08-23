@@ -34,10 +34,12 @@ import (
 
 var _ = Describe("Frobs query", func() {
 	var (
-		db         *postgres.DB
-		frobRepo   vat_frob.VatFrobRepository
-		headerRepo repositories.HeaderRepository
-		fakeUrn    = test_data.RandomString(5)
+		db                *postgres.DB
+		frobRepo          vat_frob.VatFrobRepository
+		headerRepo        repositories.HeaderRepository
+		fakeIlkHex        = test_helpers.FakeIlk.Hex
+		fakeIlkIdentifier = test_helpers.FakeIlk.Identifier
+		fakeUrn           = test_data.RandomString(40)
 	)
 
 	BeforeEach(func() {
@@ -54,66 +56,115 @@ var _ = Describe("Frobs query", func() {
 	})
 
 	Describe("urn_frobs", func() {
-		It("returns frobs for relevant ilk/urn", func() {
-			headerOne := fakes.GetFakeHeaderWithTimestamp(int64(111111111), 1)
-			headerOneId, err := headerRepo.CreateOrUpdateHeader(headerOne)
-			Expect(err).NotTo(HaveOccurred())
-
-			frobBlockOne := test_data.CopyModel(test_data.VatFrobModelWithPositiveDart)
-			frobBlockOne.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
-			frobBlockOne.ForeignKeyValues[constants.UrnFK] = fakeUrn
-			frobBlockOne.ColumnValues["dink"] = strconv.Itoa(rand.Int())
-			frobBlockOne.ColumnValues["dart"] = strconv.Itoa(rand.Int())
-
-			ilkID, ilkErr := shared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
-			Expect(ilkErr).NotTo(HaveOccurred())
-			ilkRateBlockOne := rand.Int()
-			_, insertIlkRateErr := db.Exec(`INSERT INTO maker.vat_ilk_rate (block_number, ilk_id, rate) VALUES ($1, $2, $3)`, headerOne.BlockNumber, ilkID, ilkRateBlockOne)
-			Expect(insertIlkRateErr).NotTo(HaveOccurred())
-
-			irrelevantFrob := test_data.CopyModel(test_data.VatFrobModelWithPositiveDart)
-			irrelevantFrob.ForeignKeyValues[constants.IlkFK] = test_helpers.AnotherFakeIlk.Hex
-			irrelevantFrob.ForeignKeyValues[constants.UrnFK] = fakeUrn
-			irrelevantFrob.ColumnValues["dink"] = strconv.Itoa(rand.Int())
-			irrelevantFrob.ColumnValues["dart"] = strconv.Itoa(rand.Int())
-			irrelevantFrob.ColumnValues["tx_idx"] = frobBlockOne.ColumnValues["tx_idx"].(uint) + 1
-
-			err = frobRepo.Create(headerOneId, []shared.InsertionModel{frobBlockOne, irrelevantFrob})
-			Expect(err).NotTo(HaveOccurred())
-
-			// New block
-			headerTwo := fakes.GetFakeHeaderWithTimestamp(int64(222222222), 2)
-			headerTwo.Hash = "anotherHash"
-			headerTwoId, err := headerRepo.CreateOrUpdateHeader(headerTwo)
-			Expect(err).NotTo(HaveOccurred())
-
-			ilkRateBlockTwo := rand.Int()
-			_, insertIlkRateTwoErr := db.Exec(`INSERT INTO maker.vat_ilk_rate (block_number, ilk_id, rate) VALUES ($1, $2, $3)`, headerTwo.BlockNumber, ilkID, ilkRateBlockTwo)
-			Expect(insertIlkRateTwoErr).NotTo(HaveOccurred())
-
-			frobBlockTwo := test_data.CopyModel(test_data.VatFrobModelWithPositiveDart)
-			frobBlockTwo.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
-			frobBlockTwo.ForeignKeyValues[constants.UrnFK] = fakeUrn
-			frobBlockTwo.ColumnValues["dink"] = strconv.Itoa(rand.Int())
-			frobBlockTwo.ColumnValues["dart"] = strconv.Itoa(rand.Int())
-
-			err = frobRepo.Create(headerTwoId, []shared.InsertionModel{frobBlockTwo})
-			Expect(err).NotTo(HaveOccurred())
+		It("returns frob for ilk/urn combination", func() {
+			headerID, blockNumber := insertHeader(rand.Int63(), headerRepo)
+			ilkRate := insertIlkRate(fakeIlkHex, blockNumber, db)
+			vatFrobEvent := getFakeVatFrobEvent(fakeIlkHex, fakeUrn)
+			insertFrobErr := frobRepo.Create(headerID, []shared.InsertionModel{vatFrobEvent})
+			Expect(insertFrobErr).NotTo(HaveOccurred())
 
 			var actualFrobs []test_helpers.FrobEvent
-			err = db.Select(&actualFrobs, `SELECT ilk_identifier, urn_identifier, dink, dart, ilk_rate FROM api.urn_frobs($1, $2)`, test_helpers.FakeIlk.Identifier, fakeUrn)
-			Expect(err).NotTo(HaveOccurred())
+			getFrobsErr := db.Select(&actualFrobs, `SELECT ilk_identifier, urn_identifier, dink, dart, ilk_rate FROM api.urn_frobs($1, $2)`, fakeIlkIdentifier, fakeUrn)
+			Expect(getFrobsErr).NotTo(HaveOccurred())
 
 			Expect(actualFrobs).To(ConsistOf(
 				test_helpers.FrobEvent{
-					IlkIdentifier: test_helpers.FakeIlk.Identifier,
+					IlkIdentifier: fakeIlkIdentifier,
+					UrnIdentifier: fakeUrn,
+					Dink:          vatFrobEvent.ColumnValues["dink"].(string),
+					Dart:          vatFrobEvent.ColumnValues["dart"].(string),
+					Rate:          strconv.Itoa(ilkRate),
+				},
+			))
+		})
+
+		It("returns matching frobs from multiple blocks", func() {
+			headerOneId, headerOneBlockNumber := insertHeader(rand.Int63(), headerRepo)
+			frobBlockOne := getFakeVatFrobEvent(fakeIlkHex, fakeUrn)
+			insertFrobErr := frobRepo.Create(headerOneId, []shared.InsertionModel{frobBlockOne})
+			Expect(insertFrobErr).NotTo(HaveOccurred())
+
+			headerTwoId, _ := insertHeader(headerOneBlockNumber+1, headerRepo)
+			frobBlockTwo := getFakeVatFrobEvent(fakeIlkHex, fakeUrn)
+			insertFrobTwoErr := frobRepo.Create(headerTwoId, []shared.InsertionModel{frobBlockTwo})
+			Expect(insertFrobTwoErr).NotTo(HaveOccurred())
+
+			ilkRate := insertIlkRate(fakeIlkHex, headerOneBlockNumber, db)
+
+			var actualFrobs []test_helpers.FrobEvent
+			getFrobsErr := db.Select(&actualFrobs, `SELECT ilk_identifier, urn_identifier, dink, dart, ilk_rate FROM api.urn_frobs($1, $2)`, fakeIlkIdentifier, fakeUrn)
+			Expect(getFrobsErr).NotTo(HaveOccurred())
+
+			Expect(actualFrobs).To(ConsistOf(
+				test_helpers.FrobEvent{
+					IlkIdentifier: fakeIlkIdentifier,
+					UrnIdentifier: fakeUrn,
+					Dink:          frobBlockOne.ColumnValues["dink"].(string),
+					Dart:          frobBlockOne.ColumnValues["dart"].(string),
+					Rate:          strconv.Itoa(ilkRate),
+				},
+				test_helpers.FrobEvent{
+					IlkIdentifier: fakeIlkIdentifier,
+					UrnIdentifier: fakeUrn,
+					Dink:          frobBlockTwo.ColumnValues["dink"].(string),
+					Dart:          frobBlockTwo.ColumnValues["dart"].(string),
+					Rate:          strconv.Itoa(ilkRate),
+				},
+			))
+		})
+
+		It("does not include frobs for a different urn", func() {
+			headerID, blockNumber := insertHeader(rand.Int63(), headerRepo)
+			vatFrobEvent := getFakeVatFrobEvent(fakeIlkHex, fakeUrn)
+			irrelevantVatFrobEvent := getFakeVatFrobEvent(fakeIlkHex, test_data.RandomString(40))
+			createFrobsErr := frobRepo.Create(headerID, []shared.InsertionModel{vatFrobEvent, irrelevantVatFrobEvent})
+			Expect(createFrobsErr).NotTo(HaveOccurred())
+
+			ilkRate := insertIlkRate(fakeIlkHex, blockNumber, db)
+
+			var actualFrobs []test_helpers.FrobEvent
+			getFrobsErr := db.Select(&actualFrobs, `SELECT ilk_identifier, urn_identifier, dink, dart, ilk_rate FROM api.urn_frobs($1, $2)`, fakeIlkIdentifier, fakeUrn)
+			Expect(getFrobsErr).NotTo(HaveOccurred())
+
+			Expect(actualFrobs).To(ConsistOf(
+				test_helpers.FrobEvent{
+					IlkIdentifier: fakeIlkIdentifier,
+					UrnIdentifier: fakeUrn,
+					Dink:          vatFrobEvent.ColumnValues["dink"].(string),
+					Dart:          vatFrobEvent.ColumnValues["dart"].(string),
+					Rate:          strconv.Itoa(ilkRate),
+				},
+			))
+		})
+
+		It("provides most recent rate for each frob across blocks", func() {
+			blockNumber := rand.Int63()
+			headerOneId, headerOneBlockNumber := insertHeader(blockNumber, headerRepo)
+			ilkRateBlockOne := insertIlkRate(fakeIlkHex, headerOneBlockNumber, db)
+			frobBlockOne := getFakeVatFrobEvent(fakeIlkHex, fakeUrn)
+			insertFrobOneErr := frobRepo.Create(headerOneId, []shared.InsertionModel{frobBlockOne})
+			Expect(insertFrobOneErr).NotTo(HaveOccurred())
+
+			headerTwoId, headerTwoBlockNumber := insertHeader(blockNumber+1, headerRepo)
+			ilkRateBlockTwo := insertIlkRate(fakeIlkHex, headerTwoBlockNumber, db)
+			frobBlockTwo := getFakeVatFrobEvent(fakeIlkHex, fakeUrn)
+			insertFrobTwoErr := frobRepo.Create(headerTwoId, []shared.InsertionModel{frobBlockTwo})
+			Expect(insertFrobTwoErr).NotTo(HaveOccurred())
+
+			var actualFrobs []test_helpers.FrobEvent
+			getFrobsErr := db.Select(&actualFrobs, `SELECT ilk_identifier, urn_identifier, dink, dart, ilk_rate FROM api.urn_frobs($1, $2)`, fakeIlkIdentifier, fakeUrn)
+			Expect(getFrobsErr).NotTo(HaveOccurred())
+
+			Expect(actualFrobs).To(ConsistOf(
+				test_helpers.FrobEvent{
+					IlkIdentifier: fakeIlkIdentifier,
 					UrnIdentifier: fakeUrn,
 					Dink:          frobBlockOne.ColumnValues["dink"].(string),
 					Dart:          frobBlockOne.ColumnValues["dart"].(string),
 					Rate:          strconv.Itoa(ilkRateBlockOne),
 				},
 				test_helpers.FrobEvent{
-					IlkIdentifier: test_helpers.FakeIlk.Identifier,
+					IlkIdentifier: fakeIlkIdentifier,
 					UrnIdentifier: fakeUrn,
 					Dink:          frobBlockTwo.ColumnValues["dink"].(string),
 					Dart:          frobBlockTwo.ColumnValues["dart"].(string),
@@ -123,41 +174,25 @@ var _ = Describe("Frobs query", func() {
 		})
 
 		It("gets the most recent ilk rate when not updated in the same block as frob", func() {
-			headerOne := fakes.GetFakeHeaderWithTimestamp(int64(111111111), 1)
-			_, err := headerRepo.CreateOrUpdateHeader(headerOne)
-			Expect(err).NotTo(HaveOccurred())
+			_, headerOneBlockNumber := insertHeader(rand.Int63(), headerRepo)
+			ilkRateBlockOne := insertIlkRate(fakeIlkHex, headerOneBlockNumber, db)
 
-			ilkID, ilkErr := shared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
-			Expect(ilkErr).NotTo(HaveOccurred())
-			ilkRate := rand.Int()
-			_, insertIlkRateErr := db.Exec(`INSERT INTO maker.vat_ilk_rate (block_number, ilk_id, rate) VALUES ($1, $2, $3)`, headerOne.BlockNumber, ilkID, ilkRate)
-			Expect(insertIlkRateErr).NotTo(HaveOccurred())
-
-			headerTwo := fakes.GetFakeHeaderWithTimestamp(int64(222222222), 2)
-			headerTwo.Hash = "anotherHash"
-			headerTwoId, err := headerRepo.CreateOrUpdateHeader(headerTwo)
-			Expect(err).NotTo(HaveOccurred())
-
-			frobBlockTwo := test_data.CopyModel(test_data.VatFrobModelWithPositiveDart)
-			frobBlockTwo.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
-			frobBlockTwo.ForeignKeyValues[constants.UrnFK] = fakeUrn
-			frobBlockTwo.ColumnValues["dink"] = strconv.Itoa(rand.Int())
-			frobBlockTwo.ColumnValues["dart"] = strconv.Itoa(rand.Int())
-
-			err = frobRepo.Create(headerTwoId, []shared.InsertionModel{frobBlockTwo})
-			Expect(err).NotTo(HaveOccurred())
+			headerTwoID, _ := insertHeader(headerOneBlockNumber+1, headerRepo)
+			frobBlockTwo := getFakeVatFrobEvent(fakeIlkHex, fakeUrn)
+			insertFrobErr := frobRepo.Create(headerTwoID, []shared.InsertionModel{frobBlockTwo})
+			Expect(insertFrobErr).NotTo(HaveOccurred())
 
 			var actualFrobs []test_helpers.FrobEvent
-			err = db.Select(&actualFrobs, `SELECT ilk_identifier, urn_identifier, dink, dart, ilk_rate FROM api.urn_frobs($1, $2)`, test_helpers.FakeIlk.Identifier, fakeUrn)
-			Expect(err).NotTo(HaveOccurred())
+			getFrobsErr := db.Select(&actualFrobs, `SELECT ilk_identifier, urn_identifier, dink, dart, ilk_rate FROM api.urn_frobs($1, $2)`, fakeIlkIdentifier, fakeUrn)
+			Expect(getFrobsErr).NotTo(HaveOccurred())
 
 			Expect(actualFrobs).To(ConsistOf(
 				test_helpers.FrobEvent{
-					IlkIdentifier: test_helpers.FakeIlk.Identifier,
+					IlkIdentifier: fakeIlkIdentifier,
 					UrnIdentifier: fakeUrn,
 					Dink:          frobBlockTwo.ColumnValues["dink"].(string),
 					Dart:          frobBlockTwo.ColumnValues["dart"].(string),
-					Rate:          strconv.Itoa(ilkRate),
+					Rate:          strconv.Itoa(ilkRateBlockOne),
 				},
 			))
 		})
@@ -169,56 +204,37 @@ var _ = Describe("Frobs query", func() {
 		})
 
 		It("fails if only one argument is supplied (STRICT)", func() {
-			_, err := db.Exec(`SELECT * FROM api.urn_frobs($1::text)`, test_helpers.FakeIlk.Identifier)
+			_, err := db.Exec(`SELECT * FROM api.urn_frobs($1::text)`, fakeIlkIdentifier)
 			Expect(err).NotTo(BeNil())
 			Expect(err.Error()).To(ContainSubstring("function api.urn_frobs(text) does not exist"))
 		})
 	})
 
 	Describe("all_frobs", func() {
-		It("returns all frobs for a whole ilk", func() {
-			headerOne := fakes.GetFakeHeader(1)
-			headerOneId, err := headerRepo.CreateOrUpdateHeader(headerOne)
-			Expect(err).NotTo(HaveOccurred())
-
-			frobOne := test_data.CopyModel(test_data.VatFrobModelWithPositiveDart)
-			frobOne.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
-			frobOne.ForeignKeyValues[constants.UrnFK] = fakeUrn
-			frobOne.ColumnValues["dink"] = strconv.Itoa(rand.Int())
-			frobOne.ColumnValues["dart"] = strconv.Itoa(rand.Int())
-
-			anotherUrn := "anotherUrn"
-			frobTwo := test_data.CopyModel(test_data.VatFrobModelWithPositiveDart)
-			frobTwo.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
-			frobTwo.ForeignKeyValues[constants.UrnFK] = anotherUrn
-			frobTwo.ColumnValues["dink"] = strconv.Itoa(rand.Int())
-			frobTwo.ColumnValues["dart"] = strconv.Itoa(rand.Int())
-			frobTwo.ColumnValues["tx_idx"] = frobOne.ColumnValues["tx_idx"].(uint) + 1
-
-			err = frobRepo.Create(headerOneId, []shared.InsertionModel{frobOne, frobTwo})
-			Expect(err).NotTo(HaveOccurred())
-
-			ilkID, ilkErr := shared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
-			Expect(ilkErr).NotTo(HaveOccurred())
-			ilkRate := rand.Int()
-			_, insertIlkRateErr := db.Exec(`INSERT INTO maker.vat_ilk_rate (block_number, ilk_id, rate) VALUES ($1, $2, $3)`, headerOne.BlockNumber, ilkID, ilkRate)
-			Expect(insertIlkRateErr).NotTo(HaveOccurred())
+		It("returns frobs for all urns on an ilk", func() {
+			headerID, blockNumber := insertHeader(rand.Int63(), headerRepo)
+			frobOne := getFakeVatFrobEvent(fakeIlkHex, fakeUrn)
+			anotherFakeUrn := test_data.RandomString(40)
+			frobTwo := getFakeVatFrobEvent(fakeIlkHex, anotherFakeUrn)
+			insertFrobsErr := frobRepo.Create(headerID, []shared.InsertionModel{frobOne, frobTwo})
+			Expect(insertFrobsErr).NotTo(HaveOccurred())
+			ilkRate := insertIlkRate(fakeIlkHex, blockNumber, db)
 
 			var actualFrobs []test_helpers.FrobEvent
-			err = db.Select(&actualFrobs, `SELECT ilk_identifier, urn_identifier, dink, dart, ilk_rate FROM api.all_frobs($1)`, test_helpers.FakeIlk.Identifier)
-			Expect(err).NotTo(HaveOccurred())
+			getFrobsErr := db.Select(&actualFrobs, `SELECT ilk_identifier, urn_identifier, dink, dart, ilk_rate FROM api.all_frobs($1)`, fakeIlkIdentifier)
+			Expect(getFrobsErr).NotTo(HaveOccurred())
 
 			Expect(actualFrobs).To(ConsistOf(
 				test_helpers.FrobEvent{
-					IlkIdentifier: test_helpers.FakeIlk.Identifier,
+					IlkIdentifier: fakeIlkIdentifier,
 					UrnIdentifier: fakeUrn,
 					Dink:          frobOne.ColumnValues["dink"].(string),
 					Dart:          frobOne.ColumnValues["dart"].(string),
 					Rate:          strconv.Itoa(ilkRate),
 				},
 				test_helpers.FrobEvent{
-					IlkIdentifier: test_helpers.FakeIlk.Identifier,
-					UrnIdentifier: anotherUrn,
+					IlkIdentifier: fakeIlkIdentifier,
+					UrnIdentifier: anotherFakeUrn,
 					Dink:          frobTwo.ColumnValues["dink"].(string),
 					Dart:          frobTwo.ColumnValues["dart"].(string),
 					Rate:          strconv.Itoa(ilkRate),
@@ -226,55 +242,100 @@ var _ = Describe("Frobs query", func() {
 			))
 		})
 
-		It("gets most recent rate when rate not updated in same block", func() {
-			headerOne := fakes.GetFakeHeader(1)
-			_, insertHeaderOneErr := headerRepo.CreateOrUpdateHeader(headerOne)
-			Expect(insertHeaderOneErr).NotTo(HaveOccurred())
+		It("returns frobs across multiple blocks", func() {
+			headerOneID, headerOneBlockNumber := insertHeader(rand.Int63(), headerRepo)
+			frobOne := getFakeVatFrobEvent(fakeIlkHex, fakeUrn)
+			insertFrobOneErr := frobRepo.Create(headerOneID, []shared.InsertionModel{frobOne})
+			Expect(insertFrobOneErr).NotTo(HaveOccurred())
 
-			ilkID, ilkErr := shared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
-			Expect(ilkErr).NotTo(HaveOccurred())
-			ilkRate := rand.Int()
-			_, insertIlkRateErr := db.Exec(`INSERT INTO maker.vat_ilk_rate (block_number, ilk_id, rate) VALUES ($1, $2, $3)`, headerOne.BlockNumber, ilkID, ilkRate)
-			Expect(insertIlkRateErr).NotTo(HaveOccurred())
+			ilkRate := insertIlkRate(fakeIlkHex, headerOneBlockNumber, db)
 
-			headerTwo := fakes.GetFakeHeader(2)
-			headerTwoID, insertHeaderTwoErr := headerRepo.CreateOrUpdateHeader(headerTwo)
-			Expect(insertHeaderTwoErr).NotTo(HaveOccurred())
-
-			frobOne := test_data.CopyModel(test_data.VatFrobModelWithPositiveDart)
-			frobOne.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
-			frobOne.ForeignKeyValues[constants.UrnFK] = fakeUrn
-			frobOne.ColumnValues["dink"] = strconv.Itoa(rand.Int())
-			frobOne.ColumnValues["dart"] = strconv.Itoa(rand.Int())
-
-			anotherUrn := "anotherUrn"
-			frobTwo := test_data.CopyModel(test_data.VatFrobModelWithPositiveDart)
-			frobTwo.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
-			frobTwo.ForeignKeyValues[constants.UrnFK] = anotherUrn
-			frobTwo.ColumnValues["dink"] = strconv.Itoa(rand.Int())
-			frobTwo.ColumnValues["dart"] = strconv.Itoa(rand.Int())
-			frobTwo.ColumnValues["tx_idx"] = frobOne.ColumnValues["tx_idx"].(uint) + 1
-
-			insertFrobsErr := frobRepo.Create(headerTwoID, []shared.InsertionModel{frobOne, frobTwo})
-			Expect(insertFrobsErr).NotTo(HaveOccurred())
+			headerTwoID, _ := insertHeader(headerOneBlockNumber+1, headerRepo)
+			anotherFakeUrn := test_data.RandomString(40)
+			frobTwo := getFakeVatFrobEvent(fakeIlkHex, anotherFakeUrn)
+			insertFrobTwoErr := frobRepo.Create(headerTwoID, []shared.InsertionModel{frobTwo})
+			Expect(insertFrobTwoErr).NotTo(HaveOccurred())
 
 			var actualFrobs []test_helpers.FrobEvent
-			err := db.Select(&actualFrobs, `SELECT ilk_identifier, urn_identifier, dink, dart, ilk_rate FROM api.all_frobs($1)`, test_helpers.FakeIlk.Identifier)
-			Expect(err).NotTo(HaveOccurred())
+			getFrobsErr := db.Select(&actualFrobs, `SELECT ilk_identifier, urn_identifier, dink, dart, ilk_rate FROM api.all_frobs($1)`, fakeIlkIdentifier)
+			Expect(getFrobsErr).NotTo(HaveOccurred())
 
 			Expect(actualFrobs).To(ConsistOf(
 				test_helpers.FrobEvent{
-					IlkIdentifier: test_helpers.FakeIlk.Identifier,
+					IlkIdentifier: fakeIlkIdentifier,
 					UrnIdentifier: fakeUrn,
 					Dink:          frobOne.ColumnValues["dink"].(string),
 					Dart:          frobOne.ColumnValues["dart"].(string),
 					Rate:          strconv.Itoa(ilkRate),
 				},
 				test_helpers.FrobEvent{
-					IlkIdentifier: test_helpers.FakeIlk.Identifier,
-					UrnIdentifier: anotherUrn,
+					IlkIdentifier: fakeIlkIdentifier,
+					UrnIdentifier: anotherFakeUrn,
 					Dink:          frobTwo.ColumnValues["dink"].(string),
 					Dart:          frobTwo.ColumnValues["dart"].(string),
+					Rate:          strconv.Itoa(ilkRate),
+				},
+			))
+		})
+
+		It("provides most recent rate for each block", func() {
+			headerOneID, headerOneBlockNumber := insertHeader(rand.Int63(), headerRepo)
+			frobOne := getFakeVatFrobEvent(fakeIlkHex, fakeUrn)
+			insertFrobOneErr := frobRepo.Create(headerOneID, []shared.InsertionModel{frobOne})
+			Expect(insertFrobOneErr).NotTo(HaveOccurred())
+
+			ilkRateBlockOne := insertIlkRate(fakeIlkHex, headerOneBlockNumber, db)
+
+			headerTwoID, headerTwoBlockNumber := insertHeader(headerOneBlockNumber+1, headerRepo)
+			anotherFakeUrn := test_data.RandomString(40)
+			frobTwo := getFakeVatFrobEvent(fakeIlkHex, anotherFakeUrn)
+			insertFrobTwoErr := frobRepo.Create(headerTwoID, []shared.InsertionModel{frobTwo})
+			Expect(insertFrobTwoErr).NotTo(HaveOccurred())
+
+			ilkRateBlockTwo := insertIlkRate(fakeIlkHex, headerTwoBlockNumber, db)
+
+			var actualFrobs []test_helpers.FrobEvent
+			getFrobsErr := db.Select(&actualFrobs, `SELECT ilk_identifier, urn_identifier, dink, dart, ilk_rate FROM api.all_frobs($1)`, fakeIlkIdentifier)
+			Expect(getFrobsErr).NotTo(HaveOccurred())
+
+			Expect(actualFrobs).To(ConsistOf(
+				test_helpers.FrobEvent{
+					IlkIdentifier: fakeIlkIdentifier,
+					UrnIdentifier: fakeUrn,
+					Dink:          frobOne.ColumnValues["dink"].(string),
+					Dart:          frobOne.ColumnValues["dart"].(string),
+					Rate:          strconv.Itoa(ilkRateBlockOne),
+				},
+				test_helpers.FrobEvent{
+					IlkIdentifier: fakeIlkIdentifier,
+					UrnIdentifier: anotherFakeUrn,
+					Dink:          frobTwo.ColumnValues["dink"].(string),
+					Dart:          frobTwo.ColumnValues["dart"].(string),
+					Rate:          strconv.Itoa(ilkRateBlockTwo),
+				},
+			))
+		})
+
+		It("gets most recent rate when rate not updated in same block", func() {
+			_, headerOneBlockNumber := insertHeader(rand.Int63(), headerRepo)
+			ilkRate := insertIlkRate(fakeIlkHex, headerOneBlockNumber, db)
+
+			headerTwoID, _ := insertHeader(headerOneBlockNumber+1, headerRepo)
+			vatFrobEvent := getFakeVatFrobEvent(fakeIlkHex, fakeUrn)
+
+			insertFrobsErr := frobRepo.Create(headerTwoID, []shared.InsertionModel{vatFrobEvent})
+			Expect(insertFrobsErr).NotTo(HaveOccurred())
+
+			var actualFrobs []test_helpers.FrobEvent
+			err := db.Select(&actualFrobs, `SELECT ilk_identifier, urn_identifier, dink, dart, ilk_rate FROM api.all_frobs($1)`, fakeIlkIdentifier)
+			Expect(err).NotTo(HaveOccurred())
+
+			Expect(actualFrobs).To(ConsistOf(
+				test_helpers.FrobEvent{
+					IlkIdentifier: fakeIlkIdentifier,
+					UrnIdentifier: fakeUrn,
+					Dink:          vatFrobEvent.ColumnValues["dink"].(string),
+					Dart:          vatFrobEvent.ColumnValues["dart"].(string),
 					Rate:          strconv.Itoa(ilkRate),
 				},
 			))
@@ -287,3 +348,32 @@ var _ = Describe("Frobs query", func() {
 		})
 	})
 })
+
+func getFakeVatFrobEvent(ilk, urn string) shared.InsertionModel {
+	vatFrobEvent := test_data.CopyModel(test_data.VatFrobModelWithPositiveDart)
+	vatFrobEvent.ForeignKeyValues[constants.IlkFK] = ilk
+	vatFrobEvent.ForeignKeyValues[constants.UrnFK] = urn
+	vatFrobEvent.ColumnValues["dink"] = strconv.Itoa(rand.Int())
+	vatFrobEvent.ColumnValues["dart"] = strconv.Itoa(rand.Int())
+	// randomize log_idx/tx_idx so we don't update over frobs created in the same header
+	// val must be <= int32 bc column types are integer rather than something larger like numeric
+	vatFrobEvent.ColumnValues["log_idx"] = strconv.Itoa(int(rand.Int31()))
+	vatFrobEvent.ColumnValues["tx_idx"] = strconv.Itoa(int(rand.Int31()))
+	return vatFrobEvent
+}
+
+func insertIlkRate(ilk string, blockNumber int64, db *postgres.DB) int {
+	ilkID, ilkErr := shared.GetOrCreateIlk(ilk, db)
+	Expect(ilkErr).NotTo(HaveOccurred())
+	ilkRate := rand.Int()
+	_, insertIlkRateErr := db.Exec(`INSERT INTO maker.vat_ilk_rate (block_number, ilk_id, rate) VALUES ($1, $2, $3)`, blockNumber, ilkID, ilkRate)
+	Expect(insertIlkRateErr).NotTo(HaveOccurred())
+	return ilkRate
+}
+
+func insertHeader(blockNumber int64, headerRepo repositories.HeaderRepository) (int64, int64) {
+	header := fakes.GetFakeHeader(blockNumber)
+	headerID, insertHeaderErr := headerRepo.CreateOrUpdateHeader(header)
+	Expect(insertHeaderErr).NotTo(HaveOccurred())
+	return headerID, blockNumber
+}
