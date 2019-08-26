@@ -3,14 +3,17 @@ CREATE TYPE api.flop_bid_event AS (
     bid_id NUMERIC,
     lot NUMERIC,
     bid_amount NUMERIC,
-    act TEXT,
+    act api.bid_act,
     block_height BIGINT,
-    tx_idx INTEGER
+    tx_idx INTEGER,
+    contract_address TEXT
     );
 
 COMMENT ON COLUMN api.flop_bid_event.block_height
     IS E'@omit';
 COMMENT ON COLUMN api.flop_bid_event.tx_idx
+    IS E'@omit';
+COMMENT ON COLUMN api.flop_bid_event.contract_address
     IS E'@omit';
 
 CREATE FUNCTION api.all_flop_bid_events()
@@ -25,9 +28,10 @@ WITH address AS (
          SELECT deal.bid_id,
                 flop_bid_lot.lot,
                 flop_bid_bid.bid     AS bid_amount,
-                'deal'               AS act,
+                'deal'::api.bid_act  AS act,
                 headers.block_number AS block_height,
-                tx_idx
+                tx_idx,
+                deal.contract_address
          FROM maker.deal
                   LEFT JOIN headers ON deal.header_id = headers.id
                   LEFT JOIN maker.flop_bid_bid
@@ -43,9 +47,10 @@ WITH address AS (
          SELECT yank.bid_id,
                 flop_bid_lot.lot,
                 flop_bid_bid.bid     AS bid_amount,
-                'yank'               AS act,
+                'yank'::api.bid_act  AS act,
                 headers.block_number AS block_height,
-                tx_idx
+                tx_idx,
+                yank.contract_address
          FROM maker.yank
                   LEFT JOIN headers ON yank.header_id = headers.id
                   LEFT JOIN maker.flop_bid_bid
@@ -58,11 +63,23 @@ WITH address AS (
          ORDER BY block_height DESC
      )
 
-SELECT flop_kick.bid_id, lot, bid AS bid_amount, 'kick' AS act, block_number AS block_height, tx_idx
+SELECT flop_kick.bid_id,
+       lot,
+       bid                 AS bid_amount,
+       'kick'::api.bid_act AS act,
+       block_number        AS block_height,
+       tx_idx,
+       contract_address
 FROM maker.flop_kick
          LEFT JOIN headers ON flop_kick.header_id = headers.id
 UNION
-SELECT bid_id, lot, bid AS bid_amount, 'dent' AS act, block_number AS block_height, tx_idx
+SELECT bid_id,
+       lot,
+       bid                 AS bid_amount,
+       'dent'::api.bid_act AS act,
+       block_number        AS block_height,
+       tx_idx,
+       contract_address
 FROM maker.dent
          LEFT JOIN headers ON dent.header_id = headers.id
 WHERE dent.contract_address = (SELECT * FROM address)

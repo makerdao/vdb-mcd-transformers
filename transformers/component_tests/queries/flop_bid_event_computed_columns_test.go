@@ -68,7 +68,7 @@ var _ = Describe("Flop bid event computed columns", func() {
 			err := db.Get(&actualBid, `
 				SELECT bid_id, guy, tic, "end", lot, bid, dealt, created, updated
 				FROM api.flop_bid_event_bid(
-					(SELECT (bid_id, lot, bid_amount, act, block_height, tx_idx)::api.flop_bid_event FROM api.all_flop_bid_events())
+					(SELECT (bid_id, lot, bid_amount, act, block_height, tx_idx, contract_address)::api.flop_bid_event FROM api.all_flop_bid_events())
 				)`)
 
 			Expect(err).NotTo(HaveOccurred())
@@ -95,7 +95,7 @@ var _ = Describe("Flop bid event computed columns", func() {
 			var actualTx Tx
 			queryErr := db.Get(&actualTx, `
 				SELECT * FROM api.flop_bid_event_tx(
-					(SELECT (bid_id, lot, bid_amount, act, block_height, tx_idx)::api.flop_bid_event FROM api.all_flop_bid_events()))`)
+					(SELECT (bid_id, lot, bid_amount, act, block_height, tx_idx, contract_address)::api.flop_bid_event FROM api.all_flop_bid_events()))`)
 
 			Expect(queryErr).NotTo(HaveOccurred())
 			Expect(actualTx).To(Equal(expectedTx))
@@ -122,7 +122,7 @@ var _ = Describe("Flop bid event computed columns", func() {
 			var actualTx []Tx
 			queryErr := db.Select(&actualTx, `
 				SELECT * FROM api.flop_bid_event_tx(
-					(SELECT (bid_id, lot, bid_amount, act, block_height, tx_idx)::api.flop_bid_event FROM api.all_flop_bid_events()))`)
+					(SELECT (bid_id, lot, bid_amount, act, block_height, tx_idx, contract_address)::api.flop_bid_event FROM api.all_flop_bid_events()))`)
 
 			Expect(queryErr).NotTo(HaveOccurred())
 			Expect(actualTx).To(BeZero())

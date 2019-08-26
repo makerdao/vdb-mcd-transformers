@@ -249,7 +249,7 @@ var _ = Describe("All flip bid events query", func() {
 		})
 
 		It("returns bid events from different kinds of flips (flips with different contract addresses", func() {
-			anotherFlipContractAddress := "different flip contract address"
+			anotherFlipContractAddress := "DifferentFlipAddress"
 			differentLot := rand.Int()
 			differentBidAmount := rand.Int()
 

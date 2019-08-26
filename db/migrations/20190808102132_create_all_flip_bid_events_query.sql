@@ -3,7 +3,7 @@ CREATE TYPE api.flip_bid_event AS (
     bid_id NUMERIC,
     lot NUMERIC,
     bid_amount NUMERIC,
-    act TEXT,
+    act api.bid_act,
     block_height BIGINT,
     tx_idx INTEGER,
     contract_address TEXT
@@ -27,7 +27,7 @@ WITH addresses AS (
          SELECT deal.bid_id,
                 flip_bid_lot.lot,
                 flip_bid_bid.bid     AS bid_amount,
-                'deal'               AS act,
+                'deal'::api.bid_act  AS act,
                 headers.block_number AS block_height,
                 tx_idx,
                 deal.contract_address
@@ -46,7 +46,7 @@ WITH addresses AS (
          SELECT yank.bid_id,
                 flip_bid_lot.lot,
                 flip_bid_bid.bid     AS bid_amount,
-                'yank'               AS act,
+                'yank'::api.bid_act  AS act,
                 headers.block_number AS block_height,
                 tx_idx,
                 yank.contract_address
@@ -65,7 +65,7 @@ WITH addresses AS (
          SELECT flip_tick.bid_id,
                 flip_bid_lot.lot,
                 flip_bid_bid.bid     AS bid_amount,
-                'tick'               AS act,
+                'tick'::api.bid_act  AS act,
                 headers.block_number AS block_height,
                 tx_idx,
                 flip_tick.contract_address
@@ -80,16 +80,34 @@ WITH addresses AS (
          ORDER BY block_height DESC
      )
 
-SELECT flip_kick.bid_id, lot, bid AS bid_amount, 'kick' AS act, block_number AS block_height, tx_idx, contract_address
+SELECT flip_kick.bid_id,
+       lot,
+       bid                 AS bid_amount,
+       'kick'::api.bid_act AS act,
+       block_number        AS block_height,
+       tx_idx,
+       contract_address
 FROM maker.flip_kick
          LEFT JOIN headers ON flip_kick.header_id = headers.id
 UNION
-SELECT bid_id, lot, bid AS bid_amount, 'tend' AS act, block_number AS block_height, tx_idx, contract_address
+SELECT bid_id,
+       lot,
+       bid                 AS bid_amount,
+       'tend'::api.bid_act AS act,
+       block_number        AS block_height,
+       tx_idx,
+       contract_address
 FROM maker.tend
          LEFT JOIN headers on tend.header_id = headers.id
 WHERE tend.contract_address IN (SELECT * FROM addresses)
 UNION
-SELECT bid_id, lot, bid AS bid_amount, 'dent' AS act, block_number AS block_height, tx_idx, dent.contract_address
+SELECT bid_id,
+       lot,
+       bid                 AS bid_amount,
+       'dent'::api.bid_act AS act,
+       block_number        AS block_height,
+       tx_idx,
+       dent.contract_address
 FROM maker.dent
          LEFT JOIN headers on dent.header_id = headers.id
 WHERE dent.contract_address IN (SELECT * FROM addresses)
@@ -100,10 +118,11 @@ UNION
 SELECT *
 from yanks
 UNION
-SELECT * FROM ticks
+SELECT *
+FROM ticks
 $$
     LANGUAGE sql
     STABLE;
 -- +goose Down
 DROP FUNCTION api.all_flip_bid_events();
-DROP TYPE api.flip_bid_event CASCADE;
+DROP TYPE api.flip_bid_event CASCADE ;

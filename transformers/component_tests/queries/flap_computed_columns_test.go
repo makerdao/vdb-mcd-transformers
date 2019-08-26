@@ -19,12 +19,11 @@ var _ = Describe("Flap computed columns", func() {
 		db              *postgres.DB
 		flapKickRepo    flap_kick.FlapKickRepository
 		headerRepo      repositories.HeaderRepository
-		contractAddress = "flap contract address"
+		contractAddress = "Flap"
 
 		fakeBidId      = rand.Int()
 		blockOne       = rand.Int()
-		timestampOne   = int(rand.Int31())
-		blockOneHeader = fakes.GetFakeHeaderWithTimestamp(int64(timestampOne), int64(blockOne))
+		blockOneHeader = fakes.GetFakeHeader(int64(blockOne))
 	)
 
 	BeforeEach(func() {
@@ -55,14 +54,15 @@ var _ = Describe("Flap computed columns", func() {
 			Expect(flapKickErr).NotTo(HaveOccurred())
 
 			expectedBidEvents := test_helpers.BidEvent{
-				BidId:     strconv.Itoa(fakeBidId),
-				Lot:       flapKickEvent.Lot,
-				BidAmount: flapKickEvent.Bid,
-				Act:       "kick",
+				BidId:           strconv.Itoa(fakeBidId),
+				Lot:             flapKickEvent.Lot,
+				BidAmount:       flapKickEvent.Bid,
+				Act:             "kick",
+				ContractAddress: contractAddress,
 			}
 			var actualBidEvents test_helpers.BidEvent
 			queryErr := db.Get(&actualBidEvents,
-				`SELECT bid_id, bid_amount, lot, act FROM api.flap_bid_events(
+				`SELECT bid_id, bid_amount, lot, act, contract_address FROM api.flap_bid_events(
     					(SELECT (bid_id, guy, tic, "end", lot, bid, gal, dealt, created, updated)::api.flap 
     					FROM api.all_flaps()))`)
 			Expect(queryErr).NotTo(HaveOccurred())
@@ -83,8 +83,7 @@ var _ = Describe("Flap computed columns", func() {
 			Expect(flapKickErr).NotTo(HaveOccurred())
 
 			blockTwo := blockOne + 1
-			timestampTwo := timestampOne + 111111
-			blockTwoHeader := fakes.GetFakeHeaderWithTimestamp(int64(timestampTwo), int64(blockTwo))
+			blockTwoHeader := fakes.GetFakeHeader(int64(blockTwo))
 			headerTwoId, headerTwoErr := headerRepo.CreateOrUpdateHeader(blockTwoHeader)
 			Expect(headerTwoErr).NotTo(HaveOccurred())
 
@@ -100,15 +99,16 @@ var _ = Describe("Flap computed columns", func() {
 			Expect(flapKickErr).NotTo(HaveOccurred())
 
 			expectedBidEvents := test_helpers.BidEvent{
-				BidId:     strconv.Itoa(fakeBidId),
-				Lot:       flapKickEvent.Lot,
-				BidAmount: flapKickEvent.Bid,
-				Act:       "kick",
+				BidId:           strconv.Itoa(fakeBidId),
+				Lot:             flapKickEvent.Lot,
+				BidAmount:       flapKickEvent.Bid,
+				Act:             "kick",
+				ContractAddress: contractAddress,
 			}
 
 			var actualBidEvents []test_helpers.BidEvent
 			queryErr := db.Select(&actualBidEvents,
-				`SELECT bid_id, bid_amount, lot, act FROM api.flap_bid_events(
+				`SELECT bid_id, bid_amount, lot, act, contract_address FROM api.flap_bid_events(
     					(SELECT (bid_id, guy, tic, "end", lot, bid, gal, dealt, created, updated)::api.flap
     					FROM api.all_flaps() WHERE bid_id = $1))`, fakeBidId)
 

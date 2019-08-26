@@ -23,7 +23,7 @@ $$
     LANGUAGE sql
     STABLE;
 
--- Extend flip with bid events
+-- Extend flip_state with bid events
 -- there are different kinds of flippers, so we need to filter on contract address
 CREATE FUNCTION api.flip_state_bid_events(flip api.flip_state)
     RETURNS SETOF api.flip_bid_event AS

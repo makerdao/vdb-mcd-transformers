@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 11.3
--- Dumped by pg_dump version 11.3
+-- Dumped from database version 11.4
+-- Dumped by pg_dump version 11.4
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -42,6 +42,20 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA public;
 --
 
 COMMENT ON EXTENSION citext IS 'data type for case-insensitive character strings';
+
+
+--
+-- Name: bid_act; Type: TYPE; Schema: api; Owner: -
+--
+
+CREATE TYPE api.bid_act AS ENUM (
+    'kick',
+    'tick',
+    'tend',
+    'dent',
+    'deal',
+    'yank'
+);
 
 
 --
@@ -110,9 +124,10 @@ CREATE TYPE api.flap_bid_event AS (
 	bid_id numeric,
 	lot numeric,
 	bid_amount numeric,
-	act text,
+	act api.bid_act,
 	block_height bigint,
-	tx_idx integer
+	tx_idx integer,
+	contract_address text
 );
 
 
@@ -131,6 +146,13 @@ COMMENT ON COLUMN api.flap_bid_event.tx_idx IS '@omit';
 
 
 --
+-- Name: COLUMN flap_bid_event.contract_address; Type: COMMENT; Schema: api; Owner: -
+--
+
+COMMENT ON COLUMN api.flap_bid_event.contract_address IS '@omit';
+
+
+--
 -- Name: flip_bid_event; Type: TYPE; Schema: api; Owner: -
 --
 
@@ -138,7 +160,7 @@ CREATE TYPE api.flip_bid_event AS (
 	bid_id numeric,
 	lot numeric,
 	bid_amount numeric,
-	act text,
+	act api.bid_act,
 	block_height bigint,
 	tx_idx integer,
 	contract_address text
@@ -234,9 +256,10 @@ CREATE TYPE api.flop_bid_event AS (
 	bid_id numeric,
 	lot numeric,
 	bid_amount numeric,
-	act text,
+	act api.bid_act,
 	block_height bigint,
-	tx_idx integer
+	tx_idx integer,
+	contract_address text
 );
 
 
@@ -252,6 +275,13 @@ COMMENT ON COLUMN api.flop_bid_event.block_height IS '@omit';
 --
 
 COMMENT ON COLUMN api.flop_bid_event.tx_idx IS '@omit';
+
+
+--
+-- Name: COLUMN flop_bid_event.contract_address; Type: COMMENT; Schema: api; Owner: -
+--
+
+COMMENT ON COLUMN api.flop_bid_event.contract_address IS '@omit';
 
 
 --
@@ -531,9 +561,10 @@ WITH address AS (
          SELECT deal.bid_id,
                 flap_bid_lot.lot,
                 flap_bid_bid.bid     AS bid_amount,
-                'deal'               AS act,
+                'deal'::api.bid_act  AS act,
                 headers.block_number AS block_height,
-                tx_idx
+                tx_idx,
+                deal.contract_address
          FROM maker.deal
                   LEFT JOIN headers ON deal.header_id = headers.id
                   LEFT JOIN maker.flap_bid_bid
@@ -549,9 +580,10 @@ WITH address AS (
          SELECT yank.bid_id,
                 flap_bid_lot.lot,
                 flap_bid_bid.bid     AS bid_amount,
-                'yank'               AS act,
+                'yank'::api.bid_act  AS act,
                 headers.block_number AS block_height,
-                tx_idx
+                tx_idx,
+                yank.contract_address
          FROM maker.yank
                   LEFT JOIN headers ON yank.header_id = headers.id
                   LEFT JOIN maker.flap_bid_bid
@@ -563,12 +595,23 @@ WITH address AS (
          WHERE yank.contract_address = (SELECT * FROM address)
          ORDER BY block_height DESC
      )
-
-SELECT flap_kick.bid_id, lot, bid AS bid_amount, 'kick' AS act, block_number AS block_height, tx_idx
+SELECT flap_kick.bid_id,
+       lot,
+       bid                 AS bid_amount,
+       'kick'::api.bid_act AS act,
+       block_number        AS block_height,
+       tx_idx,
+       contract_address
 FROM maker.flap_kick
          LEFT JOIN headers ON flap_kick.header_id = headers.id
 UNION
-SELECT bid_id, lot, bid AS bid_amount, 'tend' AS act, block_number AS block_height, tx_idx
+SELECT bid_id,
+       lot,
+       bid                 AS bid_amount,
+       'tend'::api.bid_act AS act,
+       block_number        AS block_height,
+       tx_idx,
+       contract_address
 FROM maker.tend
          LEFT JOIN headers ON tend.header_id = headers.id
 WHERE tend.contract_address = (SELECT * FROM address)
@@ -578,7 +621,6 @@ FROM deals
 UNION
 SELECT *
 FROM yanks
-
 $$;
 
 
@@ -633,7 +675,7 @@ WITH addresses AS (
          SELECT deal.bid_id,
                 flip_bid_lot.lot,
                 flip_bid_bid.bid     AS bid_amount,
-                'deal'               AS act,
+                'deal'::api.bid_act  AS act,
                 headers.block_number AS block_height,
                 tx_idx,
                 deal.contract_address
@@ -652,7 +694,7 @@ WITH addresses AS (
          SELECT yank.bid_id,
                 flip_bid_lot.lot,
                 flip_bid_bid.bid     AS bid_amount,
-                'yank'               AS act,
+                'yank'::api.bid_act  AS act,
                 headers.block_number AS block_height,
                 tx_idx,
                 yank.contract_address
@@ -671,7 +713,7 @@ WITH addresses AS (
          SELECT flip_tick.bid_id,
                 flip_bid_lot.lot,
                 flip_bid_bid.bid     AS bid_amount,
-                'tick'               AS act,
+                'tick'::api.bid_act  AS act,
                 headers.block_number AS block_height,
                 tx_idx,
                 flip_tick.contract_address
@@ -685,17 +727,34 @@ WITH addresses AS (
                                 AND flip_bid_lot.block_number = headers.block_number
          ORDER BY block_height DESC
      )
-
-SELECT flip_kick.bid_id, lot, bid AS bid_amount, 'kick' AS act, block_number AS block_height, tx_idx, contract_address
+SELECT flip_kick.bid_id,
+       lot,
+       bid                 AS bid_amount,
+       'kick'::api.bid_act AS act,
+       block_number        AS block_height,
+       tx_idx,
+       contract_address
 FROM maker.flip_kick
          LEFT JOIN headers ON flip_kick.header_id = headers.id
 UNION
-SELECT bid_id, lot, bid AS bid_amount, 'tend' AS act, block_number AS block_height, tx_idx, contract_address
+SELECT bid_id,
+       lot,
+       bid                 AS bid_amount,
+       'tend'::api.bid_act AS act,
+       block_number        AS block_height,
+       tx_idx,
+       contract_address
 FROM maker.tend
          LEFT JOIN headers on tend.header_id = headers.id
 WHERE tend.contract_address IN (SELECT * FROM addresses)
 UNION
-SELECT bid_id, lot, bid AS bid_amount, 'dent' AS act, block_number AS block_height, tx_idx, dent.contract_address
+SELECT bid_id,
+       lot,
+       bid                 AS bid_amount,
+       'dent'::api.bid_act AS act,
+       block_number        AS block_height,
+       tx_idx,
+       dent.contract_address
 FROM maker.dent
          LEFT JOIN headers on dent.header_id = headers.id
 WHERE dent.contract_address IN (SELECT * FROM addresses)
@@ -706,7 +765,8 @@ UNION
 SELECT *
 from yanks
 UNION
-SELECT * FROM ticks
+SELECT *
+FROM ticks
 $$;
 
 
@@ -756,9 +816,10 @@ WITH address AS (
          SELECT deal.bid_id,
                 flop_bid_lot.lot,
                 flop_bid_bid.bid     AS bid_amount,
-                'deal'               AS act,
+                'deal'::api.bid_act  AS act,
                 headers.block_number AS block_height,
-                tx_idx
+                tx_idx,
+                deal.contract_address
          FROM maker.deal
                   LEFT JOIN headers ON deal.header_id = headers.id
                   LEFT JOIN maker.flop_bid_bid
@@ -774,9 +835,10 @@ WITH address AS (
          SELECT yank.bid_id,
                 flop_bid_lot.lot,
                 flop_bid_bid.bid     AS bid_amount,
-                'yank'               AS act,
+                'yank'::api.bid_act  AS act,
                 headers.block_number AS block_height,
-                tx_idx
+                tx_idx,
+                yank.contract_address
          FROM maker.yank
                   LEFT JOIN headers ON yank.header_id = headers.id
                   LEFT JOIN maker.flop_bid_bid
@@ -788,12 +850,23 @@ WITH address AS (
          WHERE yank.contract_address = (SELECT * FROM address)
          ORDER BY block_height DESC
      )
-
-SELECT flop_kick.bid_id, lot, bid AS bid_amount, 'kick' AS act, block_number AS block_height, tx_idx
+SELECT flop_kick.bid_id,
+       lot,
+       bid                 AS bid_amount,
+       'kick'::api.bid_act AS act,
+       block_number        AS block_height,
+       tx_idx,
+       contract_address
 FROM maker.flop_kick
          LEFT JOIN headers ON flop_kick.header_id = headers.id
 UNION
-SELECT bid_id, lot, bid AS bid_amount, 'dent' AS act, block_number AS block_height, tx_idx
+SELECT bid_id,
+       lot,
+       bid                 AS bid_amount,
+       'dent'::api.bid_act AS act,
+       block_number        AS block_height,
+       tx_idx,
+       contract_address
 FROM maker.dent
          LEFT JOIN headers ON dent.header_id = headers.id
 WHERE dent.contract_address = (SELECT * FROM address)
@@ -803,7 +876,6 @@ FROM deals
 UNION
 SELECT *
 FROM yanks
-
 $$;
 
 
@@ -848,7 +920,6 @@ CREATE FUNCTION api.all_frobs(ilk_identifier text) RETURNS SETOF api.frob_event
     LANGUAGE sql STABLE STRICT
     AS $$
 WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier)
-
 SELECT ilk_identifier, identifier AS urn_identifier, dink, dart, block_number, tx_idx
 FROM maker.vat_frob
          LEFT JOIN maker.urns ON vat_frob.urn_id = urns.id
@@ -866,7 +937,6 @@ CREATE FUNCTION api.all_ilk_file_events(ilk_identifier text) RETURNS SETOF api.i
     LANGUAGE sql STABLE STRICT
     AS $$
 WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier)
-
 SELECT ilk_identifier, what, data :: text, block_number, tx_idx
 FROM maker.cat_file_chop_lump
          LEFT JOIN headers ON cat_file_chop_lump.header_id = headers.id
@@ -1134,7 +1204,6 @@ BEGIN
     FROM maker.urns
     WHERE urns.identifier = urn_identifier
       AND urns.ilk_id = _ilk_id INTO _urn_id;
-
     blocks := ARRAY(
             SELECT block_number
             FROM (SELECT block_number
@@ -1148,7 +1217,6 @@ BEGIN
                     AND block_number <= all_urn_states.block_height) inks_and_arts
             ORDER BY block_number DESC
         );
-
     FOREACH i IN ARRAY blocks
         LOOP
             RETURN QUERY
@@ -1214,7 +1282,6 @@ WITH urns AS (SELECT urns.id AS urn_id, ilks.id AS ilk_id, ilks.ilk, urns.identi
                         ORDER BY urn_id, block_number DESC)) last_blocks
                           LEFT JOIN public.headers ON headers.hash = last_blocks.block_hash
                  ORDER BY urn_id, headers.block_timestamp DESC)
-
 SELECT urns.identifier,
        ilks.identifier,
        all_urns.block_height,
@@ -1437,12 +1504,7 @@ $$;
 CREATE FUNCTION api.flop_bid_event_tx(event api.flop_bid_event) RETURNS SETOF api.tx
     LANGUAGE sql STABLE
     AS $$
-SELECT txs.hash, txs.tx_index, headers.block_number, headers.hash, tx_from, tx_to
-FROM public.header_sync_transactions txs
-         LEFT JOIN headers ON txs.header_id = headers.id
-WHERE block_number <= event.block_height
-  AND txs.tx_index <= event.tx_idx
-ORDER BY block_number DESC
+SELECT * FROM get_tx_data(event.block_height, event.tx_idx)
 $$;
 
 
@@ -1596,7 +1658,6 @@ WITH address AS (
          ORDER BY relevant_blocks.block_height DESC
          LIMIT 1
      )
-
 SELECT get_flap.bid_id,
        guy.guy,
        tic.tic,
@@ -1956,7 +2017,6 @@ WITH address AS (
          ORDER BY relevant_blocks.block_height DESC
          LIMIT 1
      )
-
 SELECT get_flop.bid_id,
        guy.guy,
        tic.tic,
@@ -2124,7 +2184,6 @@ WITH ilk AS (SELECT id FROM maker.ilks WHERE identifier = ilk_identifier),
                           LEFT JOIN public.headers AS headers on headers.hash = relevant_blocks.block_hash
                  ORDER BY relevant_blocks.block_height DESC
                  LIMIT 1)
-
 SELECT ilks.identifier,
        get_ilk.block_height,
        rates.rate,
@@ -2260,7 +2319,6 @@ WITH created AS (SELECT era, vow_sin_mapping.block_number, api.epoch_to_datetime
                  WHERE era = get_queued_sin.era
                  ORDER BY vow_sin_mapping.block_number DESC
                  LIMIT 1)
-
 SELECT get_queued_sin.era,
        tab,
        (SELECT EXISTS(SELECT id FROM maker.vow_flog WHERE vow_flog.era = get_queued_sin.era)) AS flogged,
@@ -2332,7 +2390,6 @@ WITH urn AS (SELECT urns.id AS urn_id, ilks.id AS ilk_id, ilks.ilk, urns.identif
                        FROM art) last_blocks
                           LEFT JOIN public.headers ON headers.block_number = last_blocks.block_number
                  ORDER BY urn_id, block_timestamp DESC)
-
 SELECT get_urn.urn_identifier,
        ilk_identifier,
        $3,
@@ -2429,7 +2486,6 @@ CREATE FUNCTION api.poke_event_ilk(priceupdate api.poke_event) RETURNS api.ilk_s
     LANGUAGE sql STABLE
     AS $$
 WITH raw_ilk AS (SELECT * FROM maker.ilks WHERE ilks.id = priceUpdate.ilk_id)
-
 SELECT *
 FROM api.get_ilk((SELECT identifier FROM raw_ilk), priceUpdate.block_height)
 $$;
@@ -2524,7 +2580,6 @@ WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier),
              FROM maker.urns
              WHERE ilk_id = (SELECT id FROM ilk)
                AND identifier = urn_identifier)
-
 SELECT ilk_identifier, urn_identifier, dink, dart, block_number, tx_idx
 FROM maker.vat_frob
          LEFT JOIN headers ON vat_frob.header_id = headers.id
@@ -11714,6 +11769,13 @@ CREATE INDEX vow_sin_mapping_block_number_index ON maker.vow_sin_mapping USING b
 --
 
 CREATE INDEX vow_sin_mapping_era_index ON maker.vow_sin_mapping USING btree (era);
+
+
+--
+-- Name: yank_bid_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX yank_bid_id_index ON maker.yank USING btree (bid_id);
 
 
 --
