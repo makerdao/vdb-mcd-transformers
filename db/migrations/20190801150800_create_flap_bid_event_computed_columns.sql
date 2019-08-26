@@ -1,5 +1,4 @@
 -- +goose Up
--- +goose StatementBegin
 
 -- Extend type flap_bid_event with bid field
 CREATE FUNCTION api.flap_bid_event_bid(event api.flap_bid_event)
@@ -33,7 +32,6 @@ $$
     LANGUAGE SQL
     STABLE;
 
--- +goose StatementEnd
 -- +goose Down
 DROP FUNCTION api.flap_bid_event_tx(api.flap_bid_event);
 DROP FUNCTION api.flap_bid_event_bid(api.flap_bid_event);

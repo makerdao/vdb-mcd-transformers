@@ -17,7 +17,6 @@ import (
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 	"math/rand"
 	"strconv"
-	"time"
 )
 
 var _ = Describe("Flap bid events query", func() {
@@ -28,7 +27,7 @@ var _ = Describe("Flap bid events query", func() {
 		dealRepo        deal.DealRepository
 		yankRepo        yank.YankRepository
 		headerRepo      repositories.HeaderRepository
-		contractAddress = "flap contract address"
+		contractAddress = "FlapContract"
 	)
 
 	BeforeEach(func() {
@@ -43,7 +42,6 @@ var _ = Describe("Flap bid events query", func() {
 		dealRepo.SetDB(db)
 		yankRepo = yank.YankRepository{}
 		yankRepo.SetDB(db)
-		rand.Seed(time.Now().UnixNano())
 	})
 
 	AfterEach(func() {
@@ -52,7 +50,7 @@ var _ = Describe("Flap bid events query", func() {
 	})
 
 	Describe("all_flap_bid_events", func() {
-		It("returns all flap bid events", func() {
+		It("returns all flap bid events (same block)", func() {
 			fakeBidId := rand.Int()
 			fakeLot := rand.Int()
 			fakeBidAmount := rand.Int()
@@ -77,21 +75,17 @@ var _ = Describe("Flap bid events query", func() {
 			})
 			Expect(flapTendErr).NotTo(HaveOccurred())
 
-			headerTwo := fakes.GetFakeHeader(2)
-			headerTwoId, headerTwoErr := headerRepo.CreateOrUpdateHeader(headerTwo)
-			Expect(headerTwoErr).NotTo(HaveOccurred())
-
 			flapDealErr := test_helpers.CreateDeal(test_helpers.DealCreationInput{
 				Db:              db,
 				BidId:           fakeBidId,
 				ContractAddress: contractAddress,
 				DealRepo:        dealRepo,
-				DealHeaderId:    headerTwoId,
+				DealHeaderId:    headerId,
 			})
 			Expect(flapDealErr).NotTo(HaveOccurred())
 
 			flapStorageValues := test_helpers.GetFlapStorageValues(1, fakeBidId)
-			test_helpers.CreateFlap(db, headerTwo, flapStorageValues, test_helpers.GetFlapMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
+			test_helpers.CreateFlap(db, header, flapStorageValues, test_helpers.GetFlapMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
 
 			var actualBidEvents []test_helpers.BidEvent
 			queryErr := db.Select(&actualBidEvents, `SELECT bid_id, bid_amount, lot, act FROM api.all_flap_bid_events()`)
@@ -104,14 +98,46 @@ var _ = Describe("Flap bid events query", func() {
 			))
 		})
 
-		It("returns bid events from multiple flappers", func() {
+		It("returns all flap bid events across all blocks", func() {
+			fakeBidId := rand.Int()
+			fakeBidIdTwo := rand.Int() + 1
+			headerOne := fakes.GetFakeHeader(1)
+			headerOneId, headerErr := headerRepo.CreateOrUpdateHeader(headerOne)
+			Expect(headerErr).NotTo(HaveOccurred())
+
+			flapKickEvent := test_data.FlapKickModel
+			flapKickEvent.ContractAddress = contractAddress
+			flapKickEvent.BidId = strconv.Itoa(fakeBidId)
+			flapKickErr := flapKickRepo.Create(headerOneId, []interface{}{flapKickEvent})
+			Expect(flapKickErr).NotTo(HaveOccurred())
+
+			headerTwo := fakes.GetFakeHeader(2)
+			headerTwoId, headerTwoErr := headerRepo.CreateOrUpdateHeader(headerTwo)
+			Expect(headerTwoErr).NotTo(HaveOccurred())
+
+			flapKickEventTwo := test_data.FlapKickModel
+			flapKickEventTwo.Bid = strconv.Itoa(rand.Int())
+			flapKickEventTwo.Lot = strconv.Itoa(rand.Int())
+			flapKickEventTwo.ContractAddress = contractAddress
+			flapKickEventTwo.BidId = strconv.Itoa(fakeBidIdTwo)
+			flapKickErr = flapKickRepo.Create(headerTwoId, []interface{}{flapKickEventTwo})
+			Expect(flapKickErr).NotTo(HaveOccurred())
+
+			var actualBidEvents []test_helpers.BidEvent
+			queryErr := db.Select(&actualBidEvents, `SELECT bid_id, bid_amount, lot, act FROM api.all_flap_bid_events()`)
+			Expect(queryErr).NotTo(HaveOccurred())
+
+			Expect(actualBidEvents).To(ConsistOf(
+				test_helpers.BidEvent{BidId: flapKickEvent.BidId, BidAmount: flapKickEvent.Bid, Lot: flapKickEvent.Lot, Act: "kick"},
+				test_helpers.BidEvent{BidId: flapKickEventTwo.BidId, BidAmount: flapKickEventTwo.Bid, Lot: flapKickEventTwo.Lot, Act: "kick"},
+			))
+		})
+
+		It("returns bid events for multiple bid ids", func() {
 			bidIdOne := rand.Int()
+			bidIdTwo := rand.Int()
 			lotOne := rand.Int()
 			bidAmountOne := rand.Int()
-
-			bidIdTwo := rand.Int()
-			lotTwo := rand.Int()
-			bidAmountTwo := rand.Int()
 
 			header := fakes.GetFakeHeader(1)
 			headerId, headerErr := headerRepo.CreateOrUpdateHeader(header)
@@ -126,8 +152,8 @@ var _ = Describe("Flap bid events query", func() {
 			flapKickEventTwo := test_data.FlapKickModel
 			flapKickEventTwo.ContractAddress = contractAddress
 			flapKickEventTwo.BidId = strconv.Itoa(bidIdTwo)
-			flapKickEventTwo.TransactionIndex = 11
-			flapKickEventTwo.LogIndex = 12
+			flapKickEventTwo.TransactionIndex = flapKickEventOne.TransactionIndex + 1
+			flapKickEventTwo.LogIndex = flapKickEventOne.LogIndex + 1
 			flapKickErr = flapKickRepo.Create(headerId, []interface{}{flapKickEventTwo})
 			Expect(flapKickErr).NotTo(HaveOccurred())
 
@@ -141,18 +167,6 @@ var _ = Describe("Flap bid events query", func() {
 			})
 			Expect(flapTendOneErr).NotTo(HaveOccurred())
 
-			flapTendTwoErr := test_helpers.CreateTend(test_helpers.TendCreationInput{
-				BidId:           bidIdTwo,
-				ContractAddress: contractAddress,
-				Lot:             lotTwo,
-				BidAmount:       bidAmountTwo,
-				TxIndex:         21,
-				LogIndex:        22,
-				TendRepo:        tendRepo,
-				TendHeaderId:    headerId,
-			})
-			Expect(flapTendTwoErr).NotTo(HaveOccurred())
-
 			var actualBidEvents []test_helpers.BidEvent
 			queryErr := db.Select(&actualBidEvents, `SELECT bid_id, bid_amount, lot, act FROM api.all_flap_bid_events()`)
 			Expect(queryErr).NotTo(HaveOccurred())
@@ -161,37 +175,6 @@ var _ = Describe("Flap bid events query", func() {
 				test_helpers.BidEvent{BidId: flapKickEventOne.BidId, BidAmount: flapKickEventOne.Bid, Lot: flapKickEventOne.Lot, Act: "kick"},
 				test_helpers.BidEvent{BidId: flapKickEventTwo.BidId, BidAmount: flapKickEventTwo.Bid, Lot: flapKickEventTwo.Lot, Act: "kick"},
 				test_helpers.BidEvent{BidId: strconv.Itoa(bidIdOne), BidAmount: strconv.Itoa(bidAmountOne), Lot: strconv.Itoa(lotOne), Act: "tend"},
-				test_helpers.BidEvent{BidId: strconv.Itoa(bidIdTwo), BidAmount: strconv.Itoa(bidAmountTwo), Lot: strconv.Itoa(lotTwo), Act: "tend"},
-			))
-		})
-
-		It("returns bid events from multiple blocks", func() {
-			fakeBidId := rand.Int()
-			headerOne := fakes.GetFakeHeaderWithTimestamp(int64(111111111), 1)
-			headerOneId, headerOneErr := headerRepo.CreateOrUpdateHeader(headerOne)
-			Expect(headerOneErr).NotTo(HaveOccurred())
-
-			flapKickBlockOne := test_data.FlapKickModel
-			flapKickBlockOne.BidId = strconv.Itoa(fakeBidId)
-			flapKickErr := flapKickRepo.Create(headerOneId, []interface{}{flapKickBlockOne})
-			Expect(flapKickErr).NotTo(HaveOccurred())
-
-			headerTwo := fakes.GetFakeHeaderWithTimestamp(int64(222222222), 2)
-			headerTwoId, headerTwoErr := headerRepo.CreateOrUpdateHeader(headerTwo)
-			Expect(headerTwoErr).NotTo(HaveOccurred())
-
-			flapKickBlockTwo := test_data.FlapKickModel
-			flapKickBlockTwo.BidId = strconv.Itoa(fakeBidId)
-			flapKickErr = flapKickRepo.Create(headerTwoId, []interface{}{flapKickBlockTwo})
-			Expect(flapKickErr).NotTo(HaveOccurred())
-
-			var actualBidEvents []test_helpers.BidEvent
-			queryErr := db.Select(&actualBidEvents, `SELECT bid_id, bid_amount, lot, act FROM api.all_flap_bid_events()`)
-			Expect(queryErr).NotTo(HaveOccurred())
-
-			Expect(actualBidEvents).To(ConsistOf(
-				test_helpers.BidEvent{BidId: flapKickBlockOne.BidId, BidAmount: flapKickBlockOne.Bid, Lot: flapKickBlockOne.Lot, Act: "kick"},
-				test_helpers.BidEvent{BidId: flapKickBlockTwo.BidId, BidAmount: flapKickBlockTwo.Bid, Lot: flapKickBlockTwo.Lot, Act: "kick"},
 			))
 		})
 

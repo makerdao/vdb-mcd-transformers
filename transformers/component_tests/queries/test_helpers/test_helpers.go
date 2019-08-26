@@ -634,14 +634,10 @@ type FlipTickCreationInput struct {
 }
 
 type BidEvent struct {
-	BidId     string `db:"bid_id"`
-	Lot       string
-	BidAmount string `db:"bid_amount"`
-	Act       string
-}
-
-type FlipBidEvent struct {
-	BidEvent
+	BidId           string `db:"bid_id"`
+	Lot             string
+	BidAmount       string `db:"bid_amount"`
+	Act             string
 	ContractAddress string `db:"contract_address"`
 }
 

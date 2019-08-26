@@ -153,13 +153,11 @@ var _ = Describe("Flip state computed columns", func() {
 			flipKickErr := flipKickRepo.Create(headerId, []interface{}{flipKickEvent})
 			Expect(flipKickErr).NotTo(HaveOccurred())
 
-			expectedFlipKickEvent := test_helpers.FlipBidEvent{
-				BidEvent: test_helpers.BidEvent{
-					BidId:     strconv.Itoa(fakeBidId),
-					Lot:       flipKickEvent.Lot,
-					BidAmount: flipKickEvent.Bid,
-					Act:       "kick",
-				},
+			expectedFlipKickEvent := test_helpers.BidEvent{
+				BidId:           strconv.Itoa(fakeBidId),
+				Lot:             flipKickEvent.Lot,
+				BidAmount:       flipKickEvent.Bid,
+				Act:             "kick",
 				ContractAddress: contractAddress,
 			}
 
@@ -175,17 +173,15 @@ var _ = Describe("Flip state computed columns", func() {
 			})
 			Expect(flipTendErr).NotTo(HaveOccurred())
 
-			expectedTendEvent := test_helpers.FlipBidEvent{
-				BidEvent: test_helpers.BidEvent{
-					BidId:     strconv.Itoa(fakeBidId),
-					Lot:       strconv.Itoa(tendLot),
-					BidAmount: strconv.Itoa(tendBidAmount),
-					Act:       "tend",
-				},
+			expectedTendEvent := test_helpers.BidEvent{
+				BidId:           strconv.Itoa(fakeBidId),
+				Lot:             strconv.Itoa(tendLot),
+				BidAmount:       strconv.Itoa(tendBidAmount),
+				Act:             "tend",
 				ContractAddress: contractAddress,
 			}
 
-			var actualBidEvents []test_helpers.FlipBidEvent
+			var actualBidEvents []test_helpers.BidEvent
 			queryErr := db.Select(&actualBidEvents,
 				`SELECT bid_id, bid_amount, lot, act, contract_address FROM api.flip_state_bid_events(
     					(SELECT (block_height, bid_id, ilk_id, urn_id, guy, tic, "end", lot, bid, gal, dealt, tab, created, updated)::api.flip_state 
@@ -226,17 +222,15 @@ var _ = Describe("Flip state computed columns", func() {
 			flipKickErr = flipKickRepo.Create(headerId, []interface{}{flipKickEvent})
 			Expect(flipKickErr).NotTo(HaveOccurred())
 
-			expectedBidEvent := test_helpers.FlipBidEvent{
-				BidEvent: test_helpers.BidEvent{
-					BidId:     strconv.Itoa(fakeBidId),
-					Lot:       flipKickEvent.Lot,
-					BidAmount: flipKickEvent.Bid,
-					Act:       "kick",
-				},
+			expectedBidEvent := test_helpers.BidEvent{
+				BidId:           strconv.Itoa(fakeBidId),
+				Lot:             flipKickEvent.Lot,
+				BidAmount:       flipKickEvent.Bid,
+				Act:             "kick",
 				ContractAddress: contractAddress,
 			}
 
-			var actualBidEvents []test_helpers.FlipBidEvent
+			var actualBidEvents []test_helpers.BidEvent
 			queryErr := db.Select(&actualBidEvents,
 				`SELECT bid_id, bid_amount, lot, act, contract_address FROM api.flip_state_bid_events(
     					(SELECT (block_height, bid_id, ilk_id, urn_id, guy, tic, "end", lot, bid, gal, dealt, tab, created, updated)::api.flip_state 
@@ -268,7 +262,7 @@ var _ = Describe("Flip state computed columns", func() {
 			})
 			Expect(err).NotTo(HaveOccurred())
 
-			var actualBidEvents []test_helpers.FlipBidEvent
+			var actualBidEvents []test_helpers.BidEvent
 			queryErr := db.Select(&actualBidEvents,
 				`SELECT bid_id, bid_amount, lot, act, contract_address FROM api.flip_state_bid_events(
     					(SELECT (block_height, bid_id, ilk_id, urn_id, guy, tic, "end", lot, bid, gal, dealt, tab, created, updated)::api.flip_state 

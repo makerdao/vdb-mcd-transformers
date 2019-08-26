@@ -1,5 +1,4 @@
 -- +goose Up
--- +goose StatementBegin
 
 -- Extend flap with bid events
 CREATE FUNCTION api.flap_bid_events(flap api.flap)
@@ -12,7 +11,6 @@ RETURNS SETOF api.flap_bid_event AS
 LANGUAGE sql
 STABLE;
 
--- +goose StatementEnd
 -- +goose Down
 DROP FUNCTION api.flap_bid_events(api.flap);
 
