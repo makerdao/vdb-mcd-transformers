@@ -219,6 +219,19 @@ var _ = Describe("Flap storage repository", func() {
 			}
 
 			shared_behaviors.SharedStorageRepositoryVariableBehaviors(&inputs)
+
+			It("triggers an update to the flap table", func() {
+				err := repository.Create(fakeBlockNumber, fakeHash, bidBidMetadata, fakeBidValue)
+				Expect(err).NotTo(HaveOccurred())
+
+				var flap FlapRes
+				queryErr := db.Get(&flap, `SELECT block_number, block_hash, bid_id, bid FROM maker.flap`)
+				Expect(queryErr).NotTo(HaveOccurred())
+				Expect(flap.BlockNumber).To(Equal(fakeBlockNumber))
+				Expect(flap.BlockHash).To(Equal(fakeHash))
+				Expect(flap.BidId).To(Equal(fakeBidId))
+				Expect(flap.Bid).To(Equal(fakeBidValue))
+			})
 		})
 
 		Describe("bid_lot", func() {
@@ -240,6 +253,19 @@ var _ = Describe("Flap storage repository", func() {
 			}
 
 			shared_behaviors.SharedStorageRepositoryVariableBehaviors(&inputs)
+
+			It("triggers an update to the flap table", func() {
+				err := repository.Create(fakeBlockNumber, fakeHash, bidLotMetadata, fakeLotValue)
+				Expect(err).NotTo(HaveOccurred())
+
+				var flap FlapRes
+				queryErr := db.Get(&flap, `SELECT block_number, block_hash, bid_id, lot FROM maker.flap`)
+				Expect(queryErr).NotTo(HaveOccurred())
+				Expect(flap.BlockNumber).To(Equal(fakeBlockNumber))
+				Expect(flap.BlockHash).To(Equal(fakeHash))
+				Expect(flap.BidId).To(Equal(fakeBidId))
+				Expect(flap.Lot).To(Equal(fakeLotValue))
+			})
 		})
 
 		Describe("bid_guy, bid_tic and bid_end packed storage", func() {
@@ -287,6 +313,18 @@ var _ = Describe("Flap storage repository", func() {
 					Expect(selectErr).NotTo(HaveOccurred())
 					AssertMapping(endResult, fakeBlockNumber, fakeHash, fakeBidId, fakeEnd)
 				})
+
+				It("triggers an update to the flap table with the latest guy, tic, and end values", func() {
+					var flap FlapRes
+					queryErr := db.Get(&flap, `SELECT block_number, block_hash, bid_id, guy, tic, "end" FROM maker.flap`)
+					Expect(queryErr).NotTo(HaveOccurred())
+					Expect(flap.BlockNumber).To(Equal(fakeBlockNumber))
+					Expect(flap.BlockHash).To(Equal(fakeHash))
+					Expect(flap.BidId).To(Equal(fakeBidId))
+					Expect(flap.Guy).To(Equal(fakeGuy))
+					Expect(flap.Tic).To(Equal(fakeTic))
+					Expect(flap.End).To(Equal(fakeEnd))
+				})
 			})
 
 			It("returns an error if inserting fails", func() {
@@ -317,6 +355,19 @@ var _ = Describe("Flap storage repository", func() {
 			}
 
 			shared_behaviors.SharedStorageRepositoryVariableBehaviors(&inputs)
+
+			It("triggers an update to the flap table", func() {
+				err := repository.Create(fakeBlockNumber, fakeHash, bidGalMetadata, fakeGalValue)
+				Expect(err).NotTo(HaveOccurred())
+
+				var flap FlapRes
+				queryErr := db.Get(&flap, `SELECT block_number, block_hash, bid_id, gal FROM maker.flap`)
+				Expect(queryErr).NotTo(HaveOccurred())
+				Expect(flap.BlockNumber).To(Equal(fakeBlockNumber))
+				Expect(flap.BlockHash).To(Equal(fakeHash))
+				Expect(flap.BidId).To(Equal(fakeBidId))
+				Expect(flap.Gal).To(Equal(fakeGalValue))
+			})
 		})
 	})
 })
