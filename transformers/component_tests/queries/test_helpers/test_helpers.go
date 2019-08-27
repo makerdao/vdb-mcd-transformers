@@ -5,6 +5,7 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/vulcanize/mcd_transformers/transformers/events/deal"
 	"github.com/vulcanize/mcd_transformers/transformers/events/dent"
+	"github.com/vulcanize/mcd_transformers/transformers/events/flap_kick"
 	"github.com/vulcanize/mcd_transformers/transformers/events/flip_kick"
 	"github.com/vulcanize/mcd_transformers/transformers/events/flip_tick"
 	"github.com/vulcanize/mcd_transformers/transformers/events/tend"
@@ -520,6 +521,22 @@ func SetUpFlipBidContext(setupData FlipBidContextInput) (ilkId, urnId int, err e
 	return ilkId, urnId, nil
 }
 
+func SetUpFlapBidContext(setupData FlapBidCreationInput) (err error) {
+	flapKickErr := CreateFlapKick(setupData.ContractAddress, setupData.BidId, setupData.FlapKickHeaderId, setupData.FlapKickRepo)
+	if flapKickErr != nil {
+		return flapKickErr
+	}
+
+	if setupData.Dealt {
+		dealErr := CreateDeal(setupData.DealCreationInput)
+		if dealErr != nil {
+			return dealErr
+		}
+	}
+
+	return nil
+}
+
 func CreateDeal(input DealCreationInput) (err error) {
 	dealModel := test_data.DealModel
 	dealModel.ColumnValues["contract_address"] = input.ContractAddress
@@ -534,6 +551,13 @@ func CreateFlipKick(contractAddress string, bidId int, headerId int64, usr strin
 	flipKickModel.BidId = strconv.Itoa(bidId)
 	flipKickModel.Usr = usr
 	return repo.Create(headerId, []interface{}{flipKickModel})
+}
+
+func CreateFlapKick(contractAddress string, bidId int, headerId int64, repo flap_kick.FlapKickRepository) error {
+	flapKickModel := test_data.FlapKickModel
+	flapKickModel.ContractAddress = contractAddress
+	flapKickModel.BidId = strconv.Itoa(bidId)
+	return repo.Create(headerId, []interface{}{flapKickModel})
 }
 
 func CreateTend(input TendCreationInput) (err error) {
@@ -624,6 +648,13 @@ type FlipBidContextInput struct {
 	UrnGuy           string
 	FlipKickRepo     flip_kick.FlipKickRepository
 	FlipKickHeaderId int64
+}
+
+type FlapBidCreationInput struct {
+	DealCreationInput
+	Dealt            bool
+	FlapKickRepo     flap_kick.FlapKickRepository
+	FlapKickHeaderId int64
 }
 
 type FlipTickCreationInput struct {
