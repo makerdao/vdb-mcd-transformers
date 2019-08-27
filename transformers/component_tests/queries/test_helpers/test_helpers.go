@@ -14,6 +14,7 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/storage"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/cat"
+	"github.com/vulcanize/mcd_transformers/transformers/storage/cdp_manager"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/flap"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/flip"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/flop"
@@ -367,6 +368,16 @@ func GetFlopMetadatas(bidId string) []utils.StorageValueMetadata {
 	}
 }
 
+func GetCdpManagerMetadatas(cdpi string) []utils.StorageValueMetadata {
+	keys := map[utils.Key]string{constants.Cdpi: cdpi}
+	return []utils.StorageValueMetadata{
+		utils.GetStorageValueMetadata(cdp_manager.CdpManagerCdpi, nil, utils.Uint256),
+		utils.GetStorageValueMetadata(cdp_manager.CdpManagerUrns, keys, utils.Address),
+		utils.GetStorageValueMetadata(cdp_manager.CdpManagerOwns, keys, utils.Address),
+		utils.GetStorageValueMetadata(cdp_manager.CdpManagerIlks, keys, utils.Bytes32),
+	}
+}
+
 func GetFlapMetadatas(bidId string) []utils.StorageValueMetadata {
 	keys := map[utils.Key]string{constants.BidId: bidId}
 	return append(GetFlopMetadatas(bidId), utils.GetStorageValueMetadata(storage.BidGal, keys, utils.Address))
@@ -378,6 +389,15 @@ func GetFlipMetadatas(bidId string) []utils.StorageValueMetadata {
 		utils.GetStorageValueMetadata(storage.Ilk, nil, utils.Bytes32),
 		utils.GetStorageValueMetadata(storage.BidUsr, keys, utils.Address),
 		utils.GetStorageValueMetadata(storage.BidTab, keys, utils.Uint256))
+}
+
+func GetCdpManagerStorageValues(seed int, ilkHex string, urnGuy string, cdpi int) map[string]interface{} {
+	valuesMap := make(map[string]interface{})
+	valuesMap[cdp_manager.CdpManagerCdpi] = strconv.Itoa(cdpi)
+	valuesMap[cdp_manager.CdpManagerUrns] = urnGuy
+	valuesMap[cdp_manager.CdpManagerOwns] = "address1" + strconv.Itoa(seed)
+	valuesMap[cdp_manager.CdpManagerIlks] = ilkHex
+	return valuesMap
 }
 
 func GetFlopStorageValues(seed int, bidId int) map[string]interface{} {
@@ -405,7 +425,7 @@ func GetFlipStorageValues(seed int, ilk string, bidId int) map[string]interface{
 	return valuesMap
 }
 
-func createBid(repo repository.StorageRepository, header core.Header, valuesMap map[string]interface{}, metadatas []utils.StorageValueMetadata) {
+func insertValues(repo repository.StorageRepository, header core.Header, valuesMap map[string]interface{}, metadatas []utils.StorageValueMetadata) {
 	blockHash := header.Hash
 	blockNumber := int(header.BlockNumber)
 
@@ -420,19 +440,43 @@ func createBid(repo repository.StorageRepository, header core.Header, valuesMap 
 func CreateFlop(db *postgres.DB, header core.Header, valuesMap map[string]interface{}, flopMetadatas []utils.StorageValueMetadata, contractAddress string) {
 	flopRepo := flop.FlopStorageRepository{ContractAddress: contractAddress}
 	flopRepo.SetDB(db)
-	createBid(&flopRepo, header, valuesMap, flopMetadatas)
+	insertValues(&flopRepo, header, valuesMap, flopMetadatas)
 }
 
 func CreateFlap(db *postgres.DB, header core.Header, valuesMap map[string]interface{}, flapMetadatas []utils.StorageValueMetadata, contractAddress string) {
 	flapRepo := flap.FlapStorageRepository{ContractAddress: contractAddress}
 	flapRepo.SetDB(db)
-	createBid(&flapRepo, header, valuesMap, flapMetadatas)
+	insertValues(&flapRepo, header, valuesMap, flapMetadatas)
 }
 
 func CreateFlip(db *postgres.DB, header core.Header, valuesMap map[string]interface{}, flipMetadatas []utils.StorageValueMetadata, contractAddress string) {
 	flipRepo := flip.FlipStorageRepository{ContractAddress: contractAddress}
 	flipRepo.SetDB(db)
-	createBid(&flipRepo, header, valuesMap, flipMetadatas)
+	insertValues(&flipRepo, header, valuesMap, flipMetadatas)
+}
+
+func CreateManagedCdp(db *postgres.DB, header core.Header, valuesMap map[string]interface{}, metadatas []utils.StorageValueMetadata) error {
+	cdpManagerRepo := cdp_manager.CdpManagerStorageRepository{}
+	cdpManagerRepo.SetDB(db)
+	_, err := shared.GetOrCreateUrn(valuesMap[cdp_manager.CdpManagerUrns].(string), valuesMap[cdp_manager.CdpManagerIlks].(string), db)
+	if err != nil {
+		return err
+	}
+	insertValues(&cdpManagerRepo, header, valuesMap, metadatas)
+	return nil
+}
+
+func ManagedCdpFromValues(ilkIdentifier, created string, cdpValues map[string]interface{}) ManagedCdp {
+	parsedCreated, _ := strconv.ParseInt(created, 10, 64)
+	createdTimestamp := time.Unix(parsedCreated, 0).UTC().Format(time.RFC3339)
+
+	return ManagedCdp{
+		Usr:           cdpValues[cdp_manager.CdpManagerOwns].(string),
+		Id:            cdpValues[cdp_manager.CdpManagerCdpi].(string),
+		UrnIdentifier: cdpValues[cdp_manager.CdpManagerUrns].(string),
+		IlkIdentifier: ilkIdentifier,
+		Created:       sql.NullString{String: createdTimestamp, Valid: true},
+	}
 }
 
 func FlopBidFromValues(bidId, dealt, updated, created string, bidValues map[string]interface{}) FlopBid {
@@ -469,6 +513,14 @@ func FlipBidFromValues(bidId, ilkId, urnId, dealt, updated, created string, bidV
 		UrnId:   urnId,
 		Tab:     bidValues[storage.BidTab].(string),
 	}
+}
+
+type ManagedCdp struct {
+	Usr           string
+	Id            string
+	UrnIdentifier string `db:"urn_identifier"`
+	IlkIdentifier string `db:"ilk_identifier"`
+	Created       sql.NullString
 }
 
 type FlopBid struct {

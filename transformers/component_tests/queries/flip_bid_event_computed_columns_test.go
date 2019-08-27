@@ -34,9 +34,9 @@ import (
 
 var _ = Describe("Flip bid event computed columns", func() {
 	var (
-		blockNumber     = rand.Int()
-		bidId           = rand.Int()
 		contractAddress = "ContractAddress"
+		bidId           int
+		blockNumber     int
 		db              *postgres.DB
 		header          core.Header
 		flipKickRepo    flip_kick.FlipKickRepository
@@ -48,6 +48,8 @@ var _ = Describe("Flip bid event computed columns", func() {
 	BeforeEach(func() {
 		db = test_config.NewTestDB(test_config.NewTestNode())
 		test_config.CleanTestDB(db)
+		bidId = rand.Int()
+		blockNumber = rand.Int()
 
 		headerRepo = repositories.NewHeaderRepository(db)
 		header = fakes.GetFakeHeader(int64(blockNumber))
@@ -106,7 +108,7 @@ var _ = Describe("Flip bid event computed columns", func() {
 
 		It("gets the correct flipper for the event (using the contract address that matches the event)", func() {
 			irrelevantContractAddress := "different flipper"
-			irrelevantFlipStorageValues := test_helpers.GetFlipStorageValues(0, test_helpers.FakeIlk.Hex, bidId)
+			irrelevantFlipStorageValues := test_helpers.GetFlipStorageValues(0, test_helpers.AnotherFakeIlk.Hex, bidId)
 			irrelevantFlipMetadatas := test_helpers.GetFlipMetadatas(strconv.Itoa(bidId))
 			test_helpers.CreateFlip(db, header, irrelevantFlipStorageValues, irrelevantFlipMetadatas, irrelevantContractAddress)
 
@@ -117,8 +119,8 @@ var _ = Describe("Flip bid event computed columns", func() {
 					ContractAddress: irrelevantContractAddress,
 				},
 				Dealt:            false,
-				IlkHex:           test_helpers.FakeIlk.Hex,
-				UrnGuy:           test_data.FlipKickModel.Usr,
+				IlkHex:           test_helpers.AnotherFakeIlk.Hex,
+				UrnGuy:           test_data.FakeUrn,
 				FlipKickRepo:     flipKickRepo,
 				FlipKickHeaderId: headerId,
 			})
@@ -136,7 +138,7 @@ var _ = Describe("Flip bid event computed columns", func() {
 				},
 				Dealt:            false,
 				IlkHex:           test_helpers.FakeIlk.Hex,
-				UrnGuy:           test_data.FlipKickModel.Usr,
+				UrnGuy:           test_data.FakeUrn,
 				FlipKickRepo:     flipKickRepo,
 				FlipKickHeaderId: headerId,
 			})

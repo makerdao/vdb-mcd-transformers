@@ -34,7 +34,7 @@ var (
 	lot             = big.NewInt(10)
 	bid             = big.NewInt(25)
 	tab             = big.NewInt(50)
-	usr             = "0x7340e006f4135BA6970D43bf43d88DCAD4e7a8CA"
+	FakeUrn         = "0x7340e006f4135BA6970D43bf43d88DCAD4e7a8CA"
 	gal             = "0x07Fa9eF6609cA7921112231F8f195138ebbA2977"
 	contractAddress = EthFlipAddress()
 	rawLog, _       = json.Marshal(EthFlipKickLog)
@@ -67,7 +67,7 @@ var FlipKickEntity = flip_kick.FlipKickEntity{
 	Lot:              lot,
 	Bid:              bid,
 	Tab:              tab,
-	Usr:              common.HexToAddress(usr),
+	Usr:              common.HexToAddress(FakeUrn),
 	Gal:              common.HexToAddress(gal),
 	ContractAddress:  common.HexToAddress(contractAddress),
 	TransactionIndex: EthFlipKickLog.TxIndex,
@@ -80,7 +80,7 @@ var FlipKickModel = flip_kick.FlipKickModel{
 	Lot:              lot.String(),
 	Bid:              bid.String(),
 	Tab:              tab.String(),
-	Usr:              usr,
+	Usr:              FakeUrn,
 	Gal:              gal,
 	ContractAddress:  contractAddress,
 	TransactionIndex: EthFlipKickLog.TxIndex,
