@@ -371,6 +371,33 @@ CREATE TYPE api.ilk_state AS (
 
 
 --
+-- Name: managed_cdp; Type: TYPE; Schema: api; Owner: -
+--
+
+CREATE TYPE api.managed_cdp AS (
+	usr text,
+	id numeric,
+	urn_identifier text,
+	ilk_identifier text,
+	created timestamp without time zone
+);
+
+
+--
+-- Name: COLUMN managed_cdp.urn_identifier; Type: COMMENT; Schema: api; Owner: -
+--
+
+COMMENT ON COLUMN api.managed_cdp.urn_identifier IS '@name urn_id';
+
+
+--
+-- Name: COLUMN managed_cdp.ilk_identifier; Type: COMMENT; Schema: api; Owner: -
+--
+
+COMMENT ON COLUMN api.managed_cdp.ilk_identifier IS '@name ilk_id';
+
+
+--
 -- Name: poke_event; Type: TYPE; Schema: api; Owner: -
 --
 
@@ -525,6 +552,7 @@ CREATE FUNCTION api.all_bites(ilk_identifier text) RETURNS SETOF api.bite_event
     LANGUAGE sql STABLE STRICT
     AS $$
 WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier)
+
 SELECT ilk_identifier, identifier AS urn_identifier, bite_identifier AS bid_id, ink, art, tab, block_number, tx_idx
 FROM maker.bite
          LEFT JOIN maker.urns ON bite.urn_id = urns.id
@@ -584,6 +612,7 @@ WITH address AS (
          WHERE yank.contract_address = (SELECT * FROM address)
          ORDER BY block_height DESC
      )
+
 SELECT flap_kick.bid_id,
        lot,
        bid                 AS bid_amount,
@@ -610,6 +639,7 @@ FROM deals
 UNION
 SELECT *
 FROM yanks
+
 $$;
 
 
@@ -701,6 +731,7 @@ WITH addresses AS (
                                 AND flip_bid_lot.block_number = headers.block_number
          ORDER BY block_height DESC
      )
+
 SELECT flip_kick.bid_id,
        lot,
        bid                 AS bid_amount,
@@ -824,6 +855,7 @@ WITH address AS (
          WHERE yank.contract_address = (SELECT * FROM address)
          ORDER BY block_height DESC
      )
+
 SELECT flop_kick.bid_id,
        lot,
        bid                 AS bid_amount,
@@ -850,6 +882,7 @@ FROM deals
 UNION
 SELECT *
 FROM yanks
+
 $$;
 
 
@@ -894,6 +927,7 @@ CREATE FUNCTION api.all_frobs(ilk_identifier text) RETURNS SETOF api.frob_event
     LANGUAGE sql STABLE STRICT
     AS $$
 WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier)
+
 SELECT ilk_identifier, identifier AS urn_identifier, dink, dart, block_number, tx_idx
 FROM maker.vat_frob
          LEFT JOIN maker.urns ON vat_frob.urn_id = urns.id
@@ -911,6 +945,7 @@ CREATE FUNCTION api.all_ilk_file_events(ilk_identifier text) RETURNS SETOF api.i
     LANGUAGE sql STABLE STRICT
     AS $$
 WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier)
+
 SELECT ilk_identifier, what, data :: text, block_number, tx_idx
 FROM maker.cat_file_chop_lump
          LEFT JOIN headers ON cat_file_chop_lump.header_id = headers.id
@@ -1093,6 +1128,28 @@ $$;
 
 
 --
+-- Name: all_managed_cdps(text); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.all_managed_cdps(usr text DEFAULT NULL::text) RETURNS SETOF api.managed_cdp
+    LANGUAGE plpgsql STABLE
+    AS $$
+BEGIN
+    RETURN QUERY (
+        WITH cdpis AS (
+            SELECT DISTINCT cdpi
+            FROM maker.cdp_manager_owns
+            WHERE (all_managed_cdps.usr IS NULL OR cdp_manager_owns.owner = all_managed_cdps.usr)
+            ORDER BY cdpi)
+        SELECT cdp.*
+        FROM cdpis,
+             LATERAL api.get_managed_cdp(cdpis.cdpi) cdp
+    );
+END
+$$;
+
+
+--
 -- Name: max_timestamp(); Type: FUNCTION; Schema: api; Owner: -
 --
 
@@ -1178,6 +1235,7 @@ BEGIN
     FROM maker.urns
     WHERE urns.identifier = urn_identifier
       AND urns.ilk_id = _ilk_id INTO _urn_id;
+
     blocks := ARRAY(
             SELECT block_number
             FROM (SELECT block_number
@@ -1191,6 +1249,7 @@ BEGIN
                     AND block_number <= all_urn_states.block_height) inks_and_arts
             ORDER BY block_number DESC
         );
+
     FOREACH i IN ARRAY blocks
         LOOP
             RETURN QUERY
@@ -1256,6 +1315,7 @@ WITH urns AS (SELECT urns.id AS urn_id, ilks.id AS ilk_id, ilks.ilk, urns.identi
                         ORDER BY urn_id, block_number DESC)) last_blocks
                           LEFT JOIN public.headers ON headers.hash = last_blocks.block_hash
                  ORDER BY urn_id, headers.block_timestamp DESC)
+
 SELECT urns.identifier,
        ilks.identifier,
        all_urns.block_height,
@@ -1568,6 +1628,7 @@ WITH address AS (
          ORDER BY bid_id, block_number DESC
          LIMIT 1
      )
+
 SELECT get_flap.bid_id,
        storage_values.guy,
        storage_values.tic,
@@ -1868,6 +1929,7 @@ WITH address AS (
          ORDER BY relevant_blocks.block_height DESC
          LIMIT 1
      )
+
 SELECT get_flop.bid_id,
        guy.guy,
        tic.tic,
@@ -2035,6 +2097,7 @@ WITH ilk AS (SELECT id FROM maker.ilks WHERE identifier = ilk_identifier),
                           LEFT JOIN public.headers AS headers on headers.hash = relevant_blocks.block_hash
                  ORDER BY relevant_blocks.block_height DESC
                  LIMIT 1)
+
 SELECT ilks.identifier,
        get_ilk.block_height,
        rates.rate,
@@ -2152,6 +2215,50 @@ COMMENT ON FUNCTION api.get_ilk_blocks_before(ilk_identifier text, block_height 
 
 
 --
+-- Name: get_managed_cdp(numeric); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.get_managed_cdp(id numeric) RETURNS api.managed_cdp
+    LANGUAGE sql STABLE STRICT
+    AS $$
+WITH owners AS (
+    SELECT cdp_manager_owns.owner, cdpi
+    FROM maker.cdp_manager_owns
+    WHERE cdpi = get_managed_cdp.id
+    ORDER BY cdp_manager_owns.block_number DESC
+    LIMIT 1),
+     ilk AS (
+         SELECT ilks.identifier, cdp_manager_ilks.cdpi
+         FROM maker.cdp_manager_ilks
+                  LEFT JOIN maker.ilks ON ilks.id = cdp_manager_ilks.ilk_id
+         WHERE cdp_manager_ilks.cdpi = get_managed_cdp.id
+         ORDER BY cdp_manager_ilks.block_number DESC
+         LIMIT 1),
+     urn AS (
+         SELECT cdp_manager_urns.urn AS identifier, cdp_manager_urns.cdpi
+         FROM maker.cdp_manager_urns
+         WHERE cdp_manager_urns.cdpi = get_managed_cdp.id
+         ORDER BY cdp_manager_urns.block_number DESC
+         LIMIT 1),
+     created AS (
+         SELECT api.epoch_to_datetime(headers.block_timestamp) AS datetime, cdp_manager_cdpi.cdpi
+         FROM headers
+                  LEFT JOIN maker.cdp_manager_cdpi ON cdp_manager_cdpi.block_number = headers.block_number
+         WHERE cdp_manager_cdpi.cdpi = get_managed_cdp.id
+         LIMIT 1)
+SELECT owners.owner     AS usr,
+       get_managed_cdp.id,
+       urn.identifier   AS urn_identifier,
+       ilk.identifier   AS ilk_identifier,
+       created.datetime AS created
+FROM owners
+         LEFT JOIN ilk ON ilk.cdpi = owners.cdpi
+         LEFT JOIN urn ON urn.cdpi = owners.cdpi
+         LEFT JOIN created ON created.cdpi = owners.cdpi
+$$;
+
+
+--
 -- Name: get_queued_sin(numeric); Type: FUNCTION; Schema: api; Owner: -
 --
 
@@ -2170,6 +2277,7 @@ WITH created AS (SELECT era, vow_sin_mapping.block_number, api.epoch_to_datetime
                  WHERE era = get_queued_sin.era
                  ORDER BY vow_sin_mapping.block_number DESC
                  LIMIT 1)
+
 SELECT get_queued_sin.era,
        tab,
        (SELECT EXISTS(SELECT id FROM maker.vow_flog WHERE vow_flog.era = get_queued_sin.era)) AS flogged,
@@ -2241,6 +2349,7 @@ WITH urn AS (SELECT urns.id AS urn_id, ilks.id AS ilk_id, ilks.ilk, urns.identif
                        FROM art) last_blocks
                           LEFT JOIN public.headers ON headers.block_number = last_blocks.block_number
                  ORDER BY urn_id, block_timestamp DESC)
+
 SELECT get_urn.urn_identifier,
        ilk_identifier,
        $3,
@@ -2330,6 +2439,30 @@ $$;
 
 
 --
+-- Name: managed_cdp_ilk(api.managed_cdp); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.managed_cdp_ilk(cdp api.managed_cdp) RETURNS api.ilk_state
+    LANGUAGE sql STABLE
+    AS $$
+SELECT *
+FROM api.get_ilk(cdp.ilk_identifier)
+$$;
+
+
+--
+-- Name: managed_cdp_urn(api.managed_cdp); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.managed_cdp_urn(cdp api.managed_cdp) RETURNS SETOF api.urn_state
+    LANGUAGE sql STABLE
+    AS $$
+SELECT *
+FROM api.get_urn(cdp.ilk_identifier, cdp.urn_identifier)
+$$;
+
+
+--
 -- Name: poke_event_ilk(api.poke_event); Type: FUNCTION; Schema: api; Owner: -
 --
 
@@ -2337,6 +2470,7 @@ CREATE FUNCTION api.poke_event_ilk(priceupdate api.poke_event) RETURNS api.ilk_s
     LANGUAGE sql STABLE
     AS $$
 WITH raw_ilk AS (SELECT * FROM maker.ilks WHERE ilks.id = priceUpdate.ilk_id)
+
 SELECT *
 FROM api.get_ilk((SELECT identifier FROM raw_ilk), priceUpdate.block_height)
 $$;
@@ -2411,6 +2545,7 @@ WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier),
              FROM maker.urns
              WHERE ilk_id = (SELECT id FROM ilk)
                AND identifier = urn_bites.urn_identifier)
+
 SELECT ilk_identifier, urn_bites.urn_identifier, bite_identifier AS bid_id, ink, art, tab, block_number, tx_idx
 FROM maker.bite
          LEFT JOIN headers ON bite.header_id = headers.id
@@ -2431,6 +2566,7 @@ WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier),
              FROM maker.urns
              WHERE ilk_id = (SELECT id FROM ilk)
                AND identifier = urn_identifier)
+
 SELECT ilk_identifier, urn_identifier, dink, dart, block_number, tx_idx
 FROM maker.vat_frob
          LEFT JOIN headers ON vat_frob.header_id = headers.id
@@ -11014,6 +11150,69 @@ CREATE INDEX cat_ilk_lump_block_number_index ON maker.cat_ilk_lump USING btree (
 --
 
 CREATE INDEX cat_ilk_lump_ilk_index ON maker.cat_ilk_lump USING btree (ilk_id);
+
+
+--
+-- Name: cdp_manager_cdpi_block_number_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX cdp_manager_cdpi_block_number_index ON maker.cdp_manager_cdpi USING btree (block_number);
+
+
+--
+-- Name: cdp_manager_cdpi_cdpi_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX cdp_manager_cdpi_cdpi_index ON maker.cdp_manager_cdpi USING btree (cdpi);
+
+
+--
+-- Name: cdp_manager_ilks_cdpi_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX cdp_manager_ilks_cdpi_index ON maker.cdp_manager_ilks USING btree (cdpi);
+
+
+--
+-- Name: cdp_manager_ilks_ilk_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX cdp_manager_ilks_ilk_id_index ON maker.cdp_manager_ilks USING btree (ilk_id);
+
+
+--
+-- Name: cdp_manager_owns_block_number_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX cdp_manager_owns_block_number_index ON maker.cdp_manager_owns USING btree (block_number);
+
+
+--
+-- Name: cdp_manager_owns_cdpi_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX cdp_manager_owns_cdpi_index ON maker.cdp_manager_owns USING btree (cdpi);
+
+
+--
+-- Name: cdp_manager_owns_owner_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX cdp_manager_owns_owner_index ON maker.cdp_manager_owns USING btree (owner);
+
+
+--
+-- Name: cdp_manager_urns_cdpi_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX cdp_manager_urns_cdpi_index ON maker.cdp_manager_urns USING btree (cdpi);
+
+
+--
+-- Name: cdp_manager_urns_urn_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX cdp_manager_urns_urn_index ON maker.cdp_manager_urns USING btree (urn);
 
 
 --

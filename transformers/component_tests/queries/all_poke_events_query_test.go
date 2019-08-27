@@ -115,7 +115,7 @@ var _ = Describe("all poke events query", func() {
 		var dbPokeEvents []test_helpers.PokeEvent
 		err = db.Select(&dbPokeEvents, `SELECT ilk_id, val, spot FROM api.all_poke_events($1, $2)`, beginningTimeRange, endingTimeRange)
 		Expect(err).NotTo(HaveOccurred())
-		Expect(dbPokeEvents).To(Equal(expectedValues))
+		Expect(dbPokeEvents).To(ConsistOf(expectedValues))
 	})
 
 	It("ignores poke events not in time range", func() {
