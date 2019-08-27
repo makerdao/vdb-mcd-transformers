@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 11.4
--- Dumped by pg_dump version 11.4
+-- Dumped from database version 11.3
+-- Dumped by pg_dump version 11.3
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -231,23 +231,6 @@ COMMENT ON COLUMN api.flip_state.urn_id IS '@omit';
 
 
 --
--- Name: flop; Type: TYPE; Schema: api; Owner: -
---
-
-CREATE TYPE api.flop AS (
-	bid_id numeric,
-	guy text,
-	tic bigint,
-	"end" bigint,
-	lot numeric,
-	bid numeric,
-	dealt boolean,
-	created timestamp without time zone,
-	updated timestamp without time zone
-);
-
-
---
 -- Name: flop_bid_event; Type: TYPE; Schema: api; Owner: -
 --
 
@@ -281,6 +264,23 @@ COMMENT ON COLUMN api.flop_bid_event.tx_idx IS '@omit';
 --
 
 COMMENT ON COLUMN api.flop_bid_event.contract_address IS '@omit';
+
+
+--
+-- Name: flop_state; Type: TYPE; Schema: api; Owner: -
+--
+
+CREATE TYPE api.flop_state AS (
+	bid_id numeric,
+	guy text,
+	tic bigint,
+	"end" bigint,
+	lot numeric,
+	bid numeric,
+	dealt boolean,
+	created timestamp without time zone,
+	updated timestamp without time zone
+);
 
 
 --
@@ -433,17 +433,6 @@ CREATE TYPE api.relevant_block AS (
 --
 
 CREATE TYPE api.relevant_flip_block AS (
-	block_height bigint,
-	block_hash text,
-	bid_id numeric
-);
-
-
---
--- Name: relevant_flop_block; Type: TYPE; Schema: api; Owner: -
---
-
-CREATE TYPE api.relevant_flop_block AS (
 	block_height bigint,
 	block_hash text,
 	bid_id numeric
@@ -880,26 +869,14 @@ $$;
 -- Name: all_flops(); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.all_flops() RETURNS SETOF api.flop
+CREATE FUNCTION api.all_flops() RETURNS SETOF api.flop_state
     LANGUAGE plpgsql STABLE
     AS $$
 BEGIN
     RETURN QUERY (
         WITH bid_ids AS (
-            SELECT DISTINCT flop_bid_guy.bid_id
-            FROM maker.flop_bid_guy
-            UNION
-            SELECT DISTINCT flop_bid_tic.bid_id
-            FROM maker.flop_bid_tic
-            UNION
-            SELECT DISTINCT flop_bid_bid.bid_id
-            FROM maker.flop_bid_bid
-            UNION
-            SELECT DISTINCT flop_bid_lot.bid_id
-            FROM maker.flop_bid_lot
-            UNION
-            SELECT DISTINCT flop_bid_end.bid_id
-            FROM maker.flop_bid_end
+            SELECT DISTINCT bid_id
+            FROM maker.flop
         )
         SELECT f.*
         FROM bid_ids,
@@ -1500,7 +1477,7 @@ $$;
 -- Name: flop_bid_event_bid(api.flop_bid_event); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.flop_bid_event_bid(event api.flop_bid_event) RETURNS SETOF api.flop
+CREATE FUNCTION api.flop_bid_event_bid(event api.flop_bid_event) RETURNS SETOF api.flop_state
     LANGUAGE sql STABLE
     AS $$
 SELECT *
@@ -1520,10 +1497,10 @@ $$;
 
 
 --
--- Name: flop_bid_events(api.flop); Type: FUNCTION; Schema: api; Owner: -
+-- Name: flop_state_bid_events(api.flop_state); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.flop_bid_events(flop api.flop) RETURNS SETOF api.flop_bid_event
+CREATE FUNCTION api.flop_state_bid_events(flop api.flop_state) RETURNS SETOF api.flop_bid_event
     LANGUAGE sql STABLE
     AS $$
 SELECT *
@@ -1815,54 +1792,22 @@ COMMENT ON FUNCTION api.get_flip_blocks_before(bid_id numeric, contract_address 
 -- Name: get_flop(numeric, bigint); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.get_flop(bid_id numeric, block_height bigint DEFAULT api.max_block()) RETURNS api.flop
+CREATE FUNCTION api.get_flop(bid_id numeric, block_height bigint DEFAULT api.max_block()) RETURNS api.flop_state
     LANGUAGE sql STABLE
     AS $$
 WITH address AS (
     SELECT contract_address
-    FROM maker.flop_bid_guy
-    WHERE flop_bid_guy.bid_id = get_flop.bid_id
+    FROM maker.flop
+    WHERE flop.bid_id = get_flop.bid_id
       AND block_number <= block_height
     LIMIT 1
 ),
-     guy AS (
-         SELECT guy, bid_id
-         FROM maker.flop_bid_guy
-         WHERE flop_bid_guy.bid_id = get_flop.bid_id
+     storage_values AS (
+         SELECT bid_id, guy, tic, "end", lot, bid, created, updated
+         FROM maker.flop
+         WHERE bid_id = get_flop.bid_id
            AND block_number <= block_height
-         ORDER BY flop_bid_guy.bid_id, block_number DESC
-         LIMIT 1
-     ),
-     tic AS (
-         SELECT tic, bid_id
-         FROM maker.flop_bid_tic
-         WHERE flop_bid_tic.bid_id = get_flop.bid_id
-           AND block_number <= block_height
-         ORDER BY flop_bid_tic.bid_id, block_number DESC
-         LIMIT 1
-     ),
-     "end" AS (
-         SELECT "end", bid_id
-         FROM maker.flop_bid_end
-         WHERE flop_bid_end.bid_id = get_flop.bid_id
-           AND block_number <= block_height
-         ORDER BY flop_bid_end.bid_id, block_number DESC
-         LIMIT 1
-     ),
-     lot AS (
-         SELECT lot, bid_id
-         FROM maker.flop_bid_lot
-         WHERE flop_bid_lot.bid_id = get_flop.bid_id
-           AND block_number <= block_height
-         ORDER BY flop_bid_lot.bid_id, block_number DESC
-         LIMIT 1
-     ),
-     bid AS (
-         SELECT bid, bid_id
-         FROM maker.flop_bid_bid
-         WHERE flop_bid_bid.bid_id = get_flop.bid_id
-           AND block_number <= block_height
-         ORDER BY flop_bid_bid.bid_id, block_number DESC
+         ORDER BY block_number DESC
          LIMIT 1
      ),
      deal AS (
@@ -1874,96 +1819,20 @@ WITH address AS (
            AND headers.block_number <= block_height
          ORDER BY bid_id, block_number DESC
          LIMIT 1
-     ),
-     relevant_blocks AS (
-         SELECT *
-         FROM api.get_flop_blocks_before(bid_id, (SELECT * FROM address), get_flop.block_height)
-     ),
-     created AS (
-         SELECT DISTINCT ON (relevant_blocks.bid_id, relevant_blocks.block_height) relevant_blocks.block_height,
-                                                                                   relevant_blocks.block_hash,
-                                                                                   relevant_blocks.bid_id,
-                                                                                   api.epoch_to_datetime(headers.block_timestamp) AS datetime
-         FROM relevant_blocks
-                  LEFT JOIN public.headers AS headers on headers.hash = relevant_blocks.block_hash
-         ORDER BY relevant_blocks.block_height ASC
-         LIMIT 1
-     ),
-     updated AS (
-         SELECT DISTINCT ON (relevant_blocks.bid_id, relevant_blocks.block_height) relevant_blocks.block_height,
-                                                                                   relevant_blocks.block_hash,
-                                                                                   relevant_blocks.bid_id,
-                                                                                   api.epoch_to_datetime(headers.block_timestamp) AS datetime
-         FROM relevant_blocks
-                  LEFT JOIN public.headers AS headers on headers.hash = relevant_blocks.block_hash
-         ORDER BY relevant_blocks.block_height DESC
-         LIMIT 1
      )
 SELECT get_flop.bid_id,
-       guy.guy,
-       tic.tic,
-       "end"."end",
-       lot.lot,
-       bid.bid,
+       storage_values.guy,
+       storage_values.tic,
+       storage_values."end",
+       storage_values.lot,
+       storage_values.bid,
        CASE (SELECT COUNT(*) FROM deal)
            WHEN 0 THEN FALSE
            ELSE TRUE
            END AS dealt,
-       created.datetime,
-       updated.datetime
-FROM lot
-         LEFT JOIN guy ON guy.bid_id = lot.bid_id
-         LEFT JOIN tic ON tic.bid_id = lot.bid_id
-         LEFT JOIN "end" ON "end".bid_id = lot.bid_id
-         LEFT JOIN bid ON bid.bid_id = lot.bid_id
-         LEFT JOIN created on created.bid_id = lot.bid_id
-         LEFT JOIN updated on updated.bid_id = lot.bid_id
-$$;
-
-
---
--- Name: get_flop_blocks_before(numeric, text, bigint); Type: FUNCTION; Schema: api; Owner: -
---
-
-CREATE FUNCTION api.get_flop_blocks_before(bid_id numeric, contract_address text, block_height bigint) RETURNS SETOF api.relevant_flop_block
-    LANGUAGE sql STABLE
-    AS $$
-SELECT block_number AS block_height, block_hash, kicks AS bid_id
-FROM maker.flop_kicks
-WHERE block_number <= get_flop_blocks_before.block_height
-  AND kicks = get_flop_blocks_before.bid_id
-  AND flop_kicks.contract_address = get_flop_blocks_before.contract_address
-UNION
-SELECT block_number AS block_height, block_hash, flop_bid_bid.bid_id
-FROM maker.flop_bid_bid
-WHERE block_number <= get_flop_blocks_before.block_height
-  AND flop_bid_bid.bid_id = get_flop_blocks_before.bid_id
-  AND flop_bid_bid.contract_address = get_flop_blocks_before.contract_address
-UNION
-SELECT block_number AS block_height, block_hash, flop_bid_lot.bid_id
-FROM maker.flop_bid_lot
-WHERE block_number <= get_flop_blocks_before.block_height
-  AND flop_bid_lot.bid_id = get_flop_blocks_before.bid_id
-  AND flop_bid_lot.contract_address = get_flop_blocks_before.contract_address
-UNION
-SELECT block_number AS block_height, block_hash, flop_bid_guy.bid_id
-FROM maker.flop_bid_guy
-WHERE block_number <= get_flop_blocks_before.block_height
-  AND flop_bid_guy.bid_id = get_flop_blocks_before.bid_id
-  AND flop_bid_guy.contract_address = get_flop_blocks_before.contract_address
-UNION
-SELECT block_number AS block_height, block_hash, flop_bid_tic.bid_id
-FROM maker.flop_bid_tic
-WHERE block_number <= get_flop_blocks_before.block_height
-  AND flop_bid_tic.bid_id = get_flop_blocks_before.bid_id
-  AND flop_bid_tic.contract_address = get_flop_blocks_before.contract_address
-UNION
-SELECT block_number AS block_height, block_hash, flop_bid_end.bid_id
-FROM maker.flop_bid_end
-WHERE block_number <= get_flop_blocks_before.block_height
-  AND flop_bid_end.bid_id = get_flop_blocks_before.bid_id
-  AND flop_bid_end.contract_address = get_flop_blocks_before.contract_address
-ORDER BY block_height DESC
+       storage_values.created,
+       storage_values.updated
+FROM storage_values
 $$;
 
 
@@ -2594,6 +2463,40 @@ $$;
 
 --
 -- Name: insert_cdp_created(); Type: FUNCTION; Schema: maker; Owner: -
+-- Name: flop_created(); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.flop_created() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    WITH block_info AS (
+        SELECT block_number, hash, api.epoch_to_datetime(headers.block_timestamp) AS datetime
+        FROM public.headers
+        WHERE headers.id = NEW.header_id
+        LIMIT 1
+    )
+    INSERT
+    INTO maker.flop(bid_id, contract_address, block_number, block_hash, created, updated, bid, guy, tic, "end", lot)
+    VALUES (NEW.bid_id, NEW.contract_address,
+            (SELECT block_number FROM block_info),
+            (SELECT hash FROM block_info),
+            (SELECT datetime FROM block_info),
+            (SELECT datetime FROM block_info),
+            (SELECT get_latest_flop_bid_bid(NEW.bid_id)),
+            (SELECT get_latest_flop_bid_guy(NEW.bid_id)),
+            (SELECT get_latest_flop_bid_tic(NEW.bid_id)),
+            (SELECT get_latest_flop_bid_end(NEW.bid_id)),
+            (SELECT get_latest_flop_bid_lot(NEW.bid_id)))
+    ON CONFLICT (bid_id, block_number) DO UPDATE SET created = (SELECT datetime FROM block_info),
+                                                     updated = (SELECT datetime FROM block_info);
+    return NEW;
+END
+$$;
+
+
+--
+-- Name: insert_updated_flap_bid(); Type: FUNCTION; Schema: maker; Owner: -
 --
 
 CREATE FUNCTION maker.insert_cdp_created() RETURNS trigger
@@ -2835,6 +2738,161 @@ $$;
 
 
 --
+-- Name: insert_updated_flop_bid(); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.insert_updated_flop_bid() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    WITH created AS (
+        SELECT created
+        FROM maker.flop
+        WHERE flop.bid_id = NEW.bid_id
+        ORDER BY flop.block_number
+        LIMIT 1
+    )
+    INSERT
+    INTO maker.flop(bid_id, contract_address, block_number, block_hash, bid, guy, tic, "end", lot, updated,
+                    created)
+    VALUES (NEW.bid_id, NEW.contract_address, NEW.block_number, NEW.block_hash, NEW.bid,
+            (SELECT get_latest_flop_bid_guy(NEW.bid_id)),
+            (SELECT get_latest_flop_bid_tic(NEW.bid_id)),
+            (SELECT get_latest_flop_bid_end(NEW.bid_id)),
+            (SELECT get_latest_flop_bid_lot(NEW.bid_id)),
+            (SELECT get_block_timestamp(NEW.block_hash)),
+            (SELECT created FROM created))
+    ON CONFLICT (bid_id, block_number) DO UPDATE SET bid = NEW.bid;
+    return NEW;
+END
+$$;
+
+
+--
+-- Name: insert_updated_flop_end(); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.insert_updated_flop_end() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    WITH created AS (
+        SELECT created
+        FROM maker.flop
+        WHERE flop.bid_id = NEW.bid_id
+        ORDER BY flop.block_number
+        LIMIT 1
+    )
+    INSERT
+    INTO maker.flop(bid_id, contract_address, block_number, block_hash, "end", bid, guy, tic, lot, updated,
+                    created)
+    VALUES (NEW.bid_id, NEW.contract_address, NEW.block_number, NEW.block_hash, NEW."end",
+            (SELECT get_latest_flop_bid_bid(NEW.bid_id)),
+            (SELECT get_latest_flop_bid_guy(NEW.bid_id)),
+            (SELECT get_latest_flop_bid_tic(NEW.bid_id)),
+            (SELECT get_latest_flop_bid_lot(NEW.bid_id)),
+            (SELECT get_block_timestamp(NEW.block_hash)),
+            (SELECT created FROM created))
+    ON CONFLICT (bid_id, block_number) DO UPDATE SET "end" = NEW."end";
+    return NEW;
+END
+$$;
+
+
+--
+-- Name: insert_updated_flop_guy(); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.insert_updated_flop_guy() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    WITH created AS (
+        SELECT created
+        FROM maker.flop
+        WHERE flop.bid_id = NEW.bid_id
+        ORDER BY flop.block_number
+        LIMIT 1
+    )
+    INSERT
+    INTO maker.flop(bid_id, contract_address, block_number, block_hash, guy, bid, tic, "end", lot, updated,
+                    created)
+    VALUES (NEW.bid_id, NEW.contract_address, NEW.block_number, NEW.block_hash, NEW.guy,
+            (SELECT get_latest_flop_bid_bid(NEW.bid_id)),
+            (SELECT get_latest_flop_bid_tic(NEW.bid_id)),
+            (SELECT get_latest_flop_bid_end(NEW.bid_id)),
+            (SELECT get_latest_flop_bid_lot(NEW.bid_id)),
+            (SELECT get_block_timestamp(NEW.block_hash)),
+            (SELECT created FROM created))
+    ON CONFLICT (bid_id, block_number) DO UPDATE SET guy = NEW.guy;
+    return NEW;
+END
+$$;
+
+
+--
+-- Name: insert_updated_flop_lot(); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.insert_updated_flop_lot() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    WITH created AS (
+        SELECT created
+        FROM maker.flop
+        WHERE flop.bid_id = NEW.bid_id
+        ORDER BY flop.block_number
+        LIMIT 1
+    )
+    INSERT
+    INTO maker.flop(bid_id, contract_address, block_number, block_hash, lot, bid, guy, tic, "end", updated,
+                    created)
+    VALUES (NEW.bid_id, NEW.contract_address, NEW.block_number, NEW.block_hash, NEW.lot,
+            (SELECT get_latest_flop_bid_bid(NEW.bid_id)),
+            (SELECT get_latest_flop_bid_guy(NEW.bid_id)),
+            (SELECT get_latest_flop_bid_tic(NEW.bid_id)),
+            (SELECT get_latest_flop_bid_end(NEW.bid_id)),
+            (SELECT get_block_timestamp(NEW.block_hash)),
+            (SELECT created FROM created))
+    ON CONFLICT (bid_id, block_number) DO UPDATE SET lot = NEW.lot;
+    return NEW;
+END
+$$;
+
+
+--
+-- Name: insert_updated_flop_tic(); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.insert_updated_flop_tic() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    WITH created AS (
+        SELECT created
+        FROM maker.flop
+        WHERE flop.bid_id = NEW.bid_id
+        ORDER BY flop.block_number
+        LIMIT 1
+    )
+    INSERT
+    INTO maker.flop(bid_id, contract_address, block_number, block_hash, tic, bid, guy, "end", lot, updated,
+                    created)
+    VALUES (NEW.bid_id, NEW.contract_address, NEW.block_number, NEW.block_hash, NEW.tic,
+            (SELECT get_latest_flop_bid_bid(NEW.bid_id)),
+            (SELECT get_latest_flop_bid_guy(NEW.bid_id)),
+            (SELECT get_latest_flop_bid_end(NEW.bid_id)),
+            (SELECT get_latest_flop_bid_lot(NEW.bid_id)),
+            (SELECT get_block_timestamp(NEW.block_hash)),
+            (SELECT created FROM created))
+    ON CONFLICT (bid_id, block_number) DO UPDATE SET tic = NEW.tic;
+    return NEW;
+END
+$$;
+
+
+--
 -- Name: get_block_timestamp(character varying); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -2924,6 +2982,86 @@ SELECT tic
 FROM maker.flap
 WHERE tic IS NOT NULL
   AND flap.bid_id = bid_id
+ORDER BY block_number
+LIMIT 1
+$$;
+
+
+--
+-- Name: get_latest_flop_bid_bid(numeric); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.get_latest_flop_bid_bid(bid_id numeric) RETURNS numeric
+    LANGUAGE sql
+    AS $$
+SELECT bid
+FROM maker.flop
+WHERE bid IS NOT NULL
+  AND flop.bid_id = bid_id
+ORDER BY block_number
+LIMIT 1
+$$;
+
+
+--
+-- Name: get_latest_flop_bid_end(numeric); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.get_latest_flop_bid_end(bid_id numeric) RETURNS bigint
+    LANGUAGE sql
+    AS $$
+SELECT "end"
+FROM maker.flop
+WHERE "end" IS NOT NULL
+  AND flop.bid_id = bid_id
+ORDER BY block_number
+LIMIT 1
+$$;
+
+
+--
+-- Name: get_latest_flop_bid_guy(numeric); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.get_latest_flop_bid_guy(bid_id numeric) RETURNS text
+    LANGUAGE sql
+    AS $$
+SELECT guy
+FROM maker.flop
+WHERE guy IS NOT NULL
+  AND flop.bid_id = bid_id
+ORDER BY block_number
+LIMIT 1
+$$;
+
+
+--
+-- Name: get_latest_flop_bid_lot(numeric); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.get_latest_flop_bid_lot(bid_id numeric) RETURNS numeric
+    LANGUAGE sql
+    AS $$
+SELECT lot
+FROM maker.flop
+WHERE lot IS NOT NULL
+  AND flop.bid_id = bid_id
+ORDER BY block_number
+LIMIT 1
+$$;
+
+
+--
+-- Name: get_latest_flop_bid_tic(numeric); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.get_latest_flop_bid_tic(bid_id numeric) RETURNS bigint
+    LANGUAGE sql
+    AS $$
+SELECT tic
+FROM maker.flop
+WHERE tic IS NOT NULL
+  AND flop.bid_id = bid_id
 ORDER BY block_number
 LIMIT 1
 $$;
@@ -4744,6 +4882,26 @@ ALTER SEQUENCE maker.flip_vat_id_seq OWNED BY maker.flip_vat.id;
 
 
 --
+-- Name: flop; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.flop (
+    id integer NOT NULL,
+    block_number bigint,
+    block_hash text,
+    contract_address text,
+    bid_id numeric,
+    guy text,
+    tic bigint,
+    "end" bigint,
+    lot numeric,
+    bid numeric,
+    created timestamp without time zone,
+    updated timestamp without time zone
+);
+
+
+--
 -- Name: flop_beg; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -4977,6 +5135,26 @@ CREATE SEQUENCE maker.flop_gem_id_seq
 --
 
 ALTER SEQUENCE maker.flop_gem_id_seq OWNED BY maker.flop_gem.id;
+
+
+--
+-- Name: flop_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.flop_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: flop_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.flop_id_seq OWNED BY maker.flop.id;
 
 
 --
@@ -8256,6 +8434,13 @@ ALTER TABLE ONLY maker.flip_vat ALTER COLUMN id SET DEFAULT nextval('maker.flip_
 
 
 --
+-- Name: flop id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flop ALTER COLUMN id SET DEFAULT nextval('maker.flop_id_seq'::regclass);
+
+
+--
 -- Name: flop_beg id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
@@ -9807,6 +9992,14 @@ ALTER TABLE ONLY maker.flop_bid_tic
 
 
 --
+-- Name: flop flop_block_number_bid_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flop
+    ADD CONSTRAINT flop_block_number_bid_id_key UNIQUE (block_number, bid_id);
+
+
+--
 -- Name: flop_gem flop_gem_block_number_block_hash_contract_address_gem_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -9868,6 +10061,14 @@ ALTER TABLE ONLY maker.flop_live
 
 ALTER TABLE ONLY maker.flop_live
     ADD CONSTRAINT flop_live_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: flop flop_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flop
+    ADD CONSTRAINT flop_pkey PRIMARY KEY (id);
 
 
 --
@@ -12351,6 +12552,45 @@ CREATE TRIGGER managed_cdp_urn AFTER INSERT OR UPDATE ON maker.cdp_manager_urns 
 --
 
 CREATE TRIGGER managed_cdp_usr AFTER INSERT OR UPDATE ON maker.cdp_manager_owns FOR EACH ROW EXECUTE PROCEDURE maker.insert_cdp_usr();
+-- Name: flop_bid_bid flop_bid_bid; Type: TRIGGER; Schema: maker; Owner: -
+--
+
+CREATE TRIGGER flop_bid_bid AFTER INSERT OR UPDATE ON maker.flop_bid_bid FOR EACH ROW EXECUTE PROCEDURE maker.insert_updated_flop_bid();
+
+
+--
+-- Name: flop_bid_end flop_bid_end; Type: TRIGGER; Schema: maker; Owner: -
+--
+
+CREATE TRIGGER flop_bid_end AFTER INSERT OR UPDATE ON maker.flop_bid_end FOR EACH ROW EXECUTE PROCEDURE maker.insert_updated_flop_end();
+
+
+--
+-- Name: flop_bid_guy flop_bid_guy; Type: TRIGGER; Schema: maker; Owner: -
+--
+
+CREATE TRIGGER flop_bid_guy AFTER INSERT OR UPDATE ON maker.flop_bid_guy FOR EACH ROW EXECUTE PROCEDURE maker.insert_updated_flop_guy();
+
+
+--
+-- Name: flop_bid_lot flop_bid_lot; Type: TRIGGER; Schema: maker; Owner: -
+--
+
+CREATE TRIGGER flop_bid_lot AFTER INSERT OR UPDATE ON maker.flop_bid_lot FOR EACH ROW EXECUTE PROCEDURE maker.insert_updated_flop_lot();
+
+
+--
+-- Name: flop_bid_tic flop_bid_tic; Type: TRIGGER; Schema: maker; Owner: -
+--
+
+CREATE TRIGGER flop_bid_tic AFTER INSERT OR UPDATE ON maker.flop_bid_tic FOR EACH ROW EXECUTE PROCEDURE maker.insert_updated_flop_tic();
+
+
+--
+-- Name: flop_kick flop_created_trigger; Type: TRIGGER; Schema: maker; Owner: -
+--
+
+CREATE TRIGGER flop_created_trigger AFTER INSERT ON maker.flop_kick FOR EACH ROW EXECUTE PROCEDURE maker.flop_created();
 
 
 --

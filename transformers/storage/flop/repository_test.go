@@ -244,6 +244,19 @@ var _ = Describe("Flop storage repository", func() {
 			}
 
 			shared_behaviors.SharedStorageRepositoryVariableBehaviors(&inputs)
+
+			It("triggers an update to the flop table", func() {
+				err := repo.Create(fakeBlockNumber, fakeBlockHash, bidLotMetadata, fakeLotValue)
+				Expect(err).NotTo(HaveOccurred())
+
+				var flop FlopRes
+				queryErr := db.Get(&flop, `SELECT block_number, block_hash, bid_id, lot FROM maker.flop`)
+				Expect(queryErr).NotTo(HaveOccurred())
+				Expect(flop.BlockNumber).To(Equal(fakeBlockNumber))
+				Expect(flop.BlockHash).To(Equal(fakeBlockHash))
+				Expect(flop.BidId).To(Equal(fakeBidId))
+				Expect(flop.Lot).To(Equal(fakeLotValue))
+			})
 		})
 
 		Describe("bid_guy, bid_tic and bid_end packed storage", func() {
@@ -290,6 +303,18 @@ var _ = Describe("Flop storage repository", func() {
 					selectErr := db.Get(&endResult, `SELECT block_number, block_hash, bid_id AS key, "end" AS value FROM maker.flop_bid_end`)
 					Expect(selectErr).NotTo(HaveOccurred())
 					AssertMapping(endResult, fakeBlockNumber, fakeBlockHash, fakeBidId, fakeEnd)
+				})
+
+				It("triggers an update to the flop table with the latest guy, tic, and end values", func() {
+					var flop FlopRes
+					queryErr := db.Get(&flop, `SELECT block_number, block_hash, bid_id, guy, tic, "end" FROM maker.flop`)
+					Expect(queryErr).NotTo(HaveOccurred())
+					Expect(flop.BlockNumber).To(Equal(fakeBlockNumber))
+					Expect(flop.BlockHash).To(Equal(fakeBlockHash))
+					Expect(flop.BidId).To(Equal(fakeBidId))
+					Expect(flop.Guy).To(Equal(fakeGuy))
+					Expect(flop.Tic).To(Equal(fakeTic))
+					Expect(flop.End).To(Equal(fakeEnd))
 				})
 			})
 
