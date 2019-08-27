@@ -210,6 +210,19 @@ var _ = Describe("Flop storage repository", func() {
 			}
 
 			shared_behaviors.SharedStorageRepositoryVariableBehaviors(&inputs)
+
+			It("triggers an update to the flop table", func() {
+				err := repo.Create(fakeBlockNumber, fakeBlockHash, bidBidMetadata, fakeBidValue)
+				Expect(err).NotTo(HaveOccurred())
+
+				var flop FlopRes
+				queryErr := db.Get(&flop, `SELECT block_number, block_hash, bid_id, bid FROM maker.flop`)
+				Expect(queryErr).NotTo(HaveOccurred())
+				Expect(flop.BlockNumber).To(Equal(fakeBlockNumber))
+				Expect(flop.BlockHash).To(Equal(fakeBlockHash))
+				Expect(flop.BidId).To(Equal(fakeBidId))
+				Expect(flop.Bid).To(Equal(fakeBidValue))
+			})
 		})
 
 		Describe("bid_lot", func() {
