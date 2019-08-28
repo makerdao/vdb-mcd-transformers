@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"github.com/jmoiron/sqlx"
 	"github.com/vulcanize/mcd_transformers/transformers/events/spot_poke"
-	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/cat"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/jug"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/vat"
@@ -31,6 +30,8 @@ const (
 		VALUES($1, $2::NUMERIC, $3, $4, $5::NUMERIC, $6::NUMERIC, $7, $8, $9)
 		ON CONFLICT (header_id, tx_idx, log_idx)
 		DO UPDATE SET urn_id = $2, v = $3, w = $4, dink = $5, dart = $6, raw_log = $7;`
+	insertIlkQuery = `INSERT INTO maker.ilks (ilk, identifier) VALUES ($1, $2) RETURNING id`
+	insertUrnQuery = `INSERT INTO maker.urns (identifier, ilk_id) VALUES ($1, $2) RETURNING id`
 )
 
 var (
@@ -328,7 +329,7 @@ func (state *GeneratorState) updateUrn() error {
 // Inserts into `urns` table, returning the urn_id from the database
 func (state *GeneratorState) insertUrn(ilkId int64, guy string) (int64, error) {
 	var id int64
-	err := state.pgTx.QueryRow(shared.InsertUrnQuery, guy, ilkId).Scan(&id)
+	err := state.pgTx.QueryRow(insertUrnQuery, guy, ilkId).Scan(&id)
 	if err != nil {
 		return -1, fmt.Errorf("error inserting urn: %v", err)
 	}
@@ -339,7 +340,7 @@ func (state *GeneratorState) insertUrn(ilkId int64, guy string) (int64, error) {
 // Inserts into `ilks` table, returning the ilk_id from the database
 func (state *GeneratorState) insertIlk(hexIlk, name string) (int64, error) {
 	var id int64
-	err := state.pgTx.QueryRow(shared.InsertIlkQuery, hexIlk, name).Scan(&id)
+	err := state.pgTx.QueryRow(insertIlkQuery, hexIlk, name).Scan(&id)
 	if err != nil {
 		return -1, fmt.Errorf("error inserting ilk: %v", err)
 	}
