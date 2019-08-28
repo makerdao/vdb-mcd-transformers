@@ -6,6 +6,7 @@ import (
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/component_tests/queries/test_helpers"
 	"github.com/vulcanize/mcd_transformers/transformers/events/deal"
+	"github.com/vulcanize/mcd_transformers/transformers/events/flop_kick"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/flop"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres/repositories"
@@ -17,6 +18,7 @@ import (
 var _ = Describe("All flops query", func() {
 	var (
 		db              *postgres.DB
+		flopKickRepo    flop_kick.FlopKickRepository
 		flopRepo        flop.FlopStorageRepository
 		dealRepo        deal.DealRepository
 		headerRepo      repositories.HeaderRepository
@@ -34,6 +36,8 @@ var _ = Describe("All flops query", func() {
 		test_config.CleanTestDB(db)
 		flopRepo = flop.FlopStorageRepository{}
 		flopRepo.SetDB(db)
+		flopKickRepo = flop_kick.FlopKickRepository{}
+		flopKickRepo.SetDB(db)
 		dealRepo = deal.DealRepository{}
 		dealRepo.SetDB(db)
 		headerRepo = repositories.NewHeaderRepository(db)
@@ -49,13 +53,25 @@ var _ = Describe("All flops query", func() {
 		fakeBidIdTwo := fakeBidIdOne + 1
 
 		blockOneHeader := fakes.GetFakeHeaderWithTimestamp(blockOneTimestamp, int64(blockOne))
-		_, headerOneErr := headerRepo.CreateOrUpdateHeader(blockOneHeader)
+		headerOneId, headerOneErr := headerRepo.CreateOrUpdateHeader(blockOneHeader)
 		Expect(headerOneErr).NotTo(HaveOccurred())
 
 		blockTwoHeader := fakes.GetFakeHeaderWithTimestamp(blockTwoTimestamp, int64(blockTwo))
 		blockTwoHeader.Hash = "blockTwoHeader"
-		_, headerTwoErr := headerRepo.CreateOrUpdateHeader(blockTwoHeader)
+		headerTwoId, headerTwoErr := headerRepo.CreateOrUpdateHeader(blockTwoHeader)
 		Expect(headerTwoErr).NotTo(HaveOccurred())
+
+		contextErr := test_helpers.SetUpFlopBidContext(test_helpers.FlopBidCreationInput{
+			DealCreationInput: test_helpers.DealCreationInput{
+				Db:              db,
+				BidId:           fakeBidIdOne,
+				ContractAddress: contractAddress,
+			},
+			Dealt:            false,
+			FlopKickRepo:     flopKickRepo,
+			FlopKickHeaderId: headerOneId,
+		})
+		Expect(contextErr).NotTo(HaveOccurred())
 
 		initialFlopOneStorageValues := test_helpers.GetFlopStorageValues(1, fakeBidIdOne)
 		test_helpers.CreateFlop(db, blockOneHeader, initialFlopOneStorageValues, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidIdOne)), contractAddress)
@@ -65,6 +81,18 @@ var _ = Describe("All flops query", func() {
 
 		flopStorageValuesTwo := test_helpers.GetFlopStorageValues(3, fakeBidIdTwo)
 		test_helpers.CreateFlop(db, blockTwoHeader, flopStorageValuesTwo, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidIdTwo)), contractAddress)
+
+		contextErr = test_helpers.SetUpFlopBidContext(test_helpers.FlopBidCreationInput{
+			DealCreationInput: test_helpers.DealCreationInput{
+				Db:              db,
+				BidId:           fakeBidIdTwo,
+				ContractAddress: contractAddress,
+			},
+			Dealt:            false,
+			FlopKickRepo:     flopKickRepo,
+			FlopKickHeaderId: headerTwoId,
+		})
+		Expect(contextErr).NotTo(HaveOccurred())
 
 		var actualBids []test_helpers.FlopBid
 		queryErr := db.Select(&actualBids, `SELECT bid_id, guy, tic, "end", lot, bid, dealt, created, updated FROM api.all_flops()`)
