@@ -78,9 +78,10 @@ var _ = Describe("Managed CDP computed columns", func() {
 			getIlkErr := db.Get(&result, `
 				SELECT ilk_identifier, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated
 				FROM api.managed_cdp_ilk(
-					(SELECT (usr, id, urn_identifier, ilk_identifier, created)::api.managed_cdp
-					 FROM api.get_managed_cdp($1))
-			)`, fakeCdpi)
+					(SELECT (id, cdpi, usr, urn_identifier, ilk_identifier, created)::api.managed_cdp
+					 FROM api.managed_cdp
+					 WHERE cdpi = $1))
+			`, fakeCdpi)
 
 			Expect(getIlkErr).NotTo(HaveOccurred())
 			Expect(result).To(Equal(expectedIlk))
@@ -103,9 +104,10 @@ var _ = Describe("Managed CDP computed columns", func() {
 			getUrnErr := db.Get(&actualUrn, `
 				SELECT urn_identifier, ilk_identifier
 				FROM api.managed_cdp_urn(
-					(SELECT (usr, id, urn_identifier, ilk_identifier, created)::api.managed_cdp
-					 FROM api.get_managed_cdp($1))
-			)`, fakeCdpi)
+					(SELECT (id, cdpi, usr, urn_identifier, ilk_identifier, created)::api.managed_cdp
+					 FROM api.managed_cdp
+					 WHERE cdpi = $1))
+			`, fakeCdpi)
 
 			Expect(getUrnErr).NotTo(HaveOccurred())
 			test_helpers.AssertUrn(actualUrn, expectedUrn)
