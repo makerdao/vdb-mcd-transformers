@@ -59,6 +59,7 @@ func jugFileVowMethod() string {
 	return getOverloadedFunctionSignature(JugABI(), "file", []string{"bytes32", "address"})
 }
 func jugInitMethod() string { return getSolidityFunctionSignature(JugABI(), "init") }
+func newCdpMethod() string  { return getSolidityFunctionSignature(CdpManagerABI(), "NewCdp") }
 func spotFileMatMethod() string {
 	return getOverloadedFunctionSignature(SpotABI(), "file", []string{"bytes32", "bytes32", "uint256"})
 }

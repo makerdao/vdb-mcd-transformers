@@ -552,7 +552,6 @@ CREATE FUNCTION api.all_bites(ilk_identifier text) RETURNS SETOF api.bite_event
     LANGUAGE sql STABLE STRICT
     AS $$
 WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier)
-
 SELECT ilk_identifier, identifier AS urn_identifier, bite_identifier AS bid_id, ink, art, tab, block_number, tx_idx
 FROM maker.bite
          LEFT JOIN maker.urns ON bite.urn_id = urns.id
@@ -612,7 +611,6 @@ WITH address AS (
          WHERE yank.contract_address = (SELECT * FROM address)
          ORDER BY block_height DESC
      )
-
 SELECT flap_kick.bid_id,
        lot,
        bid                 AS bid_amount,
@@ -639,7 +637,6 @@ FROM deals
 UNION
 SELECT *
 FROM yanks
-
 $$;
 
 
@@ -731,7 +728,6 @@ WITH addresses AS (
                                 AND flip_bid_lot.block_number = headers.block_number
          ORDER BY block_height DESC
      )
-
 SELECT flip_kick.bid_id,
        lot,
        bid                 AS bid_amount,
@@ -855,7 +851,6 @@ WITH address AS (
          WHERE yank.contract_address = (SELECT * FROM address)
          ORDER BY block_height DESC
      )
-
 SELECT flop_kick.bid_id,
        lot,
        bid                 AS bid_amount,
@@ -882,7 +877,6 @@ FROM deals
 UNION
 SELECT *
 FROM yanks
-
 $$;
 
 
@@ -927,7 +921,6 @@ CREATE FUNCTION api.all_frobs(ilk_identifier text) RETURNS SETOF api.frob_event
     LANGUAGE sql STABLE STRICT
     AS $$
 WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier)
-
 SELECT ilk_identifier, identifier AS urn_identifier, dink, dart, block_number, tx_idx
 FROM maker.vat_frob
          LEFT JOIN maker.urns ON vat_frob.urn_id = urns.id
@@ -945,7 +938,6 @@ CREATE FUNCTION api.all_ilk_file_events(ilk_identifier text) RETURNS SETOF api.i
     LANGUAGE sql STABLE STRICT
     AS $$
 WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier)
-
 SELECT ilk_identifier, what, data :: text, block_number, tx_idx
 FROM maker.cat_file_chop_lump
          LEFT JOIN headers ON cat_file_chop_lump.header_id = headers.id
@@ -1235,7 +1227,6 @@ BEGIN
     FROM maker.urns
     WHERE urns.identifier = urn_identifier
       AND urns.ilk_id = _ilk_id INTO _urn_id;
-
     blocks := ARRAY(
             SELECT block_number
             FROM (SELECT block_number
@@ -1249,7 +1240,6 @@ BEGIN
                     AND block_number <= all_urn_states.block_height) inks_and_arts
             ORDER BY block_number DESC
         );
-
     FOREACH i IN ARRAY blocks
         LOOP
             RETURN QUERY
@@ -1315,7 +1305,6 @@ WITH urns AS (SELECT urns.id AS urn_id, ilks.id AS ilk_id, ilks.ilk, urns.identi
                         ORDER BY urn_id, block_number DESC)) last_blocks
                           LEFT JOIN public.headers ON headers.hash = last_blocks.block_hash
                  ORDER BY urn_id, headers.block_timestamp DESC)
-
 SELECT urns.identifier,
        ilks.identifier,
        all_urns.block_height,
@@ -1628,7 +1617,6 @@ WITH address AS (
          ORDER BY bid_id, block_number DESC
          LIMIT 1
      )
-
 SELECT get_flap.bid_id,
        storage_values.guy,
        storage_values.tic,
@@ -1654,6 +1642,7 @@ CREATE FUNCTION api.get_flip(bid_id numeric, ilk text, block_height bigint DEFAU
     LANGUAGE sql STABLE STRICT
     AS $$
 WITH ilk_ids AS (SELECT id FROM maker.ilks WHERE ilks.identifier = get_flip.ilk),
+     -- there should only ever be 1 address for a given ilk, which is why there's a LIMIT with no ORDER BY
      address AS (SELECT contract_address
                  FROM maker.flip_ilk
                  WHERE flip_ilk.ilk_id = (SELECT id FROM ilk_ids)
@@ -1929,7 +1918,6 @@ WITH address AS (
          ORDER BY relevant_blocks.block_height DESC
          LIMIT 1
      )
-
 SELECT get_flop.bid_id,
        guy.guy,
        tic.tic,
@@ -2097,7 +2085,6 @@ WITH ilk AS (SELECT id FROM maker.ilks WHERE identifier = ilk_identifier),
                           LEFT JOIN public.headers AS headers on headers.hash = relevant_blocks.block_hash
                  ORDER BY relevant_blocks.block_height DESC
                  LIMIT 1)
-
 SELECT ilks.identifier,
        get_ilk.block_height,
        rates.rate,
@@ -2277,7 +2264,6 @@ WITH created AS (SELECT era, vow_sin_mapping.block_number, api.epoch_to_datetime
                  WHERE era = get_queued_sin.era
                  ORDER BY vow_sin_mapping.block_number DESC
                  LIMIT 1)
-
 SELECT get_queued_sin.era,
        tab,
        (SELECT EXISTS(SELECT id FROM maker.vow_flog WHERE vow_flog.era = get_queued_sin.era)) AS flogged,
@@ -2349,7 +2335,6 @@ WITH urn AS (SELECT urns.id AS urn_id, ilks.id AS ilk_id, ilks.ilk, urns.identif
                        FROM art) last_blocks
                           LEFT JOIN public.headers ON headers.block_number = last_blocks.block_number
                  ORDER BY urn_id, block_timestamp DESC)
-
 SELECT get_urn.urn_identifier,
        ilk_identifier,
        $3,
@@ -2470,7 +2455,6 @@ CREATE FUNCTION api.poke_event_ilk(priceupdate api.poke_event) RETURNS api.ilk_s
     LANGUAGE sql STABLE
     AS $$
 WITH raw_ilk AS (SELECT * FROM maker.ilks WHERE ilks.id = priceUpdate.ilk_id)
-
 SELECT *
 FROM api.get_ilk((SELECT identifier FROM raw_ilk), priceUpdate.block_height)
 $$;
@@ -2545,7 +2529,6 @@ WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier),
              FROM maker.urns
              WHERE ilk_id = (SELECT id FROM ilk)
                AND identifier = urn_bites.urn_identifier)
-
 SELECT ilk_identifier, urn_bites.urn_identifier, bite_identifier AS bid_id, ink, art, tab, block_number, tx_idx
 FROM maker.bite
          LEFT JOIN headers ON bite.header_id = headers.id
@@ -2566,7 +2549,6 @@ WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier),
              FROM maker.urns
              WHERE ilk_id = (SELECT id FROM ilk)
                AND identifier = urn_identifier)
-
 SELECT ilk_identifier, urn_identifier, dink, dart, block_number, tx_idx
 FROM maker.vat_frob
          LEFT JOIN headers ON vat_frob.header_id = headers.id
@@ -5648,6 +5630,49 @@ ALTER SEQUENCE maker.jug_vow_id_seq OWNED BY maker.jug_vow.id;
 
 
 --
+-- Name: new_cdp; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.new_cdp (
+    id integer NOT NULL,
+    header_id integer NOT NULL,
+    usr text,
+    own text,
+    cdp numeric,
+    tx_idx integer NOT NULL,
+    log_idx integer NOT NULL,
+    raw_log jsonb
+);
+
+
+--
+-- Name: COLUMN new_cdp.id; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON COLUMN maker.new_cdp.id IS '@omit';
+
+
+--
+-- Name: new_cdp_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.new_cdp_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: new_cdp_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.new_cdp_id_seq OWNED BY maker.new_cdp.id;
+
+
+--
 -- Name: spot_file_mat; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -7426,7 +7451,8 @@ CREATE TABLE public.checked_headers (
     vat_fork integer DEFAULT 0 NOT NULL,
     jug_init integer DEFAULT 0 NOT NULL,
     yank integer DEFAULT 0 NOT NULL,
-    flip_tick integer DEFAULT 0 NOT NULL
+    flip_tick integer DEFAULT 0 NOT NULL,
+    new_cdp integer DEFAULT 0 NOT NULL
 );
 
 
@@ -8426,6 +8452,13 @@ ALTER TABLE ONLY maker.jug_vat ALTER COLUMN id SET DEFAULT nextval('maker.jug_va
 --
 
 ALTER TABLE ONLY maker.jug_vow ALTER COLUMN id SET DEFAULT nextval('maker.jug_vow_id_seq'::regclass);
+
+
+--
+-- Name: new_cdp id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.new_cdp ALTER COLUMN id SET DEFAULT nextval('maker.new_cdp_id_seq'::regclass);
 
 
 --
@@ -10107,6 +10140,22 @@ ALTER TABLE ONLY maker.jug_vow
 
 ALTER TABLE ONLY maker.jug_vow
     ADD CONSTRAINT jug_vow_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: new_cdp new_cdp_header_id_tx_idx_log_idx_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.new_cdp
+    ADD CONSTRAINT new_cdp_header_id_tx_idx_log_idx_key UNIQUE (header_id, tx_idx, log_idx);
+
+
+--
+-- Name: new_cdp new_cdp_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.new_cdp
+    ADD CONSTRAINT new_cdp_pkey PRIMARY KEY (id);
 
 
 --
@@ -12550,6 +12599,14 @@ ALTER TABLE ONLY maker.jug_init
 
 ALTER TABLE ONLY maker.jug_init
     ADD CONSTRAINT jug_init_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id) ON DELETE CASCADE;
+
+
+--
+-- Name: new_cdp new_cdp_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.new_cdp
+    ADD CONSTRAINT new_cdp_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
 
 
 --
