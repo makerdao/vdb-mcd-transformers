@@ -17,11 +17,10 @@
 package shared
 
 import (
-	"database/sql"
 	"fmt"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/jmoiron/sqlx"
-	log "github.com/sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/repository"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
@@ -30,10 +29,18 @@ import (
 )
 
 const (
-	getIlkIdQuery  = `SELECT id FROM maker.ilks WHERE ilk = $1`
-	getUrnIdQuery  = `SELECT id FROM maker.urns WHERE identifier = $1 AND ilk_id = $2`
-	InsertIlkQuery = `INSERT INTO maker.ilks (ilk, identifier) VALUES ($1, $2) RETURNING id`
-	InsertUrnQuery = `INSERT INTO maker.urns (identifier, ilk_id) VALUES ($1, $2) RETURNING id`
+	getOrCreateIlkQuery = `WITH insertedIlkId AS (
+		INSERT INTO maker.ilks (ilk, identifier) VALUES ($1, $2) ON CONFLICT DO NOTHING RETURNING id
+		)
+		SELECT id FROM maker.ilks WHERE ilk = $1
+		UNION
+		SELECT id FROM insertedIlkId`
+	getOrCreateUrnQuery = `WITH insertedUrnId AS (
+		INSERT INTO maker.urns (identifier, ilk_id) VALUES ($1, $2) ON CONFLICT DO NOTHING RETURNING id
+		)
+		SELECT id FROM maker.urns WHERE identifier = $1 AND ilk_id = $2
+		UNION
+		SELECT id FROM insertedUrnId`
 )
 
 type SharedRepository interface {
@@ -143,7 +150,7 @@ func Create(headerID int64, models []InsertionModel, db *postgres.DB) error {
 		if execErr != nil {
 			rollbackErr := tx.Rollback()
 			if rollbackErr != nil {
-				log.Error("failed to rollback ", rollbackErr)
+				logrus.Error("failed to rollback ", rollbackErr)
 			}
 			return execErr
 		}
@@ -153,7 +160,7 @@ func Create(headerID int64, models []InsertionModel, db *postgres.DB) error {
 	if checkHeaderErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
-			log.Error("failed to rollback ", rollbackErr)
+			logrus.Error("failed to rollback ", rollbackErr)
 		}
 		return checkHeaderErr
 	}
@@ -177,7 +184,7 @@ func populateForeignKeyIDs(fkToValue ForeignKeyValues, columnToValue ColumnValue
 		if dbErr != nil {
 			rollbackErr := tx.Rollback()
 			if rollbackErr != nil {
-				log.Error("failed to rollback ", rollbackErr)
+				logrus.Error("failed to rollback ", rollbackErr)
 			}
 			return fmt.Errorf("couldn't get or create FK (%s, %s): %s", fk, value, dbErr.Error())
 		} else {
@@ -192,24 +199,16 @@ func populateForeignKeyIDs(fkToValue ForeignKeyValues, columnToValue ColumnValue
 func GetOrCreateIlk(ilk string, db *postgres.DB) (int, error) {
 	var ilkID int
 	uniformIlk := common.HexToHash(ilk).Hex()
-	err := db.Get(&ilkID, getIlkIdQuery, uniformIlk)
-	if err == sql.ErrNoRows {
-		ilkIdentifier := DecodeHexToText(uniformIlk)
-		insertErr := db.QueryRow(InsertIlkQuery, uniformIlk, ilkIdentifier).Scan(&ilkID)
-		return ilkID, insertErr
-	}
+	ilkIdentifier := DecodeHexToText(uniformIlk)
+	err := db.Get(&ilkID, getOrCreateIlkQuery, uniformIlk, ilkIdentifier)
 	return ilkID, err
 }
 
 func GetOrCreateIlkInTransaction(ilk string, tx *sqlx.Tx) (int, error) {
 	var ilkID int
 	uniformIlk := common.HexToHash(ilk).Hex()
-	err := tx.Get(&ilkID, getIlkIdQuery, uniformIlk)
-	if err == sql.ErrNoRows {
-		ilkIdentifier := DecodeHexToText(uniformIlk)
-		insertErr := tx.QueryRow(InsertIlkQuery, uniformIlk, ilkIdentifier).Scan(&ilkID)
-		return ilkID, insertErr
-	}
+	ilkIdentifier := DecodeHexToText(uniformIlk)
+	err := tx.Get(&ilkID, getOrCreateIlkQuery, uniformIlk, ilkIdentifier)
 	return ilkID, err
 }
 
@@ -219,14 +218,7 @@ func GetOrCreateUrn(guy string, hexIlk string, db *postgres.DB) (urnID int, err 
 		return 0, fmt.Errorf("error getting ilkID for urn: %s", ilkErr.Error())
 	}
 
-	err = db.Get(&urnID, getUrnIdQuery, guy, ilkID)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			insertErr := db.QueryRow(InsertUrnQuery, guy, ilkID).Scan(&urnID)
-			return urnID, insertErr
-		}
-	}
-
+	err = db.Get(&urnID, getOrCreateUrnQuery, guy, ilkID)
 	return urnID, err
 }
 
@@ -235,14 +227,7 @@ func GetOrCreateUrnInTransaction(guy string, hexIlk string, tx *sqlx.Tx) (urnID 
 	if ilkErr != nil {
 		return 0, fmt.Errorf("error getting ilkID for urn")
 	}
-	err = tx.Get(&urnID, getUrnIdQuery, guy, ilkID)
 
-	if err != nil {
-		if err == sql.ErrNoRows {
-			insertErr := tx.QueryRow(InsertUrnQuery, guy, ilkID).Scan(&urnID)
-			return urnID, insertErr
-		}
-	}
-
+	err = tx.Get(&urnID, getOrCreateUrnQuery, guy, ilkID)
 	return urnID, err
 }
