@@ -82,6 +82,10 @@ var _ = Describe("Signature constants", func() {
 		Expect(JugInitSignature()).To(Equal("0x3b66319500000000000000000000000000000000000000000000000000000000"))
 	})
 
+	It("generates cdp manager new cdp signature", func() {
+		Expect(NewCdpSignature()).To(Equal("0xd6be0bc178658a382ff4f91c8c68b542aa6b71685b8fe427966b87745c3ea7a2"))
+	})
+
 	It("generates spot file mat signature", func() {
 		Expect(SpotFileMatSignature()).To(Equal("0x1a0b287e00000000000000000000000000000000000000000000000000000000"))
 	})
