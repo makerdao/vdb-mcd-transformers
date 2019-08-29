@@ -80,14 +80,13 @@ var _ = XDescribe("FlapKick Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []flap_kick.FlapKickModel
-		err = db.Select(&dbResult, `SELECT bid, bid_id, "end", gal, lot FROM maker.flap_kick`)
+		err = db.Select(&dbResult, `SELECT bid, bid_id, "end", lot FROM maker.flap_kick`)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))
 		Expect(dbResult[0].Bid).To(Equal("0"))
 		Expect(dbResult[0].BidId).To(Equal("1"))
 		Expect(dbResult[0].ContractAddress).To(Equal(""))
-		Expect(dbResult[0].Gal).To(Equal("0x0000d8b4147eDa80Fec7122AE16DA2479Cbd7ffB"))
 		Expect(dbResult[0].Lot).To(Equal("1000000000000000000"))
 	})
 })

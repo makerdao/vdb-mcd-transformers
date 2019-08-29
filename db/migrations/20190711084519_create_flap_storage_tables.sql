@@ -70,20 +70,6 @@ CREATE INDEX flap_bid_end_block_number_index ON maker.flap_bid_end (block_number
 CREATE INDEX flap_bid_end_bid_id_index ON maker.flap_bid_end (bid_id);
 CREATE INDEX flap_bid_end_bid_contract_address_index ON maker.flap_bid_end (contract_address);
 
-CREATE TABLE maker.flap_bid_gal
-(
-    id               SERIAL PRIMARY KEY,
-    block_number     BIGINT,
-    block_hash       TEXT,
-    contract_address TEXT,
-    bid_id           NUMERIC NOT NULL,
-    gal              TEXT    NOT NULL,
-    UNIQUE (block_number, block_hash, contract_address, bid_id, gal)
-);
-CREATE INDEX flap_bid_gal_block_number_index ON maker.flap_bid_gal (block_number);
-CREATE INDEX flap_bid_gal_bid_id_index ON maker.flap_bid_gal (bid_id);
-CREATE INDEX flap_bid_gal_bid_contract_address_index ON maker.flap_bid_gal (contract_address);
-
 CREATE TABLE maker.flap_vat
 (
     id               SERIAL PRIMARY KEY,
@@ -181,16 +167,12 @@ DROP INDEX maker.flap_bid_tic_bid_id_index;
 DROP INDEX maker.flap_bid_end_block_number_index;
 DROP INDEX maker.flap_bid_end_bid_contract_address_index;
 DROP INDEX maker.flap_bid_end_bid_id_index;
-DROP INDEX maker.flap_bid_gal_block_number_index;
-DROP INDEX maker.flap_bid_gal_bid_contract_address_index;
-DROP INDEX maker.flap_bid_gal_bid_id_index;
 
 DROP TABLE maker.flap_bid_bid;
 DROP TABLE maker.flap_bid_lot;
 DROP TABLE maker.flap_bid_guy;
 DROP TABLE maker.flap_bid_tic;
 DROP TABLE maker.flap_bid_end;
-DROP TABLE maker.flap_bid_gal;
 DROP TABLE maker.flap_beg;
 DROP TABLE maker.flap_vat;
 DROP TABLE maker.flap_gem;

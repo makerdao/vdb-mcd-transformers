@@ -72,11 +72,10 @@ var _ = Describe("Flap Kick Repository", func() {
 			Expect(count).To(Equal(1))
 
 			var dbResult flap_kick.FlapKickModel
-			getErr := db.Get(&dbResult, `SELECT bid, bid_id, gal, lot, contract_address, log_idx, tx_idx, raw_log FROM maker.flap_kick WHERE header_id = $1`, headerId)
+			getErr := db.Get(&dbResult, `SELECT bid, bid_id, lot, contract_address, log_idx, tx_idx, raw_log FROM maker.flap_kick WHERE header_id = $1`, headerId)
 			Expect(getErr).NotTo(HaveOccurred())
 			Expect(dbResult.Bid).To(Equal(test_data.FlapKickModel.Bid))
 			Expect(dbResult.BidId).To(Equal(test_data.FlapKickModel.BidId))
-			Expect(dbResult.Gal).To(Equal(test_data.FlapKickModel.Gal))
 			Expect(dbResult.Lot).To(Equal(test_data.FlapKickModel.Lot))
 			Expect(dbResult.ContractAddress).To(Equal(test_data.FlapKickModel.ContractAddress))
 			Expect(dbResult.LogIndex).To(Equal(test_data.FlapKickModel.LogIndex))

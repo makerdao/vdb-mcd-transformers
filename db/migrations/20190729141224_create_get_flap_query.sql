@@ -6,7 +6,6 @@ CREATE TYPE api.flap_state AS (
     "end" BIGINT,
     lot NUMERIC,
     bid NUMERIC,
-    gal TEXT,
     dealt BOOLEAN,
     created TIMESTAMP,
     updated TIMESTAMP
@@ -24,7 +23,7 @@ WITH address AS (
     LIMIT 1
 ),
      storage_values AS (
-         SELECT bid_id, guy, tic, "end", lot, bid, gal, created, updated
+         SELECT bid_id, guy, tic, "end", lot, bid, created, updated
          FROM maker.flap
          WHERE bid_id = get_flap.bid_id
            AND block_number <= block_height
@@ -48,7 +47,6 @@ SELECT get_flap.bid_id,
        storage_values."end",
        storage_values.lot,
        storage_values.bid,
-       storage_values.gal,
        CASE (SELECT COUNT(*) FROM deal)
            WHEN 0 THEN FALSE
            ELSE TRUE

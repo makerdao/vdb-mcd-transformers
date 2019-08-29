@@ -30,12 +30,9 @@ import (
 )
 
 var EthFlapKickLog = types.Log{
-	Address: common.HexToAddress(FlapAddress()),
-	Topics: []common.Hash{
-		common.HexToHash(constants.FlapKickSignature()),
-		common.HexToHash("0x0000000000000000000000007d7bee5fcfd8028cf7b00876c5b1421c800561a6"),
-	},
-	Data:        hexutil.MustDecode("0x0000000000000000000000000000000000000000000000000000246139ca80000000000000000000000000000000000000000000000000000de0b6b3a76400000000000000000000000000000000000000000000000000001bc16d674ec80000"),
+	Address:     common.HexToAddress(FlapAddress()),
+	Topics:      []common.Hash{common.HexToHash(constants.FlapKickSignature())},
+	Data:        hexutil.MustDecode("0x0000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000003b9aca000000000000000000000000000000000000000000000000000000000001312d00"),
 	BlockNumber: 65,
 	TxHash:      common.HexToHash("0xee7930b76b6e93974bd3f37824644ae42a89a3887a1131a7bcb3267ab4dc0169"),
 	TxIndex:     66,
@@ -45,10 +42,9 @@ var EthFlapKickLog = types.Log{
 }
 
 var FlapKickEntity = flap_kick.FlapKickEntity{
-	Id:               big.NewInt(40000000000000),
-	Lot:              big.NewInt(1000000000000000000),
-	Bid:              big.NewInt(2000000000000000000),
-	Gal:              common.HexToAddress("0x7d7bEe5fCfD8028cf7b00876C5b1421c800561A6"),
+	Id:               big.NewInt(1),
+	Lot:              big.NewInt(1000000000),
+	Bid:              big.NewInt(20000000),
 	Raw:              EthFlapKickLog,
 	TransactionIndex: EthFlapKickLog.TxIndex,
 	LogIndex:         EthFlapKickLog.Index,
@@ -59,7 +55,6 @@ var FlapKickModel = flap_kick.FlapKickModel{
 	BidId:            FlapKickEntity.Id.String(),
 	Lot:              FlapKickEntity.Lot.String(),
 	Bid:              FlapKickEntity.Bid.String(),
-	Gal:              FlapKickEntity.Gal.String(),
 	ContractAddress:  EthFlapKickLog.Address.Hex(),
 	LogIndex:         EthFlapKickLog.Index,
 	TransactionIndex: EthFlapKickLog.TxIndex,

@@ -335,39 +335,5 @@ var _ = Describe("Flap storage repository", func() {
 				Expect(err.Error()).To(MatchRegexp("pq: invalid input syntax for integer"))
 			})
 		})
-
-		Describe("bid_gal", func() {
-			var fakeGalValue = FakeAddress
-			var bidGalMetadata = utils.StorageValueMetadata{
-				Name: storage.BidGal,
-				Keys: map[utils.Key]string{constants.BidId: fakeBidId},
-				Type: utils.Address,
-			}
-			inputs := shared_behaviors.StorageVariableBehaviorInputs{
-				KeyFieldName:     string(constants.BidId),
-				ValueFieldName:   "gal",
-				Value:            fakeGalValue,
-				Key:              fakeBidId,
-				IsAMapping:       true,
-				StorageTableName: "maker.flap_bid_gal",
-				Repository:       &repository,
-				Metadata:         bidGalMetadata,
-			}
-
-			shared_behaviors.SharedStorageRepositoryVariableBehaviors(&inputs)
-
-			It("triggers an update to the flap table", func() {
-				err := repository.Create(fakeBlockNumber, fakeHash, bidGalMetadata, fakeGalValue)
-				Expect(err).NotTo(HaveOccurred())
-
-				var flap FlapRes
-				queryErr := db.Get(&flap, `SELECT block_number, block_hash, bid_id, gal FROM maker.flap`)
-				Expect(queryErr).NotTo(HaveOccurred())
-				Expect(flap.BlockNumber).To(Equal(fakeBlockNumber))
-				Expect(flap.BlockHash).To(Equal(fakeHash))
-				Expect(flap.BidId).To(Equal(fakeBidId))
-				Expect(flap.Gal).To(Equal(fakeGalValue))
-			})
-		})
 	})
 })

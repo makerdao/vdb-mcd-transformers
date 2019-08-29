@@ -76,7 +76,6 @@ func (FlapKickConverter) ToModels(entities []interface{}) ([]interface{}, error)
 			BidId:            flapKickEntity.Id.String(),
 			Lot:              shared.BigIntToString(flapKickEntity.Lot),
 			Bid:              shared.BigIntToString(flapKickEntity.Bid),
-			Gal:              flapKickEntity.Gal.String(),
 			ContractAddress:  flapKickEntity.Raw.Address.Hex(),
 			LogIndex:         flapKickEntity.LogIndex,
 			TransactionIndex: flapKickEntity.TransactionIndex,

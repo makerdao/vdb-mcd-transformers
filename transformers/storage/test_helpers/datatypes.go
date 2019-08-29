@@ -47,7 +47,6 @@ type FlapRes struct {
 	End             string
 	Lot             string
 	Bid             string
-	Gal             string
 }
 
 func AssertVariable(res VariableRes, blockNumber int, blockHash, value string) {
