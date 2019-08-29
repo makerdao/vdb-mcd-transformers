@@ -356,7 +356,7 @@ func AssertUrn(actual, expected UrnState) {
 	Expect(actual.Updated).To(Equal(expected.Updated))
 }
 
-func GetFlopMetadatas(bidId string) []utils.StorageValueMetadata {
+func getCommonBidMetadatas(bidId string) []utils.StorageValueMetadata {
 	keys := map[utils.Key]string{constants.BidId: bidId}
 	packedNames := map[int]string{0: storage.BidGuy, 1: storage.BidTic, 2: storage.BidEnd}
 	packedTypes := map[int]utils.ValueType{0: utils.Address, 1: utils.Uint48, 2: utils.Uint48}
@@ -366,6 +366,14 @@ func GetFlopMetadatas(bidId string) []utils.StorageValueMetadata {
 		utils.GetStorageValueMetadata(storage.BidLot, keys, utils.Uint256),
 		utils.GetStorageValueMetadataForPackedSlot(storage.Packed, keys, utils.PackedSlot, packedNames, packedTypes),
 	}
+}
+
+func GetFlopMetadatas(bidId string) []utils.StorageValueMetadata {
+	return getCommonBidMetadatas(bidId)
+}
+
+func GetFlapMetadatas(bidId string) []utils.StorageValueMetadata {
+	return getCommonBidMetadatas(bidId)
 }
 
 func GetCdpManagerMetadatas(cdpi string) []utils.StorageValueMetadata {
@@ -378,16 +386,12 @@ func GetCdpManagerMetadatas(cdpi string) []utils.StorageValueMetadata {
 	}
 }
 
-func GetFlapMetadatas(bidId string) []utils.StorageValueMetadata {
-	keys := map[utils.Key]string{constants.BidId: bidId}
-	return append(GetFlopMetadatas(bidId), utils.GetStorageValueMetadata(storage.BidGal, keys, utils.Address))
-}
-
 func GetFlipMetadatas(bidId string) []utils.StorageValueMetadata {
 	keys := map[utils.Key]string{constants.BidId: bidId}
-	return append(GetFlapMetadatas(bidId),
+	return append(getCommonBidMetadatas(bidId),
 		utils.GetStorageValueMetadata(storage.Ilk, nil, utils.Bytes32),
 		utils.GetStorageValueMetadata(storage.BidUsr, keys, utils.Address),
+		utils.GetStorageValueMetadata(storage.BidGal, keys, utils.Address),
 		utils.GetStorageValueMetadata(storage.BidTab, keys, utils.Uint256))
 }
 
@@ -400,7 +404,7 @@ func GetCdpManagerStorageValues(seed int, ilkHex string, urnGuy string, cdpi int
 	return valuesMap
 }
 
-func GetFlopStorageValues(seed int, bidId int) map[string]interface{} {
+func getCommonBidStorageValues(seed, bidId int) map[string]interface{} {
 	packedValues := map[int]string{0: "address1" + strconv.Itoa(seed), 1: strconv.Itoa(1 + seed), 2: strconv.Itoa(2 + seed)}
 	valuesMap := make(map[string]interface{})
 	valuesMap[storage.Kicks] = strconv.Itoa(bidId)
@@ -411,15 +415,18 @@ func GetFlopStorageValues(seed int, bidId int) map[string]interface{} {
 	return valuesMap
 }
 
-func GetFlapStorageValues(seed int, bidId int) map[string]interface{} {
-	valuesMap := GetFlopStorageValues(seed, bidId)
-	valuesMap[storage.BidGal] = "address2" + strconv.Itoa(seed)
-	return valuesMap
+func GetFlopStorageValues(seed, bidId int) map[string]interface{} {
+	return getCommonBidStorageValues(seed, bidId)
+}
+
+func GetFlapStorageValues(seed, bidId int) map[string]interface{} {
+	return getCommonBidStorageValues(seed, bidId)
 }
 
 func GetFlipStorageValues(seed int, ilk string, bidId int) map[string]interface{} {
-	valuesMap := GetFlapStorageValues(seed, bidId)
+	valuesMap := getCommonBidStorageValues(seed, bidId)
 	valuesMap[storage.Ilk] = ilk
+	valuesMap[storage.BidGal] = "address2" + strconv.Itoa(seed)
 	valuesMap[storage.BidUsr] = "address3" + strconv.Itoa(seed)
 	valuesMap[storage.BidTab] = strconv.Itoa(5 + seed)
 	return valuesMap
@@ -479,14 +486,14 @@ func ManagedCdpFromValues(ilkIdentifier, created string, cdpValues map[string]in
 	}
 }
 
-func FlopBidFromValues(bidId, dealt, updated, created string, bidValues map[string]interface{}) FlopBid {
+func commonBidFromValues(bidId, dealt, updated, created string, bidValues map[string]interface{}) commonBid {
 	parsedCreated, _ := strconv.ParseInt(created, 10, 64)
 	parsedUpdated, _ := strconv.ParseInt(updated, 10, 64)
 	createdTimestamp := time.Unix(parsedCreated, 0).UTC().Format(time.RFC3339)
 	updatedTimestamp := time.Unix(parsedUpdated, 0).UTC().Format(time.RFC3339)
 	packedValues := bidValues[storage.Packed].(map[int]string)
 
-	return FlopBid{
+	return commonBid{
 		BidId:   bidId,
 		Guy:     packedValues[0],
 		Tic:     packedValues[1],
@@ -499,19 +506,25 @@ func FlopBidFromValues(bidId, dealt, updated, created string, bidValues map[stri
 	}
 }
 
+func FlopBidFromValues(bidId, dealt, updated, created string, bidValues map[string]interface{}) FlopBid {
+	return FlopBid{
+		commonBid: commonBidFromValues(bidId, dealt, updated, created, bidValues),
+	}
+}
+
 func FlapBidFromValues(bidId, dealt, updated, created string, bidValues map[string]interface{}) FlapBid {
 	return FlapBid{
-		FlopBid: FlopBidFromValues(bidId, dealt, updated, created, bidValues),
-		Gal:     bidValues[storage.BidGal].(string),
+		commonBid: commonBidFromValues(bidId, dealt, updated, created, bidValues),
 	}
 }
 
 func FlipBidFromValues(bidId, ilkId, urnId, dealt, updated, created string, bidValues map[string]interface{}) FlipBid {
 	return FlipBid{
-		FlapBid: FlapBidFromValues(bidId, dealt, updated, created, bidValues),
-		IlkId:   ilkId,
-		UrnId:   urnId,
-		Tab:     bidValues[storage.BidTab].(string),
+		commonBid: commonBidFromValues(bidId, dealt, updated, created, bidValues),
+		IlkId:     ilkId,
+		UrnId:     urnId,
+		Gal:       bidValues[storage.BidGal].(string),
+		Tab:       bidValues[storage.BidTab].(string),
 	}
 }
 
@@ -523,7 +536,7 @@ type ManagedCdp struct {
 	Created       sql.NullString
 }
 
-type FlopBid struct {
+type commonBid struct {
 	BidId   string `db:"bid_id"`
 	Guy     string
 	Tic     string
@@ -535,15 +548,19 @@ type FlopBid struct {
 	Updated sql.NullString
 }
 
+type FlopBid struct {
+	commonBid
+}
+
 type FlapBid struct {
-	FlopBid
-	Gal string
+	commonBid
 }
 
 type FlipBid struct {
-	FlapBid
+	commonBid
 	IlkId string `db:"ilk_id"`
 	UrnId string `db:"urn_id"`
+	Gal   string
 	Tab   string
 }
 

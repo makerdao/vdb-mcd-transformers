@@ -145,7 +145,6 @@ CREATE TYPE api.flap_state AS (
 	"end" bigint,
 	lot numeric,
 	bid numeric,
-	gal text,
 	dealt boolean,
 	created timestamp without time zone,
 	updated timestamp without time zone
@@ -552,6 +551,7 @@ CREATE FUNCTION api.all_bites(ilk_identifier text) RETURNS SETOF api.bite_event
     LANGUAGE sql STABLE STRICT
     AS $$
 WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier)
+
 SELECT ilk_identifier, identifier AS urn_identifier, bite_identifier AS bid_id, ink, art, tab, block_number, tx_idx
 FROM maker.bite
          LEFT JOIN maker.urns ON bite.urn_id = urns.id
@@ -611,6 +611,7 @@ WITH address AS (
          WHERE yank.contract_address = (SELECT * FROM address)
          ORDER BY block_height DESC
      )
+
 SELECT flap_kick.bid_id,
        lot,
        bid                 AS bid_amount,
@@ -637,6 +638,7 @@ FROM deals
 UNION
 SELECT *
 FROM yanks
+
 $$;
 
 
@@ -728,6 +730,7 @@ WITH addresses AS (
                                 AND flip_bid_lot.block_number = headers.block_number
          ORDER BY block_height DESC
      )
+
 SELECT flip_kick.bid_id,
        lot,
        bid                 AS bid_amount,
@@ -851,6 +854,7 @@ WITH address AS (
          WHERE yank.contract_address = (SELECT * FROM address)
          ORDER BY block_height DESC
      )
+
 SELECT flop_kick.bid_id,
        lot,
        bid                 AS bid_amount,
@@ -877,6 +881,7 @@ FROM deals
 UNION
 SELECT *
 FROM yanks
+
 $$;
 
 
@@ -921,6 +926,7 @@ CREATE FUNCTION api.all_frobs(ilk_identifier text) RETURNS SETOF api.frob_event
     LANGUAGE sql STABLE STRICT
     AS $$
 WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier)
+
 SELECT ilk_identifier, identifier AS urn_identifier, dink, dart, block_number, tx_idx
 FROM maker.vat_frob
          LEFT JOIN maker.urns ON vat_frob.urn_id = urns.id
@@ -938,6 +944,7 @@ CREATE FUNCTION api.all_ilk_file_events(ilk_identifier text) RETURNS SETOF api.i
     LANGUAGE sql STABLE STRICT
     AS $$
 WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier)
+
 SELECT ilk_identifier, what, data :: text, block_number, tx_idx
 FROM maker.cat_file_chop_lump
          LEFT JOIN headers ON cat_file_chop_lump.header_id = headers.id
@@ -1227,6 +1234,7 @@ BEGIN
     FROM maker.urns
     WHERE urns.identifier = urn_identifier
       AND urns.ilk_id = _ilk_id INTO _urn_id;
+
     blocks := ARRAY(
             SELECT block_number
             FROM (SELECT block_number
@@ -1240,6 +1248,7 @@ BEGIN
                     AND block_number <= all_urn_states.block_height) inks_and_arts
             ORDER BY block_number DESC
         );
+
     FOREACH i IN ARRAY blocks
         LOOP
             RETURN QUERY
@@ -1305,6 +1314,7 @@ WITH urns AS (SELECT urns.id AS urn_id, ilks.id AS ilk_id, ilks.ilk, urns.identi
                         ORDER BY urn_id, block_number DESC)) last_blocks
                           LEFT JOIN public.headers ON headers.hash = last_blocks.block_hash
                  ORDER BY urn_id, headers.block_timestamp DESC)
+
 SELECT urns.identifier,
        ilks.identifier,
        all_urns.block_height,
@@ -1600,7 +1610,7 @@ WITH address AS (
     LIMIT 1
 ),
      storage_values AS (
-         SELECT bid_id, guy, tic, "end", lot, bid, gal, created, updated
+         SELECT bid_id, guy, tic, "end", lot, bid, created, updated
          FROM maker.flap
          WHERE bid_id = get_flap.bid_id
            AND block_number <= block_height
@@ -1617,13 +1627,13 @@ WITH address AS (
          ORDER BY bid_id, block_number DESC
          LIMIT 1
      )
+
 SELECT get_flap.bid_id,
        storage_values.guy,
        storage_values.tic,
        storage_values."end",
        storage_values.lot,
        storage_values.bid,
-       storage_values.gal,
        CASE (SELECT COUNT(*) FROM deal)
            WHEN 0 THEN FALSE
            ELSE TRUE
@@ -1918,6 +1928,7 @@ WITH address AS (
          ORDER BY relevant_blocks.block_height DESC
          LIMIT 1
      )
+
 SELECT get_flop.bid_id,
        guy.guy,
        tic.tic,
@@ -2085,6 +2096,7 @@ WITH ilk AS (SELECT id FROM maker.ilks WHERE identifier = ilk_identifier),
                           LEFT JOIN public.headers AS headers on headers.hash = relevant_blocks.block_hash
                  ORDER BY relevant_blocks.block_height DESC
                  LIMIT 1)
+
 SELECT ilks.identifier,
        get_ilk.block_height,
        rates.rate,
@@ -2264,6 +2276,7 @@ WITH created AS (SELECT era, vow_sin_mapping.block_number, api.epoch_to_datetime
                  WHERE era = get_queued_sin.era
                  ORDER BY vow_sin_mapping.block_number DESC
                  LIMIT 1)
+
 SELECT get_queued_sin.era,
        tab,
        (SELECT EXISTS(SELECT id FROM maker.vow_flog WHERE vow_flog.era = get_queued_sin.era)) AS flogged,
@@ -2335,6 +2348,7 @@ WITH urn AS (SELECT urns.id AS urn_id, ilks.id AS ilk_id, ilks.ilk, urns.identif
                        FROM art) last_blocks
                           LEFT JOIN public.headers ON headers.block_number = last_blocks.block_number
                  ORDER BY urn_id, block_timestamp DESC)
+
 SELECT get_urn.urn_identifier,
        ilk_identifier,
        $3,
@@ -2455,6 +2469,7 @@ CREATE FUNCTION api.poke_event_ilk(priceupdate api.poke_event) RETURNS api.ilk_s
     LANGUAGE sql STABLE
     AS $$
 WITH raw_ilk AS (SELECT * FROM maker.ilks WHERE ilks.id = priceUpdate.ilk_id)
+
 SELECT *
 FROM api.get_ilk((SELECT identifier FROM raw_ilk), priceUpdate.block_height)
 $$;
@@ -2529,6 +2544,7 @@ WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier),
              FROM maker.urns
              WHERE ilk_id = (SELECT id FROM ilk)
                AND identifier = urn_bites.urn_identifier)
+
 SELECT ilk_identifier, urn_bites.urn_identifier, bite_identifier AS bid_id, ink, art, tab, block_number, tx_idx
 FROM maker.bite
          LEFT JOIN headers ON bite.header_id = headers.id
@@ -2549,6 +2565,7 @@ WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier),
              FROM maker.urns
              WHERE ilk_id = (SELECT id FROM ilk)
                AND identifier = urn_identifier)
+
 SELECT ilk_identifier, urn_identifier, dink, dart, block_number, tx_idx
 FROM maker.vat_frob
          LEFT JOIN headers ON vat_frob.header_id = headers.id
@@ -2610,8 +2627,7 @@ BEGIN
         LIMIT 1
     )
     INSERT
-    INTO maker.flap(bid_id, contract_address, block_number, block_hash, created, updated, bid, guy, tic, "end", lot,
-                    gal)
+    INTO maker.flap(bid_id, contract_address, block_number, block_hash, created, updated, bid, guy, tic, "end", lot)
     VALUES (NEW.bid_id, NEW.contract_address,
             (SELECT block_number FROM block_info),
             (SELECT hash FROM block_info),
@@ -2621,8 +2637,7 @@ BEGIN
             (SELECT get_latest_flap_bid_guy(NEW.bid_id)),
             (SELECT get_latest_flap_bid_tic(NEW.bid_id)),
             (SELECT get_latest_flap_bid_end(NEW.bid_id)),
-            (SELECT get_latest_flap_bid_lot(NEW.bid_id)),
-            (SELECT get_latest_flap_bid_gal(NEW.bid_id)))
+            (SELECT get_latest_flap_bid_lot(NEW.bid_id)))
     ON CONFLICT (bid_id, block_number) DO UPDATE SET created = (SELECT datetime FROM block_info),
                                                      updated = (SELECT datetime FROM block_info);
     return NEW;
@@ -2646,14 +2661,13 @@ BEGIN
         LIMIT 1
     )
     INSERT
-    INTO maker.flap(bid_id, contract_address, block_number, block_hash, bid, guy, tic, "end", lot, gal, updated,
+    INTO maker.flap(bid_id, contract_address, block_number, block_hash, bid, guy, tic, "end", lot, updated,
                     created)
     VALUES (NEW.bid_id, NEW.contract_address, NEW.block_number, NEW.block_hash, NEW.bid,
             (SELECT get_latest_flap_bid_guy(NEW.bid_id)),
             (SELECT get_latest_flap_bid_tic(NEW.bid_id)),
             (SELECT get_latest_flap_bid_end(NEW.bid_id)),
             (SELECT get_latest_flap_bid_lot(NEW.bid_id)),
-            (SELECT get_latest_flap_bid_gal(NEW.bid_id)),
             (SELECT get_block_timestamp(NEW.block_hash)),
             (SELECT created FROM created))
     ON CONFLICT (bid_id, block_number) DO UPDATE SET bid = NEW.bid;
@@ -2678,49 +2692,16 @@ BEGIN
         LIMIT 1
     )
     INSERT
-    INTO maker.flap(bid_id, contract_address, block_number, block_hash, "end", bid, guy, tic, lot, gal, updated,
+    INTO maker.flap(bid_id, contract_address, block_number, block_hash, "end", bid, guy, tic, lot, updated,
                     created)
     VALUES (NEW.bid_id, NEW.contract_address, NEW.block_number, NEW.block_hash, NEW."end",
             (SELECT get_latest_flap_bid_bid(NEW.bid_id)),
             (SELECT get_latest_flap_bid_guy(NEW.bid_id)),
             (SELECT get_latest_flap_bid_tic(NEW.bid_id)),
             (SELECT get_latest_flap_bid_lot(NEW.bid_id)),
-            (SELECT get_latest_flap_bid_gal(NEW.bid_id)),
             (SELECT get_block_timestamp(NEW.block_hash)),
             (SELECT created FROM created))
     ON CONFLICT (bid_id, block_number) DO UPDATE SET "end" = NEW."end";
-    return NEW;
-END
-$$;
-
-
---
--- Name: insert_updated_flap_gal(); Type: FUNCTION; Schema: maker; Owner: -
---
-
-CREATE FUNCTION maker.insert_updated_flap_gal() RETURNS trigger
-    LANGUAGE plpgsql
-    AS $$
-BEGIN
-    WITH created AS (
-        SELECT created
-        FROM maker.flap
-        WHERE flap.bid_id = NEW.bid_id
-        ORDER BY flap.block_number
-        LIMIT 1
-    )
-    INSERT
-    INTO maker.flap(bid_id, contract_address, block_number, block_hash, gal, bid, guy, tic, "end", lot, updated,
-                    created)
-    VALUES (NEW.bid_id, NEW.contract_address, NEW.block_number, NEW.block_hash, NEW.gal,
-            (SELECT get_latest_flap_bid_bid(NEW.bid_id)),
-            (SELECT get_latest_flap_bid_guy(NEW.bid_id)),
-            (SELECT get_latest_flap_bid_tic(NEW.bid_id)),
-            (SELECT get_latest_flap_bid_end(NEW.bid_id)),
-            (SELECT get_latest_flap_bid_lot(NEW.bid_id)),
-            (SELECT get_block_timestamp(NEW.block_hash)),
-            (SELECT created FROM created))
-    ON CONFLICT (bid_id, block_number) DO UPDATE SET gal = NEW.gal;
     return NEW;
 END
 $$;
@@ -2742,14 +2723,13 @@ BEGIN
         LIMIT 1
     )
     INSERT
-    INTO maker.flap(bid_id, contract_address, block_number, block_hash, guy, bid, tic, "end", lot, gal, updated,
+    INTO maker.flap(bid_id, contract_address, block_number, block_hash, guy, bid, tic, "end", lot, updated,
                     created)
     VALUES (NEW.bid_id, NEW.contract_address, NEW.block_number, NEW.block_hash, NEW.guy,
             (SELECT get_latest_flap_bid_bid(NEW.bid_id)),
             (SELECT get_latest_flap_bid_tic(NEW.bid_id)),
             (SELECT get_latest_flap_bid_end(NEW.bid_id)),
             (SELECT get_latest_flap_bid_lot(NEW.bid_id)),
-            (SELECT get_latest_flap_bid_gal(NEW.bid_id)),
             (SELECT get_block_timestamp(NEW.block_hash)),
             (SELECT created FROM created))
     ON CONFLICT (bid_id, block_number) DO UPDATE SET guy = NEW.guy;
@@ -2774,14 +2754,13 @@ BEGIN
         LIMIT 1
     )
     INSERT
-    INTO maker.flap(bid_id, contract_address, block_number, block_hash, lot, bid, guy, tic, "end", gal, updated,
+    INTO maker.flap(bid_id, contract_address, block_number, block_hash, lot, bid, guy, tic, "end", updated,
                     created)
     VALUES (NEW.bid_id, NEW.contract_address, NEW.block_number, NEW.block_hash, NEW.lot,
             (SELECT get_latest_flap_bid_bid(NEW.bid_id)),
             (SELECT get_latest_flap_bid_guy(NEW.bid_id)),
             (SELECT get_latest_flap_bid_tic(NEW.bid_id)),
             (SELECT get_latest_flap_bid_end(NEW.bid_id)),
-            (SELECT get_latest_flap_bid_gal(NEW.bid_id)),
             (SELECT get_block_timestamp(NEW.block_hash)),
             (SELECT created FROM created))
     ON CONFLICT (bid_id, block_number) DO UPDATE SET lot = NEW.lot;
@@ -2806,14 +2785,13 @@ BEGIN
         LIMIT 1
     )
     INSERT
-    INTO maker.flap(bid_id, contract_address, block_number, block_hash, tic, bid, guy, "end", lot, gal, updated,
+    INTO maker.flap(bid_id, contract_address, block_number, block_hash, tic, bid, guy, "end", lot, updated,
                     created)
     VALUES (NEW.bid_id, NEW.contract_address, NEW.block_number, NEW.block_hash, NEW.tic,
             (SELECT get_latest_flap_bid_bid(NEW.bid_id)),
             (SELECT get_latest_flap_bid_guy(NEW.bid_id)),
             (SELECT get_latest_flap_bid_end(NEW.bid_id)),
             (SELECT get_latest_flap_bid_lot(NEW.bid_id)),
-            (SELECT get_latest_flap_bid_gal(NEW.bid_id)),
             (SELECT get_block_timestamp(NEW.block_hash)),
             (SELECT created FROM created))
     ON CONFLICT (bid_id, block_number) DO UPDATE SET tic = NEW.tic;
@@ -2863,22 +2841,6 @@ CREATE FUNCTION public.get_latest_flap_bid_end(bid_id numeric) RETURNS bigint
 SELECT "end"
 FROM maker.flap
 WHERE "end" IS NOT NULL
-  AND flap.bid_id = bid_id
-ORDER BY block_number
-LIMIT 1
-$$;
-
-
---
--- Name: get_latest_flap_bid_gal(numeric); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION public.get_latest_flap_bid_gal(bid_id numeric) RETURNS text
-    LANGUAGE sql
-    AS $$
-SELECT gal
-FROM maker.flap
-WHERE gal IS NOT NULL
   AND flap.bid_id = bid_id
 ORDER BY block_number
 LIMIT 1
@@ -3730,7 +3692,6 @@ CREATE TABLE maker.flap (
     "end" bigint,
     lot numeric,
     bid numeric,
-    gal text,
     created timestamp without time zone,
     updated timestamp without time zone
 );
@@ -3835,40 +3796,6 @@ CREATE SEQUENCE maker.flap_bid_end_id_seq
 --
 
 ALTER SEQUENCE maker.flap_bid_end_id_seq OWNED BY maker.flap_bid_end.id;
-
-
---
--- Name: flap_bid_gal; Type: TABLE; Schema: maker; Owner: -
---
-
-CREATE TABLE maker.flap_bid_gal (
-    id integer NOT NULL,
-    block_number bigint,
-    block_hash text,
-    contract_address text,
-    bid_id numeric NOT NULL,
-    gal text NOT NULL
-);
-
-
---
--- Name: flap_bid_gal_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
---
-
-CREATE SEQUENCE maker.flap_bid_gal_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: flap_bid_gal_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
---
-
-ALTER SEQUENCE maker.flap_bid_gal_id_seq OWNED BY maker.flap_bid_gal.id;
 
 
 --
@@ -4036,7 +3963,6 @@ CREATE TABLE maker.flap_kick (
     bid_id numeric NOT NULL,
     lot numeric NOT NULL,
     bid numeric NOT NULL,
-    gal text,
     contract_address text,
     tx_idx integer NOT NULL,
     log_idx integer NOT NULL,
@@ -8098,13 +8024,6 @@ ALTER TABLE ONLY maker.flap_bid_end ALTER COLUMN id SET DEFAULT nextval('maker.f
 
 
 --
--- Name: flap_bid_gal id; Type: DEFAULT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.flap_bid_gal ALTER COLUMN id SET DEFAULT nextval('maker.flap_bid_gal_id_seq'::regclass);
-
-
---
 -- Name: flap_bid_guy id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
@@ -9300,22 +9219,6 @@ ALTER TABLE ONLY maker.flap_bid_end
 
 ALTER TABLE ONLY maker.flap_bid_end
     ADD CONSTRAINT flap_bid_end_pkey PRIMARY KEY (id);
-
-
---
--- Name: flap_bid_gal flap_bid_gal_block_number_block_hash_contract_address_bid_i_key; Type: CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.flap_bid_gal
-    ADD CONSTRAINT flap_bid_gal_block_number_block_hash_contract_address_bid_i_key UNIQUE (block_number, block_hash, contract_address, bid_id, gal);
-
-
---
--- Name: flap_bid_gal flap_bid_gal_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.flap_bid_gal
-    ADD CONSTRAINT flap_bid_gal_pkey PRIMARY KEY (id);
 
 
 --
@@ -11335,27 +11238,6 @@ CREATE INDEX flap_bid_end_block_number_index ON maker.flap_bid_end USING btree (
 
 
 --
--- Name: flap_bid_gal_bid_contract_address_index; Type: INDEX; Schema: maker; Owner: -
---
-
-CREATE INDEX flap_bid_gal_bid_contract_address_index ON maker.flap_bid_gal USING btree (contract_address);
-
-
---
--- Name: flap_bid_gal_bid_id_index; Type: INDEX; Schema: maker; Owner: -
---
-
-CREATE INDEX flap_bid_gal_bid_id_index ON maker.flap_bid_gal USING btree (bid_id);
-
-
---
--- Name: flap_bid_gal_block_number_index; Type: INDEX; Schema: maker; Owner: -
---
-
-CREATE INDEX flap_bid_gal_block_number_index ON maker.flap_bid_gal USING btree (block_number);
-
-
---
 -- Name: flap_bid_guy_bid_contract_address_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -12340,13 +12222,6 @@ CREATE TRIGGER flap_bid_bid AFTER INSERT OR UPDATE ON maker.flap_bid_bid FOR EAC
 --
 
 CREATE TRIGGER flap_bid_end AFTER INSERT OR UPDATE ON maker.flap_bid_end FOR EACH ROW EXECUTE PROCEDURE maker.insert_updated_flap_end();
-
-
---
--- Name: flap_bid_gal flap_bid_gal; Type: TRIGGER; Schema: maker; Owner: -
---
-
-CREATE TRIGGER flap_bid_gal AFTER INSERT OR UPDATE ON maker.flap_bid_gal FOR EACH ROW EXECUTE PROCEDURE maker.insert_updated_flap_gal();
 
 
 --

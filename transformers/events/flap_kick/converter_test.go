@@ -73,7 +73,6 @@ var _ = Describe("Flap kick converter", func() {
 			Expect(model.BidId).To(Equal("1"))
 			Expect(model.Lot).To(Equal(emptyString))
 			Expect(model.Bid).To(Equal(emptyString))
-			Expect(model.Gal).To(Equal(emptyAddressHex))
 			Expect(model.ContractAddress).To(Equal(emptyAddressHex))
 			Expect(model.Raw).To(Equal(emptyRawLogJson))
 		})

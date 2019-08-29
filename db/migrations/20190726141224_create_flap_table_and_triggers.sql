@@ -11,7 +11,6 @@ CREATE TABLE maker.flap
     "end"            BIGINT  DEFAULT NULL,
     lot              NUMERIC DEFAULT NULL,
     bid              NUMERIC DEFAULT NULL,
-    gal              TEXT    DEFAULT NULL,
     created          TIMESTAMP,
     updated          TIMESTAMP,
     UNIQUE (block_number, bid_id)
@@ -72,17 +71,6 @@ LIMIT 1
 $$
     LANGUAGE sql;
 
-CREATE FUNCTION get_latest_flap_bid_gal(bid_id numeric) RETURNS TEXT AS
-$$
-SELECT gal
-FROM maker.flap
-WHERE gal IS NOT NULL
-  AND flap.bid_id = bid_id
-ORDER BY block_number
-LIMIT 1
-$$
-    LANGUAGE sql;
-
 CREATE FUNCTION get_block_timestamp(block_hash varchar) RETURNS TIMESTAMP AS
 $$
 SELECT api.epoch_to_datetime(headers.block_timestamp) AS datetime
@@ -106,14 +94,13 @@ BEGIN
         LIMIT 1
     )
     INSERT
-    INTO maker.flap(bid_id, contract_address, block_number, block_hash, bid, guy, tic, "end", lot, gal, updated,
+    INTO maker.flap(bid_id, contract_address, block_number, block_hash, bid, guy, tic, "end", lot, updated,
                     created)
     VALUES (NEW.bid_id, NEW.contract_address, NEW.block_number, NEW.block_hash, NEW.bid,
             (SELECT get_latest_flap_bid_guy(NEW.bid_id)),
             (SELECT get_latest_flap_bid_tic(NEW.bid_id)),
             (SELECT get_latest_flap_bid_end(NEW.bid_id)),
             (SELECT get_latest_flap_bid_lot(NEW.bid_id)),
-            (SELECT get_latest_flap_bid_gal(NEW.bid_id)),
             (SELECT get_block_timestamp(NEW.block_hash)),
             (SELECT created FROM created))
     ON CONFLICT (bid_id, block_number) DO UPDATE SET bid = NEW.bid;
@@ -136,14 +123,13 @@ BEGIN
         LIMIT 1
     )
     INSERT
-    INTO maker.flap(bid_id, contract_address, block_number, block_hash, guy, bid, tic, "end", lot, gal, updated,
+    INTO maker.flap(bid_id, contract_address, block_number, block_hash, guy, bid, tic, "end", lot, updated,
                     created)
     VALUES (NEW.bid_id, NEW.contract_address, NEW.block_number, NEW.block_hash, NEW.guy,
             (SELECT get_latest_flap_bid_bid(NEW.bid_id)),
             (SELECT get_latest_flap_bid_tic(NEW.bid_id)),
             (SELECT get_latest_flap_bid_end(NEW.bid_id)),
             (SELECT get_latest_flap_bid_lot(NEW.bid_id)),
-            (SELECT get_latest_flap_bid_gal(NEW.bid_id)),
             (SELECT get_block_timestamp(NEW.block_hash)),
             (SELECT created FROM created))
     ON CONFLICT (bid_id, block_number) DO UPDATE SET guy = NEW.guy;
@@ -166,14 +152,13 @@ BEGIN
         LIMIT 1
     )
     INSERT
-    INTO maker.flap(bid_id, contract_address, block_number, block_hash, tic, bid, guy, "end", lot, gal, updated,
+    INTO maker.flap(bid_id, contract_address, block_number, block_hash, tic, bid, guy, "end", lot, updated,
                     created)
     VALUES (NEW.bid_id, NEW.contract_address, NEW.block_number, NEW.block_hash, NEW.tic,
             (SELECT get_latest_flap_bid_bid(NEW.bid_id)),
             (SELECT get_latest_flap_bid_guy(NEW.bid_id)),
             (SELECT get_latest_flap_bid_end(NEW.bid_id)),
             (SELECT get_latest_flap_bid_lot(NEW.bid_id)),
-            (SELECT get_latest_flap_bid_gal(NEW.bid_id)),
             (SELECT get_block_timestamp(NEW.block_hash)),
             (SELECT created FROM created))
     ON CONFLICT (bid_id, block_number) DO UPDATE SET tic = NEW.tic;
@@ -196,14 +181,13 @@ BEGIN
         LIMIT 1
     )
     INSERT
-    INTO maker.flap(bid_id, contract_address, block_number, block_hash, "end", bid, guy, tic, lot, gal, updated,
+    INTO maker.flap(bid_id, contract_address, block_number, block_hash, "end", bid, guy, tic, lot, updated,
                     created)
     VALUES (NEW.bid_id, NEW.contract_address, NEW.block_number, NEW.block_hash, NEW."end",
             (SELECT get_latest_flap_bid_bid(NEW.bid_id)),
             (SELECT get_latest_flap_bid_guy(NEW.bid_id)),
             (SELECT get_latest_flap_bid_tic(NEW.bid_id)),
             (SELECT get_latest_flap_bid_lot(NEW.bid_id)),
-            (SELECT get_latest_flap_bid_gal(NEW.bid_id)),
             (SELECT get_block_timestamp(NEW.block_hash)),
             (SELECT created FROM created))
     ON CONFLICT (bid_id, block_number) DO UPDATE SET "end" = NEW."end";
@@ -226,47 +210,16 @@ BEGIN
         LIMIT 1
     )
     INSERT
-    INTO maker.flap(bid_id, contract_address, block_number, block_hash, lot, bid, guy, tic, "end", gal, updated,
+    INTO maker.flap(bid_id, contract_address, block_number, block_hash, lot, bid, guy, tic, "end", updated,
                     created)
     VALUES (NEW.bid_id, NEW.contract_address, NEW.block_number, NEW.block_hash, NEW.lot,
             (SELECT get_latest_flap_bid_bid(NEW.bid_id)),
             (SELECT get_latest_flap_bid_guy(NEW.bid_id)),
             (SELECT get_latest_flap_bid_tic(NEW.bid_id)),
             (SELECT get_latest_flap_bid_end(NEW.bid_id)),
-            (SELECT get_latest_flap_bid_gal(NEW.bid_id)),
             (SELECT get_block_timestamp(NEW.block_hash)),
             (SELECT created FROM created))
     ON CONFLICT (bid_id, block_number) DO UPDATE SET lot = NEW.lot;
-    return NEW;
-END
-$$
-    LANGUAGE plpgsql;
--- +goose StatementEnd
-
--- +goose StatementBegin
-CREATE OR REPLACE FUNCTION maker.insert_updated_flap_gal() RETURNS TRIGGER
-AS
-$$
-BEGIN
-    WITH created AS (
-        SELECT created
-        FROM maker.flap
-        WHERE flap.bid_id = NEW.bid_id
-        ORDER BY flap.block_number
-        LIMIT 1
-    )
-    INSERT
-    INTO maker.flap(bid_id, contract_address, block_number, block_hash, gal, bid, guy, tic, "end", lot, updated,
-                    created)
-    VALUES (NEW.bid_id, NEW.contract_address, NEW.block_number, NEW.block_hash, NEW.gal,
-            (SELECT get_latest_flap_bid_bid(NEW.bid_id)),
-            (SELECT get_latest_flap_bid_guy(NEW.bid_id)),
-            (SELECT get_latest_flap_bid_tic(NEW.bid_id)),
-            (SELECT get_latest_flap_bid_end(NEW.bid_id)),
-            (SELECT get_latest_flap_bid_lot(NEW.bid_id)),
-            (SELECT get_block_timestamp(NEW.block_hash)),
-            (SELECT created FROM created))
-    ON CONFLICT (bid_id, block_number) DO UPDATE SET gal = NEW.gal;
     return NEW;
 END
 $$
@@ -285,8 +238,7 @@ BEGIN
         LIMIT 1
     )
     INSERT
-    INTO maker.flap(bid_id, contract_address, block_number, block_hash, created, updated, bid, guy, tic, "end", lot,
-                    gal)
+    INTO maker.flap(bid_id, contract_address, block_number, block_hash, created, updated, bid, guy, tic, "end", lot)
     VALUES (NEW.bid_id, NEW.contract_address,
             (SELECT block_number FROM block_info),
             (SELECT hash FROM block_info),
@@ -296,8 +248,7 @@ BEGIN
             (SELECT get_latest_flap_bid_guy(NEW.bid_id)),
             (SELECT get_latest_flap_bid_tic(NEW.bid_id)),
             (SELECT get_latest_flap_bid_end(NEW.bid_id)),
-            (SELECT get_latest_flap_bid_lot(NEW.bid_id)),
-            (SELECT get_latest_flap_bid_gal(NEW.bid_id)))
+            (SELECT get_latest_flap_bid_lot(NEW.bid_id)))
     ON CONFLICT (bid_id, block_number) DO UPDATE SET created = (SELECT datetime FROM block_info),
                                                      updated = (SELECT datetime FROM block_info);
     return NEW;
@@ -336,12 +287,6 @@ CREATE TRIGGER flap_bid_lot
     FOR EACH ROW
 EXECUTE PROCEDURE maker.insert_updated_flap_lot();
 
-CREATE TRIGGER flap_bid_gal
-    AFTER INSERT OR UPDATE
-    ON maker.flap_bid_gal
-    FOR EACH ROW
-EXECUTE PROCEDURE maker.insert_updated_flap_gal();
-
 CREATE TRIGGER flap_created_trigger
     AFTER INSERT
     ON maker.flap_kick
@@ -354,7 +299,6 @@ DROP TRIGGER flap_bid_guy ON maker.flap_bid_guy;
 DROP TRIGGER flap_bid_tic ON maker.flap_bid_tic;
 DROP TRIGGER flap_bid_end ON maker.flap_bid_end;
 DROP TRIGGER flap_bid_lot ON maker.flap_bid_lot;
-DROP TRIGGER flap_bid_gal ON maker.flap_bid_gal;
 DROP TRIGGER flap_created_trigger ON maker.flap_kick;
 
 DROP FUNCTION maker.insert_updated_flap_bid();
@@ -362,13 +306,11 @@ DROP FUNCTION maker.insert_updated_flap_guy();
 DROP FUNCTION maker.insert_updated_flap_tic();
 DROP FUNCTION maker.insert_updated_flap_end();
 DROP FUNCTION maker.insert_updated_flap_lot();
-DROP FUNCTION maker.insert_updated_flap_gal();
 DROP FUNCTION maker.flap_created();
 DROP FUNCTION get_latest_flap_bid_guy(numeric);
 DROP FUNCTION get_latest_flap_bid_bid(numeric);
 DROP FUNCTION get_latest_flap_bid_tic(numeric);
 DROP FUNCTION get_latest_flap_bid_end(numeric);
 DROP FUNCTION get_latest_flap_bid_lot(numeric);
-DROP FUNCTION get_latest_flap_bid_gal(numeric);
 DROP FUNCTION get_block_timestamp(varchar);
 DROP TABLE maker.flap;

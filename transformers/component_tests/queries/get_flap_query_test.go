@@ -83,7 +83,7 @@ var _ = Describe("Get flap query", func() {
 		expectedBid := test_helpers.FlapBidFromValues(strconv.Itoa(fakeBidId), "true", blockOneHeader.Timestamp, blockOneHeader.Timestamp, flapStorageValuesOne)
 
 		var actualBid test_helpers.FlapBid
-		queryErr := db.Get(&actualBid, `SELECT bid_id, guy, tic, "end", lot, bid, gal, dealt, created, updated FROM api.get_flap($1, $2)`, fakeBidId, blockOne)
+		queryErr := db.Get(&actualBid, `SELECT bid_id, guy, tic, "end", lot, bid, dealt, created, updated FROM api.get_flap($1, $2)`, fakeBidId, blockOne)
 		Expect(queryErr).NotTo(HaveOccurred())
 
 		Expect(expectedBid).To(Equal(actualBid))
@@ -127,7 +127,7 @@ var _ = Describe("Get flap query", func() {
 		expectedBid := test_helpers.FlapBidFromValues(strconv.Itoa(fakeBidId), "true", blockTwoHeader.Timestamp, blockOneHeader.Timestamp, flapStorageValuesTwo)
 
 		var actualBid test_helpers.FlapBid
-		queryErr := db.Get(&actualBid, `SELECT bid_id, guy, tic, "end", lot, bid, gal, dealt, created, updated FROM api.get_flap($1, $2)`, fakeBidId, blockTwo)
+		queryErr := db.Get(&actualBid, `SELECT bid_id, guy, tic, "end", lot, bid, dealt, created, updated FROM api.get_flap($1, $2)`, fakeBidId, blockTwo)
 		Expect(queryErr).NotTo(HaveOccurred())
 
 		Expect(expectedBid).To(Equal(actualBid))
@@ -157,7 +157,7 @@ var _ = Describe("Get flap query", func() {
 			expectedBid := test_helpers.FlapBidFromValues(strconv.Itoa(fakeBidId), "false", header.Timestamp, header.Timestamp, flapStorageValues)
 
 			var actualBid test_helpers.FlapBid
-			queryErr := db.Get(&actualBid, `SELECT bid_id, guy, tic, "end", lot, bid, gal, dealt, created, updated FROM api.get_flap($1, $2)`, fakeBidId, blockOne)
+			queryErr := db.Get(&actualBid, `SELECT bid_id, guy, tic, "end", lot, bid, dealt, created, updated FROM api.get_flap($1, $2)`, fakeBidId, blockOne)
 			Expect(queryErr).NotTo(HaveOccurred())
 
 			Expect(expectedBid).To(Equal(actualBid))
@@ -193,7 +193,7 @@ var _ = Describe("Get flap query", func() {
 
 			expectedBid := test_helpers.FlapBidFromValues(strconv.Itoa(fakeBidId), "false", blockOneHeader.Timestamp, blockOneHeader.Timestamp, flapStorageValuesOne)
 			var actualBid test_helpers.FlapBid
-			queryErr := db.Get(&actualBid, `SELECT bid_id, guy, tic, "end", lot, bid, gal, dealt, created, updated FROM api.get_flap($1, $2)`, fakeBidId, blockOne)
+			queryErr := db.Get(&actualBid, `SELECT bid_id, guy, tic, "end", lot, bid, dealt, created, updated FROM api.get_flap($1, $2)`, fakeBidId, blockOne)
 			Expect(queryErr).NotTo(HaveOccurred())
 
 			Expect(expectedBid).To(Equal(actualBid))

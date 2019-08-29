@@ -28,10 +28,10 @@ import (
 )
 
 const InsertFlapKickQuery = `INSERT into maker.flap_kick
-		(header_id, bid_id, lot, bid, gal, contract_address, tx_idx, log_idx, raw_log)
-		VALUES($1, $2::NUMERIC, $3::NUMERIC, $4::NUMERIC, $5, $6, $7, $8, $9)
+		(header_id, bid_id, lot, bid, contract_address, tx_idx, log_idx, raw_log)
+		VALUES($1, $2::NUMERIC, $3::NUMERIC, $4::NUMERIC, $5, $6, $7, $8)
 		ON CONFLICT (header_id, tx_idx, log_idx)
-		DO UPDATE SET bid_id = $2, lot = $3, bid = $4, gal = $5, contract_address = $6, raw_log = $9;`
+		DO UPDATE SET bid_id = $2, lot = $3, bid = $4, contract_address = $5, raw_log = $8;`
 
 type FlapKickRepository struct {
 	db *postgres.DB
@@ -53,8 +53,7 @@ func (repository *FlapKickRepository) Create(headerID int64, models []interface{
 		}
 
 		_, execErr := tx.Exec(InsertFlapKickQuery, headerID, flapKickModel.BidId, flapKickModel.Lot, flapKickModel.Bid,
-			flapKickModel.Gal, flapKickModel.ContractAddress, flapKickModel.TransactionIndex, flapKickModel.LogIndex,
-			flapKickModel.Raw)
+			flapKickModel.ContractAddress, flapKickModel.TransactionIndex, flapKickModel.LogIndex, flapKickModel.Raw)
 		if execErr != nil {
 			rollbackErr := tx.Rollback()
 			if rollbackErr != nil {

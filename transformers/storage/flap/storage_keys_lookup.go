@@ -78,7 +78,6 @@ func (mapping *StorageKeysLookup) loadBidKeys() error {
 		mapping.mappings[getBidBidKey(hexBidId)] = getBidBidMetadata(bidId)
 		mapping.mappings[getBidLotKey(hexBidId)] = getBidLotMetadata(bidId)
 		mapping.mappings[getBidGuyTicEndKey(hexBidId)] = getBidGuyTicEndMetadata(bidId)
-		mapping.mappings[getBidGalKey(hexBidId)] = getBidGalMetadata(bidId)
 	}
 
 	return getBidIdsErr
@@ -117,18 +116,6 @@ func getBidGuyTicEndMetadata(bidId string) utils.StorageValueMetadata {
 	packedTypes := map[int]utils.ValueType{0: utils.Address, 1: utils.Uint48, 2: utils.Uint48}
 	packedNames := map[int]string{0: storage.BidGuy, 1: storage.BidTic, 2: storage.BidEnd}
 	return utils.GetStorageValueMetadataForPackedSlot(storage.Packed, keys, utils.PackedSlot, packedNames, packedTypes)
-}
-
-func getBidGalKey(bidId string) common.Hash {
-	return vdbStorage.GetIncrementedKey(getBidBidKey(bidId), 3)
-}
-
-func getBidGalMetadata(bidId string) utils.StorageValueMetadata {
-	return utils.StorageValueMetadata{
-		Name: storage.BidGal,
-		Keys: map[utils.Key]string{constants.BidId: bidId},
-		Type: utils.Address,
-	}
 }
 
 func (mapping *StorageKeysLookup) loadStaticKeys() {

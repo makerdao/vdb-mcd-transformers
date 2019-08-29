@@ -141,18 +141,6 @@ var _ = Describe("Flap storage mappings", func() {
 				}
 				Expect(mapping.Lookup(bidGuyKey)).To(Equal(expectedMetadata))
 			})
-
-			It("gets gal metadata", func() {
-				flapBidGalKey := vdbStorage.GetIncrementedKey(flapBidBidKey, 3)
-				metadata, err := mapping.Lookup(flapBidGalKey)
-				Expect(err).NotTo(HaveOccurred())
-
-				Expect(metadata).To(Equal(utils.StorageValueMetadata{
-					Name: storage.BidGal,
-					Keys: map[utils.Key]string{constants.BidId: bidId},
-					Type: utils.Address,
-				}))
-			})
 		})
 	})
 })
