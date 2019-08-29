@@ -6,7 +6,6 @@ CREATE TABLE maker.flap_kick
     bid_id           NUMERIC NOT NULL,
     lot              NUMERIC NOT NULL,
     bid              NUMERIC NOT NULL,
-    gal              TEXT,
     contract_address TEXT,
     tx_idx           INTEGER NOT NULL,
     log_idx          INTEGER NOT NULL,

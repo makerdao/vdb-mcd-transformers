@@ -91,7 +91,7 @@ var _ = Describe("All flaps query", func() {
 		test_helpers.CreateFlap(db, blockTwoHeader, flapStorageValuesThree, test_helpers.GetFlapMetadatas(strconv.Itoa(fakeBidIdTwo)), contractAddress)
 
 		var actualBids []test_helpers.FlapBid
-		queryErr := db.Select(&actualBids, `SELECT bid_id, guy, tic, "end", lot, bid, gal, dealt, created, updated FROM api.all_flaps()`)
+		queryErr := db.Select(&actualBids, `SELECT bid_id, guy, tic, "end", lot, bid, dealt, created, updated FROM api.all_flaps()`)
 		Expect(queryErr).NotTo(HaveOccurred())
 
 		expectedBidOne := test_helpers.FlapBidFromValues(strconv.Itoa(fakeBidIdOne), "false", blockTwoHeader.Timestamp, blockOneHeader.Timestamp, flapStorageValuesTwo)

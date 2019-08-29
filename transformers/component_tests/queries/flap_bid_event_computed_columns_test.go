@@ -63,7 +63,7 @@ var _ = Describe("flap_bid_event computed columns", func() {
 
 			var actualBid test_helpers.FlapBid
 			err := db.Get(&actualBid, `
-				SELECT bid_id, guy, tic, "end", lot, bid, gal, dealt, created, updated
+				SELECT bid_id, guy, tic, "end", lot, bid, dealt, created, updated
 				FROM api.flap_bid_event_bid(
 					(SELECT (bid_id, lot, bid_amount, act, block_height, tx_idx, contract_address)::api.flap_bid_event
 					FROM api.all_flap_bid_events())

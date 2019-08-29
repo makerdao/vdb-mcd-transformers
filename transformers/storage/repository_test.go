@@ -624,7 +624,7 @@ func insertFlapKick(blockNumber int64, bidId, contractAddress string, db *postgr
 	Expect(jsonErr).NotTo(HaveOccurred())
 	headerID := insertHeader(db, blockNumber)
 	_, insertErr := db.Exec(flap_kick.InsertFlapKickQuery,
-		headerID, bidId, 0, 0, "", contractAddress, 0, 0, emptyRawJson,
+		headerID, bidId, 0, 0, contractAddress, 0, 0, emptyRawJson,
 	)
 	Expect(insertErr).NotTo(HaveOccurred())
 }
