@@ -23,7 +23,6 @@ const (
 	insertBidGuyQuery = `INSERT INTO maker.flap_bid_guy (block_number, block_hash, contract_address, bid_id, guy) VALUES ($1, $2, $3, $4, $5) ON CONFLICT DO NOTHING`
 	insertBidTicQuery = `INSERT INTO maker.flap_bid_tic (block_number, block_hash, contract_address, bid_id, tic) VALUES ($1, $2, $3, $4, $5) ON CONFLICT DO NOTHING`
 	insertBidEndQuery = `INSERT INTO maker.flap_bid_end (block_number, block_hash, contract_address, bid_id, "end") VALUES ($1, $2, $3, $4, $5) ON CONFLICT DO NOTHING`
-	insertBidGalQuery = `INSERT INTO maker.flap_bid_gal (block_number, block_hash, contract_address, bid_id, gal) VALUES ($1, $2, $3, $4, $5) ON CONFLICT DO NOTHING`
 )
 
 type FlapStorageRepository struct {
@@ -47,8 +46,6 @@ func (repository *FlapStorageRepository) Create(blockNumber int, blockHash strin
 		return repository.insertBidBid(blockNumber, blockHash, metadata, value.(string))
 	case storage.BidLot:
 		return repository.insertBidLot(blockNumber, blockHash, metadata, value.(string))
-	case storage.BidGal:
-		return repository.insertBidGal(blockNumber, blockHash, metadata, value.(string))
 	case storage.Packed:
 		return repository.insertPackedValueRecord(blockNumber, blockHash, metadata, value.(map[int]string))
 	default:
@@ -137,15 +134,6 @@ func (repository *FlapStorageRepository) insertBidEnd(blockNumber int, blockHash
 		return err
 	}
 	_, writeErr := repository.db.Exec(insertBidEndQuery, blockNumber, blockHash, repository.ContractAddress, bidId, end)
-	return writeErr
-}
-
-func (repository *FlapStorageRepository) insertBidGal(blockNumber int, blockHash string, metadata utils.StorageValueMetadata, gal string) error {
-	bidId, err := getBidId(metadata.Keys)
-	if err != nil {
-		return err
-	}
-	_, writeErr := repository.db.Exec(insertBidGalQuery, blockNumber, blockHash, repository.ContractAddress, bidId, gal)
 	return writeErr
 }
 

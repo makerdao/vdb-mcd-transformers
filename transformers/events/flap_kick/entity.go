@@ -19,7 +19,6 @@ package flap_kick
 import (
 	"math/big"
 
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 )
 
@@ -27,7 +26,6 @@ type FlapKickEntity struct {
 	Id               *big.Int
 	Lot              *big.Int
 	Bid              *big.Int
-	Gal              common.Address
 	Raw              types.Log
 	TransactionIndex uint
 	LogIndex         uint
