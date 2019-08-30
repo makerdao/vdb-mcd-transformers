@@ -24,8 +24,8 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/events/deal"
 	"github.com/vulcanize/mcd_transformers/transformers/events/dent"
 	"github.com/vulcanize/mcd_transformers/transformers/events/flip_kick"
-	"github.com/vulcanize/mcd_transformers/transformers/events/flip_tick"
 	"github.com/vulcanize/mcd_transformers/transformers/events/tend"
+	"github.com/vulcanize/mcd_transformers/transformers/events/tick"
 	"github.com/vulcanize/mcd_transformers/transformers/events/yank"
 	"github.com/vulcanize/mcd_transformers/transformers/storage"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
@@ -41,7 +41,7 @@ var _ = Describe("All flip bid events query", func() {
 		db              *postgres.DB
 		flipKickRepo    flip_kick.FlipKickRepository
 		tendRepo        tend.TendRepository
-		flipTickRepo    flip_tick.FlipTickRepository
+		tickRepo        tick.TickRepository
 		dentRepo        dent.DentRepository
 		dealRepo        deal.DealRepository
 		yankRepo        yank.YankRepository
@@ -58,8 +58,8 @@ var _ = Describe("All flip bid events query", func() {
 		flipKickRepo.SetDB(db)
 		tendRepo = tend.TendRepository{}
 		tendRepo.SetDB(db)
-		flipTickRepo = flip_tick.FlipTickRepository{}
-		flipTickRepo.SetDB(db)
+		tickRepo = tick.TickRepository{}
+		tickRepo.SetDB(db)
 		dentRepo = dent.DentRepository{}
 		dentRepo.SetDB(db)
 		dealRepo = deal.DealRepository{}
@@ -101,13 +101,13 @@ var _ = Describe("All flip bid events query", func() {
 			})
 			Expect(flipTendErr).NotTo(HaveOccurred())
 
-			flipTickErr := test_helpers.CreateFlipTick(test_helpers.FlipTickCreationInput{
-				BidId:            bidId,
-				ContractAddress:  contractAddress,
-				FlipTickRepo:     flipTickRepo,
-				FlipTickHeaderId: headerOneId,
+			tickErr := test_helpers.CreateTick(test_helpers.TickCreationInput{
+				BidId:           bidId,
+				ContractAddress: contractAddress,
+				TickRepo:        tickRepo,
+				TickHeaderId:    headerOneId,
 			})
-			Expect(flipTickErr).NotTo(HaveOccurred())
+			Expect(tickErr).NotTo(HaveOccurred())
 
 			flipStorageValues := test_helpers.GetFlipStorageValues(1, test_helpers.FakeIlk.Hex, bidId)
 			test_helpers.CreateFlip(db, headerOne, flipStorageValues,
@@ -164,13 +164,13 @@ var _ = Describe("All flip bid events query", func() {
 			headerTwoId, headerTwoErr := headerRepo.CreateOrUpdateHeader(headerTwo)
 			Expect(headerTwoErr).NotTo(HaveOccurred())
 
-			flipTickErr := test_helpers.CreateFlipTick(test_helpers.FlipTickCreationInput{
-				BidId:            bidId,
-				ContractAddress:  contractAddress,
-				FlipTickRepo:     flipTickRepo,
-				FlipTickHeaderId: headerTwoId,
+			tickErr := test_helpers.CreateTick(test_helpers.TickCreationInput{
+				BidId:           bidId,
+				ContractAddress: contractAddress,
+				TickRepo:        tickRepo,
+				TickHeaderId:    headerTwoId,
 			})
-			Expect(flipTickErr).NotTo(HaveOccurred())
+			Expect(tickErr).NotTo(HaveOccurred())
 
 			flipStorageValuesBlockTwo := test_helpers.GetFlipStorageValues(2, test_helpers.FakeIlk.Hex, bidId)
 			test_helpers.CreateFlip(db, headerTwo, flipStorageValuesBlockTwo,
@@ -518,6 +518,74 @@ var _ = Describe("All flip bid events query", func() {
 						Act:       "yank",
 					},
 				))
+			})
+
+			Describe("tick", func() {
+				It("includes tick events", func() {
+					headerOne := fakes.GetFakeHeader(1)
+					headerOneId, headerOneErr := headerRepo.CreateOrUpdateHeader(headerOne)
+					Expect(headerOneErr).NotTo(HaveOccurred())
+
+					flipKickEvent := test_data.FlipKickModel
+					flipKickEvent.ContractAddress = contractAddress
+					flipKickEvent.BidId = strconv.Itoa(bidId)
+					flipKickErr := flipKickRepo.Create(headerOneId, []interface{}{flipKickEvent})
+					Expect(flipKickErr).NotTo(HaveOccurred())
+
+					flipStorageValues := test_helpers.GetFlipStorageValues(1, test_helpers.FakeIlk.Hex, bidId)
+					test_helpers.CreateFlip(db, headerOne, flipStorageValues,
+						test_helpers.GetFlipMetadatas(strconv.Itoa(bidId)), contractAddress)
+					tickErr := test_helpers.CreateTick(test_helpers.TickCreationInput{
+						BidId:           bidId,
+						ContractAddress: contractAddress,
+						TickRepo:        tickRepo,
+						TickHeaderId:    headerOneId,
+					})
+					Expect(tickErr).NotTo(HaveOccurred())
+
+					var actualBidEvents []test_helpers.BidEvent
+					queryErr := db.Select(&actualBidEvents, `SELECT bid_id, bid_amount, lot, act FROM api.all_flip_bid_events()`)
+					Expect(queryErr).NotTo(HaveOccurred())
+
+					Expect(actualBidEvents).To(ConsistOf(
+						test_helpers.BidEvent{BidId: flipKickEvent.BidId, BidAmount: flipKickEvent.Bid, Lot: flipKickEvent.Lot, Act: "kick"},
+						test_helpers.BidEvent{
+							BidId:     strconv.Itoa(bidId),
+							BidAmount: flipStorageValues[storage.BidBid].(string),
+							Lot:       flipStorageValues[storage.BidLot].(string),
+							Act:       "tick",
+						},
+					))
+				})
+
+				It("ignores tick events that aren't from flips", func() {
+					headerOne := fakes.GetFakeHeader(1)
+					headerOneId, headerOneErr := headerRepo.CreateOrUpdateHeader(headerOne)
+					Expect(headerOneErr).NotTo(HaveOccurred())
+
+					flipKickEvent := test_data.FlipKickModel
+					flipKickEvent.ContractAddress = contractAddress
+					flipKickEvent.BidId = strconv.Itoa(bidId)
+					flipKickErr := flipKickRepo.Create(headerOneId, []interface{}{flipKickEvent})
+					Expect(flipKickErr).NotTo(HaveOccurred())
+
+					tickErr := test_helpers.CreateTick(test_helpers.TickCreationInput{
+						BidId:           bidId,
+						ContractAddress: "flop",
+						TickRepo:        tickRepo,
+						TickHeaderId:    headerOneId,
+					})
+					Expect(tickErr).NotTo(HaveOccurred())
+
+					var actualBidEvents []test_helpers.BidEvent
+					queryErr := db.Select(&actualBidEvents, `SELECT bid_id, bid_amount, lot, act FROM api.all_flip_bid_events()`)
+					Expect(queryErr).NotTo(HaveOccurred())
+
+					// just the kick event because the tick is for a flop
+					Expect(actualBidEvents).To(ConsistOf(
+						test_helpers.BidEvent{BidId: flipKickEvent.BidId, BidAmount: flipKickEvent.Bid, Lot: flipKickEvent.Lot, Act: "kick"},
+					))
+				})
 			})
 		})
 	})

@@ -1,4 +1,4 @@
-package flip_tick_test
+package tick_test
 
 import (
 	"io/ioutil"
@@ -9,9 +9,9 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func TestFlipTick(t *testing.T) {
+func TestTick(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "Flip tick Suite")
+	RunSpecs(t, "Tick Suite")
 }
 
 var _ = BeforeSuite(func() {

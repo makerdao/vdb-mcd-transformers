@@ -1,5 +1,5 @@
 -- +goose Up
-CREATE TABLE maker.flip_tick
+CREATE TABLE maker.tick
 (
     id               SERIAL PRIMARY KEY,
     header_id        INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
@@ -11,19 +11,19 @@ CREATE TABLE maker.flip_tick
     UNIQUE (header_id, tx_idx, log_idx)
 );
 
-CREATE INDEX flip_tick_header_index
-    ON maker.flip_tick (header_id);
+CREATE INDEX tick_header_index
+    ON maker.tick (header_id);
 
 ALTER TABLE public.checked_headers
-    ADD COLUMN flip_tick INTEGER NOT NULL DEFAULT 0;
+    ADD COLUMN tick INTEGER NOT NULL DEFAULT 0;
 
-CREATE INDEX flip_tick_bid_id_index
-    ON maker.flip_tick (bid_id);
+CREATE INDEX tick_bid_id_index
+    ON maker.tick (bid_id);
 
 -- +goose Down
 ALTER TABLE public.checked_headers
-    DROP COLUMN flip_tick;
+    DROP COLUMN tick;
 
-DROP INDEX maker.flip_tick_header_index;
-DROP INDEX maker.flip_tick_bid_id_index;
-DROP TABLE maker.flip_tick;
+DROP INDEX maker.tick_header_index;
+DROP INDEX maker.tick_bid_id_index;
+DROP TABLE maker.tick;

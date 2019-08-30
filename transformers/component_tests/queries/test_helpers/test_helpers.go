@@ -7,8 +7,8 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/events/dent"
 	"github.com/vulcanize/mcd_transformers/transformers/events/flap_kick"
 	"github.com/vulcanize/mcd_transformers/transformers/events/flip_kick"
-	"github.com/vulcanize/mcd_transformers/transformers/events/flip_tick"
 	"github.com/vulcanize/mcd_transformers/transformers/events/tend"
+	"github.com/vulcanize/mcd_transformers/transformers/events/tick"
 	"github.com/vulcanize/mcd_transformers/transformers/events/yank"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
@@ -666,11 +666,11 @@ func CreateYank(input YankCreationInput) (err error) {
 	return input.YankRepo.Create(input.YankHeaderId, []shared.InsertionModel{yankModel})
 }
 
-func CreateFlipTick(input FlipTickCreationInput) (err error) {
-	flipTickModel := test_data.FlipTickModel
-	flipTickModel.ColumnValues["contract_address"] = input.ContractAddress
-	flipTickModel.ColumnValues["bid_id"] = strconv.Itoa(input.BidId)
-	return input.FlipTickRepo.Create(input.FlipTickHeaderId, []shared.InsertionModel{flipTickModel})
+func CreateTick(input TickCreationInput) (err error) {
+	tickModel := test_data.TickModel
+	tickModel.ColumnValues["contract_address"] = input.ContractAddress
+	tickModel.ColumnValues["bid_id"] = strconv.Itoa(input.BidId)
+	return input.TickRepo.Create(input.TickHeaderId, []shared.InsertionModel{tickModel})
 }
 
 type YankCreationInput struct {
@@ -726,11 +726,11 @@ type FlapBidCreationInput struct {
 	FlapKickHeaderId int64
 }
 
-type FlipTickCreationInput struct {
-	BidId            int
-	ContractAddress  string
-	FlipTickRepo     flip_tick.FlipTickRepository
-	FlipTickHeaderId int64
+type TickCreationInput struct {
+	BidId           int
+	ContractAddress string
+	TickRepo        tick.TickRepository
+	TickHeaderId    int64
 }
 
 type BidEvent struct {

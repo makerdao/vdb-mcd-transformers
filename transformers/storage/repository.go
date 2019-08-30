@@ -186,7 +186,7 @@ func (repository *MakerStorageRepository) GetOwners() ([]string, error) {
 func (repository *MakerStorageRepository) GetFlipBidIds(contractAddress string) ([]string, error) {
 	var bidIds []string
 	err := repository.db.Select(&bidIds, `
-   		SELECT DISTINCT bid_id FROM maker.flip_tick
+   		SELECT DISTINCT bid_id FROM maker.tick
 		WHERE contract_address = $1
 		UNION
    		SELECT DISTINCT bid_id FROM maker.flip_kick

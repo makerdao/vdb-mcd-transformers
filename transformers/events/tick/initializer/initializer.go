@@ -14,28 +14,18 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package flip_tick
+package initializer
 
 import (
-	repo "github.com/vulcanize/vulcanizedb/libraries/shared/repository"
-	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
-
-	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
+
+	"github.com/vulcanize/mcd_transformers/transformers/events/tick"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 )
 
-type FlipTickRepository struct {
-	db *postgres.DB
-}
-
-func (repository FlipTickRepository) Create(headerID int64, models []shared.InsertionModel) error {
-	return shared.Create(headerID, models, repository.db)
-}
-
-func (repository FlipTickRepository) MarkHeaderChecked(headerId int64) error {
-	return repo.MarkHeaderChecked(headerId, repository.db, constants.FlipTickLabel)
-}
-
-func (repository *FlipTickRepository) SetDB(db *postgres.DB) {
-	repository.db = db
-}
+var EventTransformerInitializer transformer.EventTransformerInitializer = shared.LogNoteTransformer{
+	Config:     shared.GetEventTransformerConfig(constants.TickLabel, constants.TickSignature()),
+	Converter:  tick.TickConverter{},
+	Repository: &tick.TickRepository{},
+}.NewLogNoteTransformer

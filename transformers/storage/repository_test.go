@@ -510,9 +510,9 @@ var _ = Describe("Maker storage repository", func() {
 			Expect(bidIds[0]).To(Equal(bidId1))
 		})
 
-		It("fetches unique bid ids from flip_tick, flip_kick, flip_kicks, tend, dent, deal and yank", func() {
+		It("fetches unique bid ids from tick, flip_kick, flip_kicks, tend, dent, deal and yank", func() {
 			duplicateBidId := bidId1
-			insertFlipTick(1, bidId1, address, db)
+			insertTick(1, bidId1, address, db)
 			insertFlipKick(2, bidId2, address, db)
 			insertFlipKicks(3, bidId3, address, db)
 			insertTend(4, bidId4, address, db)
@@ -637,12 +637,12 @@ func insertFlapKicks(blockNumber int64, kicks, contractAddress string, db *postg
 	Expect(insertErr).NotTo(HaveOccurred())
 }
 
-func insertFlipTick(blockNumber int64, bidId, contractAddress string, db *postgres.DB) {
-	// flip kick event record
+func insertTick(blockNumber int64, bidId, contractAddress string, db *postgres.DB) {
+	// tick event record
 	emptyRawJson, jsonErr := json.Marshal("")
 	Expect(jsonErr).NotTo(HaveOccurred())
 	headerID := insertHeader(db, blockNumber)
-	_, insertErr := db.Exec(`INSERT INTO maker.flip_tick (header_id, bid_id, contract_address, tx_idx, log_idx, raw_log)
+	_, insertErr := db.Exec(`INSERT INTO maker.tick (header_id, bid_id, contract_address, tx_idx, log_idx, raw_log)
 				VALUES($1, $2::NUMERIC, $3, $4, $5, $6)`,
 		headerID, bidId, contractAddress, 0, 0, emptyRawJson,
 	)

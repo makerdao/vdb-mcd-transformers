@@ -46,7 +46,6 @@ func dealMethod() string     { return getSolidityFunctionSignature(FlipABI(), "d
 func dentMethod() string     { return getSolidityFunctionSignature(FlipABI(), "dent") }
 func flapKickMethod() string { return getSolidityFunctionSignature(FlapABI(), "Kick") }
 func flipKickMethod() string { return getSolidityFunctionSignature(FlipABI(), "Kick") }
-func flipTickMethod() string { return getSolidityFunctionSignature(FlipABI(), "tick") }
 func flopKickMethod() string { return getSolidityFunctionSignature(FlopABI(), "Kick") }
 func jugDripMethod() string  { return getSolidityFunctionSignature(JugABI(), "drip") }
 func jugFileBaseMethod() string {
@@ -68,6 +67,7 @@ func spotFilePipMethod() string {
 }
 func spotPokeMethod() string { return getSolidityFunctionSignature(SpotABI(), "Poke") }
 func tendMethod() string     { return getSolidityFunctionSignature(FlipABI(), "tend") }
+func tickMethod() string     { return getSolidityFunctionSignature(FlipABI(), "tick") }
 func vatFileDebtCeilingMethod() string {
 	return getOverloadedFunctionSignature(VatABI(), "file", []string{"bytes32", "uint256"})
 }
