@@ -152,4 +152,17 @@ var _ = Describe("Ilk State History Query", func() {
 		Expect(err).NotTo(HaveOccurred())
 		Expect(dbResult).To(Equal([]int{blockTwo, blockOne}))
 	})
+
+	It("limits the results to the most recent [limit] ilk states when a limit argument is provided", func() {
+		var dbResult []test_helpers.IlkState
+		err := db.Select(&dbResult,
+			`SELECT ilk_identifier, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated from api.all_ilk_states($1, $2, $3)`,
+			test_helpers.FakeIlk.Identifier, blockTwo, 1)
+		Expect(err).NotTo(HaveOccurred())
+
+		Expect(len(dbResult)).To(Equal(1))
+		Expect(dbResult).To(ConsistOf([]test_helpers.IlkState{
+			expectedBlockTwoIlkState,
+		}))
+	})
 })
