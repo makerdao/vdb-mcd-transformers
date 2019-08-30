@@ -62,21 +62,22 @@ WITH addresses AS (
          ORDER BY block_height DESC
      ),
      ticks AS (
-         SELECT flip_tick.bid_id,
+         SELECT tick.bid_id,
                 flip_bid_lot.lot,
                 flip_bid_bid.bid     AS bid_amount,
                 'tick'::api.bid_act  AS act,
                 headers.block_number AS block_height,
                 tx_idx,
-                flip_tick.contract_address
-         FROM maker.flip_tick
-                  LEFT JOIN headers on flip_tick.header_id = headers.id
+                tick.contract_address
+         FROM maker.tick
+                  LEFT JOIN headers on tick.header_id = headers.id
                   LEFT JOIN maker.flip_bid_bid
-                            ON flip_tick.bid_id = flip_bid_bid.bid_id
+                            ON tick.bid_id = flip_bid_bid.bid_id
                                 AND flip_bid_bid.block_number = headers.block_number
                   LEFT JOIN maker.flip_bid_lot
-                            ON flip_tick.bid_id = flip_bid_lot.bid_id
+                            ON tick.bid_id = flip_bid_lot.bid_id
                                 AND flip_bid_lot.block_number = headers.block_number
+         WHERE tick.contract_address IN (SELECT * FROM addresses)
          ORDER BY block_height DESC
      )
 
@@ -125,4 +126,4 @@ $$
     STABLE;
 -- +goose Down
 DROP FUNCTION api.all_flip_bid_events();
-DROP TYPE api.flip_bid_event CASCADE ;
+DROP TYPE api.flip_bid_event CASCADE;

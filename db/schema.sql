@@ -551,7 +551,6 @@ CREATE FUNCTION api.all_bites(ilk_identifier text) RETURNS SETOF api.bite_event
     LANGUAGE sql STABLE STRICT
     AS $$
 WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier)
-
 SELECT ilk_identifier, identifier AS urn_identifier, bite_identifier AS bid_id, ink, art, tab, block_number, tx_idx
 FROM maker.bite
          LEFT JOIN maker.urns ON bite.urn_id = urns.id
@@ -611,7 +610,6 @@ WITH address AS (
          WHERE yank.contract_address = (SELECT * FROM address)
          ORDER BY block_height DESC
      )
-
 SELECT flap_kick.bid_id,
        lot,
        bid                 AS bid_amount,
@@ -638,7 +636,6 @@ FROM deals
 UNION
 SELECT *
 FROM yanks
-
 $$;
 
 
@@ -713,24 +710,24 @@ WITH addresses AS (
          ORDER BY block_height DESC
      ),
      ticks AS (
-         SELECT flip_tick.bid_id,
+         SELECT tick.bid_id,
                 flip_bid_lot.lot,
                 flip_bid_bid.bid     AS bid_amount,
                 'tick'::api.bid_act  AS act,
                 headers.block_number AS block_height,
                 tx_idx,
-                flip_tick.contract_address
-         FROM maker.flip_tick
-                  LEFT JOIN headers on flip_tick.header_id = headers.id
+                tick.contract_address
+         FROM maker.tick
+                  LEFT JOIN headers on tick.header_id = headers.id
                   LEFT JOIN maker.flip_bid_bid
-                            ON flip_tick.bid_id = flip_bid_bid.bid_id
+                            ON tick.bid_id = flip_bid_bid.bid_id
                                 AND flip_bid_bid.block_number = headers.block_number
                   LEFT JOIN maker.flip_bid_lot
-                            ON flip_tick.bid_id = flip_bid_lot.bid_id
+                            ON tick.bid_id = flip_bid_lot.bid_id
                                 AND flip_bid_lot.block_number = headers.block_number
+         WHERE tick.contract_address IN (SELECT * FROM addresses)
          ORDER BY block_height DESC
      )
-
 SELECT flip_kick.bid_id,
        lot,
        bid                 AS bid_amount,
@@ -854,7 +851,6 @@ WITH address AS (
          WHERE yank.contract_address = (SELECT * FROM address)
          ORDER BY block_height DESC
      )
-
 SELECT flop_kick.bid_id,
        lot,
        bid                 AS bid_amount,
@@ -881,7 +877,6 @@ FROM deals
 UNION
 SELECT *
 FROM yanks
-
 $$;
 
 
@@ -926,7 +921,6 @@ CREATE FUNCTION api.all_frobs(ilk_identifier text) RETURNS SETOF api.frob_event
     LANGUAGE sql STABLE STRICT
     AS $$
 WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier)
-
 SELECT ilk_identifier, identifier AS urn_identifier, dink, dart, block_number, tx_idx
 FROM maker.vat_frob
          LEFT JOIN maker.urns ON vat_frob.urn_id = urns.id
@@ -944,7 +938,6 @@ CREATE FUNCTION api.all_ilk_file_events(ilk_identifier text) RETURNS SETOF api.i
     LANGUAGE sql STABLE STRICT
     AS $$
 WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier)
-
 SELECT ilk_identifier, what, data :: text, block_number, tx_idx
 FROM maker.cat_file_chop_lump
          LEFT JOIN headers ON cat_file_chop_lump.header_id = headers.id
@@ -1234,7 +1227,6 @@ BEGIN
     FROM maker.urns
     WHERE urns.identifier = urn_identifier
       AND urns.ilk_id = _ilk_id INTO _urn_id;
-
     blocks := ARRAY(
             SELECT block_number
             FROM (SELECT block_number
@@ -1248,7 +1240,6 @@ BEGIN
                     AND block_number <= all_urn_states.block_height) inks_and_arts
             ORDER BY block_number DESC
         );
-
     FOREACH i IN ARRAY blocks
         LOOP
             RETURN QUERY
@@ -1314,7 +1305,6 @@ WITH urns AS (SELECT urns.id AS urn_id, ilks.id AS ilk_id, ilks.ilk, urns.identi
                         ORDER BY urn_id, block_number DESC)) last_blocks
                           LEFT JOIN public.headers ON headers.hash = last_blocks.block_hash
                  ORDER BY urn_id, headers.block_timestamp DESC)
-
 SELECT urns.identifier,
        ilks.identifier,
        all_urns.block_height,
@@ -1627,7 +1617,6 @@ WITH address AS (
          ORDER BY bid_id, block_number DESC
          LIMIT 1
      )
-
 SELECT get_flap.bid_id,
        storage_values.guy,
        storage_values.tic,
@@ -1928,7 +1917,6 @@ WITH address AS (
          ORDER BY relevant_blocks.block_height DESC
          LIMIT 1
      )
-
 SELECT get_flop.bid_id,
        guy.guy,
        tic.tic,
@@ -2096,7 +2084,6 @@ WITH ilk AS (SELECT id FROM maker.ilks WHERE identifier = ilk_identifier),
                           LEFT JOIN public.headers AS headers on headers.hash = relevant_blocks.block_hash
                  ORDER BY relevant_blocks.block_height DESC
                  LIMIT 1)
-
 SELECT ilks.identifier,
        get_ilk.block_height,
        rates.rate,
@@ -2276,7 +2263,6 @@ WITH created AS (SELECT era, vow_sin_mapping.block_number, api.epoch_to_datetime
                  WHERE era = get_queued_sin.era
                  ORDER BY vow_sin_mapping.block_number DESC
                  LIMIT 1)
-
 SELECT get_queued_sin.era,
        tab,
        (SELECT EXISTS(SELECT id FROM maker.vow_flog WHERE vow_flog.era = get_queued_sin.era)) AS flogged,
@@ -2348,7 +2334,6 @@ WITH urn AS (SELECT urns.id AS urn_id, ilks.id AS ilk_id, ilks.ilk, urns.identif
                        FROM art) last_blocks
                           LEFT JOIN public.headers ON headers.block_number = last_blocks.block_number
                  ORDER BY urn_id, block_timestamp DESC)
-
 SELECT get_urn.urn_identifier,
        ilk_identifier,
        $3,
@@ -2469,7 +2454,6 @@ CREATE FUNCTION api.poke_event_ilk(priceupdate api.poke_event) RETURNS api.ilk_s
     LANGUAGE sql STABLE
     AS $$
 WITH raw_ilk AS (SELECT * FROM maker.ilks WHERE ilks.id = priceUpdate.ilk_id)
-
 SELECT *
 FROM api.get_ilk((SELECT identifier FROM raw_ilk), priceUpdate.block_height)
 $$;
@@ -2544,7 +2528,6 @@ WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier),
              FROM maker.urns
              WHERE ilk_id = (SELECT id FROM ilk)
                AND identifier = urn_bites.urn_identifier)
-
 SELECT ilk_identifier, urn_bites.urn_identifier, bite_identifier AS bid_id, ink, art, tab, block_number, tx_idx
 FROM maker.bite
          LEFT JOIN headers ON bite.header_id = headers.id
@@ -2565,7 +2548,6 @@ WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier),
              FROM maker.urns
              WHERE ilk_id = (SELECT id FROM ilk)
                AND identifier = urn_identifier)
-
 SELECT ilk_identifier, urn_identifier, dink, dart, block_number, tx_idx
 FROM maker.vat_frob
          LEFT JOIN headers ON vat_frob.header_id = headers.id
@@ -4628,41 +4610,6 @@ ALTER SEQUENCE maker.flip_tau_id_seq OWNED BY maker.flip_tau.id;
 
 
 --
--- Name: flip_tick; Type: TABLE; Schema: maker; Owner: -
---
-
-CREATE TABLE maker.flip_tick (
-    id integer NOT NULL,
-    header_id integer NOT NULL,
-    bid_id numeric NOT NULL,
-    contract_address text,
-    log_idx integer NOT NULL,
-    tx_idx integer NOT NULL,
-    raw_log jsonb
-);
-
-
---
--- Name: flip_tick_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
---
-
-CREATE SEQUENCE maker.flip_tick_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: flip_tick_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
---
-
-ALTER SEQUENCE maker.flip_tick_id_seq OWNED BY maker.flip_tick.id;
-
-
---
 -- Name: flip_ttl; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -5870,6 +5817,41 @@ CREATE SEQUENCE maker.tend_id_seq
 --
 
 ALTER SEQUENCE maker.tend_id_seq OWNED BY maker.tend.id;
+
+
+--
+-- Name: tick; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.tick (
+    id integer NOT NULL,
+    header_id integer NOT NULL,
+    bid_id numeric NOT NULL,
+    contract_address text,
+    log_idx integer NOT NULL,
+    tx_idx integer NOT NULL,
+    raw_log jsonb
+);
+
+
+--
+-- Name: tick_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.tick_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: tick_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.tick_id_seq OWNED BY maker.tick.id;
 
 
 --
@@ -7377,7 +7359,7 @@ CREATE TABLE public.checked_headers (
     vat_fork integer DEFAULT 0 NOT NULL,
     jug_init integer DEFAULT 0 NOT NULL,
     yank integer DEFAULT 0 NOT NULL,
-    flip_tick integer DEFAULT 0 NOT NULL,
+    tick integer DEFAULT 0 NOT NULL,
     new_cdp integer DEFAULT 0 NOT NULL
 );
 
@@ -8185,13 +8167,6 @@ ALTER TABLE ONLY maker.flip_tau ALTER COLUMN id SET DEFAULT nextval('maker.flip_
 
 
 --
--- Name: flip_tick id; Type: DEFAULT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.flip_tick ALTER COLUMN id SET DEFAULT nextval('maker.flip_tick_id_seq'::regclass);
-
-
---
 -- Name: flip_ttl id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
@@ -8434,6 +8409,13 @@ ALTER TABLE ONLY maker.spot_vat ALTER COLUMN id SET DEFAULT nextval('maker.spot_
 --
 
 ALTER TABLE ONLY maker.tend ALTER COLUMN id SET DEFAULT nextval('maker.tend_id_seq'::regclass);
+
+
+--
+-- Name: tick id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.tick ALTER COLUMN id SET DEFAULT nextval('maker.tick_id_seq'::regclass);
 
 
 --
@@ -9606,22 +9588,6 @@ ALTER TABLE ONLY maker.flip_tau
 
 
 --
--- Name: flip_tick flip_tick_header_id_tx_idx_log_idx_key; Type: CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.flip_tick
-    ADD CONSTRAINT flip_tick_header_id_tx_idx_log_idx_key UNIQUE (header_id, tx_idx, log_idx);
-
-
---
--- Name: flip_tick flip_tick_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.flip_tick
-    ADD CONSTRAINT flip_tick_pkey PRIMARY KEY (id);
-
-
---
 -- Name: flip_ttl flip_ttl_block_number_block_hash_contract_address_ttl_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -10187,6 +10153,22 @@ ALTER TABLE ONLY maker.tend
 
 ALTER TABLE ONLY maker.tend
     ADD CONSTRAINT tend_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: tick tick_header_id_tx_idx_log_idx_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.tick
+    ADD CONSTRAINT tick_header_id_tx_idx_log_idx_key UNIQUE (header_id, tx_idx, log_idx);
+
+
+--
+-- Name: tick tick_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.tick
+    ADD CONSTRAINT tick_pkey PRIMARY KEY (id);
 
 
 --
@@ -11553,20 +11535,6 @@ CREATE INDEX flip_kicks_kicks_index ON maker.flip_kicks USING btree (kicks);
 
 
 --
--- Name: flip_tick_bid_id_index; Type: INDEX; Schema: maker; Owner: -
---
-
-CREATE INDEX flip_tick_bid_id_index ON maker.flip_tick USING btree (bid_id);
-
-
---
--- Name: flip_tick_header_index; Type: INDEX; Schema: maker; Owner: -
---
-
-CREATE INDEX flip_tick_header_index ON maker.flip_tick USING btree (header_id);
-
-
---
 -- Name: flop_bid_bid_bid_id_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -11858,6 +11826,20 @@ CREATE INDEX spot_poke_ilk_index ON maker.spot_poke USING btree (ilk_id);
 --
 
 CREATE INDEX tend_header_index ON maker.tend USING btree (header_id);
+
+
+--
+-- Name: tick_bid_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX tick_bid_id_index ON maker.tick USING btree (bid_id);
+
+
+--
+-- Name: tick_header_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX tick_header_index ON maker.tick USING btree (header_id);
 
 
 --
@@ -12381,14 +12363,6 @@ ALTER TABLE ONLY maker.flip_kick
 
 
 --
--- Name: flip_tick flip_tick_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.flip_tick
-    ADD CONSTRAINT flip_tick_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
-
-
---
 -- Name: flop_kick flop_kick_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -12554,6 +12528,14 @@ ALTER TABLE ONLY maker.spot_poke
 
 ALTER TABLE ONLY maker.tend
     ADD CONSTRAINT tend_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: tick tick_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.tick
+    ADD CONSTRAINT tick_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
 
 
 --

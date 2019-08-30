@@ -24,7 +24,6 @@ func DealSignature() string               { return getLogNoteTopicZero(dealMetho
 func DentSignature() string               { return getLogNoteTopicZero(dentMethod()) }
 func FlapKickSignature() string           { return getEventTopicZero(flapKickMethod()) }
 func FlipKickSignature() string           { return getEventTopicZero(flipKickMethod()) }
-func FlipTickSignature() string           { return getLogNoteTopicZero(flipTickMethod()) }
 func FlopKickSignature() string           { return getEventTopicZero(flopKickMethod()) }
 func JugDripSignature() string            { return getLogNoteTopicZero(jugDripMethod()) }
 func JugFileBaseSignature() string        { return getLogNoteTopicZero(jugFileBaseMethod()) }
@@ -36,6 +35,7 @@ func SpotFileMatSignature() string        { return getLogNoteTopicZero(spotFileM
 func SpotFilePipSignature() string        { return getLogNoteTopicZero(spotFilePipMethod()) }
 func SpotPokeSignature() string           { return getEventTopicZero(spotPokeMethod()) }
 func TendSignature() string               { return getLogNoteTopicZero(tendMethod()) }
+func TickSignature() string               { return getLogNoteTopicZero(tickMethod()) }
 func VatFileDebtCeilingSignature() string { return getLogNoteTopicZero(vatFileDebtCeilingMethod()) }
 func VatFileIlkSignature() string         { return getLogNoteTopicZero(vatFileIlkMethod()) }
 func VatFluxSignature() string            { return getLogNoteTopicZero(vatFluxMethod()) }

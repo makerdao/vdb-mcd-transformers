@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package flip_tick
+package tick
 
 import (
 	"encoding/json"
@@ -25,9 +25,9 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 )
 
-type FlipTickConverter struct{}
+type TickConverter struct{}
 
-func (FlipTickConverter) ToModels(ethLogs []types.Log) (results []shared.InsertionModel, err error) {
+func (TickConverter) ToModels(ethLogs []types.Log) (results []shared.InsertionModel, err error) {
 	for _, ethLog := range ethLogs {
 		validateErr := validateLog(ethLog)
 		if validateErr != nil {
@@ -40,7 +40,7 @@ func (FlipTickConverter) ToModels(ethLogs []types.Log) (results []shared.Inserti
 		}
 
 		model := shared.InsertionModel{
-			TableName: "flip_tick",
+			TableName: "tick",
 			OrderedColumns: []string{
 				"header_id", "bid_id", "contract_address", "log_idx", "tx_idx", "raw_log",
 			},

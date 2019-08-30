@@ -30,39 +30,39 @@ import (
 )
 
 var (
-	flipTickBidId           = int64(10)
-	flipTickData            = "0x000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000e0fc7b6aee000000000000000000000000000000000000000000000000000000000000000a0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
-	flipTickTransactionHash = "0x6dc191fc774d5c5dc82bb292e6e2c4c62b5476b7fc9e589a89c3120448161966"
+	tickBidId           = int64(10)
+	tickData            = "0x000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000e0fc7b6aee000000000000000000000000000000000000000000000000000000000000000a0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+	tickTransactionHash = "0x6dc191fc774d5c5dc82bb292e6e2c4c62b5476b7fc9e589a89c3120448161966"
 )
 
-var FlipTickLogNote = types.Log{
+var TickLogNote = types.Log{
 	Address: common.HexToAddress(EthFlipAddress()),
 	Topics: []common.Hash{
-		common.HexToHash(constants.FlipTickSignature()),
+		common.HexToHash(constants.TickSignature()),
 		common.HexToHash("0x000000000000000000000000da198bfdd2671d7ad4614c9cf2beb87cdfec1460"),
 		common.HexToHash("0x000000000000000000000000000000000000000000000000000000000000000a"),
 	},
-	Data:        hexutil.MustDecode(flipTickData),
+	Data:        hexutil.MustDecode(tickData),
 	BlockNumber: 11,
-	TxHash:      common.HexToHash(flipTickTransactionHash),
+	TxHash:      common.HexToHash(tickTransactionHash),
 	TxIndex:     10,
 	BlockHash:   fakes.FakeHash,
 	Index:       1,
 	Removed:     false,
 }
 
-var rawFlipTickLog, _ = json.Marshal(FlipTickLogNote)
-var FlipTickModel = shared.InsertionModel{
-	TableName: "flip_tick",
+var rawTickLog, _ = json.Marshal(TickLogNote)
+var TickModel = shared.InsertionModel{
+	TableName: "tick",
 	OrderedColumns: []string{
 		"header_id", "bid_id", "contract_address", "log_idx", "tx_idx", "raw_log",
 	},
 	ColumnValues: shared.ColumnValues{
-		"bid_id":           strconv.FormatInt(flipTickBidId, 10),
-		"contract_address": FlipTickLogNote.Address.Hex(),
-		"log_idx":          FlipTickLogNote.Index,
-		"tx_idx":           FlipTickLogNote.TxIndex,
-		"raw_log":          rawFlipTickLog,
+		"bid_id":           strconv.FormatInt(tickBidId, 10),
+		"contract_address": TickLogNote.Address.Hex(),
+		"log_idx":          TickLogNote.Index,
+		"tx_idx":           TickLogNote.TxIndex,
+		"raw_log":          rawTickLog,
 	},
 	ForeignKeyValues: shared.ForeignKeyValues{},
 }

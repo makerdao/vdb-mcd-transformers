@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package flip_tick_test
+package tick_test
 
 import (
 	"github.com/ethereum/go-ethereum/common"
@@ -22,24 +22,24 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
-	"github.com/vulcanize/mcd_transformers/transformers/events/flip_tick"
+	"github.com/vulcanize/mcd_transformers/transformers/events/tick"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
-var _ = Describe("FlipTickConverter", func() {
-	converter := flip_tick.FlipTickConverter{}
+var _ = Describe("TickConverter", func() {
+	converter := tick.TickConverter{}
 
 	Describe("ToModels", func() {
 		It("converts an eth log to a db model", func() {
-			models, err := converter.ToModels([]types.Log{test_data.FlipTickLogNote})
+			models, err := converter.ToModels([]types.Log{test_data.TickLogNote})
 
 			Expect(err).NotTo(HaveOccurred())
-			Expect(models).To(Equal([]shared.InsertionModel{test_data.FlipTickModel}))
+			Expect(models).To(Equal([]shared.InsertionModel{test_data.TickModel}))
 		})
 
 		It("returns an error if the expected amount of topics aren't in the log", func() {
-			invalidLog := test_data.FlipTickLogNote
+			invalidLog := test_data.TickLogNote
 			invalidLog.Topics = []common.Hash{}
 			_, err := converter.ToModels([]types.Log{invalidLog})
 

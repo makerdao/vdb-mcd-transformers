@@ -41,7 +41,6 @@
         "dent",
         "flap_kick",
         "flip_kick",
-        "flip_tick",
         "flop_kick",
         "jug_drip",
         "jug_file_base",
@@ -53,6 +52,7 @@
         "spot_file_pip",
         "spot_poke",
         "tend",
+        "tick",
         "vat_file_debt_ceiling",
         "vat_file_ilk",
         "vat_flux",
@@ -237,15 +237,6 @@
                       "MCD_FLIP_REP_A", "MCD_FLIP_ZRX_A", "MCD_FLIP_OMG_A", "MCD_FLIP_BAT_A", "MCD_FLIP_DGD_A", "MCD_FLIP_GNT_A",
                     ]
         rank = "0"
-    [exporter.flip_tick]
-        path = "transformers/events/flip_tick/initializer"
-        type = "eth_event"
-        repository = "github.com/vulcanize/mcd_transformers"
-        migrations = "db/migrations"
-        contracts = [ "MCD_FLIP_ETH_A", "MCD_FLIP_ETH_B", "MCD_FLIP_ETH_C",
-                      "MCD_FLIP_REP_A", "MCD_FLIP_ZRX_A", "MCD_FLIP_OMG_A", "MCD_FLIP_BAT_A", "MCD_FLIP_DGD_A", "MCD_FLIP_GNT_A",
-                    ]
-        rank = "0"
     [exporter.flop_kick]
         path = "transformers/events/flop_kick/initializer"
         type = "eth_event"
@@ -324,6 +315,15 @@
         contracts = [ "MCD_FLIP_ETH_A", "MCD_FLIP_ETH_B", "MCD_FLIP_ETH_C",
                       "MCD_FLIP_REP_A", "MCD_FLIP_ZRX_A", "MCD_FLIP_OMG_A", "MCD_FLIP_BAT_A", "MCD_FLIP_DGD_A", "MCD_FLIP_GNT_A",
                     ]
+        rank = "0"
+    [exporter.tick]
+        path = "transformers/events/tick/initializer"
+        type = "eth_event"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
+        contracts = [ "MCD_FLOP", "MCD_FLIP_ETH_A", "MCD_FLIP_ETH_B", "MCD_FLIP_ETH_C",
+                    "MCD_FLIP_REP_A", "MCD_FLIP_ZRX_A", "MCD_FLIP_OMG_A", "MCD_FLIP_BAT_A", "MCD_FLIP_DGD_A", "MCD_FLIP_GNT_A",
+                  ]
         rank = "0"
     [exporter.vat_file_debt_ceiling]
         path = "transformers/events/vat_file/debt_ceiling/initializer"

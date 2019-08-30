@@ -54,8 +54,8 @@ var _ = Describe("Signature constants", func() {
 		Expect(FlipKickSignature()).To(Equal("0xc84ce3a1172f0dec3173f04caaa6005151a4bfe40d4c9f3ea28dba5f719b2a7a"))
 	})
 
-	It("generates flip tick signature", func() {
-		Expect(FlipTickSignature()).To(Equal("0xfc7b6aee00000000000000000000000000000000000000000000000000000000"))
+	It("generates tick signature", func() {
+		Expect(TickSignature()).To(Equal("0xfc7b6aee00000000000000000000000000000000000000000000000000000000"))
 	})
 
 	It("generates flop kick signature", func() {
