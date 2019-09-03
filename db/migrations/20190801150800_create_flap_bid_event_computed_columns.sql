@@ -2,7 +2,7 @@
 
 -- Extend type flap_bid_event with bid field
 CREATE FUNCTION api.flap_bid_event_bid(event api.flap_bid_event)
-    RETURNS SETOF api.flap_state AS
+    RETURNS api.flap_state AS
 $$
 SELECT *
 FROM api.get_flap(event.bid_id, event.block_height)

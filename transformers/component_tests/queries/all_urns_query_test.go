@@ -123,6 +123,45 @@ var _ = Describe("Urn view", func() {
 		helper.AssertUrn(result[1], expectedUrnTwo)
 	})
 
+	It("limits results if max_results argument is provided", func() {
+		blockOne := rand.Int()
+		timestampOne := int(rand.Int31())
+
+		urnOneMetadata := helper.GetUrnMetadata(helper.FakeIlk.Hex, urnOne)
+		urnOneSetupData := helper.GetUrnSetupData(blockOne, timestampOne)
+		helper.CreateUrn(urnOneSetupData, urnOneMetadata, vatRepo, headerRepo)
+
+		// New block
+		blockTwo := blockOne + 1
+		timestampTwo := timestampOne + 1
+
+		urnTwoMetadata := helper.GetUrnMetadata(helper.AnotherFakeIlk.Hex, urnTwo)
+		urnTwoSetupData := helper.GetUrnSetupData(blockTwo, timestampTwo)
+		helper.CreateUrn(urnTwoSetupData, urnTwoMetadata, vatRepo, headerRepo)
+		expectedRatioTwo := helper.GetExpectedRatio(urnTwoSetupData.Ink, urnTwoSetupData.Spot, urnTwoSetupData.Art, urnTwoSetupData.Rate)
+
+		expectedTimestampTwo := helper.GetExpectedTimestamp(timestampTwo)
+		expectedUrnTwo := helper.UrnState{
+			UrnIdentifier: urnTwo,
+			IlkIdentifier: helper.AnotherFakeIlk.Identifier,
+			Ink:           strconv.Itoa(urnTwoSetupData.Ink),
+			Art:           strconv.Itoa(urnTwoSetupData.Art),
+			Ratio:         helper.GetValidNullString(strconv.FormatFloat(expectedRatioTwo, 'f', 8, 64)),
+			Safe:          expectedRatioTwo >= 1,
+			Created:       helper.GetValidNullString(expectedTimestampTwo),
+			Updated:       helper.GetValidNullString(expectedTimestampTwo),
+		}
+
+		maxResults := 1
+		var result []helper.UrnState
+		err = db.Select(&result, `SELECT urn_identifier, ilk_identifier, ink, art, ratio, safe, created, updated
+			FROM api.all_urns($1, $2)`, blockTwo, maxResults)
+		Expect(err).NotTo(HaveOccurred())
+
+		Expect(len(result)).To(Equal(maxResults))
+		helper.AssertUrn(result[0], expectedUrnTwo)
+	})
+
 	It("returns urn state without timestamps if corresponding headers aren't synced", func() {
 		block := rand.Int()
 		timestamp := int(rand.Int31())

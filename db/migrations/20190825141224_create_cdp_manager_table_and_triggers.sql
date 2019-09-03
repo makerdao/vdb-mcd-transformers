@@ -9,6 +9,7 @@ CREATE TABLE api.managed_cdp
     created        TIMESTAMP DEFAULT NULL
 );
 
+COMMENT ON TABLE api.managed_cdp IS '@omit create,update,delete';
 COMMENT ON COLUMN api.managed_cdp.id IS '@omit';
 COMMENT ON COLUMN api.managed_cdp.cdpi IS '@name id';
 

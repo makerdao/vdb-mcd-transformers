@@ -14,7 +14,7 @@ $$
 
 -- Extend type bite_event with urn field
 CREATE FUNCTION api.bite_event_urn(event api.bite_event)
-    RETURNS SETOF api.urn_state AS
+    RETURNS api.urn_state AS
 $$
 SELECT *
 FROM api.get_urn(event.ilk_identifier, event.urn_identifier, event.block_height)
@@ -25,7 +25,7 @@ $$
 
 -- Extend type bite_event with bid field
 CREATE FUNCTION api.bite_event_bid(event api.bite_event)
-    RETURNS SETOF api.flip_state AS
+    RETURNS api.flip_state AS
 $$
 SELECT *
 FROM api.get_flip(event.bid_id, event.ilk_identifier, event.block_height)

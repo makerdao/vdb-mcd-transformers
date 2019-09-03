@@ -43,7 +43,8 @@ var _ = Describe("QueuedSin", func() {
 	var (
 		db                 *postgres.DB
 		fakeBlock          int
-		fakeEra            = strconv.Itoa(int(rand.Int31()))
+		rawEra             = int(rand.Int31())
+		fakeEra            = strconv.Itoa(rawEra)
 		fakeHeader         core.Header
 		fakeTab            = strconv.Itoa(int(rand.Int31()))
 		headerID           int64
@@ -184,6 +185,25 @@ var _ = Describe("QueuedSin", func() {
 			fakeTabNullString := test_helpers.GetValidNullString(fakeTab)
 			anotherFakeTabNullString := test_helpers.GetValidNullString(anotherFakeTab)
 			Expect(results[0].Tab).To(Or(Equal(fakeTabNullString), Equal(anotherFakeTabNullString)))
+		})
+
+		It("limits results to latest era if max_results argument is provided", func() {
+			laterEra := strconv.Itoa(rawEra + 1)
+			anotherFakeTab := strconv.Itoa(int(rand.Int31()))
+			anotherSinMappingKeys := map[utils.Key]string{constants.Timestamp: laterEra}
+			anotherSinMappingMetadata := utils.GetStorageValueMetadata(vow.SinMapping, anotherSinMappingKeys, utils.Uint256)
+			insertSinMappingErr := vowRepository.Create(int(fakeHeader.BlockNumber), fakeHeader.Hash, anotherSinMappingMetadata, anotherFakeTab)
+			Expect(insertSinMappingErr).NotTo(HaveOccurred())
+
+			maxResults := 1
+			var results []QueuedSin
+			err := db.Select(&results, `SELECT era, tab, flogged, created, updated FROM api.all_queued_sin($1)`,
+				maxResults)
+			Expect(err).NotTo(HaveOccurred())
+
+			Expect(len(results)).To(Equal(maxResults))
+			Expect(results[0].Era).To(Equal(test_helpers.GetValidNullString(laterEra)))
+			Expect(results[0].Tab).To(Equal(test_helpers.GetValidNullString(anotherFakeTab)))
 		})
 	})
 })

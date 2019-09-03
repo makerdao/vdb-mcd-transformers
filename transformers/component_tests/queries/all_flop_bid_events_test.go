@@ -408,4 +408,42 @@ var _ = Describe("Flop bid events query", func() {
 			))
 		})
 	})
+
+	It("limits result to latest blocks if max_results argument is provided", func() {
+		fakeBidId := rand.Int()
+		lot := rand.Int()
+		bidAmount := rand.Int()
+		updatedLot := lot + 100
+		updatedBidAmount := bidAmount + 100
+
+		flopKickBlockOne := test_data.FlopKickModel
+		flopKickBlockOne.BidId = strconv.Itoa(fakeBidId)
+		flopKickBlockOne.ContractAddress = contractAddress
+		flopKickErr := flopKickRepo.Create(headerOneId, []interface{}{flopKickBlockOne})
+		Expect(flopKickErr).NotTo(HaveOccurred())
+
+		headerTwo := fakes.GetFakeHeaderWithTimestamp(int64(222222222), 2)
+		headerTwoId, headerTwoErr := headerRepo.CreateOrUpdateHeader(headerTwo)
+		Expect(headerTwoErr).NotTo(HaveOccurred())
+
+		flopDentErr := test_helpers.CreateDent(test_helpers.DentCreationInput{
+			BidId:           fakeBidId,
+			ContractAddress: contractAddress,
+			Lot:             updatedLot,
+			BidAmount:       updatedBidAmount,
+			DentRepo:        dentRepo,
+			DentHeaderId:    headerTwoId,
+		})
+		Expect(flopDentErr).NotTo(HaveOccurred())
+
+		maxResults := 1
+		var actualBidEvents []test_helpers.BidEvent
+		queryErr := db.Select(&actualBidEvents, `SELECT bid_id, bid_amount, lot, act FROM api.all_flop_bid_events($1)`,
+			maxResults)
+		Expect(queryErr).NotTo(HaveOccurred())
+
+		Expect(actualBidEvents).To(ConsistOf(
+			test_helpers.BidEvent{BidId: strconv.Itoa(fakeBidId), BidAmount: strconv.Itoa(updatedBidAmount), Lot: strconv.Itoa(updatedLot), Act: "dent"},
+		))
+	})
 })

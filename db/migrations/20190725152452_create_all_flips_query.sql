@@ -1,7 +1,7 @@
 -- +goose Up
 -- SQL in this section is executed when the migration is applied.
 
-CREATE OR REPLACE FUNCTION api.all_flips(ilk TEXT) RETURNS SETOF api.flip_state AS
+CREATE OR REPLACE FUNCTION api.all_flips(ilk TEXT, max_results INTEGER DEFAULT NULL) RETURNS SETOF api.flip_state AS
 -- +goose StatementBegin
 $BODY$
 BEGIN
@@ -18,7 +18,8 @@ BEGIN
                  SELECT DISTINCT flip_kicks.kicks
                  FROM maker.flip_kicks
                  WHERE contract_address = (SELECT * FROM address)
-                 ORDER BY flip_kicks.kicks)
+                 ORDER BY flip_kicks.kicks DESC
+                 LIMIT all_flips.max_results)
         SELECT f.*
         FROM bid_ids,
              LATERAL api.get_flip(bid_ids.kicks, all_flips.ilk) f
@@ -30,4 +31,4 @@ $BODY$
 -- +goose StatementEnd
 
 -- +goose Down
-DROP FUNCTION api.all_flips(ilk TEXT);
+DROP FUNCTION api.all_flips(TEXT, INTEGER);

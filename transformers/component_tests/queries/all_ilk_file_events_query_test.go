@@ -182,6 +182,39 @@ var _ = Describe("Ilk File Events Query", func() {
 		))
 	})
 
+	It("limits results to most recent blocks if max_results argument is provided", func() {
+		fileBlockOne := test_data.CopyModel(test_data.VatFileIlkDustModel)
+		fileBlockOne.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
+		fileBlockOne.ColumnValues["data"] = strconv.Itoa(rand.Int())
+		fileBlockOneErr := vatFileRepo.Create(headerOneId, []shared.InsertionModel{fileBlockOne})
+		Expect(fileBlockOneErr).NotTo(HaveOccurred())
+
+		headerTwo := fakes.GetFakeHeader(2)
+		headerTwo.Hash = "anotherHash"
+		headerTwoId, headerTwoErr := headerRepo.CreateOrUpdateHeader(headerTwo)
+		Expect(headerTwoErr).NotTo(HaveOccurred())
+
+		fileBlockTwo := test_data.CopyModel(test_data.VatFileIlkDustModel)
+		fileBlockTwo.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
+		fileBlockTwo.ColumnValues["data"] = strconv.Itoa(rand.Int())
+		fileBlockTwoErr := vatFileRepo.Create(headerTwoId, []shared.InsertionModel{fileBlockTwo})
+		Expect(fileBlockTwoErr).NotTo(HaveOccurred())
+
+		maxResults := 1
+		var actualFiles []test_helpers.IlkFileEvent
+		filesErr := db.Select(&actualFiles, `SELECT ilk_identifier, what, data FROM api.all_ilk_file_events($1, $2)`,
+			test_helpers.FakeIlk.Identifier, maxResults)
+		Expect(filesErr).NotTo(HaveOccurred())
+
+		Expect(actualFiles).To(ConsistOf(
+			test_helpers.IlkFileEvent{
+				IlkIdentifier: relevantIlkIdentifier,
+				What:          fileBlockTwo.ColumnValues["what"].(string),
+				Data:          fileBlockTwo.ColumnValues["data"].(string),
+			},
+		))
+	})
+
 	It("does not include ilk file events for a different ilk", func() {
 		relevantFile := test_data.CopyModel(test_data.VatFileIlkDustModel)
 		relevantFile.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex

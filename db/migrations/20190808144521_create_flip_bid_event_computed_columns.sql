@@ -2,7 +2,7 @@
 
 -- Extend type flip_bid_event with bid field
 CREATE FUNCTION api.flip_bid_event_bid(event api.flip_bid_event)
-    RETURNS SETOF api.flip_state AS
+    RETURNS api.flip_state AS
 $$
 WITH ilks AS (
     SELECT ilks.identifier

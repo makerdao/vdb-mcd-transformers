@@ -18,7 +18,7 @@ COMMENT ON COLUMN api.frob_event.block_height
 COMMENT ON COLUMN api.frob_event.tx_idx
     IS E'@omit';
 
-CREATE FUNCTION api.urn_frobs(ilk_identifier TEXT, urn_identifier TEXT)
+CREATE FUNCTION api.urn_frobs(ilk_identifier TEXT, urn_identifier TEXT, max_results INTEGER DEFAULT NULL)
     RETURNS SETOF api.frob_event AS
 $$
 WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier),
@@ -44,13 +44,13 @@ FROM maker.vat_frob
          LEFT JOIN headers ON vat_frob.header_id = headers.id
 WHERE vat_frob.urn_id = (SELECT id FROM urn)
 ORDER BY block_number DESC
+LIMIT urn_frobs.max_results
 $$
     LANGUAGE sql
-    STABLE
-    STRICT;
+    STABLE;
 
 
-CREATE FUNCTION api.all_frobs(ilk_identifier TEXT)
+CREATE FUNCTION api.all_frobs(ilk_identifier TEXT, max_results INTEGER DEFAULT NULL)
     RETURNS SETOF api.frob_event AS
 $$
 WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier),
@@ -61,7 +61,7 @@ WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier),
      )
 
 SELECT ilk_identifier,
-       identifier                                                                  AS urn_identifier,
+       urns.identifier                                                             AS urn_identifier,
        dink,
        dart,
        (SELECT rate from rates WHERE block_number <= headers.block_number LIMIT 1) AS ilk_rate,
@@ -71,14 +71,14 @@ FROM maker.vat_frob
          LEFT JOIN maker.urns ON vat_frob.urn_id = urns.id
          LEFT JOIN headers ON vat_frob.header_id = headers.id
 WHERE urns.ilk_id = (SELECT id FROM ilk)
-ORDER BY identifier, block_number DESC
+ORDER BY block_number DESC
+LIMIT max_results
 $$
     LANGUAGE sql
-    STABLE
-    STRICT;
+    STABLE;
 
 -- +goose Down
 -- SQL in this section is executed when the migration is rolled back.
-DROP FUNCTION api.urn_frobs(TEXT, TEXT);
-DROP FUNCTION api.all_frobs(TEXT);
+DROP FUNCTION api.urn_frobs(TEXT, TEXT, INTEGER);
+DROP FUNCTION api.all_frobs(TEXT, INTEGER);
 DROP TYPE api.frob_event CASCADE;
