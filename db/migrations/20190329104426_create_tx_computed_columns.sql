@@ -27,8 +27,22 @@ $$
     LANGUAGE sql
     STABLE;
 
+CREATE FUNCTION get_tx_data(block_height bigint, tx_idx integer)
+    RETURNS SETOF api.tx AS
+$$
+SELECT txs.hash, txs.tx_index, headers.block_number, headers.hash, tx_from, tx_to
+FROM header_sync_transactions txs
+         LEFT JOIN headers ON txs.header_id = headers.id
+WHERE block_number = block_height
+  AND txs.tx_index = tx_idx
+ORDER BY block_number DESC
+$$
+    LANGUAGE sql
+    STABLE;
+
 -- +goose Down
 -- SQL in this section is executed when the migration is rolled back.
+DROP FUNCTION get_tx_data(bigint, integer);
 DROP FUNCTION api.tx_era(api.tx);
 DROP TYPE api.tx CASCADE;
 DROP TYPE api.era CASCADE;

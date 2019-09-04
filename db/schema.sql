@@ -1578,13 +1578,7 @@ $$;
 CREATE FUNCTION api.frob_event_tx(event api.frob_event) RETURNS api.tx
     LANGUAGE sql STABLE
     AS $$
-SELECT txs.hash, txs.tx_index, headers.block_number, headers.hash, tx_from, tx_to
-FROM public.header_sync_transactions txs
-         LEFT JOIN headers ON txs.header_id = headers.id
-WHERE block_number <= event.block_height
-  AND txs.tx_index = event.tx_idx
-ORDER BY block_number DESC
-LIMIT 1 -- Should always be true anyway?
+SELECT * FROM get_tx_data(event.block_height, event.tx_idx)
 $$;
 
 
@@ -2388,13 +2382,7 @@ $$;
 CREATE FUNCTION api.ilk_file_event_tx(event api.ilk_file_event) RETURNS api.tx
     LANGUAGE sql STABLE
     AS $$
-SELECT txs.hash, txs.tx_index, headers.block_number, headers.hash, tx_from, tx_to
-FROM public.header_sync_transactions txs
-         LEFT JOIN headers ON txs.header_id = headers.id
-WHERE block_number <= event.block_height
-  AND txs.tx_index = event.tx_idx
-ORDER BY block_number DESC
-LIMIT 1
+SELECT * FROM get_tx_data(event.block_height, event.tx_idx)
 $$;
 
 
@@ -2481,12 +2469,7 @@ $$;
 CREATE FUNCTION api.poke_event_tx(priceupdate api.poke_event) RETURNS api.tx
     LANGUAGE sql STABLE
     AS $$
-SELECT txs.hash, txs.tx_index, headers.block_number, headers.hash, txs.tx_from, txs.tx_to
-FROM public.header_sync_transactions txs
-         LEFT JOIN headers ON txs.header_id = headers.id
-WHERE headers.block_number = priceUpdate.block_height
-  AND txs.tx_index = priceUpdate.tx_idx
-ORDER BY headers.block_number DESC
+SELECT * FROM get_tx_data(priceUpdate.block_height, priceUpdate.tx_idx)
 $$;
 
 
@@ -2509,12 +2492,7 @@ $$;
 CREATE FUNCTION api.sin_queue_event_tx(event api.sin_queue_event) RETURNS api.tx
     LANGUAGE sql STABLE
     AS $$
-SELECT txs.hash, txs.tx_index, headers.block_number AS block_height, headers.hash, tx_from, tx_to
-FROM public.header_sync_transactions txs
-         LEFT JOIN headers ON txs.header_id = headers.id
-WHERE block_number <= event.block_height
-  AND txs.tx_index = event.tx_idx
-ORDER BY block_height DESC
+SELECT * FROM get_tx_data(event.block_height, event.tx_idx)
 $$;
 
 
@@ -2913,8 +2891,8 @@ CREATE FUNCTION public.get_tx_data(block_height bigint, tx_idx integer) RETURNS 
 SELECT txs.hash, txs.tx_index, headers.block_number, headers.hash, tx_from, tx_to
 FROM header_sync_transactions txs
          LEFT JOIN headers ON txs.header_id = headers.id
-WHERE block_number <= block_height
-  AND txs.tx_index <= tx_idx
+WHERE block_number = block_height
+  AND txs.tx_index = tx_idx
 ORDER BY block_number DESC
 $$;
 

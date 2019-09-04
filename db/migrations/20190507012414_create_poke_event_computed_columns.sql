@@ -16,14 +16,9 @@ $$
 -- extend type poke_event with tx field
 CREATE FUNCTION api.poke_event_tx(priceUpdate api.poke_event)
     RETURNS api.tx AS
-$body$
-SELECT txs.hash, txs.tx_index, headers.block_number, headers.hash, txs.tx_from, txs.tx_to
-FROM public.header_sync_transactions txs
-         LEFT JOIN headers ON txs.header_id = headers.id
-WHERE headers.block_number = priceUpdate.block_height
-  AND txs.tx_index = priceUpdate.tx_idx
-ORDER BY headers.block_number DESC
-$body$
+$$
+SELECT * FROM get_tx_data(priceUpdate.block_height, priceUpdate.tx_idx)
+$$
     LANGUAGE sql
     STABLE;
 
