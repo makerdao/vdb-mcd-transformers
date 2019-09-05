@@ -529,8 +529,8 @@ func FlipBidFromValues(bidId, ilkId, urnId, dealt, updated, created string, bidV
 }
 
 type ManagedCdp struct {
+	Id            string `db:"cdpi"`
 	Usr           string
-	Id            string
 	UrnIdentifier string `db:"urn_identifier"`
 	IlkIdentifier string `db:"ilk_identifier"`
 	Created       sql.NullString

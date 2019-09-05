@@ -371,33 +371,6 @@ CREATE TYPE api.ilk_state AS (
 
 
 --
--- Name: managed_cdp; Type: TYPE; Schema: api; Owner: -
---
-
-CREATE TYPE api.managed_cdp AS (
-	usr text,
-	id numeric,
-	urn_identifier text,
-	ilk_identifier text,
-	created timestamp without time zone
-);
-
-
---
--- Name: COLUMN managed_cdp.urn_identifier; Type: COMMENT; Schema: api; Owner: -
---
-
-COMMENT ON COLUMN api.managed_cdp.urn_identifier IS '@name urn_id';
-
-
---
--- Name: COLUMN managed_cdp.ilk_identifier; Type: COMMENT; Schema: api; Owner: -
---
-
-COMMENT ON COLUMN api.managed_cdp.ilk_identifier IS '@name ilk_id';
-
-
---
 -- Name: poke_event; Type: TYPE; Schema: api; Owner: -
 --
 
@@ -1131,28 +1104,6 @@ WHERE (
               pips.pip is not null OR
               mats.mat is not null
           )
-$$;
-
-
---
--- Name: all_managed_cdps(text); Type: FUNCTION; Schema: api; Owner: -
---
-
-CREATE FUNCTION api.all_managed_cdps(usr text DEFAULT NULL::text) RETURNS SETOF api.managed_cdp
-    LANGUAGE plpgsql STABLE
-    AS $$
-BEGIN
-    RETURN QUERY (
-        WITH cdpis AS (
-            SELECT DISTINCT cdpi
-            FROM maker.cdp_manager_owns
-            WHERE (all_managed_cdps.usr IS NULL OR cdp_manager_owns.owner = all_managed_cdps.usr)
-            ORDER BY cdpi)
-        SELECT cdp.*
-        FROM cdpis,
-             LATERAL api.get_managed_cdp(cdpis.cdpi) cdp
-    );
-END
 $$;
 
 
@@ -2210,50 +2161,6 @@ COMMENT ON FUNCTION api.get_ilk_blocks_before(ilk_identifier text, block_height 
 
 
 --
--- Name: get_managed_cdp(numeric); Type: FUNCTION; Schema: api; Owner: -
---
-
-CREATE FUNCTION api.get_managed_cdp(id numeric) RETURNS api.managed_cdp
-    LANGUAGE sql STABLE STRICT
-    AS $$
-WITH owners AS (
-    SELECT cdp_manager_owns.owner, cdpi
-    FROM maker.cdp_manager_owns
-    WHERE cdpi = get_managed_cdp.id
-    ORDER BY cdp_manager_owns.block_number DESC
-    LIMIT 1),
-     ilk AS (
-         SELECT ilks.identifier, cdp_manager_ilks.cdpi
-         FROM maker.cdp_manager_ilks
-                  LEFT JOIN maker.ilks ON ilks.id = cdp_manager_ilks.ilk_id
-         WHERE cdp_manager_ilks.cdpi = get_managed_cdp.id
-         ORDER BY cdp_manager_ilks.block_number DESC
-         LIMIT 1),
-     urn AS (
-         SELECT cdp_manager_urns.urn AS identifier, cdp_manager_urns.cdpi
-         FROM maker.cdp_manager_urns
-         WHERE cdp_manager_urns.cdpi = get_managed_cdp.id
-         ORDER BY cdp_manager_urns.block_number DESC
-         LIMIT 1),
-     created AS (
-         SELECT api.epoch_to_datetime(headers.block_timestamp) AS datetime, cdp_manager_cdpi.cdpi
-         FROM headers
-                  LEFT JOIN maker.cdp_manager_cdpi ON cdp_manager_cdpi.block_number = headers.block_number
-         WHERE cdp_manager_cdpi.cdpi = get_managed_cdp.id
-         LIMIT 1)
-SELECT owners.owner     AS usr,
-       get_managed_cdp.id,
-       urn.identifier   AS urn_identifier,
-       ilk.identifier   AS ilk_identifier,
-       created.datetime AS created
-FROM owners
-         LEFT JOIN ilk ON ilk.cdpi = owners.cdpi
-         LEFT JOIN urn ON urn.cdpi = owners.cdpi
-         LEFT JOIN created ON created.cdpi = owners.cdpi
-$$;
-
-
---
 -- Name: get_queued_sin(numeric); Type: FUNCTION; Schema: api; Owner: -
 --
 
@@ -2423,6 +2330,38 @@ SELECT *
 FROM api.all_ilk_file_events(state.ilk_identifier)
 WHERE block_height <= state.block_height
 $$;
+
+
+SET default_tablespace = '';
+
+SET default_with_oids = false;
+
+--
+-- Name: managed_cdp; Type: TABLE; Schema: api; Owner: -
+--
+
+CREATE TABLE api.managed_cdp (
+    id integer NOT NULL,
+    cdpi numeric,
+    usr text,
+    urn_identifier text,
+    ilk_identifier text,
+    created timestamp without time zone
+);
+
+
+--
+-- Name: COLUMN managed_cdp.id; Type: COMMENT; Schema: api; Owner: -
+--
+
+COMMENT ON COLUMN api.managed_cdp.id IS '@omit';
+
+
+--
+-- Name: COLUMN managed_cdp.cdpi; Type: COMMENT; Schema: api; Owner: -
+--
+
+COMMENT ON COLUMN api.managed_cdp.cdpi IS '@name id';
 
 
 --
@@ -2627,6 +2566,93 @@ BEGIN
     ON CONFLICT (bid_id, block_number) DO UPDATE SET created = (SELECT datetime FROM block_info),
                                                      updated = (SELECT datetime FROM block_info);
     return NEW;
+END
+$$;
+
+
+--
+-- Name: insert_cdp_created(); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.insert_cdp_created() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    WITH block_info AS (
+        SELECT api.epoch_to_datetime(headers.block_timestamp) AS datetime
+        FROM public.headers
+        WHERE headers.block_number = NEW.block_number
+        LIMIT 1)
+    INSERT
+    INTO api.managed_cdp (cdpi, created)
+    VALUES (NEW.cdpi, (SELECT datetime FROM block_info))
+    ON CONFLICT (cdpi)
+        DO UPDATE SET created = (SELECT datetime FROM block_info)
+    WHERE managed_cdp.created IS NULL;
+    RETURN NEW;
+END
+$$;
+
+
+--
+-- Name: insert_cdp_ilk_identifier(); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.insert_cdp_ilk_identifier() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    WITH ilk AS (
+        SELECT ilks.identifier
+        FROM maker.cdp_manager_ilks
+                 LEFT JOIN maker.ilks ON ilks.id = cdp_manager_ilks.ilk_id
+        WHERE cdp_manager_ilks.cdpi = NEW.cdpi
+    )
+    INSERT
+    INTO api.managed_cdp (cdpi, ilk_identifier)
+    VALUES (NEW.cdpi, (SELECT identifier FROM ilk))
+    ON CONFLICT (cdpi) DO UPDATE SET ilk_identifier = (SELECT identifier FROM ilk);
+    RETURN NEW;
+END
+$$;
+
+
+--
+-- Name: insert_cdp_urn_identifier(); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.insert_cdp_urn_identifier() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    INSERT
+    INTO api.managed_cdp (cdpi, urn_identifier)
+    VALUES (NEW.cdpi, NEW.urn)
+    ON CONFLICT (cdpi) DO UPDATE SET urn_identifier = NEW.urn;
+    RETURN NEW;
+END
+$$;
+
+
+--
+-- Name: insert_cdp_usr(); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.insert_cdp_usr() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    INSERT
+    INTO api.managed_cdp (cdpi, usr)
+    VALUES (NEW.cdpi, NEW.owner)
+    -- only update usr if the new owner is coming from the latest owns block we know about for the given cdpi
+    ON CONFLICT (cdpi)
+        DO UPDATE SET usr = NEW.owner
+    WHERE NEW.block_number >= (
+        SELECT MAX(block_number)
+        FROM maker.cdp_manager_owns
+        WHERE cdp_manager_owns.cdpi = NEW.cdpi);
+    RETURN NEW;
 END
 $$;
 
@@ -2897,9 +2923,25 @@ ORDER BY block_number DESC
 $$;
 
 
-SET default_tablespace = '';
+--
+-- Name: managed_cdp_id_seq; Type: SEQUENCE; Schema: api; Owner: -
+--
 
-SET default_with_oids = false;
+CREATE SEQUENCE api.managed_cdp_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: managed_cdp_id_seq; Type: SEQUENCE OWNED BY; Schema: api; Owner: -
+--
+
+ALTER SEQUENCE api.managed_cdp_id_seq OWNED BY api.managed_cdp.id;
+
 
 --
 -- Name: bite; Type: TABLE; Schema: maker; Owner: -
@@ -7828,6 +7870,13 @@ CREATE VIEW public.watched_event_logs AS
 
 
 --
+-- Name: managed_cdp id; Type: DEFAULT; Schema: api; Owner: -
+--
+
+ALTER TABLE ONLY api.managed_cdp ALTER COLUMN id SET DEFAULT nextval('api.managed_cdp_id_seq'::regclass);
+
+
+--
 -- Name: bite id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
@@ -8805,6 +8854,22 @@ ALTER TABLE ONLY public.uncles ALTER COLUMN id SET DEFAULT nextval('public.uncle
 --
 
 ALTER TABLE ONLY public.watched_contracts ALTER COLUMN contract_id SET DEFAULT nextval('public.watched_contracts_contract_id_seq'::regclass);
+
+
+--
+-- Name: managed_cdp managed_cdp_cdpi_key; Type: CONSTRAINT; Schema: api; Owner: -
+--
+
+ALTER TABLE ONLY api.managed_cdp
+    ADD CONSTRAINT managed_cdp_cdpi_key UNIQUE (cdpi);
+
+
+--
+-- Name: managed_cdp managed_cdp_pkey; Type: CONSTRAINT; Schema: api; Owner: -
+--
+
+ALTER TABLE ONLY api.managed_cdp
+    ADD CONSTRAINT managed_cdp_pkey PRIMARY KEY (id);
 
 
 --
@@ -12236,6 +12301,34 @@ CREATE TRIGGER flap_bid_tic AFTER INSERT OR UPDATE ON maker.flap_bid_tic FOR EAC
 --
 
 CREATE TRIGGER flap_created_trigger AFTER INSERT ON maker.flap_kick FOR EACH ROW EXECUTE PROCEDURE maker.flap_created();
+
+
+--
+-- Name: cdp_manager_cdpi managed_cdp_cdpi; Type: TRIGGER; Schema: maker; Owner: -
+--
+
+CREATE TRIGGER managed_cdp_cdpi AFTER INSERT OR UPDATE ON maker.cdp_manager_cdpi FOR EACH ROW EXECUTE PROCEDURE maker.insert_cdp_created();
+
+
+--
+-- Name: cdp_manager_ilks managed_cdp_ilk; Type: TRIGGER; Schema: maker; Owner: -
+--
+
+CREATE TRIGGER managed_cdp_ilk AFTER INSERT OR UPDATE ON maker.cdp_manager_ilks FOR EACH ROW EXECUTE PROCEDURE maker.insert_cdp_ilk_identifier();
+
+
+--
+-- Name: cdp_manager_urns managed_cdp_urn; Type: TRIGGER; Schema: maker; Owner: -
+--
+
+CREATE TRIGGER managed_cdp_urn AFTER INSERT OR UPDATE ON maker.cdp_manager_urns FOR EACH ROW EXECUTE PROCEDURE maker.insert_cdp_urn_identifier();
+
+
+--
+-- Name: cdp_manager_owns managed_cdp_usr; Type: TRIGGER; Schema: maker; Owner: -
+--
+
+CREATE TRIGGER managed_cdp_usr AFTER INSERT OR UPDATE ON maker.cdp_manager_owns FOR EACH ROW EXECUTE PROCEDURE maker.insert_cdp_usr();
 
 
 --
