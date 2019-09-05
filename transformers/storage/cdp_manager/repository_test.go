@@ -1,16 +1,21 @@
 package cdp_manager_test
 
 import (
+	"database/sql"
 	"math/rand"
 	"strconv"
+	"time"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
+	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 
 	"github.com/vulcanize/mcd_transformers/test_config"
+	"github.com/vulcanize/mcd_transformers/transformers/component_tests/queries/test_helpers"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/cdp_manager"
@@ -60,8 +65,20 @@ var _ = Describe("CDP Manager storage repository", func() {
 	})
 
 	Describe("cdpi", func() {
-		var cdpiMetadata = utils.StorageValueMetadata{Name: cdp_manager.CdpManagerCdpi}
-		var fakeCdpi = strconv.Itoa(rand.Int())
+		var (
+			cdpiMetadata  = utils.StorageValueMetadata{Name: cdp_manager.CdpManagerCdpi}
+			fakeCdpi      = strconv.Itoa(rand.Int())
+			fakeTimestamp int
+			header        core.Header
+		)
+
+		BeforeEach(func() {
+			fakeTimestamp = int(rand.Int31())
+			header = fakes.GetFakeHeaderWithTimestamp(int64(fakeTimestamp), int64(fakeBlockNumber))
+			headerRepo := repositories.NewHeaderRepository(db)
+			_, headerErr := headerRepo.CreateOrUpdateHeader(header)
+			Expect(headerErr).NotTo(HaveOccurred())
+		})
 
 		inputs := shared_behaviors.StorageVariableBehaviorInputs{
 			ValueFieldName:   cdp_manager.CdpManagerCdpi,
@@ -72,6 +89,19 @@ var _ = Describe("CDP Manager storage repository", func() {
 		}
 
 		shared_behaviors.SharedStorageRepositoryVariableBehaviors(&inputs)
+
+		It("triggers an update to the managed_cdp table", func() {
+			createdTimestamp := time.Unix(int64(fakeTimestamp), 0).UTC().Format(time.RFC3339)
+			expectedTimeCreated := sql.NullString{String: createdTimestamp, Valid: true}
+			err := repository.Create(fakeBlockNumber, fakeHash, cdpiMetadata, fakeCdpi)
+			Expect(err).NotTo(HaveOccurred())
+
+			var cdp test_helpers.ManagedCdp
+			queryErr := db.Get(&cdp, `SELECT cdpi, created FROM api.managed_cdp`)
+			Expect(queryErr).NotTo(HaveOccurred())
+			Expect(cdp.Id).To(Equal(fakeCdpi))
+			Expect(cdp.Created).To(Equal(expectedTimeCreated))
+		})
 	})
 
 	Describe("cdpi mapping tables", func() {
@@ -106,6 +136,17 @@ var _ = Describe("CDP Manager storage repository", func() {
 			}
 
 			shared_behaviors.SharedStorageRepositoryVariableBehaviors(&inputs)
+
+			It("triggers an update to the managed_cdp table", func() {
+				err := repository.Create(fakeBlockNumber, fakeHash, urnsMetadata, fakeUrnsValue)
+				Expect(err).NotTo(HaveOccurred())
+
+				var cdp test_helpers.ManagedCdp
+				queryErr := db.Get(&cdp, `SELECT cdpi, urn_identifier FROM api.managed_cdp`)
+				Expect(queryErr).NotTo(HaveOccurred())
+				Expect(cdp.Id).To(Equal(fakeCdpi))
+				Expect(cdp.UrnIdentifier).To(Equal(fakeUrnsValue))
+			})
 		})
 
 		Describe("list_prev", func() {
@@ -169,6 +210,17 @@ var _ = Describe("CDP Manager storage repository", func() {
 			}
 
 			shared_behaviors.SharedStorageRepositoryVariableBehaviors(&inputs)
+
+			It("triggers an update to the managed_cdp table", func() {
+				err := repository.Create(fakeBlockNumber, fakeHash, ownsMetadata, fakeOwner)
+				Expect(err).NotTo(HaveOccurred())
+
+				var cdp test_helpers.ManagedCdp
+				queryErr := db.Get(&cdp, `SELECT cdpi, usr FROM api.managed_cdp`)
+				Expect(queryErr).NotTo(HaveOccurred())
+				Expect(cdp.Id).To(Equal(fakeCdpi))
+				Expect(cdp.Usr).To(Equal(fakeOwner))
+			})
 		})
 
 		Describe("ilks", func() {
@@ -178,7 +230,7 @@ var _ = Describe("CDP Manager storage repository", func() {
 					Keys: map[utils.Key]string{constants.Cdpi: fakeCdpi},
 					Type: utils.Bytes32,
 				}
-				fakeIlksValue   = FakeIlk
+				fakeIlksValue   = test_helpers.FakeIlk.Hex
 				fakeBlockNumber = rand.Int()
 				fakeHash        = fakes.FakeHash.Hex()
 			)
@@ -208,6 +260,17 @@ var _ = Describe("CDP Manager storage repository", func() {
 				err = db.Get(&count, "SELECT COUNT(*) FROM maker.cdp_manager_ilks")
 				Expect(err).NotTo(HaveOccurred())
 				Expect(count).To(Equal(1))
+			})
+
+			It("triggers an update to the managed_cdp table", func() {
+				err := repository.Create(fakeBlockNumber, fakeHash, ilksMetadata, fakeIlksValue)
+				Expect(err).NotTo(HaveOccurred())
+
+				var cdp test_helpers.ManagedCdp
+				queryErr := db.Get(&cdp, `SELECT cdpi, ilk_identifier FROM api.managed_cdp`)
+				Expect(queryErr).NotTo(HaveOccurred())
+				Expect(cdp.Id).To(Equal(fakeCdpi))
+				Expect(cdp.IlkIdentifier).To(Equal(test_helpers.FakeIlk.Identifier))
 			})
 		})
 	})
