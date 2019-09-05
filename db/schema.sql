@@ -2998,7 +2998,7 @@ SELECT bid
 FROM maker.flop
 WHERE bid IS NOT NULL
   AND flop.bid_id = bid_id
-ORDER BY block_number
+ORDER BY block_number DESC
 LIMIT 1
 $$;
 
@@ -3014,7 +3014,7 @@ SELECT "end"
 FROM maker.flop
 WHERE "end" IS NOT NULL
   AND flop.bid_id = bid_id
-ORDER BY block_number
+ORDER BY block_number DESC
 LIMIT 1
 $$;
 
@@ -3030,7 +3030,7 @@ SELECT guy
 FROM maker.flop
 WHERE guy IS NOT NULL
   AND flop.bid_id = bid_id
-ORDER BY block_number
+ORDER BY block_number DESC
 LIMIT 1
 $$;
 
@@ -3046,7 +3046,7 @@ SELECT lot
 FROM maker.flop
 WHERE lot IS NOT NULL
   AND flop.bid_id = bid_id
-ORDER BY block_number
+ORDER BY block_number DESC
 LIMIT 1
 $$;
 
@@ -3062,7 +3062,7 @@ SELECT tic
 FROM maker.flop
 WHERE tic IS NOT NULL
   AND flop.bid_id = bid_id
-ORDER BY block_number
+ORDER BY block_number DESC
 LIMIT 1
 $$;
 
