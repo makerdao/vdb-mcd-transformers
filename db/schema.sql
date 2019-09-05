@@ -824,6 +824,25 @@ WITH address AS (
                                 AND flop_bid_lot.block_number = headers.block_number
          WHERE yank.contract_address = (SELECT * FROM address)
          ORDER BY block_height DESC
+     ),
+     ticks AS (
+         SELECT tick.bid_id,
+                flop_bid_lot.lot,
+                flop_bid_bid.bid AS bid_amount,
+                'tick'::api.bid_act AS act,
+                headers.block_number AS block_height,
+                tx_idx,
+                tick.contract_address
+         FROM maker.tick
+                  LEFT JOIN headers on tick.header_id = headers.id
+                  LEFT JOIN maker.flop_bid_bid
+                            ON tick.bid_id = flop_bid_bid.bid_id
+                                AND flop_bid_bid.block_number = headers.block_number
+                  LEFT JOIN maker.flop_bid_lot
+                            ON tick.bid_id = flop_bid_lot.bid_id
+                                AND flop_bid_lot.block_number = headers.block_number
+         WHERE tick.contract_address = (SELECT * FROM address)
+         ORDER BY block_height DESC
      )
 SELECT flop_kick.bid_id,
        lot,
@@ -851,6 +870,9 @@ FROM deals
 UNION
 SELECT *
 FROM yanks
+UNION
+SELECT *
+FROM ticks
 $$;
 
 
