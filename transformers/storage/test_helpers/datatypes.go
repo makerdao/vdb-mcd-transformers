@@ -49,6 +49,18 @@ type FlapRes struct {
 	Bid             string
 }
 
+type FlopRes struct {
+	BlockMetadata
+	ContractAddress string `db:"contract_address"`
+	Id              string
+	BidId           string `db:"bid_id"`
+	Guy             string
+	Tic             string
+	End             string
+	Lot             string
+	Bid             string
+}
+
 func AssertVariable(res VariableRes, blockNumber int, blockHash, value string) {
 	Expect(res.BlockNumber).To(Equal(blockNumber))
 	Expect(res.BlockHash).To(Equal(blockHash))

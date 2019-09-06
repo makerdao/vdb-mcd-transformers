@@ -65,8 +65,8 @@ var _ = Describe("Flop computed columns", func() {
 			}
 			var actualBidEvents test_helpers.BidEvent
 			queryErr := db.Get(&actualBidEvents,
-				`SELECT bid_id, bid_amount, lot, act FROM api.flop_bid_events(
-    					(SELECT (bid_id, guy, tic, "end", lot, bid, dealt, created, updated)::api.flop 
+				`SELECT bid_id, bid_amount, lot, act FROM api.flop_state_bid_events(
+    					(SELECT (bid_id, guy, tic, "end", lot, bid, dealt, created, updated)::api.flop_state 
     					FROM api.all_flops()))`)
 			Expect(queryErr).NotTo(HaveOccurred())
 			Expect(actualBidEvents).To(Equal(expectedBidEvents))
@@ -111,8 +111,8 @@ var _ = Describe("Flop computed columns", func() {
 
 			var actualBidEvents []test_helpers.BidEvent
 			queryErr := db.Select(&actualBidEvents,
-				`SELECT bid_id, bid_amount, lot, act FROM api.flop_bid_events(
-    					(SELECT (bid_id, guy, tic, "end", lot, bid, dealt, created, updated)::api.flop
+				`SELECT bid_id, bid_amount, lot, act FROM api.flop_state_bid_events(
+    					(SELECT (bid_id, guy, tic, "end", lot, bid, dealt, created, updated)::api.flop_state
     					FROM api.all_flops() WHERE bid_id = $1))`, fakeBidId)
 
 			Expect(queryErr).NotTo(HaveOccurred())

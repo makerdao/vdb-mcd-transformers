@@ -7,6 +7,7 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/events/dent"
 	"github.com/vulcanize/mcd_transformers/transformers/events/flap_kick"
 	"github.com/vulcanize/mcd_transformers/transformers/events/flip_kick"
+	"github.com/vulcanize/mcd_transformers/transformers/events/flop_kick"
 	"github.com/vulcanize/mcd_transformers/transformers/events/tend"
 	"github.com/vulcanize/mcd_transformers/transformers/events/tick"
 	"github.com/vulcanize/mcd_transformers/transformers/events/yank"
@@ -606,6 +607,21 @@ func SetUpFlapBidContext(setupData FlapBidCreationInput) (err error) {
 	return nil
 }
 
+func SetUpFlopBidContext(setupData FlopBidCreationInput) (err error) {
+	flopKickErr := CreateFlopKick(setupData.ContractAddress, setupData.BidId, setupData.FlopKickHeaderId, setupData.FlopKickRepo)
+	if flopKickErr != nil {
+		return flopKickErr
+	}
+
+	if setupData.Dealt {
+		dealErr := CreateDeal(setupData.DealCreationInput)
+		if dealErr != nil {
+			return dealErr
+		}
+	}
+	return nil
+}
+
 func CreateDeal(input DealCreationInput) (err error) {
 	dealModel := test_data.DealModel
 	dealModel.ColumnValues["contract_address"] = input.ContractAddress
@@ -627,6 +643,13 @@ func CreateFlapKick(contractAddress string, bidId int, headerId int64, repo flap
 	flapKickModel.ContractAddress = contractAddress
 	flapKickModel.BidId = strconv.Itoa(bidId)
 	return repo.Create(headerId, []interface{}{flapKickModel})
+}
+
+func CreateFlopKick(contractAddress string, bidId int, headerId int64, repo flop_kick.FlopKickRepository) error {
+	flopKickModel := test_data.FlopKickModel
+	flopKickModel.ContractAddress = contractAddress
+	flopKickModel.BidId = strconv.Itoa(bidId)
+	return repo.Create(headerId, []interface{}{flopKickModel})
 }
 
 func CreateTend(input TendCreationInput) (err error) {
@@ -731,6 +754,13 @@ type TickCreationInput struct {
 	ContractAddress string
 	TickRepo        tick.TickRepository
 	TickHeaderId    int64
+}
+
+type FlopBidCreationInput struct {
+	DealCreationInput
+	Dealt            bool
+	FlopKickRepo     flop_kick.FlopKickRepository
+	FlopKickHeaderId int64
 }
 
 type BidEvent struct {
