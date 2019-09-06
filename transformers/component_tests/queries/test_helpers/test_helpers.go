@@ -754,18 +754,13 @@ type TickCreationInput struct {
 	ContractAddress string
 	TickRepo        tick.TickRepository
 	TickHeaderId    int64
+}
+
 type FlopBidCreationInput struct {
 	DealCreationInput
 	Dealt            bool
 	FlopKickRepo     flop_kick.FlopKickRepository
 	FlopKickHeaderId int64
-}
-
-type FlipTickCreationInput struct {
-	BidId            int
-	ContractAddress  string
-	FlipTickRepo     flip_tick.FlipTickRepository
-	FlipTickHeaderId int64
 }
 
 type BidEvent struct {
