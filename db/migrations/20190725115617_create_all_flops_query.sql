@@ -1,26 +1,14 @@
 -- +goose Up
 -- +goose StatementBegin
 CREATE OR REPLACE FUNCTION api.all_flops()
-    RETURNS SETOF api.flop
+    RETURNS SETOF api.flop_state
 AS
 $BODY$
 BEGIN
     RETURN QUERY (
         WITH bid_ids AS (
-            SELECT DISTINCT flop_bid_guy.bid_id
-            FROM maker.flop_bid_guy
-            UNION
-            SELECT DISTINCT flop_bid_tic.bid_id
-            FROM maker.flop_bid_tic
-            UNION
-            SELECT DISTINCT flop_bid_bid.bid_id
-            FROM maker.flop_bid_bid
-            UNION
-            SELECT DISTINCT flop_bid_lot.bid_id
-            FROM maker.flop_bid_lot
-            UNION
-            SELECT DISTINCT flop_bid_end.bid_id
-            FROM maker.flop_bid_end
+            SELECT DISTINCT bid_id
+            FROM maker.flop
         )
         SELECT f.*
         FROM bid_ids,
