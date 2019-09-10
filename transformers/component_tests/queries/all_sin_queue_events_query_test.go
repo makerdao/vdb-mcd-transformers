@@ -154,5 +154,42 @@ var _ = Describe("Sin queue events query", func() {
 
 			Expect(actualEvents).To(BeEmpty())
 		})
+
+		It("limits results to latest block if max_results argument is provided", func() {
+			headerOne := fakes.GetFakeHeader(1)
+			headerOneId, headerOneErr := headerRepo.CreateOrUpdateHeader(headerOne)
+			Expect(headerOneErr).NotTo(HaveOccurred())
+
+			vowFlogRepo := vow_flog.VowFlogRepository{}
+			vowFlogRepo.SetDB(db)
+			fakeEra := strconv.Itoa(int(rand.Int31()))
+			vowFlogEvent := test_data.VowFlogModel
+			vowFlogEvent.ColumnValues["era"] = fakeEra
+			vowFlogErr := vowFlogRepo.Create(headerOneId, []shared.InsertionModel{vowFlogEvent})
+			Expect(vowFlogErr).NotTo(HaveOccurred())
+
+			// New block
+			headerTwo := fakes.GetFakeHeader(2)
+			headerTwo.Hash = "anotherHash"
+			headerTwo.Timestamp = fakeEra
+			headerTwoId, headerTwoErr := headerRepo.CreateOrUpdateHeader(headerTwo)
+			Expect(headerTwoErr).NotTo(HaveOccurred())
+
+			vowFessRepo := vow_fess.VowFessRepository{}
+			vowFessRepo.SetDB(db)
+			vowFessEvent := test_data.VowFessModel
+			vowFessErr := vowFessRepo.Create(headerTwoId, []shared.InsertionModel{vowFessEvent})
+			Expect(vowFessErr).NotTo(HaveOccurred())
+
+			maxResults := 1
+			var actualEvents []test_helpers.SinQueueEvent
+			headerOneErr = db.Select(&actualEvents, `SELECT era, act FROM api.all_sin_queue_events($1, $2)`,
+				fakeEra, maxResults)
+			Expect(headerOneErr).NotTo(HaveOccurred())
+
+			Expect(actualEvents).To(ConsistOf(
+				test_helpers.SinQueueEvent{Era: fakeEra, Act: "fess"},
+			))
+		})
 	})
 })

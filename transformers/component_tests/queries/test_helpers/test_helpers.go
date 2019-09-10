@@ -794,8 +794,9 @@ type BiteEvent struct {
 }
 
 type SinQueueEvent struct {
-	Era string
-	Act string
+	Era         string
+	Act         string
+	BlockHeight string `db:"block_height"`
 }
 
 type PokeEvent struct {

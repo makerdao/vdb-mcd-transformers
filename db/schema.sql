@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 11.5
--- Dumped by pg_dump version 11.5
+-- Dumped from database version 11.4
+-- Dumped by pg_dump version 11.4
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -507,11 +507,11 @@ CREATE TYPE api.urn_state AS (
 
 
 --
--- Name: all_bites(text); Type: FUNCTION; Schema: api; Owner: -
+-- Name: all_bites(text, integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.all_bites(ilk_identifier text) RETURNS SETOF api.bite_event
-    LANGUAGE sql STABLE STRICT
+CREATE FUNCTION api.all_bites(ilk_identifier text, max_results integer DEFAULT NULL::integer) RETURNS SETOF api.bite_event
+    LANGUAGE sql STABLE
     AS $$
 WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier)
 
@@ -521,14 +521,15 @@ FROM maker.bite
          LEFT JOIN headers ON bite.header_id = headers.id
 WHERE urns.ilk_id = (SELECT id FROM ilk)
 ORDER BY urn_identifier, block_number DESC
+LIMIT all_bites.max_results
 $$;
 
 
 --
--- Name: all_flap_bid_events(); Type: FUNCTION; Schema: api; Owner: -
+-- Name: all_flap_bid_events(integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.all_flap_bid_events() RETURNS SETOF api.flap_bid_event
+CREATE FUNCTION api.all_flap_bid_events(max_results integer DEFAULT NULL::integer) RETURNS SETOF api.flap_bid_event
     LANGUAGE sql STABLE
     AS $$
 WITH address AS (
@@ -553,7 +554,6 @@ WITH address AS (
                             ON deal.bid_id = flap_bid_lot.bid_id
                                 AND flap_bid_lot.block_number = headers.block_number
          WHERE deal.contract_address = (SELECT * FROM address)
-         ORDER BY block_height DESC
      ),
      yanks AS (
          SELECT yank.bid_id,
@@ -572,7 +572,6 @@ WITH address AS (
                             ON yank.bid_id = flap_bid_lot.bid_id
                                 AND flap_bid_lot.block_number = headers.block_number
          WHERE yank.contract_address = (SELECT * FROM address)
-         ORDER BY block_height DESC
      )
 
 SELECT flap_kick.bid_id,
@@ -601,15 +600,16 @@ FROM deals
 UNION
 SELECT *
 FROM yanks
-
+ORDER BY block_height DESC
+LIMIT all_flap_bid_events.max_results
 $$;
 
 
 --
--- Name: all_flaps(); Type: FUNCTION; Schema: api; Owner: -
+-- Name: all_flaps(integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.all_flaps() RETURNS SETOF api.flap_state
+CREATE FUNCTION api.all_flaps(max_results integer DEFAULT NULL::integer) RETURNS SETOF api.flap_state
     LANGUAGE plpgsql STABLE
     AS $$
 BEGIN
@@ -617,6 +617,8 @@ BEGIN
         WITH bid_ids AS (
             SELECT DISTINCT bid_id
             FROM maker.flap
+            ORDER BY bid_id DESC
+            LIMIT all_flaps.max_results
         )
         SELECT f.*
         FROM bid_ids,
@@ -627,10 +629,10 @@ $$;
 
 
 --
--- Name: all_flip_bid_events(); Type: FUNCTION; Schema: api; Owner: -
+-- Name: all_flip_bid_events(integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.all_flip_bid_events() RETURNS SETOF api.flip_bid_event
+CREATE FUNCTION api.all_flip_bid_events(max_results integer DEFAULT NULL::integer) RETURNS SETOF api.flip_bid_event
     LANGUAGE sql STABLE
     AS $$
 WITH addresses AS (
@@ -654,7 +656,6 @@ WITH addresses AS (
                             ON deal.bid_id = flip_bid_lot.bid_id
                                 AND flip_bid_lot.block_number = headers.block_number
          WHERE deal.contract_address IN (SELECT * FROM addresses)
-         ORDER BY block_height DESC
      ),
      yanks AS (
          SELECT yank.bid_id,
@@ -673,7 +674,6 @@ WITH addresses AS (
                             ON yank.bid_id = flip_bid_lot.bid_id
                                 AND flip_bid_lot.block_number = headers.block_number
          WHERE yank.contract_address IN (SELECT * FROM addresses)
-         ORDER BY block_height DESC
      ),
      ticks AS (
          SELECT tick.bid_id,
@@ -692,7 +692,6 @@ WITH addresses AS (
                             ON tick.bid_id = flip_bid_lot.bid_id
                                 AND flip_bid_lot.block_number = headers.block_number
          WHERE tick.contract_address IN (SELECT * FROM addresses)
-         ORDER BY block_height DESC
      )
 
 SELECT flip_kick.bid_id,
@@ -735,14 +734,16 @@ from yanks
 UNION
 SELECT *
 FROM ticks
+ORDER BY block_height DESC
+LIMIT all_flip_bid_events.max_results
 $$;
 
 
 --
--- Name: all_flips(text); Type: FUNCTION; Schema: api; Owner: -
+-- Name: all_flips(text, integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.all_flips(ilk text) RETURNS SETOF api.flip_state
+CREATE FUNCTION api.all_flips(ilk text, max_results integer DEFAULT NULL::integer) RETURNS SETOF api.flip_state
     LANGUAGE plpgsql STABLE
     AS $$
 BEGIN
@@ -759,7 +760,8 @@ BEGIN
                  SELECT DISTINCT flip_kicks.kicks
                  FROM maker.flip_kicks
                  WHERE contract_address = (SELECT * FROM address)
-                 ORDER BY flip_kicks.kicks)
+                 ORDER BY flip_kicks.kicks DESC
+                 LIMIT all_flips.max_results)
         SELECT f.*
         FROM bid_ids,
              LATERAL api.get_flip(bid_ids.kicks, all_flips.ilk) f
@@ -769,10 +771,10 @@ $$;
 
 
 --
--- Name: all_flop_bid_events(); Type: FUNCTION; Schema: api; Owner: -
+-- Name: all_flop_bid_events(integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.all_flop_bid_events() RETURNS SETOF api.flop_bid_event
+CREATE FUNCTION api.all_flop_bid_events(max_results integer DEFAULT NULL::integer) RETURNS SETOF api.flop_bid_event
     LANGUAGE sql STABLE
     AS $$
 WITH address AS (
@@ -797,7 +799,6 @@ WITH address AS (
                             ON deal.bid_id = flop_bid_lot.bid_id
                                 AND flop_bid_lot.block_number = headers.block_number
          WHERE deal.contract_address = (SELECT * FROM address)
-         ORDER BY block_height DESC
      ),
      yanks AS (
          SELECT yank.bid_id,
@@ -835,7 +836,6 @@ WITH address AS (
                             ON tick.bid_id = flop_bid_lot.bid_id
                                 AND flop_bid_lot.block_number = headers.block_number
          WHERE tick.contract_address = (SELECT * FROM address)
-         ORDER BY block_height DESC
      )
 
 SELECT flop_kick.bid_id,
@@ -867,15 +867,16 @@ FROM yanks
 UNION
 SELECT *
 FROM ticks
-
+ORDER BY block_height DESC
+LIMIT all_flop_bid_events.max_results
 $$;
 
 
 --
--- Name: all_flops(); Type: FUNCTION; Schema: api; Owner: -
+-- Name: all_flops(integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.all_flops() RETURNS SETOF api.flop_state
+CREATE FUNCTION api.all_flops(max_results integer DEFAULT NULL::integer) RETURNS SETOF api.flop_state
     LANGUAGE plpgsql STABLE
     AS $$
 BEGIN
@@ -883,6 +884,8 @@ BEGIN
         WITH bid_ids AS (
             SELECT DISTINCT bid_id
             FROM maker.flop
+            ORDER BY bid_id DESC
+            LIMIT all_flops.max_results
         )
         SELECT f.*
         FROM bid_ids,
@@ -893,11 +896,11 @@ $$;
 
 
 --
--- Name: all_frobs(text); Type: FUNCTION; Schema: api; Owner: -
+-- Name: all_frobs(text, integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.all_frobs(ilk_identifier text) RETURNS SETOF api.frob_event
-    LANGUAGE sql STABLE STRICT
+CREATE FUNCTION api.all_frobs(ilk_identifier text, max_results integer DEFAULT NULL::integer) RETURNS SETOF api.frob_event
+    LANGUAGE sql STABLE
     AS $$
 WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier),
      rates AS (SELECT block_number, rate
@@ -907,7 +910,7 @@ WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier),
      )
 
 SELECT ilk_identifier,
-       identifier                                                                  AS urn_identifier,
+       urns.identifier                                                             AS urn_identifier,
        dink,
        dart,
        (SELECT rate from rates WHERE block_number <= headers.block_number LIMIT 1) AS ilk_rate,
@@ -917,16 +920,17 @@ FROM maker.vat_frob
          LEFT JOIN maker.urns ON vat_frob.urn_id = urns.id
          LEFT JOIN headers ON vat_frob.header_id = headers.id
 WHERE urns.ilk_id = (SELECT id FROM ilk)
-ORDER BY identifier, block_number DESC
+ORDER BY block_number DESC
+LIMIT max_results
 $$;
 
 
 --
--- Name: all_ilk_file_events(text); Type: FUNCTION; Schema: api; Owner: -
+-- Name: all_ilk_file_events(text, integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.all_ilk_file_events(ilk_identifier text) RETURNS SETOF api.ilk_file_event
-    LANGUAGE sql STABLE STRICT
+CREATE FUNCTION api.all_ilk_file_events(ilk_identifier text, max_results integer DEFAULT NULL::integer) RETURNS SETOF api.ilk_file_event
+    LANGUAGE sql STABLE
     AS $$
 WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier)
 
@@ -960,6 +964,7 @@ FROM maker.vat_file_ilk
          LEFT JOIN headers ON vat_file_ilk.header_id = headers.id
 WHERE vat_file_ilk.ilk_id = (SELECT id FROM ilk)
 ORDER BY block_number DESC
+LIMIT all_ilk_file_events.max_results
 $$;
 
 
@@ -986,11 +991,10 @@ COMMENT ON FUNCTION api.max_block() IS '@omit';
 -- Name: all_ilk_states(text, bigint, integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.all_ilk_states(ilk_identifier text, block_height bigint DEFAULT api.max_block(), "limit" integer DEFAULT NULL::integer) RETURNS SETOF api.ilk_state
+CREATE FUNCTION api.all_ilk_states(ilk_identifier text, block_height bigint DEFAULT api.max_block(), max_results integer DEFAULT NULL::integer) RETURNS SETOF api.ilk_state
     LANGUAGE plpgsql STABLE
     AS $$
 BEGIN
-    RAISE NOTICE 'limit is %', "limit";
     RETURN QUERY (
         WITH relevant_blocks AS (
             SELECT get_ilk_blocks_before.block_height
@@ -999,18 +1003,18 @@ BEGIN
         SELECT r.*
         FROM relevant_blocks,
              LATERAL api.get_ilk(ilk_identifier, relevant_blocks.block_height) r
-        LIMIT "limit" -- LIMIT NULL is the same as omitting a limit
+        LIMIT all_ilk_states.max_results -- LIMIT NULL is the same as omitting a limit
     );
 END;
 $$;
 
 
 --
--- Name: all_ilks(bigint); Type: FUNCTION; Schema: api; Owner: -
+-- Name: all_ilks(bigint, integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.all_ilks(block_height bigint DEFAULT api.max_block()) RETURNS SETOF api.ilk_state
-    LANGUAGE sql STABLE STRICT
+CREATE FUNCTION api.all_ilks(block_height bigint DEFAULT api.max_block(), max_results integer DEFAULT NULL::integer) RETURNS SETOF api.ilk_state
+    LANGUAGE sql STABLE
     AS $$
 WITH rates AS (SELECT DISTINCT ON (ilk_id) rate, ilk_id, block_hash
                FROM maker.vat_ilk_rate
@@ -1111,6 +1115,8 @@ WHERE (
               pips.pip is not null OR
               mats.mat is not null
           )
+ORDER BY updated DESC
+LIMIT all_ilks.max_results
 $$;
 
 
@@ -1127,44 +1133,49 @@ $$;
 
 
 --
--- Name: all_poke_events(numeric, numeric); Type: FUNCTION; Schema: api; Owner: -
+-- Name: all_poke_events(numeric, numeric, integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.all_poke_events(begintime numeric DEFAULT 0, endtime numeric DEFAULT api.max_timestamp()) RETURNS SETOF api.poke_event
+CREATE FUNCTION api.all_poke_events(begintime numeric DEFAULT 0, endtime numeric DEFAULT api.max_timestamp(), max_results integer DEFAULT NULL::integer) RETURNS SETOF api.poke_event
     LANGUAGE sql STABLE
     AS $$
 SELECT ilk_id, "value" AS val, spot, block_number AS block_height, tx_idx
 FROM maker.spot_poke
          LEFT JOIN public.headers ON spot_poke.header_id = headers.id
 WHERE block_timestamp BETWEEN beginTime AND endTime
+ORDER BY block_height DESC
+LIMIT all_poke_events.max_results
 $$;
 
 
 --
--- Name: all_queued_sin(); Type: FUNCTION; Schema: api; Owner: -
+-- Name: all_queued_sin(integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.all_queued_sin() RETURNS SETOF api.queued_sin
+CREATE FUNCTION api.all_queued_sin(max_results integer DEFAULT NULL::integer) RETURNS SETOF api.queued_sin
     LANGUAGE plpgsql STABLE
     AS $$
-DECLARE
-    _era NUMERIC;
 BEGIN
-    FOR _era IN
-        SELECT DISTINCT era FROM maker.vow_sin_mapping
-        LOOP
-            RETURN QUERY
-                SELECT * FROM api.get_queued_sin(_era);
-        END LOOP;
-END;
+    RETURN QUERY (
+        WITH eras AS (
+            SELECT DISTINCT era
+            FROM maker.vow_sin_mapping
+            ORDER BY era DESC
+            LIMIT all_queued_sin.max_results
+        )
+        SELECT sin.*
+        FROM eras,
+             LATERAL api.get_queued_sin(eras.era) sin
+    );
+END
 $$;
 
 
 --
--- Name: all_sin_queue_events(numeric); Type: FUNCTION; Schema: api; Owner: -
+-- Name: all_sin_queue_events(numeric, integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.all_sin_queue_events(era numeric) RETURNS SETOF api.sin_queue_event
+CREATE FUNCTION api.all_sin_queue_events(era numeric, max_results integer DEFAULT NULL::integer) RETURNS SETOF api.sin_queue_event
     LANGUAGE sql STABLE
     AS $$
 SELECT block_timestamp AS era, 'fess' :: api.sin_act AS act, block_number AS block_height, tx_idx
@@ -1175,61 +1186,55 @@ UNION
 SELECT era, 'flog' :: api.sin_act AS act, block_number AS block_height, tx_idx
 FROM maker.vow_flog
          LEFT JOIN headers ON vow_flog.header_id = headers.id
-where vow_flog.era = all_sin_queue_events.era
+WHERE vow_flog.era = all_sin_queue_events.era
 ORDER BY block_height DESC
+LIMIT all_sin_queue_events.max_results
 $$;
 
 
 --
--- Name: all_urn_states(text, text, bigint); Type: FUNCTION; Schema: api; Owner: -
+-- Name: all_urn_states(text, text, bigint, integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.all_urn_states(ilk_identifier text, urn_identifier text, block_height bigint DEFAULT api.max_block()) RETURNS SETOF api.urn_state
-    LANGUAGE plpgsql STABLE STRICT
+CREATE FUNCTION api.all_urn_states(ilk_identifier text, urn_identifier text, block_height bigint DEFAULT api.max_block(), max_results integer DEFAULT NULL::integer) RETURNS SETOF api.urn_state
+    LANGUAGE plpgsql STABLE
     AS $$
-DECLARE
-    blocks  BIGINT[];
-    i       BIGINT;
-    _ilk_id NUMERIC;
-    _urn_id NUMERIC;
 BEGIN
-    SELECT id
-    FROM maker.ilks
-    WHERE ilks.identifier = ilk_identifier INTO _ilk_id;
-    SELECT id
-    FROM maker.urns
-    WHERE urns.identifier = urn_identifier
-      AND urns.ilk_id = _ilk_id INTO _urn_id;
-
-    blocks := ARRAY(
-            SELECT block_number
-            FROM (SELECT block_number
-                  FROM maker.vat_urn_ink
-                  WHERE vat_urn_ink.urn_id = _urn_id
-                    AND block_number <= all_urn_states.block_height
-                  UNION
-                  SELECT block_number
-                  FROM maker.vat_urn_art
-                  WHERE vat_urn_art.urn_id = _urn_id
-                    AND block_number <= all_urn_states.block_height) inks_and_arts
-            ORDER BY block_number DESC
-        );
-
-    FOREACH i IN ARRAY blocks
-        LOOP
-            RETURN QUERY
-                SELECT * FROM api.get_urn(ilk_identifier, urn_identifier, i);
-        END LOOP;
+    RETURN QUERY (
+        WITH urn_id AS (
+            SELECT id
+            FROM maker.urns
+            WHERE urns.identifier = all_urn_states.urn_identifier
+              AND urns.ilk_id = (SELECT id
+                                 FROM maker.ilks
+                                 WHERE ilks.identifier = all_urn_states.ilk_identifier)
+        ),
+             relevant_blocks AS (
+                 SELECT block_number
+                 FROM maker.vat_urn_ink
+                 WHERE vat_urn_ink.urn_id = (SELECT * FROM urn_id)
+                   AND block_number <= all_urn_states.block_height
+                 UNION
+                 SELECT block_number
+                 FROM maker.vat_urn_art
+                 WHERE vat_urn_art.urn_id = (SELECT * FROM urn_id)
+                   AND block_number <= all_urn_states.block_height)
+        SELECT r.*
+        FROM relevant_blocks,
+             LATERAL api.get_urn(ilk_identifier, urn_identifier, relevant_blocks.block_number) r
+        ORDER BY relevant_blocks.block_number DESC
+        LIMIT all_urn_states.max_results
+    );
 END;
 $$;
 
 
 --
--- Name: all_urns(bigint); Type: FUNCTION; Schema: api; Owner: -
+-- Name: all_urns(bigint, integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.all_urns(block_height bigint DEFAULT api.max_block()) RETURNS SETOF api.urn_state
-    LANGUAGE sql STABLE STRICT
+CREATE FUNCTION api.all_urns(block_height bigint DEFAULT api.max_block(), max_results integer DEFAULT NULL::integer) RETURNS SETOF api.urn_state
+    LANGUAGE sql STABLE
     AS $$
 WITH urns AS (SELECT urns.id AS urn_id, ilks.id AS ilk_id, ilks.ilk, urns.identifier
               FROM maker.urns urns
@@ -1298,6 +1303,8 @@ FROM inks
          LEFT JOIN created ON created.urn_id = urns.urn_id
          LEFT JOIN updated ON updated.urn_id = urns.urn_id
          LEFT JOIN maker.ilks ON ilks.id = urns.ilk_id
+ORDER BY updated DESC
+LIMIT all_urns.max_results
 $$;
 
 
@@ -1305,7 +1312,7 @@ $$;
 -- Name: bite_event_bid(api.bite_event); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.bite_event_bid(event api.bite_event) RETURNS SETOF api.flip_state
+CREATE FUNCTION api.bite_event_bid(event api.bite_event) RETURNS api.flip_state
     LANGUAGE sql STABLE
     AS $$
 SELECT *
@@ -1345,7 +1352,7 @@ $$;
 -- Name: bite_event_urn(api.bite_event); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.bite_event_urn(event api.bite_event) RETURNS SETOF api.urn_state
+CREATE FUNCTION api.bite_event_urn(event api.bite_event) RETURNS api.urn_state
     LANGUAGE sql STABLE
     AS $$
 SELECT *
@@ -1375,7 +1382,7 @@ COMMENT ON FUNCTION api.epoch_to_datetime(epoch numeric) IS '@omit';
 -- Name: flap_bid_event_bid(api.flap_bid_event); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.flap_bid_event_bid(event api.flap_bid_event) RETURNS SETOF api.flap_state
+CREATE FUNCTION api.flap_bid_event_bid(event api.flap_bid_event) RETURNS api.flap_state
     LANGUAGE sql STABLE
     AS $$
 SELECT *
@@ -1395,23 +1402,25 @@ $$;
 
 
 --
--- Name: flap_state_bid_events(api.flap_state); Type: FUNCTION; Schema: api; Owner: -
+-- Name: flap_state_bid_events(api.flap_state, integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.flap_state_bid_events(flap api.flap_state) RETURNS SETOF api.flap_bid_event
+CREATE FUNCTION api.flap_state_bid_events(flap api.flap_state, max_results integer DEFAULT NULL::integer) RETURNS SETOF api.flap_bid_event
     LANGUAGE sql STABLE
     AS $$
-    SELECT *
-    FROM api.all_flap_bid_events()
-    WHERE bid_id = flap.bid_id
-    $$;
+SELECT *
+FROM api.all_flap_bid_events() bids
+WHERE bid_id = flap.bid_id
+ORDER BY bids.block_height DESC
+LIMIT flap_state_bid_events.max_results
+$$;
 
 
 --
 -- Name: flip_bid_event_bid(api.flip_bid_event); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.flip_bid_event_bid(event api.flip_bid_event) RETURNS SETOF api.flip_state
+CREATE FUNCTION api.flip_bid_event_bid(event api.flip_bid_event) RETURNS api.flip_state
     LANGUAGE sql STABLE
     AS $$
 WITH ilks AS (
@@ -1438,10 +1447,10 @@ $$;
 
 
 --
--- Name: flip_state_bid_events(api.flip_state); Type: FUNCTION; Schema: api; Owner: -
+-- Name: flip_state_bid_events(api.flip_state, integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.flip_state_bid_events(flip api.flip_state) RETURNS SETOF api.flip_bid_event
+CREATE FUNCTION api.flip_state_bid_events(flip api.flip_state, max_results integer DEFAULT NULL::integer) RETURNS SETOF api.flip_bid_event
     LANGUAGE sql STABLE
     AS $$
 WITH addresses AS ( -- get the contract address from flip_ilk table using the ilk_id from flip
@@ -1456,6 +1465,8 @@ SELECT bid_id, lot, bid_amount, act, block_height, tx_idx, events.contract_addre
 FROM api.all_flip_bid_events() AS events
          LEFT JOIN addresses ON events.contract_address = addresses.contract_address
 WHERE bid_id = flip.bid_id
+ORDER BY block_height DESC
+LIMIT flip_state_bid_events.max_results
 $$;
 
 
@@ -1488,7 +1499,7 @@ $$;
 -- Name: flop_bid_event_bid(api.flop_bid_event); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.flop_bid_event_bid(event api.flop_bid_event) RETURNS SETOF api.flop_state
+CREATE FUNCTION api.flop_bid_event_bid(event api.flop_bid_event) RETURNS api.flop_state
     LANGUAGE sql STABLE
     AS $$
 SELECT *
@@ -1508,15 +1519,17 @@ $$;
 
 
 --
--- Name: flop_state_bid_events(api.flop_state); Type: FUNCTION; Schema: api; Owner: -
+-- Name: flop_state_bid_events(api.flop_state, integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.flop_state_bid_events(flop api.flop_state) RETURNS SETOF api.flop_bid_event
+CREATE FUNCTION api.flop_state_bid_events(flop api.flop_state, max_results integer DEFAULT NULL::integer) RETURNS SETOF api.flop_bid_event
     LANGUAGE sql STABLE
     AS $$
 SELECT *
-FROM api.all_flop_bid_events()
+FROM api.all_flop_bid_events() bids
 WHERE bid_id = flop.bid_id
+ORDER BY bids.block_height DESC
+LIMIT flop_state_bid_events.max_results
 $$;
 
 
@@ -2201,41 +2214,46 @@ $$;
 
 
 --
--- Name: ilk_state_bites(api.ilk_state); Type: FUNCTION; Schema: api; Owner: -
+-- Name: ilk_state_bites(api.ilk_state, integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.ilk_state_bites(state api.ilk_state) RETURNS SETOF api.bite_event
+CREATE FUNCTION api.ilk_state_bites(state api.ilk_state, max_results integer DEFAULT NULL::integer) RETURNS SETOF api.bite_event
     LANGUAGE sql STABLE
     AS $$
 SELECT *
 FROM api.all_bites(state.ilk_identifier)
 WHERE block_height <= state.block_height
+ORDER BY block_height DESC
+LIMIT ilk_state_bites.max_results
 $$;
 
 
 --
--- Name: ilk_state_frobs(api.ilk_state); Type: FUNCTION; Schema: api; Owner: -
+-- Name: ilk_state_frobs(api.ilk_state, integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.ilk_state_frobs(state api.ilk_state) RETURNS SETOF api.frob_event
+CREATE FUNCTION api.ilk_state_frobs(state api.ilk_state, max_results integer DEFAULT NULL::integer) RETURNS SETOF api.frob_event
     LANGUAGE sql STABLE
     AS $$
 SELECT *
 FROM api.all_frobs(state.ilk_identifier)
 WHERE block_height <= state.block_height
+ORDER BY block_height DESC
+LIMIT ilk_state_frobs.max_results
 $$;
 
 
 --
--- Name: ilk_state_ilk_file_events(api.ilk_state); Type: FUNCTION; Schema: api; Owner: -
+-- Name: ilk_state_ilk_file_events(api.ilk_state, integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.ilk_state_ilk_file_events(state api.ilk_state) RETURNS SETOF api.ilk_file_event
+CREATE FUNCTION api.ilk_state_ilk_file_events(state api.ilk_state, max_results integer DEFAULT NULL::integer) RETURNS SETOF api.ilk_file_event
     LANGUAGE sql STABLE
     AS $$
 SELECT *
 FROM api.all_ilk_file_events(state.ilk_identifier)
 WHERE block_height <= state.block_height
+LIMIT ilk_state_ilk_file_events.max_results
 $$;
 
 
@@ -2255,6 +2273,13 @@ CREATE TABLE api.managed_cdp (
     ilk_identifier text,
     created timestamp without time zone
 );
+
+
+--
+-- Name: TABLE managed_cdp; Type: COMMENT; Schema: api; Owner: -
+--
+
+COMMENT ON TABLE api.managed_cdp IS '@omit create,update,delete';
 
 
 --
@@ -2321,14 +2346,15 @@ $$;
 
 
 --
--- Name: queued_sin_sin_queue_events(api.queued_sin); Type: FUNCTION; Schema: api; Owner: -
+-- Name: queued_sin_sin_queue_events(api.queued_sin, integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.queued_sin_sin_queue_events(state api.queued_sin) RETURNS SETOF api.sin_queue_event
+CREATE FUNCTION api.queued_sin_sin_queue_events(state api.queued_sin, max_results integer DEFAULT NULL::integer) RETURNS SETOF api.sin_queue_event
     LANGUAGE sql STABLE
     AS $$
 SELECT *
 FROM api.all_sin_queue_events(state.era)
+LIMIT queued_sin_sin_queue_events.max_results
 $$;
 
 
@@ -2357,11 +2383,11 @@ $$;
 
 
 --
--- Name: urn_bites(text, text); Type: FUNCTION; Schema: api; Owner: -
+-- Name: urn_bites(text, text, integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.urn_bites(ilk_identifier text, urn_identifier text) RETURNS SETOF api.bite_event
-    LANGUAGE sql STABLE STRICT
+CREATE FUNCTION api.urn_bites(ilk_identifier text, urn_identifier text, max_results integer DEFAULT NULL::integer) RETURNS SETOF api.bite_event
+    LANGUAGE sql STABLE
     AS $$
 WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier),
      urn AS (SELECT id
@@ -2374,15 +2400,16 @@ FROM maker.bite
          LEFT JOIN headers ON bite.header_id = headers.id
 WHERE bite.urn_id = (SELECT id FROM urn)
 ORDER BY block_number DESC
+LIMIT urn_bites.max_results
 $$;
 
 
 --
--- Name: urn_frobs(text, text); Type: FUNCTION; Schema: api; Owner: -
+-- Name: urn_frobs(text, text, integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.urn_frobs(ilk_identifier text, urn_identifier text) RETURNS SETOF api.frob_event
-    LANGUAGE sql STABLE STRICT
+CREATE FUNCTION api.urn_frobs(ilk_identifier text, urn_identifier text, max_results integer DEFAULT NULL::integer) RETURNS SETOF api.frob_event
+    LANGUAGE sql STABLE
     AS $$
 WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier),
      urn AS (SELECT id
@@ -2407,32 +2434,35 @@ FROM maker.vat_frob
          LEFT JOIN headers ON vat_frob.header_id = headers.id
 WHERE vat_frob.urn_id = (SELECT id FROM urn)
 ORDER BY block_number DESC
+LIMIT urn_frobs.max_results
 $$;
 
 
 --
--- Name: urn_state_bites(api.urn_state); Type: FUNCTION; Schema: api; Owner: -
+-- Name: urn_state_bites(api.urn_state, integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.urn_state_bites(state api.urn_state) RETURNS SETOF api.bite_event
+CREATE FUNCTION api.urn_state_bites(state api.urn_state, max_results integer DEFAULT NULL::integer) RETURNS SETOF api.bite_event
     LANGUAGE sql STABLE
     AS $$
 SELECT *
 FROM api.urn_bites(state.ilk_identifier, state.urn_identifier)
 WHERE block_height <= state.block_height
+LIMIT urn_state_bites.max_results
 $$;
 
 
 --
--- Name: urn_state_frobs(api.urn_state); Type: FUNCTION; Schema: api; Owner: -
+-- Name: urn_state_frobs(api.urn_state, integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.urn_state_frobs(state api.urn_state) RETURNS SETOF api.frob_event
+CREATE FUNCTION api.urn_state_frobs(state api.urn_state, max_results integer DEFAULT NULL::integer) RETURNS SETOF api.frob_event
     LANGUAGE sql STABLE
     AS $$
 SELECT *
 FROM api.urn_frobs(state.ilk_identifier, state.urn_identifier)
 WHERE block_height <= state.block_height
+LIMIT urn_state_frobs.max_results
 $$;
 
 

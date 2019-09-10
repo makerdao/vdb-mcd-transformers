@@ -6,6 +6,7 @@ import (
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/component_tests/queries/test_helpers"
 	"github.com/vulcanize/mcd_transformers/transformers/events/flap_kick"
+	"github.com/vulcanize/mcd_transformers/transformers/events/tend"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres/repositories"
@@ -114,6 +115,57 @@ var _ = Describe("Flap computed columns", func() {
 
 			Expect(queryErr).NotTo(HaveOccurred())
 			Expect(actualBidEvents).To(ConsistOf(expectedBidEvents))
+		})
+
+		It("limits result to most recent block if max_results argument is provided", func() {
+			headerId, headerErr := headerRepo.CreateOrUpdateHeader(blockOneHeader)
+			Expect(headerErr).NotTo(HaveOccurred())
+
+			flapStorageValues := test_helpers.GetFlapStorageValues(1, fakeBidId)
+			test_helpers.CreateFlap(db, blockOneHeader, flapStorageValues, test_helpers.GetFlapMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
+
+			flapKickEvent := test_data.FlapKickModel
+			flapKickEvent.ContractAddress = contractAddress
+			flapKickEvent.BidId = strconv.Itoa(fakeBidId)
+			flapKickErr := flapKickRepo.Create(headerId, []interface{}{flapKickEvent})
+			Expect(flapKickErr).NotTo(HaveOccurred())
+
+			blockTwo := blockOne + 1
+			blockTwoHeader := fakes.GetFakeHeader(int64(blockTwo))
+			headerTwoId, headerTwoErr := headerRepo.CreateOrUpdateHeader(blockTwoHeader)
+			Expect(headerTwoErr).NotTo(HaveOccurred())
+
+			tendLot := rand.Int()
+			tendBid := rand.Int()
+			tendRepo := tend.TendRepository{}
+			tendRepo.SetDB(db)
+			flapTendErr := test_helpers.CreateTend(test_helpers.TendCreationInput{
+				BidId:           fakeBidId,
+				ContractAddress: contractAddress,
+				Lot:             tendLot,
+				BidAmount:       tendBid,
+				TendRepo:        tendRepo,
+				TendHeaderId:    headerTwoId,
+			})
+			Expect(flapTendErr).NotTo(HaveOccurred())
+
+			expectedBidEvent := test_helpers.BidEvent{
+				BidId:           strconv.Itoa(fakeBidId),
+				Lot:             strconv.Itoa(tendLot),
+				BidAmount:       strconv.Itoa(tendBid),
+				Act:             "tend",
+				ContractAddress: contractAddress,
+			}
+
+			maxResults := 1
+			var actualBidEvents []test_helpers.BidEvent
+			queryErr := db.Select(&actualBidEvents,
+				`SELECT bid_id, bid_amount, lot, act, contract_address FROM api.flap_state_bid_events(
+    					(SELECT (bid_id, guy, tic, "end", lot, bid, dealt, created, updated)::api.flap_state
+    					FROM api.all_flaps() WHERE bid_id = $1), $2)`, fakeBidId, maxResults)
+
+			Expect(queryErr).NotTo(HaveOccurred())
+			Expect(actualBidEvents).To(ConsistOf(expectedBidEvent))
 		})
 	})
 })

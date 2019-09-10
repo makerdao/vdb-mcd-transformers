@@ -17,6 +17,7 @@
 package queries
 
 import (
+	"math/big"
 	"math/rand"
 	"strconv"
 
@@ -137,6 +138,53 @@ var _ = Describe("Urn state computed columns", func() {
 
 			Expect(actualFrobs).To(Equal(expectedFrobs))
 		})
+
+		It("limits results to latest block number if max_results argument is provided", func() {
+			urnSetupData := test_helpers.GetUrnSetupData(fakeBlock, 1)
+			urnSetupData.Header.Hash = fakeHeader.Hash
+			urnMetadata := test_helpers.GetUrnMetadata(test_helpers.FakeIlk.Hex, fakeGuy)
+			test_helpers.CreateUrn(urnSetupData, urnMetadata, vatRepository, headerRepository)
+
+			frobRepo := vat_frob.VatFrobRepository{}
+			frobRepo.SetDB(db)
+
+			frobEventOne := test_data.CopyModel(test_data.VatFrobModelWithPositiveDart)
+			frobEventOne.ForeignKeyValues[constants.UrnFK] = fakeGuy
+			frobEventOne.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
+			insertFrobErrOne := frobRepo.Create(headerId, []shared.InsertionModel{frobEventOne})
+			Expect(insertFrobErrOne).NotTo(HaveOccurred())
+
+			// insert more recent frob for same urn
+			laterBlock := fakeBlock + 1
+			fakeHeaderTwo := fakes.GetFakeHeader(int64(laterBlock))
+			headerTwoId, insertHeaderTwoErr := headerRepository.CreateOrUpdateHeader(fakeHeaderTwo)
+			Expect(insertHeaderTwoErr).NotTo(HaveOccurred())
+
+			frobEventTwo := test_data.CopyModel(test_data.VatFrobModelWithNegativeDink)
+			frobEventTwo.ForeignKeyValues[constants.UrnFK] = fakeGuy
+			frobEventTwo.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
+			insertFrobErrTwo := frobRepo.Create(headerTwoId, []shared.InsertionModel{frobEventTwo})
+			Expect(insertFrobErrTwo).NotTo(HaveOccurred())
+
+			maxResults := 1
+			var actualFrobs []test_helpers.FrobEvent
+			getFrobsErr := db.Select(&actualFrobs,
+				`SELECT ilk_identifier, urn_identifier, dink, dart FROM api.urn_state_frobs(
+					(SELECT (urn_identifier, ilk_identifier, block_height, ink, art, ratio, safe, created, updated)::api.urn_state
+					 FROM api.get_urn($1, $2)), $3)`, test_helpers.FakeIlk.Identifier, fakeGuy, maxResults)
+			Expect(getFrobsErr).NotTo(HaveOccurred())
+
+			expectedFrobs := []test_helpers.FrobEvent{
+				{
+					IlkIdentifier: test_helpers.FakeIlk.Identifier,
+					UrnIdentifier: fakeGuy,
+					Dink:          frobEventTwo.ColumnValues["dink"].(string),
+					Dart:          frobEventTwo.ColumnValues["dart"].(string),
+				},
+			}
+
+			Expect(actualFrobs).To(Equal(expectedFrobs))
+		})
 	})
 
 	Describe("urn_state_bites", func() {
@@ -148,7 +196,7 @@ var _ = Describe("Urn state computed columns", func() {
 
 			biteRepo := bite.BiteRepository{}
 			biteRepo.SetDB(db)
-			biteEvent := test_data.BiteModel
+			biteEvent := randomizeBite(test_data.BiteModel)
 			biteEvent.Urn = fakeGuy
 			biteEvent.Ilk = test_helpers.FakeIlk.Hex
 			insertBiteErr := biteRepo.Create(headerId, []interface{}{biteEvent})
@@ -172,5 +220,59 @@ var _ = Describe("Urn state computed columns", func() {
 
 			Expect(actualBites).To(Equal(expectedBites))
 		})
+
+		It("limits results to latest block number if max_results argument is provided", func() {
+			urnSetupData := test_helpers.GetUrnSetupData(fakeBlock, 1)
+			urnSetupData.Header.Hash = fakeHeader.Hash
+			urnMetadata := test_helpers.GetUrnMetadata(test_helpers.FakeIlk.Hex, fakeGuy)
+			test_helpers.CreateUrn(urnSetupData, urnMetadata, vatRepository, headerRepository)
+
+			biteRepo := bite.BiteRepository{}
+			biteRepo.SetDB(db)
+
+			biteEventOne := randomizeBite(test_data.BiteModel)
+			biteEventOne.Urn = fakeGuy
+			biteEventOne.Ilk = test_helpers.FakeIlk.Hex
+			insertBiteOneErr := biteRepo.Create(headerId, []interface{}{biteEventOne})
+			Expect(insertBiteOneErr).NotTo(HaveOccurred())
+
+			// insert more recent bite for same urn
+			laterBlock := fakeBlock + 1
+			fakeHeaderTwo := fakes.GetFakeHeader(int64(laterBlock))
+			headerTwoId, insertHeaderTwoErr := headerRepository.CreateOrUpdateHeader(fakeHeaderTwo)
+			Expect(insertHeaderTwoErr).NotTo(HaveOccurred())
+
+			biteEventTwo := randomizeBite(test_data.BiteModel)
+			biteEventTwo.Urn = fakeGuy
+			biteEventTwo.Ilk = test_helpers.FakeIlk.Hex
+			insertBiteTwoErr := biteRepo.Create(headerTwoId, []interface{}{biteEventTwo})
+			Expect(insertBiteTwoErr).NotTo(HaveOccurred())
+
+			maxResults := 1
+			var actualBites []test_helpers.BiteEvent
+			getBitesErr := db.Select(&actualBites, `
+				SELECT ilk_identifier, urn_identifier, ink, art, tab FROM api.urn_state_bites(
+				    (SELECT (urn_identifier, ilk_identifier, block_height, ink, art, ratio, safe, created, updated)::api.urn_state
+					 FROM api.get_urn($1, $2)), $3)`, test_helpers.FakeIlk.Identifier, fakeGuy, maxResults)
+			Expect(getBitesErr).NotTo(HaveOccurred())
+
+			expectedBites := []test_helpers.BiteEvent{
+				{
+					IlkIdentifier: test_helpers.FakeIlk.Identifier,
+					UrnIdentifier: fakeGuy,
+					Ink:           biteEventTwo.Ink,
+					Art:           biteEventTwo.Art,
+					Tab:           biteEventTwo.Tab,
+				},
+			}
+			Expect(actualBites).To(Equal(expectedBites))
+		})
 	})
 })
+
+func randomizeBite(bite bite.BiteModel) bite.BiteModel {
+	bite.Ink = big.NewInt(rand.Int63()).String()
+	bite.Art = big.NewInt(rand.Int63()).String()
+	bite.Tab = big.NewInt(rand.Int63()).String()
+	return bite
+}

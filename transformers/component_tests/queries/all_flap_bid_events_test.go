@@ -167,6 +167,42 @@ var _ = Describe("Flap bid events query", func() {
 			))
 		})
 
+		It("limits results to latest blocks if max_results argument is provided", func() {
+			bidId := rand.Int()
+			lotAmount := rand.Int()
+			bidAmount := rand.Int()
+
+			flapKick := test_data.FlapKickModel
+			flapKick.ContractAddress = contractAddress
+			flapKick.BidId = strconv.Itoa(bidId)
+			flapKickErr := flapKickRepo.Create(headerOneId, []interface{}{flapKick})
+			Expect(flapKickErr).NotTo(HaveOccurred())
+
+			headerTwo := fakes.GetFakeHeader(2)
+			headerTwoId, headerTwoErr := headerRepo.CreateOrUpdateHeader(headerTwo)
+			Expect(headerTwoErr).NotTo(HaveOccurred())
+
+			flapTendErr := test_helpers.CreateTend(test_helpers.TendCreationInput{
+				BidId:           bidId,
+				ContractAddress: contractAddress,
+				Lot:             lotAmount,
+				BidAmount:       bidAmount,
+				TendRepo:        tendRepo,
+				TendHeaderId:    headerTwoId,
+			})
+			Expect(flapTendErr).NotTo(HaveOccurred())
+
+			maxResults := 1
+			var actualBidEvents []test_helpers.BidEvent
+			queryErr := db.Select(&actualBidEvents, `SELECT bid_id, bid_amount, lot, act FROM api.all_flap_bid_events($1)`,
+				maxResults)
+			Expect(queryErr).NotTo(HaveOccurred())
+
+			Expect(actualBidEvents).To(ConsistOf(
+				test_helpers.BidEvent{BidId: strconv.Itoa(bidId), BidAmount: strconv.Itoa(bidAmount), Lot: strconv.Itoa(lotAmount), Act: "tend"},
+			))
+		})
+
 		It("ignores bid events from flops", func() {
 			flopKickRepo := flop_kick.FlopKickRepository{}
 			flopKickRepo.SetDB(db)

@@ -107,6 +107,36 @@ var _ = Describe("Bites query", func() {
 			))
 		})
 
+		It("limits results to most recent blocks if max_results argument is provided", func() {
+			headerOne := fakes.GetFakeHeaderWithTimestamp(int64(111111111), 1)
+			headerOneId, err := headerRepo.CreateOrUpdateHeader(headerOne)
+			Expect(err).NotTo(HaveOccurred())
+
+			biteBlockOne := generateBite(test_helpers.FakeIlk.Hex, fakeUrn)
+			err = biteRepo.Create(headerOneId, []interface{}{biteBlockOne})
+			Expect(err).NotTo(HaveOccurred())
+
+			// New block
+			headerTwo := fakes.GetFakeHeaderWithTimestamp(int64(222222222), 2)
+			headerTwo.Hash = "anotherHash"
+			headerTwoId, err := headerRepo.CreateOrUpdateHeader(headerTwo)
+			Expect(err).NotTo(HaveOccurred())
+
+			biteBlockTwo := generateBite(test_helpers.FakeIlk.Hex, fakeUrn)
+			err = biteRepo.Create(headerTwoId, []interface{}{biteBlockTwo})
+			Expect(err).NotTo(HaveOccurred())
+
+			maxResults := 1
+			var actualBites []test_helpers.BiteEvent
+			err = db.Select(&actualBites, `SELECT ilk_identifier, urn_identifier, ink, art, tab FROM api.all_bites($1, $2)`,
+				test_helpers.FakeIlk.Identifier, maxResults)
+			Expect(err).NotTo(HaveOccurred())
+
+			Expect(actualBites).To(ConsistOf(
+				test_helpers.BiteEvent{IlkIdentifier: test_helpers.FakeIlk.Identifier, UrnIdentifier: fakeUrn, Ink: biteBlockTwo.Ink, Art: biteBlockTwo.Art, Tab: biteBlockTwo.Tab},
+			))
+		})
+
 		It("fails if no argument is supplied (STRICT)", func() {
 			_, err := db.Exec(`SELECT * FROM api.all_bites()`)
 			Expect(err).NotTo(BeNil())
@@ -160,6 +190,36 @@ var _ = Describe("Bites query", func() {
 			Expect(actualBites).To(ConsistOf(
 				test_helpers.BiteEvent{IlkIdentifier: test_helpers.FakeIlk.Identifier, UrnIdentifier: fakeUrn, Ink: biteBlockTwo.Ink, Art: biteBlockTwo.Art, Tab: biteBlockTwo.Tab},
 				test_helpers.BiteEvent{IlkIdentifier: test_helpers.FakeIlk.Identifier, UrnIdentifier: fakeUrn, Ink: biteBlockOne.Ink, Art: biteBlockOne.Art, Tab: biteBlockOne.Tab},
+			))
+		})
+
+		It("limits results to latest block if max_results argument is provided", func() {
+			headerOne := fakes.GetFakeHeaderWithTimestamp(int64(111111111), 1)
+			headerOneId, err := headerRepo.CreateOrUpdateHeader(headerOne)
+			Expect(err).NotTo(HaveOccurred())
+
+			biteBlockOne := generateBite(test_helpers.FakeIlk.Hex, fakeUrn)
+			err = biteRepo.Create(headerOneId, []interface{}{biteBlockOne})
+			Expect(err).NotTo(HaveOccurred())
+
+			// New block
+			headerTwo := fakes.GetFakeHeaderWithTimestamp(int64(222222222), 2)
+			headerTwo.Hash = "anotherHash"
+			headerTwoId, err := headerRepo.CreateOrUpdateHeader(headerTwo)
+			Expect(err).NotTo(HaveOccurred())
+
+			biteBlockTwo := generateBite(test_helpers.FakeIlk.Hex, fakeUrn)
+			err = biteRepo.Create(headerTwoId, []interface{}{biteBlockTwo})
+			Expect(err).NotTo(HaveOccurred())
+
+			maxResults := 1
+			var actualBites []test_helpers.BiteEvent
+			err = db.Select(&actualBites, `SELECT ilk_identifier, urn_identifier, ink, art, tab FROM api.urn_bites($1, $2, $3)`,
+				test_helpers.FakeIlk.Identifier, fakeUrn, maxResults)
+			Expect(err).NotTo(HaveOccurred())
+
+			Expect(actualBites).To(ConsistOf(
+				test_helpers.BiteEvent{IlkIdentifier: test_helpers.FakeIlk.Identifier, UrnIdentifier: fakeUrn, Ink: biteBlockTwo.Ink, Art: biteBlockTwo.Art, Tab: biteBlockTwo.Tab},
 			))
 		})
 

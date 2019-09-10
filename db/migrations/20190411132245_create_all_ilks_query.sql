@@ -1,7 +1,7 @@
 -- +goose Up
 
 -- Function returning state for all ilks as of the given block height
-CREATE FUNCTION api.all_ilks(block_height BIGINT DEFAULT api.max_block())
+CREATE FUNCTION api.all_ilks(block_height BIGINT DEFAULT api.max_block(), max_results INTEGER DEFAULT NULL)
     RETURNS SETOF api.ilk_state
 AS
 $$
@@ -104,10 +104,11 @@ WHERE (
               pips.pip is not null OR
               mats.mat is not null
           )
+ORDER BY updated DESC
+LIMIT all_ilks.max_results
 $$
     LANGUAGE SQL
-    STABLE
-    STRICT;
+    STABLE;
 
 -- +goose Down
-DROP FUNCTION api.all_ilks(block_height BIGINT);
+DROP FUNCTION api.all_ilks(BIGINT, INTEGER);

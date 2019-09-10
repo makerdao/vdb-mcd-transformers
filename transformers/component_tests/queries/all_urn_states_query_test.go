@@ -129,13 +129,55 @@ var _ = Describe("Urn history query", func() {
 		helper.AssertUrn(result[2], expectedUrnBlockOne)
 	})
 
-	It("fails if no argument is supplied (STRICT)", func() {
+	It("limits results to most recent blocks when limit argument is provided", func() {
+		urnCreatedBlock := rand.Int()
+		urnCreatedTimestamp := int(rand.Int31())
+		urnSetupData := helper.GetUrnSetupData(urnCreatedBlock, urnCreatedTimestamp)
+		urnMetadata := helper.GetUrnMetadata(helper.FakeIlk.Hex, fakeUrn)
+		helper.CreateUrn(urnSetupData, urnMetadata, vatRepo, headerRepo)
+
+		// New block
+		urnUpdatedBlock := urnCreatedBlock + 1
+		urnUpdatedTimestamp := urnCreatedTimestamp + 1
+		createFakeHeader(urnUpdatedBlock, urnUpdatedTimestamp, headerRepo)
+
+		// diff in new block
+		err := vatRepo.Create(urnUpdatedBlock, fakes.FakeHash.String(), urnMetadata.UrnInk, strconv.Itoa(urnSetupData.Ink))
+		Expect(err).NotTo(HaveOccurred())
+
+		expectedTimeCreated := helper.GetExpectedTimestamp(urnCreatedTimestamp)
+		expectedRatio := helper.GetExpectedRatio(urnSetupData.Ink, urnSetupData.Spot, urnSetupData.Art, urnSetupData.Rate)
+		expectedTimeUpdated := helper.GetExpectedTimestamp(urnUpdatedTimestamp)
+		expectedUrn := helper.UrnState{
+			UrnIdentifier: fakeUrn,
+			IlkIdentifier: helper.FakeIlk.Identifier,
+			BlockHeight:   urnUpdatedBlock,
+			Ink:           strconv.Itoa(urnSetupData.Ink),
+			Art:           strconv.Itoa(urnSetupData.Art),
+			Ratio:         helper.GetValidNullString(strconv.FormatFloat(expectedRatio, 'f', 8, 64)),
+			Safe:          expectedRatio >= 1,
+			Created:       helper.GetValidNullString(expectedTimeCreated),
+			Updated:       helper.GetValidNullString(expectedTimeUpdated),
+		}
+
+		maxResults := 1
+		var result []helper.UrnState
+		dbErr := db.Select(&result,
+			`SELECT * FROM api.all_urn_states($1, $2, $3, $4)`,
+			helper.FakeIlk.Identifier, fakeUrn, urnUpdatedBlock, maxResults)
+		Expect(dbErr).NotTo(HaveOccurred())
+
+		Expect(len(result)).To(Equal(maxResults))
+		helper.AssertUrn(result[0], expectedUrn)
+	})
+
+	It("fails if no argument is supplied", func() {
 		_, err := db.Exec(`SELECT * FROM api.all_urn_states()`)
 		Expect(err).NotTo(BeNil())
 		Expect(err.Error()).To(ContainSubstring("function api.all_urn_states() does not exist"))
 	})
 
-	It("fails if only one argument is supplied (STRICT)", func() {
+	It("fails if only one argument is supplied", func() {
 		_, err := db.Exec(`SELECT * FROM api.all_urn_states($1::text)`, helper.FakeIlk.Identifier)
 		Expect(err).NotTo(BeNil())
 		Expect(err.Error()).To(ContainSubstring("function api.all_urn_states(text) does not exist"))

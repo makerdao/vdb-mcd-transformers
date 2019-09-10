@@ -169,4 +169,54 @@ var _ = Describe("All flips view", func() {
 		Expect(countQueryErr).NotTo(HaveOccurred())
 		Expect(bidCount).To(Equal(1))
 	})
+
+	It("limits results if max_results argument is provided", func() {
+		fakeBidId := rand.Int()
+		fakeBidId2 := fakeBidId + 1
+		blockNumber := rand.Int()
+		headerTimestamp := int(rand.Int31())
+
+		header := fakes.GetFakeHeaderWithTimestamp(int64(headerTimestamp), int64(blockNumber))
+		headerId, headerErr := headerRepo.CreateOrUpdateHeader(header)
+		Expect(headerErr).NotTo(HaveOccurred())
+
+		ilkId, urnId, setupErr := test_helpers.SetUpFlipBidContext(test_helpers.FlipBidContextInput{
+			DealCreationInput: test_helpers.DealCreationInput{
+				Db:              db,
+				BidId:           fakeBidId,
+				ContractAddress: contractAddress,
+			},
+			Dealt:            false,
+			IlkHex:           test_helpers.FakeIlk.Hex,
+			UrnGuy:           test_data.FlipKickModel.Usr,
+			FlipKickRepo:     flipKickRepo,
+			FlipKickHeaderId: headerId,
+		})
+		Expect(setupErr).NotTo(HaveOccurred())
+
+		flipOneStorageValues := test_helpers.GetFlipStorageValues(1, test_helpers.FakeIlk.Hex, fakeBidId)
+		test_helpers.CreateFlip(db, header, flipOneStorageValues,
+			test_helpers.GetFlipMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
+
+		// insert a separate bid with the same ilk
+		flipTwoStorageValues := test_helpers.GetFlipStorageValues(2, test_helpers.FakeIlk.Hex, fakeBidId2)
+		test_helpers.CreateFlip(db, header, flipTwoStorageValues,
+			test_helpers.GetFlipMetadatas(strconv.Itoa(fakeBidId2)), contractAddress)
+
+		flipKickErr := test_helpers.CreateFlipKick(contractAddress, fakeBidId2, headerId, test_data.FlipKickModel.Usr, flipKickRepo)
+		Expect(flipKickErr).NotTo(HaveOccurred())
+
+		expectedBid := test_helpers.FlipBidFromValues(strconv.Itoa(fakeBidId2), strconv.Itoa(ilkId),
+			strconv.Itoa(urnId), "false", header.Timestamp, header.Timestamp, flipTwoStorageValues)
+
+		maxResults := 1
+		var actualBids []test_helpers.FlipBid
+		queryErr := db.Select(&actualBids, `
+			SELECT bid_id, ilk_id, urn_id, guy, tic, "end", lot, bid, gal, dealt, tab, created, updated
+			FROM api.all_flips($1, $2)`,
+			test_helpers.FakeIlk.Identifier, maxResults)
+		Expect(queryErr).NotTo(HaveOccurred())
+
+		Expect(actualBids).To(Equal([]test_helpers.FlipBid{expectedBid}))
+	})
 })

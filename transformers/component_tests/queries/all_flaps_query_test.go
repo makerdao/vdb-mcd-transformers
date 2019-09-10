@@ -103,4 +103,59 @@ var _ = Describe("All flaps query", func() {
 			expectedBidTwo,
 		}))
 	})
+
+	It("limits results if max_results argument is provided", func() {
+		fakeBidIdOne := rand.Int()
+		fakeBidIdTwo := fakeBidIdOne + 1
+
+		blockOneHeader := fakes.GetFakeHeaderWithTimestamp(blockOneTimestamp, int64(blockOne))
+		headerOneId, headerOneErr := headerRepo.CreateOrUpdateHeader(blockOneHeader)
+		Expect(headerOneErr).NotTo(HaveOccurred())
+
+		contextErr := test_helpers.SetUpFlapBidContext(test_helpers.FlapBidCreationInput{
+			DealCreationInput: test_helpers.DealCreationInput{
+				Db:              db,
+				BidId:           fakeBidIdOne,
+				ContractAddress: contractAddress,
+			},
+			Dealt:            false,
+			FlapKickRepo:     flapKickRepo,
+			FlapKickHeaderId: headerOneId,
+		})
+		Expect(contextErr).NotTo(HaveOccurred())
+
+		flapStorageValuesOne := test_helpers.GetFlapStorageValues(2, fakeBidIdOne)
+		test_helpers.CreateFlap(db, blockOneHeader, flapStorageValuesOne, test_helpers.GetFlapMetadatas(strconv.Itoa(fakeBidIdOne)), contractAddress)
+
+		blockTwoHeader := fakes.GetFakeHeaderWithTimestamp(blockTwoTimestamp, int64(blockTwo))
+		blockTwoHeader.Hash = "blockTwoHeader"
+		headerTwoId, headerTwoErr := headerRepo.CreateOrUpdateHeader(blockTwoHeader)
+		Expect(headerTwoErr).NotTo(HaveOccurred())
+
+		contextErr = test_helpers.SetUpFlapBidContext(test_helpers.FlapBidCreationInput{
+			DealCreationInput: test_helpers.DealCreationInput{
+				Db:              db,
+				BidId:           fakeBidIdTwo,
+				ContractAddress: contractAddress,
+			},
+			Dealt:            false,
+			FlapKickRepo:     flapKickRepo,
+			FlapKickHeaderId: headerTwoId,
+		})
+		Expect(contextErr).NotTo(HaveOccurred())
+
+		flapStorageValuesTwo := test_helpers.GetFlapStorageValues(3, fakeBidIdTwo)
+		test_helpers.CreateFlap(db, blockTwoHeader, flapStorageValuesTwo, test_helpers.GetFlapMetadatas(strconv.Itoa(fakeBidIdTwo)), contractAddress)
+
+		maxResults := 1
+		var actualBids []test_helpers.FlapBid
+		queryErr := db.Select(&actualBids, `SELECT bid_id, guy, tic, "end", lot, bid, dealt, created, updated FROM api.all_flaps($1)`, maxResults)
+		Expect(queryErr).NotTo(HaveOccurred())
+
+		expectedBidTwo := test_helpers.FlapBidFromValues(strconv.Itoa(fakeBidIdTwo), "false", blockTwoHeader.Timestamp, blockTwoHeader.Timestamp, flapStorageValuesTwo)
+
+		Expect(actualBids).To(Equal([]test_helpers.FlapBid{
+			expectedBidTwo,
+		}))
+	})
 })

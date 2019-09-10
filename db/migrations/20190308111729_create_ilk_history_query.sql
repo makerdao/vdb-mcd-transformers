@@ -2,11 +2,10 @@
 -- +goose StatementBegin
 
 -- Function returning the history of a given ilk as of the given block height
-CREATE FUNCTION api.all_ilk_states(ilk_identifier TEXT, block_height BIGINT DEFAULT api.max_block(), "limit" INTEGER DEFAULT NULL)
+CREATE FUNCTION api.all_ilk_states(ilk_identifier TEXT, block_height BIGINT DEFAULT api.max_block(), max_results INTEGER DEFAULT NULL)
     RETURNS SETOF api.ilk_state AS
 $$
 BEGIN
-    RAISE NOTICE 'limit is %', "limit";
     RETURN QUERY (
         WITH relevant_blocks AS (
             SELECT get_ilk_blocks_before.block_height
@@ -15,13 +14,12 @@ BEGIN
         SELECT r.*
         FROM relevant_blocks,
              LATERAL api.get_ilk(ilk_identifier, relevant_blocks.block_height) r
-        LIMIT "limit" -- LIMIT NULL is the same as omitting a limit
+        LIMIT all_ilk_states.max_results -- LIMIT NULL is the same as omitting a limit
     );
 END;
 $$
     LANGUAGE plpgsql
-    STABLE
-    called on null input;
+    STABLE;
 -- +goose StatementEnd
 
 -- +goose Down

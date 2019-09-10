@@ -2,7 +2,7 @@
 
 -- Extend type flop_bid_event with bid field
 CREATE FUNCTION api.flop_bid_event_bid(event api.flop_bid_event)
-    RETURNS SETOF api.flop_state AS
+    RETURNS api.flop_state AS
 $$
 SELECT *
 FROM api.get_flop(event.bid_id, event.block_height)

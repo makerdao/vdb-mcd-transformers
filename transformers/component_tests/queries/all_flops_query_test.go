@@ -108,4 +108,39 @@ var _ = Describe("All flops query", func() {
 		}))
 	})
 
+	It("limits results if max_results argument is provided", func() {
+		fakeBidIdOne := rand.Int()
+		fakeBidIdTwo := fakeBidIdOne + 1
+
+		header := fakes.GetFakeHeaderWithTimestamp(blockOneTimestamp, int64(blockOne))
+		headerId, headerErr := headerRepo.CreateOrUpdateHeader(header)
+		Expect(headerErr).NotTo(HaveOccurred())
+
+		contextErr := test_helpers.SetUpFlopBidContext(test_helpers.FlopBidCreationInput{
+			DealCreationInput: test_helpers.DealCreationInput{
+				Db:              db,
+				BidId:           fakeBidIdTwo,
+				ContractAddress: contractAddress,
+			},
+			Dealt:            false,
+			FlopKickRepo:     flopKickRepo,
+			FlopKickHeaderId: headerId,
+		})
+		Expect(contextErr).NotTo(HaveOccurred())
+
+		flopStorageValuesOne := test_helpers.GetFlopStorageValues(1, fakeBidIdOne)
+		test_helpers.CreateFlop(db, header, flopStorageValuesOne, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidIdOne)), contractAddress)
+
+		flopStorageValuesTwo := test_helpers.GetFlopStorageValues(2, fakeBidIdTwo)
+		test_helpers.CreateFlop(db, header, flopStorageValuesTwo, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidIdTwo)), contractAddress)
+
+		maxResults := 1
+		var actualBids []test_helpers.FlopBid
+		queryErr := db.Select(&actualBids, `SELECT bid_id, guy, tic, "end", lot, bid, dealt, created, updated FROM api.all_flops($1)`,
+			maxResults)
+		Expect(queryErr).NotTo(HaveOccurred())
+
+		expectedBid := test_helpers.FlopBidFromValues(strconv.Itoa(fakeBidIdTwo), "false", header.Timestamp, header.Timestamp, flopStorageValuesTwo)
+		Expect(actualBids).To(Equal([]test_helpers.FlopBid{expectedBid}))
+	})
 })

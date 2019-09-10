@@ -1,6 +1,6 @@
 -- +goose Up
 -- +goose StatementBegin
-CREATE OR REPLACE FUNCTION api.all_flops()
+CREATE OR REPLACE FUNCTION api.all_flops(max_results INTEGER DEFAULT NULL)
     RETURNS SETOF api.flop_state
 AS
 $BODY$
@@ -9,6 +9,8 @@ BEGIN
         WITH bid_ids AS (
             SELECT DISTINCT bid_id
             FROM maker.flop
+            ORDER BY bid_id DESC
+            LIMIT all_flops.max_results
         )
         SELECT f.*
         FROM bid_ids,
@@ -20,5 +22,5 @@ $BODY$
     STABLE;
 -- +goose StatementEnd
 -- +goose Down
-DROP FUNCTION api.all_flops();
+DROP FUNCTION api.all_flops(INTEGER);
 

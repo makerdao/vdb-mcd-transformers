@@ -190,6 +190,49 @@ var _ = Describe("Flip state computed columns", func() {
 			Expect(actualBidEvents).To(ConsistOf(expectedFlipKickEvent, expectedTendEvent))
 		})
 
+		It("limits results to most recent block if max_results argument is provided", func() {
+			flipKickEvent := test_data.FlipKickModel
+			flipKickEvent.ContractAddress = contractAddress
+			flipKickEvent.BidId = strconv.Itoa(fakeBidId)
+			flipKickErr := flipKickRepo.Create(headerId, []interface{}{flipKickEvent})
+			Expect(flipKickErr).NotTo(HaveOccurred())
+
+			blockTwo := blockNumber + 1
+			headerTwo := fakes.GetFakeHeader(int64(blockTwo))
+			headerTwoId, headerTwoErr := headerRepository.CreateOrUpdateHeader(headerTwo)
+			Expect(headerTwoErr).NotTo(HaveOccurred())
+
+			tendLot := rand.Intn(100)
+			tendBidAmount := rand.Intn(100)
+			flipTendErr := test_helpers.CreateTend(test_helpers.TendCreationInput{
+				BidId:           fakeBidId,
+				ContractAddress: contractAddress,
+				Lot:             tendLot,
+				BidAmount:       tendBidAmount,
+				TendRepo:        tendRepo,
+				TendHeaderId:    headerTwoId,
+			})
+			Expect(flipTendErr).NotTo(HaveOccurred())
+
+			expectedTendEvent := test_helpers.BidEvent{
+				BidId:           strconv.Itoa(fakeBidId),
+				Lot:             strconv.Itoa(tendLot),
+				BidAmount:       strconv.Itoa(tendBidAmount),
+				Act:             "tend",
+				ContractAddress: contractAddress,
+			}
+
+			maxResults := 1
+			var actualBidEvents []test_helpers.BidEvent
+			queryErr := db.Select(&actualBidEvents,
+				`SELECT bid_id, bid_amount, lot, act, contract_address FROM api.flip_state_bid_events(
+    					(SELECT (block_height, bid_id, ilk_id, urn_id, guy, tic, "end", lot, bid, gal, dealt, tab, created, updated)::api.flip_state 
+    					FROM api.get_flip($1, $2)), $3)`, fakeBidId, test_helpers.FakeIlk.Identifier, maxResults)
+			Expect(queryErr).NotTo(HaveOccurred())
+
+			Expect(actualBidEvents).To(ConsistOf(expectedTendEvent))
+		})
+
 		It("ignores bid events for a flip with a different contract address", func() {
 			irrelevantContractAddress := "different flipper"
 			irrelevantFlipStorageValues := test_helpers.GetFlipStorageValues(2, test_helpers.FakeIlk.Identifier, fakeBidId)
