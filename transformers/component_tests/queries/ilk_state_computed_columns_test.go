@@ -81,9 +81,9 @@ var _ = Describe("Ilk state computed columns", func() {
 			var actualFrobs []test_helpers.FrobEvent
 			getFrobsErr := db.Select(&actualFrobs,
 				`SELECT ilk_identifier, urn_identifier, dink, dart FROM api.ilk_state_frobs(
-                        (SELECT (ilk_identifier, block_height, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated)::api.ilk_state
-                         FROM api.get_ilk($1, $2))
-                    )`, test_helpers.FakeIlk.Identifier, fakeBlock)
+					(SELECT (ilk_identifier, block_height, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated)::api.ilk_state
+					 FROM api.get_ilk($1, $2)))`,
+				test_helpers.FakeIlk.Identifier, fakeBlock)
 			Expect(getFrobsErr).NotTo(HaveOccurred())
 
 			expectedFrobs := []test_helpers.FrobEvent{{
@@ -96,42 +96,71 @@ var _ = Describe("Ilk state computed columns", func() {
 			Expect(actualFrobs).To(Equal(expectedFrobs))
 		})
 
-		It("limits results if max_results argument is provided", func() {
-			frobRepo := vat_frob.VatFrobRepository{}
-			frobRepo.SetDB(db)
-			oldFrob := test_data.CopyModel(test_data.VatFrobModelWithPositiveDart)
-			oldFrob.ForeignKeyValues[constants.UrnFK] = fakeGuy
-			oldFrob.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
-			insertOldFrobErr := frobRepo.Create(headerId, []shared.InsertionModel{oldFrob})
-			Expect(insertOldFrobErr).NotTo(HaveOccurred())
+		Describe("result pagination", func() {
+			var (
+				newBlock         int
+				oldFrob, newFrob shared.InsertionModel
+			)
 
-			newBlock := fakeBlock + 1
-			newHeader := fakes.GetFakeHeader(int64(newBlock))
-			newHeaderId, newHeaderErr := headerRepository.CreateOrUpdateHeader(newHeader)
-			Expect(newHeaderErr).NotTo(HaveOccurred())
+			BeforeEach(func() {
+				frobRepo := vat_frob.VatFrobRepository{}
+				frobRepo.SetDB(db)
+				oldFrob = test_data.CopyModel(test_data.VatFrobModelWithPositiveDart)
+				oldFrob.ForeignKeyValues[constants.UrnFK] = fakeGuy
+				oldFrob.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
+				insertOldFrobErr := frobRepo.Create(headerId, []shared.InsertionModel{oldFrob})
+				Expect(insertOldFrobErr).NotTo(HaveOccurred())
 
-			newFrob := test_data.CopyModel(test_data.VatFrobModelWithNegativeDink)
-			newFrob.ForeignKeyValues[constants.UrnFK] = fakeGuy
-			newFrob.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
-			insertNewFrobErr := frobRepo.Create(newHeaderId, []shared.InsertionModel{newFrob})
-			Expect(insertNewFrobErr).NotTo(HaveOccurred())
+				newBlock = fakeBlock + 1
+				newHeader := fakes.GetFakeHeader(int64(newBlock))
+				newHeaderId, newHeaderErr := headerRepository.CreateOrUpdateHeader(newHeader)
+				Expect(newHeaderErr).NotTo(HaveOccurred())
 
-			maxResults := 1
-			var actualFrobs []test_helpers.FrobEvent
-			getFrobsErr := db.Select(&actualFrobs,
-				`SELECT ilk_identifier, urn_identifier, dink, dart FROM api.ilk_state_frobs(
-                        (SELECT (ilk_identifier, block_height, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated)::api.ilk_state
-                         FROM api.get_ilk($1, $2)), $3)`, test_helpers.FakeIlk.Identifier, newBlock, maxResults)
-			Expect(getFrobsErr).NotTo(HaveOccurred())
+				newFrob = test_data.CopyModel(test_data.VatFrobModelWithNegativeDink)
+				newFrob.ForeignKeyValues[constants.UrnFK] = fakeGuy
+				newFrob.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
+				insertNewFrobErr := frobRepo.Create(newHeaderId, []shared.InsertionModel{newFrob})
+				Expect(insertNewFrobErr).NotTo(HaveOccurred())
+			})
 
-			expectedFrobs := []test_helpers.FrobEvent{{
-				IlkIdentifier: test_helpers.FakeIlk.Identifier,
-				UrnIdentifier: fakeGuy,
-				Dink:          newFrob.ColumnValues["dink"].(string),
-				Dart:          newFrob.ColumnValues["dart"].(string),
-			}}
+			It("limits results if max_results argument is provided", func() {
+				maxResults := 1
+				var actualFrobs []test_helpers.FrobEvent
+				getFrobsErr := db.Select(&actualFrobs,
+					`SELECT ilk_identifier, urn_identifier, dink, dart FROM api.ilk_state_frobs(
+						(SELECT (ilk_identifier, block_height, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated)::api.ilk_state
+						 FROM api.get_ilk($1, $2)), $3)`,
+					test_helpers.FakeIlk.Identifier, newBlock, maxResults)
+				Expect(getFrobsErr).NotTo(HaveOccurred())
 
-			Expect(actualFrobs).To(Equal(expectedFrobs))
+				expectedFrobs := []test_helpers.FrobEvent{{
+					IlkIdentifier: test_helpers.FakeIlk.Identifier,
+					UrnIdentifier: fakeGuy,
+					Dink:          newFrob.ColumnValues["dink"].(string),
+					Dart:          newFrob.ColumnValues["dart"].(string),
+				}}
+				Expect(actualFrobs).To(Equal(expectedFrobs))
+			})
+
+			It("offsets results if offset is provided", func() {
+				maxResults := 1
+				resultOffset := 1
+				var actualFrobs []test_helpers.FrobEvent
+				getFrobsErr := db.Select(&actualFrobs,
+					`SELECT ilk_identifier, urn_identifier, dink, dart FROM api.ilk_state_frobs(
+						(SELECT (ilk_identifier, block_height, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated)::api.ilk_state
+						 FROM api.get_ilk($1, $2)), $3, $4)`,
+					test_helpers.FakeIlk.Identifier, newBlock, maxResults, resultOffset)
+				Expect(getFrobsErr).NotTo(HaveOccurred())
+
+				expectedFrobs := []test_helpers.FrobEvent{{
+					IlkIdentifier: test_helpers.FakeIlk.Identifier,
+					UrnIdentifier: fakeGuy,
+					Dink:          oldFrob.ColumnValues["dink"].(string),
+					Dart:          oldFrob.ColumnValues["dart"].(string),
+				}}
+				Expect(actualFrobs).To(Equal(expectedFrobs))
+			})
 		})
 	})
 
@@ -147,9 +176,9 @@ var _ = Describe("Ilk state computed columns", func() {
 			var actualFiles []test_helpers.IlkFileEvent
 			getFilesErr := db.Select(&actualFiles,
 				`SELECT ilk_identifier, what, data FROM api.ilk_state_ilk_file_events(
-                        (SELECT (ilk_identifier, block_height, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated)::api.ilk_state
-                         FROM api.get_ilk($1, $2))
-                    )`, test_helpers.FakeIlk.Identifier, fakeBlock)
+					(SELECT (ilk_identifier, block_height, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated)::api.ilk_state
+					 FROM api.get_ilk($1, $2)))`,
+				test_helpers.FakeIlk.Identifier, fakeBlock)
 			Expect(getFilesErr).NotTo(HaveOccurred())
 
 			expectedFiles := []test_helpers.IlkFileEvent{{
@@ -161,41 +190,69 @@ var _ = Describe("Ilk state computed columns", func() {
 			Expect(actualFiles).To(Equal(expectedFiles))
 		})
 
-		It("limits results to latest blocks if max_results argument is provided", func() {
-			fileRepo := ilk.VatFileIlkRepository{}
-			fileRepo.SetDB(db)
-			fileEvent := test_data.VatFileIlkDustModel
-			fileEvent.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
-			insertFileErr := fileRepo.Create(headerId, []shared.InsertionModel{fileEvent})
-			Expect(insertFileErr).NotTo(HaveOccurred())
+		Describe("result pagination", func() {
+			var (
+				newBlock               int
+				fileEvent, spotFileMat shared.InsertionModel
+			)
 
-			newBlock := fakeBlock + 1
-			newHeader := fakes.GetFakeHeader(int64(newBlock))
-			newHeaderId, insertNewHeaderErr := headerRepository.CreateOrUpdateHeader(newHeader)
-			Expect(insertNewHeaderErr).NotTo(HaveOccurred())
+			BeforeEach(func() {
+				fileRepo := ilk.VatFileIlkRepository{}
+				fileRepo.SetDB(db)
+				fileEvent = test_data.VatFileIlkDustModel
+				fileEvent.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
+				insertFileErr := fileRepo.Create(headerId, []shared.InsertionModel{fileEvent})
+				Expect(insertFileErr).NotTo(HaveOccurred())
 
-			spotFileMatRepo := mat.SpotFileMatRepository{}
-			spotFileMatRepo.SetDB(db)
-			spotFileMat := test_data.SpotFileMatModel
-			spotFileMat.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
-			spotFileMatErr := spotFileMatRepo.Create(newHeaderId, []shared.InsertionModel{spotFileMat})
-			Expect(spotFileMatErr).NotTo(HaveOccurred())
+				newBlock = fakeBlock + 1
+				newHeader := fakes.GetFakeHeader(int64(newBlock))
+				newHeaderId, insertNewHeaderErr := headerRepository.CreateOrUpdateHeader(newHeader)
+				Expect(insertNewHeaderErr).NotTo(HaveOccurred())
 
-			maxResults := 1
-			var actualFiles []test_helpers.IlkFileEvent
-			getFilesErr := db.Select(&actualFiles,
-				`SELECT ilk_identifier, what, data FROM api.ilk_state_ilk_file_events(
+				spotFileMatRepo := mat.SpotFileMatRepository{}
+				spotFileMatRepo.SetDB(db)
+				spotFileMat = test_data.SpotFileMatModel
+				spotFileMat.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
+				spotFileMatErr := spotFileMatRepo.Create(newHeaderId, []shared.InsertionModel{spotFileMat})
+				Expect(spotFileMatErr).NotTo(HaveOccurred())
+			})
+
+			It("limits results to latest blocks if max_results argument is provided", func() {
+				maxResults := 1
+				var actualFiles []test_helpers.IlkFileEvent
+				getFilesErr := db.Select(&actualFiles,
+					`SELECT ilk_identifier, what, data FROM api.ilk_state_ilk_file_events(
+						(SELECT (ilk_identifier, block_height, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated)::api.ilk_state
+						 FROM api.get_ilk($1, $2)), $3)`,
+					test_helpers.FakeIlk.Identifier, newBlock, maxResults)
+				Expect(getFilesErr).NotTo(HaveOccurred())
+
+				expectedFile := test_helpers.IlkFileEvent{
+					IlkIdentifier: test_helpers.GetValidNullString(test_helpers.FakeIlk.Identifier),
+					What:          spotFileMat.ColumnValues["what"].(string),
+					Data:          spotFileMat.ColumnValues["data"].(string),
+				}
+				Expect(actualFiles).To(ConsistOf(expectedFile))
+			})
+
+			It("offsets results if offset is provided", func() {
+				maxResults := 1
+				resultOffset := 1
+				var actualFiles []test_helpers.IlkFileEvent
+				getFilesErr := db.Select(&actualFiles,
+					`SELECT ilk_identifier, what, data FROM api.ilk_state_ilk_file_events(
                         (SELECT (ilk_identifier, block_height, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated)::api.ilk_state
-                         FROM api.get_ilk($1, $2)), $3)`, test_helpers.FakeIlk.Identifier, newBlock, maxResults)
-			Expect(getFilesErr).NotTo(HaveOccurred())
+                         FROM api.get_ilk($1, $2)), $3, $4)`,
+					test_helpers.FakeIlk.Identifier, newBlock, maxResults, resultOffset)
+				Expect(getFilesErr).NotTo(HaveOccurred())
 
-			expectedFiles := []test_helpers.IlkFileEvent{{
-				IlkIdentifier: test_helpers.GetValidNullString(test_helpers.FakeIlk.Identifier),
-				What:          spotFileMat.ColumnValues["what"].(string),
-				Data:          spotFileMat.ColumnValues["data"].(string),
-			}}
-
-			Expect(actualFiles).To(Equal(expectedFiles))
+				expectedFile := test_helpers.IlkFileEvent{
+					IlkIdentifier: test_helpers.GetValidNullString(test_helpers.FakeIlk.Identifier),
+					What:          fileEvent.ColumnValues["what"].(string),
+					Data:          fileEvent.ColumnValues["data"].(string),
+				}
+				Expect(actualFiles).To(ConsistOf(expectedFile))
+			})
 		})
 	})
 
@@ -229,42 +286,71 @@ var _ = Describe("Ilk state computed columns", func() {
 			Expect(actualBites).To(Equal(expectedBites))
 		})
 
-		It("limits results to recent blocks if max_results argument is provided", func() {
-			biteRepo := bite.BiteRepository{}
-			biteRepo.SetDB(db)
-			oldBite := test_data.BiteModel
-			oldBite.Ilk = test_helpers.FakeIlk.Hex
-			insertOldBiteErr := biteRepo.Create(headerId, []interface{}{oldBite})
-			Expect(insertOldBiteErr).NotTo(HaveOccurred())
+		Describe("result pagination", func() {
+			var (
+				newBlock         int
+				oldBite, newBite bite.BiteModel
+			)
 
-			newBlock := fakeBlock + 1
-			newHeader := fakes.GetFakeHeader(int64(newBlock))
-			newHeaderId, insertNewHeaderErr := headerRepository.CreateOrUpdateHeader(newHeader)
-			Expect(insertNewHeaderErr).NotTo(HaveOccurred())
+			BeforeEach(func() {
+				biteRepo := bite.BiteRepository{}
+				biteRepo.SetDB(db)
+				oldBite = test_data.BiteModel
+				oldBite.Ilk = test_helpers.FakeIlk.Hex
+				insertOldBiteErr := biteRepo.Create(headerId, []interface{}{oldBite})
+				Expect(insertOldBiteErr).NotTo(HaveOccurred())
 
-			newBite := test_data.BiteModel
-			newBite.Ilk = test_helpers.FakeIlk.Hex
-			newBite.Urn = test_data.FakeUrn
-			insertNewBiteErr := biteRepo.Create(newHeaderId, []interface{}{newBite})
-			Expect(insertNewBiteErr).NotTo(HaveOccurred())
+				newBlock = fakeBlock + 1
+				newHeader := fakes.GetFakeHeader(int64(newBlock))
+				newHeaderId, insertNewHeaderErr := headerRepository.CreateOrUpdateHeader(newHeader)
+				Expect(insertNewHeaderErr).NotTo(HaveOccurred())
 
-			maxResults := 1
-			var actualBites []test_helpers.BiteEvent
-			getBitesErr := db.Select(&actualBites, `
+				newBite = test_data.BiteModel
+				newBite.Ilk = test_helpers.FakeIlk.Hex
+				newBite.Urn = test_data.FakeUrn
+				insertNewBiteErr := biteRepo.Create(newHeaderId, []interface{}{newBite})
+				Expect(insertNewBiteErr).NotTo(HaveOccurred())
+			})
+
+			It("limits results to recent blocks if max_results argument is provided", func() {
+				maxResults := 1
+				var actualBites []test_helpers.BiteEvent
+				getBitesErr := db.Select(&actualBites, `
 				SELECT ilk_identifier, urn_identifier, ink, art, tab FROM api.ilk_state_bites(
 					(SELECT (ilk_identifier, block_height, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated)::api.ilk_state
 					FROM api.get_ilk($1, $2)), $3)`, test_helpers.FakeIlk.Identifier, newBlock, maxResults)
-			Expect(getBitesErr).NotTo(HaveOccurred())
+				Expect(getBitesErr).NotTo(HaveOccurred())
 
-			expectedBites := []test_helpers.BiteEvent{{
-				IlkIdentifier: test_helpers.FakeIlk.Identifier,
-				UrnIdentifier: newBite.Urn,
-				Ink:           newBite.Ink,
-				Art:           newBite.Art,
-				Tab:           newBite.Tab,
-			}}
+				expectedBite := test_helpers.BiteEvent{
+					IlkIdentifier: test_helpers.FakeIlk.Identifier,
+					UrnIdentifier: newBite.Urn,
+					Ink:           newBite.Ink,
+					Art:           newBite.Art,
+					Tab:           newBite.Tab,
+				}
+				Expect(actualBites).To(ConsistOf(expectedBite))
+			})
 
-			Expect(actualBites).To(Equal(expectedBites))
+			It("offsets results if offset is provided", func() {
+				maxResults := 1
+				resultOffset := 1
+				var actualBites []test_helpers.BiteEvent
+				getBitesErr := db.Select(&actualBites, `
+				SELECT ilk_identifier, urn_identifier, ink, art, tab FROM api.ilk_state_bites(
+					(SELECT (ilk_identifier, block_height, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated)::api.ilk_state
+					FROM api.get_ilk($1, $2)), $3, $4)`,
+					test_helpers.FakeIlk.Identifier, newBlock, maxResults, resultOffset)
+				Expect(getBitesErr).NotTo(HaveOccurred())
+
+				expectedBite := test_helpers.BiteEvent{
+					IlkIdentifier: test_helpers.FakeIlk.Identifier,
+					UrnIdentifier: oldBite.Urn,
+					Ink:           oldBite.Ink,
+					Art:           oldBite.Art,
+					Tab:           oldBite.Tab,
+				}
+				Expect(actualBites).To(ConsistOf(expectedBite))
+			})
 		})
 	})
 })

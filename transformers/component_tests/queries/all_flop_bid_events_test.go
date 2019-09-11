@@ -409,41 +409,72 @@ var _ = Describe("Flop bid events query", func() {
 		})
 	})
 
-	It("limits result to latest blocks if max_results argument is provided", func() {
-		fakeBidId := rand.Int()
-		lot := rand.Int()
-		bidAmount := rand.Int()
-		updatedLot := lot + 100
-		updatedBidAmount := bidAmount + 100
+	Describe("result pagination", func() {
+		var (
+			updatedBidAmount, updatedLot int
+			flopKickBlockOne             flop_kick.Model
+		)
 
-		flopKickBlockOne := test_data.FlopKickModel
-		flopKickBlockOne.BidId = strconv.Itoa(fakeBidId)
-		flopKickBlockOne.ContractAddress = contractAddress
-		flopKickErr := flopKickRepo.Create(headerOneId, []interface{}{flopKickBlockOne})
-		Expect(flopKickErr).NotTo(HaveOccurred())
+		BeforeEach(func() {
+			lot := rand.Int()
+			bidAmount := rand.Int()
+			updatedLot = lot + 100
+			updatedBidAmount = bidAmount + 100
 
-		headerTwo := fakes.GetFakeHeaderWithTimestamp(int64(222222222), 2)
-		headerTwoId, headerTwoErr := headerRepo.CreateOrUpdateHeader(headerTwo)
-		Expect(headerTwoErr).NotTo(HaveOccurred())
+			flopKickBlockOne = test_data.FlopKickModel
+			flopKickBlockOne.BidId = strconv.Itoa(fakeBidId)
+			flopKickBlockOne.ContractAddress = contractAddress
+			flopKickErr := flopKickRepo.Create(headerOneId, []interface{}{flopKickBlockOne})
+			Expect(flopKickErr).NotTo(HaveOccurred())
 
-		flopDentErr := test_helpers.CreateDent(test_helpers.DentCreationInput{
-			BidId:           fakeBidId,
-			ContractAddress: contractAddress,
-			Lot:             updatedLot,
-			BidAmount:       updatedBidAmount,
-			DentRepo:        dentRepo,
-			DentHeaderId:    headerTwoId,
+			headerTwo := fakes.GetFakeHeaderWithTimestamp(int64(222222222), 2)
+			headerTwoId, headerTwoErr := headerRepo.CreateOrUpdateHeader(headerTwo)
+			Expect(headerTwoErr).NotTo(HaveOccurred())
+
+			flopDentErr := test_helpers.CreateDent(test_helpers.DentCreationInput{
+				BidId:           fakeBidId,
+				ContractAddress: contractAddress,
+				Lot:             updatedLot,
+				BidAmount:       updatedBidAmount,
+				DentRepo:        dentRepo,
+				DentHeaderId:    headerTwoId,
+			})
+			Expect(flopDentErr).NotTo(HaveOccurred())
 		})
-		Expect(flopDentErr).NotTo(HaveOccurred())
 
-		maxResults := 1
-		var actualBidEvents []test_helpers.BidEvent
-		queryErr := db.Select(&actualBidEvents, `SELECT bid_id, bid_amount, lot, act FROM api.all_flop_bid_events($1)`,
-			maxResults)
-		Expect(queryErr).NotTo(HaveOccurred())
+		It("limits result to latest blocks if max_results argument is provided", func() {
+			maxResults := 1
+			var actualBidEvents []test_helpers.BidEvent
+			queryErr := db.Select(&actualBidEvents, `SELECT bid_id, bid_amount, lot, act FROM api.all_flop_bid_events($1)`,
+				maxResults)
+			Expect(queryErr).NotTo(HaveOccurred())
 
-		Expect(actualBidEvents).To(ConsistOf(
-			test_helpers.BidEvent{BidId: strconv.Itoa(fakeBidId), BidAmount: strconv.Itoa(updatedBidAmount), Lot: strconv.Itoa(updatedLot), Act: "dent"},
-		))
+			Expect(actualBidEvents).To(ConsistOf(
+				test_helpers.BidEvent{
+					BidId:     strconv.Itoa(fakeBidId),
+					BidAmount: strconv.Itoa(updatedBidAmount),
+					Lot:       strconv.Itoa(updatedLot),
+					Act:       "dent",
+				},
+			))
+		})
+
+		It("offsets results if offset is provided", func() {
+			maxResults := 1
+			resultOffset := 1
+			var actualBidEvents []test_helpers.BidEvent
+			queryErr := db.Select(&actualBidEvents, `SELECT bid_id, bid_amount, lot, act FROM api.all_flop_bid_events($1, $2)`,
+				maxResults, resultOffset)
+			Expect(queryErr).NotTo(HaveOccurred())
+
+			Expect(actualBidEvents).To(ConsistOf(
+				test_helpers.BidEvent{
+					BidId:     flopKickBlockOne.BidId,
+					BidAmount: flopKickBlockOne.Bid,
+					Lot:       flopKickBlockOne.Lot,
+					Act:       "kick",
+				},
+			))
+		})
 	})
 })

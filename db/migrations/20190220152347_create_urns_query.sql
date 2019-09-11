@@ -41,7 +41,8 @@ COMMENT ON FUNCTION api.max_block()
     IS E'@omit';
 
 -- Function returning state for all urns as of given block
-CREATE FUNCTION api.all_urns(block_height BIGINT DEFAULT api.max_block(), max_results INTEGER DEFAULT NULL)
+CREATE FUNCTION api.all_urns(block_height BIGINT DEFAULT api.max_block(), max_results INTEGER DEFAULT NULL,
+                             result_offset INTEGER DEFAULT 0)
     RETURNS SETOF api.urn_state
 AS
 
@@ -114,13 +115,13 @@ FROM inks
          LEFT JOIN updated ON updated.urn_id = urns.urn_id
          LEFT JOIN maker.ilks ON ilks.id = urns.ilk_id
 ORDER BY updated DESC
-LIMIT all_urns.max_results
+LIMIT all_urns.max_results OFFSET all_urns.result_offset
 $body$
     LANGUAGE SQL
     STABLE;
 
 -- +goose Down
-DROP FUNCTION api.all_urns(BIGINT, INTEGER);
+DROP FUNCTION api.all_urns(BIGINT, INTEGER, INTEGER);
 DROP FUNCTION api.max_block();
 DROP FUNCTION api.epoch_to_datetime(NUMERIC);
 DROP TYPE api.urn_state CASCADE;

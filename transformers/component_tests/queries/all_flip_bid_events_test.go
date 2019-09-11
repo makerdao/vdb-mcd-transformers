@@ -212,44 +212,59 @@ var _ = Describe("All flip bid events query", func() {
 				test_helpers.BidEvent{BidId: strconv.Itoa(bidId), BidAmount: flipStorageValuesBlockThree[storage.BidBid].(string), Lot: flipStorageValuesBlockThree[storage.BidLot].(string), Act: "deal"}))
 		})
 
-		It("limits result to latest blocks if max_results argument is provided", func() {
-			flipKickEvent := test_data.FlipKickModel
-			flipKickEvent.ContractAddress = contractAddress
-			flipKickEvent.BidId = strconv.Itoa(bidId)
-			flipKickErr := flipKickRepo.Create(headerOneId, []interface{}{flipKickEvent})
-			Expect(flipKickErr).NotTo(HaveOccurred())
+		Describe("result pagination", func() {
+			var updatedFlipValues map[string]interface{}
 
-			headerTwo := fakes.GetFakeHeader(2)
-			headerTwoId, headerTwoErr := headerRepo.CreateOrUpdateHeader(headerTwo)
-			Expect(headerTwoErr).NotTo(HaveOccurred())
+			BeforeEach(func() {
+				headerTwo := fakes.GetFakeHeader(2)
+				headerTwoId, headerTwoErr := headerRepo.CreateOrUpdateHeader(headerTwo)
+				Expect(headerTwoErr).NotTo(HaveOccurred())
 
-			tickErr := test_helpers.CreateTick(test_helpers.TickCreationInput{
-				BidId:           bidId,
-				ContractAddress: contractAddress,
-				TickRepo:        tickRepo,
-				TickHeaderId:    headerTwoId,
+				tickErr := test_helpers.CreateTick(test_helpers.TickCreationInput{
+					BidId:           bidId,
+					ContractAddress: contractAddress,
+					TickRepo:        tickRepo,
+					TickHeaderId:    headerTwoId,
+				})
+				Expect(tickErr).NotTo(HaveOccurred())
+
+				updatedFlipValues = test_helpers.GetFlipStorageValues(2, test_helpers.FakeIlk.Hex, bidId)
+				test_helpers.CreateFlip(db, headerTwo, updatedFlipValues,
+					test_helpers.GetFlipMetadatas(strconv.Itoa(bidId)), contractAddress)
 			})
-			Expect(tickErr).NotTo(HaveOccurred())
 
-			flipStorageValuesBlockTwo := test_helpers.GetFlipStorageValues(2, test_helpers.FakeIlk.Hex, bidId)
-			test_helpers.CreateFlip(db, headerTwo, flipStorageValuesBlockTwo,
-				test_helpers.GetFlipMetadatas(strconv.Itoa(bidId)), contractAddress)
+			It("limits result to latest blocks if max_results argument is provided", func() {
+				maxResults := 1
+				var actualBidEvents []test_helpers.BidEvent
+				queryErr := db.Select(&actualBidEvents, `SELECT bid_id, bid_amount, lot, act FROM api.all_flip_bid_events($1)`, maxResults)
+				Expect(queryErr).NotTo(HaveOccurred())
 
-			maxResults := 1
-			var actualBidEvents []test_helpers.BidEvent
-			queryErr := db.Select(&actualBidEvents, `SELECT bid_id, bid_amount, lot, act FROM api.all_flip_bid_events($1)`, maxResults)
-			Expect(queryErr).NotTo(HaveOccurred())
-
-			Expect(actualBidEvents).To(Equal(
-				[]test_helpers.BidEvent{
-					{
+				Expect(actualBidEvents).To(ConsistOf(
+					test_helpers.BidEvent{
 						BidId:     strconv.Itoa(bidId),
-						BidAmount: flipStorageValuesBlockTwo[storage.BidBid].(string),
-						Lot:       flipStorageValuesBlockTwo[storage.BidLot].(string),
+						BidAmount: updatedFlipValues[storage.BidBid].(string),
+						Lot:       updatedFlipValues[storage.BidLot].(string),
 						Act:       "tick",
 					},
-				},
-			))
+				))
+			})
+
+			It("offsets results if offset is provided", func() {
+				maxResults := 1
+				resultOffset := 1
+				var actualBidEvents []test_helpers.BidEvent
+				queryErr := db.Select(&actualBidEvents, `SELECT bid_id, bid_amount, lot, act FROM api.all_flip_bid_events($1, $2)`, maxResults, resultOffset)
+				Expect(queryErr).NotTo(HaveOccurred())
+
+				Expect(actualBidEvents).To(ConsistOf(
+					test_helpers.BidEvent{
+						BidId:     strconv.Itoa(bidId),
+						BidAmount: flipKickEvent.Bid,
+						Lot:       flipKickEvent.Lot,
+						Act:       "kick",
+					},
+				))
+			})
 		})
 
 		It("returns bid events from flippers that have different bid ids", func() {

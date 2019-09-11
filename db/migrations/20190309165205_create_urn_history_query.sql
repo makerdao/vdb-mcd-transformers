@@ -1,7 +1,7 @@
 -- +goose Up
 -- +goose StatementBegin
-CREATE FUNCTION api.all_urn_states(ilk_identifier TEXT, urn_identifier TEXT,
-                                   block_height BIGINT DEFAULT api.max_block(), max_results INTEGER DEFAULT NULL)
+CREATE FUNCTION api.all_urn_states(ilk_identifier TEXT, urn_identifier TEXT, block_height BIGINT DEFAULT api.max_block(),
+                                   max_results INTEGER DEFAULT NULL, result_offset INTEGER DEFAULT 0)
     RETURNS SETOF api.urn_state AS
 $$
 BEGIN
@@ -28,7 +28,7 @@ BEGIN
         FROM relevant_blocks,
              LATERAL api.get_urn(ilk_identifier, urn_identifier, relevant_blocks.block_number) r
         ORDER BY relevant_blocks.block_number DESC
-        LIMIT all_urn_states.max_results
+        LIMIT all_urn_states.max_results OFFSET all_urn_states.result_offset
     );
 END;
 $$
@@ -37,4 +37,4 @@ $$
 -- +goose StatementEnd
 
 -- +goose Down
-DROP FUNCTION api.all_urn_states(TEXT, TEXT, BIGINT, INTEGER);
+DROP FUNCTION api.all_urn_states(TEXT, TEXT, BIGINT, INTEGER, INTEGER);

@@ -1,6 +1,6 @@
 -- +goose Up
 -- +goose StatementBegin
-CREATE OR REPLACE FUNCTION api.all_flaps(max_results INTEGER DEFAULT NULL)
+CREATE OR REPLACE FUNCTION api.all_flaps(max_results INTEGER DEFAULT NULL, result_offset INTEGER DEFAULT 0)
     RETURNS SETOF api.flap_state AS
 $BODY$
 BEGIN
@@ -9,7 +9,7 @@ BEGIN
             SELECT DISTINCT bid_id
             FROM maker.flap
             ORDER BY bid_id DESC
-            LIMIT all_flaps.max_results
+            LIMIT all_flaps.max_results OFFSET all_flaps.result_offset
         )
         SELECT f.*
         FROM bid_ids,
@@ -21,4 +21,4 @@ $BODY$
     STABLE;
 -- +goose StatementEnd
 -- +goose Down
-DROP FUNCTION api.all_flaps(INTEGER);
+DROP FUNCTION api.all_flaps(INTEGER, INTEGER);

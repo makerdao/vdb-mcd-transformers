@@ -208,34 +208,66 @@ var _ = Describe("All Ilks query", func() {
 			Expect(dbResult).To(ConsistOf(fakeIlkExpectedResult, anotherFakeIlkExpectedResult))
 		})
 
-		It("limits results to latest block numbers if max_results argument is provided", func() {
-			//anotherFakeIlk was created at block 2
-			anotherFakeIlkExpectedResult := test_helpers.IlkState{
-				IlkIdentifier: anotherFakeIlk.Identifier,
-				Rate:          anotherFakeIlkStateBlock2[vat.IlkRate],
-				Art:           anotherFakeIlkStateBlock2[vat.IlkArt],
-				Spot:          anotherFakeIlkStateBlock2[vat.IlkSpot],
-				Line:          anotherFakeIlkStateBlock2[vat.IlkLine],
-				Dust:          anotherFakeIlkStateBlock2[vat.IlkDust],
-				Chop:          anotherFakeIlkStateBlock2[cat.IlkChop],
-				Lump:          anotherFakeIlkStateBlock2[cat.IlkLump],
-				Flip:          anotherFakeIlkStateBlock2[cat.IlkFlip],
-				Rho:           anotherFakeIlkStateBlock2[jug.IlkRho],
-				Duty:          anotherFakeIlkStateBlock2[jug.IlkDuty],
-				Pip:           anotherFakeIlkStateBlock2[spot.IlkPip],
-				Mat:           anotherFakeIlkStateBlock2[spot.IlkMat],
-				Created:       test_helpers.GetValidNullString(getFormattedTimestamp(blockTwoHeader.Timestamp)),
-				Updated:       test_helpers.GetValidNullString(getFormattedTimestamp(blockTwoHeader.Timestamp)),
-			}
+		Describe("result pagination", func() {
+			It("limits results to latest block numbers if max_results argument is provided", func() {
+				//anotherFakeIlk was created at block 2
+				anotherFakeIlkExpectedResult := test_helpers.IlkState{
+					IlkIdentifier: anotherFakeIlk.Identifier,
+					Rate:          anotherFakeIlkStateBlock2[vat.IlkRate],
+					Art:           anotherFakeIlkStateBlock2[vat.IlkArt],
+					Spot:          anotherFakeIlkStateBlock2[vat.IlkSpot],
+					Line:          anotherFakeIlkStateBlock2[vat.IlkLine],
+					Dust:          anotherFakeIlkStateBlock2[vat.IlkDust],
+					Chop:          anotherFakeIlkStateBlock2[cat.IlkChop],
+					Lump:          anotherFakeIlkStateBlock2[cat.IlkLump],
+					Flip:          anotherFakeIlkStateBlock2[cat.IlkFlip],
+					Rho:           anotherFakeIlkStateBlock2[jug.IlkRho],
+					Duty:          anotherFakeIlkStateBlock2[jug.IlkDuty],
+					Pip:           anotherFakeIlkStateBlock2[spot.IlkPip],
+					Mat:           anotherFakeIlkStateBlock2[spot.IlkMat],
+					Created:       test_helpers.GetValidNullString(getFormattedTimestamp(blockTwoHeader.Timestamp)),
+					Updated:       test_helpers.GetValidNullString(getFormattedTimestamp(blockTwoHeader.Timestamp)),
+				}
 
-			maxResults := 1
-			var dbResult []test_helpers.IlkState
-			err := db.Select(&dbResult,
-				`SELECT ilk_identifier, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated FROM api.all_ilks($1, $2)`,
-				blockTwoHeader.BlockNumber, maxResults)
-			Expect(err).NotTo(HaveOccurred())
+				maxResults := 1
+				var dbResult []test_helpers.IlkState
+				err := db.Select(&dbResult,
+					`SELECT ilk_identifier, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated FROM api.all_ilks($1, $2)`,
+					blockTwoHeader.BlockNumber, maxResults)
+				Expect(err).NotTo(HaveOccurred())
 
-			Expect(dbResult).To(Equal([]test_helpers.IlkState{anotherFakeIlkExpectedResult}))
+				Expect(dbResult).To(Equal([]test_helpers.IlkState{anotherFakeIlkExpectedResult}))
+			})
+
+			It("offsets results if offset is provided", func() {
+				fakeIlkExpectedResult := test_helpers.IlkState{
+					IlkIdentifier: fakeIlk.Identifier,
+					Rate:          fakeIlkStateBlock1[vat.IlkRate],
+					Art:           fakeIlkStateBlock1[vat.IlkArt],
+					Spot:          fakeIlkStateBlock1[vat.IlkSpot],
+					Line:          fakeIlkStateBlock1[vat.IlkLine],
+					Dust:          fakeIlkStateBlock1[vat.IlkDust],
+					Chop:          fakeIlkStateBlock1[cat.IlkChop],
+					Lump:          fakeIlkStateBlock1[cat.IlkLump],
+					Flip:          fakeIlkStateBlock1[cat.IlkFlip],
+					Rho:           fakeIlkStateBlock1[jug.IlkRho],
+					Duty:          fakeIlkStateBlock1[jug.IlkDuty],
+					Pip:           fakeIlkStateBlock1[spot.IlkPip],
+					Mat:           fakeIlkStateBlock1[spot.IlkMat],
+					Created:       test_helpers.GetValidNullString(getFormattedTimestamp(blockOneHeader.Timestamp)),
+					Updated:       test_helpers.GetValidNullString(getFormattedTimestamp(blockOneHeader.Timestamp)),
+				}
+
+				maxResults := 1
+				resultOffset := 1
+				var dbResult []test_helpers.IlkState
+				err := db.Select(&dbResult,
+					`SELECT ilk_identifier, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated FROM api.all_ilks($1, $2, $3)`,
+					blockTwoHeader.BlockNumber, maxResults, resultOffset)
+				Expect(err).NotTo(HaveOccurred())
+
+				Expect(dbResult).To(ConsistOf(fakeIlkExpectedResult))
+			})
 		})
 
 		It("uses default value for blockHeight if not supplied", func() {
