@@ -20,7 +20,7 @@ var _ = Describe("Flap computed columns", func() {
 		db              *postgres.DB
 		flapKickRepo    flap_kick.FlapKickRepository
 		headerRepo      repositories.HeaderRepository
-		contractAddress = "Flap"
+		contractAddress = fakes.FakeAddress.Hex()
 
 		fakeBidId      = rand.Int()
 		blockOne       = rand.Int()

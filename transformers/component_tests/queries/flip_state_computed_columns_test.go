@@ -17,16 +17,15 @@
 package queries
 
 import (
-	"github.com/vulcanize/mcd_transformers/transformers/events/tend"
-	"math/rand"
-	"strconv"
-
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/vulcanize/mcd_transformers/transformers/events/tend"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
+	"math/rand"
+	"strconv"
 
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/component_tests/queries/test_helpers"
@@ -45,7 +44,7 @@ var _ = Describe("Flip state computed columns", func() {
 		flipKickRepo      flip_kick.FlipKickRepository
 		dealRepo          deal.DealRepository
 		tendRepo          tend.TendRepository
-		contractAddress   = "ContractAddress"
+		contractAddress   = fakes.FakeAddress.Hex()
 		flipStorageValues map[string]interface{}
 		fakeUrn           = test_data.FlipKickModel.Usr
 		fakeBidId         int

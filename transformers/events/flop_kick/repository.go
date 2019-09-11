@@ -18,6 +18,7 @@ package flop_kick
 
 import (
 	"fmt"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 
 	"github.com/sirupsen/logrus"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/repository"
@@ -27,10 +28,10 @@ import (
 )
 
 const InsertFlopKickQuery = `INSERT into maker.flop_kick
-	(header_id, bid_id, lot, bid, gal, contract_address, tx_idx, log_idx, raw_log)
+	(header_id, bid_id, lot, bid, gal, address_id, tx_idx, log_idx, raw_log)
 	VALUES($1, $2::NUMERIC, $3::NUMERIC, $4::NUMERIC, $5, $6, $7, $8, $9)
 	ON CONFLICT (header_id, tx_idx, log_idx)
-	DO UPDATE SET bid_id = $2, lot = $3, bid = $4, gal = $5, contract_address = $6, raw_log = $9;`
+	DO UPDATE SET bid_id = $2, lot = $3, bid = $4, gal = $5, address_id = $6, raw_log = $9;`
 
 type FlopKickRepository struct {
 	db *postgres.DB
@@ -51,8 +52,17 @@ func (repo FlopKickRepository) Create(headerID int64, models []interface{}) erro
 			return fmt.Errorf("model of type %T, not %T", flopKick, Model{})
 		}
 
+		addressId, addressErr := shared.GetOrCreateAddressInTransaction(flopKickModel.ContractAddress, tx)
+		if addressErr != nil {
+			rollbackErr := tx.Rollback()
+			if rollbackErr != nil {
+				shared.FormatRollbackError("flop address", addressErr.Error())
+			}
+			return addressErr
+		}
+
 		_, execErr := tx.Exec(InsertFlopKickQuery, headerID, flopKickModel.BidId, flopKickModel.Lot, flopKickModel.Bid,
-			flopKickModel.Gal, flopKickModel.ContractAddress, flopKickModel.TransactionIndex, flopKickModel.LogIndex,
+			flopKickModel.Gal, addressId, flopKickModel.TransactionIndex, flopKickModel.LogIndex,
 			flopKickModel.Raw)
 		if execErr != nil {
 			rollbackErr := tx.Rollback()

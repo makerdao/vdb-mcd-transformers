@@ -34,11 +34,11 @@ import (
 
 var _ = Describe("Flip bid event computed columns", func() {
 	var (
-		contractAddress = "ContractAddress"
-		bidId           int
-		blockNumber     int
 		db              *postgres.DB
+		blockNumber     = rand.Int()
 		header          core.Header
+		contractAddress = fakes.FakeAddress.Hex()
+		bidId           int
 		flipKickRepo    flip_kick.FlipKickRepository
 		flipKickEvent   flip_kick.FlipKickModel
 		headerId        int64
@@ -109,6 +109,7 @@ var _ = Describe("Flip bid event computed columns", func() {
 		It("gets the correct flipper for the event (using the contract address that matches the event)", func() {
 			irrelevantContractAddress := "different flipper"
 			irrelevantFlipStorageValues := test_helpers.GetFlipStorageValues(0, test_helpers.AnotherFakeIlk.Hex, bidId)
+			//irrelevantFlipStorageValues := test_helpers.GetFlipStorageValues(0, test_helpers.FakeIlk.Hex, bidId)
 			irrelevantFlipMetadatas := test_helpers.GetFlipMetadatas(strconv.Itoa(bidId))
 			test_helpers.CreateFlip(db, header, irrelevantFlipStorageValues, irrelevantFlipMetadatas, irrelevantContractAddress)
 

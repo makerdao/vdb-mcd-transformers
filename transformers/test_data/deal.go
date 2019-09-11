@@ -48,14 +48,15 @@ var dealRawJson, _ = json.Marshal(DealLogNote)
 var DealModel = shared.InsertionModel{
 	TableName: "deal",
 	OrderedColumns: []string{
-		"header_id", "bid_id", "contract_address", "log_idx", "tx_idx", "raw_log",
+		"header_id", "bid_id", string(constants.AddressFK), "log_idx", "tx_idx", "raw_log",
 	},
 	ColumnValues: shared.ColumnValues{
-		"bid_id":           "10000000000000000",
-		"contract_address": common.HexToAddress(EthFlipAddress()).Hex(),
-		"log_idx":          DealLogNote.Index,
-		"tx_idx":           DealLogNote.TxIndex,
-		"raw_log":          dealRawJson,
+		"bid_id":  "10000000000000000",
+		"log_idx": DealLogNote.Index,
+		"tx_idx":  DealLogNote.TxIndex,
+		"raw_log": dealRawJson,
 	},
-	ForeignKeyValues: shared.ForeignKeyValues{},
+	ForeignKeyValues: shared.ForeignKeyValues{
+		constants.AddressFK: EthDentLog.Address.Hex(),
+	},
 }

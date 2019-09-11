@@ -15,15 +15,22 @@ CREATE FUNCTION api.get_flap(bid_id NUMERIC, block_height BIGINT DEFAULT api.max
     RETURNS api.flap_state
 AS
 $$
-WITH address AS (
-    SELECT contract_address
+WITH address_id AS (
+    SELECT address_id
     FROM maker.flap
     WHERE flap.bid_id = get_flap.bid_id
       AND block_number <= block_height
     LIMIT 1
 ),
      storage_values AS (
-         SELECT bid_id, guy, tic, "end", lot, bid, created, updated
+         SELECT bid_id,
+                guy,
+                tic,
+                "end",
+                lot,
+                bid,
+                created,
+                updated
          FROM maker.flap
          WHERE bid_id = get_flap.bid_id
            AND block_number <= block_height
@@ -35,7 +42,7 @@ WITH address AS (
          FROM maker.deal
                   LEFT JOIN public.headers ON deal.header_id = headers.id
          WHERE deal.bid_id = get_flap.bid_id
-           AND deal.contract_address IN (SELECT * FROM address)
+           AND deal.address_id = (SELECT * FROM address_id)
            AND headers.block_number <= block_height
          ORDER BY bid_id, block_number DESC
          LIMIT 1

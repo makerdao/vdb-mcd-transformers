@@ -43,7 +43,7 @@ BEGIN
     INSERT
     INTO api.managed_cdp (cdpi, usr)
     VALUES (NEW.cdpi, NEW.owner)
-    -- only update usr if the new owner is coming from the latest owns block we know about for the given cdpi
+           -- only update usr if the new owner is coming from the latest owns block we know about for the given cdpi
     ON CONFLICT (cdpi)
         DO UPDATE SET usr = NEW.owner
     WHERE NEW.block_number >= (

@@ -43,6 +43,18 @@ var _ = Describe("Flip storage repository", func() {
 		Expect(flipCreate).Should(Panic())
 	})
 
+	It("rolls back the record and address insertions if there's a failure", func() {
+		var begMetadata = utils.StorageValueMetadata{Name: storage.Beg}
+		err := repo.Create(fakeBlockNumber, fakeBlockHash, begMetadata, "")
+		Expect(err).To(HaveOccurred())
+		Expect(err.Error()).To(MatchRegexp("pq: invalid input syntax for type numeric"))
+
+		var addressCount int
+		countErr := db.Get(&addressCount, `SELECT COUNT(*) FROM addresses`)
+		Expect(countErr).NotTo(HaveOccurred())
+		Expect(addressCount).To(Equal(0))
+	})
+
 	Describe("Variable", func() {
 		Describe("Vat", func() {
 			vatMetadata := utils.StorageValueMetadata{Name: storage.Vat}

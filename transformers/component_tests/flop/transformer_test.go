@@ -1,15 +1,14 @@
 package flop
 
 import (
-	"strconv"
-	"strings"
-
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	storageFactory "github.com/vulcanize/vulcanizedb/libraries/shared/factories/storage"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
+	"strconv"
 
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/storage"
@@ -170,7 +169,10 @@ var _ = Describe("Executing the flop transformer", func() {
 			}
 
 			BeforeEach(func() {
-				_, writeErr := db.Exec(flop.InsertFlopKicksQuery, blockNumber, blockHash.Hex(), strings.ToLower(transformer.Address.Hex()), bidId)
+				addressId, addressErr := shared.GetOrCreateAddress(transformer.Address.Hex(), db)
+				Expect(addressErr).NotTo(HaveOccurred())
+
+				_, writeErr := db.Exec(flop.InsertFlopKicksQuery, blockNumber, blockHash.Hex(), addressId, bidId)
 				Expect(writeErr).NotTo(HaveOccurred())
 
 				executeErr := transformer.Execute(diff)

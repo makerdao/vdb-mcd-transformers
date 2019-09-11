@@ -19,6 +19,7 @@ package tick
 import (
 	"encoding/json"
 	"errors"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 
 	"github.com/ethereum/go-ethereum/core/types"
 
@@ -42,16 +43,17 @@ func (TickConverter) ToModels(ethLogs []types.Log) (results []shared.InsertionMo
 		model := shared.InsertionModel{
 			TableName: "tick",
 			OrderedColumns: []string{
-				"header_id", "bid_id", "contract_address", "log_idx", "tx_idx", "raw_log",
+				"header_id", "bid_id", string(constants.AddressFK), "log_idx", "tx_idx", "raw_log",
 			},
 			ColumnValues: shared.ColumnValues{
-				"bid_id":           ethLog.Topics[2].Big().String(),
-				"contract_address": ethLog.Address.Hex(),
-				"log_idx":          ethLog.Index,
-				"tx_idx":           ethLog.TxIndex,
-				"raw_log":          rawLog,
+				"bid_id":  ethLog.Topics[2].Big().String(),
+				"log_idx": ethLog.Index,
+				"tx_idx":  ethLog.TxIndex,
+				"raw_log": rawLog,
 			},
-			ForeignKeyValues: shared.ForeignKeyValues{},
+			ForeignKeyValues: shared.ForeignKeyValues{
+				constants.AddressFK: ethLog.Address.String(),
+			},
 		}
 		results = append(results, model)
 	}

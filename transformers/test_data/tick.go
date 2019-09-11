@@ -55,14 +55,15 @@ var rawTickLog, _ = json.Marshal(TickLogNote)
 var TickModel = shared.InsertionModel{
 	TableName: "tick",
 	OrderedColumns: []string{
-		"header_id", "bid_id", "contract_address", "log_idx", "tx_idx", "raw_log",
+		"header_id", "bid_id", string(constants.AddressFK), "log_idx", "tx_idx", "raw_log",
 	},
 	ColumnValues: shared.ColumnValues{
-		"bid_id":           strconv.FormatInt(tickBidId, 10),
-		"contract_address": TickLogNote.Address.Hex(),
-		"log_idx":          TickLogNote.Index,
-		"tx_idx":           TickLogNote.TxIndex,
-		"raw_log":          rawTickLog,
+		"bid_id":  strconv.FormatInt(tickBidId, 10),
+		"log_idx": TickLogNote.Index,
+		"tx_idx":  TickLogNote.TxIndex,
+		"raw_log": rawTickLog,
 	},
-	ForeignKeyValues: shared.ForeignKeyValues{},
+	ForeignKeyValues: shared.ForeignKeyValues{
+		constants.AddressFK: TickLogNote.Address.Hex(),
+	},
 }

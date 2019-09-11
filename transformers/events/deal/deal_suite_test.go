@@ -9,7 +9,7 @@ import (
 	"io/ioutil"
 )
 
-func TestFlipDeal(t *testing.T) {
+func TestDeal(t *testing.T) {
 	RegisterFailHandler(Fail)
 	RunSpecs(t, "Deal Suite")
 }

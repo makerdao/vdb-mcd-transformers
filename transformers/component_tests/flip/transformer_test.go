@@ -29,7 +29,6 @@ import (
 	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 	"strconv"
-	"strings"
 )
 
 var _ = Describe("Executing the flip transformer", func() {
@@ -174,7 +173,10 @@ var _ = Describe("Executing the flip transformer", func() {
 			}
 
 			BeforeEach(func() {
-				_, writeErr := db.Exec(flip.InsertFlipKicksQuery, blockNumber, blockHash.Hex(), strings.ToLower(transformer.Address.Hex()), bidId)
+				addressId, addressErr := shared.GetOrCreateAddress(transformer.Address.Hex(), db)
+				Expect(addressErr).NotTo(HaveOccurred())
+
+				_, writeErr := db.Exec(flip.InsertFlipKicksQuery, blockNumber, blockHash.Hex(), addressId, bidId)
 				Expect(writeErr).NotTo(HaveOccurred())
 
 				executeErr := transformer.Execute(diff)

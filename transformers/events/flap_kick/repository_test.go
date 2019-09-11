@@ -66,21 +66,36 @@ var _ = Describe("Flap Kick Repository", func() {
 			err = flapKickRepository.Create(headerId, []interface{}{test_data.FlapKickModel})
 			Expect(err).NotTo(HaveOccurred())
 
-			var count int
-			countErr := db.Get(&count, `SELECT count(*) FROM maker.flap_kick`)
-			Expect(countErr).NotTo(HaveOccurred())
-			Expect(count).To(Equal(1))
+			test_data.AssertDBRecordCount(db, "maker.flap_kick", 1)
+			test_data.AssertDBRecordCount(db, "addresses", 1)
+
+			var addressId string
+			addressErr := db.Get(&addressId, `SELECT id FROM addresses`)
+			Expect(addressErr).NotTo(HaveOccurred())
 
 			var dbResult flap_kick.FlapKickModel
-			getErr := db.Get(&dbResult, `SELECT bid, bid_id, lot, contract_address, log_idx, tx_idx, raw_log FROM maker.flap_kick WHERE header_id = $1`, headerId)
+			getErr := db.Get(&dbResult, `SELECT bid, bid_id, lot, address_id, log_idx, tx_idx, raw_log FROM maker.flap_kick WHERE header_id = $1`, headerId)
 			Expect(getErr).NotTo(HaveOccurred())
 			Expect(dbResult.Bid).To(Equal(test_data.FlapKickModel.Bid))
 			Expect(dbResult.BidId).To(Equal(test_data.FlapKickModel.BidId))
 			Expect(dbResult.Lot).To(Equal(test_data.FlapKickModel.Lot))
-			Expect(dbResult.ContractAddress).To(Equal(test_data.FlapKickModel.ContractAddress))
+			Expect(dbResult.ContractAddress).To(Equal(addressId))
 			Expect(dbResult.LogIndex).To(Equal(test_data.FlapKickModel.LogIndex))
 			Expect(dbResult.TransactionIndex).To(Equal(test_data.FlapKickModel.TransactionIndex))
 			Expect(dbResult.Raw).To(MatchJSON(test_data.FlapKickModel.Raw))
+		})
+
+		It("doesn't insert a new address if the flap kick insertion fails", func() {
+			headerId, err := headerRepository.CreateOrUpdateHeader(fakes.FakeHeader)
+			Expect(err).NotTo(HaveOccurred())
+
+			badFlapKick := test_data.FlapKickModel
+			badFlapKick.Bid = ""
+			err = flapKickRepository.Create(headerId, []interface{}{test_data.FlapKickModel, badFlapKick})
+			Expect(err).To(HaveOccurred())
+			Expect(err.Error()).To(MatchRegexp("invalid input syntax for type numeric"))
+			test_data.AssertDBRecordCount(db, "maker.flap_kick", 0)
+			test_data.AssertDBRecordCount(db, "addresses", 0)
 		})
 	})
 

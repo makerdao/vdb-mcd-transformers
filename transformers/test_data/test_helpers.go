@@ -21,6 +21,7 @@ import (
 	"encoding/gob"
 	. "github.com/onsi/gomega"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 )
 
 // Returns a deep copy of the given model, so tests aren't getting the same map/slice references
@@ -35,4 +36,12 @@ func CopyModel(model shared.InsertionModel) shared.InsertionModel {
 	decErr := decoder.Decode(&newModel)
 	Expect(decErr).NotTo(HaveOccurred())
 	return newModel
+}
+
+func AssertDBRecordCount(db *postgres.DB, dbTable string, expectedCount int) {
+	var count int
+	query := `SELECT count(*) FROM ` + dbTable
+	err := db.QueryRow(query).Scan(&count)
+	Expect(err).NotTo(HaveOccurred())
+	Expect(count).To(Equal(expectedCount))
 }

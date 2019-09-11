@@ -110,3 +110,7 @@ func MinInt64(ints []int64) (min int64) {
 func DecodeHexToText(payload string) string {
 	return string(bytes.Trim(common.FromHex(payload), "\x00"))
 }
+
+func FormatRollbackError(field, err string) error {
+	return fmt.Errorf("failed to rollback transaction after failing to insert %s: %s", field, err)
+}

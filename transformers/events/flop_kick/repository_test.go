@@ -64,6 +64,13 @@ var _ = Describe("FlopRepository", func() {
 			err = repository.Create(headerId, []interface{}{test_data.FlopKickModel})
 			Expect(err).NotTo(HaveOccurred())
 
+			test_data.AssertDBRecordCount(db, "maker.flop_kick", 1)
+			test_data.AssertDBRecordCount(db, "addresses", 1)
+
+			var addressId string
+			addressErr := db.Get(&addressId, `SELECT id FROM addresses`)
+			Expect(addressErr).NotTo(HaveOccurred())
+
 			var dbResult test_data.FlopKickDBResult
 			err = db.Get(&dbResult, `SELECT * FROM maker.flop_kick WHERE header_id = $1`, headerId)
 			Expect(err).NotTo(HaveOccurred())
@@ -72,10 +79,25 @@ var _ = Describe("FlopRepository", func() {
 			Expect(dbResult.Lot).To(Equal(test_data.FlopKickModel.Lot))
 			Expect(dbResult.Bid).To(Equal(test_data.FlopKickModel.Bid))
 			Expect(dbResult.Gal).To(Equal(test_data.FlopKickModel.Gal))
-			Expect(dbResult.ContractAddress).To(Equal(test_data.FlopKickModel.ContractAddress))
+			Expect(dbResult.ContractAddress).To(Equal(addressId))
 			Expect(dbResult.TransactionIndex).To(Equal(test_data.FlopKickModel.TransactionIndex))
 			Expect(dbResult.LogIndex).To(Equal(test_data.FlopKickModel.LogIndex))
 			Expect(dbResult.Raw).To(MatchJSON(test_data.FlopKickModel.Raw))
+		})
+
+		It("doesn't insert a new address if the flop kick insertion fails", func() {
+			headerRepository := repositories.NewHeaderRepository(db)
+			headerId, err := headerRepository.CreateOrUpdateHeader(fakes.FakeHeader)
+			Expect(err).NotTo(HaveOccurred())
+
+			badFlopKick := test_data.FlopKickModel
+			badFlopKick.Bid = ""
+			err = repository.Create(headerId, []interface{}{test_data.FlopKickModel, badFlopKick})
+			Expect(err).To(HaveOccurred())
+			Expect(err.Error()).To(MatchRegexp("invalid input syntax for type numeric"))
+
+			test_data.AssertDBRecordCount(db, "maker.flop_kick", 0)
+			test_data.AssertDBRecordCount(db, "addresses", 0)
 		})
 	})
 

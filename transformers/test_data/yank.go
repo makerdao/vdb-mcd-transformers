@@ -47,14 +47,15 @@ var rawYank, _ = json.Marshal(EthYankLog)
 var YankModel = shared.InsertionModel{
 	TableName: "yank",
 	OrderedColumns: []string{
-		"header_id", "bid_id", "contract_address", "log_idx", "tx_idx", "raw_log",
+		"header_id", "bid_id", string(constants.AddressFK), "log_idx", "tx_idx", "raw_log",
 	},
 	ColumnValues: shared.ColumnValues{
-		"bid_id":           "10000000000000000",
-		"contract_address": EthYankLog.Address.Hex(),
-		"log_idx":          EthYankLog.Index,
-		"tx_idx":           EthYankLog.TxIndex,
-		"raw_log":          rawYank,
+		"bid_id":  "10000000000000000",
+		"log_idx": EthYankLog.Index,
+		"tx_idx":  EthYankLog.TxIndex,
+		"raw_log": rawYank,
 	},
-	ForeignKeyValues: shared.ForeignKeyValues{},
+	ForeignKeyValues: shared.ForeignKeyValues{
+		constants.AddressFK: EthYankLog.Address.Hex(),
+	},
 }

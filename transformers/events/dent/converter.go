@@ -19,6 +19,7 @@ package dent
 import (
 	"encoding/json"
 	"errors"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -54,18 +55,19 @@ func (c DentConverter) ToModels(ethLogs []types.Log) (result []shared.InsertionM
 		model := shared.InsertionModel{
 			TableName: "dent",
 			OrderedColumns: []string{
-				"header_id", "bid_id", "lot", "bid", "contract_address", "log_idx", "tx_idx", "raw_log",
+				"header_id", "bid_id", "lot", "bid", string(constants.AddressFK), "log_idx", "tx_idx", "raw_log",
 			},
 			ColumnValues: shared.ColumnValues{
-				"bid_id":           bidId.String(),
-				"lot":              lot.String(),
-				"bid":              bid.String(),
-				"contract_address": log.Address.Hex(),
-				"log_idx":          logIndex,
-				"tx_idx":           transactionIndex,
-				"raw_log":          raw,
+				"bid_id":  bidId.String(),
+				"lot":     lot.String(),
+				"bid":     bid.String(),
+				"log_idx": logIndex,
+				"tx_idx":  transactionIndex,
+				"raw_log": raw,
 			},
-			ForeignKeyValues: shared.ForeignKeyValues{},
+			ForeignKeyValues: shared.ForeignKeyValues{
+				constants.AddressFK: log.Address.String(),
+			},
 		}
 		result = append(result, model)
 	}

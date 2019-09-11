@@ -532,11 +532,17 @@ $$;
 CREATE FUNCTION api.all_flap_bid_events(max_results integer DEFAULT NULL::integer) RETURNS SETOF api.flap_bid_event
     LANGUAGE sql STABLE
     AS $$
-WITH address AS (
-    SELECT contract_address
+WITH address_id AS (
+    SELECT address_id
     FROM maker.flap_kick
     LIMIT 1
 ),
+     flap_address AS (
+         SELECT address
+         FROM maker.flap_kick
+         JOIN addresses on addresses.id = flap_kick.address_id
+         LIMIT 1
+     ),
      deals AS (
          SELECT deal.bid_id,
                 flap_bid_lot.lot,
@@ -544,7 +550,7 @@ WITH address AS (
                 'deal'::api.bid_act  AS act,
                 headers.block_number AS block_height,
                 tx_idx,
-                deal.contract_address
+                (SELECT * FROM flap_address) AS contract_address
          FROM maker.deal
                   LEFT JOIN headers ON deal.header_id = headers.id
                   LEFT JOIN maker.flap_bid_bid
@@ -553,7 +559,7 @@ WITH address AS (
                   LEFT JOIN maker.flap_bid_lot
                             ON deal.bid_id = flap_bid_lot.bid_id
                                 AND flap_bid_lot.block_number = headers.block_number
-         WHERE deal.contract_address = (SELECT * FROM address)
+         WHERE deal.address_id = (SELECT * FROM address_id)
      ),
      yanks AS (
          SELECT yank.bid_id,
@@ -562,7 +568,7 @@ WITH address AS (
                 'yank'::api.bid_act  AS act,
                 headers.block_number AS block_height,
                 tx_idx,
-                yank.contract_address
+                (SELECT * FROM flap_address) AS contract_address
          FROM maker.yank
                   LEFT JOIN headers ON yank.header_id = headers.id
                   LEFT JOIN maker.flap_bid_bid
@@ -571,7 +577,7 @@ WITH address AS (
                   LEFT JOIN maker.flap_bid_lot
                             ON yank.bid_id = flap_bid_lot.bid_id
                                 AND flap_bid_lot.block_number = headers.block_number
-         WHERE yank.contract_address = (SELECT * FROM address)
+         WHERE yank.address_id = (SELECT * FROM address_id)
      )
 
 SELECT flap_kick.bid_id,
@@ -580,7 +586,7 @@ SELECT flap_kick.bid_id,
        'kick'::api.bid_act AS act,
        block_number        AS block_height,
        tx_idx,
-       contract_address
+       (SELECT * FROM flap_address) AS contract_address
 FROM maker.flap_kick
          LEFT JOIN headers ON flap_kick.header_id = headers.id
 UNION
@@ -590,10 +596,10 @@ SELECT bid_id,
        'tend'::api.bid_act AS act,
        block_number        AS block_height,
        tx_idx,
-       contract_address
+       (SELECT * FROM flap_address) AS contract_address
 FROM maker.tend
          LEFT JOIN headers ON tend.header_id = headers.id
-WHERE tend.contract_address = (SELECT * FROM address)
+WHERE tend.address_id = (SELECT * FROM address_id)
 UNION
 SELECT *
 FROM deals
@@ -635,18 +641,18 @@ $$;
 CREATE FUNCTION api.all_flip_bid_events(max_results integer DEFAULT NULL::integer) RETURNS SETOF api.flip_bid_event
     LANGUAGE sql STABLE
     AS $$
-WITH addresses AS (
-    SELECT distinct contract_address
+WITH address_ids AS (
+    SELECT distinct address_id
     FROM maker.flip_kick
 ),
      deals AS (
          SELECT deal.bid_id,
                 flip_bid_lot.lot,
-                flip_bid_bid.bid     AS bid_amount,
+                flip_bid_bid.bid                                           AS bid_amount,
                 'deal'::api.bid_act  AS act,
-                headers.block_number AS block_height,
+                headers.block_number                                       AS block_height,
                 tx_idx,
-                deal.contract_address
+                (SELECT address FROM addresses WHERE id = deal.address_id) AS contract_address
          FROM maker.deal
                   LEFT JOIN headers ON deal.header_id = headers.id
                   LEFT JOIN maker.flip_bid_bid
@@ -655,7 +661,7 @@ WITH addresses AS (
                   LEFT JOIN maker.flip_bid_lot
                             ON deal.bid_id = flip_bid_lot.bid_id
                                 AND flip_bid_lot.block_number = headers.block_number
-         WHERE deal.contract_address IN (SELECT * FROM addresses)
+         WHERE deal.address_id IN (SELECT * FROM address_ids)
      ),
      yanks AS (
          SELECT yank.bid_id,
@@ -664,7 +670,7 @@ WITH addresses AS (
                 'yank'::api.bid_act  AS act,
                 headers.block_number AS block_height,
                 tx_idx,
-                yank.contract_address
+                (SELECT address FROM addresses WHERE id = yank.address_id)
          FROM maker.yank
                   LEFT JOIN headers ON yank.header_id = headers.id
                   LEFT JOIN maker.flip_bid_bid
@@ -673,7 +679,7 @@ WITH addresses AS (
                   LEFT JOIN maker.flip_bid_lot
                             ON yank.bid_id = flip_bid_lot.bid_id
                                 AND flip_bid_lot.block_number = headers.block_number
-         WHERE yank.contract_address IN (SELECT * FROM addresses)
+         WHERE yank.address_id IN (SELECT * FROM address_ids)
      ),
      ticks AS (
          SELECT tick.bid_id,
@@ -682,7 +688,7 @@ WITH addresses AS (
                 'tick'::api.bid_act  AS act,
                 headers.block_number AS block_height,
                 tx_idx,
-                tick.contract_address
+                (SELECT address FROM addresses WHERE id = tick.address_id)
          FROM maker.tick
                   LEFT JOIN headers on tick.header_id = headers.id
                   LEFT JOIN maker.flip_bid_bid
@@ -691,40 +697,40 @@ WITH addresses AS (
                   LEFT JOIN maker.flip_bid_lot
                             ON tick.bid_id = flip_bid_lot.bid_id
                                 AND flip_bid_lot.block_number = headers.block_number
-         WHERE tick.contract_address IN (SELECT * FROM addresses)
+         WHERE tick.address_id IN (SELECT * FROM address_ids)
      )
 
 SELECT flip_kick.bid_id,
        lot,
-       bid                 AS bid_amount,
+       bid          AS                                                 bid_amount,
        'kick'::api.bid_act AS act,
-       block_number        AS block_height,
+       block_number AS                                                 block_height,
        tx_idx,
-       contract_address
+       (SELECT address FROM addresses WHERE id = flip_kick.address_id) s
 FROM maker.flip_kick
          LEFT JOIN headers ON flip_kick.header_id = headers.id
 UNION
 SELECT bid_id,
        lot,
-       bid                 AS bid_amount,
+       bid          AS bid_amount,
        'tend'::api.bid_act AS act,
-       block_number        AS block_height,
+       block_number AS block_height,
        tx_idx,
-       contract_address
+       (SELECT address FROM addresses WHERE id = tend.address_id)
 FROM maker.tend
          LEFT JOIN headers on tend.header_id = headers.id
-WHERE tend.contract_address IN (SELECT * FROM addresses)
+WHERE tend.address_id IN (SELECT * FROM address_ids)
 UNION
 SELECT bid_id,
        lot,
-       bid                 AS bid_amount,
+       bid          AS bid_amount,
        'dent'::api.bid_act AS act,
-       block_number        AS block_height,
+       block_number AS block_height,
        tx_idx,
-       dent.contract_address
+       (SELECT address FROM addresses WHERE id = dent.address_id)
 FROM maker.dent
          LEFT JOIN headers on dent.header_id = headers.id
-WHERE dent.contract_address IN (SELECT * FROM addresses)
+WHERE dent.address_id IN (SELECT * FROM address_ids)
 UNION
 SELECT *
 from deals
@@ -752,14 +758,14 @@ BEGIN
                         FROM maker.ilks
                         WHERE identifier = all_flips.ilk),
              address AS (
-                 SELECT DISTINCT contract_address
+                 SELECT DISTINCT address_id
                  FROM maker.flip_ilk
                  WHERE flip_ilk.ilk_id = (SELECT id FROM ilk_ids)
                  LIMIT 1),
              bid_ids AS (
                  SELECT DISTINCT flip_kicks.kicks
                  FROM maker.flip_kicks
-                 WHERE contract_address = (SELECT * FROM address)
+                 WHERE address_id = (SELECT * FROM address)
                  ORDER BY flip_kicks.kicks DESC
                  LIMIT all_flips.max_results)
         SELECT f.*
@@ -777,11 +783,17 @@ $$;
 CREATE FUNCTION api.all_flop_bid_events(max_results integer DEFAULT NULL::integer) RETURNS SETOF api.flop_bid_event
     LANGUAGE sql STABLE
     AS $$
-WITH address AS (
-    SELECT contract_address
+WITH address_id AS (
+    SELECT address_id
     FROM maker.flop_kick
     LIMIT 1
 ),
+     flop_address AS (
+         SELECT address
+         FROM maker.flop_kick
+         JOIN addresses on addresses.id = flop_kick.address_id
+         LIMIT 1
+     ),
      deals AS (
          SELECT deal.bid_id,
                 flop_bid_lot.lot,
@@ -789,7 +801,7 @@ WITH address AS (
                 'deal'::api.bid_act  AS act,
                 headers.block_number AS block_height,
                 tx_idx,
-                deal.contract_address
+                (SELECT * FROM flop_address) AS contract_address
          FROM maker.deal
                   LEFT JOIN headers ON deal.header_id = headers.id
                   LEFT JOIN maker.flop_bid_bid
@@ -798,7 +810,7 @@ WITH address AS (
                   LEFT JOIN maker.flop_bid_lot
                             ON deal.bid_id = flop_bid_lot.bid_id
                                 AND flop_bid_lot.block_number = headers.block_number
-         WHERE deal.contract_address = (SELECT * FROM address)
+         WHERE deal.address_id = (SELECT * FROM address_id)
      ),
      yanks AS (
          SELECT yank.bid_id,
@@ -807,7 +819,7 @@ WITH address AS (
                 'yank'::api.bid_act  AS act,
                 headers.block_number AS block_height,
                 tx_idx,
-                yank.contract_address
+                (SELECT * FROM flop_address) AS contract_address
          FROM maker.yank
                   LEFT JOIN headers ON yank.header_id = headers.id
                   LEFT JOIN maker.flop_bid_bid
@@ -816,7 +828,7 @@ WITH address AS (
                   LEFT JOIN maker.flop_bid_lot
                             ON yank.bid_id = flop_bid_lot.bid_id
                                 AND flop_bid_lot.block_number = headers.block_number
-         WHERE yank.contract_address = (SELECT * FROM address)
+         WHERE yank.address_id = (SELECT * FROM address_id)
          ORDER BY block_height DESC
      ),
      ticks AS (
@@ -826,7 +838,7 @@ WITH address AS (
                 'tick'::api.bid_act AS act,
                 headers.block_number AS block_height,
                 tx_idx,
-                tick.contract_address
+                (SELECT * FROM flop_address) AS contract_address
          FROM maker.tick
                   LEFT JOIN headers on tick.header_id = headers.id
                   LEFT JOIN maker.flop_bid_bid
@@ -835,7 +847,7 @@ WITH address AS (
                   LEFT JOIN maker.flop_bid_lot
                             ON tick.bid_id = flop_bid_lot.bid_id
                                 AND flop_bid_lot.block_number = headers.block_number
-         WHERE tick.contract_address = (SELECT * FROM address)
+         WHERE tick.address_id = (SELECT * FROM address_id)
      )
 
 SELECT flop_kick.bid_id,
@@ -844,7 +856,7 @@ SELECT flop_kick.bid_id,
        'kick'::api.bid_act AS act,
        block_number        AS block_height,
        tx_idx,
-       contract_address
+       (SELECT * FROM flop_address) AS contract_address
 FROM maker.flop_kick
          LEFT JOIN headers ON flop_kick.header_id = headers.id
 UNION
@@ -854,10 +866,10 @@ SELECT bid_id,
        'dent'::api.bid_act AS act,
        block_number        AS block_height,
        tx_idx,
-       contract_address
+       (SELECT * FROM flop_address) AS contract_address
 FROM maker.dent
          LEFT JOIN headers ON dent.header_id = headers.id
-WHERE dent.contract_address = (SELECT * FROM address)
+WHERE dent.address_id = (SELECT * FROM address_id)
 UNION
 SELECT *
 FROM deals
@@ -1426,8 +1438,8 @@ CREATE FUNCTION api.flip_bid_event_bid(event api.flip_bid_event) RETURNS api.fli
 WITH ilks AS (
     SELECT ilks.identifier
     FROM maker.flip_ilk
-       LEFT JOIN maker.ilks ON ilks.id = flip_ilk.ilk_id
-    WHERE contract_address = event.contract_address
+             LEFT JOIN maker.ilks ON ilks.id = flip_ilk.ilk_id
+    WHERE flip_ilk.address_id = (SELECT id FROM addresses WHERE address = event.contract_address)
     LIMIT 1
 )
 SELECT *
@@ -1442,7 +1454,8 @@ $$;
 CREATE FUNCTION api.flip_bid_event_tx(event api.flip_bid_event) RETURNS SETOF api.tx
     LANGUAGE sql STABLE
     AS $$
-    SELECT * FROM get_tx_data(event.block_height, event.tx_idx)
+SELECT *
+FROM get_tx_data(event.block_height, event.tx_idx)
 $$;
 
 
@@ -1453,8 +1466,8 @@ $$;
 CREATE FUNCTION api.flip_state_bid_events(flip api.flip_state, max_results integer DEFAULT NULL::integer) RETURNS SETOF api.flip_bid_event
     LANGUAGE sql STABLE
     AS $$
-WITH addresses AS ( -- get the contract address from flip_ilk table using the ilk_id from flip
-    SELECT contract_address
+WITH address_ids AS ( -- get the contract address from flip_ilk table using the ilk_id from flip
+    SELECT address_id
     FROM maker.flip_ilk
              LEFT JOIN maker.ilks ON ilks.id = flip_ilk.ilk_id
     WHERE ilks.id = flip.ilk_id
@@ -1463,7 +1476,8 @@ WITH addresses AS ( -- get the contract address from flip_ilk table using the il
 )
 SELECT bid_id, lot, bid_amount, act, block_height, tx_idx, events.contract_address
 FROM api.all_flip_bid_events() AS events
-         LEFT JOIN addresses ON events.contract_address = addresses.contract_address
+         LEFT JOIN address_ids
+                   ON address_ids.address_id = (SELECT id FROM addresses WHERE address = events.contract_address)
 WHERE bid_id = flip.bid_id
 ORDER BY block_height DESC
 LIMIT flip_state_bid_events.max_results
@@ -1575,8 +1589,8 @@ $$;
 CREATE FUNCTION api.get_flap(bid_id numeric, block_height bigint DEFAULT api.max_block()) RETURNS api.flap_state
     LANGUAGE sql STABLE
     AS $$
-WITH address AS (
-    SELECT contract_address
+WITH address_id AS (
+    SELECT address_id
     FROM maker.flap
     WHERE flap.bid_id = get_flap.bid_id
       AND block_number <= block_height
@@ -1595,7 +1609,7 @@ WITH address AS (
          FROM maker.deal
                   LEFT JOIN public.headers ON deal.header_id = headers.id
          WHERE deal.bid_id = get_flap.bid_id
-           AND deal.contract_address IN (SELECT * FROM address)
+           AND deal.address_id = (SELECT * FROM address_id)
            AND headers.block_number <= block_height
          ORDER BY bid_id, block_number DESC
          LIMIT 1
@@ -1626,15 +1640,15 @@ CREATE FUNCTION api.get_flip(bid_id numeric, ilk text, block_height bigint DEFAU
     AS $$
 WITH ilk_ids AS (SELECT id FROM maker.ilks WHERE ilks.identifier = get_flip.ilk),
      -- there should only ever be 1 address for a given ilk, which is why there's a LIMIT with no ORDER BY
-     address AS (SELECT contract_address
-                 FROM maker.flip_ilk
-                 WHERE flip_ilk.ilk_id = (SELECT id FROM ilk_ids)
-                   AND block_number <= block_height
-                 LIMIT 1),
+     address_id AS (SELECT address_id
+                    FROM maker.flip_ilk
+                    WHERE flip_ilk.ilk_id = (SELECT id FROM ilk_ids)
+                      AND block_number <= block_height
+                    LIMIT 1),
      kicks AS (SELECT usr
                FROM maker.flip_kick
                WHERE flip_kick.bid_id = get_flip.bid_id
-                 AND contract_address = (SELECT * FROM address)
+                 AND address_id = (SELECT * FROM address_id)
                LIMIT 1),
      urn_id AS (SELECT id
                 FROM maker.urns
@@ -1643,49 +1657,49 @@ WITH ilk_ids AS (SELECT id FROM maker.ilks WHERE ilks.identifier = get_flip.ilk)
      guys AS (SELECT flip_bid_guy.bid_id, guy
               FROM maker.flip_bid_guy
               WHERE flip_bid_guy.bid_id = get_flip.bid_id
-                AND contract_address = (SELECT * FROM address)
+                AND address_id = (SELECT * FROM address_id)
                 AND block_number <= block_height
               ORDER BY block_number DESC
               LIMIT 1),
      tics AS (SELECT flip_bid_tic.bid_id, tic
               FROM maker.flip_bid_tic
               WHERE flip_bid_tic.bid_id = get_flip.bid_id
-                AND contract_address = (SELECT * FROM address)
+                AND address_id = (SELECT * FROM address_id)
                 AND block_number <= block_height
               ORDER BY block_number DESC
               LIMIT 1),
      ends AS (SELECT flip_bid_end.bid_id, "end"
               FROM maker.flip_bid_end
               WHERE flip_bid_end.bid_id = get_flip.bid_id
-                AND contract_address = (SELECT * FROM address)
+                AND address_id = (SELECT * FROM address_id)
                 AND block_number <= block_height
               ORDER BY block_number DESC
               LIMIT 1),
      lots AS (SELECT flip_bid_lot.bid_id, lot
               FROM maker.flip_bid_lot
               WHERE flip_bid_lot.bid_id = get_flip.bid_id
-                AND contract_address = (SELECT * FROM address)
+                AND address_id = (SELECT * FROM address_id)
                 AND block_number <= block_height
               ORDER BY block_number DESC
               LIMIT 1),
      bids AS (SELECT flip_bid_bid.bid_id, bid
               FROM maker.flip_bid_bid
               WHERE flip_bid_bid.bid_id = get_flip.bid_id
-                AND contract_address = (SELECT * FROM address)
+                AND address_id = (SELECT * FROM address_id)
                 AND block_number <= block_height
               ORDER BY block_number DESC
               LIMIT 1),
      gals AS (SELECT flip_bid_gal.bid_id, gal
               FROM maker.flip_bid_gal
               WHERE flip_bid_gal.bid_id = get_flip.bid_id
-                AND contract_address = (SELECT * FROM address)
+                AND address_id = (SELECT * FROM address_id)
                 AND block_number <= block_height
               ORDER BY block_number DESC
               LIMIT 1),
      tabs AS (SELECT flip_bid_tab.bid_id, tab
               FROM maker.flip_bid_tab
               WHERE flip_bid_tab.bid_id = get_flip.bid_id
-                AND contract_address = (SELECT * FROM address)
+                AND address_id = (SELECT * FROM address_id)
                 AND block_number <= block_height
               ORDER BY block_number DESC
               LIMIT 1),
@@ -1693,10 +1707,10 @@ WITH ilk_ids AS (SELECT id FROM maker.ilks WHERE ilks.identifier = get_flip.ilk)
                FROM maker.deal
                         LEFT JOIN public.headers ON deal.header_id = headers.id
                WHERE deal.bid_id = get_flip.bid_id
-                 AND deal.contract_address = (SELECT * FROM address)
+                 AND deal.address_id = (SELECT * FROM address_id)
                  AND headers.block_number <= block_height),
      relevant_blocks AS (SELECT *
-                         FROM api.get_flip_blocks_before(bid_id, (SELECT * FROM address), get_flip.block_height)),
+                         FROM api.get_flip_blocks_before(bid_id, (SELECT * FROM address_id), get_flip.block_height)),
      created AS (SELECT DISTINCT ON (relevant_blocks.bid_id, relevant_blocks.block_height) relevant_blocks.block_height,
                                                                                            relevant_blocks.block_hash,
                                                                                            relevant_blocks.bid_id,
@@ -1743,74 +1757,74 @@ $$;
 
 
 --
--- Name: get_flip_blocks_before(numeric, text, bigint); Type: FUNCTION; Schema: api; Owner: -
+-- Name: get_flip_blocks_before(numeric, integer, bigint); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.get_flip_blocks_before(bid_id numeric, contract_address text, block_height bigint) RETURNS SETOF api.relevant_flip_block
+CREATE FUNCTION api.get_flip_blocks_before(bid_id numeric, address_id integer, block_height bigint) RETURNS SETOF api.relevant_flip_block
     LANGUAGE sql STABLE
     AS $$
 SELECT block_number AS block_height, block_hash, kicks AS bid_id
 FROM maker.flip_kicks
 WHERE block_number <= get_flip_blocks_before.block_height
   AND kicks = get_flip_blocks_before.bid_id
-  AND flip_kicks.contract_address = get_flip_blocks_before.contract_address
+  AND flip_kicks.address_id = get_flip_blocks_before.address_id
 UNION
 SELECT block_number AS block_height, block_hash, flip_bid_bid.bid_id
 FROM maker.flip_bid_bid
 WHERE block_number <= get_flip_blocks_before.block_height
   AND flip_bid_bid.bid_id = get_flip_blocks_before.bid_id
-  AND flip_bid_bid.contract_address = get_flip_blocks_before.contract_address
+  AND flip_bid_bid.address_id = get_flip_blocks_before.address_id
 UNION
 SELECT block_number AS block_height, block_hash, flip_bid_lot.bid_id
 FROM maker.flip_bid_lot
 WHERE block_number <= get_flip_blocks_before.block_height
   AND flip_bid_lot.bid_id = get_flip_blocks_before.bid_id
-  AND flip_bid_lot.contract_address = get_flip_blocks_before.contract_address
+  AND flip_bid_lot.address_id = get_flip_blocks_before.address_id
 UNION
 SELECT block_number AS block_height, block_hash, flip_bid_guy.bid_id
 FROM maker.flip_bid_guy
 WHERE block_number <= get_flip_blocks_before.block_height
   AND flip_bid_guy.bid_id = get_flip_blocks_before.bid_id
-  AND flip_bid_guy.contract_address = get_flip_blocks_before.contract_address
+  AND flip_bid_guy.address_id = get_flip_blocks_before.address_id
 UNION
 SELECT block_number AS block_height, block_hash, flip_bid_tic.bid_id
 FROM maker.flip_bid_tic
 WHERE block_number <= get_flip_blocks_before.block_height
   AND flip_bid_tic.bid_id = get_flip_blocks_before.bid_id
-  AND flip_bid_tic.contract_address = get_flip_blocks_before.contract_address
+  AND flip_bid_tic.address_id = get_flip_blocks_before.address_id
 UNION
 SELECT block_number AS block_height, block_hash, flip_bid_end.bid_id
 FROM maker.flip_bid_end
 WHERE block_number <= get_flip_blocks_before.block_height
   AND flip_bid_end.bid_id = get_flip_blocks_before.bid_id
-  AND flip_bid_end.contract_address = get_flip_blocks_before.contract_address
+  AND flip_bid_end.address_id = get_flip_blocks_before.address_id
 UNION
 SELECT block_number AS block_height, block_hash, flip_bid_usr.bid_id
 FROM maker.flip_bid_usr
 WHERE block_number <= get_flip_blocks_before.block_height
   AND flip_bid_usr.bid_id = get_flip_blocks_before.bid_id
-  AND flip_bid_usr.contract_address = get_flip_blocks_before.contract_address
+  AND flip_bid_usr.address_id = get_flip_blocks_before.address_id
 UNION
 SELECT block_number AS block_height, block_hash, flip_bid_gal.bid_id
 FROM maker.flip_bid_gal
 WHERE block_number <= get_flip_blocks_before.block_height
   AND flip_bid_gal.bid_id = get_flip_blocks_before.bid_id
-  AND flip_bid_gal.contract_address = get_flip_blocks_before.contract_address
+  AND flip_bid_gal.address_id = get_flip_blocks_before.address_id
 UNION
 SELECT block_number AS block_height, block_hash, flip_bid_tab.bid_id
 FROM maker.flip_bid_tab
 WHERE block_number <= get_flip_blocks_before.block_height
   AND flip_bid_tab.bid_id = get_flip_blocks_before.bid_id
-  AND flip_bid_tab.contract_address = get_flip_blocks_before.contract_address
+  AND flip_bid_tab.address_id = get_flip_blocks_before.address_id
 ORDER BY block_height DESC
 $$;
 
 
 --
--- Name: FUNCTION get_flip_blocks_before(bid_id numeric, contract_address text, block_height bigint); Type: COMMENT; Schema: api; Owner: -
+-- Name: FUNCTION get_flip_blocks_before(bid_id numeric, address_id integer, block_height bigint); Type: COMMENT; Schema: api; Owner: -
 --
 
-COMMENT ON FUNCTION api.get_flip_blocks_before(bid_id numeric, contract_address text, block_height bigint) IS '@omit';
+COMMENT ON FUNCTION api.get_flip_blocks_before(bid_id numeric, address_id integer, block_height bigint) IS '@omit';
 
 
 --
@@ -1820,8 +1834,8 @@ COMMENT ON FUNCTION api.get_flip_blocks_before(bid_id numeric, contract_address 
 CREATE FUNCTION api.get_flop(bid_id numeric, block_height bigint DEFAULT api.max_block()) RETURNS api.flop_state
     LANGUAGE sql STABLE
     AS $$
-WITH address AS (
-    SELECT contract_address
+WITH address_id AS (
+    SELECT address_id
     FROM maker.flop
     WHERE flop.bid_id = get_flop.bid_id
       AND block_number <= block_height
@@ -1840,7 +1854,7 @@ WITH address AS (
          FROM maker.deal
                   LEFT JOIN public.headers ON deal.header_id = headers.id
          WHERE deal.bid_id = get_flop.bid_id
-           AND deal.contract_address IN (SELECT * FROM address)
+           AND deal.address_id = (SELECT address_id FROM address_id)
            AND headers.block_number <= block_height
          ORDER BY bid_id, block_number DESC
          LIMIT 1
@@ -2493,8 +2507,8 @@ BEGIN
         LIMIT 1
     )
     INSERT
-    INTO maker.flap(bid_id, contract_address, block_number, block_hash, created, updated, bid, guy, tic, "end", lot)
-    VALUES (NEW.bid_id, NEW.contract_address,
+    INTO maker.flap(bid_id, address_id, block_number, block_hash, created, updated, bid, guy, tic, "end", lot)
+    VALUES (NEW.bid_id, NEW.address_id,
             (SELECT block_number FROM block_info),
             (SELECT hash FROM block_info),
             (SELECT datetime FROM block_info),
@@ -2526,8 +2540,8 @@ BEGIN
         LIMIT 1
     )
     INSERT
-    INTO maker.flop(bid_id, contract_address, block_number, block_hash, created, updated, bid, guy, tic, "end", lot)
-    VALUES (NEW.bid_id, NEW.contract_address,
+    INTO maker.flop(bid_id, address_id, block_number, block_hash, created, updated, bid, guy, tic, "end", lot)
+    VALUES (NEW.bid_id, NEW.address_id,
             (SELECT block_number FROM block_info),
             (SELECT hash FROM block_info),
             (SELECT datetime FROM block_info),
@@ -2647,9 +2661,9 @@ BEGIN
         LIMIT 1
     )
     INSERT
-    INTO maker.flap(bid_id, contract_address, block_number, block_hash, bid, guy, tic, "end", lot, updated,
+    INTO maker.flap(bid_id, address_id, block_number, block_hash, bid, guy, tic, "end", lot, updated,
                     created)
-    VALUES (NEW.bid_id, NEW.contract_address, NEW.block_number, NEW.block_hash, NEW.bid,
+    VALUES (NEW.bid_id, NEW.address_id, NEW.block_number, NEW.block_hash, NEW.bid,
             (SELECT get_latest_flap_bid_guy(NEW.bid_id)),
             (SELECT get_latest_flap_bid_tic(NEW.bid_id)),
             (SELECT get_latest_flap_bid_end(NEW.bid_id)),
@@ -2678,9 +2692,9 @@ BEGIN
         LIMIT 1
     )
     INSERT
-    INTO maker.flap(bid_id, contract_address, block_number, block_hash, "end", bid, guy, tic, lot, updated,
+    INTO maker.flap(bid_id, address_id, block_number, block_hash, "end", bid, guy, tic, lot, updated,
                     created)
-    VALUES (NEW.bid_id, NEW.contract_address, NEW.block_number, NEW.block_hash, NEW."end",
+    VALUES (NEW.bid_id, NEW.address_id, NEW.block_number, NEW.block_hash, NEW."end",
             (SELECT get_latest_flap_bid_bid(NEW.bid_id)),
             (SELECT get_latest_flap_bid_guy(NEW.bid_id)),
             (SELECT get_latest_flap_bid_tic(NEW.bid_id)),
@@ -2709,9 +2723,9 @@ BEGIN
         LIMIT 1
     )
     INSERT
-    INTO maker.flap(bid_id, contract_address, block_number, block_hash, guy, bid, tic, "end", lot, updated,
+    INTO maker.flap(bid_id, address_id, block_number, block_hash, guy, bid, tic, "end", lot, updated,
                     created)
-    VALUES (NEW.bid_id, NEW.contract_address, NEW.block_number, NEW.block_hash, NEW.guy,
+    VALUES (NEW.bid_id, NEW.address_id, NEW.block_number, NEW.block_hash, NEW.guy,
             (SELECT get_latest_flap_bid_bid(NEW.bid_id)),
             (SELECT get_latest_flap_bid_tic(NEW.bid_id)),
             (SELECT get_latest_flap_bid_end(NEW.bid_id)),
@@ -2740,9 +2754,9 @@ BEGIN
         LIMIT 1
     )
     INSERT
-    INTO maker.flap(bid_id, contract_address, block_number, block_hash, lot, bid, guy, tic, "end", updated,
+    INTO maker.flap(bid_id, address_id, block_number, block_hash, lot, bid, guy, tic, "end", updated,
                     created)
-    VALUES (NEW.bid_id, NEW.contract_address, NEW.block_number, NEW.block_hash, NEW.lot,
+    VALUES (NEW.bid_id, NEW.address_id, NEW.block_number, NEW.block_hash, NEW.lot,
             (SELECT get_latest_flap_bid_bid(NEW.bid_id)),
             (SELECT get_latest_flap_bid_guy(NEW.bid_id)),
             (SELECT get_latest_flap_bid_tic(NEW.bid_id)),
@@ -2771,9 +2785,9 @@ BEGIN
         LIMIT 1
     )
     INSERT
-    INTO maker.flap(bid_id, contract_address, block_number, block_hash, tic, bid, guy, "end", lot, updated,
+    INTO maker.flap(bid_id, address_id, block_number, block_hash, tic, bid, guy, "end", lot, updated,
                     created)
-    VALUES (NEW.bid_id, NEW.contract_address, NEW.block_number, NEW.block_hash, NEW.tic,
+    VALUES (NEW.bid_id, NEW.address_id, NEW.block_number, NEW.block_hash, NEW.tic,
             (SELECT get_latest_flap_bid_bid(NEW.bid_id)),
             (SELECT get_latest_flap_bid_guy(NEW.bid_id)),
             (SELECT get_latest_flap_bid_end(NEW.bid_id)),
@@ -2802,9 +2816,9 @@ BEGIN
         LIMIT 1
     )
     INSERT
-    INTO maker.flop(bid_id, contract_address, block_number, block_hash, bid, guy, tic, "end", lot, updated,
+    INTO maker.flop(bid_id, address_id, block_number, block_hash, bid, guy, tic, "end", lot, updated,
                     created)
-    VALUES (NEW.bid_id, NEW.contract_address, NEW.block_number, NEW.block_hash, NEW.bid,
+    VALUES (NEW.bid_id, NEW.address_id, NEW.block_number, NEW.block_hash, NEW.bid,
             (SELECT get_latest_flop_bid_guy(NEW.bid_id)),
             (SELECT get_latest_flop_bid_tic(NEW.bid_id)),
             (SELECT get_latest_flop_bid_end(NEW.bid_id)),
@@ -2833,9 +2847,9 @@ BEGIN
         LIMIT 1
     )
     INSERT
-    INTO maker.flop(bid_id, contract_address, block_number, block_hash, "end", bid, guy, tic, lot, updated,
+    INTO maker.flop(bid_id, address_id, block_number, block_hash, "end", bid, guy, tic, lot, updated,
                     created)
-    VALUES (NEW.bid_id, NEW.contract_address, NEW.block_number, NEW.block_hash, NEW."end",
+    VALUES (NEW.bid_id, NEW.address_id, NEW.block_number, NEW.block_hash, NEW."end",
             (SELECT get_latest_flop_bid_bid(NEW.bid_id)),
             (SELECT get_latest_flop_bid_guy(NEW.bid_id)),
             (SELECT get_latest_flop_bid_tic(NEW.bid_id)),
@@ -2864,9 +2878,9 @@ BEGIN
         LIMIT 1
     )
     INSERT
-    INTO maker.flop(bid_id, contract_address, block_number, block_hash, guy, bid, tic, "end", lot, updated,
+    INTO maker.flop(bid_id, address_id, block_number, block_hash, guy, bid, tic, "end", lot, updated,
                     created)
-    VALUES (NEW.bid_id, NEW.contract_address, NEW.block_number, NEW.block_hash, NEW.guy,
+    VALUES (NEW.bid_id, NEW.address_id, NEW.block_number, NEW.block_hash, NEW.guy,
             (SELECT get_latest_flop_bid_bid(NEW.bid_id)),
             (SELECT get_latest_flop_bid_tic(NEW.bid_id)),
             (SELECT get_latest_flop_bid_end(NEW.bid_id)),
@@ -2895,9 +2909,9 @@ BEGIN
         LIMIT 1
     )
     INSERT
-    INTO maker.flop(bid_id, contract_address, block_number, block_hash, lot, bid, guy, tic, "end", updated,
+    INTO maker.flop(bid_id, address_id, block_number, block_hash, lot, bid, guy, tic, "end", updated,
                     created)
-    VALUES (NEW.bid_id, NEW.contract_address, NEW.block_number, NEW.block_hash, NEW.lot,
+    VALUES (NEW.bid_id, NEW.address_id, NEW.block_number, NEW.block_hash, NEW.lot,
             (SELECT get_latest_flop_bid_bid(NEW.bid_id)),
             (SELECT get_latest_flop_bid_guy(NEW.bid_id)),
             (SELECT get_latest_flop_bid_tic(NEW.bid_id)),
@@ -2926,9 +2940,9 @@ BEGIN
         LIMIT 1
     )
     INSERT
-    INTO maker.flop(bid_id, contract_address, block_number, block_hash, tic, bid, guy, "end", lot, updated,
+    INTO maker.flop(bid_id, address_id, block_number, block_hash, tic, bid, guy, "end", lot, updated,
                     created)
-    VALUES (NEW.bid_id, NEW.contract_address, NEW.block_number, NEW.block_hash, NEW.tic,
+    VALUES (NEW.bid_id, NEW.address_id, NEW.block_number, NEW.block_hash, NEW.tic,
             (SELECT get_latest_flop_bid_bid(NEW.bid_id)),
             (SELECT get_latest_flop_bid_guy(NEW.bid_id)),
             (SELECT get_latest_flop_bid_end(NEW.bid_id)),
@@ -3850,7 +3864,7 @@ CREATE TABLE maker.deal (
     id integer NOT NULL,
     header_id integer NOT NULL,
     bid_id numeric NOT NULL,
-    contract_address text,
+    address_id integer NOT NULL,
     log_idx integer NOT NULL,
     tx_idx integer NOT NULL,
     raw_log jsonb
@@ -3887,7 +3901,7 @@ CREATE TABLE maker.dent (
     bid_id numeric NOT NULL,
     lot numeric,
     bid numeric,
-    contract_address text,
+    address_id integer NOT NULL,
     log_idx integer NOT NULL,
     tx_idx integer NOT NULL,
     raw_log jsonb
@@ -3922,7 +3936,7 @@ CREATE TABLE maker.flap (
     id integer NOT NULL,
     block_number bigint,
     block_hash text,
-    contract_address text,
+    address_id integer NOT NULL,
     bid_id numeric,
     guy text,
     tic bigint,
@@ -3942,7 +3956,7 @@ CREATE TABLE maker.flap_beg (
     id integer NOT NULL,
     block_number bigint,
     block_hash text,
-    contract_address text,
+    address_id integer NOT NULL,
     beg numeric NOT NULL
 );
 
@@ -3975,7 +3989,7 @@ CREATE TABLE maker.flap_bid_bid (
     id integer NOT NULL,
     block_number bigint,
     block_hash text,
-    contract_address text,
+    address_id integer NOT NULL,
     bid_id numeric NOT NULL,
     bid numeric NOT NULL
 );
@@ -4009,7 +4023,7 @@ CREATE TABLE maker.flap_bid_end (
     id integer NOT NULL,
     block_number bigint,
     block_hash text,
-    contract_address text,
+    address_id integer NOT NULL,
     bid_id numeric NOT NULL,
     "end" bigint NOT NULL
 );
@@ -4043,7 +4057,7 @@ CREATE TABLE maker.flap_bid_guy (
     id integer NOT NULL,
     block_number bigint,
     block_hash text,
-    contract_address text,
+    address_id integer NOT NULL,
     bid_id numeric NOT NULL,
     guy text NOT NULL
 );
@@ -4077,7 +4091,7 @@ CREATE TABLE maker.flap_bid_lot (
     id integer NOT NULL,
     block_number bigint,
     block_hash text,
-    contract_address text,
+    address_id integer NOT NULL,
     bid_id numeric NOT NULL,
     lot numeric NOT NULL
 );
@@ -4111,7 +4125,7 @@ CREATE TABLE maker.flap_bid_tic (
     id integer NOT NULL,
     block_number bigint,
     block_hash text,
-    contract_address text,
+    address_id integer NOT NULL,
     bid_id numeric NOT NULL,
     tic bigint NOT NULL
 );
@@ -4145,7 +4159,7 @@ CREATE TABLE maker.flap_gem (
     id integer NOT NULL,
     block_number bigint,
     block_hash text,
-    contract_address text,
+    address_id integer NOT NULL,
     gem text NOT NULL
 );
 
@@ -4200,7 +4214,7 @@ CREATE TABLE maker.flap_kick (
     bid_id numeric NOT NULL,
     lot numeric NOT NULL,
     bid numeric NOT NULL,
-    contract_address text,
+    address_id integer NOT NULL,
     tx_idx integer NOT NULL,
     log_idx integer NOT NULL,
     raw_log jsonb
@@ -4242,7 +4256,7 @@ CREATE TABLE maker.flap_kicks (
     id integer NOT NULL,
     block_number bigint,
     block_hash text,
-    contract_address text,
+    address_id integer NOT NULL,
     kicks numeric NOT NULL
 );
 
@@ -4282,7 +4296,7 @@ CREATE TABLE maker.flap_live (
     id integer NOT NULL,
     block_number bigint,
     block_hash text,
-    contract_address text,
+    address_id integer NOT NULL,
     live numeric NOT NULL
 );
 
@@ -4315,7 +4329,7 @@ CREATE TABLE maker.flap_tau (
     id integer NOT NULL,
     block_number bigint,
     block_hash text,
-    contract_address text,
+    address_id integer NOT NULL,
     tau integer NOT NULL
 );
 
@@ -4348,7 +4362,7 @@ CREATE TABLE maker.flap_ttl (
     id integer NOT NULL,
     block_number bigint,
     block_hash text,
-    contract_address text,
+    address_id integer NOT NULL,
     ttl integer NOT NULL
 );
 
@@ -4381,7 +4395,7 @@ CREATE TABLE maker.flap_vat (
     id integer NOT NULL,
     block_number bigint,
     block_hash text,
-    contract_address text,
+    address_id integer NOT NULL,
     vat text NOT NULL
 );
 
@@ -4414,7 +4428,7 @@ CREATE TABLE maker.flip_beg (
     id integer NOT NULL,
     block_number bigint,
     block_hash text,
-    contract_address text,
+    address_id integer NOT NULL,
     beg numeric NOT NULL
 );
 
@@ -4447,7 +4461,7 @@ CREATE TABLE maker.flip_bid_bid (
     id integer NOT NULL,
     block_number bigint,
     block_hash text,
-    contract_address text,
+    address_id integer NOT NULL,
     bid_id numeric NOT NULL,
     bid numeric NOT NULL
 );
@@ -4481,7 +4495,7 @@ CREATE TABLE maker.flip_bid_end (
     id integer NOT NULL,
     block_number bigint,
     block_hash text,
-    contract_address text,
+    address_id integer NOT NULL,
     bid_id numeric NOT NULL,
     "end" bigint NOT NULL
 );
@@ -4515,7 +4529,7 @@ CREATE TABLE maker.flip_bid_gal (
     id integer NOT NULL,
     block_number bigint,
     block_hash text,
-    contract_address text,
+    address_id integer NOT NULL,
     bid_id numeric NOT NULL,
     gal text
 );
@@ -4549,7 +4563,7 @@ CREATE TABLE maker.flip_bid_guy (
     id integer NOT NULL,
     block_number bigint,
     block_hash text,
-    contract_address text,
+    address_id integer NOT NULL,
     bid_id numeric NOT NULL,
     guy text
 );
@@ -4583,7 +4597,7 @@ CREATE TABLE maker.flip_bid_lot (
     id integer NOT NULL,
     block_number bigint,
     block_hash text,
-    contract_address text,
+    address_id integer NOT NULL,
     bid_id numeric NOT NULL,
     lot numeric NOT NULL
 );
@@ -4617,7 +4631,7 @@ CREATE TABLE maker.flip_bid_tab (
     id integer NOT NULL,
     block_number bigint,
     block_hash text,
-    contract_address text,
+    address_id integer NOT NULL,
     bid_id numeric NOT NULL,
     tab numeric NOT NULL
 );
@@ -4651,7 +4665,7 @@ CREATE TABLE maker.flip_bid_tic (
     id integer NOT NULL,
     block_number bigint,
     block_hash text,
-    contract_address text,
+    address_id integer NOT NULL,
     bid_id numeric NOT NULL,
     tic bigint NOT NULL
 );
@@ -4685,7 +4699,7 @@ CREATE TABLE maker.flip_bid_usr (
     id integer NOT NULL,
     block_number bigint,
     block_hash text,
-    contract_address text,
+    address_id integer NOT NULL,
     bid_id numeric NOT NULL,
     usr text
 );
@@ -4719,7 +4733,7 @@ CREATE TABLE maker.flip_ilk (
     id integer NOT NULL,
     block_number bigint,
     block_hash text,
-    contract_address text,
+    address_id integer NOT NULL,
     ilk_id integer NOT NULL
 );
 
@@ -4757,7 +4771,7 @@ CREATE TABLE maker.flip_kick (
     tab numeric,
     usr text,
     gal text,
-    contract_address text,
+    address_id integer NOT NULL,
     tx_idx integer NOT NULL,
     log_idx integer NOT NULL,
     raw_log jsonb
@@ -4799,7 +4813,7 @@ CREATE TABLE maker.flip_kicks (
     id integer NOT NULL,
     block_number bigint,
     block_hash text,
-    contract_address text,
+    address_id integer NOT NULL,
     kicks numeric NOT NULL
 );
 
@@ -4839,7 +4853,7 @@ CREATE TABLE maker.flip_tau (
     id integer NOT NULL,
     block_number bigint,
     block_hash text,
-    contract_address text,
+    address_id integer NOT NULL,
     tau numeric NOT NULL
 );
 
@@ -4872,7 +4886,7 @@ CREATE TABLE maker.flip_ttl (
     id integer NOT NULL,
     block_number bigint,
     block_hash text,
-    contract_address text,
+    address_id integer NOT NULL,
     ttl numeric NOT NULL
 );
 
@@ -4905,7 +4919,7 @@ CREATE TABLE maker.flip_vat (
     id integer NOT NULL,
     block_number bigint,
     block_hash text,
-    contract_address text,
+    address_id integer NOT NULL,
     vat text
 );
 
@@ -4938,7 +4952,7 @@ CREATE TABLE maker.flop (
     id integer NOT NULL,
     block_number bigint,
     block_hash text,
-    contract_address text,
+    address_id integer NOT NULL,
     bid_id numeric,
     guy text,
     tic bigint,
@@ -4958,7 +4972,7 @@ CREATE TABLE maker.flop_beg (
     id integer NOT NULL,
     block_number bigint,
     block_hash text,
-    contract_address text,
+    address_id integer NOT NULL,
     beg numeric NOT NULL
 );
 
@@ -4991,7 +5005,7 @@ CREATE TABLE maker.flop_bid_bid (
     id integer NOT NULL,
     block_number bigint,
     block_hash text,
-    contract_address text,
+    address_id integer NOT NULL,
     bid_id numeric NOT NULL,
     bid numeric NOT NULL
 );
@@ -5025,7 +5039,7 @@ CREATE TABLE maker.flop_bid_end (
     id integer NOT NULL,
     block_number bigint,
     block_hash text,
-    contract_address text,
+    address_id integer NOT NULL,
     bid_id numeric NOT NULL,
     "end" bigint NOT NULL
 );
@@ -5059,7 +5073,7 @@ CREATE TABLE maker.flop_bid_guy (
     id integer NOT NULL,
     block_number bigint,
     block_hash text,
-    contract_address text,
+    address_id integer NOT NULL,
     bid_id numeric NOT NULL,
     guy text
 );
@@ -5093,7 +5107,7 @@ CREATE TABLE maker.flop_bid_lot (
     id integer NOT NULL,
     block_number bigint,
     block_hash text,
-    contract_address text,
+    address_id integer NOT NULL,
     bid_id numeric NOT NULL,
     lot numeric NOT NULL
 );
@@ -5127,7 +5141,7 @@ CREATE TABLE maker.flop_bid_tic (
     id integer NOT NULL,
     block_number bigint,
     block_hash text,
-    contract_address text,
+    address_id integer NOT NULL,
     bid_id numeric NOT NULL,
     tic bigint NOT NULL
 );
@@ -5161,7 +5175,7 @@ CREATE TABLE maker.flop_gem (
     id integer NOT NULL,
     block_number bigint,
     block_hash text,
-    contract_address text,
+    address_id integer NOT NULL,
     gem text
 );
 
@@ -5217,7 +5231,7 @@ CREATE TABLE maker.flop_kick (
     lot numeric NOT NULL,
     bid numeric NOT NULL,
     gal text,
-    contract_address text,
+    address_id integer NOT NULL,
     tx_idx integer NOT NULL,
     log_idx integer NOT NULL,
     raw_log jsonb
@@ -5259,7 +5273,7 @@ CREATE TABLE maker.flop_kicks (
     id integer NOT NULL,
     block_number bigint,
     block_hash text,
-    contract_address text,
+    address_id integer NOT NULL,
     kicks numeric NOT NULL
 );
 
@@ -5299,7 +5313,7 @@ CREATE TABLE maker.flop_live (
     id integer NOT NULL,
     block_number bigint,
     block_hash text,
-    contract_address text,
+    address_id integer NOT NULL,
     live numeric NOT NULL
 );
 
@@ -5332,7 +5346,7 @@ CREATE TABLE maker.flop_tau (
     id integer NOT NULL,
     block_number bigint,
     block_hash text,
-    contract_address text,
+    address_id integer NOT NULL,
     tau numeric NOT NULL
 );
 
@@ -5365,7 +5379,7 @@ CREATE TABLE maker.flop_ttl (
     id integer NOT NULL,
     block_number bigint,
     block_hash text,
-    contract_address text,
+    address_id integer NOT NULL,
     ttl numeric NOT NULL
 );
 
@@ -5398,7 +5412,7 @@ CREATE TABLE maker.flop_vat (
     id integer NOT NULL,
     block_number bigint,
     block_hash text,
-    contract_address text,
+    address_id integer NOT NULL,
     vat text
 );
 
@@ -6087,7 +6101,7 @@ CREATE TABLE maker.tend (
     bid_id numeric NOT NULL,
     lot numeric,
     bid numeric,
-    contract_address text,
+    address_id integer NOT NULL,
     log_idx integer NOT NULL,
     tx_idx integer NOT NULL,
     raw_log jsonb
@@ -6122,7 +6136,7 @@ CREATE TABLE maker.tick (
     id integer NOT NULL,
     header_id integer NOT NULL,
     bid_id numeric NOT NULL,
-    contract_address text,
+    address_id integer NOT NULL,
     log_idx integer NOT NULL,
     tx_idx integer NOT NULL,
     raw_log jsonb
@@ -7511,7 +7525,7 @@ CREATE TABLE maker.yank (
     id integer NOT NULL,
     header_id integer NOT NULL,
     bid_id numeric NOT NULL,
-    contract_address text,
+    address_id integer NOT NULL,
     log_idx integer NOT NULL,
     tx_idx integer NOT NULL,
     raw_log jsonb
@@ -7536,6 +7550,36 @@ CREATE SEQUENCE maker.yank_id_seq
 --
 
 ALTER SEQUENCE maker.yank_id_seq OWNED BY maker.yank.id;
+
+
+--
+-- Name: addresses; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.addresses (
+    id integer NOT NULL,
+    address character varying(42)
+);
+
+
+--
+-- Name: addresses_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.addresses_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: addresses_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.addresses_id_seq OWNED BY public.addresses.id;
 
 
 --
@@ -7698,7 +7742,7 @@ CREATE TABLE public.eth_nodes (
 
 CREATE TABLE public.full_sync_receipts (
     id integer NOT NULL,
-    contract_address character varying(42),
+    address_id integer NOT NULL,
     cumulative_gas_used numeric,
     gas_used numeric,
     state_root character varying(66),
@@ -7808,7 +7852,7 @@ CREATE TABLE public.header_sync_receipts (
     id integer NOT NULL,
     transaction_id integer NOT NULL,
     header_id integer NOT NULL,
-    contract_address character varying(42),
+    address_id integer NOT NULL,
     cumulative_gas_used numeric,
     gas_used numeric,
     state_root character varying(66),
@@ -9015,6 +9059,13 @@ ALTER TABLE ONLY maker.yank ALTER COLUMN id SET DEFAULT nextval('maker.yank_id_s
 
 
 --
+-- Name: addresses id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.addresses ALTER COLUMN id SET DEFAULT nextval('public.addresses_id_seq'::regclass);
+
+
+--
 -- Name: blocks id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -9481,11 +9532,11 @@ ALTER TABLE ONLY maker.dent
 
 
 --
--- Name: flap_beg flap_beg_block_number_block_hash_contract_address_beg_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: flap_beg flap_beg_block_number_block_hash_address_id_beg_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.flap_beg
-    ADD CONSTRAINT flap_beg_block_number_block_hash_contract_address_beg_key UNIQUE (block_number, block_hash, contract_address, beg);
+    ADD CONSTRAINT flap_beg_block_number_block_hash_address_id_beg_key UNIQUE (block_number, block_hash, address_id, beg);
 
 
 --
@@ -9497,11 +9548,11 @@ ALTER TABLE ONLY maker.flap_beg
 
 
 --
--- Name: flap_bid_bid flap_bid_bid_block_number_block_hash_contract_address_bid_i_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: flap_bid_bid flap_bid_bid_block_number_block_hash_address_id_bid_id_bid_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.flap_bid_bid
-    ADD CONSTRAINT flap_bid_bid_block_number_block_hash_contract_address_bid_i_key UNIQUE (block_number, block_hash, contract_address, bid_id, bid);
+    ADD CONSTRAINT flap_bid_bid_block_number_block_hash_address_id_bid_id_bid_key UNIQUE (block_number, block_hash, address_id, bid_id, bid);
 
 
 --
@@ -9513,11 +9564,11 @@ ALTER TABLE ONLY maker.flap_bid_bid
 
 
 --
--- Name: flap_bid_end flap_bid_end_block_number_block_hash_contract_address_bid_i_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: flap_bid_end flap_bid_end_block_number_block_hash_address_id_bid_id_end_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.flap_bid_end
-    ADD CONSTRAINT flap_bid_end_block_number_block_hash_contract_address_bid_i_key UNIQUE (block_number, block_hash, contract_address, bid_id, "end");
+    ADD CONSTRAINT flap_bid_end_block_number_block_hash_address_id_bid_id_end_key UNIQUE (block_number, block_hash, address_id, bid_id, "end");
 
 
 --
@@ -9529,11 +9580,11 @@ ALTER TABLE ONLY maker.flap_bid_end
 
 
 --
--- Name: flap_bid_guy flap_bid_guy_block_number_block_hash_contract_address_bid_i_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: flap_bid_guy flap_bid_guy_block_number_block_hash_address_id_bid_id_guy_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.flap_bid_guy
-    ADD CONSTRAINT flap_bid_guy_block_number_block_hash_contract_address_bid_i_key UNIQUE (block_number, block_hash, contract_address, bid_id, guy);
+    ADD CONSTRAINT flap_bid_guy_block_number_block_hash_address_id_bid_id_guy_key UNIQUE (block_number, block_hash, address_id, bid_id, guy);
 
 
 --
@@ -9545,11 +9596,11 @@ ALTER TABLE ONLY maker.flap_bid_guy
 
 
 --
--- Name: flap_bid_lot flap_bid_lot_block_number_block_hash_contract_address_bid_i_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: flap_bid_lot flap_bid_lot_block_number_block_hash_address_id_bid_id_lot_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.flap_bid_lot
-    ADD CONSTRAINT flap_bid_lot_block_number_block_hash_contract_address_bid_i_key UNIQUE (block_number, block_hash, contract_address, bid_id, lot);
+    ADD CONSTRAINT flap_bid_lot_block_number_block_hash_address_id_bid_id_lot_key UNIQUE (block_number, block_hash, address_id, bid_id, lot);
 
 
 --
@@ -9561,11 +9612,11 @@ ALTER TABLE ONLY maker.flap_bid_lot
 
 
 --
--- Name: flap_bid_tic flap_bid_tic_block_number_block_hash_contract_address_bid_i_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: flap_bid_tic flap_bid_tic_block_number_block_hash_address_id_bid_id_tic_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.flap_bid_tic
-    ADD CONSTRAINT flap_bid_tic_block_number_block_hash_contract_address_bid_i_key UNIQUE (block_number, block_hash, contract_address, bid_id, tic);
+    ADD CONSTRAINT flap_bid_tic_block_number_block_hash_address_id_bid_id_tic_key UNIQUE (block_number, block_hash, address_id, bid_id, tic);
 
 
 --
@@ -9585,11 +9636,11 @@ ALTER TABLE ONLY maker.flap
 
 
 --
--- Name: flap_gem flap_gem_block_number_block_hash_contract_address_gem_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: flap_gem flap_gem_block_number_block_hash_address_id_gem_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.flap_gem
-    ADD CONSTRAINT flap_gem_block_number_block_hash_contract_address_gem_key UNIQUE (block_number, block_hash, contract_address, gem);
+    ADD CONSTRAINT flap_gem_block_number_block_hash_address_id_gem_key UNIQUE (block_number, block_hash, address_id, gem);
 
 
 --
@@ -9617,11 +9668,11 @@ ALTER TABLE ONLY maker.flap_kick
 
 
 --
--- Name: flap_kicks flap_kicks_block_number_block_hash_contract_address_kicks_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: flap_kicks flap_kicks_block_number_block_hash_address_id_kicks_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.flap_kicks
-    ADD CONSTRAINT flap_kicks_block_number_block_hash_contract_address_kicks_key UNIQUE (block_number, block_hash, contract_address, kicks);
+    ADD CONSTRAINT flap_kicks_block_number_block_hash_address_id_kicks_key UNIQUE (block_number, block_hash, address_id, kicks);
 
 
 --
@@ -9633,11 +9684,11 @@ ALTER TABLE ONLY maker.flap_kicks
 
 
 --
--- Name: flap_live flap_live_block_number_block_hash_contract_address_live_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: flap_live flap_live_block_number_block_hash_address_id_live_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.flap_live
-    ADD CONSTRAINT flap_live_block_number_block_hash_contract_address_live_key UNIQUE (block_number, block_hash, contract_address, live);
+    ADD CONSTRAINT flap_live_block_number_block_hash_address_id_live_key UNIQUE (block_number, block_hash, address_id, live);
 
 
 --
@@ -9657,11 +9708,11 @@ ALTER TABLE ONLY maker.flap
 
 
 --
--- Name: flap_tau flap_tau_block_number_block_hash_contract_address_tau_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: flap_tau flap_tau_block_number_block_hash_address_id_tau_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.flap_tau
-    ADD CONSTRAINT flap_tau_block_number_block_hash_contract_address_tau_key UNIQUE (block_number, block_hash, contract_address, tau);
+    ADD CONSTRAINT flap_tau_block_number_block_hash_address_id_tau_key UNIQUE (block_number, block_hash, address_id, tau);
 
 
 --
@@ -9673,11 +9724,11 @@ ALTER TABLE ONLY maker.flap_tau
 
 
 --
--- Name: flap_ttl flap_ttl_block_number_block_hash_contract_address_ttl_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: flap_ttl flap_ttl_block_number_block_hash_address_id_ttl_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.flap_ttl
-    ADD CONSTRAINT flap_ttl_block_number_block_hash_contract_address_ttl_key UNIQUE (block_number, block_hash, contract_address, ttl);
+    ADD CONSTRAINT flap_ttl_block_number_block_hash_address_id_ttl_key UNIQUE (block_number, block_hash, address_id, ttl);
 
 
 --
@@ -9689,11 +9740,11 @@ ALTER TABLE ONLY maker.flap_ttl
 
 
 --
--- Name: flap_vat flap_vat_block_number_block_hash_contract_address_vat_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: flap_vat flap_vat_block_number_block_hash_address_id_vat_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.flap_vat
-    ADD CONSTRAINT flap_vat_block_number_block_hash_contract_address_vat_key UNIQUE (block_number, block_hash, contract_address, vat);
+    ADD CONSTRAINT flap_vat_block_number_block_hash_address_id_vat_key UNIQUE (block_number, block_hash, address_id, vat);
 
 
 --
@@ -9705,11 +9756,11 @@ ALTER TABLE ONLY maker.flap_vat
 
 
 --
--- Name: flip_beg flip_beg_block_number_block_hash_contract_address_beg_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: flip_beg flip_beg_block_number_block_hash_address_id_beg_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.flip_beg
-    ADD CONSTRAINT flip_beg_block_number_block_hash_contract_address_beg_key UNIQUE (block_number, block_hash, contract_address, beg);
+    ADD CONSTRAINT flip_beg_block_number_block_hash_address_id_beg_key UNIQUE (block_number, block_hash, address_id, beg);
 
 
 --
@@ -9721,11 +9772,11 @@ ALTER TABLE ONLY maker.flip_beg
 
 
 --
--- Name: flip_bid_bid flip_bid_bid_block_number_block_hash_bid_id_contract_addres_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: flip_bid_bid flip_bid_bid_block_number_block_hash_bid_id_address_id_bid_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.flip_bid_bid
-    ADD CONSTRAINT flip_bid_bid_block_number_block_hash_bid_id_contract_addres_key UNIQUE (block_number, block_hash, bid_id, contract_address, bid);
+    ADD CONSTRAINT flip_bid_bid_block_number_block_hash_bid_id_address_id_bid_key UNIQUE (block_number, block_hash, bid_id, address_id, bid);
 
 
 --
@@ -9737,11 +9788,11 @@ ALTER TABLE ONLY maker.flip_bid_bid
 
 
 --
--- Name: flip_bid_end flip_bid_end_block_number_block_hash_bid_id_contract_addres_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: flip_bid_end flip_bid_end_block_number_block_hash_bid_id_address_id_end_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.flip_bid_end
-    ADD CONSTRAINT flip_bid_end_block_number_block_hash_bid_id_contract_addres_key UNIQUE (block_number, block_hash, bid_id, contract_address, "end");
+    ADD CONSTRAINT flip_bid_end_block_number_block_hash_bid_id_address_id_end_key UNIQUE (block_number, block_hash, bid_id, address_id, "end");
 
 
 --
@@ -9753,11 +9804,11 @@ ALTER TABLE ONLY maker.flip_bid_end
 
 
 --
--- Name: flip_bid_gal flip_bid_gal_block_number_block_hash_bid_id_contract_addres_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: flip_bid_gal flip_bid_gal_block_number_block_hash_bid_id_address_id_gal_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.flip_bid_gal
-    ADD CONSTRAINT flip_bid_gal_block_number_block_hash_bid_id_contract_addres_key UNIQUE (block_number, block_hash, bid_id, contract_address, gal);
+    ADD CONSTRAINT flip_bid_gal_block_number_block_hash_bid_id_address_id_gal_key UNIQUE (block_number, block_hash, bid_id, address_id, gal);
 
 
 --
@@ -9769,11 +9820,11 @@ ALTER TABLE ONLY maker.flip_bid_gal
 
 
 --
--- Name: flip_bid_guy flip_bid_guy_block_number_block_hash_bid_id_contract_addres_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: flip_bid_guy flip_bid_guy_block_number_block_hash_bid_id_address_id_guy_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.flip_bid_guy
-    ADD CONSTRAINT flip_bid_guy_block_number_block_hash_bid_id_contract_addres_key UNIQUE (block_number, block_hash, bid_id, contract_address, guy);
+    ADD CONSTRAINT flip_bid_guy_block_number_block_hash_bid_id_address_id_guy_key UNIQUE (block_number, block_hash, bid_id, address_id, guy);
 
 
 --
@@ -9785,11 +9836,11 @@ ALTER TABLE ONLY maker.flip_bid_guy
 
 
 --
--- Name: flip_bid_lot flip_bid_lot_block_number_block_hash_bid_id_contract_addres_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: flip_bid_lot flip_bid_lot_block_number_block_hash_bid_id_address_id_lot_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.flip_bid_lot
-    ADD CONSTRAINT flip_bid_lot_block_number_block_hash_bid_id_contract_addres_key UNIQUE (block_number, block_hash, bid_id, contract_address, lot);
+    ADD CONSTRAINT flip_bid_lot_block_number_block_hash_bid_id_address_id_lot_key UNIQUE (block_number, block_hash, bid_id, address_id, lot);
 
 
 --
@@ -9801,11 +9852,11 @@ ALTER TABLE ONLY maker.flip_bid_lot
 
 
 --
--- Name: flip_bid_tab flip_bid_tab_block_number_block_hash_bid_id_contract_addres_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: flip_bid_tab flip_bid_tab_block_number_block_hash_bid_id_address_id_tab_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.flip_bid_tab
-    ADD CONSTRAINT flip_bid_tab_block_number_block_hash_bid_id_contract_addres_key UNIQUE (block_number, block_hash, bid_id, contract_address, tab);
+    ADD CONSTRAINT flip_bid_tab_block_number_block_hash_bid_id_address_id_tab_key UNIQUE (block_number, block_hash, bid_id, address_id, tab);
 
 
 --
@@ -9817,11 +9868,11 @@ ALTER TABLE ONLY maker.flip_bid_tab
 
 
 --
--- Name: flip_bid_tic flip_bid_tic_block_number_block_hash_bid_id_contract_addres_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: flip_bid_tic flip_bid_tic_block_number_block_hash_bid_id_address_id_tic_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.flip_bid_tic
-    ADD CONSTRAINT flip_bid_tic_block_number_block_hash_bid_id_contract_addres_key UNIQUE (block_number, block_hash, bid_id, contract_address, tic);
+    ADD CONSTRAINT flip_bid_tic_block_number_block_hash_bid_id_address_id_tic_key UNIQUE (block_number, block_hash, bid_id, address_id, tic);
 
 
 --
@@ -9833,11 +9884,11 @@ ALTER TABLE ONLY maker.flip_bid_tic
 
 
 --
--- Name: flip_bid_usr flip_bid_usr_block_number_block_hash_bid_id_contract_addres_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: flip_bid_usr flip_bid_usr_block_number_block_hash_bid_id_address_id_usr_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.flip_bid_usr
-    ADD CONSTRAINT flip_bid_usr_block_number_block_hash_bid_id_contract_addres_key UNIQUE (block_number, block_hash, bid_id, contract_address, usr);
+    ADD CONSTRAINT flip_bid_usr_block_number_block_hash_bid_id_address_id_usr_key UNIQUE (block_number, block_hash, bid_id, address_id, usr);
 
 
 --
@@ -9849,11 +9900,11 @@ ALTER TABLE ONLY maker.flip_bid_usr
 
 
 --
--- Name: flip_ilk flip_ilk_block_number_block_hash_contract_address_ilk_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: flip_ilk flip_ilk_block_number_block_hash_address_id_ilk_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.flip_ilk
-    ADD CONSTRAINT flip_ilk_block_number_block_hash_contract_address_ilk_id_key UNIQUE (block_number, block_hash, contract_address, ilk_id);
+    ADD CONSTRAINT flip_ilk_block_number_block_hash_address_id_ilk_id_key UNIQUE (block_number, block_hash, address_id, ilk_id);
 
 
 --
@@ -9881,11 +9932,11 @@ ALTER TABLE ONLY maker.flip_kick
 
 
 --
--- Name: flip_kicks flip_kicks_block_number_block_hash_contract_address_kicks_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: flip_kicks flip_kicks_block_number_block_hash_address_id_kicks_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.flip_kicks
-    ADD CONSTRAINT flip_kicks_block_number_block_hash_contract_address_kicks_key UNIQUE (block_number, block_hash, contract_address, kicks);
+    ADD CONSTRAINT flip_kicks_block_number_block_hash_address_id_kicks_key UNIQUE (block_number, block_hash, address_id, kicks);
 
 
 --
@@ -9897,11 +9948,11 @@ ALTER TABLE ONLY maker.flip_kicks
 
 
 --
--- Name: flip_tau flip_tau_block_number_block_hash_contract_address_tau_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: flip_tau flip_tau_block_number_block_hash_address_id_tau_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.flip_tau
-    ADD CONSTRAINT flip_tau_block_number_block_hash_contract_address_tau_key UNIQUE (block_number, block_hash, contract_address, tau);
+    ADD CONSTRAINT flip_tau_block_number_block_hash_address_id_tau_key UNIQUE (block_number, block_hash, address_id, tau);
 
 
 --
@@ -9913,11 +9964,11 @@ ALTER TABLE ONLY maker.flip_tau
 
 
 --
--- Name: flip_ttl flip_ttl_block_number_block_hash_contract_address_ttl_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: flip_ttl flip_ttl_block_number_block_hash_address_id_ttl_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.flip_ttl
-    ADD CONSTRAINT flip_ttl_block_number_block_hash_contract_address_ttl_key UNIQUE (block_number, block_hash, contract_address, ttl);
+    ADD CONSTRAINT flip_ttl_block_number_block_hash_address_id_ttl_key UNIQUE (block_number, block_hash, address_id, ttl);
 
 
 --
@@ -9929,11 +9980,11 @@ ALTER TABLE ONLY maker.flip_ttl
 
 
 --
--- Name: flip_vat flip_vat_block_number_block_hash_contract_address_vat_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: flip_vat flip_vat_block_number_block_hash_address_id_vat_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.flip_vat
-    ADD CONSTRAINT flip_vat_block_number_block_hash_contract_address_vat_key UNIQUE (block_number, block_hash, contract_address, vat);
+    ADD CONSTRAINT flip_vat_block_number_block_hash_address_id_vat_key UNIQUE (block_number, block_hash, address_id, vat);
 
 
 --
@@ -9945,11 +9996,11 @@ ALTER TABLE ONLY maker.flip_vat
 
 
 --
--- Name: flop_beg flop_beg_block_number_block_hash_contract_address_beg_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: flop_beg flop_beg_block_number_block_hash_address_id_beg_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.flop_beg
-    ADD CONSTRAINT flop_beg_block_number_block_hash_contract_address_beg_key UNIQUE (block_number, block_hash, contract_address, beg);
+    ADD CONSTRAINT flop_beg_block_number_block_hash_address_id_beg_key UNIQUE (block_number, block_hash, address_id, beg);
 
 
 --
@@ -9961,11 +10012,11 @@ ALTER TABLE ONLY maker.flop_beg
 
 
 --
--- Name: flop_bid_bid flop_bid_bid_block_number_block_hash_bid_id_contract_addres_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: flop_bid_bid flop_bid_bid_block_number_block_hash_bid_id_address_id_bid_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.flop_bid_bid
-    ADD CONSTRAINT flop_bid_bid_block_number_block_hash_bid_id_contract_addres_key UNIQUE (block_number, block_hash, bid_id, contract_address, bid);
+    ADD CONSTRAINT flop_bid_bid_block_number_block_hash_bid_id_address_id_bid_key UNIQUE (block_number, block_hash, bid_id, address_id, bid);
 
 
 --
@@ -9977,11 +10028,11 @@ ALTER TABLE ONLY maker.flop_bid_bid
 
 
 --
--- Name: flop_bid_end flop_bid_end_block_number_block_hash_bid_id_contract_addres_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: flop_bid_end flop_bid_end_block_number_block_hash_bid_id_address_id_end_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.flop_bid_end
-    ADD CONSTRAINT flop_bid_end_block_number_block_hash_bid_id_contract_addres_key UNIQUE (block_number, block_hash, bid_id, contract_address, "end");
+    ADD CONSTRAINT flop_bid_end_block_number_block_hash_bid_id_address_id_end_key UNIQUE (block_number, block_hash, bid_id, address_id, "end");
 
 
 --
@@ -9993,11 +10044,11 @@ ALTER TABLE ONLY maker.flop_bid_end
 
 
 --
--- Name: flop_bid_guy flop_bid_guy_block_number_block_hash_bid_id_contract_addres_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: flop_bid_guy flop_bid_guy_block_number_block_hash_bid_id_address_id_guy_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.flop_bid_guy
-    ADD CONSTRAINT flop_bid_guy_block_number_block_hash_bid_id_contract_addres_key UNIQUE (block_number, block_hash, bid_id, contract_address, guy);
+    ADD CONSTRAINT flop_bid_guy_block_number_block_hash_bid_id_address_id_guy_key UNIQUE (block_number, block_hash, bid_id, address_id, guy);
 
 
 --
@@ -10009,11 +10060,11 @@ ALTER TABLE ONLY maker.flop_bid_guy
 
 
 --
--- Name: flop_bid_lot flop_bid_lot_block_number_block_hash_bid_id_contract_addres_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: flop_bid_lot flop_bid_lot_block_number_block_hash_bid_id_address_id_lot_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.flop_bid_lot
-    ADD CONSTRAINT flop_bid_lot_block_number_block_hash_bid_id_contract_addres_key UNIQUE (block_number, block_hash, bid_id, contract_address, lot);
+    ADD CONSTRAINT flop_bid_lot_block_number_block_hash_bid_id_address_id_lot_key UNIQUE (block_number, block_hash, bid_id, address_id, lot);
 
 
 --
@@ -10025,11 +10076,11 @@ ALTER TABLE ONLY maker.flop_bid_lot
 
 
 --
--- Name: flop_bid_tic flop_bid_tic_block_number_block_hash_bid_id_contract_addres_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: flop_bid_tic flop_bid_tic_block_number_block_hash_bid_id_address_id_tic_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.flop_bid_tic
-    ADD CONSTRAINT flop_bid_tic_block_number_block_hash_bid_id_contract_addres_key UNIQUE (block_number, block_hash, bid_id, contract_address, tic);
+    ADD CONSTRAINT flop_bid_tic_block_number_block_hash_bid_id_address_id_tic_key UNIQUE (block_number, block_hash, bid_id, address_id, tic);
 
 
 --
@@ -10049,11 +10100,11 @@ ALTER TABLE ONLY maker.flop
 
 
 --
--- Name: flop_gem flop_gem_block_number_block_hash_contract_address_gem_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: flop_gem flop_gem_block_number_block_hash_address_id_gem_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.flop_gem
-    ADD CONSTRAINT flop_gem_block_number_block_hash_contract_address_gem_key UNIQUE (block_number, block_hash, contract_address, gem);
+    ADD CONSTRAINT flop_gem_block_number_block_hash_address_id_gem_key UNIQUE (block_number, block_hash, address_id, gem);
 
 
 --
@@ -10081,11 +10132,11 @@ ALTER TABLE ONLY maker.flop_kick
 
 
 --
--- Name: flop_kicks flop_kicks_block_number_block_hash_contract_address_kicks_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: flop_kicks flop_kicks_block_number_block_hash_address_id_kicks_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.flop_kicks
-    ADD CONSTRAINT flop_kicks_block_number_block_hash_contract_address_kicks_key UNIQUE (block_number, block_hash, contract_address, kicks);
+    ADD CONSTRAINT flop_kicks_block_number_block_hash_address_id_kicks_key UNIQUE (block_number, block_hash, address_id, kicks);
 
 
 --
@@ -10097,11 +10148,11 @@ ALTER TABLE ONLY maker.flop_kicks
 
 
 --
--- Name: flop_live flop_live_block_number_block_hash_contract_address_live_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: flop_live flop_live_block_number_block_hash_address_id_live_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.flop_live
-    ADD CONSTRAINT flop_live_block_number_block_hash_contract_address_live_key UNIQUE (block_number, block_hash, contract_address, live);
+    ADD CONSTRAINT flop_live_block_number_block_hash_address_id_live_key UNIQUE (block_number, block_hash, address_id, live);
 
 
 --
@@ -10121,11 +10172,11 @@ ALTER TABLE ONLY maker.flop
 
 
 --
--- Name: flop_tau flop_tau_block_number_block_hash_contract_address_tau_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: flop_tau flop_tau_block_number_block_hash_address_id_tau_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.flop_tau
-    ADD CONSTRAINT flop_tau_block_number_block_hash_contract_address_tau_key UNIQUE (block_number, block_hash, contract_address, tau);
+    ADD CONSTRAINT flop_tau_block_number_block_hash_address_id_tau_key UNIQUE (block_number, block_hash, address_id, tau);
 
 
 --
@@ -10137,11 +10188,11 @@ ALTER TABLE ONLY maker.flop_tau
 
 
 --
--- Name: flop_ttl flop_ttl_block_number_block_hash_contract_address_ttl_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: flop_ttl flop_ttl_block_number_block_hash_address_id_ttl_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.flop_ttl
-    ADD CONSTRAINT flop_ttl_block_number_block_hash_contract_address_ttl_key UNIQUE (block_number, block_hash, contract_address, ttl);
+    ADD CONSTRAINT flop_ttl_block_number_block_hash_address_id_ttl_key UNIQUE (block_number, block_hash, address_id, ttl);
 
 
 --
@@ -10153,11 +10204,11 @@ ALTER TABLE ONLY maker.flop_ttl
 
 
 --
--- Name: flop_vat flop_vat_block_number_block_hash_contract_address_vat_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: flop_vat flop_vat_block_number_block_hash_address_id_vat_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.flop_vat
-    ADD CONSTRAINT flop_vat_block_number_block_hash_contract_address_vat_key UNIQUE (block_number, block_hash, contract_address, vat);
+    ADD CONSTRAINT flop_vat_block_number_block_hash_address_id_vat_key UNIQUE (block_number, block_hash, address_id, vat);
 
 
 --
@@ -11169,6 +11220,22 @@ ALTER TABLE ONLY maker.yank
 
 
 --
+-- Name: addresses addresses_address_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.addresses
+    ADD CONSTRAINT addresses_address_key UNIQUE (address);
+
+
+--
+-- Name: addresses addresses_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.addresses
+    ADD CONSTRAINT addresses_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: blocks blocks_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -11294,6 +11361,14 @@ ALTER TABLE ONLY public.log_filters
 
 ALTER TABLE ONLY public.eth_nodes
     ADD CONSTRAINT nodes_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: queued_storage queued_storage_block_height_block_hash_contract_storage_key_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.queued_storage
+    ADD CONSTRAINT queued_storage_block_height_block_hash_contract_storage_key_key UNIQUE (block_height, block_hash, contract, storage_key, storage_value);
 
 
 --
@@ -11491,17 +11566,17 @@ CREATE INDEX cdp_manager_urns_urn_index ON maker.cdp_manager_urns USING btree (u
 
 
 --
+-- Name: deal_address_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX deal_address_id_index ON maker.deal USING btree (address_id);
+
+
+--
 -- Name: deal_bid_id_index; Type: INDEX; Schema: maker; Owner: -
 --
 
 CREATE INDEX deal_bid_id_index ON maker.deal USING btree (bid_id);
-
-
---
--- Name: deal_contract_address_index; Type: INDEX; Schema: maker; Owner: -
---
-
-CREATE INDEX deal_contract_address_index ON maker.deal USING btree (contract_address);
 
 
 --
@@ -11519,6 +11594,13 @@ CREATE INDEX dent_header_index ON maker.dent USING btree (header_id);
 
 
 --
+-- Name: flap_bid_bid_address_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flap_bid_bid_address_id_index ON maker.flap_bid_bid USING btree (address_id);
+
+
+--
 -- Name: flap_bid_bid_bid_id_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -11533,17 +11615,10 @@ CREATE INDEX flap_bid_bid_block_number_index ON maker.flap_bid_bid USING btree (
 
 
 --
--- Name: flap_bid_bid_contract_address_index; Type: INDEX; Schema: maker; Owner: -
+-- Name: flap_bid_end_bid_address_id_index; Type: INDEX; Schema: maker; Owner: -
 --
 
-CREATE INDEX flap_bid_bid_contract_address_index ON maker.flap_bid_bid USING btree (contract_address);
-
-
---
--- Name: flap_bid_end_bid_contract_address_index; Type: INDEX; Schema: maker; Owner: -
---
-
-CREATE INDEX flap_bid_end_bid_contract_address_index ON maker.flap_bid_end USING btree (contract_address);
+CREATE INDEX flap_bid_end_bid_address_id_index ON maker.flap_bid_end USING btree (address_id);
 
 
 --
@@ -11561,10 +11636,10 @@ CREATE INDEX flap_bid_end_block_number_index ON maker.flap_bid_end USING btree (
 
 
 --
--- Name: flap_bid_guy_bid_contract_address_index; Type: INDEX; Schema: maker; Owner: -
+-- Name: flap_bid_guy_bid_address_id_index; Type: INDEX; Schema: maker; Owner: -
 --
 
-CREATE INDEX flap_bid_guy_bid_contract_address_index ON maker.flap_bid_guy USING btree (contract_address);
+CREATE INDEX flap_bid_guy_bid_address_id_index ON maker.flap_bid_guy USING btree (address_id);
 
 
 --
@@ -11582,10 +11657,10 @@ CREATE INDEX flap_bid_guy_block_number_index ON maker.flap_bid_guy USING btree (
 
 
 --
--- Name: flap_bid_lot_bid_contract_address_index; Type: INDEX; Schema: maker; Owner: -
+-- Name: flap_bid_lot_bid_address_id_index; Type: INDEX; Schema: maker; Owner: -
 --
 
-CREATE INDEX flap_bid_lot_bid_contract_address_index ON maker.flap_bid_lot USING btree (contract_address);
+CREATE INDEX flap_bid_lot_bid_address_id_index ON maker.flap_bid_lot USING btree (address_id);
 
 
 --
@@ -11603,10 +11678,10 @@ CREATE INDEX flap_bid_lot_block_number_index ON maker.flap_bid_lot USING btree (
 
 
 --
--- Name: flap_bid_tic_bid_contract_address_index; Type: INDEX; Schema: maker; Owner: -
+-- Name: flap_bid_tic_bid_address_id_index; Type: INDEX; Schema: maker; Owner: -
 --
 
-CREATE INDEX flap_bid_tic_bid_contract_address_index ON maker.flap_bid_tic USING btree (contract_address);
+CREATE INDEX flap_bid_tic_bid_address_id_index ON maker.flap_bid_tic USING btree (address_id);
 
 
 --
@@ -11631,6 +11706,13 @@ CREATE INDEX flap_kick_header_index ON maker.flap_kick USING btree (header_id);
 
 
 --
+-- Name: flap_kicks_address_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flap_kicks_address_id_index ON maker.flap_kicks USING btree (address_id);
+
+
+--
 -- Name: flap_kicks_block_number_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -11638,17 +11720,17 @@ CREATE INDEX flap_kicks_block_number_index ON maker.flap_kicks USING btree (bloc
 
 
 --
--- Name: flap_kicks_contract_address_index; Type: INDEX; Schema: maker; Owner: -
---
-
-CREATE INDEX flap_kicks_contract_address_index ON maker.flap_kicks USING btree (contract_address);
-
-
---
 -- Name: flap_kicks_kicks_index; Type: INDEX; Schema: maker; Owner: -
 --
 
 CREATE INDEX flap_kicks_kicks_index ON maker.flap_kicks USING btree (kicks);
+
+
+--
+-- Name: flip_bid_bid_address_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flip_bid_bid_address_id_index ON maker.flip_bid_bid USING btree (address_id);
 
 
 --
@@ -11666,10 +11748,10 @@ CREATE INDEX flip_bid_bid_block_number_index ON maker.flip_bid_bid USING btree (
 
 
 --
--- Name: flip_bid_bid_contract_address_index; Type: INDEX; Schema: maker; Owner: -
+-- Name: flip_bid_end_address_id_index; Type: INDEX; Schema: maker; Owner: -
 --
 
-CREATE INDEX flip_bid_bid_contract_address_index ON maker.flip_bid_bid USING btree (contract_address);
+CREATE INDEX flip_bid_end_address_id_index ON maker.flip_bid_end USING btree (address_id);
 
 
 --
@@ -11687,10 +11769,10 @@ CREATE INDEX flip_bid_end_block_number_index ON maker.flip_bid_end USING btree (
 
 
 --
--- Name: flip_bid_end_contract_address_index; Type: INDEX; Schema: maker; Owner: -
+-- Name: flip_bid_gal_address_id_index; Type: INDEX; Schema: maker; Owner: -
 --
 
-CREATE INDEX flip_bid_end_contract_address_index ON maker.flip_bid_end USING btree (contract_address);
+CREATE INDEX flip_bid_gal_address_id_index ON maker.flip_bid_gal USING btree (address_id);
 
 
 --
@@ -11708,10 +11790,10 @@ CREATE INDEX flip_bid_gal_block_number_index ON maker.flip_bid_gal USING btree (
 
 
 --
--- Name: flip_bid_gal_contract_address_index; Type: INDEX; Schema: maker; Owner: -
+-- Name: flip_bid_guy_address_id_index; Type: INDEX; Schema: maker; Owner: -
 --
 
-CREATE INDEX flip_bid_gal_contract_address_index ON maker.flip_bid_gal USING btree (contract_address);
+CREATE INDEX flip_bid_guy_address_id_index ON maker.flip_bid_guy USING btree (address_id);
 
 
 --
@@ -11729,10 +11811,10 @@ CREATE INDEX flip_bid_guy_block_number_index ON maker.flip_bid_guy USING btree (
 
 
 --
--- Name: flip_bid_guy_contract_address_index; Type: INDEX; Schema: maker; Owner: -
+-- Name: flip_bid_lot_address_id_index; Type: INDEX; Schema: maker; Owner: -
 --
 
-CREATE INDEX flip_bid_guy_contract_address_index ON maker.flip_bid_guy USING btree (contract_address);
+CREATE INDEX flip_bid_lot_address_id_index ON maker.flip_bid_lot USING btree (address_id);
 
 
 --
@@ -11750,10 +11832,10 @@ CREATE INDEX flip_bid_lot_block_number_index ON maker.flip_bid_lot USING btree (
 
 
 --
--- Name: flip_bid_lot_contract_address_index; Type: INDEX; Schema: maker; Owner: -
+-- Name: flip_bid_tab_address_id_index; Type: INDEX; Schema: maker; Owner: -
 --
 
-CREATE INDEX flip_bid_lot_contract_address_index ON maker.flip_bid_lot USING btree (contract_address);
+CREATE INDEX flip_bid_tab_address_id_index ON maker.flip_bid_tab USING btree (address_id);
 
 
 --
@@ -11771,10 +11853,10 @@ CREATE INDEX flip_bid_tab_block_number_index ON maker.flip_bid_tab USING btree (
 
 
 --
--- Name: flip_bid_tab_contract_address_index; Type: INDEX; Schema: maker; Owner: -
+-- Name: flip_bid_tic_address_id_index; Type: INDEX; Schema: maker; Owner: -
 --
 
-CREATE INDEX flip_bid_tab_contract_address_index ON maker.flip_bid_tab USING btree (contract_address);
+CREATE INDEX flip_bid_tic_address_id_index ON maker.flip_bid_tic USING btree (address_id);
 
 
 --
@@ -11792,10 +11874,10 @@ CREATE INDEX flip_bid_tic_block_number_index ON maker.flip_bid_tic USING btree (
 
 
 --
--- Name: flip_bid_tic_contract_address_index; Type: INDEX; Schema: maker; Owner: -
+-- Name: flip_bid_usr_address_id_index; Type: INDEX; Schema: maker; Owner: -
 --
 
-CREATE INDEX flip_bid_tic_contract_address_index ON maker.flip_bid_tic USING btree (contract_address);
+CREATE INDEX flip_bid_usr_address_id_index ON maker.flip_bid_usr USING btree (address_id);
 
 
 --
@@ -11813,13 +11895,6 @@ CREATE INDEX flip_bid_usr_block_number_index ON maker.flip_bid_usr USING btree (
 
 
 --
--- Name: flip_bid_usr_contract_address_index; Type: INDEX; Schema: maker; Owner: -
---
-
-CREATE INDEX flip_bid_usr_contract_address_index ON maker.flip_bid_usr USING btree (contract_address);
-
-
---
 -- Name: flip_ilk_block_number_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -11834,17 +11909,17 @@ CREATE INDEX flip_ilk_ilk_id_index ON maker.flip_ilk USING btree (ilk_id);
 
 
 --
+-- Name: flip_kick_address_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flip_kick_address_id_index ON maker.flip_kick USING btree (address_id);
+
+
+--
 -- Name: flip_kick_bid_id_index; Type: INDEX; Schema: maker; Owner: -
 --
 
 CREATE INDEX flip_kick_bid_id_index ON maker.flip_kick USING btree (bid_id);
-
-
---
--- Name: flip_kick_contract_address_index; Type: INDEX; Schema: maker; Owner: -
---
-
-CREATE INDEX flip_kick_contract_address_index ON maker.flip_kick USING btree (contract_address);
 
 
 --
@@ -11855,6 +11930,13 @@ CREATE INDEX flip_kick_header_index ON maker.flip_kick USING btree (header_id);
 
 
 --
+-- Name: flip_kicks_address_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flip_kicks_address_id_index ON maker.flip_kicks USING btree (address_id);
+
+
+--
 -- Name: flip_kicks_block_number_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -11862,17 +11944,17 @@ CREATE INDEX flip_kicks_block_number_index ON maker.flip_kicks USING btree (bloc
 
 
 --
--- Name: flip_kicks_contract_address_index; Type: INDEX; Schema: maker; Owner: -
---
-
-CREATE INDEX flip_kicks_contract_address_index ON maker.flip_kicks USING btree (contract_address);
-
-
---
 -- Name: flip_kicks_kicks_index; Type: INDEX; Schema: maker; Owner: -
 --
 
 CREATE INDEX flip_kicks_kicks_index ON maker.flip_kicks USING btree (kicks);
+
+
+--
+-- Name: flop_bid_bid_address_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flop_bid_bid_address_id_index ON maker.flop_bid_bid USING btree (address_id);
 
 
 --
@@ -11890,17 +11972,10 @@ CREATE INDEX flop_bid_bid_block_number_index ON maker.flop_bid_bid USING btree (
 
 
 --
--- Name: flop_bid_bid_contract_address_index; Type: INDEX; Schema: maker; Owner: -
+-- Name: flop_bid_end_bid_address_id_index; Type: INDEX; Schema: maker; Owner: -
 --
 
-CREATE INDEX flop_bid_bid_contract_address_index ON maker.flop_bid_bid USING btree (contract_address);
-
-
---
--- Name: flop_bid_end_bid_contract_address_index; Type: INDEX; Schema: maker; Owner: -
---
-
-CREATE INDEX flop_bid_end_bid_contract_address_index ON maker.flop_bid_end USING btree (contract_address);
+CREATE INDEX flop_bid_end_bid_address_id_index ON maker.flop_bid_end USING btree (address_id);
 
 
 --
@@ -11918,10 +11993,10 @@ CREATE INDEX flop_bid_end_block_number_index ON maker.flop_bid_end USING btree (
 
 
 --
--- Name: flop_bid_guy_bid_contract_address_index; Type: INDEX; Schema: maker; Owner: -
+-- Name: flop_bid_guy_bid_address_id_index; Type: INDEX; Schema: maker; Owner: -
 --
 
-CREATE INDEX flop_bid_guy_bid_contract_address_index ON maker.flop_bid_guy USING btree (contract_address);
+CREATE INDEX flop_bid_guy_bid_address_id_index ON maker.flop_bid_guy USING btree (address_id);
 
 
 --
@@ -11939,10 +12014,10 @@ CREATE INDEX flop_bid_guy_block_number_index ON maker.flop_bid_guy USING btree (
 
 
 --
--- Name: flop_bid_lot_bid_contract_address_index; Type: INDEX; Schema: maker; Owner: -
+-- Name: flop_bid_lot_bid_address_id_index; Type: INDEX; Schema: maker; Owner: -
 --
 
-CREATE INDEX flop_bid_lot_bid_contract_address_index ON maker.flop_bid_lot USING btree (contract_address);
+CREATE INDEX flop_bid_lot_bid_address_id_index ON maker.flop_bid_lot USING btree (address_id);
 
 
 --
@@ -11960,10 +12035,10 @@ CREATE INDEX flop_bid_lot_block_number_index ON maker.flop_bid_lot USING btree (
 
 
 --
--- Name: flop_bid_tic_bid_contract_address_index; Type: INDEX; Schema: maker; Owner: -
+-- Name: flop_bid_tic_bid_address_id_index; Type: INDEX; Schema: maker; Owner: -
 --
 
-CREATE INDEX flop_bid_tic_bid_contract_address_index ON maker.flop_bid_tic USING btree (contract_address);
+CREATE INDEX flop_bid_tic_bid_address_id_index ON maker.flop_bid_tic USING btree (address_id);
 
 
 --
@@ -11988,17 +12063,17 @@ CREATE INDEX flop_kick_header_index ON maker.flop_kick USING btree (header_id);
 
 
 --
+-- Name: flop_kicks_address_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flop_kicks_address_id_index ON maker.flop_kicks USING btree (address_id);
+
+
+--
 -- Name: flop_kicks_block_number_index; Type: INDEX; Schema: maker; Owner: -
 --
 
 CREATE INDEX flop_kicks_block_number_index ON maker.flop_kicks USING btree (block_number);
-
-
---
--- Name: flop_kicks_contract_address_index; Type: INDEX; Schema: maker; Owner: -
---
-
-CREATE INDEX flop_kicks_contract_address_index ON maker.flop_kicks USING btree (contract_address);
 
 
 --
@@ -12734,11 +12809,27 @@ ALTER TABLE ONLY maker.cdp_manager_ilks
 
 
 --
+-- Name: deal deal_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.deal
+    ADD CONSTRAINT deal_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
 -- Name: deal deal_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.deal
     ADD CONSTRAINT deal_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: dent dent_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.dent
+    ADD CONSTRAINT dent_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --
@@ -12750,11 +12841,203 @@ ALTER TABLE ONLY maker.dent
 
 
 --
+-- Name: flap flap_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flap
+    ADD CONSTRAINT flap_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: flap_beg flap_beg_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flap_beg
+    ADD CONSTRAINT flap_beg_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: flap_bid_bid flap_bid_bid_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flap_bid_bid
+    ADD CONSTRAINT flap_bid_bid_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: flap_bid_end flap_bid_end_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flap_bid_end
+    ADD CONSTRAINT flap_bid_end_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: flap_bid_guy flap_bid_guy_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flap_bid_guy
+    ADD CONSTRAINT flap_bid_guy_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: flap_bid_lot flap_bid_lot_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flap_bid_lot
+    ADD CONSTRAINT flap_bid_lot_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: flap_bid_tic flap_bid_tic_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flap_bid_tic
+    ADD CONSTRAINT flap_bid_tic_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: flap_gem flap_gem_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flap_gem
+    ADD CONSTRAINT flap_gem_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: flap_kick flap_kick_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flap_kick
+    ADD CONSTRAINT flap_kick_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
 -- Name: flap_kick flap_kick_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.flap_kick
     ADD CONSTRAINT flap_kick_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: flap_kicks flap_kicks_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flap_kicks
+    ADD CONSTRAINT flap_kicks_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: flap_live flap_live_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flap_live
+    ADD CONSTRAINT flap_live_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: flap_tau flap_tau_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flap_tau
+    ADD CONSTRAINT flap_tau_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: flap_ttl flap_ttl_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flap_ttl
+    ADD CONSTRAINT flap_ttl_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: flap_vat flap_vat_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flap_vat
+    ADD CONSTRAINT flap_vat_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: flip_beg flip_beg_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_beg
+    ADD CONSTRAINT flip_beg_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: flip_bid_bid flip_bid_bid_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_bid_bid
+    ADD CONSTRAINT flip_bid_bid_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: flip_bid_end flip_bid_end_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_bid_end
+    ADD CONSTRAINT flip_bid_end_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: flip_bid_gal flip_bid_gal_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_bid_gal
+    ADD CONSTRAINT flip_bid_gal_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: flip_bid_guy flip_bid_guy_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_bid_guy
+    ADD CONSTRAINT flip_bid_guy_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: flip_bid_lot flip_bid_lot_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_bid_lot
+    ADD CONSTRAINT flip_bid_lot_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: flip_bid_tab flip_bid_tab_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_bid_tab
+    ADD CONSTRAINT flip_bid_tab_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: flip_bid_tic flip_bid_tic_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_bid_tic
+    ADD CONSTRAINT flip_bid_tic_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: flip_bid_usr flip_bid_usr_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_bid_usr
+    ADD CONSTRAINT flip_bid_usr_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: flip_ilk flip_ilk_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_ilk
+    ADD CONSTRAINT flip_ilk_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --
@@ -12766,6 +13049,14 @@ ALTER TABLE ONLY maker.flip_ilk
 
 
 --
+-- Name: flip_kick flip_kick_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_kick
+    ADD CONSTRAINT flip_kick_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
 -- Name: flip_kick flip_kick_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -12774,11 +13065,155 @@ ALTER TABLE ONLY maker.flip_kick
 
 
 --
+-- Name: flip_kicks flip_kicks_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_kicks
+    ADD CONSTRAINT flip_kicks_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: flip_tau flip_tau_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_tau
+    ADD CONSTRAINT flip_tau_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: flip_ttl flip_ttl_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_ttl
+    ADD CONSTRAINT flip_ttl_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: flip_vat flip_vat_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_vat
+    ADD CONSTRAINT flip_vat_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: flop flop_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flop
+    ADD CONSTRAINT flop_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: flop_beg flop_beg_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flop_beg
+    ADD CONSTRAINT flop_beg_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: flop_bid_bid flop_bid_bid_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flop_bid_bid
+    ADD CONSTRAINT flop_bid_bid_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: flop_bid_end flop_bid_end_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flop_bid_end
+    ADD CONSTRAINT flop_bid_end_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: flop_bid_guy flop_bid_guy_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flop_bid_guy
+    ADD CONSTRAINT flop_bid_guy_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: flop_bid_lot flop_bid_lot_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flop_bid_lot
+    ADD CONSTRAINT flop_bid_lot_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: flop_bid_tic flop_bid_tic_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flop_bid_tic
+    ADD CONSTRAINT flop_bid_tic_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: flop_gem flop_gem_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flop_gem
+    ADD CONSTRAINT flop_gem_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: flop_kick flop_kick_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flop_kick
+    ADD CONSTRAINT flop_kick_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
 -- Name: flop_kick flop_kick_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.flop_kick
     ADD CONSTRAINT flop_kick_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: flop_kicks flop_kicks_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flop_kicks
+    ADD CONSTRAINT flop_kicks_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: flop_live flop_live_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flop_live
+    ADD CONSTRAINT flop_live_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: flop_tau flop_tau_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flop_tau
+    ADD CONSTRAINT flop_tau_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: flop_ttl flop_ttl_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flop_ttl
+    ADD CONSTRAINT flop_ttl_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: flop_vat flop_vat_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flop_vat
+    ADD CONSTRAINT flop_vat_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --
@@ -12934,11 +13369,27 @@ ALTER TABLE ONLY maker.spot_poke
 
 
 --
+-- Name: tend tend_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.tend
+    ADD CONSTRAINT tend_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
 -- Name: tend tend_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.tend
     ADD CONSTRAINT tend_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: tick tick_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.tick
+    ADD CONSTRAINT tick_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --
@@ -13206,6 +13657,14 @@ ALTER TABLE ONLY maker.vow_flog
 
 
 --
+-- Name: yank yank_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.yank
+    ADD CONSTRAINT yank_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
 -- Name: yank yank_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -13230,11 +13689,27 @@ ALTER TABLE ONLY public.checked_headers
 
 
 --
+-- Name: full_sync_receipts full_sync_receipts_address_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.full_sync_receipts
+    ADD CONSTRAINT full_sync_receipts_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
 -- Name: full_sync_transactions full_sync_transactions_block_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.full_sync_transactions
     ADD CONSTRAINT full_sync_transactions_block_id_fkey FOREIGN KEY (block_id) REFERENCES public.blocks(id) ON DELETE CASCADE;
+
+
+--
+-- Name: header_sync_receipts header_sync_receipts_address_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.header_sync_receipts
+    ADD CONSTRAINT header_sync_receipts_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --

@@ -219,23 +219,62 @@ var _ = Describe("Shared repository", func() {
 			Expect(actualQuery).To(Equal(expectedQuery))
 		})
 
-		It("looks up FK id and persists in columnToValue", func() {
-			guy := "0x12345"
-			foreignKeyValues := ForeignKeyValues{constants.IlkFK: hexIlk, constants.UrnFK: guy}
-			columnToValue := ColumnValues{}
+		Describe("FK columns", func() {
+			It("looks up FK id and persists in columnToValue for IlkFK", func() {
+				foreignKeyValues := ForeignKeyValues{constants.IlkFK: hexIlk}
+				columnToValue := ColumnValues{}
 
-			tx, txErr := db.Beginx()
-			Expect(txErr).NotTo(HaveOccurred())
-			fkErr := populateForeignKeyIDs(foreignKeyValues, columnToValue, tx)
-			Expect(fkErr).NotTo(HaveOccurred())
-			commitErr := tx.Commit()
-			Expect(commitErr).NotTo(HaveOccurred())
+				tx, txErr := db.Beginx()
+				Expect(txErr).NotTo(HaveOccurred())
+				fkErr := populateForeignKeyIDs(foreignKeyValues, columnToValue, tx)
+				Expect(fkErr).NotTo(HaveOccurred())
+				commitErr := tx.Commit()
+				Expect(commitErr).NotTo(HaveOccurred())
 
-			var expectedUrnID int
-			urnErr := db.Get(&expectedUrnID, `SELECT id FROM maker.urns WHERE identifier = $1`, guy)
-			Expect(urnErr).NotTo(HaveOccurred())
-			actualUrnID := columnToValue[string(constants.UrnFK)].(int)
-			Expect(actualUrnID).To(Equal(expectedUrnID))
+				ilkIdentifier := DecodeHexToText(hexIlk)
+				var expectedIlkID int
+				ilkErr := db.Get(&expectedIlkID, `SELECT id FROM maker.ilks WHERE identifier = $1`, ilkIdentifier)
+				Expect(ilkErr).NotTo(HaveOccurred())
+				actualIlkID := columnToValue[string(constants.IlkFK)].(int)
+				Expect(actualIlkID).To(Equal(expectedIlkID))
+			})
+
+			It("looks up FK id and persists in columnToValue for UrnFK", func() {
+				guy := "0x12345"
+				foreignKeyValues := ForeignKeyValues{constants.UrnFK: guy}
+				columnToValue := ColumnValues{}
+
+				tx, txErr := db.Beginx()
+				Expect(txErr).NotTo(HaveOccurred())
+				fkErr := populateForeignKeyIDs(foreignKeyValues, columnToValue, tx)
+				Expect(fkErr).NotTo(HaveOccurred())
+				commitErr := tx.Commit()
+				Expect(commitErr).NotTo(HaveOccurred())
+
+				var expectedUrnID int
+				urnErr := db.Get(&expectedUrnID, `SELECT id FROM maker.urns WHERE identifier = $1`, guy)
+				Expect(urnErr).NotTo(HaveOccurred())
+				actualUrnID := columnToValue[string(constants.UrnFK)].(int)
+				Expect(actualUrnID).To(Equal(expectedUrnID))
+			})
+
+			It("looks up FK id and persists in columnToValue for AddressFK", func() {
+				foreignKeyValues := ForeignKeyValues{constants.AddressFK: fakes.FakeAddress.Hex()}
+				columnToValue := ColumnValues{}
+
+				tx, txErr := db.Beginx()
+				Expect(txErr).NotTo(HaveOccurred())
+				fkErr := populateForeignKeyIDs(foreignKeyValues, columnToValue, tx)
+				Expect(fkErr).NotTo(HaveOccurred())
+				commitErr := tx.Commit()
+				Expect(commitErr).NotTo(HaveOccurred())
+
+				var expectedAddressID int
+				addressErr := db.Get(&expectedAddressID, `SELECT id FROM public.addresses WHERE address = $1`, fakes.FakeAddress.Hex())
+				Expect(addressErr).NotTo(HaveOccurred())
+				actualAddressID := columnToValue[string(constants.AddressFK)].(int)
+				Expect(actualAddressID).To(Equal(expectedAddressID))
+			})
 		})
 	})
 
@@ -274,6 +313,87 @@ var _ = Describe("Shared repository", func() {
 
 			Expect(ilkIdOne).NotTo(BeZero())
 			Expect(ilkIdOne).To(Equal(ilkIdTwo))
+		})
+	})
+
+	Describe("GetOrCreateAddress", func() {
+		It("creates an address record", func() {
+			_, err := GetOrCreateAddress(fakes.FakeAddress.Hex(), db)
+			Expect(err).NotTo(HaveOccurred())
+
+			var address string
+			db.Get(&address, `SELECT address from addresses LIMIT 1`)
+			Expect(address).To(Equal(fakes.FakeAddress.Hex()))
+		})
+
+		It("returns the id for an address that already exists", func() {
+			//create the address record
+			createAddressId, createErr := GetOrCreateAddress(fakes.FakeAddress.Hex(), db)
+			Expect(createErr).NotTo(HaveOccurred())
+
+			//get the address record
+			getAddressId, getErr := GetOrCreateAddress(fakes.FakeAddress.Hex(), db)
+			Expect(getErr).NotTo(HaveOccurred())
+
+			Expect(createAddressId).To(Equal(getAddressId))
+
+			var addressCount int
+			db.Get(&addressCount, `SELECT count(*) from addresses`)
+			Expect(addressCount).To(Equal(1))
+		})
+	})
+
+	Describe("GetOrCreateAddressInTransaction", func() {
+		It("creates an address record", func() {
+			tx, txErr := db.Beginx()
+			Expect(txErr).NotTo(HaveOccurred())
+
+			_, createErr := GetOrCreateAddressInTransaction(fakes.FakeAddress.Hex(), tx)
+			Expect(createErr).NotTo(HaveOccurred())
+
+			commitErr := tx.Commit()
+			Expect(commitErr).NotTo(HaveOccurred())
+
+			var address string
+			db.Get(&address, `SELECT address from addresses LIMIT 1`)
+			Expect(address).To(Equal(fakes.FakeAddress.Hex()))
+		})
+
+		It("returns the id for an address that already exists", func() {
+			tx, txErr := db.Beginx()
+			Expect(txErr).NotTo(HaveOccurred())
+
+			//create the address record
+			createAddressId, createErr := GetOrCreateAddressInTransaction(fakes.FakeAddress.Hex(), tx)
+			Expect(createErr).NotTo(HaveOccurred())
+
+			//get the address record
+			getAddressId, getErr := GetOrCreateAddressInTransaction(fakes.FakeAddress.Hex(), tx)
+			Expect(getErr).NotTo(HaveOccurred())
+
+			commitErr := tx.Commit()
+			Expect(commitErr).NotTo(HaveOccurred())
+
+			Expect(createAddressId).To(Equal(getAddressId))
+
+			var addressCount int
+			db.Get(&addressCount, `SELECT count(*) from addresses`)
+			Expect(addressCount).To(Equal(1))
+		})
+
+		It("doesn't persist the address if the transaction is rolled back", func() {
+			tx, txErr := db.Beginx()
+			Expect(txErr).NotTo(HaveOccurred())
+
+			_, createErr := GetOrCreateAddressInTransaction(fakes.FakeAddress.Hex(), tx)
+			Expect(createErr).NotTo(HaveOccurred())
+
+			commitErr := tx.Rollback()
+			Expect(commitErr).NotTo(HaveOccurred())
+
+			var addressCount int
+			db.Get(&addressCount, `SELECT count(*) from addresses`)
+			Expect(addressCount).To(Equal(0))
 		})
 	})
 })

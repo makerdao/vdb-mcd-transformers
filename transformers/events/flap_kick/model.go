@@ -20,7 +20,7 @@ type FlapKickModel struct {
 	BidId            string `db:"bid_id"`
 	Lot              string
 	Bid              string
-	ContractAddress  string `db:"contract_address"`
+	ContractAddress  string `db:"address_id"`
 	LogIndex         uint   `db:"log_idx"`
 	TransactionIndex uint   `db:"tx_idx"`
 	Raw              []byte `db:"raw_log"`

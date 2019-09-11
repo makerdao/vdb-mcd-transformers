@@ -25,11 +25,6 @@ type MappingRes struct {
 	Value string
 }
 
-type AuctionMappingRes struct {
-	MappingRes
-	ContractAddress string `db:"contract_address"`
-}
-
 type DoubleMappingRes struct {
 	BlockMetadata
 	KeyOne string `db:"key_one"`

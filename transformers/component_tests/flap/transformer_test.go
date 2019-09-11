@@ -1,6 +1,7 @@
 package flap
 
 import (
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"strconv"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -174,7 +175,10 @@ var _ = Describe("Executing the flap transformer", func() {
 			}
 
 			BeforeEach(func() {
-				_, writeErr := db.Exec(flap.InsertKicksQuery, blockNumber, blockHash.Hex(), transformer.Address.Hex(), bidId)
+				addressId, addressErr := shared.GetOrCreateAddress(transformer.Address.Hex(), db)
+				Expect(addressErr).NotTo(HaveOccurred())
+
+				_, writeErr := db.Exec(flap.InsertKicksQuery, blockNumber, blockHash.Hex(), addressId, bidId)
 				Expect(writeErr).NotTo(HaveOccurred())
 
 				executeErr := transformer.Execute(diff)

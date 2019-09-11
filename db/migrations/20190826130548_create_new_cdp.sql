@@ -1,14 +1,14 @@
 -- +goose Up
 CREATE TABLE maker.new_cdp
 (
-    id SERIAL PRIMARY KEY,
+    id        SERIAL PRIMARY KEY,
     header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
-    usr TEXT,
-    own TEXT,
-    cdp NUMERIC ,
-    tx_idx INTEGER NOT NULL,
-    log_idx INTEGER NOT NULL,
-    raw_log JSONB,
+    usr       TEXT,
+    own       TEXT,
+    cdp       NUMERIC,
+    tx_idx    INTEGER NOT NULL,
+    log_idx   INTEGER NOT NULL,
+    raw_log   JSONB,
     UNIQUE (header_id, tx_idx, log_idx)
 );
 

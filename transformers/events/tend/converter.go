@@ -19,6 +19,7 @@ package tend
 import (
 	"encoding/json"
 	"errors"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -50,18 +51,19 @@ func (TendConverter) ToModels(ethLogs []types.Log) (results []shared.InsertionMo
 		model := shared.InsertionModel{
 			TableName: "tend",
 			OrderedColumns: []string{
-				"header_id", "bid_id", "lot", "bid", "contract_address", "log_idx", "tx_idx", "raw_log",
+				"header_id", "bid_id", "lot", "bid", string(constants.AddressFK), "log_idx", "tx_idx", "raw_log",
 			},
 			ColumnValues: shared.ColumnValues{
-				"bid_id":           bidId.String(),
-				"lot":              lot,
-				"bid":              bidValue,
-				"contract_address": ethLog.Address.Hex(),
-				"log_idx":          ethLog.Index,
-				"tx_idx":           ethLog.TxIndex,
-				"raw_log":          rawLog,
+				"bid_id":  bidId.String(),
+				"lot":     lot,
+				"bid":     bidValue,
+				"log_idx": ethLog.Index,
+				"tx_idx":  ethLog.TxIndex,
+				"raw_log": rawLog,
 			},
-			ForeignKeyValues: shared.ForeignKeyValues{},
+			ForeignKeyValues: shared.ForeignKeyValues{
+				constants.AddressFK: ethLog.Address.Hex(),
+			},
 		}
 		results = append(results, model)
 	}

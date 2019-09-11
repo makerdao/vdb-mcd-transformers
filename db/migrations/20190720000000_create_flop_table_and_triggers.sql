@@ -1,18 +1,18 @@
 -- +goose Up
 CREATE TABLE maker.flop
 (
-    id               SERIAL PRIMARY KEY,
-    block_number     BIGINT  DEFAULT NULL,
-    block_hash       TEXT    DEFAULT NULL,
-    contract_address TEXT    DEFAULT NULL,
-    bid_id           NUMERIC DEFAULT NULL,
-    guy              TEXT    DEFAULT NULL,
-    tic              BIGINT  DEFAULT NULL,
-    "end"            BIGINT  DEFAULT NULL,
-    lot              NUMERIC DEFAULT NULL,
-    bid              NUMERIC DEFAULT NULL,
-    created          TIMESTAMP,
-    updated          TIMESTAMP,
+    id           SERIAL PRIMARY KEY,
+    block_number BIGINT  DEFAULT NULL,
+    block_hash   TEXT    DEFAULT NULL,
+    address_id   INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
+    bid_id       NUMERIC DEFAULT NULL,
+    guy          TEXT    DEFAULT NULL,
+    tic          BIGINT  DEFAULT NULL,
+    "end"        BIGINT  DEFAULT NULL,
+    lot          NUMERIC DEFAULT NULL,
+    bid          NUMERIC DEFAULT NULL,
+    created      TIMESTAMP,
+    updated      TIMESTAMP,
     UNIQUE (block_number, bid_id)
 );
 
@@ -86,9 +86,9 @@ BEGIN
         LIMIT 1
     )
     INSERT
-    INTO maker.flop(bid_id, contract_address, block_number, block_hash, bid, guy, tic, "end", lot, updated,
+    INTO maker.flop(bid_id, address_id, block_number, block_hash, bid, guy, tic, "end", lot, updated,
                     created)
-    VALUES (NEW.bid_id, NEW.contract_address, NEW.block_number, NEW.block_hash, NEW.bid,
+    VALUES (NEW.bid_id, NEW.address_id, NEW.block_number, NEW.block_hash, NEW.bid,
             (SELECT get_latest_flop_bid_guy(NEW.bid_id)),
             (SELECT get_latest_flop_bid_tic(NEW.bid_id)),
             (SELECT get_latest_flop_bid_end(NEW.bid_id)),
@@ -115,9 +115,9 @@ BEGIN
         LIMIT 1
     )
     INSERT
-    INTO maker.flop(bid_id, contract_address, block_number, block_hash, guy, bid, tic, "end", lot, updated,
+    INTO maker.flop(bid_id, address_id, block_number, block_hash, guy, bid, tic, "end", lot, updated,
                     created)
-    VALUES (NEW.bid_id, NEW.contract_address, NEW.block_number, NEW.block_hash, NEW.guy,
+    VALUES (NEW.bid_id, NEW.address_id, NEW.block_number, NEW.block_hash, NEW.guy,
             (SELECT get_latest_flop_bid_bid(NEW.bid_id)),
             (SELECT get_latest_flop_bid_tic(NEW.bid_id)),
             (SELECT get_latest_flop_bid_end(NEW.bid_id)),
@@ -144,9 +144,9 @@ BEGIN
         LIMIT 1
     )
     INSERT
-    INTO maker.flop(bid_id, contract_address, block_number, block_hash, tic, bid, guy, "end", lot, updated,
+    INTO maker.flop(bid_id, address_id, block_number, block_hash, tic, bid, guy, "end", lot, updated,
                     created)
-    VALUES (NEW.bid_id, NEW.contract_address, NEW.block_number, NEW.block_hash, NEW.tic,
+    VALUES (NEW.bid_id, NEW.address_id, NEW.block_number, NEW.block_hash, NEW.tic,
             (SELECT get_latest_flop_bid_bid(NEW.bid_id)),
             (SELECT get_latest_flop_bid_guy(NEW.bid_id)),
             (SELECT get_latest_flop_bid_end(NEW.bid_id)),
@@ -173,9 +173,9 @@ BEGIN
         LIMIT 1
     )
     INSERT
-    INTO maker.flop(bid_id, contract_address, block_number, block_hash, "end", bid, guy, tic, lot, updated,
+    INTO maker.flop(bid_id, address_id, block_number, block_hash, "end", bid, guy, tic, lot, updated,
                     created)
-    VALUES (NEW.bid_id, NEW.contract_address, NEW.block_number, NEW.block_hash, NEW."end",
+    VALUES (NEW.bid_id, NEW.address_id, NEW.block_number, NEW.block_hash, NEW."end",
             (SELECT get_latest_flop_bid_bid(NEW.bid_id)),
             (SELECT get_latest_flop_bid_guy(NEW.bid_id)),
             (SELECT get_latest_flop_bid_tic(NEW.bid_id)),
@@ -202,9 +202,9 @@ BEGIN
         LIMIT 1
     )
     INSERT
-    INTO maker.flop(bid_id, contract_address, block_number, block_hash, lot, bid, guy, tic, "end", updated,
+    INTO maker.flop(bid_id, address_id, block_number, block_hash, lot, bid, guy, tic, "end", updated,
                     created)
-    VALUES (NEW.bid_id, NEW.contract_address, NEW.block_number, NEW.block_hash, NEW.lot,
+    VALUES (NEW.bid_id, NEW.address_id, NEW.block_number, NEW.block_hash, NEW.lot,
             (SELECT get_latest_flop_bid_bid(NEW.bid_id)),
             (SELECT get_latest_flop_bid_guy(NEW.bid_id)),
             (SELECT get_latest_flop_bid_tic(NEW.bid_id)),
@@ -230,8 +230,8 @@ BEGIN
         LIMIT 1
     )
     INSERT
-    INTO maker.flop(bid_id, contract_address, block_number, block_hash, created, updated, bid, guy, tic, "end", lot)
-    VALUES (NEW.bid_id, NEW.contract_address,
+    INTO maker.flop(bid_id, address_id, block_number, block_hash, created, updated, bid, guy, tic, "end", lot)
+    VALUES (NEW.bid_id, NEW.address_id,
             (SELECT block_number FROM block_info),
             (SELECT hash FROM block_info),
             (SELECT datetime FROM block_info),

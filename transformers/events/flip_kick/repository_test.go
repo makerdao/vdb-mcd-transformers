@@ -63,7 +63,11 @@ var _ = Describe("FlipKick Repository", func() {
 			err = flipKickRepository.Create(headerId, []interface{}{test_data.FlipKickModel})
 			Expect(err).NotTo(HaveOccurred())
 
-			assertDBRecordCount(db, "maker.flip_kick", 1)
+			test_data.AssertDBRecordCount(db, "maker.flip_kick", 1)
+
+			var addressId string
+			addressErr := db.Get(&addressId, `SELECT id FROM addresses`)
+			Expect(addressErr).NotTo(HaveOccurred())
 
 			dbResult := test_data.FlipKickDBRow{}
 			err = db.QueryRowx(`SELECT * FROM maker.flip_kick`).StructScan(&dbResult)
@@ -75,10 +79,25 @@ var _ = Describe("FlipKick Repository", func() {
 			Expect(dbResult.Tab).To(Equal(test_data.FlipKickModel.Tab))
 			Expect(dbResult.Usr).To(Equal(test_data.FlipKickModel.Usr))
 			Expect(dbResult.Gal).To(Equal(test_data.FlipKickModel.Gal))
-			Expect(dbResult.ContractAddress).To(Equal(test_data.FlipKickModel.ContractAddress))
+			Expect(dbResult.ContractAddress).To(Equal(addressId))
 			Expect(dbResult.TransactionIndex).To(Equal(test_data.FlipKickModel.TransactionIndex))
 			Expect(dbResult.LogIndex).To(Equal(test_data.FlipKickModel.LogIndex))
 			Expect(dbResult.Raw).To(MatchJSON(test_data.FlipKickModel.Raw))
+		})
+
+		It("doesn't insert a new address if the flip kick insertion fails", func() {
+			headerRepository := repositories.NewHeaderRepository(db)
+			headerId, err := headerRepository.CreateOrUpdateHeader(fakes.FakeHeader)
+			Expect(err).NotTo(HaveOccurred())
+
+			badFlipKick := test_data.FlipKickModel
+			badFlipKick.Bid = ""
+			err = flipKickRepository.Create(headerId, []interface{}{test_data.FlipKickModel, badFlipKick})
+			Expect(err).To(HaveOccurred())
+			Expect(err.Error()).To(MatchRegexp("invalid input syntax for type numeric"))
+
+			test_data.AssertDBRecordCount(db, "maker.flip_kick", 0)
+			test_data.AssertDBRecordCount(db, "addresses", 0)
 		})
 	})
 
@@ -91,11 +110,3 @@ var _ = Describe("FlipKick Repository", func() {
 		shared_behaviors.SharedRepositoryMarkHeaderCheckedBehaviors(&inputs)
 	})
 })
-
-func assertDBRecordCount(db *postgres.DB, dbTable string, expectedCount int) {
-	var count int
-	query := `SELECT count(*) FROM ` + dbTable
-	err := db.QueryRow(query).Scan(&count)
-	Expect(err).NotTo(HaveOccurred())
-	Expect(count).To(Equal(expectedCount))
-}

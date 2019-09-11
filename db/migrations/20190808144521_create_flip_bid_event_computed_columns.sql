@@ -7,8 +7,8 @@ $$
 WITH ilks AS (
     SELECT ilks.identifier
     FROM maker.flip_ilk
-       LEFT JOIN maker.ilks ON ilks.id = flip_ilk.ilk_id
-    WHERE contract_address = event.contract_address
+             LEFT JOIN maker.ilks ON ilks.id = flip_ilk.ilk_id
+    WHERE flip_ilk.address_id = (SELECT id FROM addresses WHERE address = event.contract_address)
     LIMIT 1
 )
 SELECT *
@@ -21,7 +21,8 @@ $$
 CREATE FUNCTION api.flip_bid_event_tx(event api.flip_bid_event)
     RETURNS SETOF api.tx AS
 $$
-    SELECT * FROM get_tx_data(event.block_height, event.tx_idx)
+SELECT *
+FROM get_tx_data(event.block_height, event.tx_idx)
 $$
     LANGUAGE sql
     STABLE;

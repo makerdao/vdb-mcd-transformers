@@ -17,6 +17,7 @@
 package queries
 
 import (
+	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/vulcanize/mcd_transformers/test_config"
@@ -39,20 +40,21 @@ import (
 
 var _ = Describe("All flip bid events query", func() {
 	var (
-		db              *postgres.DB
-		flipKickRepo    flip_kick.FlipKickRepository
-		tendRepo        tend.TendRepository
-		tickRepo        tick.TickRepository
-		dentRepo        dent.DentRepository
-		dealRepo        deal.DealRepository
-		yankRepo        yank.YankRepository
-		headerRepo      repositories.HeaderRepository
-		headerOne       core.Header
-		headerOneId     int64
-		headerOneErr    error
-		contractAddress = "FlipContract"
-		bidId           int
-		flipKickEvent   flip_kick.FlipKickModel
+		db                     *postgres.DB
+		flipKickRepo           flip_kick.FlipKickRepository
+		tendRepo               tend.TendRepository
+		tickRepo               tick.TickRepository
+		dentRepo               dent.DentRepository
+		dealRepo               deal.DealRepository
+		yankRepo               yank.YankRepository
+		headerRepo             repositories.HeaderRepository
+		contractAddress        = fakes.FakeAddress.Hex()
+		anotherContractAddress = common.HexToAddress("0xabcdef123456789").Hex()
+		bidId                  int
+		headerOne              core.Header
+		headerOneId            int64
+		headerOneErr           error
+		flipKickEvent          flip_kick.FlipKickModel
 	)
 
 	BeforeEach(func() {
@@ -343,7 +345,7 @@ var _ = Describe("All flip bid events query", func() {
 			It("ignores tend events that are not from a flip", func() {
 				flapTendErr := test_helpers.CreateTend(test_helpers.TendCreationInput{
 					BidId:           bidId,
-					ContractAddress: "flap",
+					ContractAddress: anotherContractAddress,
 					Lot:             rand.Int(),
 					BidAmount:       rand.Int(),
 					TendRepo:        tendRepo,
@@ -406,7 +408,7 @@ var _ = Describe("All flip bid events query", func() {
 			It("ignores dent events that are not from flip", func() {
 				flapDentErr := test_helpers.CreateDent(test_helpers.DentCreationInput{
 					BidId:           bidId,
-					ContractAddress: "flap",
+					ContractAddress: anotherContractAddress,
 					Lot:             rand.Int(),
 					BidAmount:       rand.Int(),
 					DentRepo:        dentRepo,

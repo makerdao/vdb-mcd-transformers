@@ -2,7 +2,7 @@ package flop
 
 import (
 	"fmt"
-
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 
@@ -11,19 +11,19 @@ import (
 )
 
 const (
-	insertFlopVatQuery   = `INSERT INTO maker.flop_vat (block_number, block_hash, contract_address, vat) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
-	insertFlopGemQuery   = `INSERT INTO maker.flop_gem (block_number, block_hash, contract_address, gem) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
-	insertFlopBegQuery   = `INSERT INTO maker.flop_beg (block_number, block_hash, contract_address, beg) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
-	insertFlopTtlQuery   = `INSERT INTO maker.flop_ttl (block_number, block_hash, contract_address, ttl) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
-	insertFlopTauQuery   = `INSERT INTO maker.flop_tau (block_number, block_hash, contract_address, tau) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
-	InsertFlopKicksQuery = `INSERT INTO maker.flop_kicks (block_number, block_hash, contract_address, kicks) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
-	insertFlopLiveQuery  = `INSERT INTO maker.flop_live (block_number, block_hash, contract_address, live) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
+	insertFlopVatQuery   = `INSERT INTO maker.flop_vat (block_number, block_hash, address_id, vat) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
+	insertFlopGemQuery   = `INSERT INTO maker.flop_gem (block_number, block_hash, address_id, gem) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
+	insertFlopBegQuery   = `INSERT INTO maker.flop_beg (block_number, block_hash, address_id, beg) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
+	insertFlopTtlQuery   = `INSERT INTO maker.flop_ttl (block_number, block_hash, address_id, ttl) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
+	insertFlopTauQuery   = `INSERT INTO maker.flop_tau (block_number, block_hash, address_id, tau) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
+	InsertFlopKicksQuery = `INSERT INTO maker.flop_kicks (block_number, block_hash, address_id, kicks) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
+	insertFlopLiveQuery  = `INSERT INTO maker.flop_live (block_number, block_hash, address_id, live) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
 
-	InsertFlopBidBidQuery = `INSERT INTO maker.flop_bid_bid (block_number, block_hash, contract_address, bid_id, bid) VALUES ($1, $2, $3, $4, $5) ON CONFLICT DO NOTHING`
-	InsertFlopBidLotQuery = `INSERT INTO Maker.flop_bid_lot (block_number, block_hash, contract_address, bid_id, lot) VALUES ($1, $2, $3, $4, $5) ON CONFLICT DO NOTHING`
-	InsertFlopBidGuyQuery = `INSERT INTO Maker.flop_bid_guy (block_number, block_hash, contract_address, bid_id, guy) VALUES ($1, $2, $3, $4, $5) ON CONFLICT DO NOTHING`
-	InsertFlopBidTicQuery = `INSERT INTO Maker.flop_bid_tic (block_number, block_hash, contract_address, bid_id, tic) VALUES ($1, $2, $3, $4, $5) ON CONFLICT DO NOTHING`
-	InsertFlopBidEndQuery = `INSERT INTO Maker.flop_bid_end (block_number, block_hash, contract_address, bid_id, "end") VALUES ($1, $2, $3, $4, $5) ON CONFLICT DO NOTHING`
+	InsertFlopBidBidQuery = `INSERT INTO maker.flop_bid_bid (block_number, block_hash, address_id, bid_id, bid) VALUES ($1, $2, $3, $4, $5) ON CONFLICT DO NOTHING`
+	InsertFlopBidLotQuery = `INSERT INTO Maker.flop_bid_lot (block_number, block_hash, address_id, bid_id, lot) VALUES ($1, $2, $3, $4, $5) ON CONFLICT DO NOTHING`
+	InsertFlopBidGuyQuery = `INSERT INTO Maker.flop_bid_guy (block_number, block_hash, address_id, bid_id, guy) VALUES ($1, $2, $3, $4, $5) ON CONFLICT DO NOTHING`
+	InsertFlopBidTicQuery = `INSERT INTO Maker.flop_bid_tic (block_number, block_hash, address_id, bid_id, tic) VALUES ($1, $2, $3, $4, $5) ON CONFLICT DO NOTHING`
+	InsertFlopBidEndQuery = `INSERT INTO Maker.flop_bid_end (block_number, block_hash, address_id, bid_id, "end") VALUES ($1, $2, $3, $4, $5) ON CONFLICT DO NOTHING`
 )
 
 type FlopStorageRepository struct {
@@ -59,38 +59,31 @@ func (repository *FlopStorageRepository) SetDB(db *postgres.DB) {
 }
 
 func (repository *FlopStorageRepository) insertVat(blockNumber int, blockHash string, vat string) error {
-	_, writeErr := repository.db.Exec(insertFlopVatQuery, blockNumber, blockHash, repository.ContractAddress, vat)
-	return writeErr
+	return repository.insertRecordWithAddress(blockNumber, blockHash, insertFlopVatQuery, vat)
 }
 
 func (repository *FlopStorageRepository) insertGem(blockNumber int, blockHash string, gem string) error {
-	_, writeErr := repository.db.Exec(insertFlopGemQuery, blockNumber, blockHash, repository.ContractAddress, gem)
-	return writeErr
+	return repository.insertRecordWithAddress(blockNumber, blockHash, insertFlopGemQuery, gem)
 }
 
 func (repository *FlopStorageRepository) insertBeg(blockNumber int, blockHash string, beg string) error {
-	_, writeErr := repository.db.Exec(insertFlopBegQuery, blockNumber, blockHash, repository.ContractAddress, beg)
-	return writeErr
+	return repository.insertRecordWithAddress(blockNumber, blockHash, insertFlopBegQuery, beg)
 }
 
 func (repository *FlopStorageRepository) insertTtl(blockNumber int, blockHash string, ttl string) error {
-	_, writeErr := repository.db.Exec(insertFlopTtlQuery, blockNumber, blockHash, repository.ContractAddress, ttl)
-	return writeErr
+	return repository.insertRecordWithAddress(blockNumber, blockHash, insertFlopTtlQuery, ttl)
 }
 
 func (repository *FlopStorageRepository) insertTau(blockNumber int, blockHash string, tau string) error {
-	_, writeErr := repository.db.Exec(insertFlopTauQuery, blockNumber, blockHash, repository.ContractAddress, tau)
-	return writeErr
+	return repository.insertRecordWithAddress(blockNumber, blockHash, insertFlopTauQuery, tau)
 }
 
 func (repository *FlopStorageRepository) insertKicks(blockNumber int, blockHash string, kicks string) error {
-	_, writeErr := repository.db.Exec(InsertFlopKicksQuery, blockNumber, blockHash, repository.ContractAddress, kicks)
-	return writeErr
+	return repository.insertRecordWithAddress(blockNumber, blockHash, InsertFlopKicksQuery, kicks)
 }
 
 func (repository *FlopStorageRepository) insertLive(blockNumber int, blockHash string, live string) error {
-	_, writeErr := repository.db.Exec(insertFlopLiveQuery, blockNumber, blockHash, repository.ContractAddress, live)
-	return writeErr
+	return repository.insertRecordWithAddress(blockNumber, blockHash, insertFlopLiveQuery, live)
 }
 
 func (repository *FlopStorageRepository) insertBidBid(blockNumber int, blockHash string, metadata utils.StorageValueMetadata, bid string) error {
@@ -98,8 +91,7 @@ func (repository *FlopStorageRepository) insertBidBid(blockNumber int, blockHash
 	if err != nil {
 		return err
 	}
-	_, writeErr := repository.db.Exec(InsertFlopBidBidQuery, blockNumber, blockHash, repository.ContractAddress, bidId, bid)
-	return writeErr
+	return repository.insertRecordWithAddressAndBidId(blockNumber, blockHash, InsertFlopBidBidQuery, bidId, bid)
 }
 
 func (repository *FlopStorageRepository) insertBidLot(blockNumber int, blockHash string, metadata utils.StorageValueMetadata, lot string) error {
@@ -107,8 +99,7 @@ func (repository *FlopStorageRepository) insertBidLot(blockNumber int, blockHash
 	if err != nil {
 		return err
 	}
-	_, writeErr := repository.db.Exec(InsertFlopBidLotQuery, blockNumber, blockHash, repository.ContractAddress, bidId, lot)
-	return writeErr
+	return repository.insertRecordWithAddressAndBidId(blockNumber, blockHash, InsertFlopBidLotQuery, bidId, lot)
 }
 
 func (repository *FlopStorageRepository) insertBidGuy(blockNumber int, blockHash string, metadata utils.StorageValueMetadata, guy string) error {
@@ -116,8 +107,7 @@ func (repository *FlopStorageRepository) insertBidGuy(blockNumber int, blockHash
 	if err != nil {
 		return err
 	}
-	_, writeErr := repository.db.Exec(InsertFlopBidGuyQuery, blockNumber, blockHash, repository.ContractAddress, bidId, guy)
-	return writeErr
+	return repository.insertRecordWithAddressAndBidId(blockNumber, blockHash, InsertFlopBidGuyQuery, bidId, guy)
 }
 
 func (repository *FlopStorageRepository) insertBidTic(blockNumber int, blockHash string, metadata utils.StorageValueMetadata, tic string) error {
@@ -125,8 +115,7 @@ func (repository *FlopStorageRepository) insertBidTic(blockNumber int, blockHash
 	if err != nil {
 		return err
 	}
-	_, writeErr := repository.db.Exec(InsertFlopBidTicQuery, blockNumber, blockHash, repository.ContractAddress, bidId, tic)
-	return writeErr
+	return repository.insertRecordWithAddressAndBidId(blockNumber, blockHash, InsertFlopBidTicQuery, bidId, tic)
 }
 
 func (repository *FlopStorageRepository) insertBidEnd(blockNumber int, blockHash string, metadata utils.StorageValueMetadata, end string) error {
@@ -134,8 +123,7 @@ func (repository *FlopStorageRepository) insertBidEnd(blockNumber int, blockHash
 	if err != nil {
 		return err
 	}
-	_, writeErr := repository.db.Exec(InsertFlopBidEndQuery, blockNumber, blockHash, repository.ContractAddress, bidId, end)
-	return writeErr
+	return repository.insertRecordWithAddressAndBidId(blockNumber, blockHash, InsertFlopBidEndQuery, bidId, end)
 }
 
 func (repository *FlopStorageRepository) insertPackedValueRecord(blockNumber int, blockHash string, metadata utils.StorageValueMetadata, packedValues map[int]string) error {
@@ -168,4 +156,54 @@ func getBidId(keys map[utils.Key]string) (string, error) {
 		return "", utils.ErrMetadataMalformed{MissingData: constants.BidId}
 	}
 	return bidId, nil
+}
+
+func (repository *FlopStorageRepository) insertRecordWithAddress(blockNumber int, blockHash, query, value string) error {
+	tx, txErr := repository.db.Beginx()
+	if txErr != nil {
+		return txErr
+	}
+	addressId, addressErr := shared.GetOrCreateAddress(repository.ContractAddress, repository.db)
+	if addressErr != nil {
+		rollbackErr := tx.Rollback()
+		if rollbackErr != nil {
+			return shared.FormatRollbackError("flop address", addressErr.Error())
+		}
+		return addressErr
+	}
+	_, insertErr := tx.Exec(query, blockNumber, blockHash, addressId, value)
+	if insertErr != nil {
+		rollbackErr := tx.Rollback()
+		if rollbackErr != nil {
+			return shared.FormatRollbackError("flop field with address", insertErr.Error())
+		}
+		return insertErr
+	}
+
+	return tx.Commit()
+}
+
+func (repository *FlopStorageRepository) insertRecordWithAddressAndBidId(blockNumber int, blockHash, query, bidId, value string) error {
+	tx, txErr := repository.db.Beginx()
+	if txErr != nil {
+		return txErr
+	}
+	addressId, addressErr := shared.GetOrCreateAddress(repository.ContractAddress, repository.db)
+	if addressErr != nil {
+		rollbackErr := tx.Rollback()
+		if rollbackErr != nil {
+			return shared.FormatRollbackError("flop address", addressErr.Error())
+		}
+		return addressErr
+	}
+	_, insertErr := tx.Exec(query, blockNumber, blockHash, addressId, bidId, value)
+	if insertErr != nil {
+		rollbackErr := tx.Rollback()
+		if rollbackErr != nil {
+			errorString := fmt.Sprintf("flop field with address for bid id %s", bidId)
+			return shared.FormatRollbackError(errorString, insertErr.Error())
+		}
+		return insertErr
+	}
+	return tx.Commit()
 }

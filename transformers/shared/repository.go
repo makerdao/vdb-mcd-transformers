@@ -24,6 +24,7 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/repository"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
+	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres/repositories"
 	"strconv"
 	"strings"
 )
@@ -177,6 +178,8 @@ func populateForeignKeyIDs(fkToValue ForeignKeyValues, columnToValue ColumnValue
 			fkID, dbErr = GetOrCreateIlkInTransaction(value, tx)
 		case constants.UrnFK:
 			fkID, dbErr = GetOrCreateUrnInTransaction(value, fkToValue[constants.IlkFK], tx)
+		case constants.AddressFK:
+			fkID, dbErr = GetOrCreateAddressInTransaction(value, tx)
 		default:
 			return fmt.Errorf("repository got unrecognised FK: %s", fk)
 		}
@@ -230,4 +233,15 @@ func GetOrCreateUrnInTransaction(guy string, hexIlk string, tx *sqlx.Tx) (urnID 
 
 	err = tx.Get(&urnID, getOrCreateUrnQuery, guy, ilkID)
 	return urnID, err
+}
+
+func GetOrCreateAddress(address string, db *postgres.DB) (int64, error) {
+	addressRepository := repositories.AddressRepository{}
+	return addressRepository.GetOrCreateAddress(db, address)
+}
+
+func GetOrCreateAddressInTransaction(address string, tx *sqlx.Tx) (int, error) {
+	addressRepository := repositories.AddressRepository{}
+	addressId, addressErr := addressRepository.GetOrCreateAddressInTransaction(tx, address)
+	return int(addressId), addressErr
 }

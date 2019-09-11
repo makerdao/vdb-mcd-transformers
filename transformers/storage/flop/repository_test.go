@@ -43,6 +43,7 @@ var _ = Describe("Flop storage repository", func() {
 
 		Expect(flopCreate).Should(Panic())
 	})
+
 	Describe("Vat", func() {
 		vatMetadata := utils.StorageValueMetadata{Name: storage.Vat}
 

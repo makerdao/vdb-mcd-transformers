@@ -23,7 +23,7 @@ type FlipKickModel struct {
 	Tab              string
 	Usr              string
 	Gal              string
-	ContractAddress  string `db:"contract_address"`
+	ContractAddress  string `db:"address_id"`
 	TransactionIndex uint   `db:"tx_idx"`
 	LogIndex         uint   `db:"log_idx"`
 	Raw              []byte `db:"raw_log"`

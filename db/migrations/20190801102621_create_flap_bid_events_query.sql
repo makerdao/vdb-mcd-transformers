@@ -29,19 +29,25 @@ COMMENT ON COLUMN api.flap_bid_event.contract_address
 CREATE FUNCTION api.all_flap_bid_events(max_results INTEGER DEFAULT NULL)
     RETURNS SETOF api.flap_bid_event AS
 $$
-WITH address AS (
-    SELECT contract_address
+WITH address_id AS (
+    SELECT address_id
     FROM maker.flap_kick
     LIMIT 1
 ),
+     flap_address AS (
+         SELECT address
+         FROM maker.flap_kick
+         JOIN addresses on addresses.id = flap_kick.address_id
+         LIMIT 1
+     ),
      deals AS (
          SELECT deal.bid_id,
                 flap_bid_lot.lot,
-                flap_bid_bid.bid     AS bid_amount,
-                'deal'::api.bid_act  AS act,
-                headers.block_number AS block_height,
+                flap_bid_bid.bid                                           AS bid_amount,
+                'deal'::api.bid_act                                        AS act,
+                headers.block_number                                       AS block_height,
                 tx_idx,
-                deal.contract_address
+                (SELECT * FROM flap_address) AS contract_address
          FROM maker.deal
                   LEFT JOIN headers ON deal.header_id = headers.id
                   LEFT JOIN maker.flap_bid_bid
@@ -50,16 +56,16 @@ WITH address AS (
                   LEFT JOIN maker.flap_bid_lot
                             ON deal.bid_id = flap_bid_lot.bid_id
                                 AND flap_bid_lot.block_number = headers.block_number
-         WHERE deal.contract_address = (SELECT * FROM address)
+         WHERE deal.address_id = (SELECT * FROM address_id)
      ),
      yanks AS (
          SELECT yank.bid_id,
                 flap_bid_lot.lot,
-                flap_bid_bid.bid     AS bid_amount,
-                'yank'::api.bid_act  AS act,
-                headers.block_number AS block_height,
+                flap_bid_bid.bid                                           AS bid_amount,
+                'yank'::api.bid_act                                        AS act,
+                headers.block_number                                       AS block_height,
                 tx_idx,
-                yank.contract_address
+                (SELECT * FROM flap_address) AS contract_address
          FROM maker.yank
                   LEFT JOIN headers ON yank.header_id = headers.id
                   LEFT JOIN maker.flap_bid_bid
@@ -68,29 +74,29 @@ WITH address AS (
                   LEFT JOIN maker.flap_bid_lot
                             ON yank.bid_id = flap_bid_lot.bid_id
                                 AND flap_bid_lot.block_number = headers.block_number
-         WHERE yank.contract_address = (SELECT * FROM address)
+         WHERE yank.address_id = (SELECT * FROM address_id)
      )
 
 SELECT flap_kick.bid_id,
        lot,
-       bid                 AS bid_amount,
-       'kick'::api.bid_act AS act,
-       block_number        AS block_height,
+       bid                                                             AS bid_amount,
+       'kick'::api.bid_act                                             AS act,
+       block_number                                                    AS block_height,
        tx_idx,
-       contract_address
+       (SELECT * FROM flap_address) AS contract_address
 FROM maker.flap_kick
          LEFT JOIN headers ON flap_kick.header_id = headers.id
 UNION
 SELECT bid_id,
        lot,
-       bid                 AS bid_amount,
-       'tend'::api.bid_act AS act,
-       block_number        AS block_height,
+       bid                                                        AS bid_amount,
+       'tend'::api.bid_act                                        AS act,
+       block_number                                               AS block_height,
        tx_idx,
-       contract_address
+       (SELECT * FROM flap_address) AS contract_address
 FROM maker.tend
          LEFT JOIN headers ON tend.header_id = headers.id
-WHERE tend.contract_address = (SELECT * FROM address)
+WHERE tend.address_id = (SELECT * FROM address_id)
 UNION
 SELECT *
 FROM deals

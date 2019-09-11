@@ -19,6 +19,7 @@ package yank
 import (
 	"encoding/json"
 	"errors"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
@@ -42,16 +43,17 @@ func (YankConverter) ToModels(ethLogs []types.Log) (results []shared.InsertionMo
 		model := shared.InsertionModel{
 			TableName: "yank",
 			OrderedColumns: []string{
-				"header_id", "bid_id", "contract_address", "log_idx", "tx_idx", "raw_log",
+				"header_id", "bid_id", string(constants.AddressFK), "log_idx", "tx_idx", "raw_log",
 			},
 			ColumnValues: shared.ColumnValues{
-				"bid_id":           bidId.String(),
-				"contract_address": log.Address.Hex(),
-				"log_idx":          log.Index,
-				"tx_idx":           log.TxIndex,
-				"raw_log":          raw,
+				"bid_id":  bidId.String(),
+				"log_idx": log.Index,
+				"tx_idx":  log.TxIndex,
+				"raw_log": raw,
 			},
-			ForeignKeyValues: shared.ForeignKeyValues{},
+			ForeignKeyValues: shared.ForeignKeyValues{
+				constants.AddressFK: log.Address.Hex(),
+			},
 		}
 		results = append(results, model)
 	}

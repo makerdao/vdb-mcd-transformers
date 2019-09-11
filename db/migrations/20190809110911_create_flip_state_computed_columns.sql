@@ -28,8 +28,8 @@ $$
 CREATE FUNCTION api.flip_state_bid_events(flip api.flip_state, max_results INTEGER DEFAULT NULL)
     RETURNS SETOF api.flip_bid_event AS
 $$
-WITH addresses AS ( -- get the contract address from flip_ilk table using the ilk_id from flip
-    SELECT contract_address
+WITH address_ids AS ( -- get the contract address from flip_ilk table using the ilk_id from flip
+    SELECT address_id
     FROM maker.flip_ilk
              LEFT JOIN maker.ilks ON ilks.id = flip_ilk.ilk_id
     WHERE ilks.id = flip.ilk_id
@@ -38,7 +38,8 @@ WITH addresses AS ( -- get the contract address from flip_ilk table using the il
 )
 SELECT bid_id, lot, bid_amount, act, block_height, tx_idx, events.contract_address
 FROM api.all_flip_bid_events() AS events
-         LEFT JOIN addresses ON events.contract_address = addresses.contract_address
+         LEFT JOIN address_ids
+                   ON address_ids.address_id = (SELECT id FROM addresses WHERE address = events.contract_address)
 WHERE bid_id = flip.bid_id
 ORDER BY block_height DESC
 LIMIT flip_state_bid_events.max_results

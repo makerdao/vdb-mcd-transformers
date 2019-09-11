@@ -95,7 +95,7 @@ func (repository *CatStorageRepository) insertFieldWithIlk(blockNumber int, bloc
 	if ilkErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
-			return formatRollbackError("ilk", ilkErr.Error())
+			return shared.FormatRollbackError("ilk", ilkErr.Error())
 		}
 		return ilkErr
 	}
@@ -103,7 +103,7 @@ func (repository *CatStorageRepository) insertFieldWithIlk(blockNumber int, bloc
 	if writeErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
-			return formatRollbackError(variableName, writeErr.Error())
+			return shared.FormatRollbackError(variableName, writeErr.Error())
 		}
 		return writeErr
 	}
@@ -124,8 +124,4 @@ func getFlip(keys map[utils.Key]string) (string, error) {
 		return "", utils.ErrMetadataMalformed{MissingData: constants.Flip}
 	}
 	return flip, nil
-}
-
-func formatRollbackError(field, err string) error {
-	return fmt.Errorf("failed to rollback transaction after failing to insert %s: %s", field, err)
 }

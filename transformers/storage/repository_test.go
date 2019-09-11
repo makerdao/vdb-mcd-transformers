@@ -44,6 +44,9 @@ import (
 
 var _ = Describe("Maker storage repository", func() {
 	var (
+		address             = fakes.FakeAddress.Hex()
+		addressId           int64
+		addressErr          error
 		db                  *postgres.DB
 		repository          storage.IMakerStorageRepository
 		ilk1                = common.HexToHash("0x494c4b31").Hex()
@@ -66,12 +69,13 @@ var _ = Describe("Maker storage repository", func() {
 		test_config.CleanTestDB(db)
 		repository = &storage.MakerStorageRepository{}
 		repository.SetDB(db)
+		addressId, addressErr = shared.GetOrCreateAddress(address, db)
+		Expect(addressErr).NotTo(HaveOccurred())
 	})
 
 	Describe("getting flap bid ids", func() {
 		var (
 			bidId1, bidId2, bidId3, bidId4, bidId5, bidId6 string
-			address                                        = fakes.FakeAddress.Hex()
 		)
 		BeforeEach(func() {
 			bidId1 = strconv.FormatInt(rand.Int63(), 10)
@@ -83,8 +87,8 @@ var _ = Describe("Maker storage repository", func() {
 		})
 
 		It("fetches unique bid ids from Flap methods", func() {
-			insertFlapKick(1, bidId1, address, db)
-			insertFlapKick(2, bidId1, address, db)
+			insertFlapKick(1, bidId1, addressId, db)
+			insertFlapKick(2, bidId1, addressId, db)
 
 			bidIds, err := repository.GetFlapBidIds(address)
 			Expect(err).NotTo(HaveOccurred())
@@ -94,12 +98,12 @@ var _ = Describe("Maker storage repository", func() {
 
 		It("fetches unique bid ids from flap_kick, tend, deal and yank", func() {
 			duplicateBidId := bidId1
-			insertFlapKick(1, bidId1, address, db)
-			insertFlapKicks(2, bidId2, address, db)
-			insertTend(3, bidId3, address, db)
-			insertDeal(4, bidId4, address, db)
-			insertYank(5, bidId5, address, db)
-			insertYank(6, duplicateBidId, address, db)
+			insertFlapKick(1, bidId1, addressId, db)
+			insertFlapKicks(2, bidId2, addressId, db)
+			insertTend(3, bidId3, addressId, db)
+			insertDeal(4, bidId4, addressId, db)
+			insertYank(5, bidId5, addressId, db)
+			insertYank(6, duplicateBidId, addressId, db)
 
 			bidIds, err := repository.GetFlapBidIds(address)
 			Expect(err).NotTo(HaveOccurred())
@@ -109,12 +113,14 @@ var _ = Describe("Maker storage repository", func() {
 
 		It("fetches bid ids only for the given contract address", func() {
 			anotherAddress := address + "1"
-			insertFlapKick(1, bidId1, address, db)
-			insertFlapKick(2, bidId2, address, db)
-			insertTend(3, bidId3, address, db)
-			insertDeal(4, bidId4, address, db)
-			insertYank(5, bidId5, address, db)
-			insertYank(6, bidId6, anotherAddress, db)
+			anotherAddressId, addressErr := shared.GetOrCreateAddress(anotherAddress, db)
+			Expect(addressErr).NotTo(HaveOccurred())
+			insertFlapKick(1, bidId1, addressId, db)
+			insertFlapKick(2, bidId2, addressId, db)
+			insertTend(3, bidId3, addressId, db)
+			insertDeal(4, bidId4, addressId, db)
+			insertYank(5, bidId5, addressId, db)
+			insertYank(6, bidId6, anotherAddressId, db)
 
 			bidIds, err := repository.GetFlapBidIds(address)
 			Expect(err).NotTo(HaveOccurred())
@@ -501,8 +507,8 @@ var _ = Describe("Maker storage repository", func() {
 		})
 
 		It("fetches unique bid ids from flip methods", func() {
-			insertFlipKick(1, bidId1, address, db)
-			insertFlipKick(2, bidId1, address, db)
+			insertFlipKick(1, bidId1, addressId, db)
+			insertFlipKick(2, bidId1, addressId, db)
 
 			bidIds, err := repository.GetFlipBidIds(address)
 			Expect(err).NotTo(HaveOccurred())
@@ -512,14 +518,14 @@ var _ = Describe("Maker storage repository", func() {
 
 		It("fetches unique bid ids from tick, flip_kick, flip_kicks, tend, dent, deal and yank", func() {
 			duplicateBidId := bidId1
-			insertTick(1, bidId1, address, db)
-			insertFlipKick(2, bidId2, address, db)
-			insertFlipKicks(3, bidId3, address, db)
-			insertTend(4, bidId4, address, db)
-			insertDent(5, bidId5, address, db)
-			insertDeal(6, bidId6, address, db)
-			insertYank(7, bidId7, address, db)
-			insertYank(8, duplicateBidId, address, db)
+			insertTick(1, bidId1, addressId, db)
+			insertFlipKick(2, bidId2, addressId, db)
+			insertFlipKicks(3, bidId3, addressId, db)
+			insertTend(4, bidId4, addressId, db)
+			insertDent(5, bidId5, addressId, db)
+			insertDeal(6, bidId6, addressId, db)
+			insertYank(7, bidId7, addressId, db)
+			insertYank(8, duplicateBidId, addressId, db)
 
 			bidIds, err := repository.GetFlipBidIds(address)
 			Expect(err).NotTo(HaveOccurred())
@@ -549,8 +555,8 @@ var _ = Describe("Maker storage repository", func() {
 		})
 
 		It("fetches unique flop bid ids from flop methods", func() {
-			insertFlopKick(1, bidId1, address, db)
-			insertFlopKick(2, bidId1, address, db)
+			insertFlopKick(1, bidId1, addressId, db)
+			insertFlopKick(2, bidId1, addressId, db)
 
 			bidIds, err := repository.GetFlopBidIds(address)
 			Expect(err).NotTo(HaveOccurred())
@@ -560,12 +566,12 @@ var _ = Describe("Maker storage repository", func() {
 
 		It("fetches unique bid ids from flop_kick, dent, deal, and yank", func() {
 			duplicateBidId := bidId1
-			insertFlopKick(1, bidId1, address, db)
-			insertFlopKicks(2, bidId2, address, db)
-			insertDent(3, bidId3, address, db)
-			insertDeal(4, bidId4, address, db)
-			insertYank(5, bidId5, address, db)
-			insertYank(6, duplicateBidId, address, db)
+			insertFlopKick(1, bidId1, addressId, db)
+			insertFlopKicks(2, bidId2, addressId, db)
+			insertDent(3, bidId3, addressId, db)
+			insertDeal(4, bidId4, addressId, db)
+			insertYank(5, bidId5, addressId, db)
+			insertYank(6, duplicateBidId, addressId, db)
 
 			bidIds, err := repository.GetFlopBidIds(address)
 			Expect(err).NotTo(HaveOccurred())
@@ -575,12 +581,14 @@ var _ = Describe("Maker storage repository", func() {
 
 		It("fetches bid ids only for the given contract address", func() {
 			anotherAddress := address + "1"
-			insertFlopKick(1, bidId1, address, db)
-			insertFlopKick(2, bidId2, address, db)
-			insertDent(3, bidId3, address, db)
-			insertDeal(4, bidId4, address, db)
-			insertYank(5, bidId5, address, db)
-			insertYank(6, bidId6, anotherAddress, db)
+			anotherAddressId, addressErr := shared.GetOrCreateAddress(anotherAddress, db)
+			Expect(addressErr).NotTo(HaveOccurred())
+			insertFlopKick(1, bidId1, addressId, db)
+			insertFlopKick(2, bidId2, addressId, db)
+			insertDent(3, bidId3, addressId, db)
+			insertDeal(4, bidId4, addressId, db)
+			insertYank(5, bidId5, addressId, db)
+			insertYank(6, bidId6, anotherAddressId, db)
 
 			bidIds, err := repository.GetFlopBidIds(address)
 			Expect(err).NotTo(HaveOccurred())
@@ -618,107 +626,107 @@ var _ = Describe("Maker storage repository", func() {
 	})
 })
 
-func insertFlapKick(blockNumber int64, bidId, contractAddress string, db *postgres.DB) {
+func insertFlapKick(blockNumber int64, bidId string, contractAddressId int64, db *postgres.DB) {
 	//inserting a flap kick log event record
 	emptyRawJson, jsonErr := json.Marshal("")
 	Expect(jsonErr).NotTo(HaveOccurred())
 	headerID := insertHeader(db, blockNumber)
 	_, insertErr := db.Exec(flap_kick.InsertFlapKickQuery,
-		headerID, bidId, 0, 0, contractAddress, 0, 0, emptyRawJson,
+		headerID, bidId, 0, 0, contractAddressId, 0, 0, emptyRawJson,
 	)
 	Expect(insertErr).NotTo(HaveOccurred())
 }
 
-func insertFlapKicks(blockNumber int64, kicks, contractAddress string, db *postgres.DB) {
+func insertFlapKicks(blockNumber int64, kicks string, contractAddressId int64, db *postgres.DB) {
 	//inserting a flap kicks storage record
 	_, insertErr := db.Exec(flap.InsertKicksQuery,
-		blockNumber, fakes.FakeHash.Hex(), contractAddress, kicks,
+		blockNumber, fakes.FakeHash.Hex(), contractAddressId, kicks,
 	)
 	Expect(insertErr).NotTo(HaveOccurred())
 }
 
-func insertTick(blockNumber int64, bidId, contractAddress string, db *postgres.DB) {
+func insertTick(blockNumber int64, bidId string, contractAddressId int64, db *postgres.DB) {
 	// tick event record
 	emptyRawJson, jsonErr := json.Marshal("")
 	Expect(jsonErr).NotTo(HaveOccurred())
 	headerID := insertHeader(db, blockNumber)
-	_, insertErr := db.Exec(`INSERT INTO maker.tick (header_id, bid_id, contract_address, tx_idx, log_idx, raw_log)
+	_, insertErr := db.Exec(`INSERT INTO maker.tick (header_id, bid_id, address_id, tx_idx, log_idx, raw_log)
 				VALUES($1, $2::NUMERIC, $3, $4, $5, $6)`,
-		headerID, bidId, contractAddress, 0, 0, emptyRawJson,
+		headerID, bidId, contractAddressId, 0, 0, emptyRawJson,
 	)
 	Expect(insertErr).NotTo(HaveOccurred())
 }
 
-func insertFlipKick(blockNumber int64, bidId, contractAddress string, db *postgres.DB) {
+func insertFlipKick(blockNumber int64, bidId string, contractAddressId int64, db *postgres.DB) {
 	// flip kick event record
 	emptyRawJson, jsonErr := json.Marshal("")
 	Expect(jsonErr).NotTo(HaveOccurred())
 	headerID := insertHeader(db, blockNumber)
 	_, insertErr := db.Exec(flip_kick.InsertFlipKickQuery,
-		headerID, bidId, 0, 0, 0, "", "", contractAddress, 0, 0, emptyRawJson,
+		headerID, bidId, 0, 0, 0, "", "", contractAddressId, 0, 0, emptyRawJson,
 	)
 	Expect(insertErr).NotTo(HaveOccurred())
 }
 
-func insertFlipKicks(blockNumber int64, kicks, contractAddress string, db *postgres.DB) {
+func insertFlipKicks(blockNumber int64, kicks string, contractAddressId int64, db *postgres.DB) {
 	// flip kicks storage record
 	_, insertErr := db.Exec(flip.InsertFlipKicksQuery,
-		blockNumber, fakes.FakeHash.Hex(), contractAddress, kicks,
+		blockNumber, fakes.FakeHash.Hex(), contractAddressId, kicks,
 	)
 	Expect(insertErr).NotTo(HaveOccurred())
 }
 
-func insertFlopKick(blockNumber int64, bidId, contractAddress string, db *postgres.DB) {
+func insertFlopKick(blockNumber int64, bidId string, contractAddressId int64, db *postgres.DB) {
 	// inserting a flop kick log event record
 	emptyRawJson, jsonErr := json.Marshal("")
 	Expect(jsonErr).NotTo(HaveOccurred())
 	headerId := insertHeader(db, blockNumber)
-	_, insertErr := db.Exec(flop_kick.InsertFlopKickQuery, headerId, bidId, 0, 0, "", contractAddress, 0, 0, emptyRawJson)
+	_, insertErr := db.Exec(flop_kick.InsertFlopKickQuery, headerId, bidId, 0, 0, "", contractAddressId, 0, 0, emptyRawJson)
 	Expect(insertErr).NotTo(HaveOccurred())
 }
 
-func insertFlopKicks(blockNumber int64, kicks, contractAddress string, db *postgres.DB) {
+func insertFlopKicks(blockNumber int64, kicks string, contractAddressId int64, db *postgres.DB) {
 	// inserting a flop kicks storage record
-	_, insertErr := db.Exec(flop.InsertFlopKicksQuery, blockNumber, fakes.FakeHash.Hex(), contractAddress, kicks)
+	_, insertErr := db.Exec(flop.InsertFlopKicksQuery, blockNumber, fakes.FakeHash.Hex(), contractAddressId, kicks)
 	Expect(insertErr).NotTo(HaveOccurred())
 }
 
-func insertTend(blockNumber int64, bidId, contractAddress string, db *postgres.DB) {
+func insertTend(blockNumber int64, bidId string, contractAddressId int64, db *postgres.DB) {
 	headerID := insertHeader(db, blockNumber)
 
-	_, err := db.Exec(`INSERT into maker.tend (header_id, bid_id, lot, bid, contract_address, log_idx, tx_idx)
+	_, err := db.Exec(`INSERT into maker.tend (header_id, bid_id, lot, bid, address_id, log_idx, tx_idx)
 		VALUES($1, $2::NUMERIC, $3::NUMERIC, $4::NUMERIC, $5, $6, $7)`,
-		headerID, bidId, 0, 0, contractAddress, 0, 0,
+		headerID, bidId, 0, 0, contractAddressId, 0, 0,
 	)
 	Expect(err).NotTo(HaveOccurred())
 }
 
-func insertDent(blockNumber int64, bidId, contractAddress string, db *postgres.DB) {
+func insertDent(blockNumber int64, bidId string, contractAddressId int64, db *postgres.DB) {
 	headerID := insertHeader(db, blockNumber)
 
-	_, err := db.Exec(`INSERT into maker.dent (header_id, bid_id, lot, bid, contract_address, log_idx, tx_idx)
+	_, err := db.Exec(`INSERT into maker.dent (header_id, bid_id, lot, bid, address_id, log_idx, tx_idx)
 		VALUES($1, $2::NUMERIC, $3::NUMERIC, $4::NUMERIC, $5, $6, $7)`,
-		headerID, bidId, 0, 0, contractAddress, 0, 0,
+		headerID, bidId, 0, 0, contractAddressId, 0, 0,
 	)
 	Expect(err).NotTo(HaveOccurred())
 }
 
-func insertDeal(blockNumber int64, bidId, contractAddress string, db *postgres.DB) {
+func insertDeal(blockNumber int64, bidId string, contractAddressId int64, db *postgres.DB) {
 	headerID := insertHeader(db, blockNumber)
 
-	_, err := db.Exec(`INSERT into maker.deal (header_id, bid_id, contract_address, log_idx, tx_idx)
+	_, err := db.Exec(`INSERT into maker.deal (header_id, bid_id, address_id, log_idx, tx_idx)
 		VALUES($1, $2::NUMERIC, $3, $4, $5)`,
-		headerID, bidId, contractAddress, 0, 0,
+		headerID, bidId, contractAddressId, 0, 0,
 	)
 	Expect(err).NotTo(HaveOccurred())
 }
 
-func insertYank(blockNumber int64, bidId, contractAddress string, db *postgres.DB) {
+func insertYank(blockNumber int64, bidId string, contractAddressId int64, db *postgres.DB) {
 	headerID := insertHeader(db, blockNumber)
 
-	_, err := db.Exec(`INSERT into maker.yank (header_id, bid_id, contract_address, log_idx, tx_idx)
+	_, err := db.Exec(`INSERT into maker.yank (header_id, bid_id, address_id, log_idx, tx_idx)
 		VALUES($1, $2::NUMERIC, $3, $4, $5)`,
-		headerID, bidId, contractAddress, 0, 0,
+		headerID, bidId, contractAddressId, 0, 0,
 	)
 	Expect(err).NotTo(HaveOccurred())
 }

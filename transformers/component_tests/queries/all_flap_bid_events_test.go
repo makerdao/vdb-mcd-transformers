@@ -1,6 +1,7 @@
 package queries
 
 import (
+	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/vulcanize/mcd_transformers/test_config"
@@ -22,19 +23,20 @@ import (
 
 var _ = Describe("Flap bid events query", func() {
 	var (
-		db              *postgres.DB
-		flapKickRepo    flap_kick.FlapKickRepository
-		tendRepo        tend.TendRepository
-		dealRepo        deal.DealRepository
-		yankRepo        yank.YankRepository
-		headerRepo      repositories.HeaderRepository
-		blockOne        int64
-		headerOne       core.Header
-		headerOneId     int64
-		headerOneErr    error
-		contractAddress = "FlapContract"
-		fakeBidId       int
-		flapKickEvent   flap_kick.FlapKickModel
+		db                     *postgres.DB
+		flapKickRepo           flap_kick.FlapKickRepository
+		tendRepo               tend.TendRepository
+		dealRepo               deal.DealRepository
+		yankRepo               yank.YankRepository
+		headerRepo             repositories.HeaderRepository
+		contractAddress        = fakes.FakeAddress.Hex()
+		anotherContractAddress = common.HexToAddress("0xabcdef123456789").Hex()
+		blockOne               int64
+		headerOne              core.Header
+		headerOneId            int64
+		headerOneErr           error
+		fakeBidId              int
+		flapKickEvent          flap_kick.FlapKickModel
 	)
 
 	BeforeEach(func() {
@@ -263,7 +265,7 @@ var _ = Describe("Flap bid events query", func() {
 			// create irrelevant flop tend
 			flopTendErr := test_helpers.CreateTend(test_helpers.TendCreationInput{
 				BidId:           fakeBidId,
-				ContractAddress: "flop contract address",
+				ContractAddress: anotherContractAddress,
 				Lot:             lot,
 				BidAmount:       bidAmount,
 				TendRepo:        tendRepo,
@@ -382,7 +384,7 @@ var _ = Describe("Flap bid events query", func() {
 			// irrelevant flop yank
 			flopYankErr := test_helpers.CreateYank(test_helpers.YankCreationInput{
 				BidId:           fakeBidId,
-				ContractAddress: "flop contract address",
+				ContractAddress: anotherContractAddress,
 				YankRepo:        yankRepo,
 				YankHeaderId:    headerTwoId,
 			})

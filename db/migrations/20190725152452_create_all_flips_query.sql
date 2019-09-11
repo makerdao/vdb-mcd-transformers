@@ -7,17 +7,17 @@ $BODY$
 BEGIN
     RETURN QUERY (
         WITH ilk_ids AS (SELECT id
-                        FROM maker.ilks
-                        WHERE identifier = all_flips.ilk),
+                         FROM maker.ilks
+                         WHERE identifier = all_flips.ilk),
              address AS (
-                 SELECT DISTINCT contract_address
+                 SELECT DISTINCT address_id
                  FROM maker.flip_ilk
                  WHERE flip_ilk.ilk_id = (SELECT id FROM ilk_ids)
                  LIMIT 1),
              bid_ids AS (
                  SELECT DISTINCT flip_kicks.kicks
                  FROM maker.flip_kicks
-                 WHERE contract_address = (SELECT * FROM address)
+                 WHERE address_id = (SELECT * FROM address)
                  ORDER BY flip_kicks.kicks DESC
                  LIMIT all_flips.max_results)
         SELECT f.*

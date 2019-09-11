@@ -31,6 +31,7 @@ const (
 type ForeignKeyField string
 
 const (
-	IlkFK ForeignKeyField = "ilk_id"
-	UrnFK ForeignKeyField = "urn_id"
+	IlkFK     ForeignKeyField = "ilk_id"
+	UrnFK     ForeignKeyField = "urn_id"
+	AddressFK ForeignKeyField = "address_id"
 )
