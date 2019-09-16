@@ -146,16 +146,11 @@ var _ = Describe("Flip state computed columns", func() {
 
 	Describe("flip_state_bid_events", func() {
 		It("returns the bid events for a flip", func() {
-			flipKickEvent := test_data.FlipKickModel
-			flipKickEvent.ContractAddress = contractAddress
-			flipKickEvent.BidId = strconv.Itoa(fakeBidId)
-			flipKickErr := flipKickRepo.Create(headerId, []interface{}{flipKickEvent})
-			Expect(flipKickErr).NotTo(HaveOccurred())
-
+			// flip kick created in BeforeEach
 			expectedFlipKickEvent := test_helpers.BidEvent{
 				BidId:           strconv.Itoa(fakeBidId),
-				Lot:             flipKickEvent.Lot,
-				BidAmount:       flipKickEvent.Bid,
+				Lot:             test_data.FlipKickModel.Lot,
+				BidAmount:       test_data.FlipKickModel.Bid,
 				Act:             "kick",
 				ContractAddress: contractAddress,
 			}

@@ -625,6 +625,7 @@ func SetUpFlopBidContext(setupData FlopBidCreationInput) (err error) {
 func CreateDeal(input DealCreationInput) (err error) {
 	dealModel := test_data.DealModel
 	dealModel.ColumnValues["bid_id"] = strconv.Itoa(input.BidId)
+	dealModel.ColumnValues["tx_idx"] = rand.Int31()
 	dealModel.ForeignKeyValues[constants.AddressFK] = input.ContractAddress
 	deals := []shared.InsertionModel{dealModel}
 	return input.DealRepo.Create(input.DealHeaderId, deals)
@@ -635,6 +636,7 @@ func CreateFlipKick(contractAddress string, bidId int, headerId int64, usr strin
 	flipKickModel.ContractAddress = contractAddress
 	flipKickModel.BidId = strconv.Itoa(bidId)
 	flipKickModel.Usr = usr
+	flipKickModel.TransactionIndex = uint(rand.Int31())
 	return repo.Create(headerId, []interface{}{flipKickModel})
 }
 
@@ -642,6 +644,7 @@ func CreateFlapKick(contractAddress string, bidId int, headerId int64, repo flap
 	flapKickModel := test_data.FlapKickModel
 	flapKickModel.ContractAddress = contractAddress
 	flapKickModel.BidId = strconv.Itoa(bidId)
+	flapKickModel.TransactionIndex = uint(rand.Int31())
 	return repo.Create(headerId, []interface{}{flapKickModel})
 }
 
@@ -649,6 +652,7 @@ func CreateFlopKick(contractAddress string, bidId int, headerId int64, repo flop
 	flopKickModel := test_data.FlopKickModel
 	flopKickModel.ContractAddress = contractAddress
 	flopKickModel.BidId = strconv.Itoa(bidId)
+	flopKickModel.TransactionIndex = uint(rand.Int31())
 	return repo.Create(headerId, []interface{}{flopKickModel})
 }
 
@@ -659,9 +663,13 @@ func CreateTend(input TendCreationInput) (err error) {
 	tendModel.ColumnValues["bid"] = strconv.Itoa(input.BidAmount)
 	if input.LogIndex != 0 {
 		tendModel.ColumnValues["log_idx"] = input.LogIndex
+	} else {
+		tendModel.ColumnValues["log_idx"] = rand.Int31()
 	}
 	if input.TxIndex != 0 {
 		tendModel.ColumnValues["tx_idx"] = input.TxIndex
+	} else {
+		tendModel.ColumnValues["tx_idx"] = rand.Int31()
 	}
 	tendModel.ForeignKeyValues[constants.AddressFK] = input.ContractAddress
 	return input.TendRepo.Create(input.TendHeaderId, []shared.InsertionModel{tendModel})
@@ -674,9 +682,13 @@ func CreateDent(input DentCreationInput) (err error) {
 	dentModel.ColumnValues["bid"] = strconv.Itoa(input.BidAmount)
 	if input.LogIndex != 0 {
 		dentModel.ColumnValues["log_idx"] = input.LogIndex
+	} else {
+		dentModel.ColumnValues["log_idx"] = rand.Int31()
 	}
 	if input.TxIndex != 0 {
 		dentModel.ColumnValues["tx_idx"] = input.TxIndex
+	} else {
+		dentModel.ColumnValues["tx_idx"] = rand.Int31()
 	}
 	dentModel.ForeignKeyValues[constants.AddressFK] = input.ContractAddress
 	return input.DentRepo.Create(input.DentHeaderId, []shared.InsertionModel{dentModel})
@@ -685,6 +697,7 @@ func CreateDent(input DentCreationInput) (err error) {
 func CreateYank(input YankCreationInput) (err error) {
 	yankModel := test_data.YankModel
 	yankModel.ColumnValues["bid_id"] = strconv.Itoa(input.BidId)
+	yankModel.ColumnValues["tx_idx"] = rand.Int31()
 	yankModel.ForeignKeyValues[constants.AddressFK] = input.ContractAddress
 	return input.YankRepo.Create(input.YankHeaderId, []shared.InsertionModel{yankModel})
 }
@@ -692,6 +705,7 @@ func CreateYank(input YankCreationInput) (err error) {
 func CreateTick(input TickCreationInput) (err error) {
 	tickModel := test_data.TickModel
 	tickModel.ColumnValues["bid_id"] = strconv.Itoa(input.BidId)
+	tickModel.ColumnValues["tx_idx"] = rand.Int31()
 	tickModel.ForeignKeyValues[constants.AddressFK] = input.ContractAddress
 	return input.TickRepo.Create(input.TickHeaderId, []shared.InsertionModel{tickModel})
 }

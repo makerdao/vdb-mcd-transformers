@@ -40,7 +40,6 @@ var _ = Describe("Flip bid event computed columns", func() {
 		contractAddress = fakes.FakeAddress.Hex()
 		bidId           int
 		flipKickRepo    flip_kick.FlipKickRepository
-		flipKickEvent   flip_kick.FlipKickModel
 		headerId        int64
 		headerRepo      repositories.HeaderRepository
 	)
@@ -59,12 +58,6 @@ var _ = Describe("Flip bid event computed columns", func() {
 
 		flipKickRepo = flip_kick.FlipKickRepository{}
 		flipKickRepo.SetDB(db)
-
-		flipKickEvent = test_data.FlipKickModel
-		flipKickEvent.BidId = strconv.Itoa(bidId)
-		flipKickEvent.ContractAddress = contractAddress
-		insertFlipKickErr := flipKickRepo.Create(headerId, []interface{}{flipKickEvent})
-		Expect(insertFlipKickErr).NotTo(HaveOccurred())
 	})
 
 	AfterEach(func() {
@@ -109,7 +102,6 @@ var _ = Describe("Flip bid event computed columns", func() {
 		It("gets the correct flipper for the event (using the contract address that matches the event)", func() {
 			irrelevantContractAddress := "different flipper"
 			irrelevantFlipStorageValues := test_helpers.GetFlipStorageValues(0, test_helpers.AnotherFakeIlk.Hex, bidId)
-			//irrelevantFlipStorageValues := test_helpers.GetFlipStorageValues(0, test_helpers.FakeIlk.Hex, bidId)
 			irrelevantFlipMetadatas := test_helpers.GetFlipMetadatas(strconv.Itoa(bidId))
 			test_helpers.CreateFlip(db, header, irrelevantFlipStorageValues, irrelevantFlipMetadatas, irrelevantContractAddress)
 
@@ -152,8 +144,8 @@ var _ = Describe("Flip bid event computed columns", func() {
 			queryErr := db.Get(&actualBid, `
 				SELECT bid_id, ilk_id, urn_id, guy, tic, "end", lot, bid, gal, dealt, tab, created, updated
 				FROM api.flip_bid_event_bid(
-					(SELECT (bid_id, lot, bid_amount, act, block_height, tx_idx, contract_address)::api.flip_bid_event FROM api.all_flip_bid_events())
-				)`)
+					(SELECT (bid_id, lot, bid_amount, act, block_height, tx_idx, contract_address)::api.flip_bid_event FROM api.all_flip_bid_events() WHERE contract_address = $1)
+				)`, contractAddress)
 
 			Expect(queryErr).NotTo(HaveOccurred())
 			Expect(actualBid).To(Equal(expectedBid))
@@ -161,10 +153,18 @@ var _ = Describe("Flip bid event computed columns", func() {
 	})
 
 	Describe("flip_bid_event_tx", func() {
+		BeforeEach(func() {
+			flipKickEvent := test_data.FlipKickModel
+			flipKickEvent.ContractAddress = contractAddress
+			flipKickEvent.BidId = strconv.Itoa(bidId)
+			flipKickErr := flipKickRepo.Create(headerId, []interface{}{flipKickEvent})
+			Expect(flipKickErr).NotTo(HaveOccurred())
+		})
+
 		It("returns transaction for a flip bid event", func() {
 			expectedTx := Tx{
 				TransactionHash:  test_helpers.GetValidNullString("txHash"),
-				TransactionIndex: sql.NullInt64{Int64: int64(flipKickEvent.TransactionIndex), Valid: true},
+				TransactionIndex: sql.NullInt64{Int64: int64(test_data.FlipKickModel.TransactionIndex), Valid: true},
 				BlockHeight:      sql.NullInt64{Int64: int64(blockNumber), Valid: true},
 				BlockHash:        test_helpers.GetValidNullString(header.Hash),
 				TxFrom:           test_helpers.GetValidNullString("fromAddress"),
@@ -189,7 +189,7 @@ var _ = Describe("Flip bid event computed columns", func() {
 			wrongTx := Tx{
 				TransactionHash: test_helpers.GetValidNullString("wrongTxHash"),
 				TransactionIndex: sql.NullInt64{
-					Int64: int64(flipKickEvent.TransactionIndex) + 1,
+					Int64: int64(test_data.FlipKickModel.TransactionIndex) + 1,
 					Valid: true,
 				},
 				BlockHeight: sql.NullInt64{Int64: int64(blockNumber), Valid: true},
