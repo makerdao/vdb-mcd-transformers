@@ -232,9 +232,9 @@ var _ = Describe("Flip state computed columns", func() {
 			Expect(actualBidEvents).To(ConsistOf(expectedTendEvent))
 		})
 
-		It("ignores bid events for a flip with a different contract address", func() {
+		It("ignores bid events for a flip with a different ilk", func() {
 			irrelevantContractAddress := "different flipper"
-			irrelevantFlipStorageValues := test_helpers.GetFlipStorageValues(2, test_helpers.FakeIlk.Identifier, fakeBidId)
+			irrelevantFlipStorageValues := test_helpers.GetFlipStorageValues(1, test_helpers.AnotherFakeIlk.Hex, fakeBidId)
 			irrelevantFlipMetadatas := test_helpers.GetFlipMetadatas(strconv.Itoa(fakeBidId))
 			test_helpers.CreateFlip(db, fakeHeader, irrelevantFlipStorageValues, irrelevantFlipMetadatas, irrelevantContractAddress)
 
@@ -255,19 +255,14 @@ var _ = Describe("Flip state computed columns", func() {
 			irrelevantFlipKickEvent := test_data.FlipKickModel
 			irrelevantFlipKickEvent.ContractAddress = irrelevantContractAddress
 			irrelevantFlipKickEvent.BidId = strconv.Itoa(fakeBidId)
+			irrelevantFlipKickEvent.TransactionIndex = irrelevantFlipKickEvent.TransactionIndex + 1
 			flipKickErr := flipKickRepo.Create(headerId, []interface{}{irrelevantFlipKickEvent})
-			Expect(flipKickErr).NotTo(HaveOccurred())
-
-			flipKickEvent := test_data.FlipKickModel
-			flipKickEvent.ContractAddress = contractAddress
-			flipKickEvent.BidId = strconv.Itoa(fakeBidId)
-			flipKickErr = flipKickRepo.Create(headerId, []interface{}{flipKickEvent})
 			Expect(flipKickErr).NotTo(HaveOccurred())
 
 			expectedBidEvent := test_helpers.BidEvent{
 				BidId:           strconv.Itoa(fakeBidId),
-				Lot:             flipKickEvent.Lot,
-				BidAmount:       flipKickEvent.Bid,
+				Lot:             test_data.FlipKickModel.Lot,
+				BidAmount:       test_data.FlipKickModel.Bid,
 				Act:             "kick",
 				ContractAddress: contractAddress,
 			}

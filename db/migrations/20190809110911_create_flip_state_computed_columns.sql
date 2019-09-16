@@ -31,16 +31,18 @@ $$
 WITH address_ids AS ( -- get the contract address from flip_ilk table using the ilk_id from flip
     SELECT address_id
     FROM maker.flip_ilk
-             LEFT JOIN maker.ilks ON ilks.id = flip_ilk.ilk_id
-    WHERE ilks.id = flip.ilk_id
-    ORDER BY block_number DESC
+    WHERE ilk_id = flip.ilk_id
     LIMIT 1
-)
+),
+     addresses AS (
+         SELECT address
+         FROM public.addresses
+         WHERE id = (SELECT address_id FROM address_ids)
+     )
 SELECT bid_id, lot, bid_amount, act, block_height, tx_idx, events.contract_address
 FROM api.all_flip_bid_events() AS events
-         LEFT JOIN address_ids
-                   ON address_ids.address_id = (SELECT id FROM addresses WHERE address = events.contract_address)
 WHERE bid_id = flip.bid_id
+  AND contract_address = (SELECT address FROM addresses)
 ORDER BY block_height DESC
 LIMIT flip_state_bid_events.max_results
 $$
