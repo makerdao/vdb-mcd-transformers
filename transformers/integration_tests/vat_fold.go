@@ -34,7 +34,7 @@ import (
 	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
-var _ = XDescribe("VatFold Transformer", func() {
+var _ = Describe("VatFold Transformer", func() {
 	var (
 		db         *postgres.DB
 		blockChain core.BlockChain
@@ -57,7 +57,7 @@ var _ = XDescribe("VatFold Transformer", func() {
 	}
 
 	It("transforms VatFold log events", func() {
-		blockNumber := int64(11144455)
+		blockNumber := int64(13424126)
 		vatFoldConfig.StartingBlockNumber = blockNumber
 		vatFoldConfig.EndingBlockNumber = blockNumber
 
@@ -86,11 +86,11 @@ var _ = XDescribe("VatFold Transformer", func() {
 
 		Expect(len(dbResults)).To(Equal(1))
 		dbResult := dbResults[0]
-		urnID, err := shared.GetOrCreateUrn("0x21444AC712cCD21ce82AF24eA1aEc64Cf07361D2",
-			"0x434f4c312d410000000000000000000000000000000000000000000000000000", db)
+		urnID, err := shared.GetOrCreateUrn("0x022688b43Bf76a9E6f4d3a96350ffDe90a752d25",
+			"0x4447442d41000000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(dbResult.Urn).To(Equal(strconv.Itoa(urnID)))
-		Expect(dbResult.Rate).To(Equal("479620379870463446010918"))
+		Expect(dbResult.Rate).To(Equal("909758435446422415095"))
 	})
 })
 

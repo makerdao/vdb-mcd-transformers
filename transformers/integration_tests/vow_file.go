@@ -66,7 +66,7 @@ var _ = Describe("VowFile LogNoteTransforer", func() {
 	})
 
 	It("fetches and transforms a Vow.file event from Kovan", func() {
-		blockNumber := int64(12742217)
+		blockNumber := int64(13171810)
 		initializer.Config.StartingBlockNumber = blockNumber
 		initializer.Config.EndingBlockNumber = blockNumber
 
@@ -86,8 +86,8 @@ var _ = Describe("VowFile LogNoteTransforer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))
-		Expect(dbResult[0].What).To(Equal("wait"))
-		Expect(dbResult[0].Data).To(Equal("0"))
+		Expect(dbResult[0].What).To(Equal("bump"))
+		Expect(dbResult[0].Data).To(Equal("100000000000000000000000000000000000000000000"))
 	})
 })
 

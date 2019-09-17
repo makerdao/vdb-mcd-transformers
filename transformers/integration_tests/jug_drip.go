@@ -34,7 +34,7 @@ import (
 	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
-var _ = XDescribe("JugDrip Transformer", func() {
+var _ = Describe("JugDrip Transformer", func() {
 	var (
 		db            *postgres.DB
 		blockChain    core.BlockChain
@@ -57,7 +57,7 @@ var _ = XDescribe("JugDrip Transformer", func() {
 	})
 
 	It("transforms JugDrip log events", func() {
-		blockNumber := int64(11144455)
+		blockNumber := int64(13424126)
 		jugDripConfig.StartingBlockNumber = blockNumber
 		jugDripConfig.EndingBlockNumber = blockNumber
 
@@ -87,46 +87,9 @@ var _ = XDescribe("JugDrip Transformer", func() {
 
 		Expect(len(dbResults)).To(Equal(1))
 		dbResult := dbResults[0]
-		ilkID, err := shared.GetOrCreateIlk("434f4c312d410000000000000000000000000000000000000000000000000000", db)
+		ilkID, err := shared.GetOrCreateIlk("0x4447442d41000000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(dbResult.Ilk).To(Equal(strconv.Itoa(ilkID)))
-	})
-
-	It("rechecks jug drip event", func() {
-		blockNumber := int64(11144455)
-		jugDripConfig.StartingBlockNumber = blockNumber
-		jugDripConfig.EndingBlockNumber = blockNumber
-
-		header, err := persistHeader(db, blockNumber, blockChain)
-		Expect(err).NotTo(HaveOccurred())
-
-		initializer := shared.LogNoteTransformer{
-			Config:     jugDripConfig,
-			Converter:  &jug_drip.JugDripConverter{},
-			Repository: &jug_drip.JugDripRepository{},
-		}
-		tr := initializer.NewLogNoteTransformer(db)
-
-		f := fetcher.NewLogFetcher(blockChain)
-		logs, err := f.FetchLogs(
-			transformer.HexStringsToAddresses(jugDripConfig.ContractAddresses),
-			[]common.Hash{common.HexToHash(jugDripConfig.Topic)},
-			header)
-		Expect(err).NotTo(HaveOccurred())
-
-		err = tr.Execute(logs, header)
-		Expect(err).NotTo(HaveOccurred())
-
-		err = tr.Execute(logs, header)
-		Expect(err).NotTo(HaveOccurred())
-
-		var headerID int64
-		err = db.Get(&headerID, `SELECT id FROM public.headers WHERE block_number = $1`, blockNumber)
-		Expect(err).NotTo(HaveOccurred())
-
-		var jugDripChecked []int
-		err = db.Select(&jugDripChecked, `SELECT jug_drip FROM public.checked_headers WHERE header_id = $1`, headerID)
-		Expect(err).NotTo(HaveOccurred())
 	})
 })
 

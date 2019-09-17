@@ -30,8 +30,7 @@ import (
 	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
-// TODO: Replace block number once there's a heal event on the updated Vat
-var _ = XDescribe("VatHeal Transformer", func() {
+var _ = Describe("VatHeal Transformer", func() {
 	vatHealConfig := transformer.EventTransformerConfig{
 		TransformerName:   mcdConstants.VatHealLabel,
 		ContractAddresses: []string{test_data.VatAddress()},
@@ -40,7 +39,7 @@ var _ = XDescribe("VatHeal Transformer", func() {
 	}
 
 	It("transforms VatHeal log events", func() {
-		blockNumber := int64(10921610)
+		blockNumber := int64(13452194)
 		vatHealConfig.StartingBlockNumber = blockNumber
 		vatHealConfig.EndingBlockNumber = blockNumber
 
@@ -71,13 +70,11 @@ var _ = XDescribe("VatHeal Transformer", func() {
 		err = tr.Execute(logs, header)
 		Expect(err).NotTo(HaveOccurred())
 
-		var dbResults []vatHealModel
-		err = db.Select(&dbResults, `SELECT urn, v, rad from maker.vat_heal`)
+		var dbResult vatHealModel
+		err = db.Get(&dbResult, `SELECT rad from maker.vat_heal`)
 		Expect(err).NotTo(HaveOccurred())
 
-		Expect(len(dbResults)).To(Equal(1))
-		dbResult := dbResults[0]
-		Expect(dbResult.Rad).To(Equal("0"))
+		Expect(dbResult.Rad).To(Equal("225599427701338117775213711537013756055330"))
 	})
 })
 

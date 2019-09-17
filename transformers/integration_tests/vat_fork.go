@@ -17,24 +17,21 @@
 package integration_tests
 
 import (
-	"github.com/vulcanize/mcd_transformers/transformers/test_data"
-	"strconv"
-
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/vulcanize/mcd_transformers/test_config"
+	"github.com/vulcanize/mcd_transformers/transformers/events/vat_fork"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
-
-	"github.com/vulcanize/mcd_transformers/test_config"
-	"github.com/vulcanize/mcd_transformers/transformers/events/jug_file/ilk"
-	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
-var _ = Describe("Jug File Ilk LogNoteTransformer", func() {
+var _ = Describe("Vat fork transformer", func() {
 	var (
 		db         *postgres.DB
 		blockChain core.BlockChain
@@ -49,56 +46,56 @@ var _ = Describe("Jug File Ilk LogNoteTransformer", func() {
 		test_config.CleanTestDB(db)
 	})
 
-	jugFileIlkConfig := transformer.EventTransformerConfig{
-		TransformerName:   mcdConstants.JugFileIlkLabel,
-		ContractAddresses: []string{test_data.JugAddress()},
-		ContractAbi:       mcdConstants.JugABI(),
-		Topic:             mcdConstants.JugFileIlkSignature(),
+	vatForkConfig := transformer.EventTransformerConfig{
+		TransformerName:   constants.VatForkLabel,
+		ContractAddresses: []string{test_data.VatAddress()},
+		ContractAbi:       constants.VatABI(),
+		Topic:             constants.VatForkSignature(),
 	}
 
-	It("transforms jug file ilk log events", func() {
-		blockNumber := int64(13171964)
-		jugFileIlkConfig.StartingBlockNumber = blockNumber
-		jugFileIlkConfig.EndingBlockNumber = blockNumber
+	It("fetches and transforms vat fork event", func() {
+		blockNumber := int64(13234996)
+		vatForkConfig.StartingBlockNumber = blockNumber
+		vatForkConfig.EndingBlockNumber = blockNumber
 
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
 		initializer := shared.LogNoteTransformer{
-			Config:     jugFileIlkConfig,
-			Converter:  &ilk.JugFileIlkConverter{},
-			Repository: &ilk.JugFileIlkRepository{},
+			Config:     vatForkConfig,
+			Converter:  &vat_fork.VatForkConverter{},
+			Repository: &vat_fork.VatForkRepository{},
 		}
 		tr := initializer.NewLogNoteTransformer(db)
 
 		f := fetcher.NewLogFetcher(blockChain)
 		logs, err := f.FetchLogs(
-			transformer.HexStringsToAddresses(jugFileIlkConfig.ContractAddresses),
-			[]common.Hash{common.HexToHash(jugFileIlkConfig.Topic)},
+			transformer.HexStringsToAddresses(vatForkConfig.ContractAddresses),
+			[]common.Hash{common.HexToHash(vatForkConfig.Topic)},
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
 		err = tr.Execute(logs, header)
 		Expect(err).NotTo(HaveOccurred())
 
-		var dbResult []jugFileIlkModel
-		err = db.Select(&dbResult, `SELECT ilk_id, what, data FROM maker.jug_file_ilk`)
+		var dbResult vatForkModel
+		err = db.Get(&dbResult, `SELECT ilk_id, src, dst, dink, dart FROM maker.vat_fork`)
 		Expect(err).NotTo(HaveOccurred())
 
-		Expect(len(dbResult)).To(Equal(1))
 		ilkID, err := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
-		Expect(dbResult[0].Ilk).To(Equal(strconv.Itoa(ilkID)))
-		Expect(dbResult[0].What).To(Equal("duty"))
-		Expect(dbResult[0].Data).To(Equal("1000000001547125957863212448"))
+		Expect(dbResult.Ilk).To(Equal(ilkID))
+		Expect(dbResult.Src).To(Equal("0xAE21412A422279B72aA8641a3D5F1da4BF6cfD30"))
+		Expect(dbResult.Dst).To(Equal("0xdB33dFD3D61308C33C63209845DaD3e6bfb2c674"))
+		Expect(dbResult.Dink).To(Equal(0))
+		Expect(dbResult.Dart).To(Equal(0))
 	})
 })
 
-type jugFileIlkModel struct {
-	Ilk              string `db:"ilk_id"`
-	What             string
-	Data             string
-	LogIndex         uint   `db:"log_idx"`
-	TransactionIndex uint   `db:"tx_idx"`
-	Raw              []byte `db:"raw_log"`
+type vatForkModel struct {
+	Ilk  int `db:"ilk_id"`
+	Src  string
+	Dst  string
+	Dink int
+	Dart int
 }

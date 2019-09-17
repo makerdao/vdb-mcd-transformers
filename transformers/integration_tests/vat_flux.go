@@ -32,7 +32,7 @@ import (
 	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
-var _ = XDescribe("VatFlux LogNoteTransformer", func() {
+var _ = Describe("VatFlux LogNoteTransformer", func() {
 	vatFluxConfig := transformer.EventTransformerConfig{
 		TransformerName:   mcdConstants.VatFluxLabel,
 		ContractAddresses: []string{test_data.VatAddress()},
@@ -40,9 +40,8 @@ var _ = XDescribe("VatFlux LogNoteTransformer", func() {
 		Topic:             mcdConstants.VatFluxSignature(),
 	}
 
-	// TODO: Replace block number once there's a flux event on the updated Vat
 	It("transforms VatFlux log events", func() {
-		blockNumber := int64(9004474)
+		blockNumber := int64(13297132)
 		vatFluxConfig.StartingBlockNumber = blockNumber
 		vatFluxConfig.EndingBlockNumber = blockNumber
 
@@ -75,16 +74,16 @@ var _ = XDescribe("VatFlux LogNoteTransformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []vatFluxModel
-		err = db.Select(&dbResult, `SELECT ilk_id, src, dst, rad from maker.vat_flux`)
+		err = db.Select(&dbResult, `SELECT ilk_id, src, dst, wad from maker.vat_flux`)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))
-		ilkID, err := shared.GetOrCreateIlk("0x5245500000000000000000000000000000000000000000000000000000000000", db)
+		ilkID, err := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(dbResult[0].Ilk).To(Equal(strconv.Itoa(ilkID)))
-		Expect(dbResult[0].Src).To(Equal("000000000000000000000000c0851f73cc8dd5c0765e71980ec7e7fd1ef74434"))
-		Expect(dbResult[0].Dst).To(Equal("0000000000000000000000000000d8b4147eda80fec7122ae16da2479cbd7ffb"))
-		Expect(dbResult[0].Wad).To(Equal("1800000000000000000000000000000000000000000000"))
+		Expect(dbResult[0].Src).To(Equal("0x764B9b6326141C5912eBb6948b2b3d51B408d3E6"))
+		Expect(dbResult[0].Dst).To(Equal("0x6bCc9f143D9C799E2C79DB9C921095130d371A16"))
+		Expect(dbResult[0].Wad).To(Equal("1000000000000000000"))
 		Expect(dbResult[0].TransactionIndex).To(Equal(uint(0)))
 	})
 })

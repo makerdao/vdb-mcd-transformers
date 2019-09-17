@@ -41,7 +41,7 @@ var _ = Describe("VatInit LogNoteTransformer", func() {
 	}
 
 	It("transforms vat init log events", func() {
-		blockNumber := int64(12742151)
+		blockNumber := int64(13171646)
 		vatInitConfig.StartingBlockNumber = blockNumber
 		vatInitConfig.EndingBlockNumber = blockNumber
 
@@ -78,7 +78,7 @@ var _ = Describe("VatInit LogNoteTransformer", func() {
 
 		Expect(len(dbResults)).To(Equal(1))
 		dbResult := dbResults[0]
-		ilkID, err := shared.GetOrCreateIlk("0x474e542d41000000000000000000000000000000000000000000000000000000", db)
+		ilkID, err := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(dbResult.Ilk).To(Equal(strconv.Itoa(ilkID)))
 	})

@@ -57,7 +57,7 @@ var _ = Describe("Vat slip transformer", func() {
 	}
 
 	It("persists vat slip event", func() {
-		blockNumber := int64(12847637)
+		blockNumber := int64(13445460)
 		vatSlipConfig.StartingBlockNumber = blockNumber
 		vatSlipConfig.EndingBlockNumber = blockNumber
 
@@ -86,11 +86,11 @@ var _ = Describe("Vat slip transformer", func() {
 		var model vatSlipModel
 		err = db.Get(&model, `SELECT ilk_id, usr, wad, tx_idx FROM maker.vat_slip WHERE header_id = $1`, headerID)
 		Expect(err).NotTo(HaveOccurred())
-		ilkID, err := shared.GetOrCreateIlk("0x5245502d41000000000000000000000000000000000000000000000000000000", db)
+		ilkID, err := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(model.Ilk).To(Equal(strconv.Itoa(ilkID)))
-		Expect(model.Usr).To(Equal("0x2273F4B12Bfc5ACCEc0605A338598aCB42739124"))
-		Expect(model.Wad).To(Equal("10000000000000000000"))
+		Expect(model.Usr).To(Equal("0xAd4F32E272fFA9686ACAd217Ef038fD09e598Fc0"))
+		Expect(model.Wad).To(Equal("1000000000000000000"))
 		Expect(model.TransactionIndex).To(Equal(uint(0)))
 		var headerChecked bool
 		err = db.Get(&headerChecked, `SELECT vat_slip FROM public.checked_headers WHERE header_id = $1`, headerID)
