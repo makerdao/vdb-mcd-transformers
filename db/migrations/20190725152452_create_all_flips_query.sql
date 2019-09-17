@@ -15,14 +15,14 @@ BEGIN
                  WHERE flip_ilk.ilk_id = (SELECT id FROM ilk_ids)
                  LIMIT 1),
              bid_ids AS (
-                 SELECT DISTINCT flip_kicks.kicks
-                 FROM maker.flip_kicks
+                 SELECT DISTINCT bid_id
+                 FROM maker.flip
                  WHERE address_id = (SELECT * FROM address)
-                 ORDER BY flip_kicks.kicks DESC
+                 ORDER BY bid_id DESC
                  LIMIT all_flips.max_results)
         SELECT f.*
         FROM bid_ids,
-             LATERAL api.get_flip(bid_ids.kicks, all_flips.ilk) f
+             LATERAL api.get_flip(bid_ids.bid_id, all_flips.ilk) f
     );
 END
 $BODY$

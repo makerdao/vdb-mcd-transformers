@@ -110,7 +110,6 @@ var _ = Describe("Get flap query", func() {
 		})
 		Expect(err).NotTo(HaveOccurred())
 
-		// todo: change how created timestamp is retrieved so this test can pass if we set up flap bid context after storage vals are created
 		flapStorageValuesTwo := test_helpers.GetFlapStorageValues(2, fakeBidId)
 		test_helpers.CreateFlap(db, blockTwoHeader, flapStorageValuesTwo, test_helpers.GetFlapMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
 

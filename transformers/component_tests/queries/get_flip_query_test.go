@@ -23,7 +23,7 @@ var _ = Describe("Single flip view", func() {
 		flipKickRepo    flip_kick.FlipKickRepository
 		dealRepo        deal.DealRepository
 		headerRepo      repositories.HeaderRepository
-		contractAddress = "contract address"
+		contractAddress = "flip"
 	)
 
 	BeforeEach(func() {

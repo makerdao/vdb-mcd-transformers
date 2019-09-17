@@ -22,7 +22,7 @@ SELECT guy
 FROM maker.flap
 WHERE guy IS NOT NULL
   AND flap.bid_id = bid_id
-ORDER BY block_number
+ORDER BY block_number DESC
 LIMIT 1
 $$
     LANGUAGE sql;
@@ -33,7 +33,7 @@ SELECT bid
 FROM maker.flap
 WHERE bid IS NOT NULL
   AND flap.bid_id = bid_id
-ORDER BY block_number
+ORDER BY block_number DESC
 LIMIT 1
 $$
     LANGUAGE sql;
@@ -44,7 +44,7 @@ SELECT tic
 FROM maker.flap
 WHERE tic IS NOT NULL
   AND flap.bid_id = bid_id
-ORDER BY block_number
+ORDER BY block_number DESC
 LIMIT 1
 $$
     LANGUAGE sql;
@@ -55,7 +55,7 @@ SELECT "end"
 FROM maker.flap
 WHERE "end" IS NOT NULL
   AND flap.bid_id = bid_id
-ORDER BY block_number
+ORDER BY block_number DESC
 LIMIT 1
 $$
     LANGUAGE sql;
@@ -66,17 +66,7 @@ SELECT lot
 FROM maker.flap
 WHERE lot IS NOT NULL
   AND flap.bid_id = bid_id
-ORDER BY block_number
-LIMIT 1
-$$
-    LANGUAGE sql;
-
-CREATE FUNCTION get_block_timestamp(block_hash varchar) RETURNS TIMESTAMP AS
-$$
-SELECT api.epoch_to_datetime(headers.block_timestamp) AS datetime
-FROM public.headers
-WHERE headers.hash = block_hash
-ORDER BY headers.block_number DESC
+ORDER BY block_number DESC
 LIMIT 1
 $$
     LANGUAGE sql;
@@ -312,5 +302,4 @@ DROP FUNCTION get_latest_flap_bid_bid(numeric);
 DROP FUNCTION get_latest_flap_bid_tic(numeric);
 DROP FUNCTION get_latest_flap_bid_end(numeric);
 DROP FUNCTION get_latest_flap_bid_lot(numeric);
-DROP FUNCTION get_block_timestamp(varchar);
 DROP TABLE maker.flap;
