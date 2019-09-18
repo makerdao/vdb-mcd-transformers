@@ -17,7 +17,8 @@ COMMENT ON COLUMN api.ilk_file_event.block_height
 COMMENT ON COLUMN api.ilk_file_event.tx_idx
     IS E'@omit';
 
-CREATE FUNCTION api.all_ilk_file_events(ilk_identifier TEXT, max_results INTEGER DEFAULT NULL)
+CREATE FUNCTION api.all_ilk_file_events(ilk_identifier TEXT, max_results INTEGER DEFAULT NULL,
+                                        result_offset INTEGER DEFAULT 0)
     RETURNS SETOF api.ilk_file_event AS
 $$
 WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier)
@@ -52,12 +53,12 @@ FROM maker.vat_file_ilk
          LEFT JOIN headers ON vat_file_ilk.header_id = headers.id
 WHERE vat_file_ilk.ilk_id = (SELECT id FROM ilk)
 ORDER BY block_number DESC
-LIMIT all_ilk_file_events.max_results
+LIMIT all_ilk_file_events.max_results OFFSET all_ilk_file_events.result_offset
 $$
     LANGUAGE sql
     STABLE;
 
 -- +goose Down
 -- SQL in this section is executed when the migration is rolled back.
-DROP FUNCTION api.all_ilk_file_events(TEXT, INTEGER);
+DROP FUNCTION api.all_ilk_file_events(TEXT, INTEGER, INTEGER);
 DROP TYPE api.ilk_file_event CASCADE;

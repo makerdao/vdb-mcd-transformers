@@ -152,36 +152,60 @@ var _ = Describe("all poke events query", func() {
 		Expect(dbPokeEvents).To(Equal(expectedValues))
 	})
 
-	It("limits results to latest blocks if max_results argument is provided", func() {
-		fakeHeaderOne := fakes.GetFakeHeaderWithTimestamp(beginningTimeRange, int64(test_data.EthSpotPokeLog.BlockNumber))
-		headerID, headerOneErr := headerRepo.CreateOrUpdateHeader(fakeHeaderOne)
-		Expect(headerOneErr).NotTo(HaveOccurred())
+	Describe("result pagination", func() {
+		var (
+			ilkId                       int
+			oldSpotPoke, recentSpotPoke spot_poke.SpotPokeModel
+		)
+		BeforeEach(func() {
+			fakeHeaderOne := fakes.GetFakeHeaderWithTimestamp(beginningTimeRange, int64(test_data.EthSpotPokeLog.BlockNumber))
+			headerID, headerOneErr := headerRepo.CreateOrUpdateHeader(fakeHeaderOne)
+			Expect(headerOneErr).NotTo(HaveOccurred())
 
-		oldSpotPoke := generateSpotPoke(test_helpers.FakeIlk.Hex, 1)
-		ilkId, ilkErr := shared.GetOrCreateIlk(oldSpotPoke.Ilk, db)
-		Expect(ilkErr).NotTo(HaveOccurred())
-		oldSpotPokeErr := spotPokeRepo.Create(headerID, []interface{}{oldSpotPoke})
-		Expect(oldSpotPokeErr).NotTo(HaveOccurred())
+			oldSpotPoke = generateSpotPoke(test_helpers.FakeIlk.Hex, 1)
+			var ilkErr error
+			ilkId, ilkErr = shared.GetOrCreateIlk(oldSpotPoke.Ilk, db)
+			Expect(ilkErr).NotTo(HaveOccurred())
+			oldSpotPokeErr := spotPokeRepo.Create(headerID, []interface{}{oldSpotPoke})
+			Expect(oldSpotPokeErr).NotTo(HaveOccurred())
 
-		fakeHeaderTwo := fakes.GetFakeHeaderWithTimestamp(endingTimeRange, fakeHeaderOne.BlockNumber+1)
-		anotherHeaderID, headerTwoErr := headerRepo.CreateOrUpdateHeader(fakeHeaderTwo)
-		Expect(headerTwoErr).NotTo(HaveOccurred())
+			fakeHeaderTwo := fakes.GetFakeHeaderWithTimestamp(endingTimeRange, fakeHeaderOne.BlockNumber+1)
+			anotherHeaderID, headerTwoErr := headerRepo.CreateOrUpdateHeader(fakeHeaderTwo)
+			Expect(headerTwoErr).NotTo(HaveOccurred())
 
-		recentSpotPoke := generateSpotPoke(test_helpers.FakeIlk.Hex, 2)
-		recentSpotPokeErr := spotPokeRepo.Create(anotherHeaderID, []interface{}{recentSpotPoke})
-		Expect(recentSpotPokeErr).NotTo(HaveOccurred())
+			recentSpotPoke = generateSpotPoke(test_helpers.FakeIlk.Hex, 2)
+			recentSpotPokeErr := spotPokeRepo.Create(anotherHeaderID, []interface{}{recentSpotPoke})
+			Expect(recentSpotPokeErr).NotTo(HaveOccurred())
+		})
 
-		maxResults := 1
-		var dbPokeEvents []test_helpers.PokeEvent
-		selectErr := db.Select(&dbPokeEvents, `SELECT ilk_id, val, spot FROM api.all_poke_events($1, $2, $3)`,
-			beginningTimeRange, endingTimeRange, maxResults)
-		Expect(selectErr).NotTo(HaveOccurred())
+		It("limits results to latest blocks if max_results argument is provided", func() {
+			maxResults := 1
+			var dbPokeEvents []test_helpers.PokeEvent
+			selectErr := db.Select(&dbPokeEvents, `SELECT ilk_id, val, spot FROM api.all_poke_events($1, $2, $3)`,
+				beginningTimeRange, endingTimeRange, maxResults)
+			Expect(selectErr).NotTo(HaveOccurred())
 
-		Expect(dbPokeEvents).To(ConsistOf(test_helpers.PokeEvent{
-			IlkId: strconv.Itoa(ilkId),
-			Val:   recentSpotPoke.Value,
-			Spot:  recentSpotPoke.Spot,
-		}))
+			Expect(dbPokeEvents).To(ConsistOf(test_helpers.PokeEvent{
+				IlkId: strconv.Itoa(ilkId),
+				Val:   recentSpotPoke.Value,
+				Spot:  recentSpotPoke.Spot,
+			}))
+		})
+
+		It("offsets results if offset is provided", func() {
+			maxResults := 1
+			resultOffset := 1
+			var dbPokeEvents []test_helpers.PokeEvent
+			selectErr := db.Select(&dbPokeEvents, `SELECT ilk_id, val, spot FROM api.all_poke_events($1, $2, $3, $4)`,
+				beginningTimeRange, endingTimeRange, maxResults, resultOffset)
+			Expect(selectErr).NotTo(HaveOccurred())
+
+			Expect(dbPokeEvents).To(ConsistOf(test_helpers.PokeEvent{
+				IlkId: strconv.Itoa(ilkId),
+				Val:   oldSpotPoke.Value,
+				Spot:  oldSpotPoke.Spot,
+			}))
+		})
 	})
 
 	It("uses default arguments when none are passed in", func() {

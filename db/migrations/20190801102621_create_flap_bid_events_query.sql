@@ -26,7 +26,7 @@ COMMENT ON COLUMN api.flap_bid_event.tx_idx
 COMMENT ON COLUMN api.flap_bid_event.contract_address
     IS E'@omit';
 
-CREATE FUNCTION api.all_flap_bid_events(max_results INTEGER DEFAULT NULL)
+CREATE FUNCTION api.all_flap_bid_events(max_results INTEGER DEFAULT NULL, result_offset INTEGER DEFAULT 0)
     RETURNS SETOF api.flap_bid_event AS
 $$
 WITH address_id AS (
@@ -104,13 +104,13 @@ UNION
 SELECT *
 FROM yanks
 ORDER BY block_height DESC
-LIMIT all_flap_bid_events.max_results
+LIMIT all_flap_bid_events.max_results OFFSET all_flap_bid_events.result_offset
 $$
     LANGUAGE sql
     STABLE;
 
 -- +goose StatementEnd
 -- +goose Down
-DROP FUNCTION api.all_flap_bid_events(INTEGER);
+DROP FUNCTION api.all_flap_bid_events(INTEGER, INTEGER);
 DROP TYPE api.flap_bid_event CASCADE;
 DROP TYPE api.bid_act CASCADE;

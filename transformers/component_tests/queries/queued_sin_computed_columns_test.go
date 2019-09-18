@@ -105,36 +105,75 @@ var _ = Describe("Queued sin computed columns", func() {
 			))
 		})
 
-		It("limits results to latest blocks if max_results argument is provided", func() {
-			newBlock := fakeBlock + 1
-			newHeader := fakes.GetFakeHeader(int64(newBlock))
-			newHeader.Timestamp = strconv.Itoa(fakeEra + 1)
-			newHeaderId, newHeaderErr := headerRepository.CreateOrUpdateHeader(newHeader)
-			Expect(newHeaderErr).NotTo(HaveOccurred())
+		Describe("result pagination", func() {
+			var headerOne, headerTwo core.Header
 
-			// add flog event for same sin in later block
-			vowFlogEvent := test_data.VowFlogModel
-			vowFlogEvent.ColumnValues["era"] = fakeEra
-			insertVowFlogErr := vowFlogRepo.Create(newHeaderId, []shared.InsertionModel{vowFlogEvent})
-			Expect(insertVowFlogErr).NotTo(HaveOccurred())
+			BeforeEach(func() {
+				blockOne := fakeBlock + 1
+				headerOne = fakes.GetFakeHeader(int64(blockOne))
+				headerOne.Timestamp = strconv.Itoa(fakeEra + 1)
+				headerOneId, headerOneErr := headerRepository.CreateOrUpdateHeader(headerOne)
+				Expect(headerOneErr).NotTo(HaveOccurred())
 
-			maxResults := 1
-			var actualEvents []test_helpers.SinQueueEvent
-			err := db.Select(&actualEvents,
-				`SELECT era, act, block_height
+				blockTwo := blockOne + 1
+				headerTwo = fakes.GetFakeHeader(int64(blockTwo))
+				headerTwo.Timestamp = strconv.Itoa(fakeEra + 1)
+				headerTwoId, headerTwoError := headerRepository.CreateOrUpdateHeader(headerTwo)
+				Expect(headerTwoError).NotTo(HaveOccurred())
+
+				// add flog event for same sin in later block
+				vowFlogEventOne := test_data.VowFlogModel
+				vowFlogEventOne.ColumnValues["era"] = fakeEra
+				vowFlogOneErr := vowFlogRepo.Create(headerOneId, []shared.InsertionModel{vowFlogEventOne})
+				Expect(vowFlogOneErr).NotTo(HaveOccurred())
+
+				// add flog event for same sin in later block
+				vowFlogEventTwo := test_data.VowFlogModel
+				vowFlogEventTwo.ColumnValues["era"] = fakeEra
+				vowFlogTwoErr := vowFlogRepo.Create(headerTwoId, []shared.InsertionModel{vowFlogEventTwo})
+				Expect(vowFlogTwoErr).NotTo(HaveOccurred())
+			})
+
+			It("limits results to latest blocks if max_results argument is provided", func() {
+				maxResults := 1
+				var actualEvents []test_helpers.SinQueueEvent
+				err := db.Select(&actualEvents,
+					`SELECT era, act, block_height
 					FROM api.queued_sin_sin_queue_events(
 						(SELECT (era, tab, flogged, created, updated)::api.queued_sin FROM api.get_queued_sin($1)), $2)`,
-				fakeEra, maxResults)
+					fakeEra, maxResults)
 
-			Expect(err).NotTo(HaveOccurred())
+				Expect(err).NotTo(HaveOccurred())
 
-			Expect(actualEvents).To(ConsistOf(
-				test_helpers.SinQueueEvent{
-					Era:         strconv.Itoa(fakeEra),
-					Act:         "flog",
-					BlockHeight: strconv.FormatInt(newHeader.BlockNumber, 10),
-				},
-			))
+				Expect(actualEvents).To(ConsistOf(
+					test_helpers.SinQueueEvent{
+						Era:         strconv.Itoa(fakeEra),
+						Act:         "flog",
+						BlockHeight: strconv.FormatInt(headerTwo.BlockNumber, 10),
+					},
+				))
+			})
+
+			It("offsets results if offset is provided", func() {
+				maxResults := 1
+				resultOffset := 1
+				var actualEvents []test_helpers.SinQueueEvent
+				err := db.Select(&actualEvents,
+					`SELECT era, act, block_height
+					FROM api.queued_sin_sin_queue_events(
+						(SELECT (era, tab, flogged, created, updated)::api.queued_sin FROM api.get_queued_sin($1)), $2, $3)`,
+					fakeEra, maxResults, resultOffset)
+
+				Expect(err).NotTo(HaveOccurred())
+
+				Expect(actualEvents).To(ConsistOf(
+					test_helpers.SinQueueEvent{
+						Era:         strconv.Itoa(fakeEra),
+						Act:         "flog",
+						BlockHeight: strconv.FormatInt(headerOne.BlockNumber, 10),
+					},
+				))
+			})
 		})
 	})
 })
