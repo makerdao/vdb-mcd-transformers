@@ -46,7 +46,8 @@ func (VatFoldConverter) ToModels(ethLogs []types.Log) ([]shared.InsertionModel, 
 		}
 
 		model := shared.InsertionModel{
-			TableName: "vat_fold",
+			SchemaName: "maker",
+			TableName:  "vat_fold",
 			OrderedColumns: []string{
 				"header_id", string(constants.UrnFK), "rate", "log_idx", "tx_idx", "raw_log",
 			},

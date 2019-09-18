@@ -47,7 +47,8 @@ var EthVatFileDebtCeilingLog = types.Log{
 
 var rawVatFileDebtCeilingLog, _ = json.Marshal(EthVatFileDebtCeilingLog)
 var VatFileDebtCeilingModel = shared.InsertionModel{
-	TableName: "vat_file_debt_ceiling",
+	SchemaName: "maker",
+	TableName:  "vat_file_debt_ceiling",
 	OrderedColumns: []string{
 		"header_id", "what", "data", "log_idx", "tx_idx", "raw_log",
 	},
@@ -81,7 +82,8 @@ var EthVatFileIlkDustLog = types.Log{
 
 var rawVatFileIlkDustLog, _ = json.Marshal(EthVatFileIlkDustLog)
 var VatFileIlkDustModel = shared.InsertionModel{
-	TableName: "vat_file_ilk",
+	SchemaName: "maker",
+	TableName:  "vat_file_ilk",
 	OrderedColumns: []string{
 		"header_id", string(constants.IlkFK), "what", "data", "log_idx", "tx_idx", "raw_log",
 	},
@@ -117,7 +119,8 @@ var EthVatFileIlkLineLog = types.Log{
 
 var rawVatFileIlkLineLog, _ = json.Marshal(EthVatFileIlkLineLog)
 var VatFileIlkLineModel = shared.InsertionModel{
-	TableName: "vat_file_ilk",
+	SchemaName: "maker",
+	TableName:  "vat_file_ilk",
 	OrderedColumns: []string{
 		"header_id", string(constants.IlkFK), "what", "data", "log_idx", "tx_idx", "raw_log",
 	},
@@ -152,7 +155,8 @@ var EthVatFileIlkSpotLog = types.Log{
 
 var rawVatFileIlkSpotLog, _ = json.Marshal(EthVatFileIlkSpotLog)
 var VatFileIlkSpotModel = shared.InsertionModel{
-	TableName: "vat_file_ilk",
+	SchemaName: "maker",
+	TableName:  "vat_file_ilk",
 	OrderedColumns: []string{
 		"header_id", string(constants.IlkFK), "what", "data", "log_idx", "tx_idx", "raw_log",
 	},

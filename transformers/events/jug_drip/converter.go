@@ -41,7 +41,8 @@ func (JugDripConverter) ToModels(ethLogs []types.Log) ([]shared.InsertionModel, 
 			return nil, err
 		}
 		model := shared.InsertionModel{
-			TableName: "jug_drip",
+			SchemaName: "maker",
+			TableName:  "jug_drip",
 			OrderedColumns: []string{
 				"header_id", string(constants.IlkFK), "log_idx", "tx_idx", "raw_log",
 			},

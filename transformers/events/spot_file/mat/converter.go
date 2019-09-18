@@ -50,7 +50,8 @@ func (SpotFileMatConverter) ToModels(ethLogs []types.Log) ([]shared.InsertionMod
 			return nil, err
 		}
 		model := shared.InsertionModel{
-			TableName: "spot_file_mat",
+			SchemaName: "maker",
+			TableName:  "spot_file_mat",
 			OrderedColumns: []string{
 				"header_id", string(constants2.IlkFK), "what", "data", "log_idx", "tx_idx", "raw_log",
 			},

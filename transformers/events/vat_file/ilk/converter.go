@@ -46,7 +46,8 @@ func (VatFileIlkConverter) ToModels(ethLogs []types.Log) ([]shared.InsertionMode
 			return nil, err
 		}
 		model := shared.InsertionModel{
-			TableName: "vat_file_ilk",
+			SchemaName: "maker",
+			TableName:  "vat_file_ilk",
 			OrderedColumns: []string{
 				"header_id", string(constants2.IlkFK), "what", "data", "log_idx", "tx_idx", "raw_log",
 			},

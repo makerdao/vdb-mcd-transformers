@@ -57,7 +57,8 @@ var TendLogNote = types.Log{
 
 var rawTendLog, _ = json.Marshal(TendLogNote)
 var TendModel = shared.InsertionModel{
-	TableName: "tend",
+	SchemaName: "maker",
+	TableName:  "tend",
 	OrderedColumns: []string{
 		"header_id", "bid_id", "lot", "bid", string(constants.AddressFK), "log_idx", "tx_idx", "raw_log",
 	},

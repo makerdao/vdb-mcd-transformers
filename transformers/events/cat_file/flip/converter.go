@@ -51,7 +51,8 @@ func (CatFileFlipConverter) ToModels(ethLogs []types.Log) ([]shared.InsertionMod
 		}
 
 		result := shared.InsertionModel{
-			TableName: "cat_file_flip",
+			SchemaName: "maker",
+			TableName:  "cat_file_flip",
 			OrderedColumns: []string{
 				"header_id", string(constants2.IlkFK), "what", "flip", "tx_idx", "log_idx", "raw_log",
 			},

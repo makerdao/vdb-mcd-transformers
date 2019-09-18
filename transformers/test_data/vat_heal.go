@@ -45,7 +45,8 @@ var EthVatHealLogWithPositiveRad = types.Log{
 
 var rawVatHealLogWithPositiveRad, _ = json.Marshal(EthVatHealLogWithPositiveRad)
 var VatHealModelWithPositiveRad = shared.InsertionModel{
-	TableName: "vat_heal",
+	SchemaName: "maker",
+	TableName:  "vat_heal",
 	OrderedColumns: []string{
 		"header_id", "rad", "log_idx", "tx_idx", "raw_log",
 	},

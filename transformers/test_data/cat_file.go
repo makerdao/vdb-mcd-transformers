@@ -47,7 +47,8 @@ var EthCatFileChopLog = types.Log{
 
 var rawCatFileChopLog, _ = json.Marshal(EthCatFileChopLog)
 var CatFileChopModel = shared.InsertionModel{
-	TableName: "cat_file_chop_lump",
+	SchemaName: "maker",
+	TableName:  "cat_file_chop_lump",
 	OrderedColumns: []string{
 		"header_id", string(constants.IlkFK), "what", "data", "tx_idx", "log_idx", "raw_log",
 	},
@@ -82,7 +83,8 @@ var EthCatFileLumpLog = types.Log{
 
 var rawCatFileLumpLog, _ = json.Marshal(EthCatFileLumpLog)
 var CatFileLumpModel = shared.InsertionModel{
-	TableName: "cat_file_chop_lump",
+	SchemaName: "maker",
+	TableName:  "cat_file_chop_lump",
 	OrderedColumns: []string{
 		"header_id", string(constants.IlkFK), "what", "data", "tx_idx", "log_idx", "raw_log",
 	},
@@ -117,7 +119,8 @@ var EthCatFileFlipLog = types.Log{
 
 var rawCatFileFlipLog, _ = json.Marshal(EthCatFileFlipLog)
 var CatFileFlipModel = shared.InsertionModel{
-	TableName: "cat_file_flip",
+	SchemaName: "maker",
+	TableName:  "cat_file_flip",
 	OrderedColumns: []string{
 		"header_id", string(constants.IlkFK), "what", "flip", "tx_idx", "log_idx", "raw_log",
 	},
@@ -152,7 +155,8 @@ var EthCatFileVowLog = types.Log{
 
 var rawCatFileVowLog, _ = json.Marshal(EthCatFileVowLog)
 var CatFileVowModel = shared.InsertionModel{
-	TableName: "cat_file_vow",
+	SchemaName: "maker",
+	TableName:  "cat_file_vow",
 	OrderedColumns: []string{
 		"header_id", "what", "data", "tx_idx", "log_idx", "raw_log",
 	},

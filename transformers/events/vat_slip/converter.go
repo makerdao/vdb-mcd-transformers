@@ -45,7 +45,8 @@ func (VatSlipConverter) ToModels(ethLogs []types.Log) ([]shared.InsertionModel, 
 			return nil, err
 		}
 		model := shared.InsertionModel{
-			TableName: "vat_slip",
+			SchemaName: "maker",
+			TableName:  "vat_slip",
 			OrderedColumns: []string{
 				"header_id", string(constants.IlkFK), "usr", "wad", "tx_idx", "log_idx", "raw_log",
 			},

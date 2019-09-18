@@ -44,7 +44,8 @@ func (JugFileVowConverter) ToModels(ethLogs []types.Log) ([]shared.InsertionMode
 		}
 
 		model := shared.InsertionModel{
-			TableName: "jug_file_vow",
+			SchemaName: "maker",
+			TableName:  "jug_file_vow",
 			OrderedColumns: []string{
 				"header_id", "what", "data", "log_idx", "tx_idx", "raw_log",
 			},

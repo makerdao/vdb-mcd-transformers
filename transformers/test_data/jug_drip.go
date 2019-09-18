@@ -47,7 +47,8 @@ var EthJugDripLog = types.Log{
 
 var rawJugDripLog, _ = json.Marshal(EthJugDripLog)
 var JugDripModel = shared.InsertionModel{
-	TableName: "jug_drip",
+	SchemaName: "maker",
+	TableName:  "jug_drip",
 	OrderedColumns: []string{
 		"header_id", string(constants.IlkFK), "log_idx", "tx_idx", "raw_log",
 	},

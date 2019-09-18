@@ -47,7 +47,8 @@ var EthVatMoveLog = types.Log{
 
 var rawVatMoveLog, _ = json.Marshal(EthVatMoveLog)
 var VatMoveModel = shared.InsertionModel{
-	TableName: "vat_move",
+	SchemaName: "maker",
+	TableName:  "vat_move",
 	OrderedColumns: []string{
 		"header_id", "src", "dst", "rad", "log_idx", "tx_idx", "raw_log",
 	},

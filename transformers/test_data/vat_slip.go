@@ -47,7 +47,8 @@ var EthVatSlipLogWithPositiveWad = types.Log{
 
 var rawVatSlipLogWithPositiveWad, _ = json.Marshal(EthVatSlipLogWithPositiveWad)
 var VatSlipModelWithPositiveWad = shared.InsertionModel{
-	TableName: "vat_slip",
+	SchemaName: "maker",
+	TableName:  "vat_slip",
 	OrderedColumns: []string{
 		"header_id", string(constants.IlkFK), "usr", "wad", "tx_idx", "log_idx", "raw_log",
 	},
@@ -82,7 +83,8 @@ var EthVatSlipLogWithNegativeWad = types.Log{
 
 var rawVatSlipLogWithNegativeWad, _ = json.Marshal(EthVatSlipLogWithNegativeWad)
 var VatSlipModelWithNegativeWad = shared.InsertionModel{
-	TableName: "vat_slip",
+	SchemaName: "maker",
+	TableName:  "vat_slip",
 	OrderedColumns: []string{
 		"header_id", string(constants.IlkFK), "usr", "wad", "tx_idx", "log_idx", "raw_log",
 	},

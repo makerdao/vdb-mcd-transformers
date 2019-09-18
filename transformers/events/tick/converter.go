@@ -41,7 +41,8 @@ func (TickConverter) ToModels(ethLogs []types.Log) (results []shared.InsertionMo
 		}
 
 		model := shared.InsertionModel{
-			TableName: "tick",
+			SchemaName: "maker",
+			TableName:  "tick",
 			OrderedColumns: []string{
 				"header_id", "bid_id", string(constants.AddressFK), "log_idx", "tx_idx", "raw_log",
 			},

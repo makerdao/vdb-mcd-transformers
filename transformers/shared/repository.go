@@ -53,6 +53,7 @@ type SharedRepository interface {
 type ForeignKeyValues map[constants.ForeignKeyField]string
 type ColumnValues map[string]interface{}
 type InsertionModel struct {
+	SchemaName     string
 	TableName      string   // For MarkHeaderChecked, insert query
 	OrderedColumns []string // Defines the fields to insert, and in which order the table expects them
 	// ColumnValues needs to be typed interface{}, since `raw_log` is a slice of bytes and not a string
@@ -60,14 +61,16 @@ type InsertionModel struct {
 	ForeignKeyValues ForeignKeyValues // FK name and value to get/create ID for
 }
 
+// Stores memoised insertion queries to minimise computation
 var modelToQuery = map[string]string{}
 
 func getMemoizedQuery(model InsertionModel) string {
-	// The table name uniquely determines the insertion query, use that for memoization
-	query, queryMemoized := modelToQuery[model.TableName]
+	// The schema and table name uniquely determines the insertion query, use that for memoization
+	queryKey := model.SchemaName + model.TableName
+	query, queryMemoized := modelToQuery[queryKey]
 	if !queryMemoized {
 		query = generateInsertionQuery(model)
-		modelToQuery[model.TableName] = query
+		modelToQuery[queryKey] = query
 	}
 	return query
 }
@@ -87,9 +90,10 @@ func generateInsertionQuery(model InsertionModel) string {
 			fmt.Sprintf("%s = %s", model.OrderedColumns[i], valuePlaceholder))
 	}
 
-	baseQuery := `INSERT INTO maker.%v (%v) VALUES(%v)
+	baseQuery := `INSERT INTO %v.%v (%v) VALUES(%v)
 		ON CONFLICT (header_id, tx_idx, log_idx) DO UPDATE SET %v;`
 	return fmt.Sprintf(baseQuery,
+		model.SchemaName,
 		model.TableName,
 		strings.Join(model.OrderedColumns, ", "),
 		strings.Join(valuePlaceholders, ", "),
@@ -101,6 +105,7 @@ foreign keys automatically after getting from the DB. These "special fields" are
 columnToValue mapping, and are treated like any other in the insertion.
 
 testModel = shared.InsertionModel{
+			SchemaName:     "maker"
 			TableName:      "testEvent",
 			OrderedColumns: []string{"header_id", "log_idx", "tx_idx", "raw_log", constants.IlkFK, constants.UrnFK, "variable1"},
 			ColumnValues: ColumnValues{

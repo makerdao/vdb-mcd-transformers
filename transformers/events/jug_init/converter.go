@@ -42,6 +42,7 @@ func (JugInitConverter) ToModels(ethLogs []types.Log) ([]shared.InsertionModel, 
 		}
 
 		model := shared.InsertionModel{
+			SchemaName:     "maker",
 			TableName:      "jug_init",
 			OrderedColumns: []string{"header_id", string(constants.IlkFK), "log_idx", "tx_idx", "raw_log"},
 			ColumnValues: shared.ColumnValues{

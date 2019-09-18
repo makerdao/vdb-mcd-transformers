@@ -47,7 +47,8 @@ var EthVatFoldLogWithPositiveRate = types.Log{
 
 var rawVatFoldLogWithPositiveRate, _ = json.Marshal(EthVatFoldLogWithPositiveRate)
 var VatFoldModelWithPositiveRate = shared.InsertionModel{
-	TableName: "vat_fold",
+	SchemaName: "maker",
+	TableName:  "vat_fold",
 	OrderedColumns: []string{
 		"header_id", string(constants.UrnFK), "rate", "log_idx", "tx_idx", "raw_log",
 	},
@@ -82,7 +83,8 @@ var EthVatFoldLogWithNegativeRate = types.Log{
 
 var rawVatFoldLogWithNegativeRate, _ = json.Marshal(EthVatFoldLogWithNegativeRate)
 var VatFoldModelWithNegativeRate = shared.InsertionModel{
-	TableName: "vat_fold",
+	SchemaName: "maker",
+	TableName:  "vat_fold",
 	OrderedColumns: []string{
 		"header_id", string(constants.UrnFK), "rate", "log_idx", "tx_idx", "raw_log",
 	},

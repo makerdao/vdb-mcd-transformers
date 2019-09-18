@@ -44,7 +44,8 @@ var EthSpotFileMatLog = types.Log{
 
 var rawSpotFileMatLog, _ = json.Marshal(EthSpotFileMatLog)
 var SpotFileMatModel = shared.InsertionModel{
-	TableName: "spot_file_mat",
+	SchemaName: "maker",
+	TableName:  "spot_file_mat",
 	OrderedColumns: []string{
 		"header_id", string(constants.IlkFK), "what", "data", "log_idx", "tx_idx", "raw_log",
 	},
@@ -79,7 +80,8 @@ var EthSpotFilePipLog = types.Log{
 
 var rawSpotFilePipLog, _ = json.Marshal(EthSpotFilePipLog)
 var SpotFilePipModel = shared.InsertionModel{
-	TableName: "spot_file_pip",
+	SchemaName: "maker",
+	TableName:  "spot_file_pip",
 	OrderedColumns: []string{
 		"header_id", string(constants.IlkFK), "pip", "log_idx", "tx_idx", "raw_log",
 	},

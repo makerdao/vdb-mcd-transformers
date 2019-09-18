@@ -47,7 +47,8 @@ var EthJugInitLog = types.Log{
 
 var rawJugInitLog, _ = json.Marshal(EthJugInitLog)
 var JugInitModel = shared.InsertionModel{
-	TableName: "jug_init",
+	SchemaName: "maker",
+	TableName:  "jug_init",
 	OrderedColumns: []string{
 		"header_id", string(constants.IlkFK), "log_idx", "tx_idx", "raw_log",
 	},

@@ -51,7 +51,8 @@ func (JugFileIlkConverter) ToModels(ethLogs []types.Log) ([]shared.InsertionMode
 		}
 
 		model := shared.InsertionModel{
-			TableName: "jug_file_ilk",
+			SchemaName: "maker",
+			TableName:  "jug_file_ilk",
 			OrderedColumns: []string{
 				"header_id", string(constants2.IlkFK), "what", "data", "log_idx", "tx_idx", "raw_log",
 			},

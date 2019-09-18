@@ -55,7 +55,8 @@ func (CatFileChopLumpConverter) ToModels(ethLogs []types.Log) ([]shared.Insertio
 			return nil, marshalErr
 		}
 		result := shared.InsertionModel{
-			TableName: "cat_file_chop_lump",
+			SchemaName: "maker",
+			TableName:  "cat_file_chop_lump",
 			OrderedColumns: []string{
 				"header_id", string(constants2.IlkFK), "what", "data", "tx_idx", "log_idx", "raw_log",
 			},

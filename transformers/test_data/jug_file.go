@@ -48,7 +48,8 @@ var EthJugFileIlkLog = types.Log{
 
 var rawJugFileIlkLog, _ = json.Marshal(EthJugFileIlkLog)
 var JugFileIlkModel = shared.InsertionModel{
-	TableName: "jug_file_ilk",
+	SchemaName: "maker",
+	TableName:  "jug_file_ilk",
 	OrderedColumns: []string{
 		"header_id", string(constants.IlkFK), "what", "data", "log_idx", "tx_idx", "raw_log",
 	},
@@ -83,7 +84,8 @@ var EthJugFileBaseLog = types.Log{
 
 var rawJugFileBaseLog, _ = json.Marshal(EthJugFileBaseLog)
 var JugFileBaseModel = shared.InsertionModel{
-	TableName: "jug_file_base",
+	SchemaName: "maker",
+	TableName:  "jug_file_base",
 	OrderedColumns: []string{
 		"header_id", "what", "data", "log_idx", "tx_idx", "raw_log",
 	},
@@ -116,7 +118,8 @@ var EthJugFileVowLog = types.Log{
 
 var rawJugFileVowLog, _ = json.Marshal(EthJugFileVowLog)
 var JugFileVowModel = shared.InsertionModel{
-	TableName: "jug_file_vow",
+	SchemaName: "maker",
+	TableName:  "jug_file_vow",
 	OrderedColumns: []string{
 		"header_id", "what", "data", "log_idx", "tx_idx", "raw_log",
 	},

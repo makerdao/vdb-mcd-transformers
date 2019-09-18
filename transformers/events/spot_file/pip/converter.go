@@ -43,7 +43,8 @@ func (SpotFilePipConverter) ToModels(ethLogs []types.Log) ([]shared.InsertionMod
 			return nil, err
 		}
 		model := shared.InsertionModel{
-			TableName: "spot_file_pip",
+			SchemaName: "maker",
+			TableName:  "spot_file_pip",
 			OrderedColumns: []string{
 				"header_id", string(constants.IlkFK), "pip", "log_idx", "tx_idx", "raw_log",
 			},

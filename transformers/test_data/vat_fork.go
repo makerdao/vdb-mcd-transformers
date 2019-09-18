@@ -46,7 +46,8 @@ var EthVatForkLogWithNegativeDinkDart = types.Log{
 
 var rawVatForkLogWithNegativeDinkDart, _ = json.Marshal(EthVatForkLogWithNegativeDinkDart)
 var VatForkModelWithNegativeDinkDart = shared.InsertionModel{
-	TableName: "vat_fork",
+	SchemaName: "maker",
+	TableName:  "vat_fork",
 	OrderedColumns: []string{
 		"header_id", string(constants.IlkFK), "src", "dst", "dink", "dart", "log_idx", "tx_idx", "raw_log",
 	},
@@ -83,7 +84,8 @@ var EthVatForkLogWithPositiveDinkDart = types.Log{
 
 var rawVatForkLogWithPositiveDinkDart, _ = json.Marshal(EthVatForkLogWithPositiveDinkDart)
 var VatForkModelWithPositiveDinkDart = shared.InsertionModel{
-	TableName: "vat_fork",
+	SchemaName: "maker",
+	TableName:  "vat_fork",
 	OrderedColumns: []string{
 		"header_id", string(constants.IlkFK), "src", "dst", "dink", "dart", "log_idx", "tx_idx", "raw_log",
 	},

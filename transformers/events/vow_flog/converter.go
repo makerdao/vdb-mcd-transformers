@@ -43,7 +43,8 @@ func (VowFlogConverter) ToModels(ethLogs []types.Log) ([]shared.InsertionModel, 
 			return nil, err
 		}
 		model := shared.InsertionModel{
-			TableName: "vow_flog",
+			SchemaName: "maker",
+			TableName:  "vow_flog",
 			OrderedColumns: []string{
 				"header_id", "era", "log_idx", "tx_idx", "raw_log",
 			},

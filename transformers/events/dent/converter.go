@@ -53,7 +53,8 @@ func (c DentConverter) ToModels(ethLogs []types.Log) (result []shared.InsertionM
 		}
 
 		model := shared.InsertionModel{
-			TableName: "dent",
+			SchemaName: "maker",
+			TableName:  "dent",
 			OrderedColumns: []string{
 				"header_id", "bid_id", "lot", "bid", string(constants.AddressFK), "log_idx", "tx_idx", "raw_log",
 			},

@@ -45,7 +45,8 @@ var EthYankLog = types.Log{
 
 var rawYank, _ = json.Marshal(EthYankLog)
 var YankModel = shared.InsertionModel{
-	TableName: "yank",
+	SchemaName: "maker",
+	TableName:  "yank",
 	OrderedColumns: []string{
 		"header_id", "bid_id", string(constants.AddressFK), "log_idx", "tx_idx", "raw_log",
 	},

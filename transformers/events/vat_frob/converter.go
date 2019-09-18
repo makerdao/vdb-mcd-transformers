@@ -62,7 +62,8 @@ func (VatFrobConverter) ToModels(ethLogs []types.Log) ([]shared.InsertionModel, 
 			return nil, err
 		}
 		model := shared.InsertionModel{
-			TableName: "vat_frob",
+			SchemaName: "maker",
+			TableName:  "vat_frob",
 			OrderedColumns: []string{
 				"header_id", string(constants2.UrnFK), "v", "w", "dink", "dart", "log_idx", "tx_idx", "raw_log",
 			},

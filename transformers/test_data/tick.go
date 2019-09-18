@@ -53,7 +53,8 @@ var TickLogNote = types.Log{
 
 var rawTickLog, _ = json.Marshal(TickLogNote)
 var TickModel = shared.InsertionModel{
-	TableName: "tick",
+	SchemaName: "maker",
+	TableName:  "tick",
 	OrderedColumns: []string{
 		"header_id", "bid_id", string(constants.AddressFK), "log_idx", "tx_idx", "raw_log",
 	},

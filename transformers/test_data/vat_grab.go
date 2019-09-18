@@ -46,7 +46,8 @@ var EthVatGrabLogWithPositiveDink = types.Log{
 
 var rawVatGrabLogWithPositiveDink, _ = json.Marshal(EthVatGrabLogWithPositiveDink)
 var VatGrabModelWithPositiveDink = shared.InsertionModel{
-	TableName: "vat_grab",
+	SchemaName: "maker",
+	TableName:  "vat_grab",
 	OrderedColumns: []string{
 		"header_id", string(constants.UrnFK), "v", "w", "dink", "dart", "log_idx", "tx_idx", "raw_log",
 	},
@@ -84,7 +85,8 @@ var EthVatGrabLogWithNegativeDink = types.Log{
 
 var rawVatGrabLogWithNegativeDink, _ = json.Marshal(EthVatGrabLogWithNegativeDink)
 var VatGrabModelWithNegativeDink = shared.InsertionModel{
-	TableName: "vat_grab",
+	SchemaName: "maker",
+	TableName:  "vat_grab",
 	OrderedColumns: []string{
 		"header_id", string(constants.UrnFK), "v", "w", "dink", "dart", "log_idx", "tx_idx", "raw_log",
 	},

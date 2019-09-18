@@ -64,7 +64,8 @@ var _ = Describe("Shared repository", func() {
 			headerRepository = repositories.NewHeaderRepository(db)
 
 			testModel = InsertionModel{
-				TableName: "testEvent",
+				SchemaName: "maker",
+				TableName:  "testEvent",
 				OrderedColumns: []string{
 					"header_id", "log_idx", "tx_idx", "raw_log", string(constants.IlkFK), string(constants.UrnFK), "variable1",
 				},
@@ -121,6 +122,7 @@ var _ = Describe("Shared repository", func() {
 
 			It("for unknown foreign keys", func() {
 				brokenModel := InsertionModel{
+					SchemaName:     "maker",
 					TableName:      "testEvent",
 					OrderedColumns: nil,
 					ColumnValues:   nil,
@@ -136,7 +138,8 @@ var _ = Describe("Shared repository", func() {
 
 			It("for failed SQL inserts", func() {
 				brokenModel := InsertionModel{
-					TableName: "testEvent",
+					SchemaName: "maker",
+					TableName:  "testEvent",
 					// Wrong name of last column compared to DB, will generate incorrect query
 					OrderedColumns: []string{
 						"header_id", "log_idx", "tx_idx", "raw_log", string(constants.IlkFK), string(constants.UrnFK), "variable2",
@@ -154,7 +157,7 @@ var _ = Describe("Shared repository", func() {
 				}
 
 				// Remove cached queries, or we won't generate a new (incorrect) one
-				delete(modelToQuery, "testEvent")
+				delete(modelToQuery, "makertestEvent")
 				header := fakes.GetFakeHeader(1)
 				headerID, headerErr := headerRepository.CreateOrUpdateHeader(header)
 				Expect(headerErr).NotTo(HaveOccurred())
@@ -162,7 +165,7 @@ var _ = Describe("Shared repository", func() {
 				createErr := Create(headerID, []InsertionModel{brokenModel}, db)
 				Expect(createErr).To(HaveOccurred())
 				// Remove incorrect query, so other tests won't get it
-				delete(modelToQuery, "testEvent")
+				delete(modelToQuery, "makertestEvent")
 			})
 		})
 
@@ -172,7 +175,8 @@ var _ = Describe("Shared repository", func() {
 			Expect(headerErr).NotTo(HaveOccurred())
 
 			conflictingModel := InsertionModel{
-				TableName: "testEvent",
+				SchemaName: "maker",
+				TableName:  "testEvent",
 				OrderedColumns: []string{
 					"header_id", "log_idx", "tx_idx", "raw_log", string(constants.IlkFK), string(constants.UrnFK), "variable1",
 				},

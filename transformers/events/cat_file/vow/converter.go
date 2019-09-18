@@ -46,7 +46,8 @@ func (CatFileVowConverter) ToModels(ethLogs []types.Log) ([]shared.InsertionMode
 		}
 
 		result := shared.InsertionModel{
-			TableName: "cat_file_vow",
+			SchemaName: "maker",
+			TableName:  "cat_file_vow",
 			OrderedColumns: []string{
 				"header_id", "what", "data", "tx_idx", "log_idx", "raw_log",
 			},

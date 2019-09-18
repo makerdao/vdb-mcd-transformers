@@ -51,7 +51,8 @@ var EthVatFrobLogWithPositiveDart = types.Log{
 
 var rawVatFrobLogWithPositiveDart, _ = json.Marshal(EthVatFrobLogWithPositiveDart)
 var VatFrobModelWithPositiveDart = shared.InsertionModel{
-	TableName: "vat_frob",
+	SchemaName: "maker",
+	TableName:  "vat_frob",
 	OrderedColumns: []string{
 		"header_id", string(constants.UrnFK), "v", "w", "dink", "dart", "log_idx", "tx_idx", "raw_log",
 	},
@@ -89,7 +90,8 @@ var EthVatFrobLogWithNegativeDink = types.Log{
 
 var rawVatFrobLogWithNegativeDink, _ = json.Marshal(EthVatFrobLogWithNegativeDink)
 var VatFrobModelWithNegativeDink = shared.InsertionModel{
-	TableName: "vat_frob",
+	SchemaName: "maker",
+	TableName:  "vat_frob",
 	OrderedColumns: []string{
 		"header_id", string(constants.UrnFK), "v", "w", "dink", "dart", "log_idx", "tx_idx", "raw_log",
 	},

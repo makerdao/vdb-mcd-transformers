@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 11.4
--- Dumped by pg_dump version 11.4
+-- Dumped from database version 11.5
+-- Dumped by pg_dump version 11.5
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -546,9 +546,9 @@ WITH address_id AS (
      deals AS (
          SELECT deal.bid_id,
                 flap_bid_lot.lot,
-                flap_bid_bid.bid     AS bid_amount,
-                'deal'::api.bid_act  AS act,
-                headers.block_number AS block_height,
+                flap_bid_bid.bid                                           AS bid_amount,
+                'deal'::api.bid_act                                        AS act,
+                headers.block_number                                       AS block_height,
                 tx_idx,
                 (SELECT * FROM flap_address) AS contract_address
          FROM maker.deal
@@ -564,9 +564,9 @@ WITH address_id AS (
      yanks AS (
          SELECT yank.bid_id,
                 flap_bid_lot.lot,
-                flap_bid_bid.bid     AS bid_amount,
-                'yank'::api.bid_act  AS act,
-                headers.block_number AS block_height,
+                flap_bid_bid.bid                                           AS bid_amount,
+                'yank'::api.bid_act                                        AS act,
+                headers.block_number                                       AS block_height,
                 tx_idx,
                 (SELECT * FROM flap_address) AS contract_address
          FROM maker.yank
@@ -582,9 +582,9 @@ WITH address_id AS (
 
 SELECT flap_kick.bid_id,
        lot,
-       bid                 AS bid_amount,
-       'kick'::api.bid_act AS act,
-       block_number        AS block_height,
+       bid                                                             AS bid_amount,
+       'kick'::api.bid_act                                             AS act,
+       block_number                                                    AS block_height,
        tx_idx,
        (SELECT * FROM flap_address) AS contract_address
 FROM maker.flap_kick
@@ -592,9 +592,9 @@ FROM maker.flap_kick
 UNION
 SELECT bid_id,
        lot,
-       bid                 AS bid_amount,
-       'tend'::api.bid_act AS act,
-       block_number        AS block_height,
+       bid                                                        AS bid_amount,
+       'tend'::api.bid_act                                        AS act,
+       block_number                                               AS block_height,
        tx_idx,
        (SELECT * FROM flap_address) AS contract_address
 FROM maker.tend
@@ -649,7 +649,7 @@ WITH address_ids AS (
          SELECT deal.bid_id,
                 flip_bid_lot.lot,
                 flip_bid_bid.bid                                           AS bid_amount,
-                'deal'::api.bid_act  AS act,
+                'deal'::api.bid_act                                        AS act,
                 headers.block_number                                       AS block_height,
                 tx_idx,
                 (SELECT address FROM addresses WHERE id = deal.address_id) AS contract_address
@@ -702,9 +702,9 @@ WITH address_ids AS (
 
 SELECT flip_kick.bid_id,
        lot,
-       bid          AS                                                 bid_amount,
-       'kick'::api.bid_act AS act,
-       block_number AS                                                 block_height,
+       bid                 AS                                          bid_amount,
+       'kick'::api.bid_act AS                                          act,
+       block_number        AS                                          block_height,
        tx_idx,
        (SELECT address FROM addresses WHERE id = flip_kick.address_id) s
 FROM maker.flip_kick
@@ -712,9 +712,9 @@ FROM maker.flip_kick
 UNION
 SELECT bid_id,
        lot,
-       bid          AS bid_amount,
+       bid                 AS bid_amount,
        'tend'::api.bid_act AS act,
-       block_number AS block_height,
+       block_number        AS block_height,
        tx_idx,
        (SELECT address FROM addresses WHERE id = tend.address_id)
 FROM maker.tend
@@ -723,9 +723,9 @@ WHERE tend.address_id IN (SELECT * FROM address_ids)
 UNION
 SELECT bid_id,
        lot,
-       bid          AS bid_amount,
+       bid                 AS bid_amount,
        'dent'::api.bid_act AS act,
-       block_number AS block_height,
+       block_number        AS block_height,
        tx_idx,
        (SELECT address FROM addresses WHERE id = dent.address_id)
 FROM maker.dent
@@ -755,8 +755,8 @@ CREATE FUNCTION api.all_flips(ilk text, max_results integer DEFAULT NULL::intege
 BEGIN
     RETURN QUERY (
         WITH ilk_ids AS (SELECT id
-                        FROM maker.ilks
-                        WHERE identifier = all_flips.ilk),
+                         FROM maker.ilks
+                         WHERE identifier = all_flips.ilk),
              address AS (
                  SELECT DISTINCT address_id
                  FROM maker.flip_ilk
@@ -797,9 +797,9 @@ WITH address_id AS (
      deals AS (
          SELECT deal.bid_id,
                 flop_bid_lot.lot,
-                flop_bid_bid.bid     AS bid_amount,
-                'deal'::api.bid_act  AS act,
-                headers.block_number AS block_height,
+                flop_bid_bid.bid                                           AS bid_amount,
+                'deal'::api.bid_act                                        AS act,
+                headers.block_number                                       AS block_height,
                 tx_idx,
                 (SELECT * FROM flop_address) AS contract_address
          FROM maker.deal
@@ -815,9 +815,9 @@ WITH address_id AS (
      yanks AS (
          SELECT yank.bid_id,
                 flop_bid_lot.lot,
-                flop_bid_bid.bid     AS bid_amount,
-                'yank'::api.bid_act  AS act,
-                headers.block_number AS block_height,
+                flop_bid_bid.bid                                           AS bid_amount,
+                'yank'::api.bid_act                                        AS act,
+                headers.block_number                                       AS block_height,
                 tx_idx,
                 (SELECT * FROM flop_address) AS contract_address
          FROM maker.yank
@@ -834,9 +834,9 @@ WITH address_id AS (
      ticks AS (
          SELECT tick.bid_id,
                 flop_bid_lot.lot,
-                flop_bid_bid.bid AS bid_amount,
-                'tick'::api.bid_act AS act,
-                headers.block_number AS block_height,
+                flop_bid_bid.bid                                           AS bid_amount,
+                'tick'::api.bid_act                                        AS act,
+                headers.block_number                                       AS block_height,
                 tx_idx,
                 (SELECT * FROM flop_address) AS contract_address
          FROM maker.tick
@@ -852,9 +852,9 @@ WITH address_id AS (
 
 SELECT flop_kick.bid_id,
        lot,
-       bid                 AS bid_amount,
-       'kick'::api.bid_act AS act,
-       block_number        AS block_height,
+       bid                                                             AS bid_amount,
+       'kick'::api.bid_act                                             AS act,
+       block_number                                                    AS block_height,
        tx_idx,
        (SELECT * FROM flop_address) AS contract_address
 FROM maker.flop_kick
@@ -862,9 +862,9 @@ FROM maker.flop_kick
 UNION
 SELECT bid_id,
        lot,
-       bid                 AS bid_amount,
-       'dent'::api.bid_act AS act,
-       block_number        AS block_height,
+       bid                                                        AS bid_amount,
+       'dent'::api.bid_act                                        AS act,
+       block_number                                               AS block_height,
        tx_idx,
        (SELECT * FROM flop_address) AS contract_address
 FROM maker.dent
@@ -1409,7 +1409,8 @@ $$;
 CREATE FUNCTION api.flap_bid_event_tx(event api.flap_bid_event) RETURNS SETOF api.tx
     LANGUAGE sql STABLE
     AS $$
-    SELECT * FROM get_tx_data(event.block_height, event.tx_idx)
+SELECT *
+FROM get_tx_data(event.block_height, event.tx_idx)
 $$;
 
 
@@ -1528,7 +1529,8 @@ $$;
 CREATE FUNCTION api.flop_bid_event_tx(event api.flop_bid_event) RETURNS SETOF api.tx
     LANGUAGE sql STABLE
     AS $$
-SELECT * FROM get_tx_data(event.block_height, event.tx_idx)
+SELECT *
+FROM get_tx_data(event.block_height, event.tx_idx)
 $$;
 
 
@@ -1597,7 +1599,14 @@ WITH address_id AS (
     LIMIT 1
 ),
      storage_values AS (
-         SELECT bid_id, guy, tic, "end", lot, bid, created, updated
+         SELECT bid_id,
+                guy,
+                tic,
+                "end",
+                lot,
+                bid,
+                created,
+                updated
          FROM maker.flap
          WHERE bid_id = get_flap.bid_id
            AND block_number <= block_height
@@ -1842,7 +1851,14 @@ WITH address_id AS (
     LIMIT 1
 ),
      storage_values AS (
-         SELECT bid_id, guy, tic, "end", lot, bid, created, updated
+         SELECT bid_id,
+                guy,
+                tic,
+                "end",
+                lot,
+                bid,
+                created,
+                updated
          FROM maker.flop
          WHERE bid_id = get_flop.bid_id
            AND block_number <= block_height
@@ -2633,7 +2649,7 @@ BEGIN
     INSERT
     INTO api.managed_cdp (cdpi, usr)
     VALUES (NEW.cdpi, NEW.owner)
-    -- only update usr if the new owner is coming from the latest owns block we know about for the given cdpi
+           -- only update usr if the new owner is coming from the latest owns block we know about for the given cdpi
     ON CONFLICT (cdpi)
         DO UPDATE SET usr = NEW.owner
     WHERE NEW.block_number >= (

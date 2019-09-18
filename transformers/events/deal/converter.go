@@ -41,7 +41,8 @@ func (DealConverter) ToModels(ethLogs []types.Log) (result []shared.InsertionMod
 		}
 
 		model := shared.InsertionModel{
-			TableName: "deal",
+			SchemaName: "maker",
+			TableName:  "deal",
 			OrderedColumns: []string{
 				"header_id", "bid_id", string(constants.AddressFK), "log_idx", "tx_idx", "raw_log",
 			},

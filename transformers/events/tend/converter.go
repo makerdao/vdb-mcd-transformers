@@ -49,7 +49,8 @@ func (TendConverter) ToModels(ethLogs []types.Log) (results []shared.InsertionMo
 		}
 
 		model := shared.InsertionModel{
-			TableName: "tend",
+			SchemaName: "maker",
+			TableName:  "tend",
 			OrderedColumns: []string{
 				"header_id", "bid_id", "lot", "bid", string(constants.AddressFK), "log_idx", "tx_idx", "raw_log",
 			},

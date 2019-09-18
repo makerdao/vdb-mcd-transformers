@@ -46,7 +46,8 @@ func (VatSuckConverter) ToModels(ethLogs []types.Log) ([]shared.InsertionModel, 
 		}
 
 		model := shared.InsertionModel{
-			TableName: "vat_suck",
+			SchemaName: "maker",
+			TableName:  "vat_suck",
 			OrderedColumns: []string{
 				"header_id", "u", "v", "rad", "log_idx", "tx_idx", "raw_log",
 			},

@@ -45,7 +45,8 @@ func (VatMoveConverter) ToModels(ethLogs []types.Log) ([]shared.InsertionModel, 
 		}
 
 		model := shared.InsertionModel{
-			TableName: "vat_move",
+			SchemaName: "maker",
+			TableName:  "vat_move",
 			OrderedColumns: []string{
 				"header_id", "src", "dst", "rad", "log_idx", "tx_idx", "raw_log",
 			},

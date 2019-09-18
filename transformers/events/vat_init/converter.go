@@ -41,7 +41,8 @@ func (VatInitConverter) ToModels(ethLogs []types.Log) ([]shared.InsertionModel, 
 			return nil, err
 		}
 		model := shared.InsertionModel{
-			TableName: "vat_init",
+			SchemaName: "maker",
+			TableName:  "vat_init",
 			OrderedColumns: []string{
 				"header_id", string(constants.IlkFK), "log_idx", "tx_idx", "raw_log",
 			},

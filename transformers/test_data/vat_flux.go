@@ -46,7 +46,8 @@ var EthVatFluxLog = types.Log{
 
 var rawFluxLog, _ = json.Marshal(EthVatFluxLog)
 var VatFluxModel = shared.InsertionModel{
-	TableName: "vat_flux",
+	SchemaName: "maker",
+	TableName:  "vat_flux",
 	OrderedColumns: []string{
 		"header_id", string(constants.IlkFK), "src", "dst", "wad", "tx_idx", "log_idx", "raw_log",
 	},

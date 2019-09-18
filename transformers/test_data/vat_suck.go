@@ -46,7 +46,8 @@ var EthVatSuckLog = types.Log{
 
 var rawVatSuckLog, _ = json.Marshal(EthVatSuckLog)
 var VatSuckModel = shared.InsertionModel{
-	TableName: "vat_suck",
+	SchemaName: "maker",
+	TableName:  "vat_suck",
 	OrderedColumns: []string{
 		"header_id", "u", "v", "rad", "log_idx", "tx_idx", "raw_log",
 	},

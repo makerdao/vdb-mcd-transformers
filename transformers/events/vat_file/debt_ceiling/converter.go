@@ -43,7 +43,8 @@ func (VatFileDebtCeilingConverter) ToModels(ethLogs []types.Log) ([]shared.Inser
 			return nil, err
 		}
 		model := shared.InsertionModel{
-			TableName: "vat_file_debt_ceiling",
+			SchemaName: "maker",
+			TableName:  "vat_file_debt_ceiling",
 			OrderedColumns: []string{
 				"header_id", "what", "data", "log_idx", "tx_idx", "raw_log",
 			},

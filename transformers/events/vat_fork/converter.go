@@ -61,7 +61,8 @@ func (VatForkConverter) ToModels(ethLogs []types.Log) ([]shared.InsertionModel, 
 		}
 
 		model := shared.InsertionModel{
-			TableName: "vat_fork",
+			SchemaName: "maker",
+			TableName:  "vat_fork",
 			OrderedColumns: []string{
 				"header_id", string(constants2.IlkFK), "src", "dst", "dink", "dart", "log_idx", "tx_idx", "raw_log",
 			},

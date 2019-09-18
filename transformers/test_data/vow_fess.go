@@ -45,7 +45,8 @@ var EthVowFessLog = types.Log{
 
 var rawVowFessLog, _ = json.Marshal(EthVowFessLog)
 var VowFessModel = shared.InsertionModel{
-	TableName: "vow_fess",
+	SchemaName: "maker",
+	TableName:  "vow_fess",
 	OrderedColumns: []string{
 		"header_id", "tab", "log_idx", "tx_idx", "raw_log",
 	},

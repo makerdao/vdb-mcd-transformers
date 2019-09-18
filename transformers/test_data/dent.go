@@ -55,7 +55,8 @@ var EthDentLog = types.Log{
 
 var dentRawJson, _ = json.Marshal(EthDentLog)
 var DentModel = shared.InsertionModel{
-	TableName: "dent",
+	SchemaName: "maker",
+	TableName:  "dent",
 	OrderedColumns: []string{
 		"header_id", "bid_id", "lot", "bid", string(constants.AddressFK), "log_idx", "tx_idx", "raw_log",
 	},
