@@ -226,7 +226,7 @@ var _ = Describe("Plugin test", func() {
 
 				ilkID, err := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
 				Expect(err).NotTo(HaveOccurred())
-				Expect(returned.Ilk).To(Equal(strconv.Itoa(ilkID)))
+				Expect(returned.Ilk).To(Equal(strconv.FormatInt(ilkID, 10)))
 				Expect(returned.What).To(Equal("flip"))
 				Expect(returned.Flip).To(Equal("0x02b6c914E29EE4D310e6b8e24340A8A643627D44"))
 				Expect(returned.TransactionIndex).To(Equal(uint(0)))
@@ -381,7 +381,7 @@ var _ = Describe("Plugin test", func() {
 
 				ilkID, err := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
 				Expect(err).NotTo(HaveOccurred())
-				Expect(returned.Ilk).To(Equal(strconv.Itoa(ilkID)))
+				Expect(returned.Ilk).To(Equal(strconv.FormatInt(ilkID, 10)))
 				Expect(returned.What).To(Equal("flip"))
 				Expect(returned.Flip).To(Equal("0x02b6c914E29EE4D310e6b8e24340A8A643627D44"))
 				Expect(returned.TransactionIndex).To(Equal(uint(0)))

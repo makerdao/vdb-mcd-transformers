@@ -82,7 +82,7 @@ var _ = Describe("Flip storage repository", func() {
 				Expect(getErr).NotTo(HaveOccurred())
 				ilkID, ilkErr := shared.GetOrCreateIlk(FakeIlk, db)
 				Expect(ilkErr).NotTo(HaveOccurred())
-				AssertVariable(result, fakeBlockNumber, fakeBlockHash, strconv.Itoa(ilkID))
+				AssertVariable(result, fakeBlockNumber, fakeBlockHash, strconv.FormatInt(ilkID, 10))
 			})
 
 			It("does not duplicate row", func() {

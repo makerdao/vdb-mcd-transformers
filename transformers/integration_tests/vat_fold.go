@@ -89,7 +89,7 @@ var _ = Describe("VatFold Transformer", func() {
 		urnID, err := shared.GetOrCreateUrn("0x022688b43Bf76a9E6f4d3a96350ffDe90a752d25",
 			"0x4447442d41000000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
-		Expect(dbResult.Urn).To(Equal(strconv.Itoa(urnID)))
+		Expect(dbResult.Urn).To(Equal(strconv.FormatInt(urnID, 10)))
 		Expect(dbResult.Rate).To(Equal("909758435446422415095"))
 	})
 })

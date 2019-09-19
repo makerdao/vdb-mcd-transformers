@@ -65,12 +65,12 @@ var _ = Describe("all poke events query", func() {
 
 		expectedValues := []test_helpers.PokeEvent{
 			{
-				IlkId: strconv.Itoa(anotherIlkId),
+				IlkId: strconv.Itoa(int(anotherIlkId)),
 				Val:   anotherSpotPoke.Value,
 				Spot:  anotherSpotPoke.Spot,
 			},
 			{
-				IlkId: strconv.Itoa(ilkIdBlockOne),
+				IlkId: strconv.Itoa(int(ilkIdBlockOne)),
 				Val:   spotPoke.Value,
 				Spot:  spotPoke.Spot,
 			},
@@ -101,12 +101,12 @@ var _ = Describe("all poke events query", func() {
 
 		expectedValues := []test_helpers.PokeEvent{
 			{
-				IlkId: strconv.Itoa(ilkIdBlockOne),
+				IlkId: strconv.Itoa(int(ilkIdBlockOne)),
 				Val:   spotPoke.Value,
 				Spot:  spotPoke.Spot,
 			},
 			{
-				IlkId: strconv.Itoa(anotherIlkId),
+				IlkId: strconv.Itoa(int(anotherIlkId)),
 				Val:   anotherSpotPoke.Value,
 				Spot:  anotherSpotPoke.Spot,
 			},
@@ -140,7 +140,7 @@ var _ = Describe("all poke events query", func() {
 
 		expectedValues := []test_helpers.PokeEvent{
 			{
-				IlkId: strconv.Itoa(ilkIdBlockOne),
+				IlkId: strconv.Itoa(int(ilkIdBlockOne)),
 				Val:   spotPoke.Value,
 				Spot:  spotPoke.Spot,
 			},
@@ -154,7 +154,7 @@ var _ = Describe("all poke events query", func() {
 
 	Describe("result pagination", func() {
 		var (
-			ilkId                       int
+			ilkId                       int64
 			oldSpotPoke, recentSpotPoke spot_poke.SpotPokeModel
 		)
 		BeforeEach(func() {
@@ -186,7 +186,7 @@ var _ = Describe("all poke events query", func() {
 			Expect(selectErr).NotTo(HaveOccurred())
 
 			Expect(dbPokeEvents).To(ConsistOf(test_helpers.PokeEvent{
-				IlkId: strconv.Itoa(ilkId),
+				IlkId: strconv.FormatInt(ilkId, 10),
 				Val:   recentSpotPoke.Value,
 				Spot:  recentSpotPoke.Spot,
 			}))
@@ -201,7 +201,7 @@ var _ = Describe("all poke events query", func() {
 			Expect(selectErr).NotTo(HaveOccurred())
 
 			Expect(dbPokeEvents).To(ConsistOf(test_helpers.PokeEvent{
-				IlkId: strconv.Itoa(ilkId),
+				IlkId: strconv.FormatInt(ilkId, 10),
 				Val:   oldSpotPoke.Value,
 				Spot:  oldSpotPoke.Spot,
 			}))

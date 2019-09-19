@@ -101,7 +101,7 @@ var _ = Describe("Vat storage repository", func() {
 			Expect(err).NotTo(HaveOccurred())
 			ilkID, err := shared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
 			Expect(err).NotTo(HaveOccurred())
-			AssertDoubleMapping(result, fakeBlockNumber, fakeBlockHash, strconv.Itoa(ilkID), fakeGuy, fakeUint256)
+			AssertDoubleMapping(result, fakeBlockNumber, fakeBlockHash, strconv.FormatInt(ilkID, 10), fakeGuy, fakeUint256)
 		})
 
 		It("does not duplicate row", func() {
@@ -150,7 +150,7 @@ var _ = Describe("Vat storage repository", func() {
 			Expect(err).NotTo(HaveOccurred())
 			ilkID, err := shared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
 			Expect(err).NotTo(HaveOccurred())
-			AssertMapping(result, fakeBlockNumber, fakeBlockHash, strconv.Itoa(ilkID), fakeUint256)
+			AssertMapping(result, fakeBlockNumber, fakeBlockHash, strconv.FormatInt(ilkID, 10), fakeUint256)
 		})
 
 		It("does not duplicate row", func() {
@@ -190,7 +190,7 @@ var _ = Describe("Vat storage repository", func() {
 			Expect(err).NotTo(HaveOccurred())
 			ilkID, err := shared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
 			Expect(err).NotTo(HaveOccurred())
-			AssertMapping(result, fakeBlockNumber, fakeBlockHash, strconv.Itoa(ilkID), fakeUint256)
+			AssertMapping(result, fakeBlockNumber, fakeBlockHash, strconv.FormatInt(ilkID, 10), fakeUint256)
 		})
 
 		It("does not duplicate row", func() {
@@ -230,7 +230,7 @@ var _ = Describe("Vat storage repository", func() {
 			Expect(err).NotTo(HaveOccurred())
 			ilkID, err := shared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
 			Expect(err).NotTo(HaveOccurred())
-			AssertMapping(result, fakeBlockNumber, fakeBlockHash, strconv.Itoa(ilkID), fakeUint256)
+			AssertMapping(result, fakeBlockNumber, fakeBlockHash, strconv.FormatInt(ilkID, 10), fakeUint256)
 		})
 
 		It("does not duplicate row", func() {
@@ -270,7 +270,7 @@ var _ = Describe("Vat storage repository", func() {
 			Expect(err).NotTo(HaveOccurred())
 			ilkID, err := shared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
 			Expect(err).NotTo(HaveOccurred())
-			AssertMapping(result, fakeBlockNumber, fakeBlockHash, strconv.Itoa(ilkID), fakeUint256)
+			AssertMapping(result, fakeBlockNumber, fakeBlockHash, strconv.FormatInt(ilkID, 10), fakeUint256)
 		})
 
 		It("does not duplicate row", func() {
@@ -310,7 +310,7 @@ var _ = Describe("Vat storage repository", func() {
 			Expect(err).NotTo(HaveOccurred())
 			ilkID, err := shared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
 			Expect(err).NotTo(HaveOccurred())
-			AssertMapping(result, fakeBlockNumber, fakeBlockHash, strconv.Itoa(ilkID), fakeUint256)
+			AssertMapping(result, fakeBlockNumber, fakeBlockHash, strconv.FormatInt(ilkID, 10), fakeUint256)
 		})
 
 		It("does not duplicate row", func() {
@@ -393,7 +393,7 @@ var _ = Describe("Vat storage repository", func() {
 			Expect(err).NotTo(HaveOccurred())
 			ilkID, err := shared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
 			Expect(err).NotTo(HaveOccurred())
-			AssertDoubleMapping(result, fakeBlockNumber, fakeBlockHash, strconv.Itoa(ilkID), fakeGuy, fakeUint256)
+			AssertDoubleMapping(result, fakeBlockNumber, fakeBlockHash, strconv.FormatInt(ilkID, 10), fakeGuy, fakeUint256)
 		})
 
 		It("does not duplicate row", func() {
@@ -447,7 +447,7 @@ var _ = Describe("Vat storage repository", func() {
 			Expect(err).NotTo(HaveOccurred())
 			ilkID, err := shared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
 			Expect(err).NotTo(HaveOccurred())
-			AssertDoubleMapping(result, fakeBlockNumber, fakeBlockHash, strconv.Itoa(ilkID), fakeGuy, fakeUint256)
+			AssertDoubleMapping(result, fakeBlockNumber, fakeBlockHash, strconv.FormatInt(ilkID, 10), fakeGuy, fakeUint256)
 		})
 
 		It("does not duplicate row", func() {

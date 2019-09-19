@@ -89,7 +89,7 @@ var _ = Describe("SpotPoke Transformer", func() {
 		Expect(len(dbResult)).To(Equal(1))
 		ilkID, err := shared.GetOrCreateIlk("4554482d41000000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
-		Expect(dbResult[0].Ilk).To(Equal(strconv.Itoa(ilkID)))
+		Expect(dbResult[0].Ilk).To(Equal(strconv.FormatInt(ilkID, 10)))
 		Expect(dbResult[0].Value).To(Equal("315700000000000000000.000000"))
 		Expect(dbResult[0].Spot).To(Equal("210466666666666666666666666666"))
 	})

@@ -91,7 +91,7 @@ var _ = Describe("VatFileIlk LogNoteTransformer", func() {
 		Expect(len(dbResult)).To(Equal(1))
 		ilkID, err := shared.GetOrCreateIlk("0x5341490000000000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
-		Expect(dbResult[0].Ilk).To(Equal(strconv.Itoa(ilkID)))
+		Expect(dbResult[0].Ilk).To(Equal(strconv.FormatInt(ilkID, 10)))
 		Expect(dbResult[0].What).To(Equal("spot"))
 		Expect(dbResult[0].Data).To(Equal("1000000000000000000000000000000000000000000000"))
 	})
@@ -121,7 +121,7 @@ var _ = Describe("VatFileIlk LogNoteTransformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 		sort.Sort(byLogIndexVatFileIlk(dbResults))
 		dbResult := dbResults[0]
-		Expect(dbResult.Ilk).To(Equal(strconv.Itoa(ilkID)))
+		Expect(dbResult.Ilk).To(Equal(strconv.FormatInt(ilkID, 10)))
 		Expect(dbResult.What).To(Equal("line"))
 		Expect(dbResult.Data).To(Equal("5000000000000000000000000000000000000000000000000"))
 	})
@@ -151,7 +151,7 @@ var _ = Describe("VatFileIlk LogNoteTransformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 		sort.Sort(byLogIndexVatFileIlk(dbResults))
 		dbResult := dbResults[0]
-		Expect(dbResult.Ilk).To(Equal(strconv.Itoa(ilkID)))
+		Expect(dbResult.Ilk).To(Equal(strconv.FormatInt(ilkID, 10)))
 		Expect(dbResult.What).To(Equal("dust"))
 		Expect(dbResult.Data).To(Equal("0"))
 	})

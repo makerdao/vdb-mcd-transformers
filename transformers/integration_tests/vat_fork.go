@@ -93,7 +93,7 @@ var _ = Describe("Vat fork transformer", func() {
 })
 
 type vatForkModel struct {
-	Ilk  int `db:"ilk_id"`
+	Ilk  int64 `db:"ilk_id"`
 	Src  string
 	Dst  string
 	Dink int

@@ -21,7 +21,7 @@ var _ = Describe("Executing the transformer", func() {
 	var (
 		db          *postgres.DB
 		err         error
-		ilkID       int
+		ilkID       int64
 		mappings    = spot.SpotMappings{StorageRepository: &storage2.MakerStorageRepository{}}
 		repository  = spot.SpotStorageRepository{}
 		transformer = storage.Transformer{
@@ -91,7 +91,7 @@ var _ = Describe("Executing the transformer", func() {
 		var ilkPipResult test_helpers.MappingRes
 		err = db.Get(&ilkPipResult, `SELECT block_number, block_hash, ilk_id AS key, pip AS value FROM maker.spot_ilk_pip`)
 		Expect(err).NotTo(HaveOccurred())
-		test_helpers.AssertMapping(ilkPipResult, blockNumber, "0x8c57727c0e057bd603e27304762c7144df161fc96990a573fddf23916b64c7df", strconv.Itoa(ilkID), "0xA53e6EFB4cBeD841Eace02220498860905E94998")
+		test_helpers.AssertMapping(ilkPipResult, blockNumber, "0x8c57727c0e057bd603e27304762c7144df161fc96990a573fddf23916b64c7df", strconv.FormatInt(ilkID, 10), "0xA53e6EFB4cBeD841Eace02220498860905E94998")
 	})
 
 	It("reads in a Spot Ilk Mat storage diff row and persists it", func() {
@@ -109,6 +109,6 @@ var _ = Describe("Executing the transformer", func() {
 		var ilkRhoResult test_helpers.MappingRes
 		err = db.Get(&ilkRhoResult, `SELECT block_number, block_hash, ilk_id AS key, mat AS value FROM maker.spot_ilk_mat`)
 		Expect(err).NotTo(HaveOccurred())
-		test_helpers.AssertMapping(ilkRhoResult, blockNumber, "0xd95e007739c8451f5e7b73fa1139b450aae37a6bf7735bcdb1f858cd32873726", strconv.Itoa(ilkID), "2000000000000000000000000000")
+		test_helpers.AssertMapping(ilkRhoResult, blockNumber, "0xd95e007739c8451f5e7b73fa1139b450aae37a6bf7735bcdb1f858cd32873726", strconv.FormatInt(ilkID, 10), "2000000000000000000000000000")
 	})
 })

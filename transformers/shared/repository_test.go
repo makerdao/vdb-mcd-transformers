@@ -232,10 +232,10 @@ var _ = Describe("Shared repository", func() {
 				Expect(commitErr).NotTo(HaveOccurred())
 
 				ilkIdentifier := DecodeHexToText(hexIlk)
-				var expectedIlkID int
+				var expectedIlkID int64
 				ilkErr := db.Get(&expectedIlkID, `SELECT id FROM maker.ilks WHERE identifier = $1`, ilkIdentifier)
 				Expect(ilkErr).NotTo(HaveOccurred())
-				actualIlkID := columnToValue[string(constants.IlkFK)].(int)
+				actualIlkID := columnToValue[string(constants.IlkFK)].(int64)
 				Expect(actualIlkID).To(Equal(expectedIlkID))
 			})
 
@@ -251,10 +251,10 @@ var _ = Describe("Shared repository", func() {
 				commitErr := tx.Commit()
 				Expect(commitErr).NotTo(HaveOccurred())
 
-				var expectedUrnID int
+				var expectedUrnID int64
 				urnErr := db.Get(&expectedUrnID, `SELECT id FROM maker.urns WHERE identifier = $1`, guy)
 				Expect(urnErr).NotTo(HaveOccurred())
-				actualUrnID := columnToValue[string(constants.UrnFK)].(int)
+				actualUrnID := columnToValue[string(constants.UrnFK)].(int64)
 				Expect(actualUrnID).To(Equal(expectedUrnID))
 			})
 
@@ -269,10 +269,10 @@ var _ = Describe("Shared repository", func() {
 				commitErr := tx.Commit()
 				Expect(commitErr).NotTo(HaveOccurred())
 
-				var expectedAddressID int
+				var expectedAddressID int64
 				addressErr := db.Get(&expectedAddressID, `SELECT id FROM public.addresses WHERE address = $1`, fakes.FakeAddress.Hex())
 				Expect(addressErr).NotTo(HaveOccurred())
-				actualAddressID := columnToValue[string(constants.AddressFK)].(int)
+				actualAddressID := columnToValue[string(constants.AddressFK)].(int64)
 				Expect(actualAddressID).To(Equal(expectedAddressID))
 			})
 		})

@@ -136,7 +136,7 @@ var _ = Describe("Bite event computed columns", func() {
 				test_helpers.FakeIlk.Identifier)
 			Expect(err).NotTo(HaveOccurred())
 
-			expectedBid := test_helpers.FlipBidFromValues(strconv.Itoa(bidId), strconv.Itoa(ilkId), strconv.Itoa(urnId),
+			expectedBid := test_helpers.FlipBidFromValues(strconv.Itoa(bidId), strconv.FormatInt(ilkId, 10), strconv.FormatInt(urnId, 10),
 				strconv.FormatBool(dealt), fakeHeader.Timestamp, fakeHeader.Timestamp, flipValues)
 			Expect(actualBid).To(Equal(expectedBid))
 		})

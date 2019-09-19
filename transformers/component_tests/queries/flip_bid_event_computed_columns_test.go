@@ -85,8 +85,8 @@ var _ = Describe("Flip bid event computed columns", func() {
 			})
 			Expect(err).NotTo(HaveOccurred())
 
-			expectedBid := test_helpers.FlipBidFromValues(strconv.Itoa(bidId), strconv.Itoa(ilkId),
-				strconv.Itoa(urnId), "false", header.Timestamp, header.Timestamp, flipStorageValues)
+			expectedBid := test_helpers.FlipBidFromValues(strconv.Itoa(bidId), strconv.FormatInt(ilkId, 10),
+				strconv.FormatInt(urnId, 10), "false", header.Timestamp, header.Timestamp, flipStorageValues)
 
 			var actualBid test_helpers.FlipBid
 			queryErr := db.Get(&actualBid, `
@@ -137,8 +137,8 @@ var _ = Describe("Flip bid event computed columns", func() {
 			})
 			Expect(err).NotTo(HaveOccurred())
 
-			expectedBid := test_helpers.FlipBidFromValues(strconv.Itoa(bidId), strconv.Itoa(ilkId),
-				strconv.Itoa(urnId), "false", header.Timestamp, header.Timestamp, flipStorageValues)
+			expectedBid := test_helpers.FlipBidFromValues(strconv.Itoa(bidId), strconv.FormatInt(ilkId, 10),
+				strconv.FormatInt(urnId, 10), "false", header.Timestamp, header.Timestamp, flipStorageValues)
 
 			var actualBid test_helpers.FlipBid
 			queryErr := db.Get(&actualBid, `

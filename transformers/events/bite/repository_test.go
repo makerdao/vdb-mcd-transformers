@@ -72,7 +72,7 @@ var _ = Describe("Bite repository", func() {
 			Expect(err).NotTo(HaveOccurred())
 			urnID, err := shared.GetOrCreateUrn(test_data.BiteModel.Urn, test_data.BiteModel.Ilk, db)
 			Expect(err).NotTo(HaveOccurred())
-			Expect(dbBite.Urn).To(Equal(strconv.Itoa(urnID)))
+			Expect(dbBite.Urn).To(Equal(strconv.FormatInt(urnID, 10)))
 			Expect(dbBite.Ink).To(Equal(test_data.BiteModel.Ink))
 			Expect(dbBite.Art).To(Equal(test_data.BiteModel.Art))
 			Expect(dbBite.Tab).To(Equal(test_data.BiteModel.Tab))

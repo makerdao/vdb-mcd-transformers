@@ -99,7 +99,7 @@ var _ = Describe("Cat File transformer", func() {
 
 		ilkID, err := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
-		Expect(dbResult[0].Ilk).To(Equal(strconv.Itoa(ilkID)))
+		Expect(dbResult[0].Ilk).To(Equal(strconv.FormatInt(ilkID, 10)))
 		Expect(dbResult[0].What).To(Equal("lump"))
 		Expect(dbResult[0].Data).To(Equal("1500000000000000000"))
 		Expect(dbResult[0].LogIndex).To(Equal(uint(3)))
@@ -139,7 +139,7 @@ var _ = Describe("Cat File transformer", func() {
 
 		ilkID, err := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
-		Expect(dbResult[0].Ilk).To(Equal(strconv.Itoa(ilkID)))
+		Expect(dbResult[0].Ilk).To(Equal(strconv.FormatInt(ilkID, 10)))
 		Expect(dbResult[0].What).To(Equal("chop"))
 		Expect(dbResult[0].Data).To(Equal("1050000000000000000000000000"))
 		Expect(dbResult[0].LogIndex).To(Equal(uint(3)))
@@ -178,7 +178,7 @@ var _ = Describe("Cat File transformer", func() {
 		Expect(len(dbResult)).To(Equal(1))
 		ilkID, err := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
-		Expect(dbResult[0].Ilk).To(Equal(strconv.Itoa(ilkID)))
+		Expect(dbResult[0].Ilk).To(Equal(strconv.FormatInt(ilkID, 10)))
 		Expect(dbResult[0].What).To(Equal("flip"))
 		Expect(dbResult[0].Flip).To(Equal("0x02b6c914E29EE4D310e6b8e24340A8A643627D44"))
 	})

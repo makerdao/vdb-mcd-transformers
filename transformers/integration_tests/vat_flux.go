@@ -80,7 +80,7 @@ var _ = Describe("VatFlux LogNoteTransformer", func() {
 		Expect(len(dbResult)).To(Equal(1))
 		ilkID, err := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
-		Expect(dbResult[0].Ilk).To(Equal(strconv.Itoa(ilkID)))
+		Expect(dbResult[0].Ilk).To(Equal(strconv.FormatInt(ilkID, 10)))
 		Expect(dbResult[0].Src).To(Equal("0x764B9b6326141C5912eBb6948b2b3d51B408d3E6"))
 		Expect(dbResult[0].Dst).To(Equal("0x6bCc9f143D9C799E2C79DB9C921095130d371A16"))
 		Expect(dbResult[0].Wad).To(Equal("1000000000000000000"))

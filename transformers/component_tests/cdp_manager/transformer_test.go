@@ -194,7 +194,7 @@ var _ = Describe("Executing the transformer", func() {
 			Expect(readErr).NotTo(HaveOccurred())
 			ilkId, ilkErr := shared.GetOrCreateIlk(ilk, db)
 			Expect(ilkErr).NotTo(HaveOccurred())
-			test_helpers.AssertMapping(ilksResult, blockNumber, blockHash, strconv.Itoa(cdpi), strconv.Itoa(ilkId))
+			test_helpers.AssertMapping(ilksResult, blockNumber, blockHash, strconv.Itoa(cdpi), strconv.FormatInt(ilkId, 10))
 		})
 	})
 

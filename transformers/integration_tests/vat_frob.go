@@ -94,7 +94,7 @@ var _ = Describe("Vat frob Transformer", func() {
 			"0x4554482d42000000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
 
-		Expect(dbResult[0].Urn).To(Equal(strconv.Itoa(urnID)))
+		Expect(dbResult[0].Urn).To(Equal(strconv.FormatInt(urnID, 10)))
 		Expect(dbResult[0].V).To(Equal("0x3A409104c7505157DBB5D4D195452a28BeA14592"))
 		Expect(dbResult[0].W).To(Equal("0x3A409104c7505157DBB5D4D195452a28BeA14592"))
 		Expect(dbResult[0].Dink).To(Equal("0"))

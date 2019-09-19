@@ -565,7 +565,7 @@ type FlipBid struct {
 	Tab   string
 }
 
-func SetUpFlipBidContext(setupData FlipBidContextInput) (ilkId, urnId int, err error) {
+func SetUpFlipBidContext(setupData FlipBidContextInput) (ilkId, urnId int64, err error) {
 	ilkId, ilkErr := shared.GetOrCreateIlk(setupData.IlkHex, setupData.Db)
 	if ilkErr != nil {
 		return 0, 0, ilkErr

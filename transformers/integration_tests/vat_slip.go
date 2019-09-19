@@ -88,7 +88,7 @@ var _ = Describe("Vat slip transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 		ilkID, err := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
-		Expect(model.Ilk).To(Equal(strconv.Itoa(ilkID)))
+		Expect(model.Ilk).To(Equal(strconv.FormatInt(ilkID, 10)))
 		Expect(model.Usr).To(Equal("0xAd4F32E272fFA9686ACAd217Ef038fD09e598Fc0"))
 		Expect(model.Wad).To(Equal("1000000000000000000"))
 		Expect(model.TransactionIndex).To(Equal(uint(0)))

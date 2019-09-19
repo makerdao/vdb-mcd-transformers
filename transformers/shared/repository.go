@@ -171,7 +171,7 @@ func Create(headerID int64, models []InsertionModel, db *postgres.DB) error {
 // Gets or creates the FK for the key/values supplied, and inserts the resulting ID into the columnToValue mapping
 func populateForeignKeyIDs(fkToValue ForeignKeyValues, columnToValue ColumnValues, tx *sqlx.Tx) error {
 	var dbErr error
-	var fkID int
+	var fkID int64
 	for fk, value := range fkToValue {
 		switch fk {
 		case constants.IlkFK:
@@ -199,23 +199,23 @@ func populateForeignKeyIDs(fkToValue ForeignKeyValues, columnToValue ColumnValue
 	return nil
 }
 
-func GetOrCreateIlk(ilk string, db *postgres.DB) (int, error) {
-	var ilkID int
+func GetOrCreateIlk(ilk string, db *postgres.DB) (int64, error) {
+	var ilkID int64
 	uniformIlk := common.HexToHash(ilk).Hex()
 	ilkIdentifier := DecodeHexToText(uniformIlk)
 	err := db.Get(&ilkID, getOrCreateIlkQuery, uniformIlk, ilkIdentifier)
 	return ilkID, err
 }
 
-func GetOrCreateIlkInTransaction(ilk string, tx *sqlx.Tx) (int, error) {
-	var ilkID int
+func GetOrCreateIlkInTransaction(ilk string, tx *sqlx.Tx) (int64, error) {
+	var ilkID int64
 	uniformIlk := common.HexToHash(ilk).Hex()
 	ilkIdentifier := DecodeHexToText(uniformIlk)
 	err := tx.Get(&ilkID, getOrCreateIlkQuery, uniformIlk, ilkIdentifier)
 	return ilkID, err
 }
 
-func GetOrCreateUrn(guy string, hexIlk string, db *postgres.DB) (urnID int, err error) {
+func GetOrCreateUrn(guy string, hexIlk string, db *postgres.DB) (urnID int64, err error) {
 	ilkID, ilkErr := GetOrCreateIlk(hexIlk, db)
 	if ilkErr != nil {
 		return 0, fmt.Errorf("error getting ilkID for urn: %s", ilkErr.Error())
@@ -225,7 +225,7 @@ func GetOrCreateUrn(guy string, hexIlk string, db *postgres.DB) (urnID int, err 
 	return urnID, err
 }
 
-func GetOrCreateUrnInTransaction(guy string, hexIlk string, tx *sqlx.Tx) (urnID int, err error) {
+func GetOrCreateUrnInTransaction(guy string, hexIlk string, tx *sqlx.Tx) (urnID int64, err error) {
 	ilkID, ilkErr := GetOrCreateIlkInTransaction(hexIlk, tx)
 	if ilkErr != nil {
 		return 0, fmt.Errorf("error getting ilkID for urn")
@@ -240,8 +240,8 @@ func GetOrCreateAddress(address string, db *postgres.DB) (int64, error) {
 	return addressRepository.GetOrCreateAddress(db, address)
 }
 
-func GetOrCreateAddressInTransaction(address string, tx *sqlx.Tx) (int, error) {
+func GetOrCreateAddressInTransaction(address string, tx *sqlx.Tx) (int64, error) {
 	addressRepository := repositories.AddressRepository{}
 	addressId, addressErr := addressRepository.GetOrCreateAddressInTransaction(tx, address)
-	return int(addressId), addressErr
+	return addressId, addressErr
 }

@@ -89,7 +89,7 @@ var _ = Describe("JugDrip Transformer", func() {
 		dbResult := dbResults[0]
 		ilkID, err := shared.GetOrCreateIlk("0x4447442d41000000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
-		Expect(dbResult.Ilk).To(Equal(strconv.Itoa(ilkID)))
+		Expect(dbResult.Ilk).To(Equal(strconv.FormatInt(ilkID, 10)))
 	})
 })
 

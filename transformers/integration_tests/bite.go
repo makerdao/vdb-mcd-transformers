@@ -86,7 +86,7 @@ var _ = Describe("Bite Transformer", func() {
 		urnID, err := shared.GetOrCreateUrn("0000000000000000000000000000d8b4147eda80fec7122ae16da2479cbd7ffb",
 			"0x4554480000000000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
-		Expect(dbResult[0].Urn).To(Equal(strconv.Itoa(urnID)))
+		Expect(dbResult[0].Urn).To(Equal(strconv.FormatInt(urnID, 10)))
 		Expect(dbResult[0].Ink).To(Equal("1000000000000000000"))
 		Expect(dbResult[0].Flip).To(Equal("2"))
 		Expect(dbResult[0].Tab).To(Equal("149846666666666655744"))

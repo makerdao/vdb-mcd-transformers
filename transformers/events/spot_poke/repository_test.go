@@ -71,7 +71,7 @@ var _ = Describe("Spot Poke repository", func() {
 			var dbSpotPoke spot_poke.SpotPokeModel
 			err = db.Get(&dbSpotPoke, `SELECT ilk_id, value, spot, log_idx, tx_idx, raw_log FROM maker.spot_poke WHERE header_id = $1`, headerID)
 			Expect(err).NotTo(HaveOccurred())
-			Expect(dbSpotPoke.Ilk).To(Equal(strconv.Itoa(ilkID)))
+			Expect(dbSpotPoke.Ilk).To(Equal(strconv.FormatInt(ilkID, 10)))
 			Expect(dbSpotPoke.Value).To(Equal(test_data.SpotPokeModel.Value))
 			Expect(dbSpotPoke.Spot).To(Equal(test_data.SpotPokeModel.Spot))
 			Expect(dbSpotPoke.LogIndex).To(Equal(test_data.SpotPokeModel.LogIndex))

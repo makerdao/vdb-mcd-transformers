@@ -92,8 +92,8 @@ var _ = Describe("All flips view", func() {
 		test_helpers.CreateFlip(db, blockTwoHeader, flipStorageValuesThree,
 			test_helpers.GetFlipMetadatas(strconv.Itoa(fakeBidId2)), contractAddress)
 
-		expectedBid1 := test_helpers.FlipBidFromValues(strconv.Itoa(fakeBidId), strconv.Itoa(ilkId),
-			strconv.Itoa(urnId), "false", blockTwoHeader.Timestamp, blockOneHeader.Timestamp, flipStorageValuesTwo)
+		expectedBid1 := test_helpers.FlipBidFromValues(strconv.Itoa(fakeBidId), strconv.FormatInt(ilkId, 10),
+			strconv.FormatInt(urnId, 10), "false", blockTwoHeader.Timestamp, blockOneHeader.Timestamp, flipStorageValuesTwo)
 		var actualBid1 test_helpers.FlipBid
 		queryErr1 := db.Get(&actualBid1, `SELECT bid_id, ilk_id, urn_id, guy, tic, "end", lot, bid, gal, dealt, tab, created, updated FROM api.all_flips($1) WHERE bid_id = $2`,
 			test_helpers.FakeIlk.Identifier, fakeBidId)
@@ -103,8 +103,8 @@ var _ = Describe("All flips view", func() {
 		flipKickErr := test_helpers.CreateFlipKick(contractAddress, fakeBidId2, headerTwoId, test_data.FlipKickModel.Usr, flipKickRepo)
 		Expect(flipKickErr).NotTo(HaveOccurred())
 
-		expectedBid2 := test_helpers.FlipBidFromValues(strconv.Itoa(fakeBidId2), strconv.Itoa(ilkId),
-			strconv.Itoa(urnId), "false", blockTwoHeader.Timestamp, blockTwoHeader.Timestamp, flipStorageValuesThree)
+		expectedBid2 := test_helpers.FlipBidFromValues(strconv.Itoa(fakeBidId2), strconv.FormatInt(ilkId, 10),
+			strconv.FormatInt(urnId, 10), "false", blockTwoHeader.Timestamp, blockTwoHeader.Timestamp, flipStorageValuesThree)
 		var actualBid2 test_helpers.FlipBid
 		queryErr2 := db.Get(&actualBid2, `SELECT bid_id, ilk_id, urn_id, guy, tic, "end", lot, bid, gal, dealt, tab, created, updated FROM api.all_flips($1) WHERE bid_id = $2`,
 			test_helpers.FakeIlk.Identifier, fakeBidId2)
@@ -230,11 +230,11 @@ var _ = Describe("All flips view", func() {
 		})
 		Expect(setupErr).NotTo(HaveOccurred())
 
-		expectedBid1 := test_helpers.FlipBidFromValues(strconv.Itoa(bidIdOne), strconv.Itoa(ilkId),
-			strconv.Itoa(urnId), "false", blockOneHeader.Timestamp, blockOneHeader.Timestamp, flipStorageValuesOne)
+		expectedBid1 := test_helpers.FlipBidFromValues(strconv.Itoa(bidIdOne), strconv.FormatInt(ilkId, 10),
+			strconv.FormatInt(urnId, 10), "false", blockOneHeader.Timestamp, blockOneHeader.Timestamp, flipStorageValuesOne)
 
-		expectedBid2 := test_helpers.FlipBidFromValues(strconv.Itoa(bidIdTwo), strconv.Itoa(ilkIdTwo),
-			strconv.Itoa(urnIdTwo), "false", blockTwoHeader.Timestamp, blockTwoHeader.Timestamp, flipStorageValuesTwo)
+		expectedBid2 := test_helpers.FlipBidFromValues(strconv.Itoa(bidIdTwo), strconv.Itoa(int(ilkIdTwo)),
+			strconv.Itoa(int(urnIdTwo)), "false", blockTwoHeader.Timestamp, blockTwoHeader.Timestamp, flipStorageValuesTwo)
 
 		var actualBid1 test_helpers.FlipBid
 		queryErr1 := db.Get(&actualBid1, `SELECT bid_id, ilk_id, urn_id, guy, tic, "end", lot, bid, gal, dealt, tab, created, updated FROM api.all_flips($1) WHERE bid_id = $2`,
@@ -254,7 +254,7 @@ var _ = Describe("All flips view", func() {
 			header                                     core.Header
 			headerId                                   int64
 			fakeBidIdOne, fakeBidIdTwo                 int
-			ilkId, urnId                               int
+			ilkId, urnId                               int64
 			flipOneStorageValues, flipTwoStorageValues map[string]interface{}
 		)
 
@@ -306,8 +306,8 @@ var _ = Describe("All flips view", func() {
 				test_helpers.FakeIlk.Identifier, maxResults)
 			Expect(queryErr).NotTo(HaveOccurred())
 
-			expectedBid := test_helpers.FlipBidFromValues(strconv.Itoa(fakeBidIdTwo), strconv.Itoa(ilkId),
-				strconv.Itoa(urnId), "false", header.Timestamp, header.Timestamp, flipTwoStorageValues)
+			expectedBid := test_helpers.FlipBidFromValues(strconv.Itoa(fakeBidIdTwo), strconv.FormatInt(ilkId, 10),
+				strconv.FormatInt(urnId, 10), "false", header.Timestamp, header.Timestamp, flipTwoStorageValues)
 			Expect(actualBids).To(Equal([]test_helpers.FlipBid{expectedBid}))
 		})
 
@@ -324,8 +324,8 @@ var _ = Describe("All flips view", func() {
 				test_helpers.FakeIlk.Identifier, maxResults, resultOffset)
 			Expect(queryErr).NotTo(HaveOccurred())
 
-			expectedBid := test_helpers.FlipBidFromValues(strconv.Itoa(fakeBidIdOne), strconv.Itoa(ilkId),
-				strconv.Itoa(urnId), "false", header.Timestamp, header.Timestamp, flipOneStorageValues)
+			expectedBid := test_helpers.FlipBidFromValues(strconv.Itoa(fakeBidIdOne), strconv.FormatInt(ilkId, 10),
+				strconv.FormatInt(urnId, 10), "false", header.Timestamp, header.Timestamp, flipOneStorageValues)
 			Expect(actualBids).To(ConsistOf(expectedBid))
 		})
 	})

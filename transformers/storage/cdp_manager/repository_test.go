@@ -246,7 +246,7 @@ var _ = Describe("CDP Manager storage repository", func() {
 				ilkId, ilkErr := shared.GetOrCreateIlk(fakeIlksValue, db)
 				Expect(ilkErr).NotTo(HaveOccurred())
 
-				AssertMapping(result, fakeBlockNumber, fakeHash, fakeCdpi, strconv.Itoa(ilkId))
+				AssertMapping(result, fakeBlockNumber, fakeHash, fakeCdpi, strconv.FormatInt(ilkId, 10))
 			})
 
 			It("doesn't duplicate a record", func() {
