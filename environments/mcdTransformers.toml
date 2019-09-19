@@ -8,6 +8,7 @@
 [client]
     ipcPath = ""
 
+
 [filesystem]
     storageDiffsPath = "INSERT-PATH-TO-STORAGE-DIFFS"
 
@@ -234,7 +235,7 @@
         repository = "github.com/vulcanize/mcd_transformers"
         migrations = "db/migrations"
         contracts = [ "MCD_FLIP_ETH_A", "MCD_FLIP_ETH_B", "MCD_FLIP_ETH_C",  "MCD_FLIP_REP_A", "MCD_FLIP_ZRX_A",
-                      "MCD_FLIP_OMG_A", "MCD_FLIP_BAT_A", "MCD_FLIP_DGD_A", "MCD_FLIP_GNT_A", "MCD_FLIP_SAI"                    ]
+                      "MCD_FLIP_OMG_A", "MCD_FLIP_BAT_A", "MCD_FLIP_DGD_A", "MCD_FLIP_GNT_A", "MCD_FLIP_SAI"
                     ]
         rank = "0"
     [exporter.flop_kick]
@@ -313,7 +314,7 @@
         repository = "github.com/vulcanize/mcd_transformers"
         migrations = "db/migrations"
         contracts = [ "MCD_FLIP_ETH_A", "MCD_FLIP_ETH_B", "MCD_FLIP_ETH_C",  "MCD_FLIP_REP_A", "MCD_FLIP_ZRX_A",
-                      "MCD_FLIP_OMG_A", "MCD_FLIP_BAT_A", "MCD_FLIP_DGD_A", "MCD_FLIP_GNT_A", "MCD_FLIP_SAI"                    ]
+                      "MCD_FLIP_OMG_A", "MCD_FLIP_BAT_A", "MCD_FLIP_DGD_A", "MCD_FLIP_GNT_A", "MCD_FLIP_SAI"
                     ]
         rank = "0"
     [exporter.tick]
