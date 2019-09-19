@@ -219,6 +219,8 @@ github.com/vulcanize/vulcanizedb v0.0.7-0.20190911022214-3f9b034c4c1a h1:3s92I9V
 github.com/vulcanize/vulcanizedb v0.0.7-0.20190911022214-3f9b034c4c1a/go.mod h1:vLlCXSqTNlBhu1rlkKTu7ss4mZ9OYE1Du/bP09Gi/wQ=
 github.com/vulcanize/vulcanizedb v0.0.7-0.20190913162013-2b798e00e09d h1:5qEy4qApks7dbH+lTT14qn7DPs6OEr3+ClXym5Pfnss=
 github.com/vulcanize/vulcanizedb v0.0.7-0.20190913162013-2b798e00e09d/go.mod h1:vLlCXSqTNlBhu1rlkKTu7ss4mZ9OYE1Du/bP09Gi/wQ=
+github.com/vulcanize/vulcanizedb v0.0.7-0.20190919031702-b96a1ee1c6b2 h1:zjRWVjGH/IyJMXRiL7CILcAqprVpqcT7khwewplWWIY=
+github.com/vulcanize/vulcanizedb v0.0.7-0.20190919031702-b96a1ee1c6b2/go.mod h1:vLlCXSqTNlBhu1rlkKTu7ss4mZ9OYE1Du/bP09Gi/wQ=
 github.com/wsddn/go-ecdh v0.0.0-20161211032359-48726bab9208 h1:1cngl9mPEoITZG8s8cVcUy5CeIBYhEESkOB7m6Gmkrk=
 github.com/wsddn/go-ecdh v0.0.0-20161211032359-48726bab9208/go.mod h1:IotVbo4F+mw0EzQ08zFqg7pK3FebNXpaMsRy2RT+Ees=
 github.com/xordataexchange/crypt v0.0.3-0.20170626215501-b2862e3d0a77/go.mod h1:aYKd//L2LvnjZzWKhF00oedf4jCCReLcmhLdhm1A27Q=

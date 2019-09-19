@@ -21,6 +21,6 @@ require (
 	github.com/sirupsen/logrus v1.2.0
 	github.com/spf13/afero v1.2.1 // indirect
 	github.com/spf13/viper v1.3.2
-	github.com/vulcanize/vulcanizedb v0.0.7-0.20190913162013-2b798e00e09d
+	github.com/vulcanize/vulcanizedb v0.0.7-0.20190919031702-b96a1ee1c6b2
 	golang.org/x/crypto v0.0.0-20190605123033-f99c8df09eb5
 )

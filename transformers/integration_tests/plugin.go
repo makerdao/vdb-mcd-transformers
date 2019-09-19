@@ -201,19 +201,25 @@ var _ = Describe("Plugin test", func() {
 				eventTransformerInitializers, _, _ := exporter.Export()
 
 				w := watcher.NewEventWatcher(db, bc)
-				addTransformerErr := w.AddTransformers(eventTransformerInitializers)
-				Expect(addTransformerErr).NotTo(HaveOccurred())
-				errsChan := make(chan error)
-				go w.Execute(constants.HeaderUnchecked, errsChan)
+				addErr := w.AddTransformers(eventTransformerInitializers)
+				Expect(addErr).NotTo(HaveOccurred())
 
-				ilkID, err := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
+				var executeErr error
+				go func() {
+					executeErr = w.Execute(constants.HeaderUnchecked)
+				}()
+
+				Consistently(func() error {
+					return executeErr
+				}).Should(BeNil())
+				expectedIlkID, err := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
 				Expect(err).NotTo(HaveOccurred())
 				// including longer timeout because this test takes awhile to populate the db
 				Eventually(func() int64 {
 					var ilkID int64
 					_ = db.Get(&ilkID, `SELECT ilk_id FROM maker.cat_file_flip WHERE header_id = $1`, headerID)
 					return ilkID
-				}, time.Second*30).Should(Equal(ilkID))
+				}, time.Second*30).Should(Equal(expectedIlkID))
 				Eventually(func() string {
 					var what string
 					_ = db.Get(&what, `SELECT what FROM maker.cat_file_flip WHERE header_id = $1`, headerID)
@@ -243,12 +249,21 @@ var _ = Describe("Plugin test", func() {
 				eventTransformerInitializers, _, _ := exporter.Export()
 
 				w := watcher.NewEventWatcher(db, bc)
-				w.AddTransformers(eventTransformerInitializers)
-				errsChan := make(chan error)
-				go w.Execute(constants.HeaderUnchecked, errsChan)
+				addErr := w.AddTransformers(eventTransformerInitializers)
+				Expect(addErr).NotTo(HaveOccurred())
+				var executeErrOne, executeErrTwo error
 
-				nextErrsChan := make(chan error)
-				go w.Execute(constants.HeaderUnchecked, nextErrsChan)
+				go func() {
+					executeErrOne = w.Execute(constants.HeaderUnchecked)
+					executeErrTwo = w.Execute(constants.HeaderUnchecked)
+				}()
+
+				Consistently(func() error {
+					return executeErrOne
+				}).Should(BeNil())
+				Consistently(func() error {
+					return executeErrTwo
+				}).Should(BeNil())
 			})
 		})
 	})
@@ -351,17 +366,23 @@ var _ = Describe("Plugin test", func() {
 				ew := watcher.NewEventWatcher(db, bc)
 				addTransformersErr := ew.AddTransformers(eventInitializers)
 				Expect(addTransformersErr).NotTo(HaveOccurred())
-				errsChan := make(chan error)
-				go ew.Execute(constants.HeaderUnchecked, errsChan)
 
-				ilkID, err := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
+				var executeErr error
+				go func() {
+					executeErr = ew.Execute(constants.HeaderUnchecked)
+				}()
+
+				Consistently(func() error {
+					return executeErr
+				}).Should(BeNil())
+				expectedIlkID, err := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
 				Expect(err).NotTo(HaveOccurred())
 				// including longer timeout because this test takes awhile to populate the db
 				Eventually(func() int64 {
 					var ilkID int64
 					_ = db.Get(&ilkID, `SELECT ilk_id FROM maker.cat_file_flip WHERE header_id = $1`, headerID)
 					return ilkID
-				}, time.Second*30).Should(Equal(ilkID))
+				}, time.Second*30).Should(Equal(expectedIlkID))
 				Eventually(func() string {
 					var what string
 					_ = db.Get(&what, `SELECT what FROM maker.cat_file_flip WHERE header_id = $1`, headerID)
