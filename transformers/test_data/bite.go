@@ -18,6 +18,7 @@ package test_data
 
 import (
 	"encoding/json"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"math/big"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -75,15 +76,24 @@ var BiteEntity = bite.BiteEntity{
 	Raw:              EthBiteLog,
 }
 
-var BiteModel = bite.BiteModel{
-	Ilk:              "0x4554480000000000000000000000000000000000000000000000000000000000",
-	Urn:              "0x7d7bEe5fCfD8028cf7b00876C5b1421c800561A6",
-	Ink:              biteInk.String(),
-	Art:              biteArt.String(),
-	Tab:              biteTab.String(),
-	Flip:             "0x7d7bEe5fCfD8028cf7b00876C5b1421c800561A6",
-	Id:               biteID.String(),
-	LogIndex:         EthBiteLog.Index,
-	TransactionIndex: EthBiteLog.TxIndex,
-	Raw:              biteRawJson,
+var BiteModel = shared.InsertionModel{
+	SchemaName:       "maker",
+	TableName:        "bite",
+	OrderedColumns:   []string {
+		"header_id", "urn_id", "ink", "art", "tab", "flip", "bite_identifier", "tx_idx", "log_idx", "raw_log",
+	},
+	ColumnValues:     shared.ColumnValues{
+		"ink": biteInk.String(),
+		"art": biteArt.String(),
+		"tab": biteTab.String(),
+		"flip": "0x7d7bEe5fCfD8028cf7b00876C5b1421c800561A6",
+		"bite_identifier": biteID.String(),
+		"log_idx": EthBiteLog.Index,
+		"tx_idx": EthBiteLog.TxIndex,
+		"raw_log": biteRawJson,
+	},
+	ForeignKeyValues: shared.ForeignKeyValues{
+		constants.IlkFK: "0x4554480000000000000000000000000000000000000000000000000000000000",
+		constants.UrnFK: "0x7d7bEe5fCfD8028cf7b00876C5b1421c800561A6",
+	},
 }

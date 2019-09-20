@@ -17,9 +17,6 @@
 package bite
 
 import (
-	"fmt"
-
-	"github.com/sirupsen/logrus"
 	repo "github.com/vulcanize/vulcanizedb/libraries/shared/repository"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 
@@ -35,55 +32,8 @@ func (repository *BiteRepository) SetDB(db *postgres.DB) {
 	repository.db = db
 }
 
-func (repository BiteRepository) Create(headerID int64, models []interface{}) error {
-	tx, dBaseErr := repository.db.Beginx()
-	if dBaseErr != nil {
-		return dBaseErr
-	}
-	for _, model := range models {
-		biteModel, ok := model.(BiteModel)
-		if !ok {
-			rollbackErr := tx.Rollback()
-			if rollbackErr != nil {
-				logrus.Error("failed to rollback ", rollbackErr)
-			}
-			return fmt.Errorf("model of type %T, not %T", model, BiteModel{})
-		}
-
-		urnID, urnErr := shared.GetOrCreateUrnInTransaction(biteModel.Urn, biteModel.Ilk, tx)
-		if urnErr != nil {
-			rollbackErr := tx.Rollback()
-			if rollbackErr != nil {
-				logrus.Error("failed to rollback", rollbackErr)
-			}
-			return urnErr
-		}
-
-		_, execErr := tx.Exec(
-			`INSERT into maker.bite (header_id, urn_id, ink, art, tab, flip, bite_identifier, log_idx, tx_idx, raw_log)
-					VALUES($1, $2, $3::NUMERIC, $4::NUMERIC, $5::NUMERIC, $6, $7::NUMERIC, $8, $9, $10)
-					ON CONFLICT (header_id, tx_idx, log_idx) DO UPDATE SET urn_id = $2, ink = $3, art = $4, tab = $5, flip = $6, bite_identifier = $7, raw_log = $10`,
-			headerID, urnID, biteModel.Ink, biteModel.Art, biteModel.Tab, biteModel.Flip, biteModel.Id, biteModel.LogIndex, biteModel.TransactionIndex, biteModel.Raw,
-		)
-		if execErr != nil {
-			rollbackErr := tx.Rollback()
-			if rollbackErr != nil {
-				logrus.Error("failed to rollback ", rollbackErr)
-			}
-			return execErr
-		}
-	}
-
-	checkHeaderErr := repo.MarkHeaderCheckedInTransaction(headerID, tx, constants.BiteLabel)
-	if checkHeaderErr != nil {
-		rollbackErr := tx.Rollback()
-		if rollbackErr != nil {
-			logrus.Error("failed to rollback ", rollbackErr)
-		}
-		return checkHeaderErr
-	}
-
-	return tx.Commit()
+func (repository BiteRepository) Create(headerID int64, models []shared.InsertionModel) error {
+	return shared.Create(headerID, models, repository.db)
 }
 
 func (repository BiteRepository) MarkHeaderChecked(headerID int64) error {

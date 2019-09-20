@@ -17,11 +17,10 @@
 package bite_test
 
 import (
-	"encoding/json"
-
 	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 
 	"github.com/vulcanize/mcd_transformers/transformers/events/bite"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
@@ -40,53 +39,21 @@ var _ = Describe("Bite Converter", func() {
 			entity := entities[0]
 			Expect(entity).To(Equal(test_data.BiteEntity))
 		})
-
-		It("returns an error if converting log to entity fails", func() {
-			_, err := converter.ToEntities("error abi", []types.Log{test_data.EthBiteLog})
-
-			Expect(err).To(HaveOccurred())
-		})
 	})
 
 	Describe("ToModel", func() {
-		var emptyEntity = bite.BiteEntity{}
-
-		It("converts an Entity to a Model", func() {
-			models, err := converter.ToModels([]interface{}{test_data.BiteEntity})
+		It("converts a log to a Model", func() {
+			models, err := converter.ToModels(constants.CatABI(), []types.Log{test_data.EthBiteLog})
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(models)).To(Equal(1))
-			model := models[0]
-			Expect(model).To(Equal(test_data.BiteModel))
+			Expect(models).To(Equal([]shared.InsertionModel{test_data.BiteModel}))
 		})
 
-		It("returns an error if the entity type is wrong", func() {
-			_, err := converter.ToModels([]interface{}{test_data.WrongEntity{}})
+		It("returns an error if converting log to entity fails", func() {
+			_, err := converter.ToModels("error abi", []types.Log{test_data.EthBiteLog})
 
 			Expect(err).To(HaveOccurred())
-			Expect(err.Error()).To(ContainSubstring("entity of type test_data.WrongEntity, not bite.BiteEntity"))
-		})
-
-		It("handles nil values", func() {
-			emptyLog, err := json.Marshal(types.Log{})
-			Expect(err).NotTo(HaveOccurred())
-			expectedModel := bite.BiteModel{
-				Ilk:              "0x0000000000000000000000000000000000000000000000000000000000000000",
-				Urn:              "0x0000000000000000000000000000000000000000",
-				Ink:              "",
-				Art:              "",
-				Tab:              "",
-				Flip:             "0x0000000000000000000000000000000000000000",
-				Id:               "",
-				TransactionIndex: 0,
-				Raw:              emptyLog,
-			}
-			models, err := converter.ToModels([]interface{}{emptyEntity})
-
-			Expect(err).NotTo(HaveOccurred())
-			Expect(len(models)).To(Equal(1))
-			model := models[0]
-			Expect(model).To(Equal(expectedModel))
 		})
 	})
 })
