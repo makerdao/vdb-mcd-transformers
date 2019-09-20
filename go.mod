@@ -9,7 +9,7 @@ require (
 	github.com/cespare/cp v1.1.1 // indirect
 	github.com/docker/docker v1.13.1 // indirect
 	github.com/elastic/gosigar v0.10.5 // indirect
-	github.com/ethereum/go-ethereum v1.9.1
+	github.com/ethereum/go-ethereum v1.9.5
 	github.com/google/uuid v1.1.0 // indirect
 	github.com/hashicorp/golang-lru v0.5.3 // indirect
 	github.com/howeyc/fsnotify v0.9.0 // indirect
@@ -24,7 +24,7 @@ require (
 	github.com/sirupsen/logrus v1.2.0
 	github.com/spf13/afero v1.2.1 // indirect
 	github.com/spf13/viper v1.3.2
-	github.com/vulcanize/vulcanizedb v0.0.7-0.20190919031702-b96a1ee1c6b2
+	github.com/vulcanize/vulcanizedb v0.0.7-0.20190920153816-3897b288af3c
 	golang.org/x/crypto v0.0.0-20190605123033-f99c8df09eb5
 	google.golang.org/appengine v1.6.2 // indirect
 	gopkg.in/natefinch/npipe.v2 v2.0.0-20160621034901-c1b8fa8bdcce // indirect
