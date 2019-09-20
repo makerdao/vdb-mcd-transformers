@@ -43,7 +43,7 @@ var _ = Describe("Frob event computed columns", func() {
 		fakeBlock        int
 		fakeGuy          = "fakeAddress"
 		fakeHeader       core.Header
-		fakeLog          types.Log
+		frobGethLog      types.Log
 		frobRepo         vat_frob.VatFrobRepository
 		frobEvent        shared.InsertionModel
 		headerId         int64
@@ -62,8 +62,8 @@ var _ = Describe("Frob event computed columns", func() {
 		headerId, insertHeaderErr = headerRepository.CreateOrUpdateHeader(fakeHeader)
 		Expect(insertHeaderErr).NotTo(HaveOccurred())
 
-		insertedLog := test_data.CreateTestLog(headerId, db)
-		fakeLog = insertedLog.Log
+		frobHeaderSyncLog := test_data.CreateTestLog(headerId, db)
+		frobGethLog = frobHeaderSyncLog.Log
 
 		frobRepo = vat_frob.VatFrobRepository{}
 		frobRepo.SetDB(db)
@@ -71,7 +71,7 @@ var _ = Describe("Frob event computed columns", func() {
 		frobEvent.ForeignKeyValues[constants.UrnFK] = fakeGuy
 		frobEvent.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
 		frobEvent.ColumnValues[constants.HeaderFK] = headerId
-		frobEvent.ColumnValues[constants.LogFK] = insertedLog.ID
+		frobEvent.ColumnValues[constants.LogFK] = frobHeaderSyncLog.ID
 		insertFrobErr := frobRepo.Create([]shared.InsertionModel{frobEvent})
 		Expect(insertFrobErr).NotTo(HaveOccurred())
 	})
@@ -130,7 +130,7 @@ var _ = Describe("Frob event computed columns", func() {
 			expectedTx := Tx{
 				TransactionHash: test_helpers.GetValidNullString("txHash"),
 				TransactionIndex: sql.NullInt64{
-					Int64: int64(fakeLog.TxIndex),
+					Int64: int64(frobGethLog.TxIndex),
 					Valid: true,
 				},
 				BlockHeight: sql.NullInt64{Int64: int64(fakeBlock), Valid: true},
@@ -157,7 +157,7 @@ var _ = Describe("Frob event computed columns", func() {
 			wrongTx := Tx{
 				TransactionHash: test_helpers.GetValidNullString("wrongTxHash"),
 				TransactionIndex: sql.NullInt64{
-					Int64: int64(fakeLog.TxIndex) + 1,
+					Int64: int64(frobGethLog.TxIndex) + 1,
 					Valid: true,
 				},
 				BlockHeight: sql.NullInt64{Int64: int64(fakeBlock), Valid: true},

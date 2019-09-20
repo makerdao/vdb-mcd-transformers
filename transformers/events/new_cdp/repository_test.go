@@ -41,8 +41,8 @@ var _ = Describe("NewCdp Repository", func() {
 		newCdpRepository = new_cdp.NewCdpRepository{}
 		newCdpRepository.SetDB(db)
 		headerID = test_data.CreateTestHeader(db)
-		persistedLog := test_data.CreateTestLog(headerID, db)
-		logID = persistedLog.ID
+		newCdpHeaderSyncLog := test_data.CreateTestLog(headerID, db)
+		logID = newCdpHeaderSyncLog.ID
 		model = test_data.NewCdpModel
 		model.HeaderID = headerID
 		model.LogID = logID
@@ -79,10 +79,10 @@ var _ = Describe("NewCdp Repository", func() {
 		})
 
 		It("allows for multiple log events of the same type in one transaction if they have different log indexes", func() {
-			persistedLogTwo := test_data.CreateTestLog(headerID, db)
+			newCdpHeaderSyncLogTwo := test_data.CreateTestLog(headerID, db)
 			modelWithDifferentLogID := test_data.NewCdpModel
 			modelWithDifferentLogID.HeaderID = headerID
-			modelWithDifferentLogID.LogID = persistedLogTwo.ID
+			modelWithDifferentLogID.LogID = newCdpHeaderSyncLogTwo.ID
 
 			insertOneErr := newCdpRepository.Create([]interface{}{model})
 			Expect(insertOneErr).NotTo(HaveOccurred())

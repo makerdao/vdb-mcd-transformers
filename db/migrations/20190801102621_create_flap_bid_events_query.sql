@@ -104,7 +104,9 @@ UNION
 SELECT *
 FROM yanks
 ORDER BY block_height DESC
-LIMIT all_flap_bid_events.max_results OFFSET all_flap_bid_events.result_offset
+LIMIT all_flap_bid_events.max_results
+OFFSET
+all_flap_bid_events.result_offset
 $$
     LANGUAGE sql
     STABLE;

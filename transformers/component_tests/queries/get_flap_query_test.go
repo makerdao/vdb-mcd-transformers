@@ -64,11 +64,11 @@ var _ = Describe("Get flap query", func() {
 				BidId:           fakeBidId,
 				ContractAddress: contractAddress,
 				DealRepo:        dealRepo,
-				DealHeaderID:    headerId,
+				DealHeaderId:    headerId,
 			},
 			Dealt:            true,
 			FlapKickRepo:     flapKickRepo,
-			FlapKickHeaderID: headerId,
+			FlapKickHeaderId: headerId,
 		})
 		Expect(err).NotTo(HaveOccurred())
 
@@ -102,11 +102,11 @@ var _ = Describe("Get flap query", func() {
 				BidId:           fakeBidId,
 				ContractAddress: contractAddress,
 				DealRepo:        dealRepo,
-				DealHeaderID:    headerTwoId,
+				DealHeaderId:    headerTwoId,
 			},
 			Dealt:            true,
 			FlapKickRepo:     flapKickRepo,
-			FlapKickHeaderID: headerOneId,
+			FlapKickHeaderId: headerOneId,
 		})
 		Expect(err).NotTo(HaveOccurred())
 
@@ -146,7 +146,7 @@ var _ = Describe("Get flap query", func() {
 				},
 				Dealt:            false,
 				FlapKickRepo:     flapKickRepo,
-				FlapKickHeaderID: headerId,
+				FlapKickHeaderId: headerId,
 			})
 			Expect(err).NotTo(HaveOccurred())
 
@@ -176,11 +176,11 @@ var _ = Describe("Get flap query", func() {
 					BidId:           fakeBidId,
 					ContractAddress: contractAddress,
 					DealRepo:        dealRepo,
-					DealHeaderID:    headerTwoId,
+					DealHeaderId:    headerTwoId,
 				},
 				Dealt:            true,
 				FlapKickRepo:     flapKickRepo,
-				FlapKickHeaderID: headerId,
+				FlapKickHeaderId: headerId,
 			})
 			Expect(err).NotTo(HaveOccurred())
 

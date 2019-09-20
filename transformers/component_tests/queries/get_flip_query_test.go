@@ -63,13 +63,13 @@ var _ = Describe("Single flip view", func() {
 				BidId:           fakeBidId,
 				ContractAddress: contractAddress,
 				DealRepo:        dealRepo,
-				DealHeaderID:    headerId,
+				DealHeaderId:    headerId,
 			},
 			Dealt:            true,
 			IlkHex:           test_helpers.FakeIlk.Hex,
 			UrnGuy:           test_data.FlipKickModel.Usr,
 			FlipKickRepo:     flipKickRepo,
-			FlipKickHeaderID: headerId,
+			FlipKickHeaderId: headerId,
 		})
 		Expect(err).NotTo(HaveOccurred())
 
@@ -116,7 +116,7 @@ var _ = Describe("Single flip view", func() {
 				IlkHex:           test_helpers.FakeIlk.Hex,
 				UrnGuy:           test_data.FlipKickModel.Usr,
 				FlipKickRepo:     flipKickRepo,
-				FlipKickHeaderID: headerId,
+				FlipKickHeaderId: headerId,
 			})
 			Expect(err).NotTo(HaveOccurred())
 
@@ -161,13 +161,13 @@ var _ = Describe("Single flip view", func() {
 					BidId:           fakeBidId,
 					ContractAddress: contractAddress,
 					DealRepo:        dealRepo,
-					DealHeaderID:    headerTwoId,
+					DealHeaderId:    headerTwoId,
 				},
 				Dealt:            true,
 				IlkHex:           test_helpers.FakeIlk.Hex,
 				UrnGuy:           test_data.FlipKickModel.Usr,
 				FlipKickRepo:     flipKickRepo,
-				FlipKickHeaderID: headerOneId,
+				FlipKickHeaderId: headerOneId,
 			})
 			Expect(err).NotTo(HaveOccurred())
 
@@ -205,13 +205,13 @@ var _ = Describe("Single flip view", func() {
 				BidId:           fakeBidId,
 				ContractAddress: contractAddress,
 				DealRepo:        dealRepo,
-				DealHeaderID:    headerId,
+				DealHeaderId:    headerId,
 			},
 			Dealt:            true,
 			IlkHex:           test_helpers.FakeIlk.Hex,
 			UrnGuy:           test_data.FlipKickModel.Usr,
 			FlipKickRepo:     flipKickRepo,
-			FlipKickHeaderID: headerId,
+			FlipKickHeaderId: headerId,
 		})
 		Expect(err).NotTo(HaveOccurred())
 

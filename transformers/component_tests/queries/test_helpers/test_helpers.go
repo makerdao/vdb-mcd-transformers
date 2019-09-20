@@ -23,7 +23,7 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/storage/spot"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/vat"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
-	storage2 "github.com/vulcanize/vulcanizedb/libraries/shared/factories/storage"
+	vdbStorage "github.com/vulcanize/vulcanizedb/libraries/shared/factories/storage"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
@@ -433,7 +433,7 @@ func GetFlipStorageValues(seed int, ilk string, bidId int) map[string]interface{
 	return valuesMap
 }
 
-func insertValues(repo storage2.Repository, header core.Header, valuesMap map[string]interface{}, metadatas []utils.StorageValueMetadata) {
+func insertValues(repo vdbStorage.Repository, header core.Header, valuesMap map[string]interface{}, metadatas []utils.StorageValueMetadata) {
 	blockHash := header.Hash
 	blockNumber := int(header.BlockNumber)
 
@@ -576,8 +576,8 @@ func SetUpFlipBidContext(setupData FlipBidContextInput) (ilkId, urnId int64, err
 		return 0, 0, urnErr
 	}
 
-	flipKickLog := test_data.CreateTestLog(setupData.FlipKickHeaderID, setupData.Db)
-	flipKickErr := CreateFlipKick(setupData.ContractAddress, setupData.BidId, setupData.FlipKickHeaderID, flipKickLog.ID, setupData.UrnGuy, setupData.FlipKickRepo)
+	flipKickLog := test_data.CreateTestLog(setupData.FlipKickHeaderId, setupData.Db)
+	flipKickErr := CreateFlipKick(setupData.ContractAddress, setupData.BidId, setupData.FlipKickHeaderId, flipKickLog.ID, setupData.UrnGuy, setupData.FlipKickRepo)
 	if flipKickErr != nil {
 		return 0, 0, flipKickErr
 	}
@@ -593,8 +593,8 @@ func SetUpFlipBidContext(setupData FlipBidContextInput) (ilkId, urnId int64, err
 }
 
 func SetUpFlapBidContext(setupData FlapBidCreationInput) (err error) {
-	flapKickLog := test_data.CreateTestLog(setupData.FlapKickHeaderID, setupData.Db)
-	flapKickErr := CreateFlapKick(setupData.ContractAddress, setupData.BidId, setupData.FlapKickHeaderID, flapKickLog.ID, setupData.FlapKickRepo)
+	flapKickLog := test_data.CreateTestLog(setupData.FlapKickHeaderId, setupData.Db)
+	flapKickErr := CreateFlapKick(setupData.ContractAddress, setupData.BidId, setupData.FlapKickHeaderId, flapKickLog.ID, setupData.FlapKickRepo)
 	if flapKickErr != nil {
 		return flapKickErr
 	}
@@ -626,33 +626,33 @@ func SetUpFlopBidContext(setupData FlopBidCreationInput) (err error) {
 }
 
 func CreateDeal(input DealCreationInput) (err error) {
-	dealLog := test_data.CreateTestLog(input.DealHeaderID, input.Db)
+	dealLog := test_data.CreateTestLog(input.DealHeaderId, input.Db)
 	dealModel := test_data.DealModel
 	dealModel.ColumnValues["bid_id"] = strconv.Itoa(input.BidId)
 	dealModel.ColumnValues["tx_idx"] = rand.Int31()
 	dealModel.ForeignKeyValues[constants.AddressFK] = input.ContractAddress
-	dealModel.ColumnValues[constants.HeaderFK] = input.DealHeaderID
+	dealModel.ColumnValues[constants.HeaderFK] = input.DealHeaderId
 	dealModel.ColumnValues[constants.LogFK] = dealLog.ID
 	deals := []shared.InsertionModel{dealModel}
 	return input.DealRepo.Create(deals)
 }
 
-func CreateFlipKick(contractAddress string, bidId int, headerId, logID int64, usr string, repo flip_kick.FlipKickRepository) error {
+func CreateFlipKick(contractAddress string, bidId int, headerId, logId int64, usr string, repo flip_kick.FlipKickRepository) error {
 	flipKickModel := test_data.FlipKickModel
 	flipKickModel.ContractAddress = contractAddress
 	flipKickModel.BidId = strconv.Itoa(bidId)
 	flipKickModel.Usr = usr
 	flipKickModel.HeaderID = headerId
-	flipKickModel.LogID = logID
+	flipKickModel.LogID = logId
 	return repo.Create([]interface{}{flipKickModel})
 }
 
-func CreateFlapKick(contractAddress string, bidId int, headerID, logID int64, repo flap_kick.FlapKickRepository) error {
+func CreateFlapKick(contractAddress string, bidId int, headerId, logId int64, repo flap_kick.FlapKickRepository) error {
 	flapKickModel := test_data.FlapKickModel
 	flapKickModel.ContractAddress = contractAddress
 	flapKickModel.BidId = strconv.Itoa(bidId)
-	flapKickModel.HeaderID = headerID
-	flapKickModel.LogID = logID
+	flapKickModel.HeaderID = headerId
+	flapKickModel.LogID = logId
 	return repo.Create([]interface{}{flapKickModel})
 }
 
@@ -672,7 +672,7 @@ func CreateTend(input TendCreationInput) (err error) {
 	tendModel.ColumnValues["bid"] = strconv.Itoa(input.BidAmount)
 	tendModel.ForeignKeyValues[constants.AddressFK] = input.ContractAddress
 	tendModel.ColumnValues[constants.HeaderFK] = input.TendHeaderId
-	tendModel.ColumnValues[constants.LogFK] = input.TendLogID
+	tendModel.ColumnValues[constants.LogFK] = input.TendLogId
 	return input.TendRepo.Create([]shared.InsertionModel{tendModel})
 }
 
@@ -683,7 +683,7 @@ func CreateDent(input DentCreationInput) (err error) {
 	dentModel.ColumnValues["bid"] = strconv.Itoa(input.BidAmount)
 	dentModel.ForeignKeyValues[constants.AddressFK] = input.ContractAddress
 	dentModel.ColumnValues[constants.HeaderFK] = input.DentHeaderId
-	dentModel.ColumnValues[constants.LogFK] = input.DentLogID
+	dentModel.ColumnValues[constants.LogFK] = input.DentLogId
 	return input.DentRepo.Create([]shared.InsertionModel{dentModel})
 }
 
@@ -693,7 +693,7 @@ func CreateYank(input YankCreationInput) (err error) {
 	yankModel.ColumnValues["tx_idx"] = rand.Int31()
 	yankModel.ForeignKeyValues[constants.AddressFK] = input.ContractAddress
 	yankModel.ColumnValues[constants.HeaderFK] = input.YankHeaderId
-	yankModel.ColumnValues[constants.LogFK] = input.YankLogID
+	yankModel.ColumnValues[constants.LogFK] = input.YankLogId
 	return input.YankRepo.Create([]shared.InsertionModel{yankModel})
 }
 
@@ -712,7 +712,7 @@ type YankCreationInput struct {
 	BidId           int
 	YankRepo        yank.YankRepository
 	YankHeaderId    int64
-	YankLogID       int64
+	YankLogId       int64
 }
 
 type TendCreationInput struct {
@@ -722,7 +722,7 @@ type TendCreationInput struct {
 	BidAmount       int
 	TendRepo        tend.TendRepository
 	TendHeaderId    int64
-	TendLogID       int64
+	TendLogId       int64
 }
 
 type DentCreationInput struct {
@@ -732,7 +732,7 @@ type DentCreationInput struct {
 	BidAmount       int
 	DentRepo        dent.DentRepository
 	DentHeaderId    int64
-	DentLogID       int64
+	DentLogId       int64
 }
 
 type DealCreationInput struct {
@@ -740,7 +740,7 @@ type DealCreationInput struct {
 	BidId           int
 	ContractAddress string
 	DealRepo        deal.DealRepository
-	DealHeaderID    int64
+	DealHeaderId    int64
 }
 
 type FlipBidContextInput struct {
@@ -749,14 +749,14 @@ type FlipBidContextInput struct {
 	IlkHex           string
 	UrnGuy           string
 	FlipKickRepo     flip_kick.FlipKickRepository
-	FlipKickHeaderID int64
+	FlipKickHeaderId int64
 }
 
 type FlapBidCreationInput struct {
 	DealCreationInput
 	Dealt            bool
 	FlapKickRepo     flap_kick.FlapKickRepository
-	FlapKickHeaderID int64
+	FlapKickHeaderId int64
 }
 
 type TickCreationInput struct {

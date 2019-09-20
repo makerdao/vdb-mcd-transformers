@@ -82,7 +82,7 @@ var _ = Describe("Flip bid event computed columns", func() {
 				IlkHex:           test_helpers.FakeIlk.Hex,
 				UrnGuy:           test_data.FlipKickModel.Usr,
 				FlipKickRepo:     flipKickRepo,
-				FlipKickHeaderID: headerId,
+				FlipKickHeaderId: headerId,
 			})
 			Expect(err).NotTo(HaveOccurred())
 
@@ -116,7 +116,7 @@ var _ = Describe("Flip bid event computed columns", func() {
 				IlkHex:           test_helpers.AnotherFakeIlk.Hex,
 				UrnGuy:           test_data.FakeUrn,
 				FlipKickRepo:     flipKickRepo,
-				FlipKickHeaderID: headerId,
+				FlipKickHeaderId: headerId,
 			})
 			Expect(irrelevantFlipContextErr).NotTo(HaveOccurred())
 
@@ -134,7 +134,7 @@ var _ = Describe("Flip bid event computed columns", func() {
 				IlkHex:           test_helpers.FakeIlk.Hex,
 				UrnGuy:           test_data.FakeUrn,
 				FlipKickRepo:     flipKickRepo,
-				FlipKickHeaderID: headerId,
+				FlipKickHeaderId: headerId,
 			})
 			Expect(flipContextErr).NotTo(HaveOccurred())
 
@@ -154,17 +154,17 @@ var _ = Describe("Flip bid event computed columns", func() {
 	})
 
 	Describe("flip_bid_event_tx", func() {
-		var fakeLog types.Log
+		var flipKickGethLog types.Log
 
 		BeforeEach(func() {
-			insertedLog := test_data.CreateTestLog(headerId, db)
-			fakeLog = insertedLog.Log
+			flipKickHeaderSyncLog := test_data.CreateTestLog(headerId, db)
+			flipKickGethLog = flipKickHeaderSyncLog.Log
 
 			flipKickEvent := test_data.FlipKickModel
 			flipKickEvent.ContractAddress = contractAddress
 			flipKickEvent.BidId = strconv.Itoa(bidId)
 			flipKickEvent.HeaderID = headerId
-			flipKickEvent.LogID = insertedLog.ID
+			flipKickEvent.LogID = flipKickHeaderSyncLog.ID
 			flipKickErr := flipKickRepo.Create([]interface{}{flipKickEvent})
 			Expect(flipKickErr).NotTo(HaveOccurred())
 		})
@@ -172,7 +172,7 @@ var _ = Describe("Flip bid event computed columns", func() {
 		It("returns transaction for a flip bid event", func() {
 			expectedTx := Tx{
 				TransactionHash:  test_helpers.GetValidNullString("txHash"),
-				TransactionIndex: sql.NullInt64{Int64: int64(fakeLog.TxIndex), Valid: true},
+				TransactionIndex: sql.NullInt64{Int64: int64(flipKickGethLog.TxIndex), Valid: true},
 				BlockHeight:      sql.NullInt64{Int64: int64(blockNumber), Valid: true},
 				BlockHash:        test_helpers.GetValidNullString(header.Hash),
 				TxFrom:           test_helpers.GetValidNullString("fromAddress"),
@@ -197,7 +197,7 @@ var _ = Describe("Flip bid event computed columns", func() {
 			wrongTx := Tx{
 				TransactionHash: test_helpers.GetValidNullString("wrongTxHash"),
 				TransactionIndex: sql.NullInt64{
-					Int64: int64(fakeLog.TxIndex) + 1,
+					Int64: int64(flipKickGethLog.TxIndex) + 1,
 					Valid: true,
 				},
 				BlockHeight: sql.NullInt64{Int64: int64(blockNumber), Valid: true},

@@ -2,10 +2,10 @@ package queries
 
 import (
 	"database/sql"
-	"github.com/ethereum/go-ethereum/core/types"
 	"math/rand"
 	"strconv"
 
+	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
@@ -27,7 +27,7 @@ var _ = Describe("Bite event computed columns", func() {
 		fakeBlock        int
 		fakeGuy          string
 		fakeHeader       core.Header
-		fakeLog          types.Log
+		biteGethLog      types.Log
 		biteEvent        bite.BiteModel
 		biteRepo         bite.BiteRepository
 		headerId         int64
@@ -47,8 +47,8 @@ var _ = Describe("Bite event computed columns", func() {
 		headerId, insertHeaderErr = headerRepository.CreateOrUpdateHeader(fakeHeader)
 		Expect(insertHeaderErr).NotTo(HaveOccurred())
 
-		insertedLog := test_data.CreateTestLog(headerId, db)
-		fakeLog = insertedLog.Log
+		biteHeaderSyncLog := test_data.CreateTestLog(headerId, db)
+		biteGethLog = biteHeaderSyncLog.Log
 
 		biteRepo = bite.BiteRepository{}
 		biteRepo.SetDB(db)
@@ -56,7 +56,7 @@ var _ = Describe("Bite event computed columns", func() {
 		biteEvent.Ilk = test_helpers.FakeIlk.Hex
 		biteEvent.Urn = fakeGuy
 		biteEvent.HeaderID = headerId
-		biteEvent.LogID = insertedLog.ID
+		biteEvent.LogID = biteHeaderSyncLog.ID
 		insertBiteErr := biteRepo.Create([]interface{}{biteEvent})
 		Expect(insertBiteErr).NotTo(HaveOccurred())
 	})
@@ -129,7 +129,7 @@ var _ = Describe("Bite event computed columns", func() {
 					IlkHex:           biteEvent.Ilk,
 					UrnGuy:           biteEvent.Urn,
 					FlipKickRepo:     flipKickRepo,
-					FlipKickHeaderID: headerId,
+					FlipKickHeaderId: headerId,
 				})
 			Expect(ctxErr).NotTo(HaveOccurred())
 			flipValues := test_helpers.GetFlipStorageValues(0, biteEvent.Ilk, bidId)
@@ -153,7 +153,7 @@ var _ = Describe("Bite event computed columns", func() {
 		It("returns transaction for a bite_event", func() {
 			expectedTx := Tx{
 				TransactionHash:  test_helpers.GetValidNullString("txHash"),
-				TransactionIndex: sql.NullInt64{Int64: int64(fakeLog.TxIndex), Valid: true},
+				TransactionIndex: sql.NullInt64{Int64: int64(biteGethLog.TxIndex), Valid: true},
 				BlockHeight:      sql.NullInt64{Int64: int64(fakeBlock), Valid: true},
 				BlockHash:        test_helpers.GetValidNullString(fakeHeader.Hash),
 				TxFrom:           test_helpers.GetValidNullString("fromAddress"),
@@ -179,7 +179,7 @@ var _ = Describe("Bite event computed columns", func() {
 			wrongTx := Tx{
 				TransactionHash: test_helpers.GetValidNullString("wrongTxHash"),
 				TransactionIndex: sql.NullInt64{
-					Int64: int64(fakeLog.TxIndex) + 1,
+					Int64: int64(biteGethLog.TxIndex) + 1,
 					Valid: true,
 				},
 				BlockHeight: sql.NullInt64{Int64: int64(fakeBlock), Valid: true},

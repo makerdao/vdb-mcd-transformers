@@ -2,9 +2,9 @@ package queries
 
 import (
 	"database/sql"
-	"github.com/ethereum/go-ethereum/core/types"
 	"math/rand"
 
+	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
@@ -23,7 +23,7 @@ var _ = Describe("all poke events query", func() {
 		db               *postgres.DB
 		fakeBlock        int
 		fakeHeader       core.Header
-		fakeLog          types.Log
+		fakeGethLog      types.Log
 		spotPokeEvent    spot_poke.SpotPokeModel
 		spotPokeRepo     spot_poke.SpotPokeRepository
 		headerId         int64
@@ -41,15 +41,15 @@ var _ = Describe("all poke events query", func() {
 		headerId, insertHeaderErr = headerRepository.CreateOrUpdateHeader(fakeHeader)
 		Expect(insertHeaderErr).NotTo(HaveOccurred())
 
-		insertedLog := test_data.CreateTestLog(headerId, db)
-		fakeLog = insertedLog.Log
+		fakeHeaderSyncLog := test_data.CreateTestLog(headerId, db)
+		fakeGethLog = fakeHeaderSyncLog.Log
 
 		spotPokeRepo = spot_poke.SpotPokeRepository{}
 		spotPokeRepo.SetDB(db)
 		spotPokeEvent = test_data.SpotPokeModel
 		spotPokeEvent.Ilk = test_helpers.FakeIlk.Hex
 		spotPokeEvent.HeaderID = headerId
-		spotPokeEvent.LogID = insertedLog.ID
+		spotPokeEvent.LogID = fakeHeaderSyncLog.ID
 		insertSpotPokeErr := spotPokeRepo.Create([]interface{}{spotPokeEvent})
 		Expect(insertSpotPokeErr).NotTo(HaveOccurred())
 	})
@@ -81,7 +81,7 @@ var _ = Describe("all poke events query", func() {
 		It("returns transaction for a poke_event", func() {
 			expectedTx := Tx{
 				TransactionHash:  test_helpers.GetValidNullString("txHash"),
-				TransactionIndex: sql.NullInt64{Int64: int64(fakeLog.TxIndex), Valid: true},
+				TransactionIndex: sql.NullInt64{Int64: int64(fakeGethLog.TxIndex), Valid: true},
 				BlockHeight:      sql.NullInt64{Int64: int64(fakeBlock), Valid: true},
 				BlockHash:        test_helpers.GetValidNullString(fakeHeader.Hash),
 				TxFrom:           test_helpers.GetValidNullString("fromAddress"),
@@ -106,7 +106,7 @@ var _ = Describe("all poke events query", func() {
 			wrongTx := Tx{
 				TransactionHash: test_helpers.GetValidNullString("wrongTxHash"),
 				TransactionIndex: sql.NullInt64{
-					Int64: int64(fakeLog.TxIndex) + 1,
+					Int64: int64(fakeGethLog.TxIndex) + 1,
 					Valid: true,
 				},
 				BlockHeight: sql.NullInt64{Int64: int64(fakeBlock), Valid: true},

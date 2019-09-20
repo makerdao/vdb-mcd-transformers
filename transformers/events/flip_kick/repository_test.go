@@ -42,9 +42,9 @@ var _ = Describe("FlipKick Repository", func() {
 			flipKickRepository.SetDB(db)
 
 			headerID = test_data.CreateTestHeader(db)
-			insertedLogs := test_data.CreateLogs(headerID, []types.Log{test_data.FlipKickHeaderSyncLog.Log}, db)
-			Expect(len(insertedLogs)).To(Equal(1))
-			logID = insertedLogs[0].ID
+			flipKickLogs := test_data.CreateLogs(headerID, []types.Log{test_data.FlipKickHeaderSyncLog.Log}, db)
+			Expect(len(flipKickLogs)).To(Equal(1))
+			logID = flipKickLogs[0].ID
 
 			model = test_data.FlipKickModel
 			model.HeaderID = headerID
@@ -99,8 +99,8 @@ var _ = Describe("FlipKick Repository", func() {
 		It("allows for multiple log events of the same type in one transaction if they have different log indexes", func() {
 			modelWithDifferentLogID := test_data.FlipKickModel
 			modelWithDifferentLogID.HeaderID = headerID
-			insertedLog := test_data.CreateTestLog(headerID, db)
-			modelWithDifferentLogID.LogID = insertedLog.ID
+			flipKickLog := test_data.CreateTestLog(headerID, db)
+			modelWithDifferentLogID.LogID = flipKickLog.ID
 
 			insertOneErr := flipKickRepository.Create([]interface{}{model})
 			Expect(insertOneErr).NotTo(HaveOccurred())

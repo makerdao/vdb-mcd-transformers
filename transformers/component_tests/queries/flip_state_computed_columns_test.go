@@ -85,7 +85,7 @@ var _ = Describe("Flip state computed columns", func() {
 			IlkHex:           test_helpers.FakeIlk.Hex,
 			UrnGuy:           fakeUrn,
 			FlipKickRepo:     flipKickRepo,
-			FlipKickHeaderID: headerId,
+			FlipKickHeaderId: headerId,
 		})
 		Expect(err).NotTo(HaveOccurred())
 	})
@@ -165,7 +165,7 @@ var _ = Describe("Flip state computed columns", func() {
 				BidAmount:       tendBidAmount,
 				TendRepo:        tendRepo,
 				TendHeaderId:    headerId,
-				TendLogID:       tendLog.ID,
+				TendLogId:       tendLog.ID,
 			})
 			Expect(flipTendErr).NotTo(HaveOccurred())
 
@@ -216,7 +216,7 @@ var _ = Describe("Flip state computed columns", func() {
 					BidAmount:       tendBidAmount,
 					TendRepo:        tendRepo,
 					TendHeaderId:    headerTwoId,
-					TendLogID:       tendLogId,
+					TendLogId:       tendLogId,
 				})
 				Expect(flipTendErr).NotTo(HaveOccurred())
 			})
@@ -288,7 +288,7 @@ var _ = Describe("Flip state computed columns", func() {
 				IlkHex:           test_helpers.AnotherFakeIlk.Hex,
 				UrnGuy:           fakeUrn,
 				FlipKickRepo:     flipKickRepo,
-				FlipKickHeaderID: headerId,
+				FlipKickHeaderId: headerId,
 			})
 			Expect(irrelevantFlipContextErr).NotTo(HaveOccurred())
 
@@ -320,7 +320,7 @@ var _ = Describe("Flip state computed columns", func() {
 				IlkHex:           test_helpers.FakeIlk.Hex,
 				UrnGuy:           fakeUrn,
 				FlipKickRepo:     flipKickRepo,
-				FlipKickHeaderID: headerId,
+				FlipKickHeaderId: headerId,
 			})
 			Expect(err).NotTo(HaveOccurred())
 

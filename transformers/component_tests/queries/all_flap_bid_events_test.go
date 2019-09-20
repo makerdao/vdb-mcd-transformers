@@ -86,7 +86,7 @@ var _ = Describe("Flap bid events query", func() {
 				BidAmount:       fakeBidAmount,
 				TendRepo:        tendRepo,
 				TendHeaderId:    headerOneId,
-				TendLogID:       tendLog.ID,
+				TendLogId:       tendLog.ID,
 			})
 			Expect(flapTendErr).NotTo(HaveOccurred())
 
@@ -95,7 +95,7 @@ var _ = Describe("Flap bid events query", func() {
 				BidId:           fakeBidId,
 				ContractAddress: contractAddress,
 				DealRepo:        dealRepo,
-				DealHeaderID:    headerOneId,
+				DealHeaderId:    headerOneId,
 			})
 			Expect(flapDealErr).NotTo(HaveOccurred())
 
@@ -164,7 +164,7 @@ var _ = Describe("Flap bid events query", func() {
 				BidAmount:       bidAmountOne,
 				TendRepo:        tendRepo,
 				TendHeaderId:    headerOneId,
-				TendLogID:       flapTendOneLog.ID,
+				TendLogId:       flapTendOneLog.ID,
 			})
 			Expect(flapTendOneErr).NotTo(HaveOccurred())
 
@@ -200,7 +200,7 @@ var _ = Describe("Flap bid events query", func() {
 					BidAmount:       bidAmount,
 					TendRepo:        tendRepo,
 					TendHeaderId:    headerTwoId,
-					TendLogID:       tendLogId,
+					TendLogId:       tendLogId,
 				})
 				Expect(flapTendErr).NotTo(HaveOccurred())
 			})
@@ -281,7 +281,7 @@ var _ = Describe("Flap bid events query", func() {
 				BidAmount:       bidAmount,
 				TendRepo:        tendRepo,
 				TendHeaderId:    headerOneId,
-				TendLogID:       flapTendOneLog.ID,
+				TendLogId:       flapTendOneLog.ID,
 			})
 			Expect(flapTendOneErr).NotTo(HaveOccurred())
 
@@ -297,7 +297,7 @@ var _ = Describe("Flap bid events query", func() {
 				BidAmount:       updatedBidAmount,
 				TendRepo:        tendRepo,
 				TendHeaderId:    headerTwoId,
-				TendLogID:       flapTendTwoLog.ID,
+				TendLogId:       flapTendTwoLog.ID,
 			})
 			Expect(flapTendTwoErr).NotTo(HaveOccurred())
 
@@ -314,7 +314,7 @@ var _ = Describe("Flap bid events query", func() {
 				BidAmount:       bidAmount,
 				TendRepo:        tendRepo,
 				TendHeaderId:    headerThreeId,
-				TendLogID:       tendLog.ID,
+				TendLogId:       tendLog.ID,
 			})
 			Expect(flopTendErr).NotTo(HaveOccurred())
 
@@ -356,7 +356,7 @@ var _ = Describe("Flap bid events query", func() {
 				BidId:           fakeBidId,
 				ContractAddress: contractAddress,
 				DealRepo:        dealRepo,
-				DealHeaderID:    headerThreeId,
+				DealHeaderId:    headerThreeId,
 			})
 			Expect(flapDealErr).NotTo(HaveOccurred())
 
@@ -385,7 +385,7 @@ var _ = Describe("Flap bid events query", func() {
 				BidAmount:       fakeBidAmount,
 				TendRepo:        tendRepo,
 				TendHeaderId:    headerOneId,
-				TendLogID:       tendLog.ID,
+				TendLogId:       tendLog.ID,
 			})
 			Expect(flapTendErr).NotTo(HaveOccurred())
 
@@ -402,7 +402,7 @@ var _ = Describe("Flap bid events query", func() {
 				ContractAddress: contractAddress,
 				YankRepo:        yankRepo,
 				YankHeaderId:    headerTwoId,
-				YankLogID:       flapYankLog.ID,
+				YankLogId:       flapYankLog.ID,
 			})
 			Expect(flapYankErr).NotTo(HaveOccurred())
 
@@ -437,7 +437,7 @@ var _ = Describe("Flap bid events query", func() {
 				ContractAddress: anotherContractAddress,
 				YankRepo:        yankRepo,
 				YankHeaderId:    headerTwoId,
-				YankLogID:       yankLog.ID,
+				YankLogId:       yankLog.ID,
 			})
 			Expect(flopYankErr).NotTo(HaveOccurred())
 

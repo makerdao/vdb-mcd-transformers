@@ -109,7 +109,7 @@ var _ = Describe("All flip bid events query", func() {
 				BidAmount:       tendBidAmount,
 				TendRepo:        tendRepo,
 				TendHeaderId:    headerOneId,
-				TendLogID:       flipTendLog.ID,
+				TendLogId:       flipTendLog.ID,
 			})
 			Expect(flipTendErr).NotTo(HaveOccurred())
 
@@ -135,7 +135,7 @@ var _ = Describe("All flip bid events query", func() {
 				BidAmount:       dentBidAmount,
 				DentRepo:        dentRepo,
 				DentHeaderId:    headerOneId,
-				DentLogID:       flipDentLog.ID,
+				DentLogId:       flipDentLog.ID,
 			})
 			Expect(flipDentErr).NotTo(HaveOccurred())
 
@@ -164,7 +164,7 @@ var _ = Describe("All flip bid events query", func() {
 				BidAmount:       tendBidAmount,
 				TendRepo:        tendRepo,
 				TendHeaderId:    headerOneId,
-				TendLogID:       flipTendLog.ID,
+				TendLogId:       flipTendLog.ID,
 			})
 			Expect(flipTendErr).NotTo(HaveOccurred())
 
@@ -198,7 +198,7 @@ var _ = Describe("All flip bid events query", func() {
 				BidAmount:       dentBidAmount,
 				DentRepo:        dentRepo,
 				DentHeaderId:    headerThreeId,
-				DentLogID:       flipDentLog.ID,
+				DentLogId:       flipDentLog.ID,
 			})
 			Expect(flipDentErr).NotTo(HaveOccurred())
 
@@ -207,7 +207,7 @@ var _ = Describe("All flip bid events query", func() {
 				BidId:           bidId,
 				ContractAddress: contractAddress,
 				DealRepo:        dealRepo,
-				DealHeaderID:    headerThreeId,
+				DealHeaderId:    headerThreeId,
 			})
 			Expect(flipDealErr).NotTo(HaveOccurred())
 
@@ -288,14 +288,14 @@ var _ = Describe("All flip bid events query", func() {
 			differentBidId := rand.Int()
 			differentLot := rand.Int()
 
-			insertedLogTwo := test_data.CreateTestLog(headerOneId, db)
+			flipKickLogTwo := test_data.CreateTestLog(headerOneId, db)
 
 			flipKickEventTwo := test_data.FlipKickModel
 			flipKickEventTwo.ContractAddress = contractAddress
 			flipKickEventTwo.BidId = strconv.Itoa(differentBidId)
 			flipKickEventTwo.Lot = strconv.Itoa(differentLot)
 			flipKickEventTwo.HeaderID = headerOneId
-			flipKickEventTwo.LogID = insertedLogTwo.ID
+			flipKickEventTwo.LogID = flipKickLogTwo.ID
 			flipKickErr := flipKickRepo.Create([]interface{}{flipKickEventTwo})
 			Expect(flipKickErr).NotTo(HaveOccurred())
 
@@ -350,7 +350,7 @@ var _ = Describe("All flip bid events query", func() {
 					BidAmount:       bidAmountOne,
 					TendRepo:        tendRepo,
 					TendHeaderId:    headerOneId,
-					TendLogID:       flipTendHeaderOneLog.ID,
+					TendLogId:       flipTendHeaderOneLog.ID,
 				})
 				Expect(flipTendErr).NotTo(HaveOccurred())
 
@@ -366,7 +366,7 @@ var _ = Describe("All flip bid events query", func() {
 					BidAmount:       bidAmountTwo,
 					TendRepo:        tendRepo,
 					TendHeaderId:    headerTwoId,
-					TendLogID:       flipTendHeaderTwoLog.ID,
+					TendLogId:       flipTendHeaderTwoLog.ID,
 				})
 				Expect(flipTendHeaderTwoErr).NotTo(HaveOccurred())
 
@@ -390,7 +390,7 @@ var _ = Describe("All flip bid events query", func() {
 					BidAmount:       rand.Int(),
 					TendRepo:        tendRepo,
 					TendHeaderId:    headerOneId,
-					TendLogID:       flapTendLog.ID,
+					TendLogId:       flapTendLog.ID,
 				})
 				Expect(flapTendErr).NotTo(HaveOccurred())
 
@@ -419,7 +419,7 @@ var _ = Describe("All flip bid events query", func() {
 					BidAmount:       bidAmountOne,
 					DentRepo:        dentRepo,
 					DentHeaderId:    headerOneId,
-					DentLogID:       flipDentHeaderOneLog.ID,
+					DentLogId:       flipDentHeaderOneLog.ID,
 				})
 				Expect(flipDentErr).NotTo(HaveOccurred())
 
@@ -435,7 +435,7 @@ var _ = Describe("All flip bid events query", func() {
 					BidAmount:       bidAmountTwo,
 					DentRepo:        dentRepo,
 					DentHeaderId:    headerTwoId,
-					DentLogID:       flipDentHeaderTwoLog.ID,
+					DentLogId:       flipDentHeaderTwoLog.ID,
 				})
 				Expect(flipDentHeaderTwoErr).NotTo(HaveOccurred())
 
@@ -459,7 +459,7 @@ var _ = Describe("All flip bid events query", func() {
 					BidAmount:       rand.Int(),
 					DentRepo:        dentRepo,
 					DentHeaderId:    headerOneId,
-					DentLogID:       flapDentLog.ID,
+					DentLogId:       flapDentLog.ID,
 				})
 				Expect(flapDentErr).NotTo(HaveOccurred())
 
@@ -486,7 +486,7 @@ var _ = Describe("All flip bid events query", func() {
 					BidAmount:       tendBidAmount,
 					TendRepo:        tendRepo,
 					TendHeaderId:    headerOneId,
-					TendLogID:       flipTendLog.ID,
+					TendLogId:       flipTendLog.ID,
 				})
 				Expect(flipTendErr).NotTo(HaveOccurred())
 
@@ -504,7 +504,7 @@ var _ = Describe("All flip bid events query", func() {
 					ContractAddress: contractAddress,
 					YankRepo:        yankRepo,
 					YankHeaderId:    headerTwoId,
-					YankLogID:       flipYankLog.ID,
+					YankLogId:       flipYankLog.ID,
 				})
 				Expect(flipYankErr).NotTo(HaveOccurred())
 

@@ -43,8 +43,8 @@ var _ = Describe("Spot Poke repository", func() {
 			spotPokeRepository = spot_poke.SpotPokeRepository{}
 			spotPokeRepository.SetDB(db)
 			headerID = test_data.CreateTestHeader(db)
-			insertedLog := test_data.CreateTestLog(headerID, db)
-			logID = insertedLog.ID
+			spotPokeLog := test_data.CreateTestLog(headerID, db)
+			logID = spotPokeLog.ID
 			model = test_data.SpotPokeModel
 			model.HeaderID = headerID
 			model.LogID = logID
@@ -80,8 +80,8 @@ var _ = Describe("Spot Poke repository", func() {
 		It("allows for multiple log events of the same type in one transaction if they have different log indexes", func() {
 			modelWithDifferentLogID := test_data.SpotPokeModel
 			modelWithDifferentLogID.HeaderID = headerID
-			insertedLog := test_data.CreateTestLog(headerID, db)
-			modelWithDifferentLogID.LogID = insertedLog.ID
+			spotPokeLogTwo := test_data.CreateTestLog(headerID, db)
+			modelWithDifferentLogID.LogID = spotPokeLogTwo.ID
 
 			insertOneErr := spotPokeRepository.Create([]interface{}{model})
 			Expect(insertOneErr).NotTo(HaveOccurred())

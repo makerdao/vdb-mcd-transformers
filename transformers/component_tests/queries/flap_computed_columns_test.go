@@ -165,7 +165,7 @@ var _ = Describe("Flap computed columns", func() {
 					BidAmount:       tendBid,
 					TendRepo:        tendRepo,
 					TendHeaderId:    headerTwoId,
-					TendLogID:       logTwoId,
+					TendLogId:       logTwoId,
 				})
 				Expect(flapTendErr).NotTo(HaveOccurred())
 			})
