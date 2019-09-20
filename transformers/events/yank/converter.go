@@ -27,7 +27,7 @@ import (
 
 type YankConverter struct{}
 
-func (YankConverter) ToModels(ethLogs []types.Log) (results []shared.InsertionModel, err error) {
+func (YankConverter) ToModels(_ string, ethLogs []types.Log) (results []shared.InsertionModel, err error) {
 	for _, log := range ethLogs {
 		validationErr := validateLog(log)
 		if validationErr != nil {

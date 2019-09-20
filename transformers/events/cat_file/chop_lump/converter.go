@@ -35,7 +35,7 @@ var (
 
 type CatFileChopLumpConverter struct{}
 
-func (CatFileChopLumpConverter) ToModels(ethLogs []types.Log) ([]shared.InsertionModel, error) {
+func (CatFileChopLumpConverter) ToModels(_ string, ethLogs []types.Log) ([]shared.InsertionModel, error) {
 	var results []shared.InsertionModel
 	for _, ethLog := range ethLogs {
 		verifyErr := verifyLog(ethLog)

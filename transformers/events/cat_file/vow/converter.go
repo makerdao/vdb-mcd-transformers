@@ -29,7 +29,7 @@ import (
 
 type CatFileVowConverter struct{}
 
-func (CatFileVowConverter) ToModels(ethLogs []types.Log) ([]shared.InsertionModel, error) {
+func (CatFileVowConverter) ToModels(_ string, ethLogs []types.Log) ([]shared.InsertionModel, error) {
 	var results []shared.InsertionModel
 	for _, ethLog := range ethLogs {
 		err := verifyLog(ethLog)

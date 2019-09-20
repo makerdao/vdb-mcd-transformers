@@ -28,7 +28,7 @@ import (
 
 type JugFileVowConverter struct{}
 
-func (JugFileVowConverter) ToModels(ethLogs []types.Log) ([]shared.InsertionModel, error) {
+func (JugFileVowConverter) ToModels(_ string, ethLogs []types.Log) ([]shared.InsertionModel, error) {
 	var models []shared.InsertionModel
 	for _, ethLog := range ethLogs {
 		err := verifyLog(ethLog)

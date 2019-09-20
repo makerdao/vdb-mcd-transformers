@@ -25,7 +25,7 @@ import (
 
 type VowFileConverter struct{}
 
-func (VowFileConverter) ToModels(ethLogs []types.Log) ([]shared.InsertionModel, error) {
+func (VowFileConverter) ToModels(_ string, ethLogs []types.Log) ([]shared.InsertionModel, error) {
 	var models []shared.InsertionModel
 	for _, ethLog := range ethLogs {
 		err := verifyLog(ethLog)

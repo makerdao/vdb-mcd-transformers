@@ -27,7 +27,7 @@ import (
 
 type VatHealConverter struct{}
 
-func (VatHealConverter) ToModels(ethLogs []types.Log) ([]shared.InsertionModel, error) {
+func (VatHealConverter) ToModels(_ string, ethLogs []types.Log) ([]shared.InsertionModel, error) {
 	var models []shared.InsertionModel
 	for _, ethLog := range ethLogs {
 		err := verifyLog(ethLog)

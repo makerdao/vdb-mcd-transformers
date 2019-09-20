@@ -29,7 +29,7 @@ import (
 
 type TendConverter struct{}
 
-func (TendConverter) ToModels(ethLogs []types.Log) (results []shared.InsertionModel, err error) {
+func (TendConverter) ToModels(_ string, ethLogs []types.Log) (results []shared.InsertionModel, err error) {
 	for _, ethLog := range ethLogs {
 		err := validateLog(ethLog)
 		if err != nil {

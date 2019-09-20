@@ -29,7 +29,7 @@ import (
 
 type DentConverter struct{}
 
-func (c DentConverter) ToModels(ethLogs []types.Log) (result []shared.InsertionModel, err error) {
+func (c DentConverter) ToModels(_ string, ethLogs []types.Log) (result []shared.InsertionModel, err error) {
 	for _, log := range ethLogs {
 		validateErr := validateLog(log)
 		if validateErr != nil {

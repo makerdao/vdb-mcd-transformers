@@ -27,7 +27,7 @@ import (
 
 type DealConverter struct{}
 
-func (DealConverter) ToModels(ethLogs []types.Log) (result []shared.InsertionModel, err error) {
+func (DealConverter) ToModels(_ string, ethLogs []types.Log) (result []shared.InsertionModel, err error) {
 	for _, log := range ethLogs {
 		validationErr := validateLog(log)
 		if validationErr != nil {

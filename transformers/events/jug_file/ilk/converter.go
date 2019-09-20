@@ -30,7 +30,7 @@ import (
 
 type JugFileIlkConverter struct{}
 
-func (JugFileIlkConverter) ToModels(ethLogs []types.Log) ([]shared.InsertionModel, error) {
+func (JugFileIlkConverter) ToModels(_ string, ethLogs []types.Log) ([]shared.InsertionModel, error) {
 	var models []shared.InsertionModel
 	for _, ethLog := range ethLogs {
 		verifyErr := verifyLog(ethLog)

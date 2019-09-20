@@ -30,7 +30,7 @@ import (
 
 type CatFileFlipConverter struct{}
 
-func (CatFileFlipConverter) ToModels(ethLogs []types.Log) ([]shared.InsertionModel, error) {
+func (CatFileFlipConverter) ToModels(_ string, ethLogs []types.Log) ([]shared.InsertionModel, error) {
 	var results []shared.InsertionModel
 	for _, ethLog := range ethLogs {
 		verifyErr := verifyLog(ethLog)

@@ -30,7 +30,7 @@ import (
 
 type VatFluxConverter struct{}
 
-func (VatFluxConverter) ToModels(ethLogs []types.Log) ([]shared.InsertionModel, error) {
+func (VatFluxConverter) ToModels(_ string, ethLogs []types.Log) ([]shared.InsertionModel, error) {
 	var models []shared.InsertionModel
 	for _, ethLog := range ethLogs {
 		err := verifyLog(ethLog)

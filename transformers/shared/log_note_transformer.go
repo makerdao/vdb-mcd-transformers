@@ -49,7 +49,7 @@ func (tr LogNoteTransformer) Execute(logs []types.Log, header core.Header) error
 		return nil
 	}
 
-	models, err := tr.Converter.ToModels(logs)
+	models, err := tr.Converter.ToModels(tr.Config.ContractAbi, logs)
 	if err != nil {
 		log.Printf("Error converting logs in %v: %v", transformerName, err)
 		return err

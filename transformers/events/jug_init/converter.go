@@ -28,7 +28,7 @@ import (
 
 type JugInitConverter struct{}
 
-func (JugInitConverter) ToModels(ethLogs []types.Log) ([]shared.InsertionModel, error) {
+func (JugInitConverter) ToModels(_ string, ethLogs []types.Log) ([]shared.InsertionModel, error) {
 	var models []shared.InsertionModel
 	for _, ethLog := range ethLogs {
 		err := verifyLog(ethLog)

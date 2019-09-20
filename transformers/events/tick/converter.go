@@ -28,7 +28,7 @@ import (
 
 type TickConverter struct{}
 
-func (TickConverter) ToModels(ethLogs []types.Log) (results []shared.InsertionModel, err error) {
+func (TickConverter) ToModels(_ string, ethLogs []types.Log) (results []shared.InsertionModel, err error) {
 	for _, ethLog := range ethLogs {
 		validateErr := validateLog(ethLog)
 		if validateErr != nil {

@@ -28,7 +28,7 @@ import (
 
 type VatInitConverter struct{}
 
-func (VatInitConverter) ToModels(ethLogs []types.Log) ([]shared.InsertionModel, error) {
+func (VatInitConverter) ToModels(_ string, ethLogs []types.Log) ([]shared.InsertionModel, error) {
 	var models []shared.InsertionModel
 	for _, ethLog := range ethLogs {
 		err := verifyLog(ethLog)

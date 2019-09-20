@@ -31,7 +31,7 @@ import (
 
 type VatGrabConverter struct{}
 
-func (VatGrabConverter) ToModels(ethLogs []types.Log) ([]shared.InsertionModel, error) {
+func (VatGrabConverter) ToModels(_ string, ethLogs []types.Log) ([]shared.InsertionModel, error) {
 	var models []shared.InsertionModel
 	for _, ethLog := range ethLogs {
 		err := verifyLog(ethLog)

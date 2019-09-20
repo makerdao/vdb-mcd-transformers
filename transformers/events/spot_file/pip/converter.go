@@ -29,7 +29,7 @@ import (
 
 type SpotFilePipConverter struct{}
 
-func (SpotFilePipConverter) ToModels(ethLogs []types.Log) ([]shared.InsertionModel, error) {
+func (SpotFilePipConverter) ToModels(_ string, ethLogs []types.Log) ([]shared.InsertionModel, error) {
 	var models []shared.InsertionModel
 	for _, ethLog := range ethLogs {
 		err := verifyLog(ethLog)

@@ -30,7 +30,7 @@ import (
 
 type SpotFileMatConverter struct{}
 
-func (SpotFileMatConverter) ToModels(ethLogs []types.Log) ([]shared.InsertionModel, error) {
+func (SpotFileMatConverter) ToModels(_ string, ethLogs []types.Log) ([]shared.InsertionModel, error) {
 	var models []shared.InsertionModel
 	for _, ethLog := range ethLogs {
 		err := verifyLog(ethLog)

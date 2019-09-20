@@ -29,7 +29,7 @@ import (
 
 type VatFileIlkConverter struct{}
 
-func (VatFileIlkConverter) ToModels(ethLogs []types.Log) ([]shared.InsertionModel, error) {
+func (VatFileIlkConverter) ToModels(_ string, ethLogs []types.Log) ([]shared.InsertionModel, error) {
 	//NOTE: the vat contract defines its own custom Note event, rather than relying on DS-Note
 	var models []shared.InsertionModel
 	for _, ethLog := range ethLogs {

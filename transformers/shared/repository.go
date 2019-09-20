@@ -233,7 +233,7 @@ func GetOrCreateUrn(guy string, hexIlk string, db *postgres.DB) (urnID int, err 
 func GetOrCreateUrnInTransaction(guy string, hexIlk string, tx *sqlx.Tx) (urnID int, err error) {
 	ilkID, ilkErr := GetOrCreateIlkInTransaction(hexIlk, tx)
 	if ilkErr != nil {
-		return 0, fmt.Errorf("error getting ilkID for urn")
+		return 0, fmt.Errorf("error getting ilkID for urn: %v", ilkErr.Error())
 	}
 
 	err = tx.Get(&urnID, getOrCreateUrnQuery, guy, ilkID)
