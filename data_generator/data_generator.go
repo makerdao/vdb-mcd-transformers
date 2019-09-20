@@ -30,10 +30,10 @@ const (
 	insertUrnQuery = `INSERT INTO maker.urns (identifier, ilk_id) VALUES ($1, $2) RETURNING id`
 	insertLogSql   = `
 		WITH insertedAddressId AS (
-			INSERT INTO public.addresses (address) VALUES ('0x1234567890') ON CONFLICT DO NOTHING RETURNING id
+			INSERT INTO public.addresses (address) VALUES ('0x1234567890123456789012345678901234567890') ON CONFLICT DO NOTHING RETURNING id
 		),
 		selectedAddressId AS (
-			SELECT id FROM public.addresses WHERE address = '0x1234567890'
+			SELECT id FROM public.addresses WHERE address = '0x1234567890123456789012345678901234567890'
 		)
 		INSERT INTO public.header_sync_logs (header_id, address) VALUES ($1, (
 			SELECT id FROM insertedAddressId
