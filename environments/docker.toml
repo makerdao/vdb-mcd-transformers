@@ -1,14 +1,3 @@
-[database]
-    name     = "vulcanize_public"
-    hostname = "host.docker.internal"
-    port     = 5432
-
-[client]
-    ipcPath = ""
-
-[filesystem]
-    storageDiffsPath = "INSERT-PATH-TO-STORAGE-DIFFS"
-
 [exporter]
     home     = "github.com/vulcanize/vulcanizedb"
     name     = "transformerExporter"
