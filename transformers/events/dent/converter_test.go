@@ -21,6 +21,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 
 	"github.com/vulcanize/mcd_transformers/transformers/events/dent"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
@@ -31,7 +32,7 @@ var _ = Describe("Dent Converter", func() {
 	var converter dent.DentConverter
 
 	It("converts an eth log to a db model", func() {
-		models, err := converter.ToModels([]types.Log{test_data.EthDentLog})
+		models, err := converter.ToModels(constants.FlipABI(), []types.Log{test_data.EthDentLog})
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(models).To(Equal([]shared.InsertionModel{test_data.DentModel}))
@@ -40,7 +41,7 @@ var _ = Describe("Dent Converter", func() {
 	It("returns an error if the expected amount of topics aren't in the log", func() {
 		invalidLog := test_data.EthDentLog
 		invalidLog.Topics = []common.Hash{}
-		_, err := converter.ToModels([]types.Log{invalidLog})
+		_, err := converter.ToModels(constants.FlipABI(), []types.Log{invalidLog})
 		Expect(err).To(HaveOccurred())
 		Expect(err).To(MatchError("dent log does not contain expected topics"))
 	})
@@ -48,7 +49,7 @@ var _ = Describe("Dent Converter", func() {
 	It("returns an error if the log data is empty", func() {
 		emptyDataLog := test_data.EthDentLog
 		emptyDataLog.Data = []byte{}
-		_, err := converter.ToModels([]types.Log{emptyDataLog})
+		_, err := converter.ToModels(constants.FlipABI(), []types.Log{emptyDataLog})
 		Expect(err).To(HaveOccurred())
 		Expect(err).To(MatchError("dent log data is empty"))
 	})

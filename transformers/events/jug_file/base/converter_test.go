@@ -19,6 +19,7 @@ package base_test
 import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -36,12 +37,12 @@ var _ = Describe("Jug file base converter", func() {
 			Data:   []byte{1, 1, 1, 1, 1},
 		}
 
-		_, err := converter.ToModels([]types.Log{badLog})
+		_, err := converter.ToModels(constants.JugABI(), []types.Log{badLog})
 		Expect(err).To(HaveOccurred())
 	})
 
 	It("converts a log to a model", func() {
-		models, err := converter.ToModels([]types.Log{test_data.EthJugFileBaseLog})
+		models, err := converter.ToModels(constants.JugABI(), []types.Log{test_data.EthJugFileBaseLog})
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(models).To(Equal([]shared.InsertionModel{test_data.JugFileBaseModel}))

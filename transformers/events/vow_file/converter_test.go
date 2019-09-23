@@ -21,6 +21,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 
 	"github.com/vulcanize/mcd_transformers/transformers/events/vow_file"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
@@ -34,12 +35,12 @@ var _ = Describe("Vow file converter", func() {
 			Data:   []byte{1, 1, 1, 1, 1},
 		}
 
-		_, err := converter.ToModels([]types.Log{badLog})
+		_, err := converter.ToModels(constants.VowABI(), []types.Log{badLog})
 		Expect(err).To(HaveOccurred())
 	})
 
 	It("converts a log to a model", func() {
-		models, err := converter.ToModels([]types.Log{test_data.EthVowFileLog})
+		models, err := converter.ToModels(constants.VowABI(), []types.Log{test_data.EthVowFileLog})
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(len(models)).To(Equal(1))

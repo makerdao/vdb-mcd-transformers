@@ -21,6 +21,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 
 	"github.com/vulcanize/mcd_transformers/transformers/events/cat_file/flip"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
@@ -39,7 +40,7 @@ var _ = Describe("Cat file flip converter", func() {
 			Data: []byte{1, 1, 1, 1, 1},
 		}
 
-		_, err := converter.ToModels([]types.Log{badLog})
+		_, err := converter.ToModels(constants.CatABI(), []types.Log{badLog})
 		Expect(err).To(HaveOccurred())
 	})
 
@@ -48,12 +49,12 @@ var _ = Describe("Cat file flip converter", func() {
 			Topics: []common.Hash{{}, {}, {}, {}},
 		}
 
-		_, err := converter.ToModels([]types.Log{badLog})
+		_, err := converter.ToModels(constants.CatABI(), []types.Log{badLog})
 		Expect(err).To(HaveOccurred())
 	})
 
 	It("converts a log to an model", func() {
-		models, err := converter.ToModels([]types.Log{test_data.EthCatFileFlipLog})
+		models, err := converter.ToModels(constants.CatABI(), []types.Log{test_data.EthCatFileFlipLog})
 		Expect(err).NotTo(HaveOccurred())
 		Expect(models).To(Equal([]shared.InsertionModel{test_data.CatFileFlipModel}))
 	})

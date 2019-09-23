@@ -20,6 +20,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 
 	"github.com/vulcanize/mcd_transformers/transformers/events/jug_drip"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
@@ -30,12 +31,12 @@ var _ = Describe("Jug drip converter", func() {
 	var converter = jug_drip.JugDripConverter{}
 	It("returns err if log is missing topics", func() {
 		badLog := types.Log{}
-		_, err := converter.ToModels([]types.Log{badLog})
+		_, err := converter.ToModels(constants.JugABI(), []types.Log{badLog})
 		Expect(err).To(HaveOccurred())
 	})
 
 	It("converts a log to an model", func() {
-		model, err := converter.ToModels([]types.Log{test_data.EthJugDripLog})
+		model, err := converter.ToModels(constants.JugABI(), []types.Log{test_data.EthJugDripLog})
 		Expect(err).NotTo(HaveOccurred())
 		Expect(model).To(Equal([]shared.InsertionModel{test_data.JugDripModel}))
 	})

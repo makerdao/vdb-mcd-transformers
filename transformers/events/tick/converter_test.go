@@ -21,6 +21,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 
 	"github.com/vulcanize/mcd_transformers/transformers/events/tick"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
@@ -32,7 +33,7 @@ var _ = Describe("TickConverter", func() {
 
 	Describe("ToModels", func() {
 		It("converts an eth log to a db model", func() {
-			models, err := converter.ToModels([]types.Log{test_data.TickLogNote})
+			models, err := converter.ToModels(constants.FlipABI(), []types.Log{test_data.TickLogNote})
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(models).To(Equal([]shared.InsertionModel{test_data.TickModel}))
@@ -41,7 +42,7 @@ var _ = Describe("TickConverter", func() {
 		It("returns an error if the expected amount of topics aren't in the log", func() {
 			invalidLog := test_data.TickLogNote
 			invalidLog.Topics = []common.Hash{}
-			_, err := converter.ToModels([]types.Log{invalidLog})
+			_, err := converter.ToModels(constants.FlipABI(), []types.Log{invalidLog})
 
 			Expect(err).To(MatchError("flip tick log does not contain expected topics"))
 		})

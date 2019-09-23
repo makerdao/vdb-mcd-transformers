@@ -77,20 +77,20 @@ var BiteEntity = bite.BiteEntity{
 }
 
 var BiteModel = shared.InsertionModel{
-	SchemaName:       "maker",
-	TableName:        "bite",
-	OrderedColumns:   []string {
+	SchemaName: "maker",
+	TableName:  "bite",
+	OrderedColumns: []string{
 		"header_id", "urn_id", "ink", "art", "tab", "flip", "bite_identifier", "tx_idx", "log_idx", "raw_log",
 	},
-	ColumnValues:     shared.ColumnValues{
-		"ink": biteInk.String(),
-		"art": biteArt.String(),
-		"tab": biteTab.String(),
-		"flip": "0x7d7bEe5fCfD8028cf7b00876C5b1421c800561A6",
+	ColumnValues: shared.ColumnValues{
+		"ink":             biteInk.String(),
+		"art":             biteArt.String(),
+		"tab":             biteTab.String(),
+		"flip":            "0x7d7bEe5fCfD8028cf7b00876C5b1421c800561A6",
 		"bite_identifier": biteID.String(),
-		"log_idx": EthBiteLog.Index,
-		"tx_idx": EthBiteLog.TxIndex,
-		"raw_log": biteRawJson,
+		"log_idx":         EthBiteLog.Index,
+		"tx_idx":          EthBiteLog.TxIndex,
+		"raw_log":         biteRawJson,
 	},
 	ForeignKeyValues: shared.ForeignKeyValues{
 		constants.IlkFK: "0x4554480000000000000000000000000000000000000000000000000000000000",

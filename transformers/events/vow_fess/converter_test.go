@@ -22,6 +22,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/vulcanize/mcd_transformers/transformers/events/vow_fess"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
@@ -36,7 +37,7 @@ var _ = Describe("Vow fess converter", func() {
 			Data: []byte{1, 1, 1, 1, 1},
 		}
 
-		_, err := converter.ToModels([]types.Log{badLog})
+		_, err := converter.ToModels(constants.VowABI(), []types.Log{badLog})
 		Expect(err).To(HaveOccurred())
 	})
 
@@ -45,12 +46,12 @@ var _ = Describe("Vow fess converter", func() {
 			Topics: []common.Hash{{}, {}, {}, {}},
 		}
 
-		_, err := converter.ToModels([]types.Log{badLog})
+		_, err := converter.ToModels(constants.VowABI(), []types.Log{badLog})
 		Expect(err).To(HaveOccurred())
 	})
 
 	It("converts a log to a model", func() {
-		models, err := converter.ToModels([]types.Log{test_data.EthVowFessLog})
+		models, err := converter.ToModels(constants.VowABI(), []types.Log{test_data.EthVowFessLog})
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(len(models)).To(Equal(1))

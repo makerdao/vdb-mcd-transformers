@@ -21,6 +21,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 
 	"github.com/vulcanize/mcd_transformers/transformers/events/yank"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
@@ -31,7 +32,7 @@ var _ = Describe("Yank Converter", func() {
 	var converter = yank.YankConverter{}
 
 	It("converts logs to models", func() {
-		models, err := converter.ToModels([]types.Log{test_data.EthYankLog})
+		models, err := converter.ToModels(constants.FlipABI(), []types.Log{test_data.EthYankLog})
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(models).To(Equal([]shared.InsertionModel{test_data.YankModel}))
@@ -41,7 +42,7 @@ var _ = Describe("Yank Converter", func() {
 		invalidLog := test_data.EthYankLog
 		invalidLog.Topics = []common.Hash{}
 
-		_, err := converter.ToModels([]types.Log{invalidLog})
+		_, err := converter.ToModels(constants.FlipABI(), []types.Log{invalidLog})
 
 		Expect(err).To(HaveOccurred())
 		Expect(err).To(MatchError("yank log does not contain expected topics"))

@@ -21,6 +21,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_suck"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
@@ -29,7 +30,7 @@ import (
 var _ = Describe("VatSuck converter", func() {
 	It("Converts log to a model", func() {
 		converter := vat_suck.VatSuckConverter{}
-		models, err := converter.ToModels([]types.Log{test_data.EthVatSuckLog})
+		models, err := converter.ToModels(constants.VatABI(), []types.Log{test_data.EthVatSuckLog})
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(len(models)).To(Equal(1))
@@ -45,7 +46,7 @@ var _ = Describe("VatSuck converter", func() {
 				common.HexToHash("0x"),
 			},
 		}
-		_, err := converter.ToModels([]types.Log{badLog})
+		_, err := converter.ToModels(constants.VatABI(), []types.Log{badLog})
 
 		Expect(err).To(HaveOccurred())
 	})

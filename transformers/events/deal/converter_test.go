@@ -21,6 +21,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 
 	"github.com/vulcanize/mcd_transformers/transformers/events/deal"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
@@ -30,7 +31,7 @@ import (
 var _ = Describe("Flip Deal Converter", func() {
 	var converter = deal.DealConverter{}
 	It("converts logs to models", func() {
-		models, err := converter.ToModels([]types.Log{test_data.DealLogNote})
+		models, err := converter.ToModels(constants.FlipABI(), []types.Log{test_data.DealLogNote})
 		Expect(err).NotTo(HaveOccurred())
 		Expect(models).To(Equal([]shared.InsertionModel{test_data.DealModel}))
 	})
@@ -39,7 +40,7 @@ var _ = Describe("Flip Deal Converter", func() {
 		invalidLog := test_data.DealLogNote
 		invalidLog.Topics = []common.Hash{}
 
-		_, err := converter.ToModels([]types.Log{invalidLog})
+		_, err := converter.ToModels(constants.FlipABI(), []types.Log{invalidLog})
 
 		Expect(err).To(HaveOccurred())
 		Expect(err).To(MatchError("deal log does not contain expected topics"))

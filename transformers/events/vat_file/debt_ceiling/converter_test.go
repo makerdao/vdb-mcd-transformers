@@ -21,6 +21,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_file/debt_ceiling"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
@@ -34,7 +35,7 @@ var _ = Describe("Vat file debt ceiling converter", func() {
 			Data: []byte{1, 1, 1, 1, 1},
 		}
 
-		_, err := converter.ToModels([]types.Log{badLog})
+		_, err := converter.ToModels(constants.VatABI(), []types.Log{badLog})
 		Expect(err).To(HaveOccurred())
 	})
 
@@ -43,12 +44,12 @@ var _ = Describe("Vat file debt ceiling converter", func() {
 			Topics: []common.Hash{{}, {}, {}, {}},
 		}
 
-		_, err := converter.ToModels([]types.Log{badLog})
+		_, err := converter.ToModels(constants.VatABI(), []types.Log{badLog})
 		Expect(err).To(HaveOccurred())
 	})
 
 	It("converts a log to an model", func() {
-		models, err := converter.ToModels([]types.Log{test_data.EthVatFileDebtCeilingLog})
+		models, err := converter.ToModels(constants.VatABI(), []types.Log{test_data.EthVatFileDebtCeilingLog})
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(len(models)).To(Equal(1))

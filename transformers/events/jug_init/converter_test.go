@@ -22,6 +22,7 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/vulcanize/mcd_transformers/transformers/events/jug_init"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
@@ -30,12 +31,12 @@ var _ = Describe("Jug init converter", func() {
 
 	It("returns err if log is missing topics", func() {
 		incompleteLog := types.Log{}
-		_, err := converter.ToModels([]types.Log{incompleteLog})
+		_, err := converter.ToModels(constants.JugABI(), []types.Log{incompleteLog})
 		Expect(err).To(HaveOccurred())
 	})
 
 	It("convert a log to an insertion model", func() {
-		models, err := converter.ToModels([]types.Log{test_data.EthJugInitLog})
+		models, err := converter.ToModels(constants.JugABI(), []types.Log{test_data.EthJugInitLog})
 		Expect(err).NotTo(HaveOccurred())
 		Expect(models).To(Equal([]shared.InsertionModel{test_data.JugInitModel}))
 	})

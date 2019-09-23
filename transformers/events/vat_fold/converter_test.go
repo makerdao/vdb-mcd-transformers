@@ -20,6 +20,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_fold"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
@@ -31,19 +32,19 @@ var _ = Describe("Vat fold converter", func() {
 	It("returns err if log missing topics", func() {
 		badLog := types.Log{}
 
-		_, err := converter.ToModels([]types.Log{badLog})
+		_, err := converter.ToModels(constants.VatABI(), []types.Log{badLog})
 		Expect(err).To(HaveOccurred())
 	})
 
 	It("converts a log with positive rate to an model", func() {
-		models, err := converter.ToModels([]types.Log{test_data.EthVatFoldLogWithPositiveRate})
+		models, err := converter.ToModels(constants.VatABI(), []types.Log{test_data.EthVatFoldLogWithPositiveRate})
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(models).To(Equal([]shared.InsertionModel{test_data.VatFoldModelWithPositiveRate}))
 	})
 
 	It("converts a log with negative rate to an model", func() {
-		models, err := converter.ToModels([]types.Log{test_data.EthVatFoldLogWithNegativeRate})
+		models, err := converter.ToModels(constants.VatABI(), []types.Log{test_data.EthVatFoldLogWithNegativeRate})
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(models).To(Equal([]shared.InsertionModel{test_data.VatFoldModelWithNegativeRate}))

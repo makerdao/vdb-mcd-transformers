@@ -21,6 +21,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 
 	"github.com/vulcanize/mcd_transformers/transformers/events/cat_file/chop_lump"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
@@ -36,7 +37,7 @@ var _ = Describe("Cat file chop lump converter", func() {
 
 	Context("chop events", func() {
 		It("converts a chop log to a model", func() {
-			models, err := converter.ToModels([]types.Log{test_data.EthCatFileChopLog})
+			models, err := converter.ToModels(constants.CatABI(), []types.Log{test_data.EthCatFileChopLog})
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(models).To(Equal([]shared.InsertionModel{test_data.CatFileChopModel}))
@@ -45,7 +46,7 @@ var _ = Describe("Cat file chop lump converter", func() {
 
 	Context("lump events", func() {
 		It("converts a lump log to a model", func() {
-			models, err := converter.ToModels([]types.Log{test_data.EthCatFileLumpLog})
+			models, err := converter.ToModels(constants.CatABI(), []types.Log{test_data.EthCatFileLumpLog})
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(models).To(Equal([]shared.InsertionModel{test_data.CatFileLumpModel}))
@@ -57,7 +58,7 @@ var _ = Describe("Cat file chop lump converter", func() {
 			Data: []byte{1, 1, 1, 1, 1},
 		}
 
-		_, err := converter.ToModels([]types.Log{badLog})
+		_, err := converter.ToModels(constants.CatABI(), []types.Log{badLog})
 		Expect(err).To(HaveOccurred())
 	})
 
@@ -66,7 +67,7 @@ var _ = Describe("Cat file chop lump converter", func() {
 			Topics: []common.Hash{{}, {}, {}, {}},
 		}
 
-		_, err := converter.ToModels([]types.Log{badLog})
+		_, err := converter.ToModels(constants.CatABI(), []types.Log{badLog})
 		Expect(err).To(HaveOccurred())
 	})
 })

@@ -23,6 +23,7 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_frob"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
@@ -34,7 +35,7 @@ var _ = Describe("Frob converter", func() {
 			Data: []byte{1, 1, 1, 1, 1},
 		}
 
-		_, err := converter.ToModels([]types.Log{badLog})
+		_, err := converter.ToModels(constants.VatABI(), []types.Log{badLog})
 		Expect(err).To(HaveOccurred())
 	})
 
@@ -43,12 +44,12 @@ var _ = Describe("Frob converter", func() {
 			Topics: []common.Hash{{}, {}, {}, {}},
 		}
 
-		_, err := converter.ToModels([]types.Log{badLog})
+		_, err := converter.ToModels(constants.VatABI(), []types.Log{badLog})
 		Expect(err).To(HaveOccurred())
 	})
 
 	It("converts a log with positive dart to a model", func() {
-		models, err := converter.ToModels([]types.Log{test_data.EthVatFrobLogWithPositiveDart})
+		models, err := converter.ToModels(constants.VatABI(), []types.Log{test_data.EthVatFrobLogWithPositiveDart})
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(len(models)).To(Equal(1))
@@ -56,7 +57,7 @@ var _ = Describe("Frob converter", func() {
 	})
 
 	It("converts a log with negative dink to a model", func() {
-		models, err := converter.ToModels([]types.Log{test_data.EthVatFrobLogWithNegativeDink})
+		models, err := converter.ToModels(constants.VatABI(), []types.Log{test_data.EthVatFrobLogWithNegativeDink})
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(len(models)).To(Equal(1))
