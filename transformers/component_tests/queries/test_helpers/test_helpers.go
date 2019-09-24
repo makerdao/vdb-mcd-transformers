@@ -640,9 +640,9 @@ func CreateFlipKick(contractAddress string, bidId int, headerId int64, usr strin
 
 func CreateFlapKick(contractAddress string, bidId int, headerId int64, repo flap_kick.FlapKickRepository) error {
 	flapKickModel := test_data.FlapKickModel
-	flapKickModel.ContractAddress = contractAddress
-	flapKickModel.BidId = strconv.Itoa(bidId)
-	return repo.Create(headerId, []interface{}{flapKickModel})
+	flapKickModel.ForeignKeyValues[constants.AddressFK] = contractAddress
+	flapKickModel.ColumnValues["bid_id"] = strconv.Itoa(bidId)
+	return repo.Create(headerId, []shared.InsertionModel{flapKickModel})
 }
 
 func CreateFlopKick(contractAddress string, bidId int, headerId int64, repo flop_kick.FlopKickRepository) error {

@@ -1,6 +1,9 @@
 package queries
 
 import (
+	"fmt"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"math/rand"
 	"strconv"
 
@@ -44,7 +47,7 @@ var _ = Describe("Bites query", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			biteOne := generateBite(test_helpers.FakeIlk.Hex, fakeUrn)
-			err = biteRepo.Create(headerOneId, []interface{}{biteOne})
+			err = biteRepo.Create(headerOneId, []shared.InsertionModel{biteOne})
 			Expect(err).NotTo(HaveOccurred())
 
 			var actualBites []test_helpers.BiteEvent
@@ -53,7 +56,13 @@ var _ = Describe("Bites query", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(actualBites).To(ConsistOf(
-				test_helpers.BiteEvent{IlkIdentifier: test_helpers.FakeIlk.Identifier, UrnIdentifier: fakeUrn, Ink: biteOne.Ink, Art: biteOne.Art, Tab: biteOne.Tab},
+				test_helpers.BiteEvent{
+					IlkIdentifier: test_helpers.FakeIlk.Identifier,
+					UrnIdentifier: fakeUrn,
+					Ink:           fmt.Sprint(biteOne.ColumnValues["ink"].(uint)),
+					Art:           fmt.Sprint(biteOne.ColumnValues["art"].(uint)),
+					Tab:           fmt.Sprint(biteOne.ColumnValues["tab"].(uint)),
+				},
 			))
 		})
 
@@ -63,7 +72,7 @@ var _ = Describe("Bites query", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			biteBlockOne := generateBite(test_helpers.FakeIlk.Hex, fakeUrn)
-			err = biteRepo.Create(headerOneId, []interface{}{biteBlockOne})
+			err = biteRepo.Create(headerOneId, []shared.InsertionModel{biteBlockOne})
 			Expect(err).NotTo(HaveOccurred())
 
 			// New block
@@ -73,7 +82,7 @@ var _ = Describe("Bites query", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			biteBlockTwo := generateBite(test_helpers.FakeIlk.Hex, fakeUrn)
-			err = biteRepo.Create(headerTwoId, []interface{}{biteBlockTwo})
+			err = biteRepo.Create(headerTwoId, []shared.InsertionModel{biteBlockTwo})
 			Expect(err).NotTo(HaveOccurred())
 
 			var actualBites []test_helpers.BiteEvent
@@ -81,8 +90,20 @@ var _ = Describe("Bites query", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(actualBites).To(ConsistOf(
-				test_helpers.BiteEvent{IlkIdentifier: test_helpers.FakeIlk.Identifier, UrnIdentifier: fakeUrn, Ink: biteBlockTwo.Ink, Art: biteBlockTwo.Art, Tab: biteBlockTwo.Tab},
-				test_helpers.BiteEvent{IlkIdentifier: test_helpers.FakeIlk.Identifier, UrnIdentifier: fakeUrn, Ink: biteBlockOne.Ink, Art: biteBlockOne.Art, Tab: biteBlockOne.Tab},
+				test_helpers.BiteEvent{
+					IlkIdentifier: test_helpers.FakeIlk.Identifier,
+					UrnIdentifier: fakeUrn,
+					Ink:           fmt.Sprint(biteBlockTwo.ColumnValues["ink"].(uint)),
+					Art:           fmt.Sprint(biteBlockTwo.ColumnValues["art"].(uint)),
+					Tab:           fmt.Sprint(biteBlockTwo.ColumnValues["tab"].(uint)),
+				},
+				test_helpers.BiteEvent{
+					IlkIdentifier: test_helpers.FakeIlk.Identifier,
+					UrnIdentifier: fakeUrn,
+					Ink:           fmt.Sprint(biteBlockOne.ColumnValues["ink"].(uint)),
+					Art:           fmt.Sprint(biteBlockOne.ColumnValues["art"].(uint)),
+					Tab:           fmt.Sprint(biteBlockOne.ColumnValues["tab"].(uint)),
+				},
 			))
 		})
 
@@ -93,9 +114,9 @@ var _ = Describe("Bites query", func() {
 
 			bite := generateBite(test_helpers.FakeIlk.Hex, fakeUrn)
 			irrelevantBite := generateBite(test_helpers.AnotherFakeIlk.Hex, fakeUrn)
-			irrelevantBite.TransactionIndex = bite.TransactionIndex + 1
+			irrelevantBite.ColumnValues["tx_idx"] = bite.ColumnValues["tx_idx"].(uint) + 1
 
-			err = biteRepo.Create(headerOneId, []interface{}{bite, irrelevantBite})
+			err = biteRepo.Create(headerOneId, []shared.InsertionModel{bite, irrelevantBite})
 			Expect(err).NotTo(HaveOccurred())
 
 			var actualBites []test_helpers.BiteEvent
@@ -103,7 +124,13 @@ var _ = Describe("Bites query", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(actualBites).To(ConsistOf(
-				test_helpers.BiteEvent{IlkIdentifier: test_helpers.FakeIlk.Identifier, UrnIdentifier: fakeUrn, Ink: bite.Ink, Art: bite.Art, Tab: bite.Tab},
+				test_helpers.BiteEvent{
+					IlkIdentifier: test_helpers.FakeIlk.Identifier,
+					UrnIdentifier: fakeUrn,
+					Ink:           fmt.Sprint(bite.ColumnValues["ink"].(uint)),
+					Art:           fmt.Sprint(bite.ColumnValues["art"].(uint)),
+					Tab:           fmt.Sprint(bite.ColumnValues["tab"].(uint)),
+				},
 			))
 		})
 
@@ -113,7 +140,7 @@ var _ = Describe("Bites query", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			biteBlockOne := generateBite(test_helpers.FakeIlk.Hex, fakeUrn)
-			err = biteRepo.Create(headerOneId, []interface{}{biteBlockOne})
+			err = biteRepo.Create(headerOneId, []shared.InsertionModel{biteBlockOne})
 			Expect(err).NotTo(HaveOccurred())
 
 			// New block
@@ -123,7 +150,7 @@ var _ = Describe("Bites query", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			biteBlockTwo := generateBite(test_helpers.FakeIlk.Hex, fakeUrn)
-			err = biteRepo.Create(headerTwoId, []interface{}{biteBlockTwo})
+			err = biteRepo.Create(headerTwoId, []shared.InsertionModel{biteBlockTwo})
 			Expect(err).NotTo(HaveOccurred())
 
 			maxResults := 1
@@ -133,7 +160,13 @@ var _ = Describe("Bites query", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(actualBites).To(ConsistOf(
-				test_helpers.BiteEvent{IlkIdentifier: test_helpers.FakeIlk.Identifier, UrnIdentifier: fakeUrn, Ink: biteBlockTwo.Ink, Art: biteBlockTwo.Art, Tab: biteBlockTwo.Tab},
+				test_helpers.BiteEvent{
+					IlkIdentifier: test_helpers.FakeIlk.Identifier,
+					UrnIdentifier: fakeUrn,
+					Ink:           fmt.Sprint(biteBlockTwo.ColumnValues["ink"].(uint)),
+					Art:           fmt.Sprint(biteBlockTwo.ColumnValues["art"].(uint)),
+					Tab:           fmt.Sprint(biteBlockTwo.ColumnValues["tab"].(uint)),
+				},
 			))
 		})
 
@@ -152,7 +185,7 @@ var _ = Describe("Bites query", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			biteOne := generateBite(test_helpers.FakeIlk.Hex, fakeUrn)
-			err = biteRepo.Create(headerOneId, []interface{}{biteOne})
+			err = biteRepo.Create(headerOneId, []shared.InsertionModel{biteOne})
 			Expect(err).NotTo(HaveOccurred())
 
 			var actualBites []test_helpers.BiteEvent
@@ -160,7 +193,13 @@ var _ = Describe("Bites query", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(actualBites).To(ConsistOf(
-				test_helpers.BiteEvent{IlkIdentifier: test_helpers.FakeIlk.Identifier, UrnIdentifier: fakeUrn, Ink: biteOne.Ink, Art: biteOne.Art, Tab: biteOne.Tab},
+				test_helpers.BiteEvent{
+					IlkIdentifier: test_helpers.FakeIlk.Identifier,
+					UrnIdentifier: fakeUrn,
+					Ink:           fmt.Sprint(biteOne.ColumnValues["ink"].(uint)),
+					Art:           fmt.Sprint(biteOne.ColumnValues["art"].(uint)),
+					Tab:           fmt.Sprint(biteOne.ColumnValues["tab"].(uint)),
+				},
 			))
 		})
 
@@ -170,7 +209,7 @@ var _ = Describe("Bites query", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			biteBlockOne := generateBite(test_helpers.FakeIlk.Hex, fakeUrn)
-			err = biteRepo.Create(headerOneId, []interface{}{biteBlockOne})
+			err = biteRepo.Create(headerOneId, []shared.InsertionModel{biteBlockOne})
 			Expect(err).NotTo(HaveOccurred())
 
 			// New block
@@ -180,7 +219,7 @@ var _ = Describe("Bites query", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			biteBlockTwo := generateBite(test_helpers.FakeIlk.Hex, fakeUrn)
-			err = biteRepo.Create(headerTwoId, []interface{}{biteBlockTwo})
+			err = biteRepo.Create(headerTwoId, []shared.InsertionModel{biteBlockTwo})
 			Expect(err).NotTo(HaveOccurred())
 
 			var actualBites []test_helpers.BiteEvent
@@ -188,8 +227,20 @@ var _ = Describe("Bites query", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(actualBites).To(ConsistOf(
-				test_helpers.BiteEvent{IlkIdentifier: test_helpers.FakeIlk.Identifier, UrnIdentifier: fakeUrn, Ink: biteBlockTwo.Ink, Art: biteBlockTwo.Art, Tab: biteBlockTwo.Tab},
-				test_helpers.BiteEvent{IlkIdentifier: test_helpers.FakeIlk.Identifier, UrnIdentifier: fakeUrn, Ink: biteBlockOne.Ink, Art: biteBlockOne.Art, Tab: biteBlockOne.Tab},
+				test_helpers.BiteEvent{
+					IlkIdentifier: test_helpers.FakeIlk.Identifier,
+					UrnIdentifier: fakeUrn,
+					Ink:           fmt.Sprint(biteBlockTwo.ColumnValues["ink"].(uint)),
+					Art:           fmt.Sprint(biteBlockTwo.ColumnValues["art"].(uint)),
+					Tab:           fmt.Sprint(biteBlockTwo.ColumnValues["tab"].(uint)),
+				},
+				test_helpers.BiteEvent{
+					IlkIdentifier: test_helpers.FakeIlk.Identifier,
+					UrnIdentifier: fakeUrn,
+					Ink:           fmt.Sprint(biteBlockOne.ColumnValues["ink"].(uint)),
+					Art:           fmt.Sprint(biteBlockOne.ColumnValues["art"].(uint)),
+					Tab:           fmt.Sprint(biteBlockOne.ColumnValues["tab"].(uint)),
+				},
 			))
 		})
 
@@ -199,7 +250,7 @@ var _ = Describe("Bites query", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			biteBlockOne := generateBite(test_helpers.FakeIlk.Hex, fakeUrn)
-			err = biteRepo.Create(headerOneId, []interface{}{biteBlockOne})
+			err = biteRepo.Create(headerOneId, []shared.InsertionModel{biteBlockOne})
 			Expect(err).NotTo(HaveOccurred())
 
 			// New block
@@ -209,7 +260,7 @@ var _ = Describe("Bites query", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			biteBlockTwo := generateBite(test_helpers.FakeIlk.Hex, fakeUrn)
-			err = biteRepo.Create(headerTwoId, []interface{}{biteBlockTwo})
+			err = biteRepo.Create(headerTwoId, []shared.InsertionModel{biteBlockTwo})
 			Expect(err).NotTo(HaveOccurred())
 
 			maxResults := 1
@@ -219,7 +270,13 @@ var _ = Describe("Bites query", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(actualBites).To(ConsistOf(
-				test_helpers.BiteEvent{IlkIdentifier: test_helpers.FakeIlk.Identifier, UrnIdentifier: fakeUrn, Ink: biteBlockTwo.Ink, Art: biteBlockTwo.Art, Tab: biteBlockTwo.Tab},
+				test_helpers.BiteEvent{
+					IlkIdentifier: test_helpers.FakeIlk.Identifier,
+					UrnIdentifier: fakeUrn,
+					Ink:           fmt.Sprint(biteBlockTwo.ColumnValues["ink"].(uint)),
+					Art:           fmt.Sprint(biteBlockTwo.ColumnValues["art"].(uint)),
+					Tab:           fmt.Sprint(biteBlockTwo.ColumnValues["tab"].(uint)),
+				},
 			))
 		})
 
@@ -230,9 +287,9 @@ var _ = Describe("Bites query", func() {
 
 			bite := generateBite(test_helpers.FakeIlk.Hex, fakeUrn)
 			irrelevantBite := generateBite(test_helpers.FakeIlk.Hex, "irrelevantUrn")
-			irrelevantBite.TransactionIndex = bite.TransactionIndex + 1
+			irrelevantBite.ColumnValues["tx_idx"] = bite.ColumnValues["tx_idx"].(uint) + 1
 
-			err = biteRepo.Create(headerOneId, []interface{}{bite, irrelevantBite})
+			err = biteRepo.Create(headerOneId, []shared.InsertionModel{bite, irrelevantBite})
 			Expect(err).NotTo(HaveOccurred())
 
 			var actualBites []test_helpers.BiteEvent
@@ -240,19 +297,25 @@ var _ = Describe("Bites query", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(actualBites).To(ConsistOf(
-				test_helpers.BiteEvent{IlkIdentifier: test_helpers.FakeIlk.Identifier, UrnIdentifier: fakeUrn, Ink: bite.Ink, Art: bite.Art, Tab: bite.Tab},
+				test_helpers.BiteEvent{
+					IlkIdentifier: test_helpers.FakeIlk.Identifier,
+					UrnIdentifier: fakeUrn,
+					Ink:           fmt.Sprint(bite.ColumnValues["ink"].(uint)),
+					Art:           fmt.Sprint(bite.ColumnValues["art"].(uint)),
+					Tab:           fmt.Sprint(bite.ColumnValues["tab"].(uint)),
+				},
 			))
 		})
 	})
 })
 
-func generateBite(ilk, urn string) bite.BiteModel {
+func generateBite(ilk, urn string) shared.InsertionModel {
 	biteEvent := test_data.BiteModel
-	biteEvent.Ilk = ilk
-	biteEvent.Urn = urn
-	biteEvent.Ink = strconv.Itoa(rand.Int())
-	biteEvent.Art = strconv.Itoa(rand.Int())
-	biteEvent.Tab = strconv.Itoa(rand.Int())
-	biteEvent.Id = strconv.Itoa(rand.Int())
+	biteEvent.ForeignKeyValues[constants.IlkFK] = ilk
+	biteEvent.ForeignKeyValues[constants.UrnFK] = urn
+	biteEvent.ColumnValues["ink"] = strconv.Itoa(rand.Int())
+	biteEvent.ColumnValues["art"] = strconv.Itoa(rand.Int())
+	biteEvent.ColumnValues["tab"] = strconv.Itoa(rand.Int())
+	biteEvent.ColumnValues["bite_identifier"] = strconv.Itoa(rand.Int())
 	return biteEvent
 }
