@@ -17,10 +17,7 @@
 package flip_kick
 
 import (
-	"fmt"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
-
-	log "github.com/sirupsen/logrus"
 
 	repo "github.com/vulcanize/vulcanizedb/libraries/shared/repository"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
@@ -36,50 +33,8 @@ type FlipKickRepository struct {
 	db *postgres.DB
 }
 
-func (repository FlipKickRepository) Create(headerID int64, models []interface{}) error {
-	tx, dBaseErr := repository.db.Beginx()
-	if dBaseErr != nil {
-		return dBaseErr
-	}
-	for _, model := range models {
-		flipKickModel, ok := model.(FlipKickModel)
-		if !ok {
-			rollbackErr := tx.Rollback()
-			if rollbackErr != nil {
-				log.Error("failed to rollback ", rollbackErr)
-			}
-			return fmt.Errorf("model of type %T, not %T", model, FlipKickModel{})
-		}
-
-		addressId, addressErr := shared.GetOrCreateAddressInTransaction(flipKickModel.ContractAddress, tx)
-		if addressErr != nil {
-			rollbackErr := tx.Rollback()
-			if rollbackErr != nil {
-				shared.FormatRollbackError("flip address", addressErr.Error())
-			}
-			return addressErr
-		}
-
-		_, execErr := tx.Exec(InsertFlipKickQuery, headerID, flipKickModel.BidId, flipKickModel.Lot, flipKickModel.Bid,
-			flipKickModel.Tab, flipKickModel.Usr, flipKickModel.Gal, addressId,
-			flipKickModel.TransactionIndex, flipKickModel.LogIndex, flipKickModel.Raw)
-		if execErr != nil {
-			rollbackErr := tx.Rollback()
-			if rollbackErr != nil {
-				log.Error("failed to rollback ", rollbackErr)
-			}
-			return execErr
-		}
-	}
-	checkHeaderErr := repo.MarkHeaderCheckedInTransaction(headerID, tx, constants.FlipKickLabel)
-	if checkHeaderErr != nil {
-		rollbackErr := tx.Rollback()
-		if rollbackErr != nil {
-			log.Error("failed to rollback ", rollbackErr)
-		}
-		return checkHeaderErr
-	}
-	return tx.Commit()
+func (repository FlipKickRepository) Create(headerID int64, models []shared.InsertionModel) error {
+	return shared.Create(headerID, models, repository.db)
 }
 
 func (repository FlipKickRepository) MarkHeaderChecked(headerId int64) error {

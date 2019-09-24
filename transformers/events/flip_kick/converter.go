@@ -20,6 +20,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -30,8 +31,8 @@ import (
 
 type FlipKickConverter struct{}
 
-func (FlipKickConverter) ToEntities(contractAbi string, ethLogs []types.Log) ([]interface{}, error) {
-	var entities []interface{}
+func (FlipKickConverter) ToEntities(contractAbi string, ethLogs []types.Log) ([]FlipKickEntity, error) {
+	var entities []FlipKickEntity
 	for _, ethLog := range ethLogs {
 		entity := &FlipKickEntity{}
 		address := ethLog.Address
@@ -56,41 +57,44 @@ func (FlipKickConverter) ToEntities(contractAbi string, ethLogs []types.Log) ([]
 	return entities, nil
 }
 
-func (FlipKickConverter) ToModels(entities []interface{}) ([]interface{}, error) {
-	var models []interface{}
-	for _, entity := range entities {
-		flipKickEntity, ok := entity.(FlipKickEntity)
-		if !ok {
-			return nil, fmt.Errorf("entity of type %T, not %T", entity, FlipKickEntity{})
-		}
+func (c FlipKickConverter) ToModels(abi string, logs []types.Log) ([]shared.InsertionModel, error) {
+	entities, entityErr := c.ToEntities(abi, logs)
+	if entityErr != nil {
+		return nil, fmt.Errorf("FlipKickConverter couldn't convert logs to entities: %v", entityErr)
+	}
+	var models []shared.InsertionModel
+	for _, flipKickEntity := range entities {
 		if flipKickEntity.Id == nil {
 			return nil, errors.New("FlipKick log ID cannot be nil.")
 		}
 
-		id := flipKickEntity.Id.String()
-		lot := shared.BigIntToString(flipKickEntity.Lot)
-		bid := shared.BigIntToString(flipKickEntity.Bid)
-		tab := shared.BigIntToString(flipKickEntity.Tab)
-		usr := flipKickEntity.Usr.String()
-		gal := flipKickEntity.Gal.String()
-		contractAddress := flipKickEntity.ContractAddress.String()
 		rawLog, err := json.Marshal(flipKickEntity.Raw)
 		if err != nil {
 			return nil, err
 		}
 
-		model := FlipKickModel{
-			BidId:            id,
-			Lot:              lot,
-			Bid:              bid,
-			Tab:              tab,
-			Usr:              usr,
-			Gal:              gal,
-			ContractAddress:  contractAddress,
-			TransactionIndex: flipKickEntity.TransactionIndex,
-			LogIndex:         flipKickEntity.LogIndex,
-			Raw:              rawLog,
+		model := shared.InsertionModel{
+			SchemaName:       "maker",
+			TableName:        "flip_kick",
+			OrderedColumns:   []string{
+				"header_id", "bid_id", "lot", "bid", "tab", "usr", "gal", "address_id", "tx_idx", "log_idx", "raw_log",
+			},
+			ColumnValues:     shared.ColumnValues{
+				"bid_id": flipKickEntity.Id.String(),
+				"lot": shared.BigIntToString(flipKickEntity.Lot),
+				"bid": shared.BigIntToString(flipKickEntity.Bid),
+				"tab": shared.BigIntToString(flipKickEntity.Tab),
+				"usr": flipKickEntity.Usr.String(),
+				"gal": flipKickEntity.Gal.String(),
+				"tx_idx": flipKickEntity.TransactionIndex,
+				"log_idx": flipKickEntity.LogIndex,
+				"raw_log": rawLog,
+			},
+			ForeignKeyValues: shared.ForeignKeyValues{
+				constants.AddressFK: flipKickEntity.ContractAddress.String(),
+			},
 		}
+
 		models = append(models, model)
 	}
 	return models, nil

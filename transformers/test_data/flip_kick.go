@@ -18,12 +18,12 @@ package test_data
 
 import (
 	"encoding/json"
-	"math/big"
-
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
+	"math/big"
 
 	"github.com/vulcanize/mcd_transformers/transformers/events/flip_kick"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
@@ -75,17 +75,26 @@ var FlipKickEntity = flip_kick.FlipKickEntity{
 	Raw:              EthFlipKickLog,
 }
 
-var FlipKickModel = flip_kick.FlipKickModel{
-	BidId:            flipID.String(),
-	Lot:              lot.String(),
-	Bid:              bid.String(),
-	Tab:              tab.String(),
-	Usr:              FakeUrn,
-	Gal:              gal,
-	ContractAddress:  contractAddress,
-	TransactionIndex: EthFlipKickLog.TxIndex,
-	LogIndex:         EthFlipKickLog.Index,
-	Raw:              rawLog,
+var FlipKickModel = shared.InsertionModel{
+	SchemaName:       "maker",
+	TableName:        "flip_kick",
+	OrderedColumns:   []string{
+		"header_id", "bid_id", "lot", "bid", "tab", "usr", "gal", "address_id", "tx_idx", "log_idx", "raw_log",
+	},
+	ColumnValues:     shared.ColumnValues{
+		"bid_id": flipID.String(),
+		"lot": lot.String(),
+		"bid": bid.String(),
+		"tab": tab.String(),
+		"usr": FakeUrn,
+		"gal": gal,
+		"tx_idx": EthFlipKickLog.TxIndex,
+		"log_idx": EthFlipKickLog.Index,
+		"raw_log": rawLog,
+	},
+	ForeignKeyValues: shared.ForeignKeyValues{
+		constants.AddressFK: contractAddress,
+	},
 }
 
 type FlipKickDBRow struct {

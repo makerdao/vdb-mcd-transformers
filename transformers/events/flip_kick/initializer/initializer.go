@@ -19,14 +19,13 @@ package initializer
 import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 
 	"github.com/vulcanize/mcd_transformers/transformers/events/flip_kick"
 )
 
-var EventTransformerInitializer transformer.EventTransformerInitializer = event.Transformer{
+var EventTransformerInitializer transformer.EventTransformerInitializer = shared.LogNoteTransformer{
 	Config:     shared.GetEventTransformerConfig(constants.FlipKickLabel, constants.FlipKickSignature()),
 	Converter:  &flip_kick.FlipKickConverter{},
 	Repository: &flip_kick.FlipKickRepository{},
-}.NewTransformer
+}.NewLogNoteTransformer
