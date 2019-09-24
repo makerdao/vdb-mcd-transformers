@@ -24,7 +24,7 @@ require (
 	github.com/sirupsen/logrus v1.2.0
 	github.com/spf13/afero v1.2.1 // indirect
 	github.com/spf13/viper v1.3.2
-	github.com/vulcanize/vulcanizedb v0.0.7-0.20190920153816-3897b288af3c
+	github.com/vulcanize/vulcanizedb v0.0.7
 	golang.org/x/crypto v0.0.0-20190605123033-f99c8df09eb5
 	google.golang.org/appengine v1.6.2 // indirect
 	gopkg.in/natefinch/npipe.v2 v2.0.0-20160621034901-c1b8fa8bdcce // indirect
