@@ -18,6 +18,7 @@ package test_data
 
 import (
 	"encoding/json"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"math/big"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -51,12 +52,21 @@ var FlapKickEntity = flap_kick.FlapKickEntity{
 }
 
 var rawFlapKickLog, _ = json.Marshal(EthFlapKickLog)
-var FlapKickModel = flap_kick.FlapKickModel{
-	BidId:            FlapKickEntity.Id.String(),
-	Lot:              FlapKickEntity.Lot.String(),
-	Bid:              FlapKickEntity.Bid.String(),
-	ContractAddress:  EthFlapKickLog.Address.Hex(),
-	LogIndex:         EthFlapKickLog.Index,
-	TransactionIndex: EthFlapKickLog.TxIndex,
-	Raw:              rawFlapKickLog,
+var FlapKickModel = shared.InsertionModel{
+	SchemaName: "maker",
+	TableName:  "flap_kick",
+	OrderedColumns: []string{
+		"header_id", "bid_id", "lot", "bid", "address_id", "tx_idx", "log_idx", "raw_log",
+	},
+	ColumnValues: shared.ColumnValues{
+		"bid_id":  FlapKickEntity.Id.String(),
+		"lot":     FlapKickEntity.Lot.String(),
+		"bid":     FlapKickEntity.Bid.String(),
+		"log_idx": EthFlapKickLog.Index,
+		"tx_idx":  EthFlapKickLog.TxIndex,
+		"raw_log": rawFlapKickLog,
+	},
+	ForeignKeyValues: shared.ForeignKeyValues{
+		constants.AddressFK: EthFlapKickLog.Address.Hex(),
+	},
 }
