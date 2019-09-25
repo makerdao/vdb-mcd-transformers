@@ -32,6 +32,7 @@ var _ = Describe("Flop storage mappings", func() {
 			Expect(mappings.Lookup(flop.VatKey)).To(Equal(flop.VatMetadata))
 			Expect(mappings.Lookup(flop.GemKey)).To(Equal(flop.GemMetadata))
 			Expect(mappings.Lookup(flop.BegKey)).To(Equal(flop.BegMetadata))
+			Expect(mappings.Lookup(flop.PadKey)).To(Equal(flop.PadMetadata))
 			Expect(mappings.Lookup(flop.TtlAndTauKey)).To(Equal(flop.TtlAndTauMetadata))
 			Expect(mappings.Lookup(flop.KicksKey)).To(Equal(flop.KicksMetadata))
 			Expect(mappings.Lookup(flop.LiveKey)).To(Equal(flop.LiveMetadata))

@@ -5,6 +5,7 @@ var (
 	Ilk    = "ilk"
 	Gem    = "gem"
 	Beg    = "beg"
+	Pad    = "pad"
 	Ttl    = "ttl"
 	Tau    = "tau"
 	Kicks  = "kicks"

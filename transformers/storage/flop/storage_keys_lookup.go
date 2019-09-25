@@ -23,15 +23,18 @@ var (
 	BegKey      = common.HexToHash(vdbStorage.IndexFour)
 	BegMetadata = utils.GetStorageValueMetadata(storage.Beg, nil, utils.Uint256)
 
-	TtlAndTauKey      = common.HexToHash(vdbStorage.IndexFive)
+	PadKey      = common.HexToHash(vdbStorage.IndexFive)
+	PadMetadata = utils.GetStorageValueMetadata(storage.Pad, nil, utils.Uint256)
+
+	TtlAndTauKey      = common.HexToHash(vdbStorage.IndexSix)
 	ttlAndTauTypes    = map[int]utils.ValueType{0: utils.Uint48, 1: utils.Uint48}
 	ttlAndTauNames    = map[int]string{0: storage.Ttl, 1: storage.Tau}
 	TtlAndTauMetadata = utils.GetStorageValueMetadataForPackedSlot(storage.Packed, nil, utils.PackedSlot, ttlAndTauNames, ttlAndTauTypes)
 
-	KicksKey      = common.HexToHash(vdbStorage.IndexSix)
+	KicksKey      = common.HexToHash(vdbStorage.IndexSeven)
 	KicksMetadata = utils.GetStorageValueMetadata(storage.Kicks, nil, utils.Uint256)
 
-	LiveKey      = common.HexToHash(vdbStorage.IndexSeven)
+	LiveKey      = common.HexToHash(vdbStorage.IndexEight)
 	LiveMetadata = utils.GetStorageValueMetadata(storage.Live, nil, utils.Uint256)
 )
 
@@ -75,6 +78,7 @@ func loadStaticMappings() map[common.Hash]utils.StorageValueMetadata {
 	mappings[VatKey] = VatMetadata
 	mappings[GemKey] = GemMetadata
 	mappings[BegKey] = BegMetadata
+	mappings[PadKey] = PadMetadata
 	mappings[TtlAndTauKey] = TtlAndTauMetadata
 	mappings[KicksKey] = KicksMetadata
 	mappings[LiveKey] = LiveMetadata

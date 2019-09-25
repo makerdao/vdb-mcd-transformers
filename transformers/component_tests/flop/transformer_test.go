@@ -94,13 +94,14 @@ var _ = Describe("Executing the flop transformer", func() {
 	})
 
 	It("reads in a ttl storage diff and persists it", func() {
+		//TODO: update this test to use a real storage diff
 		blockNumber := 11579860
 		blockHash := common.HexToHash("3d8fd744457d476c3a1a9e4cbbaa0d951e0280416988fe87528a0aaac50186a8")
 		diff := utils.StorageDiff{
 			HashedAddress: transformer.HashedAddress,
 			BlockHash:     blockHash,
 			BlockHeight:   blockNumber,
-			StorageKey:    common.HexToHash("0000000000000000000000000000000000000000000000000000000000000005"),
+			StorageKey:    common.HexToHash("0000000000000000000000000000000000000000000000000000000000000006"),
 			StorageValue:  common.HexToHash("000000000000000000000000000000000000000000000002a300000000002a30"),
 		}
 		err := transformer.Execute(diff)
@@ -113,13 +114,14 @@ var _ = Describe("Executing the flop transformer", func() {
 	})
 
 	It("reads in a tau storage diff and persists it", func() {
+		//TODO: update this test to use a real storage diff
 		blockNumber := 11579860
 		blockHash := common.HexToHash("3d8fd744457d476c3a1a9e4cbbaa0d951e0280416988fe87528a0aaac50186a8")
 		diff := utils.StorageDiff{
 			HashedAddress: transformer.HashedAddress,
 			BlockHash:     blockHash,
 			BlockHeight:   blockNumber,
-			StorageKey:    common.HexToHash("0000000000000000000000000000000000000000000000000000000000000005"),
+			StorageKey:    common.HexToHash("0000000000000000000000000000000000000000000000000000000000000006"),
 			StorageValue:  common.HexToHash("000000000000000000000000000000000000000000000002a300000000002a30"),
 		}
 		err := transformer.Execute(diff)
@@ -136,13 +138,14 @@ var _ = Describe("Executing the flop transformer", func() {
 	})
 
 	It("reads in a live storage diff and persists it", func() {
+		//TODO: update this to use a real storage diff row
 		blockNumber := 11579860
 		blockHash := common.HexToHash("3d8fd744457d476c3a1a9e4cbbaa0d951e0280416988fe87528a0aaac50186a8")
 		diff := utils.StorageDiff{
 			HashedAddress: transformer.HashedAddress,
 			BlockHash:     blockHash,
 			BlockHeight:   blockNumber,
-			StorageKey:    common.HexToHash("0000000000000000000000000000000000000000000000000000000000000007"),
+			StorageKey:    common.HexToHash("0000000000000000000000000000000000000000000000000000000000000008"),
 			StorageValue:  common.HexToHash("0000000000000000000000000000000000000000000000000000000000000001"),
 		}
 		err := transformer.Execute(diff)
