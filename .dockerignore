@@ -13,3 +13,4 @@ test_config
 .travis.yml
 vulcanizedb.log
 Dockerfile
+*.tar

@@ -17,14 +17,17 @@
 package flip_kick_test
 
 import (
+	"github.com/vulcanize/vulcanizedb/pkg/core"
+	"strings"
+
 	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+
 	"github.com/vulcanize/mcd_transformers/transformers/events/flip_kick"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
-	"strings"
 )
 
 var _ = Describe("FlipKick Converter", func() {
@@ -32,7 +35,7 @@ var _ = Describe("FlipKick Converter", func() {
 
 	Describe("ToEntity", func() {
 		It("converts an Eth Log to a FlipKickEntity", func() {
-			entities, err := converter.ToEntities(constants.FlipABI(), []types.Log{test_data.EthFlipKickLog})
+			entities, err := converter.ToEntities(constants.FlipABI(), []core.HeaderSyncLog{test_data.FlipKickHeaderSyncLog})
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(entities)).To(Equal(1))
@@ -43,7 +46,7 @@ var _ = Describe("FlipKick Converter", func() {
 
 	Describe("ToModel", func() {
 		It("converts a log to a model", func() {
-			models, err := converter.ToModels(constants.FlipABI(), []types.Log{test_data.EthFlipKickLog})
+			models, err := converter.ToModels(constants.FlipABI(), []core.HeaderSyncLog{test_data.FlipKickHeaderSyncLog})
 
 			Expect(err).NotTo(HaveOccurred())
 
@@ -53,7 +56,7 @@ var _ = Describe("FlipKick Converter", func() {
 		})
 
 		It("returns an error if converting log to entity fails", func() {
-			_, err := converter.ToEntities("error abi", []types.Log{test_data.EthFlipKickLog})
+			_, err := converter.ToEntities("error abi", []core.HeaderSyncLog{test_data.FlipKickHeaderSyncLog})
 
 			Expect(err).To(HaveOccurred())
 		})
@@ -71,8 +74,6 @@ func expectEqualModels(actual interface{}, expected flip_kick.FlipKickModel) {
 	Expect(actualFlipKick.Usr).To(Equal(expected.Usr))
 	Expect(actualFlipKick.Gal).To(Equal(expected.Gal))
 	Expect(strings.ToLower(actualFlipKick.ContractAddress)).To(Equal(strings.ToLower(expected.ContractAddress)))
-	Expect(actualFlipKick.TransactionIndex).To(Equal(expected.TransactionIndex))
-	Expect(actualFlipKick.LogIndex).To(Equal(expected.LogIndex))
-	Expect(actualFlipKick.Raw).To(Equal(expected.Raw))
+	Expect(actualFlipKick.LogID).To(Equal(expected.LogID))
 }
 */

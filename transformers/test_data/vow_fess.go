@@ -17,16 +17,17 @@
 package test_data
 
 import (
-	"encoding/json"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
+	"math/rand"
 )
 
-var EthVowFessLog = types.Log{
+var rawVowFessLog = types.Log{
 	Address: common.HexToAddress(VowAddress()),
 	Topics: []common.Hash{
 		common.HexToHash(constants.VowFessSignature()),
@@ -43,18 +44,23 @@ var EthVowFessLog = types.Log{
 	Removed:     false,
 }
 
-var rawVowFessLog, _ = json.Marshal(EthVowFessLog)
+var VowFessHeaderSyncLog = core.HeaderSyncLog{
+	ID:          int64(rand.Int31()),
+	HeaderID:    int64(rand.Int31()),
+	Log:         rawVowFessLog,
+	Transformed: false,
+}
+
 var VowFessModel = shared.InsertionModel{
 	SchemaName: "maker",
 	TableName:  "vow_fess",
 	OrderedColumns: []string{
-		"header_id", "tab", "log_idx", "tx_idx", "raw_log",
+		constants.HeaderFK, "tab", constants.LogFK,
 	},
 	ColumnValues: shared.ColumnValues{
-		"tab":     "1337",
-		"log_idx": EthVowFessLog.Index,
-		"tx_idx":  EthVowFessLog.TxIndex,
-		"raw_log": rawVowFessLog,
+		"tab":              "1337",
+		constants.HeaderFK: VowFessHeaderSyncLog.HeaderID,
+		constants.LogFK:    VowFessHeaderSyncLog.ID,
 	},
 	ForeignKeyValues: shared.ForeignKeyValues{},
 }

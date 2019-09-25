@@ -26,12 +26,24 @@ const (
 	nodeSql = `INSERT INTO public.eth_nodes (genesis_block, network_id, eth_node_id) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
 	txSql   = `INSERT INTO header_sync_transactions (header_id, hash, tx_from, tx_index, tx_to)
 		VALUES ($1, $2, $3, $4, $5)`
-	insertVatFrobSql = `INSERT INTO maker.vat_frob (header_id, urn_id, v, w, dink, dart, raw_log, log_idx, tx_idx)
-		VALUES($1, $2::NUMERIC, $3, $4, $5::NUMERIC, $6::NUMERIC, $7, $8, $9)
-		ON CONFLICT (header_id, tx_idx, log_idx)
-		DO UPDATE SET urn_id = $2, v = $3, w = $4, dink = $5, dart = $6, raw_log = $7;`
 	insertIlkQuery = `INSERT INTO maker.ilks (ilk, identifier) VALUES ($1, $2) RETURNING id`
 	insertUrnQuery = `INSERT INTO maker.urns (identifier, ilk_id) VALUES ($1, $2) RETURNING id`
+	insertLogSql   = `
+		WITH insertedAddressId AS (
+			INSERT INTO public.addresses (address) VALUES ('0x1234567890123456789012345678901234567890') ON CONFLICT DO NOTHING RETURNING id
+		),
+		selectedAddressId AS (
+			SELECT id FROM public.addresses WHERE address = '0x1234567890123456789012345678901234567890'
+		)
+		INSERT INTO public.header_sync_logs (header_id, address) VALUES ($1, (
+			SELECT id FROM insertedAddressId
+			UNION
+			SELECT id FROM selectedAddressId
+		)) RETURNING id`
+	insertVatFrobSql = `INSERT INTO maker.vat_frob (header_id, urn_id, v, w, dink, dart, log_id)
+		VALUES($1, $2::NUMERIC, $3, $4, $5::NUMERIC, $6::NUMERIC, $7)
+		ON CONFLICT (header_id, log_id)
+		DO UPDATE SET urn_id = $2, v = $3, w = $4, dink = $5, dart = $6;`
 )
 
 var (
@@ -217,8 +229,7 @@ func (state *GeneratorState) updateIlk() error {
 	randomIlkId := state.ilks[rand.Intn(len(state.ilks))]
 	blockNumber, blockHash := state.getCurrentBlockAndHash()
 
-	var storageErr error
-	var eventErr error
+	var eventErr, logErr, storageErr error
 	p := rand.Float64()
 	newValue := rand.Int()
 	if p < 0.1 {
@@ -226,8 +237,10 @@ func (state *GeneratorState) updateIlk() error {
 		// Rate is changed in fold, event which isn't included in spec
 	} else {
 		_, storageErr = state.pgTx.Exec(vat.InsertIlkSpotQuery, blockNumber, blockHash, randomIlkId, newValue)
+		var logID int64
+		logErr = state.pgTx.QueryRow(insertLogSql, state.currentHeader.Id).Scan(&logID)
 		_, eventErr = state.pgTx.Exec(spot_poke.InsertSpotPokeQuery,
-			state.currentHeader.Id, randomIlkId, newValue, newValue, 0, 0, emptyRaw) // tx_idx 0 to match tx
+			state.currentHeader.Id, randomIlkId, newValue, newValue, logID)
 
 		txErr := state.insertCurrentBlockTx()
 		if txErr != nil {
@@ -240,6 +253,9 @@ func (state *GeneratorState) updateIlk() error {
 	}
 	if eventErr != nil {
 		return eventErr
+	}
+	if logErr != nil {
+		return logErr
 	}
 
 	return nil
@@ -270,11 +286,13 @@ func (state *GeneratorState) createUrn() error {
 	art := rand.Int()
 	_, artErr := state.pgTx.Exec(vat.InsertUrnArtQuery, blockNumber, blockHash, urnId, art)
 	_, inkErr := state.pgTx.Exec(vat.InsertUrnInkQuery, blockNumber, blockHash, urnId, ink)
+	var logID int64
+	logErr := state.pgTx.QueryRow(insertLogSql, state.currentHeader.Id).Scan(&logID)
 	_, frobErr := state.pgTx.Exec(insertVatFrobSql,
-		state.currentHeader.Id, urnId, guy, guy, ink, art, emptyRaw, 0, 0) // txIx 0 to match tx
+		state.currentHeader.Id, urnId, guy, guy, ink, art, logID)
 
-	if artErr != nil || inkErr != nil || frobErr != nil {
-		return fmt.Errorf("error creating urn.\n artErr: %v\ninkErr: %v\nfrobErr: %v", artErr, inkErr, frobErr)
+	if artErr != nil || inkErr != nil || frobErr != nil || logErr != nil {
+		return fmt.Errorf("error creating urn.\n artErr: %v\ninkErr: %v\nfrobErr: %v\n logErr: %v", artErr, inkErr, frobErr, logErr)
 	}
 
 	txErr := state.insertCurrentBlockTx()
@@ -296,19 +314,22 @@ func (state *GeneratorState) updateUrn() error {
 
 	// Computing correct diff complicated, also getting correct guy :(
 
-	var updateErr error
-	var frobErr error
+	var frobErr, logErr, updateErr error
 	p := rand.Float32()
 	if p < 0.5 {
 		// Update ink
 		_, updateErr = state.pgTx.Exec(vat.InsertUrnInkQuery, blockNumber, blockHash, randomUrnId, newValue)
+		var logID int64
+		logErr = state.pgTx.QueryRow(insertLogSql, state.currentHeader.Id).Scan(&logID)
 		_, frobErr = state.pgTx.Exec(insertVatFrobSql,
-			state.currentHeader.Id, randomUrnId, randomGuy, randomGuy, newValue, 0, emptyRaw, 0, 0) // txIx 0 to match tx
+			state.currentHeader.Id, randomUrnId, randomGuy, randomGuy, newValue, 0, logID)
 	} else {
 		// Update art
 		_, updateErr = state.pgTx.Exec(vat.InsertUrnArtQuery, blockNumber, blockHash, randomUrnId, newValue)
+		var logID int64
+		logErr = state.pgTx.QueryRow(insertLogSql, state.currentHeader.Id).Scan(&logID)
 		_, frobErr = state.pgTx.Exec(insertVatFrobSql,
-			state.currentHeader.Id, randomUrnId, randomGuy, randomGuy, 0, newValue, emptyRaw, 0, 0) // txIx 0 to match tx
+			state.currentHeader.Id, randomUrnId, randomGuy, randomGuy, 0, newValue, logID)
 	}
 
 	if updateErr != nil {
@@ -316,6 +337,9 @@ func (state *GeneratorState) updateUrn() error {
 	}
 	if frobErr != nil {
 		return frobErr
+	}
+	if logErr != nil {
+		return logErr
 	}
 
 	txErr := state.insertCurrentBlockTx()

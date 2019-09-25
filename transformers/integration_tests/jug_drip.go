@@ -17,24 +17,22 @@
 package integration_tests
 
 import (
-	"github.com/vulcanize/mcd_transformers/transformers/test_data"
-	"strconv"
-
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/vulcanize/mcd_transformers/test_config"
+	"github.com/vulcanize/mcd_transformers/transformers/events/jug_drip"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
-
-	"github.com/vulcanize/mcd_transformers/test_config"
-	"github.com/vulcanize/mcd_transformers/transformers/events/jug_drip"
-	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"strconv"
 )
 
-var _ = XDescribe("JugDrip Transformer", func() {
+var _ = Describe("JugDrip Transformer", func() {
 	var (
 		db            *postgres.DB
 		blockChain    core.BlockChain
@@ -51,13 +49,13 @@ var _ = XDescribe("JugDrip Transformer", func() {
 
 		jugDripConfig = transformer.EventTransformerConfig{
 			ContractAddresses: []string{test_data.JugAddress()},
-			ContractAbi:       mcdConstants.JugABI(),
-			Topic:             mcdConstants.JugDripSignature(),
+			ContractAbi:       constants.JugABI(),
+			Topic:             constants.JugDripSignature(),
 		}
 	})
 
 	It("transforms JugDrip log events", func() {
-		blockNumber := int64(11144455)
+		blockNumber := int64(13424126)
 		jugDripConfig.StartingBlockNumber = blockNumber
 		jugDripConfig.EndingBlockNumber = blockNumber
 
@@ -78,7 +76,9 @@ var _ = XDescribe("JugDrip Transformer", func() {
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
-		err = tr.Execute(logs, header)
+		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+
+		err = tr.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResults []jugDripModel
@@ -87,52 +87,12 @@ var _ = XDescribe("JugDrip Transformer", func() {
 
 		Expect(len(dbResults)).To(Equal(1))
 		dbResult := dbResults[0]
-		ilkID, err := shared.GetOrCreateIlk("434f4c312d410000000000000000000000000000000000000000000000000000", db)
+		ilkID, err := shared.GetOrCreateIlk("0x4447442d41000000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
-		Expect(dbResult.Ilk).To(Equal(strconv.Itoa(ilkID)))
-	})
-
-	It("rechecks jug drip event", func() {
-		blockNumber := int64(11144455)
-		jugDripConfig.StartingBlockNumber = blockNumber
-		jugDripConfig.EndingBlockNumber = blockNumber
-
-		header, err := persistHeader(db, blockNumber, blockChain)
-		Expect(err).NotTo(HaveOccurred())
-
-		initializer := shared.LogNoteTransformer{
-			Config:     jugDripConfig,
-			Converter:  &jug_drip.JugDripConverter{},
-			Repository: &jug_drip.JugDripRepository{},
-		}
-		tr := initializer.NewLogNoteTransformer(db)
-
-		f := fetcher.NewLogFetcher(blockChain)
-		logs, err := f.FetchLogs(
-			transformer.HexStringsToAddresses(jugDripConfig.ContractAddresses),
-			[]common.Hash{common.HexToHash(jugDripConfig.Topic)},
-			header)
-		Expect(err).NotTo(HaveOccurred())
-
-		err = tr.Execute(logs, header)
-		Expect(err).NotTo(HaveOccurred())
-
-		err = tr.Execute(logs, header)
-		Expect(err).NotTo(HaveOccurred())
-
-		var headerID int64
-		err = db.Get(&headerID, `SELECT id FROM public.headers WHERE block_number = $1`, blockNumber)
-		Expect(err).NotTo(HaveOccurred())
-
-		var jugDripChecked []int
-		err = db.Select(&jugDripChecked, `SELECT jug_drip FROM public.checked_headers WHERE header_id = $1`, headerID)
-		Expect(err).NotTo(HaveOccurred())
+		Expect(dbResult.Ilk).To(Equal(strconv.FormatInt(ilkID, 10)))
 	})
 })
 
 type jugDripModel struct {
-	Ilk              string `db:"ilk_id"`
-	LogIndex         uint   `db:"log_idx"`
-	TransactionIndex uint   `db:"tx_idx"`
-	Raw              []byte `db:"raw_log"`
+	Ilk string `db:"ilk_id"`
 }

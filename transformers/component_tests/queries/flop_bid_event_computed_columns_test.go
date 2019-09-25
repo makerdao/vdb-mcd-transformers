@@ -13,6 +13,7 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/events/flop_kick"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 
+	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres/repositories"
@@ -27,6 +28,7 @@ var _ = Describe("Flop bid event computed columns", func() {
 		header          core.Header
 		contractAddress = "0x763ztv6x68exwqrgtl325e7hrcvavid4e3fcb4g"
 		fakeBidId       = rand.Int()
+		flopKickGethLog types.Log
 		flopKickRepo    flop_kick.FlopKickRepository
 		flopKickEvent   flop_kick.Model
 		headerId        int64
@@ -42,13 +44,17 @@ var _ = Describe("Flop bid event computed columns", func() {
 		var insertHeaderErr error
 		headerId, insertHeaderErr = headerRepo.CreateOrUpdateHeader(header)
 		Expect(insertHeaderErr).NotTo(HaveOccurred())
+		flopKickHeaderSyncLog := test_data.CreateTestLog(headerId, db)
+		flopKickGethLog = flopKickHeaderSyncLog.Log
 
 		flopKickRepo = flop_kick.FlopKickRepository{}
 		flopKickRepo.SetDB(db)
 		flopKickEvent = test_data.FlopKickModel
 		flopKickEvent.BidId = strconv.Itoa(fakeBidId)
 		flopKickEvent.ContractAddress = contractAddress
-		insertFlopKickErr := flopKickRepo.Create(headerId, []interface{}{flopKickEvent})
+		flopKickEvent.HeaderID = headerId
+		flopKickEvent.LogID = flopKickHeaderSyncLog.ID
+		insertFlopKickErr := flopKickRepo.Create([]interface{}{flopKickEvent})
 		Expect(insertFlopKickErr).NotTo(HaveOccurred())
 	})
 
@@ -68,7 +74,7 @@ var _ = Describe("Flop bid event computed columns", func() {
 			err := db.Get(&actualBid, `
 				SELECT bid_id, guy, tic, "end", lot, bid, dealt, created, updated
 				FROM api.flop_bid_event_bid(
-					(SELECT (bid_id, lot, bid_amount, act, block_height, tx_idx, contract_address)::api.flop_bid_event FROM api.all_flop_bid_events())
+					(SELECT (bid_id, lot, bid_amount, act, block_height, log_id, contract_address)::api.flop_bid_event FROM api.all_flop_bid_events())
 				)`)
 
 			Expect(err).NotTo(HaveOccurred())
@@ -80,7 +86,7 @@ var _ = Describe("Flop bid event computed columns", func() {
 		It("returns transaction for a flop bid event", func() {
 			expectedTx := Tx{
 				TransactionHash:  test_helpers.GetValidNullString("txHash"),
-				TransactionIndex: sql.NullInt64{Int64: int64(flopKickEvent.TransactionIndex), Valid: true},
+				TransactionIndex: sql.NullInt64{Int64: int64(flopKickGethLog.TxIndex), Valid: true},
 				BlockHeight:      sql.NullInt64{Int64: int64(blockNumber), Valid: true},
 				BlockHash:        test_helpers.GetValidNullString(header.Hash),
 				TxFrom:           test_helpers.GetValidNullString("fromAddress"),
@@ -95,7 +101,7 @@ var _ = Describe("Flop bid event computed columns", func() {
 			var actualTx Tx
 			queryErr := db.Get(&actualTx, `
 				SELECT * FROM api.flop_bid_event_tx(
-					(SELECT (bid_id, lot, bid_amount, act, block_height, tx_idx, contract_address)::api.flop_bid_event FROM api.all_flop_bid_events()))`)
+					(SELECT (bid_id, lot, bid_amount, act, block_height, log_id, contract_address)::api.flop_bid_event FROM api.all_flop_bid_events()))`)
 
 			Expect(queryErr).NotTo(HaveOccurred())
 			Expect(actualTx).To(Equal(expectedTx))
@@ -105,7 +111,7 @@ var _ = Describe("Flop bid event computed columns", func() {
 			wrongTx := Tx{
 				TransactionHash: test_helpers.GetValidNullString("wrongTxHash"),
 				TransactionIndex: sql.NullInt64{
-					Int64: int64(flopKickEvent.TransactionIndex) + 1,
+					Int64: int64(flopKickGethLog.TxIndex + 1),
 					Valid: true,
 				},
 				BlockHeight: sql.NullInt64{Int64: int64(blockNumber), Valid: true},
@@ -122,7 +128,7 @@ var _ = Describe("Flop bid event computed columns", func() {
 			var actualTx []Tx
 			queryErr := db.Select(&actualTx, `
 				SELECT * FROM api.flop_bid_event_tx(
-					(SELECT (bid_id, lot, bid_amount, act, block_height, tx_idx, contract_address)::api.flop_bid_event FROM api.all_flop_bid_events()))`)
+					(SELECT (bid_id, lot, bid_amount, act, block_height, log_id, contract_address)::api.flop_bid_event FROM api.all_flop_bid_events()))`)
 
 			Expect(queryErr).NotTo(HaveOccurred())
 			Expect(actualTx).To(BeZero())

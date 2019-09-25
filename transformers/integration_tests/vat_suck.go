@@ -17,31 +17,28 @@
 package integration_tests
 
 import (
+	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/vulcanize/mcd_transformers/transformers/test_data"
-
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
-
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_suck"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/mcd_transformers/transformers/test_data"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 )
 
-// TODO: Replace block number once there's a suck event on the updated Vat
-var _ = XDescribe("VatSuck Transformer", func() {
+var _ = Describe("VatSuck Transformer", func() {
 	vatSuckConfig := transformer.EventTransformerConfig{
-		TransformerName:   mcdConstants.VatSuckLabel,
+		TransformerName:   constants.VatSuckLabel,
 		ContractAddresses: []string{test_data.VatAddress()},
-		ContractAbi:       mcdConstants.VatABI(),
-		Topic:             mcdConstants.VatSuckSignature(),
+		ContractAbi:       constants.VatABI(),
+		Topic:             constants.VatSuckSignature(),
 	}
 
 	It("transforms VatSuck log events", func() {
-		blockNumber := int64(0)
+		blockNumber := int64(13424194)
 		vatSuckConfig.StartingBlockNumber = blockNumber
 		vatSuckConfig.EndingBlockNumber = blockNumber
 
@@ -63,13 +60,15 @@ var _ = XDescribe("VatSuck Transformer", func() {
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
+		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+
 		tr := shared.LogNoteTransformer{
 			Config:     vatSuckConfig,
 			Converter:  &vat_suck.VatSuckConverter{},
 			Repository: &vat_suck.VatSuckRepository{},
 		}.NewLogNoteTransformer(db)
 
-		err = tr.Execute(logs, header)
+		err = tr.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResults []vatSuckModel
@@ -78,17 +77,14 @@ var _ = XDescribe("VatSuck Transformer", func() {
 
 		Expect(len(dbResults)).To(Equal(1))
 		dbResult := dbResults[0]
-		Expect(dbResult.U).To(Equal(""))
-		Expect(dbResult.V).To(Equal(""))
-		Expect(dbResult.Rad).To(Equal(""))
+		Expect(dbResult.U).To(Equal("0x022688b43Bf76a9E6f4d3a96350ffDe90a752d25"))
+		Expect(dbResult.V).To(Equal("0xE8fC4FC4D5Ab7Fa20BE296277EF157A8B0ec20Ce"))
+		Expect(dbResult.Rad).To(Equal("117003578721766336311574734269352563186228"))
 	})
 })
 
 type vatSuckModel struct {
-	U                string
-	V                string
-	Rad              string
-	LogIndex         uint   `db:"log_idx"`
-	TransactionIndex uint   `db:"tx_idx"`
-	Raw              []byte `db:"raw_log"`
+	U   string
+	V   string
+	Rad string
 }

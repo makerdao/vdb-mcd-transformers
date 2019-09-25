@@ -17,10 +17,9 @@
 package new_cdp_test
 
 import (
-	"encoding/json"
-	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 
 	"github.com/vulcanize/mcd_transformers/transformers/events/new_cdp"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
@@ -32,7 +31,7 @@ var _ = Describe("NewCdp Converter", func() {
 
 	Describe("ToEntity", func() {
 		It("converts an Eth Log to a NewCdpEntity", func() {
-			entities, err := converter.ToEntities(constants.CdpManagerABI(), []types.Log{test_data.EthNewCdpLog})
+			entities, err := converter.ToEntities(constants.CdpManagerABI(), []core.HeaderSyncLog{test_data.NewCdpHeaderSyncLog})
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(entities)).To(Equal(1))
@@ -40,7 +39,7 @@ var _ = Describe("NewCdp Converter", func() {
 		})
 
 		It("returns an error if converting log to entity fails", func() {
-			_, err := converter.ToEntities("error abi", []types.Log{test_data.EthNewCdpLog})
+			_, err := converter.ToEntities("error abi", []core.HeaderSyncLog{test_data.NewCdpHeaderSyncLog})
 
 			Expect(err).To(HaveOccurred())
 		})
@@ -59,8 +58,6 @@ var _ = Describe("NewCdp Converter", func() {
 			emptyAddressHex := "0x0000000000000000000000000000000000000000"
 			emptyString := ""
 			emptyEntity := new_cdp.NewCdpEntity{}
-			emptyRawLogJson, err := json.Marshal(types.Log{})
-			Expect(err).NotTo(HaveOccurred())
 
 			models, err := converter.ToModels([]interface{}{emptyEntity})
 			Expect(err).NotTo(HaveOccurred())
@@ -70,7 +67,6 @@ var _ = Describe("NewCdp Converter", func() {
 			Expect(model.Usr).To(Equal(emptyAddressHex))
 			Expect(model.Own).To(Equal(emptyAddressHex))
 			Expect(model.Cdp).To(Equal(emptyString))
-			Expect(model.Raw).To(Equal(emptyRawLogJson))
 		})
 
 		It("returns an error if the wrong entity type is passed in", func() {

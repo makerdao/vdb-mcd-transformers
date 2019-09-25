@@ -21,8 +21,9 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/events/jug_file/ilk"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
@@ -31,26 +32,28 @@ import (
 var _ = Describe("Jug file ilk converter", func() {
 	var converter = ilk.JugFileIlkConverter{}
 	It("returns err if log missing topics", func() {
-		badLog := types.Log{
-			Topics: []common.Hash{{}},
-			Data:   []byte{1, 1, 1, 1, 1},
-		}
+		badLog := core.HeaderSyncLog{
+			Log: types.Log{
+				Topics: []common.Hash{{}},
+				Data:   []byte{1, 1, 1, 1, 1},
+			}}
 
-		_, err := converter.ToModels(constants.JugABI(), []types.Log{badLog})
+		_, err := converter.ToModels(constants.JugABI(), []core.HeaderSyncLog{badLog})
 		Expect(err).To(HaveOccurred())
 	})
 
 	It("returns err if log missing data", func() {
-		badLog := types.Log{
-			Topics: []common.Hash{{}, {}, {}, {}},
-		}
+		badLog := core.HeaderSyncLog{
+			Log: types.Log{
+				Topics: []common.Hash{{}, {}, {}, {}},
+			}}
 
-		_, err := converter.ToModels(constants.JugABI(), []types.Log{badLog})
+		_, err := converter.ToModels(constants.JugABI(), []core.HeaderSyncLog{badLog})
 		Expect(err).To(HaveOccurred())
 	})
 
 	It("converts a log to a model", func() {
-		models, err := converter.ToModels(constants.JugABI(), []types.Log{test_data.EthJugFileIlkLog})
+		models, err := converter.ToModels(constants.JugABI(), []core.HeaderSyncLog{test_data.JugFileIlkHeaderSyncLog})
 		Expect(err).NotTo(HaveOccurred())
 		Expect(models).To(Equal([]shared.InsertionModel{test_data.JugFileIlkModel}))
 	})

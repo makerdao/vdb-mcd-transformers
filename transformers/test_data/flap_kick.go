@@ -17,20 +17,20 @@
 package test_data
 
 import (
-	"encoding/json"
-	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	"math/big"
-
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
+	"math/big"
+	"math/rand"
 
 	"github.com/vulcanize/mcd_transformers/transformers/events/flap_kick"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
-var EthFlapKickLog = types.Log{
+var rawFlapKickLog = types.Log{
 	Address:     common.HexToAddress(FlapAddress()),
 	Topics:      []common.Hash{common.HexToHash(constants.FlapKickSignature())},
 	Data:        hexutil.MustDecode("0x0000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000003b9aca000000000000000000000000000000000000000000000000000000000001312d00"),
@@ -42,31 +42,36 @@ var EthFlapKickLog = types.Log{
 	Removed:     false,
 }
 
-var FlapKickEntity = flap_kick.FlapKickEntity{
-	Id:               big.NewInt(1),
-	Lot:              big.NewInt(1000000000),
-	Bid:              big.NewInt(20000000),
-	Raw:              EthFlapKickLog,
-	TransactionIndex: EthFlapKickLog.TxIndex,
-	LogIndex:         EthFlapKickLog.Index,
+var FlapKickHeaderSyncLog = core.HeaderSyncLog{
+	ID:          int64(rand.Int31()),
+	HeaderID:    int64(rand.Int31()),
+	Log:         rawFlapKickLog,
+	Transformed: false,
 }
 
-var rawFlapKickLog, _ = json.Marshal(EthFlapKickLog)
+var FlapKickEntity = flap_kick.FlapKickEntity{
+	Id:              big.NewInt(1),
+	Lot:             big.NewInt(1000000000),
+	Bid:             big.NewInt(20000000),
+	ContractAddress: rawFlapKickLog.Address,
+	HeaderID:        FlapKickHeaderSyncLog.HeaderID,
+	LogID:           FlapKickHeaderSyncLog.ID,
+}
+
 var FlapKickModel = shared.InsertionModel{
 	SchemaName: "maker",
 	TableName:  "flap_kick",
 	OrderedColumns: []string{
-		"header_id", "bid_id", "lot", "bid", "address_id", "tx_idx", "log_idx", "raw_log",
+		constants.HeaderFK, constants.LogFK, "bid_id", "lot", "bid", "address_id",
 	},
 	ColumnValues: shared.ColumnValues{
+		constants.HeaderFK: FlapKickEntity.HeaderID,
+		constants.LogFK: FlapKickEntity.LogID,
 		"bid_id":  FlapKickEntity.Id.String(),
 		"lot":     FlapKickEntity.Lot.String(),
 		"bid":     FlapKickEntity.Bid.String(),
-		"log_idx": EthFlapKickLog.Index,
-		"tx_idx":  EthFlapKickLog.TxIndex,
-		"raw_log": rawFlapKickLog,
 	},
 	ForeignKeyValues: shared.ForeignKeyValues{
-		constants.AddressFK: EthFlapKickLog.Address.Hex(),
+		constants.AddressFK: FlapKickHeaderSyncLog.Log.Address.Hex(),
 	},
 }

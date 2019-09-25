@@ -17,29 +17,23 @@
 package flap_kick
 
 import (
-	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	repo "github.com/vulcanize/vulcanizedb/libraries/shared/repository"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 
-	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 )
 
 const InsertFlapKickQuery = `INSERT into maker.flap_kick
-		(header_id, bid_id, lot, bid, address_id, tx_idx, log_idx, raw_log)
-		VALUES($1, $2::NUMERIC, $3::NUMERIC, $4::NUMERIC, $5, $6, $7, $8)
-		ON CONFLICT (header_id, tx_idx, log_idx)
-		DO UPDATE SET bid_id = $2, lot = $3, bid = $4, address_id = $5, raw_log = $8;`
+		(header_id, bid_id, lot, bid, address_id, log_id)
+		VALUES($1, $2::NUMERIC, $3::NUMERIC, $4::NUMERIC, $5, $6)
+		ON CONFLICT (header_id, log_id)
+		DO UPDATE SET bid_id = $2, lot = $3, bid = $4, address_id = $5;`
 
 type FlapKickRepository struct {
 	db *postgres.DB
 }
 
-func (repository *FlapKickRepository) Create(headerID int64, models []shared.InsertionModel) error {
-	return shared.Create(headerID, models, repository.db)
-}
-
-func (repository *FlapKickRepository) MarkHeaderChecked(headerID int64) error {
-	return repo.MarkHeaderChecked(headerID, repository.db, constants.FlapKickLabel)
+func (repository *FlapKickRepository) Create(models []shared.InsertionModel) error {
+	return shared.Create(models, repository.db)
 }
 
 func (repository *FlapKickRepository) SetDB(db *postgres.DB) {

@@ -18,8 +18,6 @@ package vat_fork
 
 import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
-	repo "github.com/vulcanize/vulcanizedb/libraries/shared/repository"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 )
 
@@ -27,12 +25,8 @@ type VatForkRepository struct {
 	db *postgres.DB
 }
 
-func (repository VatForkRepository) Create(headerID int64, models []shared.InsertionModel) error {
-	return shared.Create(headerID, models, repository.db)
-}
-
-func (repository VatForkRepository) MarkHeaderChecked(headerID int64) error {
-	return repo.MarkHeaderChecked(headerID, repository.db, constants.VatForkLabel)
+func (repository VatForkRepository) Create(models []shared.InsertionModel) error {
+	return shared.Create(models, repository.db)
 }
 
 func (repository *VatForkRepository) SetDB(db *postgres.DB) {

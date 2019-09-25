@@ -17,16 +17,17 @@
 package test_data
 
 import (
-	"encoding/json"
-
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
+	"math/rand"
 
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 )
 
-var EthVatHealLogWithPositiveRad = types.Log{
+var rawVatHealLog = types.Log{
 	Address: common.HexToAddress(VatAddress()),
 	Topics: []common.Hash{
 		common.HexToHash("0x00000000000000000000000000000000000000000000000000000000f37ac61c"),
@@ -43,18 +44,23 @@ var EthVatHealLogWithPositiveRad = types.Log{
 	Removed:     false,
 }
 
-var rawVatHealLogWithPositiveRad, _ = json.Marshal(EthVatHealLogWithPositiveRad)
-var VatHealModelWithPositiveRad = shared.InsertionModel{
+var VatHealHeaderSyncLog = core.HeaderSyncLog{
+	ID:          int64(rand.Int31()),
+	HeaderID:    int64(rand.Int31()),
+	Log:         rawVatHealLog,
+	Transformed: false,
+}
+
+var VatHealModel = shared.InsertionModel{
 	SchemaName: "maker",
-	TableName:  "vat_heal",
+	TableName: "vat_heal",
 	OrderedColumns: []string{
-		"header_id", "rad", "log_idx", "tx_idx", "raw_log",
+		constants.HeaderFK, "rad", constants.LogFK,
 	},
 	ColumnValues: shared.ColumnValues{
-		"rad":     "10001",
-		"log_idx": EthVatHealLogWithPositiveRad.Index,
-		"tx_idx":  EthVatHealLogWithPositiveRad.TxIndex,
-		"raw_log": rawVatHealLogWithPositiveRad,
+		"rad":              "10001",
+		constants.HeaderFK: VatHealHeaderSyncLog.HeaderID,
+		constants.LogFK:    VatHealHeaderSyncLog.ID,
 	},
 	ForeignKeyValues: shared.ForeignKeyValues{},
 }

@@ -17,23 +17,21 @@
 package integration_tests
 
 import (
-	"github.com/vulcanize/mcd_transformers/transformers/test_data"
-	"strconv"
-
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
-	"github.com/vulcanize/vulcanizedb/pkg/core"
-	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
-
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/events/spot_file/mat"
 	"github.com/vulcanize/mcd_transformers/transformers/events/spot_file/pip"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/mcd_transformers/transformers/test_data"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
+	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
+	"strconv"
 )
 
 var _ = Describe("SpotFile LogNoteTransformers", func() {
@@ -63,16 +61,16 @@ var _ = Describe("SpotFile LogNoteTransformers", func() {
 		)
 
 		BeforeEach(func() {
-			blockNumber = int64(12742298)
+			blockNumber = int64(13171882)
 			var insertHeaderErr error
 			header, insertHeaderErr = persistHeader(db, blockNumber, blockChain)
 			Expect(insertHeaderErr).NotTo(HaveOccurred())
 
 			spotFileMatConfig := transformer.EventTransformerConfig{
-				TransformerName:     mcdConstants.SpotFileMatLabel,
+				TransformerName:     constants.SpotFileMatLabel,
 				ContractAddresses:   []string{test_data.SpotAddress()},
-				ContractAbi:         mcdConstants.SpotABI(),
-				Topic:               mcdConstants.SpotFileMatSignature(),
+				ContractAbi:         constants.SpotABI(),
+				Topic:               constants.SpotFileMatSignature(),
 				StartingBlockNumber: blockNumber,
 				EndingBlockNumber:   blockNumber,
 			}
@@ -91,8 +89,10 @@ var _ = Describe("SpotFile LogNoteTransformers", func() {
 			logs, fetcherErr = logFetcher.FetchLogs(addresses, topics, header)
 			Expect(fetcherErr).NotTo(HaveOccurred())
 
+			headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+
 			tr = initializer.NewLogNoteTransformer(db)
-			executeErr := tr.Execute(logs, header)
+			executeErr := tr.Execute(headerSyncLogs)
 			Expect(executeErr).NotTo(HaveOccurred())
 		})
 
@@ -101,11 +101,11 @@ var _ = Describe("SpotFile LogNoteTransformers", func() {
 			getSpotErr := db.Get(&dbResult, `SELECT ilk_id, what, data FROM maker.spot_file_mat`)
 			Expect(getSpotErr).NotTo(HaveOccurred())
 
-			ilkID, ilkErr := shared.GetOrCreateIlk("0x474e542d41000000000000000000000000000000000000000000000000000000", db)
+			ilkID, ilkErr := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
 			Expect(ilkErr).NotTo(HaveOccurred())
-			Expect(dbResult.Ilk).To(Equal(strconv.Itoa(ilkID)))
+			Expect(dbResult.Ilk).To(Equal(strconv.FormatInt(ilkID, 10)))
 			Expect(dbResult.What).To(Equal("mat"))
-			Expect(dbResult.Data).To(Equal("1800000000000000000000000000"))
+			Expect(dbResult.Data).To(Equal("1500000000000000000000000000"))
 		})
 	})
 
@@ -121,16 +121,16 @@ var _ = Describe("SpotFile LogNoteTransformers", func() {
 		)
 
 		BeforeEach(func() {
-			blockNumber = int64(12742151)
+			blockNumber = int64(13171646)
 			var insertHeaderErr error
 			header, insertHeaderErr = persistHeader(db, blockNumber, blockChain)
 			Expect(insertHeaderErr).NotTo(HaveOccurred())
 
 			spotFilePipConfig := transformer.EventTransformerConfig{
-				TransformerName:     mcdConstants.SpotFilePipLabel,
+				TransformerName:     constants.SpotFilePipLabel,
 				ContractAddresses:   []string{test_data.SpotAddress()},
-				ContractAbi:         mcdConstants.SpotABI(),
-				Topic:               mcdConstants.SpotFilePipSignature(),
+				ContractAbi:         constants.SpotABI(),
+				Topic:               constants.SpotFilePipSignature(),
 				StartingBlockNumber: blockNumber,
 				EndingBlockNumber:   blockNumber,
 			}
@@ -149,8 +149,10 @@ var _ = Describe("SpotFile LogNoteTransformers", func() {
 			logs, fetcherErr = logFetcher.FetchLogs(addresses, topics, header)
 			Expect(fetcherErr).NotTo(HaveOccurred())
 
+			headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+
 			tr = initializer.NewLogNoteTransformer(db)
-			executeErr := tr.Execute(logs, header)
+			executeErr := tr.Execute(headerSyncLogs)
 			Expect(executeErr).NotTo(HaveOccurred())
 		})
 
@@ -159,27 +161,21 @@ var _ = Describe("SpotFile LogNoteTransformers", func() {
 			getSpotErr := db.Get(&dbResult, `SELECT ilk_id, pip from maker.spot_file_pip`)
 			Expect(getSpotErr).NotTo(HaveOccurred())
 
-			ilkID, ilkErr := shared.GetOrCreateIlk("0x474e542d41000000000000000000000000000000000000000000000000000000", db)
+			ilkID, ilkErr := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
 			Expect(ilkErr).NotTo(HaveOccurred())
-			Expect(dbResult.Ilk).To(Equal(strconv.Itoa(ilkID)))
-			Expect(dbResult.Pip).To(Equal("0xF46E96a6F23FDcB5870F0AC0DBe9D2c605485DdC"))
+			Expect(dbResult.Ilk).To(Equal(strconv.FormatInt(ilkID, 10)))
+			Expect(dbResult.Pip).To(Equal("0x75dD74e8afE8110C8320eD397CcCff3B8134d981"))
 		})
 	})
 })
 
 type spotFileMatModel struct {
-	Ilk              string `db:"ilk_id"`
-	What             string
-	Data             string
-	LogIndex         uint   `db:"log_idx"`
-	TransactionIndex uint   `db:"tx_idx"`
-	Raw              []byte `db:"raw_log"`
+	Ilk  string `db:"ilk_id"`
+	What string
+	Data string
 }
 
 type spotFilePipModel struct {
-	Ilk              string `db:"ilk_id"`
-	Pip              string
-	LogIndex         uint   `db:"log_idx"`
-	TransactionIndex uint   `db:"tx_idx"`
-	Raw              []byte `db:"raw_log"`
+	Ilk string `db:"ilk_id"`
+	Pip string
 }

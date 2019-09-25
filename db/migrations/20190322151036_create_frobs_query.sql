@@ -9,16 +9,17 @@ CREATE TYPE api.frob_event AS (
     dart NUMERIC,
     ilk_rate NUMERIC,
     block_height BIGINT,
-    tx_idx INTEGER
+    log_id BIGINT
     -- tx
     );
 
 COMMENT ON COLUMN api.frob_event.block_height
     IS E'@omit';
-COMMENT ON COLUMN api.frob_event.tx_idx
+COMMENT ON COLUMN api.frob_event.log_id
     IS E'@omit';
 
-CREATE FUNCTION api.urn_frobs(ilk_identifier TEXT, urn_identifier TEXT, max_results INTEGER DEFAULT NULL)
+CREATE FUNCTION api.urn_frobs(ilk_identifier TEXT, urn_identifier TEXT, max_results INTEGER DEFAULT NULL,
+                              result_offset INTEGER DEFAULT 0)
     RETURNS SETOF api.frob_event AS
 $$
 WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier),
@@ -32,25 +33,24 @@ WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier),
                ORDER BY block_number DESC
      )
 
-
 SELECT ilk_identifier,
        urn_identifier,
        dink,
        dart,
        (SELECT rate from rates WHERE block_number <= headers.block_number LIMIT 1) AS ilk_rate,
        headers.block_number,
-       tx_idx
+       log_id
 FROM maker.vat_frob
          LEFT JOIN headers ON vat_frob.header_id = headers.id
 WHERE vat_frob.urn_id = (SELECT id FROM urn)
 ORDER BY block_number DESC
-LIMIT urn_frobs.max_results
+LIMIT urn_frobs.max_results OFFSET urn_frobs.result_offset
 $$
     LANGUAGE sql
     STABLE;
 
 
-CREATE FUNCTION api.all_frobs(ilk_identifier TEXT, max_results INTEGER DEFAULT NULL)
+CREATE FUNCTION api.all_frobs(ilk_identifier TEXT, max_results INTEGER DEFAULT NULL, result_offset INTEGER DEFAULT 0)
     RETURNS SETOF api.frob_event AS
 $$
 WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier),
@@ -66,19 +66,19 @@ SELECT ilk_identifier,
        dart,
        (SELECT rate from rates WHERE block_number <= headers.block_number LIMIT 1) AS ilk_rate,
        block_number,
-       tx_idx
+       log_id
 FROM maker.vat_frob
          LEFT JOIN maker.urns ON vat_frob.urn_id = urns.id
          LEFT JOIN headers ON vat_frob.header_id = headers.id
 WHERE urns.ilk_id = (SELECT id FROM ilk)
 ORDER BY block_number DESC
-LIMIT max_results
+LIMIT all_frobs.max_results OFFSET all_frobs.result_offset
 $$
     LANGUAGE sql
     STABLE;
 
 -- +goose Down
 -- SQL in this section is executed when the migration is rolled back.
-DROP FUNCTION api.urn_frobs(TEXT, TEXT, INTEGER);
-DROP FUNCTION api.all_frobs(TEXT, INTEGER);
+DROP FUNCTION api.urn_frobs(TEXT, TEXT, INTEGER, INTEGER);
+DROP FUNCTION api.all_frobs(TEXT, INTEGER, INTEGER);
 DROP TYPE api.frob_event CASCADE;

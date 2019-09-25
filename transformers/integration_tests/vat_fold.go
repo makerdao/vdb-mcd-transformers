@@ -17,24 +17,22 @@
 package integration_tests
 
 import (
-	"github.com/vulcanize/mcd_transformers/transformers/test_data"
-	"strconv"
-
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/vulcanize/mcd_transformers/test_config"
+	"github.com/vulcanize/mcd_transformers/transformers/events/vat_fold"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
-
-	"github.com/vulcanize/mcd_transformers/test_config"
-	"github.com/vulcanize/mcd_transformers/transformers/events/vat_fold"
-	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"strconv"
 )
 
-var _ = XDescribe("VatFold Transformer", func() {
+var _ = Describe("VatFold Transformer", func() {
 	var (
 		db         *postgres.DB
 		blockChain core.BlockChain
@@ -50,14 +48,14 @@ var _ = XDescribe("VatFold Transformer", func() {
 	})
 
 	vatFoldConfig := transformer.EventTransformerConfig{
-		TransformerName:   mcdConstants.VatFoldLabel,
+		TransformerName:   constants.VatFoldLabel,
 		ContractAddresses: []string{test_data.VatAddress()},
-		ContractAbi:       mcdConstants.VatABI(),
-		Topic:             mcdConstants.VatFoldSignature(),
+		ContractAbi:       constants.VatABI(),
+		Topic:             constants.VatFoldSignature(),
 	}
 
 	It("transforms VatFold log events", func() {
-		blockNumber := int64(11144455)
+		blockNumber := int64(13424126)
 		vatFoldConfig.StartingBlockNumber = blockNumber
 		vatFoldConfig.EndingBlockNumber = blockNumber
 
@@ -71,13 +69,15 @@ var _ = XDescribe("VatFold Transformer", func() {
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
+		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+
 		transformer := shared.LogNoteTransformer{
 			Config:     vatFoldConfig,
 			Converter:  &vat_fold.VatFoldConverter{},
 			Repository: &vat_fold.VatFoldRepository{},
 		}.NewLogNoteTransformer(db)
 
-		err = transformer.Execute(logs, header)
+		err = transformer.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResults []vatFoldModel
@@ -86,19 +86,16 @@ var _ = XDescribe("VatFold Transformer", func() {
 
 		Expect(len(dbResults)).To(Equal(1))
 		dbResult := dbResults[0]
-		urnID, err := shared.GetOrCreateUrn("0x21444AC712cCD21ce82AF24eA1aEc64Cf07361D2",
-			"0x434f4c312d410000000000000000000000000000000000000000000000000000", db)
+		urnID, err := shared.GetOrCreateUrn("0x022688b43Bf76a9E6f4d3a96350ffDe90a752d25",
+			"0x4447442d41000000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
-		Expect(dbResult.Urn).To(Equal(strconv.Itoa(urnID)))
-		Expect(dbResult.Rate).To(Equal("479620379870463446010918"))
+		Expect(dbResult.Urn).To(Equal(strconv.FormatInt(urnID, 10)))
+		Expect(dbResult.Rate).To(Equal("909758435446422415095"))
 	})
 })
 
 type vatFoldModel struct {
-	Ilk              string
-	Urn              string `db:"urn_id"`
-	Rate             string
-	LogIndex         uint   `db:"log_idx"`
-	TransactionIndex uint   `db:"tx_idx"`
-	Raw              []byte `db:"raw_log"`
+	Ilk  string
+	Urn  string `db:"urn_id"`
+	Rate string
 }

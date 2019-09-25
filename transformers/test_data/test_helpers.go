@@ -19,9 +19,15 @@ package test_data
 import (
 	"bytes"
 	"encoding/gob"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/gomega"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
+	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres/repositories"
+	"github.com/vulcanize/vulcanizedb/pkg/fakes"
+	"math/rand"
 )
 
 // Returns a deep copy of the given model, so tests aren't getting the same map/slice references
@@ -44,4 +50,55 @@ func AssertDBRecordCount(db *postgres.DB, dbTable string, expectedCount int) {
 	err := db.QueryRow(query).Scan(&count)
 	Expect(err).NotTo(HaveOccurred())
 	Expect(count).To(Equal(expectedCount))
+}
+
+// Create a header to reference in an event, returning headerID
+func CreateTestHeader(db *postgres.DB) int64 {
+	headerRepository := repositories.NewHeaderRepository(db)
+	headerID, insertHeaderErr := headerRepository.CreateOrUpdateHeader(fakes.FakeHeader)
+	Expect(insertHeaderErr).NotTo(HaveOccurred())
+	return headerID
+}
+
+// Create a header sync log to reference in an event, returning inserted header sync log
+func CreateTestLog(headerID int64, db *postgres.DB) core.HeaderSyncLog {
+	log := types.Log{
+		Address:     common.Address{},
+		Topics:      nil,
+		Data:        nil,
+		BlockNumber: 0,
+		TxHash:      common.Hash{},
+		TxIndex:     uint(rand.Int31()),
+		BlockHash:   common.Hash{},
+		Index:       0,
+		Removed:     false,
+	}
+	headerSyncLogRepository := repositories.NewHeaderSyncLogRepository(db)
+	insertLogsErr := headerSyncLogRepository.CreateHeaderSyncLogs(headerID, []types.Log{log})
+	Expect(insertLogsErr).NotTo(HaveOccurred())
+	headerSyncLogs, getLogsErr := headerSyncLogRepository.GetUntransformedHeaderSyncLogs()
+	Expect(getLogsErr).NotTo(HaveOccurred())
+	for _, headerSyncLog := range headerSyncLogs {
+		if headerSyncLog.Log.TxIndex == log.TxIndex {
+			return headerSyncLog
+		}
+	}
+	panic("couldn't find inserted test log")
+}
+
+func CreateLogs(headerID int64, logs []types.Log, db *postgres.DB) []core.HeaderSyncLog {
+	headerSyncLogRepository := repositories.NewHeaderSyncLogRepository(db)
+	insertLogsErr := headerSyncLogRepository.CreateHeaderSyncLogs(headerID, logs)
+	Expect(insertLogsErr).NotTo(HaveOccurred())
+	headerSyncLogs, getLogsErr := headerSyncLogRepository.GetUntransformedHeaderSyncLogs()
+	Expect(getLogsErr).NotTo(HaveOccurred())
+	var results []core.HeaderSyncLog
+	for _, headerSyncLog := range headerSyncLogs {
+		for _, log := range logs {
+			if headerSyncLog.Log.BlockNumber == log.BlockNumber && headerSyncLog.Log.TxIndex == log.TxIndex && headerSyncLog.Log.Index == log.Index {
+				results = append(results, headerSyncLog)
+			}
+		}
+	}
+	return results
 }

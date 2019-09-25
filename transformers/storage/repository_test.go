@@ -17,19 +17,10 @@
 package storage_test
 
 import (
-	"encoding/json"
-	"math/big"
-	"math/rand"
-	"strconv"
-
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/vulcanize/vulcanizedb/pkg/core"
-	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
-	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres/repositories"
-	"github.com/vulcanize/vulcanizedb/pkg/fakes"
-
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/component_tests/queries/test_helpers"
 	"github.com/vulcanize/mcd_transformers/transformers/events/flap_kick"
@@ -40,6 +31,14 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/storage/flap"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/flip"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/flop"
+	"github.com/vulcanize/mcd_transformers/transformers/test_data"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
+	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
+	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres/repositories"
+	"github.com/vulcanize/vulcanizedb/pkg/fakes"
+	"math/big"
+	"math/rand"
+	"strconv"
 )
 
 var _ = Describe("Maker storage repository", func() {
@@ -628,11 +627,10 @@ var _ = Describe("Maker storage repository", func() {
 
 func insertFlapKick(blockNumber int64, bidId string, contractAddressId int64, db *postgres.DB) {
 	//inserting a flap kick log event record
-	emptyRawJson, jsonErr := json.Marshal("")
-	Expect(jsonErr).NotTo(HaveOccurred())
 	headerID := insertHeader(db, blockNumber)
+	flapKickLog := test_data.CreateTestLog(headerID, db)
 	_, insertErr := db.Exec(flap_kick.InsertFlapKickQuery,
-		headerID, bidId, 0, 0, contractAddressId, 0, 0, emptyRawJson,
+		headerID, bidId, 0, 0, contractAddressId, flapKickLog.ID,
 	)
 	Expect(insertErr).NotTo(HaveOccurred())
 }
@@ -647,23 +645,21 @@ func insertFlapKicks(blockNumber int64, kicks string, contractAddressId int64, d
 
 func insertTick(blockNumber int64, bidId string, contractAddressId int64, db *postgres.DB) {
 	// tick event record
-	emptyRawJson, jsonErr := json.Marshal("")
-	Expect(jsonErr).NotTo(HaveOccurred())
 	headerID := insertHeader(db, blockNumber)
-	_, insertErr := db.Exec(`INSERT INTO maker.tick (header_id, bid_id, address_id, tx_idx, log_idx, raw_log)
-				VALUES($1, $2::NUMERIC, $3, $4, $5, $6)`,
-		headerID, bidId, contractAddressId, 0, 0, emptyRawJson,
+	flapTickLog := test_data.CreateTestLog(headerID, db)
+	_, insertErr := db.Exec(`INSERT INTO maker.tick (header_id, bid_id, address_id, log_id)
+				VALUES($1, $2::NUMERIC, $3, $4)`,
+		headerID, bidId, contractAddressId, flapTickLog.ID,
 	)
 	Expect(insertErr).NotTo(HaveOccurred())
 }
 
 func insertFlipKick(blockNumber int64, bidId string, contractAddressId int64, db *postgres.DB) {
 	// flip kick event record
-	emptyRawJson, jsonErr := json.Marshal("")
-	Expect(jsonErr).NotTo(HaveOccurred())
 	headerID := insertHeader(db, blockNumber)
+	log := test_data.CreateTestLog(headerID, db)
 	_, insertErr := db.Exec(flip_kick.InsertFlipKickQuery,
-		headerID, bidId, 0, 0, 0, "", "", contractAddressId, 0, 0, emptyRawJson,
+		headerID, bidId, 0, 0, 0, "", "", contractAddressId, log.ID,
 	)
 	Expect(insertErr).NotTo(HaveOccurred())
 }
@@ -678,10 +674,9 @@ func insertFlipKicks(blockNumber int64, kicks string, contractAddressId int64, d
 
 func insertFlopKick(blockNumber int64, bidId string, contractAddressId int64, db *postgres.DB) {
 	// inserting a flop kick log event record
-	emptyRawJson, jsonErr := json.Marshal("")
-	Expect(jsonErr).NotTo(HaveOccurred())
 	headerId := insertHeader(db, blockNumber)
-	_, insertErr := db.Exec(flop_kick.InsertFlopKickQuery, headerId, bidId, 0, 0, "", contractAddressId, 0, 0, emptyRawJson)
+	flopKickLog := test_data.CreateTestLog(headerId, db)
+	_, insertErr := db.Exec(flop_kick.InsertFlopKickQuery, headerId, bidId, 0, 0, "", contractAddressId, flopKickLog.ID)
 	Expect(insertErr).NotTo(HaveOccurred())
 }
 
@@ -693,40 +688,40 @@ func insertFlopKicks(blockNumber int64, kicks string, contractAddressId int64, d
 
 func insertTend(blockNumber int64, bidId string, contractAddressId int64, db *postgres.DB) {
 	headerID := insertHeader(db, blockNumber)
-
-	_, err := db.Exec(`INSERT into maker.tend (header_id, bid_id, lot, bid, address_id, log_idx, tx_idx)
-		VALUES($1, $2::NUMERIC, $3::NUMERIC, $4::NUMERIC, $5, $6, $7)`,
-		headerID, bidId, 0, 0, contractAddressId, 0, 0,
+	tendLog := test_data.CreateTestLog(headerID, db)
+	_, err := db.Exec(`INSERT into maker.tend (header_id, bid_id, lot, bid, address_id, log_id)
+		VALUES($1, $2::NUMERIC, $3::NUMERIC, $4::NUMERIC, $5, $6)`,
+		headerID, bidId, 0, 0, contractAddressId, tendLog.ID,
 	)
 	Expect(err).NotTo(HaveOccurred())
 }
 
 func insertDent(blockNumber int64, bidId string, contractAddressId int64, db *postgres.DB) {
 	headerID := insertHeader(db, blockNumber)
-
-	_, err := db.Exec(`INSERT into maker.dent (header_id, bid_id, lot, bid, address_id, log_idx, tx_idx)
-		VALUES($1, $2::NUMERIC, $3::NUMERIC, $4::NUMERIC, $5, $6, $7)`,
-		headerID, bidId, 0, 0, contractAddressId, 0, 0,
+	dentLog := test_data.CreateTestLog(headerID, db)
+	_, err := db.Exec(`INSERT into maker.dent (header_id, bid_id, lot, bid, address_id, log_id)
+		VALUES($1, $2::NUMERIC, $3::NUMERIC, $4::NUMERIC, $5, $6)`,
+		headerID, bidId, 0, 0, contractAddressId, dentLog.ID,
 	)
 	Expect(err).NotTo(HaveOccurred())
 }
 
 func insertDeal(blockNumber int64, bidId string, contractAddressId int64, db *postgres.DB) {
 	headerID := insertHeader(db, blockNumber)
-
-	_, err := db.Exec(`INSERT into maker.deal (header_id, bid_id, address_id, log_idx, tx_idx)
-		VALUES($1, $2::NUMERIC, $3, $4, $5)`,
-		headerID, bidId, contractAddressId, 0, 0,
+	dealLog := test_data.CreateTestLog(headerID, db)
+	_, err := db.Exec(`INSERT into maker.deal (header_id, bid_id, address_id, log_id)
+		VALUES($1, $2::NUMERIC, $3, $4)`,
+		headerID, bidId, contractAddressId, dealLog.ID,
 	)
 	Expect(err).NotTo(HaveOccurred())
 }
 
 func insertYank(blockNumber int64, bidId string, contractAddressId int64, db *postgres.DB) {
 	headerID := insertHeader(db, blockNumber)
-
-	_, err := db.Exec(`INSERT into maker.yank (header_id, bid_id, address_id, log_idx, tx_idx)
-		VALUES($1, $2::NUMERIC, $3, $4, $5)`,
-		headerID, bidId, contractAddressId, 0, 0,
+	yankLog := test_data.CreateTestLog(headerID, db)
+	_, err := db.Exec(`INSERT into maker.yank (header_id, bid_id, address_id, log_id)
+		VALUES($1, $2::NUMERIC, $3, $4)`,
+		headerID, bidId, contractAddressId, yankLog.ID,
 	)
 	Expect(err).NotTo(HaveOccurred())
 }
@@ -740,23 +735,25 @@ func insertCdpManagerCdpi(blockNumber int64, cdpi int, db *postgres.DB) {
 
 func insertVatFold(urn string, blockNumber int64, db *postgres.DB) {
 	headerID := insertHeader(db, blockNumber)
+	vatFoldLog := test_data.CreateTestLog(headerID, db)
 	urnID, err := shared.GetOrCreateUrn(urn, test_helpers.FakeIlk.Hex, db)
 	Expect(err).NotTo(HaveOccurred())
 
 	_, execErr := db.Exec(
-		`INSERT INTO maker.vat_fold (header_id, urn_id, log_idx, tx_idx)
-			VALUES($1, $2, $3, $4)`,
-		headerID, urnID, 0, 0,
+		`INSERT INTO maker.vat_fold (header_id, urn_id, log_id)
+			VALUES($1, $2, $3)`,
+		headerID, urnID, vatFoldLog.ID,
 	)
 	Expect(execErr).NotTo(HaveOccurred())
 }
 
 func insertVowFlog(era string, blockNumber int64, db *postgres.DB) {
 	headerID := insertHeader(db, blockNumber)
+	vowFlogLog := test_data.CreateTestLog(headerID, db)
 	_, execErr := db.Exec(
-		`INSERT INTO maker.vow_flog (header_id, era, log_idx, tx_idx)
-			VALUES($1, $2, $3, $4)`,
-		headerID, era, 0, 0,
+		`INSERT INTO maker.vow_flog (header_id, era, log_id)
+			VALUES($1, $2, $3)`,
+		headerID, era, vowFlogLog.ID,
 	)
 	Expect(execErr).NotTo(HaveOccurred())
 }
@@ -765,119 +762,134 @@ func insertVowFess(tab string, timestamp, blockNumber int64, db *postgres.DB) {
 	headerRepository := repositories.NewHeaderRepository(db)
 	fakeHeader := fakes.GetFakeHeaderWithTimestamp(timestamp, blockNumber)
 	headerID, err := headerRepository.CreateOrUpdateHeader(fakeHeader)
+	vowFessLog := test_data.CreateTestLog(headerID, db)
 
 	Expect(err).NotTo(HaveOccurred())
 	_, execErr := db.Exec(
-		`INSERT INTO maker.vow_fess (header_id, tab, log_idx, tx_idx)
-			VALUES($1, $2, $3, $4)`,
-		headerID, tab, 0, 0,
+		`INSERT INTO maker.vow_fess (header_id, tab, log_id)
+			VALUES($1, $2, $3)`,
+		headerID, tab, vowFessLog.ID,
 	)
 	Expect(execErr).NotTo(HaveOccurred())
 }
 
 func insertVatInit(ilk string, blockNumber int64, db *postgres.DB) {
 	headerID := insertHeader(db, blockNumber)
+	vatInitLog := test_data.CreateTestLog(headerID, db)
 	ilkID, err := shared.GetOrCreateIlk(ilk, db)
 	Expect(err).NotTo(HaveOccurred())
 	_, execErr := db.Exec(
-		`INSERT INTO maker.vat_init (header_id, ilk_id, log_idx, tx_idx)
-			VALUES($1, $2, $3, $4)`,
-		headerID, ilkID, 0, 0,
+		`INSERT INTO maker.vat_init (header_id, ilk_id, log_id)
+			VALUES($1, $2, $3)`,
+		headerID, ilkID, vatInitLog.ID,
 	)
 	Expect(execErr).NotTo(HaveOccurred())
 }
 
 func insertVatFlux(ilk, src, dst string, blockNumber int64, db *postgres.DB) {
 	headerID := insertHeader(db, blockNumber)
+	vatFluxLog := test_data.CreateTestLog(headerID, db)
 	ilkID, err := shared.GetOrCreateIlk(ilk, db)
 	Expect(err).NotTo(HaveOccurred())
 
 	_, execErr := db.Exec(
-		`INSERT INTO maker.vat_flux (header_id, ilk_id, src, dst, log_idx, tx_idx)
-			VALUES($1, $2, $3, $4, $5, $6)`,
-		headerID, ilkID, src, dst, 0, 0,
+		`INSERT INTO maker.vat_flux (header_id, ilk_id, src, dst, log_id)
+			VALUES($1, $2, $3, $4, $5)`,
+		headerID, ilkID, src, dst, vatFluxLog.ID,
 	)
 	Expect(execErr).NotTo(HaveOccurred())
 }
 
 func insertVatFork(ilk, src, dst string, blockNumber int64, db *postgres.DB) {
 	headerID := insertHeader(db, blockNumber)
+	vatForkLog := test_data.CreateTestLog(headerID, db)
 	ilkID, err := shared.GetOrCreateIlk(ilk, db)
 	Expect(err).NotTo(HaveOccurred())
 
 	_, execErr := db.Exec(
-		`INSERT INTO maker.vat_fork (header_id, ilk_id, src, dst, log_idx, tx_idx)
-			VALUES($1, $2, $3, $4, $5, $6)`,
-		headerID, ilkID, src, dst, 0, 0,
+		`INSERT INTO maker.vat_fork (header_id, ilk_id, src, dst, log_id)
+			VALUES($1, $2, $3, $4, $5)`,
+		headerID, ilkID, src, dst, vatForkLog.ID,
 	)
 	Expect(execErr).NotTo(HaveOccurred())
 }
 
 func insertVatFrob(ilk, urn, v, w string, blockNumber int64, db *postgres.DB) {
 	headerID := insertHeader(db, blockNumber)
+	vatFrobLog := test_data.CreateTestLog(headerID, db)
 	urnID, err := shared.GetOrCreateUrn(urn, ilk, db)
 	Expect(err).NotTo(HaveOccurred())
 
 	_, execErr := db.Exec(
-		`INSERT INTO maker.vat_frob (header_id, urn_id, v, w, log_idx, tx_idx)
-			VALUES($1, $2, $3, $4, $5, $6)`,
-		headerID, urnID, v, w, 0, 0,
+		`INSERT INTO maker.vat_frob (header_id, urn_id, v, w, log_id)
+			VALUES($1, $2, $3, $4, $5)`,
+		headerID, urnID, v, w, vatFrobLog.ID,
 	)
 	Expect(execErr).NotTo(HaveOccurred())
 }
 
 func insertVatGrab(ilk, urn, v, w string, blockNumber int64, db *postgres.DB) {
 	headerID := insertHeader(db, blockNumber)
+	vatGrabLog := test_data.CreateTestLog(headerID, db)
 	urnID, err := shared.GetOrCreateUrn(urn, ilk, db)
 	Expect(err).NotTo(HaveOccurred())
 
 	_, execErr := db.Exec(
-		`INSERT INTO maker.vat_grab (header_id, urn_id, v, w, log_idx, tx_idx)
-			VALUES($1, $2, $3, $4, $5, $6)`,
-		headerID, urnID, v, w, 0, 0,
+		`INSERT INTO maker.vat_grab (header_id, urn_id, v, w, log_id)
+			VALUES($1, $2, $3, $4, $5)`,
+		headerID, urnID, v, w, vatGrabLog.ID,
 	)
 	Expect(execErr).NotTo(HaveOccurred())
 }
 
 func insertVatSuck(u, v string, rad int, blockNumber int64, db *postgres.DB) {
 	headerID := insertHeader(db, blockNumber)
+	vatSuckLog := test_data.CreateTestLog(headerID, db)
 	_, execErr := db.Exec(
-		`INSERT INTO maker.vat_suck (header_id, u, v, rad, log_idx, tx_idx)
-			VALUES($1, $2, $3, $4, $5, $6)`,
-		headerID, u, v, rad, 0, 0,
+		`INSERT INTO maker.vat_suck (header_id, u, v, rad, log_id)
+			VALUES($1, $2, $3, $4, $5)`,
+		headerID, u, v, rad, vatSuckLog.ID,
 	)
 	Expect(execErr).NotTo(HaveOccurred())
 }
 
 func insertVatHeal(blockNumber int64, transaction core.TransactionModel, db *postgres.DB) {
-	headerID := insertHeader(db, blockNumber)
+	// TODO: abstract to not init a new repo on every call
+	headerRespository := repositories.NewHeaderRepository(db)
+	headerID, insertHeaderErr := headerRespository.CreateOrUpdateHeader(fakes.GetFakeHeader(blockNumber))
+	Expect(insertHeaderErr).NotTo(HaveOccurred())
+	log := types.Log{TxIndex: uint(transaction.TxIndex), BlockNumber: uint64(blockNumber)}
+	vatHealLogs := test_data.CreateLogs(headerID, []types.Log{log}, db)
+	Expect(len(vatHealLogs)).To(Equal(1))
 	insertTransaction(blockNumber, transaction, db)
 	_, execErr := db.Exec(
-		`INSERT INTO maker.vat_heal (header_id, log_idx, tx_idx)
-			VALUES($1, $2, $3)`,
-		headerID, 0, transaction.TxIndex,
+		`INSERT INTO maker.vat_heal (header_id, log_id)
+			VALUES($1, $2)`,
+		headerID, vatHealLogs[0].ID,
 	)
 	Expect(execErr).NotTo(HaveOccurred())
 }
 
 func insertVatMove(src, dst string, blockNumber int64, db *postgres.DB) {
 	headerID := insertHeader(db, blockNumber)
+	vatMoveLog := test_data.CreateTestLog(headerID, db)
 	_, execErr := db.Exec(
-		`INSERT INTO maker.vat_move (header_id, src, dst, rad, log_idx, tx_idx)
-			VALUES($1, $2, $3, $4, $5, $6)`,
-		headerID, src, dst, 0, 0, 0,
+		`INSERT INTO maker.vat_move (header_id, src, dst, rad, log_id)
+			VALUES($1, $2, $3, $4, $5)`,
+		headerID, src, dst, 0, vatMoveLog.ID,
 	)
 	Expect(execErr).NotTo(HaveOccurred())
 }
 
 func insertVatSlip(ilk, usr string, blockNumber int64, db *postgres.DB) {
 	headerID := insertHeader(db, blockNumber)
+	vatSlipLog := test_data.CreateTestLog(headerID, db)
 	ilkID, err := shared.GetOrCreateIlk(ilk, db)
 	Expect(err).NotTo(HaveOccurred())
 	_, execErr := db.Exec(
-		`INSERT INTO maker.vat_slip (header_id, ilk_id, usr, log_idx, tx_idx)
-				VALUES($1, $2, $3, $4, $5)`,
-		headerID, ilkID, usr, 0, 0,
+		`INSERT INTO maker.vat_slip (header_id, ilk_id, usr, log_id)
+				VALUES($1, $2, $3, $4)`,
+		headerID, ilkID, usr, vatSlipLog.ID,
 	)
 	Expect(execErr).NotTo(HaveOccurred())
 }

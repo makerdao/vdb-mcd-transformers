@@ -22,8 +22,10 @@ import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 	"math/big"
+	"math/rand"
 
 	"github.com/vulcanize/mcd_transformers/transformers/events/flip_kick"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
@@ -37,7 +39,7 @@ var (
 	FakeUrn         = "0x7340e006f4135BA6970D43bf43d88DCAD4e7a8CA"
 	gal             = "0x07Fa9eF6609cA7921112231F8f195138ebbA2977"
 	contractAddress = EthFlipAddress()
-	rawLog, _       = json.Marshal(EthFlipKickLog)
+	rawLog, _       = json.Marshal(FlipKickHeaderSyncLog)
 )
 
 var (
@@ -46,7 +48,7 @@ var (
 	FlipKickBlockNumber     = int64(10)
 )
 
-var EthFlipKickLog = types.Log{
+var rawFlipKickLog = types.Log{
 	Address: common.HexToAddress(EthFlipAddress()),
 	Topics: []common.Hash{
 		common.HexToHash(constants.FlipKickSignature()),
@@ -62,35 +64,40 @@ var EthFlipKickLog = types.Log{
 	Removed:     false,
 }
 
+var FlipKickHeaderSyncLog = core.HeaderSyncLog{
+	ID:          int64(rand.Int31()),
+	HeaderID:    int64(rand.Int31()),
+	Log:         rawFlipKickLog,
+	Transformed: false,
+}
+
 var FlipKickEntity = flip_kick.FlipKickEntity{
-	Id:               flipID,
-	Lot:              lot,
-	Bid:              bid,
-	Tab:              tab,
-	Usr:              common.HexToAddress(FakeUrn),
-	Gal:              common.HexToAddress(gal),
-	ContractAddress:  common.HexToAddress(contractAddress),
-	TransactionIndex: EthFlipKickLog.TxIndex,
-	LogIndex:         EthFlipKickLog.Index,
-	Raw:              EthFlipKickLog,
+	Id:              flipID,
+	Lot:             lot,
+	Bid:             bid,
+	Tab:             tab,
+	Usr:             common.HexToAddress(FakeUrn),
+	Gal:             common.HexToAddress(gal),
+	ContractAddress: common.HexToAddress(contractAddress),
+	HeaderID:        FlipKickHeaderSyncLog.HeaderID,
+	LogID:           FlipKickHeaderSyncLog.ID,
 }
 
 var FlipKickModel = shared.InsertionModel{
 	SchemaName:       "maker",
 	TableName:        "flip_kick",
 	OrderedColumns:   []string{
-		"header_id", "bid_id", "lot", "bid", "tab", "usr", "gal", "address_id", "tx_idx", "log_idx", "raw_log",
+		constants.HeaderFK, constants.LogFK, "bid_id", "lot", "bid", "tab", "usr", "gal", "address_id",
 	},
 	ColumnValues:     shared.ColumnValues{
+		constants.HeaderFK: FlipKickEntity.HeaderID,
+		constants.LogFK: FlipKickEntity.LogID,
 		"bid_id": flipID.String(),
 		"lot": lot.String(),
 		"bid": bid.String(),
 		"tab": tab.String(),
 		"usr": FakeUrn,
 		"gal": gal,
-		"tx_idx": EthFlipKickLog.TxIndex,
-		"log_idx": EthFlipKickLog.Index,
-		"raw_log": rawLog,
 	},
 	ForeignKeyValues: shared.ForeignKeyValues{
 		constants.AddressFK: contractAddress,
@@ -98,7 +105,6 @@ var FlipKickModel = shared.InsertionModel{
 }
 
 type FlipKickDBRow struct {
-	ID       int64
-	HeaderId int64 `db:"header_id"`
+	ID int64
 	flip_kick.FlipKickModel
 }

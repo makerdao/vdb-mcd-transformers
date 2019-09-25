@@ -17,14 +17,13 @@
 package flip_kick
 
 type FlipKickModel struct {
-	BidId            string `db:"bid_id"`
-	Lot              string
-	Bid              string
-	Tab              string
-	Usr              string
-	Gal              string
-	ContractAddress  string `db:"address_id"`
-	TransactionIndex uint   `db:"tx_idx"`
-	LogIndex         uint   `db:"log_idx"`
-	Raw              []byte `db:"raw_log"`
+	BidId           string `db:"bid_id"`
+	Lot             string
+	Bid             string
+	Tab             string
+	Usr             string
+	Gal             string
+	ContractAddress string `db:"address_id"`
+	HeaderID        int64  `db:"header_id"`
+	LogID           int64  `db:"log_id"`
 }

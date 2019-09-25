@@ -17,28 +17,21 @@
 package flip_kick
 
 import (
-	"github.com/vulcanize/mcd_transformers/transformers/shared"
-
-	repo "github.com/vulcanize/vulcanizedb/libraries/shared/repository"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 
-	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 )
 
-var InsertFlipKickQuery = `INSERT into maker.flip_kick (header_id, bid_id, lot, bid, tab, usr, gal, address_id, tx_idx, log_idx, raw_log)
-				VALUES($1, $2::NUMERIC, $3::NUMERIC, $4::NUMERIC, $5::NUMERIC, $6, $7, $8, $9, $10, $11)
-				ON CONFLICT (header_id, tx_idx, log_idx) DO UPDATE SET bid_id = $2, lot = $3, bid = $4, tab = $5, usr = $6, gal = $7, address_id = $8, raw_log = $11;`
+var InsertFlipKickQuery = `INSERT into maker.flip_kick (header_id, bid_id, lot, bid, tab, usr, gal, address_id, log_id)
+				VALUES($1, $2::NUMERIC, $3::NUMERIC, $4::NUMERIC, $5::NUMERIC, $6, $7, $8, $9)
+				ON CONFLICT (header_id, log_id) DO UPDATE SET bid_id = $2, lot = $3, bid = $4, tab = $5, usr = $6, gal = $7, address_id = $8;`
 
 type FlipKickRepository struct {
 	db *postgres.DB
 }
 
-func (repository FlipKickRepository) Create(headerID int64, models []shared.InsertionModel) error {
-	return shared.Create(headerID, models, repository.db)
-}
-
-func (repository FlipKickRepository) MarkHeaderChecked(headerId int64) error {
-	return repo.MarkHeaderChecked(headerId, repository.db, constants.FlipKickLabel)
+func (repository FlipKickRepository) Create(models []shared.InsertionModel) error {
+	return shared.Create(models, repository.db)
 }
 
 func (repository *FlipKickRepository) SetDB(db *postgres.DB) {

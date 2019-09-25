@@ -17,7 +17,6 @@
 package shared
 
 import (
-	"github.com/ethereum/go-ethereum/core/types"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
@@ -36,16 +35,11 @@ func (tr LogNoteTransformer) NewLogNoteTransformer(db *postgres.DB) transformer.
 	return tr
 }
 
-func (tr LogNoteTransformer) Execute(logs []types.Log, header core.Header) error {
+func (tr LogNoteTransformer) Execute(logs []core.HeaderSyncLog) error {
 	transformerName := tr.Config.TransformerName
 
 	// No matching logs, mark the header as checked for this type of logs
 	if len(logs) < 1 {
-		err := tr.Repository.MarkHeaderChecked(header.Id)
-		if err != nil {
-			log.Printf("Error marking header as checked in %v: %v", transformerName, err)
-			return err
-		}
 		return nil
 	}
 
@@ -55,7 +49,7 @@ func (tr LogNoteTransformer) Execute(logs []types.Log, header core.Header) error
 		return err
 	}
 
-	err = tr.Repository.Create(header.Id, models)
+	err = tr.Repository.Create(models)
 	if err != nil {
 		log.Printf("Error persisting %v record: %v", transformerName, err)
 		return err

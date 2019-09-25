@@ -20,25 +20,27 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_slip"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
 var _ = Describe("Vat slip converter", func() {
 	var converter = vat_slip.VatSlipConverter{}
 	It("returns err if log is missing topics", func() {
-		badLog := types.Log{
-			Data: []byte{1, 1, 1, 1, 1},
-		}
+		badLog := core.HeaderSyncLog{
+			Log: types.Log{
+				Data: []byte{1, 1, 1, 1, 1},
+			}}
 
-		_, err := converter.ToModels(constants.VatABI(), []types.Log{badLog})
+		_, err := converter.ToModels(constants.VatABI(), []core.HeaderSyncLog{badLog})
 		Expect(err).To(HaveOccurred())
 	})
 
 	It("converts a log with positive wad to a model", func() {
-		models, err := converter.ToModels(constants.VatABI(), []types.Log{test_data.EthVatSlipLogWithPositiveWad})
+		models, err := converter.ToModels(constants.VatABI(), []core.HeaderSyncLog{test_data.VatSlipHeaderSyncLogWithPositiveWad})
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(len(models)).To(Equal(1))
@@ -46,7 +48,7 @@ var _ = Describe("Vat slip converter", func() {
 	})
 
 	It("converts a log with a negative wad to a model", func() {
-		models, err := converter.ToModels(constants.VatABI(), []types.Log{test_data.EthVatSlipLogWithNegativeWad})
+		models, err := converter.ToModels(constants.VatABI(), []core.HeaderSyncLog{test_data.VatSlipHeaderSyncLogWithNegativeWad})
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(len(models)).To(Equal(1))

@@ -17,14 +17,13 @@
 package bite
 
 type BiteModel struct {
-	Ilk              string
-	Urn              string `db:"urn_id"`
-	Ink              string
-	Art              string
-	Tab              string
-	Flip             string
-	Id               string `db:"bite_identifier"`
-	LogIndex         uint   `db:"log_idx"`
-	TransactionIndex uint   `db:"tx_idx"`
-	Raw              []byte `db:"raw_log"`
+	Ilk      string
+	Urn      string `db:"urn_id"`
+	Ink      string
+	Art      string
+	Tab      string
+	Flip     string
+	Id       string `db:"bite_identifier"`
+	HeaderID int64
+	LogID    int64 `db:"log_id"`
 }

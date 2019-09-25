@@ -17,7 +17,8 @@
 package test_data
 
 import (
-	"encoding/json"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
+	"math/rand"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
@@ -28,7 +29,7 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
-var EthVatInitLog = types.Log{
+var rawVatInitLog = types.Log{
 	Address: common.HexToAddress(VatAddress()),
 	Topics: []common.Hash{
 		common.HexToHash(constants.VatInitSignature()),
@@ -45,17 +46,22 @@ var EthVatInitLog = types.Log{
 	Removed:     false,
 }
 
-var rawVatInitLog, _ = json.Marshal(EthVatInitLog)
+var VatInitHeaderSyncLog = core.HeaderSyncLog{
+	ID:          int64(rand.Int31()),
+	HeaderID:    int64(rand.Int31()),
+	Log:         rawVatInitLog,
+	Transformed: false,
+}
+
 var VatInitModel = shared.InsertionModel{
 	SchemaName: "maker",
 	TableName:  "vat_init",
 	OrderedColumns: []string{
-		"header_id", string(constants.IlkFK), "log_idx", "tx_idx", "raw_log",
+		constants.HeaderFK, string(constants.IlkFK), constants.LogFK,
 	},
 	ColumnValues: shared.ColumnValues{
-		"log_idx": EthVatInitLog.Index,
-		"tx_idx":  EthVatInitLog.TxIndex,
-		"raw_log": rawVatInitLog,
+		constants.HeaderFK: VatInitHeaderSyncLog.HeaderID,
+		constants.LogFK:    VatInitHeaderSyncLog.ID,
 	},
 	ForeignKeyValues: shared.ForeignKeyValues{
 		constants.IlkFK: "0x66616b6520696c6b000000000000000000000000000000000000000000000000",

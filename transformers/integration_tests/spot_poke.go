@@ -17,22 +17,20 @@
 package integration_tests
 
 import (
-	"github.com/vulcanize/mcd_transformers/transformers/events/spot_poke"
-	"github.com/vulcanize/mcd_transformers/transformers/test_data"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
-	"strconv"
-
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/vulcanize/mcd_transformers/test_config"
+	"github.com/vulcanize/mcd_transformers/transformers/events/spot_poke"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/mcd_transformers/transformers/test_data"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
-
-	"github.com/vulcanize/mcd_transformers/test_config"
-	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"strconv"
 )
 
 var _ = Describe("SpotPoke Transformer", func() {
@@ -51,14 +49,14 @@ var _ = Describe("SpotPoke Transformer", func() {
 	})
 
 	spotPokeConfig := transformer.EventTransformerConfig{
-		TransformerName:   mcdConstants.SpotPokeLabel,
+		TransformerName:   constants.SpotPokeLabel,
 		ContractAddresses: []string{test_data.SpotAddress()},
-		ContractAbi:       mcdConstants.SpotABI(),
-		Topic:             mcdConstants.SpotPokeSignature(),
+		ContractAbi:       constants.SpotABI(),
+		Topic:             constants.SpotPokeSignature(),
 	}
 
 	It("transforms spot poke log events", func() {
-		blockNumber := int64(12742357)
+		blockNumber := int64(13171995)
 		spotPokeConfig.StartingBlockNumber = blockNumber
 		spotPokeConfig.EndingBlockNumber = blockNumber
 
@@ -79,7 +77,9 @@ var _ = Describe("SpotPoke Transformer", func() {
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
-		err = tr.Execute(logs, header)
+		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+
+		err = tr.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []spot_poke.SpotPokeModel
@@ -87,10 +87,10 @@ var _ = Describe("SpotPoke Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))
-		ilkID, err := shared.GetOrCreateIlk("0x474e542d41000000000000000000000000000000000000000000000000000000", db)
+		ilkID, err := shared.GetOrCreateIlk("4554482d41000000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
-		Expect(dbResult[0].Ilk).To(Equal(strconv.Itoa(ilkID)))
-		Expect(dbResult[0].Value).To(Equal("93003334050000000.000000"))
-		Expect(dbResult[0].Spot).To(Equal("51668518916666666666666666"))
+		Expect(dbResult[0].Ilk).To(Equal(strconv.FormatInt(ilkID, 10)))
+		Expect(dbResult[0].Value).To(Equal("315700000000000000000.000000"))
+		Expect(dbResult[0].Spot).To(Equal("210466666666666666666666666666"))
 	})
 })

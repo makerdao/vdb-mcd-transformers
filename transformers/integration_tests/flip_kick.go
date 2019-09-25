@@ -20,22 +20,21 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/vulcanize/mcd_transformers/test_config"
+	"github.com/vulcanize/mcd_transformers/transformers/events/flip_kick"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
-
-	"github.com/vulcanize/mcd_transformers/test_config"
-	"github.com/vulcanize/mcd_transformers/transformers/events/flip_kick"
-	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
-	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
 var _ = Describe("FlipKick Transformer", func() {
 	flipKickConfig := transformer.EventTransformerConfig{
-		TransformerName:   mcdConstants.FlipKickLabel,
+		TransformerName:   constants.FlipKickLabel,
 		ContractAddresses: []string{test_data.EthFlipAddress()},
-		ContractAbi:       mcdConstants.FlipABI(),
-		Topic:             mcdConstants.FlipKickSignature(),
+		ContractAbi:       constants.FlipABI(),
+		Topic:             constants.FlipKickSignature(),
 	}
 
 	// TODO: Update when updated kick event exists in kovan
@@ -67,7 +66,9 @@ var _ = Describe("FlipKick Transformer", func() {
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
-		err = tr.Execute(logs, header)
+		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+
+		err = tr.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []flip_kick.FlipKickModel

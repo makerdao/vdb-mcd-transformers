@@ -17,50 +17,45 @@
 package bite
 
 import (
-	"encoding/json"
 	"fmt"
-	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/ethereum/go-ethereum/core/types"
-
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/geth"
 
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 )
 
 type BiteConverter struct{}
 
-func (BiteConverter) ToEntities(contractAbi string, ethLogs []types.Log) ([]BiteEntity, error) {
+func (BiteConverter) ToEntities(contractAbi string, ethLogs []core.HeaderSyncLog) ([]BiteEntity, error) {
 	var entities []BiteEntity
-	for _, ethLog := range ethLogs {
+	for _, log := range ethLogs {
 		entity := &BiteEntity{}
-		address := ethLog.Address
+		address := log.Log.Address
 		abi, err := geth.ParseAbi(contractAbi)
 		if err != nil {
 			return nil, err
 		}
 
 		contract := bind.NewBoundContract(address, abi, nil, nil, nil)
-
-		err = contract.UnpackLog(entity, "Bite", ethLog)
-		if err != nil {
-			return nil, err
+		unpackErr := contract.UnpackLog(&entity, "Bite", log.Log)
+		if unpackErr != nil {
+			return nil, unpackErr
 		}
 
-		entity.Raw = ethLog
-		entity.LogIndex = ethLog.Index
-		entity.TransactionIndex = ethLog.TxIndex
-
+		entity.HeaderID = log.HeaderID
+		entity.LogID = log.ID
 		entities = append(entities, *entity)
 	}
 
 	return entities, nil
 }
 
-func (converter BiteConverter) ToModels(abi string, logs []types.Log) ([]shared.InsertionModel, error) {
+func (converter BiteConverter) ToModels(abi string, logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
 	entities, entityErr := converter.ToEntities(abi, logs)
 	if entityErr != nil {
 		return nil, fmt.Errorf("BiteConverter couldn't convert logs to entities: %v", entityErr)
@@ -70,10 +65,6 @@ func (converter BiteConverter) ToModels(abi string, logs []types.Log) ([]shared.
 	for _, biteEntity := range entities {
 		ilk := hexutil.Encode(biteEntity.Ilk[:])
 		urn := common.BytesToAddress(biteEntity.Urn[:]).Hex()
-		rawLog, err := json.Marshal(biteEntity.Raw)
-		if err != nil {
-			return nil, err
-		}
 
 		model := shared.InsertionModel{
 			SchemaName: "maker",
@@ -82,14 +73,13 @@ func (converter BiteConverter) ToModels(abi string, logs []types.Log) ([]shared.
 				"header_id", string(constants.UrnFK), "ink", "art", "tab", "flip", "bite_identifier", "tx_idx", "log_idx", "raw_log",
 			},
 			ColumnValues: shared.ColumnValues{
-				"ink":             biteEntity.Ink.String(),
-				"art":             biteEntity.Art.String(),
-				"tab":             biteEntity.Tab.String(),
+				constants.HeaderFK: biteEntity.HeaderID,
+				constants.LogFK: biteEntity.LogID,
+				"ink":             shared.BigIntToString(biteEntity.Ink),
+				"art":             shared.BigIntToString(biteEntity.Art),
+				"tab":             shared.BigIntToString(biteEntity.Tab),
 				"flip":            common.BytesToAddress(biteEntity.Flip.Bytes()).Hex(),
-				"bite_identifier": biteEntity.Id.String(),
-				"tx_idx":          biteEntity.TransactionIndex,
-				"log_idx":         biteEntity.LogIndex,
-				"raw_log":         rawLog,
+				"bite_identifier": shared.BigIntToString(biteEntity.Id),
 			},
 			ForeignKeyValues: shared.ForeignKeyValues{
 				constants.IlkFK: ilk,

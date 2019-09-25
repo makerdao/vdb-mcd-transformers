@@ -17,26 +17,23 @@
 package integration_tests
 
 import (
-	"sort"
-	"strconv"
-
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
-	"github.com/vulcanize/vulcanizedb/pkg/core"
-	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
-	"github.com/vulcanize/vulcanizedb/pkg/geth/client"
-
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/events/cat_file/chop_lump"
 	"github.com/vulcanize/mcd_transformers/transformers/events/cat_file/flip"
 	"github.com/vulcanize/mcd_transformers/transformers/events/cat_file/vow"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
+	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
+	"github.com/vulcanize/vulcanizedb/pkg/geth/client"
+	"strconv"
 )
 
 var _ = Describe("Cat File transformer", func() {
@@ -51,7 +48,7 @@ var _ = Describe("Cat File transformer", func() {
 
 	var catFileConfig = transformer.EventTransformerConfig{
 		ContractAddresses: []string{test_data.CatAddress()},
-		ContractAbi:       mcdConstants.CatABI(),
+		ContractAbi:       constants.CatABI(),
 	}
 
 	BeforeEach(func() {
@@ -66,11 +63,11 @@ var _ = Describe("Cat File transformer", func() {
 	})
 
 	It("persists a chop lump event (lump)", func() {
-		chopLumpBlockNumber := int64(12742403)
+		chopLumpBlockNumber := int64(13172049)
 		header, err := persistHeader(db, chopLumpBlockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
-		catFileConfig.TransformerName = mcdConstants.CatFileChopLumpLabel
-		catFileConfig.Topic = mcdConstants.CatFileChopLumpSignature()
+		catFileConfig.TransformerName = constants.CatFileChopLumpLabel
+		catFileConfig.Topic = constants.CatFileChopLumpSignature()
 		catFileConfig.StartingBlockNumber = chopLumpBlockNumber
 		catFileConfig.EndingBlockNumber = chopLumpBlockNumber
 
@@ -87,30 +84,30 @@ var _ = Describe("Cat File transformer", func() {
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
-		err = transformer.Execute(logs, header)
+		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+
+		err = transformer.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []catFileChopLumpModel
-		err = db.Select(&dbResult, `SELECT what, ilk_id, data, log_idx FROM maker.cat_file_chop_lump`)
+		err = db.Select(&dbResult, `SELECT what, ilk_id, data FROM maker.cat_file_chop_lump`)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))
-		sort.Sort(byLogIndexChopLump(dbResult))
 
-		ilkID, err := shared.GetOrCreateIlk("0x474e542d41000000000000000000000000000000000000000000000000000000", db)
+		ilkID, err := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
-		Expect(dbResult[0].Ilk).To(Equal(strconv.Itoa(ilkID)))
+		Expect(dbResult[0].Ilk).To(Equal(strconv.FormatInt(ilkID, 10)))
 		Expect(dbResult[0].What).To(Equal("lump"))
-		Expect(dbResult[0].Data).To(Equal("5000000000000000000000"))
-		Expect(dbResult[0].LogIndex).To(Equal(uint(3)))
+		Expect(dbResult[0].Data).To(Equal("1500000000000000000"))
 	})
 
 	It("persists a chop lump event (chop)", func() {
-		chopLumpBlockNumber := int64(12742382)
+		chopLumpBlockNumber := int64(13172024)
 		header, err := persistHeader(db, chopLumpBlockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
-		catFileConfig.TransformerName = mcdConstants.CatFileChopLumpLabel
-		catFileConfig.Topic = mcdConstants.CatFileChopLumpSignature()
+		catFileConfig.TransformerName = constants.CatFileChopLumpLabel
+		catFileConfig.Topic = constants.CatFileChopLumpSignature()
 		catFileConfig.StartingBlockNumber = chopLumpBlockNumber
 		catFileConfig.EndingBlockNumber = chopLumpBlockNumber
 
@@ -127,30 +124,30 @@ var _ = Describe("Cat File transformer", func() {
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
-		err = transformer.Execute(logs, header)
+		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+
+		err = transformer.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []catFileChopLumpModel
-		err = db.Select(&dbResult, `SELECT what, ilk_id, data, log_idx FROM maker.cat_file_chop_lump`)
+		err = db.Select(&dbResult, `SELECT what, ilk_id, data FROM maker.cat_file_chop_lump`)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))
-		sort.Sort(byLogIndexChopLump(dbResult))
 
-		ilkID, err := shared.GetOrCreateIlk("0x474e542d41000000000000000000000000000000000000000000000000000000", db)
+		ilkID, err := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
-		Expect(dbResult[0].Ilk).To(Equal(strconv.Itoa(ilkID)))
+		Expect(dbResult[0].Ilk).To(Equal(strconv.FormatInt(ilkID, 10)))
 		Expect(dbResult[0].What).To(Equal("chop"))
 		Expect(dbResult[0].Data).To(Equal("1050000000000000000000000000"))
-		Expect(dbResult[0].LogIndex).To(Equal(uint(3)))
 	})
 
 	It("persists a flip event", func() {
-		flipBlockNumber := int64(12742151)
+		flipBlockNumber := int64(13171646)
 		header, err := persistHeader(db, flipBlockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
-		catFileConfig.TransformerName = mcdConstants.CatFileFlipLabel
-		catFileConfig.Topic = mcdConstants.CatFileFlipSignature()
+		catFileConfig.TransformerName = constants.CatFileFlipLabel
+		catFileConfig.Topic = constants.CatFileFlipSignature()
 		catFileConfig.StartingBlockNumber = flipBlockNumber
 		catFileConfig.EndingBlockNumber = flipBlockNumber
 
@@ -168,7 +165,9 @@ var _ = Describe("Cat File transformer", func() {
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
-		err = t.Execute(logs, header)
+		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+
+		err = t.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []catFileFlipModel
@@ -176,19 +175,19 @@ var _ = Describe("Cat File transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))
-		ilkID, err := shared.GetOrCreateIlk("0x474e542d41000000000000000000000000000000000000000000000000000000", db)
+		ilkID, err := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
-		Expect(dbResult[0].Ilk).To(Equal(strconv.Itoa(ilkID)))
+		Expect(dbResult[0].Ilk).To(Equal(strconv.FormatInt(ilkID, 10)))
 		Expect(dbResult[0].What).To(Equal("flip"))
-		Expect(dbResult[0].Flip).To(Equal("0xA1A4CC927091A3C9F10e55a161869B3CAd58ef1b"))
+		Expect(dbResult[0].Flip).To(Equal("0x02b6c914E29EE4D310e6b8e24340A8A643627D44"))
 	})
 
 	It("persists a vow event", func() {
-		vowBlockNumber := int64(12742086)
+		vowBlockNumber := int64(13171626)
 		header, err := persistHeader(db, vowBlockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
-		catFileConfig.TransformerName = mcdConstants.CatFileVowLabel
-		catFileConfig.Topic = mcdConstants.CatFileVowSignature()
+		catFileConfig.TransformerName = constants.CatFileVowLabel
+		catFileConfig.Topic = constants.CatFileVowSignature()
 		catFileConfig.StartingBlockNumber = vowBlockNumber
 		catFileConfig.EndingBlockNumber = vowBlockNumber
 
@@ -205,10 +204,9 @@ var _ = Describe("Cat File transformer", func() {
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
-		err = t.Execute(logs, header)
-		Expect(err).NotTo(HaveOccurred())
+		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
 
-		err = t.Execute(logs, header)
+		err = t.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 
 		var headerID int64
@@ -219,41 +217,23 @@ var _ = Describe("Cat File transformer", func() {
 		err = db.Get(&dbResult, `SELECT what, data FROM maker.cat_file_vow`)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(dbResult.What).To(Equal("vow"))
-		Expect(dbResult.Data).To(Equal("0x5fD6598A1F6a3b5FE78627fa72107D4a9fAdf348"))
-
-		var catVowChecked []int
-		err = db.Select(&catVowChecked, `SELECT cat_file_vow FROM public.checked_headers WHERE header_id = $1`, headerID)
-		Expect(err).NotTo(HaveOccurred())
-
-		Expect(catVowChecked[0]).To(Equal(2))
+		Expect(dbResult.Data).To(Equal("0x022688b43Bf76a9E6f4d3a96350ffDe90a752d25"))
 	})
 })
 
 type catFileChopLumpModel struct {
-	Ilk              string `db:"ilk_id"`
-	What             string
-	Data             string
-	TransactionIndex uint   `db:"tx_idx"`
-	LogIndex         uint   `db:"log_idx"`
-	Raw              []byte `db:"raw_log"`
+	Ilk  string `db:"ilk_id"`
+	What string
+	Data string
 }
 
 type catFileFlipModel struct {
-	Ilk              string `db:"ilk_id"`
-	What             string
-	Flip             string
-	TransactionIndex uint   `db:"tx_idx"`
-	LogIndex         uint   `db:"log_idx"`
-	Raw              []byte `db:"raw_log"`
+	Ilk  string `db:"ilk_id"`
+	What string
+	Flip string
 }
 
 type catFileVowModel struct {
 	What string
 	Data string
 }
-
-type byLogIndexChopLump []catFileChopLumpModel
-
-func (c byLogIndexChopLump) Len() int           { return len(c) }
-func (c byLogIndexChopLump) Less(i, j int) bool { return c[i].LogIndex < c[j].LogIndex }
-func (c byLogIndexChopLump) Swap(i, j int)      { c[i], c[j] = c[j], c[i] }

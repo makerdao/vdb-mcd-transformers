@@ -17,11 +17,10 @@
 package flop_kick
 
 import (
-	"encoding/json"
 	"fmt"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
-	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/vulcanize/vulcanizedb/pkg/geth"
 
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
@@ -29,25 +28,24 @@ import (
 
 type FlopKickConverter struct{}
 
-func (FlopKickConverter) ToEntities(contractAbi string, ethLogs []types.Log) ([]interface{}, error) {
+func (FlopKickConverter) ToEntities(contractAbi string, logs []core.HeaderSyncLog) ([]interface{}, error) {
 	var results []interface{}
-	for _, ethLog := range ethLogs {
-		entity := Entity{}
-		address := ethLog.Address
-		abi, err := geth.ParseAbi(contractAbi)
-		if err != nil {
-			return nil, err
+	for _, log := range logs {
+		var entity Entity
+		address := log.Log.Address
+		abi, parseErr := geth.ParseAbi(contractAbi)
+		if parseErr != nil {
+			return nil, parseErr
 		}
 
 		contract := bind.NewBoundContract(address, abi, nil, nil, nil)
-
-		err = contract.UnpackLog(&entity, "Kick", ethLog)
-		if err != nil {
-			return nil, err
+		unpackErr := contract.UnpackLog(&entity, "Kick", log.Log)
+		if unpackErr != nil {
+			return nil, unpackErr
 		}
-		entity.Raw = ethLog
-		entity.TransactionIndex = ethLog.TxIndex
-		entity.LogIndex = ethLog.Index
+		entity.ContractAddress = log.Log.Address
+		entity.HeaderID = log.HeaderID
+		entity.LogID = log.ID
 		results = append(results, entity)
 	}
 	return results, nil
@@ -61,20 +59,14 @@ func (FlopKickConverter) ToModels(entities []interface{}) ([]interface{}, error)
 			return nil, fmt.Errorf("entity of type %T, not %T", entity, Entity{})
 		}
 
-		rawLogJson, err := json.Marshal(flopKickEntity.Raw)
-		if err != nil {
-			return nil, err
-		}
-
 		model := Model{
-			BidId:            shared.BigIntToString(flopKickEntity.Id),
-			Lot:              shared.BigIntToString(flopKickEntity.Lot),
-			Bid:              shared.BigIntToString(flopKickEntity.Bid),
-			Gal:              flopKickEntity.Gal.String(),
-			ContractAddress:  flopKickEntity.Raw.Address.Hex(),
-			TransactionIndex: flopKickEntity.TransactionIndex,
-			LogIndex:         flopKickEntity.LogIndex,
-			Raw:              rawLogJson,
+			BidId:           shared.BigIntToString(flopKickEntity.Id),
+			Lot:             shared.BigIntToString(flopKickEntity.Lot),
+			Bid:             shared.BigIntToString(flopKickEntity.Bid),
+			Gal:             flopKickEntity.Gal.String(),
+			ContractAddress: flopKickEntity.ContractAddress.Hex(),
+			HeaderID:        flopKickEntity.HeaderID,
+			LogID:           flopKickEntity.LogID,
 		}
 		results = append(results, model)
 	}

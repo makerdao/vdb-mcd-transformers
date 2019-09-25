@@ -20,26 +20,25 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/vulcanize/mcd_transformers/transformers/test_data"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
-
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_move"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/mcd_transformers/transformers/test_data"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 )
 
 var _ = Describe("VatMove LogNoteTransformer", func() {
 	vatMoveConfig := transformer.EventTransformerConfig{
-		TransformerName:   mcdConstants.VatMoveLabel,
+		TransformerName:   constants.VatMoveLabel,
 		ContractAddresses: []string{test_data.VatAddress()},
-		ContractAbi:       mcdConstants.VatABI(),
-		Topic:             mcdConstants.VatMoveSignature(),
+		ContractAbi:       constants.VatABI(),
+		Topic:             constants.VatMoveSignature(),
 	}
 
 	It("transforms VatMove log events", func() {
-		blockNumber := int64(12842696)
+		blockNumber := int64(13528665)
 		vatMoveConfig.StartingBlockNumber = blockNumber
 		vatMoveConfig.EndingBlockNumber = blockNumber
 
@@ -61,13 +60,15 @@ var _ = Describe("VatMove LogNoteTransformer", func() {
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
+		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+
 		tr := shared.LogNoteTransformer{
 			Config:     vatMoveConfig,
 			Converter:  &vat_move.VatMoveConverter{},
 			Repository: &vat_move.VatMoveRepository{},
 		}.NewLogNoteTransformer(db)
 
-		err = tr.Execute(logs, header)
+		err = tr.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResults []vatMoveModel
@@ -76,17 +77,14 @@ var _ = Describe("VatMove LogNoteTransformer", func() {
 
 		Expect(len(dbResults)).To(Equal(1))
 		dbResult := dbResults[0]
-		Expect(dbResult.Src).To(Equal("0x16Fb96a5fa0427Af0C8F7cF1eB4870231c8154B6"))
-		Expect(dbResult.Dst).To(Equal("0xEAf1475440f06d53B0C2A51896a52A63b7966C8d"))
-		Expect(dbResult.Rad).To(Equal("20000000000000000000000000000000000000000000000"))
+		Expect(dbResult.Src).To(Equal("0x922253e8bb9905aE4D37bc9bD512db5c91b5EE6C"))
+		Expect(dbResult.Dst).To(Equal("0x3A409104c7505157DBB5D4D195452a28BeA14592"))
+		Expect(dbResult.Rad).To(Equal("1000000000000000000000000000000000000000000000"))
 	})
 })
 
 type vatMoveModel struct {
-	Src              string
-	Dst              string
-	Rad              string
-	LogIndex         uint   `db:"log_idx"`
-	TransactionIndex uint   `db:"tx_idx"`
-	Raw              []byte `db:"raw_log"`
+	Src string
+	Dst string
+	Rad string
 }

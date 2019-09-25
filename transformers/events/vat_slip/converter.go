@@ -17,45 +17,42 @@
 package vat_slip
 
 import (
-	"encoding/json"
-	"errors"
-
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
-
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 )
 
 type VatSlipConverter struct{}
 
-func (VatSlipConverter) ToModels(_ string, ethLogs []types.Log) ([]shared.InsertionModel, error) {
-	var models []shared.InsertionModel
-	for _, ethLog := range ethLogs {
-		err := verifyLog(ethLog)
-		if err != nil {
-			return nil, err
-		}
-		ilk := ethLog.Topics[1].Hex()
-		usr := common.BytesToAddress(ethLog.Topics[2].Bytes()).String()
-		wad := shared.ConvertInt256HexToBigInt(ethLog.Topics[3].Hex())
+const (
+	logDataRequired   = false
+	numTopicsRequired = 4
+)
 
-		raw, err := json.Marshal(ethLog)
+func (VatSlipConverter) ToModels(_ string, logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
+	var models []shared.InsertionModel
+	for _, log := range logs {
+		err := shared.VerifyLog(log.Log, numTopicsRequired, logDataRequired)
 		if err != nil {
 			return nil, err
 		}
+
+		ilk := log.Log.Topics[1].Hex()
+		usr := common.BytesToAddress(log.Log.Topics[2].Bytes()).String()
+		wad := shared.ConvertInt256HexToBigInt(log.Log.Topics[3].Hex())
+
 		model := shared.InsertionModel{
 			SchemaName: "maker",
 			TableName:  "vat_slip",
 			OrderedColumns: []string{
-				"header_id", string(constants.IlkFK), "usr", "wad", "tx_idx", "log_idx", "raw_log",
+				constants.HeaderFK, string(constants.IlkFK), "usr", "wad", constants.LogFK,
 			},
 			ColumnValues: shared.ColumnValues{
-				"usr":     usr,
-				"wad":     wad.String(),
-				"tx_idx":  ethLog.TxIndex,
-				"log_idx": ethLog.Index,
-				"raw_log": raw,
+				"usr":              usr,
+				"wad":              wad.String(),
+				constants.HeaderFK: log.HeaderID,
+				constants.LogFK:    log.ID,
 			},
 			ForeignKeyValues: shared.ForeignKeyValues{
 				constants.IlkFK: ilk,
@@ -64,12 +61,4 @@ func (VatSlipConverter) ToModels(_ string, ethLogs []types.Log) ([]shared.Insert
 		models = append(models, model)
 	}
 	return models, nil
-}
-
-func verifyLog(log types.Log) error {
-	numTopicInValidLog := 4
-	if len(log.Topics) < numTopicInValidLog {
-		return errors.New("log missing topics")
-	}
-	return nil
 }

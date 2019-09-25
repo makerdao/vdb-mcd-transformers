@@ -91,7 +91,7 @@ var _ = Describe("Executing the flip transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 		ilkID, ilkErr := shared.GetOrCreateIlk(ilk, db)
 		Expect(ilkErr).NotTo(HaveOccurred())
-		test_helpers.AssertVariable(ilkResult, blockNumber, blockHash.Hex(), strconv.Itoa(ilkID))
+		test_helpers.AssertVariable(ilkResult, blockNumber, blockHash.Hex(), strconv.FormatInt(ilkID, 10))
 	})
 
 	It("reads in a beg storage diff and persists it", func() {

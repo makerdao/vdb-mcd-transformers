@@ -17,11 +17,12 @@
 package flap_kick_test
 
 import (
-	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/events/flap_kick"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
@@ -31,7 +32,7 @@ var _ = Describe("Flap kick converter", func() {
 
 	Describe("ToEntity", func() {
 		It("converts an Eth Log to a FlapKickEntity", func() {
-			entities, err := converter.ToEntities(constants.FlapABI(), []types.Log{test_data.EthFlapKickLog})
+			entities, err := converter.ToEntities(constants.FlapABI(), []core.HeaderSyncLog{test_data.FlapKickHeaderSyncLog})
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(entities)).To(Equal(1))
@@ -41,13 +42,13 @@ var _ = Describe("Flap kick converter", func() {
 
 	Describe("ToModel", func() {
 		It("returns an error if converting log to entity fails", func() {
-			_, err := converter.ToModels("error abi", []types.Log{test_data.EthFlapKickLog})
+			_, err := converter.ToEntities("error abi", []core.HeaderSyncLog{test_data.FlapKickHeaderSyncLog})
 
 			Expect(err).To(HaveOccurred())
 		})
 
 		It("converts a log to a Model", func() {
-			models, err := converter.ToModels(constants.FlapABI(), []types.Log{test_data.EthFlapKickLog})
+			models, err := converter.ToModels(constants.FlapABI(), []core.HeaderSyncLog{test_data.FlapKickHeaderSyncLog})
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(models)).To(Equal(1))

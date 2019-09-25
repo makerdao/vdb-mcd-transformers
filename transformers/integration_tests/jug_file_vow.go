@@ -20,16 +20,15 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/vulcanize/mcd_transformers/test_config"
+	"github.com/vulcanize/mcd_transformers/transformers/events/jug_file/vow"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
-
-	"github.com/vulcanize/mcd_transformers/test_config"
-	"github.com/vulcanize/mcd_transformers/transformers/events/jug_file/vow"
-	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
 var _ = Describe("Jug File Vow LogNoteTransformer", func() {
@@ -48,14 +47,14 @@ var _ = Describe("Jug File Vow LogNoteTransformer", func() {
 	})
 
 	jugFileVowConfig := transformer.EventTransformerConfig{
-		TransformerName:   mcdConstants.JugFileVowLabel,
+		TransformerName:   constants.JugFileVowLabel,
 		ContractAddresses: []string{test_data.JugAddress()},
-		ContractAbi:       mcdConstants.JugABI(),
-		Topic:             mcdConstants.JugFileVowSignature(),
+		ContractAbi:       constants.JugABI(),
+		Topic:             constants.JugFileVowSignature(),
 	}
 
 	It("transforms JugFileVow log events", func() {
-		blockNumber := int64(12742084)
+		blockNumber := int64(13171623)
 		jugFileVowConfig.StartingBlockNumber = blockNumber
 		jugFileVowConfig.EndingBlockNumber = blockNumber
 
@@ -76,7 +75,9 @@ var _ = Describe("Jug File Vow LogNoteTransformer", func() {
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
-		err = tr.Execute(logs, header)
+		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+
+		err = tr.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []jugFileVowModel
@@ -85,14 +86,11 @@ var _ = Describe("Jug File Vow LogNoteTransformer", func() {
 
 		Expect(len(dbResult)).To(Equal(1))
 		Expect(dbResult[0].What).To(Equal("vow"))
-		Expect(dbResult[0].Data).To(Equal("0x5fD6598A1F6a3b5FE78627fa72107D4a9fAdf348"))
+		Expect(dbResult[0].Data).To(Equal("0x022688b43Bf76a9E6f4d3a96350ffDe90a752d25"))
 	})
 })
 
 type jugFileVowModel struct {
-	What             string
-	Data             string
-	LogIndex         uint   `db:"log_idx"`
-	TransactionIndex uint   `db:"tx_idx"`
-	Raw              []byte `db:"raw_log"`
+	What string
+	Data string
 }

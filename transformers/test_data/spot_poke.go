@@ -17,16 +17,17 @@
 package test_data
 
 import (
-	"encoding/json"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/vulcanize/mcd_transformers/transformers/events/spot_poke"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"math/big"
+	"math/rand"
 )
 
-var EthSpotPokeLog = types.Log{
+var rawEthSpotPokeLog = types.Log{
 	Address: common.HexToAddress(SpotAddress()),
 	Topics: []common.Hash{
 		common.HexToHash(constants.SpotPokeSignature()),
@@ -39,6 +40,12 @@ var EthSpotPokeLog = types.Log{
 	Index:       2,
 	Removed:     false,
 }
+var SpotPokeHeaderSyncLog = core.HeaderSyncLog{
+	ID:          int64(rand.Int31()),
+	HeaderID:    int64(rand.Int31()),
+	Log:         rawEthSpotPokeLog,
+	Transformed: false,
+}
 
 func spot() *big.Int {
 	spot := big.Int{}
@@ -47,20 +54,17 @@ func spot() *big.Int {
 }
 
 var SpotPokeEntity = spot_poke.SpotPokeEntity{
-	Ilk:              [32]byte{67, 79, 76, 53, 45, 65, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-	Val:              [32]byte{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 60, 109, 112, 62, 236, 55, 0},
-	Spot:             spot(),
-	TransactionIndex: 1,
-	LogIndex:         2,
-	Raw:              EthSpotPokeLog,
+	Ilk:      [32]byte{67, 79, 76, 53, 45, 65, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+	Val:      [32]byte{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 60, 109, 112, 62, 236, 55, 0},
+	Spot:     spot(),
+	HeaderID: SpotPokeHeaderSyncLog.HeaderID,
+	LogID:    SpotPokeHeaderSyncLog.ID,
 }
 
-var rawLogJson, _ = json.Marshal(EthSpotPokeLog)
 var SpotPokeModel = spot_poke.SpotPokeModel{
-	Ilk:              "0x434f4c352d410000000000000000000000000000000000000000000000000000",
-	Value:            "89066421500000000.000000",
-	Spot:             "46877063947368421052631578",
-	TransactionIndex: 1,
-	LogIndex:         2,
-	Raw:              rawLogJson,
+	Ilk:      "0x434f4c352d410000000000000000000000000000000000000000000000000000",
+	Value:    "89066421500000000.000000",
+	Spot:     "46877063947368421052631578",
+	HeaderID: SpotPokeEntity.HeaderID,
+	LogID:    SpotPokeEntity.LogID,
 }

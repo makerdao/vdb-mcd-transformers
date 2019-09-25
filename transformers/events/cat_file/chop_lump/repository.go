@@ -17,23 +17,17 @@
 package chop_lump
 
 import (
-	repo "github.com/vulcanize/vulcanizedb/libraries/shared/repository"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
 type CatFileChopLumpRepository struct {
 	db *postgres.DB
 }
 
-func (repository CatFileChopLumpRepository) Create(headerID int64, models []shared.InsertionModel) error {
-	return shared.Create(headerID, models, repository.db)
-}
-
-func (repository CatFileChopLumpRepository) MarkHeaderChecked(headerID int64) error {
-	return repo.MarkHeaderChecked(headerID, repository.db, constants.CatFileChopLumpLabel)
+func (repository CatFileChopLumpRepository) Create(models []shared.InsertionModel) error {
+	return shared.Create(models, repository.db)
 }
 
 func (repository *CatFileChopLumpRepository) SetDB(db *postgres.DB) {

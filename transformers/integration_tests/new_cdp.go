@@ -56,7 +56,7 @@ var _ = Describe("NewCdp Transformer", func() {
 	}
 
 	It("fetches a transforms a NewCdp event from Kovan chain", func() {
-		blockNumber := int64(12975121)
+		blockNumber := int64(13401063)
 		newCdpConfig.StartingBlockNumber = blockNumber
 		newCdpConfig.EndingBlockNumber = blockNumber
 
@@ -75,8 +75,9 @@ var _ = Describe("NewCdp Transformer", func() {
 			[]common.Hash{common.HexToHash(newCdpConfig.Topic)},
 			header)
 		Expect(err).NotTo(HaveOccurred())
+		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
 
-		err = tr.Execute(logs, header)
+		err = tr.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []new_cdp.NewCdpModel
@@ -84,9 +85,9 @@ var _ = Describe("NewCdp Transformer", func() {
 		Expect(queryErr).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))
-		Expect(dbResult[0].Usr).To(Equal("0xA9fCcB07DD3f774d5b9d02e99DE1a27f47F91189"))
-		Expect(dbResult[0].Own).To(Equal("0xA9fCcB07DD3f774d5b9d02e99DE1a27f47F91189"))
-		Expect(dbResult[0].Cdp).To(Equal("21"))
+		Expect(dbResult[0].Usr).To(Equal("0x3746107F6125CD50Eb364b8A724a3a1aFe5B051E"))
+		Expect(dbResult[0].Own).To(Equal("0x3746107F6125CD50Eb364b8A724a3a1aFe5B051E"))
+		Expect(dbResult[0].Cdp).To(Equal("23"))
 	})
 
 	It("unpacks an event log", func() {
@@ -97,9 +98,9 @@ var _ = Describe("NewCdp Transformer", func() {
 		contract := bind.NewBoundContract(address, abi, nil, nil, nil)
 		entity := &new_cdp.NewCdpEntity{}
 
-		var eventLog = test_data.EthNewCdpLog
+		var eventLog = test_data.NewCdpHeaderSyncLog
 
-		unpackErr := contract.UnpackLog(entity, "NewCdp", eventLog)
+		unpackErr := contract.UnpackLog(entity, "NewCdp", eventLog.Log)
 		Expect(unpackErr).NotTo(HaveOccurred())
 
 		expectedEntity := test_data.NewCdpEntity

@@ -21,16 +21,17 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_suck"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
 var _ = Describe("VatSuck converter", func() {
 	It("Converts log to a model", func() {
 		converter := vat_suck.VatSuckConverter{}
-		models, err := converter.ToModels(constants.VatABI(), []types.Log{test_data.EthVatSuckLog})
+		models, err := converter.ToModels(constants.VatABI(), []core.HeaderSyncLog{test_data.VatSuckHeaderSyncLog})
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(len(models)).To(Equal(1))
@@ -39,14 +40,16 @@ var _ = Describe("VatSuck converter", func() {
 
 	It("Returns an error if there are missing topics", func() {
 		converter := vat_suck.VatSuckConverter{}
-		badLog := types.Log{
-			Topics: []common.Hash{
-				common.HexToHash("0x"),
-				common.HexToHash("0x"),
-				common.HexToHash("0x"),
-			},
+		badLog := core.HeaderSyncLog{
+			Log: types.Log{
+				Topics: []common.Hash{
+					common.HexToHash("0x"),
+					common.HexToHash("0x"),
+					common.HexToHash("0x"),
+				}},
 		}
-		_, err := converter.ToModels(constants.VatABI(), []types.Log{badLog})
+
+		_, err := converter.ToModels(constants.VatABI(), []core.HeaderSyncLog{badLog})
 
 		Expect(err).To(HaveOccurred())
 	})

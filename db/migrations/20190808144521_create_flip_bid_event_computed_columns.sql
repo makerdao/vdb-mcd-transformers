@@ -22,7 +22,7 @@ CREATE FUNCTION api.flip_bid_event_tx(event api.flip_bid_event)
     RETURNS SETOF api.tx AS
 $$
 SELECT *
-FROM get_tx_data(event.block_height, event.tx_idx)
+FROM get_tx_data(event.block_height, event.log_id)
 $$
     LANGUAGE sql
     STABLE;

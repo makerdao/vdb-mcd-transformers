@@ -20,6 +20,7 @@ import (
 	"database/sql"
 	"math/rand"
 
+	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
@@ -40,6 +41,7 @@ var _ = Describe("Ilk file event computed columns", func() {
 		db               *postgres.DB
 		fakeBlock        int
 		fakeHeader       core.Header
+		fakeGethLog      types.Log
 		fileEvent        shared.InsertionModel
 		fileRepo         ilk.VatFileIlkRepository
 		headerId         int64
@@ -57,11 +59,16 @@ var _ = Describe("Ilk file event computed columns", func() {
 		headerId, insertHeaderErr = headerRepository.CreateOrUpdateHeader(fakeHeader)
 		Expect(insertHeaderErr).NotTo(HaveOccurred())
 
+		fakeHeaderSyncLog := test_data.CreateTestLog(headerId, db)
+		fakeGethLog = fakeHeaderSyncLog.Log
+
 		fileRepo = ilk.VatFileIlkRepository{}
 		fileRepo.SetDB(db)
 		fileEvent = test_data.VatFileIlkDustModel
 		fileEvent.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
-		insertFileErr := fileRepo.Create(headerId, []shared.InsertionModel{fileEvent})
+		fileEvent.ColumnValues[constants.HeaderFK] = headerId
+		fileEvent.ColumnValues[constants.LogFK] = fakeHeaderSyncLog.ID
+		insertFileErr := fileRepo.Create([]shared.InsertionModel{fileEvent})
 		Expect(insertFileErr).NotTo(HaveOccurred())
 	})
 
@@ -81,7 +88,7 @@ var _ = Describe("Ilk file event computed columns", func() {
 			err := db.Get(&result,
 				`SELECT ilk_identifier, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated
                     FROM api.ilk_file_event_ilk(
-                        (SELECT (ilk_identifier, what, data, block_height, tx_idx)::api.ilk_file_event FROM api.all_ilk_file_events($1))
+                        (SELECT (ilk_identifier, what, data, block_height, log_id)::api.ilk_file_event FROM api.all_ilk_file_events($1))
                     )`, test_helpers.FakeIlk.Identifier)
 
 			Expect(err).NotTo(HaveOccurred())
@@ -94,7 +101,7 @@ var _ = Describe("Ilk file event computed columns", func() {
 			expectedTx := Tx{
 				TransactionHash: test_helpers.GetValidNullString("txHash"),
 				TransactionIndex: sql.NullInt64{
-					Int64: int64(fileEvent.ColumnValues["tx_idx"].(uint)),
+					Int64: int64(fakeGethLog.TxIndex),
 					Valid: true,
 				},
 				BlockHeight: sql.NullInt64{Int64: int64(fakeBlock), Valid: true},
@@ -110,7 +117,7 @@ var _ = Describe("Ilk file event computed columns", func() {
 
 			var actualTx Tx
 			err := db.Get(&actualTx, `SELECT * FROM api.ilk_file_event_tx(
-			    (SELECT (ilk_identifier, what, data, block_height, tx_idx)::api.ilk_file_event FROM api.all_ilk_file_events($1)))`,
+			    (SELECT (ilk_identifier, what, data, block_height, log_id)::api.ilk_file_event FROM api.all_ilk_file_events($1)))`,
 				test_helpers.FakeIlk.Identifier)
 
 			Expect(err).NotTo(HaveOccurred())
@@ -121,7 +128,7 @@ var _ = Describe("Ilk file event computed columns", func() {
 			wrongTx := Tx{
 				TransactionHash: test_helpers.GetValidNullString("wrongTxHash"),
 				TransactionIndex: sql.NullInt64{
-					Int64: int64(fileEvent.ColumnValues["tx_idx"].(uint)) + 1,
+					Int64: int64(fakeGethLog.TxIndex) + 1,
 					Valid: true,
 				},
 				BlockHeight: sql.NullInt64{Int64: int64(fakeBlock), Valid: true},
@@ -137,7 +144,7 @@ var _ = Describe("Ilk file event computed columns", func() {
 
 			var actualTx Tx
 			err := db.Get(&actualTx, `SELECT * FROM api.ilk_file_event_tx(
-			    (SELECT (ilk_identifier, what, data, block_height, tx_idx)::api.ilk_file_event FROM api.all_ilk_file_events($1)))`,
+			    (SELECT (ilk_identifier, what, data, block_height, log_id)::api.ilk_file_event FROM api.all_ilk_file_events($1)))`,
 				test_helpers.FakeIlk.Identifier)
 
 			Expect(err).NotTo(HaveOccurred())

@@ -17,80 +17,64 @@
 package vat_fork
 
 import (
-	"encoding/json"
-	"errors"
-
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/constants"
-
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	constants2 "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 )
 
 type VatForkConverter struct{}
 
-func (VatForkConverter) ToModels(_ string, ethLogs []types.Log) ([]shared.InsertionModel, error) {
+const (
+	logDataRequired   = true
+	numTopicsRequired = 4
+)
+
+func (VatForkConverter) ToModels(_ string, logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
 	var models []shared.InsertionModel
-	for _, ethLog := range ethLogs {
-		err := verifyLog(ethLog)
+	for _, log := range logs {
+		err := shared.VerifyLog(log.Log, numTopicsRequired, logDataRequired)
 		if err != nil {
 			return nil, err
 		}
 
-		ilk := ethLog.Topics[1].Hex()
-		src := common.BytesToAddress(ethLog.Topics[2].Bytes()).String()
-		dst := common.BytesToAddress(ethLog.Topics[3].Bytes()).String()
+		ilk := log.Log.Topics[1].Hex()
+		src := common.BytesToAddress(log.Log.Topics[2].Bytes()).String()
+		dst := common.BytesToAddress(log.Log.Topics[3].Bytes()).String()
 
-		dinkBytes, dinkErr := shared.GetLogNoteArgumentAtIndex(3, ethLog.Data)
+		dinkBytes, dinkErr := shared.GetLogNoteArgumentAtIndex(3, log.Log.Data)
 		if dinkErr != nil {
 			return nil, dinkErr
 		}
 		dink := shared.ConvertInt256HexToBigInt(hexutil.Encode(dinkBytes))
 
-		dartBytes, dartErr := shared.GetLogNoteArgumentAtIndex(4, ethLog.Data)
+		dartBytes, dartErr := shared.GetLogNoteArgumentAtIndex(4, log.Log.Data)
 		if dartErr != nil {
 			return nil, dartErr
 		}
 		dart := shared.ConvertInt256HexToBigInt(hexutil.Encode(dartBytes))
 
-		rawLogJson, jsonErr := json.Marshal(ethLog)
-		if jsonErr != nil {
-			return nil, jsonErr
-		}
-
 		model := shared.InsertionModel{
 			SchemaName: "maker",
 			TableName:  "vat_fork",
 			OrderedColumns: []string{
-				"header_id", string(constants2.IlkFK), "src", "dst", "dink", "dart", "log_idx", "tx_idx", "raw_log",
+				constants.HeaderFK, string(constants.IlkFK), "src", "dst", "dink", "dart", constants.LogFK,
 			},
 			ColumnValues: shared.ColumnValues{
-				"src":     src,
-				"dst":     dst,
-				"dink":    dink.String(),
-				"dart":    dart.String(),
-				"log_idx": ethLog.Index,
-				"tx_idx":  ethLog.TxIndex,
-				"raw_log": rawLogJson,
+				"src":              src,
+				"dst":              dst,
+				"dink":             dink.String(),
+				"dart":             dart.String(),
+				constants.HeaderFK: log.HeaderID,
+				constants.LogFK:    log.ID,
 			},
 			ForeignKeyValues: shared.ForeignKeyValues{
-				constants2.IlkFK: ilk,
+				constants.IlkFK: ilk,
 			},
 		}
 		models = append(models, model)
 	}
 
 	return models, nil
-}
-
-func verifyLog(log types.Log) error {
-	if len(log.Topics) < 4 {
-		return errors.New("log missing topics")
-	}
-	if len(log.Data) < constants.DataItemLength {
-		return errors.New("log missing data")
-	}
-	return nil
 }

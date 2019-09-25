@@ -17,31 +17,29 @@
 package integration_tests
 
 import (
-	"github.com/vulcanize/mcd_transformers/transformers/test_data"
-	"strconv"
-
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
-
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_init"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/mcd_transformers/transformers/test_data"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
+	"strconv"
 )
 
 var _ = Describe("VatInit LogNoteTransformer", func() {
 	vatInitConfig := transformer.EventTransformerConfig{
-		TransformerName:   mcdConstants.VatInitLabel,
+		TransformerName:   constants.VatInitLabel,
 		ContractAddresses: []string{test_data.VatAddress()},
-		ContractAbi:       mcdConstants.VatABI(),
-		Topic:             mcdConstants.VatInitSignature(),
+		ContractAbi:       constants.VatABI(),
+		Topic:             constants.VatInitSignature(),
 	}
 
 	It("transforms vat init log events", func() {
-		blockNumber := int64(12742151)
+		blockNumber := int64(13171646)
 		vatInitConfig.StartingBlockNumber = blockNumber
 		vatInitConfig.EndingBlockNumber = blockNumber
 
@@ -63,13 +61,15 @@ var _ = Describe("VatInit LogNoteTransformer", func() {
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
+		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+
 		transformer := shared.LogNoteTransformer{
 			Config:     vatInitConfig,
 			Converter:  &vat_init.VatInitConverter{},
 			Repository: &vat_init.VatInitRepository{},
 		}.NewLogNoteTransformer(db)
 
-		err = transformer.Execute(logs, header)
+		err = transformer.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResults []vatInitModel
@@ -78,15 +78,12 @@ var _ = Describe("VatInit LogNoteTransformer", func() {
 
 		Expect(len(dbResults)).To(Equal(1))
 		dbResult := dbResults[0]
-		ilkID, err := shared.GetOrCreateIlk("0x474e542d41000000000000000000000000000000000000000000000000000000", db)
+		ilkID, err := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
-		Expect(dbResult.Ilk).To(Equal(strconv.Itoa(ilkID)))
+		Expect(dbResult.Ilk).To(Equal(strconv.FormatInt(ilkID, 10)))
 	})
 })
 
 type vatInitModel struct {
-	Ilk              string `db:"ilk_id"`
-	LogIndex         uint   `db:"log_idx"`
-	TransactionIndex uint   `db:"tx_idx"`
-	Raw              []byte `db:"raw_log"`
+	Ilk string `db:"ilk_id"`
 }

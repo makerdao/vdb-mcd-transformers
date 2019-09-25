@@ -20,16 +20,15 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/vulcanize/mcd_transformers/test_config"
+	"github.com/vulcanize/mcd_transformers/transformers/events/vow_file"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
-
-	"github.com/vulcanize/mcd_transformers/test_config"
-	"github.com/vulcanize/mcd_transformers/transformers/events/vow_file"
-	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
 var _ = Describe("VowFile LogNoteTransforer", func() {
@@ -49,10 +48,10 @@ var _ = Describe("VowFile LogNoteTransforer", func() {
 		db = test_config.NewTestDB(blockChain.Node())
 		test_config.CleanTestDB(db)
 		vowFileConfig := transformer.EventTransformerConfig{
-			TransformerName:   mcdConstants.VowFileLabel,
+			TransformerName:   constants.VowFileLabel,
 			ContractAddresses: []string{test_data.VowAddress()},
-			ContractAbi:       mcdConstants.VowABI(),
-			Topic:             mcdConstants.VowFileSignature(),
+			ContractAbi:       constants.VowABI(),
+			Topic:             constants.VowFileSignature(),
 		}
 
 		addresses = transformer.HexStringsToAddresses(vowFileConfig.ContractAddresses)
@@ -66,7 +65,7 @@ var _ = Describe("VowFile LogNoteTransforer", func() {
 	})
 
 	It("fetches and transforms a Vow.file event from Kovan", func() {
-		blockNumber := int64(12742217)
+		blockNumber := int64(13171810)
 		initializer.Config.StartingBlockNumber = blockNumber
 		initializer.Config.EndingBlockNumber = blockNumber
 
@@ -77,8 +76,10 @@ var _ = Describe("VowFile LogNoteTransforer", func() {
 		logs, err := logFetcher.FetchLogs(addresses, topics, header)
 		Expect(err).NotTo(HaveOccurred())
 
+		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+
 		tr := initializer.NewLogNoteTransformer(db)
-		err = tr.Execute(logs, header)
+		err = tr.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []vowFileModel
@@ -86,15 +87,12 @@ var _ = Describe("VowFile LogNoteTransforer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))
-		Expect(dbResult[0].What).To(Equal("wait"))
-		Expect(dbResult[0].Data).To(Equal("0"))
+		Expect(dbResult[0].What).To(Equal("bump"))
+		Expect(dbResult[0].Data).To(Equal("100000000000000000000000000000000000000000000"))
 	})
 })
 
 type vowFileModel struct {
-	What             string
-	Data             string
-	LogIndex         uint   `db:"log_idx"`
-	TransactionIndex uint   `db:"tx_idx"`
-	Raw              []byte `db:"raw_log"`
+	What string
+	Data string
 }

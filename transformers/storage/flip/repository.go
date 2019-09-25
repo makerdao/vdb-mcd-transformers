@@ -74,7 +74,7 @@ func (repository *FlipStorageRepository) insertIlk(blockNumber int, blockHash st
 		return ilkErr
 	}
 
-	return repository.insertRecordWithAddress(blockNumber, blockHash, insertFlipIlkQuery, strconv.Itoa(ilkID))
+	return repository.insertRecordWithAddress(blockNumber, blockHash, insertFlipIlkQuery, strconv.FormatInt(ilkID, 10))
 }
 
 func (repository *FlipStorageRepository) insertBeg(blockNumber int, blockHash string, beg string) error {

@@ -35,3 +35,8 @@ const (
 	UrnFK     ForeignKeyField = "urn_id"
 	AddressFK ForeignKeyField = "address_id"
 )
+
+const (
+	HeaderFK = "header_id"
+	LogFK    = "log_id"
+)

@@ -17,7 +17,8 @@
 package test_data
 
 import (
-	"encoding/json"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
+	"math/rand"
 	"strconv"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -35,7 +36,7 @@ var (
 	tickTransactionHash = "0x6dc191fc774d5c5dc82bb292e6e2c4c62b5476b7fc9e589a89c3120448161966"
 )
 
-var TickLogNote = types.Log{
+var rawFlipTickLog = types.Log{
 	Address: common.HexToAddress(EthFlipAddress()),
 	Topics: []common.Hash{
 		common.HexToHash(constants.TickSignature()),
@@ -51,20 +52,25 @@ var TickLogNote = types.Log{
 	Removed:     false,
 }
 
-var rawTickLog, _ = json.Marshal(TickLogNote)
+var FlipTickHeaderSyncLog = core.HeaderSyncLog{
+	ID:          int64(rand.Int31()),
+	HeaderID:    int64(rand.Int31()),
+	Log:         rawFlipTickLog,
+	Transformed: false,
+}
+
 var TickModel = shared.InsertionModel{
 	SchemaName: "maker",
 	TableName:  "tick",
 	OrderedColumns: []string{
-		"header_id", "bid_id", string(constants.AddressFK), "log_idx", "tx_idx", "raw_log",
+		constants.HeaderFK, "bid_id", string(constants.AddressFK), constants.LogFK,
 	},
 	ColumnValues: shared.ColumnValues{
-		"bid_id":  strconv.FormatInt(tickBidId, 10),
-		"log_idx": TickLogNote.Index,
-		"tx_idx":  TickLogNote.TxIndex,
-		"raw_log": rawTickLog,
+		"bid_id":           strconv.FormatInt(tickBidId, 10),
+		constants.HeaderFK: FlipTickHeaderSyncLog.HeaderID,
+		constants.LogFK:    FlipTickHeaderSyncLog.ID,
 	},
 	ForeignKeyValues: shared.ForeignKeyValues{
-		constants.AddressFK: TickLogNote.Address.Hex(),
+		constants.AddressFK: FlipTickHeaderSyncLog.Log.Address.Hex(),
 	},
 }

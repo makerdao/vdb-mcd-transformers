@@ -17,13 +17,12 @@
 package flip_kick
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
-	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/vulcanize/vulcanizedb/pkg/geth"
 
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
@@ -31,33 +30,31 @@ import (
 
 type FlipKickConverter struct{}
 
-func (FlipKickConverter) ToEntities(contractAbi string, ethLogs []types.Log) ([]FlipKickEntity, error) {
+func (FlipKickConverter) ToEntities(contractAbi string, ethLogs []core.HeaderSyncLog) ([]FlipKickEntity, error) {
 	var entities []FlipKickEntity
-	for _, ethLog := range ethLogs {
+	for _, log := range ethLogs {
 		entity := &FlipKickEntity{}
-		address := ethLog.Address
+		address := log.Log.Address
 		abi, err := geth.ParseAbi(contractAbi)
 		if err != nil {
 			return nil, err
 		}
 
 		contract := bind.NewBoundContract(address, abi, nil, nil, nil)
-
-		err = contract.UnpackLog(entity, "Kick", ethLog)
-		if err != nil {
-			return nil, err
+		unpackErr := contract.UnpackLog(&entity, "Kick", log.Log)
+		if unpackErr != nil {
+			return nil, unpackErr
 		}
 		entity.ContractAddress = address
-		entity.Raw = ethLog
-		entity.TransactionIndex = ethLog.TxIndex
-		entity.LogIndex = ethLog.Index
+		entity.HeaderID = log.HeaderID
+		entity.LogID = log.ID
 		entities = append(entities, *entity)
 	}
 
 	return entities, nil
 }
 
-func (c FlipKickConverter) ToModels(abi string, logs []types.Log) ([]shared.InsertionModel, error) {
+func (c FlipKickConverter) ToModels(abi string, logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
 	entities, entityErr := c.ToEntities(abi, logs)
 	if entityErr != nil {
 		return nil, fmt.Errorf("FlipKickConverter couldn't convert logs to entities: %v", entityErr)
@@ -65,12 +62,7 @@ func (c FlipKickConverter) ToModels(abi string, logs []types.Log) ([]shared.Inse
 	var models []shared.InsertionModel
 	for _, flipKickEntity := range entities {
 		if flipKickEntity.Id == nil {
-			return nil, errors.New("FlipKick log ID cannot be nil.")
-		}
-
-		rawLog, err := json.Marshal(flipKickEntity.Raw)
-		if err != nil {
-			return nil, err
+			return nil, errors.New("flip kick bid ID cannot be nil")
 		}
 
 		model := shared.InsertionModel{
@@ -80,15 +72,14 @@ func (c FlipKickConverter) ToModels(abi string, logs []types.Log) ([]shared.Inse
 				"header_id", "bid_id", "lot", "bid", "tab", "usr", "gal", "address_id", "tx_idx", "log_idx", "raw_log",
 			},
 			ColumnValues:     shared.ColumnValues{
+				constants.HeaderFK: flipKickEntity.HeaderID,
+				constants.LogFK: flipKickEntity.LogID,
 				"bid_id": flipKickEntity.Id.String(),
 				"lot": shared.BigIntToString(flipKickEntity.Lot),
 				"bid": shared.BigIntToString(flipKickEntity.Bid),
 				"tab": shared.BigIntToString(flipKickEntity.Tab),
 				"usr": flipKickEntity.Usr.String(),
 				"gal": flipKickEntity.Gal.String(),
-				"tx_idx": flipKickEntity.TransactionIndex,
-				"log_idx": flipKickEntity.LogIndex,
-				"raw_log": rawLog,
 			},
 			ForeignKeyValues: shared.ForeignKeyValues{
 				constants.AddressFK: flipKickEntity.ContractAddress.String(),

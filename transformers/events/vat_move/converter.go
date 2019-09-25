@@ -17,46 +17,43 @@
 package vat_move
 
 import (
-	"encoding/json"
-	"errors"
-
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
-
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 )
 
 type VatMoveConverter struct{}
 
-func (VatMoveConverter) ToModels(_ string, ethLogs []types.Log) ([]shared.InsertionModel, error) {
+const (
+	logDataRequired   = false
+	numTopicsRequired = 4
+)
+
+func (VatMoveConverter) ToModels(_ string, logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
 	var models []shared.InsertionModel
-	for _, ethLog := range ethLogs {
-		err := verifyLog(ethLog)
+	for _, log := range logs {
+		err := shared.VerifyLog(log.Log, numTopicsRequired, logDataRequired)
 		if err != nil {
 			return []shared.InsertionModel{}, err
 		}
 
-		src := common.BytesToAddress(ethLog.Topics[1].Bytes()).String()
-		dst := common.BytesToAddress(ethLog.Topics[2].Bytes()).String()
-		rad := shared.ConvertUint256HexToBigInt(ethLog.Topics[3].Hex())
-		raw, err := json.Marshal(ethLog)
-		if err != nil {
-			return []shared.InsertionModel{}, err
-		}
+		src := common.BytesToAddress(log.Log.Topics[1].Bytes()).String()
+		dst := common.BytesToAddress(log.Log.Topics[2].Bytes()).String()
+		rad := shared.ConvertUint256HexToBigInt(log.Log.Topics[3].Hex())
 
 		model := shared.InsertionModel{
 			SchemaName: "maker",
 			TableName:  "vat_move",
 			OrderedColumns: []string{
-				"header_id", "src", "dst", "rad", "log_idx", "tx_idx", "raw_log",
+				constants.HeaderFK, "src", "dst", "rad", constants.LogFK,
 			},
 			ColumnValues: shared.ColumnValues{
-				"src":     src,
-				"dst":     dst,
-				"rad":     rad.String(),
-				"log_idx": ethLog.Index,
-				"tx_idx":  ethLog.TxIndex,
-				"raw_log": raw,
+				"src":              src,
+				"dst":              dst,
+				"rad":              rad.String(),
+				constants.HeaderFK: log.HeaderID,
+				constants.LogFK:    log.ID,
 			},
 			ForeignKeyValues: shared.ForeignKeyValues{},
 		}
@@ -64,14 +61,4 @@ func (VatMoveConverter) ToModels(_ string, ethLogs []types.Log) ([]shared.Insert
 	}
 
 	return models, nil
-}
-
-func verifyLog(ethLog types.Log) error {
-	if len(ethLog.Data) <= 0 {
-		return errors.New("log data is empty")
-	}
-	if len(ethLog.Topics) < 4 {
-		return errors.New("log missing topics")
-	}
-	return nil
 }

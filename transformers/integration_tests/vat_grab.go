@@ -17,28 +17,26 @@
 package integration_tests
 
 import (
-	"github.com/vulcanize/mcd_transformers/transformers/test_data"
-	"math/big"
-	"strconv"
-
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
-
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_grab"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/mcd_transformers/transformers/test_data"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
+	"math/big"
+	"strconv"
 )
 
 var _ = XDescribe("Vat Grab Transformer", func() {
 	vatGrabConfig := transformer.EventTransformerConfig{
-		TransformerName:   mcdConstants.VatGrabLabel,
+		TransformerName:   constants.VatGrabLabel,
 		ContractAddresses: []string{test_data.VatAddress()},
-		ContractAbi:       mcdConstants.VatABI(),
-		Topic:             mcdConstants.VatGrabSignature(),
+		ContractAbi:       constants.VatABI(),
+		Topic:             constants.VatGrabSignature(),
 	}
 
 	// TODO: Replace block number once there's a grab event on the updated Vat
@@ -65,13 +63,15 @@ var _ = XDescribe("Vat Grab Transformer", func() {
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
+		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+
 		tr := shared.LogNoteTransformer{
 			Config:     vatGrabConfig,
 			Converter:  &vat_grab.VatGrabConverter{},
 			Repository: &vat_grab.VatGrabRepository{},
 		}.NewLogNoteTransformer(db)
 
-		err = tr.Execute(logs, header)
+		err = tr.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []vatGrabModel
@@ -82,7 +82,7 @@ var _ = XDescribe("Vat Grab Transformer", func() {
 		urnID, err := shared.GetOrCreateUrn("0000000000000000000000006a3ae20c315e845b2e398e68effe39139ec6060c",
 			"0x5245500000000000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
-		Expect(dbResult[0].Urn).To(Equal(strconv.Itoa(urnID)))
+		Expect(dbResult[0].Urn).To(Equal(strconv.FormatInt(urnID, 10)))
 		Expect(dbResult[0].V).To(Equal("0000000000000000000000002f34f22a00ee4b7a8f8bbc4eaee1658774c624e0")) //cat contract address as bytes32
 		Expect(dbResult[0].W).To(Equal("0000000000000000000000003728e9777b2a0a611ee0f89e00e01044ce4736d1"))
 		expectedDink := new(big.Int)
@@ -91,18 +91,14 @@ var _ = XDescribe("Vat Grab Transformer", func() {
 		expectedDart := new(big.Int)
 		expectedDart.SetString("115792089237316195423570985008687907853269984665640564039441803007913129639936", 10)
 		Expect(dbResult[0].Dart).To(Equal(expectedDart.String()))
-		Expect(dbResult[0].TransactionIndex).To(Equal(uint(0)))
 	})
 })
 
 type vatGrabModel struct {
-	Ilk              string
-	Urn              string `db:"urn_id"`
-	V                string
-	W                string
-	Dink             string
-	Dart             string
-	LogIndex         uint   `db:"log_idx"`
-	TransactionIndex uint   `db:"tx_idx"`
-	Raw              []byte `db:"raw_log"`
+	Ilk  string
+	Urn  string `db:"urn_id"`
+	V    string
+	W    string
+	Dink string
+	Dart string
 }

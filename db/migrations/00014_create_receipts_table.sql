@@ -3,7 +3,7 @@ CREATE TABLE full_sync_receipts
 (
     id                  SERIAL PRIMARY KEY,
     transaction_id      INTEGER NOT NULL REFERENCES full_sync_transactions (id) ON DELETE CASCADE,
-    address_id          INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
+    contract_address_id INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
     cumulative_gas_used NUMERIC,
     gas_used            NUMERIC,
     state_root          VARCHAR(66),

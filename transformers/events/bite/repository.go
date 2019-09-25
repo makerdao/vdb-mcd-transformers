@@ -17,11 +17,9 @@
 package bite
 
 import (
-	repo "github.com/vulcanize/vulcanizedb/libraries/shared/repository"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
 type BiteRepository struct {
@@ -32,10 +30,7 @@ func (repository *BiteRepository) SetDB(db *postgres.DB) {
 	repository.db = db
 }
 
-func (repository BiteRepository) Create(headerID int64, models []shared.InsertionModel) error {
-	return shared.Create(headerID, models, repository.db)
+func (repository BiteRepository) Create(models []shared.InsertionModel) error {
+	return shared.Create(models, repository.db)
 }
 
-func (repository BiteRepository) MarkHeaderChecked(headerID int64) error {
-	return repo.MarkHeaderChecked(headerID, repository.db, constants.BiteLabel)
-}

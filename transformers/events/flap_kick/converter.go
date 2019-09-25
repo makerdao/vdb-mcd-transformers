@@ -17,13 +17,13 @@
 package flap_kick
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
+	"strconv"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
-	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/vulcanize/vulcanizedb/pkg/geth"
 
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
@@ -31,32 +31,30 @@ import (
 
 type FlapKickConverter struct{}
 
-func (c FlapKickConverter) ToEntities(contractAbi string, ethLogs []types.Log) ([]FlapKickEntity, error) {
+func (FlapKickConverter) ToEntities(contractAbi string, logs []core.HeaderSyncLog) ([]FlapKickEntity, error) {
 	var entities []FlapKickEntity
 	abi, parseErr := geth.ParseAbi(contractAbi)
 	if parseErr != nil {
 		return nil, parseErr
 	}
 
-	for _, ethLog := range ethLogs {
-		contract := bind.NewBoundContract(ethLog.Address, abi, nil, nil, nil)
-
+	for _, log := range logs {
+		contract := bind.NewBoundContract(log.Log.Address, abi, nil, nil, nil)
 		var entity FlapKickEntity
-		unpackErr := contract.UnpackLog(&entity, "Kick", ethLog)
+		unpackErr := contract.UnpackLog(&entity, "Kick", log.Log)
 		if unpackErr != nil {
 			return nil, unpackErr
 		}
 
-		entity.Raw = ethLog
-		entity.TransactionIndex = ethLog.TxIndex
-		entity.LogIndex = ethLog.Index
-
+		entity.ContractAddress = log.Log.Address
+		entity.HeaderID = log.HeaderID
+		entity.LogID = log.ID
 		entities = append(entities, entity)
 	}
 	return entities, nil
 }
 
-func (c FlapKickConverter) ToModels(abi string, logs []types.Log) ([]shared.InsertionModel, error) {
+func (c FlapKickConverter) ToModels(abi string, logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
 	entities, entityErr := c.ToEntities(abi, logs)
 	if entityErr != nil {
 		return nil, fmt.Errorf("FlapKickConverter couldn't convert logs to entities: %v", entityErr)
@@ -68,27 +66,21 @@ func (c FlapKickConverter) ToModels(abi string, logs []types.Log) ([]shared.Inse
 			return nil, errors.New("flapKick log ID cannot be nil")
 		}
 
-		rawLog, err := json.Marshal(flapKickEntity.Raw)
-		if err != nil {
-			return nil, err
-		}
-
 		model := shared.InsertionModel{
 			SchemaName: "maker",
 			TableName:  "flap_kick",
 			OrderedColumns: []string{
-				"header_id", "bid_id", "lot", "bid", "address_id", "tx_idx", "log_idx", "raw_log",
+				constants.HeaderFK, constants.LogFK, "bid_id", "lot", "bid", "address_id",
 			},
 			ColumnValues: shared.ColumnValues{
-				"bid_id":  flapKickEntity.Id.String(),
-				"lot":     shared.BigIntToString(flapKickEntity.Lot),
-				"bid":     shared.BigIntToString(flapKickEntity.Bid),
-				"log_idx": flapKickEntity.LogIndex,
-				"tx_idx":  flapKickEntity.TransactionIndex,
-				"raw_log": rawLog,
+				"bid_id": flapKickEntity.Id.String(),
+				"lot":    shared.BigIntToString(flapKickEntity.Lot),
+				"bid":    shared.BigIntToString(flapKickEntity.Bid),
 			},
 			ForeignKeyValues: shared.ForeignKeyValues{
-				constants.AddressFK: flapKickEntity.Raw.Address.Hex(),
+				constants.AddressFK: flapKickEntity.ContractAddress.Hex(),
+				constants.HeaderFK:  strconv.FormatInt(flapKickEntity.HeaderID, 10),
+				constants.LogFK:     strconv.FormatInt(flapKickEntity.LogID, 10),
 			},
 		}
 

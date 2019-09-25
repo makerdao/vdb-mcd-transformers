@@ -21,10 +21,11 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_fork"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
@@ -32,37 +33,40 @@ var _ = Describe("VatFork converter", func() {
 	converter := vat_fork.VatForkConverter{}
 
 	It("Converts a log with a negative dink and dart to a model", func() {
-		models, err := converter.ToModels(constants.VatABI(), []types.Log{test_data.EthVatForkLogWithNegativeDinkDart})
+		models, err := converter.ToModels(constants.VatABI(), []core.HeaderSyncLog{test_data.VatForkHeaderSyncLogWithNegativeDinkDart})
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(models).To(Equal([]shared.InsertionModel{test_data.VatForkModelWithNegativeDinkDart}))
 	})
 
 	It("Converts a log with a positive dink and dart to a model", func() {
-		models, err := converter.ToModels(constants.VatABI(), []types.Log{test_data.EthVatForkLogWithPositiveDinkDart})
+		models, err := converter.ToModels(constants.VatABI(), []core.HeaderSyncLog{test_data.VatForkHeaderSyncLogWithPositiveDinkDart})
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(models).To(Equal([]shared.InsertionModel{test_data.VatForkModelWithPositiveDinkDart}))
 	})
 
 	It("Returns an error there are missing topics", func() {
-		badLog := types.Log{
-			Topics: []common.Hash{
-				common.HexToHash("0x"),
-				common.HexToHash("0x"),
-				common.HexToHash("0x"),
-			},
+		badLog := core.HeaderSyncLog{
+			Log: types.Log{
+				Topics: []common.Hash{
+					common.HexToHash("0x"),
+					common.HexToHash("0x"),
+					common.HexToHash("0x"),
+				}},
 		}
-		_, err := converter.ToModels(constants.VatABI(), []types.Log{badLog})
+
+		_, err := converter.ToModels(constants.VatABI(), []core.HeaderSyncLog{badLog})
 		Expect(err).To(HaveOccurred())
 	})
 
 	It("returns err if log is missing data", func() {
-		badLog := types.Log{
-			Topics: []common.Hash{{}, {}, {}, {}},
-		}
+		badLog := core.HeaderSyncLog{
+			Log: types.Log{
+				Topics: []common.Hash{{}, {}, {}, {}},
+			}}
 
-		_, err := converter.ToModels(constants.VatABI(), []types.Log{badLog})
+		_, err := converter.ToModels(constants.VatABI(), []core.HeaderSyncLog{badLog})
 		Expect(err).To(HaveOccurred())
 	})
 })

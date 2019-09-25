@@ -2,16 +2,15 @@ package shared_behaviors
 
 import (
 	"fmt"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/storage"
 	"math/rand"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/repository"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
-	"github.com/vulcanize/vulcanizedb/pkg/fakes"
-
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/test_helpers"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
+	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 )
 
 type StorageVariableBehaviorInputs struct {
@@ -21,7 +20,7 @@ type StorageVariableBehaviorInputs struct {
 	Value            string
 	IsAMapping       bool
 	StorageTableName string
-	Repository       repository.StorageRepository
+	Repository       storage.Repository
 	Metadata         utils.StorageValueMetadata
 }
 

@@ -17,7 +17,8 @@
 package test_data
 
 import (
-	"encoding/json"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
+	"math/rand"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
@@ -28,7 +29,7 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
-var EthVatSlipLogWithPositiveWad = types.Log{
+var rawVatSlipLogWithPositiveWad = types.Log{
 	Address: common.HexToAddress(VatAddress()),
 	Topics: []common.Hash{
 		common.HexToHash(constants.VatSlipSignature()),
@@ -45,26 +46,31 @@ var EthVatSlipLogWithPositiveWad = types.Log{
 	Removed:     false,
 }
 
-var rawVatSlipLogWithPositiveWad, _ = json.Marshal(EthVatSlipLogWithPositiveWad)
+var VatSlipHeaderSyncLogWithPositiveWad = core.HeaderSyncLog{
+	ID:          int64(rand.Int31()),
+	HeaderID:    int64(rand.Int31()),
+	Log:         rawVatSlipLogWithPositiveWad,
+	Transformed: false,
+}
+
 var VatSlipModelWithPositiveWad = shared.InsertionModel{
 	SchemaName: "maker",
 	TableName:  "vat_slip",
 	OrderedColumns: []string{
-		"header_id", string(constants.IlkFK), "usr", "wad", "tx_idx", "log_idx", "raw_log",
+		constants.HeaderFK, string(constants.IlkFK), "usr", "wad", constants.LogFK,
 	},
 	ColumnValues: shared.ColumnValues{
-		"usr":     "0x5c8c8e5895B9cCf34ACF391C99E13C79EE2eFb46",
-		"wad":     "10000000000000000",
-		"tx_idx":  EthVatSlipLogWithPositiveWad.TxIndex,
-		"log_idx": EthVatSlipLogWithPositiveWad.Index,
-		"raw_log": rawVatSlipLogWithPositiveWad,
+		"usr":              "0x5c8c8e5895B9cCf34ACF391C99E13C79EE2eFb46",
+		"wad":              "10000000000000000",
+		constants.HeaderFK: VatSlipHeaderSyncLogWithPositiveWad.HeaderID,
+		constants.LogFK:    VatSlipHeaderSyncLogWithPositiveWad.ID,
 	},
 	ForeignKeyValues: shared.ForeignKeyValues{
 		constants.IlkFK: "0x4554482d41000000000000000000000000000000000000000000000000000000",
 	},
 }
 
-var EthVatSlipLogWithNegativeWad = types.Log{
+var rawVatSlipLogWithNegativeWad = types.Log{
 	Address: common.HexToAddress(VatAddress()),
 	Topics: []common.Hash{
 		common.HexToHash(constants.VatSlipSignature()),
@@ -81,19 +87,24 @@ var EthVatSlipLogWithNegativeWad = types.Log{
 	Removed:     false,
 }
 
-var rawVatSlipLogWithNegativeWad, _ = json.Marshal(EthVatSlipLogWithNegativeWad)
+var VatSlipHeaderSyncLogWithNegativeWad = core.HeaderSyncLog{
+	ID:          int64(rand.Int31()),
+	HeaderID:    int64(rand.Int31()),
+	Log:         rawVatSlipLogWithNegativeWad,
+	Transformed: false,
+}
+
 var VatSlipModelWithNegativeWad = shared.InsertionModel{
 	SchemaName: "maker",
 	TableName:  "vat_slip",
 	OrderedColumns: []string{
-		"header_id", string(constants.IlkFK), "usr", "wad", "tx_idx", "log_idx", "raw_log",
+		constants.HeaderFK, string(constants.IlkFK), "usr", "wad", constants.LogFK,
 	},
 	ColumnValues: shared.ColumnValues{
-		"usr":     "0xFc7440E2Ed4A3AEb14d40c00f02a14221Be0474d",
-		"wad":     "-5000000000000000",
-		"tx_idx":  EthVatSlipLogWithNegativeWad.TxIndex,
-		"log_idx": EthVatSlipLogWithNegativeWad.Index,
-		"raw_log": rawVatSlipLogWithNegativeWad,
+		"usr":              "0xFc7440E2Ed4A3AEb14d40c00f02a14221Be0474d",
+		"wad":              "-5000000000000000",
+		constants.HeaderFK: VatSlipHeaderSyncLogWithNegativeWad.HeaderID,
+		constants.LogFK:    VatSlipHeaderSyncLogWithNegativeWad.ID,
 	},
 	ForeignKeyValues: shared.ForeignKeyValues{
 		constants.IlkFK: "0x4554482d41000000000000000000000000000000000000000000000000000000",

@@ -17,12 +17,12 @@
 package vat_move_test
 
 import (
-	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_move"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
@@ -34,14 +34,14 @@ var _ = Describe("Vat move converter", func() {
 	})
 
 	It("returns err if logs are missing topics", func() {
-		badLog := types.Log{}
-		_, err := converter.ToModels(constants.VatABI(), []types.Log{badLog})
+		badLog := core.HeaderSyncLog{}
+		_, err := converter.ToModels(constants.VatABI(), []core.HeaderSyncLog{badLog})
 
 		Expect(err).To(HaveOccurred())
 	})
 
 	It("converts a log to a model", func() {
-		models, err := converter.ToModels(constants.VatABI(), []types.Log{test_data.EthVatMoveLog})
+		models, err := converter.ToModels(constants.VatABI(), []core.HeaderSyncLog{test_data.VatMoveHeaderSyncLog})
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(len(models)).To(Equal(1))

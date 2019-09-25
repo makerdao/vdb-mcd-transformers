@@ -20,16 +20,15 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/vulcanize/mcd_transformers/test_config"
+	"github.com/vulcanize/mcd_transformers/transformers/events/deal"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
-
-	"github.com/vulcanize/mcd_transformers/test_config"
-	"github.com/vulcanize/mcd_transformers/transformers/events/deal"
-	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
-	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
 var _ = XDescribe("Deal transformer", func() {
@@ -52,13 +51,13 @@ var _ = XDescribe("Deal transformer", func() {
 		test_config.CleanTestDB(db)
 
 		dealConfig = transformer.EventTransformerConfig{
-			TransformerName: mcdConstants.DealLabel,
+			TransformerName: constants.DealLabel,
 			ContractAddresses: []string{
 				test_data.FlapAddress(),
 				test_data.EthFlipAddress(),
 				test_data.FlopAddress(),
 			},
-			Topic: mcdConstants.DealSignature(),
+			Topic: constants.DealSignature(),
 		}
 
 		initializer = shared.LogNoteTransformer{
@@ -85,8 +84,10 @@ var _ = XDescribe("Deal transformer", func() {
 		logs, err := logFetcher.FetchLogs(addresses, topics, header)
 		Expect(err).NotTo(HaveOccurred())
 
+		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+
 		transformer := initializer.NewLogNoteTransformer(db)
-		err = transformer.Execute(logs, header)
+		err = transformer.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []dealModel
@@ -113,8 +114,10 @@ var _ = XDescribe("Deal transformer", func() {
 		logs, err := logFetcher.FetchLogs(addresses, topics, header)
 		Expect(err).NotTo(HaveOccurred())
 
+		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+
 		transformer := initializer.NewLogNoteTransformer(db)
-		err = transformer.Execute(logs, header)
+		err = transformer.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []dealModel
@@ -128,9 +131,6 @@ var _ = XDescribe("Deal transformer", func() {
 })
 
 type dealModel struct {
-	BidId            string `db:"bid_id"`
-	ContractAddress  string `db:"contract_address"`
-	LogIndex         uint   `db:"log_idx"`
-	TransactionIndex uint   `db:"tx_idx"`
-	Raw              []byte `db:"raw_log"`
+	BidId           string `db:"bid_id"`
+	ContractAddress string `db:"contract_address"`
 }

@@ -19,30 +19,32 @@ package base_test
 import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 
 	"github.com/vulcanize/mcd_transformers/transformers/events/jug_file/base"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
 var _ = Describe("Jug file base converter", func() {
 	var converter = base.JugFileBaseConverter{}
 	It("returns err if log missing topics", func() {
-		badLog := types.Log{
-			Topics: []common.Hash{{}},
-			Data:   []byte{1, 1, 1, 1, 1},
-		}
+		badLog := core.HeaderSyncLog{
+			Log: types.Log{
+				Topics: []common.Hash{{}},
+				Data:   []byte{1, 1, 1, 1, 1},
+			}}
 
-		_, err := converter.ToModels(constants.JugABI(), []types.Log{badLog})
+		_, err := converter.ToModels(constants.JugABI(), []core.HeaderSyncLog{badLog})
 		Expect(err).To(HaveOccurred())
 	})
 
 	It("converts a log to a model", func() {
-		models, err := converter.ToModels(constants.JugABI(), []types.Log{test_data.EthJugFileBaseLog})
+		models, err := converter.ToModels(constants.JugABI(), []core.HeaderSyncLog{test_data.JugFileBaseHeaderSyncLog})
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(models).To(Equal([]shared.InsertionModel{test_data.JugFileBaseModel}))

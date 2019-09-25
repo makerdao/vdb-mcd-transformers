@@ -17,57 +17,43 @@
 package debt_ceiling
 
 import (
-	"encoding/json"
-	"errors"
-
-	"github.com/ethereum/go-ethereum/core/types"
-
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/constants"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 )
 
 type VatFileDebtCeilingConverter struct{}
 
-func (VatFileDebtCeilingConverter) ToModels(_ string, ethLogs []types.Log) ([]shared.InsertionModel, error) {
-	var models []shared.InsertionModel
-	for _, ethLog := range ethLogs {
-		err := verifyLog(ethLog)
-		if err != nil {
-			return nil, err
-		}
-		what := shared.DecodeHexToText(ethLog.Topics[1].Hex())
-		data := shared.ConvertUint256HexToBigInt(ethLog.Topics[2].Hex())
+const (
+	logDataRequired   = false
+	numTopicsRequired = 2
+)
 
-		raw, err := json.Marshal(ethLog)
+func (VatFileDebtCeilingConverter) ToModels(_ string, logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
+	var models []shared.InsertionModel
+	for _, log := range logs {
+		err := shared.VerifyLog(log.Log, numTopicsRequired, logDataRequired)
 		if err != nil {
 			return nil, err
 		}
+		what := shared.DecodeHexToText(log.Log.Topics[1].Hex())
+		data := shared.ConvertUint256HexToBigInt(log.Log.Topics[2].Hex())
+
 		model := shared.InsertionModel{
 			SchemaName: "maker",
 			TableName:  "vat_file_debt_ceiling",
 			OrderedColumns: []string{
-				"header_id", "what", "data", "log_idx", "tx_idx", "raw_log",
+				constants.HeaderFK, "what", "data", constants.LogFK,
 			},
 			ColumnValues: shared.ColumnValues{
-				"what":    what,
-				"data":    data.String(),
-				"log_idx": ethLog.Index,
-				"tx_idx":  ethLog.TxIndex,
-				"raw_log": raw,
+				"what":             what,
+				"data":             data.String(),
+				constants.HeaderFK: log.HeaderID,
+				constants.LogFK:    log.ID,
 			},
 			ForeignKeyValues: shared.ForeignKeyValues{},
 		}
 		models = append(models, model)
 	}
 	return models, nil
-}
-
-func verifyLog(log types.Log) error {
-	if len(log.Topics) < 2 {
-		return errors.New("log missing topics")
-	}
-	if len(log.Data) < constants.DataItemLength {
-		return errors.New("log missing data")
-	}
-	return nil
 }

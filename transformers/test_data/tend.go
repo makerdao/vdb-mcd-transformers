@@ -17,7 +17,8 @@
 package test_data
 
 import (
-	"encoding/json"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
+	"math/rand"
 	"strconv"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -38,7 +39,7 @@ var (
 	tendTransactionHash = "0xaa12e00846ceda4bf8ed33b1513c1972038c5152f8ca621dcb396652da9559b8"
 )
 
-var TendLogNote = types.Log{
+var rawTendLog = types.Log{
 	Address: tendAddress,
 	Topics: []common.Hash{
 		common.HexToHash(constants.TendSignature()),
@@ -55,20 +56,25 @@ var TendLogNote = types.Log{
 	Removed:     false,
 }
 
-var rawTendLog, _ = json.Marshal(TendLogNote)
+var TendHeaderSyncLog = core.HeaderSyncLog{
+	ID:          int64(rand.Int31()),
+	HeaderID:    int64(rand.Int31()),
+	Log:         rawTendLog,
+	Transformed: false,
+}
+
 var TendModel = shared.InsertionModel{
 	SchemaName: "maker",
 	TableName:  "tend",
 	OrderedColumns: []string{
-		"header_id", "bid_id", "lot", "bid", string(constants.AddressFK), "log_idx", "tx_idx", "raw_log",
+		constants.HeaderFK, "bid_id", "lot", "bid", string(constants.AddressFK), constants.LogFK,
 	},
 	ColumnValues: shared.ColumnValues{
-		"bid_id":  strconv.FormatInt(tendBidId, 10),
-		"lot":     tendLot,
-		"bid":     tendBid,
-		"log_idx": TendLogNote.Index,
-		"tx_idx":  TendLogNote.TxIndex,
-		"raw_log": rawTendLog,
+		"bid_id":           strconv.FormatInt(tendBidId, 10),
+		"lot":              tendLot,
+		"bid":              tendBid,
+		constants.HeaderFK: TendHeaderSyncLog.HeaderID,
+		constants.LogFK:    TendHeaderSyncLog.ID,
 	},
 	ForeignKeyValues: shared.ForeignKeyValues{
 		constants.AddressFK: tendAddress.Hex(),

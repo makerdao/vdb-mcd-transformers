@@ -129,46 +129,83 @@ var _ = Describe("Urn history query", func() {
 		helper.AssertUrn(result[2], expectedUrnBlockOne)
 	})
 
-	It("limits results to most recent blocks when limit argument is provided", func() {
-		urnCreatedBlock := rand.Int()
-		urnCreatedTimestamp := int(rand.Int31())
-		urnSetupData := helper.GetUrnSetupData(urnCreatedBlock, urnCreatedTimestamp)
-		urnMetadata := helper.GetUrnMetadata(helper.FakeIlk.Hex, fakeUrn)
-		helper.CreateUrn(urnSetupData, urnMetadata, vatRepo, headerRepo)
+	Describe("result pagination", func() {
+		var (
+			urnCreatedTimestamp, urnUpdatedTimestamp int
+			urnCreatedBlock, urnUpdatedBlock         int
+			urnSetupData                             helper.UrnSetupData
+		)
 
-		// New block
-		urnUpdatedBlock := urnCreatedBlock + 1
-		urnUpdatedTimestamp := urnCreatedTimestamp + 1
-		createFakeHeader(urnUpdatedBlock, urnUpdatedTimestamp, headerRepo)
+		BeforeEach(func() {
+			urnCreatedBlock = rand.Int()
+			urnCreatedTimestamp = int(rand.Int31())
+			urnSetupData = helper.GetUrnSetupData(urnCreatedBlock, urnCreatedTimestamp)
+			urnMetadata := helper.GetUrnMetadata(helper.FakeIlk.Hex, fakeUrn)
+			helper.CreateUrn(urnSetupData, urnMetadata, vatRepo, headerRepo)
 
-		// diff in new block
-		err := vatRepo.Create(urnUpdatedBlock, fakes.FakeHash.String(), urnMetadata.UrnInk, strconv.Itoa(urnSetupData.Ink))
-		Expect(err).NotTo(HaveOccurred())
+			// New block
+			urnUpdatedBlock = urnCreatedBlock + 1
+			urnUpdatedTimestamp = urnCreatedTimestamp + 1
+			createFakeHeader(urnUpdatedBlock, urnUpdatedTimestamp, headerRepo)
 
-		expectedTimeCreated := helper.GetExpectedTimestamp(urnCreatedTimestamp)
-		expectedRatio := helper.GetExpectedRatio(urnSetupData.Ink, urnSetupData.Spot, urnSetupData.Art, urnSetupData.Rate)
-		expectedTimeUpdated := helper.GetExpectedTimestamp(urnUpdatedTimestamp)
-		expectedUrn := helper.UrnState{
-			UrnIdentifier: fakeUrn,
-			IlkIdentifier: helper.FakeIlk.Identifier,
-			BlockHeight:   urnUpdatedBlock,
-			Ink:           strconv.Itoa(urnSetupData.Ink),
-			Art:           strconv.Itoa(urnSetupData.Art),
-			Ratio:         helper.GetValidNullString(strconv.FormatFloat(expectedRatio, 'f', 8, 64)),
-			Safe:          expectedRatio >= 1,
-			Created:       helper.GetValidNullString(expectedTimeCreated),
-			Updated:       helper.GetValidNullString(expectedTimeUpdated),
-		}
+			// diff in new block
+			err := vatRepo.Create(urnUpdatedBlock, fakes.FakeHash.String(), urnMetadata.UrnInk, strconv.Itoa(urnSetupData.Ink))
+			Expect(err).NotTo(HaveOccurred())
+		})
 
-		maxResults := 1
-		var result []helper.UrnState
-		dbErr := db.Select(&result,
-			`SELECT * FROM api.all_urn_states($1, $2, $3, $4)`,
-			helper.FakeIlk.Identifier, fakeUrn, urnUpdatedBlock, maxResults)
-		Expect(dbErr).NotTo(HaveOccurred())
+		It("limits results to most recent blocks when limit argument is provided", func() {
+			expectedTimeCreated := helper.GetExpectedTimestamp(urnCreatedTimestamp)
+			expectedRatio := helper.GetExpectedRatio(urnSetupData.Ink, urnSetupData.Spot, urnSetupData.Art, urnSetupData.Rate)
+			expectedTimeUpdated := helper.GetExpectedTimestamp(urnUpdatedTimestamp)
+			expectedUrn := helper.UrnState{
+				UrnIdentifier: fakeUrn,
+				IlkIdentifier: helper.FakeIlk.Identifier,
+				BlockHeight:   urnUpdatedBlock,
+				Ink:           strconv.Itoa(urnSetupData.Ink),
+				Art:           strconv.Itoa(urnSetupData.Art),
+				Ratio:         helper.GetValidNullString(strconv.FormatFloat(expectedRatio, 'f', 8, 64)),
+				Safe:          expectedRatio >= 1,
+				Created:       helper.GetValidNullString(expectedTimeCreated),
+				Updated:       helper.GetValidNullString(expectedTimeUpdated),
+			}
 
-		Expect(len(result)).To(Equal(maxResults))
-		helper.AssertUrn(result[0], expectedUrn)
+			maxResults := 1
+			var result []helper.UrnState
+			dbErr := db.Select(&result,
+				`SELECT * FROM api.all_urn_states($1, $2, $3, $4)`,
+				helper.FakeIlk.Identifier, fakeUrn, urnUpdatedBlock, maxResults)
+			Expect(dbErr).NotTo(HaveOccurred())
+
+			Expect(len(result)).To(Equal(maxResults))
+			helper.AssertUrn(result[0], expectedUrn)
+		})
+
+		It("offsets results if offset is provided", func() {
+			expectedTimeCreated := helper.GetExpectedTimestamp(urnCreatedTimestamp)
+			expectedRatio := helper.GetExpectedRatio(urnSetupData.Ink, urnSetupData.Spot, urnSetupData.Art, urnSetupData.Rate)
+			expectedUrn := helper.UrnState{
+				UrnIdentifier: fakeUrn,
+				IlkIdentifier: helper.FakeIlk.Identifier,
+				BlockHeight:   urnCreatedBlock,
+				Ink:           strconv.Itoa(urnSetupData.Ink),
+				Art:           strconv.Itoa(urnSetupData.Art),
+				Ratio:         helper.GetValidNullString(strconv.FormatFloat(expectedRatio, 'f', 8, 64)),
+				Safe:          expectedRatio >= 1,
+				Created:       helper.GetValidNullString(expectedTimeCreated),
+				Updated:       helper.GetValidNullString(expectedTimeCreated),
+			}
+
+			maxResults := 1
+			resultOffset := 1
+			var result []helper.UrnState
+			dbErr := db.Select(&result,
+				`SELECT * FROM api.all_urn_states($1, $2, $3, $4, $5)`,
+				helper.FakeIlk.Identifier, fakeUrn, urnUpdatedBlock, maxResults, resultOffset)
+			Expect(dbErr).NotTo(HaveOccurred())
+
+			Expect(len(result)).To(Equal(maxResults))
+			helper.AssertUrn(result[0], expectedUrn)
+		})
 	})
 
 	It("fails if no argument is supplied", func() {

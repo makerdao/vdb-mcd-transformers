@@ -17,22 +17,19 @@
 package integration_tests
 
 import (
-	"github.com/vulcanize/mcd_transformers/transformers/test_data"
-	"sort"
-	"strconv"
-
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/vulcanize/mcd_transformers/test_config"
+	"github.com/vulcanize/mcd_transformers/transformers/events/vat_file/ilk"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
-
-	"github.com/vulcanize/mcd_transformers/test_config"
-	"github.com/vulcanize/mcd_transformers/transformers/events/vat_file/ilk"
-	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"strconv"
 )
 
 var _ = Describe("VatFileIlk LogNoteTransformer", func() {
@@ -52,10 +49,10 @@ var _ = Describe("VatFileIlk LogNoteTransformer", func() {
 		db = test_config.NewTestDB(blockChain.Node())
 		test_config.CleanTestDB(db)
 		vatFileIlkConfig := transformer.EventTransformerConfig{
-			TransformerName:   mcdConstants.VatFileIlkLabel,
+			TransformerName:   constants.VatFileIlkLabel,
 			ContractAddresses: []string{test_data.VatAddress()},
-			ContractAbi:       mcdConstants.VatABI(),
-			Topic:             mcdConstants.VatFileIlkSignature(),
+			ContractAbi:       constants.VatABI(),
+			Topic:             constants.VatFileIlkSignature(),
 		}
 
 		addresses = transformer.HexStringsToAddresses(vatFileIlkConfig.ContractAddresses)
@@ -69,7 +66,7 @@ var _ = Describe("VatFileIlk LogNoteTransformer", func() {
 	})
 
 	It("fetches and transforms a Vat.file ilk 'spot' event from Kovan", func() {
-		blockNumber := int64(12742357)
+		blockNumber := int64(13172020)
 		initializer.Config.StartingBlockNumber = blockNumber
 		initializer.Config.EndingBlockNumber = blockNumber
 
@@ -80,8 +77,10 @@ var _ = Describe("VatFileIlk LogNoteTransformer", func() {
 		logs, err := logFetcher.FetchLogs(addresses, topics, header)
 		Expect(err).NotTo(HaveOccurred())
 
+		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+
 		tr := initializer.NewLogNoteTransformer(db)
-		err = tr.Execute(logs, header)
+		err = tr.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []vatFileIlkModel
@@ -89,15 +88,15 @@ var _ = Describe("VatFileIlk LogNoteTransformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))
-		ilkID, err := shared.GetOrCreateIlk("0x474e542d41000000000000000000000000000000000000000000000000000000", db)
+		ilkID, err := shared.GetOrCreateIlk("0x5341490000000000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
-		Expect(dbResult[0].Ilk).To(Equal(strconv.Itoa(ilkID)))
+		Expect(dbResult[0].Ilk).To(Equal(strconv.FormatInt(ilkID, 10)))
 		Expect(dbResult[0].What).To(Equal("spot"))
-		Expect(dbResult[0].Data).To(Equal("51668518916666666666666666"))
+		Expect(dbResult[0].Data).To(Equal("1000000000000000000000000000000000000000000000"))
 	})
 
 	It("fetches and transforms a Vat.file ilk 'line' event from Kovan", func() {
-		blockNumber := int64(12742316)
+		blockNumber := int64(13171919)
 		initializer.Config.StartingBlockNumber = blockNumber
 		initializer.Config.EndingBlockNumber = blockNumber
 
@@ -108,8 +107,41 @@ var _ = Describe("VatFileIlk LogNoteTransformer", func() {
 		logs, err := logFetcher.FetchLogs(addresses, topics, header)
 		Expect(err).NotTo(HaveOccurred())
 
+		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+
 		tr := initializer.NewLogNoteTransformer(db)
-		err = tr.Execute(logs, header)
+		err = tr.Execute(headerSyncLogs)
+		Expect(err).NotTo(HaveOccurred())
+
+		var dbResults []vatFileIlkModel
+		err = db.Select(&dbResults, `SELECT ilk_id, what, data from maker.vat_file_ilk`)
+		Expect(err).NotTo(HaveOccurred())
+
+		Expect(len(dbResults)).To(Equal(1))
+		ilkID, err := shared.GetOrCreateIlk("0x5a52582d41000000000000000000000000000000000000000000000000000000", db)
+		Expect(err).NotTo(HaveOccurred())
+		dbResult := dbResults[0]
+		Expect(dbResult.Ilk).To(Equal(strconv.FormatInt(ilkID, 10)))
+		Expect(dbResult.What).To(Equal("line"))
+		Expect(dbResult.Data).To(Equal("5000000000000000000000000000000000000000000000000"))
+	})
+
+	It("fetches and transforms a Vat.file ilk 'dust' event from Kovan", func() {
+		blockNumber := int64(13171960)
+		initializer.Config.StartingBlockNumber = blockNumber
+		initializer.Config.EndingBlockNumber = blockNumber
+
+		header, err := persistHeader(db, blockNumber, blockChain)
+		Expect(err).NotTo(HaveOccurred())
+
+		logFetcher := fetcher.NewLogFetcher(blockChain)
+		logs, err := logFetcher.FetchLogs(addresses, topics, header)
+		Expect(err).NotTo(HaveOccurred())
+
+		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+
+		tr := initializer.NewLogNoteTransformer(db)
+		err = tr.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResults []vatFileIlkModel
@@ -119,25 +151,15 @@ var _ = Describe("VatFileIlk LogNoteTransformer", func() {
 		Expect(len(dbResults)).To(Equal(1))
 		ilkID, err := shared.GetOrCreateIlk("0x474e542d41000000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
-		sort.Sort(byLogIndexVatFileIlk(dbResults))
 		dbResult := dbResults[0]
-		Expect(dbResult.Ilk).To(Equal(strconv.Itoa(ilkID)))
-		Expect(dbResult.What).To(Equal("line"))
-		Expect(dbResult.Data).To(Equal("5000000000000000000000000000000000000000000000000"))
+		Expect(dbResult.Ilk).To(Equal(strconv.FormatInt(ilkID, 10)))
+		Expect(dbResult.What).To(Equal("dust"))
+		Expect(dbResult.Data).To(Equal("0"))
 	})
 })
 
 type vatFileIlkModel struct {
-	Ilk              string `db:"ilk_id"`
-	What             string
-	Data             string
-	LogIndex         uint   `db:"log_idx"`
-	TransactionIndex uint   `db:"tx_idx"`
-	Raw              []byte `db:"raw_log"`
+	Ilk  string `db:"ilk_id"`
+	What string
+	Data string
 }
-
-type byLogIndexVatFileIlk []vatFileIlkModel
-
-func (c byLogIndexVatFileIlk) Len() int           { return len(c) }
-func (c byLogIndexVatFileIlk) Less(i, j int) bool { return c[i].LogIndex < c[j].LogIndex }
-func (c byLogIndexVatFileIlk) Swap(i, j int)      { c[i], c[j] = c[j], c[i] }

@@ -70,7 +70,7 @@ CREATE TYPE api.bite_event AS (
 	art numeric,
 	tab numeric,
 	block_height bigint,
-	tx_idx integer
+	log_id bigint
 );
 
 
@@ -82,10 +82,10 @@ COMMENT ON COLUMN api.bite_event.block_height IS '@omit';
 
 
 --
--- Name: COLUMN bite_event.tx_idx; Type: COMMENT; Schema: api; Owner: -
+-- Name: COLUMN bite_event.log_id; Type: COMMENT; Schema: api; Owner: -
 --
 
-COMMENT ON COLUMN api.bite_event.tx_idx IS '@omit';
+COMMENT ON COLUMN api.bite_event.log_id IS '@omit';
 
 
 --
@@ -108,7 +108,7 @@ CREATE TYPE api.flap_bid_event AS (
 	bid_amount numeric,
 	act api.bid_act,
 	block_height bigint,
-	tx_idx integer,
+	log_id bigint,
 	contract_address text
 );
 
@@ -121,10 +121,10 @@ COMMENT ON COLUMN api.flap_bid_event.block_height IS '@omit';
 
 
 --
--- Name: COLUMN flap_bid_event.tx_idx; Type: COMMENT; Schema: api; Owner: -
+-- Name: COLUMN flap_bid_event.log_id; Type: COMMENT; Schema: api; Owner: -
 --
 
-COMMENT ON COLUMN api.flap_bid_event.tx_idx IS '@omit';
+COMMENT ON COLUMN api.flap_bid_event.log_id IS '@omit';
 
 
 --
@@ -161,7 +161,7 @@ CREATE TYPE api.flip_bid_event AS (
 	bid_amount numeric,
 	act api.bid_act,
 	block_height bigint,
-	tx_idx integer,
+	log_id bigint,
 	contract_address text
 );
 
@@ -174,10 +174,10 @@ COMMENT ON COLUMN api.flip_bid_event.block_height IS '@omit';
 
 
 --
--- Name: COLUMN flip_bid_event.tx_idx; Type: COMMENT; Schema: api; Owner: -
+-- Name: COLUMN flip_bid_event.log_id; Type: COMMENT; Schema: api; Owner: -
 --
 
-COMMENT ON COLUMN api.flip_bid_event.tx_idx IS '@omit';
+COMMENT ON COLUMN api.flip_bid_event.log_id IS '@omit';
 
 
 --
@@ -240,7 +240,7 @@ CREATE TYPE api.flop_bid_event AS (
 	bid_amount numeric,
 	act api.bid_act,
 	block_height bigint,
-	tx_idx integer,
+	log_id bigint,
 	contract_address text
 );
 
@@ -253,10 +253,10 @@ COMMENT ON COLUMN api.flop_bid_event.block_height IS '@omit';
 
 
 --
--- Name: COLUMN flop_bid_event.tx_idx; Type: COMMENT; Schema: api; Owner: -
+-- Name: COLUMN flop_bid_event.log_id; Type: COMMENT; Schema: api; Owner: -
 --
 
-COMMENT ON COLUMN api.flop_bid_event.tx_idx IS '@omit';
+COMMENT ON COLUMN api.flop_bid_event.log_id IS '@omit';
 
 
 --
@@ -294,7 +294,7 @@ CREATE TYPE api.frob_event AS (
 	dart numeric,
 	ilk_rate numeric,
 	block_height bigint,
-	tx_idx integer
+	log_id bigint
 );
 
 
@@ -306,10 +306,10 @@ COMMENT ON COLUMN api.frob_event.block_height IS '@omit';
 
 
 --
--- Name: COLUMN frob_event.tx_idx; Type: COMMENT; Schema: api; Owner: -
+-- Name: COLUMN frob_event.log_id; Type: COMMENT; Schema: api; Owner: -
 --
 
-COMMENT ON COLUMN api.frob_event.tx_idx IS '@omit';
+COMMENT ON COLUMN api.frob_event.log_id IS '@omit';
 
 
 --
@@ -321,7 +321,7 @@ CREATE TYPE api.ilk_file_event AS (
 	what text,
 	data text,
 	block_height bigint,
-	tx_idx integer
+	log_id bigint
 );
 
 
@@ -340,10 +340,10 @@ COMMENT ON COLUMN api.ilk_file_event.block_height IS '@omit';
 
 
 --
--- Name: COLUMN ilk_file_event.tx_idx; Type: COMMENT; Schema: api; Owner: -
+-- Name: COLUMN ilk_file_event.log_id; Type: COMMENT; Schema: api; Owner: -
 --
 
-COMMENT ON COLUMN api.ilk_file_event.tx_idx IS '@omit';
+COMMENT ON COLUMN api.ilk_file_event.log_id IS '@omit';
 
 
 --
@@ -379,7 +379,7 @@ CREATE TYPE api.poke_event AS (
 	val numeric,
 	spot numeric,
 	block_height bigint,
-	tx_idx integer
+	log_id bigint
 );
 
 
@@ -398,10 +398,10 @@ COMMENT ON COLUMN api.poke_event.block_height IS '@omit';
 
 
 --
--- Name: COLUMN poke_event.tx_idx; Type: COMMENT; Schema: api; Owner: -
+-- Name: COLUMN poke_event.log_id; Type: COMMENT; Schema: api; Owner: -
 --
 
-COMMENT ON COLUMN api.poke_event.tx_idx IS '@omit';
+COMMENT ON COLUMN api.poke_event.log_id IS '@omit';
 
 
 --
@@ -429,17 +429,6 @@ CREATE TYPE api.relevant_block AS (
 
 
 --
--- Name: relevant_flip_block; Type: TYPE; Schema: api; Owner: -
---
-
-CREATE TYPE api.relevant_flip_block AS (
-	block_height bigint,
-	block_hash text,
-	bid_id numeric
-);
-
-
---
 -- Name: sin_act; Type: TYPE; Schema: api; Owner: -
 --
 
@@ -457,7 +446,7 @@ CREATE TYPE api.sin_queue_event AS (
 	era numeric,
 	act api.sin_act,
 	block_height bigint,
-	tx_idx integer
+	log_id bigint
 );
 
 
@@ -469,10 +458,10 @@ COMMENT ON COLUMN api.sin_queue_event.block_height IS '@omit';
 
 
 --
--- Name: COLUMN sin_queue_event.tx_idx; Type: COMMENT; Schema: api; Owner: -
+-- Name: COLUMN sin_queue_event.log_id; Type: COMMENT; Schema: api; Owner: -
 --
 
-COMMENT ON COLUMN api.sin_queue_event.tx_idx IS '@omit';
+COMMENT ON COLUMN api.sin_queue_event.log_id IS '@omit';
 
 
 --
@@ -507,29 +496,29 @@ CREATE TYPE api.urn_state AS (
 
 
 --
--- Name: all_bites(text, integer); Type: FUNCTION; Schema: api; Owner: -
+-- Name: all_bites(text, integer, integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.all_bites(ilk_identifier text, max_results integer DEFAULT NULL::integer) RETURNS SETOF api.bite_event
+CREATE FUNCTION api.all_bites(ilk_identifier text, max_results integer DEFAULT NULL::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.bite_event
     LANGUAGE sql STABLE
     AS $$
 WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier)
 
-SELECT ilk_identifier, identifier AS urn_identifier, bite_identifier AS bid_id, ink, art, tab, block_number, tx_idx
+SELECT ilk_identifier, identifier AS urn_identifier, bite_identifier AS bid_id, ink, art, tab, block_number, log_id
 FROM maker.bite
          LEFT JOIN maker.urns ON bite.urn_id = urns.id
          LEFT JOIN headers ON bite.header_id = headers.id
 WHERE urns.ilk_id = (SELECT id FROM ilk)
 ORDER BY urn_identifier, block_number DESC
-LIMIT all_bites.max_results
+LIMIT all_bites.max_results OFFSET all_bites.result_offset
 $$;
 
 
 --
--- Name: all_flap_bid_events(integer); Type: FUNCTION; Schema: api; Owner: -
+-- Name: all_flap_bid_events(integer, integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.all_flap_bid_events(max_results integer DEFAULT NULL::integer) RETURNS SETOF api.flap_bid_event
+CREATE FUNCTION api.all_flap_bid_events(max_results integer DEFAULT NULL::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.flap_bid_event
     LANGUAGE sql STABLE
     AS $$
 WITH address_id AS (
@@ -540,16 +529,16 @@ WITH address_id AS (
      flap_address AS (
          SELECT address
          FROM maker.flap_kick
-         JOIN addresses on addresses.id = flap_kick.address_id
+                  JOIN addresses on addresses.id = flap_kick.address_id
          LIMIT 1
      ),
      deals AS (
          SELECT deal.bid_id,
                 flap_bid_lot.lot,
-                flap_bid_bid.bid                                           AS bid_amount,
-                'deal'::api.bid_act                                        AS act,
-                headers.block_number                                       AS block_height,
-                tx_idx,
+                flap_bid_bid.bid             AS bid_amount,
+                'deal'::api.bid_act          AS act,
+                headers.block_number         AS block_height,
+                deal.log_id,
                 (SELECT * FROM flap_address) AS contract_address
          FROM maker.deal
                   LEFT JOIN headers ON deal.header_id = headers.id
@@ -564,10 +553,10 @@ WITH address_id AS (
      yanks AS (
          SELECT yank.bid_id,
                 flap_bid_lot.lot,
-                flap_bid_bid.bid                                           AS bid_amount,
-                'yank'::api.bid_act                                        AS act,
-                headers.block_number                                       AS block_height,
-                tx_idx,
+                flap_bid_bid.bid             AS bid_amount,
+                'yank'::api.bid_act          AS act,
+                headers.block_number         AS block_height,
+                yank.log_id,
                 (SELECT * FROM flap_address) AS contract_address
          FROM maker.yank
                   LEFT JOIN headers ON yank.header_id = headers.id
@@ -582,20 +571,20 @@ WITH address_id AS (
 
 SELECT flap_kick.bid_id,
        lot,
-       bid                                                             AS bid_amount,
-       'kick'::api.bid_act                                             AS act,
-       block_number                                                    AS block_height,
-       tx_idx,
+       bid                          AS bid_amount,
+       'kick'::api.bid_act          AS act,
+       block_number                 AS block_height,
+       log_id,
        (SELECT * FROM flap_address) AS contract_address
 FROM maker.flap_kick
          LEFT JOIN headers ON flap_kick.header_id = headers.id
 UNION
 SELECT bid_id,
        lot,
-       bid                                                        AS bid_amount,
-       'tend'::api.bid_act                                        AS act,
-       block_number                                               AS block_height,
-       tx_idx,
+       bid                          AS bid_amount,
+       'tend'::api.bid_act          AS act,
+       block_number                 AS block_height,
+       log_id,
        (SELECT * FROM flap_address) AS contract_address
 FROM maker.tend
          LEFT JOIN headers ON tend.header_id = headers.id
@@ -608,14 +597,16 @@ SELECT *
 FROM yanks
 ORDER BY block_height DESC
 LIMIT all_flap_bid_events.max_results
+OFFSET
+all_flap_bid_events.result_offset
 $$;
 
 
 --
--- Name: all_flaps(integer); Type: FUNCTION; Schema: api; Owner: -
+-- Name: all_flaps(integer, integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.all_flaps(max_results integer DEFAULT NULL::integer) RETURNS SETOF api.flap_state
+CREATE FUNCTION api.all_flaps(max_results integer DEFAULT NULL::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.flap_state
     LANGUAGE plpgsql STABLE
     AS $$
 BEGIN
@@ -624,7 +615,7 @@ BEGIN
             SELECT DISTINCT bid_id
             FROM maker.flap
             ORDER BY bid_id DESC
-            LIMIT all_flaps.max_results
+            LIMIT all_flaps.max_results OFFSET all_flaps.result_offset
         )
         SELECT f.*
         FROM bid_ids,
@@ -635,10 +626,10 @@ $$;
 
 
 --
--- Name: all_flip_bid_events(integer); Type: FUNCTION; Schema: api; Owner: -
+-- Name: all_flip_bid_events(integer, integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.all_flip_bid_events(max_results integer DEFAULT NULL::integer) RETURNS SETOF api.flip_bid_event
+CREATE FUNCTION api.all_flip_bid_events(max_results integer DEFAULT NULL::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.flip_bid_event
     LANGUAGE sql STABLE
     AS $$
 WITH address_ids AS (
@@ -651,7 +642,7 @@ WITH address_ids AS (
                 flip_bid_bid.bid                                           AS bid_amount,
                 'deal'::api.bid_act                                        AS act,
                 headers.block_number                                       AS block_height,
-                tx_idx,
+                log_id,
                 (SELECT address FROM addresses WHERE id = deal.address_id) AS contract_address
          FROM maker.deal
                   LEFT JOIN headers ON deal.header_id = headers.id
@@ -669,7 +660,7 @@ WITH address_ids AS (
                 flip_bid_bid.bid     AS bid_amount,
                 'yank'::api.bid_act  AS act,
                 headers.block_number AS block_height,
-                tx_idx,
+                log_id,
                 (SELECT address FROM addresses WHERE id = yank.address_id)
          FROM maker.yank
                   LEFT JOIN headers ON yank.header_id = headers.id
@@ -687,7 +678,7 @@ WITH address_ids AS (
                 flip_bid_bid.bid     AS bid_amount,
                 'tick'::api.bid_act  AS act,
                 headers.block_number AS block_height,
-                tx_idx,
+                log_id,
                 (SELECT address FROM addresses WHERE id = tick.address_id)
          FROM maker.tick
                   LEFT JOIN headers on tick.header_id = headers.id
@@ -705,7 +696,7 @@ SELECT flip_kick.bid_id,
        bid                 AS                                          bid_amount,
        'kick'::api.bid_act AS                                          act,
        block_number        AS                                          block_height,
-       tx_idx,
+       log_id,
        (SELECT address FROM addresses WHERE id = flip_kick.address_id) s
 FROM maker.flip_kick
          LEFT JOIN headers ON flip_kick.header_id = headers.id
@@ -715,7 +706,7 @@ SELECT bid_id,
        bid                 AS bid_amount,
        'tend'::api.bid_act AS act,
        block_number        AS block_height,
-       tx_idx,
+       log_id,
        (SELECT address FROM addresses WHERE id = tend.address_id)
 FROM maker.tend
          LEFT JOIN headers on tend.header_id = headers.id
@@ -726,7 +717,7 @@ SELECT bid_id,
        bid                 AS bid_amount,
        'dent'::api.bid_act AS act,
        block_number        AS block_height,
-       tx_idx,
+       log_id,
        (SELECT address FROM addresses WHERE id = dent.address_id)
 FROM maker.dent
          LEFT JOIN headers on dent.header_id = headers.id
@@ -741,15 +732,15 @@ UNION
 SELECT *
 FROM ticks
 ORDER BY block_height DESC
-LIMIT all_flip_bid_events.max_results
+LIMIT all_flip_bid_events.max_results OFFSET all_flip_bid_events.result_offset
 $$;
 
 
 --
--- Name: all_flips(text, integer); Type: FUNCTION; Schema: api; Owner: -
+-- Name: all_flips(text, integer, integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.all_flips(ilk text, max_results integer DEFAULT NULL::integer) RETURNS SETOF api.flip_state
+CREATE FUNCTION api.all_flips(ilk text, max_results integer DEFAULT NULL::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.flip_state
     LANGUAGE plpgsql STABLE
     AS $$
 BEGIN
@@ -763,24 +754,24 @@ BEGIN
                  WHERE flip_ilk.ilk_id = (SELECT id FROM ilk_ids)
                  LIMIT 1),
              bid_ids AS (
-                 SELECT DISTINCT flip_kicks.kicks
-                 FROM maker.flip_kicks
+                 SELECT DISTINCT bid_id
+                 FROM maker.flip
                  WHERE address_id = (SELECT * FROM address)
-                 ORDER BY flip_kicks.kicks DESC
-                 LIMIT all_flips.max_results)
+                 ORDER BY bid_id DESC
+                 LIMIT all_flips.max_results OFFSET all_flips.result_offset)
         SELECT f.*
         FROM bid_ids,
-             LATERAL api.get_flip(bid_ids.kicks, all_flips.ilk) f
+             LATERAL api.get_flip(bid_ids.bid_id, all_flips.ilk) f
     );
 END
 $$;
 
 
 --
--- Name: all_flop_bid_events(integer); Type: FUNCTION; Schema: api; Owner: -
+-- Name: all_flop_bid_events(integer, integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.all_flop_bid_events(max_results integer DEFAULT NULL::integer) RETURNS SETOF api.flop_bid_event
+CREATE FUNCTION api.all_flop_bid_events(max_results integer DEFAULT NULL::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.flop_bid_event
     LANGUAGE sql STABLE
     AS $$
 WITH address_id AS (
@@ -791,16 +782,16 @@ WITH address_id AS (
      flop_address AS (
          SELECT address
          FROM maker.flop_kick
-         JOIN addresses on addresses.id = flop_kick.address_id
+                  JOIN addresses on addresses.id = flop_kick.address_id
          LIMIT 1
      ),
      deals AS (
          SELECT deal.bid_id,
                 flop_bid_lot.lot,
-                flop_bid_bid.bid                                           AS bid_amount,
-                'deal'::api.bid_act                                        AS act,
-                headers.block_number                                       AS block_height,
-                tx_idx,
+                flop_bid_bid.bid             AS bid_amount,
+                'deal'::api.bid_act          AS act,
+                headers.block_number         AS block_height,
+                deal.log_id,
                 (SELECT * FROM flop_address) AS contract_address
          FROM maker.deal
                   LEFT JOIN headers ON deal.header_id = headers.id
@@ -815,10 +806,10 @@ WITH address_id AS (
      yanks AS (
          SELECT yank.bid_id,
                 flop_bid_lot.lot,
-                flop_bid_bid.bid                                           AS bid_amount,
-                'yank'::api.bid_act                                        AS act,
-                headers.block_number                                       AS block_height,
-                tx_idx,
+                flop_bid_bid.bid             AS bid_amount,
+                'yank'::api.bid_act          AS act,
+                headers.block_number         AS block_height,
+                yank.log_id,
                 (SELECT * FROM flop_address) AS contract_address
          FROM maker.yank
                   LEFT JOIN headers ON yank.header_id = headers.id
@@ -834,10 +825,10 @@ WITH address_id AS (
      ticks AS (
          SELECT tick.bid_id,
                 flop_bid_lot.lot,
-                flop_bid_bid.bid                                           AS bid_amount,
-                'tick'::api.bid_act                                        AS act,
-                headers.block_number                                       AS block_height,
-                tx_idx,
+                flop_bid_bid.bid             AS bid_amount,
+                'tick'::api.bid_act          AS act,
+                headers.block_number         AS block_height,
+                log_id,
                 (SELECT * FROM flop_address) AS contract_address
          FROM maker.tick
                   LEFT JOIN headers on tick.header_id = headers.id
@@ -852,20 +843,20 @@ WITH address_id AS (
 
 SELECT flop_kick.bid_id,
        lot,
-       bid                                                             AS bid_amount,
-       'kick'::api.bid_act                                             AS act,
-       block_number                                                    AS block_height,
-       tx_idx,
+       bid                          AS bid_amount,
+       'kick'::api.bid_act          AS act,
+       block_number                 AS block_height,
+       log_id,
        (SELECT * FROM flop_address) AS contract_address
 FROM maker.flop_kick
          LEFT JOIN headers ON flop_kick.header_id = headers.id
 UNION
 SELECT bid_id,
        lot,
-       bid                                                        AS bid_amount,
-       'dent'::api.bid_act                                        AS act,
-       block_number                                               AS block_height,
-       tx_idx,
+       bid                          AS bid_amount,
+       'dent'::api.bid_act          AS act,
+       block_number                 AS block_height,
+       log_id,
        (SELECT * FROM flop_address) AS contract_address
 FROM maker.dent
          LEFT JOIN headers ON dent.header_id = headers.id
@@ -880,15 +871,15 @@ UNION
 SELECT *
 FROM ticks
 ORDER BY block_height DESC
-LIMIT all_flop_bid_events.max_results
+LIMIT all_flop_bid_events.max_results OFFSET all_flop_bid_events.result_offset
 $$;
 
 
 --
--- Name: all_flops(integer); Type: FUNCTION; Schema: api; Owner: -
+-- Name: all_flops(integer, integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.all_flops(max_results integer DEFAULT NULL::integer) RETURNS SETOF api.flop_state
+CREATE FUNCTION api.all_flops(max_results integer DEFAULT NULL::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.flop_state
     LANGUAGE plpgsql STABLE
     AS $$
 BEGIN
@@ -897,7 +888,7 @@ BEGIN
             SELECT DISTINCT bid_id
             FROM maker.flop
             ORDER BY bid_id DESC
-            LIMIT all_flops.max_results
+            LIMIT all_flops.max_results OFFSET all_flops.result_offset
         )
         SELECT f.*
         FROM bid_ids,
@@ -908,10 +899,10 @@ $$;
 
 
 --
--- Name: all_frobs(text, integer); Type: FUNCTION; Schema: api; Owner: -
+-- Name: all_frobs(text, integer, integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.all_frobs(ilk_identifier text, max_results integer DEFAULT NULL::integer) RETURNS SETOF api.frob_event
+CREATE FUNCTION api.all_frobs(ilk_identifier text, max_results integer DEFAULT NULL::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.frob_event
     LANGUAGE sql STABLE
     AS $$
 WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier),
@@ -927,56 +918,56 @@ SELECT ilk_identifier,
        dart,
        (SELECT rate from rates WHERE block_number <= headers.block_number LIMIT 1) AS ilk_rate,
        block_number,
-       tx_idx
+       log_id
 FROM maker.vat_frob
          LEFT JOIN maker.urns ON vat_frob.urn_id = urns.id
          LEFT JOIN headers ON vat_frob.header_id = headers.id
 WHERE urns.ilk_id = (SELECT id FROM ilk)
 ORDER BY block_number DESC
-LIMIT max_results
+LIMIT all_frobs.max_results OFFSET all_frobs.result_offset
 $$;
 
 
 --
--- Name: all_ilk_file_events(text, integer); Type: FUNCTION; Schema: api; Owner: -
+-- Name: all_ilk_file_events(text, integer, integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.all_ilk_file_events(ilk_identifier text, max_results integer DEFAULT NULL::integer) RETURNS SETOF api.ilk_file_event
+CREATE FUNCTION api.all_ilk_file_events(ilk_identifier text, max_results integer DEFAULT NULL::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.ilk_file_event
     LANGUAGE sql STABLE
     AS $$
 WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier)
 
-SELECT ilk_identifier, what, data :: text, block_number, tx_idx
+SELECT ilk_identifier, what, data :: text, block_number, log_id
 FROM maker.cat_file_chop_lump
          LEFT JOIN headers ON cat_file_chop_lump.header_id = headers.id
 WHERE cat_file_chop_lump.ilk_id = (SELECT id FROM ilk)
 UNION
-SELECT ilk_identifier, what, flip AS data, block_number, tx_idx
+SELECT ilk_identifier, what, flip AS data, block_number, log_id
 FROM maker.cat_file_flip
          LEFT JOIN headers ON cat_file_flip.header_id = headers.id
 WHERE cat_file_flip.ilk_id = (SELECT id FROM ilk)
 UNION
-SELECT ilk_identifier, what, data :: text, block_number, tx_idx
+SELECT ilk_identifier, what, data :: text, block_number, log_id
 FROM maker.jug_file_ilk
          LEFT JOIN headers ON jug_file_ilk.header_id = headers.id
 WHERE jug_file_ilk.ilk_id = (SELECT id FROM ilk)
 UNION
-SELECT ilk_identifier, what, data :: text, block_number, tx_idx
+SELECT ilk_identifier, what, data :: text, block_number, log_id
 FROM maker.spot_file_mat
          LEFT JOIN headers ON spot_file_mat.header_id = headers.id
 WHERE spot_file_mat.ilk_id = (SELECT id FROM ilk)
 UNION
-SELECT ilk_identifier, 'pip' AS what, pip AS data, block_number, tx_idx
+SELECT ilk_identifier, 'pip' AS what, pip AS data, block_number, log_id
 FROM maker.spot_file_pip
          LEFT JOIN headers ON spot_file_pip.header_id = headers.id
 WHERE spot_file_pip.ilk_id = (SELECT id FROM ilk)
 UNION
-SELECT ilk_identifier, what, data :: text, block_number, tx_idx
+SELECT ilk_identifier, what, data :: text, block_number, log_id
 FROM maker.vat_file_ilk
          LEFT JOIN headers ON vat_file_ilk.header_id = headers.id
 WHERE vat_file_ilk.ilk_id = (SELECT id FROM ilk)
 ORDER BY block_number DESC
-LIMIT all_ilk_file_events.max_results
+LIMIT all_ilk_file_events.max_results OFFSET all_ilk_file_events.result_offset
 $$;
 
 
@@ -1000,10 +991,10 @@ COMMENT ON FUNCTION api.max_block() IS '@omit';
 
 
 --
--- Name: all_ilk_states(text, bigint, integer); Type: FUNCTION; Schema: api; Owner: -
+-- Name: all_ilk_states(text, bigint, integer, integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.all_ilk_states(ilk_identifier text, block_height bigint DEFAULT api.max_block(), max_results integer DEFAULT NULL::integer) RETURNS SETOF api.ilk_state
+CREATE FUNCTION api.all_ilk_states(ilk_identifier text, block_height bigint DEFAULT api.max_block(), max_results integer DEFAULT NULL::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.ilk_state
     LANGUAGE plpgsql STABLE
     AS $$
 BEGIN
@@ -1015,17 +1006,17 @@ BEGIN
         SELECT r.*
         FROM relevant_blocks,
              LATERAL api.get_ilk(ilk_identifier, relevant_blocks.block_height) r
-        LIMIT all_ilk_states.max_results -- LIMIT NULL is the same as omitting a limit
+        LIMIT all_ilk_states.max_results OFFSET all_ilk_states.result_offset
     );
 END;
 $$;
 
 
 --
--- Name: all_ilks(bigint, integer); Type: FUNCTION; Schema: api; Owner: -
+-- Name: all_ilks(bigint, integer, integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.all_ilks(block_height bigint DEFAULT api.max_block(), max_results integer DEFAULT NULL::integer) RETURNS SETOF api.ilk_state
+CREATE FUNCTION api.all_ilks(block_height bigint DEFAULT api.max_block(), max_results integer DEFAULT NULL::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.ilk_state
     LANGUAGE sql STABLE
     AS $$
 WITH rates AS (SELECT DISTINCT ON (ilk_id) rate, ilk_id, block_hash
@@ -1128,7 +1119,7 @@ WHERE (
               mats.mat is not null
           )
 ORDER BY updated DESC
-LIMIT all_ilks.max_results
+LIMIT all_ilks.max_results OFFSET all_ilks.result_offset
 $$;
 
 
@@ -1145,26 +1136,26 @@ $$;
 
 
 --
--- Name: all_poke_events(numeric, numeric, integer); Type: FUNCTION; Schema: api; Owner: -
+-- Name: all_poke_events(numeric, numeric, integer, integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.all_poke_events(begintime numeric DEFAULT 0, endtime numeric DEFAULT api.max_timestamp(), max_results integer DEFAULT NULL::integer) RETURNS SETOF api.poke_event
+CREATE FUNCTION api.all_poke_events(begintime numeric DEFAULT 0, endtime numeric DEFAULT api.max_timestamp(), max_results integer DEFAULT NULL::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.poke_event
     LANGUAGE sql STABLE
     AS $$
-SELECT ilk_id, "value" AS val, spot, block_number AS block_height, tx_idx
+SELECT ilk_id, "value" AS val, spot, block_number AS block_height, log_id
 FROM maker.spot_poke
          LEFT JOIN public.headers ON spot_poke.header_id = headers.id
 WHERE block_timestamp BETWEEN beginTime AND endTime
 ORDER BY block_height DESC
-LIMIT all_poke_events.max_results
+LIMIT all_poke_events.max_results OFFSET all_poke_events.result_offset
 $$;
 
 
 --
--- Name: all_queued_sin(integer); Type: FUNCTION; Schema: api; Owner: -
+-- Name: all_queued_sin(integer, integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.all_queued_sin(max_results integer DEFAULT NULL::integer) RETURNS SETOF api.queued_sin
+CREATE FUNCTION api.all_queued_sin(max_results integer DEFAULT NULL::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.queued_sin
     LANGUAGE plpgsql STABLE
     AS $$
 BEGIN
@@ -1173,7 +1164,7 @@ BEGIN
             SELECT DISTINCT era
             FROM maker.vow_sin_mapping
             ORDER BY era DESC
-            LIMIT all_queued_sin.max_results
+            LIMIT all_queued_sin.max_results OFFSET all_queued_sin.result_offset
         )
         SELECT sin.*
         FROM eras,
@@ -1184,31 +1175,31 @@ $$;
 
 
 --
--- Name: all_sin_queue_events(numeric, integer); Type: FUNCTION; Schema: api; Owner: -
+-- Name: all_sin_queue_events(numeric, integer, integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.all_sin_queue_events(era numeric, max_results integer DEFAULT NULL::integer) RETURNS SETOF api.sin_queue_event
+CREATE FUNCTION api.all_sin_queue_events(era numeric, max_results integer DEFAULT NULL::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.sin_queue_event
     LANGUAGE sql STABLE
     AS $$
-SELECT block_timestamp AS era, 'fess' :: api.sin_act AS act, block_number AS block_height, tx_idx
+SELECT block_timestamp AS era, 'fess' :: api.sin_act AS act, block_number AS block_height, log_id
 FROM maker.vow_fess
          LEFT JOIN headers ON vow_fess.header_id = headers.id
 WHERE block_timestamp = all_sin_queue_events.era
 UNION
-SELECT era, 'flog' :: api.sin_act AS act, block_number AS block_height, tx_idx
+SELECT era, 'flog' :: api.sin_act AS act, block_number AS block_height, log_id
 FROM maker.vow_flog
          LEFT JOIN headers ON vow_flog.header_id = headers.id
 WHERE vow_flog.era = all_sin_queue_events.era
 ORDER BY block_height DESC
-LIMIT all_sin_queue_events.max_results
+LIMIT all_sin_queue_events.max_results OFFSET all_sin_queue_events.result_offset
 $$;
 
 
 --
--- Name: all_urn_states(text, text, bigint, integer); Type: FUNCTION; Schema: api; Owner: -
+-- Name: all_urn_states(text, text, bigint, integer, integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.all_urn_states(ilk_identifier text, urn_identifier text, block_height bigint DEFAULT api.max_block(), max_results integer DEFAULT NULL::integer) RETURNS SETOF api.urn_state
+CREATE FUNCTION api.all_urn_states(ilk_identifier text, urn_identifier text, block_height bigint DEFAULT api.max_block(), max_results integer DEFAULT NULL::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.urn_state
     LANGUAGE plpgsql STABLE
     AS $$
 BEGIN
@@ -1235,17 +1226,17 @@ BEGIN
         FROM relevant_blocks,
              LATERAL api.get_urn(ilk_identifier, urn_identifier, relevant_blocks.block_number) r
         ORDER BY relevant_blocks.block_number DESC
-        LIMIT all_urn_states.max_results
+        LIMIT all_urn_states.max_results OFFSET all_urn_states.result_offset
     );
 END;
 $$;
 
 
 --
--- Name: all_urns(bigint, integer); Type: FUNCTION; Schema: api; Owner: -
+-- Name: all_urns(bigint, integer, integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.all_urns(block_height bigint DEFAULT api.max_block(), max_results integer DEFAULT NULL::integer) RETURNS SETOF api.urn_state
+CREATE FUNCTION api.all_urns(block_height bigint DEFAULT api.max_block(), max_results integer DEFAULT NULL::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.urn_state
     LANGUAGE sql STABLE
     AS $$
 WITH urns AS (SELECT urns.id AS urn_id, ilks.id AS ilk_id, ilks.ilk, urns.identifier
@@ -1316,7 +1307,7 @@ FROM inks
          LEFT JOIN updated ON updated.urn_id = urns.urn_id
          LEFT JOIN maker.ilks ON ilks.id = urns.ilk_id
 ORDER BY updated DESC
-LIMIT all_urns.max_results
+LIMIT all_urns.max_results OFFSET all_urns.result_offset
 $$;
 
 
@@ -1354,8 +1345,9 @@ CREATE FUNCTION api.bite_event_tx(event api.bite_event) RETURNS api.tx
 SELECT txs.hash, txs.tx_index, headers.block_number, headers.hash, tx_from, tx_to
 FROM public.header_sync_transactions txs
          LEFT JOIN headers ON txs.header_id = headers.id
-WHERE block_number <= event.block_height
-  AND txs.tx_index = event.tx_idx
+         LEFT JOIN header_sync_logs ON txs.tx_index = header_sync_logs.tx_index
+WHERE headers.block_number <= event.block_height
+  AND header_sync_logs.id = event.log_id
 ORDER BY block_number DESC
 $$;
 
@@ -1410,22 +1402,22 @@ CREATE FUNCTION api.flap_bid_event_tx(event api.flap_bid_event) RETURNS SETOF ap
     LANGUAGE sql STABLE
     AS $$
 SELECT *
-FROM get_tx_data(event.block_height, event.tx_idx)
+FROM get_tx_data(event.block_height, event.log_id)
 $$;
 
 
 --
--- Name: flap_state_bid_events(api.flap_state, integer); Type: FUNCTION; Schema: api; Owner: -
+-- Name: flap_state_bid_events(api.flap_state, integer, integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.flap_state_bid_events(flap api.flap_state, max_results integer DEFAULT NULL::integer) RETURNS SETOF api.flap_bid_event
+CREATE FUNCTION api.flap_state_bid_events(flap api.flap_state, max_results integer DEFAULT NULL::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.flap_bid_event
     LANGUAGE sql STABLE
     AS $$
 SELECT *
 FROM api.all_flap_bid_events() bids
 WHERE bid_id = flap.bid_id
 ORDER BY bids.block_height DESC
-LIMIT flap_state_bid_events.max_results
+LIMIT flap_state_bid_events.max_results OFFSET flap_state_bid_events.result_offset
 $$;
 
 
@@ -1456,32 +1448,34 @@ CREATE FUNCTION api.flip_bid_event_tx(event api.flip_bid_event) RETURNS SETOF ap
     LANGUAGE sql STABLE
     AS $$
 SELECT *
-FROM get_tx_data(event.block_height, event.tx_idx)
+FROM get_tx_data(event.block_height, event.log_id)
 $$;
 
 
 --
--- Name: flip_state_bid_events(api.flip_state, integer); Type: FUNCTION; Schema: api; Owner: -
+-- Name: flip_state_bid_events(api.flip_state, integer, integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.flip_state_bid_events(flip api.flip_state, max_results integer DEFAULT NULL::integer) RETURNS SETOF api.flip_bid_event
+CREATE FUNCTION api.flip_state_bid_events(flip api.flip_state, max_results integer DEFAULT NULL::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.flip_bid_event
     LANGUAGE sql STABLE
     AS $$
 WITH address_ids AS ( -- get the contract address from flip_ilk table using the ilk_id from flip
     SELECT address_id
     FROM maker.flip_ilk
-             LEFT JOIN maker.ilks ON ilks.id = flip_ilk.ilk_id
-    WHERE ilks.id = flip.ilk_id
-    ORDER BY block_number DESC
+    WHERE ilk_id = flip.ilk_id
     LIMIT 1
-)
-SELECT bid_id, lot, bid_amount, act, block_height, tx_idx, events.contract_address
+),
+     addresses AS (
+         SELECT address
+         FROM public.addresses
+         WHERE id = (SELECT address_id FROM address_ids)
+     )
+SELECT bid_id, lot, bid_amount, act, block_height, events.log_id, events.contract_address
 FROM api.all_flip_bid_events() AS events
-         LEFT JOIN address_ids
-                   ON address_ids.address_id = (SELECT id FROM addresses WHERE address = events.contract_address)
 WHERE bid_id = flip.bid_id
+  AND contract_address = (SELECT address FROM addresses)
 ORDER BY block_height DESC
-LIMIT flip_state_bid_events.max_results
+LIMIT flip_state_bid_events.max_results OFFSET flip_state_bid_events.result_offset
 $$;
 
 
@@ -1530,22 +1524,22 @@ CREATE FUNCTION api.flop_bid_event_tx(event api.flop_bid_event) RETURNS SETOF ap
     LANGUAGE sql STABLE
     AS $$
 SELECT *
-FROM get_tx_data(event.block_height, event.tx_idx)
+FROM get_tx_data(event.block_height, event.log_id)
 $$;
 
 
 --
--- Name: flop_state_bid_events(api.flop_state, integer); Type: FUNCTION; Schema: api; Owner: -
+-- Name: flop_state_bid_events(api.flop_state, integer, integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.flop_state_bid_events(flop api.flop_state, max_results integer DEFAULT NULL::integer) RETURNS SETOF api.flop_bid_event
+CREATE FUNCTION api.flop_state_bid_events(flop api.flop_state, max_results integer DEFAULT NULL::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.flop_bid_event
     LANGUAGE sql STABLE
     AS $$
 SELECT *
 FROM api.all_flop_bid_events() bids
 WHERE bid_id = flop.bid_id
 ORDER BY bids.block_height DESC
-LIMIT flop_state_bid_events.max_results
+LIMIT flop_state_bid_events.max_results OFFSET flop_state_bid_events.result_offset
 $$;
 
 
@@ -1568,7 +1562,7 @@ $$;
 CREATE FUNCTION api.frob_event_tx(event api.frob_event) RETURNS api.tx
     LANGUAGE sql STABLE
     AS $$
-SELECT * FROM get_tx_data(event.block_height, event.tx_idx)
+SELECT * FROM get_tx_data(event.block_height, event.log_id)
 $$;
 
 
@@ -1663,177 +1657,48 @@ WITH ilk_ids AS (SELECT id FROM maker.ilks WHERE ilks.identifier = get_flip.ilk)
                 FROM maker.urns
                 WHERE urns.ilk_id = (SELECT id FROM ilk_ids)
                   AND urns.identifier = (SELECT usr FROM kicks)),
-     guys AS (SELECT flip_bid_guy.bid_id, guy
-              FROM maker.flip_bid_guy
-              WHERE flip_bid_guy.bid_id = get_flip.bid_id
-                AND address_id = (SELECT * FROM address_id)
-                AND block_number <= block_height
-              ORDER BY block_number DESC
-              LIMIT 1),
-     tics AS (SELECT flip_bid_tic.bid_id, tic
-              FROM maker.flip_bid_tic
-              WHERE flip_bid_tic.bid_id = get_flip.bid_id
-                AND address_id = (SELECT * FROM address_id)
-                AND block_number <= block_height
-              ORDER BY block_number DESC
-              LIMIT 1),
-     ends AS (SELECT flip_bid_end.bid_id, "end"
-              FROM maker.flip_bid_end
-              WHERE flip_bid_end.bid_id = get_flip.bid_id
-                AND address_id = (SELECT * FROM address_id)
-                AND block_number <= block_height
-              ORDER BY block_number DESC
-              LIMIT 1),
-     lots AS (SELECT flip_bid_lot.bid_id, lot
-              FROM maker.flip_bid_lot
-              WHERE flip_bid_lot.bid_id = get_flip.bid_id
-                AND address_id = (SELECT * FROM address_id)
-                AND block_number <= block_height
-              ORDER BY block_number DESC
-              LIMIT 1),
-     bids AS (SELECT flip_bid_bid.bid_id, bid
-              FROM maker.flip_bid_bid
-              WHERE flip_bid_bid.bid_id = get_flip.bid_id
-                AND address_id = (SELECT * FROM address_id)
-                AND block_number <= block_height
-              ORDER BY block_number DESC
-              LIMIT 1),
-     gals AS (SELECT flip_bid_gal.bid_id, gal
-              FROM maker.flip_bid_gal
-              WHERE flip_bid_gal.bid_id = get_flip.bid_id
-                AND address_id = (SELECT * FROM address_id)
-                AND block_number <= block_height
-              ORDER BY block_number DESC
-              LIMIT 1),
-     tabs AS (SELECT flip_bid_tab.bid_id, tab
-              FROM maker.flip_bid_tab
-              WHERE flip_bid_tab.bid_id = get_flip.bid_id
-                AND address_id = (SELECT * FROM address_id)
-                AND block_number <= block_height
-              ORDER BY block_number DESC
-              LIMIT 1),
+
+     storage_values AS (
+         SELECT guy,
+                tic,
+                "end",
+                lot,
+                bid,
+                gal,
+                tab,
+                created,
+                updated
+         FROM maker.flip
+         WHERE bid_id = get_flip.bid_id
+           AND block_number <= block_height
+         ORDER BY block_number DESC
+         LIMIT 1
+     ),
      deals AS (SELECT deal.bid_id
                FROM maker.deal
                         LEFT JOIN public.headers ON deal.header_id = headers.id
                WHERE deal.bid_id = get_flip.bid_id
                  AND deal.address_id = (SELECT * FROM address_id)
-                 AND headers.block_number <= block_height),
-     relevant_blocks AS (SELECT *
-                         FROM api.get_flip_blocks_before(bid_id, (SELECT * FROM address_id), get_flip.block_height)),
-     created AS (SELECT DISTINCT ON (relevant_blocks.bid_id, relevant_blocks.block_height) relevant_blocks.block_height,
-                                                                                           relevant_blocks.block_hash,
-                                                                                           relevant_blocks.bid_id,
-                                                                                           api.epoch_to_datetime(block_timestamp) AS datetime
-                 FROM relevant_blocks
-                          LEFT JOIN public.headers AS headers on headers.hash = relevant_blocks.block_hash
-                 ORDER BY relevant_blocks.block_height ASC
-                 LIMIT 1),
-     updated AS (SELECT DISTINCT ON (relevant_blocks.bid_id, relevant_blocks.block_height) relevant_blocks.block_height,
-                                                                                           relevant_blocks.block_hash,
-                                                                                           relevant_blocks.bid_id,
-                                                                                           api.epoch_to_datetime(block_timestamp) AS datetime
-                 FROM relevant_blocks
-                          LEFT JOIN public.headers AS headers on headers.hash = relevant_blocks.block_hash
-                 ORDER BY relevant_blocks.block_height DESC
-                 LIMIT 1)
-SELECT (get_flip.block_height,
-        get_flip.bid_id,
-        (SELECT id FROM ilk_ids),
-        (SELECT id FROM urn_id),
-        guys.guy,
-        tics.tic,
-        ends."end",
-        lots.lot,
-        bids.bid,
-        gals.gal,
-        CASE (SELECT COUNT(*) FROM deals)
-            WHEN 0 THEN FALSE
-            ELSE TRUE
-            END,
-        tabs.tab,
-        created.datetime,
-        updated.datetime)::api.flip_state
-FROM guys
-         LEFT JOIN tics ON tics.bid_id = guys.bid_id
-         LEFT JOIN ends ON ends.bid_id = guys.bid_id
-         LEFT JOIN lots ON lots.bid_id = guys.bid_id
-         LEFT JOIN bids ON bids.bid_id = guys.bid_id
-         LEFT JOIN gals ON gals.bid_id = guys.bid_id
-         LEFT JOIN tabs ON tabs.bid_id = guys.bid_id
-         LEFT JOIN created ON created.bid_id = guys.bid_id
-         LEFT JOIN updated ON updated.bid_id = guys.bid_id
+                 AND headers.block_number <= block_height)
+
+SELECT get_flip.block_height,
+       get_flip.bid_id,
+       (SELECT id FROM ilk_ids),
+       (SELECT id FROM urn_id),
+       storage_values.guy,
+       storage_values.tic,
+       storage_values."end",
+       storage_values.lot,
+       storage_values.bid,
+       storage_values.gal,
+       CASE (SELECT COUNT(*) FROM deals)
+           WHEN 0 THEN FALSE
+           ELSE TRUE END,
+       storage_values.tab,
+       storage_values.created,
+       storage_values.updated
+FROM storage_values
 $$;
-
-
---
--- Name: get_flip_blocks_before(numeric, integer, bigint); Type: FUNCTION; Schema: api; Owner: -
---
-
-CREATE FUNCTION api.get_flip_blocks_before(bid_id numeric, address_id integer, block_height bigint) RETURNS SETOF api.relevant_flip_block
-    LANGUAGE sql STABLE
-    AS $$
-SELECT block_number AS block_height, block_hash, kicks AS bid_id
-FROM maker.flip_kicks
-WHERE block_number <= get_flip_blocks_before.block_height
-  AND kicks = get_flip_blocks_before.bid_id
-  AND flip_kicks.address_id = get_flip_blocks_before.address_id
-UNION
-SELECT block_number AS block_height, block_hash, flip_bid_bid.bid_id
-FROM maker.flip_bid_bid
-WHERE block_number <= get_flip_blocks_before.block_height
-  AND flip_bid_bid.bid_id = get_flip_blocks_before.bid_id
-  AND flip_bid_bid.address_id = get_flip_blocks_before.address_id
-UNION
-SELECT block_number AS block_height, block_hash, flip_bid_lot.bid_id
-FROM maker.flip_bid_lot
-WHERE block_number <= get_flip_blocks_before.block_height
-  AND flip_bid_lot.bid_id = get_flip_blocks_before.bid_id
-  AND flip_bid_lot.address_id = get_flip_blocks_before.address_id
-UNION
-SELECT block_number AS block_height, block_hash, flip_bid_guy.bid_id
-FROM maker.flip_bid_guy
-WHERE block_number <= get_flip_blocks_before.block_height
-  AND flip_bid_guy.bid_id = get_flip_blocks_before.bid_id
-  AND flip_bid_guy.address_id = get_flip_blocks_before.address_id
-UNION
-SELECT block_number AS block_height, block_hash, flip_bid_tic.bid_id
-FROM maker.flip_bid_tic
-WHERE block_number <= get_flip_blocks_before.block_height
-  AND flip_bid_tic.bid_id = get_flip_blocks_before.bid_id
-  AND flip_bid_tic.address_id = get_flip_blocks_before.address_id
-UNION
-SELECT block_number AS block_height, block_hash, flip_bid_end.bid_id
-FROM maker.flip_bid_end
-WHERE block_number <= get_flip_blocks_before.block_height
-  AND flip_bid_end.bid_id = get_flip_blocks_before.bid_id
-  AND flip_bid_end.address_id = get_flip_blocks_before.address_id
-UNION
-SELECT block_number AS block_height, block_hash, flip_bid_usr.bid_id
-FROM maker.flip_bid_usr
-WHERE block_number <= get_flip_blocks_before.block_height
-  AND flip_bid_usr.bid_id = get_flip_blocks_before.bid_id
-  AND flip_bid_usr.address_id = get_flip_blocks_before.address_id
-UNION
-SELECT block_number AS block_height, block_hash, flip_bid_gal.bid_id
-FROM maker.flip_bid_gal
-WHERE block_number <= get_flip_blocks_before.block_height
-  AND flip_bid_gal.bid_id = get_flip_blocks_before.bid_id
-  AND flip_bid_gal.address_id = get_flip_blocks_before.address_id
-UNION
-SELECT block_number AS block_height, block_hash, flip_bid_tab.bid_id
-FROM maker.flip_bid_tab
-WHERE block_number <= get_flip_blocks_before.block_height
-  AND flip_bid_tab.bid_id = get_flip_blocks_before.bid_id
-  AND flip_bid_tab.address_id = get_flip_blocks_before.address_id
-ORDER BY block_height DESC
-$$;
-
-
---
--- Name: FUNCTION get_flip_blocks_before(bid_id numeric, address_id integer, block_height bigint); Type: COMMENT; Schema: api; Owner: -
---
-
-COMMENT ON FUNCTION api.get_flip_blocks_before(bid_id numeric, address_id integer, block_height bigint) IS '@omit';
 
 
 --
@@ -2239,51 +2104,51 @@ $$;
 CREATE FUNCTION api.ilk_file_event_tx(event api.ilk_file_event) RETURNS api.tx
     LANGUAGE sql STABLE
     AS $$
-SELECT * FROM get_tx_data(event.block_height, event.tx_idx)
+SELECT * FROM get_tx_data(event.block_height, event.log_id)
 $$;
 
 
 --
--- Name: ilk_state_bites(api.ilk_state, integer); Type: FUNCTION; Schema: api; Owner: -
+-- Name: ilk_state_bites(api.ilk_state, integer, integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.ilk_state_bites(state api.ilk_state, max_results integer DEFAULT NULL::integer) RETURNS SETOF api.bite_event
+CREATE FUNCTION api.ilk_state_bites(state api.ilk_state, max_results integer DEFAULT NULL::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.bite_event
     LANGUAGE sql STABLE
     AS $$
 SELECT *
 FROM api.all_bites(state.ilk_identifier)
 WHERE block_height <= state.block_height
 ORDER BY block_height DESC
-LIMIT ilk_state_bites.max_results
+LIMIT ilk_state_bites.max_results OFFSET ilk_state_bites.result_offset
 $$;
 
 
 --
--- Name: ilk_state_frobs(api.ilk_state, integer); Type: FUNCTION; Schema: api; Owner: -
+-- Name: ilk_state_frobs(api.ilk_state, integer, integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.ilk_state_frobs(state api.ilk_state, max_results integer DEFAULT NULL::integer) RETURNS SETOF api.frob_event
+CREATE FUNCTION api.ilk_state_frobs(state api.ilk_state, max_results integer DEFAULT NULL::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.frob_event
     LANGUAGE sql STABLE
     AS $$
 SELECT *
 FROM api.all_frobs(state.ilk_identifier)
 WHERE block_height <= state.block_height
 ORDER BY block_height DESC
-LIMIT ilk_state_frobs.max_results
+LIMIT ilk_state_frobs.max_results OFFSET ilk_state_frobs.result_offset
 $$;
 
 
 --
--- Name: ilk_state_ilk_file_events(api.ilk_state, integer); Type: FUNCTION; Schema: api; Owner: -
+-- Name: ilk_state_ilk_file_events(api.ilk_state, integer, integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.ilk_state_ilk_file_events(state api.ilk_state, max_results integer DEFAULT NULL::integer) RETURNS SETOF api.ilk_file_event
+CREATE FUNCTION api.ilk_state_ilk_file_events(state api.ilk_state, max_results integer DEFAULT NULL::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.ilk_file_event
     LANGUAGE sql STABLE
     AS $$
 SELECT *
 FROM api.all_ilk_file_events(state.ilk_identifier)
 WHERE block_height <= state.block_height
-LIMIT ilk_state_ilk_file_events.max_results
+LIMIT ilk_state_ilk_file_events.max_results OFFSET ilk_state_ilk_file_events.result_offset
 $$;
 
 
@@ -2371,20 +2236,20 @@ $$;
 CREATE FUNCTION api.poke_event_tx(priceupdate api.poke_event) RETURNS api.tx
     LANGUAGE sql STABLE
     AS $$
-SELECT * FROM get_tx_data(priceUpdate.block_height, priceUpdate.tx_idx)
+SELECT * FROM get_tx_data(priceUpdate.block_height, priceUpdate.log_id)
 $$;
 
 
 --
--- Name: queued_sin_sin_queue_events(api.queued_sin, integer); Type: FUNCTION; Schema: api; Owner: -
+-- Name: queued_sin_sin_queue_events(api.queued_sin, integer, integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.queued_sin_sin_queue_events(state api.queued_sin, max_results integer DEFAULT NULL::integer) RETURNS SETOF api.sin_queue_event
+CREATE FUNCTION api.queued_sin_sin_queue_events(state api.queued_sin, max_results integer DEFAULT NULL::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.sin_queue_event
     LANGUAGE sql STABLE
     AS $$
 SELECT *
 FROM api.all_sin_queue_events(state.era)
-LIMIT queued_sin_sin_queue_events.max_results
+LIMIT queued_sin_sin_queue_events.max_results OFFSET queued_sin_sin_queue_events.result_offset
 $$;
 
 
@@ -2395,7 +2260,7 @@ $$;
 CREATE FUNCTION api.sin_queue_event_tx(event api.sin_queue_event) RETURNS api.tx
     LANGUAGE sql STABLE
     AS $$
-SELECT * FROM get_tx_data(event.block_height, event.tx_idx)
+SELECT * FROM get_tx_data(event.block_height, event.log_id)
 $$;
 
 
@@ -2413,10 +2278,10 @@ $$;
 
 
 --
--- Name: urn_bites(text, text, integer); Type: FUNCTION; Schema: api; Owner: -
+-- Name: urn_bites(text, text, integer, integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.urn_bites(ilk_identifier text, urn_identifier text, max_results integer DEFAULT NULL::integer) RETURNS SETOF api.bite_event
+CREATE FUNCTION api.urn_bites(ilk_identifier text, urn_identifier text, max_results integer DEFAULT NULL::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.bite_event
     LANGUAGE sql STABLE
     AS $$
 WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier),
@@ -2425,20 +2290,20 @@ WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier),
              WHERE ilk_id = (SELECT id FROM ilk)
                AND identifier = urn_bites.urn_identifier)
 
-SELECT ilk_identifier, urn_bites.urn_identifier, bite_identifier AS bid_id, ink, art, tab, block_number, tx_idx
+SELECT ilk_identifier, urn_bites.urn_identifier, bite_identifier AS bid_id, ink, art, tab, block_number, log_id
 FROM maker.bite
          LEFT JOIN headers ON bite.header_id = headers.id
 WHERE bite.urn_id = (SELECT id FROM urn)
 ORDER BY block_number DESC
-LIMIT urn_bites.max_results
+LIMIT urn_bites.max_results OFFSET urn_bites.result_offset
 $$;
 
 
 --
--- Name: urn_frobs(text, text, integer); Type: FUNCTION; Schema: api; Owner: -
+-- Name: urn_frobs(text, text, integer, integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.urn_frobs(ilk_identifier text, urn_identifier text, max_results integer DEFAULT NULL::integer) RETURNS SETOF api.frob_event
+CREATE FUNCTION api.urn_frobs(ilk_identifier text, urn_identifier text, max_results integer DEFAULT NULL::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.frob_event
     LANGUAGE sql STABLE
     AS $$
 WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier),
@@ -2452,47 +2317,46 @@ WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier),
                ORDER BY block_number DESC
      )
 
-
 SELECT ilk_identifier,
        urn_identifier,
        dink,
        dart,
        (SELECT rate from rates WHERE block_number <= headers.block_number LIMIT 1) AS ilk_rate,
        headers.block_number,
-       tx_idx
+       log_id
 FROM maker.vat_frob
          LEFT JOIN headers ON vat_frob.header_id = headers.id
 WHERE vat_frob.urn_id = (SELECT id FROM urn)
 ORDER BY block_number DESC
-LIMIT urn_frobs.max_results
+LIMIT urn_frobs.max_results OFFSET urn_frobs.result_offset
 $$;
 
 
 --
--- Name: urn_state_bites(api.urn_state, integer); Type: FUNCTION; Schema: api; Owner: -
+-- Name: urn_state_bites(api.urn_state, integer, integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.urn_state_bites(state api.urn_state, max_results integer DEFAULT NULL::integer) RETURNS SETOF api.bite_event
+CREATE FUNCTION api.urn_state_bites(state api.urn_state, max_results integer DEFAULT NULL::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.bite_event
     LANGUAGE sql STABLE
     AS $$
 SELECT *
 FROM api.urn_bites(state.ilk_identifier, state.urn_identifier)
 WHERE block_height <= state.block_height
-LIMIT urn_state_bites.max_results
+LIMIT urn_state_bites.max_results OFFSET urn_state_bites.result_offset
 $$;
 
 
 --
--- Name: urn_state_frobs(api.urn_state, integer); Type: FUNCTION; Schema: api; Owner: -
+-- Name: urn_state_frobs(api.urn_state, integer, integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.urn_state_frobs(state api.urn_state, max_results integer DEFAULT NULL::integer) RETURNS SETOF api.frob_event
+CREATE FUNCTION api.urn_state_frobs(state api.urn_state, max_results integer DEFAULT NULL::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.frob_event
     LANGUAGE sql STABLE
     AS $$
 SELECT *
 FROM api.urn_frobs(state.ilk_identifier, state.urn_identifier)
 WHERE block_height <= state.block_height
-LIMIT urn_state_frobs.max_results
+LIMIT urn_state_frobs.max_results OFFSET urn_state_frobs.result_offset
 $$;
 
 
@@ -2534,6 +2398,42 @@ BEGIN
             (SELECT get_latest_flap_bid_tic(NEW.bid_id)),
             (SELECT get_latest_flap_bid_end(NEW.bid_id)),
             (SELECT get_latest_flap_bid_lot(NEW.bid_id)))
+    ON CONFLICT (bid_id, block_number) DO UPDATE SET created = (SELECT datetime FROM block_info),
+                                                     updated = (SELECT datetime FROM block_info);
+    return NEW;
+END
+$$;
+
+
+--
+-- Name: flip_created(); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.flip_created() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    WITH block_info AS (
+        SELECT block_number, hash, api.epoch_to_datetime(headers.block_timestamp) AS datetime
+        FROM public.headers
+        WHERE headers.id = NEW.header_id
+        LIMIT 1
+    )
+    INSERT
+    INTO maker.flip(bid_id, address_id, block_number, block_hash, created, updated, guy, tic, "end", lot, bid,
+                    gal, tab)
+    VALUES (NEW.bid_id, NEW.address_id,
+            (SELECT block_number FROM block_info),
+            (SELECT hash FROM block_info),
+            (SELECT datetime FROM block_info),
+            (SELECT datetime FROM block_info),
+            (SELECT get_latest_flip_bid_guy(NEW.bid_id)),
+            (SELECT get_latest_flip_bid_tic(NEW.bid_id)),
+            (SELECT get_latest_flip_bid_end(NEW.bid_id)),
+            (SELECT get_latest_flip_bid_lot(NEW.bid_id)),
+            (SELECT get_latest_flip_bid_bid(NEW.bid_id)),
+            (SELECT get_latest_flip_bid_gal(NEW.bid_id)),
+            (SELECT get_latest_flip_bid_tab(NEW.bid_id)))
     ON CONFLICT (bid_id, block_number) DO UPDATE SET created = (SELECT datetime FROM block_info),
                                                      updated = (SELECT datetime FROM block_info);
     return NEW;
@@ -2817,6 +2717,237 @@ $$;
 
 
 --
+-- Name: insert_updated_flip_bid(); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.insert_updated_flip_bid() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    WITH created AS (
+        SELECT created
+        FROM maker.flip
+        WHERE flip.bid_id = NEW.bid_id
+        ORDER BY flip.block_number
+        LIMIT 1
+    )
+    INSERT
+    INTO maker.flip(bid_id, address_id, block_number, block_hash, bid, guy, tic, "end", lot, gal, tab, updated,
+                    created)
+    VALUES (NEW.bid_id, NEW.address_id, NEW.block_number, new.block_hash, NEW.bid,
+            (SELECT get_latest_flip_bid_guy(NEW.bid_id)),
+            (SELECT get_latest_flip_bid_tic(NEW.bid_id)),
+            (SELECT get_latest_flip_bid_end(NEW.bid_id)),
+            (SELECT get_latest_flip_bid_lot(NEW.bid_id)),
+            (SELECT get_latest_flip_bid_gal(NEW.bid_id)),
+            (SELECT get_latest_flip_bid_tab(NEW.bid_id)),
+            (SELECT get_block_timestamp(NEW.block_hash)),
+            (SELECT created FROM created))
+    ON CONFLICT (bid_id, block_number) DO UPDATE SET bid = NEW.bid;
+    return NEW;
+END
+$$;
+
+
+--
+-- Name: insert_updated_flip_end(); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.insert_updated_flip_end() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    WITH created AS (
+        SELECT created
+        FROM maker.flip
+        WHERE flip.bid_id = NEW.bid_id
+        ORDER BY flip.block_number
+        LIMIT 1
+    )
+    INSERT
+    INTO maker.flip(bid_id, address_id, block_number, block_hash, "end", guy, tic, lot, bid, gal, tab, updated,
+                    created)
+    VALUES (NEW.bid_id, NEW.address_id, NEW.block_number, new.block_hash, NEW."end",
+            (SELECT get_latest_flip_bid_guy(NEW.bid_id)),
+            (SELECT get_latest_flip_bid_tic(NEW.bid_id)),
+            (SELECT get_latest_flip_bid_lot(NEW.bid_id)),
+            (SELECT get_latest_flip_bid_bid(NEW.bid_id)),
+            (SELECT get_latest_flip_bid_gal(NEW.bid_id)),
+            (SELECT get_latest_flip_bid_tab(NEW.bid_id)),
+            (SELECT get_block_timestamp(NEW.block_hash)),
+            (SELECT created FROM created))
+    ON CONFLICT (bid_id, block_number) DO UPDATE SET "end" = NEW."end";
+    return NEW;
+END
+$$;
+
+
+--
+-- Name: insert_updated_flip_gal(); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.insert_updated_flip_gal() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    WITH created AS (
+        SELECT created
+        FROM maker.flip
+        WHERE flip.bid_id = NEW.bid_id
+        ORDER BY flip.block_number
+        LIMIT 1
+    )
+    INSERT
+    INTO maker.flip(bid_id, address_id, block_number, block_hash, gal, guy, tic, "end", lot, bid, tab, updated,
+                    created)
+    VALUES (NEW.bid_id, NEW.address_id, NEW.block_number, new.block_hash, NEW.gal,
+            (SELECT get_latest_flip_bid_guy(NEW.bid_id)),
+            (SELECT get_latest_flip_bid_tic(NEW.bid_id)),
+            (SELECT get_latest_flip_bid_end(NEW.bid_id)),
+            (SELECT get_latest_flip_bid_lot(NEW.bid_id)),
+            (SELECT get_latest_flip_bid_bid(NEW.bid_id)),
+            (SELECT get_latest_flip_bid_tab(NEW.bid_id)),
+            (SELECT get_block_timestamp(NEW.block_hash)),
+            (SELECT created FROM created))
+    ON CONFLICT (bid_id, block_number) DO UPDATE SET gal = NEW.gal;
+    return NEW;
+END
+$$;
+
+
+--
+-- Name: insert_updated_flip_guy(); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.insert_updated_flip_guy() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    WITH created AS (
+        SELECT created
+        FROM maker.flip
+        WHERE flip.bid_id = NEW.bid_id
+        ORDER BY flip.block_number
+        LIMIT 1
+    )
+    INSERT
+    INTO maker.flip(bid_id, address_id, block_number, block_hash, guy, tic, "end", lot, bid, gal, tab, updated,
+                    created)
+    VALUES (NEW.bid_id, NEW.address_id, NEW.block_number, new.block_hash, NEW.guy,
+            (SELECT get_latest_flip_bid_tic(NEW.bid_id)),
+            (SELECT get_latest_flip_bid_end(NEW.bid_id)),
+            (SELECT get_latest_flip_bid_lot(NEW.bid_id)),
+            (SELECT get_latest_flip_bid_bid(NEW.bid_id)),
+            (SELECT get_latest_flip_bid_gal(NEW.bid_id)),
+            (SELECT get_latest_flip_bid_tab(NEW.bid_id)),
+            (SELECT get_block_timestamp(NEW.block_hash)),
+            (SELECT created FROM created))
+    ON CONFLICT (bid_id, block_number) DO UPDATE SET guy = NEW.guy;
+    return NEW;
+END
+$$;
+
+
+--
+-- Name: insert_updated_flip_lot(); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.insert_updated_flip_lot() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    WITH created AS (
+        SELECT created
+        FROM maker.flip
+        WHERE flip.bid_id = NEW.bid_id
+        ORDER BY flip.block_number
+        LIMIT 1
+    )
+    INSERT
+    INTO maker.flip(bid_id, address_id, block_number, block_hash, lot, guy, tic, "end", bid, gal, tab, updated,
+                    created)
+    VALUES (NEW.bid_id, NEW.address_id, NEW.block_number, new.block_hash, NEW.lot,
+            (SELECT get_latest_flip_bid_guy(NEW.bid_id)),
+            (SELECT get_latest_flip_bid_tic(NEW.bid_id)),
+            (SELECT get_latest_flip_bid_end(NEW.bid_id)),
+            (SELECT get_latest_flip_bid_bid(NEW.bid_id)),
+            (SELECT get_latest_flip_bid_gal(NEW.bid_id)),
+            (SELECT get_latest_flip_bid_tab(NEW.bid_id)),
+            (SELECT get_block_timestamp(NEW.block_hash)),
+            (SELECT created FROM created))
+    ON CONFLICT (bid_id, block_number) DO UPDATE SET lot = NEW.lot;
+    return NEW;
+END
+$$;
+
+
+--
+-- Name: insert_updated_flip_tab(); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.insert_updated_flip_tab() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    WITH created AS (
+        SELECT created
+        FROM maker.flip
+        WHERE flip.bid_id = NEW.bid_id
+        ORDER BY flip.block_number
+        LIMIT 1
+    )
+    INSERT
+    INTO maker.flip(bid_id, address_id, block_number, block_hash, tab, guy, tic, "end", lot, bid, gal, updated,
+                    created)
+    VALUES (NEW.bid_id, NEW.address_id, NEW.block_number, new.block_hash, NEW.tab,
+            (SELECT get_latest_flip_bid_guy(NEW.bid_id)),
+            (SELECT get_latest_flip_bid_tic(NEW.bid_id)),
+            (SELECT get_latest_flip_bid_end(NEW.bid_id)),
+            (SELECT get_latest_flip_bid_lot(NEW.bid_id)),
+            (SELECT get_latest_flip_bid_bid(NEW.bid_id)),
+            (SELECT get_latest_flip_bid_gal(NEW.bid_id)),
+            (SELECT get_block_timestamp(NEW.block_hash)),
+            (SELECT created FROM created))
+    ON CONFLICT (bid_id, block_number) DO UPDATE SET tab = NEW.tab;
+    return NEW;
+END
+$$;
+
+
+--
+-- Name: insert_updated_flip_tic(); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.insert_updated_flip_tic() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    WITH created AS (
+        SELECT created
+        FROM maker.flip
+        WHERE flip.bid_id = NEW.bid_id
+        ORDER BY flip.block_number
+        LIMIT 1
+    )
+    INSERT
+    INTO maker.flip(bid_id, address_id, block_number, block_hash, tic, guy, "end", lot, bid, gal, tab, updated,
+                    created)
+    VALUES (NEW.bid_id, NEW.address_id, NEW.block_number, new.block_hash, NEW.tic,
+            (SELECT get_latest_flip_bid_guy(NEW.bid_id)),
+            (SELECT get_latest_flip_bid_end(NEW.bid_id)),
+            (SELECT get_latest_flip_bid_lot(NEW.bid_id)),
+            (SELECT get_latest_flip_bid_bid(NEW.bid_id)),
+            (SELECT get_latest_flip_bid_gal(NEW.bid_id)),
+            (SELECT get_latest_flip_bid_tab(NEW.bid_id)),
+            (SELECT get_block_timestamp(NEW.block_hash)),
+            (SELECT created FROM created))
+    ON CONFLICT (bid_id, block_number) DO UPDATE SET tic = NEW.tic;
+    return NEW;
+END
+$$;
+
+
+--
 -- Name: insert_updated_flop_bid(); Type: FUNCTION; Schema: maker; Owner: -
 --
 
@@ -2997,7 +3128,7 @@ SELECT bid
 FROM maker.flap
 WHERE bid IS NOT NULL
   AND flap.bid_id = bid_id
-ORDER BY block_number
+ORDER BY block_number DESC
 LIMIT 1
 $$;
 
@@ -3013,7 +3144,7 @@ SELECT "end"
 FROM maker.flap
 WHERE "end" IS NOT NULL
   AND flap.bid_id = bid_id
-ORDER BY block_number
+ORDER BY block_number DESC
 LIMIT 1
 $$;
 
@@ -3029,7 +3160,7 @@ SELECT guy
 FROM maker.flap
 WHERE guy IS NOT NULL
   AND flap.bid_id = bid_id
-ORDER BY block_number
+ORDER BY block_number DESC
 LIMIT 1
 $$;
 
@@ -3045,7 +3176,7 @@ SELECT lot
 FROM maker.flap
 WHERE lot IS NOT NULL
   AND flap.bid_id = bid_id
-ORDER BY block_number
+ORDER BY block_number DESC
 LIMIT 1
 $$;
 
@@ -3061,7 +3192,119 @@ SELECT tic
 FROM maker.flap
 WHERE tic IS NOT NULL
   AND flap.bid_id = bid_id
-ORDER BY block_number
+ORDER BY block_number DESC
+LIMIT 1
+$$;
+
+
+--
+-- Name: get_latest_flip_bid_bid(numeric); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.get_latest_flip_bid_bid(bid_id numeric) RETURNS numeric
+    LANGUAGE sql
+    AS $$
+SELECT bid
+FROM maker.flip
+WHERE bid IS NOT NULL
+  AND flip.bid_id = bid_id
+ORDER BY block_number DESC
+LIMIT 1
+$$;
+
+
+--
+-- Name: get_latest_flip_bid_end(numeric); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.get_latest_flip_bid_end(bid_id numeric) RETURNS bigint
+    LANGUAGE sql
+    AS $$
+SELECT "end"
+FROM maker.flip
+WHERE "end" IS NOT NULL
+  AND flip.bid_id = bid_id
+ORDER BY block_number DESC
+LIMIT 1
+$$;
+
+
+--
+-- Name: get_latest_flip_bid_gal(numeric); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.get_latest_flip_bid_gal(bid_id numeric) RETURNS text
+    LANGUAGE sql
+    AS $$
+SELECT gal
+FROM maker.flip
+WHERE gal IS NOT NULL
+  AND flip.bid_id = bid_id
+ORDER BY block_number DESC
+LIMIT 1
+$$;
+
+
+--
+-- Name: get_latest_flip_bid_guy(numeric); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.get_latest_flip_bid_guy(bid_id numeric) RETURNS text
+    LANGUAGE sql
+    AS $$
+SELECT guy
+FROM maker.flip
+WHERE guy IS NOT NULL
+  AND flip.bid_id = bid_id
+ORDER BY block_number DESC
+LIMIT 1
+$$;
+
+
+--
+-- Name: get_latest_flip_bid_lot(numeric); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.get_latest_flip_bid_lot(bid_id numeric) RETURNS numeric
+    LANGUAGE sql
+    AS $$
+SELECT lot
+FROM maker.flip
+WHERE lot IS NOT NULL
+  AND flip.bid_id = bid_id
+ORDER BY block_number DESC
+LIMIT 1
+$$;
+
+
+--
+-- Name: get_latest_flip_bid_tab(numeric); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.get_latest_flip_bid_tab(bid_id numeric) RETURNS numeric
+    LANGUAGE sql
+    AS $$
+SELECT tab
+FROM maker.flip
+WHERE tab IS NOT NULL
+  AND flip.bid_id = bid_id
+ORDER BY block_number DESC
+LIMIT 1
+$$;
+
+
+--
+-- Name: get_latest_flip_bid_tic(numeric); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.get_latest_flip_bid_tic(bid_id numeric) RETURNS bigint
+    LANGUAGE sql
+    AS $$
+SELECT tic
+FROM maker.flip
+WHERE tic IS NOT NULL
+  AND flip.bid_id = bid_id
+ORDER BY block_number DESC
 LIMIT 1
 $$;
 
@@ -3147,18 +3390,20 @@ $$;
 
 
 --
--- Name: get_tx_data(bigint, integer); Type: FUNCTION; Schema: public; Owner: -
+-- Name: get_tx_data(bigint, bigint); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION public.get_tx_data(block_height bigint, tx_idx integer) RETURNS SETOF api.tx
+CREATE FUNCTION public.get_tx_data(block_height bigint, log_id bigint) RETURNS SETOF api.tx
     LANGUAGE sql STABLE
     AS $$
 SELECT txs.hash, txs.tx_index, headers.block_number, headers.hash, tx_from, tx_to
-FROM header_sync_transactions txs
+FROM public.header_sync_transactions txs
          LEFT JOIN headers ON txs.header_id = headers.id
-WHERE block_number = block_height
-  AND txs.tx_index = tx_idx
+         LEFT JOIN header_sync_logs ON txs.tx_index = header_sync_logs.tx_index
+WHERE headers.block_number <= block_height
+  AND header_sync_logs.id = log_id
 ORDER BY block_number DESC
+
 $$;
 
 
@@ -3189,15 +3434,13 @@ ALTER SEQUENCE api.managed_cdp_id_seq OWNED BY api.managed_cdp.id;
 CREATE TABLE maker.bite (
     id integer NOT NULL,
     header_id integer NOT NULL,
+    log_id bigint NOT NULL,
     urn_id integer NOT NULL,
     ink numeric,
     art numeric,
     tab numeric,
     flip text,
-    bite_identifier numeric,
-    tx_idx integer NOT NULL,
-    log_idx integer NOT NULL,
-    raw_log jsonb
+    bite_identifier numeric
 );
 
 
@@ -3249,12 +3492,10 @@ ALTER SEQUENCE maker.bite_id_seq OWNED BY maker.bite.id;
 CREATE TABLE maker.cat_file_chop_lump (
     id integer NOT NULL,
     header_id integer NOT NULL,
+    log_id bigint NOT NULL,
     ilk_id integer NOT NULL,
     what text,
-    data numeric,
-    tx_idx integer NOT NULL,
-    log_idx integer NOT NULL,
-    raw_log jsonb
+    data numeric
 );
 
 
@@ -3285,12 +3526,10 @@ ALTER SEQUENCE maker.cat_file_chop_lump_id_seq OWNED BY maker.cat_file_chop_lump
 CREATE TABLE maker.cat_file_flip (
     id integer NOT NULL,
     header_id integer NOT NULL,
+    log_id bigint NOT NULL,
     ilk_id integer NOT NULL,
     what text,
-    flip text,
-    tx_idx integer NOT NULL,
-    log_idx integer NOT NULL,
-    raw_log jsonb
+    flip text
 );
 
 
@@ -3321,11 +3560,9 @@ ALTER SEQUENCE maker.cat_file_flip_id_seq OWNED BY maker.cat_file_flip.id;
 CREATE TABLE maker.cat_file_vow (
     id integer NOT NULL,
     header_id integer NOT NULL,
+    log_id bigint NOT NULL,
     what text,
-    data text,
-    tx_idx integer NOT NULL,
-    log_idx integer NOT NULL,
-    raw_log jsonb
+    data text
 );
 
 
@@ -3879,11 +4116,9 @@ ALTER SEQUENCE maker.cdp_manager_vat_id_seq OWNED BY maker.cdp_manager_vat.id;
 CREATE TABLE maker.deal (
     id integer NOT NULL,
     header_id integer NOT NULL,
+    log_id bigint NOT NULL,
     bid_id numeric NOT NULL,
-    address_id integer NOT NULL,
-    log_idx integer NOT NULL,
-    tx_idx integer NOT NULL,
-    raw_log jsonb
+    address_id integer NOT NULL
 );
 
 
@@ -3914,13 +4149,11 @@ ALTER SEQUENCE maker.deal_id_seq OWNED BY maker.deal.id;
 CREATE TABLE maker.dent (
     id integer NOT NULL,
     header_id integer NOT NULL,
+    log_id bigint NOT NULL,
     bid_id numeric NOT NULL,
     lot numeric,
     bid numeric,
-    address_id integer NOT NULL,
-    log_idx integer NOT NULL,
-    tx_idx integer NOT NULL,
-    raw_log jsonb
+    address_id integer NOT NULL
 );
 
 
@@ -4227,13 +4460,11 @@ ALTER SEQUENCE maker.flap_id_seq OWNED BY maker.flap.id;
 CREATE TABLE maker.flap_kick (
     id integer NOT NULL,
     header_id integer NOT NULL,
+    log_id bigint NOT NULL,
     bid_id numeric NOT NULL,
     lot numeric NOT NULL,
     bid numeric NOT NULL,
-    address_id integer NOT NULL,
-    tx_idx integer NOT NULL,
-    log_idx integer NOT NULL,
-    raw_log jsonb
+    address_id integer NOT NULL
 );
 
 
@@ -4434,6 +4665,28 @@ CREATE SEQUENCE maker.flap_vat_id_seq
 --
 
 ALTER SEQUENCE maker.flap_vat_id_seq OWNED BY maker.flap_vat.id;
+
+
+--
+-- Name: flip; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.flip (
+    id integer NOT NULL,
+    block_number bigint,
+    block_hash text,
+    address_id integer NOT NULL,
+    bid_id numeric,
+    guy text,
+    tic bigint,
+    "end" bigint,
+    lot numeric,
+    bid numeric,
+    gal text,
+    tab numeric,
+    created timestamp without time zone,
+    updated timestamp without time zone
+);
 
 
 --
@@ -4742,6 +4995,26 @@ ALTER SEQUENCE maker.flip_bid_usr_id_seq OWNED BY maker.flip_bid_usr.id;
 
 
 --
+-- Name: flip_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.flip_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: flip_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.flip_id_seq OWNED BY maker.flip.id;
+
+
+--
 -- Name: flip_ilk; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -4788,9 +5061,7 @@ CREATE TABLE maker.flip_kick (
     usr text,
     gal text,
     address_id integer NOT NULL,
-    tx_idx integer NOT NULL,
-    log_idx integer NOT NULL,
-    raw_log jsonb
+    log_id bigint NOT NULL
 );
 
 
@@ -5243,14 +5514,12 @@ ALTER SEQUENCE maker.flop_id_seq OWNED BY maker.flop.id;
 CREATE TABLE maker.flop_kick (
     id integer NOT NULL,
     header_id integer NOT NULL,
+    log_id bigint NOT NULL,
     bid_id numeric NOT NULL,
     lot numeric NOT NULL,
     bid numeric NOT NULL,
     gal text,
-    address_id integer NOT NULL,
-    tx_idx integer NOT NULL,
-    log_idx integer NOT NULL,
-    raw_log jsonb
+    address_id integer NOT NULL
 );
 
 
@@ -5530,10 +5799,8 @@ ALTER SEQUENCE maker.jug_base_id_seq OWNED BY maker.jug_base.id;
 CREATE TABLE maker.jug_drip (
     id integer NOT NULL,
     header_id integer NOT NULL,
-    ilk_id integer NOT NULL,
-    log_idx integer NOT NULL,
-    tx_idx integer NOT NULL,
-    raw_log jsonb
+    log_id bigint NOT NULL,
+    ilk_id integer NOT NULL
 );
 
 
@@ -5564,11 +5831,9 @@ ALTER SEQUENCE maker.jug_drip_id_seq OWNED BY maker.jug_drip.id;
 CREATE TABLE maker.jug_file_base (
     id integer NOT NULL,
     header_id integer NOT NULL,
+    log_id bigint NOT NULL,
     what text,
-    data numeric,
-    log_idx integer NOT NULL,
-    tx_idx integer NOT NULL,
-    raw_log jsonb
+    data numeric
 );
 
 
@@ -5599,12 +5864,10 @@ ALTER SEQUENCE maker.jug_file_base_id_seq OWNED BY maker.jug_file_base.id;
 CREATE TABLE maker.jug_file_ilk (
     id integer NOT NULL,
     header_id integer NOT NULL,
+    log_id bigint NOT NULL,
     ilk_id integer NOT NULL,
     what text,
-    data numeric,
-    log_idx integer NOT NULL,
-    tx_idx integer NOT NULL,
-    raw_log jsonb
+    data numeric
 );
 
 
@@ -5635,11 +5898,9 @@ ALTER SEQUENCE maker.jug_file_ilk_id_seq OWNED BY maker.jug_file_ilk.id;
 CREATE TABLE maker.jug_file_vow (
     id integer NOT NULL,
     header_id integer NOT NULL,
+    log_id bigint NOT NULL,
     what text,
-    data text,
-    log_idx integer NOT NULL,
-    tx_idx integer NOT NULL,
-    raw_log jsonb
+    data text
 );
 
 
@@ -5735,11 +5996,9 @@ ALTER SEQUENCE maker.jug_ilk_rho_id_seq OWNED BY maker.jug_ilk_rho.id;
 
 CREATE TABLE maker.jug_init (
     id integer NOT NULL,
+    log_id bigint NOT NULL,
     header_id integer NOT NULL,
-    ilk_id integer NOT NULL,
-    log_idx integer NOT NULL,
-    tx_idx integer NOT NULL,
-    raw_log jsonb
+    ilk_id integer NOT NULL
 );
 
 
@@ -5834,12 +6093,10 @@ ALTER SEQUENCE maker.jug_vow_id_seq OWNED BY maker.jug_vow.id;
 CREATE TABLE maker.new_cdp (
     id integer NOT NULL,
     header_id integer NOT NULL,
+    log_id bigint NOT NULL,
     usr text,
     own text,
-    cdp numeric,
-    tx_idx integer NOT NULL,
-    log_idx integer NOT NULL,
-    raw_log jsonb
+    cdp numeric
 );
 
 
@@ -5877,12 +6134,10 @@ ALTER SEQUENCE maker.new_cdp_id_seq OWNED BY maker.new_cdp.id;
 CREATE TABLE maker.spot_file_mat (
     id integer NOT NULL,
     header_id integer NOT NULL,
+    log_id bigint NOT NULL,
     ilk_id integer NOT NULL,
     what text,
-    data numeric,
-    log_idx integer NOT NULL,
-    tx_idx integer NOT NULL,
-    raw_log jsonb
+    data numeric
 );
 
 
@@ -5913,11 +6168,9 @@ ALTER SEQUENCE maker.spot_file_mat_id_seq OWNED BY maker.spot_file_mat.id;
 CREATE TABLE maker.spot_file_pip (
     id integer NOT NULL,
     header_id integer NOT NULL,
+    log_id bigint NOT NULL,
     ilk_id integer NOT NULL,
-    pip text,
-    log_idx integer NOT NULL,
-    tx_idx integer NOT NULL,
-    raw_log jsonb
+    pip text
 );
 
 
@@ -6046,12 +6299,10 @@ ALTER SEQUENCE maker.spot_par_id_seq OWNED BY maker.spot_par.id;
 CREATE TABLE maker.spot_poke (
     id integer NOT NULL,
     header_id integer NOT NULL,
+    log_id bigint NOT NULL,
     ilk_id integer NOT NULL,
     value numeric,
-    spot numeric,
-    log_idx integer NOT NULL,
-    tx_idx integer NOT NULL,
-    raw_log jsonb
+    spot numeric
 );
 
 
@@ -6114,13 +6365,11 @@ ALTER SEQUENCE maker.spot_vat_id_seq OWNED BY maker.spot_vat.id;
 CREATE TABLE maker.tend (
     id integer NOT NULL,
     header_id integer NOT NULL,
+    log_id bigint NOT NULL,
     bid_id numeric NOT NULL,
     lot numeric,
     bid numeric,
-    address_id integer NOT NULL,
-    log_idx integer NOT NULL,
-    tx_idx integer NOT NULL,
-    raw_log jsonb
+    address_id integer NOT NULL
 );
 
 
@@ -6151,11 +6400,9 @@ ALTER SEQUENCE maker.tend_id_seq OWNED BY maker.tend.id;
 CREATE TABLE maker.tick (
     id integer NOT NULL,
     header_id integer NOT NULL,
+    log_id bigint NOT NULL,
     bid_id numeric NOT NULL,
-    address_id integer NOT NULL,
-    log_idx integer NOT NULL,
-    tx_idx integer NOT NULL,
-    raw_log jsonb
+    address_id integer NOT NULL
 );
 
 
@@ -6289,11 +6536,9 @@ ALTER SEQUENCE maker.vat_debt_id_seq OWNED BY maker.vat_debt.id;
 CREATE TABLE maker.vat_file_debt_ceiling (
     id integer NOT NULL,
     header_id integer NOT NULL,
+    log_id bigint NOT NULL,
     what text,
-    data numeric,
-    log_idx integer NOT NULL,
-    tx_idx integer NOT NULL,
-    raw_log jsonb
+    data numeric
 );
 
 
@@ -6324,12 +6569,10 @@ ALTER SEQUENCE maker.vat_file_debt_ceiling_id_seq OWNED BY maker.vat_file_debt_c
 CREATE TABLE maker.vat_file_ilk (
     id integer NOT NULL,
     header_id integer NOT NULL,
+    log_id bigint NOT NULL,
     ilk_id integer NOT NULL,
     what text,
-    data numeric,
-    log_idx integer NOT NULL,
-    tx_idx integer NOT NULL,
-    raw_log jsonb
+    data numeric
 );
 
 
@@ -6360,13 +6603,11 @@ ALTER SEQUENCE maker.vat_file_ilk_id_seq OWNED BY maker.vat_file_ilk.id;
 CREATE TABLE maker.vat_flux (
     id integer NOT NULL,
     header_id integer NOT NULL,
+    log_id bigint NOT NULL,
     ilk_id integer NOT NULL,
     src text,
     dst text,
-    wad numeric,
-    tx_idx integer NOT NULL,
-    log_idx integer NOT NULL,
-    raw_log jsonb
+    wad numeric
 );
 
 
@@ -6397,11 +6638,9 @@ ALTER SEQUENCE maker.vat_flux_id_seq OWNED BY maker.vat_flux.id;
 CREATE TABLE maker.vat_fold (
     id integer NOT NULL,
     header_id integer NOT NULL,
+    log_id bigint NOT NULL,
     urn_id integer NOT NULL,
-    rate numeric,
-    log_idx integer NOT NULL,
-    tx_idx integer NOT NULL,
-    raw_log jsonb
+    rate numeric
 );
 
 
@@ -6432,14 +6671,12 @@ ALTER SEQUENCE maker.vat_fold_id_seq OWNED BY maker.vat_fold.id;
 CREATE TABLE maker.vat_fork (
     id integer NOT NULL,
     header_id integer NOT NULL,
+    log_id bigint NOT NULL,
     ilk_id integer NOT NULL,
     src text,
     dst text,
     dink numeric,
-    dart numeric,
-    log_idx integer NOT NULL,
-    tx_idx integer NOT NULL,
-    raw_log jsonb
+    dart numeric
 );
 
 
@@ -6470,14 +6707,12 @@ ALTER SEQUENCE maker.vat_fork_id_seq OWNED BY maker.vat_fork.id;
 CREATE TABLE maker.vat_frob (
     id integer NOT NULL,
     header_id integer NOT NULL,
+    log_id bigint NOT NULL,
     urn_id integer NOT NULL,
     v text,
     w text,
     dink numeric,
-    dart numeric,
-    log_idx integer NOT NULL,
-    tx_idx integer NOT NULL,
-    raw_log jsonb
+    dart numeric
 );
 
 
@@ -6542,14 +6777,12 @@ ALTER SEQUENCE maker.vat_gem_id_seq OWNED BY maker.vat_gem.id;
 CREATE TABLE maker.vat_grab (
     id integer NOT NULL,
     header_id integer NOT NULL,
+    log_id bigint NOT NULL,
     urn_id integer NOT NULL,
     v text,
     w text,
     dink numeric,
-    dart numeric,
-    log_idx integer NOT NULL,
-    tx_idx integer NOT NULL,
-    raw_log jsonb
+    dart numeric
 );
 
 
@@ -6580,10 +6813,8 @@ ALTER SEQUENCE maker.vat_grab_id_seq OWNED BY maker.vat_grab.id;
 CREATE TABLE maker.vat_heal (
     id integer NOT NULL,
     header_id integer NOT NULL,
-    rad numeric,
-    log_idx integer NOT NULL,
-    tx_idx integer NOT NULL,
-    raw_log jsonb
+    log_id bigint NOT NULL,
+    rad numeric
 );
 
 
@@ -6779,10 +7010,8 @@ ALTER SEQUENCE maker.vat_ilk_spot_id_seq OWNED BY maker.vat_ilk_spot.id;
 CREATE TABLE maker.vat_init (
     id integer NOT NULL,
     header_id integer NOT NULL,
-    ilk_id integer NOT NULL,
-    log_idx integer NOT NULL,
-    tx_idx integer NOT NULL,
-    raw_log jsonb
+    log_id bigint NOT NULL,
+    ilk_id integer NOT NULL
 );
 
 
@@ -6877,12 +7106,10 @@ ALTER SEQUENCE maker.vat_live_id_seq OWNED BY maker.vat_live.id;
 CREATE TABLE maker.vat_move (
     id integer NOT NULL,
     header_id integer NOT NULL,
+    log_id bigint NOT NULL,
     src text NOT NULL,
     dst text NOT NULL,
-    rad numeric NOT NULL,
-    log_idx integer NOT NULL,
-    tx_idx integer NOT NULL,
-    raw_log jsonb
+    rad numeric NOT NULL
 );
 
 
@@ -6946,12 +7173,10 @@ ALTER SEQUENCE maker.vat_sin_id_seq OWNED BY maker.vat_sin.id;
 CREATE TABLE maker.vat_slip (
     id integer NOT NULL,
     header_id integer NOT NULL,
+    log_id bigint NOT NULL,
     ilk_id integer NOT NULL,
     usr text,
-    wad numeric,
-    tx_idx integer NOT NULL,
-    log_idx integer NOT NULL,
-    raw_log jsonb
+    wad numeric
 );
 
 
@@ -6982,12 +7207,10 @@ ALTER SEQUENCE maker.vat_slip_id_seq OWNED BY maker.vat_slip.id;
 CREATE TABLE maker.vat_suck (
     id integer NOT NULL,
     header_id integer NOT NULL,
+    log_id bigint NOT NULL,
     u text,
     v text,
-    rad numeric,
-    log_idx integer NOT NULL,
-    tx_idx integer NOT NULL,
-    raw_log jsonb
+    rad numeric
 );
 
 
@@ -7180,10 +7403,8 @@ ALTER SEQUENCE maker.vow_bump_id_seq OWNED BY maker.vow_bump.id;
 CREATE TABLE maker.vow_fess (
     id integer NOT NULL,
     header_id integer NOT NULL,
-    tab numeric NOT NULL,
-    log_idx integer NOT NULL,
-    tx_idx integer NOT NULL,
-    raw_log jsonb
+    log_id bigint NOT NULL,
+    tab numeric NOT NULL
 );
 
 
@@ -7214,11 +7435,9 @@ ALTER SEQUENCE maker.vow_fess_id_seq OWNED BY maker.vow_fess.id;
 CREATE TABLE maker.vow_file (
     id integer NOT NULL,
     header_id integer NOT NULL,
+    log_id bigint NOT NULL,
     what text,
-    data numeric,
-    log_idx integer NOT NULL,
-    tx_idx integer NOT NULL,
-    raw_log jsonb
+    data numeric
 );
 
 
@@ -7281,10 +7500,8 @@ ALTER SEQUENCE maker.vow_flapper_id_seq OWNED BY maker.vow_flapper.id;
 CREATE TABLE maker.vow_flog (
     id integer NOT NULL,
     header_id integer NOT NULL,
-    era integer NOT NULL,
-    log_idx integer NOT NULL,
-    tx_idx integer NOT NULL,
-    raw_log jsonb
+    log_id bigint NOT NULL,
+    era integer NOT NULL
 );
 
 
@@ -7540,11 +7757,9 @@ ALTER SEQUENCE maker.vow_wait_id_seq OWNED BY maker.vow_wait.id;
 CREATE TABLE maker.yank (
     id integer NOT NULL,
     header_id integer NOT NULL,
+    log_id bigint NOT NULL,
     bid_id numeric NOT NULL,
-    address_id integer NOT NULL,
-    log_idx integer NOT NULL,
-    tx_idx integer NOT NULL,
-    raw_log jsonb
+    address_id integer NOT NULL
 );
 
 
@@ -7599,10 +7814,10 @@ ALTER SEQUENCE public.addresses_id_seq OWNED BY public.addresses.id;
 
 
 --
--- Name: logs; Type: TABLE; Schema: public; Owner: -
+-- Name: full_sync_logs; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.logs (
+CREATE TABLE public.full_sync_logs (
     id integer NOT NULL,
     block_number bigint,
     address character varying(66),
@@ -7622,9 +7837,9 @@ CREATE TABLE public.logs (
 --
 
 CREATE VIEW public.block_stats AS
- SELECT max(logs.block_number) AS max_block,
-    min(logs.block_number) AS min_block
-   FROM public.logs;
+ SELECT max(full_sync_logs.block_number) AS max_block,
+    min(full_sync_logs.block_number) AS min_block
+   FROM public.full_sync_logs;
 
 
 --
@@ -7680,41 +7895,7 @@ ALTER SEQUENCE public.blocks_id_seq OWNED BY public.blocks.id;
 CREATE TABLE public.checked_headers (
     id integer NOT NULL,
     header_id integer NOT NULL,
-    flip_kick integer DEFAULT 0 NOT NULL,
-    vat_frob integer DEFAULT 0 NOT NULL,
-    tend integer DEFAULT 0 NOT NULL,
-    bite integer DEFAULT 0 NOT NULL,
-    dent integer DEFAULT 0 NOT NULL,
-    vat_file_debt_ceiling integer DEFAULT 0 NOT NULL,
-    vat_file_ilk integer DEFAULT 0 NOT NULL,
-    vat_init integer DEFAULT 0 NOT NULL,
-    jug_file_base integer DEFAULT 0 NOT NULL,
-    jug_file_ilk integer DEFAULT 0 NOT NULL,
-    jug_file_vow integer DEFAULT 0 NOT NULL,
-    deal integer DEFAULT 0 NOT NULL,
-    jug_drip integer DEFAULT 0 NOT NULL,
-    cat_file_chop_lump integer DEFAULT 0 NOT NULL,
-    cat_file_flip integer DEFAULT 0 NOT NULL,
-    cat_file_vow integer DEFAULT 0 NOT NULL,
-    flop_kick integer DEFAULT 0 NOT NULL,
-    vat_move integer DEFAULT 0 NOT NULL,
-    vat_fold integer DEFAULT 0 NOT NULL,
-    vat_heal integer DEFAULT 0 NOT NULL,
-    vat_grab integer DEFAULT 0 NOT NULL,
-    vat_flux integer DEFAULT 0 NOT NULL,
-    vat_slip integer DEFAULT 0 NOT NULL,
-    vow_flog integer DEFAULT 0 NOT NULL,
-    flap_kick integer DEFAULT 0 NOT NULL,
-    vow_fess integer DEFAULT 0 NOT NULL,
-    spot_file_mat integer DEFAULT 0 NOT NULL,
-    spot_file_pip integer DEFAULT 0 NOT NULL,
-    spot_poke integer DEFAULT 0 NOT NULL,
-    vow_file integer DEFAULT 0 NOT NULL,
-    vat_suck integer DEFAULT 0 NOT NULL,
-    vat_fork integer DEFAULT 0 NOT NULL,
-    jug_init integer DEFAULT 0 NOT NULL,
     yank integer DEFAULT 0 NOT NULL,
-    tick integer DEFAULT 0 NOT NULL,
     new_cdp integer DEFAULT 0 NOT NULL
 );
 
@@ -7753,12 +7934,32 @@ CREATE TABLE public.eth_nodes (
 
 
 --
+-- Name: full_sync_logs_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.full_sync_logs_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: full_sync_logs_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.full_sync_logs_id_seq OWNED BY public.full_sync_logs.id;
+
+
+--
 -- Name: full_sync_receipts; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.full_sync_receipts (
     id integer NOT NULL,
-    address_id integer NOT NULL,
+    contract_address_id integer NOT NULL,
     cumulative_gas_used numeric,
     gas_used numeric,
     state_root character varying(66),
@@ -7861,6 +8062,46 @@ ALTER SEQUENCE public.goose_db_version_id_seq OWNED BY public.goose_db_version.i
 
 
 --
+-- Name: header_sync_logs; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.header_sync_logs (
+    id integer NOT NULL,
+    header_id integer NOT NULL,
+    address integer NOT NULL,
+    topics bytea[],
+    data bytea,
+    block_number bigint,
+    block_hash character varying(66),
+    tx_hash character varying(66),
+    tx_index integer,
+    log_index integer,
+    raw jsonb,
+    transformed boolean DEFAULT false NOT NULL
+);
+
+
+--
+-- Name: header_sync_logs_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.header_sync_logs_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: header_sync_logs_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.header_sync_logs_id_seq OWNED BY public.header_sync_logs.id;
+
+
+--
 -- Name: header_sync_receipts; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -7868,7 +8109,7 @@ CREATE TABLE public.header_sync_receipts (
     id integer NOT NULL,
     transaction_id integer NOT NULL,
     header_id integer NOT NULL,
-    address_id integer NOT NULL,
+    contract_address_id integer NOT NULL,
     cumulative_gas_used numeric,
     gas_used numeric,
     state_root character varying(66),
@@ -7948,6 +8189,7 @@ CREATE TABLE public.headers (
     block_number bigint,
     raw jsonb,
     block_timestamp numeric,
+    check_count integer DEFAULT 0 NOT NULL,
     eth_node_id integer NOT NULL,
     eth_node_fingerprint character varying(128)
 );
@@ -8011,26 +8253,6 @@ CREATE SEQUENCE public.log_filters_id_seq
 --
 
 ALTER SEQUENCE public.log_filters_id_seq OWNED BY public.log_filters.id;
-
-
---
--- Name: logs_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.logs_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: logs_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.logs_id_seq OWNED BY public.logs.id;
 
 
 --
@@ -8161,21 +8383,52 @@ ALTER SEQUENCE public.watched_contracts_contract_id_seq OWNED BY public.watched_
 
 CREATE VIEW public.watched_event_logs AS
  SELECT log_filters.name,
-    logs.id,
-    logs.block_number,
-    logs.address,
-    logs.tx_hash,
-    logs.index,
-    logs.topic0,
-    logs.topic1,
-    logs.topic2,
-    logs.topic3,
-    logs.data,
-    logs.receipt_id
+    full_sync_logs.id,
+    full_sync_logs.block_number,
+    full_sync_logs.address,
+    full_sync_logs.tx_hash,
+    full_sync_logs.index,
+    full_sync_logs.topic0,
+    full_sync_logs.topic1,
+    full_sync_logs.topic2,
+    full_sync_logs.topic3,
+    full_sync_logs.data,
+    full_sync_logs.receipt_id
    FROM ((public.log_filters
      CROSS JOIN public.block_stats)
-     JOIN public.logs ON ((((logs.address)::text = (log_filters.address)::text) AND (logs.block_number >= COALESCE(log_filters.from_block, block_stats.min_block)) AND (logs.block_number <= COALESCE(log_filters.to_block, block_stats.max_block)))))
-  WHERE ((((log_filters.topic0)::text = (logs.topic0)::text) OR (log_filters.topic0 IS NULL)) AND (((log_filters.topic1)::text = (logs.topic1)::text) OR (log_filters.topic1 IS NULL)) AND (((log_filters.topic2)::text = (logs.topic2)::text) OR (log_filters.topic2 IS NULL)) AND (((log_filters.topic3)::text = (logs.topic3)::text) OR (log_filters.topic3 IS NULL)));
+     JOIN public.full_sync_logs ON ((((full_sync_logs.address)::text = (log_filters.address)::text) AND (full_sync_logs.block_number >= COALESCE(log_filters.from_block, block_stats.min_block)) AND (full_sync_logs.block_number <= COALESCE(log_filters.to_block, block_stats.max_block)))))
+  WHERE ((((log_filters.topic0)::text = (full_sync_logs.topic0)::text) OR (log_filters.topic0 IS NULL)) AND (((log_filters.topic1)::text = (full_sync_logs.topic1)::text) OR (log_filters.topic1 IS NULL)) AND (((log_filters.topic2)::text = (full_sync_logs.topic2)::text) OR (log_filters.topic2 IS NULL)) AND (((log_filters.topic3)::text = (full_sync_logs.topic3)::text) OR (log_filters.topic3 IS NULL)));
+
+
+--
+-- Name: watched_logs; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.watched_logs (
+    id integer NOT NULL,
+    contract_address character varying(42),
+    topic_zero character varying(66)
+);
+
+
+--
+-- Name: watched_logs_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.watched_logs_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: watched_logs_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.watched_logs_id_seq OWNED BY public.watched_logs.id;
 
 
 --
@@ -8435,6 +8688,13 @@ ALTER TABLE ONLY maker.flap_ttl ALTER COLUMN id SET DEFAULT nextval('maker.flap_
 --
 
 ALTER TABLE ONLY maker.flap_vat ALTER COLUMN id SET DEFAULT nextval('maker.flap_vat_id_seq'::regclass);
+
+
+--
+-- Name: flip id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip ALTER COLUMN id SET DEFAULT nextval('maker.flip_id_seq'::regclass);
 
 
 --
@@ -9103,6 +9363,13 @@ ALTER TABLE ONLY public.eth_nodes ALTER COLUMN id SET DEFAULT nextval('public.no
 
 
 --
+-- Name: full_sync_logs id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.full_sync_logs ALTER COLUMN id SET DEFAULT nextval('public.full_sync_logs_id_seq'::regclass);
+
+
+--
 -- Name: full_sync_receipts id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -9121,6 +9388,13 @@ ALTER TABLE ONLY public.full_sync_transactions ALTER COLUMN id SET DEFAULT nextv
 --
 
 ALTER TABLE ONLY public.goose_db_version ALTER COLUMN id SET DEFAULT nextval('public.goose_db_version_id_seq'::regclass);
+
+
+--
+-- Name: header_sync_logs id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.header_sync_logs ALTER COLUMN id SET DEFAULT nextval('public.header_sync_logs_id_seq'::regclass);
 
 
 --
@@ -9152,13 +9426,6 @@ ALTER TABLE ONLY public.log_filters ALTER COLUMN id SET DEFAULT nextval('public.
 
 
 --
--- Name: logs id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.logs ALTER COLUMN id SET DEFAULT nextval('public.logs_id_seq'::regclass);
-
-
---
 -- Name: queued_storage id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -9180,6 +9447,13 @@ ALTER TABLE ONLY public.watched_contracts ALTER COLUMN contract_id SET DEFAULT n
 
 
 --
+-- Name: watched_logs id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.watched_logs ALTER COLUMN id SET DEFAULT nextval('public.watched_logs_id_seq'::regclass);
+
+
+--
 -- Name: managed_cdp managed_cdp_cdpi_key; Type: CONSTRAINT; Schema: api; Owner: -
 --
 
@@ -9196,11 +9470,11 @@ ALTER TABLE ONLY api.managed_cdp
 
 
 --
--- Name: bite bite_header_id_tx_idx_log_idx_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: bite bite_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.bite
-    ADD CONSTRAINT bite_header_id_tx_idx_log_idx_key UNIQUE (header_id, tx_idx, log_idx);
+    ADD CONSTRAINT bite_header_id_log_id_key UNIQUE (header_id, log_id);
 
 
 --
@@ -9212,11 +9486,11 @@ ALTER TABLE ONLY maker.bite
 
 
 --
--- Name: cat_file_chop_lump cat_file_chop_lump_header_id_tx_idx_log_idx_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: cat_file_chop_lump cat_file_chop_lump_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.cat_file_chop_lump
-    ADD CONSTRAINT cat_file_chop_lump_header_id_tx_idx_log_idx_key UNIQUE (header_id, tx_idx, log_idx);
+    ADD CONSTRAINT cat_file_chop_lump_header_id_log_id_key UNIQUE (header_id, log_id);
 
 
 --
@@ -9228,11 +9502,11 @@ ALTER TABLE ONLY maker.cat_file_chop_lump
 
 
 --
--- Name: cat_file_flip cat_file_flip_header_id_tx_idx_log_idx_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: cat_file_flip cat_file_flip_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.cat_file_flip
-    ADD CONSTRAINT cat_file_flip_header_id_tx_idx_log_idx_key UNIQUE (header_id, tx_idx, log_idx);
+    ADD CONSTRAINT cat_file_flip_header_id_log_id_key UNIQUE (header_id, log_id);
 
 
 --
@@ -9244,11 +9518,11 @@ ALTER TABLE ONLY maker.cat_file_flip
 
 
 --
--- Name: cat_file_vow cat_file_vow_header_id_tx_idx_log_idx_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: cat_file_vow cat_file_vow_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.cat_file_vow
-    ADD CONSTRAINT cat_file_vow_header_id_tx_idx_log_idx_key UNIQUE (header_id, tx_idx, log_idx);
+    ADD CONSTRAINT cat_file_vow_header_id_log_id_key UNIQUE (header_id, log_id);
 
 
 --
@@ -9516,11 +9790,11 @@ ALTER TABLE ONLY maker.cdp_manager_vat
 
 
 --
--- Name: deal deal_header_id_tx_idx_log_idx_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: deal deal_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.deal
-    ADD CONSTRAINT deal_header_id_tx_idx_log_idx_key UNIQUE (header_id, tx_idx, log_idx);
+    ADD CONSTRAINT deal_header_id_log_id_key UNIQUE (header_id, log_id);
 
 
 --
@@ -9532,11 +9806,11 @@ ALTER TABLE ONLY maker.deal
 
 
 --
--- Name: dent dent_header_id_tx_idx_log_idx_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: dent dent_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.dent
-    ADD CONSTRAINT dent_header_id_tx_idx_log_idx_key UNIQUE (header_id, tx_idx, log_idx);
+    ADD CONSTRAINT dent_header_id_log_id_key UNIQUE (header_id, log_id);
 
 
 --
@@ -9668,11 +9942,11 @@ ALTER TABLE ONLY maker.flap_gem
 
 
 --
--- Name: flap_kick flap_kick_header_id_tx_idx_log_idx_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: flap_kick flap_kick_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.flap_kick
-    ADD CONSTRAINT flap_kick_header_id_tx_idx_log_idx_key UNIQUE (header_id, tx_idx, log_idx);
+    ADD CONSTRAINT flap_kick_header_id_log_id_key UNIQUE (header_id, log_id);
 
 
 --
@@ -9916,6 +10190,14 @@ ALTER TABLE ONLY maker.flip_bid_usr
 
 
 --
+-- Name: flip flip_block_number_bid_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip
+    ADD CONSTRAINT flip_block_number_bid_id_key UNIQUE (block_number, bid_id);
+
+
+--
 -- Name: flip_ilk flip_ilk_block_number_block_hash_address_id_ilk_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -9932,11 +10214,11 @@ ALTER TABLE ONLY maker.flip_ilk
 
 
 --
--- Name: flip_kick flip_kick_header_id_tx_idx_log_idx_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: flip_kick flip_kick_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.flip_kick
-    ADD CONSTRAINT flip_kick_header_id_tx_idx_log_idx_key UNIQUE (header_id, tx_idx, log_idx);
+    ADD CONSTRAINT flip_kick_header_id_log_id_key UNIQUE (header_id, log_id);
 
 
 --
@@ -9961,6 +10243,14 @@ ALTER TABLE ONLY maker.flip_kicks
 
 ALTER TABLE ONLY maker.flip_kicks
     ADD CONSTRAINT flip_kicks_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: flip flip_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip
+    ADD CONSTRAINT flip_pkey PRIMARY KEY (id);
 
 
 --
@@ -10132,11 +10422,11 @@ ALTER TABLE ONLY maker.flop_gem
 
 
 --
--- Name: flop_kick flop_kick_header_id_tx_idx_log_idx_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: flop_kick flop_kick_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.flop_kick
-    ADD CONSTRAINT flop_kick_header_id_tx_idx_log_idx_key UNIQUE (header_id, tx_idx, log_idx);
+    ADD CONSTRAINT flop_kick_header_id_log_id_key UNIQUE (header_id, log_id);
 
 
 --
@@ -10276,11 +10566,11 @@ ALTER TABLE ONLY maker.jug_base
 
 
 --
--- Name: jug_drip jug_drip_header_id_tx_idx_log_idx_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: jug_drip jug_drip_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.jug_drip
-    ADD CONSTRAINT jug_drip_header_id_tx_idx_log_idx_key UNIQUE (header_id, tx_idx, log_idx);
+    ADD CONSTRAINT jug_drip_header_id_log_id_key UNIQUE (header_id, log_id);
 
 
 --
@@ -10292,11 +10582,11 @@ ALTER TABLE ONLY maker.jug_drip
 
 
 --
--- Name: jug_file_base jug_file_base_header_id_tx_idx_log_idx_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: jug_file_base jug_file_base_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.jug_file_base
-    ADD CONSTRAINT jug_file_base_header_id_tx_idx_log_idx_key UNIQUE (header_id, tx_idx, log_idx);
+    ADD CONSTRAINT jug_file_base_header_id_log_id_key UNIQUE (header_id, log_id);
 
 
 --
@@ -10308,11 +10598,11 @@ ALTER TABLE ONLY maker.jug_file_base
 
 
 --
--- Name: jug_file_ilk jug_file_ilk_header_id_tx_idx_log_idx_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: jug_file_ilk jug_file_ilk_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.jug_file_ilk
-    ADD CONSTRAINT jug_file_ilk_header_id_tx_idx_log_idx_key UNIQUE (header_id, tx_idx, log_idx);
+    ADD CONSTRAINT jug_file_ilk_header_id_log_id_key UNIQUE (header_id, log_id);
 
 
 --
@@ -10324,11 +10614,11 @@ ALTER TABLE ONLY maker.jug_file_ilk
 
 
 --
--- Name: jug_file_vow jug_file_vow_header_id_tx_idx_log_idx_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: jug_file_vow jug_file_vow_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.jug_file_vow
-    ADD CONSTRAINT jug_file_vow_header_id_tx_idx_log_idx_key UNIQUE (header_id, tx_idx, log_idx);
+    ADD CONSTRAINT jug_file_vow_header_id_log_id_key UNIQUE (header_id, log_id);
 
 
 --
@@ -10372,11 +10662,11 @@ ALTER TABLE ONLY maker.jug_ilk_rho
 
 
 --
--- Name: jug_init jug_init_header_id_tx_idx_log_idx_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: jug_init jug_init_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.jug_init
-    ADD CONSTRAINT jug_init_header_id_tx_idx_log_idx_key UNIQUE (header_id, tx_idx, log_idx);
+    ADD CONSTRAINT jug_init_header_id_log_id_key UNIQUE (header_id, log_id);
 
 
 --
@@ -10420,11 +10710,11 @@ ALTER TABLE ONLY maker.jug_vow
 
 
 --
--- Name: new_cdp new_cdp_header_id_tx_idx_log_idx_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: new_cdp new_cdp_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.new_cdp
-    ADD CONSTRAINT new_cdp_header_id_tx_idx_log_idx_key UNIQUE (header_id, tx_idx, log_idx);
+    ADD CONSTRAINT new_cdp_header_id_log_id_key UNIQUE (header_id, log_id);
 
 
 --
@@ -10436,11 +10726,11 @@ ALTER TABLE ONLY maker.new_cdp
 
 
 --
--- Name: spot_file_mat spot_file_mat_header_id_tx_idx_log_idx_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: spot_file_mat spot_file_mat_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.spot_file_mat
-    ADD CONSTRAINT spot_file_mat_header_id_tx_idx_log_idx_key UNIQUE (header_id, tx_idx, log_idx);
+    ADD CONSTRAINT spot_file_mat_header_id_log_id_key UNIQUE (header_id, log_id);
 
 
 --
@@ -10452,11 +10742,11 @@ ALTER TABLE ONLY maker.spot_file_mat
 
 
 --
--- Name: spot_file_pip spot_file_pip_header_id_tx_idx_log_idx_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: spot_file_pip spot_file_pip_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.spot_file_pip
-    ADD CONSTRAINT spot_file_pip_header_id_tx_idx_log_idx_key UNIQUE (header_id, tx_idx, log_idx);
+    ADD CONSTRAINT spot_file_pip_header_id_log_id_key UNIQUE (header_id, log_id);
 
 
 --
@@ -10516,11 +10806,11 @@ ALTER TABLE ONLY maker.spot_par
 
 
 --
--- Name: spot_poke spot_poke_header_id_tx_idx_log_idx_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: spot_poke spot_poke_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.spot_poke
-    ADD CONSTRAINT spot_poke_header_id_tx_idx_log_idx_key UNIQUE (header_id, tx_idx, log_idx);
+    ADD CONSTRAINT spot_poke_header_id_log_id_key UNIQUE (header_id, log_id);
 
 
 --
@@ -10548,11 +10838,11 @@ ALTER TABLE ONLY maker.spot_vat
 
 
 --
--- Name: tend tend_header_id_tx_idx_log_idx_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: tend tend_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.tend
-    ADD CONSTRAINT tend_header_id_tx_idx_log_idx_key UNIQUE (header_id, tx_idx, log_idx);
+    ADD CONSTRAINT tend_header_id_log_id_key UNIQUE (header_id, log_id);
 
 
 --
@@ -10564,11 +10854,11 @@ ALTER TABLE ONLY maker.tend
 
 
 --
--- Name: tick tick_header_id_tx_idx_log_idx_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: tick tick_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.tick
-    ADD CONSTRAINT tick_header_id_tx_idx_log_idx_key UNIQUE (header_id, tx_idx, log_idx);
+    ADD CONSTRAINT tick_header_id_log_id_key UNIQUE (header_id, log_id);
 
 
 --
@@ -10628,11 +10918,11 @@ ALTER TABLE ONLY maker.vat_debt
 
 
 --
--- Name: vat_file_debt_ceiling vat_file_debt_ceiling_header_id_tx_idx_log_idx_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: vat_file_debt_ceiling vat_file_debt_ceiling_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.vat_file_debt_ceiling
-    ADD CONSTRAINT vat_file_debt_ceiling_header_id_tx_idx_log_idx_key UNIQUE (header_id, tx_idx, log_idx);
+    ADD CONSTRAINT vat_file_debt_ceiling_header_id_log_id_key UNIQUE (header_id, log_id);
 
 
 --
@@ -10644,11 +10934,11 @@ ALTER TABLE ONLY maker.vat_file_debt_ceiling
 
 
 --
--- Name: vat_file_ilk vat_file_ilk_header_id_tx_idx_log_idx_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: vat_file_ilk vat_file_ilk_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.vat_file_ilk
-    ADD CONSTRAINT vat_file_ilk_header_id_tx_idx_log_idx_key UNIQUE (header_id, tx_idx, log_idx);
+    ADD CONSTRAINT vat_file_ilk_header_id_log_id_key UNIQUE (header_id, log_id);
 
 
 --
@@ -10660,11 +10950,11 @@ ALTER TABLE ONLY maker.vat_file_ilk
 
 
 --
--- Name: vat_flux vat_flux_header_id_tx_idx_log_idx_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: vat_flux vat_flux_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.vat_flux
-    ADD CONSTRAINT vat_flux_header_id_tx_idx_log_idx_key UNIQUE (header_id, tx_idx, log_idx);
+    ADD CONSTRAINT vat_flux_header_id_log_id_key UNIQUE (header_id, log_id);
 
 
 --
@@ -10676,11 +10966,11 @@ ALTER TABLE ONLY maker.vat_flux
 
 
 --
--- Name: vat_fold vat_fold_header_id_tx_idx_log_idx_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: vat_fold vat_fold_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.vat_fold
-    ADD CONSTRAINT vat_fold_header_id_tx_idx_log_idx_key UNIQUE (header_id, tx_idx, log_idx);
+    ADD CONSTRAINT vat_fold_header_id_log_id_key UNIQUE (header_id, log_id);
 
 
 --
@@ -10692,11 +10982,11 @@ ALTER TABLE ONLY maker.vat_fold
 
 
 --
--- Name: vat_fork vat_fork_header_id_tx_idx_log_idx_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: vat_fork vat_fork_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.vat_fork
-    ADD CONSTRAINT vat_fork_header_id_tx_idx_log_idx_key UNIQUE (header_id, tx_idx, log_idx);
+    ADD CONSTRAINT vat_fork_header_id_log_id_key UNIQUE (header_id, log_id);
 
 
 --
@@ -10708,11 +10998,11 @@ ALTER TABLE ONLY maker.vat_fork
 
 
 --
--- Name: vat_frob vat_frob_header_id_tx_idx_log_idx_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: vat_frob vat_frob_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.vat_frob
-    ADD CONSTRAINT vat_frob_header_id_tx_idx_log_idx_key UNIQUE (header_id, tx_idx, log_idx);
+    ADD CONSTRAINT vat_frob_header_id_log_id_key UNIQUE (header_id, log_id);
 
 
 --
@@ -10740,11 +11030,11 @@ ALTER TABLE ONLY maker.vat_gem
 
 
 --
--- Name: vat_grab vat_grab_header_id_tx_idx_log_idx_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: vat_grab vat_grab_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.vat_grab
-    ADD CONSTRAINT vat_grab_header_id_tx_idx_log_idx_key UNIQUE (header_id, tx_idx, log_idx);
+    ADD CONSTRAINT vat_grab_header_id_log_id_key UNIQUE (header_id, log_id);
 
 
 --
@@ -10756,11 +11046,11 @@ ALTER TABLE ONLY maker.vat_grab
 
 
 --
--- Name: vat_heal vat_heal_header_id_tx_idx_log_idx_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: vat_heal vat_heal_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.vat_heal
-    ADD CONSTRAINT vat_heal_header_id_tx_idx_log_idx_key UNIQUE (header_id, tx_idx, log_idx);
+    ADD CONSTRAINT vat_heal_header_id_log_id_key UNIQUE (header_id, log_id);
 
 
 --
@@ -10852,11 +11142,11 @@ ALTER TABLE ONLY maker.vat_ilk_spot
 
 
 --
--- Name: vat_init vat_init_header_id_tx_idx_log_idx_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: vat_init vat_init_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.vat_init
-    ADD CONSTRAINT vat_init_header_id_tx_idx_log_idx_key UNIQUE (header_id, tx_idx, log_idx);
+    ADD CONSTRAINT vat_init_header_id_log_id_key UNIQUE (header_id, log_id);
 
 
 --
@@ -10900,11 +11190,11 @@ ALTER TABLE ONLY maker.vat_live
 
 
 --
--- Name: vat_move vat_move_header_id_tx_idx_log_idx_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: vat_move vat_move_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.vat_move
-    ADD CONSTRAINT vat_move_header_id_tx_idx_log_idx_key UNIQUE (header_id, tx_idx, log_idx);
+    ADD CONSTRAINT vat_move_header_id_log_id_key UNIQUE (header_id, log_id);
 
 
 --
@@ -10932,11 +11222,11 @@ ALTER TABLE ONLY maker.vat_sin
 
 
 --
--- Name: vat_slip vat_slip_header_id_tx_idx_log_idx_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: vat_slip vat_slip_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.vat_slip
-    ADD CONSTRAINT vat_slip_header_id_tx_idx_log_idx_key UNIQUE (header_id, tx_idx, log_idx);
+    ADD CONSTRAINT vat_slip_header_id_log_id_key UNIQUE (header_id, log_id);
 
 
 --
@@ -10948,11 +11238,11 @@ ALTER TABLE ONLY maker.vat_slip
 
 
 --
--- Name: vat_suck vat_suck_header_id_tx_idx_log_idx_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: vat_suck vat_suck_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.vat_suck
-    ADD CONSTRAINT vat_suck_header_id_tx_idx_log_idx_key UNIQUE (header_id, tx_idx, log_idx);
+    ADD CONSTRAINT vat_suck_header_id_log_id_key UNIQUE (header_id, log_id);
 
 
 --
@@ -11044,11 +11334,11 @@ ALTER TABLE ONLY maker.vow_bump
 
 
 --
--- Name: vow_fess vow_fess_header_id_tx_idx_log_idx_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: vow_fess vow_fess_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.vow_fess
-    ADD CONSTRAINT vow_fess_header_id_tx_idx_log_idx_key UNIQUE (header_id, tx_idx, log_idx);
+    ADD CONSTRAINT vow_fess_header_id_log_id_key UNIQUE (header_id, log_id);
 
 
 --
@@ -11060,11 +11350,11 @@ ALTER TABLE ONLY maker.vow_fess
 
 
 --
--- Name: vow_file vow_file_header_id_tx_idx_log_idx_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: vow_file vow_file_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.vow_file
-    ADD CONSTRAINT vow_file_header_id_tx_idx_log_idx_key UNIQUE (header_id, tx_idx, log_idx);
+    ADD CONSTRAINT vow_file_header_id_log_id_key UNIQUE (header_id, log_id);
 
 
 --
@@ -11092,11 +11382,11 @@ ALTER TABLE ONLY maker.vow_flapper
 
 
 --
--- Name: vow_flog vow_flog_header_id_tx_idx_log_idx_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: vow_flog vow_flog_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.vow_flog
-    ADD CONSTRAINT vow_flog_header_id_tx_idx_log_idx_key UNIQUE (header_id, tx_idx, log_idx);
+    ADD CONSTRAINT vow_flog_header_id_log_id_key UNIQUE (header_id, log_id);
 
 
 --
@@ -11220,11 +11510,11 @@ ALTER TABLE ONLY maker.vow_wait
 
 
 --
--- Name: yank yank_header_id_tx_idx_log_idx_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: yank yank_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.yank
-    ADD CONSTRAINT yank_header_id_tx_idx_log_idx_key UNIQUE (header_id, tx_idx, log_idx);
+    ADD CONSTRAINT yank_header_id_log_id_key UNIQUE (header_id, log_id);
 
 
 --
@@ -11292,6 +11582,14 @@ ALTER TABLE ONLY public.eth_nodes
 
 
 --
+-- Name: full_sync_logs full_sync_logs_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.full_sync_logs
+    ADD CONSTRAINT full_sync_logs_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: full_sync_receipts full_sync_receipts_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -11313,6 +11611,22 @@ ALTER TABLE ONLY public.full_sync_transactions
 
 ALTER TABLE ONLY public.goose_db_version
     ADD CONSTRAINT goose_db_version_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: header_sync_logs header_sync_logs_header_id_tx_index_log_index_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.header_sync_logs
+    ADD CONSTRAINT header_sync_logs_header_id_tx_index_log_index_key UNIQUE (header_id, tx_index, log_index);
+
+
+--
+-- Name: header_sync_logs header_sync_logs_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.header_sync_logs
+    ADD CONSTRAINT header_sync_logs_pkey PRIMARY KEY (id);
 
 
 --
@@ -11353,14 +11667,6 @@ ALTER TABLE ONLY public.header_sync_transactions
 
 ALTER TABLE ONLY public.headers
     ADD CONSTRAINT headers_pkey PRIMARY KEY (id);
-
-
---
--- Name: logs logs_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.logs
-    ADD CONSTRAINT logs_pkey PRIMARY KEY (id);
 
 
 --
@@ -11425,6 +11731,14 @@ ALTER TABLE ONLY public.watched_contracts
 
 ALTER TABLE ONLY public.watched_contracts
     ADD CONSTRAINT watched_contracts_pkey PRIMARY KEY (contract_id);
+
+
+--
+-- Name: watched_logs watched_logs_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.watched_logs
+    ADD CONSTRAINT watched_logs_pkey PRIMARY KEY (id);
 
 
 --
@@ -12667,6 +12981,62 @@ CREATE TRIGGER flap_created_trigger AFTER INSERT ON maker.flap_kick FOR EACH ROW
 
 
 --
+-- Name: flip_bid_bid flip_bid_bid; Type: TRIGGER; Schema: maker; Owner: -
+--
+
+CREATE TRIGGER flip_bid_bid AFTER INSERT OR UPDATE ON maker.flip_bid_bid FOR EACH ROW EXECUTE PROCEDURE maker.insert_updated_flip_bid();
+
+
+--
+-- Name: flip_bid_end flip_bid_end; Type: TRIGGER; Schema: maker; Owner: -
+--
+
+CREATE TRIGGER flip_bid_end AFTER INSERT OR UPDATE ON maker.flip_bid_end FOR EACH ROW EXECUTE PROCEDURE maker.insert_updated_flip_end();
+
+
+--
+-- Name: flip_bid_gal flip_bid_gal; Type: TRIGGER; Schema: maker; Owner: -
+--
+
+CREATE TRIGGER flip_bid_gal AFTER INSERT OR UPDATE ON maker.flip_bid_gal FOR EACH ROW EXECUTE PROCEDURE maker.insert_updated_flip_gal();
+
+
+--
+-- Name: flip_bid_guy flip_bid_guy; Type: TRIGGER; Schema: maker; Owner: -
+--
+
+CREATE TRIGGER flip_bid_guy AFTER INSERT OR UPDATE ON maker.flip_bid_guy FOR EACH ROW EXECUTE PROCEDURE maker.insert_updated_flip_guy();
+
+
+--
+-- Name: flip_bid_lot flip_bid_lot; Type: TRIGGER; Schema: maker; Owner: -
+--
+
+CREATE TRIGGER flip_bid_lot AFTER INSERT OR UPDATE ON maker.flip_bid_lot FOR EACH ROW EXECUTE PROCEDURE maker.insert_updated_flip_lot();
+
+
+--
+-- Name: flip_bid_tab flip_bid_tab; Type: TRIGGER; Schema: maker; Owner: -
+--
+
+CREATE TRIGGER flip_bid_tab AFTER INSERT OR UPDATE ON maker.flip_bid_tab FOR EACH ROW EXECUTE PROCEDURE maker.insert_updated_flip_tab();
+
+
+--
+-- Name: flip_bid_tic flip_bid_tic; Type: TRIGGER; Schema: maker; Owner: -
+--
+
+CREATE TRIGGER flip_bid_tic AFTER INSERT OR UPDATE ON maker.flip_bid_tic FOR EACH ROW EXECUTE PROCEDURE maker.insert_updated_flip_tic();
+
+
+--
+-- Name: flip_kick flip_created_trigger; Type: TRIGGER; Schema: maker; Owner: -
+--
+
+CREATE TRIGGER flip_created_trigger AFTER INSERT ON maker.flip_kick FOR EACH ROW EXECUTE PROCEDURE maker.flip_created();
+
+
+--
 -- Name: flop_bid_bid flop_bid_bid; Type: TRIGGER; Schema: maker; Owner: -
 --
 
@@ -12745,6 +13115,14 @@ ALTER TABLE ONLY maker.bite
 
 
 --
+-- Name: bite bite_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.bite
+    ADD CONSTRAINT bite_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
+
+
+--
 -- Name: bite bite_urn_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -12769,6 +13147,14 @@ ALTER TABLE ONLY maker.cat_file_chop_lump
 
 
 --
+-- Name: cat_file_chop_lump cat_file_chop_lump_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_file_chop_lump
+    ADD CONSTRAINT cat_file_chop_lump_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
+
+
+--
 -- Name: cat_file_flip cat_file_flip_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -12785,11 +13171,27 @@ ALTER TABLE ONLY maker.cat_file_flip
 
 
 --
+-- Name: cat_file_flip cat_file_flip_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_file_flip
+    ADD CONSTRAINT cat_file_flip_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
+
+
+--
 -- Name: cat_file_vow cat_file_vow_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.cat_file_vow
     ADD CONSTRAINT cat_file_vow_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: cat_file_vow cat_file_vow_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_file_vow
+    ADD CONSTRAINT cat_file_vow_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
 
 
 --
@@ -12841,6 +13243,14 @@ ALTER TABLE ONLY maker.deal
 
 
 --
+-- Name: deal deal_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.deal
+    ADD CONSTRAINT deal_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
+
+
+--
 -- Name: dent dent_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -12854,6 +13264,14 @@ ALTER TABLE ONLY maker.dent
 
 ALTER TABLE ONLY maker.dent
     ADD CONSTRAINT dent_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: dent dent_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.dent
+    ADD CONSTRAINT dent_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
 
 
 --
@@ -12937,6 +13355,14 @@ ALTER TABLE ONLY maker.flap_kick
 
 
 --
+-- Name: flap_kick flap_kick_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flap_kick
+    ADD CONSTRAINT flap_kick_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
+
+
+--
 -- Name: flap_kicks flap_kicks_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -12974,6 +13400,14 @@ ALTER TABLE ONLY maker.flap_ttl
 
 ALTER TABLE ONLY maker.flap_vat
     ADD CONSTRAINT flap_vat_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: flip flip_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip
+    ADD CONSTRAINT flip_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --
@@ -13078,6 +13512,14 @@ ALTER TABLE ONLY maker.flip_kick
 
 ALTER TABLE ONLY maker.flip_kick
     ADD CONSTRAINT flip_kick_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: flip_kick flip_kick_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_kick
+    ADD CONSTRAINT flip_kick_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
 
 
 --
@@ -13193,6 +13635,14 @@ ALTER TABLE ONLY maker.flop_kick
 
 
 --
+-- Name: flop_kick flop_kick_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flop_kick
+    ADD CONSTRAINT flop_kick_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
+
+
+--
 -- Name: flop_kicks flop_kicks_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -13249,11 +13699,27 @@ ALTER TABLE ONLY maker.jug_drip
 
 
 --
+-- Name: jug_drip jug_drip_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.jug_drip
+    ADD CONSTRAINT jug_drip_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
+
+
+--
 -- Name: jug_file_base jug_file_base_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.jug_file_base
     ADD CONSTRAINT jug_file_base_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: jug_file_base jug_file_base_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.jug_file_base
+    ADD CONSTRAINT jug_file_base_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
 
 
 --
@@ -13273,11 +13739,27 @@ ALTER TABLE ONLY maker.jug_file_ilk
 
 
 --
+-- Name: jug_file_ilk jug_file_ilk_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.jug_file_ilk
+    ADD CONSTRAINT jug_file_ilk_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
+
+
+--
 -- Name: jug_file_vow jug_file_vow_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.jug_file_vow
     ADD CONSTRAINT jug_file_vow_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: jug_file_vow jug_file_vow_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.jug_file_vow
+    ADD CONSTRAINT jug_file_vow_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
 
 
 --
@@ -13313,11 +13795,27 @@ ALTER TABLE ONLY maker.jug_init
 
 
 --
+-- Name: jug_init jug_init_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.jug_init
+    ADD CONSTRAINT jug_init_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
+
+
+--
 -- Name: new_cdp new_cdp_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.new_cdp
     ADD CONSTRAINT new_cdp_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: new_cdp new_cdp_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.new_cdp
+    ADD CONSTRAINT new_cdp_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
 
 
 --
@@ -13337,6 +13835,14 @@ ALTER TABLE ONLY maker.spot_file_mat
 
 
 --
+-- Name: spot_file_mat spot_file_mat_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.spot_file_mat
+    ADD CONSTRAINT spot_file_mat_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
+
+
+--
 -- Name: spot_file_pip spot_file_pip_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -13350,6 +13856,14 @@ ALTER TABLE ONLY maker.spot_file_pip
 
 ALTER TABLE ONLY maker.spot_file_pip
     ADD CONSTRAINT spot_file_pip_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id) ON DELETE CASCADE;
+
+
+--
+-- Name: spot_file_pip spot_file_pip_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.spot_file_pip
+    ADD CONSTRAINT spot_file_pip_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
 
 
 --
@@ -13385,6 +13899,14 @@ ALTER TABLE ONLY maker.spot_poke
 
 
 --
+-- Name: spot_poke spot_poke_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.spot_poke
+    ADD CONSTRAINT spot_poke_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
+
+
+--
 -- Name: tend tend_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -13398,6 +13920,14 @@ ALTER TABLE ONLY maker.tend
 
 ALTER TABLE ONLY maker.tend
     ADD CONSTRAINT tend_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: tend tend_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.tend
+    ADD CONSTRAINT tend_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
 
 
 --
@@ -13417,6 +13947,14 @@ ALTER TABLE ONLY maker.tick
 
 
 --
+-- Name: tick tick_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.tick
+    ADD CONSTRAINT tick_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
+
+
+--
 -- Name: urns urns_ilk_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -13430,6 +13968,14 @@ ALTER TABLE ONLY maker.urns
 
 ALTER TABLE ONLY maker.vat_file_debt_ceiling
     ADD CONSTRAINT vat_file_debt_ceiling_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: vat_file_debt_ceiling vat_file_debt_ceiling_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_file_debt_ceiling
+    ADD CONSTRAINT vat_file_debt_ceiling_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
 
 
 --
@@ -13449,6 +13995,14 @@ ALTER TABLE ONLY maker.vat_file_ilk
 
 
 --
+-- Name: vat_file_ilk vat_file_ilk_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_file_ilk
+    ADD CONSTRAINT vat_file_ilk_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
+
+
+--
 -- Name: vat_flux vat_flux_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -13465,11 +14019,27 @@ ALTER TABLE ONLY maker.vat_flux
 
 
 --
+-- Name: vat_flux vat_flux_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_flux
+    ADD CONSTRAINT vat_flux_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
+
+
+--
 -- Name: vat_fold vat_fold_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.vat_fold
     ADD CONSTRAINT vat_fold_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: vat_fold vat_fold_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_fold
+    ADD CONSTRAINT vat_fold_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
 
 
 --
@@ -13497,11 +14067,27 @@ ALTER TABLE ONLY maker.vat_fork
 
 
 --
+-- Name: vat_fork vat_fork_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_fork
+    ADD CONSTRAINT vat_fork_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
+
+
+--
 -- Name: vat_frob vat_frob_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.vat_frob
     ADD CONSTRAINT vat_frob_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: vat_frob vat_frob_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_frob
+    ADD CONSTRAINT vat_frob_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
 
 
 --
@@ -13529,6 +14115,14 @@ ALTER TABLE ONLY maker.vat_grab
 
 
 --
+-- Name: vat_grab vat_grab_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_grab
+    ADD CONSTRAINT vat_grab_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
+
+
+--
 -- Name: vat_grab vat_grab_urn_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -13542,6 +14136,14 @@ ALTER TABLE ONLY maker.vat_grab
 
 ALTER TABLE ONLY maker.vat_heal
     ADD CONSTRAINT vat_heal_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: vat_heal vat_heal_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_heal
+    ADD CONSTRAINT vat_heal_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
 
 
 --
@@ -13601,11 +14203,27 @@ ALTER TABLE ONLY maker.vat_init
 
 
 --
+-- Name: vat_init vat_init_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_init
+    ADD CONSTRAINT vat_init_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
+
+
+--
 -- Name: vat_move vat_move_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.vat_move
     ADD CONSTRAINT vat_move_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: vat_move vat_move_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_move
+    ADD CONSTRAINT vat_move_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
 
 
 --
@@ -13625,11 +14243,27 @@ ALTER TABLE ONLY maker.vat_slip
 
 
 --
+-- Name: vat_slip vat_slip_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_slip
+    ADD CONSTRAINT vat_slip_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
+
+
+--
 -- Name: vat_suck vat_suck_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.vat_suck
     ADD CONSTRAINT vat_suck_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: vat_suck vat_suck_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_suck
+    ADD CONSTRAINT vat_suck_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
 
 
 --
@@ -13657,6 +14291,14 @@ ALTER TABLE ONLY maker.vow_fess
 
 
 --
+-- Name: vow_fess vow_fess_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_fess
+    ADD CONSTRAINT vow_fess_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
+
+
+--
 -- Name: vow_file vow_file_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -13665,11 +14307,27 @@ ALTER TABLE ONLY maker.vow_file
 
 
 --
+-- Name: vow_file vow_file_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_file
+    ADD CONSTRAINT vow_file_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
+
+
+--
 -- Name: vow_flog vow_flog_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.vow_flog
     ADD CONSTRAINT vow_flog_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: vow_flog vow_flog_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_flog
+    ADD CONSTRAINT vow_flog_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
 
 
 --
@@ -13689,6 +14347,14 @@ ALTER TABLE ONLY maker.yank
 
 
 --
+-- Name: yank yank_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.yank
+    ADD CONSTRAINT yank_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
+
+
+--
 -- Name: full_sync_receipts blocks_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -13705,11 +14371,11 @@ ALTER TABLE ONLY public.checked_headers
 
 
 --
--- Name: full_sync_receipts full_sync_receipts_address_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: full_sync_receipts full_sync_receipts_contract_address_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.full_sync_receipts
-    ADD CONSTRAINT full_sync_receipts_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+    ADD CONSTRAINT full_sync_receipts_contract_address_id_fkey FOREIGN KEY (contract_address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --
@@ -13721,11 +14387,27 @@ ALTER TABLE ONLY public.full_sync_transactions
 
 
 --
--- Name: header_sync_receipts header_sync_receipts_address_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: header_sync_logs header_sync_logs_address_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.header_sync_logs
+    ADD CONSTRAINT header_sync_logs_address_fkey FOREIGN KEY (address) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: header_sync_logs header_sync_logs_header_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.header_sync_logs
+    ADD CONSTRAINT header_sync_logs_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: header_sync_receipts header_sync_receipts_contract_address_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.header_sync_receipts
-    ADD CONSTRAINT header_sync_receipts_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+    ADD CONSTRAINT header_sync_receipts_contract_address_id_fkey FOREIGN KEY (contract_address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --
@@ -13769,10 +14451,10 @@ ALTER TABLE ONLY public.blocks
 
 
 --
--- Name: logs receipts_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: full_sync_logs receipts_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.logs
+ALTER TABLE ONLY public.full_sync_logs
     ADD CONSTRAINT receipts_fk FOREIGN KEY (receipt_id) REFERENCES public.full_sync_receipts(id) ON DELETE CASCADE;
 
 

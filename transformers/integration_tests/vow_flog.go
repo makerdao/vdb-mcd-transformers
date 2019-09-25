@@ -20,16 +20,15 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/vulcanize/mcd_transformers/test_config"
+	"github.com/vulcanize/mcd_transformers/transformers/events/vow_flog"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
-
-	"github.com/vulcanize/mcd_transformers/test_config"
-	"github.com/vulcanize/mcd_transformers/transformers/events/vow_flog"
-	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
 // TODO: replace block number when there is a flog event on the updated Vow
@@ -49,10 +48,10 @@ var _ = XDescribe("VowFlog LogNoteTransformer", func() {
 	})
 
 	vowFlogConfig := transformer.EventTransformerConfig{
-		TransformerName:   mcdConstants.VowFlogLabel,
+		TransformerName:   constants.VowFlogLabel,
 		ContractAddresses: []string{test_data.VowAddress()},
-		ContractAbi:       mcdConstants.VowABI(),
-		Topic:             mcdConstants.VowFlogSignature(),
+		ContractAbi:       constants.VowABI(),
+		Topic:             constants.VowFlogSignature(),
 	}
 
 	It("transforms VowFlog log events", func() {
@@ -70,29 +69,26 @@ var _ = XDescribe("VowFlog LogNoteTransformer", func() {
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
+		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+
 		tr := shared.LogNoteTransformer{
 			Config:     vowFlogConfig,
 			Converter:  &vow_flog.VowFlogConverter{},
 			Repository: &vow_flog.VowFlogRepository{},
 		}.NewLogNoteTransformer(db)
 
-		err = tr.Execute(logs, header)
+		err = tr.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []vowFlogModel
-		err = db.Select(&dbResult, `SELECT era, log_idx, tx_idx from maker.vow_flog`)
+		err = db.Select(&dbResult, `SELECT era from maker.vow_flog`)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))
 		Expect(dbResult[0].Era).To(Equal("0"))
-		Expect(dbResult[0].LogIndex).To(Equal(uint(1)))
-		Expect(dbResult[0].TransactionIndex).To(Equal(uint(8)))
 	})
 })
 
 type vowFlogModel struct {
-	Era              string
-	LogIndex         uint   `db:"log_idx"`
-	TransactionIndex uint   `db:"tx_idx"`
-	Raw              []byte `db:"raw_log"`
+	Era string
 }

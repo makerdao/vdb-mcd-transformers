@@ -17,42 +17,38 @@
 package vat_heal
 
 import (
-	"encoding/json"
-	"errors"
-
-	"github.com/ethereum/go-ethereum/core/types"
-
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 )
 
 type VatHealConverter struct{}
 
-func (VatHealConverter) ToModels(_ string, ethLogs []types.Log) ([]shared.InsertionModel, error) {
+const (
+	logDataRequired   = false
+	numTopicsRequired = 2
+)
+
+func (VatHealConverter) ToModels(_ string, logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
 	var models []shared.InsertionModel
-	for _, ethLog := range ethLogs {
-		err := verifyLog(ethLog)
+	for _, log := range logs {
+		err := shared.VerifyLog(log.Log, numTopicsRequired, logDataRequired)
 		if err != nil {
 			return nil, err
 		}
 
-		radInt := shared.ConvertUint256HexToBigInt(ethLog.Topics[1].Hex())
-
-		rawLogJson, err := json.Marshal(ethLog)
-		if err != nil {
-			return nil, err
-		}
+		radInt := shared.ConvertUint256HexToBigInt(log.Log.Topics[1].Hex())
 
 		model := shared.InsertionModel{
 			SchemaName: "maker",
 			TableName:  "vat_heal",
 			OrderedColumns: []string{
-				"header_id", "rad", "log_idx", "tx_idx", "raw_log",
+				constants.HeaderFK, "rad", constants.LogFK,
 			},
 			ColumnValues: shared.ColumnValues{
-				"rad":     radInt.String(),
-				"log_idx": ethLog.Index,
-				"tx_idx":  ethLog.TxIndex,
-				"raw_log": rawLogJson,
+				"rad":              radInt.String(),
+				constants.HeaderFK: log.HeaderID,
+				constants.LogFK:    log.ID,
 			},
 			ForeignKeyValues: shared.ForeignKeyValues{},
 		}
@@ -60,11 +56,4 @@ func (VatHealConverter) ToModels(_ string, ethLogs []types.Log) ([]shared.Insert
 	}
 
 	return models, nil
-}
-
-func verifyLog(log types.Log) error {
-	if len(log.Topics) < 4 {
-		return errors.New("log missing topics")
-	}
-	return nil
 }

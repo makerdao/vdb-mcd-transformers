@@ -16,8 +16,8 @@
 
 package shared
 
-import "github.com/ethereum/go-ethereum/core/types"
+import "github.com/vulcanize/vulcanizedb/pkg/core"
 
 type LogNoteConverter interface {
-	ToModels(contractAbi string, ethLog []types.Log) ([]InsertionModel, error)
+	ToModels(contractAbi string, ethLog []core.HeaderSyncLog) ([]InsertionModel, error)
 }

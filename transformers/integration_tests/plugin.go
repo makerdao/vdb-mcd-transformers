@@ -17,14 +17,13 @@
 package integration_tests
 
 import (
-	"plugin"
-	"strconv"
-
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/spf13/viper"
-
+	"github.com/vulcanize/mcd_transformers/test_config"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/constants"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/watcher"
 	"github.com/vulcanize/vulcanizedb/pkg/config"
@@ -34,10 +33,8 @@ import (
 	"github.com/vulcanize/vulcanizedb/pkg/fs"
 	p2 "github.com/vulcanize/vulcanizedb/pkg/plugin"
 	"github.com/vulcanize/vulcanizedb/pkg/plugin/helpers"
-
-	"github.com/vulcanize/mcd_transformers/test_config"
-	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
+	"plugin"
+	"time"
 )
 
 var eventConfig = config.Plugin{
@@ -152,7 +149,6 @@ func SetupDBandBC() (*postgres.DB, core.BlockChain) {
 var _ = Describe("Plugin test", func() {
 	var g p2.Generator
 	var goPath, soPath string
-	var err error
 	var db *postgres.DB
 	var hr repositories.HeaderRepository
 	var headerID int64
@@ -161,12 +157,13 @@ var _ = Describe("Plugin test", func() {
 
 	Describe("Event Transformers only", func() {
 		BeforeEach(func() {
-			goPath, soPath, err = eventConfig.GetPluginPaths()
-			Expect(err).ToNot(HaveOccurred())
-			g, err = p2.NewGenerator(eventConfig, dbConfig)
-			Expect(err).ToNot(HaveOccurred())
-			err = g.GenerateExporterPlugin()
-			Expect(err).ToNot(HaveOccurred())
+			var pathErr, initErr, generateErr error
+			goPath, soPath, pathErr = eventConfig.GetPluginPaths()
+			Expect(pathErr).ToNot(HaveOccurred())
+			g, initErr = p2.NewGenerator(eventConfig, dbConfig)
+			Expect(initErr).ToNot(HaveOccurred())
+			generateErr = g.GenerateExporterPlugin()
+			Expect(generateErr).ToNot(HaveOccurred())
 		})
 
 		AfterEach(func() {
@@ -190,7 +187,7 @@ var _ = Describe("Plugin test", func() {
 			It("Loads our generated Exporter and uses it to import an arbitrary set of TransformerInitializers that we can execute over", func() {
 				db, bc := SetupDBandBC()
 				hr = repositories.NewHeaderRepository(db)
-				header1, err := bc.GetHeaderByNumber(12742101)
+				header1, err := bc.GetHeaderByNumber(13171646)
 				Expect(err).ToNot(HaveOccurred())
 				headerID, err = hr.CreateOrUpdateHeader(header1)
 				Expect(err).ToNot(HaveOccurred())
@@ -204,39 +201,41 @@ var _ = Describe("Plugin test", func() {
 				eventTransformerInitializers, _, _ := exporter.Export()
 
 				w := watcher.NewEventWatcher(db, bc)
-				w.AddTransformers(eventTransformerInitializers)
-				err = w.Execute(constants.HeaderMissing)
-				Expect(err).ToNot(HaveOccurred())
+				addErr := w.AddTransformers(eventTransformerInitializers)
+				Expect(addErr).NotTo(HaveOccurred())
 
-				type model struct {
-					Ilk              string `db:"ilk_id"`
-					What             string
-					Flip             string
-					LogIndex         uint   `db:"log_idx"`
-					TransactionIndex uint   `db:"tx_idx"`
-					Raw              []byte `db:"raw_log"`
-					Id               int64  `db:"id"`
-					HeaderId         int64  `db:"header_id"`
-				}
+				var executeErr error
+				go func() {
+					executeErr = w.Execute(constants.HeaderUnchecked)
+				}()
 
-				returned := model{}
-
-				err = db.Get(&returned, `SELECT * FROM maker.cat_file_flip WHERE header_id = $1`, headerID)
-				Expect(err).ToNot(HaveOccurred())
-
-				ilkID, err := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
+				Consistently(func() error {
+					return executeErr
+				}).Should(BeNil())
+				expectedIlkID, err := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
 				Expect(err).NotTo(HaveOccurred())
-				Expect(returned.Ilk).To(Equal(strconv.Itoa(ilkID)))
-				Expect(returned.What).To(Equal("flip"))
-				Expect(returned.Flip).To(Equal("0xe8b1439bbCc5a4Da4A8e938257AEa3a8D18F78ad"))
-				Expect(returned.TransactionIndex).To(Equal(uint(0)))
-				Expect(returned.LogIndex).To(Equal(uint(3)))
+				// including longer timeout because this test takes awhile to populate the db
+				Eventually(func() int64 {
+					var ilkID int64
+					_ = db.Get(&ilkID, `SELECT ilk_id FROM maker.cat_file_flip WHERE header_id = $1`, headerID)
+					return ilkID
+				}, time.Second*30).Should(Equal(expectedIlkID))
+				Eventually(func() string {
+					var what string
+					_ = db.Get(&what, `SELECT what FROM maker.cat_file_flip WHERE header_id = $1`, headerID)
+					return what
+				}).Should(Equal("flip"))
+				Eventually(func() string {
+					var flip string
+					_ = db.Get(&flip, `SELECT flip FROM maker.cat_file_flip WHERE header_id = $1`, headerID)
+					return flip
+				}).Should(Equal("0x02b6c914E29EE4D310e6b8e24340A8A643627D44"))
 			})
 
 			It("rechecks checked headers for event logs", func() {
 				db, bc := SetupDBandBC()
 				hr = repositories.NewHeaderRepository(db)
-				header1, err := bc.GetHeaderByNumber(12742101)
+				header1, err := bc.GetHeaderByNumber(13171646)
 				Expect(err).ToNot(HaveOccurred())
 				headerID, err = hr.CreateOrUpdateHeader(header1)
 				Expect(err).ToNot(HaveOccurred())
@@ -250,29 +249,34 @@ var _ = Describe("Plugin test", func() {
 				eventTransformerInitializers, _, _ := exporter.Export()
 
 				w := watcher.NewEventWatcher(db, bc)
-				w.AddTransformers(eventTransformerInitializers)
-				err = w.Execute(constants.HeaderMissing)
-				Expect(err).ToNot(HaveOccurred())
+				addErr := w.AddTransformers(eventTransformerInitializers)
+				Expect(addErr).NotTo(HaveOccurred())
+				var executeErrOne, executeErrTwo error
 
-				err = w.Execute(constants.HeaderMissing)
-				Expect(err).ToNot(HaveOccurred())
+				go func() {
+					executeErrOne = w.Execute(constants.HeaderUnchecked)
+					executeErrTwo = w.Execute(constants.HeaderUnchecked)
+				}()
 
-				var catFileFlipChecked int
-				err = db.Get(&catFileFlipChecked, `SELECT cat_file_flip FROM public.checked_headers WHERE header_id = $1`, headerID)
-				Expect(err).ToNot(HaveOccurred())
-				Expect(catFileFlipChecked).To(Equal(2))
+				Consistently(func() error {
+					return executeErrOne
+				}).Should(BeNil())
+				Consistently(func() error {
+					return executeErrTwo
+				}).Should(BeNil())
 			})
 		})
 	})
 
 	Describe("Storage Transformers only", func() {
 		BeforeEach(func() {
-			goPath, soPath, err = storageConfig.GetPluginPaths()
-			Expect(err).ToNot(HaveOccurred())
-			g, err = p2.NewGenerator(storageConfig, dbConfig)
-			Expect(err).ToNot(HaveOccurred())
-			err = g.GenerateExporterPlugin()
-			Expect(err).ToNot(HaveOccurred())
+			var pathErr, initErr, generateErr error
+			goPath, soPath, pathErr = storageConfig.GetPluginPaths()
+			Expect(pathErr).ToNot(HaveOccurred())
+			g, initErr = p2.NewGenerator(storageConfig, dbConfig)
+			Expect(initErr).ToNot(HaveOccurred())
+			generateErr = g.GenerateExporterPlugin()
+			Expect(generateErr).ToNot(HaveOccurred())
 		})
 
 		AfterEach(func() {
@@ -316,12 +320,13 @@ var _ = Describe("Plugin test", func() {
 
 	Describe("Event and Storage Transformers in same instance", func() {
 		BeforeEach(func() {
-			goPath, soPath, err = combinedConfig.GetPluginPaths()
-			Expect(err).ToNot(HaveOccurred())
-			g, err = p2.NewGenerator(combinedConfig, dbConfig)
-			Expect(err).ToNot(HaveOccurred())
-			err = g.GenerateExporterPlugin()
-			Expect(err).ToNot(HaveOccurred())
+			var pathErr, initErr, generateErr error
+			goPath, soPath, pathErr = combinedConfig.GetPluginPaths()
+			Expect(pathErr).ToNot(HaveOccurred())
+			g, initErr = p2.NewGenerator(combinedConfig, dbConfig)
+			Expect(initErr).ToNot(HaveOccurred())
+			generateErr = g.GenerateExporterPlugin()
+			Expect(generateErr).ToNot(HaveOccurred())
 		})
 
 		AfterEach(func() {
@@ -345,7 +350,7 @@ var _ = Describe("Plugin test", func() {
 			It("Loads our generated Exporter and uses it to import an arbitrary set of TransformerInitializers and StorageTransformerInitializers that we can execute over", func() {
 				db, bc := SetupDBandBC()
 				hr = repositories.NewHeaderRepository(db)
-				header1, err := bc.GetHeaderByNumber(12742101)
+				header1, err := bc.GetHeaderByNumber(13171646)
 				Expect(err).ToNot(HaveOccurred())
 				headerID, err = hr.CreateOrUpdateHeader(header1)
 				Expect(err).ToNot(HaveOccurred())
@@ -359,33 +364,35 @@ var _ = Describe("Plugin test", func() {
 				eventInitializers, storageInitializers, _ := exporter.Export()
 
 				ew := watcher.NewEventWatcher(db, bc)
-				ew.AddTransformers(eventInitializers)
-				err = ew.Execute(constants.HeaderMissing)
-				Expect(err).ToNot(HaveOccurred())
+				addTransformersErr := ew.AddTransformers(eventInitializers)
+				Expect(addTransformersErr).NotTo(HaveOccurred())
 
-				type model struct {
-					Ilk              string `db:"ilk_id"`
-					What             string
-					Flip             string
-					LogIndex         uint   `db:"log_idx"`
-					TransactionIndex uint   `db:"tx_idx"`
-					Raw              []byte `db:"raw_log"`
-					Id               int64  `db:"id"`
-					HeaderId         int64  `db:"header_id"`
-				}
+				var executeErr error
+				go func() {
+					executeErr = ew.Execute(constants.HeaderUnchecked)
+				}()
 
-				returned := model{}
-
-				err = db.Get(&returned, `SELECT * FROM maker.cat_file_flip WHERE header_id = $1`, headerID)
-				Expect(err).ToNot(HaveOccurred())
-
-				ilkID, err := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
+				Consistently(func() error {
+					return executeErr
+				}).Should(BeNil())
+				expectedIlkID, err := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
 				Expect(err).NotTo(HaveOccurred())
-				Expect(returned.Ilk).To(Equal(strconv.Itoa(ilkID)))
-				Expect(returned.What).To(Equal("flip"))
-				Expect(returned.Flip).To(Equal("0xe8b1439bbCc5a4Da4A8e938257AEa3a8D18F78ad"))
-				Expect(returned.TransactionIndex).To(Equal(uint(0)))
-				Expect(returned.LogIndex).To(Equal(uint(3)))
+				// including longer timeout because this test takes awhile to populate the db
+				Eventually(func() int64 {
+					var ilkID int64
+					_ = db.Get(&ilkID, `SELECT ilk_id FROM maker.cat_file_flip WHERE header_id = $1`, headerID)
+					return ilkID
+				}, time.Second*30).Should(Equal(expectedIlkID))
+				Eventually(func() string {
+					var what string
+					_ = db.Get(&what, `SELECT what FROM maker.cat_file_flip WHERE header_id = $1`, headerID)
+					return what
+				}).Should(Equal("flip"))
+				Eventually(func() string {
+					var flip string
+					_ = db.Get(&flip, `SELECT flip FROM maker.cat_file_flip WHERE header_id = $1`, headerID)
+					return flip
+				}).Should(Equal("0x02b6c914E29EE4D310e6b8e24340A8A643627D44"))
 
 				tailer := fs.FileTailer{Path: viper.GetString("filesystem.storageDiffsPath")}
 				storageFetcher := fetcher.NewCsvTailStorageFetcher(tailer)

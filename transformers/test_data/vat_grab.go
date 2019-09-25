@@ -17,7 +17,8 @@
 package test_data
 
 import (
-	"encoding/json"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
+	"math/rand"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
@@ -27,7 +28,7 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
-var EthVatGrabLogWithPositiveDink = types.Log{
+var rawVatGrabLogWithPositiveDink = types.Log{
 	Address: common.HexToAddress(VatAddress()),
 	Topics: []common.Hash{
 		common.HexToHash(constants.VatGrabSignature()),
@@ -44,21 +45,26 @@ var EthVatGrabLogWithPositiveDink = types.Log{
 	Removed:     false,
 }
 
-var rawVatGrabLogWithPositiveDink, _ = json.Marshal(EthVatGrabLogWithPositiveDink)
+var VatGrabHeaderSyncLogWithPositiveDink = core.HeaderSyncLog{
+	ID:          int64(rand.Int31()),
+	HeaderID:    int64(rand.Int31()),
+	Log:         rawVatGrabLogWithPositiveDink,
+	Transformed: false,
+}
+
 var VatGrabModelWithPositiveDink = shared.InsertionModel{
 	SchemaName: "maker",
 	TableName:  "vat_grab",
 	OrderedColumns: []string{
-		"header_id", string(constants.UrnFK), "v", "w", "dink", "dart", "log_idx", "tx_idx", "raw_log",
+		constants.HeaderFK, string(constants.UrnFK), "v", "w", "dink", "dart", constants.LogFK,
 	},
 	ColumnValues: shared.ColumnValues{
-		"v":       "0x7340e006f4135BA6970D43bf43d88DCAD4e7a8CA",
-		"w":       "0x7526EB4f95e2a1394797Cb38a921Fb1EbA09291B",
-		"dink":    "1000000000000000000000",
-		"dart":    "2000000000000000000000",
-		"log_idx": EthVatGrabLogWithPositiveDink.Index,
-		"tx_idx":  EthVatGrabLogWithPositiveDink.TxIndex,
-		"raw_log": rawVatGrabLogWithPositiveDink,
+		"v":                "0x7340e006f4135BA6970D43bf43d88DCAD4e7a8CA",
+		"w":                "0x7526EB4f95e2a1394797Cb38a921Fb1EbA09291B",
+		"dink":             "1000000000000000000000",
+		"dart":             "2000000000000000000000",
+		constants.HeaderFK: VatGrabHeaderSyncLogWithPositiveDink.HeaderID,
+		constants.LogFK:    VatGrabHeaderSyncLogWithPositiveDink.ID,
 	},
 	ForeignKeyValues: shared.ForeignKeyValues{
 		constants.IlkFK: "0x66616b6520696c6b000000000000000000000000000000000000000000000000",
@@ -66,7 +72,7 @@ var VatGrabModelWithPositiveDink = shared.InsertionModel{
 	},
 }
 
-var EthVatGrabLogWithNegativeDink = types.Log{
+var rawVatGrabLogWithNegativeDink = types.Log{
 	Address: common.HexToAddress(VatAddress()),
 	Topics: []common.Hash{
 		common.HexToHash(constants.VatGrabSignature()),
@@ -83,21 +89,26 @@ var EthVatGrabLogWithNegativeDink = types.Log{
 	Removed:     false,
 }
 
-var rawVatGrabLogWithNegativeDink, _ = json.Marshal(EthVatGrabLogWithNegativeDink)
+var VatGrabHeaderSyncLogWithNegativeDink = core.HeaderSyncLog{
+	ID:          int64(rand.Int31()),
+	HeaderID:    int64(rand.Int31()),
+	Log:         rawVatGrabLogWithNegativeDink,
+	Transformed: false,
+}
+
 var VatGrabModelWithNegativeDink = shared.InsertionModel{
 	SchemaName: "maker",
 	TableName:  "vat_grab",
 	OrderedColumns: []string{
-		"header_id", string(constants.UrnFK), "v", "w", "dink", "dart", "log_idx", "tx_idx", "raw_log",
+		constants.HeaderFK, string(constants.UrnFK), "v", "w", "dink", "dart", constants.LogFK,
 	},
 	ColumnValues: shared.ColumnValues{
-		"v":       "0x7340e006f4135BA6970D43bf43d88DCAD4e7a8CA",
-		"w":       "0x7526EB4f95e2a1394797Cb38a921Fb1EbA09291B",
-		"dink":    "-1000000000000000000000",
-		"dart":    "-2000000000000000000000",
-		"log_idx": EthVatGrabLogWithNegativeDink.Index,
-		"tx_idx":  EthVatGrabLogWithNegativeDink.TxIndex,
-		"raw_log": rawVatGrabLogWithNegativeDink,
+		"v":                "0x7340e006f4135BA6970D43bf43d88DCAD4e7a8CA",
+		"w":                "0x7526EB4f95e2a1394797Cb38a921Fb1EbA09291B",
+		"dink":             "-1000000000000000000000",
+		"dart":             "-2000000000000000000000",
+		constants.HeaderFK: VatGrabHeaderSyncLogWithNegativeDink.HeaderID,
+		constants.LogFK:    VatGrabHeaderSyncLogWithNegativeDink.ID,
 	},
 	ForeignKeyValues: shared.ForeignKeyValues{
 		constants.IlkFK: "0x66616b6520696c6b000000000000000000000000000000000000000000000000",

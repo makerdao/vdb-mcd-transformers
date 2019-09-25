@@ -20,16 +20,15 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/vulcanize/mcd_transformers/test_config"
+	"github.com/vulcanize/mcd_transformers/transformers/events/vow_fess"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
-
-	"github.com/vulcanize/mcd_transformers/test_config"
-	"github.com/vulcanize/mcd_transformers/transformers/events/vow_fess"
-	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
 var _ = XDescribe("VowFess LogNoteTransformer", func() {
@@ -48,10 +47,10 @@ var _ = XDescribe("VowFess LogNoteTransformer", func() {
 	})
 
 	vowFessConfig := transformer.EventTransformerConfig{
-		TransformerName:   mcdConstants.VowFessLabel,
+		TransformerName:   constants.VowFessLabel,
 		ContractAddresses: []string{test_data.VowAddress()},
-		ContractAbi:       mcdConstants.VowABI(),
-		Topic:             mcdConstants.VowFessSignature(),
+		ContractAbi:       constants.VowABI(),
+		Topic:             constants.VowFessSignature(),
 	}
 
 	// TODO: replace block number when there is a fess event on the updated Vow
@@ -71,28 +70,25 @@ var _ = XDescribe("VowFess LogNoteTransformer", func() {
 		Expect(len(logs)).To(Equal(1))
 		Expect(err).NotTo(HaveOccurred())
 
+		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+
 		tr := shared.LogNoteTransformer{
 			Config:     vowFessConfig,
 			Converter:  &vow_fess.VowFessConverter{},
 			Repository: &vow_fess.VowFessRepository{},
 		}.NewLogNoteTransformer(db)
 
-		err = tr.Execute(logs, header)
+		err = tr.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []vowFessModel
-		err = db.Select(&dbResult, `SELECT tab, log_idx, tx_idx from maker.vow_fess`)
+		err = db.Select(&dbResult, `SELECT tab from maker.vow_fess`)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(dbResult[0].Tab).To(Equal("11000000000000000000000"))
-		Expect(dbResult[0].LogIndex).To(Equal(uint(3)))
-		Expect(dbResult[0].TransactionIndex).To(Equal(uint(1)))
 	})
 })
 
 type vowFessModel struct {
-	Tab              string
-	LogIndex         uint   `db:"log_idx"`
-	TransactionIndex uint   `db:"tx_idx"`
-	Raw              []byte `db:"raw_log"`
+	Tab string
 }

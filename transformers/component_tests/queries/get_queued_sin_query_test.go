@@ -47,7 +47,7 @@ var _ = Describe("QueuedSin", func() {
 		fakeEra            = strconv.Itoa(rawEra)
 		fakeHeader         core.Header
 		fakeTab            = strconv.Itoa(int(rand.Int31()))
-		headerID           int64
+		headerID, logId    int64
 		sinMappingMetadata utils.StorageValueMetadata
 		vowRepository      vow.VowStorageRepository
 		headerRepository   repositories.HeaderRepository
@@ -63,6 +63,8 @@ var _ = Describe("QueuedSin", func() {
 		var insertHeaderErr error
 		headerID, insertHeaderErr = headerRepository.CreateOrUpdateHeader(fakeHeader)
 		Expect(insertHeaderErr).NotTo(HaveOccurred())
+		fakeHeaderSyncLog := test_data.CreateTestLog(headerID, db)
+		logId = fakeHeaderSyncLog.ID
 
 		vowRepository = vow.VowStorageRepository{}
 		vowRepository.SetDB(db)
@@ -99,7 +101,9 @@ var _ = Describe("QueuedSin", func() {
 			vowFlogRepository.SetDB(db)
 			vowFlogEvent := test_data.VowFlogModel
 			vowFlogEvent.ColumnValues["era"] = fakeEra
-			insertVowFlogErr := vowFlogRepository.Create(headerID, []shared.InsertionModel{vowFlogEvent})
+			vowFlogEvent.ColumnValues[constants.HeaderFK] = headerID
+			vowFlogEvent.ColumnValues[constants.LogFK] = logId
+			insertVowFlogErr := vowFlogRepository.Create([]shared.InsertionModel{vowFlogEvent})
 			Expect(insertVowFlogErr).NotTo(HaveOccurred())
 
 			var result QueuedSin
@@ -187,23 +191,43 @@ var _ = Describe("QueuedSin", func() {
 			Expect(results[0].Tab).To(Or(Equal(fakeTabNullString), Equal(anotherFakeTabNullString)))
 		})
 
-		It("limits results to latest era if max_results argument is provided", func() {
-			laterEra := strconv.Itoa(rawEra + 1)
-			anotherFakeTab := strconv.Itoa(int(rand.Int31()))
-			anotherSinMappingKeys := map[utils.Key]string{constants.Timestamp: laterEra}
-			anotherSinMappingMetadata := utils.GetStorageValueMetadata(vow.SinMapping, anotherSinMappingKeys, utils.Uint256)
-			insertSinMappingErr := vowRepository.Create(int(fakeHeader.BlockNumber), fakeHeader.Hash, anotherSinMappingMetadata, anotherFakeTab)
-			Expect(insertSinMappingErr).NotTo(HaveOccurred())
+		Describe("result pagination", func() {
+			var laterEra, anotherFakeTab string
 
-			maxResults := 1
-			var results []QueuedSin
-			err := db.Select(&results, `SELECT era, tab, flogged, created, updated FROM api.all_queued_sin($1)`,
-				maxResults)
-			Expect(err).NotTo(HaveOccurred())
+			BeforeEach(func() {
+				laterEra = strconv.Itoa(rawEra + 1)
+				anotherFakeTab = strconv.Itoa(int(rand.Int31()))
+				anotherSinMappingKeys := map[utils.Key]string{constants.Timestamp: laterEra}
+				anotherSinMappingMetadata := utils.GetStorageValueMetadata(vow.SinMapping, anotherSinMappingKeys, utils.Uint256)
 
-			Expect(len(results)).To(Equal(maxResults))
-			Expect(results[0].Era).To(Equal(test_helpers.GetValidNullString(laterEra)))
-			Expect(results[0].Tab).To(Equal(test_helpers.GetValidNullString(anotherFakeTab)))
+				insertSinMappingErr := vowRepository.Create(int(fakeHeader.BlockNumber), fakeHeader.Hash, anotherSinMappingMetadata, anotherFakeTab)
+				Expect(insertSinMappingErr).NotTo(HaveOccurred())
+			})
+
+			It("limits results to latest era if max_results argument is provided", func() {
+				maxResults := 1
+				var results []QueuedSin
+				err := db.Select(&results, `SELECT era, tab, flogged, created, updated FROM api.all_queued_sin($1)`,
+					maxResults)
+				Expect(err).NotTo(HaveOccurred())
+
+				Expect(len(results)).To(Equal(maxResults))
+				Expect(results[0].Era).To(Equal(test_helpers.GetValidNullString(laterEra)))
+				Expect(results[0].Tab).To(Equal(test_helpers.GetValidNullString(anotherFakeTab)))
+			})
+
+			It("offsets results if offset is provided", func() {
+				maxResults := 1
+				resultOffset := 1
+				var results []QueuedSin
+				err := db.Select(&results, `SELECT era, tab, flogged, created, updated FROM api.all_queued_sin($1, $2)`,
+					maxResults, resultOffset)
+				Expect(err).NotTo(HaveOccurred())
+
+				Expect(len(results)).To(Equal(maxResults))
+				Expect(results[0].Era).To(Equal(test_helpers.GetValidNullString(strconv.Itoa(rawEra))))
+				Expect(results[0].Tab).To(Equal(test_helpers.GetValidNullString(fakeTab)))
+			})
 		})
 	})
 })

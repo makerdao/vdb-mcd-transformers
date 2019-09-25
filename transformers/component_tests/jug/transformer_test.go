@@ -19,7 +19,7 @@ var _ = Describe("Executing the transformer", func() {
 	var (
 		db          *postgres.DB
 		err         error
-		ilkID       int
+		ilkID       int64
 		mappings    = jug.JugMappings{StorageRepository: &storage2.MakerStorageRepository{}}
 		repository  = jug.JugStorageRepository{}
 		transformer = storage.Transformer{
@@ -89,7 +89,7 @@ var _ = Describe("Executing the transformer", func() {
 		var ilkDutyResult test_helpers.MappingRes
 		err = db.Get(&ilkDutyResult, `SELECT block_number, block_hash, ilk_id AS key, duty AS value FROM maker.jug_ilk_duty`)
 		Expect(err).NotTo(HaveOccurred())
-		test_helpers.AssertMapping(ilkDutyResult, blockNumber, "0x3f58749d3956984c2b03a84d5c02105a06efa1ad048d8aa97cf8f59aafa8f08b", strconv.Itoa(ilkID), "1000000000000000000000000000")
+		test_helpers.AssertMapping(ilkDutyResult, blockNumber, "0x3f58749d3956984c2b03a84d5c02105a06efa1ad048d8aa97cf8f59aafa8f08b", strconv.FormatInt(ilkID, 10), "1000000000000000000000000000")
 	})
 
 	It("reads in a Jug Ilk Rho storage diff row and persists it", func() {
@@ -107,6 +107,6 @@ var _ = Describe("Executing the transformer", func() {
 		var ilkRhoResult test_helpers.MappingRes
 		err = db.Get(&ilkRhoResult, `SELECT block_number, block_hash, ilk_id AS key, rho AS value FROM maker.jug_ilk_rho`)
 		Expect(err).NotTo(HaveOccurred())
-		test_helpers.AssertMapping(ilkRhoResult, blockNumber, "0x3f58749d3956984c2b03a84d5c02105a06efa1ad048d8aa97cf8f59aafa8f08b", strconv.Itoa(ilkID), "1551968264")
+		test_helpers.AssertMapping(ilkRhoResult, blockNumber, "0x3f58749d3956984c2b03a84d5c02105a06efa1ad048d8aa97cf8f59aafa8f08b", strconv.FormatInt(ilkID, 10), "1551968264")
 	})
 })

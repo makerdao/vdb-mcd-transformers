@@ -17,54 +17,41 @@
 package tick
 
 import (
-	"encoding/json"
-	"errors"
-	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
-
-	"github.com/ethereum/go-ethereum/core/types"
-
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 )
 
 type TickConverter struct{}
 
-func (TickConverter) ToModels(_ string, ethLogs []types.Log) (results []shared.InsertionModel, err error) {
-	for _, ethLog := range ethLogs {
-		validateErr := validateLog(ethLog)
+const (
+	logDataRequired   = false
+	numTopicsRequired = 3
+)
+
+func (TickConverter) ToModels(_ string, logs []core.HeaderSyncLog) (results []shared.InsertionModel, err error) {
+	for _, log := range logs {
+		validateErr := shared.VerifyLog(log.Log, numTopicsRequired, logDataRequired)
 		if validateErr != nil {
 			return nil, validateErr
-		}
-
-		rawLog, jsonErr := json.Marshal(ethLog)
-		if jsonErr != nil {
-			return nil, jsonErr
 		}
 
 		model := shared.InsertionModel{
 			SchemaName: "maker",
 			TableName:  "tick",
 			OrderedColumns: []string{
-				"header_id", "bid_id", string(constants.AddressFK), "log_idx", "tx_idx", "raw_log",
+				constants.HeaderFK, "bid_id", string(constants.AddressFK), constants.LogFK,
 			},
 			ColumnValues: shared.ColumnValues{
-				"bid_id":  ethLog.Topics[2].Big().String(),
-				"log_idx": ethLog.Index,
-				"tx_idx":  ethLog.TxIndex,
-				"raw_log": rawLog,
+				"bid_id":           log.Log.Topics[2].Big().String(),
+				constants.HeaderFK: log.HeaderID,
+				constants.LogFK:    log.ID,
 			},
 			ForeignKeyValues: shared.ForeignKeyValues{
-				constants.AddressFK: ethLog.Address.String(),
+				constants.AddressFK: log.Log.Address.String(),
 			},
 		}
 		results = append(results, model)
 	}
 	return results, err
-}
-
-func validateLog(ethLog types.Log) error {
-	if len(ethLog.Topics) < 3 {
-		return errors.New("flip tick log does not contain expected topics")
-	}
-
-	return nil
 }

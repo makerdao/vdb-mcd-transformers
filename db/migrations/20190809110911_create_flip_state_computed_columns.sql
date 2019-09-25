@@ -25,30 +25,33 @@ $$
 
 -- Extend flip_state with bid events
 -- there are different kinds of flippers, so we need to filter on contract address
-CREATE FUNCTION api.flip_state_bid_events(flip api.flip_state, max_results INTEGER DEFAULT NULL)
+CREATE FUNCTION api.flip_state_bid_events(flip api.flip_state, max_results INTEGER DEFAULT NULL,
+                                          result_offset INTEGER DEFAULT 0)
     RETURNS SETOF api.flip_bid_event AS
 $$
 WITH address_ids AS ( -- get the contract address from flip_ilk table using the ilk_id from flip
     SELECT address_id
     FROM maker.flip_ilk
-             LEFT JOIN maker.ilks ON ilks.id = flip_ilk.ilk_id
-    WHERE ilks.id = flip.ilk_id
-    ORDER BY block_number DESC
+    WHERE ilk_id = flip.ilk_id
     LIMIT 1
-)
-SELECT bid_id, lot, bid_amount, act, block_height, tx_idx, events.contract_address
+),
+     addresses AS (
+         SELECT address
+         FROM public.addresses
+         WHERE id = (SELECT address_id FROM address_ids)
+     )
+SELECT bid_id, lot, bid_amount, act, block_height, events.log_id, events.contract_address
 FROM api.all_flip_bid_events() AS events
-         LEFT JOIN address_ids
-                   ON address_ids.address_id = (SELECT id FROM addresses WHERE address = events.contract_address)
 WHERE bid_id = flip.bid_id
+  AND contract_address = (SELECT address FROM addresses)
 ORDER BY block_height DESC
-LIMIT flip_state_bid_events.max_results
+LIMIT flip_state_bid_events.max_results OFFSET flip_state_bid_events.result_offset
 $$
     LANGUAGE sql
     STABLE;
 
 -- +goose Down
 -- SQL in this section is executed when the migration is rolled back.
-DROP FUNCTION api.flip_state_bid_events(api.flip_state, INTEGER);
+DROP FUNCTION api.flip_state_bid_events(api.flip_state, INTEGER, INTEGER);
 DROP FUNCTION api.flip_state_ilk(api.flip_state);
 DROP FUNCTION api.flip_state_urn(api.flip_state);

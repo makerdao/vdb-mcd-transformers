@@ -17,47 +17,43 @@
 package vat_suck
 
 import (
-	"encoding/json"
-	"errors"
-
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
-
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 )
 
 type VatSuckConverter struct{}
 
-func (VatSuckConverter) ToModels(_ string, ethLogs []types.Log) ([]shared.InsertionModel, error) {
+const (
+	logDataRequired   = false
+	numTopicsRequired = 4
+)
+
+func (VatSuckConverter) ToModels(_ string, logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
 	var models []shared.InsertionModel
-	for _, ethLog := range ethLogs {
-		err := verifyLog(ethLog)
+	for _, log := range logs {
+		err := shared.VerifyLog(log.Log, numTopicsRequired, logDataRequired)
 		if err != nil {
 			return nil, err
 		}
 
-		u := common.BytesToAddress(ethLog.Topics[1].Bytes()).String()
-		v := common.BytesToAddress(ethLog.Topics[2].Bytes()).String()
-		radInt := shared.ConvertUint256HexToBigInt(ethLog.Topics[3].Hex())
-
-		rawLogJson, err := json.Marshal(ethLog)
-		if err != nil {
-			return nil, err
-		}
+		u := common.BytesToAddress(log.Log.Topics[1].Bytes()).String()
+		v := common.BytesToAddress(log.Log.Topics[2].Bytes()).String()
+		radInt := shared.ConvertUint256HexToBigInt(log.Log.Topics[3].Hex())
 
 		model := shared.InsertionModel{
 			SchemaName: "maker",
 			TableName:  "vat_suck",
 			OrderedColumns: []string{
-				"header_id", "u", "v", "rad", "log_idx", "tx_idx", "raw_log",
+				constants.HeaderFK, "u", "v", "rad", constants.LogFK,
 			},
 			ColumnValues: shared.ColumnValues{
-				"u":       u,
-				"v":       v,
-				"rad":     radInt.String(),
-				"log_idx": ethLog.Index,
-				"tx_idx":  ethLog.TxIndex,
-				"raw_log": rawLogJson,
+				"u":                u,
+				"v":                v,
+				"rad":              radInt.String(),
+				constants.HeaderFK: log.HeaderID,
+				constants.LogFK:    log.ID,
 			},
 			ForeignKeyValues: shared.ForeignKeyValues{},
 		}
@@ -65,11 +61,4 @@ func (VatSuckConverter) ToModels(_ string, ethLogs []types.Log) ([]shared.Insert
 	}
 
 	return models, nil
-}
-
-func verifyLog(log types.Log) error {
-	if len(log.Topics) < 4 {
-		return errors.New("log missing topics")
-	}
-	return nil
 }

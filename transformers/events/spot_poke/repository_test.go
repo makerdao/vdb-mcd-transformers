@@ -22,92 +22,130 @@ import (
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/events/spot_poke"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
-	"github.com/vulcanize/mcd_transformers/transformers/test_data/shared_behaviors"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
-	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres/repositories"
-	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 	"strconv"
 )
 
 var _ = Describe("Spot Poke repository", func() {
-	var (
-		repository spot_poke.SpotPokeRepository
-		db         *postgres.DB
-	)
-
-	BeforeEach(func() {
-		db = test_config.NewTestDB(test_config.NewTestNode())
-		test_config.CleanTestDB(db)
-		repository = spot_poke.SpotPokeRepository{}
-		repository.SetDB(db)
-	})
 
 	Describe("Create", func() {
-		modelWithDifferentLogIdx := test_data.SpotPokeModel
-		modelWithDifferentLogIdx.LogIndex++
-		inputs := shared_behaviors.CreateBehaviorInputs{
-			CheckedHeaderColumnName:  constants.SpotPokeLabel,
-			LogEventTableName:        "maker.spot_poke",
-			TestModel:                test_data.SpotPokeModel,
-			ModelWithDifferentLogIdx: modelWithDifferentLogIdx,
-			Repository:               &repository,
-		}
+		var (
+			spotPokeRepository spot_poke.SpotPokeRepository
+			db                 *postgres.DB
+			headerID, logID    int64
+			model              spot_poke.SpotPokeModel
+		)
 
-		shared_behaviors.SharedRepositoryCreateBehaviors(&inputs)
+		BeforeEach(func() {
+			db = test_config.NewTestDB(test_config.NewTestNode())
+			test_config.CleanTestDB(db)
+			spotPokeRepository = spot_poke.SpotPokeRepository{}
+			spotPokeRepository.SetDB(db)
+			headerID = test_data.CreateTestHeader(db)
+			spotPokeLog := test_data.CreateTestLog(headerID, db)
+			logID = spotPokeLog.ID
+			model = test_data.SpotPokeModel
+			model.HeaderID = headerID
+			model.LogID = logID
+		})
 
 		It("persists a spot poke record", func() {
-			headerRepository := repositories.NewHeaderRepository(db)
-			headerID, err := headerRepository.CreateOrUpdateHeader(fakes.FakeHeader)
-			Expect(err).NotTo(HaveOccurred())
-
-			err = repository.Create(headerID, []interface{}{test_data.SpotPokeModel})
-			Expect(err).NotTo(HaveOccurred())
+			insertErr := spotPokeRepository.Create([]interface{}{model})
+			Expect(insertErr).NotTo(HaveOccurred())
 
 			ilkID, err := shared.GetOrCreateIlk(test_data.SpotPokeModel.Ilk, db)
 			Expect(err).NotTo(HaveOccurred())
 
 			var dbSpotPoke spot_poke.SpotPokeModel
-			err = db.Get(&dbSpotPoke, `SELECT ilk_id, value, spot, log_idx, tx_idx, raw_log FROM maker.spot_poke WHERE header_id = $1`, headerID)
+			err = db.Get(&dbSpotPoke, `SELECT header_id, log_id, ilk_id, value, spot, log_id FROM maker.spot_poke WHERE header_id = $1`, headerID)
 			Expect(err).NotTo(HaveOccurred())
-			Expect(dbSpotPoke.Ilk).To(Equal(strconv.Itoa(ilkID)))
+			Expect(dbSpotPoke.HeaderID).To(Equal(headerID))
+			Expect(dbSpotPoke.LogID).To(Equal(logID))
+			Expect(dbSpotPoke.Ilk).To(Equal(strconv.FormatInt(ilkID, 10)))
 			Expect(dbSpotPoke.Value).To(Equal(test_data.SpotPokeModel.Value))
 			Expect(dbSpotPoke.Spot).To(Equal(test_data.SpotPokeModel.Spot))
-			Expect(dbSpotPoke.LogIndex).To(Equal(test_data.SpotPokeModel.LogIndex))
-			Expect(dbSpotPoke.TransactionIndex).To(Equal(test_data.SpotPokeModel.TransactionIndex))
-			Expect(dbSpotPoke.Raw).To(MatchJSON(test_data.SpotPokeModel.Raw))
+		})
+
+		It("marks log as transformed", func() {
+			insertErr := spotPokeRepository.Create([]interface{}{model})
+			Expect(insertErr).NotTo(HaveOccurred())
+
+			var logTransformed bool
+			getErr := db.Get(&logTransformed, `SELECT transformed FROM public.header_sync_logs WHERE id = $1`, logID)
+			Expect(getErr).NotTo(HaveOccurred())
+			Expect(logTransformed).To(BeTrue())
+		})
+
+		It("allows for multiple log events of the same type in one transaction if they have different log indexes", func() {
+			modelWithDifferentLogID := test_data.SpotPokeModel
+			modelWithDifferentLogID.HeaderID = headerID
+			spotPokeLogTwo := test_data.CreateTestLog(headerID, db)
+			modelWithDifferentLogID.LogID = spotPokeLogTwo.ID
+
+			insertOneErr := spotPokeRepository.Create([]interface{}{model})
+			Expect(insertOneErr).NotTo(HaveOccurred())
+
+			insertTwoErr := spotPokeRepository.Create([]interface{}{modelWithDifferentLogID})
+			Expect(insertTwoErr).NotTo(HaveOccurred())
+		})
+
+		It("handles events with the same header_id + log_id combo by upserting", func() {
+			insertOneErr := spotPokeRepository.Create([]interface{}{model})
+			Expect(insertOneErr).NotTo(HaveOccurred())
+
+			insertTwoErr := spotPokeRepository.Create([]interface{}{model})
+			Expect(insertTwoErr).NotTo(HaveOccurred())
+		})
+
+		It("removes the log event record if the corresponding header is deleted", func() {
+			insertErr := spotPokeRepository.Create([]interface{}{model})
+			Expect(insertErr).NotTo(HaveOccurred())
+
+			_, deleteErr := db.Exec(`DELETE FROM headers WHERE id = $1`, headerID)
+			Expect(deleteErr).NotTo(HaveOccurred())
+
+			var count int
+			getErr := db.QueryRow(`SELECT count(*) FROM maker.spot_poke`).Scan(&count)
+			Expect(getErr).NotTo(HaveOccurred())
+			Expect(count).To(Equal(0))
+		})
+
+		It("returns an error if model is of wrong type", func() {
+			insertErr := spotPokeRepository.Create([]interface{}{test_data.WrongModel{}})
+
+			Expect(insertErr).To(HaveOccurred())
+			Expect(insertErr.Error()).To(ContainSubstring("model of type"))
 		})
 
 		It("rolls back the transaction if insertion fails", func() {
-			headerRepository := repositories.NewHeaderRepository(db)
-			headerID, err := headerRepository.CreateOrUpdateHeader(fakes.FakeHeader)
-			Expect(err).NotTo(HaveOccurred())
-
 			badSpotPokeModel := spot_poke.SpotPokeModel{}
+			badSpotPokeModel.HeaderID = headerID
 
-			err = repository.Create(headerID, []interface{}{test_data.SpotPokeModel, badSpotPokeModel})
-			Expect(err).To(HaveOccurred())
-			Expect(err.Error()).To(ContainSubstring("invalid input syntax for type numeric"))
+			insertErr := spotPokeRepository.Create([]interface{}{model, badSpotPokeModel})
+			Expect(insertErr).To(HaveOccurred())
+			Expect(insertErr.Error()).To(ContainSubstring("invalid input syntax for type numeric"))
 
 			var spotPokeCount int
-			err = db.Get(&spotPokeCount, `SELECT count(*) FROM maker.spot_poke`)
-			Expect(err).NotTo(HaveOccurred())
+			getOneErr := db.Get(&spotPokeCount, `SELECT count(*) FROM maker.spot_poke`)
+			Expect(getOneErr).NotTo(HaveOccurred())
 			Expect(spotPokeCount).To(Equal(0))
 
 			var ilkCount int
-			err = db.Get(&ilkCount, `SELECT count(*) FROM maker.ilks`)
-			Expect(err).NotTo(HaveOccurred())
+			getTwoErr := db.Get(&ilkCount, `SELECT count(*) FROM maker.ilks`)
+			Expect(getTwoErr).NotTo(HaveOccurred())
 			Expect(ilkCount).To(Equal(0))
 		})
-	})
 
-	Describe("MarkHeaderChecked", func() {
-		inputs := shared_behaviors.MarkedHeaderCheckedBehaviorInputs{
-			CheckedHeaderColumnName: constants.SpotPokeLabel,
-			Repository:              &repository,
-		}
+		It("rolls back the transaction if the given model is of the wrong type", func() {
+			insertErr := spotPokeRepository.Create([]interface{}{model, test_data.WrongModel{}})
+			Expect(insertErr).To(HaveOccurred())
+			Expect(insertErr.Error()).To(ContainSubstring("model of type"))
 
-		shared_behaviors.SharedRepositoryMarkHeaderCheckedBehaviors(&inputs)
+			var count int
+			getErr := db.QueryRow(`SELECT count(*) FROM maker.spot_poke`).Scan(&count)
+			Expect(getErr).NotTo(HaveOccurred())
+			Expect(count).To(Equal(0))
+		})
 	})
 })

@@ -17,39 +17,37 @@
 package jug_drip
 
 import (
-	"encoding/json"
-	"errors"
-
-	"github.com/ethereum/go-ethereum/core/types"
-
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 )
 
 type JugDripConverter struct{}
 
-func (JugDripConverter) ToModels(_ string, ethLogs []types.Log) ([]shared.InsertionModel, error) {
+const (
+	logDataRequired   = false
+	numTopicsRequired = 3
+)
+
+func (JugDripConverter) ToModels(_ string, logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
 	var models []shared.InsertionModel
-	for _, ethLog := range ethLogs {
-		err := verifyLog(ethLog)
+	for _, log := range logs {
+		err := shared.VerifyLog(log.Log, numTopicsRequired, logDataRequired)
 		if err != nil {
 			return nil, err
 		}
-		ilk := ethLog.Topics[2].Hex()
-		raw, err := json.Marshal(ethLog)
-		if err != nil {
-			return nil, err
-		}
+
+		ilk := log.Log.Topics[2].Hex()
+
 		model := shared.InsertionModel{
 			SchemaName: "maker",
 			TableName:  "jug_drip",
 			OrderedColumns: []string{
-				"header_id", string(constants.IlkFK), "log_idx", "tx_idx", "raw_log",
+				constants.HeaderFK, string(constants.IlkFK), constants.LogFK,
 			},
 			ColumnValues: shared.ColumnValues{
-				"log_idx": ethLog.Index,
-				"tx_idx":  ethLog.TxIndex,
-				"raw_log": raw,
+				constants.HeaderFK: log.HeaderID,
+				constants.LogFK:    log.ID,
 			},
 			ForeignKeyValues: shared.ForeignKeyValues{
 				constants.IlkFK: ilk,
@@ -58,11 +56,4 @@ func (JugDripConverter) ToModels(_ string, ethLogs []types.Log) ([]shared.Insert
 		models = append(models, model)
 	}
 	return models, nil
-}
-
-func verifyLog(log types.Log) error {
-	if len(log.Topics) < 3 {
-		return errors.New("log missing topics")
-	}
-	return nil
 }

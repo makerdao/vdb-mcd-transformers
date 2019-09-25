@@ -17,21 +17,19 @@
 package integration_tests
 
 import (
-	"github.com/vulcanize/mcd_transformers/transformers/test_data"
-	"strconv"
-
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/vulcanize/mcd_transformers/test_config"
+	"github.com/vulcanize/mcd_transformers/transformers/events/jug_file/ilk"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
-
-	"github.com/vulcanize/mcd_transformers/test_config"
-	"github.com/vulcanize/mcd_transformers/transformers/events/jug_file/ilk"
-	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"strconv"
 )
 
 var _ = Describe("Jug File Ilk LogNoteTransformer", func() {
@@ -50,14 +48,14 @@ var _ = Describe("Jug File Ilk LogNoteTransformer", func() {
 	})
 
 	jugFileIlkConfig := transformer.EventTransformerConfig{
-		TransformerName:   mcdConstants.JugFileIlkLabel,
+		TransformerName:   constants.JugFileIlkLabel,
 		ContractAddresses: []string{test_data.JugAddress()},
-		ContractAbi:       mcdConstants.JugABI(),
-		Topic:             mcdConstants.JugFileIlkSignature(),
+		ContractAbi:       constants.JugABI(),
+		Topic:             constants.JugFileIlkSignature(),
 	}
 
 	It("transforms jug file ilk log events", func() {
-		blockNumber := int64(12742336)
+		blockNumber := int64(13171964)
 		jugFileIlkConfig.StartingBlockNumber = blockNumber
 		jugFileIlkConfig.EndingBlockNumber = blockNumber
 
@@ -78,7 +76,9 @@ var _ = Describe("Jug File Ilk LogNoteTransformer", func() {
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
-		err = tr.Execute(logs, header)
+		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+
+		err = tr.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []jugFileIlkModel
@@ -86,19 +86,16 @@ var _ = Describe("Jug File Ilk LogNoteTransformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))
-		ilkID, err := shared.GetOrCreateIlk("0x474e542d41000000000000000000000000000000000000000000000000000000", db)
+		ilkID, err := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
-		Expect(dbResult[0].Ilk).To(Equal(strconv.Itoa(ilkID)))
+		Expect(dbResult[0].Ilk).To(Equal(strconv.FormatInt(ilkID, 10)))
 		Expect(dbResult[0].What).To(Equal("duty"))
-		Expect(dbResult[0].Data).To(Equal("1000000002732676825177582095"))
+		Expect(dbResult[0].Data).To(Equal("1000000001547125957863212448"))
 	})
 })
 
 type jugFileIlkModel struct {
-	Ilk              string `db:"ilk_id"`
-	What             string
-	Data             string
-	LogIndex         uint   `db:"log_idx"`
-	TransactionIndex uint   `db:"tx_idx"`
-	Raw              []byte `db:"raw_log"`
+	Ilk  string `db:"ilk_id"`
+	What string
+	Data string
 }

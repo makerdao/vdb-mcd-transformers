@@ -18,7 +18,6 @@ package deal_test
 
 import (
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
@@ -26,23 +25,24 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/events/deal"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 )
 
 var _ = Describe("Flip Deal Converter", func() {
 	var converter = deal.DealConverter{}
 	It("converts logs to models", func() {
-		models, err := converter.ToModels(constants.FlipABI(), []types.Log{test_data.DealLogNote})
+		models, err := converter.ToModels(constants.FlipABI(), []core.HeaderSyncLog{test_data.DealHeaderSyncLog})
 		Expect(err).NotTo(HaveOccurred())
 		Expect(models).To(Equal([]shared.InsertionModel{test_data.DealModel}))
 	})
 
 	It("returns an error if the expected amount of topics aren't in the log", func() {
-		invalidLog := test_data.DealLogNote
-		invalidLog.Topics = []common.Hash{}
+		invalidLog := test_data.DealHeaderSyncLog
+		invalidLog.Log.Topics = []common.Hash{}
 
-		_, err := converter.ToModels(constants.FlipABI(), []types.Log{invalidLog})
+		_, err := converter.ToModels(constants.FlipABI(), []core.HeaderSyncLog{invalidLog})
 
 		Expect(err).To(HaveOccurred())
-		Expect(err).To(MatchError("deal log does not contain expected topics"))
+		Expect(err).To(MatchError(shared.ErrLogMissingTopics(3, 0)))
 	})
 })

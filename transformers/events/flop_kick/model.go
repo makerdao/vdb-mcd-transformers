@@ -17,12 +17,11 @@
 package flop_kick
 
 type Model struct {
-	BidId            string `db:"bid_id"`
-	Lot              string
-	Bid              string
-	Gal              string
-	ContractAddress  string `db:"address_id"`
-	TransactionIndex uint   `db:"tx_idx"`
-	LogIndex         uint   `db:"log_idx"`
-	Raw              []byte `db:"raw_log"`
+	BidId           string `db:"bid_id"`
+	Lot             string
+	Bid             string
+	Gal             string
+	ContractAddress string `db:"address_id"`
+	HeaderID        int64  `db:"header_id"`
+	LogID           int64  `db:"log_id"`
 }

@@ -5,18 +5,18 @@ CREATE TYPE api.flip_bid_event AS (
     bid_amount NUMERIC,
     act api.bid_act,
     block_height BIGINT,
-    tx_idx INTEGER,
+    log_id BIGINT,
     contract_address TEXT
     );
 
 COMMENT ON COLUMN api.flip_bid_event.block_height
     IS E'@omit';
-COMMENT ON COLUMN api.flip_bid_event.tx_idx
+COMMENT ON COLUMN api.flip_bid_event.log_id
     IS E'@omit';
 COMMENT ON COLUMN api.flip_bid_event.contract_address
     IS E'@omit';
 
-CREATE FUNCTION api.all_flip_bid_events(max_results INTEGER DEFAULT NULL)
+CREATE FUNCTION api.all_flip_bid_events(max_results INTEGER DEFAULT NULL, result_offset INTEGER DEFAULT 0)
     RETURNS SETOF api.flip_bid_event AS
 $$
 WITH address_ids AS (
@@ -29,7 +29,7 @@ WITH address_ids AS (
                 flip_bid_bid.bid                                           AS bid_amount,
                 'deal'::api.bid_act                                        AS act,
                 headers.block_number                                       AS block_height,
-                tx_idx,
+                log_id,
                 (SELECT address FROM addresses WHERE id = deal.address_id) AS contract_address
          FROM maker.deal
                   LEFT JOIN headers ON deal.header_id = headers.id
@@ -47,7 +47,7 @@ WITH address_ids AS (
                 flip_bid_bid.bid     AS bid_amount,
                 'yank'::api.bid_act  AS act,
                 headers.block_number AS block_height,
-                tx_idx,
+                log_id,
                 (SELECT address FROM addresses WHERE id = yank.address_id)
          FROM maker.yank
                   LEFT JOIN headers ON yank.header_id = headers.id
@@ -65,7 +65,7 @@ WITH address_ids AS (
                 flip_bid_bid.bid     AS bid_amount,
                 'tick'::api.bid_act  AS act,
                 headers.block_number AS block_height,
-                tx_idx,
+                log_id,
                 (SELECT address FROM addresses WHERE id = tick.address_id)
          FROM maker.tick
                   LEFT JOIN headers on tick.header_id = headers.id
@@ -83,7 +83,7 @@ SELECT flip_kick.bid_id,
        bid                 AS                                          bid_amount,
        'kick'::api.bid_act AS                                          act,
        block_number        AS                                          block_height,
-       tx_idx,
+       log_id,
        (SELECT address FROM addresses WHERE id = flip_kick.address_id) s
 FROM maker.flip_kick
          LEFT JOIN headers ON flip_kick.header_id = headers.id
@@ -93,7 +93,7 @@ SELECT bid_id,
        bid                 AS bid_amount,
        'tend'::api.bid_act AS act,
        block_number        AS block_height,
-       tx_idx,
+       log_id,
        (SELECT address FROM addresses WHERE id = tend.address_id)
 FROM maker.tend
          LEFT JOIN headers on tend.header_id = headers.id
@@ -104,7 +104,7 @@ SELECT bid_id,
        bid                 AS bid_amount,
        'dent'::api.bid_act AS act,
        block_number        AS block_height,
-       tx_idx,
+       log_id,
        (SELECT address FROM addresses WHERE id = dent.address_id)
 FROM maker.dent
          LEFT JOIN headers on dent.header_id = headers.id
@@ -119,10 +119,10 @@ UNION
 SELECT *
 FROM ticks
 ORDER BY block_height DESC
-LIMIT all_flip_bid_events.max_results
+LIMIT all_flip_bid_events.max_results OFFSET all_flip_bid_events.result_offset
 $$
     LANGUAGE sql
     STABLE;
 -- +goose Down
-DROP FUNCTION api.all_flip_bid_events(INTEGER);
+DROP FUNCTION api.all_flip_bid_events(INTEGER, INTEGER);
 DROP TYPE api.flip_bid_event CASCADE;

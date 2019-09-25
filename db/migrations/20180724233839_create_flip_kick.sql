@@ -10,10 +10,8 @@ CREATE TABLE maker.flip_kick
     usr        TEXT,
     gal        TEXT,
     address_id INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
-    tx_idx     INTEGER NOT NULL,
-    log_idx    INTEGER NOT NULL,
-    raw_log    JSONB,
-    UNIQUE (header_id, tx_idx, log_idx)
+    log_id     BIGINT NOT NULL REFERENCES header_sync_logs (id) ON DELETE CASCADE,
+    UNIQUE (header_id, log_id)
 );
 
 -- prevent naming conflict with maker.flip_kicks in postgraphile
@@ -26,8 +24,6 @@ CREATE INDEX flip_kick_bid_id_index
 CREATE INDEX flip_kick_address_id_index
     ON maker.flip_kick (address_id);
 
-ALTER TABLE public.checked_headers
-    ADD COLUMN flip_kick INTEGER NOT NULL DEFAULT 0;
 
 -- +goose Down
 DROP INDEX maker.flip_kick_address_id_index;
@@ -35,6 +31,3 @@ DROP INDEX maker.flip_kick_bid_id_index;
 DROP INDEX maker.flip_kick_header_index;
 
 DROP TABLE maker.flip_kick;
-
-ALTER TABLE public.checked_headers
-    DROP COLUMN flip_kick;

@@ -93,7 +93,7 @@ var _ = Describe("Executing the transformer", func() {
 	Describe("ilk", func() {
 		var (
 			ilk    string
-			ilkID  int
+			ilkID  int64
 			ilkErr error
 		)
 
@@ -118,7 +118,7 @@ var _ = Describe("Executing the transformer", func() {
 			var ilkFlipResult test_helpers.MappingRes
 			err = db.Get(&ilkFlipResult, `SELECT block_number, block_hash, ilk_id AS key, flip AS value FROM maker.cat_ilk_flip`)
 			Expect(err).NotTo(HaveOccurred())
-			test_helpers.AssertMapping(ilkFlipResult, blockNumber, "0x88aa77e1bdd6f06c304b8f674a10689c8b96e48deccb2e358597198e8a96a3ef", strconv.Itoa(ilkID), "0xB88d2655abA486A06e638707FBEbD858D430AC6E")
+			test_helpers.AssertMapping(ilkFlipResult, blockNumber, "0x88aa77e1bdd6f06c304b8f674a10689c8b96e48deccb2e358597198e8a96a3ef", strconv.FormatInt(ilkID, 10), "0xB88d2655abA486A06e638707FBEbD858D430AC6E")
 		})
 
 		It("reads in a Cat Ilk Chop storage diff row and persists it", func() {
@@ -136,7 +136,7 @@ var _ = Describe("Executing the transformer", func() {
 			var ilkChopResult test_helpers.MappingRes
 			err = db.Get(&ilkChopResult, `SELECT block_number, block_hash, ilk_id AS key, chop AS value FROM maker.cat_ilk_chop`)
 			Expect(err).NotTo(HaveOccurred())
-			test_helpers.AssertMapping(ilkChopResult, blockNumber, "0x88aa77e1bdd6f06c304b8f674a10689c8b96e48deccb2e358597198e8a96a3ef", strconv.Itoa(ilkID), "1000000000000000000000000000")
+			test_helpers.AssertMapping(ilkChopResult, blockNumber, "0x88aa77e1bdd6f06c304b8f674a10689c8b96e48deccb2e358597198e8a96a3ef", strconv.FormatInt(ilkID, 10), "1000000000000000000000000000")
 		})
 
 		It("reads in a Cat Ilk Lump storage diff row and persists it", func() {
@@ -154,7 +154,7 @@ var _ = Describe("Executing the transformer", func() {
 			var ilkLumpResult test_helpers.MappingRes
 			err = db.Get(&ilkLumpResult, `SELECT block_number, block_hash, ilk_id AS key, lump AS value FROM maker.cat_ilk_lump`)
 			Expect(err).NotTo(HaveOccurred())
-			test_helpers.AssertMapping(ilkLumpResult, blockNumber, "0x88aa77e1bdd6f06c304b8f674a10689c8b96e48deccb2e358597198e8a96a3ef", strconv.Itoa(ilkID), "10000000000000000000000000000000000000000000000000")
+			test_helpers.AssertMapping(ilkLumpResult, blockNumber, "0x88aa77e1bdd6f06c304b8f674a10689c8b96e48deccb2e358597198e8a96a3ef", strconv.FormatInt(ilkID, 10), "10000000000000000000000000000000000000000000000000")
 		})
 	})
 })

@@ -17,31 +17,29 @@
 package integration_tests
 
 import (
-	"github.com/vulcanize/mcd_transformers/transformers/test_data"
-	"strconv"
-
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
-
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/events/jug_init"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/mcd_transformers/transformers/test_data"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
+	"strconv"
 )
 
 var _ = Describe("JugInit LogNoteTransformer", func() {
 	jugInitConfig := transformer.EventTransformerConfig{
-		TransformerName:   mcdConstants.JugInitLabel,
+		TransformerName:   constants.JugInitLabel,
 		ContractAddresses: []string{test_data.JugAddress()},
-		ContractAbi:       mcdConstants.JugABI(),
-		Topic:             mcdConstants.JugInitSignature(),
+		ContractAbi:       constants.JugABI(),
+		Topic:             constants.JugInitSignature(),
 	}
 
 	It("transforms jug init log events", func() {
-		blockNumber := int64(12742151)
+		blockNumber := int64(13171646)
 		jugInitConfig.StartingBlockNumber = blockNumber
 		jugInitConfig.EndingBlockNumber = blockNumber
 
@@ -63,13 +61,15 @@ var _ = Describe("JugInit LogNoteTransformer", func() {
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
+		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+
 		transformer := shared.LogNoteTransformer{
 			Config:     jugInitConfig,
 			Converter:  &jug_init.JugInitConverter{},
 			Repository: &jug_init.JugInitRepository{},
 		}.NewLogNoteTransformer(db)
 
-		err = transformer.Execute(logs, header)
+		err = transformer.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResults []JugInitModel
@@ -78,15 +78,12 @@ var _ = Describe("JugInit LogNoteTransformer", func() {
 
 		Expect(len(dbResults)).To(Equal(1))
 		dbResult := dbResults[0]
-		ilkID, err := shared.GetOrCreateIlk("0x474e542d41000000000000000000000000000000000000000000000000000000", db)
+		ilkID, err := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
-		Expect(dbResult.Ilk).To(Equal(strconv.Itoa(ilkID)))
+		Expect(dbResult.Ilk).To(Equal(strconv.FormatInt(ilkID, 10)))
 	})
 })
 
 type JugInitModel struct {
-	Ilk              string `db:"ilk_id"`
-	LogIndex         uint   `db:"log_idx"`
-	TransactionIndex uint   `db:"tx_idx"`
-	Raw              []byte `db:"raw_log"`
+	Ilk string `db:"ilk_id"`
 }

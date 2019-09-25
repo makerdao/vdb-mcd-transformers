@@ -80,9 +80,10 @@ var _ = XDescribe("Tick LogNoteTransformer", func() {
 
 		logs, err := logFetcher.FetchLogs(addresses, topics, header)
 		Expect(err).NotTo(HaveOccurred())
+		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
 
 		transformer := initializer.NewLogNoteTransformer(db)
-		err = transformer.Execute(logs, header)
+		err = transformer.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []tickModel
@@ -105,9 +106,10 @@ var _ = XDescribe("Tick LogNoteTransformer", func() {
 
 		logs, err := logFetcher.FetchLogs(addresses, topics, header)
 		Expect(err).NotTo(HaveOccurred())
+		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
 
 		transformer := initializer.NewLogNoteTransformer(db)
-		err = transformer.Execute(logs, header)
+		err = transformer.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []tickModel

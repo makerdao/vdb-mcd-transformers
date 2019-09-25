@@ -20,27 +20,25 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/vulcanize/mcd_transformers/transformers/test_data"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
-
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_heal"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/mcd_transformers/transformers/test_data"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 )
 
-// TODO: Replace block number once there's a heal event on the updated Vat
-var _ = XDescribe("VatHeal Transformer", func() {
+var _ = Describe("VatHeal Transformer", func() {
 	vatHealConfig := transformer.EventTransformerConfig{
-		TransformerName:   mcdConstants.VatHealLabel,
+		TransformerName:   constants.VatHealLabel,
 		ContractAddresses: []string{test_data.VatAddress()},
-		ContractAbi:       mcdConstants.VatABI(),
-		Topic:             mcdConstants.VatHealSignature(),
+		ContractAbi:       constants.VatABI(),
+		Topic:             constants.VatHealSignature(),
 	}
 
 	It("transforms VatHeal log events", func() {
-		blockNumber := int64(10921610)
+		blockNumber := int64(13452194)
 		vatHealConfig.StartingBlockNumber = blockNumber
 		vatHealConfig.EndingBlockNumber = blockNumber
 
@@ -62,28 +60,25 @@ var _ = XDescribe("VatHeal Transformer", func() {
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
+		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+
 		tr := shared.LogNoteTransformer{
 			Config:     vatHealConfig,
 			Converter:  &vat_heal.VatHealConverter{},
 			Repository: &vat_heal.VatHealRepository{},
 		}.NewLogNoteTransformer(db)
 
-		err = tr.Execute(logs, header)
+		err = tr.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 
-		var dbResults []vatHealModel
-		err = db.Select(&dbResults, `SELECT urn, v, rad from maker.vat_heal`)
+		var dbResult vatHealModel
+		err = db.Get(&dbResult, `SELECT rad from maker.vat_heal`)
 		Expect(err).NotTo(HaveOccurred())
 
-		Expect(len(dbResults)).To(Equal(1))
-		dbResult := dbResults[0]
-		Expect(dbResult.Rad).To(Equal("0"))
+		Expect(dbResult.Rad).To(Equal("225599427701338117775213711537013756055330"))
 	})
 })
 
 type vatHealModel struct {
-	Rad              string
-	LogIndex         uint   `db:"log_idx"`
-	TransactionIndex uint   `db:"tx_idx"`
-	Raw              []byte `db:"raw_log"`
+	Rad string
 }

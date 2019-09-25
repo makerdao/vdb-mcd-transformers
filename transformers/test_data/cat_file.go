@@ -17,7 +17,8 @@
 package test_data
 
 import (
-	"encoding/json"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
+	"math/rand"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
@@ -28,7 +29,7 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
-var EthCatFileChopLog = types.Log{
+var rawCatFileChopLog = types.Log{
 	Address: common.HexToAddress(CatAddress()),
 	Topics: []common.Hash{
 		common.HexToHash(constants.CatFileChopLumpSignature()),
@@ -45,26 +46,31 @@ var EthCatFileChopLog = types.Log{
 	Removed:     false,
 }
 
-var rawCatFileChopLog, _ = json.Marshal(EthCatFileChopLog)
+var CatFileChopHeaderSyncLog = core.HeaderSyncLog{
+	ID:          int64(rand.Int31()),
+	HeaderID:    int64(rand.Int31()),
+	Log:         rawCatFileChopLog,
+	Transformed: false,
+}
+
 var CatFileChopModel = shared.InsertionModel{
 	SchemaName: "maker",
 	TableName:  "cat_file_chop_lump",
 	OrderedColumns: []string{
-		"header_id", string(constants.IlkFK), "what", "data", "tx_idx", "log_idx", "raw_log",
+		constants.HeaderFK, string(constants.IlkFK), "what", "data", constants.LogFK,
 	},
 	ColumnValues: shared.ColumnValues{
-		"what":    "chop",
-		"data":    "1000000000000000000000000000",
-		"tx_idx":  EthCatFileChopLog.TxIndex,
-		"log_idx": EthCatFileChopLog.Index,
-		"raw_log": rawCatFileChopLog,
+		"what":             "chop",
+		"data":             "1000000000000000000000000000",
+		constants.HeaderFK: CatFileChopHeaderSyncLog.HeaderID,
+		constants.LogFK:    CatFileChopHeaderSyncLog.ID,
 	},
 	ForeignKeyValues: shared.ForeignKeyValues{
 		constants.IlkFK: "0x434f4c342d410000000000000000000000000000000000000000000000000000",
 	},
 }
 
-var EthCatFileLumpLog = types.Log{
+var rawCatFileLumpLog = types.Log{
 	Address: common.HexToAddress(CatAddress()),
 	Topics: []common.Hash{
 		common.HexToHash(constants.CatFileChopLumpSignature()),
@@ -81,26 +87,31 @@ var EthCatFileLumpLog = types.Log{
 	Removed:     false,
 }
 
-var rawCatFileLumpLog, _ = json.Marshal(EthCatFileLumpLog)
+var CatFileLumpHeaderSyncLog = core.HeaderSyncLog{
+	ID:          int64(rand.Int31()),
+	HeaderID:    int64(rand.Int31()),
+	Log:         rawCatFileLumpLog,
+	Transformed: false,
+}
+
 var CatFileLumpModel = shared.InsertionModel{
 	SchemaName: "maker",
 	TableName:  "cat_file_chop_lump",
 	OrderedColumns: []string{
-		"header_id", string(constants.IlkFK), "what", "data", "tx_idx", "log_idx", "raw_log",
+		constants.HeaderFK, string(constants.IlkFK), "what", "data", constants.LogFK,
 	},
 	ColumnValues: shared.ColumnValues{
-		"what":    "lump",
-		"data":    "10000000000000000000000000000000000000000000000000",
-		"tx_idx":  EthCatFileLumpLog.TxIndex,
-		"log_idx": EthCatFileLumpLog.Index,
-		"raw_log": rawCatFileLumpLog,
+		"what":             "lump",
+		"data":             "10000000000000000000000000000000000000000000000000",
+		constants.HeaderFK: CatFileLumpHeaderSyncLog.HeaderID,
+		constants.LogFK:    CatFileLumpHeaderSyncLog.ID,
 	},
 	ForeignKeyValues: shared.ForeignKeyValues{
 		constants.IlkFK: "0x434f4c342d410000000000000000000000000000000000000000000000000000",
 	},
 }
 
-var EthCatFileFlipLog = types.Log{
+var rawCatFileFlipLog = types.Log{
 	Address: common.HexToAddress(CatAddress()),
 	Topics: []common.Hash{
 		common.HexToHash(constants.CatFileFlipSignature()),
@@ -117,26 +128,31 @@ var EthCatFileFlipLog = types.Log{
 	Removed:     false,
 }
 
-var rawCatFileFlipLog, _ = json.Marshal(EthCatFileFlipLog)
+var CatFileFlipHeaderSyncLog = core.HeaderSyncLog{
+	ID:          int64(rand.Int31()),
+	HeaderID:    int64(rand.Int31()),
+	Log:         rawCatFileFlipLog,
+	Transformed: false,
+}
+
 var CatFileFlipModel = shared.InsertionModel{
 	SchemaName: "maker",
 	TableName:  "cat_file_flip",
 	OrderedColumns: []string{
-		"header_id", string(constants.IlkFK), "what", "flip", "tx_idx", "log_idx", "raw_log",
+		constants.HeaderFK, string(constants.IlkFK), "what", "flip", constants.LogFK,
 	},
 	ColumnValues: shared.ColumnValues{
-		"what":    "flip",
-		"flip":    "0x6E8032435c84B08E30F27bfbb812Ee365A095b31",
-		"tx_idx":  EthCatFileFlipLog.TxIndex,
-		"log_idx": EthCatFileFlipLog.Index,
-		"raw_log": rawCatFileFlipLog,
+		"what":             "flip",
+		"flip":             "0x6E8032435c84B08E30F27bfbb812Ee365A095b31",
+		constants.HeaderFK: CatFileFlipHeaderSyncLog.HeaderID,
+		constants.LogFK:    CatFileFlipHeaderSyncLog.ID,
 	},
 	ForeignKeyValues: shared.ForeignKeyValues{
 		constants.IlkFK: "0x434f4c312d410000000000000000000000000000000000000000000000000000",
 	},
 }
 
-var EthCatFileVowLog = types.Log{
+var rawCatFileVowLog = types.Log{
 	Address: common.HexToAddress(CatAddress()),
 	Topics: []common.Hash{
 		common.HexToHash(constants.CatFileVowSignature()),
@@ -153,19 +169,24 @@ var EthCatFileVowLog = types.Log{
 	Removed:     false,
 }
 
-var rawCatFileVowLog, _ = json.Marshal(EthCatFileVowLog)
+var CatFileVowHeaderSyncLog = core.HeaderSyncLog{
+	ID:          int64(rand.Int31()),
+	HeaderID:    int64(rand.Int31()),
+	Log:         rawCatFileVowLog,
+	Transformed: false,
+}
+
 var CatFileVowModel = shared.InsertionModel{
 	SchemaName: "maker",
 	TableName:  "cat_file_vow",
 	OrderedColumns: []string{
-		"header_id", "what", "data", "tx_idx", "log_idx", "raw_log",
+		constants.HeaderFK, "what", "data", constants.LogFK,
 	},
 	ColumnValues: shared.ColumnValues{
-		"what":    "vow",
-		"data":    "0x17560834075DA3Db54f737db74377E799c865821",
-		"tx_idx":  EthCatFileVowLog.TxIndex,
-		"log_idx": EthCatFileVowLog.Index,
-		"raw_log": rawCatFileVowLog,
+		"what":             "vow",
+		"data":             "0x17560834075DA3Db54f737db74377E799c865821",
+		constants.HeaderFK: CatFileVowHeaderSyncLog.HeaderID,
+		constants.LogFK:    CatFileVowHeaderSyncLog.ID,
 	},
 	ForeignKeyValues: shared.ForeignKeyValues{},
 }

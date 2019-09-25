@@ -17,21 +17,19 @@
 package integration_tests
 
 import (
-	"github.com/vulcanize/mcd_transformers/transformers/test_data"
-	"strconv"
-
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/vulcanize/mcd_transformers/test_config"
+	"github.com/vulcanize/mcd_transformers/transformers/events/vat_slip"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
-
-	"github.com/vulcanize/mcd_transformers/test_config"
-	"github.com/vulcanize/mcd_transformers/transformers/events/vat_slip"
-	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"strconv"
 )
 
 var _ = Describe("Vat slip transformer", func() {
@@ -50,14 +48,14 @@ var _ = Describe("Vat slip transformer", func() {
 	})
 
 	vatSlipConfig := transformer.EventTransformerConfig{
-		TransformerName:   mcdConstants.VatSlipLabel,
+		TransformerName:   constants.VatSlipLabel,
 		ContractAddresses: []string{test_data.VatAddress()},
-		ContractAbi:       mcdConstants.VatABI(),
-		Topic:             mcdConstants.VatSlipSignature(),
+		ContractAbi:       constants.VatABI(),
+		Topic:             constants.VatSlipSignature(),
 	}
 
 	It("persists vat slip event", func() {
-		blockNumber := int64(12847637)
+		blockNumber := int64(13445460)
 		vatSlipConfig.StartingBlockNumber = blockNumber
 		vatSlipConfig.EndingBlockNumber = blockNumber
 
@@ -71,39 +69,33 @@ var _ = Describe("Vat slip transformer", func() {
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
+		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+
 		tr := shared.LogNoteTransformer{
 			Config:     vatSlipConfig,
 			Converter:  &vat_slip.VatSlipConverter{},
 			Repository: &vat_slip.VatSlipRepository{},
 		}.NewLogNoteTransformer(db)
 
-		err = tr.Execute(logs, header)
+		err = tr.Execute(headerSyncLogs)
 
 		Expect(err).NotTo(HaveOccurred())
 		var headerID int64
 		err = db.Get(&headerID, `SELECT id FROM public.headers WHERE block_number = $1`, blockNumber)
 		Expect(err).NotTo(HaveOccurred())
 		var model vatSlipModel
-		err = db.Get(&model, `SELECT ilk_id, usr, wad, tx_idx FROM maker.vat_slip WHERE header_id = $1`, headerID)
+		err = db.Get(&model, `SELECT ilk_id, usr, wad FROM maker.vat_slip WHERE header_id = $1`, headerID)
 		Expect(err).NotTo(HaveOccurred())
-		ilkID, err := shared.GetOrCreateIlk("0x5245502d41000000000000000000000000000000000000000000000000000000", db)
+		ilkID, err := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
-		Expect(model.Ilk).To(Equal(strconv.Itoa(ilkID)))
-		Expect(model.Usr).To(Equal("0x2273F4B12Bfc5ACCEc0605A338598aCB42739124"))
-		Expect(model.Wad).To(Equal("10000000000000000000"))
-		Expect(model.TransactionIndex).To(Equal(uint(0)))
-		var headerChecked bool
-		err = db.Get(&headerChecked, `SELECT vat_slip FROM public.checked_headers WHERE header_id = $1`, headerID)
-		Expect(err).NotTo(HaveOccurred())
-		Expect(headerChecked).To(BeTrue())
+		Expect(model.Ilk).To(Equal(strconv.FormatInt(ilkID, 10)))
+		Expect(model.Usr).To(Equal("0xAd4F32E272fFA9686ACAd217Ef038fD09e598Fc0"))
+		Expect(model.Wad).To(Equal("1000000000000000000"))
 	})
 })
 
 type vatSlipModel struct {
-	Ilk              string `db:"ilk_id"`
-	Usr              string
-	Wad              string
-	TransactionIndex uint   `db:"tx_idx"`
-	LogIndex         uint   `db:"log_idx"`
-	Raw              []byte `db:"raw_log"`
+	Ilk string `db:"ilk_id"`
+	Usr string
+	Wad string
 }

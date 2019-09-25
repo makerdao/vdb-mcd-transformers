@@ -17,10 +17,9 @@
 package new_cdp
 
 type NewCdpModel struct {
-	Usr              string
-	Own              string
-	Cdp              string
-	LogIndex         uint   `db:"log_idx"`
-	TransactionIndex uint   `db:"tx_idx"`
-	Raw              []byte `db:"raw_log"`
+	Usr      string
+	Own      string
+	Cdp      string
+	LogID    int64 `db:"log_id"`
+	HeaderID int64
 }

@@ -17,7 +17,7 @@ $$
 CREATE FUNCTION api.poke_event_tx(priceUpdate api.poke_event)
     RETURNS api.tx AS
 $$
-SELECT * FROM get_tx_data(priceUpdate.block_height, priceUpdate.tx_idx)
+SELECT * FROM get_tx_data(priceUpdate.block_height, priceUpdate.log_id)
 $$
     LANGUAGE sql
     STABLE;

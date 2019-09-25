@@ -17,7 +17,8 @@
 package test_data
 
 import (
-	"encoding/json"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
+	"math/rand"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
@@ -27,7 +28,7 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
-var EthVatSuckLog = types.Log{
+var rawVatSuckLog = types.Log{
 	Address: common.HexToAddress(VatAddress()),
 	Topics: []common.Hash{
 		common.HexToHash(constants.VatSuckSignature()),
@@ -44,20 +45,25 @@ var EthVatSuckLog = types.Log{
 	Removed:     false,
 }
 
-var rawVatSuckLog, _ = json.Marshal(EthVatSuckLog)
+var VatSuckHeaderSyncLog = core.HeaderSyncLog{
+	ID:          int64(rand.Int31()),
+	HeaderID:    int64(rand.Int31()),
+	Log:         rawVatSuckLog,
+	Transformed: false,
+}
+
 var VatSuckModel = shared.InsertionModel{
 	SchemaName: "maker",
 	TableName:  "vat_suck",
 	OrderedColumns: []string{
-		"header_id", "u", "v", "rad", "log_idx", "tx_idx", "raw_log",
+		constants.HeaderFK, "u", "v", "rad", constants.LogFK,
 	},
 	ColumnValues: shared.ColumnValues{
-		"u":       "0x07Fa9eF6609cA7921112231F8f195138ebbA2977",
-		"v":       "0x7340e006f4135BA6970D43bf43d88DCAD4e7a8CA",
-		"rad":     "1000000000000000000000",
-		"log_idx": EthVatSuckLog.Index,
-		"tx_idx":  EthVatSuckLog.TxIndex,
-		"raw_log": rawVatSuckLog,
+		"u":                "0x07Fa9eF6609cA7921112231F8f195138ebbA2977",
+		"v":                "0x7340e006f4135BA6970D43bf43d88DCAD4e7a8CA",
+		"rad":              "1000000000000000000000",
+		constants.HeaderFK: VatSuckHeaderSyncLog.HeaderID,
+		constants.LogFK:    VatSuckHeaderSyncLog.ID,
 	},
 	ForeignKeyValues: shared.ForeignKeyValues{},
 }

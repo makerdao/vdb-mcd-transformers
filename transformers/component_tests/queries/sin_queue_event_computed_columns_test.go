@@ -18,21 +18,21 @@ package queries
 
 import (
 	"database/sql"
-	"math/rand"
-	"strconv"
-
+	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/vulcanize/vulcanizedb/pkg/core"
-	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
-	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres/repositories"
-	"github.com/vulcanize/vulcanizedb/pkg/fakes"
-
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/component_tests/queries/test_helpers"
 	"github.com/vulcanize/mcd_transformers/transformers/events/vow_fess"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
+	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
+	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres/repositories"
+	"github.com/vulcanize/vulcanizedb/pkg/fakes"
+	"math/rand"
+	"strconv"
 )
 
 var _ = Describe("Sin queue event computed columns", func() {
@@ -41,6 +41,7 @@ var _ = Describe("Sin queue event computed columns", func() {
 		fakeBlock        int
 		fakeEra          string
 		fakeHeader       core.Header
+		fakeGethLog      types.Log
 		vowFessEvent     shared.InsertionModel
 		vowFessRepo      vow_fess.VowFessRepository
 		headerId         int64
@@ -60,10 +61,15 @@ var _ = Describe("Sin queue event computed columns", func() {
 		headerId, insertHeaderErr = headerRepository.CreateOrUpdateHeader(fakeHeader)
 		Expect(insertHeaderErr).NotTo(HaveOccurred())
 
+		fakeHeaderSyncLog := test_data.CreateTestLog(headerId, db)
+		fakeGethLog = fakeHeaderSyncLog.Log
+
 		vowFessRepo = vow_fess.VowFessRepository{}
 		vowFessRepo.SetDB(db)
 		vowFessEvent = test_data.VowFessModel
-		insertErr := vowFessRepo.Create(headerId, []shared.InsertionModel{vowFessEvent})
+		vowFessEvent.ColumnValues[constants.HeaderFK] = headerId
+		vowFessEvent.ColumnValues[constants.LogFK] = fakeHeaderSyncLog.ID
+		insertErr := vowFessRepo.Create([]shared.InsertionModel{vowFessEvent})
 		Expect(insertErr).NotTo(HaveOccurred())
 	})
 
@@ -76,7 +82,7 @@ var _ = Describe("Sin queue event computed columns", func() {
 		It("returns transaction for a sin_queue_event", func() {
 			expectedTx := Tx{
 				TransactionHash:  test_helpers.GetValidNullString("txHash"),
-				TransactionIndex: sql.NullInt64{Int64: int64(vowFessEvent.ColumnValues["tx_idx"].(uint)), Valid: true},
+				TransactionIndex: sql.NullInt64{Int64: int64(fakeGethLog.TxIndex), Valid: true},
 				BlockHeight:      sql.NullInt64{Int64: int64(fakeBlock), Valid: true},
 				BlockHash:        test_helpers.GetValidNullString(fakeHeader.Hash),
 				TxFrom:           test_helpers.GetValidNullString("fromAddress"),
@@ -91,7 +97,7 @@ var _ = Describe("Sin queue event computed columns", func() {
 			var actualTx Tx
 			err = db.Get(&actualTx, `
 				SELECT * FROM api.sin_queue_event_tx(
-					(SELECT (era, act, block_height, tx_idx)::api.sin_queue_event FROM api.all_sin_queue_events($1)))`,
+					(SELECT (era, act, block_height, log_id)::api.sin_queue_event FROM api.all_sin_queue_events($1)))`,
 				fakeEra)
 
 			Expect(err).NotTo(HaveOccurred())
@@ -102,7 +108,7 @@ var _ = Describe("Sin queue event computed columns", func() {
 			wrongTx := Tx{
 				TransactionHash: test_helpers.GetValidNullString("wrongTxHash"),
 				TransactionIndex: sql.NullInt64{
-					Int64: int64(vowFessEvent.ColumnValues["tx_idx"].(uint)) + 1,
+					Int64: int64(fakeGethLog.TxIndex) + 1,
 					Valid: true,
 				},
 				BlockHeight: sql.NullInt64{Int64: int64(fakeBlock), Valid: true},
@@ -119,7 +125,7 @@ var _ = Describe("Sin queue event computed columns", func() {
 			var actualTx Tx
 			err := db.Get(&actualTx, `
 				SELECT * FROM api.sin_queue_event_tx(
-					(SELECT (era, act, block_height, tx_idx)::api.sin_queue_event FROM api.all_sin_queue_events($1)))`,
+					(SELECT (era, act, block_height, log_id)::api.sin_queue_event FROM api.all_sin_queue_events($1)))`,
 				fakeEra)
 
 			Expect(err).NotTo(HaveOccurred())

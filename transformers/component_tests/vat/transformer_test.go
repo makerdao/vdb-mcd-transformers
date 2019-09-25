@@ -40,8 +40,7 @@ import (
 
 var _ = Describe("Executing the transformer", func() {
 	var (
-		db *postgres.DB
-
+		db          *postgres.DB
 		mappings    = vat.VatMappings{StorageRepository: &storage2.MakerStorageRepository{}}
 		repository  = vat.VatStorageRepository{}
 		transformer = storage.Transformer{
@@ -115,7 +114,7 @@ var _ = Describe("Executing the transformer", func() {
 
 	Describe("ilk", func() {
 		var (
-			ilkId  int
+			ilkId  int64
 			ilkErr error
 		)
 
@@ -141,7 +140,7 @@ var _ = Describe("Executing the transformer", func() {
 			var artResult test_helpers.MappingRes
 			err = db.Get(&artResult, `SELECT block_number, block_hash, ilk_id AS key, art AS value FROM maker.vat_ilk_art`)
 			Expect(err).NotTo(HaveOccurred())
-			test_helpers.AssertMapping(artResult, blockNumber, blockHash, strconv.Itoa(ilkId), "1000000000000000000")
+			test_helpers.AssertMapping(artResult, blockNumber, blockHash, strconv.FormatInt(ilkId, 10), "1000000000000000000")
 		})
 
 		It("reads in a Vat ilk rate storage diff row and persists it", func() {
@@ -160,7 +159,7 @@ var _ = Describe("Executing the transformer", func() {
 			var rateResult test_helpers.MappingRes
 			err = db.Get(&rateResult, `SELECT block_number, block_hash, ilk_id AS key, rate AS value FROM maker.vat_ilk_rate`)
 			Expect(err).NotTo(HaveOccurred())
-			test_helpers.AssertMapping(rateResult, blockNumber, blockHash, strconv.Itoa(ilkId), "1000000000000000000000000000")
+			test_helpers.AssertMapping(rateResult, blockNumber, blockHash, strconv.FormatInt(ilkId, 10), "1000000000000000000000000000")
 		})
 
 		It("reads in a Vat ilk spot storage diff row and persists it", func() {
@@ -179,7 +178,7 @@ var _ = Describe("Executing the transformer", func() {
 			var spotResult test_helpers.MappingRes
 			err = db.Get(&spotResult, `SELECT block_number, block_hash, ilk_id AS key, spot AS value FROM maker.vat_ilk_spot`)
 			Expect(err).NotTo(HaveOccurred())
-			test_helpers.AssertMapping(spotResult, blockNumber, blockHash, strconv.Itoa(ilkId), "89550000000000000000000000000")
+			test_helpers.AssertMapping(spotResult, blockNumber, blockHash, strconv.FormatInt(ilkId, 10), "89550000000000000000000000000")
 		})
 
 		It("reads in a Vat ilk line storage diff row and persists it", func() {
@@ -198,13 +197,13 @@ var _ = Describe("Executing the transformer", func() {
 			var lineResult test_helpers.MappingRes
 			err = db.Get(&lineResult, `SELECT block_number, block_hash, ilk_id AS key, line AS value FROM maker.vat_ilk_line`)
 			Expect(err).NotTo(HaveOccurred())
-			test_helpers.AssertMapping(lineResult, blockNumber, blockHash, strconv.Itoa(ilkId), "100000000000000000000000000000000000000000000")
+			test_helpers.AssertMapping(lineResult, blockNumber, blockHash, strconv.FormatInt(ilkId, 10), "100000000000000000000000000000000000000000000")
 		})
 	})
 
 	Describe("urn", func() {
 		var (
-			urnID  int
+			urnID  int64
 			urnErr error
 		)
 
@@ -231,7 +230,7 @@ var _ = Describe("Executing the transformer", func() {
 			var inkResult test_helpers.MappingRes
 			err = db.Get(&inkResult, `SELECT block_number, block_hash, urn_id AS key, ink AS value FROM maker.vat_urn_ink`)
 			Expect(err).NotTo(HaveOccurred())
-			test_helpers.AssertMapping(inkResult, blockNumber, blockHash, strconv.Itoa(urnID), "50000000000000000000")
+			test_helpers.AssertMapping(inkResult, blockNumber, blockHash, strconv.FormatInt(urnID, 10), "50000000000000000000")
 		})
 
 		It("reads in a Vat urn art storage diff row and persists it", func() {
@@ -250,7 +249,7 @@ var _ = Describe("Executing the transformer", func() {
 			var artResult test_helpers.MappingRes
 			err = db.Get(&artResult, `SELECT block_number, block_hash, urn_id AS key, art AS value FROM maker.vat_urn_art`)
 			Expect(err).NotTo(HaveOccurred())
-			test_helpers.AssertMapping(artResult, blockNumber, blockHash, strconv.Itoa(urnID), "1000000000000000000")
+			test_helpers.AssertMapping(artResult, blockNumber, blockHash, strconv.FormatInt(urnID, 10), "1000000000000000000")
 		})
 	})
 
@@ -264,12 +263,15 @@ var _ = Describe("Executing the transformer", func() {
 			headerRepository := repositories.NewHeaderRepository(db)
 			headerID, err := headerRepository.CreateOrUpdateHeader(fakes.FakeHeader)
 			Expect(err).NotTo(HaveOccurred())
+			vatFrobLog := test_data.CreateTestLog(headerID, db)
 			vatFrobRepository := vat_frob.VatFrobRepository{}
 			vatFrobRepository.SetDB(db)
 			vatFrob := test_data.CopyModel(test_data.VatFrobModelWithPositiveDart)
 			vatFrob.ForeignKeyValues[constants.IlkFK] = ilk
 			vatFrob.ColumnValues["v"] = guy
-			insertErr := vatFrobRepository.Create(headerID, []shared.InsertionModel{vatFrob})
+			vatFrob.ColumnValues[constants.HeaderFK] = headerID
+			vatFrob.ColumnValues[constants.LogFK] = vatFrobLog.ID
+			insertErr := vatFrobRepository.Create([]shared.InsertionModel{vatFrob})
 			Expect(insertErr).NotTo(HaveOccurred())
 		})
 
@@ -291,7 +293,7 @@ var _ = Describe("Executing the transformer", func() {
 			Expect(err).NotTo(HaveOccurred())
 			ilkID, ilkErr := shared.GetOrCreateIlk(ilk, db)
 			Expect(ilkErr).NotTo(HaveOccurred())
-			test_helpers.AssertDoubleMapping(gemResult, blockNumber, blockHash, strconv.Itoa(ilkID), guy, "0")
+			test_helpers.AssertDoubleMapping(gemResult, blockNumber, blockHash, strconv.FormatInt(ilkID, 10), guy, "0")
 		})
 	})
 
@@ -304,11 +306,14 @@ var _ = Describe("Executing the transformer", func() {
 			headerRepository := repositories.NewHeaderRepository(db)
 			headerID, err := headerRepository.CreateOrUpdateHeader(fakes.FakeHeader)
 			Expect(err).NotTo(HaveOccurred())
+			vatFrobLog := test_data.CreateTestLog(headerID, db)
 			vatFrobRepository := vat_frob.VatFrobRepository{}
 			vatFrobRepository.SetDB(db)
 			vatFrob := test_data.CopyModel(test_data.VatFrobModelWithPositiveDart)
 			vatFrob.ColumnValues["w"] = guy
-			insertErr := vatFrobRepository.Create(headerID, []shared.InsertionModel{vatFrob})
+			vatFrob.ColumnValues[constants.HeaderFK] = headerID
+			vatFrob.ColumnValues[constants.LogFK] = vatFrobLog.ID
+			insertErr := vatFrobRepository.Create([]shared.InsertionModel{vatFrob})
 			Expect(insertErr).NotTo(HaveOccurred())
 		})
 

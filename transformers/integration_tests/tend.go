@@ -20,16 +20,15 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/vulcanize/mcd_transformers/test_config"
+	"github.com/vulcanize/mcd_transformers/transformers/events/tend"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
-
-	"github.com/vulcanize/mcd_transformers/test_config"
-	"github.com/vulcanize/mcd_transformers/transformers/events/tend"
-	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
-	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
 var _ = XDescribe("Tend LogNoteTransformer", func() {
@@ -52,10 +51,10 @@ var _ = XDescribe("Tend LogNoteTransformer", func() {
 		test_config.CleanTestDB(db)
 
 		tendConfig = transformer.EventTransformerConfig{
-			TransformerName:   mcdConstants.TendLabel,
+			TransformerName:   constants.TendLabel,
 			ContractAddresses: append(test_data.FlipAddresses(), test_data.FlapAddress()),
-			ContractAbi:       mcdConstants.FlipABI(),
-			Topic:             mcdConstants.TendSignature(),
+			ContractAbi:       constants.FlipABI(),
+			Topic:             constants.TendSignature(),
 		}
 
 		logFetcher = fetcher.NewLogFetcher(blockChain)
@@ -80,8 +79,10 @@ var _ = XDescribe("Tend LogNoteTransformer", func() {
 		logs, err := logFetcher.FetchLogs(addresses, topics, header)
 		Expect(err).NotTo(HaveOccurred())
 
+		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+
 		transformer := initializer.NewLogNoteTransformer(db)
-		err = transformer.Execute(logs, header)
+		err = transformer.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []tendModel
@@ -98,7 +99,7 @@ var _ = XDescribe("Tend LogNoteTransformer", func() {
 		err = db.Get(&dbTic, `SELECT tic FROM maker.tend`)
 		Expect(err).NotTo(HaveOccurred())
 
-		actualTic := 1538490276 + mcdConstants.TTL
+		actualTic := 1538490276 + constants.TTL
 		Expect(dbTic).To(Equal(actualTic))
 	})
 
@@ -113,8 +114,10 @@ var _ = XDescribe("Tend LogNoteTransformer", func() {
 		logs, err := logFetcher.FetchLogs(addresses, topics, header)
 		Expect(err).NotTo(HaveOccurred())
 
+		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+
 		transformer := initializer.NewLogNoteTransformer(db)
-		err = transformer.Execute(logs, header)
+		err = transformer.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []tendModel
@@ -131,7 +134,7 @@ var _ = XDescribe("Tend LogNoteTransformer", func() {
 		err = db.Get(&dbTic, `SELECT tic FROM maker.tend`)
 		Expect(err).NotTo(HaveOccurred())
 
-		actualTic := 1538491224 + mcdConstants.TTL
+		actualTic := 1538491224 + constants.TTL
 		Expect(dbTic).To(Equal(actualTic))
 	})
 
@@ -146,8 +149,10 @@ var _ = XDescribe("Tend LogNoteTransformer", func() {
 		logs, err := logFetcher.FetchLogs(addresses, topics, header)
 		Expect(err).NotTo(HaveOccurred())
 
+		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+
 		transformer := initializer.NewLogNoteTransformer(db)
-		err = transformer.Execute(logs, header)
+		err = transformer.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []tendModel
@@ -164,17 +169,14 @@ var _ = XDescribe("Tend LogNoteTransformer", func() {
 		err = db.Get(&dbTic, `SELECT tic FROM maker.tend`)
 		Expect(err).NotTo(HaveOccurred())
 
-		actualTic := 1538992860 + mcdConstants.TTL
+		actualTic := 1538992860 + constants.TTL
 		Expect(dbTic).To(Equal(actualTic))
 	})
 })
 
 type tendModel struct {
-	BidId            string `db:"bid_id"`
-	Lot              string
-	Bid              string
-	ContractAddress  string `db:"contract_address"`
-	LogIndex         uint   `db:"log_idx"`
-	TransactionIndex uint   `db:"tx_idx"`
-	Raw              []byte `db:"raw_log"`
+	BidId           string `db:"bid_id"`
+	Lot             string
+	Bid             string
+	ContractAddress string `db:"contract_address"`
 }

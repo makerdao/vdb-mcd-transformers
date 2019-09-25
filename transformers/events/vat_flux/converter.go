@@ -17,54 +17,49 @@
 package vat_flux
 
 import (
-	"encoding/json"
-	"errors"
-
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/ethereum/go-ethereum/core/types"
-
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 )
 
 type VatFluxConverter struct{}
 
-func (VatFluxConverter) ToModels(_ string, ethLogs []types.Log) ([]shared.InsertionModel, error) {
+const (
+	logDataRequired   = true
+	numTopicsRequired = 4
+)
+
+func (VatFluxConverter) ToModels(_ string, logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
 	var models []shared.InsertionModel
-	for _, ethLog := range ethLogs {
-		err := verifyLog(ethLog)
+	for _, log := range logs {
+		err := shared.VerifyLog(log.Log, numTopicsRequired, logDataRequired)
 		if err != nil {
 			return nil, err
 		}
 
-		ilk := ethLog.Topics[1].Hex()
-		src := common.BytesToAddress(ethLog.Topics[2].Bytes()).String()
-		dst := common.BytesToAddress(ethLog.Topics[3].Bytes()).String()
-		wadBytes, wadErr := shared.GetLogNoteArgumentAtIndex(3, ethLog.Data)
+		ilk := log.Log.Topics[1].Hex()
+		src := common.BytesToAddress(log.Log.Topics[2].Bytes()).String()
+		dst := common.BytesToAddress(log.Log.Topics[3].Bytes()).String()
+		wadBytes, wadErr := shared.GetLogNoteArgumentAtIndex(3, log.Log.Data)
 		if wadErr != nil {
 			return nil, wadErr
 		}
 		wad := shared.ConvertUint256HexToBigInt(hexutil.Encode(wadBytes))
 
-		rawLogJson, jsonErr := json.Marshal(ethLog)
-		if jsonErr != nil {
-			return nil, jsonErr
-		}
-
 		model := shared.InsertionModel{
 			SchemaName: "maker",
 			TableName:  "vat_flux",
 			OrderedColumns: []string{
-				"header_id", string(constants.IlkFK), "src", "dst", "wad", "tx_idx", "log_idx", "raw_log",
+				constants.HeaderFK, string(constants.IlkFK), "src", "dst", "wad", constants.LogFK,
 			},
 			ColumnValues: shared.ColumnValues{
-				"src":     src,
-				"dst":     dst,
-				"wad":     wad.String(),
-				"tx_idx":  ethLog.TxIndex,
-				"log_idx": ethLog.Index,
-				"raw_log": rawLogJson,
+				"src":              src,
+				"dst":              dst,
+				"wad":              wad.String(),
+				constants.HeaderFK: log.HeaderID,
+				constants.LogFK:    log.ID,
 			},
 			ForeignKeyValues: shared.ForeignKeyValues{
 				constants.IlkFK: ilk,
@@ -74,11 +69,4 @@ func (VatFluxConverter) ToModels(_ string, ethLogs []types.Log) ([]shared.Insert
 	}
 
 	return models, nil
-}
-
-func verifyLog(log types.Log) error {
-	if len(log.Topics) < 4 {
-		return errors.New("log missing topics")
-	}
-	return nil
 }

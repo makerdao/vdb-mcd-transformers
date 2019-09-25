@@ -17,7 +17,8 @@
 package test_data
 
 import (
-	"encoding/json"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
+	"math/rand"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
@@ -32,7 +33,7 @@ var (
 	frobData = "0x000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000e0760887034554482d41000000000000000000000000000000000000000000000000000000000000000000000000000000eeec867b3f51ab5b619d582481bf53eea930b074000000000000000000000000eeec867b3f51ab5b619d582481bf53eea930b074000000000000000000000000eeec867b3f51ab5b619d582481bf53eea930b0740000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000016345785d8a000000000000000000000000000000000000000000000000000000000000"
 )
 
-var EthVatFrobLogWithPositiveDart = types.Log{
+var rawVatFrobLogWithPositiveDart = types.Log{
 	Address: common.HexToAddress(VatAddress()),
 	Topics: []common.Hash{
 		common.HexToHash(constants.VatFrobSignature()),
@@ -49,21 +50,26 @@ var EthVatFrobLogWithPositiveDart = types.Log{
 	Removed:     false,
 }
 
-var rawVatFrobLogWithPositiveDart, _ = json.Marshal(EthVatFrobLogWithPositiveDart)
+var VatFrobHeaderSyncLogWithPositiveDart = core.HeaderSyncLog{
+	ID:          int64(rand.Int31()),
+	HeaderID:    int64(rand.Int31()),
+	Log:         rawVatFrobLogWithPositiveDart,
+	Transformed: false,
+}
+
 var VatFrobModelWithPositiveDart = shared.InsertionModel{
 	SchemaName: "maker",
 	TableName:  "vat_frob",
 	OrderedColumns: []string{
-		"header_id", string(constants.UrnFK), "v", "w", "dink", "dart", "log_idx", "tx_idx", "raw_log",
+		constants.HeaderFK, string(constants.UrnFK), "v", "w", "dink", "dart", constants.LogFK,
 	},
 	ColumnValues: shared.ColumnValues{
-		"v":       "0xFc7440E2Ed4A3AEb14d40c00f02a14221Be0474d",
-		"w":       "0xEEec867B3F51ab5b619d582481BF53eea930b074",
-		"dink":    "0",
-		"dart":    "100000000000000000",
-		"log_idx": EthVatFrobLogWithPositiveDart.Index,
-		"tx_idx":  EthVatFrobLogWithPositiveDart.TxIndex,
-		"raw_log": rawVatFrobLogWithPositiveDart,
+		"v":                "0xFc7440E2Ed4A3AEb14d40c00f02a14221Be0474d",
+		"w":                "0xEEec867B3F51ab5b619d582481BF53eea930b074",
+		"dink":             "0",
+		"dart":             "100000000000000000",
+		constants.HeaderFK: VatFrobHeaderSyncLogWithPositiveDart.HeaderID,
+		constants.LogFK:    VatFrobHeaderSyncLogWithPositiveDart.ID,
 	},
 	ForeignKeyValues: shared.ForeignKeyValues{
 		constants.IlkFK: "0x4554480000000000000000000000000000000000000000000000000000000000",
@@ -71,7 +77,7 @@ var VatFrobModelWithPositiveDart = shared.InsertionModel{
 	},
 }
 
-var EthVatFrobLogWithNegativeDink = types.Log{
+var rawVatFrobLogWithNegativeDink = types.Log{
 	Address: common.HexToAddress(VatAddress()),
 	Topics: []common.Hash{
 		common.HexToHash(constants.VatFrobSignature()),
@@ -88,21 +94,26 @@ var EthVatFrobLogWithNegativeDink = types.Log{
 	Removed:     false,
 }
 
-var rawVatFrobLogWithNegativeDink, _ = json.Marshal(EthVatFrobLogWithNegativeDink)
+var VatFrobHeaderSyncLogWithNegativeDink = core.HeaderSyncLog{
+	ID:          int64(rand.Int31()),
+	HeaderID:    int64(rand.Int31()),
+	Log:         rawVatFrobLogWithNegativeDink,
+	Transformed: false,
+}
+
 var VatFrobModelWithNegativeDink = shared.InsertionModel{
 	SchemaName: "maker",
 	TableName:  "vat_frob",
 	OrderedColumns: []string{
-		"header_id", string(constants.UrnFK), "v", "w", "dink", "dart", "log_idx", "tx_idx", "raw_log",
+		constants.HeaderFK, string(constants.UrnFK), "v", "w", "dink", "dart", constants.LogFK,
 	},
 	ColumnValues: shared.ColumnValues{
-		"v":       "0xFc7440E2Ed4A3AEb14d40c00f02a14221Be0474d",
-		"w":       "0x5c8c8e5895B9cCf34ACF391C99E13C79EE2eFb46",
-		"dink":    "-8000000000000000",
-		"dart":    "0",
-		"log_idx": EthVatFrobLogWithNegativeDink.Index,
-		"tx_idx":  EthVatFrobLogWithNegativeDink.TxIndex,
-		"raw_log": rawVatFrobLogWithNegativeDink,
+		"v":                "0xFc7440E2Ed4A3AEb14d40c00f02a14221Be0474d",
+		"w":                "0x5c8c8e5895B9cCf34ACF391C99E13C79EE2eFb46",
+		"dink":             "-8000000000000000",
+		"dart":             "0",
+		constants.HeaderFK: VatFrobHeaderSyncLogWithNegativeDink.HeaderID,
+		constants.LogFK:    VatFrobHeaderSyncLogWithNegativeDink.ID,
 	},
 	ForeignKeyValues: shared.ForeignKeyValues{
 		constants.IlkFK: "0x4554482d41000000000000000000000000000000000000000000000000000000",
