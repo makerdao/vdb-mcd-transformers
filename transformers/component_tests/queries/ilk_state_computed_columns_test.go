@@ -277,10 +277,10 @@ var _ = Describe("Ilk state computed columns", func() {
 			biteRepo := bite.BiteRepository{}
 			biteRepo.SetDB(db)
 			biteEvent := test_data.BiteModel
-			biteEvent.Ilk = test_helpers.FakeIlk.Hex
-			biteEvent.HeaderID = headerId
-			biteEvent.LogID = logId
-			insertBiteErr := biteRepo.Create([]interface{}{biteEvent})
+			biteEvent.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
+			biteEvent.ColumnValues[constants.HeaderFK] = headerId
+			biteEvent.ColumnValues[constants.LogFK] = logId
+			insertBiteErr := biteRepo.Create([]shared.InsertionModel{biteEvent})
 			Expect(insertBiteErr).NotTo(HaveOccurred())
 
 			var actualBites []test_helpers.BiteEvent
@@ -295,10 +295,10 @@ var _ = Describe("Ilk state computed columns", func() {
 
 			expectedBites := []test_helpers.BiteEvent{{
 				IlkIdentifier: test_helpers.FakeIlk.Identifier,
-				UrnIdentifier: biteEvent.Urn,
-				Ink:           biteEvent.Ink,
-				Art:           biteEvent.Art,
-				Tab:           biteEvent.Tab,
+				UrnIdentifier: biteEvent.ForeignKeyValues[constants.UrnFK],
+				Ink:           biteEvent.ColumnValues["ink"].(string),
+				Art:           biteEvent.ColumnValues["art"].(string),
+				Tab:           biteEvent.ColumnValues["tab"].(string),
 			}}
 
 			Expect(actualBites).To(Equal(expectedBites))
@@ -307,17 +307,17 @@ var _ = Describe("Ilk state computed columns", func() {
 		Describe("result pagination", func() {
 			var (
 				newBlock         int
-				oldBite, newBite bite.BiteModel
+				oldBite, newBite shared.InsertionModel
 			)
 
 			BeforeEach(func() {
 				biteRepo := bite.BiteRepository{}
 				biteRepo.SetDB(db)
 				oldBite = test_data.BiteModel
-				oldBite.Ilk = test_helpers.FakeIlk.Hex
-				oldBite.HeaderID = headerId
-				oldBite.LogID = logId
-				insertOldBiteErr := biteRepo.Create([]interface{}{oldBite})
+				oldBite.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
+				oldBite.ColumnValues[constants.HeaderFK] = headerId
+				oldBite.ColumnValues[constants.LogFK] = logId
+				insertOldBiteErr := biteRepo.Create([]shared.InsertionModel{oldBite})
 				Expect(insertOldBiteErr).NotTo(HaveOccurred())
 
 				newBlock = fakeBlock + 1
@@ -327,11 +327,11 @@ var _ = Describe("Ilk state computed columns", func() {
 				newLogId := test_data.CreateTestLog(newHeaderId, db).ID
 
 				newBite = test_data.BiteModel
-				newBite.Ilk = test_helpers.FakeIlk.Hex
-				newBite.Urn = test_data.FakeUrn
-				newBite.HeaderID = newHeaderId
-				newBite.LogID = newLogId
-				insertNewBiteErr := biteRepo.Create([]interface{}{newBite})
+				newBite.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
+				newBite.ForeignKeyValues[constants.UrnFK] = test_data.FakeUrn
+				newBite.ColumnValues[constants.HeaderFK] = newHeaderId
+				newBite.ColumnValues[constants.LogFK] = newLogId
+				insertNewBiteErr := biteRepo.Create([]shared.InsertionModel{newBite})
 				Expect(insertNewBiteErr).NotTo(HaveOccurred())
 			})
 
@@ -346,10 +346,10 @@ var _ = Describe("Ilk state computed columns", func() {
 
 				expectedBite := test_helpers.BiteEvent{
 					IlkIdentifier: test_helpers.FakeIlk.Identifier,
-					UrnIdentifier: newBite.Urn,
-					Ink:           newBite.Ink,
-					Art:           newBite.Art,
-					Tab:           newBite.Tab,
+					UrnIdentifier: newBite.ForeignKeyValues[constants.UrnFK],
+					Ink:           newBite.ColumnValues["ink"].(string),
+					Art:           newBite.ColumnValues["art"].(string),
+					Tab:           newBite.ColumnValues["tab"].(string),
 				}
 				Expect(actualBites).To(ConsistOf(expectedBite))
 			})
@@ -367,10 +367,10 @@ var _ = Describe("Ilk state computed columns", func() {
 
 				expectedBite := test_helpers.BiteEvent{
 					IlkIdentifier: test_helpers.FakeIlk.Identifier,
-					UrnIdentifier: oldBite.Urn,
-					Ink:           oldBite.Ink,
-					Art:           oldBite.Art,
-					Tab:           oldBite.Tab,
+					UrnIdentifier: newBite.ForeignKeyValues[constants.UrnFK],
+					Ink:           newBite.ColumnValues["ink"].(string),
+					Art:           newBite.ColumnValues["art"].(string),
+					Tab:           newBite.ColumnValues["tab"].(string),
 				}
 				Expect(actualBites).To(ConsistOf(expectedBite))
 			})

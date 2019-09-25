@@ -17,7 +17,6 @@
 package bite_test
 
 import (
-	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 

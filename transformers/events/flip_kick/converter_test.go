@@ -20,7 +20,6 @@ import (
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"strings"
 
-	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
@@ -50,7 +49,6 @@ var _ = Describe("FlipKick Converter", func() {
 
 			Expect(err).NotTo(HaveOccurred())
 
-			// TODO Why is the converter capitalising some chars in the address?!
 			models[0].ForeignKeyValues[constants.AddressFK] = strings.ToLower(models[0].ForeignKeyValues[constants.AddressFK])
 			Expect(models).To(Equal([]shared.InsertionModel{test_data.FlipKickModel}))
 		})

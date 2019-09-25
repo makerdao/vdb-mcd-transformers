@@ -7,6 +7,8 @@ import (
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/component_tests/queries/test_helpers"
 	"github.com/vulcanize/mcd_transformers/transformers/events/flap_kick"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
@@ -25,7 +27,7 @@ var _ = Describe("flap_bid_event computed columns", func() {
 		headerId        int64
 		headerRepo      repositories.HeaderRepository
 		flapKickRepo    flap_kick.FlapKickRepository
-		flapKickEvent   flap_kick.FlapKickModel
+		flapKickEvent   shared.InsertionModel
 		contractAddress = "FlapAddress"
 		fakeBidId       = rand.Int()
 	)
@@ -45,11 +47,11 @@ var _ = Describe("flap_bid_event computed columns", func() {
 		flapKickRepo.SetDB(db)
 
 		flapKickEvent = test_data.FlapKickModel
-		flapKickEvent.BidId = strconv.Itoa(fakeBidId)
-		flapKickEvent.ContractAddress = contractAddress
-		flapKickEvent.HeaderID = headerId
-		flapKickEvent.LogID = flapKickLog.ID
-		insertFlapKickErr := flapKickRepo.Create([]interface{}{flapKickEvent})
+		flapKickEvent.ColumnValues["bid_id"] = strconv.Itoa(fakeBidId)
+		flapKickEvent.ForeignKeyValues[constants.AddressFK] = contractAddress
+		flapKickEvent.ColumnValues[constants.HeaderFK] = headerId
+		flapKickEvent.ColumnValues[constants.LogFK] = flapKickLog.ID
+		insertFlapKickErr := flapKickRepo.Create([]shared.InsertionModel{flapKickEvent})
 		Expect(insertFlapKickErr).NotTo(HaveOccurred())
 	})
 

@@ -2,6 +2,8 @@ package queries
 
 import (
 	"github.com/vulcanize/mcd_transformers/transformers/events/tick"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"math/rand"
 	"strconv"
@@ -183,13 +185,17 @@ var _ = Describe("Flop bid events query", func() {
 			flapKickRepo := flap_kick.FlapKickRepository{}
 			flapKickRepo.SetDB(db)
 			flapKickEvent := test_data.FlapKickModel
-			flapKickEvent.BidId = strconv.Itoa(fakeBidId)
-			flapKickEvent.HeaderID = headerOneId
-			flapKickEvent.LogID = flapKickLog.ID
-			flapKickErr := flapKickRepo.Create([]interface{}{flapKickEvent})
+			flapKickEvent.ColumnValues["bid_id"] = strconv.Itoa(fakeBidId)
+			flapKickEvent.ColumnValues[constants.HeaderFK] = headerOneId
+			flapKickEvent.ColumnValues[constants.LogFK] = flapKickLog.ID
+			flapKickErr := flapKickRepo.Create([]shared.InsertionModel{flapKickEvent})
 			Expect(flapKickErr).NotTo(HaveOccurred())
 
-			flapKickBidEvent := test_helpers.BidEvent{BidId: flapKickEvent.BidId, BidAmount: flapKickEvent.Bid, Lot: flapKickEvent.Lot, Act: "kick"}
+			flapKickBidEvent := test_helpers.BidEvent{
+				BidId:     flapKickEvent.ColumnValues["bid_id"].(string),
+				BidAmount: flapKickEvent.ColumnValues["bid"].(string),
+				Lot:       flapKickEvent.ColumnValues["lot"].(string),
+				Act:       "kick"}
 
 			var flopBidEvents []test_helpers.BidEvent
 			queryErr := db.Select(&flopBidEvents, `SELECT bid_id, bid_amount, lot, act FROM api.all_flop_bid_events()`)

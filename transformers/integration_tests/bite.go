@@ -26,7 +26,6 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 	"github.com/vulcanize/vulcanizedb/pkg/geth"
@@ -58,12 +57,12 @@ var _ = Describe("Bite Transformer", func() {
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		initializer := event.Transformer{
+		initializer := shared.LogNoteTransformer{
 			Config:     biteConfig,
 			Converter:  &bite.BiteConverter{},
 			Repository: &bite.BiteRepository{},
 		}
-		transformer := initializer.NewTransformer(db)
+		transformer := initializer.NewLogNoteTransformer(db)
 
 		logFetcher := fetcher.NewLogFetcher(blockChain)
 		logs, err := logFetcher.FetchLogs(

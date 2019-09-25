@@ -33,7 +33,7 @@ type FlipKickConverter struct{}
 func (FlipKickConverter) ToEntities(contractAbi string, ethLogs []core.HeaderSyncLog) ([]FlipKickEntity, error) {
 	var entities []FlipKickEntity
 	for _, log := range ethLogs {
-		entity := &FlipKickEntity{}
+		var entity FlipKickEntity
 		address := log.Log.Address
 		abi, err := geth.ParseAbi(contractAbi)
 		if err != nil {
@@ -48,7 +48,7 @@ func (FlipKickConverter) ToEntities(contractAbi string, ethLogs []core.HeaderSyn
 		entity.ContractAddress = address
 		entity.HeaderID = log.HeaderID
 		entity.LogID = log.ID
-		entities = append(entities, *entity)
+		entities = append(entities, entity)
 	}
 
 	return entities, nil
@@ -66,20 +66,20 @@ func (c FlipKickConverter) ToModels(abi string, logs []core.HeaderSyncLog) ([]sh
 		}
 
 		model := shared.InsertionModel{
-			SchemaName:       "maker",
-			TableName:        "flip_kick",
-			OrderedColumns:   []string{
-				"header_id", "bid_id", "lot", "bid", "tab", "usr", "gal", "address_id", "tx_idx", "log_idx", "raw_log",
+			SchemaName: "maker",
+			TableName:  "flip_kick",
+			OrderedColumns: []string{
+				constants.HeaderFK, constants.LogFK, "bid_id", "lot", "bid", "tab", "usr", "gal", string(constants.AddressFK),
 			},
-			ColumnValues:     shared.ColumnValues{
+			ColumnValues: shared.ColumnValues{
 				constants.HeaderFK: flipKickEntity.HeaderID,
-				constants.LogFK: flipKickEntity.LogID,
-				"bid_id": flipKickEntity.Id.String(),
-				"lot": shared.BigIntToString(flipKickEntity.Lot),
-				"bid": shared.BigIntToString(flipKickEntity.Bid),
-				"tab": shared.BigIntToString(flipKickEntity.Tab),
-				"usr": flipKickEntity.Usr.String(),
-				"gal": flipKickEntity.Gal.String(),
+				constants.LogFK:    flipKickEntity.LogID,
+				"bid_id":           flipKickEntity.Id.String(),
+				"lot":              shared.BigIntToString(flipKickEntity.Lot),
+				"bid":              shared.BigIntToString(flipKickEntity.Bid),
+				"tab":              shared.BigIntToString(flipKickEntity.Tab),
+				"usr":              flipKickEntity.Usr.String(),
+				"gal":              flipKickEntity.Gal.String(),
 			},
 			ForeignKeyValues: shared.ForeignKeyValues{
 				constants.AddressFK: flipKickEntity.ContractAddress.String(),

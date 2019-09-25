@@ -17,6 +17,7 @@
 package shared_test
 
 import (
+	"fmt"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/vulcanize/mcd_transformers/test_config"
@@ -26,7 +27,6 @@ import (
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
-	"strconv"
 )
 
 var _ = Describe("Shared repository", func() {
@@ -74,13 +74,13 @@ var _ = Describe("Shared repository", func() {
 
 			testModel = shared.InsertionModel{
 				SchemaName: "maker",
-				TableName: "testEvent",
+				TableName:  "testEvent",
 				OrderedColumns: []string{
 					constants.HeaderFK, constants.LogFK, string(constants.IlkFK), string(constants.UrnFK), "variable1",
 				},
 				ColumnValues: shared.ColumnValues{
 					constants.HeaderFK: headerID,
-					constants.LogFK:    strconv.FormatInt(logID, 10),
+					constants.LogFK:    logID,
 					"variable1":        "value1",
 				},
 				ForeignKeyValues: shared.ForeignKeyValues{
@@ -112,7 +112,7 @@ var _ = Describe("Shared repository", func() {
 			dbErr := db.Get(&res, `SELECT log_id, variable1 FROM maker.testEvent;`)
 			Expect(dbErr).NotTo(HaveOccurred())
 
-			Expect(res.LogID).To(Equal(testModel.ColumnValues[constants.LogFK]))
+			Expect(res.LogID).To(Equal(fmt.Sprint(testModel.ColumnValues[constants.LogFK])))
 			Expect(res.Variable1).To(Equal(testModel.ColumnValues["variable1"]))
 		})
 
@@ -139,9 +139,9 @@ var _ = Describe("Shared repository", func() {
 			})
 
 			It("for failed SQL inserts", func() {
-                header := fakes.GetFakeHeader(1)
-                headerID, headerErr := headerRepository.CreateOrUpdateHeader(header)
-                Expect(headerErr).NotTo(HaveOccurred())
+				header := fakes.GetFakeHeader(1)
+				headerID, headerErr := headerRepository.CreateOrUpdateHeader(header)
+				Expect(headerErr).NotTo(HaveOccurred())
 
 				brokenModel := shared.InsertionModel{
 					SchemaName: "maker",
@@ -173,10 +173,6 @@ var _ = Describe("Shared repository", func() {
 		})
 
 		It("upserts queries with conflicting source", func() {
-            header := fakes.GetFakeHeader(1)
-            headerID, headerErr := headerRepository.CreateOrUpdateHeader(header)
-            Expect(headerErr).NotTo(HaveOccurred())
-
 			conflictingModel := shared.InsertionModel{
 				SchemaName: "maker",
 				TableName:  "testEvent",

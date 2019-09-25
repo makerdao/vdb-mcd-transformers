@@ -19,11 +19,9 @@ package flap_kick
 import (
 	"errors"
 	"fmt"
+	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
-	"strconv"
-
-	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/vulcanize/vulcanizedb/pkg/geth"
 
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
@@ -73,14 +71,14 @@ func (c FlapKickConverter) ToModels(abi string, logs []core.HeaderSyncLog) ([]sh
 				constants.HeaderFK, constants.LogFK, "bid_id", "lot", "bid", "address_id",
 			},
 			ColumnValues: shared.ColumnValues{
-				"bid_id": flapKickEntity.Id.String(),
-				"lot":    shared.BigIntToString(flapKickEntity.Lot),
-				"bid":    shared.BigIntToString(flapKickEntity.Bid),
+				constants.HeaderFK: flapKickEntity.HeaderID,
+				constants.LogFK:    flapKickEntity.LogID,
+				"bid_id":           flapKickEntity.Id.String(),
+				"lot":              shared.BigIntToString(flapKickEntity.Lot),
+				"bid":              shared.BigIntToString(flapKickEntity.Bid),
 			},
 			ForeignKeyValues: shared.ForeignKeyValues{
 				constants.AddressFK: flapKickEntity.ContractAddress.Hex(),
-				constants.HeaderFK:  strconv.FormatInt(flapKickEntity.HeaderID, 10),
-				constants.LogFK:     strconv.FormatInt(flapKickEntity.LogID, 10),
 			},
 		}
 

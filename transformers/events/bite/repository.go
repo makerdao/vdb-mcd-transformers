@@ -33,4 +33,3 @@ func (repository *BiteRepository) SetDB(db *postgres.DB) {
 func (repository BiteRepository) Create(models []shared.InsertionModel) error {
 	return shared.Create(models, repository.db)
 }
-

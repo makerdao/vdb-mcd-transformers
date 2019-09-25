@@ -66,10 +66,10 @@ var FlapKickModel = shared.InsertionModel{
 	},
 	ColumnValues: shared.ColumnValues{
 		constants.HeaderFK: FlapKickEntity.HeaderID,
-		constants.LogFK: FlapKickEntity.LogID,
-		"bid_id":  FlapKickEntity.Id.String(),
-		"lot":     FlapKickEntity.Lot.String(),
-		"bid":     FlapKickEntity.Bid.String(),
+		constants.LogFK:    FlapKickEntity.LogID,
+		"bid_id":           FlapKickEntity.Id.String(),
+		"lot":              FlapKickEntity.Lot.String(),
+		"bid":              FlapKickEntity.Bid.String(),
 	},
 	ForeignKeyValues: shared.ForeignKeyValues{
 		constants.AddressFK: FlapKickHeaderSyncLog.Log.Address.Hex(),

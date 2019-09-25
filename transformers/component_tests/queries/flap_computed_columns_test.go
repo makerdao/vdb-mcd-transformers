@@ -7,6 +7,8 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/component_tests/queries/test_helpers"
 	"github.com/vulcanize/mcd_transformers/transformers/events/flap_kick"
 	"github.com/vulcanize/mcd_transformers/transformers/events/tend"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres/repositories"
@@ -50,17 +52,17 @@ var _ = Describe("Flap computed columns", func() {
 			test_helpers.CreateFlap(db, blockOneHeader, flapStorageValues, test_helpers.GetFlapMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
 
 			flapKickEvent := test_data.FlapKickModel
-			flapKickEvent.ContractAddress = contractAddress
-			flapKickEvent.BidId = strconv.Itoa(fakeBidId)
-			flapKickEvent.HeaderID = headerId
-			flapKickEvent.LogID = flapKickLog.ID
-			flapKickErr := flapKickRepo.Create([]interface{}{flapKickEvent})
+			flapKickEvent.ForeignKeyValues[constants.AddressFK] = contractAddress
+			flapKickEvent.ColumnValues["bid_id"] = strconv.Itoa(fakeBidId)
+			flapKickEvent.ColumnValues[constants.HeaderFK] = headerId
+			flapKickEvent.ColumnValues[constants.LogFK] = flapKickLog.ID
+			flapKickErr := flapKickRepo.Create([]shared.InsertionModel{flapKickEvent})
 			Expect(flapKickErr).NotTo(HaveOccurred())
 
 			expectedBidEvents := test_helpers.BidEvent{
 				BidId:           strconv.Itoa(fakeBidId),
-				Lot:             flapKickEvent.Lot,
-				BidAmount:       flapKickEvent.Bid,
+				Lot:             flapKickEvent.ColumnValues["lot"].(string),
+				BidAmount:       flapKickEvent.ColumnValues["bid"].(string),
 				Act:             "kick",
 				ContractAddress: contractAddress,
 			}
@@ -82,11 +84,11 @@ var _ = Describe("Flap computed columns", func() {
 			test_helpers.CreateFlap(db, blockOneHeader, flapStorageValues, test_helpers.GetFlapMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
 
 			flapKickEvent := test_data.FlapKickModel
-			flapKickEvent.ContractAddress = contractAddress
-			flapKickEvent.BidId = strconv.Itoa(fakeBidId)
-			flapKickEvent.HeaderID = headerId
-			flapKickEvent.LogID = flapKickLog.ID
-			flapKickErr := flapKickRepo.Create([]interface{}{flapKickEvent})
+			flapKickEvent.ForeignKeyValues[constants.AddressFK] = contractAddress
+			flapKickEvent.ColumnValues["bid_id"] = strconv.Itoa(fakeBidId)
+			flapKickEvent.ColumnValues[constants.HeaderFK] = headerId
+			flapKickEvent.ColumnValues[constants.LogFK] = flapKickLog.ID
+			flapKickErr := flapKickRepo.Create([]shared.InsertionModel{flapKickEvent})
 			Expect(flapKickErr).NotTo(HaveOccurred())
 
 			blockTwo := blockOne + 1
@@ -100,18 +102,18 @@ var _ = Describe("Flap computed columns", func() {
 			test_helpers.CreateFlap(db, blockTwoHeader, irrelevantFlapStorageValues, test_helpers.GetFlapMetadatas(strconv.Itoa(irrelevantBidId)), contractAddress)
 
 			irrelevantFlapKickEvent := test_data.FlapKickModel
-			irrelevantFlapKickEvent.ContractAddress = contractAddress
-			irrelevantFlapKickEvent.BidId = strconv.Itoa(irrelevantBidId)
-			irrelevantFlapKickEvent.HeaderID = headerTwoId
-			irrelevantFlapKickEvent.LogID = irrelevantFlipKickLog.ID
+			irrelevantFlapKickEvent.ForeignKeyValues[constants.AddressFK] = contractAddress
+			irrelevantFlapKickEvent.ColumnValues["bid_id"] = strconv.Itoa(irrelevantBidId)
+			irrelevantFlapKickEvent.ColumnValues[constants.HeaderFK] = headerTwoId
+			irrelevantFlapKickEvent.ColumnValues[constants.LogFK] = irrelevantFlipKickLog.ID
 
-			flapKickErr = flapKickRepo.Create([]interface{}{irrelevantFlapKickEvent})
+			flapKickErr = flapKickRepo.Create([]shared.InsertionModel{irrelevantFlapKickEvent})
 			Expect(flapKickErr).NotTo(HaveOccurred())
 
 			expectedBidEvents := test_helpers.BidEvent{
 				BidId:           strconv.Itoa(fakeBidId),
-				Lot:             flapKickEvent.Lot,
-				BidAmount:       flapKickEvent.Bid,
+				Lot:             flapKickEvent.ColumnValues["lot"].(string),
+				BidAmount:       flapKickEvent.ColumnValues["bid"].(string),
 				Act:             "kick",
 				ContractAddress: contractAddress,
 			}
@@ -129,7 +131,7 @@ var _ = Describe("Flap computed columns", func() {
 		Describe("result pagination", func() {
 			var (
 				tendBid, tendLot int
-				flapKickEvent    flap_kick.FlapKickModel
+				flapKickEvent    shared.InsertionModel
 			)
 
 			BeforeEach(func() {
@@ -141,11 +143,11 @@ var _ = Describe("Flap computed columns", func() {
 				test_helpers.CreateFlap(db, blockOneHeader, flapStorageValues, test_helpers.GetFlapMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
 
 				flapKickEvent = test_data.FlapKickModel
-				flapKickEvent.ContractAddress = contractAddress
-				flapKickEvent.BidId = strconv.Itoa(fakeBidId)
-				flapKickEvent.HeaderID = headerId
-				flapKickEvent.LogID = logId
-				flapKickErr := flapKickRepo.Create([]interface{}{flapKickEvent})
+				flapKickEvent.ForeignKeyValues[constants.AddressFK] = contractAddress
+				flapKickEvent.ColumnValues["bid_id"] = strconv.Itoa(fakeBidId)
+				flapKickEvent.ColumnValues[constants.HeaderFK] = headerId
+				flapKickEvent.ColumnValues[constants.LogFK] = logId
+				flapKickErr := flapKickRepo.Create([]shared.InsertionModel{flapKickEvent})
 				Expect(flapKickErr).NotTo(HaveOccurred())
 
 				blockTwo := blockOne + 1
@@ -193,8 +195,8 @@ var _ = Describe("Flap computed columns", func() {
 			It("offsets results if offset is provided", func() {
 				expectedBidEvent := test_helpers.BidEvent{
 					BidId:           strconv.Itoa(fakeBidId),
-					Lot:             flapKickEvent.Lot,
-					BidAmount:       flapKickEvent.Bid,
+					Lot:             flapKickEvent.ColumnValues["lot"].(string),
+					BidAmount:       flapKickEvent.ColumnValues["bid"].(string),
 					Act:             "kick",
 					ContractAddress: contractAddress,
 				}

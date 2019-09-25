@@ -24,6 +24,8 @@ import (
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/component_tests/queries/test_helpers"
 	"github.com/vulcanize/mcd_transformers/transformers/events/flip_kick"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
@@ -80,7 +82,7 @@ var _ = Describe("Flip bid event computed columns", func() {
 				},
 				Dealt:            false,
 				IlkHex:           test_helpers.FakeIlk.Hex,
-				UrnGuy:           test_data.FlipKickModel.Usr,
+				UrnGuy:           test_data.FlipKickModel.ColumnValues["usr"].(string),
 				FlipKickRepo:     flipKickRepo,
 				FlipKickHeaderId: headerId,
 			})
@@ -161,11 +163,11 @@ var _ = Describe("Flip bid event computed columns", func() {
 			flipKickGethLog = flipKickHeaderSyncLog.Log
 
 			flipKickEvent := test_data.FlipKickModel
-			flipKickEvent.ContractAddress = contractAddress
-			flipKickEvent.BidId = strconv.Itoa(bidId)
-			flipKickEvent.HeaderID = headerId
-			flipKickEvent.LogID = flipKickHeaderSyncLog.ID
-			flipKickErr := flipKickRepo.Create([]interface{}{flipKickEvent})
+			flipKickEvent.ForeignKeyValues[constants.AddressFK] = contractAddress
+			flipKickEvent.ColumnValues["bid_id"] = strconv.Itoa(bidId)
+			flipKickEvent.ColumnValues[constants.HeaderFK] = headerId
+			flipKickEvent.ColumnValues[constants.LogFK] = flipKickHeaderSyncLog.ID
+			flipKickErr := flipKickRepo.Create([]shared.InsertionModel{flipKickEvent})
 			Expect(flipKickErr).NotTo(HaveOccurred())
 		})
 

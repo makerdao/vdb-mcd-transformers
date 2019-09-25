@@ -1,7 +1,6 @@
 package queries
 
 import (
-	"fmt"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"math/rand"
@@ -60,9 +59,9 @@ var _ = Describe("Bites query", func() {
 				test_helpers.BiteEvent{
 					IlkIdentifier: test_helpers.FakeIlk.Identifier,
 					UrnIdentifier: fakeUrn,
-					Ink:           fmt.Sprint(biteOne.ColumnValues["ink"].(uint)),
-					Art:           fmt.Sprint(biteOne.ColumnValues["art"].(uint)),
-					Tab:           fmt.Sprint(biteOne.ColumnValues["tab"].(uint)),
+					Ink:           biteOne.ColumnValues["ink"].(string),
+					Art:           biteOne.ColumnValues["art"].(string),
+					Tab:           biteOne.ColumnValues["tab"].(string),
 				},
 			))
 		})
@@ -96,16 +95,16 @@ var _ = Describe("Bites query", func() {
 				test_helpers.BiteEvent{
 					IlkIdentifier: test_helpers.FakeIlk.Identifier,
 					UrnIdentifier: fakeUrn,
-					Ink:           fmt.Sprint(biteBlockTwo.ColumnValues["ink"].(uint)),
-					Art:           fmt.Sprint(biteBlockTwo.ColumnValues["art"].(uint)),
-					Tab:           fmt.Sprint(biteBlockTwo.ColumnValues["tab"].(uint)),
+					Ink:           biteBlockTwo.ColumnValues["ink"].(string),
+					Art:           biteBlockTwo.ColumnValues["art"].(string),
+					Tab:           biteBlockTwo.ColumnValues["tab"].(string),
 				},
 				test_helpers.BiteEvent{
 					IlkIdentifier: test_helpers.FakeIlk.Identifier,
 					UrnIdentifier: fakeUrn,
-					Ink:           fmt.Sprint(biteBlockOne.ColumnValues["ink"].(uint)),
-					Art:           fmt.Sprint(biteBlockOne.ColumnValues["art"].(uint)),
-					Tab:           fmt.Sprint(biteBlockOne.ColumnValues["tab"].(uint)),
+					Ink:           biteBlockOne.ColumnValues["ink"].(string),
+					Art:           biteBlockOne.ColumnValues["art"].(string),
+					Tab:           biteBlockOne.ColumnValues["tab"].(string),
 				},
 			))
 		})
@@ -131,9 +130,9 @@ var _ = Describe("Bites query", func() {
 				test_helpers.BiteEvent{
 					IlkIdentifier: test_helpers.FakeIlk.Identifier,
 					UrnIdentifier: fakeUrn,
-					Ink:           fmt.Sprint(bite.ColumnValues["ink"].(uint)),
-					Art:           fmt.Sprint(bite.ColumnValues["art"].(uint)),
-					Tab:           fmt.Sprint(bite.ColumnValues["tab"].(uint)),
+					Ink:           bite.ColumnValues["ink"].(string),
+					Art:           bite.ColumnValues["art"].(string),
+					Tab:           bite.ColumnValues["tab"].(string),
 				},
 			))
 		})
@@ -180,9 +179,9 @@ var _ = Describe("Bites query", func() {
 					test_helpers.BiteEvent{
 						IlkIdentifier: test_helpers.FakeIlk.Identifier,
 						UrnIdentifier: fakeUrn,
-						Ink:           fmt.Sprint(biteBlockTwo.ColumnValues["ink"].(uint)),
-						Art:           fmt.Sprint(biteBlockTwo.ColumnValues["art"].(uint)),
-						Tab:           fmt.Sprint(biteBlockTwo.ColumnValues["tab"].(uint)),
+						Ink:           biteBlockTwo.ColumnValues["ink"].(string),
+						Art:           biteBlockTwo.ColumnValues["art"].(string),
+						Tab:           biteBlockTwo.ColumnValues["tab"].(string),
 					},
 				))
 			})
@@ -199,9 +198,9 @@ var _ = Describe("Bites query", func() {
 					test_helpers.BiteEvent{
 						IlkIdentifier: test_helpers.FakeIlk.Identifier,
 						UrnIdentifier: fakeUrn,
-						Ink:           fmt.Sprint(biteBlockOne.ColumnValues["ink"].(uint)),
-						Art:           fmt.Sprint(biteBlockOne.ColumnValues["art"].(uint)),
-						Tab:           fmt.Sprint(biteBlockOne.ColumnValues["tab"].(uint)),
+						Ink:           biteBlockOne.ColumnValues["ink"].(string),
+						Art:           biteBlockOne.ColumnValues["art"].(string),
+						Tab:           biteBlockOne.ColumnValues["tab"].(string),
 					},
 				))
 			})
@@ -227,9 +226,9 @@ var _ = Describe("Bites query", func() {
 				test_helpers.BiteEvent{
 					IlkIdentifier: test_helpers.FakeIlk.Identifier,
 					UrnIdentifier: fakeUrn,
-					Ink:           fmt.Sprint(biteOne.ColumnValues["ink"].(uint)),
-					Art:           fmt.Sprint(biteOne.ColumnValues["art"].(uint)),
-					Tab:           fmt.Sprint(biteOne.ColumnValues["tab"].(uint)),
+					Ink:           biteOne.ColumnValues["ink"].(string),
+					Art:           biteOne.ColumnValues["art"].(string),
+					Tab:           biteOne.ColumnValues["tab"].(string),
 				},
 			))
 		})
@@ -263,16 +262,16 @@ var _ = Describe("Bites query", func() {
 				test_helpers.BiteEvent{
 					IlkIdentifier: test_helpers.FakeIlk.Identifier,
 					UrnIdentifier: fakeUrn,
-					Ink:           fmt.Sprint(biteBlockTwo.ColumnValues["ink"].(uint)),
-					Art:           fmt.Sprint(biteBlockTwo.ColumnValues["art"].(uint)),
-					Tab:           fmt.Sprint(biteBlockTwo.ColumnValues["tab"].(uint)),
+					Ink:           biteBlockTwo.ColumnValues["ink"].(string),
+					Art:           biteBlockTwo.ColumnValues["art"].(string),
+					Tab:           biteBlockTwo.ColumnValues["tab"].(string),
 				},
 				test_helpers.BiteEvent{
 					IlkIdentifier: test_helpers.FakeIlk.Identifier,
 					UrnIdentifier: fakeUrn,
-					Ink:           fmt.Sprint(biteBlockOne.ColumnValues["ink"].(uint)),
-					Art:           fmt.Sprint(biteBlockOne.ColumnValues["art"].(uint)),
-					Tab:           fmt.Sprint(biteBlockOne.ColumnValues["tab"].(uint)),
+					Ink:           biteBlockOne.ColumnValues["ink"].(string),
+					Art:           biteBlockOne.ColumnValues["art"].(string),
+					Tab:           biteBlockOne.ColumnValues["tab"].(string),
 				},
 			))
 		})
@@ -310,7 +309,13 @@ var _ = Describe("Bites query", func() {
 				Expect(err).NotTo(HaveOccurred())
 
 				Expect(actualBites).To(ConsistOf(
-					test_helpers.BiteEvent{IlkIdentifier: test_helpers.FakeIlk.Identifier, UrnIdentifier: fakeUrn, Ink: biteBlockTwo.Ink, Art: biteBlockTwo.Art, Tab: biteBlockTwo.Tab},
+					test_helpers.BiteEvent{
+						IlkIdentifier: test_helpers.FakeIlk.Identifier,
+						UrnIdentifier: fakeUrn,
+						Ink:           biteBlockTwo.ColumnValues["ink"].(string),
+						Art:           biteBlockTwo.ColumnValues["art"].(string),
+						Tab:           biteBlockTwo.ColumnValues["tab"].(string),
+					},
 				))
 			})
 
@@ -323,7 +328,13 @@ var _ = Describe("Bites query", func() {
 				Expect(err).NotTo(HaveOccurred())
 
 				Expect(actualBites).To(ConsistOf(
-					test_helpers.BiteEvent{IlkIdentifier: test_helpers.FakeIlk.Identifier, UrnIdentifier: fakeUrn, Ink: biteBlockOne.Ink, Art: biteBlockOne.Art, Tab: biteBlockOne.Tab},
+					test_helpers.BiteEvent{
+						IlkIdentifier: test_helpers.FakeIlk.Identifier,
+						UrnIdentifier: fakeUrn,
+						Ink:           biteBlockOne.ColumnValues["ink"].(string),
+						Art:           biteBlockOne.ColumnValues["art"].(string),
+						Tab:           biteBlockOne.ColumnValues["tab"].(string),
+					},
 				))
 			})
 		})
@@ -349,9 +360,9 @@ var _ = Describe("Bites query", func() {
 				test_helpers.BiteEvent{
 					IlkIdentifier: test_helpers.FakeIlk.Identifier,
 					UrnIdentifier: fakeUrn,
-					Ink:           fmt.Sprint(bite.ColumnValues["ink"].(uint)),
-					Art:           fmt.Sprint(bite.ColumnValues["art"].(uint)),
-					Tab:           fmt.Sprint(bite.ColumnValues["tab"].(uint)),
+					Ink:           bite.ColumnValues["ink"].(string),
+					Art:           bite.ColumnValues["art"].(string),
+					Tab:           bite.ColumnValues["tab"].(string),
 				},
 			))
 		})
@@ -359,7 +370,7 @@ var _ = Describe("Bites query", func() {
 })
 
 func generateBite(ilk, urn string, headerID, logID int64) shared.InsertionModel {
-	biteEvent := test_data.BiteModel
+	biteEvent := test_data.CopyModel(test_data.BiteModel)
 	biteEvent.ForeignKeyValues[constants.IlkFK] = ilk
 	biteEvent.ForeignKeyValues[constants.UrnFK] = urn
 	biteEvent.ColumnValues["ink"] = strconv.Itoa(rand.Int())

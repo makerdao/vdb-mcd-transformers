@@ -84,20 +84,20 @@ var FlipKickEntity = flip_kick.FlipKickEntity{
 }
 
 var FlipKickModel = shared.InsertionModel{
-	SchemaName:       "maker",
-	TableName:        "flip_kick",
-	OrderedColumns:   []string{
+	SchemaName: "maker",
+	TableName:  "flip_kick",
+	OrderedColumns: []string{
 		constants.HeaderFK, constants.LogFK, "bid_id", "lot", "bid", "tab", "usr", "gal", "address_id",
 	},
-	ColumnValues:     shared.ColumnValues{
+	ColumnValues: shared.ColumnValues{
 		constants.HeaderFK: FlipKickEntity.HeaderID,
-		constants.LogFK: FlipKickEntity.LogID,
-		"bid_id": flipID.String(),
-		"lot": lot.String(),
-		"bid": bid.String(),
-		"tab": tab.String(),
-		"usr": FakeUrn,
-		"gal": gal,
+		constants.LogFK:    FlipKickEntity.LogID,
+		"bid_id":           flipID.String(),
+		"lot":              lot.String(),
+		"bid":              bid.String(),
+		"tab":              tab.String(),
+		"usr":              FakeUrn,
+		"gal":              gal,
 	},
 	ForeignKeyValues: shared.ForeignKeyValues{
 		constants.AddressFK: contractAddress,

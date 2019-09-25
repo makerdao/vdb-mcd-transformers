@@ -25,8 +25,8 @@ import (
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/geth"
 
-	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
 type BiteConverter struct{}
@@ -34,7 +34,7 @@ type BiteConverter struct{}
 func (BiteConverter) ToEntities(contractAbi string, ethLogs []core.HeaderSyncLog) ([]BiteEntity, error) {
 	var entities []BiteEntity
 	for _, log := range ethLogs {
-		entity := &BiteEntity{}
+		var entity BiteEntity
 		address := log.Log.Address
 		abi, err := geth.ParseAbi(contractAbi)
 		if err != nil {
@@ -49,7 +49,7 @@ func (BiteConverter) ToEntities(contractAbi string, ethLogs []core.HeaderSyncLog
 
 		entity.HeaderID = log.HeaderID
 		entity.LogID = log.ID
-		entities = append(entities, *entity)
+		entities = append(entities, entity)
 	}
 
 	return entities, nil
@@ -70,16 +70,16 @@ func (converter BiteConverter) ToModels(abi string, logs []core.HeaderSyncLog) (
 			SchemaName: "maker",
 			TableName:  "bite",
 			OrderedColumns: []string{
-				"header_id", string(constants.UrnFK), "ink", "art", "tab", "flip", "bite_identifier", "tx_idx", "log_idx", "raw_log",
+				constants.HeaderFK, constants.LogFK, string(constants.UrnFK), "ink", "art", "tab", "flip", "bite_identifier",
 			},
 			ColumnValues: shared.ColumnValues{
 				constants.HeaderFK: biteEntity.HeaderID,
-				constants.LogFK: biteEntity.LogID,
-				"ink":             shared.BigIntToString(biteEntity.Ink),
-				"art":             shared.BigIntToString(biteEntity.Art),
-				"tab":             shared.BigIntToString(biteEntity.Tab),
-				"flip":            common.BytesToAddress(biteEntity.Flip.Bytes()).Hex(),
-				"bite_identifier": shared.BigIntToString(biteEntity.Id),
+				constants.LogFK:    biteEntity.LogID,
+				"ink":              shared.BigIntToString(biteEntity.Ink),
+				"art":              shared.BigIntToString(biteEntity.Art),
+				"tab":              shared.BigIntToString(biteEntity.Tab),
+				"flip":             common.BytesToAddress(biteEntity.Flip.Bytes()).Hex(),
+				"bite_identifier":  shared.BigIntToString(biteEntity.Id),
 			},
 			ForeignKeyValues: shared.ForeignKeyValues{
 				constants.IlkFK: ilk,
