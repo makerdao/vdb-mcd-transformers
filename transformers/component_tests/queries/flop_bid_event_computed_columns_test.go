@@ -2,6 +2,8 @@ package queries
 
 import (
 	"database/sql"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"math/rand"
 	"strconv"
 
@@ -30,7 +32,7 @@ var _ = Describe("Flop bid event computed columns", func() {
 		fakeBidId       = rand.Int()
 		flopKickGethLog types.Log
 		flopKickRepo    flop_kick.FlopKickRepository
-		flopKickEvent   flop_kick.Model
+		flopKickEvent   shared.InsertionModel
 		headerId        int64
 		headerRepo      repositories.HeaderRepository
 	)
@@ -49,12 +51,14 @@ var _ = Describe("Flop bid event computed columns", func() {
 
 		flopKickRepo = flop_kick.FlopKickRepository{}
 		flopKickRepo.SetDB(db)
-		flopKickEvent = test_data.FlopKickModel
-		flopKickEvent.BidId = strconv.Itoa(fakeBidId)
-		flopKickEvent.ContractAddress = contractAddress
-		flopKickEvent.HeaderID = headerId
-		flopKickEvent.LogID = flopKickHeaderSyncLog.ID
-		insertFlopKickErr := flopKickRepo.Create([]interface{}{flopKickEvent})
+
+		flopKickEvent = test_data.CopyModel(test_data.FlopKickModel)
+		flopKickEvent.ForeignKeyValues[constants.AddressFK] = contractAddress
+		flopKickEvent.ColumnValues["bid_id"] = strconv.Itoa(fakeBidId)
+		flopKickEvent.ColumnValues[constants.HeaderFK] = headerId
+		flopKickEvent.ColumnValues[constants.LogFK] = flopKickHeaderSyncLog.ID
+		insertFlopKickErr := flopKickRepo.Create([]shared.InsertionModel{flopKickEvent})
+
 		Expect(insertFlopKickErr).NotTo(HaveOccurred())
 	})
 

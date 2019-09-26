@@ -1,6 +1,7 @@
 package queries
 
 import (
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"math/rand"
 	"strconv"
 
@@ -50,8 +51,8 @@ var _ = Describe("all poke events query", func() {
 		spotPokeLog := test_data.CreateTestLog(headerID, db)
 
 		spotPoke := generateSpotPoke(test_helpers.FakeIlk.Hex, 1, headerID, spotPokeLog.ID)
-		ilkIdBlockOne, err := shared.GetOrCreateIlk(spotPoke.Ilk, db)
-		err = spotPokeRepo.Create([]interface{}{spotPoke})
+		ilkIdBlockOne, err := shared.GetOrCreateIlk(spotPoke.ForeignKeyValues[constants.IlkFK], db)
+		err = spotPokeRepo.Create([]shared.InsertionModel{spotPoke})
 		Expect(err).NotTo(HaveOccurred())
 
 		fakeHeaderTwo := fakes.GetFakeHeaderWithTimestamp(endingTimeRange, fakeHeaderOne.BlockNumber+1)
@@ -60,21 +61,21 @@ var _ = Describe("all poke events query", func() {
 		anotherSpotPokeLog := test_data.CreateTestLog(anotherHeaderID, db)
 
 		anotherSpotPoke := generateSpotPoke(test_helpers.AnotherFakeIlk.Hex, 1, anotherHeaderID, anotherSpotPokeLog.ID)
-		anotherIlkId, err := shared.GetOrCreateIlk(anotherSpotPoke.Ilk, db)
+		anotherIlkId, err := shared.GetOrCreateIlk(anotherSpotPoke.ForeignKeyValues[constants.IlkFK], db)
 		Expect(err).NotTo(HaveOccurred())
-		err = spotPokeRepo.Create([]interface{}{anotherSpotPoke})
+		err = spotPokeRepo.Create([]shared.InsertionModel{anotherSpotPoke})
 		Expect(err).NotTo(HaveOccurred())
 
 		expectedValues := []test_helpers.PokeEvent{
 			{
 				IlkId: strconv.Itoa(int(anotherIlkId)),
-				Val:   anotherSpotPoke.Value,
-				Spot:  anotherSpotPoke.Spot,
+				Val:   anotherSpotPoke.ColumnValues["value"].(string),
+				Spot:  anotherSpotPoke.ColumnValues["spot"].(string),
 			},
 			{
 				IlkId: strconv.Itoa(int(ilkIdBlockOne)),
-				Val:   spotPoke.Value,
-				Spot:  spotPoke.Spot,
+				Val:   spotPoke.ColumnValues["value"].(string),
+				Spot:  spotPoke.ColumnValues["spot"].(string),
 			},
 		}
 
@@ -91,27 +92,27 @@ var _ = Describe("all poke events query", func() {
 		spotPokeLog := test_data.CreateTestLog(headerID, db)
 
 		spotPoke := generateSpotPoke(test_helpers.FakeIlk.Hex, 1, headerID, spotPokeLog.ID)
-		ilkIdBlockOne, err := shared.GetOrCreateIlk(spotPoke.Ilk, db)
-		err = spotPokeRepo.Create([]interface{}{spotPoke})
+		ilkIdBlockOne, err := shared.GetOrCreateIlk(spotPoke.ForeignKeyValues[constants.IlkFK], db)
+		err = spotPokeRepo.Create([]shared.InsertionModel{spotPoke})
 		Expect(err).NotTo(HaveOccurred())
 		anotherSpotPokeLog := test_data.CreateTestLog(headerID, db)
 
 		anotherSpotPoke := generateSpotPoke(test_helpers.AnotherFakeIlk.Hex, 1, headerID, anotherSpotPokeLog.ID)
-		anotherIlkId, err := shared.GetOrCreateIlk(anotherSpotPoke.Ilk, db)
+		anotherIlkId, err := shared.GetOrCreateIlk(anotherSpotPoke.ForeignKeyValues[constants.IlkFK], db)
 		Expect(err).NotTo(HaveOccurred())
-		err = spotPokeRepo.Create([]interface{}{anotherSpotPoke})
+		err = spotPokeRepo.Create([]shared.InsertionModel{anotherSpotPoke})
 		Expect(err).NotTo(HaveOccurred())
 
 		expectedValues := []test_helpers.PokeEvent{
 			{
 				IlkId: strconv.Itoa(int(ilkIdBlockOne)),
-				Val:   spotPoke.Value,
-				Spot:  spotPoke.Spot,
+				Val:   spotPoke.ColumnValues["value"].(string),
+				Spot:  spotPoke.ColumnValues["spot"].(string),
 			},
 			{
 				IlkId: strconv.Itoa(int(anotherIlkId)),
-				Val:   anotherSpotPoke.Value,
-				Spot:  anotherSpotPoke.Spot,
+				Val:   anotherSpotPoke.ColumnValues["value"].(string),
+				Spot:  anotherSpotPoke.ColumnValues["spot"].(string),
 			},
 		}
 
@@ -127,8 +128,8 @@ var _ = Describe("all poke events query", func() {
 		Expect(err).NotTo(HaveOccurred())
 		spotPokeLog := test_data.CreateTestLog(headerID, db)
 		spotPoke := generateSpotPoke(test_helpers.FakeIlk.Hex, 1, headerID, spotPokeLog.ID)
-		ilkIdBlockOne, err := shared.GetOrCreateIlk(spotPoke.Ilk, db)
-		err = spotPokeRepo.Create([]interface{}{spotPoke})
+		ilkIdBlockOne, err := shared.GetOrCreateIlk(spotPoke.ForeignKeyValues[constants.IlkFK], db)
+		err = spotPokeRepo.Create([]shared.InsertionModel{spotPoke})
 		Expect(err).NotTo(HaveOccurred())
 
 		fakeHeaderTwo := fakes.GetFakeHeaderWithTimestamp(endingTimeRange+1, fakeHeaderOne.BlockNumber+1)
@@ -137,16 +138,16 @@ var _ = Describe("all poke events query", func() {
 		anotherSpotPokeLog := test_data.CreateTestLog(anotherHeaderID, db)
 		anotherSpotPoke := generateSpotPoke(test_helpers.AnotherFakeIlk.Hex, 1, anotherHeaderID, anotherSpotPokeLog.ID)
 
-		_, err = shared.GetOrCreateIlk(anotherSpotPoke.Ilk, db)
+		_, err = shared.GetOrCreateIlk(anotherSpotPoke.ForeignKeyValues[constants.IlkFK], db)
 		Expect(err).NotTo(HaveOccurred())
-		err = spotPokeRepo.Create([]interface{}{anotherSpotPoke})
+		err = spotPokeRepo.Create([]shared.InsertionModel{anotherSpotPoke})
 		Expect(err).NotTo(HaveOccurred())
 
 		expectedValues := []test_helpers.PokeEvent{
 			{
 				IlkId: strconv.Itoa(int(ilkIdBlockOne)),
-				Val:   spotPoke.Value,
-				Spot:  spotPoke.Spot,
+				Val:   spotPoke.ColumnValues["value"].(string),
+				Spot:  spotPoke.ColumnValues["spot"].(string),
 			},
 		}
 
@@ -159,7 +160,7 @@ var _ = Describe("all poke events query", func() {
 	Describe("result pagination", func() {
 		var (
 			ilkId                       int64
-			oldSpotPoke, recentSpotPoke spot_poke.SpotPokeModel
+			oldSpotPoke, recentSpotPoke shared.InsertionModel
 		)
 		BeforeEach(func() {
 			fakeHeaderOne := fakes.GetFakeHeaderWithTimestamp(beginningTimeRange, int64(test_data.SpotPokeHeaderSyncLog.Log.BlockNumber))
@@ -169,9 +170,9 @@ var _ = Describe("all poke events query", func() {
 
 			oldSpotPoke = generateSpotPoke(test_helpers.FakeIlk.Hex, 1, headerID, logID)
 			var ilkErr error
-			ilkId, ilkErr = shared.GetOrCreateIlk(oldSpotPoke.Ilk, db)
+			ilkId, ilkErr = shared.GetOrCreateIlk(oldSpotPoke.ForeignKeyValues[constants.IlkFK], db)
 			Expect(ilkErr).NotTo(HaveOccurred())
-			oldSpotPokeErr := spotPokeRepo.Create([]interface{}{oldSpotPoke})
+			oldSpotPokeErr := spotPokeRepo.Create([]shared.InsertionModel{oldSpotPoke})
 			Expect(oldSpotPokeErr).NotTo(HaveOccurred())
 
 			fakeHeaderTwo := fakes.GetFakeHeaderWithTimestamp(endingTimeRange, fakeHeaderOne.BlockNumber+1)
@@ -180,7 +181,7 @@ var _ = Describe("all poke events query", func() {
 			anotherLogID := test_data.CreateTestLog(anotherHeaderID, db).ID
 
 			recentSpotPoke = generateSpotPoke(test_helpers.FakeIlk.Hex, 2, anotherHeaderID, anotherLogID)
-			recentSpotPokeErr := spotPokeRepo.Create([]interface{}{recentSpotPoke})
+			recentSpotPokeErr := spotPokeRepo.Create([]shared.InsertionModel{recentSpotPoke})
 			Expect(recentSpotPokeErr).NotTo(HaveOccurred())
 		})
 
@@ -193,8 +194,8 @@ var _ = Describe("all poke events query", func() {
 
 			Expect(dbPokeEvents).To(ConsistOf(test_helpers.PokeEvent{
 				IlkId: strconv.FormatInt(ilkId, 10),
-				Val:   recentSpotPoke.Value,
-				Spot:  recentSpotPoke.Spot,
+				Val:   recentSpotPoke.ColumnValues["value"].(string),
+				Spot:  recentSpotPoke.ColumnValues["spot"].(string),
 			}))
 		})
 
@@ -208,8 +209,8 @@ var _ = Describe("all poke events query", func() {
 
 			Expect(dbPokeEvents).To(ConsistOf(test_helpers.PokeEvent{
 				IlkId: strconv.FormatInt(ilkId, 10),
-				Val:   oldSpotPoke.Value,
-				Spot:  oldSpotPoke.Spot,
+				Val:   oldSpotPoke.ColumnValues["value"].(string),
+				Spot:  oldSpotPoke.ColumnValues["spot"].(string),
 			}))
 		})
 	})
@@ -220,12 +221,12 @@ var _ = Describe("all poke events query", func() {
 	})
 })
 
-func generateSpotPoke(ilk string, seed int, headerID, logID int64) spot_poke.SpotPokeModel {
-	spotPoke := test_data.SpotPokeModel
-	spotPoke.Ilk = ilk
-	spotPoke.Value = strconv.Itoa(1 + seed)
-	spotPoke.Spot = strconv.Itoa(2 + seed)
-	spotPoke.HeaderID = headerID
-	spotPoke.LogID = logID
+func generateSpotPoke(ilk string, seed int, headerID, logID int64) shared.InsertionModel {
+	spotPoke := test_data.CopyModel(test_data.SpotPokeModel)
+	spotPoke.ForeignKeyValues[constants.IlkFK] = ilk
+	spotPoke.ColumnValues["value"] = strconv.Itoa(1 + seed)
+	spotPoke.ColumnValues["spot"] = strconv.Itoa(2 + seed)
+	spotPoke.ColumnValues[constants.HeaderFK] = headerID
+	spotPoke.ColumnValues[constants.LogFK] = logID
 	return spotPoke
 }

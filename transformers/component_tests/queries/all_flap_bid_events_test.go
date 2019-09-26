@@ -271,14 +271,20 @@ var _ = Describe("Flap bid events query", func() {
 			flopKickLog := test_data.CreateTestLog(headerOneId, db)
 			flopKickRepo := flop_kick.FlopKickRepository{}
 			flopKickRepo.SetDB(db)
-			flopKickEvent := test_data.FlopKickModel
-			flopKickEvent.ContractAddress = "flop"
-			flopKickEvent.BidId = strconv.Itoa(fakeBidId)
-			flopKickEvent.HeaderID = headerOneId
-			flopKickEvent.LogID = flopKickLog.ID
-			flopKickErr := flopKickRepo.Create([]interface{}{flopKickEvent})
+
+			flopKickEvent := test_data.CopyModel(test_data.FlopKickModel)
+			flopKickEvent.ForeignKeyValues[constants.AddressFK] = "flop"
+			flopKickEvent.ColumnValues["bid_id"] = strconv.Itoa(fakeBidId)
+			flopKickEvent.ColumnValues[constants.HeaderFK] = headerOneId
+			flopKickEvent.ColumnValues[constants.LogFK] = flopKickLog.ID
+			flopKickErr := flopKickRepo.Create([]shared.InsertionModel{flopKickEvent})
 			Expect(flopKickErr).NotTo(HaveOccurred())
-			flopKickBidEvent := test_helpers.BidEvent{BidId: flopKickEvent.BidId, BidAmount: flopKickEvent.Bid, Lot: flopKickEvent.Lot, Act: "kick", ContractAddress: flopKickEvent.ContractAddress}
+			flopKickBidEvent := test_helpers.BidEvent{
+				BidId:           flopKickEvent.ColumnValues["bid_id"].(string),
+				BidAmount:       flopKickEvent.ColumnValues["bid"].(string),
+				Lot:             flopKickEvent.ColumnValues["lot"].(string),
+				Act:             "kick",
+				ContractAddress: flopKickEvent.ForeignKeyValues[constants.AddressFK]}
 
 			var actualBidEvents []test_helpers.BidEvent
 			queryErr := db.Select(&actualBidEvents, `SELECT bid_id, bid_amount, lot, act, contract_address FROM api.all_flap_bid_events()`)
