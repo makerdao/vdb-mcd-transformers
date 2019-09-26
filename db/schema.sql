@@ -1385,6 +1385,94 @@ FROM api.get_urn(event.ilk_identifier, event.urn_identifier, event.block_height)
 $$;
 
 
+SET default_tablespace = '';
+
+SET default_with_oids = false;
+
+--
+-- Name: current_ilk_state; Type: TABLE; Schema: api; Owner: -
+--
+
+CREATE TABLE api.current_ilk_state (
+    ilk_identifier text NOT NULL,
+    rate numeric,
+    art numeric,
+    spot numeric,
+    line numeric,
+    dust numeric,
+    chop numeric,
+    lump numeric,
+    flip text,
+    rho numeric,
+    duty numeric,
+    pip text,
+    mat numeric,
+    created timestamp without time zone,
+    updated timestamp without time zone
+);
+
+
+--
+-- Name: TABLE current_ilk_state; Type: COMMENT; Schema: api; Owner: -
+--
+
+COMMENT ON TABLE api.current_ilk_state IS '@omit create,update,delete';
+
+
+--
+-- Name: COLUMN current_ilk_state.ilk_identifier; Type: COMMENT; Schema: api; Owner: -
+--
+
+COMMENT ON COLUMN api.current_ilk_state.ilk_identifier IS '@name id';
+
+
+--
+-- Name: current_ilk_state_bites(api.current_ilk_state, integer, integer); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.current_ilk_state_bites(state api.current_ilk_state, max_results integer DEFAULT NULL::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.bite_event
+    LANGUAGE sql STABLE
+    AS $$
+SELECT *
+FROM api.all_bites(state.ilk_identifier)
+ORDER BY block_height DESC
+LIMIT max_results
+OFFSET
+result_offset
+$$;
+
+
+--
+-- Name: current_ilk_state_frobs(api.current_ilk_state, integer, integer); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.current_ilk_state_frobs(state api.current_ilk_state, max_results integer DEFAULT NULL::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.frob_event
+    LANGUAGE sql STABLE
+    AS $$
+SELECT *
+FROM api.all_frobs(state.ilk_identifier)
+ORDER BY block_height DESC
+LIMIT max_results
+OFFSET
+result_offset
+$$;
+
+
+--
+-- Name: current_ilk_state_ilk_file_events(api.current_ilk_state, integer, integer); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.current_ilk_state_ilk_file_events(state api.current_ilk_state, max_results integer DEFAULT NULL::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.ilk_file_event
+    LANGUAGE sql STABLE
+    AS $$
+SELECT *
+FROM api.all_ilk_file_events(state.ilk_identifier)
+LIMIT max_results
+OFFSET
+result_offset
+$$;
+
+
 --
 -- Name: epoch_to_datetime(numeric); Type: FUNCTION; Schema: api; Owner: -
 --
@@ -2173,10 +2261,6 @@ LIMIT ilk_state_ilk_file_events.max_results OFFSET ilk_state_ilk_file_events.res
 $$;
 
 
-SET default_tablespace = '';
-
-SET default_with_oids = false;
-
 --
 -- Name: managed_cdp; Type: TABLE; Schema: api; Owner: -
 --
@@ -2606,6 +2690,414 @@ BEGIN
         SELECT MAX(block_number)
         FROM maker.cdp_manager_owns
         WHERE cdp_manager_owns.cdpi = NEW.cdpi);
+    RETURN NEW;
+END
+$$;
+
+
+--
+-- Name: insert_ilk_art(); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.insert_ilk_art() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    WITH ilk AS (SELECT identifier FROM maker.ilks WHERE id = NEW.ilk_id),
+         block_header AS (
+             SELECT api.epoch_to_datetime(block_timestamp) AS block_timestamp
+             FROM public.headers
+             WHERE block_number = NEW.block_number)
+    INSERT
+    INTO api.current_ilk_state (ilk_identifier, art, created, updated)
+    VALUES ((SELECT identifier FROM ilk),
+            NEW.art,
+            (SELECT block_timestamp FROM block_header),
+            (SELECT block_timestamp FROM block_header))
+    ON CONFLICT (ilk_identifier)
+        DO UPDATE
+        SET art     = (
+            CASE
+                WHEN current_ilk_state.art IS NULL OR
+                     current_ilk_state.updated < (SELECT block_timestamp FROM block_header)
+                    THEN NEW.art
+                ELSE current_ilk_state.art END),
+            created = LEAST((SELECT block_timestamp FROM block_header), current_ilk_state.created),
+            updated = GREATEST((SELECT block_timestamp FROM block_header), current_ilk_state.updated);
+    RETURN NEW;
+END
+$$;
+
+
+--
+-- Name: insert_ilk_chop(); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.insert_ilk_chop() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    WITH ilk AS (SELECT identifier FROM maker.ilks WHERE id = NEW.ilk_id),
+         block_header AS (
+             SELECT api.epoch_to_datetime(block_timestamp) AS block_timestamp
+             FROM public.headers
+             WHERE block_number = NEW.block_number)
+    INSERT
+    INTO api.current_ilk_state (ilk_identifier, chop, created, updated)
+    VALUES ((SELECT identifier FROM ilk),
+            NEW.chop,
+            (SELECT block_timestamp FROM block_header),
+            (SELECT block_timestamp FROM block_header))
+    ON CONFLICT (ilk_identifier)
+        DO UPDATE
+        SET chop    = (
+            CASE
+                WHEN current_ilk_state.chop IS NULL OR
+                     current_ilk_state.updated < (SELECT block_timestamp FROM block_header)
+                    THEN NEW.chop
+                ELSE current_ilk_state.chop END),
+            created = LEAST((SELECT block_timestamp FROM block_header), current_ilk_state.created),
+            updated = GREATEST((SELECT block_timestamp FROM block_header), current_ilk_state.updated);
+    RETURN NEW;
+END
+$$;
+
+
+--
+-- Name: insert_ilk_dust(); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.insert_ilk_dust() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    WITH ilk AS (SELECT identifier FROM maker.ilks WHERE id = NEW.ilk_id),
+         block_header AS (
+             SELECT api.epoch_to_datetime(block_timestamp) AS block_timestamp
+             FROM public.headers
+             WHERE block_number = NEW.block_number)
+    INSERT
+    INTO api.current_ilk_state (ilk_identifier, dust, created, updated)
+    VALUES ((SELECT identifier FROM ilk),
+            NEW.dust,
+            (SELECT block_timestamp FROM block_header),
+            (SELECT block_timestamp FROM block_header))
+    ON CONFLICT (ilk_identifier)
+        DO UPDATE
+        SET dust    = (
+            CASE
+                WHEN current_ilk_state.dust IS NULL OR
+                     current_ilk_state.updated < (SELECT block_timestamp FROM block_header)
+                    THEN NEW.dust
+                ELSE current_ilk_state.dust END),
+            created = LEAST((SELECT block_timestamp FROM block_header), current_ilk_state.created),
+            updated = GREATEST((SELECT block_timestamp FROM block_header), current_ilk_state.updated);
+    RETURN NEW;
+END
+$$;
+
+
+--
+-- Name: insert_ilk_duty(); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.insert_ilk_duty() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    WITH ilk AS (SELECT identifier FROM maker.ilks WHERE id = NEW.ilk_id),
+         block_header AS (
+             SELECT api.epoch_to_datetime(block_timestamp) AS block_timestamp
+             FROM public.headers
+             WHERE block_number = NEW.block_number)
+    INSERT
+    INTO api.current_ilk_state (ilk_identifier, duty, created, updated)
+    VALUES ((SELECT identifier FROM ilk),
+            NEW.duty,
+            (SELECT block_timestamp FROM block_header),
+            (SELECT block_timestamp FROM block_header))
+    ON CONFLICT (ilk_identifier)
+        DO UPDATE
+        SET duty    = (
+            CASE
+                WHEN current_ilk_state.duty IS NULL OR
+                     current_ilk_state.updated < (SELECT block_timestamp FROM block_header)
+                    THEN NEW.duty
+                ELSE current_ilk_state.duty END),
+            created = LEAST((SELECT block_timestamp FROM block_header), current_ilk_state.created),
+            updated = GREATEST((SELECT block_timestamp FROM block_header), current_ilk_state.updated);
+    RETURN NEW;
+END
+$$;
+
+
+--
+-- Name: insert_ilk_flip(); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.insert_ilk_flip() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    WITH ilk AS (SELECT identifier FROM maker.ilks WHERE id = NEW.ilk_id),
+         block_header AS (
+             SELECT api.epoch_to_datetime(block_timestamp) AS block_timestamp
+             FROM public.headers
+             WHERE block_number = NEW.block_number)
+    INSERT
+    INTO api.current_ilk_state (ilk_identifier, flip, created, updated)
+    VALUES ((SELECT identifier FROM ilk),
+            NEW.flip,
+            (SELECT block_timestamp FROM block_header),
+            (SELECT block_timestamp FROM block_header))
+    ON CONFLICT (ilk_identifier)
+        DO UPDATE
+        SET flip    = (
+            CASE
+                WHEN current_ilk_state.flip IS NULL OR
+                     current_ilk_state.updated < (SELECT block_timestamp FROM block_header)
+                    THEN NEW.flip
+                ELSE current_ilk_state.flip END),
+            created = LEAST((SELECT block_timestamp FROM block_header), current_ilk_state.created),
+            updated = GREATEST((SELECT block_timestamp FROM block_header), current_ilk_state.updated);
+    RETURN NEW;
+END
+$$;
+
+
+--
+-- Name: insert_ilk_line(); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.insert_ilk_line() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    WITH ilk AS (SELECT identifier FROM maker.ilks WHERE id = NEW.ilk_id),
+         block_header AS (
+             SELECT api.epoch_to_datetime(block_timestamp) AS block_timestamp
+             FROM public.headers
+             WHERE block_number = NEW.block_number)
+    INSERT
+    INTO api.current_ilk_state (ilk_identifier, line, created, updated)
+    VALUES ((SELECT identifier FROM ilk),
+            NEW.line,
+            (SELECT block_timestamp FROM block_header),
+            (SELECT block_timestamp FROM block_header))
+    ON CONFLICT (ilk_identifier)
+        DO UPDATE
+        SET line    = (
+            CASE
+                WHEN current_ilk_state.line IS NULL OR
+                     current_ilk_state.updated < (SELECT block_timestamp FROM block_header)
+                    THEN NEW.line
+                ELSE current_ilk_state.line END),
+            created = LEAST((SELECT block_timestamp FROM block_header), current_ilk_state.created),
+            updated = GREATEST((SELECT block_timestamp FROM block_header), current_ilk_state.updated);
+    RETURN NEW;
+END
+$$;
+
+
+--
+-- Name: insert_ilk_lump(); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.insert_ilk_lump() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    WITH ilk AS (SELECT identifier FROM maker.ilks WHERE id = NEW.ilk_id),
+         block_header AS (
+             SELECT api.epoch_to_datetime(block_timestamp) AS block_timestamp
+             FROM public.headers
+             WHERE block_number = NEW.block_number)
+    INSERT
+    INTO api.current_ilk_state (ilk_identifier, lump, created, updated)
+    VALUES ((SELECT identifier FROM ilk),
+            NEW.lump,
+            (SELECT block_timestamp FROM block_header),
+            (SELECT block_timestamp FROM block_header))
+    ON CONFLICT (ilk_identifier)
+        DO UPDATE
+        SET lump    = (
+            CASE
+                WHEN current_ilk_state.lump IS NULL OR
+                     current_ilk_state.updated < (SELECT block_timestamp FROM block_header)
+                    THEN NEW.lump
+                ELSE current_ilk_state.lump END),
+            created = LEAST((SELECT block_timestamp FROM block_header), current_ilk_state.created),
+            updated = GREATEST((SELECT block_timestamp FROM block_header), current_ilk_state.updated);
+    RETURN NEW;
+END
+$$;
+
+
+--
+-- Name: insert_ilk_mat(); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.insert_ilk_mat() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    WITH ilk AS (SELECT identifier FROM maker.ilks WHERE id = NEW.ilk_id),
+         block_header AS (
+             SELECT api.epoch_to_datetime(block_timestamp) AS block_timestamp
+             FROM public.headers
+             WHERE block_number = NEW.block_number)
+    INSERT
+    INTO api.current_ilk_state (ilk_identifier, mat, created, updated)
+    VALUES ((SELECT identifier FROM ilk),
+            NEW.mat,
+            (SELECT block_timestamp FROM block_header),
+            (SELECT block_timestamp FROM block_header))
+    ON CONFLICT (ilk_identifier)
+        DO UPDATE
+        SET mat     = (
+            CASE
+                WHEN current_ilk_state.mat IS NULL OR
+                     current_ilk_state.updated < (SELECT block_timestamp FROM block_header)
+                    THEN NEW.mat
+                ELSE current_ilk_state.mat END),
+            created = LEAST((SELECT block_timestamp FROM block_header), current_ilk_state.created),
+            updated = GREATEST((SELECT block_timestamp FROM block_header), current_ilk_state.updated);
+    RETURN NEW;
+END
+$$;
+
+
+--
+-- Name: insert_ilk_pip(); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.insert_ilk_pip() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    WITH ilk AS (SELECT identifier FROM maker.ilks WHERE id = NEW.ilk_id),
+         block_header AS (
+             SELECT api.epoch_to_datetime(block_timestamp) AS block_timestamp
+             FROM public.headers
+             WHERE block_number = NEW.block_number)
+    INSERT
+    INTO api.current_ilk_state (ilk_identifier, pip, created, updated)
+    VALUES ((SELECT identifier FROM ilk),
+            NEW.pip,
+            (SELECT block_timestamp FROM block_header),
+            (SELECT block_timestamp FROM block_header))
+    ON CONFLICT (ilk_identifier)
+        DO UPDATE
+        SET pip     = (
+            CASE
+                WHEN current_ilk_state.pip IS NULL OR
+                     current_ilk_state.updated < (SELECT block_timestamp FROM block_header)
+                    THEN NEW.pip
+                ELSE current_ilk_state.pip END),
+            created = LEAST((SELECT block_timestamp FROM block_header), current_ilk_state.created),
+            updated = GREATEST((SELECT block_timestamp FROM block_header), current_ilk_state.updated);
+    RETURN NEW;
+END
+$$;
+
+
+--
+-- Name: insert_ilk_rate(); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.insert_ilk_rate() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    WITH ilk AS (SELECT identifier FROM maker.ilks WHERE id = NEW.ilk_id),
+         block_header AS (
+             SELECT api.epoch_to_datetime(block_timestamp) AS block_timestamp
+             FROM public.headers
+             WHERE block_number = NEW.block_number)
+    INSERT
+    INTO api.current_ilk_state (ilk_identifier, rate, created, updated)
+    VALUES ((SELECT identifier FROM ilk),
+            NEW.rate,
+            (SELECT block_timestamp FROM block_header),
+            (SELECT block_timestamp FROM block_header))
+    ON CONFLICT (ilk_identifier)
+        DO UPDATE
+        SET rate    = (
+            CASE
+                WHEN current_ilk_state.rate IS NULL OR
+                     current_ilk_state.updated < (SELECT block_timestamp FROM block_header)
+                    THEN NEW.rate
+                ELSE current_ilk_state.rate END),
+            created = LEAST((SELECT block_timestamp FROM block_header), current_ilk_state.created),
+            updated = GREATEST((SELECT block_timestamp FROM block_header), current_ilk_state.updated);
+    RETURN NEW;
+END
+$$;
+
+
+--
+-- Name: insert_ilk_rho(); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.insert_ilk_rho() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    WITH ilk AS (SELECT identifier FROM maker.ilks WHERE id = NEW.ilk_id),
+         block_header AS (
+             SELECT api.epoch_to_datetime(block_timestamp) AS block_timestamp
+             FROM public.headers
+             WHERE block_number = NEW.block_number)
+    INSERT
+    INTO api.current_ilk_state (ilk_identifier, rho, created, updated)
+    VALUES ((SELECT identifier FROM ilk),
+            NEW.rho,
+            (SELECT block_timestamp FROM block_header),
+            (SELECT block_timestamp FROM block_header))
+    ON CONFLICT (ilk_identifier)
+        DO UPDATE
+        SET rho     = (
+            CASE
+                WHEN current_ilk_state.rho IS NULL OR
+                     current_ilk_state.updated < (SELECT block_timestamp FROM block_header)
+                    THEN NEW.rho
+                ELSE current_ilk_state.rho END),
+            created = LEAST((SELECT block_timestamp FROM block_header), current_ilk_state.created),
+            updated = GREATEST((SELECT block_timestamp FROM block_header), current_ilk_state.updated);
+    RETURN NEW;
+END
+$$;
+
+
+--
+-- Name: insert_ilk_spot(); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.insert_ilk_spot() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    WITH ilk AS (SELECT identifier FROM maker.ilks WHERE id = NEW.ilk_id),
+         block_header AS (
+             SELECT api.epoch_to_datetime(block_timestamp) AS block_timestamp
+             FROM public.headers
+             WHERE block_number = NEW.block_number)
+    INSERT
+    INTO api.current_ilk_state (ilk_identifier, spot, created, updated)
+    VALUES ((SELECT identifier FROM ilk),
+            NEW.spot,
+            (SELECT block_timestamp FROM block_header),
+            (SELECT block_timestamp FROM block_header))
+    ON CONFLICT (ilk_identifier)
+        DO UPDATE
+        SET spot    = (
+            CASE
+                WHEN current_ilk_state.spot IS NULL OR
+                     current_ilk_state.updated < (SELECT block_timestamp FROM block_header)
+                    THEN NEW.spot
+                ELSE current_ilk_state.spot END),
+            created = LEAST((SELECT block_timestamp FROM block_header), current_ilk_state.created),
+            updated = GREATEST((SELECT block_timestamp FROM block_header), current_ilk_state.updated);
     RETURN NEW;
 END
 $$;
@@ -9577,6 +10069,14 @@ ALTER TABLE ONLY public.watched_logs ALTER COLUMN id SET DEFAULT nextval('public
 
 
 --
+-- Name: current_ilk_state current_ilk_state_pkey; Type: CONSTRAINT; Schema: api; Owner: -
+--
+
+ALTER TABLE ONLY api.current_ilk_state
+    ADD CONSTRAINT current_ilk_state_pkey PRIMARY KEY (ilk_identifier);
+
+
+--
 -- Name: managed_cdp managed_cdp_cdpi_key; Type: CONSTRAINT; Schema: api; Owner: -
 --
 
@@ -13231,6 +13731,90 @@ CREATE TRIGGER flop_bid_tic AFTER INSERT OR UPDATE ON maker.flop_bid_tic FOR EAC
 --
 
 CREATE TRIGGER flop_created_trigger AFTER INSERT ON maker.flop_kick FOR EACH ROW EXECUTE PROCEDURE maker.flop_created();
+
+
+--
+-- Name: vat_ilk_art ilk_art; Type: TRIGGER; Schema: maker; Owner: -
+--
+
+CREATE TRIGGER ilk_art AFTER INSERT OR UPDATE ON maker.vat_ilk_art FOR EACH ROW EXECUTE PROCEDURE maker.insert_ilk_art();
+
+
+--
+-- Name: cat_ilk_chop ilk_chop; Type: TRIGGER; Schema: maker; Owner: -
+--
+
+CREATE TRIGGER ilk_chop AFTER INSERT OR UPDATE ON maker.cat_ilk_chop FOR EACH ROW EXECUTE PROCEDURE maker.insert_ilk_chop();
+
+
+--
+-- Name: vat_ilk_dust ilk_dust; Type: TRIGGER; Schema: maker; Owner: -
+--
+
+CREATE TRIGGER ilk_dust AFTER INSERT OR UPDATE ON maker.vat_ilk_dust FOR EACH ROW EXECUTE PROCEDURE maker.insert_ilk_dust();
+
+
+--
+-- Name: jug_ilk_duty ilk_duty; Type: TRIGGER; Schema: maker; Owner: -
+--
+
+CREATE TRIGGER ilk_duty AFTER INSERT OR UPDATE ON maker.jug_ilk_duty FOR EACH ROW EXECUTE PROCEDURE maker.insert_ilk_duty();
+
+
+--
+-- Name: cat_ilk_flip ilk_flip; Type: TRIGGER; Schema: maker; Owner: -
+--
+
+CREATE TRIGGER ilk_flip AFTER INSERT OR UPDATE ON maker.cat_ilk_flip FOR EACH ROW EXECUTE PROCEDURE maker.insert_ilk_flip();
+
+
+--
+-- Name: vat_ilk_line ilk_line; Type: TRIGGER; Schema: maker; Owner: -
+--
+
+CREATE TRIGGER ilk_line AFTER INSERT OR UPDATE ON maker.vat_ilk_line FOR EACH ROW EXECUTE PROCEDURE maker.insert_ilk_line();
+
+
+--
+-- Name: cat_ilk_lump ilk_lump; Type: TRIGGER; Schema: maker; Owner: -
+--
+
+CREATE TRIGGER ilk_lump AFTER INSERT OR UPDATE ON maker.cat_ilk_lump FOR EACH ROW EXECUTE PROCEDURE maker.insert_ilk_lump();
+
+
+--
+-- Name: spot_ilk_mat ilk_mat; Type: TRIGGER; Schema: maker; Owner: -
+--
+
+CREATE TRIGGER ilk_mat AFTER INSERT OR UPDATE ON maker.spot_ilk_mat FOR EACH ROW EXECUTE PROCEDURE maker.insert_ilk_mat();
+
+
+--
+-- Name: spot_ilk_pip ilk_pip; Type: TRIGGER; Schema: maker; Owner: -
+--
+
+CREATE TRIGGER ilk_pip AFTER INSERT OR UPDATE ON maker.spot_ilk_pip FOR EACH ROW EXECUTE PROCEDURE maker.insert_ilk_pip();
+
+
+--
+-- Name: vat_ilk_rate ilk_rate; Type: TRIGGER; Schema: maker; Owner: -
+--
+
+CREATE TRIGGER ilk_rate AFTER INSERT OR UPDATE ON maker.vat_ilk_rate FOR EACH ROW EXECUTE PROCEDURE maker.insert_ilk_rate();
+
+
+--
+-- Name: jug_ilk_rho ilk_rho; Type: TRIGGER; Schema: maker; Owner: -
+--
+
+CREATE TRIGGER ilk_rho AFTER INSERT OR UPDATE ON maker.jug_ilk_rho FOR EACH ROW EXECUTE PROCEDURE maker.insert_ilk_rho();
+
+
+--
+-- Name: vat_ilk_spot ilk_spot; Type: TRIGGER; Schema: maker; Owner: -
+--
+
+CREATE TRIGGER ilk_spot AFTER INSERT OR UPDATE ON maker.vat_ilk_spot FOR EACH ROW EXECUTE PROCEDURE maker.insert_ilk_spot();
 
 
 --
