@@ -66,7 +66,7 @@ var SpotPokeModel = shared.InsertionModel{
 	SchemaName: "maker",
 	TableName:  "spot_poke",
 	OrderedColumns: []string{
-		constants.HeaderFK, constants.LogFK, "value", "spot",
+		constants.HeaderFK, constants.LogFK, string(constants.IlkFK), "value", "spot",
 	},
 	ColumnValues: shared.ColumnValues{
 		constants.HeaderFK: SpotPokeEntity.HeaderID,
