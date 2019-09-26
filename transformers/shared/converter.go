@@ -21,6 +21,7 @@ import (
 	"fmt"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/constants"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 )
 
 var (
@@ -29,6 +30,10 @@ var (
 	}
 	ErrLogMissingData = errors.New("log missing data")
 )
+
+type Converter interface {
+	ToModels(contractAbi string, ethLog []core.HeaderSyncLog) ([]InsertionModel, error)
+}
 
 func VerifyLog(log types.Log, expectedNumTopics int, isDataRequired bool) error {
 	actualNumTopics := len(log.Topics)

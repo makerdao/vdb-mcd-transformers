@@ -26,7 +26,7 @@ import (
 
 type LogNoteTransformer struct {
 	Config     transformer.EventTransformerConfig
-	Converter  LogNoteConverter
+	Converter  Converter
 	Repository SharedRepository
 }
 
