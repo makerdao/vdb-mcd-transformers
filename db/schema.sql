@@ -5617,6 +5617,39 @@ ALTER SEQUENCE maker.flop_live_id_seq OWNED BY maker.flop_live.id;
 
 
 --
+-- Name: flop_pad; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.flop_pad (
+    id integer NOT NULL,
+    block_number bigint,
+    block_hash text,
+    address_id integer NOT NULL,
+    pad numeric NOT NULL
+);
+
+
+--
+-- Name: flop_pad_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.flop_pad_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: flop_pad_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.flop_pad_id_seq OWNED BY maker.flop_pad.id;
+
+
+--
 -- Name: flop_tau; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -8906,6 +8939,13 @@ ALTER TABLE ONLY maker.flop_live ALTER COLUMN id SET DEFAULT nextval('maker.flop
 
 
 --
+-- Name: flop_pad id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flop_pad ALTER COLUMN id SET DEFAULT nextval('maker.flop_pad_id_seq'::regclass);
+
+
+--
 -- Name: flop_tau id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
@@ -10500,6 +10540,22 @@ ALTER TABLE ONLY maker.flop_live
 
 ALTER TABLE ONLY maker.flop_live
     ADD CONSTRAINT flop_live_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: flop_pad flop_pad_block_number_block_hash_address_id_pad_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flop_pad
+    ADD CONSTRAINT flop_pad_block_number_block_hash_address_id_pad_key UNIQUE (block_number, block_hash, address_id, pad);
+
+
+--
+-- Name: flop_pad flop_pad_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flop_pad
+    ADD CONSTRAINT flop_pad_pkey PRIMARY KEY (id);
 
 
 --
@@ -13705,6 +13761,14 @@ ALTER TABLE ONLY maker.flop_kicks
 
 ALTER TABLE ONLY maker.flop_live
     ADD CONSTRAINT flop_live_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: flop_pad flop_pad_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flop_pad
+    ADD CONSTRAINT flop_pad_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --
