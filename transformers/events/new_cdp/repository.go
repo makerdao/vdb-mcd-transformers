@@ -17,9 +17,7 @@
 package new_cdp
 
 import (
-	"fmt"
-	"github.com/jmoiron/sqlx"
-	"github.com/sirupsen/logrus"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 )
 
@@ -37,35 +35,6 @@ func (repository *NewCdpRepository) SetDB(db *postgres.DB) {
 	repository.db = db
 }
 
-func (repository NewCdpRepository) Create(models []interface{}) error {
-	tx, dbErr := repository.db.Beginx()
-	if dbErr != nil {
-		return dbErr
-	}
-	for _, model := range models {
-		newCdpModel, ok := model.(NewCdpModel)
-		if !ok {
-			return rollbackErr(tx, fmt.Errorf("model of type %T, not %T", model, NewCdpModel{}))
-		}
-
-		_, execErr := tx.Exec(InsertNewCdpQuery, newCdpModel.HeaderID, newCdpModel.Usr, newCdpModel.Own, newCdpModel.Cdp,
-			newCdpModel.LogID)
-		if execErr != nil {
-			return rollbackErr(tx, execErr)
-		}
-		_, logErr := tx.Exec(`UPDATE public.header_sync_logs SET transformed = true WHERE id = $1`, newCdpModel.LogID)
-		if logErr != nil {
-			return rollbackErr(tx, logErr)
-		}
-	}
-
-	return tx.Commit()
-}
-
-func rollbackErr(tx *sqlx.Tx, err error) error {
-	rollbackErr := tx.Rollback()
-	if rollbackErr != nil {
-		logrus.Error("failed to rollback ", rollbackErr)
-	}
-	return err
+func (repository NewCdpRepository) Create(models []shared.InsertionModel) error {
+	return shared.Create(models, repository.db)
 }

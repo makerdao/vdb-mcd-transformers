@@ -40,40 +40,22 @@ var _ = Describe("NewCdp Converter", func() {
 
 		It("returns an error if converting log to entity fails", func() {
 			_, err := converter.ToEntities("error abi", []core.HeaderSyncLog{test_data.NewCdpHeaderSyncLog})
-
 			Expect(err).To(HaveOccurred())
 		})
 	})
 
 	Describe("ToModel", func() {
-		It("converts an Entity to a Model", func() {
-			models, err := converter.ToModels([]interface{}{test_data.NewCdpEntity})
+		It("converts a log to a Model", func() {
+			models, err := converter.ToModels(constants.CdpManagerABI(), []core.HeaderSyncLog{test_data.NewCdpHeaderSyncLog})
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(models)).To(Equal(1))
 			Expect(models[0]).To(Equal(test_data.NewCdpModel))
 		})
 
-		It("handles nil values", func() {
-			emptyAddressHex := "0x0000000000000000000000000000000000000000"
-			emptyString := ""
-			emptyEntity := new_cdp.NewCdpEntity{}
-
-			models, err := converter.ToModels([]interface{}{emptyEntity})
-			Expect(err).NotTo(HaveOccurred())
-
-			Expect(len(models)).To(Equal(1))
-			model := models[0].(new_cdp.NewCdpModel)
-			Expect(model.Usr).To(Equal(emptyAddressHex))
-			Expect(model.Own).To(Equal(emptyAddressHex))
-			Expect(model.Cdp).To(Equal(emptyString))
-		})
-
-		It("returns an error if the wrong entity type is passed in", func() {
-			_, err := converter.ToModels([]interface{}{test_data.WrongEntity{}})
-
+		It("returns an error if converting log to entity fails", func() {
+			_, err := converter.ToEntities("error abi", []core.HeaderSyncLog{test_data.NewCdpHeaderSyncLog})
 			Expect(err).To(HaveOccurred())
-			Expect(err.Error()).To(ContainSubstring("entity of type"))
 		})
 	})
 })
