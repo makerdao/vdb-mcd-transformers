@@ -79,7 +79,7 @@ var _ = XDescribe("FlapKick Transformer", func() {
 		err = tr.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 
-		var dbResult []flap_kick.FlapKickModel
+		var dbResult []FlapKickModel
 		err = db.Select(&dbResult, `SELECT bid, bid_id, "end", lot FROM maker.flap_kick`)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -90,3 +90,12 @@ var _ = XDescribe("FlapKick Transformer", func() {
 		Expect(dbResult[0].Lot).To(Equal("1000000000000000000"))
 	})
 })
+
+type FlapKickModel struct {
+	BidId           string `db:"bid_id"`
+	Lot             string
+	Bid             string
+	ContractAddress string `db:"address_id"`
+	HeaderID        int64  `db:"header_id"`
+	LogID           int64  `db:"log_id"`
+}

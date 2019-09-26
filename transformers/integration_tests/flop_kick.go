@@ -85,7 +85,7 @@ var _ = XDescribe("FlopKick Transformer", func() {
 		err = transformer.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 
-		var dbResult []flop_kick.Model
+		var dbResult []FlopKickModel
 		err = db.Select(&dbResult, `SELECT bid, bid_id, "end", gal, lot FROM maker.flop_kick`)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -115,7 +115,7 @@ var _ = XDescribe("FlopKick Transformer", func() {
 		err = transformer.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 
-		var dbResult []flop_kick.Model
+		var dbResult []FlopKickModel
 		err = db.Select(&dbResult, `SELECT bid, bid_id, "end", gal, lot FROM maker.flop_kick`)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -127,3 +127,13 @@ var _ = XDescribe("FlopKick Transformer", func() {
 		Expect(dbResult[0].Lot).To(Equal("115792089237316195423570985008687907853269984665640564039457584007913129639935"))
 	})
 })
+
+type FlopKickModel struct {
+	BidId           string `db:"bid_id"`
+	Lot             string
+	Bid             string
+	Gal             string
+	ContractAddress string `db:"address_id"`
+	HeaderID        int64  `db:"header_id"`
+	LogID           int64  `db:"log_id"`
+}

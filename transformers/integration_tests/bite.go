@@ -76,7 +76,7 @@ var _ = Describe("Bite Transformer", func() {
 		err = transformer.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 
-		var dbResult []bite.BiteModel
+		var dbResult []BiteModel
 		err = db.Select(&dbResult, `SELECT art, ink, flip, tab, urn_id, bite_identifier from maker.bite`)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -112,3 +112,15 @@ var _ = Describe("Bite Transformer", func() {
 		Expect(entity.Id).To(Equal(expectedEntity.Id))
 	})
 })
+
+type BiteModel struct {
+	Ilk      string
+	Urn      string `db:"urn_id"`
+	Ink      string
+	Art      string
+	Tab      string
+	Flip     string
+	Id       string `db:"bite_identifier"`
+	HeaderID int64
+	LogID    int64 `db:"log_id"`
+}

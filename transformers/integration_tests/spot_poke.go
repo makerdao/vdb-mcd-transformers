@@ -81,7 +81,7 @@ var _ = Describe("SpotPoke Transformer", func() {
 		err = tr.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 
-		var dbResult []spot_poke.SpotPokeModel
+		var dbResult []SpotPokeModel
 		err = db.Select(&dbResult, `SELECT ilk_id, value, spot FROM maker.spot_poke`)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -93,3 +93,11 @@ var _ = Describe("SpotPoke Transformer", func() {
 		Expect(dbResult[0].Spot).To(Equal("210466666666666666666666666666"))
 	})
 })
+
+type SpotPokeModel struct {
+	Ilk      string `db:"ilk_id"`
+	Value    string
+	Spot     string
+	HeaderID int64 `db:"header_id"`
+	LogID    int64 `db:"log_id"`
+}

@@ -81,8 +81,3 @@ var (
 		},
 	}
 )
-
-type FlopKickDBResult struct {
-	Id int64
-	flop_kick.Model
-}

@@ -71,7 +71,7 @@ var _ = Describe("FlipKick Transformer", func() {
 		err = tr.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 
-		var dbResult []flip_kick.FlipKickModel
+		var dbResult []FlipKickModel
 		err = db.Select(&dbResult, `SELECT bid_id, lot, bid, tab, usr, gal, contract_address FROM maker.flip_kick`)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -84,3 +84,15 @@ var _ = Describe("FlipKick Transformer", func() {
 		Expect(dbResult[0].ContractAddress).To(Equal(""))
 	})
 })
+
+type FlipKickModel struct {
+	BidId           string `db:"bid_id"`
+	Lot             string
+	Bid             string
+	Tab             string
+	Usr             string
+	Gal             string
+	ContractAddress string `db:"address_id"`
+	HeaderID        int64  `db:"header_id"`
+	LogID           int64  `db:"log_id"`
+}

@@ -103,8 +103,3 @@ var FlipKickModel = shared.InsertionModel{
 		constants.AddressFK: contractAddress,
 	},
 }
-
-type FlipKickDBRow struct {
-	ID int64
-	flip_kick.FlipKickModel
-}

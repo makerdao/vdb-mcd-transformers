@@ -80,7 +80,7 @@ var _ = Describe("NewCdp Transformer", func() {
 		err = tr.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 
-		var dbResult []new_cdp.NewCdpModel
+		var dbResult []NewCdpModel
 		queryErr := db.Select(&dbResult, `SELECT usr, own, cdp FROM maker.new_cdp`)
 		Expect(queryErr).NotTo(HaveOccurred())
 
@@ -109,3 +109,11 @@ var _ = Describe("NewCdp Transformer", func() {
 		Expect(entity.Cdp).To(Equal(entity.Cdp))
 	})
 })
+
+type NewCdpModel struct {
+	Usr      string
+	Own      string
+	Cdp      string
+	LogID    int64 `db:"log_id"`
+	HeaderID int64
+}
