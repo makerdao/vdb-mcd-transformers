@@ -59,17 +59,17 @@ var NewCdpEntity = new_cdp.NewCdpEntity{
 }
 
 var NewCdpModel = shared.InsertionModel{
-	SchemaName:       "maker",
-	TableName:        "new_cdp",
-	OrderedColumns:   []string{
+	SchemaName: "maker",
+	TableName:  "new_cdp",
+	OrderedColumns: []string{
 		constants.HeaderFK, constants.LogFK, "usr", "own", "cdp",
 	},
-	ColumnValues:     shared.ColumnValues{
+	ColumnValues: shared.ColumnValues{
 		constants.HeaderFK: NewCdpHeaderSyncLog.HeaderID,
-		constants.LogFK: NewCdpHeaderSyncLog.ID,
-		"usr": "0xA9fCcB07DD3f774d5b9d02e99DE1a27f47F91189",
-		"own": "0xA9fCcB07DD3f774d5b9d02e99DE1a27f47F91189",
-		"cdp": newCdpCdp.String(),
+		constants.LogFK:    NewCdpHeaderSyncLog.ID,
+		"usr":              "0xA9fCcB07DD3f774d5b9d02e99DE1a27f47F91189",
+		"own":              "0xA9fCcB07DD3f774d5b9d02e99DE1a27f47F91189",
+		"cdp":              newCdpCdp.String(),
 	},
 	ForeignKeyValues: shared.ForeignKeyValues{},
 }

@@ -21,6 +21,7 @@ import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/vulcanize/mcd_transformers/transformers/events/spot_poke"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"math/big"
@@ -61,10 +62,19 @@ var SpotPokeEntity = spot_poke.SpotPokeEntity{
 	LogID:    SpotPokeHeaderSyncLog.ID,
 }
 
-var SpotPokeModel = spot_poke.SpotPokeModel{
-	Ilk:      "0x434f4c352d410000000000000000000000000000000000000000000000000000",
-	Value:    "89066421500000000.000000",
-	Spot:     "46877063947368421052631578",
-	HeaderID: SpotPokeEntity.HeaderID,
-	LogID:    SpotPokeEntity.LogID,
+var SpotPokeModel = shared.InsertionModel{
+	SchemaName: "maker",
+	TableName:  "spot_poke",
+	OrderedColumns: []string{
+		constants.HeaderFK, constants.LogFK, "value", "spot",
+	},
+	ColumnValues: shared.ColumnValues{
+		constants.HeaderFK: SpotPokeEntity.HeaderID,
+		constants.LogFK:    SpotPokeEntity.LogID,
+		"value":            "89066421500000000.000000",
+		"spot":             "46877063947368421052631578",
+	},
+	ForeignKeyValues: shared.ForeignKeyValues{
+		constants.IlkFK: "0x434f4c352d410000000000000000000000000000000000000000000000000000",
+	},
 }

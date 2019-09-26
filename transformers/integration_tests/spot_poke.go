@@ -25,7 +25,6 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
@@ -63,12 +62,12 @@ var _ = Describe("SpotPoke Transformer", func() {
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		initializer := event.Transformer{
+		initializer := shared.LogNoteTransformer{
 			Config:     spotPokeConfig,
 			Converter:  &spot_poke.SpotPokeConverter{},
 			Repository: &spot_poke.SpotPokeRepository{},
 		}
-		tr := initializer.NewTransformer(db)
+		tr := initializer.NewLogNoteTransformer(db)
 
 		f := fetcher.NewLogFetcher(blockChain)
 		logs, err := f.FetchLogs(

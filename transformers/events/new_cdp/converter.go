@@ -59,20 +59,20 @@ func (converter NewCdpConverter) ToModels(abi string, logs []core.HeaderSyncLog)
 	if entityErr != nil {
 		return nil, fmt.Errorf("NewCDPConverter couldn't convert logs to entities: %v", entityErr)
 	}
-	
+
 	for _, newCdpEntity := range entities {
 		model := shared.InsertionModel{
-			SchemaName:       "maker",
-			TableName:        "new_cdp",
-			OrderedColumns:   []string{
+			SchemaName: "maker",
+			TableName:  "new_cdp",
+			OrderedColumns: []string{
 				constants.HeaderFK, constants.LogFK, "usr", "own", "cdp",
 			},
-			ColumnValues:     shared.ColumnValues{
+			ColumnValues: shared.ColumnValues{
 				constants.HeaderFK: newCdpEntity.HeaderID,
-				constants.LogFK: newCdpEntity.LogID,
-				"usr": newCdpEntity.Usr.Hex(),
-				"own": newCdpEntity.Own.Hex(),
-				"cdp": shared.BigIntToString(newCdpEntity.Cdp),
+				constants.LogFK:    newCdpEntity.LogID,
+				"usr":              newCdpEntity.Usr.Hex(),
+				"own":              newCdpEntity.Own.Hex(),
+				"cdp":              shared.BigIntToString(newCdpEntity.Cdp),
 			},
 			ForeignKeyValues: shared.ForeignKeyValues{},
 		}

@@ -63,12 +63,12 @@ var (
 	}
 
 	FlopKickModel = shared.InsertionModel{
-		SchemaName:       "maker",
-		TableName:        "flop_kick",
-		OrderedColumns:   []string{
+		SchemaName: "maker",
+		TableName:  "flop_kick",
+		OrderedColumns: []string{
 			constants.HeaderFK, constants.LogFK, string(constants.AddressFK), "bid_id", "lot", "bid", "gal",
 		},
-		ColumnValues:     shared.ColumnValues{
+		ColumnValues: shared.ColumnValues{
 			constants.HeaderFK: FlopKickEntity.HeaderID,
 			constants.LogFK:    FlopKickEntity.LogID,
 			"bid_id":           shared.BigIntToString(FlopKickEntity.Id),

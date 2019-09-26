@@ -657,12 +657,12 @@ func CreateFlapKick(contractAddress string, bidId int, headerId, logId int64, re
 }
 
 func CreateFlopKick(contractAddress string, bidId int, headerId, logId int64, repo flop_kick.FlopKickRepository) error {
-	flopKickModel := test_data.FlopKickModel
-	flopKickModel.ContractAddress = contractAddress
-	flopKickModel.BidId = strconv.Itoa(bidId)
-	flopKickModel.HeaderID = headerId
-	flopKickModel.LogID = logId
-	return repo.Create([]interface{}{flopKickModel})
+	flopKickModel := test_data.CopyModel(test_data.FlopKickModel)
+	flopKickModel.ForeignKeyValues[constants.AddressFK] = contractAddress
+	flopKickModel.ColumnValues["bid_id"] = strconv.Itoa(bidId)
+	flopKickModel.ColumnValues[constants.HeaderFK] = headerId
+	flopKickModel.ColumnValues[constants.LogFK] = logId
+	return repo.Create([]shared.InsertionModel{flopKickModel})
 }
 
 func CreateTend(input TendCreationInput) (err error) {

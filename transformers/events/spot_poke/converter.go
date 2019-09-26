@@ -21,6 +21,7 @@ import (
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/geth"
 	"math/big"
@@ -28,8 +29,8 @@ import (
 
 type SpotPokeConverter struct{}
 
-func (s SpotPokeConverter) ToEntities(contractAbi string, logs []core.HeaderSyncLog) ([]interface{}, error) {
-	var entities []interface{}
+func (s SpotPokeConverter) ToEntities(contractAbi string, logs []core.HeaderSyncLog) ([]SpotPokeEntity, error) {
+	var entities []SpotPokeEntity
 	for _, log := range logs {
 		var entity SpotPokeEntity
 		address := log.Log.Address
@@ -52,20 +53,29 @@ func (s SpotPokeConverter) ToEntities(contractAbi string, logs []core.HeaderSync
 	return entities, nil
 }
 
-func (s SpotPokeConverter) ToModels(entities []interface{}) ([]interface{}, error) {
-	var models []interface{}
-	for _, entity := range entities {
-		spotPokeEntity, ok := entity.(SpotPokeEntity)
-		if !ok {
-			return nil, fmt.Errorf("entity of type %T, not %T", entity, SpotPokeEntity{})
-		}
+func (s SpotPokeConverter) ToModels(abi string, logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
+	entities, entityErr := s.ToEntities(abi, logs)
+	if entityErr != nil {
+		return nil, fmt.Errorf("NewCDPConverter couldn't convert logs to entities: %v", entityErr)
+	}
 
-		spotPokeModel := SpotPokeModel{
-			Ilk:      hexutil.Encode(spotPokeEntity.Ilk[:]),
-			Value:    bytesToFloatString(spotPokeEntity.Val[:], 6),
-			Spot:     shared.BigIntToString(spotPokeEntity.Spot),
-			HeaderID: spotPokeEntity.HeaderID,
-			LogID:    spotPokeEntity.LogID,
+	var models []shared.InsertionModel
+	for _, spotPokeEntity := range entities {
+		spotPokeModel := shared.InsertionModel{
+			SchemaName: "maker",
+			TableName:  "spot_poke",
+			OrderedColumns: []string{
+				constants.HeaderFK, constants.LogFK, "value", "spot",
+			},
+			ColumnValues: shared.ColumnValues{
+				constants.HeaderFK: spotPokeEntity.HeaderID,
+				constants.LogFK:    spotPokeEntity.LogID,
+				"value":            bytesToFloatString(spotPokeEntity.Val[:], 6),
+				"spot":             shared.BigIntToString(spotPokeEntity.Spot),
+			},
+			ForeignKeyValues: shared.ForeignKeyValues{
+				constants.IlkFK: hexutil.Encode(spotPokeEntity.Ilk[:]),
+			},
 		}
 		models = append(models, spotPokeModel)
 	}
