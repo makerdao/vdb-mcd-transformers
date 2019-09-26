@@ -13,7 +13,7 @@ ADD . .
 WORKDIR /go
 RUN GO111MODULE=auto go get -u -d github.com/vulcanize/vulcanizedb
 WORKDIR /go/src/github.com/vulcanize/vulcanizedb
-RUN git checkout v0.0.6
+RUN git checkout v0.0.7
 RUN go build
 
 WORKDIR /go/src/github.com/vulcanize/mcd_transformers
