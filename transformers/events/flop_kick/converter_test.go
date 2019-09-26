@@ -38,46 +38,22 @@ var _ = Describe("FlopKick Converter", func() {
 		})
 
 		It("returns an error if converting the log to an entity fails", func() {
-			entities, err := converter.ToEntities("error abi", []core.HeaderSyncLog{test_data.FlopKickHeaderSyncLog})
-
+			_, err := converter.ToEntities("error abi", []core.HeaderSyncLog{test_data.FlopKickHeaderSyncLog})
 			Expect(err).To(HaveOccurred())
-			Expect(entities).To(BeNil())
 		})
 	})
 
 	Describe("ToModels", func() {
-		It("converts an Entity to a Model", func() {
-			models, err := converter.ToModels([]interface{}{test_data.FlopKickEntity})
+		It("converts a log to a Model", func() {
+			models, err := converter.ToModels(constants.FlopABI(), []core.HeaderSyncLog{test_data.FlopKickHeaderSyncLog})
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(models[0]).To(Equal(test_data.FlopKickModel))
 		})
 
-		It("returns error if wrong entity", func() {
-			_, err := converter.ToModels([]interface{}{test_data.WrongEntity{}})
-
+		It("returns an error if converting log to entity fails", func() {
+			_, err := converter.ToEntities("error abi", []core.HeaderSyncLog{test_data.FlopKickHeaderSyncLog})
 			Expect(err).To(HaveOccurred())
-			Expect(err.Error()).To(ContainSubstring("entity of type test_data.WrongEntity, not flop_kick.Entity"))
-		})
-
-		It("handles nil values", func() {
-			emptyAddressHex := "0x0000000000000000000000000000000000000000"
-			emptyString := ""
-			emptyEntity := flop_kick.Entity{}
-			expectedModel := flop_kick.Model{
-				BidId:           emptyString,
-				Lot:             emptyString,
-				Bid:             emptyString,
-				Gal:             emptyAddressHex,
-				ContractAddress: emptyAddressHex,
-				LogID:           0,
-			}
-
-			models, err := converter.ToModels([]interface{}{emptyEntity})
-
-			Expect(err).NotTo(HaveOccurred())
-			Expect(len(models)).To(Equal(1))
-			Expect(models[0]).To(Equal(expectedModel))
 		})
 	})
 })

@@ -17,7 +17,6 @@
 package flop_kick
 
 import (
-	"fmt"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 )
@@ -32,51 +31,8 @@ type FlopKickRepository struct {
 	db *postgres.DB
 }
 
-func (repo FlopKickRepository) Create(models []interface{}) error {
-	tx, dBaseErr := repo.db.Beginx()
-	if dBaseErr != nil {
-		return dBaseErr
-	}
-	for _, model := range models {
-		flopKickModel, ok := model.(Model)
-		if !ok {
-			wrongTypeErr := fmt.Errorf("model of type %T, not %T", model, Model{})
-			rollbackErr := tx.Rollback()
-			if rollbackErr != nil {
-				return shared.FormatRollbackError("flop kick", wrongTypeErr.Error())
-			}
-			return wrongTypeErr
-		}
-
-		addressId, addressErr := shared.GetOrCreateAddressInTransaction(flopKickModel.ContractAddress, tx)
-		if addressErr != nil {
-			rollbackErr := tx.Rollback()
-			if rollbackErr != nil {
-				return shared.FormatRollbackError("flop address", addressErr.Error())
-			}
-			return addressErr
-		}
-
-		_, execErr := tx.Exec(InsertFlopKickQuery, flopKickModel.HeaderID, flopKickModel.BidId, flopKickModel.Lot, flopKickModel.Bid,
-			flopKickModel.Gal, addressId, flopKickModel.LogID)
-		if execErr != nil {
-			rollbackErr := tx.Rollback()
-			if rollbackErr != nil {
-				return shared.FormatRollbackError("flop kick", execErr.Error())
-			}
-			return execErr
-		}
-
-		_, logErr := tx.Exec(`UPDATE public.header_sync_logs SET transformed = true WHERE id = $1`, flopKickModel.LogID)
-		if logErr != nil {
-			rollbackErr := tx.Rollback()
-			if rollbackErr != nil {
-				return shared.FormatRollbackError("flop kick", logErr.Error())
-			}
-			return logErr
-		}
-	}
-	return tx.Commit()
+func (repo FlopKickRepository) Create(models []shared.InsertionModel) error {
+	return shared.Create(models, repo.db)
 }
 
 func (repo *FlopKickRepository) SetDB(db *postgres.DB) {

@@ -18,6 +18,7 @@ package flop_kick
 
 import (
 	"fmt"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
@@ -28,10 +29,10 @@ import (
 
 type FlopKickConverter struct{}
 
-func (FlopKickConverter) ToEntities(contractAbi string, logs []core.HeaderSyncLog) ([]interface{}, error) {
-	var results []interface{}
+func (FlopKickConverter) ToEntities(contractAbi string, logs []core.HeaderSyncLog) ([]FlopKickEntity, error) {
+	var results []FlopKickEntity
 	for _, log := range logs {
-		var entity Entity
+		var entity FlopKickEntity
 		address := log.Log.Address
 		abi, parseErr := geth.ParseAbi(contractAbi)
 		if parseErr != nil {
@@ -51,22 +52,30 @@ func (FlopKickConverter) ToEntities(contractAbi string, logs []core.HeaderSyncLo
 	return results, nil
 }
 
-func (FlopKickConverter) ToModels(entities []interface{}) ([]interface{}, error) {
-	var results []interface{}
-	for _, entity := range entities {
-		flopKickEntity, ok := entity.(Entity)
-		if !ok {
-			return nil, fmt.Errorf("entity of type %T, not %T", entity, Entity{})
-		}
-
-		model := Model{
-			BidId:           shared.BigIntToString(flopKickEntity.Id),
-			Lot:             shared.BigIntToString(flopKickEntity.Lot),
-			Bid:             shared.BigIntToString(flopKickEntity.Bid),
-			Gal:             flopKickEntity.Gal.String(),
-			ContractAddress: flopKickEntity.ContractAddress.Hex(),
-			HeaderID:        flopKickEntity.HeaderID,
-			LogID:           flopKickEntity.LogID,
+func (c FlopKickConverter) ToModels(abi string, logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
+	var results []shared.InsertionModel
+	entities, entityErr := c.ToEntities(abi, logs)
+	if entityErr != nil {
+		return nil, fmt.Errorf("FlopKickConverter couldn't convert logs to entities: %v", entityErr)
+	}
+	for _, flopKickEntity := range entities {
+		model := shared.InsertionModel{
+			SchemaName: "maker",
+			TableName:  "flop_kick",
+			OrderedColumns: []string{
+				constants.HeaderFK, constants.LogFK, string(constants.AddressFK), "bid_id", "lot", "bid", "gal",
+			},
+			ColumnValues: shared.ColumnValues{
+				constants.HeaderFK: flopKickEntity.HeaderID,
+				constants.LogFK:    flopKickEntity.LogID,
+				"bid_id":           shared.BigIntToString(flopKickEntity.Id),
+				"lot":              shared.BigIntToString(flopKickEntity.Lot),
+				"bid":              shared.BigIntToString(flopKickEntity.Bid),
+				"gal":              flopKickEntity.Gal.String(),
+			},
+			ForeignKeyValues: shared.ForeignKeyValues{
+				constants.AddressFK: flopKickEntity.ContractAddress.Hex(),
+			},
 		}
 		results = append(results, model)
 	}

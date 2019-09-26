@@ -21,6 +21,7 @@ import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/vulcanize/mcd_transformers/transformers/events/flop_kick"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
@@ -51,7 +52,7 @@ var (
 		Transformed: false,
 	}
 
-	FlopKickEntity = flop_kick.Entity{
+	FlopKickEntity = flop_kick.FlopKickEntity{
 		Id:              big.NewInt(30000000000000000),
 		Lot:             big.NewInt(1000000000000000000),
 		Bid:             big.NewInt(2000000000000000000),
@@ -61,14 +62,23 @@ var (
 		LogID:           FlopKickHeaderSyncLog.ID,
 	}
 
-	FlopKickModel = flop_kick.Model{
-		BidId:           FlopKickEntity.Id.String(),
-		Lot:             FlopKickEntity.Lot.String(),
-		Bid:             FlopKickEntity.Bid.String(),
-		Gal:             FlopKickEntity.Gal.Hex(),
-		ContractAddress: FlopKickHeaderSyncLog.Log.Address.Hex(),
-		HeaderID:        FlopKickEntity.HeaderID,
-		LogID:           FlopKickEntity.LogID,
+	FlopKickModel = shared.InsertionModel{
+		SchemaName:       "maker",
+		TableName:        "flop_kick",
+		OrderedColumns:   []string{
+			constants.HeaderFK, constants.LogFK, string(constants.AddressFK), "bid_id", "lot", "bid", "gal",
+		},
+		ColumnValues:     shared.ColumnValues{
+			constants.HeaderFK: FlopKickEntity.HeaderID,
+			constants.LogFK:    FlopKickEntity.LogID,
+			"bid_id":           shared.BigIntToString(FlopKickEntity.Id),
+			"lot":              shared.BigIntToString(FlopKickEntity.Lot),
+			"bid":              shared.BigIntToString(FlopKickEntity.Bid),
+			"gal":              FlopKickEntity.Gal.String(),
+		},
+		ForeignKeyValues: shared.ForeignKeyValues{
+			constants.AddressFK: FlopKickEntity.ContractAddress.Hex(),
+		},
 	}
 )
 
