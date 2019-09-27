@@ -63,7 +63,7 @@ func spotFileMatMethod() string {
 	return getOverloadedFunctionSignature(SpotABI(), "file", []string{"bytes32", "bytes32", "uint256"})
 }
 func spotFilePipMethod() string {
-	return getOverloadedFunctionSignature(SpotABI(), "file", []string{"bytes32", "address"})
+	return getOverloadedFunctionSignature(SpotABI(), "file", []string{"bytes32", "bytes32", "address"})
 }
 func spotPokeMethod() string { return getSolidityFunctionSignature(SpotABI(), "Poke") }
 func tendMethod() string     { return getSolidityFunctionSignature(FlipABI(), "tend") }

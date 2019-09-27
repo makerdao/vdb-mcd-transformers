@@ -61,7 +61,7 @@ var _ = Describe("SpotFile EventTransformers", func() {
 		)
 
 		BeforeEach(func() {
-			blockNumber = int64(13171882)
+			blockNumber = int64(13475100)
 			var insertHeaderErr error
 			header, insertHeaderErr = persistHeader(db, blockNumber, blockChain)
 			Expect(insertHeaderErr).NotTo(HaveOccurred())
@@ -121,7 +121,7 @@ var _ = Describe("SpotFile EventTransformers", func() {
 		)
 
 		BeforeEach(func() {
-			blockNumber = int64(13171646)
+			blockNumber = int64(13474863)
 			var insertHeaderErr error
 			header, insertHeaderErr = persistHeader(db, blockNumber, blockChain)
 			Expect(insertHeaderErr).NotTo(HaveOccurred())

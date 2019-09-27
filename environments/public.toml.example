@@ -23,6 +23,6 @@
     MCD_FLIP_ZRX_A = "0xb08a9c38f184c7e0b7468e6fb3923a1121a23cb0"
     MCD_FLOP       = "0xd86a529f008c092009334f0ea975e01d6d2dbf9a"
     MCD_JUG        = "0x269b2ca90b8f5d8e0a78ec9e1ea43ec41f7d1477"
-    MCD_SPOT       = "0xb61db7923f841740c96b24baec4805e522bb8594"
+    MCD_SPOT       = "0xa5aa0fb23322ff0a60832bb08cd0d360a71413c1"
     MCD_VAT        = "0xdf69460542dbdcf2f1e77941f53cfd4113a06183"
     MCD_VOW        = "0x32afee51c93d0bb71ff2e58af6b7b29cff5f8436"

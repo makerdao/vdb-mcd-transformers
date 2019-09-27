@@ -957,7 +957,7 @@ FROM maker.spot_file_mat
          LEFT JOIN headers ON spot_file_mat.header_id = headers.id
 WHERE spot_file_mat.ilk_id = (SELECT id FROM ilk)
 UNION
-SELECT ilk_identifier, 'pip' AS what, pip AS data, block_number, log_id
+SELECT ilk_identifier, what, pip AS data, block_number, log_id
 FROM maker.spot_file_pip
          LEFT JOIN headers ON spot_file_pip.header_id = headers.id
 WHERE spot_file_pip.ilk_id = (SELECT id FROM ilk)
@@ -6163,6 +6163,7 @@ CREATE TABLE maker.spot_file_pip (
     header_id integer NOT NULL,
     log_id bigint NOT NULL,
     ilk_id integer NOT NULL,
+    what text,
     pip text
 );
 
