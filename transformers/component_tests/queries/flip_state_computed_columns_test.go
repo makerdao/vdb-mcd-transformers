@@ -47,7 +47,6 @@ var _ = Describe("Flip state computed columns", func() {
 		dealRepo         deal.DealRepository
 		tendRepo         tend.TendRepository
 		contractAddress  = fakes.FakeAddress.Hex()
-		fakeUrn          = test_data.FakeUrn
 		fakeBidId        int
 		blockNumber      int
 	)
@@ -85,7 +84,7 @@ var _ = Describe("Flip state computed columns", func() {
 			},
 			Dealt:            false,
 			IlkHex:           test_helpers.FakeIlk.Hex,
-			UrnGuy:           fakeUrn,
+			UrnGuy:           test_data.FlipKickModel().ForeignKeyValues[constants.UrnFK],
 			FlipKickRepo:     flipKickRepo,
 			FlipKickHeaderId: headerId,
 		})
@@ -122,7 +121,7 @@ var _ = Describe("Flip state computed columns", func() {
 		It("returns urn_state for a flip_state", func() {
 			urnSetupData := test_helpers.GetUrnSetupData(blockNumber, 1)
 			urnSetupData.Header.Hash = fakeHeader.Hash
-			urnMetadata := test_helpers.GetUrnMetadata(test_helpers.FakeIlk.Hex, fakeUrn)
+			urnMetadata := test_helpers.GetUrnMetadata(test_helpers.FakeIlk.Hex, test_data.FlipKickModel().ForeignKeyValues[constants.UrnFK])
 			vatRepository := vat.VatStorageRepository{}
 			vatRepository.SetDB(db)
 			test_helpers.CreateUrn(urnSetupData, urnMetadata, vatRepository, headerRepository)
@@ -138,7 +137,7 @@ var _ = Describe("Flip state computed columns", func() {
 			Expect(getUrnErr).NotTo(HaveOccurred())
 
 			expectedUrn := test_helpers.UrnState{
-				UrnIdentifier: fakeUrn,
+				UrnIdentifier: test_data.FlipKickModel().ForeignKeyValues[constants.UrnFK],
 				IlkIdentifier: test_helpers.FakeIlk.Identifier,
 			}
 
@@ -288,7 +287,7 @@ var _ = Describe("Flip state computed columns", func() {
 				},
 				Dealt:            false,
 				IlkHex:           test_helpers.AnotherFakeIlk.Hex,
-				UrnGuy:           fakeUrn,
+				UrnGuy:           test_data.FlipKickModel().ForeignKeyValues[constants.UrnFK],
 				FlipKickRepo:     flipKickRepo,
 				FlipKickHeaderId: headerId,
 			})
@@ -320,7 +319,7 @@ var _ = Describe("Flip state computed columns", func() {
 				},
 				Dealt:            false,
 				IlkHex:           test_helpers.FakeIlk.Hex,
-				UrnGuy:           fakeUrn,
+				UrnGuy:           test_data.FlipKickModel().ForeignKeyValues[constants.UrnFK],
 				FlipKickRepo:     flipKickRepo,
 				FlipKickHeaderId: headerId,
 			})
