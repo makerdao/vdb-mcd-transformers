@@ -24,8 +24,8 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 )
 
-var EventTransformerInitializer transformer.EventTransformerInitializer = shared.LogNoteTransformer{
+var EventTransformerInitializer transformer.EventTransformerInitializer = shared.EventTransformer{
 	Config:     shared.GetEventTransformerConfig(constants.VatFluxLabel, constants.VatFluxSignature()),
 	Converter:  &vat_flux.VatFluxConverter{},
 	Repository: &vat_flux.VatFluxRepository{},
-}.NewLogNoteTransformer
+}.NewEventTransformer

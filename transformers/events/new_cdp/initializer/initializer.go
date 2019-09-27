@@ -24,8 +24,8 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
-var EventTransformerInitializer transformer.EventTransformerInitializer = shared.LogNoteTransformer{
+var EventTransformerInitializer transformer.EventTransformerInitializer = shared.EventTransformer{
 	Config:     shared.GetEventTransformerConfig(constants.NewCdpLabel, constants.NewCdpSignature()),
 	Converter:  new_cdp.NewCdpConverter{},
 	Repository: &new_cdp.NewCdpRepository{},
-}.NewLogNoteTransformer
+}.NewEventTransformer

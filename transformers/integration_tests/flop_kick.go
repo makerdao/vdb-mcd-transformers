@@ -36,7 +36,7 @@ var _ = XDescribe("FlopKick Transformer", func() {
 		db             *postgres.DB
 		blockChain     core.BlockChain
 		flopKickConfig transformer.EventTransformerConfig
-		initializer    shared.LogNoteTransformer
+		initializer    shared.EventTransformer
 		logFetcher     fetcher.ILogFetcher
 		addresses      []common.Address
 		topics         []common.Hash
@@ -57,7 +57,7 @@ var _ = XDescribe("FlopKick Transformer", func() {
 			Topic:             constants.FlopKickSignature(),
 		}
 
-		initializer = shared.LogNoteTransformer{
+		initializer = shared.EventTransformer{
 			Config:     flopKickConfig,
 			Converter:  &flop_kick.FlopKickConverter{},
 			Repository: &flop_kick.FlopKickRepository{},
@@ -81,7 +81,7 @@ var _ = XDescribe("FlopKick Transformer", func() {
 
 		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
 
-		transformer := initializer.NewLogNoteTransformer(db)
+		transformer := initializer.NewEventTransformer(db)
 		err = transformer.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -111,7 +111,7 @@ var _ = XDescribe("FlopKick Transformer", func() {
 
 		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
 
-		transformer := initializer.NewLogNoteTransformer(db)
+		transformer := initializer.NewEventTransformer(db)
 		err = transformer.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 

@@ -17,7 +17,6 @@
 package integration_tests
 
 import (
-	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -28,7 +27,6 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
-	"github.com/vulcanize/vulcanizedb/pkg/geth"
 	"strconv"
 )
 
@@ -57,12 +55,12 @@ var _ = Describe("Bite Transformer", func() {
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		initializer := shared.LogNoteTransformer{
+		initializer := shared.EventTransformer{
 			Config:     biteConfig,
 			Converter:  &bite.BiteConverter{},
 			Repository: &bite.BiteRepository{},
 		}
-		transformer := initializer.NewLogNoteTransformer(db)
+		transformer := initializer.NewEventTransformer(db)
 
 		logFetcher := fetcher.NewLogFetcher(blockChain)
 		logs, err := logFetcher.FetchLogs(
@@ -76,7 +74,7 @@ var _ = Describe("Bite Transformer", func() {
 		err = transformer.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 
-		var dbResult []BiteModel
+		var dbResult []biteModel
 		err = db.Select(&dbResult, `SELECT art, ink, flip, tab, urn_id, bite_identifier from maker.bite`)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -91,29 +89,9 @@ var _ = Describe("Bite Transformer", func() {
 		Expect(dbResult[0].Tab).To(Equal("149846666666666655744"))
 		Expect(dbResult[0].Id).To(Equal(""))
 	})
-
-	It("unpacks an event log", func() {
-		address := common.HexToAddress(test_data.CatAddress())
-		abi, err := geth.ParseAbi(constants.CatABI())
-		Expect(err).NotTo(HaveOccurred())
-
-		contract := bind.NewBoundContract(address, abi, nil, nil, nil)
-		entity := &bite.BiteEntity{}
-
-		var eventLog = test_data.BiteHeaderSyncLog
-
-		err = contract.UnpackLog(entity, "Bite", eventLog.Log)
-		Expect(err).NotTo(HaveOccurred())
-
-		expectedEntity := test_data.BiteEntity
-		Expect(entity.Art).To(Equal(expectedEntity.Art))
-		Expect(entity.Ilk).To(Equal(expectedEntity.Ilk))
-		Expect(entity.Ink).To(Equal(expectedEntity.Ink))
-		Expect(entity.Id).To(Equal(expectedEntity.Id))
-	})
 })
 
-type BiteModel struct {
+type biteModel struct {
 	Ilk      string
 	Urn      string `db:"urn_id"`
 	Ink      string

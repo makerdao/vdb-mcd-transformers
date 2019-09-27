@@ -24,8 +24,8 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/events/flip_kick"
 )
 
-var EventTransformerInitializer transformer.EventTransformerInitializer = shared.LogNoteTransformer{
+var EventTransformerInitializer transformer.EventTransformerInitializer = shared.EventTransformer{
 	Config:     shared.GetEventTransformerConfig(constants.FlipKickLabel, constants.FlipKickSignature()),
 	Converter:  &flip_kick.FlipKickConverter{},
 	Repository: &flip_kick.FlipKickRepository{},
-}.NewLogNoteTransformer
+}.NewEventTransformer

@@ -31,7 +31,7 @@ import (
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 )
 
-var _ = XDescribe("VowFess LogNoteTransformer", func() {
+var _ = XDescribe("VowFess EventTransformer", func() {
 	var (
 		db         *postgres.DB
 		blockChain core.BlockChain
@@ -72,11 +72,11 @@ var _ = XDescribe("VowFess LogNoteTransformer", func() {
 
 		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
 
-		tr := shared.LogNoteTransformer{
+		tr := shared.EventTransformer{
 			Config:     vowFessConfig,
 			Converter:  &vow_fess.VowFessConverter{},
 			Repository: &vow_fess.VowFessRepository{},
-		}.NewLogNoteTransformer(db)
+		}.NewEventTransformer(db)
 
 		err = tr.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())

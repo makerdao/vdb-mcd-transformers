@@ -61,12 +61,12 @@ var _ = Describe("Vat fork transformer", func() {
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		initializer := shared.LogNoteTransformer{
+		initializer := shared.EventTransformer{
 			Config:     vatForkConfig,
 			Converter:  &vat_fork.VatForkConverter{},
 			Repository: &vat_fork.VatForkRepository{},
 		}
-		tr := initializer.NewLogNoteTransformer(db)
+		tr := initializer.NewEventTransformer(db)
 
 		f := fetcher.NewLogFetcher(blockChain)
 		logs, err := f.FetchLogs(

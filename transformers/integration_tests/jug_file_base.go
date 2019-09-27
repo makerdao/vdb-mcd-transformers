@@ -31,7 +31,7 @@ import (
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 )
 
-var _ = Describe("Jug File Base LogNoteTransformer", func() {
+var _ = Describe("Jug File Base EventTransformer", func() {
 	var (
 		db         *postgres.DB
 		blockChain core.BlockChain
@@ -61,12 +61,12 @@ var _ = Describe("Jug File Base LogNoteTransformer", func() {
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		initializer := shared.LogNoteTransformer{
+		initializer := shared.EventTransformer{
 			Config:     jugFileBaseConfig,
 			Converter:  base.JugFileBaseConverter{},
 			Repository: &base.JugFileBaseRepository{},
 		}
-		tr := initializer.NewLogNoteTransformer(db)
+		tr := initializer.NewEventTransformer(db)
 
 		f := fetcher.NewLogFetcher(blockChain)
 		logs, err := f.FetchLogs(

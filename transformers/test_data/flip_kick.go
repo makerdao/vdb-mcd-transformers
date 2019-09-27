@@ -17,7 +17,6 @@
 package test_data
 
 import (
-	"encoding/json"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -27,7 +26,6 @@ import (
 	"math/big"
 	"math/rand"
 
-	"github.com/vulcanize/mcd_transformers/transformers/events/flip_kick"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
@@ -39,7 +37,6 @@ var (
 	FakeUrn         = "0x7340e006f4135BA6970D43bf43d88DCAD4e7a8CA"
 	gal             = "0x07Fa9eF6609cA7921112231F8f195138ebbA2977"
 	contractAddress = EthFlipAddress()
-	rawLog, _       = json.Marshal(FlipKickHeaderSyncLog)
 )
 
 var (
@@ -71,18 +68,6 @@ var FlipKickHeaderSyncLog = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-var FlipKickEntity = flip_kick.FlipKickEntity{
-	Id:              flipID,
-	Lot:             lot,
-	Bid:             bid,
-	Tab:             tab,
-	Usr:             common.HexToAddress(FakeUrn),
-	Gal:             common.HexToAddress(gal),
-	ContractAddress: common.HexToAddress(contractAddress),
-	HeaderID:        FlipKickHeaderSyncLog.HeaderID,
-	LogID:           FlipKickHeaderSyncLog.ID,
-}
-
 func FlipKickModel() shared.InsertionModel { return CopyModel(flipKickModel) }
 
 var flipKickModel = shared.InsertionModel{
@@ -92,8 +77,8 @@ var flipKickModel = shared.InsertionModel{
 		constants.HeaderFK, constants.LogFK, "bid_id", "lot", "bid", "tab", "usr", "gal", "address_id",
 	},
 	ColumnValues: shared.ColumnValues{
-		constants.HeaderFK: FlipKickEntity.HeaderID,
-		constants.LogFK:    FlipKickEntity.LogID,
+		constants.HeaderFK: FlipKickHeaderSyncLog.HeaderID,
+		constants.LogFK:    FlipKickHeaderSyncLog.ID,
 		"bid_id":           flipID.String(),
 		"lot":              lot.String(),
 		"bid":              bid.String(),

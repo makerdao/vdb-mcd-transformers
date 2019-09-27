@@ -24,8 +24,8 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 )
 
-var EventTransformerInitializer transformer.EventTransformerInitializer = shared.LogNoteTransformer{
+var EventTransformerInitializer transformer.EventTransformerInitializer = shared.EventTransformer{
 	Config:     shared.GetEventTransformerConfig(constants.VatSlipLabel, constants.VatSlipSignature()),
 	Converter:  &vat_slip.VatSlipConverter{},
 	Repository: &vat_slip.VatSlipRepository{},
-}.NewLogNoteTransformer
+}.NewEventTransformer

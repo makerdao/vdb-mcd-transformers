@@ -71,11 +71,11 @@ var _ = Describe("Vat slip transformer", func() {
 
 		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
 
-		tr := shared.LogNoteTransformer{
+		tr := shared.EventTransformer{
 			Config:     vatSlipConfig,
 			Converter:  &vat_slip.VatSlipConverter{},
 			Repository: &vat_slip.VatSlipRepository{},
-		}.NewLogNoteTransformer(db)
+		}.NewEventTransformer(db)
 
 		err = tr.Execute(headerSyncLogs)
 

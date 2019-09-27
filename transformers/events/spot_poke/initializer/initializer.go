@@ -23,8 +23,8 @@ import (
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 )
 
-var EventTransformerInitializer transformer.EventTransformerInitializer = shared.LogNoteTransformer{
+var EventTransformerInitializer transformer.EventTransformerInitializer = shared.EventTransformer{
 	Config:     shared.GetEventTransformerConfig(constants.SpotPokeLabel, constants.SpotPokeSignature()),
 	Converter:  spot_poke.SpotPokeConverter{},
 	Repository: &spot_poke.SpotPokeRepository{},
-}.NewLogNoteTransformer
+}.NewEventTransformer

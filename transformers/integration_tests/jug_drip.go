@@ -62,12 +62,12 @@ var _ = Describe("JugDrip Transformer", func() {
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		initializer := shared.LogNoteTransformer{
+		initializer := shared.EventTransformer{
 			Config:     jugDripConfig,
 			Converter:  &jug_drip.JugDripConverter{},
 			Repository: &jug_drip.JugDripRepository{},
 		}
-		tr := initializer.NewLogNoteTransformer(db)
+		tr := initializer.NewEventTransformer(db)
 
 		logFetcher := fetcher.NewLogFetcher(blockChain)
 		logs, err := logFetcher.FetchLogs(

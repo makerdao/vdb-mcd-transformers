@@ -30,7 +30,7 @@ import (
 	"strconv"
 )
 
-var _ = Describe("VatFlux LogNoteTransformer", func() {
+var _ = Describe("VatFlux EventTransformer", func() {
 	vatFluxConfig := transformer.EventTransformerConfig{
 		TransformerName:   constants.VatFluxLabel,
 		ContractAddresses: []string{test_data.VatAddress()},
@@ -63,12 +63,12 @@ var _ = Describe("VatFlux LogNoteTransformer", func() {
 
 		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
 
-		initializer := shared.LogNoteTransformer{
+		initializer := shared.EventTransformer{
 			Config:     vatFluxConfig,
 			Converter:  &vat_flux.VatFluxConverter{},
 			Repository: &vat_flux.VatFluxRepository{},
 		}
-		transformer := initializer.NewLogNoteTransformer(db)
+		transformer := initializer.NewEventTransformer(db)
 
 		err = transformer.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())

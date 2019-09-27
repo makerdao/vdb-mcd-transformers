@@ -53,11 +53,11 @@ var _ = Describe("FlipKick Transformer", func() {
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		tr := shared.LogNoteTransformer{
+		tr := shared.EventTransformer{
 			Config:     flipKickConfig,
 			Converter:  &flip_kick.FlipKickConverter{},
 			Repository: &flip_kick.FlipKickRepository{},
-		}.NewLogNoteTransformer(db)
+		}.NewEventTransformer(db)
 
 		f := fetcher.NewLogFetcher(blockChain)
 		logs, err := f.FetchLogs(

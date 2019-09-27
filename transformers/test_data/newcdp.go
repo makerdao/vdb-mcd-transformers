@@ -5,7 +5,6 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/vulcanize/mcd_transformers/transformers/events/new_cdp"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
@@ -48,14 +47,6 @@ var NewCdpHeaderSyncLog = core.HeaderSyncLog{
 	HeaderID:    int64(rand.Int31()),
 	Log:         rawNewCdpLog,
 	Transformed: false,
-}
-
-var NewCdpEntity = new_cdp.NewCdpEntity{
-	Usr:      newCdpUsr,
-	Own:      newCdpOwn,
-	Cdp:      newCdpCdp,
-	LogID:    NewCdpHeaderSyncLog.ID,
-	HeaderID: NewCdpHeaderSyncLog.HeaderID,
 }
 
 func NewCdpModel() shared.InsertionModel { return CopyModel(newCdpModel) }

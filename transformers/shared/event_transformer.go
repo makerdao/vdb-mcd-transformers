@@ -24,18 +24,18 @@ import (
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 )
 
-type LogNoteTransformer struct {
+type EventTransformer struct {
 	Config     transformer.EventTransformerConfig
 	Converter  Converter
 	Repository SharedRepository
 }
 
-func (tr LogNoteTransformer) NewLogNoteTransformer(db *postgres.DB) transformer.EventTransformer {
+func (tr EventTransformer) NewEventTransformer(db *postgres.DB) transformer.EventTransformer {
 	tr.Repository.SetDB(db)
 	return tr
 }
 
-func (tr LogNoteTransformer) Execute(logs []core.HeaderSyncLog) error {
+func (tr EventTransformer) Execute(logs []core.HeaderSyncLog) error {
 	transformerName := tr.Config.TransformerName
 
 	// No matching logs, mark the header as checked for this type of logs
@@ -57,10 +57,10 @@ func (tr LogNoteTransformer) Execute(logs []core.HeaderSyncLog) error {
 	return nil
 }
 
-func (tr LogNoteTransformer) GetName() string {
+func (tr EventTransformer) GetName() string {
 	return tr.Config.TransformerName
 }
 
-func (tr LogNoteTransformer) GetConfig() transformer.EventTransformerConfig {
+func (tr EventTransformer) GetConfig() transformer.EventTransformerConfig {
 	return tr.Config
 }

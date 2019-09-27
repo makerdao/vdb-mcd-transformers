@@ -36,7 +36,7 @@ var _ = XDescribe("Deal transformer", func() {
 		db          *postgres.DB
 		blockChain  core.BlockChain
 		dealConfig  transformer.EventTransformerConfig
-		initializer shared.LogNoteTransformer
+		initializer shared.EventTransformer
 		logFetcher  fetcher.ILogFetcher
 		addresses   []common.Address
 		topics      []common.Hash
@@ -60,7 +60,7 @@ var _ = XDescribe("Deal transformer", func() {
 			Topic: constants.DealSignature(),
 		}
 
-		initializer = shared.LogNoteTransformer{
+		initializer = shared.EventTransformer{
 			Config:     dealConfig,
 			Converter:  &deal.DealConverter{},
 			Repository: &deal.DealRepository{},
@@ -86,7 +86,7 @@ var _ = XDescribe("Deal transformer", func() {
 
 		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
 
-		transformer := initializer.NewLogNoteTransformer(db)
+		transformer := initializer.NewEventTransformer(db)
 		err = transformer.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -116,7 +116,7 @@ var _ = XDescribe("Deal transformer", func() {
 
 		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
 
-		transformer := initializer.NewLogNoteTransformer(db)
+		transformer := initializer.NewEventTransformer(db)
 		err = transformer.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 

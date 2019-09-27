@@ -20,7 +20,6 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/vulcanize/mcd_transformers/transformers/events/flop_kick"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
@@ -51,16 +50,6 @@ var FlopKickHeaderSyncLog = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-var FlopKickEntity = flop_kick.FlopKickEntity{
-	Id:              big.NewInt(30000000000000000),
-	Lot:             big.NewInt(1000000000000000000),
-	Bid:             big.NewInt(2000000000000000000),
-	Gal:             common.HexToAddress("0x7d7bEe5fCfD8028cf7b00876C5b1421c800561A6"),
-	ContractAddress: rawFlopKickLog.Address,
-	HeaderID:        FlopKickHeaderSyncLog.HeaderID,
-	LogID:           FlopKickHeaderSyncLog.ID,
-}
-
 func FlopKickModel() shared.InsertionModel { return CopyModel(flopKickModel) }
 
 var flopKickModel = shared.InsertionModel{
@@ -70,14 +59,14 @@ var flopKickModel = shared.InsertionModel{
 		constants.HeaderFK, constants.LogFK, string(constants.AddressFK), "bid_id", "lot", "bid", "gal",
 	},
 	ColumnValues: shared.ColumnValues{
-		constants.HeaderFK: FlopKickEntity.HeaderID,
-		constants.LogFK:    FlopKickEntity.LogID,
-		"bid_id":           shared.BigIntToString(FlopKickEntity.Id),
-		"lot":              shared.BigIntToString(FlopKickEntity.Lot),
-		"bid":              shared.BigIntToString(FlopKickEntity.Bid),
-		"gal":              FlopKickEntity.Gal.String(),
+		constants.HeaderFK: FlopKickHeaderSyncLog.HeaderID,
+		constants.LogFK:    FlopKickHeaderSyncLog.ID,
+		"bid_id":           big.NewInt(30000000000000000).String(),
+		"lot":              big.NewInt(1000000000000000000).String(),
+		"bid":              big.NewInt(2000000000000000000).String(),
+		"gal":              common.HexToAddress("0x7d7bEe5fCfD8028cf7b00876C5b1421c800561A6").String(),
 	},
 	ForeignKeyValues: shared.ForeignKeyValues{
-		constants.AddressFK: FlopKickEntity.ContractAddress.Hex(),
+		constants.AddressFK: rawFlopKickLog.Address.Hex(),
 	},
 }

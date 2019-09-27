@@ -35,7 +35,7 @@ var _ = Describe("VowFile LogNoteTransforer", func() {
 	var (
 		db          *postgres.DB
 		blockChain  core.BlockChain
-		initializer shared.LogNoteTransformer
+		initializer shared.EventTransformer
 		addresses   []common.Address
 		topics      []common.Hash
 	)
@@ -57,7 +57,7 @@ var _ = Describe("VowFile LogNoteTransforer", func() {
 		addresses = transformer.HexStringsToAddresses(vowFileConfig.ContractAddresses)
 		topics = []common.Hash{common.HexToHash(vowFileConfig.Topic)}
 
-		initializer = shared.LogNoteTransformer{
+		initializer = shared.EventTransformer{
 			Config:     vowFileConfig,
 			Converter:  vow_file.VowFileConverter{},
 			Repository: &vow_file.VowFileRepository{},
@@ -78,7 +78,7 @@ var _ = Describe("VowFile LogNoteTransforer", func() {
 
 		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
 
-		tr := initializer.NewLogNoteTransformer(db)
+		tr := initializer.NewEventTransformer(db)
 		err = tr.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 

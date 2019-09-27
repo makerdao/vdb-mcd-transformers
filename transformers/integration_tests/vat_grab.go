@@ -65,11 +65,11 @@ var _ = XDescribe("Vat Grab Transformer", func() {
 
 		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
 
-		tr := shared.LogNoteTransformer{
+		tr := shared.EventTransformer{
 			Config:     vatGrabConfig,
 			Converter:  &vat_grab.VatGrabConverter{},
 			Repository: &vat_grab.VatGrabRepository{},
-		}.NewLogNoteTransformer(db)
+		}.NewEventTransformer(db)
 
 		err = tr.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())

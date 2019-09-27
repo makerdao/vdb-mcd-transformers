@@ -62,11 +62,11 @@ var _ = Describe("VatHeal Transformer", func() {
 
 		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
 
-		tr := shared.LogNoteTransformer{
+		tr := shared.EventTransformer{
 			Config:     vatHealConfig,
 			Converter:  &vat_heal.VatHealConverter{},
 			Repository: &vat_heal.VatHealRepository{},
-		}.NewLogNoteTransformer(db)
+		}.NewEventTransformer(db)
 
 		err = tr.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())

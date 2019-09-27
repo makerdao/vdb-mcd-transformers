@@ -71,11 +71,11 @@ var _ = Describe("VatFold Transformer", func() {
 
 		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
 
-		transformer := shared.LogNoteTransformer{
+		transformer := shared.EventTransformer{
 			Config:     vatFoldConfig,
 			Converter:  &vat_fold.VatFoldConverter{},
 			Repository: &vat_fold.VatFoldRepository{},
-		}.NewLogNoteTransformer(db)
+		}.NewEventTransformer(db)
 
 		err = transformer.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())

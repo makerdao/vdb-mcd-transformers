@@ -62,12 +62,12 @@ var _ = Describe("SpotPoke Transformer", func() {
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		initializer := shared.LogNoteTransformer{
+		initializer := shared.EventTransformer{
 			Config:     spotPokeConfig,
 			Converter:  &spot_poke.SpotPokeConverter{},
 			Repository: &spot_poke.SpotPokeRepository{},
 		}
-		tr := initializer.NewLogNoteTransformer(db)
+		tr := initializer.NewEventTransformer(db)
 
 		f := fetcher.NewLogFetcher(blockChain)
 		logs, err := f.FetchLogs(

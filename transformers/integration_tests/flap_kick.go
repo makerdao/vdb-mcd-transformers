@@ -61,11 +61,11 @@ var _ = XDescribe("FlapKick Transformer", func() {
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		tr := shared.LogNoteTransformer{
+		tr := shared.EventTransformer{
 			Config:     flapKickConfig,
 			Converter:  &flap_kick.FlapKickConverter{},
 			Repository: &flap_kick.FlapKickRepository{},
-		}.NewLogNoteTransformer(db)
+		}.NewEventTransformer(db)
 
 		logFetcher := fetcher.NewLogFetcher(blockChain)
 		logs, err := logFetcher.FetchLogs(

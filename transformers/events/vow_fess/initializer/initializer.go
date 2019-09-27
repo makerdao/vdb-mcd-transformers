@@ -23,8 +23,8 @@ import (
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 )
 
-var EventTransformerInitializer transformer.EventTransformerInitializer = shared.LogNoteTransformer{
+var EventTransformerInitializer transformer.EventTransformerInitializer = shared.EventTransformer{
 	Config:     shared.GetEventTransformerConfig(constants.VowFessLabel, constants.VowFessSignature()),
 	Converter:  &vow_fess.VowFessConverter{},
 	Repository: &vow_fess.VowFessRepository{},
-}.NewLogNoteTransformer
+}.NewEventTransformer

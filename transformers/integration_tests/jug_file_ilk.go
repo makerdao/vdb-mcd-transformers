@@ -32,7 +32,7 @@ import (
 	"strconv"
 )
 
-var _ = Describe("Jug File Ilk LogNoteTransformer", func() {
+var _ = Describe("Jug File Ilk EventTransformer", func() {
 	var (
 		db         *postgres.DB
 		blockChain core.BlockChain
@@ -62,12 +62,12 @@ var _ = Describe("Jug File Ilk LogNoteTransformer", func() {
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		initializer := shared.LogNoteTransformer{
+		initializer := shared.EventTransformer{
 			Config:     jugFileIlkConfig,
 			Converter:  &ilk.JugFileIlkConverter{},
 			Repository: &ilk.JugFileIlkRepository{},
 		}
-		tr := initializer.NewLogNoteTransformer(db)
+		tr := initializer.NewEventTransformer(db)
 
 		f := fetcher.NewLogFetcher(blockChain)
 		logs, err := f.FetchLogs(
