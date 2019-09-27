@@ -29,7 +29,7 @@ import (
 
 type FlopKickConverter struct{}
 
-func (FlopKickConverter) ToEntities(contractAbi string, logs []core.HeaderSyncLog) ([]FlopKickEntity, error) {
+func (FlopKickConverter) toEntities(contractAbi string, logs []core.HeaderSyncLog) ([]FlopKickEntity, error) {
 	var results []FlopKickEntity
 	for _, log := range logs {
 		var entity FlopKickEntity
@@ -54,7 +54,7 @@ func (FlopKickConverter) ToEntities(contractAbi string, logs []core.HeaderSyncLo
 
 func (c FlopKickConverter) ToModels(abi string, logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
 	var results []shared.InsertionModel
-	entities, entityErr := c.ToEntities(abi, logs)
+	entities, entityErr := c.toEntities(abi, logs)
 	if entityErr != nil {
 		return nil, fmt.Errorf("FlopKickConverter couldn't convert logs to entities: %v", entityErr)
 	}

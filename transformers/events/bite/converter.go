@@ -31,7 +31,7 @@ import (
 
 type BiteConverter struct{}
 
-func (BiteConverter) ToEntities(contractAbi string, logs []core.HeaderSyncLog) ([]BiteEntity, error) {
+func (BiteConverter) toEntities(contractAbi string, logs []core.HeaderSyncLog) ([]BiteEntity, error) {
 	var entities []BiteEntity
 	for _, log := range logs {
 		var entity BiteEntity
@@ -56,7 +56,7 @@ func (BiteConverter) ToEntities(contractAbi string, logs []core.HeaderSyncLog) (
 }
 
 func (converter BiteConverter) ToModels(abi string, logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
-	entities, entityErr := converter.ToEntities(abi, logs)
+	entities, entityErr := converter.toEntities(abi, logs)
 	if entityErr != nil {
 		return nil, fmt.Errorf("BiteConverter couldn't convert logs to entities: %v", entityErr)
 	}

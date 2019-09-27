@@ -30,30 +30,17 @@ import (
 var _ = Describe("Bite Converter", func() {
 	var converter = bite.BiteConverter{}
 
-	Describe("ToEntity", func() {
-		It("converts an eth log to a bite entity", func() {
-			entities, err := converter.ToEntities(constants.CatABI(), []core.HeaderSyncLog{test_data.BiteHeaderSyncLog})
+	It("converts a log to a Model", func() {
+		models, err := converter.ToModels(constants.CatABI(), []core.HeaderSyncLog{test_data.BiteHeaderSyncLog})
 
-			Expect(err).NotTo(HaveOccurred())
-			Expect(len(entities)).To(Equal(1))
-			entity := entities[0]
-			Expect(entity).To(Equal(test_data.BiteEntity))
-		})
+		Expect(err).NotTo(HaveOccurred())
+		Expect(len(models)).To(Equal(1))
+		Expect(models).To(Equal([]shared.InsertionModel{test_data.BiteModel()}))
 	})
 
-	Describe("ToModel", func() {
-		It("converts a log to a Model", func() {
-			models, err := converter.ToModels(constants.CatABI(), []core.HeaderSyncLog{test_data.BiteHeaderSyncLog})
+	It("returns an error if converting log to entity fails", func() {
+		_, err := converter.ToModels("error abi", []core.HeaderSyncLog{test_data.BiteHeaderSyncLog})
 
-			Expect(err).NotTo(HaveOccurred())
-			Expect(len(models)).To(Equal(1))
-			Expect(models).To(Equal([]shared.InsertionModel{test_data.BiteModel()}))
-		})
-
-		It("returns an error if converting log to entity fails", func() {
-			_, err := converter.ToModels("error abi", []core.HeaderSyncLog{test_data.BiteHeaderSyncLog})
-
-			Expect(err).To(HaveOccurred())
-		})
+		Expect(err).To(HaveOccurred())
 	})
 })

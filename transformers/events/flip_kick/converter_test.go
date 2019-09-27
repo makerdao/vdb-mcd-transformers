@@ -31,33 +31,19 @@ import (
 
 var _ = Describe("FlipKick Converter", func() {
 	var converter = flip_kick.FlipKickConverter{}
+	It("converts a log to a model", func() {
+		models, err := converter.ToModels(constants.FlipABI(), []core.HeaderSyncLog{test_data.FlipKickHeaderSyncLog})
 
-	Describe("ToEntity", func() {
-		It("converts an Eth Log to a FlipKickEntity", func() {
-			entities, err := converter.ToEntities(constants.FlipABI(), []core.HeaderSyncLog{test_data.FlipKickHeaderSyncLog})
+		Expect(err).NotTo(HaveOccurred())
 
-			Expect(err).NotTo(HaveOccurred())
-			Expect(len(entities)).To(Equal(1))
-			entity := entities[0]
-			Expect(entity).To(Equal(test_data.FlipKickEntity))
-		})
+		models[0].ForeignKeyValues[constants.AddressFK] = strings.ToLower(models[0].ForeignKeyValues[constants.AddressFK])
+		Expect(models).To(Equal([]shared.InsertionModel{test_data.FlipKickModel()}))
 	})
 
-	Describe("ToModel", func() {
-		It("converts a log to a model", func() {
-			models, err := converter.ToModels(constants.FlipABI(), []core.HeaderSyncLog{test_data.FlipKickHeaderSyncLog})
+	It("returns an error if converting log to entity fails", func() {
+		_, err := converter.ToModels("error abi", []core.HeaderSyncLog{test_data.FlipKickHeaderSyncLog})
 
-			Expect(err).NotTo(HaveOccurred())
-
-			models[0].ForeignKeyValues[constants.AddressFK] = strings.ToLower(models[0].ForeignKeyValues[constants.AddressFK])
-			Expect(models).To(Equal([]shared.InsertionModel{test_data.FlipKickModel()}))
-		})
-
-		It("returns an error if converting log to entity fails", func() {
-			_, err := converter.ToEntities("error abi", []core.HeaderSyncLog{test_data.FlipKickHeaderSyncLog})
-
-			Expect(err).To(HaveOccurred())
-		})
+		Expect(err).To(HaveOccurred())
 	})
 })
 

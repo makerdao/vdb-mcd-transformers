@@ -29,7 +29,7 @@ import (
 
 type SpotPokeConverter struct{}
 
-func (s SpotPokeConverter) ToEntities(contractAbi string, logs []core.HeaderSyncLog) ([]SpotPokeEntity, error) {
+func (s SpotPokeConverter) toEntities(contractAbi string, logs []core.HeaderSyncLog) ([]SpotPokeEntity, error) {
 	var entities []SpotPokeEntity
 	for _, log := range logs {
 		var entity SpotPokeEntity
@@ -54,7 +54,7 @@ func (s SpotPokeConverter) ToEntities(contractAbi string, logs []core.HeaderSync
 }
 
 func (s SpotPokeConverter) ToModels(abi string, logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
-	entities, entityErr := s.ToEntities(abi, logs)
+	entities, entityErr := s.toEntities(abi, logs)
 	if entityErr != nil {
 		return nil, fmt.Errorf("NewCDPConverter couldn't convert logs to entities: %v", entityErr)
 	}

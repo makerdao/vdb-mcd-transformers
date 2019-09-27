@@ -29,33 +29,16 @@ import (
 var _ = Describe("NewCdp Converter", func() {
 	var converter = new_cdp.NewCdpConverter{}
 
-	Describe("ToEntity", func() {
-		It("converts an Eth Log to a NewCdpEntity", func() {
-			entities, err := converter.ToEntities(constants.CdpManagerABI(), []core.HeaderSyncLog{test_data.NewCdpHeaderSyncLog})
+	It("converts a log to a Model", func() {
+		models, err := converter.ToModels(constants.CdpManagerABI(), []core.HeaderSyncLog{test_data.NewCdpHeaderSyncLog})
 
-			Expect(err).NotTo(HaveOccurred())
-			Expect(len(entities)).To(Equal(1))
-			Expect(entities[0]).To(Equal(test_data.NewCdpEntity))
-		})
-
-		It("returns an error if converting log to entity fails", func() {
-			_, err := converter.ToEntities("error abi", []core.HeaderSyncLog{test_data.NewCdpHeaderSyncLog})
-			Expect(err).To(HaveOccurred())
-		})
+		Expect(err).NotTo(HaveOccurred())
+		Expect(len(models)).To(Equal(1))
+		Expect(models[0]).To(Equal(test_data.NewCdpModel()))
 	})
 
-	Describe("ToModel", func() {
-		It("converts a log to a Model", func() {
-			models, err := converter.ToModels(constants.CdpManagerABI(), []core.HeaderSyncLog{test_data.NewCdpHeaderSyncLog})
-
-			Expect(err).NotTo(HaveOccurred())
-			Expect(len(models)).To(Equal(1))
-			Expect(models[0]).To(Equal(test_data.NewCdpModel()))
-		})
-
-		It("returns an error if converting log to entity fails", func() {
-			_, err := converter.ToEntities("error abi", []core.HeaderSyncLog{test_data.NewCdpHeaderSyncLog})
-			Expect(err).To(HaveOccurred())
-		})
+	It("returns an error if converting log to entity fails", func() {
+		_, err := converter.ToModels("error abi", []core.HeaderSyncLog{test_data.NewCdpHeaderSyncLog})
+		Expect(err).To(HaveOccurred())
 	})
 })

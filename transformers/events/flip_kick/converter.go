@@ -30,7 +30,7 @@ import (
 
 type FlipKickConverter struct{}
 
-func (FlipKickConverter) ToEntities(contractAbi string, logs []core.HeaderSyncLog) ([]FlipKickEntity, error) {
+func (FlipKickConverter) toEntities(contractAbi string, logs []core.HeaderSyncLog) ([]FlipKickEntity, error) {
 	var entities []FlipKickEntity
 	for _, log := range logs {
 		var entity FlipKickEntity
@@ -55,7 +55,7 @@ func (FlipKickConverter) ToEntities(contractAbi string, logs []core.HeaderSyncLo
 }
 
 func (c FlipKickConverter) ToModels(abi string, logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
-	entities, entityErr := c.ToEntities(abi, logs)
+	entities, entityErr := c.toEntities(abi, logs)
 	if entityErr != nil {
 		return nil, fmt.Errorf("FlipKickConverter couldn't convert logs to entities: %v", entityErr)
 	}

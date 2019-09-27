@@ -30,29 +30,18 @@ import (
 var _ = Describe("Flap kick converter", func() {
 	var converter = flap_kick.FlapKickConverter{}
 
-	Describe("ToEntity", func() {
-		It("converts an Eth Log to a FlapKickEntity", func() {
-			entities, err := converter.ToEntities(constants.FlapABI(), []core.HeaderSyncLog{test_data.FlapKickHeaderSyncLog})
+	It("converts a log to a Model", func() {
+		models, err := converter.ToModels(constants.FlapABI(), []core.HeaderSyncLog{test_data.FlapKickHeaderSyncLog})
 
-			Expect(err).NotTo(HaveOccurred())
-			Expect(len(entities)).To(Equal(1))
-			Expect(entities[0]).To(Equal(test_data.FlapKickEntity))
-		})
+		Expect(err).NotTo(HaveOccurred())
+		Expect(len(models)).To(Equal(1))
+		Expect(models[0]).To(Equal(test_data.FlapKickModel()))
 	})
 
-	Describe("ToModel", func() {
-		It("returns an error if converting log to entity fails", func() {
-			_, err := converter.ToEntities("error abi", []core.HeaderSyncLog{test_data.FlapKickHeaderSyncLog})
+	It("returns an error if converting log to entity fails", func() {
+		_, err := converter.ToModels("error abi", []core.HeaderSyncLog{test_data.FlapKickHeaderSyncLog})
 
-			Expect(err).To(HaveOccurred())
-		})
-
-		It("converts a log to a Model", func() {
-			models, err := converter.ToModels(constants.FlapABI(), []core.HeaderSyncLog{test_data.FlapKickHeaderSyncLog})
-
-			Expect(err).NotTo(HaveOccurred())
-			Expect(len(models)).To(Equal(1))
-			Expect(models[0]).To(Equal(test_data.FlapKickModel()))
-		})
+		Expect(err).To(HaveOccurred())
 	})
+
 })

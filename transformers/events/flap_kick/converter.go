@@ -29,7 +29,7 @@ import (
 
 type FlapKickConverter struct{}
 
-func (FlapKickConverter) ToEntities(contractAbi string, logs []core.HeaderSyncLog) ([]FlapKickEntity, error) {
+func (FlapKickConverter) toEntities(contractAbi string, logs []core.HeaderSyncLog) ([]FlapKickEntity, error) {
 	var entities []FlapKickEntity
 	abi, parseErr := geth.ParseAbi(contractAbi)
 	if parseErr != nil {
@@ -53,7 +53,7 @@ func (FlapKickConverter) ToEntities(contractAbi string, logs []core.HeaderSyncLo
 }
 
 func (c FlapKickConverter) ToModels(abi string, logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
-	entities, entityErr := c.ToEntities(abi, logs)
+	entities, entityErr := c.toEntities(abi, logs)
 	if entityErr != nil {
 		return nil, fmt.Errorf("FlapKickConverter couldn't convert logs to entities: %v", entityErr)
 	}

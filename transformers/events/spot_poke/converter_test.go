@@ -28,33 +28,16 @@ import (
 var _ = Describe("SpotPoke Converter", func() {
 	var converter = spot_poke.SpotPokeConverter{}
 
-	Describe("ToEntities", func() {
-		It("converts eth logs into spot poke entities", func() {
-			entities, err := converter.ToEntities(constants.SpotABI(), []core.HeaderSyncLog{test_data.SpotPokeHeaderSyncLog})
-			Expect(err).NotTo(HaveOccurred())
+	It("converts spot poke entities to models", func() {
+		models, err := converter.ToModels(constants.SpotABI(), []core.HeaderSyncLog{test_data.SpotPokeHeaderSyncLog})
+		Expect(err).NotTo(HaveOccurred())
 
-			Expect(len(entities)).To(Equal(1))
-			Expect(entities[0]).To(Equal(test_data.SpotPokeEntity))
-		})
-
-		It("returns an error converting a log to an entity fails", func() {
-			_, err := converter.ToEntities("error abi", []core.HeaderSyncLog{test_data.SpotPokeHeaderSyncLog})
-			Expect(err).To(HaveOccurred())
-		})
+		Expect(len(models)).To(Equal(1))
+		Expect(models[0]).To(Equal(test_data.SpotPokeModel()))
 	})
 
-	Describe("ToModels", func() {
-		It("converts spot poke entities to models", func() {
-			models, err := converter.ToModels(constants.SpotABI(), []core.HeaderSyncLog{test_data.SpotPokeHeaderSyncLog})
-			Expect(err).NotTo(HaveOccurred())
-
-			Expect(len(models)).To(Equal(1))
-			Expect(models[0]).To(Equal(test_data.SpotPokeModel()))
-		})
-
-		It("returns an error converting a log to an entity fails", func() {
-			_, err := converter.ToModels("error abi", []core.HeaderSyncLog{test_data.SpotPokeHeaderSyncLog})
-			Expect(err).To(HaveOccurred())
-		})
+	It("returns an error converting a log to an entity fails", func() {
+		_, err := converter.ToModels("error abi", []core.HeaderSyncLog{test_data.SpotPokeHeaderSyncLog})
+		Expect(err).To(HaveOccurred())
 	})
 })

@@ -27,7 +27,7 @@ import (
 
 type NewCdpConverter struct{}
 
-func (NewCdpConverter) ToEntities(contractAbi string, logs []core.HeaderSyncLog) ([]NewCdpEntity, error) {
+func (NewCdpConverter) toEntities(contractAbi string, logs []core.HeaderSyncLog) ([]NewCdpEntity, error) {
 	var entities []NewCdpEntity
 	for _, log := range logs {
 		var entity NewCdpEntity
@@ -55,7 +55,7 @@ func (NewCdpConverter) ToEntities(contractAbi string, logs []core.HeaderSyncLog)
 
 func (converter NewCdpConverter) ToModels(abi string, logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
 	var models []shared.InsertionModel
-	entities, entityErr := converter.ToEntities(abi, logs)
+	entities, entityErr := converter.toEntities(abi, logs)
 	if entityErr != nil {
 		return nil, fmt.Errorf("NewCDPConverter couldn't convert logs to entities: %v", entityErr)
 	}
