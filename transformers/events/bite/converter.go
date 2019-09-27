@@ -36,9 +36,9 @@ func (BiteConverter) toEntities(contractAbi string, logs []core.HeaderSyncLog) (
 	for _, log := range logs {
 		var entity BiteEntity
 		address := log.Log.Address
-		abi, err := geth.ParseAbi(contractAbi)
-		if err != nil {
-			return nil, err
+		abi, parseErr := geth.ParseAbi(contractAbi)
+		if parseErr != nil {
+			return nil, parseErr
 		}
 
 		contract := bind.NewBoundContract(address, abi, nil, nil, nil)
