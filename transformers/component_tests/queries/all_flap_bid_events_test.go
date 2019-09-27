@@ -61,7 +61,7 @@ var _ = Describe("Flap bid events query", func() {
 		Expect(headerOneErr).NotTo(HaveOccurred())
 		flapKickLog := test_data.CreateTestLog(headerOneId, db)
 
-		flapKickEvent = test_data.CopyModel(test_data.FlapKickModel)
+		flapKickEvent = test_data.FlapKickModel()
 		flapKickEvent.ForeignKeyValues[constants.AddressFK] = contractAddress
 		flapKickEvent.ColumnValues["bid_id"] = strconv.Itoa(fakeBidId)
 		flapKickEvent.ColumnValues[constants.HeaderFK] = headerOneId
@@ -127,7 +127,7 @@ var _ = Describe("Flap bid events query", func() {
 			Expect(headerTwoErr).NotTo(HaveOccurred())
 
 			flapKickEventTwoLog := test_data.CreateTestLog(headerTwoId, db)
-			flapKickEventTwo := test_data.CopyModel(test_data.FlapKickModel)
+			flapKickEventTwo := test_data.FlapKickModel()
 			flapKickEventTwo.ColumnValues["bid"] = strconv.Itoa(rand.Int())
 			flapKickEventTwo.ColumnValues["lot"] = strconv.Itoa(rand.Int())
 			flapKickEventTwo.ColumnValues["bid_id"] = strconv.Itoa(fakeBidIdTwo)
@@ -162,7 +162,7 @@ var _ = Describe("Flap bid events query", func() {
 			bidAmountOne := rand.Int()
 
 			flapKickEventTwoLog := test_data.CreateTestLog(headerOneId, db)
-			flapKickEventTwo := test_data.CopyModel(test_data.FlapKickModel)
+			flapKickEventTwo := test_data.FlapKickModel()
 			flapKickEventTwo.ColumnValues["bid_id"] = strconv.Itoa(bidIdTwo)
 			flapKickEventTwo.ColumnValues[constants.HeaderFK] = headerOneId
 			flapKickEventTwo.ColumnValues[constants.LogFK] = flapKickEventTwoLog.ID
@@ -272,7 +272,7 @@ var _ = Describe("Flap bid events query", func() {
 			flopKickRepo := flop_kick.FlopKickRepository{}
 			flopKickRepo.SetDB(db)
 
-			flopKickEvent := test_data.CopyModel(test_data.FlopKickModel)
+			flopKickEvent := test_data.FlopKickModel()
 			flopKickEvent.ForeignKeyValues[constants.AddressFK] = "flop"
 			flopKickEvent.ColumnValues["bid_id"] = strconv.Itoa(fakeBidId)
 			flopKickEvent.ColumnValues[constants.HeaderFK] = headerOneId

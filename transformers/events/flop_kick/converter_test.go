@@ -48,7 +48,7 @@ var _ = Describe("FlopKick Converter", func() {
 			models, err := converter.ToModels(constants.FlopABI(), []core.HeaderSyncLog{test_data.FlopKickHeaderSyncLog})
 
 			Expect(err).NotTo(HaveOccurred())
-			Expect(models[0]).To(Equal(test_data.FlopKickModel))
+			Expect(models[0]).To(Equal(test_data.FlopKickModel()))
 		})
 
 		It("returns an error if converting log to entity fails", func() {

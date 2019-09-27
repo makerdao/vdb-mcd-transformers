@@ -45,6 +45,6 @@ var _ = Describe("Spot file pip converter", func() {
 		models, err := converter.ToModels(constants.SpotABI(), []core.HeaderSyncLog{test_data.SpotFilePipHeaderSyncLog})
 
 		Expect(err).NotTo(HaveOccurred())
-		Expect(models).To(Equal([]shared.InsertionModel{test_data.SpotFilePipModel}))
+		Expect(models).To(Equal([]shared.InsertionModel{test_data.SpotFilePipModel()}))
 	})
 })

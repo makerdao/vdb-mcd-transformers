@@ -638,7 +638,7 @@ func CreateDeal(input DealCreationInput) (err error) {
 }
 
 func CreateFlipKick(contractAddress string, bidId int, headerId, logId int64, usr string, repo flip_kick.FlipKickRepository) error {
-	flipKickModel := test_data.CopyModel(test_data.FlipKickModel)
+	flipKickModel := test_data.CopyModel(test_data.FlipKickModel())
 	flipKickModel.ForeignKeyValues[constants.AddressFK] = contractAddress
 	flipKickModel.ColumnValues["bid_id"] = strconv.Itoa(bidId)
 	flipKickModel.ColumnValues["usr"] = usr
@@ -648,7 +648,7 @@ func CreateFlipKick(contractAddress string, bidId int, headerId, logId int64, us
 }
 
 func CreateFlapKick(contractAddress string, bidId int, headerId, logId int64, repo flap_kick.FlapKickRepository) error {
-	flapKickModel := test_data.CopyModel(test_data.FlapKickModel)
+	flapKickModel := test_data.FlapKickModel()
 	flapKickModel.ForeignKeyValues[constants.AddressFK] = contractAddress
 	flapKickModel.ColumnValues[constants.HeaderFK] = headerId
 	flapKickModel.ColumnValues[constants.LogFK] = logId
@@ -657,7 +657,7 @@ func CreateFlapKick(contractAddress string, bidId int, headerId, logId int64, re
 }
 
 func CreateFlopKick(contractAddress string, bidId int, headerId, logId int64, repo flop_kick.FlopKickRepository) error {
-	flopKickModel := test_data.CopyModel(test_data.FlopKickModel)
+	flopKickModel := test_data.FlopKickModel()
 	flopKickModel.ForeignKeyValues[constants.AddressFK] = contractAddress
 	flopKickModel.ColumnValues["bid_id"] = strconv.Itoa(bidId)
 	flopKickModel.ColumnValues[constants.HeaderFK] = headerId

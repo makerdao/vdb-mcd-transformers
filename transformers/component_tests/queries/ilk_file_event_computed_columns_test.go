@@ -64,7 +64,7 @@ var _ = Describe("Ilk file event computed columns", func() {
 
 		fileRepo = ilk.VatFileIlkRepository{}
 		fileRepo.SetDB(db)
-		fileEvent = test_data.VatFileIlkDustModel
+		fileEvent = test_data.VatFileIlkDustModel()
 		fileEvent.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
 		fileEvent.ColumnValues[constants.HeaderFK] = headerId
 		fileEvent.ColumnValues[constants.LogFK] = fakeHeaderSyncLog.ID

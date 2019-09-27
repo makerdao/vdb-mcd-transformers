@@ -222,7 +222,7 @@ var _ = Describe("all poke events query", func() {
 })
 
 func generateSpotPoke(ilk string, seed int, headerID, logID int64) shared.InsertionModel {
-	spotPoke := test_data.CopyModel(test_data.SpotPokeModel)
+	spotPoke := test_data.SpotPokeModel()
 	spotPoke.ForeignKeyValues[constants.IlkFK] = ilk
 	spotPoke.ColumnValues["value"] = strconv.Itoa(1 + seed)
 	spotPoke.ColumnValues["spot"] = strconv.Itoa(2 + seed)

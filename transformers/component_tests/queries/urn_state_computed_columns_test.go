@@ -117,7 +117,7 @@ var _ = Describe("Urn state computed columns", func() {
 
 			frobRepo := vat_frob.VatFrobRepository{}
 			frobRepo.SetDB(db)
-			frobEvent := test_data.CopyModel(test_data.VatFrobModelWithPositiveDart)
+			frobEvent := test_data.VatFrobModelWithPositiveDart()
 			frobEvent.ForeignKeyValues[constants.UrnFK] = fakeGuy
 			frobEvent.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
 			frobEvent.ColumnValues[constants.HeaderFK] = headerId
@@ -155,7 +155,7 @@ var _ = Describe("Urn state computed columns", func() {
 				frobRepo := vat_frob.VatFrobRepository{}
 				frobRepo.SetDB(db)
 
-				frobEventOne = test_data.CopyModel(test_data.VatFrobModelWithPositiveDart)
+				frobEventOne = test_data.VatFrobModelWithPositiveDart()
 				frobEventOne.ForeignKeyValues[constants.UrnFK] = fakeGuy
 				frobEventOne.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
 				frobEventOne.ColumnValues[constants.HeaderFK] = headerId
@@ -170,7 +170,7 @@ var _ = Describe("Urn state computed columns", func() {
 				Expect(insertHeaderTwoErr).NotTo(HaveOccurred())
 				logTwoId := test_data.CreateTestLog(headerTwoId, db).ID
 
-				frobEventTwo = test_data.CopyModel(test_data.VatFrobModelWithNegativeDink)
+				frobEventTwo = test_data.VatFrobModelWithNegativeDink()
 				frobEventTwo.ForeignKeyValues[constants.UrnFK] = fakeGuy
 				frobEventTwo.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
 				frobEventTwo.ColumnValues[constants.HeaderFK] = headerTwoId
@@ -228,7 +228,7 @@ var _ = Describe("Urn state computed columns", func() {
 
 			biteRepo := bite.BiteRepository{}
 			biteRepo.SetDB(db)
-			biteEvent := randomizeBite(test_data.BiteModel)
+			biteEvent := randomizeBite(test_data.BiteModel())
 			biteEvent.ForeignKeyValues[constants.UrnFK] = fakeGuy
 			biteEvent.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
 			biteEvent.ColumnValues[constants.HeaderFK] = headerId
@@ -267,7 +267,7 @@ var _ = Describe("Urn state computed columns", func() {
 				biteRepo := bite.BiteRepository{}
 				biteRepo.SetDB(db)
 
-				biteEventOne = randomizeBite(test_data.CopyModel(test_data.BiteModel))
+				biteEventOne = randomizeBite(test_data.BiteModel())
 				biteEventOne.ForeignKeyValues[constants.UrnFK] = fakeGuy
 				biteEventOne.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
 				biteEventOne.ColumnValues[constants.HeaderFK] = headerId
@@ -282,7 +282,7 @@ var _ = Describe("Urn state computed columns", func() {
 				Expect(insertHeaderTwoErr).NotTo(HaveOccurred())
 				logTwoId := test_data.CreateTestLog(headerTwoId, db).ID
 
-				biteEventTwo = randomizeBite(test_data.CopyModel(test_data.BiteModel))
+				biteEventTwo = randomizeBite(test_data.BiteModel())
 				biteEventTwo.ForeignKeyValues[constants.UrnFK] = fakeGuy
 				biteEventTwo.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
 				biteEventTwo.ColumnValues[constants.HeaderFK] = headerTwoId

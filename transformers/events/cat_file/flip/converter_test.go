@@ -62,6 +62,6 @@ var _ = Describe("Cat file flip converter", func() {
 		models, err := converter.ToModels(constants.CatABI(), []core.HeaderSyncLog{test_data.CatFileFlipHeaderSyncLog})
 
 		Expect(err).NotTo(HaveOccurred())
-		Expect(models).To(Equal([]shared.InsertionModel{test_data.CatFileFlipModel}))
+		Expect(models).To(Equal([]shared.InsertionModel{test_data.CatFileFlipModel()}))
 	})
 })

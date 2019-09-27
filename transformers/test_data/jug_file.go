@@ -54,7 +54,9 @@ var JugFileIlkHeaderSyncLog = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-var JugFileIlkModel = shared.InsertionModel{
+func JugFileIlkModel() shared.InsertionModel { return CopyModel(jugFileIlkModel) }
+
+var jugFileIlkModel = shared.InsertionModel{
 	SchemaName: "maker",
 	TableName:  "jug_file_ilk",
 	OrderedColumns: []string{

@@ -54,7 +54,7 @@ var _ = Describe("Bite event computed columns", func() {
 
 		biteRepo = bite.BiteRepository{}
 		biteRepo.SetDB(db)
-		biteEvent = test_data.BiteModel
+		biteEvent = test_data.BiteModel()
 		biteEvent.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
 		biteEvent.ForeignKeyValues[constants.UrnFK] = fakeGuy
 		biteEvent.ColumnValues[constants.HeaderFK] = headerId

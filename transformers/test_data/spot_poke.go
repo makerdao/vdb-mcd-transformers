@@ -62,7 +62,9 @@ var SpotPokeEntity = spot_poke.SpotPokeEntity{
 	LogID:    SpotPokeHeaderSyncLog.ID,
 }
 
-var SpotPokeModel = shared.InsertionModel{
+func SpotPokeModel() shared.InsertionModel { return CopyModel(spotPokeModel) }
+
+var spotPokeModel = shared.InsertionModel{
 	SchemaName: "maker",
 	TableName:  "spot_poke",
 	OrderedColumns: []string{

@@ -55,6 +55,6 @@ var _ = Describe("Jug file ilk converter", func() {
 	It("converts a log to a model", func() {
 		models, err := converter.ToModels(constants.JugABI(), []core.HeaderSyncLog{test_data.JugFileIlkHeaderSyncLog})
 		Expect(err).NotTo(HaveOccurred())
-		Expect(models).To(Equal([]shared.InsertionModel{test_data.JugFileIlkModel}))
+		Expect(models).To(Equal([]shared.InsertionModel{test_data.JugFileIlkModel()}))
 	})
 })

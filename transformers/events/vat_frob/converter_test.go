@@ -56,7 +56,7 @@ var _ = Describe("Frob converter", func() {
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(len(models)).To(Equal(1))
-		Expect(models).To(Equal([]shared.InsertionModel{test_data.VatFrobModelWithPositiveDart}))
+		Expect(models).To(Equal([]shared.InsertionModel{test_data.VatFrobModelWithPositiveDart()}))
 	})
 
 	It("converts a log with negative dink to a model", func() {
@@ -64,6 +64,6 @@ var _ = Describe("Frob converter", func() {
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(len(models)).To(Equal(1))
-		Expect(models).To(Equal([]shared.InsertionModel{test_data.VatFrobModelWithNegativeDink}))
+		Expect(models).To(Equal([]shared.InsertionModel{test_data.VatFrobModelWithNegativeDink()}))
 	})
 })

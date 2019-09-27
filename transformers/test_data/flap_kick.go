@@ -58,7 +58,9 @@ var FlapKickEntity = flap_kick.FlapKickEntity{
 	LogID:           FlapKickHeaderSyncLog.ID,
 }
 
-var FlapKickModel = shared.InsertionModel{
+func FlapKickModel() shared.InsertionModel { return CopyModel(flapKickModel) }
+
+var flapKickModel = shared.InsertionModel{
 	SchemaName: "maker",
 	TableName:  "flap_kick",
 	OrderedColumns: []string{

@@ -82,7 +82,7 @@ var _ = Describe("All flip bid events query", func() {
 		Expect(headerOneErr).NotTo(HaveOccurred())
 		flipKickLog := test_data.CreateTestLog(headerOneId, db)
 
-		flipKickEvent = test_data.CopyModel(test_data.FlipKickModel)
+		flipKickEvent = test_data.FlipKickModel()
 		flipKickEvent.ForeignKeyValues[constants.AddressFK] = contractAddress
 		flipKickEvent.ColumnValues["bid_id"] = strconv.Itoa(bidId)
 		flipKickEvent.ColumnValues[constants.HeaderFK] = headerOneId
@@ -296,7 +296,7 @@ var _ = Describe("All flip bid events query", func() {
 
 			flipKickLogTwo := test_data.CreateTestLog(headerOneId, db)
 
-			flipKickEventTwo := test_data.CopyModel(test_data.FlipKickModel)
+			flipKickEventTwo := test_data.FlipKickModel()
 			flipKickEventTwo.ForeignKeyValues[constants.AddressFK] = contractAddress
 			flipKickEventTwo.ColumnValues["bid_id"] = strconv.Itoa(differentBidId)
 			flipKickEventTwo.ColumnValues["lot"] = strconv.Itoa(differentLot)
@@ -329,7 +329,7 @@ var _ = Describe("All flip bid events query", func() {
 			differentBidAmount := rand.Int()
 
 			flipKickLog := test_data.CreateTestLog(headerOneId, db)
-			flipKickEventTwo := test_data.CopyModel(test_data.FlipKickModel)
+			flipKickEventTwo := test_data.FlipKickModel()
 			flipKickEventTwo.ForeignKeyValues[constants.AddressFK] = anotherFlipContractAddress
 			flipKickEventTwo.ColumnValues["bid_id"] = strconv.Itoa(bidId)
 			flipKickEventTwo.ColumnValues["lot"] = strconv.Itoa(differentLot)

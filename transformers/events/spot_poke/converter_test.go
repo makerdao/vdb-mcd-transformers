@@ -49,7 +49,7 @@ var _ = Describe("SpotPoke Converter", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(len(models)).To(Equal(1))
-			Expect(models[0]).To(Equal(test_data.SpotPokeModel))
+			Expect(models[0]).To(Equal(test_data.SpotPokeModel()))
 		})
 
 		It("returns an error converting a log to an entity fails", func() {

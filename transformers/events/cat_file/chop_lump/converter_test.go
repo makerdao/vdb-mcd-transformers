@@ -41,7 +41,7 @@ var _ = Describe("Cat file chop lump converter", func() {
 			models, err := converter.ToModels(constants.CatABI(), []core.HeaderSyncLog{test_data.CatFileChopHeaderSyncLog})
 
 			Expect(err).NotTo(HaveOccurred())
-			Expect(models).To(Equal([]shared.InsertionModel{test_data.CatFileChopModel}))
+			Expect(models).To(Equal([]shared.InsertionModel{test_data.CatFileChopModel()}))
 		})
 	})
 
@@ -50,7 +50,7 @@ var _ = Describe("Cat file chop lump converter", func() {
 			models, err := converter.ToModels(constants.CatABI(), []core.HeaderSyncLog{test_data.CatFileLumpHeaderSyncLog})
 
 			Expect(err).NotTo(HaveOccurred())
-			Expect(models).To(Equal([]shared.InsertionModel{test_data.CatFileLumpModel}))
+			Expect(models).To(Equal([]shared.InsertionModel{test_data.CatFileLumpModel()}))
 		})
 	})
 

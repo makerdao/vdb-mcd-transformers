@@ -48,7 +48,7 @@ var _ = Describe("all poke events query", func() {
 
 		spotPokeRepo = spot_poke.SpotPokeRepository{}
 		spotPokeRepo.SetDB(db)
-		spotPokeEvent = test_data.CopyModel(test_data.SpotPokeModel)
+		spotPokeEvent = test_data.SpotPokeModel()
 		spotPokeEvent.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
 		spotPokeEvent.ColumnValues[constants.HeaderFK] = headerId
 		spotPokeEvent.ColumnValues[constants.LogFK] = fakeHeaderSyncLog.ID

@@ -52,7 +52,7 @@ var _ = Describe("Flap kick converter", func() {
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(models)).To(Equal(1))
-			Expect(models[0]).To(Equal(test_data.FlapKickModel))
+			Expect(models[0]).To(Equal(test_data.FlapKickModel()))
 		})
 	})
 })

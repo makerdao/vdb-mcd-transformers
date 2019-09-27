@@ -82,7 +82,7 @@ var _ = Describe("Flip bid event computed columns", func() {
 				},
 				Dealt:            false,
 				IlkHex:           test_helpers.FakeIlk.Hex,
-				UrnGuy:           test_data.FlipKickModel.ColumnValues["usr"].(string),
+				UrnGuy:           test_data.FlipKickModel().ColumnValues["usr"].(string),
 				FlipKickRepo:     flipKickRepo,
 				FlipKickHeaderId: headerId,
 			})
@@ -162,7 +162,7 @@ var _ = Describe("Flip bid event computed columns", func() {
 			flipKickHeaderSyncLog := test_data.CreateTestLog(headerId, db)
 			flipKickGethLog = flipKickHeaderSyncLog.Log
 
-			flipKickEvent := test_data.FlipKickModel
+			flipKickEvent := test_data.FlipKickModel()
 			flipKickEvent.ForeignKeyValues[constants.AddressFK] = contractAddress
 			flipKickEvent.ColumnValues["bid_id"] = strconv.Itoa(bidId)
 			flipKickEvent.ColumnValues[constants.HeaderFK] = headerId

@@ -47,7 +47,7 @@ var _ = Describe("Bite Converter", func() {
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(models)).To(Equal(1))
-			Expect(models).To(Equal([]shared.InsertionModel{test_data.BiteModel}))
+			Expect(models).To(Equal([]shared.InsertionModel{test_data.BiteModel()}))
 		})
 
 		It("returns an error if converting log to entity fails", func() {

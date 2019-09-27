@@ -79,7 +79,7 @@ var _ = Describe("Ilk File Events Query", func() {
 
 	It("returns all ilk file events for ilk", func() {
 		catFileChopLumpLog := test_data.CreateTestLog(headerOneId, db)
-		catFileChopLump := test_data.CopyModel(test_data.CatFileChopModel)
+		catFileChopLump := test_data.CatFileChopModel()
 		catFileChopLump.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
 		catFileChopLump.ColumnValues[constants.HeaderFK] = headerOneId
 		catFileChopLump.ColumnValues[constants.LogFK] = catFileChopLumpLog.ID
@@ -87,7 +87,7 @@ var _ = Describe("Ilk File Events Query", func() {
 		Expect(chopLumpErr).NotTo(HaveOccurred())
 
 		catFileFlipLog := test_data.CreateTestLog(headerOneId, db)
-		catFileFlip := test_data.CatFileFlipModel
+		catFileFlip := test_data.CatFileFlipModel()
 		catFileFlip.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
 		catFileFlip.ColumnValues[constants.HeaderFK] = headerOneId
 		catFileFlip.ColumnValues[constants.LogFK] = catFileFlipLog.ID
@@ -95,7 +95,7 @@ var _ = Describe("Ilk File Events Query", func() {
 		Expect(flipErr).NotTo(HaveOccurred())
 
 		jugFileLog := test_data.CreateTestLog(headerOneId, db)
-		jugFile := test_data.CopyModel(test_data.JugFileIlkModel)
+		jugFile := test_data.JugFileIlkModel()
 		jugFile.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
 		jugFile.ColumnValues[constants.HeaderFK] = headerOneId
 		jugFile.ColumnValues[constants.LogFK] = jugFileLog.ID
@@ -103,7 +103,7 @@ var _ = Describe("Ilk File Events Query", func() {
 		Expect(jugErr).NotTo(HaveOccurred())
 
 		spotFileMatLog := test_data.CreateTestLog(headerOneId, db)
-		spotFileMat := test_data.CopyModel(test_data.SpotFileMatModel)
+		spotFileMat := test_data.SpotFileMatModel()
 		spotFileMat.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
 		spotFileMat.ColumnValues[constants.HeaderFK] = headerOneId
 		spotFileMat.ColumnValues[constants.LogFK] = spotFileMatLog.ID
@@ -111,7 +111,7 @@ var _ = Describe("Ilk File Events Query", func() {
 		Expect(spotFileMatErr).NotTo(HaveOccurred())
 
 		spotFilePipLog := test_data.CreateTestLog(headerOneId, db)
-		spotFilePip := test_data.CopyModel(test_data.SpotFilePipModel)
+		spotFilePip := test_data.SpotFilePipModel()
 		spotFilePip.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
 		spotFilePip.ColumnValues[constants.HeaderFK] = headerOneId
 		spotFilePip.ColumnValues[constants.LogFK] = spotFilePipLog.ID
@@ -119,7 +119,7 @@ var _ = Describe("Ilk File Events Query", func() {
 		Expect(spotFilePipErr).NotTo(HaveOccurred())
 
 		vatFileLog := test_data.CreateTestLog(headerOneId, db)
-		vatFile := test_data.CopyModel(test_data.VatFileIlkDustModel)
+		vatFile := test_data.VatFileIlkDustModel()
 		vatFile.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
 		vatFile.ColumnValues[constants.HeaderFK] = headerOneId
 		vatFile.ColumnValues[constants.LogFK] = vatFileLog.ID
@@ -165,7 +165,7 @@ var _ = Describe("Ilk File Events Query", func() {
 	})
 
 	It("includes results across blocks", func() {
-		fileBlockOne := test_data.CopyModel(test_data.VatFileIlkDustModel)
+		fileBlockOne := test_data.VatFileIlkDustModel()
 		fileBlockOne.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
 		fileBlockOne.ColumnValues["data"] = strconv.Itoa(rand.Int())
 		fileBlockOne.ColumnValues[constants.HeaderFK] = headerOneId
@@ -179,7 +179,7 @@ var _ = Describe("Ilk File Events Query", func() {
 		Expect(headerTwoErr).NotTo(HaveOccurred())
 
 		logBlockTwo := test_data.CreateTestLog(headerTwoId, db)
-		fileBlockTwo := test_data.CopyModel(test_data.VatFileIlkDustModel)
+		fileBlockTwo := test_data.VatFileIlkDustModel()
 		fileBlockTwo.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
 		fileBlockTwo.ColumnValues["data"] = strconv.Itoa(rand.Int())
 		fileBlockTwo.ColumnValues[constants.HeaderFK] = headerTwoId
@@ -209,7 +209,7 @@ var _ = Describe("Ilk File Events Query", func() {
 		var fileBlockOne, fileBlockTwo shared.InsertionModel
 
 		BeforeEach(func() {
-			fileBlockOne = test_data.CopyModel(test_data.VatFileIlkDustModel)
+			fileBlockOne = test_data.VatFileIlkDustModel()
 			fileBlockOne.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
 			fileBlockOne.ColumnValues["data"] = strconv.Itoa(rand.Int())
 			fileBlockOne.ColumnValues[constants.HeaderFK] = headerOneId
@@ -223,7 +223,7 @@ var _ = Describe("Ilk File Events Query", func() {
 			Expect(headerTwoErr).NotTo(HaveOccurred())
 			logTwoID := test_data.CreateTestLog(headerOneId, db).ID
 
-			fileBlockTwo = test_data.CopyModel(test_data.VatFileIlkDustModel)
+			fileBlockTwo = test_data.VatFileIlkDustModel()
 			fileBlockTwo.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
 			fileBlockTwo.ColumnValues["data"] = strconv.Itoa(rand.Int())
 			fileBlockTwo.ColumnValues[constants.HeaderFK] = headerTwoId
@@ -267,14 +267,14 @@ var _ = Describe("Ilk File Events Query", func() {
 	})
 
 	It("does not include ilk file events for a different ilk", func() {
-		relevantFile := test_data.CopyModel(test_data.VatFileIlkDustModel)
+		relevantFile := test_data.VatFileIlkDustModel()
 		relevantFile.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
 		relevantFile.ColumnValues["data"] = strconv.Itoa(rand.Int())
 		relevantFile.ColumnValues[constants.HeaderFK] = headerOneId
 		relevantFile.ColumnValues[constants.LogFK] = logOneId
 
 		irrelevantLog := test_data.CreateTestLog(headerOneId, db)
-		irrelevantFile := test_data.CopyModel(test_data.VatFileIlkDustModel)
+		irrelevantFile := test_data.VatFileIlkDustModel()
 		irrelevantFile.ForeignKeyValues[constants.IlkFK] = test_helpers.AnotherFakeIlk.Hex
 		irrelevantFile.ColumnValues["data"] = strconv.Itoa(rand.Int())
 		irrelevantFile.ColumnValues[constants.HeaderFK] = headerOneId

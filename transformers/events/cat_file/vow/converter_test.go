@@ -62,6 +62,6 @@ var _ = Describe("Cat file vow converter", func() {
 		models, err := converter.ToModels(constants.CatABI(), []core.HeaderSyncLog{test_data.CatFileVowHeaderSyncLog})
 
 		Expect(err).NotTo(HaveOccurred())
-		Expect(models).To(Equal([]shared.InsertionModel{test_data.CatFileVowModel}))
+		Expect(models).To(Equal([]shared.InsertionModel{test_data.CatFileVowModel()}))
 	})
 })

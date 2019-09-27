@@ -67,7 +67,7 @@ var _ = Describe("Single flip view", func() {
 			},
 			Dealt:            true,
 			IlkHex:           test_helpers.FakeIlk.Hex,
-			UrnGuy:           test_data.FlipKickModel.ColumnValues["usr"].(string),
+			UrnGuy:           test_data.FlipKickModel().ColumnValues["usr"].(string),
 			FlipKickRepo:     flipKickRepo,
 			FlipKickHeaderId: headerId,
 		})
@@ -114,7 +114,7 @@ var _ = Describe("Single flip view", func() {
 				},
 				Dealt:            false,
 				IlkHex:           test_helpers.FakeIlk.Hex,
-				UrnGuy:           test_data.FlipKickModel.ColumnValues["usr"].(string),
+				UrnGuy:           test_data.FlipKickModel().ColumnValues["usr"].(string),
 				FlipKickRepo:     flipKickRepo,
 				FlipKickHeaderId: headerId,
 			})
@@ -165,7 +165,7 @@ var _ = Describe("Single flip view", func() {
 				},
 				Dealt:            true,
 				IlkHex:           test_helpers.FakeIlk.Hex,
-				UrnGuy:           test_data.FlipKickModel.ColumnValues["usr"].(string),
+				UrnGuy:           test_data.FlipKickModel().ColumnValues["usr"].(string),
 				FlipKickRepo:     flipKickRepo,
 				FlipKickHeaderId: headerOneId,
 			})
@@ -209,7 +209,7 @@ var _ = Describe("Single flip view", func() {
 			},
 			Dealt:            true,
 			IlkHex:           test_helpers.FakeIlk.Hex,
-			UrnGuy:           test_data.FlipKickModel.ColumnValues["usr"].(string),
+			UrnGuy:           test_data.FlipKickModel().ColumnValues["usr"].(string),
 			FlipKickRepo:     flipKickRepo,
 			FlipKickHeaderId: headerId,
 		})

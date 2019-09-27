@@ -50,7 +50,7 @@ var _ = Describe("NewCdp Converter", func() {
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(models)).To(Equal(1))
-			Expect(models[0]).To(Equal(test_data.NewCdpModel))
+			Expect(models[0]).To(Equal(test_data.NewCdpModel()))
 		})
 
 		It("returns an error if converting log to entity fails", func() {

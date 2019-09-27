@@ -52,7 +52,7 @@ var _ = Describe("Flop bid event computed columns", func() {
 		flopKickRepo = flop_kick.FlopKickRepository{}
 		flopKickRepo.SetDB(db)
 
-		flopKickEvent = test_data.CopyModel(test_data.FlopKickModel)
+		flopKickEvent = test_data.FlopKickModel()
 		flopKickEvent.ForeignKeyValues[constants.AddressFK] = contractAddress
 		flopKickEvent.ColumnValues["bid_id"] = strconv.Itoa(fakeBidId)
 		flopKickEvent.ColumnValues[constants.HeaderFK] = headerId

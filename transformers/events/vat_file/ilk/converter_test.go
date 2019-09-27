@@ -45,7 +45,7 @@ var _ = Describe("Vat file ilk converter", func() {
 			models, err := converter.ToModels(constants.VatABI(), []core.HeaderSyncLog{test_data.VatFileIlkSpotHeaderSyncLog})
 
 			Expect(err).NotTo(HaveOccurred())
-			Expect(models).To(Equal([]shared.InsertionModel{test_data.VatFileIlkSpotModel}))
+			Expect(models).To(Equal([]shared.InsertionModel{test_data.VatFileIlkSpotModel()}))
 		})
 
 		It("converts to model with data converted to wad when what is 'line'", func() {
@@ -53,7 +53,7 @@ var _ = Describe("Vat file ilk converter", func() {
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(models)).To(Equal(1))
-			Expect(models).To(Equal([]shared.InsertionModel{test_data.VatFileIlkLineModel}))
+			Expect(models).To(Equal([]shared.InsertionModel{test_data.VatFileIlkLineModel()}))
 		})
 
 		It("converts to model with data converted to rad when what is 'dust'", func() {
@@ -61,7 +61,7 @@ var _ = Describe("Vat file ilk converter", func() {
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(models)).To(Equal(1))
-			Expect(models).To(Equal([]shared.InsertionModel{test_data.VatFileIlkDustModel}))
+			Expect(models).To(Equal([]shared.InsertionModel{test_data.VatFileIlkDustModel()}))
 		})
 	})
 })

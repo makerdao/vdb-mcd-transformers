@@ -50,7 +50,9 @@ var SpotFileMatHeaderSyncLog = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-var SpotFileMatModel = shared.InsertionModel{
+func SpotFileMatModel() shared.InsertionModel { return CopyModel(spotFileMatModel) }
+
+var spotFileMatModel = shared.InsertionModel{
 	SchemaName: "maker",
 	TableName:  "spot_file_mat",
 	OrderedColumns: []string{
@@ -91,7 +93,9 @@ var SpotFilePipHeaderSyncLog = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-var SpotFilePipModel = shared.InsertionModel{
+func SpotFilePipModel() shared.InsertionModel { return CopyModel(spotFilePipModel) }
+
+var spotFilePipModel = shared.InsertionModel{
 	SchemaName: "maker",
 	TableName:  "spot_file_pip",
 	OrderedColumns: []string{

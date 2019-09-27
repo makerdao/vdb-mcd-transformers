@@ -56,6 +56,6 @@ var _ = Describe("Spot file mat converter", func() {
 		models, err := converter.ToModels(constants.SpotABI(), []core.HeaderSyncLog{test_data.SpotFileMatHeaderSyncLog})
 
 		Expect(err).NotTo(HaveOccurred())
-		Expect(models).To(Equal([]shared.InsertionModel{test_data.SpotFileMatModel}))
+		Expect(models).To(Equal([]shared.InsertionModel{test_data.SpotFileMatModel()}))
 	})
 })

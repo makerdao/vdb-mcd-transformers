@@ -370,7 +370,7 @@ var _ = Describe("Bites query", func() {
 })
 
 func generateBite(ilk, urn string, headerID, logID int64) shared.InsertionModel {
-	biteEvent := test_data.CopyModel(test_data.BiteModel)
+	biteEvent := test_data.BiteModel()
 	biteEvent.ForeignKeyValues[constants.IlkFK] = ilk
 	biteEvent.ForeignKeyValues[constants.UrnFK] = urn
 	biteEvent.ColumnValues["ink"] = strconv.Itoa(rand.Int())

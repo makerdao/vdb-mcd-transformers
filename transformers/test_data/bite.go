@@ -82,7 +82,9 @@ var BiteEntity = bite.BiteEntity{
 	LogID:    BiteHeaderSyncLog.ID,
 }
 
-var BiteModel = shared.InsertionModel{
+func BiteModel() shared.InsertionModel { return CopyModel(biteModel) }
+
+var biteModel = shared.InsertionModel{
 	SchemaName: "maker",
 	TableName:  "bite",
 	OrderedColumns: []string{

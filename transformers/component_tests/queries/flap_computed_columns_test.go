@@ -51,7 +51,7 @@ var _ = Describe("Flap computed columns", func() {
 			flapStorageValues := test_helpers.GetFlapStorageValues(1, fakeBidId)
 			test_helpers.CreateFlap(db, blockOneHeader, flapStorageValues, test_helpers.GetFlapMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
 
-			flapKickEvent := test_data.FlapKickModel
+			flapKickEvent := test_data.FlapKickModel()
 			flapKickEvent.ForeignKeyValues[constants.AddressFK] = contractAddress
 			flapKickEvent.ColumnValues["bid_id"] = strconv.Itoa(fakeBidId)
 			flapKickEvent.ColumnValues[constants.HeaderFK] = headerId
@@ -83,7 +83,7 @@ var _ = Describe("Flap computed columns", func() {
 			flapStorageValues := test_helpers.GetFlapStorageValues(1, fakeBidId)
 			test_helpers.CreateFlap(db, blockOneHeader, flapStorageValues, test_helpers.GetFlapMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
 
-			flapKickEvent := test_data.FlapKickModel
+			flapKickEvent := test_data.FlapKickModel()
 			flapKickEvent.ForeignKeyValues[constants.AddressFK] = contractAddress
 			flapKickEvent.ColumnValues["bid_id"] = strconv.Itoa(fakeBidId)
 			flapKickEvent.ColumnValues[constants.HeaderFK] = headerId
@@ -101,7 +101,7 @@ var _ = Describe("Flap computed columns", func() {
 			irrelevantFlapStorageValues := test_helpers.GetFlapStorageValues(2, irrelevantBidId)
 			test_helpers.CreateFlap(db, blockTwoHeader, irrelevantFlapStorageValues, test_helpers.GetFlapMetadatas(strconv.Itoa(irrelevantBidId)), contractAddress)
 
-			irrelevantFlapKickEvent := test_data.FlapKickModel
+			irrelevantFlapKickEvent := test_data.FlapKickModel()
 			irrelevantFlapKickEvent.ForeignKeyValues[constants.AddressFK] = contractAddress
 			irrelevantFlapKickEvent.ColumnValues["bid_id"] = strconv.Itoa(irrelevantBidId)
 			irrelevantFlapKickEvent.ColumnValues[constants.HeaderFK] = headerTwoId
@@ -142,7 +142,7 @@ var _ = Describe("Flap computed columns", func() {
 				flapStorageValues := test_helpers.GetFlapStorageValues(1, fakeBidId)
 				test_helpers.CreateFlap(db, blockOneHeader, flapStorageValues, test_helpers.GetFlapMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
 
-				flapKickEvent = test_data.FlapKickModel
+				flapKickEvent = test_data.FlapKickModel()
 				flapKickEvent.ForeignKeyValues[constants.AddressFK] = contractAddress
 				flapKickEvent.ColumnValues["bid_id"] = strconv.Itoa(fakeBidId)
 				flapKickEvent.ColumnValues[constants.HeaderFK] = headerId

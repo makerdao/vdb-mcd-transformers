@@ -67,7 +67,7 @@ var _ = Describe("Frob event computed columns", func() {
 
 		frobRepo = vat_frob.VatFrobRepository{}
 		frobRepo.SetDB(db)
-		frobEvent = test_data.CopyModel(test_data.VatFrobModelWithPositiveDart)
+		frobEvent = test_data.VatFrobModelWithPositiveDart()
 		frobEvent.ForeignKeyValues[constants.UrnFK] = fakeGuy
 		frobEvent.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
 		frobEvent.ColumnValues[constants.HeaderFK] = headerId

@@ -151,8 +151,8 @@ var _ = Describe("Flip state computed columns", func() {
 			// flip kick created in BeforeEach
 			expectedFlipKickEvent := test_helpers.BidEvent{
 				BidId:           strconv.Itoa(fakeBidId),
-				Lot:             test_data.FlipKickModel.ColumnValues["lot"].(string),
-				BidAmount:       test_data.FlipKickModel.ColumnValues["bid"].(string),
+				Lot:             test_data.FlipKickModel().ColumnValues["lot"].(string),
+				BidAmount:       test_data.FlipKickModel().ColumnValues["bid"].(string),
 				Act:             "kick",
 				ContractAddress: contractAddress,
 			}
@@ -195,7 +195,7 @@ var _ = Describe("Flip state computed columns", func() {
 			)
 
 			BeforeEach(func() {
-				flipKickEvent = test_data.CopyModel(test_data.FlipKickModel)
+				flipKickEvent = test_data.FlipKickModel()
 				flipKickEvent.ForeignKeyValues[constants.AddressFK] = contractAddress
 				flipKickEvent.ColumnValues["bid_id"] = strconv.Itoa(fakeBidId)
 				flipKickEvent.ColumnValues[constants.HeaderFK] = headerId
@@ -269,8 +269,8 @@ var _ = Describe("Flip state computed columns", func() {
 		It("ignores bid events for a flip with a different ilk", func() {
 			expectedBidEvent := test_helpers.BidEvent{
 				BidId:           strconv.Itoa(fakeBidId),
-				Lot:             test_data.FlipKickModel.ColumnValues["lot"].(string),
-				BidAmount:       test_data.FlipKickModel.ColumnValues["bid"].(string),
+				Lot:             test_data.FlipKickModel().ColumnValues["lot"].(string),
+				BidAmount:       test_data.FlipKickModel().ColumnValues["bid"].(string),
 				Act:             "kick",
 				ContractAddress: contractAddress,
 			}

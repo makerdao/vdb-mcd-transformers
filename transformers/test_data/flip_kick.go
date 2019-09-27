@@ -83,7 +83,9 @@ var FlipKickEntity = flip_kick.FlipKickEntity{
 	LogID:           FlipKickHeaderSyncLog.ID,
 }
 
-var FlipKickModel = shared.InsertionModel{
+func FlipKickModel() shared.InsertionModel { return CopyModel(flipKickModel) }
+
+var flipKickModel = shared.InsertionModel{
 	SchemaName: "maker",
 	TableName:  "flip_kick",
 	OrderedColumns: []string{

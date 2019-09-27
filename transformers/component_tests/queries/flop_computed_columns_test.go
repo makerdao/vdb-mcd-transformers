@@ -55,7 +55,7 @@ var _ = Describe("Flop computed columns", func() {
 			flopStorageValues := test_helpers.GetFlopStorageValues(1, fakeBidId)
 			test_helpers.CreateFlop(db, blockOneHeader, flopStorageValues, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
 
-			flopKickEvent := test_data.CopyModel(test_data.FlopKickModel)
+			flopKickEvent := test_data.FlopKickModel()
 			flopKickEvent.ForeignKeyValues[constants.AddressFK] = contractAddress
 			flopKickEvent.ColumnValues["bid_id"] = strconv.Itoa(fakeBidId)
 			flopKickEvent.ColumnValues[constants.HeaderFK] = headerId
@@ -86,7 +86,7 @@ var _ = Describe("Flop computed columns", func() {
 			flopStorageValues := test_helpers.GetFlopStorageValues(1, fakeBidId)
 			test_helpers.CreateFlop(db, blockOneHeader, flopStorageValues, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
 
-			flopKickEvent := test_data.CopyModel(test_data.FlopKickModel)
+			flopKickEvent := test_data.FlopKickModel()
 			flopKickEvent.ForeignKeyValues[constants.AddressFK] = contractAddress
 			flopKickEvent.ColumnValues["bid_id"] = strconv.Itoa(fakeBidId)
 			flopKickEvent.ColumnValues[constants.HeaderFK] = headerId
@@ -105,7 +105,7 @@ var _ = Describe("Flop computed columns", func() {
 			irrelevantFlopStorageValues := test_helpers.GetFlopStorageValues(2, irrelevantBidId)
 			test_helpers.CreateFlop(db, blockTwoHeader, irrelevantFlopStorageValues, test_helpers.GetFlopMetadatas(strconv.Itoa(irrelevantBidId)), contractAddress)
 
-			irrelevantFlopKickEvent := test_data.CopyModel(test_data.FlopKickModel)
+			irrelevantFlopKickEvent := test_data.FlopKickModel()
 			irrelevantFlopKickEvent.ForeignKeyValues[constants.AddressFK] = contractAddress
 			irrelevantFlopKickEvent.ColumnValues["bid_id"] = strconv.Itoa(irrelevantBidId)
 			irrelevantFlopKickEvent.ColumnValues[constants.HeaderFK] = headerTwoId
@@ -145,7 +145,7 @@ var _ = Describe("Flop computed columns", func() {
 				flopStorageValues := test_helpers.GetFlopStorageValues(1, fakeBidId)
 				test_helpers.CreateFlop(db, blockOneHeader, flopStorageValues, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
 
-				flopKickEvent = test_data.CopyModel(test_data.FlopKickModel)
+				flopKickEvent = test_data.FlopKickModel()
 				flopKickEvent.ForeignKeyValues[constants.AddressFK] = contractAddress
 				flopKickEvent.ColumnValues["bid_id"] = strconv.Itoa(fakeBidId)
 				flopKickEvent.ColumnValues[constants.HeaderFK] = headerId

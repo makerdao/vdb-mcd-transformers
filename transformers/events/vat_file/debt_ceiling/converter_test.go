@@ -45,6 +45,6 @@ var _ = Describe("Vat file debt ceiling converter", func() {
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(len(models)).To(Equal(1))
-		Expect(models).To(Equal([]shared.InsertionModel{test_data.VatFileDebtCeilingModel}))
+		Expect(models).To(Equal([]shared.InsertionModel{test_data.VatFileDebtCeilingModel()}))
 	})
 })

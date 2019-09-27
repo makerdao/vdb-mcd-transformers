@@ -46,7 +46,7 @@ var _ = Describe("flap_bid_event computed columns", func() {
 		flapKickRepo = flap_kick.FlapKickRepository{}
 		flapKickRepo.SetDB(db)
 
-		flapKickEvent = test_data.FlapKickModel
+		flapKickEvent = test_data.FlapKickModel()
 		flapKickEvent.ColumnValues["bid_id"] = strconv.Itoa(fakeBidId)
 		flapKickEvent.ForeignKeyValues[constants.AddressFK] = contractAddress
 		flapKickEvent.ColumnValues[constants.HeaderFK] = headerId

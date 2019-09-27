@@ -74,7 +74,7 @@ var _ = Describe("Ilk state computed columns", func() {
 		It("returns relevant frobs for an ilk_state", func() {
 			frobRepo := vat_frob.VatFrobRepository{}
 			frobRepo.SetDB(db)
-			frobEvent := test_data.CopyModel(test_data.VatFrobModelWithPositiveDart)
+			frobEvent := test_data.VatFrobModelWithPositiveDart()
 			frobEvent.ForeignKeyValues[constants.UrnFK] = fakeGuy
 			frobEvent.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
 			frobEvent.ColumnValues[constants.HeaderFK] = headerId
@@ -109,7 +109,7 @@ var _ = Describe("Ilk state computed columns", func() {
 			BeforeEach(func() {
 				frobRepo := vat_frob.VatFrobRepository{}
 				frobRepo.SetDB(db)
-				oldFrob = test_data.CopyModel(test_data.VatFrobModelWithPositiveDart)
+				oldFrob = test_data.VatFrobModelWithPositiveDart()
 				oldFrob.ForeignKeyValues[constants.UrnFK] = fakeGuy
 				oldFrob.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
 				oldFrob.ColumnValues[constants.HeaderFK] = headerId
@@ -123,7 +123,7 @@ var _ = Describe("Ilk state computed columns", func() {
 				Expect(newHeaderErr).NotTo(HaveOccurred())
 				newLogId := test_data.CreateTestLog(newHeaderId, db).ID
 
-				newFrob = test_data.CopyModel(test_data.VatFrobModelWithNegativeDink)
+				newFrob = test_data.VatFrobModelWithNegativeDink()
 				newFrob.ForeignKeyValues[constants.UrnFK] = fakeGuy
 				newFrob.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
 				newFrob.ColumnValues[constants.HeaderFK] = newHeaderId
@@ -177,7 +177,7 @@ var _ = Describe("Ilk state computed columns", func() {
 		It("returns ilk file events for an ilk state", func() {
 			fileRepo := ilk.VatFileIlkRepository{}
 			fileRepo.SetDB(db)
-			fileEvent := test_data.VatFileIlkDustModel
+			fileEvent := test_data.VatFileIlkDustModel()
 			fileEvent.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
 			fileEvent.ColumnValues[constants.HeaderFK] = headerId
 			fileEvent.ColumnValues[constants.LogFK] = logId
@@ -210,7 +210,7 @@ var _ = Describe("Ilk state computed columns", func() {
 			BeforeEach(func() {
 				fileRepo := ilk.VatFileIlkRepository{}
 				fileRepo.SetDB(db)
-				fileEvent = test_data.VatFileIlkDustModel
+				fileEvent = test_data.VatFileIlkDustModel()
 				fileEvent.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
 				fileEvent.ColumnValues[constants.HeaderFK] = headerId
 				fileEvent.ColumnValues[constants.LogFK] = logId
@@ -225,7 +225,7 @@ var _ = Describe("Ilk state computed columns", func() {
 
 				spotFileMatRepo := mat.SpotFileMatRepository{}
 				spotFileMatRepo.SetDB(db)
-				spotFileMat = test_data.SpotFileMatModel
+				spotFileMat = test_data.SpotFileMatModel()
 				spotFileMat.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
 				spotFileMat.ColumnValues[constants.HeaderFK] = newHeaderId
 				spotFileMat.ColumnValues[constants.LogFK] = newLogId
@@ -276,7 +276,7 @@ var _ = Describe("Ilk state computed columns", func() {
 		It("returns bite event for an ilk state", func() {
 			biteRepo := bite.BiteRepository{}
 			biteRepo.SetDB(db)
-			biteEvent := test_data.BiteModel
+			biteEvent := test_data.BiteModel()
 			biteEvent.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
 			biteEvent.ColumnValues[constants.HeaderFK] = headerId
 			biteEvent.ColumnValues[constants.LogFK] = logId
@@ -313,7 +313,7 @@ var _ = Describe("Ilk state computed columns", func() {
 			BeforeEach(func() {
 				biteRepo := bite.BiteRepository{}
 				biteRepo.SetDB(db)
-				oldBite = test_data.BiteModel
+				oldBite = test_data.BiteModel()
 				oldBite.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
 				oldBite.ColumnValues[constants.HeaderFK] = headerId
 				oldBite.ColumnValues[constants.LogFK] = logId
@@ -326,7 +326,7 @@ var _ = Describe("Ilk state computed columns", func() {
 				Expect(insertNewHeaderErr).NotTo(HaveOccurred())
 				newLogId := test_data.CreateTestLog(newHeaderId, db).ID
 
-				newBite = test_data.BiteModel
+				newBite = test_data.BiteModel()
 				newBite.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
 				newBite.ForeignKeyValues[constants.UrnFK] = test_data.FakeUrn
 				newBite.ColumnValues[constants.HeaderFK] = newHeaderId
@@ -367,10 +367,10 @@ var _ = Describe("Ilk state computed columns", func() {
 
 				expectedBite := test_helpers.BiteEvent{
 					IlkIdentifier: test_helpers.FakeIlk.Identifier,
-					UrnIdentifier: newBite.ForeignKeyValues[constants.UrnFK],
-					Ink:           newBite.ColumnValues["ink"].(string),
-					Art:           newBite.ColumnValues["art"].(string),
-					Tab:           newBite.ColumnValues["tab"].(string),
+					UrnIdentifier: oldBite.ForeignKeyValues[constants.UrnFK],
+					Ink:           oldBite.ColumnValues["ink"].(string),
+					Art:           oldBite.ColumnValues["art"].(string),
+					Tab:           oldBite.ColumnValues["tab"].(string),
 				}
 				Expect(actualBites).To(ConsistOf(expectedBite))
 			})

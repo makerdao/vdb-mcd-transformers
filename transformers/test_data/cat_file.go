@@ -53,7 +53,9 @@ var CatFileChopHeaderSyncLog = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-var CatFileChopModel = shared.InsertionModel{
+func CatFileChopModel() shared.InsertionModel { return CopyModel(catFileChopModel) }
+
+var catFileChopModel = shared.InsertionModel{
 	SchemaName: "maker",
 	TableName:  "cat_file_chop_lump",
 	OrderedColumns: []string{
@@ -94,7 +96,9 @@ var CatFileLumpHeaderSyncLog = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-var CatFileLumpModel = shared.InsertionModel{
+func CatFileLumpModel() shared.InsertionModel { return CopyModel(catFileLumpModel) }
+
+var catFileLumpModel = shared.InsertionModel{
 	SchemaName: "maker",
 	TableName:  "cat_file_chop_lump",
 	OrderedColumns: []string{
@@ -135,7 +139,9 @@ var CatFileFlipHeaderSyncLog = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-var CatFileFlipModel = shared.InsertionModel{
+func CatFileFlipModel() shared.InsertionModel { return CopyModel(catFileFlipModel) }
+
+var catFileFlipModel = shared.InsertionModel{
 	SchemaName: "maker",
 	TableName:  "cat_file_flip",
 	OrderedColumns: []string{
@@ -176,7 +182,9 @@ var CatFileVowHeaderSyncLog = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-var CatFileVowModel = shared.InsertionModel{
+func CatFileVowModel() shared.InsertionModel { return CopyModel(catFileVowModel) }
+
+var catFileVowModel = shared.InsertionModel{
 	SchemaName: "maker",
 	TableName:  "cat_file_vow",
 	OrderedColumns: []string{

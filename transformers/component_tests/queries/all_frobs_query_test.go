@@ -495,7 +495,7 @@ var _ = Describe("Frobs query", func() {
 })
 
 func getFakeVatFrobEvent(ilk, urn string, headerID, logID int64) shared.InsertionModel {
-	vatFrobEvent := test_data.CopyModel(test_data.VatFrobModelWithPositiveDart)
+	vatFrobEvent := test_data.VatFrobModelWithPositiveDart()
 	vatFrobEvent.ForeignKeyValues[constants.IlkFK] = ilk
 	vatFrobEvent.ForeignKeyValues[constants.UrnFK] = urn
 	vatFrobEvent.ColumnValues["dink"] = strconv.Itoa(rand.Int())

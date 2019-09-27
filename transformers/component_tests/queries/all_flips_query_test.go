@@ -68,7 +68,7 @@ var _ = Describe("All flips view", func() {
 			},
 			Dealt:            false,
 			IlkHex:           test_helpers.FakeIlk.Hex,
-			UrnGuy:           test_data.FlipKickModel.ColumnValues["usr"].(string),
+			UrnGuy:           test_data.FlipKickModel().ColumnValues["usr"].(string),
 			FlipKickRepo:     flipKickRepo,
 			FlipKickHeaderId: headerId,
 		})
@@ -101,7 +101,7 @@ var _ = Describe("All flips view", func() {
 		Expect(expectedBid1).To(Equal(actualBid1))
 
 		flipKickLog := test_data.CreateTestLog(headerTwoId, db)
-		flipKickErr := test_helpers.CreateFlipKick(contractAddress, fakeBidId2, headerTwoId, flipKickLog.ID, test_data.FlipKickModel.ColumnValues["usr"].(string), flipKickRepo)
+		flipKickErr := test_helpers.CreateFlipKick(contractAddress, fakeBidId2, headerTwoId, flipKickLog.ID, test_data.FlipKickModel().ColumnValues["usr"].(string), flipKickRepo)
 		Expect(flipKickErr).NotTo(HaveOccurred())
 
 		expectedBid2 := test_helpers.FlipBidFromValues(strconv.Itoa(fakeBidId2), strconv.FormatInt(ilkId, 10),
@@ -136,7 +136,7 @@ var _ = Describe("All flips view", func() {
 			},
 			Dealt:            false,
 			IlkHex:           test_helpers.FakeIlk.Hex,
-			UrnGuy:           test_data.FlipKickModel.ColumnValues["usr"].(string),
+			UrnGuy:           test_data.FlipKickModel().ColumnValues["usr"].(string),
 			FlipKickRepo:     flipKickRepo,
 			FlipKickHeaderId: headerId,
 		})
@@ -148,7 +148,7 @@ var _ = Describe("All flips view", func() {
 		irrelevantBidId := fakeBidId + 1
 		irrelevantAddress := "contract address2"
 		irrelevantIlkHex := test_helpers.AnotherFakeIlk.Hex
-		irrelevantUrn := test_data.FlipKickModel.ColumnValues["gal"].(string)
+		irrelevantUrn := test_data.FlipKickModel().ColumnValues["gal"].(string)
 		_, _, setupErr2 := test_helpers.SetUpFlipBidContext(test_helpers.FlipBidContextInput{
 			DealCreationInput: test_helpers.DealCreationInput{
 				Db:              db,
@@ -195,7 +195,7 @@ var _ = Describe("All flips view", func() {
 			},
 			Dealt:            false,
 			IlkHex:           ilkOne.Hex,
-			UrnGuy:           test_data.FlipKickModel.ColumnValues["usr"].(string),
+			UrnGuy:           test_data.FlipKickModel().ColumnValues["usr"].(string),
 			FlipKickRepo:     flipKickRepo,
 			FlipKickHeaderId: headerId,
 		})
@@ -225,7 +225,7 @@ var _ = Describe("All flips view", func() {
 			},
 			Dealt:            false,
 			IlkHex:           ilkTwo.Hex,
-			UrnGuy:           test_data.FlipKickModel.ColumnValues["gal"].(string),
+			UrnGuy:           test_data.FlipKickModel().ColumnValues["gal"].(string),
 			FlipKickRepo:     flipKickRepo,
 			FlipKickHeaderId: headerTwoId,
 		})
@@ -280,7 +280,7 @@ var _ = Describe("All flips view", func() {
 				},
 				Dealt:            false,
 				IlkHex:           test_helpers.FakeIlk.Hex,
-				UrnGuy:           test_data.FlipKickModel.ColumnValues["usr"].(string),
+				UrnGuy:           test_data.FlipKickModel().ColumnValues["usr"].(string),
 				FlipKickRepo:     flipKickRepo,
 				FlipKickHeaderId: headerId,
 			})
@@ -297,7 +297,7 @@ var _ = Describe("All flips view", func() {
 		})
 
 		It("limits results if max_results argument is provided", func() {
-			flipKickErr := test_helpers.CreateFlipKick(contractAddress, fakeBidIdTwo, headerId, logId, test_data.FlipKickModel.ColumnValues["usr"].(string), flipKickRepo)
+			flipKickErr := test_helpers.CreateFlipKick(contractAddress, fakeBidIdTwo, headerId, logId, test_data.FlipKickModel().ColumnValues["usr"].(string), flipKickRepo)
 			Expect(flipKickErr).NotTo(HaveOccurred())
 
 			maxResults := 1
@@ -314,7 +314,7 @@ var _ = Describe("All flips view", func() {
 		})
 
 		It("offsets results if offset is provided", func() {
-			flipKickErr := test_helpers.CreateFlipKick(contractAddress, fakeBidIdOne, headerId, logId, test_data.FlipKickModel.ColumnValues["usr"].(string), flipKickRepo)
+			flipKickErr := test_helpers.CreateFlipKick(contractAddress, fakeBidIdOne, headerId, logId, test_data.FlipKickModel().ColumnValues["usr"].(string), flipKickRepo)
 			Expect(flipKickErr).NotTo(HaveOccurred())
 
 			maxResults := 1

@@ -58,7 +58,9 @@ var NewCdpEntity = new_cdp.NewCdpEntity{
 	HeaderID: NewCdpHeaderSyncLog.HeaderID,
 }
 
-var NewCdpModel = shared.InsertionModel{
+func NewCdpModel() shared.InsertionModel { return CopyModel(newCdpModel) }
+
+var newCdpModel = shared.InsertionModel{
 	SchemaName: "maker",
 	TableName:  "new_cdp",
 	OrderedColumns: []string{
