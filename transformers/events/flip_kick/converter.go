@@ -30,9 +30,9 @@ import (
 
 type FlipKickConverter struct{}
 
-func (FlipKickConverter) ToEntities(contractAbi string, ethLogs []core.HeaderSyncLog) ([]FlipKickEntity, error) {
+func (FlipKickConverter) ToEntities(contractAbi string, logs []core.HeaderSyncLog) ([]FlipKickEntity, error) {
 	var entities []FlipKickEntity
-	for _, log := range ethLogs {
+	for _, log := range logs {
 		var entity FlipKickEntity
 		address := log.Log.Address
 		abi, err := geth.ParseAbi(contractAbi)

@@ -31,9 +31,9 @@ import (
 
 type BiteConverter struct{}
 
-func (BiteConverter) ToEntities(contractAbi string, ethLogs []core.HeaderSyncLog) ([]BiteEntity, error) {
+func (BiteConverter) ToEntities(contractAbi string, logs []core.HeaderSyncLog) ([]BiteEntity, error) {
 	var entities []BiteEntity
-	for _, log := range ethLogs {
+	for _, log := range logs {
 		var entity BiteEntity
 		address := log.Log.Address
 		abi, err := geth.ParseAbi(contractAbi)
