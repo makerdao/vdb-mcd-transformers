@@ -20,7 +20,7 @@ var _ = Describe("Executing the flop transformer", func() {
 	var (
 		db                     *postgres.DB
 		transformer            storageFactory.Transformer
-		flopperContractAddress = "0x70b1a0fa8cc13cd3ce3cd65064c226dd9bc65f49"
+		flopperContractAddress = "0xa806168abccd3c8cbc07ee4a87b16b14b874ffcf"
 		repository             = flop.FlopStorageRepository{ContractAddress: flopperContractAddress}
 		storageKeyLookup       = flop.StorageKeysLookup{StorageRepository: &storage.MakerStorageRepository{}, ContractAddress: flopperContractAddress}
 	)
@@ -91,6 +91,10 @@ var _ = Describe("Executing the flop transformer", func() {
 		err = db.Get(&begResult, `SELECT block_number, block_hash, beg AS value from maker.flop_beg`)
 		Expect(err).NotTo(HaveOccurred())
 		test_helpers.AssertVariable(begResult, blockNumber, blockHash.Hex(), "1050000000000000000000000000")
+	})
+
+	It("reads in a pad storage diff and persists it", func() {
+		//TODO: write this test
 	})
 
 	It("reads in a ttl storage diff and persists it", func() {
