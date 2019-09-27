@@ -46,18 +46,3 @@ var _ = Describe("FlipKick Converter", func() {
 		Expect(err).To(HaveOccurred())
 	})
 })
-
-// Old test compared lowercase. The testing.toml lists the ETH_FLIP_A lowercased, yet here it appears mixed case in "actual". Where does the capitalisation happen?
-/*
-func expectEqualModels(actual interface{}, expected flip_kick.FlipKickModel) {
-	actualFlipKick := actual.(flip_kick.FlipKickModel)
-	Expect(actualFlipKick.BidId).To(Equal(expected.BidId))
-	Expect(actualFlipKick.Lot).To(Equal(expected.Lot))
-	Expect(actualFlipKick.Bid).To(Equal(expected.Bid))
-	Expect(actualFlipKick.Tab).To(Equal(expected.Tab))
-	Expect(actualFlipKick.Usr).To(Equal(expected.Usr))
-	Expect(actualFlipKick.Gal).To(Equal(expected.Gal))
-	Expect(strings.ToLower(actualFlipKick.ContractAddress)).To(Equal(strings.ToLower(expected.ContractAddress)))
-	Expect(actualFlipKick.LogID).To(Equal(expected.LogID))
-}
-*/
