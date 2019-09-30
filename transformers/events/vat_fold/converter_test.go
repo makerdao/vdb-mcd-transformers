@@ -23,6 +23,7 @@ import (
 
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_fold"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
@@ -31,19 +32,19 @@ var _ = Describe("Vat fold converter", func() {
 	It("returns err if log missing topics", func() {
 		badLog := core.HeaderSyncLog{}
 
-		_, err := converter.ToModels([]core.HeaderSyncLog{badLog})
+		_, err := converter.ToModels(constants.VatABI(), []core.HeaderSyncLog{badLog})
 		Expect(err).To(HaveOccurred())
 	})
 
 	It("converts a log with positive rate to an model", func() {
-		models, err := converter.ToModels([]core.HeaderSyncLog{test_data.VatFoldHeaderSyncLogWithPositiveRate})
+		models, err := converter.ToModels(constants.VatABI(), []core.HeaderSyncLog{test_data.VatFoldHeaderSyncLogWithPositiveRate})
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(models).To(Equal([]shared.InsertionModel{test_data.VatFoldModelWithPositiveRate}))
 	})
 
 	It("converts a log with negative rate to an model", func() {
-		models, err := converter.ToModels([]core.HeaderSyncLog{test_data.VatFoldHeaderSyncLogWithNegativeRate})
+		models, err := converter.ToModels(constants.VatABI(), []core.HeaderSyncLog{test_data.VatFoldHeaderSyncLogWithNegativeRate})
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(models).To(Equal([]shared.InsertionModel{test_data.VatFoldModelWithNegativeRate}))

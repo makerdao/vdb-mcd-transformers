@@ -34,7 +34,7 @@ import (
 	"strconv"
 )
 
-var _ = Describe("SpotFile LogNoteTransformers", func() {
+var _ = Describe("SpotFile EventTransformers", func() {
 	var (
 		db         *postgres.DB
 		blockChain core.BlockChain
@@ -54,7 +54,7 @@ var _ = Describe("SpotFile LogNoteTransformers", func() {
 			addresses   []common.Address
 			blockNumber int64
 			header      core.Header
-			initializer shared.LogNoteTransformer
+			initializer shared.EventTransformer
 			logs        []types.Log
 			topics      []common.Hash
 			tr          transformer.EventTransformer
@@ -78,7 +78,7 @@ var _ = Describe("SpotFile LogNoteTransformers", func() {
 			addresses = transformer.HexStringsToAddresses(spotFileMatConfig.ContractAddresses)
 			topics = []common.Hash{common.HexToHash(spotFileMatConfig.Topic)}
 
-			initializer = shared.LogNoteTransformer{
+			initializer = shared.EventTransformer{
 				Config:     spotFileMatConfig,
 				Converter:  mat.SpotFileMatConverter{},
 				Repository: &mat.SpotFileMatRepository{},
@@ -91,7 +91,7 @@ var _ = Describe("SpotFile LogNoteTransformers", func() {
 
 			headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
 
-			tr = initializer.NewLogNoteTransformer(db)
+			tr = initializer.NewEventTransformer(db)
 			executeErr := tr.Execute(headerSyncLogs)
 			Expect(executeErr).NotTo(HaveOccurred())
 		})
@@ -114,7 +114,7 @@ var _ = Describe("SpotFile LogNoteTransformers", func() {
 			addresses   []common.Address
 			blockNumber int64
 			header      core.Header
-			initializer shared.LogNoteTransformer
+			initializer shared.EventTransformer
 			logs        []types.Log
 			topics      []common.Hash
 			tr          transformer.EventTransformer
@@ -138,7 +138,7 @@ var _ = Describe("SpotFile LogNoteTransformers", func() {
 			addresses = transformer.HexStringsToAddresses(spotFilePipConfig.ContractAddresses)
 			topics = []common.Hash{common.HexToHash(spotFilePipConfig.Topic)}
 
-			initializer = shared.LogNoteTransformer{
+			initializer = shared.EventTransformer{
 				Config:     spotFilePipConfig,
 				Converter:  pip.SpotFilePipConverter{},
 				Repository: &pip.SpotFilePipRepository{},
@@ -151,7 +151,7 @@ var _ = Describe("SpotFile LogNoteTransformers", func() {
 
 			headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
 
-			tr = initializer.NewLogNoteTransformer(db)
+			tr = initializer.NewEventTransformer(db)
 			executeErr := tr.Execute(headerSyncLogs)
 			Expect(executeErr).NotTo(HaveOccurred())
 		})

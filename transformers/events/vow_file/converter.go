@@ -29,7 +29,7 @@ const (
 	numTopicsRequired = 4
 )
 
-func (VowFileConverter) ToModels(logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
+func (VowFileConverter) ToModels(_ string, logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
 	var models []shared.InsertionModel
 	for _, log := range logs {
 		err := shared.VerifyLog(log.Log, numTopicsRequired, logDataRequired)
@@ -41,7 +41,8 @@ func (VowFileConverter) ToModels(logs []core.HeaderSyncLog) ([]shared.InsertionM
 		data := shared.ConvertUint256HexToBigInt(log.Log.Topics[3].Hex())
 
 		model := shared.InsertionModel{
-			TableName: "vow_file",
+			SchemaName: "maker",
+			TableName:  "vow_file",
 			OrderedColumns: []string{
 				constants.HeaderFK, "what", "data", constants.LogFK,
 			},

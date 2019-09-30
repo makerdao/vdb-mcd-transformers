@@ -35,7 +35,7 @@ const (
 	numTopicsRequired = 4
 )
 
-func (CatFileChopLumpConverter) ToModels(logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
+func (CatFileChopLumpConverter) ToModels(_ string, logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
 	var results []shared.InsertionModel
 	for _, log := range logs {
 		verifyErr := shared.VerifyLog(log.Log, numTopicsRequired, logDataRequired)
@@ -51,7 +51,8 @@ func (CatFileChopLumpConverter) ToModels(logs []core.HeaderSyncLog) ([]shared.In
 		data := shared.ConvertUint256HexToBigInt(hexutil.Encode(dataBytes))
 
 		result := shared.InsertionModel{
-			TableName: "cat_file_chop_lump",
+			SchemaName: "maker",
+			TableName:  "cat_file_chop_lump",
 			OrderedColumns: []string{
 				constants.HeaderFK, string(constants.IlkFK), "what", "data", constants.LogFK,
 			},

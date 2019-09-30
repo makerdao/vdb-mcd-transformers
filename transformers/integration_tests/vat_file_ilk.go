@@ -32,11 +32,11 @@ import (
 	"strconv"
 )
 
-var _ = Describe("VatFileIlk LogNoteTransformer", func() {
+var _ = Describe("VatFileIlk EventTransformer", func() {
 	var (
 		db          *postgres.DB
 		blockChain  core.BlockChain
-		initializer shared.LogNoteTransformer
+		initializer shared.EventTransformer
 		addresses   []common.Address
 		topics      []common.Hash
 	)
@@ -58,7 +58,7 @@ var _ = Describe("VatFileIlk LogNoteTransformer", func() {
 		addresses = transformer.HexStringsToAddresses(vatFileIlkConfig.ContractAddresses)
 		topics = []common.Hash{common.HexToHash(vatFileIlkConfig.Topic)}
 
-		initializer = shared.LogNoteTransformer{
+		initializer = shared.EventTransformer{
 			Config:     vatFileIlkConfig,
 			Converter:  &ilk.VatFileIlkConverter{},
 			Repository: &ilk.VatFileIlkRepository{},
@@ -79,7 +79,7 @@ var _ = Describe("VatFileIlk LogNoteTransformer", func() {
 
 		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
 
-		tr := initializer.NewLogNoteTransformer(db)
+		tr := initializer.NewEventTransformer(db)
 		err = tr.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -109,7 +109,7 @@ var _ = Describe("VatFileIlk LogNoteTransformer", func() {
 
 		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
 
-		tr := initializer.NewLogNoteTransformer(db)
+		tr := initializer.NewEventTransformer(db)
 		err = tr.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -140,7 +140,7 @@ var _ = Describe("VatFileIlk LogNoteTransformer", func() {
 
 		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
 
-		tr := initializer.NewLogNoteTransformer(db)
+		tr := initializer.NewEventTransformer(db)
 		err = tr.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 

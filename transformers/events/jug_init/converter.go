@@ -29,7 +29,7 @@ const (
 	numTopicsRequired = 3
 )
 
-func (JugInitConverter) ToModels(logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
+func (JugInitConverter) ToModels(_ string, logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
 	var models []shared.InsertionModel
 	for _, log := range logs {
 		err := shared.VerifyLog(log.Log, numTopicsRequired, logDataRequired)
@@ -40,6 +40,7 @@ func (JugInitConverter) ToModels(logs []core.HeaderSyncLog) ([]shared.InsertionM
 		ilk := log.Log.Topics[2].Hex()
 
 		model := shared.InsertionModel{
+			SchemaName:     "maker",
 			TableName:      "jug_init",
 			OrderedColumns: []string{constants.HeaderFK, string(constants.IlkFK), constants.LogFK},
 			ColumnValues: shared.ColumnValues{

@@ -117,7 +117,7 @@ var _ = Describe("Urn state computed columns", func() {
 
 			frobRepo := vat_frob.VatFrobRepository{}
 			frobRepo.SetDB(db)
-			frobEvent := test_data.CopyModel(test_data.VatFrobModelWithPositiveDart)
+			frobEvent := test_data.VatFrobModelWithPositiveDart()
 			frobEvent.ForeignKeyValues[constants.UrnFK] = fakeGuy
 			frobEvent.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
 			frobEvent.ColumnValues[constants.HeaderFK] = headerId
@@ -155,7 +155,7 @@ var _ = Describe("Urn state computed columns", func() {
 				frobRepo := vat_frob.VatFrobRepository{}
 				frobRepo.SetDB(db)
 
-				frobEventOne = test_data.CopyModel(test_data.VatFrobModelWithPositiveDart)
+				frobEventOne = test_data.VatFrobModelWithPositiveDart()
 				frobEventOne.ForeignKeyValues[constants.UrnFK] = fakeGuy
 				frobEventOne.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
 				frobEventOne.ColumnValues[constants.HeaderFK] = headerId
@@ -170,7 +170,7 @@ var _ = Describe("Urn state computed columns", func() {
 				Expect(insertHeaderTwoErr).NotTo(HaveOccurred())
 				logTwoId := test_data.CreateTestLog(headerTwoId, db).ID
 
-				frobEventTwo = test_data.CopyModel(test_data.VatFrobModelWithNegativeDink)
+				frobEventTwo = test_data.VatFrobModelWithNegativeDink()
 				frobEventTwo.ForeignKeyValues[constants.UrnFK] = fakeGuy
 				frobEventTwo.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
 				frobEventTwo.ColumnValues[constants.HeaderFK] = headerTwoId
@@ -228,12 +228,12 @@ var _ = Describe("Urn state computed columns", func() {
 
 			biteRepo := bite.BiteRepository{}
 			biteRepo.SetDB(db)
-			biteEvent := randomizeBite(test_data.BiteModel)
-			biteEvent.Urn = fakeGuy
-			biteEvent.Ilk = test_helpers.FakeIlk.Hex
-			biteEvent.HeaderID = headerId
-			biteEvent.LogID = logId
-			insertBiteErr := biteRepo.Create([]interface{}{biteEvent})
+			biteEvent := randomizeBite(test_data.BiteModel())
+			biteEvent.ForeignKeyValues[constants.UrnFK] = fakeGuy
+			biteEvent.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
+			biteEvent.ColumnValues[constants.HeaderFK] = headerId
+			biteEvent.ColumnValues[constants.LogFK] = logId
+			insertBiteErr := biteRepo.Create([]shared.InsertionModel{biteEvent})
 			Expect(insertBiteErr).NotTo(HaveOccurred())
 
 			var actualBites test_helpers.BiteEvent
@@ -247,16 +247,16 @@ var _ = Describe("Urn state computed columns", func() {
 			expectedBites := test_helpers.BiteEvent{
 				IlkIdentifier: test_helpers.FakeIlk.Identifier,
 				UrnIdentifier: fakeGuy,
-				Ink:           biteEvent.Ink,
-				Art:           biteEvent.Art,
-				Tab:           biteEvent.Tab,
+				Ink:           biteEvent.ColumnValues["ink"].(string),
+				Art:           biteEvent.ColumnValues["art"].(string),
+				Tab:           biteEvent.ColumnValues["tab"].(string),
 			}
 
 			Expect(actualBites).To(Equal(expectedBites))
 		})
 
 		Describe("result pagination", func() {
-			var biteEventOne, biteEventTwo bite.BiteModel
+			var biteEventOne, biteEventTwo shared.InsertionModel
 
 			BeforeEach(func() {
 				urnSetupData := test_helpers.GetUrnSetupData(fakeBlock, 1)
@@ -267,12 +267,12 @@ var _ = Describe("Urn state computed columns", func() {
 				biteRepo := bite.BiteRepository{}
 				biteRepo.SetDB(db)
 
-				biteEventOne = randomizeBite(test_data.BiteModel)
-				biteEventOne.Urn = fakeGuy
-				biteEventOne.Ilk = test_helpers.FakeIlk.Hex
-				biteEventOne.HeaderID = headerId
-				biteEventOne.LogID = logId
-				insertBiteOneErr := biteRepo.Create([]interface{}{biteEventOne})
+				biteEventOne = randomizeBite(test_data.BiteModel())
+				biteEventOne.ForeignKeyValues[constants.UrnFK] = fakeGuy
+				biteEventOne.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
+				biteEventOne.ColumnValues[constants.HeaderFK] = headerId
+				biteEventOne.ColumnValues[constants.LogFK] = logId
+				insertBiteOneErr := biteRepo.Create([]shared.InsertionModel{biteEventOne})
 				Expect(insertBiteOneErr).NotTo(HaveOccurred())
 
 				// insert more recent bite for same urn
@@ -282,12 +282,12 @@ var _ = Describe("Urn state computed columns", func() {
 				Expect(insertHeaderTwoErr).NotTo(HaveOccurred())
 				logTwoId := test_data.CreateTestLog(headerTwoId, db).ID
 
-				biteEventTwo = randomizeBite(test_data.BiteModel)
-				biteEventTwo.Urn = fakeGuy
-				biteEventTwo.Ilk = test_helpers.FakeIlk.Hex
-				biteEventTwo.HeaderID = headerTwoId
-				biteEventTwo.LogID = logTwoId
-				insertBiteTwoErr := biteRepo.Create([]interface{}{biteEventTwo})
+				biteEventTwo = randomizeBite(test_data.BiteModel())
+				biteEventTwo.ForeignKeyValues[constants.UrnFK] = fakeGuy
+				biteEventTwo.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
+				biteEventTwo.ColumnValues[constants.HeaderFK] = headerTwoId
+				biteEventTwo.ColumnValues[constants.LogFK] = logTwoId
+				insertBiteTwoErr := biteRepo.Create([]shared.InsertionModel{biteEventTwo})
 				Expect(insertBiteTwoErr).NotTo(HaveOccurred())
 			})
 
@@ -304,9 +304,9 @@ var _ = Describe("Urn state computed columns", func() {
 				expectedBite := test_helpers.BiteEvent{
 					IlkIdentifier: test_helpers.FakeIlk.Identifier,
 					UrnIdentifier: fakeGuy,
-					Ink:           biteEventTwo.Ink,
-					Art:           biteEventTwo.Art,
-					Tab:           biteEventTwo.Tab,
+					Ink:           biteEventTwo.ColumnValues["ink"].(string),
+					Art:           biteEventTwo.ColumnValues["art"].(string),
+					Tab:           biteEventTwo.ColumnValues["tab"].(string),
 				}
 				Expect(actualBites).To(ConsistOf(expectedBite))
 			})
@@ -325,9 +325,9 @@ var _ = Describe("Urn state computed columns", func() {
 				expectedBite := test_helpers.BiteEvent{
 					IlkIdentifier: test_helpers.FakeIlk.Identifier,
 					UrnIdentifier: fakeGuy,
-					Ink:           biteEventOne.Ink,
-					Art:           biteEventOne.Art,
-					Tab:           biteEventOne.Tab,
+					Ink:           biteEventOne.ColumnValues["ink"].(string),
+					Art:           biteEventOne.ColumnValues["art"].(string),
+					Tab:           biteEventOne.ColumnValues["tab"].(string),
 				}
 				Expect(actualBites).To(ConsistOf(expectedBite))
 			})
@@ -335,9 +335,9 @@ var _ = Describe("Urn state computed columns", func() {
 	})
 })
 
-func randomizeBite(bite bite.BiteModel) bite.BiteModel {
-	bite.Ink = big.NewInt(rand.Int63()).String()
-	bite.Art = big.NewInt(rand.Int63()).String()
-	bite.Tab = big.NewInt(rand.Int63()).String()
+func randomizeBite(bite shared.InsertionModel) shared.InsertionModel {
+	bite.ColumnValues["ink"] = big.NewInt(rand.Int63()).String()
+	bite.ColumnValues["art"] = big.NewInt(rand.Int63()).String()
+	bite.ColumnValues["tab"] = big.NewInt(rand.Int63()).String()
 	return bite
 }

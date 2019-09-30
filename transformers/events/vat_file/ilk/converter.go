@@ -29,7 +29,7 @@ const (
 	numTopicsRequired = 4
 )
 
-func (VatFileIlkConverter) ToModels(logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
+func (VatFileIlkConverter) ToModels(_ string, logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
 	//NOTE: the vat contract defines its own custom Note event, rather than relying on DS-Note
 	var models []shared.InsertionModel
 	for _, log := range logs {
@@ -42,7 +42,8 @@ func (VatFileIlkConverter) ToModels(logs []core.HeaderSyncLog) ([]shared.Inserti
 		data := log.Log.Topics[3].Big().String()
 
 		model := shared.InsertionModel{
-			TableName: "vat_file_ilk",
+			SchemaName: "maker",
+			TableName:  "vat_file_ilk",
 			OrderedColumns: []string{
 				constants.HeaderFK, string(constants.IlkFK), "what", "data", constants.LogFK,
 			},

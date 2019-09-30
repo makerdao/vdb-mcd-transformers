@@ -25,13 +25,14 @@ import (
 
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_flux"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
 var _ = Describe("VatFlux converter", func() {
 	var converter = vat_flux.VatFluxConverter{}
 	It("Converts logs to models", func() {
-		models, err := converter.ToModels([]core.HeaderSyncLog{test_data.VatFluxHeaderSyncLog})
+		models, err := converter.ToModels(constants.VatABI(), []core.HeaderSyncLog{test_data.VatFluxHeaderSyncLog})
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(models).To(Equal([]shared.InsertionModel{test_data.VatFluxModel}))
@@ -46,7 +47,8 @@ var _ = Describe("VatFlux converter", func() {
 					common.HexToHash("0x"),
 				}},
 		}
-		_, err := converter.ToModels([]core.HeaderSyncLog{badLog})
+
+		_, err := converter.ToModels(constants.VatABI(), []core.HeaderSyncLog{badLog})
 		Expect(err).To(HaveOccurred())
 	})
 })

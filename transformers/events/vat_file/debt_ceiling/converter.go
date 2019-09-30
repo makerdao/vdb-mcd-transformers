@@ -29,7 +29,7 @@ const (
 	numTopicsRequired = 2
 )
 
-func (VatFileDebtCeilingConverter) ToModels(logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
+func (VatFileDebtCeilingConverter) ToModels(_ string, logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
 	var models []shared.InsertionModel
 	for _, log := range logs {
 		err := shared.VerifyLog(log.Log, numTopicsRequired, logDataRequired)
@@ -40,7 +40,8 @@ func (VatFileDebtCeilingConverter) ToModels(logs []core.HeaderSyncLog) ([]shared
 		data := shared.ConvertUint256HexToBigInt(log.Log.Topics[2].Hex())
 
 		model := shared.InsertionModel{
-			TableName: "vat_file_debt_ceiling",
+			SchemaName: "maker",
+			TableName:  "vat_file_debt_ceiling",
 			OrderedColumns: []string{
 				constants.HeaderFK, "what", "data", constants.LogFK,
 			},

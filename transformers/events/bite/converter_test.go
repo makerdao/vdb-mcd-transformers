@@ -19,7 +19,9 @@ package bite_test
 import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+
 	"github.com/vulcanize/mcd_transformers/transformers/events/bite"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
@@ -28,58 +30,17 @@ import (
 var _ = Describe("Bite Converter", func() {
 	var converter = bite.BiteConverter{}
 
-	Describe("ToEntity", func() {
-		It("converts an eth log to a bite entity", func() {
-			entities, err := converter.ToEntities(constants.CatABI(), []core.HeaderSyncLog{test_data.BiteHeaderSyncLog})
+	It("converts a log to a Model", func() {
+		models, err := converter.ToModels(constants.CatABI(), []core.HeaderSyncLog{test_data.BiteHeaderSyncLog})
 
-			Expect(err).NotTo(HaveOccurred())
-			Expect(len(entities)).To(Equal(1))
-			entity := entities[0]
-			Expect(entity).To(Equal(test_data.BiteEntity))
-		})
-
-		It("returns an error if converting log to entity fails", func() {
-			_, err := converter.ToEntities("error abi", []core.HeaderSyncLog{test_data.BiteHeaderSyncLog})
-
-			Expect(err).To(HaveOccurred())
-		})
+		Expect(err).NotTo(HaveOccurred())
+		Expect(len(models)).To(Equal(1))
+		Expect(models).To(Equal([]shared.InsertionModel{test_data.BiteModel()}))
 	})
 
-	Describe("ToModel", func() {
-		var emptyEntity = bite.BiteEntity{}
+	It("returns an error if converting log to entity fails", func() {
+		_, err := converter.ToModels("error abi", []core.HeaderSyncLog{test_data.BiteHeaderSyncLog})
 
-		It("converts an Entity to a Model", func() {
-			models, err := converter.ToModels([]interface{}{test_data.BiteEntity})
-
-			Expect(err).NotTo(HaveOccurred())
-			Expect(len(models)).To(Equal(1))
-			model := models[0]
-			Expect(model).To(Equal(test_data.BiteModel))
-		})
-
-		It("returns an error if the entity type is wrong", func() {
-			_, err := converter.ToModels([]interface{}{test_data.WrongEntity{}})
-
-			Expect(err).To(HaveOccurred())
-			Expect(err.Error()).To(ContainSubstring("entity of type test_data.WrongEntity, not bite.BiteEntity"))
-		})
-
-		It("handles nil values", func() {
-			expectedModel := bite.BiteModel{
-				Ilk:  "0x0000000000000000000000000000000000000000000000000000000000000000",
-				Urn:  "0x0000000000000000000000000000000000000000",
-				Ink:  "",
-				Art:  "",
-				Tab:  "",
-				Flip: "0x0000000000000000000000000000000000000000",
-				Id:   "",
-			}
-			models, err := converter.ToModels([]interface{}{emptyEntity})
-
-			Expect(err).NotTo(HaveOccurred())
-			Expect(len(models)).To(Equal(1))
-			model := models[0]
-			Expect(model).To(Equal(expectedModel))
-		})
+		Expect(err).To(HaveOccurred())
 	})
 })

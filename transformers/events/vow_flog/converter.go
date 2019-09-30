@@ -29,7 +29,7 @@ const (
 	numTopicsRequired = 3
 )
 
-func (VowFlogConverter) ToModels(logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
+func (VowFlogConverter) ToModels(_ string, logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
 	var models []shared.InsertionModel
 	for _, log := range logs {
 		err := shared.VerifyLog(log.Log, numTopicsRequired, logDataRequired)
@@ -40,7 +40,8 @@ func (VowFlogConverter) ToModels(logs []core.HeaderSyncLog) ([]shared.InsertionM
 		era := log.Log.Topics[2].Big()
 
 		model := shared.InsertionModel{
-			TableName: "vow_flog",
+			SchemaName: "maker",
+			TableName:  "vow_flog",
 			OrderedColumns: []string{
 				constants.HeaderFK, "era", constants.LogFK,
 			},

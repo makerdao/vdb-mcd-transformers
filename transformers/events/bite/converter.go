@@ -26,12 +26,13 @@ import (
 	"github.com/vulcanize/vulcanizedb/pkg/geth"
 
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
 type BiteConverter struct{}
 
-func (BiteConverter) ToEntities(contractAbi string, logs []core.HeaderSyncLog) ([]interface{}, error) {
-	var entities []interface{}
+func (BiteConverter) toEntities(contractAbi string, logs []core.HeaderSyncLog) ([]BiteEntity, error) {
+	var entities []BiteEntity
 	for _, log := range logs {
 		var entity BiteEntity
 		address := log.Log.Address
@@ -54,33 +55,36 @@ func (BiteConverter) ToEntities(contractAbi string, logs []core.HeaderSyncLog) (
 	return entities, nil
 }
 
-func (converter BiteConverter) ToModels(entities []interface{}) ([]interface{}, error) {
-	var models []interface{}
-	for _, entity := range entities {
-		biteEntity, ok := entity.(BiteEntity)
-		if !ok {
-			return nil, fmt.Errorf("entity of type %T, not %T", entity, BiteEntity{})
-		}
+func (converter BiteConverter) ToModels(abi string, logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
+	entities, entityErr := converter.toEntities(abi, logs)
+	if entityErr != nil {
+		return nil, fmt.Errorf("BiteConverter couldn't convert logs to entities: %v", entityErr)
+	}
 
+	var models []shared.InsertionModel
+	for _, biteEntity := range entities {
 		ilk := hexutil.Encode(biteEntity.Ilk[:])
 		urn := common.BytesToAddress(biteEntity.Urn[:]).Hex()
-		ink := biteEntity.Ink
-		art := biteEntity.Art
-		tab := biteEntity.Tab
-		flip := common.BytesToAddress(biteEntity.Flip.Bytes()).Hex()
-		id := biteEntity.Id
-		logId := biteEntity.LogID
 
-		model := BiteModel{
-			Ilk:      ilk,
-			Urn:      urn,
-			Ink:      shared.BigIntToString(ink),
-			Art:      shared.BigIntToString(art),
-			Tab:      shared.BigIntToString(tab),
-			Flip:     flip,
-			Id:       shared.BigIntToString(id),
-			HeaderID: biteEntity.HeaderID,
-			LogID:    logId,
+		model := shared.InsertionModel{
+			SchemaName: "maker",
+			TableName:  "bite",
+			OrderedColumns: []string{
+				constants.HeaderFK, constants.LogFK, string(constants.UrnFK), "ink", "art", "tab", "flip", "bite_identifier",
+			},
+			ColumnValues: shared.ColumnValues{
+				constants.HeaderFK: biteEntity.HeaderID,
+				constants.LogFK:    biteEntity.LogID,
+				"ink":              shared.BigIntToString(biteEntity.Ink),
+				"art":              shared.BigIntToString(biteEntity.Art),
+				"tab":              shared.BigIntToString(biteEntity.Tab),
+				"flip":             common.BytesToAddress(biteEntity.Flip.Bytes()).Hex(),
+				"bite_identifier":  shared.BigIntToString(biteEntity.Id),
+			},
+			ForeignKeyValues: shared.ForeignKeyValues{
+				constants.IlkFK: ilk,
+				constants.UrnFK: urn,
+			},
 		}
 		models = append(models, model)
 	}

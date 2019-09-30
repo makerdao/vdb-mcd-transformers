@@ -33,12 +33,12 @@ import (
 )
 
 // Update when auction events are in kovan
-var _ = XDescribe("Tick LogNoteTransformer", func() {
+var _ = XDescribe("Tick EventTransformer", func() {
 	var (
 		db          *postgres.DB
 		blockChain  core.BlockChain
 		tickConfig  transformer.EventTransformerConfig
-		initializer shared.LogNoteTransformer
+		initializer shared.EventTransformer
 		logFetcher  fetcher.ILogFetcher
 		addresses   []common.Address
 		topics      []common.Hash
@@ -63,7 +63,7 @@ var _ = XDescribe("Tick LogNoteTransformer", func() {
 		addresses = transformer.HexStringsToAddresses(tickConfig.ContractAddresses)
 		topics = []common.Hash{common.HexToHash(tickConfig.Topic)}
 
-		initializer = shared.LogNoteTransformer{
+		initializer = shared.EventTransformer{
 			Config:     tickConfig,
 			Converter:  &tick.TickConverter{},
 			Repository: &tick.TickRepository{},
@@ -82,7 +82,7 @@ var _ = XDescribe("Tick LogNoteTransformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
 
-		transformer := initializer.NewLogNoteTransformer(db)
+		transformer := initializer.NewEventTransformer(db)
 		err = transformer.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -108,7 +108,7 @@ var _ = XDescribe("Tick LogNoteTransformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
 
-		transformer := initializer.NewLogNoteTransformer(db)
+		transformer := initializer.NewEventTransformer(db)
 		err = transformer.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 

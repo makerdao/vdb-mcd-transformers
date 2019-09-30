@@ -30,7 +30,7 @@ const (
 	numTopicsRequired = 4
 )
 
-func (TendConverter) ToModels(logs []core.HeaderSyncLog) (results []shared.InsertionModel, err error) {
+func (TendConverter) ToModels(_ string, logs []core.HeaderSyncLog) (results []shared.InsertionModel, err error) {
 	for _, log := range logs {
 		err := shared.VerifyLog(log.Log, numTopicsRequired, logDataRequired)
 		if err != nil {
@@ -46,7 +46,8 @@ func (TendConverter) ToModels(logs []core.HeaderSyncLog) (results []shared.Inser
 		bidValue := shared.ConvertUint256HexToBigInt(hexutil.Encode(rawBid)).String()
 
 		model := shared.InsertionModel{
-			TableName: "tend",
+			SchemaName: "maker",
+			TableName:  "tend",
 			OrderedColumns: []string{
 				constants.HeaderFK, "bid_id", "lot", "bid", string(constants.AddressFK), constants.LogFK,
 			},

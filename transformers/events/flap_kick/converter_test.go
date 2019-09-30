@@ -17,73 +17,31 @@
 package flap_kick_test
 
 import (
-	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
-	"math/big"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
 	"github.com/vulcanize/mcd_transformers/transformers/events/flap_kick"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
 var _ = Describe("Flap kick converter", func() {
 	var converter = flap_kick.FlapKickConverter{}
 
-	Describe("ToEntity", func() {
-		It("converts an Eth Log to a FlapKickEntity", func() {
-			entities, err := converter.ToEntities(constants.FlapABI(), []core.HeaderSyncLog{test_data.FlapKickHeaderSyncLog})
+	It("converts a log to a Model", func() {
+		models, err := converter.ToModels(constants.FlapABI(), []core.HeaderSyncLog{test_data.FlapKickHeaderSyncLog})
 
-			Expect(err).NotTo(HaveOccurred())
-			Expect(len(entities)).To(Equal(1))
-			Expect(entities[0]).To(Equal(test_data.FlapKickEntity))
-		})
-
-		It("returns an error if converting log to entity fails", func() {
-			_, err := converter.ToEntities("error abi", []core.HeaderSyncLog{test_data.FlapKickHeaderSyncLog})
-
-			Expect(err).To(HaveOccurred())
-		})
+		Expect(err).NotTo(HaveOccurred())
+		Expect(len(models)).To(Equal(1))
+		Expect(models[0]).To(Equal(test_data.FlapKickModel()))
 	})
 
-	Describe("ToModel", func() {
-		It("converts an Entity to a Model", func() {
-			models, err := converter.ToModels([]interface{}{test_data.FlapKickEntity})
+	It("returns an error if converting log to entity fails", func() {
+		_, err := converter.ToModels("error abi", []core.HeaderSyncLog{test_data.FlapKickHeaderSyncLog})
 
-			Expect(err).NotTo(HaveOccurred())
-			Expect(len(models)).To(Equal(1))
-			Expect(models[0]).To(Equal(test_data.FlapKickModel))
-		})
-
-		It("handles nil values", func() {
-			emptyAddressHex := "0x0000000000000000000000000000000000000000"
-			emptyString := ""
-			emptyEntity := flap_kick.FlapKickEntity{}
-			emptyEntity.Id = big.NewInt(1)
-
-			models, err := converter.ToModels([]interface{}{emptyEntity})
-
-			Expect(err).NotTo(HaveOccurred())
-			Expect(len(models)).To(Equal(1))
-			model := models[0].(flap_kick.FlapKickModel)
-			Expect(model.BidId).To(Equal("1"))
-			Expect(model.Lot).To(Equal(emptyString))
-			Expect(model.Bid).To(Equal(emptyString))
-			Expect(model.ContractAddress).To(Equal(emptyAddressHex))
-		})
-
-		It("returns an error if the flap kick event id is nil", func() {
-			_, err := converter.ToModels([]interface{}{flap_kick.FlapKickEntity{}})
-
-			Expect(err).To(HaveOccurred())
-		})
-
-		It("returns an error if the wrong entity type is passed in", func() {
-			_, err := converter.ToModels([]interface{}{test_data.WrongEntity{}})
-
-			Expect(err).To(HaveOccurred())
-			Expect(err.Error()).To(ContainSubstring("entity of type"))
-		})
+		Expect(err).To(HaveOccurred())
 	})
+
 })

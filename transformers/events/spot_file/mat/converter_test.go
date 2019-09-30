@@ -25,6 +25,7 @@ import (
 
 	"github.com/vulcanize/mcd_transformers/transformers/events/spot_file/mat"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
@@ -37,7 +38,7 @@ var _ = Describe("Spot file mat converter", func() {
 				Data: []byte{1, 1, 1, 1, 1},
 			}}
 
-		_, err := converter.ToModels([]core.HeaderSyncLog{badLog})
+		_, err := converter.ToModels(constants.SpotABI(), []core.HeaderSyncLog{badLog})
 		Expect(err).To(HaveOccurred())
 	})
 
@@ -47,14 +48,14 @@ var _ = Describe("Spot file mat converter", func() {
 				Topics: []common.Hash{{}, {}, {}, {}},
 			}}
 
-		_, err := converter.ToModels([]core.HeaderSyncLog{badLog})
+		_, err := converter.ToModels(constants.SpotABI(), []core.HeaderSyncLog{badLog})
 		Expect(err).To(HaveOccurred())
 	})
 
 	It("converts a log to a model", func() {
-		models, err := converter.ToModels([]core.HeaderSyncLog{test_data.SpotFileMatHeaderSyncLog})
+		models, err := converter.ToModels(constants.SpotABI(), []core.HeaderSyncLog{test_data.SpotFileMatHeaderSyncLog})
 
 		Expect(err).NotTo(HaveOccurred())
-		Expect(models).To(Equal([]shared.InsertionModel{test_data.SpotFileMatModel}))
+		Expect(models).To(Equal([]shared.InsertionModel{test_data.SpotFileMatModel()}))
 	})
 })

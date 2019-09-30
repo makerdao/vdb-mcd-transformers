@@ -30,7 +30,7 @@ const (
 	numTopicsRequired = 4
 )
 
-func (JugFileIlkConverter) ToModels(logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
+func (JugFileIlkConverter) ToModels(_ string, logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
 	var models []shared.InsertionModel
 	for _, log := range logs {
 		verifyErr := shared.VerifyLog(log.Log, numTopicsRequired, logDataRequired)
@@ -47,7 +47,8 @@ func (JugFileIlkConverter) ToModels(logs []core.HeaderSyncLog) ([]shared.Inserti
 		data := shared.ConvertUint256HexToBigInt(hexutil.Encode(dataBytes))
 
 		model := shared.InsertionModel{
-			TableName: "jug_file_ilk",
+			SchemaName: "maker",
+			TableName:  "jug_file_ilk",
 			OrderedColumns: []string{
 				constants.HeaderFK, string(constants.IlkFK), "what", "data", constants.LogFK,
 			},

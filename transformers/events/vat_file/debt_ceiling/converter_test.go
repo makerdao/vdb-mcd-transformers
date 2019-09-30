@@ -20,8 +20,10 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_file/debt_ceiling"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 )
@@ -34,15 +36,15 @@ var _ = Describe("Vat file debt ceiling converter", func() {
 				Data: []byte{1, 1, 1, 1, 1},
 			}}
 
-		_, err := converter.ToModels([]core.HeaderSyncLog{badLog})
+		_, err := converter.ToModels(constants.VatABI(), []core.HeaderSyncLog{badLog})
 		Expect(err).To(HaveOccurred())
 	})
 
 	It("converts a log to an model", func() {
-		models, err := converter.ToModels([]core.HeaderSyncLog{test_data.VatFileDebtCeilingHeaderSyncLog})
+		models, err := converter.ToModels(constants.VatABI(), []core.HeaderSyncLog{test_data.VatFileDebtCeilingHeaderSyncLog})
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(len(models)).To(Equal(1))
-		Expect(models).To(Equal([]shared.InsertionModel{test_data.VatFileDebtCeilingModel}))
+		Expect(models).To(Equal([]shared.InsertionModel{test_data.VatFileDebtCeilingModel()}))
 	})
 })

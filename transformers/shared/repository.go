@@ -50,6 +50,7 @@ type SharedRepository interface {
 type ForeignKeyValues map[constants.ForeignKeyField]string
 type ColumnValues map[string]interface{}
 type InsertionModel struct {
+	SchemaName     string
 	TableName      string   // For MarkHeaderChecked, insert query
 	OrderedColumns []string // Defines the fields to insert, and in which order the table expects them
 	// ColumnValues needs to be typed interface{}, since `raw_log` is a slice of bytes and not a string
@@ -57,14 +58,16 @@ type InsertionModel struct {
 	ForeignKeyValues ForeignKeyValues // FK name and value to get/create ID for
 }
 
+// Stores memoised insertion queries to minimise computation
 var ModelToQuery = map[string]string{}
 
 func GetMemoizedQuery(model InsertionModel) string {
-	// The table name uniquely determines the insertion query, use that for memoization
-	query, queryMemoized := ModelToQuery[model.TableName]
+	// The schema and table name uniquely determines the insertion query, use that for memoization
+	queryKey := model.SchemaName + model.TableName
+	query, queryMemoized := ModelToQuery[queryKey]
 	if !queryMemoized {
 		query = GenerateInsertionQuery(model)
-		ModelToQuery[model.TableName] = query
+		ModelToQuery[queryKey] = query
 	}
 	return query
 }
@@ -84,9 +87,11 @@ func GenerateInsertionQuery(model InsertionModel) string {
 			fmt.Sprintf("%s = %s", model.OrderedColumns[i], valuePlaceholder))
 	}
 
-	baseQuery := `INSERT INTO maker.%v (%v) VALUES(%v)
+	baseQuery := `INSERT INTO %v.%v (%v) VALUES(%v)
 		ON CONFLICT (header_id, log_id) DO UPDATE SET %v;`
+
 	return fmt.Sprintf(baseQuery,
+		model.SchemaName,
 		model.TableName,
 		strings.Join(model.OrderedColumns, ", "),
 		strings.Join(valuePlaceholders, ", "),
@@ -98,6 +103,7 @@ foreign keys automatically after getting from the DB. These "special fields" are
 columnToValue mapping, and are treated like any other in the insertion.
 
 testModel = shared.InsertionModel{
+			SchemaName:     "maker"
 			TableName:      "testEvent",
 			OrderedColumns: []string{"header_id", "log_id", constants.IlkFK, constants.UrnFK, "variable1"},
 			ColumnValues: ColumnValues{
@@ -218,7 +224,7 @@ func GetOrCreateUrn(guy string, hexIlk string, db *postgres.DB) (urnID int64, er
 func GetOrCreateUrnInTransaction(guy string, hexIlk string, tx *sqlx.Tx) (urnID int64, err error) {
 	ilkID, ilkErr := GetOrCreateIlkInTransaction(hexIlk, tx)
 	if ilkErr != nil {
-		return 0, fmt.Errorf("error getting ilkID for urn")
+		return 0, fmt.Errorf("error getting ilkID for urn: %v", ilkErr.Error())
 	}
 
 	err = tx.Get(&urnID, getOrCreateUrnQuery, guy, ilkID)

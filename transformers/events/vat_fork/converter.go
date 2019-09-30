@@ -31,7 +31,7 @@ const (
 	numTopicsRequired = 4
 )
 
-func (VatForkConverter) ToModels(logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
+func (VatForkConverter) ToModels(_ string, logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
 	var models []shared.InsertionModel
 	for _, log := range logs {
 		err := shared.VerifyLog(log.Log, numTopicsRequired, logDataRequired)
@@ -56,7 +56,8 @@ func (VatForkConverter) ToModels(logs []core.HeaderSyncLog) ([]shared.InsertionM
 		dart := shared.ConvertInt256HexToBigInt(hexutil.Encode(dartBytes))
 
 		model := shared.InsertionModel{
-			TableName: "vat_fork",
+			SchemaName: "maker",
+			TableName:  "vat_fork",
 			OrderedColumns: []string{
 				constants.HeaderFK, string(constants.IlkFK), "src", "dst", "dink", "dart", constants.LogFK,
 			},

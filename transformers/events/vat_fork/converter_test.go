@@ -25,6 +25,7 @@ import (
 
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_fork"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
@@ -32,14 +33,14 @@ var _ = Describe("VatFork converter", func() {
 	converter := vat_fork.VatForkConverter{}
 
 	It("Converts a log with a negative dink and dart to a model", func() {
-		models, err := converter.ToModels([]core.HeaderSyncLog{test_data.VatForkHeaderSyncLogWithNegativeDinkDart})
+		models, err := converter.ToModels(constants.VatABI(), []core.HeaderSyncLog{test_data.VatForkHeaderSyncLogWithNegativeDinkDart})
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(models).To(Equal([]shared.InsertionModel{test_data.VatForkModelWithNegativeDinkDart}))
 	})
 
 	It("Converts a log with a positive dink and dart to a model", func() {
-		models, err := converter.ToModels([]core.HeaderSyncLog{test_data.VatForkHeaderSyncLogWithPositiveDinkDart})
+		models, err := converter.ToModels(constants.VatABI(), []core.HeaderSyncLog{test_data.VatForkHeaderSyncLogWithPositiveDinkDart})
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(models).To(Equal([]shared.InsertionModel{test_data.VatForkModelWithPositiveDinkDart}))
@@ -54,7 +55,8 @@ var _ = Describe("VatFork converter", func() {
 					common.HexToHash("0x"),
 				}},
 		}
-		_, err := converter.ToModels([]core.HeaderSyncLog{badLog})
+
+		_, err := converter.ToModels(constants.VatABI(), []core.HeaderSyncLog{badLog})
 		Expect(err).To(HaveOccurred())
 	})
 
@@ -64,7 +66,7 @@ var _ = Describe("VatFork converter", func() {
 				Topics: []common.Hash{{}, {}, {}, {}},
 			}}
 
-		_, err := converter.ToModels([]core.HeaderSyncLog{badLog})
+		_, err := converter.ToModels(constants.VatABI(), []core.HeaderSyncLog{badLog})
 		Expect(err).To(HaveOccurred())
 	})
 })

@@ -5,7 +5,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/vulcanize/mcd_transformers/transformers/events/new_cdp"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
@@ -49,18 +49,20 @@ var NewCdpHeaderSyncLog = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-var NewCdpEntity = new_cdp.NewCdpEntity{
-	Usr:      newCdpUsr,
-	Own:      newCdpOwn,
-	Cdp:      newCdpCdp,
-	LogID:    NewCdpHeaderSyncLog.ID,
-	HeaderID: NewCdpHeaderSyncLog.HeaderID,
-}
+func NewCdpModel() shared.InsertionModel { return CopyModel(newCdpModel) }
 
-var NewCdpModel = new_cdp.NewCdpModel{
-	Usr:      "0xA9fCcB07DD3f774d5b9d02e99DE1a27f47F91189",
-	Own:      "0xA9fCcB07DD3f774d5b9d02e99DE1a27f47F91189",
-	Cdp:      newCdpCdp.String(),
-	LogID:    NewCdpHeaderSyncLog.ID,
-	HeaderID: NewCdpHeaderSyncLog.HeaderID,
+var newCdpModel = shared.InsertionModel{
+	SchemaName: "maker",
+	TableName:  "new_cdp",
+	OrderedColumns: []string{
+		constants.HeaderFK, constants.LogFK, "usr", "own", "cdp",
+	},
+	ColumnValues: shared.ColumnValues{
+		constants.HeaderFK: NewCdpHeaderSyncLog.HeaderID,
+		constants.LogFK:    NewCdpHeaderSyncLog.ID,
+		"usr":              "0xA9fCcB07DD3f774d5b9d02e99DE1a27f47F91189",
+		"own":              "0xA9fCcB07DD3f774d5b9d02e99DE1a27f47F91189",
+		"cdp":              newCdpCdp.String(),
+	},
+	ForeignKeyValues: shared.ForeignKeyValues{},
 }

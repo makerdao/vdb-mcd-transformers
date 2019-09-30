@@ -62,11 +62,11 @@ var _ = Describe("VatSuck Transformer", func() {
 
 		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
 
-		tr := shared.LogNoteTransformer{
+		tr := shared.EventTransformer{
 			Config:     vatSuckConfig,
 			Converter:  &vat_suck.VatSuckConverter{},
 			Repository: &vat_suck.VatSuckRepository{},
-		}.NewLogNoteTransformer(db)
+		}.NewEventTransformer(db)
 
 		err = tr.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())

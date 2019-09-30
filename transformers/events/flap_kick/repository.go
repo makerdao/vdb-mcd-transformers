@@ -17,9 +17,9 @@
 package flap_kick
 
 import (
-	"fmt"
-	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
+
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 )
 
 const InsertFlapKickQuery = `INSERT into maker.flap_kick
@@ -32,48 +32,8 @@ type FlapKickRepository struct {
 	db *postgres.DB
 }
 
-func (repository *FlapKickRepository) Create(models []interface{}) error {
-	tx, dBaseErr := repository.db.Beginx()
-	if dBaseErr != nil {
-		return dBaseErr
-	}
-	for _, model := range models {
-		flapKickModel, ok := model.(FlapKickModel)
-		if !ok {
-			wrongTypeErr := fmt.Errorf("model of type %T, not %T", model, FlapKickModel{})
-			return shared.FormatRollbackError("flap kick", wrongTypeErr.Error())
-		}
-
-		addressId, addressErr := shared.GetOrCreateAddressInTransaction(flapKickModel.ContractAddress, tx)
-		if addressErr != nil {
-			rollbackErr := tx.Rollback()
-			if rollbackErr != nil {
-				return shared.FormatRollbackError("flap address", addressErr.Error())
-			}
-			return addressErr
-		}
-
-		_, execErr := tx.Exec(InsertFlapKickQuery, flapKickModel.HeaderID, flapKickModel.BidId, flapKickModel.Lot, flapKickModel.Bid,
-			addressId, flapKickModel.LogID)
-		if execErr != nil {
-			rollbackErr := tx.Rollback()
-			if rollbackErr != nil {
-				return shared.FormatRollbackError("flap kick", execErr.Error())
-			}
-			return execErr
-		}
-
-		_, logErr := tx.Exec(`UPDATE public.header_sync_logs SET transformed = true WHERE id = $1`, flapKickModel.LogID)
-		if logErr != nil {
-			rollbackErr := tx.Rollback()
-			if rollbackErr != nil {
-				return shared.FormatRollbackError("flap kick", logErr.Error())
-			}
-			return logErr
-		}
-	}
-
-	return tx.Commit()
+func (repository *FlapKickRepository) Create(models []shared.InsertionModel) error {
+	return shared.Create(models, repository.db)
 }
 
 func (repository *FlapKickRepository) SetDB(db *postgres.DB) {

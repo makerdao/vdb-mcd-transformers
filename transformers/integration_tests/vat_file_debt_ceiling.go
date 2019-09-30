@@ -31,7 +31,7 @@ import (
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 )
 
-var _ = Describe("VatFileDebtCeiling LogNoteTransformer", func() {
+var _ = Describe("VatFileDebtCeiling EventTransformer", func() {
 	var (
 		db         *postgres.DB
 		blockChain core.BlockChain
@@ -70,12 +70,12 @@ var _ = Describe("VatFileDebtCeiling LogNoteTransformer", func() {
 
 		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
 
-		initializer := shared.LogNoteTransformer{
+		initializer := shared.EventTransformer{
 			Config:     vatFileDebtCeilingConfig,
 			Converter:  &debt_ceiling.VatFileDebtCeilingConverter{},
 			Repository: &debt_ceiling.VatFileDebtCeilingRepository{},
 		}
-		transformer := initializer.NewLogNoteTransformer(db)
+		transformer := initializer.NewEventTransformer(db)
 
 		err = transformer.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())

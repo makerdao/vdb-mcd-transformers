@@ -17,20 +17,18 @@
 package integration_tests
 
 import (
-	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/events/new_cdp"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	mcdConstants "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
-	"github.com/vulcanize/vulcanizedb/pkg/geth"
 )
 
 var _ = Describe("NewCdp Transformer", func() {
@@ -55,7 +53,7 @@ var _ = Describe("NewCdp Transformer", func() {
 		Topic:             mcdConstants.NewCdpSignature(),
 	}
 
-	It("fetches a transforms a NewCdp event from Kovan chain", func() {
+	It("fetches and transforms a NewCdp event from Kovan chain", func() {
 		blockNumber := int64(13401063)
 		newCdpConfig.StartingBlockNumber = blockNumber
 		newCdpConfig.EndingBlockNumber = blockNumber
@@ -63,11 +61,11 @@ var _ = Describe("NewCdp Transformer", func() {
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		tr := event.Transformer{
+		tr := shared.EventTransformer{
 			Config:     newCdpConfig,
 			Converter:  &new_cdp.NewCdpConverter{},
 			Repository: &new_cdp.NewCdpRepository{},
-		}.NewTransformer(db)
+		}.NewEventTransformer(db)
 
 		logFetcher := fetcher.NewLogFetcher(blockChain)
 		logs, err := logFetcher.FetchLogs(
@@ -80,7 +78,7 @@ var _ = Describe("NewCdp Transformer", func() {
 		err = tr.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 
-		var dbResult []new_cdp.NewCdpModel
+		var dbResult []NewCdpModel
 		queryErr := db.Select(&dbResult, `SELECT usr, own, cdp FROM maker.new_cdp`)
 		Expect(queryErr).NotTo(HaveOccurred())
 
@@ -89,23 +87,12 @@ var _ = Describe("NewCdp Transformer", func() {
 		Expect(dbResult[0].Own).To(Equal("0x3746107F6125CD50Eb364b8A724a3a1aFe5B051E"))
 		Expect(dbResult[0].Cdp).To(Equal("23"))
 	})
-
-	It("unpacks an event log", func() {
-		address := common.HexToAddress(test_data.CdpManagerAddress())
-		abi, parseErr := geth.ParseAbi(mcdConstants.CdpManagerABI())
-		Expect(parseErr).NotTo(HaveOccurred())
-
-		contract := bind.NewBoundContract(address, abi, nil, nil, nil)
-		entity := &new_cdp.NewCdpEntity{}
-
-		var eventLog = test_data.NewCdpHeaderSyncLog
-
-		unpackErr := contract.UnpackLog(entity, "NewCdp", eventLog.Log)
-		Expect(unpackErr).NotTo(HaveOccurred())
-
-		expectedEntity := test_data.NewCdpEntity
-		Expect(entity.Usr).To(Equal(expectedEntity.Usr))
-		Expect(entity.Own).To(Equal(expectedEntity.Own))
-		Expect(entity.Cdp).To(Equal(entity.Cdp))
-	})
 })
+
+type NewCdpModel struct {
+	Usr      string
+	Own      string
+	Cdp      string
+	LogID    int64 `db:"log_id"`
+	HeaderID int64
+}

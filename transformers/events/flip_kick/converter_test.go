@@ -17,92 +17,32 @@
 package flip_kick_test
 
 import (
+	"github.com/vulcanize/vulcanizedb/pkg/core"
+	"strings"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+
 	"github.com/vulcanize/mcd_transformers/transformers/events/flip_kick"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
-	"github.com/vulcanize/vulcanizedb/pkg/core"
-	"math/big"
-	"strings"
 )
 
 var _ = Describe("FlipKick Converter", func() {
 	var converter = flip_kick.FlipKickConverter{}
+	It("converts a log to a model", func() {
+		models, err := converter.ToModels(constants.FlipABI(), []core.HeaderSyncLog{test_data.FlipKickHeaderSyncLog})
 
-	Describe("ToEntity", func() {
-		It("converts an Eth Log to a FlipKickEntity", func() {
-			entities, err := converter.ToEntities(constants.FlipABI(), []core.HeaderSyncLog{test_data.FlipKickHeaderSyncLog})
+		Expect(err).NotTo(HaveOccurred())
 
-			Expect(err).NotTo(HaveOccurred())
-			Expect(len(entities)).To(Equal(1))
-			entity := entities[0]
-			Expect(entity).To(Equal(test_data.FlipKickEntity))
-		})
-
-		It("returns an error if converting log to entity fails", func() {
-			_, err := converter.ToEntities("error abi", []core.HeaderSyncLog{test_data.FlipKickHeaderSyncLog})
-
-			Expect(err).To(HaveOccurred())
-		})
+		models[0].ForeignKeyValues[constants.AddressFK] = strings.ToLower(models[0].ForeignKeyValues[constants.AddressFK])
+		Expect(models).To(Equal([]shared.InsertionModel{test_data.FlipKickModel()}))
 	})
 
-	Describe("ToModel", func() {
-		var emptyAddressHex = "0x0000000000000000000000000000000000000000"
-		var emptyString = ""
-		var emptyEntity = flip_kick.FlipKickEntity{}
+	It("returns an error if converting log to entity fails", func() {
+		_, err := converter.ToModels("error abi", []core.HeaderSyncLog{test_data.FlipKickHeaderSyncLog})
 
-		BeforeEach(func() {
-			emptyEntity.Id = big.NewInt(1)
-		})
-
-		It("converts an Entity to a Model", func() {
-			models, err := converter.ToModels([]interface{}{test_data.FlipKickEntity})
-
-			Expect(err).NotTo(HaveOccurred())
-			Expect(len(models)).To(Equal(1))
-			expectEqualModels(models[0], test_data.FlipKickModel)
-		})
-
-		It("handles nil values", func() {
-			models, err := converter.ToModels([]interface{}{emptyEntity})
-
-			Expect(err).NotTo(HaveOccurred())
-			Expect(len(models)).To(Equal(1))
-			model := models[0].(flip_kick.FlipKickModel)
-			Expect(model.BidId).To(Equal("1"))
-			Expect(model.Lot).To(Equal(emptyString))
-			Expect(model.Bid).To(Equal(emptyString))
-			Expect(model.Tab).To(Equal(emptyString))
-			Expect(model.Usr).To(Equal(emptyAddressHex))
-			Expect(model.Gal).To(Equal(emptyAddressHex))
-			Expect(model.ContractAddress).To(Equal(emptyAddressHex))
-		})
-
-		It("returns an error if the flip kick event id is nil", func() {
-			emptyEntity.Id = nil
-			_, err := converter.ToModels([]interface{}{emptyEntity})
-
-			Expect(err).To(HaveOccurred())
-		})
-
-		It("returns an error if the wrong entity type is passed in", func() {
-			_, err := converter.ToModels([]interface{}{test_data.WrongEntity{}})
-
-			Expect(err).To(HaveOccurred())
-			Expect(err.Error()).To(ContainSubstring("entity of type"))
-		})
+		Expect(err).To(HaveOccurred())
 	})
 })
-
-func expectEqualModels(actual interface{}, expected flip_kick.FlipKickModel) {
-	actualFlipKick := actual.(flip_kick.FlipKickModel)
-	Expect(actualFlipKick.BidId).To(Equal(expected.BidId))
-	Expect(actualFlipKick.Lot).To(Equal(expected.Lot))
-	Expect(actualFlipKick.Bid).To(Equal(expected.Bid))
-	Expect(actualFlipKick.Tab).To(Equal(expected.Tab))
-	Expect(actualFlipKick.Usr).To(Equal(expected.Usr))
-	Expect(actualFlipKick.Gal).To(Equal(expected.Gal))
-	Expect(strings.ToLower(actualFlipKick.ContractAddress)).To(Equal(strings.ToLower(expected.ContractAddress)))
-	Expect(actualFlipKick.LogID).To(Equal(expected.LogID))
-}

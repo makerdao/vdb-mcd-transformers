@@ -29,7 +29,7 @@ const (
 	numTopicsRequired = 3
 )
 
-func (TickConverter) ToModels(logs []core.HeaderSyncLog) (results []shared.InsertionModel, err error) {
+func (TickConverter) ToModels(_ string, logs []core.HeaderSyncLog) (results []shared.InsertionModel, err error) {
 	for _, log := range logs {
 		validateErr := shared.VerifyLog(log.Log, numTopicsRequired, logDataRequired)
 		if validateErr != nil {
@@ -37,7 +37,8 @@ func (TickConverter) ToModels(logs []core.HeaderSyncLog) (results []shared.Inser
 		}
 
 		model := shared.InsertionModel{
-			TableName: "tick",
+			SchemaName: "maker",
+			TableName:  "tick",
 			OrderedColumns: []string{
 				constants.HeaderFK, "bid_id", string(constants.AddressFK), constants.LogFK,
 			},

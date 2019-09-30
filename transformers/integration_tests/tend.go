@@ -31,12 +31,12 @@ import (
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 )
 
-var _ = XDescribe("Tend LogNoteTransformer", func() {
+var _ = XDescribe("Tend EventTransformer", func() {
 	var (
 		db          *postgres.DB
 		blockChain  core.BlockChain
 		tendConfig  transformer.EventTransformerConfig
-		initializer shared.LogNoteTransformer
+		initializer shared.EventTransformer
 		logFetcher  fetcher.ILogFetcher
 		addresses   []common.Address
 		topics      []common.Hash
@@ -61,7 +61,7 @@ var _ = XDescribe("Tend LogNoteTransformer", func() {
 		addresses = transformer.HexStringsToAddresses(tendConfig.ContractAddresses)
 		topics = []common.Hash{common.HexToHash(tendConfig.Topic)}
 
-		initializer = shared.LogNoteTransformer{
+		initializer = shared.EventTransformer{
 			Config:     tendConfig,
 			Converter:  &tend.TendConverter{},
 			Repository: &tend.TendRepository{},
@@ -81,7 +81,7 @@ var _ = XDescribe("Tend LogNoteTransformer", func() {
 
 		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
 
-		transformer := initializer.NewLogNoteTransformer(db)
+		transformer := initializer.NewEventTransformer(db)
 		err = transformer.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -116,7 +116,7 @@ var _ = XDescribe("Tend LogNoteTransformer", func() {
 
 		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
 
-		transformer := initializer.NewLogNoteTransformer(db)
+		transformer := initializer.NewEventTransformer(db)
 		err = transformer.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -151,7 +151,7 @@ var _ = XDescribe("Tend LogNoteTransformer", func() {
 
 		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
 
-		transformer := initializer.NewLogNoteTransformer(db)
+		transformer := initializer.NewEventTransformer(db)
 		err = transformer.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 

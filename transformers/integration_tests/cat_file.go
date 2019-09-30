@@ -71,12 +71,12 @@ var _ = Describe("Cat File transformer", func() {
 		catFileConfig.StartingBlockNumber = chopLumpBlockNumber
 		catFileConfig.EndingBlockNumber = chopLumpBlockNumber
 
-		initializer := shared.LogNoteTransformer{
+		initializer := shared.EventTransformer{
 			Config:     catFileConfig,
 			Converter:  &chop_lump.CatFileChopLumpConverter{},
 			Repository: &chop_lump.CatFileChopLumpRepository{},
 		}
-		transformer := initializer.NewLogNoteTransformer(db)
+		transformer := initializer.NewEventTransformer(db)
 
 		logs, err := logFetcher.FetchLogs(
 			[]common.Address{common.HexToAddress(catFileConfig.ContractAddresses[0])},
@@ -111,12 +111,12 @@ var _ = Describe("Cat File transformer", func() {
 		catFileConfig.StartingBlockNumber = chopLumpBlockNumber
 		catFileConfig.EndingBlockNumber = chopLumpBlockNumber
 
-		initializer := shared.LogNoteTransformer{
+		initializer := shared.EventTransformer{
 			Config:     catFileConfig,
 			Converter:  &chop_lump.CatFileChopLumpConverter{},
 			Repository: &chop_lump.CatFileChopLumpRepository{},
 		}
-		transformer := initializer.NewLogNoteTransformer(db)
+		transformer := initializer.NewEventTransformer(db)
 
 		logs, err := logFetcher.FetchLogs(
 			[]common.Address{common.HexToAddress(catFileConfig.ContractAddresses[0])},
@@ -151,13 +151,13 @@ var _ = Describe("Cat File transformer", func() {
 		catFileConfig.StartingBlockNumber = flipBlockNumber
 		catFileConfig.EndingBlockNumber = flipBlockNumber
 
-		initializer := shared.LogNoteTransformer{
+		initializer := shared.EventTransformer{
 			Config:     catFileConfig,
 			Converter:  &flip.CatFileFlipConverter{},
 			Repository: &flip.CatFileFlipRepository{},
 		}
 
-		t := initializer.NewLogNoteTransformer(db)
+		t := initializer.NewEventTransformer(db)
 
 		logs, err := logFetcher.FetchLogs(
 			[]common.Address{common.HexToAddress(catFileConfig.ContractAddresses[0])},
@@ -191,12 +191,12 @@ var _ = Describe("Cat File transformer", func() {
 		catFileConfig.StartingBlockNumber = vowBlockNumber
 		catFileConfig.EndingBlockNumber = vowBlockNumber
 
-		initializer := shared.LogNoteTransformer{
+		initializer := shared.EventTransformer{
 			Config:     catFileConfig,
 			Converter:  &vow.CatFileVowConverter{},
 			Repository: &vow.CatFileVowRepository{},
 		}
-		t := initializer.NewLogNoteTransformer(db)
+		t := initializer.NewEventTransformer(db)
 
 		logs, err := logFetcher.FetchLogs(
 			[]common.Address{common.HexToAddress(catFileConfig.ContractAddresses[0])},

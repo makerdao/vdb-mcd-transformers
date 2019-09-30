@@ -52,7 +52,8 @@ var VowFessHeaderSyncLog = core.HeaderSyncLog{
 }
 
 var VowFessModel = shared.InsertionModel{
-	TableName: "vow_fess",
+	SchemaName: "maker",
+	TableName:  "vow_fess",
 	OrderedColumns: []string{
 		constants.HeaderFK, "tab", constants.LogFK,
 	},

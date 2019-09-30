@@ -60,7 +60,8 @@ var DentHeaderSyncLog = core.HeaderSyncLog{
 }
 
 var DentModel = shared.InsertionModel{
-	TableName: "dent",
+	SchemaName: "maker",
+	TableName:  "dent",
 	OrderedColumns: []string{
 		constants.HeaderFK, "bid_id", "lot", "bid", string(constants.AddressFK), constants.LogFK,
 	},

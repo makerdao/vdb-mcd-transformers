@@ -30,7 +30,7 @@ const (
 	numTopicsRequired = 4
 )
 
-func (c DentConverter) ToModels(logs []core.HeaderSyncLog) (result []shared.InsertionModel, err error) {
+func (c DentConverter) ToModels(_ string, logs []core.HeaderSyncLog) (result []shared.InsertionModel, err error) {
 	for _, log := range logs {
 		validateErr := shared.VerifyLog(log.Log, numTopicsRequired, logDataRequired)
 		if validateErr != nil {
@@ -46,7 +46,8 @@ func (c DentConverter) ToModels(logs []core.HeaderSyncLog) (result []shared.Inse
 		bid := shared.ConvertUint256HexToBigInt(hexutil.Encode(bidBytes))
 
 		model := shared.InsertionModel{
-			TableName: "dent",
+			SchemaName: "maker",
+			TableName:  "dent",
 			OrderedColumns: []string{
 				constants.HeaderFK, "bid_id", "lot", "bid", string(constants.AddressFK), constants.LogFK,
 			},

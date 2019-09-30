@@ -24,13 +24,14 @@ import (
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_suck"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
 var _ = Describe("VatSuck converter", func() {
 	It("Converts log to a model", func() {
 		converter := vat_suck.VatSuckConverter{}
-		models, err := converter.ToModels([]core.HeaderSyncLog{test_data.VatSuckHeaderSyncLog})
+		models, err := converter.ToModels(constants.VatABI(), []core.HeaderSyncLog{test_data.VatSuckHeaderSyncLog})
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(len(models)).To(Equal(1))
@@ -47,7 +48,8 @@ var _ = Describe("VatSuck converter", func() {
 					common.HexToHash("0x"),
 				}},
 		}
-		_, err := converter.ToModels([]core.HeaderSyncLog{badLog})
+
+		_, err := converter.ToModels(constants.VatABI(), []core.HeaderSyncLog{badLog})
 
 		Expect(err).To(HaveOccurred())
 	})

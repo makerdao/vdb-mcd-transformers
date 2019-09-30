@@ -17,16 +17,15 @@
 package test_data
 
 import (
-	"github.com/vulcanize/vulcanizedb/pkg/core"
-	"math/big"
-	"math/rand"
-
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
+	"math/big"
+	"math/rand"
 
-	"github.com/vulcanize/mcd_transformers/transformers/events/flap_kick"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
@@ -49,20 +48,22 @@ var FlapKickHeaderSyncLog = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-var FlapKickEntity = flap_kick.FlapKickEntity{
-	Id:              big.NewInt(1),
-	Lot:             big.NewInt(1000000000),
-	Bid:             big.NewInt(20000000),
-	ContractAddress: rawFlapKickLog.Address,
-	HeaderID:        FlapKickHeaderSyncLog.HeaderID,
-	LogID:           FlapKickHeaderSyncLog.ID,
-}
+func FlapKickModel() shared.InsertionModel { return CopyModel(flapKickModel) }
 
-var FlapKickModel = flap_kick.FlapKickModel{
-	BidId:           FlapKickEntity.Id.String(),
-	Lot:             FlapKickEntity.Lot.String(),
-	Bid:             FlapKickEntity.Bid.String(),
-	ContractAddress: FlapKickHeaderSyncLog.Log.Address.Hex(),
-	HeaderID:        FlapKickEntity.HeaderID,
-	LogID:           FlapKickEntity.LogID,
+var flapKickModel = shared.InsertionModel{
+	SchemaName: "maker",
+	TableName:  "flap_kick",
+	OrderedColumns: []string{
+		constants.HeaderFK, constants.LogFK, "bid_id", "lot", "bid", "address_id",
+	},
+	ColumnValues: shared.ColumnValues{
+		constants.HeaderFK: FlapKickHeaderSyncLog.HeaderID,
+		constants.LogFK:    FlapKickHeaderSyncLog.ID,
+		"bid_id":           big.NewInt(1).String(),
+		"lot":              big.NewInt(1000000000).String(),
+		"bid":              big.NewInt(20000000).String(),
+	},
+	ForeignKeyValues: shared.ForeignKeyValues{
+		constants.AddressFK: FlapKickHeaderSyncLog.Log.Address.Hex(),
+	},
 }

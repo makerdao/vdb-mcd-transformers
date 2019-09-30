@@ -54,8 +54,11 @@ var JugFileIlkHeaderSyncLog = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-var JugFileIlkModel = shared.InsertionModel{
-	TableName: "jug_file_ilk",
+func JugFileIlkModel() shared.InsertionModel { return CopyModel(jugFileIlkModel) }
+
+var jugFileIlkModel = shared.InsertionModel{
+	SchemaName: "maker",
+	TableName:  "jug_file_ilk",
 	OrderedColumns: []string{
 		constants.HeaderFK, string(constants.IlkFK), "what", "data", constants.LogFK,
 	},
@@ -95,7 +98,8 @@ var JugFileBaseHeaderSyncLog = core.HeaderSyncLog{
 }
 
 var JugFileBaseModel = shared.InsertionModel{
-	TableName: "jug_file_base",
+	SchemaName: "maker",
+	TableName:  "jug_file_base",
 	OrderedColumns: []string{
 		constants.HeaderFK, "what", "data", constants.LogFK,
 	},
@@ -133,7 +137,8 @@ var JugFileVowHeaderSyncLog = core.HeaderSyncLog{
 }
 
 var JugFileVowModel = shared.InsertionModel{
-	TableName: "jug_file_vow",
+	SchemaName: "maker",
+	TableName:  "jug_file_vow",
 	OrderedColumns: []string{
 		constants.HeaderFK, "what", "data", constants.LogFK,
 	},

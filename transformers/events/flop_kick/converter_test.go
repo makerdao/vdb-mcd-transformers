@@ -28,56 +28,15 @@ import (
 var _ = Describe("FlopKick Converter", func() {
 	var converter flop_kick.FlopKickConverter
 
-	Describe("ToEntities", func() {
-		It("converts a log to a FlopKick entity", func() {
-			entities, err := converter.ToEntities(constants.FlopABI(), []core.HeaderSyncLog{test_data.FlopKickHeaderSyncLog})
+	It("converts a log to a Model", func() {
+		models, err := converter.ToModels(constants.FlopABI(), []core.HeaderSyncLog{test_data.FlopKickHeaderSyncLog})
 
-			Expect(err).NotTo(HaveOccurred())
-			Expect(len(entities)).To(Equal(1))
-			Expect(entities[0]).To(Equal(test_data.FlopKickEntity))
-		})
-
-		It("returns an error if converting the log to an entity fails", func() {
-			entities, err := converter.ToEntities("error abi", []core.HeaderSyncLog{test_data.FlopKickHeaderSyncLog})
-
-			Expect(err).To(HaveOccurred())
-			Expect(entities).To(BeNil())
-		})
+		Expect(err).NotTo(HaveOccurred())
+		Expect(models[0]).To(Equal(test_data.FlopKickModel()))
 	})
 
-	Describe("ToModels", func() {
-		It("converts an Entity to a Model", func() {
-			models, err := converter.ToModels([]interface{}{test_data.FlopKickEntity})
-
-			Expect(err).NotTo(HaveOccurred())
-			Expect(models[0]).To(Equal(test_data.FlopKickModel))
-		})
-
-		It("returns error if wrong entity", func() {
-			_, err := converter.ToModels([]interface{}{test_data.WrongEntity{}})
-
-			Expect(err).To(HaveOccurred())
-			Expect(err.Error()).To(ContainSubstring("entity of type test_data.WrongEntity, not flop_kick.Entity"))
-		})
-
-		It("handles nil values", func() {
-			emptyAddressHex := "0x0000000000000000000000000000000000000000"
-			emptyString := ""
-			emptyEntity := flop_kick.Entity{}
-			expectedModel := flop_kick.Model{
-				BidId:           emptyString,
-				Lot:             emptyString,
-				Bid:             emptyString,
-				Gal:             emptyAddressHex,
-				ContractAddress: emptyAddressHex,
-				LogID:           0,
-			}
-
-			models, err := converter.ToModels([]interface{}{emptyEntity})
-
-			Expect(err).NotTo(HaveOccurred())
-			Expect(len(models)).To(Equal(1))
-			Expect(models[0]).To(Equal(expectedModel))
-		})
+	It("returns an error if converting log to entity fails", func() {
+		_, err := converter.ToModels("error abi", []core.HeaderSyncLog{test_data.FlopKickHeaderSyncLog})
+		Expect(err).To(HaveOccurred())
 	})
 })

@@ -24,6 +24,7 @@ import (
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 
 	"github.com/vulcanize/mcd_transformers/transformers/events/vow_file"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
@@ -36,12 +37,12 @@ var _ = Describe("Vow file converter", func() {
 				Data:   []byte{1, 1, 1, 1, 1},
 			}}
 
-		_, err := converter.ToModels([]core.HeaderSyncLog{badLog})
+		_, err := converter.ToModels(constants.VowABI(), []core.HeaderSyncLog{badLog})
 		Expect(err).To(HaveOccurred())
 	})
 
 	It("converts a log to a model", func() {
-		models, err := converter.ToModels([]core.HeaderSyncLog{test_data.VowFileHeaderSyncLog})
+		models, err := converter.ToModels(constants.VowABI(), []core.HeaderSyncLog{test_data.VowFileHeaderSyncLog})
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(len(models)).To(Equal(1))

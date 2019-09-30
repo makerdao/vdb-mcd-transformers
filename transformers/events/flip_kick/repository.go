@@ -17,9 +17,9 @@
 package flip_kick
 
 import (
-	"fmt"
-	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
+
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 )
 
 var InsertFlipKickQuery = `INSERT into maker.flip_kick (header_id, bid_id, lot, bid, tab, usr, gal, address_id, log_id)
@@ -30,47 +30,8 @@ type FlipKickRepository struct {
 	db *postgres.DB
 }
 
-func (repository FlipKickRepository) Create(models []interface{}) error {
-	tx, dBaseErr := repository.db.Beginx()
-	if dBaseErr != nil {
-		return dBaseErr
-	}
-	for _, model := range models {
-		flipKickModel, ok := model.(FlipKickModel)
-		if !ok {
-			wrongTypeErr := fmt.Errorf("model of type %T, not %T", model, FlipKickModel{})
-			return shared.FormatRollbackError("flip kick", wrongTypeErr.Error())
-		}
-
-		addressId, addressErr := shared.GetOrCreateAddressInTransaction(flipKickModel.ContractAddress, tx)
-		if addressErr != nil {
-			rollbackErr := tx.Rollback()
-			if rollbackErr != nil {
-				return shared.FormatRollbackError("flip address", addressErr.Error())
-			}
-			return addressErr
-		}
-
-		_, execErr := tx.Exec(InsertFlipKickQuery, flipKickModel.HeaderID, flipKickModel.BidId, flipKickModel.Lot, flipKickModel.Bid,
-			flipKickModel.Tab, flipKickModel.Usr, flipKickModel.Gal, addressId, flipKickModel.LogID)
-		if execErr != nil {
-			rollbackErr := tx.Rollback()
-			if rollbackErr != nil {
-				return shared.FormatRollbackError("flip kick", execErr.Error())
-			}
-			return execErr
-		}
-
-		_, logErr := tx.Exec(`UPDATE public.header_sync_logs SET transformed = true WHERE id = $1`, flipKickModel.LogID)
-		if logErr != nil {
-			rollbackErr := tx.Rollback()
-			if rollbackErr != nil {
-				return shared.FormatRollbackError("flip kick", logErr.Error())
-			}
-			return logErr
-		}
-	}
-	return tx.Commit()
+func (repository FlipKickRepository) Create(models []shared.InsertionModel) error {
+	return shared.Create(models, repository.db)
 }
 
 func (repository *FlipKickRepository) SetDB(db *postgres.DB) {

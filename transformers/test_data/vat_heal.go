@@ -17,13 +17,12 @@
 package test_data
 
 import (
-	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
-	"github.com/vulcanize/vulcanizedb/pkg/core"
-	"math/rand"
-
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
+	"math/rand"
 
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 )
@@ -53,7 +52,8 @@ var VatHealHeaderSyncLog = core.HeaderSyncLog{
 }
 
 var VatHealModel = shared.InsertionModel{
-	TableName: "vat_heal",
+	SchemaName: "maker",
+	TableName:  "vat_heal",
 	OrderedColumns: []string{
 		constants.HeaderFK, "rad", constants.LogFK,
 	},

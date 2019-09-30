@@ -20,6 +20,8 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+
 	"github.com/vulcanize/mcd_transformers/transformers/events/tend"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
@@ -31,7 +33,7 @@ var _ = Describe("Tend TendConverter", func() {
 
 	Describe("ToModels", func() {
 		It("converts an eth log to a db model", func() {
-			models, err := converter.ToModels([]core.HeaderSyncLog{test_data.TendHeaderSyncLog})
+			models, err := converter.ToModels(constants.FlipABI(), []core.HeaderSyncLog{test_data.TendHeaderSyncLog})
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(models).To(Equal([]shared.InsertionModel{test_data.TendModel}))
@@ -40,7 +42,7 @@ var _ = Describe("Tend TendConverter", func() {
 		It("returns an error if the log data is empty", func() {
 			emptyDataLog := test_data.TendHeaderSyncLog
 			emptyDataLog.Log.Data = []byte{}
-			_, err := converter.ToModels([]core.HeaderSyncLog{emptyDataLog})
+			_, err := converter.ToModels(constants.FlipABI(), []core.HeaderSyncLog{emptyDataLog})
 
 			Expect(err).To(HaveOccurred())
 			Expect(err).To(MatchError(shared.ErrLogMissingData))
@@ -49,7 +51,7 @@ var _ = Describe("Tend TendConverter", func() {
 		It("returns an error if the expected amount of topics aren't in the log", func() {
 			invalidLog := test_data.TendHeaderSyncLog
 			invalidLog.Log.Topics = []common.Hash{}
-			_, err := converter.ToModels([]core.HeaderSyncLog{invalidLog})
+			_, err := converter.ToModels(constants.FlipABI(), []core.HeaderSyncLog{invalidLog})
 
 			Expect(err).To(MatchError(shared.ErrLogMissingTopics(4, 0)))
 		})

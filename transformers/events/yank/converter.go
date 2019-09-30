@@ -29,7 +29,7 @@ const (
 	numTopicsRequired = 3
 )
 
-func (YankConverter) ToModels(logs []core.HeaderSyncLog) (results []shared.InsertionModel, err error) {
+func (YankConverter) ToModels(_ string, logs []core.HeaderSyncLog) (results []shared.InsertionModel, err error) {
 	for _, log := range logs {
 		validationErr := shared.VerifyLog(log.Log, numTopicsRequired, logDataRequired)
 		if validationErr != nil {
@@ -39,7 +39,8 @@ func (YankConverter) ToModels(logs []core.HeaderSyncLog) (results []shared.Inser
 		bidId := log.Log.Topics[2].Big()
 
 		model := shared.InsertionModel{
-			TableName: "yank",
+			SchemaName: "maker",
+			TableName:  "yank",
 			OrderedColumns: []string{
 				constants.HeaderFK, "bid_id", string(constants.AddressFK), constants.LogFK,
 			},

@@ -30,7 +30,7 @@ const (
 	numTopicsRequired = 4
 )
 
-func (VatFoldConverter) ToModels(logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
+func (VatFoldConverter) ToModels(_ string, logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
 	var models []shared.InsertionModel
 	for _, log := range logs {
 		err := shared.VerifyLog(log.Log, numTopicsRequired, logDataRequired)
@@ -43,7 +43,8 @@ func (VatFoldConverter) ToModels(logs []core.HeaderSyncLog) ([]shared.InsertionM
 		rate := shared.ConvertInt256HexToBigInt(log.Log.Topics[3].Hex())
 
 		model := shared.InsertionModel{
-			TableName: "vat_fold",
+			SchemaName: "maker",
+			TableName:  "vat_fold",
 			OrderedColumns: []string{
 				constants.HeaderFK, string(constants.UrnFK), "rate", constants.LogFK,
 			},

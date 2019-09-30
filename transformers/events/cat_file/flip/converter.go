@@ -30,7 +30,7 @@ const (
 	numTopicsRequired = 4
 )
 
-func (CatFileFlipConverter) ToModels(logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
+func (CatFileFlipConverter) ToModels(_ string, logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
 	var results []shared.InsertionModel
 	for _, log := range logs {
 		verifyErr := shared.VerifyLog(log.Log, numTopicsRequired, logDataRequired)
@@ -46,7 +46,8 @@ func (CatFileFlipConverter) ToModels(logs []core.HeaderSyncLog) ([]shared.Insert
 		flip := common.BytesToAddress(flipBytes).String()
 
 		result := shared.InsertionModel{
-			TableName: "cat_file_flip",
+			SchemaName: "maker",
+			TableName:  "cat_file_flip",
 			OrderedColumns: []string{
 				constants.HeaderFK, string(constants.IlkFK), "what", "flip", constants.LogFK,
 			},

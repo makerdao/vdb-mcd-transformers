@@ -30,7 +30,7 @@ const (
 	numTopicsRequired = 4
 )
 
-func (SpotFileMatConverter) ToModels(logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
+func (SpotFileMatConverter) ToModels(_ string, logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
 	var models []shared.InsertionModel
 	for _, log := range logs {
 		err := shared.VerifyLog(log.Log, numTopicsRequired, logDataRequired)
@@ -47,7 +47,8 @@ func (SpotFileMatConverter) ToModels(logs []core.HeaderSyncLog) ([]shared.Insert
 		data := shared.ConvertUint256HexToBigInt(hexutil.Encode(dataBytes))
 
 		model := shared.InsertionModel{
-			TableName: "spot_file_mat",
+			SchemaName: "maker",
+			TableName:  "spot_file_mat",
 			OrderedColumns: []string{
 				constants.HeaderFK, string(constants.IlkFK), "what", "data", constants.LogFK,
 			},

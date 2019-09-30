@@ -20,6 +20,8 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+
 	"github.com/vulcanize/mcd_transformers/transformers/events/yank"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
@@ -30,7 +32,7 @@ var _ = Describe("Yank Converter", func() {
 	var converter = yank.YankConverter{}
 
 	It("converts logs to models", func() {
-		models, err := converter.ToModels([]core.HeaderSyncLog{test_data.YankHeaderSyncLog})
+		models, err := converter.ToModels(constants.FlipABI(), []core.HeaderSyncLog{test_data.YankHeaderSyncLog})
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(models).To(Equal([]shared.InsertionModel{test_data.YankModel}))
@@ -40,7 +42,7 @@ var _ = Describe("Yank Converter", func() {
 		invalidLog := test_data.YankHeaderSyncLog
 		invalidLog.Log.Topics = []common.Hash{}
 
-		_, err := converter.ToModels([]core.HeaderSyncLog{invalidLog})
+		_, err := converter.ToModels(constants.FlipABI(), []core.HeaderSyncLog{invalidLog})
 
 		Expect(err).To(HaveOccurred())
 		Expect(err).To(MatchError(shared.ErrLogMissingTopics(3, 0)))

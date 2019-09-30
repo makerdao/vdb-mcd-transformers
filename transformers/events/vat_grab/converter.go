@@ -31,7 +31,7 @@ const (
 	numTopicsRequired = 4
 )
 
-func (VatGrabConverter) ToModels(logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
+func (VatGrabConverter) ToModels(_ string, logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
 	var models []shared.InsertionModel
 	for _, log := range logs {
 		err := shared.VerifyLog(log.Log, numTopicsRequired, logDataRequired)
@@ -58,7 +58,8 @@ func (VatGrabConverter) ToModels(logs []core.HeaderSyncLog) ([]shared.InsertionM
 		dart := shared.ConvertInt256HexToBigInt(hexutil.Encode(dartBytes))
 
 		model := shared.InsertionModel{
-			TableName: "vat_grab",
+			SchemaName: "maker",
+			TableName:  "vat_grab",
 			OrderedColumns: []string{
 				constants.HeaderFK, string(constants.UrnFK), "v", "w", "dink", "dart", constants.LogFK,
 			},

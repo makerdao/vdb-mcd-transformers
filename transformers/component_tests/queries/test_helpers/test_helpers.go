@@ -627,7 +627,7 @@ func SetUpFlopBidContext(setupData FlopBidCreationInput) (err error) {
 
 func CreateDeal(input DealCreationInput) (err error) {
 	dealLog := test_data.CreateTestLog(input.DealHeaderId, input.Db)
-	dealModel := test_data.DealModel
+	dealModel := test_data.CopyModel(test_data.DealModel)
 	dealModel.ColumnValues["bid_id"] = strconv.Itoa(input.BidId)
 	dealModel.ColumnValues["tx_idx"] = rand.Int31()
 	dealModel.ForeignKeyValues[constants.AddressFK] = input.ContractAddress
@@ -638,35 +638,35 @@ func CreateDeal(input DealCreationInput) (err error) {
 }
 
 func CreateFlipKick(contractAddress string, bidId int, headerId, logId int64, usr string, repo flip_kick.FlipKickRepository) error {
-	flipKickModel := test_data.FlipKickModel
-	flipKickModel.ContractAddress = contractAddress
-	flipKickModel.BidId = strconv.Itoa(bidId)
-	flipKickModel.Usr = usr
-	flipKickModel.HeaderID = headerId
-	flipKickModel.LogID = logId
-	return repo.Create([]interface{}{flipKickModel})
+	flipKickModel := test_data.CopyModel(test_data.FlipKickModel())
+	flipKickModel.ForeignKeyValues[constants.AddressFK] = contractAddress
+	flipKickModel.ColumnValues["bid_id"] = strconv.Itoa(bidId)
+	flipKickModel.ColumnValues["usr"] = usr
+	flipKickModel.ColumnValues[constants.HeaderFK] = headerId
+	flipKickModel.ColumnValues[constants.LogFK] = logId
+	return repo.Create([]shared.InsertionModel{flipKickModel})
 }
 
 func CreateFlapKick(contractAddress string, bidId int, headerId, logId int64, repo flap_kick.FlapKickRepository) error {
-	flapKickModel := test_data.FlapKickModel
-	flapKickModel.ContractAddress = contractAddress
-	flapKickModel.BidId = strconv.Itoa(bidId)
-	flapKickModel.HeaderID = headerId
-	flapKickModel.LogID = logId
-	return repo.Create([]interface{}{flapKickModel})
+	flapKickModel := test_data.FlapKickModel()
+	flapKickModel.ForeignKeyValues[constants.AddressFK] = contractAddress
+	flapKickModel.ColumnValues[constants.HeaderFK] = headerId
+	flapKickModel.ColumnValues[constants.LogFK] = logId
+	flapKickModel.ColumnValues["bid_id"] = strconv.Itoa(bidId)
+	return repo.Create([]shared.InsertionModel{flapKickModel})
 }
 
 func CreateFlopKick(contractAddress string, bidId int, headerId, logId int64, repo flop_kick.FlopKickRepository) error {
-	flopKickModel := test_data.FlopKickModel
-	flopKickModel.ContractAddress = contractAddress
-	flopKickModel.BidId = strconv.Itoa(bidId)
-	flopKickModel.HeaderID = headerId
-	flopKickModel.LogID = logId
-	return repo.Create([]interface{}{flopKickModel})
+	flopKickModel := test_data.FlopKickModel()
+	flopKickModel.ForeignKeyValues[constants.AddressFK] = contractAddress
+	flopKickModel.ColumnValues["bid_id"] = strconv.Itoa(bidId)
+	flopKickModel.ColumnValues[constants.HeaderFK] = headerId
+	flopKickModel.ColumnValues[constants.LogFK] = logId
+	return repo.Create([]shared.InsertionModel{flopKickModel})
 }
 
 func CreateTend(input TendCreationInput) (err error) {
-	tendModel := test_data.TendModel
+	tendModel := test_data.CopyModel(test_data.TendModel)
 	tendModel.ColumnValues["bid_id"] = strconv.Itoa(input.BidId)
 	tendModel.ColumnValues["lot"] = strconv.Itoa(input.Lot)
 	tendModel.ColumnValues["bid"] = strconv.Itoa(input.BidAmount)
@@ -677,7 +677,7 @@ func CreateTend(input TendCreationInput) (err error) {
 }
 
 func CreateDent(input DentCreationInput) (err error) {
-	dentModel := test_data.DentModel
+	dentModel := test_data.CopyModel(test_data.DentModel)
 	dentModel.ColumnValues["bid_id"] = strconv.Itoa(input.BidId)
 	dentModel.ColumnValues["lot"] = strconv.Itoa(input.Lot)
 	dentModel.ColumnValues["bid"] = strconv.Itoa(input.BidAmount)
@@ -688,7 +688,7 @@ func CreateDent(input DentCreationInput) (err error) {
 }
 
 func CreateYank(input YankCreationInput) (err error) {
-	yankModel := test_data.YankModel
+	yankModel := test_data.CopyModel(test_data.YankModel)
 	yankModel.ColumnValues["bid_id"] = strconv.Itoa(input.BidId)
 	yankModel.ColumnValues["tx_idx"] = rand.Int31()
 	yankModel.ForeignKeyValues[constants.AddressFK] = input.ContractAddress
@@ -698,7 +698,7 @@ func CreateYank(input YankCreationInput) (err error) {
 }
 
 func CreateTick(input TickCreationInput) (err error) {
-	tickModel := test_data.TickModel
+	tickModel := test_data.CopyModel(test_data.TickModel)
 	tickModel.ColumnValues["bid_id"] = strconv.Itoa(input.BidId)
 	tickModel.ColumnValues["tx_idx"] = rand.Int31()
 	tickModel.ForeignKeyValues[constants.AddressFK] = input.ContractAddress

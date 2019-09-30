@@ -29,7 +29,7 @@ const (
 	numTopicsRequired = 3
 )
 
-func (DealConverter) ToModels(logs []core.HeaderSyncLog) (result []shared.InsertionModel, err error) {
+func (DealConverter) ToModels(_ string, logs []core.HeaderSyncLog) (result []shared.InsertionModel, err error) {
 	for _, log := range logs {
 		validationErr := shared.VerifyLog(log.Log, numTopicsRequired, logDataRequired)
 		if validationErr != nil {
@@ -39,7 +39,8 @@ func (DealConverter) ToModels(logs []core.HeaderSyncLog) (result []shared.Insert
 		bidId := log.Log.Topics[2].Big()
 
 		model := shared.InsertionModel{
-			TableName: "deal",
+			SchemaName: "maker",
+			TableName:  "deal",
 			OrderedColumns: []string{
 				constants.HeaderFK, "bid_id", string(constants.AddressFK), constants.LogFK,
 			},

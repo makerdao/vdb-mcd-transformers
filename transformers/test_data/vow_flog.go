@@ -52,7 +52,8 @@ var VowFlogHeaderSyncLog = core.HeaderSyncLog{
 }
 
 var VowFlogModel = shared.InsertionModel{
-	TableName: "vow_flog",
+	SchemaName: "maker",
+	TableName:  "vow_flog",
 	OrderedColumns: []string{
 		constants.HeaderFK, "era", constants.LogFK,
 	},

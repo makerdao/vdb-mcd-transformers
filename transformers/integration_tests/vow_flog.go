@@ -32,7 +32,7 @@ import (
 )
 
 // TODO: replace block number when there is a flog event on the updated Vow
-var _ = XDescribe("VowFlog LogNoteTransformer", func() {
+var _ = XDescribe("VowFlog EventTransformer", func() {
 	var (
 		db         *postgres.DB
 		blockChain core.BlockChain
@@ -71,11 +71,11 @@ var _ = XDescribe("VowFlog LogNoteTransformer", func() {
 
 		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
 
-		tr := shared.LogNoteTransformer{
+		tr := shared.EventTransformer{
 			Config:     vowFlogConfig,
 			Converter:  &vow_flog.VowFlogConverter{},
 			Repository: &vow_flog.VowFlogRepository{},
-		}.NewLogNoteTransformer(db)
+		}.NewEventTransformer(db)
 
 		err = tr.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())

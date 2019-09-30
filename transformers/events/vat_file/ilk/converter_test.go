@@ -24,6 +24,7 @@ import (
 
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_file/ilk"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
@@ -35,32 +36,32 @@ var _ = Describe("Vat file ilk converter", func() {
 				Data: []byte{1, 1, 1, 1, 1},
 			}}
 
-		_, err := converter.ToModels([]core.HeaderSyncLog{badLog})
+		_, err := converter.ToModels(constants.VatABI(), []core.HeaderSyncLog{badLog})
 		Expect(err).To(HaveOccurred())
 	})
 
 	Describe("when log is valid", func() {
 		It("converts to model with data converted to ray when what is 'spot'", func() {
-			models, err := converter.ToModels([]core.HeaderSyncLog{test_data.VatFileIlkSpotHeaderSyncLog})
+			models, err := converter.ToModels(constants.VatABI(), []core.HeaderSyncLog{test_data.VatFileIlkSpotHeaderSyncLog})
 
 			Expect(err).NotTo(HaveOccurred())
-			Expect(models).To(Equal([]shared.InsertionModel{test_data.VatFileIlkSpotModel}))
+			Expect(models).To(Equal([]shared.InsertionModel{test_data.VatFileIlkSpotModel()}))
 		})
 
 		It("converts to model with data converted to wad when what is 'line'", func() {
-			models, err := converter.ToModels([]core.HeaderSyncLog{test_data.VatFileIlkLineHeaderSyncLog})
+			models, err := converter.ToModels(constants.VatABI(), []core.HeaderSyncLog{test_data.VatFileIlkLineHeaderSyncLog})
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(models)).To(Equal(1))
-			Expect(models).To(Equal([]shared.InsertionModel{test_data.VatFileIlkLineModel}))
+			Expect(models).To(Equal([]shared.InsertionModel{test_data.VatFileIlkLineModel()}))
 		})
 
 		It("converts to model with data converted to rad when what is 'dust'", func() {
-			models, err := converter.ToModels([]core.HeaderSyncLog{test_data.VatFileIlkDustHeaderSyncLog})
+			models, err := converter.ToModels(constants.VatABI(), []core.HeaderSyncLog{test_data.VatFileIlkDustHeaderSyncLog})
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(models)).To(Equal(1))
-			Expect(models).To(Equal([]shared.InsertionModel{test_data.VatFileIlkDustModel}))
+			Expect(models).To(Equal([]shared.InsertionModel{test_data.VatFileIlkDustModel()}))
 		})
 	})
 })

@@ -30,7 +30,7 @@ const (
 	numTopicsRequired = 4
 )
 
-func (CatFileVowConverter) ToModels(logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
+func (CatFileVowConverter) ToModels(_ string, logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
 	var results []shared.InsertionModel
 	for _, log := range logs {
 		err := shared.VerifyLog(log.Log, numTopicsRequired, logDataRequired)
@@ -42,7 +42,8 @@ func (CatFileVowConverter) ToModels(logs []core.HeaderSyncLog) ([]shared.Inserti
 		data := common.BytesToAddress(log.Log.Topics[3].Bytes()).String()
 
 		result := shared.InsertionModel{
-			TableName: "cat_file_vow",
+			SchemaName: "maker",
+			TableName:  "cat_file_vow",
 			OrderedColumns: []string{
 				constants.HeaderFK, "what", "data", constants.LogFK,
 			},

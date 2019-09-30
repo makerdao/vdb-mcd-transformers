@@ -20,7 +20,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/vulcanize/mcd_transformers/transformers/events/spot_poke"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"math/big"
@@ -53,18 +53,21 @@ func spot() *big.Int {
 	return &spot
 }
 
-var SpotPokeEntity = spot_poke.SpotPokeEntity{
-	Ilk:      [32]byte{67, 79, 76, 53, 45, 65, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-	Val:      [32]byte{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 60, 109, 112, 62, 236, 55, 0},
-	Spot:     spot(),
-	HeaderID: SpotPokeHeaderSyncLog.HeaderID,
-	LogID:    SpotPokeHeaderSyncLog.ID,
-}
+func SpotPokeModel() shared.InsertionModel { return CopyModel(spotPokeModel) }
 
-var SpotPokeModel = spot_poke.SpotPokeModel{
-	Ilk:      "0x434f4c352d410000000000000000000000000000000000000000000000000000",
-	Value:    "89066421500000000.000000",
-	Spot:     "46877063947368421052631578",
-	HeaderID: SpotPokeEntity.HeaderID,
-	LogID:    SpotPokeEntity.LogID,
+var spotPokeModel = shared.InsertionModel{
+	SchemaName: "maker",
+	TableName:  "spot_poke",
+	OrderedColumns: []string{
+		constants.HeaderFK, constants.LogFK, string(constants.IlkFK), "value", "spot",
+	},
+	ColumnValues: shared.ColumnValues{
+		constants.HeaderFK: SpotPokeHeaderSyncLog.HeaderID,
+		constants.LogFK:    SpotPokeHeaderSyncLog.ID,
+		"value":            "89066421500000000.000000",
+		"spot":             "46877063947368421052631578",
+	},
+	ForeignKeyValues: shared.ForeignKeyValues{
+		constants.IlkFK: "0x434f4c352d410000000000000000000000000000000000000000000000000000",
+	},
 }

@@ -17,17 +17,16 @@
 package test_data
 
 import (
-	"encoding/json"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 	"math/big"
 	"math/rand"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/vulcanize/mcd_transformers/transformers/events/bite"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
 const (
@@ -37,14 +36,10 @@ const (
 )
 
 var (
-	biteInk        = big.NewInt(10000000000)
-	biteArt        = big.NewInt(20000000000)
-	biteTab        = big.NewInt(30000000000)
-	biteFlip       = common.HexToAddress("0x7d7bEe5fCfD8028cf7b00876C5b1421c800561A6")
-	biteID         = big.NewInt(40000000000)
-	biteRawJson, _ = json.Marshal(BiteHeaderSyncLog)
-	biteIlk        = [32]byte{69, 84, 72, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
-	biteUrn        = common.HexToAddress("0x7d7bEe5fCfD8028cf7b00876C5b1421c800561A6")
+	biteInk = big.NewInt(10000000000)
+	biteArt = big.NewInt(20000000000)
+	biteTab = big.NewInt(30000000000)
+	biteID  = big.NewInt(40000000000)
 )
 
 var rawBiteLog = types.Log{
@@ -69,26 +64,25 @@ var BiteHeaderSyncLog = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-var BiteEntity = bite.BiteEntity{
-	Ilk:      biteIlk,
-	Urn:      biteUrn,
-	Ink:      biteInk,
-	Art:      biteArt,
-	Tab:      biteTab,
-	Flip:     biteFlip,
-	Id:       biteID,
-	HeaderID: BiteHeaderSyncLog.HeaderID,
-	LogID:    BiteHeaderSyncLog.ID,
-}
+func BiteModel() shared.InsertionModel { return CopyModel(biteModel) }
 
-var BiteModel = bite.BiteModel{
-	Ilk:      "0x4554480000000000000000000000000000000000000000000000000000000000",
-	Urn:      "0x7d7bEe5fCfD8028cf7b00876C5b1421c800561A6",
-	Ink:      biteInk.String(),
-	Art:      biteArt.String(),
-	Tab:      biteTab.String(),
-	Flip:     "0x7d7bEe5fCfD8028cf7b00876C5b1421c800561A6",
-	Id:       biteID.String(),
-	HeaderID: BiteEntity.HeaderID,
-	LogID:    BiteEntity.LogID,
+var biteModel = shared.InsertionModel{
+	SchemaName: "maker",
+	TableName:  "bite",
+	OrderedColumns: []string{
+		constants.HeaderFK, constants.LogFK, "urn_id", "ink", "art", "tab", "flip", "bite_identifier",
+	},
+	ColumnValues: shared.ColumnValues{
+		constants.HeaderFK: BiteHeaderSyncLog.HeaderID,
+		constants.LogFK:    BiteHeaderSyncLog.ID,
+		"ink":              biteInk.String(),
+		"art":              biteArt.String(),
+		"tab":              biteTab.String(),
+		"flip":             "0x7d7bEe5fCfD8028cf7b00876C5b1421c800561A6",
+		"bite_identifier":  biteID.String(),
+	},
+	ForeignKeyValues: shared.ForeignKeyValues{
+		constants.IlkFK: "0x4554480000000000000000000000000000000000000000000000000000000000",
+		constants.UrnFK: "0x7d7bEe5fCfD8028cf7b00876C5b1421c800561A6",
+	},
 }

@@ -30,7 +30,7 @@ const (
 	numTopicsRequired = 4
 )
 
-func (JugFileVowConverter) ToModels(logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
+func (JugFileVowConverter) ToModels(_ string, logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
 	var models []shared.InsertionModel
 	for _, log := range logs {
 		err := shared.VerifyLog(log.Log, numTopicsRequired, logDataRequired)
@@ -42,7 +42,8 @@ func (JugFileVowConverter) ToModels(logs []core.HeaderSyncLog) ([]shared.Inserti
 		data := common.BytesToAddress(log.Log.Topics[3].Bytes()).String()
 
 		model := shared.InsertionModel{
-			TableName: "jug_file_vow",
+			SchemaName: "maker",
+			TableName:  "jug_file_vow",
 			OrderedColumns: []string{
 				constants.HeaderFK, "what", "data", constants.LogFK,
 			},

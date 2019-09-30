@@ -51,7 +51,8 @@ var VowFileHeaderSyncLog = core.HeaderSyncLog{
 }
 
 var VowFileModel = shared.InsertionModel{
-	TableName: "vow_file",
+	SchemaName: "maker",
+	TableName:  "vow_file",
 	OrderedColumns: []string{
 		constants.HeaderFK, "what", "data", constants.LogFK,
 	},

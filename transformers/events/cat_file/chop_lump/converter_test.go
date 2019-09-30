@@ -21,6 +21,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 
 	"github.com/vulcanize/mcd_transformers/transformers/events/cat_file/chop_lump"
@@ -37,19 +38,19 @@ var _ = Describe("Cat file chop lump converter", func() {
 
 	Context("chop events", func() {
 		It("converts a chop log to a model", func() {
-			models, err := converter.ToModels([]core.HeaderSyncLog{test_data.CatFileChopHeaderSyncLog})
+			models, err := converter.ToModels(constants.CatABI(), []core.HeaderSyncLog{test_data.CatFileChopHeaderSyncLog})
 
 			Expect(err).NotTo(HaveOccurred())
-			Expect(models).To(Equal([]shared.InsertionModel{test_data.CatFileChopModel}))
+			Expect(models).To(Equal([]shared.InsertionModel{test_data.CatFileChopModel()}))
 		})
 	})
 
 	Context("lump events", func() {
 		It("converts a lump log to a model", func() {
-			models, err := converter.ToModels([]core.HeaderSyncLog{test_data.CatFileLumpHeaderSyncLog})
+			models, err := converter.ToModels(constants.CatABI(), []core.HeaderSyncLog{test_data.CatFileLumpHeaderSyncLog})
 
 			Expect(err).NotTo(HaveOccurred())
-			Expect(models).To(Equal([]shared.InsertionModel{test_data.CatFileLumpModel}))
+			Expect(models).To(Equal([]shared.InsertionModel{test_data.CatFileLumpModel()}))
 		})
 	})
 
@@ -60,7 +61,7 @@ var _ = Describe("Cat file chop lump converter", func() {
 			},
 		}
 
-		_, err := converter.ToModels([]core.HeaderSyncLog{badLog})
+		_, err := converter.ToModels(constants.CatABI(), []core.HeaderSyncLog{badLog})
 		Expect(err).To(HaveOccurred())
 	})
 
@@ -71,7 +72,7 @@ var _ = Describe("Cat file chop lump converter", func() {
 			},
 		}
 
-		_, err := converter.ToModels([]core.HeaderSyncLog{badLog})
+		_, err := converter.ToModels(constants.CatABI(), []core.HeaderSyncLog{badLog})
 		Expect(err).To(HaveOccurred())
 	})
 })

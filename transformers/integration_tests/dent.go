@@ -40,7 +40,7 @@ var _ = XDescribe("Dent transformer", func() {
 		dentConfig  transformer.EventTransformerConfig
 		addresses   []common.Address
 		topics      []common.Hash
-		initializer shared.LogNoteTransformer
+		initializer shared.EventTransformer
 	)
 
 	BeforeEach(func() {
@@ -62,7 +62,7 @@ var _ = XDescribe("Dent transformer", func() {
 		topics = []common.Hash{common.HexToHash(dentConfig.Topic)}
 		logFetcher = fetcher.NewLogFetcher(blockChain)
 
-		initializer = shared.LogNoteTransformer{
+		initializer = shared.EventTransformer{
 			Config:     dentConfig,
 			Converter:  &dent.DentConverter{},
 			Repository: &dent.DentRepository{},
@@ -82,7 +82,7 @@ var _ = XDescribe("Dent transformer", func() {
 
 		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
 
-		tr = initializer.NewLogNoteTransformer(db)
+		tr = initializer.NewEventTransformer(db)
 		err = tr.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 

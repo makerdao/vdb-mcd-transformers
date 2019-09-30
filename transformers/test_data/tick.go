@@ -60,7 +60,8 @@ var FlipTickHeaderSyncLog = core.HeaderSyncLog{
 }
 
 var TickModel = shared.InsertionModel{
-	TableName: "tick",
+	SchemaName: "maker",
+	TableName:  "tick",
 	OrderedColumns: []string{
 		constants.HeaderFK, "bid_id", string(constants.AddressFK), constants.LogFK,
 	},

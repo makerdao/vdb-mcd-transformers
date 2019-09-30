@@ -38,7 +38,7 @@ var _ = Describe("Vat frob Transformer", func() {
 		blockChain    core.BlockChain
 		logFetcher    fetcher.ILogFetcher
 		vatFrobConfig transformer.EventTransformerConfig
-		initializer   shared.LogNoteTransformer
+		initializer   shared.EventTransformer
 	)
 
 	BeforeEach(func() {
@@ -57,7 +57,7 @@ var _ = Describe("Vat frob Transformer", func() {
 			Topic:             constants.VatFrobSignature(),
 		}
 
-		initializer = shared.LogNoteTransformer{
+		initializer = shared.EventTransformer{
 			Config:     vatFrobConfig,
 			Converter:  &vat_frob.VatFrobConverter{},
 			Repository: &vat_frob.VatFrobRepository{},
@@ -80,7 +80,7 @@ var _ = Describe("Vat frob Transformer", func() {
 
 		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
 
-		transformer := initializer.NewLogNoteTransformer(db)
+		transformer := initializer.NewEventTransformer(db)
 		err = transformer.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 

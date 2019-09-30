@@ -20,9 +20,11 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/vulcanize/mcd_transformers/transformers/events/vow_flog"
-	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
+
+	"github.com/vulcanize/mcd_transformers/transformers/events/vow_flog"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
 var _ = Describe("Vow flog converter", func() {
@@ -37,12 +39,12 @@ var _ = Describe("Vow flog converter", func() {
 				Data: []byte{1, 1, 1, 1, 1},
 			}}
 
-		_, err := converter.ToModels([]core.HeaderSyncLog{badLog})
+		_, err := converter.ToModels(constants.VowABI(), []core.HeaderSyncLog{badLog})
 		Expect(err).To(HaveOccurred())
 	})
 
 	It("converts a log to a model", func() {
-		models, err := converter.ToModels([]core.HeaderSyncLog{test_data.VowFlogHeaderSyncLog})
+		models, err := converter.ToModels(constants.VowABI(), []core.HeaderSyncLog{test_data.VowFlogHeaderSyncLog})
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(len(models)).To(Equal(1))

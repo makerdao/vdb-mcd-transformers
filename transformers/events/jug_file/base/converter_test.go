@@ -26,6 +26,7 @@ import (
 
 	"github.com/vulcanize/mcd_transformers/transformers/events/jug_file/base"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
@@ -38,12 +39,12 @@ var _ = Describe("Jug file base converter", func() {
 				Data:   []byte{1, 1, 1, 1, 1},
 			}}
 
-		_, err := converter.ToModels([]core.HeaderSyncLog{badLog})
+		_, err := converter.ToModels(constants.JugABI(), []core.HeaderSyncLog{badLog})
 		Expect(err).To(HaveOccurred())
 	})
 
 	It("converts a log to a model", func() {
-		models, err := converter.ToModels([]core.HeaderSyncLog{test_data.JugFileBaseHeaderSyncLog})
+		models, err := converter.ToModels(constants.JugABI(), []core.HeaderSyncLog{test_data.JugFileBaseHeaderSyncLog})
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(models).To(Equal([]shared.InsertionModel{test_data.JugFileBaseModel}))

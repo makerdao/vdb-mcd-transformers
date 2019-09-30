@@ -23,6 +23,7 @@ import (
 
 	"github.com/vulcanize/mcd_transformers/transformers/events/jug_drip"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
@@ -30,12 +31,12 @@ var _ = Describe("Jug drip converter", func() {
 	var converter = jug_drip.JugDripConverter{}
 	It("returns err if log is missing topics", func() {
 		badLog := core.HeaderSyncLog{}
-		_, err := converter.ToModels([]core.HeaderSyncLog{badLog})
+		_, err := converter.ToModels(constants.JugABI(), []core.HeaderSyncLog{badLog})
 		Expect(err).To(HaveOccurred())
 	})
 
 	It("converts a log to an model", func() {
-		model, err := converter.ToModels([]core.HeaderSyncLog{test_data.JugDripHeaderSyncLog})
+		model, err := converter.ToModels(constants.JugABI(), []core.HeaderSyncLog{test_data.JugDripHeaderSyncLog})
 		Expect(err).NotTo(HaveOccurred())
 		Expect(model).To(Equal([]shared.InsertionModel{test_data.JugDripModel}))
 	})

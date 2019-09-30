@@ -25,6 +25,7 @@ import (
 
 	"github.com/vulcanize/mcd_transformers/transformers/events/cat_file/flip"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
@@ -42,7 +43,7 @@ var _ = Describe("Cat file flip converter", func() {
 			},
 		}
 
-		_, err := converter.ToModels([]core.HeaderSyncLog{badLog})
+		_, err := converter.ToModels(constants.CatABI(), []core.HeaderSyncLog{badLog})
 		Expect(err).To(HaveOccurred())
 	})
 
@@ -53,13 +54,14 @@ var _ = Describe("Cat file flip converter", func() {
 			},
 		}
 
-		_, err := converter.ToModels([]core.HeaderSyncLog{badLog})
+		_, err := converter.ToModels(constants.CatABI(), []core.HeaderSyncLog{badLog})
 		Expect(err).To(HaveOccurred())
 	})
 
 	It("converts a log to an model", func() {
-		models, err := converter.ToModels([]core.HeaderSyncLog{test_data.CatFileFlipHeaderSyncLog})
+		models, err := converter.ToModels(constants.CatABI(), []core.HeaderSyncLog{test_data.CatFileFlipHeaderSyncLog})
+
 		Expect(err).NotTo(HaveOccurred())
-		Expect(models).To(Equal([]shared.InsertionModel{test_data.CatFileFlipModel}))
+		Expect(models).To(Equal([]shared.InsertionModel{test_data.CatFileFlipModel()}))
 	})
 })

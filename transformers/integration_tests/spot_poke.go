@@ -25,7 +25,6 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
@@ -63,12 +62,12 @@ var _ = Describe("SpotPoke Transformer", func() {
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		initializer := event.Transformer{
+		initializer := shared.EventTransformer{
 			Config:     spotPokeConfig,
 			Converter:  &spot_poke.SpotPokeConverter{},
 			Repository: &spot_poke.SpotPokeRepository{},
 		}
-		tr := initializer.NewTransformer(db)
+		tr := initializer.NewEventTransformer(db)
 
 		f := fetcher.NewLogFetcher(blockChain)
 		logs, err := f.FetchLogs(
@@ -82,7 +81,7 @@ var _ = Describe("SpotPoke Transformer", func() {
 		err = tr.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 
-		var dbResult []spot_poke.SpotPokeModel
+		var dbResult []spotPokeModel
 		err = db.Select(&dbResult, `SELECT ilk_id, value, spot FROM maker.spot_poke`)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -94,3 +93,9 @@ var _ = Describe("SpotPoke Transformer", func() {
 		Expect(dbResult[0].Spot).To(Equal("210466666666666666666666666666"))
 	})
 })
+
+type spotPokeModel struct {
+	Ilk   string `db:"ilk_id"`
+	Value string
+	Spot  string
+}

@@ -17,9 +17,6 @@
 package spot_poke
 
 import (
-	"fmt"
-	"github.com/jmoiron/sqlx"
-	"github.com/sirupsen/logrus"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 )
@@ -34,49 +31,10 @@ type SpotPokeRepository struct {
 	db *postgres.DB
 }
 
-func (repository *SpotPokeRepository) Create(models []interface{}) error {
-	tx, dbErr := repository.db.Beginx()
-	if dbErr != nil {
-		return dbErr
-	}
-
-	for _, model := range models {
-		spotPokeModel, ok := model.(SpotPokeModel)
-		if !ok {
-			wrongTypeErr := fmt.Errorf("model of type %T, not %T", model, SpotPokeModel{})
-			return rollbackErr(tx, wrongTypeErr)
-		}
-
-		ilkID, ilkErr := shared.GetOrCreateIlkInTransaction(spotPokeModel.Ilk, tx)
-		if ilkErr != nil {
-			return rollbackErr(tx, ilkErr)
-		}
-
-		_, insertErr := tx.Exec(
-			InsertSpotPokeQuery,
-			spotPokeModel.HeaderID, ilkID, spotPokeModel.Value, spotPokeModel.Spot, spotPokeModel.LogID,
-		)
-		if insertErr != nil {
-			return rollbackErr(tx, insertErr)
-		}
-
-		_, logErr := tx.Exec(`UPDATE public.header_sync_logs SET transformed = true WHERE id = $1`, spotPokeModel.LogID)
-		if logErr != nil {
-			return rollbackErr(tx, logErr)
-		}
-	}
-
-	return tx.Commit()
+func (repository *SpotPokeRepository) Create(models []shared.InsertionModel) error {
+	return shared.Create(models, repository.db)
 }
 
 func (repository *SpotPokeRepository) SetDB(db *postgres.DB) {
 	repository.db = db
-}
-
-func rollbackErr(tx *sqlx.Tx, err error) error {
-	rollbackErr := tx.Rollback()
-	if rollbackErr != nil {
-		logrus.Error("failed to rollback ", rollbackErr)
-	}
-	return err
 }

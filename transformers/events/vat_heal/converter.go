@@ -29,7 +29,7 @@ const (
 	numTopicsRequired = 2
 )
 
-func (VatHealConverter) ToModels(logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
+func (VatHealConverter) ToModels(_ string, logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
 	var models []shared.InsertionModel
 	for _, log := range logs {
 		err := shared.VerifyLog(log.Log, numTopicsRequired, logDataRequired)
@@ -40,7 +40,8 @@ func (VatHealConverter) ToModels(logs []core.HeaderSyncLog) ([]shared.InsertionM
 		radInt := shared.ConvertUint256HexToBigInt(log.Log.Topics[1].Hex())
 
 		model := shared.InsertionModel{
-			TableName: "vat_heal",
+			SchemaName: "maker",
+			TableName:  "vat_heal",
 			OrderedColumns: []string{
 				constants.HeaderFK, "rad", constants.LogFK,
 			},

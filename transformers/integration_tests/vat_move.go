@@ -29,7 +29,7 @@ import (
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 )
 
-var _ = Describe("VatMove LogNoteTransformer", func() {
+var _ = Describe("VatMove EventTransformer", func() {
 	vatMoveConfig := transformer.EventTransformerConfig{
 		TransformerName:   constants.VatMoveLabel,
 		ContractAddresses: []string{test_data.VatAddress()},
@@ -62,11 +62,11 @@ var _ = Describe("VatMove LogNoteTransformer", func() {
 
 		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
 
-		tr := shared.LogNoteTransformer{
+		tr := shared.EventTransformer{
 			Config:     vatMoveConfig,
 			Converter:  &vat_move.VatMoveConverter{},
 			Repository: &vat_move.VatMoveRepository{},
-		}.NewLogNoteTransformer(db)
+		}.NewEventTransformer(db)
 
 		err = tr.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())

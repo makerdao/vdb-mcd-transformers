@@ -20,6 +20,8 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+
 	"github.com/vulcanize/mcd_transformers/transformers/events/deal"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
@@ -29,7 +31,7 @@ import (
 var _ = Describe("Flip Deal Converter", func() {
 	var converter = deal.DealConverter{}
 	It("converts logs to models", func() {
-		models, err := converter.ToModels([]core.HeaderSyncLog{test_data.DealHeaderSyncLog})
+		models, err := converter.ToModels(constants.FlipABI(), []core.HeaderSyncLog{test_data.DealHeaderSyncLog})
 		Expect(err).NotTo(HaveOccurred())
 		Expect(models).To(Equal([]shared.InsertionModel{test_data.DealModel}))
 	})
@@ -38,7 +40,7 @@ var _ = Describe("Flip Deal Converter", func() {
 		invalidLog := test_data.DealHeaderSyncLog
 		invalidLog.Log.Topics = []common.Hash{}
 
-		_, err := converter.ToModels([]core.HeaderSyncLog{invalidLog})
+		_, err := converter.ToModels(constants.FlipABI(), []core.HeaderSyncLog{invalidLog})
 
 		Expect(err).To(HaveOccurred())
 		Expect(err).To(MatchError(shared.ErrLogMissingTopics(3, 0)))

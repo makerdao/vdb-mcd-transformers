@@ -29,7 +29,7 @@ const (
 	numTopicsRequired = 2
 )
 
-func (VatInitConverter) ToModels(logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
+func (VatInitConverter) ToModels(_ string, logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
 	var models []shared.InsertionModel
 	for _, log := range logs {
 		err := shared.VerifyLog(log.Log, numTopicsRequired, logDataRequired)
@@ -40,7 +40,8 @@ func (VatInitConverter) ToModels(logs []core.HeaderSyncLog) ([]shared.InsertionM
 		ilk := log.Log.Topics[1].Hex()
 
 		model := shared.InsertionModel{
-			TableName: "vat_init",
+			SchemaName: "maker",
+			TableName:  "vat_init",
 			OrderedColumns: []string{
 				constants.HeaderFK, string(constants.IlkFK), constants.LogFK,
 			},

@@ -7,15 +7,17 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
+	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
+	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres/repositories"
+	"github.com/vulcanize/vulcanizedb/pkg/fakes"
+
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/component_tests/queries/test_helpers"
 	"github.com/vulcanize/mcd_transformers/transformers/events/dent"
 	"github.com/vulcanize/mcd_transformers/transformers/events/flop_kick"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
-
-	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
-	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres/repositories"
-	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 )
 
 var _ = Describe("Flop computed columns", func() {
@@ -53,18 +55,18 @@ var _ = Describe("Flop computed columns", func() {
 			flopStorageValues := test_helpers.GetFlopStorageValues(1, fakeBidId)
 			test_helpers.CreateFlop(db, blockOneHeader, flopStorageValues, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
 
-			flopKickEvent := test_data.FlopKickModel
-			flopKickEvent.ContractAddress = contractAddress
-			flopKickEvent.BidId = strconv.Itoa(fakeBidId)
-			flopKickEvent.HeaderID = headerId
-			flopKickEvent.LogID = flopKickLog.ID
-			flopKickErr := flopKickRepo.Create([]interface{}{flopKickEvent})
+			flopKickEvent := test_data.FlopKickModel()
+			flopKickEvent.ForeignKeyValues[constants.AddressFK] = contractAddress
+			flopKickEvent.ColumnValues["bid_id"] = strconv.Itoa(fakeBidId)
+			flopKickEvent.ColumnValues[constants.HeaderFK] = headerId
+			flopKickEvent.ColumnValues[constants.LogFK] = flopKickLog.ID
+			flopKickErr := flopKickRepo.Create([]shared.InsertionModel{flopKickEvent})
 			Expect(flopKickErr).NotTo(HaveOccurred())
 
 			expectedBidEvents := test_helpers.BidEvent{
 				BidId:     strconv.Itoa(fakeBidId),
-				Lot:       flopKickEvent.Lot,
-				BidAmount: flopKickEvent.Bid,
+				Lot:       flopKickEvent.ColumnValues["lot"].(string),
+				BidAmount: flopKickEvent.ColumnValues["bid"].(string),
 				Act:       "kick",
 			}
 			var actualBidEvents test_helpers.BidEvent
@@ -84,12 +86,12 @@ var _ = Describe("Flop computed columns", func() {
 			flopStorageValues := test_helpers.GetFlopStorageValues(1, fakeBidId)
 			test_helpers.CreateFlop(db, blockOneHeader, flopStorageValues, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
 
-			flopKickEvent := test_data.FlopKickModel
-			flopKickEvent.ContractAddress = contractAddress
-			flopKickEvent.BidId = strconv.Itoa(fakeBidId)
-			flopKickEvent.HeaderID = headerId
-			flopKickEvent.LogID = flopKickLog.ID
-			flopKickErr := flopKickRepo.Create([]interface{}{flopKickEvent})
+			flopKickEvent := test_data.FlopKickModel()
+			flopKickEvent.ForeignKeyValues[constants.AddressFK] = contractAddress
+			flopKickEvent.ColumnValues["bid_id"] = strconv.Itoa(fakeBidId)
+			flopKickEvent.ColumnValues[constants.HeaderFK] = headerId
+			flopKickEvent.ColumnValues[constants.LogFK] = flopKickLog.ID
+			flopKickErr := flopKickRepo.Create([]shared.InsertionModel{flopKickEvent})
 			Expect(flopKickErr).NotTo(HaveOccurred())
 
 			blockTwo := blockOne + 1
@@ -103,19 +105,19 @@ var _ = Describe("Flop computed columns", func() {
 			irrelevantFlopStorageValues := test_helpers.GetFlopStorageValues(2, irrelevantBidId)
 			test_helpers.CreateFlop(db, blockTwoHeader, irrelevantFlopStorageValues, test_helpers.GetFlopMetadatas(strconv.Itoa(irrelevantBidId)), contractAddress)
 
-			irrelevantFlopKickEvent := test_data.FlopKickModel
-			irrelevantFlopKickEvent.ContractAddress = contractAddress
-			irrelevantFlopKickEvent.BidId = strconv.Itoa(irrelevantBidId)
-			irrelevantFlopKickEvent.HeaderID = headerTwoId
-			irrelevantFlopKickEvent.LogID = irrelevantFlopKickLog.ID
+			irrelevantFlopKickEvent := test_data.FlopKickModel()
+			irrelevantFlopKickEvent.ForeignKeyValues[constants.AddressFK] = contractAddress
+			irrelevantFlopKickEvent.ColumnValues["bid_id"] = strconv.Itoa(irrelevantBidId)
+			irrelevantFlopKickEvent.ColumnValues[constants.HeaderFK] = headerTwoId
+			irrelevantFlopKickEvent.ColumnValues[constants.LogFK] = irrelevantFlopKickLog.ID
+			flopKickErr = flopKickRepo.Create([]shared.InsertionModel{flopKickEvent})
 
-			flopKickErr = flopKickRepo.Create([]interface{}{irrelevantFlopKickEvent})
 			Expect(flopKickErr).NotTo(HaveOccurred())
 
 			expectedBidEvents := test_helpers.BidEvent{
 				BidId:     strconv.Itoa(fakeBidId),
-				Lot:       flopKickEvent.Lot,
-				BidAmount: flopKickEvent.Bid,
+				Lot:       flopKickEvent.ColumnValues["lot"].(string),
+				BidAmount: flopKickEvent.ColumnValues["bid"].(string),
 				Act:       "kick",
 			}
 
@@ -132,7 +134,7 @@ var _ = Describe("Flop computed columns", func() {
 		Describe("result pagination", func() {
 			var (
 				dentLot, dentBid int
-				flopKickEvent    flop_kick.Model
+				flopKickEvent    shared.InsertionModel
 			)
 
 			BeforeEach(func() {
@@ -143,12 +145,13 @@ var _ = Describe("Flop computed columns", func() {
 				flopStorageValues := test_helpers.GetFlopStorageValues(1, fakeBidId)
 				test_helpers.CreateFlop(db, blockOneHeader, flopStorageValues, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
 
-				flopKickEvent = test_data.FlopKickModel
-				flopKickEvent.ContractAddress = contractAddress
-				flopKickEvent.BidId = strconv.Itoa(fakeBidId)
-				flopKickEvent.HeaderID = headerId
-				flopKickEvent.LogID = logId
-				flopKickErr := flopKickRepo.Create([]interface{}{flopKickEvent})
+				flopKickEvent = test_data.FlopKickModel()
+				flopKickEvent.ForeignKeyValues[constants.AddressFK] = contractAddress
+				flopKickEvent.ColumnValues["bid_id"] = strconv.Itoa(fakeBidId)
+				flopKickEvent.ColumnValues[constants.HeaderFK] = headerId
+				flopKickEvent.ColumnValues[constants.LogFK] = logId
+				flopKickErr := flopKickRepo.Create([]shared.InsertionModel{flopKickEvent})
+
 				Expect(flopKickErr).NotTo(HaveOccurred())
 
 				blockTwo := blockOne + 1
@@ -197,8 +200,8 @@ var _ = Describe("Flop computed columns", func() {
 			It("offsets results if offset is provided", func() {
 				expectedBidEvents := test_helpers.BidEvent{
 					BidId:     strconv.Itoa(fakeBidId),
-					Lot:       flopKickEvent.Lot,
-					BidAmount: flopKickEvent.Bid,
+					Lot:       flopKickEvent.ColumnValues["lot"].(string),
+					BidAmount: flopKickEvent.ColumnValues["bid"].(string),
 					Act:       "kick",
 				}
 

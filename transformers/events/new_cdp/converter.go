@@ -18,19 +18,19 @@ package new_cdp
 
 import (
 	"fmt"
-	"github.com/vulcanize/vulcanizedb/pkg/core"
-
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/geth"
 )
 
 type NewCdpConverter struct{}
 
-func (NewCdpConverter) ToEntities(contractAbi string, logs []core.HeaderSyncLog) ([]interface{}, error) {
-	var entities []interface{}
+func (NewCdpConverter) toEntities(contractAbi string, logs []core.HeaderSyncLog) ([]NewCdpEntity, error) {
+	var entities []NewCdpEntity
 	for _, log := range logs {
-		entity := &NewCdpEntity{}
+		var entity NewCdpEntity
 		address := log.Log.Address
 		abi, err := geth.ParseAbi(contractAbi)
 		if err != nil {
@@ -39,7 +39,7 @@ func (NewCdpConverter) ToEntities(contractAbi string, logs []core.HeaderSyncLog)
 
 		contract := bind.NewBoundContract(address, abi, nil, nil, nil)
 
-		err = contract.UnpackLog(entity, "NewCdp", log.Log)
+		err = contract.UnpackLog(&entity, "NewCdp", log.Log)
 		if err != nil {
 			return nil, err
 		}
@@ -47,30 +47,34 @@ func (NewCdpConverter) ToEntities(contractAbi string, logs []core.HeaderSyncLog)
 		entity.LogID = log.ID
 		entity.HeaderID = log.HeaderID
 
-		entities = append(entities, *entity)
+		entities = append(entities, entity)
 	}
 
 	return entities, nil
 }
 
-func (converter NewCdpConverter) ToModels(entities []interface{}) ([]interface{}, error) {
-	var models []interface{}
-	for _, entity := range entities {
-		newCdpEntity, ok := entity.(NewCdpEntity)
-		if !ok {
-			return nil, fmt.Errorf("entity of type %T, not %T", entity, NewCdpEntity{})
-		}
+func (converter NewCdpConverter) ToModels(abi string, logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
+	var models []shared.InsertionModel
+	entities, entityErr := converter.toEntities(abi, logs)
+	if entityErr != nil {
+		return nil, fmt.Errorf("NewCDPConverter couldn't convert logs to entities: %v", entityErr)
+	}
 
-		usr := newCdpEntity.Usr.Hex()
-		own := newCdpEntity.Own.Hex()
-		cdp := newCdpEntity.Cdp
-
-		model := NewCdpModel{
-			Usr:      usr,
-			Own:      own,
-			Cdp:      shared.BigIntToString(cdp),
-			LogID:    newCdpEntity.LogID,
-			HeaderID: newCdpEntity.HeaderID,
+	for _, newCdpEntity := range entities {
+		model := shared.InsertionModel{
+			SchemaName: "maker",
+			TableName:  "new_cdp",
+			OrderedColumns: []string{
+				constants.HeaderFK, constants.LogFK, "usr", "own", "cdp",
+			},
+			ColumnValues: shared.ColumnValues{
+				constants.HeaderFK: newCdpEntity.HeaderID,
+				constants.LogFK:    newCdpEntity.LogID,
+				"usr":              newCdpEntity.Usr.Hex(),
+				"own":              newCdpEntity.Own.Hex(),
+				"cdp":              shared.BigIntToString(newCdpEntity.Cdp),
+			},
+			ForeignKeyValues: shared.ForeignKeyValues{},
 		}
 		models = append(models, model)
 	}

@@ -20,7 +20,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/vulcanize/mcd_transformers/transformers/events/flop_kick"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
@@ -28,51 +28,45 @@ import (
 	"math/rand"
 )
 
-var (
-	rawFlopKickLog = types.Log{
-		Address: common.HexToAddress(FlopAddress()),
-		Topics: []common.Hash{
-			common.HexToHash(constants.FlopKickSignature()),
-			common.HexToHash("0x0000000000000000000000007d7bee5fcfd8028cf7b00876c5b1421c800561a6"),
-		},
-		Data:        hexutil.MustDecode("0x000000000000000000000000000000000000000000000000006a94d74f4300000000000000000000000000000000000000000000000000000de0b6b3a76400000000000000000000000000000000000000000000000000001bc16d674ec80000"),
-		BlockNumber: 19,
-		TxHash:      common.HexToHash("0xd8fd67b37a6aa64a3cef4937204765183b180d8dc92eecd0d233f445526d31b5"),
-		TxIndex:     uint(33),
-		BlockHash:   fakes.FakeHash,
-		Index:       32,
-		Removed:     false,
-	}
+var rawFlopKickLog = types.Log{
+	Address: common.HexToAddress(FlopAddress()),
+	Topics: []common.Hash{
+		common.HexToHash(constants.FlopKickSignature()),
+		common.HexToHash("0x0000000000000000000000007d7bee5fcfd8028cf7b00876c5b1421c800561a6"),
+	},
+	Data:        hexutil.MustDecode("0x000000000000000000000000000000000000000000000000006a94d74f4300000000000000000000000000000000000000000000000000000de0b6b3a76400000000000000000000000000000000000000000000000000001bc16d674ec80000"),
+	BlockNumber: 19,
+	TxHash:      common.HexToHash("0xd8fd67b37a6aa64a3cef4937204765183b180d8dc92eecd0d233f445526d31b5"),
+	TxIndex:     uint(33),
+	BlockHash:   fakes.FakeHash,
+	Index:       32,
+	Removed:     false,
+}
 
-	FlopKickHeaderSyncLog = core.HeaderSyncLog{
-		ID:          int64(rand.Int31()),
-		HeaderID:    int64(rand.Int31()),
-		Log:         rawFlopKickLog,
-		Transformed: false,
-	}
+var FlopKickHeaderSyncLog = core.HeaderSyncLog{
+	ID:          int64(rand.Int31()),
+	HeaderID:    int64(rand.Int31()),
+	Log:         rawFlopKickLog,
+	Transformed: false,
+}
 
-	FlopKickEntity = flop_kick.Entity{
-		Id:              big.NewInt(30000000000000000),
-		Lot:             big.NewInt(1000000000000000000),
-		Bid:             big.NewInt(2000000000000000000),
-		Gal:             common.HexToAddress("0x7d7bEe5fCfD8028cf7b00876C5b1421c800561A6"),
-		ContractAddress: rawFlopKickLog.Address,
-		HeaderID:        FlopKickHeaderSyncLog.HeaderID,
-		LogID:           FlopKickHeaderSyncLog.ID,
-	}
+func FlopKickModel() shared.InsertionModel { return CopyModel(flopKickModel) }
 
-	FlopKickModel = flop_kick.Model{
-		BidId:           FlopKickEntity.Id.String(),
-		Lot:             FlopKickEntity.Lot.String(),
-		Bid:             FlopKickEntity.Bid.String(),
-		Gal:             FlopKickEntity.Gal.Hex(),
-		ContractAddress: FlopKickHeaderSyncLog.Log.Address.Hex(),
-		HeaderID:        FlopKickEntity.HeaderID,
-		LogID:           FlopKickEntity.LogID,
-	}
-)
-
-type FlopKickDBResult struct {
-	Id int64
-	flop_kick.Model
+var flopKickModel = shared.InsertionModel{
+	SchemaName: "maker",
+	TableName:  "flop_kick",
+	OrderedColumns: []string{
+		constants.HeaderFK, constants.LogFK, string(constants.AddressFK), "bid_id", "lot", "bid", "gal",
+	},
+	ColumnValues: shared.ColumnValues{
+		constants.HeaderFK: FlopKickHeaderSyncLog.HeaderID,
+		constants.LogFK:    FlopKickHeaderSyncLog.ID,
+		"bid_id":           big.NewInt(30000000000000000).String(),
+		"lot":              big.NewInt(1000000000000000000).String(),
+		"bid":              big.NewInt(2000000000000000000).String(),
+		"gal":              common.HexToAddress("0x7d7bEe5fCfD8028cf7b00876C5b1421c800561A6").String(),
+	},
+	ForeignKeyValues: shared.ForeignKeyValues{
+		constants.AddressFK: rawFlopKickLog.Address.Hex(),
+	},
 }

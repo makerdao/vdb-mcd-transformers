@@ -30,7 +30,7 @@ import (
 	"strconv"
 )
 
-var _ = Describe("JugInit LogNoteTransformer", func() {
+var _ = Describe("JugInit EventTransformer", func() {
 	jugInitConfig := transformer.EventTransformerConfig{
 		TransformerName:   constants.JugInitLabel,
 		ContractAddresses: []string{test_data.JugAddress()},
@@ -63,11 +63,11 @@ var _ = Describe("JugInit LogNoteTransformer", func() {
 
 		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
 
-		transformer := shared.LogNoteTransformer{
+		transformer := shared.EventTransformer{
 			Config:     jugInitConfig,
 			Converter:  &jug_init.JugInitConverter{},
 			Repository: &jug_init.JugInitRepository{},
-		}.NewLogNoteTransformer(db)
+		}.NewEventTransformer(db)
 
 		err = transformer.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())

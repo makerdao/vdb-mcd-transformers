@@ -30,7 +30,7 @@ const (
 	numTopicsRequired = 4
 )
 
-func (SpotFilePipConverter) ToModels(logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
+func (SpotFilePipConverter) ToModels(_ string, logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
 	var models []shared.InsertionModel
 	for _, log := range logs {
 		err := shared.VerifyLog(log.Log, numTopicsRequired, logDataRequired)
@@ -42,7 +42,8 @@ func (SpotFilePipConverter) ToModels(logs []core.HeaderSyncLog) ([]shared.Insert
 		pip := common.BytesToAddress(log.Log.Topics[3].Bytes()).String()
 
 		model := shared.InsertionModel{
-			TableName: "spot_file_pip",
+			SchemaName: "maker",
+			TableName:  "spot_file_pip",
 			OrderedColumns: []string{
 				constants.HeaderFK, string(constants.IlkFK), "pip", constants.LogFK,
 			},

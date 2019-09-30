@@ -21,6 +21,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 
 	"github.com/vulcanize/mcd_transformers/transformers/events/cat_file/vow"
@@ -42,7 +43,7 @@ var _ = Describe("Cat file vow converter", func() {
 			},
 		}
 
-		_, err := converter.ToModels([]core.HeaderSyncLog{badLog})
+		_, err := converter.ToModels(constants.CatABI(), []core.HeaderSyncLog{badLog})
 		Expect(err).To(HaveOccurred())
 	})
 
@@ -53,14 +54,14 @@ var _ = Describe("Cat file vow converter", func() {
 			},
 		}
 
-		_, err := converter.ToModels([]core.HeaderSyncLog{badLog})
+		_, err := converter.ToModels(constants.CatABI(), []core.HeaderSyncLog{badLog})
 		Expect(err).To(HaveOccurred())
 	})
 
 	It("converts a log to an model", func() {
-		models, err := converter.ToModels([]core.HeaderSyncLog{test_data.CatFileVowHeaderSyncLog})
+		models, err := converter.ToModels(constants.CatABI(), []core.HeaderSyncLog{test_data.CatFileVowHeaderSyncLog})
 
 		Expect(err).NotTo(HaveOccurred())
-		Expect(models).To(Equal([]shared.InsertionModel{test_data.CatFileVowModel}))
+		Expect(models).To(Equal([]shared.InsertionModel{test_data.CatFileVowModel()}))
 	})
 })

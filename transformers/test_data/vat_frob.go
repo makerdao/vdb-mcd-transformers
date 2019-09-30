@@ -57,8 +57,13 @@ var VatFrobHeaderSyncLogWithPositiveDart = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-var VatFrobModelWithPositiveDart = shared.InsertionModel{
-	TableName: "vat_frob",
+func VatFrobModelWithPositiveDart() shared.InsertionModel {
+	return CopyModel(vatFrobModelWithPositiveDart)
+}
+
+var vatFrobModelWithPositiveDart = shared.InsertionModel{
+	SchemaName: "maker",
+	TableName:  "vat_frob",
 	OrderedColumns: []string{
 		constants.HeaderFK, string(constants.UrnFK), "v", "w", "dink", "dart", constants.LogFK,
 	},
@@ -100,8 +105,11 @@ var VatFrobHeaderSyncLogWithNegativeDink = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-var VatFrobModelWithNegativeDink = shared.InsertionModel{
-	TableName: "vat_frob",
+func VatFrobModelWithNegativeDink() shared.InsertionModel { return vatFrobModelWithNegativeDink }
+
+var vatFrobModelWithNegativeDink = shared.InsertionModel{
+	SchemaName: "maker",
+	TableName:  "vat_frob",
 	OrderedColumns: []string{
 		constants.HeaderFK, string(constants.UrnFK), "v", "w", "dink", "dart", constants.LogFK,
 	},

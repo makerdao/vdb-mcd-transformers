@@ -2,6 +2,8 @@ package queries
 
 import (
 	"database/sql"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"math/rand"
 
 	"github.com/ethereum/go-ethereum/core/types"
@@ -24,7 +26,7 @@ var _ = Describe("all poke events query", func() {
 		fakeBlock        int
 		fakeHeader       core.Header
 		fakeGethLog      types.Log
-		spotPokeEvent    spot_poke.SpotPokeModel
+		spotPokeEvent    shared.InsertionModel
 		spotPokeRepo     spot_poke.SpotPokeRepository
 		headerId         int64
 		headerRepository repositories.HeaderRepository
@@ -46,11 +48,11 @@ var _ = Describe("all poke events query", func() {
 
 		spotPokeRepo = spot_poke.SpotPokeRepository{}
 		spotPokeRepo.SetDB(db)
-		spotPokeEvent = test_data.SpotPokeModel
-		spotPokeEvent.Ilk = test_helpers.FakeIlk.Hex
-		spotPokeEvent.HeaderID = headerId
-		spotPokeEvent.LogID = fakeHeaderSyncLog.ID
-		insertSpotPokeErr := spotPokeRepo.Create([]interface{}{spotPokeEvent})
+		spotPokeEvent = test_data.SpotPokeModel()
+		spotPokeEvent.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
+		spotPokeEvent.ColumnValues[constants.HeaderFK] = headerId
+		spotPokeEvent.ColumnValues[constants.LogFK] = fakeHeaderSyncLog.ID
+		insertSpotPokeErr := spotPokeRepo.Create([]shared.InsertionModel{spotPokeEvent})
 		Expect(insertSpotPokeErr).NotTo(HaveOccurred())
 	})
 

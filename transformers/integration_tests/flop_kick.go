@@ -22,9 +22,9 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/events/flop_kick"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
@@ -36,7 +36,7 @@ var _ = XDescribe("FlopKick Transformer", func() {
 		db             *postgres.DB
 		blockChain     core.BlockChain
 		flopKickConfig transformer.EventTransformerConfig
-		initializer    event.Transformer
+		initializer    shared.EventTransformer
 		logFetcher     fetcher.ILogFetcher
 		addresses      []common.Address
 		topics         []common.Hash
@@ -57,7 +57,7 @@ var _ = XDescribe("FlopKick Transformer", func() {
 			Topic:             constants.FlopKickSignature(),
 		}
 
-		initializer = event.Transformer{
+		initializer = shared.EventTransformer{
 			Config:     flopKickConfig,
 			Converter:  &flop_kick.FlopKickConverter{},
 			Repository: &flop_kick.FlopKickRepository{},
@@ -81,11 +81,11 @@ var _ = XDescribe("FlopKick Transformer", func() {
 
 		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
 
-		transformer := initializer.NewTransformer(db)
+		transformer := initializer.NewEventTransformer(db)
 		err = transformer.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 
-		var dbResult []flop_kick.Model
+		var dbResult []FlopKickModel
 		err = db.Select(&dbResult, `SELECT bid, bid_id, "end", gal, lot FROM maker.flop_kick`)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -111,11 +111,11 @@ var _ = XDescribe("FlopKick Transformer", func() {
 
 		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
 
-		transformer := initializer.NewTransformer(db)
+		transformer := initializer.NewEventTransformer(db)
 		err = transformer.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 
-		var dbResult []flop_kick.Model
+		var dbResult []FlopKickModel
 		err = db.Select(&dbResult, `SELECT bid, bid_id, "end", gal, lot FROM maker.flop_kick`)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -127,3 +127,13 @@ var _ = XDescribe("FlopKick Transformer", func() {
 		Expect(dbResult[0].Lot).To(Equal("115792089237316195423570985008687907853269984665640564039457584007913129639935"))
 	})
 })
+
+type FlopKickModel struct {
+	BidId           string `db:"bid_id"`
+	Lot             string
+	Bid             string
+	Gal             string
+	ContractAddress string `db:"address_id"`
+	HeaderID        int64  `db:"header_id"`
+	LogID           int64  `db:"log_id"`
+}

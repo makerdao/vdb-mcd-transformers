@@ -64,7 +64,8 @@ var TendHeaderSyncLog = core.HeaderSyncLog{
 }
 
 var TendModel = shared.InsertionModel{
-	TableName: "tend",
+	SchemaName: "maker",
+	TableName:  "tend",
 	OrderedColumns: []string{
 		constants.HeaderFK, "bid_id", "lot", "bid", string(constants.AddressFK), constants.LogFK,
 	},

@@ -31,7 +31,7 @@ const (
 	numTopicsRequired = 4
 )
 
-func (VatFluxConverter) ToModels(logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
+func (VatFluxConverter) ToModels(_ string, logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
 	var models []shared.InsertionModel
 	for _, log := range logs {
 		err := shared.VerifyLog(log.Log, numTopicsRequired, logDataRequired)
@@ -49,7 +49,8 @@ func (VatFluxConverter) ToModels(logs []core.HeaderSyncLog) ([]shared.InsertionM
 		wad := shared.ConvertUint256HexToBigInt(hexutil.Encode(wadBytes))
 
 		model := shared.InsertionModel{
-			TableName: "vat_flux",
+			SchemaName: "maker",
+			TableName:  "vat_flux",
 			OrderedColumns: []string{
 				constants.HeaderFK, string(constants.IlkFK), "src", "dst", "wad", constants.LogFK,
 			},

@@ -54,7 +54,8 @@ var DealHeaderSyncLog = core.HeaderSyncLog{
 }
 
 var DealModel = shared.InsertionModel{
-	TableName: "deal",
+	SchemaName: "maker",
+	TableName:  "deal",
 	OrderedColumns: []string{
 		constants.HeaderFK, "bid_id", string(constants.AddressFK), constants.LogFK,
 	},

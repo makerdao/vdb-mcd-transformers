@@ -23,8 +23,8 @@ import (
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 )
 
-var EventTransformerInitializer transformer.EventTransformerInitializer = shared.LogNoteTransformer{
+var EventTransformerInitializer transformer.EventTransformerInitializer = shared.EventTransformer{
 	Config:     shared.GetEventTransformerConfig(constants.VatForkLabel, constants.VatForkSignature()),
 	Converter:  &vat_fork.VatForkConverter{},
 	Repository: &vat_fork.VatForkRepository{},
-}.NewLogNoteTransformer
+}.NewEventTransformer

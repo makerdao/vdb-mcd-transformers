@@ -22,9 +22,9 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/events/flip_kick"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 )
@@ -53,11 +53,11 @@ var _ = Describe("FlipKick Transformer", func() {
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		tr := event.Transformer{
+		tr := shared.EventTransformer{
 			Config:     flipKickConfig,
 			Converter:  &flip_kick.FlipKickConverter{},
 			Repository: &flip_kick.FlipKickRepository{},
-		}.NewTransformer(db)
+		}.NewEventTransformer(db)
 
 		f := fetcher.NewLogFetcher(blockChain)
 		logs, err := f.FetchLogs(
@@ -71,7 +71,7 @@ var _ = Describe("FlipKick Transformer", func() {
 		err = tr.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 
-		var dbResult []flip_kick.FlipKickModel
+		var dbResult []FlipKickModel
 		err = db.Select(&dbResult, `SELECT bid_id, lot, bid, tab, usr, gal, contract_address FROM maker.flip_kick`)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -84,3 +84,15 @@ var _ = Describe("FlipKick Transformer", func() {
 		Expect(dbResult[0].ContractAddress).To(Equal(""))
 	})
 })
+
+type FlipKickModel struct {
+	BidId           string `db:"bid_id"`
+	Lot             string
+	Bid             string
+	Tab             string
+	Usr             string
+	Gal             string
+	ContractAddress string `db:"address_id"`
+	HeaderID        int64  `db:"header_id"`
+	LogID           int64  `db:"log_id"`
+}

@@ -29,7 +29,7 @@ const (
 	numTopicsRequired = 3
 )
 
-func (VowFessConverter) ToModels(logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
+func (VowFessConverter) ToModels(_ string, logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
 	var models []shared.InsertionModel
 	for _, log := range logs {
 		err := shared.VerifyLog(log.Log, numTopicsRequired, logDataRequired)
@@ -40,7 +40,8 @@ func (VowFessConverter) ToModels(logs []core.HeaderSyncLog) ([]shared.InsertionM
 		tab := log.Log.Topics[2].Big()
 
 		model := shared.InsertionModel{
-			TableName: "vow_fess",
+			SchemaName: "maker",
+			TableName:  "vow_fess",
 			OrderedColumns: []string{
 				constants.HeaderFK, "tab", constants.LogFK,
 			},
