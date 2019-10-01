@@ -30,6 +30,7 @@ const (
 	insertSinIntegerQuery = `INSERT INTO maker.vow_sin_integer (block_number, block_hash, sin) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
 	insertAshQuery        = `INSERT INTO maker.vow_ash (block_number, block_hash, ash) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
 	insertWaitQuery       = `INSERT INTO maker.vow_wait (block_number, block_hash, wait) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
+	insertDumpQuery       = `INSERT INTO maker.vow_dump (block_number, block_hash, dump) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
 	insertSumpQuery       = `INSERT INTO maker.vow_sump (block_number, block_hash, sump) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
 	insertBumpQuery       = `INSERT INTO maker.vow_bump (block_number, block_hash, bump) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
 	insertHumpQuery       = `INSERT INTO maker.vow_hump (block_number, block_hash, hump) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
@@ -59,6 +60,8 @@ func (repository VowStorageRepository) Create(blockNumber int, blockHash string,
 		return repository.insertVowAsh(blockNumber, blockHash, value.(string))
 	case VowWait:
 		return repository.insertVowWait(blockNumber, blockHash, value.(string))
+	case VowDump:
+		return repository.insertVowDump(blockNumber, blockHash, value.(string))
 	case VowSump:
 		return repository.insertVowSump(blockNumber, blockHash, value.(string))
 	case VowBump:
@@ -112,6 +115,12 @@ func (repository VowStorageRepository) insertVowAsh(blockNumber int, blockHash s
 
 func (repository VowStorageRepository) insertVowWait(blockNumber int, blockHash string, wait string) error {
 	_, err := repository.db.Exec(insertWaitQuery, blockNumber, blockHash, wait)
+
+	return err
+}
+
+func (repository VowStorageRepository) insertVowDump(blockNumber int, blockHash string, dump string) error {
+	_, err := repository.db.Exec(insertDumpQuery, blockNumber, blockHash, dump)
 
 	return err
 }

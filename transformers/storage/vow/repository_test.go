@@ -237,6 +237,30 @@ var _ = Describe("Vow storage repository test", func() {
 		Expect(count).To(Equal(1))
 	})
 
+	It("persists a vow Dump", func() {
+		err = repo.Create(fakeBlockNumber, fakeBlockHash, vow.DumpMetadata, fakeUint256)
+
+		Expect(err).NotTo(HaveOccurred())
+
+		var result VariableRes
+		err = db.Get(&result, `SELECT block_number, block_hash, dump AS value from maker.vow_dump`)
+		Expect(err).NotTo(HaveOccurred())
+		AssertVariable(result, fakeBlockNumber, fakeBlockHash, fakeUint256)
+	})
+
+	It("does not duplicate vow Dump", func() {
+		insertOneErr := repo.Create(fakeBlockNumber, fakeBlockHash, vow.DumpMetadata, fakeUint256)
+		Expect(insertOneErr).NotTo(HaveOccurred())
+
+		insertTwoErr := repo.Create(fakeBlockNumber, fakeBlockHash, vow.DumpMetadata, fakeUint256)
+
+		Expect(insertTwoErr).NotTo(HaveOccurred())
+		var count int
+		getCountErr := db.Get(&count, `SELECT count(*) FROM maker.vow_dump`)
+		Expect(getCountErr).NotTo(HaveOccurred())
+		Expect(count).To(Equal(1))
+	})
+
 	It("persists a vow Sump", func() {
 		err = repo.Create(fakeBlockNumber, fakeBlockHash, vow.SumpMetadata, fakeUint256)
 

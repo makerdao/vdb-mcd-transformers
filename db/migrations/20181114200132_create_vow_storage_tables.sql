@@ -69,6 +69,15 @@ CREATE TABLE maker.vow_wait
     UNIQUE (block_number, block_hash, wait)
 );
 
+CREATE TABLE maker.vow_dump
+(
+    id           SERIAL PRIMARY KEY,
+    block_number BIGINT,
+    block_hash   TEXT,
+    dump         NUMERIC,
+    UNIQUE (block_number, block_hash, dump)
+);
+
 CREATE TABLE maker.vow_sump
 (
     id           SERIAL PRIMARY KEY,
@@ -107,6 +116,7 @@ DROP TABLE maker.vow_sin_integer;
 DROP TABLE maker.vow_sin_mapping;
 DROP TABLE maker.vow_ash;
 DROP TABLE maker.vow_wait;
+DROP TABLE maker.vow_dump;
 DROP TABLE maker.vow_sump;
 DROP TABLE maker.vow_bump;
 DROP TABLE maker.vow_hump;
