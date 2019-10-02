@@ -376,7 +376,7 @@ func generateBite(ilk, urn string, headerID, logID int64) shared.InsertionModel 
 	biteEvent.ColumnValues["ink"] = strconv.Itoa(rand.Int())
 	biteEvent.ColumnValues["art"] = strconv.Itoa(rand.Int())
 	biteEvent.ColumnValues["tab"] = strconv.Itoa(rand.Int())
-	biteEvent.ColumnValues["bite_identifier"] = strconv.Itoa(rand.Int())
+	biteEvent.ColumnValues["bid_id"] = strconv.Itoa(rand.Int())
 	biteEvent.ColumnValues[constants.HeaderFK] = headerID
 	biteEvent.ColumnValues[constants.LogFK] = logID
 	return biteEvent

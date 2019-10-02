@@ -70,7 +70,7 @@ func (converter BiteConverter) ToModels(abi string, logs []core.HeaderSyncLog) (
 			SchemaName: "maker",
 			TableName:  "bite",
 			OrderedColumns: []string{
-				constants.HeaderFK, constants.LogFK, string(constants.UrnFK), "ink", "art", "tab", "flip", "bite_identifier",
+				constants.HeaderFK, constants.LogFK, string(constants.UrnFK), "ink", "art", "tab", "flip", "bid_id",
 			},
 			ColumnValues: shared.ColumnValues{
 				constants.HeaderFK: biteEntity.HeaderID,
@@ -79,7 +79,7 @@ func (converter BiteConverter) ToModels(abi string, logs []core.HeaderSyncLog) (
 				"art":              shared.BigIntToString(biteEntity.Art),
 				"tab":              shared.BigIntToString(biteEntity.Tab),
 				"flip":             common.BytesToAddress(biteEntity.Flip.Bytes()).Hex(),
-				"bite_identifier":  shared.BigIntToString(biteEntity.Id),
+				"bid_id":           shared.BigIntToString(biteEntity.Id),
 			},
 			ForeignKeyValues: shared.ForeignKeyValues{
 				constants.IlkFK: ilk,

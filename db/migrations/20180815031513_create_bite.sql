@@ -1,22 +1,20 @@
 -- +goose Up
 CREATE TABLE maker.bite
 (
-    id              SERIAL PRIMARY KEY,
-    header_id       INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
-    log_id          BIGINT  NOT NULL REFERENCES header_sync_logs (id) ON DELETE CASCADE,
-    urn_id          INTEGER NOT NULL REFERENCES maker.urns (id) ON DELETE CASCADE,
-    ink             NUMERIC,
-    art             NUMERIC,
-    tab             NUMERIC,
-    flip            TEXT,
-    bite_identifier NUMERIC,
+    id        SERIAL PRIMARY KEY,
+    header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
+    log_id    BIGINT  NOT NULL REFERENCES header_sync_logs (id) ON DELETE CASCADE,
+    urn_id    INTEGER NOT NULL REFERENCES maker.urns (id) ON DELETE CASCADE,
+    ink       NUMERIC,
+    art       NUMERIC,
+    tab       NUMERIC,
+    flip      TEXT,
+    bid_id    NUMERIC,
     UNIQUE (header_id, log_id)
 );
 
 COMMENT ON TABLE maker.bite
     IS E'@name raw_bites';
-COMMENT ON COLUMN maker.bite.bite_identifier
-    IS E'@name id';
 COMMENT ON COLUMN maker.bite.id
     IS E'@omit';
 

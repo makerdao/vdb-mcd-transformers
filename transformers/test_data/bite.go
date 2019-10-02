@@ -70,7 +70,7 @@ var biteModel = shared.InsertionModel{
 	SchemaName: "maker",
 	TableName:  "bite",
 	OrderedColumns: []string{
-		constants.HeaderFK, constants.LogFK, "urn_id", "ink", "art", "tab", "flip", "bite_identifier",
+		constants.HeaderFK, constants.LogFK, "urn_id", "ink", "art", "tab", "flip", "bid_id",
 	},
 	ColumnValues: shared.ColumnValues{
 		constants.HeaderFK: BiteHeaderSyncLog.HeaderID,
@@ -79,7 +79,7 @@ var biteModel = shared.InsertionModel{
 		"art":              biteArt.String(),
 		"tab":              biteTab.String(),
 		"flip":             "0x7d7bEe5fCfD8028cf7b00876C5b1421c800561A6",
-		"bite_identifier":  biteID.String(),
+		"bid_id":           biteID.String(),
 	},
 	ForeignKeyValues: shared.ForeignKeyValues{
 		constants.IlkFK: "0x4554480000000000000000000000000000000000000000000000000000000000",

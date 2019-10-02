@@ -114,7 +114,7 @@ var _ = Describe("Bite event computed columns", func() {
 
 	Describe("bite_event_bid", func() {
 		It("returns flip_state for a bite_event", func() {
-			bidId, convErr := strconv.Atoi(biteEvent.ColumnValues["bite_identifier"].(string))
+			bidId, convErr := strconv.Atoi(biteEvent.ColumnValues["bid_id"].(string))
 			Expect(convErr).NotTo(HaveOccurred())
 			address := fakes.FakeAddress
 			dealt := false
