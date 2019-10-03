@@ -87,15 +87,14 @@ var _ = Describe("Executing the transformer", func() {
 	})
 
 	It("reads in a Vow.dump storage diff row and persists it", func() {
-		// TODO: Update with a real storage diff
-		blockNumber := 10869770
-		blockHash := "fe124bd8436290c364692b928a59f02f4d458c642b40398cbae173252b54093c"
+		blockNumber := 13475028
+		blockHash := "ce700b74d34213a26cf368152c10897d07413102de31c9f89aaac453809a5106"
 		vowDump := utils.StorageDiff{
 			HashedAddress: transformer.HashedAddress,
 			BlockHeight:   blockNumber,
 			BlockHash:     common.HexToHash(blockHash),
 			StorageKey:    common.HexToHash("0000000000000000000000000000000000000000000000000000000000000008"),
-			StorageValue:  common.HexToHash("00000000000000000000000000047bf19673df52e37f2410011d100000000000"),
+			StorageValue:  common.HexToHash("000000000000000000000000000000000000000000000000002386f26fc10000"),
 		}
 		err := transformer.Execute(vowDump)
 		Expect(err).NotTo(HaveOccurred())
@@ -103,16 +102,15 @@ var _ = Describe("Executing the transformer", func() {
 		var rowResult test_helpers.VariableRes
 		err = db.Get(&rowResult, `SELECT block_number, block_hash, dump AS value FROM maker.vow_dump`)
 		Expect(err).NotTo(HaveOccurred())
-		test_helpers.AssertVariable(rowResult, blockNumber, "0x"+blockHash, "100000000000000000000000000000000000000000000")
+		test_helpers.AssertVariable(rowResult, blockNumber, "0x"+blockHash, "10000000000000000")
 	})
 
 	It("reads in a Vow.sump storage diff row and persists it", func() {
-		// TODO: Update with a real storage diff
-		blockNumber := 10869770
+		blockNumber := 13475031
 		vowSump := utils.StorageDiff{
 			HashedAddress: transformer.HashedAddress,
 			BlockHeight:   blockNumber,
-			BlockHash:     common.HexToHash("fe124bd8436290c364692b928a59f02f4d458c642b40398cbae173252b54093c"),
+			BlockHash:     common.HexToHash("1139ef7db215364b5f1bc8711e46f9e5ec4645d9d29a5baa54750af10cc035fc"),
 			StorageKey:    common.HexToHash("0000000000000000000000000000000000000000000000000000000000000009"),
 			StorageValue:  common.HexToHash("00000000000000000000000000047bf19673df52e37f2410011d100000000000"),
 		}
@@ -122,16 +120,15 @@ var _ = Describe("Executing the transformer", func() {
 		var rowResult test_helpers.VariableRes
 		err = db.Get(&rowResult, `SELECT block_number, block_hash, sump AS value FROM maker.vow_sump`)
 		Expect(err).NotTo(HaveOccurred())
-		test_helpers.AssertVariable(rowResult, blockNumber, "0xfe124bd8436290c364692b928a59f02f4d458c642b40398cbae173252b54093c", "100000000000000000000000000000000000000000000")
+		test_helpers.AssertVariable(rowResult, blockNumber, "0x1139ef7db215364b5f1bc8711e46f9e5ec4645d9d29a5baa54750af10cc035fc", "100000000000000000000000000000000000000000000")
 	})
 
 	It("reads in a Vow.bump storage diff row and persists it", func() {
-		// TODO: Update with a real storage diff
-		blockNumber := 10869768
+		blockNumber := 13475024
 		vowBump := utils.StorageDiff{
 			HashedAddress: transformer.HashedAddress,
 			BlockHeight:   blockNumber,
-			BlockHash:     common.HexToHash("a750d8cf2317bb6d65b43b96ff24a179ed8c3a237f874c0e867987180b2527a8"),
+			BlockHash:     common.HexToHash("b0753160aff9d2e44f677a5198f2baae36101a33df85f110af543f6878dc3f43"),
 			StorageKey:    common.HexToHash("000000000000000000000000000000000000000000000000000000000000000a"),
 			StorageValue:  common.HexToHash("00000000000000000000000000047bf19673df52e37f2410011d100000000000"),
 		}
@@ -141,7 +138,7 @@ var _ = Describe("Executing the transformer", func() {
 		var rowResult test_helpers.VariableRes
 		err = db.Get(&rowResult, `SELECT block_number, block_hash, bump AS value FROM maker.vow_bump`)
 		Expect(err).NotTo(HaveOccurred())
-		test_helpers.AssertVariable(rowResult, blockNumber, "0xa750d8cf2317bb6d65b43b96ff24a179ed8c3a237f874c0e867987180b2527a8", "100000000000000000000000000000000000000000000")
+		test_helpers.AssertVariable(rowResult, blockNumber, "0xb0753160aff9d2e44f677a5198f2baae36101a33df85f110af543f6878dc3f43", "100000000000000000000000000000000000000000000")
 	})
 
 	It("reads in a Vow.hump storage diff row and persists it", func() {
