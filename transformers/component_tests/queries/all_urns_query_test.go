@@ -1,12 +1,15 @@
 package queries
 
 import (
+	"database/sql"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/vulcanize/mcd_transformers/test_config"
 	helper "github.com/vulcanize/mcd_transformers/transformers/component_tests/queries/test_helpers"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/vat"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
@@ -121,6 +124,40 @@ var _ = Describe("Urn view", func() {
 
 		helper.AssertUrn(result[0], expectedUrnOne)
 		helper.AssertUrn(result[1], expectedUrnTwo)
+	})
+
+	It("returns available data if urn has ink but no art", func() {
+		fakeHeader := fakes.GetFakeHeader(int64(rand.Int()))
+		fakeTimestamp := int(rand.Int31())
+		fakeHeader.Timestamp = strconv.Itoa(fakeTimestamp)
+		fakeHeader.Hash = test_data.RandomString(5)
+		_, insertHeaderErr := headerRepo.CreateOrUpdateHeader(fakeHeader)
+		Expect(insertHeaderErr).NotTo(HaveOccurred())
+
+		fakeInk := rand.Int()
+		urnInkMetadata := utils.GetStorageValueMetadata(vat.UrnInk, map[utils.Key]string{constants.Ilk: helper.FakeIlk.Hex, constants.Guy: urnOne}, utils.Uint256)
+		insertInkErr := vatRepo.Create(int(fakeHeader.BlockNumber), fakeHeader.Hash, urnInkMetadata, strconv.Itoa(fakeInk))
+		Expect(insertInkErr).NotTo(HaveOccurred())
+
+		var result []helper.UrnState
+		err = db.Select(&result, `SELECT urn_identifier, ilk_identifier, ink, art, ratio, safe, created, updated
+			FROM api.all_urns($1) ORDER BY created`, fakeHeader.BlockNumber)
+		Expect(err).NotTo(HaveOccurred())
+
+		expectedTimestamp := helper.GetExpectedTimestamp(fakeTimestamp)
+		expectedUrn := helper.UrnState{
+			UrnIdentifier: urnOne,
+			IlkIdentifier: helper.FakeIlk.Identifier,
+			Ink:           strconv.Itoa(fakeInk),
+			Art:           "0",
+			Ratio:         sql.NullString{Valid: false},
+			Safe:          true,
+			Created:       helper.GetValidNullString(expectedTimestamp),
+			Updated:       helper.GetValidNullString(expectedTimestamp),
+		}
+
+		Expect(len(result)).To(Equal(1))
+		helper.AssertUrn(result[0], expectedUrn)
 	})
 
 	Describe("result pagination", func() {

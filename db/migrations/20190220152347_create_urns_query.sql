@@ -101,16 +101,16 @@ SELECT urns.identifier,
        ilks.identifier,
        all_urns.block_height,
        inks.ink,
-       arts.art,
+       COALESCE(arts.art, 0),
        ratios.ratio,
-       COALESCE(safe.safe, arts.art = 0),
+       COALESCE(safe.safe, COALESCE(arts.art, 0) = 0),
        created.datetime,
        updated.datetime
 FROM inks
          LEFT JOIN arts ON arts.urn_id = inks.urn_id
-         LEFT JOIN urns ON arts.urn_id = urns.urn_id
+         LEFT JOIN urns ON inks.urn_id = urns.urn_id
          LEFT JOIN ratios ON ratios.urn_identifier = urns.identifier
-         LEFT JOIN safe ON safe.urn_identifier = ratios.urn_identifier
+         LEFT JOIN safe ON safe.urn_identifier = urns.identifier
          LEFT JOIN created ON created.urn_id = urns.urn_id
          LEFT JOIN updated ON updated.urn_id = urns.urn_id
          LEFT JOIN maker.ilks ON ilks.id = urns.ilk_id

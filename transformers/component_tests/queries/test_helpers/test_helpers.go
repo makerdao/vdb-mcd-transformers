@@ -349,7 +349,7 @@ func AssertUrn(actual, expected UrnState) {
 		Expect(err).NotTo(HaveOccurred())
 		Expect(actualRatio).To(BeNumerically("~", expectedRatio))
 	} else {
-		Expect(!expected.Ratio.Valid)
+		Expect(!expected.Ratio.Valid).To(BeTrue())
 	}
 
 	Expect(actual.Safe).To(Equal(expected.Safe))
