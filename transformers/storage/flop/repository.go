@@ -73,8 +73,8 @@ func (repository *FlopStorageRepository) insertBeg(blockNumber int, blockHash st
 	return repository.insertRecordWithAddress(blockNumber, blockHash, insertFlopBegQuery, beg)
 }
 
-func (repository *FlopStorageRepository) insertPad(blockNumber int, blockHash string, beg string) error {
-	return repository.insertRecordWithAddress(blockNumber, blockHash, insertFlopPadQuery, beg)
+func (repository *FlopStorageRepository) insertPad(blockNumber int, blockHash string, pad string) error {
+	return repository.insertRecordWithAddress(blockNumber, blockHash, insertFlopPadQuery, pad)
 }
 
 func (repository *FlopStorageRepository) insertTtl(blockNumber int, blockHash string, ttl string) error {
