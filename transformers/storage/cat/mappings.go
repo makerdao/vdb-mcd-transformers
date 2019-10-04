@@ -64,7 +64,7 @@ func (mappings *CatMappings) loadMappings() error {
 	if ilkErr != nil {
 		return ilkErr
 	}
-
+	mappings.mappings = storage.AddHashedKeys(mappings.mappings)
 	return nil
 }
 

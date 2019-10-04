@@ -126,6 +126,7 @@ func (mappings *VatMappings) loadMappings() error {
 	if urnErr != nil {
 		return urnErr
 	}
+	mappings.mappings = storage.AddHashedKeys(mappings.mappings)
 	return nil
 }
 

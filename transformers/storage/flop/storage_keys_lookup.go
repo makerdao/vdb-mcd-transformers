@@ -62,7 +62,12 @@ func (mappings *StorageKeysLookup) SetDB(db *postgres.DB) {
 
 func (mappings *StorageKeysLookup) loadMappings() error {
 	mappings.mappings = loadStaticMappings()
-	return mappings.loadBidKeys()
+	err := mappings.loadBidKeys()
+	if err != nil {
+		return err
+	}
+	mappings.mappings = vdbStorage.AddHashedKeys(mappings.mappings)
+	return nil
 }
 
 func loadStaticMappings() map[common.Hash]utils.StorageValueMetadata {

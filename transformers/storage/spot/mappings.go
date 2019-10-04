@@ -78,6 +78,7 @@ func (mappings *SpotMappings) loadMappings() error {
 		mappings.mappings[getPipKey(ilk)] = getPipMetadata(ilk)
 		mappings.mappings[getMatKey(ilk)] = getMatMetadata(ilk)
 	}
+	mappings.mappings = storage.AddHashedKeys(mappings.mappings)
 	return nil
 }
 

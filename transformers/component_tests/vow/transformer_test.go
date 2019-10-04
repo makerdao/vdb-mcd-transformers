@@ -15,11 +15,11 @@ import (
 
 var _ = Describe("Executing the transformer", func() {
 	var (
-		db          *postgres.DB
-		mappings    = vow.VowMappings{StorageRepository: &storage2.MakerStorageRepository{}}
-		repository  = vow.VowStorageRepository{}
+		db              *postgres.DB
+		mappings        = vow.VowMappings{StorageRepository: &storage2.MakerStorageRepository{}}
+		repository      = vow.VowStorageRepository{}
 		contractAddress = "4afcab85f27dd2e1a5ec1008b5b294e44e487f90"
-		transformer = storage.Transformer{
+		transformer     = storage.Transformer{
 			HashedAddress: utils.HexToKeccak256Hash(contractAddress),
 			Mappings:      &mappings,
 			Repository:    &repository,

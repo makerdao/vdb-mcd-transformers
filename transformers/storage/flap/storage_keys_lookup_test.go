@@ -69,6 +69,40 @@ var _ = Describe("Flap storage mappings", func() {
 			}))
 		})
 
+		It("returns storage value mapping if keccak hashed storage key exists", func() {
+			Expect(mapping.Lookup(crypto.Keccak256Hash(flap.VatStorageKey[:]))).To(Equal(utils.StorageValueMetadata{
+				Name: storage.Vat,
+				Keys: nil,
+				Type: utils.Address,
+			}))
+			Expect(mapping.Lookup(crypto.Keccak256Hash(flap.GemStorageKey[:]))).To(Equal(utils.StorageValueMetadata{
+				Name: storage.Gem,
+				Keys: nil,
+				Type: utils.Address,
+			}))
+			Expect(mapping.Lookup(crypto.Keccak256Hash(flap.BegStorageKey[:]))).To(Equal(utils.StorageValueMetadata{
+				Name: storage.Beg,
+				Keys: nil,
+				Type: utils.Uint256,
+			}))
+			Expect(mapping.Lookup(crypto.Keccak256Hash(flap.TtlAndTauStorageKey[:]))).To(Equal(utils.StorageValueMetadata{
+				Name:        storage.Packed,
+				Type:        utils.PackedSlot,
+				PackedTypes: map[int]utils.ValueType{0: utils.Uint48, 1: utils.Uint48},
+				PackedNames: map[int]string{0: storage.Ttl, 1: storage.Tau},
+			}))
+			Expect(mapping.Lookup(crypto.Keccak256Hash(flap.KicksStorageKey[:]))).To(Equal(utils.StorageValueMetadata{
+				Name: storage.Kicks,
+				Keys: nil,
+				Type: utils.Uint256,
+			}))
+			Expect(mapping.Lookup(crypto.Keccak256Hash(flap.LiveStorageKey[:]))).To(Equal(utils.StorageValueMetadata{
+				Name: storage.Live,
+				Keys: nil,
+				Type: utils.Uint256,
+			}))
+		})
+
 		It("returns an error if the key doesn't exist", func() {
 			emptyMetadata, err := mapping.Lookup(fakes.FakeHash)
 

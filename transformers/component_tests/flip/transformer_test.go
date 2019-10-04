@@ -44,7 +44,7 @@ var _ = Describe("Executing the flip transformer", func() {
 		db = test_config.NewTestDB(test_config.NewTestNode())
 		test_config.CleanTestDB(db)
 		transformer = storageFactory.Transformer{
-			HashedAddress: common.HexToHash(contractAddress),
+			HashedAddress: utils.HexToKeccak256Hash(contractAddress),
 			Mappings:      &storageKeyLookup,
 			Repository:    &repository,
 		}

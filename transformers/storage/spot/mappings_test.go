@@ -41,6 +41,14 @@ var _ = Describe("spot storage mappings", func() {
 			Expect(mappings.Lookup(spot.ParKey)).To(Equal(spot.ParMetadata))
 		})
 
+		It("returns value metadata if keccak of key exists", func() {
+			storageRepository := &test_helpers.MockMakerStorageRepository{}
+			mappings := spot.SpotMappings{StorageRepository: storageRepository}
+
+			Expect(mappings.Lookup(crypto.Keccak256Hash(spot.VatKey[:]))).To(Equal(spot.VatMetadata))
+			Expect(mappings.Lookup(crypto.Keccak256Hash(spot.ParKey[:]))).To(Equal(spot.ParMetadata))
+		})
+
 		It("returns error if key does not exist", func() {
 			mappings := spot.SpotMappings{StorageRepository: &test_helpers.MockMakerStorageRepository{}}
 

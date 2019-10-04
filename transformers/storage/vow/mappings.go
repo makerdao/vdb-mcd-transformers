@@ -133,6 +133,7 @@ func (mappings *VowMappings) loadMappings() error {
 	if sinErr != nil {
 		return sinErr
 	}
+	mappings.mappings = storage.AddHashedKeys(mappings.mappings)
 	return nil
 }
 

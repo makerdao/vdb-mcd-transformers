@@ -37,6 +37,15 @@ var _ = Describe("Flop storage mappings", func() {
 			Expect(mappings.Lookup(flop.LiveKey)).To(Equal(flop.LiveMetadata))
 		})
 
+		It("returns value metadata if keccak hash of key exists", func() {
+			Expect(mappings.Lookup(crypto.Keccak256Hash(flop.VatKey[:]))).To(Equal(flop.VatMetadata))
+			Expect(mappings.Lookup(crypto.Keccak256Hash(flop.GemKey[:]))).To(Equal(flop.GemMetadata))
+			Expect(mappings.Lookup(crypto.Keccak256Hash(flop.BegKey[:]))).To(Equal(flop.BegMetadata))
+			Expect(mappings.Lookup(crypto.Keccak256Hash(flop.TtlAndTauKey[:]))).To(Equal(flop.TtlAndTauMetadata))
+			Expect(mappings.Lookup(crypto.Keccak256Hash(flop.KicksKey[:]))).To(Equal(flop.KicksMetadata))
+			Expect(mappings.Lookup(crypto.Keccak256Hash(flop.LiveKey[:]))).To(Equal(flop.LiveMetadata))
+		})
+
 		It("returns error if key does not exist", func() {
 			_, err := mappings.Lookup(fakes.FakeHash)
 

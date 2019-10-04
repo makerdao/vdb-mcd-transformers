@@ -64,7 +64,12 @@ func (mapping *StorageKeysLookup) SetDB(db *postgres.DB) {
 
 func (mapping *StorageKeysLookup) loadMapping() error {
 	mapping.loadStaticKeys()
-	return mapping.loadBidKeys()
+	err := mapping.loadBidKeys()
+	if err != nil {
+		return err
+	}
+	mapping.mappings = vdbStorage.AddHashedKeys(mapping.mappings)
+	return nil
 }
 
 func (mapping *StorageKeysLookup) loadBidKeys() error {

@@ -38,10 +38,10 @@ var _ = Describe("Executing the transformer", func() {
 	var (
 		db *postgres.DB
 
-		mappings    = cdp_manager.CdpManagerMappings{StorageRepository: &storage2.MakerStorageRepository{}}
-		repository  = cdp_manager.CdpManagerStorageRepository{}
+		mappings        = cdp_manager.CdpManagerMappings{StorageRepository: &storage2.MakerStorageRepository{}}
+		repository      = cdp_manager.CdpManagerStorageRepository{}
 		contractAddress = "7a4991c6bd1053c31f1678955ce839999d9841b1"
-		transformer = storage.Transformer{
+		transformer     = storage.Transformer{
 			HashedAddress: utils.HexToKeccak256Hash(contractAddress),
 			Mappings:      &mappings,
 			Repository:    &repository,
@@ -181,7 +181,7 @@ var _ = Describe("Executing the transformer", func() {
 			ilk := "0x4554482d41000000000000000000000000000000000000000000000000000000"
 			blockHash := "0xf5daa905de07c9d4b584534e1f35a6b43bfd5b112fffa9dc3edd991f1e5441fa"
 			ilksRow := utils.StorageDiff{
-				HashedAddress: transformer.HashedAddress,
+				HashedAddress: utils.HexToKeccak256Hash("7a4991c6bd1053c31f1678955ce839999d9841b1"),
 				BlockHeight:   blockNumber,
 				BlockHash:     common.HexToHash(blockHash[2:]),
 				StorageKey:    common.HexToHash("89832631fb3c3307a103ba2c84ab569c64d6182a18893dcd163f0f1c2090733a"),

@@ -33,6 +33,12 @@ var _ = Describe("Cat storage mappings", func() {
 			Expect(mappings.Lookup(cat.VowKey)).To(Equal(cat.VowMetadata))
 		})
 
+		It("returns value metadata for keccak hashed storage keys", func() {
+			Expect(mappings.Lookup(crypto.Keccak256Hash(cat.LiveKey[:]))).To(Equal(cat.LiveMetadata))
+			Expect(mappings.Lookup(crypto.Keccak256Hash(cat.VatKey[:]))).To(Equal(cat.VatMetadata))
+			Expect(mappings.Lookup(crypto.Keccak256Hash(cat.VowKey[:]))).To(Equal(cat.VowMetadata))
+		})
+
 		It("returns error if key does not exist", func() {
 			_, err := mappings.Lookup(fakes.FakeHash)
 

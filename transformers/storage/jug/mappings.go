@@ -81,6 +81,7 @@ func (mappings *JugMappings) loadMappings() error {
 		mappings.mappings[getDutyKey(ilk)] = getDutyMetadata(ilk)
 		mappings.mappings[getRhoKey(ilk)] = getRhoMetadata(ilk)
 	}
+	mappings.mappings = storage.AddHashedKeys(mappings.mappings)
 	return nil
 }
 

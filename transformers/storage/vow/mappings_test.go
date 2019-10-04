@@ -18,6 +18,7 @@ package vow_test
 
 import (
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/crypto"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
@@ -49,6 +50,18 @@ var _ = Describe("Vow storage mappings", func() {
 			Expect(mappings.Lookup(vow.SumpKey)).To(Equal(vow.SumpMetadata))
 			Expect(mappings.Lookup(vow.BumpKey)).To(Equal(vow.BumpMetadata))
 			Expect(mappings.Lookup(vow.HumpKey)).To(Equal(vow.HumpMetadata))
+		})
+
+		It("returns value metadata if keccak of key exists", func() {
+			Expect(mappings.Lookup(crypto.Keccak256Hash(vow.VatKey[:]))).To(Equal(vow.VatMetadata))
+			Expect(mappings.Lookup(crypto.Keccak256Hash(vow.FlapperKey[:]))).To(Equal(vow.FlapperMetadata))
+			Expect(mappings.Lookup(crypto.Keccak256Hash(vow.FlopperKey[:]))).To(Equal(vow.FlopperMetadata))
+			Expect(mappings.Lookup(crypto.Keccak256Hash(vow.SinIntegerKey[:]))).To(Equal(vow.SinIntegerMetadata))
+			Expect(mappings.Lookup(crypto.Keccak256Hash(vow.AshKey[:]))).To(Equal(vow.AshMetadata))
+			Expect(mappings.Lookup(crypto.Keccak256Hash(vow.WaitKey[:]))).To(Equal(vow.WaitMetadata))
+			Expect(mappings.Lookup(crypto.Keccak256Hash(vow.SumpKey[:]))).To(Equal(vow.SumpMetadata))
+			Expect(mappings.Lookup(crypto.Keccak256Hash(vow.BumpKey[:]))).To(Equal(vow.BumpMetadata))
+			Expect(mappings.Lookup(crypto.Keccak256Hash(vow.HumpKey[:]))).To(Equal(vow.HumpMetadata))
 		})
 
 		It("returns error if key does not exist", func() {

@@ -43,6 +43,15 @@ var _ = Describe("jug storage mappings", func() {
 			Expect(mappings.Lookup(jug.BaseKey)).To(Equal(jug.BaseMetadata))
 		})
 
+		It("returns value metadata if keccak of key exists", func() {
+			storageRepository := &test_helpers.MockMakerStorageRepository{}
+			mappings := jug.JugMappings{StorageRepository: storageRepository}
+
+			Expect(mappings.Lookup(crypto.Keccak256Hash(jug.VatKey[:]))).To(Equal(jug.VatMetadata))
+			Expect(mappings.Lookup(crypto.Keccak256Hash(jug.VowKey[:]))).To(Equal(jug.VowMetadata))
+			Expect(mappings.Lookup(crypto.Keccak256Hash(jug.BaseKey[:]))).To(Equal(jug.BaseMetadata))
+		})
+
 		It("returns error if key does not exist", func() {
 			mappings := jug.JugMappings{StorageRepository: &test_helpers.MockMakerStorageRepository{}}
 

@@ -17,13 +17,13 @@ import (
 
 var _ = Describe("Executing the transformer", func() {
 	var (
-		db          *postgres.DB
-		err         error
-		ilkID       int64
-		mappings    = jug.JugMappings{StorageRepository: &storage2.MakerStorageRepository{}}
-		repository  = jug.JugStorageRepository{}
+		db              *postgres.DB
+		err             error
+		ilkID           int64
+		mappings        = jug.JugMappings{StorageRepository: &storage2.MakerStorageRepository{}}
+		repository      = jug.JugStorageRepository{}
 		contractAddress = "25a008bf942ce6d5b362f91ed7ae3e4104286a12"
-		transformer = storage.Transformer{
+		transformer     = storage.Transformer{
 			HashedAddress: utils.HexToKeccak256Hash(contractAddress),
 			Mappings:      &mappings,
 			Repository:    &repository,

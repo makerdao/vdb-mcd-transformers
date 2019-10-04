@@ -17,9 +17,8 @@
 package initializer
 
 import (
-	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
-
 	s2 "github.com/vulcanize/vulcanizedb/libraries/shared/factories/storage"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"

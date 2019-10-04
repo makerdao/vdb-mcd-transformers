@@ -52,6 +52,13 @@ var _ = Describe("Vat storage mappings", func() {
 			Expect(mappings.Lookup(vat.LiveKey)).To(Equal(vat.LiveMetadata))
 		})
 
+		It("returns value metadata if keccak of key exists", func() {
+			Expect(mappings.Lookup(crypto.Keccak256Hash(vat.DebtKey[:]))).To(Equal(vat.DebtMetadata))
+			Expect(mappings.Lookup(crypto.Keccak256Hash(vat.ViceKey[:]))).To(Equal(vat.ViceMetadata))
+			Expect(mappings.Lookup(crypto.Keccak256Hash(vat.LineKey[:]))).To(Equal(vat.LineMetadata))
+			Expect(mappings.Lookup(crypto.Keccak256Hash(vat.LiveKey[:]))).To(Equal(vat.LiveMetadata))
+		})
+
 		It("returns error if key does not exist", func() {
 			_, err := mappings.Lookup(common.HexToHash(fakes.FakeHash.Hex()))
 

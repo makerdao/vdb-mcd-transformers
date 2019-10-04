@@ -36,6 +36,14 @@ var _ = Describe("Flip storage mappings", func() {
 			Expect(mappings.Lookup(flip.KicksKey)).To(Equal(flip.KicksMetadata))
 		})
 
+		It("returns value metadata if keccak hashed key exists", func() {
+			Expect(mappings.Lookup(crypto.Keccak256Hash(flip.VatKey[:]))).To(Equal(flip.VatMetadata))
+			Expect(mappings.Lookup(crypto.Keccak256Hash(flip.IlkKey[:]))).To(Equal(flip.IlkMetadata))
+			Expect(mappings.Lookup(crypto.Keccak256Hash(flip.BegKey[:]))).To(Equal(flip.BegMetadata))
+			Expect(mappings.Lookup(crypto.Keccak256Hash(flip.TtlAndTauStorageKey[:]))).To(Equal(flip.TtlAndTauMetadata))
+			Expect(mappings.Lookup(crypto.Keccak256Hash(flip.KicksKey[:]))).To(Equal(flip.KicksMetadata))
+		})
+
 		It("returns error if key does not exist", func() {
 			_, err := mappings.Lookup(fakes.FakeHash)
 
