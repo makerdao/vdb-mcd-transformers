@@ -17,7 +17,7 @@
 package initializers
 
 import (
-	"github.com/ethereum/go-ethereum/common"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
 
 	s2 "github.com/vulcanize/vulcanizedb/libraries/shared/factories/storage"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
@@ -28,8 +28,8 @@ import (
 
 func GenerateStorageTransformerInitializer(contractAddress string) transformer.StorageTransformerInitializer {
 	return s2.Transformer{
-		Address:    common.HexToAddress(contractAddress),
-		Mappings:   &flip.StorageKeysLookup{StorageRepository: &storage.MakerStorageRepository{}, ContractAddress: contractAddress},
-		Repository: &flip.FlipStorageRepository{ContractAddress: contractAddress},
+		HashedAddress: utils.HexToKeccak256Hash(contractAddress),
+		Mappings:      &flip.StorageKeysLookup{StorageRepository: &storage.MakerStorageRepository{}, ContractAddress: contractAddress},
+		Repository:    &flip.FlipStorageRepository{ContractAddress: contractAddress},
 	}.NewTransformer
 }

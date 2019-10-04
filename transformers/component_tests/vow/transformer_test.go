@@ -18,10 +18,11 @@ var _ = Describe("Executing the transformer", func() {
 		db          *postgres.DB
 		mappings    = vow.VowMappings{StorageRepository: &storage2.MakerStorageRepository{}}
 		repository  = vow.VowStorageRepository{}
+		contractAddress = "4afcab85f27dd2e1a5ec1008b5b294e44e487f90"
 		transformer = storage.Transformer{
-			Address:    common.Address{},
-			Mappings:   &mappings,
-			Repository: &repository,
+			HashedAddress: utils.HexToKeccak256Hash(contractAddress),
+			Mappings:      &mappings,
+			Repository:    &repository,
 		}
 	)
 
@@ -33,12 +34,12 @@ var _ = Describe("Executing the transformer", func() {
 
 	It("reads in a Vow.vat storage diff row and persists it", func() {
 		blockNumber := 10501125
-		vowVat := utils.StorageDiffRow{
-			Contract:     common.HexToAddress("17560834075da3db54f737db74377e799c865821"),
-			BlockHeight:  blockNumber,
-			BlockHash:    common.HexToHash("1822bb271ce246212f0d097e59b3b04e0302819da3a2bd80e85b91e8c89fc883"),
-			StorageKey:   common.HexToHash("0000000000000000000000000000000000000000000000000000000000000001"),
-			StorageValue: common.HexToHash("00000000000000000000000067fd6c3575fc2dbe2cb596bd3bebc9edb5571fa1"),
+		vowVat := utils.StorageDiff{
+			HashedAddress: transformer.HashedAddress,
+			BlockHeight:   blockNumber,
+			BlockHash:     common.HexToHash("1822bb271ce246212f0d097e59b3b04e0302819da3a2bd80e85b91e8c89fc883"),
+			StorageKey:    common.HexToHash("0000000000000000000000000000000000000000000000000000000000000001"),
+			StorageValue:  common.HexToHash("00000000000000000000000067fd6c3575fc2dbe2cb596bd3bebc9edb5571fa1"),
 		}
 		err := transformer.Execute(vowVat)
 		Expect(err).NotTo(HaveOccurred())
@@ -51,12 +52,12 @@ var _ = Describe("Executing the transformer", func() {
 
 	It("reads in a Vow.flapper storage diff row and persists it", func() {
 		blockNumber := 10980004
-		vowFlapper := utils.StorageDiffRow{
-			Contract:     common.HexToAddress("21444ac712ccd21ce82af24ea1aec64cf07361d2"),
-			BlockHeight:  blockNumber,
-			BlockHash:    common.HexToHash("44c07814be2cd81491f4d815ac922cc6590184e8777a5f0e3982c3b9ea83600e"),
-			StorageKey:   common.HexToHash("0000000000000000000000000000000000000000000000000000000000000002"),
-			StorageValue: common.HexToHash("000000000000000000000000b6e31ab6ea62be7c530c32daea96e84d92fe20b7"),
+		vowFlapper := utils.StorageDiff{
+			HashedAddress: transformer.HashedAddress,
+			BlockHeight:   blockNumber,
+			BlockHash:     common.HexToHash("44c07814be2cd81491f4d815ac922cc6590184e8777a5f0e3982c3b9ea83600e"),
+			StorageKey:    common.HexToHash("0000000000000000000000000000000000000000000000000000000000000002"),
+			StorageValue:  common.HexToHash("000000000000000000000000b6e31ab6ea62be7c530c32daea96e84d92fe20b7"),
 		}
 		err := transformer.Execute(vowFlapper)
 		Expect(err).NotTo(HaveOccurred())
@@ -69,12 +70,12 @@ var _ = Describe("Executing the transformer", func() {
 
 	It("reads in a Vow.flopper storage diff row and persists it", func() {
 		blockNumber := 10980004
-		vowFlopper := utils.StorageDiffRow{
-			Contract:     common.HexToAddress("21444ac712ccd21ce82af24ea1aec64cf07361d2"),
-			BlockHeight:  blockNumber,
-			BlockHash:    common.HexToHash("44c07814be2cd81491f4d815ac922cc6590184e8777a5f0e3982c3b9ea83600e"),
-			StorageKey:   common.HexToHash("0000000000000000000000000000000000000000000000000000000000000003"),
-			StorageValue: common.HexToHash("000000000000000000000000275ec1950d6406e3ce6156f9f529c047ea41c8ce"),
+		vowFlopper := utils.StorageDiff{
+			HashedAddress: transformer.HashedAddress,
+			BlockHeight:   blockNumber,
+			BlockHash:     common.HexToHash("44c07814be2cd81491f4d815ac922cc6590184e8777a5f0e3982c3b9ea83600e"),
+			StorageKey:    common.HexToHash("0000000000000000000000000000000000000000000000000000000000000003"),
+			StorageValue:  common.HexToHash("000000000000000000000000275ec1950d6406e3ce6156f9f529c047ea41c8ce"),
 		}
 		err := transformer.Execute(vowFlopper)
 		Expect(err).NotTo(HaveOccurred())
@@ -87,12 +88,12 @@ var _ = Describe("Executing the transformer", func() {
 
 	It("reads in a Vow.sump storage diff row and persists it", func() {
 		blockNumber := 10869770
-		vowSump := utils.StorageDiffRow{
-			Contract:     common.HexToAddress("4afcab85f27dd2e1a5ec1008b5b294e44e487f90"),
-			BlockHeight:  blockNumber,
-			BlockHash:    common.HexToHash("fe124bd8436290c364692b928a59f02f4d458c642b40398cbae173252b54093c"),
-			StorageKey:   common.HexToHash("0000000000000000000000000000000000000000000000000000000000000008"),
-			StorageValue: common.HexToHash("00000000000000000000000000047bf19673df52e37f2410011d100000000000"),
+		vowSump := utils.StorageDiff{
+			HashedAddress: transformer.HashedAddress,
+			BlockHeight:   blockNumber,
+			BlockHash:     common.HexToHash("fe124bd8436290c364692b928a59f02f4d458c642b40398cbae173252b54093c"),
+			StorageKey:    common.HexToHash("0000000000000000000000000000000000000000000000000000000000000008"),
+			StorageValue:  common.HexToHash("00000000000000000000000000047bf19673df52e37f2410011d100000000000"),
 		}
 		err := transformer.Execute(vowSump)
 		Expect(err).NotTo(HaveOccurred())
@@ -105,12 +106,12 @@ var _ = Describe("Executing the transformer", func() {
 
 	It("reads in a Vow.bump storage diff row and persists it", func() {
 		blockNumber := 10869768
-		vowBump := utils.StorageDiffRow{
-			Contract:     common.HexToAddress("4afcab85f27dd2e1a5ec1008b5b294e44e487f90"),
-			BlockHeight:  blockNumber,
-			BlockHash:    common.HexToHash("a750d8cf2317bb6d65b43b96ff24a179ed8c3a237f874c0e867987180b2527a8"),
-			StorageKey:   common.HexToHash("0000000000000000000000000000000000000000000000000000000000000009"),
-			StorageValue: common.HexToHash("00000000000000000000000000047bf19673df52e37f2410011d100000000000"),
+		vowBump := utils.StorageDiff{
+			HashedAddress: transformer.HashedAddress,
+			BlockHeight:   blockNumber,
+			BlockHash:     common.HexToHash("a750d8cf2317bb6d65b43b96ff24a179ed8c3a237f874c0e867987180b2527a8"),
+			StorageKey:    common.HexToHash("0000000000000000000000000000000000000000000000000000000000000009"),
+			StorageValue:  common.HexToHash("00000000000000000000000000047bf19673df52e37f2410011d100000000000"),
 		}
 		err := transformer.Execute(vowBump)
 		Expect(err).NotTo(HaveOccurred())

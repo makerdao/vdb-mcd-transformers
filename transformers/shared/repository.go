@@ -22,8 +22,8 @@ import (
 	"github.com/jmoiron/sqlx"
 	"github.com/sirupsen/logrus"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/repository"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
-	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres/repositories"
 	"strings"
 )
 
@@ -232,12 +232,10 @@ func GetOrCreateUrnInTransaction(guy string, hexIlk string, tx *sqlx.Tx) (urnID 
 }
 
 func GetOrCreateAddress(address string, db *postgres.DB) (int64, error) {
-	addressRepository := repositories.AddressRepository{}
-	return addressRepository.GetOrCreateAddress(db, address)
+	return repository.GetOrCreateAddress(db, address)
 }
 
 func GetOrCreateAddressInTransaction(address string, tx *sqlx.Tx) (int64, error) {
-	addressRepository := repositories.AddressRepository{}
-	addressId, addressErr := addressRepository.GetOrCreateAddressInTransaction(tx, address)
+	addressId, addressErr := repository.GetOrCreateAddressInTransaction(tx, address)
 	return addressId, addressErr
 }

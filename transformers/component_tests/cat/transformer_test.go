@@ -23,10 +23,11 @@ var _ = Describe("Executing the transformer", func() {
 		db          *postgres.DB
 		mappings    = cat.CatMappings{StorageRepository: &storage2.MakerStorageRepository{}}
 		repository  = cat.CatStorageRepository{}
+		contractAddress = "81f7aa9c1570de564eb511b3a1e57dae558c65b5"
 		transformer = storage.Transformer{
-			Address:    common.Address{},
-			Mappings:   &mappings,
-			Repository: &repository,
+			HashedAddress: utils.HexToKeccak256Hash(contractAddress),
+			Mappings:      &mappings,
+			Repository:    &repository,
 		}
 	)
 
@@ -38,12 +39,12 @@ var _ = Describe("Executing the transformer", func() {
 
 	It("reads in a Cat Live storage diff row and persists it", func() {
 		blockNumber := 10980005
-		catLineRow := utils.StorageDiffRow{
-			Contract:     common.HexToAddress("81f7aa9c1570de564eb511b3a1e57dae558c65b5"),
-			BlockHeight:  blockNumber,
-			BlockHash:    common.HexToHash("82755877daf87d6eb8a228ee757450890f4b9b7bef96b749d8831fcfa466e6d7"),
-			StorageKey:   common.HexToHash("0000000000000000000000000000000000000000000000000000000000000002"),
-			StorageValue: common.HexToHash("0000000000000000000000000000000000000000000000000000000000000001"),
+		catLineRow := utils.StorageDiff{
+			HashedAddress: transformer.HashedAddress,
+			BlockHeight:   blockNumber,
+			BlockHash:     common.HexToHash("82755877daf87d6eb8a228ee757450890f4b9b7bef96b749d8831fcfa466e6d7"),
+			StorageKey:    common.HexToHash("0000000000000000000000000000000000000000000000000000000000000002"),
+			StorageValue:  common.HexToHash("0000000000000000000000000000000000000000000000000000000000000001"),
 		}
 		err := transformer.Execute(catLineRow)
 		Expect(err).NotTo(HaveOccurred())
@@ -56,12 +57,12 @@ var _ = Describe("Executing the transformer", func() {
 
 	It("reads in a Cat Vat storage diff row and persists it", func() {
 		blockNumber := 10980005
-		catLineRow := utils.StorageDiffRow{
-			Contract:     common.HexToAddress("81f7aa9c1570de564eb511b3a1e57dae558c65b5"),
-			BlockHeight:  blockNumber,
-			BlockHash:    common.HexToHash("82755877daf87d6eb8a228ee757450890f4b9b7bef96b749d8831fcfa466e6d7"),
-			StorageKey:   common.HexToHash("0000000000000000000000000000000000000000000000000000000000000003"),
-			StorageValue: common.HexToHash("000000000000000000000000acdd1ee0f74954ed8f0ac581b081b7b86bd6aad9"),
+		catLineRow := utils.StorageDiff{
+			HashedAddress: transformer.HashedAddress,
+			BlockHeight:   blockNumber,
+			BlockHash:     common.HexToHash("82755877daf87d6eb8a228ee757450890f4b9b7bef96b749d8831fcfa466e6d7"),
+			StorageKey:    common.HexToHash("0000000000000000000000000000000000000000000000000000000000000003"),
+			StorageValue:  common.HexToHash("000000000000000000000000acdd1ee0f74954ed8f0ac581b081b7b86bd6aad9"),
 		}
 		err := transformer.Execute(catLineRow)
 		Expect(err).NotTo(HaveOccurred())
@@ -74,12 +75,12 @@ var _ = Describe("Executing the transformer", func() {
 
 	It("reads in a Cat Vow storage diff row and persists it", func() {
 		blockNumber := 10980005
-		catLineRow := utils.StorageDiffRow{
-			Contract:     common.HexToAddress("81f7aa9c1570de564eb511b3a1e57dae558c65b5"),
-			BlockHeight:  blockNumber,
-			BlockHash:    common.HexToHash("82755877daf87d6eb8a228ee757450890f4b9b7bef96b749d8831fcfa466e6d7"),
-			StorageKey:   common.HexToHash("0000000000000000000000000000000000000000000000000000000000000004"),
-			StorageValue: common.HexToHash("00000000000000000000000021444ac712ccd21ce82af24ea1aec64cf07361d2"),
+		catLineRow := utils.StorageDiff{
+			HashedAddress: transformer.HashedAddress,
+			BlockHeight:   blockNumber,
+			BlockHash:     common.HexToHash("82755877daf87d6eb8a228ee757450890f4b9b7bef96b749d8831fcfa466e6d7"),
+			StorageKey:    common.HexToHash("0000000000000000000000000000000000000000000000000000000000000004"),
+			StorageValue:  common.HexToHash("00000000000000000000000021444ac712ccd21ce82af24ea1aec64cf07361d2"),
 		}
 		err := transformer.Execute(catLineRow)
 		Expect(err).NotTo(HaveOccurred())
@@ -105,12 +106,12 @@ var _ = Describe("Executing the transformer", func() {
 
 		It("reads in a Cat Ilk Flip storage diff row and persists it", func() {
 			blockNumber := 10980036
-			catLineRow := utils.StorageDiffRow{
-				Contract:     common.HexToAddress("81f7aa9c1570de564eb511b3a1e57dae558c65b5"),
-				BlockHeight:  blockNumber,
-				BlockHash:    common.HexToHash("88aa77e1bdd6f06c304b8f674a10689c8b96e48deccb2e358597198e8a96a3ef"),
-				StorageKey:   common.HexToHash("ddedd75666d350fcd985cb35e3b9f2d4f288318d97268199e03d4405df947015"),
-				StorageValue: common.HexToHash("000000000000000000000000b88d2655aba486a06e638707fbebd858d430ac6e"),
+			catLineRow := utils.StorageDiff{
+				HashedAddress: transformer.HashedAddress,
+				BlockHeight:   blockNumber,
+				BlockHash:     common.HexToHash("88aa77e1bdd6f06c304b8f674a10689c8b96e48deccb2e358597198e8a96a3ef"),
+				StorageKey:    common.HexToHash("ddedd75666d350fcd985cb35e3b9f2d4f288318d97268199e03d4405df947015"),
+				StorageValue:  common.HexToHash("000000000000000000000000b88d2655aba486a06e638707fbebd858d430ac6e"),
 			}
 			err := transformer.Execute(catLineRow)
 			Expect(err).NotTo(HaveOccurred())
@@ -123,12 +124,12 @@ var _ = Describe("Executing the transformer", func() {
 
 		It("reads in a Cat Ilk Chop storage diff row and persists it", func() {
 			blockNumber := 10980036
-			catLineRow := utils.StorageDiffRow{
-				Contract:     common.HexToAddress("81f7aa9c1570de564eb511b3a1e57dae558c65b5"),
-				BlockHeight:  blockNumber,
-				BlockHash:    common.HexToHash("88aa77e1bdd6f06c304b8f674a10689c8b96e48deccb2e358597198e8a96a3ef"),
-				StorageKey:   common.HexToHash("ddedd75666d350fcd985cb35e3b9f2d4f288318d97268199e03d4405df947016"),
-				StorageValue: common.HexToHash("0000000000000000000000000000000000000000033b2e3c9fd0803ce8000000"),
+			catLineRow := utils.StorageDiff{
+				HashedAddress: transformer.HashedAddress,
+				BlockHeight:   blockNumber,
+				BlockHash:     common.HexToHash("88aa77e1bdd6f06c304b8f674a10689c8b96e48deccb2e358597198e8a96a3ef"),
+				StorageKey:    common.HexToHash("ddedd75666d350fcd985cb35e3b9f2d4f288318d97268199e03d4405df947016"),
+				StorageValue:  common.HexToHash("0000000000000000000000000000000000000000033b2e3c9fd0803ce8000000"),
 			}
 			err := transformer.Execute(catLineRow)
 			Expect(err).NotTo(HaveOccurred())
@@ -141,12 +142,12 @@ var _ = Describe("Executing the transformer", func() {
 
 		It("reads in a Cat Ilk Lump storage diff row and persists it", func() {
 			blockNumber := 10980036
-			catLineRow := utils.StorageDiffRow{
-				Contract:     common.HexToAddress("81f7aa9c1570de564eb511b3a1e57dae558c65b5"),
-				BlockHeight:  blockNumber,
-				BlockHash:    common.HexToHash("88aa77e1bdd6f06c304b8f674a10689c8b96e48deccb2e358597198e8a96a3ef"),
-				StorageKey:   common.HexToHash("ddedd75666d350fcd985cb35e3b9f2d4f288318d97268199e03d4405df947017"),
-				StorageValue: common.HexToHash("000000000000000000000006d79f82328ea3da61e066ebb2f88a000000000000"),
+			catLineRow := utils.StorageDiff{
+				HashedAddress: transformer.HashedAddress,
+				BlockHeight:   blockNumber,
+				BlockHash:     common.HexToHash("88aa77e1bdd6f06c304b8f674a10689c8b96e48deccb2e358597198e8a96a3ef"),
+				StorageKey:    common.HexToHash("ddedd75666d350fcd985cb35e3b9f2d4f288318d97268199e03d4405df947017"),
+				StorageValue:  common.HexToHash("000000000000000000000006d79f82328ea3da61e066ebb2f88a000000000000"),
 			}
 			err := transformer.Execute(catLineRow)
 			Expect(err).NotTo(HaveOccurred())

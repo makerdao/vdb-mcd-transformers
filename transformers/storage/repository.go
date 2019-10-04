@@ -18,10 +18,10 @@ package storage
 
 import (
 	"errors"
+	repository2 "github.com/vulcanize/vulcanizedb/libraries/shared/repository"
 	"strconv"
 
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
-	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres/repositories"
 )
 
 type Urn struct {
@@ -245,7 +245,7 @@ func (repository *MakerStorageRepository) GetFlopBidIds(contractAddress string) 
 }
 
 func (repository *MakerStorageRepository) GetOrCreateAddress(contractAddress string) (int64, error) {
-	return repositories.AddressRepository{}.GetOrCreateAddress(repository.db, contractAddress)
+	return repository2.GetOrCreateAddress(repository.db, contractAddress)
 }
 
 func (repository *MakerStorageRepository) SetDB(db *postgres.DB) {

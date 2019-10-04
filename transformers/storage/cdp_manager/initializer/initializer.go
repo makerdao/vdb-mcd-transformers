@@ -17,8 +17,8 @@
 package initializer
 
 import (
-	"github.com/ethereum/go-ethereum/common"
 	s2 "github.com/vulcanize/vulcanizedb/libraries/shared/factories/storage"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
@@ -27,7 +27,7 @@ import (
 )
 
 var StorageTransformerInitializer transformer.StorageTransformerInitializer = s2.Transformer{
-	Address:    common.HexToAddress(constants.GetContractAddress("CDP_MANAGER")),
-	Mappings:   &cdp_manager.CdpManagerMappings{StorageRepository: &storage.MakerStorageRepository{}},
-	Repository: &cdp_manager.CdpManagerStorageRepository{},
+	HashedAddress: utils.HexToKeccak256Hash(constants.GetContractAddress("CDP_MANAGER")),
+	Mappings:      &cdp_manager.CdpManagerMappings{StorageRepository: &storage.MakerStorageRepository{}},
+	Repository:    &cdp_manager.CdpManagerStorageRepository{},
 }.NewTransformer

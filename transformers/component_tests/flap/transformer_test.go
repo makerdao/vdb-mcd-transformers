@@ -29,9 +29,9 @@ var _ = Describe("Executing the flap transformer", func() {
 		db = test_config.NewTestDB(test_config.NewTestNode())
 		test_config.CleanTestDB(db)
 		transformer = storageFactory.Transformer{
-			Address:    common.HexToAddress(contractAddress),
-			Mappings:   &storageKeyLookup,
-			Repository: &repository,
+			HashedAddress: utils.HexToKeccak256Hash(contractAddress),
+			Mappings:      &storageKeyLookup,
+			Repository:    &repository,
 		}
 		transformer.NewTransformer(db)
 	})
@@ -39,12 +39,12 @@ var _ = Describe("Executing the flap transformer", func() {
 	It("reads in a vat storage diff and persists it", func() {
 		blockNumber := 11579860
 		blockHash := common.HexToHash("3d8fd744457d476c3a1a9e4cbbaa0d951e0280416988fe87528a0aaac50186a8")
-		diff := utils.StorageDiffRow{
-			Contract:     transformer.Address,
-			BlockHash:    blockHash,
-			BlockHeight:  blockNumber,
-			StorageKey:   common.HexToHash("0000000000000000000000000000000000000000000000000000000000000002"),
-			StorageValue: common.HexToHash("000000000000000000000000284ecb5880cdc3362d979d07d162bf1d8488975d"),
+		diff := utils.StorageDiff{
+			HashedAddress: transformer.HashedAddress,
+			BlockHash:     blockHash,
+			BlockHeight:   blockNumber,
+			StorageKey:    common.HexToHash("0000000000000000000000000000000000000000000000000000000000000002"),
+			StorageValue:  common.HexToHash("000000000000000000000000284ecb5880cdc3362d979d07d162bf1d8488975d"),
 		}
 		err := transformer.Execute(diff)
 		Expect(err).NotTo(HaveOccurred())
@@ -59,12 +59,12 @@ var _ = Describe("Executing the flap transformer", func() {
 	It("reads in a gem storage diff and persists it", func() {
 		blockNumber := 11579860
 		blockHash := common.HexToHash("3d8fd744457d476c3a1a9e4cbbaa0d951e0280416988fe87528a0aaac50186a8")
-		diff := utils.StorageDiffRow{
-			Contract:     transformer.Address,
-			BlockHash:    blockHash,
-			BlockHeight:  blockNumber,
-			StorageKey:   common.HexToHash("0000000000000000000000000000000000000000000000000000000000000003"),
-			StorageValue: common.HexToHash("000000000000000000000000a90843676a7f747a3c8adda142471369346369c1"),
+		diff := utils.StorageDiff{
+			HashedAddress: transformer.HashedAddress,
+			BlockHash:     blockHash,
+			BlockHeight:   blockNumber,
+			StorageKey:    common.HexToHash("0000000000000000000000000000000000000000000000000000000000000003"),
+			StorageValue:  common.HexToHash("000000000000000000000000a90843676a7f747a3c8adda142471369346369c1"),
 		}
 		err := transformer.Execute(diff)
 		Expect(err).NotTo(HaveOccurred())
@@ -79,12 +79,12 @@ var _ = Describe("Executing the flap transformer", func() {
 	It("reads in a beg storage diff and persists it", func() {
 		blockNumber := 11579860
 		blockHash := common.HexToHash("3d8fd744457d476c3a1a9e4cbbaa0d951e0280416988fe87528a0aaac50186a8")
-		diff := utils.StorageDiffRow{
-			Contract:     transformer.Address,
-			BlockHash:    blockHash,
-			BlockHeight:  blockNumber,
-			StorageKey:   common.HexToHash("0000000000000000000000000000000000000000000000000000000000000004"),
-			StorageValue: common.HexToHash("000000000000000000000000000000000000000003648a260e3486a65a000000"),
+		diff := utils.StorageDiff{
+			HashedAddress: transformer.HashedAddress,
+			BlockHash:     blockHash,
+			BlockHeight:   blockNumber,
+			StorageKey:    common.HexToHash("0000000000000000000000000000000000000000000000000000000000000004"),
+			StorageValue:  common.HexToHash("000000000000000000000000000000000000000003648a260e3486a65a000000"),
 		}
 		err := transformer.Execute(diff)
 		Expect(err).NotTo(HaveOccurred())
@@ -99,12 +99,12 @@ var _ = Describe("Executing the flap transformer", func() {
 	It("reads in a ttl storage diff and persists it", func() {
 		blockNumber := 11579860
 		blockHash := common.HexToHash("3d8fd744457d476c3a1a9e4cbbaa0d951e0280416988fe87528a0aaac50186a8")
-		diff := utils.StorageDiffRow{
-			Contract:     transformer.Address,
-			BlockHash:    blockHash,
-			BlockHeight:  blockNumber,
-			StorageKey:   common.HexToHash("0000000000000000000000000000000000000000000000000000000000000005"),
-			StorageValue: common.HexToHash("000000000000000000000000000000000000000000000002a300000000002a30"),
+		diff := utils.StorageDiff{
+			HashedAddress: transformer.HashedAddress,
+			BlockHash:     blockHash,
+			BlockHeight:   blockNumber,
+			StorageKey:    common.HexToHash("0000000000000000000000000000000000000000000000000000000000000005"),
+			StorageValue:  common.HexToHash("000000000000000000000000000000000000000000000002a300000000002a30"),
 		}
 		err := transformer.Execute(diff)
 		Expect(err).NotTo(HaveOccurred())
@@ -119,12 +119,12 @@ var _ = Describe("Executing the flap transformer", func() {
 	It("reads in a tau storage diff and persists it", func() {
 		blockNumber := 11579860
 		blockHash := common.HexToHash("3d8fd744457d476c3a1a9e4cbbaa0d951e0280416988fe87528a0aaac50186a8")
-		diff := utils.StorageDiffRow{
-			Contract:     transformer.Address,
-			BlockHash:    blockHash,
-			BlockHeight:  blockNumber,
-			StorageKey:   common.HexToHash("0000000000000000000000000000000000000000000000000000000000000005"),
-			StorageValue: common.HexToHash("000000000000000000000000000000000000000000000002a300000000002a30"),
+		diff := utils.StorageDiff{
+			HashedAddress: transformer.HashedAddress,
+			BlockHash:     blockHash,
+			BlockHeight:   blockNumber,
+			StorageKey:    common.HexToHash("0000000000000000000000000000000000000000000000000000000000000005"),
+			StorageValue:  common.HexToHash("000000000000000000000000000000000000000000000002a300000000002a30"),
 		}
 		err := transformer.Execute(diff)
 		Expect(err).NotTo(HaveOccurred())
@@ -143,12 +143,12 @@ var _ = Describe("Executing the flap transformer", func() {
 	It("reads in a live storage diff and persists it", func() {
 		blockNumber := 11579860
 		blockHash := common.HexToHash("3d8fd744457d476c3a1a9e4cbbaa0d951e0280416988fe87528a0aaac50186a8")
-		diff := utils.StorageDiffRow{
-			Contract:     transformer.Address,
-			BlockHash:    blockHash,
-			BlockHeight:  blockNumber,
-			StorageKey:   common.HexToHash("0000000000000000000000000000000000000000000000000000000000000007"),
-			StorageValue: common.HexToHash("0000000000000000000000000000000000000000000000000000000000000001"),
+		diff := utils.StorageDiff{
+			HashedAddress: transformer.HashedAddress,
+			BlockHash:     blockHash,
+			BlockHeight:   blockNumber,
+			StorageKey:    common.HexToHash("0000000000000000000000000000000000000000000000000000000000000007"),
+			StorageValue:  common.HexToHash("0000000000000000000000000000000000000000000000000000000000000001"),
 		}
 		err := transformer.Execute(diff)
 		Expect(err).NotTo(HaveOccurred())
@@ -166,16 +166,16 @@ var _ = Describe("Executing the flap transformer", func() {
 			bidId := 1
 			blockNumber := 11579891
 			blockHash := common.HexToHash("5f2be3f6566f39dddfcfcf29784866280399ed9070af0b4fccd465509260349d")
-			diff := utils.StorageDiffRow{
-				Contract:     transformer.Address,
-				BlockHash:    blockHash,
-				BlockHeight:  blockNumber,
-				StorageKey:   common.HexToHash("cc69885fda6bcc1a4ace058b4a62bf5e179ea78fd58a1ccd71c22cc9b6887931"),
-				StorageValue: common.HexToHash("00000002a300000000002a30284ecb5880cdc3362d979d07d162bf1d8488975d"),
+			diff := utils.StorageDiff{
+				HashedAddress: transformer.HashedAddress,
+				BlockHash:     blockHash,
+				BlockHeight:   blockNumber,
+				StorageKey:    common.HexToHash("cc69885fda6bcc1a4ace058b4a62bf5e179ea78fd58a1ccd71c22cc9b6887931"),
+				StorageValue:  common.HexToHash("00000002a300000000002a30284ecb5880cdc3362d979d07d162bf1d8488975d"),
 			}
 
 			BeforeEach(func() {
-				addressId, addressErr := shared.GetOrCreateAddress(transformer.Address.Hex(), db)
+				addressId, addressErr := shared.GetOrCreateAddress(contractAddress, db)
 				Expect(addressErr).NotTo(HaveOccurred())
 
 				_, writeErr := db.Exec(flap.InsertKicksQuery, blockNumber, blockHash.Hex(), addressId, bidId)
