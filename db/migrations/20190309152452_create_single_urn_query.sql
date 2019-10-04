@@ -63,9 +63,9 @@ SELECT get_urn.urn_identifier,
        ilk_identifier,
        $3,
        ink.ink,
-       art.art,
+       COALESCE(art.art, 0),
        ratio.ratio,
-       COALESCE(safe.safe, art.art = 0),
+       COALESCE(safe.safe, COALESCE(art.art, 0) = 0),
        created.datetime,
        updated.datetime
 FROM ink

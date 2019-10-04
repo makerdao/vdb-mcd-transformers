@@ -5,8 +5,10 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/vulcanize/mcd_transformers/test_config"
 	helper "github.com/vulcanize/mcd_transformers/transformers/component_tests/queries/test_helpers"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/vat"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
@@ -197,19 +199,21 @@ var _ = Describe("Single urn view", func() {
 	})
 
 	It("returns null ratio and urn being safe if there is no debt", func() {
-		block := rand.Int()
-		setupData := helper.GetUrnSetupData(block, 1)
-		setupData.Art = 0
-		metadata := helper.GetUrnMetadata(helper.FakeIlk.Hex, urnOne)
-		helper.CreateUrn(setupData, metadata, vatRepo, headerRepo)
+		fakeHeader := fakes.GetFakeHeader(int64(rand.Int()))
+		fakeTimestamp := int(rand.Int31())
+		fakeHeader.Timestamp = strconv.Itoa(fakeTimestamp)
+		fakeHeader.Hash = test_data.RandomString(5)
+		_, insertHeaderErr := headerRepo.CreateOrUpdateHeader(fakeHeader)
+		Expect(insertHeaderErr).NotTo(HaveOccurred())
 
-		fakeHeader := fakes.GetFakeHeader(int64(block))
-		_, err = headerRepo.CreateOrUpdateHeader(fakeHeader)
-		Expect(err).NotTo(HaveOccurred())
+		fakeInk := rand.Int()
+		urnInkMetadata := utils.GetStorageValueMetadata(vat.UrnInk, map[utils.Key]string{constants.Ilk: helper.FakeIlk.Hex, constants.Guy: urnOne}, utils.Uint256)
+		insertInkErr := vatRepo.Create(int(fakeHeader.BlockNumber), fakeHeader.Hash, urnInkMetadata, strconv.Itoa(fakeInk))
+		Expect(insertInkErr).NotTo(HaveOccurred())
 
 		var result helper.UrnState
 		err = db.Get(&result, `SELECT urn_identifier, ilk_identifier, ink, art, ratio, safe, created, updated
-			FROM api.get_urn($1, $2, $3)`, helper.FakeIlk.Identifier, urnOne, block)
+			FROM api.get_urn($1, $2, $3)`, helper.FakeIlk.Identifier, urnOne, fakeHeader.BlockNumber)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(result.Ratio.String).To(BeEmpty())
