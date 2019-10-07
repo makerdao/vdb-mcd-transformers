@@ -63,6 +63,7 @@ SELECT get_flap.bid_id,
 FROM storage_values
 $$
     LANGUAGE sql
+    STRICT
     STABLE;
 -- +goose Down
 DROP FUNCTION api.get_flap(NUMERIC, BIGINT);
