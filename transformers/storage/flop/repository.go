@@ -14,6 +14,7 @@ const (
 	insertFlopVatQuery   = `INSERT INTO maker.flop_vat (block_number, block_hash, address_id, vat) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
 	insertFlopGemQuery   = `INSERT INTO maker.flop_gem (block_number, block_hash, address_id, gem) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
 	insertFlopBegQuery   = `INSERT INTO maker.flop_beg (block_number, block_hash, address_id, beg) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
+	insertFlopPadQuery   = `INSERT INTO maker.flop_pad (block_number, block_hash, address_id, pad) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
 	insertFlopTtlQuery   = `INSERT INTO maker.flop_ttl (block_number, block_hash, address_id, ttl) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
 	insertFlopTauQuery   = `INSERT INTO maker.flop_tau (block_number, block_hash, address_id, tau) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
 	InsertFlopKicksQuery = `INSERT INTO maker.flop_kicks (block_number, block_hash, address_id, kicks) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
@@ -39,6 +40,8 @@ func (repository *FlopStorageRepository) Create(blockNumber int, blockHash strin
 		return repository.insertGem(blockNumber, blockHash, value.(string))
 	case storage.Beg:
 		return repository.insertBeg(blockNumber, blockHash, value.(string))
+	case storage.Pad:
+		return repository.insertPad(blockNumber, blockHash, value.(string))
 	case storage.Kicks:
 		return repository.insertKicks(blockNumber, blockHash, value.(string))
 	case storage.Live:
@@ -68,6 +71,10 @@ func (repository *FlopStorageRepository) insertGem(blockNumber int, blockHash st
 
 func (repository *FlopStorageRepository) insertBeg(blockNumber int, blockHash string, beg string) error {
 	return repository.insertRecordWithAddress(blockNumber, blockHash, insertFlopBegQuery, beg)
+}
+
+func (repository *FlopStorageRepository) insertPad(blockNumber int, blockHash string, pad string) error {
+	return repository.insertRecordWithAddress(blockNumber, blockHash, insertFlopPadQuery, pad)
 }
 
 func (repository *FlopStorageRepository) insertTtl(blockNumber int, blockHash string, ttl string) error {

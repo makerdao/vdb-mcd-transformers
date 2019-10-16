@@ -120,6 +120,16 @@ CREATE TABLE maker.flop_beg
     UNIQUE (block_number, block_hash, address_id, beg)
 );
 
+CREATE TABLE maker.flop_pad
+(
+    id           SERIAL PRIMARY KEY,
+    block_number BIGINT,
+    block_hash   TEXT,
+    address_id   INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
+    pad          NUMERIC NOT NULL,
+    UNIQUE (block_number, block_hash, address_id, pad)
+);
+
 CREATE TABLE maker.flop_ttl
 (
     id           SERIAL PRIMARY KEY,
@@ -196,6 +206,7 @@ DROP TABLE maker.flop_kicks;
 DROP TABLE maker.flop_tau;
 DROP TABLE maker.flop_ttl;
 DROP TABLE maker.flop_beg;
+DROP TABLE maker.flop_pad;
 DROP TABLE maker.flop_gem;
 DROP TABLE maker.flop_vat;
 DROP TABLE maker.flop_bid_end;

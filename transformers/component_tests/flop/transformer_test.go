@@ -20,7 +20,7 @@ var _ = Describe("Executing the flop transformer", func() {
 	var (
 		db                     *postgres.DB
 		transformer            storageFactory.Transformer
-		flopperContractAddress = "0x70b1a0fa8cc13cd3ce3cd65064c226dd9bc65f49"
+		flopperContractAddress = "0xa806168abccd3c8cbc07ee4a87b16b14b874ffcf"
 		repository             = flop.FlopStorageRepository{ContractAddress: flopperContractAddress}
 		storageKeyLookup       = flop.StorageKeysLookup{StorageRepository: &storage.MakerStorageRepository{}, ContractAddress: flopperContractAddress}
 	)
@@ -37,14 +37,15 @@ var _ = Describe("Executing the flop transformer", func() {
 	})
 
 	It("reads in a vat storage diff and persists it", func() {
-		blockNumber := 11579860
-		blockHash := common.HexToHash("3d8fd744457d476c3a1a9e4cbbaa0d951e0280416988fe87528a0aaac50186a8")
+		blockNumber := 13474844
+		blockHash := common.HexToHash("55f105f740e51bf45e4e3855d29c9d4642dca4372d70c17bcc038274b2e8751c")
+		vat := "0x1CC5ABe5C0464F3af2a10df0c711236a8446BF75"
 		diff := utils.StorageDiff{
 			HashedAddress: transformer.HashedAddress,
 			BlockHash:     blockHash,
 			BlockHeight:   blockNumber,
 			StorageKey:    common.HexToHash("0000000000000000000000000000000000000000000000000000000000000002"),
-			StorageValue:  common.HexToHash("000000000000000000000000284ecb5880cdc3362d979d07d162bf1d8488975d"),
+			StorageValue:  common.HexToHash("0000000000000000000000001cc5abe5c0464f3af2a10df0c711236a8446bf75"),
 		}
 		err := transformer.Execute(diff)
 		Expect(err).NotTo(HaveOccurred())
@@ -52,18 +53,19 @@ var _ = Describe("Executing the flop transformer", func() {
 		var vatResult test_helpers.VariableRes
 		err = db.Get(&vatResult, `SELECT block_number, block_hash, vat AS value from maker.flop_vat`)
 		Expect(err).NotTo(HaveOccurred())
-		test_helpers.AssertVariable(vatResult, blockNumber, blockHash.Hex(), "0x284ecB5880CdC3362D979D07D162bf1d8488975D")
+		test_helpers.AssertVariable(vatResult, blockNumber, blockHash.Hex(), vat)
 	})
 
 	It("reads in a gem storage diff and persists it", func() {
-		blockNumber := 11579860
-		blockHash := common.HexToHash("3d8fd744457d476c3a1a9e4cbbaa0d951e0280416988fe87528a0aaac50186a8")
+		blockNumber := 13474844
+		blockHash := common.HexToHash("55f105f740e51bf45e4e3855d29c9d4642dca4372d70c17bcc038274b2e8751c")
+		gem := "0xAaF64BFCC32d0F15873a02163e7E500671a4ffcD"
 		diff := utils.StorageDiff{
 			HashedAddress: transformer.HashedAddress,
 			BlockHash:     blockHash,
 			BlockHeight:   blockNumber,
 			StorageKey:    common.HexToHash("0000000000000000000000000000000000000000000000000000000000000003"),
-			StorageValue:  common.HexToHash("000000000000000000000000a90843676a7f747a3c8adda142471369346369c1"),
+			StorageValue:  common.HexToHash("000000000000000000000000aaf64bfcc32d0f15873a02163e7e500671a4ffcd"),
 		}
 		err := transformer.Execute(diff)
 		Expect(err).NotTo(HaveOccurred())
@@ -71,12 +73,13 @@ var _ = Describe("Executing the flop transformer", func() {
 		var gemResult test_helpers.VariableRes
 		err = db.Get(&gemResult, `SELECT block_number, block_hash, gem AS value from maker.flop_gem`)
 		Expect(err).NotTo(HaveOccurred())
-		test_helpers.AssertVariable(gemResult, blockNumber, blockHash.Hex(), "0xa90843676A7F747A3c8aDDa142471369346369c1")
+		test_helpers.AssertVariable(gemResult, blockNumber, blockHash.Hex(), gem)
 	})
 
 	It("reads in a beg storage diff and persists it", func() {
-		blockNumber := 11579860
-		blockHash := common.HexToHash("3d8fd744457d476c3a1a9e4cbbaa0d951e0280416988fe87528a0aaac50186a8")
+		blockNumber := 13474844
+		blockHash := common.HexToHash("55f105f740e51bf45e4e3855d29c9d4642dca4372d70c17bcc038274b2e8751c")
+		beg := "1050000000000000000000000000"
 		diff := utils.StorageDiff{
 			HashedAddress: transformer.HashedAddress,
 			BlockHash:     blockHash,
@@ -90,17 +93,39 @@ var _ = Describe("Executing the flop transformer", func() {
 		var begResult test_helpers.VariableRes
 		err = db.Get(&begResult, `SELECT block_number, block_hash, beg AS value from maker.flop_beg`)
 		Expect(err).NotTo(HaveOccurred())
-		test_helpers.AssertVariable(begResult, blockNumber, blockHash.Hex(), "1050000000000000000000000000")
+		test_helpers.AssertVariable(begResult, blockNumber, blockHash.Hex(), beg)
 	})
 
-	It("reads in a ttl storage diff and persists it", func() {
-		blockNumber := 11579860
-		blockHash := common.HexToHash("3d8fd744457d476c3a1a9e4cbbaa0d951e0280416988fe87528a0aaac50186a8")
+	It("reads in a pad storage diff and persists it", func() {
+		blockNumber := 13474844
+		blockHash := common.HexToHash("55f105f740e51bf45e4e3855d29c9d4642dca4372d70c17bcc038274b2e8751c")
+		pad := "1500000000000000000000000000"
+
 		diff := utils.StorageDiff{
 			HashedAddress: transformer.HashedAddress,
 			BlockHash:     blockHash,
 			BlockHeight:   blockNumber,
 			StorageKey:    common.HexToHash("0000000000000000000000000000000000000000000000000000000000000005"),
+			StorageValue:  common.HexToHash("000000000000000000000000000000000000000004d8c55aefb8c05b5c000000"),
+		}
+		err := transformer.Execute(diff)
+		Expect(err).NotTo(HaveOccurred())
+
+		var ttlResult test_helpers.VariableRes
+		err = db.Get(&ttlResult, `SELECT block_number, block_hash, pad AS value from maker.flop_pad`)
+		Expect(err).NotTo(HaveOccurred())
+		test_helpers.AssertVariable(ttlResult, blockNumber, blockHash.Hex(), pad)
+	})
+
+	It("reads in a ttl storage diff and persists it", func() {
+		blockNumber := 13474844
+		blockHash := common.HexToHash("55f105f740e51bf45e4e3855d29c9d4642dca4372d70c17bcc038274b2e8751c")
+		ttl := "10800"
+		diff := utils.StorageDiff{
+			HashedAddress: transformer.HashedAddress,
+			BlockHash:     blockHash,
+			BlockHeight:   blockNumber,
+			StorageKey:    common.HexToHash("0000000000000000000000000000000000000000000000000000000000000006"),
 			StorageValue:  common.HexToHash("000000000000000000000000000000000000000000000002a300000000002a30"),
 		}
 		err := transformer.Execute(diff)
@@ -109,17 +134,18 @@ var _ = Describe("Executing the flop transformer", func() {
 		var ttlResult test_helpers.VariableRes
 		err = db.Get(&ttlResult, `SELECT block_number, block_hash, ttl AS value from maker.flop_ttl`)
 		Expect(err).NotTo(HaveOccurred())
-		test_helpers.AssertVariable(ttlResult, blockNumber, blockHash.Hex(), "10800")
+		test_helpers.AssertVariable(ttlResult, blockNumber, blockHash.Hex(), ttl)
 	})
 
 	It("reads in a tau storage diff and persists it", func() {
-		blockNumber := 11579860
-		blockHash := common.HexToHash("3d8fd744457d476c3a1a9e4cbbaa0d951e0280416988fe87528a0aaac50186a8")
+		blockNumber := 13474844
+		blockHash := common.HexToHash("55f105f740e51bf45e4e3855d29c9d4642dca4372d70c17bcc038274b2e8751c")
+		ttl := "172800"
 		diff := utils.StorageDiff{
 			HashedAddress: transformer.HashedAddress,
 			BlockHash:     blockHash,
 			BlockHeight:   blockNumber,
-			StorageKey:    common.HexToHash("0000000000000000000000000000000000000000000000000000000000000005"),
+			StorageKey:    common.HexToHash("0000000000000000000000000000000000000000000000000000000000000006"),
 			StorageValue:  common.HexToHash("000000000000000000000000000000000000000000000002a300000000002a30"),
 		}
 		err := transformer.Execute(diff)
@@ -128,21 +154,21 @@ var _ = Describe("Executing the flop transformer", func() {
 		var tauResult test_helpers.VariableRes
 		err = db.Get(&tauResult, `SELECT block_number, block_hash, tau AS value from maker.flop_tau`)
 		Expect(err).NotTo(HaveOccurred())
-		test_helpers.AssertVariable(tauResult, blockNumber, blockHash.Hex(), "172800")
+		test_helpers.AssertVariable(tauResult, blockNumber, blockHash.Hex(), ttl)
 	})
 
-	XIt("reads in a kicks storage diff and persists it", func() {
+	It("reads in a kicks storage diff and persists it", func() {
 		//TODO: update this when we get a storage diff row for Flop kicks
 	})
 
 	It("reads in a live storage diff and persists it", func() {
-		blockNumber := 11579860
-		blockHash := common.HexToHash("3d8fd744457d476c3a1a9e4cbbaa0d951e0280416988fe87528a0aaac50186a8")
+		blockNumber := 13474844
+		blockHash := common.HexToHash("55f105f740e51bf45e4e3855d29c9d4642dca4372d70c17bcc038274b2e8751c")
 		diff := utils.StorageDiff{
 			HashedAddress: transformer.HashedAddress,
 			BlockHash:     blockHash,
 			BlockHeight:   blockNumber,
-			StorageKey:    common.HexToHash("0000000000000000000000000000000000000000000000000000000000000007"),
+			StorageKey:    common.HexToHash("0000000000000000000000000000000000000000000000000000000000000008"),
 			StorageValue:  common.HexToHash("0000000000000000000000000000000000000000000000000000000000000001"),
 		}
 		err := transformer.Execute(diff)

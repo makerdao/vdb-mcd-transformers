@@ -92,6 +92,27 @@ var _ = Describe("Flop storage repository", func() {
 		})
 	})
 
+	Describe("Pad", func() {
+		padMetadata := utils.StorageValueMetadata{Name: storage.Pad}
+		fakePad := strconv.Itoa(rand.Int())
+
+		inputs := shared_behaviors.StorageVariableBehaviorInputs{
+			ValueFieldName:   storage.Pad,
+			Value:            fakePad,
+			StorageTableName: "maker.flop_pad",
+			Repository:       &repo,
+			Metadata:         padMetadata,
+		}
+
+		shared_behaviors.SharedStorageRepositoryVariableBehaviors(&inputs)
+
+		It("returns an error if inserting fails", func() {
+			createErr := repo.Create(fakeBlockNumber, fakeBlockHash, padMetadata, "")
+			Expect(createErr).To(HaveOccurred())
+			Expect(createErr.Error()).To(MatchRegexp("pq: invalid input syntax for type numeric"))
+		})
+	})
+
 	Describe("Ttl and Tau", func() {
 		packedNames := make(map[int]string)
 		packedNames[0] = storage.Ttl
