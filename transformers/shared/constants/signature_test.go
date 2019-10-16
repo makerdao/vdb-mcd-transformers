@@ -91,7 +91,7 @@ var _ = Describe("Signature constants", func() {
 	})
 
 	It("generates spot file pip signature", func() {
-		Expect(SpotFilePipSignature()).To(Equal("0xd4e8be8300000000000000000000000000000000000000000000000000000000"))
+		Expect(SpotFilePipSignature()).To(Equal("0xebecb39d00000000000000000000000000000000000000000000000000000000"))
 	})
 
 	It("generates spot poke signature", func() {

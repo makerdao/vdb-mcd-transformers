@@ -39,16 +39,22 @@ func (SpotFilePipConverter) ToModels(_ string, logs []core.HeaderSyncLog) ([]sha
 		}
 
 		ilk := log.Log.Topics[2].Hex()
-		pip := common.BytesToAddress(log.Log.Topics[3].Bytes()).String()
+		what := shared.DecodeHexToText(log.Log.Topics[3].Hex())
+		pipBytes, getErr := shared.GetLogNoteArgumentAtIndex(2, log.Log.Data)
+		if getErr != nil {
+			return nil, getErr
+		}
+		pip := common.BytesToAddress(pipBytes)
 
 		model := shared.InsertionModel{
 			SchemaName: "maker",
 			TableName:  "spot_file_pip",
 			OrderedColumns: []string{
-				constants.HeaderFK, string(constants.IlkFK), "pip", constants.LogFK,
+				constants.HeaderFK, string(constants.IlkFK), "what", "pip", constants.LogFK,
 			},
 			ColumnValues: shared.ColumnValues{
-				"pip":              pip,
+				"what":             what,
+				"pip":              pip.Hex(),
 				constants.HeaderFK: log.HeaderID,
 				constants.LogFK:    log.ID,
 			},
