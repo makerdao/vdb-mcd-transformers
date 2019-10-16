@@ -31,7 +31,8 @@ import (
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 )
 
-var _ = Describe("Vat fork transformer", func() {
+var _ = XDescribe("Vat fork transformer", func() {
+	// TODO: Update when event exists in kovan
 	var (
 		db         *postgres.DB
 		blockChain core.BlockChain

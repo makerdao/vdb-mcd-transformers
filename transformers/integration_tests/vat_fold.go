@@ -55,7 +55,7 @@ var _ = Describe("VatFold Transformer", func() {
 	}
 
 	It("transforms VatFold log events", func() {
-		blockNumber := int64(13424126)
+		blockNumber := int64(13985205)
 		vatFoldConfig.StartingBlockNumber = blockNumber
 		vatFoldConfig.EndingBlockNumber = blockNumber
 
@@ -86,11 +86,11 @@ var _ = Describe("VatFold Transformer", func() {
 
 		Expect(len(dbResults)).To(Equal(1))
 		dbResult := dbResults[0]
-		urnID, err := shared.GetOrCreateUrn("0x022688b43Bf76a9E6f4d3a96350ffDe90a752d25",
-			"0x4447442d41000000000000000000000000000000000000000000000000000000", db)
+		urnID, err := shared.GetOrCreateUrn("0x32afee51c93d0bb71ff2e58af6b7b29cff5f8436",
+			"0x4554482d41000000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(dbResult.Urn).To(Equal(strconv.FormatInt(urnID, 10)))
-		Expect(dbResult.Rate).To(Equal("909758435446422415095"))
+		Expect(dbResult.Rate).To(Equal("1241630278277009462698"))
 	})
 })
 

@@ -54,7 +54,7 @@ var _ = Describe("VatFileDebtCeiling EventTransformer", func() {
 	}
 
 	It("fetches and transforms a VatFileDebtCeiling event from Kovan chain", func() {
-		blockNumber := int64(13171804)
+		blockNumber := int64(13475016)
 		vatFileDebtCeilingConfig.StartingBlockNumber = blockNumber
 		vatFileDebtCeilingConfig.EndingBlockNumber = blockNumber
 
