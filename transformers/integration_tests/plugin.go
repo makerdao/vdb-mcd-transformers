@@ -187,7 +187,7 @@ var _ = Describe("Plugin test", func() {
 			It("Loads our generated Exporter and uses it to import an arbitrary set of TransformerInitializers that we can execute over", func() {
 				db, bc := SetupDBandBC()
 				hr = repositories.NewHeaderRepository(db)
-				header1, err := bc.GetHeaderByNumber(13171646)
+				header1, err := bc.GetHeaderByNumber(13474863)
 				Expect(err).ToNot(HaveOccurred())
 				headerID, err = hr.CreateOrUpdateHeader(header1)
 				Expect(err).ToNot(HaveOccurred())
@@ -229,7 +229,7 @@ var _ = Describe("Plugin test", func() {
 					var flip string
 					_ = db.Get(&flip, `SELECT flip FROM maker.cat_file_flip WHERE header_id = $1`, headerID)
 					return flip
-				}).Should(Equal("0x02b6c914E29EE4D310e6b8e24340A8A643627D44"))
+				}).Should(Equal("0xd8eFe36a4E25DE8BaD875c8340b86975Bb363cf1"))
 			})
 
 			It("rechecks checked headers for event logs", func() {
@@ -350,7 +350,7 @@ var _ = Describe("Plugin test", func() {
 			It("Loads our generated Exporter and uses it to import an arbitrary set of TransformerInitializers and StorageTransformerInitializers that we can execute over", func() {
 				db, bc := SetupDBandBC()
 				hr = repositories.NewHeaderRepository(db)
-				header1, err := bc.GetHeaderByNumber(13171646)
+				header1, err := bc.GetHeaderByNumber(13474863)
 				Expect(err).ToNot(HaveOccurred())
 				headerID, err = hr.CreateOrUpdateHeader(header1)
 				Expect(err).ToNot(HaveOccurred())
@@ -392,7 +392,7 @@ var _ = Describe("Plugin test", func() {
 					var flip string
 					_ = db.Get(&flip, `SELECT flip FROM maker.cat_file_flip WHERE header_id = $1`, headerID)
 					return flip
-				}).Should(Equal("0x02b6c914E29EE4D310e6b8e24340A8A643627D44"))
+				}).Should(Equal("0xd8eFe36a4E25DE8BaD875c8340b86975Bb363cf1"))
 
 				tailer := fs.FileTailer{Path: viper.GetString("filesystem.storageDiffsPath")}
 				storageFetcher := fetcher.NewCsvTailStorageFetcher(tailer)

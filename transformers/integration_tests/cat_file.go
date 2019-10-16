@@ -63,7 +63,7 @@ var _ = Describe("Cat File transformer", func() {
 	})
 
 	It("persists a chop lump event (lump)", func() {
-		chopLumpBlockNumber := int64(13172049)
+		chopLumpBlockNumber := int64(13475259)
 		header, err := persistHeader(db, chopLumpBlockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 		catFileConfig.TransformerName = constants.CatFileChopLumpLabel
@@ -103,7 +103,7 @@ var _ = Describe("Cat File transformer", func() {
 	})
 
 	It("persists a chop lump event (chop)", func() {
-		chopLumpBlockNumber := int64(13172024)
+		chopLumpBlockNumber := int64(13475233)
 		header, err := persistHeader(db, chopLumpBlockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 		catFileConfig.TransformerName = constants.CatFileChopLumpLabel
@@ -143,7 +143,7 @@ var _ = Describe("Cat File transformer", func() {
 	})
 
 	It("persists a flip event", func() {
-		flipBlockNumber := int64(13171646)
+		flipBlockNumber := int64(13474863)
 		header, err := persistHeader(db, flipBlockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 		catFileConfig.TransformerName = constants.CatFileFlipLabel
@@ -179,11 +179,11 @@ var _ = Describe("Cat File transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 		Expect(dbResult[0].Ilk).To(Equal(strconv.FormatInt(ilkID, 10)))
 		Expect(dbResult[0].What).To(Equal("flip"))
-		Expect(dbResult[0].Flip).To(Equal("0x02b6c914E29EE4D310e6b8e24340A8A643627D44"))
+		Expect(dbResult[0].Flip).To(Equal("0xd8eFe36a4E25DE8BaD875c8340b86975Bb363cf1"))
 	})
 
 	It("persists a vow event", func() {
-		vowBlockNumber := int64(13171626)
+		vowBlockNumber := int64(13474846)
 		header, err := persistHeader(db, vowBlockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 		catFileConfig.TransformerName = constants.CatFileVowLabel
@@ -217,7 +217,7 @@ var _ = Describe("Cat File transformer", func() {
 		err = db.Get(&dbResult, `SELECT what, data FROM maker.cat_file_vow`)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(dbResult.What).To(Equal("vow"))
-		Expect(dbResult.Data).To(Equal("0x022688b43Bf76a9E6f4d3a96350ffDe90a752d25"))
+		Expect(dbResult.Data).To(Equal("0x32afee51C93D0BB71ff2E58aF6b7B29CFF5f8436"))
 	})
 })
 

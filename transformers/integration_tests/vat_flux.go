@@ -30,7 +30,8 @@ import (
 	"strconv"
 )
 
-var _ = Describe("VatFlux EventTransformer", func() {
+var _ = XDescribe("VatFlux EventTransformer", func() {
+	// TODO: Update when event exists in kovan
 	vatFluxConfig := transformer.EventTransformerConfig{
 		TransformerName:   constants.VatFluxLabel,
 		ContractAddresses: []string{test_data.VatAddress()},
