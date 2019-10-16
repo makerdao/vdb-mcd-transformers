@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 11.5
+-- Dumped from database version 11.4
 -- Dumped by pg_dump version 11.5
 
 SET statement_timeout = 0;
@@ -7397,6 +7397,38 @@ ALTER SEQUENCE maker.vow_bump_id_seq OWNED BY maker.vow_bump.id;
 
 
 --
+-- Name: vow_dump; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.vow_dump (
+    id integer NOT NULL,
+    block_number bigint,
+    block_hash text,
+    dump numeric
+);
+
+
+--
+-- Name: vow_dump_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.vow_dump_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: vow_dump_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.vow_dump_id_seq OWNED BY maker.vow_dump.id;
+
+
+--
 -- Name: vow_fess; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -9248,6 +9280,13 @@ ALTER TABLE ONLY maker.vow_ash ALTER COLUMN id SET DEFAULT nextval('maker.vow_as
 --
 
 ALTER TABLE ONLY maker.vow_bump ALTER COLUMN id SET DEFAULT nextval('maker.vow_bump_id_seq'::regclass);
+
+
+--
+-- Name: vow_dump id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_dump ALTER COLUMN id SET DEFAULT nextval('maker.vow_dump_id_seq'::regclass);
 
 
 --
@@ -11331,6 +11370,22 @@ ALTER TABLE ONLY maker.vow_bump
 
 ALTER TABLE ONLY maker.vow_bump
     ADD CONSTRAINT vow_bump_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: vow_dump vow_dump_block_number_block_hash_dump_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_dump
+    ADD CONSTRAINT vow_dump_block_number_block_hash_dump_key UNIQUE (block_number, block_hash, dump);
+
+
+--
+-- Name: vow_dump vow_dump_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_dump
+    ADD CONSTRAINT vow_dump_pkey PRIMARY KEY (id);
 
 
 --

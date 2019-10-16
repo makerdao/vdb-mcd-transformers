@@ -47,6 +47,7 @@ var _ = Describe("Vow storage mappings", func() {
 			Expect(mappings.Lookup(vow.SinIntegerKey)).To(Equal(vow.SinIntegerMetadata))
 			Expect(mappings.Lookup(vow.AshKey)).To(Equal(vow.AshMetadata))
 			Expect(mappings.Lookup(vow.WaitKey)).To(Equal(vow.WaitMetadata))
+			Expect(mappings.Lookup(vow.DumpKey)).To(Equal(vow.DumpMetadata))
 			Expect(mappings.Lookup(vow.SumpKey)).To(Equal(vow.SumpMetadata))
 			Expect(mappings.Lookup(vow.BumpKey)).To(Equal(vow.BumpMetadata))
 			Expect(mappings.Lookup(vow.HumpKey)).To(Equal(vow.HumpMetadata))

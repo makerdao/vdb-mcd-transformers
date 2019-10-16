@@ -35,6 +35,7 @@ const (
 	SinInteger = "Sin"
 	VowAsh     = "Ash"
 	VowWait    = "wait"
+	VowDump    = "dump"
 	VowSump    = "sump"
 	VowBump    = "bump"
 	VowHump    = "hump"
@@ -85,21 +86,28 @@ var (
 		Type: utils.Uint256,
 	}
 
-	SumpKey      = common.HexToHash(storage.IndexEight)
+	DumpKey      = common.HexToHash(storage.IndexEight)
+	DumpMetadata = utils.StorageValueMetadata{
+		Name: VowDump,
+		Keys: nil,
+		Type: utils.Uint256,
+	}
+
+	SumpKey      = common.HexToHash(storage.IndexNine)
 	SumpMetadata = utils.StorageValueMetadata{
 		Name: VowSump,
 		Keys: nil,
 		Type: utils.Uint256,
 	}
 
-	BumpKey      = common.HexToHash(storage.IndexNine)
+	BumpKey      = common.HexToHash(storage.IndexTen)
 	BumpMetadata = utils.StorageValueMetadata{
 		Name: VowBump,
 		Keys: nil,
 		Type: utils.Uint256,
 	}
 
-	HumpKey      = common.HexToHash(storage.IndexTen)
+	HumpKey      = common.HexToHash(storage.IndexEleven)
 	HumpMetadata = utils.StorageValueMetadata{
 		Name: VowHump,
 		Keys: nil,
@@ -149,6 +157,7 @@ func loadStaticMappings() map[common.Hash]utils.StorageValueMetadata {
 	mappings[SinIntegerKey] = SinIntegerMetadata
 	mappings[AshKey] = AshMetadata
 	mappings[WaitKey] = WaitMetadata
+	mappings[DumpKey] = DumpMetadata
 	mappings[SumpKey] = SumpMetadata
 	mappings[BumpKey] = BumpMetadata
 	mappings[HumpKey] = HumpMetadata
