@@ -17,18 +17,16 @@
 package initializer
 
 import (
-	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
-
-	s2 "github.com/vulcanize/vulcanizedb/libraries/shared/factories/storage"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
-
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
-	"github.com/vulcanize/mcd_transformers/transformers/storage"
+	mcdStorage "github.com/vulcanize/mcd_transformers/transformers/storage"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/cat"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/storage"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 )
 
-var StorageTransformerInitializer transformer.StorageTransformerInitializer = s2.Transformer{
+var StorageTransformerInitializer transformer.StorageTransformerInitializer = storage.Transformer{
 	HashedAddress: utils.HexToKeccak256Hash(constants.GetContractAddress("MCD_CAT")),
-	Mappings:      &cat.StorageKeysLookup{StorageRepository: &storage.MakerStorageRepository{}},
+	Mappings:      &cat.StorageKeysLookup{StorageRepository: &mcdStorage.MakerStorageRepository{}},
 	Repository:    &cat.CatStorageRepository{},
 }.NewTransformer

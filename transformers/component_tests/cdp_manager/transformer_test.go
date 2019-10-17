@@ -17,27 +17,25 @@
 package cdp_manager
 
 import (
-	"math/rand"
-	"strconv"
-
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/vulcanize/mcd_transformers/test_config"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	mcdStorage "github.com/vulcanize/mcd_transformers/transformers/storage"
+	"github.com/vulcanize/mcd_transformers/transformers/storage/cdp_manager"
+	"github.com/vulcanize/mcd_transformers/transformers/storage/test_helpers"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/storage"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
-
-	"github.com/vulcanize/mcd_transformers/test_config"
-	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	storage2 "github.com/vulcanize/mcd_transformers/transformers/storage"
-	"github.com/vulcanize/mcd_transformers/transformers/storage/cdp_manager"
-	"github.com/vulcanize/mcd_transformers/transformers/storage/test_helpers"
+	"math/rand"
+	"strconv"
 )
 
 var _ = Describe("Executing the transformer", func() {
 	var (
 		db                *postgres.DB
-		storageKeysLookup = cdp_manager.StorageKeysLookup{StorageRepository: &storage2.MakerStorageRepository{}}
+		storageKeysLookup = cdp_manager.StorageKeysLookup{StorageRepository: &mcdStorage.MakerStorageRepository{}}
 		repository        = cdp_manager.CdpManagerStorageRepository{}
 		contractAddress   = "7a4991c6bd1053c31f1678955ce839999d9841b1"
 		transformer       = storage.Transformer{

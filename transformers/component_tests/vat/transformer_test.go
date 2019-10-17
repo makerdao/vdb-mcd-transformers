@@ -17,31 +17,29 @@
 package vat
 
 import (
-	"strconv"
-
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/vulcanize/mcd_transformers/test_config"
+	"github.com/vulcanize/mcd_transformers/transformers/events/vat_frob"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	mcdStorage "github.com/vulcanize/mcd_transformers/transformers/storage"
+	"github.com/vulcanize/mcd_transformers/transformers/storage/test_helpers"
+	"github.com/vulcanize/mcd_transformers/transformers/storage/vat"
+	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/storage"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
-
-	"github.com/vulcanize/mcd_transformers/test_config"
-	"github.com/vulcanize/mcd_transformers/transformers/events/vat_frob"
-	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
-	storage2 "github.com/vulcanize/mcd_transformers/transformers/storage"
-	"github.com/vulcanize/mcd_transformers/transformers/storage/test_helpers"
-	"github.com/vulcanize/mcd_transformers/transformers/storage/vat"
-	"github.com/vulcanize/mcd_transformers/transformers/test_data"
+	"strconv"
 )
 
 var _ = Describe("Executing the transformer", func() {
 	var (
 		db                *postgres.DB
-		storageKeysLookup = vat.StorageKeysLookup{StorageRepository: &storage2.MakerStorageRepository{}}
+		storageKeysLookup = vat.StorageKeysLookup{StorageRepository: &mcdStorage.MakerStorageRepository{}}
 		repository        = vat.VatStorageRepository{}
 		contractAddress   = "48f749bd988caafacd7b951abbecc1aa31488690"
 		transformer       = storage.Transformer{

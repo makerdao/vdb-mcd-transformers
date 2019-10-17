@@ -1,3 +1,19 @@
+// VulcanizeDB
+// Copyright © 2018 Vulcanize
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 package jug
 
 import (
@@ -6,7 +22,7 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	storage2 "github.com/vulcanize/mcd_transformers/transformers/storage"
+	mcdStorage "github.com/vulcanize/mcd_transformers/transformers/storage"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/jug"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/test_helpers"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/storage"
@@ -20,7 +36,7 @@ var _ = Describe("Executing the transformer", func() {
 		db                *postgres.DB
 		err               error
 		ilkID             int64
-		storageKeysLookup = jug.StorageKeysLookup{StorageRepository: &storage2.MakerStorageRepository{}}
+		storageKeysLookup = jug.StorageKeysLookup{StorageRepository: &mcdStorage.MakerStorageRepository{}}
 		repository        = jug.JugStorageRepository{}
 		contractAddress   = "25a008bf942ce6d5b362f91ed7ae3e4104286a12"
 		transformer       = storage.Transformer{

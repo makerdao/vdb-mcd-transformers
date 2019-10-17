@@ -1,3 +1,19 @@
+// VulcanizeDB
+// Copyright © 2018 Vulcanize
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 package vow
 
 import (
@@ -5,7 +21,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/vulcanize/mcd_transformers/test_config"
-	storage2 "github.com/vulcanize/mcd_transformers/transformers/storage"
+	mcdStorage "github.com/vulcanize/mcd_transformers/transformers/storage"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/test_helpers"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/vow"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/storage"
@@ -16,7 +32,7 @@ import (
 var _ = Describe("Executing the transformer", func() {
 	var (
 		db                *postgres.DB
-		storageKeysLookup = vow.StorageKeysLookup{StorageRepository: &storage2.MakerStorageRepository{}}
+		storageKeysLookup = vow.StorageKeysLookup{StorageRepository: &mcdStorage.MakerStorageRepository{}}
 		repository        = vow.VowStorageRepository{}
 		contractAddress   = "4afcab85f27dd2e1a5ec1008b5b294e44e487f90"
 		transformer       = storage.Transformer{

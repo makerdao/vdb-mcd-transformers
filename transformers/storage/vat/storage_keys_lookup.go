@@ -18,13 +18,12 @@ package vat
 
 import (
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	mcdStorage "github.com/vulcanize/mcd_transformers/transformers/storage"
+	"github.com/vulcanize/mcd_transformers/transformers/storage/utilities"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/storage"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
-
-	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
-	s2 "github.com/vulcanize/mcd_transformers/transformers/storage"
-	"github.com/vulcanize/mcd_transformers/transformers/storage/utilities"
 )
 
 const (
@@ -81,7 +80,7 @@ var (
 )
 
 type StorageKeysLookup struct {
-	StorageRepository s2.IMakerStorageRepository
+	StorageRepository mcdStorage.IMakerStorageRepository
 	mappings          map[common.Hash]utils.StorageValueMetadata
 }
 

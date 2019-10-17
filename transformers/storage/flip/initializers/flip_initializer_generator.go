@@ -17,19 +17,17 @@
 package initializers
 
 import (
-	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
-
-	s2 "github.com/vulcanize/vulcanizedb/libraries/shared/factories/storage"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
-
-	"github.com/vulcanize/mcd_transformers/transformers/storage"
+	mcdStorage "github.com/vulcanize/mcd_transformers/transformers/storage"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/flip"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/storage"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 )
 
 func GenerateStorageTransformerInitializer(contractAddress string) transformer.StorageTransformerInitializer {
-	return s2.Transformer{
+	return storage.Transformer{
 		HashedAddress: utils.HexToKeccak256Hash(contractAddress),
-		Mappings:      &flip.StorageKeysLookup{StorageRepository: &storage.MakerStorageRepository{}, ContractAddress: contractAddress},
+		Mappings:      &flip.StorageKeysLookup{StorageRepository: &mcdStorage.MakerStorageRepository{}, ContractAddress: contractAddress},
 		Repository:    &flip.FlipStorageRepository{ContractAddress: contractAddress},
 	}.NewTransformer
 }

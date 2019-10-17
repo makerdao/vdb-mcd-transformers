@@ -1,34 +1,48 @@
+// VulcanizeDB
+// Copyright © 2018 Vulcanize
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 package flap
 
 import (
-	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	"strconv"
-
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	storageFactory "github.com/vulcanize/vulcanizedb/libraries/shared/factories/storage"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
-	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
-
 	"github.com/vulcanize/mcd_transformers/test_config"
-	"github.com/vulcanize/mcd_transformers/transformers/storage"
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	mcdStorage "github.com/vulcanize/mcd_transformers/transformers/storage"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/flap"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/test_helpers"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/storage"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
+	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
+	"strconv"
 )
 
 var _ = Describe("Executing the flap transformer", func() {
 	var (
 		db                *postgres.DB
 		repository        = flap.FlapStorageRepository{}
-		transformer       storageFactory.Transformer
+		transformer       storage.Transformer
 		contractAddress   = "0x164a942d9d7A269B2Dc8551C8dFad32e8fFd0b80"
-		storageKeysLookup = flap.StorageKeysLookup{StorageRepository: &storage.MakerStorageRepository{}, ContractAddress: contractAddress}
+		storageKeysLookup = flap.StorageKeysLookup{StorageRepository: &mcdStorage.MakerStorageRepository{}, ContractAddress: contractAddress}
 	)
 	BeforeEach(func() {
 		db = test_config.NewTestDB(test_config.NewTestNode())
 		test_config.CleanTestDB(db)
-		transformer = storageFactory.Transformer{
+		transformer = storage.Transformer{
 			HashedAddress: utils.HexToKeccak256Hash(contractAddress),
 			Mappings:      &storageKeysLookup,
 			Repository:    &repository,

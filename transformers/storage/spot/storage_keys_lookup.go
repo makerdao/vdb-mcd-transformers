@@ -18,13 +18,11 @@ package spot
 
 import (
 	"github.com/ethereum/go-ethereum/common"
-
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	mcdStorage "github.com/vulcanize/mcd_transformers/transformers/storage"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/storage"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
-
-	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
-	storage2 "github.com/vulcanize/mcd_transformers/transformers/storage"
 )
 
 const (
@@ -45,7 +43,7 @@ var (
 )
 
 type StorageKeysLookup struct {
-	StorageRepository storage2.IMakerStorageRepository
+	StorageRepository mcdStorage.IMakerStorageRepository
 	mappings          map[common.Hash]utils.StorageValueMetadata
 }
 

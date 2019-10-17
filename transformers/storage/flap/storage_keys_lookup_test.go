@@ -1,3 +1,19 @@
+// VulcanizeDB
+// Copyright © 2018 Vulcanize
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 package flap_test
 
 import (
@@ -8,16 +24,15 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	vdbStorage "github.com/vulcanize/vulcanizedb/libraries/shared/storage"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
-	"github.com/vulcanize/vulcanizedb/pkg/fakes"
-
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
-	"github.com/vulcanize/mcd_transformers/transformers/storage"
+	mcdStorage "github.com/vulcanize/mcd_transformers/transformers/storage"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/flap"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/test_helpers"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/storage"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
+	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 )
 
 var _ = Describe("Flap storage mappings", func() {
@@ -37,33 +52,33 @@ var _ = Describe("Flap storage mappings", func() {
 	Describe("looks up static keys", func() {
 		It("returns storage value mapping if storage key exists", func() {
 			Expect(storageKeysLookup.Lookup(flap.VatStorageKey)).To(Equal(utils.StorageValueMetadata{
-				Name: storage.Vat,
+				Name: mcdStorage.Vat,
 				Keys: nil,
 				Type: utils.Address,
 			}))
 			Expect(storageKeysLookup.Lookup(flap.GemStorageKey)).To(Equal(utils.StorageValueMetadata{
-				Name: storage.Gem,
+				Name: mcdStorage.Gem,
 				Keys: nil,
 				Type: utils.Address,
 			}))
 			Expect(storageKeysLookup.Lookup(flap.BegStorageKey)).To(Equal(utils.StorageValueMetadata{
-				Name: storage.Beg,
+				Name: mcdStorage.Beg,
 				Keys: nil,
 				Type: utils.Uint256,
 			}))
 			Expect(storageKeysLookup.Lookup(flap.TtlAndTauStorageKey)).To(Equal(utils.StorageValueMetadata{
-				Name:        storage.Packed,
+				Name:        mcdStorage.Packed,
 				Type:        utils.PackedSlot,
 				PackedTypes: map[int]utils.ValueType{0: utils.Uint48, 1: utils.Uint48},
-				PackedNames: map[int]string{0: storage.Ttl, 1: storage.Tau},
+				PackedNames: map[int]string{0: mcdStorage.Ttl, 1: mcdStorage.Tau},
 			}))
 			Expect(storageKeysLookup.Lookup(flap.KicksStorageKey)).To(Equal(utils.StorageValueMetadata{
-				Name: storage.Kicks,
+				Name: mcdStorage.Kicks,
 				Keys: nil,
 				Type: utils.Uint256,
 			}))
 			Expect(storageKeysLookup.Lookup(flap.LiveStorageKey)).To(Equal(utils.StorageValueMetadata{
-				Name: storage.Live,
+				Name: mcdStorage.Live,
 				Keys: nil,
 				Type: utils.Uint256,
 			}))
@@ -71,33 +86,33 @@ var _ = Describe("Flap storage mappings", func() {
 
 		It("returns storage value mapping if keccak hashed storage key exists", func() {
 			Expect(storageKeysLookup.Lookup(crypto.Keccak256Hash(flap.VatStorageKey[:]))).To(Equal(utils.StorageValueMetadata{
-				Name: storage.Vat,
+				Name: mcdStorage.Vat,
 				Keys: nil,
 				Type: utils.Address,
 			}))
 			Expect(storageKeysLookup.Lookup(crypto.Keccak256Hash(flap.GemStorageKey[:]))).To(Equal(utils.StorageValueMetadata{
-				Name: storage.Gem,
+				Name: mcdStorage.Gem,
 				Keys: nil,
 				Type: utils.Address,
 			}))
 			Expect(storageKeysLookup.Lookup(crypto.Keccak256Hash(flap.BegStorageKey[:]))).To(Equal(utils.StorageValueMetadata{
-				Name: storage.Beg,
+				Name: mcdStorage.Beg,
 				Keys: nil,
 				Type: utils.Uint256,
 			}))
 			Expect(storageKeysLookup.Lookup(crypto.Keccak256Hash(flap.TtlAndTauStorageKey[:]))).To(Equal(utils.StorageValueMetadata{
-				Name:        storage.Packed,
+				Name:        mcdStorage.Packed,
 				Type:        utils.PackedSlot,
 				PackedTypes: map[int]utils.ValueType{0: utils.Uint48, 1: utils.Uint48},
-				PackedNames: map[int]string{0: storage.Ttl, 1: storage.Tau},
+				PackedNames: map[int]string{0: mcdStorage.Ttl, 1: mcdStorage.Tau},
 			}))
 			Expect(storageKeysLookup.Lookup(crypto.Keccak256Hash(flap.KicksStorageKey[:]))).To(Equal(utils.StorageValueMetadata{
-				Name: storage.Kicks,
+				Name: mcdStorage.Kicks,
 				Keys: nil,
 				Type: utils.Uint256,
 			}))
 			Expect(storageKeysLookup.Lookup(crypto.Keccak256Hash(flap.LiveStorageKey[:]))).To(Equal(utils.StorageValueMetadata{
-				Name: storage.Live,
+				Name: mcdStorage.Live,
 				Keys: nil,
 				Type: utils.Uint256,
 			}))
@@ -146,32 +161,32 @@ var _ = Describe("Flap storage mappings", func() {
 				Expect(err).NotTo(HaveOccurred())
 
 				Expect(metadata).To(Equal(utils.StorageValueMetadata{
-					Name: storage.BidBid,
+					Name: mcdStorage.BidBid,
 					Keys: map[utils.Key]string{constants.BidId: bidId},
 					Type: utils.Uint256,
 				}))
 			})
 
 			It("gets lot metadata", func() {
-				flapBidLotKey := vdbStorage.GetIncrementedKey(flapBidBidKey, 1)
+				flapBidLotKey := storage.GetIncrementedKey(flapBidBidKey, 1)
 				metadata, err := storageKeysLookup.Lookup(flapBidLotKey)
 				Expect(err).NotTo(HaveOccurred())
 
 				Expect(metadata).To(Equal(utils.StorageValueMetadata{
-					Name: storage.BidLot,
+					Name: mcdStorage.BidLot,
 					Keys: map[utils.Key]string{constants.BidId: bidId},
 					Type: utils.Uint256,
 				}))
 			})
 
 			It("returns value metadata for bid guy + tic + end packed slot", func() {
-				bidGuyKey := vdbStorage.GetIncrementedKey(flapBidBidKey, 2)
+				bidGuyKey := storage.GetIncrementedKey(flapBidBidKey, 2)
 				expectedMetadata := utils.StorageValueMetadata{
-					Name:        storage.Packed,
+					Name:        mcdStorage.Packed,
 					Keys:        map[utils.Key]string{constants.BidId: bidId},
 					Type:        utils.PackedSlot,
 					PackedTypes: map[int]utils.ValueType{0: utils.Address, 1: utils.Uint48, 2: utils.Uint48},
-					PackedNames: map[int]string{0: storage.BidGuy, 1: storage.BidTic, 2: storage.BidEnd},
+					PackedNames: map[int]string{0: mcdStorage.BidGuy, 1: mcdStorage.BidTic, 2: mcdStorage.BidEnd},
 				}
 				Expect(storageKeysLookup.Lookup(bidGuyKey)).To(Equal(expectedMetadata))
 			})

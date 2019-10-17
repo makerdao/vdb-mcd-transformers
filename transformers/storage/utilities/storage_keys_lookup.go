@@ -14,26 +14,21 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package storage
+package utilities
 
-var (
-	Vat    = "vat"
-	Ilk    = "ilk"
-	Gem    = "gem"
-	Beg    = "beg"
-	Pad    = "pad"
-	Ttl    = "ttl"
-	Tau    = "tau"
-	Kicks  = "kicks"
-	Live   = "live"
-	Packed = "packed_storage_values"
-
-	BidBid = "bid_bid"
-	BidLot = "bid_lot"
-	BidGuy = "bid_guy"
-	BidTic = "bid_tic"
-	BidEnd = "bid_end"
-	BidGal = "bid_gal"
-	BidUsr = "bid_usr"
-	BidTab = "bid_tab"
+import (
+	"errors"
+	"fmt"
 )
+
+var ErrInvalidAddress = func(addr string) error {
+	return errors.New(fmt.Sprintf("invalid address passed for padding: %s", addr))
+}
+
+func PadAddress(addr string) (string, error) {
+	if len(addr) != 42 {
+		return "", ErrInvalidAddress(addr)
+	}
+	padding := "0x000000000000000000000000"
+	return padding + addr[2:], nil
+}

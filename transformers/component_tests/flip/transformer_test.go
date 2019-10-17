@@ -22,10 +22,10 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	"github.com/vulcanize/mcd_transformers/transformers/storage"
+	mcdStorage "github.com/vulcanize/mcd_transformers/transformers/storage"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/flip"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/test_helpers"
-	storageFactory "github.com/vulcanize/vulcanizedb/libraries/shared/factories/storage"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/storage"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 	"strconv"
@@ -35,15 +35,15 @@ var _ = Describe("Executing the flip transformer", func() {
 	var (
 		db                *postgres.DB
 		repository        = flip.FlipStorageRepository{}
-		transformer       storageFactory.Transformer
+		transformer       storage.Transformer
 		contractAddress   = "0x43c331c0389a92af62ee726d5ae0c8a424320c31"
-		storageKeysLookup = flip.StorageKeysLookup{StorageRepository: &storage.MakerStorageRepository{}, ContractAddress: contractAddress}
+		storageKeysLookup = flip.StorageKeysLookup{StorageRepository: &mcdStorage.MakerStorageRepository{}, ContractAddress: contractAddress}
 	)
 
 	BeforeEach(func() {
 		db = test_config.NewTestDB(test_config.NewTestNode())
 		test_config.CleanTestDB(db)
-		transformer = storageFactory.Transformer{
+		transformer = storage.Transformer{
 			HashedAddress: utils.HexToKeccak256Hash(contractAddress),
 			Mappings:      &storageKeysLookup,
 			Repository:    &repository,
