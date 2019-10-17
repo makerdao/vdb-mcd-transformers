@@ -19,18 +19,18 @@ import (
 
 var _ = Describe("Executing the flap transformer", func() {
 	var (
-		db               *postgres.DB
-		repository       = flap.FlapStorageRepository{}
-		transformer      storageFactory.Transformer
-		contractAddress  = "0x164a942d9d7A269B2Dc8551C8dFad32e8fFd0b80"
-		storageKeyLookup = flap.StorageKeysLookup{StorageRepository: &storage.MakerStorageRepository{}, ContractAddress: contractAddress}
+		db                *postgres.DB
+		repository        = flap.FlapStorageRepository{}
+		transformer       storageFactory.Transformer
+		contractAddress   = "0x164a942d9d7A269B2Dc8551C8dFad32e8fFd0b80"
+		storageKeysLookup = flap.StorageKeysLookup{StorageRepository: &storage.MakerStorageRepository{}, ContractAddress: contractAddress}
 	)
 	BeforeEach(func() {
 		db = test_config.NewTestDB(test_config.NewTestNode())
 		test_config.CleanTestDB(db)
 		transformer = storageFactory.Transformer{
 			HashedAddress: utils.HexToKeccak256Hash(contractAddress),
-			Mappings:      &storageKeyLookup,
+			Mappings:      &storageKeysLookup,
 			Repository:    &repository,
 		}
 		transformer.NewTransformer(db)

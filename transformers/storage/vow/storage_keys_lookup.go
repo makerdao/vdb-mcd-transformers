@@ -115,19 +115,19 @@ var (
 	}
 )
 
-type VowMappings struct {
+type StorageKeysLookup struct {
 	StorageRepository s2.IMakerStorageRepository
 	mappings          map[common.Hash]utils.StorageValueMetadata
 }
 
-func (mappings *VowMappings) Lookup(key common.Hash) (utils.StorageValueMetadata, error) {
-	metadata, ok := mappings.mappings[key]
+func (lookup *StorageKeysLookup) Lookup(key common.Hash) (utils.StorageValueMetadata, error) {
+	metadata, ok := lookup.mappings[key]
 	if !ok {
-		err := mappings.loadMappings()
+		err := lookup.loadMappings()
 		if err != nil {
 			return metadata, err
 		}
-		metadata, ok = mappings.mappings[key]
+		metadata, ok = lookup.mappings[key]
 		if !ok {
 			return metadata, utils.ErrStorageKeyNotFound{Key: key.Hex()}
 		}
@@ -135,18 +135,18 @@ func (mappings *VowMappings) Lookup(key common.Hash) (utils.StorageValueMetadata
 	return metadata, nil
 }
 
-func (mappings *VowMappings) loadMappings() error {
-	mappings.mappings = loadStaticMappings()
-	sinErr := mappings.loadSinKeys()
+func (lookup *StorageKeysLookup) loadMappings() error {
+	lookup.mappings = loadStaticMappings()
+	sinErr := lookup.loadSinKeys()
 	if sinErr != nil {
 		return sinErr
 	}
-	mappings.mappings = storage.AddHashedKeys(mappings.mappings)
+	lookup.mappings = storage.AddHashedKeys(lookup.mappings)
 	return nil
 }
 
-func (mappings *VowMappings) SetDB(db *postgres.DB) {
-	mappings.StorageRepository.SetDB(db)
+func (lookup *StorageKeysLookup) SetDB(db *postgres.DB) {
+	lookup.StorageRepository.SetDB(db)
 }
 
 func loadStaticMappings() map[common.Hash]utils.StorageValueMetadata {
@@ -164,8 +164,8 @@ func loadStaticMappings() map[common.Hash]utils.StorageValueMetadata {
 	return mappings
 }
 
-func (mappings *VowMappings) loadSinKeys() error {
-	sinKeys, err := mappings.StorageRepository.GetVowSinKeys()
+func (lookup *StorageKeysLookup) loadSinKeys() error {
+	sinKeys, err := lookup.StorageRepository.GetVowSinKeys()
 	if err != nil {
 		return err
 	}
@@ -174,7 +174,7 @@ func (mappings *VowMappings) loadSinKeys() error {
 		if err != nil {
 			return err
 		}
-		mappings.mappings[getSinKey(hexTimestamp)] = getSinMetadata(timestamp)
+		lookup.mappings[getSinKey(hexTimestamp)] = getSinMetadata(timestamp)
 	}
 	return nil
 }

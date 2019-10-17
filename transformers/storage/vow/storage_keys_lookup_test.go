@@ -31,42 +31,42 @@ import (
 var _ = Describe("Vow storage mappings", func() {
 	var (
 		storageRepository *test_helpers.MockMakerStorageRepository
-		mappings          vow.VowMappings
+		storageKeysLookup vow.StorageKeysLookup
 	)
 
 	BeforeEach(func() {
 		storageRepository = &test_helpers.MockMakerStorageRepository{}
-		mappings = vow.VowMappings{StorageRepository: storageRepository}
+		storageKeysLookup = vow.StorageKeysLookup{StorageRepository: storageRepository}
 	})
 
 	Describe("looking up static keys", func() {
 		It("returns value metadata if key exists", func() {
-			Expect(mappings.Lookup(vow.VatKey)).To(Equal(vow.VatMetadata))
-			Expect(mappings.Lookup(vow.FlapperKey)).To(Equal(vow.FlapperMetadata))
-			Expect(mappings.Lookup(vow.FlopperKey)).To(Equal(vow.FlopperMetadata))
-			Expect(mappings.Lookup(vow.SinIntegerKey)).To(Equal(vow.SinIntegerMetadata))
-			Expect(mappings.Lookup(vow.AshKey)).To(Equal(vow.AshMetadata))
-			Expect(mappings.Lookup(vow.WaitKey)).To(Equal(vow.WaitMetadata))
-			Expect(mappings.Lookup(vow.DumpKey)).To(Equal(vow.DumpMetadata))
-			Expect(mappings.Lookup(vow.SumpKey)).To(Equal(vow.SumpMetadata))
-			Expect(mappings.Lookup(vow.BumpKey)).To(Equal(vow.BumpMetadata))
-			Expect(mappings.Lookup(vow.HumpKey)).To(Equal(vow.HumpMetadata))
+			Expect(storageKeysLookup.Lookup(vow.VatKey)).To(Equal(vow.VatMetadata))
+			Expect(storageKeysLookup.Lookup(vow.FlapperKey)).To(Equal(vow.FlapperMetadata))
+			Expect(storageKeysLookup.Lookup(vow.FlopperKey)).To(Equal(vow.FlopperMetadata))
+			Expect(storageKeysLookup.Lookup(vow.SinIntegerKey)).To(Equal(vow.SinIntegerMetadata))
+			Expect(storageKeysLookup.Lookup(vow.AshKey)).To(Equal(vow.AshMetadata))
+			Expect(storageKeysLookup.Lookup(vow.WaitKey)).To(Equal(vow.WaitMetadata))
+			Expect(storageKeysLookup.Lookup(vow.DumpKey)).To(Equal(vow.DumpMetadata))
+			Expect(storageKeysLookup.Lookup(vow.SumpKey)).To(Equal(vow.SumpMetadata))
+			Expect(storageKeysLookup.Lookup(vow.BumpKey)).To(Equal(vow.BumpMetadata))
+			Expect(storageKeysLookup.Lookup(vow.HumpKey)).To(Equal(vow.HumpMetadata))
 		})
 
 		It("returns value metadata if keccak of key exists", func() {
-			Expect(mappings.Lookup(crypto.Keccak256Hash(vow.VatKey[:]))).To(Equal(vow.VatMetadata))
-			Expect(mappings.Lookup(crypto.Keccak256Hash(vow.FlapperKey[:]))).To(Equal(vow.FlapperMetadata))
-			Expect(mappings.Lookup(crypto.Keccak256Hash(vow.FlopperKey[:]))).To(Equal(vow.FlopperMetadata))
-			Expect(mappings.Lookup(crypto.Keccak256Hash(vow.SinIntegerKey[:]))).To(Equal(vow.SinIntegerMetadata))
-			Expect(mappings.Lookup(crypto.Keccak256Hash(vow.AshKey[:]))).To(Equal(vow.AshMetadata))
-			Expect(mappings.Lookup(crypto.Keccak256Hash(vow.WaitKey[:]))).To(Equal(vow.WaitMetadata))
-			Expect(mappings.Lookup(crypto.Keccak256Hash(vow.SumpKey[:]))).To(Equal(vow.SumpMetadata))
-			Expect(mappings.Lookup(crypto.Keccak256Hash(vow.BumpKey[:]))).To(Equal(vow.BumpMetadata))
-			Expect(mappings.Lookup(crypto.Keccak256Hash(vow.HumpKey[:]))).To(Equal(vow.HumpMetadata))
+			Expect(storageKeysLookup.Lookup(crypto.Keccak256Hash(vow.VatKey[:]))).To(Equal(vow.VatMetadata))
+			Expect(storageKeysLookup.Lookup(crypto.Keccak256Hash(vow.FlapperKey[:]))).To(Equal(vow.FlapperMetadata))
+			Expect(storageKeysLookup.Lookup(crypto.Keccak256Hash(vow.FlopperKey[:]))).To(Equal(vow.FlopperMetadata))
+			Expect(storageKeysLookup.Lookup(crypto.Keccak256Hash(vow.SinIntegerKey[:]))).To(Equal(vow.SinIntegerMetadata))
+			Expect(storageKeysLookup.Lookup(crypto.Keccak256Hash(vow.AshKey[:]))).To(Equal(vow.AshMetadata))
+			Expect(storageKeysLookup.Lookup(crypto.Keccak256Hash(vow.WaitKey[:]))).To(Equal(vow.WaitMetadata))
+			Expect(storageKeysLookup.Lookup(crypto.Keccak256Hash(vow.SumpKey[:]))).To(Equal(vow.SumpMetadata))
+			Expect(storageKeysLookup.Lookup(crypto.Keccak256Hash(vow.BumpKey[:]))).To(Equal(vow.BumpMetadata))
+			Expect(storageKeysLookup.Lookup(crypto.Keccak256Hash(vow.HumpKey[:]))).To(Equal(vow.HumpMetadata))
 		})
 
 		It("returns error if key does not exist", func() {
-			_, err := mappings.Lookup(common.HexToHash(fakes.FakeHash.Hex()))
+			_, err := storageKeysLookup.Lookup(common.HexToHash(fakes.FakeHash.Hex()))
 
 			Expect(err).To(HaveOccurred())
 			Expect(err).To(MatchError(utils.ErrStorageKeyNotFound{Key: fakes.FakeHash.Hex()}))
@@ -75,7 +75,7 @@ var _ = Describe("Vow storage mappings", func() {
 
 	Describe("looking up dynamic keys", func() {
 		It("refreshes mappings from repository if key not found", func() {
-			mappings.Lookup(fakes.FakeHash)
+			storageKeysLookup.Lookup(fakes.FakeHash)
 
 			Expect(storageRepository.GetVowSinKeysCalled).To(BeTrue())
 		})
@@ -83,7 +83,7 @@ var _ = Describe("Vow storage mappings", func() {
 		It("returns error if sin keys lookup fails", func() {
 			storageRepository.GetVowSinKeysError = fakes.FakeError
 
-			_, err := mappings.Lookup(fakes.FakeHash)
+			_, err := storageKeysLookup.Lookup(fakes.FakeHash)
 
 			Expect(err).To(HaveOccurred())
 			Expect(err).To(MatchError(fakes.FakeError))
@@ -97,7 +97,7 @@ var _ = Describe("Vow storage mappings", func() {
 			expectedKeys := map[utils.Key]string{constants.Timestamp: fakeTimestamp}
 			expectedMetadata := utils.GetStorageValueMetadata(vow.SinMapping, expectedKeys, utils.Uint256)
 
-			Expect(mappings.Lookup(sinKey)).To(Equal(expectedMetadata))
+			Expect(storageKeysLookup.Lookup(sinKey)).To(Equal(expectedMetadata))
 		})
 
 		It("returns value metadata for sin with vow fess event", func() {
@@ -108,7 +108,7 @@ var _ = Describe("Vow storage mappings", func() {
 			expectedKeys := map[utils.Key]string{constants.Timestamp: fakeTimestamp}
 			expectedMetadata := utils.GetStorageValueMetadata(vow.SinMapping, expectedKeys, utils.Uint256)
 
-			Expect(mappings.Lookup(sinKey)).To(Equal(expectedMetadata))
+			Expect(storageKeysLookup.Lookup(sinKey)).To(Equal(expectedMetadata))
 		})
 	})
 })

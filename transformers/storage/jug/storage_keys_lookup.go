@@ -47,23 +47,23 @@ var (
 	BaseMetadata = utils.GetStorageValueMetadata(JugBase, nil, utils.Uint256)
 )
 
-type JugMappings struct {
+type StorageKeysLookup struct {
 	StorageRepository storage2.IMakerStorageRepository
 	mappings          map[common.Hash]utils.StorageValueMetadata
 }
 
-func (mappings *JugMappings) SetDB(db *postgres.DB) {
-	mappings.StorageRepository.SetDB(db)
+func (lookup *StorageKeysLookup) SetDB(db *postgres.DB) {
+	lookup.StorageRepository.SetDB(db)
 }
 
-func (mappings *JugMappings) Lookup(key common.Hash) (utils.StorageValueMetadata, error) {
-	metadata, ok := mappings.mappings[key]
+func (lookup *StorageKeysLookup) Lookup(key common.Hash) (utils.StorageValueMetadata, error) {
+	metadata, ok := lookup.mappings[key]
 	if !ok {
-		err := mappings.loadMappings()
+		err := lookup.loadMappings()
 		if err != nil {
 			return metadata, err
 		}
-		metadata, ok = mappings.mappings[key]
+		metadata, ok = lookup.mappings[key]
 		if !ok {
 			return metadata, utils.ErrStorageKeyNotFound{Key: key.Hex()}
 		}
@@ -71,17 +71,17 @@ func (mappings *JugMappings) Lookup(key common.Hash) (utils.StorageValueMetadata
 	return metadata, nil
 }
 
-func (mappings *JugMappings) loadMappings() error {
-	mappings.mappings = getStaticMappings()
-	ilks, err := mappings.StorageRepository.GetIlks()
+func (lookup *StorageKeysLookup) loadMappings() error {
+	lookup.mappings = getStaticMappings()
+	ilks, err := lookup.StorageRepository.GetIlks()
 	if err != nil {
 		return err
 	}
 	for _, ilk := range ilks {
-		mappings.mappings[getDutyKey(ilk)] = getDutyMetadata(ilk)
-		mappings.mappings[getRhoKey(ilk)] = getRhoMetadata(ilk)
+		lookup.mappings[getDutyKey(ilk)] = getDutyMetadata(ilk)
+		lookup.mappings[getRhoKey(ilk)] = getRhoMetadata(ilk)
 	}
-	mappings.mappings = storage.AddHashedKeys(mappings.mappings)
+	lookup.mappings = storage.AddHashedKeys(lookup.mappings)
 	return nil
 }
 

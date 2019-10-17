@@ -32,27 +32,29 @@ import (
 )
 
 var _ = Describe("spot storage mappings", func() {
+	var (
+		storageRepository *test_helpers.MockMakerStorageRepository
+		storageKeysLookup spot.StorageKeysLookup
+	)
+
+	BeforeEach(func() {
+		storageRepository = &test_helpers.MockMakerStorageRepository{}
+		storageKeysLookup = spot.StorageKeysLookup{StorageRepository: storageRepository}
+	})
+
 	Describe("looking up static keys", func() {
 		It("returns value metadata if key exists", func() {
-			storageRepository := &test_helpers.MockMakerStorageRepository{}
-			mappings := spot.SpotMappings{StorageRepository: storageRepository}
-
-			Expect(mappings.Lookup(spot.VatKey)).To(Equal(spot.VatMetadata))
-			Expect(mappings.Lookup(spot.ParKey)).To(Equal(spot.ParMetadata))
+			Expect(storageKeysLookup.Lookup(spot.VatKey)).To(Equal(spot.VatMetadata))
+			Expect(storageKeysLookup.Lookup(spot.ParKey)).To(Equal(spot.ParMetadata))
 		})
 
 		It("returns value metadata if keccak of key exists", func() {
-			storageRepository := &test_helpers.MockMakerStorageRepository{}
-			mappings := spot.SpotMappings{StorageRepository: storageRepository}
-
-			Expect(mappings.Lookup(crypto.Keccak256Hash(spot.VatKey[:]))).To(Equal(spot.VatMetadata))
-			Expect(mappings.Lookup(crypto.Keccak256Hash(spot.ParKey[:]))).To(Equal(spot.ParMetadata))
+			Expect(storageKeysLookup.Lookup(crypto.Keccak256Hash(spot.VatKey[:]))).To(Equal(spot.VatMetadata))
+			Expect(storageKeysLookup.Lookup(crypto.Keccak256Hash(spot.ParKey[:]))).To(Equal(spot.ParMetadata))
 		})
 
 		It("returns error if key does not exist", func() {
-			mappings := spot.SpotMappings{StorageRepository: &test_helpers.MockMakerStorageRepository{}}
-
-			_, err := mappings.Lookup(common.HexToHash(fakes.FakeHash.Hex()))
+			_, err := storageKeysLookup.Lookup(common.HexToHash(fakes.FakeHash.Hex()))
 
 			Expect(err).To(HaveOccurred())
 			Expect(err).To(MatchError(utils.ErrStorageKeyNotFound{Key: fakes.FakeHash.Hex()}))
@@ -61,19 +63,14 @@ var _ = Describe("spot storage mappings", func() {
 
 	Describe("looking up dynamic keys", func() {
 		It("refreshes mappings from the repository if key not found", func() {
-			storageRepository := &test_helpers.MockMakerStorageRepository{}
-			mappings := spot.SpotMappings{StorageRepository: storageRepository}
-
-			mappings.Lookup(fakes.FakeHash)
+			storageKeysLookup.Lookup(fakes.FakeHash)
 
 			Expect(storageRepository.GetIlksCalled).To(BeTrue())
 		})
 
 		It("returns value metadata for pip when ilk in the DB", func() {
-			storageRepository := &test_helpers.MockMakerStorageRepository{}
 			fakeIlk := "fakeIlk"
 			storageRepository.Ilks = []string{fakeIlk}
-			mappings := spot.SpotMappings{StorageRepository: storageRepository}
 			ilkPipKey := common.BytesToHash(crypto.Keccak256(common.FromHex("0x" + fakeIlk + spot.IlkMappingIndex)))
 			expectedMetadata := utils.StorageValueMetadata{
 				Name: spot.IlkPip,
@@ -81,14 +78,12 @@ var _ = Describe("spot storage mappings", func() {
 				Type: utils.Address,
 			}
 
-			Expect(mappings.Lookup(ilkPipKey)).To(Equal(expectedMetadata))
+			Expect(storageKeysLookup.Lookup(ilkPipKey)).To(Equal(expectedMetadata))
 		})
 
 		It("returns value metadata for mat when ilk in the DB", func() {
-			storageRepository := &test_helpers.MockMakerStorageRepository{}
 			fakeIlk := "fakeIlk"
 			storageRepository.Ilks = []string{fakeIlk}
-			mappings := spot.SpotMappings{StorageRepository: storageRepository}
 			ilkPipKeyBytes := crypto.Keccak256(common.FromHex("0x" + fakeIlk + spot.IlkMappingIndex))
 			ilkPipAsInt := big.NewInt(0).SetBytes(ilkPipKeyBytes)
 			incrementedIlkPip := big.NewInt(0).Add(ilkPipAsInt, big.NewInt(1))
@@ -99,14 +94,11 @@ var _ = Describe("spot storage mappings", func() {
 				Type: utils.Uint256,
 			}
 
-			Expect(mappings.Lookup(ilkMatKey)).To(Equal(expectedMetadata))
+			Expect(storageKeysLookup.Lookup(ilkMatKey)).To(Equal(expectedMetadata))
 		})
 
 		It("returns error if key not found", func() {
-			storageRepository := &test_helpers.MockMakerStorageRepository{}
-			mappings := spot.SpotMappings{StorageRepository: storageRepository}
-
-			_, err := mappings.Lookup(fakes.FakeHash)
+			_, err := storageKeysLookup.Lookup(fakes.FakeHash)
 
 			Expect(err).To(HaveOccurred())
 			Expect(err).To(MatchError(utils.ErrStorageKeyNotFound{Key: fakes.FakeHash.Hex()}))

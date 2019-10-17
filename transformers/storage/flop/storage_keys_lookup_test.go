@@ -19,36 +19,36 @@ import (
 var _ = Describe("Flop storage mappings", func() {
 	var (
 		storageRepository *test_helpers.MockMakerStorageRepository
-		mappings          flop.StorageKeysLookup
+		storageKeysLookup flop.StorageKeysLookup
 	)
 
 	BeforeEach(func() {
 		storageRepository = &test_helpers.MockMakerStorageRepository{}
-		mappings = flop.StorageKeysLookup{StorageRepository: storageRepository, ContractAddress: "0x668001c75a9c02d6b10c7a17dbd8aa4afff95037"}
+		storageKeysLookup = flop.StorageKeysLookup{StorageRepository: storageRepository, ContractAddress: "0x668001c75a9c02d6b10c7a17dbd8aa4afff95037"}
 	})
 
 	Describe("looking up static keys", func() {
 		It("returns value metadata if key exists", func() {
-			Expect(mappings.Lookup(flop.VatKey)).To(Equal(flop.VatMetadata))
-			Expect(mappings.Lookup(flop.GemKey)).To(Equal(flop.GemMetadata))
-			Expect(mappings.Lookup(flop.BegKey)).To(Equal(flop.BegMetadata))
-			Expect(mappings.Lookup(flop.PadKey)).To(Equal(flop.PadMetadata))
-			Expect(mappings.Lookup(flop.TtlAndTauKey)).To(Equal(flop.TtlAndTauMetadata))
-			Expect(mappings.Lookup(flop.KicksKey)).To(Equal(flop.KicksMetadata))
-			Expect(mappings.Lookup(flop.LiveKey)).To(Equal(flop.LiveMetadata))
+			Expect(storageKeysLookup.Lookup(flop.VatKey)).To(Equal(flop.VatMetadata))
+			Expect(storageKeysLookup.Lookup(flop.GemKey)).To(Equal(flop.GemMetadata))
+			Expect(storageKeysLookup.Lookup(flop.BegKey)).To(Equal(flop.BegMetadata))
+			Expect(storageKeysLookup.Lookup(flop.PadKey)).To(Equal(flop.PadMetadata))
+			Expect(storageKeysLookup.Lookup(flop.TtlAndTauKey)).To(Equal(flop.TtlAndTauMetadata))
+			Expect(storageKeysLookup.Lookup(flop.KicksKey)).To(Equal(flop.KicksMetadata))
+			Expect(storageKeysLookup.Lookup(flop.LiveKey)).To(Equal(flop.LiveMetadata))
 		})
 
 		It("returns value metadata if keccak hash of key exists", func() {
-			Expect(mappings.Lookup(crypto.Keccak256Hash(flop.VatKey[:]))).To(Equal(flop.VatMetadata))
-			Expect(mappings.Lookup(crypto.Keccak256Hash(flop.GemKey[:]))).To(Equal(flop.GemMetadata))
-			Expect(mappings.Lookup(crypto.Keccak256Hash(flop.BegKey[:]))).To(Equal(flop.BegMetadata))
-			Expect(mappings.Lookup(crypto.Keccak256Hash(flop.TtlAndTauKey[:]))).To(Equal(flop.TtlAndTauMetadata))
-			Expect(mappings.Lookup(crypto.Keccak256Hash(flop.KicksKey[:]))).To(Equal(flop.KicksMetadata))
-			Expect(mappings.Lookup(crypto.Keccak256Hash(flop.LiveKey[:]))).To(Equal(flop.LiveMetadata))
+			Expect(storageKeysLookup.Lookup(crypto.Keccak256Hash(flop.VatKey[:]))).To(Equal(flop.VatMetadata))
+			Expect(storageKeysLookup.Lookup(crypto.Keccak256Hash(flop.GemKey[:]))).To(Equal(flop.GemMetadata))
+			Expect(storageKeysLookup.Lookup(crypto.Keccak256Hash(flop.BegKey[:]))).To(Equal(flop.BegMetadata))
+			Expect(storageKeysLookup.Lookup(crypto.Keccak256Hash(flop.TtlAndTauKey[:]))).To(Equal(flop.TtlAndTauMetadata))
+			Expect(storageKeysLookup.Lookup(crypto.Keccak256Hash(flop.KicksKey[:]))).To(Equal(flop.KicksMetadata))
+			Expect(storageKeysLookup.Lookup(crypto.Keccak256Hash(flop.LiveKey[:]))).To(Equal(flop.LiveMetadata))
 		})
 
 		It("returns error if key does not exist", func() {
-			_, err := mappings.Lookup(fakes.FakeHash)
+			_, err := storageKeysLookup.Lookup(fakes.FakeHash)
 
 			Expect(err).To(HaveOccurred())
 			Expect(err).To(MatchError(utils.ErrStorageKeyNotFound{Key: fakes.FakeHash.Hex()}))
@@ -57,15 +57,15 @@ var _ = Describe("Flop storage mappings", func() {
 
 	Describe("looking up dynamic keys", func() {
 		It("refreshes mappings from repository if key not found", func() {
-			_, _ = mappings.Lookup(fakes.FakeHash)
+			_, _ = storageKeysLookup.Lookup(fakes.FakeHash)
 
-			Expect(storageRepository.GetFlopBidIdsCalledWith).To(Equal(mappings.ContractAddress))
+			Expect(storageRepository.GetFlopBidIdsCalledWith).To(Equal(storageKeysLookup.ContractAddress))
 		})
 
 		It("returns error if bid ID lookup fails", func() {
 			storageRepository.GetFlopBidIdsError = fakes.FakeError
 
-			_, err := mappings.Lookup(fakes.FakeHash)
+			_, err := storageKeysLookup.Lookup(fakes.FakeHash)
 
 			Expect(err).To(HaveOccurred())
 			Expect(err).To(MatchError(fakes.FakeError))
@@ -92,7 +92,7 @@ var _ = Describe("Flop storage mappings", func() {
 				Keys: map[utils.Key]string{constants.BidId: fakeBidId},
 				Type: utils.Uint256,
 			}
-			Expect(mappings.Lookup(bidBidKey)).To(Equal(expectedMetadata))
+			Expect(storageKeysLookup.Lookup(bidBidKey)).To(Equal(expectedMetadata))
 		})
 
 		It("returns value metadata for bid lot", func() {
@@ -102,7 +102,7 @@ var _ = Describe("Flop storage mappings", func() {
 				Keys: map[utils.Key]string{constants.BidId: fakeBidId},
 				Type: utils.Uint256,
 			}
-			Expect(mappings.Lookup(bidLotKey)).To(Equal(expectedMetadata))
+			Expect(storageKeysLookup.Lookup(bidLotKey)).To(Equal(expectedMetadata))
 		})
 
 		It("returns value metadata for bid guy + tic + end packed slot", func() {
@@ -114,7 +114,7 @@ var _ = Describe("Flop storage mappings", func() {
 				PackedTypes: map[int]utils.ValueType{0: utils.Address, 1: utils.Uint48, 2: utils.Uint48},
 				PackedNames: map[int]string{0: storage.BidGuy, 1: storage.BidTic, 2: storage.BidEnd},
 			}
-			Expect(mappings.Lookup(bidGuyKey)).To(Equal(expectedMetadata))
+			Expect(storageKeysLookup.Lookup(bidGuyKey)).To(Equal(expectedMetadata))
 		})
 	})
 })

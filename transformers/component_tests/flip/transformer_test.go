@@ -33,11 +33,11 @@ import (
 
 var _ = Describe("Executing the flip transformer", func() {
 	var (
-		db               *postgres.DB
-		repository       = flip.FlipStorageRepository{}
-		transformer      storageFactory.Transformer
-		contractAddress  = "0x43c331c0389a92af62ee726d5ae0c8a424320c31"
-		storageKeyLookup = flip.StorageKeysLookup{StorageRepository: &storage.MakerStorageRepository{}, ContractAddress: contractAddress}
+		db                *postgres.DB
+		repository        = flip.FlipStorageRepository{}
+		transformer       storageFactory.Transformer
+		contractAddress   = "0x43c331c0389a92af62ee726d5ae0c8a424320c31"
+		storageKeysLookup = flip.StorageKeysLookup{StorageRepository: &storage.MakerStorageRepository{}, ContractAddress: contractAddress}
 	)
 
 	BeforeEach(func() {
@@ -45,7 +45,7 @@ var _ = Describe("Executing the flip transformer", func() {
 		test_config.CleanTestDB(db)
 		transformer = storageFactory.Transformer{
 			HashedAddress: utils.HexToKeccak256Hash(contractAddress),
-			Mappings:      &storageKeyLookup,
+			Mappings:      &storageKeysLookup,
 			Repository:    &repository,
 		}
 		transformer.NewTransformer(db)

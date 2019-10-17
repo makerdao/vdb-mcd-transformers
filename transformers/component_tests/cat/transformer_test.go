@@ -20,13 +20,13 @@ import (
 
 var _ = Describe("Executing the transformer", func() {
 	var (
-		db              *postgres.DB
-		mappings        = cat.CatMappings{StorageRepository: &storage2.MakerStorageRepository{}}
-		repository      = cat.CatStorageRepository{}
-		contractAddress = "81f7aa9c1570de564eb511b3a1e57dae558c65b5"
-		transformer     = storage.Transformer{
+		db                *postgres.DB
+		storageKeysLookup = cat.StorageKeysLookup{StorageRepository: &storage2.MakerStorageRepository{}}
+		repository        = cat.CatStorageRepository{}
+		contractAddress   = "81f7aa9c1570de564eb511b3a1e57dae558c65b5"
+		transformer       = storage.Transformer{
 			HashedAddress: utils.HexToKeccak256Hash(contractAddress),
-			Mappings:      &mappings,
+			Mappings:      &storageKeysLookup,
 			Repository:    &repository,
 		}
 	)

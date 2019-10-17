@@ -41,15 +41,15 @@ type StorageKeysLookup struct {
 	ContractAddress   string
 }
 
-func (mapping *StorageKeysLookup) Lookup(key common.Hash) (utils.StorageValueMetadata, error) {
-	metadata, ok := mapping.mappings[key]
+func (lookup *StorageKeysLookup) Lookup(key common.Hash) (utils.StorageValueMetadata, error) {
+	metadata, ok := lookup.mappings[key]
 	if !ok {
-		loadErr := mapping.loadMapping()
+		loadErr := lookup.loadMapping()
 		if loadErr != nil {
 			return utils.StorageValueMetadata{}, loadErr
 		}
 
-		metadata, ok = mapping.mappings[key]
+		metadata, ok = lookup.mappings[key]
 		if !ok {
 			return metadata, utils.ErrStorageKeyNotFound{Key: key.Hex()}
 		}
@@ -58,31 +58,31 @@ func (mapping *StorageKeysLookup) Lookup(key common.Hash) (utils.StorageValueMet
 	return metadata, nil
 }
 
-func (mapping *StorageKeysLookup) SetDB(db *postgres.DB) {
-	mapping.StorageRepository.SetDB(db)
+func (lookup *StorageKeysLookup) SetDB(db *postgres.DB) {
+	lookup.StorageRepository.SetDB(db)
 }
 
-func (mapping *StorageKeysLookup) loadMapping() error {
-	mapping.loadStaticKeys()
-	err := mapping.loadBidKeys()
+func (lookup *StorageKeysLookup) loadMapping() error {
+	lookup.loadStaticKeys()
+	err := lookup.loadBidKeys()
 	if err != nil {
 		return err
 	}
-	mapping.mappings = vdbStorage.AddHashedKeys(mapping.mappings)
+	lookup.mappings = vdbStorage.AddHashedKeys(lookup.mappings)
 	return nil
 }
 
-func (mapping *StorageKeysLookup) loadBidKeys() error {
-	bidIds, getBidIdsErr := mapping.StorageRepository.GetFlapBidIds(mapping.ContractAddress)
+func (lookup *StorageKeysLookup) loadBidKeys() error {
+	bidIds, getBidIdsErr := lookup.StorageRepository.GetFlapBidIds(lookup.ContractAddress)
 	for _, bidId := range bidIds {
 		hexBidId, convertErr := shared.ConvertIntStringToHex(bidId)
 		if convertErr != nil {
 			return convertErr
 		}
 
-		mapping.mappings[getBidBidKey(hexBidId)] = getBidBidMetadata(bidId)
-		mapping.mappings[getBidLotKey(hexBidId)] = getBidLotMetadata(bidId)
-		mapping.mappings[getBidGuyTicEndKey(hexBidId)] = getBidGuyTicEndMetadata(bidId)
+		lookup.mappings[getBidBidKey(hexBidId)] = getBidBidMetadata(bidId)
+		lookup.mappings[getBidLotKey(hexBidId)] = getBidLotMetadata(bidId)
+		lookup.mappings[getBidGuyTicEndKey(hexBidId)] = getBidGuyTicEndMetadata(bidId)
 	}
 
 	return getBidIdsErr
@@ -123,7 +123,7 @@ func getBidGuyTicEndMetadata(bidId string) utils.StorageValueMetadata {
 	return utils.GetStorageValueMetadataForPackedSlot(storage.Packed, keys, utils.PackedSlot, packedNames, packedTypes)
 }
 
-func (mapping *StorageKeysLookup) loadStaticKeys() {
+func (lookup *StorageKeysLookup) loadStaticKeys() {
 	mappings := make(map[common.Hash]utils.StorageValueMetadata)
 	mappings[VatStorageKey] = VatMetadata
 	mappings[GemStorageKey] = GemMetadata
@@ -131,5 +131,5 @@ func (mapping *StorageKeysLookup) loadStaticKeys() {
 	mappings[TtlAndTauStorageKey] = TtlAndTauMetadata
 	mappings[KicksStorageKey] = KicksMetadata
 	mappings[LiveStorageKey] = LiveMetadata
-	mapping.mappings = mappings
+	lookup.mappings = mappings
 }

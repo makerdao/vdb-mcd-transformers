@@ -36,14 +36,13 @@ import (
 
 var _ = Describe("Executing the transformer", func() {
 	var (
-		db *postgres.DB
-
-		mappings        = cdp_manager.CdpManagerMappings{StorageRepository: &storage2.MakerStorageRepository{}}
-		repository      = cdp_manager.CdpManagerStorageRepository{}
-		contractAddress = "7a4991c6bd1053c31f1678955ce839999d9841b1"
-		transformer     = storage.Transformer{
+		db                *postgres.DB
+		storageKeysLookup = cdp_manager.StorageKeysLookup{StorageRepository: &storage2.MakerStorageRepository{}}
+		repository        = cdp_manager.CdpManagerStorageRepository{}
+		contractAddress   = "7a4991c6bd1053c31f1678955ce839999d9841b1"
+		transformer       = storage.Transformer{
 			HashedAddress: utils.HexToKeccak256Hash(contractAddress),
-			Mappings:      &mappings,
+			Mappings:      &storageKeysLookup,
 			Repository:    &repository,
 		}
 	)

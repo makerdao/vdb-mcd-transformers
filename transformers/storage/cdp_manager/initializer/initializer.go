@@ -28,6 +28,6 @@ import (
 
 var StorageTransformerInitializer transformer.StorageTransformerInitializer = s2.Transformer{
 	HashedAddress: utils.HexToKeccak256Hash(constants.GetContractAddress("CDP_MANAGER")),
-	Mappings:      &cdp_manager.CdpManagerMappings{StorageRepository: &storage.MakerStorageRepository{}},
+	Mappings:      &cdp_manager.StorageKeysLookup{StorageRepository: &storage.MakerStorageRepository{}},
 	Repository:    &cdp_manager.CdpManagerStorageRepository{},
 }.NewTransformer

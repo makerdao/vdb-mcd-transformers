@@ -80,19 +80,19 @@ var (
 	}
 )
 
-type VatMappings struct {
+type StorageKeysLookup struct {
 	StorageRepository s2.IMakerStorageRepository
 	mappings          map[common.Hash]utils.StorageValueMetadata
 }
 
-func (mappings VatMappings) Lookup(key common.Hash) (utils.StorageValueMetadata, error) {
-	metadata, ok := mappings.mappings[key]
+func (lookup StorageKeysLookup) Lookup(key common.Hash) (utils.StorageValueMetadata, error) {
+	metadata, ok := lookup.mappings[key]
 	if !ok {
-		err := mappings.loadMappings()
+		err := lookup.loadMappings()
 		if err != nil {
 			return metadata, err
 		}
-		metadata, ok = mappings.mappings[key]
+		metadata, ok = lookup.mappings[key]
 		if !ok {
 			return metadata, utils.ErrStorageKeyNotFound{Key: key.Hex()}
 		}
@@ -100,33 +100,33 @@ func (mappings VatMappings) Lookup(key common.Hash) (utils.StorageValueMetadata,
 	return metadata, nil
 }
 
-func (mappings *VatMappings) SetDB(db *postgres.DB) {
-	mappings.StorageRepository.SetDB(db)
+func (lookup *StorageKeysLookup) SetDB(db *postgres.DB) {
+	lookup.StorageRepository.SetDB(db)
 }
 
-func (mappings *VatMappings) loadMappings() error {
-	mappings.mappings = loadStaticMappings()
-	daiErr := mappings.loadDaiKeys()
+func (lookup *StorageKeysLookup) loadMappings() error {
+	lookup.mappings = loadStaticMappings()
+	daiErr := lookup.loadDaiKeys()
 	if daiErr != nil {
 		return daiErr
 	}
-	gemErr := mappings.loadGemKeys()
+	gemErr := lookup.loadGemKeys()
 	if gemErr != nil {
 		return gemErr
 	}
-	ilkErr := mappings.loadIlkKeys()
+	ilkErr := lookup.loadIlkKeys()
 	if ilkErr != nil {
 		return ilkErr
 	}
-	sinErr := mappings.loadSinKeys()
+	sinErr := lookup.loadSinKeys()
 	if sinErr != nil {
 		return sinErr
 	}
-	urnErr := mappings.loadUrnKeys()
+	urnErr := lookup.loadUrnKeys()
 	if urnErr != nil {
 		return urnErr
 	}
-	mappings.mappings = storage.AddHashedKeys(mappings.mappings)
+	lookup.mappings = storage.AddHashedKeys(lookup.mappings)
 	return nil
 }
 
@@ -139,8 +139,8 @@ func loadStaticMappings() map[common.Hash]utils.StorageValueMetadata {
 	return mappings
 }
 
-func (mappings *VatMappings) loadDaiKeys() error {
-	daiKeys, err := mappings.StorageRepository.GetDaiKeys()
+func (lookup *StorageKeysLookup) loadDaiKeys() error {
+	daiKeys, err := lookup.StorageRepository.GetDaiKeys()
 	if err != nil {
 		return err
 	}
@@ -149,13 +149,13 @@ func (mappings *VatMappings) loadDaiKeys() error {
 		if padErr != nil {
 			return padErr
 		}
-		mappings.mappings[getDaiKey(paddedDai)] = getDaiMetadata(d)
+		lookup.mappings[getDaiKey(paddedDai)] = getDaiMetadata(d)
 	}
 	return nil
 }
 
-func (mappings *VatMappings) loadGemKeys() error {
-	gemKeys, err := mappings.StorageRepository.GetGemKeys()
+func (lookup *StorageKeysLookup) loadGemKeys() error {
+	gemKeys, err := lookup.StorageRepository.GetGemKeys()
 	if err != nil {
 		return err
 	}
@@ -164,28 +164,28 @@ func (mappings *VatMappings) loadGemKeys() error {
 		if padErr != nil {
 			return padErr
 		}
-		mappings.mappings[getGemKey(gem.Ilk, paddedGem)] = getGemMetadata(gem.Ilk, gem.Identifier)
+		lookup.mappings[getGemKey(gem.Ilk, paddedGem)] = getGemMetadata(gem.Ilk, gem.Identifier)
 	}
 	return nil
 }
 
-func (mappings *VatMappings) loadIlkKeys() error {
-	ilks, err := mappings.StorageRepository.GetIlks()
+func (lookup *StorageKeysLookup) loadIlkKeys() error {
+	ilks, err := lookup.StorageRepository.GetIlks()
 	if err != nil {
 		return err
 	}
 	for _, ilk := range ilks {
-		mappings.mappings[getIlkArtKey(ilk)] = getIlkArtMetadata(ilk)
-		mappings.mappings[getIlkRateKey(ilk)] = getIlkRateMetadata(ilk)
-		mappings.mappings[getIlkSpotKey(ilk)] = getIlkSpotMetadata(ilk)
-		mappings.mappings[getIlkLineKey(ilk)] = getIlkLineMetadata(ilk)
-		mappings.mappings[getIlkDustKey(ilk)] = getIlkDustMetadata(ilk)
+		lookup.mappings[getIlkArtKey(ilk)] = getIlkArtMetadata(ilk)
+		lookup.mappings[getIlkRateKey(ilk)] = getIlkRateMetadata(ilk)
+		lookup.mappings[getIlkSpotKey(ilk)] = getIlkSpotMetadata(ilk)
+		lookup.mappings[getIlkLineKey(ilk)] = getIlkLineMetadata(ilk)
+		lookup.mappings[getIlkDustKey(ilk)] = getIlkDustMetadata(ilk)
 	}
 	return nil
 }
 
-func (mappings *VatMappings) loadSinKeys() error {
-	sinKeys, err := mappings.StorageRepository.GetVatSinKeys()
+func (lookup *StorageKeysLookup) loadSinKeys() error {
+	sinKeys, err := lookup.StorageRepository.GetVatSinKeys()
 	if err != nil {
 		return err
 	}
@@ -194,13 +194,13 @@ func (mappings *VatMappings) loadSinKeys() error {
 		if padErr != nil {
 			return padErr
 		}
-		mappings.mappings[getSinKey(paddedSin)] = getSinMetadata(s)
+		lookup.mappings[getSinKey(paddedSin)] = getSinMetadata(s)
 	}
 	return nil
 }
 
-func (mappings *VatMappings) loadUrnKeys() error {
-	urns, err := mappings.StorageRepository.GetUrns()
+func (lookup *StorageKeysLookup) loadUrnKeys() error {
+	urns, err := lookup.StorageRepository.GetUrns()
 	if err != nil {
 		return err
 	}
@@ -209,8 +209,8 @@ func (mappings *VatMappings) loadUrnKeys() error {
 		if padErr != nil {
 			return padErr
 		}
-		mappings.mappings[getUrnArtKey(urn.Ilk, paddedGuy)] = getUrnArtMetadata(urn.Ilk, urn.Identifier)
-		mappings.mappings[getUrnInkKey(urn.Ilk, paddedGuy)] = getUrnInkMetadata(urn.Ilk, urn.Identifier)
+		lookup.mappings[getUrnArtKey(urn.Ilk, paddedGuy)] = getUrnArtMetadata(urn.Ilk, urn.Identifier)
+		lookup.mappings[getUrnInkKey(urn.Ilk, paddedGuy)] = getUrnInkMetadata(urn.Ilk, urn.Identifier)
 	}
 	return nil
 }

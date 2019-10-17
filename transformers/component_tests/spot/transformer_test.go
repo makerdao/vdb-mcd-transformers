@@ -19,15 +19,15 @@ import (
 
 var _ = Describe("Executing the transformer", func() {
 	var (
-		db              *postgres.DB
-		err             error
-		ilkID           int64
-		mappings        = spot.SpotMappings{StorageRepository: &storage2.MakerStorageRepository{}}
-		repository      = spot.SpotStorageRepository{}
-		contractAddress = "a57d4123c8a80ac410e924df9d5e47765ffd1375"
-		transformer     = storage.Transformer{
+		db                *postgres.DB
+		err               error
+		ilkID             int64
+		storageKeysLookup = spot.StorageKeysLookup{StorageRepository: &storage2.MakerStorageRepository{}}
+		repository        = spot.SpotStorageRepository{}
+		contractAddress   = "a57d4123c8a80ac410e924df9d5e47765ffd1375"
+		transformer       = storage.Transformer{
 			HashedAddress: utils.HexToKeccak256Hash(contractAddress),
-			Mappings:      &mappings,
+			Mappings:      &storageKeysLookup,
 			Repository:    &repository,
 		}
 	)

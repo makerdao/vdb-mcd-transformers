@@ -33,29 +33,31 @@ import (
 )
 
 var _ = Describe("jug storage mappings", func() {
+	var (
+		storageRepository *test_helpers.MockMakerStorageRepository
+		storageKeysLookup jug.StorageKeysLookup
+	)
+
+	BeforeEach(func() {
+		storageRepository = &test_helpers.MockMakerStorageRepository{}
+		storageKeysLookup = jug.StorageKeysLookup{StorageRepository: storageRepository}
+	})
+
 	Describe("looking up static keys", func() {
 		It("returns value metadata if key exists", func() {
-			storageRepository := &test_helpers.MockMakerStorageRepository{}
-			mappings := jug.JugMappings{StorageRepository: storageRepository}
-
-			Expect(mappings.Lookup(jug.VatKey)).To(Equal(jug.VatMetadata))
-			Expect(mappings.Lookup(jug.VowKey)).To(Equal(jug.VowMetadata))
-			Expect(mappings.Lookup(jug.BaseKey)).To(Equal(jug.BaseMetadata))
+			Expect(storageKeysLookup.Lookup(jug.VatKey)).To(Equal(jug.VatMetadata))
+			Expect(storageKeysLookup.Lookup(jug.VowKey)).To(Equal(jug.VowMetadata))
+			Expect(storageKeysLookup.Lookup(jug.BaseKey)).To(Equal(jug.BaseMetadata))
 		})
 
 		It("returns value metadata if keccak of key exists", func() {
-			storageRepository := &test_helpers.MockMakerStorageRepository{}
-			mappings := jug.JugMappings{StorageRepository: storageRepository}
-
-			Expect(mappings.Lookup(crypto.Keccak256Hash(jug.VatKey[:]))).To(Equal(jug.VatMetadata))
-			Expect(mappings.Lookup(crypto.Keccak256Hash(jug.VowKey[:]))).To(Equal(jug.VowMetadata))
-			Expect(mappings.Lookup(crypto.Keccak256Hash(jug.BaseKey[:]))).To(Equal(jug.BaseMetadata))
+			Expect(storageKeysLookup.Lookup(crypto.Keccak256Hash(jug.VatKey[:]))).To(Equal(jug.VatMetadata))
+			Expect(storageKeysLookup.Lookup(crypto.Keccak256Hash(jug.VowKey[:]))).To(Equal(jug.VowMetadata))
+			Expect(storageKeysLookup.Lookup(crypto.Keccak256Hash(jug.BaseKey[:]))).To(Equal(jug.BaseMetadata))
 		})
 
 		It("returns error if key does not exist", func() {
-			mappings := jug.JugMappings{StorageRepository: &test_helpers.MockMakerStorageRepository{}}
-
-			_, err := mappings.Lookup(common.HexToHash(fakes.FakeHash.Hex()))
+			_, err := storageKeysLookup.Lookup(common.HexToHash(fakes.FakeHash.Hex()))
 
 			Expect(err).To(HaveOccurred())
 			Expect(err).To(MatchError(utils.ErrStorageKeyNotFound{Key: fakes.FakeHash.Hex()}))
@@ -64,18 +66,13 @@ var _ = Describe("jug storage mappings", func() {
 
 	Describe("looking up dynamic keys", func() {
 		It("refreshes mappings from the repository if key not found", func() {
-			storageRepository := &test_helpers.MockMakerStorageRepository{}
-			mappings := jug.JugMappings{StorageRepository: storageRepository}
-
-			mappings.Lookup(fakes.FakeHash)
+			storageKeysLookup.Lookup(fakes.FakeHash)
 
 			Expect(storageRepository.GetIlksCalled).To(BeTrue())
 		})
 
 		It("returns value metadata for tax when ilk in the DB", func() {
-			storageRepository := &test_helpers.MockMakerStorageRepository{}
 			storageRepository.Ilks = []string{test_helpers.FakeIlk}
-			mappings := jug.JugMappings{StorageRepository: storageRepository}
 			ilkTaxKey := common.BytesToHash(crypto.Keccak256(common.FromHex(test_helpers.FakeIlk + jug.IlkMappingIndex)))
 			expectedMetadata := utils.StorageValueMetadata{
 				Name: jug.IlkDuty,
@@ -83,13 +80,11 @@ var _ = Describe("jug storage mappings", func() {
 				Type: utils.Uint256,
 			}
 
-			Expect(mappings.Lookup(ilkTaxKey)).To(Equal(expectedMetadata))
+			Expect(storageKeysLookup.Lookup(ilkTaxKey)).To(Equal(expectedMetadata))
 		})
 
 		It("returns value metadata for rho when ilk in the DB", func() {
-			storageRepository := &test_helpers.MockMakerStorageRepository{}
 			storageRepository.Ilks = []string{test_helpers.FakeIlk}
-			mappings := jug.JugMappings{StorageRepository: storageRepository}
 			ilkTaxKeyBytes := crypto.Keccak256(common.FromHex(test_helpers.FakeIlk + jug.IlkMappingIndex))
 			ilkTaxAsInt := big.NewInt(0).SetBytes(ilkTaxKeyBytes)
 			incrementedIlkTax := big.NewInt(0).Add(ilkTaxAsInt, big.NewInt(1))
@@ -100,14 +95,11 @@ var _ = Describe("jug storage mappings", func() {
 				Type: utils.Uint256,
 			}
 
-			Expect(mappings.Lookup(ilkRhoKey)).To(Equal(expectedMetadata))
+			Expect(storageKeysLookup.Lookup(ilkRhoKey)).To(Equal(expectedMetadata))
 		})
 
 		It("returns error if key not found", func() {
-			storageRepository := &test_helpers.MockMakerStorageRepository{}
-			mappings := jug.JugMappings{StorageRepository: storageRepository}
-
-			_, err := mappings.Lookup(fakes.FakeHash)
+			_, err := storageKeysLookup.Lookup(fakes.FakeHash)
 
 			Expect(err).To(HaveOccurred())
 			Expect(err).To(MatchError(utils.ErrStorageKeyNotFound{Key: fakes.FakeHash.Hex()}))

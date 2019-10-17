@@ -38,14 +38,14 @@ type StorageKeysLookup struct {
 	mappings          map[common.Hash]utils.StorageValueMetadata
 }
 
-func (mappings StorageKeysLookup) Lookup(key common.Hash) (utils.StorageValueMetadata, error) {
-	metadata, ok := mappings.mappings[key]
+func (lookup StorageKeysLookup) Lookup(key common.Hash) (utils.StorageValueMetadata, error) {
+	metadata, ok := lookup.mappings[key]
 	if !ok {
-		err := mappings.loadMappings()
+		err := lookup.loadMappings()
 		if err != nil {
 			return metadata, err
 		}
-		metadata, ok = mappings.mappings[key]
+		metadata, ok = lookup.mappings[key]
 		if !ok {
 			return metadata, utils.ErrStorageKeyNotFound{Key: key.Hex()}
 		}
@@ -53,17 +53,17 @@ func (mappings StorageKeysLookup) Lookup(key common.Hash) (utils.StorageValueMet
 	return metadata, nil
 }
 
-func (mappings *StorageKeysLookup) SetDB(db *postgres.DB) {
-	mappings.StorageRepository.SetDB(db)
+func (lookup *StorageKeysLookup) SetDB(db *postgres.DB) {
+	lookup.StorageRepository.SetDB(db)
 }
 
-func (mappings *StorageKeysLookup) loadMappings() error {
-	mappings.mappings = loadStaticMappings()
-	err := mappings.loadBidKeys()
+func (lookup *StorageKeysLookup) loadMappings() error {
+	lookup.mappings = loadStaticMappings()
+	err := lookup.loadBidKeys()
 	if err != nil {
 		return err
 	}
-	mappings.mappings = vdbStorage.AddHashedKeys(mappings.mappings)
+	lookup.mappings = vdbStorage.AddHashedKeys(lookup.mappings)
 	return nil
 }
 
@@ -77,8 +77,8 @@ func loadStaticMappings() map[common.Hash]utils.StorageValueMetadata {
 	return mappings
 }
 
-func (mappings *StorageKeysLookup) loadBidKeys() error {
-	bidIds, err := mappings.StorageRepository.GetFlipBidIds(mappings.ContractAddress)
+func (lookup *StorageKeysLookup) loadBidKeys() error {
+	bidIds, err := lookup.StorageRepository.GetFlipBidIds(lookup.ContractAddress)
 	if err != nil {
 		return err
 	}
@@ -87,12 +87,12 @@ func (mappings *StorageKeysLookup) loadBidKeys() error {
 		if err != nil {
 			return err
 		}
-		mappings.mappings[getBidBidKey(hexBidId)] = getBidBidMetadata(bidId)
-		mappings.mappings[getBidLotKey(hexBidId)] = getBidLotMetadata(bidId)
-		mappings.mappings[getBidGuyTicEndKey(hexBidId)] = getBidGuyTicEndMetadata(bidId)
-		mappings.mappings[getBidUsrKey(hexBidId)] = getBidUsrMetadata(bidId)
-		mappings.mappings[getBidGalKey(hexBidId)] = getBidGalMetadata(bidId)
-		mappings.mappings[getBidTabKey(hexBidId)] = getBidTabMetadata(bidId)
+		lookup.mappings[getBidBidKey(hexBidId)] = getBidBidMetadata(bidId)
+		lookup.mappings[getBidLotKey(hexBidId)] = getBidLotMetadata(bidId)
+		lookup.mappings[getBidGuyTicEndKey(hexBidId)] = getBidGuyTicEndMetadata(bidId)
+		lookup.mappings[getBidUsrKey(hexBidId)] = getBidUsrMetadata(bidId)
+		lookup.mappings[getBidGalKey(hexBidId)] = getBidGalMetadata(bidId)
+		lookup.mappings[getBidTabKey(hexBidId)] = getBidTabMetadata(bidId)
 	}
 	return nil
 }

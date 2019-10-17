@@ -22,7 +22,7 @@ var _ = Describe("Executing the flop transformer", func() {
 		transformer            storageFactory.Transformer
 		flopperContractAddress = "0xa806168abccd3c8cbc07ee4a87b16b14b874ffcf"
 		repository             = flop.FlopStorageRepository{ContractAddress: flopperContractAddress}
-		storageKeyLookup       = flop.StorageKeysLookup{StorageRepository: &storage.MakerStorageRepository{}, ContractAddress: flopperContractAddress}
+		storageKeysLookup      = flop.StorageKeysLookup{StorageRepository: &storage.MakerStorageRepository{}, ContractAddress: flopperContractAddress}
 	)
 
 	BeforeEach(func() {
@@ -30,7 +30,7 @@ var _ = Describe("Executing the flop transformer", func() {
 		test_config.CleanTestDB(db)
 		transformer = storageFactory.Transformer{
 			HashedAddress: utils.HexToKeccak256Hash(flopperContractAddress),
-			Mappings:      &storageKeyLookup,
+			Mappings:      &storageKeysLookup,
 			Repository:    &repository,
 		}
 		transformer.NewTransformer(db)
