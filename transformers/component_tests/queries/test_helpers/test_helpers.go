@@ -1,3 +1,19 @@
+// VulcanizeDB
+// Copyright © 2019 Vulcanize
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 package test_helpers
 
 import (
@@ -380,10 +396,10 @@ func GetFlapMetadatas(bidId string) []utils.StorageValueMetadata {
 func GetCdpManagerMetadatas(cdpi string) []utils.StorageValueMetadata {
 	keys := map[utils.Key]string{constants.Cdpi: cdpi}
 	return []utils.StorageValueMetadata{
-		utils.GetStorageValueMetadata(cdp_manager.CdpManagerCdpi, nil, utils.Uint256),
-		utils.GetStorageValueMetadata(cdp_manager.CdpManagerUrns, keys, utils.Address),
-		utils.GetStorageValueMetadata(cdp_manager.CdpManagerOwns, keys, utils.Address),
-		utils.GetStorageValueMetadata(cdp_manager.CdpManagerIlks, keys, utils.Bytes32),
+		utils.GetStorageValueMetadata(cdp_manager.Cdpi, nil, utils.Uint256),
+		utils.GetStorageValueMetadata(cdp_manager.Urns, keys, utils.Address),
+		utils.GetStorageValueMetadata(cdp_manager.Owns, keys, utils.Address),
+		utils.GetStorageValueMetadata(cdp_manager.Ilks, keys, utils.Bytes32),
 	}
 }
 
@@ -398,10 +414,10 @@ func GetFlipMetadatas(bidId string) []utils.StorageValueMetadata {
 
 func GetCdpManagerStorageValues(seed int, ilkHex string, urnGuy string, cdpi int) map[string]interface{} {
 	valuesMap := make(map[string]interface{})
-	valuesMap[cdp_manager.CdpManagerCdpi] = strconv.Itoa(cdpi)
-	valuesMap[cdp_manager.CdpManagerUrns] = urnGuy
-	valuesMap[cdp_manager.CdpManagerOwns] = "address1" + strconv.Itoa(seed)
-	valuesMap[cdp_manager.CdpManagerIlks] = ilkHex
+	valuesMap[cdp_manager.Cdpi] = strconv.Itoa(cdpi)
+	valuesMap[cdp_manager.Urns] = urnGuy
+	valuesMap[cdp_manager.Owns] = "address1" + strconv.Itoa(seed)
+	valuesMap[cdp_manager.Ilks] = ilkHex
 	return valuesMap
 }
 
@@ -466,7 +482,7 @@ func CreateFlip(db *postgres.DB, header core.Header, valuesMap map[string]interf
 func CreateManagedCdp(db *postgres.DB, header core.Header, valuesMap map[string]interface{}, metadatas []utils.StorageValueMetadata) error {
 	cdpManagerRepo := cdp_manager.CdpManagerStorageRepository{}
 	cdpManagerRepo.SetDB(db)
-	_, err := shared.GetOrCreateUrn(valuesMap[cdp_manager.CdpManagerUrns].(string), valuesMap[cdp_manager.CdpManagerIlks].(string), db)
+	_, err := shared.GetOrCreateUrn(valuesMap[cdp_manager.Urns].(string), valuesMap[cdp_manager.Ilks].(string), db)
 	if err != nil {
 		return err
 	}
@@ -479,9 +495,9 @@ func ManagedCdpFromValues(ilkIdentifier, created string, cdpValues map[string]in
 	createdTimestamp := time.Unix(parsedCreated, 0).UTC().Format(time.RFC3339)
 
 	return ManagedCdp{
-		Usr:           cdpValues[cdp_manager.CdpManagerOwns].(string),
-		Id:            cdpValues[cdp_manager.CdpManagerCdpi].(string),
-		UrnIdentifier: cdpValues[cdp_manager.CdpManagerUrns].(string),
+		Usr:           cdpValues[cdp_manager.Owns].(string),
+		Id:            cdpValues[cdp_manager.Cdpi].(string),
+		UrnIdentifier: cdpValues[cdp_manager.Urns].(string),
 		IlkIdentifier: ilkIdentifier,
 		Created:       sql.NullString{String: createdTimestamp, Valid: true},
 	}

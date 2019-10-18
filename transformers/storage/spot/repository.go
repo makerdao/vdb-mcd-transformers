@@ -18,12 +18,10 @@ package spot
 
 import (
 	"fmt"
-
-	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
-	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
-
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
+	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 )
 
 const (
@@ -47,9 +45,9 @@ func (repository SpotStorageRepository) Create(blockNumber int, blockHash string
 		return repository.insertIlkPip(blockNumber, blockHash, metadata, value.(string))
 	case IlkMat:
 		return repository.insertIlkMat(blockNumber, blockHash, metadata, value.(string))
-	case SpotVat:
+	case Vat:
 		return repository.insertSpotVat(blockNumber, blockHash, value.(string))
-	case SpotPar:
+	case Par:
 		return repository.insertSpotPar(blockNumber, blockHash, value.(string))
 
 	default:

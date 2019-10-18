@@ -37,10 +37,10 @@ const (
 	Sin     = "sin"
 	UrnArt  = "art"
 	UrnInk  = "ink"
-	VatDebt = "debt"
-	VatVice = "vice"
-	VatLine = "Line"
-	VatLive = "live"
+	Debt    = "debt"
+	Vice    = "vice"
+	Line    = "Line"
+	Live    = "live"
 )
 
 var (
@@ -52,28 +52,28 @@ var (
 
 	DebtKey      = common.HexToHash(storage.IndexSeven)
 	DebtMetadata = utils.StorageValueMetadata{
-		Name: VatDebt,
+		Name: Debt,
 		Keys: nil,
 		Type: utils.Uint256,
 	}
 
 	ViceKey      = common.HexToHash(storage.IndexEight)
 	ViceMetadata = utils.StorageValueMetadata{
-		Name: VatVice,
+		Name: Vice,
 		Keys: nil,
 		Type: utils.Uint256,
 	}
 
 	LineKey      = common.HexToHash(storage.IndexNine)
 	LineMetadata = utils.StorageValueMetadata{
-		Name: VatLine,
+		Name: Line,
 		Keys: nil,
 		Type: utils.Uint256,
 	}
 
 	LiveKey      = common.HexToHash(storage.IndexTen)
 	LiveMetadata = utils.StorageValueMetadata{
-		Name: VatLive,
+		Name: Live,
 		Keys: nil,
 		Type: utils.Uint256,
 	}

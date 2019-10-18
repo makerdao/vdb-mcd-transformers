@@ -75,7 +75,7 @@ var _ = Describe("CDP Manager storage mappings", func() {
 				Expect(err).NotTo(HaveOccurred())
 
 				Expect(metadata).To(Equal(utils.StorageValueMetadata{
-					Name: cdp_manager.CdpManagerUrns,
+					Name: cdp_manager.Urns,
 					Keys: map[utils.Key]string{constants.Cdpi: cdpi},
 					Type: utils.Address,
 				}))
@@ -90,7 +90,7 @@ var _ = Describe("CDP Manager storage mappings", func() {
 					Expect(err).NotTo(HaveOccurred())
 
 					Expect(metadata).To(Equal(utils.StorageValueMetadata{
-						Name: cdp_manager.CdpManagerListPrev,
+						Name: cdp_manager.ListPrev,
 						Keys: map[utils.Key]string{constants.Cdpi: cdpi},
 						Type: utils.Uint256,
 					}))
@@ -102,7 +102,7 @@ var _ = Describe("CDP Manager storage mappings", func() {
 					Expect(err).NotTo(HaveOccurred())
 
 					Expect(metadata).To(Equal(utils.StorageValueMetadata{
-						Name: cdp_manager.CdpManagerListNext,
+						Name: cdp_manager.ListNext,
 						Keys: map[utils.Key]string{constants.Cdpi: cdpi},
 						Type: utils.Uint256,
 					}))
@@ -115,7 +115,7 @@ var _ = Describe("CDP Manager storage mappings", func() {
 				Expect(err).NotTo(HaveOccurred())
 
 				Expect(metadata).To(Equal(utils.StorageValueMetadata{
-					Name: cdp_manager.CdpManagerOwns,
+					Name: cdp_manager.Owns,
 					Keys: map[utils.Key]string{constants.Cdpi: cdpi},
 					Type: utils.Address,
 				}))
@@ -127,7 +127,7 @@ var _ = Describe("CDP Manager storage mappings", func() {
 				Expect(err).NotTo(HaveOccurred())
 
 				Expect(metadata).To(Equal(utils.StorageValueMetadata{
-					Name: cdp_manager.CdpManagerIlks,
+					Name: cdp_manager.Ilks,
 					Keys: map[utils.Key]string{constants.Cdpi: cdpi},
 					Type: utils.Bytes32,
 				}))
@@ -150,7 +150,7 @@ var _ = Describe("CDP Manager storage mappings", func() {
 				Expect(err).NotTo(HaveOccurred())
 
 				Expect(metadata).To(Equal(utils.StorageValueMetadata{
-					Name: cdp_manager.CdpManagerFirst,
+					Name: cdp_manager.First,
 					Keys: map[utils.Key]string{constants.Owner: owns},
 					Type: utils.Uint256,
 				}))
@@ -162,7 +162,7 @@ var _ = Describe("CDP Manager storage mappings", func() {
 				Expect(err).NotTo(HaveOccurred())
 
 				Expect(metadata).To(Equal(utils.StorageValueMetadata{
-					Name: cdp_manager.CdpManagerLast,
+					Name: cdp_manager.Last,
 					Keys: map[utils.Key]string{constants.Owner: owns},
 					Type: utils.Uint256,
 				}))
@@ -174,7 +174,7 @@ var _ = Describe("CDP Manager storage mappings", func() {
 				Expect(err).NotTo(HaveOccurred())
 
 				Expect(metadata).To(Equal(utils.StorageValueMetadata{
-					Name: cdp_manager.CdpManagerCount,
+					Name: cdp_manager.Count,
 					Keys: map[utils.Key]string{constants.Owner: owns},
 					Type: utils.Uint256,
 				}))

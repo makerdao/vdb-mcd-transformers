@@ -18,12 +18,10 @@ package vat
 
 import (
 	"fmt"
-
-	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
-	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
-
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
+	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 )
 
 const (
@@ -69,13 +67,13 @@ func (repository *VatStorageRepository) Create(blockNumber int, blockHash string
 		return repository.insertUrnArt(blockNumber, blockHash, metadata, value.(string))
 	case UrnInk:
 		return repository.insertUrnInk(blockNumber, blockHash, metadata, value.(string))
-	case VatDebt:
+	case Debt:
 		return repository.insertVatDebt(blockNumber, blockHash, value.(string))
-	case VatVice:
+	case Vice:
 		return repository.insertVatVice(blockNumber, blockHash, value.(string))
-	case VatLine:
+	case Line:
 		return repository.insertVatLine(blockNumber, blockHash, value.(string))
-	case VatLive:
+	case Live:
 		return repository.insertVatLive(blockNumber, blockHash, value.(string))
 	default:
 		panic(fmt.Sprintf("unrecognized vat contract storage name: %s", metadata.Name))

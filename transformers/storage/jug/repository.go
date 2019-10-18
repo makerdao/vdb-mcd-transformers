@@ -18,12 +18,10 @@ package jug
 
 import (
 	"fmt"
-
-	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
-	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
-
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
+	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 )
 
 const (
@@ -48,11 +46,11 @@ func (repository JugStorageRepository) Create(blockNumber int, blockHash string,
 		return repository.insertIlkRho(blockNumber, blockHash, metadata, value.(string))
 	case IlkDuty:
 		return repository.insertIlkDuty(blockNumber, blockHash, metadata, value.(string))
-	case JugVat:
+	case Vat:
 		return repository.insertJugVat(blockNumber, blockHash, value.(string))
-	case JugVow:
+	case Vow:
 		return repository.insertJugVow(blockNumber, blockHash, value.(string))
-	case JugBase:
+	case Base:
 		return repository.insertJugBase(blockNumber, blockHash, value.(string))
 
 	default:

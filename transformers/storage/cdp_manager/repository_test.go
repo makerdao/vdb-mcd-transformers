@@ -1,19 +1,25 @@
+// VulcanizeDB
+// Copyright © 2019 Vulcanize
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 package cdp_manager_test
 
 import (
 	"database/sql"
-	"math/rand"
-	"strconv"
-	"time"
-
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
-	"github.com/vulcanize/vulcanizedb/pkg/core"
-	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
-	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres/repositories"
-	"github.com/vulcanize/vulcanizedb/pkg/fakes"
-
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/component_tests/queries/test_helpers"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
@@ -21,6 +27,14 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/storage/cdp_manager"
 	. "github.com/vulcanize/mcd_transformers/transformers/storage/test_helpers"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data/shared_behaviors"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
+	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
+	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres/repositories"
+	"github.com/vulcanize/vulcanizedb/pkg/fakes"
+	"math/rand"
+	"strconv"
+	"time"
 )
 
 var _ = Describe("CDP Manager storage repository", func() {
@@ -50,11 +64,11 @@ var _ = Describe("CDP Manager storage repository", func() {
 	})
 
 	Describe("vat", func() {
-		var vatMetadata = utils.StorageValueMetadata{Name: cdp_manager.CdpManagerVat}
+		var vatMetadata = utils.StorageValueMetadata{Name: cdp_manager.Vat}
 		var fakeAddress = FakeAddress
 
 		inputs := shared_behaviors.StorageVariableBehaviorInputs{
-			ValueFieldName:   cdp_manager.CdpManagerVat,
+			ValueFieldName:   cdp_manager.Vat,
 			Value:            fakeAddress,
 			StorageTableName: "maker.cdp_manager_vat",
 			Repository:       &repository,
@@ -66,7 +80,7 @@ var _ = Describe("CDP Manager storage repository", func() {
 
 	Describe("cdpi", func() {
 		var (
-			cdpiMetadata  = utils.StorageValueMetadata{Name: cdp_manager.CdpManagerCdpi}
+			cdpiMetadata  = utils.StorageValueMetadata{Name: cdp_manager.Cdpi}
 			fakeCdpi      = strconv.Itoa(rand.Int())
 			fakeTimestamp int
 			header        core.Header
@@ -81,7 +95,7 @@ var _ = Describe("CDP Manager storage repository", func() {
 		})
 
 		inputs := shared_behaviors.StorageVariableBehaviorInputs{
-			ValueFieldName:   cdp_manager.CdpManagerCdpi,
+			ValueFieldName:   cdp_manager.Cdpi,
 			Value:            fakeCdpi,
 			StorageTableName: "maker.cdp_manager_cdpi",
 			Repository:       &repository,
@@ -109,7 +123,7 @@ var _ = Describe("CDP Manager storage repository", func() {
 
 		It("returns an error if mapping metadata is missing the key", func() {
 			badMetadata := utils.StorageValueMetadata{
-				Name: cdp_manager.CdpManagerUrns,
+				Name: cdp_manager.Urns,
 				Keys: map[utils.Key]string{},
 				Type: utils.Address,
 			}
@@ -120,7 +134,7 @@ var _ = Describe("CDP Manager storage repository", func() {
 		Describe("urns", func() {
 			var fakeUrnsValue = FakeAddress
 			var urnsMetadata = utils.StorageValueMetadata{
-				Name: cdp_manager.CdpManagerUrns,
+				Name: cdp_manager.Urns,
 				Keys: map[utils.Key]string{constants.Cdpi: fakeCdpi},
 				Type: utils.Address,
 			}
@@ -152,7 +166,7 @@ var _ = Describe("CDP Manager storage repository", func() {
 		Describe("list_prev", func() {
 			var fakePrevValue = strconv.Itoa(rand.Int())
 			var prevMetadata = utils.StorageValueMetadata{
-				Name: cdp_manager.CdpManagerListPrev,
+				Name: cdp_manager.ListPrev,
 				Keys: map[utils.Key]string{constants.Cdpi: fakeCdpi},
 				Type: utils.Uint256,
 			}
@@ -173,7 +187,7 @@ var _ = Describe("CDP Manager storage repository", func() {
 		Describe("list_next", func() {
 			var fakeNextValue = strconv.Itoa(rand.Int())
 			var nextMetadata = utils.StorageValueMetadata{
-				Name: cdp_manager.CdpManagerListNext,
+				Name: cdp_manager.ListNext,
 				Keys: map[utils.Key]string{constants.Cdpi: fakeCdpi},
 				Type: utils.Uint256,
 			}
@@ -194,7 +208,7 @@ var _ = Describe("CDP Manager storage repository", func() {
 		Describe("owns", func() {
 			var fakeOwner = FakeAddress
 			var ownsMetadata = utils.StorageValueMetadata{
-				Name: cdp_manager.CdpManagerOwns,
+				Name: cdp_manager.Owns,
 				Keys: map[utils.Key]string{constants.Cdpi: fakeCdpi},
 				Type: utils.Address,
 			}
@@ -226,7 +240,7 @@ var _ = Describe("CDP Manager storage repository", func() {
 		Describe("ilks", func() {
 			var (
 				ilksMetadata = utils.StorageValueMetadata{
-					Name: cdp_manager.CdpManagerIlks,
+					Name: cdp_manager.Ilks,
 					Keys: map[utils.Key]string{constants.Cdpi: fakeCdpi},
 					Type: utils.Bytes32,
 				}
@@ -281,7 +295,7 @@ var _ = Describe("CDP Manager storage repository", func() {
 		Describe("first", func() {
 			var fakeFirstValue = strconv.Itoa(rand.Int())
 			var firstMetadata = utils.StorageValueMetadata{
-				Name: cdp_manager.CdpManagerFirst,
+				Name: cdp_manager.First,
 				Keys: map[utils.Key]string{constants.Owner: fakeOwner},
 				Type: utils.Uint256,
 			}
@@ -302,7 +316,7 @@ var _ = Describe("CDP Manager storage repository", func() {
 		Describe("last", func() {
 			var fakeLastValue = strconv.Itoa(rand.Int())
 			var lastMetadata = utils.StorageValueMetadata{
-				Name: cdp_manager.CdpManagerLast,
+				Name: cdp_manager.Last,
 				Keys: map[utils.Key]string{constants.Owner: fakeOwner},
 				Type: utils.Uint256,
 			}
@@ -323,7 +337,7 @@ var _ = Describe("CDP Manager storage repository", func() {
 		Describe("count", func() {
 			var fakeCountValue = strconv.Itoa(rand.Int())
 			var countMetadata = utils.StorageValueMetadata{
-				Name: cdp_manager.CdpManagerCount,
+				Name: cdp_manager.Count,
 				Keys: map[utils.Key]string{constants.Owner: fakeOwner},
 				Type: utils.Uint256,
 			}

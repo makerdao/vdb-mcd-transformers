@@ -28,29 +28,29 @@ import (
 )
 
 const (
-	CdpManagerVat      = "vat"
-	CdpManagerCdpi     = "cdpi"
-	CdpManagerUrns     = "urns"
-	CdpManagerListPrev = "prev"
-	CdpManagerListNext = "next"
-	CdpManagerOwns     = "owns"
-	CdpManagerIlks     = "ilks"
-	CdpManagerFirst    = "first"
-	CdpManagerLast     = "last"
-	CdpManagerCount    = "count"
+	Vat      = "vat"
+	Cdpi     = "cdpi"
+	Urns     = "urns"
+	ListPrev = "prev"
+	ListNext = "next"
+	Owns     = "owns"
+	Ilks     = "ilks"
+	First    = "first"
+	Last     = "last"
+	Count    = "count"
 )
 
 var (
 	VatKey      = common.HexToHash(storage.IndexZero)
 	VatMetadata = utils.StorageValueMetadata{
-		Name: CdpManagerVat,
+		Name: Vat,
 		Keys: nil,
 		Type: utils.Address,
 	}
 
 	CdpiKey      = common.HexToHash(storage.IndexOne)
 	CdpiMetadata = utils.StorageValueMetadata{
-		Name: CdpManagerCdpi,
+		Name: Cdpi,
 		Keys: nil,
 		Type: utils.Uint256,
 	}
@@ -150,7 +150,7 @@ func getUrnsKey(hexCdpi string) common.Hash {
 
 func getUrnsMetadata(cdpi string) utils.StorageValueMetadata {
 	keys := map[utils.Key]string{constants.Cdpi: cdpi}
-	return utils.GetStorageValueMetadata(CdpManagerUrns, keys, utils.Address)
+	return utils.GetStorageValueMetadata(Urns, keys, utils.Address)
 }
 
 func getListPrevKey(hexCdpi string) common.Hash {
@@ -159,7 +159,7 @@ func getListPrevKey(hexCdpi string) common.Hash {
 
 func getListPrevMetadata(cdpi string) utils.StorageValueMetadata {
 	keys := map[utils.Key]string{constants.Cdpi: cdpi}
-	return utils.GetStorageValueMetadata(CdpManagerListPrev, keys, utils.Uint256)
+	return utils.GetStorageValueMetadata(ListPrev, keys, utils.Uint256)
 }
 
 func getListNextKey(hexCdpi string) common.Hash {
@@ -168,7 +168,7 @@ func getListNextKey(hexCdpi string) common.Hash {
 
 func getListNextMetadata(cdpi string) utils.StorageValueMetadata {
 	keys := map[utils.Key]string{constants.Cdpi: cdpi}
-	return utils.GetStorageValueMetadata(CdpManagerListNext, keys, utils.Uint256)
+	return utils.GetStorageValueMetadata(ListNext, keys, utils.Uint256)
 }
 
 func getOwnsKey(hexCdpi string) common.Hash {
@@ -177,7 +177,7 @@ func getOwnsKey(hexCdpi string) common.Hash {
 
 func getOwnsMetadata(cdpi string) utils.StorageValueMetadata {
 	keys := map[utils.Key]string{constants.Cdpi: cdpi}
-	return utils.GetStorageValueMetadata(CdpManagerOwns, keys, utils.Address)
+	return utils.GetStorageValueMetadata(Owns, keys, utils.Address)
 }
 
 func getIlksKey(hexCdpi string) common.Hash {
@@ -186,7 +186,7 @@ func getIlksKey(hexCdpi string) common.Hash {
 
 func getIlksMetadata(cdpi string) utils.StorageValueMetadata {
 	keys := map[utils.Key]string{constants.Cdpi: cdpi}
-	return utils.GetStorageValueMetadata(CdpManagerIlks, keys, utils.Bytes32)
+	return utils.GetStorageValueMetadata(Ilks, keys, utils.Bytes32)
 }
 
 func getFirstKey(ownerAddress string) common.Hash {
@@ -195,7 +195,7 @@ func getFirstKey(ownerAddress string) common.Hash {
 
 func getFirstMetadata(ownerAddress string) utils.StorageValueMetadata {
 	keys := map[utils.Key]string{constants.Owner: ownerAddress}
-	return utils.GetStorageValueMetadata(CdpManagerFirst, keys, utils.Uint256)
+	return utils.GetStorageValueMetadata(First, keys, utils.Uint256)
 }
 
 func getLastKey(ownerAddress string) common.Hash {
@@ -204,7 +204,7 @@ func getLastKey(ownerAddress string) common.Hash {
 
 func getLastMetadata(ownerAddress string) utils.StorageValueMetadata {
 	keys := map[utils.Key]string{constants.Owner: ownerAddress}
-	return utils.GetStorageValueMetadata(CdpManagerLast, keys, utils.Uint256)
+	return utils.GetStorageValueMetadata(Last, keys, utils.Uint256)
 }
 
 func getCountKey(ownerAddress string) common.Hash {
@@ -213,5 +213,5 @@ func getCountKey(ownerAddress string) common.Hash {
 
 func getCountMetadata(ownerAddress string) utils.StorageValueMetadata {
 	keys := map[utils.Key]string{constants.Owner: ownerAddress}
-	return utils.GetStorageValueMetadata(CdpManagerCount, keys, utils.Uint256)
+	return utils.GetStorageValueMetadata(Count, keys, utils.Uint256)
 }

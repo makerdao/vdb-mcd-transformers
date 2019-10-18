@@ -26,20 +26,20 @@ import (
 )
 
 const (
-	IlkPip  = "pip"
-	IlkMat  = "mat"
-	SpotVat = "vat"
-	SpotPar = "par"
+	IlkPip = "pip"
+	IlkMat = "mat"
+	Vat    = "vat"
+	Par    = "par"
 )
 
 var (
 	IlkMappingIndex = storage.IndexOne
 
 	VatKey      = common.HexToHash(storage.IndexTwo)
-	VatMetadata = utils.GetStorageValueMetadata(SpotVat, nil, utils.Address)
+	VatMetadata = utils.GetStorageValueMetadata(Vat, nil, utils.Address)
 
 	ParKey      = common.HexToHash(storage.IndexThree)
-	ParMetadata = utils.GetStorageValueMetadata(SpotPar, nil, utils.Uint256)
+	ParMetadata = utils.GetStorageValueMetadata(Par, nil, utils.Uint256)
 )
 
 type StorageKeysLookup struct {

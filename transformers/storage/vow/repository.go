@@ -46,27 +46,27 @@ func (repository *VowStorageRepository) SetDB(db *postgres.DB) {
 
 func (repository VowStorageRepository) Create(blockNumber int, blockHash string, metadata utils.StorageValueMetadata, value interface{}) error {
 	switch metadata.Name {
-	case VowVat:
+	case Vat:
 		return repository.insertVowVat(blockNumber, blockHash, value.(string))
-	case VowFlapper:
+	case Flapper:
 		return repository.insertVowFlapper(blockNumber, blockHash, value.(string))
-	case VowFlopper:
+	case Flopper:
 		return repository.insertVowFlopper(blockNumber, blockHash, value.(string))
 	case SinMapping:
 		return repository.insertSinMapping(blockNumber, blockHash, metadata, value.(string))
 	case SinInteger:
 		return repository.insertSinInteger(blockNumber, blockHash, value.(string))
-	case VowAsh:
+	case Ash:
 		return repository.insertVowAsh(blockNumber, blockHash, value.(string))
-	case VowWait:
+	case Wait:
 		return repository.insertVowWait(blockNumber, blockHash, value.(string))
-	case VowDump:
+	case Dump:
 		return repository.insertVowDump(blockNumber, blockHash, value.(string))
-	case VowSump:
+	case Sump:
 		return repository.insertVowSump(blockNumber, blockHash, value.(string))
-	case VowBump:
+	case Bump:
 		return repository.insertVowBump(blockNumber, blockHash, value.(string))
-	case VowHump:
+	case Hump:
 		return repository.insertVowHump(blockNumber, blockHash, value.(string))
 	default:
 		panic("unrecognized storage metadata name")

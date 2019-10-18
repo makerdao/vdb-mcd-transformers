@@ -28,22 +28,22 @@ import (
 const (
 	IlkDuty = "duty"
 	IlkRho  = "rho"
-	JugVat  = "vat"
-	JugVow  = "vow"
-	JugBase = "base"
+	Vat     = "vat"
+	Vow     = "vow"
+	Base    = "base"
 )
 
 var (
 	IlkMappingIndex = storage.IndexOne
 
 	VatKey      = common.HexToHash(storage.IndexTwo)
-	VatMetadata = utils.GetStorageValueMetadata(JugVat, nil, utils.Address)
+	VatMetadata = utils.GetStorageValueMetadata(Vat, nil, utils.Address)
 
 	VowKey      = common.HexToHash(storage.IndexThree)
-	VowMetadata = utils.GetStorageValueMetadata(JugVow, nil, utils.Bytes32)
+	VowMetadata = utils.GetStorageValueMetadata(Vow, nil, utils.Bytes32)
 
 	BaseKey      = common.HexToHash(storage.IndexFour)
-	BaseMetadata = utils.GetStorageValueMetadata(JugBase, nil, utils.Uint256)
+	BaseMetadata = utils.GetStorageValueMetadata(Base, nil, utils.Uint256)
 )
 
 type StorageKeysLookup struct {

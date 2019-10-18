@@ -46,25 +46,25 @@ func (repository *CdpManagerStorageRepository) SetDB(db *postgres.DB) {
 
 func (repository CdpManagerStorageRepository) Create(blockNumber int, blockHash string, metadata utils.StorageValueMetadata, value interface{}) error {
 	switch metadata.Name {
-	case CdpManagerVat:
+	case Vat:
 		return repository.insertVat(blockNumber, blockHash, value.(string))
-	case CdpManagerCdpi:
+	case Cdpi:
 		return repository.insertCdpi(blockNumber, blockHash, value.(string))
-	case CdpManagerUrns:
+	case Urns:
 		return repository.insertUrns(blockNumber, blockHash, metadata, value.(string))
-	case CdpManagerListPrev:
+	case ListPrev:
 		return repository.insertListPrev(blockNumber, blockHash, metadata, value.(string))
-	case CdpManagerListNext:
+	case ListNext:
 		return repository.insertListNext(blockNumber, blockHash, metadata, value.(string))
-	case CdpManagerOwns:
+	case Owns:
 		return repository.insertOwns(blockNumber, blockHash, metadata, value.(string))
-	case CdpManagerIlks:
+	case Ilks:
 		return repository.insertIlks(blockNumber, blockHash, metadata, value.(string))
-	case CdpManagerFirst:
+	case First:
 		return repository.insertFirst(blockNumber, blockHash, metadata, value.(string))
-	case CdpManagerLast:
+	case Last:
 		return repository.insertLast(blockNumber, blockHash, metadata, value.(string))
-	case CdpManagerCount:
+	case Count:
 		return repository.insertCount(blockNumber, blockHash, metadata, value.(string))
 	default:
 		panic("unrecognized storage metadata name")

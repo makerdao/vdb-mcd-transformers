@@ -27,37 +27,37 @@ import (
 )
 
 const (
-	VowVat     = "vat"
-	VowFlapper = "flapper"
-	VowFlopper = "flopper"
+	Vat        = "vat"
+	Flapper    = "flapper"
+	Flopper    = "flopper"
 	SinMapping = "sin"
 	SinInteger = "Sin"
-	VowAsh     = "Ash"
-	VowWait    = "wait"
-	VowDump    = "dump"
-	VowSump    = "sump"
-	VowBump    = "bump"
-	VowHump    = "hump"
+	Ash        = "Ash"
+	Wait       = "wait"
+	Dump       = "dump"
+	Sump       = "sump"
+	Bump       = "bump"
+	Hump       = "hump"
 )
 
 var (
 	VatKey      = common.HexToHash(storage.IndexOne)
 	VatMetadata = utils.StorageValueMetadata{
-		Name: VowVat,
+		Name: Vat,
 		Keys: nil,
 		Type: utils.Address,
 	}
 
 	FlapperKey      = common.HexToHash(storage.IndexTwo)
 	FlapperMetadata = utils.StorageValueMetadata{
-		Name: VowFlapper,
+		Name: Flapper,
 		Keys: nil,
 		Type: utils.Address,
 	}
 
 	FlopperKey      = common.HexToHash(storage.IndexThree)
 	FlopperMetadata = utils.StorageValueMetadata{
-		Name: VowFlopper,
+		Name: Flopper,
 		Keys: nil,
 		Type: utils.Address,
 	}
@@ -73,42 +73,42 @@ var (
 
 	AshKey      = common.HexToHash(storage.IndexSix)
 	AshMetadata = utils.StorageValueMetadata{
-		Name: VowAsh,
+		Name: Ash,
 		Keys: nil,
 		Type: utils.Uint256,
 	}
 
 	WaitKey      = common.HexToHash(storage.IndexSeven)
 	WaitMetadata = utils.StorageValueMetadata{
-		Name: VowWait,
+		Name: Wait,
 		Keys: nil,
 		Type: utils.Uint256,
 	}
 
 	DumpKey      = common.HexToHash(storage.IndexEight)
 	DumpMetadata = utils.StorageValueMetadata{
-		Name: VowDump,
+		Name: Dump,
 		Keys: nil,
 		Type: utils.Uint256,
 	}
 
 	SumpKey      = common.HexToHash(storage.IndexNine)
 	SumpMetadata = utils.StorageValueMetadata{
-		Name: VowSump,
+		Name: Sump,
 		Keys: nil,
 		Type: utils.Uint256,
 	}
 
 	BumpKey      = common.HexToHash(storage.IndexTen)
 	BumpMetadata = utils.StorageValueMetadata{
-		Name: VowBump,
+		Name: Bump,
 		Keys: nil,
 		Type: utils.Uint256,
 	}
 
 	HumpKey      = common.HexToHash(storage.IndexEleven)
 	HumpMetadata = utils.StorageValueMetadata{
-		Name: VowHump,
+		Name: Hump,
 		Keys: nil,
 		Type: utils.Uint256,
 	}
