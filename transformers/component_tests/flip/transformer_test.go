@@ -37,7 +37,7 @@ var _ = Describe("Executing the flip transformer", func() {
 		repository        = flip.FlipStorageRepository{}
 		transformer       storage.Transformer
 		contractAddress   = "0x43c331c0389a92af62ee726d5ae0c8a424320c31"
-		storageKeysLookup = flip.StorageKeysLookup{StorageRepository: &mcdStorage.MakerStorageRepository{}, ContractAddress: contractAddress}
+		storageKeysLookup = mcdStorage.NewKeysLookup(flip.NewKeysLoader(&mcdStorage.MakerStorageRepository{}, contractAddress))
 	)
 
 	BeforeEach(func() {
@@ -45,7 +45,7 @@ var _ = Describe("Executing the flip transformer", func() {
 		test_config.CleanTestDB(db)
 		transformer = storage.Transformer{
 			HashedAddress: utils.HexToKeccak256Hash(contractAddress),
-			Mappings:      &storageKeysLookup,
+			Mappings:      storageKeysLookup,
 			Repository:    &repository,
 		}
 		transformer.NewTransformer(db)

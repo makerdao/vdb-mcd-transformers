@@ -31,65 +31,53 @@ import (
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 )
 
-var _ = Describe("Flip storage mappings", func() {
+var _ = Describe("Flip storage keys loader", func() {
 	var (
 		storageRepository *test_helpers.MockMakerStorageRepository
-		storageKeysLookup flip.StorageKeysLookup
+		storageKeysLoader mcdStorage.KeysLoader
 	)
 
 	BeforeEach(func() {
 		storageRepository = &test_helpers.MockMakerStorageRepository{}
-		storageKeysLookup = flip.StorageKeysLookup{StorageRepository: storageRepository, ContractAddress: constants.GetContractAddress("MCD_FLIP_ETH_A")}
+		storageKeysLoader = flip.NewKeysLoader(storageRepository, constants.GetContractAddress("MCD_FLIP_ETH_A"))
 	})
 
-	Describe("looking up static keys", func() {
-		It("returns value metadata if key exists", func() {
-			Expect(storageKeysLookup.Lookup(flip.VatKey)).To(Equal(flip.VatMetadata))
-			Expect(storageKeysLookup.Lookup(flip.IlkKey)).To(Equal(flip.IlkMetadata))
-			Expect(storageKeysLookup.Lookup(flip.BegKey)).To(Equal(flip.BegMetadata))
-			Expect(storageKeysLookup.Lookup(flip.TtlAndTauStorageKey)).To(Equal(flip.TtlAndTauMetadata))
-			Expect(storageKeysLookup.Lookup(flip.KicksKey)).To(Equal(flip.KicksMetadata))
-		})
+	It("returns value metadata for static keys", func() {
+		mappings, err := storageKeysLoader.LoadMappings()
 
-		It("returns value metadata if keccak hashed key exists", func() {
-			Expect(storageKeysLookup.Lookup(crypto.Keccak256Hash(flip.VatKey[:]))).To(Equal(flip.VatMetadata))
-			Expect(storageKeysLookup.Lookup(crypto.Keccak256Hash(flip.IlkKey[:]))).To(Equal(flip.IlkMetadata))
-			Expect(storageKeysLookup.Lookup(crypto.Keccak256Hash(flip.BegKey[:]))).To(Equal(flip.BegMetadata))
-			Expect(storageKeysLookup.Lookup(crypto.Keccak256Hash(flip.TtlAndTauStorageKey[:]))).To(Equal(flip.TtlAndTauMetadata))
-			Expect(storageKeysLookup.Lookup(crypto.Keccak256Hash(flip.KicksKey[:]))).To(Equal(flip.KicksMetadata))
-		})
-
-		It("returns error if key does not exist", func() {
-			_, err := storageKeysLookup.Lookup(fakes.FakeHash)
-
-			Expect(err).To(HaveOccurred())
-			Expect(err).To(MatchError(utils.ErrStorageKeyNotFound{Key: fakes.FakeHash.Hex()}))
-		})
+		Expect(err).NotTo(HaveOccurred())
+		Expect(mappings[flip.VatKey]).To(Equal(flip.VatMetadata))
+		Expect(mappings[flip.IlkKey]).To(Equal(flip.IlkMetadata))
+		Expect(mappings[flip.BegKey]).To(Equal(flip.BegMetadata))
+		Expect(mappings[flip.TtlAndTauStorageKey]).To(Equal(flip.TtlAndTauMetadata))
+		Expect(mappings[flip.KicksKey]).To(Equal(flip.KicksMetadata))
 	})
 
-	Describe("looking up dynamic keys", func() {
-		It("refreshes mappings from repository if key not found", func() {
-			_, _ = storageKeysLookup.Lookup(fakes.FakeHash)
+	Describe("bid", func() {
+		Describe("when loading bid IDs fails", func() {
+			It("returns error", func() {
+				storageRepository.GetFlipBidIdsError = fakes.FakeError
 
-			Expect(storageRepository.GetFlipBidIdsCalledWith).To(Equal(storageKeysLookup.ContractAddress))
+				_, err := storageKeysLoader.LoadMappings()
+
+				Expect(err).To(HaveOccurred())
+				Expect(err).To(MatchError(fakes.FakeError))
+			})
 		})
 
-		It("returns error if bid ID lookup fails", func() {
-			storageRepository.GetFlipBidIdsError = fakes.FakeError
-
-			_, err := storageKeysLookup.Lookup(fakes.FakeHash)
-
-			Expect(err).To(HaveOccurred())
-			Expect(err).To(MatchError(fakes.FakeError))
-		})
-
-		Describe("bid", func() {
-			fakeBidId := "1"
-			fakeHexBidId, _ := shared.ConvertIntStringToHex(fakeBidId)
-			var bidBidKey = common.BytesToHash(crypto.Keccak256(common.FromHex(fakeHexBidId + flip.BidsMappingIndex)))
+		Describe("when loading bid IDs succeeds", func() {
+			var (
+				fakeBidId       = "1"
+				fakeHexBidId, _ = shared.ConvertIntStringToHex(fakeBidId)
+				bidBidKey       = common.BytesToHash(crypto.Keccak256(common.FromHex(fakeHexBidId + flip.BidsMappingIndex)))
+				mappings        map[common.Hash]utils.StorageValueMetadata
+			)
 
 			BeforeEach(func() {
 				storageRepository.FlipBidIds = []string{fakeBidId}
+				var err error
+				mappings, err = storageKeysLoader.LoadMappings()
+				Expect(err).NotTo(HaveOccurred())
 			})
 
 			It("returns value metadata for bid bid", func() {
@@ -98,7 +86,8 @@ var _ = Describe("Flip storage mappings", func() {
 					Keys: map[utils.Key]string{constants.BidId: fakeBidId},
 					Type: utils.Uint256,
 				}
-				Expect(storageKeysLookup.Lookup(bidBidKey)).To(Equal(expectedMetadata))
+
+				Expect(mappings[bidBidKey]).To(Equal(expectedMetadata))
 			})
 
 			It("returns value metadata for bid lot", func() {
@@ -108,7 +97,8 @@ var _ = Describe("Flip storage mappings", func() {
 					Keys: map[utils.Key]string{constants.BidId: fakeBidId},
 					Type: utils.Uint256,
 				}
-				Expect(storageKeysLookup.Lookup(bidLotKey)).To(Equal(expectedMetadata))
+
+				Expect(mappings[bidLotKey]).To(Equal(expectedMetadata))
 			})
 
 			It("returns value metadata for bid guy + tic + end packed slot", func() {
@@ -120,7 +110,8 @@ var _ = Describe("Flip storage mappings", func() {
 					PackedTypes: map[int]utils.ValueType{0: utils.Address, 1: utils.Uint48, 2: utils.Uint48},
 					PackedNames: map[int]string{0: mcdStorage.BidGuy, 1: mcdStorage.BidTic, 2: mcdStorage.BidEnd},
 				}
-				Expect(storageKeysLookup.Lookup(bidGuyKey)).To(Equal(expectedMetadata))
+
+				Expect(mappings[bidGuyKey]).To(Equal(expectedMetadata))
 			})
 
 			It("returns value metadata for bid usr", func() {
@@ -130,7 +121,8 @@ var _ = Describe("Flip storage mappings", func() {
 					Keys: map[utils.Key]string{constants.BidId: fakeBidId},
 					Type: utils.Address,
 				}
-				Expect(storageKeysLookup.Lookup(bidUsrKey)).To(Equal(expectedMetadata))
+
+				Expect(mappings[bidUsrKey]).To(Equal(expectedMetadata))
 			})
 
 			It("returns value metadata for bid gal", func() {
@@ -140,7 +132,8 @@ var _ = Describe("Flip storage mappings", func() {
 					Keys: map[utils.Key]string{constants.BidId: fakeBidId},
 					Type: utils.Address,
 				}
-				Expect(storageKeysLookup.Lookup(bidGalKey)).To(Equal(expectedMetadata))
+
+				Expect(mappings[bidGalKey]).To(Equal(expectedMetadata))
 			})
 
 			It("returns value metadata for bid tab", func() {
@@ -150,7 +143,8 @@ var _ = Describe("Flip storage mappings", func() {
 					Keys: map[utils.Key]string{constants.BidId: fakeBidId},
 					Type: utils.Uint256,
 				}
-				Expect(storageKeysLookup.Lookup(bidTabKey)).To(Equal(expectedMetadata))
+
+				Expect(mappings[bidTabKey]).To(Equal(expectedMetadata))
 			})
 		})
 	})

@@ -27,7 +27,7 @@ import (
 func GenerateStorageTransformerInitializer(contractAddress string) transformer.StorageTransformerInitializer {
 	return storage.Transformer{
 		HashedAddress: utils.HexToKeccak256Hash(contractAddress),
-		Mappings:      &flip.StorageKeysLookup{StorageRepository: &mcdStorage.MakerStorageRepository{}, ContractAddress: contractAddress},
+		Mappings:      mcdStorage.NewKeysLookup(flip.NewKeysLoader(&mcdStorage.MakerStorageRepository{}, contractAddress)),
 		Repository:    &flip.FlipStorageRepository{ContractAddress: contractAddress},
 	}.NewTransformer
 }
