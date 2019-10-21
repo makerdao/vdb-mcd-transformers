@@ -14,19 +14,25 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package initializer
+package test_helpers
 
 import (
-	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
-	mcdStorage "github.com/vulcanize/mcd_transformers/transformers/storage"
-	"github.com/vulcanize/mcd_transformers/transformers/storage/vow"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/storage"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
+	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 )
 
-var StorageTransformerInitializer transformer.StorageTransformerInitializer = storage.Transformer{
-	HashedAddress: utils.HexToKeccak256Hash(constants.GetContractAddress("MCD_VOW")),
-	Mappings:      mcdStorage.NewKeysLookup(vow.NewKeysLoader(&mcdStorage.MakerStorageRepository{})),
-	Repository:    &vow.VowStorageRepository{},
-}.NewTransformer
+type MockKeysLoader struct {
+	LoadMappingsCallCount int
+	LoadMappingsError     error
+	StorageKeyMappings    map[common.Hash]utils.StorageValueMetadata
+}
+
+func (m *MockKeysLoader) LoadMappings() (map[common.Hash]utils.StorageValueMetadata, error) {
+	m.LoadMappingsCallCount++
+	return m.StorageKeyMappings, m.LoadMappingsError
+}
+
+func (m *MockKeysLoader) SetDB(db *postgres.DB) {
+	panic("implement me")
+}

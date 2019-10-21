@@ -114,42 +114,39 @@ var (
 	}
 )
 
-type StorageKeysLookup struct {
-	StorageRepository mcdStorage.IMakerStorageRepository
-	mappings          map[common.Hash]utils.StorageValueMetadata
+type keysLoader struct {
+	storageRepository mcdStorage.IMakerStorageRepository
 }
 
-func (lookup *StorageKeysLookup) Lookup(key common.Hash) (utils.StorageValueMetadata, error) {
-	metadata, ok := lookup.mappings[key]
-	if !ok {
-		err := lookup.loadMappings()
-		if err != nil {
-			return metadata, err
-		}
-		metadata, ok = lookup.mappings[key]
-		if !ok {
-			return metadata, utils.ErrStorageKeyNotFound{Key: key.Hex()}
-		}
+func NewKeysLoader(storageRepository mcdStorage.IMakerStorageRepository) mcdStorage.KeysLoader {
+	return &keysLoader{storageRepository: storageRepository}
+}
+
+func (loader *keysLoader) LoadMappings() (map[common.Hash]utils.StorageValueMetadata, error) {
+	mappings := addStaticMappings(make(map[common.Hash]utils.StorageValueMetadata))
+	return loader.addDynamicMappings(mappings)
+}
+
+func (loader *keysLoader) SetDB(db *postgres.DB) {
+	loader.storageRepository.SetDB(db)
+}
+
+func (loader *keysLoader) addDynamicMappings(mappings map[common.Hash]utils.StorageValueMetadata) (map[common.Hash]utils.StorageValueMetadata, error) {
+	sinKeys, getErr := loader.storageRepository.GetVowSinKeys()
+	if getErr != nil {
+		return nil, getErr
 	}
-	return metadata, nil
-}
-
-func (lookup *StorageKeysLookup) loadMappings() error {
-	lookup.mappings = loadStaticMappings()
-	sinErr := lookup.loadSinKeys()
-	if sinErr != nil {
-		return sinErr
+	for _, timestamp := range sinKeys {
+		hexTimestamp, convertErr := shared.ConvertIntStringToHex(timestamp)
+		if convertErr != nil {
+			return nil, convertErr
+		}
+		mappings[getSinKey(hexTimestamp)] = getSinMetadata(timestamp)
 	}
-	lookup.mappings = storage.AddHashedKeys(lookup.mappings)
-	return nil
+	return mappings, nil
 }
 
-func (lookup *StorageKeysLookup) SetDB(db *postgres.DB) {
-	lookup.StorageRepository.SetDB(db)
-}
-
-func loadStaticMappings() map[common.Hash]utils.StorageValueMetadata {
-	mappings := make(map[common.Hash]utils.StorageValueMetadata)
+func addStaticMappings(mappings map[common.Hash]utils.StorageValueMetadata) map[common.Hash]utils.StorageValueMetadata {
 	mappings[VatKey] = VatMetadata
 	mappings[FlapperKey] = FlapperMetadata
 	mappings[FlopperKey] = FlopperMetadata
@@ -161,21 +158,6 @@ func loadStaticMappings() map[common.Hash]utils.StorageValueMetadata {
 	mappings[BumpKey] = BumpMetadata
 	mappings[HumpKey] = HumpMetadata
 	return mappings
-}
-
-func (lookup *StorageKeysLookup) loadSinKeys() error {
-	sinKeys, err := lookup.StorageRepository.GetVowSinKeys()
-	if err != nil {
-		return err
-	}
-	for _, timestamp := range sinKeys {
-		hexTimestamp, err := shared.ConvertIntStringToHex(timestamp)
-		if err != nil {
-			return err
-		}
-		lookup.mappings[getSinKey(hexTimestamp)] = getSinMetadata(timestamp)
-	}
-	return nil
 }
 
 func getSinKey(hexTimestamp string) common.Hash {
