@@ -22,6 +22,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/mcd_transformers/transformers/storage"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/spot"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/test_helpers"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
@@ -29,44 +30,37 @@ import (
 	"math/big"
 )
 
-var _ = Describe("spot storage mappings", func() {
+var _ = Describe("spot storage keys loader", func() {
 	var (
 		storageRepository *test_helpers.MockMakerStorageRepository
-		storageKeysLookup spot.StorageKeysLookup
+		storageKeysLoader storage.KeysLoader
 	)
 
 	BeforeEach(func() {
 		storageRepository = &test_helpers.MockMakerStorageRepository{}
-		storageKeysLookup = spot.StorageKeysLookup{StorageRepository: storageRepository}
+		storageKeysLoader = spot.NewKeysLoader(storageRepository)
 	})
 
-	Describe("looking up static keys", func() {
-		It("returns value metadata if key exists", func() {
-			Expect(storageKeysLookup.Lookup(spot.VatKey)).To(Equal(spot.VatMetadata))
-			Expect(storageKeysLookup.Lookup(spot.ParKey)).To(Equal(spot.ParMetadata))
-		})
+	It("returns value metadata for static keys", func() {
+		mappings, err := storageKeysLoader.LoadMappings()
 
-		It("returns value metadata if keccak of key exists", func() {
-			Expect(storageKeysLookup.Lookup(crypto.Keccak256Hash(spot.VatKey[:]))).To(Equal(spot.VatMetadata))
-			Expect(storageKeysLookup.Lookup(crypto.Keccak256Hash(spot.ParKey[:]))).To(Equal(spot.ParMetadata))
-		})
+		Expect(err).NotTo(HaveOccurred())
+		Expect(mappings[spot.VatKey]).To(Equal(spot.VatMetadata))
+		Expect(mappings[spot.ParKey]).To(Equal(spot.ParMetadata))
+	})
 
-		It("returns error if key does not exist", func() {
-			_, err := storageKeysLookup.Lookup(common.HexToHash(fakes.FakeHash.Hex()))
+	Describe("when getting ilks fails", func() {
+		It("returns error", func() {
+			storageRepository.GetIlksError = fakes.FakeError
 
-			Expect(err).To(HaveOccurred())
-			Expect(err).To(MatchError(utils.ErrStorageKeyNotFound{Key: fakes.FakeHash.Hex()}))
+			_, err := storageKeysLoader.LoadMappings()
+
+			Expect(err).To(MatchError(fakes.FakeError))
 		})
 	})
 
-	Describe("looking up dynamic keys", func() {
-		It("refreshes mappings from the repository if key not found", func() {
-			storageKeysLookup.Lookup(fakes.FakeHash)
-
-			Expect(storageRepository.GetIlksCalled).To(BeTrue())
-		})
-
-		It("returns value metadata for pip when ilk in the DB", func() {
+	Describe("when getting ilks succeeds", func() {
+		It("returns value metadata for pip", func() {
 			fakeIlk := "fakeIlk"
 			storageRepository.Ilks = []string{fakeIlk}
 			ilkPipKey := common.BytesToHash(crypto.Keccak256(common.FromHex("0x" + fakeIlk + spot.IlkMappingIndex)))
@@ -76,10 +70,13 @@ var _ = Describe("spot storage mappings", func() {
 				Type: utils.Address,
 			}
 
-			Expect(storageKeysLookup.Lookup(ilkPipKey)).To(Equal(expectedMetadata))
+			mappings, err := storageKeysLoader.LoadMappings()
+
+			Expect(err).NotTo(HaveOccurred())
+			Expect(mappings[ilkPipKey]).To(Equal(expectedMetadata))
 		})
 
-		It("returns value metadata for mat when ilk in the DB", func() {
+		It("returns value metadata for mat", func() {
 			fakeIlk := "fakeIlk"
 			storageRepository.Ilks = []string{fakeIlk}
 			ilkPipKeyBytes := crypto.Keccak256(common.FromHex("0x" + fakeIlk + spot.IlkMappingIndex))
@@ -92,14 +89,10 @@ var _ = Describe("spot storage mappings", func() {
 				Type: utils.Uint256,
 			}
 
-			Expect(storageKeysLookup.Lookup(ilkMatKey)).To(Equal(expectedMetadata))
-		})
+			mappings, err := storageKeysLoader.LoadMappings()
 
-		It("returns error if key not found", func() {
-			_, err := storageKeysLookup.Lookup(fakes.FakeHash)
-
-			Expect(err).To(HaveOccurred())
-			Expect(err).To(MatchError(utils.ErrStorageKeyNotFound{Key: fakes.FakeHash.Hex()}))
+			Expect(err).NotTo(HaveOccurred())
+			Expect(mappings[ilkMatKey]).To(Equal(expectedMetadata))
 		})
 	})
 })

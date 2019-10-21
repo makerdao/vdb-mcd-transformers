@@ -42,42 +42,29 @@ var (
 	ParMetadata = utils.GetStorageValueMetadata(Par, nil, utils.Uint256)
 )
 
-type StorageKeysLookup struct {
-	StorageRepository mcdStorage.IMakerStorageRepository
-	mappings          map[common.Hash]utils.StorageValueMetadata
+type keysLoader struct {
+	storageRepository mcdStorage.IMakerStorageRepository
 }
 
-func (lookup *StorageKeysLookup) SetDB(db *postgres.DB) {
-	lookup.StorageRepository.SetDB(db)
+func NewKeysLoader(storageRepository mcdStorage.IMakerStorageRepository) mcdStorage.KeysLoader {
+	return &keysLoader{storageRepository: storageRepository}
 }
 
-func (lookup *StorageKeysLookup) Lookup(key common.Hash) (utils.StorageValueMetadata, error) {
-	metadata, ok := lookup.mappings[key]
-	if !ok {
-		err := lookup.loadMappings()
-		if err != nil {
-			return metadata, err
-		}
-		metadata, ok = lookup.mappings[key]
-		if !ok {
-			return metadata, utils.ErrStorageKeyNotFound{Key: key.Hex()}
-		}
-	}
-	return metadata, nil
+func (loader *keysLoader) SetDB(db *postgres.DB) {
+	loader.storageRepository.SetDB(db)
 }
 
-func (lookup *StorageKeysLookup) loadMappings() error {
-	lookup.mappings = getStaticMappings()
-	ilks, err := lookup.StorageRepository.GetIlks()
+func (loader *keysLoader) LoadMappings() (map[common.Hash]utils.StorageValueMetadata, error) {
+	mappings := getStaticMappings()
+	ilks, err := loader.storageRepository.GetIlks()
 	if err != nil {
-		return err
+		return nil, err
 	}
 	for _, ilk := range ilks {
-		lookup.mappings[getPipKey(ilk)] = getPipMetadata(ilk)
-		lookup.mappings[getMatKey(ilk)] = getMatMetadata(ilk)
+		mappings[getPipKey(ilk)] = getPipMetadata(ilk)
+		mappings[getMatKey(ilk)] = getMatMetadata(ilk)
 	}
-	lookup.mappings = storage.AddHashedKeys(lookup.mappings)
-	return nil
+	return mappings, nil
 }
 
 func getStaticMappings() map[common.Hash]utils.StorageValueMetadata {
