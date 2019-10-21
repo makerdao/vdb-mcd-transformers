@@ -35,12 +35,12 @@ import (
 var _ = Describe("Executing the transformer", func() {
 	var (
 		db                *postgres.DB
-		storageKeysLookup = cdp_manager.StorageKeysLookup{StorageRepository: &mcdStorage.MakerStorageRepository{}}
+		storageKeysLookup = mcdStorage.NewKeysLookup(cdp_manager.NewKeysLoader(&mcdStorage.MakerStorageRepository{}))
 		repository        = cdp_manager.CdpManagerStorageRepository{}
 		contractAddress   = "7a4991c6bd1053c31f1678955ce839999d9841b1"
 		transformer       = storage.Transformer{
 			HashedAddress: utils.HexToKeccak256Hash(contractAddress),
-			Mappings:      &storageKeysLookup,
+			Mappings:      storageKeysLookup,
 			Repository:    &repository,
 		}
 	)

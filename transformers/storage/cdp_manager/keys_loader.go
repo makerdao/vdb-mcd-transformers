@@ -64,41 +64,61 @@ var (
 	CountMappingIndex = storage.IndexEight
 )
 
-type StorageKeysLookup struct {
-	StorageRepository mcdStorage.IMakerStorageRepository
-	mappings          map[common.Hash]utils.StorageValueMetadata
+type keysLoader struct {
+	storageRepository mcdStorage.IMakerStorageRepository
 }
 
-func (lookup *StorageKeysLookup) SetDB(db *postgres.DB) {
-	lookup.StorageRepository.SetDB(db)
+func NewKeysLoader(storageRepository mcdStorage.IMakerStorageRepository) mcdStorage.KeysLoader {
+	return &keysLoader{storageRepository: storageRepository}
 }
 
-func (lookup *StorageKeysLookup) Lookup(key common.Hash) (utils.StorageValueMetadata, error) {
-	metadata, ok := lookup.mappings[key]
-	if !ok {
-		err := lookup.loadMappings()
-		if err != nil {
-			return metadata, err
-		}
-		metadata, ok = lookup.mappings[key]
-		if !ok {
-			return metadata, utils.ErrStorageKeyNotFound{Key: key.Hex()}
-		}
-	}
-	return metadata, nil
+func (loader *keysLoader) SetDB(db *postgres.DB) {
+	loader.storageRepository.SetDB(db)
 }
 
-func (lookup *StorageKeysLookup) loadMappings() error {
-	lookup.mappings = loadStaticMappings()
-	cdpiErr := lookup.loadCdpiKeyMappings()
+func (loader *keysLoader) LoadMappings() (map[common.Hash]utils.StorageValueMetadata, error) {
+	mappings := loadStaticMappings()
+	mappings, cdpiErr := loader.loadCdpiKeyMappings(mappings)
 	if cdpiErr != nil {
-		return cdpiErr
+		return nil, cdpiErr
 	}
-	ownsErr := lookup.loadOwnsKeyMappings()
-	if ownsErr != nil {
-		return ownsErr
+	return loader.loadOwnsKeyMappings(mappings)
+}
+
+func (loader *keysLoader) loadCdpiKeyMappings(mappings map[common.Hash]utils.StorageValueMetadata) (map[common.Hash]utils.StorageValueMetadata, error) {
+	cdpis, cdpiErr := loader.storageRepository.GetCdpis()
+	if cdpiErr != nil {
+		return nil, cdpiErr
 	}
-	return nil
+	for _, cdpi := range cdpis {
+		hexCdpi, hexErr := shared.ConvertIntStringToHex(cdpi)
+		if hexErr != nil {
+			return nil, hexErr
+		}
+		mappings[getUrnsKey(hexCdpi)] = getUrnsMetadata(cdpi)
+		mappings[getListPrevKey(hexCdpi)] = getListPrevMetadata(cdpi)
+		mappings[getListNextKey(hexCdpi)] = getListNextMetadata(cdpi)
+		mappings[getOwnsKey(hexCdpi)] = getOwnsMetadata(cdpi)
+		mappings[getIlksKey(hexCdpi)] = getIlksMetadata(cdpi)
+	}
+	return mappings, nil
+}
+
+func (loader *keysLoader) loadOwnsKeyMappings(mappings map[common.Hash]utils.StorageValueMetadata) (map[common.Hash]utils.StorageValueMetadata, error) {
+	owners, ownersErr := loader.storageRepository.GetOwners()
+	if ownersErr != nil {
+		return nil, ownersErr
+	}
+	for _, owner := range owners {
+		paddedOwner, padErr := utilities.PadAddress(owner)
+		if padErr != nil {
+			return nil, padErr
+		}
+		mappings[getFirstKey(paddedOwner)] = getFirstMetadata(owner)
+		mappings[getLastKey(paddedOwner)] = getLastMetadata(owner)
+		mappings[getCountKey(paddedOwner)] = getCountMetadata(owner)
+	}
+	return mappings, nil
 }
 
 func loadStaticMappings() map[common.Hash]utils.StorageValueMetadata {
@@ -106,42 +126,6 @@ func loadStaticMappings() map[common.Hash]utils.StorageValueMetadata {
 	mappings[VatKey] = VatMetadata
 	mappings[CdpiKey] = CdpiMetadata
 	return mappings
-}
-
-func (lookup *StorageKeysLookup) loadCdpiKeyMappings() error {
-	cdpis, cdpiErr := lookup.StorageRepository.GetCdpis()
-	if cdpiErr != nil {
-		return cdpiErr
-	}
-	for _, cdpi := range cdpis {
-		hexCdpi, hexErr := shared.ConvertIntStringToHex(cdpi)
-		if hexErr != nil {
-			return hexErr
-		}
-		lookup.mappings[getUrnsKey(hexCdpi)] = getUrnsMetadata(cdpi)
-		lookup.mappings[getListPrevKey(hexCdpi)] = getListPrevMetadata(cdpi)
-		lookup.mappings[getListNextKey(hexCdpi)] = getListNextMetadata(cdpi)
-		lookup.mappings[getOwnsKey(hexCdpi)] = getOwnsMetadata(cdpi)
-		lookup.mappings[getIlksKey(hexCdpi)] = getIlksMetadata(cdpi)
-	}
-	return nil
-}
-
-func (lookup *StorageKeysLookup) loadOwnsKeyMappings() error {
-	owners, ownersErr := lookup.StorageRepository.GetOwners()
-	if ownersErr != nil {
-		return ownersErr
-	}
-	for _, owner := range owners {
-		paddedOwner, padErr := utilities.PadAddress(owner)
-		if padErr != nil {
-			return padErr
-		}
-		lookup.mappings[getFirstKey(paddedOwner)] = getFirstMetadata(owner)
-		lookup.mappings[getLastKey(paddedOwner)] = getLastMetadata(owner)
-		lookup.mappings[getCountKey(paddedOwner)] = getCountMetadata(owner)
-	}
-	return nil
 }
 
 func getUrnsKey(hexCdpi string) common.Hash {
