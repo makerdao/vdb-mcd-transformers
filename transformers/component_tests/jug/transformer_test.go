@@ -36,12 +36,12 @@ var _ = Describe("Executing the transformer", func() {
 		db                *postgres.DB
 		err               error
 		ilkID             int64
-		storageKeysLookup = jug.StorageKeysLookup{StorageRepository: &mcdStorage.MakerStorageRepository{}}
+		storageKeysLookup = mcdStorage.NewKeysLookup(jug.NewKeysLoader(&mcdStorage.MakerStorageRepository{}))
 		repository        = jug.JugStorageRepository{}
 		contractAddress   = "25a008bf942ce6d5b362f91ed7ae3e4104286a12"
 		transformer       = storage.Transformer{
 			HashedAddress: utils.HexToKeccak256Hash(contractAddress),
-			Mappings:      &storageKeysLookup,
+			Mappings:      storageKeysLookup,
 			Repository:    &repository,
 		}
 	)

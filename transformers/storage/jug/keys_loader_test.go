@@ -22,6 +22,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/mcd_transformers/transformers/storage"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/jug"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/test_helpers"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
@@ -29,46 +30,39 @@ import (
 	"math/big"
 )
 
-var _ = Describe("jug storage mappings", func() {
+var _ = Describe("jug storage keys loader", func() {
 	var (
 		storageRepository *test_helpers.MockMakerStorageRepository
-		storageKeysLookup jug.StorageKeysLookup
+		storageKeysLoader storage.KeysLoader
 	)
 
 	BeforeEach(func() {
 		storageRepository = &test_helpers.MockMakerStorageRepository{}
-		storageKeysLookup = jug.StorageKeysLookup{StorageRepository: storageRepository}
+		storageKeysLoader = jug.NewKeysLoader(storageRepository)
 	})
 
-	Describe("looking up static keys", func() {
-		It("returns value metadata if key exists", func() {
-			Expect(storageKeysLookup.Lookup(jug.VatKey)).To(Equal(jug.VatMetadata))
-			Expect(storageKeysLookup.Lookup(jug.VowKey)).To(Equal(jug.VowMetadata))
-			Expect(storageKeysLookup.Lookup(jug.BaseKey)).To(Equal(jug.BaseMetadata))
-		})
+	It("returns value metadata for static keys", func() {
+		mappings, err := storageKeysLoader.LoadMappings()
 
-		It("returns value metadata if keccak of key exists", func() {
-			Expect(storageKeysLookup.Lookup(crypto.Keccak256Hash(jug.VatKey[:]))).To(Equal(jug.VatMetadata))
-			Expect(storageKeysLookup.Lookup(crypto.Keccak256Hash(jug.VowKey[:]))).To(Equal(jug.VowMetadata))
-			Expect(storageKeysLookup.Lookup(crypto.Keccak256Hash(jug.BaseKey[:]))).To(Equal(jug.BaseMetadata))
-		})
+		Expect(err).NotTo(HaveOccurred())
+		Expect(mappings[jug.VatKey]).To(Equal(jug.VatMetadata))
+		Expect(mappings[jug.VowKey]).To(Equal(jug.VowMetadata))
+		Expect(mappings[jug.BaseKey]).To(Equal(jug.BaseMetadata))
+	})
 
-		It("returns error if key does not exist", func() {
-			_, err := storageKeysLookup.Lookup(common.HexToHash(fakes.FakeHash.Hex()))
+	Describe("when getting ilks fails", func() {
+		It("returns error", func() {
+			storageRepository.GetIlksError = fakes.FakeError
+
+			_, err := storageKeysLoader.LoadMappings()
 
 			Expect(err).To(HaveOccurred())
-			Expect(err).To(MatchError(utils.ErrStorageKeyNotFound{Key: fakes.FakeHash.Hex()}))
+			Expect(err).To(MatchError(fakes.FakeError))
 		})
 	})
 
-	Describe("looking up dynamic keys", func() {
-		It("refreshes mappings from the repository if key not found", func() {
-			storageKeysLookup.Lookup(fakes.FakeHash)
-
-			Expect(storageRepository.GetIlksCalled).To(BeTrue())
-		})
-
-		It("returns value metadata for tax when ilk in the DB", func() {
+	Describe("when getting ilks succeeds", func() {
+		It("returns value metadata for tax", func() {
 			storageRepository.Ilks = []string{test_helpers.FakeIlk}
 			ilkTaxKey := common.BytesToHash(crypto.Keccak256(common.FromHex(test_helpers.FakeIlk + jug.IlkMappingIndex)))
 			expectedMetadata := utils.StorageValueMetadata{
@@ -77,10 +71,13 @@ var _ = Describe("jug storage mappings", func() {
 				Type: utils.Uint256,
 			}
 
-			Expect(storageKeysLookup.Lookup(ilkTaxKey)).To(Equal(expectedMetadata))
+			mappings, err := storageKeysLoader.LoadMappings()
+
+			Expect(err).NotTo(HaveOccurred())
+			Expect(mappings[ilkTaxKey]).To(Equal(expectedMetadata))
 		})
 
-		It("returns value metadata for rho when ilk in the DB", func() {
+		It("returns value metadata for rho", func() {
 			storageRepository.Ilks = []string{test_helpers.FakeIlk}
 			ilkTaxKeyBytes := crypto.Keccak256(common.FromHex(test_helpers.FakeIlk + jug.IlkMappingIndex))
 			ilkTaxAsInt := big.NewInt(0).SetBytes(ilkTaxKeyBytes)
@@ -92,14 +89,10 @@ var _ = Describe("jug storage mappings", func() {
 				Type: utils.Uint256,
 			}
 
-			Expect(storageKeysLookup.Lookup(ilkRhoKey)).To(Equal(expectedMetadata))
-		})
+			mappings, err := storageKeysLoader.LoadMappings()
 
-		It("returns error if key not found", func() {
-			_, err := storageKeysLookup.Lookup(fakes.FakeHash)
-
-			Expect(err).To(HaveOccurred())
-			Expect(err).To(MatchError(utils.ErrStorageKeyNotFound{Key: fakes.FakeHash.Hex()}))
+			Expect(err).NotTo(HaveOccurred())
+			Expect(mappings[ilkRhoKey]).To(Equal(expectedMetadata))
 		})
 	})
 })
