@@ -49,38 +49,34 @@ var (
 	VowMetadata = utils.GetStorageValueMetadata(Vow, nil, utils.Address)
 )
 
-type StorageKeysLookup struct {
-	StorageRepository mcdStorage.IMakerStorageRepository
-	mappings          map[common.Hash]utils.StorageValueMetadata
+type keysLoader struct {
+	storageRepository mcdStorage.IMakerStorageRepository
 }
 
-func (lookup StorageKeysLookup) Lookup(key common.Hash) (utils.StorageValueMetadata, error) {
-	metadata, ok := lookup.mappings[key]
-	if !ok {
-		err := lookup.loadMappings()
-		if err != nil {
-			return metadata, err
-		}
-		metadata, ok = lookup.mappings[key]
-		if !ok {
-			return metadata, utils.ErrStorageKeyNotFound{Key: key.Hex()}
-		}
+func NewKeysLoader(storageRepository mcdStorage.IMakerStorageRepository) mcdStorage.KeysLoader {
+	return &keysLoader{storageRepository: storageRepository}
+}
+
+func (loader *keysLoader) SetDB(db *postgres.DB) {
+	loader.storageRepository.SetDB(db)
+}
+
+func (loader *keysLoader) LoadMappings() (map[common.Hash]utils.StorageValueMetadata, error) {
+	mappings := loadStaticMappings()
+	return loader.addIlkKeys(mappings)
+}
+
+func (loader *keysLoader) addIlkKeys(mappings map[common.Hash]utils.StorageValueMetadata) (map[common.Hash]utils.StorageValueMetadata, error) {
+	ilks, err := loader.storageRepository.GetIlks()
+	if err != nil {
+		return nil, err
 	}
-	return metadata, nil
-}
-
-func (lookup *StorageKeysLookup) SetDB(db *postgres.DB) {
-	lookup.StorageRepository.SetDB(db)
-}
-
-func (lookup *StorageKeysLookup) loadMappings() error {
-	lookup.mappings = loadStaticMappings()
-	ilkErr := lookup.loadIlkKeys()
-	if ilkErr != nil {
-		return ilkErr
+	for _, ilk := range ilks {
+		mappings[getIlkFlipKey(ilk)] = getIlkFlipMetadata(ilk)
+		mappings[getIlkChopKey(ilk)] = getIlkChopMetadata(ilk)
+		mappings[getIlkLumpKey(ilk)] = getIlkLumpMetadata(ilk)
 	}
-	lookup.mappings = storage.AddHashedKeys(lookup.mappings)
-	return nil
+	return mappings, nil
 }
 
 func loadStaticMappings() map[common.Hash]utils.StorageValueMetadata {
@@ -89,20 +85,6 @@ func loadStaticMappings() map[common.Hash]utils.StorageValueMetadata {
 	mappings[VatKey] = VatMetadata
 	mappings[VowKey] = VowMetadata
 	return mappings
-}
-
-// Ilks
-func (lookup *StorageKeysLookup) loadIlkKeys() error {
-	ilks, err := lookup.StorageRepository.GetIlks()
-	if err != nil {
-		return err
-	}
-	for _, ilk := range ilks {
-		lookup.mappings[getIlkFlipKey(ilk)] = getIlkFlipMetadata(ilk)
-		lookup.mappings[getIlkChopKey(ilk)] = getIlkChopMetadata(ilk)
-		lookup.mappings[getIlkLumpKey(ilk)] = getIlkLumpMetadata(ilk)
-	}
-	return nil
 }
 
 func getIlkFlipKey(ilk string) common.Hash {

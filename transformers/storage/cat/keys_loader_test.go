@@ -22,6 +22,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	mcdStorage "github.com/vulcanize/mcd_transformers/transformers/storage"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/cat"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/test_helpers"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/storage"
@@ -29,60 +30,49 @@ import (
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 )
 
-var _ = Describe("Cat storage mappings", func() {
-
+var _ = Describe("Cat storage keys loader", func() {
 	var (
 		storageRepository *test_helpers.MockMakerStorageRepository
-		storageKeysLookup cat.StorageKeysLookup
+		storageKeysLoader mcdStorage.KeysLoader
 	)
 
 	BeforeEach(func() {
 		storageRepository = &test_helpers.MockMakerStorageRepository{}
-		storageKeysLookup = cat.StorageKeysLookup{StorageRepository: storageRepository}
+		storageKeysLoader = cat.NewKeysLoader(storageRepository)
 	})
 
-	Describe("looking up static keys", func() {
-		It("returns value metadata if key exists", func() {
-			Expect(storageKeysLookup.Lookup(cat.LiveKey)).To(Equal(cat.LiveMetadata))
-			Expect(storageKeysLookup.Lookup(cat.VatKey)).To(Equal(cat.VatMetadata))
-			Expect(storageKeysLookup.Lookup(cat.VowKey)).To(Equal(cat.VowMetadata))
-		})
+	It("returns value metadata for static keys", func() {
+		mappings, err := storageKeysLoader.LoadMappings()
 
-		It("returns value metadata for keccak hashed storage keys", func() {
-			Expect(storageKeysLookup.Lookup(crypto.Keccak256Hash(cat.LiveKey[:]))).To(Equal(cat.LiveMetadata))
-			Expect(storageKeysLookup.Lookup(crypto.Keccak256Hash(cat.VatKey[:]))).To(Equal(cat.VatMetadata))
-			Expect(storageKeysLookup.Lookup(crypto.Keccak256Hash(cat.VowKey[:]))).To(Equal(cat.VowMetadata))
-		})
-
-		It("returns error if key does not exist", func() {
-			_, err := storageKeysLookup.Lookup(fakes.FakeHash)
-
-			Expect(err).To(HaveOccurred())
-			Expect(err).To(MatchError(utils.ErrStorageKeyNotFound{Key: fakes.FakeHash.Hex()}))
-		})
+		Expect(err).NotTo(HaveOccurred())
+		Expect(mappings[cat.LiveKey]).To(Equal(cat.LiveMetadata))
+		Expect(mappings[cat.VatKey]).To(Equal(cat.VatMetadata))
+		Expect(mappings[cat.VowKey]).To(Equal(cat.VowMetadata))
 	})
 
-	Describe("looking up dynamic keys", func() {
-		It("refreshes mappings from repository if key not found", func() {
-			_, _ = storageKeysLookup.Lookup(fakes.FakeHash)
+	Describe("ilk", func() {
+		Describe("when getting ilks fails", func() {
+			It("returns error", func() {
+				storageRepository.GetIlksError = fakes.FakeError
 
-			Expect(storageRepository.GetIlksCalled).To(BeTrue())
+				_, err := storageKeysLoader.LoadMappings()
+
+				Expect(err).To(HaveOccurred())
+				Expect(err).To(MatchError(fakes.FakeError))
+			})
 		})
 
-		It("returns error if ilks lookup fails", func() {
-			storageRepository.GetIlksError = fakes.FakeError
-
-			_, err := storageKeysLookup.Lookup(fakes.FakeHash)
-
-			Expect(err).To(HaveOccurred())
-			Expect(err).To(MatchError(fakes.FakeError))
-		})
-
-		Describe("ilk", func() {
-			var ilkFlipKey = common.BytesToHash(crypto.Keccak256(common.FromHex(test_helpers.FakeIlk + cat.IlksMappingIndex)))
+		Describe("when getting ilks succeeds", func() {
+			var (
+				ilkFlipKey = common.BytesToHash(crypto.Keccak256(common.FromHex(test_helpers.FakeIlk + cat.IlksMappingIndex)))
+				mappings   map[common.Hash]utils.StorageValueMetadata
+			)
 
 			BeforeEach(func() {
 				storageRepository.Ilks = []string{test_helpers.FakeIlk}
+				var err error
+				mappings, err = storageKeysLoader.LoadMappings()
+				Expect(err).NotTo(HaveOccurred())
 			})
 
 			It("returns value metadata for ilk flip", func() {
@@ -91,7 +81,8 @@ var _ = Describe("Cat storage mappings", func() {
 					Keys: map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk},
 					Type: utils.Address,
 				}
-				Expect(storageKeysLookup.Lookup(ilkFlipKey)).To(Equal(expectedMetadata))
+
+				Expect(mappings[ilkFlipKey]).To(Equal(expectedMetadata))
 			})
 
 			It("returns value metadata for ilk chop", func() {
@@ -101,7 +92,8 @@ var _ = Describe("Cat storage mappings", func() {
 					Keys: map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk},
 					Type: utils.Uint256,
 				}
-				Expect(storageKeysLookup.Lookup(ilkChopKey)).To(Equal(expectedMetadata))
+
+				Expect(mappings[ilkChopKey]).To(Equal(expectedMetadata))
 			})
 
 			It("returns value metadata for ilk lump", func() {
@@ -111,7 +103,8 @@ var _ = Describe("Cat storage mappings", func() {
 					Keys: map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk},
 					Type: utils.Uint256,
 				}
-				Expect(storageKeysLookup.Lookup(ilkLumpKey)).To(Equal(expectedMetadata))
+
+				Expect(mappings[ilkLumpKey]).To(Equal(expectedMetadata))
 			})
 		})
 	})
