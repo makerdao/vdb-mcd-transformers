@@ -39,12 +39,12 @@ import (
 var _ = Describe("Executing the transformer", func() {
 	var (
 		db                *postgres.DB
-		storageKeysLookup = vat.StorageKeysLookup{StorageRepository: &mcdStorage.MakerStorageRepository{}}
+		storageKeysLookup = mcdStorage.NewKeysLookup(vat.NewKeysLoader(&mcdStorage.MakerStorageRepository{}))
 		repository        = vat.VatStorageRepository{}
 		contractAddress   = "48f749bd988caafacd7b951abbecc1aa31488690"
 		transformer       = storage.Transformer{
 			HashedAddress: utils.HexToKeccak256Hash(contractAddress),
-			Mappings:      &storageKeysLookup,
+			Mappings:      storageKeysLookup,
 			Repository:    &repository,
 		}
 	)

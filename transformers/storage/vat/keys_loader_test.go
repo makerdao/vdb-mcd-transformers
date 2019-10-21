@@ -30,55 +30,35 @@ import (
 	"math/big"
 )
 
-var _ = Describe("Vat storage mappings", func() {
+var _ = Describe("Vat storage keys loader", func() {
 	var (
 		storageRepository *test_helpers.MockMakerStorageRepository
-		storageKeysLookup vat.StorageKeysLookup
+		storageKeysLoader storage.KeysLoader
 	)
 
 	BeforeEach(func() {
 		storageRepository = &test_helpers.MockMakerStorageRepository{}
-		storageKeysLookup = vat.StorageKeysLookup{StorageRepository: storageRepository}
+		storageKeysLoader = vat.NewKeysLoader(storageRepository)
 	})
 
 	Describe("looking up static keys", func() {
 		It("returns value metadata if key exists", func() {
-			Expect(storageKeysLookup.Lookup(vat.DebtKey)).To(Equal(vat.DebtMetadata))
-			Expect(storageKeysLookup.Lookup(vat.ViceKey)).To(Equal(vat.ViceMetadata))
-			Expect(storageKeysLookup.Lookup(vat.LineKey)).To(Equal(vat.LineMetadata))
-			Expect(storageKeysLookup.Lookup(vat.LiveKey)).To(Equal(vat.LiveMetadata))
+			mappings, err := storageKeysLoader.LoadMappings()
+
+			Expect(err).NotTo(HaveOccurred())
+			Expect(mappings[vat.DebtKey]).To(Equal(vat.DebtMetadata))
+			Expect(mappings[vat.ViceKey]).To(Equal(vat.ViceMetadata))
+			Expect(mappings[vat.LineKey]).To(Equal(vat.LineMetadata))
+			Expect(mappings[vat.LiveKey]).To(Equal(vat.LiveMetadata))
 		})
 
-		It("returns value metadata if keccak of key exists", func() {
-			Expect(storageKeysLookup.Lookup(crypto.Keccak256Hash(vat.DebtKey[:]))).To(Equal(vat.DebtMetadata))
-			Expect(storageKeysLookup.Lookup(crypto.Keccak256Hash(vat.ViceKey[:]))).To(Equal(vat.ViceMetadata))
-			Expect(storageKeysLookup.Lookup(crypto.Keccak256Hash(vat.LineKey[:]))).To(Equal(vat.LineMetadata))
-			Expect(storageKeysLookup.Lookup(crypto.Keccak256Hash(vat.LiveKey[:]))).To(Equal(vat.LiveMetadata))
-		})
-
-		It("returns error if key does not exist", func() {
-			_, err := storageKeysLookup.Lookup(common.HexToHash(fakes.FakeHash.Hex()))
-
-			Expect(err).To(HaveOccurred())
-			Expect(err).To(MatchError(utils.ErrStorageKeyNotFound{Key: fakes.FakeHash.Hex()}))
-		})
 	})
 
 	Describe("looking up dynamic keys", func() {
-		It("refreshes mappings from repository if key not found", func() {
-			storageKeysLookup.Lookup(fakes.FakeHash)
-
-			Expect(storageRepository.GetDaiKeysCalled).To(BeTrue())
-			Expect(storageRepository.GetGemKeysCalled).To(BeTrue())
-			Expect(storageRepository.GetIlksCalled).To(BeTrue())
-			Expect(storageRepository.GetVatSinKeysCalled).To(BeTrue())
-			Expect(storageRepository.GetUrnsCalled).To(BeTrue())
-		})
-
 		It("returns error if dai keys lookup fails", func() {
 			storageRepository.GetDaiKeysError = fakes.FakeError
 
-			_, err := storageKeysLookup.Lookup(fakes.FakeHash)
+			_, err := storageKeysLoader.LoadMappings()
 
 			Expect(err).To(HaveOccurred())
 			Expect(err).To(MatchError(fakes.FakeError))
@@ -87,7 +67,7 @@ var _ = Describe("Vat storage mappings", func() {
 		It("returns error if gem keys lookup fails", func() {
 			storageRepository.GetGemKeysError = fakes.FakeError
 
-			_, err := storageKeysLookup.Lookup(fakes.FakeHash)
+			_, err := storageKeysLoader.LoadMappings()
 
 			Expect(err).To(HaveOccurred())
 			Expect(err).To(MatchError(fakes.FakeError))
@@ -96,7 +76,7 @@ var _ = Describe("Vat storage mappings", func() {
 		It("returns error if ilks lookup fails", func() {
 			storageRepository.GetIlksError = fakes.FakeError
 
-			_, err := storageKeysLookup.Lookup(fakes.FakeHash)
+			_, err := storageKeysLoader.LoadMappings()
 
 			Expect(err).To(HaveOccurred())
 			Expect(err).To(MatchError(fakes.FakeError))
@@ -105,7 +85,7 @@ var _ = Describe("Vat storage mappings", func() {
 		It("returns error if sin keys lookup fails", func() {
 			storageRepository.GetVatSinKeysError = fakes.FakeError
 
-			_, err := storageKeysLookup.Lookup(fakes.FakeHash)
+			_, err := storageKeysLoader.LoadMappings()
 
 			Expect(err).To(HaveOccurred())
 			Expect(err).To(MatchError(fakes.FakeError))
@@ -114,28 +94,26 @@ var _ = Describe("Vat storage mappings", func() {
 		It("returns error if urns lookup fails", func() {
 			storageRepository.GetUrnsError = fakes.FakeError
 
-			_, err := storageKeysLookup.Lookup(fakes.FakeHash)
+			_, err := storageKeysLoader.LoadMappings()
 
 			Expect(err).To(HaveOccurred())
 			Expect(err).To(MatchError(fakes.FakeError))
 		})
 
-		It("returns error if lookups return addresses not of length 42", func() {
-			storageRepository.DaiKeys = []string{"0xshortAddress"}
-
-			_, err := storageKeysLookup.Lookup(fakes.FakeHash)
-
-			Expect(err).To(HaveOccurred())
-		})
-
 		Describe("ilk", func() {
-			var ilkArtKey common.Hash
-			var ilkArtAsInt *big.Int
+			var (
+				ilkArtKey   common.Hash
+				ilkArtAsInt *big.Int
+				mappings    map[common.Hash]utils.StorageValueMetadata
+			)
 
 			BeforeEach(func() {
 				storageRepository.Ilks = []string{test_helpers.FakeIlk}
 				ilkArtKey = common.BytesToHash(crypto.Keccak256(common.FromHex(test_helpers.FakeIlk + vat.IlksMappingIndex)))
 				ilkArtAsInt = big.NewInt(0).SetBytes(ilkArtKey.Bytes())
+				var err error
+				mappings, err = storageKeysLoader.LoadMappings()
+				Expect(err).NotTo(HaveOccurred())
 			})
 
 			It("returns value metadata for ilk Art", func() {
@@ -145,7 +123,7 @@ var _ = Describe("Vat storage mappings", func() {
 					Type: utils.Uint256,
 				}
 
-				Expect(storageKeysLookup.Lookup(ilkArtKey)).To(Equal(expectedMetadata))
+				Expect(mappings[ilkArtKey]).To(Equal(expectedMetadata))
 			})
 
 			It("returns value metadata for ilk rate", func() {
@@ -157,7 +135,7 @@ var _ = Describe("Vat storage mappings", func() {
 					Type: utils.Uint256,
 				}
 
-				Expect(storageKeysLookup.Lookup(ilkRateKey)).To(Equal(expectedMetadata))
+				Expect(mappings[ilkRateKey]).To(Equal(expectedMetadata))
 			})
 
 			It("returns value metadata for ilk spot", func() {
@@ -169,7 +147,7 @@ var _ = Describe("Vat storage mappings", func() {
 					Type: utils.Uint256,
 				}
 
-				Expect(storageKeysLookup.Lookup(ilkSpotKey)).To(Equal(expectedMetadata))
+				Expect(mappings[ilkSpotKey]).To(Equal(expectedMetadata))
 			})
 
 			It("returns value metadata for ilk line", func() {
@@ -181,7 +159,7 @@ var _ = Describe("Vat storage mappings", func() {
 					Type: utils.Uint256,
 				}
 
-				Expect(storageKeysLookup.Lookup(ilkLineKey)).To(Equal(expectedMetadata))
+				Expect(mappings[ilkLineKey]).To(Equal(expectedMetadata))
 			})
 
 			It("returns value metadata for ilk dust", func() {
@@ -193,7 +171,7 @@ var _ = Describe("Vat storage mappings", func() {
 					Type: utils.Uint256,
 				}
 
-				Expect(storageKeysLookup.Lookup(ilkDustKey)).To(Equal(expectedMetadata))
+				Expect(mappings[ilkDustKey]).To(Equal(expectedMetadata))
 			})
 		})
 
@@ -210,7 +188,10 @@ var _ = Describe("Vat storage mappings", func() {
 					Type: utils.Uint256,
 				}
 
-				Expect(storageKeysLookup.Lookup(urnInkKey)).To(Equal(expectedMetadata))
+				mappings, err := storageKeysLoader.LoadMappings()
+
+				Expect(err).NotTo(HaveOccurred())
+				Expect(mappings[urnInkKey]).To(Equal(expectedMetadata))
 			})
 
 			It("returns value metadata for urn art", func() {
@@ -226,8 +207,10 @@ var _ = Describe("Vat storage mappings", func() {
 					Keys: map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk, constants.Guy: test_helpers.FakeAddress},
 					Type: utils.Uint256,
 				}
+				mappings, err := storageKeysLoader.LoadMappings()
 
-				Expect(storageKeysLookup.Lookup(urnArtKey)).To(Equal(expectedMetadata))
+				Expect(err).NotTo(HaveOccurred())
+				Expect(mappings[urnArtKey]).To(Equal(expectedMetadata))
 			})
 		})
 
@@ -243,8 +226,10 @@ var _ = Describe("Vat storage mappings", func() {
 					Keys: map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk, constants.Guy: test_helpers.FakeAddress},
 					Type: utils.Uint256,
 				}
+				mappings, err := storageKeysLoader.LoadMappings()
 
-				Expect(storageKeysLookup.Lookup(gemKey)).To(Equal(expectedMetadata))
+				Expect(err).NotTo(HaveOccurred())
+				Expect(mappings[gemKey]).To(Equal(expectedMetadata))
 			})
 		})
 
@@ -258,8 +243,10 @@ var _ = Describe("Vat storage mappings", func() {
 					Keys: map[utils.Key]string{constants.Guy: test_helpers.FakeAddress},
 					Type: utils.Uint256,
 				}
+				mappings, err := storageKeysLoader.LoadMappings()
 
-				Expect(storageKeysLookup.Lookup(daiKey)).To(Equal(expectedMetadata))
+				Expect(err).NotTo(HaveOccurred())
+				Expect(mappings[daiKey]).To(Equal(expectedMetadata))
 			})
 		})
 
@@ -273,8 +260,10 @@ var _ = Describe("Vat storage mappings", func() {
 					Keys: map[utils.Key]string{constants.Guy: test_helpers.FakeAddress},
 					Type: utils.Uint256,
 				}
+				mappings, err := storageKeysLoader.LoadMappings()
 
-				Expect(storageKeysLookup.Lookup(sinKey)).To(Equal(expectedMetadata))
+				Expect(err).NotTo(HaveOccurred())
+				Expect(mappings[sinKey]).To(Equal(expectedMetadata))
 			})
 		})
 	})
