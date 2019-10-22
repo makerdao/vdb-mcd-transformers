@@ -22,10 +22,9 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
-	mcdStorage "github.com/vulcanize/mcd_transformers/transformers/storage"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/cat"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/test_helpers"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/storage"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/storage"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 )
@@ -33,7 +32,7 @@ import (
 var _ = Describe("Cat storage keys loader", func() {
 	var (
 		storageRepository *test_helpers.MockMakerStorageRepository
-		storageKeysLoader mcdStorage.KeysLoader
+		storageKeysLoader storage.KeysLoader
 	)
 
 	BeforeEach(func() {
@@ -86,7 +85,7 @@ var _ = Describe("Cat storage keys loader", func() {
 			})
 
 			It("returns value metadata for ilk chop", func() {
-				ilkChopKey := storage.GetIncrementedKey(ilkFlipKey, 1)
+				ilkChopKey := utils.GetIncrementedStorageKey(ilkFlipKey, 1)
 				expectedMetadata := utils.StorageValueMetadata{
 					Name: cat.IlkChop,
 					Keys: map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk},
@@ -97,7 +96,7 @@ var _ = Describe("Cat storage keys loader", func() {
 			})
 
 			It("returns value metadata for ilk lump", func() {
-				ilkLumpKey := storage.GetIncrementedKey(ilkFlipKey, 2)
+				ilkLumpKey := utils.GetIncrementedStorageKey(ilkFlipKey, 2)
 				expectedMetadata := utils.StorageValueMetadata{
 					Name: cat.IlkLump,
 					Keys: map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk},

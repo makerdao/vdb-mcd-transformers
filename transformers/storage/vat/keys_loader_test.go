@@ -22,9 +22,10 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
-	"github.com/vulcanize/mcd_transformers/transformers/storage"
+	mcdStorage "github.com/vulcanize/mcd_transformers/transformers/storage"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/test_helpers"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/vat"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/storage"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 	"math/big"
@@ -177,7 +178,7 @@ var _ = Describe("Vat storage keys loader", func() {
 
 		Describe("urn", func() {
 			It("returns value metadata for urn ink", func() {
-				storageRepository.Urns = []storage.Urn{{Ilk: test_helpers.FakeIlk, Identifier: test_helpers.FakeAddress}}
+				storageRepository.Urns = []mcdStorage.Urn{{Ilk: test_helpers.FakeIlk, Identifier: test_helpers.FakeAddress}}
 				encodedPrimaryMapIndex := crypto.Keccak256(common.FromHex(test_helpers.FakeIlk + vat.UrnsMappingIndex))
 				paddedUrnGuy := common.FromHex("0x000000000000000000000000" + test_helpers.FakeAddress[2:])
 				encodedSecondaryMapIndex := crypto.Keccak256(paddedUrnGuy, encodedPrimaryMapIndex)
@@ -195,7 +196,7 @@ var _ = Describe("Vat storage keys loader", func() {
 			})
 
 			It("returns value metadata for urn art", func() {
-				storageRepository.Urns = []storage.Urn{{Ilk: test_helpers.FakeIlk, Identifier: test_helpers.FakeAddress}}
+				storageRepository.Urns = []mcdStorage.Urn{{Ilk: test_helpers.FakeIlk, Identifier: test_helpers.FakeAddress}}
 				encodedPrimaryMapIndex := crypto.Keccak256(common.FromHex(test_helpers.FakeIlk + vat.UrnsMappingIndex))
 				paddedUrnGuy := common.FromHex("0x000000000000000000000000" + test_helpers.FakeAddress[2:])
 				urnInkKey := crypto.Keccak256(paddedUrnGuy, encodedPrimaryMapIndex)
@@ -216,7 +217,7 @@ var _ = Describe("Vat storage keys loader", func() {
 
 		Describe("gem", func() {
 			It("returns value metadata for gem", func() {
-				storageRepository.GemKeys = []storage.Urn{{Ilk: test_helpers.FakeIlk, Identifier: test_helpers.FakeAddress}}
+				storageRepository.GemKeys = []mcdStorage.Urn{{Ilk: test_helpers.FakeIlk, Identifier: test_helpers.FakeAddress}}
 				encodedPrimaryMapIndex := crypto.Keccak256(common.FromHex(test_helpers.FakeIlk + vat.GemsMappingIndex))
 				paddedGemAddress := common.FromHex("0x000000000000000000000000" + test_helpers.FakeAddress[2:])
 				encodedSecondaryMapIndex := crypto.Keccak256(paddedGemAddress, encodedPrimaryMapIndex)

@@ -26,7 +26,7 @@ import (
 	mcdStorage "github.com/vulcanize/mcd_transformers/transformers/storage"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/flop"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/test_helpers"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/storage"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/storage"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 )
@@ -34,7 +34,7 @@ import (
 var _ = Describe("Flop storage keys loader", func() {
 	var (
 		storageRepository *test_helpers.MockMakerStorageRepository
-		storageKeysLoader mcdStorage.KeysLoader
+		storageKeysLoader storage.KeysLoader
 	)
 
 	BeforeEach(func() {
@@ -98,7 +98,7 @@ var _ = Describe("Flop storage keys loader", func() {
 			})
 
 			It("returns value metadata for bid lot", func() {
-				bidLotKey := storage.GetIncrementedKey(bidBidKey, 1)
+				bidLotKey := utils.GetIncrementedStorageKey(bidBidKey, 1)
 				expectedMetadata := utils.StorageValueMetadata{
 					Name: mcdStorage.BidLot,
 					Keys: map[utils.Key]string{constants.BidId: fakeBidId},
@@ -109,7 +109,7 @@ var _ = Describe("Flop storage keys loader", func() {
 			})
 
 			It("returns value metadata for bid guy + tic + end packed slot", func() {
-				bidGuyKey := storage.GetIncrementedKey(bidBidKey, 2)
+				bidGuyKey := utils.GetIncrementedStorageKey(bidBidKey, 2)
 				expectedMetadata := utils.StorageValueMetadata{
 					Name:        mcdStorage.Packed,
 					Keys:        map[utils.Key]string{constants.BidId: fakeBidId},

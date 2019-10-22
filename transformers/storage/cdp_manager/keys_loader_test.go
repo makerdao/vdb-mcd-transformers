@@ -23,11 +23,10 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
-	mcdStorage "github.com/vulcanize/mcd_transformers/transformers/storage"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/cdp_manager"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/test_helpers"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/utilities"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/storage"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/storage"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 	"math/rand"
@@ -37,7 +36,7 @@ import (
 var _ = Describe("CDP Manager storage keys loader", func() {
 	var (
 		storageRepository *test_helpers.MockMakerStorageRepository
-		storageKeysLoader mcdStorage.KeysLoader
+		storageKeysLoader storage.KeysLoader
 	)
 
 	BeforeEach(func() {
@@ -104,7 +103,7 @@ var _ = Describe("CDP Manager storage keys loader", func() {
 					})
 
 					It("gets next metadata", func() {
-						listNextKey := storage.GetIncrementedKey(listPrevKey, 1)
+						listNextKey := utils.GetIncrementedStorageKey(listPrevKey, 1)
 
 						Expect(mappings[listNextKey]).To(Equal(utils.StorageValueMetadata{
 							Name: cdp_manager.ListNext,

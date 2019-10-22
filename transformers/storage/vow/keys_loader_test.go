@@ -21,25 +21,25 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
-	"github.com/vulcanize/mcd_transformers/transformers/storage"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/test_helpers"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/vow"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/storage"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
 )
 
 var _ = Describe("Vow storage keys loader", func() {
 	var (
 		storageRepository *test_helpers.MockMakerStorageRepository
-		mappingsLoader    storage.KeysLoader
+		storageKeysLoader storage.KeysLoader
 	)
 
 	BeforeEach(func() {
 		storageRepository = &test_helpers.MockMakerStorageRepository{}
-		mappingsLoader = vow.NewKeysLoader(storageRepository)
+		storageKeysLoader = vow.NewKeysLoader(storageRepository)
 	})
 
 	It("loads value metadata for static keys", func() {
-		mappings, err := mappingsLoader.LoadMappings()
+		mappings, err := storageKeysLoader.LoadMappings()
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(mappings[vow.VatKey]).To(Equal(vow.VatMetadata))
@@ -62,7 +62,7 @@ var _ = Describe("Vow storage keys loader", func() {
 		expectedKeys := map[utils.Key]string{constants.Timestamp: fakeTimestamp}
 		expectedMetadata := utils.GetStorageValueMetadata(vow.SinMapping, expectedKeys, utils.Uint256)
 
-		mappings, err := mappingsLoader.LoadMappings()
+		mappings, err := storageKeysLoader.LoadMappings()
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(mappings[sinKey]).To(Equal(expectedMetadata))
@@ -76,7 +76,7 @@ var _ = Describe("Vow storage keys loader", func() {
 		expectedKeys := map[utils.Key]string{constants.Timestamp: fakeTimestamp}
 		expectedMetadata := utils.GetStorageValueMetadata(vow.SinMapping, expectedKeys, utils.Uint256)
 
-		mappings, err := mappingsLoader.LoadMappings()
+		mappings, err := storageKeysLoader.LoadMappings()
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(mappings[sinKey]).To(Equal(expectedMetadata))

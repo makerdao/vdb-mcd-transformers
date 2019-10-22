@@ -17,10 +17,6 @@
 package flap_test
 
 import (
-	"github.com/vulcanize/vulcanizedb/pkg/fakes"
-	"math/rand"
-	"strconv"
-
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 	. "github.com/onsi/ginkgo"
@@ -31,14 +27,17 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/storage/flap"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/test_helpers"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/storage"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/storage"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
+	"github.com/vulcanize/vulcanizedb/pkg/fakes"
+	"math/rand"
+	"strconv"
 )
 
 var _ = Describe("Flap storage keys loader", func() {
 	var (
 		storageRepository *test_helpers.MockMakerStorageRepository
-		storageKeysLoader mcdStorage.KeysLoader
+		storageKeysLoader storage.KeysLoader
 	)
 
 	BeforeEach(func() {
@@ -123,7 +122,7 @@ var _ = Describe("Flap storage keys loader", func() {
 			})
 
 			It("gets lot metadata", func() {
-				flapBidLotKey := storage.GetIncrementedKey(flapBidBidKey, 1)
+				flapBidLotKey := utils.GetIncrementedStorageKey(flapBidBidKey, 1)
 				expectedMetadata := utils.StorageValueMetadata{
 					Name: mcdStorage.BidLot,
 					Keys: map[utils.Key]string{constants.BidId: bidId},
@@ -134,7 +133,7 @@ var _ = Describe("Flap storage keys loader", func() {
 			})
 
 			It("returns value metadata for bid guy + tic + end packed slot", func() {
-				bidGuyKey := storage.GetIncrementedKey(flapBidBidKey, 2)
+				bidGuyKey := utils.GetIncrementedStorageKey(flapBidBidKey, 2)
 				expectedMetadata := utils.StorageValueMetadata{
 					Name:        mcdStorage.Packed,
 					Keys:        map[utils.Key]string{constants.BidId: bidId},
