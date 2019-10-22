@@ -43,7 +43,7 @@ OFFSET
 all_bites.result_offset
 $$
     LANGUAGE sql
-    STRICT
+    STRICT --necessary for postgraphile queries with required arguments
     STABLE;
 
 
@@ -74,7 +74,7 @@ OFFSET
 urn_bites.result_offset
 $$
     LANGUAGE sql
-    STRICT
+    STRICT --necessary for postgraphile queries with required arguments
     STABLE;
 
 -- +goose Down

@@ -58,7 +58,7 @@ OFFSET
 all_ilk_file_events.result_offset
 $$
     LANGUAGE sql
-    STRICT
+    STRICT --necessary for postgraphile queries with required arguments
     STABLE;
 
 -- +goose Down

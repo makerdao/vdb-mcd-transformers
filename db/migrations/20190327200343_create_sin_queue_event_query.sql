@@ -36,7 +36,7 @@ OFFSET
 all_sin_queue_events.result_offset
 $$
     LANGUAGE sql
-    STRICT
+    STRICT --necessary for postgraphile queries with required arguments
     STABLE;
 
 -- +goose Down

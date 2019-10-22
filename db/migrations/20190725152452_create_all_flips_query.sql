@@ -30,7 +30,7 @@ BEGIN
 END
 $BODY$
     LANGUAGE plpgsql
-    STRICT
+    STRICT --necessary for postgraphile queries with required arguments
     STABLE;
 -- +goose StatementEnd
 
