@@ -31,7 +31,7 @@ import (
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 )
 
-var _ = XDescribe("Tend EventTransformer", func() {
+var _ = Describe("Tend EventTransformer", func() {
 	var (
 		db          *postgres.DB
 		blockChain  core.BlockChain
@@ -52,8 +52,8 @@ var _ = XDescribe("Tend EventTransformer", func() {
 
 		tendConfig = transformer.EventTransformerConfig{
 			TransformerName:   constants.TendLabel,
-			ContractAddresses: append(test_data.FlipAddresses(), test_data.FlapAddress()),
-			ContractAbi:       constants.FlipABI(),
+			ContractAddresses: []string{test_data.FlapAddress()},
+			ContractAbi:       constants.FlapABI(),
 			Topic:             constants.TendSignature(),
 		}
 
@@ -68,8 +68,8 @@ var _ = XDescribe("Tend EventTransformer", func() {
 		}
 	})
 
-	It("fetches and transforms a Flip Tend event from Kovan chain", func() {
-		blockNumber := int64(8935601)
+	It("fetches and transforms a Tend event from the Kovan chain", func() {
+		blockNumber := int64(14308157)
 		initializer.Config.StartingBlockNumber = blockNumber
 		initializer.Config.EndingBlockNumber = blockNumber
 
@@ -86,97 +86,18 @@ var _ = XDescribe("Tend EventTransformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []tendModel
-		err = db.Select(&dbResult, `SELECT bid_id, lot, bid, contract_address FROM maker.tend`)
+		err = db.Select(&dbResult, `SELECT bid_id, lot, bid FROM maker.tend`)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))
-		Expect(dbResult[0].ContractAddress).To(Equal(""))
-		Expect(dbResult[0].Bid).To(Equal("4000"))
-		Expect(dbResult[0].BidId).To(Equal("3"))
-		Expect(dbResult[0].Lot).To(Equal("1000000000000000000"))
-
-		var dbTic int64
-		err = db.Get(&dbTic, `SELECT tic FROM maker.tend`)
-		Expect(err).NotTo(HaveOccurred())
-
-		actualTic := 1538490276 + constants.TTL
-		Expect(dbTic).To(Equal(actualTic))
-	})
-
-	It("fetches and transforms a subsequent Flip Tend event from Kovan chain for the same auction", func() {
-		blockNumber := int64(8935731)
-		initializer.Config.StartingBlockNumber = blockNumber
-		initializer.Config.EndingBlockNumber = blockNumber
-
-		header, err := persistHeader(db, blockNumber, blockChain)
-		Expect(err).NotTo(HaveOccurred())
-
-		logs, err := logFetcher.FetchLogs(addresses, topics, header)
-		Expect(err).NotTo(HaveOccurred())
-
-		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
-
-		transformer := initializer.NewEventTransformer(db)
-		err = transformer.Execute(headerSyncLogs)
-		Expect(err).NotTo(HaveOccurred())
-
-		var dbResult []tendModel
-		err = db.Select(&dbResult, `SELECT bid_id, lot, bid, contract_address FROM maker.tend`)
-		Expect(err).NotTo(HaveOccurred())
-
-		Expect(len(dbResult)).To(Equal(1))
-		Expect(dbResult[0].ContractAddress).To(Equal(""))
-		Expect(dbResult[0].Bid).To(Equal("4300"))
-		Expect(dbResult[0].BidId).To(Equal("3"))
-		Expect(dbResult[0].Lot).To(Equal("1000000000000000000"))
-
-		var dbTic int64
-		err = db.Get(&dbTic, `SELECT tic FROM maker.tend`)
-		Expect(err).NotTo(HaveOccurred())
-
-		actualTic := 1538491224 + constants.TTL
-		Expect(dbTic).To(Equal(actualTic))
-	})
-
-	It("fetches and transforms a Flap Tend event from the Kovan chain", func() {
-		blockNumber := int64(9003177)
-		initializer.Config.StartingBlockNumber = blockNumber
-		initializer.Config.EndingBlockNumber = blockNumber
-
-		header, err := persistHeader(db, blockNumber, blockChain)
-		Expect(err).NotTo(HaveOccurred())
-
-		logs, err := logFetcher.FetchLogs(addresses, topics, header)
-		Expect(err).NotTo(HaveOccurred())
-
-		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
-
-		transformer := initializer.NewEventTransformer(db)
-		err = transformer.Execute(headerSyncLogs)
-		Expect(err).NotTo(HaveOccurred())
-
-		var dbResult []tendModel
-		err = db.Select(&dbResult, `SELECT bid_id, lot, bid, contract_address FROM maker.tend`)
-		Expect(err).NotTo(HaveOccurred())
-
-		Expect(len(dbResult)).To(Equal(1))
-		Expect(dbResult[0].ContractAddress).To(Equal(""))
-		Expect(dbResult[0].Bid).To(Equal("1000000000000000"))
-		Expect(dbResult[0].BidId).To(Equal("1"))
-		Expect(dbResult[0].Lot).To(Equal("1000000000000000000"))
-
-		var dbTic int64
-		err = db.Get(&dbTic, `SELECT tic FROM maker.tend`)
-		Expect(err).NotTo(HaveOccurred())
-
-		actualTic := 1538992860 + constants.TTL
-		Expect(dbTic).To(Equal(actualTic))
+		Expect(dbResult[0].Bid).To(Equal("193362866030587"))
+		Expect(dbResult[0].BidId).To(Equal("27"))
+		Expect(dbResult[0].Lot).To(Equal("100000000000000000000000000000000000000000000"))
 	})
 })
 
 type tendModel struct {
-	BidId           string `db:"bid_id"`
-	Lot             string
-	Bid             string
-	ContractAddress string `db:"contract_address"`
+	BidId string `db:"bid_id"`
+	Lot   string
+	Bid   string
 }

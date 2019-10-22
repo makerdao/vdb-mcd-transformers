@@ -31,7 +31,7 @@ import (
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 )
 
-var _ = XDescribe("FlapKick Transformer", func() {
+var _ = Describe("FlapKick Transformer", func() {
 	var (
 		db         *postgres.DB
 		blockChain core.BlockChain
@@ -54,7 +54,7 @@ var _ = XDescribe("FlapKick Transformer", func() {
 	}
 
 	It("fetches and transforms a FlapKick event from Kovan chain", func() {
-		blockNumber := int64(9002933)
+		blockNumber := int64(14308157)
 		flapKickConfig.StartingBlockNumber = blockNumber
 		flapKickConfig.EndingBlockNumber = blockNumber
 
@@ -80,22 +80,20 @@ var _ = XDescribe("FlapKick Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []FlapKickModel
-		err = db.Select(&dbResult, `SELECT bid, bid_id, "end", lot FROM maker.flap_kick`)
+		err = db.Select(&dbResult, `SELECT bid, bid_id, lot FROM maker.flap_kick`)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))
 		Expect(dbResult[0].Bid).To(Equal("0"))
-		Expect(dbResult[0].BidId).To(Equal("1"))
-		Expect(dbResult[0].ContractAddress).To(Equal(""))
-		Expect(dbResult[0].Lot).To(Equal("1000000000000000000"))
+		Expect(dbResult[0].BidId).To(Equal("28"))
+		Expect(dbResult[0].Lot).To(Equal("100000000000000000000000000000000000000000000"))
 	})
 })
 
 type FlapKickModel struct {
-	BidId           string `db:"bid_id"`
-	Lot             string
-	Bid             string
-	ContractAddress string `db:"address_id"`
-	HeaderID        int64  `db:"header_id"`
-	LogID           int64  `db:"log_id"`
+	BidId    string `db:"bid_id"`
+	Lot      string
+	Bid      string
+	HeaderID int64 `db:"header_id"`
+	LogID    int64 `db:"log_id"`
 }

@@ -30,8 +30,7 @@ import (
 	"strconv"
 )
 
-var _ = XDescribe("VatFlux EventTransformer", func() {
-	// TODO: Update when event exists in kovan
+var _ = Describe("VatFlux EventTransformer", func() {
 	vatFluxConfig := transformer.EventTransformerConfig{
 		TransformerName:   constants.VatFluxLabel,
 		ContractAddresses: []string{test_data.VatAddress()},
@@ -40,7 +39,7 @@ var _ = XDescribe("VatFlux EventTransformer", func() {
 	}
 
 	It("transforms VatFlux log events", func() {
-		blockNumber := int64(13297132)
+		blockNumber := int64(13922081)
 		vatFluxConfig.StartingBlockNumber = blockNumber
 		vatFluxConfig.EndingBlockNumber = blockNumber
 
@@ -82,9 +81,9 @@ var _ = XDescribe("VatFlux EventTransformer", func() {
 		ilkID, err := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(dbResult[0].Ilk).To(Equal(strconv.FormatInt(ilkID, 10)))
-		Expect(dbResult[0].Src).To(Equal("0x764B9b6326141C5912eBb6948b2b3d51B408d3E6"))
+		Expect(dbResult[0].Src).To(Equal("0x3bDF1B433793f86D6f9F31531727307bC573750e"))
 		Expect(dbResult[0].Dst).To(Equal("0x6bCc9f143D9C799E2C79DB9C921095130d371A16"))
-		Expect(dbResult[0].Wad).To(Equal("1000000000000000000"))
+		Expect(dbResult[0].Wad).To(Equal("2000000000000000000"))
 	})
 })
 

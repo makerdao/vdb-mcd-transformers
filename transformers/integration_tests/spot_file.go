@@ -61,7 +61,7 @@ var _ = Describe("SpotFile EventTransformers", func() {
 		)
 
 		BeforeEach(func() {
-			blockNumber = int64(13475100)
+			blockNumber = int64(13773237)
 			var insertHeaderErr error
 			header, insertHeaderErr = persistHeader(db, blockNumber, blockChain)
 			Expect(insertHeaderErr).NotTo(HaveOccurred())
@@ -109,8 +109,7 @@ var _ = Describe("SpotFile EventTransformers", func() {
 		})
 	})
 
-	XDescribe("Spot file pip", func() {
-		// TODO: Update when event exists in kovan
+	Describe("Spot file pip", func() {
 		var (
 			addresses   []common.Address
 			blockNumber int64
@@ -122,7 +121,7 @@ var _ = Describe("SpotFile EventTransformers", func() {
 		)
 
 		BeforeEach(func() {
-			blockNumber = int64(13474863)
+			blockNumber = int64(13772999)
 			var insertHeaderErr error
 			header, insertHeaderErr = persistHeader(db, blockNumber, blockChain)
 			Expect(insertHeaderErr).NotTo(HaveOccurred())

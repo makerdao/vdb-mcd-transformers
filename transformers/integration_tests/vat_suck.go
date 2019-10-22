@@ -38,7 +38,7 @@ var _ = Describe("VatSuck Transformer", func() {
 	}
 
 	It("transforms VatSuck log events", func() {
-		blockNumber := int64(13984898)
+		blockNumber := int64(13773176)
 		vatSuckConfig.StartingBlockNumber = blockNumber
 		vatSuckConfig.EndingBlockNumber = blockNumber
 
@@ -77,9 +77,9 @@ var _ = Describe("VatSuck Transformer", func() {
 
 		Expect(len(dbResults)).To(Equal(1))
 		dbResult := dbResults[0]
-		Expect(dbResult.U).To(Equal("0x32afee51C93D0BB71ff2E58aF6b7B29CFF5f8436"))
-		Expect(dbResult.V).To(Equal("0x3d9AfbED6Ee2C2d17749B003875EAa38c0ce0c7f"))
-		Expect(dbResult.Rad).To(Equal("3252052393501506844667885583812189275025"))
+		Expect(dbResult.U).To(Equal("0xdC02a6b2eCd2ed6C54a5EC1F1585FE82137D31dD"))
+		Expect(dbResult.V).To(Equal("0x24e89801DAD4603a3E2280eE30FB77f183Cb9eD9"))
+		Expect(dbResult.Rad).To(Equal("0"))
 	})
 })
 

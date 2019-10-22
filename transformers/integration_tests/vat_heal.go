@@ -29,8 +29,7 @@ import (
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 )
 
-var _ = XDescribe("VatHeal Transformer", func() {
-	// TODO: Update when event exists in kovan
+var _ = Describe("VatHeal Transformer", func() {
 	vatHealConfig := transformer.EventTransformerConfig{
 		TransformerName:   constants.VatHealLabel,
 		ContractAddresses: []string{test_data.VatAddress()},
@@ -39,7 +38,7 @@ var _ = XDescribe("VatHeal Transformer", func() {
 	}
 
 	It("transforms VatHeal log events", func() {
-		blockNumber := int64(13452194)
+		blockNumber := int64(14308001)
 		vatHealConfig.StartingBlockNumber = blockNumber
 		vatHealConfig.EndingBlockNumber = blockNumber
 
@@ -76,7 +75,7 @@ var _ = XDescribe("VatHeal Transformer", func() {
 		err = db.Get(&dbResult, `SELECT rad from maker.vat_heal`)
 		Expect(err).NotTo(HaveOccurred())
 
-		Expect(dbResult.Rad).To(Equal("225599427701338117775213711537013756055330"))
+		Expect(dbResult.Rad).To(Equal("96532732872987985369729157768036110196102"))
 	})
 })
 
