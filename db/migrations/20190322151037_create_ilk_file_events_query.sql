@@ -17,7 +17,7 @@ COMMENT ON COLUMN api.ilk_file_event.block_height
 COMMENT ON COLUMN api.ilk_file_event.log_id
     IS E'@omit';
 
-CREATE FUNCTION api.all_ilk_file_events(ilk_identifier TEXT, max_results INTEGER DEFAULT NULL,
+CREATE FUNCTION api.all_ilk_file_events(ilk_identifier TEXT, max_results INTEGER DEFAULT -1,
                                         result_offset INTEGER DEFAULT 0)
     RETURNS SETOF api.ilk_file_event AS
 $$
@@ -53,9 +53,12 @@ FROM maker.vat_file_ilk
          LEFT JOIN headers ON vat_file_ilk.header_id = headers.id
 WHERE vat_file_ilk.ilk_id = (SELECT id FROM ilk)
 ORDER BY block_number DESC
-LIMIT all_ilk_file_events.max_results OFFSET all_ilk_file_events.result_offset
+LIMIT CASE WHEN max_results = -1 THEN NULL ELSE max_results END
+OFFSET
+all_ilk_file_events.result_offset
 $$
     LANGUAGE sql
+    STRICT --necessary for postgraphile queries with required arguments
     STABLE;
 
 -- +goose Down

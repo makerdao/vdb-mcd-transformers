@@ -499,18 +499,27 @@ CREATE TYPE api.urn_state AS (
 -- Name: all_bites(text, integer, integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.all_bites(ilk_identifier text, max_results integer DEFAULT NULL::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.bite_event
-    LANGUAGE sql STABLE
+CREATE FUNCTION api.all_bites(ilk_identifier text, max_results integer DEFAULT '-1'::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.bite_event
+    LANGUAGE sql STABLE STRICT
     AS $$
 WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier)
 
-SELECT ilk_identifier, identifier AS urn_identifier, bid_id, ink, art, tab, block_number, log_id
+SELECT ilk_identifier,
+       identifier AS urn_identifier,
+       bid_id,
+       ink,
+       art,
+       tab,
+       block_number,
+       log_id
 FROM maker.bite
          LEFT JOIN maker.urns ON bite.urn_id = urns.id
          LEFT JOIN headers ON bite.header_id = headers.id
 WHERE urns.ilk_id = (SELECT id FROM ilk)
 ORDER BY urn_identifier, block_number DESC
-LIMIT all_bites.max_results OFFSET all_bites.result_offset
+LIMIT CASE WHEN max_results = -1 THEN NULL ELSE max_results END
+OFFSET
+all_bites.result_offset
 $$;
 
 
@@ -740,8 +749,8 @@ $$;
 -- Name: all_flips(text, integer, integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.all_flips(ilk text, max_results integer DEFAULT NULL::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.flip_state
-    LANGUAGE plpgsql STABLE
+CREATE FUNCTION api.all_flips(ilk text, max_results integer DEFAULT '-1'::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.flip_state
+    LANGUAGE plpgsql STABLE STRICT
     AS $$
 BEGIN
     RETURN QUERY (
@@ -758,7 +767,9 @@ BEGIN
                  FROM maker.flip
                  WHERE address_id = (SELECT * FROM address)
                  ORDER BY bid_id DESC
-                 LIMIT all_flips.max_results OFFSET all_flips.result_offset)
+                 LIMIT CASE WHEN max_results = -1 THEN NULL ELSE max_results END
+                 OFFSET
+                 all_flips.result_offset)
         SELECT f.*
         FROM bid_ids,
              LATERAL api.get_flip(bid_ids.bid_id, all_flips.ilk) f
@@ -902,8 +913,8 @@ $$;
 -- Name: all_frobs(text, integer, integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.all_frobs(ilk_identifier text, max_results integer DEFAULT NULL::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.frob_event
-    LANGUAGE sql STABLE
+CREATE FUNCTION api.all_frobs(ilk_identifier text, max_results integer DEFAULT '-1'::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.frob_event
+    LANGUAGE sql STABLE STRICT
     AS $$
 WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier),
      rates AS (SELECT block_number, rate
@@ -924,7 +935,9 @@ FROM maker.vat_frob
          LEFT JOIN headers ON vat_frob.header_id = headers.id
 WHERE urns.ilk_id = (SELECT id FROM ilk)
 ORDER BY block_number DESC
-LIMIT all_frobs.max_results OFFSET all_frobs.result_offset
+LIMIT CASE WHEN max_results = -1 THEN NULL ELSE max_results END
+OFFSET
+all_frobs.result_offset
 $$;
 
 
@@ -932,8 +945,8 @@ $$;
 -- Name: all_ilk_file_events(text, integer, integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.all_ilk_file_events(ilk_identifier text, max_results integer DEFAULT NULL::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.ilk_file_event
-    LANGUAGE sql STABLE
+CREATE FUNCTION api.all_ilk_file_events(ilk_identifier text, max_results integer DEFAULT '-1'::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.ilk_file_event
+    LANGUAGE sql STABLE STRICT
     AS $$
 WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier)
 
@@ -967,7 +980,9 @@ FROM maker.vat_file_ilk
          LEFT JOIN headers ON vat_file_ilk.header_id = headers.id
 WHERE vat_file_ilk.ilk_id = (SELECT id FROM ilk)
 ORDER BY block_number DESC
-LIMIT all_ilk_file_events.max_results OFFSET all_ilk_file_events.result_offset
+LIMIT CASE WHEN max_results = -1 THEN NULL ELSE max_results END
+OFFSET
+all_ilk_file_events.result_offset
 $$;
 
 
@@ -994,8 +1009,8 @@ COMMENT ON FUNCTION api.max_block() IS '@omit';
 -- Name: all_ilk_states(text, bigint, integer, integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.all_ilk_states(ilk_identifier text, block_height bigint DEFAULT api.max_block(), max_results integer DEFAULT NULL::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.ilk_state
-    LANGUAGE plpgsql STABLE
+CREATE FUNCTION api.all_ilk_states(ilk_identifier text, block_height bigint DEFAULT api.max_block(), max_results integer DEFAULT '-1'::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.ilk_state
+    LANGUAGE plpgsql STABLE STRICT
     AS $$
 BEGIN
     RETURN QUERY (
@@ -1006,7 +1021,9 @@ BEGIN
         SELECT r.*
         FROM relevant_blocks,
              LATERAL api.get_ilk(ilk_identifier, relevant_blocks.block_height) r
-        LIMIT all_ilk_states.max_results OFFSET all_ilk_states.result_offset
+        LIMIT CASE WHEN max_results = -1 THEN NULL ELSE max_results END
+        OFFSET
+        all_ilk_states.result_offset
     );
 END;
 $$;
@@ -1178,8 +1195,8 @@ $$;
 -- Name: all_sin_queue_events(numeric, integer, integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.all_sin_queue_events(era numeric, max_results integer DEFAULT NULL::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.sin_queue_event
-    LANGUAGE sql STABLE
+CREATE FUNCTION api.all_sin_queue_events(era numeric, max_results integer DEFAULT '-1'::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.sin_queue_event
+    LANGUAGE sql STABLE STRICT
     AS $$
 SELECT block_timestamp AS era, 'fess' :: api.sin_act AS act, block_number AS block_height, log_id
 FROM maker.vow_fess
@@ -1191,7 +1208,9 @@ FROM maker.vow_flog
          LEFT JOIN headers ON vow_flog.header_id = headers.id
 WHERE vow_flog.era = all_sin_queue_events.era
 ORDER BY block_height DESC
-LIMIT all_sin_queue_events.max_results OFFSET all_sin_queue_events.result_offset
+LIMIT CASE WHEN max_results = -1 THEN NULL ELSE max_results END
+OFFSET
+all_sin_queue_events.result_offset
 $$;
 
 
@@ -1199,8 +1218,8 @@ $$;
 -- Name: all_urn_states(text, text, bigint, integer, integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.all_urn_states(ilk_identifier text, urn_identifier text, block_height bigint DEFAULT api.max_block(), max_results integer DEFAULT NULL::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.urn_state
-    LANGUAGE plpgsql STABLE
+CREATE FUNCTION api.all_urn_states(ilk_identifier text, urn_identifier text, block_height bigint DEFAULT api.max_block(), max_results integer DEFAULT '-1'::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.urn_state
+    LANGUAGE plpgsql STABLE STRICT
     AS $$
 BEGIN
     RETURN QUERY (
@@ -1226,7 +1245,9 @@ BEGIN
         FROM relevant_blocks,
              LATERAL api.get_urn(ilk_identifier, urn_identifier, relevant_blocks.block_number) r
         ORDER BY relevant_blocks.block_number DESC
-        LIMIT all_urn_states.max_results OFFSET all_urn_states.result_offset
+        LIMIT CASE WHEN max_results = -1 THEN NULL ELSE max_results END
+        OFFSET
+        all_urn_states.result_offset
     );
 END;
 $$;
@@ -1583,7 +1604,7 @@ $$;
 --
 
 CREATE FUNCTION api.get_flap(bid_id numeric, block_height bigint DEFAULT api.max_block()) RETURNS api.flap_state
-    LANGUAGE sql STABLE
+    LANGUAGE sql STABLE STRICT
     AS $$
 WITH address_id AS (
     SELECT address_id
@@ -1706,7 +1727,7 @@ $$;
 --
 
 CREATE FUNCTION api.get_flop(bid_id numeric, block_height bigint DEFAULT api.max_block()) RETURNS api.flop_state
-    LANGUAGE sql STABLE
+    LANGUAGE sql STABLE STRICT
     AS $$
 WITH address_id AS (
     SELECT address_id
@@ -2299,8 +2320,8 @@ $$;
 -- Name: urn_bites(text, text, integer, integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.urn_bites(ilk_identifier text, urn_identifier text, max_results integer DEFAULT NULL::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.bite_event
-    LANGUAGE sql STABLE
+CREATE FUNCTION api.urn_bites(ilk_identifier text, urn_identifier text, max_results integer DEFAULT '-1'::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.bite_event
+    LANGUAGE sql STABLE STRICT
     AS $$
 WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier),
      urn AS (SELECT id
@@ -2308,12 +2329,21 @@ WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier),
              WHERE ilk_id = (SELECT id FROM ilk)
                AND identifier = urn_bites.urn_identifier)
 
-SELECT ilk_identifier, urn_bites.urn_identifier, bid_id, ink, art, tab, block_number, log_id
+SELECT ilk_identifier,
+       urn_bites.urn_identifier,
+       bid_id,
+       ink,
+       art,
+       tab,
+       block_number,
+       log_id
 FROM maker.bite
          LEFT JOIN headers ON bite.header_id = headers.id
 WHERE bite.urn_id = (SELECT id FROM urn)
 ORDER BY block_number DESC
-LIMIT urn_bites.max_results OFFSET urn_bites.result_offset
+LIMIT CASE WHEN max_results = -1 THEN NULL ELSE max_results END
+OFFSET
+urn_bites.result_offset
 $$;
 
 
@@ -2321,8 +2351,8 @@ $$;
 -- Name: urn_frobs(text, text, integer, integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.urn_frobs(ilk_identifier text, urn_identifier text, max_results integer DEFAULT NULL::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.frob_event
-    LANGUAGE sql STABLE
+CREATE FUNCTION api.urn_frobs(ilk_identifier text, urn_identifier text, max_results integer DEFAULT '-1'::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.frob_event
+    LANGUAGE sql STABLE STRICT
     AS $$
 WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier),
      urn AS (SELECT id
@@ -2346,7 +2376,9 @@ FROM maker.vat_frob
          LEFT JOIN headers ON vat_frob.header_id = headers.id
 WHERE vat_frob.urn_id = (SELECT id FROM urn)
 ORDER BY block_number DESC
-LIMIT urn_frobs.max_results OFFSET urn_frobs.result_offset
+LIMIT CASE WHEN max_results = -1 THEN NULL ELSE max_results END
+OFFSET
+urn_frobs.result_offset
 $$;
 
 

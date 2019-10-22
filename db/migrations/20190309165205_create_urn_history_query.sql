@@ -1,7 +1,8 @@
 -- +goose Up
 -- +goose StatementBegin
-CREATE FUNCTION api.all_urn_states(ilk_identifier TEXT, urn_identifier TEXT, block_height BIGINT DEFAULT api.max_block(),
-                                   max_results INTEGER DEFAULT NULL, result_offset INTEGER DEFAULT 0)
+CREATE FUNCTION api.all_urn_states(ilk_identifier TEXT, urn_identifier TEXT,
+                                   block_height BIGINT DEFAULT api.max_block(),
+                                   max_results INTEGER DEFAULT -1, result_offset INTEGER DEFAULT 0)
     RETURNS SETOF api.urn_state AS
 $$
 BEGIN
@@ -28,11 +29,14 @@ BEGIN
         FROM relevant_blocks,
              LATERAL api.get_urn(ilk_identifier, urn_identifier, relevant_blocks.block_number) r
         ORDER BY relevant_blocks.block_number DESC
-        LIMIT all_urn_states.max_results OFFSET all_urn_states.result_offset
+        LIMIT CASE WHEN max_results = -1 THEN NULL ELSE max_results END
+        OFFSET
+        all_urn_states.result_offset
     );
 END;
 $$
     LANGUAGE plpgsql
+    STRICT --necessary for postgraphile queries with required arguments
     STABLE;
 -- +goose StatementEnd
 

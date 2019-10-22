@@ -63,6 +63,7 @@ SELECT get_flop.bid_id,
 FROM storage_values
 $$
     LANGUAGE SQL
+    STRICT --necessary for postgraphile queries with required arguments
     STABLE;
 -- +goose Down
 DROP FUNCTION api.get_flop(NUMERIC, BIGINT);

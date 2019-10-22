@@ -3,7 +3,7 @@
 
 -- Function returning the history of a given ilk as of the given block height
 CREATE FUNCTION api.all_ilk_states(ilk_identifier TEXT, block_height BIGINT DEFAULT api.max_block(),
-                                   max_results INTEGER DEFAULT NULL, result_offset INTEGER DEFAULT 0)
+                                   max_results INTEGER DEFAULT -1, result_offset INTEGER DEFAULT 0)
     RETURNS SETOF api.ilk_state AS
 $$
 BEGIN
@@ -15,11 +15,14 @@ BEGIN
         SELECT r.*
         FROM relevant_blocks,
              LATERAL api.get_ilk(ilk_identifier, relevant_blocks.block_height) r
-        LIMIT all_ilk_states.max_results OFFSET all_ilk_states.result_offset
+        LIMIT CASE WHEN max_results = -1 THEN NULL ELSE max_results END
+        OFFSET
+        all_ilk_states.result_offset
     );
 END;
 $$
     LANGUAGE plpgsql
+    STRICT --necessary for postgraphile queries with required arguments
     STABLE;
 -- +goose StatementEnd
 

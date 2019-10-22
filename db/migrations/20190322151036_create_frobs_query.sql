@@ -18,7 +18,7 @@ COMMENT ON COLUMN api.frob_event.block_height
 COMMENT ON COLUMN api.frob_event.log_id
     IS E'@omit';
 
-CREATE FUNCTION api.urn_frobs(ilk_identifier TEXT, urn_identifier TEXT, max_results INTEGER DEFAULT NULL,
+CREATE FUNCTION api.urn_frobs(ilk_identifier TEXT, urn_identifier TEXT, max_results INTEGER DEFAULT -1,
                               result_offset INTEGER DEFAULT 0)
     RETURNS SETOF api.frob_event AS
 $$
@@ -44,13 +44,16 @@ FROM maker.vat_frob
          LEFT JOIN headers ON vat_frob.header_id = headers.id
 WHERE vat_frob.urn_id = (SELECT id FROM urn)
 ORDER BY block_number DESC
-LIMIT urn_frobs.max_results OFFSET urn_frobs.result_offset
+LIMIT CASE WHEN max_results = -1 THEN NULL ELSE max_results END
+OFFSET
+urn_frobs.result_offset
 $$
     LANGUAGE sql
+    STRICT --necessary for postgraphile queries with required arguments
     STABLE;
 
 
-CREATE FUNCTION api.all_frobs(ilk_identifier TEXT, max_results INTEGER DEFAULT NULL, result_offset INTEGER DEFAULT 0)
+CREATE FUNCTION api.all_frobs(ilk_identifier TEXT, max_results INTEGER DEFAULT -1, result_offset INTEGER DEFAULT 0)
     RETURNS SETOF api.frob_event AS
 $$
 WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier),
@@ -72,9 +75,12 @@ FROM maker.vat_frob
          LEFT JOIN headers ON vat_frob.header_id = headers.id
 WHERE urns.ilk_id = (SELECT id FROM ilk)
 ORDER BY block_number DESC
-LIMIT all_frobs.max_results OFFSET all_frobs.result_offset
+LIMIT CASE WHEN max_results = -1 THEN NULL ELSE max_results END
+OFFSET
+all_frobs.result_offset
 $$
     LANGUAGE sql
+    STRICT --necessary for postgraphile queries with required arguments
     STABLE;
 
 -- +goose Down

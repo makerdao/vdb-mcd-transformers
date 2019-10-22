@@ -1,7 +1,7 @@
 -- +goose Up
 -- SQL in this section is executed when the migration is applied.
 
-CREATE OR REPLACE FUNCTION api.all_flips(ilk TEXT, max_results INTEGER DEFAULT NULL, result_offset INTEGER DEFAULT 0)
+CREATE OR REPLACE FUNCTION api.all_flips(ilk TEXT, max_results INTEGER DEFAULT -1, result_offset INTEGER DEFAULT 0)
     RETURNS SETOF api.flip_state AS
 -- +goose StatementBegin
 $BODY$
@@ -20,7 +20,9 @@ BEGIN
                  FROM maker.flip
                  WHERE address_id = (SELECT * FROM address)
                  ORDER BY bid_id DESC
-                 LIMIT all_flips.max_results OFFSET all_flips.result_offset)
+                 LIMIT CASE WHEN max_results = -1 THEN NULL ELSE max_results END
+                 OFFSET
+                 all_flips.result_offset)
         SELECT f.*
         FROM bid_ids,
              LATERAL api.get_flip(bid_ids.bid_id, all_flips.ilk) f
@@ -28,6 +30,7 @@ BEGIN
 END
 $BODY$
     LANGUAGE plpgsql
+    STRICT --necessary for postgraphile queries with required arguments
     STABLE;
 -- +goose StatementEnd
 
