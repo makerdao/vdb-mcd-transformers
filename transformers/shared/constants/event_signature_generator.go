@@ -25,7 +25,7 @@ import (
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/crypto"
 
-	"github.com/vulcanize/vulcanizedb/pkg/geth"
+	"github.com/vulcanize/vulcanizedb/pkg/eth"
 )
 
 func getEventTopicZero(solidityEventSignature string) string {
@@ -40,7 +40,7 @@ func getLogNoteTopicZero(solidityFunctionSignature string) string {
 }
 
 func getSolidityFunctionSignature(abi, name string) string {
-	parsedAbi, _ := geth.ParseAbi(abi)
+	parsedAbi, _ := eth.ParseAbi(abi)
 
 	if method, ok := parsedAbi.Methods[name]; ok {
 		return method.Sig()

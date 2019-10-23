@@ -23,7 +23,7 @@ import (
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
-	"github.com/vulcanize/vulcanizedb/pkg/geth"
+	"github.com/vulcanize/vulcanizedb/pkg/eth"
 
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 )
@@ -35,7 +35,7 @@ func (FlipKickConverter) toEntities(contractAbi string, logs []core.HeaderSyncLo
 	for _, log := range logs {
 		var entity FlipKickEntity
 		address := log.Log.Address
-		abi, err := geth.ParseAbi(contractAbi)
+		abi, err := eth.ParseAbi(contractAbi)
 		if err != nil {
 			return nil, err
 		}

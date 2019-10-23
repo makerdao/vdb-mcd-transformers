@@ -23,7 +23,7 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
-	"github.com/vulcanize/vulcanizedb/pkg/geth"
+	"github.com/vulcanize/vulcanizedb/pkg/eth"
 	"math/big"
 )
 
@@ -34,7 +34,7 @@ func (s SpotPokeConverter) toEntities(contractAbi string, logs []core.HeaderSync
 	for _, log := range logs {
 		var entity SpotPokeEntity
 		address := log.Log.Address
-		abi, parseErr := geth.ParseAbi(contractAbi)
+		abi, parseErr := eth.ParseAbi(contractAbi)
 		if parseErr != nil {
 			return nil, parseErr
 		}
