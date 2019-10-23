@@ -10,10 +10,10 @@ ENV GO111MODULE on
 WORKDIR /go/src/github.com/vulcanize/mcd_transformers
 ADD . .
 
-WORKDIR /go
-RUN GO111MODULE=auto go get -u -d github.com/vulcanize/vulcanizedb
+WORKDIR /go/src/github.com/vulcanize
+RUN git clone https://github.com/vulcanize/vulcanizedb.git
 WORKDIR /go/src/github.com/vulcanize/vulcanizedb
-RUN git checkout v0.0.7
+RUN git checkout v0.0.8
 RUN go build
 
 WORKDIR /go/src/github.com/vulcanize/mcd_transformers
