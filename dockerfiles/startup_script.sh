@@ -32,7 +32,7 @@ fi
 # Fire up the services
 if [ $? -eq 0 ]; then
   # Fire up the services
-  ./vulcanizedb headerSync --config config.toml -s 13474838 &
+  ./vulcanizedb headerSync --config config.toml -s 13772974 &
   ./vulcanizedb composeAndExecute --config config.toml &
 fi
 
