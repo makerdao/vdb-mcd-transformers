@@ -23,7 +23,7 @@ RUN go build
 
 WORKDIR /go/src/github.com/vulcanize/vulcanizedb
 # add mcd to go.mod
-RUN go mod edit -require=github.com/vulcanize/mcd_transformers@v0.2.12
+RUN go mod edit -require=github.com/vulcanize/mcd_transformers@v0.2.13
 # use local mcd for build
 RUN go mod edit -replace=github.com/vulcanize/mcd_transformers=/go/src/github.com/vulcanize/mcd_transformers/
 RUN go build
