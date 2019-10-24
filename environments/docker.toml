@@ -304,15 +304,15 @@
                     ]
         rank = "0"
     [exporter.tick]
-         path = "transformers/events/tick/initializer"
-         type = "eth_event"
-         repository = "github.com/vulcanize/mcd_transformers"
-         migrations = "db/migrations"
+        path = "transformers/events/tick/initializer"
+        type = "eth_event"
+        repository = "github.com/vulcanize/mcd_transformers"
+        migrations = "db/migrations"
         contracts = [ "MCD_FLIP_ETH_A", "MCD_FLIP_ETH_B", "MCD_FLIP_ETH_C", "MCD_FLIP_REP_A", "MCD_FLIP_ZRX_A",
-                      "MCD_FLIP_OMG_A", "MCD_FLIP_BAT_A", "MCD_FLIP_DGD_A", "MCD_FLIP_GNT_A", "MCD_FLIP_SAI",
-                      "MCD_FLOP"
-                     ]
-         rank = "0"
+                     "MCD_FLIP_OMG_A", "MCD_FLIP_BAT_A", "MCD_FLIP_DGD_A", "MCD_FLIP_GNT_A", "MCD_FLIP_SAI",
+                     "MCD_FLAP", "MCD_FLOP"
+                    ]
+        rank = "0"
     [exporter.vat_file_debt_ceiling]
         path = "transformers/events/vat_file/debt_ceiling/initializer"
         type = "eth_event"

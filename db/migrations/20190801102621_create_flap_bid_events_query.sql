@@ -75,6 +75,24 @@ WITH address_id AS (
                             ON yank.bid_id = flap_bid_lot.bid_id
                                 AND flap_bid_lot.block_number = headers.block_number
          WHERE yank.address_id = (SELECT * FROM address_id)
+     ),
+     ticks AS (
+         SELECT tick.bid_id,
+                flap_bid_lot.lot,
+                flap_bid_bid.bid             AS bid_amount,
+                'tick'::api.bid_act          AS act,
+                headers.block_number         AS block_height,
+                log_id,
+                (SELECT * FROM flap_address) AS contract_address
+         FROM maker.tick
+                  LEFT JOIN headers on tick.header_id = headers.id
+                  LEFT JOIN maker.flap_bid_bid
+                            ON tick.bid_id = flap_bid_bid.bid_id
+                                AND flap_bid_bid.block_number = headers.block_number
+                  LEFT JOIN maker.flap_bid_lot
+                            ON tick.bid_id = flap_bid_lot.bid_id
+                                AND flap_bid_lot.block_number = headers.block_number
+         WHERE tick.address_id = (SELECT * FROM address_id)
      )
 
 SELECT flap_kick.bid_id,
@@ -97,6 +115,9 @@ SELECT bid_id,
 FROM maker.tend
          LEFT JOIN headers ON tend.header_id = headers.id
 WHERE tend.address_id = (SELECT * FROM address_id)
+UNION
+SELECT *
+FROM ticks
 UNION
 SELECT *
 FROM deals

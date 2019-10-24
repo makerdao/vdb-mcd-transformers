@@ -10,6 +10,7 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/events/flap_kick"
 	"github.com/vulcanize/mcd_transformers/transformers/events/flop_kick"
 	"github.com/vulcanize/mcd_transformers/transformers/events/tend"
+	"github.com/vulcanize/mcd_transformers/transformers/events/tick"
 	"github.com/vulcanize/mcd_transformers/transformers/events/yank"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
@@ -28,6 +29,7 @@ var _ = Describe("Flap bid events query", func() {
 		db                     *postgres.DB
 		flapKickRepo           flap_kick.FlapKickRepository
 		tendRepo               tend.TendRepository
+		tickRepo               tick.TickRepository
 		dealRepo               deal.DealRepository
 		yankRepo               yank.YankRepository
 		headerRepo             repositories.HeaderRepository
@@ -49,6 +51,8 @@ var _ = Describe("Flap bid events query", func() {
 		flapKickRepo.SetDB(db)
 		tendRepo = tend.TendRepository{}
 		tendRepo.SetDB(db)
+		tickRepo = tick.TickRepository{}
+		tickRepo.SetDB(db)
 		dealRepo = deal.DealRepository{}
 		dealRepo.SetDB(db)
 		yankRepo = yank.YankRepository{}
@@ -92,6 +96,16 @@ var _ = Describe("Flap bid events query", func() {
 			})
 			Expect(flapTendErr).NotTo(HaveOccurred())
 
+			tickLog := test_data.CreateTestLog(headerOneId, db)
+			flapTickErr := test_helpers.CreateTick(test_helpers.TickCreationInput{
+				BidId:           fakeBidId,
+				ContractAddress: contractAddress,
+				TickRepo:        tickRepo,
+				TickHeaderId:    headerOneId,
+				TickLogId:       tickLog.ID,
+			})
+			Expect(flapTickErr).NotTo(HaveOccurred())
+
 			flapDealErr := test_helpers.CreateDeal(test_helpers.DealCreationInput{
 				Db:              db,
 				BidId:           fakeBidId,
@@ -115,6 +129,7 @@ var _ = Describe("Flap bid events query", func() {
 					Lot:       flapKickEvent.ColumnValues["lot"].(string),
 					Act:       "kick"},
 				test_helpers.BidEvent{BidId: strconv.Itoa(fakeBidId), BidAmount: strconv.Itoa(fakeBidAmount), Lot: strconv.Itoa(fakeLot), Act: "tend"},
+				test_helpers.BidEvent{BidId: strconv.Itoa(fakeBidId), BidAmount: flapStorageValues[storage.BidBid].(string), Lot: flapStorageValues[storage.BidLot].(string), Act: "tick"},
 				test_helpers.BidEvent{BidId: strconv.Itoa(fakeBidId), BidAmount: flapStorageValues[storage.BidBid].(string), Lot: flapStorageValues[storage.BidLot].(string), Act: "deal"},
 			))
 		})
@@ -371,6 +386,69 @@ var _ = Describe("Flap bid events query", func() {
 		})
 	})
 
+	Describe("tick event", func() {
+		It("ignores tick events from non flap contracts", func() {
+			fakeBidId := rand.Int()
+			tickLog := test_data.CreateTestLog(headerOneId, db)
+
+			// irrelevant tick event
+			tickErr := test_helpers.CreateTick(test_helpers.TickCreationInput{
+				BidId:           fakeBidId,
+				ContractAddress: "flip",
+				TickRepo:        tickRepo,
+				TickHeaderId:    headerOneId,
+				TickLogId:       tickLog.ID,
+			})
+			Expect(tickErr).NotTo(HaveOccurred())
+
+			var actualBidEvents []test_helpers.BidEvent
+			queryErr := db.Select(&actualBidEvents, `SELECT bid_id, bid_amount, lot, act FROM api.all_flap_bid_events()`)
+			Expect(queryErr).NotTo(HaveOccurred())
+
+			Expect(actualBidEvents).To(ConsistOf(
+				test_helpers.BidEvent{
+					BidId:     flapKickEvent.ColumnValues["bid_id"].(string),
+					BidAmount: flapKickEvent.ColumnValues["bid"].(string),
+					Lot:       flapKickEvent.ColumnValues["lot"].(string),
+					Act:       "kick",
+				},
+			))
+		})
+
+		It("includes flap tick bid events", func() {
+			fakeBidId := rand.Int()
+			tickLog := test_data.CreateTestLog(headerOneId, db)
+
+			tickErr := test_helpers.CreateTick(test_helpers.TickCreationInput{
+				BidId:           fakeBidId,
+				ContractAddress: contractAddress,
+				TickRepo:        tickRepo,
+				TickHeaderId:    headerOneId,
+				TickLogId:       tickLog.ID,
+			})
+			Expect(tickErr).NotTo(HaveOccurred())
+			flapStorageValues := test_helpers.GetFlapStorageValues(1, fakeBidId)
+			test_helpers.CreateFlap(db, headerOne, flapStorageValues, test_helpers.GetFlapMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
+
+			var actualBidEvents []test_helpers.BidEvent
+			queryErr := db.Select(&actualBidEvents, `SELECT bid_id, bid_amount, lot, act FROM api.all_flap_bid_events()`)
+			Expect(queryErr).NotTo(HaveOccurred())
+
+			Expect(actualBidEvents).To(ConsistOf(
+				test_helpers.BidEvent{
+					BidId:     flapKickEvent.ColumnValues["bid_id"].(string),
+					BidAmount: flapKickEvent.ColumnValues["bid"].(string),
+					Lot:       flapKickEvent.ColumnValues["lot"].(string),
+					Act:       "kick"},
+				test_helpers.BidEvent{
+					BidId:     strconv.Itoa(fakeBidId),
+					BidAmount: flapStorageValues[storage.BidBid].(string),
+					Lot:       flapStorageValues[storage.BidLot].(string),
+					Act:       "tick"},
+			))
+		})
+	})
+
 	Describe("Deal", func() {
 		It("returns bid events with lot and bid amount values from the block where the deal occurred", func() {
 			blockTwo := blockOne + 1
@@ -503,5 +581,4 @@ var _ = Describe("Flap bid events query", func() {
 			))
 		})
 	})
-
 })
