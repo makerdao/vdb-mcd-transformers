@@ -31,7 +31,7 @@ import (
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 )
 
-var _ = Describe("Tend EventTransformer", func() {
+var _ = XDescribe("Tend EventTransformer", func() {
 	var (
 		db          *postgres.DB
 		blockChain  core.BlockChain

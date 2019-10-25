@@ -30,7 +30,7 @@ import (
 	"strconv"
 )
 
-var _ = Describe("VatFlux EventTransformer", func() {
+var _ = XDescribe("VatFlux EventTransformer", func() {
 	vatFluxConfig := transformer.EventTransformerConfig{
 		TransformerName:   constants.VatFluxLabel,
 		ContractAddresses: []string{test_data.VatAddress()},

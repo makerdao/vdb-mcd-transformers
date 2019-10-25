@@ -29,7 +29,7 @@ import (
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 )
 
-var _ = Describe("VatHeal Transformer", func() {
+var _ = XDescribe("VatHeal Transformer", func() {
 	vatHealConfig := transformer.EventTransformerConfig{
 		TransformerName:   constants.VatHealLabel,
 		ContractAddresses: []string{test_data.VatAddress()},

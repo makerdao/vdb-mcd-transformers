@@ -31,7 +31,7 @@ import (
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 )
 
-var _ = Describe("FlapKick Transformer", func() {
+var _ = XDescribe("FlapKick Transformer", func() {
 	var (
 		db         *postgres.DB
 		blockChain core.BlockChain
