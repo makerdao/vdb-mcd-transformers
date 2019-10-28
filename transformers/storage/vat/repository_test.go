@@ -17,27 +17,26 @@
 package vat_test
 
 import (
-	"github.com/vulcanize/mcd_transformers/transformers/component_tests/queries/test_helpers"
-	"strconv"
-
+	"database/sql"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-
-	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
-	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
-
 	"github.com/vulcanize/mcd_transformers/test_config"
+	"github.com/vulcanize/mcd_transformers/transformers/component_tests/queries/test_helpers"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	. "github.com/vulcanize/mcd_transformers/transformers/storage/test_helpers"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/vat"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
+	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
+	"math/rand"
+	"strconv"
 )
 
 var _ = Describe("Vat storage repository", func() {
 	var (
 		db              *postgres.DB
 		repo            vat.VatStorageRepository
-		fakeBlockNumber = 123
+		fakeBlockNumber = rand.Int()
 		fakeBlockHash   = "expected_block_hash"
 		fakeGuy         = "fake_urn"
 		fakeUint256     = "12345"
@@ -175,6 +174,118 @@ var _ = Describe("Vat storage repository", func() {
 			Expect(err).To(HaveOccurred())
 			Expect(err).To(MatchError(utils.ErrMetadataMalformed{MissingData: constants.Ilk}))
 		})
+
+		Describe("updating current_ilk_state trigger table", func() {
+			It("inserts a row for new ilk identifier", func() {
+				rawTimestamp := int64(rand.Int31())
+				CreateHeader(rawTimestamp, fakeBlockNumber, db)
+				ilkArtMetadata := utils.GetStorageValueMetadata(
+					vat.IlkArt, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Uint256)
+				expectedTime := sql.NullString{String: FormatTimestamp(rawTimestamp), Valid: true}
+
+				err := repo.Create(fakeBlockNumber, fakeBlockHash, ilkArtMetadata, fakeUint256)
+				Expect(err).NotTo(HaveOccurred())
+
+				var ilkState test_helpers.IlkState
+				queryErr := db.Get(&ilkState, `SELECT ilk_identifier, art, created, updated FROM api.current_ilk_state`)
+				Expect(queryErr).NotTo(HaveOccurred())
+				Expect(ilkState.IlkIdentifier).To(Equal(test_helpers.FakeIlk.Identifier))
+				Expect(ilkState.Art).To(Equal(fakeUint256))
+				Expect(ilkState.Created).To(Equal(expectedTime))
+				Expect(ilkState.Updated).To(Equal(expectedTime))
+			})
+
+			It("updates time created if new diff is from earlier block", func() {
+				rawTimestamp := int64(rand.Int31())
+				CreateHeader(rawTimestamp, fakeBlockNumber, db)
+				formattedTimestamp := FormatTimestamp(rawTimestamp)
+				expectedTimeUpdated := sql.NullString{String: formattedTimestamp, Valid: true}
+
+				// set up old ilk state in later block
+				ilkArtMetadata := utils.GetStorageValueMetadata(vat.IlkArt, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Uint256)
+				_, insertErr := db.Exec(
+					`INSERT INTO api.current_ilk_state (ilk_identifier, art, created, updated) VALUES ($1, $2, $3::TIMESTAMP, $3::TIMESTAMP)`,
+					test_helpers.FakeIlk.Identifier, fakeUint256, formattedTimestamp)
+				Expect(insertErr).NotTo(HaveOccurred())
+
+				// set up earlier header
+				earlierBlockNumber := fakeBlockNumber - 1
+				earlierTimestamp := rawTimestamp - 1
+				CreateHeader(earlierTimestamp, earlierBlockNumber, db)
+				formattedEarlierTimestamp := FormatTimestamp(earlierTimestamp)
+				expectedTimeCreated := sql.NullString{String: formattedEarlierTimestamp, Valid: true}
+
+				// trigger new ilk state from earlier block
+				err := repo.Create(earlierBlockNumber, fakeBlockHash, ilkArtMetadata, strconv.Itoa(rand.Int()))
+				Expect(err).NotTo(HaveOccurred())
+
+				var ilkState test_helpers.IlkState
+				queryErr := db.Get(&ilkState, `SELECT ilk_identifier, art, created, updated FROM api.current_ilk_state`)
+				Expect(queryErr).NotTo(HaveOccurred())
+				Expect(ilkState.IlkIdentifier).To(Equal(test_helpers.FakeIlk.Identifier))
+				Expect(ilkState.Art).To(Equal(fakeUint256))
+				Expect(ilkState.Created).To(Equal(expectedTimeCreated))
+				Expect(ilkState.Updated).To(Equal(expectedTimeUpdated))
+			})
+
+			It("updates art and time updated if new diff is from later block", func() {
+				rawTimestamp := int64(rand.Int31())
+				CreateHeader(rawTimestamp, fakeBlockNumber, db)
+				formattedTimestamp := FormatTimestamp(rawTimestamp)
+				expectedTimeCreated := sql.NullString{String: formattedTimestamp, Valid: true}
+
+				// set up old ilk state in earlier block
+				ilkArtMetadata := utils.GetStorageValueMetadata(vat.IlkArt, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Uint256)
+				_, insertErr := db.Exec(
+					`INSERT INTO api.current_ilk_state (ilk_identifier, art, created, updated) VALUES ($1, $2, $3::TIMESTAMP, $3::TIMESTAMP)`,
+					test_helpers.FakeIlk.Identifier, fakeUint256, formattedTimestamp)
+				Expect(insertErr).NotTo(HaveOccurred())
+
+				// set up later header
+				laterBlockNumber := fakeBlockNumber + 1
+				laterTimestamp := rawTimestamp + 1
+				CreateHeader(laterTimestamp, laterBlockNumber, db)
+				formattedLaterTimestamp := FormatTimestamp(laterTimestamp)
+				expectedTimeUpdated := sql.NullString{String: formattedLaterTimestamp, Valid: true}
+
+				// trigger new ilk state from later block
+				newArt := strconv.Itoa(rand.Int())
+				err := repo.Create(laterBlockNumber, fakeBlockHash, ilkArtMetadata, newArt)
+				Expect(err).NotTo(HaveOccurred())
+
+				var ilkState test_helpers.IlkState
+				queryErr := db.Get(&ilkState, `SELECT ilk_identifier, art, created, updated FROM api.current_ilk_state`)
+				Expect(queryErr).NotTo(HaveOccurred())
+				Expect(ilkState.IlkIdentifier).To(Equal(test_helpers.FakeIlk.Identifier))
+				Expect(ilkState.Art).To(Equal(newArt))
+				Expect(ilkState.Created).To(Equal(expectedTimeCreated))
+				Expect(ilkState.Updated).To(Equal(expectedTimeUpdated))
+			})
+
+			It("otherwise leaves row as is", func() {
+				rawTimestamp := int64(rand.Int31())
+				CreateHeader(rawTimestamp, fakeBlockNumber, db)
+				formattedTimestamp := FormatTimestamp(rawTimestamp)
+				expectedTime := sql.NullString{String: formattedTimestamp, Valid: true}
+
+				ilkArtMetadata := utils.GetStorageValueMetadata(vat.IlkArt, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Uint256)
+				_, insertErr := db.Exec(
+					`INSERT INTO api.current_ilk_state (ilk_identifier, art, created, updated) VALUES ($1, $2, $3::TIMESTAMP, $3::TIMESTAMP)`,
+					test_helpers.FakeIlk.Identifier, fakeUint256, formattedTimestamp)
+				Expect(insertErr).NotTo(HaveOccurred())
+
+				err := repo.Create(fakeBlockNumber, fakeBlockHash, ilkArtMetadata, strconv.Itoa(rand.Int()))
+				Expect(err).NotTo(HaveOccurred())
+
+				var ilkState test_helpers.IlkState
+				queryErr := db.Get(&ilkState, `SELECT ilk_identifier, art, created, updated FROM api.current_ilk_state`)
+				Expect(queryErr).NotTo(HaveOccurred())
+				Expect(ilkState.IlkIdentifier).To(Equal(test_helpers.FakeIlk.Identifier))
+				Expect(ilkState.Art).To(Equal(fakeUint256))
+				Expect(ilkState.Created).To(Equal(expectedTime))
+				Expect(ilkState.Updated).To(Equal(expectedTime))
+			})
+		})
 	})
 
 	Describe("ilk dust", func() {
@@ -214,6 +325,118 @@ var _ = Describe("Vat storage repository", func() {
 
 			Expect(err).To(HaveOccurred())
 			Expect(err).To(MatchError(utils.ErrMetadataMalformed{MissingData: constants.Ilk}))
+		})
+
+		Describe("updating current_ilk_state trigger table", func() {
+			It("inserts a row for new ilk identifier", func() {
+				rawTimestamp := int64(rand.Int31())
+				CreateHeader(rawTimestamp, fakeBlockNumber, db)
+				ilkDustMetadata := utils.GetStorageValueMetadata(
+					vat.IlkDust, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Uint256)
+				expectedTime := sql.NullString{String: FormatTimestamp(rawTimestamp), Valid: true}
+
+				err := repo.Create(fakeBlockNumber, fakeBlockHash, ilkDustMetadata, fakeUint256)
+				Expect(err).NotTo(HaveOccurred())
+
+				var ilkState test_helpers.IlkState
+				queryErr := db.Get(&ilkState, `SELECT ilk_identifier, dust, created, updated FROM api.current_ilk_state`)
+				Expect(queryErr).NotTo(HaveOccurred())
+				Expect(ilkState.IlkIdentifier).To(Equal(test_helpers.FakeIlk.Identifier))
+				Expect(ilkState.Dust).To(Equal(fakeUint256))
+				Expect(ilkState.Created).To(Equal(expectedTime))
+				Expect(ilkState.Updated).To(Equal(expectedTime))
+			})
+
+			It("updates time created if new diff is from earlier block", func() {
+				rawTimestamp := int64(rand.Int31())
+				CreateHeader(rawTimestamp, fakeBlockNumber, db)
+				formattedTimestamp := FormatTimestamp(rawTimestamp)
+				expectedTimeUpdated := sql.NullString{String: formattedTimestamp, Valid: true}
+
+				// set up old ilk state in later block
+				ilkDustMetadata := utils.GetStorageValueMetadata(vat.IlkDust, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Uint256)
+				_, insertErr := db.Exec(
+					`INSERT INTO api.current_ilk_state (ilk_identifier, dust, created, updated) VALUES ($1, $2, $3::TIMESTAMP, $3::TIMESTAMP)`,
+					test_helpers.FakeIlk.Identifier, fakeUint256, formattedTimestamp)
+				Expect(insertErr).NotTo(HaveOccurred())
+
+				// set up earlier header
+				earlierBlockNumber := fakeBlockNumber - 1
+				earlierTimestamp := rawTimestamp - 1
+				CreateHeader(earlierTimestamp, earlierBlockNumber, db)
+				formattedEarlierTimestamp := FormatTimestamp(earlierTimestamp)
+				expectedTimeCreated := sql.NullString{String: formattedEarlierTimestamp, Valid: true}
+
+				// trigger new ilk state from earlier block
+				err := repo.Create(earlierBlockNumber, fakeBlockHash, ilkDustMetadata, strconv.Itoa(rand.Int()))
+				Expect(err).NotTo(HaveOccurred())
+
+				var ilkState test_helpers.IlkState
+				queryErr := db.Get(&ilkState, `SELECT ilk_identifier, dust, created, updated FROM api.current_ilk_state`)
+				Expect(queryErr).NotTo(HaveOccurred())
+				Expect(ilkState.IlkIdentifier).To(Equal(test_helpers.FakeIlk.Identifier))
+				Expect(ilkState.Dust).To(Equal(fakeUint256))
+				Expect(ilkState.Created).To(Equal(expectedTimeCreated))
+				Expect(ilkState.Updated).To(Equal(expectedTimeUpdated))
+			})
+
+			It("updates dust and time updated if new diff is from later block", func() {
+				rawTimestamp := int64(rand.Int31())
+				CreateHeader(rawTimestamp, fakeBlockNumber, db)
+				formattedTimestamp := FormatTimestamp(rawTimestamp)
+				expectedTimeCreated := sql.NullString{String: formattedTimestamp, Valid: true}
+
+				// set up old ilk state in earlier block
+				ilkDustMetadata := utils.GetStorageValueMetadata(vat.IlkDust, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Uint256)
+				_, insertErr := db.Exec(
+					`INSERT INTO api.current_ilk_state (ilk_identifier, dust, created, updated) VALUES ($1, $2, $3::TIMESTAMP, $3::TIMESTAMP)`,
+					test_helpers.FakeIlk.Identifier, fakeUint256, formattedTimestamp)
+				Expect(insertErr).NotTo(HaveOccurred())
+
+				// set up later header
+				laterBlockNumber := fakeBlockNumber + 1
+				laterTimestamp := rawTimestamp + 1
+				CreateHeader(laterTimestamp, laterBlockNumber, db)
+				formattedLaterTimestamp := FormatTimestamp(laterTimestamp)
+				expectedTimeUpdated := sql.NullString{String: formattedLaterTimestamp, Valid: true}
+
+				// trigger new ilk state from later block
+				newDust := strconv.Itoa(rand.Int())
+				err := repo.Create(laterBlockNumber, fakeBlockHash, ilkDustMetadata, newDust)
+				Expect(err).NotTo(HaveOccurred())
+
+				var ilkState test_helpers.IlkState
+				queryErr := db.Get(&ilkState, `SELECT ilk_identifier, dust, created, updated FROM api.current_ilk_state`)
+				Expect(queryErr).NotTo(HaveOccurred())
+				Expect(ilkState.IlkIdentifier).To(Equal(test_helpers.FakeIlk.Identifier))
+				Expect(ilkState.Dust).To(Equal(newDust))
+				Expect(ilkState.Created).To(Equal(expectedTimeCreated))
+				Expect(ilkState.Updated).To(Equal(expectedTimeUpdated))
+			})
+
+			It("otherwise leaves row as is", func() {
+				rawTimestamp := int64(rand.Int31())
+				CreateHeader(rawTimestamp, fakeBlockNumber, db)
+				formattedTimestamp := FormatTimestamp(rawTimestamp)
+				expectedTime := sql.NullString{String: formattedTimestamp, Valid: true}
+
+				ilkDustMetadata := utils.GetStorageValueMetadata(vat.IlkDust, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Uint256)
+				_, insertErr := db.Exec(
+					`INSERT INTO api.current_ilk_state (ilk_identifier, dust, created, updated) VALUES ($1, $2, $3::TIMESTAMP, $3::TIMESTAMP)`,
+					test_helpers.FakeIlk.Identifier, fakeUint256, formattedTimestamp)
+				Expect(insertErr).NotTo(HaveOccurred())
+
+				err := repo.Create(fakeBlockNumber, fakeBlockHash, ilkDustMetadata, strconv.Itoa(rand.Int()))
+				Expect(err).NotTo(HaveOccurred())
+
+				var ilkState test_helpers.IlkState
+				queryErr := db.Get(&ilkState, `SELECT ilk_identifier, dust, created, updated FROM api.current_ilk_state`)
+				Expect(queryErr).NotTo(HaveOccurred())
+				Expect(ilkState.IlkIdentifier).To(Equal(test_helpers.FakeIlk.Identifier))
+				Expect(ilkState.Dust).To(Equal(fakeUint256))
+				Expect(ilkState.Created).To(Equal(expectedTime))
+				Expect(ilkState.Updated).To(Equal(expectedTime))
+			})
 		})
 	})
 
@@ -255,6 +478,118 @@ var _ = Describe("Vat storage repository", func() {
 			Expect(err).To(HaveOccurred())
 			Expect(err).To(MatchError(utils.ErrMetadataMalformed{MissingData: constants.Ilk}))
 		})
+
+		Describe("updating current_ilk_state trigger table", func() {
+			It("inserts a row for new ilk identifier", func() {
+				rawTimestamp := int64(rand.Int31())
+				CreateHeader(rawTimestamp, fakeBlockNumber, db)
+				ilkLineMetadata := utils.GetStorageValueMetadata(
+					vat.IlkLine, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Uint256)
+				expectedTime := sql.NullString{String: FormatTimestamp(rawTimestamp), Valid: true}
+
+				err := repo.Create(fakeBlockNumber, fakeBlockHash, ilkLineMetadata, fakeUint256)
+				Expect(err).NotTo(HaveOccurred())
+
+				var ilkState test_helpers.IlkState
+				queryErr := db.Get(&ilkState, `SELECT ilk_identifier, line, created, updated FROM api.current_ilk_state`)
+				Expect(queryErr).NotTo(HaveOccurred())
+				Expect(ilkState.IlkIdentifier).To(Equal(test_helpers.FakeIlk.Identifier))
+				Expect(ilkState.Line).To(Equal(fakeUint256))
+				Expect(ilkState.Created).To(Equal(expectedTime))
+				Expect(ilkState.Updated).To(Equal(expectedTime))
+			})
+
+			It("updates time created if new diff is from earlier block", func() {
+				rawTimestamp := int64(rand.Int31())
+				CreateHeader(rawTimestamp, fakeBlockNumber, db)
+				formattedTimestamp := FormatTimestamp(rawTimestamp)
+				expectedTimeUpdated := sql.NullString{String: formattedTimestamp, Valid: true}
+
+				// set up old ilk state in later block
+				ilkLineMetadata := utils.GetStorageValueMetadata(vat.IlkLine, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Uint256)
+				_, insertErr := db.Exec(
+					`INSERT INTO api.current_ilk_state (ilk_identifier, line, created, updated) VALUES ($1, $2, $3::TIMESTAMP, $3::TIMESTAMP)`,
+					test_helpers.FakeIlk.Identifier, fakeUint256, formattedTimestamp)
+				Expect(insertErr).NotTo(HaveOccurred())
+
+				// set up earlier header
+				earlierBlockNumber := fakeBlockNumber - 1
+				earlierTimestamp := rawTimestamp - 1
+				CreateHeader(earlierTimestamp, earlierBlockNumber, db)
+				formattedEarlierTimestamp := FormatTimestamp(earlierTimestamp)
+				expectedTimeCreated := sql.NullString{String: formattedEarlierTimestamp, Valid: true}
+
+				// trigger new ilk state from earlier block
+				err := repo.Create(earlierBlockNumber, fakeBlockHash, ilkLineMetadata, strconv.Itoa(rand.Int()))
+				Expect(err).NotTo(HaveOccurred())
+
+				var ilkState test_helpers.IlkState
+				queryErr := db.Get(&ilkState, `SELECT ilk_identifier, line, created, updated FROM api.current_ilk_state`)
+				Expect(queryErr).NotTo(HaveOccurred())
+				Expect(ilkState.IlkIdentifier).To(Equal(test_helpers.FakeIlk.Identifier))
+				Expect(ilkState.Line).To(Equal(fakeUint256))
+				Expect(ilkState.Created).To(Equal(expectedTimeCreated))
+				Expect(ilkState.Updated).To(Equal(expectedTimeUpdated))
+			})
+
+			It("updates line and time updated if new diff is from later block", func() {
+				rawTimestamp := int64(rand.Int31())
+				CreateHeader(rawTimestamp, fakeBlockNumber, db)
+				formattedTimestamp := FormatTimestamp(rawTimestamp)
+				expectedTimeCreated := sql.NullString{String: formattedTimestamp, Valid: true}
+
+				// set up old ilk state in earlier block
+				ilkLineMetadata := utils.GetStorageValueMetadata(vat.IlkLine, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Uint256)
+				_, insertErr := db.Exec(
+					`INSERT INTO api.current_ilk_state (ilk_identifier, line, created, updated) VALUES ($1, $2, $3::TIMESTAMP, $3::TIMESTAMP)`,
+					test_helpers.FakeIlk.Identifier, fakeUint256, formattedTimestamp)
+				Expect(insertErr).NotTo(HaveOccurred())
+
+				// set up later header
+				laterBlockNumber := fakeBlockNumber + 1
+				laterTimestamp := rawTimestamp + 1
+				CreateHeader(laterTimestamp, laterBlockNumber, db)
+				formattedLaterTimestamp := FormatTimestamp(laterTimestamp)
+				expectedTimeUpdated := sql.NullString{String: formattedLaterTimestamp, Valid: true}
+
+				// trigger new ilk state from later block
+				newLine := strconv.Itoa(rand.Int())
+				err := repo.Create(laterBlockNumber, fakeBlockHash, ilkLineMetadata, newLine)
+				Expect(err).NotTo(HaveOccurred())
+
+				var ilkState test_helpers.IlkState
+				queryErr := db.Get(&ilkState, `SELECT ilk_identifier, line, created, updated FROM api.current_ilk_state`)
+				Expect(queryErr).NotTo(HaveOccurred())
+				Expect(ilkState.IlkIdentifier).To(Equal(test_helpers.FakeIlk.Identifier))
+				Expect(ilkState.Line).To(Equal(newLine))
+				Expect(ilkState.Created).To(Equal(expectedTimeCreated))
+				Expect(ilkState.Updated).To(Equal(expectedTimeUpdated))
+			})
+
+			It("otherwise leaves row as is", func() {
+				rawTimestamp := int64(rand.Int31())
+				CreateHeader(rawTimestamp, fakeBlockNumber, db)
+				formattedTimestamp := FormatTimestamp(rawTimestamp)
+				expectedTime := sql.NullString{String: formattedTimestamp, Valid: true}
+
+				ilkLineMetadata := utils.GetStorageValueMetadata(vat.IlkLine, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Uint256)
+				_, insertErr := db.Exec(
+					`INSERT INTO api.current_ilk_state (ilk_identifier, line, created, updated) VALUES ($1, $2, $3::TIMESTAMP, $3::TIMESTAMP)`,
+					test_helpers.FakeIlk.Identifier, fakeUint256, formattedTimestamp)
+				Expect(insertErr).NotTo(HaveOccurred())
+
+				err := repo.Create(fakeBlockNumber, fakeBlockHash, ilkLineMetadata, strconv.Itoa(rand.Int()))
+				Expect(err).NotTo(HaveOccurred())
+
+				var ilkState test_helpers.IlkState
+				queryErr := db.Get(&ilkState, `SELECT ilk_identifier, line, created, updated FROM api.current_ilk_state`)
+				Expect(queryErr).NotTo(HaveOccurred())
+				Expect(ilkState.IlkIdentifier).To(Equal(test_helpers.FakeIlk.Identifier))
+				Expect(ilkState.Line).To(Equal(fakeUint256))
+				Expect(ilkState.Created).To(Equal(expectedTime))
+				Expect(ilkState.Updated).To(Equal(expectedTime))
+			})
+		})
 	})
 
 	Describe("ilk rate", func() {
@@ -295,6 +630,118 @@ var _ = Describe("Vat storage repository", func() {
 			Expect(err).To(HaveOccurred())
 			Expect(err).To(MatchError(utils.ErrMetadataMalformed{MissingData: constants.Ilk}))
 		})
+
+		Describe("updating current_ilk_state trigger table", func() {
+			It("inserts a row for new ilk identifier", func() {
+				rawTimestamp := int64(rand.Int31())
+				CreateHeader(rawTimestamp, fakeBlockNumber, db)
+				ilkRateMetadata := utils.GetStorageValueMetadata(
+					vat.IlkRate, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Uint256)
+				expectedTime := sql.NullString{String: FormatTimestamp(rawTimestamp), Valid: true}
+
+				err := repo.Create(fakeBlockNumber, fakeBlockHash, ilkRateMetadata, fakeUint256)
+				Expect(err).NotTo(HaveOccurred())
+
+				var ilkState test_helpers.IlkState
+				queryErr := db.Get(&ilkState, `SELECT ilk_identifier, rate, created, updated FROM api.current_ilk_state`)
+				Expect(queryErr).NotTo(HaveOccurred())
+				Expect(ilkState.IlkIdentifier).To(Equal(test_helpers.FakeIlk.Identifier))
+				Expect(ilkState.Rate).To(Equal(fakeUint256))
+				Expect(ilkState.Created).To(Equal(expectedTime))
+				Expect(ilkState.Updated).To(Equal(expectedTime))
+			})
+
+			It("updates time created if new diff is from earlier block", func() {
+				rawTimestamp := int64(rand.Int31())
+				CreateHeader(rawTimestamp, fakeBlockNumber, db)
+				formattedTimestamp := FormatTimestamp(rawTimestamp)
+				expectedTimeUpdated := sql.NullString{String: formattedTimestamp, Valid: true}
+
+				// set up old ilk state in later block
+				ilkRateMetadata := utils.GetStorageValueMetadata(vat.IlkRate, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Uint256)
+				_, insertErr := db.Exec(
+					`INSERT INTO api.current_ilk_state (ilk_identifier, rate, created, updated) VALUES ($1, $2, $3::TIMESTAMP, $3::TIMESTAMP)`,
+					test_helpers.FakeIlk.Identifier, fakeUint256, formattedTimestamp)
+				Expect(insertErr).NotTo(HaveOccurred())
+
+				// set up earlier header
+				earlierBlockNumber := fakeBlockNumber - 1
+				earlierTimestamp := rawTimestamp - 1
+				CreateHeader(earlierTimestamp, earlierBlockNumber, db)
+				formattedEarlierTimestamp := FormatTimestamp(earlierTimestamp)
+				expectedTimeCreated := sql.NullString{String: formattedEarlierTimestamp, Valid: true}
+
+				// trigger new ilk state from earlier block
+				err := repo.Create(earlierBlockNumber, fakeBlockHash, ilkRateMetadata, strconv.Itoa(rand.Int()))
+				Expect(err).NotTo(HaveOccurred())
+
+				var ilkState test_helpers.IlkState
+				queryErr := db.Get(&ilkState, `SELECT ilk_identifier, rate, created, updated FROM api.current_ilk_state`)
+				Expect(queryErr).NotTo(HaveOccurred())
+				Expect(ilkState.IlkIdentifier).To(Equal(test_helpers.FakeIlk.Identifier))
+				Expect(ilkState.Rate).To(Equal(fakeUint256))
+				Expect(ilkState.Created).To(Equal(expectedTimeCreated))
+				Expect(ilkState.Updated).To(Equal(expectedTimeUpdated))
+			})
+
+			It("updates rate and time updated if new diff is from later block", func() {
+				rawTimestamp := int64(rand.Int31())
+				CreateHeader(rawTimestamp, fakeBlockNumber, db)
+				formattedTimestamp := FormatTimestamp(rawTimestamp)
+				expectedTimeCreated := sql.NullString{String: formattedTimestamp, Valid: true}
+
+				// set up old ilk state in earlier block
+				ilkRateMetadata := utils.GetStorageValueMetadata(vat.IlkRate, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Uint256)
+				_, insertErr := db.Exec(
+					`INSERT INTO api.current_ilk_state (ilk_identifier, rate, created, updated) VALUES ($1, $2, $3::TIMESTAMP, $3::TIMESTAMP)`,
+					test_helpers.FakeIlk.Identifier, fakeUint256, formattedTimestamp)
+				Expect(insertErr).NotTo(HaveOccurred())
+
+				// set up later header
+				laterBlockNumber := fakeBlockNumber + 1
+				laterTimestamp := rawTimestamp + 1
+				CreateHeader(laterTimestamp, laterBlockNumber, db)
+				formattedLaterTimestamp := FormatTimestamp(laterTimestamp)
+				expectedTimeUpdated := sql.NullString{String: formattedLaterTimestamp, Valid: true}
+
+				// trigger new ilk state from later block
+				newRate := strconv.Itoa(rand.Int())
+				err := repo.Create(laterBlockNumber, fakeBlockHash, ilkRateMetadata, newRate)
+				Expect(err).NotTo(HaveOccurred())
+
+				var ilkState test_helpers.IlkState
+				queryErr := db.Get(&ilkState, `SELECT ilk_identifier, rate, created, updated FROM api.current_ilk_state`)
+				Expect(queryErr).NotTo(HaveOccurred())
+				Expect(ilkState.IlkIdentifier).To(Equal(test_helpers.FakeIlk.Identifier))
+				Expect(ilkState.Rate).To(Equal(newRate))
+				Expect(ilkState.Created).To(Equal(expectedTimeCreated))
+				Expect(ilkState.Updated).To(Equal(expectedTimeUpdated))
+			})
+
+			It("otherwise leaves row as is", func() {
+				rawTimestamp := int64(rand.Int31())
+				CreateHeader(rawTimestamp, fakeBlockNumber, db)
+				formattedTimestamp := FormatTimestamp(rawTimestamp)
+				expectedTime := sql.NullString{String: formattedTimestamp, Valid: true}
+
+				ilkRateMetadata := utils.GetStorageValueMetadata(vat.IlkRate, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Uint256)
+				_, insertErr := db.Exec(
+					`INSERT INTO api.current_ilk_state (ilk_identifier, rate, created, updated) VALUES ($1, $2, $3::TIMESTAMP, $3::TIMESTAMP)`,
+					test_helpers.FakeIlk.Identifier, fakeUint256, formattedTimestamp)
+				Expect(insertErr).NotTo(HaveOccurred())
+
+				err := repo.Create(fakeBlockNumber, fakeBlockHash, ilkRateMetadata, strconv.Itoa(rand.Int()))
+				Expect(err).NotTo(HaveOccurred())
+
+				var ilkState test_helpers.IlkState
+				queryErr := db.Get(&ilkState, `SELECT ilk_identifier, rate, created, updated FROM api.current_ilk_state`)
+				Expect(queryErr).NotTo(HaveOccurred())
+				Expect(ilkState.IlkIdentifier).To(Equal(test_helpers.FakeIlk.Identifier))
+				Expect(ilkState.Rate).To(Equal(fakeUint256))
+				Expect(ilkState.Created).To(Equal(expectedTime))
+				Expect(ilkState.Updated).To(Equal(expectedTime))
+			})
+		})
 	})
 
 	Describe("ilk spot", func() {
@@ -334,6 +781,118 @@ var _ = Describe("Vat storage repository", func() {
 
 			Expect(err).To(HaveOccurred())
 			Expect(err).To(MatchError(utils.ErrMetadataMalformed{MissingData: constants.Ilk}))
+		})
+
+		Describe("updating current_ilk_state trigger table", func() {
+			It("inserts a row for new ilk identifier", func() {
+				rawTimestamp := int64(rand.Int31())
+				CreateHeader(rawTimestamp, fakeBlockNumber, db)
+				ilkSpotMetadata := utils.GetStorageValueMetadata(
+					vat.IlkSpot, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Uint256)
+				expectedTime := sql.NullString{String: FormatTimestamp(rawTimestamp), Valid: true}
+
+				err := repo.Create(fakeBlockNumber, fakeBlockHash, ilkSpotMetadata, fakeUint256)
+				Expect(err).NotTo(HaveOccurred())
+
+				var ilkState test_helpers.IlkState
+				queryErr := db.Get(&ilkState, `SELECT ilk_identifier, spot, created, updated FROM api.current_ilk_state`)
+				Expect(queryErr).NotTo(HaveOccurred())
+				Expect(ilkState.IlkIdentifier).To(Equal(test_helpers.FakeIlk.Identifier))
+				Expect(ilkState.Spot).To(Equal(fakeUint256))
+				Expect(ilkState.Created).To(Equal(expectedTime))
+				Expect(ilkState.Updated).To(Equal(expectedTime))
+			})
+
+			It("updates time created if new diff is from earlier block", func() {
+				rawTimestamp := int64(rand.Int31())
+				CreateHeader(rawTimestamp, fakeBlockNumber, db)
+				formattedTimestamp := FormatTimestamp(rawTimestamp)
+				expectedTimeUpdated := sql.NullString{String: formattedTimestamp, Valid: true}
+
+				// set up old ilk state in later block
+				ilkSpotMetadata := utils.GetStorageValueMetadata(vat.IlkSpot, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Uint256)
+				_, insertErr := db.Exec(
+					`INSERT INTO api.current_ilk_state (ilk_identifier, spot, created, updated) VALUES ($1, $2, $3::TIMESTAMP, $3::TIMESTAMP)`,
+					test_helpers.FakeIlk.Identifier, fakeUint256, formattedTimestamp)
+				Expect(insertErr).NotTo(HaveOccurred())
+
+				// set up earlier header
+				earlierBlockNumber := fakeBlockNumber - 1
+				earlierTimestamp := rawTimestamp - 1
+				CreateHeader(earlierTimestamp, earlierBlockNumber, db)
+				formattedEarlierTimestamp := FormatTimestamp(earlierTimestamp)
+				expectedTimeCreated := sql.NullString{String: formattedEarlierTimestamp, Valid: true}
+
+				// trigger new ilk state from earlier block
+				err := repo.Create(earlierBlockNumber, fakeBlockHash, ilkSpotMetadata, strconv.Itoa(rand.Int()))
+				Expect(err).NotTo(HaveOccurred())
+
+				var ilkState test_helpers.IlkState
+				queryErr := db.Get(&ilkState, `SELECT ilk_identifier, spot, created, updated FROM api.current_ilk_state`)
+				Expect(queryErr).NotTo(HaveOccurred())
+				Expect(ilkState.IlkIdentifier).To(Equal(test_helpers.FakeIlk.Identifier))
+				Expect(ilkState.Spot).To(Equal(fakeUint256))
+				Expect(ilkState.Created).To(Equal(expectedTimeCreated))
+				Expect(ilkState.Updated).To(Equal(expectedTimeUpdated))
+			})
+
+			It("updates spot and time updated if new diff is from later block", func() {
+				rawTimestamp := int64(rand.Int31())
+				CreateHeader(rawTimestamp, fakeBlockNumber, db)
+				formattedTimestamp := FormatTimestamp(rawTimestamp)
+				expectedTimeCreated := sql.NullString{String: formattedTimestamp, Valid: true}
+
+				// set up old ilk state in earlier block
+				ilkSpotMetadata := utils.GetStorageValueMetadata(vat.IlkSpot, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Uint256)
+				_, insertErr := db.Exec(
+					`INSERT INTO api.current_ilk_state (ilk_identifier, spot, created, updated) VALUES ($1, $2, $3::TIMESTAMP, $3::TIMESTAMP)`,
+					test_helpers.FakeIlk.Identifier, fakeUint256, formattedTimestamp)
+				Expect(insertErr).NotTo(HaveOccurred())
+
+				// set up later header
+				laterBlockNumber := fakeBlockNumber + 1
+				laterTimestamp := rawTimestamp + 1
+				CreateHeader(laterTimestamp, laterBlockNumber, db)
+				formattedLaterTimestamp := FormatTimestamp(laterTimestamp)
+				expectedTimeUpdated := sql.NullString{String: formattedLaterTimestamp, Valid: true}
+
+				// trigger new ilk state from later block
+				newSpot := strconv.Itoa(rand.Int())
+				err := repo.Create(laterBlockNumber, fakeBlockHash, ilkSpotMetadata, newSpot)
+				Expect(err).NotTo(HaveOccurred())
+
+				var ilkState test_helpers.IlkState
+				queryErr := db.Get(&ilkState, `SELECT ilk_identifier, spot, created, updated FROM api.current_ilk_state`)
+				Expect(queryErr).NotTo(HaveOccurred())
+				Expect(ilkState.IlkIdentifier).To(Equal(test_helpers.FakeIlk.Identifier))
+				Expect(ilkState.Spot).To(Equal(newSpot))
+				Expect(ilkState.Created).To(Equal(expectedTimeCreated))
+				Expect(ilkState.Updated).To(Equal(expectedTimeUpdated))
+			})
+
+			It("otherwise leaves row as is", func() {
+				rawTimestamp := int64(rand.Int31())
+				CreateHeader(rawTimestamp, fakeBlockNumber, db)
+				formattedTimestamp := FormatTimestamp(rawTimestamp)
+				expectedTime := sql.NullString{String: formattedTimestamp, Valid: true}
+
+				ilkSpotMetadata := utils.GetStorageValueMetadata(vat.IlkSpot, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Uint256)
+				_, insertErr := db.Exec(
+					`INSERT INTO api.current_ilk_state (ilk_identifier, spot, created, updated) VALUES ($1, $2, $3::TIMESTAMP, $3::TIMESTAMP)`,
+					test_helpers.FakeIlk.Identifier, fakeUint256, formattedTimestamp)
+				Expect(insertErr).NotTo(HaveOccurred())
+
+				err := repo.Create(fakeBlockNumber, fakeBlockHash, ilkSpotMetadata, strconv.Itoa(rand.Int()))
+				Expect(err).NotTo(HaveOccurred())
+
+				var ilkState test_helpers.IlkState
+				queryErr := db.Get(&ilkState, `SELECT ilk_identifier, spot, created, updated FROM api.current_ilk_state`)
+				Expect(queryErr).NotTo(HaveOccurred())
+				Expect(ilkState.IlkIdentifier).To(Equal(test_helpers.FakeIlk.Identifier))
+				Expect(ilkState.Spot).To(Equal(fakeUint256))
+				Expect(ilkState.Created).To(Equal(expectedTime))
+				Expect(ilkState.Updated).To(Equal(expectedTime))
+			})
 		})
 	})
 
