@@ -12,7 +12,6 @@ require (
 	github.com/ethereum/go-ethereum v1.9.6
 	github.com/google/uuid v1.1.1 // indirect
 	github.com/graph-gophers/graphql-go v0.0.0-20191024035216-0a9cfbec35a1 // indirect
-	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/influxdata/influxdb v1.7.9 // indirect
 	github.com/jmoiron/sqlx v0.0.0-20181024163419-82935fac6c1a
 	github.com/karalabe/usb v0.0.0-20190919080040-51dc0efba356 // indirect
@@ -41,7 +40,6 @@ require (
 	golang.org/x/text v0.3.2 // indirect
 	google.golang.org/appengine v1.6.0 // indirect
 	gopkg.in/natefinch/npipe.v2 v2.0.0-20160621034901-c1b8fa8bdcce // indirect
-	gopkg.in/urfave/cli.v1 v1.22.1 // indirect
 )
 
 replace gopkg.in/urfave/cli.v1 => gopkg.in/urfave/cli.v1 v1.20.0

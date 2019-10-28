@@ -26,7 +26,7 @@ import (
 	mcdStorage "github.com/vulcanize/mcd_transformers/transformers/storage"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/flip"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/test_helpers"
-	storage2 "github.com/vulcanize/vulcanizedb/libraries/shared/factories/storage"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/storage"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 )
@@ -34,7 +34,7 @@ import (
 var _ = Describe("Flip storage keys loader", func() {
 	var (
 		storageRepository *test_helpers.MockMakerStorageRepository
-		storageKeysLoader storage2.KeysLoader
+		storageKeysLoader storage.KeysLoader
 	)
 
 	BeforeEach(func() {
