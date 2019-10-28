@@ -29,10 +29,18 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
+
+if test -z "$STARTING_BLOCK_NUMBER"
+then
+    echo "STARTING_BLOCK_NUMBER is required and no value was given"
+    exit 1
+fi
+
+
 # Fire up the services
 if [ $? -eq 0 ]; then
   # Fire up the services
-  ./vulcanizedb headerSync --config config.toml -s 13772974 &
+  ./vulcanizedb headerSync --config config.toml -s $STARTING_BLOCK_NUMBER &
   ./vulcanizedb composeAndExecute --config config.toml &
 fi
 
