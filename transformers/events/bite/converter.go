@@ -23,7 +23,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
-	"github.com/vulcanize/vulcanizedb/pkg/geth"
+	"github.com/vulcanize/vulcanizedb/pkg/eth"
 
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
@@ -36,7 +36,7 @@ func (BiteConverter) toEntities(contractAbi string, logs []core.HeaderSyncLog) (
 	for _, log := range logs {
 		var entity BiteEntity
 		address := log.Log.Address
-		abi, parseErr := geth.ParseAbi(contractAbi)
+		abi, parseErr := eth.ParseAbi(contractAbi)
 		if parseErr != nil {
 			return nil, parseErr
 		}

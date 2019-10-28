@@ -32,7 +32,7 @@ import (
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
-	"github.com/vulcanize/vulcanizedb/pkg/geth/client"
+	"github.com/vulcanize/vulcanizedb/pkg/eth/client"
 	"strconv"
 )
 

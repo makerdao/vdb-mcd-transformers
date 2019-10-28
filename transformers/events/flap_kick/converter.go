@@ -22,7 +22,7 @@ import (
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
-	"github.com/vulcanize/vulcanizedb/pkg/geth"
+	"github.com/vulcanize/vulcanizedb/pkg/eth"
 
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 )
@@ -31,7 +31,7 @@ type FlapKickConverter struct{}
 
 func (FlapKickConverter) toEntities(contractAbi string, logs []core.HeaderSyncLog) ([]FlapKickEntity, error) {
 	var entities []FlapKickEntity
-	abi, parseErr := geth.ParseAbi(contractAbi)
+	abi, parseErr := eth.ParseAbi(contractAbi)
 	if parseErr != nil {
 		return nil, parseErr
 	}

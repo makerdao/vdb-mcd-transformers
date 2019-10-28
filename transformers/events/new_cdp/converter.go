@@ -22,7 +22,7 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
-	"github.com/vulcanize/vulcanizedb/pkg/geth"
+	"github.com/vulcanize/vulcanizedb/pkg/eth"
 )
 
 type NewCdpConverter struct{}
@@ -32,7 +32,7 @@ func (NewCdpConverter) toEntities(contractAbi string, logs []core.HeaderSyncLog)
 	for _, log := range logs {
 		var entity NewCdpEntity
 		address := log.Log.Address
-		abi, err := geth.ParseAbi(contractAbi)
+		abi, err := eth.ParseAbi(contractAbi)
 		if err != nil {
 			return nil, err
 		}
