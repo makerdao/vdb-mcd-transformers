@@ -37,15 +37,15 @@ var _ = Describe("Executing the flap transformer", func() {
 		repository        = flap.FlapStorageRepository{}
 		transformer       storage.Transformer
 		contractAddress   = "0x164a942d9d7A269B2Dc8551C8dFad32e8fFd0b80"
-		storageKeysLookup = mcdStorage.NewKeysLookup(flap.NewKeysLoader(&mcdStorage.MakerStorageRepository{}, contractAddress))
+		storageKeysLookup = storage.NewKeysLookup(flap.NewKeysLoader(&mcdStorage.MakerStorageRepository{}, contractAddress))
 	)
 	BeforeEach(func() {
 		db = test_config.NewTestDB(test_config.NewTestNode())
 		test_config.CleanTestDB(db)
 		transformer = storage.Transformer{
-			HashedAddress: utils.HexToKeccak256Hash(contractAddress),
-			Mappings:      storageKeysLookup,
-			Repository:    &repository,
+			HashedAddress:     utils.HexToKeccak256Hash(contractAddress),
+			StorageKeysLookup: storageKeysLookup,
+			Repository:        &repository,
 		}
 		transformer.NewTransformer(db)
 	})

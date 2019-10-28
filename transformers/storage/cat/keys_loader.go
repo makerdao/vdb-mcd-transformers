@@ -20,7 +20,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	mcdStorage "github.com/vulcanize/mcd_transformers/transformers/storage"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/storage"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/storage"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 )
@@ -37,15 +37,15 @@ const (
 
 var (
 	// wards takes up index 0
-	IlksMappingIndex = storage.IndexOne // bytes32 => flip address; chop (ray), lump (wad) uint256
+	IlksMappingIndex = utils.IndexOne // bytes32 => flip address; chop (ray), lump (wad) uint256
 
-	LiveKey      = common.HexToHash(storage.IndexTwo)
+	LiveKey      = common.HexToHash(utils.IndexTwo)
 	LiveMetadata = utils.GetStorageValueMetadata(Live, nil, utils.Uint256)
 
-	VatKey      = common.HexToHash(storage.IndexThree)
+	VatKey      = common.HexToHash(utils.IndexThree)
 	VatMetadata = utils.GetStorageValueMetadata(Vat, nil, utils.Address)
 
-	VowKey      = common.HexToHash(storage.IndexFour)
+	VowKey      = common.HexToHash(utils.IndexFour)
 	VowMetadata = utils.GetStorageValueMetadata(Vow, nil, utils.Address)
 )
 
@@ -53,7 +53,7 @@ type keysLoader struct {
 	storageRepository mcdStorage.IMakerStorageRepository
 }
 
-func NewKeysLoader(storageRepository mcdStorage.IMakerStorageRepository) mcdStorage.KeysLoader {
+func NewKeysLoader(storageRepository mcdStorage.IMakerStorageRepository) storage.KeysLoader {
 	return &keysLoader{storageRepository: storageRepository}
 }
 
@@ -88,7 +88,7 @@ func loadStaticMappings() map[common.Hash]utils.StorageValueMetadata {
 }
 
 func getIlkFlipKey(ilk string) common.Hash {
-	return storage.GetMapping(IlksMappingIndex, ilk)
+	return utils.GetStorageKeyForMapping(IlksMappingIndex, ilk)
 }
 
 func getIlkFlipMetadata(ilk string) utils.StorageValueMetadata {
@@ -97,7 +97,7 @@ func getIlkFlipMetadata(ilk string) utils.StorageValueMetadata {
 }
 
 func getIlkChopKey(ilk string) common.Hash {
-	return storage.GetIncrementedKey(getIlkFlipKey(ilk), 1)
+	return utils.GetIncrementedStorageKey(getIlkFlipKey(ilk), 1)
 }
 
 func getIlkChopMetadata(ilk string) utils.StorageValueMetadata {
@@ -106,7 +106,7 @@ func getIlkChopMetadata(ilk string) utils.StorageValueMetadata {
 }
 
 func getIlkLumpKey(ilk string) common.Hash {
-	return storage.GetIncrementedKey(getIlkFlipKey(ilk), 2)
+	return utils.GetIncrementedStorageKey(getIlkFlipKey(ilk), 2)
 }
 
 func getIlkLumpMetadata(ilk string) utils.StorageValueMetadata {

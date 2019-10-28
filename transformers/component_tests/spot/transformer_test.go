@@ -36,13 +36,13 @@ var _ = Describe("Executing the transformer", func() {
 		db                *postgres.DB
 		err               error
 		ilkID             int64
-		storageKeysLookup = mcdStorage.NewKeysLookup(spot.NewKeysLoader(&mcdStorage.MakerStorageRepository{}))
+		storageKeysLookup = storage.NewKeysLookup(spot.NewKeysLoader(&mcdStorage.MakerStorageRepository{}))
 		repository        = spot.SpotStorageRepository{}
 		contractAddress   = "a57d4123c8a80ac410e924df9d5e47765ffd1375"
 		transformer       = storage.Transformer{
-			HashedAddress: utils.HexToKeccak256Hash(contractAddress),
-			Mappings:      storageKeysLookup,
-			Repository:    &repository,
+			HashedAddress:     utils.HexToKeccak256Hash(contractAddress),
+			StorageKeysLookup: storageKeysLookup,
+			Repository:        &repository,
 		}
 	)
 

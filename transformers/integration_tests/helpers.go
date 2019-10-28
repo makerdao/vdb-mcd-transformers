@@ -23,10 +23,10 @@ import (
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres/repositories"
-	"github.com/vulcanize/vulcanizedb/pkg/geth"
-	"github.com/vulcanize/vulcanizedb/pkg/geth/client"
-	rpc2 "github.com/vulcanize/vulcanizedb/pkg/geth/converters/rpc"
-	"github.com/vulcanize/vulcanizedb/pkg/geth/node"
+	"github.com/vulcanize/vulcanizedb/pkg/eth"
+	"github.com/vulcanize/vulcanizedb/pkg/eth/client"
+	rpc2 "github.com/vulcanize/vulcanizedb/pkg/eth/converters/rpc"
+	"github.com/vulcanize/vulcanizedb/pkg/eth/node"
 )
 
 var ipc string
@@ -43,7 +43,7 @@ func getBlockChain(rpcClient client.RpcClient, ethClient *ethclient.Client) (cor
 	client := client.NewEthClient(ethClient)
 	node := node.MakeNode(rpcClient)
 	transactionConverter := rpc2.NewRpcTransactionConverter(client)
-	blockChain := geth.NewBlockChain(client, rpcClient, node, transactionConverter)
+	blockChain := eth.NewBlockChain(client, rpcClient, node, transactionConverter)
 	return blockChain, nil
 }
 

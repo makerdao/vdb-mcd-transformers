@@ -21,35 +21,35 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	mcdStorage "github.com/vulcanize/mcd_transformers/transformers/storage"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/storage"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/storage"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 )
 
 var (
-	BidsIndex = storage.IndexOne
+	BidsIndex = utils.IndexOne
 
-	VatKey      = common.HexToHash(storage.IndexTwo)
+	VatKey      = common.HexToHash(utils.IndexTwo)
 	VatMetadata = utils.GetStorageValueMetadata(mcdStorage.Vat, nil, utils.Address)
 
-	GemKey      = common.HexToHash(storage.IndexThree)
+	GemKey      = common.HexToHash(utils.IndexThree)
 	GemMetadata = utils.GetStorageValueMetadata(mcdStorage.Gem, nil, utils.Address)
 
-	BegKey      = common.HexToHash(storage.IndexFour)
+	BegKey      = common.HexToHash(utils.IndexFour)
 	BegMetadata = utils.GetStorageValueMetadata(mcdStorage.Beg, nil, utils.Uint256)
 
-	PadKey      = common.HexToHash(storage.IndexFive)
+	PadKey      = common.HexToHash(utils.IndexFive)
 	PadMetadata = utils.GetStorageValueMetadata(mcdStorage.Pad, nil, utils.Uint256)
 
-	TtlAndTauKey      = common.HexToHash(storage.IndexSix)
+	TtlAndTauKey      = common.HexToHash(utils.IndexSix)
 	ttlAndTauTypes    = map[int]utils.ValueType{0: utils.Uint48, 1: utils.Uint48}
 	ttlAndTauNames    = map[int]string{0: mcdStorage.Ttl, 1: mcdStorage.Tau}
 	TtlAndTauMetadata = utils.GetStorageValueMetadataForPackedSlot(mcdStorage.Packed, nil, utils.PackedSlot, ttlAndTauNames, ttlAndTauTypes)
 
-	KicksKey      = common.HexToHash(storage.IndexSeven)
+	KicksKey      = common.HexToHash(utils.IndexSeven)
 	KicksMetadata = utils.GetStorageValueMetadata(mcdStorage.Kicks, nil, utils.Uint256)
 
-	LiveKey      = common.HexToHash(storage.IndexEight)
+	LiveKey      = common.HexToHash(utils.IndexEight)
 	LiveMetadata = utils.GetStorageValueMetadata(mcdStorage.Live, nil, utils.Uint256)
 )
 
@@ -58,7 +58,7 @@ type keysLoader struct {
 	contractAddress   string
 }
 
-func NewKeysLoader(storageRepository mcdStorage.IMakerStorageRepository, contractAddress string) mcdStorage.KeysLoader {
+func NewKeysLoader(storageRepository mcdStorage.IMakerStorageRepository, contractAddress string) storage.KeysLoader {
 	return &keysLoader{
 		storageRepository: storageRepository,
 		contractAddress:   contractAddress,
@@ -104,7 +104,7 @@ func loadStaticMappings() map[common.Hash]utils.StorageValueMetadata {
 }
 
 func getBidBidKey(hexBidId string) common.Hash {
-	return storage.GetMapping(BidsIndex, hexBidId)
+	return utils.GetStorageKeyForMapping(BidsIndex, hexBidId)
 }
 
 func getBidBidMetadata(bidId string) utils.StorageValueMetadata {
@@ -113,7 +113,7 @@ func getBidBidMetadata(bidId string) utils.StorageValueMetadata {
 }
 
 func getBidLotKey(hexBidId string) common.Hash {
-	return storage.GetIncrementedKey(getBidBidKey(hexBidId), 1)
+	return utils.GetIncrementedStorageKey(getBidBidKey(hexBidId), 1)
 }
 
 func getBidLotMetadata(bidId string) utils.StorageValueMetadata {
@@ -122,7 +122,7 @@ func getBidLotMetadata(bidId string) utils.StorageValueMetadata {
 }
 
 func getBidGuyTicEndKey(hexBidId string) common.Hash {
-	return storage.GetIncrementedKey(getBidBidKey(hexBidId), 2)
+	return utils.GetIncrementedStorageKey(getBidBidKey(hexBidId), 2)
 }
 
 func getBidGuyTicEndMetadata(bidId string) utils.StorageValueMetadata {

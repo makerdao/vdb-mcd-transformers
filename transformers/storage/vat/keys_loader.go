@@ -21,7 +21,7 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	mcdStorage "github.com/vulcanize/mcd_transformers/transformers/storage"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/utilities"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/storage"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/storage"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 )
@@ -44,34 +44,34 @@ const (
 )
 
 var (
-	IlksMappingIndex = storage.IndexTwo
-	UrnsMappingIndex = storage.IndexThree
-	GemsMappingIndex = storage.IndexFour
-	DaiMappingIndex  = storage.IndexFive
-	SinMappingIndex  = storage.IndexSix
+	IlksMappingIndex = utils.IndexTwo
+	UrnsMappingIndex = utils.IndexThree
+	GemsMappingIndex = utils.IndexFour
+	DaiMappingIndex  = utils.IndexFive
+	SinMappingIndex  = utils.IndexSix
 
-	DebtKey      = common.HexToHash(storage.IndexSeven)
+	DebtKey      = common.HexToHash(utils.IndexSeven)
 	DebtMetadata = utils.StorageValueMetadata{
 		Name: Debt,
 		Keys: nil,
 		Type: utils.Uint256,
 	}
 
-	ViceKey      = common.HexToHash(storage.IndexEight)
+	ViceKey      = common.HexToHash(utils.IndexEight)
 	ViceMetadata = utils.StorageValueMetadata{
 		Name: Vice,
 		Keys: nil,
 		Type: utils.Uint256,
 	}
 
-	LineKey      = common.HexToHash(storage.IndexNine)
+	LineKey      = common.HexToHash(utils.IndexNine)
 	LineMetadata = utils.StorageValueMetadata{
 		Name: Line,
 		Keys: nil,
 		Type: utils.Uint256,
 	}
 
-	LiveKey      = common.HexToHash(storage.IndexTen)
+	LiveKey      = common.HexToHash(utils.IndexTen)
 	LiveMetadata = utils.StorageValueMetadata{
 		Name: Live,
 		Keys: nil,
@@ -83,7 +83,7 @@ type keysLoader struct {
 	storageRepository mcdStorage.IMakerStorageRepository
 }
 
-func NewKeysLoader(storageRepository mcdStorage.IMakerStorageRepository) mcdStorage.KeysLoader {
+func NewKeysLoader(storageRepository mcdStorage.IMakerStorageRepository) storage.KeysLoader {
 	return &keysLoader{storageRepository: storageRepository}
 }
 
@@ -198,7 +198,7 @@ func (loader *keysLoader) addUrnKeys(mappings map[common.Hash]utils.StorageValue
 }
 
 func getIlkArtKey(ilk string) common.Hash {
-	return storage.GetMapping(IlksMappingIndex, ilk)
+	return utils.GetStorageKeyForMapping(IlksMappingIndex, ilk)
 }
 
 func getIlkArtMetadata(ilk string) utils.StorageValueMetadata {
@@ -207,7 +207,7 @@ func getIlkArtMetadata(ilk string) utils.StorageValueMetadata {
 }
 
 func getIlkRateKey(ilk string) common.Hash {
-	return storage.GetIncrementedKey(getIlkArtKey(ilk), 1)
+	return utils.GetIncrementedStorageKey(getIlkArtKey(ilk), 1)
 }
 
 func getIlkRateMetadata(ilk string) utils.StorageValueMetadata {
@@ -216,7 +216,7 @@ func getIlkRateMetadata(ilk string) utils.StorageValueMetadata {
 }
 
 func getIlkSpotKey(ilk string) common.Hash {
-	return storage.GetIncrementedKey(getIlkArtKey(ilk), 2)
+	return utils.GetIncrementedStorageKey(getIlkArtKey(ilk), 2)
 }
 
 func getIlkSpotMetadata(ilk string) utils.StorageValueMetadata {
@@ -225,7 +225,7 @@ func getIlkSpotMetadata(ilk string) utils.StorageValueMetadata {
 }
 
 func getIlkLineKey(ilk string) common.Hash {
-	return storage.GetIncrementedKey(getIlkArtKey(ilk), 3)
+	return utils.GetIncrementedStorageKey(getIlkArtKey(ilk), 3)
 }
 
 func getIlkLineMetadata(ilk string) utils.StorageValueMetadata {
@@ -234,7 +234,7 @@ func getIlkLineMetadata(ilk string) utils.StorageValueMetadata {
 }
 
 func getIlkDustKey(ilk string) common.Hash {
-	return storage.GetIncrementedKey(getIlkArtKey(ilk), 4)
+	return utils.GetIncrementedStorageKey(getIlkArtKey(ilk), 4)
 }
 
 func getIlkDustMetadata(ilk string) utils.StorageValueMetadata {
@@ -243,7 +243,7 @@ func getIlkDustMetadata(ilk string) utils.StorageValueMetadata {
 }
 
 func getUrnInkKey(ilk, guy string) common.Hash {
-	return storage.GetNestedMapping(UrnsMappingIndex, ilk, guy)
+	return utils.GetStorageKeyForNestedMapping(UrnsMappingIndex, ilk, guy)
 }
 
 func getUrnInkMetadata(ilk, guy string) utils.StorageValueMetadata {
@@ -252,7 +252,7 @@ func getUrnInkMetadata(ilk, guy string) utils.StorageValueMetadata {
 }
 
 func getUrnArtKey(ilk, guy string) common.Hash {
-	return storage.GetIncrementedKey(getUrnInkKey(ilk, guy), 1)
+	return utils.GetIncrementedStorageKey(getUrnInkKey(ilk, guy), 1)
 }
 
 func getUrnArtMetadata(ilk, guy string) utils.StorageValueMetadata {
@@ -261,7 +261,7 @@ func getUrnArtMetadata(ilk, guy string) utils.StorageValueMetadata {
 }
 
 func getGemKey(ilk, guy string) common.Hash {
-	return storage.GetNestedMapping(GemsMappingIndex, ilk, guy)
+	return utils.GetStorageKeyForNestedMapping(GemsMappingIndex, ilk, guy)
 }
 
 func getGemMetadata(ilk, guy string) utils.StorageValueMetadata {
@@ -270,7 +270,7 @@ func getGemMetadata(ilk, guy string) utils.StorageValueMetadata {
 }
 
 func getDaiKey(guy string) common.Hash {
-	return storage.GetMapping(DaiMappingIndex, guy)
+	return utils.GetStorageKeyForMapping(DaiMappingIndex, guy)
 }
 
 func getDaiMetadata(guy string) utils.StorageValueMetadata {
@@ -279,7 +279,7 @@ func getDaiMetadata(guy string) utils.StorageValueMetadata {
 }
 
 func getSinKey(guy string) common.Hash {
-	return storage.GetMapping(SinMappingIndex, guy)
+	return utils.GetStorageKeyForMapping(SinMappingIndex, guy)
 }
 
 func getSinMetadata(guy string) utils.StorageValueMetadata {

@@ -37,16 +37,16 @@ var _ = Describe("Executing the flop transformer", func() {
 		transformer            storage.Transformer
 		flopperContractAddress = "0xa806168abccd3c8cbc07ee4a87b16b14b874ffcf"
 		repository             = flop.FlopStorageRepository{ContractAddress: flopperContractAddress}
-		storageKeysLookup      = mcdStorage.NewKeysLookup(flop.NewKeysLoader(&mcdStorage.MakerStorageRepository{}, flopperContractAddress))
+		storageKeysLookup      = storage.NewKeysLookup(flop.NewKeysLoader(&mcdStorage.MakerStorageRepository{}, flopperContractAddress))
 	)
 
 	BeforeEach(func() {
 		db = test_config.NewTestDB(test_config.NewTestNode())
 		test_config.CleanTestDB(db)
 		transformer = storage.Transformer{
-			HashedAddress: utils.HexToKeccak256Hash(flopperContractAddress),
-			Mappings:      storageKeysLookup,
-			Repository:    &repository,
+			HashedAddress:     utils.HexToKeccak256Hash(flopperContractAddress),
+			StorageKeysLookup: storageKeysLookup,
+			Repository:        &repository,
 		}
 		transformer.NewTransformer(db)
 	})

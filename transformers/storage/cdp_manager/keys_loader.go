@@ -22,7 +22,7 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	mcdStorage "github.com/vulcanize/mcd_transformers/transformers/storage"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/utilities"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/storage"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/storage"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 )
@@ -41,34 +41,34 @@ const (
 )
 
 var (
-	VatKey      = common.HexToHash(storage.IndexZero)
+	VatKey      = common.HexToHash(utils.IndexZero)
 	VatMetadata = utils.StorageValueMetadata{
 		Name: Vat,
 		Keys: nil,
 		Type: utils.Address,
 	}
 
-	CdpiKey      = common.HexToHash(storage.IndexOne)
+	CdpiKey      = common.HexToHash(utils.IndexOne)
 	CdpiMetadata = utils.StorageValueMetadata{
 		Name: Cdpi,
 		Keys: nil,
 		Type: utils.Uint256,
 	}
 
-	UrnsMappingIndex  = storage.IndexTwo
-	ListMappingIndex  = storage.IndexThree
-	OwnsMappingIndex  = storage.IndexFour
-	IlksMappingIndex  = storage.IndexFive
-	FirstMappingIndex = storage.IndexSix
-	LastMappingIndex  = storage.IndexSeven
-	CountMappingIndex = storage.IndexEight
+	UrnsMappingIndex  = utils.IndexTwo
+	ListMappingIndex  = utils.IndexThree
+	OwnsMappingIndex  = utils.IndexFour
+	IlksMappingIndex  = utils.IndexFive
+	FirstMappingIndex = utils.IndexSix
+	LastMappingIndex  = utils.IndexSeven
+	CountMappingIndex = utils.IndexEight
 )
 
 type keysLoader struct {
 	storageRepository mcdStorage.IMakerStorageRepository
 }
 
-func NewKeysLoader(storageRepository mcdStorage.IMakerStorageRepository) mcdStorage.KeysLoader {
+func NewKeysLoader(storageRepository mcdStorage.IMakerStorageRepository) storage.KeysLoader {
 	return &keysLoader{storageRepository: storageRepository}
 }
 
@@ -129,7 +129,7 @@ func loadStaticMappings() map[common.Hash]utils.StorageValueMetadata {
 }
 
 func getUrnsKey(hexCdpi string) common.Hash {
-	return storage.GetMapping(UrnsMappingIndex, hexCdpi)
+	return utils.GetStorageKeyForMapping(UrnsMappingIndex, hexCdpi)
 }
 
 func getUrnsMetadata(cdpi string) utils.StorageValueMetadata {
@@ -138,7 +138,7 @@ func getUrnsMetadata(cdpi string) utils.StorageValueMetadata {
 }
 
 func getListPrevKey(hexCdpi string) common.Hash {
-	return storage.GetMapping(ListMappingIndex, hexCdpi)
+	return utils.GetStorageKeyForMapping(ListMappingIndex, hexCdpi)
 }
 
 func getListPrevMetadata(cdpi string) utils.StorageValueMetadata {
@@ -147,7 +147,7 @@ func getListPrevMetadata(cdpi string) utils.StorageValueMetadata {
 }
 
 func getListNextKey(hexCdpi string) common.Hash {
-	return storage.GetIncrementedKey(getListPrevKey(hexCdpi), 1)
+	return utils.GetIncrementedStorageKey(getListPrevKey(hexCdpi), 1)
 }
 
 func getListNextMetadata(cdpi string) utils.StorageValueMetadata {
@@ -156,7 +156,7 @@ func getListNextMetadata(cdpi string) utils.StorageValueMetadata {
 }
 
 func getOwnsKey(hexCdpi string) common.Hash {
-	return storage.GetMapping(OwnsMappingIndex, hexCdpi)
+	return utils.GetStorageKeyForMapping(OwnsMappingIndex, hexCdpi)
 }
 
 func getOwnsMetadata(cdpi string) utils.StorageValueMetadata {
@@ -165,7 +165,7 @@ func getOwnsMetadata(cdpi string) utils.StorageValueMetadata {
 }
 
 func getIlksKey(hexCdpi string) common.Hash {
-	return storage.GetMapping(IlksMappingIndex, hexCdpi)
+	return utils.GetStorageKeyForMapping(IlksMappingIndex, hexCdpi)
 }
 
 func getIlksMetadata(cdpi string) utils.StorageValueMetadata {
@@ -174,7 +174,7 @@ func getIlksMetadata(cdpi string) utils.StorageValueMetadata {
 }
 
 func getFirstKey(ownerAddress string) common.Hash {
-	return storage.GetMapping(FirstMappingIndex, ownerAddress)
+	return utils.GetStorageKeyForMapping(FirstMappingIndex, ownerAddress)
 }
 
 func getFirstMetadata(ownerAddress string) utils.StorageValueMetadata {
@@ -183,7 +183,7 @@ func getFirstMetadata(ownerAddress string) utils.StorageValueMetadata {
 }
 
 func getLastKey(ownerAddress string) common.Hash {
-	return storage.GetMapping(LastMappingIndex, ownerAddress)
+	return utils.GetStorageKeyForMapping(LastMappingIndex, ownerAddress)
 }
 
 func getLastMetadata(ownerAddress string) utils.StorageValueMetadata {
@@ -192,7 +192,7 @@ func getLastMetadata(ownerAddress string) utils.StorageValueMetadata {
 }
 
 func getCountKey(ownerAddress string) common.Hash {
-	return storage.GetMapping(CountMappingIndex, ownerAddress)
+	return utils.GetStorageKeyForMapping(CountMappingIndex, ownerAddress)
 }
 
 func getCountMetadata(ownerAddress string) utils.StorageValueMetadata {

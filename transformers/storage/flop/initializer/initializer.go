@@ -27,7 +27,7 @@ import (
 
 var StorageTransformerInitializer transformer.StorageTransformerInitializer = storage.Transformer{
 	HashedAddress: utils.HexToKeccak256Hash(constants.GetContractAddress("MCD_FLOP")),
-	Mappings: mcdStorage.NewKeysLookup(flop.NewKeysLoader(
+	StorageKeysLookup: storage.NewKeysLookup(flop.NewKeysLoader(
 		&mcdStorage.MakerStorageRepository{},
 		constants.GetContractAddress("MCD_FLOP"))),
 	Repository: &flop.FlopStorageRepository{ContractAddress: constants.GetContractAddress("MCD_FLOP")},

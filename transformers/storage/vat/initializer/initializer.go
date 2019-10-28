@@ -26,7 +26,7 @@ import (
 )
 
 var StorageTransformerInitializer transformer.StorageTransformerInitializer = storage.Transformer{
-	HashedAddress: utils.HexToKeccak256Hash(constants.GetContractAddress("MCD_VAT")),
-	Mappings:      mcdStorage.NewKeysLookup(vat.NewKeysLoader(&mcdStorage.MakerStorageRepository{})),
-	Repository:    &vat.VatStorageRepository{},
+	HashedAddress:     utils.HexToKeccak256Hash(constants.GetContractAddress("MCD_VAT")),
+	StorageKeysLookup: storage.NewKeysLookup(vat.NewKeysLoader(&mcdStorage.MakerStorageRepository{})),
+	Repository:        &vat.VatStorageRepository{},
 }.NewTransformer

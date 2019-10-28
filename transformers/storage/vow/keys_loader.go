@@ -21,7 +21,7 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	mcdStorage "github.com/vulcanize/mcd_transformers/transformers/storage"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/storage"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/storage"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 )
@@ -41,72 +41,72 @@ const (
 )
 
 var (
-	VatKey      = common.HexToHash(storage.IndexOne)
+	VatKey      = common.HexToHash(utils.IndexOne)
 	VatMetadata = utils.StorageValueMetadata{
 		Name: Vat,
 		Keys: nil,
 		Type: utils.Address,
 	}
 
-	FlapperKey      = common.HexToHash(storage.IndexTwo)
+	FlapperKey      = common.HexToHash(utils.IndexTwo)
 	FlapperMetadata = utils.StorageValueMetadata{
 		Name: Flapper,
 		Keys: nil,
 		Type: utils.Address,
 	}
 
-	FlopperKey      = common.HexToHash(storage.IndexThree)
+	FlopperKey      = common.HexToHash(utils.IndexThree)
 	FlopperMetadata = utils.StorageValueMetadata{
 		Name: Flopper,
 		Keys: nil,
 		Type: utils.Address,
 	}
 
-	SinMappingIndex = storage.IndexFour
+	SinMappingIndex = utils.IndexFour
 
-	SinIntegerKey      = common.HexToHash(storage.IndexFive)
+	SinIntegerKey      = common.HexToHash(utils.IndexFive)
 	SinIntegerMetadata = utils.StorageValueMetadata{
 		Name: SinInteger,
 		Keys: nil,
 		Type: utils.Uint256,
 	}
 
-	AshKey      = common.HexToHash(storage.IndexSix)
+	AshKey      = common.HexToHash(utils.IndexSix)
 	AshMetadata = utils.StorageValueMetadata{
 		Name: Ash,
 		Keys: nil,
 		Type: utils.Uint256,
 	}
 
-	WaitKey      = common.HexToHash(storage.IndexSeven)
+	WaitKey      = common.HexToHash(utils.IndexSeven)
 	WaitMetadata = utils.StorageValueMetadata{
 		Name: Wait,
 		Keys: nil,
 		Type: utils.Uint256,
 	}
 
-	DumpKey      = common.HexToHash(storage.IndexEight)
+	DumpKey      = common.HexToHash(utils.IndexEight)
 	DumpMetadata = utils.StorageValueMetadata{
 		Name: Dump,
 		Keys: nil,
 		Type: utils.Uint256,
 	}
 
-	SumpKey      = common.HexToHash(storage.IndexNine)
+	SumpKey      = common.HexToHash(utils.IndexNine)
 	SumpMetadata = utils.StorageValueMetadata{
 		Name: Sump,
 		Keys: nil,
 		Type: utils.Uint256,
 	}
 
-	BumpKey      = common.HexToHash(storage.IndexTen)
+	BumpKey      = common.HexToHash(utils.IndexTen)
 	BumpMetadata = utils.StorageValueMetadata{
 		Name: Bump,
 		Keys: nil,
 		Type: utils.Uint256,
 	}
 
-	HumpKey      = common.HexToHash(storage.IndexEleven)
+	HumpKey      = common.HexToHash(utils.IndexEleven)
 	HumpMetadata = utils.StorageValueMetadata{
 		Name: Hump,
 		Keys: nil,
@@ -118,7 +118,7 @@ type keysLoader struct {
 	storageRepository mcdStorage.IMakerStorageRepository
 }
 
-func NewKeysLoader(storageRepository mcdStorage.IMakerStorageRepository) mcdStorage.KeysLoader {
+func NewKeysLoader(storageRepository mcdStorage.IMakerStorageRepository) storage.KeysLoader {
 	return &keysLoader{storageRepository: storageRepository}
 }
 
@@ -161,7 +161,7 @@ func addStaticMappings(mappings map[common.Hash]utils.StorageValueMetadata) map[
 }
 
 func getSinKey(hexTimestamp string) common.Hash {
-	return storage.GetMapping(SinMappingIndex, hexTimestamp)
+	return utils.GetStorageKeyForMapping(SinMappingIndex, hexTimestamp)
 }
 
 func getSinMetadata(timestamp string) utils.StorageValueMetadata {

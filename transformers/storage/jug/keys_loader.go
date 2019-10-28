@@ -20,7 +20,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	mcdStorage "github.com/vulcanize/mcd_transformers/transformers/storage"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/storage"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/storage"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 )
@@ -34,15 +34,15 @@ const (
 )
 
 var (
-	IlkMappingIndex = storage.IndexOne
+	IlkMappingIndex = utils.IndexOne
 
-	VatKey      = common.HexToHash(storage.IndexTwo)
+	VatKey      = common.HexToHash(utils.IndexTwo)
 	VatMetadata = utils.GetStorageValueMetadata(Vat, nil, utils.Address)
 
-	VowKey      = common.HexToHash(storage.IndexThree)
+	VowKey      = common.HexToHash(utils.IndexThree)
 	VowMetadata = utils.GetStorageValueMetadata(Vow, nil, utils.Bytes32)
 
-	BaseKey      = common.HexToHash(storage.IndexFour)
+	BaseKey      = common.HexToHash(utils.IndexFour)
 	BaseMetadata = utils.GetStorageValueMetadata(Base, nil, utils.Uint256)
 )
 
@@ -50,7 +50,7 @@ type keysLoader struct {
 	storageRepository mcdStorage.IMakerStorageRepository
 }
 
-func NewKeysLoader(storageRepository mcdStorage.IMakerStorageRepository) mcdStorage.KeysLoader {
+func NewKeysLoader(storageRepository mcdStorage.IMakerStorageRepository) storage.KeysLoader {
 	return &keysLoader{storageRepository: storageRepository}
 }
 
@@ -80,7 +80,7 @@ func getStaticMappings() map[common.Hash]utils.StorageValueMetadata {
 }
 
 func getDutyKey(ilk string) common.Hash {
-	return storage.GetMapping(IlkMappingIndex, ilk)
+	return utils.GetStorageKeyForMapping(IlkMappingIndex, ilk)
 }
 
 func getDutyMetadata(ilk string) utils.StorageValueMetadata {
@@ -89,7 +89,7 @@ func getDutyMetadata(ilk string) utils.StorageValueMetadata {
 }
 
 func getRhoKey(ilk string) common.Hash {
-	return storage.GetIncrementedKey(getDutyKey(ilk), 1)
+	return utils.GetIncrementedStorageKey(getDutyKey(ilk), 1)
 }
 
 func getRhoMetadata(ilk string) utils.StorageValueMetadata {
