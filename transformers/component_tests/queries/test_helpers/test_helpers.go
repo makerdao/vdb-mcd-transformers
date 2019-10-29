@@ -139,6 +139,7 @@ type TestIlk struct {
 
 type IlkState struct {
 	IlkIdentifier string `db:"ilk_identifier"`
+	BlockNumber   string `db:"block_number"`
 	Rate          string
 	Art           string
 	Spot          string
