@@ -55,7 +55,7 @@ var _ = Describe("SpotPoke Transformer", func() {
 	}
 
 	It("transforms spot poke log events", func() {
-		blockNumber := int64(13773347)
+		blockNumber := int64(14374954)
 		spotPokeConfig.StartingBlockNumber = blockNumber
 		spotPokeConfig.EndingBlockNumber = blockNumber
 

@@ -54,7 +54,7 @@ var _ = Describe("Jug File Vow EventTransformer", func() {
 	}
 
 	It("transforms JugFileVow log events", func() {
-		blockNumber := int64(13772979)
+		blockNumber := int64(14374540)
 		jugFileVowConfig.StartingBlockNumber = blockNumber
 		jugFileVowConfig.EndingBlockNumber = blockNumber
 
@@ -86,7 +86,7 @@ var _ = Describe("Jug File Vow EventTransformer", func() {
 
 		Expect(len(dbResult)).To(Equal(1))
 		Expect(dbResult[0].What).To(Equal("vow"))
-		Expect(dbResult[0].Data).To(Equal("0xdC02a6b2eCd2ed6C54a5EC1F1585FE82137D31dD"))
+		Expect(dbResult[0].Data).To(Equal("0x6740282231148a5d8A81da510AE25b21B226BA13"))
 	})
 })
 
