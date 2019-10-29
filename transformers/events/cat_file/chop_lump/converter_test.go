@@ -19,38 +19,56 @@ package chop_lump_test
 import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/events/cat_file/chop_lump"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/vulcanize/mcd_transformers/test_config"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
-
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/cat_file/chop_lump"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
+	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 )
 
 var _ = Describe("Cat file chop lump converter", func() {
-	var converter chop_lump.CatFileChopLumpConverter
+	var (
+		converter chop_lump.Converter
+		db        *postgres.DB
+	)
 
 	BeforeEach(func() {
-		converter = chop_lump.CatFileChopLumpConverter{}
+		converter = chop_lump.Converter{}
+		db = test_config.NewTestDB(test_config.NewTestNode())
+		converter.SetDB(db)
 	})
 
 	Context("chop events", func() {
 		It("converts a chop log to a model", func() {
 			models, err := converter.ToModels(constants.CatABI(), []core.HeaderSyncLog{test_data.CatFileChopHeaderSyncLog})
-
 			Expect(err).NotTo(HaveOccurred())
-			Expect(models).To(Equal([]shared.InsertionModel{test_data.CatFileChopModel()}))
+
+			var ilkID int64
+			ilkErr := db.Get(&ilkID, `SELECT id FROM maker.ilks where ilk = $1`, "0x434f4c342d410000000000000000000000000000000000000000000000000000")
+			Expect(ilkErr).NotTo(HaveOccurred())
+			expectedModel := test_data.CatFileChopModel()
+			expectedModel.ColumnValues[constants.IlkColumn] = ilkID
+
+			Expect(models).To(Equal([]event.InsertionModel{expectedModel}))
 		})
 	})
 
 	Context("lump events", func() {
 		It("converts a lump log to a model", func() {
 			models, err := converter.ToModels(constants.CatABI(), []core.HeaderSyncLog{test_data.CatFileLumpHeaderSyncLog})
-
 			Expect(err).NotTo(HaveOccurred())
-			Expect(models).To(Equal([]shared.InsertionModel{test_data.CatFileLumpModel()}))
+
+			var ilkID int64
+			ilkErr := db.Get(&ilkID, `SELECT id FROM maker.ilks where ilk = $1`, "0x434f4c342d410000000000000000000000000000000000000000000000000000")
+			Expect(ilkErr).NotTo(HaveOccurred())
+			expectedModel := test_data.CatFileLumpModel()
+			expectedModel.ColumnValues[constants.IlkColumn] = ilkID
+
+			Expect(models).To(Equal([]event.InsertionModel{expectedModel}))
 		})
 	})
 

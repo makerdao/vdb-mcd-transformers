@@ -20,7 +20,9 @@ import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
+	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 )
 
 var (
@@ -28,45 +30,58 @@ var (
 	lump = "lump"
 )
 
-type CatFileChopLumpConverter struct{}
+type Converter struct {
+	db *postgres.DB
+}
 
 const (
-	logDataRequired   = true
-	numTopicsRequired = 4
+	logDataRequired                    = true
+	numTopicsRequired                  = 4
+	What              event.ColumnName = "what"
+	Data              event.ColumnName = "data"
 )
 
-func (CatFileChopLumpConverter) ToModels(_ string, logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
-	var results []shared.InsertionModel
+func (converter Converter) ToModels(_ string, logs []core.HeaderSyncLog) ([]event.InsertionModel, error) {
+	var results []event.InsertionModel
 	for _, log := range logs {
 		verifyErr := shared.VerifyLog(log.Log, numTopicsRequired, logDataRequired)
 		if verifyErr != nil {
 			return nil, verifyErr
 		}
 		ilk := log.Log.Topics[2].Hex()
+		ilkId, ilkErr := shared.GetOrCreateIlk(ilk, converter.db)
+		if ilkErr != nil {
+			return nil, shared.ErrCouldNotCreateFK(ilkErr)
+		}
 		what := shared.DecodeHexToText(log.Log.Topics[3].Hex())
 		dataBytes, parseErr := shared.GetLogNoteArgumentAtIndex(2, log.Log.Data)
 		if parseErr != nil {
 			return nil, parseErr
 		}
 		data := shared.ConvertUint256HexToBigInt(hexutil.Encode(dataBytes))
-
-		result := shared.InsertionModel{
+		result := event.InsertionModel{
 			SchemaName: "maker",
 			TableName:  "cat_file_chop_lump",
-			OrderedColumns: []string{
-				constants.HeaderFK, string(constants.IlkFK), "what", "data", constants.LogFK,
+			OrderedColumns: []event.ColumnName{
+				event.HeaderFK,
+				constants.IlkColumn,
+				What,
+				Data,
+				event.LogFK,
 			},
-			ColumnValues: shared.ColumnValues{
-				"what":             what,
-				"data":             data.String(),
-				constants.HeaderFK: log.HeaderID,
-				constants.LogFK:    log.ID,
-			},
-			ForeignKeyValues: shared.ForeignKeyValues{
-				constants.IlkFK: ilk,
+			ColumnValues: event.ColumnValues{
+				event.HeaderFK:      log.HeaderID,
+				constants.IlkColumn: ilkId,
+				What:                what,
+				Data:                data.String(),
+				event.LogFK:         log.ID,
 			},
 		}
 		results = append(results, result)
 	}
 	return results, nil
+}
+
+func (converter *Converter) SetDB(db *postgres.DB) {
+	converter.db = db
 }
