@@ -15,7 +15,7 @@
 [exporter]
     home     = "github.com/vulcanize/vulcanizedb"
     name     = "transformerExporter"
-    save     = false
+    save     = true
     transformerNames = [
         "cat",
         "cdp_manager",
