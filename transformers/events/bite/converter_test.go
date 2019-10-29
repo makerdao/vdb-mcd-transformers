@@ -19,23 +19,31 @@ package bite_test
 import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/vulcanize/mcd_transformers/test_config"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 
 	"github.com/vulcanize/mcd_transformers/transformers/events/bite"
-	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 )
 
 var _ = Describe("Bite Converter", func() {
-	var converter = bite.BiteConverter{}
+	db := test_config.NewTestDB(test_config.NewTestNode())
+	var converter = bite.Converter{}
+	converter.SetDB(db)
 
 	It("converts a log to a Model", func() {
 		models, err := converter.ToModels(constants.CatABI(), []core.HeaderSyncLog{test_data.BiteHeaderSyncLog})
-
 		Expect(err).NotTo(HaveOccurred())
-		Expect(len(models)).To(Equal(1))
-		Expect(models).To(Equal([]shared.InsertionModel{test_data.BiteModel()}))
+
+		var urnID int64
+		urnErr := db.Get(&urnID, `SELECT id FROM maker.urns`)
+		Expect(urnErr).NotTo(HaveOccurred())
+		expectedModel := test_data.BiteModel()
+		expectedModel.ColumnValues[constants.UrnColumn] = urnID
+
+		Expect(models).To(Equal([]event.InsertionModel{expectedModel}))
 	})
 
 	It("returns an error if converting log to entity fails", func() {

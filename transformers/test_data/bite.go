@@ -20,12 +20,13 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/vulcanize/mcd_transformers/transformers/events/bite"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 	"math/big"
 	"math/rand"
 
-	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
@@ -64,25 +65,22 @@ var BiteHeaderSyncLog = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-func BiteModel() shared.InsertionModel { return CopyModel(biteModel) }
+func BiteModel() event.InsertionModel { return CopyEventModel(biteModel) }
 
-var biteModel = shared.InsertionModel{
+var biteModel = event.InsertionModel{
 	SchemaName: "maker",
 	TableName:  "bite",
-	OrderedColumns: []string{
-		constants.HeaderFK, constants.LogFK, "urn_id", "ink", "art", "tab", "flip", "bid_id",
+	OrderedColumns: []event.ColumnName{
+		constants.HeaderFK, constants.LogFK, constants.UrnColumn, bite.Ink, bite.Art, bite.Tab, bite.Flip, bite.Id,
 	},
-	ColumnValues: shared.ColumnValues{
+	ColumnValues: event.ColumnValues{
 		constants.HeaderFK: BiteHeaderSyncLog.HeaderID,
 		constants.LogFK:    BiteHeaderSyncLog.ID,
-		"ink":              biteInk.String(),
-		"art":              biteArt.String(),
-		"tab":              biteTab.String(),
-		"flip":             "0x7d7bEe5fCfD8028cf7b00876C5b1421c800561A6",
-		"bid_id":           biteID.String(),
-	},
-	ForeignKeyValues: shared.ForeignKeyValues{
-		constants.IlkFK: "0x4554480000000000000000000000000000000000000000000000000000000000",
-		constants.UrnFK: "0x7d7bEe5fCfD8028cf7b00876C5b1421c800561A6",
+		// constants.UrnColumn: Can't assert against this since we don't know the ID...
+		bite.Ink:  biteInk.String(),
+		bite.Art:  biteArt.String(),
+		bite.Tab:  biteTab.String(),
+		bite.Flip: "0x7d7bEe5fCfD8028cf7b00876C5b1421c800561A6",
+		bite.Id:   biteID.String(),
 	},
 }

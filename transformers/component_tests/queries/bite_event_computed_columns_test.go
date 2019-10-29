@@ -2,8 +2,7 @@ package queries
 
 import (
 	"database/sql"
-	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 	"math/rand"
 	"strconv"
 
@@ -30,8 +29,8 @@ var _ = Describe("Bite event computed columns", func() {
 		fakeGuy          string
 		fakeHeader       core.Header
 		biteGethLog      types.Log
-		biteEvent        shared.InsertionModel
-		biteRepo         bite.BiteRepository
+		biteEvent        event.InsertionModel
+		biteRepo         bite.Repository
 		headerId         int64
 		vatRepository    vat.VatStorageRepository
 		headerRepository repositories.HeaderRepository
@@ -52,14 +51,10 @@ var _ = Describe("Bite event computed columns", func() {
 		biteHeaderSyncLog := test_data.CreateTestLog(headerId, db)
 		biteGethLog = biteHeaderSyncLog.Log
 
-		biteRepo = bite.BiteRepository{}
+		biteRepo = bite.Repository{}
 		biteRepo.SetDB(db)
-		biteEvent = test_data.BiteModel()
-		biteEvent.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
-		biteEvent.ForeignKeyValues[constants.UrnFK] = fakeGuy
-		biteEvent.ColumnValues[constants.HeaderFK] = headerId
-		biteEvent.ColumnValues[constants.LogFK] = biteHeaderSyncLog.ID
-		insertBiteErr := biteRepo.Create([]shared.InsertionModel{biteEvent})
+		biteEvent = generateBite(test_helpers.FakeIlk.Hex, fakeGuy, headerId, biteHeaderSyncLog.ID, db)
+		insertBiteErr := biteRepo.Create([]event.InsertionModel{biteEvent})
 		Expect(insertBiteErr).NotTo(HaveOccurred())
 	})
 
@@ -128,13 +123,13 @@ var _ = Describe("Bite event computed columns", func() {
 						ContractAddress: address.Hex(),
 					},
 					Dealt:            dealt,
-					IlkHex:           biteEvent.ForeignKeyValues[constants.IlkFK],
-					UrnGuy:           biteEvent.ForeignKeyValues[constants.UrnFK],
+					IlkHex:           test_helpers.FakeIlk.Hex,
+					UrnGuy:           test_data.FakeUrn,
 					FlipKickRepo:     flipKickRepo,
 					FlipKickHeaderId: headerId,
 				})
 			Expect(ctxErr).NotTo(HaveOccurred())
-			flipValues := test_helpers.GetFlipStorageValues(0, biteEvent.ForeignKeyValues[constants.IlkFK], bidId)
+			flipValues := test_helpers.GetFlipStorageValues(0, test_helpers.FakeIlk.Hex, bidId)
 			flipMetadatas := test_helpers.GetFlipMetadatas(strconv.Itoa(bidId))
 			test_helpers.CreateFlip(db, fakeHeader, flipValues, flipMetadatas, address.Hex())
 

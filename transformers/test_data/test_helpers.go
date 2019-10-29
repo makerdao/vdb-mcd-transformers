@@ -23,6 +23,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/gomega"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres/repositories"
@@ -38,6 +39,20 @@ func CopyModel(model shared.InsertionModel) shared.InsertionModel {
 	Expect(encErr).NotTo(HaveOccurred())
 
 	var newModel shared.InsertionModel
+	decoder := gob.NewDecoder(buf)
+	decErr := decoder.Decode(&newModel)
+	Expect(decErr).NotTo(HaveOccurred())
+	return newModel
+}
+
+// TODO rename CopyEventModel => CopyModel
+func CopyEventModel(model event.InsertionModel) event.InsertionModel {
+	buf := new(bytes.Buffer)
+	encoder := gob.NewEncoder(buf)
+	encErr := encoder.Encode(model)
+	Expect(encErr).NotTo(HaveOccurred())
+
+	var newModel event.InsertionModel
 	decoder := gob.NewDecoder(buf)
 	decErr := decoder.Decode(&newModel)
 	Expect(decErr).NotTo(HaveOccurred())

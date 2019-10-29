@@ -18,6 +18,8 @@ package bite
 
 import (
 	"fmt"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
+	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
@@ -29,9 +31,19 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
-type BiteConverter struct{}
+type Converter struct {
+	db *postgres.DB
+}
 
-func (BiteConverter) toEntities(contractAbi string, logs []core.HeaderSyncLog) ([]BiteEntity, error) {
+const (
+	Ink  event.ColumnName = "ink"
+	Art  event.ColumnName = "art"
+	Tab  event.ColumnName = "tab"
+	Flip event.ColumnName = "flip"
+	Id   event.ColumnName = "bid_id"
+)
+
+func (Converter) toEntities(contractAbi string, logs []core.HeaderSyncLog) ([]BiteEntity, error) {
 	var entities []BiteEntity
 	for _, log := range logs {
 		var entity BiteEntity
@@ -55,38 +67,44 @@ func (BiteConverter) toEntities(contractAbi string, logs []core.HeaderSyncLog) (
 	return entities, nil
 }
 
-func (converter BiteConverter) ToModels(abi string, logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
-	entities, entityErr := converter.toEntities(abi, logs)
+func (c Converter) ToModels(abi string, logs []core.HeaderSyncLog) ([]event.InsertionModel, error) {
+	entities, entityErr := c.toEntities(abi, logs)
 	if entityErr != nil {
-		return nil, fmt.Errorf("BiteConverter couldn't convert logs to entities: %v", entityErr)
+		return nil, fmt.Errorf("converter couldn't convert logs to entities: %v", entityErr)
 	}
 
-	var models []shared.InsertionModel
+	var models []event.InsertionModel
 	for _, biteEntity := range entities {
-		ilk := hexutil.Encode(biteEntity.Ilk[:])
+		hexIlk := hexutil.Encode(biteEntity.Ilk[:])
 		urn := common.BytesToAddress(biteEntity.Urn[:]).Hex()
 
-		model := shared.InsertionModel{
+		urnID, urnErr := shared.GetOrCreateUrn(urn, hexIlk, c.db)
+		if urnErr != nil {
+			return nil, shared.ErrCouldNotCreateFK(urnErr)
+		}
+
+		model := event.InsertionModel{
 			SchemaName: "maker",
 			TableName:  "bite",
-			OrderedColumns: []string{
-				constants.HeaderFK, constants.LogFK, string(constants.UrnFK), "ink", "art", "tab", "flip", "bid_id",
+			OrderedColumns: []event.ColumnName{
+				event.HeaderFK, event.LogFK, constants.UrnColumn, Ink, Art, Tab, Flip, Id,
 			},
-			ColumnValues: shared.ColumnValues{
-				constants.HeaderFK: biteEntity.HeaderID,
-				constants.LogFK:    biteEntity.LogID,
-				"ink":              shared.BigIntToString(biteEntity.Ink),
-				"art":              shared.BigIntToString(biteEntity.Art),
-				"tab":              shared.BigIntToString(biteEntity.Tab),
-				"flip":             common.BytesToAddress(biteEntity.Flip.Bytes()).Hex(),
-				"bid_id":           shared.BigIntToString(biteEntity.Id),
-			},
-			ForeignKeyValues: shared.ForeignKeyValues{
-				constants.IlkFK: ilk,
-				constants.UrnFK: urn,
+			ColumnValues: event.ColumnValues{
+				event.HeaderFK:      biteEntity.HeaderID,
+				event.LogFK:         biteEntity.LogID,
+				constants.UrnColumn: urnID,
+				Ink:                 shared.BigIntToString(biteEntity.Ink),
+				Art:                 shared.BigIntToString(biteEntity.Art),
+				Tab:                 shared.BigIntToString(biteEntity.Tab),
+				Flip:                common.BytesToAddress(biteEntity.Flip.Bytes()).Hex(),
+				Id:                  shared.BigIntToString(biteEntity.Id),
 			},
 		}
 		models = append(models, model)
 	}
 	return models, nil
+}
+
+func (c *Converter) SetDB(db *postgres.DB) {
+	c.db = db
 }

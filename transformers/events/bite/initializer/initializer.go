@@ -17,6 +17,7 @@
 package initializer
 
 import (
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 
 	"github.com/vulcanize/mcd_transformers/transformers/events/bite"
@@ -24,8 +25,8 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
-var EventTransformerInitializer transformer.EventTransformerInitializer = shared.EventTransformer{
+var EventTransformerInitializer transformer.EventTransformerInitializer = event.Transformer{
 	Config:     shared.GetEventTransformerConfig(constants.BiteLabel, constants.BiteSignature()),
-	Converter:  bite.BiteConverter{},
-	Repository: &bite.BiteRepository{},
-}.NewEventTransformer
+	Converter:  &bite.Converter{},
+	Repository: &bite.Repository{},
+}.NewTransformer

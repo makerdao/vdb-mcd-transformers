@@ -17,6 +17,7 @@
 package queries
 
 import (
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 	"math/rand"
 
 	. "github.com/onsi/ginkgo"
@@ -274,13 +275,10 @@ var _ = Describe("Ilk state computed columns", func() {
 
 	Describe("ilk_state_bites", func() {
 		It("returns bite event for an ilk state", func() {
-			biteRepo := bite.BiteRepository{}
+			biteRepo := bite.Repository{}
 			biteRepo.SetDB(db)
-			biteEvent := test_data.BiteModel()
-			biteEvent.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
-			biteEvent.ColumnValues[constants.HeaderFK] = headerId
-			biteEvent.ColumnValues[constants.LogFK] = logId
-			insertBiteErr := biteRepo.Create([]shared.InsertionModel{biteEvent})
+			biteEvent := generateBite(test_helpers.FakeIlk.Hex, fakeGuy, headerId, logId, db)
+			insertBiteErr := biteRepo.Create([]event.InsertionModel{biteEvent})
 			Expect(insertBiteErr).NotTo(HaveOccurred())
 
 			var actualBites []test_helpers.BiteEvent
@@ -295,7 +293,7 @@ var _ = Describe("Ilk state computed columns", func() {
 
 			expectedBites := []test_helpers.BiteEvent{{
 				IlkIdentifier: test_helpers.FakeIlk.Identifier,
-				UrnIdentifier: biteEvent.ForeignKeyValues[constants.UrnFK],
+				UrnIdentifier: fakeGuy,
 				Ink:           biteEvent.ColumnValues["ink"].(string),
 				Art:           biteEvent.ColumnValues["art"].(string),
 				Tab:           biteEvent.ColumnValues["tab"].(string),
@@ -307,17 +305,16 @@ var _ = Describe("Ilk state computed columns", func() {
 		Describe("result pagination", func() {
 			var (
 				newBlock         int
-				oldBite, newBite shared.InsertionModel
+				oldBite, newBite event.InsertionModel
+				oldGuy           = "0x7d7bEe5fCfD8028cf7b00876C5b1421c800561A6"
 			)
 
 			BeforeEach(func() {
-				biteRepo := bite.BiteRepository{}
+				biteRepo := bite.Repository{}
 				biteRepo.SetDB(db)
-				oldBite = test_data.BiteModel()
-				oldBite.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
-				oldBite.ColumnValues[constants.HeaderFK] = headerId
-				oldBite.ColumnValues[constants.LogFK] = logId
-				insertOldBiteErr := biteRepo.Create([]shared.InsertionModel{oldBite})
+
+				oldBite = generateBite(test_helpers.FakeIlk.Hex, oldGuy, headerId, logId, db)
+				insertOldBiteErr := biteRepo.Create([]event.InsertionModel{oldBite})
 				Expect(insertOldBiteErr).NotTo(HaveOccurred())
 
 				newBlock = fakeBlock + 1
@@ -326,12 +323,8 @@ var _ = Describe("Ilk state computed columns", func() {
 				Expect(insertNewHeaderErr).NotTo(HaveOccurred())
 				newLogId := test_data.CreateTestLog(newHeaderId, db).ID
 
-				newBite = test_data.BiteModel()
-				newBite.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
-				newBite.ForeignKeyValues[constants.UrnFK] = test_data.FakeUrn
-				newBite.ColumnValues[constants.HeaderFK] = newHeaderId
-				newBite.ColumnValues[constants.LogFK] = newLogId
-				insertNewBiteErr := biteRepo.Create([]shared.InsertionModel{newBite})
+				newBite = generateBite(test_helpers.FakeIlk.Hex, fakeGuy, newHeaderId, newLogId, db)
+				insertNewBiteErr := biteRepo.Create([]event.InsertionModel{newBite})
 				Expect(insertNewBiteErr).NotTo(HaveOccurred())
 			})
 
@@ -346,7 +339,7 @@ var _ = Describe("Ilk state computed columns", func() {
 
 				expectedBite := test_helpers.BiteEvent{
 					IlkIdentifier: test_helpers.FakeIlk.Identifier,
-					UrnIdentifier: newBite.ForeignKeyValues[constants.UrnFK],
+					UrnIdentifier: fakeGuy,
 					Ink:           newBite.ColumnValues["ink"].(string),
 					Art:           newBite.ColumnValues["art"].(string),
 					Tab:           newBite.ColumnValues["tab"].(string),
@@ -367,7 +360,7 @@ var _ = Describe("Ilk state computed columns", func() {
 
 				expectedBite := test_helpers.BiteEvent{
 					IlkIdentifier: test_helpers.FakeIlk.Identifier,
-					UrnIdentifier: oldBite.ForeignKeyValues[constants.UrnFK],
+					UrnIdentifier: oldGuy,
 					Ink:           oldBite.ColumnValues["ink"].(string),
 					Art:           oldBite.ColumnValues["art"].(string),
 					Tab:           oldBite.ColumnValues["tab"].(string),

@@ -17,19 +17,18 @@
 package bite
 
 import (
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
-
-	"github.com/vulcanize/mcd_transformers/transformers/shared"
 )
 
-type BiteRepository struct {
+type Repository struct {
 	db *postgres.DB
 }
 
-func (repository *BiteRepository) SetDB(db *postgres.DB) {
+func (repository *Repository) SetDB(db *postgres.DB) {
 	repository.db = db
 }
 
-func (repository BiteRepository) Create(models []shared.InsertionModel) error {
-	return shared.Create(models, repository.db)
+func (repository Repository) Create(models []event.InsertionModel) error {
+	return event.Create(models, repository.db)
 }

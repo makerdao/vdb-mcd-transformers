@@ -16,7 +16,10 @@
 
 package constants
 
-import "github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
+import (
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
+)
 
 const (
 	BidId     utils.Key = "bid_id"
@@ -28,6 +31,7 @@ const (
 	Owner     utils.Key = "owner"
 )
 
+// TODO remove after transition to ColumnName
 type ForeignKeyField string
 
 const (
@@ -39,4 +43,10 @@ const (
 const (
 	HeaderFK = "header_id"
 	LogFK    = "log_id"
+)
+
+const (
+	IlkColumn     event.ColumnName = "ilk_id"
+	UrnColumn     event.ColumnName = "urn_id"
+	AddressColumn event.ColumnName = "address_id"
 )

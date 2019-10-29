@@ -28,9 +28,13 @@ var (
 	ErrLogMissingTopics = func(expectedNumTopics, actualNumTopics int) error {
 		return fmt.Errorf("log missing topics: has %d, want %d", actualNumTopics, expectedNumTopics)
 	}
-	ErrLogMissingData = errors.New("log missing data")
+	ErrLogMissingData   = errors.New("log missing data")
+	ErrCouldNotCreateFK = func(err error) error {
+		return fmt.Errorf("converter could not create FK: %v", err)
+	}
 )
 
+// TODO purge when everything moved to vDB interface
 type Converter interface {
 	ToModels(contractAbi string, ethLog []core.HeaderSyncLog) ([]InsertionModel, error)
 }

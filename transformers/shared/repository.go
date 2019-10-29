@@ -42,6 +42,8 @@ const (
 		SELECT id FROM insertedUrnId`
 )
 
+// TODO purge everything but ilk/urn helpers and rename fk_utils.go when everything moved to vDB core transformer
+
 type SharedRepository interface {
 	Create(models []InsertionModel) error
 	SetDB(db *postgres.DB)
