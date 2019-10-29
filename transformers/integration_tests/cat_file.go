@@ -73,12 +73,12 @@ var _ = Describe("Cat File transformer", func() {
 		catFileConfig.StartingBlockNumber = chopLumpBlockNumber
 		catFileConfig.EndingBlockNumber = chopLumpBlockNumber
 
-		initializer := shared.EventTransformer{
+		initializer := event.Transformer{
 			Config:     catFileConfig,
 			Converter:  &chop_lump.Converter{},
-			Repository: &chop_lump.CatFileChopLumpRepository{},
+			Repository: &chop_lump.Repository{},
 		}
-		transformer := initializer.NewEventTransformer(db)
+		transformer := initializer.NewTransformer(db)
 
 		logs, err := logFetcher.FetchLogs(
 			[]common.Address{common.HexToAddress(catFileConfig.ContractAddresses[0])},
@@ -113,12 +113,12 @@ var _ = Describe("Cat File transformer", func() {
 		catFileConfig.StartingBlockNumber = chopLumpBlockNumber
 		catFileConfig.EndingBlockNumber = chopLumpBlockNumber
 
-		initializer := shared.EventTransformer{
+		initializer := event.Transformer{
 			Config:     catFileConfig,
 			Converter:  &chop_lump.Converter{},
-			Repository: &chop_lump.CatFileChopLumpRepository{},
+			Repository: &chop_lump.Repository{},
 		}
-		transformer := initializer.NewEventTransformer(db)
+		transformer := initializer.NewTransformer(db)
 
 		logs, err := logFetcher.FetchLogs(
 			[]common.Address{common.HexToAddress(catFileConfig.ContractAddresses[0])},
