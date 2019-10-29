@@ -17,6 +17,7 @@
 package queries
 
 import (
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 	"math/rand"
 	"strconv"
 
@@ -80,10 +81,13 @@ var _ = Describe("Ilk File Events Query", func() {
 	It("returns all ilk file events for ilk", func() {
 		catFileChopLumpLog := test_data.CreateTestLog(headerOneId, db)
 		catFileChopLump := test_data.CatFileChopModel()
-		catFileChopLump.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
+		ilkId, createIlkError := shared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
+		Expect(createIlkError).NotTo(HaveOccurred())
+
+		catFileChopLump.ColumnValues[constants.IlkColumn] = ilkId
 		catFileChopLump.ColumnValues[constants.HeaderFK] = headerOneId
 		catFileChopLump.ColumnValues[constants.LogFK] = catFileChopLumpLog.ID
-		chopLumpErr := catFileChopLumpRepo.Create([]shared.InsertionModel{catFileChopLump})
+		chopLumpErr := catFileChopLumpRepo.Create([]event.InsertionModel{catFileChopLump})
 		Expect(chopLumpErr).NotTo(HaveOccurred())
 
 		catFileFlipLog := test_data.CreateTestLog(headerOneId, db)
