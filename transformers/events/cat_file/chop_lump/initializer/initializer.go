@@ -20,11 +20,12 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/cat_file/chop_lump"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 )
 
-var EventTransformerInitializer transformer.EventTransformerInitializer = shared.EventTransformer{
+var EventTransformerInitializer transformer.EventTransformerInitializer = event.Transformer{
 	Config:     shared.GetEventTransformerConfig(constants.CatFileChopLumpLabel, constants.CatFileChopLumpSignature()),
-	Converter:  chop_lump.Converter{},
+	Converter:  &chop_lump.Converter{},
 	Repository: &chop_lump.Repository{},
-}.NewEventTransformer
+}.NewTransformer
