@@ -5,10 +5,8 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/vulcanize/mcd_transformers/test_config"
 	helper "github.com/vulcanize/mcd_transformers/transformers/component_tests/queries/test_helpers"
-	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/vat"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
@@ -26,6 +24,8 @@ var _ = Describe("Single urn view", func() {
 		urnTwo     string
 		err        error
 	)
+
+	const getUrnQuery = `SELECT urn_identifier, ilk_identifier, ink, art, created, updated FROM api.get_urn($1, $2, $3)`
 
 	BeforeEach(func() {
 		db = test_config.NewTestDB(test_config.NewTestNode())
@@ -54,15 +54,12 @@ var _ = Describe("Single urn view", func() {
 		urnOneSetupData := helper.GetUrnSetupData(blockOne, timestampOne)
 		helper.CreateUrn(urnOneSetupData, urnOneMetadata, vatRepo, headerRepo)
 
-		expectedRatio := helper.GetExpectedRatio(urnOneSetupData.Ink, urnOneSetupData.Spot, urnOneSetupData.Art, urnOneSetupData.Rate)
 		expectedTimestampOne := helper.GetExpectedTimestamp(timestampOne)
 		expectedUrn := helper.UrnState{
 			UrnIdentifier: urnOne,
 			IlkIdentifier: helper.FakeIlk.Identifier,
 			Ink:           strconv.Itoa(urnOneSetupData.Ink),
 			Art:           strconv.Itoa(urnOneSetupData.Art),
-			Ratio:         helper.GetValidNullString(strconv.FormatFloat(expectedRatio, 'f', 8, 64)),
-			Safe:          expectedRatio >= 1,
 			Created:       helper.GetValidNullString(expectedTimestampOne),
 			Updated:       helper.GetValidNullString(expectedTimestampOne),
 		}
@@ -72,8 +69,7 @@ var _ = Describe("Single urn view", func() {
 		helper.CreateUrn(urnTwoSetupData, urnTwoMetadata, vatRepo, headerRepo)
 
 		var actualUrn helper.UrnState
-		err = db.Get(&actualUrn, `SELECT urn_identifier, ilk_identifier, ink, art, ratio, safe, created, updated
-			FROM api.get_urn($1, $2, $3)`, helper.FakeIlk.Identifier, urnOne, blockTwo)
+		err = db.Get(&actualUrn, getUrnQuery, helper.FakeIlk.Identifier, urnOne, blockTwo)
 		Expect(err).NotTo(HaveOccurred())
 
 		helper.AssertUrn(actualUrn, expectedUrn)
@@ -90,8 +86,7 @@ var _ = Describe("Single urn view", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		var result helper.UrnState
-		err = db.Get(&result, `SELECT urn_identifier, ilk_identifier, ink, art, ratio, safe, created, updated
-			FROM api.get_urn($1, $2, $3)`, helper.FakeIlk.Identifier, urnOne, block)
+		err = db.Get(&result, getUrnQuery, helper.FakeIlk.Identifier, urnOne, block)
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(result.Created.String).To(BeEmpty())
@@ -140,21 +135,17 @@ var _ = Describe("Single urn view", func() {
 			err = vatRepo.Create(blockTwo, hashTwo, metadata.UrnInk, strconv.Itoa(updatedInk))
 			Expect(err).NotTo(HaveOccurred())
 
-			expectedRatio := helper.GetExpectedRatio(setupDataOne.Ink, setupDataOne.Spot, setupDataOne.Art, setupDataOne.Rate)
 			expectedTimestampOne := helper.GetExpectedTimestamp(timestampOne)
 			expectedUrn := helper.UrnState{
 				UrnIdentifier: urnOne,
 				IlkIdentifier: helper.FakeIlk.Identifier,
 				Ink:           strconv.Itoa(setupDataOne.Ink),
 				Art:           strconv.Itoa(setupDataOne.Art),
-				Ratio:         helper.GetValidNullString(strconv.FormatFloat(expectedRatio, 'f', 8, 64)),
-				Safe:          expectedRatio >= 1,
 				Created:       helper.GetValidNullString(expectedTimestampOne),
 				Updated:       helper.GetValidNullString(expectedTimestampOne),
 			}
 
-			err = db.Get(&actualUrn, `SELECT urn_identifier, ilk_identifier, ink, art, ratio, safe, created, updated
-				FROM api.get_urn($1, $2, $3)`, helper.FakeIlk.Identifier, urnOne, blockOne)
+			err = db.Get(&actualUrn, getUrnQuery, helper.FakeIlk.Identifier, urnOne, blockOne)
 			Expect(err).NotTo(HaveOccurred())
 
 			helper.AssertUrn(actualUrn, expectedUrn)
@@ -169,7 +160,6 @@ var _ = Describe("Single urn view", func() {
 			err = vatRepo.Create(blockTwo, hashTwo, metadata.UrnInk, strconv.Itoa(updatedInk))
 			Expect(err).NotTo(HaveOccurred())
 
-			expectedRatio := helper.GetExpectedRatio(updatedInk, setupDataOne.Spot, setupDataOne.Art, setupDataOne.Rate)
 			expectedTimestampOne := helper.GetExpectedTimestamp(timestampOne)
 			expectedTimestampTwo := helper.GetExpectedTimestamp(timestampTwo)
 			expectedUrn := helper.UrnState{
@@ -177,8 +167,6 @@ var _ = Describe("Single urn view", func() {
 				IlkIdentifier: helper.FakeIlk.Identifier,
 				Ink:           strconv.Itoa(updatedInk),
 				Art:           strconv.Itoa(setupDataOne.Art), // Not changed
-				Ratio:         helper.GetValidNullString(strconv.FormatFloat(expectedRatio, 'f', 8, 64)),
-				Safe:          expectedRatio >= 1,
 				Created:       helper.GetValidNullString(expectedTimestampOne),
 				Updated:       helper.GetValidNullString(expectedTimestampTwo),
 			}
@@ -190,33 +178,10 @@ var _ = Describe("Single urn view", func() {
 			_, err = headerRepo.CreateOrUpdateHeader(fakeHeaderTwo)
 			Expect(err).NotTo(HaveOccurred())
 
-			err = db.Get(&actualUrn, `SELECT urn_identifier, ilk_identifier, ink, art, ratio, safe, created, updated
-				FROM api.get_urn($1, $2, $3)`, helper.FakeIlk.Identifier, urnOne, blockTwo)
+			err = db.Get(&actualUrn, getUrnQuery, helper.FakeIlk.Identifier, urnOne, blockTwo)
 			Expect(err).NotTo(HaveOccurred())
 
 			helper.AssertUrn(actualUrn, expectedUrn)
 		})
-	})
-
-	It("returns null ratio and urn being safe if there is no debt", func() {
-		fakeHeader := fakes.GetFakeHeader(int64(rand.Int()))
-		fakeTimestamp := int(rand.Int31())
-		fakeHeader.Timestamp = strconv.Itoa(fakeTimestamp)
-		fakeHeader.Hash = test_data.RandomString(5)
-		_, insertHeaderErr := headerRepo.CreateOrUpdateHeader(fakeHeader)
-		Expect(insertHeaderErr).NotTo(HaveOccurred())
-
-		fakeInk := rand.Int()
-		urnInkMetadata := utils.GetStorageValueMetadata(vat.UrnInk, map[utils.Key]string{constants.Ilk: helper.FakeIlk.Hex, constants.Guy: urnOne}, utils.Uint256)
-		insertInkErr := vatRepo.Create(int(fakeHeader.BlockNumber), fakeHeader.Hash, urnInkMetadata, strconv.Itoa(fakeInk))
-		Expect(insertInkErr).NotTo(HaveOccurred())
-
-		var result helper.UrnState
-		err = db.Get(&result, `SELECT urn_identifier, ilk_identifier, ink, art, ratio, safe, created, updated
-			FROM api.get_urn($1, $2, $3)`, helper.FakeIlk.Identifier, urnOne, fakeHeader.BlockNumber)
-		Expect(err).NotTo(HaveOccurred())
-
-		Expect(result.Ratio.String).To(BeEmpty())
-		Expect(result.Safe).To(BeTrue())
 	})
 })

@@ -9,8 +9,6 @@ CREATE TYPE api.urn_state AS (
     -- ilk object
     ink NUMERIC,
     art NUMERIC,
-    ratio NUMERIC,
-    safe BOOLEAN,
     -- frobs
     -- bites
     created TIMESTAMP,
@@ -70,15 +68,6 @@ WITH urns AS (SELECT urns.id AS urn_id, ilks.id AS ilk_id, ilks.ilk, urns.identi
          FROM maker.vat_ilk_spot
          WHERE block_number <= all_urns.block_height
          ORDER BY ilk_id, block_number DESC),
-     ratio_data AS (SELECT urns.ilk, urns.identifier, inks.ink, spots.spot, arts.art, rates.rate
-                    FROM inks
-                             JOIN urns ON inks.urn_id = urns.urn_id
-                             JOIN arts ON arts.urn_id = inks.urn_id
-                             JOIN spots ON spots.ilk_id = urns.ilk_id
-                             JOIN rates ON rates.ilk_id = spots.ilk_id),
-     ratios AS (SELECT ilk, identifier as urn_identifier, ((1.0 * ink * spot) / NULLIF(art * rate, 0)) AS ratio
-                FROM ratio_data),
-     safe AS (SELECT ilk, urn_identifier, (ratio >= 1) AS safe FROM ratios),
      created AS (SELECT urn_id, api.epoch_to_datetime(block_timestamp) AS datetime
                  FROM (SELECT DISTINCT ON (urn_id) urn_id, block_hash
                        FROM maker.vat_urn_ink
@@ -102,15 +91,11 @@ SELECT urns.identifier,
        all_urns.block_height,
        inks.ink,
        COALESCE(arts.art, 0),
-       ratios.ratio,
-       COALESCE(safe.safe, COALESCE(arts.art, 0) = 0),
        created.datetime,
        updated.datetime
 FROM inks
          LEFT JOIN arts ON arts.urn_id = inks.urn_id
          LEFT JOIN urns ON inks.urn_id = urns.urn_id
-         LEFT JOIN ratios ON ratios.urn_identifier = urns.identifier
-         LEFT JOIN safe ON safe.urn_identifier = urns.identifier
          LEFT JOIN created ON created.urn_id = urns.urn_id
          LEFT JOIN updated ON updated.urn_id = urns.urn_id
          LEFT JOIN maker.ilks ON ilks.id = urns.ilk_id

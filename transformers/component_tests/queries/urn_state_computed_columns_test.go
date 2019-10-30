@@ -101,7 +101,7 @@ var _ = Describe("Urn state computed columns", func() {
 			getIlkErr := db.Get(&result,
 				`SELECT ilk_identifier, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated
 					FROM api.urn_state_ilk(
-					(SELECT (urn_identifier, ilk_identifier, block_height, ink, art, ratio, safe, created, updated)::api.urn_state
+					(SELECT (urn_identifier, ilk_identifier, block_height, ink, art, created, updated)::api.urn_state
 					FROM api.get_urn($1, $2, $3)))`, test_helpers.FakeIlk.Identifier, fakeGuy, fakeHeader.BlockNumber)
 
 			Expect(getIlkErr).NotTo(HaveOccurred())
@@ -129,7 +129,7 @@ var _ = Describe("Urn state computed columns", func() {
 			var actualFrobs test_helpers.FrobEvent
 			getFrobsErr := db.Get(&actualFrobs,
 				`SELECT ilk_identifier, urn_identifier, dink, dart FROM api.urn_state_frobs(
-                        (SELECT (urn_identifier, ilk_identifier, block_height, ink, art, ratio, safe, created, updated)::api.urn_state
+                        (SELECT (urn_identifier, ilk_identifier, block_height, ink, art, created, updated)::api.urn_state
                          FROM api.all_urns($1))
                     )`, fakeBlock)
 			Expect(getFrobsErr).NotTo(HaveOccurred())
@@ -185,7 +185,7 @@ var _ = Describe("Urn state computed columns", func() {
 				var actualFrobs []test_helpers.FrobEvent
 				getFrobsErr := db.Select(&actualFrobs,
 					`SELECT ilk_identifier, urn_identifier, dink, dart FROM api.urn_state_frobs(
-						(SELECT (urn_identifier, ilk_identifier, block_height, ink, art, ratio, safe, created, updated)::api.urn_state
+						(SELECT (urn_identifier, ilk_identifier, block_height, ink, art, created, updated)::api.urn_state
 						 FROM api.get_urn($1, $2)), $3)`, test_helpers.FakeIlk.Identifier, fakeGuy, maxResults)
 				Expect(getFrobsErr).NotTo(HaveOccurred())
 
@@ -204,7 +204,7 @@ var _ = Describe("Urn state computed columns", func() {
 				var actualFrobs []test_helpers.FrobEvent
 				getFrobsErr := db.Select(&actualFrobs,
 					`SELECT ilk_identifier, urn_identifier, dink, dart FROM api.urn_state_frobs(
-						(SELECT (urn_identifier, ilk_identifier, block_height, ink, art, ratio, safe, created, updated)::api.urn_state
+						(SELECT (urn_identifier, ilk_identifier, block_height, ink, art, created, updated)::api.urn_state
 						 FROM api.get_urn($1, $2)), $3, $4)`,
 					test_helpers.FakeIlk.Identifier, fakeGuy, maxResults, resultOffset)
 				Expect(getFrobsErr).NotTo(HaveOccurred())
@@ -236,7 +236,7 @@ var _ = Describe("Urn state computed columns", func() {
 			var actualBites test_helpers.BiteEvent
 			getBitesErr := db.Get(&actualBites, `
 				SELECT ilk_identifier, urn_identifier, ink, art, tab FROM api.urn_state_bites(
-				    (SELECT (urn_identifier, ilk_identifier, block_height, ink, art, ratio, safe, created, updated)::api.urn_state
+				    (SELECT (urn_identifier, ilk_identifier, block_height, ink, art, created, updated)::api.urn_state
 				    FROM api.all_urns($1)))`,
 				fakeBlock)
 			Expect(getBitesErr).NotTo(HaveOccurred())
@@ -285,7 +285,7 @@ var _ = Describe("Urn state computed columns", func() {
 				var actualBites []test_helpers.BiteEvent
 				getBitesErr := db.Select(&actualBites, `
 					SELECT ilk_identifier, urn_identifier, ink, art, tab FROM api.urn_state_bites(
-						(SELECT (urn_identifier, ilk_identifier, block_height, ink, art, ratio, safe, created, updated)::api.urn_state
+						(SELECT (urn_identifier, ilk_identifier, block_height, ink, art, created, updated)::api.urn_state
 						 FROM api.get_urn($1, $2)), $3)`,
 					test_helpers.FakeIlk.Identifier, fakeGuy, maxResults)
 				Expect(getBitesErr).NotTo(HaveOccurred())
@@ -306,7 +306,7 @@ var _ = Describe("Urn state computed columns", func() {
 				var actualBites []test_helpers.BiteEvent
 				getBitesErr := db.Select(&actualBites, `
 					SELECT ilk_identifier, urn_identifier, ink, art, tab FROM api.urn_state_bites(
-						(SELECT (urn_identifier, ilk_identifier, block_height, ink, art, ratio, safe, created, updated)::api.urn_state
+						(SELECT (urn_identifier, ilk_identifier, block_height, ink, art, created, updated)::api.urn_state
 						 FROM api.get_urn($1, $2)), $3, $4)`,
 					test_helpers.FakeIlk.Identifier, fakeGuy, maxResults, resultOffset)
 				Expect(getBitesErr).NotTo(HaveOccurred())

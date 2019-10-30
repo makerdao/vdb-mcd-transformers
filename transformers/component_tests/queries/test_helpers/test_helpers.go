@@ -247,12 +247,6 @@ func CreateSpotRecords(header core.Header, valuesMap map[string]string, metadata
 	}
 }
 
-func GetExpectedRatio(ink, spot, art, rate int) float64 {
-	inkXspot := float64(ink) * float64(spot)
-	artXrate := float64(art) * float64(rate)
-	return inkXspot / artXrate
-}
-
 // Creates urn by creating necessary state diffs and the corresponding header
 func CreateUrn(setupData UrnSetupData, metadata UrnMetadata, vatRepo vat.VatStorageRepository, headerRepo repositories.HeaderRepository) {
 	blockNo := int(setupData.Header.BlockNumber)
@@ -296,7 +290,7 @@ func CreateIlk(db *postgres.DB, header core.Header, valuesMap map[string]string,
 	CreateSpotRecords(header, valuesMap, spotMetadatas, spotRepo)
 }
 
-// Does not return values computed by the query (ratio, safe, updated, created)
+// Does not return values computed by the query (updated, created)
 func GetUrnSetupData(block, timestamp int) UrnSetupData {
 	fakeHeader := fakes.GetFakeHeader(int64(block))
 	fakeHeader.Timestamp = strconv.Itoa(timestamp)
@@ -345,8 +339,6 @@ type UrnState struct {
 	BlockHeight   int    `db:"block_height"`
 	Ink           string
 	Art           string
-	Ratio         sql.NullString
-	Safe          bool
 	Created       sql.NullString
 	Updated       sql.NullString
 }
@@ -357,18 +349,6 @@ func AssertUrn(actual, expected UrnState) {
 	Expect(actual.BlockHeight).To(Equal(expected.BlockHeight))
 	Expect(actual.Ink).To(Equal(expected.Ink))
 	Expect(actual.Art).To(Equal(expected.Art))
-
-	if actual.Ratio.Valid {
-		actualRatio, err := strconv.ParseFloat(actual.Ratio.String, 64)
-		Expect(err).NotTo(HaveOccurred())
-		expectedRatio, err := strconv.ParseFloat(expected.Ratio.String, 64)
-		Expect(err).NotTo(HaveOccurred())
-		Expect(actualRatio).To(BeNumerically("~", expectedRatio))
-	} else {
-		Expect(!expected.Ratio.Valid).To(BeTrue())
-	}
-
-	Expect(actual.Safe).To(Equal(expected.Safe))
 	Expect(actual.Created).To(Equal(expected.Created))
 	Expect(actual.Updated).To(Equal(expected.Updated))
 }

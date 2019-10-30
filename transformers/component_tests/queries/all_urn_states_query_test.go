@@ -48,7 +48,6 @@ var _ = Describe("Urn history query", func() {
 		inkBlockOne := urnSetupData.Ink
 		artBlockOne := urnSetupData.Art
 
-		expectedRatioBlockOne := helper.GetExpectedRatio(inkBlockOne, urnSetupData.Spot, artBlockOne, urnSetupData.Rate)
 		expectedTimestampOne := helper.GetExpectedTimestamp(timestampOne)
 		expectedUrnBlockOne := helper.UrnState{
 			UrnIdentifier: fakeUrn,
@@ -56,8 +55,6 @@ var _ = Describe("Urn history query", func() {
 			BlockHeight:   blockOne,
 			Ink:           strconv.Itoa(inkBlockOne),
 			Art:           strconv.Itoa(artBlockOne),
-			Ratio:         helper.GetValidNullString(strconv.FormatFloat(expectedRatioBlockOne, 'f', 8, 64)),
-			Safe:          expectedRatioBlockOne >= 1,
 			Created:       helper.GetValidNullString(expectedTimestampOne),
 			Updated:       helper.GetValidNullString(expectedTimestampOne),
 		}
@@ -80,7 +77,6 @@ var _ = Describe("Urn history query", func() {
 		err = vatRepo.Create(blockOne, fakes.FakeHash.String(), wrongMetadata, wrongArt)
 		Expect(err).NotTo(HaveOccurred())
 
-		expectedRatioBlockTwo := helper.GetExpectedRatio(inkBlockTwo, urnSetupData.Spot, artBlockOne, urnSetupData.Rate)
 		expectedTimestampTwo := helper.GetExpectedTimestamp(timestampTwo)
 		expectedUrnBlockTwo := helper.UrnState{
 			UrnIdentifier: fakeUrn,
@@ -88,8 +84,6 @@ var _ = Describe("Urn history query", func() {
 			BlockHeight:   blockTwo,
 			Ink:           strconv.Itoa(inkBlockTwo),
 			Art:           strconv.Itoa(artBlockOne),
-			Ratio:         helper.GetValidNullString(strconv.FormatFloat(expectedRatioBlockTwo, 'f', 8, 64)),
-			Safe:          expectedRatioBlockTwo >= 1,
 			Created:       helper.GetValidNullString(expectedTimestampOne),
 			Updated:       helper.GetValidNullString(expectedTimestampTwo),
 		}
@@ -111,8 +105,6 @@ var _ = Describe("Urn history query", func() {
 			BlockHeight:   blockThree,
 			Ink:           strconv.Itoa(inkBlockTwo),
 			Art:           strconv.Itoa(artBlockThree),
-			Ratio:         helper.GetEmptyNullString(), // 0 art => null ratio
-			Safe:          true,                        // 0 art => safe urn
 			Created:       helper.GetValidNullString(expectedTimestampOne),
 			Updated:       helper.GetValidNullString(expectedTimestampThree),
 		}
@@ -155,7 +147,6 @@ var _ = Describe("Urn history query", func() {
 
 		It("limits results to most recent blocks when limit argument is provided", func() {
 			expectedTimeCreated := helper.GetExpectedTimestamp(urnCreatedTimestamp)
-			expectedRatio := helper.GetExpectedRatio(urnSetupData.Ink, urnSetupData.Spot, urnSetupData.Art, urnSetupData.Rate)
 			expectedTimeUpdated := helper.GetExpectedTimestamp(urnUpdatedTimestamp)
 			expectedUrn := helper.UrnState{
 				UrnIdentifier: fakeUrn,
@@ -163,8 +154,6 @@ var _ = Describe("Urn history query", func() {
 				BlockHeight:   urnUpdatedBlock,
 				Ink:           strconv.Itoa(urnSetupData.Ink),
 				Art:           strconv.Itoa(urnSetupData.Art),
-				Ratio:         helper.GetValidNullString(strconv.FormatFloat(expectedRatio, 'f', 8, 64)),
-				Safe:          expectedRatio >= 1,
 				Created:       helper.GetValidNullString(expectedTimeCreated),
 				Updated:       helper.GetValidNullString(expectedTimeUpdated),
 			}
@@ -182,15 +171,12 @@ var _ = Describe("Urn history query", func() {
 
 		It("offsets results if offset is provided", func() {
 			expectedTimeCreated := helper.GetExpectedTimestamp(urnCreatedTimestamp)
-			expectedRatio := helper.GetExpectedRatio(urnSetupData.Ink, urnSetupData.Spot, urnSetupData.Art, urnSetupData.Rate)
 			expectedUrn := helper.UrnState{
 				UrnIdentifier: fakeUrn,
 				IlkIdentifier: helper.FakeIlk.Identifier,
 				BlockHeight:   urnCreatedBlock,
 				Ink:           strconv.Itoa(urnSetupData.Ink),
 				Art:           strconv.Itoa(urnSetupData.Art),
-				Ratio:         helper.GetValidNullString(strconv.FormatFloat(expectedRatio, 'f', 8, 64)),
-				Safe:          expectedRatio >= 1,
 				Created:       helper.GetValidNullString(expectedTimeCreated),
 				Updated:       helper.GetValidNullString(expectedTimeCreated),
 			}

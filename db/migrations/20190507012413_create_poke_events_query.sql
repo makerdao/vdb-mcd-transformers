@@ -26,6 +26,9 @@ $$
     LANGUAGE SQL
     STABLE;
 
+COMMENT ON FUNCTION api.max_timestamp()
+    IS E'@omit';
+
 CREATE FUNCTION api.all_poke_events(beginTime NUMERIC DEFAULT 0, endTime NUMERIC DEFAULT api.max_timestamp(),
                                     max_results INTEGER DEFAULT NULL, result_offset INTEGER DEFAULT 0)
     RETURNS SETOF api.poke_event AS

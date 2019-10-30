@@ -27,6 +27,9 @@ var _ = Describe("Bites query", func() {
 		fakeUrn    = test_data.RandomString(5)
 	)
 
+	const allBitesQuery = `SELECT ilk_identifier, urn_identifier, ink, art, tab FROM api.all_bites($1)`
+	const urnBitesQuery = `SELECT ilk_identifier, urn_identifier, ink, art, tab FROM api.urn_bites($1, $2)`
+
 	BeforeEach(func() {
 		db = test_config.NewTestDB(test_config.NewTestNode())
 		test_config.CleanTestDB(db)
@@ -52,7 +55,7 @@ var _ = Describe("Bites query", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			var actualBites []test_helpers.BiteEvent
-			err = db.Select(&actualBites, `SELECT ilk_identifier, urn_identifier, ink, art, tab FROM api.all_bites($1)`,
+			err = db.Select(&actualBites, allBitesQuery,
 				test_helpers.FakeIlk.Identifier)
 			Expect(err).NotTo(HaveOccurred())
 
@@ -89,7 +92,7 @@ var _ = Describe("Bites query", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			var actualBites []test_helpers.BiteEvent
-			err = db.Select(&actualBites, `SELECT ilk_identifier, urn_identifier, ink, art, tab FROM api.all_bites($1)`, test_helpers.FakeIlk.Identifier)
+			err = db.Select(&actualBites, allBitesQuery, test_helpers.FakeIlk.Identifier)
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(actualBites).To(ConsistOf(
@@ -124,7 +127,7 @@ var _ = Describe("Bites query", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			var actualBites []test_helpers.BiteEvent
-			err = db.Select(&actualBites, `SELECT ilk_identifier, urn_identifier, ink, art, tab FROM api.all_bites($1)`, test_helpers.FakeIlk.Identifier)
+			err = db.Select(&actualBites, allBitesQuery, test_helpers.FakeIlk.Identifier)
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(actualBites).To(ConsistOf(
@@ -220,7 +223,7 @@ var _ = Describe("Bites query", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			var actualBites []test_helpers.BiteEvent
-			err = db.Select(&actualBites, `SELECT ilk_identifier, urn_identifier, ink, art, tab FROM api.urn_bites($1, $2)`, test_helpers.FakeIlk.Identifier, fakeUrn)
+			err = db.Select(&actualBites, urnBitesQuery, test_helpers.FakeIlk.Identifier, fakeUrn)
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(actualBites).To(ConsistOf(
@@ -256,7 +259,7 @@ var _ = Describe("Bites query", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			var actualBites []test_helpers.BiteEvent
-			err = db.Select(&actualBites, `SELECT ilk_identifier, urn_identifier, ink, art, tab FROM api.urn_bites($1, $2)`, test_helpers.FakeIlk.Identifier, fakeUrn)
+			err = db.Select(&actualBites, urnBitesQuery, test_helpers.FakeIlk.Identifier, fakeUrn)
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(actualBites).To(ConsistOf(
@@ -354,7 +357,7 @@ var _ = Describe("Bites query", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			var actualBites []test_helpers.BiteEvent
-			err = db.Select(&actualBites, `SELECT ilk_identifier, urn_identifier, ink, art, tab FROM api.urn_bites($1, $2)`, test_helpers.FakeIlk.Identifier, fakeUrn)
+			err = db.Select(&actualBites, urnBitesQuery, test_helpers.FakeIlk.Identifier, fakeUrn)
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(actualBites).To(ConsistOf(
