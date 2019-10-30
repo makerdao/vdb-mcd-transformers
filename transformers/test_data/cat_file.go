@@ -17,6 +17,8 @@
 package test_data
 
 import (
+	"github.com/vulcanize/mcd_transformers/transformers/events/cat_file/flip"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"math/rand"
 
@@ -139,22 +141,23 @@ var CatFileFlipHeaderSyncLog = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-func CatFileFlipModel() shared.InsertionModel { return CopyModel(catFileFlipModel) }
+func CatFileFlipModel() event.InsertionModel { return CopyEventModel(catFileFlipModel) }
 
-var catFileFlipModel = shared.InsertionModel{
+var catFileFlipModel = event.InsertionModel{
 	SchemaName: "maker",
 	TableName:  "cat_file_flip",
-	OrderedColumns: []string{
-		constants.HeaderFK, string(constants.IlkFK), "what", "flip", constants.LogFK,
+	OrderedColumns: []event.ColumnName{
+		event.HeaderFK,
+		constants.IlkColumn,
+		flip.What,
+		flip.Flip,
+		constants.LogFK,
 	},
-	ColumnValues: shared.ColumnValues{
-		"what":             "flip",
-		"flip":             "0x6E8032435c84B08E30F27bfbb812Ee365A095b31",
-		constants.HeaderFK: CatFileFlipHeaderSyncLog.HeaderID,
-		constants.LogFK:    CatFileFlipHeaderSyncLog.ID,
-	},
-	ForeignKeyValues: shared.ForeignKeyValues{
-		constants.IlkFK: "0x434f4c312d410000000000000000000000000000000000000000000000000000",
+	ColumnValues:   event.ColumnValues{
+		event.HeaderFK: CatFileFlipHeaderSyncLog.HeaderID,
+		flip.What:             "flip",
+		flip.Flip:             "0x6E8032435c84B08E30F27bfbb812Ee365A095b31",
+		constants.LogFK: CatFileFlipHeaderSyncLog.ID,
 	},
 }
 

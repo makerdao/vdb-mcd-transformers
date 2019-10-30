@@ -20,24 +20,35 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
+	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 )
 
-type CatFileFlipConverter struct{}
+type Converter struct{
+	db *postgres.DB
+}
 
 const (
 	logDataRequired   = true
 	numTopicsRequired = 4
+	What event.ColumnName = "what"
+	Flip event.ColumnName = "flip"
 )
 
-func (CatFileFlipConverter) ToModels(_ string, logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
-	var results []shared.InsertionModel
+func (converter Converter) ToModels(_ string, logs []core.HeaderSyncLog) ([]event.InsertionModel, error) {
+	var results []event.InsertionModel
 	for _, log := range logs {
 		verifyErr := shared.VerifyLog(log.Log, numTopicsRequired, logDataRequired)
 		if verifyErr != nil {
 			return nil, verifyErr
 		}
 		ilk := log.Log.Topics[2].Hex()
+		ilkId, ilkErr := shared.GetOrCreateIlk(ilk, converter.db)
+		if ilkErr != nil {
+			shared.ErrCouldNotCreateFK(ilkErr)
+		}
+
 		what := shared.DecodeHexToText(log.Log.Topics[3].Hex())
 		flipBytes, parseErr := shared.GetLogNoteArgumentAtIndex(2, log.Log.Data)
 		if parseErr != nil {
@@ -45,20 +56,22 @@ func (CatFileFlipConverter) ToModels(_ string, logs []core.HeaderSyncLog) ([]sha
 		}
 		flip := common.BytesToAddress(flipBytes).String()
 
-		result := shared.InsertionModel{
+		result := event.InsertionModel{
 			SchemaName: "maker",
 			TableName:  "cat_file_flip",
-			OrderedColumns: []string{
-				constants.HeaderFK, string(constants.IlkFK), "what", "flip", constants.LogFK,
+			OrderedColumns: []event.ColumnName{
+				event.HeaderFK,
+				constants.IlkColumn,
+				What,
+				Flip,
+				event.LogFK,
 			},
-			ColumnValues: shared.ColumnValues{
-				"what":             what,
-				"flip":             flip,
-				constants.HeaderFK: log.HeaderID,
-				constants.LogFK:    log.ID,
-			},
-			ForeignKeyValues: shared.ForeignKeyValues{
-				constants.IlkFK: ilk,
+			ColumnValues:   event.ColumnValues{
+				event.HeaderFK: log.HeaderID,
+				constants.IlkColumn: ilkId,
+				What: what,
+				Flip: flip,
+				event.LogFK: log.ID,
 			},
 		}
 
@@ -66,3 +79,8 @@ func (CatFileFlipConverter) ToModels(_ string, logs []core.HeaderSyncLog) ([]sha
 	}
 	return results, nil
 }
+
+func (converter *Converter) SetDB(db *postgres.DB) {
+	converter.db = db
+}
+

@@ -153,7 +153,7 @@ var _ = Describe("Cat File transformer", func() {
 
 		initializer := shared.EventTransformer{
 			Config:     catFileConfig,
-			Converter:  &flip.CatFileFlipConverter{},
+			Converter:  &flip.Converter{},
 			Repository: &flip.CatFileFlipRepository{},
 		}
 

@@ -21,19 +21,26 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/vulcanize/mcd_transformers/test_config"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
+	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 
 	"github.com/vulcanize/mcd_transformers/transformers/events/cat_file/flip"
-	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
 var _ = Describe("Cat file flip converter", func() {
-	var converter flip.CatFileFlipConverter
+	var (
+		converter flip.Converter
+		db *postgres.DB
+	)
 
 	BeforeEach(func() {
-		converter = flip.CatFileFlipConverter{}
+		converter = flip.Converter{}
+		db = test_config.NewTestDB(test_config.NewTestNode())
+		converter.SetDB(db)
 	})
 
 	It("returns err if log is missing topics", func() {
@@ -60,8 +67,14 @@ var _ = Describe("Cat file flip converter", func() {
 
 	It("converts a log to an model", func() {
 		models, err := converter.ToModels(constants.CatABI(), []core.HeaderSyncLog{test_data.CatFileFlipHeaderSyncLog})
-
 		Expect(err).NotTo(HaveOccurred())
-		Expect(models).To(Equal([]shared.InsertionModel{test_data.CatFileFlipModel()}))
+
+		var ilkID int64
+		ilkErr := db.Get(&ilkID, `SELECT id FROM maker.ilks where ilk = $1`, test_data.CatFileFlipHeaderSyncLog.Log.Topics[2].Hex())
+		Expect(ilkErr).NotTo(HaveOccurred())
+		expectedModel := test_data.CatFileFlipModel()
+		expectedModel.ColumnValues[constants.IlkColumn] = ilkID
+
+		Expect(models).To(Equal([]event.InsertionModel{expectedModel}))
 	})
 })
