@@ -17,7 +17,6 @@
 package queries
 
 import (
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 	"math/rand"
 	"strconv"
 
@@ -92,8 +91,6 @@ var _ = Describe("Ilk File Events Query", func() {
 
 		catFileFlipLog := test_data.CreateTestLog(headerOneId, db)
 		catFileFlip := test_data.CatFileFlipModel()
-		ilkId, createIlkError := shared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
-		Expect(createIlkError).NotTo(HaveOccurred())
 		catFileFlip.ColumnValues[constants.IlkColumn] = ilkId
 		catFileFlip.ColumnValues[constants.HeaderFK] = headerOneId
 		catFileFlip.ColumnValues[constants.LogFK] = catFileFlipLog.ID

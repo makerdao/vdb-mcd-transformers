@@ -19,12 +19,12 @@ package chop_lump_test
 import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/cat_file/chop_lump"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
@@ -48,7 +48,7 @@ var _ = Describe("Cat file chop lump converter", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			var ilkID int64
-			ilkErr := db.Get(&ilkID, `SELECT id FROM maker.ilks where ilk = $1`, "0x434f4c342d410000000000000000000000000000000000000000000000000000")
+			ilkErr := db.Get(&ilkID, `SELECT id FROM maker.ilks where ilk = $1`, test_data.CatFileChopHeaderSyncLog.Log.Topics[2].Hex())
 			Expect(ilkErr).NotTo(HaveOccurred())
 			expectedModel := test_data.CatFileChopModel()
 			expectedModel.ColumnValues[constants.IlkColumn] = ilkID
@@ -63,7 +63,7 @@ var _ = Describe("Cat file chop lump converter", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			var ilkID int64
-			ilkErr := db.Get(&ilkID, `SELECT id FROM maker.ilks where ilk = $1`, "0x434f4c342d410000000000000000000000000000000000000000000000000000")
+			ilkErr := db.Get(&ilkID, `SELECT id FROM maker.ilks where ilk = $1`, test_data.CatFileLumpHeaderSyncLog.Log.Topics[2].Hex())
 			Expect(ilkErr).NotTo(HaveOccurred())
 			expectedModel := test_data.CatFileLumpModel()
 			expectedModel.ColumnValues[constants.IlkColumn] = ilkID
