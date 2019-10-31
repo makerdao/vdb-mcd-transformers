@@ -19,12 +19,13 @@ package test_data
 import (
 	"math/rand"
 
+	"github.com/makerdao/vdb-mcd-transformers/transformers/events/cat_file/vow"
+
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/cat_file/chop_lump"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/cat_file/flip"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
@@ -189,19 +190,19 @@ var CatFileVowHeaderSyncLog = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-func CatFileVowModel() shared.InsertionModel { return CopyModel(catFileVowModel) }
+func CatFileVowModel() event.InsertionModel { return CopyEventModel(catFileVowModel) }
 
-var catFileVowModel = shared.InsertionModel{
+var catFileVowModel = event.InsertionModel{
 	SchemaName: "maker",
 	TableName:  "cat_file_vow",
-	OrderedColumns: []string{
-		constants.HeaderFK, "what", "data", constants.LogFK,
+	OrderedColumns: []event.ColumnName{
+		constants.HeaderFK, vow.What, vow.Data, constants.LogFK,
 	},
-	ColumnValues: shared.ColumnValues{
-		"what":             "vow",
-		"data":             "0x17560834075DA3Db54f737db74377E799c865821",
+	ColumnValues:   event.ColumnValues{
 		constants.HeaderFK: CatFileVowHeaderSyncLog.HeaderID,
+		vow.What: "vow",
+		vow.Data:             "0x17560834075DA3Db54f737db74377E799c865821",
 		constants.LogFK:    CatFileVowHeaderSyncLog.ID,
+
 	},
-	ForeignKeyValues: shared.ForeignKeyValues{},
 }

@@ -19,21 +19,20 @@ package vow_test
 import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/events/cat_file/vow"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/cat_file/vow"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 )
 
 var _ = Describe("Cat file vow converter", func() {
-	var converter vow.CatFileVowConverter
+	var converter vow.Converter
 
 	BeforeEach(func() {
-		converter = vow.CatFileVowConverter{}
+		converter = vow.Converter{}
 	})
 
 	It("returns err if log is missing topics", func() {
@@ -62,6 +61,6 @@ var _ = Describe("Cat file vow converter", func() {
 		models, err := converter.ToModels(constants.CatABI(), []core.HeaderSyncLog{test_data.CatFileVowHeaderSyncLog})
 
 		Expect(err).NotTo(HaveOccurred())
-		Expect(models).To(Equal([]shared.InsertionModel{test_data.CatFileVowModel()}))
+		Expect(models).To(Equal([]event.InsertionModel{test_data.CatFileVowModel()}))
 	})
 })
