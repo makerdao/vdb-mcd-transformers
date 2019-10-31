@@ -198,11 +198,10 @@ var catFileVowModel = event.InsertionModel{
 	OrderedColumns: []event.ColumnName{
 		constants.HeaderFK, vow.What, vow.Data, constants.LogFK,
 	},
-	ColumnValues:   event.ColumnValues{
+	ColumnValues: event.ColumnValues{
 		constants.HeaderFK: CatFileVowHeaderSyncLog.HeaderID,
-		vow.What: "vow",
-		vow.Data:             "0x17560834075DA3Db54f737db74377E799c865821",
+		vow.What:           "vow",
+		vow.Data:           "0x17560834075DA3Db54f737db74377E799c865821",
 		constants.LogFK:    CatFileVowHeaderSyncLog.ID,
-
 	},
 }

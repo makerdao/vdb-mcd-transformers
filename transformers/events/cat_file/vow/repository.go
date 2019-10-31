@@ -19,17 +19,17 @@ package vow
 import (
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 )
 
-type CatFileVowRepository struct {
+type Repository struct {
 	db *postgres.DB
 }
 
-func (repository CatFileVowRepository) Create(models []shared.InsertionModel) error {
-	return shared.Create(models, repository.db)
+func (repository Repository) Create(models []event.InsertionModel) error {
+	return event.Create(models, repository.db)
 }
 
-func (repository *CatFileVowRepository) SetDB(db *postgres.DB) {
+func (repository *Repository) SetDB(db *postgres.DB) {
 	repository.db = db
 }

@@ -196,7 +196,7 @@ var _ = Describe("Cat File transformer", func() {
 		initializer := event.Transformer{
 			Config:     catFileConfig,
 			Converter:  &vow.Converter{},
-			Repository: &vow.CatFileVowRepository{},
+			Repository: &vow.Repository{},
 		}
 		t := initializer.NewTransformer(db)
 
