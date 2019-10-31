@@ -65,7 +65,7 @@ func setTestConfig() {
 
 func setABIPath() {
 	gp := os.Getenv("GOPATH")
-	ABIFilePath = gp + "/src/github.com/vulcanize/vulcanizedb/pkg/geth/testing/"
+	ABIFilePath = gp + "/src/github.com/vulcanize/vulcanizedb/pkg/eth/testing/"
 }
 
 func NewTestDB(node core.Node) *postgres.DB {

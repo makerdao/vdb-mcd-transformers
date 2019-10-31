@@ -153,10 +153,10 @@ var catFileFlipModel = event.InsertionModel{
 		flip.Flip,
 		constants.LogFK,
 	},
-	ColumnValues:   event.ColumnValues{
-		event.HeaderFK: CatFileFlipHeaderSyncLog.HeaderID,
-		flip.What:             "flip",
-		flip.Flip:             "0x6E8032435c84B08E30F27bfbb812Ee365A095b31",
+	ColumnValues: event.ColumnValues{
+		event.HeaderFK:  CatFileFlipHeaderSyncLog.HeaderID,
+		flip.What:       "flip",
+		flip.Flip:       "0x6E8032435c84B08E30F27bfbb812Ee365A095b31",
 		constants.LogFK: CatFileFlipHeaderSyncLog.ID,
 	},
 }

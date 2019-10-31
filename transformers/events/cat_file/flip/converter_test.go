@@ -34,7 +34,7 @@ import (
 var _ = Describe("Cat file flip converter", func() {
 	var (
 		converter flip.Converter
-		db *postgres.DB
+		db        *postgres.DB
 	)
 
 	BeforeEach(func() {

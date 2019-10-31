@@ -28,6 +28,7 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
@@ -151,13 +152,13 @@ var _ = Describe("Cat File transformer", func() {
 		catFileConfig.StartingBlockNumber = flipBlockNumber
 		catFileConfig.EndingBlockNumber = flipBlockNumber
 
-		initializer := shared.EventTransformer{
+		initializer := event.Transformer{
 			Config:     catFileConfig,
 			Converter:  &flip.Converter{},
-			Repository: &flip.CatFileFlipRepository{},
+			Repository: &flip.Repository{},
 		}
 
-		t := initializer.NewEventTransformer(db)
+		t := initializer.NewTransformer(db)
 
 		logs, err := logFetcher.FetchLogs(
 			[]common.Address{common.HexToAddress(catFileConfig.ContractAddresses[0])},

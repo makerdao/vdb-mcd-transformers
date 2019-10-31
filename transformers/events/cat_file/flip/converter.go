@@ -25,15 +25,15 @@ import (
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 )
 
-type Converter struct{
+type Converter struct {
 	db *postgres.DB
 }
 
 const (
-	logDataRequired   = true
-	numTopicsRequired = 4
-	What event.ColumnName = "what"
-	Flip event.ColumnName = "flip"
+	logDataRequired                    = true
+	numTopicsRequired                  = 4
+	What              event.ColumnName = "what"
+	Flip              event.ColumnName = "flip"
 )
 
 func (converter Converter) ToModels(_ string, logs []core.HeaderSyncLog) ([]event.InsertionModel, error) {
@@ -66,12 +66,12 @@ func (converter Converter) ToModels(_ string, logs []core.HeaderSyncLog) ([]even
 				Flip,
 				event.LogFK,
 			},
-			ColumnValues:   event.ColumnValues{
-				event.HeaderFK: log.HeaderID,
+			ColumnValues: event.ColumnValues{
+				event.HeaderFK:      log.HeaderID,
 				constants.IlkColumn: ilkId,
-				What: what,
-				Flip: flip,
-				event.LogFK: log.ID,
+				What:                what,
+				Flip:                flip,
+				event.LogFK:         log.ID,
 			},
 		}
 
