@@ -145,3 +145,11 @@ version_migrations:
 import:
 	test -n "$(NAME)" # $$NAME
 	psql $(NAME) < db/schema.sql
+
+# Build plugin
+TARGET_LOCATION = $(BASE)/plugins/transformerExporter.go
+OUTPUT_LOCATION = $(BASE)/plugins/transformerExporter.so
+
+.PHONY: plugin
+plugin:
+	go build -buildmode=plugin -o $(OUTPUT_LOCATION) $(TARGET_LOCATION)
