@@ -130,5 +130,36 @@ var _ = Describe("all poke events query", func() {
 			Expect(err).NotTo(HaveOccurred())
 			Expect(actualTx).To(BeZero())
 		})
+
+		It("does not return transaction from different block with same index", func() {
+			lowerBlockNumber := fakeBlock - 1
+			anotherHeader := fakes.GetFakeHeader(int64(lowerBlockNumber))
+			anotherHeaderID, insertHeaderErr := headerRepository.CreateOrUpdateHeader(anotherHeader)
+			Expect(insertHeaderErr).NotTo(HaveOccurred())
+			wrongTx := Tx{
+				TransactionHash: test_helpers.GetValidNullString("wrongTxHash"),
+				TransactionIndex: sql.NullInt64{
+					Int64: int64(fakeGethLog.TxIndex),
+					Valid: true,
+				},
+				BlockHeight: sql.NullInt64{Int64: int64(lowerBlockNumber), Valid: true},
+				BlockHash:   test_helpers.GetValidNullString(fakeHeader.Hash),
+				TxFrom:      test_helpers.GetValidNullString("wrongFromAddress"),
+				TxTo:        test_helpers.GetValidNullString("wrongToAddress"),
+			}
+
+			_, insertErr := db.Exec(`INSERT INTO header_sync_transactions (header_id, hash, tx_from, tx_index, tx_to)
+				VALUES ($1, $2, $3, $4, $5)`, anotherHeaderID, wrongTx.TransactionHash, wrongTx.TxFrom,
+				wrongTx.TransactionIndex, wrongTx.TxTo)
+			Expect(insertErr).NotTo(HaveOccurred())
+
+			var actualTx Tx
+			err := db.Get(&actualTx, `
+				SELECT * FROM api.poke_event_tx(
+					(SELECT (ilk_id, val, spot, block_height, log_id)::api.poke_event FROM api.all_poke_events()))`)
+
+			Expect(err).NotTo(HaveOccurred())
+			Expect(actualTx).To(BeZero())
+		})
 	})
 })
