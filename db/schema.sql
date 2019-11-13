@@ -1376,13 +1376,8 @@ $$;
 CREATE FUNCTION api.bite_event_tx(event api.bite_event) RETURNS api.tx
     LANGUAGE sql STABLE
     AS $$
-SELECT txs.hash, txs.tx_index, headers.block_number, headers.hash, tx_from, tx_to
-FROM public.header_sync_transactions txs
-         LEFT JOIN headers ON txs.header_id = headers.id
-         LEFT JOIN header_sync_logs ON txs.tx_index = header_sync_logs.tx_index
-WHERE headers.block_number <= event.block_height
-  AND header_sync_logs.id = event.log_id
-ORDER BY block_number DESC
+SELECT *
+FROM get_tx_data(event.block_height, event.log_id)
 $$;
 
 
@@ -3943,7 +3938,7 @@ SELECT txs.hash, txs.tx_index, headers.block_number, headers.hash, tx_from, tx_t
 FROM public.header_sync_transactions txs
          LEFT JOIN headers ON txs.header_id = headers.id
          LEFT JOIN header_sync_logs ON txs.tx_index = header_sync_logs.tx_index
-WHERE headers.block_number <= block_height
+WHERE headers.block_number = block_height
   AND header_sync_logs.id = log_id
 ORDER BY block_number DESC
 

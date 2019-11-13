@@ -137,5 +137,36 @@ var _ = Describe("Flop bid event computed columns", func() {
 			Expect(queryErr).NotTo(HaveOccurred())
 			Expect(actualTx).To(BeZero())
 		})
+
+		It("does not return transaction from different block with same index", func() {
+			lowerBlockNumber := blockNumber - 1
+			anotherHeader := fakes.GetFakeHeader(int64(lowerBlockNumber))
+			anotherHeaderID, insertHeaderErr := headerRepo.CreateOrUpdateHeader(anotherHeader)
+			Expect(insertHeaderErr).NotTo(HaveOccurred())
+			wrongTx := Tx{
+				TransactionHash: test_helpers.GetValidNullString("wrongTxHash"),
+				TransactionIndex: sql.NullInt64{
+					Int64: int64(flopKickGethLog.TxIndex),
+					Valid: true,
+				},
+				BlockHeight: sql.NullInt64{Int64: int64(lowerBlockNumber), Valid: true},
+				BlockHash:   test_helpers.GetValidNullString(header.Hash),
+				TxFrom:      test_helpers.GetValidNullString("wrongFromAddress"),
+				TxTo:        test_helpers.GetValidNullString("wrongToAddress"),
+			}
+
+			_, insertErr := db.Exec(`INSERT INTO header_sync_transactions (header_id, hash, tx_from, tx_index, tx_to)
+				VALUES ($1, $2, $3, $4, $5)`, anotherHeaderID, wrongTx.TransactionHash, wrongTx.TxFrom,
+				wrongTx.TransactionIndex, wrongTx.TxTo)
+			Expect(insertErr).NotTo(HaveOccurred())
+
+			var actualTx []Tx
+			queryErr := db.Select(&actualTx, `
+				SELECT * FROM api.flop_bid_event_tx(
+					(SELECT (bid_id, lot, bid_amount, act, block_height, log_id, contract_address)::api.flop_bid_event FROM api.all_flop_bid_events()))`)
+
+			Expect(queryErr).NotTo(HaveOccurred())
+			Expect(actualTx).To(BeZero())
+		})
 	})
 })

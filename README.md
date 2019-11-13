@@ -1,8 +1,6 @@
 # [MakerDAO](https://makerdao.com) [VulcanizeDB](https://github.com/vulcanize/vulcanizedb) Transformers
 
-[![Join the chat at https://gitter.im/vulcanizeio/VulcanizeDB](https://badges.gitter.im/vulcanizeio/VulcanizeDB.svg)](https://gitter.im/vulcanizeio/VulcanizeDB?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-
-[![Build Status](https://travis-ci.com/vulcanize/mcd_transformers.svg?token=MKcE2K7CRvKtdxSSnbap&branch=staging)](https://travis-ci.com/vulcanize/mcd_transformers)
+[![Build Status](https://travis-ci.com/makerdao/vdb-mcd-transformers.svg?token=yVLfQ4hNQCqvt2qjLkus&branch=staging)](https://travis-ci.com/makerdao/vdb-mcd-transformers)
 
 ## About
 
