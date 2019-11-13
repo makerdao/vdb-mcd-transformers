@@ -3,10 +3,11 @@ package dent_test
 import (
 	"testing"
 
+	"io/ioutil"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	log "github.com/sirupsen/logrus"
-	"io/ioutil"
 )
 
 func TestDent(t *testing.T) {

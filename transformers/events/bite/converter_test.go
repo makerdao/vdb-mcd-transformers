@@ -17,9 +17,9 @@
 package bite_test
 
 import (
+	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/bite"

@@ -19,6 +19,7 @@ package flap_kick
 import (
 	"errors"
 	"fmt"
+
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/vulcanize/vulcanizedb/pkg/core"

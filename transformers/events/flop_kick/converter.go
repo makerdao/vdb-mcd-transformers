@@ -18,6 +18,7 @@ package flop_kick
 
 import (
 	"fmt"
+
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 

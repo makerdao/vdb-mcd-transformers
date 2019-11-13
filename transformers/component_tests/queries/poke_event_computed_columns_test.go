@@ -2,9 +2,10 @@ package queries
 
 import (
 	"database/sql"
+	"math/rand"
+
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
-	"math/rand"
 
 	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"

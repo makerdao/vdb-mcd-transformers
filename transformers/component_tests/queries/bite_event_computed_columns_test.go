@@ -2,9 +2,10 @@ package queries
 
 import (
 	"database/sql"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 	"math/rand"
 	"strconv"
+
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 
 	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"

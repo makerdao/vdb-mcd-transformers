@@ -18,8 +18,8 @@ package trigger_test
 
 import (
 	"database/sql"
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
+	"math/rand"
+
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_init"
@@ -27,8 +27,9 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	. "github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
-	"math/rand"
 )
 
 var _ = Describe("Updating historical_ilk_state table", func() {

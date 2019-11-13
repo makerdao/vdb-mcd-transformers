@@ -1,9 +1,10 @@
 package queries
 
 import (
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"math/rand"
 	"strconv"
+
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"

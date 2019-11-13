@@ -1,9 +1,10 @@
 package flap_test
 
 import (
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"math/rand"
 	"strconv"
+
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"

@@ -17,9 +17,10 @@
 package test_data
 
 import (
-	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"math/rand"
 	"strconv"
+
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"

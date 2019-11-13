@@ -19,6 +19,7 @@ package flip_kick
 import (
 	"errors"
 	"fmt"
+
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 

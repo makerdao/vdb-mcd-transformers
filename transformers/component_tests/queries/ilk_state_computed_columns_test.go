@@ -17,8 +17,9 @@
 package queries
 
 import (
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 	"math/rand"
+
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"

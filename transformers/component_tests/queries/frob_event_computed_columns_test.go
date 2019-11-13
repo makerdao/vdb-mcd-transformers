@@ -18,8 +18,9 @@ package queries
 
 import (
 	"database/sql"
-	"github.com/ethereum/go-ethereum/core/types"
 	"math/rand"
+
+	"github.com/ethereum/go-ethereum/core/types"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"

@@ -83,4 +83,3 @@ func (converter Converter) ToModels(_ string, logs []core.HeaderSyncLog) ([]even
 func (converter *Converter) SetDB(db *postgres.DB) {
 	converter.db = db
 }
-

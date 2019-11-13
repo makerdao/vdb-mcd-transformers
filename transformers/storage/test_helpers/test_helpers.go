@@ -1,10 +1,11 @@
 package test_helpers
 
 import (
-	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"math/rand"
 	"strconv"
 	"time"
+
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 
 	. "github.com/onsi/gomega"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"

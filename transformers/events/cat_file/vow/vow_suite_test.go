@@ -17,9 +17,10 @@
 package vow_test
 
 import (
-	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"testing"
+
+	log "github.com/sirupsen/logrus"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"

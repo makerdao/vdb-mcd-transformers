@@ -17,8 +17,9 @@
 package flip_kick_test
 
 import (
-	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"strings"
+
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"

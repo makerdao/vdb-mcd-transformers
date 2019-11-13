@@ -1,9 +1,10 @@
 package test_data
 
 import (
+	"io/ioutil"
+
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
-	"io/ioutil"
 )
 
 func SetTestConfig() bool {

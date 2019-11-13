@@ -1,12 +1,13 @@
 package queries
 
 import (
+	"math/rand"
+	"strconv"
+
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/tick"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
-	"math/rand"
-	"strconv"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"

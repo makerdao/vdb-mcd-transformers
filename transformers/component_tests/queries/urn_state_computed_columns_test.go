@@ -17,10 +17,11 @@
 package queries
 
 import (
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 	"math/big"
 	"math/rand"
 	"strconv"
+
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"

@@ -18,6 +18,7 @@ package bite
 
 import (
 	"fmt"
+
 	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 

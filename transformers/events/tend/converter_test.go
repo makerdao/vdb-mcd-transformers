@@ -18,9 +18,9 @@ package tend_test
 
 import (
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/tend"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"

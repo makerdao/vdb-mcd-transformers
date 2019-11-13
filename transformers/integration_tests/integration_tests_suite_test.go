@@ -2,14 +2,16 @@ package integration_tests
 
 import (
 	"errors"
-	"github.com/sirupsen/logrus"
 	"log"
 	"testing"
+
+	"github.com/sirupsen/logrus"
+
+	"io/ioutil"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/spf13/viper"
-	"io/ioutil"
 )
 
 func TestIntegrationTests(t *testing.T) {
