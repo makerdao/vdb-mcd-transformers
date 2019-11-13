@@ -17,16 +17,8 @@
 package queries
 
 import (
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
-	"math/rand"
-
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/vulcanize/vulcanizedb/pkg/core"
-	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
-	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres/repositories"
-	"github.com/vulcanize/vulcanizedb/pkg/fakes"
-
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/component_tests/queries/test_helpers"
 	"github.com/vulcanize/mcd_transformers/transformers/events/spot_file/mat"
@@ -35,6 +27,12 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
+	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
+	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres/repositories"
+	"github.com/vulcanize/vulcanizedb/pkg/fakes"
+	"math/rand"
 )
 
 var _ = Describe("current ilk state computed columns", func() {
@@ -70,8 +68,8 @@ var _ = Describe("current ilk state computed columns", func() {
 		Expect(closeErr).NotTo(HaveOccurred())
 	})
 
-	Describe("current_ilk_state_frobs", func() {
-		It("returns relevant frobs for a current_ilk_state", func() {
+	Describe("historical_ilk_state_frobs", func() {
+		It("returns relevant frobs for an historical_ilk_state", func() {
 			frobRepo := vat_frob.VatFrobRepository{}
 			frobRepo.SetDB(db)
 			frobEvent := test_data.VatFrobModelWithPositiveDart()
@@ -84,9 +82,9 @@ var _ = Describe("current ilk state computed columns", func() {
 
 			var actualFrobs []test_helpers.FrobEvent
 			getFrobsErr := db.Select(&actualFrobs,
-				`SELECT ilk_identifier, urn_identifier, dink, dart FROM api.current_ilk_state_frobs(
-					(SELECT (ilk_identifier, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated)::api.current_ilk_state
-					 FROM api.current_ilk_state))`)
+				`SELECT ilk_identifier, urn_identifier, dink, dart FROM api.historical_ilk_state_frobs(
+					(SELECT (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated)::api.historical_ilk_state
+					 FROM api.historical_ilk_state))`)
 			Expect(getFrobsErr).NotTo(HaveOccurred())
 
 			expectedFrobs := []test_helpers.FrobEvent{{
@@ -135,9 +133,9 @@ var _ = Describe("current ilk state computed columns", func() {
 				maxResults := 1
 				var actualFrobs []test_helpers.FrobEvent
 				getFrobsErr := db.Select(&actualFrobs,
-					`SELECT ilk_identifier, urn_identifier, dink, dart FROM api.current_ilk_state_frobs(
-						(SELECT (ilk_identifier, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated)::api.current_ilk_state
-						 FROM api.current_ilk_state), $1)`,
+					`SELECT ilk_identifier, urn_identifier, dink, dart FROM api.historical_ilk_state_frobs(
+						(SELECT (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated)::api.historical_ilk_state
+						 FROM api.historical_ilk_state), $1)`,
 					maxResults)
 				Expect(getFrobsErr).NotTo(HaveOccurred())
 
@@ -155,9 +153,9 @@ var _ = Describe("current ilk state computed columns", func() {
 				resultOffset := 1
 				var actualFrobs []test_helpers.FrobEvent
 				getFrobsErr := db.Select(&actualFrobs,
-					`SELECT ilk_identifier, urn_identifier, dink, dart FROM api.current_ilk_state_frobs(
-						(SELECT (ilk_identifier, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated)::api.current_ilk_state
-						 FROM api.current_ilk_state), $1, $2)`,
+					`SELECT ilk_identifier, urn_identifier, dink, dart FROM api.historical_ilk_state_frobs(
+						(SELECT (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated)::api.historical_ilk_state
+						 FROM api.historical_ilk_state), $1, $2)`,
 					maxResults, resultOffset)
 				Expect(getFrobsErr).NotTo(HaveOccurred())
 
@@ -172,8 +170,8 @@ var _ = Describe("current ilk state computed columns", func() {
 		})
 	})
 
-	Describe("current_ilk_state_ilk_file_events", func() {
-		It("returns ilk file events for a current_ilk_state", func() {
+	Describe("historical_ilk_state_ilk_file_events", func() {
+		It("returns ilk file events for an historical_ilk_state", func() {
 			fileRepo := ilk.VatFileIlkRepository{}
 			fileRepo.SetDB(db)
 			fileEvent := test_data.VatFileIlkDustModel()
@@ -185,9 +183,9 @@ var _ = Describe("current ilk state computed columns", func() {
 
 			var actualFiles []test_helpers.IlkFileEvent
 			getFilesErr := db.Select(&actualFiles,
-				`SELECT ilk_identifier, what, data FROM api.current_ilk_state_ilk_file_events(
-					(SELECT (ilk_identifier, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated)::api.current_ilk_state
-					 FROM api.current_ilk_state))`)
+				`SELECT ilk_identifier, what, data FROM api.historical_ilk_state_ilk_file_events(
+					(SELECT (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated)::api.historical_ilk_state
+					 FROM api.historical_ilk_state))`)
 			Expect(getFilesErr).NotTo(HaveOccurred())
 
 			expectedFiles := []test_helpers.IlkFileEvent{{
@@ -235,9 +233,9 @@ var _ = Describe("current ilk state computed columns", func() {
 				maxResults := 1
 				var actualFiles []test_helpers.IlkFileEvent
 				getFilesErr := db.Select(&actualFiles,
-					`SELECT ilk_identifier, what, data FROM api.current_ilk_state_ilk_file_events(
-						(SELECT (ilk_identifier, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated)::api.current_ilk_state
-						 FROM api.current_ilk_state), $1)`,
+					`SELECT ilk_identifier, what, data FROM api.historical_ilk_state_ilk_file_events(
+						(SELECT (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated)::api.historical_ilk_state
+						 FROM api.historical_ilk_state), $1)`,
 					maxResults)
 				Expect(getFilesErr).NotTo(HaveOccurred())
 
@@ -254,9 +252,9 @@ var _ = Describe("current ilk state computed columns", func() {
 				resultOffset := 1
 				var actualFiles []test_helpers.IlkFileEvent
 				getFilesErr := db.Select(&actualFiles,
-					`SELECT ilk_identifier, what, data FROM api.current_ilk_state_ilk_file_events(
-						(SELECT (ilk_identifier, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated)::api.current_ilk_state
-						 FROM api.current_ilk_state), $1, $2)`,
+					`SELECT ilk_identifier, what, data FROM api.historical_ilk_state_ilk_file_events(
+						(SELECT (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated)::api.historical_ilk_state
+						 FROM api.historical_ilk_state), $1, $2)`,
 					maxResults, resultOffset)
 				Expect(getFilesErr).NotTo(HaveOccurred())
 
@@ -270,7 +268,7 @@ var _ = Describe("current ilk state computed columns", func() {
 		})
 	})
 
-	Describe("current_ilk_state_bites", func() {
+	Describe("historical_ilk_state_bites", func() {
 		It("returns bite event for a current ilk state", func() {
 			biteEvent := generateBite(test_helpers.FakeIlk.Hex, test_data.FakeUrn, headerId, logId, db)
 			insertBiteErr := event.Create([]event.InsertionModel{biteEvent}, db)
@@ -278,9 +276,9 @@ var _ = Describe("current ilk state computed columns", func() {
 
 			var actualBites []test_helpers.BiteEvent
 			getBitesErr := db.Select(&actualBites, `
-				SELECT ilk_identifier, urn_identifier, ink, art, tab FROM api.current_ilk_state_bites(
-					(SELECT (ilk_identifier, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated)::api.current_ilk_state
-					 FROM api.current_ilk_state))`)
+				SELECT ilk_identifier, urn_identifier, ink, art, tab FROM api.historical_ilk_state_bites(
+					(SELECT (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated)::api.historical_ilk_state
+					 FROM api.historical_ilk_state))`)
 			Expect(getBitesErr).NotTo(HaveOccurred())
 
 			expectedBites := []test_helpers.BiteEvent{{
@@ -321,9 +319,9 @@ var _ = Describe("current ilk state computed columns", func() {
 				maxResults := 1
 				var actualBites []test_helpers.BiteEvent
 				getBitesErr := db.Select(&actualBites, `
-					SELECT ilk_identifier, urn_identifier, ink, art, tab FROM api.current_ilk_state_bites(
-						(SELECT (ilk_identifier, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated)::api.current_ilk_state
-						 FROM api.current_ilk_state), $1)`,
+					SELECT ilk_identifier, urn_identifier, ink, art, tab FROM api.historical_ilk_state_bites(
+						(SELECT (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated)::api.historical_ilk_state
+						 FROM api.historical_ilk_state), $1)`,
 					maxResults)
 				Expect(getBitesErr).NotTo(HaveOccurred())
 
@@ -342,9 +340,9 @@ var _ = Describe("current ilk state computed columns", func() {
 				resultOffset := 1
 				var actualBites []test_helpers.BiteEvent
 				getBitesErr := db.Select(&actualBites, `
-					SELECT ilk_identifier, urn_identifier, ink, art, tab FROM api.current_ilk_state_bites(
-						(SELECT (ilk_identifier, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated)::api.current_ilk_state
-						 FROM api.current_ilk_state), $1, $2)`,
+					SELECT ilk_identifier, urn_identifier, ink, art, tab FROM api.historical_ilk_state_bites(
+						(SELECT (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated)::api.historical_ilk_state
+						 FROM api.historical_ilk_state), $1, $2)`,
 					maxResults, resultOffset)
 				Expect(getBitesErr).NotTo(HaveOccurred())
 
