@@ -13,9 +13,6 @@ before_install:
 - curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
 - echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
 - sudo apt-get update && sudo apt-get install yarn
-before_script:
-- sudo -u postgres createdb vulcanize_testing
-- make version_migrations
 script:
 - env GO111MODULE=on make test
 - env GO111MODULE=on make integrationtest
@@ -23,4 +20,4 @@ notifications:
   email: false
 env:
   matrix:
-  - secure: a3OimkNslcXAQKPTgResoRx1rrU2Pl/d9xw28smNCfXHRsYmSa6Qn3ICnHaliEwb82g9Z2D6VPqvXeSfEnLZIHYNb7oFxwiR0Z7tYKohzvMuOw6qQJm922A5zaE7Xv8uZO2+r0wluE+lxqjy7X/Le9eSDlaKY5Hmav+WnKroY7H3OaBwAj4FMbkBogmoZ7TiKTUj8AgZS/e44BcwpoCU+82RunnMdMxah3kukzcHrK0OB1+WFApGdWGBpWPXLeLp6ZRaYjuFamDsD1MFo3a0vEcScyj2vnfYsuDKpE9ZQaJmmYMAwgTZ4SGvfGL7W9+mMkGQUgfM2cWFSSjXZ6bh1ihx1EP6OHmH3iRJARhIoV0LptR147+uE7A9f2/9byC4yb3NgLUhkoYJRfo2Te7vnTKujqOsn4mgFzEMGb+R2FNUZde/W+uQ2U/XIWlj7A4Fhn29nztklFhuUo8051eJbRitMHhjzCoSgHOr7l3pyoF7CcO2Aze08140Zez4eabS05vB2DVSXxFtMivL6o13KKDn5qOIZv/32ELVvdctgR3kCefBEdWIxs9HlWCEtTURoNYes9AgV3qR51zjYdhabsfod0D/XHR6hZZvzbIz7cS+RUrctz+3BFupjYk2AKhbYu+LZJsPpQSEHy9qxUpcj2NnV0ev3fT+CwZwHrtQHDw=
+  - secure: Xv9dfWzuvcxbQXDOeYt4lrSlWE44GmD0jKvqQ51gRYq1ZxvycbY8IKd5Qzeto+/F0PLiw6H0nFlC9LsnT+7bbr1ZhCB4T/Z537X6Z5+q/A32O0VpC2sZ3VM75URxEu3bCe4P0+3nMmoNDqJ+C0maauXd0orq4+rhLxQYxs6BaOCR82A/JI0Lz1GftPTPBkaLA9setOTFO786PpHF7C6AVSjLiJychHlLD8T1QHlDxFo9Q2F3Uy3mFsMtddpri14uNhb0Dbi/x9XY5g0V4b5hFYEIChzXg/Jp67Pl71yUV6kmNecy0TbORtNkCunEdIM9BTti11fNLMQjcMr4fGBJfSJ4ImBk0YpeMKN1U3uH9JsyAZi5jHIJWiFYDAdKaG5+DMfaF5irppgBpw+l6I6vZorr8n/CiR1UT4Zz4uiHG7c+m+EaJyecVuR8VH/ft/n3ZWpOAQUAx90rA6Pxj3XBzL9Ntrircr/1S3qONMseKOWZDQh7d0Whl0rAli7zn/Mt8/eMcUpg90fWLA0dwgLyTtCecetCbsoqzEe5vE5YtSV2OpFqJUgXDAud+qqn5vQaPJwcJAopT2kuFyyq1OUYq21IC1iJ6cjrmJUrDRAWBuF0iHpMMtcwSIFy3up1iLJg1uaEQG0hYfhANNO6NSwRwGrzII3VUxUSqxsgHNNiw6Y=
