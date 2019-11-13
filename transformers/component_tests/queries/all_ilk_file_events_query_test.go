@@ -28,17 +28,17 @@ import (
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 
-	"github.com/vulcanize/mcd_transformers/test_config"
-	"github.com/vulcanize/mcd_transformers/transformers/component_tests/queries/test_helpers"
-	"github.com/vulcanize/mcd_transformers/transformers/events/cat_file/chop_lump"
-	"github.com/vulcanize/mcd_transformers/transformers/events/cat_file/flip"
-	ilk2 "github.com/vulcanize/mcd_transformers/transformers/events/jug_file/ilk"
-	"github.com/vulcanize/mcd_transformers/transformers/events/spot_file/mat"
-	"github.com/vulcanize/mcd_transformers/transformers/events/spot_file/pip"
-	"github.com/vulcanize/mcd_transformers/transformers/events/vat_file/ilk"
-	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
-	"github.com/vulcanize/mcd_transformers/transformers/test_data"
+	"github.com/makerdao/vdb-mcd-transformers/test_config"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/events/cat_file/chop_lump"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/events/cat_file/flip"
+	ilk2 "github.com/makerdao/vdb-mcd-transformers/transformers/events/jug_file/ilk"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/events/spot_file/mat"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/events/spot_file/pip"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_file/ilk"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 )
 
 var _ = Describe("Ilk File Events Query", func() {

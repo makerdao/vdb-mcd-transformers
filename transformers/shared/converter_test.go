@@ -21,7 +21,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 )
 

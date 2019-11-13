@@ -20,11 +20,11 @@ import (
 	"errors"
 	"fmt"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
-	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/eth"
 
-	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 )
 
 type FlapKickConverter struct{}

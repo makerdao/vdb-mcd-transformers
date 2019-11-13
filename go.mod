@@ -1,4 +1,4 @@
-module github.com/vulcanize/mcd_transformers
+module github.com/makerdao/vdb-mcd-transformers
 
 go 1.12
 

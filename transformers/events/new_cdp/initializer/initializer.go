@@ -19,9 +19,9 @@ package initializer
 import (
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 
-	"github.com/vulcanize/mcd_transformers/transformers/events/new_cdp"
-	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/events/new_cdp"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 )
 
 var EventTransformerInitializer transformer.EventTransformerInitializer = shared.EventTransformer{

@@ -19,14 +19,14 @@ package vow_test
 import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 
-	"github.com/vulcanize/mcd_transformers/test_config"
-	. "github.com/vulcanize/mcd_transformers/transformers/storage/test_helpers"
-	"github.com/vulcanize/mcd_transformers/transformers/storage/vow"
+	"github.com/makerdao/vdb-mcd-transformers/test_config"
+	. "github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/vow"
 )
 
 var _ = Describe("Vow storage repository test", func() {

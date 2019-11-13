@@ -25,8 +25,8 @@ import (
 	"math/big"
 	"math/rand"
 
-	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 )
 
 var rawFlapKickLog = types.Log{

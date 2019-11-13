@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
+	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 	"math/rand"
 	"os/exec"

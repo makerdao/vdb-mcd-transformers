@@ -20,8 +20,8 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/spf13/viper"
-	"github.com/vulcanize/mcd_transformers/test_config"
-	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/makerdao/vdb-mcd-transformers/test_config"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/constants"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
@@ -38,91 +38,91 @@ import (
 )
 
 var eventConfig = config.Plugin{
-	Home: "github.com/vulcanize/mcd_transformers",
+	Home: "github.com/makerdao/vdb-mcd-transformers",
 	Transformers: map[string]config.Transformer{
 		"bite": {
 			Path:           "transformers/events/bite/initializer",
 			Type:           config.EthEvent,
 			MigrationPath:  "db/migrations",
 			MigrationRank:  0,
-			RepositoryPath: "github.com/vulcanize/mcd_transformers",
+			RepositoryPath: "github.com/makerdao/vdb-mcd-transformers",
 		},
 		"cat_file": {
 			Path:           "transformers/events/cat_file/flip/initializer",
 			Type:           config.EthEvent,
 			MigrationPath:  "db/migrations",
-			RepositoryPath: "github.com/vulcanize/mcd_transformers",
+			RepositoryPath: "github.com/makerdao/vdb-mcd-transformers",
 		},
 		"deal": {
 			Path:           "transformers/events/deal/initializer",
 			Type:           config.EthEvent,
 			MigrationPath:  "db/migrations",
 			MigrationRank:  0,
-			RepositoryPath: "github.com/vulcanize/mcd_transformers",
+			RepositoryPath: "github.com/makerdao/vdb-mcd-transformers",
 		},
 	},
 	FileName: "testEventTransformerSet",
-	FilePath: "$GOPATH/src/github.com/vulcanize/mcd_transformers/transformers/integration_tests/plugin",
+	FilePath: "$GOPATH/src/github.com/makerdao/vdb-mcd-transformers/transformers/integration_tests/plugin",
 	Save:     false,
 }
 
 var storageConfig = config.Plugin{
-	Home: "github.com/vulcanize/mcd_transformers",
+	Home: "github.com/makerdao/vdb-mcd-transformers",
 	Transformers: map[string]config.Transformer{
 		"jug": {
 			Path:           "transformers/storage/jug/initializer",
 			Type:           config.EthStorage,
 			MigrationPath:  "db/migrations",
-			RepositoryPath: "github.com/vulcanize/mcd_transformers",
+			RepositoryPath: "github.com/makerdao/vdb-mcd-transformers",
 		},
 		"vat": {
 			Path:           "transformers/storage/vat/initializer",
 			Type:           config.EthStorage,
 			MigrationPath:  "db/migrations",
-			RepositoryPath: "github.com/vulcanize/mcd_transformers",
+			RepositoryPath: "github.com/makerdao/vdb-mcd-transformers",
 		},
 	},
 	FileName: "testStorageTransformerSet",
-	FilePath: "$GOPATH/src/github.com/vulcanize/mcd_transformers/transformers/integration_tests/plugin",
+	FilePath: "$GOPATH/src/github.com/makerdao/vdb-mcd-transformers/transformers/integration_tests/plugin",
 	Save:     false,
 }
 
 var combinedConfig = config.Plugin{
-	Home: "github.com/vulcanize/mcd_transformers",
+	Home: "github.com/makerdao/vdb-mcd-transformers",
 	Transformers: map[string]config.Transformer{
 		"bite": {
 			Path:           "transformers/events/bite/initializer",
 			Type:           config.EthEvent,
 			MigrationPath:  "db/migrations",
-			RepositoryPath: "github.com/vulcanize/mcd_transformers",
+			RepositoryPath: "github.com/makerdao/vdb-mcd-transformers",
 		},
 		"cat_file": {
 			Path:           "transformers/events/cat_file/flip/initializer",
 			Type:           config.EthEvent,
 			MigrationPath:  "db/migrations",
-			RepositoryPath: "github.com/vulcanize/mcd_transformers",
+			RepositoryPath: "github.com/makerdao/vdb-mcd-transformers",
 		},
 		"deal": {
 			Path:           "transformers/events/deal/initializer",
 			Type:           config.EthEvent,
 			MigrationPath:  "db/migrations",
-			RepositoryPath: "github.com/vulcanize/mcd_transformers",
+			RepositoryPath: "github.com/makerdao/vdb-mcd-transformers",
 		},
 		"jug": {
 			Path:           "transformers/storage/jug/initializer",
 			Type:           config.EthStorage,
 			MigrationPath:  "db/migrations",
-			RepositoryPath: "github.com/vulcanize/mcd_transformers",
+			RepositoryPath: "github.com/makerdao/vdb-mcd-transformers",
 		},
 		"vat": {
 			Path:           "transformers/storage/vat/initializer",
 			Type:           config.EthStorage,
 			MigrationPath:  "db/migrations",
-			RepositoryPath: "github.com/vulcanize/mcd_transformers",
+			RepositoryPath: "github.com/makerdao/vdb-mcd-transformers",
 		},
 	},
 	FileName: "testComboTransformerSet",
-	FilePath: "$GOPATH/src/github.com/vulcanize/mcd_transformers/transformers/integration_tests/plugin",
+	FilePath: "$GOPATH/src/github.com/makerdao/vdb-mcd-transformers/transformers/integration_tests/plugin",
 	Save:     false,
 }
 
@@ -153,7 +153,7 @@ var _ = Describe("Plugin test", func() {
 	var hr repositories.HeaderRepository
 	var headerID int64
 	viper.SetConfigName("testing")
-	viper.AddConfigPath("$GOPATH/src/github.com/vulcanize/mcd_transformers/environments/")
+	viper.AddConfigPath("$GOPATH/src/github.com/makerdao/vdb-mcd-transformers/environments/")
 
 	Describe("Event Transformers only", func() {
 		BeforeEach(func() {

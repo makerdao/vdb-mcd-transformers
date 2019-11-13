@@ -19,7 +19,7 @@ package tick
 import (
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 
-	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 )
 
 type TickRepository struct {

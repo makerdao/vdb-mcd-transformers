@@ -19,7 +19,7 @@ package shared
 import (
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 
-	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 )
 
 // Creates a transformer config by pulling values from configuration environment

@@ -17,11 +17,11 @@
 package initializer
 
 import (
-	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 
-	"github.com/vulcanize/mcd_transformers/transformers/events/flop_kick"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/events/flop_kick"
 )
 
 var EventTransformerInitializer transformer.EventTransformerInitializer = shared.EventTransformer{

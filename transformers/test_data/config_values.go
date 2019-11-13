@@ -1,6 +1,6 @@
 package test_data
 
-import "github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+import "github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 
 // This file contains "shortcuts" to some configuration values useful for testing
 

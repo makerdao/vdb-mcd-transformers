@@ -17,7 +17,7 @@
 package test_data
 
 import (
-	"github.com/vulcanize/mcd_transformers/transformers/events/cat_file/flip"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/events/cat_file/flip"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"math/rand"
@@ -27,8 +27,8 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 
-	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 )
 
 var rawCatFileChopLog = types.Log{

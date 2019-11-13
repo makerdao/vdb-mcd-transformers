@@ -9,6 +9,6 @@ import (
 func SetTestConfig() bool {
 	logrus.SetOutput(ioutil.Discard)
 	viper.SetConfigName("testing")
-	viper.AddConfigPath("$GOPATH/src/github.com/vulcanize/mcd_transformers/environments/")
+	viper.AddConfigPath("$GOPATH/src/github.com/makerdao/vdb-mcd-transformers/environments/")
 	return true
 }

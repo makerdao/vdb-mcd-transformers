@@ -3,7 +3,7 @@ package test_helpers
 import (
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 
-	"github.com/vulcanize/mcd_transformers/transformers/storage"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/storage"
 )
 
 type MockMakerStorageRepository struct {

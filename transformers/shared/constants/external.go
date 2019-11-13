@@ -52,7 +52,7 @@ func getEnvironmentString(key string) string {
 [exporter.vow_file]
 	path = "transformers/events/vow_file/initializer"
 	type = "eth_event"
-	repository = "github.com/vulcanize/mcd_transformers"
+	repository = "github.com/makerdao/vdb-mcd-transformers"
 	migrations = "db/migrations"
 	contracts = ["MCD_VOW"]   <----
 	rank = "0"
