@@ -17,6 +17,7 @@
 package queries
 
 import (
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 	"math/rand"
 	"strconv"
 
@@ -43,7 +44,7 @@ import (
 var _ = Describe("Ilk File Events Query", func() {
 	var (
 		catFileChopLumpRepo   chop_lump.CatFileChopLumpRepository
-		catFileFlipRepo       flip.CatFileFlipRepository
+		catFileFlipRepo       flip.Repository
 		db                    *postgres.DB
 		err                   error
 		headerOneId, logOneId int64
@@ -60,7 +61,7 @@ var _ = Describe("Ilk File Events Query", func() {
 		test_config.CleanTestDB(db)
 		catFileChopLumpRepo = chop_lump.CatFileChopLumpRepository{}
 		catFileChopLumpRepo.SetDB(db)
-		catFileFlipRepo = flip.CatFileFlipRepository{}
+		catFileFlipRepo = flip.Repository{}
 		catFileFlipRepo.SetDB(db)
 		headerRepo = repositories.NewHeaderRepository(db)
 		headerOne := fakes.GetFakeHeader(1)
@@ -88,10 +89,12 @@ var _ = Describe("Ilk File Events Query", func() {
 
 		catFileFlipLog := test_data.CreateTestLog(headerOneId, db)
 		catFileFlip := test_data.CatFileFlipModel()
-		catFileFlip.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
+		ilkId, createIlkError := shared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
+		Expect(createIlkError).NotTo(HaveOccurred())
+		catFileFlip.ColumnValues[constants.IlkColumn] = ilkId
 		catFileFlip.ColumnValues[constants.HeaderFK] = headerOneId
 		catFileFlip.ColumnValues[constants.LogFK] = catFileFlipLog.ID
-		flipErr := catFileFlipRepo.Create([]shared.InsertionModel{catFileFlip})
+		flipErr := catFileFlipRepo.Create([]event.InsertionModel{catFileFlip})
 		Expect(flipErr).NotTo(HaveOccurred())
 
 		jugFileLog := test_data.CreateTestLog(headerOneId, db)
