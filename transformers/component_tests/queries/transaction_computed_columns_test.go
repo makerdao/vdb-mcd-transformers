@@ -9,7 +9,7 @@ import (
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 
-	"github.com/vulcanize/mcd_transformers/test_config"
+	"github.com/makerdao/vdb-mcd-transformers/test_config"
 )
 
 var _ = Describe("Transaction computed columns", func() {

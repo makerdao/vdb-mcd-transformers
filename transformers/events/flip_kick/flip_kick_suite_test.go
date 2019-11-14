@@ -17,9 +17,10 @@
 package flip_kick
 
 import (
-	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"testing"
+
+	log "github.com/sirupsen/logrus"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"

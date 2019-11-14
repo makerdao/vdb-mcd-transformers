@@ -19,10 +19,11 @@ package bite_test
 import (
 	"testing"
 
+	"io/ioutil"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	log "github.com/sirupsen/logrus"
-	"io/ioutil"
 )
 
 func TestBite(t *testing.T) {

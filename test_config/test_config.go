@@ -44,7 +44,7 @@ func init() {
 func setTestConfig() {
 	TestConfig = viper.New()
 	TestConfig.SetConfigName("testing")
-	TestConfig.AddConfigPath("$GOPATH/src/github.com/vulcanize/mcd_transformers/environments/")
+	TestConfig.AddConfigPath("$GOPATH/src/github.com/makerdao/vdb-mcd-transformers/environments/")
 	err := TestConfig.ReadInConfig()
 	if err != nil {
 		log.Fatal(err)

@@ -2,14 +2,16 @@ package integration_tests
 
 import (
 	"errors"
-	"github.com/sirupsen/logrus"
 	"log"
 	"testing"
+
+	"github.com/sirupsen/logrus"
+
+	"io/ioutil"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/spf13/viper"
-	"io/ioutil"
 )
 
 func TestIntegrationTests(t *testing.T) {
@@ -20,7 +22,7 @@ func TestIntegrationTests(t *testing.T) {
 var _ = BeforeSuite(func() {
 	testConfig := viper.New()
 	testConfig.SetConfigName("testing")
-	testConfig.AddConfigPath("$GOPATH/src/github.com/vulcanize/mcd_transformers/environments/")
+	testConfig.AddConfigPath("$GOPATH/src/github.com/makerdao/vdb-mcd-transformers/environments/")
 	err := testConfig.ReadInConfig()
 	ipc = testConfig.GetString("client.ipcPath")
 	if err != nil {

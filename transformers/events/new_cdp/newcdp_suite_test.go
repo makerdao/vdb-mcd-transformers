@@ -1,11 +1,12 @@
 package new_cdp_test
 
 import (
+	"io/ioutil"
+	"testing"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/sirupsen/logrus"
-	"io/ioutil"
-	"testing"
 )
 
 func TestNewCdp(t *testing.T) {

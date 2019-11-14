@@ -1,9 +1,10 @@
 package cat_test
 
 import (
-	"github.com/sirupsen/logrus"
 	"io/ioutil"
 	"testing"
+
+	"github.com/sirupsen/logrus"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"

@@ -18,8 +18,8 @@ package flip
 
 import (
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/vulcanize/mcd_transformers/transformers/shared"
-	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
@@ -83,4 +83,3 @@ func (converter Converter) ToModels(_ string, logs []core.HeaderSyncLog) ([]even
 func (converter *Converter) SetDB(db *postgres.DB) {
 	converter.db = db
 }
-

@@ -2,19 +2,20 @@ package shared_behaviors
 
 import (
 	"fmt"
+	"math/rand"
+	"reflect"
+	"strconv"
+
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/makerdao/vdb-mcd-transformers/test_config"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
+	. "github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/vulcanize/mcd_transformers/test_config"
-	"github.com/vulcanize/mcd_transformers/transformers/component_tests/queries/test_helpers"
-	. "github.com/vulcanize/mcd_transformers/transformers/storage/test_helpers"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/storage"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
-	"math/rand"
-	"reflect"
-	"strconv"
 )
 
 type StorageVariableBehaviorInputs struct {

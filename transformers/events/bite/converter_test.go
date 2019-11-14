@@ -17,14 +17,14 @@
 package bite_test
 
 import (
+	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 
-	"github.com/vulcanize/mcd_transformers/transformers/events/bite"
-	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
-	"github.com/vulcanize/mcd_transformers/transformers/test_data"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/events/bite"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 )
 

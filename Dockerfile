@@ -7,7 +7,7 @@ RUN apk add busybox-extras
 ENV GO111MODULE on
 
 # Build statically linked vDB binary (wonky path because of Dep)
-WORKDIR /go/src/github.com/vulcanize/mcd_transformers
+WORKDIR /go/src/github.com/makerdao/vdb-mcd-transformers
 ADD . .
 
 WORKDIR /go/src/github.com/vulcanize
@@ -17,10 +17,10 @@ RUN git checkout v0.0.9
 RUN go build
 
 # build mcd with local vdb
-WORKDIR /go/src/github.com/vulcanize/mcd_transformers
+WORKDIR /go/src/github.com/makerdao/vdb-mcd-transformers
 
 RUN go mod edit -replace=github.com/vulcanize/vulcanizedb=/go/src/github.com/vulcanize/vulcanizedb/
-RUN make plugin PACKAGE=github.com/vulcanize/mcd_transformers
+RUN make plugin PACKAGE=github.com/makerdao/vdb-mcd-transformers
 
 # Build migration tool
 WORKDIR /go
@@ -65,14 +65,14 @@ USER $USER
 # chown first so dir is writable
 # note: using $USER is merged, but not in the stable release yet
 COPY --chown=5000:5000 --from=builder /go/src/github.com/vulcanize/vulcanizedb .
-COPY --chown=5000:5000 --from=builder /go/src/github.com/vulcanize/mcd_transformers /go/src/github.com/vulcanize/mcd_transformers
+COPY --chown=5000:5000 --from=builder /go/src/github.com/makerdao/vdb-mcd-transformers /go/src/github.com/makerdao/vdb-mcd-transformers
 
 # keep binaries immutable
-COPY --from=builder /go/src/github.com/vulcanize/mcd_transformers/$config_file config.toml
-COPY --from=builder /go/src/github.com/vulcanize/mcd_transformers/dockerfiles/startup_script.sh .
+COPY --from=builder /go/src/github.com/makerdao/vdb-mcd-transformers/$config_file config.toml
+COPY --from=builder /go/src/github.com/makerdao/vdb-mcd-transformers/dockerfiles/startup_script.sh .
 COPY --from=builder /go/src/github.com/pressly/goose/cmd/goose/goose goose
-COPY --from=builder /go/src/github.com/vulcanize/mcd_transformers/db/migrations/* db/migrations/
-COPY --from=builder /go/src/github.com/vulcanize/mcd_transformers/plugins/transformerExporter.so plugins/transformerExporter.so
+COPY --from=builder /go/src/github.com/makerdao/vdb-mcd-transformers/db/migrations/* db/migrations/
+COPY --from=builder /go/src/github.com/makerdao/vdb-mcd-transformers/plugins/transformerExporter.so plugins/transformerExporter.so
 
 # DEBUG
 COPY --from=builder /usr/bin/telnet /bin/telnet

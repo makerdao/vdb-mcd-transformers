@@ -18,8 +18,9 @@ package storage
 
 import (
 	"errors"
-	repository2 "github.com/vulcanize/vulcanizedb/libraries/shared/repository"
 	"strconv"
+
+	repository2 "github.com/vulcanize/vulcanizedb/libraries/shared/repository"
 
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 )
