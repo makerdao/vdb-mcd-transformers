@@ -20,15 +20,6 @@ import (
 	"math/rand"
 	"strconv"
 
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
-
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
-	"github.com/vulcanize/vulcanizedb/pkg/datastore"
-	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
-	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres/repositories"
-	"github.com/vulcanize/vulcanizedb/pkg/fakes"
-
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/cat_file/chop_lump"
@@ -40,11 +31,18 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
+	"github.com/vulcanize/vulcanizedb/pkg/datastore"
+	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
+	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres/repositories"
+	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 )
 
 var _ = Describe("Ilk File Events Query", func() {
 	var (
-		catFileChopLumpRepo   chop_lump.CatFileChopLumpRepository
+		catFileChopLumpRepo   chop_lump.Repository
 		catFileFlipRepo       flip.Repository
 		db                    *postgres.DB
 		err                   error
@@ -60,7 +58,7 @@ var _ = Describe("Ilk File Events Query", func() {
 	BeforeEach(func() {
 		db = test_config.NewTestDB(test_config.NewTestNode())
 		test_config.CleanTestDB(db)
-		catFileChopLumpRepo = chop_lump.CatFileChopLumpRepository{}
+		catFileChopLumpRepo = chop_lump.Repository{}
 		catFileChopLumpRepo.SetDB(db)
 		catFileFlipRepo = flip.Repository{}
 		catFileFlipRepo.SetDB(db)
@@ -82,16 +80,17 @@ var _ = Describe("Ilk File Events Query", func() {
 	It("returns all ilk file events for ilk", func() {
 		catFileChopLumpLog := test_data.CreateTestLog(headerOneId, db)
 		catFileChopLump := test_data.CatFileChopModel()
-		catFileChopLump.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
+		ilkId, createIlkError := shared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
+		Expect(createIlkError).NotTo(HaveOccurred())
+
+		catFileChopLump.ColumnValues[constants.IlkColumn] = ilkId
 		catFileChopLump.ColumnValues[constants.HeaderFK] = headerOneId
 		catFileChopLump.ColumnValues[constants.LogFK] = catFileChopLumpLog.ID
-		chopLumpErr := catFileChopLumpRepo.Create([]shared.InsertionModel{catFileChopLump})
+		chopLumpErr := catFileChopLumpRepo.Create([]event.InsertionModel{catFileChopLump})
 		Expect(chopLumpErr).NotTo(HaveOccurred())
 
 		catFileFlipLog := test_data.CreateTestLog(headerOneId, db)
 		catFileFlip := test_data.CatFileFlipModel()
-		ilkId, createIlkError := shared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
-		Expect(createIlkError).NotTo(HaveOccurred())
 		catFileFlip.ColumnValues[constants.IlkColumn] = ilkId
 		catFileFlip.ColumnValues[constants.HeaderFK] = headerOneId
 		catFileFlip.ColumnValues[constants.LogFK] = catFileFlipLog.ID

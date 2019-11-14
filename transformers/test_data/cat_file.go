@@ -19,17 +19,16 @@ package test_data
 import (
 	"math/rand"
 
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/cat_file/flip"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
-	"github.com/vulcanize/vulcanizedb/pkg/core"
-
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/vulcanize/vulcanizedb/pkg/fakes"
-
+	"github.com/makerdao/vdb-mcd-transformers/transformers/events/cat_file/chop_lump"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/events/cat_file/flip"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
+	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 )
 
 var rawCatFileChopLog = types.Log{
@@ -56,22 +55,24 @@ var CatFileChopHeaderSyncLog = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-func CatFileChopModel() shared.InsertionModel { return CopyModel(catFileChopModel) }
+func CatFileChopModel() event.InsertionModel { return CopyEventModel(catFileChopModel) }
 
-var catFileChopModel = shared.InsertionModel{
+var catFileChopModel = event.InsertionModel{
 	SchemaName: "maker",
 	TableName:  "cat_file_chop_lump",
-	OrderedColumns: []string{
-		constants.HeaderFK, string(constants.IlkFK), "what", "data", constants.LogFK,
+	OrderedColumns: []event.ColumnName{
+		event.HeaderFK,
+		constants.IlkColumn,
+		chop_lump.What,
+		chop_lump.Data,
+		event.LogFK,
 	},
-	ColumnValues: shared.ColumnValues{
-		"what":             "chop",
-		"data":             "1000000000000000000000000000",
-		constants.HeaderFK: CatFileChopHeaderSyncLog.HeaderID,
-		constants.LogFK:    CatFileChopHeaderSyncLog.ID,
-	},
-	ForeignKeyValues: shared.ForeignKeyValues{
-		constants.IlkFK: "0x434f4c342d410000000000000000000000000000000000000000000000000000",
+	ColumnValues: event.ColumnValues{
+		event.HeaderFK: CatFileChopHeaderSyncLog.HeaderID,
+		//constants.IlkIdColumn changes with each insertion so it's best to assert directly in the test itself
+		chop_lump.What: "chop",
+		chop_lump.Data: "1000000000000000000000000000",
+		event.LogFK:    CatFileChopHeaderSyncLog.ID,
 	},
 }
 
@@ -99,22 +100,24 @@ var CatFileLumpHeaderSyncLog = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-func CatFileLumpModel() shared.InsertionModel { return CopyModel(catFileLumpModel) }
+func CatFileLumpModel() event.InsertionModel { return CopyEventModel(catFileLumpModel) }
 
-var catFileLumpModel = shared.InsertionModel{
+var catFileLumpModel = event.InsertionModel{
 	SchemaName: "maker",
 	TableName:  "cat_file_chop_lump",
-	OrderedColumns: []string{
-		constants.HeaderFK, string(constants.IlkFK), "what", "data", constants.LogFK,
+	OrderedColumns: []event.ColumnName{
+		event.HeaderFK,
+		constants.IlkColumn,
+		chop_lump.What,
+		chop_lump.Data,
+		event.LogFK,
 	},
-	ColumnValues: shared.ColumnValues{
-		"what":             "lump",
-		"data":             "10000000000000000000000000000000000000000000000000",
-		constants.HeaderFK: CatFileLumpHeaderSyncLog.HeaderID,
-		constants.LogFK:    CatFileLumpHeaderSyncLog.ID,
-	},
-	ForeignKeyValues: shared.ForeignKeyValues{
-		constants.IlkFK: "0x434f4c342d410000000000000000000000000000000000000000000000000000",
+	ColumnValues: event.ColumnValues{
+		event.HeaderFK: CatFileLumpHeaderSyncLog.HeaderID,
+		//constants.IlkIdColumn changes with each insertion so it's best to assert directly in the test itself
+		chop_lump.What: "lump",
+		chop_lump.Data: "10000000000000000000000000000000000000000000000000",
+		event.LogFK:    CatFileLumpHeaderSyncLog.ID,
 	},
 }
 
