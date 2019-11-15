@@ -1,5 +1,5 @@
 -- +goose Up
-CREATE TABLE full_sync_logs
+CREATE TABLE public.full_sync_logs
 (
     id           SERIAL PRIMARY KEY,
     block_number BIGINT,
@@ -13,6 +13,8 @@ CREATE TABLE full_sync_logs
     data         TEXT
 );
 
+COMMENT ON TABLE public.full_sync_logs
+    IS E'@omit';
 
 -- +goose Down
 DROP TABLE full_sync_logs;

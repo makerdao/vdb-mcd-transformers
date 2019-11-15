@@ -18,6 +18,8 @@ CREATE TABLE public.blocks (
   uncle_hash    VARCHAR(66)
 );
 
+COMMENT ON TABLE public.blocks
+    IS E'@omit';
 
 -- +goose Down
 DROP TABLE public.blocks;

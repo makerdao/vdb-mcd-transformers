@@ -1,5 +1,5 @@
 -- +goose Up
-CREATE TABLE log_filters (
+CREATE TABLE public.log_filters (
   id         SERIAL,
   name       VARCHAR NOT NULL CHECK (name <> ''),
   from_block BIGINT CHECK (from_block >= 0),
@@ -11,6 +11,9 @@ CREATE TABLE log_filters (
   topic3     VARCHAR(66),
   CONSTRAINT name_uc UNIQUE (name)
 );
+
+COMMENT ON TABLE public.log_filters
+    IS E'@omit';
 
 -- +goose Down
 DROP TABLE log_filters;

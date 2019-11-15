@@ -1,5 +1,5 @@
 -- +goose Up
-CREATE TABLE header_sync_receipts
+CREATE TABLE public.header_sync_receipts
 (
     id                  SERIAL PRIMARY KEY,
     transaction_id      INTEGER NOT NULL REFERENCES header_sync_transactions (id) ON DELETE CASCADE,
@@ -19,6 +19,8 @@ CREATE INDEX header_sync_receipts_contract_address
 CREATE INDEX header_sync_receipts_transaction
     ON header_sync_receipts (transaction_id);
 
+COMMENT ON TABLE public.header_sync_receipts
+    IS E'@omit';
 
 -- +goose Down
 DROP INDEX header_sync_receipts_transaction;

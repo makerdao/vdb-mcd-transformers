@@ -1,5 +1,5 @@
 -- +goose Up
-CREATE TABLE full_sync_receipts
+CREATE TABLE public.full_sync_receipts
 (
     id                  SERIAL PRIMARY KEY,
     transaction_id      INTEGER NOT NULL REFERENCES full_sync_transactions (id) ON DELETE CASCADE,
@@ -14,6 +14,8 @@ CREATE TABLE full_sync_receipts
 CREATE INDEX full_sync_receipts_contract_address
     ON full_sync_receipts (contract_address_id);
 
+COMMENT ON TABLE public.full_sync_receipts
+    IS E'@omit';
 
 -- +goose Down
 DROP INDEX full_sync_receipts_contract_address;

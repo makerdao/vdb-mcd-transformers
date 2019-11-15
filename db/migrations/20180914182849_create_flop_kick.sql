@@ -13,7 +13,7 @@ CREATE TABLE maker.flop_kick
 );
 
 -- prevent naming conflict with maker.flop_kicks in postgraphile
-COMMENT ON TABLE maker.flop_kick IS E'@name flopKickEvent';
+-- COMMENT ON TABLE maker.flop_kick IS E'@name flopKickEvent';
 
 CREATE INDEX flop_kick_header_index
     ON maker.flop_kick (header_id);

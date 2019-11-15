@@ -2953,6 +2953,13 @@ CREATE TABLE maker.vat_ilk_art (
 
 
 --
+-- Name: TABLE vat_ilk_art; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.vat_ilk_art IS '@omit';
+
+
+--
 -- Name: insert_new_art(maker.vat_ilk_art); Type: FUNCTION; Schema: maker; Owner: -
 --
 
@@ -3017,6 +3024,13 @@ CREATE TABLE maker.cat_ilk_chop (
     ilk_id integer NOT NULL,
     chop numeric NOT NULL
 );
+
+
+--
+-- Name: TABLE cat_ilk_chop; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.cat_ilk_chop IS '@omit';
 
 
 --
@@ -3087,6 +3101,13 @@ CREATE TABLE maker.vat_ilk_dust (
 
 
 --
+-- Name: TABLE vat_ilk_dust; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.vat_ilk_dust IS '@omit';
+
+
+--
 -- Name: insert_new_dust(maker.vat_ilk_dust); Type: FUNCTION; Schema: maker; Owner: -
 --
 
@@ -3151,6 +3172,13 @@ CREATE TABLE maker.jug_ilk_duty (
     ilk_id integer NOT NULL,
     duty numeric NOT NULL
 );
+
+
+--
+-- Name: TABLE jug_ilk_duty; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.jug_ilk_duty IS '@omit';
 
 
 --
@@ -3221,6 +3249,13 @@ CREATE TABLE maker.cat_ilk_flip (
 
 
 --
+-- Name: TABLE cat_ilk_flip; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.cat_ilk_flip IS '@omit';
+
+
+--
 -- Name: insert_new_flip(maker.cat_ilk_flip); Type: FUNCTION; Schema: maker; Owner: -
 --
 
@@ -3285,6 +3320,13 @@ CREATE TABLE maker.vat_ilk_line (
     ilk_id integer NOT NULL,
     line numeric NOT NULL
 );
+
+
+--
+-- Name: TABLE vat_ilk_line; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.vat_ilk_line IS '@omit';
 
 
 --
@@ -3355,6 +3397,13 @@ CREATE TABLE maker.cat_ilk_lump (
 
 
 --
+-- Name: TABLE cat_ilk_lump; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.cat_ilk_lump IS '@omit';
+
+
+--
 -- Name: insert_new_lump(maker.cat_ilk_lump); Type: FUNCTION; Schema: maker; Owner: -
 --
 
@@ -3419,6 +3468,13 @@ CREATE TABLE maker.spot_ilk_mat (
     ilk_id integer NOT NULL,
     mat numeric NOT NULL
 );
+
+
+--
+-- Name: TABLE spot_ilk_mat; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.spot_ilk_mat IS '@omit';
 
 
 --
@@ -3489,6 +3545,13 @@ CREATE TABLE maker.spot_ilk_pip (
 
 
 --
+-- Name: TABLE spot_ilk_pip; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.spot_ilk_pip IS '@omit';
+
+
+--
 -- Name: insert_new_pip(maker.spot_ilk_pip); Type: FUNCTION; Schema: maker; Owner: -
 --
 
@@ -3553,6 +3616,13 @@ CREATE TABLE maker.vat_ilk_rate (
     ilk_id integer NOT NULL,
     rate numeric NOT NULL
 );
+
+
+--
+-- Name: TABLE vat_ilk_rate; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.vat_ilk_rate IS '@omit';
 
 
 --
@@ -3623,6 +3693,13 @@ CREATE TABLE maker.jug_ilk_rho (
 
 
 --
+-- Name: TABLE jug_ilk_rho; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.jug_ilk_rho IS '@omit';
+
+
+--
 -- Name: insert_new_rho(maker.jug_ilk_rho); Type: FUNCTION; Schema: maker; Owner: -
 --
 
@@ -3687,6 +3764,13 @@ CREATE TABLE maker.vat_ilk_spot (
     ilk_id integer NOT NULL,
     spot numeric NOT NULL
 );
+
+
+--
+-- Name: TABLE vat_ilk_spot; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.vat_ilk_spot IS '@omit';
 
 
 --
@@ -4418,6 +4502,13 @@ CREATE TABLE maker.vat_urn_art (
 
 
 --
+-- Name: TABLE vat_urn_art; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.vat_urn_art IS '@omit';
+
+
+--
 -- Name: insert_urn_art(maker.vat_urn_art); Type: FUNCTION; Schema: maker; Owner: -
 --
 
@@ -4468,6 +4559,13 @@ CREATE TABLE maker.vat_urn_ink (
     urn_id integer NOT NULL,
     ink numeric NOT NULL
 );
+
+
+--
+-- Name: TABLE vat_urn_ink; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.vat_urn_ink IS '@omit';
 
 
 --
@@ -6330,13 +6428,6 @@ CREATE TABLE maker.bite (
 
 
 --
--- Name: TABLE bite; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.bite IS '@name raw_bites';
-
-
---
 -- Name: COLUMN bite.id; Type: COMMENT; Schema: maker; Owner: -
 --
 
@@ -6537,6 +6628,13 @@ CREATE TABLE maker.cat_live (
 
 
 --
+-- Name: TABLE cat_live; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.cat_live IS '@omit';
+
+
+--
 -- Name: cat_live_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -6566,6 +6664,13 @@ CREATE TABLE maker.cat_vat (
     header_id integer NOT NULL,
     vat text
 );
+
+
+--
+-- Name: TABLE cat_vat; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.cat_vat IS '@omit';
 
 
 --
@@ -6601,6 +6706,13 @@ CREATE TABLE maker.cat_vow (
 
 
 --
+-- Name: TABLE cat_vow; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.cat_vow IS '@omit';
+
+
+--
 -- Name: cat_vow_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -6630,6 +6742,13 @@ CREATE TABLE maker.cdp_manager_cdpi (
     header_id integer NOT NULL,
     cdpi numeric NOT NULL
 );
+
+
+--
+-- Name: TABLE cdp_manager_cdpi; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.cdp_manager_cdpi IS '@omit';
 
 
 --
@@ -6666,6 +6785,13 @@ CREATE TABLE maker.cdp_manager_count (
 
 
 --
+-- Name: TABLE cdp_manager_count; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.cdp_manager_count IS '@omit';
+
+
+--
 -- Name: cdp_manager_count_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -6696,6 +6822,13 @@ CREATE TABLE maker.cdp_manager_first (
     owner text,
     first numeric NOT NULL
 );
+
+
+--
+-- Name: TABLE cdp_manager_first; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.cdp_manager_first IS '@omit';
 
 
 --
@@ -6732,6 +6865,13 @@ CREATE TABLE maker.cdp_manager_ilks (
 
 
 --
+-- Name: TABLE cdp_manager_ilks; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.cdp_manager_ilks IS '@omit';
+
+
+--
 -- Name: cdp_manager_ilks_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -6762,6 +6902,13 @@ CREATE TABLE maker.cdp_manager_last (
     owner text,
     last numeric NOT NULL
 );
+
+
+--
+-- Name: TABLE cdp_manager_last; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.cdp_manager_last IS '@omit';
 
 
 --
@@ -6798,6 +6945,13 @@ CREATE TABLE maker.cdp_manager_list_next (
 
 
 --
+-- Name: TABLE cdp_manager_list_next; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.cdp_manager_list_next IS '@omit';
+
+
+--
 -- Name: cdp_manager_list_next_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -6828,6 +6982,13 @@ CREATE TABLE maker.cdp_manager_list_prev (
     cdpi numeric NOT NULL,
     prev numeric NOT NULL
 );
+
+
+--
+-- Name: TABLE cdp_manager_list_prev; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.cdp_manager_list_prev IS '@omit';
 
 
 --
@@ -6864,6 +7025,13 @@ CREATE TABLE maker.cdp_manager_owns (
 
 
 --
+-- Name: TABLE cdp_manager_owns; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.cdp_manager_owns IS '@omit';
+
+
+--
 -- Name: cdp_manager_owns_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -6897,6 +7065,13 @@ CREATE TABLE maker.cdp_manager_urns (
 
 
 --
+-- Name: TABLE cdp_manager_urns; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.cdp_manager_urns IS '@omit';
+
+
+--
 -- Name: cdp_manager_urns_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -6926,6 +7101,13 @@ CREATE TABLE maker.cdp_manager_vat (
     header_id integer NOT NULL,
     vat text
 );
+
+
+--
+-- Name: TABLE cdp_manager_vat; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.cdp_manager_vat IS '@omit';
 
 
 --
@@ -7037,6 +7219,13 @@ CREATE TABLE maker.flap (
 
 
 --
+-- Name: TABLE flap; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.flap IS '@omit';
+
+
+--
 -- Name: flap_beg; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -7047,6 +7236,13 @@ CREATE TABLE maker.flap_beg (
     address_id integer NOT NULL,
     beg numeric NOT NULL
 );
+
+
+--
+-- Name: TABLE flap_beg; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.flap_beg IS '@omit';
 
 
 --
@@ -7084,6 +7280,13 @@ CREATE TABLE maker.flap_bid_bid (
 
 
 --
+-- Name: TABLE flap_bid_bid; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.flap_bid_bid IS '@omit';
+
+
+--
 -- Name: flap_bid_bid_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -7115,6 +7318,13 @@ CREATE TABLE maker.flap_bid_end (
     bid_id numeric NOT NULL,
     "end" bigint NOT NULL
 );
+
+
+--
+-- Name: TABLE flap_bid_end; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.flap_bid_end IS '@omit';
 
 
 --
@@ -7152,6 +7362,13 @@ CREATE TABLE maker.flap_bid_guy (
 
 
 --
+-- Name: TABLE flap_bid_guy; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.flap_bid_guy IS '@omit';
+
+
+--
 -- Name: flap_bid_guy_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -7183,6 +7400,13 @@ CREATE TABLE maker.flap_bid_lot (
     bid_id numeric NOT NULL,
     lot numeric NOT NULL
 );
+
+
+--
+-- Name: TABLE flap_bid_lot; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.flap_bid_lot IS '@omit';
 
 
 --
@@ -7220,6 +7444,13 @@ CREATE TABLE maker.flap_bid_tic (
 
 
 --
+-- Name: TABLE flap_bid_tic; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.flap_bid_tic IS '@omit';
+
+
+--
 -- Name: flap_bid_tic_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -7250,6 +7481,13 @@ CREATE TABLE maker.flap_gem (
     address_id integer NOT NULL,
     gem text NOT NULL
 );
+
+
+--
+-- Name: TABLE flap_gem; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.flap_gem IS '@omit';
 
 
 --
@@ -7308,13 +7546,6 @@ CREATE TABLE maker.flap_kick (
 
 
 --
--- Name: TABLE flap_kick; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.flap_kick IS '@name flapKickEvent';
-
-
---
 -- Name: flap_kick_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -7351,7 +7582,8 @@ CREATE TABLE maker.flap_kicks (
 -- Name: TABLE flap_kicks; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.flap_kicks IS '@name flapKicksStorage';
+COMMENT ON TABLE maker.flap_kicks IS '@name flapKicksStorage
+@omit';
 
 
 --
@@ -7388,6 +7620,13 @@ CREATE TABLE maker.flap_live (
 
 
 --
+-- Name: TABLE flap_live; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.flap_live IS '@omit';
+
+
+--
 -- Name: flap_live_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -7418,6 +7657,13 @@ CREATE TABLE maker.flap_tau (
     address_id integer NOT NULL,
     tau integer NOT NULL
 );
+
+
+--
+-- Name: TABLE flap_tau; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.flap_tau IS '@omit';
 
 
 --
@@ -7454,6 +7700,13 @@ CREATE TABLE maker.flap_ttl (
 
 
 --
+-- Name: TABLE flap_ttl; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.flap_ttl IS '@omit';
+
+
+--
 -- Name: flap_ttl_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -7484,6 +7737,13 @@ CREATE TABLE maker.flap_vat (
     address_id integer NOT NULL,
     vat text NOT NULL
 );
+
+
+--
+-- Name: TABLE flap_vat; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.flap_vat IS '@omit';
 
 
 --
@@ -7529,6 +7789,13 @@ CREATE TABLE maker.flip (
 
 
 --
+-- Name: TABLE flip; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.flip IS '@omit';
+
+
+--
 -- Name: flip_beg; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -7539,6 +7806,13 @@ CREATE TABLE maker.flip_beg (
     address_id integer NOT NULL,
     beg numeric NOT NULL
 );
+
+
+--
+-- Name: TABLE flip_beg; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.flip_beg IS '@omit';
 
 
 --
@@ -7576,6 +7850,13 @@ CREATE TABLE maker.flip_bid_bid (
 
 
 --
+-- Name: TABLE flip_bid_bid; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.flip_bid_bid IS '@omit';
+
+
+--
 -- Name: flip_bid_bid_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -7607,6 +7888,13 @@ CREATE TABLE maker.flip_bid_end (
     bid_id numeric NOT NULL,
     "end" bigint NOT NULL
 );
+
+
+--
+-- Name: TABLE flip_bid_end; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.flip_bid_end IS '@omit';
 
 
 --
@@ -7644,6 +7932,13 @@ CREATE TABLE maker.flip_bid_gal (
 
 
 --
+-- Name: TABLE flip_bid_gal; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.flip_bid_gal IS '@omit';
+
+
+--
 -- Name: flip_bid_gal_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -7675,6 +7970,13 @@ CREATE TABLE maker.flip_bid_guy (
     bid_id numeric NOT NULL,
     guy text
 );
+
+
+--
+-- Name: TABLE flip_bid_guy; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.flip_bid_guy IS '@omit';
 
 
 --
@@ -7712,6 +8014,13 @@ CREATE TABLE maker.flip_bid_lot (
 
 
 --
+-- Name: TABLE flip_bid_lot; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.flip_bid_lot IS '@omit';
+
+
+--
 -- Name: flip_bid_lot_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -7743,6 +8052,13 @@ CREATE TABLE maker.flip_bid_tab (
     bid_id numeric NOT NULL,
     tab numeric NOT NULL
 );
+
+
+--
+-- Name: TABLE flip_bid_tab; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.flip_bid_tab IS '@omit';
 
 
 --
@@ -7780,6 +8096,13 @@ CREATE TABLE maker.flip_bid_tic (
 
 
 --
+-- Name: TABLE flip_bid_tic; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.flip_bid_tic IS '@omit';
+
+
+--
 -- Name: flip_bid_tic_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -7811,6 +8134,13 @@ CREATE TABLE maker.flip_bid_usr (
     bid_id numeric NOT NULL,
     usr text
 );
+
+
+--
+-- Name: TABLE flip_bid_usr; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.flip_bid_usr IS '@omit';
 
 
 --
@@ -7867,6 +8197,13 @@ CREATE TABLE maker.flip_ilk (
 
 
 --
+-- Name: TABLE flip_ilk; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.flip_ilk IS '@omit';
+
+
+--
 -- Name: flip_ilk_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -7902,13 +8239,6 @@ CREATE TABLE maker.flip_kick (
     address_id integer NOT NULL,
     log_id bigint NOT NULL
 );
-
-
---
--- Name: TABLE flip_kick; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.flip_kick IS '@name flipKickEvent';
 
 
 --
@@ -7948,7 +8278,8 @@ CREATE TABLE maker.flip_kicks (
 -- Name: TABLE flip_kicks; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.flip_kicks IS '@name flipKicksStorage';
+COMMENT ON TABLE maker.flip_kicks IS '@name flipKicksStorage
+@omit';
 
 
 --
@@ -7985,6 +8316,13 @@ CREATE TABLE maker.flip_tau (
 
 
 --
+-- Name: TABLE flip_tau; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.flip_tau IS '@omit';
+
+
+--
 -- Name: flip_tau_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -8018,6 +8356,13 @@ CREATE TABLE maker.flip_ttl (
 
 
 --
+-- Name: TABLE flip_ttl; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.flip_ttl IS '@omit';
+
+
+--
 -- Name: flip_ttl_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -8048,6 +8393,13 @@ CREATE TABLE maker.flip_vat (
     address_id integer NOT NULL,
     vat text
 );
+
+
+--
+-- Name: TABLE flip_vat; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.flip_vat IS '@omit';
 
 
 --
@@ -8091,6 +8443,13 @@ CREATE TABLE maker.flop (
 
 
 --
+-- Name: TABLE flop; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.flop IS '@omit';
+
+
+--
 -- Name: flop_beg; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -8101,6 +8460,13 @@ CREATE TABLE maker.flop_beg (
     address_id integer NOT NULL,
     beg numeric NOT NULL
 );
+
+
+--
+-- Name: TABLE flop_beg; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.flop_beg IS '@omit';
 
 
 --
@@ -8138,6 +8504,13 @@ CREATE TABLE maker.flop_bid_bid (
 
 
 --
+-- Name: TABLE flop_bid_bid; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.flop_bid_bid IS '@omit';
+
+
+--
 -- Name: flop_bid_bid_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -8169,6 +8542,13 @@ CREATE TABLE maker.flop_bid_end (
     bid_id numeric NOT NULL,
     "end" bigint NOT NULL
 );
+
+
+--
+-- Name: TABLE flop_bid_end; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.flop_bid_end IS '@omit';
 
 
 --
@@ -8206,6 +8586,13 @@ CREATE TABLE maker.flop_bid_guy (
 
 
 --
+-- Name: TABLE flop_bid_guy; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.flop_bid_guy IS '@omit';
+
+
+--
 -- Name: flop_bid_guy_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -8237,6 +8624,13 @@ CREATE TABLE maker.flop_bid_lot (
     bid_id numeric NOT NULL,
     lot numeric NOT NULL
 );
+
+
+--
+-- Name: TABLE flop_bid_lot; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.flop_bid_lot IS '@omit';
 
 
 --
@@ -8274,6 +8668,13 @@ CREATE TABLE maker.flop_bid_tic (
 
 
 --
+-- Name: TABLE flop_bid_tic; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.flop_bid_tic IS '@omit';
+
+
+--
 -- Name: flop_bid_tic_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -8304,6 +8705,13 @@ CREATE TABLE maker.flop_gem (
     address_id integer NOT NULL,
     gem text
 );
+
+
+--
+-- Name: TABLE flop_gem; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.flop_gem IS '@omit';
 
 
 --
@@ -8363,13 +8771,6 @@ CREATE TABLE maker.flop_kick (
 
 
 --
--- Name: TABLE flop_kick; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.flop_kick IS '@name flopKickEvent';
-
-
---
 -- Name: flop_kick_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -8406,7 +8807,8 @@ CREATE TABLE maker.flop_kicks (
 -- Name: TABLE flop_kicks; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.flop_kicks IS '@name flopKicksStorage';
+COMMENT ON TABLE maker.flop_kicks IS '@name flopKicksStorage
+@omit';
 
 
 --
@@ -8443,6 +8845,13 @@ CREATE TABLE maker.flop_live (
 
 
 --
+-- Name: TABLE flop_live; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.flop_live IS '@omit';
+
+
+--
 -- Name: flop_live_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -8473,6 +8882,13 @@ CREATE TABLE maker.flop_pad (
     address_id integer NOT NULL,
     pad numeric NOT NULL
 );
+
+
+--
+-- Name: TABLE flop_pad; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.flop_pad IS '@omit';
 
 
 --
@@ -8509,6 +8925,13 @@ CREATE TABLE maker.flop_tau (
 
 
 --
+-- Name: TABLE flop_tau; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.flop_tau IS '@omit';
+
+
+--
 -- Name: flop_tau_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -8542,6 +8965,13 @@ CREATE TABLE maker.flop_ttl (
 
 
 --
+-- Name: TABLE flop_ttl; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.flop_ttl IS '@omit';
+
+
+--
 -- Name: flop_ttl_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -8572,6 +9002,13 @@ CREATE TABLE maker.flop_vat (
     address_id integer NOT NULL,
     vat text
 );
+
+
+--
+-- Name: TABLE flop_vat; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.flop_vat IS '@omit';
 
 
 --
@@ -8642,6 +9079,13 @@ CREATE TABLE maker.jug_base (
     header_id integer NOT NULL,
     base text
 );
+
+
+--
+-- Name: TABLE jug_base; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.jug_base IS '@omit';
 
 
 --
@@ -8881,6 +9325,13 @@ CREATE TABLE maker.jug_vat (
 
 
 --
+-- Name: TABLE jug_vat; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.jug_vat IS '@omit';
+
+
+--
 -- Name: jug_vat_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -8910,6 +9361,13 @@ CREATE TABLE maker.jug_vow (
     header_id integer NOT NULL,
     vow text
 );
+
+
+--
+-- Name: TABLE jug_vow; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.jug_vow IS '@omit';
 
 
 --
@@ -9618,6 +10076,13 @@ CREATE TABLE maker.spot_live (
 
 
 --
+-- Name: TABLE spot_live; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.spot_live IS '@omit';
+
+
+--
 -- Name: spot_live_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -9647,6 +10112,13 @@ CREATE TABLE maker.spot_par (
     header_id integer NOT NULL,
     par numeric NOT NULL
 );
+
+
+--
+-- Name: TABLE spot_par; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.spot_par IS '@omit';
 
 
 --
@@ -9713,6 +10185,13 @@ CREATE TABLE maker.spot_vat (
     header_id integer NOT NULL,
     vat text
 );
+
+
+--
+-- Name: TABLE spot_vat; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.spot_vat IS '@omit';
 
 
 --
@@ -9855,6 +10334,13 @@ CREATE TABLE maker.vat_dai (
 
 
 --
+-- Name: TABLE vat_dai; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.vat_dai IS '@omit';
+
+
+--
 -- Name: vat_dai_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -9884,6 +10370,13 @@ CREATE TABLE maker.vat_debt (
     header_id integer NOT NULL,
     debt numeric NOT NULL
 );
+
+
+--
+-- Name: TABLE vat_debt; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.vat_debt IS '@omit';
 
 
 --
@@ -10129,6 +10622,13 @@ CREATE TABLE maker.vat_gem (
 
 
 --
+-- Name: TABLE vat_gem; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.vat_gem IS '@omit';
+
+
+--
 -- Name: vat_gem_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -10349,6 +10849,13 @@ CREATE TABLE maker.vat_line (
 
 
 --
+-- Name: TABLE vat_line; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.vat_line IS '@omit';
+
+
+--
 -- Name: vat_line_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -10378,6 +10885,13 @@ CREATE TABLE maker.vat_live (
     header_id integer NOT NULL,
     live numeric NOT NULL
 );
+
+
+--
+-- Name: TABLE vat_live; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.vat_live IS '@omit';
 
 
 --
@@ -10445,6 +10959,13 @@ CREATE TABLE maker.vat_sin (
     guy text,
     sin numeric NOT NULL
 );
+
+
+--
+-- Name: TABLE vat_sin; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.vat_sin IS '@omit';
 
 
 --
@@ -10588,6 +11109,13 @@ CREATE TABLE maker.vat_vice (
 
 
 --
+-- Name: TABLE vat_vice; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.vat_vice IS '@omit';
+
+
+--
 -- Name: vat_vice_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -10617,6 +11145,13 @@ CREATE TABLE maker.vow_ash (
     header_id integer NOT NULL,
     ash numeric
 );
+
+
+--
+-- Name: TABLE vow_ash; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.vow_ash IS '@omit';
 
 
 --
@@ -10652,6 +11187,13 @@ CREATE TABLE maker.vow_bump (
 
 
 --
+-- Name: TABLE vow_bump; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.vow_bump IS '@omit';
+
+
+--
 -- Name: vow_bump_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -10681,6 +11223,13 @@ CREATE TABLE maker.vow_dump (
     header_id integer NOT NULL,
     dump numeric
 );
+
+
+--
+-- Name: TABLE vow_dump; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.vow_dump IS '@omit';
 
 
 --
@@ -10781,6 +11330,13 @@ CREATE TABLE maker.vow_flapper (
 
 
 --
+-- Name: TABLE vow_flapper; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.vow_flapper IS '@omit';
+
+
+--
 -- Name: vow_flapper_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -10845,6 +11401,13 @@ CREATE TABLE maker.vow_flopper (
 
 
 --
+-- Name: TABLE vow_flopper; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.vow_flopper IS '@omit';
+
+
+--
 -- Name: vow_flopper_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -10877,6 +11440,13 @@ CREATE TABLE maker.vow_hump (
 
 
 --
+-- Name: TABLE vow_hump; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.vow_hump IS '@omit';
+
+
+--
 -- Name: vow_hump_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -10906,6 +11476,13 @@ CREATE TABLE maker.vow_sin_integer (
     header_id integer NOT NULL,
     sin numeric
 );
+
+
+--
+-- Name: TABLE vow_sin_integer; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.vow_sin_integer IS '@omit';
 
 
 --
@@ -10942,6 +11519,13 @@ CREATE TABLE maker.vow_sin_mapping (
 
 
 --
+-- Name: TABLE vow_sin_mapping; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.vow_sin_mapping IS '@omit';
+
+
+--
 -- Name: vow_sin_mapping_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -10971,6 +11555,13 @@ CREATE TABLE maker.vow_sump (
     header_id integer NOT NULL,
     sump numeric
 );
+
+
+--
+-- Name: TABLE vow_sump; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.vow_sump IS '@omit';
 
 
 --
@@ -11006,6 +11597,13 @@ CREATE TABLE maker.vow_vat (
 
 
 --
+-- Name: TABLE vow_vat; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.vow_vat IS '@omit';
+
+
+--
 -- Name: vow_vat_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -11035,6 +11633,13 @@ CREATE TABLE maker.vow_wait (
     header_id integer NOT NULL,
     wait numeric
 );
+
+
+--
+-- Name: TABLE vow_wait; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.vow_wait IS '@omit';
 
 
 --
@@ -11141,6 +11746,13 @@ CREATE TABLE public.full_sync_logs (
 
 
 --
+-- Name: TABLE full_sync_logs; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON TABLE public.full_sync_logs IS '@omit';
+
+
+--
 -- Name: block_stats; Type: VIEW; Schema: public; Owner: -
 --
 
@@ -11148,6 +11760,13 @@ CREATE VIEW public.block_stats AS
  SELECT max(full_sync_logs.block_number) AS max_block,
     min(full_sync_logs.block_number) AS min_block
    FROM public.full_sync_logs;
+
+
+--
+-- Name: VIEW block_stats; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON VIEW public.block_stats IS '@omit';
 
 
 --
@@ -11173,6 +11792,13 @@ CREATE TABLE public.blocks (
     uncle_hash character varying(66),
     eth_node_id integer NOT NULL
 );
+
+
+--
+-- Name: TABLE blocks; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON TABLE public.blocks IS '@omit';
 
 
 --
@@ -11205,6 +11831,13 @@ CREATE TABLE public.checked_headers (
     yank integer DEFAULT 0 NOT NULL,
     new_cdp integer DEFAULT 0 NOT NULL
 );
+
+
+--
+-- Name: TABLE checked_headers; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON TABLE public.checked_headers IS '@omit';
 
 
 --
@@ -11241,6 +11874,13 @@ CREATE TABLE public.eth_nodes (
 
 
 --
+-- Name: TABLE eth_nodes; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON TABLE public.eth_nodes IS '@omit';
+
+
+--
 -- Name: full_sync_logs_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -11274,6 +11914,13 @@ CREATE TABLE public.full_sync_receipts (
     tx_hash character varying(66),
     block_id integer NOT NULL
 );
+
+
+--
+-- Name: TABLE full_sync_receipts; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON TABLE public.full_sync_receipts IS '@omit';
 
 
 --
@@ -11317,6 +11964,13 @@ CREATE TABLE public.full_sync_transactions (
 
 
 --
+-- Name: TABLE full_sync_transactions; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON TABLE public.full_sync_transactions IS '@omit';
+
+
+--
 -- Name: full_sync_transactions_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -11346,6 +12000,13 @@ CREATE TABLE public.goose_db_version (
     is_applied boolean NOT NULL,
     tstamp timestamp without time zone DEFAULT now()
 );
+
+
+--
+-- Name: TABLE goose_db_version; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON TABLE public.goose_db_version IS '@omit';
 
 
 --
@@ -11424,6 +12085,13 @@ CREATE TABLE public.header_sync_receipts (
     tx_hash character varying(66),
     rlp bytea
 );
+
+
+--
+-- Name: TABLE header_sync_receipts; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON TABLE public.header_sync_receipts IS '@omit';
 
 
 --
@@ -11542,6 +12210,13 @@ CREATE TABLE public.log_filters (
 
 
 --
+-- Name: TABLE log_filters; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON TABLE public.log_filters IS '@omit';
+
+
+--
 -- Name: log_filters_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -11589,6 +12264,13 @@ CREATE TABLE public.queued_storage (
     id integer NOT NULL,
     diff_id bigint NOT NULL
 );
+
+
+--
+-- Name: TABLE queued_storage; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON TABLE public.queued_storage IS '@omit';
 
 
 --
@@ -11661,6 +12343,13 @@ CREATE TABLE public.uncles (
 
 
 --
+-- Name: TABLE uncles; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON TABLE public.uncles IS '@omit';
+
+
+--
 -- Name: uncles_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -11689,6 +12378,13 @@ CREATE TABLE public.watched_contracts (
     contract_abi json,
     contract_hash character varying(66)
 );
+
+
+--
+-- Name: TABLE watched_contracts; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON TABLE public.watched_contracts IS '@omit';
 
 
 --
@@ -11735,6 +12431,13 @@ CREATE VIEW public.watched_event_logs AS
 
 
 --
+-- Name: VIEW watched_event_logs; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON VIEW public.watched_event_logs IS '@omit';
+
+
+--
 -- Name: watched_logs; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -11743,6 +12446,13 @@ CREATE TABLE public.watched_logs (
     contract_address character varying(42),
     topic_zero character varying(66)
 );
+
+
+--
+-- Name: TABLE watched_logs; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON TABLE public.watched_logs IS '@omit';
 
 
 --
@@ -15700,6 +16410,13 @@ CREATE INDEX cat_vow_header_id_index ON maker.cat_vow USING btree (header_id);
 
 
 --
+-- Name: cdp_manager_cdpi_cdpi_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX cdp_manager_cdpi_cdpi_index ON maker.cdp_manager_cdpi USING btree (cdpi);
+
+
+--
 -- Name: cdp_manager_cdpi_header_id_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -15718,6 +16435,13 @@ CREATE INDEX cdp_manager_count_header_id_index ON maker.cdp_manager_count USING 
 --
 
 CREATE INDEX cdp_manager_first_header_id_index ON maker.cdp_manager_first USING btree (header_id);
+
+
+--
+-- Name: cdp_manager_ilks_cdpi_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX cdp_manager_ilks_cdpi_index ON maker.cdp_manager_ilks USING btree (cdpi);
 
 
 --
@@ -15753,6 +16477,13 @@ CREATE INDEX cdp_manager_list_next_header_id_index ON maker.cdp_manager_list_nex
 --
 
 CREATE INDEX cdp_manager_list_prev_header_id_index ON maker.cdp_manager_list_prev USING btree (header_id);
+
+
+--
+-- Name: cdp_manager_owns_cdpi_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX cdp_manager_owns_cdpi_index ON maker.cdp_manager_owns USING btree (cdpi);
 
 
 --
@@ -16012,6 +16743,13 @@ CREATE INDEX flap_kicks_address_index ON maker.flap_kicks USING btree (address_i
 --
 
 CREATE INDEX flap_kicks_header_id_index ON maker.flap_kicks USING btree (header_id);
+
+
+--
+-- Name: flap_kicks_kicks_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flap_kicks_kicks_index ON maker.flap_kicks USING btree (kicks);
 
 
 --
@@ -16323,6 +17061,13 @@ CREATE INDEX flip_kicks_header_id_index ON maker.flip_kicks USING btree (header_
 
 
 --
+-- Name: flip_kicks_kicks_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flip_kicks_kicks_index ON maker.flip_kicks USING btree (kicks);
+
+
+--
 -- Name: flip_tau_address_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -16537,6 +17282,13 @@ CREATE INDEX flop_kicks_address_index ON maker.flop_kicks USING btree (address_i
 --
 
 CREATE INDEX flop_kicks_header_id_index ON maker.flop_kicks USING btree (header_id);
+
+
+--
+-- Name: flop_kicks_kicks_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flop_kicks_kicks_index ON maker.flop_kicks USING btree (kicks);
 
 
 --

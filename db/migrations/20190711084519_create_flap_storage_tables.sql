@@ -10,9 +10,13 @@ CREATE TABLE maker.flap_bid_bid
     bid        NUMERIC NOT NULL,
     UNIQUE (diff_id, header_id, address_id, bid_id, bid)
 );
+
 CREATE INDEX flap_bid_bid_header_id_index ON maker.flap_bid_bid (header_id);
 CREATE INDEX flap_bid_bid_bid_id_index ON maker.flap_bid_bid (bid_id);
 CREATE INDEX flap_bid_bid_address_index ON maker.flap_bid_bid (address_id);
+
+COMMENT ON TABLE maker.flap_bid_bid
+    IS E'@omit';
 
 CREATE TABLE maker.flap_bid_lot
 (
@@ -24,9 +28,13 @@ CREATE TABLE maker.flap_bid_lot
     lot        NUMERIC NOT NULL,
     UNIQUE (diff_id, header_id, address_id, bid_id, lot)
 );
+
 CREATE INDEX flap_bid_lot_header_id_index ON maker.flap_bid_lot (header_id);
 CREATE INDEX flap_bid_lot_bid_id_index ON maker.flap_bid_lot (bid_id);
 CREATE INDEX flap_bid_lot_bid_address_index ON maker.flap_bid_lot (address_id);
+
+COMMENT ON TABLE maker.flap_bid_lot
+    IS E'@omit';
 
 CREATE TABLE maker.flap_bid_guy
 (
@@ -38,9 +46,13 @@ CREATE TABLE maker.flap_bid_guy
     guy        TEXT    NOT NULL,
     UNIQUE (diff_id, header_id, address_id, bid_id, guy)
 );
+
 CREATE INDEX flap_bid_guy_header_id_index ON maker.flap_bid_guy (header_id);
 CREATE INDEX flap_bid_guy_bid_id_index ON maker.flap_bid_guy (bid_id);
 CREATE INDEX flap_bid_guy_bid_address_index ON maker.flap_bid_guy (address_id);
+
+COMMENT ON TABLE maker.flap_bid_guy
+    IS E'@omit';
 
 CREATE TABLE maker.flap_bid_tic
 (
@@ -52,9 +64,13 @@ CREATE TABLE maker.flap_bid_tic
     tic        BIGINT  NOT NULL,
     UNIQUE (diff_id, header_id, address_id, bid_id, tic)
 );
+
 CREATE INDEX flap_bid_tic_header_id_index ON maker.flap_bid_tic (header_id);
 CREATE INDEX flap_bid_tic_bid_id_index ON maker.flap_bid_tic (bid_id);
 CREATE INDEX flap_bid_tic_bid_address_index ON maker.flap_bid_tic (address_id);
+
+COMMENT ON TABLE maker.flap_bid_tic
+    IS E'@omit';
 
 CREATE TABLE maker.flap_bid_end
 (
@@ -69,6 +85,9 @@ CREATE TABLE maker.flap_bid_end
 CREATE INDEX flap_bid_end_header_id_index ON maker.flap_bid_end (header_id);
 CREATE INDEX flap_bid_end_bid_id_index ON maker.flap_bid_end (bid_id);
 CREATE INDEX flap_bid_end_bid_address_index ON maker.flap_bid_end (address_id);
+
+COMMENT ON TABLE maker.flap_bid_end
+    IS E'@omit';
 
 CREATE TABLE maker.flap_vat
 (
@@ -85,6 +104,9 @@ CREATE INDEX flap_vat_header_id_index
 CREATE INDEX flap_vat_address_index
     ON maker.flap_vat (address_id);
 
+COMMENT ON TABLE maker.flap_vat
+    IS E'@omit';
+
 CREATE TABLE maker.flap_gem
 (
     id         SERIAL PRIMARY KEY,
@@ -99,6 +121,9 @@ CREATE INDEX flap_gem_header_id_index
     ON maker.flap_gem (header_id);
 CREATE INDEX flap_gem_address_index
     ON maker.flap_gem (address_id);
+
+COMMENT ON TABLE maker.flap_gem
+    IS E'@omit';
 
 CREATE TABLE maker.flap_beg
 (
@@ -115,6 +140,9 @@ CREATE INDEX flap_beg_header_id_index
 CREATE INDEX flap_beg_address_index
     ON maker.flap_beg (address_id);
 
+COMMENT ON TABLE maker.flap_beg
+    IS E'@omit';
+
 CREATE TABLE maker.flap_ttl
 (
     id         SERIAL PRIMARY KEY,
@@ -129,6 +157,9 @@ CREATE INDEX flap_ttl_header_id_index
     ON maker.flap_ttl (header_id);
 CREATE INDEX flap_ttl_address_index
     ON maker.flap_ttl (address_id);
+
+COMMENT ON TABLE maker.flap_ttl
+    IS E'@omit';
 
 CREATE TABLE maker.flap_tau
 (
@@ -145,6 +176,9 @@ CREATE INDEX flap_tau_header_id_index
 CREATE INDEX flap_tau_address_index
     ON maker.flap_tau (address_id);
 
+COMMENT ON TABLE maker.flap_tau
+    IS E'@omit';
+
 CREATE TABLE maker.flap_kicks
 (
     id         SERIAL PRIMARY KEY,
@@ -157,9 +191,14 @@ CREATE TABLE maker.flap_kicks
 
 CREATE INDEX flap_kicks_header_id_index ON maker.flap_kicks (header_id);
 CREATE INDEX flap_kicks_address_index ON maker.flap_kicks (address_id);
+CREATE INDEX flap_kicks_kicks_index ON maker.flap_kicks (kicks);
+
+COMMENT ON TABLE maker.flap_kicks
+    IS E'@name flapKicksStorage\n@omit';
+
 
 -- prevent naming conflict with maker.flap_kick in postgraphile
-COMMENT ON TABLE maker.flap_kicks IS E'@name flapKicksStorage';
+-- COMMENT ON TABLE maker.flap_kicks IS E'@name flapKicksStorage';
 
 CREATE TABLE maker.flap_live
 (
@@ -176,12 +215,16 @@ CREATE INDEX flap_live_header_id_index
 CREATE INDEX flap_live_address_index
     ON maker.flap_live (address_id);
 
+COMMENT ON TABLE maker.flap_live
+    IS E'@omit';
+
 -- +goose Down
 -- SQL in this section is executed when the migration is rolled back.
 DROP INDEX maker.flap_live_address_index;
 DROP INDEX maker.flap_live_header_id_index;
 DROP INDEX maker.flap_kicks_address_index;
 DROP INDEX maker.flap_kicks_header_id_index;
+DROP INDEX maker.flap_kicks_kicks_index;
 DROP INDEX maker.flap_tau_address_index;
 DROP INDEX maker.flap_tau_header_id_index;
 DROP INDEX maker.flap_ttl_address_index;

@@ -12,6 +12,8 @@ CREATE TABLE maker.spot_ilk_pip
 
 CREATE INDEX spot_ilk_pip_header_id_index
     ON maker.spot_ilk_pip (header_id);
+COMMENT ON TABLE maker.spot_ilk_pip
+    IS E'@omit';
 CREATE INDEX spot_ilk_pip_ilk_index
     ON maker.spot_ilk_pip (ilk_id);
 
@@ -27,6 +29,8 @@ CREATE TABLE maker.spot_ilk_mat
 
 CREATE INDEX spot_ilk_mat_header_id_index
     ON maker.spot_ilk_mat (header_id);
+COMMENT ON TABLE maker.spot_ilk_mat
+    IS E'@omit';
 CREATE INDEX spot_ilk_mat_ilk_index
     ON maker.spot_ilk_mat (ilk_id);
 
@@ -41,6 +45,8 @@ CREATE TABLE maker.spot_vat
 
 CREATE INDEX spot_vat_header_id_index
     ON maker.spot_vat (header_id);
+COMMENT ON TABLE maker.spot_vat
+    IS E'@omit';
 
 CREATE TABLE maker.spot_par
 (
@@ -53,6 +59,8 @@ CREATE TABLE maker.spot_par
 
 CREATE INDEX spot_par_header_id_index
     ON maker.spot_par (header_id);
+COMMENT ON TABLE maker.spot_par
+    IS E'@omit';
 
 CREATE TABLE maker.spot_live
 (
@@ -65,6 +73,8 @@ CREATE TABLE maker.spot_live
 
 CREATE INDEX spot_live_header_id_index
     ON maker.spot_live (header_id);
+COMMENT ON TABLE maker.spot_live
+    IS E'@omit';
 
 
 -- +goose Down

@@ -22,6 +22,9 @@ CREATE TABLE maker.flap
 CREATE INDEX flap_address_index
     ON maker.flap (address_id);
 
+COMMENT ON TABLE maker.flap
+    IS E'@omit';
+
 CREATE FUNCTION get_latest_flap_bid_guy(bid_id numeric) RETURNS TEXT AS
 $$
 SELECT guy

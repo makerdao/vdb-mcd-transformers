@@ -15,7 +15,7 @@ CREATE TABLE maker.flip_kick
 );
 
 -- prevent naming conflict with maker.flip_kicks in postgraphile
-COMMENT ON TABLE maker.flip_kick IS E'@name flipKickEvent';
+-- COMMENT ON TABLE maker.flip_kick IS E'@name flipKickEvent';
 
 CREATE INDEX flip_kick_header_index
     ON maker.flip_kick (header_id);

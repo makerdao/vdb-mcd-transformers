@@ -12,7 +12,7 @@ CREATE TABLE maker.flap_kick
 );
 
 -- prevent naming conflict with maker.flap_kicks in postgraphile
-COMMENT ON TABLE maker.flap_kick IS E'@name flapKickEvent';
+-- COMMENT ON TABLE maker.flap_kick IS E'@name flapKickEvent';
 
 CREATE INDEX flap_kick_header_index
     ON maker.flap_kick (header_id);

@@ -10,6 +10,8 @@ CREATE TABLE maker.vow_vat
 
 CREATE INDEX vow_vat_header_id_index
     ON maker.vow_vat (header_id);
+COMMENT ON TABLE maker.vow_vat
+    IS E'@omit';
 
 CREATE TABLE maker.vow_flapper
 (
@@ -22,6 +24,8 @@ CREATE TABLE maker.vow_flapper
 
 CREATE INDEX vow_flapper_header_id_index
     ON maker.vow_flapper (header_id);
+COMMENT ON TABLE maker.vow_flapper
+    IS E'@omit';
 
 CREATE TABLE maker.vow_flopper
 (
@@ -34,6 +38,8 @@ CREATE TABLE maker.vow_flopper
 
 CREATE INDEX vow_flopper_header_id_index
     ON maker.vow_flopper (header_id);
+COMMENT ON TABLE maker.vow_flopper
+    IS E'@omit';
 
 CREATE TABLE maker.vow_sin_integer
 (
@@ -46,6 +52,8 @@ CREATE TABLE maker.vow_sin_integer
 
 CREATE INDEX vow_sin_integer_header_id_index
     ON maker.vow_sin_integer (header_id);
+COMMENT ON TABLE maker.vow_sin_integer
+    IS E'@omit';
 
 CREATE TABLE maker.vow_sin_mapping
 (
@@ -61,6 +69,8 @@ CREATE INDEX vow_sin_mapping_header_id_index
     ON maker.vow_sin_mapping (header_id);
 CREATE INDEX vow_sin_mapping_era_index
     ON maker.vow_sin_mapping (era);
+COMMENT ON TABLE maker.vow_sin_mapping
+    IS E'@omit';
 
 CREATE TABLE maker.vow_ash
 (
@@ -73,6 +83,8 @@ CREATE TABLE maker.vow_ash
 
 CREATE INDEX vow_ash_header_id_index
     ON maker.vow_ash (header_id);
+COMMENT ON TABLE maker.vow_ash
+    IS E'@omit';
 
 CREATE TABLE maker.vow_wait
 (
@@ -85,6 +97,8 @@ CREATE TABLE maker.vow_wait
 
 CREATE INDEX vow_wait_header_id_index
     ON maker.vow_wait (header_id);
+COMMENT ON TABLE maker.vow_wait
+    IS E'@omit';
 
 CREATE TABLE maker.vow_dump
 (
@@ -97,6 +111,8 @@ CREATE TABLE maker.vow_dump
 
 CREATE INDEX vow_dump_header_id_index
     ON maker.vow_dump (header_id);
+COMMENT ON TABLE maker.vow_dump
+    IS E'@omit';
 
 CREATE TABLE maker.vow_sump
 (
@@ -109,6 +125,8 @@ CREATE TABLE maker.vow_sump
 
 CREATE INDEX vow_sump_header_id_index
     ON maker.vow_sump (header_id);
+COMMENT ON TABLE maker.vow_sump
+    IS E'@omit';
 
 CREATE TABLE maker.vow_bump
 (
@@ -121,6 +139,8 @@ CREATE TABLE maker.vow_bump
 
 CREATE INDEX vow_bump_header_id_index
     ON maker.vow_bump (header_id);
+COMMENT ON TABLE maker.vow_bump
+    IS E'@omit';
 
 CREATE TABLE maker.vow_hump
 (
@@ -133,6 +153,8 @@ CREATE TABLE maker.vow_hump
 
 CREATE INDEX vow_hump_header_id_index
     ON maker.vow_hump (header_id);
+COMMENT ON TABLE maker.vow_hump
+    IS E'@omit';
 
 -- +goose Down
 DROP INDEX maker.vow_vat_header_id_index;

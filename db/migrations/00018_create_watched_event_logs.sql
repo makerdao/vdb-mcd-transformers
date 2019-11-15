@@ -1,10 +1,13 @@
 -- +goose Up
-CREATE VIEW block_stats AS
+CREATE VIEW public.block_stats AS
 SELECT max(block_number) AS max_block,
        min(block_number) AS min_block
 FROM full_sync_logs;
 
-CREATE VIEW watched_event_logs AS
+COMMENT ON VIEW public.block_stats
+    IS E'@omit';
+
+CREATE VIEW public.watched_event_logs AS
 SELECT log_filters.name,
        full_sync_logs.id,
        block_number,
@@ -26,6 +29,9 @@ WHERE (log_filters.topic0 = full_sync_logs.topic0 OR log_filters.topic0 ISNULL)
   AND (log_filters.topic1 = full_sync_logs.topic1 OR log_filters.topic1 ISNULL)
   AND (log_filters.topic2 = full_sync_logs.topic2 OR log_filters.topic2 ISNULL)
   AND (log_filters.topic3 = full_sync_logs.topic3 OR log_filters.topic3 ISNULL);
+
+COMMENT ON VIEW public.watched_event_logs
+    IS E'@omit';
 
 -- +goose Down
 DROP VIEW watched_event_logs;

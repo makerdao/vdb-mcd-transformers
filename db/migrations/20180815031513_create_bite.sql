@@ -13,8 +13,8 @@ CREATE TABLE maker.bite
     UNIQUE (header_id, log_id)
 );
 
-COMMENT ON TABLE maker.bite
-    IS E'@name raw_bites';
+--COMMENT ON TABLE maker.bite
+--    IS E'@name raw_bites';
 COMMENT ON COLUMN maker.bite.id
     IS E'@omit';
 

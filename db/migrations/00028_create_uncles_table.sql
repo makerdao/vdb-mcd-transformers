@@ -13,6 +13,8 @@ CREATE TABLE public.uncles (
 
 CREATE INDEX uncles_eth_node
     ON uncles (eth_node_id);
+COMMENT ON TABLE public.uncles
+    IS E'@omit';
 
 -- +goose Down
 DROP INDEX uncles_eth_node;

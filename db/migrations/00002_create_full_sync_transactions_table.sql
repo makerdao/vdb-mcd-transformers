@@ -1,5 +1,5 @@
 -- +goose Up
-CREATE TABLE full_sync_transactions (
+CREATE TABLE public.full_sync_transactions (
   id          SERIAL PRIMARY KEY,
   block_id    INTEGER NOT NULL REFERENCES blocks(id) ON DELETE CASCADE,
   gas_limit    NUMERIC,
@@ -13,6 +13,9 @@ CREATE TABLE full_sync_transactions (
   tx_to       VARCHAR(66),
   "value"     NUMERIC
 );
+
+COMMENT ON TABLE public.full_sync_transactions
+    IS E'@omit';
 
 -- +goose Down
 DROP TABLE full_sync_transactions;
