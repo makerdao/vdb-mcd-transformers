@@ -6,4 +6,3 @@ import (
 
 // TODO: replace block number when there is a yank event on Flip, Flop or Flap contracts
 var _ = Describe("Yank LogNoteTransforer", func() {})
-

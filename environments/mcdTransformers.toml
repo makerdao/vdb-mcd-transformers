@@ -101,6 +101,12 @@
         repository = "github.com/makerdao/vdb-mcd-transformers"
         migrations = "db/migrations"
         rank = "0"
+    [exporter.sai_flip]
+        path = "transformers/storage/flip/initializers/sai_flip"
+        type = "eth_storage"
+        repository = "github.com/makerdao/vdb-mcd-transformers"
+        migrations = "db/migrations"
+        rank = "0"
     [exporter.jug]
         path = "transformers/storage/jug/initializer"
         type = "eth_storage"

@@ -106,8 +106,8 @@ var _ = Describe("Dent transformer", func() {
 })
 
 type dentModel struct {
-	BidId           string `db:"bid_id"`
-	Lot             string
-	Bid             string
-	AddressId int64  `db:"address_id"`
+	BidId     string `db:"bid_id"`
+	Lot       string
+	Bid       string
+	AddressId int64 `db:"address_id"`
 }
