@@ -86,6 +86,10 @@ var _ = Describe("Signature constants", func() {
 		Expect(NewCdpSignature()).To(Equal("0xd6be0bc178658a382ff4f91c8c68b542aa6b71685b8fe427966b87745c3ea7a2"))
 	})
 
+	It("generates log note signature", func() {
+		Expect(LogValueSignature()).To(Equal("0x296ba4ca62c6c21c95e828080cb8aec7481b71390585605300a8a76f9e95b527"))
+	})
+
 	It("generates spot file mat signature", func() {
 		Expect(SpotFileMatSignature()).To(Equal("0x1a0b287e00000000000000000000000000000000000000000000000000000000"))
 	})

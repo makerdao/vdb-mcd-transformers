@@ -7835,6 +7835,45 @@ ALTER SEQUENCE maker.jug_vow_id_seq OWNED BY maker.jug_vow.id;
 
 
 --
+-- Name: log_value; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.log_value (
+    id integer NOT NULL,
+    header_id integer NOT NULL,
+    log_id bigint NOT NULL,
+    val numeric
+);
+
+
+--
+-- Name: COLUMN log_value.id; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON COLUMN maker.log_value.id IS '@omit';
+
+
+--
+-- Name: log_value_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.log_value_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: log_value_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.log_value_id_seq OWNED BY maker.log_value.id;
+
+
+--
 -- Name: new_cdp; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -10654,6 +10693,13 @@ ALTER TABLE ONLY maker.jug_vow ALTER COLUMN id SET DEFAULT nextval('maker.jug_vo
 
 
 --
+-- Name: log_value id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_value ALTER COLUMN id SET DEFAULT nextval('maker.log_value_id_seq'::regclass);
+
+
+--
 -- Name: new_cdp id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
@@ -12417,6 +12463,22 @@ ALTER TABLE ONLY maker.jug_vow
 
 
 --
+-- Name: log_value log_value_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_value
+    ADD CONSTRAINT log_value_header_id_log_id_key UNIQUE (header_id, log_id);
+
+
+--
+-- Name: log_value log_value_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_value
+    ADD CONSTRAINT log_value_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: new_cdp new_cdp_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -14058,6 +14120,13 @@ CREATE INDEX jug_init_header_index ON maker.jug_init USING btree (header_id);
 --
 
 CREATE INDEX jug_init_ilk_index ON maker.jug_init USING btree (ilk_id);
+
+
+--
+-- Name: log_value_header_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX log_value_header_index ON maker.log_value USING btree (header_id);
 
 
 --
@@ -15935,6 +16004,22 @@ ALTER TABLE ONLY maker.jug_vat
 
 ALTER TABLE ONLY maker.jug_vow
     ADD CONSTRAINT jug_vow_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: log_value log_value_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_value
+    ADD CONSTRAINT log_value_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: log_value log_value_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_value
+    ADD CONSTRAINT log_value_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
 
 
 --
