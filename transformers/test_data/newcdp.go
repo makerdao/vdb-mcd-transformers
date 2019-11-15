@@ -23,7 +23,7 @@ const (
 var (
 	newCdpUsr        = common.HexToAddress("0x000000000000000000000000a9fccb07dd3f774d5b9d02e99de1a27f47f91189")
 	newCdpOwn        = common.HexToAddress("0x000000000000000000000000a9fccb07dd3f774d5b9d02e99de1a27f47f91189")
-	newCdpCdp        = big.NewInt(21)
+	newCdpCdp        = big.NewInt(83)
 	newCdpRawJson, _ = json.Marshal(NewCdpHeaderSyncLog)
 )
 
@@ -33,6 +33,7 @@ var rawNewCdpLog = types.Log{
 		common.HexToHash(constants.NewCdpSignature()),
 		common.HexToHash("0x000000000000000000000000a9fccb07dd3f774d5b9d02e99de1a27f47f91189"),
 		common.HexToHash("0x000000000000000000000000a9fccb07dd3f774d5b9d02e99de1a27f47f91189"),
+		common.HexToHash("0x0000000000000000000000000000000000000000000000000000000000000053"),
 	},
 	Data:        hexutil.MustDecode(newCdpData),
 	BlockNumber: uint64(TemporaryNewCdpBlockNumber),
