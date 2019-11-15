@@ -32,6 +32,7 @@ import (
 )
 
 var _ = XDescribe("FlopKick Transformer", func() {
+	//TODO: There are currently no FlopKick events on Kovan
 	var (
 		db             *postgres.DB
 		blockChain     core.BlockChain

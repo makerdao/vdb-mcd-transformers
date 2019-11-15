@@ -31,7 +31,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = XDescribe("VowFess EventTransformer", func() {
+var _ = Describe("VowFess EventTransformer", func() {
 	var (
 		db         *postgres.DB
 		blockChain core.BlockChain
@@ -53,9 +53,8 @@ var _ = XDescribe("VowFess EventTransformer", func() {
 		Topic:             constants.VowFessSignature(),
 	}
 
-	// TODO: replace block number when there is a fess event on the updated Vow
 	It("transforms VowFess log events", func() {
-		blockNumber := int64(9377319)
+		blockNumber := int64(14783840)
 		vowFessConfig.StartingBlockNumber = blockNumber
 		vowFessConfig.EndingBlockNumber = blockNumber
 
@@ -85,7 +84,7 @@ var _ = XDescribe("VowFess EventTransformer", func() {
 		err = db.Select(&dbResult, `SELECT tab from maker.vow_fess`)
 		Expect(err).NotTo(HaveOccurred())
 
-		Expect(dbResult[0].Tab).To(Equal("11000000000000000000000"))
+		Expect(dbResult[0].Tab).To(Equal("21001400664939036955849236599648053637998064448"))
 	})
 })
 

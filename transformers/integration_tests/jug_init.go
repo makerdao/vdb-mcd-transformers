@@ -40,7 +40,7 @@ var _ = Describe("JugInit EventTransformer", func() {
 	}
 
 	It("transforms jug init log events", func() {
-		blockNumber := int64(14374561)
+		blockNumber := int64(14681706)
 		jugInitConfig.StartingBlockNumber = blockNumber
 		jugInitConfig.EndingBlockNumber = blockNumber
 
@@ -79,7 +79,7 @@ var _ = Describe("JugInit EventTransformer", func() {
 
 		Expect(len(dbResults)).To(Equal(1))
 		dbResult := dbResults[0]
-		ilkID, err := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
+		ilkID, err := shared.GetOrCreateIlk("0x5341490000000000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(dbResult.Ilk).To(Equal(strconv.FormatInt(ilkID, 10)))
 	})

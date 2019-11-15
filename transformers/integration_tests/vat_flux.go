@@ -31,7 +31,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = XDescribe("VatFlux EventTransformer", func() {
+var _ = Describe("VatFlux EventTransformer", func() {
 	vatFluxConfig := transformer.EventTransformerConfig{
 		TransformerName:   constants.VatFluxLabel,
 		ContractAddresses: []string{test_data.VatAddress()},
@@ -40,7 +40,7 @@ var _ = XDescribe("VatFlux EventTransformer", func() {
 	}
 
 	It("transforms VatFlux log events", func() {
-		blockNumber := int64(13922081)
+		blockNumber := int64(14804638)
 		vatFluxConfig.StartingBlockNumber = blockNumber
 		vatFluxConfig.EndingBlockNumber = blockNumber
 
@@ -82,9 +82,9 @@ var _ = XDescribe("VatFlux EventTransformer", func() {
 		ilkID, err := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(dbResult[0].Ilk).To(Equal(strconv.FormatInt(ilkID, 10)))
-		Expect(dbResult[0].Src).To(Equal("0x3bDF1B433793f86D6f9F31531727307bC573750e"))
-		Expect(dbResult[0].Dst).To(Equal("0x6bCc9f143D9C799E2C79DB9C921095130d371A16"))
-		Expect(dbResult[0].Wad).To(Equal("2000000000000000000"))
+		Expect(dbResult[0].Src).To(Equal("0x1D4A67E274F2e614441836537aC2E91E8a414C0A"))
+		Expect(dbResult[0].Dst).To(Equal("0xef82e83F02894eE4BdafCDB04F7fbf783b25Af1A"))
+		Expect(dbResult[0].Wad).To(Equal("2837000000000000000"))
 	})
 })
 

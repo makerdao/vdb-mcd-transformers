@@ -37,9 +37,8 @@ var _ = Describe("FlipKick Transformer", func() {
 		Topic:             constants.FlipKickSignature(),
 	}
 
-	// TODO: Update when updated kick event exists in kovan
-	XIt("fetches and transforms a FlipKick event from Kovan chain", func() {
-		blockNumber := int64(8956476)
+	It("fetches and transforms a FlipKick event from Kovan chain", func() {
+		blockNumber := int64(14783840)
 		flipKickConfig.StartingBlockNumber = blockNumber
 		flipKickConfig.EndingBlockNumber = blockNumber
 
@@ -72,27 +71,30 @@ var _ = Describe("FlipKick Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []FlipKickModel
-		err = db.Select(&dbResult, `SELECT bid_id, lot, bid, tab, usr, gal, contract_address FROM maker.flip_kick`)
+		err = db.Select(&dbResult, `SELECT bid_id, lot, bid, tab, usr, gal, address_id FROM maker.flip_kick`)
+		Expect(err).NotTo(HaveOccurred())
+
+		flipContractAddressId, err := shared.GetOrCreateAddress(test_data.EthFlipAddress(), db)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))
 		Expect(dbResult[0].Bid).To(Equal("0"))
-		Expect(dbResult[0].Lot).To(Equal("1000000000000000000"))
-		Expect(dbResult[0].Tab).To(Equal(""))
-		Expect(dbResult[0].Usr).To(Equal(""))
-		Expect(dbResult[0].Gal).To(Equal("0x3728e9777B2a0a611ee0F89e00E01044ce4736d1"))
-		Expect(dbResult[0].ContractAddress).To(Equal(""))
+		Expect(dbResult[0].Lot).To(Equal("170000000000000000"))
+		Expect(dbResult[0].Tab).To(Equal("23731582751381111760109637357602300610937812826"))
+		Expect(dbResult[0].Usr).To(Equal("0xA17B62E20d2d700950cf95ceE5d8cC910850Dd98"))
+		Expect(dbResult[0].Gal).To(Equal("0x6F29dfc2f7142C6f161abC0E5bE6E79A41269Fa9"))
+		Expect(dbResult[0].AddressId).To(Equal(flipContractAddressId))
 	})
 })
 
 type FlipKickModel struct {
-	BidId           string `db:"bid_id"`
-	Lot             string
-	Bid             string
-	Tab             string
-	Usr             string
-	Gal             string
-	ContractAddress string `db:"address_id"`
-	HeaderID        int64  `db:"header_id"`
-	LogID           int64  `db:"log_id"`
+	BidId     string `db:"bid_id"`
+	Lot       string
+	Bid       string
+	Tab       string
+	Usr       string
+	Gal       string
+	AddressId int64 `db:"address_id"`
+	HeaderID  int64 `db:"header_id"`
+	LogID     int64 `db:"log_id"`
 }

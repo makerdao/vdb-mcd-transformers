@@ -29,6 +29,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
+// TODO: Update when Tick events are on Kovan
 var _ = XDescribe("VatHeal Transformer", func() {
 	vatHealConfig := transformer.EventTransformerConfig{
 		TransformerName:   constants.VatHealLabel,

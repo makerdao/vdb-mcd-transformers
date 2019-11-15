@@ -31,7 +31,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = XDescribe("Tend EventTransformer", func() {
+var _ = Describe("Tend EventTransformer", func() {
 	var (
 		db          *postgres.DB
 		blockChain  core.BlockChain
@@ -52,8 +52,8 @@ var _ = XDescribe("Tend EventTransformer", func() {
 
 		tendConfig = transformer.EventTransformerConfig{
 			TransformerName:   constants.TendLabel,
-			ContractAddresses: []string{test_data.FlapAddress()},
-			ContractAbi:       constants.FlapABI(),
+			ContractAddresses: []string{test_data.EthFlipAddress()},
+			ContractAbi:       constants.FlipABI(),
 			Topic:             constants.TendSignature(),
 		}
 
@@ -68,8 +68,8 @@ var _ = XDescribe("Tend EventTransformer", func() {
 		}
 	})
 
-	It("fetches and transforms a Tend event from the Kovan chain", func() {
-		blockNumber := int64(14308157)
+	It("fetches and transforms a Flip Tend event from the Kovan chain", func() {
+		blockNumber := int64(14783938)
 		initializer.Config.StartingBlockNumber = blockNumber
 		initializer.Config.EndingBlockNumber = blockNumber
 
@@ -90,10 +90,13 @@ var _ = XDescribe("Tend EventTransformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))
-		Expect(dbResult[0].Bid).To(Equal("193362866030587"))
-		Expect(dbResult[0].BidId).To(Equal("27"))
-		Expect(dbResult[0].Lot).To(Equal("100000000000000000000000000000000000000000000"))
+		Expect(dbResult[0].Bid).To(Equal("23731582751381111760109637357602300610937812826"))
+		Expect(dbResult[0].BidId).To(Equal("1"))
+		Expect(dbResult[0].Lot).To(Equal("170000000000000000"))
 	})
+
+	//TODO: There are currently no Flap Tend events on Kovan
+	It("fetches and transforms a Flap Tend event from the Kovan chain", func() {})
 })
 
 type tendModel struct {

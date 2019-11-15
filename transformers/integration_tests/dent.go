@@ -31,7 +31,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = XDescribe("Dent transformer", func() {
+var _ = Describe("Dent transformer", func() {
 	var (
 		db          *postgres.DB
 		blockChain  core.BlockChain
@@ -70,7 +70,11 @@ var _ = XDescribe("Dent transformer", func() {
 	})
 
 	It("persists a flop dent log event", func() {
-		blockNumber := int64(8955613)
+		//TODO: There are currently no Flop.dent events on Kovan
+	})
+
+	It("persists a flip dent log event", func() {
+		blockNumber := int64(14783939)
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -87,25 +91,17 @@ var _ = XDescribe("Dent transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []dentModel
-		err = db.Select(&dbResult, `SELECT bid, bid_id, guy, lot FROM maker.dent`)
+		err = db.Select(&dbResult, `SELECT bid, bid_id, lot, address_id FROM maker.dent`)
+		Expect(err).NotTo(HaveOccurred())
+
+		flipContractAddressId, err := shared.GetOrCreateAddress(test_data.EthFlipAddress(), db)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))
-		Expect(dbResult[0].Bid).To(Equal("10000000000000000000000"))
-		Expect(dbResult[0].BidId).To(Equal("2"))
-		Expect(dbResult[0].Lot).To(Equal("1000000000000000000000000000"))
-		Expect(dbResult[0].ContractAddress).To(Equal(""))
-
-		var dbTic int64
-		err = db.Get(&dbTic, `SELECT tic FROM maker.dent`)
-		Expect(err).NotTo(HaveOccurred())
-
-		actualTic := 1538637780 + test_data.TTL
-		Expect(dbTic).To(Equal(actualTic))
-	})
-
-	It("persists a flip dent log event", func() {
-		//TODO: There are currently no Flip.dent events on Kovan
+		Expect(dbResult[0].Bid).To(Equal("23731582751381111760109637357602300610937812826"))
+		Expect(dbResult[0].BidId).To(Equal("1"))
+		Expect(dbResult[0].Lot).To(Equal("132025495139811470"))
+		Expect(dbResult[0].AddressId).To(Equal(flipContractAddressId))
 	})
 })
 
@@ -113,5 +109,5 @@ type dentModel struct {
 	BidId           string `db:"bid_id"`
 	Lot             string
 	Bid             string
-	ContractAddress string `db:"contract_address"`
+	AddressId int64  `db:"address_id"`
 }

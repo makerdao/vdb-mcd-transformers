@@ -32,7 +32,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = XDescribe("Vat Grab Transformer", func() {
+var _ = Describe("Vat Grab Transformer", func() {
 	vatGrabConfig := transformer.EventTransformerConfig{
 		TransformerName:   constants.VatGrabLabel,
 		ContractAddresses: []string{test_data.VatAddress()},
@@ -40,9 +40,8 @@ var _ = XDescribe("Vat Grab Transformer", func() {
 		Topic:             constants.VatGrabSignature(),
 	}
 
-	// TODO: Replace block number once there's a grab event on the updated Vat
 	It("transforms VatGrab log events", func() {
-		blockNumber := int64(8958230)
+		blockNumber := int64(14783840)
 		vatGrabConfig.StartingBlockNumber = blockNumber
 		vatGrabConfig.EndingBlockNumber = blockNumber
 
@@ -80,17 +79,17 @@ var _ = XDescribe("Vat Grab Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))
-		urnID, err := shared.GetOrCreateUrn("0000000000000000000000006a3ae20c315e845b2e398e68effe39139ec6060c",
-			"0x5245500000000000000000000000000000000000000000000000000000000000", db)
+		urnID, err := shared.GetOrCreateUrn("0xA17B62E20d2d700950cf95ceE5d8cC910850Dd98",
+			"0x4554482d41000000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(dbResult[0].Urn).To(Equal(strconv.FormatInt(urnID, 10)))
-		Expect(dbResult[0].V).To(Equal("0000000000000000000000002f34f22a00ee4b7a8f8bbc4eaee1658774c624e0")) //cat contract address as bytes32
-		Expect(dbResult[0].W).To(Equal("0000000000000000000000003728e9777b2a0a611ee0f89e00e01044ce4736d1"))
+		Expect(dbResult[0].V).To(Equal("0xAB10DFC4578EE6f9389c3c3F5F010CF9df30ea2B")) //cat contract address as bytes32
+		Expect(dbResult[0].W).To(Equal("0x6F29dfc2f7142C6f161abC0E5bE6E79A41269Fa9"))
 		expectedDink := new(big.Int)
-		expectedDink.SetString("115792089237316195423570985008687907853269984665640564039455584007913129639936", 10)
+		expectedDink.SetString("-170000000000000000", 10)
 		Expect(dbResult[0].Dink).To(Equal(expectedDink.String()))
 		expectedDart := new(big.Int)
-		expectedDart.SetString("115792089237316195423570985008687907853269984665640564039441803007913129639936", 10)
+		expectedDart.SetString("-20990706494289402873", 10)
 		Expect(dbResult[0].Dart).To(Equal(expectedDart.String()))
 	})
 })
