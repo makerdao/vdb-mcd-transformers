@@ -56,8 +56,8 @@ var _ = Describe("Vat frob Transformer", func() {
 		}
 	})
 
-	It("fetches and transforms a vat frob event from Kovan chain", func() {
-		blockNumber := int64(14911513)
+	It("fetches and transforms a vat frob event", func() {
+		blockNumber := int64(8928903)
 		initializer.Config.StartingBlockNumber = blockNumber
 		initializer.Config.EndingBlockNumber = blockNumber
 
@@ -82,15 +82,15 @@ var _ = Describe("Vat frob Transformer", func() {
 
 		Expect(len(dbResult)).To(Equal(1))
 		Expect(err).NotTo(HaveOccurred())
-		urnID, err := shared.GetOrCreateUrn("0x1cFAC6A57f473541f1a38056a83898338e3B546a",
+		urnID, err := shared.GetOrCreateUrn("0xfC24B0E4A2ff825cd25E85D658b70b51Bf1D0902",
 			"0x4554482d41000000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(dbResult[0].Urn).To(Equal(strconv.FormatInt(urnID, 10)))
-		Expect(dbResult[0].V).To(Equal("0x1cFAC6A57f473541f1a38056a83898338e3B546a"))
-		Expect(dbResult[0].W).To(Equal("0x1cFAC6A57f473541f1a38056a83898338e3B546a"))
-		Expect(dbResult[0].Dink).To(Equal("200000000000000000"))
-		Expect(dbResult[0].Dart).To(Equal("20984635073990875301"))
+		Expect(dbResult[0].V).To(Equal("0xfC24B0E4A2ff825cd25E85D658b70b51Bf1D0902"))
+		Expect(dbResult[0].W).To(Equal("0xfC24B0E4A2ff825cd25E85D658b70b51Bf1D0902"))
+		Expect(dbResult[0].Dink).To(Equal("50000000000000000"))
+		Expect(dbResult[0].Dart).To(Equal("0"))
 	})
 })
 

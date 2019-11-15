@@ -25,7 +25,7 @@ var _ = Describe("PotExit Transformer", func() {
 	}
 
 	It("transforms PotExit log events", func() {
-		blockNumber := int64(15506076)
+		blockNumber := int64(9132846)
 		potExitConfig.StartingBlockNumber = blockNumber
 		potExitConfig.EndingBlockNumber = blockNumber
 
@@ -54,10 +54,10 @@ var _ = Describe("PotExit Transformer", func() {
 		queryErr := db.Get(&dbResult, `SELECT msg_sender, wad from maker.pot_exit`)
 		Expect(queryErr).NotTo(HaveOccurred())
 
-		addressID, addressErr := shared.GetOrCreateAddress("0xe7bc397dbd069fc7d0109c0636d06888bb50668c", db)
+		addressID, addressErr := shared.GetOrCreateAddress("0x2D8990618391aD152c336649D27F164b2618bf60", db)
 		Expect(addressErr).NotTo(HaveOccurred())
 		Expect(dbResult.MsgSender).To(Equal(strconv.FormatInt(addressID, 10)))
-		Expect(dbResult.Wad).To(Equal("22957121481043076331"))
+		Expect(dbResult.Wad).To(Equal("200473120597989120478"))
 	})
 })
 

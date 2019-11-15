@@ -22,7 +22,6 @@ import (
 
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/constants"
 	"github.com/makerdao/vulcanizedb/libraries/shared/fetcher"
 	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
@@ -144,7 +143,6 @@ var _ = Describe("Plugin test", func() {
 	viper.SetConfigName("testing")
 	viper.AddConfigPath("$GOPATH/src/github.com/makerdao/vdb-mcd-transformers/environments/")
 	var ilk = "0x4554482d41000000000000000000000000000000000000000000000000000000"
-	var blockNumber = int64(14764569)
 	var maxConsecutiveUnexpectedErrs = 0
 	var retryInterval = 2 * time.Second
 
@@ -183,7 +181,7 @@ var _ = Describe("Plugin test", func() {
 
 			It("Loads our generated Exporter and uses it to import an arbitrary set of TransformerInitializers that we can execute over", func() {
 				hr = repositories.NewHeaderRepository(db)
-				header1, err := blockChain.GetHeaderByNumber(blockNumber)
+				header1, err := blockChain.GetHeaderByNumber(8928180)
 				Expect(err).ToNot(HaveOccurred())
 				headerID, err = hr.CreateOrUpdateHeader(header1)
 				Expect(err).ToNot(HaveOccurred())
@@ -225,12 +223,12 @@ var _ = Describe("Plugin test", func() {
 					var flip string
 					_ = db.Get(&flip, `SELECT flip FROM maker.cat_file_flip WHERE header_id = $1`, headerID)
 					return flip
-				}).Should(Equal(test_data.EthFlipAddress()))
+				}).Should(Equal("0xd8a04F5412223F513DC55F839574430f5EC15531"))
 			})
 
 			It("rechecks checked headers for event logs", func() {
 				hr = repositories.NewHeaderRepository(db)
-				header1, err := blockChain.GetHeaderByNumber(blockNumber)
+				header1, err := blockChain.GetHeaderByNumber(8928180)
 				Expect(err).ToNot(HaveOccurred())
 				headerID, err = hr.CreateOrUpdateHeader(header1)
 				Expect(err).ToNot(HaveOccurred())
@@ -343,7 +341,7 @@ var _ = Describe("Plugin test", func() {
 
 			It("Loads our generated Exporter and uses it to import an arbitrary set of TransformerInitializers and StorageTransformerInitializers that we can execute over", func() {
 				hr = repositories.NewHeaderRepository(db)
-				header1, err := blockChain.GetHeaderByNumber(blockNumber)
+				header1, err := blockChain.GetHeaderByNumber(8928180)
 				Expect(err).ToNot(HaveOccurred())
 				headerID, err = hr.CreateOrUpdateHeader(header1)
 				Expect(err).ToNot(HaveOccurred())
@@ -385,7 +383,7 @@ var _ = Describe("Plugin test", func() {
 					var flip string
 					_ = db.Get(&flip, `SELECT flip FROM maker.cat_file_flip WHERE header_id = $1`, headerID)
 					return flip
-				}).Should(Equal(test_data.EthFlipAddress()))
+				}).Should(Equal("0xd8a04F5412223F513DC55F839574430f5EC15531"))
 
 				tailer := fs.FileTailer{Path: viper.GetString("filesystem.storageDiffsPath")}
 				storageFetcher := fetcher.NewCsvTailStorageFetcher(tailer)

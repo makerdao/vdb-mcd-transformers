@@ -41,7 +41,7 @@ var _ = Describe("VatFlux EventTransformer", func() {
 	}
 
 	It("transforms VatFlux log events", func() {
-		blockNumber := int64(14889930)
+		blockNumber := int64(9046454)
 		vatFluxConfig.StartingBlockNumber = blockNumber
 		vatFluxConfig.EndingBlockNumber = blockNumber
 
@@ -75,9 +75,9 @@ var _ = Describe("VatFlux EventTransformer", func() {
 		ilkID, err := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(dbResult[0].Ilk).To(Equal(strconv.FormatInt(ilkID, 10)))
-		Expect(dbResult[0].Src).To(Equal("0x0fACcB57F1186918F4b856f486dd81558Ff66926"))
-		Expect(dbResult[0].Dst).To(Equal("0x78680C202B302ed167E776C357312e11b6e1725B"))
-		Expect(dbResult[0].Wad).To(Equal("10000000000000000"))
+		Expect(dbResult[0].Src).To(Equal("0xF6Aa7E9C9805b683e3c70FFd68e9d0F2E632307d"))
+		Expect(dbResult[0].Dst).To(Equal("0xd4E133dD36442CeE6da6438d480558a631325edd"))
+		Expect(dbResult[0].Wad).To(Equal("1485170438407164677"))
 	})
 })
 

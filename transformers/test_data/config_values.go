@@ -7,8 +7,9 @@ import (
 
 // This file contains "shortcuts" to some configuration values useful for testing
 
-func CatAddress() string  { return checksum(constants.GetContractAddress("MCD_CAT")) }
-func FlapAddress() string { return checksum(constants.GetContractAddress("MCD_FLAP")) }
+func CatAddress() string        { return checksum(constants.GetContractAddress("MCD_CAT")) }
+func CdpManagerAddress() string { return checksum(constants.GetContractAddress("CDP_MANAGER")) }
+func FlapAddress() string       { return checksum(constants.GetContractAddress("MCD_FLAP")) }
 func FlipAddresses() []string {
 	var addressesResult []string
 	flipAddresses := constants.GetContractAddresses([]string{
@@ -34,11 +35,10 @@ func OsmAddresses() []string {
 	}
 	return addressesResult
 }
-func PotAddress() string        { return checksum(constants.GetContractAddress("MCD_POT")) }
-func SpotAddress() string       { return checksum(constants.GetContractAddress("MCD_SPOT")) }
-func VatAddress() string        { return checksum(constants.GetContractAddress("MCD_VAT")) }
-func VowAddress() string        { return checksum(constants.GetContractAddress("MCD_VOW")) }
-func CdpManagerAddress() string { return checksum(constants.GetContractAddress("CDP_MANAGER")) }
+func PotAddress() string  { return checksum(constants.GetContractAddress("MCD_POT")) }
+func SpotAddress() string { return checksum(constants.GetContractAddress("MCD_SPOT")) }
+func VatAddress() string  { return checksum(constants.GetContractAddress("MCD_VAT")) }
+func VowAddress() string  { return checksum(constants.GetContractAddress("MCD_VOW")) }
 
 func checksum(addressString string) string {
 	return common.HexToAddress(addressString).Hex()

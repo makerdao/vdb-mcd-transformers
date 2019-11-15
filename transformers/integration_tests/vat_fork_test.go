@@ -43,7 +43,7 @@ var _ = Describe("Vat fork transformer", func() {
 	}
 
 	It("fetches and transforms vat fork event", func() {
-		blockNumber := int64(14809729)
+		blockNumber := int64(9003611)
 		vatForkConfig.StartingBlockNumber = blockNumber
 		vatForkConfig.EndingBlockNumber = blockNumber
 
@@ -74,10 +74,10 @@ var _ = Describe("Vat fork transformer", func() {
 		ilkID, err := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(dbResult.Ilk).To(Equal(ilkID))
-		Expect(dbResult.Src).To(Equal("0x791e615fc7f63A02ab853C2ad457aB84D3897aE1"))
-		Expect(dbResult.Dst).To(Equal("0x911Ac745F7eB543C279FC254Da0A7005A422404e"))
-		Expect(dbResult.Dink).To(Equal("510000000000000000"))
-		Expect(dbResult.Dart).To(Equal("57787061332234766314"))
+		Expect(dbResult.Src).To(Equal("0x7939E55BE6A8CB8fceE57F409543E25489C06aaC"))
+		Expect(dbResult.Dst).To(Equal("0xd175Dfd88939eE702CB69e96f8bedAa2f93FBFfA"))
+		Expect(dbResult.Dink).To(Equal("3248431462049897973"))
+		Expect(dbResult.Dart).To(Equal("218121873079553101113"))
 	})
 })
 

@@ -38,7 +38,7 @@ var _ = Describe("VatMove EventTransformer", func() {
 	}
 
 	It("transforms VatMove log events", func() {
-		blockNumber := int64(14911655)
+		blockNumber := int64(9046898)
 		vatMoveConfig.StartingBlockNumber = blockNumber
 		vatMoveConfig.EndingBlockNumber = blockNumber
 
@@ -64,14 +64,14 @@ var _ = Describe("VatMove EventTransformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResults []vatMoveModel
-		err = db.Select(&dbResults, `SELECT src, dst, rad from maker.vat_move`)
+		err = db.Select(&dbResults, `SELECT src, dst, rad from maker.vat_move ORDER BY rad ASC LIMIT 1`)
 		Expect(err).NotTo(HaveOccurred())
 
-		Expect(len(dbResults)).To(Equal(2))
+		Expect(len(dbResults)).To(Equal(1))
 		dbResult := dbResults[0]
-		Expect(dbResult.Src).To(Equal("0x293E7ED907Ce834Cb3d4D1124FC432377eeb6443"))
-		Expect(dbResult.Dst).To(Equal("0x9B068ee52DB6508A5973f14B60c39c3219424381"))
-		Expect(dbResult.Rad).To(Equal("100000000000000000000000000000000000000000000000"))
+		Expect(dbResult.Src).To(Equal("0xc73e0383F3Aff3215E6f04B0331D58CeCf0Ab849"))
+		Expect(dbResult.Dst).To(Equal("0x9759A6Ac90977b93B58547b4A71c78317f391A28"))
+		Expect(dbResult.Rad).To(Equal("14967448188835982956000000000000000000000000000"))
 	})
 })
 

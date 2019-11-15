@@ -42,7 +42,7 @@ var _ = Describe("Vat Grab Transformer", func() {
 	}
 
 	It("transforms VatGrab log events", func() {
-		blockNumber := int64(14887556)
+		blockNumber := int64(8997283)
 		vatGrabConfig.StartingBlockNumber = blockNumber
 		vatGrabConfig.EndingBlockNumber = blockNumber
 
@@ -72,17 +72,17 @@ var _ = Describe("Vat Grab Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))
-		urnID, err := shared.GetOrCreateUrn("0xec718b93624e618709EE44F81240552cDcE162Ff",
+		urnID, err := shared.GetOrCreateUrn("0x0A051CD913dFD1820dbf87a9bf62B04A129F88A5",
 			"0x4554482d41000000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(dbResult[0].Urn).To(Equal(strconv.FormatInt(urnID, 10)))
 		Expect(dbResult[0].V).To(Equal(test_data.CatAddress())) //cat contract address as bytes32
-		Expect(dbResult[0].W).To(Equal("0x0F4Cbe6CBA918b7488C26E29d9ECd7368F38EA3b"))
+		Expect(dbResult[0].W).To(Equal("0xA950524441892A31ebddF91d3cEEFa04Bf454466"))
 		expectedDink := new(big.Int)
-		expectedDink.SetString("-161720826865883606", 10)
+		expectedDink.SetString("-50000000000000000000", 10)
 		Expect(dbResult[0].Dink).To(Equal(expectedDink.String()))
 		expectedDart := new(big.Int)
-		expectedDart.SetString("-19987760954011462103", 10)
+		expectedDart.SetString("-4460522851157616216837", 10)
 		Expect(dbResult[0].Dart).To(Equal(expectedDart.String()))
 	})
 })

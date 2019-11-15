@@ -46,7 +46,7 @@ var _ = Describe("JugDrip Transformer", func() {
 	})
 
 	It("transforms JugDrip log events", func() {
-		blockNumber := int64(14893280)
+		blockNumber := int64(8928358)
 		jugDripConfig.StartingBlockNumber = blockNumber
 		jugDripConfig.EndingBlockNumber = blockNumber
 

@@ -58,8 +58,8 @@ var _ = Describe("Tend EventTransformer", func() {
 		}
 	})
 
-	It("fetches and transforms a Flip Tend event from the Kovan chain", func() {
-		blockNumber := int64(14887560)
+	It("fetches and transforms a Flip Tend event", func() {
+		blockNumber := int64(9004844)
 		initializer.Config.StartingBlockNumber = blockNumber
 		initializer.Config.EndingBlockNumber = blockNumber
 
@@ -80,9 +80,9 @@ var _ = Describe("Tend EventTransformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))
-		Expect(dbResult[0].Bid).To(Equal("22600003035575947920904950765775383978062700848"))
-		Expect(dbResult[0].BidId).To(Equal("15"))
-		Expect(dbResult[0].Lot).To(Equal("161720826865883606"))
+		Expect(dbResult[0].Bid).To(Equal("76840636079422693500873675445736719538580144543"))
+		Expect(dbResult[0].BidId).To(Equal("121"))
+		Expect(dbResult[0].Lot).To(Equal("700000000000000000"))
 	})
 
 	//TODO: There are currently no Flap Tend events on Kovan

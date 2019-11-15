@@ -20,6 +20,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/tick"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	mcdConstants "github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
@@ -29,8 +30,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-// TODO: Update when Tick events are on Kovan
-var _ = XDescribe("Tick EventTransformer", func() {
+var _ = Describe("Tick EventTransformer", func() {
 	var (
 		tickConfig  transformer.EventTransformerConfig
 		initializer event.Transformer
@@ -59,8 +59,8 @@ var _ = XDescribe("Tick EventTransformer", func() {
 		}
 	})
 
-	It("fetches and transforms a flip tick event from the Kovan chain", func() {
-		blockNumber := int64(8935601)
+	It("fetches and transforms a flip tick event", func() {
+		blockNumber := int64(8974350)
 		tickConfig.StartingBlockNumber = blockNumber
 		tickConfig.EndingBlockNumber = blockNumber
 
@@ -76,16 +76,18 @@ var _ = XDescribe("Tick EventTransformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []tickModel
-		err = db.Select(&dbResult, `SELECT bid_id, contract_address FROM maker.tick`)
+		err = db.Select(&dbResult, `SELECT bid_id, address_id FROM maker.tick`)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))
-		Expect(dbResult[0].ContractAddress).To(Equal(""))
-		Expect(dbResult[0].BidId).To(Equal(""))
+		flipContractAddressId, err := shared.GetOrCreateAddress(test_data.EthFlipAddress(), db)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(dbResult[0].AddressID).To(Equal(flipContractAddressId))
+		Expect(dbResult[0].BidId).To(Equal("15"))
 	})
 
 	// Todo: fill this in with flap tick event data from kovan
-	It("fetches and transforms a flap tick event from the Kovan chain", func() {
+	XIt("fetches and transforms a flap tick event from the Kovan chain", func() {
 		blockNumber := int64(8935601)
 		tickConfig.StartingBlockNumber = blockNumber
 		tickConfig.EndingBlockNumber = blockNumber
@@ -102,18 +104,18 @@ var _ = XDescribe("Tick EventTransformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []tickModel
-		err = db.Select(&dbResult, `SELECT bid_id, contract_address FROM maker.tick`)
+		err = db.Select(&dbResult, `SELECT bid_id, address_id FROM maker.tick`)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))
-		Expect(dbResult[0].ContractAddress).To(Equal(""))
+		Expect(dbResult[0].AddressID).To(Equal(""))
 		Expect(dbResult[0].BidId).To(Equal(""))
 	})
 })
 
 type tickModel struct {
 	BidId            string `db:"bid_id"`
-	ContractAddress  string `db:"contract_address"`
+	AddressID        int64  `db:"address_id"`
 	LogIndex         uint   `db:"log_idx"`
 	TransactionIndex uint   `db:"tx_idx"`
 	Raw              []byte `db:"raw_log"`

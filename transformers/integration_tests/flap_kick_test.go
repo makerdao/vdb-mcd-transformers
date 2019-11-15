@@ -29,7 +29,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("FlapKick Transformer", func() {
+var _ = XDescribe("FlapKick Transformer", func() {
 	BeforeEach(func() {
 		test_config.CleanTestDB(db)
 	})

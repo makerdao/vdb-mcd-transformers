@@ -15,7 +15,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("PotCage EventTransformer", func() {
+var _ = XDescribe("PotCage EventTransformer", func() {
 	var cageDeploymentPotAddress = "0x52ca216f93836eea1ee605cf6aa41127134b9754"
 
 	BeforeEach(func() {

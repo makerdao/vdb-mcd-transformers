@@ -42,7 +42,7 @@ var _ = Describe("NewCdp Transformer", func() {
 	}
 
 	It("fetches and transforms a NewCdp event from Kovan chain", func() {
-		blockNumber := int64(14892092)
+		blockNumber := int64(8930579)
 		newCdpConfig.StartingBlockNumber = blockNumber
 		newCdpConfig.EndingBlockNumber = blockNumber
 
@@ -66,13 +66,13 @@ var _ = Describe("NewCdp Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []NewCdpModel
-		queryErr := db.Select(&dbResult, `SELECT usr, own, cdp FROM maker.new_cdp`)
+		queryErr := db.Select(&dbResult, `SELECT usr, own, cdp FROM maker.new_cdp ORDER BY cdp DESC LIMIT 1`)
 		Expect(queryErr).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))
-		Expect(dbResult[0].Usr).To(Equal("0x441d1a4393339C5Df24c2711A774CdEF1294F616"))
-		Expect(dbResult[0].Own).To(Equal("0x441d1a4393339C5Df24c2711A774CdEF1294F616"))
-		Expect(dbResult[0].Cdp).To(Equal("144"))
+		Expect(dbResult[0].Usr).To(Equal("0x094766D0C35300C1fc2D8A7DA8d641886Df0e5FD"))
+		Expect(dbResult[0].Own).To(Equal("0xB2AA786Be6264c3F29f96513f13bA927f8b350c2"))
+		Expect(dbResult[0].Cdp).To(Equal("99"))
 	})
 })
 

@@ -41,7 +41,7 @@ var _ = Describe("PotJoin Transformer", func() {
 	}
 
 	It("transforms PotJoin log events", func() {
-		blockNumber := int64(15485181)
+		blockNumber := int64(9131808)
 		potJoinConfig.StartingBlockNumber = blockNumber
 		potJoinConfig.EndingBlockNumber = blockNumber
 
@@ -70,10 +70,10 @@ var _ = Describe("PotJoin Transformer", func() {
 		queryErr := db.Get(&dbResult, `SELECT msg_sender, wad from maker.pot_join`)
 		Expect(queryErr).NotTo(HaveOccurred())
 
-		addressID, addressErr := shared.GetOrCreateAddress("0xe7bc397DBd069fC7d0109C0636d06888bb50668c", db)
+		addressID, addressErr := shared.GetOrCreateAddress("0x06AF07097C9Eeb7fD685c692751D5C66dB49c215", db)
 		Expect(addressErr).NotTo(HaveOccurred())
 		Expect(dbResult.MsgSender).To(Equal(strconv.FormatInt(addressID, 10)))
-		Expect(dbResult.Wad).To(Equal("4719670301595647258"))
+		Expect(dbResult.Wad).To(Equal("1065452848025509462649"))
 	})
 })
 

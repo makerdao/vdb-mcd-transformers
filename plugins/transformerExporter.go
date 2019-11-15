@@ -47,18 +47,6 @@ import (
 	vow_file "github.com/makerdao/vdb-mcd-transformers/transformers/events/vow_file/initializer"
 	vow_flog "github.com/makerdao/vdb-mcd-transformers/transformers/events/vow_flog/initializer"
 	yank "github.com/makerdao/vdb-mcd-transformers/transformers/events/yank/initializer"
-	cat "github.com/makerdao/vdb-mcd-transformers/transformers/storage/cat/initializer"
-	cdp_manager "github.com/makerdao/vdb-mcd-transformers/transformers/storage/cdp_manager/initializer"
-	flap_storage "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flap/initializer"
-	bat_flip "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/bat_flip"
-	eth_flip_a "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/eth_flip_a"
-	sai_flip "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/sai_flip"
-	flop_storage "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flop/initializer"
-	jug "github.com/makerdao/vdb-mcd-transformers/transformers/storage/jug/initializer"
-	pot "github.com/makerdao/vdb-mcd-transformers/transformers/storage/pot/initializer"
-	spot "github.com/makerdao/vdb-mcd-transformers/transformers/storage/spot/initializer"
-	vat "github.com/makerdao/vdb-mcd-transformers/transformers/storage/vat/initializer"
-	vow "github.com/makerdao/vdb-mcd-transformers/transformers/storage/vow/initializer"
 	interface1 "github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 )
 
@@ -113,19 +101,6 @@ func (e exporter) Export() ([]interface1.EventTransformerInitializer, []interfac
 			vow_flog.EventTransformerInitializer,
 			yank.EventTransformerInitializer,
 		},
-		[]interface1.StorageTransformerInitializer{
-			bat_flip.StorageTransformerInitializer,
-			cat.StorageTransformerInitializer,
-			cdp_manager.StorageTransformerInitializer,
-			eth_flip_a.StorageTransformerInitializer,
-			flap_storage.StorageTransformerInitializer,
-			flop_storage.StorageTransformerInitializer,
-			jug.StorageTransformerInitializer,
-			pot.StorageTransformerInitializer,
-			sai_flip.StorageTransformerInitializer,
-			spot.StorageTransformerInitializer,
-			vat.StorageTransformerInitializer,
-			vow.StorageTransformerInitializer,
-		},
+		[]interface1.StorageTransformerInitializer{},
 		[]interface1.ContractTransformerInitializer{}
 }
