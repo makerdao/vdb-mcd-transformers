@@ -155,6 +155,9 @@ var _ = Describe("Plugin test", func() {
 	var headerID int64
 	viper.SetConfigName("testing")
 	viper.AddConfigPath("$GOPATH/src/github.com/makerdao/vdb-mcd-transformers/environments/")
+	var ilk = "0x5341490000000000000000000000000000000000000000000000000000000000"
+	var blockNumber = int64(14681706)
+	var ethFlipAddress = "0x5B21577c9C3444A748684a80A1aaEFDac538a6cb"
 
 	Describe("Event Transformers only", func() {
 		BeforeEach(func() {
@@ -188,7 +191,7 @@ var _ = Describe("Plugin test", func() {
 			It("Loads our generated Exporter and uses it to import an arbitrary set of TransformerInitializers that we can execute over", func() {
 				db, bc := SetupDBandBC()
 				hr = repositories.NewHeaderRepository(db)
-				header1, err := bc.GetHeaderByNumber(14374561)
+				header1, err := bc.GetHeaderByNumber(blockNumber)
 				Expect(err).ToNot(HaveOccurred())
 				headerID, err = hr.CreateOrUpdateHeader(header1)
 				Expect(err).ToNot(HaveOccurred())
@@ -213,7 +216,7 @@ var _ = Describe("Plugin test", func() {
 				Consistently(func() error {
 					return executeErr
 				}).Should(BeNil())
-				expectedIlkID, err := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
+				expectedIlkID, err := shared.GetOrCreateIlk(ilk, db)
 				Expect(err).NotTo(HaveOccurred())
 				// including longer timeout because this test takes awhile to populate the db
 				Eventually(func() int64 {
@@ -230,13 +233,13 @@ var _ = Describe("Plugin test", func() {
 					var flip string
 					_ = db.Get(&flip, `SELECT flip FROM maker.cat_file_flip WHERE header_id = $1`, headerID)
 					return flip
-				}).Should(Equal("0xed9C01b0Da1453caBCD6605Ca0d85391D520B627"))
+				}).Should(Equal(ethFlipAddress))
 			})
 
 			It("rechecks checked headers for event logs", func() {
 				db, bc := SetupDBandBC()
 				hr = repositories.NewHeaderRepository(db)
-				header1, err := bc.GetHeaderByNumber(13171646)
+				header1, err := bc.GetHeaderByNumber(blockNumber)
 				Expect(err).ToNot(HaveOccurred())
 				headerID, err = hr.CreateOrUpdateHeader(header1)
 				Expect(err).ToNot(HaveOccurred())
@@ -351,7 +354,7 @@ var _ = Describe("Plugin test", func() {
 			It("Loads our generated Exporter and uses it to import an arbitrary set of TransformerInitializers and StorageTransformerInitializers that we can execute over", func() {
 				db, bc := SetupDBandBC()
 				hr = repositories.NewHeaderRepository(db)
-				header1, err := bc.GetHeaderByNumber(14374561)
+				header1, err := bc.GetHeaderByNumber(blockNumber)
 				Expect(err).ToNot(HaveOccurred())
 				headerID, err = hr.CreateOrUpdateHeader(header1)
 				Expect(err).ToNot(HaveOccurred())
@@ -376,7 +379,7 @@ var _ = Describe("Plugin test", func() {
 				Consistently(func() error {
 					return executeErr
 				}).Should(BeNil())
-				expectedIlkID, err := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
+				expectedIlkID, err := shared.GetOrCreateIlk(ilk, db)
 				Expect(err).NotTo(HaveOccurred())
 				// including longer timeout because this test takes awhile to populate the db
 				Eventually(func() int64 {
@@ -393,7 +396,7 @@ var _ = Describe("Plugin test", func() {
 					var flip string
 					_ = db.Get(&flip, `SELECT flip FROM maker.cat_file_flip WHERE header_id = $1`, headerID)
 					return flip
-				}).Should(Equal("0xed9C01b0Da1453caBCD6605Ca0d85391D520B627"))
+				}).Should(Equal(ethFlipAddress))
 
 				tailer := fs.FileTailer{Path: viper.GetString("filesystem.storageDiffsPath")}
 				storageFetcher := fetcher.NewCsvTailStorageFetcher(tailer)
