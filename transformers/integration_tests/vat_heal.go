@@ -29,8 +29,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-// TODO: Update when Tick events are on Kovan
-var _ = XDescribe("VatHeal Transformer", func() {
+var _ = Describe("VatHeal Transformer", func() {
 	vatHealConfig := transformer.EventTransformerConfig{
 		TransformerName:   constants.VatHealLabel,
 		ContractAddresses: []string{test_data.VatAddress()},
@@ -39,7 +38,7 @@ var _ = XDescribe("VatHeal Transformer", func() {
 	}
 
 	It("transforms VatHeal log events", func() {
-		blockNumber := int64(14308001)
+		blockNumber := int64(14883486)
 		vatHealConfig.StartingBlockNumber = blockNumber
 		vatHealConfig.EndingBlockNumber = blockNumber
 
@@ -76,7 +75,7 @@ var _ = XDescribe("VatHeal Transformer", func() {
 		err = db.Get(&dbResult, `SELECT rad from maker.vat_heal`)
 		Expect(err).NotTo(HaveOccurred())
 
-		Expect(dbResult.Rad).To(Equal("96532732872987985369729157768036110196102"))
+		Expect(dbResult.Rad).To(Equal("88730079194963819108278188144142294477657210"))
 	})
 })
 

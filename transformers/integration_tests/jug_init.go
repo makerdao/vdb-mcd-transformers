@@ -40,7 +40,7 @@ var _ = Describe("JugInit EventTransformer", func() {
 	}
 
 	It("transforms jug init log events", func() {
-		blockNumber := int64(14681706)
+		blockNumber := int64(14764612)
 		jugInitConfig.StartingBlockNumber = blockNumber
 		jugInitConfig.EndingBlockNumber = blockNumber
 

@@ -40,7 +40,7 @@ var _ = Describe("VatInit EventTransformer", func() {
 	}
 
 	It("transforms vat init log events", func() {
-		blockNumber := int64(14681706)
+		blockNumber := int64(14764612)
 		vatInitConfig.StartingBlockNumber = blockNumber
 		vatInitConfig.EndingBlockNumber = blockNumber
 

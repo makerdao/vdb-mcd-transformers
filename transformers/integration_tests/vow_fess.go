@@ -54,7 +54,7 @@ var _ = Describe("VowFess EventTransformer", func() {
 	}
 
 	It("transforms VowFess log events", func() {
-		blockNumber := int64(14783840)
+		blockNumber := int64(14887556)
 		vowFessConfig.StartingBlockNumber = blockNumber
 		vowFessConfig.EndingBlockNumber = blockNumber
 
@@ -84,7 +84,7 @@ var _ = Describe("VowFess EventTransformer", func() {
 		err = db.Select(&dbResult, `SELECT tab from maker.vow_fess`)
 		Expect(err).NotTo(HaveOccurred())
 
-		Expect(dbResult[0].Tab).To(Equal("21001400664939036955849236599648053637998064448"))
+		Expect(dbResult[0].Tab).To(Equal("20000002686350396390181372359093260157577611370"))
 	})
 })
 

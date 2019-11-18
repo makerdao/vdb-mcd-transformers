@@ -75,7 +75,7 @@ var _ = Describe("Dent transformer", func() {
 	})
 
 	It("persists a flip dent log event", func() {
-		blockNumber := int64(14783939)
+		blockNumber := int64(14887563)
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -99,9 +99,9 @@ var _ = Describe("Dent transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))
-		Expect(dbResult[0].Bid).To(Equal("23731582751381111760109637357602300610937812826"))
-		Expect(dbResult[0].BidId).To(Equal("1"))
-		Expect(dbResult[0].Lot).To(Equal("132025495139811470"))
+		Expect(dbResult[0].Bid).To(Equal("22600003035575947920904950765775383978062700848"))
+		Expect(dbResult[0].BidId).To(Equal("15"))
+		Expect(dbResult[0].Lot).To(Equal("125730197694441991"))
 		Expect(dbResult[0].AddressId).To(Equal(flipContractAddressId))
 	})
 })

@@ -20,6 +20,8 @@ import (
 	"plugin"
 	"time"
 
+	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
+
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vulcanizedb/libraries/shared/constants"
@@ -155,9 +157,8 @@ var _ = Describe("Plugin test", func() {
 	var headerID int64
 	viper.SetConfigName("testing")
 	viper.AddConfigPath("$GOPATH/src/github.com/makerdao/vdb-mcd-transformers/environments/")
-	var ilk = "0x5341490000000000000000000000000000000000000000000000000000000000"
-	var blockNumber = int64(14681706)
-	var ethFlipAddress = "0x5B21577c9C3444A748684a80A1aaEFDac538a6cb"
+	var ilk = "0x4554482d41000000000000000000000000000000000000000000000000000000"
+	var blockNumber = int64(14764569)
 
 	Describe("Event Transformers only", func() {
 		BeforeEach(func() {
@@ -233,7 +234,7 @@ var _ = Describe("Plugin test", func() {
 					var flip string
 					_ = db.Get(&flip, `SELECT flip FROM maker.cat_file_flip WHERE header_id = $1`, headerID)
 					return flip
-				}).Should(Equal(ethFlipAddress))
+				}).Should(Equal(test_data.EthFlipAddress()))
 			})
 
 			It("rechecks checked headers for event logs", func() {
@@ -396,7 +397,7 @@ var _ = Describe("Plugin test", func() {
 					var flip string
 					_ = db.Get(&flip, `SELECT flip FROM maker.cat_file_flip WHERE header_id = $1`, headerID)
 					return flip
-				}).Should(Equal(ethFlipAddress))
+				}).Should(Equal(test_data.EthFlipAddress()))
 
 				tailer := fs.FileTailer{Path: viper.GetString("filesystem.storageDiffsPath")}
 				storageFetcher := fetcher.NewCsvTailStorageFetcher(tailer)

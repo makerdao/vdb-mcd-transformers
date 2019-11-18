@@ -67,7 +67,7 @@ var _ = Describe("VatFileIlk EventTransformer", func() {
 	})
 
 	It("fetches and transforms a Vat.file ilk 'spot' event from Kovan", func() {
-		blockNumber := int64(14681982)
+		blockNumber := int64(14781185)
 		initializer.Config.StartingBlockNumber = blockNumber
 		initializer.Config.EndingBlockNumber = blockNumber
 
@@ -97,7 +97,7 @@ var _ = Describe("VatFileIlk EventTransformer", func() {
 	})
 
 	It("fetches and transforms a Vat.file ilk 'line' event from Kovan", func() {
-		blockNumber := int64(14681957)
+		blockNumber := int64(14764761)
 		initializer.Config.StartingBlockNumber = blockNumber
 		initializer.Config.EndingBlockNumber = blockNumber
 
@@ -128,7 +128,7 @@ var _ = Describe("VatFileIlk EventTransformer", func() {
 	})
 
 	It("fetches and transforms a Vat.file ilk 'dust' event from Kovan", func() {
-		blockNumber := int64(14681963)
+		blockNumber := int64(14764768)
 		initializer.Config.StartingBlockNumber = blockNumber
 		initializer.Config.EndingBlockNumber = blockNumber
 
