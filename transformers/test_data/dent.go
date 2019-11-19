@@ -22,8 +22,9 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/events/dent"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
 )
@@ -60,20 +61,22 @@ var DentHeaderSyncLog = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-var DentModel = shared.InsertionModel{
+func DentModel() event.InsertionModel {
+	return CopyEventModel(dentModel)
+}
+
+var dentModel = event.InsertionModel{
 	SchemaName: "maker",
 	TableName:  "dent",
-	OrderedColumns: []string{
-		constants.HeaderFK, "bid_id", "lot", "bid", string(constants.AddressFK), constants.LogFK,
+	OrderedColumns: []event.ColumnName{
+		event.HeaderFK, dent.Id, dent.Lot, dent.Bid, constants.AddressColumn, event.LogFK,
 	},
-	ColumnValues: shared.ColumnValues{
-		"bid_id":           dentBidId,
-		"lot":              dentLot,
-		"bid":              dentBid,
-		constants.HeaderFK: DentHeaderSyncLog.HeaderID,
-		constants.LogFK:    DentHeaderSyncLog.ID,
-	},
-	ForeignKeyValues: shared.ForeignKeyValues{
-		constants.AddressFK: DentHeaderSyncLog.Log.Address.Hex(),
+	ColumnValues: event.ColumnValues{
+		dent.Id:        dentBidId,
+		dent.Lot:       dentLot,
+		dent.Bid:       dentBid,
+		event.HeaderFK: DentHeaderSyncLog.HeaderID,
+		event.LogFK:    DentHeaderSyncLog.ID,
+		// constants.AddressColumn
 	},
 }

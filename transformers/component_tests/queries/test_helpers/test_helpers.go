@@ -654,14 +654,16 @@ func CreateTend(input TendCreationInput) (err error) {
 }
 
 func CreateDent(input DentCreationInput) (err error) {
-	dentModel := test_data.CopyModel(test_data.DentModel)
-	dentModel.ColumnValues["bid_id"] = strconv.Itoa(input.BidId)
-	dentModel.ColumnValues["lot"] = strconv.Itoa(input.Lot)
-	dentModel.ColumnValues["bid"] = strconv.Itoa(input.BidAmount)
-	dentModel.ForeignKeyValues[constants.AddressFK] = input.ContractAddress
+	addressID, addressErr := shared.GetOrCreateAddress(input.ContractAddress, input.Db)
+	Expect(addressErr).NotTo(HaveOccurred())
+	dentModel := test_data.DentModel()
+	dentModel.ColumnValues[dent.Id] = strconv.Itoa(input.BidId)
+	dentModel.ColumnValues[dent.Lot] = strconv.Itoa(input.Lot)
+	dentModel.ColumnValues[dent.Bid] = strconv.Itoa(input.BidAmount)
+	dentModel.ColumnValues[constants.AddressColumn] = addressID
 	dentModel.ColumnValues[constants.HeaderFK] = input.DentHeaderId
 	dentModel.ColumnValues[constants.LogFK] = input.DentLogId
-	return input.DentRepo.Create([]shared.InsertionModel{dentModel})
+	return input.DentRepo.Create([]event.InsertionModel{dentModel})
 }
 
 func CreateYank(input YankCreationInput) (err error) {
@@ -708,11 +710,12 @@ type TendCreationInput struct {
 }
 
 type DentCreationInput struct {
+	Db              *postgres.DB
 	ContractAddress string
 	BidId           int
 	Lot             int
 	BidAmount       int
-	DentRepo        dent.DentRepository
+	DentRepo        dent.Repository
 	DentHeaderId    int64
 	DentLogId       int64
 }

@@ -18,24 +18,41 @@ package dent_test
 
 import (
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
-
+	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/dent"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
+	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("Dent Converter", func() {
-	var converter dent.DentConverter
+	var (
+		converter dent.Converter
+		db        *postgres.DB
+	)
+
+	BeforeEach(func() {
+		db = test_config.NewTestDB(test_config.NewTestNode())
+		converter = dent.Converter{}
+		converter.SetDB(db)
+	})
 
 	It("converts an eth log to a db model", func() {
 		models, err := converter.ToModels(constants.FlipABI(), []core.HeaderSyncLog{test_data.DentHeaderSyncLog})
-
 		Expect(err).NotTo(HaveOccurred())
-		Expect(models).To(Equal([]shared.InsertionModel{test_data.DentModel}))
+
+		var addressID int64
+		addrErr := db.Get(&addressID, `SELECT id FROM public.addresses`)
+		Expect(addrErr).NotTo(HaveOccurred())
+		expectedModel := test_data.DentModel()
+		expectedModel.ColumnValues[constants.AddressColumn] = addressID
+
+		Expect(models).To(Equal([]event.InsertionModel{expectedModel}))
 	})
 
 	It("returns an error if the expected amount of topics aren't in the log", func() {
