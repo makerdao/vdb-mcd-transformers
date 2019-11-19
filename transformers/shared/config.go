@@ -17,18 +17,23 @@
 package shared
 
 import (
-	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
-
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
+	"github.com/sirupsen/logrus"
 )
 
 // Creates a transformer config by pulling values from configuration environment
 func GetEventTransformerConfig(transformerLabel, signature string) transformer.EventTransformerConfig {
+	err := constants.InitConfig()
 	contractNames := constants.GetTransformerContractNames(transformerLabel)
+	abi, err := constants.GetContractsABI(contractNames)
+	if err != nil {
+		logrus.Fatalf("error getting abi: %s", err.Error())
+	}
 	return transformer.EventTransformerConfig{
 		TransformerName:     transformerLabel,
 		ContractAddresses:   constants.GetContractAddresses(contractNames),
-		ContractAbi:         constants.GetContractsABI(contractNames),
+		ContractAbi:         abi,
 		Topic:               signature,
 		StartingBlockNumber: constants.GetMinDeploymentBlock(contractNames),
 		EndingBlockNumber:   -1, // TODO Generalise endingBlockNumber

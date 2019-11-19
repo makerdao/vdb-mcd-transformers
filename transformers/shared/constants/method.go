@@ -16,24 +16,90 @@
 
 package constants
 
+import (
+	"github.com/sirupsen/logrus"
+)
+
 // TODO Figure out signatures automatically from config somehow :(
-func CatABI() string        { return getContractABI("MCD_CAT") }
-func CdpManagerABI() string { return getContractABI("CDP_MANAGER") }
-func FlapABI() string       { return getContractABI("MCD_FLAP") }
+func CatABI() string {
+	abi, err := GetContractsABI([]string{"MCD_CAT"})
+	if err != nil {
+		logrus.Fatalf("error getting cat abi: %s", err.Error())
+	}
+	return abi
+}
+func CdpManagerABI() string {
+	abi, err := GetContractsABI([]string{"CDP_MANAGER"})
+	if err != nil {
+		logrus.Fatalf("error getting cdb manager abi: %s", err.Error())
+	}
+	return abi
+}
+func FlapABI() string {
+	abi, err := GetContractsABI([]string{"MCD_FLAP"})
+	if err != nil {
+		logrus.Fatalf("error getting flap abi: %s", err.Error())
+	}
+	return abi
+}
 func FlipABI() string {
-	return GetContractsABI([]string{
+	abi, err := GetContractsABI([]string{
 		"MCD_FLIP_ETH_A", "MCD_FLIP_BAT_A", "MCD_FLIP_SAI",
 	})
+	if err != nil {
+		logrus.Fatalf("error getting flip abi: %s", err.Error())
+	}
+	return abi
 }
-func FlopABI() string { return getContractABI("MCD_FLOP") }
-func JugABI() string  { return getContractABI("MCD_JUG") }
+func FlopABI() string {
+	abi, err := GetContractsABI([]string{"MCD_FLOP"})
+	if err != nil {
+		logrus.Fatalf("error getting flop abi: %s", err.Error())
+	}
+	return abi
+}
+func JugABI() string {
+	abi, err := GetContractsABI([]string{"MCD_JUG"})
+	if err != nil {
+		logrus.Fatalf("error getting jug abi: %s", err.Error())
+	}
+	return abi
+}
 func OsmABI() string {
-	return GetContractsABI([]string{"OSM_ETH", "OSM_BAT"})
+	abi, err := GetContractsABI([]string{"OSM_ETH", "OSM_BAT"})
+	if err != nil {
+		logrus.Fatalf("error getting osm abi: %s", err.Error())
+	}
+	return abi
 }
-func PotABI() string  { return getContractABI("MCD_POT") }
-func SpotABI() string { return getContractABI("MCD_SPOT") }
-func VatABI() string  { return getContractABI("MCD_VAT") }
-func VowABI() string  { return getContractABI("MCD_VOW") }
+func PotABI() string {
+	abi, err := GetContractsABI([]string{"MCD_POT"})
+	if err != nil {
+		logrus.Fatalf("error getting pot abi: %s", err.Error())
+	}
+	return abi
+}
+func SpotABI() string {
+	abi, err := GetContractsABI([]string{"MCD_SPOT"})
+	if err != nil {
+		logrus.Fatalf("error getting spot abi: %s", err.Error())
+	}
+	return abi
+}
+func VatABI() string {
+	abi, err := GetContractsABI([]string{"MCD_VAT"})
+	if err != nil {
+		logrus.Fatalf("error getting vat abi: %s", err.Error())
+	}
+	return abi
+}
+func VowABI() string {
+	abi, err := GetContractsABI([]string{"MCD_VOW"})
+	if err != nil {
+		logrus.Fatalf("error getting vow abi: %s", err.Error())
+	}
+	return abi
+}
 
 func biteMethod() string { return getSolidityFunctionSignature(CatABI(), "Bite") }
 func catFileChopLumpMethod() string {

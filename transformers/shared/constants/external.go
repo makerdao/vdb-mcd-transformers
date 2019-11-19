@@ -19,6 +19,7 @@ package constants
 import (
 	"fmt"
 	"math"
+	"time"
 
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
@@ -26,21 +27,26 @@ import (
 
 var initialized = false
 
-func initConfig() {
+func InitConfig() error {
 	if initialized {
-		return
+		time.Sleep(time.Millisecond)
+		return nil
 	}
+	initialized = true
 
 	if err := viper.ReadInConfig(); err == nil {
 		log.Info("Using config file:", viper.ConfigFileUsed())
 	} else {
-		panic(fmt.Sprintf("Could not find environment file: %v", err))
+		return fmt.Errorf("could not find environment file: %v", err)
 	}
-	initialized = true
+	return nil
 }
 
 func getEnvironmentString(key string) string {
-	initConfig()
+	err := InitConfig()
+	if err != nil {
+		log.Fatalf("failed to init config: %s", err.Error())
+	}
 	value := viper.GetString(key)
 	if value == "" {
 		log.Fatalf("No environment configuration variable set for key: \"%v\"", key)
@@ -58,7 +64,10 @@ func getEnvironmentString(key string) string {
 	rank = "0"
 */
 func GetTransformerContractNames(transformerLabel string) []string {
-	initConfig()
+	err := InitConfig()
+	if err != nil {
+		log.Fatalf("failed to init config: %s", err.Error())
+	}
 	configKey := "exporter." + transformerLabel + ".contracts"
 	contracts := viper.GetStringSlice(configKey)
 	if len(contracts) == 0 {
@@ -69,18 +78,23 @@ func GetTransformerContractNames(transformerLabel string) []string {
 
 // Get the ABI for multiple contracts from config
 // Makes sure the ABI matches for all, since a single transformer may run against many contracts.
-func GetContractsABI(contractNames []string) string {
-	initConfig()
+func GetContractsABI(contractNames []string) (string, error) {
+	err := InitConfig()
+	if err != nil {
+		return "", fmt.Errorf("failed to init config: %s", err.Error())
+	}
 	if len(contractNames) < 1 {
-		log.Fatalf("No contracts to get ABI for")
+		return "", fmt.Errorf("No contracts to get ABI for")
 	}
 	abi := getContractABI(contractNames[0])
-	for _, contractName := range contractNames[:1] {
-		if abi != getContractABI(contractName) {
-			log.WithField("contracts", contractNames).Fatalf("ABIs not consistent between contracts")
+	if len(contractNames) > 1 {
+		for _, contractName := range contractNames[:1] {
+			if abi != getContractABI(contractName) {
+				log.WithField("contracts", contractNames).Fatalf("ABIs not consistent between contracts")
+			}
 		}
 	}
-	return abi
+	return abi, nil
 }
 
 func getContractABI(contractName string) string {
@@ -97,7 +111,10 @@ func GetMinDeploymentBlock(contractNames []string) int64 {
 	if len(contractNames) < 1 {
 		log.Fatalf("No contracts supplied")
 	}
-	initConfig()
+	err := InitConfig()
+	if err != nil {
+		log.Fatalf("failed to init config: %s", err.Error())
+	}
 	minBlock := int64(math.MaxInt64)
 	for _, c := range contractNames {
 		deployed := getDeploymentBlock(c)
@@ -123,7 +140,10 @@ func GetContractAddresses(contractNames []string) (addresses []string) {
 	if len(contractNames) < 1 {
 		log.Fatalf("No contracts supplied")
 	}
-	initConfig()
+	err := InitConfig()
+	if err != nil {
+		log.Fatalf("failed to init config: %s", err.Error())
+	}
 	for _, contractName := range contractNames {
 		addresses = append(addresses, GetContractAddress(contractName))
 	}
