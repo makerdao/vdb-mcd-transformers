@@ -18,8 +18,8 @@ package initializer
 
 import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
+	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/cat_file/flip"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"

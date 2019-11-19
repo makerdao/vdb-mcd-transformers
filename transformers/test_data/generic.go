@@ -23,7 +23,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 
-	shared_t "github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
+	shared_t "github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 )
 
 type GenericModel struct{}

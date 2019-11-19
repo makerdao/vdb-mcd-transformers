@@ -24,7 +24,7 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 	math2 "github.com/ethereum/go-ethereum/common/math"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/constants"
+	"github.com/makerdao/vulcanizedb/libraries/shared/constants"
 )
 
 var ErrInvalidIndex = func(index int) error {

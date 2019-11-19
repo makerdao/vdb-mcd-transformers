@@ -25,7 +25,7 @@ import (
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/crypto"
 
-	"github.com/vulcanize/vulcanizedb/pkg/eth"
+	"github.com/makerdao/vulcanizedb/pkg/eth"
 )
 
 func getEventTopicZero(solidityEventSignature string) string {

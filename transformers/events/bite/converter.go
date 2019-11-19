@@ -19,14 +19,14 @@ package bite
 import (
 	"fmt"
 
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
-	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
+	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/vulcanize/vulcanizedb/pkg/core"
-	"github.com/vulcanize/vulcanizedb/pkg/eth"
+	"github.com/makerdao/vulcanizedb/pkg/core"
+	"github.com/makerdao/vulcanizedb/pkg/eth"
 
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"

@@ -19,7 +19,7 @@ package test_data
 import (
 	"math/rand"
 
-	"github.com/vulcanize/vulcanizedb/pkg/core"
+	"github.com/makerdao/vulcanizedb/pkg/core"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"

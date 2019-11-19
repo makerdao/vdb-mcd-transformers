@@ -20,13 +20,13 @@ import (
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/ethereum/go-ethereum/rpc"
 
-	"github.com/vulcanize/vulcanizedb/pkg/core"
-	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
-	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres/repositories"
-	"github.com/vulcanize/vulcanizedb/pkg/eth"
-	"github.com/vulcanize/vulcanizedb/pkg/eth/client"
-	rpc2 "github.com/vulcanize/vulcanizedb/pkg/eth/converters/rpc"
-	"github.com/vulcanize/vulcanizedb/pkg/eth/node"
+	"github.com/makerdao/vulcanizedb/pkg/core"
+	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
+	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
+	"github.com/makerdao/vulcanizedb/pkg/eth"
+	"github.com/makerdao/vulcanizedb/pkg/eth/client"
+	rpc2 "github.com/makerdao/vulcanizedb/pkg/eth/converters/rpc"
+	"github.com/makerdao/vulcanizedb/pkg/eth/node"
 )
 
 var ipc string

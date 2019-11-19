@@ -6,12 +6,12 @@ import (
 	"time"
 
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/makerdao/vulcanizedb/pkg/core"
+	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
+	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
+	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/vulcanize/vulcanizedb/pkg/core"
-	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
-	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres/repositories"
-	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"

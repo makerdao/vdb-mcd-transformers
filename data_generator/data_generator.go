@@ -15,9 +15,9 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/jug"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/vat"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
-	"github.com/vulcanize/vulcanizedb/pkg/core"
-	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
-	"github.com/vulcanize/vulcanizedb/pkg/fakes"
+	"github.com/makerdao/vulcanizedb/pkg/core"
+	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
+	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	"golang.org/x/crypto/sha3"
 )
 

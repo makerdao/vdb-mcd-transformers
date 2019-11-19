@@ -19,9 +19,9 @@ package mat_test
 import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/makerdao/vulcanizedb/pkg/core"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/vulcanize/vulcanizedb/pkg/core"
 
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/spot_file/mat"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"

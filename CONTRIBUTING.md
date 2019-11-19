@@ -24,7 +24,7 @@ We follow a standard of including imports in the following order:
 1. project packages
 
 ## Generating the Changelog
-See documentation in VulcanizeDB repository: https://github.com/vulcanize/vulcanizedb/blob/staging/documentation/contributing.md#generating-the-changelog.
+See documentation in VulcanizeDB repository: https://github.com/makerdao/vulcanizedb/blob/staging/documentation/contributing.md#generating-the-changelog.
 
 ## Creating a new migration file
 1. `make new_migration NAME=add_columnA_to_table1`

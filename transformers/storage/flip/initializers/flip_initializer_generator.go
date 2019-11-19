@@ -19,9 +19,9 @@ package initializers
 import (
 	mcdStorage "github.com/makerdao/vdb-mcd-transformers/transformers/storage"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/storage"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
+	"github.com/makerdao/vulcanizedb/libraries/shared/storage/utils"
+	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 )
 
 func GenerateStorageTransformerInitializer(contractAddress string) transformer.StorageTransformerInitializer {

@@ -21,8 +21,8 @@ import (
 	"fmt"
 
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/constants"
-	"github.com/vulcanize/vulcanizedb/pkg/core"
+	"github.com/makerdao/vulcanizedb/libraries/shared/constants"
+	"github.com/makerdao/vulcanizedb/pkg/core"
 )
 
 var (

@@ -6,9 +6,9 @@ import (
 	"os/exec"
 
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
+	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 )
 
 var _ = Describe("data generator", func() {

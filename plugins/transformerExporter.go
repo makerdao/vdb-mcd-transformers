@@ -56,7 +56,7 @@ import (
 	spot "github.com/makerdao/vdb-mcd-transformers/transformers/storage/spot/initializer"
 	vat "github.com/makerdao/vdb-mcd-transformers/transformers/storage/vat/initializer"
 	vow "github.com/makerdao/vdb-mcd-transformers/transformers/storage/vow/initializer"
-	interface1 "github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
+	interface1 "github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 )
 
 type exporter string

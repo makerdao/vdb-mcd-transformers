@@ -17,7 +17,7 @@
 package flap_kick_test
 
 import (
-	"github.com/vulcanize/vulcanizedb/pkg/core"
+	"github.com/makerdao/vulcanizedb/pkg/core"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"

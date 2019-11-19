@@ -25,7 +25,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/tend"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
-	"github.com/vulcanize/vulcanizedb/pkg/core"
+	"github.com/makerdao/vulcanizedb/pkg/core"
 )
 
 var _ = Describe("Tend TendConverter", func() {

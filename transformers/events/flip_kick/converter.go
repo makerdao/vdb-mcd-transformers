@@ -21,10 +21,10 @@ import (
 	"fmt"
 
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
-	"github.com/vulcanize/vulcanizedb/pkg/core"
+	"github.com/makerdao/vulcanizedb/pkg/core"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
-	"github.com/vulcanize/vulcanizedb/pkg/eth"
+	"github.com/makerdao/vulcanizedb/pkg/eth"
 
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 )

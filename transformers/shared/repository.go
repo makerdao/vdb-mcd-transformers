@@ -23,9 +23,9 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/jmoiron/sqlx"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
+	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	"github.com/sirupsen/logrus"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/repository"
-	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 )
 
 const (

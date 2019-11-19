@@ -26,9 +26,9 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/cat_file/flip"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
-	"github.com/vulcanize/vulcanizedb/pkg/core"
-	"github.com/vulcanize/vulcanizedb/pkg/fakes"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
+	"github.com/makerdao/vulcanizedb/pkg/core"
+	"github.com/makerdao/vulcanizedb/pkg/fakes"
 )
 
 var rawCatFileChopLog = types.Log{

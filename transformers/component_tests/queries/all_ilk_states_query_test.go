@@ -9,12 +9,12 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/jug"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/spot"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/vat"
+	"github.com/makerdao/vulcanizedb/pkg/core"
+	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
+	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
+	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/vulcanize/vulcanizedb/pkg/core"
-	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
-	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres/repositories"
-	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 )
 
 var _ = Describe("Ilk State History Query", func() {

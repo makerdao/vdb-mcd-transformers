@@ -19,12 +19,12 @@ package integration_tests
 import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
+	"github.com/makerdao/vulcanizedb/libraries/shared/fetcher"
+	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
+	"github.com/makerdao/vulcanizedb/pkg/core"
+	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
-	"github.com/vulcanize/vulcanizedb/pkg/core"
-	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/tick"
