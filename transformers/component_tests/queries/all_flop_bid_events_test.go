@@ -16,6 +16,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
@@ -176,15 +177,17 @@ var _ = Describe("Flop bid events query", func() {
 
 		It("ignores bid events from flaps", func() {
 			flapKickLog := test_data.CreateTestLog(headerOne.Id, db)
-			flapKickRepo := flap_kick.FlapKickRepository{}
+			flapKickRepo := flap_kick.Repository{}
 			flapKickRepo.SetDB(db)
 
+			addressId, addressErr := shared.GetOrCreateAddress(contractAddress, db)
+			Expect(addressErr).NotTo(HaveOccurred())
 			flapKickEvent := test_data.FlapKickModel()
-			flapKickEvent.ForeignKeyValues[constants.AddressFK] = contractAddress
-			flapKickEvent.ColumnValues["bid_id"] = strconv.Itoa(fakeBidId)
-			flapKickEvent.ColumnValues[constants.HeaderFK] = headerOne.Id
-			flapKickEvent.ColumnValues[constants.LogFK] = flapKickLog.ID
-			flapKickErr := flapKickRepo.Create([]shared.InsertionModel{flapKickEvent})
+			flapKickEvent.ColumnValues[event.AddressFK] = addressId
+			flapKickEvent.ColumnValues[flap_kick.BidId] = strconv.Itoa(fakeBidId)
+			flapKickEvent.ColumnValues[event.HeaderFK] = headerOne.Id
+			flapKickEvent.ColumnValues[event.LogFK] = flapKickLog.ID
+			flapKickErr := flapKickRepo.Create([]event.InsertionModel{flapKickEvent})
 			Expect(flapKickErr).NotTo(HaveOccurred())
 
 			flapKickBidEvent := test_helpers.BidEvent{

@@ -23,11 +23,11 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/events/flap_kick"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
-
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 )
 
 var rawFlapKickLog = types.Log{
@@ -49,22 +49,19 @@ var FlapKickHeaderSyncLog = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-func FlapKickModel() shared.InsertionModel { return CopyModel(flapKickModel) }
+func FlapKickModel() event.InsertionModel { return CopyEventModel(flapKickModel) }
 
-var flapKickModel = shared.InsertionModel{
+var flapKickModel = event.InsertionModel{
 	SchemaName: "maker",
 	TableName:  "flap_kick",
-	OrderedColumns: []string{
-		constants.HeaderFK, constants.LogFK, "bid_id", "lot", "bid", "address_id",
+	OrderedColumns: []event.ColumnName{
+		event.HeaderFK, event.LogFK, event.AddressFK, flap_kick.BidId, flap_kick.Lot, flap_kick.Bid,
 	},
-	ColumnValues: shared.ColumnValues{
-		constants.HeaderFK: FlapKickHeaderSyncLog.HeaderID,
-		constants.LogFK:    FlapKickHeaderSyncLog.ID,
-		"bid_id":           big.NewInt(1).String(),
-		"lot":              big.NewInt(1000000000).String(),
-		"bid":              big.NewInt(20000000).String(),
-	},
-	ForeignKeyValues: shared.ForeignKeyValues{
-		constants.AddressFK: FlapKickHeaderSyncLog.Log.Address.Hex(),
+	ColumnValues: event.ColumnValues{
+		event.HeaderFK:  FlapKickHeaderSyncLog.HeaderID,
+		event.LogFK:     FlapKickHeaderSyncLog.ID,
+		flap_kick.BidId: big.NewInt(1).String(),
+		flap_kick.Lot:   big.NewInt(1000000000).String(),
+		flap_kick.Bid:   big.NewInt(20000000).String(),
 	},
 }
