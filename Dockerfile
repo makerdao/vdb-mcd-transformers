@@ -10,16 +10,16 @@ ENV GO111MODULE on
 WORKDIR /go/src/github.com/makerdao/vdb-mcd-transformers
 ADD . .
 
-WORKDIR /go/src/github.com/vulcanize
-RUN git clone https://github.com/vulcanize/vulcanizedb.git
-WORKDIR /go/src/github.com/vulcanize/vulcanizedb
+WORKDIR /go/src/github.com/makerdao
+RUN git clone https://github.com/makerdao/vulcanizedb.git
+WORKDIR /go/src/github.com/makerdao/vulcanizedb
 RUN git checkout v0.0.9
 RUN go build
 
 # build mcd with local vdb
 WORKDIR /go/src/github.com/makerdao/vdb-mcd-transformers
 
-RUN go mod edit -replace=github.com/vulcanize/vulcanizedb=/go/src/github.com/vulcanize/vulcanizedb/
+RUN go mod edit -replace=github.com/makerdao/vulcanizedb=/go/src/github.com/makerdao/vulcanizedb/
 RUN make plugin PACKAGE=github.com/makerdao/vdb-mcd-transformers
 
 # Build migration tool
@@ -32,7 +32,7 @@ RUN GO111MODULE=auto go build -a -ldflags '-s' -tags='no_mysql no_sqlite' -o goo
 # app container
 FROM golang:alpine
 # workdir needs to match gopath for building file to correct path
-WORKDIR /go/src/github.com/vulcanize/vulcanizedb
+WORKDIR /go/src/github.com/makerdao/vulcanizedb
 
 # add certificates for node requests via https
 RUN apk update \
@@ -54,17 +54,17 @@ ENV GO111MODULE on
 ENV VDB_PG_CONNECT="$vdb_connect"
 
 # Direct logs to stdout for docker log driver
-RUN ln -sf /dev/stdout /go/src/github.com/vulcanize/vulcanizedb/vulcanizedb.log
+RUN ln -sf /dev/stdout /go/src/github.com/makerdao/vulcanizedb/vulcanizedb.log
 
 RUN adduser -Su 5000 $USER
 # container needs to be writable for plugin execution
-RUN chown 5000:5000 /go/src/github.com/vulcanize/vulcanizedb
+RUN chown 5000:5000 /go/src/github.com/makerdao/vulcanizedb
 
 USER $USER
 
 # chown first so dir is writable
 # note: using $USER is merged, but not in the stable release yet
-COPY --chown=5000:5000 --from=builder /go/src/github.com/vulcanize/vulcanizedb .
+COPY --chown=5000:5000 --from=builder /go/src/github.com/makerdao/vulcanizedb .
 COPY --chown=5000:5000 --from=builder /go/src/github.com/makerdao/vdb-mcd-transformers /go/src/github.com/makerdao/vdb-mcd-transformers
 
 # keep binaries immutable

@@ -21,10 +21,10 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/vow"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
+	"github.com/makerdao/vulcanizedb/libraries/shared/storage/utils"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/storage"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
 )
 
 var _ = Describe("Vow storage keys loader", func() {

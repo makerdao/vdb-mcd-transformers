@@ -1,5 +1,5 @@
 [exporter]
-    home     = "github.com/vulcanize/vulcanizedb"
+    home     = "github.com/makerdao/vulcanizedb"
     name     = "transformerExporter"
     save     = false
     transformerNames = [

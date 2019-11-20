@@ -20,7 +20,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/spot_poke"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
+	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 )
 
 var EventTransformerInitializer transformer.EventTransformerInitializer = shared.EventTransformer{

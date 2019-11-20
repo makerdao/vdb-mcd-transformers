@@ -17,9 +17,9 @@
 package vat_move_test
 
 import (
+	"github.com/makerdao/vulcanizedb/pkg/core"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/vulcanize/vulcanizedb/pkg/core"
 
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_move"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"

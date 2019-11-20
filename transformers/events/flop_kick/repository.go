@@ -18,7 +18,7 @@ package flop_kick
 
 import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
-	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
+	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 )
 
 const InsertFlopKickQuery = `INSERT into maker.flop_kick

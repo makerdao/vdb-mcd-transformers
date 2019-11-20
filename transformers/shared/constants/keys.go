@@ -17,8 +17,8 @@
 package constants
 
 import (
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
+	"github.com/makerdao/vulcanizedb/libraries/shared/storage/utils"
 )
 
 const (

@@ -13,7 +13,7 @@
     storageDiffsPath = "INSERT-PATH-TO-STORAGE-DIFFS"
 
 [exporter]
-    home     = "github.com/vulcanize/vulcanizedb"
+    home     = "github.com/makerdao/vulcanizedb"
     name     = "transformerExporter"
     save     = true
     transformerNames = [

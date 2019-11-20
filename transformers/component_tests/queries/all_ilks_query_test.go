@@ -11,12 +11,12 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/jug"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/spot"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/vat"
+	"github.com/makerdao/vulcanizedb/libraries/shared/storage/utils"
+	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
+	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
+	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
-	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
-	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres/repositories"
-	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 )
 
 var _ = Describe("All Ilks query", func() {

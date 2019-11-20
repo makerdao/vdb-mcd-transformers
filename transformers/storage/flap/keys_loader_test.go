@@ -28,11 +28,11 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/flap"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
+	"github.com/makerdao/vulcanizedb/libraries/shared/storage/utils"
+	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/storage"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
-	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 )
 
 var _ = Describe("Flap storage keys loader", func() {

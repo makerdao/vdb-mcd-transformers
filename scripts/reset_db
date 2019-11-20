@@ -11,7 +11,7 @@ fi
 
 db=$1
 dir=$(basename "$(pwd)")
-if [ $dir != "mcd_transformers" ]
+if [ $dir != "vdb-mcd-transformers" ]
 then
   echo "Run me from the mcd_transformers root dir"
   exit 1

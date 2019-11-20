@@ -1,4 +1,4 @@
-# [MakerDAO](https://makerdao.com) [VulcanizeDB](https://github.com/vulcanize/vulcanizedb) Transformers
+# [MakerDAO](https://makerdao.com) [VulcanizeDB](https://github.com/makerdao/vulcanizedb) Transformers
 
 [![Build Status](https://travis-ci.com/makerdao/vdb-mcd-transformers.svg?token=yVLfQ4hNQCqvt2qjLkus&branch=staging)](https://travis-ci.com/makerdao/vdb-mcd-transformers)
 
@@ -28,12 +28,12 @@ Using Vulcanize for the first time requires several steps be done in order to al
 
 In order to fetch the project codebase for local use or modification, install it to your `GOPATH` via:
 
-`go get github.com/vulcanize/vulcanizedb`
+`go get github.com/makerdao/vulcanizedb`
 `go get gopkg.in/DataDog/dd-trace-go.v1/ddtrace`
 
 Once fetched, dependencies can be installed via `go get` or (the preferred method) at specific versions via `golang/dep`, the prototype golang pakcage manager. Installation instructions are [here](https://golang.github.io/dep/docs/installation.html).
 
-In order to install packages with `dep`, ensure you are in the project directory now within your `GOPATH` (default location is `~/go/src/github.com/vulcanize/vulcanizedb/`) and run:
+In order to install packages with `dep`, ensure you are in the project directory now within your `GOPATH` (default location is `~/go/src/github.com/makerdao/vulcanizedb/`) and run:
 
 `dep ensure`
 
@@ -45,7 +45,7 @@ Lastly, ensure that `GOPATH` is defined in your shell. If necessary, `GOPATH` ca
 1. Install Postgres
 1. Create a superuser for yourself and make sure `psql --list` works without prompting for a password.
 1. `createdb vulcanize_public`
-1. `cd $GOPATH/src/github.com/vulcanize/vulcanizedb`
+1. `cd $GOPATH/src/github.com/makerdao/vulcanizedb`
 1.  Run the migrations: `make migrate HOST_NAME=localhost NAME=vulcanize_public PORT=5432`
     - To rollback a single step: `make rollback NAME=vulcanize_public`
     - To rollback to a certain migration: `make rollback_to MIGRATION=n NAME=vulcanize_public`

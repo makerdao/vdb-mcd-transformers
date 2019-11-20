@@ -18,7 +18,7 @@ package new_cdp
 
 import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
-	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
+	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 )
 
 const InsertNewCdpQuery = `INSERT INTO maker.new_cdp

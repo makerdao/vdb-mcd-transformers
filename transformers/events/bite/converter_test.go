@@ -18,14 +18,14 @@ package bite_test
 
 import (
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/bite"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
-	"github.com/vulcanize/vulcanizedb/pkg/core"
+	"github.com/makerdao/vulcanizedb/pkg/core"
 )
 
 var _ = Describe("Bite Converter", func() {

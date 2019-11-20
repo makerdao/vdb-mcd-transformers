@@ -17,7 +17,7 @@
 package vat_flux
 
 import (
-	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
+	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 )

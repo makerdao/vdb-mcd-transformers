@@ -20,7 +20,7 @@ import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
-	"github.com/vulcanize/vulcanizedb/pkg/core"
+	"github.com/makerdao/vulcanizedb/pkg/core"
 )
 
 type SpotFileMatConverter struct{}

@@ -18,9 +18,9 @@ package pip_test
 
 import (
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/makerdao/vulcanizedb/pkg/core"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/vulcanize/vulcanizedb/pkg/core"
 
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/spot_file/pip"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"

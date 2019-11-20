@@ -27,9 +27,9 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	. "github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
+	"github.com/makerdao/vulcanizedb/pkg/core"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/vulcanize/vulcanizedb/pkg/core"
 )
 
 var _ = Describe("Updating historical_ilk_state table", func() {

@@ -20,9 +20,9 @@ import (
 	"errors"
 	"strconv"
 
-	repository2 "github.com/vulcanize/vulcanizedb/libraries/shared/repository"
+	repository2 "github.com/makerdao/vulcanizedb/libraries/shared/repository"
 
-	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
+	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 )
 
 type Urn struct {

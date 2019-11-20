@@ -18,7 +18,7 @@ package spot_poke
 
 import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
-	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
+	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 )
 
 const (
