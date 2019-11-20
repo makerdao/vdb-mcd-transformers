@@ -31,7 +31,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = XDescribe("Deal transformer", func() {
+var _ = Describe("Deal transformer", func() {
 	var (
 		db          *postgres.DB
 		blockChain  core.BlockChain
@@ -73,8 +73,7 @@ var _ = XDescribe("Deal transformer", func() {
 	})
 
 	It("persists a flip deal log event", func() {
-		// transaction: 0x05b5eabac2ace136f0f7e0efc61d7d42abe8e8938cc0f04fbf1a6ba545d59e58
-		flipBlockNumber := int64(8958007)
+		flipBlockNumber := int64(14784093)
 		header, err := persistHeader(db, flipBlockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -91,12 +90,15 @@ var _ = XDescribe("Deal transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []dealModel
-		err = db.Select(&dbResult, `SELECT bid_id, contract_address FROM maker.deal`)
+		err = db.Select(&dbResult, `SELECT bid_id, address_id FROM maker.deal`)
+		Expect(err).NotTo(HaveOccurred())
+
+		flipContractAddressId, err := shared.GetOrCreateAddress(test_data.EthFlipAddress(), db)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))
-		Expect(dbResult[0].BidId).To(Equal("6"))
-		Expect(dbResult[0].ContractAddress).To(Equal(test_data.EthFlipAddress()))
+		Expect(dbResult[0].BidId).To(Equal("1"))
+		Expect(dbResult[0].AddressId).To(Equal(flipContractAddressId))
 	})
 
 	It("persists a flop deal log event", func() {
@@ -104,33 +106,11 @@ var _ = XDescribe("Deal transformer", func() {
 	})
 
 	It("persists a flap deal log event", func() {
-		flapBlockNumber := int64(9004628)
-		header, err := persistHeader(db, flapBlockNumber, blockChain)
-		Expect(err).NotTo(HaveOccurred())
-
-		initializer.Config.StartingBlockNumber = flapBlockNumber
-		initializer.Config.EndingBlockNumber = flapBlockNumber
-
-		logs, err := logFetcher.FetchLogs(addresses, topics, header)
-		Expect(err).NotTo(HaveOccurred())
-
-		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
-
-		transformer := initializer.NewEventTransformer(db)
-		err = transformer.Execute(headerSyncLogs)
-		Expect(err).NotTo(HaveOccurred())
-
-		var dbResult []dealModel
-		err = db.Select(&dbResult, `SELECT bid_id, contract_address FROM maker.deal`)
-		Expect(err).NotTo(HaveOccurred())
-
-		Expect(len(dbResult)).To(Equal(1))
-		Expect(dbResult[0].BidId).To(Equal("1"))
-		Expect(dbResult[0].ContractAddress).To(Equal(test_data.FlapAddress()))
+		//TODO: There are currently no Flap.deal events on Kovan
 	})
 })
 
 type dealModel struct {
-	BidId           string `db:"bid_id"`
-	ContractAddress string `db:"contract_address"`
+	BidId     string `db:"bid_id"`
+	AddressId int64  `db:"address_id"`
 }

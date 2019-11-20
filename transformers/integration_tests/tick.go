@@ -32,7 +32,7 @@ import (
 	mcdConstants "github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 )
 
-// Update when auction events are in kovan
+// TODO: Update when Tick events are on Kovan
 var _ = XDescribe("Tick EventTransformer", func() {
 	var (
 		db          *postgres.DB

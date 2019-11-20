@@ -37,7 +37,6 @@ func (NewCdpConverter) toEntities(contractAbi string, logs []core.HeaderSyncLog)
 		if err != nil {
 			return nil, err
 		}
-
 		contract := bind.NewBoundContract(address, abi, nil, nil, nil)
 
 		err = contract.UnpackLog(&entity, "NewCdp", log.Log)

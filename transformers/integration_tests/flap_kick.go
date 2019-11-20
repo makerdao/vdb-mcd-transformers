@@ -32,6 +32,7 @@ import (
 )
 
 var _ = XDescribe("FlapKick Transformer", func() {
+	//TODO: There are currently no FlapKick events on Kovan
 	var (
 		db         *postgres.DB
 		blockChain core.BlockChain

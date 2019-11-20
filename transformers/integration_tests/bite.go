@@ -40,9 +40,8 @@ var _ = Describe("Bite Transformer", func() {
 		Topic:             constants.BiteSignature(),
 	}
 
-	// TODO: replace block number when there is an updated Cat bite event
-	XIt("fetches and transforms a Bite event from Kovan chain", func() {
-		blockNumber := int64(8956422)
+	It("fetches and transforms a Bite event from Kovan chain", func() {
+		blockNumber := int64(14783840)
 		biteConfig.StartingBlockNumber = blockNumber
 		biteConfig.EndingBlockNumber = blockNumber
 
@@ -81,15 +80,15 @@ var _ = Describe("Bite Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))
-		Expect(dbResult[0].Art).To(Equal("149846666666666655744"))
-		urnID, err := shared.GetOrCreateUrn("0000000000000000000000000000d8b4147eda80fec7122ae16da2479cbd7ffb",
-			"0x4554480000000000000000000000000000000000000000000000000000000000", db)
+		Expect(dbResult[0].Art).To(Equal("20990706494289402873"))
+		urnID, err := shared.GetOrCreateUrn("0xA17B62E20d2d700950cf95ceE5d8cC910850Dd98",
+			"0x4554482d41000000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(dbResult[0].Urn).To(Equal(strconv.FormatInt(urnID, 10)))
-		Expect(dbResult[0].Ink).To(Equal("1000000000000000000"))
-		Expect(dbResult[0].Flip).To(Equal("2"))
-		Expect(dbResult[0].Tab).To(Equal("149846666666666655744"))
-		Expect(dbResult[0].Id).To(Equal(""))
+		Expect(dbResult[0].Ink).To(Equal("170000000000000000"))
+		Expect(dbResult[0].Flip).To(Equal("0x6eb58e32E3f4407F074DE5FEE7454f1749Be57B2"))
+		Expect(dbResult[0].Tab).To(Equal("21001400664939036955849236599648053637998064448"))
+		Expect(dbResult[0].Id).To(Equal("1"))
 	})
 })
 
