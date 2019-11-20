@@ -10,7 +10,7 @@ ENV GO111MODULE on
 WORKDIR /go/src/github.com/makerdao/vdb-mcd-transformers
 ADD . .
 
-WORKDIR /go/src/github.com/vulcanize
+WORKDIR /go/src/github.com/makerdao
 RUN git clone https://github.com/makerdao/vulcanizedb.git
 WORKDIR /go/src/github.com/makerdao/vulcanizedb
 RUN git checkout v0.0.9
