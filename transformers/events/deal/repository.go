@@ -17,19 +17,18 @@
 package deal
 
 import (
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
-
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 )
 
-type DealRepository struct {
+type Repository struct {
 	db *postgres.DB
 }
 
-func (repository DealRepository) Create(models []shared.InsertionModel) error {
-	return shared.Create(models, repository.db)
+func (r Repository) Create(models []event.InsertionModel) error {
+	return event.Create(models, r.db)
 }
 
-func (repository *DealRepository) SetDB(db *postgres.DB) {
-	repository.db = db
+func (r *Repository) SetDB(db *postgres.DB) {
+	r.db = db
 }

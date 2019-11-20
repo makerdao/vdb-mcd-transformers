@@ -44,7 +44,7 @@ var _ = Describe("Flip state computed columns", func() {
 		headerRepository       repositories.HeaderRepository
 		logId                  int64
 		flipKickRepo           flip_kick.FlipKickRepository
-		dealRepo               deal.DealRepository
+		dealRepo               deal.Repository
 		tendRepo               tend.TendRepository
 		contractAddress        = fakes.FakeAddress.Hex()
 		fakeBidId              int
@@ -63,7 +63,7 @@ var _ = Describe("Flip state computed columns", func() {
 		flipKickRepo.SetDB(db)
 		tendRepo = tend.TendRepository{}
 		tendRepo.SetDB(db)
-		dealRepo = deal.DealRepository{}
+		dealRepo = deal.Repository{}
 		dealRepo.SetDB(db)
 
 		headerRepository = repositories.NewHeaderRepository(db)

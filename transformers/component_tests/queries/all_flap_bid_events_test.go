@@ -31,7 +31,7 @@ var _ = Describe("Flap bid events query", func() {
 		flapKickRepo           flap_kick.FlapKickRepository
 		tendRepo               tend.TendRepository
 		tickRepo               tick.TickRepository
-		dealRepo               deal.DealRepository
+		dealRepo               deal.Repository
 		yankRepo               yank.YankRepository
 		headerRepo             repositories.HeaderRepository
 		contractAddress        = fakes.FakeAddress.Hex()
@@ -52,7 +52,7 @@ var _ = Describe("Flap bid events query", func() {
 		tendRepo.SetDB(db)
 		tickRepo = tick.TickRepository{}
 		tickRepo.SetDB(db)
-		dealRepo = deal.DealRepository{}
+		dealRepo = deal.Repository{}
 		dealRepo.SetDB(db)
 		yankRepo = yank.YankRepository{}
 		yankRepo.SetDB(db)

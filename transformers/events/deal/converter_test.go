@@ -18,22 +18,40 @@ package deal_test
 
 import (
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
-
+	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/deal"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
+	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("Flip Deal Converter", func() {
-	var converter = deal.DealConverter{}
+	var (
+		converter deal.Converter
+		db        *postgres.DB
+	)
+
+	BeforeEach(func() {
+		converter = deal.Converter{}
+		db = test_config.NewTestDB(test_config.NewTestNode())
+		converter.SetDB(db)
+	})
+
 	It("converts logs to models", func() {
 		models, err := converter.ToModels(constants.FlipABI(), []core.HeaderSyncLog{test_data.DealHeaderSyncLog})
 		Expect(err).NotTo(HaveOccurred())
-		Expect(models).To(Equal([]shared.InsertionModel{test_data.DealModel}))
+		var addressID int64
+		addrErr := db.Get(&addressID, `SELECT id FROM public.addresses`)
+		Expect(addrErr).NotTo(HaveOccurred())
+		expectedModel := test_data.DealModel
+		expectedModel.ColumnValues[constants.AddressColumn] = addressID
+		expectedModel = test_data.DealModel
+		Expect(models).To(Equal([]event.InsertionModel{expectedModel}))
 	})
 
 	It("returns an error if the expected amount of topics aren't in the log", func() {

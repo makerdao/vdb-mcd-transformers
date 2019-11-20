@@ -23,6 +23,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/fetcher"
 	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 	"github.com/makerdao/vulcanizedb/pkg/core"
@@ -36,7 +37,7 @@ var _ = Describe("Deal transformer", func() {
 		db          *postgres.DB
 		blockChain  core.BlockChain
 		dealConfig  transformer.EventTransformerConfig
-		initializer shared.EventTransformer
+		initializer event.Transformer
 		logFetcher  fetcher.ILogFetcher
 		addresses   []common.Address
 		topics      []common.Hash
@@ -60,10 +61,10 @@ var _ = Describe("Deal transformer", func() {
 			Topic: constants.DealSignature(),
 		}
 
-		initializer = shared.EventTransformer{
+		initializer = event.Transformer{
 			Config:     dealConfig,
-			Converter:  &deal.DealConverter{},
-			Repository: &deal.DealRepository{},
+			Converter:  &deal.Converter{},
+			Repository: &deal.Repository{},
 		}
 
 		logFetcher = fetcher.NewLogFetcher(blockChain)
@@ -85,7 +86,7 @@ var _ = Describe("Deal transformer", func() {
 
 		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
 
-		transformer := initializer.NewEventTransformer(db)
+		transformer := initializer.NewTransformer(db)
 		err = transformer.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 

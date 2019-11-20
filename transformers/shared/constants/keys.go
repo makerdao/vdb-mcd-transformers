@@ -49,4 +49,5 @@ const (
 	IlkColumn     event.ColumnName = "ilk_id"
 	UrnColumn     event.ColumnName = "urn_id"
 	AddressColumn event.ColumnName = "address_id"
+	BidColumn     event.ColumnName = "bid_id"
 )
