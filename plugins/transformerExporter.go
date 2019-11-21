@@ -45,12 +45,6 @@ import (
 	bat_flip "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/bat_flip"
 	dgd_flip "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/dgd_flip"
 	eth_flip_a "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/eth_flip_a"
-	eth_flip_b "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/eth_flip_b"
-	eth_flip_c "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/eth_flip_c"
-	gnt_flip "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/gnt_flip"
-	omg_flip "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/omg_flip"
-	rep_flip "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/rep_flip"
-	zrx_flip "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/zrx_flip"
 	flop_storage "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flop/initializer"
 	jug "github.com/makerdao/vdb-mcd-transformers/transformers/storage/jug/initializer"
 	spot "github.com/makerdao/vdb-mcd-transformers/transformers/storage/spot/initializer"
@@ -102,22 +96,16 @@ func (e exporter) Export() ([]interface1.EventTransformerInitializer, []interfac
         spot_file_mat.EventTransformerInitializer,
         tend.EventTransformerInitializer},
     []interface1.StorageTransformerInitializer{
-		zrx_flip.StorageTransformerInitializer,
-		eth_flip_c.StorageTransformerInitializer,
-		gnt_flip.StorageTransformerInitializer,
 		jug.StorageTransformerInitializer,
 		eth_flip_a.StorageTransformerInitializer,
-		eth_flip_b.StorageTransformerInitializer,
 		flap_storage.StorageTransformerInitializer,
 		flop_storage.StorageTransformerInitializer,
-		rep_flip.StorageTransformerInitializer,
-		omg_flip.StorageTransformerInitializer,
 		bat_flip.StorageTransformerInitializer,
 		vow.StorageTransformerInitializer,
 		vat.StorageTransformerInitializer,
 		cdp_manager.StorageTransformerInitializer,
 		cat.StorageTransformerInitializer,
 		spot.StorageTransformerInitializer,
-		dgd_flip.StorageTransformerInitializer},
-		[]interface1.ContractTransformerInitializer{}
+	},
+	[]interface1.ContractTransformerInitializer{}
 }
