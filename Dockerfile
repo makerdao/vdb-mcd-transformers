@@ -13,7 +13,7 @@ ADD . .
 WORKDIR /go/src/github.com/makerdao
 RUN git clone https://github.com/makerdao/vulcanizedb.git
 WORKDIR /go/src/github.com/makerdao/vulcanizedb
-RUN git checkout v0.0.9
+RUN git checkout v0.0.10
 RUN go build
 
 # build mcd with local vdb
