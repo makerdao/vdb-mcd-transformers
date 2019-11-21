@@ -43,14 +43,8 @@ import (
 	cdp_manager "github.com/makerdao/vdb-mcd-transformers/transformers/storage/cdp_manager/initializer"
 	flap_storage "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flap/initializer"
 	bat_flip "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/bat_flip"
-	dgd_flip "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/dgd_flip"
 	eth_flip_a "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/eth_flip_a"
-	eth_flip_b "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/eth_flip_b"
-	eth_flip_c "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/eth_flip_c"
-	gnt_flip "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/gnt_flip"
-	omg_flip "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/omg_flip"
-	rep_flip "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/rep_flip"
-	zrx_flip "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/zrx_flip"
+	sai_flip "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/sai_flip"
 	flop_storage "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flop/initializer"
 	jug "github.com/makerdao/vdb-mcd-transformers/transformers/storage/jug/initializer"
 	spot "github.com/makerdao/vdb-mcd-transformers/transformers/storage/spot/initializer"
@@ -64,5 +58,56 @@ type exporter string
 var Exporter exporter
 
 func (e exporter) Export() ([]interface1.EventTransformerInitializer, []interface1.StorageTransformerInitializer, []interface1.ContractTransformerInitializer) {
-	return []interface1.EventTransformerInitializer{flap_kick.EventTransformerInitializer, flip_kick.EventTransformerInitializer, jug_file_ilk.EventTransformerInitializer, jug_file_vow.EventTransformerInitializer, yank.EventTransformerInitializer, jug_drip.EventTransformerInitializer, vat_file_debt_ceiling.EventTransformerInitializer, vat_fold.EventTransformerInitializer, vow_file.EventTransformerInitializer, vat_move.EventTransformerInitializer, flop_kick.EventTransformerInitializer, vow_flog.EventTransformerInitializer, vat_file_ilk.EventTransformerInitializer, jug_file_base.EventTransformerInitializer, tick.EventTransformerInitializer, spot_poke.EventTransformerInitializer, vat_suck.EventTransformerInitializer, vat_fork.EventTransformerInitializer, cat_file_flip.EventTransformerInitializer, spot_file_pip.EventTransformerInitializer, vat_flux.EventTransformerInitializer, deal.EventTransformerInitializer, jug_init.EventTransformerInitializer, dent.EventTransformerInitializer, vow_fess.EventTransformerInitializer, vat_heal.EventTransformerInitializer, cat_file_vow.EventTransformerInitializer, new_cdp.EventTransformerInitializer, vat_init.EventTransformerInitializer, bite.EventTransformerInitializer, cat_file_chop_lump.EventTransformerInitializer, vat_slip.EventTransformerInitializer, vat_frob.EventTransformerInitializer, vat_grab.EventTransformerInitializer, spot_file_mat.EventTransformerInitializer, tend.EventTransformerInitializer}, []interface1.StorageTransformerInitializer{zrx_flip.StorageTransformerInitializer, eth_flip_c.StorageTransformerInitializer, gnt_flip.StorageTransformerInitializer, jug.StorageTransformerInitializer, eth_flip_a.StorageTransformerInitializer, eth_flip_b.StorageTransformerInitializer, flap_storage.StorageTransformerInitializer, flop_storage.StorageTransformerInitializer, rep_flip.StorageTransformerInitializer, omg_flip.StorageTransformerInitializer, bat_flip.StorageTransformerInitializer, vow.StorageTransformerInitializer, vat.StorageTransformerInitializer, cdp_manager.StorageTransformerInitializer, cat.StorageTransformerInitializer, spot.StorageTransformerInitializer, dgd_flip.StorageTransformerInitializer}, []interface1.ContractTransformerInitializer{}
+	return []interface1.EventTransformerInitializer{
+			bite.EventTransformerInitializer,
+			cat_file_chop_lump.EventTransformerInitializer,
+			cat_file_flip.EventTransformerInitializer,
+			cat_file_vow.EventTransformerInitializer,
+			deal.EventTransformerInitializer,
+			dent.EventTransformerInitializer,
+			flap_kick.EventTransformerInitializer,
+			flip_kick.EventTransformerInitializer,
+			flop_kick.EventTransformerInitializer,
+			jug_drip.EventTransformerInitializer,
+			jug_file_base.EventTransformerInitializer,
+			jug_file_ilk.EventTransformerInitializer,
+			jug_init.EventTransformerInitializer,
+			jug_file_vow.EventTransformerInitializer,
+			new_cdp.EventTransformerInitializer,
+			spot_file_mat.EventTransformerInitializer,
+			spot_file_pip.EventTransformerInitializer,
+			spot_poke.EventTransformerInitializer,
+			tend.EventTransformerInitializer,
+			tick.EventTransformerInitializer,
+			vat_flux.EventTransformerInitializer,
+			vat_fold.EventTransformerInitializer,
+			vat_fork.EventTransformerInitializer,
+			vat_frob.EventTransformerInitializer,
+			vat_grab.EventTransformerInitializer,
+			vat_heal.EventTransformerInitializer,
+			vat_init.EventTransformerInitializer,
+			vat_move.EventTransformerInitializer,
+			vat_slip.EventTransformerInitializer,
+			vat_suck.EventTransformerInitializer,
+			vow_fess.EventTransformerInitializer,
+			vow_file.EventTransformerInitializer,
+			vat_file_debt_ceiling.EventTransformerInitializer,
+			vat_file_ilk.EventTransformerInitializer,
+			vow_flog.EventTransformerInitializer,
+			yank.EventTransformerInitializer,
+		},
+		[]interface1.StorageTransformerInitializer{
+			bat_flip.StorageTransformerInitializer,
+			cat.StorageTransformerInitializer,
+			cdp_manager.StorageTransformerInitializer,
+			eth_flip_a.StorageTransformerInitializer,
+			flap_storage.StorageTransformerInitializer,
+			flop_storage.StorageTransformerInitializer,
+			jug.StorageTransformerInitializer,
+			sai_flip.StorageTransformerInitializer,
+			spot.StorageTransformerInitializer,
+			vat.StorageTransformerInitializer,
+			vow.StorageTransformerInitializer,
+		},
+		[]interface1.ContractTransformerInitializer{}
 }
