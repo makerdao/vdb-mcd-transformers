@@ -45,6 +45,7 @@ import (
 	bat_flip "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/bat_flip"
 	dgd_flip "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/dgd_flip"
 	eth_flip_a "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/eth_flip_a"
+	sai_flip "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/sai_flip"
 	flop_storage "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flop/initializer"
 	jug "github.com/makerdao/vdb-mcd-transformers/transformers/storage/jug/initializer"
 	spot "github.com/makerdao/vdb-mcd-transformers/transformers/storage/spot/initializer"
@@ -105,6 +106,7 @@ func (e exporter) Export() ([]interface1.EventTransformerInitializer, []interfac
 		vat.StorageTransformerInitializer,
 		cdp_manager.StorageTransformerInitializer,
 		cat.StorageTransformerInitializer,
+		sai_flip.StorageTransformerInitializer,
 		spot.StorageTransformerInitializer,
 	},
 	[]interface1.ContractTransformerInitializer{}
