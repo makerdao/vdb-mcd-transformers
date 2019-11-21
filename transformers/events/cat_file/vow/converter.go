@@ -29,17 +29,10 @@ type Converter struct {
 	db *postgres.DB
 }
 
-const (
-	logDataRequired                    = true
-	numTopicsRequired                  = 4
-	What              event.ColumnName = "what"
-	Data              event.ColumnName = "data"
-)
-
 func (Converter) ToModels(_ string, logs []core.HeaderSyncLog) ([]event.InsertionModel, error) {
 	var results []event.InsertionModel
 	for _, log := range logs {
-		err := shared.VerifyLog(log.Log, numTopicsRequired, logDataRequired)
+		err := shared.VerifyLog(log.Log, shared.FourTopicsRequired, shared.LogDataRequired)
 		if err != nil {
 			return nil, err
 		}
@@ -51,13 +44,13 @@ func (Converter) ToModels(_ string, logs []core.HeaderSyncLog) ([]event.Insertio
 			SchemaName: "maker",
 			TableName:  "cat_file_vow",
 			OrderedColumns: []event.ColumnName{
-				constants.HeaderFK, What, Data, event.LogFK,
+				constants.HeaderFK, constants.WhatColumn, constants.DataColumn, event.LogFK,
 			},
 			ColumnValues: event.ColumnValues{
-				constants.HeaderFK: log.HeaderID,
-				What:               what,
-				Data:               data,
-				event.LogFK:        log.ID,
+				constants.HeaderFK:   log.HeaderID,
+				constants.WhatColumn: what,
+				constants.DataColumn: data,
+				event.LogFK:          log.ID,
 			},
 		}
 		results = append(results, result)

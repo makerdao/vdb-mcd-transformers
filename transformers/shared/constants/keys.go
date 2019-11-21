@@ -50,4 +50,11 @@ const (
 	UrnColumn     event.ColumnName = "urn_id"
 	AddressColumn event.ColumnName = "address_id"
 	BidColumn     event.ColumnName = "bid_id"
+	FlipColumn    event.ColumnName = "flip"
+	WhatColumn    event.ColumnName = "what"
+	DataColumn    event.ColumnName = "data"
+	InkColumn     event.ColumnName = "ink"
+	ArtColumn     event.ColumnName = "art"
+	TabColumn     event.ColumnName = "tab"
+	BidIdColumn   event.ColumnName = "bid_id"
 )

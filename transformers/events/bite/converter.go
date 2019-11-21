@@ -36,14 +36,6 @@ type Converter struct {
 	db *postgres.DB
 }
 
-const (
-	Ink  event.ColumnName = "ink"
-	Art  event.ColumnName = "art"
-	Tab  event.ColumnName = "tab"
-	Flip event.ColumnName = "flip"
-	Id   event.ColumnName = "bid_id"
-)
-
 func (Converter) toEntities(contractAbi string, logs []core.HeaderSyncLog) ([]BiteEntity, error) {
 	var entities []BiteEntity
 	for _, log := range logs {
@@ -88,17 +80,17 @@ func (c Converter) ToModels(abi string, logs []core.HeaderSyncLog) ([]event.Inse
 			SchemaName: "maker",
 			TableName:  "bite",
 			OrderedColumns: []event.ColumnName{
-				event.HeaderFK, event.LogFK, constants.UrnColumn, Ink, Art, Tab, Flip, Id,
+				event.HeaderFK, event.LogFK, constants.UrnColumn, constants.InkColumn, constants.ArtColumn, constants.TabColumn, constants.FlipColumn, constants.BidIdColumn,
 			},
 			ColumnValues: event.ColumnValues{
-				event.HeaderFK:      biteEntity.HeaderID,
-				event.LogFK:         biteEntity.LogID,
-				constants.UrnColumn: urnID,
-				Ink:                 shared.BigIntToString(biteEntity.Ink),
-				Art:                 shared.BigIntToString(biteEntity.Art),
-				Tab:                 shared.BigIntToString(biteEntity.Tab),
-				Flip:                common.BytesToAddress(biteEntity.Flip.Bytes()).Hex(),
-				Id:                  shared.BigIntToString(biteEntity.Id),
+				event.HeaderFK:        biteEntity.HeaderID,
+				event.LogFK:           biteEntity.LogID,
+				constants.UrnColumn:   urnID,
+				constants.InkColumn:   shared.BigIntToString(biteEntity.Ink),
+				constants.ArtColumn:   shared.BigIntToString(biteEntity.Art),
+				constants.TabColumn:   shared.BigIntToString(biteEntity.Tab),
+				constants.FlipColumn:  common.BytesToAddress(biteEntity.Flip.Bytes()).Hex(),
+				constants.BidIdColumn: shared.BigIntToString(biteEntity.Id),
 			},
 		}
 		models = append(models, model)
