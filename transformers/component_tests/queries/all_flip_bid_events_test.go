@@ -45,7 +45,7 @@ var _ = Describe("All flip bid events query", func() {
 	var (
 		db                     *postgres.DB
 		flipKickRepo           flip_kick.FlipKickRepository
-		tendRepo               tend.TendRepository
+		tendRepo               tend.Repository
 		tickRepo               tick.TickRepository
 		dentRepo               dent.DentRepository
 		dealRepo               deal.Repository
@@ -65,7 +65,7 @@ var _ = Describe("All flip bid events query", func() {
 		headerRepo = repositories.NewHeaderRepository(db)
 		flipKickRepo = flip_kick.FlipKickRepository{}
 		flipKickRepo.SetDB(db)
-		tendRepo = tend.TendRepository{}
+		tendRepo = tend.Repository{}
 		tendRepo.SetDB(db)
 		tickRepo = tick.TickRepository{}
 		tickRepo.SetDB(db)
@@ -106,8 +106,9 @@ var _ = Describe("All flip bid events query", func() {
 
 			flipTendLog := test_data.CreateTestLog(headerOne.Id, db)
 			flipTendErr := test_helpers.CreateTend(test_helpers.TendCreationInput{
-				BidId:           bidId,
+				Db:              db,
 				ContractAddress: contractAddress,
+				BidId:           bidId,
 				Lot:             tendLot,
 				BidAmount:       tendBidAmount,
 				TendRepo:        tendRepo,
@@ -165,8 +166,9 @@ var _ = Describe("All flip bid events query", func() {
 
 			flipTendLog := test_data.CreateTestLog(headerOne.Id, db)
 			flipTendErr := test_helpers.CreateTend(test_helpers.TendCreationInput{
-				BidId:           bidId,
+				Db:              db,
 				ContractAddress: contractAddress,
+				BidId:           bidId,
 				Lot:             tendLot,
 				BidAmount:       tendBidAmount,
 				TendRepo:        tendRepo,
@@ -362,8 +364,9 @@ var _ = Describe("All flip bid events query", func() {
 
 				flipTendHeaderOneLog := test_data.CreateTestLog(headerOne.Id, db)
 				flipTendErr := test_helpers.CreateTend(test_helpers.TendCreationInput{
-					BidId:           bidId,
+					Db:              db,
 					ContractAddress: contractAddress,
+					BidId:           bidId,
 					Lot:             lotOne,
 					BidAmount:       bidAmountOne,
 					TendRepo:        tendRepo,
@@ -376,8 +379,9 @@ var _ = Describe("All flip bid events query", func() {
 
 				flipTendHeaderTwoLog := test_data.CreateTestLog(headerTwo.Id, db)
 				flipTendHeaderTwoErr := test_helpers.CreateTend(test_helpers.TendCreationInput{
-					BidId:           bidId,
+					Db:              db,
 					ContractAddress: contractAddress,
+					BidId:           bidId,
 					Lot:             lotTwo,
 					BidAmount:       bidAmountTwo,
 					TendRepo:        tendRepo,
@@ -400,8 +404,9 @@ var _ = Describe("All flip bid events query", func() {
 			It("ignores tend events that are not from a flip", func() {
 				flapTendLog := test_data.CreateTestLog(headerOne.Id, db)
 				flapTendErr := test_helpers.CreateTend(test_helpers.TendCreationInput{
-					BidId:           bidId,
+					Db:              db,
 					ContractAddress: anotherContractAddress,
+					BidId:           bidId,
 					Lot:             rand.Int(),
 					BidAmount:       rand.Int(),
 					TendRepo:        tendRepo,
@@ -494,8 +499,9 @@ var _ = Describe("All flip bid events query", func() {
 
 				flipTendLog := test_data.CreateTestLog(headerOne.Id, db)
 				flipTendErr := test_helpers.CreateTend(test_helpers.TendCreationInput{
-					BidId:           bidId,
+					Db:              db,
 					ContractAddress: contractAddress,
+					BidId:           bidId,
 					Lot:             tendLot,
 					BidAmount:       tendBidAmount,
 					TendRepo:        tendRepo,

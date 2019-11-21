@@ -18,22 +18,20 @@ package test_data
 
 import (
 	"math/rand"
-	"strconv"
-
-	"github.com/makerdao/vulcanizedb/pkg/core"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/makerdao/vulcanizedb/pkg/fakes"
-
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/events/tend"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
+	"github.com/makerdao/vulcanizedb/pkg/core"
+	"github.com/makerdao/vulcanizedb/pkg/fakes"
 )
 
 var (
 	tendAddress         = common.HexToAddress(FlapAddress())
-	tendBidId           = int64(10)
+	tendBidId           = "10"
 	tendLot             = "8500000000000"
 	tendBid             = "100000000000"
 	tendData            = "0x000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000e04b43ed12000000000000000000000000000000000000000000000000000000000000000a000000000000000000000000000000000000000000000000000007bb0f7b0800000000000000000000000000000000000000000000000000000000174876e80000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
@@ -64,20 +62,22 @@ var TendHeaderSyncLog = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-var TendModel = shared.InsertionModel{
+var tendModel = event.InsertionModel{
 	SchemaName: "maker",
 	TableName:  "tend",
-	OrderedColumns: []string{
-		constants.HeaderFK, "bid_id", "lot", "bid", string(constants.AddressFK), constants.LogFK,
+	OrderedColumns: []event.ColumnName{
+		constants.HeaderFK, tend.Id, tend.Lot, tend.Bid, constants.AddressColumn, constants.LogFK,
 	},
-	ColumnValues: shared.ColumnValues{
-		"bid_id":           strconv.FormatInt(tendBidId, 10),
-		"lot":              tendLot,
-		"bid":              tendBid,
-		constants.HeaderFK: TendHeaderSyncLog.HeaderID,
-		constants.LogFK:    TendHeaderSyncLog.ID,
+	ColumnValues: event.ColumnValues{
+		constants.HeaderFK:      TendHeaderSyncLog.HeaderID,
+		tend.Id:                 tendBidId,
+		tend.Lot:                tendLot,
+		tend.Bid:                tendBid,
+		constants.AddressColumn: rawTendLog.Address.Hex(),
+		constants.LogFK:         TendHeaderSyncLog.ID,
 	},
-	ForeignKeyValues: shared.ForeignKeyValues{
-		constants.AddressFK: tendAddress.Hex(),
-	},
+}
+
+func TendModel() event.InsertionModel {
+	return CopyEventModel(tendModel)
 }

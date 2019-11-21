@@ -20,21 +20,34 @@ import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
+	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 )
 
-type TendConverter struct{}
+type Converter struct {
+	db *postgres.DB
+}
 
 const (
-	logDataRequired   = true
-	numTopicsRequired = 4
+	logDataRequired                    = true
+	numTopicsRequired                  = 4
+	Id                event.ColumnName = "bid_id"
+	Lot               event.ColumnName = "lot"
+	Bid               event.ColumnName = "bid"
 )
 
-func (TendConverter) ToModels(_ string, logs []core.HeaderSyncLog) (results []shared.InsertionModel, err error) {
+func (c Converter) ToModels(_ string, logs []core.HeaderSyncLog) ([]event.InsertionModel, error) {
+	var models []event.InsertionModel
 	for _, log := range logs {
 		err := shared.VerifyLog(log.Log, numTopicsRequired, logDataRequired)
 		if err != nil {
 			return nil, err
+		}
+
+		addressID, addressErr := shared.GetOrCreateAddress(log.Log.Address.String(), c.db)
+		if addressErr != nil {
+			return nil, shared.ErrCouldNotCreateFK(addressErr)
 		}
 
 		bidId := log.Log.Topics[2].Big()
@@ -45,24 +58,25 @@ func (TendConverter) ToModels(_ string, logs []core.HeaderSyncLog) (results []sh
 		}
 		bidValue := shared.ConvertUint256HexToBigInt(hexutil.Encode(rawBid)).String()
 
-		model := shared.InsertionModel{
+		model := event.InsertionModel{
 			SchemaName: "maker",
 			TableName:  "tend",
-			OrderedColumns: []string{
-				constants.HeaderFK, "bid_id", "lot", "bid", string(constants.AddressFK), constants.LogFK,
+			OrderedColumns: []event.ColumnName{
+				constants.HeaderFK, Id, Lot, Bid, constants.AddressColumn, constants.LogFK,
 			},
-			ColumnValues: shared.ColumnValues{
-				"bid_id":           bidId.String(),
-				"lot":              lot,
-				"bid":              bidValue,
-				constants.HeaderFK: log.HeaderID,
-				constants.LogFK:    log.ID,
-			},
-			ForeignKeyValues: shared.ForeignKeyValues{
-				constants.AddressFK: log.Log.Address.Hex(),
+			ColumnValues: event.ColumnValues{
+				constants.HeaderFK:      log.HeaderID,
+				Id:                      bidId.String(),
+				Lot:                     lot,
+				Bid:                     bidValue,
+				constants.AddressColumn: addressID,
+				constants.LogFK:         log.ID,
 			},
 		}
-		results = append(results, model)
+		models = append(models, model)
 	}
-	return results, err
+	return models, nil
+}
+func (c *Converter) SetDB(db *postgres.DB) {
+	c.db = db
 }

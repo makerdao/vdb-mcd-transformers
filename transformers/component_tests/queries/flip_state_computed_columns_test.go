@@ -45,7 +45,7 @@ var _ = Describe("Flip state computed columns", func() {
 		logId                  int64
 		flipKickRepo           flip_kick.FlipKickRepository
 		dealRepo               deal.Repository
-		tendRepo               tend.TendRepository
+		tendRepo               tend.Repository
 		contractAddress        = fakes.FakeAddress.Hex()
 		fakeBidId              int
 		blockOne, timestampOne int
@@ -61,7 +61,7 @@ var _ = Describe("Flip state computed columns", func() {
 
 		flipKickRepo = flip_kick.FlipKickRepository{}
 		flipKickRepo.SetDB(db)
-		tendRepo = tend.TendRepository{}
+		tendRepo = tend.Repository{}
 		tendRepo.SetDB(db)
 		dealRepo = deal.Repository{}
 		dealRepo.SetDB(db)
@@ -156,8 +156,9 @@ var _ = Describe("Flip state computed columns", func() {
 			tendBidAmount := rand.Intn(100)
 			tendLog := test_data.CreateTestLog(headerOne.Id, db)
 			flipTendErr := test_helpers.CreateTend(test_helpers.TendCreationInput{
-				BidId:           fakeBidId,
+				Db:              db,
 				ContractAddress: contractAddress,
+				BidId:           fakeBidId,
 				Lot:             tendLot,
 				BidAmount:       tendBidAmount,
 				TendRepo:        tendRepo,
@@ -204,8 +205,9 @@ var _ = Describe("Flip state computed columns", func() {
 				tendLot = rand.Intn(100)
 				tendBidAmount = rand.Intn(100)
 				flipTendErr := test_helpers.CreateTend(test_helpers.TendCreationInput{
-					BidId:           fakeBidId,
+					Db:              db,
 					ContractAddress: contractAddress,
+					BidId:           fakeBidId,
 					Lot:             tendLot,
 					BidAmount:       tendBidAmount,
 					TendRepo:        tendRepo,

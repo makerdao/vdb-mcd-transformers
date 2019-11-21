@@ -640,14 +640,17 @@ func CreateFlopKick(contractAddress string, bidId int, headerId, logId int64, re
 }
 
 func CreateTend(input TendCreationInput) (err error) {
-	tendModel := test_data.CopyModel(test_data.TendModel)
-	tendModel.ColumnValues["bid_id"] = strconv.Itoa(input.BidId)
-	tendModel.ColumnValues["lot"] = strconv.Itoa(input.Lot)
-	tendModel.ColumnValues["bid"] = strconv.Itoa(input.BidAmount)
-	tendModel.ForeignKeyValues[constants.AddressFK] = input.ContractAddress
+	addressID, addressErr := shared.GetOrCreateAddress(input.ContractAddress, input.Db)
+	Expect(addressErr).NotTo(HaveOccurred())
+	tendModel := test_data.TendModel()
+	tendLog := test_data.CreateTestLog(input.TendHeaderId, input.Db)
+	tendModel.ColumnValues[tend.Id] = strconv.Itoa(input.BidId)
+	tendModel.ColumnValues[tend.Lot] = strconv.Itoa(input.Lot)
+	tendModel.ColumnValues[tend.Bid] = strconv.Itoa(input.BidAmount)
+	tendModel.ColumnValues[constants.AddressColumn] = addressID
 	tendModel.ColumnValues[constants.HeaderFK] = input.TendHeaderId
-	tendModel.ColumnValues[constants.LogFK] = input.TendLogId
-	return input.TendRepo.Create([]shared.InsertionModel{tendModel})
+	tendModel.ColumnValues[constants.LogFK] = tendLog.ID
+	return input.TendRepo.Create([]event.InsertionModel{tendModel})
 }
 
 func CreateDent(input DentCreationInput) (err error) {
@@ -690,11 +693,12 @@ type YankCreationInput struct {
 }
 
 type TendCreationInput struct {
+	Db              *postgres.DB
 	ContractAddress string
 	BidId           int
 	Lot             int
 	BidAmount       int
-	TendRepo        tend.TendRepository
+	TendRepo        tend.Repository
 	TendHeaderId    int64
 	TendLogId       int64
 }

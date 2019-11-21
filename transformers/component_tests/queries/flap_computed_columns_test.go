@@ -156,11 +156,12 @@ var _ = Describe("Flap computed columns", func() {
 
 				tendBid = rand.Int()
 				tendLot = rand.Int()
-				tendRepo := tend.TendRepository{}
+				tendRepo := tend.Repository{}
 				tendRepo.SetDB(db)
 				flapTendErr := test_helpers.CreateTend(test_helpers.TendCreationInput{
-					BidId:           fakeBidId,
+					Db:              db,
 					ContractAddress: contractAddress,
+					BidId:           fakeBidId,
 					Lot:             tendLot,
 					BidAmount:       tendBid,
 					TendRepo:        tendRepo,

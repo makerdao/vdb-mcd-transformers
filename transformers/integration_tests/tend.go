@@ -20,9 +20,9 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/tend"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/fetcher"
 	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 	"github.com/makerdao/vulcanizedb/pkg/core"
@@ -36,7 +36,7 @@ var _ = Describe("Tend EventTransformer", func() {
 		db          *postgres.DB
 		blockChain  core.BlockChain
 		tendConfig  transformer.EventTransformerConfig
-		initializer shared.EventTransformer
+		initializer event.Transformer
 		logFetcher  fetcher.ILogFetcher
 		addresses   []common.Address
 		topics      []common.Hash
@@ -61,10 +61,10 @@ var _ = Describe("Tend EventTransformer", func() {
 		addresses = transformer.HexStringsToAddresses(tendConfig.ContractAddresses)
 		topics = []common.Hash{common.HexToHash(tendConfig.Topic)}
 
-		initializer = shared.EventTransformer{
+		initializer = event.Transformer{
 			Config:     tendConfig,
-			Converter:  &tend.TendConverter{},
-			Repository: &tend.TendRepository{},
+			Converter:  &tend.Converter{},
+			Repository: &tend.Repository{},
 		}
 	})
 
@@ -81,7 +81,7 @@ var _ = Describe("Tend EventTransformer", func() {
 
 		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
 
-		transformer := initializer.NewEventTransformer(db)
+		transformer := initializer.NewTransformer(db)
 		err = transformer.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 

@@ -18,25 +18,41 @@ package tend_test
 
 import (
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
-
+	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/tend"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
+	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("Tend TendConverter", func() {
-	var converter = tend.TendConverter{}
+	var (
+		converter = tend.Converter{}
+		db        *postgres.DB
+	)
+
+	BeforeEach(func() {
+		db = test_config.NewTestDB(test_config.NewTestNode())
+		test_config.CleanTestDB(db)
+		converter.SetDB(db)
+	})
 
 	Describe("ToModels", func() {
 		It("converts an eth log to a db model", func() {
 			models, err := converter.ToModels(constants.FlipABI(), []core.HeaderSyncLog{test_data.TendHeaderSyncLog})
-
 			Expect(err).NotTo(HaveOccurred())
-			Expect(models).To(Equal([]shared.InsertionModel{test_data.TendModel}))
+
+			var addressID int64
+			addrErr := db.Get(&addressID, `SELECT id FROM public.addresses`)
+			Expect(addrErr).NotTo(HaveOccurred())
+			expectedModel := test_data.TendModel()
+			expectedModel.ColumnValues[constants.AddressColumn] = addressID
+			Expect(models).To(Equal([]event.InsertionModel{expectedModel}))
 		})
 
 		It("returns an error if the log data is empty", func() {

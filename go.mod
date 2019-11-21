@@ -4,6 +4,7 @@ go 1.12
 
 require (
 	github.com/aristanetworks/goarista v0.0.0-20191106175434-873d404c7f40 // indirect
+	github.com/dave/jennifer v1.4.0 // indirect
 	github.com/elastic/gosigar v0.10.5 // indirect
 	github.com/ethereum/go-ethereum v1.9.8
 	github.com/gballet/go-libpcsclite v0.0.0-20191108122812-4678299bea08 // indirect
