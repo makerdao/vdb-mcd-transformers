@@ -51,7 +51,7 @@ var _ = Describe("Flap bid events query", func() {
 		flapKickRepo.SetDB(db)
 		tendRepo = tend.Repository{}
 		tendRepo.SetDB(db)
-		tickRepo = tick.TickRepository{}
+		tickRepo = tick.Repository{}
 		tickRepo.SetDB(db)
 		dealRepo = deal.Repository{}
 		dealRepo.SetDB(db)
@@ -100,6 +100,7 @@ var _ = Describe("Flap bid events query", func() {
 
 			tickLog := test_data.CreateTestLog(headerOne.Id, db)
 			flapTickErr := test_helpers.CreateTick(test_helpers.TickCreationInput{
+				Db:              db,
 				BidId:           fakeBidId,
 				ContractAddress: contractAddress,
 				TickRepo:        tickRepo,
@@ -397,6 +398,7 @@ var _ = Describe("Flap bid events query", func() {
 
 			// irrelevant tick event
 			tickErr := test_helpers.CreateTick(test_helpers.TickCreationInput{
+				Db:              db,
 				BidId:           fakeBidId,
 				ContractAddress: "flip",
 				TickRepo:        tickRepo,
@@ -424,6 +426,7 @@ var _ = Describe("Flap bid events query", func() {
 			tickLog := test_data.CreateTestLog(headerOne.Id, db)
 
 			tickErr := test_helpers.CreateTick(test_helpers.TickCreationInput{
+				Db:              db,
 				BidId:           fakeBidId,
 				ContractAddress: contractAddress,
 				TickRepo:        tickRepo,

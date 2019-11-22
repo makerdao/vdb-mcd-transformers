@@ -18,6 +18,8 @@ package tick_test
 
 import (
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/makerdao/vdb-mcd-transformers/test_config"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
@@ -29,14 +31,23 @@ import (
 )
 
 var _ = Describe("TickConverter", func() {
-	converter := tick.TickConverter{}
+	converter := tick.Converter{}
+	db := test_config.NewTestDB(test_config.NewTestNode())
+	converter.SetDB(db)
 
 	Describe("ToModels", func() {
 		It("converts an eth log to a db model", func() {
 			models, err := converter.ToModels(constants.FlipABI(), []core.HeaderSyncLog{test_data.FlipTickHeaderSyncLog})
-
 			Expect(err).NotTo(HaveOccurred())
-			Expect(models).To(Equal([]shared.InsertionModel{test_data.TickModel}))
+
+			var addressID int64
+			addrErr := db.Get(&addressID, `SELECT id FROM public.addresses`)
+			Expect(addrErr).NotTo(HaveOccurred())
+
+			expectedModel := test_data.TickModel
+			expectedModel.ColumnValues[constants.AddressColumn] = addressID
+
+			Expect(models).To(Equal([]event.InsertionModel{expectedModel}))
 		})
 
 		It("returns an error if the expected amount of topics aren't in the log", func() {

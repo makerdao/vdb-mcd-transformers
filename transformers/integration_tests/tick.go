@@ -18,18 +18,17 @@ package integration_tests
 
 import (
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/makerdao/vdb-mcd-transformers/test_config"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/events/tick"
+	mcdConstants "github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/fetcher"
 	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-
-	"github.com/makerdao/vdb-mcd-transformers/test_config"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/tick"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
-	mcdConstants "github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 )
 
 // TODO: Update when Tick events are on Kovan
@@ -38,7 +37,7 @@ var _ = XDescribe("Tick EventTransformer", func() {
 		db          *postgres.DB
 		blockChain  core.BlockChain
 		tickConfig  transformer.EventTransformerConfig
-		initializer shared.EventTransformer
+		initializer event.Transformer
 		logFetcher  fetcher.ILogFetcher
 		addresses   []common.Address
 		topics      []common.Hash
@@ -63,10 +62,10 @@ var _ = XDescribe("Tick EventTransformer", func() {
 		addresses = transformer.HexStringsToAddresses(tickConfig.ContractAddresses)
 		topics = []common.Hash{common.HexToHash(tickConfig.Topic)}
 
-		initializer = shared.EventTransformer{
+		initializer = event.Transformer{
 			Config:     tickConfig,
-			Converter:  &tick.TickConverter{},
-			Repository: &tick.TickRepository{},
+			Converter:  &tick.Converter{},
+			Repository: &tick.Repository{},
 		}
 	})
 
@@ -82,7 +81,7 @@ var _ = XDescribe("Tick EventTransformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
 
-		transformer := initializer.NewEventTransformer(db)
+		transformer := initializer.NewTransformer(db)
 		err = transformer.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -108,7 +107,7 @@ var _ = XDescribe("Tick EventTransformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
 
-		transformer := initializer.NewEventTransformer(db)
+		transformer := initializer.NewTransformer(db)
 		err = transformer.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 

@@ -18,6 +18,7 @@ package test_helpers
 
 import (
 	"database/sql"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"math/rand"
 	"strconv"
 	"time"
@@ -676,13 +677,15 @@ func CreateYank(input YankCreationInput) (err error) {
 }
 
 func CreateTick(input TickCreationInput) (err error) {
-	tickModel := test_data.CopyModel(test_data.TickModel)
-	tickModel.ColumnValues["bid_id"] = strconv.Itoa(input.BidId)
-	tickModel.ColumnValues["tx_idx"] = rand.Int31()
-	tickModel.ForeignKeyValues[constants.AddressFK] = input.ContractAddress
+	addressID, addressErr := shared.GetOrCreateAddress(input.ContractAddress, input.Db)
+	Expect(addressErr).NotTo(HaveOccurred())
+	tickLog := test_data.CreateTestLog(input.TickHeaderId, input.Db)
+	tickModel := test_data.CopyEventModel(test_data.TickModel)
+	tickModel.ColumnValues[tick.Id] = strconv.Itoa(input.BidId)
+	tickModel.ColumnValues[constants.AddressColumn] = addressID
 	tickModel.ColumnValues[constants.HeaderFK] = input.TickHeaderId
-	tickModel.ColumnValues[constants.LogFK] = input.TickLogId
-	return input.TickRepo.Create([]shared.InsertionModel{tickModel})
+	tickModel.ColumnValues[constants.LogFK] = tickLog.ID
+	return input.TickRepo.Create([]event.InsertionModel{tickModel})
 }
 
 type YankCreationInput struct {
@@ -740,9 +743,10 @@ type FlapBidCreationInput struct {
 }
 
 type TickCreationInput struct {
+	Db              *postgres.DB
 	BidId           int
 	ContractAddress string
-	TickRepo        tick.TickRepository
+	TickRepo        tick.Repository
 	TickHeaderId    int64
 	TickLogId       int64
 }

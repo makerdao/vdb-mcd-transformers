@@ -19,39 +19,52 @@ package tick
 import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
+	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 )
 
-type TickConverter struct{}
+type Converter struct {
+	db *postgres.DB
+}
 
 const (
-	logDataRequired   = false
-	numTopicsRequired = 3
+	Id                event.ColumnName = "bid_id"
+	logDataRequired                    = false
+	numTopicsRequired                  = 3
 )
 
-func (TickConverter) ToModels(_ string, logs []core.HeaderSyncLog) (results []shared.InsertionModel, err error) {
+func (c Converter) ToModels(_ string, logs []core.HeaderSyncLog) ([]event.InsertionModel, error) {
+	var models []event.InsertionModel
 	for _, log := range logs {
 		validateErr := shared.VerifyLog(log.Log, numTopicsRequired, logDataRequired)
 		if validateErr != nil {
 			return nil, validateErr
 		}
 
-		model := shared.InsertionModel{
+		addressID, addressErr := shared.GetOrCreateAddress(log.Log.Address.String(), c.db)
+		if addressErr != nil {
+			return nil, shared.ErrCouldNotCreateFK(addressErr)
+		}
+
+		model := event.InsertionModel{
 			SchemaName: "maker",
 			TableName:  "tick",
-			OrderedColumns: []string{
-				constants.HeaderFK, "bid_id", string(constants.AddressFK), constants.LogFK,
+			OrderedColumns: []event.ColumnName{
+				constants.HeaderFK, constants.LogFK, Id, constants.AddressColumn,
 			},
-			ColumnValues: shared.ColumnValues{
-				"bid_id":           log.Log.Topics[2].Big().String(),
-				constants.HeaderFK: log.HeaderID,
-				constants.LogFK:    log.ID,
-			},
-			ForeignKeyValues: shared.ForeignKeyValues{
-				constants.AddressFK: log.Log.Address.String(),
+			ColumnValues: event.ColumnValues{
+				constants.HeaderFK:      log.HeaderID,
+				constants.LogFK:         log.ID,
+				Id:                      log.Log.Topics[2].Big().String(),
+				constants.AddressColumn: addressID,
 			},
 		}
-		results = append(results, model)
+		models = append(models, model)
 	}
-	return results, err
+	return models, nil
+}
+
+func (c *Converter) SetDB(db *postgres.DB) {
+	c.db = db
 }
