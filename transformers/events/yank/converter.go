@@ -19,41 +19,51 @@ package yank
 import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
+	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 )
 
-type YankConverter struct{}
+type Converter struct {
+	db *postgres.DB
+}
 
 const (
 	logDataRequired   = false
 	numTopicsRequired = 3
+	Id                = "bid_id"
 )
 
-func (YankConverter) ToModels(_ string, logs []core.HeaderSyncLog) (results []shared.InsertionModel, err error) {
+func (c Converter) ToModels(_ string, logs []core.HeaderSyncLog) (results []event.InsertionModel, err error) {
 	for _, log := range logs {
 		validationErr := shared.VerifyLog(log.Log, numTopicsRequired, logDataRequired)
 		if validationErr != nil {
 			return nil, validationErr
 		}
-
+		addressID, addressErr := shared.GetOrCreateAddress(log.Log.Address.String(), c.db)
+		if addressErr != nil {
+			return nil, shared.ErrCouldNotCreateFK(addressErr)
+		}
 		bidId := log.Log.Topics[2].Big()
 
-		model := shared.InsertionModel{
+		model := event.InsertionModel{
 			SchemaName: "maker",
 			TableName:  "yank",
-			OrderedColumns: []string{
-				constants.HeaderFK, "bid_id", string(constants.AddressFK), constants.LogFK,
+			OrderedColumns: []event.ColumnName{
+				constants.HeaderFK, Id, constants.AddressColumn, constants.LogFK,
 			},
-			ColumnValues: shared.ColumnValues{
-				"bid_id":           bidId.String(),
-				constants.HeaderFK: log.HeaderID,
-				constants.LogFK:    log.ID,
-			},
-			ForeignKeyValues: shared.ForeignKeyValues{
-				constants.AddressFK: log.Log.Address.Hex(),
+			ColumnValues: event.ColumnValues{
+				Id:                      bidId.String(),
+				constants.HeaderFK:      log.HeaderID,
+				constants.LogFK:         log.ID,
+				constants.AddressColumn: addressID,
 			},
 		}
 		results = append(results, model)
 	}
 	return results, err
+}
+
+func (c *Converter) SetDB(db *postgres.DB) {
+	c.db = db
 }

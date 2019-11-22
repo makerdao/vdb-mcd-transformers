@@ -665,13 +665,14 @@ func CreateDent(input DentCreationInput) (err error) {
 }
 
 func CreateYank(input YankCreationInput) (err error) {
-	yankModel := test_data.CopyModel(test_data.YankModel)
-	yankModel.ColumnValues["bid_id"] = strconv.Itoa(input.BidId)
-	yankModel.ColumnValues["tx_idx"] = rand.Int31()
-	yankModel.ForeignKeyValues[constants.AddressFK] = input.ContractAddress
+	addressID, addressErr := shared.GetOrCreateAddress(input.ContractAddress, input.Db)
+	Expect(addressErr).NotTo(HaveOccurred())
+	yankModel := test_data.CopyEventModel(test_data.YankModel)
+	yankModel.ColumnValues[yank.Id] = strconv.Itoa(input.BidId)
+	yankModel.ColumnValues[constants.AddressColumn] = addressID
 	yankModel.ColumnValues[constants.HeaderFK] = input.YankHeaderId
 	yankModel.ColumnValues[constants.LogFK] = input.YankLogId
-	return input.YankRepo.Create([]shared.InsertionModel{yankModel})
+	return input.YankRepo.Create([]event.InsertionModel{yankModel})
 }
 
 func CreateTick(input TickCreationInput) (err error) {
@@ -685,9 +686,10 @@ func CreateTick(input TickCreationInput) (err error) {
 }
 
 type YankCreationInput struct {
+	Db              *postgres.DB
 	ContractAddress string
 	BidId           int
-	YankRepo        yank.YankRepository
+	YankRepo        yank.Repository
 	YankHeaderId    int64
 	YankLogId       int64
 }

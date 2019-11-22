@@ -18,7 +18,9 @@ package yank_test
 
 import (
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
@@ -29,13 +31,19 @@ import (
 )
 
 var _ = Describe("Yank Converter", func() {
-	var converter = yank.YankConverter{}
+	db := test_config.NewTestDB(test_config.NewTestNode())
+	var converter yank.Converter
+	converter.SetDB(db)
 
 	It("converts logs to models", func() {
 		models, err := converter.ToModels(constants.FlipABI(), []core.HeaderSyncLog{test_data.YankHeaderSyncLog})
-
+		var addressID int64
+		addrErr := db.Get(&addressID, `SELECT id FROM public.addresses`)
+		Expect(addrErr).NotTo(HaveOccurred())
+		expectedModel := test_data.YankModel
+		expectedModel.ColumnValues[constants.AddressColumn] = addressID
 		Expect(err).NotTo(HaveOccurred())
-		Expect(models).To(Equal([]shared.InsertionModel{test_data.YankModel}))
+		Expect(models).To(Equal([]event.InsertionModel{expectedModel}))
 	})
 
 	It("returns an error if the expected topics aren't in the log", func() {

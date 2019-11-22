@@ -19,10 +19,12 @@ package test_data
 import (
 	"math/rand"
 
+	"github.com/makerdao/vdb-mcd-transformers/transformers/events/yank"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
+
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 )
@@ -51,18 +53,16 @@ var YankHeaderSyncLog = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-var YankModel = shared.InsertionModel{
+var YankModel = event.InsertionModel{
 	SchemaName: "maker",
 	TableName:  "yank",
-	OrderedColumns: []string{
-		constants.HeaderFK, "bid_id", string(constants.AddressFK), constants.LogFK,
+	OrderedColumns: []event.ColumnName{
+		constants.HeaderFK, yank.Id, constants.AddressColumn, constants.LogFK,
 	},
-	ColumnValues: shared.ColumnValues{
-		"bid_id":           "10000000000000000",
-		constants.HeaderFK: YankHeaderSyncLog.HeaderID,
-		constants.LogFK:    YankHeaderSyncLog.ID,
-	},
-	ForeignKeyValues: shared.ForeignKeyValues{
-		constants.AddressFK: YankHeaderSyncLog.Log.Address.Hex(),
+	ColumnValues: event.ColumnValues{
+		yank.Id:                 "10000000000000000",
+		constants.HeaderFK:      YankHeaderSyncLog.HeaderID,
+		constants.LogFK:         YankHeaderSyncLog.ID,
+		constants.AddressColumn: rawYankLog.Address.Hex(),
 	},
 }
