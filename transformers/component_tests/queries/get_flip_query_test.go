@@ -3,14 +3,13 @@ package queries
 import (
 	"math/rand"
 	"strconv"
-	"time"
 
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/deal"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/flip_kick"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
+	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
@@ -20,11 +19,14 @@ import (
 
 var _ = Describe("Single flip view", func() {
 	var (
-		db              *postgres.DB
-		flipKickRepo    flip_kick.FlipKickRepository
-		dealRepo        deal.DealRepository
-		headerRepo      repositories.HeaderRepository
-		contractAddress = "flip"
+		blockOne, timestampOne int
+		contractAddress        = fakes.RandomString(42)
+		db                     *postgres.DB
+		dealRepo               deal.DealRepository
+		fakeBidId              = rand.Int()
+		flipKickRepo           flip_kick.FlipKickRepository
+		headerOne              core.Header
+		headerRepo             repositories.HeaderRepository
 	)
 
 	BeforeEach(func() {
@@ -35,7 +37,10 @@ var _ = Describe("Single flip view", func() {
 		dealRepo = deal.DealRepository{}
 		dealRepo.SetDB(db)
 		headerRepo = repositories.NewHeaderRepository(db)
-		rand.Seed(time.Now().UnixNano())
+
+		blockOne = rand.Int()
+		timestampOne = int(rand.Int31())
+		headerOne = createHeader(blockOne, timestampOne, headerRepo)
 	})
 
 	AfterEach(func() {
@@ -44,18 +49,8 @@ var _ = Describe("Single flip view", func() {
 	})
 
 	It("gets only the specified flip", func() {
-		fakeBidId := rand.Int()
-		blockOne := rand.Int()
-		timestampOne := int(rand.Int31())
-		blockTwo := blockOne + 1
-		timestampTwo := timestampOne + 1000
-
-		blockOneHeader := fakes.GetFakeHeaderWithTimestamp(int64(timestampOne), int64(blockOne))
-		headerId, headerOneErr := headerRepo.CreateOrUpdateHeader(blockOneHeader)
-		Expect(headerOneErr).NotTo(HaveOccurred())
-
 		flipStorageValuesOne := test_helpers.GetFlipStorageValues(1, test_helpers.FakeIlk.Hex, fakeBidId)
-		test_helpers.CreateFlip(db, blockOneHeader, flipStorageValuesOne,
+		test_helpers.CreateFlip(db, headerOne, flipStorageValuesOne,
 			test_helpers.GetFlipMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
 
 		ilkId, urnId, err := test_helpers.SetUpFlipBidContext(test_helpers.FlipBidContextInput{
@@ -64,25 +59,22 @@ var _ = Describe("Single flip view", func() {
 				BidId:           fakeBidId,
 				ContractAddress: contractAddress,
 				DealRepo:        dealRepo,
-				DealHeaderId:    headerId,
+				DealHeaderId:    headerOne.Id,
 			},
 			Dealt:            true,
 			IlkHex:           test_helpers.FakeIlk.Hex,
 			UrnGuy:           test_data.FlipKickModel().ColumnValues["usr"].(string),
 			FlipKickRepo:     flipKickRepo,
-			FlipKickHeaderId: headerId,
+			FlipKickHeaderId: headerOne.Id,
 		})
 		Expect(err).NotTo(HaveOccurred())
 
 		expectedBid := test_helpers.FlipBidFromValues(strconv.Itoa(fakeBidId), strconv.FormatInt(ilkId, 10),
-			strconv.FormatInt(urnId, 10), "true", blockOneHeader.Timestamp, blockOneHeader.Timestamp, flipStorageValuesOne)
+			strconv.FormatInt(urnId, 10), "true", headerOne.Timestamp, headerOne.Timestamp, flipStorageValuesOne)
 
-		blockTwoHeader := fakes.GetFakeHeaderWithTimestamp(int64(timestampTwo), int64(blockTwo))
-		blockTwoHeader.Hash = common.BytesToHash([]byte{5, 4, 3, 2, 1}).String()
-		_, headerTwoErr := headerRepo.CreateOrUpdateHeader(blockTwoHeader)
-		Expect(headerTwoErr).NotTo(HaveOccurred())
+		headerTwo := createHeader(blockOne+1, timestampOne+1, headerRepo)
 		flipStorageValuesTwo := test_helpers.GetFlipStorageValues(2, test_helpers.FakeIlk.Hex, fakeBidId)
-		test_helpers.CreateFlip(db, blockTwoHeader, flipStorageValuesTwo,
+		test_helpers.CreateFlip(db, headerTwo, flipStorageValuesTwo,
 			test_helpers.GetFlipMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
 
 		var actualBid test_helpers.FlipBid
@@ -95,16 +87,8 @@ var _ = Describe("Single flip view", func() {
 
 	Describe("dealt", func() {
 		It("is false if no deal events", func() {
-			fakeBidId := rand.Int()
-			blockNumber := rand.Int()
-			timestamp := int(rand.Int31())
-
-			header := fakes.GetFakeHeaderWithTimestamp(int64(timestamp), int64(blockNumber))
-			headerId, headerOneErr := headerRepo.CreateOrUpdateHeader(header)
-			Expect(headerOneErr).NotTo(HaveOccurred())
-
 			flipStorageValues := test_helpers.GetFlipStorageValues(1, test_helpers.FakeIlk.Hex, fakeBidId)
-			test_helpers.CreateFlip(db, header, flipStorageValues,
+			test_helpers.CreateFlip(db, headerOne, flipStorageValues,
 				test_helpers.GetFlipMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
 
 			ilkId, urnId, err := test_helpers.SetUpFlipBidContext(test_helpers.FlipBidContextInput{
@@ -117,43 +101,30 @@ var _ = Describe("Single flip view", func() {
 				IlkHex:           test_helpers.FakeIlk.Hex,
 				UrnGuy:           test_data.FlipKickModel().ColumnValues["usr"].(string),
 				FlipKickRepo:     flipKickRepo,
-				FlipKickHeaderId: headerId,
+				FlipKickHeaderId: headerOne.Id,
 			})
 			Expect(err).NotTo(HaveOccurred())
 
 			expectedBid := test_helpers.FlipBidFromValues(strconv.Itoa(fakeBidId), strconv.FormatInt(ilkId, 10),
-				strconv.FormatInt(urnId, 10), "false", header.Timestamp, header.Timestamp, flipStorageValues)
+				strconv.FormatInt(urnId, 10), "false", headerOne.Timestamp, headerOne.Timestamp, flipStorageValues)
 
 			var actualBid test_helpers.FlipBid
 			queryErr := db.Get(&actualBid, `SELECT bid_id, ilk_id, urn_id, guy, tic, "end", lot, bid, gal, dealt, tab, created, updated FROM api.get_flip($1, $2, $3)`,
-				fakeBidId, test_helpers.FakeIlk.Identifier, blockNumber)
+				fakeBidId, test_helpers.FakeIlk.Identifier, blockOne)
 			Expect(queryErr).NotTo(HaveOccurred())
 
 			Expect(expectedBid).To(Equal(actualBid))
 		})
 
 		It("is false if deal event in later block", func() {
-			fakeBidId := rand.Int()
-			blockOne := rand.Int()
-			timestampOne := int(rand.Int31())
-			blockTwo := blockOne + 1
-			timestampTwo := timestampOne + 1000
-
-			blockOneHeader := fakes.GetFakeHeaderWithTimestamp(int64(timestampOne), int64(blockOne))
-			headerOneId, headerOneErr := headerRepo.CreateOrUpdateHeader(blockOneHeader)
-			Expect(headerOneErr).NotTo(HaveOccurred())
-
 			flipStorageValuesOne := test_helpers.GetFlipStorageValues(1, test_helpers.FakeIlk.Hex, fakeBidId)
-			test_helpers.CreateFlip(db, blockOneHeader, flipStorageValuesOne,
+			test_helpers.CreateFlip(db, headerOne, flipStorageValuesOne,
 				test_helpers.GetFlipMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
 
-			blockTwoHeader := fakes.GetFakeHeaderWithTimestamp(int64(timestampTwo), int64(blockTwo))
-			blockTwoHeader.Hash = common.BytesToHash([]byte{5, 4, 3, 2, 1}).String()
-			headerTwoId, headerTwoErr := headerRepo.CreateOrUpdateHeader(blockTwoHeader)
-			Expect(headerTwoErr).NotTo(HaveOccurred())
+			headerTwo := createHeader(blockOne+1, timestampOne+1, headerRepo)
 
 			flipStorageValuesTwo := test_helpers.GetFlipStorageValues(2, test_helpers.FakeIlk.Hex, fakeBidId)
-			test_helpers.CreateFlip(db, blockTwoHeader, flipStorageValuesTwo,
+			test_helpers.CreateFlip(db, headerTwo, flipStorageValuesTwo,
 				test_helpers.GetFlipMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
 
 			ilkId, urnId, err := test_helpers.SetUpFlipBidContext(test_helpers.FlipBidContextInput{
@@ -162,19 +133,19 @@ var _ = Describe("Single flip view", func() {
 					BidId:           fakeBidId,
 					ContractAddress: contractAddress,
 					DealRepo:        dealRepo,
-					DealHeaderId:    headerTwoId,
+					DealHeaderId:    headerTwo.Id,
 				},
 				Dealt:            true,
 				IlkHex:           test_helpers.FakeIlk.Hex,
 				UrnGuy:           test_data.FlipKickModel().ColumnValues["usr"].(string),
 				FlipKickRepo:     flipKickRepo,
-				FlipKickHeaderId: headerOneId,
+				FlipKickHeaderId: headerOne.Id,
 			})
 			Expect(err).NotTo(HaveOccurred())
 
 			expectedBid := test_helpers.FlipBidFromValues(
 				strconv.Itoa(fakeBidId), strconv.FormatInt(ilkId, 10), strconv.FormatInt(urnId, 10), "false",
-				blockOneHeader.Timestamp, blockOneHeader.Timestamp, flipStorageValuesOne)
+				headerOne.Timestamp, headerOne.Timestamp, flipStorageValuesOne)
 
 			var actualBid test_helpers.FlipBid
 			queryErr := db.Get(&actualBid, `SELECT bid_id, ilk_id, urn_id, guy, tic, "end", lot, bid, gal, dealt, tab, created, updated FROM api.get_flip($1, $2, $3)`,
@@ -186,18 +157,8 @@ var _ = Describe("Single flip view", func() {
 	})
 
 	It("gets created and updated blocks", func() {
-		fakeBidId := rand.Int()
-		blockOne := rand.Int()
-		timestampOne := int(rand.Int31())
-		blockTwo := blockOne + 1
-		timestampTwo := timestampOne + 1000
-
-		blockOneHeader := fakes.GetFakeHeaderWithTimestamp(int64(timestampOne), int64(blockOne))
-		headerId, headerOneErr := headerRepo.CreateOrUpdateHeader(blockOneHeader)
-		Expect(headerOneErr).NotTo(HaveOccurred())
-
 		flipStorageValuesOne := test_helpers.GetFlipStorageValues(1, test_helpers.FakeIlk.Hex, fakeBidId)
-		test_helpers.CreateFlip(db, blockOneHeader, flipStorageValuesOne,
+		test_helpers.CreateFlip(db, headerOne, flipStorageValuesOne,
 			test_helpers.GetFlipMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
 
 		ilkId, urnId, err := test_helpers.SetUpFlipBidContext(test_helpers.FlipBidContextInput{
@@ -206,30 +167,27 @@ var _ = Describe("Single flip view", func() {
 				BidId:           fakeBidId,
 				ContractAddress: contractAddress,
 				DealRepo:        dealRepo,
-				DealHeaderId:    headerId,
+				DealHeaderId:    headerOne.Id,
 			},
 			Dealt:            true,
 			IlkHex:           test_helpers.FakeIlk.Hex,
 			UrnGuy:           test_data.FlipKickModel().ColumnValues["usr"].(string),
 			FlipKickRepo:     flipKickRepo,
-			FlipKickHeaderId: headerId,
+			FlipKickHeaderId: headerOne.Id,
 		})
 		Expect(err).NotTo(HaveOccurred())
 
-		blockTwoHeader := fakes.GetFakeHeaderWithTimestamp(int64(timestampTwo), int64(blockTwo))
-		blockTwoHeader.Hash = common.BytesToHash([]byte{5, 4, 3, 2, 1}).String()
-		_, headerTwoErr := headerRepo.CreateOrUpdateHeader(blockTwoHeader)
-		Expect(headerTwoErr).NotTo(HaveOccurred())
+		headerTwo := createHeader(blockOne+1, timestampOne+1, headerRepo)
 		flipStorageValuesTwo := test_helpers.GetFlipStorageValues(2, test_helpers.FakeIlk.Hex, fakeBidId)
-		test_helpers.CreateFlip(db, blockTwoHeader, flipStorageValuesTwo,
+		test_helpers.CreateFlip(db, headerTwo, flipStorageValuesTwo,
 			test_helpers.GetFlipMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
 
 		expectedBid := test_helpers.FlipBidFromValues(strconv.Itoa(fakeBidId), strconv.FormatInt(ilkId, 10),
-			strconv.FormatInt(urnId, 10), "true", blockTwoHeader.Timestamp, blockOneHeader.Timestamp, flipStorageValuesOne)
+			strconv.FormatInt(urnId, 10), "true", headerTwo.Timestamp, headerOne.Timestamp, flipStorageValuesOne)
 
 		var actualBid test_helpers.FlipBid
 		queryErr := db.Get(&actualBid, `SELECT bid_id, ilk_id, urn_id, guy, tic, "end", lot, bid, gal, dealt, tab, created, updated FROM api.get_flip($1, $2, $3)`,
-			fakeBidId, test_helpers.FakeIlk.Identifier, blockTwo)
+			fakeBidId, test_helpers.FakeIlk.Identifier, headerTwo.BlockNumber)
 		Expect(queryErr).NotTo(HaveOccurred())
 
 		Expect(expectedBid.Created).To(Equal(actualBid.Created))

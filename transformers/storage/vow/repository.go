@@ -23,17 +23,17 @@ import (
 )
 
 const (
-	insertVatQuery        = `INSERT INTO maker.vow_vat (block_number, block_hash, vat) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
-	insertFlapperQuery    = `INSERT INTO maker.vow_flapper (block_number, block_hash, flapper) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
-	insertFlopperQuery    = `INSERT INTO maker.vow_flopper (block_number, block_hash, flopper) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
-	insertSinMappingQuery = `INSERT INTO maker.vow_sin_mapping (block_number, block_hash, era, tab) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
-	insertSinIntegerQuery = `INSERT INTO maker.vow_sin_integer (block_number, block_hash, sin) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
-	insertAshQuery        = `INSERT INTO maker.vow_ash (block_number, block_hash, ash) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
-	insertWaitQuery       = `INSERT INTO maker.vow_wait (block_number, block_hash, wait) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
-	insertDumpQuery       = `INSERT INTO maker.vow_dump (block_number, block_hash, dump) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
-	insertSumpQuery       = `INSERT INTO maker.vow_sump (block_number, block_hash, sump) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
-	insertBumpQuery       = `INSERT INTO maker.vow_bump (block_number, block_hash, bump) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
-	insertHumpQuery       = `INSERT INTO maker.vow_hump (block_number, block_hash, hump) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
+	insertVatQuery        = `INSERT INTO maker.vow_vat (header_id, vat) VALUES ($1, $2) ON CONFLICT DO NOTHING`
+	insertFlapperQuery    = `INSERT INTO maker.vow_flapper (header_id, flapper) VALUES ($1, $2) ON CONFLICT DO NOTHING`
+	insertFlopperQuery    = `INSERT INTO maker.vow_flopper (header_id, flopper) VALUES ($1, $2) ON CONFLICT DO NOTHING`
+	insertSinMappingQuery = `INSERT INTO maker.vow_sin_mapping (header_id, era, tab) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
+	insertSinIntegerQuery = `INSERT INTO maker.vow_sin_integer (header_id, sin) VALUES ($1, $2) ON CONFLICT DO NOTHING`
+	insertAshQuery        = `INSERT INTO maker.vow_ash (header_id, ash) VALUES ($1, $2) ON CONFLICT DO NOTHING`
+	insertWaitQuery       = `INSERT INTO maker.vow_wait (header_id, wait) VALUES ($1, $2) ON CONFLICT DO NOTHING`
+	insertDumpQuery       = `INSERT INTO maker.vow_dump (header_id, dump) VALUES ($1, $2) ON CONFLICT DO NOTHING`
+	insertSumpQuery       = `INSERT INTO maker.vow_sump (header_id, sump) VALUES ($1, $2) ON CONFLICT DO NOTHING`
+	insertBumpQuery       = `INSERT INTO maker.vow_bump (header_id, bump) VALUES ($1, $2) ON CONFLICT DO NOTHING`
+	insertHumpQuery       = `INSERT INTO maker.vow_hump (header_id, hump) VALUES ($1, $2) ON CONFLICT DO NOTHING`
 )
 
 type VowStorageRepository struct {
@@ -44,101 +44,101 @@ func (repository *VowStorageRepository) SetDB(db *postgres.DB) {
 	repository.db = db
 }
 
-func (repository VowStorageRepository) Create(blockNumber int, blockHash string, metadata utils.StorageValueMetadata, value interface{}) error {
+func (repository VowStorageRepository) Create(headerID int64, metadata utils.StorageValueMetadata, value interface{}) error {
 	switch metadata.Name {
 	case Vat:
-		return repository.insertVowVat(blockNumber, blockHash, value.(string))
+		return repository.insertVowVat(headerID, value.(string))
 	case Flapper:
-		return repository.insertVowFlapper(blockNumber, blockHash, value.(string))
+		return repository.insertVowFlapper(headerID, value.(string))
 	case Flopper:
-		return repository.insertVowFlopper(blockNumber, blockHash, value.(string))
+		return repository.insertVowFlopper(headerID, value.(string))
 	case SinMapping:
-		return repository.insertSinMapping(blockNumber, blockHash, metadata, value.(string))
+		return repository.insertSinMapping(headerID, metadata, value.(string))
 	case SinInteger:
-		return repository.insertSinInteger(blockNumber, blockHash, value.(string))
+		return repository.insertSinInteger(headerID, value.(string))
 	case Ash:
-		return repository.insertVowAsh(blockNumber, blockHash, value.(string))
+		return repository.insertVowAsh(headerID, value.(string))
 	case Wait:
-		return repository.insertVowWait(blockNumber, blockHash, value.(string))
+		return repository.insertVowWait(headerID, value.(string))
 	case Dump:
-		return repository.insertVowDump(blockNumber, blockHash, value.(string))
+		return repository.insertVowDump(headerID, value.(string))
 	case Sump:
-		return repository.insertVowSump(blockNumber, blockHash, value.(string))
+		return repository.insertVowSump(headerID, value.(string))
 	case Bump:
-		return repository.insertVowBump(blockNumber, blockHash, value.(string))
+		return repository.insertVowBump(headerID, value.(string))
 	case Hump:
-		return repository.insertVowHump(blockNumber, blockHash, value.(string))
+		return repository.insertVowHump(headerID, value.(string))
 	default:
 		panic("unrecognized storage metadata name")
 	}
 }
 
-func (repository VowStorageRepository) insertVowVat(blockNumber int, blockHash string, vat string) error {
-	_, err := repository.db.Exec(insertVatQuery, blockNumber, blockHash, vat)
+func (repository VowStorageRepository) insertVowVat(headerID int64, vat string) error {
+	_, err := repository.db.Exec(insertVatQuery, headerID, vat)
 
 	return err
 }
 
-func (repository VowStorageRepository) insertVowFlapper(blockNumber int, blockHash string, flapper string) error {
-	_, err := repository.db.Exec(insertFlapperQuery, blockNumber, blockHash, flapper)
+func (repository VowStorageRepository) insertVowFlapper(headerID int64, flapper string) error {
+	_, err := repository.db.Exec(insertFlapperQuery, headerID, flapper)
 
 	return err
 }
 
-func (repository VowStorageRepository) insertVowFlopper(blockNumber int, blockHash string, flopper string) error {
-	_, err := repository.db.Exec(insertFlopperQuery, blockNumber, blockHash, flopper)
+func (repository VowStorageRepository) insertVowFlopper(headerID int64, flopper string) error {
+	_, err := repository.db.Exec(insertFlopperQuery, headerID, flopper)
 
 	return err
 }
 
-func (repository VowStorageRepository) insertSinInteger(blockNumber int, blockHash string, sin string) error {
-	_, err := repository.db.Exec(insertSinIntegerQuery, blockNumber, blockHash, sin)
+func (repository VowStorageRepository) insertSinInteger(headerID int64, sin string) error {
+	_, err := repository.db.Exec(insertSinIntegerQuery, headerID, sin)
 
 	return err
 }
 
-func (repository VowStorageRepository) insertSinMapping(blockNumber int, blockHash string, metadata utils.StorageValueMetadata, sin string) error {
+func (repository VowStorageRepository) insertSinMapping(headerID int64, metadata utils.StorageValueMetadata, sin string) error {
 	timestamp, err := getTimestamp(metadata.Keys)
 	if err != nil {
 		return err
 	}
-	_, writeErr := repository.db.Exec(insertSinMappingQuery, blockNumber, blockHash, timestamp, sin)
+	_, writeErr := repository.db.Exec(insertSinMappingQuery, headerID, timestamp, sin)
 
 	return writeErr
 }
 
-func (repository VowStorageRepository) insertVowAsh(blockNumber int, blockHash string, ash string) error {
-	_, err := repository.db.Exec(insertAshQuery, blockNumber, blockHash, ash)
+func (repository VowStorageRepository) insertVowAsh(headerID int64, ash string) error {
+	_, err := repository.db.Exec(insertAshQuery, headerID, ash)
 
 	return err
 }
 
-func (repository VowStorageRepository) insertVowWait(blockNumber int, blockHash string, wait string) error {
-	_, err := repository.db.Exec(insertWaitQuery, blockNumber, blockHash, wait)
+func (repository VowStorageRepository) insertVowWait(headerID int64, wait string) error {
+	_, err := repository.db.Exec(insertWaitQuery, headerID, wait)
 
 	return err
 }
 
-func (repository VowStorageRepository) insertVowDump(blockNumber int, blockHash string, dump string) error {
-	_, err := repository.db.Exec(insertDumpQuery, blockNumber, blockHash, dump)
+func (repository VowStorageRepository) insertVowDump(headerID int64, dump string) error {
+	_, err := repository.db.Exec(insertDumpQuery, headerID, dump)
 
 	return err
 }
 
-func (repository VowStorageRepository) insertVowSump(blockNumber int, blockHash string, sump string) error {
-	_, err := repository.db.Exec(insertSumpQuery, blockNumber, blockHash, sump)
+func (repository VowStorageRepository) insertVowSump(headerID int64, sump string) error {
+	_, err := repository.db.Exec(insertSumpQuery, headerID, sump)
 
 	return err
 }
 
-func (repository VowStorageRepository) insertVowBump(blockNumber int, blockHash string, bump string) error {
-	_, err := repository.db.Exec(insertBumpQuery, blockNumber, blockHash, bump)
+func (repository VowStorageRepository) insertVowBump(headerID int64, bump string) error {
+	_, err := repository.db.Exec(insertBumpQuery, headerID, bump)
 
 	return err
 }
 
-func (repository VowStorageRepository) insertVowHump(blockNumber int, blockHash string, hump string) error {
-	_, err := repository.db.Exec(insertHumpQuery, blockNumber, blockHash, hump)
+func (repository VowStorageRepository) insertVowHump(headerID int64, hump string) error {
+	_, err := repository.db.Exec(insertHumpQuery, headerID, hump)
 
 	return err
 }

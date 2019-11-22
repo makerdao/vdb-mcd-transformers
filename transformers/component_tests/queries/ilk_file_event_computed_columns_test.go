@@ -21,31 +21,28 @@ import (
 	"math/rand"
 
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/makerdao/vulcanizedb/pkg/core"
-	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
-	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
-	"github.com/makerdao/vulcanizedb/pkg/fakes"
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
-
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_file/ilk"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
+	"github.com/makerdao/vulcanizedb/pkg/core"
+	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
+	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("Ilk file event computed columns", func() {
 	var (
-		db               *postgres.DB
-		fakeBlock        int
-		fakeHeader       core.Header
-		fakeGethLog      types.Log
-		fileEvent        shared.InsertionModel
-		fileRepo         ilk.VatFileIlkRepository
-		headerId         int64
-		headerRepository repositories.HeaderRepository
+		db                     *postgres.DB
+		blockOne, timestampOne int
+		fakeGethLog            types.Log
+		fileEvent              shared.InsertionModel
+		fileRepo               ilk.VatFileIlkRepository
+		headerOne              core.Header
+		headerRepository       repositories.HeaderRepository
 	)
 
 	BeforeEach(func() {
@@ -53,20 +50,17 @@ var _ = Describe("Ilk file event computed columns", func() {
 		test_config.CleanTestDB(db)
 
 		headerRepository = repositories.NewHeaderRepository(db)
-		fakeBlock = rand.Int()
-		fakeHeader = fakes.GetFakeHeader(int64(fakeBlock))
-		var insertHeaderErr error
-		headerId, insertHeaderErr = headerRepository.CreateOrUpdateHeader(fakeHeader)
-		Expect(insertHeaderErr).NotTo(HaveOccurred())
-
-		fakeHeaderSyncLog := test_data.CreateTestLog(headerId, db)
+		blockOne = rand.Int()
+		timestampOne = int(rand.Int31())
+		headerOne = createHeader(blockOne, timestampOne, headerRepository)
+		fakeHeaderSyncLog := test_data.CreateTestLog(headerOne.Id, db)
 		fakeGethLog = fakeHeaderSyncLog.Log
 
 		fileRepo = ilk.VatFileIlkRepository{}
 		fileRepo.SetDB(db)
 		fileEvent = test_data.VatFileIlkDustModel()
 		fileEvent.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
-		fileEvent.ColumnValues[constants.HeaderFK] = headerId
+		fileEvent.ColumnValues[constants.HeaderFK] = headerOne.Id
 		fileEvent.ColumnValues[constants.LogFK] = fakeHeaderSyncLog.ID
 		insertFileErr := fileRepo.Create([]shared.InsertionModel{fileEvent})
 		Expect(insertFileErr).NotTo(HaveOccurred())
@@ -76,13 +70,14 @@ var _ = Describe("Ilk file event computed columns", func() {
 		closeErr := db.Close()
 		Expect(closeErr).NotTo(HaveOccurred())
 	})
+
 	Describe("ilk_file_event_ilk", func() {
 		It("returns ilk_state for an ilk_file_event", func() {
 			ilkValues := test_helpers.GetIlkValues(0)
-			test_helpers.CreateIlk(db, fakeHeader, ilkValues, test_helpers.FakeIlkVatMetadatas,
+			test_helpers.CreateIlk(db, headerOne, ilkValues, test_helpers.FakeIlkVatMetadatas,
 				test_helpers.FakeIlkCatMetadatas, test_helpers.FakeIlkJugMetadatas, test_helpers.FakeIlkSpotMetadatas)
 
-			expectedIlk := test_helpers.IlkStateFromValues(test_helpers.FakeIlk.Hex, fakeHeader.Timestamp, fakeHeader.Timestamp, ilkValues)
+			expectedIlk := test_helpers.IlkStateFromValues(test_helpers.FakeIlk.Hex, headerOne.Timestamp, headerOne.Timestamp, ilkValues)
 
 			var result test_helpers.IlkState
 			err := db.Get(&result,
@@ -104,14 +99,14 @@ var _ = Describe("Ilk file event computed columns", func() {
 					Int64: int64(fakeGethLog.TxIndex),
 					Valid: true,
 				},
-				BlockHeight: sql.NullInt64{Int64: int64(fakeBlock), Valid: true},
-				BlockHash:   test_helpers.GetValidNullString(fakeHeader.Hash),
+				BlockHeight: sql.NullInt64{Int64: headerOne.BlockNumber, Valid: true},
+				BlockHash:   test_helpers.GetValidNullString(headerOne.Hash),
 				TxFrom:      test_helpers.GetValidNullString("fromAddress"),
 				TxTo:        test_helpers.GetValidNullString("toAddress"),
 			}
 
 			_, insertErr := db.Exec(`INSERT INTO header_sync_transactions (header_id, hash, tx_from, tx_index, tx_to)
-				VALUES ($1, $2, $3, $4, $5)`, headerId, expectedTx.TransactionHash, expectedTx.TxFrom,
+				VALUES ($1, $2, $3, $4, $5)`, headerOne.Id, expectedTx.TransactionHash, expectedTx.TxFrom,
 				expectedTx.TransactionIndex, expectedTx.TxTo)
 			Expect(insertErr).NotTo(HaveOccurred())
 
@@ -131,14 +126,14 @@ var _ = Describe("Ilk file event computed columns", func() {
 					Int64: int64(fakeGethLog.TxIndex) + 1,
 					Valid: true,
 				},
-				BlockHeight: sql.NullInt64{Int64: int64(fakeBlock), Valid: true},
-				BlockHash:   test_helpers.GetValidNullString(fakeHeader.Hash),
+				BlockHeight: sql.NullInt64{Int64: headerOne.BlockNumber, Valid: true},
+				BlockHash:   test_helpers.GetValidNullString(headerOne.Hash),
 				TxFrom:      test_helpers.GetValidNullString("wrongFromAddress"),
 				TxTo:        test_helpers.GetValidNullString("wrongToAddress"),
 			}
 
 			_, insertErr := db.Exec(`INSERT INTO header_sync_transactions (header_id, hash, tx_from, tx_index, tx_to)
-				VALUES ($1, $2, $3, $4, $5)`, headerId, wrongTx.TransactionHash, wrongTx.TxFrom,
+				VALUES ($1, $2, $3, $4, $5)`, headerOne.Id, wrongTx.TransactionHash, wrongTx.TxFrom,
 				wrongTx.TransactionIndex, wrongTx.TxTo)
 			Expect(insertErr).NotTo(HaveOccurred())
 
@@ -152,24 +147,21 @@ var _ = Describe("Ilk file event computed columns", func() {
 		})
 
 		It("does not return transaction from different block with same index", func() {
-			lowerBlockNumber := fakeBlock - 1
-			anotherHeader := fakes.GetFakeHeader(int64(lowerBlockNumber))
-			anotherHeaderID, insertHeaderErr := headerRepository.CreateOrUpdateHeader(anotherHeader)
-			Expect(insertHeaderErr).NotTo(HaveOccurred())
+			headerZero := createHeader(blockOne-1, timestampOne-1, headerRepository)
 			wrongTx := Tx{
 				TransactionHash: test_helpers.GetValidNullString("wrongTxHash"),
 				TransactionIndex: sql.NullInt64{
 					Int64: int64(fakeGethLog.TxIndex),
 					Valid: true,
 				},
-				BlockHeight: sql.NullInt64{Int64: int64(lowerBlockNumber), Valid: true},
-				BlockHash:   test_helpers.GetValidNullString(fakeHeader.Hash),
+				BlockHeight: sql.NullInt64{Int64: headerZero.BlockNumber, Valid: true},
+				BlockHash:   test_helpers.GetValidNullString(headerOne.Hash),
 				TxFrom:      test_helpers.GetValidNullString("wrongFromAddress"),
 				TxTo:        test_helpers.GetValidNullString("wrongToAddress"),
 			}
 
 			_, insertErr := db.Exec(`INSERT INTO header_sync_transactions (header_id, hash, tx_from, tx_index, tx_to)
-				VALUES ($1, $2, $3, $4, $5)`, anotherHeaderID, wrongTx.TransactionHash, wrongTx.TxFrom,
+				VALUES ($1, $2, $3, $4, $5)`, headerZero.Id, wrongTx.TransactionHash, wrongTx.TxFrom,
 				wrongTx.TransactionIndex, wrongTx.TxTo)
 			Expect(insertErr).NotTo(HaveOccurred())
 

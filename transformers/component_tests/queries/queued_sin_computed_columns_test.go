@@ -32,7 +32,6 @@ import (
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
-	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -40,16 +39,15 @@ import (
 var _ = Describe("Queued sin computed columns", func() {
 	Describe("queued_sin_sin_queue_events", func() {
 		var (
-			db                 *postgres.DB
-			fakeBlock          int
-			fakeEra            = rand.Intn(1000000000)
-			fakeHeader         core.Header
-			fakeTab            = "123"
-			headerID           int64
-			sinMappingMetadata utils.StorageValueMetadata
-			vowRepository      vow.VowStorageRepository
-			vowFlogRepo        vow_flog.VowFlogRepository
-			headerRepository   repositories.HeaderRepository
+			db                     *postgres.DB
+			blockOne, timestampOne int
+			fakeEra                string
+			headerOne              core.Header
+			fakeTab                = strconv.Itoa(rand.Int())
+			sinMappingMetadata     utils.StorageValueMetadata
+			vowRepository          vow.VowStorageRepository
+			vowFlogRepo            vow_flog.VowFlogRepository
+			headerRepository       repositories.HeaderRepository
 		)
 
 		BeforeEach(func() {
@@ -57,35 +55,24 @@ var _ = Describe("Queued sin computed columns", func() {
 			test_config.CleanTestDB(db)
 
 			headerRepository = repositories.NewHeaderRepository(db)
-			fakeBlock = rand.Int()
-			fakeHeader = fakes.GetFakeHeader(int64(fakeBlock))
-			fakeHeader.Timestamp = strconv.Itoa(fakeEra)
-			var insertHeaderErr error
-			headerID, insertHeaderErr = headerRepository.CreateOrUpdateHeader(fakeHeader)
-			Expect(insertHeaderErr).NotTo(HaveOccurred())
+			blockOne = rand.Int()
+			timestampOne = int(rand.Int31())
+			fakeEra = strconv.Itoa(timestampOne)
+			headerOne = createHeader(blockOne, timestampOne, headerRepository)
 
 			vowRepository = vow.VowStorageRepository{}
 			vowRepository.SetDB(db)
-			sinMappingKeys := map[utils.Key]string{constants.Timestamp: strconv.Itoa(fakeEra)}
+			sinMappingKeys := map[utils.Key]string{constants.Timestamp: fakeEra}
 			sinMappingMetadata = utils.GetStorageValueMetadata(vow.SinMapping, sinMappingKeys, utils.Uint256)
-			insertSinMappingErr := vowRepository.Create(int(fakeHeader.BlockNumber), fakeHeader.Hash, sinMappingMetadata, fakeTab)
+			insertSinMappingErr := vowRepository.Create(headerOne.Id, sinMappingMetadata, fakeTab)
 			Expect(insertSinMappingErr).NotTo(HaveOccurred())
 
-			vowFessLog := test_data.CreateTestLog(headerID, db)
-			vowFessRepo := vow_fess.VowFessRepository{}
-			vowFessRepo.SetDB(db)
-			vowFessEvent := test_data.VowFessModel
-			vowFessEvent.ColumnValues[constants.HeaderFK] = headerID
-			vowFessEvent.ColumnValues[constants.LogFK] = vowFessLog.ID
-			insertVowFessErr := vowFessRepo.Create([]shared.InsertionModel{vowFessEvent})
-			Expect(insertVowFessErr).NotTo(HaveOccurred())
-
-			vowFlogLog := test_data.CreateTestLog(headerID, db)
+			vowFlogLog := test_data.CreateTestLog(headerOne.Id, db)
 			vowFlogRepo = vow_flog.VowFlogRepository{}
 			vowFlogRepo.SetDB(db)
 			vowFlogEvent := test_data.VowFlogModel
 			vowFlogEvent.ColumnValues["era"] = fakeEra
-			vowFlogEvent.ColumnValues[constants.HeaderFK] = headerID
+			vowFlogEvent.ColumnValues[constants.HeaderFK] = headerOne.Id
 			vowFlogEvent.ColumnValues[constants.LogFK] = vowFlogLog.ID
 			insertVowFlogErr := vowFlogRepo.Create([]shared.InsertionModel{vowFlogEvent})
 			Expect(insertVowFlogErr).NotTo(HaveOccurred())
@@ -97,6 +84,15 @@ var _ = Describe("Queued sin computed columns", func() {
 		})
 
 		It("returns sin queue events for queued sin", func() {
+			vowFessLog := test_data.CreateTestLog(headerOne.Id, db)
+			vowFessRepo := vow_fess.VowFessRepository{}
+			vowFessRepo.SetDB(db)
+			vowFessEvent := test_data.VowFessModel
+			vowFessEvent.ColumnValues[constants.HeaderFK] = headerOne.Id
+			vowFessEvent.ColumnValues[constants.LogFK] = vowFessLog.ID
+			insertVowFessErr := vowFessRepo.Create([]shared.InsertionModel{vowFessEvent})
+			Expect(insertVowFessErr).NotTo(HaveOccurred())
+
 			var actualEvents []test_helpers.SinQueueEvent
 			err := db.Select(&actualEvents,
 				`SELECT era, act
@@ -107,41 +103,22 @@ var _ = Describe("Queued sin computed columns", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(actualEvents).To(ConsistOf(
-				test_helpers.SinQueueEvent{Era: strconv.Itoa(fakeEra), Act: "fess"},
-				test_helpers.SinQueueEvent{Era: strconv.Itoa(fakeEra), Act: "flog"},
+				test_helpers.SinQueueEvent{Era: fakeEra, Act: "fess"},
+				test_helpers.SinQueueEvent{Era: fakeEra, Act: "flog"},
 			))
 		})
 
 		Describe("result pagination", func() {
-			var headerOne, headerTwo core.Header
+			var headerTwo core.Header
 
 			BeforeEach(func() {
-				blockOne := fakeBlock + 1
-				headerOne = fakes.GetFakeHeader(int64(blockOne))
-				headerOne.Timestamp = strconv.Itoa(fakeEra + 1)
-				headerOneId, headerOneErr := headerRepository.CreateOrUpdateHeader(headerOne)
-				Expect(headerOneErr).NotTo(HaveOccurred())
-
-				blockTwo := blockOne + 1
-				headerTwo = fakes.GetFakeHeader(int64(blockTwo))
-				headerTwo.Timestamp = strconv.Itoa(fakeEra + 1)
-				headerTwoId, headerTwoError := headerRepository.CreateOrUpdateHeader(headerTwo)
-				Expect(headerTwoError).NotTo(HaveOccurred())
+				headerTwo = createHeader(blockOne+1, timestampOne+1, headerRepository)
 
 				// add flog event for same sin in later block
-				vowFlogLog := test_data.CreateTestLog(headerOneId, db)
-				vowFlogEventOne := test_data.VowFlogModel
-				vowFlogEventOne.ColumnValues["era"] = fakeEra
-				vowFlogEventOne.ColumnValues[constants.HeaderFK] = headerOneId
-				vowFlogEventOne.ColumnValues[constants.LogFK] = vowFlogLog.ID
-				vowFlogOneErr := vowFlogRepo.Create([]shared.InsertionModel{vowFlogEventOne})
-				Expect(vowFlogOneErr).NotTo(HaveOccurred())
-
-				// add flog event for same sin in later block
-				vowFlogLogTwo := test_data.CreateTestLog(headerTwoId, db)
+				vowFlogLogTwo := test_data.CreateTestLog(headerTwo.Id, db)
 				vowFlogEventTwo := test_data.VowFlogModel
 				vowFlogEventTwo.ColumnValues["era"] = fakeEra
-				vowFlogEventTwo.ColumnValues[constants.HeaderFK] = headerTwoId
+				vowFlogEventTwo.ColumnValues[constants.HeaderFK] = headerTwo.Id
 				vowFlogEventTwo.ColumnValues[constants.LogFK] = vowFlogLogTwo.ID
 				vowFlogTwoErr := vowFlogRepo.Create([]shared.InsertionModel{vowFlogEventTwo})
 				Expect(vowFlogTwoErr).NotTo(HaveOccurred())
@@ -160,7 +137,7 @@ var _ = Describe("Queued sin computed columns", func() {
 
 				Expect(actualEvents).To(ConsistOf(
 					test_helpers.SinQueueEvent{
-						Era:         strconv.Itoa(fakeEra),
+						Era:         fakeEra,
 						Act:         "flog",
 						BlockHeight: strconv.FormatInt(headerTwo.BlockNumber, 10),
 					},
@@ -181,7 +158,7 @@ var _ = Describe("Queued sin computed columns", func() {
 
 				Expect(actualEvents).To(ConsistOf(
 					test_helpers.SinQueueEvent{
-						Era:         strconv.Itoa(fakeEra),
+						Era:         fakeEra,
 						Act:         "flog",
 						BlockHeight: strconv.FormatInt(headerOne.BlockNumber, 10),
 					},

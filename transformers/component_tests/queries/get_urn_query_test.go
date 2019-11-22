@@ -3,27 +3,26 @@ package queries
 import (
 	"math/rand"
 	"strconv"
-	"time"
 
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
-	helper "github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/vat"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
+	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
-	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("Single urn view", func() {
 	var (
-		db         *postgres.DB
-		vatRepo    vat.VatStorageRepository
-		headerRepo repositories.HeaderRepository
-		urnOne     string
-		urnTwo     string
-		err        error
+		db                     *postgres.DB
+		vatRepo                vat.VatStorageRepository
+		headerRepo             repositories.HeaderRepository
+		urnOne, urnTwo         string
+		blockOne, timestampOne int
+		headerOne              core.Header
 	)
 
 	const getUrnQuery = `SELECT urn_identifier, ilk_identifier, ink, art, created, updated FROM api.get_urn($1, $2, $3)`
@@ -34,10 +33,13 @@ var _ = Describe("Single urn view", func() {
 		vatRepo = vat.VatStorageRepository{}
 		vatRepo.SetDB(db)
 		headerRepo = repositories.NewHeaderRepository(db)
-		rand.Seed(time.Now().UnixNano())
 
 		urnOne = test_data.RandomString(5)
 		urnTwo = test_data.RandomString(5)
+
+		blockOne = rand.Int()
+		timestampOne = int(rand.Int31())
+		headerOne = createHeader(blockOne, timestampOne, headerRepo)
 	})
 
 	AfterEach(func() {
@@ -46,52 +48,32 @@ var _ = Describe("Single urn view", func() {
 	})
 
 	It("gets only the specified urn", func() {
-		blockOne := rand.Int()
-		timestampOne := int(rand.Int31())
 		blockTwo := blockOne + 1
-		timestampTwo := timestampOne + 1
+		headerTwo := createHeader(blockTwo, timestampOne+1, headerRepo)
 
-		urnOneMetadata := helper.GetUrnMetadata(helper.FakeIlk.Hex, urnOne)
-		urnOneSetupData := helper.GetUrnSetupData(blockOne, timestampOne)
-		helper.CreateUrn(urnOneSetupData, urnOneMetadata, vatRepo, headerRepo)
+		urnOneMetadata := test_helpers.GetUrnMetadata(test_helpers.FakeIlk.Hex, urnOne)
+		urnOneSetupData := test_helpers.GetUrnSetupData(headerOne)
+		test_helpers.CreateUrn(urnOneSetupData, urnOneMetadata, vatRepo)
 
-		expectedTimestampOne := helper.GetExpectedTimestamp(timestampOne)
-		expectedUrn := helper.UrnState{
+		expectedTimestampOne := test_helpers.GetExpectedTimestamp(timestampOne)
+		expectedUrn := test_helpers.UrnState{
 			UrnIdentifier: urnOne,
-			IlkIdentifier: helper.FakeIlk.Identifier,
+			IlkIdentifier: test_helpers.FakeIlk.Identifier,
 			Ink:           strconv.Itoa(urnOneSetupData.Ink),
 			Art:           strconv.Itoa(urnOneSetupData.Art),
-			Created:       helper.GetValidNullString(expectedTimestampOne),
-			Updated:       helper.GetValidNullString(expectedTimestampOne),
+			Created:       test_helpers.GetValidNullString(expectedTimestampOne),
+			Updated:       test_helpers.GetValidNullString(expectedTimestampOne),
 		}
 
-		urnTwoMetadata := helper.GetUrnMetadata(helper.AnotherFakeIlk.Hex, urnTwo)
-		urnTwoSetupData := helper.GetUrnSetupData(blockTwo, timestampTwo)
-		helper.CreateUrn(urnTwoSetupData, urnTwoMetadata, vatRepo, headerRepo)
+		urnTwoMetadata := test_helpers.GetUrnMetadata(test_helpers.AnotherFakeIlk.Hex, urnTwo)
+		urnTwoSetupData := test_helpers.GetUrnSetupData(headerTwo)
+		test_helpers.CreateUrn(urnTwoSetupData, urnTwoMetadata, vatRepo)
 
-		var actualUrn helper.UrnState
-		err = db.Get(&actualUrn, getUrnQuery, helper.FakeIlk.Identifier, urnOne, blockTwo)
-		Expect(err).NotTo(HaveOccurred())
+		var actualUrn test_helpers.UrnState
+		getErr := db.Get(&actualUrn, getUrnQuery, test_helpers.FakeIlk.Identifier, urnOne, blockTwo)
+		Expect(getErr).NotTo(HaveOccurred())
 
-		helper.AssertUrn(actualUrn, expectedUrn)
-	})
-
-	It("returns urn state without timestamps if corresponding headers aren't synced", func() {
-		block := rand.Int()
-		timestamp := int(rand.Int31())
-		metadata := helper.GetUrnMetadata(helper.FakeIlk.Hex, urnOne)
-		setupData := helper.GetUrnSetupData(block, timestamp)
-
-		helper.CreateUrn(setupData, metadata, vatRepo, headerRepo)
-		_, err = db.Exec(`DELETE FROM headers`)
-		Expect(err).NotTo(HaveOccurred())
-
-		var result helper.UrnState
-		err = db.Get(&result, getUrnQuery, helper.FakeIlk.Identifier, urnOne, block)
-
-		Expect(err).NotTo(HaveOccurred())
-		Expect(result.Created.String).To(BeEmpty())
-		Expect(result.Updated.String).To(BeEmpty())
+		test_helpers.AssertUrn(actualUrn, expectedUrn)
 	})
 
 	It("fails if no argument is supplied (STRICT)", func() {
@@ -101,88 +83,78 @@ var _ = Describe("Single urn view", func() {
 	})
 
 	It("fails if only one argument is supplied (STRICT)", func() {
-		_, err := db.Exec(`SELECT * FROM api.get_urn($1::text)`, helper.FakeIlk.Identifier)
+		_, err := db.Exec(`SELECT * FROM api.get_urn($1::text)`, test_helpers.FakeIlk.Identifier)
 		Expect(err).NotTo(BeNil())
 		Expect(err.Error()).To(ContainSubstring("function api.get_urn(text) does not exist"))
 	})
 
 	It("allows blockHeight argument to be omitted", func() {
-		_, err := db.Exec(`SELECT * FROM api.get_urn($1, $2)`, helper.FakeIlk.Identifier, urnOne)
+		_, err := db.Exec(`SELECT * FROM api.get_urn($1, $2)`, test_helpers.FakeIlk.Identifier, urnOne)
 		Expect(err).NotTo(HaveOccurred())
 	})
 
 	Describe("it includes diffs only up to given block height", func() {
 		var (
-			actualUrn    helper.UrnState
-			blockOne     int
-			timestampOne int
-			setupDataOne helper.UrnSetupData
-			metadata     helper.UrnMetadata
+			actualUrn              test_helpers.UrnState
+			setupDataOne           test_helpers.UrnSetupData
+			metadata               test_helpers.UrnMetadata
+			blockTwo, timestampTwo int
+			headerTwo              core.Header
 		)
 
 		BeforeEach(func() {
-			blockOne = rand.Int()
-			timestampOne = int(rand.Int31())
-			setupDataOne = helper.GetUrnSetupData(blockOne, timestampOne)
-			metadata = helper.GetUrnMetadata(helper.FakeIlk.Hex, urnOne)
-			helper.CreateUrn(setupDataOne, metadata, vatRepo, headerRepo)
+			setupDataOne = test_helpers.GetUrnSetupData(headerOne)
+			metadata = test_helpers.GetUrnMetadata(test_helpers.FakeIlk.Hex, urnOne)
+			test_helpers.CreateUrn(setupDataOne, metadata, vatRepo)
+
+			blockTwo = blockOne + 1
+			timestampTwo = timestampOne + 1
+			headerTwo = createHeader(blockTwo, timestampTwo, headerRepo)
 		})
 
 		It("gets urn state as of block one", func() {
-			blockTwo := blockOne + 1
-			hashTwo := test_data.RandomString(5)
 			updatedInk := rand.Int()
 
-			err = vatRepo.Create(blockTwo, hashTwo, metadata.UrnInk, strconv.Itoa(updatedInk))
-			Expect(err).NotTo(HaveOccurred())
+			createErr := vatRepo.Create(headerTwo.Id, metadata.UrnInk, strconv.Itoa(updatedInk))
+			Expect(createErr).NotTo(HaveOccurred())
 
-			expectedTimestampOne := helper.GetExpectedTimestamp(timestampOne)
-			expectedUrn := helper.UrnState{
+			expectedTimestampOne := test_helpers.GetExpectedTimestamp(timestampOne)
+			expectedUrn := test_helpers.UrnState{
 				UrnIdentifier: urnOne,
-				IlkIdentifier: helper.FakeIlk.Identifier,
+				IlkIdentifier: test_helpers.FakeIlk.Identifier,
 				Ink:           strconv.Itoa(setupDataOne.Ink),
 				Art:           strconv.Itoa(setupDataOne.Art),
-				Created:       helper.GetValidNullString(expectedTimestampOne),
-				Updated:       helper.GetValidNullString(expectedTimestampOne),
+				Created:       test_helpers.GetValidNullString(expectedTimestampOne),
+				Updated:       test_helpers.GetValidNullString(expectedTimestampOne),
 			}
 
-			err = db.Get(&actualUrn, getUrnQuery, helper.FakeIlk.Identifier, urnOne, blockOne)
-			Expect(err).NotTo(HaveOccurred())
+			getErr := db.Get(&actualUrn, getUrnQuery, test_helpers.FakeIlk.Identifier, urnOne, blockOne)
+			Expect(getErr).NotTo(HaveOccurred())
 
-			helper.AssertUrn(actualUrn, expectedUrn)
+			test_helpers.AssertUrn(actualUrn, expectedUrn)
 		})
 
 		It("gets urn state with updated values", func() {
-			blockTwo := blockOne + 1
-			timestampTwo := timestampOne + 1
-			hashTwo := test_data.RandomString(5)
 			updatedInk := rand.Int()
 
-			err = vatRepo.Create(blockTwo, hashTwo, metadata.UrnInk, strconv.Itoa(updatedInk))
-			Expect(err).NotTo(HaveOccurred())
+			createErr := vatRepo.Create(headerTwo.Id, metadata.UrnInk, strconv.Itoa(updatedInk))
+			Expect(createErr).NotTo(HaveOccurred())
 
-			expectedTimestampOne := helper.GetExpectedTimestamp(timestampOne)
-			expectedTimestampTwo := helper.GetExpectedTimestamp(timestampTwo)
-			expectedUrn := helper.UrnState{
+			expectedTimestampOne := test_helpers.GetExpectedTimestamp(timestampOne)
+			expectedTimestampTwo := test_helpers.GetExpectedTimestamp(timestampTwo)
+			expectedUrn := test_helpers.UrnState{
 				UrnIdentifier: urnOne,
-				IlkIdentifier: helper.FakeIlk.Identifier,
+				IlkIdentifier: test_helpers.FakeIlk.Identifier,
 				Ink:           strconv.Itoa(updatedInk),
 				Art:           strconv.Itoa(setupDataOne.Art), // Not changed
-				Created:       helper.GetValidNullString(expectedTimestampOne),
-				Updated:       helper.GetValidNullString(expectedTimestampTwo),
+				Created:       test_helpers.GetValidNullString(expectedTimestampOne),
+				Updated:       test_helpers.GetValidNullString(expectedTimestampTwo),
 			}
 
-			fakeHeaderTwo := fakes.GetFakeHeader(int64(blockTwo))
-			fakeHeaderTwo.Timestamp = strconv.Itoa(timestampTwo)
-			fakeHeaderTwo.Hash = hashTwo
+			getErr := db.Get(&actualUrn, getUrnQuery, test_helpers.FakeIlk.Identifier, urnOne, blockTwo)
+			Expect(getErr).NotTo(HaveOccurred())
 
-			_, err = headerRepo.CreateOrUpdateHeader(fakeHeaderTwo)
-			Expect(err).NotTo(HaveOccurred())
-
-			err = db.Get(&actualUrn, getUrnQuery, helper.FakeIlk.Identifier, urnOne, blockTwo)
-			Expect(err).NotTo(HaveOccurred())
-
-			helper.AssertUrn(actualUrn, expectedUrn)
+			test_helpers.AssertUrn(actualUrn, expectedUrn)
 		})
 	})
 })

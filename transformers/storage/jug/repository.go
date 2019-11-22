@@ -26,11 +26,11 @@ import (
 )
 
 const (
-	InsertJugIlkRhoQuery  = `INSERT INTO maker.jug_ilk_rho (block_number, block_hash, ilk_id, rho) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
-	InsertJugIlkDutyQuery = `INSERT INTO maker.jug_ilk_duty (block_number, block_hash, ilk_id, duty) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
-	insertJugVatQuery     = `INSERT INTO maker.jug_vat (block_number, block_hash, vat) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
-	insertJugVowQuery     = `INSERT INTO maker.jug_vow (block_number, block_hash, vow) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
-	insertJugBaseQuery    = `INSERT INTO maker.jug_base (block_number, block_hash, base) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
+	InsertJugIlkRhoQuery  = `INSERT INTO maker.jug_ilk_rho (header_id, ilk_id, rho) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
+	InsertJugIlkDutyQuery = `INSERT INTO maker.jug_ilk_duty (header_id, ilk_id, duty) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
+	insertJugVatQuery     = `INSERT INTO maker.jug_vat (header_id, vat) VALUES ($1, $2) ON CONFLICT DO NOTHING`
+	insertJugVowQuery     = `INSERT INTO maker.jug_vow (header_id, vow) VALUES ($1, $2) ON CONFLICT DO NOTHING`
+	insertJugBaseQuery    = `INSERT INTO maker.jug_base (header_id, base) VALUES ($1, $2) ON CONFLICT DO NOTHING`
 )
 
 type JugStorageRepository struct {
@@ -41,57 +41,57 @@ func (repository *JugStorageRepository) SetDB(db *postgres.DB) {
 	repository.db = db
 }
 
-func (repository JugStorageRepository) Create(blockNumber int, blockHash string, metadata utils.StorageValueMetadata, value interface{}) error {
+func (repository JugStorageRepository) Create(headerID int64, metadata utils.StorageValueMetadata, value interface{}) error {
 	switch metadata.Name {
 	case IlkRho:
-		return repository.insertIlkRho(blockNumber, blockHash, metadata, value.(string))
+		return repository.insertIlkRho(headerID, metadata, value.(string))
 	case IlkDuty:
-		return repository.insertIlkDuty(blockNumber, blockHash, metadata, value.(string))
+		return repository.insertIlkDuty(headerID, metadata, value.(string))
 	case Vat:
-		return repository.insertJugVat(blockNumber, blockHash, value.(string))
+		return repository.insertJugVat(headerID, value.(string))
 	case Vow:
-		return repository.insertJugVow(blockNumber, blockHash, value.(string))
+		return repository.insertJugVow(headerID, value.(string))
 	case Base:
-		return repository.insertJugBase(blockNumber, blockHash, value.(string))
+		return repository.insertJugBase(headerID, value.(string))
 
 	default:
 		panic(fmt.Sprintf("unrecognized jug contract storage name: %s", metadata.Name))
 	}
 }
 
-func (repository JugStorageRepository) insertIlkRho(blockNumber int, blockHash string, metadata utils.StorageValueMetadata, rho string) error {
+func (repository JugStorageRepository) insertIlkRho(headerID int64, metadata utils.StorageValueMetadata, rho string) error {
 	ilk, err := getIlk(metadata.Keys)
 	if err != nil {
 		return err
 	}
 
-	return repository.insertFieldWithIlk(blockNumber, blockHash, ilk, IlkRho, InsertJugIlkRhoQuery, rho)
+	return repository.insertFieldWithIlk(headerID, ilk, IlkRho, InsertJugIlkRhoQuery, rho)
 }
 
-func (repository JugStorageRepository) insertIlkDuty(blockNumber int, blockHash string, metadata utils.StorageValueMetadata, duty string) error {
+func (repository JugStorageRepository) insertIlkDuty(headerID int64, metadata utils.StorageValueMetadata, duty string) error {
 	ilk, err := getIlk(metadata.Keys)
 	if err != nil {
 		return err
 	}
-	return repository.insertFieldWithIlk(blockNumber, blockHash, ilk, IlkDuty, InsertJugIlkDutyQuery, duty)
+	return repository.insertFieldWithIlk(headerID, ilk, IlkDuty, InsertJugIlkDutyQuery, duty)
 }
 
-func (repository JugStorageRepository) insertJugVat(blockNumber int, blockHash string, vat string) error {
-	_, err := repository.db.Exec(insertJugVatQuery, blockNumber, blockHash, vat)
+func (repository JugStorageRepository) insertJugVat(headerID int64, vat string) error {
+	_, err := repository.db.Exec(insertJugVatQuery, headerID, vat)
 	return err
 }
 
-func (repository JugStorageRepository) insertJugVow(blockNumber int, blockHash string, vow string) error {
-	_, err := repository.db.Exec(insertJugVowQuery, blockNumber, blockHash, vow)
+func (repository JugStorageRepository) insertJugVow(headerID int64, vow string) error {
+	_, err := repository.db.Exec(insertJugVowQuery, headerID, vow)
 	return err
 }
 
-func (repository JugStorageRepository) insertJugBase(blockNumber int, blockHash string, repo string) error {
-	_, err := repository.db.Exec(insertJugBaseQuery, blockNumber, blockHash, repo)
+func (repository JugStorageRepository) insertJugBase(headerID int64, repo string) error {
+	_, err := repository.db.Exec(insertJugBaseQuery, headerID, repo)
 	return err
 }
 
-func (repository *JugStorageRepository) insertFieldWithIlk(blockNumber int, blockHash, ilk, variableName, query, value string) error {
+func (repository *JugStorageRepository) insertFieldWithIlk(headerID int64, ilk, variableName, query, value string) error {
 	tx, txErr := repository.db.Beginx()
 	if txErr != nil {
 		return txErr
@@ -104,7 +104,7 @@ func (repository *JugStorageRepository) insertFieldWithIlk(blockNumber int, bloc
 		}
 		return ilkErr
 	}
-	_, writeErr := tx.Exec(query, blockNumber, blockHash, ilkID, value)
+	_, writeErr := tx.Exec(query, headerID, ilkID, value)
 
 	if writeErr != nil {
 		rollbackErr := tx.Rollback()

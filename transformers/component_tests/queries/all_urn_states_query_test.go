@@ -10,19 +10,21 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/vat"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/storage/utils"
+	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
-	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("Urn history query", func() {
 	var (
-		db         *postgres.DB
-		vatRepo    vat.VatStorageRepository
-		headerRepo repositories.HeaderRepository
-		fakeUrn    string
+		db                     *postgres.DB
+		vatRepo                vat.VatStorageRepository
+		headerRepo             repositories.HeaderRepository
+		fakeUrn                string
+		blockOne, timestampOne int
+		headerOne              core.Header
 	)
 
 	BeforeEach(func() {
@@ -32,6 +34,10 @@ var _ = Describe("Urn history query", func() {
 		vatRepo.SetDB(db)
 
 		fakeUrn = test_data.RandomString(5)
+
+		blockOne = rand.Int()
+		timestampOne = int(rand.Int31())
+		headerOne = createHeader(blockOne, timestampOne, headerRepo)
 	})
 
 	AfterEach(func() {
@@ -40,11 +46,9 @@ var _ = Describe("Urn history query", func() {
 	})
 
 	It("returns a reverse chronological history for the given ilk and urn", func() {
-		blockOne := rand.Int()
-		timestampOne := int(rand.Int31())
-		urnSetupData := helper.GetUrnSetupData(blockOne, timestampOne)
+		urnSetupData := helper.GetUrnSetupData(headerOne)
 		urnMetadata := helper.GetUrnMetadata(helper.FakeIlk.Hex, fakeUrn)
-		helper.CreateUrn(urnSetupData, urnMetadata, vatRepo, headerRepo)
+		helper.CreateUrn(urnSetupData, urnMetadata, vatRepo)
 
 		inkBlockOne := urnSetupData.Ink
 		artBlockOne := urnSetupData.Art
@@ -63,11 +67,11 @@ var _ = Describe("Urn history query", func() {
 		// New block
 		blockTwo := blockOne + 1
 		timestampTwo := timestampOne + 1
-		createFakeHeader(blockTwo, timestampTwo, headerRepo)
+		headerTwo := createHeader(blockTwo, timestampTwo, headerRepo)
 
 		// Relevant ink diff in block two
 		inkBlockTwo := rand.Int()
-		err := vatRepo.Create(blockTwo, fakes.FakeHash.String(), urnMetadata.UrnInk, strconv.Itoa(inkBlockTwo))
+		err := vatRepo.Create(headerTwo.Id, urnMetadata.UrnInk, strconv.Itoa(inkBlockTwo))
 		Expect(err).NotTo(HaveOccurred())
 
 		// Irrelevant art diff in block two
@@ -75,7 +79,7 @@ var _ = Describe("Urn history query", func() {
 		wrongArt := strconv.Itoa(rand.Int())
 		wrongMetadata := utils.GetStorageValueMetadata(vat.UrnArt,
 			map[utils.Key]string{constants.Ilk: helper.FakeIlk.Hex, constants.Guy: wrongUrn}, utils.Uint256)
-		err = vatRepo.Create(blockOne, fakes.FakeHash.String(), wrongMetadata, wrongArt)
+		err = vatRepo.Create(headerOne.Id, wrongMetadata, wrongArt)
 		Expect(err).NotTo(HaveOccurred())
 
 		expectedTimestampTwo := helper.GetExpectedTimestamp(timestampTwo)
@@ -92,11 +96,11 @@ var _ = Describe("Urn history query", func() {
 		// New block
 		blockThree := blockTwo + 1
 		timestampThree := timestampTwo + 1
-		createFakeHeader(blockThree, timestampThree, headerRepo)
+		headerThree := createHeader(blockThree, timestampThree, headerRepo)
 
 		// Relevant art diff in block three
 		artBlockThree := 0
-		err = vatRepo.Create(blockThree, fakes.FakeHash.String(), urnMetadata.UrnArt, strconv.Itoa(artBlockThree))
+		err = vatRepo.Create(headerThree.Id, urnMetadata.UrnArt, strconv.Itoa(artBlockThree))
 		Expect(err).NotTo(HaveOccurred())
 
 		expectedTimestampThree := helper.GetExpectedTimestamp(timestampThree)
@@ -124,35 +128,32 @@ var _ = Describe("Urn history query", func() {
 
 	Describe("result pagination", func() {
 		var (
-			urnCreatedTimestamp, urnUpdatedTimestamp int
-			urnCreatedBlock, urnUpdatedBlock         int
-			urnSetupData                             helper.UrnSetupData
+			blockTwo, timestampTwo int
+			urnSetupData           helper.UrnSetupData
 		)
 
 		BeforeEach(func() {
-			urnCreatedBlock = rand.Int()
-			urnCreatedTimestamp = int(rand.Int31())
-			urnSetupData = helper.GetUrnSetupData(urnCreatedBlock, urnCreatedTimestamp)
+			urnSetupData = helper.GetUrnSetupData(headerOne)
 			urnMetadata := helper.GetUrnMetadata(helper.FakeIlk.Hex, fakeUrn)
-			helper.CreateUrn(urnSetupData, urnMetadata, vatRepo, headerRepo)
+			helper.CreateUrn(urnSetupData, urnMetadata, vatRepo)
 
 			// New block
-			urnUpdatedBlock = urnCreatedBlock + 1
-			urnUpdatedTimestamp = urnCreatedTimestamp + 1
-			createFakeHeader(urnUpdatedBlock, urnUpdatedTimestamp, headerRepo)
+			blockTwo = blockOne + 1
+			timestampTwo = timestampOne + 1
+			headerTwo := createHeader(blockTwo, timestampTwo, headerRepo)
 
 			// diff in new block
-			err := vatRepo.Create(urnUpdatedBlock, fakes.FakeHash.String(), urnMetadata.UrnInk, strconv.Itoa(urnSetupData.Ink))
+			err := vatRepo.Create(headerTwo.Id, urnMetadata.UrnInk, strconv.Itoa(urnSetupData.Ink))
 			Expect(err).NotTo(HaveOccurred())
 		})
 
 		It("limits results to most recent blocks when limit argument is provided", func() {
-			expectedTimeCreated := helper.GetExpectedTimestamp(urnCreatedTimestamp)
-			expectedTimeUpdated := helper.GetExpectedTimestamp(urnUpdatedTimestamp)
+			expectedTimeCreated := helper.GetExpectedTimestamp(timestampOne)
+			expectedTimeUpdated := helper.GetExpectedTimestamp(timestampTwo)
 			expectedUrn := helper.UrnState{
 				UrnIdentifier: fakeUrn,
 				IlkIdentifier: helper.FakeIlk.Identifier,
-				BlockHeight:   urnUpdatedBlock,
+				BlockHeight:   blockTwo,
 				Ink:           strconv.Itoa(urnSetupData.Ink),
 				Art:           strconv.Itoa(urnSetupData.Art),
 				Created:       helper.GetValidNullString(expectedTimeCreated),
@@ -163,7 +164,7 @@ var _ = Describe("Urn history query", func() {
 			var result []helper.UrnState
 			dbErr := db.Select(&result,
 				`SELECT * FROM api.all_urn_states($1, $2, $3, $4)`,
-				helper.FakeIlk.Identifier, fakeUrn, urnUpdatedBlock, maxResults)
+				helper.FakeIlk.Identifier, fakeUrn, blockTwo, maxResults)
 			Expect(dbErr).NotTo(HaveOccurred())
 
 			Expect(len(result)).To(Equal(maxResults))
@@ -171,11 +172,11 @@ var _ = Describe("Urn history query", func() {
 		})
 
 		It("offsets results if offset is provided", func() {
-			expectedTimeCreated := helper.GetExpectedTimestamp(urnCreatedTimestamp)
+			expectedTimeCreated := helper.GetExpectedTimestamp(timestampOne)
 			expectedUrn := helper.UrnState{
 				UrnIdentifier: fakeUrn,
 				IlkIdentifier: helper.FakeIlk.Identifier,
-				BlockHeight:   urnCreatedBlock,
+				BlockHeight:   blockOne,
 				Ink:           strconv.Itoa(urnSetupData.Ink),
 				Art:           strconv.Itoa(urnSetupData.Art),
 				Created:       helper.GetValidNullString(expectedTimeCreated),
@@ -187,7 +188,7 @@ var _ = Describe("Urn history query", func() {
 			var result []helper.UrnState
 			dbErr := db.Select(&result,
 				`SELECT * FROM api.all_urn_states($1, $2, $3, $4, $5)`,
-				helper.FakeIlk.Identifier, fakeUrn, urnUpdatedBlock, maxResults, resultOffset)
+				helper.FakeIlk.Identifier, fakeUrn, blockTwo, maxResults, resultOffset)
 			Expect(dbErr).NotTo(HaveOccurred())
 
 			Expect(len(result)).To(Equal(maxResults))
@@ -212,11 +213,3 @@ var _ = Describe("Urn history query", func() {
 		Expect(err).NotTo(HaveOccurred())
 	})
 })
-
-func createFakeHeader(blockNumber, timestamp int, headerRepo repositories.HeaderRepository) {
-	fakeHeaderOne := fakes.GetFakeHeader(int64(blockNumber))
-	fakeHeaderOne.Timestamp = strconv.Itoa(timestamp)
-
-	_, headerErr := headerRepo.CreateOrUpdateHeader(fakeHeaderOne)
-	Expect(headerErr).NotTo(HaveOccurred())
-}

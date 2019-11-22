@@ -13,6 +13,7 @@ import (
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
 	"github.com/makerdao/vulcanizedb/libraries/shared/storage/utils"
 	"github.com/makerdao/vulcanizedb/pkg/core"
+	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -32,42 +33,45 @@ type StorageVariableBehaviorInputs struct {
 func SharedStorageRepositoryVariableBehaviors(inputs *StorageVariableBehaviorInputs) {
 	Describe("Create", func() {
 		var (
-			repo            = inputs.Repository
-			fakeBlockNumber = rand.Int()
-			fakeHash        = fakes.FakeHash.Hex()
-			database        = test_config.NewTestDB(test_config.NewTestNode())
+			repo     = inputs.Repository
+			database = test_config.NewTestDB(test_config.NewTestNode())
+			headerID int64
 		)
 
 		BeforeEach(func() {
 			test_config.CleanTestDB(database)
 			repo.SetDB(database)
+			headerRepository := repositories.NewHeaderRepository(database)
+			var insertHeaderErr error
+			headerID, insertHeaderErr = headerRepository.CreateOrUpdateHeader(fakes.FakeHeader)
+			Expect(insertHeaderErr).NotTo(HaveOccurred())
 		})
 
 		It("persists a record", func() {
-			err := repo.Create(fakeBlockNumber, fakeHash, inputs.Metadata, inputs.Value)
+			err := repo.Create(headerID, inputs.Metadata, inputs.Value)
 			Expect(err).NotTo(HaveOccurred())
 
 			if inputs.IsAMapping == true {
 				var result MappingRes
-				query := fmt.Sprintf("SELECT block_number, block_hash, %s AS key, %s AS value FROM %s",
+				query := fmt.Sprintf("SELECT header_id, %s AS key, %s AS value FROM %s",
 					inputs.KeyFieldName, inputs.ValueFieldName, inputs.StorageTableName)
 				err = database.Get(&result, query)
 				Expect(err).NotTo(HaveOccurred())
-				AssertMapping(result, fakeBlockNumber, fakeHash, inputs.Key, inputs.Value)
+				AssertMapping(result, headerID, inputs.Key, inputs.Value)
 			} else {
 				var result VariableRes
-				query := fmt.Sprintf("SELECT block_number, block_hash, %s AS value FROM %s", inputs.ValueFieldName, inputs.StorageTableName)
+				query := fmt.Sprintf("SELECT header_id, %s AS value FROM %s", inputs.ValueFieldName, inputs.StorageTableName)
 				err = database.Get(&result, query)
 				Expect(err).NotTo(HaveOccurred())
-				AssertVariable(result, fakeBlockNumber, fakeHash, inputs.Value)
+				AssertVariable(result, headerID, inputs.Value)
 			}
 		})
 
 		It("doesn't duplicate a record", func() {
-			err := repo.Create(fakeBlockNumber, fakeHash, inputs.Metadata, inputs.Value)
+			err := repo.Create(headerID, inputs.Metadata, inputs.Value)
 			Expect(err).NotTo(HaveOccurred())
 
-			err = repo.Create(fakeBlockNumber, fakeHash, inputs.Metadata, inputs.Value)
+			err = repo.Create(headerID, inputs.Metadata, inputs.Value)
 			Expect(err).NotTo(HaveOccurred())
 
 			var count int
@@ -118,7 +122,7 @@ func SharedIlkTriggerTests(input IlkTriggerTestInput) {
 			test_helpers.CreateIlk(database, headerOne, initialIlkValues, test_helpers.FakeIlkVatMetadatas,
 				test_helpers.FakeIlkCatMetadatas, test_helpers.FakeIlkJugMetadatas, test_helpers.FakeIlkSpotMetadatas)
 
-			err := repo.Create(blockTwo, hashTwo.String(), input.Metadata, input.PropertyValue)
+			err := repo.Create(headerTwo.Id, input.Metadata, input.PropertyValue)
 			Expect(err).NotTo(HaveOccurred())
 
 			var ilkStates []test_helpers.IlkState
@@ -136,7 +140,7 @@ func SharedIlkTriggerTests(input IlkTriggerTestInput) {
 			test_helpers.CreateIlk(database, headerOne, initialIlkValues, test_helpers.FakeIlkVatMetadatas,
 				test_helpers.FakeIlkCatMetadatas, test_helpers.FakeIlkJugMetadatas, test_helpers.FakeIlkSpotMetadatas)
 
-			err := repo.Create(blockOne, hashOne.String(), input.Metadata, input.PropertyValue)
+			err := repo.Create(headerOne.Id, input.Metadata, input.PropertyValue)
 			Expect(err).NotTo(HaveOccurred())
 
 			var ilkStates []test_helpers.IlkState
@@ -155,7 +159,7 @@ func SharedIlkTriggerTests(input IlkTriggerTestInput) {
 				test_helpers.FakeIlk.Identifier, headerTwo.BlockNumber, initialIlkValues[input.Metadata.Name])
 			Expect(setupErr).NotTo(HaveOccurred())
 
-			err := repo.Create(blockOne, hashOne.String(), input.Metadata, input.PropertyValue)
+			err := repo.Create(headerOne.Id, input.Metadata, input.PropertyValue)
 			Expect(err).NotTo(HaveOccurred())
 
 			var ilkStates []test_helpers.IlkState
@@ -167,10 +171,10 @@ func SharedIlkTriggerTests(input IlkTriggerTestInput) {
 
 		It("ignores rows from blocks after the next time the field is updated", func() {
 			initialIlkValues := test_helpers.GetIlkValues(0)
-			setupErr := repo.Create(blockTwo, hashTwo.String(), input.Metadata, initialIlkValues[input.Metadata.Name])
+			setupErr := repo.Create(headerTwo.Id, input.Metadata, initialIlkValues[input.Metadata.Name])
 			Expect(setupErr).NotTo(HaveOccurred())
 
-			err := repo.Create(blockOne, hashOne.String(), input.Metadata, input.PropertyValue)
+			err := repo.Create(headerOne.Id, input.Metadata, input.PropertyValue)
 			Expect(err).NotTo(HaveOccurred())
 
 			var ilkStates []test_helpers.IlkState
@@ -186,7 +190,7 @@ func SharedIlkTriggerTests(input IlkTriggerTestInput) {
 				test_helpers.AnotherFakeIlk.Identifier, headerTwo.BlockNumber, initialIlkValues[input.Metadata.Name])
 			Expect(setupErr).NotTo(HaveOccurred())
 
-			err := repo.Create(blockOne, hashOne.String(), input.Metadata, input.PropertyValue)
+			err := repo.Create(headerOne.Id, input.Metadata, input.PropertyValue)
 			Expect(err).NotTo(HaveOccurred())
 
 			var ilkStates []test_helpers.IlkState
@@ -202,7 +206,7 @@ func SharedIlkTriggerTests(input IlkTriggerTestInput) {
 				test_helpers.FakeIlk.Identifier, headerOne.BlockNumber, initialIlkValues[input.Metadata.Name])
 			Expect(setupErr).NotTo(HaveOccurred())
 
-			err := repo.Create(blockTwo, hashTwo.String(), input.Metadata, input.PropertyValue)
+			err := repo.Create(headerTwo.Id, input.Metadata, input.PropertyValue)
 			Expect(err).NotTo(HaveOccurred())
 
 			var ilkStates []test_helpers.IlkState

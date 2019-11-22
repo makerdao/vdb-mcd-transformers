@@ -23,144 +23,205 @@ CREATE TABLE api.historical_ilk_state
 COMMENT ON COLUMN api.historical_ilk_state.ilk_identifier IS '@name id';
 
 
-CREATE FUNCTION ilk_rate_before_block(ilk_id INTEGER, block_number BIGINT) RETURNS NUMERIC AS
+CREATE FUNCTION ilk_rate_before_block(ilk_id INTEGER, header_id INTEGER) RETURNS NUMERIC AS
 $$
+WITH passed_block_number AS (
+    SELECT block_number FROM public.headers WHERE id = header_id
+)
+
 SELECT rate
 FROM maker.vat_ilk_rate
+    LEFT JOIN public.headers ON vat_ilk_rate.header_id = headers.id
 WHERE vat_ilk_rate.ilk_id = ilk_rate_before_block.ilk_id
-  AND vat_ilk_rate.block_number < ilk_rate_before_block.block_number
+  AND headers.block_number < (SELECT block_number FROM passed_block_number)
 ORDER BY block_number DESC
 LIMIT 1
 $$
     LANGUAGE sql;
 
 
-CREATE FUNCTION ilk_art_before_block(ilk_id INTEGER, block_number BIGINT) RETURNS NUMERIC AS
+CREATE FUNCTION ilk_art_before_block(ilk_id INTEGER, header_id INTEGER) RETURNS NUMERIC AS
 $$
+WITH passed_block_number AS (
+    SELECT block_number FROM public.headers WHERE id = header_id
+)
+
 SELECT art
 FROM maker.vat_ilk_art
+    LEFT JOIN public.headers ON vat_ilk_art.header_id = headers.id
 WHERE vat_ilk_art.ilk_id = ilk_art_before_block.ilk_id
-  AND vat_ilk_art.block_number < ilk_art_before_block.block_number
+  AND headers.block_number < (SELECT block_number FROM passed_block_number)
 ORDER BY block_number DESC
 LIMIT 1
 $$
     LANGUAGE sql;
 
 
-CREATE FUNCTION ilk_spot_before_block(ilk_id INTEGER, block_number BIGINT) RETURNS NUMERIC AS
+CREATE FUNCTION ilk_spot_before_block(ilk_id INTEGER, header_id INTEGER) RETURNS NUMERIC AS
 $$
+WITH passed_block_number AS (
+    SELECT block_number FROM public.headers WHERE id = header_id
+)
+
 SELECT spot
 FROM maker.vat_ilk_spot
+    LEFT JOIN public.headers ON vat_ilk_spot.header_id = headers.id
 WHERE vat_ilk_spot.ilk_id = ilk_spot_before_block.ilk_id
-  AND vat_ilk_spot.block_number < ilk_spot_before_block.block_number
+  AND headers.block_number < (SELECT block_number FROM passed_block_number)
 ORDER BY block_number DESC
 LIMIT 1
 $$
     LANGUAGE sql;
 
 
-CREATE FUNCTION ilk_line_before_block(ilk_id INTEGER, block_number BIGINT) RETURNS NUMERIC AS
+CREATE FUNCTION ilk_line_before_block(ilk_id INTEGER, header_id INTEGER) RETURNS NUMERIC AS
 $$
+WITH passed_block_number AS (
+    SELECT block_number FROM public.headers WHERE id = header_id
+)
+
 SELECT line
 FROM maker.vat_ilk_line
+    LEFT JOIN public.headers ON vat_ilk_line.header_id = headers.id
 WHERE vat_ilk_line.ilk_id = ilk_line_before_block.ilk_id
-  AND vat_ilk_line.block_number < ilk_line_before_block.block_number
+  AND headers.block_number < (SELECT block_number FROM passed_block_number)
 ORDER BY block_number DESC
 LIMIT 1
 $$
     LANGUAGE sql;
 
 
-CREATE FUNCTION ilk_dust_before_block(ilk_id INTEGER, block_number BIGINT) RETURNS NUMERIC AS
+CREATE FUNCTION ilk_dust_before_block(ilk_id INTEGER, header_id INTEGER) RETURNS NUMERIC AS
 $$
+WITH passed_block_number AS (
+    SELECT block_number FROM public.headers WHERE id = header_id
+)
+
 SELECT dust
 FROM maker.vat_ilk_dust
+    LEFT JOIN public.headers ON vat_ilk_dust.header_id = headers.id
 WHERE vat_ilk_dust.ilk_id = ilk_dust_before_block.ilk_id
-  AND vat_ilk_dust.block_number < ilk_dust_before_block.block_number
+  AND headers.block_number < (SELECT block_number FROM passed_block_number)
 ORDER BY block_number DESC
 LIMIT 1
 $$
     LANGUAGE sql;
 
 
-CREATE FUNCTION ilk_chop_before_block(ilk_id INTEGER, block_number BIGINT) RETURNS NUMERIC AS
+CREATE FUNCTION ilk_chop_before_block(ilk_id INTEGER, header_id INTEGER) RETURNS NUMERIC AS
 $$
+WITH passed_block_number AS (
+    SELECT block_number FROM public.headers WHERE id = header_id
+)
+
 SELECT chop
 FROM maker.cat_ilk_chop
+    LEFT JOIN public.headers ON cat_ilk_chop.header_id = headers.id
 WHERE cat_ilk_chop.ilk_id = ilk_chop_before_block.ilk_id
-  AND cat_ilk_chop.block_number < ilk_chop_before_block.block_number
+  AND headers.block_number < (SELECT block_number FROM passed_block_number)
 ORDER BY block_number DESC
 LIMIT 1
 $$
     LANGUAGE sql;
 
 
-CREATE FUNCTION ilk_lump_before_block(ilk_id INTEGER, block_number BIGINT) RETURNS NUMERIC AS
+CREATE FUNCTION ilk_lump_before_block(ilk_id INTEGER, header_id INTEGER) RETURNS NUMERIC AS
 $$
+WITH passed_block_number AS (
+    SELECT block_number FROM public.headers WHERE id = header_id
+)
+
 SELECT lump
 FROM maker.cat_ilk_lump
+    LEFT JOIN public.headers ON cat_ilk_lump.header_id = headers.id
 WHERE cat_ilk_lump.ilk_id = ilk_lump_before_block.ilk_id
-  AND cat_ilk_lump.block_number < ilk_lump_before_block.block_number
+  AND headers.block_number < (SELECT block_number FROM passed_block_number)
 ORDER BY block_number DESC
 LIMIT 1
 $$
     LANGUAGE sql;
 
 
-CREATE FUNCTION ilk_flip_before_block(ilk_id INTEGER, block_number BIGINT) RETURNS TEXT AS
+CREATE FUNCTION ilk_flip_before_block(ilk_id INTEGER, header_id INTEGER) RETURNS TEXT AS
 $$
+WITH passed_block_number AS (
+    SELECT block_number FROM public.headers WHERE id = header_id
+)
+
 SELECT flip
 FROM maker.cat_ilk_flip
+    LEFT JOIN public.headers ON cat_ilk_flip.header_id = headers.id
 WHERE cat_ilk_flip.ilk_id = ilk_flip_before_block.ilk_id
-  AND cat_ilk_flip.block_number < ilk_flip_before_block.block_number
+  AND headers.block_number < (SELECT block_number FROM passed_block_number)
 ORDER BY block_number DESC
 LIMIT 1
 $$
     LANGUAGE sql;
 
 
-CREATE FUNCTION ilk_rho_before_block(ilk_id INTEGER, block_number BIGINT) RETURNS NUMERIC AS
+CREATE FUNCTION ilk_rho_before_block(ilk_id INTEGER, header_id INTEGER) RETURNS NUMERIC AS
 $$
+
+WITH passed_block_number AS (
+    SELECT block_number FROM public.headers WHERE id = header_id
+)
+
 SELECT rho
 FROM maker.jug_ilk_rho
+    LEFT JOIN public.headers ON jug_ilk_rho.header_id = headers.id
 WHERE jug_ilk_rho.ilk_id = ilk_rho_before_block.ilk_id
-  AND jug_ilk_rho.block_number < ilk_rho_before_block.block_number
+  AND headers.block_number < (SELECT block_number FROM passed_block_number)
 ORDER BY block_number DESC
 LIMIT 1
 $$
     LANGUAGE sql;
 
 
-CREATE FUNCTION ilk_duty_before_block(ilk_id INTEGER, block_number BIGINT) RETURNS NUMERIC AS
+CREATE FUNCTION ilk_duty_before_block(ilk_id INTEGER, header_id INTEGER) RETURNS NUMERIC AS
 $$
+WITH passed_block_number AS (
+    SELECT block_number FROM public.headers WHERE id = header_id
+)
+
 SELECT duty
 FROM maker.jug_ilk_duty
+    LEFT JOIN public.headers ON jug_ilk_duty.header_id = headers.id
 WHERE jug_ilk_duty.ilk_id = ilk_duty_before_block.ilk_id
-  AND jug_ilk_duty.block_number < ilk_duty_before_block.block_number
+  AND headers.block_number < (SELECT block_number FROM passed_block_number)
 ORDER BY block_number DESC
 LIMIT 1
 $$
     LANGUAGE sql;
 
 
-CREATE FUNCTION ilk_pip_before_block(ilk_id INTEGER, block_number BIGINT) RETURNS TEXT AS
+CREATE FUNCTION ilk_pip_before_block(ilk_id INTEGER, header_id INTEGER) RETURNS TEXT AS
 $$
+WITH passed_block_number AS (
+    SELECT block_number FROM public.headers WHERE id = header_id
+)
+
 SELECT pip
 FROM maker.spot_ilk_pip
+    LEFT JOIN public.headers ON spot_ilk_pip.header_id = headers.id
 WHERE spot_ilk_pip.ilk_id = ilk_pip_before_block.ilk_id
-  AND spot_ilk_pip.block_number < ilk_pip_before_block.block_number
+  AND headers.block_number < (SELECT block_number FROM passed_block_number)
 ORDER BY block_number DESC
 LIMIT 1
 $$
     LANGUAGE sql;
 
 
-CREATE FUNCTION ilk_mat_before_block(ilk_id INTEGER, block_number BIGINT) RETURNS NUMERIC AS
+CREATE FUNCTION ilk_mat_before_block(ilk_id INTEGER, header_id INTEGER) RETURNS NUMERIC AS
 $$
+    WITH passed_block_number AS (
+        SELECT block_number FROM public.headers WHERE id = header_id
+    )
+
 SELECT mat
 FROM maker.spot_ilk_mat
+    LEFT JOIN public.headers ON spot_ilk_mat.header_id = headers.id
 WHERE spot_ilk_mat.ilk_id = ilk_mat_before_block.ilk_id
-  AND spot_ilk_mat.block_number < ilk_mat_before_block.block_number
+  AND headers.block_number < (SELECT block_number FROM passed_block_number)
 ORDER BY block_number DESC
 LIMIT 1
 $$
@@ -189,26 +250,29 @@ DECLARE
     diff_block_timestamp TIMESTAMP := (
         SELECT api.epoch_to_datetime(block_timestamp)
         FROM public.headers
-        WHERE hash = new_diff.block_hash
-          AND block_number = new_diff.block_number);
+        WHERE id = new_diff.header_id);
+    diff_block_number NUMERIC := (
+        SELECT block_number
+        FROM public.headers
+        WHERE id = new_diff.header_id);
 BEGIN
     INSERT
     INTO api.historical_ilk_state (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho, duty,
                                 pip, mat, created, updated)
     VALUES (diff_ilk_identifier,
-            new_diff.block_number,
+            diff_block_number,
             new_diff.rate,
-            ilk_art_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_spot_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_line_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_dust_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_chop_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_lump_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_flip_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_rho_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_duty_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_pip_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_mat_before_block(new_diff.ilk_id, new_diff.block_number),
+            ilk_art_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_spot_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_line_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_dust_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_chop_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_lump_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_flip_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_rho_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_duty_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_pip_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_mat_before_block(new_diff.ilk_id, new_diff.header_id),
             ilk_time_created(new_diff.ilk_id),
             diff_block_timestamp)
     ON CONFLICT (ilk_identifier, block_number)
@@ -228,16 +292,21 @@ DECLARE
         SELECT identifier
         FROM maker.ilks
         WHERE ilks.id = new_diff.ilk_id);
+    diff_block_number BIGINT := (
+        SELECT block_number
+        FROM public.headers
+        WHERE id = new_diff.header_id);
     next_rate_diff_block BIGINT := (
-        SELECT MIN(vat_ilk_rate.block_number)
+        SELECT MIN(block_number)
         FROM maker.vat_ilk_rate
+            LEFT JOIN public.headers ON vat_ilk_rate.header_id = headers.id
         WHERE vat_ilk_rate.ilk_id = new_diff.ilk_id
-          AND vat_ilk_rate.block_number > new_diff.block_number);
+          AND headers.block_number > diff_block_number);
 BEGIN
     UPDATE api.historical_ilk_state
     SET rate = new_diff.rate
     WHERE historical_ilk_state.ilk_identifier = diff_ilk_identifier
-      AND historical_ilk_state.block_number > new_diff.block_number
+      AND historical_ilk_state.block_number > diff_block_number
       AND (next_rate_diff_block IS NULL
         OR historical_ilk_state.block_number < next_rate_diff_block);
     RETURN NULL;
@@ -278,26 +347,29 @@ DECLARE
     diff_block_timestamp TIMESTAMP := (
         SELECT api.epoch_to_datetime(block_timestamp)
         FROM public.headers
-        WHERE hash = new_diff.block_hash
-          AND block_number = new_diff.block_number);
+        WHERE id = new_diff.header_id);
+    diff_block_number NUMERIC := (
+        SELECT block_number
+        FROM public.headers
+        WHERE id = new_diff.header_id);
 BEGIN
     INSERT
     INTO api.historical_ilk_state (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho, duty,
                                 pip, mat, created, updated)
     VALUES (diff_ilk_identifier,
-            new_diff.block_number,
-            ilk_rate_before_block(new_diff.ilk_id, new_diff.block_number),
+            diff_block_number,
+            ilk_rate_before_block(new_diff.ilk_id, new_diff.header_id),
             new_diff.art,
-            ilk_spot_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_line_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_dust_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_chop_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_lump_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_flip_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_rho_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_duty_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_pip_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_mat_before_block(new_diff.ilk_id, new_diff.block_number),
+            ilk_spot_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_line_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_dust_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_chop_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_lump_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_flip_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_rho_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_duty_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_pip_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_mat_before_block(new_diff.ilk_id, new_diff.header_id),
             ilk_time_created(new_diff.ilk_id),
             diff_block_timestamp)
     ON CONFLICT (ilk_identifier, block_number)
@@ -317,16 +389,21 @@ DECLARE
         SELECT identifier
         FROM maker.ilks
         WHERE ilks.id = new_diff.ilk_id);
+    diff_block_number BIGINT := (
+        SELECT block_number
+        FROM public.headers
+        WHERE id = new_diff.header_id);
     next_art_diff_block BIGINT := (
-        SELECT MIN(vat_ilk_art.block_number)
+        SELECT MIN(block_number)
         FROM maker.vat_ilk_art
+            LEFT JOIN public.headers ON vat_ilk_art.header_id = headers.id
         WHERE vat_ilk_art.ilk_id = new_diff.ilk_id
-          AND vat_ilk_art.block_number > new_diff.block_number);
+          AND block_number > diff_block_number);
 BEGIN
     UPDATE api.historical_ilk_state
     SET art = new_diff.art
     WHERE historical_ilk_state.ilk_identifier = diff_ilk_identifier
-      AND historical_ilk_state.block_number > new_diff.block_number
+      AND historical_ilk_state.block_number > diff_block_number
       AND (next_art_diff_block IS NULL
         OR historical_ilk_state.block_number < next_art_diff_block);
     RETURN NULL;
@@ -367,26 +444,29 @@ DECLARE
     diff_block_timestamp TIMESTAMP := (
         SELECT api.epoch_to_datetime(block_timestamp)
         FROM public.headers
-        WHERE hash = new_diff.block_hash
-          AND block_number = new_diff.block_number);
+        WHERE headers.id = new_diff.header_id);
+    diff_block_number NUMERIC := (
+        SELECT block_number
+        FROM public.headers
+        WHERE headers.id = new_diff.header_id);
 BEGIN
     INSERT
     INTO api.historical_ilk_state (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho, duty,
                                 pip, mat, created, updated)
     VALUES (diff_ilk_identifier,
-            new_diff.block_number,
-            ilk_rate_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_art_before_block(new_diff.ilk_id, new_diff.block_number),
+            diff_block_number,
+            ilk_rate_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_art_before_block(new_diff.ilk_id, new_diff.header_id),
             new_diff.spot,
-            ilk_line_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_dust_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_chop_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_lump_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_flip_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_rho_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_duty_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_pip_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_mat_before_block(new_diff.ilk_id, new_diff.block_number),
+            ilk_line_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_dust_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_chop_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_lump_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_flip_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_rho_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_duty_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_pip_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_mat_before_block(new_diff.ilk_id, new_diff.header_id),
             ilk_time_created(new_diff.ilk_id),
             diff_block_timestamp)
     ON CONFLICT (ilk_identifier, block_number)
@@ -406,16 +486,21 @@ DECLARE
         SELECT identifier
         FROM maker.ilks
         WHERE ilks.id = new_diff.ilk_id);
+    diff_block_number BIGINT := (
+        SELECT block_number
+        FROM public.headers
+        WHERE id = new_diff.header_id);
     next_spot_diff_block BIGINT := (
-        SELECT MIN(vat_ilk_spot.block_number)
+        SELECT MIN(block_number)
         FROM maker.vat_ilk_spot
+            LEFT JOIN public.headers ON vat_ilk_spot.header_id = headers.id
         WHERE vat_ilk_spot.ilk_id = new_diff.ilk_id
-          AND vat_ilk_spot.block_number > new_diff.block_number);
+          AND block_number > diff_block_number);
 BEGIN
     UPDATE api.historical_ilk_state
     SET spot = new_diff.spot
     WHERE historical_ilk_state.ilk_identifier = diff_ilk_identifier
-      AND historical_ilk_state.block_number > new_diff.block_number
+      AND historical_ilk_state.block_number > diff_block_number
       AND (next_spot_diff_block IS NULL
         OR historical_ilk_state.block_number < next_spot_diff_block);
     RETURN NULL;
@@ -456,26 +541,29 @@ DECLARE
     diff_block_timestamp TIMESTAMP := (
         SELECT api.epoch_to_datetime(block_timestamp)
         FROM public.headers
-        WHERE hash = new_diff.block_hash
-          AND block_number = new_diff.block_number);
+        WHERE id = new_diff.header_id);
+    diff_block_number NUMERIC := (
+        SELECT block_number
+        FROM public.headers
+        WHERE id = new_diff.header_id);
 BEGIN
     INSERT
     INTO api.historical_ilk_state (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho, duty,
                                 pip, mat, created, updated)
     VALUES (diff_ilk_identifier,
-            new_diff.block_number,
-            ilk_rate_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_art_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_spot_before_block(new_diff.ilk_id, new_diff.block_number),
+            diff_block_number,
+            ilk_rate_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_art_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_spot_before_block(new_diff.ilk_id, new_diff.header_id),
             new_diff.line,
-            ilk_dust_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_chop_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_lump_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_flip_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_rho_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_duty_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_pip_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_mat_before_block(new_diff.ilk_id, new_diff.block_number),
+            ilk_dust_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_chop_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_lump_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_flip_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_rho_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_duty_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_pip_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_mat_before_block(new_diff.ilk_id, new_diff.header_id),
             ilk_time_created(new_diff.ilk_id),
             diff_block_timestamp)
     ON CONFLICT (ilk_identifier, block_number)
@@ -495,16 +583,21 @@ DECLARE
         SELECT identifier
         FROM maker.ilks
         WHERE ilks.id = new_diff.ilk_id);
+    diff_block_number BIGINT := (
+        SELECT block_number
+        FROM public.headers
+        WHERE id = new_diff.header_id);
     next_line_diff_block BIGINT := (
-        SELECT MIN(vat_ilk_line.block_number)
+        SELECT MIN(block_number)
         FROM maker.vat_ilk_line
+            LEFT JOIN public.headers ON vat_ilk_line.header_id = headers.id
         WHERE vat_ilk_line.ilk_id = new_diff.ilk_id
-          AND vat_ilk_line.block_number > new_diff.block_number);
+          AND block_number > diff_block_number);
 BEGIN
     UPDATE api.historical_ilk_state
     SET line = new_diff.line
     WHERE historical_ilk_state.ilk_identifier = diff_ilk_identifier
-      AND historical_ilk_state.block_number > new_diff.block_number
+      AND historical_ilk_state.block_number > diff_block_number
       AND (next_line_diff_block IS NULL
         OR historical_ilk_state.block_number < next_line_diff_block);
     RETURN NULL;
@@ -545,26 +638,29 @@ DECLARE
     diff_block_timestamp TIMESTAMP := (
         SELECT api.epoch_to_datetime(block_timestamp)
         FROM public.headers
-        WHERE hash = new_diff.block_hash
-          AND block_number = new_diff.block_number);
+        WHERE id = new_diff.header_id);
+    diff_block_number NUMERIC := (
+        SELECT block_number
+        FROM public.headers
+        WHERE id = new_diff.header_id);
 BEGIN
     INSERT
     INTO api.historical_ilk_state (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho, duty,
                                 pip, mat, created, updated)
     VALUES (diff_ilk_identifier,
-            new_diff.block_number,
-            ilk_rate_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_art_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_spot_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_line_before_block(new_diff.ilk_id, new_diff.block_number),
+            diff_block_number,
+            ilk_rate_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_art_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_spot_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_line_before_block(new_diff.ilk_id, new_diff.header_id),
             new_diff.dust,
-            ilk_chop_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_lump_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_flip_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_rho_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_duty_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_pip_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_mat_before_block(new_diff.ilk_id, new_diff.block_number),
+            ilk_chop_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_lump_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_flip_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_rho_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_duty_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_pip_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_mat_before_block(new_diff.ilk_id, new_diff.header_id),
             ilk_time_created(new_diff.ilk_id),
             diff_block_timestamp)
     ON CONFLICT (ilk_identifier, block_number)
@@ -584,16 +680,21 @@ DECLARE
         SELECT identifier
         FROM maker.ilks
         WHERE ilks.id = new_diff.ilk_id);
+    diff_block_number BIGINT := (
+        SELECT block_number
+        FROM public.headers
+        WHERE id = new_diff.header_id);
     next_dust_diff_block BIGINT := (
-        SELECT MIN(vat_ilk_dust.block_number)
+        SELECT MIN(block_number)
         FROM maker.vat_ilk_dust
+            LEFT JOIN public.headers ON vat_ilk_dust.header_id = headers.id
         WHERE vat_ilk_dust.ilk_id = new_diff.ilk_id
-          AND vat_ilk_dust.block_number > new_diff.block_number);
+          AND block_number > diff_block_number);
 BEGIN
     UPDATE api.historical_ilk_state
     SET dust = new_diff.dust
     WHERE historical_ilk_state.ilk_identifier = diff_ilk_identifier
-      AND historical_ilk_state.block_number > new_diff.block_number
+      AND historical_ilk_state.block_number > diff_block_number
       AND (next_dust_diff_block IS NULL
         OR historical_ilk_state.block_number < next_dust_diff_block);
     RETURN NULL;
@@ -634,26 +735,29 @@ DECLARE
     diff_block_timestamp TIMESTAMP := (
         SELECT api.epoch_to_datetime(block_timestamp)
         FROM public.headers
-        WHERE hash = new_diff.block_hash
-          AND block_number = new_diff.block_number);
+        WHERE id = new_diff.header_id);
+    diff_block_number NUMERIC := (
+        SELECT block_number
+        FROM public.headers
+        WHERE id = new_diff.header_id);
 BEGIN
     INSERT
     INTO api.historical_ilk_state (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho, duty,
                                 pip, mat, created, updated)
     VALUES (diff_ilk_identifier,
-            new_diff.block_number,
-            ilk_rate_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_art_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_spot_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_line_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_dust_before_block(new_diff.ilk_id, new_diff.block_number),
+            diff_block_number,
+            ilk_rate_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_art_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_spot_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_line_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_dust_before_block(new_diff.ilk_id, new_diff.header_id),
             new_diff.chop,
-            ilk_lump_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_flip_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_rho_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_duty_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_pip_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_mat_before_block(new_diff.ilk_id, new_diff.block_number),
+            ilk_lump_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_flip_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_rho_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_duty_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_pip_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_mat_before_block(new_diff.ilk_id, new_diff.header_id),
             ilk_time_created(new_diff.ilk_id),
             diff_block_timestamp)
     ON CONFLICT (ilk_identifier, block_number)
@@ -673,16 +777,21 @@ DECLARE
         SELECT identifier
         FROM maker.ilks
         WHERE ilks.id = new_diff.ilk_id);
+    diff_block_number BIGINT := (
+        SELECT block_number
+        FROM public.headers
+        WHERE id = new_diff.header_id);
     next_chop_diff_block BIGINT := (
-        SELECT MIN(cat_ilk_chop.block_number)
+        SELECT MIN(block_number)
         FROM maker.cat_ilk_chop
+            LEFT JOIN public.headers ON cat_ilk_chop.header_id = headers.id
         WHERE cat_ilk_chop.ilk_id = new_diff.ilk_id
-          AND cat_ilk_chop.block_number > new_diff.block_number);
+          AND block_number > diff_block_number);
 BEGIN
     UPDATE api.historical_ilk_state
     SET chop = new_diff.chop
     WHERE historical_ilk_state.ilk_identifier = diff_ilk_identifier
-      AND historical_ilk_state.block_number > new_diff.block_number
+      AND historical_ilk_state.block_number > diff_block_number
       AND (next_chop_diff_block IS NULL
         OR historical_ilk_state.block_number < next_chop_diff_block);
     RETURN NULL;
@@ -723,26 +832,29 @@ DECLARE
     diff_block_timestamp TIMESTAMP := (
         SELECT api.epoch_to_datetime(block_timestamp)
         FROM public.headers
-        WHERE hash = new_diff.block_hash
-          AND block_number = new_diff.block_number);
+        WHERE id = new_diff.header_id);
+    diff_block_number NUMERIC := (
+        SELECT block_number
+        FROM public.headers
+        WHERE id = new_diff.header_id);
 BEGIN
     INSERT
     INTO api.historical_ilk_state (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho, duty,
                                 pip, mat, created, updated)
     VALUES (diff_ilk_identifier,
-            new_diff.block_number,
-            ilk_rate_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_art_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_spot_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_line_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_dust_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_chop_before_block(new_diff.ilk_id, new_diff.block_number),
+            diff_block_number,
+            ilk_rate_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_art_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_spot_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_line_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_dust_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_chop_before_block(new_diff.ilk_id, new_diff.header_id),
             new_diff.lump,
-            ilk_flip_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_rho_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_duty_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_pip_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_mat_before_block(new_diff.ilk_id, new_diff.block_number),
+            ilk_flip_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_rho_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_duty_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_pip_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_mat_before_block(new_diff.ilk_id, new_diff.header_id),
             ilk_time_created(new_diff.ilk_id),
             diff_block_timestamp)
     ON CONFLICT (ilk_identifier, block_number)
@@ -762,16 +874,21 @@ DECLARE
         SELECT identifier
         FROM maker.ilks
         WHERE ilks.id = new_diff.ilk_id);
+    diff_block_number BIGINT := (
+        SELECT block_number
+        FROM public.headers
+        WHERE id = new_diff.header_id);
     next_lump_diff_block BIGINT := (
-        SELECT MIN(cat_ilk_lump.block_number)
+        SELECT MIN(block_number)
         FROM maker.cat_ilk_lump
+            LEFT JOIN public.headers ON cat_ilk_lump.header_id = headers.id
         WHERE cat_ilk_lump.ilk_id = new_diff.ilk_id
-          AND cat_ilk_lump.block_number > new_diff.block_number);
+          AND block_number > diff_block_number);
 BEGIN
     UPDATE api.historical_ilk_state
     SET lump = new_diff.lump
     WHERE historical_ilk_state.ilk_identifier = diff_ilk_identifier
-      AND historical_ilk_state.block_number > new_diff.block_number
+      AND historical_ilk_state.block_number > diff_block_number
       AND (next_lump_diff_block IS NULL
         OR historical_ilk_state.block_number < next_lump_diff_block);
     RETURN NULL;
@@ -812,26 +929,29 @@ DECLARE
     diff_block_timestamp TIMESTAMP := (
         SELECT api.epoch_to_datetime(block_timestamp)
         FROM public.headers
-        WHERE hash = new_diff.block_hash
-          AND block_number = new_diff.block_number);
+        WHERE id = new_diff.header_id);
+    diff_block_number NUMERIC := (
+        SELECT block_number
+        FROM public.headers
+        WHERE id = new_diff.header_id);
 BEGIN
     INSERT
     INTO api.historical_ilk_state (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho, duty,
                                 pip, mat, created, updated)
     VALUES (diff_ilk_identifier,
-            new_diff.block_number,
-            ilk_rate_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_art_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_spot_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_line_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_dust_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_chop_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_lump_before_block(new_diff.ilk_id, new_diff.block_number),
+            diff_block_number,
+            ilk_rate_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_art_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_spot_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_line_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_dust_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_chop_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_lump_before_block(new_diff.ilk_id, new_diff.header_id),
             new_diff.flip,
-            ilk_rho_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_duty_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_pip_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_mat_before_block(new_diff.ilk_id, new_diff.block_number),
+            ilk_rho_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_duty_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_pip_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_mat_before_block(new_diff.ilk_id, new_diff.header_id),
             ilk_time_created(new_diff.ilk_id),
             diff_block_timestamp)
     ON CONFLICT (ilk_identifier, block_number)
@@ -851,16 +971,21 @@ DECLARE
         SELECT identifier
         FROM maker.ilks
         WHERE ilks.id = new_diff.ilk_id);
+    diff_block_number BIGINT := (
+        SELECT block_number
+        FROM public.headers
+        WHERE id = new_diff.header_id);
     next_flip_diff_block BIGINT := (
-        SELECT MIN(cat_ilk_flip.block_number)
+        SELECT MIN(block_number)
         FROM maker.cat_ilk_flip
+            LEFT JOIN public.headers ON cat_ilk_flip.header_id = headers.id
         WHERE cat_ilk_flip.ilk_id = new_diff.ilk_id
-          AND cat_ilk_flip.block_number > new_diff.block_number);
+          AND block_number > diff_block_number);
 BEGIN
     UPDATE api.historical_ilk_state
     SET flip = new_diff.flip
     WHERE historical_ilk_state.ilk_identifier = diff_ilk_identifier
-      AND historical_ilk_state.block_number > new_diff.block_number
+      AND historical_ilk_state.block_number > diff_block_number
       AND (next_flip_diff_block IS NULL
         OR historical_ilk_state.block_number < next_flip_diff_block);
     RETURN NULL;
@@ -901,26 +1026,29 @@ DECLARE
     diff_block_timestamp TIMESTAMP := (
         SELECT api.epoch_to_datetime(block_timestamp)
         FROM public.headers
-        WHERE hash = new_diff.block_hash
-          AND block_number = new_diff.block_number);
+        WHERE id = new_diff.header_id);
+    diff_block_number NUMERIC := (
+        SELECT block_number
+        FROM public.headers
+        WHERE id = new_diff.header_id);
 BEGIN
     INSERT
     INTO api.historical_ilk_state (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho, duty,
                                 pip, mat, created, updated)
     VALUES (diff_ilk_identifier,
-            new_diff.block_number,
-            ilk_rate_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_art_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_spot_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_line_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_dust_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_chop_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_lump_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_flip_before_block(new_diff.ilk_id, new_diff.block_number),
+            diff_block_number,
+            ilk_rate_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_art_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_spot_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_line_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_dust_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_chop_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_lump_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_flip_before_block(new_diff.ilk_id, new_diff.header_id),
             new_diff.rho,
-            ilk_duty_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_pip_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_mat_before_block(new_diff.ilk_id, new_diff.block_number),
+            ilk_duty_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_pip_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_mat_before_block(new_diff.ilk_id, new_diff.header_id),
             ilk_time_created(new_diff.ilk_id),
             diff_block_timestamp)
     ON CONFLICT (ilk_identifier, block_number)
@@ -940,16 +1068,21 @@ DECLARE
         SELECT identifier
         FROM maker.ilks
         WHERE ilks.id = new_diff.ilk_id);
+    diff_block_number BIGINT := (
+        SELECT block_number
+        FROM public.headers
+        WHERE id = new_diff.header_id);
     next_rho_diff_block BIGINT := (
-        SELECT MIN(jug_ilk_rho.block_number)
+        SELECT MIN(block_number)
         FROM maker.jug_ilk_rho
+            LEFT JOIN public.headers ON jug_ilk_rho.header_id = headers.id
         WHERE jug_ilk_rho.ilk_id = new_diff.ilk_id
-          AND jug_ilk_rho.block_number > new_diff.block_number);
+          AND block_number > diff_block_number);
 BEGIN
     UPDATE api.historical_ilk_state
     SET rho = new_diff.rho
     WHERE historical_ilk_state.ilk_identifier = diff_ilk_identifier
-      AND historical_ilk_state.block_number > new_diff.block_number
+      AND historical_ilk_state.block_number > diff_block_number
       AND (next_rho_diff_block IS NULL
         OR historical_ilk_state.block_number < next_rho_diff_block);
     RETURN NULL;
@@ -990,26 +1123,29 @@ DECLARE
     diff_block_timestamp TIMESTAMP := (
         SELECT api.epoch_to_datetime(block_timestamp)
         FROM public.headers
-        WHERE hash = new_diff.block_hash
-          AND block_number = new_diff.block_number);
+        WHERE id = new_diff.header_id);
+    diff_block_number NUMERIC := (
+        SELECT block_number
+        FROM public.headers
+        WHERE id = new_diff.header_id);
 BEGIN
     INSERT
     INTO api.historical_ilk_state (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho, duty,
                                 pip, mat, created, updated)
     VALUES (diff_ilk_identifier,
-            new_diff.block_number,
-            ilk_rate_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_art_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_spot_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_line_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_dust_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_chop_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_lump_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_flip_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_rho_before_block(new_diff.ilk_id, new_diff.block_number),
+            diff_block_number,
+            ilk_rate_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_art_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_spot_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_line_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_dust_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_chop_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_lump_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_flip_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_rho_before_block(new_diff.ilk_id, new_diff.header_id),
             new_diff.duty,
-            ilk_pip_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_mat_before_block(new_diff.ilk_id, new_diff.block_number),
+            ilk_pip_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_mat_before_block(new_diff.ilk_id, new_diff.header_id),
             ilk_time_created(new_diff.ilk_id),
             diff_block_timestamp)
     ON CONFLICT (ilk_identifier, block_number)
@@ -1029,16 +1165,21 @@ DECLARE
         SELECT identifier
         FROM maker.ilks
         WHERE ilks.id = new_diff.ilk_id);
+    diff_block_number BIGINT := (
+        SELECT block_number
+        FROM public.headers
+        WHERE id = new_diff.header_id);
     next_duty_diff_block BIGINT := (
-        SELECT MIN(jug_ilk_duty.block_number)
+        SELECT MIN(block_number)
         FROM maker.jug_ilk_duty
+            LEFT JOIN public.headers ON jug_ilk_duty.header_id = headers.id
         WHERE jug_ilk_duty.ilk_id = new_diff.ilk_id
-          AND jug_ilk_duty.block_number > new_diff.block_number);
+          AND block_number > diff_block_number);
 BEGIN
     UPDATE api.historical_ilk_state
     SET duty = new_diff.duty
     WHERE historical_ilk_state.ilk_identifier = diff_ilk_identifier
-      AND historical_ilk_state.block_number > new_diff.block_number
+      AND historical_ilk_state.block_number > diff_block_number
       AND (next_duty_diff_block IS NULL
         OR historical_ilk_state.block_number < next_duty_diff_block);
     RETURN NULL;
@@ -1079,26 +1220,29 @@ DECLARE
     diff_block_timestamp TIMESTAMP := (
         SELECT api.epoch_to_datetime(block_timestamp)
         FROM public.headers
-        WHERE hash = new_diff.block_hash
-          AND block_number = new_diff.block_number);
+        WHERE id = new_diff.header_id);
+    diff_block_number NUMERIC := (
+        SELECT block_number
+        FROM public.headers
+        WHERE id = new_diff.header_id);
 BEGIN
     INSERT
     INTO api.historical_ilk_state (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho, duty,
                                 pip, mat, created, updated)
     VALUES (diff_ilk_identifier,
-            new_diff.block_number,
-            ilk_rate_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_art_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_spot_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_line_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_dust_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_chop_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_lump_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_flip_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_rho_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_duty_before_block(new_diff.ilk_id, new_diff.block_number),
+            diff_block_number,
+            ilk_rate_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_art_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_spot_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_line_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_dust_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_chop_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_lump_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_flip_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_rho_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_duty_before_block(new_diff.ilk_id, new_diff.header_id),
             new_diff.pip,
-            ilk_mat_before_block(new_diff.ilk_id, new_diff.block_number),
+            ilk_mat_before_block(new_diff.ilk_id, new_diff.header_id),
             ilk_time_created(new_diff.ilk_id),
             diff_block_timestamp)
     ON CONFLICT (ilk_identifier, block_number)
@@ -1118,16 +1262,21 @@ DECLARE
         SELECT identifier
         FROM maker.ilks
         WHERE ilks.id = new_diff.ilk_id);
+    diff_block_number BIGINT := (
+        SELECT block_number
+        FROM public.headers
+        WHERE id = new_diff.header_id);
     next_pip_diff_block BIGINT := (
-        SELECT MIN(spot_ilk_pip.block_number)
+        SELECT MIN(block_number)
         FROM maker.spot_ilk_pip
+            LEFT JOIN public.headers ON spot_ilk_pip.header_id = headers.id
         WHERE spot_ilk_pip.ilk_id = new_diff.ilk_id
-          AND spot_ilk_pip.block_number > new_diff.block_number);
+          AND block_number > diff_block_number);
 BEGIN
     UPDATE api.historical_ilk_state
     SET pip = new_diff.pip
     WHERE historical_ilk_state.ilk_identifier = diff_ilk_identifier
-      AND historical_ilk_state.block_number > new_diff.block_number
+      AND historical_ilk_state.block_number > diff_block_number
       AND (next_pip_diff_block IS NULL
         OR historical_ilk_state.block_number < next_pip_diff_block);
     RETURN NULL;
@@ -1168,25 +1317,28 @@ DECLARE
     diff_block_timestamp TIMESTAMP := (
         SELECT api.epoch_to_datetime(block_timestamp)
         FROM public.headers
-        WHERE hash = new_diff.block_hash
-          AND block_number = new_diff.block_number);
+        WHERE id = new_diff.header_id);
+    diff_block_number NUMERIC := (
+        SELECT block_number
+        FROM public.headers
+        WHERE id = new_diff.header_id);
 BEGIN
     INSERT
     INTO api.historical_ilk_state (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho, duty,
                                 pip, mat, created, updated)
     VALUES (diff_ilk_identifier,
-            new_diff.block_number,
-            ilk_rate_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_art_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_spot_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_line_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_dust_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_chop_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_lump_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_flip_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_rho_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_duty_before_block(new_diff.ilk_id, new_diff.block_number),
-            ilk_pip_before_block(new_diff.ilk_id, new_diff.block_number),
+            diff_block_number,
+            ilk_rate_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_art_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_spot_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_line_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_dust_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_chop_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_lump_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_flip_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_rho_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_duty_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_pip_before_block(new_diff.ilk_id, new_diff.header_id),
             new_diff.mat,
             ilk_time_created(new_diff.ilk_id),
             diff_block_timestamp)
@@ -1207,16 +1359,21 @@ DECLARE
         SELECT identifier
         FROM maker.ilks
         WHERE ilks.id = new_diff.ilk_id);
+    diff_block_number BIGINT := (
+        SELECT block_number
+        FROM public.headers
+        WHERE id = new_diff.header_id);
     next_mat_diff_block BIGINT := (
-        SELECT MIN(spot_ilk_mat.block_number)
+        SELECT MIN(block_number)
         FROM maker.spot_ilk_mat
+            LEFT JOIN public.headers ON spot_ilk_mat.header_id = headers.id
         WHERE spot_ilk_mat.ilk_id = new_diff.ilk_id
-          AND spot_ilk_mat.block_number > new_diff.block_number);
+          AND block_number > diff_block_number);
 BEGIN
     UPDATE api.historical_ilk_state
     SET mat = new_diff.mat
     WHERE historical_ilk_state.ilk_identifier = diff_ilk_identifier
-      AND historical_ilk_state.block_number > new_diff.block_number
+      AND historical_ilk_state.block_number > diff_block_number
       AND (next_mat_diff_block IS NULL
         OR historical_ilk_state.block_number < next_mat_diff_block);
     RETURN NULL;
@@ -1334,17 +1491,17 @@ DROP FUNCTION maker.insert_new_art(maker.vat_ilk_art);
 DROP FUNCTION maker.insert_new_rate(maker.vat_ilk_rate);
 
 DROP FUNCTION ilk_time_created(INTEGER);
-DROP FUNCTION ilk_mat_before_block(INTEGER, BIGINT);
-DROP FUNCTION ilk_pip_before_block(INTEGER, BIGINT);
-DROP FUNCTION ilk_duty_before_block(INTEGER, BIGINT);
-DROP FUNCTION ilk_rho_before_block(INTEGER, BIGINT);
-DROP FUNCTION ilk_flip_before_block(INTEGER, BIGINT);
-DROP FUNCTION ilk_lump_before_block(INTEGER, BIGINT);
-DROP FUNCTION ilk_chop_before_block(INTEGER, BIGINT);
-DROP FUNCTION ilk_dust_before_block(INTEGER, BIGINT);
-DROP FUNCTION ilk_line_before_block(INTEGER, BIGINT);
-DROP FUNCTION ilk_spot_before_block(INTEGER, BIGINT);
-DROP FUNCTION ilk_art_before_block(INTEGER, BIGINT);
-DROP FUNCTION ilk_rate_before_block(INTEGER, BIGINT);
+DROP FUNCTION ilk_mat_before_block(INTEGER, INTEGER);
+DROP FUNCTION ilk_pip_before_block(INTEGER, INTEGER);
+DROP FUNCTION ilk_duty_before_block(INTEGER, INTEGER);
+DROP FUNCTION ilk_rho_before_block(INTEGER, INTEGER);
+DROP FUNCTION ilk_flip_before_block(INTEGER, INTEGER);
+DROP FUNCTION ilk_lump_before_block(INTEGER, INTEGER);
+DROP FUNCTION ilk_chop_before_block(INTEGER, INTEGER);
+DROP FUNCTION ilk_dust_before_block(INTEGER, INTEGER);
+DROP FUNCTION ilk_line_before_block(INTEGER, INTEGER);
+DROP FUNCTION ilk_spot_before_block(INTEGER, INTEGER);
+DROP FUNCTION ilk_art_before_block(INTEGER, INTEGER);
+DROP FUNCTION ilk_rate_before_block(INTEGER, INTEGER);
 
 DROP TABLE api.historical_ilk_state;

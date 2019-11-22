@@ -11,6 +11,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/vat"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/storage/utils"
+	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
@@ -20,12 +21,14 @@ import (
 
 var _ = Describe("Urn view", func() {
 	var (
-		db         *postgres.DB
-		vatRepo    vat.VatStorageRepository
-		headerRepo repositories.HeaderRepository
-		urnOne     string
-		urnTwo     string
-		err        error
+		db                     *postgres.DB
+		vatRepo                vat.VatStorageRepository
+		headerRepo             repositories.HeaderRepository
+		headerOne              core.Header
+		blockOne, timestampOne int
+		urnOne                 string
+		urnTwo                 string
+		err                    error
 	)
 
 	const allUrnsQuery = `SELECT urn_identifier, ilk_identifier, block_height, ink, art, created, updated FROM api.all_urns($1)`
@@ -36,10 +39,13 @@ var _ = Describe("Urn view", func() {
 		vatRepo = vat.VatStorageRepository{}
 		vatRepo.SetDB(db)
 		headerRepo = repositories.NewHeaderRepository(db)
-		rand.Seed(time.Now().UnixNano())
 
 		urnOne = test_data.RandomString(5)
 		urnTwo = test_data.RandomString(5)
+
+		blockOne = rand.Int()
+		timestampOne = int(rand.Int31())
+		headerOne = createHeader(blockOne, timestampOne, headerRepo)
 	})
 
 	AfterEach(func() {
@@ -48,22 +54,19 @@ var _ = Describe("Urn view", func() {
 	})
 
 	It("gets an urn", func() {
-		fakeBlockNo := rand.Int()
-		fakeTimestamp := 12345
-
-		setupData := helper.GetUrnSetupData(fakeBlockNo, fakeTimestamp)
+		setupData := helper.GetUrnSetupData(headerOne)
 		metadata := helper.GetUrnMetadata(helper.FakeIlk.Hex, urnOne)
-		helper.CreateUrn(setupData, metadata, vatRepo, headerRepo)
+		helper.CreateUrn(setupData, metadata, vatRepo)
 
 		var actualUrn helper.UrnState
-		err = db.Get(&actualUrn, allUrnsQuery, fakeBlockNo)
+		err = db.Get(&actualUrn, allUrnsQuery, blockOne)
 		Expect(err).NotTo(HaveOccurred())
 
-		expectedTimestamp := helper.GetExpectedTimestamp(fakeTimestamp)
+		expectedTimestamp := helper.GetExpectedTimestamp(timestampOne)
 		expectedUrn := helper.UrnState{
 			UrnIdentifier: urnOne,
 			IlkIdentifier: helper.FakeIlk.Identifier,
-			BlockHeight:   fakeBlockNo,
+			BlockHeight:   blockOne,
 			Ink:           strconv.Itoa(setupData.Ink),
 			Art:           strconv.Itoa(setupData.Art),
 			Created:       helper.GetValidNullString(expectedTimestamp),
@@ -74,14 +77,13 @@ var _ = Describe("Urn view", func() {
 	})
 
 	It("returns the correct data for multiple urns", func() {
-		blockOne := rand.Int()
-		timestampOne := int(rand.Int31())
+		urnOneMetadata := helper.GetUrnMetadata(helper.FakeIlk.Hex, urnOne)
+		urnOneSetupData := helper.GetUrnSetupData(headerOne)
+		helper.CreateUrn(urnOneSetupData, urnOneMetadata, vatRepo)
+
 		blockTwo := blockOne + 1
 		timestampTwo := timestampOne + 1
-
-		urnOneMetadata := helper.GetUrnMetadata(helper.FakeIlk.Hex, urnOne)
-		urnOneSetupData := helper.GetUrnSetupData(blockOne, timestampOne)
-		helper.CreateUrn(urnOneSetupData, urnOneMetadata, vatRepo, headerRepo)
+		headerTwo := createHeader(blockTwo, timestampTwo, headerRepo)
 
 		expectedTimestamp := time.Unix(int64(timestampOne), 0).UTC().Format(time.RFC3339)
 		expectedUrnOne := helper.UrnState{
@@ -95,8 +97,8 @@ var _ = Describe("Urn view", func() {
 		}
 
 		urnTwoMetadata := helper.GetUrnMetadata(helper.AnotherFakeIlk.Hex, urnTwo)
-		urnTwoSetupData := helper.GetUrnSetupData(blockTwo, timestampTwo)
-		helper.CreateUrn(urnTwoSetupData, urnTwoMetadata, vatRepo, headerRepo)
+		urnTwoSetupData := helper.GetUrnSetupData(headerTwo)
+		helper.CreateUrn(urnTwoSetupData, urnTwoMetadata, vatRepo)
 
 		expectedTimestampTwo := helper.GetExpectedTimestamp(timestampTwo)
 		expectedUrnTwo := helper.UrnState{
@@ -118,28 +120,20 @@ var _ = Describe("Urn view", func() {
 	})
 
 	It("returns available data if urn has ink but no art", func() {
-		blockNumber := rand.Int()
-		fakeHeader := fakes.GetFakeHeader(int64(blockNumber))
-		fakeTimestamp := int(rand.Int31())
-		fakeHeader.Timestamp = strconv.Itoa(fakeTimestamp)
-		fakeHeader.Hash = test_data.RandomString(5)
-		_, insertHeaderErr := headerRepo.CreateOrUpdateHeader(fakeHeader)
-		Expect(insertHeaderErr).NotTo(HaveOccurred())
-
 		fakeInk := rand.Int()
 		urnInkMetadata := utils.GetStorageValueMetadata(vat.UrnInk, map[utils.Key]string{constants.Ilk: helper.FakeIlk.Hex, constants.Guy: urnOne}, utils.Uint256)
-		insertInkErr := vatRepo.Create(int(fakeHeader.BlockNumber), fakeHeader.Hash, urnInkMetadata, strconv.Itoa(fakeInk))
+		insertInkErr := vatRepo.Create(headerOne.Id, urnInkMetadata, strconv.Itoa(fakeInk))
 		Expect(insertInkErr).NotTo(HaveOccurred())
 
 		var result []helper.UrnState
-		err = db.Select(&result, allUrnsQuery+` ORDER BY created`, fakeHeader.BlockNumber)
+		err = db.Select(&result, allUrnsQuery+` ORDER BY created`, headerOne.BlockNumber)
 		Expect(err).NotTo(HaveOccurred())
 
-		expectedTimestamp := helper.GetExpectedTimestamp(fakeTimestamp)
+		expectedTimestamp := helper.GetExpectedTimestamp(timestampOne)
 		expectedUrn := helper.UrnState{
 			UrnIdentifier: urnOne,
 			IlkIdentifier: helper.FakeIlk.Identifier,
-			BlockHeight:   blockNumber,
+			BlockHeight:   blockOne,
 			Ink:           strconv.Itoa(fakeInk),
 			Art:           "0",
 			Created:       helper.GetValidNullString(expectedTimestamp),
@@ -153,25 +147,23 @@ var _ = Describe("Urn view", func() {
 	Describe("result pagination", func() {
 		var (
 			urnOneSetupData, urnTwoSetupData helper.UrnSetupData
-			timestampOne, timestampTwo       int
+			timestampTwo                     int
 			blockTwo                         int
 		)
 
 		BeforeEach(func() {
-			blockOne := rand.Int()
-			timestampOne = int(rand.Int31())
-
 			urnOneMetadata := helper.GetUrnMetadata(helper.FakeIlk.Hex, urnOne)
-			urnOneSetupData = helper.GetUrnSetupData(blockOne, timestampOne)
-			helper.CreateUrn(urnOneSetupData, urnOneMetadata, vatRepo, headerRepo)
+			urnOneSetupData = helper.GetUrnSetupData(headerOne)
+			helper.CreateUrn(urnOneSetupData, urnOneMetadata, vatRepo)
 
 			// New block
 			blockTwo = blockOne + 1
 			timestampTwo = timestampOne + 1
+			headerTwo := createHeader(blockTwo, timestampTwo, headerRepo)
 
 			urnTwoMetadata := helper.GetUrnMetadata(helper.AnotherFakeIlk.Hex, urnTwo)
-			urnTwoSetupData = helper.GetUrnSetupData(blockTwo, timestampTwo)
-			helper.CreateUrn(urnTwoSetupData, urnTwoMetadata, vatRepo, headerRepo)
+			urnTwoSetupData = helper.GetUrnSetupData(headerTwo)
+			helper.CreateUrn(urnTwoSetupData, urnTwoMetadata, vatRepo)
 		})
 
 		It("limits results if max_results argument is provided", func() {
@@ -218,24 +210,6 @@ var _ = Describe("Urn view", func() {
 		})
 	})
 
-	It("returns urn state without timestamps if corresponding headers aren't synced", func() {
-		block := rand.Int()
-		timestamp := int(rand.Int31())
-		metadata := helper.GetUrnMetadata(helper.FakeIlk.Hex, urnOne)
-		setupData := helper.GetUrnSetupData(block, timestamp)
-
-		helper.CreateUrn(setupData, metadata, vatRepo, headerRepo)
-		_, err = db.Exec(`DELETE FROM headers`)
-		Expect(err).NotTo(HaveOccurred())
-
-		var result helper.UrnState
-		err = db.Get(&result, allUrnsQuery, block)
-
-		Expect(err).NotTo(HaveOccurred())
-		Expect(result.Created.String).To(BeEmpty())
-		Expect(result.Updated.String).To(BeEmpty())
-	})
-
 	It("allows blockHeight argument to be omitted", func() {
 		_, err := db.Exec(`SELECT * FROM api.all_urns()`)
 		Expect(err).NotTo(HaveOccurred())
@@ -244,18 +218,14 @@ var _ = Describe("Urn view", func() {
 	Describe("it includes diffs only up to given block height", func() {
 		var (
 			actualUrn    helper.UrnState
-			blockOne     int
-			timestampOne int
 			setupDataOne helper.UrnSetupData
 			metadata     helper.UrnMetadata
 		)
 
 		BeforeEach(func() {
-			blockOne = rand.Int()
-			timestampOne = int(rand.Int31())
-			setupDataOne = helper.GetUrnSetupData(blockOne, timestampOne)
+			setupDataOne = helper.GetUrnSetupData(headerOne)
 			metadata = helper.GetUrnMetadata(helper.FakeIlk.Hex, urnOne)
-			helper.CreateUrn(setupDataOne, metadata, vatRepo, headerRepo)
+			helper.CreateUrn(setupDataOne, metadata, vatRepo)
 		})
 
 		It("gets urn state as of block one", func() {
@@ -281,8 +251,14 @@ var _ = Describe("Urn view", func() {
 			timestampTwo := timestampOne + 1
 			hashTwo := test_data.RandomString(5)
 			updatedInk := rand.Int()
+			fakeHeaderTwo := fakes.GetFakeHeader(int64(blockTwo))
+			fakeHeaderTwo.Timestamp = strconv.Itoa(timestampTwo)
+			fakeHeaderTwo.Hash = hashTwo
 
-			err = vatRepo.Create(blockTwo, hashTwo, metadata.UrnInk, strconv.Itoa(updatedInk))
+			fakeHeaderTwoID, err := headerRepo.CreateOrUpdateHeader(fakeHeaderTwo)
+			Expect(err).NotTo(HaveOccurred())
+
+			err = vatRepo.Create(fakeHeaderTwoID, metadata.UrnInk, strconv.Itoa(updatedInk))
 			Expect(err).NotTo(HaveOccurred())
 
 			expectedTimestampOne := helper.GetExpectedTimestamp(timestampOne)
@@ -296,13 +272,6 @@ var _ = Describe("Urn view", func() {
 				Created:       helper.GetValidNullString(expectedTimestampOne),
 				Updated:       helper.GetValidNullString(expectedTimestampTwo),
 			}
-
-			fakeHeaderTwo := fakes.GetFakeHeader(int64(blockTwo))
-			fakeHeaderTwo.Timestamp = strconv.Itoa(timestampTwo)
-			fakeHeaderTwo.Hash = hashTwo
-
-			_, err = headerRepo.CreateOrUpdateHeader(fakeHeaderTwo)
-			Expect(err).NotTo(HaveOccurred())
 
 			err = db.Get(&actualUrn, allUrnsQuery, blockTwo)
 			Expect(err).NotTo(HaveOccurred())

@@ -54,9 +54,8 @@ var _ = Describe("All flip bid events query", func() {
 		contractAddress        = fakes.FakeAddress.Hex()
 		anotherContractAddress = common.HexToAddress("0xabcdef123456789").Hex()
 		bidId                  int
+		blockOne, timestampOne int
 		headerOne              core.Header
-		headerOneId            int64
-		headerOneErr           error
 		flipKickEvent          shared.InsertionModel
 	)
 
@@ -78,15 +77,16 @@ var _ = Describe("All flip bid events query", func() {
 		yankRepo.SetDB(db)
 		bidId = rand.Int()
 
-		headerOne = fakes.GetFakeHeader(1)
-		headerOneId, headerOneErr = headerRepo.CreateOrUpdateHeader(headerOne)
-		Expect(headerOneErr).NotTo(HaveOccurred())
-		flipKickLog := test_data.CreateTestLog(headerOneId, db)
+		blockOne = rand.Int()
+		timestampOne = int(rand.Int31())
+		headerOne = createHeader(blockOne, timestampOne, headerRepo)
+
+		flipKickLog := test_data.CreateTestLog(headerOne.Id, db)
 
 		flipKickEvent = test_data.FlipKickModel()
 		flipKickEvent.ForeignKeyValues[constants.AddressFK] = contractAddress
 		flipKickEvent.ColumnValues["bid_id"] = strconv.Itoa(bidId)
-		flipKickEvent.ColumnValues[constants.HeaderFK] = headerOneId
+		flipKickEvent.ColumnValues[constants.HeaderFK] = headerOne.Id
 		flipKickEvent.ColumnValues[constants.LogFK] = flipKickLog.ID
 		flipKickErr := flipKickRepo.Create([]shared.InsertionModel{flipKickEvent})
 		Expect(flipKickErr).NotTo(HaveOccurred())
@@ -104,24 +104,24 @@ var _ = Describe("All flip bid events query", func() {
 			dentLot := rand.Int()
 			dentBidAmount := rand.Int()
 
-			flipTendLog := test_data.CreateTestLog(headerOneId, db)
+			flipTendLog := test_data.CreateTestLog(headerOne.Id, db)
 			flipTendErr := test_helpers.CreateTend(test_helpers.TendCreationInput{
 				BidId:           bidId,
 				ContractAddress: contractAddress,
 				Lot:             tendLot,
 				BidAmount:       tendBidAmount,
 				TendRepo:        tendRepo,
-				TendHeaderId:    headerOneId,
+				TendHeaderId:    headerOne.Id,
 				TendLogId:       flipTendLog.ID,
 			})
 			Expect(flipTendErr).NotTo(HaveOccurred())
 
-			tickLog := test_data.CreateTestLog(headerOneId, db)
+			tickLog := test_data.CreateTestLog(headerOne.Id, db)
 			tickErr := test_helpers.CreateTick(test_helpers.TickCreationInput{
 				BidId:           bidId,
 				ContractAddress: contractAddress,
 				TickRepo:        tickRepo,
-				TickHeaderId:    headerOneId,
+				TickHeaderId:    headerOne.Id,
 				TickLogId:       tickLog.ID,
 			})
 			Expect(tickErr).NotTo(HaveOccurred())
@@ -130,14 +130,14 @@ var _ = Describe("All flip bid events query", func() {
 			test_helpers.CreateFlip(db, headerOne, flipStorageValues,
 				test_helpers.GetFlipMetadatas(strconv.Itoa(bidId)), contractAddress)
 
-			flipDentLog := test_data.CreateTestLog(headerOneId, db)
+			flipDentLog := test_data.CreateTestLog(headerOne.Id, db)
 			flipDentErr := test_helpers.CreateDent(test_helpers.DentCreationInput{
 				BidId:           bidId,
 				ContractAddress: contractAddress,
 				Lot:             dentLot,
 				BidAmount:       dentBidAmount,
 				DentRepo:        dentRepo,
-				DentHeaderId:    headerOneId,
+				DentHeaderId:    headerOne.Id,
 				DentLogId:       flipDentLog.ID,
 			})
 			Expect(flipDentErr).NotTo(HaveOccurred())
@@ -163,28 +163,26 @@ var _ = Describe("All flip bid events query", func() {
 			dentLot := rand.Int()
 			dentBidAmount := rand.Int()
 
-			flipTendLog := test_data.CreateTestLog(headerOneId, db)
+			flipTendLog := test_data.CreateTestLog(headerOne.Id, db)
 			flipTendErr := test_helpers.CreateTend(test_helpers.TendCreationInput{
 				BidId:           bidId,
 				ContractAddress: contractAddress,
 				Lot:             tendLot,
 				BidAmount:       tendBidAmount,
 				TendRepo:        tendRepo,
-				TendHeaderId:    headerOneId,
+				TendHeaderId:    headerOne.Id,
 				TendLogId:       flipTendLog.ID,
 			})
 			Expect(flipTendErr).NotTo(HaveOccurred())
 
-			headerTwo := fakes.GetFakeHeader(2)
-			headerTwoId, headerTwoErr := headerRepo.CreateOrUpdateHeader(headerTwo)
-			Expect(headerTwoErr).NotTo(HaveOccurred())
+			headerTwo := createHeader(blockOne+1, timestampOne+1, headerRepo)
 
-			tickLog := test_data.CreateTestLog(headerTwoId, db)
+			tickLog := test_data.CreateTestLog(headerTwo.Id, db)
 			tickErr := test_helpers.CreateTick(test_helpers.TickCreationInput{
 				BidId:           bidId,
 				ContractAddress: contractAddress,
 				TickRepo:        tickRepo,
-				TickHeaderId:    headerTwoId,
+				TickHeaderId:    headerTwo.Id,
 				TickLogId:       tickLog.ID,
 			})
 			Expect(tickErr).NotTo(HaveOccurred())
@@ -193,18 +191,16 @@ var _ = Describe("All flip bid events query", func() {
 			test_helpers.CreateFlip(db, headerTwo, flipStorageValuesBlockTwo,
 				test_helpers.GetFlipMetadatas(strconv.Itoa(bidId)), contractAddress)
 
-			headerThree := fakes.GetFakeHeader(3)
-			headerThreeId, headerThreeErr := headerRepo.CreateOrUpdateHeader(headerThree)
-			Expect(headerThreeErr).NotTo(HaveOccurred())
+			headerThree := createHeader(blockOne+2, timestampOne+2, headerRepo)
 
-			flipDentLog := test_data.CreateTestLog(headerThreeId, db)
+			flipDentLog := test_data.CreateTestLog(headerThree.Id, db)
 			flipDentErr := test_helpers.CreateDent(test_helpers.DentCreationInput{
 				BidId:           bidId,
 				ContractAddress: contractAddress,
 				Lot:             dentLot,
 				BidAmount:       dentBidAmount,
 				DentRepo:        dentRepo,
-				DentHeaderId:    headerThreeId,
+				DentHeaderId:    headerThree.Id,
 				DentLogId:       flipDentLog.ID,
 			})
 			Expect(flipDentErr).NotTo(HaveOccurred())
@@ -214,7 +210,7 @@ var _ = Describe("All flip bid events query", func() {
 				BidId:           bidId,
 				ContractAddress: contractAddress,
 				DealRepo:        dealRepo,
-				DealHeaderId:    headerThreeId,
+				DealHeaderId:    headerThree.Id,
 			})
 			Expect(flipDealErr).NotTo(HaveOccurred())
 
@@ -238,16 +234,15 @@ var _ = Describe("All flip bid events query", func() {
 			var updatedFlipValues map[string]interface{}
 
 			BeforeEach(func() {
-				headerTwo := fakes.GetFakeHeader(2)
-				headerTwoId, headerTwoErr := headerRepo.CreateOrUpdateHeader(headerTwo)
-				Expect(headerTwoErr).NotTo(HaveOccurred())
-				logID := test_data.CreateTestLog(headerTwoId, db).ID
+				headerTwo := createHeader(blockOne+1, timestampOne+1, headerRepo)
+
+				logID := test_data.CreateTestLog(headerTwo.Id, db).ID
 
 				tickErr := test_helpers.CreateTick(test_helpers.TickCreationInput{
 					BidId:           bidId,
 					ContractAddress: contractAddress,
 					TickRepo:        tickRepo,
-					TickHeaderId:    headerTwoId,
+					TickHeaderId:    headerTwo.Id,
 					TickLogId:       logID,
 				})
 				Expect(tickErr).NotTo(HaveOccurred())
@@ -295,13 +290,13 @@ var _ = Describe("All flip bid events query", func() {
 			differentBidId := rand.Int()
 			differentLot := rand.Int()
 
-			flipKickLogTwo := test_data.CreateTestLog(headerOneId, db)
+			flipKickLogTwo := test_data.CreateTestLog(headerOne.Id, db)
 
 			flipKickEventTwo := test_data.FlipKickModel()
 			flipKickEventTwo.ForeignKeyValues[constants.AddressFK] = contractAddress
 			flipKickEventTwo.ColumnValues["bid_id"] = strconv.Itoa(differentBidId)
 			flipKickEventTwo.ColumnValues["lot"] = strconv.Itoa(differentLot)
-			flipKickEventTwo.ColumnValues[constants.HeaderFK] = headerOneId
+			flipKickEventTwo.ColumnValues[constants.HeaderFK] = headerOne.Id
 			flipKickEventTwo.ColumnValues[constants.LogFK] = flipKickLogTwo.ID
 			flipKickErr := flipKickRepo.Create([]shared.InsertionModel{flipKickEventTwo})
 			Expect(flipKickErr).NotTo(HaveOccurred())
@@ -329,13 +324,13 @@ var _ = Describe("All flip bid events query", func() {
 			differentLot := rand.Int()
 			differentBidAmount := rand.Int()
 
-			flipKickLog := test_data.CreateTestLog(headerOneId, db)
+			flipKickLog := test_data.CreateTestLog(headerOne.Id, db)
 			flipKickEventTwo := test_data.FlipKickModel()
 			flipKickEventTwo.ForeignKeyValues[constants.AddressFK] = anotherFlipContractAddress
 			flipKickEventTwo.ColumnValues["bid_id"] = strconv.Itoa(bidId)
 			flipKickEventTwo.ColumnValues["lot"] = strconv.Itoa(differentLot)
 			flipKickEventTwo.ColumnValues["bid"] = strconv.Itoa(differentBidAmount)
-			flipKickEventTwo.ColumnValues[constants.HeaderFK] = headerOneId
+			flipKickEventTwo.ColumnValues[constants.HeaderFK] = headerOne.Id
 			flipKickEventTwo.ColumnValues[constants.LogFK] = flipKickLog.ID
 			flipKickErr := flipKickRepo.Create([]shared.InsertionModel{flipKickEventTwo})
 			Expect(flipKickErr).NotTo(HaveOccurred())
@@ -365,30 +360,28 @@ var _ = Describe("All flip bid events query", func() {
 				bidAmountOne := rand.Int()
 				bidAmountTwo := rand.Int()
 
-				flipTendHeaderOneLog := test_data.CreateTestLog(headerOneId, db)
+				flipTendHeaderOneLog := test_data.CreateTestLog(headerOne.Id, db)
 				flipTendErr := test_helpers.CreateTend(test_helpers.TendCreationInput{
 					BidId:           bidId,
 					ContractAddress: contractAddress,
 					Lot:             lotOne,
 					BidAmount:       bidAmountOne,
 					TendRepo:        tendRepo,
-					TendHeaderId:    headerOneId,
+					TendHeaderId:    headerOne.Id,
 					TendLogId:       flipTendHeaderOneLog.ID,
 				})
 				Expect(flipTendErr).NotTo(HaveOccurred())
 
-				headerTwo := fakes.GetFakeHeader(2)
-				headerTwoId, headerTwoErr := headerRepo.CreateOrUpdateHeader(headerTwo)
-				Expect(headerTwoErr).NotTo(HaveOccurred())
+				headerTwo := createHeader(blockOne+1, timestampOne+1, headerRepo)
 
-				flipTendHeaderTwoLog := test_data.CreateTestLog(headerTwoId, db)
+				flipTendHeaderTwoLog := test_data.CreateTestLog(headerTwo.Id, db)
 				flipTendHeaderTwoErr := test_helpers.CreateTend(test_helpers.TendCreationInput{
 					BidId:           bidId,
 					ContractAddress: contractAddress,
 					Lot:             lotTwo,
 					BidAmount:       bidAmountTwo,
 					TendRepo:        tendRepo,
-					TendHeaderId:    headerTwoId,
+					TendHeaderId:    headerTwo.Id,
 					TendLogId:       flipTendHeaderTwoLog.ID,
 				})
 				Expect(flipTendHeaderTwoErr).NotTo(HaveOccurred())
@@ -405,14 +398,14 @@ var _ = Describe("All flip bid events query", func() {
 			})
 
 			It("ignores tend events that are not from a flip", func() {
-				flapTendLog := test_data.CreateTestLog(headerOneId, db)
+				flapTendLog := test_data.CreateTestLog(headerOne.Id, db)
 				flapTendErr := test_helpers.CreateTend(test_helpers.TendCreationInput{
 					BidId:           bidId,
 					ContractAddress: anotherContractAddress,
 					Lot:             rand.Int(),
 					BidAmount:       rand.Int(),
 					TendRepo:        tendRepo,
-					TendHeaderId:    headerOneId,
+					TendHeaderId:    headerOne.Id,
 					TendLogId:       flapTendLog.ID,
 				})
 				Expect(flapTendErr).NotTo(HaveOccurred())
@@ -434,30 +427,28 @@ var _ = Describe("All flip bid events query", func() {
 				bidAmountOne := rand.Int()
 				bidAmountTwo := rand.Int()
 
-				flipDentHeaderOneLog := test_data.CreateTestLog(headerOneId, db)
+				flipDentHeaderOneLog := test_data.CreateTestLog(headerOne.Id, db)
 				flipDentErr := test_helpers.CreateDent(test_helpers.DentCreationInput{
 					BidId:           bidId,
 					ContractAddress: contractAddress,
 					Lot:             lotOne,
 					BidAmount:       bidAmountOne,
 					DentRepo:        dentRepo,
-					DentHeaderId:    headerOneId,
+					DentHeaderId:    headerOne.Id,
 					DentLogId:       flipDentHeaderOneLog.ID,
 				})
 				Expect(flipDentErr).NotTo(HaveOccurred())
 
-				headerTwo := fakes.GetFakeHeader(2)
-				headerTwoId, headerTwoErr := headerRepo.CreateOrUpdateHeader(headerTwo)
-				Expect(headerTwoErr).NotTo(HaveOccurred())
+				headerTwo := createHeader(blockOne+1, timestampOne+1, headerRepo)
 
-				flipDentHeaderTwoLog := test_data.CreateTestLog(headerTwoId, db)
+				flipDentHeaderTwoLog := test_data.CreateTestLog(headerTwo.Id, db)
 				flipDentHeaderTwoErr := test_helpers.CreateDent(test_helpers.DentCreationInput{
 					BidId:           bidId,
 					ContractAddress: contractAddress,
 					Lot:             lotTwo,
 					BidAmount:       bidAmountTwo,
 					DentRepo:        dentRepo,
-					DentHeaderId:    headerTwoId,
+					DentHeaderId:    headerTwo.Id,
 					DentLogId:       flipDentHeaderTwoLog.ID,
 				})
 				Expect(flipDentHeaderTwoErr).NotTo(HaveOccurred())
@@ -474,14 +465,14 @@ var _ = Describe("All flip bid events query", func() {
 			})
 
 			It("ignores dent events that are not from flip", func() {
-				flapDentLog := test_data.CreateTestLog(headerOneId, db)
+				flapDentLog := test_data.CreateTestLog(headerOne.Id, db)
 				flapDentErr := test_helpers.CreateDent(test_helpers.DentCreationInput{
 					BidId:           bidId,
 					ContractAddress: anotherContractAddress,
 					Lot:             rand.Int(),
 					BidAmount:       rand.Int(),
 					DentRepo:        dentRepo,
-					DentHeaderId:    headerOneId,
+					DentHeaderId:    headerOne.Id,
 					DentLogId:       flapDentLog.ID,
 				})
 				Expect(flapDentErr).NotTo(HaveOccurred())
@@ -501,14 +492,14 @@ var _ = Describe("All flip bid events query", func() {
 				tendLot := rand.Int()
 				tendBidAmount := rand.Int()
 
-				flipTendLog := test_data.CreateTestLog(headerOneId, db)
+				flipTendLog := test_data.CreateTestLog(headerOne.Id, db)
 				flipTendErr := test_helpers.CreateTend(test_helpers.TendCreationInput{
 					BidId:           bidId,
 					ContractAddress: contractAddress,
 					Lot:             tendLot,
 					BidAmount:       tendBidAmount,
 					TendRepo:        tendRepo,
-					TendHeaderId:    headerOneId,
+					TendHeaderId:    headerOne.Id,
 					TendLogId:       flipTendLog.ID,
 				})
 				Expect(flipTendErr).NotTo(HaveOccurred())
@@ -517,16 +508,14 @@ var _ = Describe("All flip bid events query", func() {
 				test_helpers.CreateFlip(db, headerOne, flipStorageValues,
 					test_helpers.GetFlipMetadatas(strconv.Itoa(bidId)), contractAddress)
 
-				headerTwo := fakes.GetFakeHeader(2)
-				headerTwoId, headerTwoErr := headerRepo.CreateOrUpdateHeader(headerTwo)
-				Expect(headerTwoErr).NotTo(HaveOccurred())
+				headerTwo := createHeader(blockOne+1, timestampOne+1, headerRepo)
 
-				flipYankLog := test_data.CreateTestLog(headerTwoId, db)
+				flipYankLog := test_data.CreateTestLog(headerTwo.Id, db)
 				flipYankErr := test_helpers.CreateYank(test_helpers.YankCreationInput{
 					BidId:           bidId,
 					ContractAddress: contractAddress,
 					YankRepo:        yankRepo,
-					YankHeaderId:    headerTwoId,
+					YankHeaderId:    headerTwo.Id,
 					YankLogId:       flipYankLog.ID,
 				})
 				Expect(flipYankErr).NotTo(HaveOccurred())
@@ -566,12 +555,12 @@ var _ = Describe("All flip bid events query", func() {
 					flipStorageValues := test_helpers.GetFlipStorageValues(1, test_helpers.FakeIlk.Hex, bidId)
 					test_helpers.CreateFlip(db, headerOne, flipStorageValues,
 						test_helpers.GetFlipMetadatas(strconv.Itoa(bidId)), contractAddress)
-					tickLog := test_data.CreateTestLog(headerOneId, db)
+					tickLog := test_data.CreateTestLog(headerOne.Id, db)
 					tickErr := test_helpers.CreateTick(test_helpers.TickCreationInput{
 						BidId:           bidId,
 						ContractAddress: contractAddress,
 						TickRepo:        tickRepo,
-						TickHeaderId:    headerOneId,
+						TickHeaderId:    headerOne.Id,
 						TickLogId:       tickLog.ID,
 					})
 					Expect(tickErr).NotTo(HaveOccurred())
@@ -592,12 +581,12 @@ var _ = Describe("All flip bid events query", func() {
 				})
 
 				It("ignores tick events that aren't from flips", func() {
-					tickLog := test_data.CreateTestLog(headerOneId, db)
+					tickLog := test_data.CreateTestLog(headerOne.Id, db)
 					tickErr := test_helpers.CreateTick(test_helpers.TickCreationInput{
 						BidId:           bidId,
 						ContractAddress: "flop",
 						TickRepo:        tickRepo,
-						TickHeaderId:    headerOneId,
+						TickHeaderId:    headerOne.Id,
 						TickLogId:       tickLog.ID,
 					})
 					Expect(tickErr).NotTo(HaveOccurred())

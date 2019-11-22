@@ -1,86 +1,68 @@
 -- +goose Up
 CREATE TABLE maker.cat_live
 (
-    id           SERIAL PRIMARY KEY,
-    block_number BIGINT,
-    block_hash   TEXT,
-    live         NUMERIC NOT NULL,
-    UNIQUE (block_number, block_hash, live)
+    id        SERIAL PRIMARY KEY,
+    header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
+    live      NUMERIC NOT NULL,
+    UNIQUE (header_id, live)
 );
 
 CREATE TABLE maker.cat_vat
 (
-    id           SERIAL PRIMARY KEY,
-    block_number BIGINT,
-    block_hash   TEXT,
-    vat          TEXT,
-    UNIQUE (block_number, block_hash, vat)
+    id        SERIAL PRIMARY KEY,
+    header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
+    vat       TEXT,
+    UNIQUE (header_id, vat)
 );
 
 CREATE TABLE maker.cat_vow
 (
-    id           SERIAL PRIMARY KEY,
-    block_number BIGINT,
-    block_hash   TEXT,
-    vow          TEXT,
-    UNIQUE (block_number, block_hash, vow)
+    id        SERIAL PRIMARY KEY,
+    header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
+    vow       TEXT,
+    UNIQUE (header_id, vow)
 );
 
 CREATE TABLE maker.cat_ilk_flip
 (
-    id           SERIAL PRIMARY KEY,
-    block_number BIGINT,
-    block_hash   TEXT,
-    ilk_id       INTEGER NOT NULL REFERENCES maker.ilks (id) ON DELETE CASCADE,
-    flip         TEXT,
-    UNIQUE (block_number, block_hash, ilk_id, flip)
+    id        SERIAL PRIMARY KEY,
+    header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
+    ilk_id    INTEGER NOT NULL REFERENCES maker.ilks (id) ON DELETE CASCADE,
+    flip      TEXT,
+    UNIQUE (header_id, ilk_id, flip)
 );
-
-CREATE INDEX cat_ilk_flip_block_number_index
-    ON maker.cat_ilk_flip (block_number);
 
 CREATE INDEX cat_ilk_flip_ilk_index
     ON maker.cat_ilk_flip (ilk_id);
 
 CREATE TABLE maker.cat_ilk_chop
 (
-    id           SERIAL PRIMARY KEY,
-    block_number BIGINT,
-    block_hash   TEXT,
-    ilk_id       INTEGER NOT NULL REFERENCES maker.ilks (id) ON DELETE CASCADE,
-    chop         NUMERIC NOT NULL,
-    UNIQUE (block_number, block_hash, ilk_id, chop)
+    id        SERIAL PRIMARY KEY,
+    header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
+    ilk_id    INTEGER NOT NULL REFERENCES maker.ilks (id) ON DELETE CASCADE,
+    chop      NUMERIC NOT NULL,
+    UNIQUE (header_id, ilk_id, chop)
 );
-
-CREATE INDEX cat_ilk_chop_block_number_index
-    ON maker.cat_ilk_chop (block_number);
 
 CREATE INDEX cat_ilk_chop_ilk_index
     ON maker.cat_ilk_chop (ilk_id);
 
 CREATE TABLE maker.cat_ilk_lump
 (
-    id           SERIAL PRIMARY KEY,
-    block_number BIGINT,
-    block_hash   TEXT,
-    ilk_id       INTEGER NOT NULL REFERENCES maker.ilks (id) ON DELETE CASCADE,
-    lump         NUMERIC NOT NULL,
-    UNIQUE (block_number, block_hash, ilk_id, lump)
+    id        SERIAL PRIMARY KEY,
+    header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
+    ilk_id    INTEGER NOT NULL REFERENCES maker.ilks (id) ON DELETE CASCADE,
+    lump      NUMERIC NOT NULL,
+    UNIQUE (header_id, ilk_id, lump)
 );
-
-CREATE INDEX cat_ilk_lump_block_number_index
-    ON maker.cat_ilk_lump (block_number);
 
 CREATE INDEX cat_ilk_lump_ilk_index
     ON maker.cat_ilk_lump (ilk_id);
 
 
 -- +goose Down
-DROP INDEX maker.cat_ilk_flip_block_number_index;
 DROP INDEX maker.cat_ilk_flip_ilk_index;
-DROP INDEX maker.cat_ilk_chop_block_number_index;
 DROP INDEX maker.cat_ilk_chop_ilk_index;
-DROP INDEX maker.cat_ilk_lump_block_number_index;
 DROP INDEX maker.cat_ilk_lump_ilk_index;
 
 DROP TABLE maker.cat_live;

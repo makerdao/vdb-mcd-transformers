@@ -1,67 +1,54 @@
 -- +goose Up
 CREATE TABLE maker.jug_ilk_rho
 (
-    id           SERIAL PRIMARY KEY,
-    block_number BIGINT,
-    block_hash   TEXT,
-    ilk_id       INTEGER NOT NULL REFERENCES maker.ilks (id) ON DELETE CASCADE,
-    rho          NUMERIC NOT NULL,
-    UNIQUE (block_number, block_hash, ilk_id, rho)
+    id        SERIAL PRIMARY KEY,
+    header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
+    ilk_id    INTEGER NOT NULL REFERENCES maker.ilks (id) ON DELETE CASCADE,
+    rho       NUMERIC NOT NULL,
+    UNIQUE (header_id, ilk_id, rho)
 );
-
-CREATE INDEX jug_ilk_rho_block_number_index
-    ON maker.jug_ilk_rho (block_number);
 
 CREATE INDEX jug_ilk_rho_ilk_index
     ON maker.jug_ilk_rho (ilk_id);
 
 CREATE TABLE maker.jug_ilk_duty
 (
-    id           SERIAL PRIMARY KEY,
-    block_number BIGINT,
-    block_hash   TEXT,
-    ilk_id       INTEGER NOT NULL REFERENCES maker.ilks (id) ON DELETE CASCADE,
-    duty         NUMERIC NOT NULL,
-    UNIQUE (block_number, block_hash, ilk_id, duty)
+    id        SERIAL PRIMARY KEY,
+    header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
+    ilk_id    INTEGER NOT NULL REFERENCES maker.ilks (id) ON DELETE CASCADE,
+    duty      NUMERIC NOT NULL,
+    UNIQUE (header_id, ilk_id, duty)
 );
-
-CREATE INDEX jug_ilk_duty_block_number_index
-    ON maker.jug_ilk_duty (block_number);
 
 CREATE INDEX jug_ilk_duty_ilk_index
     ON maker.jug_ilk_duty (ilk_id);
 
 CREATE TABLE maker.jug_vat
 (
-    id           SERIAL PRIMARY KEY,
-    block_number BIGINT,
-    block_hash   TEXT,
-    vat          TEXT,
-    UNIQUE (block_number, block_hash, vat)
+    id        SERIAL PRIMARY KEY,
+    header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
+    vat       TEXT,
+    UNIQUE (header_id, vat)
 );
 
 CREATE TABLE maker.jug_vow
 (
-    id           SERIAL PRIMARY KEY,
-    block_number BIGINT,
-    block_hash   TEXT,
-    vow          TEXT,
-    UNIQUE (block_number, block_hash, vow)
+    id        SERIAL PRIMARY KEY,
+    header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
+    vow       TEXT,
+    UNIQUE (header_id, vow)
 );
 
 CREATE TABLE maker.jug_base
 (
-    id           SERIAL PRIMARY KEY,
-    block_number BIGINT,
-    block_hash   TEXT,
-    base         TEXT,
-    UNIQUE (block_number, block_hash, base)
+    id        SERIAL PRIMARY KEY,
+    header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
+    base      TEXT,
+    UNIQUE (header_id, base)
 );
 
 -- +goose Down
-DROP INDEX maker.jug_ilk_rho_block_number_index;
 DROP INDEX maker.jug_ilk_rho_ilk_index;
-DROP INDEX maker.jug_ilk_duty_block_number_index;
 DROP INDEX maker.jug_ilk_duty_ilk_index;
 
 DROP TABLE maker.jug_ilk_rho;

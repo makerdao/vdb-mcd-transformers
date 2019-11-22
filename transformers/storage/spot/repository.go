@@ -26,10 +26,10 @@ import (
 )
 
 const (
-	InsertSpotIlkPipQuery = `INSERT INTO maker.spot_ilk_pip (block_number, block_hash, ilk_id, pip) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
-	InsertSpotIlkMatQuery = `INSERT INTO maker.spot_ilk_mat (block_number, block_hash, ilk_id, mat) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
-	insertSpotVatQuery    = `INSERT INTO maker.spot_vat (block_number, block_hash, vat) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
-	insertSpotParQuery    = `INSERT INTO maker.spot_par (block_number, block_hash, par) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
+	InsertSpotIlkPipQuery = `INSERT INTO maker.spot_ilk_pip (header_id, ilk_id, pip) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
+	InsertSpotIlkMatQuery = `INSERT INTO maker.spot_ilk_mat (header_id, ilk_id, mat) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
+	insertSpotVatQuery    = `INSERT INTO maker.spot_vat (header_id, vat) VALUES ($1, $2) ON CONFLICT DO NOTHING`
+	insertSpotParQuery    = `INSERT INTO maker.spot_par (header_id, par) VALUES ($1, $2) ON CONFLICT DO NOTHING`
 )
 
 type SpotStorageRepository struct {
@@ -40,50 +40,50 @@ func (repository *SpotStorageRepository) SetDB(db *postgres.DB) {
 	repository.db = db
 }
 
-func (repository SpotStorageRepository) Create(blockNumber int, blockHash string, metadata utils.StorageValueMetadata, value interface{}) error {
+func (repository SpotStorageRepository) Create(headerID int64, metadata utils.StorageValueMetadata, value interface{}) error {
 	switch metadata.Name {
 	case IlkPip:
-		return repository.insertIlkPip(blockNumber, blockHash, metadata, value.(string))
+		return repository.insertIlkPip(headerID, metadata, value.(string))
 	case IlkMat:
-		return repository.insertIlkMat(blockNumber, blockHash, metadata, value.(string))
+		return repository.insertIlkMat(headerID, metadata, value.(string))
 	case Vat:
-		return repository.insertSpotVat(blockNumber, blockHash, value.(string))
+		return repository.insertSpotVat(headerID, value.(string))
 	case Par:
-		return repository.insertSpotPar(blockNumber, blockHash, value.(string))
+		return repository.insertSpotPar(headerID, value.(string))
 
 	default:
 		panic(fmt.Sprintf("unrecognized spot contract storage name: %s", metadata.Name))
 	}
 }
 
-func (repository SpotStorageRepository) insertIlkPip(blockNumber int, blockHash string, metadata utils.StorageValueMetadata, pip string) error {
+func (repository SpotStorageRepository) insertIlkPip(headerID int64, metadata utils.StorageValueMetadata, pip string) error {
 	ilk, err := getIlk(metadata.Keys)
 	if err != nil {
 		return err
 	}
 
-	return repository.insertFieldWithIlk(blockNumber, blockHash, ilk, IlkPip, InsertSpotIlkPipQuery, pip)
+	return repository.insertFieldWithIlk(headerID, ilk, IlkPip, InsertSpotIlkPipQuery, pip)
 }
 
-func (repository SpotStorageRepository) insertIlkMat(blockNumber int, blockHash string, metadata utils.StorageValueMetadata, mat string) error {
+func (repository SpotStorageRepository) insertIlkMat(headerID int64, metadata utils.StorageValueMetadata, mat string) error {
 	ilk, err := getIlk(metadata.Keys)
 	if err != nil {
 		return err
 	}
-	return repository.insertFieldWithIlk(blockNumber, blockHash, ilk, IlkMat, InsertSpotIlkMatQuery, mat)
+	return repository.insertFieldWithIlk(headerID, ilk, IlkMat, InsertSpotIlkMatQuery, mat)
 }
 
-func (repository SpotStorageRepository) insertSpotVat(blockNumber int, blockHash string, vat string) error {
-	_, err := repository.db.Exec(insertSpotVatQuery, blockNumber, blockHash, vat)
+func (repository SpotStorageRepository) insertSpotVat(headerID int64, vat string) error {
+	_, err := repository.db.Exec(insertSpotVatQuery, headerID, vat)
 	return err
 }
 
-func (repository SpotStorageRepository) insertSpotPar(blockNumber int, blockHash string, par string) error {
-	_, err := repository.db.Exec(insertSpotParQuery, blockNumber, blockHash, par)
+func (repository SpotStorageRepository) insertSpotPar(headerID int64, par string) error {
+	_, err := repository.db.Exec(insertSpotParQuery, headerID, par)
 	return err
 }
 
-func (repository *SpotStorageRepository) insertFieldWithIlk(blockNumber int, blockHash, ilk, variableName, query, value string) error {
+func (repository *SpotStorageRepository) insertFieldWithIlk(headerID int64, ilk, variableName, query, value string) error {
 	tx, txErr := repository.db.Beginx()
 	if txErr != nil {
 		return txErr
@@ -96,7 +96,7 @@ func (repository *SpotStorageRepository) insertFieldWithIlk(blockNumber int, blo
 		}
 		return ilkErr
 	}
-	_, writeErr := tx.Exec(query, blockNumber, blockHash, ilkID, value)
+	_, writeErr := tx.Exec(query, headerID, ilkID, value)
 
 	if writeErr != nil {
 		rollbackErr := tx.Rollback()

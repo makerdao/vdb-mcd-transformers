@@ -21,16 +21,15 @@ import (
 
 var _ = Describe("flap_bid_event computed columns", func() {
 	var (
-		db              *postgres.DB
-		blockNumber     = rand.Int()
-		header          core.Header
-		flapKickLog     core.HeaderSyncLog
-		headerId        int64
-		headerRepo      repositories.HeaderRepository
-		flapKickRepo    flap_kick.FlapKickRepository
-		flapKickEvent   shared.InsertionModel
-		contractAddress = "FlapAddress"
-		fakeBidId       = rand.Int()
+		db                     *postgres.DB
+		blockOne, timestampOne int
+		headerOne              core.Header
+		flapKickLog            core.HeaderSyncLog
+		headerRepo             repositories.HeaderRepository
+		flapKickRepo           flap_kick.FlapKickRepository
+		flapKickEvent          shared.InsertionModel
+		contractAddress        = fakes.RandomString(42)
+		fakeBidId              = rand.Int()
 	)
 
 	BeforeEach(func() {
@@ -38,11 +37,10 @@ var _ = Describe("flap_bid_event computed columns", func() {
 		test_config.CleanTestDB(db)
 
 		headerRepo = repositories.NewHeaderRepository(db)
-		header = fakes.GetFakeHeader(int64(blockNumber))
-		var insertHeaderErr error
-		headerId, insertHeaderErr = headerRepo.CreateOrUpdateHeader(header)
-		Expect(insertHeaderErr).NotTo(HaveOccurred())
-		flapKickLog = test_data.CreateTestLog(headerId, db)
+		blockOne = rand.Int()
+		timestampOne = int(rand.Int31())
+		headerOne = createHeader(blockOne, timestampOne, headerRepo)
+		flapKickLog = test_data.CreateTestLog(headerOne.Id, db)
 
 		flapKickRepo = flap_kick.FlapKickRepository{}
 		flapKickRepo.SetDB(db)
@@ -50,7 +48,7 @@ var _ = Describe("flap_bid_event computed columns", func() {
 		flapKickEvent = test_data.FlapKickModel()
 		flapKickEvent.ColumnValues["bid_id"] = strconv.Itoa(fakeBidId)
 		flapKickEvent.ForeignKeyValues[constants.AddressFK] = contractAddress
-		flapKickEvent.ColumnValues[constants.HeaderFK] = headerId
+		flapKickEvent.ColumnValues[constants.HeaderFK] = headerOne.Id
 		flapKickEvent.ColumnValues[constants.LogFK] = flapKickLog.ID
 		insertFlapKickErr := flapKickRepo.Create([]shared.InsertionModel{flapKickEvent})
 		Expect(insertFlapKickErr).NotTo(HaveOccurred())
@@ -64,9 +62,9 @@ var _ = Describe("flap_bid_event computed columns", func() {
 	Describe("flap_bid_event_bid", func() {
 		It("returns flap_bid for a flap_bid_event", func() {
 			flapStorageValues := test_helpers.GetFlapStorageValues(1, fakeBidId)
-			test_helpers.CreateFlap(db, header, flapStorageValues, test_helpers.GetFlapMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
+			test_helpers.CreateFlap(db, headerOne, flapStorageValues, test_helpers.GetFlapMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
 
-			expectedBid := test_helpers.FlapBidFromValues(strconv.Itoa(fakeBidId), "false", header.Timestamp, header.Timestamp, flapStorageValues)
+			expectedBid := test_helpers.FlapBidFromValues(strconv.Itoa(fakeBidId), "false", headerOne.Timestamp, headerOne.Timestamp, flapStorageValues)
 
 			var actualBid test_helpers.FlapBid
 			err := db.Get(&actualBid, `
@@ -86,14 +84,14 @@ var _ = Describe("flap_bid_event computed columns", func() {
 			expectedTx := Tx{
 				TransactionHash:  test_helpers.GetValidNullString("txHash"),
 				TransactionIndex: sql.NullInt64{Int64: int64(flapKickLog.Log.TxIndex), Valid: true},
-				BlockHeight:      sql.NullInt64{Int64: int64(blockNumber), Valid: true},
-				BlockHash:        test_helpers.GetValidNullString(header.Hash),
+				BlockHeight:      sql.NullInt64{Int64: int64(blockOne), Valid: true},
+				BlockHash:        test_helpers.GetValidNullString(headerOne.Hash),
 				TxFrom:           test_helpers.GetValidNullString("fromAddress"),
 				TxTo:             test_helpers.GetValidNullString("toAddress"),
 			}
 
 			_, insertErr := db.Exec(`INSERT INTO header_sync_transactions (header_id, hash, tx_from, tx_index, tx_to)
-				VALUES ($1, $2, $3, $4, $5)`, headerId, expectedTx.TransactionHash, expectedTx.TxFrom,
+				VALUES ($1, $2, $3, $4, $5)`, headerOne.Id, expectedTx.TransactionHash, expectedTx.TxFrom,
 				expectedTx.TransactionIndex, expectedTx.TxTo)
 			Expect(insertErr).NotTo(HaveOccurred())
 
@@ -114,14 +112,14 @@ var _ = Describe("flap_bid_event computed columns", func() {
 					Int64: int64(flapKickLog.Log.TxIndex) + 1,
 					Valid: true,
 				},
-				BlockHeight: sql.NullInt64{Int64: int64(blockNumber), Valid: true},
-				BlockHash:   test_helpers.GetValidNullString(header.Hash),
+				BlockHeight: sql.NullInt64{Int64: int64(blockOne), Valid: true},
+				BlockHash:   test_helpers.GetValidNullString(headerOne.Hash),
 				TxFrom:      test_helpers.GetValidNullString("wrongFromAddress"),
 				TxTo:        test_helpers.GetValidNullString("wrongToAddress"),
 			}
 
 			_, insertErr := db.Exec(`INSERT INTO header_sync_transactions (header_id, hash, tx_from, tx_index, tx_to)
-				VALUES ($1, $2, $3, $4, $5)`, headerId, wrongTx.TransactionHash, wrongTx.TxFrom,
+				VALUES ($1, $2, $3, $4, $5)`, headerOne.Id, wrongTx.TransactionHash, wrongTx.TxFrom,
 				wrongTx.TransactionIndex, wrongTx.TxTo)
 			Expect(insertErr).NotTo(HaveOccurred())
 
@@ -136,24 +134,21 @@ var _ = Describe("flap_bid_event computed columns", func() {
 		})
 
 		It("does not return transaction from different block with same index", func() {
-			lowerBlockNumber := blockNumber - 1
-			anotherHeader := fakes.GetFakeHeader(int64(lowerBlockNumber))
-			anotherHeaderID, insertHeaderErr := headerRepo.CreateOrUpdateHeader(anotherHeader)
-			Expect(insertHeaderErr).NotTo(HaveOccurred())
+			headerZero := createHeader(blockOne-1, timestampOne-1, headerRepo)
 			wrongTx := Tx{
 				TransactionHash: test_helpers.GetValidNullString("wrongTxHash"),
 				TransactionIndex: sql.NullInt64{
 					Int64: int64(flapKickLog.Log.TxIndex),
 					Valid: true,
 				},
-				BlockHeight: sql.NullInt64{Int64: int64(lowerBlockNumber), Valid: true},
-				BlockHash:   test_helpers.GetValidNullString(header.Hash),
+				BlockHeight: sql.NullInt64{Int64: headerZero.BlockNumber, Valid: true},
+				BlockHash:   test_helpers.GetValidNullString(headerOne.Hash),
 				TxFrom:      test_helpers.GetValidNullString("wrongFromAddress"),
 				TxTo:        test_helpers.GetValidNullString("wrongToAddress"),
 			}
 
 			_, insertErr := db.Exec(`INSERT INTO header_sync_transactions (header_id, hash, tx_from, tx_index, tx_to)
-				VALUES ($1, $2, $3, $4, $5)`, anotherHeaderID, wrongTx.TransactionHash, wrongTx.TxFrom,
+				VALUES ($1, $2, $3, $4, $5)`, headerZero.Id, wrongTx.TransactionHash, wrongTx.TxFrom,
 				wrongTx.TransactionIndex, wrongTx.TxTo)
 			Expect(insertErr).NotTo(HaveOccurred())
 

@@ -13,42 +13,48 @@ WITH urn AS (SELECT urns.id AS urn_id, ilks.id AS ilk_id, ilks.ilk, urns.identif
              WHERE ilks.identifier = ilk_identifier
                AND urns.identifier = urn_identifier),
      ink AS ( -- Latest ink
-         SELECT DISTINCT ON (urn_id) urn_id, ink, block_number
+         SELECT DISTINCT ON (urn_id) urn_id, ink, block_number, block_timestamp
          FROM maker.vat_urn_ink
+                  LEFT JOIN public.headers ON vat_urn_ink.header_id = headers.id
          WHERE urn_id = (SELECT urn_id from urn where identifier = urn_identifier)
            AND block_number <= get_urn.block_height
          ORDER BY urn_id, block_number DESC),
      art AS ( -- Latest art
-         SELECT DISTINCT ON (urn_id) urn_id, art, block_number
+         SELECT DISTINCT ON (urn_id) urn_id, art, block_number, block_timestamp
          FROM maker.vat_urn_art
+                  LEFT JOIN public.headers ON vat_urn_art.header_id = headers.id
          WHERE urn_id = (SELECT urn_id from urn where identifier = urn_identifier)
            AND block_number <= get_urn.block_height
          ORDER BY urn_id, block_number DESC),
      rate AS ( -- Latest rate for ilk
          SELECT DISTINCT ON (ilk_id) ilk_id, rate, block_number
          FROM maker.vat_ilk_rate
+                  LEFT JOIN public.headers ON vat_ilk_rate.header_id = headers.id
          WHERE ilk_id = (SELECT ilk_id FROM urn)
            AND block_number <= get_urn.block_height
          ORDER BY ilk_id, block_number DESC),
      spot AS ( -- Get latest price update for ilk. Problematic from update frequency, slow query?
          SELECT DISTINCT ON (ilk_id) ilk_id, spot, block_number
          FROM maker.vat_ilk_spot
+                  LEFT JOIN public.headers ON vat_ilk_spot.header_id = headers.id
          WHERE ilk_id = (SELECT ilk_id FROM urn)
            AND block_number <= get_urn.block_height
          ORDER BY ilk_id, block_number DESC),
      created AS (SELECT urn_id, api.epoch_to_datetime(block_timestamp) AS datetime
-                 FROM (SELECT DISTINCT ON (urn_id) urn_id, block_hash
+                 FROM (SELECT DISTINCT ON (urn_id) urn_id,
+                                                   block_timestamp
+                                                   -- TODO: should we be using urn ink for created?
+                                                   -- Can a CDP exist before collateral is locked?
                        FROM maker.vat_urn_ink
+                                LEFT JOIN public.headers ON vat_urn_ink.header_id = headers.id
                        WHERE urn_id = (SELECT urn_id from urn where identifier = urn_identifier)
-                       ORDER BY urn_id, block_number ASC) earliest_blocks
-                          LEFT JOIN public.headers ON hash = block_hash),
+                       ORDER BY urn_id, block_number ASC) earliest_blocks),
      updated AS (SELECT DISTINCT ON (urn_id) urn_id, api.epoch_to_datetime(block_timestamp) AS datetime
-                 FROM (SELECT urn_id, block_number
+                 FROM (SELECT urn_id, block_number, block_timestamp
                        FROM ink
                        UNION
-                       SELECT urn_id, block_number
+                       SELECT urn_id, block_number, block_timestamp
                        FROM art) last_blocks
-                          LEFT JOIN public.headers ON headers.block_number = last_blocks.block_number
                  ORDER BY urn_id, block_timestamp DESC)
 
 SELECT get_urn.urn_identifier,

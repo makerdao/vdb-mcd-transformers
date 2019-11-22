@@ -12,21 +12,21 @@ import (
 )
 
 const (
-	insertFlipVatQuery   = `INSERT INTO maker.flip_vat (block_number, block_hash, address_id, vat) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
-	insertFlipIlkQuery   = `INSERT INTO maker.flip_ilk (block_number, block_hash, address_id, ilk_id) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
-	insertFlipBegQuery   = `INSERT INTO maker.flip_beg (block_number, block_hash, address_id, beg) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
-	insertFlipTtlQuery   = `INSERT INTO maker.flip_ttl (block_number, block_hash, address_id, ttl) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
-	insertFlipTauQuery   = `INSERT INTO maker.flip_tau (block_number, block_hash, address_id, tau) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
-	InsertFlipKicksQuery = `INSERT INTO maker.flip_kicks (block_number, block_hash, address_id, kicks) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
+	insertFlipVatQuery   = `INSERT INTO maker.flip_vat (header_id, address_id, vat) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
+	insertFlipIlkQuery   = `INSERT INTO maker.flip_ilk (header_id, address_id, ilk_id) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
+	insertFlipBegQuery   = `INSERT INTO maker.flip_beg (header_id, address_id, beg) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
+	insertFlipTtlQuery   = `INSERT INTO maker.flip_ttl (header_id, address_id, ttl) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
+	insertFlipTauQuery   = `INSERT INTO maker.flip_tau (header_id, address_id, tau) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
+	InsertFlipKicksQuery = `INSERT INTO maker.flip_kicks (header_id, address_id, kicks) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
 
-	InsertFlipBidBidQuery = `INSERT INTO maker.flip_bid_bid (block_number, block_hash, address_id, bid_id, bid) VALUES ($1, $2, $3, $4, $5) ON CONFLICT DO NOTHING`
-	InsertFlipBidLotQuery = `INSERT INTO maker.flip_bid_lot (block_number, block_hash, address_id, bid_id, lot) VALUES ($1, $2, $3, $4, $5) ON CONFLICT DO NOTHING`
-	InsertFlipBidGuyQuery = `INSERT INTO maker.flip_bid_guy (block_number, block_hash, address_id, bid_id, guy) VALUES ($1, $2, $3, $4, $5) ON CONFLICT DO NOTHING`
-	InsertFlipBidTicQuery = `INSERT INTO maker.flip_bid_tic (block_number, block_hash, address_id, bid_id, tic) VALUES ($1, $2, $3, $4, $5) ON CONFLICT DO NOTHING`
-	InsertFlipBidEndQuery = `INSERT INTO maker.flip_bid_end (block_number, block_hash, address_id, bid_id, "end") VALUES ($1, $2, $3, $4, $5) ON CONFLICT DO NOTHING`
-	InsertFlipBidUsrQuery = `INSERT INTO maker.flip_bid_usr (block_number, block_hash, address_id, bid_id, usr) VALUES ($1, $2, $3, $4, $5) ON CONFLICT DO NOTHING`
-	InsertFlipBidGalQuery = `INSERT INTO maker.flip_bid_gal (block_number, block_hash, address_id, bid_id, gal) VALUES ($1, $2, $3, $4, $5) ON CONFLICT DO NOTHING`
-	InsertFlipBidTabQuery = `INSERT INTO maker.flip_bid_tab (block_number, block_hash, address_id, bid_id, tab) VALUES ($1, $2, $3, $4, $5) ON CONFLICT DO NOTHING`
+	InsertFlipBidBidQuery = `INSERT INTO maker.flip_bid_bid (header_id, address_id, bid_id, bid) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
+	InsertFlipBidLotQuery = `INSERT INTO maker.flip_bid_lot (header_id, address_id, bid_id, lot) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
+	InsertFlipBidGuyQuery = `INSERT INTO maker.flip_bid_guy (header_id, address_id, bid_id, guy) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
+	InsertFlipBidTicQuery = `INSERT INTO maker.flip_bid_tic (header_id, address_id, bid_id, tic) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
+	InsertFlipBidEndQuery = `INSERT INTO maker.flip_bid_end (header_id, address_id, bid_id, "end") VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
+	InsertFlipBidUsrQuery = `INSERT INTO maker.flip_bid_usr (header_id, address_id, bid_id, usr) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
+	InsertFlipBidGalQuery = `INSERT INTO maker.flip_bid_gal (header_id, address_id, bid_id, gal) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
+	InsertFlipBidTabQuery = `INSERT INTO maker.flip_bid_tab (header_id, address_id, bid_id, tab) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
 )
 
 type FlipStorageRepository struct {
@@ -34,28 +34,28 @@ type FlipStorageRepository struct {
 	db              *postgres.DB
 }
 
-func (repository *FlipStorageRepository) Create(blockNumber int, blockHash string, metadata utils.StorageValueMetadata, value interface{}) error {
+func (repository *FlipStorageRepository) Create(headerID int64, metadata utils.StorageValueMetadata, value interface{}) error {
 	switch metadata.Name {
 	case storage.Vat:
-		return repository.insertVat(blockNumber, blockHash, value.(string))
+		return repository.insertVat(headerID, value.(string))
 	case storage.Ilk:
-		return repository.insertIlk(blockNumber, blockHash, value.(string))
+		return repository.insertIlk(headerID, value.(string))
 	case storage.Beg:
-		return repository.insertBeg(blockNumber, blockHash, value.(string))
+		return repository.insertBeg(headerID, value.(string))
 	case storage.Kicks:
-		return repository.insertKicks(blockNumber, blockHash, value.(string))
+		return repository.insertKicks(headerID, value.(string))
 	case storage.BidBid:
-		return repository.insertBidBid(blockNumber, blockHash, metadata, value.(string))
+		return repository.insertBidBid(headerID, metadata, value.(string))
 	case storage.BidLot:
-		return repository.insertBidLot(blockNumber, blockHash, metadata, value.(string))
+		return repository.insertBidLot(headerID, metadata, value.(string))
 	case storage.BidUsr:
-		return repository.insertBidUsr(blockNumber, blockHash, metadata, value.(string))
+		return repository.insertBidUsr(headerID, metadata, value.(string))
 	case storage.BidGal:
-		return repository.insertBidGal(blockNumber, blockHash, metadata, value.(string))
+		return repository.insertBidGal(headerID, metadata, value.(string))
 	case storage.BidTab:
-		return repository.insertBidTab(blockNumber, blockHash, metadata, value.(string))
+		return repository.insertBidTab(headerID, metadata, value.(string))
 	case storage.Packed:
-		return repository.insertPackedValueRecord(blockNumber, blockHash, metadata, value.(map[int]string))
+		return repository.insertPackedValueRecord(headerID, metadata, value.(map[int]string))
 	default:
 		panic(fmt.Sprintf("unrecognized flip contract storage name: %s", metadata.Name))
 	}
@@ -65,121 +65,121 @@ func (repository *FlipStorageRepository) SetDB(db *postgres.DB) {
 	repository.db = db
 }
 
-func (repository *FlipStorageRepository) insertVat(blockNumber int, blockHash string, vat string) error {
-	return repository.insertRecordWithAddress(blockNumber, blockHash, insertFlipVatQuery, vat)
+func (repository *FlipStorageRepository) insertVat(headerID int64, vat string) error {
+	return repository.insertRecordWithAddress(headerID, insertFlipVatQuery, vat)
 }
 
-func (repository *FlipStorageRepository) insertIlk(blockNumber int, blockHash string, ilk string) error {
+func (repository *FlipStorageRepository) insertIlk(headerID int64, ilk string) error {
 	ilkID, ilkErr := shared.GetOrCreateIlk(ilk, repository.db)
 	if ilkErr != nil {
 		return ilkErr
 	}
 
-	return repository.insertRecordWithAddress(blockNumber, blockHash, insertFlipIlkQuery, strconv.FormatInt(ilkID, 10))
+	return repository.insertRecordWithAddress(headerID, insertFlipIlkQuery, strconv.FormatInt(ilkID, 10))
 }
 
-func (repository *FlipStorageRepository) insertBeg(blockNumber int, blockHash string, beg string) error {
-	return repository.insertRecordWithAddress(blockNumber, blockHash, insertFlipBegQuery, beg)
+func (repository *FlipStorageRepository) insertBeg(headerID int64, beg string) error {
+	return repository.insertRecordWithAddress(headerID, insertFlipBegQuery, beg)
 }
 
-func (repository *FlipStorageRepository) insertTtl(blockNumber int, blockHash string, ttl string) error {
-	return repository.insertRecordWithAddress(blockNumber, blockHash, insertFlipTtlQuery, ttl)
+func (repository *FlipStorageRepository) insertTtl(headerID int64, ttl string) error {
+	return repository.insertRecordWithAddress(headerID, insertFlipTtlQuery, ttl)
 }
 
-func (repository *FlipStorageRepository) insertTau(blockNumber int, blockHash string, tau string) error {
-	return repository.insertRecordWithAddress(blockNumber, blockHash, insertFlipTauQuery, tau)
+func (repository *FlipStorageRepository) insertTau(headerID int64, tau string) error {
+	return repository.insertRecordWithAddress(headerID, insertFlipTauQuery, tau)
 }
 
-func (repository *FlipStorageRepository) insertKicks(blockNumber int, blockHash, kicks string) error {
-	return repository.insertRecordWithAddress(blockNumber, blockHash, InsertFlipKicksQuery, kicks)
+func (repository *FlipStorageRepository) insertKicks(headerID int64, kicks string) error {
+	return repository.insertRecordWithAddress(headerID, InsertFlipKicksQuery, kicks)
 }
 
-func (repository *FlipStorageRepository) insertBidBid(blockNumber int, blockHash string, metadata utils.StorageValueMetadata, bid string) error {
+func (repository *FlipStorageRepository) insertBidBid(headerID int64, metadata utils.StorageValueMetadata, bid string) error {
 	bidId, err := getBidId(metadata.Keys)
 	if err != nil {
 		return err
 	}
 
-	return repository.insertRecordWithAddressAndBidId(blockNumber, blockHash, InsertFlipBidBidQuery, bidId, bid)
+	return repository.insertRecordWithAddressAndBidId(headerID, InsertFlipBidBidQuery, bidId, bid)
 }
 
-func (repository *FlipStorageRepository) insertBidLot(blockNumber int, blockHash string, metadata utils.StorageValueMetadata, lot string) error {
+func (repository *FlipStorageRepository) insertBidLot(headerID int64, metadata utils.StorageValueMetadata, lot string) error {
 	bidId, err := getBidId(metadata.Keys)
 	if err != nil {
 		return err
 	}
 
-	return repository.insertRecordWithAddressAndBidId(blockNumber, blockHash, InsertFlipBidLotQuery, bidId, lot)
+	return repository.insertRecordWithAddressAndBidId(headerID, InsertFlipBidLotQuery, bidId, lot)
 }
 
-func (repository *FlipStorageRepository) insertBidGuy(blockNumber int, blockHash string, metadata utils.StorageValueMetadata, guy string) error {
+func (repository *FlipStorageRepository) insertBidGuy(headerID int64, metadata utils.StorageValueMetadata, guy string) error {
 	bidId, err := getBidId(metadata.Keys)
 	if err != nil {
 		return err
 	}
 
-	return repository.insertRecordWithAddressAndBidId(blockNumber, blockHash, InsertFlipBidGuyQuery, bidId, guy)
+	return repository.insertRecordWithAddressAndBidId(headerID, InsertFlipBidGuyQuery, bidId, guy)
 }
 
-func (repository *FlipStorageRepository) insertBidTic(blockNumber int, blockHash string, metadata utils.StorageValueMetadata, tic string) error {
+func (repository *FlipStorageRepository) insertBidTic(headerID int64, metadata utils.StorageValueMetadata, tic string) error {
 	bidId, err := getBidId(metadata.Keys)
 	if err != nil {
 		return err
 	}
 
-	return repository.insertRecordWithAddressAndBidId(blockNumber, blockHash, InsertFlipBidTicQuery, bidId, tic)
+	return repository.insertRecordWithAddressAndBidId(headerID, InsertFlipBidTicQuery, bidId, tic)
 }
 
-func (repository *FlipStorageRepository) insertBidEnd(blockNumber int, blockHash string, metadata utils.StorageValueMetadata, end string) error {
+func (repository *FlipStorageRepository) insertBidEnd(headerID int64, metadata utils.StorageValueMetadata, end string) error {
 	bidId, err := getBidId(metadata.Keys)
 	if err != nil {
 		return err
 	}
 
-	return repository.insertRecordWithAddressAndBidId(blockNumber, blockHash, InsertFlipBidEndQuery, bidId, end)
+	return repository.insertRecordWithAddressAndBidId(headerID, InsertFlipBidEndQuery, bidId, end)
 }
 
-func (repository *FlipStorageRepository) insertBidUsr(blockNumber int, blockHash string, metadata utils.StorageValueMetadata, usr string) error {
+func (repository *FlipStorageRepository) insertBidUsr(headerID int64, metadata utils.StorageValueMetadata, usr string) error {
 	bidId, err := getBidId(metadata.Keys)
 	if err != nil {
 		return err
 	}
 
-	return repository.insertRecordWithAddressAndBidId(blockNumber, blockHash, InsertFlipBidUsrQuery, bidId, usr)
+	return repository.insertRecordWithAddressAndBidId(headerID, InsertFlipBidUsrQuery, bidId, usr)
 }
 
-func (repository *FlipStorageRepository) insertBidGal(blockNumber int, blockHash string, metadata utils.StorageValueMetadata, gal string) error {
+func (repository *FlipStorageRepository) insertBidGal(headerID int64, metadata utils.StorageValueMetadata, gal string) error {
 	bidId, err := getBidId(metadata.Keys)
 	if err != nil {
 		return err
 	}
 
-	return repository.insertRecordWithAddressAndBidId(blockNumber, blockHash, InsertFlipBidGalQuery, bidId, gal)
+	return repository.insertRecordWithAddressAndBidId(headerID, InsertFlipBidGalQuery, bidId, gal)
 }
 
-func (repository *FlipStorageRepository) insertBidTab(blockNumber int, blockHash string, metadata utils.StorageValueMetadata, tab string) error {
+func (repository *FlipStorageRepository) insertBidTab(headerID int64, metadata utils.StorageValueMetadata, tab string) error {
 	bidId, err := getBidId(metadata.Keys)
 	if err != nil {
 		return err
 	}
 
-	return repository.insertRecordWithAddressAndBidId(blockNumber, blockHash, InsertFlipBidTabQuery, bidId, tab)
+	return repository.insertRecordWithAddressAndBidId(headerID, InsertFlipBidTabQuery, bidId, tab)
 }
 
-func (repository *FlipStorageRepository) insertPackedValueRecord(blockNumber int, blockHash string, metadata utils.StorageValueMetadata, packedValues map[int]string) error {
+func (repository *FlipStorageRepository) insertPackedValueRecord(headerID int64, metadata utils.StorageValueMetadata, packedValues map[int]string) error {
 	for order, value := range packedValues {
 		var insertErr error
 		switch metadata.PackedNames[order] {
 		case storage.Ttl:
-			insertErr = repository.insertTtl(blockNumber, blockHash, value)
+			insertErr = repository.insertTtl(headerID, value)
 		case storage.Tau:
-			insertErr = repository.insertTau(blockNumber, blockHash, value)
+			insertErr = repository.insertTau(headerID, value)
 		case storage.BidGuy:
-			insertErr = repository.insertBidGuy(blockNumber, blockHash, metadata, value)
+			insertErr = repository.insertBidGuy(headerID, metadata, value)
 		case storage.BidTic:
-			insertErr = repository.insertBidTic(blockNumber, blockHash, metadata, value)
+			insertErr = repository.insertBidTic(headerID, metadata, value)
 		case storage.BidEnd:
-			insertErr = repository.insertBidEnd(blockNumber, blockHash, metadata, value)
+			insertErr = repository.insertBidEnd(headerID, metadata, value)
 		default:
 			panic(fmt.Sprintf("unrecognized flip contract storage name in packed values: %s", metadata.Name))
 		}
@@ -190,7 +190,7 @@ func (repository *FlipStorageRepository) insertPackedValueRecord(blockNumber int
 	return nil
 }
 
-func (repository *FlipStorageRepository) insertRecordWithAddress(blockNumber int, blockHash, query, value string) error {
+func (repository *FlipStorageRepository) insertRecordWithAddress(headerID int64, query, value string) error {
 	tx, txErr := repository.db.Beginx()
 	if txErr != nil {
 		return txErr
@@ -204,7 +204,7 @@ func (repository *FlipStorageRepository) insertRecordWithAddress(blockNumber int
 		}
 		return addressErr
 	}
-	_, insertErr := tx.Exec(query, blockNumber, blockHash, addressId, value)
+	_, insertErr := tx.Exec(query, headerID, addressId, value)
 	if insertErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
@@ -216,7 +216,7 @@ func (repository *FlipStorageRepository) insertRecordWithAddress(blockNumber int
 	return tx.Commit()
 }
 
-func (repository *FlipStorageRepository) insertRecordWithAddressAndBidId(blockNumber int, blockHash, query, bidId, value string) error {
+func (repository *FlipStorageRepository) insertRecordWithAddressAndBidId(headerID int64, query, bidId, value string) error {
 	tx, txErr := repository.db.Beginx()
 	if txErr != nil {
 		return txErr
@@ -229,7 +229,7 @@ func (repository *FlipStorageRepository) insertRecordWithAddressAndBidId(blockNu
 		}
 		return addressErr
 	}
-	_, insertErr := tx.Exec(query, blockNumber, blockHash, addressId, bidId, value)
+	_, insertErr := tx.Exec(query, headerID, addressId, bidId, value)
 	if insertErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {

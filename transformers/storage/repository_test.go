@@ -638,8 +638,9 @@ func insertFlapKick(blockNumber int64, bidId string, contractAddressId int64, db
 
 func insertFlapKicks(blockNumber int64, kicks string, contractAddressId int64, db *postgres.DB) {
 	//inserting a flap kicks storage record
+	headerID := insertHeader(db, blockNumber)
 	_, insertErr := db.Exec(flap.InsertKicksQuery,
-		blockNumber, fakes.FakeHash.Hex(), contractAddressId, kicks,
+		headerID, contractAddressId, kicks,
 	)
 	Expect(insertErr).NotTo(HaveOccurred())
 }
@@ -667,8 +668,9 @@ func insertFlipKick(blockNumber int64, bidId string, contractAddressId int64, db
 
 func insertFlipKicks(blockNumber int64, kicks string, contractAddressId int64, db *postgres.DB) {
 	// flip kicks storage record
+	headerID := insertHeader(db, blockNumber)
 	_, insertErr := db.Exec(flip.InsertFlipKicksQuery,
-		blockNumber, fakes.FakeHash.Hex(), contractAddressId, kicks,
+		headerID, contractAddressId, kicks,
 	)
 	Expect(insertErr).NotTo(HaveOccurred())
 }
@@ -683,7 +685,8 @@ func insertFlopKick(blockNumber int64, bidId string, contractAddressId int64, db
 
 func insertFlopKicks(blockNumber int64, kicks string, contractAddressId int64, db *postgres.DB) {
 	// inserting a flop kicks storage record
-	_, insertErr := db.Exec(flop.InsertFlopKicksQuery, blockNumber, fakes.FakeHash.Hex(), contractAddressId, kicks)
+	headerID := insertHeader(db, blockNumber)
+	_, insertErr := db.Exec(flop.InsertFlopKicksQuery, headerID, contractAddressId, kicks)
 	Expect(insertErr).NotTo(HaveOccurred())
 }
 
@@ -728,9 +731,10 @@ func insertYank(blockNumber int64, bidId string, contractAddressId int64, db *po
 }
 
 func insertCdpManagerCdpi(blockNumber int64, cdpi int, db *postgres.DB) {
-	_, err := db.Exec(`INSERT INTO maker.cdp_manager_cdpi (block_number, block_hash, cdpi)
-		VALUES($1, '', $2::NUMERIC)`,
-		blockNumber, cdpi)
+	headerID := insertHeader(db, blockNumber)
+	_, err := db.Exec(`INSERT INTO maker.cdp_manager_cdpi (header_id, cdpi)
+		VALUES($1, $2::NUMERIC)`,
+		headerID, cdpi)
 	Expect(err).NotTo(HaveOccurred())
 }
 

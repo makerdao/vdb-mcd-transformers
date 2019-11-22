@@ -20,43 +20,39 @@ import (
 	"math/rand"
 	"strconv"
 
-	"github.com/makerdao/vulcanizedb/pkg/core"
-	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
-	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
-	"github.com/makerdao/vulcanizedb/pkg/fakes"
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
-
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/vat"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
+	"github.com/makerdao/vulcanizedb/pkg/core"
+	"github.com/makerdao/vulcanizedb/pkg/datastore"
+	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
+	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("Managed CDP computed columns", func() {
 	var (
 		db               *postgres.DB
-		fakeHeader       core.Header
-		headerRepository repositories.HeaderRepository
+		headerOne        core.Header
+		headerRepository datastore.HeaderRepository
 		storageValues    map[string]interface{}
 		fakeCdpi         int
-		blockNumber      int
 	)
 
 	BeforeEach(func() {
-		blockNumber = rand.Int()
-		fakeCdpi = rand.Int()
-
 		db = test_config.NewTestDB(test_config.NewTestNode())
 		test_config.CleanTestDB(db)
 
 		headerRepository = repositories.NewHeaderRepository(db)
-		fakeHeader = fakes.GetFakeHeader(int64(blockNumber))
-		_, headerOneErr := headerRepository.CreateOrUpdateHeader(fakeHeader)
-		Expect(headerOneErr).NotTo(HaveOccurred())
+		blockOne := rand.Int()
+		timestampOne := int(rand.Int31())
+		headerOne = createHeader(blockOne, timestampOne, headerRepository)
 
+		fakeCdpi = rand.Int()
 		storageValues = test_helpers.GetCdpManagerStorageValues(1, test_helpers.FakeIlk.Hex, test_data.FakeUrn, fakeCdpi)
-		cdpErr := test_helpers.CreateManagedCdp(db, fakeHeader, storageValues, test_helpers.GetCdpManagerMetadatas(strconv.Itoa(fakeCdpi)))
+		cdpErr := test_helpers.CreateManagedCdp(db, headerOne, storageValues, test_helpers.GetCdpManagerMetadatas(strconv.Itoa(fakeCdpi)))
 		Expect(cdpErr).NotTo(HaveOccurred())
 	})
 
@@ -68,11 +64,11 @@ var _ = Describe("Managed CDP computed columns", func() {
 	Describe("managed_cdp_ilk", func() {
 		It("returns ilk_state for a managed_cdp", func() {
 			ilkValues := test_helpers.GetIlkValues(0)
-			test_helpers.CreateIlk(db, fakeHeader, ilkValues, test_helpers.FakeIlkVatMetadatas,
+			test_helpers.CreateIlk(db, headerOne, ilkValues, test_helpers.FakeIlkVatMetadatas,
 				test_helpers.FakeIlkCatMetadatas, test_helpers.FakeIlkJugMetadatas, test_helpers.FakeIlkSpotMetadatas)
 
-			expectedIlk := test_helpers.IlkStateFromValues(test_helpers.FakeIlk.Hex, fakeHeader.Timestamp,
-				fakeHeader.Timestamp, ilkValues)
+			expectedIlk := test_helpers.IlkStateFromValues(test_helpers.FakeIlk.Hex, headerOne.Timestamp,
+				headerOne.Timestamp, ilkValues)
 
 			var result test_helpers.IlkState
 			getIlkErr := db.Get(&result, `
@@ -90,11 +86,11 @@ var _ = Describe("Managed CDP computed columns", func() {
 
 	Describe("managed_cdp_urn", func() {
 		It("returns urn_state for a managed_cdp", func() {
-			urnSetupData := test_helpers.GetUrnSetupData(blockNumber, 1)
+			urnSetupData := test_helpers.GetUrnSetupData(headerOne)
 			urnMetadata := test_helpers.GetUrnMetadata(test_helpers.FakeIlk.Hex, test_data.FakeUrn)
 			vatRepository := vat.VatStorageRepository{}
 			vatRepository.SetDB(db)
-			test_helpers.CreateUrn(urnSetupData, urnMetadata, vatRepository, headerRepository)
+			test_helpers.CreateUrn(urnSetupData, urnMetadata, vatRepository)
 			expectedUrn := test_helpers.UrnState{
 				UrnIdentifier: test_data.FakeUrn,
 				IlkIdentifier: test_helpers.FakeIlk.Identifier,

@@ -28,6 +28,8 @@ import (
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
 	"github.com/makerdao/vulcanizedb/libraries/shared/storage/utils"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
+	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
+	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -45,6 +47,7 @@ var _ = Describe("Executing the transformer", func() {
 			StorageKeysLookup: storageKeysLookup,
 			Repository:        &repository,
 		}
+		headerID int64
 	)
 
 	BeforeEach(func() {
@@ -54,77 +57,73 @@ var _ = Describe("Executing the transformer", func() {
 		ilk := "0x4554480000000000000000000000000000000000000000000000000000000000"
 		ilkID, err = shared.GetOrCreateIlk(ilk, db)
 		Expect(err).NotTo(HaveOccurred())
+		headerRepository := repositories.NewHeaderRepository(db)
+		var insertHeaderErr error
+		headerID, insertHeaderErr = headerRepository.CreateOrUpdateHeader(fakes.FakeHeader)
+		Expect(insertHeaderErr).NotTo(HaveOccurred())
 	})
 
 	It("reads in a Jug Vat storage diff row and persists it", func() {
-		blockNumber := 10501125
 		jugVatRow := utils.StorageDiff{
 			HashedAddress: transformer.HashedAddress,
-			BlockHeight:   blockNumber,
-			BlockHash:     common.HexToHash("1822bb271ce246212f0d097e59b3b04e0302819da3a2bd80e85b91e8c89fc883"),
 			StorageKey:    common.HexToHash("0000000000000000000000000000000000000000000000000000000000000002"),
 			StorageValue:  common.HexToHash("00000000000000000000000067fd6c3575fc2dbe2cb596bd3bebc9edb5571fa1"),
+			HeaderID:      headerID,
 		}
 		err := transformer.Execute(jugVatRow)
 		Expect(err).NotTo(HaveOccurred())
 
 		var vatResult test_helpers.VariableRes
-		err = db.Get(&vatResult, `SELECT block_number, block_hash, vat AS value FROM maker.jug_vat`)
+		err = db.Get(&vatResult, `SELECT header_id, vat AS value FROM maker.jug_vat`)
 		Expect(err).NotTo(HaveOccurred())
-		test_helpers.AssertVariable(vatResult, blockNumber, "0x1822bb271ce246212f0d097e59b3b04e0302819da3a2bd80e85b91e8c89fc883", "0x67fd6c3575Fc2dBE2CB596bD3bEbc9EDb5571fA1")
+		test_helpers.AssertVariable(vatResult, headerID, "0x67fd6c3575Fc2dBE2CB596bD3bEbc9EDb5571fA1")
 	})
 
 	It("reads in a Jug Vow storage diff row and persists it", func() {
-		blockNumber := 10501125
 		jugVowRow := utils.StorageDiff{
 			HashedAddress: transformer.HashedAddress,
-			BlockHeight:   blockNumber,
-			BlockHash:     common.HexToHash("1822bb271ce246212f0d097e59b3b04e0302819da3a2bd80e85b91e8c89fc883"),
 			StorageKey:    common.HexToHash("0000000000000000000000000000000000000000000000000000000000000003"),
 			StorageValue:  common.HexToHash("17560834075da3db54f737db74377e799c865821000000000000000000000000"),
+			HeaderID:      headerID,
 		}
 		err := transformer.Execute(jugVowRow)
 		Expect(err).NotTo(HaveOccurred())
 
 		var vowResult test_helpers.VariableRes
-		err = db.Get(&vowResult, `SELECT block_number, block_hash, vow AS value FROM maker.jug_vow`)
+		err = db.Get(&vowResult, `SELECT header_id, vow AS value FROM maker.jug_vow`)
 		Expect(err).NotTo(HaveOccurred())
-		test_helpers.AssertVariable(vowResult, blockNumber, "0x1822bb271ce246212f0d097e59b3b04e0302819da3a2bd80e85b91e8c89fc883", "0x17560834075da3db54f737db74377e799c865821000000000000000000000000")
+		test_helpers.AssertVariable(vowResult, headerID, "0x17560834075da3db54f737db74377e799c865821000000000000000000000000")
 	})
 
 	It("reads in a Jug Ilk Duty storage diff row and persists it", func() {
-		blockNumber := 10501138
 		jugIlkDutyRow := utils.StorageDiff{
 			HashedAddress: transformer.HashedAddress,
-			BlockHeight:   blockNumber,
-			BlockHash:     common.HexToHash("3f58749d3956984c2b03a84d5c02105a06efa1ad048d8aa97cf8f59aafa8f08b"),
 			StorageKey:    common.HexToHash("a27f5adbce3dcb790941ebd020e02078a61e6c9748376e52ec0929d58babf97a"),
 			StorageValue:  common.HexToHash("0000000000000000000000000000000000000000033b2e3c9fd0803ce8000000"),
+			HeaderID:      headerID,
 		}
 		err := transformer.Execute(jugIlkDutyRow)
 		Expect(err).NotTo(HaveOccurred())
 
 		var ilkDutyResult test_helpers.MappingRes
-		err = db.Get(&ilkDutyResult, `SELECT block_number, block_hash, ilk_id AS key, duty AS value FROM maker.jug_ilk_duty`)
+		err = db.Get(&ilkDutyResult, `SELECT header_id, ilk_id AS key, duty AS value FROM maker.jug_ilk_duty`)
 		Expect(err).NotTo(HaveOccurred())
-		test_helpers.AssertMapping(ilkDutyResult, blockNumber, "0x3f58749d3956984c2b03a84d5c02105a06efa1ad048d8aa97cf8f59aafa8f08b", strconv.FormatInt(ilkID, 10), "1000000000000000000000000000")
+		test_helpers.AssertMapping(ilkDutyResult, headerID, strconv.FormatInt(ilkID, 10), "1000000000000000000000000000")
 	})
 
 	It("reads in a Jug Ilk Rho storage diff row and persists it", func() {
-		blockNumber := 10501138
 		jugIlkRhoRow := utils.StorageDiff{
 			HashedAddress: transformer.HashedAddress,
-			BlockHeight:   blockNumber,
-			BlockHash:     common.HexToHash("3f58749d3956984c2b03a84d5c02105a06efa1ad048d8aa97cf8f59aafa8f08b"),
 			StorageKey:    common.HexToHash("a27f5adbce3dcb790941ebd020e02078a61e6c9748376e52ec0929d58babf97b"),
 			StorageValue:  common.HexToHash("000000000000000000000000000000000000000000000000000000005c812808"),
+			HeaderID:      headerID,
 		}
 		err := transformer.Execute(jugIlkRhoRow)
 		Expect(err).NotTo(HaveOccurred())
 
 		var ilkRhoResult test_helpers.MappingRes
-		err = db.Get(&ilkRhoResult, `SELECT block_number, block_hash, ilk_id AS key, rho AS value FROM maker.jug_ilk_rho`)
+		err = db.Get(&ilkRhoResult, `SELECT header_id, ilk_id AS key, rho AS value FROM maker.jug_ilk_rho`)
 		Expect(err).NotTo(HaveOccurred())
-		test_helpers.AssertMapping(ilkRhoResult, blockNumber, "0x3f58749d3956984c2b03a84d5c02105a06efa1ad048d8aa97cf8f59aafa8f08b", strconv.FormatInt(ilkID, 10), "1551968264")
+		test_helpers.AssertMapping(ilkRhoResult, headerID, strconv.FormatInt(ilkID, 10), "1551968264")
 	})
 })

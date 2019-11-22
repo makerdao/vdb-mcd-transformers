@@ -4,41 +4,44 @@ import (
 	"math/rand"
 	"strconv"
 
-	"github.com/makerdao/vulcanizedb/libraries/shared/storage/utils"
-	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
-	"github.com/makerdao/vulcanizedb/pkg/fakes"
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
-
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/flop"
 	. "github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data/shared_behaviors"
+	"github.com/makerdao/vulcanizedb/libraries/shared/storage/utils"
+	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
+	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
+	"github.com/makerdao/vulcanizedb/pkg/fakes"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("Flop storage repository", func() {
 	var (
-		db              *postgres.DB
-		repo            flop.FlopStorageRepository
-		fakeBlockHash   string
-		fakeBlockNumber int
+		db           *postgres.DB
+		repo         flop.FlopStorageRepository
+		blockNumber  int64
+		fakeHeaderID int64
 	)
 
 	BeforeEach(func() {
-		fakeBlockNumber = rand.Int()
-		fakeBlockHash = fakes.FakeHash.Hex()
 		db = test_config.NewTestDB(test_config.NewTestNode())
 		test_config.CleanTestDB(db)
 		repo = flop.FlopStorageRepository{ContractAddress: "0x668001c75a9c02d6b10c7a17dbd8aa4afff95037"}
 		repo.SetDB(db)
+		blockNumber = rand.Int63()
+		headerRepository := repositories.NewHeaderRepository(db)
+		var insertHeaderErr error
+		fakeHeaderID, insertHeaderErr = headerRepository.CreateOrUpdateHeader(fakes.GetFakeHeader(blockNumber))
+		Expect(insertHeaderErr).NotTo(HaveOccurred())
 	})
 
 	It("panics if the metadata name is not recognized", func() {
 		unrecognizedMetadata := utils.StorageValueMetadata{Name: "unrecognized"}
 		flopCreate := func() {
-			repo.Create(fakeBlockNumber, fakeBlockHash, unrecognizedMetadata, "")
+			repo.Create(fakeHeaderID, unrecognizedMetadata, "")
 		}
 
 		Expect(flopCreate).Should(Panic())
@@ -86,7 +89,7 @@ var _ = Describe("Flop storage repository", func() {
 		shared_behaviors.SharedStorageRepositoryVariableBehaviors(&inputs)
 
 		It("returns an error if inserting fails", func() {
-			createErr := repo.Create(fakeBlockNumber, fakeBlockHash, begMetadata, "")
+			createErr := repo.Create(fakeHeaderID, begMetadata, "")
 			Expect(createErr).To(HaveOccurred())
 			Expect(createErr.Error()).To(MatchRegexp("pq: invalid input syntax for type numeric"))
 		})
@@ -107,7 +110,7 @@ var _ = Describe("Flop storage repository", func() {
 		shared_behaviors.SharedStorageRepositoryVariableBehaviors(&inputs)
 
 		It("returns an error if inserting fails", func() {
-			createErr := repo.Create(fakeBlockNumber, fakeBlockHash, padMetadata, "")
+			createErr := repo.Create(fakeHeaderID, padMetadata, "")
 			Expect(createErr).To(HaveOccurred())
 			Expect(createErr.Error()).To(MatchRegexp("pq: invalid input syntax for type numeric"))
 		})
@@ -129,23 +132,23 @@ var _ = Describe("Flop storage repository", func() {
 		values[1] = fakeTau
 
 		It("persists a ttl record", func() {
-			createErr := repo.Create(fakeBlockNumber, fakeBlockHash, ttlAndTauMetadata, values)
+			createErr := repo.Create(fakeHeaderID, ttlAndTauMetadata, values)
 			Expect(createErr).NotTo(HaveOccurred())
 
 			var ttlResult VariableRes
-			getResErr := db.Get(&ttlResult, `SELECT block_number, block_hash, ttl AS value FROM maker.flop_ttl`)
+			getResErr := db.Get(&ttlResult, `SELECT header_id, ttl AS value FROM maker.flop_ttl`)
 			Expect(getResErr).NotTo(HaveOccurred())
-			AssertVariable(ttlResult, fakeBlockNumber, fakeBlockHash, fakeTtl)
+			AssertVariable(ttlResult, fakeHeaderID, fakeTtl)
 		})
 
 		It("persists a tau record", func() {
-			createErr := repo.Create(fakeBlockNumber, fakeBlockHash, ttlAndTauMetadata, values)
+			createErr := repo.Create(fakeHeaderID, ttlAndTauMetadata, values)
 			Expect(createErr).NotTo(HaveOccurred())
 
 			var tauResult VariableRes
-			getResErr := db.Get(&tauResult, `SELECT block_number, block_hash, tau AS value FROM maker.flop_tau`)
+			getResErr := db.Get(&tauResult, `SELECT header_id, tau AS value FROM maker.flop_tau`)
 			Expect(getResErr).NotTo(HaveOccurred())
-			AssertVariable(tauResult, fakeBlockNumber, fakeBlockHash, fakeTau)
+			AssertVariable(tauResult, fakeHeaderID, fakeTau)
 		})
 
 		It("panics if the packed name is not recognized", func() {
@@ -158,7 +161,7 @@ var _ = Describe("Flop storage repository", func() {
 			}
 
 			createFunc := func() {
-				_ = repo.Create(fakeBlockNumber, fakeBlockHash, badMetadata, values)
+				_ = repo.Create(fakeHeaderID, badMetadata, values)
 			}
 			Expect(createFunc).To(Panic())
 		})
@@ -166,7 +169,7 @@ var _ = Describe("Flop storage repository", func() {
 		It("returns an error if inserting fails", func() {
 			badValues := make(map[int]string)
 			badValues[0] = ""
-			createErr := repo.Create(fakeBlockNumber, fakeBlockHash, ttlAndTauMetadata, badValues)
+			createErr := repo.Create(fakeHeaderID, ttlAndTauMetadata, badValues)
 			Expect(createErr).To(HaveOccurred())
 			Expect(createErr.Error()).To(MatchRegexp("pq: invalid input syntax for type numeric"))
 		})
@@ -209,7 +212,7 @@ var _ = Describe("Flop storage repository", func() {
 				Keys: map[utils.Key]string{},
 				Type: utils.Uint256,
 			}
-			createErr := repo.Create(fakeBlockNumber, fakeBlockHash, badMetadata, "")
+			createErr := repo.Create(fakeHeaderID, badMetadata, "")
 			Expect(createErr).To(MatchError(utils.ErrMetadataMalformed{MissingData: constants.BidId}))
 		})
 
@@ -234,14 +237,13 @@ var _ = Describe("Flop storage repository", func() {
 			shared_behaviors.SharedStorageRepositoryVariableBehaviors(&inputs)
 
 			It("triggers an update to the flop table", func() {
-				err := repo.Create(fakeBlockNumber, fakeBlockHash, bidBidMetadata, fakeBidValue)
+				err := repo.Create(fakeHeaderID, bidBidMetadata, fakeBidValue)
 				Expect(err).NotTo(HaveOccurred())
 
 				var flop FlopRes
-				queryErr := db.Get(&flop, `SELECT block_number, block_hash, bid_id, bid FROM maker.flop`)
+				queryErr := db.Get(&flop, `SELECT block_number, bid_id, bid FROM maker.flop`)
 				Expect(queryErr).NotTo(HaveOccurred())
-				Expect(flop.BlockNumber).To(Equal(fakeBlockNumber))
-				Expect(flop.BlockHash).To(Equal(fakeBlockHash))
+				Expect(flop.BlockNumber).To(Equal(blockNumber))
 				Expect(flop.BidId).To(Equal(fakeBidId))
 				Expect(flop.Bid).To(Equal(fakeBidValue))
 			})
@@ -268,14 +270,13 @@ var _ = Describe("Flop storage repository", func() {
 			shared_behaviors.SharedStorageRepositoryVariableBehaviors(&inputs)
 
 			It("triggers an update to the flop table", func() {
-				err := repo.Create(fakeBlockNumber, fakeBlockHash, bidLotMetadata, fakeLotValue)
+				err := repo.Create(fakeHeaderID, bidLotMetadata, fakeLotValue)
 				Expect(err).NotTo(HaveOccurred())
 
 				var flop FlopRes
-				queryErr := db.Get(&flop, `SELECT block_number, block_hash, bid_id, lot FROM maker.flop`)
+				queryErr := db.Get(&flop, `SELECT block_number, bid_id, lot FROM maker.flop`)
 				Expect(queryErr).NotTo(HaveOccurred())
-				Expect(flop.BlockNumber).To(Equal(fakeBlockNumber))
-				Expect(flop.BlockHash).To(Equal(fakeBlockHash))
+				Expect(flop.BlockNumber).To(Equal(blockNumber))
 				Expect(flop.BidId).To(Equal(fakeBidId))
 				Expect(flop.Lot).To(Equal(fakeLotValue))
 			})
@@ -302,37 +303,36 @@ var _ = Describe("Flop storage repository", func() {
 				values[2] = fakeEnd
 
 				BeforeEach(func() {
-					err := repo.Create(fakeBlockNumber, fakeBlockHash, bidGuyTicEndMetadata, values)
+					err := repo.Create(fakeHeaderID, bidGuyTicEndMetadata, values)
 					Expect(err).NotTo(HaveOccurred())
 				})
 
 				It("persists bid guy record", func() {
 					var guyResult MappingRes
-					selectErr := db.Get(&guyResult, `SELECT block_number, block_hash, bid_id AS key, guy AS value FROM maker.flop_bid_guy`)
+					selectErr := db.Get(&guyResult, `SELECT header_id, bid_id AS key, guy AS value FROM maker.flop_bid_guy`)
 					Expect(selectErr).NotTo(HaveOccurred())
-					AssertMapping(guyResult, fakeBlockNumber, fakeBlockHash, fakeBidId, fakeGuy)
+					AssertMapping(guyResult, fakeHeaderID, fakeBidId, fakeGuy)
 				})
 
 				It("persists bid tic record", func() {
 					var ticResult MappingRes
-					selectErr := db.Get(&ticResult, `SELECT block_number, block_hash, bid_id AS key, tic AS value FROM maker.flop_bid_tic`)
+					selectErr := db.Get(&ticResult, `SELECT header_id, bid_id AS key, tic AS value FROM maker.flop_bid_tic`)
 					Expect(selectErr).NotTo(HaveOccurred())
-					AssertMapping(ticResult, fakeBlockNumber, fakeBlockHash, fakeBidId, fakeTic)
+					AssertMapping(ticResult, fakeHeaderID, fakeBidId, fakeTic)
 				})
 
 				It("persists bid end record", func() {
 					var endResult MappingRes
-					selectErr := db.Get(&endResult, `SELECT block_number, block_hash, bid_id AS key, "end" AS value FROM maker.flop_bid_end`)
+					selectErr := db.Get(&endResult, `SELECT header_id, bid_id AS key, "end" AS value FROM maker.flop_bid_end`)
 					Expect(selectErr).NotTo(HaveOccurred())
-					AssertMapping(endResult, fakeBlockNumber, fakeBlockHash, fakeBidId, fakeEnd)
+					AssertMapping(endResult, fakeHeaderID, fakeBidId, fakeEnd)
 				})
 
 				It("triggers an update to the flop table with the latest guy, tic, and end values", func() {
 					var flop FlopRes
-					queryErr := db.Get(&flop, `SELECT block_number, block_hash, bid_id, guy, tic, "end" FROM maker.flop`)
+					queryErr := db.Get(&flop, `SELECT block_number, bid_id, guy, tic, "end" FROM maker.flop`)
 					Expect(queryErr).NotTo(HaveOccurred())
-					Expect(flop.BlockNumber).To(Equal(fakeBlockNumber))
-					Expect(flop.BlockHash).To(Equal(fakeBlockHash))
+					Expect(flop.BlockNumber).To(Equal(blockNumber))
 					Expect(flop.BidId).To(Equal(fakeBidId))
 					Expect(flop.Guy).To(Equal(fakeGuy))
 					Expect(flop.Tic).To(Equal(fakeTic))
@@ -343,7 +343,7 @@ var _ = Describe("Flop storage repository", func() {
 			It("returns an error if inserting fails", func() {
 				badValues := make(map[int]string)
 				badValues[1] = ""
-				err := repo.Create(fakeBlockNumber, fakeBlockHash, bidGuyTicEndMetadata, badValues)
+				err := repo.Create(fakeHeaderID, bidGuyTicEndMetadata, badValues)
 				Expect(err).To(HaveOccurred())
 				Expect(err.Error()).To(MatchRegexp("pq: invalid input syntax for integer"))
 			})

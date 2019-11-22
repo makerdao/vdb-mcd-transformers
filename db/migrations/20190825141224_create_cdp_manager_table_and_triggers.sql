@@ -21,7 +21,7 @@ BEGIN
     WITH block_info AS (
         SELECT api.epoch_to_datetime(headers.block_timestamp) AS datetime
         FROM public.headers
-        WHERE headers.block_number = NEW.block_number
+        WHERE headers.id = NEW.header_id
         LIMIT 1)
     INSERT
     INTO api.managed_cdp (cdpi, created)
@@ -40,15 +40,19 @@ CREATE OR REPLACE FUNCTION maker.insert_cdp_usr() RETURNS TRIGGER
 AS
 $$
 BEGIN
+    WITH new_block_number AS (
+        SELECT block_number FROM public.headers WHERE id = NEW.header_id
+    )
     INSERT
     INTO api.managed_cdp (cdpi, usr)
     VALUES (NEW.cdpi, NEW.owner)
            -- only update usr if the new owner is coming from the latest owns block we know about for the given cdpi
     ON CONFLICT (cdpi)
         DO UPDATE SET usr = NEW.owner
-    WHERE NEW.block_number >= (
+    WHERE (SELECT block_number FROM new_block_number) >= (
         SELECT MAX(block_number)
         FROM maker.cdp_manager_owns
+            LEFT JOIN public.headers ON cdp_manager_owns.header_id = headers.id
         WHERE cdp_manager_owns.cdpi = NEW.cdpi);
     RETURN NEW;
 END

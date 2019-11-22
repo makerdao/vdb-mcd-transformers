@@ -11,7 +11,6 @@ import (
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
-	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -24,11 +23,8 @@ var _ = Describe("All flaps query", func() {
 		headerRepo      repositories.HeaderRepository
 		contractAddress = "contract address"
 
-		blockOne          = rand.Int()
-		blockOneTimestamp = int64(111111111)
-
-		blockTwo          = blockOne + 1
-		blockTwoTimestamp = int64(222222222)
+		blockOne, timestampOne int
+		headerOne              core.Header
 	)
 
 	BeforeEach(func() {
@@ -40,6 +36,10 @@ var _ = Describe("All flaps query", func() {
 		dealRepo = deal.DealRepository{}
 		dealRepo.SetDB(db)
 		headerRepo = repositories.NewHeaderRepository(db)
+
+		blockOne = rand.Int()
+		timestampOne = int(rand.Int31())
+		headerOne = createHeader(blockOne, timestampOne, headerRepo)
 	})
 
 	AfterEach(func() {
@@ -51,14 +51,7 @@ var _ = Describe("All flaps query", func() {
 		fakeBidIdOne := rand.Int()
 		fakeBidIdTwo := fakeBidIdOne + 1
 
-		blockOneHeader := fakes.GetFakeHeaderWithTimestamp(blockOneTimestamp, int64(blockOne))
-		headerOneId, headerOneErr := headerRepo.CreateOrUpdateHeader(blockOneHeader)
-		Expect(headerOneErr).NotTo(HaveOccurred())
-
-		blockTwoHeader := fakes.GetFakeHeaderWithTimestamp(blockTwoTimestamp, int64(blockTwo))
-		blockTwoHeader.Hash = "blockTwoHeader"
-		headerTwoId, headerTwoErr := headerRepo.CreateOrUpdateHeader(blockTwoHeader)
-		Expect(headerTwoErr).NotTo(HaveOccurred())
+		headerTwo := createHeader(blockOne+1, timestampOne+1, headerRepo)
 
 		contextErr := test_helpers.SetUpFlapBidContext(test_helpers.FlapBidCreationInput{
 			DealCreationInput: test_helpers.DealCreationInput{
@@ -68,15 +61,15 @@ var _ = Describe("All flaps query", func() {
 			},
 			Dealt:            false,
 			FlapKickRepo:     flapKickRepo,
-			FlapKickHeaderId: headerOneId,
+			FlapKickHeaderId: headerOne.Id,
 		})
 		Expect(contextErr).NotTo(HaveOccurred())
 
 		flapStorageValuesOne := test_helpers.GetFlapStorageValues(1, fakeBidIdOne)
-		test_helpers.CreateFlap(db, blockOneHeader, flapStorageValuesOne, test_helpers.GetFlapMetadatas(strconv.Itoa(fakeBidIdOne)), contractAddress)
+		test_helpers.CreateFlap(db, headerOne, flapStorageValuesOne, test_helpers.GetFlapMetadatas(strconv.Itoa(fakeBidIdOne)), contractAddress)
 
 		flapStorageValuesTwo := test_helpers.GetFlapStorageValues(2, fakeBidIdOne)
-		test_helpers.CreateFlap(db, blockTwoHeader, flapStorageValuesTwo, test_helpers.GetFlapMetadatas(strconv.Itoa(fakeBidIdOne)), contractAddress)
+		test_helpers.CreateFlap(db, headerTwo, flapStorageValuesTwo, test_helpers.GetFlapMetadatas(strconv.Itoa(fakeBidIdOne)), contractAddress)
 
 		contextErr = test_helpers.SetUpFlapBidContext(test_helpers.FlapBidCreationInput{
 			DealCreationInput: test_helpers.DealCreationInput{
@@ -86,18 +79,18 @@ var _ = Describe("All flaps query", func() {
 			},
 			Dealt:            false,
 			FlapKickRepo:     flapKickRepo,
-			FlapKickHeaderId: headerTwoId,
+			FlapKickHeaderId: headerTwo.Id,
 		})
 		Expect(contextErr).NotTo(HaveOccurred())
 		flapStorageValuesThree := test_helpers.GetFlapStorageValues(3, fakeBidIdTwo)
-		test_helpers.CreateFlap(db, blockTwoHeader, flapStorageValuesThree, test_helpers.GetFlapMetadatas(strconv.Itoa(fakeBidIdTwo)), contractAddress)
+		test_helpers.CreateFlap(db, headerTwo, flapStorageValuesThree, test_helpers.GetFlapMetadatas(strconv.Itoa(fakeBidIdTwo)), contractAddress)
 
 		var actualBids []test_helpers.FlapBid
 		queryErr := db.Select(&actualBids, `SELECT bid_id, guy, tic, "end", lot, bid, dealt, created, updated FROM api.all_flaps()`)
 		Expect(queryErr).NotTo(HaveOccurred())
 
-		expectedBidOne := test_helpers.FlapBidFromValues(strconv.Itoa(fakeBidIdOne), "false", blockTwoHeader.Timestamp, blockOneHeader.Timestamp, flapStorageValuesTwo)
-		expectedBidTwo := test_helpers.FlapBidFromValues(strconv.Itoa(fakeBidIdTwo), "false", blockTwoHeader.Timestamp, blockTwoHeader.Timestamp, flapStorageValuesThree)
+		expectedBidOne := test_helpers.FlapBidFromValues(strconv.Itoa(fakeBidIdOne), "false", headerTwo.Timestamp, headerOne.Timestamp, flapStorageValuesTwo)
+		expectedBidTwo := test_helpers.FlapBidFromValues(strconv.Itoa(fakeBidIdTwo), "false", headerTwo.Timestamp, headerTwo.Timestamp, flapStorageValuesThree)
 
 		Expect(len(actualBids)).To(Equal(2))
 		Expect(actualBids).To(ConsistOf([]test_helpers.FlapBid{
@@ -109,17 +102,13 @@ var _ = Describe("All flaps query", func() {
 	Describe("result pagination", func() {
 		var (
 			fakeBidIdOne, fakeBidIdTwo                 int
-			blockOneHeader, blockTwoHeader             core.Header
+			headerTwo                                  core.Header
 			flapStorageValuesOne, flapStorageValuesTwo map[string]interface{}
 		)
 
 		BeforeEach(func() {
 			fakeBidIdOne = rand.Int()
 			fakeBidIdTwo = fakeBidIdOne + 1
-
-			blockOneHeader = fakes.GetFakeHeaderWithTimestamp(blockOneTimestamp, int64(blockOne))
-			headerOneId, headerOneErr := headerRepo.CreateOrUpdateHeader(blockOneHeader)
-			Expect(headerOneErr).NotTo(HaveOccurred())
 
 			contextErr := test_helpers.SetUpFlapBidContext(test_helpers.FlapBidCreationInput{
 				DealCreationInput: test_helpers.DealCreationInput{
@@ -129,17 +118,14 @@ var _ = Describe("All flaps query", func() {
 				},
 				Dealt:            false,
 				FlapKickRepo:     flapKickRepo,
-				FlapKickHeaderId: headerOneId,
+				FlapKickHeaderId: headerOne.Id,
 			})
 			Expect(contextErr).NotTo(HaveOccurred())
 
 			flapStorageValuesOne = test_helpers.GetFlapStorageValues(2, fakeBidIdOne)
-			test_helpers.CreateFlap(db, blockOneHeader, flapStorageValuesOne, test_helpers.GetFlapMetadatas(strconv.Itoa(fakeBidIdOne)), contractAddress)
+			test_helpers.CreateFlap(db, headerOne, flapStorageValuesOne, test_helpers.GetFlapMetadatas(strconv.Itoa(fakeBidIdOne)), contractAddress)
 
-			blockTwoHeader = fakes.GetFakeHeaderWithTimestamp(blockTwoTimestamp, int64(blockTwo))
-			blockTwoHeader.Hash = "blockTwoHeader"
-			headerTwoId, headerTwoErr := headerRepo.CreateOrUpdateHeader(blockTwoHeader)
-			Expect(headerTwoErr).NotTo(HaveOccurred())
+			headerTwo = createHeader(blockOne+1, timestampOne+1, headerRepo)
 
 			contextErr = test_helpers.SetUpFlapBidContext(test_helpers.FlapBidCreationInput{
 				DealCreationInput: test_helpers.DealCreationInput{
@@ -149,12 +135,12 @@ var _ = Describe("All flaps query", func() {
 				},
 				Dealt:            false,
 				FlapKickRepo:     flapKickRepo,
-				FlapKickHeaderId: headerTwoId,
+				FlapKickHeaderId: headerTwo.Id,
 			})
 			Expect(contextErr).NotTo(HaveOccurred())
 
 			flapStorageValuesTwo = test_helpers.GetFlapStorageValues(3, fakeBidIdTwo)
-			test_helpers.CreateFlap(db, blockTwoHeader, flapStorageValuesTwo, test_helpers.GetFlapMetadatas(strconv.Itoa(fakeBidIdTwo)), contractAddress)
+			test_helpers.CreateFlap(db, headerTwo, flapStorageValuesTwo, test_helpers.GetFlapMetadatas(strconv.Itoa(fakeBidIdTwo)), contractAddress)
 		})
 
 		It("limits results if max_results argument is provided", func() {
@@ -164,7 +150,7 @@ var _ = Describe("All flaps query", func() {
 			Expect(queryErr).NotTo(HaveOccurred())
 
 			expectedBid := test_helpers.FlapBidFromValues(strconv.Itoa(fakeBidIdTwo), "false",
-				blockTwoHeader.Timestamp, blockTwoHeader.Timestamp, flapStorageValuesTwo)
+				headerTwo.Timestamp, headerTwo.Timestamp, flapStorageValuesTwo)
 			Expect(actualBids).To(ConsistOf(expectedBid))
 		})
 
@@ -177,7 +163,7 @@ var _ = Describe("All flaps query", func() {
 			Expect(queryErr).NotTo(HaveOccurred())
 
 			expectedBid := test_helpers.FlapBidFromValues(strconv.Itoa(fakeBidIdOne), "false",
-				blockOneHeader.Timestamp, blockOneHeader.Timestamp, flapStorageValuesOne)
+				headerOne.Timestamp, headerOne.Timestamp, flapStorageValuesOne)
 			Expect(actualBids).To(ConsistOf(expectedBid))
 		})
 	})

@@ -29,6 +29,7 @@ WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier),
                AND identifier = urn_identifier),
      rates AS (SELECT block_number, rate
                FROM maker.vat_ilk_rate
+                        LEFT JOIN public.headers ON vat_ilk_rate.header_id = headers.id
                WHERE ilk_id = (SELECT id FROM ilk)
                ORDER BY block_number DESC
      )
@@ -59,6 +60,7 @@ $$
 WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier),
      rates AS (SELECT block_number, rate
                FROM maker.vat_ilk_rate
+                        LEFT JOIN public.headers ON vat_ilk_rate.header_id = headers.id
                WHERE ilk_id = (SELECT id FROM ilk)
                ORDER BY block_number DESC
      )

@@ -40,10 +40,9 @@ import (
 
 var _ = Describe("CDP Manager storage repository", func() {
 	var (
-		db              *postgres.DB
-		repository      cdp_manager.CdpManagerStorageRepository
-		fakeBlockNumber int
-		fakeHash        string
+		db           *postgres.DB
+		repository   cdp_manager.CdpManagerStorageRepository
+		fakeHeaderID int64
 	)
 
 	BeforeEach(func() {
@@ -51,14 +50,16 @@ var _ = Describe("CDP Manager storage repository", func() {
 		test_config.CleanTestDB(db)
 		repository = cdp_manager.CdpManagerStorageRepository{}
 		repository.SetDB(db)
-		fakeBlockNumber = rand.Int()
-		fakeHash = fakes.FakeHash.Hex()
+		headerRepository := repositories.NewHeaderRepository(db)
+		var insertHeaderErr error
+		fakeHeaderID, insertHeaderErr = headerRepository.CreateOrUpdateHeader(fakes.FakeHeader)
+		Expect(insertHeaderErr).NotTo(HaveOccurred())
 	})
 
 	It("panics if the metadata name is not recognized", func() {
 		unrecognizedMetadata := utils.StorageValueMetadata{Name: "unrecognized"}
 		repoCreate := func() {
-			repository.Create(fakeBlockNumber, fakeHash, unrecognizedMetadata, "")
+			repository.Create(fakeHeaderID, unrecognizedMetadata, "")
 		}
 
 		Expect(repoCreate).Should(Panic())
@@ -88,10 +89,13 @@ var _ = Describe("CDP Manager storage repository", func() {
 		)
 
 		BeforeEach(func() {
+			fakeBlockNumber := rand.Int()
 			fakeTimestamp = int(rand.Int31())
 			header = fakes.GetFakeHeaderWithTimestamp(int64(fakeTimestamp), int64(fakeBlockNumber))
 			headerRepo := repositories.NewHeaderRepository(db)
-			_, headerErr := headerRepo.CreateOrUpdateHeader(header)
+			var headerErr error
+			// TODO: don't shadow fakeHeaderID
+			fakeHeaderID, headerErr = headerRepo.CreateOrUpdateHeader(header)
 			Expect(headerErr).NotTo(HaveOccurred())
 		})
 
@@ -108,7 +112,7 @@ var _ = Describe("CDP Manager storage repository", func() {
 		It("triggers an update to the managed_cdp table", func() {
 			createdTimestamp := time.Unix(int64(fakeTimestamp), 0).UTC().Format(time.RFC3339)
 			expectedTimeCreated := sql.NullString{String: createdTimestamp, Valid: true}
-			err := repository.Create(fakeBlockNumber, fakeHash, cdpiMetadata, fakeCdpi)
+			err := repository.Create(fakeHeaderID, cdpiMetadata, fakeCdpi)
 			Expect(err).NotTo(HaveOccurred())
 
 			var cdp test_helpers.ManagedCdp
@@ -128,7 +132,7 @@ var _ = Describe("CDP Manager storage repository", func() {
 				Keys: map[utils.Key]string{},
 				Type: utils.Address,
 			}
-			err := repository.Create(fakeBlockNumber, fakeHash, badMetadata, "")
+			err := repository.Create(fakeHeaderID, badMetadata, "")
 			Expect(err).To(MatchError(utils.ErrMetadataMalformed{MissingData: constants.Cdpi}))
 		})
 
@@ -153,7 +157,7 @@ var _ = Describe("CDP Manager storage repository", func() {
 			shared_behaviors.SharedStorageRepositoryVariableBehaviors(&inputs)
 
 			It("triggers an update to the managed_cdp table", func() {
-				err := repository.Create(fakeBlockNumber, fakeHash, urnsMetadata, fakeUrnsValue)
+				err := repository.Create(fakeHeaderID, urnsMetadata, fakeUrnsValue)
 				Expect(err).NotTo(HaveOccurred())
 
 				var cdp test_helpers.ManagedCdp
@@ -227,7 +231,7 @@ var _ = Describe("CDP Manager storage repository", func() {
 			shared_behaviors.SharedStorageRepositoryVariableBehaviors(&inputs)
 
 			It("triggers an update to the managed_cdp table", func() {
-				err := repository.Create(fakeBlockNumber, fakeHash, ownsMetadata, fakeOwner)
+				err := repository.Create(fakeHeaderID, ownsMetadata, fakeOwner)
 				Expect(err).NotTo(HaveOccurred())
 
 				var cdp test_helpers.ManagedCdp
@@ -245,30 +249,28 @@ var _ = Describe("CDP Manager storage repository", func() {
 					Keys: map[utils.Key]string{constants.Cdpi: fakeCdpi},
 					Type: utils.Bytes32,
 				}
-				fakeIlksValue   = test_helpers.FakeIlk.Hex
-				fakeBlockNumber = rand.Int()
-				fakeHash        = fakes.FakeHash.Hex()
+				fakeIlksValue = test_helpers.FakeIlk.Hex
 			)
 
 			It("persists a record", func() {
-				createErr := repository.Create(fakeBlockNumber, fakeHash, ilksMetadata, fakeIlksValue)
+				createErr := repository.Create(fakeHeaderID, ilksMetadata, fakeIlksValue)
 				Expect(createErr).NotTo(HaveOccurred())
 
 				var result MappingRes
-				readErr := db.Get(&result, "SELECT block_number, block_hash, cdpi AS key, ilk_id AS value FROM maker.cdp_manager_ilks")
+				readErr := db.Get(&result, "SELECT header_id, cdpi AS key, ilk_id AS value FROM maker.cdp_manager_ilks")
 				Expect(readErr).NotTo(HaveOccurred())
 
 				ilkId, ilkErr := shared.GetOrCreateIlk(fakeIlksValue, db)
 				Expect(ilkErr).NotTo(HaveOccurred())
 
-				AssertMapping(result, fakeBlockNumber, fakeHash, fakeCdpi, strconv.FormatInt(ilkId, 10))
+				AssertMapping(result, fakeHeaderID, fakeCdpi, strconv.FormatInt(ilkId, 10))
 			})
 
 			It("doesn't duplicate a record", func() {
-				err := repository.Create(fakeBlockNumber, fakeHash, ilksMetadata, fakeIlksValue)
+				err := repository.Create(fakeHeaderID, ilksMetadata, fakeIlksValue)
 				Expect(err).NotTo(HaveOccurred())
 
-				err = repository.Create(fakeBlockNumber, fakeHash, ilksMetadata, fakeIlksValue)
+				err = repository.Create(fakeHeaderID, ilksMetadata, fakeIlksValue)
 				Expect(err).NotTo(HaveOccurred())
 
 				var count int
@@ -278,7 +280,7 @@ var _ = Describe("CDP Manager storage repository", func() {
 			})
 
 			It("triggers an update to the managed_cdp table", func() {
-				err := repository.Create(fakeBlockNumber, fakeHash, ilksMetadata, fakeIlksValue)
+				err := repository.Create(fakeHeaderID, ilksMetadata, fakeIlksValue)
 				Expect(err).NotTo(HaveOccurred())
 
 				var cdp test_helpers.ManagedCdp

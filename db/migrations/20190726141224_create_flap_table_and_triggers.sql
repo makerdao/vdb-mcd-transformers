@@ -2,6 +2,9 @@
 CREATE TABLE maker.flap
 (
     id           SERIAL PRIMARY KEY,
+    -- TODO: remove hash?
+    -- Can we replace block number + hash with header_id?
+    -- Tricky because there might be multiple diffs contributing to a single row
     block_number BIGINT  DEFAULT NULL,
     block_hash   TEXT    DEFAULT NULL,
     address_id   INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
@@ -82,16 +85,21 @@ BEGIN
         WHERE flap.bid_id = NEW.bid_id
         ORDER BY flap.block_number
         LIMIT 1
-    )
+    ),
+         diff_block AS (
+             SELECT block_number, hash, block_timestamp
+             FROM public.headers
+             WHERE id = NEW.header_id
+         )
     INSERT
     INTO maker.flap(bid_id, address_id, block_number, block_hash, bid, guy, tic, "end", lot, updated,
                     created)
-    VALUES (NEW.bid_id, NEW.address_id, NEW.block_number, NEW.block_hash, NEW.bid,
+    VALUES (NEW.bid_id, NEW.address_id, (SELECT block_number FROM diff_block), (SELECT hash FROM diff_block), NEW.bid,
             (SELECT get_latest_flap_bid_guy(NEW.bid_id)),
             (SELECT get_latest_flap_bid_tic(NEW.bid_id)),
             (SELECT get_latest_flap_bid_end(NEW.bid_id)),
             (SELECT get_latest_flap_bid_lot(NEW.bid_id)),
-            (SELECT get_block_timestamp(NEW.block_hash)),
+            (SELECT api.epoch_to_datetime(block_timestamp) FROM diff_block),
             (SELECT created FROM created))
     ON CONFLICT (bid_id, block_number) DO UPDATE SET bid = NEW.bid;
     return NEW;
@@ -111,16 +119,21 @@ BEGIN
         WHERE flap.bid_id = NEW.bid_id
         ORDER BY flap.block_number
         LIMIT 1
-    )
+    ),
+         diff_block AS (
+             SELECT block_number, hash, block_timestamp
+             FROM public.headers
+             WHERE id = NEW.header_id
+         )
     INSERT
     INTO maker.flap(bid_id, address_id, block_number, block_hash, guy, bid, tic, "end", lot, updated,
                     created)
-    VALUES (NEW.bid_id, NEW.address_id, NEW.block_number, NEW.block_hash, NEW.guy,
+    VALUES (NEW.bid_id, NEW.address_id, (SELECT block_number FROM diff_block), (SELECT hash FROM diff_block), NEW.guy,
             (SELECT get_latest_flap_bid_bid(NEW.bid_id)),
             (SELECT get_latest_flap_bid_tic(NEW.bid_id)),
             (SELECT get_latest_flap_bid_end(NEW.bid_id)),
             (SELECT get_latest_flap_bid_lot(NEW.bid_id)),
-            (SELECT get_block_timestamp(NEW.block_hash)),
+            (SELECT api.epoch_to_datetime(block_timestamp) FROM diff_block),
             (SELECT created FROM created))
     ON CONFLICT (bid_id, block_number) DO UPDATE SET guy = NEW.guy;
     return NEW;
@@ -140,16 +153,21 @@ BEGIN
         WHERE flap.bid_id = NEW.bid_id
         ORDER BY flap.block_number
         LIMIT 1
-    )
+    ),
+         diff_block AS (
+             SELECT block_number, hash, block_timestamp
+             FROM public.headers
+             WHERE id = NEW.header_id
+         )
     INSERT
     INTO maker.flap(bid_id, address_id, block_number, block_hash, tic, bid, guy, "end", lot, updated,
                     created)
-    VALUES (NEW.bid_id, NEW.address_id, NEW.block_number, NEW.block_hash, NEW.tic,
+    VALUES (NEW.bid_id, NEW.address_id, (SELECT block_number FROM diff_block), (SELECT hash FROM diff_block), NEW.tic,
             (SELECT get_latest_flap_bid_bid(NEW.bid_id)),
             (SELECT get_latest_flap_bid_guy(NEW.bid_id)),
             (SELECT get_latest_flap_bid_end(NEW.bid_id)),
             (SELECT get_latest_flap_bid_lot(NEW.bid_id)),
-            (SELECT get_block_timestamp(NEW.block_hash)),
+            (SELECT api.epoch_to_datetime(block_timestamp) FROM diff_block),
             (SELECT created FROM created))
     ON CONFLICT (bid_id, block_number) DO UPDATE SET tic = NEW.tic;
     return NEW;
@@ -169,16 +187,21 @@ BEGIN
         WHERE flap.bid_id = NEW.bid_id
         ORDER BY flap.block_number
         LIMIT 1
-    )
+    ),
+         diff_block AS (
+             SELECT block_number, hash, block_timestamp
+             FROM public.headers
+             WHERE id = NEW.header_id
+         )
     INSERT
     INTO maker.flap(bid_id, address_id, block_number, block_hash, "end", bid, guy, tic, lot, updated,
                     created)
-    VALUES (NEW.bid_id, NEW.address_id, NEW.block_number, NEW.block_hash, NEW."end",
+    VALUES (NEW.bid_id, NEW.address_id, (SELECT block_number FROM diff_block), (SELECT hash FROM diff_block), NEW."end",
             (SELECT get_latest_flap_bid_bid(NEW.bid_id)),
             (SELECT get_latest_flap_bid_guy(NEW.bid_id)),
             (SELECT get_latest_flap_bid_tic(NEW.bid_id)),
             (SELECT get_latest_flap_bid_lot(NEW.bid_id)),
-            (SELECT get_block_timestamp(NEW.block_hash)),
+            (SELECT api.epoch_to_datetime(block_timestamp) FROM diff_block),
             (SELECT created FROM created))
     ON CONFLICT (bid_id, block_number) DO UPDATE SET "end" = NEW."end";
     return NEW;
@@ -198,16 +221,21 @@ BEGIN
         WHERE flap.bid_id = NEW.bid_id
         ORDER BY flap.block_number
         LIMIT 1
-    )
+    ),
+         diff_block AS (
+             SELECT block_number, hash, block_timestamp
+             FROM public.headers
+             WHERE id = NEW.header_id
+         )
     INSERT
     INTO maker.flap(bid_id, address_id, block_number, block_hash, lot, bid, guy, tic, "end", updated,
                     created)
-    VALUES (NEW.bid_id, NEW.address_id, NEW.block_number, NEW.block_hash, NEW.lot,
+    VALUES (NEW.bid_id, NEW.address_id, (SELECT block_number FROM diff_block), (SELECT hash FROM diff_block), NEW.lot,
             (SELECT get_latest_flap_bid_bid(NEW.bid_id)),
             (SELECT get_latest_flap_bid_guy(NEW.bid_id)),
             (SELECT get_latest_flap_bid_tic(NEW.bid_id)),
             (SELECT get_latest_flap_bid_end(NEW.bid_id)),
-            (SELECT get_block_timestamp(NEW.block_hash)),
+            (SELECT api.epoch_to_datetime(block_timestamp) FROM diff_block),
             (SELECT created FROM created))
     ON CONFLICT (bid_id, block_number) DO UPDATE SET lot = NEW.lot;
     return NEW;
