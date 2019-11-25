@@ -61,5 +61,3 @@ while sleep 60; do
     exit 1
   fi
 done
-
-wait
