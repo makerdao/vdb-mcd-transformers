@@ -17,25 +17,41 @@
 package flap_kick_test
 
 import (
-	"github.com/makerdao/vulcanizedb/pkg/core"
-
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
-
+	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/flap_kick"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
+	"github.com/makerdao/vulcanizedb/pkg/core"
+	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("Flap kick converter", func() {
-	var converter = flap_kick.FlapKickConverter{}
+	var (
+		converter flap_kick.Converter
+		db        *postgres.DB
+	)
+
+	BeforeEach(func() {
+		converter = flap_kick.Converter{}
+		db = test_config.NewTestDB(test_config.NewTestNode())
+		converter.SetDB(db)
+	})
 
 	It("converts a log to a Model", func() {
 		models, err := converter.ToModels(constants.FlapABI(), []core.HeaderSyncLog{test_data.FlapKickHeaderSyncLog})
-
 		Expect(err).NotTo(HaveOccurred())
+
+		expectedKick := test_data.FlapKickModel()
+		addressId, addressErr := shared.GetOrCreateAddress(test_data.FlapKickHeaderSyncLog.Log.Address.Hex(), db)
+		Expect(addressErr).NotTo(HaveOccurred())
+		expectedKick.ColumnValues[event.AddressFK] = addressId
 		Expect(len(models)).To(Equal(1))
-		Expect(models[0]).To(Equal(test_data.FlapKickModel()))
+
+		Expect(models[0]).To(Equal(expectedKick))
 	})
 
 	It("returns an error if converting log to entity fails", func() {
@@ -43,5 +59,4 @@ var _ = Describe("Flap kick converter", func() {
 
 		Expect(err).To(HaveOccurred())
 	})
-
 })

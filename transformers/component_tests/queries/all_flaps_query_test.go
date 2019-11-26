@@ -18,7 +18,7 @@ import (
 var _ = Describe("All flaps query", func() {
 	var (
 		db              *postgres.DB
-		flapKickRepo    flap_kick.FlapKickRepository
+		flapKickRepo    flap_kick.Repository
 		dealRepo        deal.Repository
 		headerRepo      repositories.HeaderRepository
 		contractAddress = "contract address"
@@ -31,7 +31,7 @@ var _ = Describe("All flaps query", func() {
 		db = test_config.NewTestDB(test_config.NewTestNode())
 		test_config.CleanTestDB(db)
 
-		flapKickRepo = flap_kick.FlapKickRepository{}
+		flapKickRepo = flap_kick.Repository{}
 		flapKickRepo.SetDB(db)
 		dealRepo = deal.Repository{}
 		dealRepo.SetDB(db)

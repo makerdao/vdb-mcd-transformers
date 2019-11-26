@@ -9,8 +9,8 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/flap_kick"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
@@ -26,8 +26,8 @@ var _ = Describe("flap_bid_event computed columns", func() {
 		headerOne              core.Header
 		flapKickLog            core.HeaderSyncLog
 		headerRepo             repositories.HeaderRepository
-		flapKickRepo           flap_kick.FlapKickRepository
-		flapKickEvent          shared.InsertionModel
+		flapKickRepo           flap_kick.Repository
+		flapKickEvent          event.InsertionModel
 		contractAddress        = fakes.RandomString(42)
 		fakeBidId              = rand.Int()
 	)
@@ -42,15 +42,17 @@ var _ = Describe("flap_bid_event computed columns", func() {
 		headerOne = createHeader(blockOne, timestampOne, headerRepo)
 		flapKickLog = test_data.CreateTestLog(headerOne.Id, db)
 
-		flapKickRepo = flap_kick.FlapKickRepository{}
+		flapKickRepo = flap_kick.Repository{}
 		flapKickRepo.SetDB(db)
+		addressId, addressErr := shared.GetOrCreateAddress(contractAddress, db)
+		Expect(addressErr).NotTo(HaveOccurred())
 
 		flapKickEvent = test_data.FlapKickModel()
-		flapKickEvent.ColumnValues["bid_id"] = strconv.Itoa(fakeBidId)
-		flapKickEvent.ForeignKeyValues[constants.AddressFK] = contractAddress
-		flapKickEvent.ColumnValues[constants.HeaderFK] = headerOne.Id
-		flapKickEvent.ColumnValues[constants.LogFK] = flapKickLog.ID
-		insertFlapKickErr := flapKickRepo.Create([]shared.InsertionModel{flapKickEvent})
+		flapKickEvent.ColumnValues[event.HeaderFK] = headerOne.Id
+		flapKickEvent.ColumnValues[event.LogFK] = flapKickLog.ID
+		flapKickEvent.ColumnValues[event.AddressFK] = addressId
+		flapKickEvent.ColumnValues[flap_kick.BidId] = strconv.Itoa(fakeBidId)
+		insertFlapKickErr := flapKickRepo.Create([]event.InsertionModel{flapKickEvent})
 		Expect(insertFlapKickErr).NotTo(HaveOccurred())
 	})
 

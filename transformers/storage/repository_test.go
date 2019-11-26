@@ -25,7 +25,6 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/flap_kick"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/flip_kick"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/flop_kick"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
@@ -41,6 +40,12 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
+
+const InsertFlapKickQuery = `INSERT into maker.flap_kick
+		(header_id, bid_id, lot, bid, address_id, log_id)
+		VALUES($1, $2::NUMERIC, $3::NUMERIC, $4::NUMERIC, $5, $6)
+		ON CONFLICT (header_id, log_id)
+		DO UPDATE SET bid_id = $2, lot = $3, bid = $4, address_id = $5;`
 
 var _ = Describe("Maker storage repository", func() {
 	var (
@@ -630,7 +635,7 @@ func insertFlapKick(blockNumber int64, bidId string, contractAddressId int64, db
 	//inserting a flap kick log event record
 	headerID := insertHeader(db, blockNumber)
 	flapKickLog := test_data.CreateTestLog(headerID, db)
-	_, insertErr := db.Exec(flap_kick.InsertFlapKickQuery,
+	_, insertErr := db.Exec(InsertFlapKickQuery,
 		headerID, bidId, 0, 0, contractAddressId, flapKickLog.ID,
 	)
 	Expect(insertErr).NotTo(HaveOccurred())

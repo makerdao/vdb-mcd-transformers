@@ -565,7 +565,7 @@ func SetUpFlipBidContext(setupData FlipBidContextInput) (ilkId, urnId int64, err
 
 func SetUpFlapBidContext(setupData FlapBidCreationInput) (err error) {
 	flapKickLog := test_data.CreateTestLog(setupData.FlapKickHeaderId, setupData.Db)
-	flapKickErr := CreateFlapKick(setupData.ContractAddress, setupData.BidId, setupData.FlapKickHeaderId, flapKickLog.ID, setupData.FlapKickRepo)
+	flapKickErr := CreateFlapKick(setupData.ContractAddress, setupData.BidId, setupData.FlapKickHeaderId, flapKickLog.ID, setupData.FlapKickRepo, setupData.Db)
 	if flapKickErr != nil {
 		return flapKickErr
 	}
@@ -619,13 +619,15 @@ func CreateFlipKick(contractAddress string, bidId int, headerId, logId int64, us
 	return repo.Create([]shared.InsertionModel{flipKickModel})
 }
 
-func CreateFlapKick(contractAddress string, bidId int, headerId, logId int64, repo flap_kick.FlapKickRepository) error {
+func CreateFlapKick(contractAddress string, bidId int, headerId, logId int64, repo flap_kick.Repository, db *postgres.DB) error {
 	flapKickModel := test_data.FlapKickModel()
-	flapKickModel.ForeignKeyValues[constants.AddressFK] = contractAddress
-	flapKickModel.ColumnValues[constants.HeaderFK] = headerId
-	flapKickModel.ColumnValues[constants.LogFK] = logId
-	flapKickModel.ColumnValues["bid_id"] = strconv.Itoa(bidId)
-	return repo.Create([]shared.InsertionModel{flapKickModel})
+	addressId, addressErr := shared.GetOrCreateAddress(contractAddress, db)
+	Expect(addressErr).NotTo(HaveOccurred())
+	flapKickModel.ColumnValues[event.HeaderFK] = headerId
+	flapKickModel.ColumnValues[event.LogFK] = logId
+	flapKickModel.ColumnValues[event.AddressFK] = addressId
+	flapKickModel.ColumnValues[flap_kick.BidId] = strconv.Itoa(bidId)
+	return repo.Create([]event.InsertionModel{flapKickModel})
 }
 
 func CreateFlopKick(contractAddress string, bidId int, headerId, logId int64, repo flop_kick.FlopKickRepository) error {
@@ -727,7 +729,7 @@ type FlipBidContextInput struct {
 type FlapBidCreationInput struct {
 	DealCreationInput
 	Dealt            bool
-	FlapKickRepo     flap_kick.FlapKickRepository
+	FlapKickRepo     flap_kick.Repository
 	FlapKickHeaderId int64
 }
 

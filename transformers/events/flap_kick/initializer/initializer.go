@@ -17,15 +17,15 @@
 package initializer
 
 import (
+	"github.com/makerdao/vdb-mcd-transformers/transformers/events/flap_kick"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
-
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/flap_kick"
 )
 
-var EventTransformerInitializer transformer.EventTransformerInitializer = shared.EventTransformer{
+var EventTransformerInitializer transformer.EventTransformerInitializer = event.Transformer{
 	Config:     shared.GetEventTransformerConfig(constants.FlapKickLabel, constants.FlapKickSignature()),
-	Converter:  &flap_kick.FlapKickConverter{},
-	Repository: &flap_kick.FlapKickRepository{},
-}.NewEventTransformer
+	Converter:  &flap_kick.Converter{},
+	Repository: &flap_kick.Repository{},
+}.NewTransformer

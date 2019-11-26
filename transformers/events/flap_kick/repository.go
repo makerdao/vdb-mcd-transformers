@@ -17,25 +17,18 @@
 package flap_kick
 
 import (
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
-
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 )
 
-const InsertFlapKickQuery = `INSERT into maker.flap_kick
-		(header_id, bid_id, lot, bid, address_id, log_id)
-		VALUES($1, $2::NUMERIC, $3::NUMERIC, $4::NUMERIC, $5, $6)
-		ON CONFLICT (header_id, log_id)
-		DO UPDATE SET bid_id = $2, lot = $3, bid = $4, address_id = $5;`
-
-type FlapKickRepository struct {
+type Repository struct {
 	db *postgres.DB
 }
 
-func (repository *FlapKickRepository) Create(models []shared.InsertionModel) error {
-	return shared.Create(models, repository.db)
+func (repository *Repository) Create(models []event.InsertionModel) error {
+	return event.Create(models, repository.db)
 }
 
-func (repository *FlapKickRepository) SetDB(db *postgres.DB) {
+func (repository *Repository) SetDB(db *postgres.DB) {
 	repository.db = db
 }

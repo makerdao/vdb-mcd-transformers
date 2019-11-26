@@ -21,16 +21,24 @@ import (
 	"fmt"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
-	"github.com/makerdao/vulcanizedb/pkg/core"
-	"github.com/makerdao/vulcanizedb/pkg/eth"
-
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
+	"github.com/makerdao/vulcanizedb/pkg/core"
+	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
+	"github.com/makerdao/vulcanizedb/pkg/eth"
 )
 
-type FlapKickConverter struct{}
+type Converter struct {
+	db *postgres.DB
+}
 
-func (FlapKickConverter) toEntities(contractAbi string, logs []core.HeaderSyncLog) ([]FlapKickEntity, error) {
+const (
+	BidId event.ColumnName = "bid_id"
+	Lot   event.ColumnName = "lot"
+	Bid   event.ColumnName = "bid"
+)
+
+func (converter Converter) toEntities(contractAbi string, logs []core.HeaderSyncLog) ([]FlapKickEntity, error) {
 	var entities []FlapKickEntity
 	abi, parseErr := eth.ParseAbi(contractAbi)
 	if parseErr != nil {
@@ -53,37 +61,43 @@ func (FlapKickConverter) toEntities(contractAbi string, logs []core.HeaderSyncLo
 	return entities, nil
 }
 
-func (c FlapKickConverter) ToModels(abi string, logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
-	entities, entityErr := c.toEntities(abi, logs)
+func (converter Converter) ToModels(abi string, logs []core.HeaderSyncLog) ([]event.InsertionModel, error) {
+	entities, entityErr := converter.toEntities(abi, logs)
 	if entityErr != nil {
-		return nil, fmt.Errorf("FlapKickConverter couldn't convert logs to entities: %v", entityErr)
+		return nil, fmt.Errorf("FlapKick converter couldn't convert logs to entities: %v", entityErr)
 	}
 
-	var models []shared.InsertionModel
+	var models []event.InsertionModel
 	for _, flapKickEntity := range entities {
 		if flapKickEntity.Id == nil {
 			return nil, errors.New("flapKick log ID cannot be nil")
 		}
+		addressId, addressErr := shared.GetOrCreateAddress(flapKickEntity.ContractAddress.Hex(), converter.db)
+		if addressErr != nil {
+			_ = shared.ErrCouldNotCreateFK(addressErr)
+		}
 
-		model := shared.InsertionModel{
+		model := event.InsertionModel{
 			SchemaName: "maker",
 			TableName:  "flap_kick",
-			OrderedColumns: []string{
-				constants.HeaderFK, constants.LogFK, "bid_id", "lot", "bid", "address_id",
+			OrderedColumns: []event.ColumnName{
+				event.HeaderFK, event.LogFK, event.AddressFK, BidId, Lot, Bid,
 			},
-			ColumnValues: shared.ColumnValues{
-				constants.HeaderFK: flapKickEntity.HeaderID,
-				constants.LogFK:    flapKickEntity.LogID,
-				"bid_id":           flapKickEntity.Id.String(),
-				"lot":              shared.BigIntToString(flapKickEntity.Lot),
-				"bid":              shared.BigIntToString(flapKickEntity.Bid),
-			},
-			ForeignKeyValues: shared.ForeignKeyValues{
-				constants.AddressFK: flapKickEntity.ContractAddress.Hex(),
+			ColumnValues: event.ColumnValues{
+				event.HeaderFK:  flapKickEntity.HeaderID,
+				event.LogFK:     flapKickEntity.LogID,
+				event.AddressFK: addressId,
+				BidId:           flapKickEntity.Id.String(),
+				Lot:             shared.BigIntToString(flapKickEntity.Lot),
+				Bid:             shared.BigIntToString(flapKickEntity.Bid),
 			},
 		}
 
 		models = append(models, model)
 	}
 	return models, nil
+}
+
+func (converter *Converter) SetDB(db *postgres.DB) {
+	converter.db = db
 }
