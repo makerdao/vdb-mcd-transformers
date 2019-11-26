@@ -17,15 +17,15 @@
 package initializer
 
 import (
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
-	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
-
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/tend"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
+	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 )
 
-var EventTransformerInitializer transformer.EventTransformerInitializer = shared.EventTransformer{
+var EventTransformerInitializer transformer.EventTransformerInitializer = event.Transformer{
 	Config:     shared.GetEventTransformerConfig(constants.TendLabel, constants.TendSignature()),
-	Converter:  &tend.TendConverter{},
-	Repository: &tend.TendRepository{},
-}.NewEventTransformer
+	Converter:  &tend.Converter{},
+	Repository: &tend.Repository{},
+}.NewTransformer
