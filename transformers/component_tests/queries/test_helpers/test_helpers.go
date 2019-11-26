@@ -18,7 +18,6 @@ package test_helpers
 
 import (
 	"database/sql"
-	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"math/rand"
 	"strconv"
 	"time"

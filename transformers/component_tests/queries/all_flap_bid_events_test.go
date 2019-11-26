@@ -31,7 +31,7 @@ var _ = Describe("Flap bid events query", func() {
 		db                     *postgres.DB
 		flapKickRepo           flap_kick.Repository
 		tendRepo               tend.Repository
-		tickRepo               tick.TickRepository
+		tickRepo               tick.Repository
 		dealRepo               deal.Repository
 		yankRepo               yank.Repository
 		headerRepo             repositories.HeaderRepository

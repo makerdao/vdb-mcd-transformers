@@ -31,7 +31,7 @@ var _ = Describe("Flop bid events query", func() {
 		dentRepo               dent.DentRepository
 		dealRepo               deal.Repository
 		yankRepo               yank.Repository
-		tickRepo               tick.TickRepository
+		tickRepo               tick.Repository
 		headerRepo             repositories.HeaderRepository
 		blockOne, timestampOne int
 		headerOne              core.Header
