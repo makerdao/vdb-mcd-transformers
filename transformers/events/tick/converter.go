@@ -28,16 +28,10 @@ type Converter struct {
 	db *postgres.DB
 }
 
-const (
-	Id                event.ColumnName = "bid_id"
-	logDataRequired                    = false
-	numTopicsRequired                  = 3
-)
-
 func (c Converter) ToModels(_ string, logs []core.HeaderSyncLog) ([]event.InsertionModel, error) {
 	var models []event.InsertionModel
 	for _, log := range logs {
-		validateErr := shared.VerifyLog(log.Log, numTopicsRequired, logDataRequired)
+		validateErr := shared.VerifyLog(log.Log, shared.ThreeTopicsRequired, shared.LogDataNotRequired)
 		if validateErr != nil {
 			return nil, validateErr
 		}
@@ -51,12 +45,12 @@ func (c Converter) ToModels(_ string, logs []core.HeaderSyncLog) ([]event.Insert
 			SchemaName: "maker",
 			TableName:  "tick",
 			OrderedColumns: []event.ColumnName{
-				constants.HeaderFK, constants.LogFK, Id, constants.AddressColumn,
+				constants.HeaderFK, constants.LogFK, constants.BidIdColumn, constants.AddressColumn,
 			},
 			ColumnValues: event.ColumnValues{
 				constants.HeaderFK:      log.HeaderID,
 				constants.LogFK:         log.ID,
-				Id:                      log.Log.Topics[2].Big().String(),
+				constants.BidIdColumn:   log.Log.Topics[2].Big().String(),
 				constants.AddressColumn: addressID,
 			},
 		}

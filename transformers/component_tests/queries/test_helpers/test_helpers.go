@@ -680,7 +680,7 @@ func CreateTick(input TickCreationInput) (err error) {
 	Expect(addressErr).NotTo(HaveOccurred())
 	tickLog := test_data.CreateTestLog(input.TickHeaderId, input.Db)
 	tickModel := test_data.CopyEventModel(test_data.TickModel)
-	tickModel.ColumnValues[tick.Id] = strconv.Itoa(input.BidId)
+	tickModel.ColumnValues[constants.BidIdColumn] = strconv.Itoa(input.BidId)
 	tickModel.ColumnValues[constants.AddressColumn] = addressID
 	tickModel.ColumnValues[constants.HeaderFK] = input.TickHeaderId
 	tickModel.ColumnValues[constants.LogFK] = tickLog.ID

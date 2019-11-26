@@ -17,10 +17,10 @@
 package test_data
 
 import (
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/tick"
-	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"math/rand"
 	"strconv"
+
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 
 	"github.com/makerdao/vulcanizedb/pkg/core"
 
@@ -65,12 +65,12 @@ var TickModel = event.InsertionModel{
 	SchemaName: "maker",
 	TableName:  "tick",
 	OrderedColumns: []event.ColumnName{
-		constants.HeaderFK, constants.LogFK, tick.Id, constants.AddressColumn,
+		constants.HeaderFK, constants.LogFK, constants.BidIdColumn, constants.AddressColumn,
 	},
 	ColumnValues: event.ColumnValues{
 		constants.HeaderFK:      FlipTickHeaderSyncLog.HeaderID,
 		constants.LogFK:         FlipTickHeaderSyncLog.ID,
-		tick.Id:                 strconv.FormatInt(tickBidId, 10),
+		constants.BidIdColumn:   strconv.FormatInt(tickBidId, 10),
 		constants.AddressColumn: FlipTickHeaderSyncLog.Log.Address.Hex(),
 	},
 }
