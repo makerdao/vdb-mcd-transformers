@@ -49,7 +49,7 @@ var _ = Describe("All flip bid events query", func() {
 		tickRepo               tick.TickRepository
 		dentRepo               dent.DentRepository
 		dealRepo               deal.Repository
-		yankRepo               yank.YankRepository
+		yankRepo               yank.Repository
 		headerRepo             repositories.HeaderRepository
 		contractAddress        = fakes.FakeAddress.Hex()
 		anotherContractAddress = common.HexToAddress("0xabcdef123456789").Hex()
@@ -73,7 +73,7 @@ var _ = Describe("All flip bid events query", func() {
 		dentRepo.SetDB(db)
 		dealRepo = deal.Repository{}
 		dealRepo.SetDB(db)
-		yankRepo = yank.YankRepository{}
+		yankRepo = yank.Repository{}
 		yankRepo.SetDB(db)
 		bidId = rand.Int()
 
@@ -518,6 +518,7 @@ var _ = Describe("All flip bid events query", func() {
 
 				flipYankLog := test_data.CreateTestLog(headerTwo.Id, db)
 				flipYankErr := test_helpers.CreateYank(test_helpers.YankCreationInput{
+					Db:              db,
 					BidId:           bidId,
 					ContractAddress: contractAddress,
 					YankRepo:        yankRepo,

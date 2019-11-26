@@ -33,7 +33,7 @@ var _ = Describe("Flap bid events query", func() {
 		tendRepo               tend.Repository
 		tickRepo               tick.TickRepository
 		dealRepo               deal.Repository
-		yankRepo               yank.YankRepository
+		yankRepo               yank.Repository
 		headerRepo             repositories.HeaderRepository
 		contractAddress        = fakes.FakeAddress.Hex()
 		anotherContractAddress = common.HexToAddress("0xabcdef123456789").Hex()
@@ -55,7 +55,7 @@ var _ = Describe("Flap bid events query", func() {
 		tickRepo.SetDB(db)
 		dealRepo = deal.Repository{}
 		dealRepo.SetDB(db)
-		yankRepo = yank.YankRepository{}
+		yankRepo = yank.Repository{}
 		yankRepo.SetDB(db)
 		fakeBidId = rand.Int()
 
@@ -519,6 +519,7 @@ var _ = Describe("Flap bid events query", func() {
 			flapYankLog := test_data.CreateTestLog(headerTwo.Id, db)
 
 			flapYankErr := test_helpers.CreateYank(test_helpers.YankCreationInput{
+				Db:              db,
 				BidId:           fakeBidId,
 				ContractAddress: contractAddress,
 				YankRepo:        yankRepo,
@@ -556,6 +557,7 @@ var _ = Describe("Flap bid events query", func() {
 
 			// irrelevant flop yank
 			flopYankErr := test_helpers.CreateYank(test_helpers.YankCreationInput{
+				Db:              db,
 				BidId:           fakeBidId,
 				ContractAddress: anotherContractAddress,
 				YankRepo:        yankRepo,

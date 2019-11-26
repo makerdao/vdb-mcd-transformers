@@ -17,19 +17,18 @@
 package yank
 
 import (
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
-
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 )
 
-type YankRepository struct {
+type Repository struct {
 	db *postgres.DB
 }
 
-func (repo YankRepository) Create(models []shared.InsertionModel) error {
-	return shared.Create(models, repo.db)
+func (r Repository) Create(models []event.InsertionModel) error {
+	return event.Create(models, r.db)
 }
 
-func (repo *YankRepository) SetDB(db *postgres.DB) {
-	repo.db = db
+func (r *Repository) SetDB(db *postgres.DB) {
+	r.db = db
 }

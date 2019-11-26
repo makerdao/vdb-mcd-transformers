@@ -30,7 +30,7 @@ var _ = Describe("Flop bid events query", func() {
 		flopKickRepo           flop_kick.FlopKickRepository
 		dentRepo               dent.DentRepository
 		dealRepo               deal.Repository
-		yankRepo               yank.YankRepository
+		yankRepo               yank.Repository
 		tickRepo               tick.TickRepository
 		headerRepo             repositories.HeaderRepository
 		blockOne, timestampOne int
@@ -50,7 +50,7 @@ var _ = Describe("Flop bid events query", func() {
 		dentRepo.SetDB(db)
 		dealRepo = deal.Repository{}
 		dealRepo.SetDB(db)
-		yankRepo = yank.YankRepository{}
+		yankRepo = yank.Repository{}
 		yankRepo.SetDB(db)
 		tickRepo = tick.TickRepository{}
 		tickRepo.SetDB(db)
@@ -326,6 +326,7 @@ var _ = Describe("Flop bid events query", func() {
 			flopYankLog := test_data.CreateTestLog(headerOne.Id, db)
 
 			flopYankErr := test_helpers.CreateYank(test_helpers.YankCreationInput{
+				Db:              db,
 				BidId:           fakeBidId,
 				ContractAddress: contractAddress,
 				YankRepo:        yankRepo,
@@ -357,6 +358,7 @@ var _ = Describe("Flop bid events query", func() {
 
 			// irrelevant flap yank
 			flapYankErr := test_helpers.CreateYank(test_helpers.YankCreationInput{
+				Db:              db,
 				BidId:           fakeBidId,
 				ContractAddress: "flap contract address",
 				YankRepo:        yankRepo,
