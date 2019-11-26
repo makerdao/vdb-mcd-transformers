@@ -17,7 +17,7 @@ Build with (e.g. from the project directory) `docker build ./ -t vulcanize_mcd_t
     - `FILESYSTEM_STORAGEDIFFSPATH` or `STORAGEDIFFS_SOURCE` - this depends on where you're getting storage diffs from, see below.
         - Use `FILESYSTEM_STORAGEDIFFSPATH` only when getting storage diffs from a CSV file - this will be the path to the CSV file.
         - Set `STORAGEDIFFS_SOURCE` to `geth` when getting storage diffs from a subscription to a geth client. The default `STORAGEDIFFS_SOURCE` is `csv`.
-1. Run with required environment variables: `docker run -e CLIENT_IPCPATH="https://kovan.infura.io/v3/token" -e DATABASE_NAME="vulcanize_public" -e DATABASE_HOSTNAME="host.docker.internal" -e DATABASE_PORT="5432" -e DATABASE_USER="vulcanize" -e DATABASE_PASSWORD="vulcanize" -e FILESYSTEM_STORAGEDIFFSPATH="/path/to/diffs" vulcanize_mcd_transformers:0.0.1`.
+1. Run with required environment variables: `docker run -e CLIENT_IPCPATH="https://kovan.infura.io/v3/token" -e DATABASE_NAME="vulcanize_public" -e DATABASE_HOSTNAME="host.docker.internal" -e DATABASE_PORT="5432" -e DATABASE_USER="vulcanize" -e DATABASE_PASSWORD="vulcanize" -e STARTING_BLOCK_NUMBER=0 -e FILESYSTEM_STORAGEDIFFSPATH="/path/to/diffs" vulcanize_mcd_transformers:0.0.1`.
     - This triggers `headerSync` + `composeAndExecute`.
     - NOTE: contract addresses are currently configured in `environments/docker.toml` to point at the given release's Kovan deployment.
        You can optionally replace any address with an environment variable, e.g. `-e CONTRACT_CONTRACT_MCD_FLIP_ETH_A_ADDRESS=0x1234"`.
