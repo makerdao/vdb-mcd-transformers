@@ -17,15 +17,15 @@
 package initializer
 
 import (
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
-	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
-
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/deal"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
+	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 )
 
-var EventTransformerInitializer transformer.EventTransformerInitializer = shared.EventTransformer{
+var EventTransformerInitializer transformer.EventTransformerInitializer = event.Transformer{
 	Config:     shared.GetEventTransformerConfig(constants.DealLabel, constants.DealSignature()),
-	Converter:  &deal.DealConverter{},
-	Repository: &deal.DealRepository{},
-}.NewEventTransformer
+	Converter:  &deal.Converter{},
+	Repository: &deal.Repository{},
+}.NewTransformer

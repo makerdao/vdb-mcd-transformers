@@ -19,7 +19,7 @@ var _ = Describe("All flaps query", func() {
 	var (
 		db              *postgres.DB
 		flapKickRepo    flap_kick.FlapKickRepository
-		dealRepo        deal.DealRepository
+		dealRepo        deal.Repository
 		headerRepo      repositories.HeaderRepository
 		contractAddress = "contract address"
 
@@ -33,7 +33,7 @@ var _ = Describe("All flaps query", func() {
 
 		flapKickRepo = flap_kick.FlapKickRepository{}
 		flapKickRepo.SetDB(db)
-		dealRepo = deal.DealRepository{}
+		dealRepo = deal.Repository{}
 		dealRepo.SetDB(db)
 		headerRepo = repositories.NewHeaderRepository(db)
 

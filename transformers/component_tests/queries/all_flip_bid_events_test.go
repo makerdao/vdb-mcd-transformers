@@ -48,7 +48,7 @@ var _ = Describe("All flip bid events query", func() {
 		tendRepo               tend.TendRepository
 		tickRepo               tick.TickRepository
 		dentRepo               dent.DentRepository
-		dealRepo               deal.DealRepository
+		dealRepo               deal.Repository
 		yankRepo               yank.YankRepository
 		headerRepo             repositories.HeaderRepository
 		contractAddress        = fakes.FakeAddress.Hex()
@@ -71,7 +71,7 @@ var _ = Describe("All flip bid events query", func() {
 		tickRepo.SetDB(db)
 		dentRepo = dent.DentRepository{}
 		dentRepo.SetDB(db)
-		dealRepo = deal.DealRepository{}
+		dealRepo = deal.Repository{}
 		dealRepo.SetDB(db)
 		yankRepo = yank.YankRepository{}
 		yankRepo.SetDB(db)

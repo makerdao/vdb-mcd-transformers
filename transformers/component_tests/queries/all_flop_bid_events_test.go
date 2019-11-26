@@ -28,7 +28,7 @@ var _ = Describe("Flop bid events query", func() {
 		db                     *postgres.DB
 		flopKickRepo           flop_kick.FlopKickRepository
 		dentRepo               dent.DentRepository
-		dealRepo               deal.DealRepository
+		dealRepo               deal.Repository
 		yankRepo               yank.YankRepository
 		tickRepo               tick.TickRepository
 		headerRepo             repositories.HeaderRepository
@@ -47,7 +47,7 @@ var _ = Describe("Flop bid events query", func() {
 		flopKickRepo.SetDB(db)
 		dentRepo = dent.DentRepository{}
 		dentRepo.SetDB(db)
-		dealRepo = deal.DealRepository{}
+		dealRepo = deal.Repository{}
 		dealRepo.SetDB(db)
 		yankRepo = yank.YankRepository{}
 		yankRepo.SetDB(db)

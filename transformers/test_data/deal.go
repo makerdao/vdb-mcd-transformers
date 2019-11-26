@@ -19,15 +19,14 @@ package test_data
 import (
 	"math/rand"
 
-	"github.com/makerdao/vulcanizedb/pkg/core"
-
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/makerdao/vulcanizedb/pkg/fakes"
-
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/events/deal"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
+	"github.com/makerdao/vulcanizedb/pkg/core"
+	"github.com/makerdao/vulcanizedb/pkg/fakes"
 )
 
 var rawDealLog = types.Log{
@@ -54,18 +53,19 @@ var DealHeaderSyncLog = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-var DealModel = shared.InsertionModel{
+var DealModel = event.InsertionModel{
 	SchemaName: "maker",
 	TableName:  "deal",
-	OrderedColumns: []string{
-		constants.HeaderFK, "bid_id", string(constants.AddressFK), constants.LogFK,
+	OrderedColumns: []event.ColumnName{
+		constants.HeaderFK,
+		deal.Id,
+		constants.AddressColumn,
+		constants.LogFK,
 	},
-	ColumnValues: shared.ColumnValues{
-		"bid_id":           "10000000000000000",
-		constants.HeaderFK: DealHeaderSyncLog.HeaderID,
-		constants.LogFK:    DealHeaderSyncLog.ID,
-	},
-	ForeignKeyValues: shared.ForeignKeyValues{
-		constants.AddressFK: rawDealLog.Address.Hex(),
+	ColumnValues: event.ColumnValues{
+		constants.HeaderFK:      DealHeaderSyncLog.HeaderID,
+		constants.BidColumn:     "10000000000000000",
+		constants.AddressColumn: rawDealLog.Address.Hex(),
+		constants.LogFK:         DealHeaderSyncLog.ID,
 	},
 }
