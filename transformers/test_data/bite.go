@@ -23,7 +23,6 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/bite"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
@@ -72,16 +71,16 @@ var biteModel = event.InsertionModel{
 	SchemaName: "maker",
 	TableName:  "bite",
 	OrderedColumns: []event.ColumnName{
-		constants.HeaderFK, constants.LogFK, constants.UrnColumn, bite.Ink, bite.Art, bite.Tab, bite.Flip, bite.Id,
+		constants.HeaderFK, constants.LogFK, constants.UrnColumn, constants.InkColumn, constants.ArtColumn, constants.TabColumn, constants.FlipColumn, constants.BidIdColumn,
 	},
 	ColumnValues: event.ColumnValues{
 		constants.HeaderFK: BiteHeaderSyncLog.HeaderID,
 		constants.LogFK:    BiteHeaderSyncLog.ID,
 		// constants.UrnColumn: Can't assert against this since we don't know the ID...
-		bite.Ink:  biteInk.String(),
-		bite.Art:  biteArt.String(),
-		bite.Tab:  biteTab.String(),
-		bite.Flip: "0x7d7bEe5fCfD8028cf7b00876C5b1421c800561A6",
-		bite.Id:   biteID.String(),
+		constants.InkColumn:   biteInk.String(),
+		constants.ArtColumn:   biteArt.String(),
+		constants.TabColumn:   biteTab.String(),
+		constants.FlipColumn:  "0x7d7bEe5fCfD8028cf7b00876C5b1421c800561A6",
+		constants.BidIdColumn: biteID.String(),
 	},
 }

@@ -193,12 +193,12 @@ var _ = Describe("Cat File transformer", func() {
 		catFileConfig.StartingBlockNumber = vowBlockNumber
 		catFileConfig.EndingBlockNumber = vowBlockNumber
 
-		initializer := shared.EventTransformer{
+		initializer := event.Transformer{
 			Config:     catFileConfig,
-			Converter:  &vow.CatFileVowConverter{},
-			Repository: &vow.CatFileVowRepository{},
+			Converter:  &vow.Converter{},
+			Repository: &vow.Repository{},
 		}
-		t := initializer.NewEventTransformer(db)
+		t := initializer.NewTransformer(db)
 
 		logs, err := logFetcher.FetchLogs(
 			[]common.Address{common.HexToAddress(catFileConfig.ContractAddresses[0])},

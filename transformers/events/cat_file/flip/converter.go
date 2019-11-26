@@ -29,17 +29,10 @@ type Converter struct {
 	db *postgres.DB
 }
 
-const (
-	logDataRequired                    = true
-	numTopicsRequired                  = 4
-	What              event.ColumnName = "what"
-	Flip              event.ColumnName = "flip"
-)
-
 func (converter Converter) ToModels(_ string, logs []core.HeaderSyncLog) ([]event.InsertionModel, error) {
 	var results []event.InsertionModel
 	for _, log := range logs {
-		verifyErr := shared.VerifyLog(log.Log, numTopicsRequired, logDataRequired)
+		verifyErr := shared.VerifyLog(log.Log, shared.FourTopicsRequired, shared.LogDataRequired)
 		if verifyErr != nil {
 			return nil, verifyErr
 		}
@@ -62,16 +55,16 @@ func (converter Converter) ToModels(_ string, logs []core.HeaderSyncLog) ([]even
 			OrderedColumns: []event.ColumnName{
 				event.HeaderFK,
 				constants.IlkColumn,
-				What,
-				Flip,
+				constants.WhatColumn,
+				constants.FlipColumn,
 				event.LogFK,
 			},
 			ColumnValues: event.ColumnValues{
-				event.HeaderFK:      log.HeaderID,
-				constants.IlkColumn: ilkId,
-				What:                what,
-				Flip:                flip,
-				event.LogFK:         log.ID,
+				event.HeaderFK:       log.HeaderID,
+				constants.IlkColumn:  ilkId,
+				constants.WhatColumn: what,
+				constants.FlipColumn: flip,
+				event.LogFK:          log.ID,
 			},
 		}
 

@@ -20,20 +20,19 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
+	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 )
 
-type CatFileVowConverter struct{}
+type Converter struct {
+	db *postgres.DB
+}
 
-const (
-	logDataRequired   = true
-	numTopicsRequired = 4
-)
-
-func (CatFileVowConverter) ToModels(_ string, logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
-	var results []shared.InsertionModel
+func (Converter) ToModels(_ string, logs []core.HeaderSyncLog) ([]event.InsertionModel, error) {
+	var results []event.InsertionModel
 	for _, log := range logs {
-		err := shared.VerifyLog(log.Log, numTopicsRequired, logDataRequired)
+		err := shared.VerifyLog(log.Log, shared.FourTopicsRequired, shared.LogDataRequired)
 		if err != nil {
 			return nil, err
 		}
@@ -41,21 +40,24 @@ func (CatFileVowConverter) ToModels(_ string, logs []core.HeaderSyncLog) ([]shar
 		what := shared.DecodeHexToText(log.Log.Topics[2].Hex())
 		data := common.BytesToAddress(log.Log.Topics[3].Bytes()).String()
 
-		result := shared.InsertionModel{
+		result := event.InsertionModel{
 			SchemaName: "maker",
 			TableName:  "cat_file_vow",
-			OrderedColumns: []string{
-				constants.HeaderFK, "what", "data", constants.LogFK,
+			OrderedColumns: []event.ColumnName{
+				constants.HeaderFK, constants.WhatColumn, constants.DataColumn, event.LogFK,
 			},
-			ColumnValues: shared.ColumnValues{
-				"what":             what,
-				"data":             data,
-				constants.HeaderFK: log.HeaderID,
-				constants.LogFK:    log.ID,
+			ColumnValues: event.ColumnValues{
+				constants.HeaderFK:   log.HeaderID,
+				constants.WhatColumn: what,
+				constants.DataColumn: data,
+				event.LogFK:          log.ID,
 			},
-			ForeignKeyValues: shared.ForeignKeyValues{},
 		}
 		results = append(results, result)
 	}
 	return results, nil
+}
+
+func (converter *Converter) SetDB(db *postgres.DB) {
+	converter.db = db
 }

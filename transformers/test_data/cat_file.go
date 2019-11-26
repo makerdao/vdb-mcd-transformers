@@ -22,9 +22,6 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/cat_file/chop_lump"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/cat_file/flip"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
@@ -63,16 +60,16 @@ var catFileChopModel = event.InsertionModel{
 	OrderedColumns: []event.ColumnName{
 		event.HeaderFK,
 		constants.IlkColumn,
-		chop_lump.What,
-		chop_lump.Data,
+		constants.WhatColumn,
+		constants.DataColumn,
 		event.LogFK,
 	},
 	ColumnValues: event.ColumnValues{
 		event.HeaderFK: CatFileChopHeaderSyncLog.HeaderID,
 		//constants.IlkIdColumn changes with each insertion so it's best to assert directly in the test itself
-		chop_lump.What: "chop",
-		chop_lump.Data: "1000000000000000000000000000",
-		event.LogFK:    CatFileChopHeaderSyncLog.ID,
+		constants.WhatColumn: "chop",
+		constants.DataColumn: "1000000000000000000000000000",
+		event.LogFK:          CatFileChopHeaderSyncLog.ID,
 	},
 }
 
@@ -108,16 +105,16 @@ var catFileLumpModel = event.InsertionModel{
 	OrderedColumns: []event.ColumnName{
 		event.HeaderFK,
 		constants.IlkColumn,
-		chop_lump.What,
-		chop_lump.Data,
+		constants.WhatColumn,
+		constants.DataColumn,
 		event.LogFK,
 	},
 	ColumnValues: event.ColumnValues{
 		event.HeaderFK: CatFileLumpHeaderSyncLog.HeaderID,
 		//constants.IlkIdColumn changes with each insertion so it's best to assert directly in the test itself
-		chop_lump.What: "lump",
-		chop_lump.Data: "10000000000000000000000000000000000000000000000000",
-		event.LogFK:    CatFileLumpHeaderSyncLog.ID,
+		constants.WhatColumn: "lump",
+		constants.DataColumn: "10000000000000000000000000000000000000000000000000",
+		event.LogFK:          CatFileLumpHeaderSyncLog.ID,
 	},
 }
 
@@ -153,15 +150,15 @@ var catFileFlipModel = event.InsertionModel{
 	OrderedColumns: []event.ColumnName{
 		event.HeaderFK,
 		constants.IlkColumn,
-		flip.What,
-		flip.Flip,
+		constants.WhatColumn,
+		constants.FlipColumn,
 		constants.LogFK,
 	},
 	ColumnValues: event.ColumnValues{
-		event.HeaderFK:  CatFileFlipHeaderSyncLog.HeaderID,
-		flip.What:       "flip",
-		flip.Flip:       "0x6E8032435c84B08E30F27bfbb812Ee365A095b31",
-		constants.LogFK: CatFileFlipHeaderSyncLog.ID,
+		event.HeaderFK:       CatFileFlipHeaderSyncLog.HeaderID,
+		constants.WhatColumn: "flip",
+		constants.FlipColumn: "0x6E8032435c84B08E30F27bfbb812Ee365A095b31",
+		constants.LogFK:      CatFileFlipHeaderSyncLog.ID,
 	},
 }
 
@@ -189,19 +186,18 @@ var CatFileVowHeaderSyncLog = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-func CatFileVowModel() shared.InsertionModel { return CopyModel(catFileVowModel) }
+func CatFileVowModel() event.InsertionModel { return CopyEventModel(catFileVowModel) }
 
-var catFileVowModel = shared.InsertionModel{
+var catFileVowModel = event.InsertionModel{
 	SchemaName: "maker",
 	TableName:  "cat_file_vow",
-	OrderedColumns: []string{
-		constants.HeaderFK, "what", "data", constants.LogFK,
+	OrderedColumns: []event.ColumnName{
+		constants.HeaderFK, constants.WhatColumn, constants.DataColumn, constants.LogFK,
 	},
-	ColumnValues: shared.ColumnValues{
-		"what":             "vow",
-		"data":             "0x17560834075DA3Db54f737db74377E799c865821",
-		constants.HeaderFK: CatFileVowHeaderSyncLog.HeaderID,
-		constants.LogFK:    CatFileVowHeaderSyncLog.ID,
+	ColumnValues: event.ColumnValues{
+		constants.HeaderFK:   CatFileVowHeaderSyncLog.HeaderID,
+		constants.WhatColumn: "vow",
+		constants.DataColumn: "0x17560834075DA3Db54f737db74377E799c865821",
+		constants.LogFK:      CatFileVowHeaderSyncLog.ID,
 	},
-	ForeignKeyValues: shared.ForeignKeyValues{},
 }

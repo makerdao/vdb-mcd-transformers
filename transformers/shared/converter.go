@@ -25,6 +25,11 @@ import (
 	"github.com/makerdao/vulcanizedb/pkg/core"
 )
 
+const (
+	FourTopicsRequired = 4
+	LogDataRequired    = true
+)
+
 var (
 	ErrLogMissingTopics = func(expectedNumTopics, actualNumTopics int) error {
 		return fmt.Errorf("log missing topics: has %d, want %d", actualNumTopics, expectedNumTopics)
