@@ -32,6 +32,8 @@ CREATE TABLE maker.cat_ilk_flip
     UNIQUE (header_id, ilk_id, flip)
 );
 
+CREATE INDEX cat_ilk_flip_header_id_index
+    ON maker.cat_ilk_flip (header_id);
 CREATE INDEX cat_ilk_flip_ilk_index
     ON maker.cat_ilk_flip (ilk_id);
 
@@ -44,6 +46,8 @@ CREATE TABLE maker.cat_ilk_chop
     UNIQUE (header_id, ilk_id, chop)
 );
 
+CREATE INDEX cat_ilk_chop_header_id_index
+    ON maker.cat_ilk_chop (header_id);
 CREATE INDEX cat_ilk_chop_ilk_index
     ON maker.cat_ilk_chop (ilk_id);
 
@@ -56,13 +60,18 @@ CREATE TABLE maker.cat_ilk_lump
     UNIQUE (header_id, ilk_id, lump)
 );
 
+CREATE INDEX cat_ilk_lump_header_id_index
+    ON maker.cat_ilk_lump (header_id);
 CREATE INDEX cat_ilk_lump_ilk_index
     ON maker.cat_ilk_lump (ilk_id);
 
 
 -- +goose Down
+DROP INDEX maker.cat_ilk_flip_header_id_index;
 DROP INDEX maker.cat_ilk_flip_ilk_index;
+DROP INDEX maker.cat_ilk_chop_header_id_index;
 DROP INDEX maker.cat_ilk_chop_ilk_index;
+DROP INDEX maker.cat_ilk_lump_header_id_index;
 DROP INDEX maker.cat_ilk_lump_ilk_index;
 
 DROP TABLE maker.cat_live;

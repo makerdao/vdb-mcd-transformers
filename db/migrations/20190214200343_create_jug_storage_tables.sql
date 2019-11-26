@@ -8,6 +8,8 @@ CREATE TABLE maker.jug_ilk_rho
     UNIQUE (header_id, ilk_id, rho)
 );
 
+CREATE INDEX jug_ilk_rho_header_id_index
+    ON maker.jug_ilk_rho (header_id);
 CREATE INDEX jug_ilk_rho_ilk_index
     ON maker.jug_ilk_rho (ilk_id);
 
@@ -20,6 +22,8 @@ CREATE TABLE maker.jug_ilk_duty
     UNIQUE (header_id, ilk_id, duty)
 );
 
+CREATE INDEX jug_ilk_duty_header_id_index
+    ON maker.jug_ilk_duty (header_id);
 CREATE INDEX jug_ilk_duty_ilk_index
     ON maker.jug_ilk_duty (ilk_id);
 
@@ -48,7 +52,9 @@ CREATE TABLE maker.jug_base
 );
 
 -- +goose Down
+DROP INDEX maker.jug_ilk_rho_header_id_index;
 DROP INDEX maker.jug_ilk_rho_ilk_index;
+DROP INDEX maker.jug_ilk_duty_header_id_index;
 DROP INDEX maker.jug_ilk_duty_ilk_index;
 
 DROP TABLE maker.jug_ilk_rho;

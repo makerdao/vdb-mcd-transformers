@@ -24,6 +24,8 @@ CREATE TABLE maker.vat_ilk_art
     UNIQUE (header_id, ilk_id, art)
 );
 
+CREATE INDEX vat_ilk_art_header_id_index
+    ON maker.vat_ilk_art (header_id);
 CREATE INDEX vat_ilk_art_ilk_index
     ON maker.vat_ilk_art (ilk_id);
 
@@ -36,6 +38,8 @@ CREATE TABLE maker.vat_ilk_dust
     UNIQUE (header_id, ilk_id, dust)
 );
 
+CREATE INDEX vat_ilk_dust_header_id_index
+    ON maker.vat_ilk_dust (header_id);
 CREATE INDEX vat_ilk_dust_ilk_index
     ON maker.vat_ilk_dust (ilk_id);
 
@@ -48,6 +52,8 @@ CREATE TABLE maker.vat_ilk_line
     UNIQUE (header_id, ilk_id, line)
 );
 
+CREATE INDEX vat_ilk_line_header_id_index
+    ON maker.vat_ilk_line (header_id);
 CREATE INDEX vat_ilk_line_ilk_index
     ON maker.vat_ilk_line (ilk_id);
 
@@ -60,6 +66,8 @@ CREATE TABLE maker.vat_ilk_spot
     UNIQUE (header_id, ilk_id, spot)
 );
 
+CREATE INDEX vat_ilk_spot_header_id_index
+    ON maker.vat_ilk_spot (header_id);
 CREATE INDEX vat_ilk_spot_ilk_index
     ON maker.vat_ilk_spot (ilk_id);
 
@@ -72,6 +80,8 @@ CREATE TABLE maker.vat_ilk_rate
     UNIQUE (header_id, ilk_id, rate)
 );
 
+CREATE INDEX vat_ilk_rate_header_id_index
+    ON maker.vat_ilk_rate (header_id);
 CREATE INDEX vat_ilk_rate_ilk_index
     ON maker.vat_ilk_rate (ilk_id);
 
@@ -84,6 +94,8 @@ CREATE TABLE maker.vat_urn_art
     UNIQUE (header_id, urn_id, art)
 );
 
+CREATE INDEX vat_urn_art_header_id_index
+    ON maker.vat_urn_art (header_id);
 CREATE INDEX vat_urn_art_urn_index
     ON maker.vat_urn_art (urn_id);
 
@@ -96,6 +108,8 @@ CREATE TABLE maker.vat_urn_ink
     UNIQUE (header_id, urn_id, ink)
 );
 
+CREATE INDEX vat_urn_ink_header_id_index
+    ON maker.vat_urn_ink (header_id);
 CREATE INDEX vat_urn_ink_urn_index
     ON maker.vat_urn_ink (urn_id);
 
@@ -147,12 +161,19 @@ CREATE TABLE maker.vat_live
 );
 
 -- +goose Down
+DROP INDEX maker.vat_ilk_art_header_id_index;
 DROP INDEX maker.vat_ilk_art_ilk_index;
+DROP INDEX maker.vat_ilk_dust_header_id_index;
 DROP INDEX maker.vat_ilk_dust_ilk_index;
+DROP INDEX maker.vat_ilk_line_header_id_index;
 DROP INDEX maker.vat_ilk_line_ilk_index;
+DROP INDEX maker.vat_ilk_spot_header_id_index;
 DROP INDEX maker.vat_ilk_spot_ilk_index;
+DROP INDEX maker.vat_ilk_rate_header_id_index;
 DROP INDEX maker.vat_ilk_rate_ilk_index;
+DROP INDEX maker.vat_urn_art_header_id_index;
 DROP INDEX maker.vat_urn_art_urn_index;
+DROP INDEX maker.vat_urn_ink_header_id_index;
 DROP INDEX maker.vat_urn_ink_urn_index;
 DROP INDEX maker.vat_gem_ilk_index;
 
