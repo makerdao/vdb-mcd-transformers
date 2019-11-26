@@ -11,17 +11,17 @@ CREATE TYPE api.queued_sin AS (
 CREATE FUNCTION api.get_queued_sin(era NUMERIC)
     RETURNS api.queued_sin AS
 $body$
-WITH created AS (SELECT era, vow_sin_mapping.block_number, api.epoch_to_datetime(block_timestamp) AS datetime
+WITH created AS (SELECT era, h.block_number, api.epoch_to_datetime(block_timestamp) AS datetime
                  FROM maker.vow_sin_mapping
-                          LEFT JOIN public.headers h ON h.block_number = vow_sin_mapping.block_number
+                          LEFT JOIN public.headers h ON h.id = vow_sin_mapping.header_id
                  WHERE era = get_queued_sin.era
-                 ORDER BY vow_sin_mapping.block_number ASC
+                 ORDER BY h.block_number ASC
                  LIMIT 1),
-     updated AS (SELECT era, vow_sin_mapping.block_number, api.epoch_to_datetime(block_timestamp) AS datetime
+     updated AS (SELECT era, h.block_number, api.epoch_to_datetime(block_timestamp) AS datetime
                  FROM maker.vow_sin_mapping
-                          LEFT JOIN public.headers h ON h.block_number = vow_sin_mapping.block_number
+                          LEFT JOIN public.headers h ON h.id = vow_sin_mapping.header_id
                  WHERE era = get_queued_sin.era
-                 ORDER BY vow_sin_mapping.block_number DESC
+                 ORDER BY h.block_number DESC
                  LIMIT 1)
 
 SELECT get_queued_sin.era,
@@ -32,8 +32,9 @@ SELECT get_queued_sin.era,
 FROM maker.vow_sin_mapping
          LEFT JOIN created ON created.era = vow_sin_mapping.era
          LEFT JOIN updated ON updated.era = vow_sin_mapping.era
+         LEFT JOIN public.headers ON headers.id = vow_sin_mapping.header_id
 WHERE vow_sin_mapping.era = get_queued_sin.era
-ORDER BY vow_sin_mapping.block_number DESC
+ORDER BY headers.block_number DESC
 $body$
     LANGUAGE sql
     STABLE

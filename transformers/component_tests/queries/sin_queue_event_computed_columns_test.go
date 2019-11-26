@@ -31,22 +31,20 @@ import (
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
-	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("Sin queue event computed columns", func() {
 	var (
-		db               *postgres.DB
-		fakeBlock        int
-		fakeEra          string
-		fakeHeader       core.Header
-		fakeGethLog      types.Log
-		vowFessEvent     shared.InsertionModel
-		vowFessRepo      vow_fess.VowFessRepository
-		headerId         int64
-		headerRepository repositories.HeaderRepository
+		db                     *postgres.DB
+		blockOne, timestampOne int
+		fakeEra                string
+		headerOne              core.Header
+		fakeGethLog            types.Log
+		vowFessEvent           shared.InsertionModel
+		vowFessRepo            vow_fess.VowFessRepository
+		headerRepository       repositories.HeaderRepository
 	)
 
 	BeforeEach(func() {
@@ -54,21 +52,17 @@ var _ = Describe("Sin queue event computed columns", func() {
 		test_config.CleanTestDB(db)
 
 		headerRepository = repositories.NewHeaderRepository(db)
-		fakeBlock = rand.Int()
-		fakeEra = strconv.Itoa(int(rand.Int31()))
-		fakeHeader = fakes.GetFakeHeader(int64(fakeBlock))
-		fakeHeader.Timestamp = fakeEra
-		var insertHeaderErr error
-		headerId, insertHeaderErr = headerRepository.CreateOrUpdateHeader(fakeHeader)
-		Expect(insertHeaderErr).NotTo(HaveOccurred())
-
-		fakeHeaderSyncLog := test_data.CreateTestLog(headerId, db)
+		blockOne = rand.Int()
+		timestampOne = int(rand.Int31())
+		headerOne = createHeader(blockOne, timestampOne, headerRepository)
+		fakeEra = strconv.Itoa(timestampOne)
+		fakeHeaderSyncLog := test_data.CreateTestLog(headerOne.Id, db)
 		fakeGethLog = fakeHeaderSyncLog.Log
 
 		vowFessRepo = vow_fess.VowFessRepository{}
 		vowFessRepo.SetDB(db)
 		vowFessEvent = test_data.VowFessModel
-		vowFessEvent.ColumnValues[constants.HeaderFK] = headerId
+		vowFessEvent.ColumnValues[constants.HeaderFK] = headerOne.Id
 		vowFessEvent.ColumnValues[constants.LogFK] = fakeHeaderSyncLog.ID
 		insertErr := vowFessRepo.Create([]shared.InsertionModel{vowFessEvent})
 		Expect(insertErr).NotTo(HaveOccurred())
@@ -84,14 +78,14 @@ var _ = Describe("Sin queue event computed columns", func() {
 			expectedTx := Tx{
 				TransactionHash:  test_helpers.GetValidNullString("txHash"),
 				TransactionIndex: sql.NullInt64{Int64: int64(fakeGethLog.TxIndex), Valid: true},
-				BlockHeight:      sql.NullInt64{Int64: int64(fakeBlock), Valid: true},
-				BlockHash:        test_helpers.GetValidNullString(fakeHeader.Hash),
+				BlockHeight:      sql.NullInt64{Int64: headerOne.BlockNumber, Valid: true},
+				BlockHash:        test_helpers.GetValidNullString(headerOne.Hash),
 				TxFrom:           test_helpers.GetValidNullString("fromAddress"),
 				TxTo:             test_helpers.GetValidNullString("toAddress"),
 			}
 
 			_, err := db.Exec(`INSERT INTO header_sync_transactions (header_id, hash, tx_from, tx_index, tx_to)
-		        VALUES ($1, $2, $3, $4, $5)`, headerId, expectedTx.TransactionHash, expectedTx.TxFrom,
+		        VALUES ($1, $2, $3, $4, $5)`, headerOne.Id, expectedTx.TransactionHash, expectedTx.TxFrom,
 				expectedTx.TransactionIndex, expectedTx.TxTo)
 			Expect(err).NotTo(HaveOccurred())
 
@@ -112,14 +106,14 @@ var _ = Describe("Sin queue event computed columns", func() {
 					Int64: int64(fakeGethLog.TxIndex) + 1,
 					Valid: true,
 				},
-				BlockHeight: sql.NullInt64{Int64: int64(fakeBlock), Valid: true},
-				BlockHash:   test_helpers.GetValidNullString(fakeHeader.Hash),
+				BlockHeight: sql.NullInt64{Int64: int64(blockOne), Valid: true},
+				BlockHash:   test_helpers.GetValidNullString(headerOne.Hash),
 				TxFrom:      test_helpers.GetValidNullString("wrongFromAddress"),
 				TxTo:        test_helpers.GetValidNullString("wrongToAddress"),
 			}
 
 			_, insertErr := db.Exec(`INSERT INTO header_sync_transactions (header_id, hash, tx_from, tx_index, tx_to)
-				VALUES ($1, $2, $3, $4, $5)`, headerId, wrongTx.TransactionHash, wrongTx.TxFrom,
+				VALUES ($1, $2, $3, $4, $5)`, headerOne.Id, wrongTx.TransactionHash, wrongTx.TxFrom,
 				wrongTx.TransactionIndex, wrongTx.TxTo)
 			Expect(insertErr).NotTo(HaveOccurred())
 
@@ -134,24 +128,21 @@ var _ = Describe("Sin queue event computed columns", func() {
 		})
 
 		It("does not return transaction from different block with same index", func() {
-			lowerBlockNumber := fakeBlock - 1
-			anotherHeader := fakes.GetFakeHeader(int64(lowerBlockNumber))
-			anotherHeaderID, insertHeaderErr := headerRepository.CreateOrUpdateHeader(anotherHeader)
-			Expect(insertHeaderErr).NotTo(HaveOccurred())
+			headerZero := createHeader(blockOne-1, timestampOne-1, headerRepository)
 			wrongTx := Tx{
 				TransactionHash: test_helpers.GetValidNullString("wrongTxHash"),
 				TransactionIndex: sql.NullInt64{
 					Int64: int64(fakeGethLog.TxIndex),
 					Valid: true,
 				},
-				BlockHeight: sql.NullInt64{Int64: int64(lowerBlockNumber), Valid: true},
-				BlockHash:   test_helpers.GetValidNullString(fakeHeader.Hash),
+				BlockHeight: sql.NullInt64{Int64: headerZero.BlockNumber, Valid: true},
+				BlockHash:   test_helpers.GetValidNullString(headerOne.Hash),
 				TxFrom:      test_helpers.GetValidNullString("wrongFromAddress"),
 				TxTo:        test_helpers.GetValidNullString("wrongToAddress"),
 			}
 
 			_, insertErr := db.Exec(`INSERT INTO header_sync_transactions (header_id, hash, tx_from, tx_index, tx_to)
-				VALUES ($1, $2, $3, $4, $5)`, anotherHeaderID, wrongTx.TransactionHash, wrongTx.TxFrom,
+				VALUES ($1, $2, $3, $4, $5)`, headerZero.Id, wrongTx.TransactionHash, wrongTx.TxFrom,
 				wrongTx.TransactionIndex, wrongTx.TxTo)
 			Expect(insertErr).NotTo(HaveOccurred())
 

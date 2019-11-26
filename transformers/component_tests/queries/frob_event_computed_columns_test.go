@@ -21,14 +21,6 @@ import (
 	"math/rand"
 
 	"github.com/ethereum/go-ethereum/core/types"
-
-	"github.com/makerdao/vulcanizedb/pkg/core"
-	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
-	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
-	"github.com/makerdao/vulcanizedb/pkg/fakes"
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
-
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_frob"
@@ -36,20 +28,25 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/vat"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
+	"github.com/makerdao/vulcanizedb/pkg/core"
+	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
+	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
+	"github.com/makerdao/vulcanizedb/pkg/fakes"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("Frob event computed columns", func() {
 	var (
-		db               *postgres.DB
-		fakeBlock        int
-		fakeGuy          = "fakeAddress"
-		fakeHeader       core.Header
-		frobGethLog      types.Log
-		frobRepo         vat_frob.VatFrobRepository
-		frobEvent        shared.InsertionModel
-		headerId         int64
-		vatRepository    vat.VatStorageRepository
-		headerRepository repositories.HeaderRepository
+		db                     *postgres.DB
+		blockOne, timestampOne int
+		fakeGuy                = fakes.RandomString(42)
+		headerOne              core.Header
+		frobGethLog            types.Log
+		frobRepo               vat_frob.VatFrobRepository
+		frobEvent              shared.InsertionModel
+		vatRepository          vat.VatStorageRepository
+		headerRepository       repositories.HeaderRepository
 	)
 
 	BeforeEach(func() {
@@ -57,13 +54,11 @@ var _ = Describe("Frob event computed columns", func() {
 		test_config.CleanTestDB(db)
 
 		headerRepository = repositories.NewHeaderRepository(db)
-		fakeBlock = rand.Int()
-		fakeHeader = fakes.GetFakeHeader(int64(fakeBlock))
-		var insertHeaderErr error
-		headerId, insertHeaderErr = headerRepository.CreateOrUpdateHeader(fakeHeader)
-		Expect(insertHeaderErr).NotTo(HaveOccurred())
+		blockOne = rand.Int()
+		timestampOne = int(rand.Int31())
+		headerOne = createHeader(blockOne, timestampOne, headerRepository)
 
-		frobHeaderSyncLog := test_data.CreateTestLog(headerId, db)
+		frobHeaderSyncLog := test_data.CreateTestLog(headerOne.Id, db)
 		frobGethLog = frobHeaderSyncLog.Log
 
 		frobRepo = vat_frob.VatFrobRepository{}
@@ -71,7 +66,7 @@ var _ = Describe("Frob event computed columns", func() {
 		frobEvent = test_data.VatFrobModelWithPositiveDart()
 		frobEvent.ForeignKeyValues[constants.UrnFK] = fakeGuy
 		frobEvent.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
-		frobEvent.ColumnValues[constants.HeaderFK] = headerId
+		frobEvent.ColumnValues[constants.HeaderFK] = headerOne.Id
 		frobEvent.ColumnValues[constants.LogFK] = frobHeaderSyncLog.ID
 		insertFrobErr := frobRepo.Create([]shared.InsertionModel{frobEvent})
 		Expect(insertFrobErr).NotTo(HaveOccurred())
@@ -85,10 +80,10 @@ var _ = Describe("Frob event computed columns", func() {
 	Describe("frob_event_ilk", func() {
 		It("returns ilk_state for a frob_event", func() {
 			ilkValues := test_helpers.GetIlkValues(0)
-			test_helpers.CreateIlk(db, fakeHeader, ilkValues, test_helpers.FakeIlkVatMetadatas,
+			test_helpers.CreateIlk(db, headerOne, ilkValues, test_helpers.FakeIlkVatMetadatas,
 				test_helpers.FakeIlkCatMetadatas, test_helpers.FakeIlkJugMetadatas, test_helpers.FakeIlkSpotMetadatas)
 
-			expectedIlk := test_helpers.IlkStateFromValues(test_helpers.FakeIlk.Hex, fakeHeader.Timestamp, fakeHeader.Timestamp, ilkValues)
+			expectedIlk := test_helpers.IlkStateFromValues(test_helpers.FakeIlk.Hex, headerOne.Timestamp, headerOne.Timestamp, ilkValues)
 
 			var result test_helpers.IlkState
 			getIlkErr := db.Get(&result,
@@ -104,11 +99,10 @@ var _ = Describe("Frob event computed columns", func() {
 
 	Describe("frob_event_urn", func() {
 		It("returns urn_state for a frob_event", func() {
-			urnSetupData := test_helpers.GetUrnSetupData(fakeBlock, 1)
-			urnSetupData.Header.Hash = fakeHeader.Hash
+			urnSetupData := test_helpers.GetUrnSetupData(headerOne)
 			urnMetadata := test_helpers.GetUrnMetadata(test_helpers.FakeIlk.Hex, fakeGuy)
 			vatRepository.SetDB(db)
-			test_helpers.CreateUrn(urnSetupData, urnMetadata, vatRepository, headerRepository)
+			test_helpers.CreateUrn(urnSetupData, urnMetadata, vatRepository)
 
 			var actualUrn test_helpers.UrnState
 			getUrnErr := db.Get(&actualUrn,
@@ -134,14 +128,14 @@ var _ = Describe("Frob event computed columns", func() {
 					Int64: int64(frobGethLog.TxIndex),
 					Valid: true,
 				},
-				BlockHeight: sql.NullInt64{Int64: int64(fakeBlock), Valid: true},
-				BlockHash:   test_helpers.GetValidNullString(fakeHeader.Hash),
+				BlockHeight: sql.NullInt64{Int64: int64(blockOne), Valid: true},
+				BlockHash:   test_helpers.GetValidNullString(headerOne.Hash),
 				TxFrom:      test_helpers.GetValidNullString("fromAddress"),
 				TxTo:        test_helpers.GetValidNullString("toAddress"),
 			}
 
 			_, insertTxErr := db.Exec(`INSERT INTO header_sync_transactions (header_id, hash, tx_from, tx_index, tx_to)
-				VALUES ($1, $2, $3, $4, $5)`, headerId, expectedTx.TransactionHash, expectedTx.TxFrom,
+				VALUES ($1, $2, $3, $4, $5)`, headerOne.Id, expectedTx.TransactionHash, expectedTx.TxFrom,
 				expectedTx.TransactionIndex, expectedTx.TxTo)
 			Expect(insertTxErr).NotTo(HaveOccurred())
 
@@ -161,14 +155,14 @@ var _ = Describe("Frob event computed columns", func() {
 					Int64: int64(frobGethLog.TxIndex) + 1,
 					Valid: true,
 				},
-				BlockHeight: sql.NullInt64{Int64: int64(fakeBlock), Valid: true},
-				BlockHash:   test_helpers.GetValidNullString(fakeHeader.Hash),
+				BlockHeight: sql.NullInt64{Int64: int64(blockOne), Valid: true},
+				BlockHash:   test_helpers.GetValidNullString(headerOne.Hash),
 				TxFrom:      test_helpers.GetValidNullString("wrongFromAddress"),
 				TxTo:        test_helpers.GetValidNullString("wrongToAddress"),
 			}
 
 			_, insertTxErr := db.Exec(`INSERT INTO header_sync_transactions (header_id, hash, tx_from, tx_index, tx_to)
-				VALUES ($1, $2, $3, $4, $5)`, headerId, wrongTx.TransactionHash, wrongTx.TxFrom,
+				VALUES ($1, $2, $3, $4, $5)`, headerOne.Id, wrongTx.TransactionHash, wrongTx.TxFrom,
 				wrongTx.TransactionIndex, wrongTx.TxTo)
 			Expect(insertTxErr).NotTo(HaveOccurred())
 
@@ -182,24 +176,21 @@ var _ = Describe("Frob event computed columns", func() {
 		})
 
 		It("does not return transaction from different block with same index", func() {
-			lowerBlockNumber := fakeBlock - 1
-			anotherHeader := fakes.GetFakeHeader(int64(lowerBlockNumber))
-			anotherHeaderID, insertHeaderErr := headerRepository.CreateOrUpdateHeader(anotherHeader)
-			Expect(insertHeaderErr).NotTo(HaveOccurred())
+			headerZero := createHeader(blockOne-1, timestampOne-1, headerRepository)
 			wrongTx := Tx{
 				TransactionHash: test_helpers.GetValidNullString("wrongTxHash"),
 				TransactionIndex: sql.NullInt64{
 					Int64: int64(frobGethLog.TxIndex),
 					Valid: true,
 				},
-				BlockHeight: sql.NullInt64{Int64: int64(lowerBlockNumber), Valid: true},
-				BlockHash:   test_helpers.GetValidNullString(fakeHeader.Hash),
+				BlockHeight: sql.NullInt64{Int64: headerZero.BlockNumber, Valid: true},
+				BlockHash:   test_helpers.GetValidNullString(headerOne.Hash),
 				TxFrom:      test_helpers.GetValidNullString("wrongFromAddress"),
 				TxTo:        test_helpers.GetValidNullString("wrongToAddress"),
 			}
 
 			_, insertTxErr := db.Exec(`INSERT INTO header_sync_transactions (header_id, hash, tx_from, tx_index, tx_to)
-				VALUES ($1, $2, $3, $4, $5)`, anotherHeaderID, wrongTx.TransactionHash, wrongTx.TxFrom,
+				VALUES ($1, $2, $3, $4, $5)`, headerZero.Id, wrongTx.TransactionHash, wrongTx.TxFrom,
 				wrongTx.TransactionIndex, wrongTx.TxTo)
 			Expect(insertTxErr).NotTo(HaveOccurred())
 

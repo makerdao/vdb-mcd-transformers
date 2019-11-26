@@ -14,6 +14,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data/shared_behaviors"
 	"github.com/makerdao/vulcanizedb/libraries/shared/storage/utils"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
+	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -21,24 +22,26 @@ import (
 
 var _ = Describe("Flip storage repository", func() {
 	var (
-		db              *postgres.DB
-		repo            flip.FlipStorageRepository
-		fakeBlockHash   = fakes.FakeHash.Hex()
-		fakeBlockNumber int
+		db           *postgres.DB
+		repo         flip.FlipStorageRepository
+		fakeHeaderID int64
 	)
 
 	BeforeEach(func() {
-		fakeBlockNumber = rand.Int()
 		db = test_config.NewTestDB(test_config.NewTestNode())
 		test_config.CleanTestDB(db)
 		repo = flip.FlipStorageRepository{ContractAddress: test_data.EthFlipAddress()}
 		repo.SetDB(db)
+		headerRepository := repositories.NewHeaderRepository(db)
+		var insertHeaderErr error
+		fakeHeaderID, insertHeaderErr = headerRepository.CreateOrUpdateHeader(fakes.FakeHeader)
+		Expect(insertHeaderErr).NotTo(HaveOccurred())
 	})
 
 	It("panics if the metadata name is not recognized", func() {
 		unrecognizedMetadata := utils.StorageValueMetadata{Name: "unrecognized"}
 		flipCreate := func() {
-			_ = repo.Create(fakeBlockNumber, fakeBlockHash, unrecognizedMetadata, "")
+			_ = repo.Create(fakeHeaderID, unrecognizedMetadata, "")
 		}
 
 		Expect(flipCreate).Should(Panic())
@@ -46,7 +49,7 @@ var _ = Describe("Flip storage repository", func() {
 
 	It("rolls back the record and address insertions if there's a failure", func() {
 		var begMetadata = utils.StorageValueMetadata{Name: storage.Beg}
-		err := repo.Create(fakeBlockNumber, fakeBlockHash, begMetadata, "")
+		err := repo.Create(fakeHeaderID, begMetadata, "")
 		Expect(err).To(HaveOccurred())
 		Expect(err.Error()).To(MatchRegexp("pq: invalid input syntax for type numeric"))
 
@@ -74,24 +77,24 @@ var _ = Describe("Flip storage repository", func() {
 			It("writes row", func() {
 				ilkMetadata := utils.StorageValueMetadata{Name: storage.Ilk}
 
-				insertErr := repo.Create(fakeBlockNumber, fakeBlockHash, ilkMetadata, FakeIlk)
+				insertErr := repo.Create(fakeHeaderID, ilkMetadata, FakeIlk)
 
 				Expect(insertErr).NotTo(HaveOccurred())
 
 				var result VariableRes
-				getErr := db.Get(&result, `SELECT block_number, block_hash, ilk_id AS value FROM maker.flip_ilk`)
+				getErr := db.Get(&result, `SELECT header_id, ilk_id AS value FROM maker.flip_ilk`)
 				Expect(getErr).NotTo(HaveOccurred())
 				ilkID, ilkErr := shared.GetOrCreateIlk(FakeIlk, db)
 				Expect(ilkErr).NotTo(HaveOccurred())
-				AssertVariable(result, fakeBlockNumber, fakeBlockHash, strconv.FormatInt(ilkID, 10))
+				AssertVariable(result, fakeHeaderID, strconv.FormatInt(ilkID, 10))
 			})
 
 			It("does not duplicate row", func() {
 				ilkMetadata := utils.StorageValueMetadata{Name: storage.Ilk}
-				insertOneErr := repo.Create(fakeBlockNumber, fakeBlockHash, ilkMetadata, FakeIlk)
+				insertOneErr := repo.Create(fakeHeaderID, ilkMetadata, FakeIlk)
 				Expect(insertOneErr).NotTo(HaveOccurred())
 
-				insertTwoErr := repo.Create(fakeBlockNumber, fakeBlockHash, ilkMetadata, FakeIlk)
+				insertTwoErr := repo.Create(fakeHeaderID, ilkMetadata, FakeIlk)
 
 				Expect(insertTwoErr).NotTo(HaveOccurred())
 				var count int
@@ -131,18 +134,18 @@ var _ = Describe("Flip storage repository", func() {
 			values[1] = fakeTau
 
 			It("persists a ttl record", func() {
-				err := repo.Create(fakeBlockNumber, fakeBlockHash, ttlAndTauMetadata, values)
+				err := repo.Create(fakeHeaderID, ttlAndTauMetadata, values)
 				Expect(err).NotTo(HaveOccurred())
 
 				var ttlResult VariableRes
-				err = db.Get(&ttlResult, `SELECT block_number, block_hash, ttl AS value FROM maker.flip_ttl`)
+				err = db.Get(&ttlResult, `SELECT header_id, ttl AS value FROM maker.flip_ttl`)
 				Expect(err).NotTo(HaveOccurred())
-				AssertVariable(ttlResult, fakeBlockNumber, fakeBlockHash, fakeTtl)
+				AssertVariable(ttlResult, fakeHeaderID, fakeTtl)
 
 				var tauResult VariableRes
-				err = db.Get(&tauResult, `SELECT block_number, block_hash, tau AS value FROM maker.flip_tau`)
+				err = db.Get(&tauResult, `SELECT header_id, tau AS value FROM maker.flip_tau`)
 				Expect(err).NotTo(HaveOccurred())
-				AssertVariable(tauResult, fakeBlockNumber, fakeBlockHash, fakeTau)
+				AssertVariable(tauResult, fakeHeaderID, fakeTau)
 			})
 
 			It("panics if the packed name is not recognized", func() {
@@ -155,7 +158,7 @@ var _ = Describe("Flip storage repository", func() {
 				}
 
 				createFunc := func() {
-					_ = repo.Create(fakeBlockNumber, fakeBlockHash, badMetadata, values)
+					_ = repo.Create(fakeHeaderID, badMetadata, values)
 				}
 				Expect(createFunc).To(Panic())
 			})
@@ -163,7 +166,7 @@ var _ = Describe("Flip storage repository", func() {
 			It("returns an error if inserting fails", func() {
 				badValues := make(map[int]string)
 				badValues[0] = ""
-				err := repo.Create(fakeBlockNumber, fakeBlockHash, ttlAndTauMetadata, badValues)
+				err := repo.Create(fakeHeaderID, ttlAndTauMetadata, badValues)
 				Expect(err).To(HaveOccurred())
 				Expect(err.Error()).To(MatchRegexp("pq: invalid input syntax for type numeric"))
 			})
@@ -194,7 +197,7 @@ var _ = Describe("Flip storage repository", func() {
 				Keys: map[utils.Key]string{},
 				Type: utils.Uint256,
 			}
-			err := repo.Create(fakeBlockNumber, fakeBlockHash, badMetadata, "")
+			err := repo.Create(fakeHeaderID, badMetadata, "")
 			Expect(err).To(MatchError(utils.ErrMetadataMalformed{MissingData: constants.BidId}))
 		})
 
@@ -261,35 +264,35 @@ var _ = Describe("Flip storage repository", func() {
 				values[2] = fakeEnd
 
 				BeforeEach(func() {
-					err := repo.Create(fakeBlockNumber, fakeBlockHash, bidGuyTicEndMetadata, values)
+					err := repo.Create(fakeHeaderID, bidGuyTicEndMetadata, values)
 					Expect(err).NotTo(HaveOccurred())
 				})
 
 				It("persists bid guy record", func() {
 					var guyResult MappingRes
-					selectErr := db.Get(&guyResult, `SELECT block_number, block_hash, bid_id AS key, guy AS value FROM maker.flip_bid_guy`)
+					selectErr := db.Get(&guyResult, `SELECT header_id, bid_id AS key, guy AS value FROM maker.flip_bid_guy`)
 					Expect(selectErr).NotTo(HaveOccurred())
-					AssertMapping(guyResult, fakeBlockNumber, fakeBlockHash, fakeBidId, fakeGuy)
+					AssertMapping(guyResult, fakeHeaderID, fakeBidId, fakeGuy)
 				})
 
 				It("persists bid tic record", func() {
 					var ticResult MappingRes
-					selectErr := db.Get(&ticResult, `SELECT block_number, block_hash, bid_id AS key, tic AS value FROM maker.flip_bid_tic`)
+					selectErr := db.Get(&ticResult, `SELECT header_id, bid_id AS key, tic AS value FROM maker.flip_bid_tic`)
 					Expect(selectErr).NotTo(HaveOccurred())
-					AssertMapping(ticResult, fakeBlockNumber, fakeBlockHash, fakeBidId, fakeTic)
+					AssertMapping(ticResult, fakeHeaderID, fakeBidId, fakeTic)
 				})
 
 				It("persists bid end record", func() {
 					var endResult MappingRes
-					selectErr := db.Get(&endResult, `SELECT block_number, block_hash, bid_id AS key, "end" AS value FROM maker.flip_bid_end`)
+					selectErr := db.Get(&endResult, `SELECT header_id, bid_id AS key, "end" AS value FROM maker.flip_bid_end`)
 					Expect(selectErr).NotTo(HaveOccurred())
-					AssertMapping(endResult, fakeBlockNumber, fakeBlockHash, fakeBidId, fakeEnd)
+					AssertMapping(endResult, fakeHeaderID, fakeBidId, fakeEnd)
 				})
 			})
 			It("returns an error if inserting fails", func() {
 				badValues := make(map[int]string)
 				badValues[1] = ""
-				err := repo.Create(fakeBlockNumber, fakeBlockHash, bidGuyTicEndMetadata, badValues)
+				err := repo.Create(fakeHeaderID, bidGuyTicEndMetadata, badValues)
 				Expect(err).To(HaveOccurred())
 				Expect(err.Error()).To(MatchRegexp("pq: invalid input syntax for integer"))
 			})

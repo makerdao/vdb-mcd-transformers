@@ -5,8 +5,7 @@ import (
 )
 
 type BlockMetadata struct {
-	BlockNumber int    `db:"block_number"`
-	BlockHash   string `db:"block_hash"`
+	HeaderID int64 `db:"header_id"`
 }
 
 type VariableRes struct {
@@ -34,6 +33,7 @@ type DoubleMappingRes struct {
 
 type FlapRes struct {
 	BlockMetadata
+	BlockNumber     int64  `db:"block_number"`
 	ContractAddress string `db:"contract_address"`
 	Id              string
 	BidId           string `db:"bid_id"`
@@ -46,6 +46,7 @@ type FlapRes struct {
 
 type FlopRes struct {
 	BlockMetadata
+	BlockNumber     int64  `db:"block_number"`
 	ContractAddress string `db:"contract_address"`
 	Id              string
 	BidId           string `db:"bid_id"`
@@ -56,22 +57,19 @@ type FlopRes struct {
 	Bid             string
 }
 
-func AssertVariable(res VariableRes, blockNumber int, blockHash, value string) {
-	Expect(res.BlockNumber).To(Equal(blockNumber))
-	Expect(res.BlockHash).To(Equal(blockHash))
+func AssertVariable(res VariableRes, headerID int64, value string) {
+	Expect(res.HeaderID).To(Equal(headerID))
 	Expect(res.Value).To(Equal(value))
 }
 
-func AssertMapping(res MappingRes, blockNumber int, blockHash, key, value string) {
-	Expect(res.BlockNumber).To(Equal(blockNumber))
-	Expect(res.BlockHash).To(Equal(blockHash))
+func AssertMapping(res MappingRes, headerID int64, key, value string) {
+	Expect(res.HeaderID).To(Equal(headerID))
 	Expect(res.Key).To(Equal(key))
 	Expect(res.Value).To(Equal(value))
 }
 
-func AssertDoubleMapping(res DoubleMappingRes, blockNumber int, blockHash, keyOne, keyTwo, value string) {
-	Expect(res.BlockNumber).To(Equal(blockNumber))
-	Expect(res.BlockHash).To(Equal(blockHash))
+func AssertDoubleMapping(res DoubleMappingRes, headerID int64, keyOne, keyTwo, value string) {
+	Expect(res.HeaderID).To(Equal(headerID))
 	Expect(res.KeyOne).To(Equal(keyOne))
 	Expect(res.KeyTwo).To(Equal(keyTwo))
 	Expect(res.Value).To(Equal(value))

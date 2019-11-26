@@ -22,14 +22,6 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/makerdao/vulcanizedb/libraries/shared/storage/utils"
-	"github.com/makerdao/vulcanizedb/pkg/core"
-	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
-	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
-	"github.com/makerdao/vulcanizedb/pkg/fakes"
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
-
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/vow_flog"
@@ -37,20 +29,26 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/vow"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
+	"github.com/makerdao/vulcanizedb/libraries/shared/storage/utils"
+	"github.com/makerdao/vulcanizedb/pkg/core"
+	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
+	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("QueuedSin", func() {
 	var (
-		db                 *postgres.DB
-		fakeBlock          int
-		rawEra             = int(rand.Int31())
-		fakeEra            = strconv.Itoa(rawEra)
-		fakeHeader         core.Header
-		fakeTab            = strconv.Itoa(int(rand.Int31()))
-		headerID, logId    int64
-		sinMappingMetadata utils.StorageValueMetadata
-		vowRepository      vow.VowStorageRepository
-		headerRepository   repositories.HeaderRepository
+		blockOne, timestampOne int
+		db                     *postgres.DB
+		fakeEra                string
+		fakeTab                = strconv.Itoa(int(rand.Int31()))
+		headerOne              core.Header
+		headerRepository       repositories.HeaderRepository
+		logId                  int64
+		rawEra                 int
+		sinMappingMetadata     utils.StorageValueMetadata
+		vowRepository          vow.VowStorageRepository
 	)
 
 	BeforeEach(func() {
@@ -58,19 +56,20 @@ var _ = Describe("QueuedSin", func() {
 		test_config.CleanTestDB(db)
 
 		headerRepository = repositories.NewHeaderRepository(db)
-		fakeBlock = rand.Int()
-		fakeHeader = fakes.GetFakeHeader(int64(fakeBlock))
-		var insertHeaderErr error
-		headerID, insertHeaderErr = headerRepository.CreateOrUpdateHeader(fakeHeader)
-		Expect(insertHeaderErr).NotTo(HaveOccurred())
-		fakeHeaderSyncLog := test_data.CreateTestLog(headerID, db)
+		blockOne = rand.Int()
+		timestampOne = int(rand.Int31())
+		headerOne = createHeader(blockOne, timestampOne, headerRepository)
+		fakeHeaderSyncLog := test_data.CreateTestLog(headerOne.Id, db)
 		logId = fakeHeaderSyncLog.ID
+
+		rawEra = int(rand.Int31())
+		fakeEra = strconv.Itoa(rawEra)
 
 		vowRepository = vow.VowStorageRepository{}
 		vowRepository.SetDB(db)
 		sinMappingKeys := map[utils.Key]string{constants.Timestamp: fakeEra}
 		sinMappingMetadata = utils.GetStorageValueMetadata(vow.SinMapping, sinMappingKeys, utils.Uint256)
-		insertSinMappingErr := vowRepository.Create(int(fakeHeader.BlockNumber), fakeHeader.Hash, sinMappingMetadata, fakeTab)
+		insertSinMappingErr := vowRepository.Create(headerOne.Id, sinMappingMetadata, fakeTab)
 		Expect(insertSinMappingErr).NotTo(HaveOccurred())
 	})
 
@@ -88,7 +87,7 @@ var _ = Describe("QueuedSin", func() {
 			Expect(result.Era).To(Equal(test_helpers.GetValidNullString(fakeEra)))
 			Expect(result.Tab).To(Equal(test_helpers.GetValidNullString(fakeTab)))
 			Expect(result.Flogged).To(Equal(sql.NullBool{Bool: false, Valid: true}))
-			timestampAsInt, convertErr := strconv.ParseInt(fakeHeader.Timestamp, 10, 64)
+			timestampAsInt, convertErr := strconv.ParseInt(headerOne.Timestamp, 10, 64)
 			Expect(convertErr).NotTo(HaveOccurred())
 			timestampAsStr := time.Unix(timestampAsInt, 0).UTC().Format(time.RFC3339)
 			expectedTimestamp := test_helpers.GetValidNullString(timestampAsStr)
@@ -101,7 +100,7 @@ var _ = Describe("QueuedSin", func() {
 			vowFlogRepository.SetDB(db)
 			vowFlogEvent := test_data.VowFlogModel
 			vowFlogEvent.ColumnValues["era"] = fakeEra
-			vowFlogEvent.ColumnValues[constants.HeaderFK] = headerID
+			vowFlogEvent.ColumnValues[constants.HeaderFK] = headerOne.Id
 			vowFlogEvent.ColumnValues[constants.LogFK] = logId
 			insertVowFlogErr := vowFlogRepository.Create([]shared.InsertionModel{vowFlogEvent})
 			Expect(insertVowFlogErr).NotTo(HaveOccurred())
@@ -129,17 +128,10 @@ var _ = Describe("QueuedSin", func() {
 			)
 
 			BeforeEach(func() {
-				laterHeader := fakeHeader
-				laterHeader.BlockNumber = int64(fakeBlock + 1000)
-				laterHeader.Hash = test_data.RandomString(5)
-				fakeHeaderTimestampAsInt, convertCreatedErr := strconv.ParseInt(fakeHeader.Timestamp, 10, 64)
-				Expect(convertCreatedErr).NotTo(HaveOccurred())
-				laterTimestamp = strconv.Itoa(int(fakeHeaderTimestampAsInt + 1))
-				laterHeader.Timestamp = laterTimestamp
-				_, insertHeaderErr := headerRepository.CreateOrUpdateHeader(laterHeader)
-				Expect(insertHeaderErr).NotTo(HaveOccurred())
-
-				insertVowMappingErr := vowRepository.Create(int(laterHeader.BlockNumber), laterHeader.Hash, sinMappingMetadata, anotherFakeTab)
+				timestampTwo := timestampOne + 1
+				headerTwo := createHeader(blockOne+1, timestampTwo, headerRepository)
+				laterTimestamp = strconv.Itoa(timestampTwo)
+				insertVowMappingErr := vowRepository.Create(headerTwo.Id, sinMappingMetadata, anotherFakeTab)
 				Expect(insertVowMappingErr).NotTo(HaveOccurred())
 			})
 
@@ -148,7 +140,7 @@ var _ = Describe("QueuedSin", func() {
 				err := db.Get(&result, `SELECT era, tab, flogged, created, updated from api.get_queued_sin($1)`, fakeEra)
 				Expect(err).NotTo(HaveOccurred())
 
-				createdTimestampAsInt, convertCreatedErr := strconv.ParseInt(fakeHeader.Timestamp, 10, 64)
+				createdTimestampAsInt, convertCreatedErr := strconv.ParseInt(headerOne.Timestamp, 10, 64)
 				Expect(convertCreatedErr).NotTo(HaveOccurred())
 				expectedCreatedTimestamp := time.Unix(createdTimestampAsInt, 0).UTC().Format(time.RFC3339)
 				Expect(result.Created).To(Equal(test_helpers.GetValidNullString(expectedCreatedTimestamp)))
@@ -175,7 +167,7 @@ var _ = Describe("QueuedSin", func() {
 			anotherFakeTab := strconv.Itoa(int(rand.Int31()))
 			anotherSinMappingKeys := map[utils.Key]string{constants.Timestamp: anotherFakeEra}
 			anotherSinMappingMetadata := utils.GetStorageValueMetadata(vow.SinMapping, anotherSinMappingKeys, utils.Uint256)
-			insertSinMappingErr := vowRepository.Create(int(fakeHeader.BlockNumber), fakeHeader.Hash, anotherSinMappingMetadata, anotherFakeTab)
+			insertSinMappingErr := vowRepository.Create(headerOne.Id, anotherSinMappingMetadata, anotherFakeTab)
 			Expect(insertSinMappingErr).NotTo(HaveOccurred())
 
 			var results []QueuedSin
@@ -200,7 +192,7 @@ var _ = Describe("QueuedSin", func() {
 				anotherSinMappingKeys := map[utils.Key]string{constants.Timestamp: laterEra}
 				anotherSinMappingMetadata := utils.GetStorageValueMetadata(vow.SinMapping, anotherSinMappingKeys, utils.Uint256)
 
-				insertSinMappingErr := vowRepository.Create(int(fakeHeader.BlockNumber), fakeHeader.Hash, anotherSinMappingMetadata, anotherFakeTab)
+				insertSinMappingErr := vowRepository.Create(headerOne.Id, anotherSinMappingMetadata, anotherFakeTab)
 				Expect(insertSinMappingErr).NotTo(HaveOccurred())
 			})
 
@@ -225,7 +217,7 @@ var _ = Describe("QueuedSin", func() {
 				Expect(err).NotTo(HaveOccurred())
 
 				Expect(len(results)).To(Equal(maxResults))
-				Expect(results[0].Era).To(Equal(test_helpers.GetValidNullString(strconv.Itoa(rawEra))))
+				Expect(results[0].Era).To(Equal(test_helpers.GetValidNullString(fakeEra)))
 				Expect(results[0].Tab).To(Equal(test_helpers.GetValidNullString(fakeTab)))
 			})
 		})

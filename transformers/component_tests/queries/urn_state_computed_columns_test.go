@@ -17,18 +17,8 @@
 package queries
 
 import (
-	"math/big"
 	"math/rand"
 	"strconv"
-
-	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
-
-	"github.com/makerdao/vulcanizedb/pkg/core"
-	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
-	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
-	"github.com/makerdao/vulcanizedb/pkg/fakes"
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
 
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
@@ -40,19 +30,26 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/jug"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/vat"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
+	"github.com/makerdao/vulcanizedb/pkg/core"
+	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
+	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
+	"github.com/makerdao/vulcanizedb/pkg/fakes"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("Urn state computed columns", func() {
 	var (
-		db               *postgres.DB
-		fakeBlock        int
-		fakeGuy          = "fakeAddress"
-		fakeHeader       core.Header
-		headerId, logId  int64
-		vatRepository    vat.VatStorageRepository
-		catRepository    cat.CatStorageRepository
-		jugRepository    jug.JugStorageRepository
-		headerRepository repositories.HeaderRepository
+		db                     *postgres.DB
+		fakeGuy                = fakes.RandomString(42)
+		blockOne, timestampOne int
+		headerOne              core.Header
+		logId                  int64
+		vatRepository          vat.VatStorageRepository
+		catRepository          cat.CatStorageRepository
+		jugRepository          jug.JugStorageRepository
+		headerRepository       repositories.HeaderRepository
 	)
 
 	BeforeEach(func() {
@@ -60,12 +57,10 @@ var _ = Describe("Urn state computed columns", func() {
 		test_config.CleanTestDB(db)
 
 		headerRepository = repositories.NewHeaderRepository(db)
-		fakeBlock = rand.Int()
-		fakeHeader = fakes.GetFakeHeader(int64(fakeBlock))
-		var insertHeaderErr error
-		headerId, insertHeaderErr = headerRepository.CreateOrUpdateHeader(fakeHeader)
-		Expect(insertHeaderErr).NotTo(HaveOccurred())
-		fakeHeaderSyncLog := test_data.CreateTestLog(headerId, db)
+		blockOne = rand.Int()
+		timestampOne = int(rand.Int31())
+		headerOne = createHeader(blockOne, timestampOne, headerRepository)
+		fakeHeaderSyncLog := test_data.CreateTestLog(headerOne.Id, db)
 		logId = fakeHeaderSyncLog.ID
 
 		vatRepository.SetDB(db)
@@ -81,12 +76,11 @@ var _ = Describe("Urn state computed columns", func() {
 	Describe("urn_state_ilk", func() {
 		It("returns the ilk for an urn", func() {
 			ilkValues := test_helpers.GetIlkValues(0)
-			test_helpers.CreateIlk(db, fakeHeader, ilkValues, test_helpers.FakeIlkVatMetadatas,
+			test_helpers.CreateIlk(db, headerOne, ilkValues, test_helpers.FakeIlkVatMetadatas,
 				test_helpers.FakeIlkCatMetadatas, test_helpers.FakeIlkJugMetadatas, test_helpers.FakeIlkSpotMetadatas)
 
 			fakeGuy := "fakeAddress"
-			urnSetupData := test_helpers.GetUrnSetupData(fakeBlock, 1)
-			urnSetupData.Header.Hash = fakeHeader.Hash
+			urnSetupData := test_helpers.GetUrnSetupData(headerOne)
 			ilkRate, convertRateErr := strconv.Atoi(ilkValues[vat.IlkRate])
 			Expect(convertRateErr).NotTo(HaveOccurred())
 			urnSetupData.Rate = ilkRate
@@ -94,16 +88,16 @@ var _ = Describe("Urn state computed columns", func() {
 			Expect(convertSpotErr).NotTo(HaveOccurred())
 			urnSetupData.Spot = ilkSpot
 			urnMetadata := test_helpers.GetUrnMetadata(test_helpers.FakeIlk.Hex, fakeGuy)
-			test_helpers.CreateUrn(urnSetupData, urnMetadata, vatRepository, headerRepository)
+			test_helpers.CreateUrn(urnSetupData, urnMetadata, vatRepository)
 
-			expectedIlk := test_helpers.IlkStateFromValues(test_helpers.FakeIlk.Hex, fakeHeader.Timestamp, fakeHeader.Timestamp, ilkValues)
+			expectedIlk := test_helpers.IlkStateFromValues(test_helpers.FakeIlk.Hex, headerOne.Timestamp, headerOne.Timestamp, ilkValues)
 
 			var result test_helpers.IlkState
 			getIlkErr := db.Get(&result,
 				`SELECT ilk_identifier, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated
 					FROM api.urn_state_ilk(
 					(SELECT (urn_identifier, ilk_identifier, block_height, ink, art, created, updated)::api.urn_state
-					FROM api.get_urn($1, $2, $3)))`, test_helpers.FakeIlk.Identifier, fakeGuy, fakeHeader.BlockNumber)
+					FROM api.get_urn($1, $2, $3)))`, test_helpers.FakeIlk.Identifier, fakeGuy, headerOne.BlockNumber)
 
 			Expect(getIlkErr).NotTo(HaveOccurred())
 			Expect(result).To(Equal(expectedIlk))
@@ -112,17 +106,16 @@ var _ = Describe("Urn state computed columns", func() {
 
 	Describe("urn_state_frobs", func() {
 		It("returns frobs for an urn_state", func() {
-			urnSetupData := test_helpers.GetUrnSetupData(fakeBlock, 1)
-			urnSetupData.Header.Hash = fakeHeader.Hash
+			urnSetupData := test_helpers.GetUrnSetupData(headerOne)
 			urnMetadata := test_helpers.GetUrnMetadata(test_helpers.FakeIlk.Hex, fakeGuy)
-			test_helpers.CreateUrn(urnSetupData, urnMetadata, vatRepository, headerRepository)
+			test_helpers.CreateUrn(urnSetupData, urnMetadata, vatRepository)
 
 			frobRepo := vat_frob.VatFrobRepository{}
 			frobRepo.SetDB(db)
 			frobEvent := test_data.VatFrobModelWithPositiveDart()
 			frobEvent.ForeignKeyValues[constants.UrnFK] = fakeGuy
 			frobEvent.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
-			frobEvent.ColumnValues[constants.HeaderFK] = headerId
+			frobEvent.ColumnValues[constants.HeaderFK] = headerOne.Id
 			frobEvent.ColumnValues[constants.LogFK] = logId
 			insertFrobErr := frobRepo.Create([]shared.InsertionModel{frobEvent})
 			Expect(insertFrobErr).NotTo(HaveOccurred())
@@ -132,7 +125,7 @@ var _ = Describe("Urn state computed columns", func() {
 				`SELECT ilk_identifier, urn_identifier, dink, dart FROM api.urn_state_frobs(
                         (SELECT (urn_identifier, ilk_identifier, block_height, ink, art, created, updated)::api.urn_state
                          FROM api.all_urns($1))
-                    )`, fakeBlock)
+                    )`, blockOne)
 			Expect(getFrobsErr).NotTo(HaveOccurred())
 
 			expectedFrobs := test_helpers.FrobEvent{
@@ -149,10 +142,9 @@ var _ = Describe("Urn state computed columns", func() {
 			var frobEventOne, frobEventTwo shared.InsertionModel
 
 			BeforeEach(func() {
-				urnSetupData := test_helpers.GetUrnSetupData(fakeBlock, 1)
-				urnSetupData.Header.Hash = fakeHeader.Hash
+				urnSetupData := test_helpers.GetUrnSetupData(headerOne)
 				urnMetadata := test_helpers.GetUrnMetadata(test_helpers.FakeIlk.Hex, fakeGuy)
-				test_helpers.CreateUrn(urnSetupData, urnMetadata, vatRepository, headerRepository)
+				test_helpers.CreateUrn(urnSetupData, urnMetadata, vatRepository)
 
 				frobRepo := vat_frob.VatFrobRepository{}
 				frobRepo.SetDB(db)
@@ -160,22 +152,19 @@ var _ = Describe("Urn state computed columns", func() {
 				frobEventOne = test_data.VatFrobModelWithPositiveDart()
 				frobEventOne.ForeignKeyValues[constants.UrnFK] = fakeGuy
 				frobEventOne.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
-				frobEventOne.ColumnValues[constants.HeaderFK] = headerId
+				frobEventOne.ColumnValues[constants.HeaderFK] = headerOne.Id
 				frobEventOne.ColumnValues[constants.LogFK] = logId
 				insertFrobErrOne := frobRepo.Create([]shared.InsertionModel{frobEventOne})
 				Expect(insertFrobErrOne).NotTo(HaveOccurred())
 
 				// insert more recent frob for same urn
-				laterBlock := fakeBlock + 1
-				fakeHeaderTwo := fakes.GetFakeHeader(int64(laterBlock))
-				headerTwoId, insertHeaderTwoErr := headerRepository.CreateOrUpdateHeader(fakeHeaderTwo)
-				Expect(insertHeaderTwoErr).NotTo(HaveOccurred())
-				logTwoId := test_data.CreateTestLog(headerTwoId, db).ID
+				headerTwo := createHeader(blockOne+1, timestampOne+1, headerRepository)
+				logTwoId := test_data.CreateTestLog(headerTwo.Id, db).ID
 
 				frobEventTwo = test_data.VatFrobModelWithNegativeDink()
 				frobEventTwo.ForeignKeyValues[constants.UrnFK] = fakeGuy
 				frobEventTwo.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
-				frobEventTwo.ColumnValues[constants.HeaderFK] = headerTwoId
+				frobEventTwo.ColumnValues[constants.HeaderFK] = headerTwo.Id
 				frobEventTwo.ColumnValues[constants.LogFK] = logTwoId
 				insertFrobErrTwo := frobRepo.Create([]shared.InsertionModel{frobEventTwo})
 				Expect(insertFrobErrTwo).NotTo(HaveOccurred())
@@ -223,14 +212,13 @@ var _ = Describe("Urn state computed columns", func() {
 
 	Describe("urn_state_bites", func() {
 		It("returns bites for an urn_state", func() {
-			urnSetupData := test_helpers.GetUrnSetupData(fakeBlock, 1)
-			urnSetupData.Header.Hash = fakeHeader.Hash
+			urnSetupData := test_helpers.GetUrnSetupData(headerOne)
 			urnMetadata := test_helpers.GetUrnMetadata(test_helpers.FakeIlk.Hex, fakeGuy)
-			test_helpers.CreateUrn(urnSetupData, urnMetadata, vatRepository, headerRepository)
+			test_helpers.CreateUrn(urnSetupData, urnMetadata, vatRepository)
 
 			biteRepo := bite.Repository{}
 			biteRepo.SetDB(db)
-			biteEvent := generateBite(test_helpers.FakeIlk.Hex, fakeGuy, headerId, logId, db)
+			biteEvent := generateBite(test_helpers.FakeIlk.Hex, fakeGuy, headerOne.Id, logId, db)
 			insertBiteErr := biteRepo.Create([]event.InsertionModel{biteEvent})
 			Expect(insertBiteErr).NotTo(HaveOccurred())
 
@@ -239,7 +227,7 @@ var _ = Describe("Urn state computed columns", func() {
 				SELECT ilk_identifier, urn_identifier, ink, art, tab FROM api.urn_state_bites(
 				    (SELECT (urn_identifier, ilk_identifier, block_height, ink, art, created, updated)::api.urn_state
 				    FROM api.all_urns($1)))`,
-				fakeBlock)
+				blockOne)
 			Expect(getBitesErr).NotTo(HaveOccurred())
 
 			expectedBites := test_helpers.BiteEvent{
@@ -257,26 +245,22 @@ var _ = Describe("Urn state computed columns", func() {
 			var biteEventOne, biteEventTwo event.InsertionModel
 
 			BeforeEach(func() {
-				urnSetupData := test_helpers.GetUrnSetupData(fakeBlock, 1)
-				urnSetupData.Header.Hash = fakeHeader.Hash
+				urnSetupData := test_helpers.GetUrnSetupData(headerOne)
 				urnMetadata := test_helpers.GetUrnMetadata(test_helpers.FakeIlk.Hex, fakeGuy)
-				test_helpers.CreateUrn(urnSetupData, urnMetadata, vatRepository, headerRepository)
+				test_helpers.CreateUrn(urnSetupData, urnMetadata, vatRepository)
 
 				biteRepo := bite.Repository{}
 				biteRepo.SetDB(db)
 
-				biteEventOne = generateBite(test_helpers.FakeIlk.Hex, fakeGuy, headerId, logId, db)
+				biteEventOne = generateBite(test_helpers.FakeIlk.Hex, fakeGuy, headerOne.Id, logId, db)
 				insertBiteOneErr := biteRepo.Create([]event.InsertionModel{biteEventOne})
 				Expect(insertBiteOneErr).NotTo(HaveOccurred())
 
 				// insert more recent bite for same urn
-				laterBlock := fakeBlock + 1
-				fakeHeaderTwo := fakes.GetFakeHeader(int64(laterBlock))
-				headerTwoId, insertHeaderTwoErr := headerRepository.CreateOrUpdateHeader(fakeHeaderTwo)
-				Expect(insertHeaderTwoErr).NotTo(HaveOccurred())
-				logTwoId := test_data.CreateTestLog(headerTwoId, db).ID
+				headerTwo := createHeader(blockOne+1, timestampOne+1, headerRepository)
+				logTwoId := test_data.CreateTestLog(headerTwo.Id, db).ID
 
-				biteEventTwo = generateBite(test_helpers.FakeIlk.Hex, fakeGuy, headerTwoId, logTwoId, db)
+				biteEventTwo = generateBite(test_helpers.FakeIlk.Hex, fakeGuy, headerTwo.Id, logTwoId, db)
 				insertBiteTwoErr := biteRepo.Create([]event.InsertionModel{biteEventTwo})
 				Expect(insertBiteTwoErr).NotTo(HaveOccurred())
 			})
@@ -324,10 +308,3 @@ var _ = Describe("Urn state computed columns", func() {
 		})
 	})
 })
-
-func randomizeBite(bite event.InsertionModel) event.InsertionModel {
-	bite.ColumnValues["ink"] = big.NewInt(rand.Int63()).String()
-	bite.ColumnValues["art"] = big.NewInt(rand.Int63()).String()
-	bite.ColumnValues["tab"] = big.NewInt(rand.Int63()).String()
-	return bite
-}

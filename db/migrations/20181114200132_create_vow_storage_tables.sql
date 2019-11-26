@@ -1,112 +1,97 @@
 -- +goose Up
 CREATE TABLE maker.vow_vat
 (
-    id           SERIAL PRIMARY KEY,
-    block_number BIGINT,
-    block_hash   TEXT,
-    vat          TEXT,
-    UNIQUE (block_number, block_hash, vat)
+    id        SERIAL PRIMARY KEY,
+    header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
+    vat       TEXT,
+    UNIQUE (header_id, vat)
 );
 
 CREATE TABLE maker.vow_flapper
 (
-    id           SERIAL PRIMARY KEY,
-    block_number BIGINT,
-    block_hash   TEXT,
-    flapper      TEXT,
-    UNIQUE (block_number, block_hash, flapper)
+    id        SERIAL PRIMARY KEY,
+    header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
+    flapper   TEXT,
+    UNIQUE (header_id, flapper)
 );
 
 CREATE TABLE maker.vow_flopper
 (
-    id           SERIAL PRIMARY KEY,
-    block_number BIGINT,
-    block_hash   TEXT,
-    flopper      TEXT,
-    UNIQUE (block_number, block_hash, flopper)
+    id        SERIAL PRIMARY KEY,
+    header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
+    flopper   TEXT,
+    UNIQUE (header_id, flopper)
 );
 
 CREATE TABLE maker.vow_sin_integer
 (
-    id           SERIAL PRIMARY KEY,
-    block_number BIGINT,
-    block_hash   TEXT,
-    sin          numeric,
-    UNIQUE (block_number, block_hash, sin)
+    id        SERIAL PRIMARY KEY,
+    header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
+    sin       numeric,
+    UNIQUE (header_id, sin)
 );
 
 CREATE TABLE maker.vow_sin_mapping
 (
-    id           SERIAL PRIMARY KEY,
-    block_number BIGINT,
-    block_hash   TEXT,
-    era          numeric,
-    tab          numeric,
-    UNIQUE (block_number, block_hash, era, tab)
+    id        SERIAL PRIMARY KEY,
+    header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
+    era       numeric,
+    tab       numeric,
+    UNIQUE (header_id, era, tab)
 );
-
-CREATE INDEX vow_sin_mapping_block_number_index
-    ON maker.vow_sin_mapping (block_number);
 
 CREATE INDEX vow_sin_mapping_era_index
     ON maker.vow_sin_mapping (era);
 
 CREATE TABLE maker.vow_ash
 (
-    id           SERIAL PRIMARY KEY,
-    block_number BIGINT,
-    block_hash   TEXT,
-    ash          numeric,
-    UNIQUE (block_number, block_hash, ash)
+    id        SERIAL PRIMARY KEY,
+    header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
+    ash       numeric,
+    UNIQUE (header_id, ash)
 );
 
 CREATE TABLE maker.vow_wait
 (
-    id           SERIAL PRIMARY KEY,
-    block_number BIGINT,
-    block_hash   TEXT,
-    wait         numeric,
-    UNIQUE (block_number, block_hash, wait)
+    id        SERIAL PRIMARY KEY,
+    header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
+    wait      numeric,
+    UNIQUE (header_id, wait)
 );
 
 CREATE TABLE maker.vow_dump
 (
-    id           SERIAL PRIMARY KEY,
-    block_number BIGINT,
-    block_hash   TEXT,
-    dump         NUMERIC,
-    UNIQUE (block_number, block_hash, dump)
+    id        SERIAL PRIMARY KEY,
+    header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
+    dump      NUMERIC,
+    UNIQUE (header_id, dump)
 );
 
 CREATE TABLE maker.vow_sump
 (
-    id           SERIAL PRIMARY KEY,
-    block_number BIGINT,
-    block_hash   TEXT,
-    sump         numeric,
-    UNIQUE (block_number, block_hash, sump)
+    id        SERIAL PRIMARY KEY,
+    header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
+    sump      numeric,
+    UNIQUE (header_id, sump)
 );
 
 CREATE TABLE maker.vow_bump
 (
-    id           SERIAL PRIMARY KEY,
-    block_number BIGINT,
-    block_hash   TEXT,
-    bump         numeric,
-    UNIQUE (block_number, block_hash, bump)
+    id        SERIAL PRIMARY KEY,
+    header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
+    bump      numeric,
+    UNIQUE (header_id, bump)
 );
 
 CREATE TABLE maker.vow_hump
 (
-    id           SERIAL PRIMARY KEY,
-    block_number BIGINT,
-    block_hash   TEXT,
-    hump         numeric,
-    UNIQUE (block_number, block_hash, hump)
+    id        SERIAL PRIMARY KEY,
+    header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
+    hump      numeric,
+    UNIQUE (header_id, hump)
 );
 
 -- +goose Down
-DROP INDEX maker.vow_sin_mapping_block_number_index;
 DROP INDEX maker.vow_sin_mapping_era_index;
 
 DROP TABLE maker.vow_vat;

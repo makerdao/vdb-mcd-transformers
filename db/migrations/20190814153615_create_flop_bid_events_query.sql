@@ -42,10 +42,10 @@ WITH address_id AS (
                   LEFT JOIN headers ON deal.header_id = headers.id
                   LEFT JOIN maker.flop_bid_bid
                             ON deal.bid_id = flop_bid_bid.bid_id
-                                AND flop_bid_bid.block_number = headers.block_number
+                                AND flop_bid_bid.header_id = headers.id
                   LEFT JOIN maker.flop_bid_lot
                             ON deal.bid_id = flop_bid_lot.bid_id
-                                AND flop_bid_lot.block_number = headers.block_number
+                                AND flop_bid_lot.header_id = headers.id
          WHERE deal.address_id = (SELECT * FROM address_id)
      ),
      yanks AS (
@@ -60,10 +60,10 @@ WITH address_id AS (
                   LEFT JOIN headers ON yank.header_id = headers.id
                   LEFT JOIN maker.flop_bid_bid
                             ON yank.bid_id = flop_bid_bid.bid_id
-                                AND flop_bid_bid.block_number = headers.block_number
+                                AND flop_bid_bid.header_id = headers.id
                   LEFT JOIN maker.flop_bid_lot
                             ON yank.bid_id = flop_bid_lot.bid_id
-                                AND flop_bid_lot.block_number = headers.block_number
+                                AND flop_bid_lot.header_id = headers.id
          WHERE yank.address_id = (SELECT * FROM address_id)
          ORDER BY block_height DESC
      ),
@@ -79,10 +79,10 @@ WITH address_id AS (
                   LEFT JOIN headers on tick.header_id = headers.id
                   LEFT JOIN maker.flop_bid_bid
                             ON tick.bid_id = flop_bid_bid.bid_id
-                                AND flop_bid_bid.block_number = headers.block_number
+                                AND flop_bid_bid.header_id = headers.id
                   LEFT JOIN maker.flop_bid_lot
                             ON tick.bid_id = flop_bid_lot.bid_id
-                                AND flop_bid_lot.block_number = headers.block_number
+                                AND flop_bid_lot.header_id = headers.id
          WHERE tick.address_id = (SELECT * FROM address_id)
      )
 

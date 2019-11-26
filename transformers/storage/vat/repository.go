@@ -26,56 +26,56 @@ import (
 )
 
 const (
-	insertDaiQuery     = `INSERT INTO maker.vat_dai (block_number, block_hash, guy, dai) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
-	insertGemQuery     = `INSERT INTO maker.vat_gem (block_number, block_hash, ilk_id, guy, gem) VALUES ($1, $2, $3, $4, $5) ON CONFLICT DO NOTHING`
-	InsertIlkArtQuery  = `INSERT INTO maker.vat_ilk_art (block_number, block_hash, ilk_id, art) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
-	InsertIlkDustQuery = `INSERT INTO maker.vat_ilk_dust (block_number, block_hash, ilk_id, dust) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
-	InsertIlkLineQuery = `INSERT INTO maker.vat_ilk_line (block_number, block_hash, ilk_id, line) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
-	InsertIlkRateQuery = `INSERT INTO maker.vat_ilk_rate (block_number, block_hash, ilk_id, rate) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
-	InsertIlkSpotQuery = `INSERT INTO maker.vat_ilk_spot (block_number, block_hash, ilk_id, spot) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
-	insertSinQuery     = `INSERT INTO maker.vat_sin (block_number, block_hash, guy, sin) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
-	InsertUrnArtQuery  = `INSERT INTO maker.vat_urn_art (block_number, block_hash, urn_id, art) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
-	InsertUrnInkQuery  = `INSERT INTO maker.vat_urn_ink (block_number, block_hash, urn_id, ink) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
-	insertVatDebtQuery = `INSERT INTO maker.vat_debt (block_number, block_hash, debt) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
-	insertVatLineQuery = `INSERT INTO maker.vat_line (block_number, block_hash, line) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
-	insertVatLiveQuery = `INSERT INTO maker.vat_live (block_number, block_hash, live) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
-	insertVatViceQuery = `INSERT INTO maker.vat_vice (block_number, block_hash, vice) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
+	insertDaiQuery     = `INSERT INTO maker.vat_dai (header_id, guy, dai) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
+	insertGemQuery     = `INSERT INTO maker.vat_gem (header_id, ilk_id, guy, gem) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
+	InsertIlkArtQuery  = `INSERT INTO maker.vat_ilk_art (header_id, ilk_id, art) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
+	InsertIlkDustQuery = `INSERT INTO maker.vat_ilk_dust (header_id, ilk_id, dust) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
+	InsertIlkLineQuery = `INSERT INTO maker.vat_ilk_line (header_id, ilk_id, line) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
+	InsertIlkRateQuery = `INSERT INTO maker.vat_ilk_rate (header_id, ilk_id, rate) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
+	InsertIlkSpotQuery = `INSERT INTO maker.vat_ilk_spot (header_id, ilk_id, spot) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
+	insertSinQuery     = `INSERT INTO maker.vat_sin (header_id, guy, sin) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
+	InsertUrnArtQuery  = `INSERT INTO maker.vat_urn_art (header_id, urn_id, art) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
+	InsertUrnInkQuery  = `INSERT INTO maker.vat_urn_ink (header_id, urn_id, ink) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
+	insertVatDebtQuery = `INSERT INTO maker.vat_debt (header_id, debt) VALUES ($1, $2) ON CONFLICT DO NOTHING`
+	insertVatLineQuery = `INSERT INTO maker.vat_line (header_id, line) VALUES ($1, $2) ON CONFLICT DO NOTHING`
+	insertVatLiveQuery = `INSERT INTO maker.vat_live (header_id, live) VALUES ($1, $2) ON CONFLICT DO NOTHING`
+	insertVatViceQuery = `INSERT INTO maker.vat_vice (header_id, vice) VALUES ($1, $2) ON CONFLICT DO NOTHING`
 )
 
 type VatStorageRepository struct {
 	db *postgres.DB
 }
 
-func (repository *VatStorageRepository) Create(blockNumber int, blockHash string, metadata utils.StorageValueMetadata, value interface{}) error {
+func (repository *VatStorageRepository) Create(headerID int64, metadata utils.StorageValueMetadata, value interface{}) error {
 	switch metadata.Name {
 	case Dai:
-		return repository.insertDai(blockNumber, blockHash, metadata, value.(string))
+		return repository.insertDai(headerID, metadata, value.(string))
 	case Gem:
-		return repository.insertGem(blockNumber, blockHash, metadata, value.(string))
+		return repository.insertGem(headerID, metadata, value.(string))
 	case IlkArt:
-		return repository.insertIlkArt(blockNumber, blockHash, metadata, value.(string))
+		return repository.insertIlkArt(headerID, metadata, value.(string))
 	case IlkDust:
-		return repository.insertIlkDust(blockNumber, blockHash, metadata, value.(string))
+		return repository.insertIlkDust(headerID, metadata, value.(string))
 	case IlkLine:
-		return repository.insertIlkLine(blockNumber, blockHash, metadata, value.(string))
+		return repository.insertIlkLine(headerID, metadata, value.(string))
 	case IlkRate:
-		return repository.insertIlkRate(blockNumber, blockHash, metadata, value.(string))
+		return repository.insertIlkRate(headerID, metadata, value.(string))
 	case IlkSpot:
-		return repository.insertIlkSpot(blockNumber, blockHash, metadata, value.(string))
+		return repository.insertIlkSpot(headerID, metadata, value.(string))
 	case Sin:
-		return repository.insertSin(blockNumber, blockHash, metadata, value.(string))
+		return repository.insertSin(headerID, metadata, value.(string))
 	case UrnArt:
-		return repository.insertUrnArt(blockNumber, blockHash, metadata, value.(string))
+		return repository.insertUrnArt(headerID, metadata, value.(string))
 	case UrnInk:
-		return repository.insertUrnInk(blockNumber, blockHash, metadata, value.(string))
+		return repository.insertUrnInk(headerID, metadata, value.(string))
 	case Debt:
-		return repository.insertVatDebt(blockNumber, blockHash, value.(string))
+		return repository.insertVatDebt(headerID, value.(string))
 	case Vice:
-		return repository.insertVatVice(blockNumber, blockHash, value.(string))
+		return repository.insertVatVice(headerID, value.(string))
 	case Line:
-		return repository.insertVatLine(blockNumber, blockHash, value.(string))
+		return repository.insertVatLine(headerID, value.(string))
 	case Live:
-		return repository.insertVatLive(blockNumber, blockHash, value.(string))
+		return repository.insertVatLive(headerID, value.(string))
 	default:
 		panic(fmt.Sprintf("unrecognized vat contract storage name: %s", metadata.Name))
 	}
@@ -85,16 +85,16 @@ func (repository *VatStorageRepository) SetDB(db *postgres.DB) {
 	repository.db = db
 }
 
-func (repository *VatStorageRepository) insertDai(blockNumber int, blockHash string, metadata utils.StorageValueMetadata, dai string) error {
+func (repository *VatStorageRepository) insertDai(headerID int64, metadata utils.StorageValueMetadata, dai string) error {
 	guy, err := getGuy(metadata.Keys)
 	if err != nil {
 		return err
 	}
-	_, writeErr := repository.db.Exec(insertDaiQuery, blockNumber, blockHash, guy, dai)
+	_, writeErr := repository.db.Exec(insertDaiQuery, headerID, guy, dai)
 	return writeErr
 }
 
-func (repository *VatStorageRepository) insertGem(blockNumber int, blockHash string, metadata utils.StorageValueMetadata, gem string) error {
+func (repository *VatStorageRepository) insertGem(headerID int64, metadata utils.StorageValueMetadata, gem string) error {
 	ilk, err := getIlk(metadata.Keys)
 	if err != nil {
 		return err
@@ -115,7 +115,7 @@ func (repository *VatStorageRepository) insertGem(blockNumber int, blockHash str
 		}
 		return ilkErr
 	}
-	_, writeErr := tx.Exec(insertGemQuery, blockNumber, blockHash, ilkID, guy, gem)
+	_, writeErr := tx.Exec(insertGemQuery, headerID, ilkID, guy, gem)
 	if writeErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
@@ -126,56 +126,56 @@ func (repository *VatStorageRepository) insertGem(blockNumber int, blockHash str
 	return tx.Commit()
 }
 
-func (repository *VatStorageRepository) insertIlkArt(blockNumber int, blockHash string, metadata utils.StorageValueMetadata, art string) error {
+func (repository *VatStorageRepository) insertIlkArt(headerID int64, metadata utils.StorageValueMetadata, art string) error {
 	ilk, err := getIlk(metadata.Keys)
 	if err != nil {
 		return err
 	}
-	return repository.insertFieldWithIlk(blockNumber, blockHash, ilk, IlkArt, InsertIlkArtQuery, art)
+	return repository.insertFieldWithIlk(headerID, ilk, IlkArt, InsertIlkArtQuery, art)
 }
 
-func (repository *VatStorageRepository) insertIlkDust(blockNumber int, blockHash string, metadata utils.StorageValueMetadata, dust string) error {
+func (repository *VatStorageRepository) insertIlkDust(headerID int64, metadata utils.StorageValueMetadata, dust string) error {
 	ilk, err := getIlk(metadata.Keys)
 	if err != nil {
 		return err
 	}
-	return repository.insertFieldWithIlk(blockNumber, blockHash, ilk, IlkDust, InsertIlkDustQuery, dust)
+	return repository.insertFieldWithIlk(headerID, ilk, IlkDust, InsertIlkDustQuery, dust)
 }
 
-func (repository *VatStorageRepository) insertIlkLine(blockNumber int, blockHash string, metadata utils.StorageValueMetadata, line string) error {
+func (repository *VatStorageRepository) insertIlkLine(headerID int64, metadata utils.StorageValueMetadata, line string) error {
 	ilk, err := getIlk(metadata.Keys)
 	if err != nil {
 		return err
 	}
-	return repository.insertFieldWithIlk(blockNumber, blockHash, ilk, IlkLine, InsertIlkLineQuery, line)
+	return repository.insertFieldWithIlk(headerID, ilk, IlkLine, InsertIlkLineQuery, line)
 }
 
-func (repository *VatStorageRepository) insertIlkRate(blockNumber int, blockHash string, metadata utils.StorageValueMetadata, rate string) error {
+func (repository *VatStorageRepository) insertIlkRate(headerID int64, metadata utils.StorageValueMetadata, rate string) error {
 	ilk, err := getIlk(metadata.Keys)
 	if err != nil {
 		return err
 	}
-	return repository.insertFieldWithIlk(blockNumber, blockHash, ilk, IlkRate, InsertIlkRateQuery, rate)
+	return repository.insertFieldWithIlk(headerID, ilk, IlkRate, InsertIlkRateQuery, rate)
 }
 
-func (repository *VatStorageRepository) insertIlkSpot(blockNumber int, blockHash string, metadata utils.StorageValueMetadata, spot string) error {
+func (repository *VatStorageRepository) insertIlkSpot(headerID int64, metadata utils.StorageValueMetadata, spot string) error {
 	ilk, err := getIlk(metadata.Keys)
 	if err != nil {
 		return err
 	}
-	return repository.insertFieldWithIlk(blockNumber, blockHash, ilk, IlkSpot, InsertIlkSpotQuery, spot)
+	return repository.insertFieldWithIlk(headerID, ilk, IlkSpot, InsertIlkSpotQuery, spot)
 }
 
-func (repository *VatStorageRepository) insertSin(blockNumber int, blockHash string, metadata utils.StorageValueMetadata, sin string) error {
+func (repository *VatStorageRepository) insertSin(headerID int64, metadata utils.StorageValueMetadata, sin string) error {
 	guy, err := getGuy(metadata.Keys)
 	if err != nil {
 		return err
 	}
-	_, writeErr := repository.db.Exec(insertSinQuery, blockNumber, blockHash, guy, sin)
+	_, writeErr := repository.db.Exec(insertSinQuery, headerID, guy, sin)
 	return writeErr
 }
 
-func (repository *VatStorageRepository) insertUrnArt(blockNumber int, blockHash string, metadata utils.StorageValueMetadata, art string) error {
+func (repository *VatStorageRepository) insertUrnArt(headerID int64, metadata utils.StorageValueMetadata, art string) error {
 	ilk, err := getIlk(metadata.Keys)
 	if err != nil {
 		return err
@@ -184,10 +184,10 @@ func (repository *VatStorageRepository) insertUrnArt(blockNumber int, blockHash 
 	if guyErr != nil {
 		return guyErr
 	}
-	return repository.insertFieldWithIlkAndUrn(blockNumber, blockHash, ilk, guy, UrnArt, InsertUrnArtQuery, art)
+	return repository.insertFieldWithIlkAndUrn(headerID, ilk, guy, UrnArt, InsertUrnArtQuery, art)
 }
 
-func (repository *VatStorageRepository) insertUrnInk(blockNumber int, blockHash string, metadata utils.StorageValueMetadata, ink string) error {
+func (repository *VatStorageRepository) insertUrnInk(headerID int64, metadata utils.StorageValueMetadata, ink string) error {
 	ilk, ilkErr := getIlk(metadata.Keys)
 	if ilkErr != nil {
 		return ilkErr
@@ -196,30 +196,30 @@ func (repository *VatStorageRepository) insertUrnInk(blockNumber int, blockHash 
 	if guyErr != nil {
 		return guyErr
 	}
-	return repository.insertFieldWithIlkAndUrn(blockNumber, blockHash, ilk, guy, UrnInk, InsertUrnInkQuery, ink)
+	return repository.insertFieldWithIlkAndUrn(headerID, ilk, guy, UrnInk, InsertUrnInkQuery, ink)
 }
 
-func (repository *VatStorageRepository) insertVatDebt(blockNumber int, blockHash, debt string) error {
-	_, err := repository.db.Exec(insertVatDebtQuery, blockNumber, blockHash, debt)
+func (repository *VatStorageRepository) insertVatDebt(headerID int64, debt string) error {
+	_, err := repository.db.Exec(insertVatDebtQuery, headerID, debt)
 	return err
 }
 
-func (repository *VatStorageRepository) insertVatLine(blockNumber int, blockHash, line string) error {
-	_, err := repository.db.Exec(insertVatLineQuery, blockNumber, blockHash, line)
+func (repository *VatStorageRepository) insertVatLine(headerID int64, line string) error {
+	_, err := repository.db.Exec(insertVatLineQuery, headerID, line)
 	return err
 }
 
-func (repository *VatStorageRepository) insertVatLive(blockNumber int, blockHash, live string) error {
-	_, err := repository.db.Exec(insertVatLiveQuery, blockNumber, blockHash, live)
+func (repository *VatStorageRepository) insertVatLive(headerID int64, live string) error {
+	_, err := repository.db.Exec(insertVatLiveQuery, headerID, live)
 	return err
 }
 
-func (repository *VatStorageRepository) insertVatVice(blockNumber int, blockHash, vice string) error {
-	_, err := repository.db.Exec(insertVatViceQuery, blockNumber, blockHash, vice)
+func (repository *VatStorageRepository) insertVatVice(headerID int64, vice string) error {
+	_, err := repository.db.Exec(insertVatViceQuery, headerID, vice)
 	return err
 }
 
-func (repository *VatStorageRepository) insertFieldWithIlk(blockNumber int, blockHash, ilk, variableName, query, value string) error {
+func (repository *VatStorageRepository) insertFieldWithIlk(headerID int64, ilk, variableName, query, value string) error {
 	tx, txErr := repository.db.Beginx()
 	if txErr != nil {
 		return txErr
@@ -232,7 +232,7 @@ func (repository *VatStorageRepository) insertFieldWithIlk(blockNumber int, bloc
 		}
 		return ilkErr
 	}
-	_, writeErr := tx.Exec(query, blockNumber, blockHash, ilkID, value)
+	_, writeErr := tx.Exec(query, headerID, ilkID, value)
 	if writeErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
@@ -243,7 +243,7 @@ func (repository *VatStorageRepository) insertFieldWithIlk(blockNumber int, bloc
 	return tx.Commit()
 }
 
-func (repository *VatStorageRepository) insertFieldWithIlkAndUrn(blockNumber int, blockHash, ilk, urn, variableName, query, value string) error {
+func (repository *VatStorageRepository) insertFieldWithIlkAndUrn(headerID int64, ilk, urn, variableName, query, value string) error {
 	tx, txErr := repository.db.Beginx()
 	if txErr != nil {
 		return txErr
@@ -257,7 +257,7 @@ func (repository *VatStorageRepository) insertFieldWithIlkAndUrn(blockNumber int
 		}
 		return urnErr
 	}
-	_, writeErr := tx.Exec(query, blockNumber, blockHash, urnID, value)
+	_, writeErr := tx.Exec(query, headerID, urnID, value)
 	if writeErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {

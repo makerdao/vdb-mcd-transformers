@@ -228,16 +228,15 @@ func (state *GeneratorState) createIlk() error {
 // Updates a random property of a randomly chosen ilk
 func (state *GeneratorState) updateIlk() error {
 	randomIlkId := state.ilks[rand.Intn(len(state.ilks))]
-	blockNumber, blockHash := state.getCurrentBlockAndHash()
 
 	var eventErr, logErr, storageErr error
 	p := rand.Float64()
 	newValue := rand.Int()
 	if p < 0.1 {
-		_, storageErr = state.pgTx.Exec(vat.InsertIlkRateQuery, blockNumber, blockHash, randomIlkId, newValue)
+		_, storageErr = state.pgTx.Exec(vat.InsertIlkRateQuery, state.currentHeader.Id, randomIlkId, newValue)
 		// Rate is changed in fold, event which isn't included in spec
 	} else {
-		_, storageErr = state.pgTx.Exec(vat.InsertIlkSpotQuery, blockNumber, blockHash, randomIlkId, newValue)
+		_, storageErr = state.pgTx.Exec(vat.InsertIlkSpotQuery, state.currentHeader.Id, randomIlkId, newValue)
 		var logID int64
 		logErr = state.pgTx.QueryRow(insertLogSql, state.currentHeader.Id).Scan(&logID)
 		_, eventErr = state.pgTx.Exec(spot_poke.InsertSpotPokeQuery,
@@ -280,13 +279,10 @@ func (state *GeneratorState) createUrn() error {
 		return insertUrnErr
 	}
 
-	blockNumber := state.currentHeader.BlockNumber
-	blockHash := state.currentHeader.Hash
-
 	ink := rand.Int()
 	art := rand.Int()
-	_, artErr := state.pgTx.Exec(vat.InsertUrnArtQuery, blockNumber, blockHash, urnId, art)
-	_, inkErr := state.pgTx.Exec(vat.InsertUrnInkQuery, blockNumber, blockHash, urnId, ink)
+	_, artErr := state.pgTx.Exec(vat.InsertUrnArtQuery, state.currentHeader.Id, urnId, art)
+	_, inkErr := state.pgTx.Exec(vat.InsertUrnInkQuery, state.currentHeader.Id, urnId, ink)
 	var logID int64
 	logErr := state.pgTx.QueryRow(insertLogSql, state.currentHeader.Id).Scan(&logID)
 	_, frobErr := state.pgTx.Exec(insertVatFrobSql,
@@ -308,8 +304,6 @@ func (state *GeneratorState) createUrn() error {
 // Updates ink or art on a random urn
 func (state *GeneratorState) updateUrn() error {
 	randomUrnId := state.urns[rand.Intn(len(state.urns))]
-	blockNumber := state.currentHeader.BlockNumber
-	blockHash := state.currentHeader.Hash
 	randomGuy := getRandomAddress()
 	newValue := rand.Int()
 
@@ -319,14 +313,14 @@ func (state *GeneratorState) updateUrn() error {
 	p := rand.Float32()
 	if p < 0.5 {
 		// Update ink
-		_, updateErr = state.pgTx.Exec(vat.InsertUrnInkQuery, blockNumber, blockHash, randomUrnId, newValue)
+		_, updateErr = state.pgTx.Exec(vat.InsertUrnInkQuery, state.currentHeader.Id, randomUrnId, newValue)
 		var logID int64
 		logErr = state.pgTx.QueryRow(insertLogSql, state.currentHeader.Id).Scan(&logID)
 		_, frobErr = state.pgTx.Exec(insertVatFrobSql,
 			state.currentHeader.Id, randomUrnId, randomGuy, randomGuy, newValue, 0, logID)
 	} else {
 		// Update art
-		_, updateErr = state.pgTx.Exec(vat.InsertUrnArtQuery, blockNumber, blockHash, randomUrnId, newValue)
+		_, updateErr = state.pgTx.Exec(vat.InsertUrnArtQuery, state.currentHeader.Id, randomUrnId, newValue)
 		var logID int64
 		logErr = state.pgTx.QueryRow(insertLogSql, state.currentHeader.Id).Scan(&logID)
 		_, frobErr = state.pgTx.Exec(insertVatFrobSql,
@@ -375,7 +369,6 @@ func (state *GeneratorState) insertIlk(hexIlk, name string) (int64, error) {
 
 // Skips initial events for everything, annoying to do individually
 func (state *GeneratorState) insertInitialIlkData(ilkId int64) error {
-	blockNumber, blockHash := state.getCurrentBlockAndHash()
 	intInsertions := []string{
 		vat.InsertIlkRateQuery,
 		vat.InsertIlkSpotQuery,
@@ -389,13 +382,13 @@ func (state *GeneratorState) insertInitialIlkData(ilkId int64) error {
 	}
 
 	for _, intInsertSql := range intInsertions {
-		_, err := state.pgTx.Exec(intInsertSql, blockNumber, blockHash, ilkId, rand.Int())
+		_, err := state.pgTx.Exec(intInsertSql, state.currentHeader.Id, ilkId, rand.Int())
 		if err != nil {
 			return fmt.Errorf("error inserting initial ilk data: %v", err)
 		}
 	}
 	_, flipErr := state.pgTx.Exec(cat.InsertCatIlkFlipQuery,
-		blockNumber, blockHash, ilkId, test_data.AlreadySeededRandomString(10))
+		state.currentHeader.Id, ilkId, test_data.AlreadySeededRandomString(10))
 
 	if flipErr != nil {
 		return fmt.Errorf("error inserting initial ilk data: %v", flipErr)
@@ -420,10 +413,6 @@ func (state *GeneratorState) insertCurrentBlockTx() error {
 	txTo := getRandomAddress()
 	_, txErr := state.pgTx.Exec(txSql, state.currentHeader.Id, txHash, txFrom, txIndex, txTo)
 	return txErr
-}
-
-func (state *GeneratorState) getCurrentBlockAndHash() (int64, string) {
-	return state.currentHeader.BlockNumber, state.currentHeader.Hash
 }
 
 // UTF-oblivious, names generated with alphanums anyway

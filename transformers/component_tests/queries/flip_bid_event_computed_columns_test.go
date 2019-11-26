@@ -38,27 +38,25 @@ import (
 
 var _ = Describe("Flip bid event computed columns", func() {
 	var (
-		db              *postgres.DB
-		blockNumber     = rand.Int()
-		header          core.Header
-		contractAddress = fakes.FakeAddress.Hex()
-		bidId           int
-		flipKickRepo    flip_kick.FlipKickRepository
-		headerId        int64
-		headerRepo      repositories.HeaderRepository
+		db                     *postgres.DB
+		blockOne, timestampOne int
+		headerOne              core.Header
+		contractAddress        = fakes.FakeAddress.Hex()
+		bidId                  int
+		flipKickRepo           flip_kick.FlipKickRepository
+		headerRepo             repositories.HeaderRepository
 	)
 
 	BeforeEach(func() {
 		db = test_config.NewTestDB(test_config.NewTestNode())
 		test_config.CleanTestDB(db)
+
 		bidId = rand.Int()
-		blockNumber = rand.Int()
 
 		headerRepo = repositories.NewHeaderRepository(db)
-		header = fakes.GetFakeHeader(int64(blockNumber))
-		var insertHeaderErr error
-		headerId, insertHeaderErr = headerRepo.CreateOrUpdateHeader(header)
-		Expect(insertHeaderErr).NotTo(HaveOccurred())
+		blockOne = rand.Int()
+		timestampOne = int(rand.Int31())
+		headerOne = createHeader(blockOne, timestampOne, headerRepo)
 
 		flipKickRepo = flip_kick.FlipKickRepository{}
 		flipKickRepo.SetDB(db)
@@ -73,7 +71,7 @@ var _ = Describe("Flip bid event computed columns", func() {
 		It("returns flip bid for a flip_bid_event", func() {
 			flipStorageValues := test_helpers.GetFlipStorageValues(1, test_helpers.FakeIlk.Hex, bidId)
 			flipMetadatas := test_helpers.GetFlipMetadatas(strconv.Itoa(bidId))
-			test_helpers.CreateFlip(db, header, flipStorageValues, flipMetadatas, contractAddress)
+			test_helpers.CreateFlip(db, headerOne, flipStorageValues, flipMetadatas, contractAddress)
 
 			ilkId, urnId, err := test_helpers.SetUpFlipBidContext(test_helpers.FlipBidContextInput{
 				DealCreationInput: test_helpers.DealCreationInput{
@@ -85,12 +83,12 @@ var _ = Describe("Flip bid event computed columns", func() {
 				IlkHex:           test_helpers.FakeIlk.Hex,
 				UrnGuy:           test_data.FlipKickModel().ColumnValues["usr"].(string),
 				FlipKickRepo:     flipKickRepo,
-				FlipKickHeaderId: headerId,
+				FlipKickHeaderId: headerOne.Id,
 			})
 			Expect(err).NotTo(HaveOccurred())
 
 			expectedBid := test_helpers.FlipBidFromValues(strconv.Itoa(bidId), strconv.FormatInt(ilkId, 10),
-				strconv.FormatInt(urnId, 10), "false", header.Timestamp, header.Timestamp, flipStorageValues)
+				strconv.FormatInt(urnId, 10), "false", headerOne.Timestamp, headerOne.Timestamp, flipStorageValues)
 
 			var actualBid test_helpers.FlipBid
 			queryErr := db.Get(&actualBid, `
@@ -107,7 +105,7 @@ var _ = Describe("Flip bid event computed columns", func() {
 			irrelevantContractAddress := "different flipper"
 			irrelevantFlipStorageValues := test_helpers.GetFlipStorageValues(0, test_helpers.AnotherFakeIlk.Hex, bidId)
 			irrelevantFlipMetadatas := test_helpers.GetFlipMetadatas(strconv.Itoa(bidId))
-			test_helpers.CreateFlip(db, header, irrelevantFlipStorageValues, irrelevantFlipMetadatas, irrelevantContractAddress)
+			test_helpers.CreateFlip(db, headerOne, irrelevantFlipStorageValues, irrelevantFlipMetadatas, irrelevantContractAddress)
 
 			_, _, irrelevantFlipContextErr := test_helpers.SetUpFlipBidContext(test_helpers.FlipBidContextInput{
 				DealCreationInput: test_helpers.DealCreationInput{
@@ -119,13 +117,13 @@ var _ = Describe("Flip bid event computed columns", func() {
 				IlkHex:           test_helpers.AnotherFakeIlk.Hex,
 				UrnGuy:           test_data.FakeUrn,
 				FlipKickRepo:     flipKickRepo,
-				FlipKickHeaderId: headerId,
+				FlipKickHeaderId: headerOne.Id,
 			})
 			Expect(irrelevantFlipContextErr).NotTo(HaveOccurred())
 
 			flipStorageValues := test_helpers.GetFlipStorageValues(1, test_helpers.FakeIlk.Hex, bidId)
 			flipMetadatas := test_helpers.GetFlipMetadatas(strconv.Itoa(bidId))
-			test_helpers.CreateFlip(db, header, flipStorageValues, flipMetadatas, contractAddress)
+			test_helpers.CreateFlip(db, headerOne, flipStorageValues, flipMetadatas, contractAddress)
 
 			ilkId, urnId, flipContextErr := test_helpers.SetUpFlipBidContext(test_helpers.FlipBidContextInput{
 				DealCreationInput: test_helpers.DealCreationInput{
@@ -137,12 +135,12 @@ var _ = Describe("Flip bid event computed columns", func() {
 				IlkHex:           test_helpers.FakeIlk.Hex,
 				UrnGuy:           test_data.FakeUrn,
 				FlipKickRepo:     flipKickRepo,
-				FlipKickHeaderId: headerId,
+				FlipKickHeaderId: headerOne.Id,
 			})
 			Expect(flipContextErr).NotTo(HaveOccurred())
 
 			expectedBid := test_helpers.FlipBidFromValues(strconv.Itoa(bidId), strconv.FormatInt(ilkId, 10),
-				strconv.FormatInt(urnId, 10), "false", header.Timestamp, header.Timestamp, flipStorageValues)
+				strconv.FormatInt(urnId, 10), "false", headerOne.Timestamp, headerOne.Timestamp, flipStorageValues)
 
 			var actualBid test_helpers.FlipBid
 			queryErr := db.Get(&actualBid, `
@@ -160,13 +158,13 @@ var _ = Describe("Flip bid event computed columns", func() {
 		var flipKickGethLog types.Log
 
 		BeforeEach(func() {
-			flipKickHeaderSyncLog := test_data.CreateTestLog(headerId, db)
+			flipKickHeaderSyncLog := test_data.CreateTestLog(headerOne.Id, db)
 			flipKickGethLog = flipKickHeaderSyncLog.Log
 
 			flipKickEvent := test_data.FlipKickModel()
 			flipKickEvent.ForeignKeyValues[constants.AddressFK] = contractAddress
 			flipKickEvent.ColumnValues["bid_id"] = strconv.Itoa(bidId)
-			flipKickEvent.ColumnValues[constants.HeaderFK] = headerId
+			flipKickEvent.ColumnValues[constants.HeaderFK] = headerOne.Id
 			flipKickEvent.ColumnValues[constants.LogFK] = flipKickHeaderSyncLog.ID
 			flipKickErr := flipKickRepo.Create([]shared.InsertionModel{flipKickEvent})
 			Expect(flipKickErr).NotTo(HaveOccurred())
@@ -176,14 +174,14 @@ var _ = Describe("Flip bid event computed columns", func() {
 			expectedTx := Tx{
 				TransactionHash:  test_helpers.GetValidNullString("txHash"),
 				TransactionIndex: sql.NullInt64{Int64: int64(flipKickGethLog.TxIndex), Valid: true},
-				BlockHeight:      sql.NullInt64{Int64: int64(blockNumber), Valid: true},
-				BlockHash:        test_helpers.GetValidNullString(header.Hash),
+				BlockHeight:      sql.NullInt64{Int64: int64(blockOne), Valid: true},
+				BlockHash:        test_helpers.GetValidNullString(headerOne.Hash),
 				TxFrom:           test_helpers.GetValidNullString("fromAddress"),
 				TxTo:             test_helpers.GetValidNullString("toAddress"),
 			}
 
 			_, insertErr := db.Exec(`INSERT INTO header_sync_transactions (header_id, hash, tx_from, tx_index, tx_to)
-				VALUES ($1, $2, $3, $4, $5)`, headerId, expectedTx.TransactionHash, expectedTx.TxFrom,
+				VALUES ($1, $2, $3, $4, $5)`, headerOne.Id, expectedTx.TransactionHash, expectedTx.TxFrom,
 				expectedTx.TransactionIndex, expectedTx.TxTo)
 			Expect(insertErr).NotTo(HaveOccurred())
 
@@ -203,14 +201,14 @@ var _ = Describe("Flip bid event computed columns", func() {
 					Int64: int64(flipKickGethLog.TxIndex) + 1,
 					Valid: true,
 				},
-				BlockHeight: sql.NullInt64{Int64: int64(blockNumber), Valid: true},
-				BlockHash:   test_helpers.GetValidNullString(header.Hash),
+				BlockHeight: sql.NullInt64{Int64: int64(blockOne), Valid: true},
+				BlockHash:   test_helpers.GetValidNullString(headerOne.Hash),
 				TxFrom:      test_helpers.GetValidNullString("wrongFromAddress"),
 				TxTo:        test_helpers.GetValidNullString("wrongToAddress"),
 			}
 
 			_, insertErr := db.Exec(`INSERT INTO header_sync_transactions (header_id, hash, tx_from, tx_index, tx_to)
-				VALUES ($1, $2, $3, $4, $5)`, headerId, wrongTx.TransactionHash, wrongTx.TxFrom,
+				VALUES ($1, $2, $3, $4, $5)`, headerOne.Id, wrongTx.TransactionHash, wrongTx.TxFrom,
 				wrongTx.TransactionIndex, wrongTx.TxTo)
 			Expect(insertErr).NotTo(HaveOccurred())
 
@@ -224,24 +222,21 @@ var _ = Describe("Flip bid event computed columns", func() {
 		})
 
 		It("does not return transaction from different block with same index", func() {
-			lowerBlockNumber := blockNumber - 1
-			anotherHeader := fakes.GetFakeHeader(int64(lowerBlockNumber))
-			anotherHeaderID, insertHeaderErr := headerRepo.CreateOrUpdateHeader(anotherHeader)
-			Expect(insertHeaderErr).NotTo(HaveOccurred())
+			headerZero := createHeader(blockOne-1, timestampOne-1, headerRepo)
 			wrongTx := Tx{
 				TransactionHash: test_helpers.GetValidNullString("wrongTxHash"),
 				TransactionIndex: sql.NullInt64{
 					Int64: int64(flipKickGethLog.TxIndex),
 					Valid: true,
 				},
-				BlockHeight: sql.NullInt64{Int64: int64(lowerBlockNumber), Valid: true},
-				BlockHash:   test_helpers.GetValidNullString(header.Hash),
+				BlockHeight: sql.NullInt64{Int64: headerZero.BlockNumber, Valid: true},
+				BlockHash:   test_helpers.GetValidNullString(headerOne.Hash),
 				TxFrom:      test_helpers.GetValidNullString("wrongFromAddress"),
 				TxTo:        test_helpers.GetValidNullString("wrongToAddress"),
 			}
 
 			_, insertErr := db.Exec(`INSERT INTO header_sync_transactions (header_id, hash, tx_from, tx_index, tx_to)
-				VALUES ($1, $2, $3, $4, $5)`, anotherHeaderID, wrongTx.TransactionHash, wrongTx.TxFrom,
+				VALUES ($1, $2, $3, $4, $5)`, headerZero.Id, wrongTx.TransactionHash, wrongTx.TxFrom,
 				wrongTx.TransactionIndex, wrongTx.TxTo)
 			Expect(insertErr).NotTo(HaveOccurred())
 

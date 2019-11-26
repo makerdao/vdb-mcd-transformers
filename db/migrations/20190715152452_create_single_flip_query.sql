@@ -35,6 +35,7 @@ WITH ilk_ids AS (SELECT id FROM maker.ilks WHERE ilks.identifier = get_flip.ilk)
      -- there should only ever be 1 address for a given ilk, which is why there's a LIMIT with no ORDER BY
      address_id AS (SELECT address_id
                     FROM maker.flip_ilk
+                             LEFT JOIN public.headers ON flip_ilk.header_id = headers.id
                     WHERE flip_ilk.ilk_id = (SELECT id FROM ilk_ids)
                       AND block_number <= block_height
                     LIMIT 1),

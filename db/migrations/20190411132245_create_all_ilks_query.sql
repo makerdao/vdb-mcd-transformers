@@ -6,52 +6,64 @@ CREATE FUNCTION api.all_ilks(block_height BIGINT DEFAULT api.max_block(), max_re
     RETURNS SETOF api.ilk_state
 AS
 $$
-WITH rates AS (SELECT DISTINCT ON (ilk_id) rate, ilk_id, block_hash
+WITH rates AS (SELECT DISTINCT ON (ilk_id) rate, ilk_id
                FROM maker.vat_ilk_rate
+                        LEFT JOIN public.headers ON vat_ilk_rate.header_id = headers.id
                WHERE block_number <= all_ilks.block_height
                ORDER BY ilk_id, block_number DESC),
-     arts AS (SELECT DISTINCT ON (ilk_id) art, ilk_id, block_hash
+     arts AS (SELECT DISTINCT ON (ilk_id) art, ilk_id
               FROM maker.vat_ilk_art
+                       LEFT JOIN public.headers ON vat_ilk_art.header_id = headers.id
               WHERE block_number <= all_ilks.block_height
               ORDER BY ilk_id, block_number DESC),
-     spots AS (SELECT DISTINCT ON (ilk_id) spot, ilk_id, block_hash
+     spots AS (SELECT DISTINCT ON (ilk_id) spot, ilk_id
                FROM maker.vat_ilk_spot
+                        LEFT JOIN public.headers ON vat_ilk_spot.header_id = headers.id
                WHERE block_number <= all_ilks.block_height
                ORDER BY ilk_id, block_number DESC),
-     lines AS (SELECT DISTINCT ON (ilk_id) line, ilk_id, block_hash
+     lines AS (SELECT DISTINCT ON (ilk_id) line, ilk_id
                FROM maker.vat_ilk_line
+                        LEFT JOIN public.headers ON vat_ilk_line.header_id = headers.id
                WHERE block_number <= all_ilks.block_height
                ORDER BY ilk_id, block_number DESC),
-     dusts AS (SELECT DISTINCT ON (ilk_id) dust, ilk_id, block_hash
+     dusts AS (SELECT DISTINCT ON (ilk_id) dust, ilk_id
                FROM maker.vat_ilk_dust
+                        LEFT JOIN public.headers ON vat_ilk_dust.header_id = headers.id
                WHERE block_number <= all_ilks.block_height
                ORDER BY ilk_id, block_number DESC),
-     chops AS (SELECT DISTINCT ON (ilk_id) chop, ilk_id, block_hash
+     chops AS (SELECT DISTINCT ON (ilk_id) chop, ilk_id
                FROM maker.cat_ilk_chop
+                        LEFT JOIN public.headers ON cat_ilk_chop.header_id = headers.id
                WHERE block_number <= all_ilks.block_height
                ORDER BY ilk_id, block_number DESC),
-     lumps AS (SELECT DISTINCT ON (ilk_id) lump, ilk_id, block_hash
+     lumps AS (SELECT DISTINCT ON (ilk_id) lump, ilk_id
                FROM maker.cat_ilk_lump
+                        LEFT JOIN public.headers ON cat_ilk_lump.header_id = headers.id
                WHERE block_number <= all_ilks.block_height
                ORDER BY ilk_id, block_number DESC),
-     flips AS (SELECT DISTINCT ON (ilk_id) flip, ilk_id, block_hash
+     flips AS (SELECT DISTINCT ON (ilk_id) flip, ilk_id
                FROM maker.cat_ilk_flip
+                        LEFT JOIN public.headers ON cat_ilk_flip.header_id = headers.id
                WHERE block_number <= all_ilks.block_height
                ORDER BY ilk_id, block_number DESC),
-     rhos AS (SELECT DISTINCT ON (ilk_id) rho, ilk_id, block_hash
+     rhos AS (SELECT DISTINCT ON (ilk_id) rho, ilk_id
               FROM maker.jug_ilk_rho
+                       LEFT JOIN public.headers ON jug_ilk_rho.header_id = headers.id
               WHERE block_number <= all_ilks.block_height
               ORDER BY ilk_id, block_number DESC),
-     duties AS (SELECT DISTINCT ON (ilk_id) duty, ilk_id, block_hash
+     duties AS (SELECT DISTINCT ON (ilk_id) duty, ilk_id
                 FROM maker.jug_ilk_duty
+                         LEFT JOIN public.headers ON jug_ilk_duty.header_id = headers.id
                 WHERE block_number <= all_ilks.block_height
                 ORDER BY ilk_id, block_number DESC),
-     pips AS (SELECT DISTINCT ON (ilk_id) pip, ilk_id, block_hash
+     pips AS (SELECT DISTINCT ON (ilk_id) pip, ilk_id
               FROM maker.spot_ilk_pip
+                       LEFT JOIN public.headers ON spot_ilk_pip.header_id = headers.id
               WHERE block_number <= all_ilks.block_height
               ORDER BY ilk_id, block_number DESC),
-     mats AS (SELECT DISTINCT ON (ilk_id) mat, ilk_id, block_hash
+     mats AS (SELECT DISTINCT ON (ilk_id) mat, ilk_id
               FROM maker.spot_ilk_mat
+                       LEFT JOIN public.headers ON spot_ilk_mat.header_id = headers.id
               WHERE block_number <= all_ilks.block_height
               ORDER BY ilk_id, block_number DESC)
 SELECT ilks.identifier,
@@ -68,15 +80,13 @@ SELECT ilks.identifier,
        duties.duty,
        pips.pip,
        mats.mat,
-       (SELECT api.epoch_to_datetime(h.block_timestamp) AS created
+       (SELECT api.epoch_to_datetime(b.block_timestamp) AS created
         FROM api.get_ilk_blocks_before(ilks.identifier, all_ilks.block_height) b
-                 JOIN headers h on h.block_number = b.block_height
-        ORDER BY h.block_number ASC
+        ORDER BY b.block_height ASC
         LIMIT 1),
-       (SELECT api.epoch_to_datetime(h.block_timestamp) AS updated
+       (SELECT api.epoch_to_datetime(b.block_timestamp) AS updated
         FROM api.get_ilk_blocks_before(ilks.identifier, all_ilks.block_height) b
-                 JOIN headers h on h.block_number = b.block_height
-        ORDER BY h.block_number DESC
+        ORDER BY b.block_height DESC
         LIMIT 1)
 FROM maker.ilks AS ilks
          LEFT JOIN rates on rates.ilk_id = ilks.id
@@ -106,7 +116,9 @@ WHERE (
               mats.mat is not null
           )
 ORDER BY updated DESC
-LIMIT all_ilks.max_results OFFSET all_ilks.result_offset
+LIMIT all_ilks.max_results
+OFFSET
+all_ilks.result_offset
 $$
     LANGUAGE SQL
     STABLE;

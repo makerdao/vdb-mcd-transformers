@@ -46,8 +46,6 @@ import (
 	"github.com/makerdao/vulcanizedb/libraries/shared/storage/utils"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
-	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
-	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	. "github.com/onsi/gomega"
 )
 
@@ -202,77 +200,58 @@ func IlkStateFromValues(ilk, updated, created string, ilkValues map[string]strin
 }
 
 func CreateVatRecords(header core.Header, valuesMap map[string]string, metadatas []utils.StorageValueMetadata, repository vat.VatStorageRepository) {
-	blockHash := header.Hash
-	blockNumber := int(header.BlockNumber)
-
 	for _, metadata := range metadatas {
 		value := valuesMap[metadata.Name]
-		err := repository.Create(blockNumber, blockHash, metadata, value)
+		err := repository.Create(header.Id, metadata, value)
 
 		Expect(err).NotTo(HaveOccurred())
 	}
 }
 
 func CreateCatRecords(header core.Header, valuesMap map[string]string, metadatas []utils.StorageValueMetadata, repository cat.CatStorageRepository) {
-	blockHash := header.Hash
-	blockNumber := int(header.BlockNumber)
-
 	for _, metadata := range metadatas {
 		value := valuesMap[metadata.Name]
-		err := repository.Create(blockNumber, blockHash, metadata, value)
+		err := repository.Create(header.Id, metadata, value)
 
 		Expect(err).NotTo(HaveOccurred())
 	}
 }
 
 func CreateJugRecords(header core.Header, valuesMap map[string]string, metadatas []utils.StorageValueMetadata, repository jug.JugStorageRepository) {
-	blockHash := header.Hash
-	blockNumber := int(header.BlockNumber)
-
 	for _, metadata := range metadatas {
 		value := valuesMap[metadata.Name]
-		err := repository.Create(blockNumber, blockHash, metadata, value)
+		err := repository.Create(header.Id, metadata, value)
 
 		Expect(err).NotTo(HaveOccurred())
 	}
 }
 
 func CreateSpotRecords(header core.Header, valuesMap map[string]string, metadatas []utils.StorageValueMetadata, repository spot.SpotStorageRepository) {
-	blockHash := header.Hash
-	blockNumber := int(header.BlockNumber)
-
 	for _, metadata := range metadatas {
 		value := valuesMap[metadata.Name]
-		err := repository.Create(blockNumber, blockHash, metadata, value)
+		err := repository.Create(header.Id, metadata, value)
 
 		Expect(err).NotTo(HaveOccurred())
 	}
 }
 
 // Creates urn by creating necessary state diffs and the corresponding header
-func CreateUrn(setupData UrnSetupData, metadata UrnMetadata, vatRepo vat.VatStorageRepository, headerRepo repositories.HeaderRepository) {
-	blockNo := int(setupData.Header.BlockNumber)
-	hash := setupData.Header.Hash
+func CreateUrn(setupData UrnSetupData, metadata UrnMetadata, vatRepo vat.VatStorageRepository) {
+	Expect(setupData.Header.Id).NotTo(BeZero())
 
 	// This also creates the ilk if it doesn't exist
-	err := vatRepo.Create(blockNo, hash, metadata.UrnInk, strconv.Itoa(setupData.Ink))
+	err := vatRepo.Create(setupData.Header.Id, metadata.UrnInk, strconv.Itoa(setupData.Ink))
 	Expect(err).NotTo(HaveOccurred())
 
-	err = vatRepo.Create(blockNo, hash, metadata.UrnArt, strconv.Itoa(setupData.Art))
+	err = vatRepo.Create(setupData.Header.Id, metadata.UrnArt, strconv.Itoa(setupData.Art))
 	Expect(err).NotTo(HaveOccurred())
 
-	err = vatRepo.Create(blockNo, hash, metadata.IlkSpot, strconv.Itoa(setupData.Spot))
+	err = vatRepo.Create(setupData.Header.Id, metadata.IlkSpot, strconv.Itoa(setupData.Spot))
 	Expect(err).NotTo(HaveOccurred())
 
-	err = vatRepo.Create(blockNo, hash, metadata.IlkRate, strconv.Itoa(setupData.Rate))
+	err = vatRepo.Create(setupData.Header.Id, metadata.IlkRate, strconv.Itoa(setupData.Rate))
 	Expect(err).NotTo(HaveOccurred())
 
-	_, err = headerRepo.CreateOrUpdateHeader(setupData.Header)
-	if err == repositories.ErrValidHeaderExists {
-		// In some tests, the header has been created in other operations
-		err = nil
-	}
-	Expect(err).NotTo(HaveOccurred())
 }
 
 func CreateIlk(db *postgres.DB, header core.Header, valuesMap map[string]string, vatMetadatas, catMetadatas, jugMetadatas, spotMetadatas []utils.StorageValueMetadata) {
@@ -293,13 +272,9 @@ func CreateIlk(db *postgres.DB, header core.Header, valuesMap map[string]string,
 }
 
 // Does not return values computed by the query (updated, created)
-func GetUrnSetupData(block, timestamp int) UrnSetupData {
-	fakeHeader := fakes.GetFakeHeader(int64(block))
-	fakeHeader.Timestamp = strconv.Itoa(timestamp)
-	fakeHeader.Hash = test_data.RandomString(5)
-
+func GetUrnSetupData(header core.Header) UrnSetupData {
 	return UrnSetupData{
-		Header: fakeHeader,
+		Header: header,
 		Ink:    rand.Int(),
 		Art:    rand.Int(),
 		Spot:   rand.Int(),
@@ -432,12 +407,9 @@ func GetFlipStorageValues(seed int, ilk string, bidId int) map[string]interface{
 }
 
 func insertValues(repo vdbStorage.Repository, header core.Header, valuesMap map[string]interface{}, metadatas []utils.StorageValueMetadata) {
-	blockHash := header.Hash
-	blockNumber := int(header.BlockNumber)
-
 	for _, metadata := range metadatas {
 		value := valuesMap[metadata.Name]
-		err := repo.Create(blockNumber, blockHash, metadata, value)
+		err := repo.Create(header.Id, metadata, value)
 
 		Expect(err).NotTo(HaveOccurred())
 	}
