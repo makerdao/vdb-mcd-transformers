@@ -668,7 +668,7 @@ func CreateYank(input YankCreationInput) (err error) {
 	addressID, addressErr := shared.GetOrCreateAddress(input.ContractAddress, input.Db)
 	Expect(addressErr).NotTo(HaveOccurred())
 	yankModel := test_data.CopyEventModel(test_data.YankModel)
-	yankModel.ColumnValues[yank.Id] = strconv.Itoa(input.BidId)
+	yankModel.ColumnValues[yank.BidId] = strconv.Itoa(input.BidId)
 	yankModel.ColumnValues[constants.AddressColumn] = addressID
 	yankModel.ColumnValues[constants.HeaderFK] = input.YankHeaderId
 	yankModel.ColumnValues[constants.LogFK] = input.YankLogId

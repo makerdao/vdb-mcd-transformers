@@ -31,7 +31,7 @@ type Converter struct {
 const (
 	logDataRequired   = false
 	numTopicsRequired = 3
-	Id                = "bid_id"
+	BidId             = "bid_id"
 )
 
 func (c Converter) ToModels(_ string, logs []core.HeaderSyncLog) (results []event.InsertionModel, err error) {
@@ -50,10 +50,10 @@ func (c Converter) ToModels(_ string, logs []core.HeaderSyncLog) (results []even
 			SchemaName: "maker",
 			TableName:  "yank",
 			OrderedColumns: []event.ColumnName{
-				constants.HeaderFK, Id, constants.AddressColumn, constants.LogFK,
+				constants.HeaderFK, BidId, constants.AddressColumn, constants.LogFK,
 			},
 			ColumnValues: event.ColumnValues{
-				Id:                      bidId.String(),
+				BidId:                   bidId.String(),
 				constants.HeaderFK:      log.HeaderID,
 				constants.LogFK:         log.ID,
 				constants.AddressColumn: addressID,

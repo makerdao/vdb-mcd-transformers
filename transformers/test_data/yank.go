@@ -57,10 +57,10 @@ var YankModel = event.InsertionModel{
 	SchemaName: "maker",
 	TableName:  "yank",
 	OrderedColumns: []event.ColumnName{
-		constants.HeaderFK, yank.Id, constants.AddressColumn, constants.LogFK,
+		constants.HeaderFK, yank.BidId, constants.AddressColumn, constants.LogFK,
 	},
 	ColumnValues: event.ColumnValues{
-		yank.Id:                 "10000000000000000",
+		yank.BidId:              "10000000000000000",
 		constants.HeaderFK:      YankHeaderSyncLog.HeaderID,
 		constants.LogFK:         YankHeaderSyncLog.ID,
 		constants.AddressColumn: rawYankLog.Address.Hex(),
