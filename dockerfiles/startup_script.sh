@@ -58,7 +58,7 @@ fi
 # Check every 60 seconds to see if either process has excited.
 # If grepping for process names finds something, they exit with 0 status. If they are not both 0, then one of the processes has already excited.
 
-while sleep 60; do
+while sleep 10; do
   ps aux | grep headerSync | grep -q -v grep
   HEADER_SYNC_STATUS=$?
 
