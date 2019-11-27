@@ -25,7 +25,6 @@ import (
 )
 
 var EventTransformerInitializer transformer.EventTransformerInitializer = event.Transformer{
-	Config:     shared.GetEventTransformerConfig(constants.LogValueLabel, constants.LogValueSignature()),
-	Converter:  &log_value.Converter{},
-	Repository: &log_value.Repository{},
+	Config:    shared.GetEventTransformerConfig(constants.LogValueLabel, constants.LogValueSignature()),
+	Converter: &log_value.Converter{},
 }.NewTransformer

@@ -25,7 +25,6 @@ import (
 )
 
 var EventTransformerInitializer transformer.EventTransformerInitializer = event.Transformer{
-	Config:     shared.GetEventTransformerConfig(constants.TickLabel, constants.TickSignature()),
-	Converter:  &tick.Converter{},
-	Repository: &tick.Repository{},
+	Config:    shared.GetEventTransformerConfig(constants.TickLabel, constants.TickSignature()),
+	Converter: &tick.Converter{},
 }.NewTransformer
