@@ -57,10 +57,6 @@ func (tr EventTransformer) Execute(logs []core.HeaderSyncLog) error {
 	return nil
 }
 
-func (tr EventTransformer) GetName() string {
-	return tr.Config.TransformerName
-}
-
 func (tr EventTransformer) GetConfig() transformer.EventTransformerConfig {
 	return tr.Config
 }

@@ -6,8 +6,6 @@ import (
 
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/deal"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/flap_kick"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
@@ -19,8 +17,6 @@ import (
 var _ = Describe("Get flap query", func() {
 	var (
 		db                         *postgres.DB
-		flapKickRepo               flap_kick.Repository
-		dealRepo                   deal.Repository
 		headerRepo                 repositories.HeaderRepository
 		contractAddress            = fakes.RandomString(42)
 		fakeBidId                  = rand.Int()
@@ -32,10 +28,6 @@ var _ = Describe("Get flap query", func() {
 	BeforeEach(func() {
 		db = test_config.NewTestDB(test_config.NewTestNode())
 		test_config.CleanTestDB(db)
-		flapKickRepo = flap_kick.Repository{}
-		flapKickRepo.SetDB(db)
-		dealRepo = deal.Repository{}
-		dealRepo.SetDB(db)
 		headerRepo = repositories.NewHeaderRepository(db)
 
 		blockOne = rand.Int()
@@ -54,14 +46,12 @@ var _ = Describe("Get flap query", func() {
 	It("gets the specified flap", func() {
 		err := test_helpers.SetUpFlapBidContext(test_helpers.FlapBidCreationInput{
 			DealCreationInput: test_helpers.DealCreationInput{
-				Db:              db,
+				DB:              db,
 				BidId:           fakeBidId,
 				ContractAddress: contractAddress,
-				DealRepo:        dealRepo,
 				DealHeaderId:    headerOne.Id,
 			},
 			Dealt:            true,
-			FlapKickRepo:     flapKickRepo,
 			FlapKickHeaderId: headerOne.Id,
 		})
 		Expect(err).NotTo(HaveOccurred())
@@ -84,14 +74,12 @@ var _ = Describe("Get flap query", func() {
 	It("gets the correct created and updated timestamps based on the requested block", func() {
 		err := test_helpers.SetUpFlapBidContext(test_helpers.FlapBidCreationInput{
 			DealCreationInput: test_helpers.DealCreationInput{
-				Db:              db,
+				DB:              db,
 				BidId:           fakeBidId,
 				ContractAddress: contractAddress,
-				DealRepo:        dealRepo,
 				DealHeaderId:    headerTwo.Id,
 			},
 			Dealt:            true,
-			FlapKickRepo:     flapKickRepo,
 			FlapKickHeaderId: headerOne.Id,
 		})
 		Expect(err).NotTo(HaveOccurred())
@@ -120,12 +108,11 @@ var _ = Describe("Get flap query", func() {
 		It("is false if no deal events", func() {
 			err := test_helpers.SetUpFlapBidContext(test_helpers.FlapBidCreationInput{
 				DealCreationInput: test_helpers.DealCreationInput{
-					Db:              db,
+					DB:              db,
 					BidId:           fakeBidId,
 					ContractAddress: contractAddress,
 				},
 				Dealt:            false,
-				FlapKickRepo:     flapKickRepo,
 				FlapKickHeaderId: headerOne.Id,
 			})
 			Expect(err).NotTo(HaveOccurred())
@@ -146,14 +133,12 @@ var _ = Describe("Get flap query", func() {
 			// todo: change how created timestamp is retrieved so this test can pass if we set up flap bid context after storage vals are created
 			err := test_helpers.SetUpFlapBidContext(test_helpers.FlapBidCreationInput{
 				DealCreationInput: test_helpers.DealCreationInput{
-					Db:              db,
+					DB:              db,
 					BidId:           fakeBidId,
 					ContractAddress: contractAddress,
-					DealRepo:        dealRepo,
 					DealHeaderId:    headerTwo.Id,
 				},
 				Dealt:            true,
-				FlapKickRepo:     flapKickRepo,
 				FlapKickHeaderId: headerOne.Id,
 			})
 			Expect(err).NotTo(HaveOccurred())

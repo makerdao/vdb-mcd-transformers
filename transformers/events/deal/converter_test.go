@@ -39,11 +39,10 @@ var _ = Describe("Flip Deal Converter", func() {
 	BeforeEach(func() {
 		converter = deal.Converter{}
 		db = test_config.NewTestDB(test_config.NewTestNode())
-		converter.SetDB(db)
 	})
 
 	It("converts logs to models", func() {
-		models, err := converter.ToModels(constants.FlipABI(), []core.HeaderSyncLog{test_data.DealHeaderSyncLog})
+		models, err := converter.ToModels(constants.FlipABI(), []core.HeaderSyncLog{test_data.DealHeaderSyncLog}, db)
 		Expect(err).NotTo(HaveOccurred())
 		var addressID int64
 		addrErr := db.Get(&addressID, `SELECT id FROM public.addresses`)
@@ -58,7 +57,7 @@ var _ = Describe("Flip Deal Converter", func() {
 		invalidLog := test_data.DealHeaderSyncLog
 		invalidLog.Log.Topics = []common.Hash{}
 
-		_, err := converter.ToModels(constants.FlipABI(), []core.HeaderSyncLog{invalidLog})
+		_, err := converter.ToModels(constants.FlipABI(), []core.HeaderSyncLog{invalidLog}, db)
 
 		Expect(err).To(HaveOccurred())
 		Expect(err).To(MatchError(shared.ErrLogMissingTopics(3, 0)))

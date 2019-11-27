@@ -62,9 +62,8 @@ var _ = Describe("FlapKick Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		tr := event.Transformer{
-			Config:     flapKickConfig,
-			Converter:  &flap_kick.Converter{},
-			Repository: &flap_kick.Repository{},
+			Config:    flapKickConfig,
+			Converter: &flap_kick.Converter{},
 		}.NewTransformer(db)
 
 		logFetcher := fetcher.NewLogFetcher(blockChain)

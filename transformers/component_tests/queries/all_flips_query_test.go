@@ -6,7 +6,6 @@ import (
 
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/deal"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/flip_kick"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/pkg/core"
@@ -21,7 +20,6 @@ var _ = Describe("All flips view", func() {
 	var (
 		db                     *postgres.DB
 		flipKickRepo           flip_kick.FlipKickRepository
-		dealRepo               deal.Repository
 		headerRepo             repositories.HeaderRepository
 		contractAddress        = fakes.RandomString(42)
 		blockOne, timestampOne int
@@ -33,8 +31,6 @@ var _ = Describe("All flips view", func() {
 		test_config.CleanTestDB(db)
 		flipKickRepo = flip_kick.FlipKickRepository{}
 		flipKickRepo.SetDB(db)
-		dealRepo = deal.Repository{}
-		dealRepo.SetDB(db)
 		headerRepo = repositories.NewHeaderRepository(db)
 
 		blockOne = rand.Int()
@@ -53,7 +49,7 @@ var _ = Describe("All flips view", func() {
 		// insert 2 records for the same bid
 		ilkId, urnId, setupErr := test_helpers.SetUpFlipBidContext(test_helpers.FlipBidContextInput{
 			DealCreationInput: test_helpers.DealCreationInput{
-				Db:              db,
+				DB:              db,
 				BidId:           fakeBidId,
 				ContractAddress: contractAddress,
 			},
@@ -111,7 +107,7 @@ var _ = Describe("All flips view", func() {
 
 		_, _, setupErr1 := test_helpers.SetUpFlipBidContext(test_helpers.FlipBidContextInput{
 			DealCreationInput: test_helpers.DealCreationInput{
-				Db:              db,
+				DB:              db,
 				BidId:           fakeBidId,
 				ContractAddress: contractAddress,
 			},
@@ -132,7 +128,7 @@ var _ = Describe("All flips view", func() {
 		irrelevantUrn := test_data.FlipKickModel().ColumnValues["gal"].(string)
 		_, _, setupErr2 := test_helpers.SetUpFlipBidContext(test_helpers.FlipBidContextInput{
 			DealCreationInput: test_helpers.DealCreationInput{
-				Db:              db,
+				DB:              db,
 				BidId:           irrelevantBidId,
 				ContractAddress: irrelevantAddress,
 			},
@@ -163,7 +159,7 @@ var _ = Describe("All flips view", func() {
 
 		ilkId, urnId, setupErr := test_helpers.SetUpFlipBidContext(test_helpers.FlipBidContextInput{
 			DealCreationInput: test_helpers.DealCreationInput{
-				Db:              db,
+				DB:              db,
 				BidId:           bidIdOne,
 				ContractAddress: contractAddress,
 			},
@@ -188,7 +184,7 @@ var _ = Describe("All flips view", func() {
 		// insert a new bid associated with a different flip contract address
 		ilkIdTwo, urnIdTwo, setupErr := test_helpers.SetUpFlipBidContext(test_helpers.FlipBidContextInput{
 			DealCreationInput: test_helpers.DealCreationInput{
-				Db:              db,
+				DB:              db,
 				BidId:           bidIdTwo,
 				ContractAddress: anotherFlipAddress,
 			},
@@ -236,7 +232,7 @@ var _ = Describe("All flips view", func() {
 			var setupErr error
 			ilkId, urnId, setupErr = test_helpers.SetUpFlipBidContext(test_helpers.FlipBidContextInput{
 				DealCreationInput: test_helpers.DealCreationInput{
-					Db:              db,
+					DB:              db,
 					BidId:           fakeBidIdOne,
 					ContractAddress: contractAddress,
 				},

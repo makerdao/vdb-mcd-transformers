@@ -33,10 +33,9 @@ import (
 var _ = Describe("Yank Converter", func() {
 	db := test_config.NewTestDB(test_config.NewTestNode())
 	var converter yank.Converter
-	converter.SetDB(db)
 
 	It("converts logs to models", func() {
-		models, err := converter.ToModels(constants.FlipABI(), []core.HeaderSyncLog{test_data.YankHeaderSyncLog})
+		models, err := converter.ToModels(constants.FlipABI(), []core.HeaderSyncLog{test_data.YankHeaderSyncLog}, db)
 		var addressID int64
 		addrErr := db.Get(&addressID, `SELECT id FROM public.addresses`)
 		Expect(addrErr).NotTo(HaveOccurred())
@@ -50,7 +49,7 @@ var _ = Describe("Yank Converter", func() {
 		invalidLog := test_data.YankHeaderSyncLog
 		invalidLog.Log.Topics = []common.Hash{}
 
-		_, err := converter.ToModels(constants.FlipABI(), []core.HeaderSyncLog{invalidLog})
+		_, err := converter.ToModels(constants.FlipABI(), []core.HeaderSyncLog{invalidLog}, db)
 
 		Expect(err).To(HaveOccurred())
 		Expect(err).To(MatchError(shared.ErrLogMissingTopics(3, 0)))

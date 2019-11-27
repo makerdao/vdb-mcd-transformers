@@ -25,7 +25,6 @@ import (
 )
 
 var EventTransformerInitializer transformer.EventTransformerInitializer = event.Transformer{
-	Config:     shared.GetEventTransformerConfig(constants.YankLabel, constants.YankSignature()),
-	Converter:  &yank.Converter{},
-	Repository: &yank.Repository{},
+	Config:    shared.GetEventTransformerConfig(constants.YankLabel, constants.YankSignature()),
+	Converter: &yank.Converter{},
 }.NewTransformer

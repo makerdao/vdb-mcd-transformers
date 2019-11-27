@@ -31,10 +31,9 @@ import (
 var _ = Describe("Bite Converter", func() {
 	db := test_config.NewTestDB(test_config.NewTestNode())
 	var converter = bite.Converter{}
-	converter.SetDB(db)
 
 	It("converts a log to a Model", func() {
-		models, err := converter.ToModels(constants.CatABI(), []core.HeaderSyncLog{test_data.BiteHeaderSyncLog})
+		models, err := converter.ToModels(constants.CatABI(), []core.HeaderSyncLog{test_data.BiteHeaderSyncLog}, db)
 		Expect(err).NotTo(HaveOccurred())
 
 		var urnID int64
@@ -47,7 +46,7 @@ var _ = Describe("Bite Converter", func() {
 	})
 
 	It("returns an error if converting log to entity fails", func() {
-		_, err := converter.ToModels("error abi", []core.HeaderSyncLog{test_data.BiteHeaderSyncLog})
+		_, err := converter.ToModels("error abi", []core.HeaderSyncLog{test_data.BiteHeaderSyncLog}, db)
 
 		Expect(err).To(HaveOccurred())
 	})

@@ -22,9 +22,7 @@ import (
 
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/deal"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/flip_kick"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/tend"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/vat"
@@ -44,8 +42,6 @@ var _ = Describe("Flip state computed columns", func() {
 		headerRepository       repositories.HeaderRepository
 		logId                  int64
 		flipKickRepo           flip_kick.FlipKickRepository
-		dealRepo               deal.Repository
-		tendRepo               tend.Repository
 		contractAddress        = fakes.FakeAddress.Hex()
 		fakeBidId              int
 		blockOne, timestampOne int
@@ -61,10 +57,6 @@ var _ = Describe("Flip state computed columns", func() {
 
 		flipKickRepo = flip_kick.FlipKickRepository{}
 		flipKickRepo.SetDB(db)
-		tendRepo = tend.Repository{}
-		tendRepo.SetDB(db)
-		dealRepo = deal.Repository{}
-		dealRepo.SetDB(db)
 
 		headerRepository = repositories.NewHeaderRepository(db)
 		headerOne = createHeader(blockOne, timestampOne, headerRepository)
@@ -75,7 +67,7 @@ var _ = Describe("Flip state computed columns", func() {
 
 		_, _, err := test_helpers.SetUpFlipBidContext(test_helpers.FlipBidContextInput{
 			DealCreationInput: test_helpers.DealCreationInput{
-				Db:              db,
+				DB:              db,
 				BidId:           fakeBidId,
 				ContractAddress: contractAddress,
 			},
@@ -156,12 +148,11 @@ var _ = Describe("Flip state computed columns", func() {
 			tendBidAmount := rand.Intn(100)
 			tendLog := test_data.CreateTestLog(headerOne.Id, db)
 			flipTendErr := test_helpers.CreateTend(test_helpers.TendCreationInput{
-				Db:              db,
+				DB:              db,
 				ContractAddress: contractAddress,
 				BidId:           fakeBidId,
 				Lot:             tendLot,
 				BidAmount:       tendBidAmount,
-				TendRepo:        tendRepo,
 				TendHeaderId:    headerOne.Id,
 				TendLogId:       tendLog.ID,
 			})
@@ -205,12 +196,11 @@ var _ = Describe("Flip state computed columns", func() {
 				tendLot = rand.Intn(100)
 				tendBidAmount = rand.Intn(100)
 				flipTendErr := test_helpers.CreateTend(test_helpers.TendCreationInput{
-					Db:              db,
+					DB:              db,
 					ContractAddress: contractAddress,
 					BidId:           fakeBidId,
 					Lot:             tendLot,
 					BidAmount:       tendBidAmount,
-					TendRepo:        tendRepo,
 					TendHeaderId:    headerTwo.Id,
 					TendLogId:       tendLogId,
 				})
@@ -276,7 +266,7 @@ var _ = Describe("Flip state computed columns", func() {
 
 			_, _, irrelevantFlipContextErr := test_helpers.SetUpFlipBidContext(test_helpers.FlipBidContextInput{
 				DealCreationInput: test_helpers.DealCreationInput{
-					Db:              db,
+					DB:              db,
 					BidId:           fakeBidId,
 					ContractAddress: irrelevantContractAddress,
 				},
@@ -308,7 +298,7 @@ var _ = Describe("Flip state computed columns", func() {
 			// so the test should return nothing
 			_, _, err := test_helpers.SetUpFlipBidContext(test_helpers.FlipBidContextInput{
 				DealCreationInput: test_helpers.DealCreationInput{
-					Db:              db,
+					DB:              db,
 					BidId:           fakeBidId,
 					ContractAddress: irrelevantContractAddress,
 				},

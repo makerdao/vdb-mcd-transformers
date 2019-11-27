@@ -262,7 +262,7 @@ var _ = Describe("current ilk state computed columns", func() {
 	Describe("historical_ilk_state_bites", func() {
 		It("returns bite event for a current ilk state", func() {
 			biteEvent := generateBite(test_helpers.FakeIlk.Hex, test_data.FakeUrn, headerOne.Id, logId, db)
-			insertBiteErr := event.Create([]event.InsertionModel{biteEvent}, db)
+			insertBiteErr := event.PersistModels([]event.InsertionModel{biteEvent}, db)
 			Expect(insertBiteErr).NotTo(HaveOccurred())
 
 			var actualBites []test_helpers.BiteEvent
@@ -291,14 +291,14 @@ var _ = Describe("current ilk state computed columns", func() {
 
 			BeforeEach(func() {
 				oldBite = generateBite(test_helpers.FakeIlk.Hex, oldGuy, headerOne.Id, logId, db)
-				insertOldBiteErr := event.Create([]event.InsertionModel{oldBite}, db)
+				insertOldBiteErr := event.PersistModels([]event.InsertionModel{oldBite}, db)
 				Expect(insertOldBiteErr).NotTo(HaveOccurred())
 
 				headerTwo := createHeader(blockOne+1, timestampOne+1, headerRepository)
 				newLogId := test_data.CreateTestLog(headerTwo.Id, db).ID
 
 				newBite = generateBite(test_helpers.FakeIlk.Hex, test_data.FakeUrn, headerTwo.Id, newLogId, db)
-				insertNewBiteErr := event.Create([]event.InsertionModel{newBite}, db)
+				insertNewBiteErr := event.PersistModels([]event.InsertionModel{newBite}, db)
 				Expect(insertNewBiteErr).NotTo(HaveOccurred())
 			})
 

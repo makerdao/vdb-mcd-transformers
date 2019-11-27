@@ -22,8 +22,6 @@ import (
 
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/cat_file/chop_lump"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/cat_file/flip"
 	ilk2 "github.com/makerdao/vdb-mcd-transformers/transformers/events/jug_file/ilk"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/spot_file/mat"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/spot_file/pip"
@@ -42,8 +40,6 @@ import (
 
 var _ = Describe("Ilk File Events Query", func() {
 	var (
-		catFileChopLumpRepo    chop_lump.Repository
-		catFileFlipRepo        flip.Repository
 		db                     *postgres.DB
 		logOneId               int64
 		blockOne, timestampOne int
@@ -59,10 +55,6 @@ var _ = Describe("Ilk File Events Query", func() {
 	BeforeEach(func() {
 		db = test_config.NewTestDB(test_config.NewTestNode())
 		test_config.CleanTestDB(db)
-		catFileChopLumpRepo = chop_lump.Repository{}
-		catFileChopLumpRepo.SetDB(db)
-		catFileFlipRepo = flip.Repository{}
-		catFileFlipRepo.SetDB(db)
 		headerRepo = repositories.NewHeaderRepository(db)
 		blockOne = rand.Int()
 		timestampOne = int(rand.Int31())
@@ -87,7 +79,7 @@ var _ = Describe("Ilk File Events Query", func() {
 		catFileChopLump.ColumnValues[constants.IlkColumn] = ilkId
 		catFileChopLump.ColumnValues[constants.HeaderFK] = headerOne.Id
 		catFileChopLump.ColumnValues[constants.LogFK] = catFileChopLumpLog.ID
-		chopLumpErr := catFileChopLumpRepo.Create([]event.InsertionModel{catFileChopLump})
+		chopLumpErr := event.PersistModels([]event.InsertionModel{catFileChopLump}, db)
 		Expect(chopLumpErr).NotTo(HaveOccurred())
 
 		catFileFlipLog := test_data.CreateTestLog(headerOne.Id, db)
@@ -95,7 +87,7 @@ var _ = Describe("Ilk File Events Query", func() {
 		catFileFlip.ColumnValues[constants.IlkColumn] = ilkId
 		catFileFlip.ColumnValues[constants.HeaderFK] = headerOne.Id
 		catFileFlip.ColumnValues[constants.LogFK] = catFileFlipLog.ID
-		flipErr := catFileFlipRepo.Create([]event.InsertionModel{catFileFlip})
+		flipErr := event.PersistModels([]event.InsertionModel{catFileFlip}, db)
 		Expect(flipErr).NotTo(HaveOccurred())
 
 		jugFileLog := test_data.CreateTestLog(headerOne.Id, db)

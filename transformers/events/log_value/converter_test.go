@@ -30,17 +30,16 @@ import (
 var _ = Describe("LogValue Converter", func() {
 	db := test_config.NewTestDB(test_config.NewTestNode())
 	var converter = log_value.Converter{}
-	converter.SetDB(db)
 
 	It("converts a log to a Model", func() {
-		models, err := converter.ToModels(constants.OsmABI(), []core.HeaderSyncLog{test_data.LogValueHeaderSyncLog})
+		models, err := converter.ToModels(constants.OsmABI(), []core.HeaderSyncLog{test_data.LogValueHeaderSyncLog}, db)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(models).To(Equal([]event.InsertionModel{test_data.LogValueModel()}))
 	})
 
 	It("returns an error if converting log to entity fails", func() {
-		_, err := converter.ToModels("error abi", []core.HeaderSyncLog{test_data.LogValueHeaderSyncLog})
+		_, err := converter.ToModels("error abi", []core.HeaderSyncLog{test_data.LogValueHeaderSyncLog}, db)
 
 		Expect(err).To(HaveOccurred())
 	})

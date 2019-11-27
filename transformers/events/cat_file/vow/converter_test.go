@@ -42,7 +42,7 @@ var _ = Describe("Cat file vow converter", func() {
 			},
 		}
 
-		_, err := converter.ToModels(constants.CatABI(), []core.HeaderSyncLog{badLog})
+		_, err := converter.ToModels(constants.CatABI(), []core.HeaderSyncLog{badLog}, nil)
 		Expect(err).To(HaveOccurred())
 	})
 
@@ -53,12 +53,12 @@ var _ = Describe("Cat file vow converter", func() {
 			},
 		}
 
-		_, err := converter.ToModels(constants.CatABI(), []core.HeaderSyncLog{badLog})
+		_, err := converter.ToModels(constants.CatABI(), []core.HeaderSyncLog{badLog}, nil)
 		Expect(err).To(HaveOccurred())
 	})
 
 	It("converts a log to an model", func() {
-		models, err := converter.ToModels(constants.CatABI(), []core.HeaderSyncLog{test_data.CatFileVowHeaderSyncLog})
+		models, err := converter.ToModels(constants.CatABI(), []core.HeaderSyncLog{test_data.CatFileVowHeaderSyncLog}, nil)
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(models).To(Equal([]event.InsertionModel{test_data.CatFileVowModel()}))

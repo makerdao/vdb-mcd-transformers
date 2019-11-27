@@ -28,7 +28,6 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/flip_kick"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/flop_kick"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/tend"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/tick"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/yank"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
@@ -537,17 +536,17 @@ type FlipBid struct {
 }
 
 func SetUpFlipBidContext(setupData FlipBidContextInput) (ilkId, urnId int64, err error) {
-	ilkId, ilkErr := shared.GetOrCreateIlk(setupData.IlkHex, setupData.Db)
+	ilkId, ilkErr := shared.GetOrCreateIlk(setupData.IlkHex, setupData.DB)
 	if ilkErr != nil {
 		return 0, 0, ilkErr
 	}
 
-	urnId, urnErr := shared.GetOrCreateUrn(setupData.UrnGuy, setupData.IlkHex, setupData.Db)
+	urnId, urnErr := shared.GetOrCreateUrn(setupData.UrnGuy, setupData.IlkHex, setupData.DB)
 	if urnErr != nil {
 		return 0, 0, urnErr
 	}
 
-	flipKickLog := test_data.CreateTestLog(setupData.FlipKickHeaderId, setupData.Db)
+	flipKickLog := test_data.CreateTestLog(setupData.FlipKickHeaderId, setupData.DB)
 	flipKickErr := CreateFlipKick(setupData.ContractAddress, setupData.BidId, setupData.FlipKickHeaderId, flipKickLog.ID, setupData.UrnGuy, setupData.FlipKickRepo)
 	if flipKickErr != nil {
 		return 0, 0, flipKickErr
@@ -564,8 +563,8 @@ func SetUpFlipBidContext(setupData FlipBidContextInput) (ilkId, urnId int64, err
 }
 
 func SetUpFlapBidContext(setupData FlapBidCreationInput) (err error) {
-	flapKickLog := test_data.CreateTestLog(setupData.FlapKickHeaderId, setupData.Db)
-	flapKickErr := CreateFlapKick(setupData.ContractAddress, setupData.BidId, setupData.FlapKickHeaderId, flapKickLog.ID, setupData.FlapKickRepo, setupData.Db)
+	flapKickLog := test_data.CreateTestLog(setupData.FlapKickHeaderId, setupData.DB)
+	flapKickErr := CreateFlapKick(setupData.ContractAddress, setupData.BidId, setupData.FlapKickHeaderId, flapKickLog.ID, setupData.DB)
 	if flapKickErr != nil {
 		return flapKickErr
 	}
@@ -581,7 +580,7 @@ func SetUpFlapBidContext(setupData FlapBidCreationInput) (err error) {
 }
 
 func SetUpFlopBidContext(setupData FlopBidCreationInput) (err error) {
-	flopKickLog := test_data.CreateTestLog(setupData.FlopKickHeaderId, setupData.Db)
+	flopKickLog := test_data.CreateTestLog(setupData.FlopKickHeaderId, setupData.DB)
 	flopKickErr := CreateFlopKick(setupData.ContractAddress, setupData.BidId, setupData.FlopKickHeaderId, flopKickLog.ID, setupData.FlopKickRepo)
 	if flopKickErr != nil {
 		return flopKickErr
@@ -597,16 +596,16 @@ func SetUpFlopBidContext(setupData FlopBidCreationInput) (err error) {
 }
 
 func CreateDeal(input DealCreationInput) (err error) {
-	addressID, addressErr := shared.GetOrCreateAddress(input.ContractAddress, input.Db)
+	addressID, addressErr := shared.GetOrCreateAddress(input.ContractAddress, input.DB)
 	Expect(addressErr).NotTo(HaveOccurred())
-	dealLog := test_data.CreateTestLog(input.DealHeaderId, input.Db)
+	dealLog := test_data.CreateTestLog(input.DealHeaderId, input.DB)
 	dealModel := test_data.CopyEventModel(test_data.DealModel)
 	dealModel.ColumnValues[deal.Id] = strconv.Itoa(input.BidId)
 	dealModel.ColumnValues[constants.HeaderFK] = input.DealHeaderId
 	dealModel.ColumnValues[constants.LogFK] = dealLog.ID
 	dealModel.ColumnValues[constants.AddressColumn] = addressID
 	deals := []event.InsertionModel{dealModel}
-	return input.DealRepo.Create(deals)
+	return event.PersistModels(deals, input.DB)
 }
 
 func CreateFlipKick(contractAddress string, bidId int, headerId, logId int64, usr string, repo flip_kick.FlipKickRepository) error {
@@ -619,7 +618,7 @@ func CreateFlipKick(contractAddress string, bidId int, headerId, logId int64, us
 	return repo.Create([]shared.InsertionModel{flipKickModel})
 }
 
-func CreateFlapKick(contractAddress string, bidId int, headerId, logId int64, repo flap_kick.Repository, db *postgres.DB) error {
+func CreateFlapKick(contractAddress string, bidId int, headerId, logId int64, db *postgres.DB) error {
 	flapKickModel := test_data.FlapKickModel()
 	addressId, addressErr := shared.GetOrCreateAddress(contractAddress, db)
 	Expect(addressErr).NotTo(HaveOccurred())
@@ -627,7 +626,7 @@ func CreateFlapKick(contractAddress string, bidId int, headerId, logId int64, re
 	flapKickModel.ColumnValues[event.LogFK] = logId
 	flapKickModel.ColumnValues[event.AddressFK] = addressId
 	flapKickModel.ColumnValues[flap_kick.BidId] = strconv.Itoa(bidId)
-	return repo.Create([]event.InsertionModel{flapKickModel})
+	return event.PersistModels([]event.InsertionModel{flapKickModel}, db)
 }
 
 func CreateFlopKick(contractAddress string, bidId int, headerId, logId int64, repo flop_kick.FlopKickRepository) error {
@@ -640,21 +639,21 @@ func CreateFlopKick(contractAddress string, bidId int, headerId, logId int64, re
 }
 
 func CreateTend(input TendCreationInput) (err error) {
-	addressID, addressErr := shared.GetOrCreateAddress(input.ContractAddress, input.Db)
+	addressID, addressErr := shared.GetOrCreateAddress(input.ContractAddress, input.DB)
 	Expect(addressErr).NotTo(HaveOccurred())
 	tendModel := test_data.TendModel()
-	tendLog := test_data.CreateTestLog(input.TendHeaderId, input.Db)
+	tendLog := test_data.CreateTestLog(input.TendHeaderId, input.DB)
 	tendModel.ColumnValues[tend.Id] = strconv.Itoa(input.BidId)
 	tendModel.ColumnValues[tend.Lot] = strconv.Itoa(input.Lot)
 	tendModel.ColumnValues[tend.Bid] = strconv.Itoa(input.BidAmount)
 	tendModel.ColumnValues[constants.AddressColumn] = addressID
 	tendModel.ColumnValues[constants.HeaderFK] = input.TendHeaderId
 	tendModel.ColumnValues[constants.LogFK] = tendLog.ID
-	return input.TendRepo.Create([]event.InsertionModel{tendModel})
+	return event.PersistModels([]event.InsertionModel{tendModel}, input.DB)
 }
 
 func CreateDent(input DentCreationInput) (err error) {
-	addressID, addressErr := shared.GetOrCreateAddress(input.ContractAddress, input.Db)
+	addressID, addressErr := shared.GetOrCreateAddress(input.ContractAddress, input.DB)
 	Expect(addressErr).NotTo(HaveOccurred())
 	dentModel := test_data.DentModel()
 	dentModel.ColumnValues[dent.Id] = strconv.Itoa(input.BidId)
@@ -663,68 +662,64 @@ func CreateDent(input DentCreationInput) (err error) {
 	dentModel.ColumnValues[constants.AddressColumn] = addressID
 	dentModel.ColumnValues[constants.HeaderFK] = input.DentHeaderId
 	dentModel.ColumnValues[constants.LogFK] = input.DentLogId
-	return input.DentRepo.Create([]event.InsertionModel{dentModel})
+	return event.PersistModels([]event.InsertionModel{dentModel}, input.DB)
 }
 
 func CreateYank(input YankCreationInput) (err error) {
-	addressID, addressErr := shared.GetOrCreateAddress(input.ContractAddress, input.Db)
+	addressID, addressErr := shared.GetOrCreateAddress(input.ContractAddress, input.DB)
 	Expect(addressErr).NotTo(HaveOccurred())
 	yankModel := test_data.CopyEventModel(test_data.YankModel)
 	yankModel.ColumnValues[yank.BidId] = strconv.Itoa(input.BidId)
 	yankModel.ColumnValues[constants.AddressColumn] = addressID
 	yankModel.ColumnValues[constants.HeaderFK] = input.YankHeaderId
 	yankModel.ColumnValues[constants.LogFK] = input.YankLogId
-	return input.YankRepo.Create([]event.InsertionModel{yankModel})
+	return event.PersistModels([]event.InsertionModel{yankModel}, input.DB)
 }
 
 func CreateTick(input TickCreationInput) (err error) {
-	addressID, addressErr := shared.GetOrCreateAddress(input.ContractAddress, input.Db)
+	addressID, addressErr := shared.GetOrCreateAddress(input.ContractAddress, input.DB)
 	Expect(addressErr).NotTo(HaveOccurred())
-	tickLog := test_data.CreateTestLog(input.TickHeaderId, input.Db)
+	tickLog := test_data.CreateTestLog(input.TickHeaderId, input.DB)
 	tickModel := test_data.CopyEventModel(test_data.TickModel)
 	tickModel.ColumnValues[constants.BidIdColumn] = strconv.Itoa(input.BidId)
 	tickModel.ColumnValues[constants.AddressColumn] = addressID
 	tickModel.ColumnValues[constants.HeaderFK] = input.TickHeaderId
 	tickModel.ColumnValues[constants.LogFK] = tickLog.ID
-	return input.TickRepo.Create([]event.InsertionModel{tickModel})
+	return event.PersistModels([]event.InsertionModel{tickModel}, input.DB)
 }
 
 type YankCreationInput struct {
-	Db              *postgres.DB
+	DB              *postgres.DB
 	ContractAddress string
 	BidId           int
-	YankRepo        yank.Repository
 	YankHeaderId    int64
 	YankLogId       int64
 }
 
 type TendCreationInput struct {
-	Db              *postgres.DB
+	DB              *postgres.DB
 	ContractAddress string
 	BidId           int
 	Lot             int
 	BidAmount       int
-	TendRepo        tend.Repository
 	TendHeaderId    int64
 	TendLogId       int64
 }
 
 type DentCreationInput struct {
-	Db              *postgres.DB
+	DB              *postgres.DB
 	ContractAddress string
 	BidId           int
 	Lot             int
 	BidAmount       int
-	DentRepo        dent.Repository
 	DentHeaderId    int64
 	DentLogId       int64
 }
 
 type DealCreationInput struct {
-	Db              *postgres.DB
+	DB              *postgres.DB
 	BidId           int
 	ContractAddress string
-	DealRepo        deal.Repository
 	DealHeaderId    int64
 }
 
@@ -740,15 +735,13 @@ type FlipBidContextInput struct {
 type FlapBidCreationInput struct {
 	DealCreationInput
 	Dealt            bool
-	FlapKickRepo     flap_kick.Repository
 	FlapKickHeaderId int64
 }
 
 type TickCreationInput struct {
-	Db              *postgres.DB
+	DB              *postgres.DB
 	BidId           int
 	ContractAddress string
-	TickRepo        tick.Repository
 	TickHeaderId    int64
 	TickLogId       int64
 }

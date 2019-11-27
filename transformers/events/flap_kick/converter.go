@@ -28,9 +28,7 @@ import (
 	"github.com/makerdao/vulcanizedb/pkg/eth"
 )
 
-type Converter struct {
-	db *postgres.DB
-}
+type Converter struct{}
 
 const (
 	BidId event.ColumnName = "bid_id"
@@ -61,7 +59,7 @@ func (converter Converter) toEntities(contractAbi string, logs []core.HeaderSync
 	return entities, nil
 }
 
-func (converter Converter) ToModels(abi string, logs []core.HeaderSyncLog) ([]event.InsertionModel, error) {
+func (converter Converter) ToModels(abi string, logs []core.HeaderSyncLog, db *postgres.DB) ([]event.InsertionModel, error) {
 	entities, entityErr := converter.toEntities(abi, logs)
 	if entityErr != nil {
 		return nil, fmt.Errorf("FlapKick converter couldn't convert logs to entities: %v", entityErr)
@@ -72,7 +70,7 @@ func (converter Converter) ToModels(abi string, logs []core.HeaderSyncLog) ([]ev
 		if flapKickEntity.Id == nil {
 			return nil, errors.New("flapKick log ID cannot be nil")
 		}
-		addressId, addressErr := shared.GetOrCreateAddress(flapKickEntity.ContractAddress.Hex(), converter.db)
+		addressId, addressErr := shared.GetOrCreateAddress(flapKickEntity.ContractAddress.Hex(), db)
 		if addressErr != nil {
 			_ = shared.ErrCouldNotCreateFK(addressErr)
 		}
@@ -96,8 +94,4 @@ func (converter Converter) ToModels(abi string, logs []core.HeaderSyncLog) ([]ev
 		models = append(models, model)
 	}
 	return models, nil
-}
-
-func (converter *Converter) SetDB(db *postgres.DB) {
-	converter.db = db
 }

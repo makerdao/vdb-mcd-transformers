@@ -33,11 +33,10 @@ import (
 var _ = Describe("TickConverter", func() {
 	converter := tick.Converter{}
 	db := test_config.NewTestDB(test_config.NewTestNode())
-	converter.SetDB(db)
 
 	Describe("ToModels", func() {
 		It("converts an eth log to a db model", func() {
-			models, err := converter.ToModels(constants.FlipABI(), []core.HeaderSyncLog{test_data.FlipTickHeaderSyncLog})
+			models, err := converter.ToModels(constants.FlipABI(), []core.HeaderSyncLog{test_data.FlipTickHeaderSyncLog}, db)
 			Expect(err).NotTo(HaveOccurred())
 
 			var addressID int64
@@ -53,7 +52,7 @@ var _ = Describe("TickConverter", func() {
 		It("returns an error if the expected amount of topics aren't in the log", func() {
 			invalidLog := test_data.FlipTickHeaderSyncLog
 			invalidLog.Log.Topics = []common.Hash{}
-			_, err := converter.ToModels(constants.FlipABI(), []core.HeaderSyncLog{invalidLog})
+			_, err := converter.ToModels(constants.FlipABI(), []core.HeaderSyncLog{invalidLog}, db)
 
 			Expect(err).To(MatchError(shared.ErrLogMissingTopics(3, 0)))
 		})

@@ -6,7 +6,6 @@ import (
 
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/deal"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/flip_kick"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/pkg/core"
@@ -22,7 +21,6 @@ var _ = Describe("Single flip view", func() {
 		blockOne, timestampOne int
 		contractAddress        = fakes.RandomString(42)
 		db                     *postgres.DB
-		dealRepo               deal.Repository
 		fakeBidId              = rand.Int()
 		flipKickRepo           flip_kick.FlipKickRepository
 		headerOne              core.Header
@@ -34,8 +32,6 @@ var _ = Describe("Single flip view", func() {
 		test_config.CleanTestDB(db)
 		flipKickRepo = flip_kick.FlipKickRepository{}
 		flipKickRepo.SetDB(db)
-		dealRepo = deal.Repository{}
-		dealRepo.SetDB(db)
 		headerRepo = repositories.NewHeaderRepository(db)
 
 		blockOne = rand.Int()
@@ -55,10 +51,9 @@ var _ = Describe("Single flip view", func() {
 
 		ilkId, urnId, err := test_helpers.SetUpFlipBidContext(test_helpers.FlipBidContextInput{
 			DealCreationInput: test_helpers.DealCreationInput{
-				Db:              db,
+				DB:              db,
 				BidId:           fakeBidId,
 				ContractAddress: contractAddress,
-				DealRepo:        dealRepo,
 				DealHeaderId:    headerOne.Id,
 			},
 			Dealt:            true,
@@ -93,7 +88,7 @@ var _ = Describe("Single flip view", func() {
 
 			ilkId, urnId, err := test_helpers.SetUpFlipBidContext(test_helpers.FlipBidContextInput{
 				DealCreationInput: test_helpers.DealCreationInput{
-					Db:              db,
+					DB:              db,
 					BidId:           fakeBidId,
 					ContractAddress: contractAddress,
 				},
@@ -129,10 +124,9 @@ var _ = Describe("Single flip view", func() {
 
 			ilkId, urnId, err := test_helpers.SetUpFlipBidContext(test_helpers.FlipBidContextInput{
 				DealCreationInput: test_helpers.DealCreationInput{
-					Db:              db,
+					DB:              db,
 					BidId:           fakeBidId,
 					ContractAddress: contractAddress,
-					DealRepo:        dealRepo,
 					DealHeaderId:    headerTwo.Id,
 				},
 				Dealt:            true,
@@ -163,10 +157,9 @@ var _ = Describe("Single flip view", func() {
 
 		ilkId, urnId, err := test_helpers.SetUpFlipBidContext(test_helpers.FlipBidContextInput{
 			DealCreationInput: test_helpers.DealCreationInput{
-				Db:              db,
+				DB:              db,
 				BidId:           fakeBidId,
 				ContractAddress: contractAddress,
-				DealRepo:        dealRepo,
 				DealHeaderId:    headerOne.Id,
 			},
 			Dealt:            true,

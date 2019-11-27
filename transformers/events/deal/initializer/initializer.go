@@ -25,7 +25,6 @@ import (
 )
 
 var EventTransformerInitializer transformer.EventTransformerInitializer = event.Transformer{
-	Config:     shared.GetEventTransformerConfig(constants.DealLabel, constants.DealSignature()),
-	Converter:  &deal.Converter{},
-	Repository: &deal.Repository{},
+	Config:    shared.GetEventTransformerConfig(constants.DealLabel, constants.DealSignature()),
+	Converter: &deal.Converter{},
 }.NewTransformer

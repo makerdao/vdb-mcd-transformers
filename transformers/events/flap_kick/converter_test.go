@@ -38,11 +38,10 @@ var _ = Describe("Flap kick converter", func() {
 	BeforeEach(func() {
 		converter = flap_kick.Converter{}
 		db = test_config.NewTestDB(test_config.NewTestNode())
-		converter.SetDB(db)
 	})
 
 	It("converts a log to a Model", func() {
-		models, err := converter.ToModels(constants.FlapABI(), []core.HeaderSyncLog{test_data.FlapKickHeaderSyncLog})
+		models, err := converter.ToModels(constants.FlapABI(), []core.HeaderSyncLog{test_data.FlapKickHeaderSyncLog}, db)
 		Expect(err).NotTo(HaveOccurred())
 
 		expectedKick := test_data.FlapKickModel()
@@ -55,7 +54,7 @@ var _ = Describe("Flap kick converter", func() {
 	})
 
 	It("returns an error if converting log to entity fails", func() {
-		_, err := converter.ToModels("error abi", []core.HeaderSyncLog{test_data.FlapKickHeaderSyncLog})
+		_, err := converter.ToModels("error abi", []core.HeaderSyncLog{test_data.FlapKickHeaderSyncLog}, db)
 
 		Expect(err).To(HaveOccurred())
 	})

@@ -28,9 +28,7 @@ import (
 	"github.com/makerdao/vulcanizedb/pkg/eth"
 )
 
-type Converter struct {
-	db *postgres.DB
-}
+type Converter struct{}
 
 const Val event.ColumnName = "val"
 
@@ -58,7 +56,7 @@ func (Converter) toEntities(contractAbi string, logs []core.HeaderSyncLog) ([]Lo
 	return entities, nil
 }
 
-func (c Converter) ToModels(abi string, logs []core.HeaderSyncLog) ([]event.InsertionModel, error) {
+func (c Converter) ToModels(abi string, logs []core.HeaderSyncLog, _ *postgres.DB) ([]event.InsertionModel, error) {
 	entities, entityErr := c.toEntities(abi, logs)
 	if entityErr != nil {
 		return nil, fmt.Errorf("converter couldn't convert logs to entities: %v", entityErr)
@@ -83,8 +81,4 @@ func (c Converter) ToModels(abi string, logs []core.HeaderSyncLog) ([]event.Inse
 		models = append(models, model)
 	}
 	return models, nil
-}
-
-func (c *Converter) SetDB(db *postgres.DB) {
-	c.db = db
 }

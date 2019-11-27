@@ -25,7 +25,6 @@ import (
 )
 
 var EventTransformerInitializer transformer.EventTransformerInitializer = event.Transformer{
-	Config:     shared.GetEventTransformerConfig(constants.CatFileChopLumpLabel, constants.CatFileChopLumpSignature()),
-	Converter:  &chop_lump.Converter{},
-	Repository: &chop_lump.Repository{},
+	Config:    shared.GetEventTransformerConfig(constants.CatFileChopLumpLabel, constants.CatFileChopLumpSignature()),
+	Converter: &chop_lump.Converter{},
 }.NewTransformer

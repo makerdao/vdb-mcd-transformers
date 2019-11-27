@@ -26,7 +26,6 @@ var _ = Describe("flap_bid_event computed columns", func() {
 		headerOne              core.Header
 		flapKickLog            core.HeaderSyncLog
 		headerRepo             repositories.HeaderRepository
-		flapKickRepo           flap_kick.Repository
 		flapKickEvent          event.InsertionModel
 		contractAddress        = fakes.RandomString(42)
 		fakeBidId              = rand.Int()
@@ -42,8 +41,6 @@ var _ = Describe("flap_bid_event computed columns", func() {
 		headerOne = createHeader(blockOne, timestampOne, headerRepo)
 		flapKickLog = test_data.CreateTestLog(headerOne.Id, db)
 
-		flapKickRepo = flap_kick.Repository{}
-		flapKickRepo.SetDB(db)
 		addressId, addressErr := shared.GetOrCreateAddress(contractAddress, db)
 		Expect(addressErr).NotTo(HaveOccurred())
 
@@ -52,7 +49,7 @@ var _ = Describe("flap_bid_event computed columns", func() {
 		flapKickEvent.ColumnValues[event.LogFK] = flapKickLog.ID
 		flapKickEvent.ColumnValues[event.AddressFK] = addressId
 		flapKickEvent.ColumnValues[flap_kick.BidId] = strconv.Itoa(fakeBidId)
-		insertFlapKickErr := flapKickRepo.Create([]event.InsertionModel{flapKickEvent})
+		insertFlapKickErr := event.PersistModels([]event.InsertionModel{flapKickEvent}, db)
 		Expect(insertFlapKickErr).NotTo(HaveOccurred())
 	})
 

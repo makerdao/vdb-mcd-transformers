@@ -24,9 +24,7 @@ import (
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 )
 
-type Converter struct {
-	db *postgres.DB
-}
+type Converter struct{}
 
 const (
 	logDataRequired                    = true
@@ -34,7 +32,7 @@ const (
 	Id                event.ColumnName = "bid_id"
 )
 
-func (c Converter) ToModels(_ string, logs []core.HeaderSyncLog) ([]event.InsertionModel, error) {
+func (c Converter) ToModels(_ string, logs []core.HeaderSyncLog, db *postgres.DB) ([]event.InsertionModel, error) {
 	var models []event.InsertionModel
 	for _, log := range logs {
 		validationErr := shared.VerifyLog(log.Log, numTopicsRequired, logDataRequired)
@@ -44,7 +42,7 @@ func (c Converter) ToModels(_ string, logs []core.HeaderSyncLog) ([]event.Insert
 
 		bidId := log.Log.Topics[2].Big()
 
-		addressID, addressErr := shared.GetOrCreateAddress(log.Log.Address.String(), c.db)
+		addressID, addressErr := shared.GetOrCreateAddress(log.Log.Address.String(), db)
 		if addressErr != nil {
 			return nil, shared.ErrCouldNotCreateFK(addressErr)
 		}
@@ -69,8 +67,4 @@ func (c Converter) ToModels(_ string, logs []core.HeaderSyncLog) ([]event.Insert
 	}
 
 	return models, nil
-}
-
-func (c *Converter) SetDB(db *postgres.DB) {
-	c.db = db
 }

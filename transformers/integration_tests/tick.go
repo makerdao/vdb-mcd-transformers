@@ -63,9 +63,8 @@ var _ = XDescribe("Tick EventTransformer", func() {
 		topics = []common.Hash{common.HexToHash(tickConfig.Topic)}
 
 		initializer = event.Transformer{
-			Config:     tickConfig,
-			Converter:  &tick.Converter{},
-			Repository: &tick.Repository{},
+			Config:    tickConfig,
+			Converter: &tick.Converter{},
 		}
 	})
 

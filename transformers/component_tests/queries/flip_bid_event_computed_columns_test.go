@@ -75,7 +75,7 @@ var _ = Describe("Flip bid event computed columns", func() {
 
 			ilkId, urnId, err := test_helpers.SetUpFlipBidContext(test_helpers.FlipBidContextInput{
 				DealCreationInput: test_helpers.DealCreationInput{
-					Db:              db,
+					DB:              db,
 					BidId:           bidId,
 					ContractAddress: contractAddress,
 				},
@@ -109,7 +109,7 @@ var _ = Describe("Flip bid event computed columns", func() {
 
 			_, _, irrelevantFlipContextErr := test_helpers.SetUpFlipBidContext(test_helpers.FlipBidContextInput{
 				DealCreationInput: test_helpers.DealCreationInput{
-					Db:              db,
+					DB:              db,
 					BidId:           bidId,
 					ContractAddress: irrelevantContractAddress,
 				},
@@ -127,7 +127,7 @@ var _ = Describe("Flip bid event computed columns", func() {
 
 			ilkId, urnId, flipContextErr := test_helpers.SetUpFlipBidContext(test_helpers.FlipBidContextInput{
 				DealCreationInput: test_helpers.DealCreationInput{
-					Db:              db,
+					DB:              db,
 					BidId:           bidId,
 					ContractAddress: contractAddress,
 				},

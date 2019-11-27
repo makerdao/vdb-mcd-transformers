@@ -54,9 +54,8 @@ var _ = Describe("LogValue Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		initializer := event.Transformer{
-			Config:     logValueConfig,
-			Converter:  &log_value.Converter{},
-			Repository: &log_value.Repository{},
+			Config:    logValueConfig,
+			Converter: &log_value.Converter{},
 		}
 		transformer := initializer.NewTransformer(db)
 

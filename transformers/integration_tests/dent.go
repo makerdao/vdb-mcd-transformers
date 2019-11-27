@@ -64,9 +64,8 @@ var _ = Describe("Dent transformer", func() {
 		logFetcher = fetcher.NewLogFetcher(blockChain)
 
 		initializer = event.Transformer{
-			Config:     dentConfig,
-			Converter:  &dent.Converter{},
-			Repository: &dent.Repository{},
+			Config:    dentConfig,
+			Converter: &dent.Converter{},
 		}
 	})
 

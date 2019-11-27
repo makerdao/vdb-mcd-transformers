@@ -39,11 +39,10 @@ var _ = Describe("Dent Converter", func() {
 	BeforeEach(func() {
 		db = test_config.NewTestDB(test_config.NewTestNode())
 		converter = dent.Converter{}
-		converter.SetDB(db)
 	})
 
 	It("converts an eth log to a db model", func() {
-		models, err := converter.ToModels(constants.FlipABI(), []core.HeaderSyncLog{test_data.DentHeaderSyncLog})
+		models, err := converter.ToModels(constants.FlipABI(), []core.HeaderSyncLog{test_data.DentHeaderSyncLog}, db)
 		Expect(err).NotTo(HaveOccurred())
 
 		var addressID int64
@@ -58,7 +57,7 @@ var _ = Describe("Dent Converter", func() {
 	It("returns an error if the expected amount of topics aren't in the log", func() {
 		invalidLog := test_data.DentHeaderSyncLog
 		invalidLog.Log.Topics = []common.Hash{}
-		_, err := converter.ToModels(constants.FlipABI(), []core.HeaderSyncLog{invalidLog})
+		_, err := converter.ToModels(constants.FlipABI(), []core.HeaderSyncLog{invalidLog}, db)
 
 		Expect(err).To(HaveOccurred())
 		Expect(err).To(MatchError(shared.ErrLogMissingTopics(4, 0)))
@@ -67,7 +66,7 @@ var _ = Describe("Dent Converter", func() {
 	It("returns an error if the log data is empty", func() {
 		emptyDataLog := test_data.DentHeaderSyncLog
 		emptyDataLog.Log.Data = []byte{}
-		_, err := converter.ToModels(constants.FlipABI(), []core.HeaderSyncLog{emptyDataLog})
+		_, err := converter.ToModels(constants.FlipABI(), []core.HeaderSyncLog{emptyDataLog}, db)
 
 		Expect(err).To(HaveOccurred())
 		Expect(err).To(MatchError(shared.ErrLogMissingData))
