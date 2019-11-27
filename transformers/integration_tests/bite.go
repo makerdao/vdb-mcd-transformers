@@ -57,9 +57,8 @@ var _ = Describe("Bite Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		initializer := event.Transformer{
-			Config:     biteConfig,
-			Converter:  &bite.Converter{},
-			Repository: &bite.Repository{},
+			Config:    biteConfig,
+			Converter: &bite.Converter{},
 		}
 		transformer := initializer.NewTransformer(db)
 

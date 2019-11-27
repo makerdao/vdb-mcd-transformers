@@ -6,7 +6,6 @@ import (
 
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/dent"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/flop_kick"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
@@ -150,15 +149,12 @@ var _ = Describe("Flop computed columns", func() {
 
 				dentLot = rand.Int()
 				dentBid = rand.Int()
-				dentRepo := dent.Repository{}
-				dentRepo.SetDB(db)
 				flopDentErr := test_helpers.CreateDent(test_helpers.DentCreationInput{
-					Db:              db,
+					DB:              db,
 					BidId:           fakeBidId,
 					ContractAddress: contractAddress,
 					Lot:             dentLot,
 					BidAmount:       dentBid,
-					DentRepo:        dentRepo,
 					DentHeaderId:    headerTwo.Id,
 					DentLogId:       logTwoId,
 				})

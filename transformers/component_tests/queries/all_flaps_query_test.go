@@ -6,8 +6,6 @@ import (
 
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/deal"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/flap_kick"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
@@ -18,8 +16,6 @@ import (
 var _ = Describe("All flaps query", func() {
 	var (
 		db              *postgres.DB
-		flapKickRepo    flap_kick.Repository
-		dealRepo        deal.Repository
 		headerRepo      repositories.HeaderRepository
 		contractAddress = "contract address"
 
@@ -30,11 +26,6 @@ var _ = Describe("All flaps query", func() {
 	BeforeEach(func() {
 		db = test_config.NewTestDB(test_config.NewTestNode())
 		test_config.CleanTestDB(db)
-
-		flapKickRepo = flap_kick.Repository{}
-		flapKickRepo.SetDB(db)
-		dealRepo = deal.Repository{}
-		dealRepo.SetDB(db)
 		headerRepo = repositories.NewHeaderRepository(db)
 
 		blockOne = rand.Int()
@@ -55,12 +46,11 @@ var _ = Describe("All flaps query", func() {
 
 		contextErr := test_helpers.SetUpFlapBidContext(test_helpers.FlapBidCreationInput{
 			DealCreationInput: test_helpers.DealCreationInput{
-				Db:              db,
+				DB:              db,
 				BidId:           fakeBidIdOne,
 				ContractAddress: contractAddress,
 			},
 			Dealt:            false,
-			FlapKickRepo:     flapKickRepo,
 			FlapKickHeaderId: headerOne.Id,
 		})
 		Expect(contextErr).NotTo(HaveOccurred())
@@ -73,12 +63,11 @@ var _ = Describe("All flaps query", func() {
 
 		contextErr = test_helpers.SetUpFlapBidContext(test_helpers.FlapBidCreationInput{
 			DealCreationInput: test_helpers.DealCreationInput{
-				Db:              db,
+				DB:              db,
 				BidId:           fakeBidIdTwo,
 				ContractAddress: contractAddress,
 			},
 			Dealt:            false,
-			FlapKickRepo:     flapKickRepo,
 			FlapKickHeaderId: headerTwo.Id,
 		})
 		Expect(contextErr).NotTo(HaveOccurred())
@@ -112,12 +101,11 @@ var _ = Describe("All flaps query", func() {
 
 			contextErr := test_helpers.SetUpFlapBidContext(test_helpers.FlapBidCreationInput{
 				DealCreationInput: test_helpers.DealCreationInput{
-					Db:              db,
+					DB:              db,
 					BidId:           fakeBidIdOne,
 					ContractAddress: contractAddress,
 				},
 				Dealt:            false,
-				FlapKickRepo:     flapKickRepo,
 				FlapKickHeaderId: headerOne.Id,
 			})
 			Expect(contextErr).NotTo(HaveOccurred())
@@ -129,12 +117,11 @@ var _ = Describe("All flaps query", func() {
 
 			contextErr = test_helpers.SetUpFlapBidContext(test_helpers.FlapBidCreationInput{
 				DealCreationInput: test_helpers.DealCreationInput{
-					Db:              db,
+					DB:              db,
 					BidId:           fakeBidIdTwo,
 					ContractAddress: contractAddress,
 				},
 				Dealt:            false,
-				FlapKickRepo:     flapKickRepo,
 				FlapKickHeaderId: headerTwo.Id,
 			})
 			Expect(contextErr).NotTo(HaveOccurred())

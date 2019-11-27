@@ -7,7 +7,6 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/flap_kick"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/tend"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
@@ -22,7 +21,6 @@ import (
 var _ = Describe("Flap computed columns", func() {
 	var (
 		db                     *postgres.DB
-		flapKickRepo           flap_kick.Repository
 		headerRepo             repositories.HeaderRepository
 		contractAddress        = fakes.FakeAddress.Hex()
 		fakeBidId              = rand.Int()
@@ -34,8 +32,6 @@ var _ = Describe("Flap computed columns", func() {
 		db = test_config.NewTestDB(test_config.NewTestNode())
 		test_config.CleanTestDB(db)
 		headerRepo = repositories.NewHeaderRepository(db)
-		flapKickRepo = flap_kick.Repository{}
-		flapKickRepo.SetDB(db)
 
 		blockOne = rand.Int()
 		timestampOne := int(rand.Int31())
@@ -61,7 +57,7 @@ var _ = Describe("Flap computed columns", func() {
 			flapKickEvent.ColumnValues[event.LogFK] = flapKickLog.ID
 			flapKickEvent.ColumnValues[event.AddressFK] = addressId
 			flapKickEvent.ColumnValues[flap_kick.BidId] = strconv.Itoa(fakeBidId)
-			flapKickErr := flapKickRepo.Create([]event.InsertionModel{flapKickEvent})
+			flapKickErr := event.PersistModels([]event.InsertionModel{flapKickEvent}, db)
 			Expect(flapKickErr).NotTo(HaveOccurred())
 
 			expectedBidEvents := test_helpers.BidEvent{
@@ -93,7 +89,7 @@ var _ = Describe("Flap computed columns", func() {
 			flapKickEvent.ColumnValues[event.LogFK] = flapKickLog.ID
 			flapKickEvent.ColumnValues[event.AddressFK] = addressId
 			flapKickEvent.ColumnValues[flap_kick.BidId] = strconv.Itoa(fakeBidId)
-			flapKickErr := flapKickRepo.Create([]event.InsertionModel{flapKickEvent})
+			flapKickErr := event.PersistModels([]event.InsertionModel{flapKickEvent}, db)
 			Expect(flapKickErr).NotTo(HaveOccurred())
 
 			headerTwo := createHeader(blockOne+1, timestampOne+1, headerRepo)
@@ -108,7 +104,7 @@ var _ = Describe("Flap computed columns", func() {
 			irrelevantFlapKickEvent.ColumnValues[event.LogFK] = irrelevantFlipKickLog.ID
 			irrelevantFlapKickEvent.ColumnValues[event.AddressFK] = addressId
 			irrelevantFlapKickEvent.ColumnValues[flap_kick.BidId] = strconv.Itoa(irrelevantBidId)
-			flapKickErr = flapKickRepo.Create([]event.InsertionModel{irrelevantFlapKickEvent})
+			flapKickErr = event.PersistModels([]event.InsertionModel{irrelevantFlapKickEvent}, db)
 			Expect(flapKickErr).NotTo(HaveOccurred())
 
 			expectedBidEvents := test_helpers.BidEvent{
@@ -148,7 +144,7 @@ var _ = Describe("Flap computed columns", func() {
 				flapKickEvent.ColumnValues[event.LogFK] = logId
 				flapKickEvent.ColumnValues[event.AddressFK] = addressId
 				flapKickEvent.ColumnValues[flap_kick.BidId] = strconv.Itoa(fakeBidId)
-				flapKickErr := flapKickRepo.Create([]event.InsertionModel{flapKickEvent})
+				flapKickErr := event.PersistModels([]event.InsertionModel{flapKickEvent}, db)
 				Expect(flapKickErr).NotTo(HaveOccurred())
 
 				headerTwo := createHeader(blockOne+1, timestampOne+1, headerRepo)
@@ -156,15 +152,12 @@ var _ = Describe("Flap computed columns", func() {
 
 				tendBid = rand.Int()
 				tendLot = rand.Int()
-				tendRepo := tend.Repository{}
-				tendRepo.SetDB(db)
 				flapTendErr := test_helpers.CreateTend(test_helpers.TendCreationInput{
-					Db:              db,
+					DB:              db,
 					ContractAddress: contractAddress,
 					BidId:           fakeBidId,
 					Lot:             tendLot,
 					BidAmount:       tendBid,
-					TendRepo:        tendRepo,
 					TendHeaderId:    headerTwo.Id,
 					TendLogId:       logTwoId,
 				})

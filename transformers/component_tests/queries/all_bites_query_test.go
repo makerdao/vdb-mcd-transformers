@@ -6,7 +6,6 @@ import (
 
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/bite"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
@@ -21,7 +20,6 @@ import (
 var _ = Describe("Bites query", func() {
 	var (
 		db                     *postgres.DB
-		biteRepo               bite.Repository
 		headerRepo             repositories.HeaderRepository
 		blockOne, timestampOne int
 		fakeUrn                = test_data.RandomString(5)
@@ -35,8 +33,6 @@ var _ = Describe("Bites query", func() {
 		db = test_config.NewTestDB(test_config.NewTestNode())
 		test_config.CleanTestDB(db)
 		headerRepo = repositories.NewHeaderRepository(db)
-		biteRepo = bite.Repository{}
-		biteRepo.SetDB(db)
 		blockOne = rand.Int()
 		timestampOne = int(rand.Int31())
 		headerOne = createHeader(blockOne, timestampOne, headerRepo)
@@ -52,7 +48,7 @@ var _ = Describe("Bites query", func() {
 			biteLog := test_data.CreateTestLog(headerOne.Id, db)
 
 			biteOne := generateBite(test_helpers.FakeIlk.Hex, fakeUrn, headerOne.Id, biteLog.ID, db)
-			createErr := biteRepo.Create([]event.InsertionModel{biteOne})
+			createErr := event.PersistModels([]event.InsertionModel{biteOne}, db)
 			Expect(createErr).NotTo(HaveOccurred())
 
 			var actualBites []test_helpers.BiteEvent
@@ -75,7 +71,7 @@ var _ = Describe("Bites query", func() {
 			biteBlockOneLog := test_data.CreateTestLog(headerOne.Id, db)
 
 			biteBlockOne := generateBite(test_helpers.FakeIlk.Hex, fakeUrn, headerOne.Id, biteBlockOneLog.ID, db)
-			createErr := biteRepo.Create([]event.InsertionModel{biteBlockOne})
+			createErr := event.PersistModels([]event.InsertionModel{biteBlockOne}, db)
 			Expect(createErr).NotTo(HaveOccurred())
 
 			// New block
@@ -83,7 +79,7 @@ var _ = Describe("Bites query", func() {
 			biteBlockTwoLog := test_data.CreateTestLog(headerTwo.Id, db)
 
 			biteBlockTwo := generateBite(test_helpers.FakeIlk.Hex, fakeUrn, headerTwo.Id, biteBlockTwoLog.ID, db)
-			createErrTwo := biteRepo.Create([]event.InsertionModel{biteBlockTwo})
+			createErrTwo := event.PersistModels([]event.InsertionModel{biteBlockTwo}, db)
 			Expect(createErrTwo).NotTo(HaveOccurred())
 
 			var actualBites []test_helpers.BiteEvent
@@ -115,7 +111,7 @@ var _ = Describe("Bites query", func() {
 			bite := generateBite(test_helpers.FakeIlk.Hex, fakeUrn, headerOne.Id, biteLog.ID, db)
 			irrelevantBite := generateBite(test_helpers.AnotherFakeIlk.Hex, fakeUrn, headerOne.Id, irrelevantBiteLog.ID, db)
 
-			createErr := biteRepo.Create([]event.InsertionModel{bite, irrelevantBite})
+			createErr := event.PersistModels([]event.InsertionModel{bite, irrelevantBite}, db)
 			Expect(createErr).NotTo(HaveOccurred())
 
 			var actualBites []test_helpers.BiteEvent
@@ -146,7 +142,7 @@ var _ = Describe("Bites query", func() {
 				biteBlockOneLog := test_data.CreateTestLog(headerOne.Id, db)
 
 				biteBlockOne = generateBite(test_helpers.FakeIlk.Hex, fakeUrn, headerOne.Id, biteBlockOneLog.ID, db)
-				biteOneErr := biteRepo.Create([]event.InsertionModel{biteBlockOne})
+				biteOneErr := event.PersistModels([]event.InsertionModel{biteBlockOne}, db)
 				Expect(biteOneErr).NotTo(HaveOccurred())
 
 				// New block
@@ -154,7 +150,7 @@ var _ = Describe("Bites query", func() {
 				biteBlockTwoLog := test_data.CreateTestLog(headerTwo.Id, db)
 
 				biteBlockTwo = generateBite(test_helpers.FakeIlk.Hex, fakeUrn, headerTwo.Id, biteBlockTwoLog.ID, db)
-				biteTwoErr := biteRepo.Create([]event.InsertionModel{biteBlockTwo})
+				biteTwoErr := event.PersistModels([]event.InsertionModel{biteBlockTwo}, db)
 				Expect(biteTwoErr).NotTo(HaveOccurred())
 			})
 
@@ -202,7 +198,7 @@ var _ = Describe("Bites query", func() {
 			biteOneLog := test_data.CreateTestLog(headerOne.Id, db)
 
 			biteOne := generateBite(test_helpers.FakeIlk.Hex, fakeUrn, headerOne.Id, biteOneLog.ID, db)
-			createErr := biteRepo.Create([]event.InsertionModel{biteOne})
+			createErr := event.PersistModels([]event.InsertionModel{biteOne}, db)
 			Expect(createErr).NotTo(HaveOccurred())
 
 			var actualBites []test_helpers.BiteEvent
@@ -224,7 +220,7 @@ var _ = Describe("Bites query", func() {
 			biteOneLog := test_data.CreateTestLog(headerOne.Id, db)
 
 			biteBlockOne := generateBite(test_helpers.FakeIlk.Hex, fakeUrn, headerOne.Id, biteOneLog.ID, db)
-			createErr := biteRepo.Create([]event.InsertionModel{biteBlockOne})
+			createErr := event.PersistModels([]event.InsertionModel{biteBlockOne}, db)
 			Expect(createErr).NotTo(HaveOccurred())
 
 			// New block
@@ -232,7 +228,7 @@ var _ = Describe("Bites query", func() {
 			biteBlockTwoLog := test_data.CreateTestLog(headerTwo.Id, db)
 
 			biteBlockTwo := generateBite(test_helpers.FakeIlk.Hex, fakeUrn, headerTwo.Id, biteBlockTwoLog.ID, db)
-			createErrTwo := biteRepo.Create([]event.InsertionModel{biteBlockTwo})
+			createErrTwo := event.PersistModels([]event.InsertionModel{biteBlockTwo}, db)
 			Expect(createErrTwo).NotTo(HaveOccurred())
 
 			var actualBites []test_helpers.BiteEvent
@@ -264,7 +260,7 @@ var _ = Describe("Bites query", func() {
 				biteBlockOneLog := test_data.CreateTestLog(headerOne.Id, db)
 
 				biteBlockOne = generateBite(test_helpers.FakeIlk.Hex, fakeUrn, headerOne.Id, biteBlockOneLog.ID, db)
-				createErr := biteRepo.Create([]event.InsertionModel{biteBlockOne})
+				createErr := event.PersistModels([]event.InsertionModel{biteBlockOne}, db)
 				Expect(createErr).NotTo(HaveOccurred())
 
 				// New block
@@ -272,7 +268,7 @@ var _ = Describe("Bites query", func() {
 				biteBlockTwoLog := test_data.CreateTestLog(headerTwo.Id, db)
 
 				biteBlockTwo = generateBite(test_helpers.FakeIlk.Hex, fakeUrn, headerTwo.Id, biteBlockTwoLog.ID, db)
-				createErrTwo := biteRepo.Create([]event.InsertionModel{biteBlockTwo})
+				createErrTwo := event.PersistModels([]event.InsertionModel{biteBlockTwo}, db)
 				Expect(createErrTwo).NotTo(HaveOccurred())
 			})
 
@@ -321,7 +317,7 @@ var _ = Describe("Bites query", func() {
 			bite := generateBite(test_helpers.FakeIlk.Hex, fakeUrn, headerOne.Id, biteLog.ID, db)
 			irrelevantBite := generateBite(test_helpers.FakeIlk.Hex, "irrelevantUrn", headerOne.Id, irrelevantBiteLog.ID, db)
 
-			createErr := biteRepo.Create([]event.InsertionModel{bite, irrelevantBite})
+			createErr := event.PersistModels([]event.InsertionModel{bite, irrelevantBite}, db)
 			Expect(createErr).NotTo(HaveOccurred())
 
 			var actualBites []test_helpers.BiteEvent

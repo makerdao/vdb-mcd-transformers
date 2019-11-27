@@ -6,12 +6,8 @@ import (
 
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/deal"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/dent"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/flap_kick"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/flop_kick"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/tick"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/yank"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage"
@@ -28,10 +24,6 @@ var _ = Describe("Flop bid events query", func() {
 	var (
 		db                     *postgres.DB
 		flopKickRepo           flop_kick.FlopKickRepository
-		dentRepo               dent.Repository
-		dealRepo               deal.Repository
-		yankRepo               yank.Repository
-		tickRepo               tick.Repository
 		headerRepo             repositories.HeaderRepository
 		blockOne, timestampOne int
 		headerOne              core.Header
@@ -46,14 +38,6 @@ var _ = Describe("Flop bid events query", func() {
 		headerRepo = repositories.NewHeaderRepository(db)
 		flopKickRepo = flop_kick.FlopKickRepository{}
 		flopKickRepo.SetDB(db)
-		dentRepo = dent.Repository{}
-		dentRepo.SetDB(db)
-		dealRepo = deal.Repository{}
-		dealRepo.SetDB(db)
-		yankRepo = yank.Repository{}
-		yankRepo.SetDB(db)
-		tickRepo = tick.Repository{}
-		tickRepo.SetDB(db)
 
 		fakeBidId = rand.Int()
 		contractAddress = "0x763ztv6x68exwqrgtl325e7hrcvavid4e3fcb4g"
@@ -85,12 +69,11 @@ var _ = Describe("Flop bid events query", func() {
 
 			flopDentLog := test_data.CreateTestLog(headerOne.Id, db)
 			flopDentErr := test_helpers.CreateDent(test_helpers.DentCreationInput{
-				Db:              db,
+				DB:              db,
 				ContractAddress: contractAddress,
 				BidId:           fakeBidId,
 				Lot:             fakeLot,
 				BidAmount:       fakeBidAmount,
-				DentRepo:        dentRepo,
 				DentHeaderId:    headerOne.Id,
 				DentLogId:       flopDentLog.ID,
 			})
@@ -99,10 +82,9 @@ var _ = Describe("Flop bid events query", func() {
 			headerTwo := createHeader(blockOne+1, timestampOne+1, headerRepo)
 
 			flopDealErr := test_helpers.CreateDeal(test_helpers.DealCreationInput{
-				Db:              db,
+				DB:              db,
 				BidId:           fakeBidId,
 				ContractAddress: contractAddress,
-				DealRepo:        dealRepo,
 				DealHeaderId:    headerTwo.Id,
 			})
 			Expect(flopDealErr).NotTo(HaveOccurred())
@@ -142,12 +124,11 @@ var _ = Describe("Flop bid events query", func() {
 
 			flopDentLog := test_data.CreateTestLog(headerOne.Id, db)
 			flopDentOneErr := test_helpers.CreateDent(test_helpers.DentCreationInput{
-				Db:              db,
+				DB:              db,
 				BidId:           fakeBidId,
 				ContractAddress: contractAddress,
 				Lot:             lotOne,
 				BidAmount:       bidAmountOne,
-				DentRepo:        dentRepo,
 				DentHeaderId:    headerOne.Id,
 				DentLogId:       flopDentLog.ID,
 			})
@@ -155,12 +136,11 @@ var _ = Describe("Flop bid events query", func() {
 
 			flopDentTwoLog := test_data.CreateTestLog(headerOne.Id, db)
 			flopDentTwoErr := test_helpers.CreateDent(test_helpers.DentCreationInput{
-				Db:              db,
+				DB:              db,
 				BidId:           bidIdTwo,
 				ContractAddress: contractAddress,
 				Lot:             lotTwo,
 				BidAmount:       bidAmountTwo,
-				DentRepo:        dentRepo,
 				DentHeaderId:    headerOne.Id,
 				DentLogId:       flopDentTwoLog.ID,
 			})
@@ -180,8 +160,6 @@ var _ = Describe("Flop bid events query", func() {
 
 		It("ignores bid events from flaps", func() {
 			flapKickLog := test_data.CreateTestLog(headerOne.Id, db)
-			flapKickRepo := flap_kick.Repository{}
-			flapKickRepo.SetDB(db)
 
 			addressId, addressErr := shared.GetOrCreateAddress(contractAddress, db)
 			Expect(addressErr).NotTo(HaveOccurred())
@@ -190,7 +168,7 @@ var _ = Describe("Flop bid events query", func() {
 			flapKickEvent.ColumnValues[flap_kick.BidId] = strconv.Itoa(fakeBidId)
 			flapKickEvent.ColumnValues[event.HeaderFK] = headerOne.Id
 			flapKickEvent.ColumnValues[event.LogFK] = flapKickLog.ID
-			flapKickErr := flapKickRepo.Create([]event.InsertionModel{flapKickEvent})
+			flapKickErr := event.PersistModels([]event.InsertionModel{flapKickEvent}, db)
 			Expect(flapKickErr).NotTo(HaveOccurred())
 
 			flapKickBidEvent := test_helpers.BidEvent{
@@ -219,12 +197,11 @@ var _ = Describe("Flop bid events query", func() {
 
 			flopDentHeaderOneLog := test_data.CreateTestLog(headerOne.Id, db)
 			flopDentErr := test_helpers.CreateDent(test_helpers.DentCreationInput{
-				Db:              db,
+				DB:              db,
 				BidId:           fakeBidId,
 				ContractAddress: contractAddress,
 				Lot:             lot,
 				BidAmount:       bidAmount,
-				DentRepo:        dentRepo,
 				DentHeaderId:    headerOne.Id,
 				DentLogId:       flopDentHeaderOneLog.ID,
 			})
@@ -234,12 +211,11 @@ var _ = Describe("Flop bid events query", func() {
 			flopDentHeaderTwoLog := test_data.CreateTestLog(headerTwo.Id, db)
 
 			flopDentHeaderTwoErr := test_helpers.CreateDent(test_helpers.DentCreationInput{
-				Db:              db,
+				DB:              db,
 				BidId:           fakeBidId,
 				ContractAddress: contractAddress,
 				Lot:             updatedLot,
 				BidAmount:       updatedBidAmount,
-				DentRepo:        dentRepo,
 				DentHeaderId:    headerTwo.Id,
 				DentLogId:       flopDentHeaderTwoLog.ID,
 			})
@@ -250,12 +226,11 @@ var _ = Describe("Flop bid events query", func() {
 
 			// create irrelevant flap dent
 			flapDentErr := test_helpers.CreateDent(test_helpers.DentCreationInput{
-				Db:              db,
+				DB:              db,
 				BidId:           fakeBidId,
 				ContractAddress: "flap contract address",
 				Lot:             lot,
 				BidAmount:       bidAmount,
-				DentRepo:        dentRepo,
 				DentHeaderId:    headerThree.Id,
 				DentLogId:       flapDentLog.ID,
 			})
@@ -288,10 +263,9 @@ var _ = Describe("Flop bid events query", func() {
 			headerThree := createHeader(blockOne+2, timestampOne+2, headerRepo)
 
 			flopDealErr := test_helpers.CreateDeal(test_helpers.DealCreationInput{
-				Db:              db,
+				DB:              db,
 				BidId:           fakeBidId,
 				ContractAddress: contractAddress,
-				DealRepo:        dealRepo,
 				DealHeaderId:    headerThree.Id,
 			})
 			Expect(flopDealErr).NotTo(HaveOccurred())
@@ -315,12 +289,11 @@ var _ = Describe("Flop bid events query", func() {
 
 			dentLog := test_data.CreateTestLog(headerOne.Id, db)
 			flopDentErr := test_helpers.CreateDent(test_helpers.DentCreationInput{
-				Db:              db,
+				DB:              db,
 				BidId:           fakeBidId,
 				ContractAddress: contractAddress,
 				Lot:             fakeLot,
 				BidAmount:       fakeBidAmount,
-				DentRepo:        dentRepo,
 				DentHeaderId:    headerOne.Id,
 				DentLogId:       dentLog.ID,
 			})
@@ -333,10 +306,9 @@ var _ = Describe("Flop bid events query", func() {
 			flopYankLog := test_data.CreateTestLog(headerOne.Id, db)
 
 			flopYankErr := test_helpers.CreateYank(test_helpers.YankCreationInput{
-				Db:              db,
+				DB:              db,
 				BidId:           fakeBidId,
 				ContractAddress: contractAddress,
-				YankRepo:        yankRepo,
 				YankHeaderId:    headerTwo.Id,
 				YankLogId:       flopYankLog.ID,
 			})
@@ -365,10 +337,9 @@ var _ = Describe("Flop bid events query", func() {
 
 			// irrelevant flap yank
 			flapYankErr := test_helpers.CreateYank(test_helpers.YankCreationInput{
-				Db:              db,
+				DB:              db,
 				BidId:           fakeBidId,
 				ContractAddress: "flap contract address",
-				YankRepo:        yankRepo,
 				YankHeaderId:    headerTwo.Id,
 				YankLogId:       flapYankLog.ID,
 			})
@@ -391,10 +362,9 @@ var _ = Describe("Flop bid events query", func() {
 
 			// irrelevant tick event
 			tickErr := test_helpers.CreateTick(test_helpers.TickCreationInput{
-				Db:              db,
+				DB:              db,
 				BidId:           fakeBidId,
 				ContractAddress: "flip",
-				TickRepo:        tickRepo,
 				TickHeaderId:    headerOne.Id,
 				TickLogId:       tickLog.ID,
 			})
@@ -414,10 +384,9 @@ var _ = Describe("Flop bid events query", func() {
 			tickLog := test_data.CreateTestLog(headerOne.Id, db)
 
 			tickErr := test_helpers.CreateTick(test_helpers.TickCreationInput{
-				Db:              db,
+				DB:              db,
 				BidId:           fakeBidId,
 				ContractAddress: contractAddress,
-				TickRepo:        tickRepo,
 				TickHeaderId:    headerOne.Id,
 				TickLogId:       tickLog.ID,
 			})
@@ -461,12 +430,11 @@ var _ = Describe("Flop bid events query", func() {
 			logTwoID := test_data.CreateTestLog(headerTwo.Id, db).ID
 
 			flopDentErr := test_helpers.CreateDent(test_helpers.DentCreationInput{
-				Db:              db,
+				DB:              db,
 				BidId:           fakeBidId,
 				ContractAddress: contractAddress,
 				Lot:             updatedLot,
 				BidAmount:       updatedBidAmount,
-				DentRepo:        dentRepo,
 				DentHeaderId:    headerTwo.Id,
 				DentLogId:       logTwoID,
 			})

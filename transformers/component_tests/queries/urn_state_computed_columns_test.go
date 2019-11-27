@@ -22,7 +22,6 @@ import (
 
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/bite"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_frob"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
@@ -216,10 +215,8 @@ var _ = Describe("Urn state computed columns", func() {
 			urnMetadata := test_helpers.GetUrnMetadata(test_helpers.FakeIlk.Hex, fakeGuy)
 			test_helpers.CreateUrn(urnSetupData, urnMetadata, vatRepository)
 
-			biteRepo := bite.Repository{}
-			biteRepo.SetDB(db)
 			biteEvent := generateBite(test_helpers.FakeIlk.Hex, fakeGuy, headerOne.Id, logId, db)
-			insertBiteErr := biteRepo.Create([]event.InsertionModel{biteEvent})
+			insertBiteErr := event.PersistModels([]event.InsertionModel{biteEvent}, db)
 			Expect(insertBiteErr).NotTo(HaveOccurred())
 
 			var actualBites test_helpers.BiteEvent
@@ -249,11 +246,8 @@ var _ = Describe("Urn state computed columns", func() {
 				urnMetadata := test_helpers.GetUrnMetadata(test_helpers.FakeIlk.Hex, fakeGuy)
 				test_helpers.CreateUrn(urnSetupData, urnMetadata, vatRepository)
 
-				biteRepo := bite.Repository{}
-				biteRepo.SetDB(db)
-
 				biteEventOne = generateBite(test_helpers.FakeIlk.Hex, fakeGuy, headerOne.Id, logId, db)
-				insertBiteOneErr := biteRepo.Create([]event.InsertionModel{biteEventOne})
+				insertBiteOneErr := event.PersistModels([]event.InsertionModel{biteEventOne}, db)
 				Expect(insertBiteOneErr).NotTo(HaveOccurred())
 
 				// insert more recent bite for same urn
@@ -261,7 +255,7 @@ var _ = Describe("Urn state computed columns", func() {
 				logTwoId := test_data.CreateTestLog(headerTwo.Id, db).ID
 
 				biteEventTwo = generateBite(test_helpers.FakeIlk.Hex, fakeGuy, headerTwo.Id, logTwoId, db)
-				insertBiteTwoErr := biteRepo.Create([]event.InsertionModel{biteEventTwo})
+				insertBiteTwoErr := event.PersistModels([]event.InsertionModel{biteEventTwo}, db)
 				Expect(insertBiteTwoErr).NotTo(HaveOccurred())
 			})
 

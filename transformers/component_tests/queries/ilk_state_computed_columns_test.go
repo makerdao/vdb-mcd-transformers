@@ -21,7 +21,6 @@ import (
 
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/bite"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/spot_file/mat"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_file/ilk"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_frob"
@@ -266,10 +265,8 @@ var _ = Describe("Ilk state computed columns", func() {
 
 	Describe("ilk_state_bites", func() {
 		It("returns bite event for an ilk state", func() {
-			biteRepo := bite.Repository{}
-			biteRepo.SetDB(db)
 			biteEvent := generateBite(test_helpers.FakeIlk.Hex, fakeGuy, headerOne.Id, logId, db)
-			insertBiteErr := biteRepo.Create([]event.InsertionModel{biteEvent})
+			insertBiteErr := event.PersistModels([]event.InsertionModel{biteEvent}, db)
 			Expect(insertBiteErr).NotTo(HaveOccurred())
 
 			var actualBites []test_helpers.BiteEvent
@@ -301,18 +298,15 @@ var _ = Describe("Ilk state computed columns", func() {
 			)
 
 			BeforeEach(func() {
-				biteRepo := bite.Repository{}
-				biteRepo.SetDB(db)
-
 				oldBite = generateBite(test_helpers.FakeIlk.Hex, oldGuy, headerOne.Id, logId, db)
-				insertOldBiteErr := biteRepo.Create([]event.InsertionModel{oldBite})
+				insertOldBiteErr := event.PersistModels([]event.InsertionModel{oldBite}, db)
 				Expect(insertOldBiteErr).NotTo(HaveOccurred())
 
 				headerTwo = createHeader(blockOne+1, timestampOne+1, headerRepository)
 				newLogId := test_data.CreateTestLog(headerTwo.Id, db).ID
 
 				newBite = generateBite(test_helpers.FakeIlk.Hex, fakeGuy, headerTwo.Id, newLogId, db)
-				insertNewBiteErr := biteRepo.Create([]event.InsertionModel{newBite})
+				insertNewBiteErr := event.PersistModels([]event.InsertionModel{newBite}, db)
 				Expect(insertNewBiteErr).NotTo(HaveOccurred())
 			})
 

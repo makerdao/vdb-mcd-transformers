@@ -8,7 +8,6 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/bite"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/flip_kick"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/vat"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
@@ -29,7 +28,6 @@ var _ = Describe("Bite event computed columns", func() {
 		headerOne              core.Header
 		biteGethLog            types.Log
 		biteEvent              event.InsertionModel
-		biteRepo               bite.Repository
 		vatRepository          vat.VatStorageRepository
 		headerRepository       repositories.HeaderRepository
 	)
@@ -47,10 +45,8 @@ var _ = Describe("Bite event computed columns", func() {
 		biteHeaderSyncLog := test_data.CreateTestLog(headerOne.Id, db)
 		biteGethLog = biteHeaderSyncLog.Log
 
-		biteRepo = bite.Repository{}
-		biteRepo.SetDB(db)
 		biteEvent = generateBite(test_helpers.FakeIlk.Hex, fakeGuy, headerOne.Id, biteHeaderSyncLog.ID, db)
-		insertBiteErr := biteRepo.Create([]event.InsertionModel{biteEvent})
+		insertBiteErr := event.PersistModels([]event.InsertionModel{biteEvent}, db)
 		Expect(insertBiteErr).NotTo(HaveOccurred())
 	})
 
@@ -113,7 +109,7 @@ var _ = Describe("Bite event computed columns", func() {
 			ilkId, urnId, ctxErr := test_helpers.SetUpFlipBidContext(
 				test_helpers.FlipBidContextInput{
 					DealCreationInput: test_helpers.DealCreationInput{
-						Db:              db,
+						DB:              db,
 						BidId:           bidId,
 						ContractAddress: address.Hex(),
 					},

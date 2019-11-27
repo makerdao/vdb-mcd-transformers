@@ -6,7 +6,6 @@ import (
 
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/deal"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/flop_kick"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
@@ -20,7 +19,6 @@ var _ = Describe("get flop query", func() {
 	var (
 		db                         *postgres.DB
 		flopKickRepo               flop_kick.FlopKickRepository
-		dealRepo                   deal.Repository
 		headerRepo                 repositories.HeaderRepository
 		contractAddress            = fakes.RandomString(42)
 		fakeBidId                  = rand.Int()
@@ -36,8 +34,6 @@ var _ = Describe("get flop query", func() {
 		test_config.CleanTestDB(db)
 		flopKickRepo = flop_kick.FlopKickRepository{}
 		flopKickRepo.SetDB(db)
-		dealRepo = deal.Repository{}
-		dealRepo.SetDB(db)
 		headerRepo = repositories.NewHeaderRepository(db)
 
 		blockOne = rand.Int()
@@ -56,10 +52,9 @@ var _ = Describe("get flop query", func() {
 	It("gets the specified flop", func() {
 		err := test_helpers.SetUpFlopBidContext(test_helpers.FlopBidCreationInput{
 			DealCreationInput: test_helpers.DealCreationInput{
-				Db:              db,
+				DB:              db,
 				BidId:           fakeBidId,
 				ContractAddress: contractAddress,
-				DealRepo:        dealRepo,
 				DealHeaderId:    headerOne.Id,
 			},
 			Dealt:            true,
@@ -83,10 +78,9 @@ var _ = Describe("get flop query", func() {
 	It("gets created and updated blocks", func() {
 		err := test_helpers.SetUpFlopBidContext(test_helpers.FlopBidCreationInput{
 			DealCreationInput: test_helpers.DealCreationInput{
-				Db:              db,
+				DB:              db,
 				BidId:           fakeBidId,
 				ContractAddress: contractAddress,
-				DealRepo:        dealRepo,
 				DealHeaderId:    headerTwo.Id,
 			},
 			Dealt:            true,
@@ -115,7 +109,7 @@ var _ = Describe("get flop query", func() {
 		It("is false if no deal events", func() {
 			err := test_helpers.SetUpFlopBidContext(test_helpers.FlopBidCreationInput{
 				DealCreationInput: test_helpers.DealCreationInput{
-					Db:              db,
+					DB:              db,
 					BidId:           fakeBidId,
 					ContractAddress: contractAddress,
 				},
@@ -140,10 +134,9 @@ var _ = Describe("get flop query", func() {
 		It("is false if deal event in later block", func() {
 			err := test_helpers.SetUpFlopBidContext(test_helpers.FlopBidCreationInput{
 				DealCreationInput: test_helpers.DealCreationInput{
-					Db:              db,
+					DB:              db,
 					BidId:           fakeBidId,
 					ContractAddress: contractAddress,
-					DealRepo:        dealRepo,
 					DealHeaderId:    headerTwo.Id,
 				},
 				Dealt:            true,

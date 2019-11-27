@@ -6,7 +6,6 @@ import (
 
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/deal"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/flop_kick"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/flop"
 	"github.com/makerdao/vulcanizedb/pkg/core"
@@ -22,7 +21,6 @@ var _ = Describe("All flops query", func() {
 		db                     *postgres.DB
 		flopKickRepo           flop_kick.FlopKickRepository
 		flopRepo               flop.FlopStorageRepository
-		dealRepo               deal.Repository
 		headerRepo             repositories.HeaderRepository
 		contractAddress        = fakes.RandomString(42)
 		blockOne, timestampOne int
@@ -36,8 +34,6 @@ var _ = Describe("All flops query", func() {
 		flopRepo.SetDB(db)
 		flopKickRepo = flop_kick.FlopKickRepository{}
 		flopKickRepo.SetDB(db)
-		dealRepo = deal.Repository{}
-		dealRepo.SetDB(db)
 		headerRepo = repositories.NewHeaderRepository(db)
 
 		blockOne = rand.Int()
@@ -58,7 +54,7 @@ var _ = Describe("All flops query", func() {
 
 		contextErr := test_helpers.SetUpFlopBidContext(test_helpers.FlopBidCreationInput{
 			DealCreationInput: test_helpers.DealCreationInput{
-				Db:              db,
+				DB:              db,
 				BidId:           fakeBidIdOne,
 				ContractAddress: contractAddress,
 			},
@@ -79,7 +75,7 @@ var _ = Describe("All flops query", func() {
 
 		contextErr = test_helpers.SetUpFlopBidContext(test_helpers.FlopBidCreationInput{
 			DealCreationInput: test_helpers.DealCreationInput{
-				Db:              db,
+				DB:              db,
 				BidId:           fakeBidIdTwo,
 				ContractAddress: contractAddress,
 			},
@@ -123,7 +119,7 @@ var _ = Describe("All flops query", func() {
 		It("limits results if max_results argument is provided", func() {
 			contextErr := test_helpers.SetUpFlopBidContext(test_helpers.FlopBidCreationInput{
 				DealCreationInput: test_helpers.DealCreationInput{
-					Db:              db,
+					DB:              db,
 					BidId:           fakeBidIdTwo,
 					ContractAddress: contractAddress,
 				},
@@ -147,7 +143,7 @@ var _ = Describe("All flops query", func() {
 		It("offsets results if offset is provided", func() {
 			contextErr := test_helpers.SetUpFlopBidContext(test_helpers.FlopBidCreationInput{
 				DealCreationInput: test_helpers.DealCreationInput{
-					Db:              db,
+					DB:              db,
 					BidId:           fakeBidIdOne,
 					ContractAddress: contractAddress,
 				},

@@ -23,12 +23,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/deal"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/dent"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/flip_kick"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/tend"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/tick"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/yank"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage"
@@ -45,11 +40,6 @@ var _ = Describe("All flip bid events query", func() {
 	var (
 		db                     *postgres.DB
 		flipKickRepo           flip_kick.FlipKickRepository
-		tendRepo               tend.Repository
-		tickRepo               tick.Repository
-		dentRepo               dent.Repository
-		dealRepo               deal.Repository
-		yankRepo               yank.Repository
 		headerRepo             repositories.HeaderRepository
 		contractAddress        = fakes.FakeAddress.Hex()
 		anotherContractAddress = common.HexToAddress("0xabcdef123456789").Hex()
@@ -65,16 +55,6 @@ var _ = Describe("All flip bid events query", func() {
 		headerRepo = repositories.NewHeaderRepository(db)
 		flipKickRepo = flip_kick.FlipKickRepository{}
 		flipKickRepo.SetDB(db)
-		tendRepo = tend.Repository{}
-		tendRepo.SetDB(db)
-		tickRepo = tick.Repository{}
-		tickRepo.SetDB(db)
-		dentRepo = dent.Repository{}
-		dentRepo.SetDB(db)
-		dealRepo = deal.Repository{}
-		dealRepo.SetDB(db)
-		yankRepo = yank.Repository{}
-		yankRepo.SetDB(db)
 		bidId = rand.Int()
 
 		blockOne = rand.Int()
@@ -106,12 +86,11 @@ var _ = Describe("All flip bid events query", func() {
 
 			flipTendLog := test_data.CreateTestLog(headerOne.Id, db)
 			flipTendErr := test_helpers.CreateTend(test_helpers.TendCreationInput{
-				Db:              db,
+				DB:              db,
 				ContractAddress: contractAddress,
 				BidId:           bidId,
 				Lot:             tendLot,
 				BidAmount:       tendBidAmount,
-				TendRepo:        tendRepo,
 				TendHeaderId:    headerOne.Id,
 				TendLogId:       flipTendLog.ID,
 			})
@@ -119,10 +98,9 @@ var _ = Describe("All flip bid events query", func() {
 
 			tickLog := test_data.CreateTestLog(headerOne.Id, db)
 			tickErr := test_helpers.CreateTick(test_helpers.TickCreationInput{
-				Db:              db,
+				DB:              db,
 				BidId:           bidId,
 				ContractAddress: contractAddress,
-				TickRepo:        tickRepo,
 				TickHeaderId:    headerOne.Id,
 				TickLogId:       tickLog.ID,
 			})
@@ -134,12 +112,11 @@ var _ = Describe("All flip bid events query", func() {
 
 			flipDentLog := test_data.CreateTestLog(headerOne.Id, db)
 			flipDentErr := test_helpers.CreateDent(test_helpers.DentCreationInput{
-				Db:              db,
+				DB:              db,
 				BidId:           bidId,
 				ContractAddress: contractAddress,
 				Lot:             dentLot,
 				BidAmount:       dentBidAmount,
-				DentRepo:        dentRepo,
 				DentHeaderId:    headerOne.Id,
 				DentLogId:       flipDentLog.ID,
 			})
@@ -168,12 +145,11 @@ var _ = Describe("All flip bid events query", func() {
 
 			flipTendLog := test_data.CreateTestLog(headerOne.Id, db)
 			flipTendErr := test_helpers.CreateTend(test_helpers.TendCreationInput{
-				Db:              db,
+				DB:              db,
 				ContractAddress: contractAddress,
 				BidId:           bidId,
 				Lot:             tendLot,
 				BidAmount:       tendBidAmount,
-				TendRepo:        tendRepo,
 				TendHeaderId:    headerOne.Id,
 				TendLogId:       flipTendLog.ID,
 			})
@@ -183,10 +159,9 @@ var _ = Describe("All flip bid events query", func() {
 
 			tickLog := test_data.CreateTestLog(headerTwo.Id, db)
 			tickErr := test_helpers.CreateTick(test_helpers.TickCreationInput{
-				Db:              db,
+				DB:              db,
 				BidId:           bidId,
 				ContractAddress: contractAddress,
-				TickRepo:        tickRepo,
 				TickHeaderId:    headerTwo.Id,
 				TickLogId:       tickLog.ID,
 			})
@@ -200,22 +175,20 @@ var _ = Describe("All flip bid events query", func() {
 
 			flipDentLog := test_data.CreateTestLog(headerThree.Id, db)
 			flipDentErr := test_helpers.CreateDent(test_helpers.DentCreationInput{
-				Db:              db,
+				DB:              db,
 				BidId:           bidId,
 				ContractAddress: contractAddress,
 				Lot:             dentLot,
 				BidAmount:       dentBidAmount,
-				DentRepo:        dentRepo,
 				DentHeaderId:    headerThree.Id,
 				DentLogId:       flipDentLog.ID,
 			})
 			Expect(flipDentErr).NotTo(HaveOccurred())
 
 			flipDealErr := test_helpers.CreateDeal(test_helpers.DealCreationInput{
-				Db:              db,
+				DB:              db,
 				BidId:           bidId,
 				ContractAddress: contractAddress,
-				DealRepo:        dealRepo,
 				DealHeaderId:    headerThree.Id,
 			})
 			Expect(flipDealErr).NotTo(HaveOccurred())
@@ -245,10 +218,9 @@ var _ = Describe("All flip bid events query", func() {
 				logID := test_data.CreateTestLog(headerTwo.Id, db).ID
 
 				tickErr := test_helpers.CreateTick(test_helpers.TickCreationInput{
-					Db:              db,
+					DB:              db,
 					BidId:           bidId,
 					ContractAddress: contractAddress,
-					TickRepo:        tickRepo,
 					TickHeaderId:    headerTwo.Id,
 					TickLogId:       logID,
 				})
@@ -369,12 +341,11 @@ var _ = Describe("All flip bid events query", func() {
 
 				flipTendHeaderOneLog := test_data.CreateTestLog(headerOne.Id, db)
 				flipTendErr := test_helpers.CreateTend(test_helpers.TendCreationInput{
-					Db:              db,
+					DB:              db,
 					ContractAddress: contractAddress,
 					BidId:           bidId,
 					Lot:             lotOne,
 					BidAmount:       bidAmountOne,
-					TendRepo:        tendRepo,
 					TendHeaderId:    headerOne.Id,
 					TendLogId:       flipTendHeaderOneLog.ID,
 				})
@@ -384,12 +355,11 @@ var _ = Describe("All flip bid events query", func() {
 
 				flipTendHeaderTwoLog := test_data.CreateTestLog(headerTwo.Id, db)
 				flipTendHeaderTwoErr := test_helpers.CreateTend(test_helpers.TendCreationInput{
-					Db:              db,
+					DB:              db,
 					ContractAddress: contractAddress,
 					BidId:           bidId,
 					Lot:             lotTwo,
 					BidAmount:       bidAmountTwo,
-					TendRepo:        tendRepo,
 					TendHeaderId:    headerTwo.Id,
 					TendLogId:       flipTendHeaderTwoLog.ID,
 				})
@@ -409,12 +379,11 @@ var _ = Describe("All flip bid events query", func() {
 			It("ignores tend events that are not from a flip", func() {
 				flapTendLog := test_data.CreateTestLog(headerOne.Id, db)
 				flapTendErr := test_helpers.CreateTend(test_helpers.TendCreationInput{
-					Db:              db,
+					DB:              db,
 					ContractAddress: anotherContractAddress,
 					BidId:           bidId,
 					Lot:             rand.Int(),
 					BidAmount:       rand.Int(),
-					TendRepo:        tendRepo,
 					TendHeaderId:    headerOne.Id,
 					TendLogId:       flapTendLog.ID,
 				})
@@ -439,12 +408,11 @@ var _ = Describe("All flip bid events query", func() {
 
 				flipDentHeaderOneLog := test_data.CreateTestLog(headerOne.Id, db)
 				flipDentErr := test_helpers.CreateDent(test_helpers.DentCreationInput{
-					Db:              db,
+					DB:              db,
 					BidId:           bidId,
 					ContractAddress: contractAddress,
 					Lot:             lotOne,
 					BidAmount:       bidAmountOne,
-					DentRepo:        dentRepo,
 					DentHeaderId:    headerOne.Id,
 					DentLogId:       flipDentHeaderOneLog.ID,
 				})
@@ -454,12 +422,11 @@ var _ = Describe("All flip bid events query", func() {
 
 				flipDentHeaderTwoLog := test_data.CreateTestLog(headerTwo.Id, db)
 				flipDentHeaderTwoErr := test_helpers.CreateDent(test_helpers.DentCreationInput{
-					Db:              db,
+					DB:              db,
 					BidId:           bidId,
 					ContractAddress: contractAddress,
 					Lot:             lotTwo,
 					BidAmount:       bidAmountTwo,
-					DentRepo:        dentRepo,
 					DentHeaderId:    headerTwo.Id,
 					DentLogId:       flipDentHeaderTwoLog.ID,
 				})
@@ -479,12 +446,11 @@ var _ = Describe("All flip bid events query", func() {
 			It("ignores dent events that are not from flip", func() {
 				flapDentLog := test_data.CreateTestLog(headerOne.Id, db)
 				flapDentErr := test_helpers.CreateDent(test_helpers.DentCreationInput{
-					Db:              db,
+					DB:              db,
 					BidId:           bidId,
 					ContractAddress: anotherContractAddress,
 					Lot:             rand.Int(),
 					BidAmount:       rand.Int(),
-					DentRepo:        dentRepo,
 					DentHeaderId:    headerOne.Id,
 					DentLogId:       flapDentLog.ID,
 				})
@@ -507,12 +473,11 @@ var _ = Describe("All flip bid events query", func() {
 
 				flipTendLog := test_data.CreateTestLog(headerOne.Id, db)
 				flipTendErr := test_helpers.CreateTend(test_helpers.TendCreationInput{
-					Db:              db,
+					DB:              db,
 					ContractAddress: contractAddress,
 					BidId:           bidId,
 					Lot:             tendLot,
 					BidAmount:       tendBidAmount,
-					TendRepo:        tendRepo,
 					TendHeaderId:    headerOne.Id,
 					TendLogId:       flipTendLog.ID,
 				})
@@ -526,10 +491,9 @@ var _ = Describe("All flip bid events query", func() {
 
 				flipYankLog := test_data.CreateTestLog(headerTwo.Id, db)
 				flipYankErr := test_helpers.CreateYank(test_helpers.YankCreationInput{
-					Db:              db,
+					DB:              db,
 					BidId:           bidId,
 					ContractAddress: contractAddress,
-					YankRepo:        yankRepo,
 					YankHeaderId:    headerTwo.Id,
 					YankLogId:       flipYankLog.ID,
 				})
@@ -572,10 +536,9 @@ var _ = Describe("All flip bid events query", func() {
 						test_helpers.GetFlipMetadatas(strconv.Itoa(bidId)), contractAddress)
 					tickLog := test_data.CreateTestLog(headerOne.Id, db)
 					tickErr := test_helpers.CreateTick(test_helpers.TickCreationInput{
-						Db:              db,
+						DB:              db,
 						BidId:           bidId,
 						ContractAddress: contractAddress,
-						TickRepo:        tickRepo,
 						TickHeaderId:    headerOne.Id,
 						TickLogId:       tickLog.ID,
 					})
@@ -599,10 +562,9 @@ var _ = Describe("All flip bid events query", func() {
 				It("ignores tick events that aren't from flips", func() {
 					tickLog := test_data.CreateTestLog(headerOne.Id, db)
 					tickErr := test_helpers.CreateTick(test_helpers.TickCreationInput{
-						Db:              db,
+						DB:              db,
 						BidId:           bidId,
 						ContractAddress: "flop",
-						TickRepo:        tickRepo,
 						TickHeaderId:    headerOne.Id,
 						TickLogId:       tickLog.ID,
 					})

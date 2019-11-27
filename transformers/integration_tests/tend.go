@@ -62,9 +62,8 @@ var _ = Describe("Tend EventTransformer", func() {
 		topics = []common.Hash{common.HexToHash(tendConfig.Topic)}
 
 		initializer = event.Transformer{
-			Config:     tendConfig,
-			Converter:  &tend.Converter{},
-			Repository: &tend.Repository{},
+			Config:    tendConfig,
+			Converter: &tend.Converter{},
 		}
 	})
 
