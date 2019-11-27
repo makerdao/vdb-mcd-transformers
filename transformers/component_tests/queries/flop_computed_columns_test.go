@@ -150,9 +150,10 @@ var _ = Describe("Flop computed columns", func() {
 
 				dentLot = rand.Int()
 				dentBid = rand.Int()
-				dentRepo := dent.DentRepository{}
+				dentRepo := dent.Repository{}
 				dentRepo.SetDB(db)
 				flopDentErr := test_helpers.CreateDent(test_helpers.DentCreationInput{
+					Db:              db,
 					BidId:           fakeBidId,
 					ContractAddress: contractAddress,
 					Lot:             dentLot,

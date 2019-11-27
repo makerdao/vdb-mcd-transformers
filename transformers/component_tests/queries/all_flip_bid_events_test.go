@@ -47,7 +47,7 @@ var _ = Describe("All flip bid events query", func() {
 		flipKickRepo           flip_kick.FlipKickRepository
 		tendRepo               tend.Repository
 		tickRepo               tick.Repository
-		dentRepo               dent.DentRepository
+		dentRepo               dent.Repository
 		dealRepo               deal.Repository
 		yankRepo               yank.Repository
 		headerRepo             repositories.HeaderRepository
@@ -69,7 +69,7 @@ var _ = Describe("All flip bid events query", func() {
 		tendRepo.SetDB(db)
 		tickRepo = tick.Repository{}
 		tickRepo.SetDB(db)
-		dentRepo = dent.DentRepository{}
+		dentRepo = dent.Repository{}
 		dentRepo.SetDB(db)
 		dealRepo = deal.Repository{}
 		dealRepo.SetDB(db)
@@ -134,6 +134,7 @@ var _ = Describe("All flip bid events query", func() {
 
 			flipDentLog := test_data.CreateTestLog(headerOne.Id, db)
 			flipDentErr := test_helpers.CreateDent(test_helpers.DentCreationInput{
+				Db:              db,
 				BidId:           bidId,
 				ContractAddress: contractAddress,
 				Lot:             dentLot,
@@ -199,6 +200,7 @@ var _ = Describe("All flip bid events query", func() {
 
 			flipDentLog := test_data.CreateTestLog(headerThree.Id, db)
 			flipDentErr := test_helpers.CreateDent(test_helpers.DentCreationInput{
+				Db:              db,
 				BidId:           bidId,
 				ContractAddress: contractAddress,
 				Lot:             dentLot,
@@ -437,6 +439,7 @@ var _ = Describe("All flip bid events query", func() {
 
 				flipDentHeaderOneLog := test_data.CreateTestLog(headerOne.Id, db)
 				flipDentErr := test_helpers.CreateDent(test_helpers.DentCreationInput{
+					Db:              db,
 					BidId:           bidId,
 					ContractAddress: contractAddress,
 					Lot:             lotOne,
@@ -451,6 +454,7 @@ var _ = Describe("All flip bid events query", func() {
 
 				flipDentHeaderTwoLog := test_data.CreateTestLog(headerTwo.Id, db)
 				flipDentHeaderTwoErr := test_helpers.CreateDent(test_helpers.DentCreationInput{
+					Db:              db,
 					BidId:           bidId,
 					ContractAddress: contractAddress,
 					Lot:             lotTwo,
@@ -475,6 +479,7 @@ var _ = Describe("All flip bid events query", func() {
 			It("ignores dent events that are not from flip", func() {
 				flapDentLog := test_data.CreateTestLog(headerOne.Id, db)
 				flapDentErr := test_helpers.CreateDent(test_helpers.DentCreationInput{
+					Db:              db,
 					BidId:           bidId,
 					ContractAddress: anotherContractAddress,
 					Lot:             rand.Int(),

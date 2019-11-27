@@ -23,6 +23,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/fetcher"
 	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 	"github.com/makerdao/vulcanizedb/pkg/core"
@@ -40,7 +41,7 @@ var _ = Describe("Dent transformer", func() {
 		dentConfig  transformer.EventTransformerConfig
 		addresses   []common.Address
 		topics      []common.Hash
-		initializer shared.EventTransformer
+		initializer event.Transformer
 	)
 
 	BeforeEach(func() {
@@ -62,10 +63,10 @@ var _ = Describe("Dent transformer", func() {
 		topics = []common.Hash{common.HexToHash(dentConfig.Topic)}
 		logFetcher = fetcher.NewLogFetcher(blockChain)
 
-		initializer = shared.EventTransformer{
+		initializer = event.Transformer{
 			Config:     dentConfig,
-			Converter:  &dent.DentConverter{},
-			Repository: &dent.DentRepository{},
+			Converter:  &dent.Converter{},
+			Repository: &dent.Repository{},
 		}
 	})
 
@@ -86,7 +87,7 @@ var _ = Describe("Dent transformer", func() {
 
 		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
 
-		tr = initializer.NewEventTransformer(db)
+		tr = initializer.NewTransformer(db)
 		err = tr.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 
