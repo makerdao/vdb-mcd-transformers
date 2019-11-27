@@ -65,7 +65,7 @@ var _ = Describe("Cat File transformer", func() {
 	})
 
 	It("persists a chop lump event (lump)", func() {
-		chopLumpBlockNumber := int64(14681994)
+		chopLumpBlockNumber := int64(14764797)
 		header, err := persistHeader(db, chopLumpBlockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 		catFileConfig.TransformerName = constants.CatFileChopLumpLabel
@@ -105,7 +105,7 @@ var _ = Describe("Cat File transformer", func() {
 	})
 
 	It("persists a chop lump event (chop)", func() {
-		chopLumpBlockNumber := int64(14681988)
+		chopLumpBlockNumber := int64(14764791)
 		header, err := persistHeader(db, chopLumpBlockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 		catFileConfig.TransformerName = constants.CatFileChopLumpLabel
@@ -145,7 +145,7 @@ var _ = Describe("Cat File transformer", func() {
 	})
 
 	It("persists a flip event", func() {
-		flipBlockNumber := int64(14681706)
+		flipBlockNumber := int64(14764569)
 		header, err := persistHeader(db, flipBlockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 		catFileConfig.TransformerName = constants.CatFileFlipLabel
@@ -177,15 +177,15 @@ var _ = Describe("Cat File transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))
-		ilkID, err := shared.GetOrCreateIlk("0x5341490000000000000000000000000000000000000000000000000000000000", db)
+		ilkID, err := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(dbResult[0].Ilk).To(Equal(strconv.FormatInt(ilkID, 10)))
 		Expect(dbResult[0].What).To(Equal("flip"))
-		Expect(dbResult[0].Flip).To(Equal("0x5B21577c9C3444A748684a80A1aaEFDac538a6cb"))
+		Expect(dbResult[0].Flip).To(Equal(test_data.EthFlipAddress()))
 	})
 
 	It("persists a vow event", func() {
-		vowBlockNumber := int64(14681650)
+		vowBlockNumber := int64(14764546)
 		header, err := persistHeader(db, vowBlockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 		catFileConfig.TransformerName = constants.CatFileVowLabel
@@ -219,7 +219,7 @@ var _ = Describe("Cat File transformer", func() {
 		err = db.Get(&dbResult, `SELECT what, data FROM maker.cat_file_vow`)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(dbResult.What).To(Equal("vow"))
-		Expect(dbResult.Data).To(Equal("0x6F29dfc2f7142C6f161abC0E5bE6E79A41269Fa9"))
+		Expect(dbResult.Data).To(Equal(test_data.VowAddress()))
 	})
 })
 

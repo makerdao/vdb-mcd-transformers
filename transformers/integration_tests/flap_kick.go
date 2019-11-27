@@ -31,8 +31,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = XDescribe("FlapKick Transformer", func() {
-	//TODO: There are currently no FlapKick events on Kovan
+var _ = Describe("FlapKick Transformer", func() {
 	var (
 		db         *postgres.DB
 		blockChain core.BlockChain
@@ -55,7 +54,7 @@ var _ = XDescribe("FlapKick Transformer", func() {
 	}
 
 	It("fetches and transforms a FlapKick event from Kovan chain", func() {
-		blockNumber := int64(14308157)
+		blockNumber := int64(14883695)
 		flapKickConfig.StartingBlockNumber = blockNumber
 		flapKickConfig.EndingBlockNumber = blockNumber
 
@@ -86,7 +85,7 @@ var _ = XDescribe("FlapKick Transformer", func() {
 
 		Expect(len(dbResult)).To(Equal(1))
 		Expect(dbResult[0].Bid).To(Equal("0"))
-		Expect(dbResult[0].BidId).To(Equal("28"))
+		Expect(dbResult[0].BidId).To(Equal("46"))
 		Expect(dbResult[0].Lot).To(Equal("100000000000000000000000000000000000000000000"))
 	})
 })

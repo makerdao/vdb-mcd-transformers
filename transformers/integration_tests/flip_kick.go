@@ -38,7 +38,7 @@ var _ = Describe("FlipKick Transformer", func() {
 	}
 
 	It("fetches and transforms a FlipKick event from Kovan chain", func() {
-		blockNumber := int64(14783840)
+		blockNumber := int64(14887556)
 		flipKickConfig.StartingBlockNumber = blockNumber
 		flipKickConfig.EndingBlockNumber = blockNumber
 
@@ -79,10 +79,10 @@ var _ = Describe("FlipKick Transformer", func() {
 
 		Expect(len(dbResult)).To(Equal(1))
 		Expect(dbResult[0].Bid).To(Equal("0"))
-		Expect(dbResult[0].Lot).To(Equal("170000000000000000"))
-		Expect(dbResult[0].Tab).To(Equal("23731582751381111760109637357602300610937812826"))
-		Expect(dbResult[0].Usr).To(Equal("0xA17B62E20d2d700950cf95ceE5d8cC910850Dd98"))
-		Expect(dbResult[0].Gal).To(Equal("0x6F29dfc2f7142C6f161abC0E5bE6E79A41269Fa9"))
+		Expect(dbResult[0].Lot).To(Equal("161720826865883606"))
+		Expect(dbResult[0].Tab).To(Equal("22600003035575947920904950765775383978062700848"))
+		Expect(dbResult[0].Usr).To(Equal("0xec718b93624e618709EE44F81240552cDcE162Ff"))
+		Expect(dbResult[0].Gal).To(Equal("0x0F4Cbe6CBA918b7488C26E29d9ECd7368F38EA3b"))
 		Expect(dbResult[0].AddressId).To(Equal(flipContractAddressId))
 	})
 })

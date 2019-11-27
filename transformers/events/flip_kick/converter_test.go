@@ -17,8 +17,6 @@
 package flip_kick_test
 
 import (
-	"strings"
-
 	"github.com/makerdao/vulcanizedb/pkg/core"
 
 	. "github.com/onsi/ginkgo"
@@ -37,7 +35,6 @@ var _ = Describe("FlipKick Converter", func() {
 
 		Expect(err).NotTo(HaveOccurred())
 
-		models[0].ForeignKeyValues[constants.AddressFK] = strings.ToLower(models[0].ForeignKeyValues[constants.AddressFK])
 		Expect(models).To(Equal([]shared.InsertionModel{test_data.FlipKickModel()}))
 	})
 

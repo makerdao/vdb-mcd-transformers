@@ -74,7 +74,7 @@ var _ = Describe("Deal transformer", func() {
 	})
 
 	It("persists a flip deal log event", func() {
-		flipBlockNumber := int64(14784093)
+		flipBlockNumber := int64(14887716)
 		header, err := persistHeader(db, flipBlockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -98,7 +98,7 @@ var _ = Describe("Deal transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))
-		Expect(dbResult[0].BidId).To(Equal("1"))
+		Expect(dbResult[0].BidId).To(Equal("15"))
 		Expect(dbResult[0].AddressId).To(Equal(flipContractAddressId))
 	})
 

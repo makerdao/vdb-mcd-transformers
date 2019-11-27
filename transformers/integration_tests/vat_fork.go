@@ -31,8 +31,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = XDescribe("Vat fork transformer", func() {
-	// TODO: Update when event exists in kovan
+var _ = Describe("Vat fork transformer", func() {
 	var (
 		db         *postgres.DB
 		blockChain core.BlockChain
@@ -55,7 +54,7 @@ var _ = XDescribe("Vat fork transformer", func() {
 	}
 
 	It("fetches and transforms vat fork event", func() {
-		blockNumber := int64(13234996)
+		blockNumber := int64(14809729)
 		vatForkConfig.StartingBlockNumber = blockNumber
 		vatForkConfig.EndingBlockNumber = blockNumber
 
@@ -87,10 +86,10 @@ var _ = XDescribe("Vat fork transformer", func() {
 		ilkID, err := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(dbResult.Ilk).To(Equal(ilkID))
-		Expect(dbResult.Src).To(Equal("0xAE21412A422279B72aA8641a3D5F1da4BF6cfD30"))
-		Expect(dbResult.Dst).To(Equal("0xdB33dFD3D61308C33C63209845DaD3e6bfb2c674"))
-		Expect(dbResult.Dink).To(Equal(0))
-		Expect(dbResult.Dart).To(Equal(0))
+		Expect(dbResult.Src).To(Equal("0x791e615fc7f63A02ab853C2ad457aB84D3897aE1"))
+		Expect(dbResult.Dst).To(Equal("0x911Ac745F7eB543C279FC254Da0A7005A422404e"))
+		Expect(dbResult.Dink).To(Equal("510000000000000000"))
+		Expect(dbResult.Dart).To(Equal("57787061332234766314"))
 	})
 })
 
@@ -98,6 +97,6 @@ type vatForkModel struct {
 	Ilk  int64 `db:"ilk_id"`
 	Src  string
 	Dst  string
-	Dink int
-	Dart int
+	Dink string
+	Dart string
 }
