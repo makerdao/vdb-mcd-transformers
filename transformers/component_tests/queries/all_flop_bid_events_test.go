@@ -31,7 +31,7 @@ var _ = Describe("Flop bid events query", func() {
 		dentRepo               dent.DentRepository
 		dealRepo               deal.Repository
 		yankRepo               yank.Repository
-		tickRepo               tick.TickRepository
+		tickRepo               tick.Repository
 		headerRepo             repositories.HeaderRepository
 		blockOne, timestampOne int
 		headerOne              core.Header
@@ -52,7 +52,7 @@ var _ = Describe("Flop bid events query", func() {
 		dealRepo.SetDB(db)
 		yankRepo = yank.Repository{}
 		yankRepo.SetDB(db)
-		tickRepo = tick.TickRepository{}
+		tickRepo = tick.Repository{}
 		tickRepo.SetDB(db)
 
 		fakeBidId = rand.Int()
@@ -384,6 +384,7 @@ var _ = Describe("Flop bid events query", func() {
 
 			// irrelevant tick event
 			tickErr := test_helpers.CreateTick(test_helpers.TickCreationInput{
+				Db:              db,
 				BidId:           fakeBidId,
 				ContractAddress: "flip",
 				TickRepo:        tickRepo,
@@ -406,6 +407,7 @@ var _ = Describe("Flop bid events query", func() {
 			tickLog := test_data.CreateTestLog(headerOne.Id, db)
 
 			tickErr := test_helpers.CreateTick(test_helpers.TickCreationInput{
+				Db:              db,
 				BidId:           fakeBidId,
 				ContractAddress: contractAddress,
 				TickRepo:        tickRepo,

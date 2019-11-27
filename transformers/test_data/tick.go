@@ -20,6 +20,8 @@ import (
 	"math/rand"
 	"strconv"
 
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
+
 	"github.com/makerdao/vulcanizedb/pkg/core"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -27,7 +29,6 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
 
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 )
 
@@ -60,18 +61,16 @@ var FlipTickHeaderSyncLog = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-var TickModel = shared.InsertionModel{
+var TickModel = event.InsertionModel{
 	SchemaName: "maker",
 	TableName:  "tick",
-	OrderedColumns: []string{
-		constants.HeaderFK, "bid_id", string(constants.AddressFK), constants.LogFK,
+	OrderedColumns: []event.ColumnName{
+		constants.HeaderFK, constants.LogFK, constants.BidIdColumn, constants.AddressColumn,
 	},
-	ColumnValues: shared.ColumnValues{
-		"bid_id":           strconv.FormatInt(tickBidId, 10),
-		constants.HeaderFK: FlipTickHeaderSyncLog.HeaderID,
-		constants.LogFK:    FlipTickHeaderSyncLog.ID,
-	},
-	ForeignKeyValues: shared.ForeignKeyValues{
-		constants.AddressFK: FlipTickHeaderSyncLog.Log.Address.Hex(),
+	ColumnValues: event.ColumnValues{
+		constants.HeaderFK:      FlipTickHeaderSyncLog.HeaderID,
+		constants.LogFK:         FlipTickHeaderSyncLog.ID,
+		constants.BidIdColumn:   strconv.FormatInt(tickBidId, 10),
+		constants.AddressColumn: FlipTickHeaderSyncLog.Log.Address.Hex(),
 	},
 }

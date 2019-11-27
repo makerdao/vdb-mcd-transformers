@@ -64,7 +64,7 @@ var DealModel = event.InsertionModel{
 	},
 	ColumnValues: event.ColumnValues{
 		constants.HeaderFK:      DealHeaderSyncLog.HeaderID,
-		constants.BidColumn:     "10000000000000000",
+		constants.BidIdColumn:   "10000000000000000",
 		constants.AddressColumn: rawDealLog.Address.Hex(),
 		constants.LogFK:         DealHeaderSyncLog.ID,
 	},

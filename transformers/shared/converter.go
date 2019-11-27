@@ -26,8 +26,10 @@ import (
 )
 
 const (
-	FourTopicsRequired = 4
-	LogDataRequired    = true
+	ThreeTopicsRequired = 3
+	FourTopicsRequired  = 4
+	LogDataRequired     = true
+	LogDataNotRequired  = false
 )
 
 var (
