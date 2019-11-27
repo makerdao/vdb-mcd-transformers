@@ -66,6 +66,9 @@ func newCdpMethod() string   { return getSolidityFunctionSignature(CdpManagerABI
 func potFileDSRMethod() string {
 	return getOverloadedFunctionSignature(PotABI(), "file", []string{"bytes32", "uint256"})
 }
+func potFileVowMethod() string {
+	return getOverloadedFunctionSignature(PotABI(), "file", []string{"bytes32", "address"})
+}
 func spotFileMatMethod() string {
 	return getOverloadedFunctionSignature(SpotABI(), "file", []string{"bytes32", "bytes32", "uint256"})
 }

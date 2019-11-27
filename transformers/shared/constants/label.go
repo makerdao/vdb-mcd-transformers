@@ -34,6 +34,7 @@ const (
 	LogValueLabel           = "log_value"
 	NewCdpLabel             = "new_cdp"
 	PotFileDSRLabel         = "pot_file_dsr"
+	PotFileVowLabel         = "pot_file_vow"
 	SpotFileMatLabel        = "spot_file_mat"
 	SpotFilePipLabel        = "spot_file_pip"
 	SpotPokeLabel           = "spot_poke"

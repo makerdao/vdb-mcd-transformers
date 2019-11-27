@@ -5,6 +5,7 @@ import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/pot_file/dsr"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/events/pot_file/vow"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
@@ -28,10 +29,34 @@ var rawPotFileDSRLog = types.Log{
 	Removed:     false,
 }
 
+var rawPotFileVowLog = types.Log{
+	Address: common.HexToAddress(PotAddress()),
+	Topics: []common.Hash{
+		common.HexToHash(constants.PotFileVowSignature()),
+		common.HexToHash("0x00000000000000000000000013141b8a5e4a82ebc6b636849dd6a515185d6236"),
+		common.HexToHash("0x766f770000000000000000000000000000000000000000000000000000000000"),
+		common.HexToHash("0x0000000000000000000000000f4cbe6cba918b7488c26e29d9ecd7368f38ea3b"),
+	},
+	Data:        hexutil.MustDecode("0x000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000e0d4e8be83766f7700000000000000000000000000000000000000000000000000000000000000000000000000000000000f4cbe6cba918b7488c26e29d9ecd7368f38ea3b000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"),
+	BlockNumber: 14764543,
+	TxHash:      common.HexToHash("0x77cb44b6811e4f81ee7d6a6cccdee8a525b0437c9dddb0e42257258749088c4d"),
+	TxIndex:     1,
+	BlockHash:   common.HexToHash("0x44bcf7b6bbbd71f329548928c03c6873a09c713bfb48c9aa086ae36a4eb3c611"),
+	Index:       9,
+	Removed:     false,
+}
+
 var PotFileDSRHeaderSyncLog = core.HeaderSyncLog{
 	ID:          int64(rand.Int31()),
 	HeaderID:    int64(rand.Int31()),
 	Log:         rawPotFileDSRLog,
+	Transformed: false,
+}
+
+var PotFileVowHeaderSyncLog = core.HeaderSyncLog{
+	ID:          int64(rand.Int31()),
+	HeaderID:    int64(rand.Int31()),
+	Log:         rawPotFileVowLog,
 	Transformed: false,
 }
 
@@ -49,4 +74,17 @@ var potFileDSRModel = event.InsertionModel{
 	},
 }
 
+var potFileVowModel = event.InsertionModel{
+	SchemaName:     "maker",
+	TableName:      "pot_file_vow",
+	OrderedColumns: []event.ColumnName{constants.HeaderFK, constants.LogFK, vow.What, vow.Data},
+	ColumnValues: event.ColumnValues{
+		constants.HeaderFK: PotFileVowHeaderSyncLog.HeaderID,
+		constants.LogFK:    PotFileVowHeaderSyncLog.ID,
+		vow.What:           "vow",
+		vow.Data:           "0x0F4Cbe6CBA918b7488C26E29d9ECd7368F38EA3b",
+	},
+}
+
 func PotFileDSRModel() event.InsertionModel { return CopyEventModel(potFileDSRModel) }
+func PotFileVowModel() event.InsertionModel { return CopyEventModel(potFileVowModel) }
