@@ -39,12 +39,11 @@ var _ = Describe("Tend TendConverter", func() {
 	BeforeEach(func() {
 		db = test_config.NewTestDB(test_config.NewTestNode())
 		test_config.CleanTestDB(db)
-		converter.SetDB(db)
 	})
 
 	Describe("ToModels", func() {
 		It("converts an eth log to a db model", func() {
-			models, err := converter.ToModels(constants.FlipABI(), []core.HeaderSyncLog{test_data.TendHeaderSyncLog})
+			models, err := converter.ToModels(constants.FlipABI(), []core.HeaderSyncLog{test_data.TendHeaderSyncLog}, db)
 			Expect(err).NotTo(HaveOccurred())
 
 			var addressID int64
@@ -58,7 +57,7 @@ var _ = Describe("Tend TendConverter", func() {
 		It("returns an error if the log data is empty", func() {
 			emptyDataLog := test_data.TendHeaderSyncLog
 			emptyDataLog.Log.Data = []byte{}
-			_, err := converter.ToModels(constants.FlipABI(), []core.HeaderSyncLog{emptyDataLog})
+			_, err := converter.ToModels(constants.FlipABI(), []core.HeaderSyncLog{emptyDataLog}, db)
 
 			Expect(err).To(HaveOccurred())
 			Expect(err).To(MatchError(shared.ErrLogMissingData))
@@ -67,7 +66,7 @@ var _ = Describe("Tend TendConverter", func() {
 		It("returns an error if the expected amount of topics aren't in the log", func() {
 			invalidLog := test_data.TendHeaderSyncLog
 			invalidLog.Log.Topics = []common.Hash{}
-			_, err := converter.ToModels(constants.FlipABI(), []core.HeaderSyncLog{invalidLog})
+			_, err := converter.ToModels(constants.FlipABI(), []core.HeaderSyncLog{invalidLog}, db)
 
 			Expect(err).To(MatchError(shared.ErrLogMissingTopics(4, 0)))
 		})

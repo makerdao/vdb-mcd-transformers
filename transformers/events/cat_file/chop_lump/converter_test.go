@@ -39,12 +39,11 @@ var _ = Describe("Cat file chop lump converter", func() {
 	BeforeEach(func() {
 		converter = chop_lump.Converter{}
 		db = test_config.NewTestDB(test_config.NewTestNode())
-		converter.SetDB(db)
 	})
 
 	Context("chop events", func() {
 		It("converts a chop log to a model", func() {
-			models, err := converter.ToModels(constants.CatABI(), []core.HeaderSyncLog{test_data.CatFileChopHeaderSyncLog})
+			models, err := converter.ToModels(constants.CatABI(), []core.HeaderSyncLog{test_data.CatFileChopHeaderSyncLog}, db)
 			Expect(err).NotTo(HaveOccurred())
 
 			var ilkID int64
@@ -59,7 +58,7 @@ var _ = Describe("Cat file chop lump converter", func() {
 
 	Context("lump events", func() {
 		It("converts a lump log to a model", func() {
-			models, err := converter.ToModels(constants.CatABI(), []core.HeaderSyncLog{test_data.CatFileLumpHeaderSyncLog})
+			models, err := converter.ToModels(constants.CatABI(), []core.HeaderSyncLog{test_data.CatFileLumpHeaderSyncLog}, db)
 			Expect(err).NotTo(HaveOccurred())
 
 			var ilkID int64
@@ -79,7 +78,7 @@ var _ = Describe("Cat file chop lump converter", func() {
 			},
 		}
 
-		_, err := converter.ToModels(constants.CatABI(), []core.HeaderSyncLog{badLog})
+		_, err := converter.ToModels(constants.CatABI(), []core.HeaderSyncLog{badLog}, db)
 		Expect(err).To(HaveOccurred())
 	})
 
@@ -90,7 +89,7 @@ var _ = Describe("Cat file chop lump converter", func() {
 			},
 		}
 
-		_, err := converter.ToModels(constants.CatABI(), []core.HeaderSyncLog{badLog})
+		_, err := converter.ToModels(constants.CatABI(), []core.HeaderSyncLog{badLog}, db)
 		Expect(err).To(HaveOccurred())
 	})
 })

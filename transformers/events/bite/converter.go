@@ -32,9 +32,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 )
 
-type Converter struct {
-	db *postgres.DB
-}
+type Converter struct{}
 
 func (Converter) toEntities(contractAbi string, logs []core.HeaderSyncLog) ([]BiteEntity, error) {
 	var entities []BiteEntity
@@ -60,7 +58,7 @@ func (Converter) toEntities(contractAbi string, logs []core.HeaderSyncLog) ([]Bi
 	return entities, nil
 }
 
-func (c Converter) ToModels(abi string, logs []core.HeaderSyncLog) ([]event.InsertionModel, error) {
+func (c Converter) ToModels(abi string, logs []core.HeaderSyncLog, db *postgres.DB) ([]event.InsertionModel, error) {
 	entities, entityErr := c.toEntities(abi, logs)
 	if entityErr != nil {
 		return nil, fmt.Errorf("converter couldn't convert logs to entities: %v", entityErr)
@@ -71,7 +69,7 @@ func (c Converter) ToModels(abi string, logs []core.HeaderSyncLog) ([]event.Inse
 		hexIlk := hexutil.Encode(biteEntity.Ilk[:])
 		urn := common.BytesToAddress(biteEntity.Urn[:]).Hex()
 
-		urnID, urnErr := shared.GetOrCreateUrn(urn, hexIlk, c.db)
+		urnID, urnErr := shared.GetOrCreateUrn(urn, hexIlk, db)
 		if urnErr != nil {
 			return nil, shared.ErrCouldNotCreateFK(urnErr)
 		}
@@ -96,8 +94,4 @@ func (c Converter) ToModels(abi string, logs []core.HeaderSyncLog) ([]event.Inse
 		models = append(models, model)
 	}
 	return models, nil
-}
-
-func (c *Converter) SetDB(db *postgres.DB) {
-	c.db = db
 }

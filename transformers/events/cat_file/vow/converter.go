@@ -25,11 +25,9 @@ import (
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 )
 
-type Converter struct {
-	db *postgres.DB
-}
+type Converter struct{}
 
-func (Converter) ToModels(_ string, logs []core.HeaderSyncLog) ([]event.InsertionModel, error) {
+func (Converter) ToModels(_ string, logs []core.HeaderSyncLog, _ *postgres.DB) ([]event.InsertionModel, error) {
 	var results []event.InsertionModel
 	for _, log := range logs {
 		err := shared.VerifyLog(log.Log, shared.FourTopicsRequired, shared.LogDataRequired)
@@ -56,8 +54,4 @@ func (Converter) ToModels(_ string, logs []core.HeaderSyncLog) ([]event.Insertio
 		results = append(results, result)
 	}
 	return results, nil
-}
-
-func (converter *Converter) SetDB(db *postgres.DB) {
-	converter.db = db
 }

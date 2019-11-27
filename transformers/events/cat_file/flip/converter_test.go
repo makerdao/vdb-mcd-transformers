@@ -40,7 +40,6 @@ var _ = Describe("Cat file flip converter", func() {
 	BeforeEach(func() {
 		converter = flip.Converter{}
 		db = test_config.NewTestDB(test_config.NewTestNode())
-		converter.SetDB(db)
 	})
 
 	It("returns err if log is missing topics", func() {
@@ -50,7 +49,7 @@ var _ = Describe("Cat file flip converter", func() {
 			},
 		}
 
-		_, err := converter.ToModels(constants.CatABI(), []core.HeaderSyncLog{badLog})
+		_, err := converter.ToModels(constants.CatABI(), []core.HeaderSyncLog{badLog}, db)
 		Expect(err).To(HaveOccurred())
 	})
 
@@ -61,12 +60,12 @@ var _ = Describe("Cat file flip converter", func() {
 			},
 		}
 
-		_, err := converter.ToModels(constants.CatABI(), []core.HeaderSyncLog{badLog})
+		_, err := converter.ToModels(constants.CatABI(), []core.HeaderSyncLog{badLog}, db)
 		Expect(err).To(HaveOccurred())
 	})
 
 	It("converts a log to an model", func() {
-		models, err := converter.ToModels(constants.CatABI(), []core.HeaderSyncLog{test_data.CatFileFlipHeaderSyncLog})
+		models, err := converter.ToModels(constants.CatABI(), []core.HeaderSyncLog{test_data.CatFileFlipHeaderSyncLog}, db)
 		Expect(err).NotTo(HaveOccurred())
 
 		var ilkID int64
