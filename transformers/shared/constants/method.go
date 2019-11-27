@@ -28,6 +28,9 @@ func FlipABI() string {
 }
 func FlopABI() string { return getContractABI("MCD_FLOP") }
 func JugABI() string  { return getContractABI("MCD_JUG") }
+func OsmABI() string {
+	return GetContractsABI([]string{"OSM_ETH", "OSM_BAT"})
+}
 func SpotABI() string { return getContractABI("MCD_SPOT") }
 func VatABI() string  { return getContractABI("MCD_VAT") }
 func VowABI() string  { return getContractABI("MCD_VOW") }
@@ -57,8 +60,9 @@ func jugFileIlkMethod() string {
 func jugFileVowMethod() string {
 	return getOverloadedFunctionSignature(JugABI(), "file", []string{"bytes32", "address"})
 }
-func jugInitMethod() string { return getSolidityFunctionSignature(JugABI(), "init") }
-func newCdpMethod() string  { return getSolidityFunctionSignature(CdpManagerABI(), "NewCdp") }
+func jugInitMethod() string  { return getSolidityFunctionSignature(JugABI(), "init") }
+func logValueMethod() string { return getSolidityFunctionSignature(OsmABI(), "LogValue") }
+func newCdpMethod() string   { return getSolidityFunctionSignature(CdpManagerABI(), "NewCdp") }
 func spotFileMatMethod() string {
 	return getOverloadedFunctionSignature(SpotABI(), "file", []string{"bytes32", "bytes32", "uint256"})
 }
