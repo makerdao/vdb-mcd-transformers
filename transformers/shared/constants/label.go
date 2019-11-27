@@ -33,6 +33,7 @@ const (
 	JugInitLabel            = "jug_init"
 	LogValueLabel           = "log_value"
 	NewCdpLabel             = "new_cdp"
+	PotCageLabel            = "pot_cage"
 	PotFileDSRLabel         = "pot_file_dsr"
 	SpotFileMatLabel        = "spot_file_mat"
 	SpotFilePipLabel        = "spot_file_pip"

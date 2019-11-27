@@ -63,6 +63,7 @@ func jugFileVowMethod() string {
 func jugInitMethod() string  { return getSolidityFunctionSignature(JugABI(), "init") }
 func logValueMethod() string { return getSolidityFunctionSignature(OsmABI(), "LogValue") }
 func newCdpMethod() string   { return getSolidityFunctionSignature(CdpManagerABI(), "NewCdp") }
+func potCageMethod() string  { return getSolidityFunctionSignature(PotABI(), "cage") }
 func potFileDSRMethod() string {
 	return getOverloadedFunctionSignature(PotABI(), "file", []string{"bytes32", "uint256"})
 }
