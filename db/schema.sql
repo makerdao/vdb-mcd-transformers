@@ -502,7 +502,6 @@ CREATE FUNCTION api.all_bites(ilk_identifier text, max_results integer DEFAULT '
     LANGUAGE sql STABLE STRICT
     AS $$
 WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier)
-
 SELECT ilk_identifier,
        identifier AS urn_identifier,
        bid_id,
@@ -594,7 +593,6 @@ WITH address_id AS (
                                 AND flap_bid_lot.header_id = headers.id
          WHERE tick.address_id = (SELECT * FROM address_id)
      )
-
 SELECT flap_kick.bid_id,
        lot,
        bid                          AS bid_amount,
@@ -719,7 +717,6 @@ WITH address_ids AS (
                                 AND flip_bid_lot.header_id = headers.id
          WHERE tick.address_id IN (SELECT * FROM address_ids)
      )
-
 SELECT flip_kick.bid_id,
        lot,
        bid                 AS                                          bid_amount,
@@ -871,7 +868,6 @@ WITH address_id AS (
                                 AND flop_bid_lot.header_id = headers.id
          WHERE tick.address_id = (SELECT * FROM address_id)
      )
-
 SELECT flop_kick.bid_id,
        lot,
        bid                          AS bid_amount,
@@ -943,7 +939,6 @@ WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier),
                WHERE ilk_id = (SELECT id FROM ilk)
                ORDER BY block_number DESC
      )
-
 SELECT ilk_identifier,
        urns.identifier                                                             AS urn_identifier,
        dink,
@@ -970,7 +965,6 @@ CREATE FUNCTION api.all_ilk_file_events(ilk_identifier text, max_results integer
     LANGUAGE sql STABLE STRICT
     AS $$
 WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier)
-
 SELECT ilk_identifier, what, data :: text, block_number, log_id
 FROM maker.cat_file_chop_lump
          LEFT JOIN headers ON cat_file_chop_lump.header_id = headers.id
@@ -1347,7 +1341,6 @@ WITH urns AS (SELECT urns.id AS urn_id, ilks.id AS ilk_id, ilks.ilk, urns.identi
                         WHERE block_number <= block_height
                         ORDER BY urn_id, block_number DESC)) last_blocks
                  ORDER BY urn_id, block_timestamp DESC)
-
 SELECT urns.identifier,
        ilks.identifier,
        all_urns.block_height,
@@ -1669,7 +1662,6 @@ WITH address_id AS (
          ORDER BY bid_id, block_number DESC
          LIMIT 1
      )
-
 SELECT get_flap.bid_id,
        storage_values.guy,
        storage_values.tic,
@@ -1710,7 +1702,6 @@ WITH ilk_ids AS (SELECT id FROM maker.ilks WHERE ilks.identifier = get_flip.ilk)
                 FROM maker.urns
                 WHERE urns.ilk_id = (SELECT id FROM ilk_ids)
                   AND urns.identifier = (SELECT usr FROM kicks)),
-
      storage_values AS (
          SELECT guy,
                 tic,
@@ -1733,7 +1724,6 @@ WITH ilk_ids AS (SELECT id FROM maker.ilks WHERE ilks.identifier = get_flip.ilk)
                WHERE deal.bid_id = get_flip.bid_id
                  AND deal.address_id = (SELECT * FROM address_id)
                  AND headers.block_number <= block_height)
-
 SELECT get_flip.block_height,
        get_flip.bid_id,
        (SELECT id FROM ilk_ids),
@@ -1793,7 +1783,6 @@ WITH address_id AS (
          ORDER BY bid_id, block_number DESC
          LIMIT 1
      )
-
 SELECT get_flop.bid_id,
        storage_values.guy,
        storage_values.tic,
@@ -1919,7 +1908,6 @@ WITH ilk AS (SELECT id FROM maker.ilks WHERE identifier = ilk_identifier),
                  FROM relevant_blocks
                  ORDER BY relevant_blocks.block_height DESC
                  LIMIT 1)
-
 SELECT ilks.identifier,
        get_ilk.block_height,
        rates.rate,
@@ -2065,7 +2053,6 @@ WITH created AS (SELECT era, h.block_number, api.epoch_to_datetime(block_timesta
                  WHERE era = get_queued_sin.era
                  ORDER BY h.block_number DESC
                  LIMIT 1)
-
 SELECT get_queued_sin.era,
        tab,
        (SELECT EXISTS(SELECT id FROM maker.vow_flog WHERE vow_flog.era = get_queued_sin.era)) AS flogged,
@@ -2136,7 +2123,6 @@ WITH urn AS (SELECT urns.id AS urn_id, ilks.id AS ilk_id, ilks.ilk, urns.identif
                        SELECT urn_id, block_number, block_timestamp
                        FROM art) last_blocks
                  ORDER BY urn_id, block_timestamp DESC)
-
 SELECT get_urn.urn_identifier,
        ilk_identifier,
        $3,
@@ -2369,7 +2355,6 @@ CREATE FUNCTION api.poke_event_ilk(priceupdate api.poke_event) RETURNS api.ilk_s
     LANGUAGE sql STABLE
     AS $$
 WITH raw_ilk AS (SELECT * FROM maker.ilks WHERE ilks.id = priceUpdate.ilk_id)
-
 SELECT *
 FROM api.get_ilk((SELECT identifier FROM raw_ilk), priceUpdate.block_height)
 $$;
@@ -2454,7 +2439,6 @@ WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier),
              FROM maker.urns
              WHERE ilk_id = (SELECT id FROM ilk)
                AND identifier = urn_bites.urn_identifier)
-
 SELECT ilk_identifier,
        urn_bites.urn_identifier,
        bid_id,
@@ -2491,7 +2475,6 @@ WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier),
                WHERE ilk_id = (SELECT id FROM ilk)
                ORDER BY block_number DESC
      )
-
 SELECT ilk_identifier,
        urn_identifier,
        dink,
@@ -4978,7 +4961,6 @@ FROM public.header_sync_transactions txs
 WHERE headers.block_number = block_height
   AND header_sync_logs.id = log_id
 ORDER BY block_number DESC
-
 $$;
 
 
@@ -4992,7 +4974,6 @@ CREATE FUNCTION public.ilk_art_before_block(ilk_id integer, header_id integer) R
 WITH passed_block_number AS (
     SELECT block_number FROM public.headers WHERE id = header_id
 )
-
 SELECT art
 FROM maker.vat_ilk_art
     LEFT JOIN public.headers ON vat_ilk_art.header_id = headers.id
@@ -5013,7 +4994,6 @@ CREATE FUNCTION public.ilk_chop_before_block(ilk_id integer, header_id integer) 
 WITH passed_block_number AS (
     SELECT block_number FROM public.headers WHERE id = header_id
 )
-
 SELECT chop
 FROM maker.cat_ilk_chop
     LEFT JOIN public.headers ON cat_ilk_chop.header_id = headers.id
@@ -5034,7 +5014,6 @@ CREATE FUNCTION public.ilk_dust_before_block(ilk_id integer, header_id integer) 
 WITH passed_block_number AS (
     SELECT block_number FROM public.headers WHERE id = header_id
 )
-
 SELECT dust
 FROM maker.vat_ilk_dust
     LEFT JOIN public.headers ON vat_ilk_dust.header_id = headers.id
@@ -5055,7 +5034,6 @@ CREATE FUNCTION public.ilk_duty_before_block(ilk_id integer, header_id integer) 
 WITH passed_block_number AS (
     SELECT block_number FROM public.headers WHERE id = header_id
 )
-
 SELECT duty
 FROM maker.jug_ilk_duty
     LEFT JOIN public.headers ON jug_ilk_duty.header_id = headers.id
@@ -5076,7 +5054,6 @@ CREATE FUNCTION public.ilk_flip_before_block(ilk_id integer, header_id integer) 
 WITH passed_block_number AS (
     SELECT block_number FROM public.headers WHERE id = header_id
 )
-
 SELECT flip
 FROM maker.cat_ilk_flip
     LEFT JOIN public.headers ON cat_ilk_flip.header_id = headers.id
@@ -5097,7 +5074,6 @@ CREATE FUNCTION public.ilk_line_before_block(ilk_id integer, header_id integer) 
 WITH passed_block_number AS (
     SELECT block_number FROM public.headers WHERE id = header_id
 )
-
 SELECT line
 FROM maker.vat_ilk_line
     LEFT JOIN public.headers ON vat_ilk_line.header_id = headers.id
@@ -5118,7 +5094,6 @@ CREATE FUNCTION public.ilk_lump_before_block(ilk_id integer, header_id integer) 
 WITH passed_block_number AS (
     SELECT block_number FROM public.headers WHERE id = header_id
 )
-
 SELECT lump
 FROM maker.cat_ilk_lump
     LEFT JOIN public.headers ON cat_ilk_lump.header_id = headers.id
@@ -5139,7 +5114,6 @@ CREATE FUNCTION public.ilk_mat_before_block(ilk_id integer, header_id integer) R
     WITH passed_block_number AS (
         SELECT block_number FROM public.headers WHERE id = header_id
     )
-
 SELECT mat
 FROM maker.spot_ilk_mat
     LEFT JOIN public.headers ON spot_ilk_mat.header_id = headers.id
@@ -5160,7 +5134,6 @@ CREATE FUNCTION public.ilk_pip_before_block(ilk_id integer, header_id integer) R
 WITH passed_block_number AS (
     SELECT block_number FROM public.headers WHERE id = header_id
 )
-
 SELECT pip
 FROM maker.spot_ilk_pip
     LEFT JOIN public.headers ON spot_ilk_pip.header_id = headers.id
@@ -5181,7 +5154,6 @@ CREATE FUNCTION public.ilk_rate_before_block(ilk_id integer, header_id integer) 
 WITH passed_block_number AS (
     SELECT block_number FROM public.headers WHERE id = header_id
 )
-
 SELECT rate
 FROM maker.vat_ilk_rate
     LEFT JOIN public.headers ON vat_ilk_rate.header_id = headers.id
@@ -5199,11 +5171,9 @@ $$;
 CREATE FUNCTION public.ilk_rho_before_block(ilk_id integer, header_id integer) RETURNS numeric
     LANGUAGE sql
     AS $$
-
 WITH passed_block_number AS (
     SELECT block_number FROM public.headers WHERE id = header_id
 )
-
 SELECT rho
 FROM maker.jug_ilk_rho
     LEFT JOIN public.headers ON jug_ilk_rho.header_id = headers.id
@@ -5224,7 +5194,6 @@ CREATE FUNCTION public.ilk_spot_before_block(ilk_id integer, header_id integer) 
 WITH passed_block_number AS (
     SELECT block_number FROM public.headers WHERE id = header_id
 )
-
 SELECT spot
 FROM maker.vat_ilk_spot
     LEFT JOIN public.headers ON vat_ilk_spot.header_id = headers.id
