@@ -25,6 +25,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
+	"github.com/makerdao/vulcanizedb/libraries/shared/test_data"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
@@ -83,12 +84,14 @@ func CreateTestLog(headerID int64, db *postgres.DB) core.HeaderSyncLog {
 		Topics:      nil,
 		Data:        nil,
 		BlockNumber: 0,
-		TxHash:      common.Hash{},
+		TxHash:      common.HexToHash("0x" + RandomString(64)),
 		TxIndex:     uint(rand.Int31()),
 		BlockHash:   common.Hash{},
 		Index:       0,
 		Removed:     false,
 	}
+	headerRepo := repositories.NewHeaderRepository(db)
+	test_data.CreateMatchingTx(log, headerID, headerRepo)
 	headerSyncLogRepository := repositories.NewHeaderSyncLogRepository(db)
 	insertLogsErr := headerSyncLogRepository.CreateHeaderSyncLogs(headerID, []types.Log{log})
 	Expect(insertLogsErr).NotTo(HaveOccurred())
@@ -103,6 +106,10 @@ func CreateTestLog(headerID int64, db *postgres.DB) core.HeaderSyncLog {
 }
 
 func CreateLogs(headerID int64, logs []types.Log, db *postgres.DB) []core.HeaderSyncLog {
+	headerRepo := repositories.NewHeaderRepository(db)
+	for _, log := range logs {
+		test_data.CreateMatchingTx(log, headerID, headerRepo)
+	}
 	headerSyncLogRepository := repositories.NewHeaderSyncLogRepository(db)
 	insertLogsErr := headerSyncLogRepository.CreateHeaderSyncLogs(headerID, logs)
 	Expect(insertLogsErr).NotTo(HaveOccurred())

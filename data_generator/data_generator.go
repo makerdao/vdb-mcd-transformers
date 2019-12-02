@@ -22,8 +22,8 @@ import (
 )
 
 const (
-	headerSql = `INSERT INTO public.headers (hash, block_number, raw, block_timestamp, eth_node_id, eth_node_fingerprint)
-		VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`
+	headerSql = `INSERT INTO public.headers (hash, block_number, raw, block_timestamp, eth_node_id)
+		VALUES ($1, $2, $3, $4, $5) RETURNING id`
 	nodeSql = `INSERT INTO public.eth_nodes (genesis_block, network_id, eth_node_id) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
 	txSql   = `INSERT INTO header_sync_transactions (header_id, hash, tx_from, tx_index, tx_to)
 		VALUES ($1, $2, $3, $4, $5)`
@@ -400,7 +400,8 @@ func (state *GeneratorState) insertInitialIlkData(ilkId int64) error {
 func (state *GeneratorState) insertCurrentHeader() error {
 	header := state.currentHeader
 	var id int64
-	err := state.pgTx.QueryRow(headerSql, header.Hash, header.BlockNumber, header.Raw, header.Timestamp, 1, node.ID).Scan(&id)
+	// TODO: derive eth node id from db so this doesn't fail if id 1 does not exist
+	err := state.pgTx.QueryRow(headerSql, header.Hash, header.BlockNumber, header.Raw, header.Timestamp, 1).Scan(&id)
 	state.currentHeader.Id = id
 	return err
 }
