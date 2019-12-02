@@ -22,11 +22,10 @@ var _ = Describe("Pot file dsr converter", func() {
 	BeforeEach(func() {
 		converter = &dsr.Converter{}
 		db = test_config.NewTestDB(test_config.NewTestNode())
-		converter.SetDB(db)
 	})
 
 	It("converts a pot file dsr log to a model", func() {
-		models, err := converter.ToModels(constants.PotABI(), []core.HeaderSyncLog{test_data.PotFileDSRHeaderSyncLog})
+		models, err := converter.ToModels(constants.PotABI(), []core.HeaderSyncLog{test_data.PotFileDSRHeaderSyncLog}, db)
 
 		Expect(err).NotTo(HaveOccurred())
 		expectedModel := test_data.PotFileDSRModel()
@@ -40,7 +39,7 @@ var _ = Describe("Pot file dsr converter", func() {
 			},
 		}
 
-		_, err := converter.ToModels(constants.PotABI(), []core.HeaderSyncLog{badLog})
+		_, err := converter.ToModels(constants.PotABI(), []core.HeaderSyncLog{badLog}, db)
 		Expect(err).To(HaveOccurred())
 	})
 })

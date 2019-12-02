@@ -60,9 +60,8 @@ var _ = Describe("PotFile EventTransformers", func() {
 			topics = []common.Hash{common.HexToHash(potFileDSRConfig.Topic)}
 
 			initializer := event.Transformer{
-				Config:     potFileDSRConfig,
-				Converter:  &dsr.Converter{},
-				Repository: &dsr.Repository{},
+				Config:    potFileDSRConfig,
+				Converter: &dsr.Converter{},
 			}
 
 			logFetcher := fetcher.NewLogFetcher(blockChain)
@@ -115,9 +114,8 @@ var _ = Describe("PotFile EventTransformers", func() {
 			topics = []common.Hash{common.HexToHash(potFileVowConfig.Topic)}
 
 			initializer := event.Transformer{
-				Config:     potFileVowConfig,
-				Converter:  &vow.Converter{},
-				Repository: &vow.Repository{},
+				Config:    potFileVowConfig,
+				Converter: &vow.Converter{},
 			}
 
 			logFetcher := fetcher.NewLogFetcher(blockChain)

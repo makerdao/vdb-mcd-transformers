@@ -60,9 +60,8 @@ var _ = Describe("PotCage EventTransformer", func() {
 			topics = []common.Hash{common.HexToHash(potCageConfig.Topic)}
 
 			initializer := event.Transformer{
-				Config:     potCageConfig,
-				Converter:  &pot_cage.Converter{},
-				Repository: &pot_cage.Repository{},
+				Config:    potCageConfig,
+				Converter: &pot_cage.Converter{},
 			}
 
 			logFetcher := fetcher.NewLogFetcher(blockChain)

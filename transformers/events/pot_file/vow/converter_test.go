@@ -22,11 +22,10 @@ var _ = Describe("Pot file vow converter", func() {
 	BeforeEach(func() {
 		converter = &vow.Converter{}
 		db = test_config.NewTestDB(test_config.NewTestNode())
-		converter.SetDB(db)
 	})
 
 	It("converts a pot file vow log to a model", func() {
-		models, err := converter.ToModels(constants.PotABI(), []core.HeaderSyncLog{test_data.PotFileVowHeaderSyncLog})
+		models, err := converter.ToModels(constants.PotABI(), []core.HeaderSyncLog{test_data.PotFileVowHeaderSyncLog}, db)
 
 		Expect(err).NotTo(HaveOccurred())
 		expectedModel := test_data.PotFileVowModel()
@@ -40,7 +39,7 @@ var _ = Describe("Pot file vow converter", func() {
 			},
 		}
 
-		_, err := converter.ToModels(constants.PotABI(), []core.HeaderSyncLog{badLog})
+		_, err := converter.ToModels(constants.PotABI(), []core.HeaderSyncLog{badLog}, db)
 		Expect(err).To(HaveOccurred())
 	})
 })

@@ -22,11 +22,10 @@ var _ = Describe("Pot cage converter", func() {
 	BeforeEach(func() {
 		converter = pot_cage.Converter{}
 		db = test_config.NewTestDB(test_config.NewTestNode())
-		converter.SetDB(db)
 	})
 
 	It("converts a pot cage log to a model", func() {
-		models, err := converter.ToModels(constants.PotABI(), []core.HeaderSyncLog{test_data.PotCageHeaderSyncLog})
+		models, err := converter.ToModels(constants.PotABI(), []core.HeaderSyncLog{test_data.PotCageHeaderSyncLog}, db)
 
 		Expect(err).NotTo(HaveOccurred())
 		expectedModel := test_data.PotCageModel()
@@ -40,7 +39,7 @@ var _ = Describe("Pot cage converter", func() {
 			},
 		}
 
-		_, err := converter.ToModels(constants.PotABI(), []core.HeaderSyncLog{badLog})
+		_, err := converter.ToModels(constants.PotABI(), []core.HeaderSyncLog{badLog}, db)
 		Expect(err).To(HaveOccurred())
 	})
 })

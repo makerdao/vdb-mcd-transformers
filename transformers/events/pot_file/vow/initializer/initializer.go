@@ -9,7 +9,6 @@ import (
 )
 
 var EventTransformerInitializer transformer.EventTransformerInitializer = event.Transformer{
-	Config:     shared.GetEventTransformerConfig(constants.PotFileVowLabel, constants.PotFileVowSignature()),
-	Converter:  &vow.Converter{},
-	Repository: &vow.Repository{},
+	Config:    shared.GetEventTransformerConfig(constants.PotFileVowLabel, constants.PotFileVowSignature()),
+	Converter: &vow.Converter{},
 }.NewTransformer

@@ -14,11 +14,9 @@ const (
 	Data              event.ColumnName = "data"
 )
 
-type Converter struct {
-	db *postgres.DB
-}
+type Converter struct{}
 
-func (converter Converter) ToModels(contractAbi string, logs []core.HeaderSyncLog) ([]event.InsertionModel, error) {
+func (converter Converter) ToModels(_ string, logs []core.HeaderSyncLog, _ *postgres.DB) ([]event.InsertionModel, error) {
 	var results []event.InsertionModel
 	for _, log := range logs {
 		verifyErr := shared.VerifyLog(log.Log, numTopicsRequired, logDataRequired)
@@ -46,8 +44,4 @@ func (converter Converter) ToModels(contractAbi string, logs []core.HeaderSyncLo
 		results = append(results, result)
 	}
 	return results, nil
-}
-
-func (converter *Converter) SetDB(db *postgres.DB) {
-	converter.db = db
 }
