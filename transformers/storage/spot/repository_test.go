@@ -97,6 +97,7 @@ var _ = Describe("Spot storage repository", func() {
 				Metadata:      utils.GetStorageValueMetadata(spot.IlkPip, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Address),
 				PropertyName:  "Pip",
 				PropertyValue: fakeAddress,
+				TableName:     "maker.spot_ilk_pip",
 			})
 		})
 
@@ -142,6 +143,7 @@ var _ = Describe("Spot storage repository", func() {
 				Metadata:      utils.GetStorageValueMetadata(spot.IlkMat, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Uint256),
 				PropertyName:  "Mat",
 				PropertyValue: strconv.Itoa(rand.Int()),
+				TableName:     "maker.spot_ilk_mat",
 			})
 		})
 	})

@@ -2550,6 +2550,87 @@ $$;
 
 
 --
+-- Name: vat_init; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.vat_init (
+    id integer NOT NULL,
+    header_id integer NOT NULL,
+    log_id bigint NOT NULL,
+    ilk_id integer NOT NULL
+);
+
+
+--
+-- Name: clear_time_created(maker.vat_init); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.clear_time_created(old_event maker.vat_init) RETURNS maker.vat_init
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    UPDATE api.historical_ilk_state
+    SET created = ilk_time_created(old_event.ilk_id)
+    FROM maker.ilks
+    WHERE ilks.identifier = historical_ilk_state.ilk_identifier
+      AND ilks.id = old_event.ilk_id;
+    RETURN NULL;
+END
+$$;
+
+
+--
+-- Name: delete_redundant_ilk_state(integer, integer); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.delete_redundant_ilk_state(ilk_id integer, header_id integer) RETURNS api.historical_ilk_state
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+    associated_ilk TEXT                     := (
+        SELECT identifier
+        FROM maker.ilks
+        WHERE id = delete_redundant_ilk_state.ilk_id);
+    ilk_state_block_number BIGINT                   := (
+        SELECT block_number
+        FROM public.headers
+        WHERE id = header_id);ilk_state      api.historical_ilk_state := (
+        SELECT (ilk_identifier, historical_ilk_state.block_number, rate, art, spot, line, dust, chop, lump, flip, rho,
+                duty, pip, mat, created, updated)
+        FROM api.historical_ilk_state
+        WHERE ilk_identifier = associated_ilk
+          AND historical_ilk_state.block_number = ilk_state_block_number);
+    prev_ilk_state         api.historical_ilk_state := (
+        SELECT (ilk_identifier, historical_ilk_state.block_number, rate, art, spot, line, dust, chop, lump, flip, rho,
+                duty, pip, mat, created, updated)
+        FROM api.historical_ilk_state
+        WHERE ilk_identifier = associated_ilk
+          AND historical_ilk_state.block_number < ilk_state_block_number
+        ORDER BY historical_ilk_state.block_number DESC
+        LIMIT 1);
+BEGIN
+    DELETE
+    FROM api.historical_ilk_state
+    WHERE historical_ilk_state.ilk_identifier = associated_ilk
+      AND historical_ilk_state.block_number = ilk_state_block_number
+      AND (ilk_state.rate IS NULL OR ilk_state.rate = prev_ilk_state.rate)
+      AND (ilk_state.art IS NULL OR ilk_state.art = prev_ilk_state.art)
+      AND (ilk_state.spot IS NULL OR ilk_state.spot = prev_ilk_state.spot)
+      AND (ilk_state.line IS NULL OR ilk_state.line = prev_ilk_state.line)
+      AND (ilk_state.dust IS NULL OR ilk_state.dust = prev_ilk_state.dust)
+      AND (ilk_state.chop IS NULL OR ilk_state.chop = prev_ilk_state.chop)
+      AND (ilk_state.lump IS NULL OR ilk_state.lump = prev_ilk_state.lump)
+      AND (ilk_state.flip IS NULL OR ilk_state.flip = prev_ilk_state.flip)
+      AND (ilk_state.rho IS NULL OR ilk_state.rho = prev_ilk_state.rho)
+      AND (ilk_state.duty IS NULL OR ilk_state.duty = prev_ilk_state.duty)
+      AND (ilk_state.pip IS NULL OR ilk_state.pip = prev_ilk_state.pip)
+      AND (ilk_state.mat IS NULL OR ilk_state.mat = prev_ilk_state.mat);
+    RETURN NULL;
+END
+$$;
+
+
+--
 -- Name: flap_created(); Type: FUNCTION; Schema: maker; Owner: -
 --
 
@@ -2743,186 +2824,6 @@ $$;
 
 
 --
--- Name: insert_ilk_arts(); Type: FUNCTION; Schema: maker; Owner: -
---
-
-CREATE FUNCTION maker.insert_ilk_arts() RETURNS trigger
-    LANGUAGE plpgsql
-    AS $$
-BEGIN
-    PERFORM maker.insert_new_art(NEW);
-    PERFORM maker.update_later_arts(NEW);
-    RETURN NULL;
-END
-$$;
-
-
---
--- Name: insert_ilk_chops(); Type: FUNCTION; Schema: maker; Owner: -
---
-
-CREATE FUNCTION maker.insert_ilk_chops() RETURNS trigger
-    LANGUAGE plpgsql
-    AS $$
-BEGIN
-    PERFORM maker.insert_new_chop(NEW);
-    PERFORM maker.update_later_chops(NEW);
-    RETURN NULL;
-END
-$$;
-
-
---
--- Name: insert_ilk_dusts(); Type: FUNCTION; Schema: maker; Owner: -
---
-
-CREATE FUNCTION maker.insert_ilk_dusts() RETURNS trigger
-    LANGUAGE plpgsql
-    AS $$
-BEGIN
-    PERFORM maker.insert_new_dust(NEW);
-    PERFORM maker.update_later_dusts(NEW);
-    RETURN NULL;
-END
-$$;
-
-
---
--- Name: insert_ilk_duties(); Type: FUNCTION; Schema: maker; Owner: -
---
-
-CREATE FUNCTION maker.insert_ilk_duties() RETURNS trigger
-    LANGUAGE plpgsql
-    AS $$
-BEGIN
-    PERFORM maker.insert_new_duty(NEW);
-    PERFORM maker.update_later_duties(NEW);
-    RETURN NULL;
-END
-$$;
-
-
---
--- Name: insert_ilk_flips(); Type: FUNCTION; Schema: maker; Owner: -
---
-
-CREATE FUNCTION maker.insert_ilk_flips() RETURNS trigger
-    LANGUAGE plpgsql
-    AS $$
-BEGIN
-    PERFORM maker.insert_new_flip(NEW);
-    PERFORM maker.update_later_flips(NEW);
-    RETURN NULL;
-END
-$$;
-
-
---
--- Name: insert_ilk_lines(); Type: FUNCTION; Schema: maker; Owner: -
---
-
-CREATE FUNCTION maker.insert_ilk_lines() RETURNS trigger
-    LANGUAGE plpgsql
-    AS $$
-BEGIN
-    PERFORM maker.insert_new_line(NEW);
-    PERFORM maker.update_later_lines(NEW);
-    RETURN NULL;
-END
-$$;
-
-
---
--- Name: insert_ilk_lumps(); Type: FUNCTION; Schema: maker; Owner: -
---
-
-CREATE FUNCTION maker.insert_ilk_lumps() RETURNS trigger
-    LANGUAGE plpgsql
-    AS $$
-BEGIN
-    PERFORM maker.insert_new_lump(NEW);
-    PERFORM maker.update_later_lumps(NEW);
-    RETURN NULL;
-END
-$$;
-
-
---
--- Name: insert_ilk_mats(); Type: FUNCTION; Schema: maker; Owner: -
---
-
-CREATE FUNCTION maker.insert_ilk_mats() RETURNS trigger
-    LANGUAGE plpgsql
-    AS $$
-BEGIN
-    PERFORM maker.insert_new_mat(NEW);
-    PERFORM maker.update_later_mats(NEW);
-    RETURN NULL;
-END
-$$;
-
-
---
--- Name: insert_ilk_pips(); Type: FUNCTION; Schema: maker; Owner: -
---
-
-CREATE FUNCTION maker.insert_ilk_pips() RETURNS trigger
-    LANGUAGE plpgsql
-    AS $$
-BEGIN
-    PERFORM maker.insert_new_pip(NEW);
-    PERFORM maker.update_later_pips(NEW);
-    RETURN NULL;
-END
-$$;
-
-
---
--- Name: insert_ilk_rates(); Type: FUNCTION; Schema: maker; Owner: -
---
-
-CREATE FUNCTION maker.insert_ilk_rates() RETURNS trigger
-    LANGUAGE plpgsql
-    AS $$
-BEGIN
-    PERFORM maker.insert_new_rate(NEW);
-    PERFORM maker.update_later_rates(NEW);
-    RETURN NULL;
-END
-$$;
-
-
---
--- Name: insert_ilk_rhos(); Type: FUNCTION; Schema: maker; Owner: -
---
-
-CREATE FUNCTION maker.insert_ilk_rhos() RETURNS trigger
-    LANGUAGE plpgsql
-    AS $$
-BEGIN
-    PERFORM maker.insert_new_rho(NEW);
-    PERFORM maker.update_later_rhos(NEW);
-    RETURN NULL;
-END
-$$;
-
-
---
--- Name: insert_ilk_spots(); Type: FUNCTION; Schema: maker; Owner: -
---
-
-CREATE FUNCTION maker.insert_ilk_spots() RETURNS trigger
-    LANGUAGE plpgsql
-    AS $$
-BEGIN
-    PERFORM maker.insert_new_spot(NEW);
-    PERFORM maker.update_later_spots(NEW);
-    RETURN NULL;
-END
-$$;
-
-
---
 -- Name: vat_ilk_art; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -2950,14 +2851,14 @@ DECLARE
         SELECT api.epoch_to_datetime(block_timestamp)
         FROM public.headers
         WHERE id = new_diff.header_id);
-    diff_block_number NUMERIC := (
+    diff_block_number    NUMERIC   := (
         SELECT block_number
         FROM public.headers
         WHERE id = new_diff.header_id);
 BEGIN
     INSERT
-    INTO api.historical_ilk_state (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho, duty,
-                                pip, mat, created, updated)
+    INTO api.historical_ilk_state (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho,
+                                   duty, pip, mat, created, updated)
     VALUES (diff_ilk_identifier,
             diff_block_number,
             ilk_rate_before_block(new_diff.ilk_id, new_diff.header_id),
@@ -3009,14 +2910,14 @@ DECLARE
         SELECT api.epoch_to_datetime(block_timestamp)
         FROM public.headers
         WHERE id = new_diff.header_id);
-    diff_block_number NUMERIC := (
+    diff_block_number    NUMERIC   := (
         SELECT block_number
         FROM public.headers
         WHERE id = new_diff.header_id);
 BEGIN
     INSERT
-    INTO api.historical_ilk_state (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho, duty,
-                                pip, mat, created, updated)
+    INTO api.historical_ilk_state (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho,
+                                   duty, pip, mat, created, updated)
     VALUES (diff_ilk_identifier,
             diff_block_number,
             ilk_rate_before_block(new_diff.ilk_id, new_diff.header_id),
@@ -3068,14 +2969,14 @@ DECLARE
         SELECT api.epoch_to_datetime(block_timestamp)
         FROM public.headers
         WHERE id = new_diff.header_id);
-    diff_block_number NUMERIC := (
+    diff_block_number    NUMERIC   := (
         SELECT block_number
         FROM public.headers
         WHERE id = new_diff.header_id);
 BEGIN
     INSERT
-    INTO api.historical_ilk_state (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho, duty,
-                                pip, mat, created, updated)
+    INTO api.historical_ilk_state (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho,
+                                   duty, pip, mat, created, updated)
     VALUES (diff_ilk_identifier,
             diff_block_number,
             ilk_rate_before_block(new_diff.ilk_id, new_diff.header_id),
@@ -3127,14 +3028,14 @@ DECLARE
         SELECT api.epoch_to_datetime(block_timestamp)
         FROM public.headers
         WHERE id = new_diff.header_id);
-    diff_block_number NUMERIC := (
+    diff_block_number    NUMERIC   := (
         SELECT block_number
         FROM public.headers
         WHERE id = new_diff.header_id);
 BEGIN
     INSERT
-    INTO api.historical_ilk_state (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho, duty,
-                                pip, mat, created, updated)
+    INTO api.historical_ilk_state (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho,
+                                   duty, pip, mat, created, updated)
     VALUES (diff_ilk_identifier,
             diff_block_number,
             ilk_rate_before_block(new_diff.ilk_id, new_diff.header_id),
@@ -3186,14 +3087,14 @@ DECLARE
         SELECT api.epoch_to_datetime(block_timestamp)
         FROM public.headers
         WHERE id = new_diff.header_id);
-    diff_block_number NUMERIC := (
+    diff_block_number    NUMERIC   := (
         SELECT block_number
         FROM public.headers
         WHERE id = new_diff.header_id);
 BEGIN
     INSERT
-    INTO api.historical_ilk_state (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho, duty,
-                                pip, mat, created, updated)
+    INTO api.historical_ilk_state (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho,
+                                   duty, pip, mat, created, updated)
     VALUES (diff_ilk_identifier,
             diff_block_number,
             ilk_rate_before_block(new_diff.ilk_id, new_diff.header_id),
@@ -3245,14 +3146,14 @@ DECLARE
         SELECT api.epoch_to_datetime(block_timestamp)
         FROM public.headers
         WHERE id = new_diff.header_id);
-    diff_block_number NUMERIC := (
+    diff_block_number    NUMERIC   := (
         SELECT block_number
         FROM public.headers
         WHERE id = new_diff.header_id);
 BEGIN
     INSERT
-    INTO api.historical_ilk_state (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho, duty,
-                                pip, mat, created, updated)
+    INTO api.historical_ilk_state (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho,
+                                   duty, pip, mat, created, updated)
     VALUES (diff_ilk_identifier,
             diff_block_number,
             ilk_rate_before_block(new_diff.ilk_id, new_diff.header_id),
@@ -3304,14 +3205,14 @@ DECLARE
         SELECT api.epoch_to_datetime(block_timestamp)
         FROM public.headers
         WHERE id = new_diff.header_id);
-    diff_block_number NUMERIC := (
+    diff_block_number    NUMERIC   := (
         SELECT block_number
         FROM public.headers
         WHERE id = new_diff.header_id);
 BEGIN
     INSERT
-    INTO api.historical_ilk_state (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho, duty,
-                                pip, mat, created, updated)
+    INTO api.historical_ilk_state (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho,
+                                   duty, pip, mat, created, updated)
     VALUES (diff_ilk_identifier,
             diff_block_number,
             ilk_rate_before_block(new_diff.ilk_id, new_diff.header_id),
@@ -3363,14 +3264,14 @@ DECLARE
         SELECT api.epoch_to_datetime(block_timestamp)
         FROM public.headers
         WHERE id = new_diff.header_id);
-    diff_block_number NUMERIC := (
+    diff_block_number    NUMERIC   := (
         SELECT block_number
         FROM public.headers
         WHERE id = new_diff.header_id);
 BEGIN
     INSERT
-    INTO api.historical_ilk_state (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho, duty,
-                                pip, mat, created, updated)
+    INTO api.historical_ilk_state (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho,
+                                   duty, pip, mat, created, updated)
     VALUES (diff_ilk_identifier,
             diff_block_number,
             ilk_rate_before_block(new_diff.ilk_id, new_diff.header_id),
@@ -3422,14 +3323,14 @@ DECLARE
         SELECT api.epoch_to_datetime(block_timestamp)
         FROM public.headers
         WHERE id = new_diff.header_id);
-    diff_block_number NUMERIC := (
+    diff_block_number    NUMERIC   := (
         SELECT block_number
         FROM public.headers
         WHERE id = new_diff.header_id);
 BEGIN
     INSERT
-    INTO api.historical_ilk_state (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho, duty,
-                                pip, mat, created, updated)
+    INTO api.historical_ilk_state (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho,
+                                   duty, pip, mat, created, updated)
     VALUES (diff_ilk_identifier,
             diff_block_number,
             ilk_rate_before_block(new_diff.ilk_id, new_diff.header_id),
@@ -3481,14 +3382,14 @@ DECLARE
         SELECT api.epoch_to_datetime(block_timestamp)
         FROM public.headers
         WHERE id = new_diff.header_id);
-    diff_block_number NUMERIC := (
+    diff_block_number    NUMERIC   := (
         SELECT block_number
         FROM public.headers
         WHERE id = new_diff.header_id);
 BEGIN
     INSERT
-    INTO api.historical_ilk_state (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho, duty,
-                                pip, mat, created, updated)
+    INTO api.historical_ilk_state (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho,
+                                   duty, pip, mat, created, updated)
     VALUES (diff_ilk_identifier,
             diff_block_number,
             new_diff.rate,
@@ -3540,14 +3441,14 @@ DECLARE
         SELECT api.epoch_to_datetime(block_timestamp)
         FROM public.headers
         WHERE id = new_diff.header_id);
-    diff_block_number NUMERIC := (
+    diff_block_number    NUMERIC   := (
         SELECT block_number
         FROM public.headers
         WHERE id = new_diff.header_id);
 BEGIN
     INSERT
-    INTO api.historical_ilk_state (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho, duty,
-                                pip, mat, created, updated)
+    INTO api.historical_ilk_state (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho,
+                                   duty, pip, mat, created, updated)
     VALUES (diff_ilk_identifier,
             diff_block_number,
             ilk_rate_before_block(new_diff.ilk_id, new_diff.header_id),
@@ -3599,14 +3500,14 @@ DECLARE
         SELECT api.epoch_to_datetime(block_timestamp)
         FROM public.headers
         WHERE headers.id = new_diff.header_id);
-    diff_block_number NUMERIC := (
+    diff_block_number    NUMERIC   := (
         SELECT block_number
         FROM public.headers
         WHERE headers.id = new_diff.header_id);
 BEGIN
     INSERT
-    INTO api.historical_ilk_state (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho, duty,
-                                pip, mat, created, updated)
+    INTO api.historical_ilk_state (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho,
+                                   duty, pip, mat, created, updated)
     VALUES (diff_ilk_identifier,
             diff_block_number,
             ilk_rate_before_block(new_diff.ilk_id, new_diff.header_id),
@@ -3626,6 +3527,34 @@ BEGIN
     ON CONFLICT (ilk_identifier, block_number)
         DO UPDATE SET spot = new_diff.spot;
     RETURN new_diff;
+END
+$$;
+
+
+--
+-- Name: insert_new_time_created(maker.vat_init); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.insert_new_time_created(new_event maker.vat_init) RETURNS maker.vat_init
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+    diff_ilk_identifier TEXT      := (
+        SELECT identifier
+        FROM maker.ilks
+        WHERE ilks.id = new_event.ilk_id);
+    diff_timestamp      TIMESTAMP := (
+        SELECT api.epoch_to_datetime(block_timestamp)
+        FROM public.headers
+        WHERE headers.id = new_event.header_id);
+BEGIN
+    UPDATE api.historical_ilk_state
+    SET created = diff_timestamp
+    FROM public.headers
+    WHERE headers.block_number = historical_ilk_state.block_number
+      AND historical_ilk_state.ilk_identifier = diff_ilk_identifier
+      AND historical_ilk_state.created IS NULL;
+    RETURN NULL;
 END
 $$;
 
@@ -4257,32 +4186,32 @@ $$;
 
 
 --
--- Name: update_later_arts(maker.vat_ilk_art); Type: FUNCTION; Schema: maker; Owner: -
+-- Name: update_arts_until_next_diff(maker.vat_ilk_art, numeric); Type: FUNCTION; Schema: maker; Owner: -
 --
 
-CREATE FUNCTION maker.update_later_arts(new_diff maker.vat_ilk_art) RETURNS maker.vat_ilk_art
+CREATE FUNCTION maker.update_arts_until_next_diff(start_at_diff maker.vat_ilk_art, new_art numeric) RETURNS maker.vat_ilk_art
     LANGUAGE plpgsql
     AS $$
 DECLARE
     diff_ilk_identifier TEXT   := (
         SELECT identifier
         FROM maker.ilks
-        WHERE ilks.id = new_diff.ilk_id);
-    diff_block_number BIGINT := (
+        WHERE ilks.id = start_at_diff.ilk_id);
+    diff_block_number   BIGINT := (
         SELECT block_number
         FROM public.headers
-        WHERE id = new_diff.header_id);
+        WHERE id = start_at_diff.header_id);
     next_art_diff_block BIGINT := (
         SELECT MIN(block_number)
         FROM maker.vat_ilk_art
-            LEFT JOIN public.headers ON vat_ilk_art.header_id = headers.id
-        WHERE vat_ilk_art.ilk_id = new_diff.ilk_id
+                 LEFT JOIN public.headers ON vat_ilk_art.header_id = headers.id
+        WHERE vat_ilk_art.ilk_id = start_at_diff.ilk_id
           AND block_number > diff_block_number);
 BEGIN
     UPDATE api.historical_ilk_state
-    SET art = new_diff.art
+    SET art = new_art
     WHERE historical_ilk_state.ilk_identifier = diff_ilk_identifier
-      AND historical_ilk_state.block_number > diff_block_number
+      AND historical_ilk_state.block_number >= diff_block_number
       AND (next_art_diff_block IS NULL
         OR historical_ilk_state.block_number < next_art_diff_block);
     RETURN NULL;
@@ -4291,32 +4220,32 @@ $$;
 
 
 --
--- Name: update_later_chops(maker.cat_ilk_chop); Type: FUNCTION; Schema: maker; Owner: -
+-- Name: update_chops_until_next_diff(maker.cat_ilk_chop, numeric); Type: FUNCTION; Schema: maker; Owner: -
 --
 
-CREATE FUNCTION maker.update_later_chops(new_diff maker.cat_ilk_chop) RETURNS maker.cat_ilk_chop
+CREATE FUNCTION maker.update_chops_until_next_diff(start_at_diff maker.cat_ilk_chop, new_chop numeric) RETURNS maker.cat_ilk_chop
     LANGUAGE plpgsql
     AS $$
 DECLARE
     diff_ilk_identifier  TEXT   := (
         SELECT identifier
         FROM maker.ilks
-        WHERE ilks.id = new_diff.ilk_id);
-    diff_block_number BIGINT := (
+        WHERE ilks.id = start_at_diff.ilk_id);
+    diff_block_number    BIGINT := (
         SELECT block_number
         FROM public.headers
-        WHERE id = new_diff.header_id);
+        WHERE id = start_at_diff.header_id);
     next_chop_diff_block BIGINT := (
         SELECT MIN(block_number)
         FROM maker.cat_ilk_chop
-            LEFT JOIN public.headers ON cat_ilk_chop.header_id = headers.id
-        WHERE cat_ilk_chop.ilk_id = new_diff.ilk_id
+                 LEFT JOIN public.headers ON cat_ilk_chop.header_id = headers.id
+        WHERE cat_ilk_chop.ilk_id = start_at_diff.ilk_id
           AND block_number > diff_block_number);
 BEGIN
     UPDATE api.historical_ilk_state
-    SET chop = new_diff.chop
+    SET chop = new_chop
     WHERE historical_ilk_state.ilk_identifier = diff_ilk_identifier
-      AND historical_ilk_state.block_number > diff_block_number
+      AND historical_ilk_state.block_number >= diff_block_number
       AND (next_chop_diff_block IS NULL
         OR historical_ilk_state.block_number < next_chop_diff_block);
     RETURN NULL;
@@ -4325,32 +4254,32 @@ $$;
 
 
 --
--- Name: update_later_dusts(maker.vat_ilk_dust); Type: FUNCTION; Schema: maker; Owner: -
+-- Name: update_dusts_until_next_diff(maker.vat_ilk_dust, numeric); Type: FUNCTION; Schema: maker; Owner: -
 --
 
-CREATE FUNCTION maker.update_later_dusts(new_diff maker.vat_ilk_dust) RETURNS maker.vat_ilk_dust
+CREATE FUNCTION maker.update_dusts_until_next_diff(start_at_diff maker.vat_ilk_dust, new_dust numeric) RETURNS maker.vat_ilk_dust
     LANGUAGE plpgsql
     AS $$
 DECLARE
     diff_ilk_identifier  TEXT   := (
         SELECT identifier
         FROM maker.ilks
-        WHERE ilks.id = new_diff.ilk_id);
-    diff_block_number BIGINT := (
+        WHERE ilks.id = start_at_diff.ilk_id);
+    diff_block_number    BIGINT := (
         SELECT block_number
         FROM public.headers
-        WHERE id = new_diff.header_id);
+        WHERE id = start_at_diff.header_id);
     next_dust_diff_block BIGINT := (
         SELECT MIN(block_number)
         FROM maker.vat_ilk_dust
-            LEFT JOIN public.headers ON vat_ilk_dust.header_id = headers.id
-        WHERE vat_ilk_dust.ilk_id = new_diff.ilk_id
+                 LEFT JOIN public.headers ON vat_ilk_dust.header_id = headers.id
+        WHERE vat_ilk_dust.ilk_id = start_at_diff.ilk_id
           AND block_number > diff_block_number);
 BEGIN
     UPDATE api.historical_ilk_state
-    SET dust = new_diff.dust
+    SET dust = new_dust
     WHERE historical_ilk_state.ilk_identifier = diff_ilk_identifier
-      AND historical_ilk_state.block_number > diff_block_number
+      AND historical_ilk_state.block_number >= diff_block_number
       AND (next_dust_diff_block IS NULL
         OR historical_ilk_state.block_number < next_dust_diff_block);
     RETURN NULL;
@@ -4359,32 +4288,32 @@ $$;
 
 
 --
--- Name: update_later_duties(maker.jug_ilk_duty); Type: FUNCTION; Schema: maker; Owner: -
+-- Name: update_duties_until_next_diff(maker.jug_ilk_duty, numeric); Type: FUNCTION; Schema: maker; Owner: -
 --
 
-CREATE FUNCTION maker.update_later_duties(new_diff maker.jug_ilk_duty) RETURNS maker.jug_ilk_duty
+CREATE FUNCTION maker.update_duties_until_next_diff(start_at_diff maker.jug_ilk_duty, new_duty numeric) RETURNS maker.jug_ilk_duty
     LANGUAGE plpgsql
     AS $$
 DECLARE
     diff_ilk_identifier  TEXT   := (
         SELECT identifier
         FROM maker.ilks
-        WHERE ilks.id = new_diff.ilk_id);
-    diff_block_number BIGINT := (
+        WHERE ilks.id = start_at_diff.ilk_id);
+    diff_block_number    BIGINT := (
         SELECT block_number
         FROM public.headers
-        WHERE id = new_diff.header_id);
+        WHERE id = start_at_diff.header_id);
     next_duty_diff_block BIGINT := (
         SELECT MIN(block_number)
         FROM maker.jug_ilk_duty
-            LEFT JOIN public.headers ON jug_ilk_duty.header_id = headers.id
-        WHERE jug_ilk_duty.ilk_id = new_diff.ilk_id
+                 LEFT JOIN public.headers ON jug_ilk_duty.header_id = headers.id
+        WHERE jug_ilk_duty.ilk_id = start_at_diff.ilk_id
           AND block_number > diff_block_number);
 BEGIN
     UPDATE api.historical_ilk_state
-    SET duty = new_diff.duty
+    SET duty = new_duty
     WHERE historical_ilk_state.ilk_identifier = diff_ilk_identifier
-      AND historical_ilk_state.block_number > diff_block_number
+      AND historical_ilk_state.block_number >= diff_block_number
       AND (next_duty_diff_block IS NULL
         OR historical_ilk_state.block_number < next_duty_diff_block);
     RETURN NULL;
@@ -4393,32 +4322,32 @@ $$;
 
 
 --
--- Name: update_later_flips(maker.cat_ilk_flip); Type: FUNCTION; Schema: maker; Owner: -
+-- Name: update_flips_until_next_diff(maker.cat_ilk_flip, text); Type: FUNCTION; Schema: maker; Owner: -
 --
 
-CREATE FUNCTION maker.update_later_flips(new_diff maker.cat_ilk_flip) RETURNS maker.cat_ilk_flip
+CREATE FUNCTION maker.update_flips_until_next_diff(start_at_diff maker.cat_ilk_flip, new_flip text) RETURNS maker.cat_ilk_flip
     LANGUAGE plpgsql
     AS $$
 DECLARE
     diff_ilk_identifier  TEXT   := (
         SELECT identifier
         FROM maker.ilks
-        WHERE ilks.id = new_diff.ilk_id);
-    diff_block_number BIGINT := (
+        WHERE ilks.id = start_at_diff.ilk_id);
+    diff_block_number    BIGINT := (
         SELECT block_number
         FROM public.headers
-        WHERE id = new_diff.header_id);
+        WHERE id = start_at_diff.header_id);
     next_flip_diff_block BIGINT := (
         SELECT MIN(block_number)
         FROM maker.cat_ilk_flip
-            LEFT JOIN public.headers ON cat_ilk_flip.header_id = headers.id
-        WHERE cat_ilk_flip.ilk_id = new_diff.ilk_id
+                 LEFT JOIN public.headers ON cat_ilk_flip.header_id = headers.id
+        WHERE cat_ilk_flip.ilk_id = start_at_diff.ilk_id
           AND block_number > diff_block_number);
 BEGIN
     UPDATE api.historical_ilk_state
-    SET flip = new_diff.flip
+    SET flip = new_flip
     WHERE historical_ilk_state.ilk_identifier = diff_ilk_identifier
-      AND historical_ilk_state.block_number > diff_block_number
+      AND historical_ilk_state.block_number >= diff_block_number
       AND (next_flip_diff_block IS NULL
         OR historical_ilk_state.block_number < next_flip_diff_block);
     RETURN NULL;
@@ -4427,32 +4356,272 @@ $$;
 
 
 --
--- Name: update_later_lines(maker.vat_ilk_line); Type: FUNCTION; Schema: maker; Owner: -
+-- Name: update_ilk_arts(); Type: FUNCTION; Schema: maker; Owner: -
 --
 
-CREATE FUNCTION maker.update_later_lines(new_diff maker.vat_ilk_line) RETURNS maker.vat_ilk_line
+CREATE FUNCTION maker.update_ilk_arts() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    IF (TG_OP IN ('INSERT', 'UPDATE')) THEN
+        PERFORM maker.insert_new_art(NEW);
+        PERFORM maker.update_arts_until_next_diff(NEW, NEW.art);
+    ELSIF (TG_OP = 'DELETE') THEN
+        PERFORM maker.update_arts_until_next_diff(OLD, ilk_art_before_block(OLD.ilk_id, OLD.header_id));
+        PERFORM maker.delete_redundant_ilk_state(OLD.ilk_id, OLD.header_id);
+    END IF;
+    RETURN NULL;
+END
+$$;
+
+
+--
+-- Name: update_ilk_chops(); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.update_ilk_chops() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    IF (TG_OP IN ('INSERT', 'UPDATE')) THEN
+        PERFORM maker.insert_new_chop(NEW);
+        PERFORM maker.update_chops_until_next_diff(NEW, NEW.chop);
+    ELSIF (TG_OP = 'DELETE') THEN
+        PERFORM maker.update_chops_until_next_diff(OLD, ilk_chop_before_block(OLD.ilk_id, OLD.header_id));
+        PERFORM maker.delete_redundant_ilk_state(OLD.ilk_id, OLD.header_id);
+    END IF;
+    RETURN NULL;
+END
+$$;
+
+
+--
+-- Name: update_ilk_dusts(); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.update_ilk_dusts() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    IF (TG_OP IN ('INSERT', 'UPDATE')) THEN
+        PERFORM maker.insert_new_dust(NEW);
+        PERFORM maker.update_dusts_until_next_diff(NEW, NEW.dust);
+    ELSIF (TG_OP = 'DELETE') THEN
+        PERFORM maker.update_dusts_until_next_diff(OLD, ilk_dust_before_block(OLD.ilk_id, OLD.header_id));
+        PERFORM maker.delete_redundant_ilk_state(OLD.ilk_id, OLD.header_id);
+    END IF;
+    RETURN NULL;
+END
+$$;
+
+
+--
+-- Name: update_ilk_duties(); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.update_ilk_duties() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    IF (TG_OP IN ('INSERT', 'UPDATE')) THEN
+        PERFORM maker.insert_new_duty(NEW);
+        PERFORM maker.update_duties_until_next_diff(NEW, NEW.duty);
+    ELSIF (TG_OP = 'DELETE') THEN
+        PERFORM maker.update_duties_until_next_diff(OLD, ilk_duty_before_block(OLD.ilk_id, OLD.header_id));
+        PERFORM maker.delete_redundant_ilk_state(OLD.ilk_id, OLD.header_id);
+    END IF;
+    RETURN NULL;
+END
+$$;
+
+
+--
+-- Name: update_ilk_flips(); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.update_ilk_flips() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    IF (TG_OP IN ('INSERT', 'UPDATE')) THEN
+        PERFORM maker.insert_new_flip(NEW);
+        PERFORM maker.update_flips_until_next_diff(NEW, NEW.flip);
+    ELSIF (TG_OP = 'DELETE') THEN
+        PERFORM maker.update_flips_until_next_diff(OLD, ilk_flip_before_block(OLD.ilk_id, OLD.header_id));
+        PERFORM maker.delete_redundant_ilk_state(OLD.ilk_id, OLD.header_id);
+    END IF;
+    RETURN NULL;
+END
+$$;
+
+
+--
+-- Name: update_ilk_lines(); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.update_ilk_lines() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    IF (TG_OP IN ('INSERT', 'UPDATE')) THEN
+        PERFORM maker.insert_new_line(NEW);
+        PERFORM maker.update_lines_until_next_diff(NEW, NEW.line);
+    ELSIF (TG_OP = 'DELETE') THEN
+        PERFORM maker.update_lines_until_next_diff(OLD, ilk_line_before_block(OLD.ilk_id, OLD.header_id));
+        PERFORM maker.delete_redundant_ilk_state(OLD.ilk_id, OLD.header_id);
+    END IF;
+    RETURN NULL;
+END
+$$;
+
+
+--
+-- Name: update_ilk_lumps(); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.update_ilk_lumps() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    IF (TG_OP IN ('INSERT', 'UPDATE')) THEN
+        PERFORM maker.insert_new_lump(NEW);
+        PERFORM maker.update_lumps_until_next_diff(NEW, NEW.lump);
+    ELSIF (TG_OP = 'DELETE') THEN
+        PERFORM maker.update_lumps_until_next_diff(OLD, ilk_lump_before_block(OLD.ilk_id, OLD.header_id));
+        PERFORM maker.delete_redundant_ilk_state(OLD.ilk_id, OLD.header_id);
+    END IF;
+    RETURN NULL;
+END
+$$;
+
+
+--
+-- Name: update_ilk_mats(); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.update_ilk_mats() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    IF (TG_OP IN ('INSERT', 'UPDATE')) THEN
+        PERFORM maker.insert_new_mat(NEW);
+        PERFORM maker.update_mats_until_next_diff(NEW, NEW.mat);
+    ELSIF (TG_OP = 'DELETE') THEN
+        PERFORM maker.update_mats_until_next_diff(OLD, ilk_mat_before_block(OLD.ilk_id, OLD.header_id));
+        PERFORM maker.delete_redundant_ilk_state(OLD.ilk_id, OLD.header_id);
+    END IF;
+    RETURN NULL;
+END
+$$;
+
+
+--
+-- Name: update_ilk_pips(); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.update_ilk_pips() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    IF (TG_OP IN ('INSERT', 'UPDATE')) THEN
+        PERFORM maker.insert_new_pip(NEW);
+        PERFORM maker.update_pips_until_next_diff(NEW, NEW.pip);
+    ELSIF (TG_OP = 'DELETE') THEN
+        PERFORM maker.update_pips_until_next_diff(OLD, ilk_pip_before_block(OLD.ilk_id, OLD.header_id));
+        PERFORM maker.delete_redundant_ilk_state(OLD.ilk_id, OLD.header_id);
+    END IF;
+    RETURN NULL;
+END
+$$;
+
+
+--
+-- Name: update_ilk_rates(); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.update_ilk_rates() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    IF (TG_OP IN ('INSERT', 'UPDATE')) THEN
+        PERFORM maker.insert_new_rate(NEW);
+        PERFORM maker.update_rates_until_next_diff(NEW, NEW.rate);
+    ELSIF (TG_OP = 'DELETE') THEN
+        PERFORM maker.update_rates_until_next_diff(OLD, ilk_rate_before_block(OLD.ilk_id, OLD.header_id));
+        PERFORM maker.delete_redundant_ilk_state(OLD.ilk_id, OLD.header_id);
+    END IF;
+    RETURN NULL;
+END
+$$;
+
+
+--
+-- Name: update_ilk_rhos(); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.update_ilk_rhos() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    IF (TG_OP IN ('INSERT', 'UPDATE')) THEN
+        PERFORM maker.insert_new_rho(NEW);
+        PERFORM maker.update_rhos_until_next_diff(NEW, NEW.rho);
+    ELSIF (TG_OP = 'DELETE') THEN
+        PERFORM maker.update_rhos_until_next_diff(OLD, ilk_rho_before_block(OLD.ilk_id, OLD.header_id));
+        PERFORM maker.delete_redundant_ilk_state(OLD.ilk_id, OLD.header_id);
+    END IF;
+    RETURN NULL;
+END
+$$;
+
+
+--
+-- Name: update_ilk_spots(); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.update_ilk_spots() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    IF (TG_OP IN ('INSERT', 'UPDATE')) THEN
+        PERFORM maker.insert_new_spot(NEW);
+        PERFORM maker.update_spots_until_next_diff(NEW, NEW.spot);
+    ELSIF (TG_OP = 'DELETE') THEN
+        PERFORM maker.update_spots_until_next_diff(OLD, ilk_spot_before_block(OLD.ilk_id, OLD.header_id));
+        PERFORM maker.delete_redundant_ilk_state(OLD.ilk_id, OLD.header_id);
+    END IF;
+    RETURN NULL;
+END
+$$;
+
+
+--
+-- Name: update_lines_until_next_diff(maker.vat_ilk_line, numeric); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.update_lines_until_next_diff(start_at_diff maker.vat_ilk_line, new_line numeric) RETURNS maker.vat_ilk_line
     LANGUAGE plpgsql
     AS $$
 DECLARE
     diff_ilk_identifier  TEXT   := (
         SELECT identifier
         FROM maker.ilks
-        WHERE ilks.id = new_diff.ilk_id);
-    diff_block_number BIGINT := (
+        WHERE ilks.id = start_at_diff.ilk_id);
+    diff_block_number    BIGINT := (
         SELECT block_number
         FROM public.headers
-        WHERE id = new_diff.header_id);
+        WHERE id = start_at_diff.header_id);
     next_line_diff_block BIGINT := (
         SELECT MIN(block_number)
         FROM maker.vat_ilk_line
-            LEFT JOIN public.headers ON vat_ilk_line.header_id = headers.id
-        WHERE vat_ilk_line.ilk_id = new_diff.ilk_id
+                 LEFT JOIN public.headers ON vat_ilk_line.header_id = headers.id
+        WHERE vat_ilk_line.ilk_id = start_at_diff.ilk_id
           AND block_number > diff_block_number);
 BEGIN
     UPDATE api.historical_ilk_state
-    SET line = new_diff.line
+    SET line = new_line
     WHERE historical_ilk_state.ilk_identifier = diff_ilk_identifier
-      AND historical_ilk_state.block_number > diff_block_number
+      AND historical_ilk_state.block_number >= diff_block_number
       AND (next_line_diff_block IS NULL
         OR historical_ilk_state.block_number < next_line_diff_block);
     RETURN NULL;
@@ -4461,32 +4630,32 @@ $$;
 
 
 --
--- Name: update_later_lumps(maker.cat_ilk_lump); Type: FUNCTION; Schema: maker; Owner: -
+-- Name: update_lumps_until_next_diff(maker.cat_ilk_lump, numeric); Type: FUNCTION; Schema: maker; Owner: -
 --
 
-CREATE FUNCTION maker.update_later_lumps(new_diff maker.cat_ilk_lump) RETURNS maker.cat_ilk_lump
+CREATE FUNCTION maker.update_lumps_until_next_diff(start_at_diff maker.cat_ilk_lump, new_lump numeric) RETURNS maker.cat_ilk_lump
     LANGUAGE plpgsql
     AS $$
 DECLARE
     diff_ilk_identifier  TEXT   := (
         SELECT identifier
         FROM maker.ilks
-        WHERE ilks.id = new_diff.ilk_id);
-    diff_block_number BIGINT := (
+        WHERE ilks.id = start_at_diff.ilk_id);
+    diff_block_number    BIGINT := (
         SELECT block_number
         FROM public.headers
-        WHERE id = new_diff.header_id);
+        WHERE id = start_at_diff.header_id);
     next_lump_diff_block BIGINT := (
         SELECT MIN(block_number)
         FROM maker.cat_ilk_lump
-            LEFT JOIN public.headers ON cat_ilk_lump.header_id = headers.id
-        WHERE cat_ilk_lump.ilk_id = new_diff.ilk_id
+                 LEFT JOIN public.headers ON cat_ilk_lump.header_id = headers.id
+        WHERE cat_ilk_lump.ilk_id = start_at_diff.ilk_id
           AND block_number > diff_block_number);
 BEGIN
     UPDATE api.historical_ilk_state
-    SET lump = new_diff.lump
+    SET lump = new_lump
     WHERE historical_ilk_state.ilk_identifier = diff_ilk_identifier
-      AND historical_ilk_state.block_number > diff_block_number
+      AND historical_ilk_state.block_number >= diff_block_number
       AND (next_lump_diff_block IS NULL
         OR historical_ilk_state.block_number < next_lump_diff_block);
     RETURN NULL;
@@ -4495,32 +4664,32 @@ $$;
 
 
 --
--- Name: update_later_mats(maker.spot_ilk_mat); Type: FUNCTION; Schema: maker; Owner: -
+-- Name: update_mats_until_next_diff(maker.spot_ilk_mat, numeric); Type: FUNCTION; Schema: maker; Owner: -
 --
 
-CREATE FUNCTION maker.update_later_mats(new_diff maker.spot_ilk_mat) RETURNS maker.spot_ilk_mat
+CREATE FUNCTION maker.update_mats_until_next_diff(start_at_diff maker.spot_ilk_mat, new_mat numeric) RETURNS maker.spot_ilk_mat
     LANGUAGE plpgsql
     AS $$
 DECLARE
     diff_ilk_identifier TEXT   := (
         SELECT identifier
         FROM maker.ilks
-        WHERE ilks.id = new_diff.ilk_id);
-    diff_block_number BIGINT := (
+        WHERE ilks.id = start_at_diff.ilk_id);
+    diff_block_number   BIGINT := (
         SELECT block_number
         FROM public.headers
-        WHERE id = new_diff.header_id);
+        WHERE id = start_at_diff.header_id);
     next_mat_diff_block BIGINT := (
         SELECT MIN(block_number)
         FROM maker.spot_ilk_mat
-            LEFT JOIN public.headers ON spot_ilk_mat.header_id = headers.id
-        WHERE spot_ilk_mat.ilk_id = new_diff.ilk_id
+                 LEFT JOIN public.headers ON spot_ilk_mat.header_id = headers.id
+        WHERE spot_ilk_mat.ilk_id = start_at_diff.ilk_id
           AND block_number > diff_block_number);
 BEGIN
     UPDATE api.historical_ilk_state
-    SET mat = new_diff.mat
+    SET mat = new_mat
     WHERE historical_ilk_state.ilk_identifier = diff_ilk_identifier
-      AND historical_ilk_state.block_number > diff_block_number
+      AND historical_ilk_state.block_number >= diff_block_number
       AND (next_mat_diff_block IS NULL
         OR historical_ilk_state.block_number < next_mat_diff_block);
     RETURN NULL;
@@ -4529,32 +4698,32 @@ $$;
 
 
 --
--- Name: update_later_pips(maker.spot_ilk_pip); Type: FUNCTION; Schema: maker; Owner: -
+-- Name: update_pips_until_next_diff(maker.spot_ilk_pip, text); Type: FUNCTION; Schema: maker; Owner: -
 --
 
-CREATE FUNCTION maker.update_later_pips(new_diff maker.spot_ilk_pip) RETURNS maker.spot_ilk_pip
+CREATE FUNCTION maker.update_pips_until_next_diff(start_at_diff maker.spot_ilk_pip, new_pip text) RETURNS maker.spot_ilk_pip
     LANGUAGE plpgsql
     AS $$
 DECLARE
     diff_ilk_identifier TEXT   := (
         SELECT identifier
         FROM maker.ilks
-        WHERE ilks.id = new_diff.ilk_id);
-    diff_block_number BIGINT := (
+        WHERE ilks.id = start_at_diff.ilk_id);
+    diff_block_number   BIGINT := (
         SELECT block_number
         FROM public.headers
-        WHERE id = new_diff.header_id);
+        WHERE id = start_at_diff.header_id);
     next_pip_diff_block BIGINT := (
         SELECT MIN(block_number)
         FROM maker.spot_ilk_pip
-            LEFT JOIN public.headers ON spot_ilk_pip.header_id = headers.id
-        WHERE spot_ilk_pip.ilk_id = new_diff.ilk_id
+                 LEFT JOIN public.headers ON spot_ilk_pip.header_id = headers.id
+        WHERE spot_ilk_pip.ilk_id = start_at_diff.ilk_id
           AND block_number > diff_block_number);
 BEGIN
     UPDATE api.historical_ilk_state
-    SET pip = new_diff.pip
+    SET pip = new_pip
     WHERE historical_ilk_state.ilk_identifier = diff_ilk_identifier
-      AND historical_ilk_state.block_number > diff_block_number
+      AND historical_ilk_state.block_number >= diff_block_number
       AND (next_pip_diff_block IS NULL
         OR historical_ilk_state.block_number < next_pip_diff_block);
     RETURN NULL;
@@ -4563,32 +4732,32 @@ $$;
 
 
 --
--- Name: update_later_rates(maker.vat_ilk_rate); Type: FUNCTION; Schema: maker; Owner: -
+-- Name: update_rates_until_next_diff(maker.vat_ilk_rate, numeric); Type: FUNCTION; Schema: maker; Owner: -
 --
 
-CREATE FUNCTION maker.update_later_rates(new_diff maker.vat_ilk_rate) RETURNS maker.vat_ilk_rate
+CREATE FUNCTION maker.update_rates_until_next_diff(start_at_diff maker.vat_ilk_rate, new_rate numeric) RETURNS maker.vat_ilk_rate
     LANGUAGE plpgsql
     AS $$
 DECLARE
     diff_ilk_identifier  TEXT   := (
         SELECT identifier
         FROM maker.ilks
-        WHERE ilks.id = new_diff.ilk_id);
-    diff_block_number BIGINT := (
+        WHERE ilks.id = start_at_diff.ilk_id);
+    diff_block_number    BIGINT := (
         SELECT block_number
         FROM public.headers
-        WHERE id = new_diff.header_id);
+        WHERE id = start_at_diff.header_id);
     next_rate_diff_block BIGINT := (
         SELECT MIN(block_number)
         FROM maker.vat_ilk_rate
-            LEFT JOIN public.headers ON vat_ilk_rate.header_id = headers.id
-        WHERE vat_ilk_rate.ilk_id = new_diff.ilk_id
-          AND headers.block_number > diff_block_number);
+                 LEFT JOIN public.headers ON vat_ilk_rate.header_id = headers.id
+        WHERE vat_ilk_rate.ilk_id = start_at_diff.ilk_id
+          AND block_number > diff_block_number);
 BEGIN
     UPDATE api.historical_ilk_state
-    SET rate = new_diff.rate
+    SET rate = new_rate
     WHERE historical_ilk_state.ilk_identifier = diff_ilk_identifier
-      AND historical_ilk_state.block_number > diff_block_number
+      AND historical_ilk_state.block_number >= diff_block_number
       AND (next_rate_diff_block IS NULL
         OR historical_ilk_state.block_number < next_rate_diff_block);
     RETURN NULL;
@@ -4597,32 +4766,32 @@ $$;
 
 
 --
--- Name: update_later_rhos(maker.jug_ilk_rho); Type: FUNCTION; Schema: maker; Owner: -
+-- Name: update_rhos_until_next_diff(maker.jug_ilk_rho, numeric); Type: FUNCTION; Schema: maker; Owner: -
 --
 
-CREATE FUNCTION maker.update_later_rhos(new_diff maker.jug_ilk_rho) RETURNS maker.jug_ilk_rho
+CREATE FUNCTION maker.update_rhos_until_next_diff(start_at_diff maker.jug_ilk_rho, new_rho numeric) RETURNS maker.jug_ilk_rho
     LANGUAGE plpgsql
     AS $$
 DECLARE
     diff_ilk_identifier TEXT   := (
         SELECT identifier
         FROM maker.ilks
-        WHERE ilks.id = new_diff.ilk_id);
-    diff_block_number BIGINT := (
+        WHERE ilks.id = start_at_diff.ilk_id);
+    diff_block_number   BIGINT := (
         SELECT block_number
         FROM public.headers
-        WHERE id = new_diff.header_id);
+        WHERE id = start_at_diff.header_id);
     next_rho_diff_block BIGINT := (
         SELECT MIN(block_number)
         FROM maker.jug_ilk_rho
-            LEFT JOIN public.headers ON jug_ilk_rho.header_id = headers.id
-        WHERE jug_ilk_rho.ilk_id = new_diff.ilk_id
+                 LEFT JOIN public.headers ON jug_ilk_rho.header_id = headers.id
+        WHERE jug_ilk_rho.ilk_id = start_at_diff.ilk_id
           AND block_number > diff_block_number);
 BEGIN
     UPDATE api.historical_ilk_state
-    SET rho = new_diff.rho
+    SET rho = new_rho
     WHERE historical_ilk_state.ilk_identifier = diff_ilk_identifier
-      AND historical_ilk_state.block_number > diff_block_number
+      AND historical_ilk_state.block_number >= diff_block_number
       AND (next_rho_diff_block IS NULL
         OR historical_ilk_state.block_number < next_rho_diff_block);
     RETURN NULL;
@@ -4631,32 +4800,32 @@ $$;
 
 
 --
--- Name: update_later_spots(maker.vat_ilk_spot); Type: FUNCTION; Schema: maker; Owner: -
+-- Name: update_spots_until_next_diff(maker.vat_ilk_spot, numeric); Type: FUNCTION; Schema: maker; Owner: -
 --
 
-CREATE FUNCTION maker.update_later_spots(new_diff maker.vat_ilk_spot) RETURNS maker.vat_ilk_spot
+CREATE FUNCTION maker.update_spots_until_next_diff(start_at_diff maker.vat_ilk_spot, new_spot numeric) RETURNS maker.vat_ilk_spot
     LANGUAGE plpgsql
     AS $$
 DECLARE
     diff_ilk_identifier  TEXT   := (
         SELECT identifier
         FROM maker.ilks
-        WHERE ilks.id = new_diff.ilk_id);
-    diff_block_number BIGINT := (
+        WHERE ilks.id = start_at_diff.ilk_id);
+    diff_block_number    BIGINT := (
         SELECT block_number
         FROM public.headers
-        WHERE id = new_diff.header_id);
+        WHERE id = start_at_diff.header_id);
     next_spot_diff_block BIGINT := (
         SELECT MIN(block_number)
         FROM maker.vat_ilk_spot
-            LEFT JOIN public.headers ON vat_ilk_spot.header_id = headers.id
-        WHERE vat_ilk_spot.ilk_id = new_diff.ilk_id
+                 LEFT JOIN public.headers ON vat_ilk_spot.header_id = headers.id
+        WHERE vat_ilk_spot.ilk_id = start_at_diff.ilk_id
           AND block_number > diff_block_number);
 BEGIN
     UPDATE api.historical_ilk_state
-    SET spot = new_diff.spot
+    SET spot = new_spot
     WHERE historical_ilk_state.ilk_identifier = diff_ilk_identifier
-      AND historical_ilk_state.block_number > diff_block_number
+      AND historical_ilk_state.block_number >= diff_block_number
       AND (next_spot_diff_block IS NULL
         OR historical_ilk_state.block_number < next_spot_diff_block);
     RETURN NULL;
@@ -4671,22 +4840,12 @@ $$;
 CREATE FUNCTION maker.update_time_created() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
-DECLARE
-    diff_ilk_identifier TEXT      := (
-        SELECT identifier
-        FROM maker.ilks
-        WHERE ilks.id = NEW.ilk_id);
-    diff_timestamp      TIMESTAMP := (
-        SELECT api.epoch_to_datetime(block_timestamp)
-        FROM public.headers
-        WHERE headers.id = NEW.header_id);
 BEGIN
-    UPDATE api.historical_ilk_state
-    SET created = diff_timestamp
-    FROM public.headers
-    WHERE headers.block_number = historical_ilk_state.block_number
-      AND historical_ilk_state.ilk_identifier = diff_ilk_identifier
-      AND historical_ilk_state.created IS NULL;
+    IF (TG_OP IN ('INSERT', 'UPDATE')) THEN
+        PERFORM maker.insert_new_time_created(NEW);
+    ELSIF (TG_OP = 'DELETE') THEN
+        PERFORM maker.clear_time_created(OLD);
+    END IF;
     RETURN NULL;
 END
 $$;
@@ -4990,12 +5149,14 @@ CREATE FUNCTION public.ilk_art_before_block(ilk_id integer, header_id integer) R
     LANGUAGE sql
     AS $$
 WITH passed_block_number AS (
-    SELECT block_number FROM public.headers WHERE id = header_id
+    SELECT block_number
+    FROM public.headers
+    WHERE id = header_id
 )
 
 SELECT art
 FROM maker.vat_ilk_art
-    LEFT JOIN public.headers ON vat_ilk_art.header_id = headers.id
+         LEFT JOIN public.headers ON vat_ilk_art.header_id = headers.id
 WHERE vat_ilk_art.ilk_id = ilk_art_before_block.ilk_id
   AND headers.block_number < (SELECT block_number FROM passed_block_number)
 ORDER BY block_number DESC
@@ -5011,12 +5172,14 @@ CREATE FUNCTION public.ilk_chop_before_block(ilk_id integer, header_id integer) 
     LANGUAGE sql
     AS $$
 WITH passed_block_number AS (
-    SELECT block_number FROM public.headers WHERE id = header_id
+    SELECT block_number
+    FROM public.headers
+    WHERE id = header_id
 )
 
 SELECT chop
 FROM maker.cat_ilk_chop
-    LEFT JOIN public.headers ON cat_ilk_chop.header_id = headers.id
+         LEFT JOIN public.headers ON cat_ilk_chop.header_id = headers.id
 WHERE cat_ilk_chop.ilk_id = ilk_chop_before_block.ilk_id
   AND headers.block_number < (SELECT block_number FROM passed_block_number)
 ORDER BY block_number DESC
@@ -5032,12 +5195,14 @@ CREATE FUNCTION public.ilk_dust_before_block(ilk_id integer, header_id integer) 
     LANGUAGE sql
     AS $$
 WITH passed_block_number AS (
-    SELECT block_number FROM public.headers WHERE id = header_id
+    SELECT block_number
+    FROM public.headers
+    WHERE id = header_id
 )
 
 SELECT dust
 FROM maker.vat_ilk_dust
-    LEFT JOIN public.headers ON vat_ilk_dust.header_id = headers.id
+         LEFT JOIN public.headers ON vat_ilk_dust.header_id = headers.id
 WHERE vat_ilk_dust.ilk_id = ilk_dust_before_block.ilk_id
   AND headers.block_number < (SELECT block_number FROM passed_block_number)
 ORDER BY block_number DESC
@@ -5053,12 +5218,14 @@ CREATE FUNCTION public.ilk_duty_before_block(ilk_id integer, header_id integer) 
     LANGUAGE sql
     AS $$
 WITH passed_block_number AS (
-    SELECT block_number FROM public.headers WHERE id = header_id
+    SELECT block_number
+    FROM public.headers
+    WHERE id = header_id
 )
 
 SELECT duty
 FROM maker.jug_ilk_duty
-    LEFT JOIN public.headers ON jug_ilk_duty.header_id = headers.id
+         LEFT JOIN public.headers ON jug_ilk_duty.header_id = headers.id
 WHERE jug_ilk_duty.ilk_id = ilk_duty_before_block.ilk_id
   AND headers.block_number < (SELECT block_number FROM passed_block_number)
 ORDER BY block_number DESC
@@ -5074,12 +5241,14 @@ CREATE FUNCTION public.ilk_flip_before_block(ilk_id integer, header_id integer) 
     LANGUAGE sql
     AS $$
 WITH passed_block_number AS (
-    SELECT block_number FROM public.headers WHERE id = header_id
+    SELECT block_number
+    FROM public.headers
+    WHERE id = header_id
 )
 
 SELECT flip
 FROM maker.cat_ilk_flip
-    LEFT JOIN public.headers ON cat_ilk_flip.header_id = headers.id
+         LEFT JOIN public.headers ON cat_ilk_flip.header_id = headers.id
 WHERE cat_ilk_flip.ilk_id = ilk_flip_before_block.ilk_id
   AND headers.block_number < (SELECT block_number FROM passed_block_number)
 ORDER BY block_number DESC
@@ -5095,12 +5264,14 @@ CREATE FUNCTION public.ilk_line_before_block(ilk_id integer, header_id integer) 
     LANGUAGE sql
     AS $$
 WITH passed_block_number AS (
-    SELECT block_number FROM public.headers WHERE id = header_id
+    SELECT block_number
+    FROM public.headers
+    WHERE id = header_id
 )
 
 SELECT line
 FROM maker.vat_ilk_line
-    LEFT JOIN public.headers ON vat_ilk_line.header_id = headers.id
+         LEFT JOIN public.headers ON vat_ilk_line.header_id = headers.id
 WHERE vat_ilk_line.ilk_id = ilk_line_before_block.ilk_id
   AND headers.block_number < (SELECT block_number FROM passed_block_number)
 ORDER BY block_number DESC
@@ -5116,12 +5287,14 @@ CREATE FUNCTION public.ilk_lump_before_block(ilk_id integer, header_id integer) 
     LANGUAGE sql
     AS $$
 WITH passed_block_number AS (
-    SELECT block_number FROM public.headers WHERE id = header_id
+    SELECT block_number
+    FROM public.headers
+    WHERE id = header_id
 )
 
 SELECT lump
 FROM maker.cat_ilk_lump
-    LEFT JOIN public.headers ON cat_ilk_lump.header_id = headers.id
+         LEFT JOIN public.headers ON cat_ilk_lump.header_id = headers.id
 WHERE cat_ilk_lump.ilk_id = ilk_lump_before_block.ilk_id
   AND headers.block_number < (SELECT block_number FROM passed_block_number)
 ORDER BY block_number DESC
@@ -5136,13 +5309,15 @@ $$;
 CREATE FUNCTION public.ilk_mat_before_block(ilk_id integer, header_id integer) RETURNS numeric
     LANGUAGE sql
     AS $$
-    WITH passed_block_number AS (
-        SELECT block_number FROM public.headers WHERE id = header_id
-    )
+WITH passed_block_number AS (
+    SELECT block_number
+    FROM public.headers
+    WHERE id = header_id
+)
 
 SELECT mat
 FROM maker.spot_ilk_mat
-    LEFT JOIN public.headers ON spot_ilk_mat.header_id = headers.id
+         LEFT JOIN public.headers ON spot_ilk_mat.header_id = headers.id
 WHERE spot_ilk_mat.ilk_id = ilk_mat_before_block.ilk_id
   AND headers.block_number < (SELECT block_number FROM passed_block_number)
 ORDER BY block_number DESC
@@ -5158,12 +5333,14 @@ CREATE FUNCTION public.ilk_pip_before_block(ilk_id integer, header_id integer) R
     LANGUAGE sql
     AS $$
 WITH passed_block_number AS (
-    SELECT block_number FROM public.headers WHERE id = header_id
+    SELECT block_number
+    FROM public.headers
+    WHERE id = header_id
 )
 
 SELECT pip
 FROM maker.spot_ilk_pip
-    LEFT JOIN public.headers ON spot_ilk_pip.header_id = headers.id
+         LEFT JOIN public.headers ON spot_ilk_pip.header_id = headers.id
 WHERE spot_ilk_pip.ilk_id = ilk_pip_before_block.ilk_id
   AND headers.block_number < (SELECT block_number FROM passed_block_number)
 ORDER BY block_number DESC
@@ -5179,12 +5356,14 @@ CREATE FUNCTION public.ilk_rate_before_block(ilk_id integer, header_id integer) 
     LANGUAGE sql
     AS $$
 WITH passed_block_number AS (
-    SELECT block_number FROM public.headers WHERE id = header_id
+    SELECT block_number
+    FROM public.headers
+    WHERE id = header_id
 )
 
 SELECT rate
 FROM maker.vat_ilk_rate
-    LEFT JOIN public.headers ON vat_ilk_rate.header_id = headers.id
+         LEFT JOIN public.headers ON vat_ilk_rate.header_id = headers.id
 WHERE vat_ilk_rate.ilk_id = ilk_rate_before_block.ilk_id
   AND headers.block_number < (SELECT block_number FROM passed_block_number)
 ORDER BY block_number DESC
@@ -5201,12 +5380,14 @@ CREATE FUNCTION public.ilk_rho_before_block(ilk_id integer, header_id integer) R
     AS $$
 
 WITH passed_block_number AS (
-    SELECT block_number FROM public.headers WHERE id = header_id
+    SELECT block_number
+    FROM public.headers
+    WHERE id = header_id
 )
 
 SELECT rho
 FROM maker.jug_ilk_rho
-    LEFT JOIN public.headers ON jug_ilk_rho.header_id = headers.id
+         LEFT JOIN public.headers ON jug_ilk_rho.header_id = headers.id
 WHERE jug_ilk_rho.ilk_id = ilk_rho_before_block.ilk_id
   AND headers.block_number < (SELECT block_number FROM passed_block_number)
 ORDER BY block_number DESC
@@ -5222,12 +5403,14 @@ CREATE FUNCTION public.ilk_spot_before_block(ilk_id integer, header_id integer) 
     LANGUAGE sql
     AS $$
 WITH passed_block_number AS (
-    SELECT block_number FROM public.headers WHERE id = header_id
+    SELECT block_number
+    FROM public.headers
+    WHERE id = header_id
 )
 
 SELECT spot
 FROM maker.vat_ilk_spot
-    LEFT JOIN public.headers ON vat_ilk_spot.header_id = headers.id
+         LEFT JOIN public.headers ON vat_ilk_spot.header_id = headers.id
 WHERE vat_ilk_spot.ilk_id = ilk_spot_before_block.ilk_id
   AND headers.block_number < (SELECT block_number FROM passed_block_number)
 ORDER BY block_number DESC
@@ -8693,18 +8876,6 @@ CREATE SEQUENCE maker.vat_ilk_spot_id_seq
 --
 
 ALTER SEQUENCE maker.vat_ilk_spot_id_seq OWNED BY maker.vat_ilk_spot.id;
-
-
---
--- Name: vat_init; Type: TABLE; Schema: maker; Owner: -
---
-
-CREATE TABLE maker.vat_init (
-    id integer NOT NULL,
-    header_id integer NOT NULL,
-    log_id bigint NOT NULL,
-    ilk_id integer NOT NULL
-);
 
 
 --
@@ -14707,91 +14878,91 @@ CREATE TRIGGER flop_created_trigger AFTER INSERT ON maker.flop_kick FOR EACH ROW
 -- Name: vat_ilk_art ilk_art; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER ilk_art AFTER INSERT OR UPDATE ON maker.vat_ilk_art FOR EACH ROW EXECUTE PROCEDURE maker.insert_ilk_arts();
+CREATE TRIGGER ilk_art AFTER INSERT OR DELETE OR UPDATE ON maker.vat_ilk_art FOR EACH ROW EXECUTE PROCEDURE maker.update_ilk_arts();
 
 
 --
 -- Name: cat_ilk_chop ilk_chop; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER ilk_chop AFTER INSERT OR UPDATE ON maker.cat_ilk_chop FOR EACH ROW EXECUTE PROCEDURE maker.insert_ilk_chops();
+CREATE TRIGGER ilk_chop AFTER INSERT OR DELETE OR UPDATE ON maker.cat_ilk_chop FOR EACH ROW EXECUTE PROCEDURE maker.update_ilk_chops();
 
 
 --
 -- Name: vat_ilk_dust ilk_dust; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER ilk_dust AFTER INSERT OR UPDATE ON maker.vat_ilk_dust FOR EACH ROW EXECUTE PROCEDURE maker.insert_ilk_dusts();
+CREATE TRIGGER ilk_dust AFTER INSERT OR DELETE OR UPDATE ON maker.vat_ilk_dust FOR EACH ROW EXECUTE PROCEDURE maker.update_ilk_dusts();
 
 
 --
 -- Name: jug_ilk_duty ilk_duty; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER ilk_duty AFTER INSERT OR UPDATE ON maker.jug_ilk_duty FOR EACH ROW EXECUTE PROCEDURE maker.insert_ilk_duties();
+CREATE TRIGGER ilk_duty AFTER INSERT OR DELETE OR UPDATE ON maker.jug_ilk_duty FOR EACH ROW EXECUTE PROCEDURE maker.update_ilk_duties();
 
 
 --
 -- Name: cat_ilk_flip ilk_flip; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER ilk_flip AFTER INSERT OR UPDATE ON maker.cat_ilk_flip FOR EACH ROW EXECUTE PROCEDURE maker.insert_ilk_flips();
+CREATE TRIGGER ilk_flip AFTER INSERT OR DELETE OR UPDATE ON maker.cat_ilk_flip FOR EACH ROW EXECUTE PROCEDURE maker.update_ilk_flips();
 
 
 --
 -- Name: vat_init ilk_init; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER ilk_init AFTER INSERT OR UPDATE ON maker.vat_init FOR EACH ROW EXECUTE PROCEDURE maker.update_time_created();
+CREATE TRIGGER ilk_init AFTER INSERT OR DELETE OR UPDATE ON maker.vat_init FOR EACH ROW EXECUTE PROCEDURE maker.update_time_created();
 
 
 --
 -- Name: vat_ilk_line ilk_line; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER ilk_line AFTER INSERT OR UPDATE ON maker.vat_ilk_line FOR EACH ROW EXECUTE PROCEDURE maker.insert_ilk_lines();
+CREATE TRIGGER ilk_line AFTER INSERT OR DELETE OR UPDATE ON maker.vat_ilk_line FOR EACH ROW EXECUTE PROCEDURE maker.update_ilk_lines();
 
 
 --
 -- Name: cat_ilk_lump ilk_lump; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER ilk_lump AFTER INSERT OR UPDATE ON maker.cat_ilk_lump FOR EACH ROW EXECUTE PROCEDURE maker.insert_ilk_lumps();
+CREATE TRIGGER ilk_lump AFTER INSERT OR DELETE OR UPDATE ON maker.cat_ilk_lump FOR EACH ROW EXECUTE PROCEDURE maker.update_ilk_lumps();
 
 
 --
 -- Name: spot_ilk_mat ilk_mat; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER ilk_mat AFTER INSERT OR UPDATE ON maker.spot_ilk_mat FOR EACH ROW EXECUTE PROCEDURE maker.insert_ilk_mats();
+CREATE TRIGGER ilk_mat AFTER INSERT OR DELETE OR UPDATE ON maker.spot_ilk_mat FOR EACH ROW EXECUTE PROCEDURE maker.update_ilk_mats();
 
 
 --
 -- Name: spot_ilk_pip ilk_pip; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER ilk_pip AFTER INSERT OR UPDATE ON maker.spot_ilk_pip FOR EACH ROW EXECUTE PROCEDURE maker.insert_ilk_pips();
+CREATE TRIGGER ilk_pip AFTER INSERT OR DELETE OR UPDATE ON maker.spot_ilk_pip FOR EACH ROW EXECUTE PROCEDURE maker.update_ilk_pips();
 
 
 --
 -- Name: vat_ilk_rate ilk_rate; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER ilk_rate AFTER INSERT OR UPDATE ON maker.vat_ilk_rate FOR EACH ROW EXECUTE PROCEDURE maker.insert_ilk_rates();
+CREATE TRIGGER ilk_rate AFTER INSERT OR DELETE OR UPDATE ON maker.vat_ilk_rate FOR EACH ROW EXECUTE PROCEDURE maker.update_ilk_rates();
 
 
 --
 -- Name: jug_ilk_rho ilk_rho; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER ilk_rho AFTER INSERT OR UPDATE ON maker.jug_ilk_rho FOR EACH ROW EXECUTE PROCEDURE maker.insert_ilk_rhos();
+CREATE TRIGGER ilk_rho AFTER INSERT OR DELETE OR UPDATE ON maker.jug_ilk_rho FOR EACH ROW EXECUTE PROCEDURE maker.update_ilk_rhos();
 
 
 --
 -- Name: vat_ilk_spot ilk_spot; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER ilk_spot AFTER INSERT OR UPDATE ON maker.vat_ilk_spot FOR EACH ROW EXECUTE PROCEDURE maker.insert_ilk_spots();
+CREATE TRIGGER ilk_spot AFTER INSERT OR DELETE OR UPDATE ON maker.vat_ilk_spot FOR EACH ROW EXECUTE PROCEDURE maker.update_ilk_spots();
 
 
 --

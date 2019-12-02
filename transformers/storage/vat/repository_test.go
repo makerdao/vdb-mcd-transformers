@@ -186,6 +186,7 @@ var _ = Describe("Vat storage repository", func() {
 			Metadata:      utils.GetStorageValueMetadata(vat.IlkArt, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Uint256),
 			PropertyName:  "Art",
 			PropertyValue: strconv.Itoa(rand.Int()),
+			TableName:     "maker.vat_ilk_art",
 		})
 	})
 
@@ -233,6 +234,7 @@ var _ = Describe("Vat storage repository", func() {
 			Metadata:      utils.GetStorageValueMetadata(vat.IlkDust, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Uint256),
 			PropertyName:  "Dust",
 			PropertyValue: strconv.Itoa(rand.Int()),
+			TableName:     "maker.vat_ilk_dust",
 		})
 	})
 
@@ -280,6 +282,7 @@ var _ = Describe("Vat storage repository", func() {
 			Metadata:      utils.GetStorageValueMetadata(vat.IlkLine, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Uint256),
 			PropertyName:  "Line",
 			PropertyValue: strconv.Itoa(rand.Int()),
+			TableName:     "maker.vat_ilk_line",
 		})
 	})
 
@@ -327,6 +330,7 @@ var _ = Describe("Vat storage repository", func() {
 			Metadata:      utils.GetStorageValueMetadata(vat.IlkRate, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Uint256),
 			PropertyName:  "Rate",
 			PropertyValue: strconv.Itoa(rand.Int()),
+			TableName:     "maker.vat_ilk_rate",
 		})
 	})
 
@@ -374,6 +378,7 @@ var _ = Describe("Vat storage repository", func() {
 			Metadata:      utils.GetStorageValueMetadata(vat.IlkSpot, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Uint256),
 			PropertyName:  "Spot",
 			PropertyValue: strconv.Itoa(rand.Int()),
+			TableName:     "maker.vat_ilk_spot",
 		})
 	})
 

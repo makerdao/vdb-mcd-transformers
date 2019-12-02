@@ -166,6 +166,7 @@ var _ = Describe("Cat storage repository", func() {
 				Metadata:      utils.GetStorageValueMetadata(cat.IlkFlip, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Address),
 				PropertyName:  "Flip",
 				PropertyValue: fakeAddress,
+				TableName:     "maker.cat_ilk_flip",
 			})
 		})
 
@@ -210,6 +211,7 @@ var _ = Describe("Cat storage repository", func() {
 				Metadata:      utils.GetStorageValueMetadata(cat.IlkChop, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Uint256),
 				PropertyName:  "Chop",
 				PropertyValue: strconv.Itoa(rand.Int()),
+				TableName:     "maker.cat_ilk_chop",
 			})
 		})
 
@@ -254,6 +256,7 @@ var _ = Describe("Cat storage repository", func() {
 				Metadata:      utils.GetStorageValueMetadata(cat.IlkLump, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Uint256),
 				PropertyName:  "Lump",
 				PropertyValue: strconv.Itoa(rand.Int()),
+				TableName:     "maker.cat_ilk_lump",
 			})
 		})
 	})

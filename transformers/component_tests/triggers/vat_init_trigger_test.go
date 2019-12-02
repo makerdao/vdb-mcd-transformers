@@ -107,6 +107,21 @@ var _ = Describe("Updating historical_ilk_state table", func() {
 		Expect(len(ilkStates)).To(Equal(1))
 		Expect(ilkStates[0].Created).To(Equal(expectedTimeCreated))
 	})
+
+	It("sets created to null when record is deleted", func() {
+		_, ilkSetupErr := database.Exec(insertEmptyRowQuery, test_helpers.FakeIlk.Identifier, headerOne.BlockNumber)
+		Expect(ilkSetupErr).NotTo(HaveOccurred())
+		vatInitSetupErr := repo.Create([]shared.InsertionModel{vatInitModel})
+		Expect(vatInitSetupErr).NotTo(HaveOccurred())
+
+		_, err := database.Exec(`DELETE FROM maker.vat_init WHERE header_id = $1`, headerOne.Id)
+		Expect(err).NotTo(HaveOccurred())
+
+		var ilkStates []test_helpers.IlkState
+		queryErr := database.Select(&ilkStates, getTimeCreatedQuery)
+		Expect(queryErr).NotTo(HaveOccurred())
+		Expect(ilkStates[0].Created).To(Equal(sql.NullString{Valid: false, String: ""}))
+	})
 })
 
 func createVatInitModel(headerId, logId int64, ilkHex string) shared.InsertionModel {
