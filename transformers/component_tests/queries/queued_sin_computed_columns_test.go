@@ -17,12 +17,12 @@
 package queries
 
 import (
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"math/rand"
 	"strconv"
 
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/vow_fess"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/vow_flog"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
@@ -85,13 +85,11 @@ var _ = Describe("Queued sin computed columns", func() {
 
 		It("returns sin queue events for queued sin", func() {
 			vowFessLog := test_data.CreateTestLog(headerOne.Id, db)
-			vowFessRepo := vow_fess.VowFessRepository{}
-			vowFessRepo.SetDB(db)
 			vowFessEvent := test_data.VowFessModel
 			vowFessEvent.ColumnValues[constants.HeaderFK] = headerOne.Id
 			vowFessEvent.ColumnValues[constants.LogFK] = vowFessLog.ID
-			insertVowFessErr := vowFessRepo.Create([]shared.InsertionModel{vowFessEvent})
-			Expect(insertVowFessErr).NotTo(HaveOccurred())
+			vowFessErr := event.PersistModels([]event.InsertionModel{vowFessEvent}, db)
+			Expect(vowFessErr).NotTo(HaveOccurred())
 
 			var actualEvents []test_helpers.SinQueueEvent
 			err := db.Select(&actualEvents,
