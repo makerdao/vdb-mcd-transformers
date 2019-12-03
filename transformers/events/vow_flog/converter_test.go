@@ -28,9 +28,9 @@ import (
 )
 
 var _ = Describe("Vow flog converter", func() {
-	var converter vow_flog.VowFlogConverter
+	var converter vow_flog.Converter
 	BeforeEach(func() {
-		converter = vow_flog.VowFlogConverter{}
+		converter = vow_flog.Converter{}
 	})
 
 	It("returns err if log is missing topics", func() {

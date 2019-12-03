@@ -19,38 +19,33 @@ package vow_flog
 import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 )
 
-type VowFlogConverter struct{}
+type Converter struct{}
 
-const (
-	logDataRequired   = false
-	numTopicsRequired = 3
-)
-
-func (VowFlogConverter) ToModels(_ string, logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
-	var models []shared.InsertionModel
+func (Converter) ToModels(_ string, logs []core.HeaderSyncLog) ([]event.InsertionModel, error) {
+	var models []event.InsertionModel
 	for _, log := range logs {
-		err := shared.VerifyLog(log.Log, numTopicsRequired, logDataRequired)
+		err := shared.VerifyLog(log.Log, shared.ThreeTopicsRequired, shared.LogDataNotRequired)
 		if err != nil {
 			return nil, err
 		}
 
 		era := log.Log.Topics[2].Big()
 
-		model := shared.InsertionModel{
+		model := event.InsertionModel{
 			SchemaName: constants.MakerSchema,
-			TableName:  "vow_flog",
-			OrderedColumns: []string{
-				constants.HeaderFK, "era", constants.LogFK,
+			TableName:  constants.VowFlogLabel,
+			OrderedColumns: []event.ColumnName{
+				constants.HeaderFK, constants.EraColumn, constants.LogFK,
 			},
-			ColumnValues: shared.ColumnValues{
-				"era":              era.String(),
-				constants.HeaderFK: log.HeaderID,
-				constants.LogFK:    log.ID,
+			ColumnValues: event.ColumnValues{
+				constants.EraColumn: era.String(),
+				constants.HeaderFK:  log.HeaderID,
+				constants.LogFK:     log.ID,
 			},
-			ForeignKeyValues: shared.ForeignKeyValues{},
 		}
 		models = append(models, model)
 	}

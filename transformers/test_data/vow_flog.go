@@ -19,10 +19,11 @@ package test_data
 import (
 	"math/rand"
 
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
+
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
@@ -52,16 +53,15 @@ var VowFlogHeaderSyncLog = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-var VowFlogModel = shared.InsertionModel{
+var VowFlogModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
-	TableName:  "vow_flog",
-	OrderedColumns: []string{
-		constants.HeaderFK, "era", constants.LogFK,
+	TableName:  constants.VowFlogLabel,
+	OrderedColumns: []event.ColumnName{
+		constants.HeaderFK, constants.EraColumn, constants.LogFK,
 	},
-	ColumnValues: shared.ColumnValues{
-		"era":              "1337",
-		constants.HeaderFK: VowFlogHeaderSyncLog.HeaderID,
-		constants.LogFK:    VowFlogHeaderSyncLog.ID,
+	ColumnValues: event.ColumnValues{
+		constants.EraColumn: "1337",
+		constants.HeaderFK:  VowFlogHeaderSyncLog.HeaderID,
+		constants.LogFK:     VowFlogHeaderSyncLog.ID,
 	},
-	ForeignKeyValues: shared.ForeignKeyValues{},
 }

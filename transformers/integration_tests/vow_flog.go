@@ -73,7 +73,7 @@ var _ = XDescribe("VowFlog EventTransformer", func() {
 
 		tr := shared.EventTransformer{
 			Config:     vowFlogConfig,
-			Converter:  &vow_flog.VowFlogConverter{},
+			Converter:  &vow_flog.Converter{},
 			Repository: &vow_flog.VowFlogRepository{},
 		}.NewEventTransformer(db)
 
