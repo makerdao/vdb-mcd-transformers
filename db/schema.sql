@@ -9742,8 +9742,7 @@ CREATE TABLE public.blocks (
     "time" bigint,
     is_final boolean,
     uncle_hash character varying(66),
-    eth_node_id integer NOT NULL,
-    eth_node_fingerprint character varying(128) NOT NULL
+    eth_node_id integer NOT NULL
 );
 
 
@@ -10025,7 +10024,7 @@ ALTER SEQUENCE public.header_sync_receipts_id_seq OWNED BY public.header_sync_re
 CREATE TABLE public.header_sync_transactions (
     id integer NOT NULL,
     header_id integer NOT NULL,
-    hash character varying(66),
+    hash character varying(66) NOT NULL,
     gas_limit numeric,
     gas_price numeric,
     input_data bytea,
@@ -10064,13 +10063,12 @@ ALTER SEQUENCE public.header_sync_transactions_id_seq OWNED BY public.header_syn
 
 CREATE TABLE public.headers (
     id integer NOT NULL,
-    hash character varying(66),
-    block_number bigint,
+    hash character varying(66) NOT NULL,
+    block_number bigint NOT NULL,
     raw jsonb,
     block_timestamp numeric,
     check_count integer DEFAULT 0 NOT NULL,
-    eth_node_id integer NOT NULL,
-    eth_node_fingerprint character varying(128)
+    eth_node_id integer NOT NULL
 );
 
 
@@ -10200,8 +10198,7 @@ CREATE TABLE public.uncles (
     miner character varying(42) NOT NULL,
     raw jsonb,
     block_timestamp numeric,
-    eth_node_id integer NOT NULL,
-    eth_node_fingerprint character varying(128)
+    eth_node_id integer NOT NULL
 );
 
 
@@ -13602,11 +13599,11 @@ ALTER TABLE ONLY public.header_sync_receipts
 
 
 --
--- Name: header_sync_transactions header_sync_transactions_header_id_hash_key; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: header_sync_transactions header_sync_transactions_hash_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.header_sync_transactions
-    ADD CONSTRAINT header_sync_transactions_header_id_hash_key UNIQUE (header_id, hash);
+    ADD CONSTRAINT header_sync_transactions_hash_key UNIQUE (hash);
 
 
 --
@@ -13618,11 +13615,11 @@ ALTER TABLE ONLY public.header_sync_transactions
 
 
 --
--- Name: headers headers_block_number_hash_eth_node_fingerprint_key; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: headers headers_block_number_hash_eth_node_id_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.headers
-    ADD CONSTRAINT headers_block_number_hash_eth_node_fingerprint_key UNIQUE (block_number, hash, eth_node_fingerprint);
+    ADD CONSTRAINT headers_block_number_hash_eth_node_id_key UNIQUE (block_number, hash, eth_node_id);
 
 
 --
@@ -17023,6 +17020,14 @@ ALTER TABLE ONLY public.header_sync_logs
 
 ALTER TABLE ONLY public.header_sync_logs
     ADD CONSTRAINT header_sync_logs_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: header_sync_logs header_sync_logs_tx_hash_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.header_sync_logs
+    ADD CONSTRAINT header_sync_logs_tx_hash_fkey FOREIGN KEY (tx_hash) REFERENCES public.header_sync_transactions(hash) ON DELETE CASCADE;
 
 
 --

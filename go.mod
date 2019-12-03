@@ -14,7 +14,7 @@ require (
 	github.com/karalabe/usb v0.0.0-20191104083709-911d15fe12a9 // indirect
 	github.com/konsorten/go-windows-terminal-sequences v1.0.2 // indirect
 	github.com/lib/pq v1.2.0 // indirect
-	github.com/makerdao/vulcanizedb v0.0.11-0.20191127154328-dbac1a4e6050
+	github.com/makerdao/vulcanizedb v0.0.11-0.20191203162415-24c2ba486630
 	github.com/mattn/go-colorable v0.1.4 // indirect
 	github.com/mattn/go-isatty v0.0.10 // indirect
 	github.com/olekukonko/tablewriter v0.0.3 // indirect
