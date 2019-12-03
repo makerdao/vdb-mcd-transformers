@@ -20,9 +20,9 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/vow_file"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/fetcher"
 	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 	"github.com/makerdao/vulcanizedb/pkg/core"
@@ -35,7 +35,7 @@ var _ = Describe("VowFile LogNoteTransforer", func() {
 	var (
 		db          *postgres.DB
 		blockChain  core.BlockChain
-		initializer shared.EventTransformer
+		initializer event.Transformer
 		addresses   []common.Address
 		topics      []common.Hash
 	)
@@ -57,10 +57,9 @@ var _ = Describe("VowFile LogNoteTransforer", func() {
 		addresses = transformer.HexStringsToAddresses(vowFileConfig.ContractAddresses)
 		topics = []common.Hash{common.HexToHash(vowFileConfig.Topic)}
 
-		initializer = shared.EventTransformer{
-			Config:     vowFileConfig,
-			Converter:  vow_file.Converter{},
-			Repository: &vow_file.VowFileRepository{},
+		initializer = event.Transformer{
+			Config:    vowFileConfig,
+			Converter: vow_file.Converter{},
 		}
 	})
 
@@ -78,7 +77,7 @@ var _ = Describe("VowFile LogNoteTransforer", func() {
 
 		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
 
-		tr := initializer.NewEventTransformer(db)
+		tr := initializer.NewTransformer(db)
 		err = tr.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 
