@@ -29,7 +29,7 @@ import (
 )
 
 var _ = Describe("Vow file converter", func() {
-	var converter = vow_file.VowFileConverter{}
+	var converter = vow_file.Converter{}
 	It("returns err if log missing topics", func() {
 		badLog := core.HeaderSyncLog{
 			Log: types.Log{

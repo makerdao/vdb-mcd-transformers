@@ -25,6 +25,6 @@ import (
 
 var EventTransformerInitializer transformer.EventTransformerInitializer = shared.EventTransformer{
 	Config:     shared.GetEventTransformerConfig(constants.VowFileLabel, constants.VowFileSignature()),
-	Converter:  &vow_file.VowFileConverter{},
+	Converter:  &vow_file.Converter{},
 	Repository: &vow_file.VowFileRepository{},
 }.NewEventTransformer

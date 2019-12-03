@@ -59,7 +59,7 @@ var _ = Describe("VowFile LogNoteTransforer", func() {
 
 		initializer = shared.EventTransformer{
 			Config:     vowFileConfig,
-			Converter:  vow_file.VowFileConverter{},
+			Converter:  vow_file.Converter{},
 			Repository: &vow_file.VowFileRepository{},
 		}
 	})
