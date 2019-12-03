@@ -72,8 +72,8 @@ var _ = Describe("VowFess EventTransformer", func() {
 		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
 
 		tr := event.Transformer{
-			Config:     vowFessConfig,
-			Converter:  &vow_fess.Converter{},
+			Config:    vowFessConfig,
+			Converter: &vow_fess.Converter{},
 		}.NewTransformer(db)
 
 		err = tr.Execute(headerSyncLogs)

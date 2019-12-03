@@ -17,8 +17,9 @@
 package test_data
 
 import (
-	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"math/rand"
+
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"

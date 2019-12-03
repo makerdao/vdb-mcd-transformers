@@ -42,7 +42,7 @@ func (Converter) ToModels(_ string, logs []core.HeaderSyncLog, db *postgres.DB) 
 			OrderedColumns: []event.ColumnName{
 				constants.HeaderFK, constants.TabColumn, constants.LogFK,
 			},
-			ColumnValues:   event.ColumnValues{
+			ColumnValues: event.ColumnValues{
 				constants.TabColumn: tab.String(),
 				constants.HeaderFK:  log.HeaderID,
 				constants.LogFK:     log.ID,

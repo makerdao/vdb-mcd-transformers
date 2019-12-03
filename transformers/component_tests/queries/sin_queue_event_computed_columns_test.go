@@ -18,9 +18,10 @@ package queries
 
 import (
 	"database/sql"
-	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"math/rand"
 	"strconv"
+
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
