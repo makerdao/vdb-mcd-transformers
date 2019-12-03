@@ -53,7 +53,7 @@ var VowFileHeaderSyncLog = core.HeaderSyncLog{
 }
 
 var VowFileModel = event.InsertionModel{
-	SchemaName: "maker",
+	SchemaName: constants.MakerSchema,
 	TableName:  constants.VowFileLabel,
 	OrderedColumns: []event.ColumnName{
 		constants.HeaderFK, constants.WhatColumn, constants.DataColumn, constants.LogFK,

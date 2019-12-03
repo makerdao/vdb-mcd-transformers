@@ -48,7 +48,7 @@ func (c Converter) ToModels(_ string, logs []core.HeaderSyncLog, db *postgres.DB
 		}
 
 		model := event.InsertionModel{
-			SchemaName: "maker",
+			SchemaName: constants.MakerSchema,
 			TableName:  "deal",
 			OrderedColumns: []event.ColumnName{
 				constants.HeaderFK,
@@ -57,8 +57,8 @@ func (c Converter) ToModels(_ string, logs []core.HeaderSyncLog, db *postgres.DB
 				constants.LogFK,
 			},
 			ColumnValues: event.ColumnValues{
-				constants.HeaderFK: log.HeaderID,
-				Id:                 bidId.String(),
+				constants.HeaderFK:      log.HeaderID,
+				Id:                      bidId.String(),
 				constants.AddressColumn: addressID,
 				constants.LogFK:         log.ID,
 			},

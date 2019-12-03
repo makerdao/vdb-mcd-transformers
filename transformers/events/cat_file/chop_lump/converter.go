@@ -46,7 +46,7 @@ func (converter Converter) ToModels(_ string, logs []core.HeaderSyncLog, db *pos
 		}
 		data := shared.ConvertUint256HexToBigInt(hexutil.Encode(dataBytes))
 		result := event.InsertionModel{
-			SchemaName: "maker",
+			SchemaName: constants.MakerSchema,
 			TableName:  "cat_file_chop_lump",
 			OrderedColumns: []event.ColumnName{
 				event.HeaderFK,

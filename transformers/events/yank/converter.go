@@ -45,7 +45,7 @@ func (c Converter) ToModels(_ string, logs []core.HeaderSyncLog, db *postgres.DB
 		bidId := log.Log.Topics[2].Big()
 
 		model := event.InsertionModel{
-			SchemaName: "maker",
+			SchemaName: constants.MakerSchema,
 			TableName:  "yank",
 			OrderedColumns: []event.ColumnName{
 				constants.HeaderFK, BidId, constants.AddressColumn, constants.LogFK,

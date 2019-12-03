@@ -39,7 +39,7 @@ func (Converter) ToModels(_ string, logs []core.HeaderSyncLog, _ *postgres.DB) (
 		data := common.BytesToAddress(log.Log.Topics[3].Bytes()).String()
 
 		result := event.InsertionModel{
-			SchemaName: "maker",
+			SchemaName: constants.MakerSchema,
 			TableName:  "cat_file_vow",
 			OrderedColumns: []event.ColumnName{
 				constants.HeaderFK, constants.WhatColumn, constants.DataColumn, event.LogFK,

@@ -54,7 +54,7 @@ var NewCdpHeaderSyncLog = core.HeaderSyncLog{
 func NewCdpModel() shared.InsertionModel { return CopyModel(newCdpModel) }
 
 var newCdpModel = shared.InsertionModel{
-	SchemaName: "maker",
+	SchemaName: constants.MakerSchema,
 	TableName:  "new_cdp",
 	OrderedColumns: []string{
 		constants.HeaderFK, constants.LogFK, "usr", "own", "cdp",

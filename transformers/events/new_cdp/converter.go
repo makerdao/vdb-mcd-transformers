@@ -62,7 +62,7 @@ func (converter NewCdpConverter) ToModels(abi string, logs []core.HeaderSyncLog)
 
 	for _, newCdpEntity := range entities {
 		model := shared.InsertionModel{
-			SchemaName: "maker",
+			SchemaName: constants.MakerSchema,
 			TableName:  "new_cdp",
 			OrderedColumns: []string{
 				constants.HeaderFK, constants.LogFK, "usr", "own", "cdp",

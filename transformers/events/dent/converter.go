@@ -57,7 +57,7 @@ func (c Converter) ToModels(_ string, logs []core.HeaderSyncLog, db *postgres.DB
 		bid := shared.ConvertUint256HexToBigInt(hexutil.Encode(bidBytes))
 
 		model := event.InsertionModel{
-			SchemaName: "maker",
+			SchemaName: constants.MakerSchema,
 			TableName:  "dent",
 			OrderedColumns: []event.ColumnName{
 				constants.HeaderFK, Id, Lot, Bid, constants.AddressColumn, constants.LogFK,

@@ -54,7 +54,7 @@ var VatGrabHeaderSyncLogWithPositiveDink = core.HeaderSyncLog{
 }
 
 var VatGrabModelWithPositiveDink = shared.InsertionModel{
-	SchemaName: "maker",
+	SchemaName: constants.MakerSchema,
 	TableName:  "vat_grab",
 	OrderedColumns: []string{
 		constants.HeaderFK, string(constants.UrnFK), "v", "w", "dink", "dart", constants.LogFK,
@@ -98,7 +98,7 @@ var VatGrabHeaderSyncLogWithNegativeDink = core.HeaderSyncLog{
 }
 
 var VatGrabModelWithNegativeDink = shared.InsertionModel{
-	SchemaName: "maker",
+	SchemaName: constants.MakerSchema,
 	TableName:  "vat_grab",
 	OrderedColumns: []string{
 		constants.HeaderFK, string(constants.UrnFK), "v", "w", "dink", "dart", constants.LogFK,

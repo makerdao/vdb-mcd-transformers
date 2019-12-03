@@ -40,7 +40,7 @@ func (VatHealConverter) ToModels(_ string, logs []core.HeaderSyncLog) ([]shared.
 		radInt := shared.ConvertUint256HexToBigInt(log.Log.Topics[1].Hex())
 
 		model := shared.InsertionModel{
-			SchemaName: "maker",
+			SchemaName: constants.MakerSchema,
 			TableName:  "vat_heal",
 			OrderedColumns: []string{
 				constants.HeaderFK, "rad", constants.LogFK,

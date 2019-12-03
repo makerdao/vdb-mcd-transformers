@@ -68,7 +68,7 @@ var BiteHeaderSyncLog = core.HeaderSyncLog{
 func BiteModel() event.InsertionModel { return CopyEventModel(biteModel) }
 
 var biteModel = event.InsertionModel{
-	SchemaName: "maker",
+	SchemaName: constants.MakerSchema,
 	TableName:  "bite",
 	OrderedColumns: []event.ColumnName{
 		constants.HeaderFK, constants.LogFK, constants.UrnColumn, constants.InkColumn, constants.ArtColumn, constants.TabColumn, constants.FlipColumn, constants.BidIdColumn,

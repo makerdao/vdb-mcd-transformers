@@ -43,7 +43,7 @@ func (VatSlipConverter) ToModels(_ string, logs []core.HeaderSyncLog) ([]shared.
 		wad := shared.ConvertInt256HexToBigInt(log.Log.Topics[3].Hex())
 
 		model := shared.InsertionModel{
-			SchemaName: "maker",
+			SchemaName: constants.MakerSchema,
 			TableName:  "vat_slip",
 			OrderedColumns: []string{
 				constants.HeaderFK, string(constants.IlkFK), "usr", "wad", constants.LogFK,

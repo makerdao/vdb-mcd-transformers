@@ -47,7 +47,7 @@ func (SpotFileMatConverter) ToModels(_ string, logs []core.HeaderSyncLog) ([]sha
 		data := shared.ConvertUint256HexToBigInt(hexutil.Encode(dataBytes))
 
 		model := shared.InsertionModel{
-			SchemaName: "maker",
+			SchemaName: constants.MakerSchema,
 			TableName:  "spot_file_mat",
 			OrderedColumns: []string{
 				constants.HeaderFK, string(constants.IlkFK), "what", "data", constants.LogFK,

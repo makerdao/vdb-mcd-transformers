@@ -72,7 +72,7 @@ var FlipKickHeaderSyncLog = core.HeaderSyncLog{
 func FlipKickModel() shared.InsertionModel { return CopyModel(flipKickModel) }
 
 var flipKickModel = shared.InsertionModel{
-	SchemaName: "maker",
+	SchemaName: constants.MakerSchema,
 	TableName:  "flip_kick",
 	OrderedColumns: []string{
 		constants.HeaderFK, constants.LogFK, "bid_id", "lot", "bid", "tab", "usr", "gal", "address_id",

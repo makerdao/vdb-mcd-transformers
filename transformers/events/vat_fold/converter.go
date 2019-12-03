@@ -43,7 +43,7 @@ func (VatFoldConverter) ToModels(_ string, logs []core.HeaderSyncLog) ([]shared.
 		rate := shared.ConvertInt256HexToBigInt(log.Log.Topics[3].Hex())
 
 		model := shared.InsertionModel{
-			SchemaName: "maker",
+			SchemaName: constants.MakerSchema,
 			TableName:  "vat_fold",
 			OrderedColumns: []string{
 				constants.HeaderFK, string(constants.UrnFK), "rate", constants.LogFK,

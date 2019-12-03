@@ -40,7 +40,7 @@ func (JugInitConverter) ToModels(_ string, logs []core.HeaderSyncLog) ([]shared.
 		ilk := log.Log.Topics[2].Hex()
 
 		model := shared.InsertionModel{
-			SchemaName:     "maker",
+			SchemaName:     constants.MakerSchema,
 			TableName:      "jug_init",
 			OrderedColumns: []string{constants.HeaderFK, string(constants.IlkFK), constants.LogFK},
 			ColumnValues: shared.ColumnValues{

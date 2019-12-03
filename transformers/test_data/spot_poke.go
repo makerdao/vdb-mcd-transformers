@@ -57,7 +57,7 @@ func spot() *big.Int {
 func SpotPokeModel() shared.InsertionModel { return CopyModel(spotPokeModel) }
 
 var spotPokeModel = shared.InsertionModel{
-	SchemaName: "maker",
+	SchemaName: constants.MakerSchema,
 	TableName:  "spot_poke",
 	OrderedColumns: []string{
 		constants.HeaderFK, constants.LogFK, string(constants.IlkFK), "value", "spot",

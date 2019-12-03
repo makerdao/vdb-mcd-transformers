@@ -38,7 +38,7 @@ func (Converter) ToModels(_ string, logs []core.HeaderSyncLog, _ *postgres.DB) (
 		data := shared.ConvertUint256HexToBigInt(log.Log.Topics[3].Hex())
 
 		model := event.InsertionModel{
-			SchemaName: "maker",
+			SchemaName: constants.MakerSchema,
 			TableName:  constants.VowFileLabel,
 			OrderedColumns: []event.ColumnName{
 				constants.HeaderFK, constants.WhatColumn, constants.DataColumn, constants.LogFK,

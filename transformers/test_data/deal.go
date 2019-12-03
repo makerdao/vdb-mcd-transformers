@@ -54,7 +54,7 @@ var DealHeaderSyncLog = core.HeaderSyncLog{
 }
 
 var DealModel = event.InsertionModel{
-	SchemaName: "maker",
+	SchemaName: constants.MakerSchema,
 	TableName:  "deal",
 	OrderedColumns: []event.ColumnName{
 		constants.HeaderFK,

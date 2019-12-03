@@ -42,7 +42,7 @@ func (VatFileIlkConverter) ToModels(_ string, logs []core.HeaderSyncLog) ([]shar
 		data := log.Log.Topics[3].Big().String()
 
 		model := shared.InsertionModel{
-			SchemaName: "maker",
+			SchemaName: constants.MakerSchema,
 			TableName:  "vat_file_ilk",
 			OrderedColumns: []string{
 				constants.HeaderFK, string(constants.IlkFK), "what", "data", constants.LogFK,
