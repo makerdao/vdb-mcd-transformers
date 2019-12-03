@@ -18,14 +18,14 @@ package initializer
 
 import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/vow_flog"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 )
 
-var EventTransformerInitializer transformer.EventTransformerInitializer = shared.EventTransformer{
-	Config:     shared.GetEventTransformerConfig(constants.VowFlogLabel, constants.VowFlogSignature()),
-	Converter:  &vow_flog.Converter{},
-	Repository: &vow_flog.VowFlogRepository{},
-}.NewEventTransformer
+var EventTransformerInitializer transformer.EventTransformerInitializer = event.Transformer{
+	Config:    shared.GetEventTransformerConfig(constants.VowFlogLabel, constants.VowFlogSignature()),
+	Converter: &vow_flog.Converter{},
+}.NewTransformer

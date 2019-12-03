@@ -18,7 +18,9 @@ package vow_flog_test
 
 import (
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vulcanizedb/pkg/core"
+	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
@@ -28,9 +30,14 @@ import (
 )
 
 var _ = Describe("Vow flog converter", func() {
-	var converter vow_flog.Converter
+	var (
+		converter vow_flog.Converter
+		db        *postgres.DB
+	)
+
 	BeforeEach(func() {
 		converter = vow_flog.Converter{}
+		db = test_config.NewTestDB(test_config.NewTestNode())
 	})
 
 	It("returns err if log is missing topics", func() {
@@ -39,12 +46,12 @@ var _ = Describe("Vow flog converter", func() {
 				Data: []byte{1, 1, 1, 1, 1},
 			}}
 
-		_, err := converter.ToModels(constants.VowABI(), []core.HeaderSyncLog{badLog})
+		_, err := converter.ToModels(constants.VowABI(), []core.HeaderSyncLog{badLog}, db)
 		Expect(err).To(HaveOccurred())
 	})
 
 	It("converts a log to a model", func() {
-		models, err := converter.ToModels(constants.VowABI(), []core.HeaderSyncLog{test_data.VowFlogHeaderSyncLog})
+		models, err := converter.ToModels(constants.VowABI(), []core.HeaderSyncLog{test_data.VowFlogHeaderSyncLog}, db)
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(len(models)).To(Equal(1))
