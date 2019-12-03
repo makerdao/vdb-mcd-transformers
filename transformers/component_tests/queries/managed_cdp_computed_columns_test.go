@@ -86,11 +86,11 @@ var _ = Describe("Managed CDP computed columns", func() {
 
 	Describe("managed_cdp_urn", func() {
 		It("returns urn_state for a managed_cdp", func() {
-			urnSetupData := test_helpers.GetUrnSetupData(headerOne)
+			urnSetupData := test_helpers.GetUrnSetupData()
 			urnMetadata := test_helpers.GetUrnMetadata(test_helpers.FakeIlk.Hex, test_data.FakeUrn)
 			vatRepository := vat.VatStorageRepository{}
 			vatRepository.SetDB(db)
-			test_helpers.CreateUrn(urnSetupData, urnMetadata, vatRepository)
+			test_helpers.CreateUrn(urnSetupData, headerOne.Id, urnMetadata, vatRepository)
 			expectedUrn := test_helpers.UrnState{
 				UrnIdentifier: test_data.FakeUrn,
 				IlkIdentifier: test_helpers.FakeIlk.Identifier,

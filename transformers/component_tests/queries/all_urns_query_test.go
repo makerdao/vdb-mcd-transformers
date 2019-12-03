@@ -54,9 +54,9 @@ var _ = Describe("Urn view", func() {
 	})
 
 	It("gets an urn", func() {
-		setupData := helper.GetUrnSetupData(headerOne)
+		setupData := helper.GetUrnSetupData()
 		metadata := helper.GetUrnMetadata(helper.FakeIlk.Hex, urnOne)
-		helper.CreateUrn(setupData, metadata, vatRepo)
+		helper.CreateUrn(setupData, headerOne.Id, metadata, vatRepo)
 
 		var actualUrn helper.UrnState
 		err = db.Get(&actualUrn, allUrnsQuery, blockOne)
@@ -67,8 +67,8 @@ var _ = Describe("Urn view", func() {
 			UrnIdentifier: urnOne,
 			IlkIdentifier: helper.FakeIlk.Identifier,
 			BlockHeight:   blockOne,
-			Ink:           strconv.Itoa(setupData.Ink),
-			Art:           strconv.Itoa(setupData.Art),
+			Ink:           strconv.Itoa(setupData[vat.UrnInk]),
+			Art:           strconv.Itoa(setupData[vat.UrnArt]),
 			Created:       helper.GetValidNullString(expectedTimestamp),
 			Updated:       helper.GetValidNullString(expectedTimestamp),
 		}
@@ -78,8 +78,8 @@ var _ = Describe("Urn view", func() {
 
 	It("returns the correct data for multiple urns", func() {
 		urnOneMetadata := helper.GetUrnMetadata(helper.FakeIlk.Hex, urnOne)
-		urnOneSetupData := helper.GetUrnSetupData(headerOne)
-		helper.CreateUrn(urnOneSetupData, urnOneMetadata, vatRepo)
+		urnOneSetupData := helper.GetUrnSetupData()
+		helper.CreateUrn(urnOneSetupData, headerOne.Id, urnOneMetadata, vatRepo)
 
 		blockTwo := blockOne + 1
 		timestampTwo := timestampOne + 1
@@ -90,23 +90,23 @@ var _ = Describe("Urn view", func() {
 			UrnIdentifier: urnOne,
 			IlkIdentifier: helper.FakeIlk.Identifier,
 			BlockHeight:   blockTwo,
-			Ink:           strconv.Itoa(urnOneSetupData.Ink),
-			Art:           strconv.Itoa(urnOneSetupData.Art),
+			Ink:           strconv.Itoa(urnOneSetupData[vat.UrnInk]),
+			Art:           strconv.Itoa(urnOneSetupData[vat.UrnArt]),
 			Created:       helper.GetValidNullString(expectedTimestamp),
 			Updated:       helper.GetValidNullString(expectedTimestamp),
 		}
 
 		urnTwoMetadata := helper.GetUrnMetadata(helper.AnotherFakeIlk.Hex, urnTwo)
-		urnTwoSetupData := helper.GetUrnSetupData(headerTwo)
-		helper.CreateUrn(urnTwoSetupData, urnTwoMetadata, vatRepo)
+		urnTwoSetupData := helper.GetUrnSetupData()
+		helper.CreateUrn(urnTwoSetupData, headerTwo.Id, urnTwoMetadata, vatRepo)
 
 		expectedTimestampTwo := helper.GetExpectedTimestamp(timestampTwo)
 		expectedUrnTwo := helper.UrnState{
 			UrnIdentifier: urnTwo,
 			IlkIdentifier: helper.AnotherFakeIlk.Identifier,
 			BlockHeight:   blockTwo,
-			Ink:           strconv.Itoa(urnTwoSetupData.Ink),
-			Art:           strconv.Itoa(urnTwoSetupData.Art),
+			Ink:           strconv.Itoa(urnTwoSetupData[vat.UrnInk]),
+			Art:           strconv.Itoa(urnTwoSetupData[vat.UrnArt]),
 			Created:       helper.GetValidNullString(expectedTimestampTwo),
 			Updated:       helper.GetValidNullString(expectedTimestampTwo),
 		}
@@ -146,15 +146,15 @@ var _ = Describe("Urn view", func() {
 
 	Describe("result pagination", func() {
 		var (
-			urnOneSetupData, urnTwoSetupData helper.UrnSetupData
+			urnOneSetupData, urnTwoSetupData map[string]int
 			timestampTwo                     int
 			blockTwo                         int
 		)
 
 		BeforeEach(func() {
 			urnOneMetadata := helper.GetUrnMetadata(helper.FakeIlk.Hex, urnOne)
-			urnOneSetupData = helper.GetUrnSetupData(headerOne)
-			helper.CreateUrn(urnOneSetupData, urnOneMetadata, vatRepo)
+			urnOneSetupData = helper.GetUrnSetupData()
+			helper.CreateUrn(urnOneSetupData, headerOne.Id, urnOneMetadata, vatRepo)
 
 			// New block
 			blockTwo = blockOne + 1
@@ -162,8 +162,8 @@ var _ = Describe("Urn view", func() {
 			headerTwo := createHeader(blockTwo, timestampTwo, headerRepo)
 
 			urnTwoMetadata := helper.GetUrnMetadata(helper.AnotherFakeIlk.Hex, urnTwo)
-			urnTwoSetupData = helper.GetUrnSetupData(headerTwo)
-			helper.CreateUrn(urnTwoSetupData, urnTwoMetadata, vatRepo)
+			urnTwoSetupData = helper.GetUrnSetupData()
+			helper.CreateUrn(urnTwoSetupData, headerTwo.Id, urnTwoMetadata, vatRepo)
 		})
 
 		It("limits results if max_results argument is provided", func() {
@@ -171,8 +171,8 @@ var _ = Describe("Urn view", func() {
 			expectedUrn := helper.UrnState{
 				UrnIdentifier: urnTwo,
 				IlkIdentifier: helper.AnotherFakeIlk.Identifier,
-				Ink:           strconv.Itoa(urnTwoSetupData.Ink),
-				Art:           strconv.Itoa(urnTwoSetupData.Art),
+				Ink:           strconv.Itoa(urnTwoSetupData[vat.UrnInk]),
+				Art:           strconv.Itoa(urnTwoSetupData[vat.UrnArt]),
 				Created:       helper.GetValidNullString(expectedTimestamp),
 				Updated:       helper.GetValidNullString(expectedTimestamp),
 			}
@@ -192,8 +192,8 @@ var _ = Describe("Urn view", func() {
 			expectedUrn := helper.UrnState{
 				UrnIdentifier: urnOne,
 				IlkIdentifier: helper.FakeIlk.Identifier,
-				Ink:           strconv.Itoa(urnOneSetupData.Ink),
-				Art:           strconv.Itoa(urnOneSetupData.Art),
+				Ink:           strconv.Itoa(urnOneSetupData[vat.UrnInk]),
+				Art:           strconv.Itoa(urnOneSetupData[vat.UrnArt]),
 				Created:       helper.GetValidNullString(expectedTimestamp),
 				Updated:       helper.GetValidNullString(expectedTimestamp),
 			}
@@ -218,14 +218,14 @@ var _ = Describe("Urn view", func() {
 	Describe("it includes diffs only up to given block height", func() {
 		var (
 			actualUrn    helper.UrnState
-			setupDataOne helper.UrnSetupData
+			setupDataOne map[string]int
 			metadata     helper.UrnMetadata
 		)
 
 		BeforeEach(func() {
-			setupDataOne = helper.GetUrnSetupData(headerOne)
+			setupDataOne = helper.GetUrnSetupData()
 			metadata = helper.GetUrnMetadata(helper.FakeIlk.Hex, urnOne)
-			helper.CreateUrn(setupDataOne, metadata, vatRepo)
+			helper.CreateUrn(setupDataOne, headerOne.Id, metadata, vatRepo)
 		})
 
 		It("gets urn state as of block one", func() {
@@ -237,8 +237,8 @@ var _ = Describe("Urn view", func() {
 				UrnIdentifier: urnOne,
 				IlkIdentifier: helper.FakeIlk.Identifier,
 				BlockHeight:   blockOne,
-				Ink:           strconv.Itoa(setupDataOne.Ink),
-				Art:           strconv.Itoa(setupDataOne.Art),
+				Ink:           strconv.Itoa(setupDataOne[vat.UrnInk]),
+				Art:           strconv.Itoa(setupDataOne[vat.UrnArt]),
 				Created:       helper.GetValidNullString(expectedTimestamp),
 				Updated:       helper.GetValidNullString(expectedTimestamp),
 			}
@@ -268,7 +268,7 @@ var _ = Describe("Urn view", func() {
 				IlkIdentifier: helper.FakeIlk.Identifier,
 				BlockHeight:   blockTwo,
 				Ink:           strconv.Itoa(updatedInk),
-				Art:           strconv.Itoa(setupDataOne.Art), // Not changed
+				Art:           strconv.Itoa(setupDataOne[vat.UrnArt]), // Not changed
 				Created:       helper.GetValidNullString(expectedTimestampOne),
 				Updated:       helper.GetValidNullString(expectedTimestampTwo),
 			}

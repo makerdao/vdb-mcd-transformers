@@ -266,14 +266,15 @@ CREATE OR REPLACE FUNCTION maker.delete_redundant_ilk_state(ilk_id INTEGER, head
 AS
 $$
 DECLARE
-    associated_ilk TEXT                     := (
+    associated_ilk         TEXT                     := (
         SELECT identifier
         FROM maker.ilks
         WHERE id = delete_redundant_ilk_state.ilk_id);
     ilk_state_block_number BIGINT                   := (
         SELECT block_number
         FROM public.headers
-        WHERE id = header_id);ilk_state      api.historical_ilk_state := (
+        WHERE id = header_id);
+    ilk_state              api.historical_ilk_state := (
         SELECT (ilk_identifier, historical_ilk_state.block_number, rate, art, spot, line, dust, chop, lump, flip, rho,
                 duty, pip, mat, created, updated)
         FROM api.historical_ilk_state

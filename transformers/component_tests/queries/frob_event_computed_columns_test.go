@@ -99,10 +99,10 @@ var _ = Describe("Frob event computed columns", func() {
 
 	Describe("frob_event_urn", func() {
 		It("returns urn_state for a frob_event", func() {
-			urnSetupData := test_helpers.GetUrnSetupData(headerOne)
+			urnSetupData := test_helpers.GetUrnSetupData()
 			urnMetadata := test_helpers.GetUrnMetadata(test_helpers.FakeIlk.Hex, fakeGuy)
 			vatRepository.SetDB(db)
-			test_helpers.CreateUrn(urnSetupData, urnMetadata, vatRepository)
+			test_helpers.CreateUrn(urnSetupData, headerOne.Id, urnMetadata, vatRepository)
 
 			var actualUrn test_helpers.UrnState
 			getUrnErr := db.Get(&actualUrn,
