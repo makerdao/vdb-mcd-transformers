@@ -73,7 +73,7 @@ var _ = Describe("VowFess EventTransformer", func() {
 
 		tr := shared.EventTransformer{
 			Config:     vowFessConfig,
-			Converter:  &vow_fess.VowFessConverter{},
+			Converter:  &vow_fess.Converter{},
 			Repository: &vow_fess.VowFessRepository{},
 		}.NewEventTransformer(db)
 

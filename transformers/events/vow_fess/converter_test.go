@@ -27,9 +27,9 @@ import (
 )
 
 var _ = Describe("Vow fess converter", func() {
-	var converter vow_fess.VowFessConverter
+	var converter vow_fess.Converter
 	BeforeEach(func() {
-		converter = vow_fess.VowFessConverter{}
+		converter = vow_fess.Converter{}
 	})
 
 	It("returns err if log is missing topics", func() {

@@ -17,12 +17,12 @@
 package test_data
 
 import (
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"math/rand"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
@@ -52,16 +52,15 @@ var VowFessHeaderSyncLog = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-var VowFessModel = shared.InsertionModel{
+var VowFessModel = event.InsertionModel{
 	SchemaName: "maker",
 	TableName:  "vow_fess",
-	OrderedColumns: []string{
+	OrderedColumns: []event.ColumnName{
 		constants.HeaderFK, "tab", constants.LogFK,
 	},
-	ColumnValues: shared.ColumnValues{
+	ColumnValues: event.ColumnValues{
 		"tab":              "1337",
 		constants.HeaderFK: VowFessHeaderSyncLog.HeaderID,
 		constants.LogFK:    VowFessHeaderSyncLog.ID,
 	},
-	ForeignKeyValues: shared.ForeignKeyValues{},
 }
