@@ -24,7 +24,7 @@ import (
 )
 
 var EventTransformerInitializer transformer.EventTransformerInitializer = shared.EventTransformer{
-	Config:     shared.GetEventTransformerConfig(constants.VatForkLabel, constants.VatForkSignature()),
+	Config:     shared.GetEventTransformerConfig(constants.VatForkTable, constants.VatForkSignature()),
 	Converter:  &vat_fork.VatForkConverter{},
 	Repository: &vat_fork.VatForkRepository{},
 }.NewEventTransformer

@@ -25,6 +25,6 @@ import (
 )
 
 var EventTransformerInitializer transformer.EventTransformerInitializer = event.Transformer{
-	Config:    shared.GetEventTransformerConfig(constants.TendLabel, constants.TendSignature()),
+	Config:    shared.GetEventTransformerConfig(constants.TendTable, constants.TendSignature()),
 	Converter: &tend.Converter{},
 }.NewTransformer

@@ -52,7 +52,7 @@ var _ = XDescribe("FlopKick Transformer", func() {
 		test_config.CleanTestDB(db)
 
 		flopKickConfig = transformer.EventTransformerConfig{
-			TransformerName:   constants.FlopKickLabel,
+			TransformerName:   constants.FlopKickTable,
 			ContractAddresses: []string{test_data.FlopAddress()},
 			ContractAbi:       constants.FlopABI(),
 			Topic:             constants.FlopKickSignature(),

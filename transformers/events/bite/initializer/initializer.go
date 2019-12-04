@@ -26,6 +26,6 @@ import (
 )
 
 var EventTransformerInitializer transformer.EventTransformerInitializer = event.Transformer{
-	Config:    shared.GetEventTransformerConfig(constants.BiteLabel, constants.BiteSignature()),
+	Config:    shared.GetEventTransformerConfig(constants.BiteTable, constants.BiteSignature()),
 	Converter: &bite.Converter{},
 }.NewTransformer

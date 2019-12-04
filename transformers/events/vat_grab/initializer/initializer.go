@@ -25,7 +25,7 @@ import (
 )
 
 var EventTransformerInitializer transformer.EventTransformerInitializer = shared.EventTransformer{
-	Config:     shared.GetEventTransformerConfig(constants.VatGrabLabel, constants.VatGrabSignature()),
+	Config:     shared.GetEventTransformerConfig(constants.VatGrabTable, constants.VatGrabSignature()),
 	Converter:  &vat_grab.VatGrabConverter{},
 	Repository: &vat_grab.VatGrabRepository{},
 }.NewEventTransformer

@@ -47,7 +47,7 @@ var _ = Describe("Jug File Vow EventTransformer", func() {
 	})
 
 	jugFileVowConfig := transformer.EventTransformerConfig{
-		TransformerName:   constants.JugFileVowLabel,
+		TransformerName:   constants.JugFileVowTable,
 		ContractAddresses: []string{test_data.JugAddress()},
 		ContractAbi:       constants.JugABI(),
 		Topic:             constants.JugFileVowSignature(),

@@ -49,7 +49,7 @@ var _ = Describe("SpotPoke Transformer", func() {
 	})
 
 	spotPokeConfig := transformer.EventTransformerConfig{
-		TransformerName:   constants.SpotPokeLabel,
+		TransformerName:   constants.SpotPokeTable,
 		ContractAddresses: []string{test_data.SpotAddress()},
 		ContractAbi:       constants.SpotABI(),
 		Topic:             constants.SpotPokeSignature(),

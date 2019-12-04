@@ -34,7 +34,7 @@ import (
 
 var _ = Describe("Vat Grab Transformer", func() {
 	vatGrabConfig := transformer.EventTransformerConfig{
-		TransformerName:   constants.VatGrabLabel,
+		TransformerName:   constants.VatGrabTable,
 		ContractAddresses: []string{test_data.VatAddress()},
 		ContractAbi:       constants.VatABI(),
 		Topic:             constants.VatGrabSignature(),

@@ -25,7 +25,7 @@ import (
 )
 
 var EventTransformerInitializer transformer.EventTransformerInitializer = shared.EventTransformer{
-	Config:     shared.GetEventTransformerConfig(constants.SpotFileMatLabel, constants.SpotFileMatSignature()),
+	Config:     shared.GetEventTransformerConfig(constants.SpotFileMatTable, constants.SpotFileMatSignature()),
 	Converter:  &mat.SpotFileMatConverter{},
 	Repository: &mat.SpotFileMatRepository{},
 }.NewEventTransformer

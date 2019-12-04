@@ -25,7 +25,7 @@ import (
 )
 
 var EventTransformerInitializer transformer.EventTransformerInitializer = shared.EventTransformer{
-	Config:     shared.GetEventTransformerConfig(constants.NewCdpLabel, constants.NewCdpSignature()),
+	Config:     shared.GetEventTransformerConfig(constants.NewCdpTable, constants.NewCdpSignature()),
 	Converter:  new_cdp.NewCdpConverter{},
 	Repository: &new_cdp.NewCdpRepository{},
 }.NewEventTransformer

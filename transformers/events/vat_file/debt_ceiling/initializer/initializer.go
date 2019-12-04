@@ -25,7 +25,7 @@ import (
 )
 
 var EventTransformerInitializer transformer.EventTransformerInitializer = shared.EventTransformer{
-	Config:     shared.GetEventTransformerConfig(constants.VatFileDebtCeilingLabel, constants.VatFileDebtCeilingSignature()),
+	Config:     shared.GetEventTransformerConfig(constants.VatFileDebtCeilingTable, constants.VatFileDebtCeilingSignature()),
 	Converter:  &debt_ceiling.VatFileDebtCeilingConverter{},
 	Repository: &debt_ceiling.VatFileDebtCeilingRepository{},
 }.NewEventTransformer

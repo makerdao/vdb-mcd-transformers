@@ -25,7 +25,7 @@ import (
 )
 
 var EventTransformerInitializer transformer.EventTransformerInitializer = shared.EventTransformer{
-	Config:     shared.GetEventTransformerConfig(constants.JugFileBaseLabel, constants.JugFileBaseSignature()),
+	Config:     shared.GetEventTransformerConfig(constants.JugFileBaseTable, constants.JugFileBaseSignature()),
 	Converter:  &base.JugFileBaseConverter{},
 	Repository: &base.JugFileBaseRepository{},
 }.NewEventTransformer

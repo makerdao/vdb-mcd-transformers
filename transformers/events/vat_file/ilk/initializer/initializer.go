@@ -25,7 +25,7 @@ import (
 )
 
 var EventTransformerInitializer transformer.EventTransformerInitializer = shared.EventTransformer{
-	Config:     shared.GetEventTransformerConfig(constants.VatFileIlkLabel, constants.VatFileIlkSignature()),
+	Config:     shared.GetEventTransformerConfig(constants.VatFileIlkTable, constants.VatFileIlkSignature()),
 	Converter:  &ilk.VatFileIlkConverter{},
 	Repository: &ilk.VatFileIlkRepository{},
 }.NewEventTransformer

@@ -31,7 +31,7 @@ import (
 
 var _ = Describe("VatMove EventTransformer", func() {
 	vatMoveConfig := transformer.EventTransformerConfig{
-		TransformerName:   constants.VatMoveLabel,
+		TransformerName:   constants.VatMoveTable,
 		ContractAddresses: []string{test_data.VatAddress()},
 		ContractAbi:       constants.VatABI(),
 		Topic:             constants.VatMoveSignature(),

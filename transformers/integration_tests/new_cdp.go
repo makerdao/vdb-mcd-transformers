@@ -47,7 +47,7 @@ var _ = Describe("NewCdp Transformer", func() {
 	})
 
 	newCdpConfig := transformer.EventTransformerConfig{
-		TransformerName:   mcdConstants.NewCdpLabel,
+		TransformerName:   mcdConstants.NewCdpTable,
 		ContractAddresses: []string{test_data.CdpManagerAddress()},
 		ContractAbi:       mcdConstants.CdpManagerABI(),
 		Topic:             mcdConstants.NewCdpSignature(),

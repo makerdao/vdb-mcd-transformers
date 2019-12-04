@@ -33,7 +33,7 @@ import (
 
 var _ = Describe("VatFlux EventTransformer", func() {
 	vatFluxConfig := transformer.EventTransformerConfig{
-		TransformerName:   constants.VatFluxLabel,
+		TransformerName:   constants.VatFluxTable,
 		ContractAddresses: []string{test_data.VatAddress()},
 		ContractAbi:       constants.VatABI(),
 		Topic:             constants.VatFluxSignature(),

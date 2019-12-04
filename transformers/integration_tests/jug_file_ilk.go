@@ -49,7 +49,7 @@ var _ = Describe("Jug File Ilk EventTransformer", func() {
 	})
 
 	jugFileIlkConfig := transformer.EventTransformerConfig{
-		TransformerName:   constants.JugFileIlkLabel,
+		TransformerName:   constants.JugFileIlkTable,
 		ContractAddresses: []string{test_data.JugAddress()},
 		ContractAbi:       constants.JugABI(),
 		Topic:             constants.JugFileIlkSignature(),

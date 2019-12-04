@@ -52,7 +52,7 @@ var _ = Describe("Vat frob Transformer", func() {
 
 		logFetcher = fetcher.NewLogFetcher(blockChain)
 		vatFrobConfig = transformer.EventTransformerConfig{
-			TransformerName:   constants.VatFrobLabel,
+			TransformerName:   constants.VatFrobTable,
 			ContractAddresses: []string{test_data.VatAddress()},
 			ContractAbi:       constants.VatABI(),
 			Topic:             constants.VatFrobSignature(),

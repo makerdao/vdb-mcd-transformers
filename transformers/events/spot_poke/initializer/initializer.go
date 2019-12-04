@@ -24,7 +24,7 @@ import (
 )
 
 var EventTransformerInitializer transformer.EventTransformerInitializer = shared.EventTransformer{
-	Config:     shared.GetEventTransformerConfig(constants.SpotPokeLabel, constants.SpotPokeSignature()),
+	Config:     shared.GetEventTransformerConfig(constants.SpotPokeTable, constants.SpotPokeSignature()),
 	Converter:  spot_poke.SpotPokeConverter{},
 	Repository: &spot_poke.SpotPokeRepository{},
 }.NewEventTransformer

@@ -49,7 +49,7 @@ var _ = Describe("Vat slip transformer", func() {
 	})
 
 	vatSlipConfig := transformer.EventTransformerConfig{
-		TransformerName:   constants.VatSlipLabel,
+		TransformerName:   constants.VatSlipTable,
 		ContractAddresses: []string{test_data.VatAddress()},
 		ContractAbi:       constants.VatABI(),
 		Topic:             constants.VatSlipSignature(),

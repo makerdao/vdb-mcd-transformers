@@ -49,7 +49,7 @@ var _ = Describe("VatFold Transformer", func() {
 	})
 
 	vatFoldConfig := transformer.EventTransformerConfig{
-		TransformerName:   constants.VatFoldLabel,
+		TransformerName:   constants.VatFoldTable,
 		ContractAddresses: []string{test_data.VatAddress()},
 		ContractAbi:       constants.VatABI(),
 		Topic:             constants.VatFoldSignature(),

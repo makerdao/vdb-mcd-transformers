@@ -9,6 +9,6 @@ import (
 )
 
 var EventTransformerInitializer transformer.EventTransformerInitializer = event.Transformer{
-	Config:    shared.GetEventTransformerConfig(constants.PotCageLabel, constants.PotCageSignature()),
+	Config:    shared.GetEventTransformerConfig(constants.PotCageTable, constants.PotCageSignature()),
 	Converter: &pot_cage.Converter{},
 }.NewTransformer
