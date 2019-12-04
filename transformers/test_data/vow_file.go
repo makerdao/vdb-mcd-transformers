@@ -56,12 +56,12 @@ var VowFileModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.VowFileLabel,
 	OrderedColumns: []event.ColumnName{
-		constants.HeaderFK, constants.WhatColumn, constants.DataColumn, constants.LogFK,
+		event.HeaderFK, constants.WhatColumn, constants.DataColumn, event.LogFK,
 	},
 	ColumnValues: event.ColumnValues{
 		constants.WhatColumn: "wait",
 		constants.DataColumn: "100000000000000000000000",
-		constants.HeaderFK:   VowFileHeaderSyncLog.HeaderID,
-		constants.LogFK:      VowFileHeaderSyncLog.ID,
+		event.HeaderFK:       VowFileHeaderSyncLog.HeaderID,
+		event.LogFK:          VowFileHeaderSyncLog.ID,
 	},
 }

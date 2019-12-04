@@ -41,13 +41,13 @@ func (Converter) ToModels(_ string, logs []core.HeaderSyncLog, _ *postgres.DB) (
 			SchemaName: constants.MakerSchema,
 			TableName:  constants.VowFileLabel,
 			OrderedColumns: []event.ColumnName{
-				constants.HeaderFK, constants.WhatColumn, constants.DataColumn, constants.LogFK,
+				event.HeaderFK, constants.WhatColumn, constants.DataColumn, event.LogFK,
 			},
 			ColumnValues: event.ColumnValues{
 				constants.WhatColumn: what,
 				constants.DataColumn: data.String(),
-				constants.HeaderFK:   log.HeaderID,
-				constants.LogFK:      log.ID,
+				event.HeaderFK:       log.HeaderID,
+				event.LogFK:          log.ID,
 			},
 		}
 
