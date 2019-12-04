@@ -40,12 +40,12 @@ func (Converter) ToModels(_ string, logs []core.HeaderSyncLog, _ *postgres.DB) (
 			SchemaName: constants.MakerSchema,
 			TableName:  constants.VowFlogLabel,
 			OrderedColumns: []event.ColumnName{
-				constants.HeaderFK, constants.EraColumn, constants.LogFK,
+				event.HeaderFK, constants.EraColumn, event.LogFK,
 			},
 			ColumnValues: event.ColumnValues{
 				constants.EraColumn: era.String(),
-				constants.HeaderFK:  log.HeaderID,
-				constants.LogFK:     log.ID,
+				event.HeaderFK:      log.HeaderID,
+				event.LogFK:         log.ID,
 			},
 		}
 		models = append(models, model)
