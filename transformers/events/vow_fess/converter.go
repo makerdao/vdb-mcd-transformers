@@ -19,38 +19,34 @@ package vow_fess
 import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
+	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 )
 
-type VowFessConverter struct{}
+type Converter struct{}
 
-const (
-	logDataRequired   = false
-	numTopicsRequired = 3
-)
-
-func (VowFessConverter) ToModels(_ string, logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
-	var models []shared.InsertionModel
+func (Converter) ToModels(_ string, logs []core.HeaderSyncLog, db *postgres.DB) ([]event.InsertionModel, error) {
+	var models []event.InsertionModel
 	for _, log := range logs {
-		err := shared.VerifyLog(log.Log, numTopicsRequired, logDataRequired)
+		err := shared.VerifyLog(log.Log, shared.ThreeTopicsRequired, shared.LogDataNotRequired)
 		if err != nil {
 			return nil, err
 		}
 
 		tab := log.Log.Topics[2].Big()
 
-		model := shared.InsertionModel{
+		model := event.InsertionModel{
 			SchemaName: "maker",
-			TableName:  "vow_fess",
-			OrderedColumns: []string{
-				constants.HeaderFK, "tab", constants.LogFK,
+			TableName:  constants.VowFessLabel,
+			OrderedColumns: []event.ColumnName{
+				event.HeaderFK, constants.TabColumn, event.LogFK,
 			},
-			ColumnValues: shared.ColumnValues{
-				"tab":              tab.String(),
-				constants.HeaderFK: log.HeaderID,
-				constants.LogFK:    log.ID,
+			ColumnValues: event.ColumnValues{
+				constants.TabColumn: tab.String(),
+				event.HeaderFK:      log.HeaderID,
+				event.LogFK:         log.ID,
 			},
-			ForeignKeyValues: shared.ForeignKeyValues{},
 		}
 		models = append(models, model)
 	}

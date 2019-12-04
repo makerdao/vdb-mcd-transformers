@@ -21,11 +21,11 @@ import (
 	"math/rand"
 	"strconv"
 
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
+
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/vow_fess"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/pkg/core"
@@ -42,8 +42,6 @@ var _ = Describe("Sin queue event computed columns", func() {
 		fakeEra                string
 		headerOne              core.Header
 		fakeGethLog            types.Log
-		vowFessEvent           shared.InsertionModel
-		vowFessRepo            vow_fess.VowFessRepository
 		headerRepository       repositories.HeaderRepository
 	)
 
@@ -59,13 +57,11 @@ var _ = Describe("Sin queue event computed columns", func() {
 		fakeHeaderSyncLog := test_data.CreateTestLog(headerOne.Id, db)
 		fakeGethLog = fakeHeaderSyncLog.Log
 
-		vowFessRepo = vow_fess.VowFessRepository{}
-		vowFessRepo.SetDB(db)
-		vowFessEvent = test_data.VowFessModel
+		vowFessEvent := test_data.VowFessModel
 		vowFessEvent.ColumnValues[constants.HeaderFK] = headerOne.Id
 		vowFessEvent.ColumnValues[constants.LogFK] = fakeHeaderSyncLog.ID
-		insertErr := vowFessRepo.Create([]shared.InsertionModel{vowFessEvent})
-		Expect(insertErr).NotTo(HaveOccurred())
+		vowFessErr := event.PersistModels([]event.InsertionModel{vowFessEvent}, db)
+		Expect(vowFessErr).NotTo(HaveOccurred())
 	})
 
 	AfterEach(func() {

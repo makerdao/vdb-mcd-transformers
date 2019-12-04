@@ -18,18 +18,22 @@ package vow_fess_test
 
 import (
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/vow_fess"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/pkg/core"
+	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("Vow fess converter", func() {
-	var converter vow_fess.VowFessConverter
+	var converter vow_fess.Converter
+	var testDb *postgres.DB
 	BeforeEach(func() {
-		converter = vow_fess.VowFessConverter{}
+		converter = vow_fess.Converter{}
+		testDb = test_config.NewTestDB(test_config.NewTestNode())
 	})
 
 	It("returns err if log is missing topics", func() {
@@ -38,12 +42,12 @@ var _ = Describe("Vow fess converter", func() {
 				Data: []byte{1, 1, 1, 1, 1},
 			}}
 
-		_, err := converter.ToModels(constants.VowABI(), []core.HeaderSyncLog{badLog})
+		_, err := converter.ToModels(constants.VowABI(), []core.HeaderSyncLog{badLog}, testDb)
 		Expect(err).To(HaveOccurred())
 	})
 
 	It("converts a log to a model", func() {
-		models, err := converter.ToModels(constants.VowABI(), []core.HeaderSyncLog{test_data.VowFessHeaderSyncLog})
+		models, err := converter.ToModels(constants.VowABI(), []core.HeaderSyncLog{test_data.VowFessHeaderSyncLog}, testDb)
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(len(models)).To(Equal(1))
