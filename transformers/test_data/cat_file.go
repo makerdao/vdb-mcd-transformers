@@ -56,7 +56,7 @@ func CatFileChopModel() event.InsertionModel { return CopyEventModel(catFileChop
 
 var catFileChopModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
-	TableName:  "cat_file_chop_lump",
+	TableName:  constants.CatFileChopLumpTable,
 	OrderedColumns: []event.ColumnName{
 		event.HeaderFK,
 		constants.IlkColumn,
@@ -101,7 +101,7 @@ func CatFileLumpModel() event.InsertionModel { return CopyEventModel(catFileLump
 
 var catFileLumpModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
-	TableName:  "cat_file_chop_lump",
+	TableName:  constants.CatFileChopLumpTable,
 	OrderedColumns: []event.ColumnName{
 		event.HeaderFK,
 		constants.IlkColumn,
@@ -146,7 +146,7 @@ func CatFileFlipModel() event.InsertionModel { return CopyEventModel(catFileFlip
 
 var catFileFlipModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
-	TableName:  "cat_file_flip",
+	TableName:  constants.CatFileFlipTable,
 	OrderedColumns: []event.ColumnName{
 		event.HeaderFK,
 		constants.IlkColumn,
@@ -190,7 +190,7 @@ func CatFileVowModel() event.InsertionModel { return CopyEventModel(catFileVowMo
 
 var catFileVowModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
-	TableName:  "cat_file_vow",
+	TableName:  constants.CatFileVowTable,
 	OrderedColumns: []event.ColumnName{
 		constants.HeaderFK, constants.WhatColumn, constants.DataColumn, constants.LogFK,
 	},

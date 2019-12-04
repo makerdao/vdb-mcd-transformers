@@ -55,7 +55,7 @@ var VatForkHeaderSyncLogWithNegativeDinkDart = core.HeaderSyncLog{
 
 var VatForkModelWithNegativeDinkDart = shared.InsertionModel{
 	SchemaName: constants.MakerSchema,
-	TableName:  "vat_fork",
+	TableName:  constants.VatForkTable,
 	OrderedColumns: []string{
 		constants.HeaderFK, string(constants.IlkFK), "src", "dst", "dink", "dart", constants.LogFK,
 	},
@@ -98,7 +98,7 @@ var VatForkHeaderSyncLogWithPositiveDinkDart = core.HeaderSyncLog{
 
 var VatForkModelWithPositiveDinkDart = shared.InsertionModel{
 	SchemaName: constants.MakerSchema,
-	TableName:  "vat_fork",
+	TableName:  constants.VatForkTable,
 	OrderedColumns: []string{
 		constants.HeaderFK, string(constants.IlkFK), "src", "dst", "dink", "dart", constants.LogFK,
 	},

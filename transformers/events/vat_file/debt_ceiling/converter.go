@@ -41,7 +41,7 @@ func (VatFileDebtCeilingConverter) ToModels(_ string, logs []core.HeaderSyncLog)
 
 		model := shared.InsertionModel{
 			SchemaName: constants.MakerSchema,
-			TableName:  "vat_file_debt_ceiling",
+			TableName:  constants.VatFileDebtCeilingTable,
 			OrderedColumns: []string{
 				constants.HeaderFK, "what", "data", constants.LogFK,
 			},

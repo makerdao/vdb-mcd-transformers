@@ -42,7 +42,7 @@ func (JugFileBaseConverter) ToModels(_ string, logs []core.HeaderSyncLog) ([]sha
 
 		model := shared.InsertionModel{
 			SchemaName: constants.MakerSchema,
-			TableName:  "jug_file_base",
+			TableName:  constants.JugFileBaseTable,
 			OrderedColumns: []string{
 				constants.HeaderFK, "what", "data", constants.LogFK,
 			},

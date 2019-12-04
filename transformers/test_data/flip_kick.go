@@ -73,7 +73,7 @@ func FlipKickModel() shared.InsertionModel { return CopyModel(flipKickModel) }
 
 var flipKickModel = shared.InsertionModel{
 	SchemaName: constants.MakerSchema,
-	TableName:  "flip_kick",
+	TableName:  constants.FlipKickTable,
 	OrderedColumns: []string{
 		constants.HeaderFK, constants.LogFK, "bid_id", "lot", "bid", "tab", "usr", "gal", "address_id",
 	},

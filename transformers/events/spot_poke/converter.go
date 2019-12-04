@@ -64,7 +64,7 @@ func (s SpotPokeConverter) ToModels(abi string, logs []core.HeaderSyncLog) ([]sh
 	for _, spotPokeEntity := range entities {
 		spotPokeModel := shared.InsertionModel{
 			SchemaName: constants.MakerSchema,
-			TableName:  "spot_poke",
+			TableName:  constants.SpotPokeTable,
 			OrderedColumns: []string{
 				constants.HeaderFK, constants.LogFK, string(constants.IlkFK), "value", "spot",
 			},

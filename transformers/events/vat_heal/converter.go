@@ -41,7 +41,7 @@ func (VatHealConverter) ToModels(_ string, logs []core.HeaderSyncLog) ([]shared.
 
 		model := shared.InsertionModel{
 			SchemaName: constants.MakerSchema,
-			TableName:  "vat_heal",
+			TableName:  constants.VatHealTable,
 			OrderedColumns: []string{
 				constants.HeaderFK, "rad", constants.LogFK,
 			},

@@ -55,7 +55,7 @@ var VowFessHeaderSyncLog = core.HeaderSyncLog{
 
 var VowFessModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
-	TableName:  constants.VowFessLabel,
+	TableName:  constants.VowFessTable,
 	OrderedColumns: []event.ColumnName{
 		event.HeaderFK, constants.TabColumn, event.LogFK,
 	},

@@ -44,7 +44,7 @@ func (VatMoveConverter) ToModels(_ string, logs []core.HeaderSyncLog) ([]shared.
 
 		model := shared.InsertionModel{
 			SchemaName: constants.MakerSchema,
-			TableName:  "vat_move",
+			TableName:  constants.VatMoveTable,
 			OrderedColumns: []string{
 				constants.HeaderFK, "src", "dst", "rad", constants.LogFK,
 			},

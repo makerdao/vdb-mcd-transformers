@@ -49,7 +49,7 @@ func (converter Converter) ToModels(_ string, logs []core.HeaderSyncLog, db *pos
 
 		result := event.InsertionModel{
 			SchemaName: constants.MakerSchema,
-			TableName:  "cat_file_flip",
+			TableName:  constants.CatFileFlipTable,
 			OrderedColumns: []event.ColumnName{
 				event.HeaderFK,
 				constants.IlkColumn,

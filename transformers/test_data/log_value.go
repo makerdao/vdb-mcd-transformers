@@ -60,7 +60,7 @@ func LogValueModel() event.InsertionModel { return CopyEventModel(logValueModel)
 
 var logValueModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
-	TableName:  "log_value",
+	TableName:  constants.LogValueTable,
 	OrderedColumns: []event.ColumnName{
 		constants.HeaderFK, constants.LogFK, log_value.Val,
 	},

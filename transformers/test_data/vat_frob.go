@@ -64,7 +64,7 @@ func VatFrobModelWithPositiveDart() shared.InsertionModel {
 
 var vatFrobModelWithPositiveDart = shared.InsertionModel{
 	SchemaName: constants.MakerSchema,
-	TableName:  "vat_frob",
+	TableName:  constants.VatFrobTable,
 	OrderedColumns: []string{
 		constants.HeaderFK, string(constants.UrnFK), "v", "w", "dink", "dart", constants.LogFK,
 	},
@@ -110,7 +110,7 @@ func VatFrobModelWithNegativeDink() shared.InsertionModel { return vatFrobModelW
 
 var vatFrobModelWithNegativeDink = shared.InsertionModel{
 	SchemaName: constants.MakerSchema,
-	TableName:  "vat_frob",
+	TableName:  constants.VatFrobTable,
 	OrderedColumns: []string{
 		constants.HeaderFK, string(constants.UrnFK), "v", "w", "dink", "dart", constants.LogFK,
 	},

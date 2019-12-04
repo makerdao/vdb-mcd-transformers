@@ -59,7 +59,7 @@ func JugFileIlkModel() shared.InsertionModel { return CopyModel(jugFileIlkModel)
 
 var jugFileIlkModel = shared.InsertionModel{
 	SchemaName: constants.MakerSchema,
-	TableName:  "jug_file_ilk",
+	TableName:  constants.JugFileIlkTable,
 	OrderedColumns: []string{
 		constants.HeaderFK, string(constants.IlkFK), "what", "data", constants.LogFK,
 	},
@@ -100,7 +100,7 @@ var JugFileBaseHeaderSyncLog = core.HeaderSyncLog{
 
 var JugFileBaseModel = shared.InsertionModel{
 	SchemaName: constants.MakerSchema,
-	TableName:  "jug_file_base",
+	TableName:  constants.JugFileBaseTable,
 	OrderedColumns: []string{
 		constants.HeaderFK, "what", "data", constants.LogFK,
 	},
@@ -139,7 +139,7 @@ var JugFileVowHeaderSyncLog = core.HeaderSyncLog{
 
 var JugFileVowModel = shared.InsertionModel{
 	SchemaName: constants.MakerSchema,
-	TableName:  "jug_file_vow",
+	TableName:  constants.JugFileVowTable,
 	OrderedColumns: []string{
 		constants.HeaderFK, "what", "data", constants.LogFK,
 	},

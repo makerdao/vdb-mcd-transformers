@@ -55,7 +55,7 @@ func SpotFileMatModel() shared.InsertionModel { return CopyModel(spotFileMatMode
 
 var spotFileMatModel = shared.InsertionModel{
 	SchemaName: constants.MakerSchema,
-	TableName:  "spot_file_mat",
+	TableName:  constants.SpotFileMatTable,
 	OrderedColumns: []string{
 		constants.HeaderFK, string(constants.IlkFK), "what", "data", constants.LogFK,
 	},
@@ -98,7 +98,7 @@ func SpotFilePipModel() shared.InsertionModel { return CopyModel(spotFilePipMode
 
 var spotFilePipModel = shared.InsertionModel{
 	SchemaName: constants.MakerSchema,
-	TableName:  "spot_file_pip",
+	TableName:  constants.SpotFilePipTable,
 	OrderedColumns: []string{
 		constants.HeaderFK, string(constants.IlkFK), "what", "pip", constants.LogFK,
 	},

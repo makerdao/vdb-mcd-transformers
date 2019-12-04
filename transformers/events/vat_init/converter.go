@@ -41,7 +41,7 @@ func (VatInitConverter) ToModels(_ string, logs []core.HeaderSyncLog) ([]shared.
 
 		model := shared.InsertionModel{
 			SchemaName: constants.MakerSchema,
-			TableName:  "vat_init",
+			TableName:  constants.VatInitTable,
 			OrderedColumns: []string{
 				constants.HeaderFK, string(constants.IlkFK), constants.LogFK,
 			},

@@ -64,7 +64,7 @@ var TendHeaderSyncLog = core.HeaderSyncLog{
 
 var tendModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
-	TableName:  "tend",
+	TableName:  constants.TendTable,
 	OrderedColumns: []event.ColumnName{
 		constants.HeaderFK, tend.Id, tend.Lot, tend.Bid, constants.AddressColumn, constants.LogFK,
 	},

@@ -40,7 +40,7 @@ func (Converter) ToModels(_ string, logs []core.HeaderSyncLog, _ *postgres.DB) (
 
 		result := event.InsertionModel{
 			SchemaName: constants.MakerSchema,
-			TableName:  "cat_file_vow",
+			TableName:  constants.CatFileVowTable,
 			OrderedColumns: []event.ColumnName{
 				constants.HeaderFK, constants.WhatColumn, constants.DataColumn, event.LogFK,
 			},

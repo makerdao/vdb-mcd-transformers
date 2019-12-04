@@ -38,7 +38,7 @@ func (Converter) ToModels(_ string, logs []core.HeaderSyncLog, db *postgres.DB) 
 
 		model := event.InsertionModel{
 			SchemaName: constants.MakerSchema,
-			TableName:  constants.VowFessLabel,
+			TableName:  constants.VowFessTable,
 			OrderedColumns: []event.ColumnName{
 				event.HeaderFK, constants.TabColumn, event.LogFK,
 			},

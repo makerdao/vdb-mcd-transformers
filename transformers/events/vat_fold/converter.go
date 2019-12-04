@@ -44,7 +44,7 @@ func (VatFoldConverter) ToModels(_ string, logs []core.HeaderSyncLog) ([]shared.
 
 		model := shared.InsertionModel{
 			SchemaName: constants.MakerSchema,
-			TableName:  "vat_fold",
+			TableName:  constants.VatFoldTable,
 			OrderedColumns: []string{
 				constants.HeaderFK, string(constants.UrnFK), "rate", constants.LogFK,
 			},

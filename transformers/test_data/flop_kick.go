@@ -55,7 +55,7 @@ func FlopKickModel() shared.InsertionModel { return CopyModel(flopKickModel) }
 
 var flopKickModel = shared.InsertionModel{
 	SchemaName: constants.MakerSchema,
-	TableName:  "flop_kick",
+	TableName:  constants.FlopKickTable,
 	OrderedColumns: []string{
 		constants.HeaderFK, constants.LogFK, string(constants.AddressFK), "bid_id", "lot", "bid", "gal",
 	},

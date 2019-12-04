@@ -61,8 +61,8 @@ var PotFileVowHeaderSyncLog = core.HeaderSyncLog{
 }
 
 var potFileDSRModel = event.InsertionModel{
-	SchemaName: "maker",
-	TableName:  "pot_file_dsr",
+	SchemaName: constants.MakerSchema,
+	TableName:  constants.PotFileDSRTable,
 	OrderedColumns: []event.ColumnName{
 		constants.HeaderFK, constants.LogFK, dsr.What, dsr.Data,
 	},
@@ -75,8 +75,8 @@ var potFileDSRModel = event.InsertionModel{
 }
 
 var potFileVowModel = event.InsertionModel{
-	SchemaName:     "maker",
-	TableName:      "pot_file_vow",
+	SchemaName:     constants.MakerSchema,
+	TableName:      constants.PotFileVowTable,
 	OrderedColumns: []event.ColumnName{constants.HeaderFK, constants.LogFK, vow.What, vow.Data},
 	ColumnValues: event.ColumnValues{
 		constants.HeaderFK: PotFileVowHeaderSyncLog.HeaderID,

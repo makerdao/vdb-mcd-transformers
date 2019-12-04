@@ -56,7 +56,7 @@ var JugDripHeaderSyncLog = core.HeaderSyncLog{
 
 var JugDripModel = shared.InsertionModel{
 	SchemaName: constants.MakerSchema,
-	TableName:  "jug_drip",
+	TableName:  constants.JugDripTable,
 	OrderedColumns: []string{
 		constants.HeaderFK, string(constants.IlkFK), constants.LogFK,
 	},

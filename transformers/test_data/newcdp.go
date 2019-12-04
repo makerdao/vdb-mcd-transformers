@@ -55,7 +55,7 @@ func NewCdpModel() shared.InsertionModel { return CopyModel(newCdpModel) }
 
 var newCdpModel = shared.InsertionModel{
 	SchemaName: constants.MakerSchema,
-	TableName:  "new_cdp",
+	TableName:  constants.NewCdpTable,
 	OrderedColumns: []string{
 		constants.HeaderFK, constants.LogFK, "usr", "own", "cdp",
 	},

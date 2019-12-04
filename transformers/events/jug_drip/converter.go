@@ -41,7 +41,7 @@ func (JugDripConverter) ToModels(_ string, logs []core.HeaderSyncLog) ([]shared.
 
 		model := shared.InsertionModel{
 			SchemaName: constants.MakerSchema,
-			TableName:  "jug_drip",
+			TableName:  constants.JugDripTable,
 			OrderedColumns: []string{
 				constants.HeaderFK, string(constants.IlkFK), constants.LogFK,
 			},
