@@ -24,8 +24,6 @@ import (
 
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/vow_flog"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/pkg/core"
@@ -82,14 +80,12 @@ var _ = Describe("Sin queue events query", func() {
 			vowFlogLog := test_data.CreateTestLog(headerOne.Id, db)
 
 			fakeEra := strconv.Itoa(int(rand.Int31()))
-			vowFlogRepo := vow_flog.VowFlogRepository{}
-			vowFlogRepo.SetDB(db)
 			vowFlogEvent := test_data.VowFlogModel
-			vowFlogEvent.ColumnValues["era"] = fakeEra
+			vowFlogEvent.ColumnValues[constants.EraColumn] = fakeEra
 			vowFlogEvent.ColumnValues[constants.HeaderFK] = headerOne.Id
 			vowFlogEvent.ColumnValues[constants.LogFK] = vowFlogLog.ID
-			createErr := vowFlogRepo.Create([]shared.InsertionModel{vowFlogEvent})
-			Expect(createErr).NotTo(HaveOccurred())
+			vowFlogErr := event.PersistModels([]event.InsertionModel{vowFlogEvent}, db)
+			Expect(vowFlogErr).NotTo(HaveOccurred())
 
 			var actualEvents []test_helpers.SinQueueEvent
 			getErr := db.Select(&actualEvents, `SELECT era, act FROM api.all_sin_queue_events($1)`, fakeEra)
@@ -115,14 +111,12 @@ var _ = Describe("Sin queue events query", func() {
 			headerTwo := createHeader(blockOne+1, timestampTwo, headerRepo)
 
 			vowFlogLog := test_data.CreateTestLog(headerTwo.Id, db)
-			vowFlogRepo := vow_flog.VowFlogRepository{}
-			vowFlogRepo.SetDB(db)
 			vowFlogEvent := test_data.VowFlogModel
-			vowFlogEvent.ColumnValues["era"] = fakeEra
+			vowFlogEvent.ColumnValues[constants.EraColumn] = fakeEra
 			vowFlogEvent.ColumnValues[constants.HeaderFK] = headerTwo.Id
 			vowFlogEvent.ColumnValues[constants.LogFK] = vowFlogLog.ID
-			createFlogErr := vowFlogRepo.Create([]shared.InsertionModel{vowFlogEvent})
-			Expect(createFlogErr).NotTo(HaveOccurred())
+			vowFlogErr := event.PersistModels([]event.InsertionModel{vowFlogEvent}, db)
+			Expect(vowFlogErr).NotTo(HaveOccurred())
 
 			var actualEvents []test_helpers.SinQueueEvent
 			getErr := db.Select(&actualEvents, `SELECT era, act FROM api.all_sin_queue_events($1)`, fakeEra)
@@ -141,14 +135,12 @@ var _ = Describe("Sin queue events query", func() {
 			fakeEra := strconv.Itoa(rawEra)
 			irrelevantEra := strconv.Itoa(rawEra + 1)
 
-			vowFlogRepo := vow_flog.VowFlogRepository{}
-			vowFlogRepo.SetDB(db)
 			vowFlogEvent := test_data.VowFlogModel
-			vowFlogEvent.ColumnValues["era"] = fakeEra
+			vowFlogEvent.ColumnValues[constants.EraColumn] = fakeEra
 			vowFlogEvent.ColumnValues[constants.HeaderFK] = headerOne.Id
 			vowFlogEvent.ColumnValues[constants.LogFK] = vowFlogLog.ID
-			createErr := vowFlogRepo.Create([]shared.InsertionModel{vowFlogEvent})
-			Expect(createErr).NotTo(HaveOccurred())
+			vowFlogErr := event.PersistModels([]event.InsertionModel{vowFlogEvent}, db)
+			Expect(vowFlogErr).NotTo(HaveOccurred())
 
 			var actualEvents []test_helpers.SinQueueEvent
 			getErr := db.Select(&actualEvents, `SELECT era, act FROM api.all_sin_queue_events($1)`, irrelevantEra)
@@ -175,13 +167,11 @@ var _ = Describe("Sin queue events query", func() {
 				headerTwo := createHeader(blockOne+1, timestampTwo, headerRepo)
 				logTwoId := test_data.CreateTestLog(headerTwo.Id, db).ID
 
-				vowFlogRepo := vow_flog.VowFlogRepository{}
-				vowFlogRepo.SetDB(db)
 				vowFlogEvent := test_data.VowFlogModel
-				vowFlogEvent.ColumnValues["era"] = fakeEra
+				vowFlogEvent.ColumnValues[constants.EraColumn] = fakeEra
 				vowFlogEvent.ColumnValues[constants.HeaderFK] = headerTwo.Id
 				vowFlogEvent.ColumnValues[constants.LogFK] = logTwoId
-				vowFlogErr := vowFlogRepo.Create([]shared.InsertionModel{vowFlogEvent})
+				vowFlogErr := event.PersistModels([]event.InsertionModel{vowFlogEvent}, db)
 				Expect(vowFlogErr).NotTo(HaveOccurred())
 			})
 

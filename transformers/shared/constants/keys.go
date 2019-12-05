@@ -56,4 +56,5 @@ const (
 	ArtColumn     event.ColumnName = "art"
 	TabColumn     event.ColumnName = "tab"
 	BidIdColumn   event.ColumnName = "bid_id"
+	EraColumn     event.ColumnName = "era"
 )

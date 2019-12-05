@@ -22,10 +22,10 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
+
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/vow_flog"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/vow"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
@@ -96,14 +96,12 @@ var _ = Describe("QueuedSin", func() {
 		})
 
 		It("returns flogged as true if era has been flogged", func() {
-			vowFlogRepository := vow_flog.VowFlogRepository{}
-			vowFlogRepository.SetDB(db)
 			vowFlogEvent := test_data.VowFlogModel
-			vowFlogEvent.ColumnValues["era"] = fakeEra
+			vowFlogEvent.ColumnValues[constants.EraColumn] = fakeEra
 			vowFlogEvent.ColumnValues[constants.HeaderFK] = headerOne.Id
 			vowFlogEvent.ColumnValues[constants.LogFK] = logId
-			insertVowFlogErr := vowFlogRepository.Create([]shared.InsertionModel{vowFlogEvent})
-			Expect(insertVowFlogErr).NotTo(HaveOccurred())
+			vowFlogErr := event.PersistModels([]event.InsertionModel{vowFlogEvent}, db)
+			Expect(vowFlogErr).NotTo(HaveOccurred())
 
 			var result QueuedSin
 			err := db.Get(&result, `SELECT era, tab, flogged, created, updated from api.get_queued_sin($1)`, fakeEra)

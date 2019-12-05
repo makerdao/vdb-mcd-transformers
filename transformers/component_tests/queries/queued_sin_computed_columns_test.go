@@ -24,8 +24,6 @@ import (
 
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/vow_flog"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/vow"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
@@ -47,7 +45,6 @@ var _ = Describe("Queued sin computed columns", func() {
 			fakeTab                = strconv.Itoa(rand.Int())
 			sinMappingMetadata     utils.StorageValueMetadata
 			vowRepository          vow.VowStorageRepository
-			vowFlogRepo            vow_flog.VowFlogRepository
 			headerRepository       repositories.HeaderRepository
 		)
 
@@ -69,14 +66,12 @@ var _ = Describe("Queued sin computed columns", func() {
 			Expect(insertSinMappingErr).NotTo(HaveOccurred())
 
 			vowFlogLog := test_data.CreateTestLog(headerOne.Id, db)
-			vowFlogRepo = vow_flog.VowFlogRepository{}
-			vowFlogRepo.SetDB(db)
 			vowFlogEvent := test_data.VowFlogModel
-			vowFlogEvent.ColumnValues["era"] = fakeEra
+			vowFlogEvent.ColumnValues[constants.EraColumn] = fakeEra
 			vowFlogEvent.ColumnValues[constants.HeaderFK] = headerOne.Id
 			vowFlogEvent.ColumnValues[constants.LogFK] = vowFlogLog.ID
-			insertVowFlogErr := vowFlogRepo.Create([]shared.InsertionModel{vowFlogEvent})
-			Expect(insertVowFlogErr).NotTo(HaveOccurred())
+			vowFlogErr := event.PersistModels([]event.InsertionModel{vowFlogEvent}, db)
+			Expect(vowFlogErr).NotTo(HaveOccurred())
 		})
 
 		AfterEach(func() {
@@ -116,11 +111,11 @@ var _ = Describe("Queued sin computed columns", func() {
 				// add flog event for same sin in later block
 				vowFlogLogTwo := test_data.CreateTestLog(headerTwo.Id, db)
 				vowFlogEventTwo := test_data.VowFlogModel
-				vowFlogEventTwo.ColumnValues["era"] = fakeEra
+				vowFlogEventTwo.ColumnValues[constants.EraColumn] = fakeEra
 				vowFlogEventTwo.ColumnValues[constants.HeaderFK] = headerTwo.Id
 				vowFlogEventTwo.ColumnValues[constants.LogFK] = vowFlogLogTwo.ID
-				vowFlogTwoErr := vowFlogRepo.Create([]shared.InsertionModel{vowFlogEventTwo})
-				Expect(vowFlogTwoErr).NotTo(HaveOccurred())
+				vowFlogErr := event.PersistModels([]event.InsertionModel{vowFlogEventTwo}, db)
+				Expect(vowFlogErr).NotTo(HaveOccurred())
 			})
 
 			It("limits results to latest blocks if max_results argument is provided", func() {
