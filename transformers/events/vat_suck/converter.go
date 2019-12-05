@@ -20,18 +20,20 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
+	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 )
 
-type VatSuckConverter struct{}
+type Converter struct{}
 
 const (
 	logDataRequired   = false
 	numTopicsRequired = 4
 )
 
-func (VatSuckConverter) ToModels(_ string, logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
-	var models []shared.InsertionModel
+func (Converter) ToModels(_ string, logs []core.HeaderSyncLog, _ *postgres.DB) ([]event.InsertionModel, error) {
+	var models []event.InsertionModel
 	for _, log := range logs {
 		err := shared.VerifyLog(log.Log, numTopicsRequired, logDataRequired)
 		if err != nil {
@@ -42,20 +44,19 @@ func (VatSuckConverter) ToModels(_ string, logs []core.HeaderSyncLog) ([]shared.
 		v := common.BytesToAddress(log.Log.Topics[2].Bytes()).String()
 		radInt := shared.ConvertUint256HexToBigInt(log.Log.Topics[3].Hex())
 
-		model := shared.InsertionModel{
-			SchemaName: constants.MakerSchema,
-			TableName:  constants.VatSuckTable,
-			OrderedColumns: []string{
-				constants.HeaderFK, "u", "v", "rad", constants.LogFK,
+		model := event.InsertionModel{
+			SchemaName: "maker",
+			TableName:  "vat_suck",
+			OrderedColumns: []event.ColumnName{
+				event.HeaderFK, constants.UColumn, constants.VColumn, constants.RadColumn, event.LogFK,
 			},
-			ColumnValues: shared.ColumnValues{
-				"u":                u,
-				"v":                v,
-				"rad":              radInt.String(),
-				constants.HeaderFK: log.HeaderID,
-				constants.LogFK:    log.ID,
+			ColumnValues: event.ColumnValues{
+				constants.UColumn:   u,
+				constants.VColumn:   v,
+				constants.RadColumn: radInt.String(),
+				event.HeaderFK:      log.HeaderID,
+				event.LogFK:         log.ID,
 			},
-			ForeignKeyValues: shared.ForeignKeyValues{},
 		}
 		models = append(models, model)
 	}

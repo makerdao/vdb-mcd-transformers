@@ -54,7 +54,10 @@ const (
 	DataColumn    event.ColumnName = "data"
 	InkColumn     event.ColumnName = "ink"
 	ArtColumn     event.ColumnName = "art"
+	RadColumn     event.ColumnName = "rad"
 	TabColumn     event.ColumnName = "tab"
+	UColumn       event.ColumnName = "u"
+	VColumn       event.ColumnName = "v"
 	BidIdColumn   event.ColumnName = "bid_id"
 	EraColumn     event.ColumnName = "era"
 )

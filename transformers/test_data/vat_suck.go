@@ -17,6 +17,7 @@
 package test_data
 
 import (
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"math/rand"
 
 	"github.com/makerdao/vulcanizedb/pkg/core"
@@ -25,7 +26,6 @@ import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
 
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 )
 
@@ -53,18 +53,17 @@ var VatSuckHeaderSyncLog = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-var VatSuckModel = shared.InsertionModel{
-	SchemaName: constants.MakerSchema,
-	TableName:  constants.VatSuckTable,
-	OrderedColumns: []string{
+var VatSuckModel = event.InsertionModel{
+	SchemaName: "maker",
+	TableName:  "vat_suck",
+	OrderedColumns: []event.ColumnName{
 		constants.HeaderFK, "u", "v", "rad", constants.LogFK,
 	},
-	ColumnValues: shared.ColumnValues{
+	ColumnValues: event.ColumnValues{
 		"u":                "0x07Fa9eF6609cA7921112231F8f195138ebbA2977",
 		"v":                "0x7340e006f4135BA6970D43bf43d88DCAD4e7a8CA",
 		"rad":              "1000000000000000000000",
 		constants.HeaderFK: VatSuckHeaderSyncLog.HeaderID,
 		constants.LogFK:    VatSuckHeaderSyncLog.ID,
 	},
-	ForeignKeyValues: shared.ForeignKeyValues{},
 }

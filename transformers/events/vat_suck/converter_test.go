@@ -19,7 +19,9 @@ package vat_suck_test
 import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vulcanizedb/pkg/core"
+	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
@@ -29,9 +31,13 @@ import (
 )
 
 var _ = Describe("VatSuck converter", func() {
+	var (
+		converter vat_suck.Converter
+		db        *postgres.DB
+	)
 	It("Converts log to a model", func() {
-		converter := vat_suck.VatSuckConverter{}
-		models, err := converter.ToModels(constants.VatABI(), []core.HeaderSyncLog{test_data.VatSuckHeaderSyncLog})
+		db = test_config.NewTestDB(test_config.NewTestNode())
+		models, err := converter.ToModels(constants.VatABI(), []core.HeaderSyncLog{test_data.VatSuckHeaderSyncLog}, db)
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(len(models)).To(Equal(1))
@@ -39,7 +45,6 @@ var _ = Describe("VatSuck converter", func() {
 	})
 
 	It("Returns an error if there are missing topics", func() {
-		converter := vat_suck.VatSuckConverter{}
 		badLog := core.HeaderSyncLog{
 			Log: types.Log{
 				Topics: []common.Hash{
@@ -49,7 +54,7 @@ var _ = Describe("VatSuck converter", func() {
 				}},
 		}
 
-		_, err := converter.ToModels(constants.VatABI(), []core.HeaderSyncLog{badLog})
+		_, err := converter.ToModels(constants.VatABI(), []core.HeaderSyncLog{badLog}, db)
 
 		Expect(err).To(HaveOccurred())
 	})
