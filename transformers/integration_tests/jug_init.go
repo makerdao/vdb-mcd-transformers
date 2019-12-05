@@ -33,7 +33,7 @@ import (
 
 var _ = Describe("JugInit EventTransformer", func() {
 	jugInitConfig := transformer.EventTransformerConfig{
-		TransformerName:   constants.JugInitLabel,
+		TransformerName:   constants.JugInitTable,
 		ContractAddresses: []string{test_data.JugAddress()},
 		ContractAbi:       constants.JugABI(),
 		Topic:             constants.JugInitSignature(),

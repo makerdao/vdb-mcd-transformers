@@ -54,7 +54,7 @@ var VatHealHeaderSyncLog = core.HeaderSyncLog{
 
 var VatHealModel = shared.InsertionModel{
 	SchemaName: constants.MakerSchema,
-	TableName:  "vat_heal",
+	TableName:  constants.VatHealTable,
 	OrderedColumns: []string{
 		constants.HeaderFK, "rad", constants.LogFK,
 	},

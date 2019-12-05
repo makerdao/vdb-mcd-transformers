@@ -48,7 +48,7 @@ var _ = XDescribe("VowFlog EventTransformer", func() {
 	})
 
 	vowFlogConfig := transformer.EventTransformerConfig{
-		TransformerName:   constants.VowFlogLabel,
+		TransformerName:   constants.VowFlogTable,
 		ContractAddresses: []string{test_data.VowAddress()},
 		ContractAbi:       constants.VowABI(),
 		Topic:             constants.VowFlogSignature(),

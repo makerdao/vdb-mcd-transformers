@@ -46,7 +46,7 @@ func (c Converter) ToModels(_ string, logs []core.HeaderSyncLog, db *postgres.DB
 
 		model := event.InsertionModel{
 			SchemaName: constants.MakerSchema,
-			TableName:  "yank",
+			TableName:  constants.YankTable,
 			OrderedColumns: []event.ColumnName{
 				constants.HeaderFK, BidId, constants.AddressColumn, constants.LogFK,
 			},

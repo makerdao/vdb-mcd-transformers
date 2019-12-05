@@ -68,7 +68,7 @@ var _ = Describe("SpotFile EventTransformers", func() {
 			Expect(insertHeaderErr).NotTo(HaveOccurred())
 
 			spotFileMatConfig := transformer.EventTransformerConfig{
-				TransformerName:     constants.SpotFileMatLabel,
+				TransformerName:     constants.SpotFileMatTable,
 				ContractAddresses:   []string{test_data.SpotAddress()},
 				ContractAbi:         constants.SpotABI(),
 				Topic:               constants.SpotFileMatSignature(),
@@ -128,7 +128,7 @@ var _ = Describe("SpotFile EventTransformers", func() {
 			Expect(insertHeaderErr).NotTo(HaveOccurred())
 
 			spotFilePipConfig := transformer.EventTransformerConfig{
-				TransformerName:     constants.SpotFilePipLabel,
+				TransformerName:     constants.SpotFilePipTable,
 				ContractAddresses:   []string{test_data.SpotAddress()},
 				ContractAbi:         constants.SpotABI(),
 				Topic:               constants.SpotFilePipSignature(),

@@ -48,7 +48,7 @@ var _ = Describe("PotCage EventTransformer", func() {
 			Expect(insertHeaderErr).NotTo(HaveOccurred())
 
 			potCageConfig := transformer.EventTransformerConfig{
-				TransformerName:     constants.PotCageLabel,
+				TransformerName:     constants.PotCageTable,
 				ContractAddresses:   []string{cageDeploymentPotAddress},
 				ContractAbi:         constants.PotABI(),
 				Topic:               constants.PotCageSignature(),

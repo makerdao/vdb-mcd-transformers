@@ -52,7 +52,7 @@ var _ = Describe("Deal transformer", func() {
 		test_config.CleanTestDB(db)
 
 		dealConfig = transformer.EventTransformerConfig{
-			TransformerName: constants.DealLabel,
+			TransformerName: constants.DealTable,
 			ContractAddresses: []string{
 				test_data.FlapAddress(),
 				test_data.EthFlipAddress(),

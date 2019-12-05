@@ -48,7 +48,7 @@ func (JugFileIlkConverter) ToModels(_ string, logs []core.HeaderSyncLog) ([]shar
 
 		model := shared.InsertionModel{
 			SchemaName: constants.MakerSchema,
-			TableName:  "jug_file_ilk",
+			TableName:  constants.JugFileIlkTable,
 			OrderedColumns: []string{
 				constants.HeaderFK, string(constants.IlkFK), "what", "data", constants.LogFK,
 			},

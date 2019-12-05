@@ -55,7 +55,7 @@ var VatFluxHeaderSyncLog = core.HeaderSyncLog{
 
 var VatFluxModel = shared.InsertionModel{
 	SchemaName: constants.MakerSchema,
-	TableName:  "vat_flux",
+	TableName:  constants.VatFluxTable,
 	OrderedColumns: []string{
 		constants.HeaderFK, string(constants.IlkFK), "src", "dst", "wad", constants.LogFK,
 	},

@@ -59,7 +59,7 @@ func (VatFrobConverter) ToModels(_ string, logs []core.HeaderSyncLog) ([]shared.
 
 		model := shared.InsertionModel{
 			SchemaName: constants.MakerSchema,
-			TableName:  "vat_frob",
+			TableName:  constants.VatFrobTable,
 			OrderedColumns: []string{
 				constants.HeaderFK, string(constants.UrnFK), "v", "w", "dink", "dart", constants.LogFK,
 			},

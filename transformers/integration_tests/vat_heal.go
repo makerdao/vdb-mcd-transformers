@@ -31,7 +31,7 @@ import (
 
 var _ = Describe("VatHeal Transformer", func() {
 	vatHealConfig := transformer.EventTransformerConfig{
-		TransformerName:   constants.VatHealLabel,
+		TransformerName:   constants.VatHealTable,
 		ContractAddresses: []string{test_data.VatAddress()},
 		ContractAbi:       constants.VatABI(),
 		Topic:             constants.VatHealSignature(),

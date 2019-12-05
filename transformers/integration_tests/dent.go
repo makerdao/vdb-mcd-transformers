@@ -53,7 +53,7 @@ var _ = Describe("Dent transformer", func() {
 		test_config.CleanTestDB(db)
 
 		dentConfig = transformer.EventTransformerConfig{
-			TransformerName:   constants.DentLabel,
+			TransformerName:   constants.DentTable,
 			ContractAddresses: append(test_data.FlipAddresses(), test_data.FlopAddress()),
 			ContractAbi:       constants.FlipABI(),
 			Topic:             constants.DentSignature(),

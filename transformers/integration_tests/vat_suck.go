@@ -31,7 +31,7 @@ import (
 
 var _ = Describe("VatSuck Transformer", func() {
 	vatSuckConfig := transformer.EventTransformerConfig{
-		TransformerName:   constants.VatSuckLabel,
+		TransformerName:   constants.VatSuckTable,
 		ContractAddresses: []string{test_data.VatAddress()},
 		ContractAbi:       constants.VatABI(),
 		Topic:             constants.VatSuckSignature(),

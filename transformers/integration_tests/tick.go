@@ -52,7 +52,7 @@ var _ = XDescribe("Tick EventTransformer", func() {
 		test_config.CleanTestDB(db)
 
 		tickConfig = transformer.EventTransformerConfig{
-			TransformerName:   mcdConstants.TickLabel,
+			TransformerName:   mcdConstants.TickTable,
 			ContractAddresses: append(test_data.FlipAddresses(), test_data.FlopAddress()),
 			ContractAbi:       mcdConstants.FlipABI(),
 			Topic:             mcdConstants.TickSignature(),

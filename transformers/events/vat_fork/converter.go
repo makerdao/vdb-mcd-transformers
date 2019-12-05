@@ -57,7 +57,7 @@ func (VatForkConverter) ToModels(_ string, logs []core.HeaderSyncLog) ([]shared.
 
 		model := shared.InsertionModel{
 			SchemaName: constants.MakerSchema,
-			TableName:  "vat_fork",
+			TableName:  constants.VatForkTable,
 			OrderedColumns: []string{
 				constants.HeaderFK, string(constants.IlkFK), "src", "dst", "dink", "dart", constants.LogFK,
 			},

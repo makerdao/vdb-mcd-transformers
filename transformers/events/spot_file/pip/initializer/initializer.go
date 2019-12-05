@@ -25,7 +25,7 @@ import (
 )
 
 var EventTransformerInitializer transformer.EventTransformerInitializer = shared.EventTransformer{
-	Config:     shared.GetEventTransformerConfig(constants.SpotFilePipLabel, constants.SpotFilePipSignature()),
+	Config:     shared.GetEventTransformerConfig(constants.SpotFilePipTable, constants.SpotFilePipSignature()),
 	Converter:  &pip.SpotFilePipConverter{},
 	Repository: &pip.SpotFilePipRepository{},
 }.NewEventTransformer

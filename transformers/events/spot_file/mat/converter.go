@@ -48,7 +48,7 @@ func (SpotFileMatConverter) ToModels(_ string, logs []core.HeaderSyncLog) ([]sha
 
 		model := shared.InsertionModel{
 			SchemaName: constants.MakerSchema,
-			TableName:  "spot_file_mat",
+			TableName:  constants.SpotFileMatTable,
 			OrderedColumns: []string{
 				constants.HeaderFK, string(constants.IlkFK), "what", "data", constants.LogFK,
 			},

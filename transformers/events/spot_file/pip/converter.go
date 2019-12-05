@@ -48,7 +48,7 @@ func (SpotFilePipConverter) ToModels(_ string, logs []core.HeaderSyncLog) ([]sha
 
 		model := shared.InsertionModel{
 			SchemaName: constants.MakerSchema,
-			TableName:  "spot_file_pip",
+			TableName:  constants.SpotFilePipTable,
 			OrderedColumns: []string{
 				constants.HeaderFK, string(constants.IlkFK), "what", "pip", constants.LogFK,
 			},

@@ -47,7 +47,7 @@ var _ = Describe("VowFess EventTransformer", func() {
 	})
 
 	vowFessConfig := transformer.EventTransformerConfig{
-		TransformerName:   constants.VowFessLabel,
+		TransformerName:   constants.VowFessTable,
 		ContractAddresses: []string{test_data.VowAddress()},
 		ContractAbi:       constants.VowABI(),
 		Topic:             constants.VowFessSignature(),

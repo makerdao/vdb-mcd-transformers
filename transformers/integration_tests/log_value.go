@@ -31,7 +31,7 @@ import (
 
 var _ = Describe("LogValue Transformer", func() {
 	logValueConfig := transformer.EventTransformerConfig{
-		TransformerName:   constants.LogValueLabel,
+		TransformerName:   constants.LogValueTable,
 		ContractAddresses: test_data.OsmAddresses(),
 		ContractAbi:       constants.OsmABI(),
 		Topic:             constants.LogValueSignature(),

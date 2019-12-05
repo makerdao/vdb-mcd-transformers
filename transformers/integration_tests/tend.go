@@ -51,7 +51,7 @@ var _ = Describe("Tend EventTransformer", func() {
 		test_config.CleanTestDB(db)
 
 		tendConfig = transformer.EventTransformerConfig{
-			TransformerName:   constants.TendLabel,
+			TransformerName:   constants.TendTable,
 			ContractAddresses: []string{test_data.EthFlipAddress()},
 			ContractAbi:       constants.FlipABI(),
 			Topic:             constants.TendSignature(),

@@ -2,6 +2,7 @@ package dsr
 
 import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
@@ -26,8 +27,8 @@ func (converter Converter) ToModels(_ string, logs []core.HeaderSyncLog, _ *post
 		what := shared.DecodeHexToText(log.Log.Topics[2].Hex())
 		data := shared.ConvertUint256HexToBigInt(log.Log.Topics[3].Hex())
 		result := event.InsertionModel{
-			SchemaName: "maker",
-			TableName:  "pot_file_dsr",
+			SchemaName: constants.MakerSchema,
+			TableName:  constants.PotFileDSRTable,
 			OrderedColumns: []event.ColumnName{
 				event.HeaderFK,
 				event.LogFK,

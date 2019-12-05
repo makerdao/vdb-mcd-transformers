@@ -48,7 +48,7 @@ var _ = Describe("PotFile EventTransformers", func() {
 			Expect(insertHeaderErr).NotTo(HaveOccurred())
 
 			potFileDSRConfig := transformer.EventTransformerConfig{
-				TransformerName:     constants.PotFileDSRLabel,
+				TransformerName:     constants.PotFileDSRTable,
 				ContractAddresses:   []string{test_data.PotAddress()},
 				ContractAbi:         constants.PotABI(),
 				Topic:               constants.PotFileDSRSignature(),
@@ -102,7 +102,7 @@ var _ = Describe("PotFile EventTransformers", func() {
 			Expect(insertHeaderErr).NotTo(HaveOccurred())
 
 			potFileVowConfig := transformer.EventTransformerConfig{
-				TransformerName:     constants.PotFileVowLabel,
+				TransformerName:     constants.PotFileVowTable,
 				ContractAddresses:   []string{test_data.PotAddress()},
 				ContractAbi:         constants.PotABI(),
 				Topic:               constants.PotFileVowSignature(),

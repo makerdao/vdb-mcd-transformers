@@ -47,7 +47,7 @@ var _ = Describe("Vat fork transformer", func() {
 	})
 
 	vatForkConfig := transformer.EventTransformerConfig{
-		TransformerName:   constants.VatForkLabel,
+		TransformerName:   constants.VatForkTable,
 		ContractAddresses: []string{test_data.VatAddress()},
 		ContractAbi:       constants.VatABI(),
 		Topic:             constants.VatForkSignature(),

@@ -47,7 +47,7 @@ var _ = Describe("FlapKick Transformer", func() {
 	})
 
 	flapKickConfig := transformer.EventTransformerConfig{
-		TransformerName:   constants.FlapKickLabel,
+		TransformerName:   constants.FlapKickTable,
 		ContractAddresses: []string{test_data.FlapAddress()},
 		ContractAbi:       constants.FlapABI(),
 		Topic:             constants.FlapKickSignature(),

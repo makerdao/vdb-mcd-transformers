@@ -56,7 +56,7 @@ var JugInitHeaderSyncLog = core.HeaderSyncLog{
 
 var JugInitModel = shared.InsertionModel{
 	SchemaName: constants.MakerSchema,
-	TableName:  "jug_init",
+	TableName:  constants.JugInitTable,
 	OrderedColumns: []string{
 		constants.HeaderFK, string(constants.IlkFK), constants.LogFK,
 	},

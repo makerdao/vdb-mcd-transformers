@@ -48,7 +48,7 @@ var _ = Describe("VowFile LogNoteTransforer", func() {
 		db = test_config.NewTestDB(blockChain.Node())
 		test_config.CleanTestDB(db)
 		vowFileConfig := transformer.EventTransformerConfig{
-			TransformerName:   constants.VowFileLabel,
+			TransformerName:   constants.VowFileTable,
 			ContractAddresses: []string{test_data.VowAddress()},
 			ContractAbi:       constants.VowABI(),
 			Topic:             constants.VowFileSignature(),

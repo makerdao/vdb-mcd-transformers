@@ -78,7 +78,7 @@ func (converter Converter) ToModels(abi string, logs []core.HeaderSyncLog, db *p
 
 		model := event.InsertionModel{
 			SchemaName: constants.MakerSchema,
-			TableName:  "flap_kick",
+			TableName:  constants.FlapKickTable,
 			OrderedColumns: []event.ColumnName{
 				event.HeaderFK, event.LogFK, event.AddressFK, BidId, Lot, Bid,
 			},

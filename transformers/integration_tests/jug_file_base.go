@@ -47,7 +47,7 @@ var _ = Describe("Jug File Base EventTransformer", func() {
 	})
 
 	jugFileBaseConfig := transformer.EventTransformerConfig{
-		TransformerName:   constants.JugFileBaseLabel,
+		TransformerName:   constants.JugFileBaseTable,
 		ContractAddresses: []string{test_data.JugAddress()},
 		ContractAbi:       constants.JugABI(),
 		Topic:             constants.JugFileBaseSignature(),

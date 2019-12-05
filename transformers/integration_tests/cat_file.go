@@ -68,7 +68,7 @@ var _ = Describe("Cat File transformer", func() {
 		chopLumpBlockNumber := int64(14764797)
 		header, err := persistHeader(db, chopLumpBlockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
-		catFileConfig.TransformerName = constants.CatFileChopLumpLabel
+		catFileConfig.TransformerName = constants.CatFileChopLumpTable
 		catFileConfig.Topic = constants.CatFileChopLumpSignature()
 		catFileConfig.StartingBlockNumber = chopLumpBlockNumber
 		catFileConfig.EndingBlockNumber = chopLumpBlockNumber
@@ -107,7 +107,7 @@ var _ = Describe("Cat File transformer", func() {
 		chopLumpBlockNumber := int64(14764791)
 		header, err := persistHeader(db, chopLumpBlockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
-		catFileConfig.TransformerName = constants.CatFileChopLumpLabel
+		catFileConfig.TransformerName = constants.CatFileChopLumpTable
 		catFileConfig.Topic = constants.CatFileChopLumpSignature()
 		catFileConfig.StartingBlockNumber = chopLumpBlockNumber
 		catFileConfig.EndingBlockNumber = chopLumpBlockNumber
@@ -146,7 +146,7 @@ var _ = Describe("Cat File transformer", func() {
 		flipBlockNumber := int64(14764569)
 		header, err := persistHeader(db, flipBlockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
-		catFileConfig.TransformerName = constants.CatFileFlipLabel
+		catFileConfig.TransformerName = constants.CatFileFlipTable
 		catFileConfig.Topic = constants.CatFileFlipSignature()
 		catFileConfig.StartingBlockNumber = flipBlockNumber
 		catFileConfig.EndingBlockNumber = flipBlockNumber
@@ -185,7 +185,7 @@ var _ = Describe("Cat File transformer", func() {
 		vowBlockNumber := int64(14764546)
 		header, err := persistHeader(db, vowBlockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
-		catFileConfig.TransformerName = constants.CatFileVowLabel
+		catFileConfig.TransformerName = constants.CatFileVowTable
 		catFileConfig.Topic = constants.CatFileVowSignature()
 		catFileConfig.StartingBlockNumber = vowBlockNumber
 		catFileConfig.EndingBlockNumber = vowBlockNumber

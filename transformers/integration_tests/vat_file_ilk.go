@@ -50,7 +50,7 @@ var _ = Describe("VatFileIlk EventTransformer", func() {
 		db = test_config.NewTestDB(blockChain.Node())
 		test_config.CleanTestDB(db)
 		vatFileIlkConfig := transformer.EventTransformerConfig{
-			TransformerName:   constants.VatFileIlkLabel,
+			TransformerName:   constants.VatFileIlkTable,
 			ContractAddresses: []string{test_data.VatAddress()},
 			ContractAbi:       constants.VatABI(),
 			Topic:             constants.VatFileIlkSignature(),

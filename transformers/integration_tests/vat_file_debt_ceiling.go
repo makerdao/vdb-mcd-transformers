@@ -47,7 +47,7 @@ var _ = Describe("VatFileDebtCeiling EventTransformer", func() {
 	})
 
 	vatFileDebtCeilingConfig := transformer.EventTransformerConfig{
-		TransformerName:   constants.VatFileDebtCeilingLabel,
+		TransformerName:   constants.VatFileDebtCeilingTable,
 		ContractAddresses: []string{test_data.VatAddress()},
 		ContractAbi:       constants.VatABI(),
 		Topic:             constants.VatFileDebtCeilingSignature(),

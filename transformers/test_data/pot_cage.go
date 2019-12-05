@@ -36,8 +36,8 @@ var PotCageHeaderSyncLog = core.HeaderSyncLog{
 }
 
 var potCageModel = event.InsertionModel{
-	SchemaName:     "maker",
-	TableName:      "pot_cage",
+	SchemaName:     constants.MakerSchema,
+	TableName:      constants.PotCageTable,
 	OrderedColumns: []event.ColumnName{constants.HeaderFK, constants.LogFK},
 	ColumnValues: event.ColumnValues{
 		constants.HeaderFK: PotCageHeaderSyncLog.HeaderID,

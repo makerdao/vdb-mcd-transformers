@@ -25,7 +25,7 @@ import (
 )
 
 var EventTransformerInitializer transformer.EventTransformerInitializer = shared.EventTransformer{
-	Config:     shared.GetEventTransformerConfig(constants.FlipKickLabel, constants.FlipKickSignature()),
+	Config:     shared.GetEventTransformerConfig(constants.FlipKickTable, constants.FlipKickSignature()),
 	Converter:  &flip_kick.FlipKickConverter{},
 	Repository: &flip_kick.FlipKickRepository{},
 }.NewEventTransformer

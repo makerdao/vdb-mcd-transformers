@@ -53,7 +53,7 @@ func FlapKickModel() event.InsertionModel { return CopyEventModel(flapKickModel)
 
 var flapKickModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
-	TableName:  "flap_kick",
+	TableName:  constants.FlapKickTable,
 	OrderedColumns: []event.ColumnName{
 		event.HeaderFK, event.LogFK, event.AddressFK, flap_kick.BidId, flap_kick.Lot, flap_kick.Bid,
 	},

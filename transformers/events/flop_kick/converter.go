@@ -62,7 +62,7 @@ func (c FlopKickConverter) ToModels(abi string, logs []core.HeaderSyncLog) ([]sh
 	for _, flopKickEntity := range entities {
 		model := shared.InsertionModel{
 			SchemaName: constants.MakerSchema,
-			TableName:  "flop_kick",
+			TableName:  constants.FlopKickTable,
 			OrderedColumns: []string{
 				constants.HeaderFK, constants.LogFK, string(constants.AddressFK), "bid_id", "lot", "bid", "gal",
 			},

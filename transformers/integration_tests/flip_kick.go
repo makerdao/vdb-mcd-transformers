@@ -31,7 +31,7 @@ import (
 
 var _ = Describe("FlipKick Transformer", func() {
 	flipKickConfig := transformer.EventTransformerConfig{
-		TransformerName:   constants.FlipKickLabel,
+		TransformerName:   constants.FlipKickTable,
 		ContractAddresses: []string{test_data.EthFlipAddress()},
 		ContractAbi:       constants.FlipABI(),
 		Topic:             constants.FlipKickSignature(),

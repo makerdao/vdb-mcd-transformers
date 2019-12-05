@@ -69,7 +69,7 @@ func BiteModel() event.InsertionModel { return CopyEventModel(biteModel) }
 
 var biteModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
-	TableName:  "bite",
+	TableName:  constants.BiteTable,
 	OrderedColumns: []event.ColumnName{
 		constants.HeaderFK, constants.LogFK, constants.UrnColumn, constants.InkColumn, constants.ArtColumn, constants.TabColumn, constants.FlipColumn, constants.BidIdColumn,
 	},

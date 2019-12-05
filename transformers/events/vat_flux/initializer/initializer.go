@@ -25,7 +25,7 @@ import (
 )
 
 var EventTransformerInitializer transformer.EventTransformerInitializer = shared.EventTransformer{
-	Config:     shared.GetEventTransformerConfig(constants.VatFluxLabel, constants.VatFluxSignature()),
+	Config:     shared.GetEventTransformerConfig(constants.VatFluxTable, constants.VatFluxSignature()),
 	Converter:  &vat_flux.VatFluxConverter{},
 	Repository: &vat_flux.VatFluxRepository{},
 }.NewEventTransformer

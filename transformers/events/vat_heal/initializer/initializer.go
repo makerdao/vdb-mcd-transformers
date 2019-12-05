@@ -25,7 +25,7 @@ import (
 )
 
 var EventTransformerInitializer transformer.EventTransformerInitializer = shared.EventTransformer{
-	Config:     shared.GetEventTransformerConfig(constants.VatHealLabel, constants.VatHealSignature()),
+	Config:     shared.GetEventTransformerConfig(constants.VatHealTable, constants.VatHealSignature()),
 	Converter:  &vat_heal.VatHealConverter{},
 	Repository: &vat_heal.VatHealRepository{},
 }.NewEventTransformer
