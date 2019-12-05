@@ -20,18 +20,20 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
+	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 )
 
-type VatSlipConverter struct{}
+type Converter struct{}
 
 const (
 	logDataRequired   = false
 	numTopicsRequired = 4
 )
 
-func (VatSlipConverter) ToModels(_ string, logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
-	var models []shared.InsertionModel
+func (Converter) ToModels(_ string, logs []core.HeaderSyncLog, _ *postgres.DB) ([]event.InsertionModel, error) {
+	var models []event.InsertionModel
 	for _, log := range logs {
 		err := shared.VerifyLog(log.Log, numTopicsRequired, logDataRequired)
 		if err != nil {
@@ -42,20 +44,18 @@ func (VatSlipConverter) ToModels(_ string, logs []core.HeaderSyncLog) ([]shared.
 		usr := common.BytesToAddress(log.Log.Topics[2].Bytes()).String()
 		wad := shared.ConvertInt256HexToBigInt(log.Log.Topics[3].Hex())
 
-		model := shared.InsertionModel{
+		model := event.InsertionModel{
 			SchemaName: constants.MakerSchema,
 			TableName:  constants.VatSlipTable,
-			OrderedColumns: []string{
-				constants.HeaderFK, string(constants.IlkFK), "usr", "wad", constants.LogFK,
+			OrderedColumns: []event.ColumnName{
+				constants.HeaderFK, constants.IlkColumn, "usr", "wad", constants.LogFK,
 			},
-			ColumnValues: shared.ColumnValues{
-				"usr":              usr,
-				"wad":              wad.String(),
-				constants.HeaderFK: log.HeaderID,
-				constants.LogFK:    log.ID,
-			},
-			ForeignKeyValues: shared.ForeignKeyValues{
-				constants.IlkFK: ilk,
+			ColumnValues: event.ColumnValues{
+				"usr":               usr,
+				"wad":               wad.String(),
+				constants.HeaderFK:  log.HeaderID,
+				constants.LogFK:     log.ID,
+				constants.IlkColumn: ilk,
 			},
 		}
 		models = append(models, model)
