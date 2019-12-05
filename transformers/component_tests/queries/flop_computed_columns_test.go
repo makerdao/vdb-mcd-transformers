@@ -40,7 +40,7 @@ var _ = Describe("Flop computed columns", func() {
 			flopKickLog := test_data.CreateTestLog(headerOne.Id, db)
 
 			flopStorageValues := test_helpers.GetFlopStorageValues(1, fakeBidId)
-			test_helpers.CreateFlop(db, headerOne, flopStorageValues, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
+			test_helpers.CreateFlop(db, 0, headerOne, flopStorageValues, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
 
 			addressId, addressErr := shared.GetOrCreateAddress(contractAddress, db)
 			Expect(addressErr).NotTo(HaveOccurred())
@@ -72,7 +72,7 @@ var _ = Describe("Flop computed columns", func() {
 			flopKickLog := test_data.CreateTestLog(headerOne.Id, db)
 
 			flopStorageValues := test_helpers.GetFlopStorageValues(1, fakeBidId)
-			test_helpers.CreateFlop(db, headerOne, flopStorageValues, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
+			test_helpers.CreateFlop(db, 0, headerOne, flopStorageValues, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
 
 			addressId, addressErr := shared.GetOrCreateAddress(contractAddress, db)
 			Expect(addressErr).NotTo(HaveOccurred())
@@ -90,7 +90,7 @@ var _ = Describe("Flop computed columns", func() {
 
 			irrelevantBidId := fakeBidId + 9999999999999
 			irrelevantFlopStorageValues := test_helpers.GetFlopStorageValues(2, irrelevantBidId)
-			test_helpers.CreateFlop(db, headerTwo, irrelevantFlopStorageValues, test_helpers.GetFlopMetadatas(strconv.Itoa(irrelevantBidId)), contractAddress)
+			test_helpers.CreateFlop(db, 0, headerTwo, irrelevantFlopStorageValues, test_helpers.GetFlopMetadatas(strconv.Itoa(irrelevantBidId)), contractAddress)
 
 			irrelevantFlopKickEvent := test_data.FlopKickModel()
 			irrelevantFlopKickEvent.ColumnValues[event.HeaderFK] = headerTwo.Id
@@ -128,7 +128,7 @@ var _ = Describe("Flop computed columns", func() {
 				logId := test_data.CreateTestLog(headerOne.Id, db).ID
 
 				flopStorageValues := test_helpers.GetFlopStorageValues(1, fakeBidId)
-				test_helpers.CreateFlop(db, headerOne, flopStorageValues, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
+				test_helpers.CreateFlop(db, 0, headerOne, flopStorageValues, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
 
 				addressId, addressErr := shared.GetOrCreateAddress(contractAddress, db)
 				Expect(addressErr).NotTo(HaveOccurred())

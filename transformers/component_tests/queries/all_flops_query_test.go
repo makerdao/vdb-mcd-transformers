@@ -52,13 +52,13 @@ var _ = Describe("All flops query", func() {
 		Expect(contextErr).NotTo(HaveOccurred())
 
 		initialFlopOneStorageValues := test_helpers.GetFlopStorageValues(1, fakeBidIdOne)
-		test_helpers.CreateFlop(db, headerOne, initialFlopOneStorageValues, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidIdOne)), contractAddress)
+		test_helpers.CreateFlop(db, 0, headerOne, initialFlopOneStorageValues, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidIdOne)), contractAddress)
 
 		updatedFlopOneStorageValues := test_helpers.GetFlopStorageValues(2, fakeBidIdOne)
-		test_helpers.CreateFlop(db, headerTwo, updatedFlopOneStorageValues, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidIdOne)), contractAddress)
+		test_helpers.CreateFlop(db, 0, headerTwo, updatedFlopOneStorageValues, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidIdOne)), contractAddress)
 
 		flopStorageValuesTwo := test_helpers.GetFlopStorageValues(3, fakeBidIdTwo)
-		test_helpers.CreateFlop(db, headerTwo, flopStorageValuesTwo, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidIdTwo)), contractAddress)
+		test_helpers.CreateFlop(db, 0, headerTwo, flopStorageValuesTwo, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidIdTwo)), contractAddress)
 
 		contextErr = test_helpers.SetUpFlopBidContext(test_helpers.FlopBidCreationInput{
 			DealCreationInput: test_helpers.DealCreationInput{
@@ -96,10 +96,10 @@ var _ = Describe("All flops query", func() {
 			fakeBidIdTwo = fakeBidIdOne + 1
 
 			flopStorageValuesOne = test_helpers.GetFlopStorageValues(1, fakeBidIdOne)
-			test_helpers.CreateFlop(db, headerOne, flopStorageValuesOne, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidIdOne)), contractAddress)
+			test_helpers.CreateFlop(db, 0, headerOne, flopStorageValuesOne, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidIdOne)), contractAddress)
 
 			flopStorageValuesTwo = test_helpers.GetFlopStorageValues(2, fakeBidIdTwo)
-			test_helpers.CreateFlop(db, headerOne, flopStorageValuesTwo, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidIdTwo)), contractAddress)
+			test_helpers.CreateFlop(db, 0, headerOne, flopStorageValuesTwo, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidIdTwo)), contractAddress)
 		})
 
 		It("limits results if max_results argument is provided", func() {

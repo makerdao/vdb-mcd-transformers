@@ -55,14 +55,12 @@ var _ = Describe("Managed CDP trigger-populated table", func() {
 		fakeUrn := test_data.FakeUrn
 
 		cdpManagerStorageValues1 := test_helpers.GetCdpManagerStorageValues(1, fakeIlk, fakeUrn, fakeCdpi)
-		cdpErr1 := test_helpers.CreateManagedCdp(db, headerOne, cdpManagerStorageValues1,
-			test_helpers.GetCdpManagerMetadatas(strconv.Itoa(fakeCdpi)))
+		cdpErr1 := test_helpers.CreateManagedCdp(db, 0, headerOne, cdpManagerStorageValues1, test_helpers.GetCdpManagerMetadatas(strconv.Itoa(fakeCdpi)))
 		Expect(cdpErr1).NotTo(HaveOccurred())
 
 		fakeCdpi2 := fakeCdpi + 1
 		cdpManagerStorageValues2 := test_helpers.GetCdpManagerStorageValues(2, fakeIlk, fakeUrn, fakeCdpi2)
-		cdpErr2 := test_helpers.CreateManagedCdp(db, headerOne, cdpManagerStorageValues2,
-			test_helpers.GetCdpManagerMetadatas(strconv.Itoa(fakeCdpi2)))
+		cdpErr2 := test_helpers.CreateManagedCdp(db, 0, headerOne, cdpManagerStorageValues2, test_helpers.GetCdpManagerMetadatas(strconv.Itoa(fakeCdpi2)))
 		Expect(cdpErr2).NotTo(HaveOccurred())
 
 		expectedCdp1 := test_helpers.ManagedCdpFromValues(
@@ -89,8 +87,7 @@ var _ = Describe("Managed CDP trigger-populated table", func() {
 		Expect(ownsErr).NotTo(HaveOccurred())
 
 		cdpManagerStorageValues := test_helpers.GetCdpManagerStorageValues(1, fakeIlk, fakeUrn, fakeCdpi)
-		cdpErr := test_helpers.CreateManagedCdp(db, headerOne, cdpManagerStorageValues,
-			test_helpers.GetCdpManagerMetadatas(strconv.Itoa(fakeCdpi)))
+		cdpErr := test_helpers.CreateManagedCdp(db, 0, headerOne, cdpManagerStorageValues, test_helpers.GetCdpManagerMetadatas(strconv.Itoa(fakeCdpi)))
 		Expect(cdpErr).NotTo(HaveOccurred())
 
 		cdpManagerStorageValues[cdp_manager.Owns] = newOwner
@@ -116,8 +113,7 @@ var _ = Describe("Managed CDP trigger-populated table", func() {
 		Expect(cdpiErr).NotTo(HaveOccurred())
 
 		cdpManagerStorageValues := test_helpers.GetCdpManagerStorageValues(1, fakeIlk, fakeUrn, fakeCdpi)
-		cdpErr := test_helpers.CreateManagedCdp(db, headerTwo, cdpManagerStorageValues,
-			test_helpers.GetCdpManagerMetadatas(strconv.Itoa(fakeCdpi)))
+		cdpErr := test_helpers.CreateManagedCdp(db, 0, headerTwo, cdpManagerStorageValues, test_helpers.GetCdpManagerMetadatas(strconv.Itoa(fakeCdpi)))
 		Expect(cdpErr).NotTo(HaveOccurred())
 
 		expectedCdp := test_helpers.ManagedCdpFromValues(

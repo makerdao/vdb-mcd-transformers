@@ -59,7 +59,7 @@ var _ = Describe("Flip bid event computed columns", func() {
 		It("returns flip bid for a flip_bid_event", func() {
 			flipStorageValues := test_helpers.GetFlipStorageValues(1, test_helpers.FakeIlk.Hex, bidId)
 			flipMetadatas := test_helpers.GetFlipMetadatas(strconv.Itoa(bidId))
-			test_helpers.CreateFlip(db, headerOne, flipStorageValues, flipMetadatas, contractAddress)
+			test_helpers.CreateFlip(db, 0, headerOne, flipStorageValues, flipMetadatas, contractAddress)
 
 			ilkId, urnId, err := test_helpers.SetUpFlipBidContext(test_helpers.FlipBidContextInput{
 				DealCreationInput: test_helpers.DealCreationInput{
@@ -92,7 +92,7 @@ var _ = Describe("Flip bid event computed columns", func() {
 			irrelevantContractAddress := "different flipper"
 			irrelevantFlipStorageValues := test_helpers.GetFlipStorageValues(0, test_helpers.AnotherFakeIlk.Hex, bidId)
 			irrelevantFlipMetadatas := test_helpers.GetFlipMetadatas(strconv.Itoa(bidId))
-			test_helpers.CreateFlip(db, headerOne, irrelevantFlipStorageValues, irrelevantFlipMetadatas, irrelevantContractAddress)
+			test_helpers.CreateFlip(db, 0, headerOne, irrelevantFlipStorageValues, irrelevantFlipMetadatas, irrelevantContractAddress)
 
 			_, _, irrelevantFlipContextErr := test_helpers.SetUpFlipBidContext(test_helpers.FlipBidContextInput{
 				DealCreationInput: test_helpers.DealCreationInput{
@@ -109,7 +109,7 @@ var _ = Describe("Flip bid event computed columns", func() {
 
 			flipStorageValues := test_helpers.GetFlipStorageValues(1, test_helpers.FakeIlk.Hex, bidId)
 			flipMetadatas := test_helpers.GetFlipMetadatas(strconv.Itoa(bidId))
-			test_helpers.CreateFlip(db, headerOne, flipStorageValues, flipMetadatas, contractAddress)
+			test_helpers.CreateFlip(db, 0, headerOne, flipStorageValues, flipMetadatas, contractAddress)
 
 			ilkId, urnId, flipContextErr := test_helpers.SetUpFlipBidContext(test_helpers.FlipBidContextInput{
 				DealCreationInput: test_helpers.DealCreationInput{

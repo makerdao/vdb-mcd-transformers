@@ -59,7 +59,7 @@ var _ = Describe("Queued sin computed columns", func() {
 			vowRepository.SetDB(db)
 			sinMappingKeys := map[utils.Key]string{constants.Timestamp: fakeEra}
 			sinMappingMetadata = utils.GetStorageValueMetadata(vow.SinMapping, sinMappingKeys, utils.Uint256)
-			insertSinMappingErr := vowRepository.Create(headerOne.Id, sinMappingMetadata, fakeTab)
+			insertSinMappingErr := vowRepository.Create(0, headerOne.Id, sinMappingMetadata, fakeTab)
 			Expect(insertSinMappingErr).NotTo(HaveOccurred())
 
 			vowFlogLog := test_data.CreateTestLog(headerOne.Id, db)

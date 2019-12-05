@@ -107,7 +107,7 @@ var _ = Describe("Single urn view", func() {
 		It("gets urn state as of block one", func() {
 			updatedInk := rand.Int()
 
-			createErr := vatRepo.Create(headerTwo.Id, metadata.UrnInk, strconv.Itoa(updatedInk))
+			createErr := vatRepo.Create(0, headerTwo.Id, metadata.UrnInk, strconv.Itoa(updatedInk))
 			Expect(createErr).NotTo(HaveOccurred())
 
 			expectedTimestampOne := test_helpers.GetExpectedTimestamp(timestampOne)
@@ -129,7 +129,7 @@ var _ = Describe("Single urn view", func() {
 		It("gets urn state with updated values", func() {
 			updatedInk := rand.Int()
 
-			createErr := vatRepo.Create(headerTwo.Id, metadata.UrnInk, strconv.Itoa(updatedInk))
+			createErr := vatRepo.Create(0, headerTwo.Id, metadata.UrnInk, strconv.Itoa(updatedInk))
 			Expect(createErr).NotTo(HaveOccurred())
 
 			expectedTimestampOne := test_helpers.GetExpectedTimestamp(timestampOne)

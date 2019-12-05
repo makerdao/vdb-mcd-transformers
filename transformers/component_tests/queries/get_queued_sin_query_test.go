@@ -66,7 +66,7 @@ var _ = Describe("QueuedSin", func() {
 		vowRepository.SetDB(db)
 		sinMappingKeys := map[utils.Key]string{constants.Timestamp: fakeEra}
 		sinMappingMetadata = utils.GetStorageValueMetadata(vow.SinMapping, sinMappingKeys, utils.Uint256)
-		insertSinMappingErr := vowRepository.Create(headerOne.Id, sinMappingMetadata, fakeTab)
+		insertSinMappingErr := vowRepository.Create(0, headerOne.Id, sinMappingMetadata, fakeTab)
 		Expect(insertSinMappingErr).NotTo(HaveOccurred())
 	})
 
@@ -121,7 +121,7 @@ var _ = Describe("QueuedSin", func() {
 				timestampTwo := timestampOne + 1
 				headerTwo := createHeader(blockOne+1, timestampTwo, headerRepository)
 				laterTimestamp = strconv.Itoa(timestampTwo)
-				insertVowMappingErr := vowRepository.Create(headerTwo.Id, sinMappingMetadata, anotherFakeTab)
+				insertVowMappingErr := vowRepository.Create(0, headerTwo.Id, sinMappingMetadata, anotherFakeTab)
 				Expect(insertVowMappingErr).NotTo(HaveOccurred())
 			})
 
@@ -157,7 +157,7 @@ var _ = Describe("QueuedSin", func() {
 			anotherFakeTab := strconv.Itoa(int(rand.Int31()))
 			anotherSinMappingKeys := map[utils.Key]string{constants.Timestamp: anotherFakeEra}
 			anotherSinMappingMetadata := utils.GetStorageValueMetadata(vow.SinMapping, anotherSinMappingKeys, utils.Uint256)
-			insertSinMappingErr := vowRepository.Create(headerOne.Id, anotherSinMappingMetadata, anotherFakeTab)
+			insertSinMappingErr := vowRepository.Create(0, headerOne.Id, anotherSinMappingMetadata, anotherFakeTab)
 			Expect(insertSinMappingErr).NotTo(HaveOccurred())
 
 			var results []QueuedSin
@@ -182,7 +182,7 @@ var _ = Describe("QueuedSin", func() {
 				anotherSinMappingKeys := map[utils.Key]string{constants.Timestamp: laterEra}
 				anotherSinMappingMetadata := utils.GetStorageValueMetadata(vow.SinMapping, anotherSinMappingKeys, utils.Uint256)
 
-				insertSinMappingErr := vowRepository.Create(headerOne.Id, anotherSinMappingMetadata, anotherFakeTab)
+				insertSinMappingErr := vowRepository.Create(0, headerOne.Id, anotherSinMappingMetadata, anotherFakeTab)
 				Expect(insertSinMappingErr).NotTo(HaveOccurred())
 			})
 

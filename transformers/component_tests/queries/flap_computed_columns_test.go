@@ -40,7 +40,7 @@ var _ = Describe("Flap computed columns", func() {
 			flapKickLog := test_data.CreateTestLog(headerOne.Id, db)
 
 			flapStorageValues := test_helpers.GetFlapStorageValues(1, fakeBidId)
-			test_helpers.CreateFlap(db, headerOne, flapStorageValues, test_helpers.GetFlapMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
+			test_helpers.CreateFlap(db, 0, headerOne, flapStorageValues, test_helpers.GetFlapMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
 			addressId, addressErr := shared.GetOrCreateAddress(contractAddress, db)
 			Expect(addressErr).NotTo(HaveOccurred())
 
@@ -72,7 +72,7 @@ var _ = Describe("Flap computed columns", func() {
 			flapKickLog := test_data.CreateTestLog(headerOne.Id, db)
 
 			flapStorageValues := test_helpers.GetFlapStorageValues(1, fakeBidId)
-			test_helpers.CreateFlap(db, headerOne, flapStorageValues, test_helpers.GetFlapMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
+			test_helpers.CreateFlap(db, 0, headerOne, flapStorageValues, test_helpers.GetFlapMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
 			addressId, addressErr := shared.GetOrCreateAddress(contractAddress, db)
 			Expect(addressErr).NotTo(HaveOccurred())
 
@@ -89,7 +89,7 @@ var _ = Describe("Flap computed columns", func() {
 
 			irrelevantBidId := fakeBidId + 9999999999999
 			irrelevantFlapStorageValues := test_helpers.GetFlapStorageValues(2, irrelevantBidId)
-			test_helpers.CreateFlap(db, headerTwo, irrelevantFlapStorageValues, test_helpers.GetFlapMetadatas(strconv.Itoa(irrelevantBidId)), contractAddress)
+			test_helpers.CreateFlap(db, 0, headerTwo, irrelevantFlapStorageValues, test_helpers.GetFlapMetadatas(strconv.Itoa(irrelevantBidId)), contractAddress)
 
 			irrelevantFlapKickEvent := test_data.FlapKickModel()
 			irrelevantFlapKickEvent.ColumnValues[event.HeaderFK] = headerTwo.Id
@@ -127,7 +127,7 @@ var _ = Describe("Flap computed columns", func() {
 				logId := test_data.CreateTestLog(headerOne.Id, db).ID
 
 				flapStorageValues := test_helpers.GetFlapStorageValues(1, fakeBidId)
-				test_helpers.CreateFlap(db, headerOne, flapStorageValues, test_helpers.GetFlapMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
+				test_helpers.CreateFlap(db, 0, headerOne, flapStorageValues, test_helpers.GetFlapMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
 				addressId, addressErr := shared.GetOrCreateAddress(contractAddress, db)
 				Expect(addressErr).NotTo(HaveOccurred())
 

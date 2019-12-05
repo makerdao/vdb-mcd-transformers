@@ -55,12 +55,12 @@ var _ = Describe("All Ilks query", func() {
 
 		//creating fakeIlk at block 1
 		test_helpers.CreateVatRecords(headerOne, fakeIlkStateBlock1, test_helpers.FakeIlkVatMetadatas, vatRepository)
-		test_helpers.CreateCatRecords(headerOne, fakeIlkStateBlock1, test_helpers.FakeIlkCatMetadatas, catRepository)
+		test_helpers.CreateCatRecords(0, headerOne, fakeIlkStateBlock1, test_helpers.FakeIlkCatMetadatas, catRepository)
 		test_helpers.CreateJugRecords(headerOne, fakeIlkStateBlock1, test_helpers.FakeIlkJugMetadatas, jugRepository)
 		test_helpers.CreateSpotRecords(headerOne, fakeIlkStateBlock1, test_helpers.FakeIlkSpotMetadatas, spotRepository)
 		//creating anotherFakeIlk at block 2
 		test_helpers.CreateVatRecords(headerTwo, anotherFakeIlkStateBlock2, test_helpers.AnotherFakeIlkVatMetadatas, vatRepository)
-		test_helpers.CreateCatRecords(headerTwo, anotherFakeIlkStateBlock2, test_helpers.AnotherFakeIlkCatMetadatas, catRepository)
+		test_helpers.CreateCatRecords(0, headerTwo, anotherFakeIlkStateBlock2, test_helpers.AnotherFakeIlkCatMetadatas, catRepository)
 		test_helpers.CreateJugRecords(headerTwo, anotherFakeIlkStateBlock2, test_helpers.AnotherFakeIlkJugMetadatas, jugRepository)
 		test_helpers.CreateSpotRecords(headerTwo, anotherFakeIlkStateBlock2, test_helpers.AnotherFakeIlkSpotMetadatas, spotRepository)
 	})
@@ -150,7 +150,7 @@ var _ = Describe("All Ilks query", func() {
 			//updating all anotherFakeIlk values at block 3
 			anotherFakeIlkStateBlock3 := test_helpers.GetIlkValues(4)
 			test_helpers.CreateVatRecords(headerThree, anotherFakeIlkStateBlock3, test_helpers.AnotherFakeIlkVatMetadatas, vatRepository)
-			test_helpers.CreateCatRecords(headerThree, anotherFakeIlkStateBlock3, test_helpers.AnotherFakeIlkCatMetadatas, catRepository)
+			test_helpers.CreateCatRecords(0, headerThree, anotherFakeIlkStateBlock3, test_helpers.AnotherFakeIlkCatMetadatas, catRepository)
 			test_helpers.CreateJugRecords(headerThree, anotherFakeIlkStateBlock3, test_helpers.AnotherFakeIlkJugMetadatas, jugRepository)
 			test_helpers.CreateSpotRecords(headerThree, anotherFakeIlkStateBlock3, test_helpers.AnotherFakeIlkSpotMetadatas, spotRepository)
 

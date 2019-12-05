@@ -64,7 +64,7 @@ var _ = Describe("Urn history query", func() {
 
 		// Relevant ink diff in block two
 		inkBlockTwo := rand.Int()
-		err := vatRepo.Create(headerTwo.Id, urnMetadata.UrnInk, strconv.Itoa(inkBlockTwo))
+		err := vatRepo.Create(0, headerTwo.Id, urnMetadata.UrnInk, strconv.Itoa(inkBlockTwo))
 		Expect(err).NotTo(HaveOccurred())
 
 		// Irrelevant art diff in block two
@@ -72,7 +72,7 @@ var _ = Describe("Urn history query", func() {
 		wrongArt := strconv.Itoa(rand.Int())
 		wrongMetadata := utils.GetStorageValueMetadata(vat.UrnArt,
 			map[utils.Key]string{constants.Ilk: helper.FakeIlk.Hex, constants.Guy: wrongUrn}, utils.Uint256)
-		err = vatRepo.Create(headerOne.Id, wrongMetadata, wrongArt)
+		err = vatRepo.Create(0, headerOne.Id, wrongMetadata, wrongArt)
 		Expect(err).NotTo(HaveOccurred())
 
 		expectedTimestampTwo := helper.GetExpectedTimestamp(timestampTwo)
@@ -93,7 +93,7 @@ var _ = Describe("Urn history query", func() {
 
 		// Relevant art diff in block three
 		artBlockThree := 0
-		err = vatRepo.Create(headerThree.Id, urnMetadata.UrnArt, strconv.Itoa(artBlockThree))
+		err = vatRepo.Create(0, headerThree.Id, urnMetadata.UrnArt, strconv.Itoa(artBlockThree))
 		Expect(err).NotTo(HaveOccurred())
 
 		expectedTimestampThree := helper.GetExpectedTimestamp(timestampThree)
@@ -136,7 +136,7 @@ var _ = Describe("Urn history query", func() {
 			headerTwo := createHeader(blockTwo, timestampTwo, headerRepo)
 
 			// diff in new block
-			err := vatRepo.Create(headerTwo.Id, urnMetadata.UrnInk, strconv.Itoa(urnSetupData[vat.UrnInk]))
+			err := vatRepo.Create(0, headerTwo.Id, urnMetadata.UrnInk, strconv.Itoa(urnSetupData[vat.UrnInk]))
 			Expect(err).NotTo(HaveOccurred())
 		})
 

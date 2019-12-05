@@ -49,15 +49,14 @@ var _ = Describe("Managed CDP computed columns", func() {
 
 		fakeCdpi = rand.Int()
 		storageValues = test_helpers.GetCdpManagerStorageValues(1, test_helpers.FakeIlk.Hex, test_data.FakeUrn, fakeCdpi)
-		cdpErr := test_helpers.CreateManagedCdp(db, headerOne, storageValues, test_helpers.GetCdpManagerMetadatas(strconv.Itoa(fakeCdpi)))
+		cdpErr := test_helpers.CreateManagedCdp(db, 0, headerOne, storageValues, test_helpers.GetCdpManagerMetadatas(strconv.Itoa(fakeCdpi)))
 		Expect(cdpErr).NotTo(HaveOccurred())
 	})
 
 	Describe("managed_cdp_ilk", func() {
 		It("returns ilk_state for a managed_cdp", func() {
 			ilkValues := test_helpers.GetIlkValues(0)
-			test_helpers.CreateIlk(db, headerOne, ilkValues, test_helpers.FakeIlkVatMetadatas,
-				test_helpers.FakeIlkCatMetadatas, test_helpers.FakeIlkJugMetadatas, test_helpers.FakeIlkSpotMetadatas)
+			test_helpers.CreateIlk(db, 0, headerOne, ilkValues, test_helpers.FakeIlkVatMetadatas, test_helpers.FakeIlkCatMetadatas, test_helpers.FakeIlkJugMetadatas, test_helpers.FakeIlkSpotMetadatas)
 
 			expectedIlk := test_helpers.IlkStateFromValues(test_helpers.FakeIlk.Hex, headerOne.Timestamp,
 				headerOne.Timestamp, ilkValues)

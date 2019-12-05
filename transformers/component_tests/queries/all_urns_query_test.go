@@ -114,7 +114,7 @@ var _ = Describe("Urn view", func() {
 	It("returns available data if urn has ink but no art", func() {
 		fakeInk := rand.Int()
 		urnInkMetadata := utils.GetStorageValueMetadata(vat.UrnInk, map[utils.Key]string{constants.Ilk: helper.FakeIlk.Hex, constants.Guy: urnOne}, utils.Uint256)
-		insertInkErr := vatRepo.Create(headerOne.Id, urnInkMetadata, strconv.Itoa(fakeInk))
+		insertInkErr := vatRepo.Create(0, headerOne.Id, urnInkMetadata, strconv.Itoa(fakeInk))
 		Expect(insertInkErr).NotTo(HaveOccurred())
 
 		var result []helper.UrnState
@@ -250,7 +250,7 @@ var _ = Describe("Urn view", func() {
 			fakeHeaderTwoID, err := headerRepo.CreateOrUpdateHeader(fakeHeaderTwo)
 			Expect(err).NotTo(HaveOccurred())
 
-			err = vatRepo.Create(fakeHeaderTwoID, metadata.UrnInk, strconv.Itoa(updatedInk))
+			err = vatRepo.Create(0, fakeHeaderTwoID, metadata.UrnInk, strconv.Itoa(updatedInk))
 			Expect(err).NotTo(HaveOccurred())
 
 			expectedTimestampOne := helper.GetExpectedTimestamp(timestampOne)

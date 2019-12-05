@@ -199,16 +199,16 @@ func IlkStateFromValues(ilk, updated, created string, ilkValues map[string]strin
 func CreateVatRecords(header core.Header, valuesMap map[string]string, metadatas []utils.StorageValueMetadata, repository vat.VatStorageRepository) {
 	for _, metadata := range metadatas {
 		value := valuesMap[metadata.Name]
-		err := repository.Create(header.Id, metadata, value)
+		err := repository.Create(0, header.Id, metadata, value)
 
 		Expect(err).NotTo(HaveOccurred())
 	}
 }
 
-func CreateCatRecords(header core.Header, valuesMap map[string]string, metadatas []utils.StorageValueMetadata, repository cat.CatStorageRepository) {
+func CreateCatRecords(diffID int64, headerID int64, valuesMap map[string]string, metadatas []utils.StorageValueMetadata, repository cat.CatStorageRepository) {
 	for _, metadata := range metadatas {
 		value := valuesMap[metadata.Name]
-		err := repository.Create(header.Id, metadata, value)
+		err := repository.Create(diffID, headerID, metadata, value)
 
 		Expect(err).NotTo(HaveOccurred())
 	}
@@ -217,7 +217,7 @@ func CreateCatRecords(header core.Header, valuesMap map[string]string, metadatas
 func CreateJugRecords(header core.Header, valuesMap map[string]string, metadatas []utils.StorageValueMetadata, repository jug.JugStorageRepository) {
 	for _, metadata := range metadatas {
 		value := valuesMap[metadata.Name]
-		err := repository.Create(header.Id, metadata, value)
+		err := repository.Create(0, header.Id, metadata, value)
 
 		Expect(err).NotTo(HaveOccurred())
 	}
@@ -226,7 +226,7 @@ func CreateJugRecords(header core.Header, valuesMap map[string]string, metadatas
 func CreateSpotRecords(header core.Header, valuesMap map[string]string, metadatas []utils.StorageValueMetadata, repository spot.SpotStorageRepository) {
 	for _, metadata := range metadatas {
 		value := valuesMap[metadata.Name]
-		err := repository.Create(header.Id, metadata, value)
+		err := repository.Create(0, header.Id, metadata, value)
 
 		Expect(err).NotTo(HaveOccurred())
 	}
@@ -235,14 +235,14 @@ func CreateSpotRecords(header core.Header, valuesMap map[string]string, metadata
 // Creates urn by creating necessary state diffs and the corresponding header
 func CreateUrn(setupData map[string]int, headerId int64, metadata UrnMetadata, vatRepo vat.VatStorageRepository) {
 	// This also creates the ilk if it doesn't exist
-	err := vatRepo.Create(headerId, metadata.UrnInk, strconv.Itoa(setupData[vat.UrnInk]))
+	err := vatRepo.Create(0, headerId, metadata.UrnInk, strconv.Itoa(setupData[vat.UrnInk]))
 	Expect(err).NotTo(HaveOccurred())
 
-	err = vatRepo.Create(headerId, metadata.UrnArt, strconv.Itoa(setupData[vat.UrnArt]))
+	err = vatRepo.Create(0, headerId, metadata.UrnArt, strconv.Itoa(setupData[vat.UrnArt]))
 	Expect(err).NotTo(HaveOccurred())
 }
 
-func CreateIlk(db *postgres.DB, header core.Header, valuesMap map[string]string, vatMetadatas, catMetadatas, jugMetadatas, spotMetadatas []utils.StorageValueMetadata) {
+func CreateIlk(db *postgres.DB, diffID int64, header core.Header, valuesMap map[string]string, vatMetadatas, catMetadatas, jugMetadatas, spotMetadatas []utils.StorageValueMetadata) {
 	var (
 		vatRepo  vat.VatStorageRepository
 		catRepo  cat.CatStorageRepository
@@ -254,7 +254,7 @@ func CreateIlk(db *postgres.DB, header core.Header, valuesMap map[string]string,
 	jugRepo.SetDB(db)
 	spotRepo.SetDB(db)
 	CreateVatRecords(header, valuesMap, vatMetadatas, vatRepo)
-	CreateCatRecords(header, valuesMap, catMetadatas, catRepo)
+	CreateCatRecords(diffID, header.Id, valuesMap, catMetadatas, catRepo)
 	CreateJugRecords(header, valuesMap, jugMetadatas, jugRepo)
 	CreateSpotRecords(header, valuesMap, spotMetadatas, spotRepo)
 }
@@ -376,41 +376,41 @@ func GetFlipStorageValues(seed int, ilk string, bidId int) map[string]interface{
 	return valuesMap
 }
 
-func insertValues(repo vdbStorage.Repository, header core.Header, valuesMap map[string]interface{}, metadatas []utils.StorageValueMetadata) {
+func insertValues(repo vdbStorage.Repository, diffID int64, headerID int64, valuesMap map[string]interface{}, metadatas []utils.StorageValueMetadata) {
 	for _, metadata := range metadatas {
 		value := valuesMap[metadata.Name]
-		err := repo.Create(header.Id, metadata, value)
+		err := repo.Create(diffID, headerID, metadata, value)
 
 		Expect(err).NotTo(HaveOccurred())
 	}
 }
 
-func CreateFlop(db *postgres.DB, header core.Header, valuesMap map[string]interface{}, flopMetadatas []utils.StorageValueMetadata, contractAddress string) {
+func CreateFlop(db *postgres.DB, diffID int64, headerID int64, valuesMap map[string]interface{}, flopMetadatas []utils.StorageValueMetadata, contractAddress string) {
 	flopRepo := flop.FlopStorageRepository{ContractAddress: contractAddress}
 	flopRepo.SetDB(db)
-	insertValues(&flopRepo, header, valuesMap, flopMetadatas)
+	insertValues(&flopRepo, diffID, headerID, valuesMap, flopMetadatas)
 }
 
-func CreateFlap(db *postgres.DB, header core.Header, valuesMap map[string]interface{}, flapMetadatas []utils.StorageValueMetadata, contractAddress string) {
+func CreateFlap(db *postgres.DB, diffID int64, headerID int64, valuesMap map[string]interface{}, flapMetadatas []utils.StorageValueMetadata, contractAddress string) {
 	flapRepo := flap.FlapStorageRepository{ContractAddress: contractAddress}
 	flapRepo.SetDB(db)
-	insertValues(&flapRepo, header, valuesMap, flapMetadatas)
+	insertValues(&flapRepo, diffID, headerID, valuesMap, flapMetadatas)
 }
 
-func CreateFlip(db *postgres.DB, header core.Header, valuesMap map[string]interface{}, flipMetadatas []utils.StorageValueMetadata, contractAddress string) {
+func CreateFlip(db *postgres.DB, diffID int64, headerID int64, valuesMap map[string]interface{}, flipMetadatas []utils.StorageValueMetadata, contractAddress string) {
 	flipRepo := flip.FlipStorageRepository{ContractAddress: contractAddress}
 	flipRepo.SetDB(db)
-	insertValues(&flipRepo, header, valuesMap, flipMetadatas)
+	insertValues(&flipRepo, diffID, headerID, valuesMap, flipMetadatas)
 }
 
-func CreateManagedCdp(db *postgres.DB, header core.Header, valuesMap map[string]interface{}, metadatas []utils.StorageValueMetadata) error {
+func CreateManagedCdp(db *postgres.DB, diffID int64, headerID int64, valuesMap map[string]interface{}, metadatas []utils.StorageValueMetadata) error {
 	cdpManagerRepo := cdp_manager.CdpManagerStorageRepository{}
 	cdpManagerRepo.SetDB(db)
 	_, err := shared.GetOrCreateUrn(valuesMap[cdp_manager.Urns].(string), valuesMap[cdp_manager.Ilks].(string), db)
 	if err != nil {
 		return err
 	}
-	insertValues(&cdpManagerRepo, header, valuesMap, metadatas)
+	insertValues(&cdpManagerRepo, diffID, headerID, valuesMap, metadatas)
 	return nil
 }
 

@@ -47,14 +47,14 @@ var _ = Describe("Ilk State History Query", func() {
 
 		blockOneIlkValues = test_helpers.GetIlkValues(0)
 		test_helpers.CreateVatRecords(headerOne, blockOneIlkValues, test_helpers.FakeIlkVatMetadatas, vatRepository)
-		test_helpers.CreateCatRecords(headerOne, blockOneIlkValues, test_helpers.FakeIlkCatMetadatas, catRepository)
+		test_helpers.CreateCatRecords(0, headerOne, blockOneIlkValues, test_helpers.FakeIlkCatMetadatas, catRepository)
 		test_helpers.CreateJugRecords(headerOne, blockOneIlkValues, test_helpers.FakeIlkJugMetadatas, jugRepository)
 		test_helpers.CreateSpotRecords(headerOne, blockOneIlkValues, test_helpers.FakeIlkSpotMetadatas, spotRepository)
 		expectedBlockOneIlkState = test_helpers.IlkStateFromValues(test_helpers.FakeIlk.Hex, headerOne.Timestamp, headerOne.Timestamp, blockOneIlkValues)
 
 		blockTwoIlkValues = test_helpers.GetIlkValues(1)
 		test_helpers.CreateVatRecords(headerTwo, blockTwoIlkValues, test_helpers.FakeIlkVatMetadatas, vatRepository)
-		test_helpers.CreateCatRecords(headerTwo, blockTwoIlkValues, test_helpers.FakeIlkCatMetadatas, catRepository)
+		test_helpers.CreateCatRecords(0, headerTwo, blockTwoIlkValues, test_helpers.FakeIlkCatMetadatas, catRepository)
 		test_helpers.CreateJugRecords(headerTwo, blockTwoIlkValues, test_helpers.FakeIlkJugMetadatas, jugRepository)
 		test_helpers.CreateSpotRecords(headerTwo, blockTwoIlkValues, test_helpers.FakeIlkSpotMetadatas, spotRepository)
 		expectedBlockTwoIlkState = test_helpers.IlkStateFromValues(test_helpers.FakeIlk.Hex, headerTwo.Timestamp, headerOne.Timestamp, blockTwoIlkValues)
@@ -78,7 +78,7 @@ var _ = Describe("Ilk State History Query", func() {
 		blockOneAnotherFakeIlkValues := test_helpers.GetIlkValues(3)
 
 		test_helpers.CreateVatRecords(headerOne, blockOneAnotherFakeIlkValues, test_helpers.AnotherFakeIlkVatMetadatas, vatRepository)
-		test_helpers.CreateCatRecords(headerOne, blockOneAnotherFakeIlkValues, test_helpers.AnotherFakeIlkCatMetadatas, catRepository)
+		test_helpers.CreateCatRecords(0, headerOne, blockOneAnotherFakeIlkValues, test_helpers.AnotherFakeIlkCatMetadatas, catRepository)
 		test_helpers.CreateJugRecords(headerOne, blockOneAnotherFakeIlkValues, test_helpers.AnotherFakeIlkJugMetadatas, jugRepository)
 		test_helpers.CreateSpotRecords(headerOne, blockOneAnotherFakeIlkValues, test_helpers.AnotherFakeIlkSpotMetadatas, spotRepository)
 
