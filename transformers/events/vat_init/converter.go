@@ -19,18 +19,20 @@ package vat_init
 import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
+	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 )
 
-type VatInitConverter struct{}
+type Converter struct{}
 
 const (
 	logDataRequired   = false
 	numTopicsRequired = 2
 )
 
-func (VatInitConverter) ToModels(_ string, logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
-	var models []shared.InsertionModel
+func (Converter) ToModels(_ string, logs []core.HeaderSyncLog, db *postgres.DB) ([]event.InsertionModel, error) {
+	var models []event.InsertionModel
 	for _, log := range logs {
 		err := shared.VerifyLog(log.Log, numTopicsRequired, logDataRequired)
 		if err != nil {
@@ -38,19 +40,21 @@ func (VatInitConverter) ToModels(_ string, logs []core.HeaderSyncLog) ([]shared.
 		}
 
 		ilk := log.Log.Topics[1].Hex()
+		ilkId, ilkErr := shared.GetOrCreateIlk(ilk, db)
+		if ilkErr != nil {
+			return nil, shared.ErrCouldNotCreateFK(ilkErr)
+		}
 
-		model := shared.InsertionModel{
+		model := event.InsertionModel{
 			SchemaName: constants.MakerSchema,
 			TableName:  constants.VatInitTable,
-			OrderedColumns: []string{
-				constants.HeaderFK, string(constants.IlkFK), constants.LogFK,
+			OrderedColumns: []event.ColumnName{
+				event.HeaderFK, constants.IlkColumn, event.LogFK,
 			},
-			ColumnValues: shared.ColumnValues{
-				constants.HeaderFK: log.HeaderID,
-				constants.LogFK:    log.ID,
-			},
-			ForeignKeyValues: shared.ForeignKeyValues{
-				constants.IlkFK: ilk,
+			ColumnValues: event.ColumnValues{
+				event.HeaderFK:      log.HeaderID,
+				event.LogFK:         log.ID,
+				constants.IlkColumn: ilkId,
 			},
 		}
 		models = append(models, model)

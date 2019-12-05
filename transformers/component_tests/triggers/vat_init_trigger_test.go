@@ -18,12 +18,13 @@ package trigger_test
 
 import (
 	"database/sql"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
+	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	"math/rand"
 
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_init"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	. "github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
@@ -41,8 +42,7 @@ var _ = Describe("Updating historical_ilk_state table", func() {
 		rawTimestampOne,
 		rawTimestampTwo int64
 		logIdOne            int64
-		vatInitModel        shared.InsertionModel
-		repo                = vat_init.VatInitRepository{}
+		vatInitModel        event.InsertionModel
 		database            = test_config.NewTestDB(test_config.NewTestNode())
 		getTimeCreatedQuery = `SELECT created FROM api.historical_ilk_state ORDER BY block_number`
 		insertRecordQuery   = `INSERT INTO api.historical_ilk_state (ilk_identifier, block_number, created) VALUES ($1, $2, $3::TIMESTAMP)`
@@ -51,7 +51,6 @@ var _ = Describe("Updating historical_ilk_state table", func() {
 
 	BeforeEach(func() {
 		test_config.CleanTestDB(database)
-		repo.SetDB(database)
 		blockOne = rand.Int()
 		blockTwo = blockOne + 1
 		rawTimestampOne = int64(rand.Int31())
@@ -59,7 +58,7 @@ var _ = Describe("Updating historical_ilk_state table", func() {
 		headerOne = CreateHeader(rawTimestampOne, blockOne, database)
 		headerTwo = CreateHeader(rawTimestampTwo, blockTwo, database)
 		logIdOne = test_data.CreateTestLog(headerOne.Id, database).ID
-		vatInitModel = createVatInitModel(headerOne.Id, logIdOne, test_helpers.FakeIlk.Hex)
+		vatInitModel = createVatInitModel(headerOne.Id, logIdOne, test_helpers.FakeIlk.Hex, database)
 	})
 
 	It("updates time created of all records for an ilk", func() {
@@ -67,8 +66,8 @@ var _ = Describe("Updating historical_ilk_state table", func() {
 		Expect(setupErr).NotTo(HaveOccurred())
 		expectedTimeCreated := sql.NullString{Valid: true, String: FormatTimestamp(rawTimestampOne)}
 
-		err := repo.Create([]shared.InsertionModel{vatInitModel})
-		Expect(err).NotTo(HaveOccurred())
+		vatInitErr := event.PersistModels([]event.InsertionModel{vatInitModel}, database)
+		Expect(vatInitErr).NotTo(HaveOccurred())
 
 		var ilkStates []test_helpers.IlkState
 		queryErr := database.Select(&ilkStates, getTimeCreatedQuery)
@@ -83,8 +82,8 @@ var _ = Describe("Updating historical_ilk_state table", func() {
 		Expect(setupErr).NotTo(HaveOccurred())
 		expectedTimeCreated := sql.NullString{Valid: true, String: FormatTimestamp(rawTimestampTwo)}
 
-		err := repo.Create([]shared.InsertionModel{vatInitModel})
-		Expect(err).NotTo(HaveOccurred())
+		vatInitErr := event.PersistModels([]event.InsertionModel{vatInitModel}, database)
+		Expect(vatInitErr).NotTo(HaveOccurred())
 
 		var ilkStates []test_helpers.IlkState
 		queryErr := database.Select(&ilkStates, getTimeCreatedQuery)
@@ -98,8 +97,8 @@ var _ = Describe("Updating historical_ilk_state table", func() {
 		Expect(setupErr).NotTo(HaveOccurred())
 		expectedTimeCreated := sql.NullString{Valid: false, String: ""}
 
-		err := repo.Create([]shared.InsertionModel{vatInitModel})
-		Expect(err).NotTo(HaveOccurred())
+		vatInitErr := event.PersistModels([]event.InsertionModel{vatInitModel}, database)
+		Expect(vatInitErr).NotTo(HaveOccurred())
 
 		var ilkStates []test_helpers.IlkState
 		queryErr := database.Select(&ilkStates, getTimeCreatedQuery)
@@ -111,8 +110,8 @@ var _ = Describe("Updating historical_ilk_state table", func() {
 	It("sets created to null when record is deleted", func() {
 		_, ilkSetupErr := database.Exec(insertEmptyRowQuery, test_helpers.FakeIlk.Identifier, headerOne.BlockNumber)
 		Expect(ilkSetupErr).NotTo(HaveOccurred())
-		vatInitSetupErr := repo.Create([]shared.InsertionModel{vatInitModel})
-		Expect(vatInitSetupErr).NotTo(HaveOccurred())
+		vatInitErr := event.PersistModels([]event.InsertionModel{vatInitModel}, database)
+		Expect(vatInitErr).NotTo(HaveOccurred())
 
 		_, err := database.Exec(`DELETE FROM maker.vat_init WHERE header_id = $1`, headerOne.Id)
 		Expect(err).NotTo(HaveOccurred())
@@ -124,9 +123,13 @@ var _ = Describe("Updating historical_ilk_state table", func() {
 	})
 })
 
-func createVatInitModel(headerId, logId int64, ilkHex string) shared.InsertionModel {
+func createVatInitModel(headerId, logId int64, ilkHex string, database *postgres.DB) event.InsertionModel {
+
+	ilkID, ilkErr := shared.GetOrCreateIlk(ilkHex, database)
+	Expect(ilkErr).NotTo(HaveOccurred())
+
 	vatInit := test_data.VatInitModel
-	vatInit.ForeignKeyValues[constants.IlkFK] = ilkHex
+	vatInit.ColumnValues[constants.IlkColumn] = ilkID
 	vatInit.ColumnValues[constants.HeaderFK] = headerId
 	vatInit.ColumnValues[constants.LogFK] = logId
 	return vatInit
