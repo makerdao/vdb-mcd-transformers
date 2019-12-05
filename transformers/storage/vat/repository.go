@@ -46,7 +46,7 @@ type VatStorageRepository struct {
 	db *postgres.DB
 }
 
-func (repository *VatStorageRepository) Create(headerID int64, metadata utils.StorageValueMetadata, value interface{}) error {
+func (repository *VatStorageRepository) Create(diffID, headerID int64, metadata utils.StorageValueMetadata, value interface{}) error {
 	switch metadata.Name {
 	case Dai:
 		return repository.insertDai(headerID, metadata, value.(string))

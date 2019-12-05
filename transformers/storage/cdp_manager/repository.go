@@ -40,11 +40,7 @@ type CdpManagerStorageRepository struct {
 	db *postgres.DB
 }
 
-func (repository *CdpManagerStorageRepository) SetDB(db *postgres.DB) {
-	repository.db = db
-}
-
-func (repository CdpManagerStorageRepository) Create(headerID int64, metadata utils.StorageValueMetadata, value interface{}) error {
+func (repository *CdpManagerStorageRepository) Create(diffID, headerID int64, metadata utils.StorageValueMetadata, value interface{}) error {
 	switch metadata.Name {
 	case Vat:
 		return repository.insertVat(headerID, value.(string))
@@ -69,6 +65,10 @@ func (repository CdpManagerStorageRepository) Create(headerID int64, metadata ut
 	default:
 		panic("unrecognized storage metadata name")
 	}
+}
+
+func (repository *CdpManagerStorageRepository) SetDB(db *postgres.DB) {
+	repository.db = db
 }
 
 func (repository CdpManagerStorageRepository) insertVat(headerID int64, vat string) error {

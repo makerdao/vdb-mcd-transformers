@@ -44,7 +44,7 @@ func (repository *VowStorageRepository) SetDB(db *postgres.DB) {
 	repository.db = db
 }
 
-func (repository VowStorageRepository) Create(headerID int64, metadata utils.StorageValueMetadata, value interface{}) error {
+func (repository VowStorageRepository) Create(diffID, headerID int64, metadata utils.StorageValueMetadata, value interface{}) error {
 	switch metadata.Name {
 	case Vat:
 		return repository.insertVowVat(headerID, value.(string))

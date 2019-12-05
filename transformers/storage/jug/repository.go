@@ -37,11 +37,7 @@ type JugStorageRepository struct {
 	db *postgres.DB
 }
 
-func (repository *JugStorageRepository) SetDB(db *postgres.DB) {
-	repository.db = db
-}
-
-func (repository JugStorageRepository) Create(headerID int64, metadata utils.StorageValueMetadata, value interface{}) error {
+func (repository JugStorageRepository) Create(diffID, headerID int64, metadata utils.StorageValueMetadata, value interface{}) error {
 	switch metadata.Name {
 	case IlkRho:
 		return repository.insertIlkRho(headerID, metadata, value.(string))
@@ -57,6 +53,10 @@ func (repository JugStorageRepository) Create(headerID int64, metadata utils.Sto
 	default:
 		panic(fmt.Sprintf("unrecognized jug contract storage name: %s", metadata.Name))
 	}
+}
+
+func (repository *JugStorageRepository) SetDB(db *postgres.DB) {
+	repository.db = db
 }
 
 func (repository JugStorageRepository) insertIlkRho(headerID int64, metadata utils.StorageValueMetadata, rho string) error {

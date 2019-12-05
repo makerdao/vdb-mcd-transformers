@@ -30,7 +30,7 @@ type FlapStorageRepository struct {
 	ContractAddress string
 }
 
-func (repository *FlapStorageRepository) Create(headerID int64, metadata utils.StorageValueMetadata, value interface{}) error {
+func (repository *FlapStorageRepository) Create(diffID, headerID int64, metadata utils.StorageValueMetadata, value interface{}) error {
 	switch metadata.Name {
 	case storage.Vat:
 		return repository.insertVat(headerID, value.(string))

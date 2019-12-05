@@ -34,7 +34,7 @@ type FlipStorageRepository struct {
 	db              *postgres.DB
 }
 
-func (repository *FlipStorageRepository) Create(headerID int64, metadata utils.StorageValueMetadata, value interface{}) error {
+func (repository *FlipStorageRepository) Create(diffID, headerID int64, metadata utils.StorageValueMetadata, value interface{}) error {
 	switch metadata.Name {
 	case storage.Vat:
 		return repository.insertVat(headerID, value.(string))

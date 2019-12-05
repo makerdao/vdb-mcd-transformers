@@ -23,7 +23,7 @@ type CatStorageRepository struct {
 	db *postgres.DB
 }
 
-func (repository *CatStorageRepository) Create(headerID int64, metadata utils.StorageValueMetadata, value interface{}) error {
+func (repository *CatStorageRepository) Create(diffId, headerID int64, metadata utils.StorageValueMetadata, value interface{}) error {
 	switch metadata.Name {
 	case Live:
 		return repository.insertLive(headerID, value.(string))

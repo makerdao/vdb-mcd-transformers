@@ -36,11 +36,7 @@ type SpotStorageRepository struct {
 	db *postgres.DB
 }
 
-func (repository *SpotStorageRepository) SetDB(db *postgres.DB) {
-	repository.db = db
-}
-
-func (repository SpotStorageRepository) Create(headerID int64, metadata utils.StorageValueMetadata, value interface{}) error {
+func (repository SpotStorageRepository) Create(diffID, headerID int64, metadata utils.StorageValueMetadata, value interface{}) error {
 	switch metadata.Name {
 	case IlkPip:
 		return repository.insertIlkPip(headerID, metadata, value.(string))
@@ -54,6 +50,10 @@ func (repository SpotStorageRepository) Create(headerID int64, metadata utils.St
 	default:
 		panic(fmt.Sprintf("unrecognized spot contract storage name: %s", metadata.Name))
 	}
+}
+
+func (repository *SpotStorageRepository) SetDB(db *postgres.DB) {
+	repository.db = db
 }
 
 func (repository SpotStorageRepository) insertIlkPip(headerID int64, metadata utils.StorageValueMetadata, pip string) error {

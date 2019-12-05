@@ -32,7 +32,7 @@ type FlopStorageRepository struct {
 	db              *postgres.DB
 }
 
-func (repository *FlopStorageRepository) Create(headerID int64, metadata utils.StorageValueMetadata, value interface{}) error {
+func (repository *FlopStorageRepository) Create(diffID, headerID int64, metadata utils.StorageValueMetadata, value interface{}) error {
 	switch metadata.Name {
 	case storage.Vat:
 		return repository.insertVat(headerID, value.(string))
