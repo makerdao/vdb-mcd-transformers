@@ -49,7 +49,7 @@ func (VatFluxConverter) ToModels(_ string, logs []core.HeaderSyncLog) ([]shared.
 		wad := shared.ConvertUint256HexToBigInt(hexutil.Encode(wadBytes))
 
 		model := shared.InsertionModel{
-			SchemaName: "maker",
+			SchemaName: constants.MakerSchema,
 			TableName:  "vat_flux",
 			OrderedColumns: []string{
 				constants.HeaderFK, string(constants.IlkFK), "src", "dst", "wad", constants.LogFK,

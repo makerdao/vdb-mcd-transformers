@@ -40,7 +40,7 @@ func (VowFlogConverter) ToModels(_ string, logs []core.HeaderSyncLog) ([]shared.
 		era := log.Log.Topics[2].Big()
 
 		model := shared.InsertionModel{
-			SchemaName: "maker",
+			SchemaName: constants.MakerSchema,
 			TableName:  "vow_flog",
 			OrderedColumns: []string{
 				constants.HeaderFK, "era", constants.LogFK,

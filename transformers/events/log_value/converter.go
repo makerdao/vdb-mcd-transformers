@@ -18,6 +18,7 @@ package log_value
 
 import (
 	"fmt"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"math/big"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
@@ -67,7 +68,7 @@ func (c Converter) ToModels(abi string, logs []core.HeaderSyncLog, _ *postgres.D
 		bigIntVal := new(big.Int).SetBytes(logValueEntity.Val[:])
 
 		model := event.InsertionModel{
-			SchemaName: "maker",
+			SchemaName: constants.MakerSchema,
 			TableName:  "log_value",
 			OrderedColumns: []event.ColumnName{
 				event.HeaderFK, event.LogFK, Val,

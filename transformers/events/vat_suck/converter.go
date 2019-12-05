@@ -43,7 +43,7 @@ func (VatSuckConverter) ToModels(_ string, logs []core.HeaderSyncLog) ([]shared.
 		radInt := shared.ConvertUint256HexToBigInt(log.Log.Topics[3].Hex())
 
 		model := shared.InsertionModel{
-			SchemaName: "maker",
+			SchemaName: constants.MakerSchema,
 			TableName:  "vat_suck",
 			OrderedColumns: []string{
 				constants.HeaderFK, "u", "v", "rad", constants.LogFK,

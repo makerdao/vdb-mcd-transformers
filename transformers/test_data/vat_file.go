@@ -57,7 +57,7 @@ var VatFileDebtCeilingHeaderSyncLog = core.HeaderSyncLog{
 func VatFileDebtCeilingModel() shared.InsertionModel { return CopyModel(vatFileDebtCeilingModel) }
 
 var vatFileDebtCeilingModel = shared.InsertionModel{
-	SchemaName: "maker",
+	SchemaName: constants.MakerSchema,
 	TableName:  "vat_file_debt_ceiling",
 	OrderedColumns: []string{
 		constants.HeaderFK, "what", "data", constants.LogFK,
@@ -99,7 +99,7 @@ var VatFileIlkDustHeaderSyncLog = core.HeaderSyncLog{
 func VatFileIlkDustModel() shared.InsertionModel { return CopyModel(vatFileIlkDustModel) }
 
 var vatFileIlkDustModel = shared.InsertionModel{
-	SchemaName: "maker",
+	SchemaName: constants.MakerSchema,
 	TableName:  "vat_file_ilk",
 	OrderedColumns: []string{
 		constants.HeaderFK, string(constants.IlkFK), "what", "data", constants.LogFK,
@@ -143,7 +143,7 @@ var VatFileIlkLineHeaderSyncLog = core.HeaderSyncLog{
 func VatFileIlkLineModel() shared.InsertionModel { return CopyModel(vatFileIlkLineModel) }
 
 var vatFileIlkLineModel = shared.InsertionModel{
-	SchemaName: "maker",
+	SchemaName: constants.MakerSchema,
 	TableName:  "vat_file_ilk",
 	OrderedColumns: []string{
 		constants.HeaderFK, string(constants.IlkFK), "what", "data", constants.LogFK,
@@ -186,7 +186,7 @@ var VatFileIlkSpotHeaderSyncLog = core.HeaderSyncLog{
 func VatFileIlkSpotModel() shared.InsertionModel { return CopyModel(vatFileIlkSpotModel) }
 
 var vatFileIlkSpotModel = shared.InsertionModel{
-	SchemaName: "maker",
+	SchemaName: constants.MakerSchema,
 	TableName:  "vat_file_ilk",
 	OrderedColumns: []string{
 		constants.HeaderFK, string(constants.IlkFK), "what", "data", constants.LogFK,

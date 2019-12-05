@@ -54,7 +54,7 @@ var VatSuckHeaderSyncLog = core.HeaderSyncLog{
 }
 
 var VatSuckModel = shared.InsertionModel{
-	SchemaName: "maker",
+	SchemaName: constants.MakerSchema,
 	TableName:  "vat_suck",
 	OrderedColumns: []string{
 		constants.HeaderFK, "u", "v", "rad", constants.LogFK,

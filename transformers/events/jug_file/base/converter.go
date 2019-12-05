@@ -41,7 +41,7 @@ func (JugFileBaseConverter) ToModels(_ string, logs []core.HeaderSyncLog) ([]sha
 		data := shared.ConvertUint256HexToBigInt(log.Log.Topics[3].Hex())
 
 		model := shared.InsertionModel{
-			SchemaName: "maker",
+			SchemaName: constants.MakerSchema,
 			TableName:  "jug_file_base",
 			OrderedColumns: []string{
 				constants.HeaderFK, "what", "data", constants.LogFK,

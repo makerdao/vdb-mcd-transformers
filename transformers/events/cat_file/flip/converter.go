@@ -48,7 +48,7 @@ func (converter Converter) ToModels(_ string, logs []core.HeaderSyncLog, db *pos
 		flip := common.BytesToAddress(flipBytes).String()
 
 		result := event.InsertionModel{
-			SchemaName: "maker",
+			SchemaName: constants.MakerSchema,
 			TableName:  "cat_file_flip",
 			OrderedColumns: []event.ColumnName{
 				event.HeaderFK,

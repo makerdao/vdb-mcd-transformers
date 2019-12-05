@@ -54,7 +54,7 @@ var YankHeaderSyncLog = core.HeaderSyncLog{
 }
 
 var YankModel = event.InsertionModel{
-	SchemaName: "maker",
+	SchemaName: constants.MakerSchema,
 	TableName:  "yank",
 	OrderedColumns: []event.ColumnName{
 		constants.HeaderFK, yank.BidId, constants.AddressColumn, constants.LogFK,

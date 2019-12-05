@@ -55,7 +55,7 @@ var VatInitHeaderSyncLog = core.HeaderSyncLog{
 }
 
 var VatInitModel = shared.InsertionModel{
-	SchemaName: "maker",
+	SchemaName: constants.MakerSchema,
 	TableName:  "vat_init",
 	OrderedColumns: []string{
 		constants.HeaderFK, string(constants.IlkFK), constants.LogFK,

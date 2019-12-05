@@ -55,7 +55,7 @@ var VatSlipHeaderSyncLogWithPositiveWad = core.HeaderSyncLog{
 }
 
 var VatSlipModelWithPositiveWad = shared.InsertionModel{
-	SchemaName: "maker",
+	SchemaName: constants.MakerSchema,
 	TableName:  "vat_slip",
 	OrderedColumns: []string{
 		constants.HeaderFK, string(constants.IlkFK), "usr", "wad", constants.LogFK,
@@ -96,7 +96,7 @@ var VatSlipHeaderSyncLogWithNegativeWad = core.HeaderSyncLog{
 }
 
 var VatSlipModelWithNegativeWad = shared.InsertionModel{
-	SchemaName: "maker",
+	SchemaName: constants.MakerSchema,
 	TableName:  "vat_slip",
 	OrderedColumns: []string{
 		constants.HeaderFK, string(constants.IlkFK), "usr", "wad", constants.LogFK,

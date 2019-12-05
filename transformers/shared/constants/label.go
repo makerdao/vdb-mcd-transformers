@@ -17,6 +17,12 @@
 package constants
 
 const (
+	MakerSchema  = "maker"
+	APISchema    = "api"
+	PublicSchema = "public"
+)
+
+const (
 	BiteLabel               = "bite"
 	CatFileChopLumpLabel    = "cat_file_chop_lump"
 	CatFileFlipLabel        = "cat_file_flip"

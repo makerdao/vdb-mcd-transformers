@@ -67,7 +67,7 @@ func (c FlipKickConverter) ToModels(abi string, logs []core.HeaderSyncLog) ([]sh
 		}
 
 		model := shared.InsertionModel{
-			SchemaName: "maker",
+			SchemaName: constants.MakerSchema,
 			TableName:  "flip_kick",
 			OrderedColumns: []string{
 				constants.HeaderFK, constants.LogFK, "bid_id", "lot", "bid", "tab", "usr", "gal", string(constants.AddressFK),

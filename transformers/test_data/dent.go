@@ -66,7 +66,7 @@ func DentModel() event.InsertionModel {
 }
 
 var dentModel = event.InsertionModel{
-	SchemaName: "maker",
+	SchemaName: constants.MakerSchema,
 	TableName:  "dent",
 	OrderedColumns: []event.ColumnName{
 		event.HeaderFK, dent.Id, dent.Lot, dent.Bid, constants.AddressColumn, event.LogFK,

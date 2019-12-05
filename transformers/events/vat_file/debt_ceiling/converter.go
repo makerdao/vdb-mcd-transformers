@@ -40,7 +40,7 @@ func (VatFileDebtCeilingConverter) ToModels(_ string, logs []core.HeaderSyncLog)
 		data := shared.ConvertUint256HexToBigInt(log.Log.Topics[2].Hex())
 
 		model := shared.InsertionModel{
-			SchemaName: "maker",
+			SchemaName: constants.MakerSchema,
 			TableName:  "vat_file_debt_ceiling",
 			OrderedColumns: []string{
 				constants.HeaderFK, "what", "data", constants.LogFK,

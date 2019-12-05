@@ -37,7 +37,7 @@ func (Converter) ToModels(_ string, logs []core.HeaderSyncLog, db *postgres.DB) 
 		tab := log.Log.Topics[2].Big()
 
 		model := event.InsertionModel{
-			SchemaName: "maker",
+			SchemaName: constants.MakerSchema,
 			TableName:  constants.VowFessLabel,
 			OrderedColumns: []event.ColumnName{
 				event.HeaderFK, constants.TabColumn, event.LogFK,

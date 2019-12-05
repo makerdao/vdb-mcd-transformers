@@ -54,7 +54,7 @@ var FlopKickHeaderSyncLog = core.HeaderSyncLog{
 func FlopKickModel() shared.InsertionModel { return CopyModel(flopKickModel) }
 
 var flopKickModel = shared.InsertionModel{
-	SchemaName: "maker",
+	SchemaName: constants.MakerSchema,
 	TableName:  "flop_kick",
 	OrderedColumns: []string{
 		constants.HeaderFK, constants.LogFK, string(constants.AddressFK), "bid_id", "lot", "bid", "gal",

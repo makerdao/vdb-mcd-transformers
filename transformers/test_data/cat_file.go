@@ -55,7 +55,7 @@ var CatFileChopHeaderSyncLog = core.HeaderSyncLog{
 func CatFileChopModel() event.InsertionModel { return CopyEventModel(catFileChopModel) }
 
 var catFileChopModel = event.InsertionModel{
-	SchemaName: "maker",
+	SchemaName: constants.MakerSchema,
 	TableName:  "cat_file_chop_lump",
 	OrderedColumns: []event.ColumnName{
 		event.HeaderFK,
@@ -100,7 +100,7 @@ var CatFileLumpHeaderSyncLog = core.HeaderSyncLog{
 func CatFileLumpModel() event.InsertionModel { return CopyEventModel(catFileLumpModel) }
 
 var catFileLumpModel = event.InsertionModel{
-	SchemaName: "maker",
+	SchemaName: constants.MakerSchema,
 	TableName:  "cat_file_chop_lump",
 	OrderedColumns: []event.ColumnName{
 		event.HeaderFK,
@@ -145,7 +145,7 @@ var CatFileFlipHeaderSyncLog = core.HeaderSyncLog{
 func CatFileFlipModel() event.InsertionModel { return CopyEventModel(catFileFlipModel) }
 
 var catFileFlipModel = event.InsertionModel{
-	SchemaName: "maker",
+	SchemaName: constants.MakerSchema,
 	TableName:  "cat_file_flip",
 	OrderedColumns: []event.ColumnName{
 		event.HeaderFK,
@@ -189,7 +189,7 @@ var CatFileVowHeaderSyncLog = core.HeaderSyncLog{
 func CatFileVowModel() event.InsertionModel { return CopyEventModel(catFileVowModel) }
 
 var catFileVowModel = event.InsertionModel{
-	SchemaName: "maker",
+	SchemaName: constants.MakerSchema,
 	TableName:  "cat_file_vow",
 	OrderedColumns: []event.ColumnName{
 		constants.HeaderFK, constants.WhatColumn, constants.DataColumn, constants.LogFK,

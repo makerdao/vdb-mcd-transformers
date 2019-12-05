@@ -52,7 +52,7 @@ var FlapKickHeaderSyncLog = core.HeaderSyncLog{
 func FlapKickModel() event.InsertionModel { return CopyEventModel(flapKickModel) }
 
 var flapKickModel = event.InsertionModel{
-	SchemaName: "maker",
+	SchemaName: constants.MakerSchema,
 	TableName:  "flap_kick",
 	OrderedColumns: []event.ColumnName{
 		event.HeaderFK, event.LogFK, event.AddressFK, flap_kick.BidId, flap_kick.Lot, flap_kick.Bid,

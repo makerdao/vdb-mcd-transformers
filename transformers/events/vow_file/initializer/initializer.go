@@ -20,11 +20,11 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/vow_file"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 )
 
-var EventTransformerInitializer transformer.EventTransformerInitializer = shared.EventTransformer{
-	Config:     shared.GetEventTransformerConfig(constants.VowFileLabel, constants.VowFileSignature()),
-	Converter:  &vow_file.VowFileConverter{},
-	Repository: &vow_file.VowFileRepository{},
-}.NewEventTransformer
+var EventTransformerInitializer transformer.EventTransformerInitializer = event.Transformer{
+	Config:    shared.GetEventTransformerConfig(constants.VowFileLabel, constants.VowFileSignature()),
+	Converter: &vow_file.Converter{},
+}.NewTransformer

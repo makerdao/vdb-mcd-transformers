@@ -55,7 +55,7 @@ var VatFoldHeaderSyncLogWithPositiveRate = core.HeaderSyncLog{
 }
 
 var VatFoldModelWithPositiveRate = shared.InsertionModel{
-	SchemaName: "maker",
+	SchemaName: constants.MakerSchema,
 	TableName:  "vat_fold",
 	OrderedColumns: []string{
 		constants.HeaderFK, string(constants.UrnFK), "rate", constants.LogFK,
@@ -96,7 +96,7 @@ var VatFoldHeaderSyncLogWithNegativeRate = core.HeaderSyncLog{
 }
 
 var VatFoldModelWithNegativeRate = shared.InsertionModel{
-	SchemaName: "maker",
+	SchemaName: constants.MakerSchema,
 	TableName:  "vat_fold",
 	OrderedColumns: []string{
 		constants.HeaderFK, string(constants.UrnFK), "rate", constants.LogFK,

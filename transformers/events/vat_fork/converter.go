@@ -56,7 +56,7 @@ func (VatForkConverter) ToModels(_ string, logs []core.HeaderSyncLog) ([]shared.
 		dart := shared.ConvertInt256HexToBigInt(hexutil.Encode(dartBytes))
 
 		model := shared.InsertionModel{
-			SchemaName: "maker",
+			SchemaName: constants.MakerSchema,
 			TableName:  "vat_fork",
 			OrderedColumns: []string{
 				constants.HeaderFK, string(constants.IlkFK), "src", "dst", "dink", "dart", constants.LogFK,

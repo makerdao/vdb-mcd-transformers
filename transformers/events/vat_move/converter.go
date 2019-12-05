@@ -43,7 +43,7 @@ func (VatMoveConverter) ToModels(_ string, logs []core.HeaderSyncLog) ([]shared.
 		rad := shared.ConvertUint256HexToBigInt(log.Log.Topics[3].Hex())
 
 		model := shared.InsertionModel{
-			SchemaName: "maker",
+			SchemaName: constants.MakerSchema,
 			TableName:  "vat_move",
 			OrderedColumns: []string{
 				constants.HeaderFK, "src", "dst", "rad", constants.LogFK,

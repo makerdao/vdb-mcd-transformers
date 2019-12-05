@@ -42,7 +42,7 @@ func (JugFileVowConverter) ToModels(_ string, logs []core.HeaderSyncLog) ([]shar
 		data := common.BytesToAddress(log.Log.Topics[3].Bytes()).String()
 
 		model := shared.InsertionModel{
-			SchemaName: "maker",
+			SchemaName: constants.MakerSchema,
 			TableName:  "jug_file_vow",
 			OrderedColumns: []string{
 				constants.HeaderFK, "what", "data", constants.LogFK,

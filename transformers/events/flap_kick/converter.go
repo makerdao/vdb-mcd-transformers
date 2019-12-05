@@ -19,6 +19,7 @@ package flap_kick
 import (
 	"errors"
 	"fmt"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
@@ -76,7 +77,7 @@ func (converter Converter) ToModels(abi string, logs []core.HeaderSyncLog, db *p
 		}
 
 		model := event.InsertionModel{
-			SchemaName: "maker",
+			SchemaName: constants.MakerSchema,
 			TableName:  "flap_kick",
 			OrderedColumns: []event.ColumnName{
 				event.HeaderFK, event.LogFK, event.AddressFK, BidId, Lot, Bid,

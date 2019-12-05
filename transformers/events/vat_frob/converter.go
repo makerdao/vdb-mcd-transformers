@@ -58,7 +58,7 @@ func (VatFrobConverter) ToModels(_ string, logs []core.HeaderSyncLog) ([]shared.
 		dart := shared.ConvertInt256HexToBigInt(hexutil.Encode(dartBytes))
 
 		model := shared.InsertionModel{
-			SchemaName: "maker",
+			SchemaName: constants.MakerSchema,
 			TableName:  "vat_frob",
 			OrderedColumns: []string{
 				constants.HeaderFK, string(constants.UrnFK), "v", "w", "dink", "dart", constants.LogFK,
