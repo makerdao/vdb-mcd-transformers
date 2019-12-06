@@ -26,6 +26,6 @@ import (
 )
 
 var EventTransformerInitializer transformer.EventTransformerInitializer = event.Transformer{
-	Config:    shared.GetEventTransformerConfig(constants.VatSuckLabel, constants.VatSuckSignature()),
+	Config:    shared.GetEventTransformerConfig(constants.VatSuckTable, constants.VatSuckSignature()),
 	Converter: &vat_suck.Converter{},
 }.NewTransformer

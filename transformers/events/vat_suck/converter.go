@@ -45,8 +45,8 @@ func (Converter) ToModels(_ string, logs []core.HeaderSyncLog, _ *postgres.DB) (
 		radInt := shared.ConvertUint256HexToBigInt(log.Log.Topics[3].Hex())
 
 		model := event.InsertionModel{
-			SchemaName: "maker",
-			TableName:  "vat_suck",
+			SchemaName: constants.MakerSchema,
+			TableName:  constants.VatSuckTable,
 			OrderedColumns: []event.ColumnName{
 				event.HeaderFK, constants.UColumn, constants.VColumn, constants.RadColumn, event.LogFK,
 			},
