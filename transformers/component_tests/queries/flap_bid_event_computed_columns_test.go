@@ -7,8 +7,8 @@ import (
 
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/flap_kick"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
@@ -48,7 +48,7 @@ var _ = Describe("flap_bid_event computed columns", func() {
 		flapKickEvent.ColumnValues[event.HeaderFK] = headerOne.Id
 		flapKickEvent.ColumnValues[event.LogFK] = flapKickLog.ID
 		flapKickEvent.ColumnValues[event.AddressFK] = addressId
-		flapKickEvent.ColumnValues[flap_kick.BidId] = strconv.Itoa(fakeBidId)
+		flapKickEvent.ColumnValues[constants.BidIdColumn] = strconv.Itoa(fakeBidId)
 		insertFlapKickErr := event.PersistModels([]event.InsertionModel{flapKickEvent}, db)
 		Expect(insertFlapKickErr).NotTo(HaveOccurred())
 	})

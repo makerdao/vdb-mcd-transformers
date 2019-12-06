@@ -62,4 +62,7 @@ const (
 	VColumn       event.ColumnName = "v"
 	BidIdColumn   event.ColumnName = "bid_id"
 	EraColumn     event.ColumnName = "era"
+	LotColumn     event.ColumnName = "lot"
+	BidColumn     event.ColumnName = "bid"
+	GalColumn     event.ColumnName = "gal"
 )

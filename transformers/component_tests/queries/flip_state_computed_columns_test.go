@@ -22,11 +22,11 @@ import (
 
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/flip_kick"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/vat"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
@@ -41,7 +41,6 @@ var _ = Describe("Flip state computed columns", func() {
 		headerOne              core.Header
 		headerRepository       repositories.HeaderRepository
 		logId                  int64
-		flipKickRepo           flip_kick.FlipKickRepository
 		contractAddress        = fakes.FakeAddress.Hex()
 		fakeBidId              int
 		blockOne, timestampOne int
@@ -54,9 +53,6 @@ var _ = Describe("Flip state computed columns", func() {
 
 		db = test_config.NewTestDB(test_config.NewTestNode())
 		test_config.CleanTestDB(db)
-
-		flipKickRepo = flip_kick.FlipKickRepository{}
-		flipKickRepo.SetDB(db)
 
 		headerRepository = repositories.NewHeaderRepository(db)
 		headerOne = createHeader(blockOne, timestampOne, headerRepository)
@@ -73,8 +69,7 @@ var _ = Describe("Flip state computed columns", func() {
 			},
 			Dealt:            false,
 			IlkHex:           test_helpers.FakeIlk.Hex,
-			UrnGuy:           test_data.FlipKickModel().ForeignKeyValues[constants.UrnFK],
-			FlipKickRepo:     flipKickRepo,
+			UrnGuy:           test_data.FlipKickModel().ColumnValues[constants.UsrColumn].(string),
 			FlipKickHeaderId: headerOne.Id,
 		})
 		Expect(err).NotTo(HaveOccurred())
@@ -109,7 +104,7 @@ var _ = Describe("Flip state computed columns", func() {
 	Describe("flip_state_urn", func() {
 		It("returns urn_state for a flip_state", func() {
 			urnSetupData := test_helpers.GetUrnSetupData()
-			urnMetadata := test_helpers.GetUrnMetadata(test_helpers.FakeIlk.Hex, test_data.FlipKickModel().ForeignKeyValues[constants.UrnFK])
+			urnMetadata := test_helpers.GetUrnMetadata(test_helpers.FakeIlk.Hex, test_data.FlipKickModel().ColumnValues[constants.UsrColumn].(string))
 			vatRepository := vat.VatStorageRepository{}
 			vatRepository.SetDB(db)
 			test_helpers.CreateUrn(urnSetupData, headerOne.Id, urnMetadata, vatRepository)
@@ -125,7 +120,7 @@ var _ = Describe("Flip state computed columns", func() {
 			Expect(getUrnErr).NotTo(HaveOccurred())
 
 			expectedUrn := test_helpers.UrnState{
-				UrnIdentifier: test_data.FlipKickModel().ForeignKeyValues[constants.UrnFK],
+				UrnIdentifier: test_data.FlipKickModel().ColumnValues[constants.UsrColumn].(string),
 				IlkIdentifier: test_helpers.FakeIlk.Identifier,
 			}
 
@@ -138,8 +133,8 @@ var _ = Describe("Flip state computed columns", func() {
 			// flip kick created in BeforeEach
 			expectedFlipKickEvent := test_helpers.BidEvent{
 				BidId:           strconv.Itoa(fakeBidId),
-				Lot:             test_data.FlipKickModel().ColumnValues["lot"].(string),
-				BidAmount:       test_data.FlipKickModel().ColumnValues["bid"].(string),
+				Lot:             test_data.FlipKickModel().ColumnValues[constants.LotColumn].(string),
+				BidAmount:       test_data.FlipKickModel().ColumnValues[constants.BidColumn].(string),
 				Act:             "kick",
 				ContractAddress: contractAddress,
 			}
@@ -178,16 +173,19 @@ var _ = Describe("Flip state computed columns", func() {
 		Describe("result pagination", func() {
 			var (
 				tendLot, tendBidAmount int
-				flipKickEvent          shared.InsertionModel
+				flipKickEvent          event.InsertionModel
 			)
 
 			BeforeEach(func() {
+				addressId, addressErr := shared.GetOrCreateAddress(contractAddress, db)
+				Expect(addressErr).NotTo(HaveOccurred())
+
 				flipKickEvent = test_data.FlipKickModel()
-				flipKickEvent.ForeignKeyValues[constants.AddressFK] = contractAddress
-				flipKickEvent.ColumnValues["bid_id"] = strconv.Itoa(fakeBidId)
-				flipKickEvent.ColumnValues[constants.HeaderFK] = headerOne.Id
-				flipKickEvent.ColumnValues[constants.LogFK] = logId
-				flipKickErr := flipKickRepo.Create([]shared.InsertionModel{flipKickEvent})
+				flipKickEvent.ColumnValues[event.HeaderFK] = headerOne.Id
+				flipKickEvent.ColumnValues[event.LogFK] = logId
+				flipKickEvent.ColumnValues[event.AddressFK] = addressId
+				flipKickEvent.ColumnValues[constants.BidIdColumn] = strconv.Itoa(fakeBidId)
+				flipKickErr := event.PersistModels([]event.InsertionModel{flipKickEvent}, db)
 				Expect(flipKickErr).NotTo(HaveOccurred())
 
 				headerTwo := createHeader(blockOne+1, timestampOne+1, headerRepository)
@@ -230,8 +228,8 @@ var _ = Describe("Flip state computed columns", func() {
 			It("offsets result if offset is provided", func() {
 				expectedTendEvent := test_helpers.BidEvent{
 					BidId:           strconv.Itoa(fakeBidId),
-					Lot:             flipKickEvent.ColumnValues["lot"].(string),
-					BidAmount:       flipKickEvent.ColumnValues["bid"].(string),
+					Lot:             flipKickEvent.ColumnValues[constants.LotColumn].(string),
+					BidAmount:       flipKickEvent.ColumnValues[constants.BidColumn].(string),
 					Act:             "kick",
 					ContractAddress: contractAddress,
 				}
@@ -253,8 +251,8 @@ var _ = Describe("Flip state computed columns", func() {
 		It("ignores bid events for a flip with a different ilk", func() {
 			expectedBidEvent := test_helpers.BidEvent{
 				BidId:           strconv.Itoa(fakeBidId),
-				Lot:             test_data.FlipKickModel().ColumnValues["lot"].(string),
-				BidAmount:       test_data.FlipKickModel().ColumnValues["bid"].(string),
+				Lot:             test_data.FlipKickModel().ColumnValues[constants.LotColumn].(string),
+				BidAmount:       test_data.FlipKickModel().ColumnValues[constants.BidColumn].(string),
 				Act:             "kick",
 				ContractAddress: contractAddress,
 			}
@@ -272,8 +270,7 @@ var _ = Describe("Flip state computed columns", func() {
 				},
 				Dealt:            false,
 				IlkHex:           test_helpers.AnotherFakeIlk.Hex,
-				UrnGuy:           test_data.FlipKickModel().ForeignKeyValues[constants.UrnFK],
-				FlipKickRepo:     flipKickRepo,
+				UrnGuy:           test_data.FlipKickModel().ColumnValues[constants.UsrColumn].(string),
 				FlipKickHeaderId: headerOne.Id,
 			})
 			Expect(irrelevantFlipContextErr).NotTo(HaveOccurred())
@@ -304,8 +301,7 @@ var _ = Describe("Flip state computed columns", func() {
 				},
 				Dealt:            false,
 				IlkHex:           test_helpers.FakeIlk.Hex,
-				UrnGuy:           test_data.FlipKickModel().ForeignKeyValues[constants.UrnFK],
-				FlipKickRepo:     flipKickRepo,
+				UrnGuy:           test_data.FlipKickModel().ColumnValues[constants.UsrColumn].(string),
 				FlipKickHeaderId: headerOne.Id,
 			})
 			Expect(err).NotTo(HaveOccurred())

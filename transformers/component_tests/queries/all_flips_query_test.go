@@ -6,7 +6,7 @@ import (
 
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/flip_kick"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
@@ -19,7 +19,6 @@ import (
 var _ = Describe("All flips view", func() {
 	var (
 		db                     *postgres.DB
-		flipKickRepo           flip_kick.FlipKickRepository
 		headerRepo             repositories.HeaderRepository
 		contractAddress        = fakes.RandomString(42)
 		blockOne, timestampOne int
@@ -29,8 +28,6 @@ var _ = Describe("All flips view", func() {
 	BeforeEach(func() {
 		db = test_config.NewTestDB(test_config.NewTestNode())
 		test_config.CleanTestDB(db)
-		flipKickRepo = flip_kick.FlipKickRepository{}
-		flipKickRepo.SetDB(db)
 		headerRepo = repositories.NewHeaderRepository(db)
 
 		blockOne = rand.Int()
@@ -55,8 +52,7 @@ var _ = Describe("All flips view", func() {
 			},
 			Dealt:            false,
 			IlkHex:           test_helpers.FakeIlk.Hex,
-			UrnGuy:           test_data.FlipKickModel().ColumnValues["usr"].(string),
-			FlipKickRepo:     flipKickRepo,
+			UrnGuy:           test_data.FlipKickModel().ColumnValues[constants.UsrColumn].(string),
 			FlipKickHeaderId: headerOne.Id,
 		})
 		Expect(setupErr).NotTo(HaveOccurred())
@@ -85,7 +81,7 @@ var _ = Describe("All flips view", func() {
 		Expect(expectedBid1).To(Equal(actualBid1))
 
 		flipKickLog := test_data.CreateTestLog(headerTwo.Id, db)
-		flipKickErr := test_helpers.CreateFlipKick(contractAddress, fakeBidId2, headerTwo.Id, flipKickLog.ID, test_data.FlipKickModel().ColumnValues["usr"].(string), flipKickRepo)
+		flipKickErr := test_helpers.CreateFlipKick(contractAddress, fakeBidId2, headerTwo.Id, flipKickLog.ID, test_data.FlipKickModel().ColumnValues[constants.UsrColumn].(string), db)
 		Expect(flipKickErr).NotTo(HaveOccurred())
 
 		expectedBid2 := test_helpers.FlipBidFromValues(strconv.Itoa(fakeBidId2), strconv.FormatInt(ilkId, 10),
@@ -113,8 +109,7 @@ var _ = Describe("All flips view", func() {
 			},
 			Dealt:            false,
 			IlkHex:           test_helpers.FakeIlk.Hex,
-			UrnGuy:           test_data.FlipKickModel().ColumnValues["usr"].(string),
-			FlipKickRepo:     flipKickRepo,
+			UrnGuy:           test_data.FlipKickModel().ColumnValues[constants.UsrColumn].(string),
 			FlipKickHeaderId: headerOne.Id,
 		})
 		Expect(setupErr1).NotTo(HaveOccurred())
@@ -125,7 +120,7 @@ var _ = Describe("All flips view", func() {
 		irrelevantBidId := fakeBidId + 1
 		irrelevantAddress := "contract address2"
 		irrelevantIlkHex := test_helpers.AnotherFakeIlk.Hex
-		irrelevantUrn := test_data.FlipKickModel().ColumnValues["gal"].(string)
+		irrelevantUrn := test_data.FlipKickModel().ColumnValues[constants.GalColumn].(string)
 		_, _, setupErr2 := test_helpers.SetUpFlipBidContext(test_helpers.FlipBidContextInput{
 			DealCreationInput: test_helpers.DealCreationInput{
 				DB:              db,
@@ -135,7 +130,6 @@ var _ = Describe("All flips view", func() {
 			Dealt:            false,
 			IlkHex:           irrelevantIlkHex,
 			UrnGuy:           irrelevantUrn,
-			FlipKickRepo:     flipKickRepo,
 			FlipKickHeaderId: headerOne.Id,
 		})
 		Expect(setupErr2).NotTo(HaveOccurred())
@@ -165,8 +159,7 @@ var _ = Describe("All flips view", func() {
 			},
 			Dealt:            false,
 			IlkHex:           ilkOne.Hex,
-			UrnGuy:           test_data.FlipKickModel().ColumnValues["usr"].(string),
-			FlipKickRepo:     flipKickRepo,
+			UrnGuy:           test_data.FlipKickModel().ColumnValues[constants.UsrColumn].(string),
 			FlipKickHeaderId: headerOne.Id,
 		})
 		Expect(setupErr).NotTo(HaveOccurred())
@@ -190,8 +183,7 @@ var _ = Describe("All flips view", func() {
 			},
 			Dealt:            false,
 			IlkHex:           ilkTwo.Hex,
-			UrnGuy:           test_data.FlipKickModel().ColumnValues["gal"].(string),
-			FlipKickRepo:     flipKickRepo,
+			UrnGuy:           test_data.FlipKickModel().ColumnValues[constants.GalColumn].(string),
 			FlipKickHeaderId: headerTwo.Id,
 		})
 		Expect(setupErr).NotTo(HaveOccurred())
@@ -238,8 +230,7 @@ var _ = Describe("All flips view", func() {
 				},
 				Dealt:            false,
 				IlkHex:           test_helpers.FakeIlk.Hex,
-				UrnGuy:           test_data.FlipKickModel().ColumnValues["usr"].(string),
-				FlipKickRepo:     flipKickRepo,
+				UrnGuy:           test_data.FlipKickModel().ColumnValues[constants.UsrColumn].(string),
 				FlipKickHeaderId: headerOne.Id,
 			})
 			Expect(setupErr).NotTo(HaveOccurred())
@@ -255,7 +246,7 @@ var _ = Describe("All flips view", func() {
 		})
 
 		It("limits results if max_results argument is provided", func() {
-			flipKickErr := test_helpers.CreateFlipKick(contractAddress, fakeBidIdTwo, headerOne.Id, logId, test_data.FlipKickModel().ColumnValues["usr"].(string), flipKickRepo)
+			flipKickErr := test_helpers.CreateFlipKick(contractAddress, fakeBidIdTwo, headerOne.Id, logId, test_data.FlipKickModel().ColumnValues[constants.UsrColumn].(string), db)
 			Expect(flipKickErr).NotTo(HaveOccurred())
 
 			maxResults := 1
@@ -272,7 +263,7 @@ var _ = Describe("All flips view", func() {
 		})
 
 		It("offsets results if offset is provided", func() {
-			flipKickErr := test_helpers.CreateFlipKick(contractAddress, fakeBidIdOne, headerOne.Id, logId, test_data.FlipKickModel().ColumnValues["usr"].(string), flipKickRepo)
+			flipKickErr := test_helpers.CreateFlipKick(contractAddress, fakeBidIdOne, headerOne.Id, logId, test_data.FlipKickModel().ColumnValues[constants.UsrColumn].(string), db)
 			Expect(flipKickErr).NotTo(HaveOccurred())
 
 			maxResults := 1

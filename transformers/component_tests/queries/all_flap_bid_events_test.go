@@ -7,7 +7,6 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/flap_kick"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/flop_kick"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
@@ -51,7 +50,7 @@ var _ = Describe("Flap bid events query", func() {
 		flapKickEvent.ColumnValues[event.HeaderFK] = headerOne.Id
 		flapKickEvent.ColumnValues[event.LogFK] = flapKickLog.ID
 		flapKickEvent.ColumnValues[event.AddressFK] = addressId
-		flapKickEvent.ColumnValues[flap_kick.BidId] = strconv.Itoa(fakeBidId)
+		flapKickEvent.ColumnValues[constants.BidIdColumn] = strconv.Itoa(fakeBidId)
 		flapKickErr := event.PersistModels([]event.InsertionModel{flapKickEvent}, db)
 		Expect(flapKickErr).NotTo(HaveOccurred())
 	})
@@ -127,9 +126,9 @@ var _ = Describe("Flap bid events query", func() {
 			flapKickEventTwo.ColumnValues[event.HeaderFK] = headerTwo.Id
 			flapKickEventTwo.ColumnValues[event.LogFK] = flapKickEventTwoLog.ID
 			flapKickEventTwo.ColumnValues[event.AddressFK] = addressId
-			flapKickEventTwo.ColumnValues[flap_kick.BidId] = strconv.Itoa(fakeBidIdTwo)
-			flapKickEventTwo.ColumnValues[flap_kick.Lot] = strconv.Itoa(rand.Int())
-			flapKickEventTwo.ColumnValues[flap_kick.Bid] = strconv.Itoa(rand.Int())
+			flapKickEventTwo.ColumnValues[constants.BidIdColumn] = strconv.Itoa(fakeBidIdTwo)
+			flapKickEventTwo.ColumnValues[constants.LotColumn] = strconv.Itoa(rand.Int())
+			flapKickEventTwo.ColumnValues[constants.BidColumn] = strconv.Itoa(rand.Int())
 			flapKickErr := event.PersistModels([]event.InsertionModel{flapKickEventTwo}, db)
 			Expect(flapKickErr).NotTo(HaveOccurred())
 
@@ -164,7 +163,7 @@ var _ = Describe("Flap bid events query", func() {
 			flapKickEventTwo.ColumnValues[event.HeaderFK] = headerOne.Id
 			flapKickEventTwo.ColumnValues[event.LogFK] = flapKickEventTwoLog.ID
 			flapKickEventTwo.ColumnValues[event.AddressFK] = addressId
-			flapKickEventTwo.ColumnValues[flap_kick.BidId] = strconv.Itoa(bidIdTwo)
+			flapKickEventTwo.ColumnValues[constants.BidIdColumn] = strconv.Itoa(bidIdTwo)
 			flapKickErr := event.PersistModels([]event.InsertionModel{flapKickEventTwo}, db)
 			Expect(flapKickErr).NotTo(HaveOccurred())
 

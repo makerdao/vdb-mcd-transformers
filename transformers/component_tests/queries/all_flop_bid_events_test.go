@@ -6,7 +6,6 @@ import (
 
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/flap_kick"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/flop_kick"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
@@ -165,7 +164,7 @@ var _ = Describe("Flop bid events query", func() {
 			Expect(addressErr).NotTo(HaveOccurred())
 			flapKickEvent := test_data.FlapKickModel()
 			flapKickEvent.ColumnValues[event.AddressFK] = addressId
-			flapKickEvent.ColumnValues[flap_kick.BidId] = strconv.Itoa(fakeBidId)
+			flapKickEvent.ColumnValues[constants.BidIdColumn] = strconv.Itoa(fakeBidId)
 			flapKickEvent.ColumnValues[event.HeaderFK] = headerOne.Id
 			flapKickEvent.ColumnValues[event.LogFK] = flapKickLog.ID
 			flapKickErr := event.PersistModels([]event.InsertionModel{flapKickEvent}, db)

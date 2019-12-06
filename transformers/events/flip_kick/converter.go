@@ -20,18 +20,18 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
-	"github.com/makerdao/vulcanizedb/pkg/core"
-
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
-	"github.com/makerdao/vulcanizedb/pkg/eth"
-
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
+	"github.com/makerdao/vulcanizedb/pkg/core"
+	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
+	"github.com/makerdao/vulcanizedb/pkg/eth"
 )
 
-type FlipKickConverter struct{}
+type Converter struct{}
 
-func (FlipKickConverter) toEntities(contractAbi string, logs []core.HeaderSyncLog) ([]FlipKickEntity, error) {
+func (Converter) toEntities(contractAbi string, logs []core.HeaderSyncLog) ([]FlipKickEntity, error) {
 	var entities []FlipKickEntity
 	for _, log := range logs {
 		var entity FlipKickEntity
@@ -55,35 +55,45 @@ func (FlipKickConverter) toEntities(contractAbi string, logs []core.HeaderSyncLo
 	return entities, nil
 }
 
-func (c FlipKickConverter) ToModels(abi string, logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
+func (c Converter) ToModels(abi string, logs []core.HeaderSyncLog, db *postgres.DB) ([]event.InsertionModel, error) {
 	entities, entityErr := c.toEntities(abi, logs)
 	if entityErr != nil {
-		return nil, fmt.Errorf("FlipKickConverter couldn't convert logs to entities: %v", entityErr)
+		return nil, fmt.Errorf("FlipKick converter couldn't convert logs to entities: %v", entityErr)
 	}
-	var models []shared.InsertionModel
+	var models []event.InsertionModel
 	for _, flipKickEntity := range entities {
 		if flipKickEntity.Id == nil {
 			return nil, errors.New("flip kick bid ID cannot be nil")
 		}
+		addressId, addressErr := shared.GetOrCreateAddress(flipKickEntity.ContractAddress.Hex(), db)
+		if addressErr != nil {
+			_ = shared.ErrCouldNotCreateFK(addressErr)
+		}
 
-		model := shared.InsertionModel{
+		model := event.InsertionModel{
 			SchemaName: constants.MakerSchema,
 			TableName:  constants.FlipKickTable,
-			OrderedColumns: []string{
-				constants.HeaderFK, constants.LogFK, "bid_id", "lot", "bid", "tab", "usr", "gal", string(constants.AddressFK),
+			OrderedColumns: []event.ColumnName{
+				event.HeaderFK,
+				event.LogFK,
+				event.AddressFK,
+				constants.BidIdColumn,
+				constants.LotColumn,
+				constants.BidColumn,
+				constants.TabColumn,
+				constants.UsrColumn,
+				constants.GalColumn,
 			},
-			ColumnValues: shared.ColumnValues{
-				constants.HeaderFK: flipKickEntity.HeaderID,
-				constants.LogFK:    flipKickEntity.LogID,
-				"bid_id":           flipKickEntity.Id.String(),
-				"lot":              shared.BigIntToString(flipKickEntity.Lot),
-				"bid":              shared.BigIntToString(flipKickEntity.Bid),
-				"tab":              shared.BigIntToString(flipKickEntity.Tab),
-				"usr":              flipKickEntity.Usr.String(),
-				"gal":              flipKickEntity.Gal.String(),
-			},
-			ForeignKeyValues: shared.ForeignKeyValues{
-				constants.AddressFK: flipKickEntity.ContractAddress.String(),
+			ColumnValues: event.ColumnValues{
+				event.HeaderFK:        flipKickEntity.HeaderID,
+				event.LogFK:           flipKickEntity.LogID,
+				event.AddressFK:       addressId,
+				constants.BidIdColumn: flipKickEntity.Id.String(),
+				constants.LotColumn:   shared.BigIntToString(flipKickEntity.Lot),
+				constants.BidColumn:   shared.BigIntToString(flipKickEntity.Bid),
+				constants.TabColumn:   shared.BigIntToString(flipKickEntity.Tab),
+				constants.UsrColumn:   flipKickEntity.Usr.String(),
+				constants.GalColumn:   flipKickEntity.Gal.String(),
 			},
 		}
 

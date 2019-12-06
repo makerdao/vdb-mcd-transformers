@@ -23,11 +23,11 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/flip_kick"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
@@ -39,22 +39,20 @@ import (
 var _ = Describe("All flip bid events query", func() {
 	var (
 		db                     *postgres.DB
-		flipKickRepo           flip_kick.FlipKickRepository
 		headerRepo             repositories.HeaderRepository
 		contractAddress        = fakes.FakeAddress.Hex()
 		anotherContractAddress = common.HexToAddress("0xabcdef123456789").Hex()
+		addressId              int64
 		bidId                  int
 		blockOne, timestampOne int
 		headerOne              core.Header
-		flipKickEvent          shared.InsertionModel
+		flipKickEvent          event.InsertionModel
 	)
 
 	BeforeEach(func() {
 		db = test_config.NewTestDB(test_config.NewTestNode())
 		test_config.CleanTestDB(db)
 		headerRepo = repositories.NewHeaderRepository(db)
-		flipKickRepo = flip_kick.FlipKickRepository{}
-		flipKickRepo.SetDB(db)
 		bidId = rand.Int()
 
 		blockOne = rand.Int()
@@ -63,12 +61,16 @@ var _ = Describe("All flip bid events query", func() {
 
 		flipKickLog := test_data.CreateTestLog(headerOne.Id, db)
 
+		var addressErr error
+		addressId, addressErr = shared.GetOrCreateAddress(contractAddress, db)
+		Expect(addressErr).NotTo(HaveOccurred())
+
 		flipKickEvent = test_data.FlipKickModel()
-		flipKickEvent.ForeignKeyValues[constants.AddressFK] = contractAddress
-		flipKickEvent.ColumnValues["bid_id"] = strconv.Itoa(bidId)
-		flipKickEvent.ColumnValues[constants.HeaderFK] = headerOne.Id
-		flipKickEvent.ColumnValues[constants.LogFK] = flipKickLog.ID
-		flipKickErr := flipKickRepo.Create([]shared.InsertionModel{flipKickEvent})
+		flipKickEvent.ColumnValues[event.HeaderFK] = headerOne.Id
+		flipKickEvent.ColumnValues[event.LogFK] = flipKickLog.ID
+		flipKickEvent.ColumnValues[event.AddressFK] = addressId
+		flipKickEvent.ColumnValues[constants.BidIdColumn] = strconv.Itoa(bidId)
+		flipKickErr := event.PersistModels([]event.InsertionModel{flipKickEvent}, db)
 		Expect(flipKickErr).NotTo(HaveOccurred())
 	})
 
@@ -272,12 +274,12 @@ var _ = Describe("All flip bid events query", func() {
 			flipKickLogTwo := test_data.CreateTestLog(headerOne.Id, db)
 
 			flipKickEventTwo := test_data.FlipKickModel()
-			flipKickEventTwo.ForeignKeyValues[constants.AddressFK] = contractAddress
-			flipKickEventTwo.ColumnValues["bid_id"] = strconv.Itoa(differentBidId)
-			flipKickEventTwo.ColumnValues["lot"] = strconv.Itoa(differentLot)
-			flipKickEventTwo.ColumnValues[constants.HeaderFK] = headerOne.Id
-			flipKickEventTwo.ColumnValues[constants.LogFK] = flipKickLogTwo.ID
-			flipKickErr := flipKickRepo.Create([]shared.InsertionModel{flipKickEventTwo})
+			flipKickEventTwo.ColumnValues[event.HeaderFK] = headerOne.Id
+			flipKickEventTwo.ColumnValues[event.LogFK] = flipKickLogTwo.ID
+			flipKickEventTwo.ColumnValues[event.AddressFK] = addressId
+			flipKickEventTwo.ColumnValues[constants.BidIdColumn] = strconv.Itoa(differentBidId)
+			flipKickEventTwo.ColumnValues[constants.LotColumn] = strconv.Itoa(differentLot)
+			flipKickErr := event.PersistModels([]event.InsertionModel{flipKickEventTwo}, db)
 			Expect(flipKickErr).NotTo(HaveOccurred())
 
 			var actualBidEvents []test_helpers.BidEvent
@@ -303,15 +305,18 @@ var _ = Describe("All flip bid events query", func() {
 			differentLot := rand.Int()
 			differentBidAmount := rand.Int()
 
+			anotherAddressId, addressErr := shared.GetOrCreateAddress(anotherFlipContractAddress, db)
+			Expect(addressErr).NotTo(HaveOccurred())
+
 			flipKickLog := test_data.CreateTestLog(headerOne.Id, db)
 			flipKickEventTwo := test_data.FlipKickModel()
-			flipKickEventTwo.ForeignKeyValues[constants.AddressFK] = anotherFlipContractAddress
-			flipKickEventTwo.ColumnValues["bid_id"] = strconv.Itoa(bidId)
-			flipKickEventTwo.ColumnValues["lot"] = strconv.Itoa(differentLot)
-			flipKickEventTwo.ColumnValues["bid"] = strconv.Itoa(differentBidAmount)
-			flipKickEventTwo.ColumnValues[constants.HeaderFK] = headerOne.Id
-			flipKickEventTwo.ColumnValues[constants.LogFK] = flipKickLog.ID
-			flipKickErr := flipKickRepo.Create([]shared.InsertionModel{flipKickEventTwo})
+			flipKickEventTwo.ColumnValues[event.HeaderFK] = headerOne.Id
+			flipKickEventTwo.ColumnValues[event.LogFK] = flipKickLog.ID
+			flipKickEventTwo.ColumnValues[event.AddressFK] = anotherAddressId
+			flipKickEventTwo.ColumnValues[constants.BidIdColumn] = strconv.Itoa(bidId)
+			flipKickEventTwo.ColumnValues[constants.LotColumn] = strconv.Itoa(differentLot)
+			flipKickEventTwo.ColumnValues[constants.BidColumn] = strconv.Itoa(differentBidAmount)
+			flipKickErr := event.PersistModels([]event.InsertionModel{flipKickEventTwo}, db)
 			Expect(flipKickErr).NotTo(HaveOccurred())
 
 			var actualBidEvents []test_helpers.BidEvent
