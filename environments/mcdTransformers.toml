@@ -45,6 +45,7 @@
         "new_cdp",
         "pot_cage",
         "pot_file_dsr",
+        "pot_file_vow",
         "spot_file_mat",
         "spot_file_pip",
         "spot_poke",
@@ -232,6 +233,13 @@
         migrations = "db/migrations"
         contracts = ["MCD_JUG"]
         rank = "0"
+    [exporter.log_value]
+        path = "transformers/events/log_value/initializer"
+        type = "eth_event"
+        repository = "github.com/makerdao/vdb-mcd-transformers"
+        migrations = "db/migrations"
+        contracts = ["OSM_ETH", "OSM_BAT"]
+        rank = "0"
     [exporter.new_cdp]
         path = "transformers/events/new_cdp/initializer"
         type = "eth_event"
@@ -246,15 +254,15 @@
         migrations = "db/migrations"
         contracts = ["MCD_POT"]
         rank = "0"
-    [exporter.log_value]
-        path = "transformers/events/log_value/initializer"
+    [exporter.pot_file_dsr]
+        path = "transformers/events/pot_file/dsr/initializer"
         type = "eth_event"
         repository = "github.com/makerdao/vdb-mcd-transformers"
         migrations = "db/migrations"
-        contracts = ["OSM_ETH", "OSM_BAT"]
+        contracts = ["MCD_POT"]
         rank = "0"
-    [exporter.pot_file_dsr]
-        path = "transformers/events/pot_file/dsr/initializer"
+    [exporter.pot_file_vow]
+        path = "transformers/events/pot_file/vow/initializer"
         type = "eth_event"
         repository = "github.com/makerdao/vdb-mcd-transformers"
         migrations = "db/migrations"
