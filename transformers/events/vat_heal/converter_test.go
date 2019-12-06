@@ -19,6 +19,8 @@ package vat_heal_test
 import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/makerdao/vdb-mcd-transformers/test_config"
+	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
@@ -29,9 +31,18 @@ import (
 )
 
 var _ = Describe("VatHeal converter", func() {
+
+	var (
+		converter vat_heal.Converter
+		db        *postgres.DB
+	)
+
+	BeforeEach(func() {
+		converter = vat_heal.Converter{}
+		db = test_config.NewTestDB(test_config.NewTestNode())
+	})
 	It("Convert log with positive rad to a model", func() {
-		converter := vat_heal.VatHealConverter{}
-		models, err := converter.ToModels(constants.VatABI(), []core.HeaderSyncLog{test_data.VatHealHeaderSyncLog})
+		models, err := converter.ToModels(constants.VatABI(), []core.HeaderSyncLog{test_data.VatHealHeaderSyncLog}, db)
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(len(models)).To(Equal(1))
@@ -39,7 +50,7 @@ var _ = Describe("VatHeal converter", func() {
 	})
 
 	It("Returns an error there are missing topics", func() {
-		converter := vat_heal.VatHealConverter{}
+		converter := vat_heal.Converter{}
 		badLog := core.HeaderSyncLog{
 			Log: types.Log{
 				Topics: []common.Hash{
@@ -47,7 +58,7 @@ var _ = Describe("VatHeal converter", func() {
 				}},
 		}
 
-		_, err := converter.ToModels(constants.VatABI(), []core.HeaderSyncLog{badLog})
+		_, err := converter.ToModels(constants.VatABI(), []core.HeaderSyncLog{badLog}, db)
 
 		Expect(err).To(HaveOccurred())
 	})

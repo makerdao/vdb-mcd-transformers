@@ -17,6 +17,7 @@
 package test_data
 
 import (
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"math/rand"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -24,8 +25,6 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vulcanizedb/pkg/core"
-
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 )
 
 var rawVatHealLog = types.Log{
@@ -52,16 +51,15 @@ var VatHealHeaderSyncLog = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-var VatHealModel = shared.InsertionModel{
+var VatHealModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.VatHealTable,
-	OrderedColumns: []string{
-		constants.HeaderFK, "rad", constants.LogFK,
+	OrderedColumns: []event.ColumnName{
+		constants.HeaderFK, constants.RadColumn, constants.LogFK,
 	},
-	ColumnValues: shared.ColumnValues{
-		"rad":              "10001",
-		constants.HeaderFK: VatHealHeaderSyncLog.HeaderID,
-		constants.LogFK:    VatHealHeaderSyncLog.ID,
+	ColumnValues: event.ColumnValues{
+		constants.RadColumn: "10001",
+		constants.HeaderFK:  VatHealHeaderSyncLog.HeaderID,
+		constants.LogFK:     VatHealHeaderSyncLog.ID,
 	},
-	ForeignKeyValues: shared.ForeignKeyValues{},
 }
