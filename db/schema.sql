@@ -6115,6 +6115,7 @@ ALTER SEQUENCE maker.cat_vow_id_seq OWNED BY maker.cat_vow.id;
 
 CREATE TABLE maker.cdp_manager_cdpi (
     id integer NOT NULL,
+    diff_id integer NOT NULL,
     header_id integer NOT NULL,
     cdpi numeric NOT NULL
 );
@@ -6146,6 +6147,7 @@ ALTER SEQUENCE maker.cdp_manager_cdpi_id_seq OWNED BY maker.cdp_manager_cdpi.id;
 
 CREATE TABLE maker.cdp_manager_count (
     id integer NOT NULL,
+    diff_id integer NOT NULL,
     header_id integer NOT NULL,
     owner text,
     count numeric NOT NULL
@@ -6178,6 +6180,7 @@ ALTER SEQUENCE maker.cdp_manager_count_id_seq OWNED BY maker.cdp_manager_count.i
 
 CREATE TABLE maker.cdp_manager_first (
     id integer NOT NULL,
+    diff_id integer NOT NULL,
     header_id integer NOT NULL,
     owner text,
     first numeric NOT NULL
@@ -6210,6 +6213,7 @@ ALTER SEQUENCE maker.cdp_manager_first_id_seq OWNED BY maker.cdp_manager_first.i
 
 CREATE TABLE maker.cdp_manager_ilks (
     id integer NOT NULL,
+    diff_id integer NOT NULL,
     header_id integer NOT NULL,
     cdpi numeric NOT NULL,
     ilk_id integer NOT NULL
@@ -6242,6 +6246,7 @@ ALTER SEQUENCE maker.cdp_manager_ilks_id_seq OWNED BY maker.cdp_manager_ilks.id;
 
 CREATE TABLE maker.cdp_manager_last (
     id integer NOT NULL,
+    diff_id integer NOT NULL,
     header_id integer NOT NULL,
     owner text,
     last numeric NOT NULL
@@ -6274,6 +6279,7 @@ ALTER SEQUENCE maker.cdp_manager_last_id_seq OWNED BY maker.cdp_manager_last.id;
 
 CREATE TABLE maker.cdp_manager_list_next (
     id integer NOT NULL,
+    diff_id integer NOT NULL,
     header_id integer NOT NULL,
     cdpi numeric NOT NULL,
     next numeric NOT NULL
@@ -6306,6 +6312,7 @@ ALTER SEQUENCE maker.cdp_manager_list_next_id_seq OWNED BY maker.cdp_manager_lis
 
 CREATE TABLE maker.cdp_manager_list_prev (
     id integer NOT NULL,
+    diff_id integer NOT NULL,
     header_id integer NOT NULL,
     cdpi numeric NOT NULL,
     prev numeric NOT NULL
@@ -6338,6 +6345,7 @@ ALTER SEQUENCE maker.cdp_manager_list_prev_id_seq OWNED BY maker.cdp_manager_lis
 
 CREATE TABLE maker.cdp_manager_owns (
     id integer NOT NULL,
+    diff_id integer NOT NULL,
     header_id integer NOT NULL,
     cdpi numeric NOT NULL,
     owner text
@@ -6370,6 +6378,7 @@ ALTER SEQUENCE maker.cdp_manager_owns_id_seq OWNED BY maker.cdp_manager_owns.id;
 
 CREATE TABLE maker.cdp_manager_urns (
     id integer NOT NULL,
+    diff_id integer NOT NULL,
     header_id integer NOT NULL,
     cdpi numeric NOT NULL,
     urn text
@@ -6402,6 +6411,7 @@ ALTER SEQUENCE maker.cdp_manager_urns_id_seq OWNED BY maker.cdp_manager_urns.id;
 
 CREATE TABLE maker.cdp_manager_vat (
     id integer NOT NULL,
+    diff_id integer NOT NULL,
     header_id integer NOT NULL,
     vat text
 );
@@ -12027,11 +12037,11 @@ ALTER TABLE ONLY maker.cat_vow
 
 
 --
--- Name: cdp_manager_cdpi cdp_manager_cdpi_header_id_cdpi_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: cdp_manager_cdpi cdp_manager_cdpi_diff_id_header_id_cdpi_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.cdp_manager_cdpi
-    ADD CONSTRAINT cdp_manager_cdpi_header_id_cdpi_key UNIQUE (header_id, cdpi);
+    ADD CONSTRAINT cdp_manager_cdpi_diff_id_header_id_cdpi_key UNIQUE (diff_id, header_id, cdpi);
 
 
 --
@@ -12043,11 +12053,11 @@ ALTER TABLE ONLY maker.cdp_manager_cdpi
 
 
 --
--- Name: cdp_manager_count cdp_manager_count_header_id_owner_count_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: cdp_manager_count cdp_manager_count_diff_id_header_id_owner_count_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.cdp_manager_count
-    ADD CONSTRAINT cdp_manager_count_header_id_owner_count_key UNIQUE (header_id, owner, count);
+    ADD CONSTRAINT cdp_manager_count_diff_id_header_id_owner_count_key UNIQUE (diff_id, header_id, owner, count);
 
 
 --
@@ -12059,11 +12069,11 @@ ALTER TABLE ONLY maker.cdp_manager_count
 
 
 --
--- Name: cdp_manager_first cdp_manager_first_header_id_owner_first_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: cdp_manager_first cdp_manager_first_diff_id_header_id_owner_first_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.cdp_manager_first
-    ADD CONSTRAINT cdp_manager_first_header_id_owner_first_key UNIQUE (header_id, owner, first);
+    ADD CONSTRAINT cdp_manager_first_diff_id_header_id_owner_first_key UNIQUE (diff_id, header_id, owner, first);
 
 
 --
@@ -12075,11 +12085,11 @@ ALTER TABLE ONLY maker.cdp_manager_first
 
 
 --
--- Name: cdp_manager_ilks cdp_manager_ilks_header_id_cdpi_ilk_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: cdp_manager_ilks cdp_manager_ilks_diff_id_header_id_cdpi_ilk_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.cdp_manager_ilks
-    ADD CONSTRAINT cdp_manager_ilks_header_id_cdpi_ilk_id_key UNIQUE (header_id, cdpi, ilk_id);
+    ADD CONSTRAINT cdp_manager_ilks_diff_id_header_id_cdpi_ilk_id_key UNIQUE (diff_id, header_id, cdpi, ilk_id);
 
 
 --
@@ -12091,11 +12101,11 @@ ALTER TABLE ONLY maker.cdp_manager_ilks
 
 
 --
--- Name: cdp_manager_last cdp_manager_last_header_id_owner_last_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: cdp_manager_last cdp_manager_last_diff_id_header_id_owner_last_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.cdp_manager_last
-    ADD CONSTRAINT cdp_manager_last_header_id_owner_last_key UNIQUE (header_id, owner, last);
+    ADD CONSTRAINT cdp_manager_last_diff_id_header_id_owner_last_key UNIQUE (diff_id, header_id, owner, last);
 
 
 --
@@ -12107,11 +12117,11 @@ ALTER TABLE ONLY maker.cdp_manager_last
 
 
 --
--- Name: cdp_manager_list_next cdp_manager_list_next_header_id_cdpi_next_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: cdp_manager_list_next cdp_manager_list_next_diff_id_header_id_cdpi_next_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.cdp_manager_list_next
-    ADD CONSTRAINT cdp_manager_list_next_header_id_cdpi_next_key UNIQUE (header_id, cdpi, next);
+    ADD CONSTRAINT cdp_manager_list_next_diff_id_header_id_cdpi_next_key UNIQUE (diff_id, header_id, cdpi, next);
 
 
 --
@@ -12123,11 +12133,11 @@ ALTER TABLE ONLY maker.cdp_manager_list_next
 
 
 --
--- Name: cdp_manager_list_prev cdp_manager_list_prev_header_id_cdpi_prev_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: cdp_manager_list_prev cdp_manager_list_prev_diff_id_header_id_cdpi_prev_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.cdp_manager_list_prev
-    ADD CONSTRAINT cdp_manager_list_prev_header_id_cdpi_prev_key UNIQUE (header_id, cdpi, prev);
+    ADD CONSTRAINT cdp_manager_list_prev_diff_id_header_id_cdpi_prev_key UNIQUE (diff_id, header_id, cdpi, prev);
 
 
 --
@@ -12139,11 +12149,11 @@ ALTER TABLE ONLY maker.cdp_manager_list_prev
 
 
 --
--- Name: cdp_manager_owns cdp_manager_owns_header_id_cdpi_owner_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: cdp_manager_owns cdp_manager_owns_diff_id_header_id_cdpi_owner_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.cdp_manager_owns
-    ADD CONSTRAINT cdp_manager_owns_header_id_cdpi_owner_key UNIQUE (header_id, cdpi, owner);
+    ADD CONSTRAINT cdp_manager_owns_diff_id_header_id_cdpi_owner_key UNIQUE (diff_id, header_id, cdpi, owner);
 
 
 --
@@ -12155,11 +12165,11 @@ ALTER TABLE ONLY maker.cdp_manager_owns
 
 
 --
--- Name: cdp_manager_urns cdp_manager_urns_header_id_cdpi_urn_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: cdp_manager_urns cdp_manager_urns_diff_id_header_id_cdpi_urn_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.cdp_manager_urns
-    ADD CONSTRAINT cdp_manager_urns_header_id_cdpi_urn_key UNIQUE (header_id, cdpi, urn);
+    ADD CONSTRAINT cdp_manager_urns_diff_id_header_id_cdpi_urn_key UNIQUE (diff_id, header_id, cdpi, urn);
 
 
 --
@@ -12171,11 +12181,11 @@ ALTER TABLE ONLY maker.cdp_manager_urns
 
 
 --
--- Name: cdp_manager_vat cdp_manager_vat_header_id_vat_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: cdp_manager_vat cdp_manager_vat_diff_id_header_id_vat_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.cdp_manager_vat
-    ADD CONSTRAINT cdp_manager_vat_header_id_vat_key UNIQUE (header_id, vat);
+    ADD CONSTRAINT cdp_manager_vat_diff_id_header_id_vat_key UNIQUE (diff_id, header_id, vat);
 
 
 --
@@ -15790,11 +15800,27 @@ ALTER TABLE ONLY maker.cat_vow
 
 
 --
+-- Name: cdp_manager_cdpi cdp_manager_cdpi_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cdp_manager_cdpi
+    ADD CONSTRAINT cdp_manager_cdpi_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
 -- Name: cdp_manager_cdpi cdp_manager_cdpi_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.cdp_manager_cdpi
     ADD CONSTRAINT cdp_manager_cdpi_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: cdp_manager_count cdp_manager_count_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cdp_manager_count
+    ADD CONSTRAINT cdp_manager_count_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
 
 
 --
@@ -15806,11 +15832,27 @@ ALTER TABLE ONLY maker.cdp_manager_count
 
 
 --
+-- Name: cdp_manager_first cdp_manager_first_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cdp_manager_first
+    ADD CONSTRAINT cdp_manager_first_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
 -- Name: cdp_manager_first cdp_manager_first_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.cdp_manager_first
     ADD CONSTRAINT cdp_manager_first_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: cdp_manager_ilks cdp_manager_ilks_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cdp_manager_ilks
+    ADD CONSTRAINT cdp_manager_ilks_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
 
 
 --
@@ -15830,11 +15872,27 @@ ALTER TABLE ONLY maker.cdp_manager_ilks
 
 
 --
+-- Name: cdp_manager_last cdp_manager_last_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cdp_manager_last
+    ADD CONSTRAINT cdp_manager_last_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
 -- Name: cdp_manager_last cdp_manager_last_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.cdp_manager_last
     ADD CONSTRAINT cdp_manager_last_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: cdp_manager_list_next cdp_manager_list_next_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cdp_manager_list_next
+    ADD CONSTRAINT cdp_manager_list_next_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
 
 
 --
@@ -15846,11 +15904,27 @@ ALTER TABLE ONLY maker.cdp_manager_list_next
 
 
 --
+-- Name: cdp_manager_list_prev cdp_manager_list_prev_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cdp_manager_list_prev
+    ADD CONSTRAINT cdp_manager_list_prev_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
 -- Name: cdp_manager_list_prev cdp_manager_list_prev_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.cdp_manager_list_prev
     ADD CONSTRAINT cdp_manager_list_prev_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: cdp_manager_owns cdp_manager_owns_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cdp_manager_owns
+    ADD CONSTRAINT cdp_manager_owns_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
 
 
 --
@@ -15862,11 +15936,27 @@ ALTER TABLE ONLY maker.cdp_manager_owns
 
 
 --
+-- Name: cdp_manager_urns cdp_manager_urns_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cdp_manager_urns
+    ADD CONSTRAINT cdp_manager_urns_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
 -- Name: cdp_manager_urns cdp_manager_urns_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.cdp_manager_urns
     ADD CONSTRAINT cdp_manager_urns_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: cdp_manager_vat cdp_manager_vat_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cdp_manager_vat
+    ADD CONSTRAINT cdp_manager_vat_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
 
 
 --

@@ -24,16 +24,16 @@ import (
 )
 
 const (
-	insertVatQuery      = `INSERT INTO maker.cdp_manager_vat (header_id, vat) VALUES ($1, $2) ON CONFLICT DO NOTHING`
-	InsertCdpiQuery     = `INSERT INTO maker.cdp_manager_cdpi (header_id, cdpi) VALUES ($1, $2) ON CONFLICT DO NOTHING`
-	insertUrnsQuery     = `INSERT INTO maker.cdp_manager_urns (header_id, cdpi, urn) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
-	insertListPrevQuery = `INSERT INTO maker.cdp_manager_list_prev (header_id, cdpi, prev) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
-	insertListNextQuery = `INSERT INTO maker.cdp_manager_list_next (header_id, cdpi, next) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
-	InsertOwnsQuery     = `INSERT INTO maker.cdp_manager_owns (header_id, cdpi, owner) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
-	insertIlksQuery     = `INSERT INTO maker.cdp_manager_ilks (header_id, cdpi, ilk_id) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
-	insertFirstQuery    = `INSERT INTO maker.cdp_manager_first (header_id, owner, first) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
-	insertLastQuery     = `INSERT INTO maker.cdp_manager_last (header_id, owner, last) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
-	insertCountQuery    = `INSERT INTO maker.cdp_manager_count (header_id, owner, count) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
+	insertVatQuery      = `INSERT INTO maker.cdp_manager_vat (diff_id, header_id, vat) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
+	InsertCdpiQuery     = `INSERT INTO maker.cdp_manager_cdpi (diff_id, header_id, cdpi) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
+	insertUrnsQuery     = `INSERT INTO maker.cdp_manager_urns (diff_id, header_id, cdpi, urn) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
+	insertListPrevQuery = `INSERT INTO maker.cdp_manager_list_prev (diff_id, header_id, cdpi, prev) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
+	insertListNextQuery = `INSERT INTO maker.cdp_manager_list_next (diff_id, header_id, cdpi, next) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
+	InsertOwnsQuery     = `INSERT INTO maker.cdp_manager_owns (diff_id, header_id, cdpi, owner) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
+	insertIlksQuery     = `INSERT INTO maker.cdp_manager_ilks (diff_id, header_id, cdpi, ilk_id) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
+	insertFirstQuery    = `INSERT INTO maker.cdp_manager_first (diff_id, header_id, owner, first) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
+	insertLastQuery     = `INSERT INTO maker.cdp_manager_last (diff_id, header_id, owner, last) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
+	insertCountQuery    = `INSERT INTO maker.cdp_manager_count (diff_id, header_id, owner, count) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
 )
 
 type CdpManagerStorageRepository struct {
@@ -43,25 +43,25 @@ type CdpManagerStorageRepository struct {
 func (repository *CdpManagerStorageRepository) Create(diffID, headerID int64, metadata utils.StorageValueMetadata, value interface{}) error {
 	switch metadata.Name {
 	case Vat:
-		return repository.insertVat(headerID, value.(string))
+		return repository.insertVat(diffID, headerID, value.(string))
 	case Cdpi:
-		return repository.insertCdpi(headerID, value.(string))
+		return repository.insertCdpi(diffID, headerID, value.(string))
 	case Urns:
-		return repository.insertUrns(headerID, metadata, value.(string))
+		return repository.insertUrns(diffID, headerID, metadata, value.(string))
 	case ListPrev:
-		return repository.insertListPrev(headerID, metadata, value.(string))
+		return repository.insertListPrev(diffID, headerID, metadata, value.(string))
 	case ListNext:
-		return repository.insertListNext(headerID, metadata, value.(string))
+		return repository.insertListNext(diffID, headerID, metadata, value.(string))
 	case Owns:
-		return repository.insertOwns(headerID, metadata, value.(string))
+		return repository.insertOwns(diffID, headerID, metadata, value.(string))
 	case Ilks:
-		return repository.insertIlks(headerID, metadata, value.(string))
+		return repository.insertIlks(diffID, headerID, metadata, value.(string))
 	case First:
-		return repository.insertFirst(headerID, metadata, value.(string))
+		return repository.insertFirst(diffID, headerID, metadata, value.(string))
 	case Last:
-		return repository.insertLast(headerID, metadata, value.(string))
+		return repository.insertLast(diffID, headerID, metadata, value.(string))
 	case Count:
-		return repository.insertCount(headerID, metadata, value.(string))
+		return repository.insertCount(diffID, headerID, metadata, value.(string))
 	default:
 		panic("unrecognized storage metadata name")
 	}
@@ -71,57 +71,57 @@ func (repository *CdpManagerStorageRepository) SetDB(db *postgres.DB) {
 	repository.db = db
 }
 
-func (repository CdpManagerStorageRepository) insertVat(headerID int64, vat string) error {
-	_, err := repository.db.Exec(insertVatQuery, headerID, vat)
+func (repository CdpManagerStorageRepository) insertVat(diffID, headerID int64, vat string) error {
+	_, err := repository.db.Exec(insertVatQuery, diffID, headerID, vat)
 	return err
 }
 
-func (repository CdpManagerStorageRepository) insertCdpi(headerID int64, cdpi string) error {
-	_, err := repository.db.Exec(InsertCdpiQuery, headerID, cdpi)
+func (repository CdpManagerStorageRepository) insertCdpi(diffID, headerID int64, cdpi string) error {
+	_, err := repository.db.Exec(InsertCdpiQuery, diffID, headerID, cdpi)
 	return err
 }
 
-func (repository CdpManagerStorageRepository) insertUrns(headerID int64, metadata utils.StorageValueMetadata, urns string) error {
+func (repository CdpManagerStorageRepository) insertUrns(diffID, headerID int64, metadata utils.StorageValueMetadata, urns string) error {
 	cdpi, keyErr := getCdpi(metadata.Keys)
 	if keyErr != nil {
 		return keyErr
 	}
 
-	_, writeErr := repository.db.Exec(insertUrnsQuery, headerID, cdpi, urns)
+	_, writeErr := repository.db.Exec(insertUrnsQuery, diffID, headerID, cdpi, urns)
 	return writeErr
 }
 
-func (repository CdpManagerStorageRepository) insertListPrev(headerID int64, metadata utils.StorageValueMetadata, prev string) error {
+func (repository CdpManagerStorageRepository) insertListPrev(diffID, headerID int64, metadata utils.StorageValueMetadata, prev string) error {
 	cdpi, keyErr := getCdpi(metadata.Keys)
 	if keyErr != nil {
 		return keyErr
 	}
 
-	_, writeErr := repository.db.Exec(insertListPrevQuery, headerID, cdpi, prev)
+	_, writeErr := repository.db.Exec(insertListPrevQuery, diffID, headerID, cdpi, prev)
 	return writeErr
 }
 
-func (repository CdpManagerStorageRepository) insertListNext(headerID int64, metadata utils.StorageValueMetadata, next string) error {
+func (repository CdpManagerStorageRepository) insertListNext(diffID, headerID int64, metadata utils.StorageValueMetadata, next string) error {
 	cdpi, keyErr := getCdpi(metadata.Keys)
 	if keyErr != nil {
 		return keyErr
 	}
 
-	_, writeErr := repository.db.Exec(insertListNextQuery, headerID, cdpi, next)
+	_, writeErr := repository.db.Exec(insertListNextQuery, diffID, headerID, cdpi, next)
 	return writeErr
 }
 
-func (repository CdpManagerStorageRepository) insertOwns(headerID int64, metadata utils.StorageValueMetadata, owner string) error {
+func (repository CdpManagerStorageRepository) insertOwns(diffID, headerID int64, metadata utils.StorageValueMetadata, owner string) error {
 	cdpi, keyErr := getCdpi(metadata.Keys)
 	if keyErr != nil {
 		return keyErr
 	}
 
-	_, writeErr := repository.db.Exec(InsertOwnsQuery, headerID, cdpi, owner)
+	_, writeErr := repository.db.Exec(InsertOwnsQuery, diffID, headerID, cdpi, owner)
 	return writeErr
 }
 
-func (repository CdpManagerStorageRepository) insertIlks(headerID int64, metadata utils.StorageValueMetadata, ilks string) error {
+func (repository CdpManagerStorageRepository) insertIlks(diffID, headerID int64, metadata utils.StorageValueMetadata, ilks string) error {
 	cdpi, keyErr := getCdpi(metadata.Keys)
 	if keyErr != nil {
 		return keyErr
@@ -131,37 +131,37 @@ func (repository CdpManagerStorageRepository) insertIlks(headerID int64, metadat
 	if ilkErr != nil {
 		return ilkErr
 	}
-	_, writeErr := repository.db.Exec(insertIlksQuery, headerID, cdpi, ilkId)
+	_, writeErr := repository.db.Exec(insertIlksQuery, diffID, headerID, cdpi, ilkId)
 	return writeErr
 }
 
-func (repository CdpManagerStorageRepository) insertFirst(headerID int64, metadata utils.StorageValueMetadata, first string) error {
+func (repository CdpManagerStorageRepository) insertFirst(diffID, headerID int64, metadata utils.StorageValueMetadata, first string) error {
 	owner, keyErr := getOwner(metadata.Keys)
 	if keyErr != nil {
 		return keyErr
 	}
 
-	_, writeErr := repository.db.Exec(insertFirstQuery, headerID, owner, first)
+	_, writeErr := repository.db.Exec(insertFirstQuery, diffID, headerID, owner, first)
 	return writeErr
 }
 
-func (repository CdpManagerStorageRepository) insertLast(headerID int64, metadata utils.StorageValueMetadata, last string) error {
+func (repository CdpManagerStorageRepository) insertLast(diffID, headerID int64, metadata utils.StorageValueMetadata, last string) error {
 	owner, keyErr := getOwner(metadata.Keys)
 	if keyErr != nil {
 		return keyErr
 	}
 
-	_, writeErr := repository.db.Exec(insertLastQuery, headerID, owner, last)
+	_, writeErr := repository.db.Exec(insertLastQuery, diffID, headerID, owner, last)
 	return writeErr
 }
 
-func (repository CdpManagerStorageRepository) insertCount(headerID int64, metadata utils.StorageValueMetadata, count string) error {
+func (repository CdpManagerStorageRepository) insertCount(diffID, headerID int64, metadata utils.StorageValueMetadata, count string) error {
 	owner, keyErr := getOwner(metadata.Keys)
 	if keyErr != nil {
 		return keyErr
 	}
 
-	_, writeErr := repository.db.Exec(insertCountQuery, headerID, owner, count)
+	_, writeErr := repository.db.Exec(insertCountQuery, diffID, headerID, owner, count)
 	return writeErr
 }
 

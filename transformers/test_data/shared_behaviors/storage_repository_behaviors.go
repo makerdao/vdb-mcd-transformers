@@ -60,7 +60,7 @@ func SharedStorageRepositoryVariableBehaviors(inputs *StorageVariableBehaviorInp
 
 			if inputs.IsAMapping == true {
 				var result MappingRes
-				query := fmt.Sprintf("SELECT header_id, %s AS key, %s AS value FROM %s",
+				query := fmt.Sprintf("SELECT diff_id, header_id, %s AS key, %s AS value FROM %s",
 					inputs.KeyFieldName, inputs.ValueFieldName, inputs.StorageTableName)
 				err = database.Get(&result, query)
 				Expect(err).NotTo(HaveOccurred())
