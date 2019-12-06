@@ -20,9 +20,9 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_move"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/fetcher"
 	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 	. "github.com/onsi/ginkgo"
@@ -62,11 +62,10 @@ var _ = Describe("VatMove EventTransformer", func() {
 
 		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
 
-		tr := shared.EventTransformer{
-			Config:     vatMoveConfig,
-			Converter:  &vat_move.VatMoveConverter{},
-			Repository: &vat_move.VatMoveRepository{},
-		}.NewEventTransformer(db)
+		tr := event.Transformer{
+			Config:    vatMoveConfig,
+			Converter: &vat_move.Converter{},
+		}.NewTransformer(db)
 
 		err = tr.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())

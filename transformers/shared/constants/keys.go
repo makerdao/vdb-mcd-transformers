@@ -60,9 +60,11 @@ const (
 	TabColumn     event.ColumnName = "tab"
 	UColumn       event.ColumnName = "u"
 	VColumn       event.ColumnName = "v"
-	BidIdColumn   event.ColumnName = "bid_id"
+	BidIDColumn   event.ColumnName = "bid_id"
 	EraColumn     event.ColumnName = "era"
 	LotColumn     event.ColumnName = "lot"
 	BidColumn     event.ColumnName = "bid"
 	GalColumn     event.ColumnName = "gal"
+	DstColumn     event.ColumnName = "dst"
+	SrcColumn     event.ColumnName = "src"
 )
