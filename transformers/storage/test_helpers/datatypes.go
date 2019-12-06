@@ -10,6 +10,7 @@ type BlockMetadata struct {
 
 type VariableRes struct {
 	BlockMetadata
+	DiffID int64 `db:"diff_id"`
 	Value string
 }
 
@@ -20,6 +21,7 @@ type AuctionVariableRes struct {
 
 type MappingRes struct {
 	BlockMetadata
+	DiffID int64 `db:"diff_id"`
 	Key   string
 	Value string
 }
@@ -57,12 +59,14 @@ type FlopRes struct {
 	Bid             string
 }
 
-func AssertVariable(res VariableRes, headerID int64, value string) {
+func AssertVariable(res VariableRes, diffID, headerID int64, value string) {
+	Expect(res.DiffID).To(Equal(diffID))
 	Expect(res.HeaderID).To(Equal(headerID))
 	Expect(res.Value).To(Equal(value))
 }
 
-func AssertMapping(res MappingRes, headerID int64, key, value string) {
+func AssertMapping(res MappingRes, diffID, headerID int64, key, value string) {
+	Expect(res.DiffID).To(Equal(diffID))
 	Expect(res.HeaderID).To(Equal(headerID))
 	Expect(res.Key).To(Equal(key))
 	Expect(res.Value).To(Equal(value))

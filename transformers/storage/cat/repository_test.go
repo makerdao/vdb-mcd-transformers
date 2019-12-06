@@ -1,6 +1,7 @@
 package cat_test
 
 import (
+	"github.com/ethereum/go-ethereum/common"
 	"math/rand"
 	"strconv"
 
@@ -21,11 +22,11 @@ import (
 
 var _ = Describe("Cat storage repository", func() {
 	var (
-		db           *postgres.DB
-		repo         cat.CatStorageRepository
+		db                   *postgres.DB
+		repo                 cat.CatStorageRepository
 		diffID, fakeHeaderID int64
-		fakeAddress  = "0x12345"
-		fakeUint256  = "12345"
+		fakeAddress          = "0x12345"
+		fakeUint256          = "12345"
 	)
 
 	BeforeEach(func() {
@@ -90,6 +91,14 @@ var _ = Describe("Cat storage repository", func() {
 	})
 
 	Describe("Ilk", func() {
+		BeforeEach(func() {
+			fakeRawDiff := fakes.GetFakeStorageDiffForHeader(fakes.FakeHeader, common.Hash{}, common.Hash{}, common.Hash{})
+			storageDiffRepo := repositories.NewStorageDiffRepository(db)
+			var insertDiffErr error
+			diffID, insertDiffErr = storageDiffRepo.CreateStorageDiff(fakeRawDiff)
+			Expect(insertDiffErr).NotTo(HaveOccurred())
+		})
+
 		Describe("Flip", func() {
 			It("writes a row", func() {
 				ilkFlipMetadata := utils.GetStorageValueMetadata(cat.IlkFlip, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Address)
@@ -98,11 +107,11 @@ var _ = Describe("Cat storage repository", func() {
 				Expect(err).NotTo(HaveOccurred())
 
 				var result MappingRes
-				err = db.Get(&result, `SELECT header_id, ilk_id AS key, flip AS value FROM maker.cat_ilk_flip`)
+				err = db.Get(&result, `SELECT diff_id, header_id, ilk_id AS key, flip AS value FROM maker.cat_ilk_flip`)
 				Expect(err).NotTo(HaveOccurred())
 				ilkID, err := shared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
 				Expect(err).NotTo(HaveOccurred())
-				AssertMapping(result, fakeHeaderID, strconv.FormatInt(ilkID, 10), fakeAddress)
+				AssertMapping(result, diffID, fakeHeaderID, strconv.FormatInt(ilkID, 10), fakeAddress)
 			})
 
 			It("does not duplicate row", func() {
@@ -143,11 +152,11 @@ var _ = Describe("Cat storage repository", func() {
 				Expect(err).NotTo(HaveOccurred())
 
 				var result MappingRes
-				err = db.Get(&result, `SELECT header_id, ilk_id AS key, chop AS value FROM maker.cat_ilk_chop`)
+				err = db.Get(&result, `SELECT diff_id, header_id, ilk_id AS key, chop AS value FROM maker.cat_ilk_chop`)
 				Expect(err).NotTo(HaveOccurred())
 				ilkID, err := shared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
 				Expect(err).NotTo(HaveOccurred())
-				AssertMapping(result, fakeHeaderID, strconv.FormatInt(ilkID, 10), fakeUint256)
+				AssertMapping(result, diffID, fakeHeaderID, strconv.FormatInt(ilkID, 10), fakeUint256)
 			})
 
 			It("does not duplicate row", func() {
@@ -188,11 +197,11 @@ var _ = Describe("Cat storage repository", func() {
 				Expect(err).NotTo(HaveOccurred())
 
 				var result MappingRes
-				err = db.Get(&result, `SELECT header_id, ilk_id AS key, lump AS value FROM maker.cat_ilk_lump`)
+				err = db.Get(&result, `SELECT diff_id, header_id, ilk_id AS key, lump AS value FROM maker.cat_ilk_lump`)
 				Expect(err).NotTo(HaveOccurred())
 				ilkID, err := shared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
 				Expect(err).NotTo(HaveOccurred())
-				AssertMapping(result, fakeHeaderID, strconv.FormatInt(ilkID, 10), fakeUint256)
+				AssertMapping(result, diffID, fakeHeaderID, strconv.FormatInt(ilkID, 10), fakeUint256)
 			})
 
 			It("does not duplicate row", func() {

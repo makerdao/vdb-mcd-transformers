@@ -2966,6 +2966,7 @@ $$;
 
 CREATE TABLE maker.cat_ilk_chop (
     id integer NOT NULL,
+    diff_id integer NOT NULL,
     header_id integer NOT NULL,
     ilk_id integer NOT NULL,
     chop numeric NOT NULL
@@ -3143,6 +3144,7 @@ $$;
 
 CREATE TABLE maker.cat_ilk_flip (
     id integer NOT NULL,
+    diff_id integer NOT NULL,
     header_id integer NOT NULL,
     ilk_id integer NOT NULL,
     flip text
@@ -3261,6 +3263,7 @@ $$;
 
 CREATE TABLE maker.cat_ilk_lump (
     id integer NOT NULL,
+    diff_id integer NOT NULL,
     header_id integer NOT NULL,
     ilk_id integer NOT NULL,
     lump numeric NOT NULL
@@ -6016,6 +6019,7 @@ ALTER SEQUENCE maker.cat_ilk_lump_id_seq OWNED BY maker.cat_ilk_lump.id;
 
 CREATE TABLE maker.cat_live (
     id integer NOT NULL,
+    diff_id integer NOT NULL,
     header_id integer NOT NULL,
     live numeric NOT NULL
 );
@@ -6047,6 +6051,7 @@ ALTER SEQUENCE maker.cat_live_id_seq OWNED BY maker.cat_live.id;
 
 CREATE TABLE maker.cat_vat (
     id integer NOT NULL,
+    diff_id integer NOT NULL,
     header_id integer NOT NULL,
     vat text
 );
@@ -6078,6 +6083,7 @@ ALTER SEQUENCE maker.cat_vat_id_seq OWNED BY maker.cat_vat.id;
 
 CREATE TABLE maker.cat_vow (
     id integer NOT NULL,
+    diff_id integer NOT NULL,
     header_id integer NOT NULL,
     vow text
 );
@@ -10578,11 +10584,7 @@ ALTER SEQUENCE public.nodes_id_seq OWNED BY public.eth_nodes.id;
 
 CREATE TABLE public.queued_storage (
     id integer NOT NULL,
-    block_height bigint,
-    block_hash bytea,
-    contract bytea,
-    storage_key bytea,
-    storage_value bytea
+    diff_id bigint NOT NULL
 );
 
 
@@ -10604,6 +10606,40 @@ CREATE SEQUENCE public.queued_storage_id_seq
 --
 
 ALTER SEQUENCE public.queued_storage_id_seq OWNED BY public.queued_storage.id;
+
+
+--
+-- Name: storage_diff; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.storage_diff (
+    id integer NOT NULL,
+    block_height bigint,
+    block_hash bytea,
+    hashed_address bytea,
+    storage_key bytea,
+    storage_value bytea
+);
+
+
+--
+-- Name: storage_diff_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.storage_diff_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: storage_diff_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.storage_diff_id_seq OWNED BY public.storage_diff.id;
 
 
 --
@@ -11771,6 +11807,13 @@ ALTER TABLE ONLY public.queued_storage ALTER COLUMN id SET DEFAULT nextval('publ
 
 
 --
+-- Name: storage_diff id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.storage_diff ALTER COLUMN id SET DEFAULT nextval('public.storage_diff_id_seq'::regclass);
+
+
+--
 -- Name: uncles id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -11888,11 +11931,11 @@ ALTER TABLE ONLY maker.cat_file_vow
 
 
 --
--- Name: cat_ilk_chop cat_ilk_chop_header_id_ilk_id_chop_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: cat_ilk_chop cat_ilk_chop_diff_id_header_id_ilk_id_chop_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.cat_ilk_chop
-    ADD CONSTRAINT cat_ilk_chop_header_id_ilk_id_chop_key UNIQUE (header_id, ilk_id, chop);
+    ADD CONSTRAINT cat_ilk_chop_diff_id_header_id_ilk_id_chop_key UNIQUE (diff_id, header_id, ilk_id, chop);
 
 
 --
@@ -11904,11 +11947,11 @@ ALTER TABLE ONLY maker.cat_ilk_chop
 
 
 --
--- Name: cat_ilk_flip cat_ilk_flip_header_id_ilk_id_flip_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: cat_ilk_flip cat_ilk_flip_diff_id_header_id_ilk_id_flip_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.cat_ilk_flip
-    ADD CONSTRAINT cat_ilk_flip_header_id_ilk_id_flip_key UNIQUE (header_id, ilk_id, flip);
+    ADD CONSTRAINT cat_ilk_flip_diff_id_header_id_ilk_id_flip_key UNIQUE (diff_id, header_id, ilk_id, flip);
 
 
 --
@@ -11920,11 +11963,11 @@ ALTER TABLE ONLY maker.cat_ilk_flip
 
 
 --
--- Name: cat_ilk_lump cat_ilk_lump_header_id_ilk_id_lump_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: cat_ilk_lump cat_ilk_lump_diff_id_header_id_ilk_id_lump_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.cat_ilk_lump
-    ADD CONSTRAINT cat_ilk_lump_header_id_ilk_id_lump_key UNIQUE (header_id, ilk_id, lump);
+    ADD CONSTRAINT cat_ilk_lump_diff_id_header_id_ilk_id_lump_key UNIQUE (diff_id, header_id, ilk_id, lump);
 
 
 --
@@ -11936,11 +11979,11 @@ ALTER TABLE ONLY maker.cat_ilk_lump
 
 
 --
--- Name: cat_live cat_live_header_id_live_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: cat_live cat_live_diff_id_header_id_live_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.cat_live
-    ADD CONSTRAINT cat_live_header_id_live_key UNIQUE (header_id, live);
+    ADD CONSTRAINT cat_live_diff_id_header_id_live_key UNIQUE (diff_id, header_id, live);
 
 
 --
@@ -11952,11 +11995,11 @@ ALTER TABLE ONLY maker.cat_live
 
 
 --
--- Name: cat_vat cat_vat_header_id_vat_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: cat_vat cat_vat_diff_id_header_id_vat_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.cat_vat
-    ADD CONSTRAINT cat_vat_header_id_vat_key UNIQUE (header_id, vat);
+    ADD CONSTRAINT cat_vat_diff_id_header_id_vat_key UNIQUE (diff_id, header_id, vat);
 
 
 --
@@ -11968,11 +12011,11 @@ ALTER TABLE ONLY maker.cat_vat
 
 
 --
--- Name: cat_vow cat_vow_header_id_vow_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: cat_vow cat_vow_diff_id_header_id_vow_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.cat_vow
-    ADD CONSTRAINT cat_vow_header_id_vow_key UNIQUE (header_id, vow);
+    ADD CONSTRAINT cat_vow_diff_id_header_id_vow_key UNIQUE (diff_id, header_id, vow);
 
 
 --
@@ -14144,11 +14187,11 @@ ALTER TABLE ONLY public.eth_nodes
 
 
 --
--- Name: queued_storage queued_storage_block_height_block_hash_contract_storage_key_key; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: queued_storage queued_storage_diff_id_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.queued_storage
-    ADD CONSTRAINT queued_storage_block_height_block_hash_contract_storage_key_key UNIQUE (block_height, block_hash, contract, storage_key, storage_value);
+    ADD CONSTRAINT queued_storage_diff_id_key UNIQUE (diff_id);
 
 
 --
@@ -14157,6 +14200,22 @@ ALTER TABLE ONLY public.queued_storage
 
 ALTER TABLE ONLY public.queued_storage
     ADD CONSTRAINT queued_storage_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: storage_diff storage_diff_block_height_block_hash_hashed_address_storage_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.storage_diff
+    ADD CONSTRAINT storage_diff_block_height_block_hash_hashed_address_storage_key UNIQUE (block_height, block_hash, hashed_address, storage_key, storage_value);
+
+
+--
+-- Name: storage_diff storage_diff_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.storage_diff
+    ADD CONSTRAINT storage_diff_pkey PRIMARY KEY (id);
 
 
 --
@@ -15611,6 +15670,14 @@ ALTER TABLE ONLY maker.cat_file_vow
 
 
 --
+-- Name: cat_ilk_chop cat_ilk_chop_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_ilk_chop
+    ADD CONSTRAINT cat_ilk_chop_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
 -- Name: cat_ilk_chop cat_ilk_chop_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -15624,6 +15691,14 @@ ALTER TABLE ONLY maker.cat_ilk_chop
 
 ALTER TABLE ONLY maker.cat_ilk_chop
     ADD CONSTRAINT cat_ilk_chop_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id) ON DELETE CASCADE;
+
+
+--
+-- Name: cat_ilk_flip cat_ilk_flip_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_ilk_flip
+    ADD CONSTRAINT cat_ilk_flip_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
 
 
 --
@@ -15643,6 +15718,14 @@ ALTER TABLE ONLY maker.cat_ilk_flip
 
 
 --
+-- Name: cat_ilk_lump cat_ilk_lump_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_ilk_lump
+    ADD CONSTRAINT cat_ilk_lump_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
 -- Name: cat_ilk_lump cat_ilk_lump_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -15659,6 +15742,14 @@ ALTER TABLE ONLY maker.cat_ilk_lump
 
 
 --
+-- Name: cat_live cat_live_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_live
+    ADD CONSTRAINT cat_live_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
 -- Name: cat_live cat_live_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -15667,11 +15758,27 @@ ALTER TABLE ONLY maker.cat_live
 
 
 --
+-- Name: cat_vat cat_vat_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_vat
+    ADD CONSTRAINT cat_vat_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
 -- Name: cat_vat cat_vat_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.cat_vat
     ADD CONSTRAINT cat_vat_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: cat_vow cat_vow_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_vow
+    ADD CONSTRAINT cat_vow_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
 
 
 --
@@ -17656,6 +17763,14 @@ ALTER TABLE ONLY public.headers
 
 ALTER TABLE ONLY public.blocks
     ADD CONSTRAINT node_fk FOREIGN KEY (eth_node_id) REFERENCES public.eth_nodes(id) ON DELETE CASCADE;
+
+
+--
+-- Name: queued_storage queued_storage_diff_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.queued_storage
+    ADD CONSTRAINT queued_storage_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id);
 
 
 --
