@@ -32,7 +32,7 @@ const (
 	numTopicsRequired = 4
 )
 
-func (Converter) ToModels(_ string, logs []core.HeaderSyncLog, _ *postgres.DB) ([]event.InsertionModel, error) {
+func (Converter) ToModels(_ string, logs []core.HeaderSyncLog, db *postgres.DB) ([]event.InsertionModel, error) {
 	var models []event.InsertionModel
 	for _, log := range logs {
 		err := shared.VerifyLog(log.Log, numTopicsRequired, logDataRequired)
@@ -41,6 +41,10 @@ func (Converter) ToModels(_ string, logs []core.HeaderSyncLog, _ *postgres.DB) (
 		}
 
 		ilk := log.Log.Topics[1].Hex()
+		ilkID, ilkErr := shared.GetOrCreateIlk(ilk, db)
+		if ilkErr != nil {
+			return nil, shared.ErrCouldNotCreateFK(ilkErr)
+		}
 		usr := common.BytesToAddress(log.Log.Topics[2].Bytes()).String()
 		wad := shared.ConvertInt256HexToBigInt(log.Log.Topics[3].Hex())
 
@@ -48,14 +52,14 @@ func (Converter) ToModels(_ string, logs []core.HeaderSyncLog, _ *postgres.DB) (
 			SchemaName: constants.MakerSchema,
 			TableName:  constants.VatSlipTable,
 			OrderedColumns: []event.ColumnName{
-				constants.HeaderFK, constants.IlkColumn, "usr", "wad", constants.LogFK,
+				event.HeaderFK, constants.IlkColumn, constants.UsrColumn, constants.WadColumn, event.LogFK,
 			},
 			ColumnValues: event.ColumnValues{
-				"usr":               usr,
-				"wad":               wad.String(),
-				constants.HeaderFK:  log.HeaderID,
-				constants.LogFK:     log.ID,
-				constants.IlkColumn: ilk,
+				constants.UsrColumn: usr,
+				constants.WadColumn: wad.String(),
+				event.HeaderFK:      log.HeaderID,
+				event.LogFK:         log.ID,
+				constants.IlkColumn: ilkID,
 			},
 		}
 		models = append(models, model)

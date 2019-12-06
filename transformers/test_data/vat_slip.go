@@ -55,14 +55,14 @@ var VatSlipHeaderSyncLogWithPositiveWad = core.HeaderSyncLog{
 }
 
 var VatSlipModelWithPositiveWad = event.InsertionModel{
-	SchemaName: "maker",
-	TableName:  "vat_slip",
+	SchemaName: constants.MakerSchema,
+	TableName:  constants.VatSlipTable,
 	OrderedColumns: []event.ColumnName{
-		constants.HeaderFK, constants.IlkColumn, "usr", "wad", constants.LogFK,
+		constants.HeaderFK, constants.IlkColumn, constants.UsrColumn, constants.WadColumn, constants.LogFK,
 	},
 	ColumnValues: event.ColumnValues{
-		"usr":               "0x5c8c8e5895B9cCf34ACF391C99E13C79EE2eFb46",
-		"wad":               "10000000000000000",
+		constants.UsrColumn: "0x5c8c8e5895B9cCf34ACF391C99E13C79EE2eFb46",
+		constants.WadColumn: "10000000000000000",
 		constants.HeaderFK:  VatSlipHeaderSyncLogWithPositiveWad.HeaderID,
 		constants.LogFK:     VatSlipHeaderSyncLogWithPositiveWad.ID,
 		constants.IlkColumn: "0x4554482d41000000000000000000000000000000000000000000000000000000",
@@ -94,16 +94,16 @@ var VatSlipHeaderSyncLogWithNegativeWad = core.HeaderSyncLog{
 }
 
 var VatSlipModelWithNegativeWad = event.InsertionModel{
-	SchemaName: "maker",
-	TableName:  "vat_slip",
+	SchemaName: constants.MakerSchema,
+	TableName:  constants.VatSlipTable,
 	OrderedColumns: []event.ColumnName{
-		constants.HeaderFK, constants.IlkColumn, "usr", "wad", constants.LogFK,
+		constants.HeaderFK, constants.IlkColumn, constants.UsrColumn, constants.WadColumn, constants.LogFK,
 	},
 	ColumnValues: event.ColumnValues{
-		"usr":               "0xFc7440E2Ed4A3AEb14d40c00f02a14221Be0474d",
-		"wad":               "-5000000000000000",
+		constants.UsrColumn: "0xFc7440E2Ed4A3AEb14d40c00f02a14221Be0474d",
+		constants.WadColumn: "-5000000000000000",
 		constants.HeaderFK:  VatSlipHeaderSyncLogWithNegativeWad.HeaderID,
 		constants.LogFK:     VatSlipHeaderSyncLogWithNegativeWad.ID,
-		constants.IlkColumn: "0x4554482d41000000000000000000000000000000000000000000000000000000",
+		//constants.IlkColumn DB state
 	},
 }
