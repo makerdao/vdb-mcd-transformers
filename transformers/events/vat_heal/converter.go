@@ -26,15 +26,10 @@ import (
 
 type Converter struct{}
 
-const (
-	logDataRequired   = false
-	numTopicsRequired = 2
-)
-
 func (Converter) ToModels(_ string, logs []core.HeaderSyncLog, _ *postgres.DB) ([]event.InsertionModel, error) {
 	var models []event.InsertionModel
 	for _, log := range logs {
-		err := shared.VerifyLog(log.Log, numTopicsRequired, logDataRequired)
+		err := shared.VerifyLog(log.Log, shared.TwoTopicsRequired, shared.LogDataNotRequired)
 		if err != nil {
 			return nil, err
 		}
