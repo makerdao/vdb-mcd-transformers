@@ -57,13 +57,13 @@ var VatSuckModel = event.InsertionModel{
 	SchemaName: "maker",
 	TableName:  "vat_suck",
 	OrderedColumns: []event.ColumnName{
-		constants.HeaderFK, "u", "v", "rad", constants.LogFK,
+		event.HeaderFK, constants.UColumn, constants.VColumn, constants.RadColumn, event.LogFK,
 	},
 	ColumnValues: event.ColumnValues{
-		"u":                "0x07Fa9eF6609cA7921112231F8f195138ebbA2977",
-		"v":                "0x7340e006f4135BA6970D43bf43d88DCAD4e7a8CA",
-		"rad":              "1000000000000000000000",
-		constants.HeaderFK: VatSuckHeaderSyncLog.HeaderID,
-		constants.LogFK:    VatSuckHeaderSyncLog.ID,
+		constants.UColumn:                "0x07Fa9eF6609cA7921112231F8f195138ebbA2977",
+		constants.VColumn:                "0x7340e006f4135BA6970D43bf43d88DCAD4e7a8CA",
+		constants.RadColumn:              "1000000000000000000000",
+		event.HeaderFK: VatSuckHeaderSyncLog.HeaderID,
+		event.LogFK:    VatSuckHeaderSyncLog.ID,
 	},
 }
