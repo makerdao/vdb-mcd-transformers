@@ -23,7 +23,6 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/flap_kick"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
@@ -55,13 +54,13 @@ var flapKickModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.FlapKickTable,
 	OrderedColumns: []event.ColumnName{
-		event.HeaderFK, event.LogFK, event.AddressFK, flap_kick.BidId, flap_kick.Lot, flap_kick.Bid,
+		event.HeaderFK, event.LogFK, event.AddressFK, constants.BidIdColumn, constants.LotColumn, constants.BidColumn,
 	},
 	ColumnValues: event.ColumnValues{
-		event.HeaderFK:  FlapKickHeaderSyncLog.HeaderID,
-		event.LogFK:     FlapKickHeaderSyncLog.ID,
-		flap_kick.BidId: big.NewInt(1).String(),
-		flap_kick.Lot:   big.NewInt(1000000000).String(),
-		flap_kick.Bid:   big.NewInt(20000000).String(),
+		event.HeaderFK:        FlapKickHeaderSyncLog.HeaderID,
+		event.LogFK:           FlapKickHeaderSyncLog.ID,
+		constants.BidIdColumn: big.NewInt(1).String(),
+		constants.LotColumn:   big.NewInt(1000000000).String(),
+		constants.BidColumn:   big.NewInt(20000000).String(),
 	},
 }

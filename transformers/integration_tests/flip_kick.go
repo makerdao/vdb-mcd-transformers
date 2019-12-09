@@ -23,6 +23,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/fetcher"
 	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 	. "github.com/onsi/ginkgo"
@@ -52,11 +53,10 @@ var _ = Describe("FlipKick Transformer", func() {
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		tr := shared.EventTransformer{
-			Config:     flipKickConfig,
-			Converter:  &flip_kick.FlipKickConverter{},
-			Repository: &flip_kick.FlipKickRepository{},
-		}.NewEventTransformer(db)
+		tr := event.Transformer{
+			Config:    flipKickConfig,
+			Converter: &flip_kick.Converter{},
+		}.NewTransformer(db)
 
 		f := fetcher.NewLogFetcher(blockChain)
 		logs, err := f.FetchLogs(

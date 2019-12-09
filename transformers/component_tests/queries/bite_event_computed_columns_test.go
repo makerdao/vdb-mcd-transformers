@@ -8,7 +8,6 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/flip_kick"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/vat"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
@@ -104,8 +103,6 @@ var _ = Describe("Bite event computed columns", func() {
 			Expect(convErr).NotTo(HaveOccurred())
 			address := fakes.FakeAddress
 			dealt := false
-			flipKickRepo := flip_kick.FlipKickRepository{}
-			flipKickRepo.SetDB(db)
 			ilkId, urnId, ctxErr := test_helpers.SetUpFlipBidContext(
 				test_helpers.FlipBidContextInput{
 					DealCreationInput: test_helpers.DealCreationInput{
@@ -116,7 +113,6 @@ var _ = Describe("Bite event computed columns", func() {
 					Dealt:            dealt,
 					IlkHex:           test_helpers.FakeIlk.Hex,
 					UrnGuy:           test_data.FakeUrn,
-					FlipKickRepo:     flipKickRepo,
 					FlipKickHeaderId: headerOne.Id,
 				})
 			Expect(ctxErr).NotTo(HaveOccurred())

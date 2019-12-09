@@ -23,11 +23,10 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
-
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 )
 
 var (
@@ -69,25 +68,30 @@ var FlipKickHeaderSyncLog = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-func FlipKickModel() shared.InsertionModel { return CopyModel(flipKickModel) }
+func FlipKickModel() event.InsertionModel { return CopyEventModel(flipKickModel) }
 
-var flipKickModel = shared.InsertionModel{
+var flipKickModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.FlipKickTable,
-	OrderedColumns: []string{
-		constants.HeaderFK, constants.LogFK, "bid_id", "lot", "bid", "tab", "usr", "gal", "address_id",
+	OrderedColumns: []event.ColumnName{
+		event.HeaderFK,
+		event.LogFK,
+		event.AddressFK,
+		constants.BidIdColumn,
+		constants.LotColumn,
+		constants.BidColumn,
+		constants.TabColumn,
+		constants.UsrColumn,
+		constants.GalColumn,
 	},
-	ColumnValues: shared.ColumnValues{
-		constants.HeaderFK: FlipKickHeaderSyncLog.HeaderID,
-		constants.LogFK:    FlipKickHeaderSyncLog.ID,
-		"bid_id":           flipID.String(),
-		"lot":              lot.String(),
-		"bid":              bid.String(),
-		"tab":              tab.String(),
-		"usr":              FakeUrn,
-		"gal":              gal,
-	},
-	ForeignKeyValues: shared.ForeignKeyValues{
-		constants.AddressFK: contractAddress,
+	ColumnValues: event.ColumnValues{
+		event.HeaderFK:        FlipKickHeaderSyncLog.HeaderID,
+		event.LogFK:           FlipKickHeaderSyncLog.ID,
+		constants.BidIdColumn: flipID.String(),
+		constants.LotColumn:   lot.String(),
+		constants.BidColumn:   bid.String(),
+		constants.TabColumn:   tab.String(),
+		constants.UsrColumn:   FakeUrn,
+		constants.GalColumn:   gal,
 	},
 }

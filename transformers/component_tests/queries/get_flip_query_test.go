@@ -6,7 +6,6 @@ import (
 
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/flip_kick"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
@@ -22,7 +21,6 @@ var _ = Describe("Single flip view", func() {
 		contractAddress        = fakes.RandomString(42)
 		db                     *postgres.DB
 		fakeBidId              = rand.Int()
-		flipKickRepo           flip_kick.FlipKickRepository
 		headerOne              core.Header
 		headerRepo             repositories.HeaderRepository
 	)
@@ -30,8 +28,6 @@ var _ = Describe("Single flip view", func() {
 	BeforeEach(func() {
 		db = test_config.NewTestDB(test_config.NewTestNode())
 		test_config.CleanTestDB(db)
-		flipKickRepo = flip_kick.FlipKickRepository{}
-		flipKickRepo.SetDB(db)
 		headerRepo = repositories.NewHeaderRepository(db)
 
 		blockOne = rand.Int()
@@ -59,7 +55,6 @@ var _ = Describe("Single flip view", func() {
 			Dealt:            true,
 			IlkHex:           test_helpers.FakeIlk.Hex,
 			UrnGuy:           test_data.FlipKickModel().ColumnValues["usr"].(string),
-			FlipKickRepo:     flipKickRepo,
 			FlipKickHeaderId: headerOne.Id,
 		})
 		Expect(err).NotTo(HaveOccurred())
@@ -95,7 +90,6 @@ var _ = Describe("Single flip view", func() {
 				Dealt:            false,
 				IlkHex:           test_helpers.FakeIlk.Hex,
 				UrnGuy:           test_data.FlipKickModel().ColumnValues["usr"].(string),
-				FlipKickRepo:     flipKickRepo,
 				FlipKickHeaderId: headerOne.Id,
 			})
 			Expect(err).NotTo(HaveOccurred())
@@ -132,7 +126,6 @@ var _ = Describe("Single flip view", func() {
 				Dealt:            true,
 				IlkHex:           test_helpers.FakeIlk.Hex,
 				UrnGuy:           test_data.FlipKickModel().ColumnValues["usr"].(string),
-				FlipKickRepo:     flipKickRepo,
 				FlipKickHeaderId: headerOne.Id,
 			})
 			Expect(err).NotTo(HaveOccurred())
@@ -165,7 +158,6 @@ var _ = Describe("Single flip view", func() {
 			Dealt:            true,
 			IlkHex:           test_helpers.FakeIlk.Hex,
 			UrnGuy:           test_data.FlipKickModel().ColumnValues["usr"].(string),
-			FlipKickRepo:     flipKickRepo,
 			FlipKickHeaderId: headerOne.Id,
 		})
 		Expect(err).NotTo(HaveOccurred())

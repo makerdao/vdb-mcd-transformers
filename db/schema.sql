@@ -2639,6 +2639,41 @@ $$;
 
 
 --
+-- Name: delete_obsolete_urn_state(integer, integer); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.delete_obsolete_urn_state(urn_id integer, header_id integer) RETURNS api.historical_urn_state
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+    urn_state_block_number BIGINT := (
+        SELECT block_number
+        FROM public.headers
+        WHERE id = header_id);
+BEGIN
+    DELETE
+    FROM api.historical_urn_state
+        USING maker.urns LEFT JOIN maker.ilks ON urns.ilk_id = ilks.id
+    WHERE historical_urn_state.urn_identifier = urns.identifier
+      AND historical_urn_state.ilk_identifier = ilks.identifier
+      AND urns.id = urn_id
+      AND historical_urn_state.block_height = urn_state_block_number
+      AND NOT (EXISTS(
+            SELECT *
+            FROM maker.vat_urn_ink
+            WHERE vat_urn_ink.urn_id = delete_obsolete_urn_state.urn_id
+              AND vat_urn_ink.header_id = delete_obsolete_urn_state.header_id))
+      AND NOT (EXISTS(
+            SELECT *
+            FROM maker.vat_urn_art
+            WHERE vat_urn_art.urn_id = delete_obsolete_urn_state.urn_id
+              AND vat_urn_art.header_id = delete_obsolete_urn_state.header_id));
+    RETURN NULL;
+END
+$$;
+
+
+--
 -- Name: delete_redundant_ilk_state(integer, integer); Type: FUNCTION; Schema: maker; Owner: -
 --
 
@@ -2685,41 +2720,6 @@ BEGIN
       AND (ilk_state.duty IS NULL OR ilk_state.duty = prev_ilk_state.duty)
       AND (ilk_state.pip IS NULL OR ilk_state.pip = prev_ilk_state.pip)
       AND (ilk_state.mat IS NULL OR ilk_state.mat = prev_ilk_state.mat);
-    RETURN NULL;
-END
-$$;
-
-
---
--- Name: delete_redundant_urn_state(integer, integer); Type: FUNCTION; Schema: maker; Owner: -
---
-
-CREATE FUNCTION maker.delete_redundant_urn_state(urn_id integer, header_id integer) RETURNS api.historical_urn_state
-    LANGUAGE plpgsql
-    AS $$
-DECLARE
-    urn_state_block_number BIGINT := (
-        SELECT block_number
-        FROM public.headers
-        WHERE id = header_id);
-BEGIN
-    DELETE
-    FROM api.historical_urn_state
-        USING maker.urns LEFT JOIN maker.ilks ON urns.ilk_id = ilks.id
-    WHERE historical_urn_state.urn_identifier = urns.identifier
-      AND historical_urn_state.ilk_identifier = ilks.identifier
-      AND urns.id = urn_id
-      AND historical_urn_state.block_height = urn_state_block_number
-      AND NOT (EXISTS(
-            SELECT *
-            FROM maker.vat_urn_ink
-            WHERE vat_urn_ink.urn_id = delete_redundant_urn_state.urn_id
-              AND vat_urn_ink.header_id = delete_redundant_urn_state.header_id))
-      AND NOT (EXISTS(
-            SELECT *
-            FROM maker.vat_urn_art
-            WHERE vat_urn_art.urn_id = delete_redundant_urn_state.urn_id
-              AND vat_urn_art.header_id = delete_redundant_urn_state.header_id));
     RETURN NULL;
 END
 $$;
@@ -5049,7 +5049,7 @@ BEGIN
         PERFORM maker.update_urn_arts_until_next_diff(NEW, NEW.art);
     ELSIF (TG_OP = 'DELETE') THEN
         PERFORM maker.update_urn_arts_until_next_diff(OLD, urn_art_before_block(OLD.urn_id, OLD.header_id));
-        PERFORM maker.delete_redundant_urn_state(OLD.urn_id, OLD.header_id);
+        PERFORM maker.delete_obsolete_urn_state(OLD.urn_id, OLD.header_id);
     END IF;
     RETURN NULL;
 END
@@ -5127,7 +5127,7 @@ BEGIN
         PERFORM maker.update_urn_created(NEW.urn_id);
     ELSIF (TG_OP = 'DELETE') THEN
         PERFORM maker.update_urn_inks_until_next_diff(OLD, urn_ink_before_block(OLD.urn_id, OLD.header_id));
-        PERFORM maker.delete_redundant_urn_state(OLD.urn_id, OLD.header_id);
+        PERFORM maker.delete_obsolete_urn_state(OLD.urn_id, OLD.header_id);
         PERFORM maker.update_urn_created(OLD.urn_id);
     END IF;
     RETURN NULL;

@@ -19,10 +19,10 @@ package flap_kick
 import (
 	"errors"
 	"fmt"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
@@ -30,12 +30,6 @@ import (
 )
 
 type Converter struct{}
-
-const (
-	BidId event.ColumnName = "bid_id"
-	Lot   event.ColumnName = "lot"
-	Bid   event.ColumnName = "bid"
-)
 
 func (converter Converter) toEntities(contractAbi string, logs []core.HeaderSyncLog) ([]FlapKickEntity, error) {
 	var entities []FlapKickEntity
@@ -80,15 +74,20 @@ func (converter Converter) ToModels(abi string, logs []core.HeaderSyncLog, db *p
 			SchemaName: constants.MakerSchema,
 			TableName:  constants.FlapKickTable,
 			OrderedColumns: []event.ColumnName{
-				event.HeaderFK, event.LogFK, event.AddressFK, BidId, Lot, Bid,
+				event.HeaderFK,
+				event.LogFK,
+				event.AddressFK,
+				constants.BidIdColumn,
+				constants.LotColumn,
+				constants.BidColumn,
 			},
 			ColumnValues: event.ColumnValues{
-				event.HeaderFK:  flapKickEntity.HeaderID,
-				event.LogFK:     flapKickEntity.LogID,
-				event.AddressFK: addressId,
-				BidId:           flapKickEntity.Id.String(),
-				Lot:             shared.BigIntToString(flapKickEntity.Lot),
-				Bid:             shared.BigIntToString(flapKickEntity.Bid),
+				event.HeaderFK:        flapKickEntity.HeaderID,
+				event.LogFK:           flapKickEntity.LogID,
+				event.AddressFK:       addressId,
+				constants.BidIdColumn: flapKickEntity.Id.String(),
+				constants.LotColumn:   shared.BigIntToString(flapKickEntity.Lot),
+				constants.BidColumn:   shared.BigIntToString(flapKickEntity.Bid),
 			},
 		}
 

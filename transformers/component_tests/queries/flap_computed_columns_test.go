@@ -6,8 +6,8 @@ import (
 
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/flap_kick"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
@@ -56,7 +56,7 @@ var _ = Describe("Flap computed columns", func() {
 			flapKickEvent.ColumnValues[event.HeaderFK] = headerOne.Id
 			flapKickEvent.ColumnValues[event.LogFK] = flapKickLog.ID
 			flapKickEvent.ColumnValues[event.AddressFK] = addressId
-			flapKickEvent.ColumnValues[flap_kick.BidId] = strconv.Itoa(fakeBidId)
+			flapKickEvent.ColumnValues[constants.BidIdColumn] = strconv.Itoa(fakeBidId)
 			flapKickErr := event.PersistModels([]event.InsertionModel{flapKickEvent}, db)
 			Expect(flapKickErr).NotTo(HaveOccurred())
 
@@ -88,7 +88,7 @@ var _ = Describe("Flap computed columns", func() {
 			flapKickEvent.ColumnValues[event.HeaderFK] = headerOne.Id
 			flapKickEvent.ColumnValues[event.LogFK] = flapKickLog.ID
 			flapKickEvent.ColumnValues[event.AddressFK] = addressId
-			flapKickEvent.ColumnValues[flap_kick.BidId] = strconv.Itoa(fakeBidId)
+			flapKickEvent.ColumnValues[constants.BidIdColumn] = strconv.Itoa(fakeBidId)
 			flapKickErr := event.PersistModels([]event.InsertionModel{flapKickEvent}, db)
 			Expect(flapKickErr).NotTo(HaveOccurred())
 
@@ -103,7 +103,7 @@ var _ = Describe("Flap computed columns", func() {
 			irrelevantFlapKickEvent.ColumnValues[event.HeaderFK] = headerTwo.Id
 			irrelevantFlapKickEvent.ColumnValues[event.LogFK] = irrelevantFlipKickLog.ID
 			irrelevantFlapKickEvent.ColumnValues[event.AddressFK] = addressId
-			irrelevantFlapKickEvent.ColumnValues[flap_kick.BidId] = strconv.Itoa(irrelevantBidId)
+			irrelevantFlapKickEvent.ColumnValues[constants.BidIdColumn] = strconv.Itoa(irrelevantBidId)
 			flapKickErr = event.PersistModels([]event.InsertionModel{irrelevantFlapKickEvent}, db)
 			Expect(flapKickErr).NotTo(HaveOccurred())
 
@@ -143,7 +143,7 @@ var _ = Describe("Flap computed columns", func() {
 				flapKickEvent.ColumnValues[event.HeaderFK] = headerOne.Id
 				flapKickEvent.ColumnValues[event.LogFK] = logId
 				flapKickEvent.ColumnValues[event.AddressFK] = addressId
-				flapKickEvent.ColumnValues[flap_kick.BidId] = strconv.Itoa(fakeBidId)
+				flapKickEvent.ColumnValues[constants.BidIdColumn] = strconv.Itoa(fakeBidId)
 				flapKickErr := event.PersistModels([]event.InsertionModel{flapKickEvent}, db)
 				Expect(flapKickErr).NotTo(HaveOccurred())
 
@@ -187,8 +187,8 @@ var _ = Describe("Flap computed columns", func() {
 			It("offsets results if offset is provided", func() {
 				expectedBidEvent := test_helpers.BidEvent{
 					BidId:           strconv.Itoa(fakeBidId),
-					Lot:             flapKickEvent.ColumnValues[flap_kick.Lot].(string),
-					BidAmount:       flapKickEvent.ColumnValues[flap_kick.Bid].(string),
+					Lot:             flapKickEvent.ColumnValues[constants.LotColumn].(string),
+					BidAmount:       flapKickEvent.ColumnValues[constants.BidColumn].(string),
 					Act:             "kick",
 					ContractAddress: contractAddress,
 				}

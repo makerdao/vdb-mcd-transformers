@@ -24,8 +24,6 @@ import (
 
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/deal"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/dent"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/flap_kick"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/flip_kick"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/flop_kick"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/tend"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/yank"
@@ -520,7 +518,7 @@ func SetUpFlipBidContext(setupData FlipBidContextInput) (ilkId, urnId int64, err
 	}
 
 	flipKickLog := test_data.CreateTestLog(setupData.FlipKickHeaderId, setupData.DB)
-	flipKickErr := CreateFlipKick(setupData.ContractAddress, setupData.BidId, setupData.FlipKickHeaderId, flipKickLog.ID, setupData.UrnGuy, setupData.FlipKickRepo)
+	flipKickErr := CreateFlipKick(setupData.ContractAddress, setupData.BidId, setupData.FlipKickHeaderId, flipKickLog.ID, setupData.UrnGuy, setupData.DB)
 	if flipKickErr != nil {
 		return 0, 0, flipKickErr
 	}
@@ -581,14 +579,16 @@ func CreateDeal(input DealCreationInput) (err error) {
 	return event.PersistModels(deals, input.DB)
 }
 
-func CreateFlipKick(contractAddress string, bidId int, headerId, logId int64, usr string, repo flip_kick.FlipKickRepository) error {
-	flipKickModel := test_data.CopyModel(test_data.FlipKickModel())
-	flipKickModel.ForeignKeyValues[constants.AddressFK] = contractAddress
-	flipKickModel.ColumnValues["bid_id"] = strconv.Itoa(bidId)
-	flipKickModel.ColumnValues["usr"] = usr
-	flipKickModel.ColumnValues[constants.HeaderFK] = headerId
-	flipKickModel.ColumnValues[constants.LogFK] = logId
-	return repo.Create([]shared.InsertionModel{flipKickModel})
+func CreateFlipKick(contractAddress string, bidId int, headerId, logId int64, usr string, db *postgres.DB) error {
+	addressId, addressErr := shared.GetOrCreateAddress(contractAddress, db)
+	Expect(addressErr).NotTo(HaveOccurred())
+	flipKickModel := test_data.CopyEventModel(test_data.FlipKickModel())
+	flipKickModel.ColumnValues[event.HeaderFK] = headerId
+	flipKickModel.ColumnValues[event.LogFK] = logId
+	flipKickModel.ColumnValues[event.AddressFK] = addressId
+	flipKickModel.ColumnValues[constants.BidIdColumn] = strconv.Itoa(bidId)
+	flipKickModel.ColumnValues[constants.UsrColumn] = usr
+	return event.PersistModels([]event.InsertionModel{flipKickModel}, db)
 }
 
 func CreateFlapKick(contractAddress string, bidId int, headerId, logId int64, db *postgres.DB) error {
@@ -598,7 +598,7 @@ func CreateFlapKick(contractAddress string, bidId int, headerId, logId int64, db
 	flapKickModel.ColumnValues[event.HeaderFK] = headerId
 	flapKickModel.ColumnValues[event.LogFK] = logId
 	flapKickModel.ColumnValues[event.AddressFK] = addressId
-	flapKickModel.ColumnValues[flap_kick.BidId] = strconv.Itoa(bidId)
+	flapKickModel.ColumnValues[constants.BidIdColumn] = strconv.Itoa(bidId)
 	return event.PersistModels([]event.InsertionModel{flapKickModel}, db)
 }
 
@@ -701,7 +701,6 @@ type FlipBidContextInput struct {
 	Dealt            bool
 	IlkHex           string
 	UrnGuy           string
-	FlipKickRepo     flip_kick.FlipKickRepository
 	FlipKickHeaderId int64
 }
 

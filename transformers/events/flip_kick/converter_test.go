@@ -17,29 +17,44 @@
 package flip_kick_test
 
 import (
+	"github.com/makerdao/vdb-mcd-transformers/test_config"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/flip_kick"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 )
 
 var _ = Describe("FlipKick Converter", func() {
-	var converter = flip_kick.FlipKickConverter{}
-	It("converts a log to a model", func() {
-		models, err := converter.ToModels(constants.FlipABI(), []core.HeaderSyncLog{test_data.FlipKickHeaderSyncLog})
+	var (
+		converter flip_kick.Converter
+		db        = test_config.NewTestDB(test_config.NewTestNode())
+	)
 
+	BeforeEach(func() {
+		converter = flip_kick.Converter{}
+		test_config.CleanTestDB(db)
+	})
+
+	It("converts a log to a model", func() {
+		models, err := converter.ToModels(constants.FlipABI(), []core.HeaderSyncLog{test_data.FlipKickHeaderSyncLog}, db)
 		Expect(err).NotTo(HaveOccurred())
 
-		Expect(models).To(Equal([]shared.InsertionModel{test_data.FlipKickModel()}))
+		expectedKick := test_data.FlipKickModel()
+		addressId, addressErr := shared.GetOrCreateAddress(test_data.FlipKickHeaderSyncLog.Log.Address.Hex(), db)
+		Expect(addressErr).NotTo(HaveOccurred())
+		expectedKick.ColumnValues[event.AddressFK] = addressId
+
+		Expect(models).To(ConsistOf(expectedKick))
 	})
 
 	It("returns an error if converting log to entity fails", func() {
-		_, err := converter.ToModels("error abi", []core.HeaderSyncLog{test_data.FlipKickHeaderSyncLog})
+		_, err := converter.ToModels("error abi", []core.HeaderSyncLog{test_data.FlipKickHeaderSyncLog}, db)
 
 		Expect(err).To(HaveOccurred())
 	})

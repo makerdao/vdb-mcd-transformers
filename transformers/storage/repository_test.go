@@ -25,7 +25,6 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/flip_kick"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/flop_kick"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage"
@@ -41,11 +40,19 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-const InsertFlapKickQuery = `INSERT into maker.flap_kick
+const (
+	insertFlapKickQuery = `INSERT into maker.flap_kick
 		(header_id, bid_id, lot, bid, address_id, log_id)
 		VALUES($1, $2::NUMERIC, $3::NUMERIC, $4::NUMERIC, $5, $6)
 		ON CONFLICT (header_id, log_id)
 		DO UPDATE SET bid_id = $2, lot = $3, bid = $4, address_id = $5;`
+
+	insertFlipKickQuery = `INSERT into maker.flip_kick
+		(header_id, bid_id, lot, bid, tab, usr, gal, address_id, log_id)
+		VALUES($1, $2::NUMERIC, $3::NUMERIC, $4::NUMERIC, $5::NUMERIC, $6, $7, $8, $9)
+		ON CONFLICT (header_id, log_id)
+		DO UPDATE SET bid_id = $2, lot = $3, bid = $4, tab = $5, usr = $6, gal = $7, address_id = $8;`
+)
 
 var _ = Describe("Maker storage repository", func() {
 	var (
@@ -635,7 +642,7 @@ func insertFlapKick(blockNumber int64, bidId string, contractAddressId int64, db
 	//inserting a flap kick log event record
 	headerID := insertHeader(db, blockNumber)
 	flapKickLog := test_data.CreateTestLog(headerID, db)
-	_, insertErr := db.Exec(InsertFlapKickQuery,
+	_, insertErr := db.Exec(insertFlapKickQuery,
 		headerID, bidId, 0, 0, contractAddressId, flapKickLog.ID,
 	)
 	Expect(insertErr).NotTo(HaveOccurred())
@@ -665,7 +672,7 @@ func insertFlipKick(blockNumber int64, bidId string, contractAddressId int64, db
 	// flip kick event record
 	headerID := insertHeader(db, blockNumber)
 	log := test_data.CreateTestLog(headerID, db)
-	_, insertErr := db.Exec(flip_kick.InsertFlipKickQuery,
+	_, insertErr := db.Exec(insertFlipKickQuery,
 		headerID, bidId, 0, 0, 0, "", "", contractAddressId, log.ID,
 	)
 	Expect(insertErr).NotTo(HaveOccurred())
