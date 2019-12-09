@@ -9717,6 +9717,7 @@ ALTER SEQUENCE maker.vat_vice_id_seq OWNED BY maker.vat_vice.id;
 
 CREATE TABLE maker.vow_ash (
     id integer NOT NULL,
+    diff_id integer NOT NULL,
     header_id integer NOT NULL,
     ash numeric
 );
@@ -9748,6 +9749,7 @@ ALTER SEQUENCE maker.vow_ash_id_seq OWNED BY maker.vow_ash.id;
 
 CREATE TABLE maker.vow_bump (
     id integer NOT NULL,
+    diff_id integer NOT NULL,
     header_id integer NOT NULL,
     bump numeric
 );
@@ -9779,6 +9781,7 @@ ALTER SEQUENCE maker.vow_bump_id_seq OWNED BY maker.vow_bump.id;
 
 CREATE TABLE maker.vow_dump (
     id integer NOT NULL,
+    diff_id integer NOT NULL,
     header_id integer NOT NULL,
     dump numeric
 );
@@ -9875,6 +9878,7 @@ ALTER SEQUENCE maker.vow_file_id_seq OWNED BY maker.vow_file.id;
 
 CREATE TABLE maker.vow_flapper (
     id integer NOT NULL,
+    diff_id integer NOT NULL,
     header_id integer NOT NULL,
     flapper text
 );
@@ -9938,6 +9942,7 @@ ALTER SEQUENCE maker.vow_flog_id_seq OWNED BY maker.vow_flog.id;
 
 CREATE TABLE maker.vow_flopper (
     id integer NOT NULL,
+    diff_id integer NOT NULL,
     header_id integer NOT NULL,
     flopper text
 );
@@ -9969,6 +9974,7 @@ ALTER SEQUENCE maker.vow_flopper_id_seq OWNED BY maker.vow_flopper.id;
 
 CREATE TABLE maker.vow_hump (
     id integer NOT NULL,
+    diff_id integer NOT NULL,
     header_id integer NOT NULL,
     hump numeric
 );
@@ -10000,6 +10006,7 @@ ALTER SEQUENCE maker.vow_hump_id_seq OWNED BY maker.vow_hump.id;
 
 CREATE TABLE maker.vow_sin_integer (
     id integer NOT NULL,
+    diff_id integer NOT NULL,
     header_id integer NOT NULL,
     sin numeric
 );
@@ -10031,6 +10038,7 @@ ALTER SEQUENCE maker.vow_sin_integer_id_seq OWNED BY maker.vow_sin_integer.id;
 
 CREATE TABLE maker.vow_sin_mapping (
     id integer NOT NULL,
+    diff_id integer NOT NULL,
     header_id integer NOT NULL,
     era numeric,
     tab numeric
@@ -10063,6 +10071,7 @@ ALTER SEQUENCE maker.vow_sin_mapping_id_seq OWNED BY maker.vow_sin_mapping.id;
 
 CREATE TABLE maker.vow_sump (
     id integer NOT NULL,
+    diff_id integer NOT NULL,
     header_id integer NOT NULL,
     sump numeric
 );
@@ -10094,6 +10103,7 @@ ALTER SEQUENCE maker.vow_sump_id_seq OWNED BY maker.vow_sump.id;
 
 CREATE TABLE maker.vow_vat (
     id integer NOT NULL,
+    diff_id integer NOT NULL,
     header_id integer NOT NULL,
     vat text
 );
@@ -10125,6 +10135,7 @@ ALTER SEQUENCE maker.vow_vat_id_seq OWNED BY maker.vow_vat.id;
 
 CREATE TABLE maker.vow_wait (
     id integer NOT NULL,
+    diff_id integer NOT NULL,
     header_id integer NOT NULL,
     wait numeric
 );
@@ -13875,11 +13886,11 @@ ALTER TABLE ONLY maker.vat_vice
 
 
 --
--- Name: vow_ash vow_ash_header_id_ash_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: vow_ash vow_ash_diff_id_header_id_ash_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.vow_ash
-    ADD CONSTRAINT vow_ash_header_id_ash_key UNIQUE (header_id, ash);
+    ADD CONSTRAINT vow_ash_diff_id_header_id_ash_key UNIQUE (diff_id, header_id, ash);
 
 
 --
@@ -13891,11 +13902,11 @@ ALTER TABLE ONLY maker.vow_ash
 
 
 --
--- Name: vow_bump vow_bump_header_id_bump_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: vow_bump vow_bump_diff_id_header_id_bump_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.vow_bump
-    ADD CONSTRAINT vow_bump_header_id_bump_key UNIQUE (header_id, bump);
+    ADD CONSTRAINT vow_bump_diff_id_header_id_bump_key UNIQUE (diff_id, header_id, bump);
 
 
 --
@@ -13907,11 +13918,11 @@ ALTER TABLE ONLY maker.vow_bump
 
 
 --
--- Name: vow_dump vow_dump_header_id_dump_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: vow_dump vow_dump_diff_id_header_id_dump_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.vow_dump
-    ADD CONSTRAINT vow_dump_header_id_dump_key UNIQUE (header_id, dump);
+    ADD CONSTRAINT vow_dump_diff_id_header_id_dump_key UNIQUE (diff_id, header_id, dump);
 
 
 --
@@ -13955,11 +13966,11 @@ ALTER TABLE ONLY maker.vow_file
 
 
 --
--- Name: vow_flapper vow_flapper_header_id_flapper_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: vow_flapper vow_flapper_diff_id_header_id_flapper_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.vow_flapper
-    ADD CONSTRAINT vow_flapper_header_id_flapper_key UNIQUE (header_id, flapper);
+    ADD CONSTRAINT vow_flapper_diff_id_header_id_flapper_key UNIQUE (diff_id, header_id, flapper);
 
 
 --
@@ -13987,11 +13998,11 @@ ALTER TABLE ONLY maker.vow_flog
 
 
 --
--- Name: vow_flopper vow_flopper_header_id_flopper_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: vow_flopper vow_flopper_diff_id_header_id_flopper_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.vow_flopper
-    ADD CONSTRAINT vow_flopper_header_id_flopper_key UNIQUE (header_id, flopper);
+    ADD CONSTRAINT vow_flopper_diff_id_header_id_flopper_key UNIQUE (diff_id, header_id, flopper);
 
 
 --
@@ -14003,11 +14014,11 @@ ALTER TABLE ONLY maker.vow_flopper
 
 
 --
--- Name: vow_hump vow_hump_header_id_hump_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: vow_hump vow_hump_diff_id_header_id_hump_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.vow_hump
-    ADD CONSTRAINT vow_hump_header_id_hump_key UNIQUE (header_id, hump);
+    ADD CONSTRAINT vow_hump_diff_id_header_id_hump_key UNIQUE (diff_id, header_id, hump);
 
 
 --
@@ -14019,11 +14030,11 @@ ALTER TABLE ONLY maker.vow_hump
 
 
 --
--- Name: vow_sin_integer vow_sin_integer_header_id_sin_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: vow_sin_integer vow_sin_integer_diff_id_header_id_sin_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.vow_sin_integer
-    ADD CONSTRAINT vow_sin_integer_header_id_sin_key UNIQUE (header_id, sin);
+    ADD CONSTRAINT vow_sin_integer_diff_id_header_id_sin_key UNIQUE (diff_id, header_id, sin);
 
 
 --
@@ -14035,11 +14046,11 @@ ALTER TABLE ONLY maker.vow_sin_integer
 
 
 --
--- Name: vow_sin_mapping vow_sin_mapping_header_id_era_tab_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: vow_sin_mapping vow_sin_mapping_diff_id_header_id_era_tab_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.vow_sin_mapping
-    ADD CONSTRAINT vow_sin_mapping_header_id_era_tab_key UNIQUE (header_id, era, tab);
+    ADD CONSTRAINT vow_sin_mapping_diff_id_header_id_era_tab_key UNIQUE (diff_id, header_id, era, tab);
 
 
 --
@@ -14051,11 +14062,11 @@ ALTER TABLE ONLY maker.vow_sin_mapping
 
 
 --
--- Name: vow_sump vow_sump_header_id_sump_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: vow_sump vow_sump_diff_id_header_id_sump_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.vow_sump
-    ADD CONSTRAINT vow_sump_header_id_sump_key UNIQUE (header_id, sump);
+    ADD CONSTRAINT vow_sump_diff_id_header_id_sump_key UNIQUE (diff_id, header_id, sump);
 
 
 --
@@ -14067,11 +14078,11 @@ ALTER TABLE ONLY maker.vow_sump
 
 
 --
--- Name: vow_vat vow_vat_header_id_vat_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: vow_vat vow_vat_diff_id_header_id_vat_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.vow_vat
-    ADD CONSTRAINT vow_vat_header_id_vat_key UNIQUE (header_id, vat);
+    ADD CONSTRAINT vow_vat_diff_id_header_id_vat_key UNIQUE (diff_id, header_id, vat);
 
 
 --
@@ -14083,11 +14094,11 @@ ALTER TABLE ONLY maker.vow_vat
 
 
 --
--- Name: vow_wait vow_wait_header_id_wait_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: vow_wait vow_wait_diff_id_header_id_wait_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.vow_wait
-    ADD CONSTRAINT vow_wait_header_id_wait_key UNIQUE (header_id, wait);
+    ADD CONSTRAINT vow_wait_diff_id_header_id_wait_key UNIQUE (diff_id, header_id, wait);
 
 
 --
@@ -18174,6 +18185,14 @@ ALTER TABLE ONLY maker.vat_vice
 
 
 --
+-- Name: vow_ash vow_ash_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_ash
+    ADD CONSTRAINT vow_ash_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
 -- Name: vow_ash vow_ash_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -18182,11 +18201,27 @@ ALTER TABLE ONLY maker.vow_ash
 
 
 --
+-- Name: vow_bump vow_bump_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_bump
+    ADD CONSTRAINT vow_bump_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
 -- Name: vow_bump vow_bump_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.vow_bump
     ADD CONSTRAINT vow_bump_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: vow_dump vow_dump_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_dump
+    ADD CONSTRAINT vow_dump_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
 
 
 --
@@ -18230,6 +18265,14 @@ ALTER TABLE ONLY maker.vow_file
 
 
 --
+-- Name: vow_flapper vow_flapper_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_flapper
+    ADD CONSTRAINT vow_flapper_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
 -- Name: vow_flapper vow_flapper_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -18254,11 +18297,27 @@ ALTER TABLE ONLY maker.vow_flog
 
 
 --
+-- Name: vow_flopper vow_flopper_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_flopper
+    ADD CONSTRAINT vow_flopper_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
 -- Name: vow_flopper vow_flopper_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.vow_flopper
     ADD CONSTRAINT vow_flopper_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: vow_hump vow_hump_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_hump
+    ADD CONSTRAINT vow_hump_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
 
 
 --
@@ -18270,11 +18329,27 @@ ALTER TABLE ONLY maker.vow_hump
 
 
 --
+-- Name: vow_sin_integer vow_sin_integer_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_sin_integer
+    ADD CONSTRAINT vow_sin_integer_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
 -- Name: vow_sin_integer vow_sin_integer_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.vow_sin_integer
     ADD CONSTRAINT vow_sin_integer_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: vow_sin_mapping vow_sin_mapping_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_sin_mapping
+    ADD CONSTRAINT vow_sin_mapping_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
 
 
 --
@@ -18286,6 +18361,14 @@ ALTER TABLE ONLY maker.vow_sin_mapping
 
 
 --
+-- Name: vow_sump vow_sump_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_sump
+    ADD CONSTRAINT vow_sump_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
 -- Name: vow_sump vow_sump_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -18294,11 +18377,27 @@ ALTER TABLE ONLY maker.vow_sump
 
 
 --
+-- Name: vow_vat vow_vat_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_vat
+    ADD CONSTRAINT vow_vat_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
 -- Name: vow_vat vow_vat_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.vow_vat
     ADD CONSTRAINT vow_vat_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: vow_wait vow_wait_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_wait
+    ADD CONSTRAINT vow_wait_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
 
 
 --
