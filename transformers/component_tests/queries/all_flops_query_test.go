@@ -1,6 +1,7 @@
 package queries
 
 import (
+	storage_helper "github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	"math/rand"
 	"strconv"
 
@@ -21,6 +22,7 @@ var _ = Describe("All flops query", func() {
 		contractAddress        = fakes.RandomString(42)
 		blockOne, timestampOne int
 		headerOne              core.Header
+		diffID int64
 	)
 
 	BeforeEach(func() {
@@ -32,6 +34,8 @@ var _ = Describe("All flops query", func() {
 		blockOne = rand.Int()
 		timestampOne = int(rand.Int31())
 		headerOne = createHeader(blockOne, timestampOne, headerRepo)
+
+		diffID = storage_helper.CreateDiffRecord(db)
 	})
 
 	It("gets the most recent flop for every bid id", func() {
@@ -52,13 +56,13 @@ var _ = Describe("All flops query", func() {
 		Expect(contextErr).NotTo(HaveOccurred())
 
 		initialFlopOneStorageValues := test_helpers.GetFlopStorageValues(1, fakeBidIdOne)
-		test_helpers.CreateFlop(db, 0, headerOne, initialFlopOneStorageValues, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidIdOne)), contractAddress)
+		test_helpers.CreateFlop(db, diffID, headerOne.Id, initialFlopOneStorageValues, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidIdOne)), contractAddress)
 
 		updatedFlopOneStorageValues := test_helpers.GetFlopStorageValues(2, fakeBidIdOne)
-		test_helpers.CreateFlop(db, 0, headerTwo, updatedFlopOneStorageValues, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidIdOne)), contractAddress)
+		test_helpers.CreateFlop(db, diffID, headerTwo.Id, updatedFlopOneStorageValues, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidIdOne)), contractAddress)
 
 		flopStorageValuesTwo := test_helpers.GetFlopStorageValues(3, fakeBidIdTwo)
-		test_helpers.CreateFlop(db, 0, headerTwo, flopStorageValuesTwo, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidIdTwo)), contractAddress)
+		test_helpers.CreateFlop(db, diffID, headerTwo.Id, flopStorageValuesTwo, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidIdTwo)), contractAddress)
 
 		contextErr = test_helpers.SetUpFlopBidContext(test_helpers.FlopBidCreationInput{
 			DealCreationInput: test_helpers.DealCreationInput{
@@ -96,10 +100,10 @@ var _ = Describe("All flops query", func() {
 			fakeBidIdTwo = fakeBidIdOne + 1
 
 			flopStorageValuesOne = test_helpers.GetFlopStorageValues(1, fakeBidIdOne)
-			test_helpers.CreateFlop(db, 0, headerOne, flopStorageValuesOne, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidIdOne)), contractAddress)
+			test_helpers.CreateFlop(db, diffID, headerOne.Id, flopStorageValuesOne, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidIdOne)), contractAddress)
 
 			flopStorageValuesTwo = test_helpers.GetFlopStorageValues(2, fakeBidIdTwo)
-			test_helpers.CreateFlop(db, 0, headerOne, flopStorageValuesTwo, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidIdTwo)), contractAddress)
+			test_helpers.CreateFlop(db, diffID, headerOne.Id, flopStorageValuesTwo, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidIdTwo)), contractAddress)
 		})
 
 		It("limits results if max_results argument is provided", func() {

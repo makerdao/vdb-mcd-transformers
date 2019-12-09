@@ -17,6 +17,7 @@
 package queries
 
 import (
+	storage_helper "github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	"math/rand"
 	"strconv"
 
@@ -42,6 +43,7 @@ var _ = Describe("Flip state computed columns", func() {
 		contractAddress        = fakes.FakeAddress.Hex()
 		fakeBidId              int
 		blockOne, timestampOne int
+		diffID int64
 	)
 
 	BeforeEach(func() {
@@ -55,8 +57,10 @@ var _ = Describe("Flip state computed columns", func() {
 		headerOne = createHeader(blockOne, timestampOne, headerRepository)
 		logId = test_data.CreateTestLog(headerOne.Id, db).ID
 
+		diffID = storage_helper.CreateDiffRecord(db)
+
 		flipStorageValues := test_helpers.GetFlipStorageValues(1, test_helpers.FakeIlk.Hex, fakeBidId)
-		test_helpers.CreateFlip(db, 0, headerOne, flipStorageValues, test_helpers.GetFlipMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
+		test_helpers.CreateFlip(db, diffID, headerOne.Id, flipStorageValues, test_helpers.GetFlipMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
 
 		_, _, err := test_helpers.SetUpFlipBidContext(test_helpers.FlipBidContextInput{
 			DealCreationInput: test_helpers.DealCreationInput{
@@ -75,7 +79,7 @@ var _ = Describe("Flip state computed columns", func() {
 	Describe("flip_state_ilk", func() {
 		It("returns ilk_state for a flip_state", func() {
 			ilkValues := test_helpers.GetIlkValues(0)
-			test_helpers.CreateIlk(db, 0, headerOne, ilkValues, test_helpers.FakeIlkVatMetadatas, test_helpers.FakeIlkCatMetadatas, test_helpers.FakeIlkJugMetadatas, test_helpers.FakeIlkSpotMetadatas)
+			test_helpers.CreateIlk(db, diffID, headerOne, ilkValues, test_helpers.FakeIlkVatMetadatas, test_helpers.FakeIlkCatMetadatas, test_helpers.FakeIlkJugMetadatas, test_helpers.FakeIlkSpotMetadatas)
 
 			expectedIlk := test_helpers.IlkStateFromValues(test_helpers.FakeIlk.Hex, headerOne.Timestamp, headerOne.Timestamp, ilkValues)
 
@@ -98,7 +102,7 @@ var _ = Describe("Flip state computed columns", func() {
 			urnMetadata := test_helpers.GetUrnMetadata(test_helpers.FakeIlk.Hex, test_data.FlipKickModel().ColumnValues[constants.UsrColumn].(string))
 			vatRepository := vat.VatStorageRepository{}
 			vatRepository.SetDB(db)
-			test_helpers.CreateUrn(urnSetupData, headerOne.Id, urnMetadata, vatRepository)
+			test_helpers.CreateUrn(urnSetupData, diffID, headerOne.Id, urnMetadata, vatRepository)
 
 			var actualUrn test_helpers.UrnState
 			getUrnErr := db.Get(&actualUrn, `
@@ -251,7 +255,7 @@ var _ = Describe("Flip state computed columns", func() {
 			irrelevantContractAddress := "different flipper"
 			irrelevantFlipStorageValues := test_helpers.GetFlipStorageValues(1, test_helpers.AnotherFakeIlk.Hex, fakeBidId)
 			irrelevantFlipMetadatas := test_helpers.GetFlipMetadatas(strconv.Itoa(fakeBidId))
-			test_helpers.CreateFlip(db, 0, headerOne, irrelevantFlipStorageValues, irrelevantFlipMetadatas, irrelevantContractAddress)
+			test_helpers.CreateFlip(db, diffID, headerOne.Id, irrelevantFlipStorageValues, irrelevantFlipMetadatas, irrelevantContractAddress)
 
 			_, _, irrelevantFlipContextErr := test_helpers.SetUpFlipBidContext(test_helpers.FlipBidContextInput{
 				DealCreationInput: test_helpers.DealCreationInput{
@@ -280,7 +284,7 @@ var _ = Describe("Flip state computed columns", func() {
 			irrelevantContractAddress := "DifferentFlipper"
 			irrelevantFlipStorageValues := test_helpers.GetFlipStorageValues(2, test_helpers.FakeIlk.Hex, fakeBidId)
 			irrelevantFlipMetadatas := test_helpers.GetFlipMetadatas(strconv.Itoa(fakeBidId))
-			test_helpers.CreateFlip(db, 0, headerOne, irrelevantFlipStorageValues, irrelevantFlipMetadatas, irrelevantContractAddress)
+			test_helpers.CreateFlip(db, diffID, headerOne.Id, irrelevantFlipStorageValues, irrelevantFlipMetadatas, irrelevantContractAddress)
 
 			// this function creates a flip kick but we are going to use a different bid id in the select query
 			// so the test should return nothing

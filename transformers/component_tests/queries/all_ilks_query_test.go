@@ -1,6 +1,7 @@
 package queries
 
 import (
+	storage_helper "github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	"math/rand"
 	"strconv"
 	"time"
@@ -36,6 +37,7 @@ var _ = Describe("All Ilks query", func() {
 		fakeIlkStateBlock1        = test_helpers.GetIlkValues(1)
 		anotherFakeIlk            = test_helpers.AnotherFakeIlk
 		anotherFakeIlkStateBlock2 = test_helpers.GetIlkValues(2)
+		diffID int64
 	)
 
 	BeforeEach(func() {
@@ -53,16 +55,18 @@ var _ = Describe("All Ilks query", func() {
 		headerOne = createHeader(blockOne, timestampOne, headerRepository)
 		headerTwo = createHeader(blockTwo, timestampTwo, headerRepository)
 
+		diffID = storage_helper.CreateDiffRecord(db)
+
 		//creating fakeIlk at block 1
-		test_helpers.CreateVatRecords(headerOne, fakeIlkStateBlock1, test_helpers.FakeIlkVatMetadatas, vatRepository)
-		test_helpers.CreateCatRecords(0, headerOne, fakeIlkStateBlock1, test_helpers.FakeIlkCatMetadatas, catRepository)
-		test_helpers.CreateJugRecords(headerOne, fakeIlkStateBlock1, test_helpers.FakeIlkJugMetadatas, jugRepository)
-		test_helpers.CreateSpotRecords(headerOne, fakeIlkStateBlock1, test_helpers.FakeIlkSpotMetadatas, spotRepository)
+		test_helpers.CreateVatRecords(diffID, headerOne, fakeIlkStateBlock1, test_helpers.FakeIlkVatMetadatas, vatRepository)
+		test_helpers.CreateCatRecords(diffID, headerOne.Id, fakeIlkStateBlock1, test_helpers.FakeIlkCatMetadatas, catRepository)
+		test_helpers.CreateJugRecords(diffID, headerOne, fakeIlkStateBlock1, test_helpers.FakeIlkJugMetadatas, jugRepository)
+		test_helpers.CreateSpotRecords(diffID, headerOne, fakeIlkStateBlock1, test_helpers.FakeIlkSpotMetadatas, spotRepository)
 		//creating anotherFakeIlk at block 2
-		test_helpers.CreateVatRecords(headerTwo, anotherFakeIlkStateBlock2, test_helpers.AnotherFakeIlkVatMetadatas, vatRepository)
-		test_helpers.CreateCatRecords(0, headerTwo, anotherFakeIlkStateBlock2, test_helpers.AnotherFakeIlkCatMetadatas, catRepository)
-		test_helpers.CreateJugRecords(headerTwo, anotherFakeIlkStateBlock2, test_helpers.AnotherFakeIlkJugMetadatas, jugRepository)
-		test_helpers.CreateSpotRecords(headerTwo, anotherFakeIlkStateBlock2, test_helpers.AnotherFakeIlkSpotMetadatas, spotRepository)
+		test_helpers.CreateVatRecords(diffID, headerTwo, anotherFakeIlkStateBlock2, test_helpers.AnotherFakeIlkVatMetadatas, vatRepository)
+		test_helpers.CreateCatRecords(diffID, headerTwo.Id, anotherFakeIlkStateBlock2, test_helpers.AnotherFakeIlkCatMetadatas, catRepository)
+		test_helpers.CreateJugRecords(diffID, headerTwo, anotherFakeIlkStateBlock2, test_helpers.AnotherFakeIlkJugMetadatas, jugRepository)
+		test_helpers.CreateSpotRecords(diffID, headerTwo, anotherFakeIlkStateBlock2, test_helpers.AnotherFakeIlkSpotMetadatas, spotRepository)
 	})
 
 	Context("When the headerSync is complete", func() {
@@ -145,14 +149,14 @@ var _ = Describe("All Ilks query", func() {
 			//updating fakeIlk spot value at block 3
 			fakeIlkStateBlock3 := test_helpers.GetIlkValues(3)
 			spotMetadata := []utils.StorageValueMetadata{test_helpers.FakeIlkSpotMetadata}
-			test_helpers.CreateVatRecords(headerThree, fakeIlkStateBlock3, spotMetadata, vatRepository)
+			test_helpers.CreateVatRecords(diffID, headerThree, fakeIlkStateBlock3, spotMetadata, vatRepository)
 
 			//updating all anotherFakeIlk values at block 3
 			anotherFakeIlkStateBlock3 := test_helpers.GetIlkValues(4)
-			test_helpers.CreateVatRecords(headerThree, anotherFakeIlkStateBlock3, test_helpers.AnotherFakeIlkVatMetadatas, vatRepository)
-			test_helpers.CreateCatRecords(0, headerThree, anotherFakeIlkStateBlock3, test_helpers.AnotherFakeIlkCatMetadatas, catRepository)
-			test_helpers.CreateJugRecords(headerThree, anotherFakeIlkStateBlock3, test_helpers.AnotherFakeIlkJugMetadatas, jugRepository)
-			test_helpers.CreateSpotRecords(headerThree, anotherFakeIlkStateBlock3, test_helpers.AnotherFakeIlkSpotMetadatas, spotRepository)
+			test_helpers.CreateVatRecords(diffID, headerThree, anotherFakeIlkStateBlock3, test_helpers.AnotherFakeIlkVatMetadatas, vatRepository)
+			test_helpers.CreateCatRecords(diffID, headerThree.Id, anotherFakeIlkStateBlock3, test_helpers.AnotherFakeIlkCatMetadatas, catRepository)
+			test_helpers.CreateJugRecords(diffID, headerThree, anotherFakeIlkStateBlock3, test_helpers.AnotherFakeIlkJugMetadatas, jugRepository)
+			test_helpers.CreateSpotRecords(diffID, headerThree, anotherFakeIlkStateBlock3, test_helpers.AnotherFakeIlkSpotMetadatas, spotRepository)
 
 			var dbResult []test_helpers.IlkState
 			fakeIlkExpectedResult := test_helpers.IlkState{
@@ -277,7 +281,7 @@ var _ = Describe("All Ilks query", func() {
 			Type: utils.Uint256,
 		}}
 		//only creating a vat_ilk_rate record
-		test_helpers.CreateVatRecords(headerFour, newIlkStateBlock4, metadata, vatRepository)
+		test_helpers.CreateVatRecords(diffID, headerFour, newIlkStateBlock4, metadata, vatRepository)
 
 		var dbResult []test_helpers.IlkState
 		newIlkExpectedResult := test_helpers.IlkState{

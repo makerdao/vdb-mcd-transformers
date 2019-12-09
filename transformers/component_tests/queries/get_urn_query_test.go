@@ -1,6 +1,7 @@
 package queries
 
 import (
+	storage_helper "github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	"math/rand"
 	"strconv"
 
@@ -21,6 +22,7 @@ var _ = Describe("Single urn view", func() {
 		urnOne, urnTwo         string
 		blockOne, timestampOne int
 		headerOne              core.Header
+		diffID int64
 	)
 
 	const getUrnQuery = `SELECT urn_identifier, ilk_identifier, ink, art, created, updated FROM api.get_urn($1, $2, $3)`
@@ -37,6 +39,8 @@ var _ = Describe("Single urn view", func() {
 		blockOne = rand.Int()
 		timestampOne = int(rand.Int31())
 		headerOne = createHeader(blockOne, timestampOne, headerRepo)
+
+		diffID = storage_helper.CreateDiffRecord(db)
 	})
 
 	It("gets only the specified urn", func() {
@@ -45,7 +49,7 @@ var _ = Describe("Single urn view", func() {
 
 		urnOneMetadata := test_helpers.GetUrnMetadata(test_helpers.FakeIlk.Hex, urnOne)
 		urnOneSetupData := test_helpers.GetUrnSetupData()
-		test_helpers.CreateUrn(urnOneSetupData, headerOne.Id, urnOneMetadata, vatRepo)
+		test_helpers.CreateUrn(urnOneSetupData, diffID, headerOne.Id, urnOneMetadata, vatRepo)
 
 		expectedTimestampOne := test_helpers.GetExpectedTimestamp(timestampOne)
 		expectedUrn := test_helpers.UrnState{
@@ -59,7 +63,7 @@ var _ = Describe("Single urn view", func() {
 
 		urnTwoMetadata := test_helpers.GetUrnMetadata(test_helpers.AnotherFakeIlk.Hex, urnTwo)
 		urnTwoSetupData := test_helpers.GetUrnSetupData()
-		test_helpers.CreateUrn(urnTwoSetupData, headerTwo.Id, urnTwoMetadata, vatRepo)
+		test_helpers.CreateUrn(urnTwoSetupData, diffID, headerTwo.Id, urnTwoMetadata, vatRepo)
 
 		var actualUrn test_helpers.UrnState
 		getErr := db.Get(&actualUrn, getUrnQuery, test_helpers.FakeIlk.Identifier, urnOne, blockTwo)
@@ -97,7 +101,7 @@ var _ = Describe("Single urn view", func() {
 		BeforeEach(func() {
 			setupDataOne = test_helpers.GetUrnSetupData()
 			metadata = test_helpers.GetUrnMetadata(test_helpers.FakeIlk.Hex, urnOne)
-			test_helpers.CreateUrn(setupDataOne, headerOne.Id, metadata, vatRepo)
+			test_helpers.CreateUrn(setupDataOne, diffID, headerOne.Id, metadata, vatRepo)
 
 			blockTwo = blockOne + 1
 			timestampTwo = timestampOne + 1
@@ -107,7 +111,7 @@ var _ = Describe("Single urn view", func() {
 		It("gets urn state as of block one", func() {
 			updatedInk := rand.Int()
 
-			createErr := vatRepo.Create(0, headerTwo.Id, metadata.UrnInk, strconv.Itoa(updatedInk))
+			createErr := vatRepo.Create(diffID, headerTwo.Id, metadata.UrnInk, strconv.Itoa(updatedInk))
 			Expect(createErr).NotTo(HaveOccurred())
 
 			expectedTimestampOne := test_helpers.GetExpectedTimestamp(timestampOne)
@@ -129,7 +133,7 @@ var _ = Describe("Single urn view", func() {
 		It("gets urn state with updated values", func() {
 			updatedInk := rand.Int()
 
-			createErr := vatRepo.Create(0, headerTwo.Id, metadata.UrnInk, strconv.Itoa(updatedInk))
+			createErr := vatRepo.Create(diffID, headerTwo.Id, metadata.UrnInk, strconv.Itoa(updatedInk))
 			Expect(createErr).NotTo(HaveOccurred())
 
 			expectedTimestampOne := test_helpers.GetExpectedTimestamp(timestampOne)

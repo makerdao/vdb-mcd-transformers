@@ -2,6 +2,7 @@ package queries
 
 import (
 	"database/sql"
+	storage_helper "github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	"math/rand"
 	"strconv"
 
@@ -27,6 +28,7 @@ var _ = Describe("flap_bid_event computed columns", func() {
 		flapKickEvent          event.InsertionModel
 		contractAddress        = fakes.RandomString(42)
 		fakeBidId              = rand.Int()
+		diffID int64
 	)
 
 	BeforeEach(func() {
@@ -48,12 +50,14 @@ var _ = Describe("flap_bid_event computed columns", func() {
 		flapKickEvent.ColumnValues[constants.BidIDColumn] = strconv.Itoa(fakeBidId)
 		insertFlapKickErr := event.PersistModels([]event.InsertionModel{flapKickEvent}, db)
 		Expect(insertFlapKickErr).NotTo(HaveOccurred())
+
+		diffID = storage_helper.CreateDiffRecord(db)
 	})
 
 	Describe("flap_bid_event_bid", func() {
 		It("returns flap_bid for a flap_bid_event", func() {
 			flapStorageValues := test_helpers.GetFlapStorageValues(1, fakeBidId)
-			test_helpers.CreateFlap(db, 0, headerOne, flapStorageValues, test_helpers.GetFlapMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
+			test_helpers.CreateFlap(db, diffID, headerOne.Id, flapStorageValues, test_helpers.GetFlapMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
 
 			expectedBid := test_helpers.FlapBidFromValues(strconv.Itoa(fakeBidId), "false", headerOne.Timestamp, headerOne.Timestamp, flapStorageValues)
 

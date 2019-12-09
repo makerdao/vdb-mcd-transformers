@@ -2,6 +2,7 @@ package queries
 
 import (
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	"math/rand"
 	"strconv"
 
@@ -23,6 +24,7 @@ var _ = Describe("Urn history query", func() {
 		fakeUrn                string
 		blockOne, timestampOne int
 		headerOne              core.Header
+		diffID int64
 	)
 
 	BeforeEach(func() {
@@ -36,12 +38,14 @@ var _ = Describe("Urn history query", func() {
 		blockOne = rand.Int()
 		timestampOne = int(rand.Int31())
 		headerOne = createHeader(blockOne, timestampOne, headerRepo)
+
+		diffID = test_helpers.CreateDiffRecordWithHeader(db, headerOne)
 	})
 
 	It("returns a reverse chronological history for the given ilk and urn", func() {
 		urnSetupData := helper.GetUrnSetupData()
 		urnMetadata := helper.GetUrnMetadata(helper.FakeIlk.Hex, fakeUrn)
-		helper.CreateUrn(urnSetupData, headerOne.Id, urnMetadata, vatRepo)
+		helper.CreateUrn(urnSetupData, diffID, headerOne.Id, urnMetadata, vatRepo)
 
 		inkBlockOne := urnSetupData[vat.UrnInk]
 		artBlockOne := urnSetupData[vat.UrnArt]
@@ -62,9 +66,12 @@ var _ = Describe("Urn history query", func() {
 		timestampTwo := timestampOne + 1
 		headerTwo := createHeader(blockTwo, timestampTwo, headerRepo)
 
+		// Diff for header2
+		diffTwoID := test_helpers.CreateDiffRecordWithHeader(db, headerTwo)
+
 		// Relevant ink diff in block two
 		inkBlockTwo := rand.Int()
-		err := vatRepo.Create(0, headerTwo.Id, urnMetadata.UrnInk, strconv.Itoa(inkBlockTwo))
+		err := vatRepo.Create(diffTwoID, headerTwo.Id, urnMetadata.UrnInk, strconv.Itoa(inkBlockTwo))
 		Expect(err).NotTo(HaveOccurred())
 
 		// Irrelevant art diff in block two
@@ -72,7 +79,7 @@ var _ = Describe("Urn history query", func() {
 		wrongArt := strconv.Itoa(rand.Int())
 		wrongMetadata := utils.GetStorageValueMetadata(vat.UrnArt,
 			map[utils.Key]string{constants.Ilk: helper.FakeIlk.Hex, constants.Guy: wrongUrn}, utils.Uint256)
-		err = vatRepo.Create(0, headerOne.Id, wrongMetadata, wrongArt)
+		err = vatRepo.Create(diffID, headerOne.Id, wrongMetadata, wrongArt)
 		Expect(err).NotTo(HaveOccurred())
 
 		expectedTimestampTwo := helper.GetExpectedTimestamp(timestampTwo)
@@ -91,9 +98,12 @@ var _ = Describe("Urn history query", func() {
 		timestampThree := timestampTwo + 1
 		headerThree := createHeader(blockThree, timestampThree, headerRepo)
 
+		// Diff for header3
+		diffThreeID := test_helpers.CreateDiffRecordWithHeader(db, headerThree)
+
 		// Relevant art diff in block three
 		artBlockThree := 0
-		err = vatRepo.Create(0, headerThree.Id, urnMetadata.UrnArt, strconv.Itoa(artBlockThree))
+		err = vatRepo.Create(diffThreeID, headerThree.Id, urnMetadata.UrnArt, strconv.Itoa(artBlockThree))
 		Expect(err).NotTo(HaveOccurred())
 
 		expectedTimestampThree := helper.GetExpectedTimestamp(timestampThree)
@@ -128,7 +138,7 @@ var _ = Describe("Urn history query", func() {
 		BeforeEach(func() {
 			urnSetupData = helper.GetUrnSetupData()
 			urnMetadata := helper.GetUrnMetadata(helper.FakeIlk.Hex, fakeUrn)
-			helper.CreateUrn(urnSetupData, headerOne.Id, urnMetadata, vatRepo)
+			helper.CreateUrn(urnSetupData, diffID, headerOne.Id, urnMetadata, vatRepo)
 
 			// New block
 			blockTwo = blockOne + 1
@@ -136,7 +146,7 @@ var _ = Describe("Urn history query", func() {
 			headerTwo := createHeader(blockTwo, timestampTwo, headerRepo)
 
 			// diff in new block
-			err := vatRepo.Create(0, headerTwo.Id, urnMetadata.UrnInk, strconv.Itoa(urnSetupData[vat.UrnInk]))
+			err := vatRepo.Create(diffID, headerTwo.Id, urnMetadata.UrnInk, strconv.Itoa(urnSetupData[vat.UrnInk]))
 			Expect(err).NotTo(HaveOccurred())
 		})
 

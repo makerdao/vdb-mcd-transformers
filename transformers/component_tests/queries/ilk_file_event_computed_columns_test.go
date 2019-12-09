@@ -18,6 +18,7 @@ package queries
 
 import (
 	"database/sql"
+	storage_helper "github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	"math/rand"
 
 	"github.com/ethereum/go-ethereum/core/types"
@@ -41,6 +42,7 @@ var _ = Describe("Ilk file event computed columns", func() {
 		fileRepo               ilk.VatFileIlkRepository
 		headerOne              core.Header
 		headerRepository       repositories.HeaderRepository
+		diffID int64
 	)
 
 	BeforeEach(func() {
@@ -61,12 +63,14 @@ var _ = Describe("Ilk file event computed columns", func() {
 		fileEvent.ColumnValues[constants.LogFK] = fakeHeaderSyncLog.ID
 		insertFileErr := fileRepo.Create([]shared.InsertionModel{fileEvent})
 		Expect(insertFileErr).NotTo(HaveOccurred())
+
+		diffID = storage_helper.CreateDiffRecord(db)
 	})
 
 	Describe("ilk_file_event_ilk", func() {
 		It("returns ilk_state for an ilk_file_event", func() {
 			ilkValues := test_helpers.GetIlkValues(0)
-			test_helpers.CreateIlk(db, 0, headerOne, ilkValues, test_helpers.FakeIlkVatMetadatas, test_helpers.FakeIlkCatMetadatas, test_helpers.FakeIlkJugMetadatas, test_helpers.FakeIlkSpotMetadatas)
+			test_helpers.CreateIlk(db, diffID, headerOne, ilkValues, test_helpers.FakeIlkVatMetadatas, test_helpers.FakeIlkCatMetadatas, test_helpers.FakeIlkJugMetadatas, test_helpers.FakeIlkSpotMetadatas)
 
 			expectedIlk := test_helpers.IlkStateFromValues(test_helpers.FakeIlk.Hex, headerOne.Timestamp, headerOne.Timestamp, ilkValues)
 

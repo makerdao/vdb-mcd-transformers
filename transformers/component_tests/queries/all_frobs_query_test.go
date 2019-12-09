@@ -17,6 +17,7 @@
 package queries
 
 import (
+	storage_helper "github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	"math/rand"
 	"strconv"
 
@@ -42,6 +43,7 @@ var _ = Describe("Frobs query", func() {
 		fakeUrn                = test_data.RandomString(40)
 		blockOne, timestampOne int
 		headerOne              core.Header
+		diffID int64
 	)
 
 	BeforeEach(func() {
@@ -53,12 +55,14 @@ var _ = Describe("Frobs query", func() {
 		blockOne = rand.Int()
 		timestampOne = int(rand.Int31())
 		headerOne = createHeader(blockOne, timestampOne, headerRepo)
+
+		diffID = storage_helper.CreateDiffRecord(db)
 	})
 
 	Describe("urn_frobs", func() {
 		It("returns frob for ilk/urn combination", func() {
 			vatFrobLog := test_data.CreateTestLog(headerOne.Id, db)
-			ilkRate := insertIlkRate(fakeIlkHex, headerOne.Id, db)
+			ilkRate := insertIlkRate(fakeIlkHex, diffID, headerOne.Id, db)
 			vatFrobEvent := getFakeVatFrobEvent(fakeIlkHex, fakeUrn, headerOne.Id, vatFrobLog.ID)
 			insertFrobErr := frobRepo.Create([]shared.InsertionModel{vatFrobEvent})
 			Expect(insertFrobErr).NotTo(HaveOccurred())
@@ -90,7 +94,7 @@ var _ = Describe("Frobs query", func() {
 			insertFrobTwoErr := frobRepo.Create([]shared.InsertionModel{frobBlockTwo})
 			Expect(insertFrobTwoErr).NotTo(HaveOccurred())
 
-			ilkRate := insertIlkRate(fakeIlkHex, headerOne.Id, db)
+			ilkRate := insertIlkRate(fakeIlkHex, diffID, headerOne.Id, db)
 
 			var actualFrobs []test_helpers.FrobEvent
 			getFrobsErr := db.Select(&actualFrobs, `SELECT ilk_identifier, urn_identifier, dink, dart, ilk_rate FROM api.urn_frobs($1, $2)`, fakeIlkIdentifier, fakeUrn)
@@ -132,7 +136,7 @@ var _ = Describe("Frobs query", func() {
 				insertFrobTwoErr := frobRepo.Create([]shared.InsertionModel{frobBlockTwo})
 				Expect(insertFrobTwoErr).NotTo(HaveOccurred())
 
-				ilkRate = insertIlkRate(fakeIlkHex, headerOne.Id, db)
+				ilkRate = insertIlkRate(fakeIlkHex, diffID, headerOne.Id, db)
 			})
 
 			It("limits results to latest blocks if max_results argument is provided", func() {
@@ -181,7 +185,7 @@ var _ = Describe("Frobs query", func() {
 			createFrobsErr := frobRepo.Create([]shared.InsertionModel{vatFrobEvent, irrelevantVatFrobEvent})
 			Expect(createFrobsErr).NotTo(HaveOccurred())
 
-			ilkRate := insertIlkRate(fakeIlkHex, headerOne.Id, db)
+			ilkRate := insertIlkRate(fakeIlkHex, diffID, headerOne.Id, db)
 
 			var actualFrobs []test_helpers.FrobEvent
 			getFrobsErr := db.Select(&actualFrobs, `SELECT ilk_identifier, urn_identifier, dink, dart, ilk_rate FROM api.urn_frobs($1, $2)`, fakeIlkIdentifier, fakeUrn)
@@ -200,14 +204,14 @@ var _ = Describe("Frobs query", func() {
 
 		It("provides most recent rate for each frob across blocks", func() {
 			vatFrobLog := test_data.CreateTestLog(headerOne.Id, db)
-			ilkRateBlockOne := insertIlkRate(fakeIlkHex, headerOne.Id, db)
+			ilkRateBlockOne := insertIlkRate(fakeIlkHex, diffID, headerOne.Id, db)
 			frobBlockOne := getFakeVatFrobEvent(fakeIlkHex, fakeUrn, headerOne.Id, vatFrobLog.ID)
 			insertFrobOneErr := frobRepo.Create([]shared.InsertionModel{frobBlockOne})
 			Expect(insertFrobOneErr).NotTo(HaveOccurred())
 
 			headerTwo := createHeader(blockOne+1, timestampOne+1, headerRepo)
 			vatFrobLogTwo := test_data.CreateTestLog(headerTwo.Id, db)
-			ilkRateBlockTwo := insertIlkRate(fakeIlkHex, headerTwo.Id, db)
+			ilkRateBlockTwo := insertIlkRate(fakeIlkHex, diffID, headerTwo.Id, db)
 			frobBlockTwo := getFakeVatFrobEvent(fakeIlkHex, fakeUrn, headerTwo.Id, vatFrobLogTwo.ID)
 			insertFrobTwoErr := frobRepo.Create([]shared.InsertionModel{frobBlockTwo})
 			Expect(insertFrobTwoErr).NotTo(HaveOccurred())
@@ -235,7 +239,7 @@ var _ = Describe("Frobs query", func() {
 		})
 
 		It("gets the most recent ilk rate when not updated in the same block as frob", func() {
-			ilkRateBlockOne := insertIlkRate(fakeIlkHex, headerOne.Id, db)
+			ilkRateBlockOne := insertIlkRate(fakeIlkHex, diffID, headerOne.Id, db)
 
 			headerTwo := createHeader(blockOne+1, timestampOne+1, headerRepo)
 			vatFrobLog := test_data.CreateTestLog(headerTwo.Id, db)
@@ -280,7 +284,7 @@ var _ = Describe("Frobs query", func() {
 			frobTwo := getFakeVatFrobEvent(fakeIlkHex, anotherFakeUrn, headerOne.Id, anotherVatFrobLog.ID)
 			insertFrobsErr := frobRepo.Create([]shared.InsertionModel{frobOne, frobTwo})
 			Expect(insertFrobsErr).NotTo(HaveOccurred())
-			ilkRate := insertIlkRate(fakeIlkHex, headerOne.Id, db)
+			ilkRate := insertIlkRate(fakeIlkHex, diffID, headerOne.Id, db)
 
 			var actualFrobs []test_helpers.FrobEvent
 			getFrobsErr := db.Select(&actualFrobs, `SELECT ilk_identifier, urn_identifier, dink, dart, ilk_rate FROM api.all_frobs($1)`, fakeIlkIdentifier)
@@ -326,7 +330,7 @@ var _ = Describe("Frobs query", func() {
 			})
 
 			It("limits results if max_results argument is provided", func() {
-				ilkRateTwo := insertIlkRate(fakeIlkHex, headerTwo.Id, db)
+				ilkRateTwo := insertIlkRate(fakeIlkHex, diffID, headerTwo.Id, db)
 
 				maxResults := 1
 				var actualFrobs []test_helpers.FrobEvent
@@ -348,7 +352,7 @@ var _ = Describe("Frobs query", func() {
 			})
 
 			It("offsets results if offset is provided", func() {
-				ilkRateOne := insertIlkRate(fakeIlkHex, headerOne.Id, db)
+				ilkRateOne := insertIlkRate(fakeIlkHex, diffID, headerOne.Id, db)
 
 				maxResults := 1
 				resultOffset := 1
@@ -377,7 +381,7 @@ var _ = Describe("Frobs query", func() {
 			insertFrobOneErr := frobRepo.Create([]shared.InsertionModel{frobOne})
 			Expect(insertFrobOneErr).NotTo(HaveOccurred())
 
-			ilkRate := insertIlkRate(fakeIlkHex, headerOne.Id, db)
+			ilkRate := insertIlkRate(fakeIlkHex, diffID, headerOne.Id, db)
 
 			headerTwo := createHeader(blockOne+1, timestampOne+1, headerRepo)
 			anotherVatFrobLog := test_data.CreateTestLog(headerTwo.Id, db)
@@ -414,7 +418,7 @@ var _ = Describe("Frobs query", func() {
 			insertFrobOneErr := frobRepo.Create([]shared.InsertionModel{frobOne})
 			Expect(insertFrobOneErr).NotTo(HaveOccurred())
 
-			ilkRateBlockOne := insertIlkRate(fakeIlkHex, headerOne.Id, db)
+			ilkRateBlockOne := insertIlkRate(fakeIlkHex, diffID, headerOne.Id, db)
 
 			headerTwo := createHeader(blockOne+1, timestampOne+1, headerRepo)
 			anotherVatFrobLog := test_data.CreateTestLog(headerTwo.Id, db)
@@ -423,7 +427,7 @@ var _ = Describe("Frobs query", func() {
 			insertFrobTwoErr := frobRepo.Create([]shared.InsertionModel{frobTwo})
 			Expect(insertFrobTwoErr).NotTo(HaveOccurred())
 
-			ilkRateBlockTwo := insertIlkRate(fakeIlkHex, headerTwo.Id, db)
+			ilkRateBlockTwo := insertIlkRate(fakeIlkHex, diffID, headerTwo.Id, db)
 
 			var actualFrobs []test_helpers.FrobEvent
 			getFrobsErr := db.Select(&actualFrobs, `SELECT ilk_identifier, urn_identifier, dink, dart, ilk_rate FROM api.all_frobs($1)`, fakeIlkIdentifier)
@@ -448,7 +452,7 @@ var _ = Describe("Frobs query", func() {
 		})
 
 		It("gets most recent rate when rate not updated in same block", func() {
-			ilkRate := insertIlkRate(fakeIlkHex, headerOne.Id, db)
+			ilkRate := insertIlkRate(fakeIlkHex, diffID, headerOne.Id, db)
 
 			headerTwo := createHeader(blockOne+1, timestampOne+1, headerRepo)
 			vatFrobLog := test_data.CreateTestLog(headerTwo.Id, db)
@@ -491,11 +495,11 @@ func getFakeVatFrobEvent(ilk, urn string, headerID, logID int64) shared.Insertio
 	return vatFrobEvent
 }
 
-func insertIlkRate(ilk string, headerID int64, db *postgres.DB) int {
+func insertIlkRate(ilk string, diffID, headerID int64, db *postgres.DB) int {
 	ilkID, ilkErr := shared.GetOrCreateIlk(ilk, db)
 	Expect(ilkErr).NotTo(HaveOccurred())
 	ilkRate := rand.Int()
-	_, insertIlkRateErr := db.Exec(`INSERT INTO maker.vat_ilk_rate (header_id, ilk_id, rate) VALUES ($1, $2, $3)`, headerID, ilkID, ilkRate)
+	_, insertIlkRateErr := db.Exec(`INSERT INTO maker.vat_ilk_rate (diff_id, header_id, ilk_id, rate) VALUES ($1, $2, $3, $4)`, diffID, headerID, ilkID, ilkRate)
 	Expect(insertIlkRateErr).NotTo(HaveOccurred())
 	return ilkRate
 }

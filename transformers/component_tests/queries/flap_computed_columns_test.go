@@ -1,6 +1,7 @@
 package queries
 
 import (
+	storage_helper "github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	"math/rand"
 	"strconv"
 
@@ -24,6 +25,7 @@ var _ = Describe("Flap computed columns", func() {
 		fakeBidId              = rand.Int()
 		blockOne, timestampOne int
 		headerOne              core.Header
+		diffID int64
 	)
 
 	BeforeEach(func() {
@@ -33,6 +35,8 @@ var _ = Describe("Flap computed columns", func() {
 		blockOne = rand.Int()
 		timestampOne := int(rand.Int31())
 		headerOne = createHeader(blockOne, timestampOne, headerRepo)
+
+		diffID = storage_helper.CreateDiffRecord(db)
 	})
 
 	Describe("flap_bid_events", func() {
@@ -40,7 +44,7 @@ var _ = Describe("Flap computed columns", func() {
 			flapKickLog := test_data.CreateTestLog(headerOne.Id, db)
 
 			flapStorageValues := test_helpers.GetFlapStorageValues(1, fakeBidId)
-			test_helpers.CreateFlap(db, 0, headerOne, flapStorageValues, test_helpers.GetFlapMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
+			test_helpers.CreateFlap(db, diffID, headerOne.Id, flapStorageValues, test_helpers.GetFlapMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
 			addressId, addressErr := shared.GetOrCreateAddress(contractAddress, db)
 			Expect(addressErr).NotTo(HaveOccurred())
 
@@ -72,7 +76,7 @@ var _ = Describe("Flap computed columns", func() {
 			flapKickLog := test_data.CreateTestLog(headerOne.Id, db)
 
 			flapStorageValues := test_helpers.GetFlapStorageValues(1, fakeBidId)
-			test_helpers.CreateFlap(db, 0, headerOne, flapStorageValues, test_helpers.GetFlapMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
+			test_helpers.CreateFlap(db, diffID, headerOne.Id, flapStorageValues, test_helpers.GetFlapMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
 			addressId, addressErr := shared.GetOrCreateAddress(contractAddress, db)
 			Expect(addressErr).NotTo(HaveOccurred())
 
@@ -89,7 +93,7 @@ var _ = Describe("Flap computed columns", func() {
 
 			irrelevantBidId := fakeBidId + 9999999999999
 			irrelevantFlapStorageValues := test_helpers.GetFlapStorageValues(2, irrelevantBidId)
-			test_helpers.CreateFlap(db, 0, headerTwo, irrelevantFlapStorageValues, test_helpers.GetFlapMetadatas(strconv.Itoa(irrelevantBidId)), contractAddress)
+			test_helpers.CreateFlap(db, diffID, headerTwo.Id, irrelevantFlapStorageValues, test_helpers.GetFlapMetadatas(strconv.Itoa(irrelevantBidId)), contractAddress)
 
 			irrelevantFlapKickEvent := test_data.FlapKickModel()
 			irrelevantFlapKickEvent.ColumnValues[event.HeaderFK] = headerTwo.Id
@@ -127,7 +131,7 @@ var _ = Describe("Flap computed columns", func() {
 				logId := test_data.CreateTestLog(headerOne.Id, db).ID
 
 				flapStorageValues := test_helpers.GetFlapStorageValues(1, fakeBidId)
-				test_helpers.CreateFlap(db, 0, headerOne, flapStorageValues, test_helpers.GetFlapMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
+				test_helpers.CreateFlap(db, diffID, headerOne.Id, flapStorageValues, test_helpers.GetFlapMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
 				addressId, addressErr := shared.GetOrCreateAddress(contractAddress, db)
 				Expect(addressErr).NotTo(HaveOccurred())
 

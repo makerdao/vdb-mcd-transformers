@@ -1,6 +1,7 @@
 package queries
 
 import (
+	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	"math/rand"
 	"strconv"
 	"time"
@@ -27,6 +28,7 @@ var _ = Describe("Urn view", func() {
 		urnOne                 string
 		urnTwo                 string
 		err                    error
+		diffID int64
 	)
 
 	const allUrnsQuery = `SELECT urn_identifier, ilk_identifier, block_height, ink, art, created, updated FROM api.all_urns($1)`
@@ -43,12 +45,14 @@ var _ = Describe("Urn view", func() {
 		blockOne = rand.Int()
 		timestampOne = int(rand.Int31())
 		headerOne = createHeader(blockOne, timestampOne, headerRepo)
+
+		diffID = test_helpers.CreateDiffRecord(db)
 	})
 
 	It("gets an urn", func() {
 		setupData := helper.GetUrnSetupData()
 		metadata := helper.GetUrnMetadata(helper.FakeIlk.Hex, urnOne)
-		helper.CreateUrn(setupData, headerOne.Id, metadata, vatRepo)
+		helper.CreateUrn(setupData, diffID, headerOne.Id, metadata, vatRepo)
 
 		var actualUrn helper.UrnState
 		err = db.Get(&actualUrn, allUrnsQuery, blockOne)
@@ -71,7 +75,7 @@ var _ = Describe("Urn view", func() {
 	It("returns the correct data for multiple urns", func() {
 		urnOneMetadata := helper.GetUrnMetadata(helper.FakeIlk.Hex, urnOne)
 		urnOneSetupData := helper.GetUrnSetupData()
-		helper.CreateUrn(urnOneSetupData, headerOne.Id, urnOneMetadata, vatRepo)
+		helper.CreateUrn(urnOneSetupData, diffID, headerOne.Id, urnOneMetadata, vatRepo)
 
 		blockTwo := blockOne + 1
 		timestampTwo := timestampOne + 1
@@ -90,7 +94,7 @@ var _ = Describe("Urn view", func() {
 
 		urnTwoMetadata := helper.GetUrnMetadata(helper.AnotherFakeIlk.Hex, urnTwo)
 		urnTwoSetupData := helper.GetUrnSetupData()
-		helper.CreateUrn(urnTwoSetupData, headerTwo.Id, urnTwoMetadata, vatRepo)
+		helper.CreateUrn(urnTwoSetupData, diffID, headerTwo.Id, urnTwoMetadata, vatRepo)
 
 		expectedTimestampTwo := helper.GetExpectedTimestamp(timestampTwo)
 		expectedUrnTwo := helper.UrnState{
@@ -114,7 +118,7 @@ var _ = Describe("Urn view", func() {
 	It("returns available data if urn has ink but no art", func() {
 		fakeInk := rand.Int()
 		urnInkMetadata := utils.GetStorageValueMetadata(vat.UrnInk, map[utils.Key]string{constants.Ilk: helper.FakeIlk.Hex, constants.Guy: urnOne}, utils.Uint256)
-		insertInkErr := vatRepo.Create(0, headerOne.Id, urnInkMetadata, strconv.Itoa(fakeInk))
+		insertInkErr := vatRepo.Create(diffID, headerOne.Id, urnInkMetadata, strconv.Itoa(fakeInk))
 		Expect(insertInkErr).NotTo(HaveOccurred())
 
 		var result []helper.UrnState
@@ -146,7 +150,7 @@ var _ = Describe("Urn view", func() {
 		BeforeEach(func() {
 			urnOneMetadata := helper.GetUrnMetadata(helper.FakeIlk.Hex, urnOne)
 			urnOneSetupData = helper.GetUrnSetupData()
-			helper.CreateUrn(urnOneSetupData, headerOne.Id, urnOneMetadata, vatRepo)
+			helper.CreateUrn(urnOneSetupData, diffID, headerOne.Id, urnOneMetadata, vatRepo)
 
 			// New block
 			blockTwo = blockOne + 1
@@ -155,7 +159,7 @@ var _ = Describe("Urn view", func() {
 
 			urnTwoMetadata := helper.GetUrnMetadata(helper.AnotherFakeIlk.Hex, urnTwo)
 			urnTwoSetupData = helper.GetUrnSetupData()
-			helper.CreateUrn(urnTwoSetupData, headerTwo.Id, urnTwoMetadata, vatRepo)
+			helper.CreateUrn(urnTwoSetupData, diffID, headerTwo.Id, urnTwoMetadata, vatRepo)
 		})
 
 		It("limits results if max_results argument is provided", func() {
@@ -217,7 +221,7 @@ var _ = Describe("Urn view", func() {
 		BeforeEach(func() {
 			setupDataOne = helper.GetUrnSetupData()
 			metadata = helper.GetUrnMetadata(helper.FakeIlk.Hex, urnOne)
-			helper.CreateUrn(setupDataOne, headerOne.Id, metadata, vatRepo)
+			helper.CreateUrn(setupDataOne, diffID, headerOne.Id, metadata, vatRepo)
 		})
 
 		It("gets urn state as of block one", func() {
@@ -250,7 +254,7 @@ var _ = Describe("Urn view", func() {
 			fakeHeaderTwoID, err := headerRepo.CreateOrUpdateHeader(fakeHeaderTwo)
 			Expect(err).NotTo(HaveOccurred())
 
-			err = vatRepo.Create(0, fakeHeaderTwoID, metadata.UrnInk, strconv.Itoa(updatedInk))
+			err = vatRepo.Create(diffID, fakeHeaderTwoID, metadata.UrnInk, strconv.Itoa(updatedInk))
 			Expect(err).NotTo(HaveOccurred())
 
 			expectedTimestampOne := helper.GetExpectedTimestamp(timestampOne)

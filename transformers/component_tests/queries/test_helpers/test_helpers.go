@@ -233,12 +233,12 @@ func CreateSpotRecords(diffID int64, header core.Header, valuesMap map[string]st
 }
 
 // Creates urn by creating necessary state diffs and the corresponding header
-func CreateUrn(setupData map[string]int, headerId int64, metadata UrnMetadata, vatRepo vat.VatStorageRepository) {
+func CreateUrn(setupData map[string]int, diffID, headerId int64, metadata UrnMetadata, vatRepo vat.VatStorageRepository) {
 	// This also creates the ilk if it doesn't exist
-	err := vatRepo.Create(0, headerId, metadata.UrnInk, strconv.Itoa(setupData[vat.UrnInk]))
+	err := vatRepo.Create(diffID, headerId, metadata.UrnInk, strconv.Itoa(setupData[vat.UrnInk]))
 	Expect(err).NotTo(HaveOccurred())
 
-	err = vatRepo.Create(0, headerId, metadata.UrnArt, strconv.Itoa(setupData[vat.UrnArt]))
+	err = vatRepo.Create(diffID, headerId, metadata.UrnArt, strconv.Itoa(setupData[vat.UrnArt]))
 	Expect(err).NotTo(HaveOccurred())
 }
 

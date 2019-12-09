@@ -1,6 +1,7 @@
 package queries
 
 import (
+	storage_helper "github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	"math/rand"
 	"strconv"
 
@@ -24,6 +25,7 @@ var _ = Describe("Flop computed columns", func() {
 		fakeBidId              = rand.Int()
 		blockOne, timestampOne int
 		headerOne              core.Header
+		diffID int64
 	)
 
 	BeforeEach(func() {
@@ -33,6 +35,8 @@ var _ = Describe("Flop computed columns", func() {
 		blockOne = rand.Int()
 		timestampOne = int(rand.Int31())
 		headerOne = createHeader(blockOne, timestampOne, headerRepo)
+
+		diffID = storage_helper.CreateDiffRecord(db)
 	})
 
 	Describe("flop_bid_events", func() {
@@ -40,7 +44,7 @@ var _ = Describe("Flop computed columns", func() {
 			flopKickLog := test_data.CreateTestLog(headerOne.Id, db)
 
 			flopStorageValues := test_helpers.GetFlopStorageValues(1, fakeBidId)
-			test_helpers.CreateFlop(db, 0, headerOne, flopStorageValues, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
+			test_helpers.CreateFlop(db, diffID, headerOne.Id, flopStorageValues, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
 
 			addressId, addressErr := shared.GetOrCreateAddress(contractAddress, db)
 			Expect(addressErr).NotTo(HaveOccurred())
@@ -72,7 +76,7 @@ var _ = Describe("Flop computed columns", func() {
 			flopKickLog := test_data.CreateTestLog(headerOne.Id, db)
 
 			flopStorageValues := test_helpers.GetFlopStorageValues(1, fakeBidId)
-			test_helpers.CreateFlop(db, 0, headerOne, flopStorageValues, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
+			test_helpers.CreateFlop(db, diffID, headerOne.Id, flopStorageValues, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
 
 			addressId, addressErr := shared.GetOrCreateAddress(contractAddress, db)
 			Expect(addressErr).NotTo(HaveOccurred())
@@ -90,7 +94,7 @@ var _ = Describe("Flop computed columns", func() {
 
 			irrelevantBidId := fakeBidId + 9999999999999
 			irrelevantFlopStorageValues := test_helpers.GetFlopStorageValues(2, irrelevantBidId)
-			test_helpers.CreateFlop(db, 0, headerTwo, irrelevantFlopStorageValues, test_helpers.GetFlopMetadatas(strconv.Itoa(irrelevantBidId)), contractAddress)
+			test_helpers.CreateFlop(db, diffID, headerTwo.Id, irrelevantFlopStorageValues, test_helpers.GetFlopMetadatas(strconv.Itoa(irrelevantBidId)), contractAddress)
 
 			irrelevantFlopKickEvent := test_data.FlopKickModel()
 			irrelevantFlopKickEvent.ColumnValues[event.HeaderFK] = headerTwo.Id
@@ -128,7 +132,7 @@ var _ = Describe("Flop computed columns", func() {
 				logId := test_data.CreateTestLog(headerOne.Id, db).ID
 
 				flopStorageValues := test_helpers.GetFlopStorageValues(1, fakeBidId)
-				test_helpers.CreateFlop(db, 0, headerOne, flopStorageValues, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
+				test_helpers.CreateFlop(db, diffID, headerOne.Id, flopStorageValues, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
 
 				addressId, addressErr := shared.GetOrCreateAddress(contractAddress, db)
 				Expect(addressErr).NotTo(HaveOccurred())

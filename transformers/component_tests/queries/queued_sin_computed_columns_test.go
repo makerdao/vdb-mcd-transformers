@@ -17,6 +17,7 @@
 package queries
 
 import (
+	storage_helper "github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	"math/rand"
 	"strconv"
 
@@ -44,6 +45,7 @@ var _ = Describe("Queued sin computed columns", func() {
 			sinMappingMetadata     utils.StorageValueMetadata
 			vowRepository          vow.VowStorageRepository
 			headerRepository       repositories.HeaderRepository
+			diffID int64
 		)
 
 		BeforeEach(func() {
@@ -55,11 +57,13 @@ var _ = Describe("Queued sin computed columns", func() {
 			fakeEra = strconv.Itoa(timestampOne)
 			headerOne = createHeader(blockOne, timestampOne, headerRepository)
 
+			diffID = storage_helper.CreateDiffRecord(db)
+
 			vowRepository = vow.VowStorageRepository{}
 			vowRepository.SetDB(db)
 			sinMappingKeys := map[utils.Key]string{constants.Timestamp: fakeEra}
 			sinMappingMetadata = utils.GetStorageValueMetadata(vow.SinMapping, sinMappingKeys, utils.Uint256)
-			insertSinMappingErr := vowRepository.Create(0, headerOne.Id, sinMappingMetadata, fakeTab)
+			insertSinMappingErr := vowRepository.Create(diffID, headerOne.Id, sinMappingMetadata, fakeTab)
 			Expect(insertSinMappingErr).NotTo(HaveOccurred())
 
 			vowFlogLog := test_data.CreateTestLog(headerOne.Id, db)

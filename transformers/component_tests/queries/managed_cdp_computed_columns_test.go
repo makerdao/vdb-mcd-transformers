@@ -17,6 +17,7 @@
 package queries
 
 import (
+	storage_helper "github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	"math/rand"
 	"strconv"
 
@@ -37,6 +38,7 @@ var _ = Describe("Managed CDP computed columns", func() {
 		headerRepository datastore.HeaderRepository
 		storageValues    map[string]interface{}
 		fakeCdpi         int
+		diffID int64
 	)
 
 	BeforeEach(func() {
@@ -47,16 +49,18 @@ var _ = Describe("Managed CDP computed columns", func() {
 		timestampOne := int(rand.Int31())
 		headerOne = createHeader(blockOne, timestampOne, headerRepository)
 
+		diffID = storage_helper.CreateDiffRecord(db)
+
 		fakeCdpi = rand.Int()
 		storageValues = test_helpers.GetCdpManagerStorageValues(1, test_helpers.FakeIlk.Hex, test_data.FakeUrn, fakeCdpi)
-		cdpErr := test_helpers.CreateManagedCdp(db, 0, headerOne, storageValues, test_helpers.GetCdpManagerMetadatas(strconv.Itoa(fakeCdpi)))
+		cdpErr := test_helpers.CreateManagedCdp(db, diffID, headerOne.Id, storageValues, test_helpers.GetCdpManagerMetadatas(strconv.Itoa(fakeCdpi)))
 		Expect(cdpErr).NotTo(HaveOccurred())
 	})
 
 	Describe("managed_cdp_ilk", func() {
 		It("returns ilk_state for a managed_cdp", func() {
 			ilkValues := test_helpers.GetIlkValues(0)
-			test_helpers.CreateIlk(db, 0, headerOne, ilkValues, test_helpers.FakeIlkVatMetadatas, test_helpers.FakeIlkCatMetadatas, test_helpers.FakeIlkJugMetadatas, test_helpers.FakeIlkSpotMetadatas)
+			test_helpers.CreateIlk(db, diffID, headerOne, ilkValues, test_helpers.FakeIlkVatMetadatas, test_helpers.FakeIlkCatMetadatas, test_helpers.FakeIlkJugMetadatas, test_helpers.FakeIlkSpotMetadatas)
 
 			expectedIlk := test_helpers.IlkStateFromValues(test_helpers.FakeIlk.Hex, headerOne.Timestamp,
 				headerOne.Timestamp, ilkValues)
@@ -81,7 +85,7 @@ var _ = Describe("Managed CDP computed columns", func() {
 			urnMetadata := test_helpers.GetUrnMetadata(test_helpers.FakeIlk.Hex, test_data.FakeUrn)
 			vatRepository := vat.VatStorageRepository{}
 			vatRepository.SetDB(db)
-			test_helpers.CreateUrn(urnSetupData, headerOne.Id, urnMetadata, vatRepository)
+			test_helpers.CreateUrn(urnSetupData, diffID, headerOne.Id, urnMetadata, vatRepository)
 			expectedUrn := test_helpers.UrnState{
 				UrnIdentifier: test_data.FakeUrn,
 				IlkIdentifier: test_helpers.FakeIlk.Identifier,

@@ -33,10 +33,14 @@ func CreateHeaderWithHash(hash string, timestamp int64, blockNumber int, db *pos
 }
 
 func CreateDiffRecord(db *postgres.DB) int64 {
-	fakeRawDiff := fakes.GetFakeStorageDiffForHeader(fakes.FakeHeader, common.Hash{}, common.Hash{}, common.Hash{})
+	return CreateDiffRecordWithHeader(db, fakes.FakeHeader)
+}
+
+func CreateDiffRecordWithHeader(db *postgres.DB, header core.Header) int64 {
+	fakeRawDiff := fakes.GetFakeStorageDiffForHeader(header, common.Hash{}, common.Hash{}, common.Hash{})
 	storageDiffRepo := repositories.NewStorageDiffRepository(db)
-	var insertDiffErr error
 	diffID, insertDiffErr := storageDiffRepo.CreateStorageDiff(fakeRawDiff)
 	Expect(insertDiffErr).NotTo(HaveOccurred())
+
 	return diffID
 }
