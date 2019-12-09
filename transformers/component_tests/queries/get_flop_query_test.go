@@ -6,7 +6,6 @@ import (
 
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/flop_kick"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
@@ -18,7 +17,6 @@ import (
 var _ = Describe("get flop query", func() {
 	var (
 		db                         *postgres.DB
-		flopKickRepo               flop_kick.FlopKickRepository
 		headerRepo                 repositories.HeaderRepository
 		contractAddress            = fakes.RandomString(42)
 		fakeBidId                  = rand.Int()
@@ -32,8 +30,6 @@ var _ = Describe("get flop query", func() {
 	BeforeEach(func() {
 		db = test_config.NewTestDB(test_config.NewTestNode())
 		test_config.CleanTestDB(db)
-		flopKickRepo = flop_kick.FlopKickRepository{}
-		flopKickRepo.SetDB(db)
 		headerRepo = repositories.NewHeaderRepository(db)
 
 		blockOne = rand.Int()
@@ -58,7 +54,6 @@ var _ = Describe("get flop query", func() {
 				DealHeaderId:    headerOne.Id,
 			},
 			Dealt:            true,
-			FlopKickRepo:     flopKickRepo,
 			FlopKickHeaderId: headerOne.Id,
 		})
 		Expect(err).NotTo(HaveOccurred())
@@ -84,7 +79,6 @@ var _ = Describe("get flop query", func() {
 				DealHeaderId:    headerTwo.Id,
 			},
 			Dealt:            true,
-			FlopKickRepo:     flopKickRepo,
 			FlopKickHeaderId: headerOne.Id,
 		})
 		Expect(err).NotTo(HaveOccurred())
@@ -114,7 +108,6 @@ var _ = Describe("get flop query", func() {
 					ContractAddress: contractAddress,
 				},
 				Dealt:            false,
-				FlopKickRepo:     flopKickRepo,
 				FlopKickHeaderId: headerOne.Id,
 			})
 			Expect(err).NotTo(HaveOccurred())
@@ -140,7 +133,6 @@ var _ = Describe("get flop query", func() {
 					DealHeaderId:    headerTwo.Id,
 				},
 				Dealt:            true,
-				FlopKickRepo:     flopKickRepo,
 				FlopKickHeaderId: headerOne.Id,
 			})
 			Expect(err).NotTo(HaveOccurred())

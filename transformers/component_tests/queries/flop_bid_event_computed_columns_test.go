@@ -8,10 +8,10 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/flop_kick"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
@@ -28,17 +28,13 @@ var _ = Describe("Flop bid event computed columns", func() {
 		contractAddress        = fakes.RandomString(42)
 		fakeBidId              = rand.Int()
 		flopKickGethLog        types.Log
-		flopKickRepo           flop_kick.FlopKickRepository
-		flopKickEvent          shared.InsertionModel
+		flopKickEvent          event.InsertionModel
 		headerRepo             repositories.HeaderRepository
 	)
 
 	BeforeEach(func() {
 		db = test_config.NewTestDB(test_config.NewTestNode())
 		test_config.CleanTestDB(db)
-
-		flopKickRepo = flop_kick.FlopKickRepository{}
-		flopKickRepo.SetDB(db)
 
 		headerRepo = repositories.NewHeaderRepository(db)
 		blockOne = rand.Int()
@@ -48,12 +44,15 @@ var _ = Describe("Flop bid event computed columns", func() {
 		flopKickHeaderSyncLog := test_data.CreateTestLog(headerOne.Id, db)
 		flopKickGethLog = flopKickHeaderSyncLog.Log
 
+		addressId, addressErr := shared.GetOrCreateAddress(contractAddress, db)
+		Expect(addressErr).NotTo(HaveOccurred())
+
 		flopKickEvent = test_data.FlopKickModel()
-		flopKickEvent.ForeignKeyValues[constants.AddressFK] = contractAddress
-		flopKickEvent.ColumnValues["bid_id"] = strconv.Itoa(fakeBidId)
-		flopKickEvent.ColumnValues[constants.HeaderFK] = headerOne.Id
-		flopKickEvent.ColumnValues[constants.LogFK] = flopKickHeaderSyncLog.ID
-		insertFlopKickErr := flopKickRepo.Create([]shared.InsertionModel{flopKickEvent})
+		flopKickEvent.ColumnValues[event.HeaderFK] = headerOne.Id
+		flopKickEvent.ColumnValues[event.LogFK] = flopKickHeaderSyncLog.ID
+		flopKickEvent.ColumnValues[event.AddressFK] = addressId
+		flopKickEvent.ColumnValues[constants.BidIdColumn] = strconv.Itoa(fakeBidId)
+		insertFlopKickErr := event.PersistModels([]event.InsertionModel{flopKickEvent}, db)
 		Expect(insertFlopKickErr).NotTo(HaveOccurred())
 	})
 

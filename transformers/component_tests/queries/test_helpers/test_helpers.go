@@ -24,7 +24,6 @@ import (
 
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/deal"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/dent"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/flop_kick"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/tend"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/yank"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
@@ -552,7 +551,7 @@ func SetUpFlapBidContext(setupData FlapBidCreationInput) (err error) {
 
 func SetUpFlopBidContext(setupData FlopBidCreationInput) (err error) {
 	flopKickLog := test_data.CreateTestLog(setupData.FlopKickHeaderId, setupData.DB)
-	flopKickErr := CreateFlopKick(setupData.ContractAddress, setupData.BidId, setupData.FlopKickHeaderId, flopKickLog.ID, setupData.FlopKickRepo)
+	flopKickErr := CreateFlopKick(setupData.ContractAddress, setupData.BidId, setupData.FlopKickHeaderId, flopKickLog.ID, setupData.DB)
 	if flopKickErr != nil {
 		return flopKickErr
 	}
@@ -602,13 +601,15 @@ func CreateFlapKick(contractAddress string, bidId int, headerId, logId int64, db
 	return event.PersistModels([]event.InsertionModel{flapKickModel}, db)
 }
 
-func CreateFlopKick(contractAddress string, bidId int, headerId, logId int64, repo flop_kick.FlopKickRepository) error {
+func CreateFlopKick(contractAddress string, bidId int, headerId, logId int64, db *postgres.DB) error {
+	addressId, addressErr := shared.GetOrCreateAddress(contractAddress, db)
+	Expect(addressErr).NotTo(HaveOccurred())
 	flopKickModel := test_data.FlopKickModel()
-	flopKickModel.ForeignKeyValues[constants.AddressFK] = contractAddress
-	flopKickModel.ColumnValues["bid_id"] = strconv.Itoa(bidId)
-	flopKickModel.ColumnValues[constants.HeaderFK] = headerId
-	flopKickModel.ColumnValues[constants.LogFK] = logId
-	return repo.Create([]shared.InsertionModel{flopKickModel})
+	flopKickModel.ColumnValues[event.HeaderFK] = headerId
+	flopKickModel.ColumnValues[event.LogFK] = logId
+	flopKickModel.ColumnValues[event.AddressFK] = addressId
+	flopKickModel.ColumnValues[constants.BidIdColumn] = strconv.Itoa(bidId)
+	return event.PersistModels([]event.InsertionModel{flopKickModel}, db)
 }
 
 func CreateTend(input TendCreationInput) (err error) {
@@ -721,7 +722,6 @@ type TickCreationInput struct {
 type FlopBidCreationInput struct {
 	DealCreationInput
 	Dealt            bool
-	FlopKickRepo     flop_kick.FlopKickRepository
 	FlopKickHeaderId int64
 }
 

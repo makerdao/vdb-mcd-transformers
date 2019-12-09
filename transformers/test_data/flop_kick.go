@@ -23,8 +23,8 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
 )
@@ -51,23 +51,26 @@ var FlopKickHeaderSyncLog = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-func FlopKickModel() shared.InsertionModel { return CopyModel(flopKickModel) }
+func FlopKickModel() event.InsertionModel { return CopyEventModel(flopKickModel) }
 
-var flopKickModel = shared.InsertionModel{
+var flopKickModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.FlopKickTable,
-	OrderedColumns: []string{
-		constants.HeaderFK, constants.LogFK, string(constants.AddressFK), "bid_id", "lot", "bid", "gal",
+	OrderedColumns: []event.ColumnName{
+		event.HeaderFK,
+		event.LogFK,
+		event.AddressFK,
+		constants.BidIdColumn,
+		constants.LotColumn,
+		constants.BidColumn,
+		constants.GalColumn,
 	},
-	ColumnValues: shared.ColumnValues{
-		constants.HeaderFK: FlopKickHeaderSyncLog.HeaderID,
-		constants.LogFK:    FlopKickHeaderSyncLog.ID,
-		"bid_id":           big.NewInt(30000000000000000).String(),
-		"lot":              big.NewInt(1000000000000000000).String(),
-		"bid":              big.NewInt(2000000000000000000).String(),
-		"gal":              common.HexToAddress("0x7d7bEe5fCfD8028cf7b00876C5b1421c800561A6").String(),
-	},
-	ForeignKeyValues: shared.ForeignKeyValues{
-		constants.AddressFK: rawFlopKickLog.Address.Hex(),
+	ColumnValues: event.ColumnValues{
+		event.HeaderFK:        FlopKickHeaderSyncLog.HeaderID,
+		event.LogFK:           FlopKickHeaderSyncLog.ID,
+		constants.BidIdColumn: big.NewInt(30000000000000000).String(),
+		constants.LotColumn:   big.NewInt(1000000000000000000).String(),
+		constants.BidColumn:   big.NewInt(2000000000000000000).String(),
+		constants.GalColumn:   common.HexToAddress("0x7d7bEe5fCfD8028cf7b00876C5b1421c800561A6").String(),
 	},
 }

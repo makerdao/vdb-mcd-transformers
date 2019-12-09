@@ -17,26 +17,42 @@
 package flop_kick_test
 
 import (
+	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/flop_kick"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("FlopKick Converter", func() {
-	var converter flop_kick.FlopKickConverter
+	var (
+		converter flop_kick.Converter
+		db        = test_config.NewTestDB(test_config.NewTestNode())
+	)
+
+	BeforeEach(func() {
+		converter = flop_kick.Converter{}
+		test_config.CleanTestDB(db)
+	})
 
 	It("converts a log to a Model", func() {
-		models, err := converter.ToModels(constants.FlopABI(), []core.HeaderSyncLog{test_data.FlopKickHeaderSyncLog})
-
+		models, err := converter.ToModels(constants.FlopABI(), []core.HeaderSyncLog{test_data.FlopKickHeaderSyncLog}, db)
 		Expect(err).NotTo(HaveOccurred())
-		Expect(models[0]).To(Equal(test_data.FlopKickModel()))
+
+		expectedKick := test_data.FlopKickModel()
+		addressId, addressErr := shared.GetOrCreateAddress(test_data.FlopKickHeaderSyncLog.Log.Address.Hex(), db)
+		Expect(addressErr).NotTo(HaveOccurred())
+		expectedKick.ColumnValues[event.AddressFK] = addressId
+
+		Expect(models[0]).To(Equal(expectedKick))
 	})
 
 	It("returns an error if converting log to entity fails", func() {
-		_, err := converter.ToModels("error abi", []core.HeaderSyncLog{test_data.FlopKickHeaderSyncLog})
+		_, err := converter.ToModels("error abi", []core.HeaderSyncLog{test_data.FlopKickHeaderSyncLog}, db)
 		Expect(err).To(HaveOccurred())
 	})
 })
