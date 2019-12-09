@@ -23,7 +23,7 @@ var _ = Describe("Flap storage repository", func() {
 		db                  = test_config.NewTestDB(test_config.NewTestNode())
 		repository          flap.FlapStorageRepository
 		blockNumber         int64
-		fakeHeaderID        int64
+		diffID, fakeHeaderID int64
 		flapContractAddress = "flapContractAddress"
 	)
 
@@ -43,7 +43,7 @@ var _ = Describe("Flap storage repository", func() {
 	It("panics if the metadata name is not recognized", func() {
 		unrecognizedMetadata := utils.StorageValueMetadata{Name: "unrecognized"}
 		flapCreate := func() {
-			repository.Create(fakeHeaderID, unrecognizedMetadata, "")
+			repository.Create(diffID, fakeHeaderID, unrecognizedMetadata, "")
 		}
 
 		Expect(flapCreate).Should(Panic())
@@ -51,7 +51,7 @@ var _ = Describe("Flap storage repository", func() {
 
 	It("rolls back the record and address insertions if there's a failure", func() {
 		var begMetadata = utils.StorageValueMetadata{Name: storage.Beg}
-		err := repository.Create(fakeHeaderID, begMetadata, "")
+		err := repository.Create(diffID, fakeHeaderID, begMetadata, "")
 		Expect(err).To(HaveOccurred())
 		Expect(err.Error()).To(MatchRegexp("pq: invalid input syntax for type numeric"))
 
@@ -68,7 +68,7 @@ var _ = Describe("Flap storage repository", func() {
 			Type: utils.Uint256,
 		}
 
-		err := repository.Create(fakeHeaderID, bidBidMetadata, "")
+		err := repository.Create(diffID, fakeHeaderID, bidBidMetadata, "")
 		Expect(err).To(HaveOccurred())
 		Expect(err.Error()).To(MatchRegexp("pq: invalid input syntax for type numeric"))
 
@@ -79,8 +79,10 @@ var _ = Describe("Flap storage repository", func() {
 	})
 
 	It("gets or creates the address record", func() {
+		diffID = CreateFakeDiffRecord(db)
+
 		var begMetadata = utils.StorageValueMetadata{Name: storage.Beg}
-		createErr := repository.Create(fakeHeaderID, begMetadata, strconv.Itoa(rand.Int()))
+		createErr := repository.Create(diffID, fakeHeaderID, begMetadata, strconv.Itoa(rand.Int()))
 		Expect(createErr).NotTo(HaveOccurred())
 
 		addressId, addressErr := shared.GetOrCreateAddress(repository.ContractAddress, db)
@@ -136,7 +138,7 @@ var _ = Describe("Flap storage repository", func() {
 		shared_behaviors.SharedStorageRepositoryVariableBehaviors(&inputs)
 
 		It("returns an error if inserting fails", func() {
-			err := repository.Create(fakeHeaderID, begMetadata, "")
+			err := repository.Create(diffID, fakeHeaderID, begMetadata, "")
 			Expect(err).To(HaveOccurred())
 			Expect(err.Error()).To(MatchRegexp("pq: invalid input syntax for type numeric"))
 		})
@@ -157,19 +159,21 @@ var _ = Describe("Flap storage repository", func() {
 		values[0] = fakeTtl
 		values[1] = fakeTau
 
-		It("persists a ttl record", func() {
-			err := repository.Create(fakeHeaderID, ttlAndTauMetadata, values)
+		It("persists ttl and tau records", func() {
+			diffID = CreateFakeDiffRecord(db)
+
+			err := repository.Create(diffID, fakeHeaderID, ttlAndTauMetadata, values)
 			Expect(err).NotTo(HaveOccurred())
 
 			var ttlResult VariableRes
-			err = db.Get(&ttlResult, `SELECT header_id, ttl AS value FROM maker.flap_ttl`)
+			err = db.Get(&ttlResult, `SELECT diff_id, header_id, ttl AS value FROM maker.flap_ttl`)
 			Expect(err).NotTo(HaveOccurred())
-			AssertVariable(ttlResult, fakeHeaderID, fakeTtl)
+			AssertVariable(ttlResult, diffID, fakeHeaderID, fakeTtl)
 
 			var tauResult VariableRes
-			err = db.Get(&tauResult, `SELECT header_id, tau AS value FROM maker.flap_tau`)
+			err = db.Get(&tauResult, `SELECT diff_id, header_id, tau AS value FROM maker.flap_tau`)
 			Expect(err).NotTo(HaveOccurred())
-			AssertVariable(tauResult, fakeHeaderID, fakeTau)
+			AssertVariable(tauResult, diffID, fakeHeaderID, fakeTau)
 		})
 
 		It("panics if the packed name is not recognized", func() {
@@ -182,7 +186,7 @@ var _ = Describe("Flap storage repository", func() {
 			}
 
 			createFunc := func() {
-				repository.Create(fakeHeaderID, badMetadata, values)
+				repository.Create(diffID, fakeHeaderID, badMetadata, values)
 			}
 			Expect(createFunc).To(Panic())
 		})
@@ -190,7 +194,7 @@ var _ = Describe("Flap storage repository", func() {
 		It("returns an error if inserting fails", func() {
 			badValues := make(map[int]string)
 			badValues[0] = ""
-			err := repository.Create(fakeHeaderID, ttlAndTauMetadata, badValues)
+			err := repository.Create(diffID, fakeHeaderID, ttlAndTauMetadata, badValues)
 			Expect(err).To(HaveOccurred())
 			Expect(err.Error()).To(MatchRegexp("pq: invalid input syntax for integer"))
 		})
@@ -210,7 +214,7 @@ var _ = Describe("Flap storage repository", func() {
 		shared_behaviors.SharedStorageRepositoryVariableBehaviors(&inputs)
 
 		It("returns an error if inserting fails", func() {
-			err := repository.Create(fakeHeaderID, kicksMetadata, "")
+			err := repository.Create(diffID, fakeHeaderID, kicksMetadata, "")
 			Expect(err).To(HaveOccurred())
 			Expect(err.Error()).To(MatchRegexp("pq: invalid input syntax for type numeric"))
 		})
@@ -230,7 +234,7 @@ var _ = Describe("Flap storage repository", func() {
 		shared_behaviors.SharedStorageRepositoryVariableBehaviors(&inputs)
 
 		It("returns an error if inserting fails", func() {
-			err := repository.Create(fakeHeaderID, liveMetadata, "")
+			err := repository.Create(diffID, fakeHeaderID, liveMetadata, "")
 			Expect(err).To(HaveOccurred())
 			Expect(err.Error()).To(MatchRegexp("pq: invalid input syntax for type numeric"))
 		})
@@ -245,7 +249,7 @@ var _ = Describe("Flap storage repository", func() {
 				Keys: map[utils.Key]string{},
 				Type: utils.Uint256,
 			}
-			err := repository.Create(fakeHeaderID, badMetadata, "")
+			err := repository.Create(diffID, fakeHeaderID, badMetadata, "")
 			Expect(err).To(MatchError(utils.ErrMetadataMalformed{MissingData: constants.BidId}))
 		})
 
@@ -270,7 +274,9 @@ var _ = Describe("Flap storage repository", func() {
 			shared_behaviors.SharedStorageRepositoryVariableBehaviors(&inputs)
 
 			It("triggers an update to the flap table", func() {
-				err := repository.Create(fakeHeaderID, bidBidMetadata, fakeBidValue)
+				diffID = CreateFakeDiffRecord(db)
+
+				err := repository.Create(diffID, fakeHeaderID, bidBidMetadata, fakeBidValue)
 				Expect(err).NotTo(HaveOccurred())
 
 				var flap FlapRes
@@ -303,7 +309,9 @@ var _ = Describe("Flap storage repository", func() {
 			shared_behaviors.SharedStorageRepositoryVariableBehaviors(&inputs)
 
 			It("triggers an update to the flap table", func() {
-				err := repository.Create(fakeHeaderID, bidLotMetadata, fakeLotValue)
+				diffID = CreateFakeDiffRecord(db)
+
+				err := repository.Create(diffID, fakeHeaderID, bidLotMetadata, fakeLotValue)
 				Expect(err).NotTo(HaveOccurred())
 
 				var flap FlapRes
@@ -336,29 +344,31 @@ var _ = Describe("Flap storage repository", func() {
 				values[2] = fakeEnd
 
 				BeforeEach(func() {
-					err := repository.Create(fakeHeaderID, bidGuyTicEndMetadata, values)
+					diffID = CreateFakeDiffRecord(db)
+
+					err := repository.Create(diffID, fakeHeaderID, bidGuyTicEndMetadata, values)
 					Expect(err).NotTo(HaveOccurred())
 				})
 
 				It("persists bid guy record", func() {
 					var guyResult MappingRes
-					selectErr := db.Get(&guyResult, `SELECT header_id, bid_id AS key, guy AS value FROM maker.flap_bid_guy`)
+					selectErr := db.Get(&guyResult, `SELECT diff_id, header_id, bid_id AS key, guy AS value FROM maker.flap_bid_guy`)
 					Expect(selectErr).NotTo(HaveOccurred())
-					AssertMapping(guyResult, fakeHeaderID, fakeBidId, fakeGuy)
+					AssertMapping(guyResult, diffID, fakeHeaderID, fakeBidId, fakeGuy)
 				})
 
 				It("persists bid tic record", func() {
 					var ticResult MappingRes
-					selectErr := db.Get(&ticResult, `SELECT header_id, bid_id AS key, tic AS value FROM maker.flap_bid_tic`)
+					selectErr := db.Get(&ticResult, `SELECT diff_id, header_id, bid_id AS key, tic AS value FROM maker.flap_bid_tic`)
 					Expect(selectErr).NotTo(HaveOccurred())
-					AssertMapping(ticResult, fakeHeaderID, fakeBidId, fakeTic)
+					AssertMapping(ticResult, diffID, fakeHeaderID, fakeBidId, fakeTic)
 				})
 
 				It("persists bid end record", func() {
 					var endResult MappingRes
-					selectErr := db.Get(&endResult, `SELECT header_id, bid_id AS key, "end" AS value FROM maker.flap_bid_end`)
+					selectErr := db.Get(&endResult, `SELECT diff_id, header_id, bid_id AS key, "end" AS value FROM maker.flap_bid_end`)
 					Expect(selectErr).NotTo(HaveOccurred())
-					AssertMapping(endResult, fakeHeaderID, fakeBidId, fakeEnd)
+					AssertMapping(endResult, diffID, fakeHeaderID, fakeBidId, fakeEnd)
 				})
 
 				It("triggers an update to the flap table with the latest guy, tic, and end values", func() {
@@ -376,7 +386,7 @@ var _ = Describe("Flap storage repository", func() {
 			It("returns an error if inserting fails", func() {
 				badValues := make(map[int]string)
 				badValues[1] = ""
-				err := repository.Create(fakeHeaderID, bidGuyTicEndMetadata, badValues)
+				err := repository.Create(diffID, fakeHeaderID, bidGuyTicEndMetadata, badValues)
 				Expect(err).To(HaveOccurred())
 				Expect(err.Error()).To(MatchRegexp("pq: invalid input syntax for integer"))
 			})

@@ -47,11 +47,7 @@ func SharedStorageRepositoryVariableBehaviors(inputs *StorageVariableBehaviorInp
 			headerID, insertHeaderErr = headerRepository.CreateOrUpdateHeader(fakes.FakeHeader)
 			Expect(insertHeaderErr).NotTo(HaveOccurred())
 
-			fakeRawDiff := fakes.GetFakeStorageDiffForHeader(fakes.FakeHeader, common.Hash{}, common.Hash{}, common.Hash{})
-			storageDiffRepo := repositories.NewStorageDiffRepository(database)
-			var insertDiffErr error
-			diffID, insertDiffErr = storageDiffRepo.CreateStorageDiff(fakeRawDiff)
-			Expect(insertDiffErr).NotTo(HaveOccurred())
+			diffID = CreateDiffRecord(database)
 		})
 
 		It("persists a record", func() {
