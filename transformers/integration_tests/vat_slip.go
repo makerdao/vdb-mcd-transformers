@@ -17,6 +17,7 @@
 package integration_tests
 
 import (
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"strconv"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -72,11 +73,10 @@ var _ = Describe("Vat slip transformer", func() {
 
 		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
 
-		tr := shared.EventTransformer{
-			Config:     vatSlipConfig,
-			Converter:  &vat_slip.VatSlipConverter{},
-			Repository: &vat_slip.VatSlipRepository{},
-		}.NewEventTransformer(db)
+		tr := event.Transformer{
+			Config:    vatSlipConfig,
+			Converter: &vat_slip.Converter{},
+		}.NewTransformer(db)
 
 		err = tr.Execute(headerSyncLogs)
 

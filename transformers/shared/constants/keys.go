@@ -50,6 +50,8 @@ const (
 	UrnColumn     event.ColumnName = "urn_id"
 	AddressColumn event.ColumnName = "address_id"
 	FlipColumn    event.ColumnName = "flip"
+	WadColumn     event.ColumnName = "wad"
+	UsrColumn     event.ColumnName = "usr"
 	WhatColumn    event.ColumnName = "what"
 	DataColumn    event.ColumnName = "data"
 	InkColumn     event.ColumnName = "ink"

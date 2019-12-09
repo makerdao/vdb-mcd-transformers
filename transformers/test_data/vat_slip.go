@@ -17,6 +17,7 @@
 package test_data
 
 import (
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"math/rand"
 
 	"github.com/makerdao/vulcanizedb/pkg/core"
@@ -26,7 +27,6 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
 
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 )
 
@@ -54,20 +54,18 @@ var VatSlipHeaderSyncLogWithPositiveWad = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-var VatSlipModelWithPositiveWad = shared.InsertionModel{
+var VatSlipModelWithPositiveWad = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.VatSlipTable,
-	OrderedColumns: []string{
-		constants.HeaderFK, string(constants.IlkFK), "usr", "wad", constants.LogFK,
+	OrderedColumns: []event.ColumnName{
+		event.HeaderFK, constants.IlkColumn, constants.UsrColumn, constants.WadColumn, event.LogFK,
 	},
-	ColumnValues: shared.ColumnValues{
-		"usr":              "0x5c8c8e5895B9cCf34ACF391C99E13C79EE2eFb46",
-		"wad":              "10000000000000000",
-		constants.HeaderFK: VatSlipHeaderSyncLogWithPositiveWad.HeaderID,
-		constants.LogFK:    VatSlipHeaderSyncLogWithPositiveWad.ID,
-	},
-	ForeignKeyValues: shared.ForeignKeyValues{
-		constants.IlkFK: "0x4554482d41000000000000000000000000000000000000000000000000000000",
+	ColumnValues: event.ColumnValues{
+		constants.UsrColumn: "0x5c8c8e5895B9cCf34ACF391C99E13C79EE2eFb46",
+		constants.WadColumn: "10000000000000000",
+		event.HeaderFK:      VatSlipHeaderSyncLogWithPositiveWad.HeaderID,
+		event.LogFK:         VatSlipHeaderSyncLogWithPositiveWad.ID,
+		constants.IlkColumn: "0x4554482d41000000000000000000000000000000000000000000000000000000",
 	},
 }
 
@@ -95,19 +93,17 @@ var VatSlipHeaderSyncLogWithNegativeWad = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-var VatSlipModelWithNegativeWad = shared.InsertionModel{
+var VatSlipModelWithNegativeWad = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.VatSlipTable,
-	OrderedColumns: []string{
-		constants.HeaderFK, string(constants.IlkFK), "usr", "wad", constants.LogFK,
+	OrderedColumns: []event.ColumnName{
+		event.HeaderFK, constants.IlkColumn, constants.UsrColumn, constants.WadColumn, event.LogFK,
 	},
-	ColumnValues: shared.ColumnValues{
-		"usr":              "0xFc7440E2Ed4A3AEb14d40c00f02a14221Be0474d",
-		"wad":              "-5000000000000000",
-		constants.HeaderFK: VatSlipHeaderSyncLogWithNegativeWad.HeaderID,
-		constants.LogFK:    VatSlipHeaderSyncLogWithNegativeWad.ID,
-	},
-	ForeignKeyValues: shared.ForeignKeyValues{
-		constants.IlkFK: "0x4554482d41000000000000000000000000000000000000000000000000000000",
+	ColumnValues: event.ColumnValues{
+		constants.UsrColumn: "0xFc7440E2Ed4A3AEb14d40c00f02a14221Be0474d",
+		constants.WadColumn: "-5000000000000000",
+		event.HeaderFK:      VatSlipHeaderSyncLogWithNegativeWad.HeaderID,
+		event.LogFK:         VatSlipHeaderSyncLogWithNegativeWad.ID,
+		//constants.IlkColumn DB state
 	},
 }

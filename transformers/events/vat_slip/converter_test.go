@@ -18,7 +18,10 @@ package vat_slip_test
 
 import (
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/makerdao/vdb-mcd-transformers/test_config"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vulcanizedb/pkg/core"
+	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
@@ -28,30 +31,50 @@ import (
 )
 
 var _ = Describe("Vat slip converter", func() {
-	var converter = vat_slip.VatSlipConverter{}
+	var (
+		converter vat_slip.Converter
+		db        *postgres.DB
+	)
+	converter = vat_slip.Converter{}
+	db = test_config.NewTestDB(test_config.NewTestNode())
+
 	It("returns err if log is missing topics", func() {
 		badLog := core.HeaderSyncLog{
 			Log: types.Log{
 				Data: []byte{1, 1, 1, 1, 1},
 			}}
 
-		_, err := converter.ToModels(constants.VatABI(), []core.HeaderSyncLog{badLog})
+		_, err := converter.ToModels(constants.VatABI(), []core.HeaderSyncLog{badLog}, db)
 		Expect(err).To(HaveOccurred())
 	})
 
 	It("converts a log with positive wad to a model", func() {
-		models, err := converter.ToModels(constants.VatABI(), []core.HeaderSyncLog{test_data.VatSlipHeaderSyncLogWithPositiveWad})
-
+		log := []core.HeaderSyncLog{test_data.VatSlipHeaderSyncLogWithPositiveWad}
+		models, err := converter.ToModels(constants.VatABI(), log, db)
 		Expect(err).NotTo(HaveOccurred())
+
+		ilk := log[0].Log.Topics[1].Hex()
+		ilkID, ilkErr := shared.GetOrCreateIlk(ilk, db)
+		Expect(ilkErr).NotTo(HaveOccurred())
+		expectedModel := test_data.VatSlipModelWithPositiveWad
+		expectedModel.ColumnValues[constants.IlkColumn] = ilkID
+
 		Expect(len(models)).To(Equal(1))
-		Expect(models[0]).To(Equal(test_data.VatSlipModelWithPositiveWad))
+		Expect(models[0]).To(Equal(expectedModel))
 	})
 
 	It("converts a log with a negative wad to a model", func() {
-		models, err := converter.ToModels(constants.VatABI(), []core.HeaderSyncLog{test_data.VatSlipHeaderSyncLogWithNegativeWad})
-
+		log := []core.HeaderSyncLog{test_data.VatSlipHeaderSyncLogWithNegativeWad}
+		models, err := converter.ToModels(constants.VatABI(), log, db)
 		Expect(err).NotTo(HaveOccurred())
+
+		ilk := log[0].Log.Topics[1].Hex()
+		ilkID, ilkErr := shared.GetOrCreateIlk(ilk, db)
+		Expect(ilkErr).NotTo(HaveOccurred())
+		expectedModel := test_data.VatSlipModelWithNegativeWad
+		expectedModel.ColumnValues[constants.IlkColumn] = ilkID
+
 		Expect(len(models)).To(Equal(1))
-		Expect(models[0]).To(Equal(test_data.VatSlipModelWithNegativeWad))
+		Expect(models[0]).To(Equal(expectedModel))
 	})
 })
