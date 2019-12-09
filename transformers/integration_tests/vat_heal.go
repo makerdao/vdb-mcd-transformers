@@ -20,9 +20,9 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_heal"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/fetcher"
 	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 	. "github.com/onsi/ginkgo"
@@ -62,11 +62,10 @@ var _ = Describe("VatHeal Transformer", func() {
 
 		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
 
-		tr := shared.EventTransformer{
-			Config:     vatHealConfig,
-			Converter:  &vat_heal.VatHealConverter{},
-			Repository: &vat_heal.VatHealRepository{},
-		}.NewEventTransformer(db)
+		tr := event.Transformer{
+			Config:    vatHealConfig,
+			Converter: &vat_heal.Converter{},
+		}.NewTransformer(db)
 
 		err = tr.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())

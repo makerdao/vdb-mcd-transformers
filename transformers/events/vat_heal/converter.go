@@ -19,38 +19,34 @@ package vat_heal
 import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
+	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 )
 
-type VatHealConverter struct{}
+type Converter struct{}
 
-const (
-	logDataRequired   = false
-	numTopicsRequired = 2
-)
-
-func (VatHealConverter) ToModels(_ string, logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
-	var models []shared.InsertionModel
+func (Converter) ToModels(_ string, logs []core.HeaderSyncLog, _ *postgres.DB) ([]event.InsertionModel, error) {
+	var models []event.InsertionModel
 	for _, log := range logs {
-		err := shared.VerifyLog(log.Log, numTopicsRequired, logDataRequired)
+		err := shared.VerifyLog(log.Log, shared.TwoTopicsRequired, shared.LogDataNotRequired)
 		if err != nil {
 			return nil, err
 		}
 
 		radInt := shared.ConvertUint256HexToBigInt(log.Log.Topics[1].Hex())
 
-		model := shared.InsertionModel{
+		model := event.InsertionModel{
 			SchemaName: constants.MakerSchema,
 			TableName:  constants.VatHealTable,
-			OrderedColumns: []string{
-				constants.HeaderFK, "rad", constants.LogFK,
+			OrderedColumns: []event.ColumnName{
+				event.HeaderFK, constants.RadColumn, event.LogFK,
 			},
-			ColumnValues: shared.ColumnValues{
-				"rad":              radInt.String(),
-				constants.HeaderFK: log.HeaderID,
-				constants.LogFK:    log.ID,
+			ColumnValues: event.ColumnValues{
+				constants.RadColumn: radInt.String(),
+				event.HeaderFK:      log.HeaderID,
+				event.LogFK:         log.ID,
 			},
-			ForeignKeyValues: shared.ForeignKeyValues{},
 		}
 		models = append(models, model)
 	}
