@@ -18,14 +18,14 @@ package initializer
 
 import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_init"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 )
 
-var EventTransformerInitializer transformer.EventTransformerInitializer = shared.EventTransformer{
-	Config:     shared.GetEventTransformerConfig(constants.VatInitTable, constants.VatInitSignature()),
-	Converter:  &vat_init.VatInitConverter{},
-	Repository: &vat_init.VatInitRepository{},
-}.NewEventTransformer
+var EventTransformerInitializer transformer.EventTransformerInitializer = event.Transformer{
+	Config:    shared.GetEventTransformerConfig(constants.VatInitTable, constants.VatInitSignature()),
+	Converter: &vat_init.Converter{},
+}.NewTransformer

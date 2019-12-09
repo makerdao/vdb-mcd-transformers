@@ -26,6 +26,7 @@ import (
 )
 
 const (
+	TwoTopicsRequired   = 2
 	ThreeTopicsRequired = 3
 	FourTopicsRequired  = 4
 	LogDataRequired     = true
