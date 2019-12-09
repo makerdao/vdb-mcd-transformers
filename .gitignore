@@ -9,4 +9,4 @@ vagrant*.sh
 test_scripts/
 vulcanizedb.log
 db/migrations/00*.sql
-mcd_transformers
+vdb-mcd-transformers

@@ -6,7 +6,6 @@ import (
 
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/flop_kick"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage"
@@ -22,21 +21,18 @@ import (
 var _ = Describe("Flop bid events query", func() {
 	var (
 		db                     *postgres.DB
-		flopKickRepo           flop_kick.FlopKickRepository
 		headerRepo             repositories.HeaderRepository
 		blockOne, timestampOne int
 		headerOne              core.Header
 		contractAddress        string
 		fakeBidId              int
-		flopKickEvent          shared.InsertionModel
+		flopKickEvent          event.InsertionModel
 	)
 
 	BeforeEach(func() {
 		db = test_config.NewTestDB(test_config.NewTestNode())
 		test_config.CleanTestDB(db)
 		headerRepo = repositories.NewHeaderRepository(db)
-		flopKickRepo = flop_kick.FlopKickRepository{}
-		flopKickRepo.SetDB(db)
 
 		fakeBidId = rand.Int()
 		contractAddress = "0x763ztv6x68exwqrgtl325e7hrcvavid4e3fcb4g"
@@ -47,12 +43,15 @@ var _ = Describe("Flop bid events query", func() {
 
 		flopKickLog := test_data.CreateTestLog(headerOne.Id, db)
 
+		addressId, addressErr := shared.GetOrCreateAddress(contractAddress, db)
+		Expect(addressErr).NotTo(HaveOccurred())
+
 		flopKickEvent = test_data.FlopKickModel()
-		flopKickEvent.ForeignKeyValues[constants.AddressFK] = contractAddress
-		flopKickEvent.ColumnValues["bid_id"] = strconv.Itoa(fakeBidId)
-		flopKickEvent.ColumnValues[constants.HeaderFK] = headerOne.Id
-		flopKickEvent.ColumnValues[constants.LogFK] = flopKickLog.ID
-		flopKickErr := flopKickRepo.Create([]shared.InsertionModel{flopKickEvent})
+		flopKickEvent.ColumnValues[event.HeaderFK] = headerOne.Id
+		flopKickEvent.ColumnValues[event.LogFK] = flopKickLog.ID
+		flopKickEvent.ColumnValues[event.AddressFK] = addressId
+		flopKickEvent.ColumnValues[constants.BidIdColumn] = strconv.Itoa(fakeBidId)
+		flopKickErr := event.PersistModels([]event.InsertionModel{flopKickEvent}, db)
 		Expect(flopKickErr).NotTo(HaveOccurred())
 	})
 
@@ -112,12 +111,15 @@ var _ = Describe("Flop bid events query", func() {
 
 			flopKickEventTwoLog := test_data.CreateTestLog(headerOne.Id, db)
 
+			addressId, addressErr := shared.GetOrCreateAddress(contractAddress, db)
+			Expect(addressErr).NotTo(HaveOccurred())
+
 			flopKickEventTwo := test_data.FlopKickModel()
-			flopKickEventTwo.ForeignKeyValues[constants.AddressFK] = contractAddress
-			flopKickEventTwo.ColumnValues["bid_id"] = strconv.Itoa(bidIdTwo)
-			flopKickEventTwo.ColumnValues[constants.HeaderFK] = headerOne.Id
-			flopKickEventTwo.ColumnValues[constants.LogFK] = flopKickEventTwoLog.ID
-			flopKickErr := flopKickRepo.Create([]shared.InsertionModel{flopKickEventTwo})
+			flopKickEventTwo.ColumnValues[event.HeaderFK] = headerOne.Id
+			flopKickEventTwo.ColumnValues[event.LogFK] = flopKickEventTwoLog.ID
+			flopKickEventTwo.ColumnValues[event.AddressFK] = addressId
+			flopKickEventTwo.ColumnValues[constants.BidIdColumn] = strconv.Itoa(bidIdTwo)
+			flopKickErr := event.PersistModels([]event.InsertionModel{flopKickEventTwo}, db)
 
 			Expect(flopKickErr).NotTo(HaveOccurred())
 
@@ -407,7 +409,7 @@ var _ = Describe("Flop bid events query", func() {
 	Describe("result pagination", func() {
 		var (
 			updatedBidAmount, updatedLot int
-			flopKickBlockOne             shared.InsertionModel
+			flopKickBlockOne             event.InsertionModel
 		)
 
 		BeforeEach(func() {
@@ -417,12 +419,15 @@ var _ = Describe("Flop bid events query", func() {
 			updatedBidAmount = bidAmount + 100
 
 			logID := test_data.CreateTestLog(headerOne.Id, db).ID
+			addressId, addressErr := shared.GetOrCreateAddress(contractAddress, db)
+			Expect(addressErr).NotTo(HaveOccurred())
+
 			flopKickBlockOne = test_data.FlopKickModel()
-			flopKickBlockOne.ColumnValues["bid_id"] = strconv.Itoa(fakeBidId)
-			flopKickBlockOne.ForeignKeyValues[constants.AddressFK] = contractAddress
-			flopKickBlockOne.ColumnValues[constants.HeaderFK] = headerOne.Id
-			flopKickBlockOne.ColumnValues[constants.LogFK] = logID
-			flopKickErr := flopKickRepo.Create([]shared.InsertionModel{flopKickBlockOne})
+			flopKickBlockOne.ColumnValues[event.HeaderFK] = headerOne.Id
+			flopKickBlockOne.ColumnValues[event.LogFK] = logID
+			flopKickBlockOne.ColumnValues[event.AddressFK] = addressId
+			flopKickBlockOne.ColumnValues[constants.BidIdColumn] = strconv.Itoa(fakeBidId)
+			flopKickErr := event.PersistModels([]event.InsertionModel{flopKickBlockOne}, db)
 			Expect(flopKickErr).NotTo(HaveOccurred())
 
 			headerTwo := createHeader(blockOne+1, timestampOne+1, headerRepo)

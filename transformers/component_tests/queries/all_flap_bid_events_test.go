@@ -7,7 +7,6 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/flop_kick"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage"
@@ -264,22 +263,24 @@ var _ = Describe("Flap bid events query", func() {
 
 		It("ignores bid events from flops", func() {
 			flopKickLog := test_data.CreateTestLog(headerOne.Id, db)
-			flopKickRepo := flop_kick.FlopKickRepository{}
-			flopKickRepo.SetDB(db)
+			flopAddress := test_data.RandomString(40)
+			addressId, addressErr := shared.GetOrCreateAddress(flopAddress, db)
+			Expect(addressErr).NotTo(HaveOccurred())
 
 			flopKickEvent := test_data.FlopKickModel()
-			flopKickEvent.ForeignKeyValues[constants.AddressFK] = "flop"
-			flopKickEvent.ColumnValues["bid_id"] = strconv.Itoa(fakeBidId)
-			flopKickEvent.ColumnValues[constants.HeaderFK] = headerOne.Id
-			flopKickEvent.ColumnValues[constants.LogFK] = flopKickLog.ID
-			flopKickErr := flopKickRepo.Create([]shared.InsertionModel{flopKickEvent})
+			flopKickEvent.ColumnValues[event.HeaderFK] = headerOne.Id
+			flopKickEvent.ColumnValues[event.LogFK] = flopKickLog.ID
+			flopKickEvent.ColumnValues[event.AddressFK] = addressId
+			flopKickEvent.ColumnValues[constants.BidIdColumn] = strconv.Itoa(fakeBidId)
+			flopKickErr := event.PersistModels([]event.InsertionModel{flopKickEvent}, db)
 			Expect(flopKickErr).NotTo(HaveOccurred())
 			flopKickBidEvent := test_helpers.BidEvent{
-				BidId:           flopKickEvent.ColumnValues["bid_id"].(string),
-				BidAmount:       flopKickEvent.ColumnValues["bid"].(string),
-				Lot:             flopKickEvent.ColumnValues["lot"].(string),
+				BidId:           flopKickEvent.ColumnValues[constants.BidIdColumn].(string),
+				BidAmount:       flopKickEvent.ColumnValues[constants.BidColumn].(string),
+				Lot:             flopKickEvent.ColumnValues[constants.LotColumn].(string),
 				Act:             "kick",
-				ContractAddress: flopKickEvent.ForeignKeyValues[constants.AddressFK]}
+				ContractAddress: flopAddress,
+			}
 
 			var actualBidEvents []test_helpers.BidEvent
 			queryErr := db.Select(&actualBidEvents, `SELECT bid_id, bid_amount, lot, act, contract_address FROM api.all_flap_bid_events()`)

@@ -19,13 +19,13 @@ package initializer
 import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/flop_kick"
 )
 
-var EventTransformerInitializer transformer.EventTransformerInitializer = shared.EventTransformer{
-	Config:     shared.GetEventTransformerConfig(constants.FlopKickTable, constants.FlopKickSignature()),
-	Converter:  flop_kick.FlopKickConverter{},
-	Repository: &flop_kick.FlopKickRepository{},
-}.NewEventTransformer
+var EventTransformerInitializer transformer.EventTransformerInitializer = event.Transformer{
+	Config:    shared.GetEventTransformerConfig(constants.FlopKickTable, constants.FlopKickSignature()),
+	Converter: flop_kick.Converter{},
+}.NewTransformer

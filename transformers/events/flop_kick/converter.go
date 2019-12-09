@@ -18,6 +18,8 @@ package flop_kick
 
 import (
 	"fmt"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
+	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vulcanizedb/pkg/core"
@@ -28,9 +30,9 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 )
 
-type FlopKickConverter struct{}
+type Converter struct{}
 
-func (FlopKickConverter) toEntities(contractAbi string, logs []core.HeaderSyncLog) ([]FlopKickEntity, error) {
+func (Converter) toEntities(contractAbi string, logs []core.HeaderSyncLog) ([]FlopKickEntity, error) {
 	var results []FlopKickEntity
 	for _, log := range logs {
 		var entity FlopKickEntity
@@ -53,29 +55,38 @@ func (FlopKickConverter) toEntities(contractAbi string, logs []core.HeaderSyncLo
 	return results, nil
 }
 
-func (c FlopKickConverter) ToModels(abi string, logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
-	var results []shared.InsertionModel
+func (c Converter) ToModels(abi string, logs []core.HeaderSyncLog, db *postgres.DB) ([]event.InsertionModel, error) {
+	var results []event.InsertionModel
 	entities, entityErr := c.toEntities(abi, logs)
 	if entityErr != nil {
-		return nil, fmt.Errorf("FlopKickConverter couldn't convert logs to entities: %v", entityErr)
+		return nil, fmt.Errorf("FlopKick converter couldn't convert logs to entities: %v", entityErr)
 	}
 	for _, flopKickEntity := range entities {
-		model := shared.InsertionModel{
+		addressId, addressErr := shared.GetOrCreateAddress(flopKickEntity.ContractAddress.Hex(), db)
+		if addressErr != nil {
+			_ = shared.ErrCouldNotCreateFK(addressErr)
+		}
+
+		model := event.InsertionModel{
 			SchemaName: constants.MakerSchema,
 			TableName:  constants.FlopKickTable,
-			OrderedColumns: []string{
-				constants.HeaderFK, constants.LogFK, string(constants.AddressFK), "bid_id", "lot", "bid", "gal",
+			OrderedColumns: []event.ColumnName{
+				event.HeaderFK,
+				event.LogFK,
+				event.AddressFK,
+				constants.BidIdColumn,
+				constants.LotColumn,
+				constants.BidColumn,
+				constants.GalColumn,
 			},
-			ColumnValues: shared.ColumnValues{
-				constants.HeaderFK: flopKickEntity.HeaderID,
-				constants.LogFK:    flopKickEntity.LogID,
-				"bid_id":           shared.BigIntToString(flopKickEntity.Id),
-				"lot":              shared.BigIntToString(flopKickEntity.Lot),
-				"bid":              shared.BigIntToString(flopKickEntity.Bid),
-				"gal":              flopKickEntity.Gal.String(),
-			},
-			ForeignKeyValues: shared.ForeignKeyValues{
-				constants.AddressFK: flopKickEntity.ContractAddress.Hex(),
+			ColumnValues: event.ColumnValues{
+				event.HeaderFK:        flopKickEntity.HeaderID,
+				event.LogFK:           flopKickEntity.LogID,
+				event.AddressFK:       addressId,
+				constants.BidIdColumn: shared.BigIntToString(flopKickEntity.Id),
+				constants.LotColumn:   shared.BigIntToString(flopKickEntity.Lot),
+				constants.BidColumn:   shared.BigIntToString(flopKickEntity.Bid),
+				constants.GalColumn:   flopKickEntity.Gal.String(),
 			},
 		}
 		results = append(results, model)
