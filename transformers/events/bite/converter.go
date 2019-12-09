@@ -78,7 +78,7 @@ func (c Converter) ToModels(abi string, logs []core.HeaderSyncLog, db *postgres.
 			SchemaName: constants.MakerSchema,
 			TableName:  constants.BiteTable,
 			OrderedColumns: []event.ColumnName{
-				event.HeaderFK, event.LogFK, constants.UrnColumn, constants.InkColumn, constants.ArtColumn, constants.TabColumn, constants.FlipColumn, constants.BidIdColumn,
+				event.HeaderFK, event.LogFK, constants.UrnColumn, constants.InkColumn, constants.ArtColumn, constants.TabColumn, constants.FlipColumn, constants.BidIDColumn,
 			},
 			ColumnValues: event.ColumnValues{
 				event.HeaderFK:        biteEntity.HeaderID,
@@ -88,7 +88,7 @@ func (c Converter) ToModels(abi string, logs []core.HeaderSyncLog, db *postgres.
 				constants.ArtColumn:   shared.BigIntToString(biteEntity.Art),
 				constants.TabColumn:   shared.BigIntToString(biteEntity.Tab),
 				constants.FlipColumn:  common.BytesToAddress(biteEntity.Flip.Bytes()).Hex(),
-				constants.BidIdColumn: shared.BigIntToString(biteEntity.Id),
+				constants.BidIDColumn: shared.BigIntToString(biteEntity.Id),
 			},
 		}
 		models = append(models, model)

@@ -17,6 +17,7 @@
 package test_data
 
 import (
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"math/rand"
 
 	"github.com/makerdao/vulcanizedb/pkg/core"
@@ -26,7 +27,6 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
 
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 )
 
@@ -54,18 +54,17 @@ var VatMoveHeaderSyncLog = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-var VatMoveModel = shared.InsertionModel{
+var VatMoveModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.VatMoveTable,
-	OrderedColumns: []string{
-		constants.HeaderFK, "src", "dst", "rad", constants.LogFK,
+	OrderedColumns: []event.ColumnName{
+		event.HeaderFK, constants.SrcColumn, constants.DstColumn, constants.RadColumn, event.LogFK,
 	},
-	ColumnValues: shared.ColumnValues{
-		"src":              "0xA730d1FF8B6Bc74a26d54c20a9dda539909BaB0e",
-		"dst":              "0xB730D1fF8b6BC74a26D54c20a9ddA539909BAb0e",
-		"rad":              "42",
-		constants.HeaderFK: VatMoveHeaderSyncLog.HeaderID,
-		constants.LogFK:    VatMoveHeaderSyncLog.ID,
+	ColumnValues: event.ColumnValues{
+		constants.SrcColumn: "0xA730d1FF8B6Bc74a26d54c20a9dda539909BaB0e",
+		constants.DstColumn: "0xB730D1fF8b6BC74a26D54c20a9ddA539909BAb0e",
+		constants.RadColumn: "42",
+		event.HeaderFK:      VatMoveHeaderSyncLog.HeaderID,
+		event.LogFK:         VatMoveHeaderSyncLog.ID,
 	},
-	ForeignKeyValues: shared.ForeignKeyValues{},
 }

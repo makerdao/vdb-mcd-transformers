@@ -69,7 +69,7 @@ var _ = Describe("All flip bid events query", func() {
 		flipKickEvent.ColumnValues[event.HeaderFK] = headerOne.Id
 		flipKickEvent.ColumnValues[event.LogFK] = flipKickLog.ID
 		flipKickEvent.ColumnValues[event.AddressFK] = addressId
-		flipKickEvent.ColumnValues[constants.BidIdColumn] = strconv.Itoa(bidId)
+		flipKickEvent.ColumnValues[constants.BidIDColumn] = strconv.Itoa(bidId)
 		flipKickErr := event.PersistModels([]event.InsertionModel{flipKickEvent}, db)
 		Expect(flipKickErr).NotTo(HaveOccurred())
 	})
@@ -277,7 +277,7 @@ var _ = Describe("All flip bid events query", func() {
 			flipKickEventTwo.ColumnValues[event.HeaderFK] = headerOne.Id
 			flipKickEventTwo.ColumnValues[event.LogFK] = flipKickLogTwo.ID
 			flipKickEventTwo.ColumnValues[event.AddressFK] = addressId
-			flipKickEventTwo.ColumnValues[constants.BidIdColumn] = strconv.Itoa(differentBidId)
+			flipKickEventTwo.ColumnValues[constants.BidIDColumn] = strconv.Itoa(differentBidId)
 			flipKickEventTwo.ColumnValues[constants.LotColumn] = strconv.Itoa(differentLot)
 			flipKickErr := event.PersistModels([]event.InsertionModel{flipKickEventTwo}, db)
 			Expect(flipKickErr).NotTo(HaveOccurred())
@@ -313,7 +313,7 @@ var _ = Describe("All flip bid events query", func() {
 			flipKickEventTwo.ColumnValues[event.HeaderFK] = headerOne.Id
 			flipKickEventTwo.ColumnValues[event.LogFK] = flipKickLog.ID
 			flipKickEventTwo.ColumnValues[event.AddressFK] = anotherAddressId
-			flipKickEventTwo.ColumnValues[constants.BidIdColumn] = strconv.Itoa(bidId)
+			flipKickEventTwo.ColumnValues[constants.BidIDColumn] = strconv.Itoa(bidId)
 			flipKickEventTwo.ColumnValues[constants.LotColumn] = strconv.Itoa(differentLot)
 			flipKickEventTwo.ColumnValues[constants.BidColumn] = strconv.Itoa(differentBidAmount)
 			flipKickErr := event.PersistModels([]event.InsertionModel{flipKickEventTwo}, db)

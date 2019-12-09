@@ -50,7 +50,7 @@ var _ = Describe("Flop bid events query", func() {
 		flopKickEvent.ColumnValues[event.HeaderFK] = headerOne.Id
 		flopKickEvent.ColumnValues[event.LogFK] = flopKickLog.ID
 		flopKickEvent.ColumnValues[event.AddressFK] = addressId
-		flopKickEvent.ColumnValues[constants.BidIdColumn] = strconv.Itoa(fakeBidId)
+		flopKickEvent.ColumnValues[constants.BidIDColumn] = strconv.Itoa(fakeBidId)
 		flopKickErr := event.PersistModels([]event.InsertionModel{flopKickEvent}, db)
 		Expect(flopKickErr).NotTo(HaveOccurred())
 	})
@@ -118,7 +118,7 @@ var _ = Describe("Flop bid events query", func() {
 			flopKickEventTwo.ColumnValues[event.HeaderFK] = headerOne.Id
 			flopKickEventTwo.ColumnValues[event.LogFK] = flopKickEventTwoLog.ID
 			flopKickEventTwo.ColumnValues[event.AddressFK] = addressId
-			flopKickEventTwo.ColumnValues[constants.BidIdColumn] = strconv.Itoa(bidIdTwo)
+			flopKickEventTwo.ColumnValues[constants.BidIDColumn] = strconv.Itoa(bidIdTwo)
 			flopKickErr := event.PersistModels([]event.InsertionModel{flopKickEventTwo}, db)
 
 			Expect(flopKickErr).NotTo(HaveOccurred())
@@ -166,7 +166,7 @@ var _ = Describe("Flop bid events query", func() {
 			Expect(addressErr).NotTo(HaveOccurred())
 			flapKickEvent := test_data.FlapKickModel()
 			flapKickEvent.ColumnValues[event.AddressFK] = addressId
-			flapKickEvent.ColumnValues[constants.BidIdColumn] = strconv.Itoa(fakeBidId)
+			flapKickEvent.ColumnValues[constants.BidIDColumn] = strconv.Itoa(fakeBidId)
 			flapKickEvent.ColumnValues[event.HeaderFK] = headerOne.Id
 			flapKickEvent.ColumnValues[event.LogFK] = flapKickLog.ID
 			flapKickErr := event.PersistModels([]event.InsertionModel{flapKickEvent}, db)
@@ -426,7 +426,7 @@ var _ = Describe("Flop bid events query", func() {
 			flopKickBlockOne.ColumnValues[event.HeaderFK] = headerOne.Id
 			flopKickBlockOne.ColumnValues[event.LogFK] = logID
 			flopKickBlockOne.ColumnValues[event.AddressFK] = addressId
-			flopKickBlockOne.ColumnValues[constants.BidIdColumn] = strconv.Itoa(fakeBidId)
+			flopKickBlockOne.ColumnValues[constants.BidIDColumn] = strconv.Itoa(fakeBidId)
 			flopKickErr := event.PersistModels([]event.InsertionModel{flopKickBlockOne}, db)
 			Expect(flopKickErr).NotTo(HaveOccurred())
 

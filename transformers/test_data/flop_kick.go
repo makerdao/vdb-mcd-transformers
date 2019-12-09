@@ -60,7 +60,7 @@ var flopKickModel = event.InsertionModel{
 		event.HeaderFK,
 		event.LogFK,
 		event.AddressFK,
-		constants.BidIdColumn,
+		constants.BidIDColumn,
 		constants.LotColumn,
 		constants.BidColumn,
 		constants.GalColumn,
@@ -68,7 +68,7 @@ var flopKickModel = event.InsertionModel{
 	ColumnValues: event.ColumnValues{
 		event.HeaderFK:        FlopKickHeaderSyncLog.HeaderID,
 		event.LogFK:           FlopKickHeaderSyncLog.ID,
-		constants.BidIdColumn: big.NewInt(30000000000000000).String(),
+		constants.BidIDColumn: big.NewInt(30000000000000000).String(),
 		constants.LotColumn:   big.NewInt(1000000000000000000).String(),
 		constants.BidColumn:   big.NewInt(2000000000000000000).String(),
 		constants.GalColumn:   common.HexToAddress("0x7d7bEe5fCfD8028cf7b00876C5b1421c800561A6").String(),

@@ -54,12 +54,12 @@ var flapKickModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.FlapKickTable,
 	OrderedColumns: []event.ColumnName{
-		event.HeaderFK, event.LogFK, event.AddressFK, constants.BidIdColumn, constants.LotColumn, constants.BidColumn,
+		event.HeaderFK, event.LogFK, event.AddressFK, constants.BidIDColumn, constants.LotColumn, constants.BidColumn,
 	},
 	ColumnValues: event.ColumnValues{
 		event.HeaderFK:        FlapKickHeaderSyncLog.HeaderID,
 		event.LogFK:           FlapKickHeaderSyncLog.ID,
-		constants.BidIdColumn: big.NewInt(1).String(),
+		constants.BidIDColumn: big.NewInt(1).String(),
 		constants.LotColumn:   big.NewInt(1000000000).String(),
 		constants.BidColumn:   big.NewInt(20000000).String(),
 	},

@@ -17,31 +17,35 @@
 package vat_move_test
 
 import (
-	"github.com/makerdao/vulcanizedb/pkg/core"
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
-
+	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_move"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
+	"github.com/makerdao/vulcanizedb/pkg/core"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("Vat move converter", func() {
-	var converter vat_move.VatMoveConverter
+	var (
+		converter vat_move.Converter
+		db        = test_config.NewTestDB(test_config.NewTestNode())
+	)
 
 	BeforeEach(func() {
-		converter = vat_move.VatMoveConverter{}
+		converter = vat_move.Converter{}
+		test_config.CleanTestDB(db)
 	})
 
 	It("returns err if logs are missing topics", func() {
 		badLog := core.HeaderSyncLog{}
-		_, err := converter.ToModels(constants.VatABI(), []core.HeaderSyncLog{badLog})
+		_, err := converter.ToModels(constants.VatABI(), []core.HeaderSyncLog{badLog}, db)
 
 		Expect(err).To(HaveOccurred())
 	})
 
 	It("converts a log to a model", func() {
-		models, err := converter.ToModels(constants.VatABI(), []core.HeaderSyncLog{test_data.VatMoveHeaderSyncLog})
+		models, err := converter.ToModels(constants.VatABI(), []core.HeaderSyncLog{test_data.VatMoveHeaderSyncLog}, db)
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(len(models)).To(Equal(1))

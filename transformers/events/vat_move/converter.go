@@ -20,42 +20,38 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
+	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 )
 
-type VatMoveConverter struct{}
+type Converter struct{}
 
-const (
-	logDataRequired   = false
-	numTopicsRequired = 4
-)
-
-func (VatMoveConverter) ToModels(_ string, logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
-	var models []shared.InsertionModel
+func (Converter) ToModels(_ string, logs []core.HeaderSyncLog, _ *postgres.DB) ([]event.InsertionModel, error) {
+	var models []event.InsertionModel
 	for _, log := range logs {
-		err := shared.VerifyLog(log.Log, numTopicsRequired, logDataRequired)
+		err := shared.VerifyLog(log.Log, shared.FourTopicsRequired, shared.LogDataNotRequired)
 		if err != nil {
-			return []shared.InsertionModel{}, err
+			return []event.InsertionModel{}, err
 		}
 
 		src := common.BytesToAddress(log.Log.Topics[1].Bytes()).String()
 		dst := common.BytesToAddress(log.Log.Topics[2].Bytes()).String()
 		rad := shared.ConvertUint256HexToBigInt(log.Log.Topics[3].Hex())
 
-		model := shared.InsertionModel{
+		model := event.InsertionModel{
 			SchemaName: constants.MakerSchema,
 			TableName:  constants.VatMoveTable,
-			OrderedColumns: []string{
-				constants.HeaderFK, "src", "dst", "rad", constants.LogFK,
+			OrderedColumns: []event.ColumnName{
+				event.HeaderFK, constants.SrcColumn, constants.DstColumn, constants.RadColumn, event.LogFK,
 			},
-			ColumnValues: shared.ColumnValues{
-				"src":              src,
-				"dst":              dst,
-				"rad":              rad.String(),
-				constants.HeaderFK: log.HeaderID,
-				constants.LogFK:    log.ID,
+			ColumnValues: event.ColumnValues{
+				constants.SrcColumn: src,
+				constants.DstColumn: dst,
+				constants.RadColumn: rad.String(),
+				event.HeaderFK:      log.HeaderID,
+				event.LogFK:         log.ID,
 			},
-			ForeignKeyValues: shared.ForeignKeyValues{},
 		}
 		models = append(models, model)
 	}

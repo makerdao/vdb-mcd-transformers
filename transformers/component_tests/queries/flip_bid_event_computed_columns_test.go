@@ -161,7 +161,7 @@ var _ = Describe("Flip bid event computed columns", func() {
 			flipKickEvent.ColumnValues[event.HeaderFK] = headerOne.Id
 			flipKickEvent.ColumnValues[event.LogFK] = flipKickHeaderSyncLog.ID
 			flipKickEvent.ColumnValues[event.AddressFK] = addressId
-			flipKickEvent.ColumnValues[constants.BidIdColumn] = strconv.Itoa(bidId)
+			flipKickEvent.ColumnValues[constants.BidIDColumn] = strconv.Itoa(bidId)
 			flipKickErr := event.PersistModels([]event.InsertionModel{flipKickEvent}, db)
 			Expect(flipKickErr).NotTo(HaveOccurred())
 		})
