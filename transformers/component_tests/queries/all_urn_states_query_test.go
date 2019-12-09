@@ -46,12 +46,12 @@ var _ = Describe("Urn history query", func() {
 	})
 
 	It("returns a reverse chronological history for the given ilk and urn", func() {
-		urnSetupData := helper.GetUrnSetupData(headerOne)
+		urnSetupData := helper.GetUrnSetupData()
 		urnMetadata := helper.GetUrnMetadata(helper.FakeIlk.Hex, fakeUrn)
-		helper.CreateUrn(urnSetupData, urnMetadata, vatRepo)
+		helper.CreateUrn(urnSetupData, headerOne.Id, urnMetadata, vatRepo)
 
-		inkBlockOne := urnSetupData.Ink
-		artBlockOne := urnSetupData.Art
+		inkBlockOne := urnSetupData[vat.UrnInk]
+		artBlockOne := urnSetupData[vat.UrnArt]
 
 		expectedTimestampOne := helper.GetExpectedTimestamp(timestampOne)
 		expectedUrnBlockOne := helper.UrnState{
@@ -129,13 +129,13 @@ var _ = Describe("Urn history query", func() {
 	Describe("result pagination", func() {
 		var (
 			blockTwo, timestampTwo int
-			urnSetupData           helper.UrnSetupData
+			urnSetupData           map[string]int
 		)
 
 		BeforeEach(func() {
-			urnSetupData = helper.GetUrnSetupData(headerOne)
+			urnSetupData = helper.GetUrnSetupData()
 			urnMetadata := helper.GetUrnMetadata(helper.FakeIlk.Hex, fakeUrn)
-			helper.CreateUrn(urnSetupData, urnMetadata, vatRepo)
+			helper.CreateUrn(urnSetupData, headerOne.Id, urnMetadata, vatRepo)
 
 			// New block
 			blockTwo = blockOne + 1
@@ -143,7 +143,7 @@ var _ = Describe("Urn history query", func() {
 			headerTwo := createHeader(blockTwo, timestampTwo, headerRepo)
 
 			// diff in new block
-			err := vatRepo.Create(headerTwo.Id, urnMetadata.UrnInk, strconv.Itoa(urnSetupData.Ink))
+			err := vatRepo.Create(headerTwo.Id, urnMetadata.UrnInk, strconv.Itoa(urnSetupData[vat.UrnInk]))
 			Expect(err).NotTo(HaveOccurred())
 		})
 
@@ -154,8 +154,8 @@ var _ = Describe("Urn history query", func() {
 				UrnIdentifier: fakeUrn,
 				IlkIdentifier: helper.FakeIlk.Identifier,
 				BlockHeight:   blockTwo,
-				Ink:           strconv.Itoa(urnSetupData.Ink),
-				Art:           strconv.Itoa(urnSetupData.Art),
+				Ink:           strconv.Itoa(urnSetupData[vat.UrnInk]),
+				Art:           strconv.Itoa(urnSetupData[vat.UrnArt]),
 				Created:       helper.GetValidNullString(expectedTimeCreated),
 				Updated:       helper.GetValidNullString(expectedTimeUpdated),
 			}
@@ -177,8 +177,8 @@ var _ = Describe("Urn history query", func() {
 				UrnIdentifier: fakeUrn,
 				IlkIdentifier: helper.FakeIlk.Identifier,
 				BlockHeight:   blockOne,
-				Ink:           strconv.Itoa(urnSetupData.Ink),
-				Art:           strconv.Itoa(urnSetupData.Art),
+				Ink:           strconv.Itoa(urnSetupData[vat.UrnInk]),
+				Art:           strconv.Itoa(urnSetupData[vat.UrnArt]),
 				Created:       helper.GetValidNullString(expectedTimeCreated),
 				Updated:       helper.GetValidNullString(expectedTimeCreated),
 			}

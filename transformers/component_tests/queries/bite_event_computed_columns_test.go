@@ -78,9 +78,9 @@ var _ = Describe("Bite event computed columns", func() {
 	Describe("bite_event_urn", func() {
 		It("returns urn_state for a bite_event", func() {
 			vatRepository.SetDB(db)
-			urnSetupData := test_helpers.GetUrnSetupData(headerOne)
+			urnSetupData := test_helpers.GetUrnSetupData()
 			urnMetadata := test_helpers.GetUrnMetadata(test_helpers.FakeIlk.Hex, fakeGuy)
-			test_helpers.CreateUrn(urnSetupData, urnMetadata, vatRepository)
+			test_helpers.CreateUrn(urnSetupData, headerOne.Id, urnMetadata, vatRepository)
 
 			var actualUrn test_helpers.UrnState
 			err := db.Get(&actualUrn, `

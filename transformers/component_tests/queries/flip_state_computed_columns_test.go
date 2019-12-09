@@ -108,11 +108,11 @@ var _ = Describe("Flip state computed columns", func() {
 
 	Describe("flip_state_urn", func() {
 		It("returns urn_state for a flip_state", func() {
-			urnSetupData := test_helpers.GetUrnSetupData(headerOne)
+			urnSetupData := test_helpers.GetUrnSetupData()
 			urnMetadata := test_helpers.GetUrnMetadata(test_helpers.FakeIlk.Hex, test_data.FlipKickModel().ForeignKeyValues[constants.UrnFK])
 			vatRepository := vat.VatStorageRepository{}
 			vatRepository.SetDB(db)
-			test_helpers.CreateUrn(urnSetupData, urnMetadata, vatRepository)
+			test_helpers.CreateUrn(urnSetupData, headerOne.Id, urnMetadata, vatRepository)
 
 			var actualUrn test_helpers.UrnState
 			getUrnErr := db.Get(&actualUrn, `

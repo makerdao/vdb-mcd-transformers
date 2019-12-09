@@ -236,22 +236,13 @@ func CreateSpotRecords(header core.Header, valuesMap map[string]string, metadata
 }
 
 // Creates urn by creating necessary state diffs and the corresponding header
-func CreateUrn(setupData UrnSetupData, metadata UrnMetadata, vatRepo vat.VatStorageRepository) {
-	Expect(setupData.Header.Id).NotTo(BeZero())
-
+func CreateUrn(setupData map[string]int, headerId int64, metadata UrnMetadata, vatRepo vat.VatStorageRepository) {
 	// This also creates the ilk if it doesn't exist
-	err := vatRepo.Create(setupData.Header.Id, metadata.UrnInk, strconv.Itoa(setupData.Ink))
+	err := vatRepo.Create(headerId, metadata.UrnInk, strconv.Itoa(setupData[vat.UrnInk]))
 	Expect(err).NotTo(HaveOccurred())
 
-	err = vatRepo.Create(setupData.Header.Id, metadata.UrnArt, strconv.Itoa(setupData.Art))
+	err = vatRepo.Create(headerId, metadata.UrnArt, strconv.Itoa(setupData[vat.UrnArt]))
 	Expect(err).NotTo(HaveOccurred())
-
-	err = vatRepo.Create(setupData.Header.Id, metadata.IlkSpot, strconv.Itoa(setupData.Spot))
-	Expect(err).NotTo(HaveOccurred())
-
-	err = vatRepo.Create(setupData.Header.Id, metadata.IlkRate, strconv.Itoa(setupData.Rate))
-	Expect(err).NotTo(HaveOccurred())
-
 }
 
 func CreateIlk(db *postgres.DB, header core.Header, valuesMap map[string]string, vatMetadatas, catMetadatas, jugMetadatas, spotMetadatas []utils.StorageValueMetadata) {
@@ -271,23 +262,11 @@ func CreateIlk(db *postgres.DB, header core.Header, valuesMap map[string]string,
 	CreateSpotRecords(header, valuesMap, spotMetadatas, spotRepo)
 }
 
-// Does not return values computed by the query (updated, created)
-func GetUrnSetupData(header core.Header) UrnSetupData {
-	return UrnSetupData{
-		Header: header,
-		Ink:    rand.Int(),
-		Art:    rand.Int(),
-		Spot:   rand.Int(),
-		Rate:   rand.Int(),
-	}
-}
-
-type UrnSetupData struct {
-	Header core.Header
-	Ink    int
-	Art    int
-	Spot   int
-	Rate   int
+func GetUrnSetupData() map[string]int {
+	urnData := make(map[string]int)
+	urnData[vat.UrnInk] = rand.Int()
+	urnData[vat.UrnArt] = rand.Int()
+	return urnData
 }
 
 func GetUrnMetadata(ilk, urn string) UrnMetadata {
@@ -296,18 +275,12 @@ func GetUrnMetadata(ilk, urn string) UrnMetadata {
 			map[utils.Key]string{constants.Ilk: ilk, constants.Guy: urn}, utils.Uint256),
 		UrnArt: utils.GetStorageValueMetadata(vat.UrnArt,
 			map[utils.Key]string{constants.Ilk: ilk, constants.Guy: urn}, utils.Uint256),
-		IlkSpot: utils.GetStorageValueMetadata(vat.IlkSpot,
-			map[utils.Key]string{constants.Ilk: ilk}, utils.Uint256),
-		IlkRate: utils.GetStorageValueMetadata(vat.IlkRate,
-			map[utils.Key]string{constants.Ilk: ilk}, utils.Uint256),
 	}
 }
 
 type UrnMetadata struct {
-	UrnInk  utils.StorageValueMetadata
-	UrnArt  utils.StorageValueMetadata
-	IlkSpot utils.StorageValueMetadata
-	IlkRate utils.StorageValueMetadata
+	UrnInk utils.StorageValueMetadata
+	UrnArt utils.StorageValueMetadata
 }
 
 type UrnState struct {

@@ -2236,6 +2236,65 @@ $$;
 
 
 --
+-- Name: historical_urn_state; Type: TABLE; Schema: api; Owner: -
+--
+
+CREATE TABLE api.historical_urn_state (
+    urn_identifier text NOT NULL,
+    ilk_identifier text NOT NULL,
+    block_height bigint NOT NULL,
+    ink numeric,
+    art numeric,
+    created timestamp without time zone,
+    updated timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: historical_urn_state_bites(api.historical_urn_state, integer, integer); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.historical_urn_state_bites(state api.historical_urn_state, max_results integer DEFAULT NULL::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.bite_event
+    LANGUAGE sql STABLE
+    AS $$
+SELECT *
+FROM api.urn_bites(state.ilk_identifier, state.urn_identifier)
+WHERE block_height <= state.block_height
+LIMIT historical_urn_state_bites.max_results
+OFFSET
+historical_urn_state_bites.result_offset
+$$;
+
+
+--
+-- Name: historical_urn_state_frobs(api.historical_urn_state, integer, integer); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.historical_urn_state_frobs(state api.historical_urn_state, max_results integer DEFAULT NULL::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.frob_event
+    LANGUAGE sql STABLE
+    AS $$
+SELECT *
+FROM api.urn_frobs(state.ilk_identifier, state.urn_identifier)
+WHERE block_height <= state.block_height
+LIMIT historical_urn_state_frobs.max_results
+OFFSET
+historical_urn_state_frobs.result_offset
+$$;
+
+
+--
+-- Name: historical_urn_state_ilk(api.historical_urn_state); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.historical_urn_state_ilk(state api.historical_urn_state) RETURNS api.ilk_state
+    LANGUAGE sql STABLE
+    AS $$
+SELECT *
+FROM api.get_ilk(state.ilk_identifier, state.block_height)
+$$;
+
+
+--
 -- Name: ilk_file_event_ilk(api.ilk_file_event); Type: FUNCTION; Schema: api; Owner: -
 --
 
@@ -2587,14 +2646,15 @@ CREATE FUNCTION maker.delete_redundant_ilk_state(ilk_id integer, header_id integ
     LANGUAGE plpgsql
     AS $$
 DECLARE
-    associated_ilk TEXT                     := (
+    associated_ilk         TEXT                     := (
         SELECT identifier
         FROM maker.ilks
         WHERE id = delete_redundant_ilk_state.ilk_id);
     ilk_state_block_number BIGINT                   := (
         SELECT block_number
         FROM public.headers
-        WHERE id = header_id);ilk_state      api.historical_ilk_state := (
+        WHERE id = header_id);
+    ilk_state              api.historical_ilk_state := (
         SELECT (ilk_identifier, historical_ilk_state.block_number, rate, art, spot, line, dust, chop, lump, flip, rho,
                 duty, pip, mat, created, updated)
         FROM api.historical_ilk_state
@@ -2625,6 +2685,41 @@ BEGIN
       AND (ilk_state.duty IS NULL OR ilk_state.duty = prev_ilk_state.duty)
       AND (ilk_state.pip IS NULL OR ilk_state.pip = prev_ilk_state.pip)
       AND (ilk_state.mat IS NULL OR ilk_state.mat = prev_ilk_state.mat);
+    RETURN NULL;
+END
+$$;
+
+
+--
+-- Name: delete_redundant_urn_state(integer, integer); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.delete_redundant_urn_state(urn_id integer, header_id integer) RETURNS api.historical_urn_state
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+    urn_state_block_number BIGINT := (
+        SELECT block_number
+        FROM public.headers
+        WHERE id = header_id);
+BEGIN
+    DELETE
+    FROM api.historical_urn_state
+        USING maker.urns LEFT JOIN maker.ilks ON urns.ilk_id = ilks.id
+    WHERE historical_urn_state.urn_identifier = urns.identifier
+      AND historical_urn_state.ilk_identifier = ilks.identifier
+      AND urns.id = urn_id
+      AND historical_urn_state.block_height = urn_state_block_number
+      AND NOT (EXISTS(
+            SELECT *
+            FROM maker.vat_urn_ink
+            WHERE vat_urn_ink.urn_id = delete_redundant_urn_state.urn_id
+              AND vat_urn_ink.header_id = delete_redundant_urn_state.header_id))
+      AND NOT (EXISTS(
+            SELECT *
+            FROM maker.vat_urn_art
+            WHERE vat_urn_art.urn_id = delete_redundant_urn_state.urn_id
+              AND vat_urn_art.header_id = delete_redundant_urn_state.header_id));
     RETURN NULL;
 END
 $$;
@@ -4186,6 +4281,96 @@ $$;
 
 
 --
+-- Name: vat_urn_art; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.vat_urn_art (
+    id integer NOT NULL,
+    header_id integer NOT NULL,
+    urn_id integer NOT NULL,
+    art numeric NOT NULL
+);
+
+
+--
+-- Name: insert_urn_art(maker.vat_urn_art); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.insert_urn_art(new_diff maker.vat_urn_art) RETURNS maker.vat_urn_art
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    WITH urn AS (
+        SELECT urns.identifier AS urn_identifier, ilks.identifier AS ilk_identifier
+        FROM maker.urns
+                 LEFT JOIN maker.ilks ON urns.ilk_id = ilks.id
+        WHERE urns.id = new_diff.urn_id),
+         new_diff_header AS (
+             SELECT api.epoch_to_datetime(block_timestamp) AS block_timestamp, block_number
+             FROM public.headers
+             WHERE id = new_diff.header_id)
+    INSERT
+    INTO api.historical_urn_state (urn_identifier, ilk_identifier, block_height, ink, art, created, updated)
+    VALUES ((SELECT urn_identifier FROM urn),
+            (SELECT ilk_identifier FROM urn),
+            (SELECT block_number FROM new_diff_header),
+            urn_ink_before_block(new_diff.urn_id, new_diff.header_id),
+            new_diff.art,
+            urn_time_created(new_diff.urn_id),
+            (SELECT block_timestamp FROM new_diff_header))
+    ON CONFLICT (urn_identifier, ilk_identifier, block_height)
+        DO UPDATE SET art = new_diff.art;
+    RETURN NULL;
+END
+$$;
+
+
+--
+-- Name: vat_urn_ink; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.vat_urn_ink (
+    id integer NOT NULL,
+    header_id integer NOT NULL,
+    urn_id integer NOT NULL,
+    ink numeric NOT NULL
+);
+
+
+--
+-- Name: insert_urn_ink(maker.vat_urn_ink); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.insert_urn_ink(new_diff maker.vat_urn_ink) RETURNS maker.vat_urn_ink
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    WITH urn AS (
+        SELECT urns.identifier AS urn_identifier, ilks.identifier AS ilk_identifier
+        FROM maker.urns
+                 LEFT JOIN maker.ilks ON urns.ilk_id = ilks.id
+        WHERE urns.id = new_diff.urn_id),
+         new_diff_header AS (
+             SELECT api.epoch_to_datetime(block_timestamp) AS block_timestamp, block_number
+             FROM public.headers
+             WHERE id = new_diff.header_id)
+    INSERT
+    INTO api.historical_urn_state (urn_identifier, ilk_identifier, block_height, ink, art, created, updated)
+    VALUES ((SELECT urn_identifier FROM urn),
+            (SELECT ilk_identifier FROM urn),
+            (SELECT block_number FROM new_diff_header),
+            new_diff.ink,
+            urn_art_before_block(new_diff.urn_id, new_diff.header_id),
+            urn_time_created(new_diff.urn_id),
+            (SELECT block_timestamp FROM new_diff_header))
+    ON CONFLICT (urn_identifier, ilk_identifier, block_height)
+        DO UPDATE SET ink = new_diff.ink;
+    RETURN NULL;
+END
+$$;
+
+
+--
 -- Name: update_arts_until_next_diff(maker.vat_ilk_art, numeric); Type: FUNCTION; Schema: maker; Owner: -
 --
 
@@ -4852,6 +5037,142 @@ $$;
 
 
 --
+-- Name: update_urn_arts(); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.update_urn_arts() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    IF (TG_OP IN ('INSERT', 'UPDATE')) THEN
+        PERFORM maker.insert_urn_art(NEW);
+        PERFORM maker.update_urn_arts_until_next_diff(NEW, NEW.art);
+    ELSIF (TG_OP = 'DELETE') THEN
+        PERFORM maker.update_urn_arts_until_next_diff(OLD, urn_art_before_block(OLD.urn_id, OLD.header_id));
+        PERFORM maker.delete_redundant_urn_state(OLD.urn_id, OLD.header_id);
+    END IF;
+    RETURN NULL;
+END
+$$;
+
+
+--
+-- Name: update_urn_arts_until_next_diff(maker.vat_urn_art, numeric); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.update_urn_arts_until_next_diff(start_at_diff maker.vat_urn_art, new_art numeric) RETURNS maker.vat_urn_art
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+    diff_block_number    BIGINT := (
+        SELECT block_number
+        FROM public.headers
+        WHERE id = start_at_diff.header_id);
+    next_rate_diff_block BIGINT := (
+        SELECT MIN(block_number)
+        FROM maker.vat_urn_art
+                 LEFT JOIN public.headers ON vat_urn_art.header_id = headers.id
+        WHERE vat_urn_art.urn_id = start_at_diff.urn_id
+          AND block_number > diff_block_number);
+BEGIN
+    WITH urn AS (
+        SELECT urns.identifier AS urn_identifier, ilks.identifier AS ilk_identifier
+        FROM maker.urns
+                 LEFT JOIN maker.ilks ON urns.ilk_id = ilks.id
+        WHERE urns.id = start_at_diff.urn_id)
+    UPDATE api.historical_urn_state
+    SET art = new_art
+    FROM urn
+    WHERE historical_urn_state.urn_identifier = urn.urn_identifier
+      AND historical_urn_state.ilk_identifier = urn.ilk_identifier
+      AND historical_urn_state.block_height >= diff_block_number
+      AND (next_rate_diff_block IS NULL
+        OR historical_urn_state.block_height < next_rate_diff_block);
+    RETURN NULL;
+END
+$$;
+
+
+--
+-- Name: update_urn_created(integer); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.update_urn_created(urn_id integer) RETURNS maker.vat_urn_ink
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    UPDATE api.historical_urn_state
+    SET created = urn_time_created(urn_id)
+    FROM maker.urns
+             LEFT JOIN maker.ilks ON urns.ilk_id = ilks.id
+    WHERE urns.identifier = historical_urn_state.urn_identifier
+      AND ilks.identifier = historical_urn_state.ilk_identifier
+      AND urns.id = urn_id;
+    RETURN NULL;
+END
+$$;
+
+
+--
+-- Name: update_urn_inks(); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.update_urn_inks() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    IF (TG_OP IN ('INSERT', 'UPDATE')) THEN
+        PERFORM maker.insert_urn_ink(NEW);
+        PERFORM maker.update_urn_inks_until_next_diff(NEW, NEW.ink);
+        PERFORM maker.update_urn_created(NEW.urn_id);
+    ELSIF (TG_OP = 'DELETE') THEN
+        PERFORM maker.update_urn_inks_until_next_diff(OLD, urn_ink_before_block(OLD.urn_id, OLD.header_id));
+        PERFORM maker.delete_redundant_urn_state(OLD.urn_id, OLD.header_id);
+        PERFORM maker.update_urn_created(OLD.urn_id);
+    END IF;
+    RETURN NULL;
+END
+$$;
+
+
+--
+-- Name: update_urn_inks_until_next_diff(maker.vat_urn_ink, numeric); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.update_urn_inks_until_next_diff(start_at_diff maker.vat_urn_ink, new_ink numeric) RETURNS maker.vat_urn_ink
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+    diff_block_number    BIGINT := (
+        SELECT block_number
+        FROM public.headers
+        WHERE id = start_at_diff.header_id);
+    next_rate_diff_block BIGINT := (
+        SELECT MIN(block_number)
+        FROM maker.vat_urn_ink
+                 LEFT JOIN public.headers ON vat_urn_ink.header_id = headers.id
+        WHERE vat_urn_ink.urn_id = start_at_diff.urn_id
+          AND block_number > diff_block_number);
+BEGIN
+    WITH urn AS (
+        SELECT urns.identifier AS urn_identifier, ilks.identifier AS ilk_identifier
+        FROM maker.urns
+                 LEFT JOIN maker.ilks ON urns.ilk_id = ilks.id
+        WHERE urns.id = start_at_diff.urn_id)
+    UPDATE api.historical_urn_state
+    SET ink = new_ink
+    FROM urn
+    WHERE historical_urn_state.urn_identifier = urn.urn_identifier
+      AND historical_urn_state.ilk_identifier = urn.ilk_identifier
+      AND historical_urn_state.block_height >= diff_block_number
+      AND (next_rate_diff_block IS NULL
+        OR historical_urn_state.block_height < next_rate_diff_block);
+    RETURN NULL;
+END
+$$;
+
+
+--
 -- Name: get_latest_flap_bid_bid(numeric); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -5429,6 +5750,62 @@ SELECT api.epoch_to_datetime(MIN(block_timestamp))
 FROM public.headers
          LEFT JOIN maker.vat_init ON vat_init.header_id = headers.id
 WHERE vat_init.ilk_id = ilk_time_created.ilk_id
+$$;
+
+
+--
+-- Name: urn_art_before_block(integer, integer); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.urn_art_before_block(urn_id integer, header_id integer) RETURNS numeric
+    LANGUAGE sql
+    AS $$
+WITH passed_block_number AS (
+    SELECT block_number
+    FROM public.headers
+    WHERE id = header_id)
+SELECT art
+FROM maker.vat_urn_art
+         LEFT JOIN public.headers ON vat_urn_art.header_id = headers.id
+WHERE vat_urn_art.urn_id = urn_art_before_block.urn_id
+  AND headers.block_number < (SELECT block_number FROM passed_block_number)
+ORDER BY block_number DESC
+LIMIT 1
+$$;
+
+
+--
+-- Name: urn_ink_before_block(integer, integer); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.urn_ink_before_block(urn_id integer, header_id integer) RETURNS numeric
+    LANGUAGE sql
+    AS $$
+WITH passed_block_number AS (
+    SELECT block_number
+    FROM public.headers
+    WHERE id = header_id)
+SELECT ink
+FROM maker.vat_urn_ink
+         LEFT JOIN public.headers ON vat_urn_ink.header_id = headers.id
+WHERE vat_urn_ink.urn_id = urn_ink_before_block.urn_id
+  AND headers.block_number < (SELECT block_number FROM passed_block_number)
+ORDER BY block_number DESC
+LIMIT 1
+$$;
+
+
+--
+-- Name: urn_time_created(integer); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.urn_time_created(urn_id integer) RETURNS timestamp without time zone
+    LANGUAGE sql
+    AS $$
+SELECT api.epoch_to_datetime(MIN(block_timestamp))
+FROM maker.vat_urn_ink
+         LEFT JOIN public.headers ON vat_urn_ink.header_id = headers.id
+WHERE vat_urn_ink.urn_id = urn_time_created.urn_id
 $$;
 
 
@@ -9192,18 +9569,6 @@ ALTER SEQUENCE maker.vat_suck_id_seq OWNED BY maker.vat_suck.id;
 
 
 --
--- Name: vat_urn_art; Type: TABLE; Schema: maker; Owner: -
---
-
-CREATE TABLE maker.vat_urn_art (
-    id integer NOT NULL,
-    header_id integer NOT NULL,
-    urn_id integer NOT NULL,
-    art numeric NOT NULL
-);
-
-
---
 -- Name: vat_urn_art_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -9221,18 +9586,6 @@ CREATE SEQUENCE maker.vat_urn_art_id_seq
 --
 
 ALTER SEQUENCE maker.vat_urn_art_id_seq OWNED BY maker.vat_urn_art.id;
-
-
---
--- Name: vat_urn_ink; Type: TABLE; Schema: maker; Owner: -
---
-
-CREATE TABLE maker.vat_urn_ink (
-    id integer NOT NULL,
-    header_id integer NOT NULL,
-    urn_id integer NOT NULL,
-    ink numeric NOT NULL
-);
 
 
 --
@@ -11474,6 +11827,14 @@ ALTER TABLE ONLY public.watched_logs ALTER COLUMN id SET DEFAULT nextval('public
 
 ALTER TABLE ONLY api.historical_ilk_state
     ADD CONSTRAINT historical_ilk_state_pkey PRIMARY KEY (ilk_identifier, block_number);
+
+
+--
+-- Name: historical_urn_state historical_urn_state_pkey; Type: CONSTRAINT; Schema: api; Owner: -
+--
+
+ALTER TABLE ONLY api.historical_urn_state
+    ADD CONSTRAINT historical_urn_state_pkey PRIMARY KEY (urn_identifier, ilk_identifier, block_height);
 
 
 --
@@ -15175,6 +15536,20 @@ CREATE TRIGGER managed_cdp_urn AFTER INSERT OR UPDATE ON maker.cdp_manager_urns 
 --
 
 CREATE TRIGGER managed_cdp_usr AFTER INSERT OR UPDATE ON maker.cdp_manager_owns FOR EACH ROW EXECUTE PROCEDURE maker.insert_cdp_usr();
+
+
+--
+-- Name: vat_urn_art urn_art; Type: TRIGGER; Schema: maker; Owner: -
+--
+
+CREATE TRIGGER urn_art AFTER INSERT OR DELETE OR UPDATE ON maker.vat_urn_art FOR EACH ROW EXECUTE PROCEDURE maker.update_urn_arts();
+
+
+--
+-- Name: vat_urn_ink urn_ink; Type: TRIGGER; Schema: maker; Owner: -
+--
+
+CREATE TRIGGER urn_ink AFTER INSERT OR DELETE OR UPDATE ON maker.vat_urn_ink FOR EACH ROW EXECUTE PROCEDURE maker.update_urn_inks();
 
 
 --
