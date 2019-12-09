@@ -7023,6 +7023,7 @@ CREATE TABLE maker.flip (
 
 CREATE TABLE maker.flip_beg (
     id integer NOT NULL,
+    diff_id integer NOT NULL,
     header_id integer NOT NULL,
     address_id integer NOT NULL,
     beg numeric NOT NULL
@@ -7055,6 +7056,7 @@ ALTER SEQUENCE maker.flip_beg_id_seq OWNED BY maker.flip_beg.id;
 
 CREATE TABLE maker.flip_bid_bid (
     id integer NOT NULL,
+    diff_id integer NOT NULL,
     header_id integer NOT NULL,
     address_id integer NOT NULL,
     bid_id numeric NOT NULL,
@@ -7088,6 +7090,7 @@ ALTER SEQUENCE maker.flip_bid_bid_id_seq OWNED BY maker.flip_bid_bid.id;
 
 CREATE TABLE maker.flip_bid_end (
     id integer NOT NULL,
+    diff_id integer NOT NULL,
     header_id integer NOT NULL,
     address_id integer NOT NULL,
     bid_id numeric NOT NULL,
@@ -7121,6 +7124,7 @@ ALTER SEQUENCE maker.flip_bid_end_id_seq OWNED BY maker.flip_bid_end.id;
 
 CREATE TABLE maker.flip_bid_gal (
     id integer NOT NULL,
+    diff_id integer NOT NULL,
     header_id integer NOT NULL,
     address_id integer NOT NULL,
     bid_id numeric NOT NULL,
@@ -7154,6 +7158,7 @@ ALTER SEQUENCE maker.flip_bid_gal_id_seq OWNED BY maker.flip_bid_gal.id;
 
 CREATE TABLE maker.flip_bid_guy (
     id integer NOT NULL,
+    diff_id integer NOT NULL,
     header_id integer NOT NULL,
     address_id integer NOT NULL,
     bid_id numeric NOT NULL,
@@ -7187,6 +7192,7 @@ ALTER SEQUENCE maker.flip_bid_guy_id_seq OWNED BY maker.flip_bid_guy.id;
 
 CREATE TABLE maker.flip_bid_lot (
     id integer NOT NULL,
+    diff_id integer NOT NULL,
     header_id integer NOT NULL,
     address_id integer NOT NULL,
     bid_id numeric NOT NULL,
@@ -7220,6 +7226,7 @@ ALTER SEQUENCE maker.flip_bid_lot_id_seq OWNED BY maker.flip_bid_lot.id;
 
 CREATE TABLE maker.flip_bid_tab (
     id integer NOT NULL,
+    diff_id integer NOT NULL,
     header_id integer NOT NULL,
     address_id integer NOT NULL,
     bid_id numeric NOT NULL,
@@ -7253,6 +7260,7 @@ ALTER SEQUENCE maker.flip_bid_tab_id_seq OWNED BY maker.flip_bid_tab.id;
 
 CREATE TABLE maker.flip_bid_tic (
     id integer NOT NULL,
+    diff_id integer NOT NULL,
     header_id integer NOT NULL,
     address_id integer NOT NULL,
     bid_id numeric NOT NULL,
@@ -7286,6 +7294,7 @@ ALTER SEQUENCE maker.flip_bid_tic_id_seq OWNED BY maker.flip_bid_tic.id;
 
 CREATE TABLE maker.flip_bid_usr (
     id integer NOT NULL,
+    diff_id integer NOT NULL,
     header_id integer NOT NULL,
     address_id integer NOT NULL,
     bid_id numeric NOT NULL,
@@ -7339,6 +7348,7 @@ ALTER SEQUENCE maker.flip_id_seq OWNED BY maker.flip.id;
 
 CREATE TABLE maker.flip_ilk (
     id integer NOT NULL,
+    diff_id integer NOT NULL,
     header_id integer NOT NULL,
     address_id integer NOT NULL,
     ilk_id integer NOT NULL
@@ -7416,6 +7426,7 @@ ALTER SEQUENCE maker.flip_kick_id_seq OWNED BY maker.flip_kick.id;
 
 CREATE TABLE maker.flip_kicks (
     id integer NOT NULL,
+    diff_id integer NOT NULL,
     header_id integer NOT NULL,
     address_id integer NOT NULL,
     kicks numeric NOT NULL
@@ -7455,6 +7466,7 @@ ALTER SEQUENCE maker.flip_kicks_id_seq OWNED BY maker.flip_kicks.id;
 
 CREATE TABLE maker.flip_tau (
     id integer NOT NULL,
+    diff_id integer NOT NULL,
     header_id integer NOT NULL,
     address_id integer NOT NULL,
     tau numeric NOT NULL
@@ -7487,6 +7499,7 @@ ALTER SEQUENCE maker.flip_tau_id_seq OWNED BY maker.flip_tau.id;
 
 CREATE TABLE maker.flip_ttl (
     id integer NOT NULL,
+    diff_id integer NOT NULL,
     header_id integer NOT NULL,
     address_id integer NOT NULL,
     ttl numeric NOT NULL
@@ -7519,6 +7532,7 @@ ALTER SEQUENCE maker.flip_ttl_id_seq OWNED BY maker.flip_ttl.id;
 
 CREATE TABLE maker.flip_vat (
     id integer NOT NULL,
+    diff_id integer NOT NULL,
     header_id integer NOT NULL,
     address_id integer NOT NULL,
     vat text
@@ -12465,11 +12479,11 @@ ALTER TABLE ONLY maker.flap_vat
 
 
 --
--- Name: flip_beg flip_beg_header_id_address_id_beg_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: flip_beg flip_beg_diff_id_header_id_address_id_beg_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.flip_beg
-    ADD CONSTRAINT flip_beg_header_id_address_id_beg_key UNIQUE (header_id, address_id, beg);
+    ADD CONSTRAINT flip_beg_diff_id_header_id_address_id_beg_key UNIQUE (diff_id, header_id, address_id, beg);
 
 
 --
@@ -12481,11 +12495,11 @@ ALTER TABLE ONLY maker.flip_beg
 
 
 --
--- Name: flip_bid_bid flip_bid_bid_header_id_bid_id_address_id_bid_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: flip_bid_bid flip_bid_bid_diff_id_header_id_bid_id_address_id_bid_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.flip_bid_bid
-    ADD CONSTRAINT flip_bid_bid_header_id_bid_id_address_id_bid_key UNIQUE (header_id, bid_id, address_id, bid);
+    ADD CONSTRAINT flip_bid_bid_diff_id_header_id_bid_id_address_id_bid_key UNIQUE (diff_id, header_id, bid_id, address_id, bid);
 
 
 --
@@ -12497,11 +12511,11 @@ ALTER TABLE ONLY maker.flip_bid_bid
 
 
 --
--- Name: flip_bid_end flip_bid_end_header_id_bid_id_address_id_end_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: flip_bid_end flip_bid_end_diff_id_header_id_bid_id_address_id_end_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.flip_bid_end
-    ADD CONSTRAINT flip_bid_end_header_id_bid_id_address_id_end_key UNIQUE (header_id, bid_id, address_id, "end");
+    ADD CONSTRAINT flip_bid_end_diff_id_header_id_bid_id_address_id_end_key UNIQUE (diff_id, header_id, bid_id, address_id, "end");
 
 
 --
@@ -12513,11 +12527,11 @@ ALTER TABLE ONLY maker.flip_bid_end
 
 
 --
--- Name: flip_bid_gal flip_bid_gal_header_id_bid_id_address_id_gal_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: flip_bid_gal flip_bid_gal_diff_id_header_id_bid_id_address_id_gal_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.flip_bid_gal
-    ADD CONSTRAINT flip_bid_gal_header_id_bid_id_address_id_gal_key UNIQUE (header_id, bid_id, address_id, gal);
+    ADD CONSTRAINT flip_bid_gal_diff_id_header_id_bid_id_address_id_gal_key UNIQUE (diff_id, header_id, bid_id, address_id, gal);
 
 
 --
@@ -12529,11 +12543,11 @@ ALTER TABLE ONLY maker.flip_bid_gal
 
 
 --
--- Name: flip_bid_guy flip_bid_guy_header_id_bid_id_address_id_guy_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: flip_bid_guy flip_bid_guy_diff_id_header_id_bid_id_address_id_guy_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.flip_bid_guy
-    ADD CONSTRAINT flip_bid_guy_header_id_bid_id_address_id_guy_key UNIQUE (header_id, bid_id, address_id, guy);
+    ADD CONSTRAINT flip_bid_guy_diff_id_header_id_bid_id_address_id_guy_key UNIQUE (diff_id, header_id, bid_id, address_id, guy);
 
 
 --
@@ -12545,11 +12559,11 @@ ALTER TABLE ONLY maker.flip_bid_guy
 
 
 --
--- Name: flip_bid_lot flip_bid_lot_header_id_bid_id_address_id_lot_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: flip_bid_lot flip_bid_lot_diff_id_header_id_bid_id_address_id_lot_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.flip_bid_lot
-    ADD CONSTRAINT flip_bid_lot_header_id_bid_id_address_id_lot_key UNIQUE (header_id, bid_id, address_id, lot);
+    ADD CONSTRAINT flip_bid_lot_diff_id_header_id_bid_id_address_id_lot_key UNIQUE (diff_id, header_id, bid_id, address_id, lot);
 
 
 --
@@ -12561,11 +12575,11 @@ ALTER TABLE ONLY maker.flip_bid_lot
 
 
 --
--- Name: flip_bid_tab flip_bid_tab_header_id_bid_id_address_id_tab_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: flip_bid_tab flip_bid_tab_diff_id_header_id_bid_id_address_id_tab_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.flip_bid_tab
-    ADD CONSTRAINT flip_bid_tab_header_id_bid_id_address_id_tab_key UNIQUE (header_id, bid_id, address_id, tab);
+    ADD CONSTRAINT flip_bid_tab_diff_id_header_id_bid_id_address_id_tab_key UNIQUE (diff_id, header_id, bid_id, address_id, tab);
 
 
 --
@@ -12577,11 +12591,11 @@ ALTER TABLE ONLY maker.flip_bid_tab
 
 
 --
--- Name: flip_bid_tic flip_bid_tic_header_id_bid_id_address_id_tic_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: flip_bid_tic flip_bid_tic_diff_id_header_id_bid_id_address_id_tic_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.flip_bid_tic
-    ADD CONSTRAINT flip_bid_tic_header_id_bid_id_address_id_tic_key UNIQUE (header_id, bid_id, address_id, tic);
+    ADD CONSTRAINT flip_bid_tic_diff_id_header_id_bid_id_address_id_tic_key UNIQUE (diff_id, header_id, bid_id, address_id, tic);
 
 
 --
@@ -12593,11 +12607,11 @@ ALTER TABLE ONLY maker.flip_bid_tic
 
 
 --
--- Name: flip_bid_usr flip_bid_usr_header_id_bid_id_address_id_usr_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: flip_bid_usr flip_bid_usr_diff_id_header_id_bid_id_address_id_usr_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.flip_bid_usr
-    ADD CONSTRAINT flip_bid_usr_header_id_bid_id_address_id_usr_key UNIQUE (header_id, bid_id, address_id, usr);
+    ADD CONSTRAINT flip_bid_usr_diff_id_header_id_bid_id_address_id_usr_key UNIQUE (diff_id, header_id, bid_id, address_id, usr);
 
 
 --
@@ -12617,11 +12631,11 @@ ALTER TABLE ONLY maker.flip
 
 
 --
--- Name: flip_ilk flip_ilk_header_id_address_id_ilk_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: flip_ilk flip_ilk_diff_id_header_id_address_id_ilk_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.flip_ilk
-    ADD CONSTRAINT flip_ilk_header_id_address_id_ilk_id_key UNIQUE (header_id, address_id, ilk_id);
+    ADD CONSTRAINT flip_ilk_diff_id_header_id_address_id_ilk_id_key UNIQUE (diff_id, header_id, address_id, ilk_id);
 
 
 --
@@ -12649,11 +12663,11 @@ ALTER TABLE ONLY maker.flip_kick
 
 
 --
--- Name: flip_kicks flip_kicks_header_id_address_id_kicks_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: flip_kicks flip_kicks_diff_id_header_id_address_id_kicks_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.flip_kicks
-    ADD CONSTRAINT flip_kicks_header_id_address_id_kicks_key UNIQUE (header_id, address_id, kicks);
+    ADD CONSTRAINT flip_kicks_diff_id_header_id_address_id_kicks_key UNIQUE (diff_id, header_id, address_id, kicks);
 
 
 --
@@ -12673,11 +12687,11 @@ ALTER TABLE ONLY maker.flip
 
 
 --
--- Name: flip_tau flip_tau_header_id_address_id_tau_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: flip_tau flip_tau_diff_id_header_id_address_id_tau_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.flip_tau
-    ADD CONSTRAINT flip_tau_header_id_address_id_tau_key UNIQUE (header_id, address_id, tau);
+    ADD CONSTRAINT flip_tau_diff_id_header_id_address_id_tau_key UNIQUE (diff_id, header_id, address_id, tau);
 
 
 --
@@ -12689,11 +12703,11 @@ ALTER TABLE ONLY maker.flip_tau
 
 
 --
--- Name: flip_ttl flip_ttl_header_id_address_id_ttl_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: flip_ttl flip_ttl_diff_id_header_id_address_id_ttl_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.flip_ttl
-    ADD CONSTRAINT flip_ttl_header_id_address_id_ttl_key UNIQUE (header_id, address_id, ttl);
+    ADD CONSTRAINT flip_ttl_diff_id_header_id_address_id_ttl_key UNIQUE (diff_id, header_id, address_id, ttl);
 
 
 --
@@ -12705,11 +12719,11 @@ ALTER TABLE ONLY maker.flip_ttl
 
 
 --
--- Name: flip_vat flip_vat_header_id_address_id_vat_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: flip_vat flip_vat_diff_id_header_id_address_id_vat_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.flip_vat
-    ADD CONSTRAINT flip_vat_header_id_address_id_vat_key UNIQUE (header_id, address_id, vat);
+    ADD CONSTRAINT flip_vat_diff_id_header_id_address_id_vat_key UNIQUE (diff_id, header_id, address_id, vat);
 
 
 --
@@ -16364,6 +16378,14 @@ ALTER TABLE ONLY maker.flip_beg
 
 
 --
+-- Name: flip_beg flip_beg_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_beg
+    ADD CONSTRAINT flip_beg_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
 -- Name: flip_beg flip_beg_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -16377,6 +16399,14 @@ ALTER TABLE ONLY maker.flip_beg
 
 ALTER TABLE ONLY maker.flip_bid_bid
     ADD CONSTRAINT flip_bid_bid_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: flip_bid_bid flip_bid_bid_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_bid_bid
+    ADD CONSTRAINT flip_bid_bid_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
 
 
 --
@@ -16396,6 +16426,14 @@ ALTER TABLE ONLY maker.flip_bid_end
 
 
 --
+-- Name: flip_bid_end flip_bid_end_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_bid_end
+    ADD CONSTRAINT flip_bid_end_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
 -- Name: flip_bid_end flip_bid_end_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -16409,6 +16447,14 @@ ALTER TABLE ONLY maker.flip_bid_end
 
 ALTER TABLE ONLY maker.flip_bid_gal
     ADD CONSTRAINT flip_bid_gal_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: flip_bid_gal flip_bid_gal_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_bid_gal
+    ADD CONSTRAINT flip_bid_gal_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
 
 
 --
@@ -16428,6 +16474,14 @@ ALTER TABLE ONLY maker.flip_bid_guy
 
 
 --
+-- Name: flip_bid_guy flip_bid_guy_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_bid_guy
+    ADD CONSTRAINT flip_bid_guy_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
 -- Name: flip_bid_guy flip_bid_guy_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -16441,6 +16495,14 @@ ALTER TABLE ONLY maker.flip_bid_guy
 
 ALTER TABLE ONLY maker.flip_bid_lot
     ADD CONSTRAINT flip_bid_lot_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: flip_bid_lot flip_bid_lot_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_bid_lot
+    ADD CONSTRAINT flip_bid_lot_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
 
 
 --
@@ -16460,6 +16522,14 @@ ALTER TABLE ONLY maker.flip_bid_tab
 
 
 --
+-- Name: flip_bid_tab flip_bid_tab_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_bid_tab
+    ADD CONSTRAINT flip_bid_tab_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
 -- Name: flip_bid_tab flip_bid_tab_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -16473,6 +16543,14 @@ ALTER TABLE ONLY maker.flip_bid_tab
 
 ALTER TABLE ONLY maker.flip_bid_tic
     ADD CONSTRAINT flip_bid_tic_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: flip_bid_tic flip_bid_tic_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_bid_tic
+    ADD CONSTRAINT flip_bid_tic_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
 
 
 --
@@ -16492,6 +16570,14 @@ ALTER TABLE ONLY maker.flip_bid_usr
 
 
 --
+-- Name: flip_bid_usr flip_bid_usr_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_bid_usr
+    ADD CONSTRAINT flip_bid_usr_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
 -- Name: flip_bid_usr flip_bid_usr_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -16505,6 +16591,14 @@ ALTER TABLE ONLY maker.flip_bid_usr
 
 ALTER TABLE ONLY maker.flip_ilk
     ADD CONSTRAINT flip_ilk_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: flip_ilk flip_ilk_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_ilk
+    ADD CONSTRAINT flip_ilk_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
 
 
 --
@@ -16556,6 +16650,14 @@ ALTER TABLE ONLY maker.flip_kicks
 
 
 --
+-- Name: flip_kicks flip_kicks_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_kicks
+    ADD CONSTRAINT flip_kicks_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
 -- Name: flip_kicks flip_kicks_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -16569,6 +16671,14 @@ ALTER TABLE ONLY maker.flip_kicks
 
 ALTER TABLE ONLY maker.flip_tau
     ADD CONSTRAINT flip_tau_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: flip_tau flip_tau_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_tau
+    ADD CONSTRAINT flip_tau_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
 
 
 --
@@ -16588,6 +16698,14 @@ ALTER TABLE ONLY maker.flip_ttl
 
 
 --
+-- Name: flip_ttl flip_ttl_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_ttl
+    ADD CONSTRAINT flip_ttl_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
 -- Name: flip_ttl flip_ttl_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -16601,6 +16719,14 @@ ALTER TABLE ONLY maker.flip_ttl
 
 ALTER TABLE ONLY maker.flip_vat
     ADD CONSTRAINT flip_vat_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: flip_vat flip_vat_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_vat
+    ADD CONSTRAINT flip_vat_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
 
 
 --
