@@ -56,7 +56,7 @@ var _ = Describe("Flap computed columns", func() {
 			flapKickEvent.ColumnValues[event.HeaderFK] = headerOne.Id
 			flapKickEvent.ColumnValues[event.LogFK] = flapKickLog.ID
 			flapKickEvent.ColumnValues[event.AddressFK] = addressId
-			flapKickEvent.ColumnValues[constants.BidIdColumn] = strconv.Itoa(fakeBidId)
+			flapKickEvent.ColumnValues[constants.BidIDColumn] = strconv.Itoa(fakeBidId)
 			flapKickErr := event.PersistModels([]event.InsertionModel{flapKickEvent}, db)
 			Expect(flapKickErr).NotTo(HaveOccurred())
 
@@ -88,7 +88,7 @@ var _ = Describe("Flap computed columns", func() {
 			flapKickEvent.ColumnValues[event.HeaderFK] = headerOne.Id
 			flapKickEvent.ColumnValues[event.LogFK] = flapKickLog.ID
 			flapKickEvent.ColumnValues[event.AddressFK] = addressId
-			flapKickEvent.ColumnValues[constants.BidIdColumn] = strconv.Itoa(fakeBidId)
+			flapKickEvent.ColumnValues[constants.BidIDColumn] = strconv.Itoa(fakeBidId)
 			flapKickErr := event.PersistModels([]event.InsertionModel{flapKickEvent}, db)
 			Expect(flapKickErr).NotTo(HaveOccurred())
 
@@ -103,7 +103,7 @@ var _ = Describe("Flap computed columns", func() {
 			irrelevantFlapKickEvent.ColumnValues[event.HeaderFK] = headerTwo.Id
 			irrelevantFlapKickEvent.ColumnValues[event.LogFK] = irrelevantFlipKickLog.ID
 			irrelevantFlapKickEvent.ColumnValues[event.AddressFK] = addressId
-			irrelevantFlapKickEvent.ColumnValues[constants.BidIdColumn] = strconv.Itoa(irrelevantBidId)
+			irrelevantFlapKickEvent.ColumnValues[constants.BidIDColumn] = strconv.Itoa(irrelevantBidId)
 			flapKickErr = event.PersistModels([]event.InsertionModel{irrelevantFlapKickEvent}, db)
 			Expect(flapKickErr).NotTo(HaveOccurred())
 
@@ -143,7 +143,7 @@ var _ = Describe("Flap computed columns", func() {
 				flapKickEvent.ColumnValues[event.HeaderFK] = headerOne.Id
 				flapKickEvent.ColumnValues[event.LogFK] = logId
 				flapKickEvent.ColumnValues[event.AddressFK] = addressId
-				flapKickEvent.ColumnValues[constants.BidIdColumn] = strconv.Itoa(fakeBidId)
+				flapKickEvent.ColumnValues[constants.BidIDColumn] = strconv.Itoa(fakeBidId)
 				flapKickErr := event.PersistModels([]event.InsertionModel{flapKickEvent}, db)
 				Expect(flapKickErr).NotTo(HaveOccurred())
 

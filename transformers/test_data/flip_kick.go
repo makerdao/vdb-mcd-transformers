@@ -77,7 +77,7 @@ var flipKickModel = event.InsertionModel{
 		event.HeaderFK,
 		event.LogFK,
 		event.AddressFK,
-		constants.BidIdColumn,
+		constants.BidIDColumn,
 		constants.LotColumn,
 		constants.BidColumn,
 		constants.TabColumn,
@@ -87,7 +87,7 @@ var flipKickModel = event.InsertionModel{
 	ColumnValues: event.ColumnValues{
 		event.HeaderFK:        FlipKickHeaderSyncLog.HeaderID,
 		event.LogFK:           FlipKickHeaderSyncLog.ID,
-		constants.BidIdColumn: flipID.String(),
+		constants.BidIDColumn: flipID.String(),
 		constants.LotColumn:   lot.String(),
 		constants.BidColumn:   bid.String(),
 		constants.TabColumn:   tab.String(),

@@ -585,7 +585,7 @@ func CreateFlipKick(contractAddress string, bidId int, headerId, logId int64, us
 	flipKickModel.ColumnValues[event.HeaderFK] = headerId
 	flipKickModel.ColumnValues[event.LogFK] = logId
 	flipKickModel.ColumnValues[event.AddressFK] = addressId
-	flipKickModel.ColumnValues[constants.BidIdColumn] = strconv.Itoa(bidId)
+	flipKickModel.ColumnValues[constants.BidIDColumn] = strconv.Itoa(bidId)
 	flipKickModel.ColumnValues[constants.UsrColumn] = usr
 	return event.PersistModels([]event.InsertionModel{flipKickModel}, db)
 }
@@ -597,7 +597,7 @@ func CreateFlapKick(contractAddress string, bidId int, headerId, logId int64, db
 	flapKickModel.ColumnValues[event.HeaderFK] = headerId
 	flapKickModel.ColumnValues[event.LogFK] = logId
 	flapKickModel.ColumnValues[event.AddressFK] = addressId
-	flapKickModel.ColumnValues[constants.BidIdColumn] = strconv.Itoa(bidId)
+	flapKickModel.ColumnValues[constants.BidIDColumn] = strconv.Itoa(bidId)
 	return event.PersistModels([]event.InsertionModel{flapKickModel}, db)
 }
 
@@ -608,7 +608,7 @@ func CreateFlopKick(contractAddress string, bidId int, headerId, logId int64, db
 	flopKickModel.ColumnValues[event.HeaderFK] = headerId
 	flopKickModel.ColumnValues[event.LogFK] = logId
 	flopKickModel.ColumnValues[event.AddressFK] = addressId
-	flopKickModel.ColumnValues[constants.BidIdColumn] = strconv.Itoa(bidId)
+	flopKickModel.ColumnValues[constants.BidIDColumn] = strconv.Itoa(bidId)
 	return event.PersistModels([]event.InsertionModel{flopKickModel}, db)
 }
 
@@ -655,7 +655,7 @@ func CreateTick(input TickCreationInput) (err error) {
 	Expect(addressErr).NotTo(HaveOccurred())
 	tickLog := test_data.CreateTestLog(input.TickHeaderId, input.DB)
 	tickModel := test_data.CopyEventModel(test_data.TickModel)
-	tickModel.ColumnValues[constants.BidIdColumn] = strconv.Itoa(input.BidId)
+	tickModel.ColumnValues[constants.BidIDColumn] = strconv.Itoa(input.BidId)
 	tickModel.ColumnValues[constants.AddressColumn] = addressID
 	tickModel.ColumnValues[constants.HeaderFK] = input.TickHeaderId
 	tickModel.ColumnValues[constants.LogFK] = tickLog.ID

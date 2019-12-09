@@ -51,7 +51,7 @@ var _ = Describe("Flop bid event computed columns", func() {
 		flopKickEvent.ColumnValues[event.HeaderFK] = headerOne.Id
 		flopKickEvent.ColumnValues[event.LogFK] = flopKickHeaderSyncLog.ID
 		flopKickEvent.ColumnValues[event.AddressFK] = addressId
-		flopKickEvent.ColumnValues[constants.BidIdColumn] = strconv.Itoa(fakeBidId)
+		flopKickEvent.ColumnValues[constants.BidIDColumn] = strconv.Itoa(fakeBidId)
 		insertFlopKickErr := event.PersistModels([]event.InsertionModel{flopKickEvent}, db)
 		Expect(insertFlopKickErr).NotTo(HaveOccurred())
 	})

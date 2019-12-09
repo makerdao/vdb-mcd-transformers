@@ -184,7 +184,7 @@ var _ = Describe("Flip state computed columns", func() {
 				flipKickEvent.ColumnValues[event.HeaderFK] = headerOne.Id
 				flipKickEvent.ColumnValues[event.LogFK] = logId
 				flipKickEvent.ColumnValues[event.AddressFK] = addressId
-				flipKickEvent.ColumnValues[constants.BidIdColumn] = strconv.Itoa(fakeBidId)
+				flipKickEvent.ColumnValues[constants.BidIDColumn] = strconv.Itoa(fakeBidId)
 				flipKickErr := event.PersistModels([]event.InsertionModel{flipKickEvent}, db)
 				Expect(flipKickErr).NotTo(HaveOccurred())
 

@@ -71,7 +71,7 @@ var biteModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.BiteTable,
 	OrderedColumns: []event.ColumnName{
-		constants.HeaderFK, constants.LogFK, constants.UrnColumn, constants.InkColumn, constants.ArtColumn, constants.TabColumn, constants.FlipColumn, constants.BidIdColumn,
+		constants.HeaderFK, constants.LogFK, constants.UrnColumn, constants.InkColumn, constants.ArtColumn, constants.TabColumn, constants.FlipColumn, constants.BidIDColumn,
 	},
 	ColumnValues: event.ColumnValues{
 		constants.HeaderFK: BiteHeaderSyncLog.HeaderID,
@@ -81,6 +81,6 @@ var biteModel = event.InsertionModel{
 		constants.ArtColumn:   biteArt.String(),
 		constants.TabColumn:   biteTab.String(),
 		constants.FlipColumn:  "0x7d7bEe5fCfD8028cf7b00876C5b1421c800561A6",
-		constants.BidIdColumn: biteID.String(),
+		constants.BidIDColumn: biteID.String(),
 	},
 }

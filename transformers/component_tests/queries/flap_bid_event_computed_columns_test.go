@@ -48,7 +48,7 @@ var _ = Describe("flap_bid_event computed columns", func() {
 		flapKickEvent.ColumnValues[event.HeaderFK] = headerOne.Id
 		flapKickEvent.ColumnValues[event.LogFK] = flapKickLog.ID
 		flapKickEvent.ColumnValues[event.AddressFK] = addressId
-		flapKickEvent.ColumnValues[constants.BidIdColumn] = strconv.Itoa(fakeBidId)
+		flapKickEvent.ColumnValues[constants.BidIDColumn] = strconv.Itoa(fakeBidId)
 		insertFlapKickErr := event.PersistModels([]event.InsertionModel{flapKickEvent}, db)
 		Expect(insertFlapKickErr).NotTo(HaveOccurred())
 	})
