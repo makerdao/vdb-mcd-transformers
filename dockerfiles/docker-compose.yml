@@ -1,0 +1,16 @@
+
+# This composition runs header sync and execute with automatic restarts.
+# Environment variables for each can be set in their respective `.env` file,
+# or overridden with a shell variable.
+
+version: "3.7"
+services:
+  header-sync:
+    image: makerdao/vdb-headersync
+    env_file: vdb-header-sync.env
+    restart: unless-stopped
+
+  execute:
+    image: makerdao/vdb-execute
+    env_file: vdb-execute.env
+    restart: unless-stopped
