@@ -11,20 +11,20 @@ import (
 )
 
 const (
-	insertFlopVatQuery   = `INSERT INTO maker.flop_vat (header_id, address_id, vat) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
-	insertFlopGemQuery   = `INSERT INTO maker.flop_gem (header_id, address_id, gem) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
-	insertFlopBegQuery   = `INSERT INTO maker.flop_beg (header_id, address_id, beg) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
-	insertFlopPadQuery   = `INSERT INTO maker.flop_pad (header_id, address_id, pad) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
-	insertFlopTtlQuery   = `INSERT INTO maker.flop_ttl (header_id, address_id, ttl) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
-	insertFlopTauQuery   = `INSERT INTO maker.flop_tau (header_id, address_id, tau) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
-	InsertFlopKicksQuery = `INSERT INTO maker.flop_kicks (header_id, address_id, kicks) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
-	insertFlopLiveQuery  = `INSERT INTO maker.flop_live (header_id, address_id, live) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
+	insertFlopVatQuery   = `INSERT INTO maker.flop_vat (diff_id, header_id, address_id, vat) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
+	insertFlopGemQuery   = `INSERT INTO maker.flop_gem (diff_id, header_id, address_id, gem) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
+	insertFlopBegQuery   = `INSERT INTO maker.flop_beg (diff_id, header_id, address_id, beg) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
+	insertFlopPadQuery   = `INSERT INTO maker.flop_pad (diff_id, header_id, address_id, pad) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
+	insertFlopTtlQuery   = `INSERT INTO maker.flop_ttl (diff_id, header_id, address_id, ttl) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
+	insertFlopTauQuery   = `INSERT INTO maker.flop_tau (diff_id, header_id, address_id, tau) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
+	InsertFlopKicksQuery = `INSERT INTO maker.flop_kicks (diff_id, header_id, address_id, kicks) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
+	insertFlopLiveQuery  = `INSERT INTO maker.flop_live (diff_id, header_id, address_id, live) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
 
-	InsertFlopBidBidQuery = `INSERT INTO maker.flop_bid_bid (header_id, address_id, bid_id, bid) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
-	InsertFlopBidLotQuery = `INSERT INTO Maker.flop_bid_lot (header_id, address_id, bid_id, lot) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
-	InsertFlopBidGuyQuery = `INSERT INTO Maker.flop_bid_guy (header_id, address_id, bid_id, guy) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
-	InsertFlopBidTicQuery = `INSERT INTO Maker.flop_bid_tic (header_id, address_id, bid_id, tic) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
-	InsertFlopBidEndQuery = `INSERT INTO Maker.flop_bid_end (header_id, address_id, bid_id, "end") VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
+	InsertFlopBidBidQuery = `INSERT INTO maker.flop_bid_bid (diff_id, header_id, address_id, bid_id, bid) VALUES ($1, $2, $3, $4, $5) ON CONFLICT DO NOTHING`
+	InsertFlopBidLotQuery = `INSERT INTO Maker.flop_bid_lot (diff_id, header_id, address_id, bid_id, lot) VALUES ($1, $2, $3, $4, $5) ON CONFLICT DO NOTHING`
+	InsertFlopBidGuyQuery = `INSERT INTO Maker.flop_bid_guy (diff_id, header_id, address_id, bid_id, guy) VALUES ($1, $2, $3, $4, $5) ON CONFLICT DO NOTHING`
+	InsertFlopBidTicQuery = `INSERT INTO Maker.flop_bid_tic (diff_id, header_id, address_id, bid_id, tic) VALUES ($1, $2, $3, $4, $5) ON CONFLICT DO NOTHING`
+	InsertFlopBidEndQuery = `INSERT INTO Maker.flop_bid_end (diff_id, header_id, address_id, bid_id, "end") VALUES ($1, $2, $3, $4, $5) ON CONFLICT DO NOTHING`
 )
 
 type FlopStorageRepository struct {
@@ -35,23 +35,23 @@ type FlopStorageRepository struct {
 func (repository *FlopStorageRepository) Create(diffID, headerID int64, metadata utils.StorageValueMetadata, value interface{}) error {
 	switch metadata.Name {
 	case storage.Vat:
-		return repository.insertVat(headerID, value.(string))
+		return repository.insertVat(diffID, headerID, value.(string))
 	case storage.Gem:
-		return repository.insertGem(headerID, value.(string))
+		return repository.insertGem(diffID, headerID, value.(string))
 	case storage.Beg:
-		return repository.insertBeg(headerID, value.(string))
+		return repository.insertBeg(diffID, headerID, value.(string))
 	case storage.Pad:
-		return repository.insertPad(headerID, value.(string))
+		return repository.insertPad(diffID, headerID, value.(string))
 	case storage.Kicks:
-		return repository.insertKicks(headerID, value.(string))
+		return repository.insertKicks(diffID, headerID, value.(string))
 	case storage.Live:
-		return repository.insertLive(headerID, value.(string))
+		return repository.insertLive(diffID, headerID, value.(string))
 	case storage.Packed:
-		return repository.insertPackedValueRecord(headerID, metadata, value.(map[int]string))
+		return repository.insertPackedValueRecord(diffID, headerID, metadata, value.(map[int]string))
 	case storage.BidBid:
-		return repository.insertBidBid(headerID, metadata, value.(string))
+		return repository.insertBidBid(diffID, headerID, metadata, value.(string))
 	case storage.BidLot:
-		return repository.insertBidLot(headerID, metadata, value.(string))
+		return repository.insertBidLot(diffID, headerID, metadata, value.(string))
 	default:
 		panic(fmt.Sprintf("unrecognized flop contract storage name: %s", metadata.Name))
 	}
@@ -61,92 +61,92 @@ func (repository *FlopStorageRepository) SetDB(db *postgres.DB) {
 	repository.db = db
 }
 
-func (repository *FlopStorageRepository) insertVat(headerID int64, vat string) error {
-	return repository.insertRecordWithAddress(headerID, insertFlopVatQuery, vat)
+func (repository *FlopStorageRepository) insertVat(diffID, headerID int64, vat string) error {
+	return repository.insertRecordWithAddress(diffID, headerID, insertFlopVatQuery, vat)
 }
 
-func (repository *FlopStorageRepository) insertGem(headerID int64, gem string) error {
-	return repository.insertRecordWithAddress(headerID, insertFlopGemQuery, gem)
+func (repository *FlopStorageRepository) insertGem(diffID, headerID int64, gem string) error {
+	return repository.insertRecordWithAddress(diffID, headerID, insertFlopGemQuery, gem)
 }
 
-func (repository *FlopStorageRepository) insertBeg(headerID int64, beg string) error {
-	return repository.insertRecordWithAddress(headerID, insertFlopBegQuery, beg)
+func (repository *FlopStorageRepository) insertBeg(diffID, headerID int64, beg string) error {
+	return repository.insertRecordWithAddress(diffID, headerID, insertFlopBegQuery, beg)
 }
 
-func (repository *FlopStorageRepository) insertPad(headerID int64, pad string) error {
-	return repository.insertRecordWithAddress(headerID, insertFlopPadQuery, pad)
+func (repository *FlopStorageRepository) insertPad(diffID, headerID int64, pad string) error {
+	return repository.insertRecordWithAddress(diffID, headerID, insertFlopPadQuery, pad)
 }
 
-func (repository *FlopStorageRepository) insertTtl(headerID int64, ttl string) error {
-	return repository.insertRecordWithAddress(headerID, insertFlopTtlQuery, ttl)
+func (repository *FlopStorageRepository) insertTtl(diffID, headerID int64, ttl string) error {
+	return repository.insertRecordWithAddress(diffID, headerID, insertFlopTtlQuery, ttl)
 }
 
-func (repository *FlopStorageRepository) insertTau(headerID int64, tau string) error {
-	return repository.insertRecordWithAddress(headerID, insertFlopTauQuery, tau)
+func (repository *FlopStorageRepository) insertTau(diffID, headerID int64, tau string) error {
+	return repository.insertRecordWithAddress(diffID, headerID, insertFlopTauQuery, tau)
 }
 
-func (repository *FlopStorageRepository) insertKicks(headerID int64, kicks string) error {
-	return repository.insertRecordWithAddress(headerID, InsertFlopKicksQuery, kicks)
+func (repository *FlopStorageRepository) insertKicks(diffID, headerID int64, kicks string) error {
+	return repository.insertRecordWithAddress(diffID, headerID, InsertFlopKicksQuery, kicks)
 }
 
-func (repository *FlopStorageRepository) insertLive(headerID int64, live string) error {
-	return repository.insertRecordWithAddress(headerID, insertFlopLiveQuery, live)
+func (repository *FlopStorageRepository) insertLive(diffID, headerID int64, live string) error {
+	return repository.insertRecordWithAddress(diffID, headerID, insertFlopLiveQuery, live)
 }
 
-func (repository *FlopStorageRepository) insertBidBid(headerID int64, metadata utils.StorageValueMetadata, bid string) error {
+func (repository *FlopStorageRepository) insertBidBid(diffID, headerID int64, metadata utils.StorageValueMetadata, bid string) error {
 	bidId, err := getBidId(metadata.Keys)
 	if err != nil {
 		return err
 	}
-	return repository.insertRecordWithAddressAndBidId(headerID, InsertFlopBidBidQuery, bidId, bid)
+	return repository.insertRecordWithAddressAndBidId(diffID, headerID, InsertFlopBidBidQuery, bidId, bid)
 }
 
-func (repository *FlopStorageRepository) insertBidLot(headerID int64, metadata utils.StorageValueMetadata, lot string) error {
+func (repository *FlopStorageRepository) insertBidLot(diffID, headerID int64, metadata utils.StorageValueMetadata, lot string) error {
 	bidId, err := getBidId(metadata.Keys)
 	if err != nil {
 		return err
 	}
-	return repository.insertRecordWithAddressAndBidId(headerID, InsertFlopBidLotQuery, bidId, lot)
+	return repository.insertRecordWithAddressAndBidId(diffID, headerID, InsertFlopBidLotQuery, bidId, lot)
 }
 
-func (repository *FlopStorageRepository) insertBidGuy(headerID int64, metadata utils.StorageValueMetadata, guy string) error {
+func (repository *FlopStorageRepository) insertBidGuy(diffID, headerID int64, metadata utils.StorageValueMetadata, guy string) error {
 	bidId, err := getBidId(metadata.Keys)
 	if err != nil {
 		return err
 	}
-	return repository.insertRecordWithAddressAndBidId(headerID, InsertFlopBidGuyQuery, bidId, guy)
+	return repository.insertRecordWithAddressAndBidId(diffID, headerID, InsertFlopBidGuyQuery, bidId, guy)
 }
 
-func (repository *FlopStorageRepository) insertBidTic(headerID int64, metadata utils.StorageValueMetadata, tic string) error {
+func (repository *FlopStorageRepository) insertBidTic(diffID, headerID int64, metadata utils.StorageValueMetadata, tic string) error {
 	bidId, err := getBidId(metadata.Keys)
 	if err != nil {
 		return err
 	}
-	return repository.insertRecordWithAddressAndBidId(headerID, InsertFlopBidTicQuery, bidId, tic)
+	return repository.insertRecordWithAddressAndBidId(diffID, headerID, InsertFlopBidTicQuery, bidId, tic)
 }
 
-func (repository *FlopStorageRepository) insertBidEnd(headerID int64, metadata utils.StorageValueMetadata, end string) error {
+func (repository *FlopStorageRepository) insertBidEnd(diffID, headerID int64, metadata utils.StorageValueMetadata, end string) error {
 	bidId, err := getBidId(metadata.Keys)
 	if err != nil {
 		return err
 	}
-	return repository.insertRecordWithAddressAndBidId(headerID, InsertFlopBidEndQuery, bidId, end)
+	return repository.insertRecordWithAddressAndBidId(diffID, headerID, InsertFlopBidEndQuery, bidId, end)
 }
 
-func (repository *FlopStorageRepository) insertPackedValueRecord(headerID int64, metadata utils.StorageValueMetadata, packedValues map[int]string) error {
+func (repository *FlopStorageRepository) insertPackedValueRecord(diffID, headerID int64, metadata utils.StorageValueMetadata, packedValues map[int]string) error {
 	var insertErr error
 	for order, value := range packedValues {
 		switch metadata.PackedNames[order] {
 		case storage.Ttl:
-			insertErr = repository.insertTtl(headerID, value)
+			insertErr = repository.insertTtl(diffID, headerID, value)
 		case storage.Tau:
-			insertErr = repository.insertTau(headerID, value)
+			insertErr = repository.insertTau(diffID, headerID, value)
 		case storage.BidGuy:
-			insertErr = repository.insertBidGuy(headerID, metadata, value)
+			insertErr = repository.insertBidGuy(diffID, headerID, metadata, value)
 		case storage.BidTic:
-			insertErr = repository.insertBidTic(headerID, metadata, value)
+			insertErr = repository.insertBidTic(diffID, headerID, metadata, value)
 		case storage.BidEnd:
-			insertErr = repository.insertBidEnd(headerID, metadata, value)
+			insertErr = repository.insertBidEnd(diffID, headerID, metadata, value)
 		default:
 			panic(fmt.Sprintf("unrecognized flop contract storage name in packed values: %s", metadata.Name))
 		}
@@ -165,7 +165,7 @@ func getBidId(keys map[utils.Key]string) (string, error) {
 	return bidId, nil
 }
 
-func (repository *FlopStorageRepository) insertRecordWithAddress(headerID int64, query, value string) error {
+func (repository *FlopStorageRepository) insertRecordWithAddress(diffID, headerID int64, query, value string) error {
 	tx, txErr := repository.db.Beginx()
 	if txErr != nil {
 		return txErr
@@ -178,7 +178,7 @@ func (repository *FlopStorageRepository) insertRecordWithAddress(headerID int64,
 		}
 		return addressErr
 	}
-	_, insertErr := tx.Exec(query, headerID, addressId, value)
+	_, insertErr := tx.Exec(query, diffID, headerID, addressId, value)
 	if insertErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
@@ -190,7 +190,7 @@ func (repository *FlopStorageRepository) insertRecordWithAddress(headerID int64,
 	return tx.Commit()
 }
 
-func (repository *FlopStorageRepository) insertRecordWithAddressAndBidId(headerID int64, query, bidId, value string) error {
+func (repository *FlopStorageRepository) insertRecordWithAddressAndBidId(diffID, headerID int64, query, bidId, value string) error {
 	tx, txErr := repository.db.Beginx()
 	if txErr != nil {
 		return txErr
@@ -203,7 +203,7 @@ func (repository *FlopStorageRepository) insertRecordWithAddressAndBidId(headerI
 		}
 		return addressErr
 	}
-	_, insertErr := tx.Exec(query, headerID, addressId, bidId, value)
+	_, insertErr := tx.Exec(query, diffID, headerID, addressId, bidId, value)
 	if insertErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {

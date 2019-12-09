@@ -7585,6 +7585,7 @@ CREATE TABLE maker.flop (
 
 CREATE TABLE maker.flop_beg (
     id integer NOT NULL,
+    diff_id integer NOT NULL,
     header_id integer NOT NULL,
     address_id integer NOT NULL,
     beg numeric NOT NULL
@@ -7617,6 +7618,7 @@ ALTER SEQUENCE maker.flop_beg_id_seq OWNED BY maker.flop_beg.id;
 
 CREATE TABLE maker.flop_bid_bid (
     id integer NOT NULL,
+    diff_id integer NOT NULL,
     header_id integer NOT NULL,
     address_id integer NOT NULL,
     bid_id numeric NOT NULL,
@@ -7650,6 +7652,7 @@ ALTER SEQUENCE maker.flop_bid_bid_id_seq OWNED BY maker.flop_bid_bid.id;
 
 CREATE TABLE maker.flop_bid_end (
     id integer NOT NULL,
+    diff_id integer NOT NULL,
     header_id integer NOT NULL,
     address_id integer NOT NULL,
     bid_id numeric NOT NULL,
@@ -7683,6 +7686,7 @@ ALTER SEQUENCE maker.flop_bid_end_id_seq OWNED BY maker.flop_bid_end.id;
 
 CREATE TABLE maker.flop_bid_guy (
     id integer NOT NULL,
+    diff_id integer NOT NULL,
     header_id integer NOT NULL,
     address_id integer NOT NULL,
     bid_id numeric NOT NULL,
@@ -7716,6 +7720,7 @@ ALTER SEQUENCE maker.flop_bid_guy_id_seq OWNED BY maker.flop_bid_guy.id;
 
 CREATE TABLE maker.flop_bid_lot (
     id integer NOT NULL,
+    diff_id integer NOT NULL,
     header_id integer NOT NULL,
     address_id integer NOT NULL,
     bid_id numeric NOT NULL,
@@ -7749,6 +7754,7 @@ ALTER SEQUENCE maker.flop_bid_lot_id_seq OWNED BY maker.flop_bid_lot.id;
 
 CREATE TABLE maker.flop_bid_tic (
     id integer NOT NULL,
+    diff_id integer NOT NULL,
     header_id integer NOT NULL,
     address_id integer NOT NULL,
     bid_id numeric NOT NULL,
@@ -7782,6 +7788,7 @@ ALTER SEQUENCE maker.flop_bid_tic_id_seq OWNED BY maker.flop_bid_tic.id;
 
 CREATE TABLE maker.flop_gem (
     id integer NOT NULL,
+    diff_id integer NOT NULL,
     header_id integer NOT NULL,
     address_id integer NOT NULL,
     gem text
@@ -7877,6 +7884,7 @@ ALTER SEQUENCE maker.flop_kick_id_seq OWNED BY maker.flop_kick.id;
 
 CREATE TABLE maker.flop_kicks (
     id integer NOT NULL,
+    diff_id integer NOT NULL,
     header_id integer NOT NULL,
     address_id integer NOT NULL,
     kicks numeric NOT NULL
@@ -7916,6 +7924,7 @@ ALTER SEQUENCE maker.flop_kicks_id_seq OWNED BY maker.flop_kicks.id;
 
 CREATE TABLE maker.flop_live (
     id integer NOT NULL,
+    diff_id integer NOT NULL,
     header_id integer NOT NULL,
     address_id integer NOT NULL,
     live numeric NOT NULL
@@ -7948,6 +7957,7 @@ ALTER SEQUENCE maker.flop_live_id_seq OWNED BY maker.flop_live.id;
 
 CREATE TABLE maker.flop_pad (
     id integer NOT NULL,
+    diff_id integer NOT NULL,
     header_id integer NOT NULL,
     address_id integer NOT NULL,
     pad numeric NOT NULL
@@ -7980,6 +7990,7 @@ ALTER SEQUENCE maker.flop_pad_id_seq OWNED BY maker.flop_pad.id;
 
 CREATE TABLE maker.flop_tau (
     id integer NOT NULL,
+    diff_id integer NOT NULL,
     header_id integer NOT NULL,
     address_id integer NOT NULL,
     tau numeric NOT NULL
@@ -8012,6 +8023,7 @@ ALTER SEQUENCE maker.flop_tau_id_seq OWNED BY maker.flop_tau.id;
 
 CREATE TABLE maker.flop_ttl (
     id integer NOT NULL,
+    diff_id integer NOT NULL,
     header_id integer NOT NULL,
     address_id integer NOT NULL,
     ttl numeric NOT NULL
@@ -8044,6 +8056,7 @@ ALTER SEQUENCE maker.flop_ttl_id_seq OWNED BY maker.flop_ttl.id;
 
 CREATE TABLE maker.flop_vat (
     id integer NOT NULL,
+    diff_id integer NOT NULL,
     header_id integer NOT NULL,
     address_id integer NOT NULL,
     vat text
@@ -12735,11 +12748,11 @@ ALTER TABLE ONLY maker.flip_vat
 
 
 --
--- Name: flop_beg flop_beg_header_id_address_id_beg_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: flop_beg flop_beg_diff_id_header_id_address_id_beg_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.flop_beg
-    ADD CONSTRAINT flop_beg_header_id_address_id_beg_key UNIQUE (header_id, address_id, beg);
+    ADD CONSTRAINT flop_beg_diff_id_header_id_address_id_beg_key UNIQUE (diff_id, header_id, address_id, beg);
 
 
 --
@@ -12751,11 +12764,11 @@ ALTER TABLE ONLY maker.flop_beg
 
 
 --
--- Name: flop_bid_bid flop_bid_bid_header_id_bid_id_address_id_bid_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: flop_bid_bid flop_bid_bid_diff_id_header_id_bid_id_address_id_bid_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.flop_bid_bid
-    ADD CONSTRAINT flop_bid_bid_header_id_bid_id_address_id_bid_key UNIQUE (header_id, bid_id, address_id, bid);
+    ADD CONSTRAINT flop_bid_bid_diff_id_header_id_bid_id_address_id_bid_key UNIQUE (diff_id, header_id, bid_id, address_id, bid);
 
 
 --
@@ -12767,11 +12780,11 @@ ALTER TABLE ONLY maker.flop_bid_bid
 
 
 --
--- Name: flop_bid_end flop_bid_end_header_id_bid_id_address_id_end_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: flop_bid_end flop_bid_end_diff_id_header_id_bid_id_address_id_end_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.flop_bid_end
-    ADD CONSTRAINT flop_bid_end_header_id_bid_id_address_id_end_key UNIQUE (header_id, bid_id, address_id, "end");
+    ADD CONSTRAINT flop_bid_end_diff_id_header_id_bid_id_address_id_end_key UNIQUE (diff_id, header_id, bid_id, address_id, "end");
 
 
 --
@@ -12783,11 +12796,11 @@ ALTER TABLE ONLY maker.flop_bid_end
 
 
 --
--- Name: flop_bid_guy flop_bid_guy_header_id_bid_id_address_id_guy_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: flop_bid_guy flop_bid_guy_diff_id_header_id_bid_id_address_id_guy_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.flop_bid_guy
-    ADD CONSTRAINT flop_bid_guy_header_id_bid_id_address_id_guy_key UNIQUE (header_id, bid_id, address_id, guy);
+    ADD CONSTRAINT flop_bid_guy_diff_id_header_id_bid_id_address_id_guy_key UNIQUE (diff_id, header_id, bid_id, address_id, guy);
 
 
 --
@@ -12799,11 +12812,11 @@ ALTER TABLE ONLY maker.flop_bid_guy
 
 
 --
--- Name: flop_bid_lot flop_bid_lot_header_id_bid_id_address_id_lot_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: flop_bid_lot flop_bid_lot_diff_id_header_id_bid_id_address_id_lot_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.flop_bid_lot
-    ADD CONSTRAINT flop_bid_lot_header_id_bid_id_address_id_lot_key UNIQUE (header_id, bid_id, address_id, lot);
+    ADD CONSTRAINT flop_bid_lot_diff_id_header_id_bid_id_address_id_lot_key UNIQUE (diff_id, header_id, bid_id, address_id, lot);
 
 
 --
@@ -12815,11 +12828,11 @@ ALTER TABLE ONLY maker.flop_bid_lot
 
 
 --
--- Name: flop_bid_tic flop_bid_tic_header_id_bid_id_address_id_tic_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: flop_bid_tic flop_bid_tic_diff_id_header_id_bid_id_address_id_tic_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.flop_bid_tic
-    ADD CONSTRAINT flop_bid_tic_header_id_bid_id_address_id_tic_key UNIQUE (header_id, bid_id, address_id, tic);
+    ADD CONSTRAINT flop_bid_tic_diff_id_header_id_bid_id_address_id_tic_key UNIQUE (diff_id, header_id, bid_id, address_id, tic);
 
 
 --
@@ -12839,11 +12852,11 @@ ALTER TABLE ONLY maker.flop
 
 
 --
--- Name: flop_gem flop_gem_header_id_address_id_gem_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: flop_gem flop_gem_diff_id_header_id_address_id_gem_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.flop_gem
-    ADD CONSTRAINT flop_gem_header_id_address_id_gem_key UNIQUE (header_id, address_id, gem);
+    ADD CONSTRAINT flop_gem_diff_id_header_id_address_id_gem_key UNIQUE (diff_id, header_id, address_id, gem);
 
 
 --
@@ -12871,11 +12884,11 @@ ALTER TABLE ONLY maker.flop_kick
 
 
 --
--- Name: flop_kicks flop_kicks_header_id_address_id_kicks_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: flop_kicks flop_kicks_diff_id_header_id_address_id_kicks_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.flop_kicks
-    ADD CONSTRAINT flop_kicks_header_id_address_id_kicks_key UNIQUE (header_id, address_id, kicks);
+    ADD CONSTRAINT flop_kicks_diff_id_header_id_address_id_kicks_key UNIQUE (diff_id, header_id, address_id, kicks);
 
 
 --
@@ -12887,11 +12900,11 @@ ALTER TABLE ONLY maker.flop_kicks
 
 
 --
--- Name: flop_live flop_live_header_id_address_id_live_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: flop_live flop_live_diff_id_header_id_address_id_live_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.flop_live
-    ADD CONSTRAINT flop_live_header_id_address_id_live_key UNIQUE (header_id, address_id, live);
+    ADD CONSTRAINT flop_live_diff_id_header_id_address_id_live_key UNIQUE (diff_id, header_id, address_id, live);
 
 
 --
@@ -12903,11 +12916,11 @@ ALTER TABLE ONLY maker.flop_live
 
 
 --
--- Name: flop_pad flop_pad_header_id_address_id_pad_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: flop_pad flop_pad_diff_id_header_id_address_id_pad_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.flop_pad
-    ADD CONSTRAINT flop_pad_header_id_address_id_pad_key UNIQUE (header_id, address_id, pad);
+    ADD CONSTRAINT flop_pad_diff_id_header_id_address_id_pad_key UNIQUE (diff_id, header_id, address_id, pad);
 
 
 --
@@ -12927,11 +12940,11 @@ ALTER TABLE ONLY maker.flop
 
 
 --
--- Name: flop_tau flop_tau_header_id_address_id_tau_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: flop_tau flop_tau_diff_id_header_id_address_id_tau_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.flop_tau
-    ADD CONSTRAINT flop_tau_header_id_address_id_tau_key UNIQUE (header_id, address_id, tau);
+    ADD CONSTRAINT flop_tau_diff_id_header_id_address_id_tau_key UNIQUE (diff_id, header_id, address_id, tau);
 
 
 --
@@ -12943,11 +12956,11 @@ ALTER TABLE ONLY maker.flop_tau
 
 
 --
--- Name: flop_ttl flop_ttl_header_id_address_id_ttl_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: flop_ttl flop_ttl_diff_id_header_id_address_id_ttl_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.flop_ttl
-    ADD CONSTRAINT flop_ttl_header_id_address_id_ttl_key UNIQUE (header_id, address_id, ttl);
+    ADD CONSTRAINT flop_ttl_diff_id_header_id_address_id_ttl_key UNIQUE (diff_id, header_id, address_id, ttl);
 
 
 --
@@ -12959,11 +12972,11 @@ ALTER TABLE ONLY maker.flop_ttl
 
 
 --
--- Name: flop_vat flop_vat_header_id_address_id_vat_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: flop_vat flop_vat_diff_id_header_id_address_id_vat_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.flop_vat
-    ADD CONSTRAINT flop_vat_header_id_address_id_vat_key UNIQUE (header_id, address_id, vat);
+    ADD CONSTRAINT flop_vat_diff_id_header_id_address_id_vat_key UNIQUE (diff_id, header_id, address_id, vat);
 
 
 --
@@ -16754,6 +16767,14 @@ ALTER TABLE ONLY maker.flop_beg
 
 
 --
+-- Name: flop_beg flop_beg_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flop_beg
+    ADD CONSTRAINT flop_beg_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
 -- Name: flop_beg flop_beg_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -16767,6 +16788,14 @@ ALTER TABLE ONLY maker.flop_beg
 
 ALTER TABLE ONLY maker.flop_bid_bid
     ADD CONSTRAINT flop_bid_bid_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: flop_bid_bid flop_bid_bid_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flop_bid_bid
+    ADD CONSTRAINT flop_bid_bid_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
 
 
 --
@@ -16786,6 +16815,14 @@ ALTER TABLE ONLY maker.flop_bid_end
 
 
 --
+-- Name: flop_bid_end flop_bid_end_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flop_bid_end
+    ADD CONSTRAINT flop_bid_end_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
 -- Name: flop_bid_end flop_bid_end_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -16799,6 +16836,14 @@ ALTER TABLE ONLY maker.flop_bid_end
 
 ALTER TABLE ONLY maker.flop_bid_guy
     ADD CONSTRAINT flop_bid_guy_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: flop_bid_guy flop_bid_guy_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flop_bid_guy
+    ADD CONSTRAINT flop_bid_guy_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
 
 
 --
@@ -16818,6 +16863,14 @@ ALTER TABLE ONLY maker.flop_bid_lot
 
 
 --
+-- Name: flop_bid_lot flop_bid_lot_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flop_bid_lot
+    ADD CONSTRAINT flop_bid_lot_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
 -- Name: flop_bid_lot flop_bid_lot_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -16834,6 +16887,14 @@ ALTER TABLE ONLY maker.flop_bid_tic
 
 
 --
+-- Name: flop_bid_tic flop_bid_tic_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flop_bid_tic
+    ADD CONSTRAINT flop_bid_tic_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
 -- Name: flop_bid_tic flop_bid_tic_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -16847,6 +16908,14 @@ ALTER TABLE ONLY maker.flop_bid_tic
 
 ALTER TABLE ONLY maker.flop_gem
     ADD CONSTRAINT flop_gem_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: flop_gem flop_gem_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flop_gem
+    ADD CONSTRAINT flop_gem_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
 
 
 --
@@ -16890,6 +16959,14 @@ ALTER TABLE ONLY maker.flop_kicks
 
 
 --
+-- Name: flop_kicks flop_kicks_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flop_kicks
+    ADD CONSTRAINT flop_kicks_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
 -- Name: flop_kicks flop_kicks_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -16903,6 +16980,14 @@ ALTER TABLE ONLY maker.flop_kicks
 
 ALTER TABLE ONLY maker.flop_live
     ADD CONSTRAINT flop_live_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: flop_live flop_live_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flop_live
+    ADD CONSTRAINT flop_live_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
 
 
 --
@@ -16922,6 +17007,14 @@ ALTER TABLE ONLY maker.flop_pad
 
 
 --
+-- Name: flop_pad flop_pad_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flop_pad
+    ADD CONSTRAINT flop_pad_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
 -- Name: flop_pad flop_pad_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -16935,6 +17028,14 @@ ALTER TABLE ONLY maker.flop_pad
 
 ALTER TABLE ONLY maker.flop_tau
     ADD CONSTRAINT flop_tau_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: flop_tau flop_tau_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flop_tau
+    ADD CONSTRAINT flop_tau_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
 
 
 --
@@ -16954,6 +17055,14 @@ ALTER TABLE ONLY maker.flop_ttl
 
 
 --
+-- Name: flop_ttl flop_ttl_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flop_ttl
+    ADD CONSTRAINT flop_ttl_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
 -- Name: flop_ttl flop_ttl_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -16967,6 +17076,14 @@ ALTER TABLE ONLY maker.flop_ttl
 
 ALTER TABLE ONLY maker.flop_vat
     ADD CONSTRAINT flop_vat_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: flop_vat flop_vat_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flop_vat
+    ADD CONSTRAINT flop_vat_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
 
 
 --
