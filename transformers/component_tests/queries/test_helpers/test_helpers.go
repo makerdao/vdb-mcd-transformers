@@ -196,10 +196,10 @@ func IlkStateFromValues(ilk, updated, created string, ilkValues map[string]strin
 	}
 }
 
-func CreateVatRecords(header core.Header, valuesMap map[string]string, metadatas []utils.StorageValueMetadata, repository vat.VatStorageRepository) {
+func CreateVatRecords(diffID int64, header core.Header, valuesMap map[string]string, metadatas []utils.StorageValueMetadata, repository vat.VatStorageRepository) {
 	for _, metadata := range metadatas {
 		value := valuesMap[metadata.Name]
-		err := repository.Create(0, header.Id, metadata, value)
+		err := repository.Create(diffID, header.Id, metadata, value)
 
 		Expect(err).NotTo(HaveOccurred())
 	}
@@ -253,7 +253,7 @@ func CreateIlk(db *postgres.DB, diffID int64, header core.Header, valuesMap map[
 	catRepo.SetDB(db)
 	jugRepo.SetDB(db)
 	spotRepo.SetDB(db)
-	CreateVatRecords(header, valuesMap, vatMetadatas, vatRepo)
+	CreateVatRecords(diffID, header, valuesMap, vatMetadatas, vatRepo)
 	CreateCatRecords(diffID, header.Id, valuesMap, catMetadatas, catRepo)
 	CreateJugRecords(diffID, header, valuesMap, jugMetadatas, jugRepo)
 	CreateSpotRecords(diffID, header, valuesMap, spotMetadatas, spotRepo)

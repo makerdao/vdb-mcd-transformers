@@ -11,7 +11,7 @@ type BlockMetadata struct {
 type VariableRes struct {
 	BlockMetadata
 	DiffID int64 `db:"diff_id"`
-	Value string
+	Value  string
 }
 
 type AuctionVariableRes struct {
@@ -22,12 +22,13 @@ type AuctionVariableRes struct {
 type MappingRes struct {
 	BlockMetadata
 	DiffID int64 `db:"diff_id"`
-	Key   string
-	Value string
+	Key    string
+	Value  string
 }
 
 type DoubleMappingRes struct {
 	BlockMetadata
+	DiffID int64  `db:"diff_id"`
 	KeyOne string `db:"key_one"`
 	KeyTwo string `db:"key_two"`
 	Value  string
@@ -72,7 +73,8 @@ func AssertMapping(res MappingRes, diffID, headerID int64, key, value string) {
 	Expect(res.Value).To(Equal(value))
 }
 
-func AssertDoubleMapping(res DoubleMappingRes, headerID int64, keyOne, keyTwo, value string) {
+func AssertDoubleMapping(res DoubleMappingRes, diffID, headerID int64, keyOne, keyTwo, value string) {
+	Expect(res.DiffID).To(Equal(diffID))
 	Expect(res.HeaderID).To(Equal(headerID))
 	Expect(res.KeyOne).To(Equal(keyOne))
 	Expect(res.KeyTwo).To(Equal(keyTwo))

@@ -2907,6 +2907,7 @@ $$;
 
 CREATE TABLE maker.vat_ilk_art (
     id integer NOT NULL,
+    diff_id integer NOT NULL,
     header_id integer NOT NULL,
     ilk_id integer NOT NULL,
     art numeric NOT NULL
@@ -3026,6 +3027,7 @@ $$;
 
 CREATE TABLE maker.vat_ilk_dust (
     id integer NOT NULL,
+    diff_id integer NOT NULL,
     header_id integer NOT NULL,
     ilk_id integer NOT NULL,
     dust numeric NOT NULL
@@ -3205,6 +3207,7 @@ $$;
 
 CREATE TABLE maker.vat_ilk_line (
     id integer NOT NULL,
+    diff_id integer NOT NULL,
     header_id integer NOT NULL,
     ilk_id integer NOT NULL,
     line numeric NOT NULL
@@ -3444,6 +3447,7 @@ $$;
 
 CREATE TABLE maker.vat_ilk_rate (
     id integer NOT NULL,
+    diff_id integer NOT NULL,
     header_id integer NOT NULL,
     ilk_id integer NOT NULL,
     rate numeric NOT NULL
@@ -3563,6 +3567,7 @@ $$;
 
 CREATE TABLE maker.vat_ilk_spot (
     id integer NOT NULL,
+    diff_id integer NOT NULL,
     header_id integer NOT NULL,
     ilk_id integer NOT NULL,
     spot numeric NOT NULL
@@ -8920,6 +8925,7 @@ ALTER SEQUENCE maker.urns_id_seq OWNED BY maker.urns.id;
 
 CREATE TABLE maker.vat_dai (
     id integer NOT NULL,
+    diff_id integer NOT NULL,
     header_id integer NOT NULL,
     guy text,
     dai numeric NOT NULL
@@ -8952,6 +8958,7 @@ ALTER SEQUENCE maker.vat_dai_id_seq OWNED BY maker.vat_dai.id;
 
 CREATE TABLE maker.vat_debt (
     id integer NOT NULL,
+    diff_id integer NOT NULL,
     header_id integer NOT NULL,
     debt numeric NOT NULL
 );
@@ -9191,6 +9198,7 @@ ALTER SEQUENCE maker.vat_frob_id_seq OWNED BY maker.vat_frob.id;
 
 CREATE TABLE maker.vat_gem (
     id integer NOT NULL,
+    diff_id integer NOT NULL,
     header_id integer NOT NULL,
     ilk_id integer NOT NULL,
     guy text,
@@ -9412,6 +9420,7 @@ ALTER SEQUENCE maker.vat_init_id_seq OWNED BY maker.vat_init.id;
 
 CREATE TABLE maker.vat_line (
     id integer NOT NULL,
+    diff_id integer NOT NULL,
     header_id integer NOT NULL,
     line numeric NOT NULL
 );
@@ -9443,6 +9452,7 @@ ALTER SEQUENCE maker.vat_line_id_seq OWNED BY maker.vat_line.id;
 
 CREATE TABLE maker.vat_live (
     id integer NOT NULL,
+    diff_id integer NOT NULL,
     header_id integer NOT NULL,
     live numeric NOT NULL
 );
@@ -9508,6 +9518,7 @@ ALTER SEQUENCE maker.vat_move_id_seq OWNED BY maker.vat_move.id;
 
 CREATE TABLE maker.vat_sin (
     id integer NOT NULL,
+    diff_id integer NOT NULL,
     header_id integer NOT NULL,
     guy text,
     sin numeric NOT NULL
@@ -9603,6 +9614,19 @@ ALTER SEQUENCE maker.vat_suck_id_seq OWNED BY maker.vat_suck.id;
 
 
 --
+-- Name: vat_urn_art; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.vat_urn_art (
+    id integer NOT NULL,
+    diff_id integer NOT NULL,
+    header_id integer NOT NULL,
+    urn_id integer NOT NULL,
+    art numeric NOT NULL
+);
+
+
+--
 -- Name: vat_urn_art_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -9620,6 +9644,19 @@ CREATE SEQUENCE maker.vat_urn_art_id_seq
 --
 
 ALTER SEQUENCE maker.vat_urn_art_id_seq OWNED BY maker.vat_urn_art.id;
+
+
+--
+-- Name: vat_urn_ink; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.vat_urn_ink (
+    id integer NOT NULL,
+    diff_id integer NOT NULL,
+    header_id integer NOT NULL,
+    urn_id integer NOT NULL,
+    ink numeric NOT NULL
+);
 
 
 --
@@ -9648,6 +9685,7 @@ ALTER SEQUENCE maker.vat_urn_ink_id_seq OWNED BY maker.vat_urn_ink.id;
 
 CREATE TABLE maker.vat_vice (
     id integer NOT NULL,
+    diff_id integer NOT NULL,
     header_id integer NOT NULL,
     vice numeric NOT NULL
 );
@@ -13421,11 +13459,11 @@ ALTER TABLE ONLY maker.urns
 
 
 --
--- Name: vat_dai vat_dai_header_id_guy_dai_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: vat_dai vat_dai_diff_id_header_id_guy_dai_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.vat_dai
-    ADD CONSTRAINT vat_dai_header_id_guy_dai_key UNIQUE (header_id, guy, dai);
+    ADD CONSTRAINT vat_dai_diff_id_header_id_guy_dai_key UNIQUE (diff_id, header_id, guy, dai);
 
 
 --
@@ -13437,11 +13475,11 @@ ALTER TABLE ONLY maker.vat_dai
 
 
 --
--- Name: vat_debt vat_debt_header_id_debt_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: vat_debt vat_debt_diff_id_header_id_debt_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.vat_debt
-    ADD CONSTRAINT vat_debt_header_id_debt_key UNIQUE (header_id, debt);
+    ADD CONSTRAINT vat_debt_diff_id_header_id_debt_key UNIQUE (diff_id, header_id, debt);
 
 
 --
@@ -13549,11 +13587,11 @@ ALTER TABLE ONLY maker.vat_frob
 
 
 --
--- Name: vat_gem vat_gem_header_id_ilk_id_guy_gem_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: vat_gem vat_gem_diff_id_header_id_ilk_id_guy_gem_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.vat_gem
-    ADD CONSTRAINT vat_gem_header_id_ilk_id_guy_gem_key UNIQUE (header_id, ilk_id, guy, gem);
+    ADD CONSTRAINT vat_gem_diff_id_header_id_ilk_id_guy_gem_key UNIQUE (diff_id, header_id, ilk_id, guy, gem);
 
 
 --
@@ -13597,11 +13635,11 @@ ALTER TABLE ONLY maker.vat_heal
 
 
 --
--- Name: vat_ilk_art vat_ilk_art_header_id_ilk_id_art_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: vat_ilk_art vat_ilk_art_diff_id_header_id_ilk_id_art_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.vat_ilk_art
-    ADD CONSTRAINT vat_ilk_art_header_id_ilk_id_art_key UNIQUE (header_id, ilk_id, art);
+    ADD CONSTRAINT vat_ilk_art_diff_id_header_id_ilk_id_art_key UNIQUE (diff_id, header_id, ilk_id, art);
 
 
 --
@@ -13613,11 +13651,11 @@ ALTER TABLE ONLY maker.vat_ilk_art
 
 
 --
--- Name: vat_ilk_dust vat_ilk_dust_header_id_ilk_id_dust_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: vat_ilk_dust vat_ilk_dust_diff_id_header_id_ilk_id_dust_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.vat_ilk_dust
-    ADD CONSTRAINT vat_ilk_dust_header_id_ilk_id_dust_key UNIQUE (header_id, ilk_id, dust);
+    ADD CONSTRAINT vat_ilk_dust_diff_id_header_id_ilk_id_dust_key UNIQUE (diff_id, header_id, ilk_id, dust);
 
 
 --
@@ -13629,11 +13667,11 @@ ALTER TABLE ONLY maker.vat_ilk_dust
 
 
 --
--- Name: vat_ilk_line vat_ilk_line_header_id_ilk_id_line_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: vat_ilk_line vat_ilk_line_diff_id_header_id_ilk_id_line_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.vat_ilk_line
-    ADD CONSTRAINT vat_ilk_line_header_id_ilk_id_line_key UNIQUE (header_id, ilk_id, line);
+    ADD CONSTRAINT vat_ilk_line_diff_id_header_id_ilk_id_line_key UNIQUE (diff_id, header_id, ilk_id, line);
 
 
 --
@@ -13645,11 +13683,11 @@ ALTER TABLE ONLY maker.vat_ilk_line
 
 
 --
--- Name: vat_ilk_rate vat_ilk_rate_header_id_ilk_id_rate_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: vat_ilk_rate vat_ilk_rate_diff_id_header_id_ilk_id_rate_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.vat_ilk_rate
-    ADD CONSTRAINT vat_ilk_rate_header_id_ilk_id_rate_key UNIQUE (header_id, ilk_id, rate);
+    ADD CONSTRAINT vat_ilk_rate_diff_id_header_id_ilk_id_rate_key UNIQUE (diff_id, header_id, ilk_id, rate);
 
 
 --
@@ -13661,11 +13699,11 @@ ALTER TABLE ONLY maker.vat_ilk_rate
 
 
 --
--- Name: vat_ilk_spot vat_ilk_spot_header_id_ilk_id_spot_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: vat_ilk_spot vat_ilk_spot_diff_id_header_id_ilk_id_spot_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.vat_ilk_spot
-    ADD CONSTRAINT vat_ilk_spot_header_id_ilk_id_spot_key UNIQUE (header_id, ilk_id, spot);
+    ADD CONSTRAINT vat_ilk_spot_diff_id_header_id_ilk_id_spot_key UNIQUE (diff_id, header_id, ilk_id, spot);
 
 
 --
@@ -13693,11 +13731,11 @@ ALTER TABLE ONLY maker.vat_init
 
 
 --
--- Name: vat_line vat_line_header_id_line_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: vat_line vat_line_diff_id_header_id_line_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.vat_line
-    ADD CONSTRAINT vat_line_header_id_line_key UNIQUE (header_id, line);
+    ADD CONSTRAINT vat_line_diff_id_header_id_line_key UNIQUE (diff_id, header_id, line);
 
 
 --
@@ -13709,11 +13747,11 @@ ALTER TABLE ONLY maker.vat_line
 
 
 --
--- Name: vat_live vat_live_header_id_live_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: vat_live vat_live_diff_id_header_id_live_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.vat_live
-    ADD CONSTRAINT vat_live_header_id_live_key UNIQUE (header_id, live);
+    ADD CONSTRAINT vat_live_diff_id_header_id_live_key UNIQUE (diff_id, header_id, live);
 
 
 --
@@ -13741,11 +13779,11 @@ ALTER TABLE ONLY maker.vat_move
 
 
 --
--- Name: vat_sin vat_sin_header_id_guy_sin_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: vat_sin vat_sin_diff_id_header_id_guy_sin_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.vat_sin
-    ADD CONSTRAINT vat_sin_header_id_guy_sin_key UNIQUE (header_id, guy, sin);
+    ADD CONSTRAINT vat_sin_diff_id_header_id_guy_sin_key UNIQUE (diff_id, header_id, guy, sin);
 
 
 --
@@ -13789,11 +13827,11 @@ ALTER TABLE ONLY maker.vat_suck
 
 
 --
--- Name: vat_urn_art vat_urn_art_header_id_urn_id_art_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: vat_urn_art vat_urn_art_diff_id_header_id_urn_id_art_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.vat_urn_art
-    ADD CONSTRAINT vat_urn_art_header_id_urn_id_art_key UNIQUE (header_id, urn_id, art);
+    ADD CONSTRAINT vat_urn_art_diff_id_header_id_urn_id_art_key UNIQUE (diff_id, header_id, urn_id, art);
 
 
 --
@@ -13805,11 +13843,11 @@ ALTER TABLE ONLY maker.vat_urn_art
 
 
 --
--- Name: vat_urn_ink vat_urn_ink_header_id_urn_id_ink_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: vat_urn_ink vat_urn_ink_diff_id_header_id_urn_id_ink_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.vat_urn_ink
-    ADD CONSTRAINT vat_urn_ink_header_id_urn_id_ink_key UNIQUE (header_id, urn_id, ink);
+    ADD CONSTRAINT vat_urn_ink_diff_id_header_id_urn_id_ink_key UNIQUE (diff_id, header_id, urn_id, ink);
 
 
 --
@@ -13821,11 +13859,11 @@ ALTER TABLE ONLY maker.vat_urn_ink
 
 
 --
--- Name: vat_vice vat_vice_header_id_vice_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: vat_vice vat_vice_diff_id_header_id_vice_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.vat_vice
-    ADD CONSTRAINT vat_vice_header_id_vice_key UNIQUE (header_id, vice);
+    ADD CONSTRAINT vat_vice_diff_id_header_id_vice_key UNIQUE (diff_id, header_id, vice);
 
 
 --
@@ -17592,11 +17630,27 @@ ALTER TABLE ONLY maker.urns
 
 
 --
+-- Name: vat_dai vat_dai_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_dai
+    ADD CONSTRAINT vat_dai_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
 -- Name: vat_dai vat_dai_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.vat_dai
     ADD CONSTRAINT vat_dai_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: vat_debt vat_debt_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_debt
+    ADD CONSTRAINT vat_debt_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
 
 
 --
@@ -17744,6 +17798,14 @@ ALTER TABLE ONLY maker.vat_frob
 
 
 --
+-- Name: vat_gem vat_gem_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_gem
+    ADD CONSTRAINT vat_gem_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
 -- Name: vat_gem vat_gem_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -17800,6 +17862,14 @@ ALTER TABLE ONLY maker.vat_heal
 
 
 --
+-- Name: vat_ilk_art vat_ilk_art_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_ilk_art
+    ADD CONSTRAINT vat_ilk_art_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
 -- Name: vat_ilk_art vat_ilk_art_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -17813,6 +17883,14 @@ ALTER TABLE ONLY maker.vat_ilk_art
 
 ALTER TABLE ONLY maker.vat_ilk_art
     ADD CONSTRAINT vat_ilk_art_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id) ON DELETE CASCADE;
+
+
+--
+-- Name: vat_ilk_dust vat_ilk_dust_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_ilk_dust
+    ADD CONSTRAINT vat_ilk_dust_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
 
 
 --
@@ -17832,6 +17910,14 @@ ALTER TABLE ONLY maker.vat_ilk_dust
 
 
 --
+-- Name: vat_ilk_line vat_ilk_line_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_ilk_line
+    ADD CONSTRAINT vat_ilk_line_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
 -- Name: vat_ilk_line vat_ilk_line_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -17848,6 +17934,14 @@ ALTER TABLE ONLY maker.vat_ilk_line
 
 
 --
+-- Name: vat_ilk_rate vat_ilk_rate_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_ilk_rate
+    ADD CONSTRAINT vat_ilk_rate_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
 -- Name: vat_ilk_rate vat_ilk_rate_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -17861,6 +17955,14 @@ ALTER TABLE ONLY maker.vat_ilk_rate
 
 ALTER TABLE ONLY maker.vat_ilk_rate
     ADD CONSTRAINT vat_ilk_rate_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id) ON DELETE CASCADE;
+
+
+--
+-- Name: vat_ilk_spot vat_ilk_spot_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_ilk_spot
+    ADD CONSTRAINT vat_ilk_spot_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
 
 
 --
@@ -17904,11 +18006,27 @@ ALTER TABLE ONLY maker.vat_init
 
 
 --
+-- Name: vat_line vat_line_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_line
+    ADD CONSTRAINT vat_line_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
 -- Name: vat_line vat_line_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.vat_line
     ADD CONSTRAINT vat_line_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: vat_live vat_live_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_live
+    ADD CONSTRAINT vat_live_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
 
 
 --
@@ -17933,6 +18051,14 @@ ALTER TABLE ONLY maker.vat_move
 
 ALTER TABLE ONLY maker.vat_move
     ADD CONSTRAINT vat_move_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: vat_sin vat_sin_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_sin
+    ADD CONSTRAINT vat_sin_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
 
 
 --
@@ -17984,6 +18110,14 @@ ALTER TABLE ONLY maker.vat_suck
 
 
 --
+-- Name: vat_urn_art vat_urn_art_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_urn_art
+    ADD CONSTRAINT vat_urn_art_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
 -- Name: vat_urn_art vat_urn_art_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -18000,6 +18134,14 @@ ALTER TABLE ONLY maker.vat_urn_art
 
 
 --
+-- Name: vat_urn_ink vat_urn_ink_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_urn_ink
+    ADD CONSTRAINT vat_urn_ink_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
 -- Name: vat_urn_ink vat_urn_ink_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -18013,6 +18155,14 @@ ALTER TABLE ONLY maker.vat_urn_ink
 
 ALTER TABLE ONLY maker.vat_urn_ink
     ADD CONSTRAINT vat_urn_ink_urn_id_fkey FOREIGN KEY (urn_id) REFERENCES maker.urns(id) ON DELETE CASCADE;
+
+
+--
+-- Name: vat_vice vat_vice_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_vice
+    ADD CONSTRAINT vat_vice_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
 
 
 --
