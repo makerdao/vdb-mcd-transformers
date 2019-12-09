@@ -3085,6 +3085,7 @@ $$;
 
 CREATE TABLE maker.jug_ilk_duty (
     id integer NOT NULL,
+    diff_id integer NOT NULL,
     header_id integer NOT NULL,
     ilk_id integer NOT NULL,
     duty numeric NOT NULL
@@ -3500,6 +3501,7 @@ $$;
 
 CREATE TABLE maker.jug_ilk_rho (
     id integer NOT NULL,
+    diff_id integer NOT NULL,
     header_id integer NOT NULL,
     ilk_id integer NOT NULL,
     rho numeric NOT NULL
@@ -8127,6 +8129,7 @@ ALTER SEQUENCE maker.ilks_id_seq OWNED BY maker.ilks.id;
 
 CREATE TABLE maker.jug_base (
     id integer NOT NULL,
+    diff_id integer NOT NULL,
     header_id integer NOT NULL,
     base text
 );
@@ -8362,6 +8365,7 @@ ALTER SEQUENCE maker.jug_init_id_seq OWNED BY maker.jug_init.id;
 
 CREATE TABLE maker.jug_vat (
     id integer NOT NULL,
+    diff_id integer NOT NULL,
     header_id integer NOT NULL,
     vat text
 );
@@ -8393,6 +8397,7 @@ ALTER SEQUENCE maker.jug_vat_id_seq OWNED BY maker.jug_vat.id;
 
 CREATE TABLE maker.jug_vow (
     id integer NOT NULL,
+    diff_id integer NOT NULL,
     header_id integer NOT NULL,
     vow text
 );
@@ -13012,11 +13017,11 @@ ALTER TABLE ONLY maker.ilks
 
 
 --
--- Name: jug_base jug_base_header_id_base_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: jug_base jug_base_diff_id_header_id_base_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.jug_base
-    ADD CONSTRAINT jug_base_header_id_base_key UNIQUE (header_id, base);
+    ADD CONSTRAINT jug_base_diff_id_header_id_base_key UNIQUE (diff_id, header_id, base);
 
 
 --
@@ -13092,11 +13097,11 @@ ALTER TABLE ONLY maker.jug_file_vow
 
 
 --
--- Name: jug_ilk_duty jug_ilk_duty_header_id_ilk_id_duty_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: jug_ilk_duty jug_ilk_duty_diff_id_header_id_ilk_id_duty_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.jug_ilk_duty
-    ADD CONSTRAINT jug_ilk_duty_header_id_ilk_id_duty_key UNIQUE (header_id, ilk_id, duty);
+    ADD CONSTRAINT jug_ilk_duty_diff_id_header_id_ilk_id_duty_key UNIQUE (diff_id, header_id, ilk_id, duty);
 
 
 --
@@ -13108,11 +13113,11 @@ ALTER TABLE ONLY maker.jug_ilk_duty
 
 
 --
--- Name: jug_ilk_rho jug_ilk_rho_header_id_ilk_id_rho_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: jug_ilk_rho jug_ilk_rho_diff_id_header_id_ilk_id_rho_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.jug_ilk_rho
-    ADD CONSTRAINT jug_ilk_rho_header_id_ilk_id_rho_key UNIQUE (header_id, ilk_id, rho);
+    ADD CONSTRAINT jug_ilk_rho_diff_id_header_id_ilk_id_rho_key UNIQUE (diff_id, header_id, ilk_id, rho);
 
 
 --
@@ -13140,11 +13145,11 @@ ALTER TABLE ONLY maker.jug_init
 
 
 --
--- Name: jug_vat jug_vat_header_id_vat_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: jug_vat jug_vat_diff_id_header_id_vat_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.jug_vat
-    ADD CONSTRAINT jug_vat_header_id_vat_key UNIQUE (header_id, vat);
+    ADD CONSTRAINT jug_vat_diff_id_header_id_vat_key UNIQUE (diff_id, header_id, vat);
 
 
 --
@@ -13156,11 +13161,11 @@ ALTER TABLE ONLY maker.jug_vat
 
 
 --
--- Name: jug_vow jug_vow_header_id_vow_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: jug_vow jug_vow_diff_id_header_id_vow_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.jug_vow
-    ADD CONSTRAINT jug_vow_header_id_vow_key UNIQUE (header_id, vow);
+    ADD CONSTRAINT jug_vow_diff_id_header_id_vow_key UNIQUE (diff_id, header_id, vow);
 
 
 --
@@ -17095,6 +17100,14 @@ ALTER TABLE ONLY maker.flop_vat
 
 
 --
+-- Name: jug_base jug_base_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.jug_base
+    ADD CONSTRAINT jug_base_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
 -- Name: jug_base jug_base_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -17183,6 +17196,14 @@ ALTER TABLE ONLY maker.jug_file_vow
 
 
 --
+-- Name: jug_ilk_duty jug_ilk_duty_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.jug_ilk_duty
+    ADD CONSTRAINT jug_ilk_duty_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
 -- Name: jug_ilk_duty jug_ilk_duty_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -17196,6 +17217,14 @@ ALTER TABLE ONLY maker.jug_ilk_duty
 
 ALTER TABLE ONLY maker.jug_ilk_duty
     ADD CONSTRAINT jug_ilk_duty_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id) ON DELETE CASCADE;
+
+
+--
+-- Name: jug_ilk_rho jug_ilk_rho_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.jug_ilk_rho
+    ADD CONSTRAINT jug_ilk_rho_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
 
 
 --
@@ -17239,11 +17268,27 @@ ALTER TABLE ONLY maker.jug_init
 
 
 --
+-- Name: jug_vat jug_vat_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.jug_vat
+    ADD CONSTRAINT jug_vat_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
 -- Name: jug_vat jug_vat_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.jug_vat
     ADD CONSTRAINT jug_vat_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: jug_vow jug_vow_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.jug_vow
+    ADD CONSTRAINT jug_vow_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
 
 
 --
