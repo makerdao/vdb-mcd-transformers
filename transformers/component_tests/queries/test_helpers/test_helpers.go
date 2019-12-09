@@ -223,10 +223,10 @@ func CreateJugRecords(diffID int64, header core.Header, valuesMap map[string]str
 	}
 }
 
-func CreateSpotRecords(header core.Header, valuesMap map[string]string, metadatas []utils.StorageValueMetadata, repository spot.SpotStorageRepository) {
+func CreateSpotRecords(diffID int64, header core.Header, valuesMap map[string]string, metadatas []utils.StorageValueMetadata, repository spot.SpotStorageRepository) {
 	for _, metadata := range metadatas {
 		value := valuesMap[metadata.Name]
-		err := repository.Create(0, header.Id, metadata, value)
+		err := repository.Create(diffID, header.Id, metadata, value)
 
 		Expect(err).NotTo(HaveOccurred())
 	}
@@ -256,7 +256,7 @@ func CreateIlk(db *postgres.DB, diffID int64, header core.Header, valuesMap map[
 	CreateVatRecords(header, valuesMap, vatMetadatas, vatRepo)
 	CreateCatRecords(diffID, header.Id, valuesMap, catMetadatas, catRepo)
 	CreateJugRecords(diffID, header, valuesMap, jugMetadatas, jugRepo)
-	CreateSpotRecords(header, valuesMap, spotMetadatas, spotRepo)
+	CreateSpotRecords(diffID, header, valuesMap, spotMetadatas, spotRepo)
 }
 
 func GetUrnSetupData() map[string]int {

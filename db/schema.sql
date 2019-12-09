@@ -3324,6 +3324,7 @@ $$;
 
 CREATE TABLE maker.spot_ilk_mat (
     id integer NOT NULL,
+    diff_id integer NOT NULL,
     header_id integer NOT NULL,
     ilk_id integer NOT NULL,
     mat numeric NOT NULL
@@ -3383,6 +3384,7 @@ $$;
 
 CREATE TABLE maker.spot_ilk_pip (
     id integer NOT NULL,
+    diff_id integer NOT NULL,
     header_id integer NOT NULL,
     ilk_id integer NOT NULL,
     pip text
@@ -8714,6 +8716,7 @@ ALTER SEQUENCE maker.spot_ilk_pip_id_seq OWNED BY maker.spot_ilk_pip.id;
 
 CREATE TABLE maker.spot_par (
     id integer NOT NULL,
+    diff_id integer NOT NULL,
     header_id integer NOT NULL,
     par numeric NOT NULL
 );
@@ -8779,6 +8782,7 @@ ALTER SEQUENCE maker.spot_poke_id_seq OWNED BY maker.spot_poke.id;
 
 CREATE TABLE maker.spot_vat (
     id integer NOT NULL,
+    diff_id integer NOT NULL,
     header_id integer NOT NULL,
     vat text
 );
@@ -13289,11 +13293,11 @@ ALTER TABLE ONLY maker.spot_file_pip
 
 
 --
--- Name: spot_ilk_mat spot_ilk_mat_header_id_ilk_id_mat_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: spot_ilk_mat spot_ilk_mat_diff_id_header_id_ilk_id_mat_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.spot_ilk_mat
-    ADD CONSTRAINT spot_ilk_mat_header_id_ilk_id_mat_key UNIQUE (header_id, ilk_id, mat);
+    ADD CONSTRAINT spot_ilk_mat_diff_id_header_id_ilk_id_mat_key UNIQUE (diff_id, header_id, ilk_id, mat);
 
 
 --
@@ -13305,11 +13309,11 @@ ALTER TABLE ONLY maker.spot_ilk_mat
 
 
 --
--- Name: spot_ilk_pip spot_ilk_pip_header_id_ilk_id_pip_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: spot_ilk_pip spot_ilk_pip_diff_id_header_id_ilk_id_pip_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.spot_ilk_pip
-    ADD CONSTRAINT spot_ilk_pip_header_id_ilk_id_pip_key UNIQUE (header_id, ilk_id, pip);
+    ADD CONSTRAINT spot_ilk_pip_diff_id_header_id_ilk_id_pip_key UNIQUE (diff_id, header_id, ilk_id, pip);
 
 
 --
@@ -13321,11 +13325,11 @@ ALTER TABLE ONLY maker.spot_ilk_pip
 
 
 --
--- Name: spot_par spot_par_header_id_par_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: spot_par spot_par_diff_id_header_id_par_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.spot_par
-    ADD CONSTRAINT spot_par_header_id_par_key UNIQUE (header_id, par);
+    ADD CONSTRAINT spot_par_diff_id_header_id_par_key UNIQUE (diff_id, header_id, par);
 
 
 --
@@ -13353,11 +13357,11 @@ ALTER TABLE ONLY maker.spot_poke
 
 
 --
--- Name: spot_vat spot_vat_header_id_vat_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: spot_vat spot_vat_diff_id_header_id_vat_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.spot_vat
-    ADD CONSTRAINT spot_vat_header_id_vat_key UNIQUE (header_id, vat);
+    ADD CONSTRAINT spot_vat_diff_id_header_id_vat_key UNIQUE (diff_id, header_id, vat);
 
 
 --
@@ -17428,6 +17432,14 @@ ALTER TABLE ONLY maker.spot_file_pip
 
 
 --
+-- Name: spot_ilk_mat spot_ilk_mat_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.spot_ilk_mat
+    ADD CONSTRAINT spot_ilk_mat_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
 -- Name: spot_ilk_mat spot_ilk_mat_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -17444,6 +17456,14 @@ ALTER TABLE ONLY maker.spot_ilk_mat
 
 
 --
+-- Name: spot_ilk_pip spot_ilk_pip_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.spot_ilk_pip
+    ADD CONSTRAINT spot_ilk_pip_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
 -- Name: spot_ilk_pip spot_ilk_pip_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -17457,6 +17477,14 @@ ALTER TABLE ONLY maker.spot_ilk_pip
 
 ALTER TABLE ONLY maker.spot_ilk_pip
     ADD CONSTRAINT spot_ilk_pip_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id) ON DELETE CASCADE;
+
+
+--
+-- Name: spot_par spot_par_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.spot_par
+    ADD CONSTRAINT spot_par_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
 
 
 --
@@ -17489,6 +17517,14 @@ ALTER TABLE ONLY maker.spot_poke
 
 ALTER TABLE ONLY maker.spot_poke
     ADD CONSTRAINT spot_poke_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: spot_vat spot_vat_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.spot_vat
+    ADD CONSTRAINT spot_vat_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
 
 
 --

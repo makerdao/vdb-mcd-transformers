@@ -40,7 +40,7 @@ var _ = Describe("Spot storage repository", func() {
 		repo         spot.SpotStorageRepository
 		fakeAddress  = "0x12345"
 		fakeUint256  = "12345"
-		fakeHeaderID int64
+		diffID, fakeHeaderID int64
 	)
 
 	BeforeEach(func() {
@@ -51,6 +51,8 @@ var _ = Describe("Spot storage repository", func() {
 		var insertHeaderErr error
 		fakeHeaderID, insertHeaderErr = headerRepository.CreateOrUpdateHeader(fakes.FakeHeader)
 		Expect(insertHeaderErr).NotTo(HaveOccurred())
+
+		diffID = CreateDiffRecord(db)
 	})
 
 	Describe("Ilk", func() {
@@ -58,23 +60,23 @@ var _ = Describe("Spot storage repository", func() {
 			It("writes a row", func() {
 				ilkPipMetadata := utils.GetStorageValueMetadata(spot.IlkPip, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Address)
 
-				err := repo.Create(fakeHeaderID, ilkPipMetadata, fakeAddress)
+				err := repo.Create(diffID, fakeHeaderID, ilkPipMetadata, fakeAddress)
 
 				Expect(err).NotTo(HaveOccurred())
 				var result MappingRes
-				err = db.Get(&result, `SELECT header_id, ilk_id AS key, pip AS VALUE FROM maker.spot_ilk_pip`)
+				err = db.Get(&result, `SELECT diff_id, header_id, ilk_id AS key, pip AS VALUE FROM maker.spot_ilk_pip`)
 				Expect(err).NotTo(HaveOccurred())
 				ilkID, err := shared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
 				Expect(err).NotTo(HaveOccurred())
-				AssertMapping(result, fakeHeaderID, strconv.FormatInt(ilkID, 10), fakeAddress)
+				AssertMapping(result, diffID, fakeHeaderID, strconv.FormatInt(ilkID, 10), fakeAddress)
 			})
 
 			It("does not duplicate row", func() {
 				ilkPipMetadata := utils.GetStorageValueMetadata(spot.IlkPip, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Address)
-				insertOneErr := repo.Create(fakeHeaderID, ilkPipMetadata, fakeAddress)
+				insertOneErr := repo.Create(diffID, fakeHeaderID, ilkPipMetadata, fakeAddress)
 				Expect(insertOneErr).NotTo(HaveOccurred())
 
-				insertTwoErr := repo.Create(fakeHeaderID, ilkPipMetadata, fakeAddress)
+				insertTwoErr := repo.Create(diffID, fakeHeaderID, ilkPipMetadata, fakeAddress)
 
 				Expect(insertTwoErr).NotTo(HaveOccurred())
 				var count int
@@ -86,7 +88,7 @@ var _ = Describe("Spot storage repository", func() {
 			It("returns an error if metadata missing ilk", func() {
 				malformedIlkPipMetadata := utils.GetStorageValueMetadata(spot.IlkPip, nil, utils.Address)
 
-				err := repo.Create(fakeHeaderID, malformedIlkPipMetadata, fakeAddress)
+				err := repo.Create(diffID, fakeHeaderID, malformedIlkPipMetadata, fakeAddress)
 				Expect(err).To(MatchError(utils.ErrMetadataMalformed{MissingData: constants.Ilk}))
 			})
 
@@ -103,24 +105,24 @@ var _ = Describe("Spot storage repository", func() {
 			It("writes a row", func() {
 				ilkMatMetadata := utils.GetStorageValueMetadata(spot.IlkMat, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Uint256)
 
-				err := repo.Create(fakeHeaderID, ilkMatMetadata, fakeUint256)
+				err := repo.Create(diffID, fakeHeaderID, ilkMatMetadata, fakeUint256)
 
 				Expect(err).NotTo(HaveOccurred())
 				var result MappingRes
-				err = db.Get(&result, `SELECT header_id, ilk_id AS KEY, mat AS VALUE FROM maker.spot_ilk_mat`)
+				err = db.Get(&result, `SELECT diff_id, header_id, ilk_id AS KEY, mat AS VALUE FROM maker.spot_ilk_mat`)
 				Expect(err).NotTo(HaveOccurred())
 				ilkID, err := shared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
 				Expect(err).NotTo(HaveOccurred())
 
-				AssertMapping(result, fakeHeaderID, strconv.FormatInt(ilkID, 10), fakeUint256)
+				AssertMapping(result, diffID, fakeHeaderID, strconv.FormatInt(ilkID, 10), fakeUint256)
 			})
 
 			It("does not duplicate row", func() {
 				ilkMatMetadata := utils.GetStorageValueMetadata(spot.IlkMat, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Uint256)
-				insertOneErr := repo.Create(fakeHeaderID, ilkMatMetadata, fakeUint256)
+				insertOneErr := repo.Create(diffID, fakeHeaderID, ilkMatMetadata, fakeUint256)
 				Expect(insertOneErr).NotTo(HaveOccurred())
 
-				insertTwoErr := repo.Create(fakeHeaderID, ilkMatMetadata, fakeUint256)
+				insertTwoErr := repo.Create(diffID, fakeHeaderID, ilkMatMetadata, fakeUint256)
 
 				Expect(insertTwoErr).NotTo(HaveOccurred())
 				var count int
@@ -132,7 +134,7 @@ var _ = Describe("Spot storage repository", func() {
 			It("returns an error if metadata missing ilk", func() {
 				malformedIlkMatMetadata := utils.GetStorageValueMetadata(spot.IlkMat, nil, utils.Uint256)
 
-				err := repo.Create(fakeHeaderID, malformedIlkMatMetadata, fakeUint256)
+				err := repo.Create(diffID, fakeHeaderID, malformedIlkMatMetadata, fakeUint256)
 				Expect(err).To(MatchError(utils.ErrMetadataMalformed{MissingData: constants.Ilk}))
 			})
 
@@ -147,20 +149,20 @@ var _ = Describe("Spot storage repository", func() {
 	})
 
 	It("persists a spot vat", func() {
-		err := repo.Create(fakeHeaderID, spot.VatMetadata, fakeAddress)
+		err := repo.Create(diffID, fakeHeaderID, spot.VatMetadata, fakeAddress)
 
 		Expect(err).NotTo(HaveOccurred())
 		var result VariableRes
-		err = db.Get(&result, `SELECT header_id, vat AS value FROM maker.spot_vat`)
+		err = db.Get(&result, `SELECT diff_id, header_id, vat AS value FROM maker.spot_vat`)
 		Expect(err).NotTo(HaveOccurred())
-		AssertVariable(result, fakeHeaderID, fakeAddress)
+		AssertVariable(result, diffID, fakeHeaderID, fakeAddress)
 	})
 
 	It("does not duplicate spot vat", func() {
-		insertOneErr := repo.Create(fakeHeaderID, spot.VatMetadata, fakeAddress)
+		insertOneErr := repo.Create(diffID, fakeHeaderID, spot.VatMetadata, fakeAddress)
 		Expect(insertOneErr).NotTo(HaveOccurred())
 
-		insertTwoErr := repo.Create(fakeHeaderID, spot.VatMetadata, fakeAddress)
+		insertTwoErr := repo.Create(diffID, fakeHeaderID, spot.VatMetadata, fakeAddress)
 
 		Expect(insertTwoErr).NotTo(HaveOccurred())
 		var count int
@@ -170,20 +172,20 @@ var _ = Describe("Spot storage repository", func() {
 	})
 
 	It("persists a spot par", func() {
-		err := repo.Create(fakeHeaderID, spot.ParMetadata, fakeUint256)
+		err := repo.Create(diffID, fakeHeaderID, spot.ParMetadata, fakeUint256)
 
 		Expect(err).NotTo(HaveOccurred())
 		var result VariableRes
-		err = db.Get(&result, `SELECT header_id, par AS value FROM maker.spot_par`)
+		err = db.Get(&result, `SELECT diff_id, header_id, par AS value FROM maker.spot_par`)
 		Expect(err).NotTo(HaveOccurred())
-		AssertVariable(result, fakeHeaderID, fakeUint256)
+		AssertVariable(result, diffID, fakeHeaderID, fakeUint256)
 	})
 
 	It("does not duplicate spot par", func() {
-		insertOneErr := repo.Create(fakeHeaderID, spot.ParMetadata, fakeUint256)
+		insertOneErr := repo.Create(diffID, fakeHeaderID, spot.ParMetadata, fakeUint256)
 		Expect(insertOneErr).NotTo(HaveOccurred())
 
-		insertTwoErr := repo.Create(fakeHeaderID, spot.ParMetadata, fakeUint256)
+		insertTwoErr := repo.Create(diffID, fakeHeaderID, spot.ParMetadata, fakeUint256)
 
 		Expect(insertTwoErr).NotTo(HaveOccurred())
 		var count int
