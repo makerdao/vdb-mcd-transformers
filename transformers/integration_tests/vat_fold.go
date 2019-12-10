@@ -17,14 +17,13 @@
 package integration_tests
 
 import (
-	"strconv"
-
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_fold"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/fetcher"
 	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 	"github.com/makerdao/vulcanizedb/pkg/core"
@@ -72,31 +71,31 @@ var _ = Describe("VatFold Transformer", func() {
 
 		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
 
-		transformer := shared.EventTransformer{
-			Config:     vatFoldConfig,
-			Converter:  &vat_fold.VatFoldConverter{},
-			Repository: &vat_fold.VatFoldRepository{},
-		}.NewEventTransformer(db)
+		transformer := event.Transformer{
+			Config:    vatFoldConfig,
+			Converter: &vat_fold.Converter{},
+		}.NewTransformer(db)
 
 		err = transformer.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResults []vatFoldModel
-		err = db.Select(&dbResults, `SELECT urn_id, rate from maker.vat_fold`)
+		err = db.Select(&dbResults, `SELECT ilk_id, u, rate from maker.vat_fold`)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResults)).To(Equal(1))
 		dbResult := dbResults[0]
-		urnID, err := shared.GetOrCreateUrn("0x0F4Cbe6CBA918b7488C26E29d9ECd7368F38EA3b",
-			"0x4554482d41000000000000000000000000000000000000000000000000000000", db)
-		Expect(err).NotTo(HaveOccurred())
-		Expect(dbResult.Urn).To(Equal(strconv.FormatInt(urnID, 10)))
+		const ilk = "0x4554482d41000000000000000000000000000000000000000000000000000000"
+		ilkID, ilkErr := shared.GetOrCreateIlk(ilk, db)
+		Expect(ilkErr).NotTo(HaveOccurred())
+		Expect(dbResult.IlkID).To(Equal(ilkID))
+		Expect(dbResult.U).To(Equal("0x0F4Cbe6CBA918b7488C26E29d9ECd7368F38EA3b"))
 		Expect(dbResult.Rate).To(Equal("5943609347786892578081"))
 	})
 })
 
 type vatFoldModel struct {
-	Ilk  string
-	Urn  string `db:"urn_id"`
-	Rate string
+	IlkID int64 `db:"ilk_id"`
+	U     string
+	Rate  string
 }

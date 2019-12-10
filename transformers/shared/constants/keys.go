@@ -23,21 +23,21 @@ import (
 
 const (
 	BidId     utils.Key = "bid_id"
-	Ilk       utils.Key = "ilk"
-	Guy       utils.Key = "guy"
-	Flip      utils.Key = "flip"
-	Timestamp utils.Key = "timestamp"
 	Cdpi      utils.Key = "cdpi"
+	Flip      utils.Key = "flip"
+	Guy       utils.Key = "guy"
+	Ilk       utils.Key = "ilk"
 	Owner     utils.Key = "owner"
+	Timestamp utils.Key = "timestamp"
 )
 
 // TODO remove after transition to ColumnName
 type ForeignKeyField string
 
 const (
+	AddressFK ForeignKeyField = "address_id"
 	IlkFK     ForeignKeyField = "ilk_id"
 	UrnFK     ForeignKeyField = "urn_id"
-	AddressFK ForeignKeyField = "address_id"
 )
 
 const (
@@ -46,25 +46,26 @@ const (
 )
 
 const (
-	IlkColumn     event.ColumnName = "ilk_id"
-	UrnColumn     event.ColumnName = "urn_id"
 	AddressColumn event.ColumnName = "address_id"
-	FlipColumn    event.ColumnName = "flip"
-	WadColumn     event.ColumnName = "wad"
-	UsrColumn     event.ColumnName = "usr"
-	WhatColumn    event.ColumnName = "what"
-	DataColumn    event.ColumnName = "data"
-	InkColumn     event.ColumnName = "ink"
 	ArtColumn     event.ColumnName = "art"
+	BidColumn     event.ColumnName = "bid"
+	BidIDColumn   event.ColumnName = "bid_id"
+	DataColumn    event.ColumnName = "data"
+	DstColumn     event.ColumnName = "dst"
+	EraColumn     event.ColumnName = "era"
+	FlipColumn    event.ColumnName = "flip"
+	GalColumn     event.ColumnName = "gal"
+	IlkColumn     event.ColumnName = "ilk_id"
+	InkColumn     event.ColumnName = "ink"
+	LotColumn     event.ColumnName = "lot"
 	RadColumn     event.ColumnName = "rad"
+	RateColumn    event.ColumnName = "rate"
+	SrcColumn     event.ColumnName = "src"
 	TabColumn     event.ColumnName = "tab"
 	UColumn       event.ColumnName = "u"
+	UrnColumn     event.ColumnName = "urn_id"
+	UsrColumn     event.ColumnName = "usr"
 	VColumn       event.ColumnName = "v"
-	BidIDColumn   event.ColumnName = "bid_id"
-	EraColumn     event.ColumnName = "era"
-	LotColumn     event.ColumnName = "lot"
-	BidColumn     event.ColumnName = "bid"
-	GalColumn     event.ColumnName = "gal"
-	DstColumn     event.ColumnName = "dst"
-	SrcColumn     event.ColumnName = "src"
+	WadColumn     event.ColumnName = "wad"
+	WhatColumn    event.ColumnName = "what"
 )

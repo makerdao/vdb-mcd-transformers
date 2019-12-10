@@ -1,6 +1,8 @@
 package test_data
 
 import (
+	"math/rand"
+
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -9,7 +11,6 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
-	"math/rand"
 )
 
 var rawPotFileDSRLog = types.Log{

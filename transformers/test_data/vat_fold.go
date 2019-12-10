@@ -19,15 +19,13 @@ package test_data
 import (
 	"math/rand"
 
-	"github.com/makerdao/vulcanizedb/pkg/core"
-
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/makerdao/vulcanizedb/pkg/fakes"
-
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
+	"github.com/makerdao/vulcanizedb/pkg/core"
+	"github.com/makerdao/vulcanizedb/pkg/fakes"
 )
 
 var rawVatFoldLogWithPositiveRate = types.Log{
@@ -54,20 +52,18 @@ var VatFoldHeaderSyncLogWithPositiveRate = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-var VatFoldModelWithPositiveRate = shared.InsertionModel{
+var VatFoldModelWithPositiveRate = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.VatFoldTable,
-	OrderedColumns: []string{
-		constants.HeaderFK, string(constants.UrnFK), "rate", constants.LogFK,
+	OrderedColumns: []event.ColumnName{
+		constants.HeaderFK, constants.LogFK, constants.IlkColumn, constants.UColumn, constants.RateColumn,
 	},
-	ColumnValues: shared.ColumnValues{
-		"rate":             "2",
+	ColumnValues: event.ColumnValues{
 		constants.HeaderFK: VatFoldHeaderSyncLogWithPositiveRate.HeaderID,
 		constants.LogFK:    VatFoldHeaderSyncLogWithPositiveRate.ID,
-	},
-	ForeignKeyValues: shared.ForeignKeyValues{
-		constants.IlkFK: "0x5245500000000000000000000000000000000000000000000000000000000000",
-		constants.UrnFK: "0x3728e9777B2a0a611ee0F89e00E01044ce4736d1",
+		// constants.IlkColumn
+		constants.UColumn:    "0x3728e9777B2a0a611ee0F89e00E01044ce4736d1",
+		constants.RateColumn: "2",
 	},
 }
 
@@ -95,19 +91,17 @@ var VatFoldHeaderSyncLogWithNegativeRate = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-var VatFoldModelWithNegativeRate = shared.InsertionModel{
+var VatFoldModelWithNegativeRate = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.VatFoldTable,
-	OrderedColumns: []string{
-		constants.HeaderFK, string(constants.UrnFK), "rate", constants.LogFK,
+	OrderedColumns: []event.ColumnName{
+		constants.HeaderFK, constants.LogFK, constants.IlkColumn, constants.UColumn, constants.RateColumn,
 	},
-	ColumnValues: shared.ColumnValues{
-		"rate":             "-500000000000000000000",
-		constants.HeaderFK: VatFoldHeaderSyncLogWithNegativeRate.HeaderID,
-		constants.LogFK:    VatFoldHeaderSyncLogWithNegativeRate.ID,
-	},
-	ForeignKeyValues: shared.ForeignKeyValues{
-		constants.IlkFK: "0x66616b6520696c6b000000000000000000000000000000000000000000000000",
-		constants.UrnFK: "0x7d7bEe5fCfD8028cf7b00876C5b1421c800561A6",
+	ColumnValues: event.ColumnValues{
+		event.HeaderFK: VatFoldHeaderSyncLogWithNegativeRate.HeaderID,
+		event.LogFK:    VatFoldHeaderSyncLogWithNegativeRate.ID,
+		// constants.IlkColumn
+		constants.UColumn:    "0x7d7bEe5fCfD8028cf7b00876C5b1421c800561A6",
+		constants.RateColumn: "-500000000000000000000",
 	},
 }
