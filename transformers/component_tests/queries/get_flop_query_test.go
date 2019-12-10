@@ -7,7 +7,6 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
 	"github.com/makerdao/vulcanizedb/pkg/core"
-	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	. "github.com/onsi/ginkgo"
@@ -16,7 +15,6 @@ import (
 
 var _ = Describe("get flop query", func() {
 	var (
-		db                         *postgres.DB
 		headerRepo                 repositories.HeaderRepository
 		contractAddress            = fakes.RandomString(42)
 		fakeBidId                  = rand.Int()
@@ -28,7 +26,6 @@ var _ = Describe("get flop query", func() {
 	)
 
 	BeforeEach(func() {
-		db = test_config.NewTestDB(test_config.NewTestNode())
 		test_config.CleanTestDB(db)
 		headerRepo = repositories.NewHeaderRepository(db)
 
@@ -38,11 +35,6 @@ var _ = Describe("get flop query", func() {
 		timestampTwo = timestampOne + 1
 		headerOne = createHeader(blockOne, timestampOne, headerRepo)
 		headerTwo = createHeader(blockTwo, timestampTwo, headerRepo)
-	})
-
-	AfterEach(func() {
-		closeErr := db.Close()
-		Expect(closeErr).NotTo(HaveOccurred())
 	})
 
 	It("gets the specified flop", func() {

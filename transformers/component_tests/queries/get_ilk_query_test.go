@@ -11,7 +11,6 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/vat"
 	"github.com/makerdao/vulcanizedb/libraries/shared/storage/utils"
 	"github.com/makerdao/vulcanizedb/pkg/core"
-	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -19,7 +18,6 @@ import (
 
 var _ = Describe("Ilk State Query", func() {
 	var (
-		db                                *postgres.DB
 		headerOne, headerTwo, headerThree core.Header
 		vatRepository                     vat.VatStorageRepository
 		catRepository                     cat.CatStorageRepository
@@ -29,7 +27,6 @@ var _ = Describe("Ilk State Query", func() {
 	)
 
 	BeforeEach(func() {
-		db = test_config.NewTestDB(test_config.NewTestNode())
 		test_config.CleanTestDB(db)
 		vatRepository.SetDB(db)
 		catRepository.SetDB(db)
@@ -46,11 +43,6 @@ var _ = Describe("Ilk State Query", func() {
 		headerOne = createHeader(blockOne, timestampOne, headerRepository)
 		headerTwo = createHeader(blockTwo, timestampTwo, headerRepository)
 		headerThree = createHeader(blockThree, timestampThree, headerRepository)
-	})
-
-	AfterEach(func() {
-		closeErr := db.Close()
-		Expect(closeErr).NotTo(HaveOccurred())
 	})
 
 	It("gets an ilk", func() {

@@ -14,7 +14,6 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/vat"
 	"github.com/makerdao/vulcanizedb/libraries/shared/storage/utils"
 	"github.com/makerdao/vulcanizedb/pkg/core"
-	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -23,7 +22,6 @@ import (
 var _ = Describe("All Ilks query", func() {
 
 	var (
-		db               *postgres.DB
 		vatRepository    vat.VatStorageRepository
 		catRepository    cat.CatStorageRepository
 		jugRepository    jug.JugStorageRepository
@@ -41,7 +39,6 @@ var _ = Describe("All Ilks query", func() {
 	)
 
 	BeforeEach(func() {
-		db = test_config.NewTestDB(test_config.NewTestNode())
 		test_config.CleanTestDB(db)
 		headerRepository = repositories.NewHeaderRepository(db)
 		vatRepository.SetDB(db)
@@ -66,11 +63,6 @@ var _ = Describe("All Ilks query", func() {
 		test_helpers.CreateCatRecords(headerTwo, anotherFakeIlkStateBlock2, test_helpers.AnotherFakeIlkCatMetadatas, catRepository)
 		test_helpers.CreateJugRecords(headerTwo, anotherFakeIlkStateBlock2, test_helpers.AnotherFakeIlkJugMetadatas, jugRepository)
 		test_helpers.CreateSpotRecords(headerTwo, anotherFakeIlkStateBlock2, test_helpers.AnotherFakeIlkSpotMetadatas, spotRepository)
-	})
-
-	AfterEach(func() {
-		closeErr := db.Close()
-		Expect(closeErr).NotTo(HaveOccurred())
 	})
 
 	Context("When the headerSync is complete", func() {

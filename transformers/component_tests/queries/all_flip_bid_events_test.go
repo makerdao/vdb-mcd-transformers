@@ -29,7 +29,6 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
-	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	. "github.com/onsi/ginkgo"
@@ -38,7 +37,6 @@ import (
 
 var _ = Describe("All flip bid events query", func() {
 	var (
-		db                     *postgres.DB
 		headerRepo             repositories.HeaderRepository
 		contractAddress        = fakes.FakeAddress.Hex()
 		anotherContractAddress = common.HexToAddress("0xabcdef123456789").Hex()
@@ -50,7 +48,6 @@ var _ = Describe("All flip bid events query", func() {
 	)
 
 	BeforeEach(func() {
-		db = test_config.NewTestDB(test_config.NewTestNode())
 		test_config.CleanTestDB(db)
 		headerRepo = repositories.NewHeaderRepository(db)
 		bidId = rand.Int()
@@ -72,11 +69,6 @@ var _ = Describe("All flip bid events query", func() {
 		flipKickEvent.ColumnValues[constants.BidIDColumn] = strconv.Itoa(bidId)
 		flipKickErr := event.PersistModels([]event.InsertionModel{flipKickEvent}, db)
 		Expect(flipKickErr).NotTo(HaveOccurred())
-	})
-
-	AfterEach(func() {
-		closeErr := db.Close()
-		Expect(closeErr).NotTo(HaveOccurred())
 	})
 
 	Describe("all_flip_bid_events", func() {

@@ -28,7 +28,6 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/pkg/core"
-	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -36,7 +35,6 @@ import (
 
 var _ = Describe("Ilk file event computed columns", func() {
 	var (
-		db                     *postgres.DB
 		blockOne, timestampOne int
 		fakeGethLog            types.Log
 		fileEvent              shared.InsertionModel
@@ -46,7 +44,6 @@ var _ = Describe("Ilk file event computed columns", func() {
 	)
 
 	BeforeEach(func() {
-		db = test_config.NewTestDB(test_config.NewTestNode())
 		test_config.CleanTestDB(db)
 
 		headerRepository = repositories.NewHeaderRepository(db)
@@ -64,11 +61,6 @@ var _ = Describe("Ilk file event computed columns", func() {
 		fileEvent.ColumnValues[constants.LogFK] = fakeHeaderSyncLog.ID
 		insertFileErr := fileRepo.Create([]shared.InsertionModel{fileEvent})
 		Expect(insertFileErr).NotTo(HaveOccurred())
-	})
-
-	AfterEach(func() {
-		closeErr := db.Close()
-		Expect(closeErr).NotTo(HaveOccurred())
 	})
 
 	Describe("ilk_file_event_ilk", func() {

@@ -31,7 +31,6 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/storage/utils"
 	"github.com/makerdao/vulcanizedb/pkg/core"
-	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -40,7 +39,6 @@ import (
 var _ = Describe("QueuedSin", func() {
 	var (
 		blockOne, timestampOne int
-		db                     *postgres.DB
 		fakeEra                string
 		fakeTab                = strconv.Itoa(int(rand.Int31()))
 		headerOne              core.Header
@@ -52,7 +50,6 @@ var _ = Describe("QueuedSin", func() {
 	)
 
 	BeforeEach(func() {
-		db = test_config.NewTestDB(test_config.NewTestNode())
 		test_config.CleanTestDB(db)
 
 		headerRepository = repositories.NewHeaderRepository(db)
@@ -71,11 +68,6 @@ var _ = Describe("QueuedSin", func() {
 		sinMappingMetadata = utils.GetStorageValueMetadata(vow.SinMapping, sinMappingKeys, utils.Uint256)
 		insertSinMappingErr := vowRepository.Create(headerOne.Id, sinMappingMetadata, fakeTab)
 		Expect(insertSinMappingErr).NotTo(HaveOccurred())
-	})
-
-	AfterEach(func() {
-		closeErr := db.Close()
-		Expect(closeErr).NotTo(HaveOccurred())
 	})
 
 	Describe("getting a single queued sin for an era", func() {

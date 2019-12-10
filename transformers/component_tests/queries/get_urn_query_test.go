@@ -9,7 +9,6 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/vat"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/pkg/core"
-	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -17,7 +16,6 @@ import (
 
 var _ = Describe("Single urn view", func() {
 	var (
-		db                     *postgres.DB
 		vatRepo                vat.VatStorageRepository
 		headerRepo             repositories.HeaderRepository
 		urnOne, urnTwo         string
@@ -28,7 +26,6 @@ var _ = Describe("Single urn view", func() {
 	const getUrnQuery = `SELECT urn_identifier, ilk_identifier, ink, art, created, updated FROM api.get_urn($1, $2, $3)`
 
 	BeforeEach(func() {
-		db = test_config.NewTestDB(test_config.NewTestNode())
 		test_config.CleanTestDB(db)
 		vatRepo = vat.VatStorageRepository{}
 		vatRepo.SetDB(db)
@@ -40,11 +37,6 @@ var _ = Describe("Single urn view", func() {
 		blockOne = rand.Int()
 		timestampOne = int(rand.Int31())
 		headerOne = createHeader(blockOne, timestampOne, headerRepo)
-	})
-
-	AfterEach(func() {
-		closeErr := db.Close()
-		Expect(closeErr).NotTo(HaveOccurred())
 	})
 
 	It("gets only the specified urn", func() {

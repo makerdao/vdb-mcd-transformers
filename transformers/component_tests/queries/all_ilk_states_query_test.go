@@ -10,7 +10,6 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/spot"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/vat"
 	"github.com/makerdao/vulcanizedb/pkg/core"
-	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -18,7 +17,6 @@ import (
 
 var _ = Describe("Ilk State History Query", func() {
 	var (
-		db                       *postgres.DB
 		vatRepository            vat.VatStorageRepository
 		catRepository            cat.CatStorageRepository
 		jugRepository            jug.JugStorageRepository
@@ -33,7 +31,6 @@ var _ = Describe("Ilk State History Query", func() {
 	)
 
 	BeforeEach(func() {
-		db = test_config.NewTestDB(test_config.NewTestNode())
 		test_config.CleanTestDB(db)
 		vatRepository.SetDB(db)
 		catRepository.SetDB(db)
@@ -61,11 +58,6 @@ var _ = Describe("Ilk State History Query", func() {
 		test_helpers.CreateJugRecords(headerTwo, blockTwoIlkValues, test_helpers.FakeIlkJugMetadatas, jugRepository)
 		test_helpers.CreateSpotRecords(headerTwo, blockTwoIlkValues, test_helpers.FakeIlkSpotMetadatas, spotRepository)
 		expectedBlockTwoIlkState = test_helpers.IlkStateFromValues(test_helpers.FakeIlk.Hex, headerTwo.Timestamp, headerOne.Timestamp, blockTwoIlkValues)
-	})
-
-	AfterEach(func() {
-		closeErr := db.Close()
-		Expect(closeErr).NotTo(HaveOccurred())
 	})
 
 	It("returns the history of an ilk from the given block height", func() {

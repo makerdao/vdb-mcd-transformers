@@ -1,17 +1,16 @@
 package queries
 
 import (
+	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"math/rand"
 	"strconv"
 
-	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	helper "github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/vat"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/storage/utils"
 	"github.com/makerdao/vulcanizedb/pkg/core"
-	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -19,7 +18,6 @@ import (
 
 var _ = Describe("Urn history query", func() {
 	var (
-		db                     *postgres.DB
 		vatRepo                vat.VatStorageRepository
 		headerRepo             repositories.HeaderRepository
 		fakeUrn                string
@@ -28,7 +26,7 @@ var _ = Describe("Urn history query", func() {
 	)
 
 	BeforeEach(func() {
-		db = test_config.NewTestDB(test_config.NewTestNode())
+		test_config.CleanTestDB(db)
 		headerRepo = repositories.NewHeaderRepository(db)
 		vatRepo = vat.VatStorageRepository{}
 		vatRepo.SetDB(db)
@@ -38,11 +36,6 @@ var _ = Describe("Urn history query", func() {
 		blockOne = rand.Int()
 		timestampOne = int(rand.Int31())
 		headerOne = createHeader(blockOne, timestampOne, headerRepo)
-	})
-
-	AfterEach(func() {
-		closeErr := db.Close()
-		Expect(closeErr).NotTo(HaveOccurred())
 	})
 
 	It("returns a reverse chronological history for the given ilk and urn", func() {

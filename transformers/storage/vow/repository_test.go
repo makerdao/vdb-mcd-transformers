@@ -22,7 +22,6 @@ import (
 	. "github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/vow"
 	"github.com/makerdao/vulcanizedb/libraries/shared/storage/utils"
-	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	. "github.com/onsi/ginkgo"
@@ -34,7 +33,7 @@ var _ = Describe("Vow storage repository test", func() {
 		fakeHeaderID int64
 		fakeAddress  string
 		fakeUint256  string
-		db           *postgres.DB
+		db           = test_config.NewTestDB(test_config.NewTestNode())
 		err          error
 		repo         vow.VowStorageRepository
 	)
@@ -42,7 +41,6 @@ var _ = Describe("Vow storage repository test", func() {
 	BeforeEach(func() {
 		fakeAddress = fakes.FakeAddress.Hex()
 		fakeUint256 = "12345"
-		db = test_config.NewTestDB(test_config.NewTestNode())
 		test_config.CleanTestDB(db)
 		repo = vow.VowStorageRepository{}
 		repo.SetDB(db)

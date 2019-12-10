@@ -13,7 +13,6 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data/shared_behaviors"
 	"github.com/makerdao/vulcanizedb/libraries/shared/storage/utils"
-	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	. "github.com/onsi/ginkgo"
@@ -22,13 +21,12 @@ import (
 
 var _ = Describe("Flip storage repository", func() {
 	var (
-		db           *postgres.DB
+		db           = test_config.NewTestDB(test_config.NewTestNode())
 		repo         flip.FlipStorageRepository
 		fakeHeaderID int64
 	)
 
 	BeforeEach(func() {
-		db = test_config.NewTestDB(test_config.NewTestNode())
 		test_config.CleanTestDB(db)
 		repo = flip.FlipStorageRepository{ContractAddress: test_data.EthFlipAddress()}
 		repo.SetDB(db)

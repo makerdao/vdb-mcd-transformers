@@ -27,7 +27,6 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
 	"github.com/makerdao/vulcanizedb/libraries/shared/storage/utils"
-	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	. "github.com/onsi/ginkgo"
@@ -36,7 +35,7 @@ import (
 
 var _ = Describe("Executing the flip transformer", func() {
 	var (
-		db                *postgres.DB
+		db                = test_config.NewTestDB(test_config.NewTestNode())
 		repository        = flip.FlipStorageRepository{}
 		transformer       storage.Transformer
 		contractAddress   = "0x43c331c0389a92af62ee726d5ae0c8a424320c31"
@@ -45,7 +44,6 @@ var _ = Describe("Executing the flip transformer", func() {
 	)
 
 	BeforeEach(func() {
-		db = test_config.NewTestDB(test_config.NewTestNode())
 		test_config.CleanTestDB(db)
 		transformer = storage.Transformer{
 			HashedAddress:     utils.HexToKeccak256Hash(contractAddress),

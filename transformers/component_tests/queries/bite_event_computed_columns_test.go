@@ -12,7 +12,6 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
-	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	. "github.com/onsi/ginkgo"
@@ -21,7 +20,6 @@ import (
 
 var _ = Describe("Bite event computed columns", func() {
 	var (
-		db                     *postgres.DB
 		blockOne, timestampOne int
 		fakeGuy                string
 		headerOne              core.Header
@@ -32,7 +30,6 @@ var _ = Describe("Bite event computed columns", func() {
 	)
 
 	BeforeEach(func() {
-		db = test_config.NewTestDB(test_config.NewTestNode())
 		test_config.CleanTestDB(db)
 
 		fakeGuy = fakes.RandomString(42)
@@ -47,11 +44,6 @@ var _ = Describe("Bite event computed columns", func() {
 		biteEvent = generateBite(test_helpers.FakeIlk.Hex, fakeGuy, headerOne.Id, biteHeaderSyncLog.ID, db)
 		insertBiteErr := event.PersistModels([]event.InsertionModel{biteEvent}, db)
 		Expect(insertBiteErr).NotTo(HaveOccurred())
-	})
-
-	AfterEach(func() {
-		closeErr := db.Close()
-		Expect(closeErr).NotTo(HaveOccurred())
 	})
 
 	Describe("bite_event_ilk", func() {

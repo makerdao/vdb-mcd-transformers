@@ -12,7 +12,6 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
-	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	. "github.com/onsi/ginkgo"
@@ -21,7 +20,6 @@ import (
 
 var _ = Describe("flap_bid_event computed columns", func() {
 	var (
-		db                     *postgres.DB
 		blockOne, timestampOne int
 		headerOne              core.Header
 		flapKickLog            core.HeaderSyncLog
@@ -32,7 +30,6 @@ var _ = Describe("flap_bid_event computed columns", func() {
 	)
 
 	BeforeEach(func() {
-		db = test_config.NewTestDB(test_config.NewTestNode())
 		test_config.CleanTestDB(db)
 
 		headerRepo = repositories.NewHeaderRepository(db)
@@ -51,11 +48,6 @@ var _ = Describe("flap_bid_event computed columns", func() {
 		flapKickEvent.ColumnValues[constants.BidIDColumn] = strconv.Itoa(fakeBidId)
 		insertFlapKickErr := event.PersistModels([]event.InsertionModel{flapKickEvent}, db)
 		Expect(insertFlapKickErr).NotTo(HaveOccurred())
-	})
-
-	AfterEach(func() {
-		closeErr := db.Close()
-		Expect(closeErr).NotTo(HaveOccurred())
 	})
 
 	Describe("flap_bid_event_bid", func() {

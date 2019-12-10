@@ -30,7 +30,6 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
 	"github.com/makerdao/vulcanizedb/libraries/shared/storage/utils"
-	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	. "github.com/onsi/ginkgo"
@@ -39,7 +38,7 @@ import (
 
 var _ = Describe("Executing the transformer", func() {
 	var (
-		db                *postgres.DB
+		db                = test_config.NewTestDB(test_config.NewTestNode())
 		storageKeysLookup = storage.NewKeysLookup(vat.NewKeysLoader(&mcdStorage.MakerStorageRepository{}))
 		repository        = vat.VatStorageRepository{}
 		contractAddress   = "48f749bd988caafacd7b951abbecc1aa31488690"
@@ -52,7 +51,6 @@ var _ = Describe("Executing the transformer", func() {
 	)
 
 	BeforeEach(func() {
-		db = test_config.NewTestDB(test_config.NewTestNode())
 		test_config.CleanTestDB(db)
 		transformer.NewTransformer(db)
 		headerRepository := repositories.NewHeaderRepository(db)
