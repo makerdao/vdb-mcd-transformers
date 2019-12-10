@@ -29,7 +29,6 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
-	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	. "github.com/onsi/ginkgo"
@@ -39,7 +38,6 @@ import (
 var _ = Describe("Ilk state computed columns", func() {
 	var (
 		blockOne, timestampOne int
-		db                     *postgres.DB
 		fakeGuy                = fakes.RandomString(42)
 		headerOne              core.Header
 		headerRepository       repositories.HeaderRepository
@@ -47,7 +45,6 @@ var _ = Describe("Ilk state computed columns", func() {
 	)
 
 	BeforeEach(func() {
-		db = test_config.NewTestDB(test_config.NewTestNode())
 		test_config.CleanTestDB(db)
 
 		headerRepository = repositories.NewHeaderRepository(db)
@@ -60,11 +57,6 @@ var _ = Describe("Ilk state computed columns", func() {
 		ilkValues := test_helpers.GetIlkValues(0)
 		test_helpers.CreateIlk(db, headerOne, ilkValues, test_helpers.FakeIlkVatMetadatas,
 			test_helpers.FakeIlkCatMetadatas, test_helpers.FakeIlkJugMetadatas, test_helpers.FakeIlkSpotMetadatas)
-	})
-
-	AfterEach(func() {
-		closeErr := db.Close()
-		Expect(closeErr).NotTo(HaveOccurred())
 	})
 
 	Describe("ilk_state_frobs", func() {

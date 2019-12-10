@@ -30,7 +30,6 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
-	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	. "github.com/onsi/ginkgo"
@@ -39,7 +38,6 @@ import (
 
 var _ = Describe("Urn state computed columns", func() {
 	var (
-		db                     *postgres.DB
 		fakeGuy                = fakes.RandomString(42)
 		blockOne, timestampOne int
 		headerOne              core.Header
@@ -51,7 +49,6 @@ var _ = Describe("Urn state computed columns", func() {
 	)
 
 	BeforeEach(func() {
-		db = test_config.NewTestDB(test_config.NewTestNode())
 		test_config.CleanTestDB(db)
 
 		headerRepository = repositories.NewHeaderRepository(db)
@@ -64,11 +61,6 @@ var _ = Describe("Urn state computed columns", func() {
 		vatRepository.SetDB(db)
 		catRepository.SetDB(db)
 		jugRepository.SetDB(db)
-	})
-
-	AfterEach(func() {
-		closeErr := db.Close()
-		Expect(closeErr).NotTo(HaveOccurred())
 	})
 
 	Describe("urn_state_ilk", func() {

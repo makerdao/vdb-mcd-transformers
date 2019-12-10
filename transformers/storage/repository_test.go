@@ -64,7 +64,7 @@ var _ = Describe("Maker storage repository", func() {
 		address             = fakes.FakeAddress.Hex()
 		addressId           int64
 		addressErr          error
-		db                  *postgres.DB
+		db                  = test_config.NewTestDB(test_config.NewTestNode())
 		repository          storage.IMakerStorageRepository
 		ilk1                = common.HexToHash("0x494c4b31").Hex()
 		ilk2                = common.HexToHash("0x494c4b32").Hex()
@@ -82,7 +82,6 @@ var _ = Describe("Maker storage repository", func() {
 	)
 
 	BeforeEach(func() {
-		db = test_config.NewTestDB(test_config.NewTestNode())
 		test_config.CleanTestDB(db)
 		repository = &storage.MakerStorageRepository{}
 		repository.SetDB(db)

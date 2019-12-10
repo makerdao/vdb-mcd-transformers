@@ -23,7 +23,6 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
-	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	. "github.com/onsi/ginkgo"
@@ -31,7 +30,7 @@ import (
 )
 
 var _ = Describe("Shared repository", func() {
-	var db *postgres.DB
+	var db = test_config.NewTestDB(test_config.NewTestNode())
 	const hexIlk = "0x464b450000000000000000000000000000000000000000000000000000000000"
 
 	BeforeEach(func() {
@@ -59,7 +58,6 @@ var _ = Describe("Shared repository", func() {
 		)
 
 		BeforeEach(func() {
-			db = test_config.NewTestDB(test_config.NewTestNode())
 			test_config.CleanTestDB(db)
 		})
 

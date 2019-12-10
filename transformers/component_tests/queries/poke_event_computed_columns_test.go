@@ -12,7 +12,6 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/pkg/core"
-	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -20,7 +19,6 @@ import (
 
 var _ = Describe("all poke events query", func() {
 	var (
-		db                     *postgres.DB
 		blockOne, timestampOne int
 		headerOne              core.Header
 		fakeGethLog            types.Log
@@ -30,7 +28,6 @@ var _ = Describe("all poke events query", func() {
 	)
 
 	BeforeEach(func() {
-		db = test_config.NewTestDB(test_config.NewTestNode())
 		test_config.CleanTestDB(db)
 
 		headerRepository = repositories.NewHeaderRepository(db)
@@ -48,11 +45,6 @@ var _ = Describe("all poke events query", func() {
 		spotPokeEvent.ColumnValues[constants.LogFK] = fakeHeaderSyncLog.ID
 		insertSpotPokeErr := spotPokeRepo.Create([]shared.InsertionModel{spotPokeEvent})
 		Expect(insertSpotPokeErr).NotTo(HaveOccurred())
-	})
-
-	AfterEach(func() {
-		closeErr := db.Close()
-		Expect(closeErr).NotTo(HaveOccurred())
 	})
 
 	Describe("poke_event_ilk", func() {

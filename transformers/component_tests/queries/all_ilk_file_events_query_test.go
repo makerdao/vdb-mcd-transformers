@@ -32,7 +32,6 @@ import (
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore"
-	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -40,7 +39,6 @@ import (
 
 var _ = Describe("Ilk File Events Query", func() {
 	var (
-		db                     *postgres.DB
 		logOneId               int64
 		blockOne, timestampOne int
 		headerOne              core.Header
@@ -53,7 +51,6 @@ var _ = Describe("Ilk File Events Query", func() {
 	)
 
 	BeforeEach(func() {
-		db = test_config.NewTestDB(test_config.NewTestNode())
 		test_config.CleanTestDB(db)
 		headerRepo = repositories.NewHeaderRepository(db)
 		blockOne = rand.Int()

@@ -35,7 +35,6 @@ import (
 
 var _ = Describe("Frobs query", func() {
 	var (
-		db                     *postgres.DB
 		frobRepo               vat_frob.VatFrobRepository
 		headerRepo             repositories.HeaderRepository
 		fakeIlkHex             = test_helpers.FakeIlk.Hex
@@ -46,7 +45,6 @@ var _ = Describe("Frobs query", func() {
 	)
 
 	BeforeEach(func() {
-		db = test_config.NewTestDB(test_config.NewTestNode())
 		test_config.CleanTestDB(db)
 		headerRepo = repositories.NewHeaderRepository(db)
 		frobRepo = vat_frob.VatFrobRepository{}
@@ -55,11 +53,6 @@ var _ = Describe("Frobs query", func() {
 		blockOne = rand.Int()
 		timestampOne = int(rand.Int31())
 		headerOne = createHeader(blockOne, timestampOne, headerRepo)
-	})
-
-	AfterEach(func() {
-		closeErr := db.Close()
-		Expect(closeErr).NotTo(HaveOccurred())
 	})
 
 	Describe("urn_frobs", func() {

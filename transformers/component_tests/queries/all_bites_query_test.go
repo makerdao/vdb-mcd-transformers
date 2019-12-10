@@ -19,7 +19,6 @@ import (
 
 var _ = Describe("Bites query", func() {
 	var (
-		db                     *postgres.DB
 		headerRepo             repositories.HeaderRepository
 		blockOne, timestampOne int
 		fakeUrn                = test_data.RandomString(5)
@@ -30,17 +29,11 @@ var _ = Describe("Bites query", func() {
 	const urnBitesQuery = `SELECT ilk_identifier, urn_identifier, ink, art, tab FROM api.urn_bites($1, $2)`
 
 	BeforeEach(func() {
-		db = test_config.NewTestDB(test_config.NewTestNode())
 		test_config.CleanTestDB(db)
 		headerRepo = repositories.NewHeaderRepository(db)
 		blockOne = rand.Int()
 		timestampOne = int(rand.Int31())
 		headerOne = createHeader(blockOne, timestampOne, headerRepo)
-	})
-
-	AfterEach(func() {
-		closeErr := db.Close()
-		Expect(closeErr).NotTo(HaveOccurred())
 	})
 
 	Describe("all_bites", func() {

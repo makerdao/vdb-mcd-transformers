@@ -15,9 +15,7 @@ import (
 var _ = Describe("Transaction computed columns", func() {
 	Describe("tx_era", func() {
 		It("returns an era object for a transaction", func() {
-			db := test_config.NewTestDB(test_config.NewTestNode())
 			test_config.CleanTestDB(db)
-			defer db.Close()
 
 			headerRepository := repositories.NewHeaderRepository(db)
 			fakeBlock := rand.Int()

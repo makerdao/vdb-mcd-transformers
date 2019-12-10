@@ -26,7 +26,6 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore"
-	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -34,7 +33,6 @@ import (
 
 var _ = Describe("Managed CDP computed columns", func() {
 	var (
-		db               *postgres.DB
 		headerOne        core.Header
 		headerRepository datastore.HeaderRepository
 		storageValues    map[string]interface{}
@@ -42,7 +40,6 @@ var _ = Describe("Managed CDP computed columns", func() {
 	)
 
 	BeforeEach(func() {
-		db = test_config.NewTestDB(test_config.NewTestNode())
 		test_config.CleanTestDB(db)
 
 		headerRepository = repositories.NewHeaderRepository(db)
@@ -54,11 +51,6 @@ var _ = Describe("Managed CDP computed columns", func() {
 		storageValues = test_helpers.GetCdpManagerStorageValues(1, test_helpers.FakeIlk.Hex, test_data.FakeUrn, fakeCdpi)
 		cdpErr := test_helpers.CreateManagedCdp(db, headerOne, storageValues, test_helpers.GetCdpManagerMetadatas(strconv.Itoa(fakeCdpi)))
 		Expect(cdpErr).NotTo(HaveOccurred())
-	})
-
-	AfterEach(func() {
-		closeErr := db.Close()
-		Expect(closeErr).NotTo(HaveOccurred())
 	})
 
 	Describe("managed_cdp_ilk", func() {

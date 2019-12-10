@@ -25,7 +25,6 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/cdp_manager"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/pkg/core"
-	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -33,7 +32,6 @@ import (
 
 var _ = Describe("Managed CDP trigger-populated table", func() {
 	var (
-		db                     *postgres.DB
 		headerRepo             repositories.HeaderRepository
 		repo                   cdp_manager.CdpManagerStorageRepository
 		fakeCdpi               = rand.Int()
@@ -42,7 +40,6 @@ var _ = Describe("Managed CDP trigger-populated table", func() {
 	)
 
 	BeforeEach(func() {
-		db = test_config.NewTestDB(test_config.NewTestNode())
 		test_config.CleanTestDB(db)
 		headerRepo = repositories.NewHeaderRepository(db)
 		repo = cdp_manager.CdpManagerStorageRepository{}
@@ -51,11 +48,6 @@ var _ = Describe("Managed CDP trigger-populated table", func() {
 		blockOne = rand.Int()
 		timestampOne = int(rand.Int31())
 		headerOne = createHeader(blockOne, timestampOne, headerRepo)
-	})
-
-	AfterEach(func() {
-		closeErr := db.Close()
-		Expect(closeErr).NotTo(HaveOccurred())
 	})
 
 	It("stores the state of each managed CDP, unique by cdpi", func() {

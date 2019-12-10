@@ -31,7 +31,6 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data/shared_behaviors"
 	"github.com/makerdao/vulcanizedb/libraries/shared/storage/utils"
 	"github.com/makerdao/vulcanizedb/pkg/core"
-	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	. "github.com/onsi/ginkgo"
@@ -40,13 +39,12 @@ import (
 
 var _ = Describe("CDP Manager storage repository", func() {
 	var (
-		db           *postgres.DB
+		db           = test_config.NewTestDB(test_config.NewTestNode())
 		repository   cdp_manager.CdpManagerStorageRepository
 		fakeHeaderID int64
 	)
 
 	BeforeEach(func() {
-		db = test_config.NewTestDB(test_config.NewTestNode())
 		test_config.CleanTestDB(db)
 		repository = cdp_manager.CdpManagerStorageRepository{}
 		repository.SetDB(db)
