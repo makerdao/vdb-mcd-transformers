@@ -20,11 +20,11 @@ import (
 
 var _ = Describe("Flap storage repository", func() {
 	var (
-		db                  = test_config.NewTestDB(test_config.NewTestNode())
-		repository          flap.FlapStorageRepository
-		blockNumber         int64
+		db                   = test_config.NewTestDB(test_config.NewTestNode())
+		repository           flap.FlapStorageRepository
+		blockNumber          int64
 		diffID, fakeHeaderID int64
-		flapContractAddress = "flapContractAddress"
+		flapContractAddress  = "flapContractAddress"
 	)
 
 	BeforeEach(func() {

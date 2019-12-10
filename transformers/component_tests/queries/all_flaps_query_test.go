@@ -15,8 +15,8 @@ import (
 
 var _ = Describe("All flaps query", func() {
 	var (
-		headerRepo      repositories.HeaderRepository
-		contractAddress = "contract address"
+		headerRepo             repositories.HeaderRepository
+		contractAddress        = "contract address"
 		blockOne, timestampOne int
 		headerOne              core.Header
 		diffID                 int64

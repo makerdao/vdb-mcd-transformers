@@ -36,10 +36,10 @@ import (
 
 var _ = Describe("Jug storage repository", func() {
 	var (
-		db           = test_config.NewTestDB(test_config.NewTestNode())
-		repo         jug.JugStorageRepository
-		fakeAddress  = "0x12345"
-		fakeUint256  = "12345"
+		db                   = test_config.NewTestDB(test_config.NewTestNode())
+		repo                 jug.JugStorageRepository
+		fakeAddress          = "0x12345"
+		fakeUint256          = "12345"
 		diffID, fakeHeaderID int64
 	)
 

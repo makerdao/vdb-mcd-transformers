@@ -31,11 +31,11 @@ import (
 var _ = Describe("Vow storage repository test", func() {
 	var (
 		diffID, fakeHeaderID int64
-		fakeAddress  string
-		fakeUint256  string
-		db           = test_config.NewTestDB(test_config.NewTestNode())
-		err          error
-		repo         vow.VowStorageRepository
+		fakeAddress          string
+		fakeUint256          string
+		db                   = test_config.NewTestDB(test_config.NewTestNode())
+		err                  error
+		repo                 vow.VowStorageRepository
 	)
 
 	BeforeEach(func() {

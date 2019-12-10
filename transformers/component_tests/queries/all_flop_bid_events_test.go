@@ -26,7 +26,7 @@ var _ = Describe("Flop bid events query", func() {
 		contractAddress        string
 		fakeBidId              int
 		flopKickEvent          event.InsertionModel
-		diffID int64
+		diffID                 int64
 	)
 
 	BeforeEach(func() {

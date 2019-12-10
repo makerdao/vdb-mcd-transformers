@@ -46,7 +46,7 @@ var _ = Describe("All flip bid events query", func() {
 		blockOne, timestampOne int
 		headerOne              core.Header
 		flipKickEvent          event.InsertionModel
-		diffID int64
+		diffID                 int64
 	)
 
 	BeforeEach(func() {

@@ -40,7 +40,7 @@ import (
 
 var _ = Describe("CDP Manager storage repository", func() {
 	var (
-		db           = test_config.NewTestDB(test_config.NewTestNode())
+		db                   = test_config.NewTestDB(test_config.NewTestNode())
 		repository           cdp_manager.CdpManagerStorageRepository
 		diffID, fakeHeaderID int64
 	)

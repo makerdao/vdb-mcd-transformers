@@ -39,10 +39,10 @@ import (
 
 var _ = Describe("Vat storage repository", func() {
 	var (
-		db           = test_config.NewTestDB(test_config.NewTestNode())
-		repo         vat.VatStorageRepository
-		fakeGuy      = "fake_urn"
-		fakeUint256  = "12345"
+		db                   = test_config.NewTestDB(test_config.NewTestNode())
+		repo                 vat.VatStorageRepository
+		fakeGuy              = "fake_urn"
+		fakeUint256          = "12345"
 		diffID, fakeHeaderID int64
 	)
 
@@ -507,11 +507,11 @@ var _ = Describe("Vat storage repository", func() {
 
 			It("inserts time of first ink diff into created", func() {
 				urnInkMetadata := utils.GetStorageValueMetadata(vat.UrnInk, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex, constants.Guy: fakeGuy}, utils.Uint256)
-				setupErrOne := repo.Create(headerOne.Id, urnInkMetadata, strconv.Itoa(rand.Int()))
+				setupErrOne := repo.Create(diffID, headerOne.Id, urnInkMetadata, strconv.Itoa(rand.Int()))
 				Expect(setupErrOne).NotTo(HaveOccurred())
 				expectedTimeCreated := test_helpers.GetValidNullString(FormatTimestamp(rawTimestampOne))
 
-				err := repo.Create(headerTwo.Id, urnArtMetadata, strconv.Itoa(rand.Int()))
+				err := repo.Create(diffID, headerTwo.Id, urnArtMetadata, strconv.Itoa(rand.Int()))
 				Expect(err).NotTo(HaveOccurred())
 
 				var timeCreated sql.NullString
@@ -524,9 +524,9 @@ var _ = Describe("Vat storage repository", func() {
 			It("inserts a row for new urn-block", func() {
 				initialUrnValues := test_helpers.GetUrnSetupData()
 				newArt := rand.Int()
-				test_helpers.CreateUrn(initialUrnValues, headerOne.Id, test_helpers.GetUrnMetadata(test_helpers.FakeIlk.Hex, fakeGuy), repo)
+				test_helpers.CreateUrn(initialUrnValues, diffID, headerOne.Id, test_helpers.GetUrnMetadata(test_helpers.FakeIlk.Hex, fakeGuy), repo)
 
-				err := repo.Create(headerTwo.Id, urnArtMetadata, strconv.Itoa(newArt))
+				err := repo.Create(diffID, headerTwo.Id, urnArtMetadata, strconv.Itoa(newArt))
 				Expect(err).NotTo(HaveOccurred())
 
 				var urnStates []test_helpers.UrnState
@@ -543,9 +543,9 @@ var _ = Describe("Vat storage repository", func() {
 			It("updates art if urn-block combination already exists in table", func() {
 				initialUrnValues := test_helpers.GetUrnSetupData()
 				newArt := rand.Int()
-				test_helpers.CreateUrn(initialUrnValues, headerOne.Id, test_helpers.GetUrnMetadata(test_helpers.FakeIlk.Hex, fakeGuy), repo)
+				test_helpers.CreateUrn(initialUrnValues, diffID, headerOne.Id, test_helpers.GetUrnMetadata(test_helpers.FakeIlk.Hex, fakeGuy), repo)
 
-				err := repo.Create(headerOne.Id, urnArtMetadata, strconv.Itoa(newArt))
+				err := repo.Create(diffID, headerOne.Id, urnArtMetadata, strconv.Itoa(newArt))
 				Expect(err).NotTo(HaveOccurred())
 
 				var urnStates []test_helpers.UrnState
@@ -566,7 +566,7 @@ var _ = Describe("Vat storage repository", func() {
 					fakeGuy, test_helpers.FakeIlk.Identifier, headerTwo.BlockNumber, initialArt)
 				Expect(setupErr).NotTo(HaveOccurred())
 
-				err := repo.Create(headerOne.Id, urnArtMetadata, strconv.Itoa(newArt))
+				err := repo.Create(diffID, headerOne.Id, urnArtMetadata, strconv.Itoa(newArt))
 				Expect(err).NotTo(HaveOccurred())
 
 				var urnStates []test_helpers.UrnState
@@ -578,10 +578,10 @@ var _ = Describe("Vat storage repository", func() {
 
 			It("ignores rows from blocks after the next art diff", func() {
 				initialArt := strconv.Itoa(rand.Int())
-				setupErr := repo.Create(headerTwo.Id, urnArtMetadata, initialArt)
+				setupErr := repo.Create(diffID, headerTwo.Id, urnArtMetadata, initialArt)
 				Expect(setupErr).NotTo(HaveOccurred())
 
-				err := repo.Create(headerOne.Id, urnArtMetadata, strconv.Itoa(rand.Int()))
+				err := repo.Create(diffID, headerOne.Id, urnArtMetadata, strconv.Itoa(rand.Int()))
 				Expect(err).NotTo(HaveOccurred())
 
 				var urnStates []test_helpers.UrnState
@@ -597,7 +597,7 @@ var _ = Describe("Vat storage repository", func() {
 					fakeGuy, test_helpers.AnotherFakeIlk.Identifier, headerTwo.BlockNumber, initialArt)
 				Expect(setupErr).NotTo(HaveOccurred())
 
-				err := repo.Create(headerOne.Id, urnArtMetadata, strconv.Itoa(rand.Int()))
+				err := repo.Create(diffID, headerOne.Id, urnArtMetadata, strconv.Itoa(rand.Int()))
 				Expect(err).NotTo(HaveOccurred())
 
 				var urnStates []test_helpers.UrnState
@@ -613,7 +613,7 @@ var _ = Describe("Vat storage repository", func() {
 					fakeGuy, test_helpers.FakeIlk.Identifier, headerOne.BlockNumber, initialArt)
 				Expect(setupErr).NotTo(HaveOccurred())
 
-				err := repo.Create(headerTwo.Id, urnArtMetadata, strconv.Itoa(rand.Int()))
+				err := repo.Create(diffID, headerTwo.Id, urnArtMetadata, strconv.Itoa(rand.Int()))
 				Expect(err).NotTo(HaveOccurred())
 
 				var urnStates []test_helpers.UrnState
@@ -626,11 +626,11 @@ var _ = Describe("Vat storage repository", func() {
 			Describe("when diff is deleted", func() {
 				It("updates art to previous value until block number of next diff", func() {
 					initialArt := rand.Int()
-					setupErrOne := repo.Create(headerOne.Id, urnArtMetadata, strconv.Itoa(initialArt))
+					setupErrOne := repo.Create(diffID, headerOne.Id, urnArtMetadata, strconv.Itoa(initialArt))
 					Expect(setupErrOne).NotTo(HaveOccurred())
 
 					subsequentArt := initialArt + 1
-					setupErrTwo := repo.Create(headerTwo.Id, urnArtMetadata, strconv.Itoa(subsequentArt))
+					setupErrTwo := repo.Create(diffID, headerTwo.Id, urnArtMetadata, strconv.Itoa(subsequentArt))
 					Expect(setupErrTwo).NotTo(HaveOccurred())
 					_, setupErrThree := db.Exec(insertArtQuery,
 						fakeGuy, test_helpers.FakeIlk.Identifier, blockThree, subsequentArt)
@@ -647,7 +647,7 @@ var _ = Describe("Vat storage repository", func() {
 
 				It("sets field in subsequent rows to null if no previous diff exists", func() {
 					initialArt := strconv.Itoa(rand.Int())
-					setupErrOne := repo.Create(headerOne.Id, urnArtMetadata, initialArt)
+					setupErrOne := repo.Create(diffID, headerOne.Id, urnArtMetadata, initialArt)
 					Expect(setupErrOne).NotTo(HaveOccurred())
 					_, setupErrTwo := db.Exec(insertArtQuery,
 						fakeGuy, test_helpers.FakeIlk.Identifier, blockTwo, initialArt)
@@ -665,11 +665,11 @@ var _ = Describe("Vat storage repository", func() {
 
 				It("deletes ilk state associated with diff if identical to previous state", func() {
 					initialArt := rand.Int()
-					setupErrOne := repo.Create(headerOne.Id, urnArtMetadata, strconv.Itoa(initialArt))
+					setupErrOne := repo.Create(diffID, headerOne.Id, urnArtMetadata, strconv.Itoa(initialArt))
 					Expect(setupErrOne).NotTo(HaveOccurred())
 
 					subsequentArt := initialArt + 1
-					setupErrTwo := repo.Create(headerTwo.Id, urnArtMetadata, strconv.Itoa(subsequentArt))
+					setupErrTwo := repo.Create(diffID, headerTwo.Id, urnArtMetadata, strconv.Itoa(subsequentArt))
 					Expect(setupErrTwo).NotTo(HaveOccurred())
 					_, setupErrThree := db.Exec(insertArtQuery,
 						fakeGuy, test_helpers.FakeIlk.Identifier, blockThree, subsequentArt)
@@ -686,7 +686,7 @@ var _ = Describe("Vat storage repository", func() {
 
 				It("deletes ilk state associated with diff if it's the earliest state in the table", func() {
 					initialArt := rand.Int()
-					setupErrOne := repo.Create(headerOne.Id, urnArtMetadata, strconv.Itoa(initialArt))
+					setupErrOne := repo.Create(diffID, headerOne.Id, urnArtMetadata, strconv.Itoa(initialArt))
 					Expect(setupErrOne).NotTo(HaveOccurred())
 
 					_, deleteErr := db.Exec(deleteRowQuery, headerOne.Id)
@@ -784,9 +784,9 @@ var _ = Describe("Vat storage repository", func() {
 			})
 
 			It("inserts time of first ink diff into created", func() {
-				setupErrOne := repo.Create(headerOne.Id, urnInkMetadata, strconv.Itoa(rand.Int()))
+				setupErrOne := repo.Create(diffID, headerOne.Id, urnInkMetadata, strconv.Itoa(rand.Int()))
 				Expect(setupErrOne).NotTo(HaveOccurred())
-				setupErrTwo := repo.Create(headerTwo.Id, urnInkMetadata, strconv.Itoa(rand.Int()))
+				setupErrTwo := repo.Create(diffID, headerTwo.Id, urnInkMetadata, strconv.Itoa(rand.Int()))
 				Expect(setupErrTwo).NotTo(HaveOccurred())
 				expectedTimeCreated := test_helpers.GetValidNullString(FormatTimestamp(rawTimestampOne))
 
@@ -801,10 +801,10 @@ var _ = Describe("Vat storage repository", func() {
 
 			It("updates time created for all the urn's states when new ink is added", func() {
 				urnArtMetadata := utils.GetStorageValueMetadata(vat.UrnArt, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex, constants.Guy: fakeGuy}, utils.Uint256)
-				setupErr := repo.Create(headerOne.Id, urnArtMetadata, strconv.Itoa(rand.Int()))
+				setupErr := repo.Create(diffID, headerOne.Id, urnArtMetadata, strconv.Itoa(rand.Int()))
 				Expect(setupErr).NotTo(HaveOccurred())
 
-				err := repo.Create(headerTwo.Id, urnInkMetadata, strconv.Itoa(rand.Int()))
+				err := repo.Create(diffID, headerTwo.Id, urnInkMetadata, strconv.Itoa(rand.Int()))
 				Expect(err).NotTo(HaveOccurred())
 				expectedTimeCreated := test_helpers.GetValidNullString(FormatTimestamp(rawTimestampTwo))
 
@@ -819,9 +819,9 @@ var _ = Describe("Vat storage repository", func() {
 			It("inserts a row for new urn-block", func() {
 				initialUrnValues := test_helpers.GetUrnSetupData()
 				newInk := rand.Int()
-				test_helpers.CreateUrn(initialUrnValues, headerOne.Id, test_helpers.GetUrnMetadata(test_helpers.FakeIlk.Hex, fakeGuy), repo)
+				test_helpers.CreateUrn(initialUrnValues, diffID, headerOne.Id, test_helpers.GetUrnMetadata(test_helpers.FakeIlk.Hex, fakeGuy), repo)
 
-				err := repo.Create(headerTwo.Id, urnInkMetadata, strconv.Itoa(newInk))
+				err := repo.Create(diffID, headerTwo.Id, urnInkMetadata, strconv.Itoa(newInk))
 				Expect(err).NotTo(HaveOccurred())
 
 				var urnStates []test_helpers.UrnState
@@ -838,9 +838,9 @@ var _ = Describe("Vat storage repository", func() {
 			It("updates ink if urn-block combination already exists in table", func() {
 				initialUrnValues := test_helpers.GetUrnSetupData()
 				newInk := rand.Int()
-				test_helpers.CreateUrn(initialUrnValues, headerOne.Id, test_helpers.GetUrnMetadata(test_helpers.FakeIlk.Hex, fakeGuy), repo)
+				test_helpers.CreateUrn(initialUrnValues, diffID, headerOne.Id, test_helpers.GetUrnMetadata(test_helpers.FakeIlk.Hex, fakeGuy), repo)
 
-				err := repo.Create(headerOne.Id, urnInkMetadata, strconv.Itoa(newInk))
+				err := repo.Create(diffID, headerOne.Id, urnInkMetadata, strconv.Itoa(newInk))
 				Expect(err).NotTo(HaveOccurred())
 
 				var urnStates []test_helpers.UrnState
@@ -861,7 +861,7 @@ var _ = Describe("Vat storage repository", func() {
 					fakeGuy, test_helpers.FakeIlk.Identifier, headerTwo.BlockNumber, initialInk)
 				Expect(setupErr).NotTo(HaveOccurred())
 
-				err := repo.Create(headerOne.Id, urnInkMetadata, strconv.Itoa(newInk))
+				err := repo.Create(diffID, headerOne.Id, urnInkMetadata, strconv.Itoa(newInk))
 				Expect(err).NotTo(HaveOccurred())
 
 				var urnStates []test_helpers.UrnState
@@ -873,10 +873,10 @@ var _ = Describe("Vat storage repository", func() {
 
 			It("ignores rows from blocks after the next ink diff", func() {
 				initialInk := strconv.Itoa(rand.Int())
-				setupErr := repo.Create(headerTwo.Id, urnInkMetadata, initialInk)
+				setupErr := repo.Create(diffID, headerTwo.Id, urnInkMetadata, initialInk)
 				Expect(setupErr).NotTo(HaveOccurred())
 
-				err := repo.Create(headerOne.Id, urnInkMetadata, strconv.Itoa(rand.Int()))
+				err := repo.Create(diffID, headerOne.Id, urnInkMetadata, strconv.Itoa(rand.Int()))
 				Expect(err).NotTo(HaveOccurred())
 
 				var urnStates []test_helpers.UrnState
@@ -892,7 +892,7 @@ var _ = Describe("Vat storage repository", func() {
 					fakeGuy, test_helpers.AnotherFakeIlk.Identifier, headerTwo.BlockNumber, initialInk)
 				Expect(setupErr).NotTo(HaveOccurred())
 
-				err := repo.Create(headerOne.Id, urnInkMetadata, strconv.Itoa(rand.Int()))
+				err := repo.Create(diffID, headerOne.Id, urnInkMetadata, strconv.Itoa(rand.Int()))
 				Expect(err).NotTo(HaveOccurred())
 
 				var urnStates []test_helpers.UrnState
@@ -908,7 +908,7 @@ var _ = Describe("Vat storage repository", func() {
 					fakeGuy, test_helpers.FakeIlk.Identifier, headerOne.BlockNumber, initialInk)
 				Expect(setupErr).NotTo(HaveOccurred())
 
-				err := repo.Create(headerTwo.Id, urnInkMetadata, strconv.Itoa(rand.Int()))
+				err := repo.Create(diffID, headerTwo.Id, urnInkMetadata, strconv.Itoa(rand.Int()))
 				Expect(err).NotTo(HaveOccurred())
 
 				var urnStates []test_helpers.UrnState
@@ -921,11 +921,11 @@ var _ = Describe("Vat storage repository", func() {
 			Describe("when diff is deleted", func() {
 				It("updates ink to previous value until block number of next diff", func() {
 					initialInk := rand.Int()
-					setupErrOne := repo.Create(headerOne.Id, urnInkMetadata, strconv.Itoa(initialInk))
+					setupErrOne := repo.Create(diffID, headerOne.Id, urnInkMetadata, strconv.Itoa(initialInk))
 					Expect(setupErrOne).NotTo(HaveOccurred())
 
 					subsequentInk := initialInk + 1
-					setupErrTwo := repo.Create(headerTwo.Id, urnInkMetadata, strconv.Itoa(subsequentInk))
+					setupErrTwo := repo.Create(diffID, headerTwo.Id, urnInkMetadata, strconv.Itoa(subsequentInk))
 					Expect(setupErrTwo).NotTo(HaveOccurred())
 					_, setupErrThree := db.Exec(insertInkQuery,
 						fakeGuy, test_helpers.FakeIlk.Identifier, blockThree, subsequentInk)
@@ -942,7 +942,7 @@ var _ = Describe("Vat storage repository", func() {
 
 				It("sets field in subsequent rows to null if no previous diff exists", func() {
 					initialInk := strconv.Itoa(rand.Int())
-					setupErrOne := repo.Create(headerOne.Id, urnInkMetadata, initialInk)
+					setupErrOne := repo.Create(diffID, headerOne.Id, urnInkMetadata, initialInk)
 					Expect(setupErrOne).NotTo(HaveOccurred())
 					_, setupErrTwo := db.Exec(insertInkQuery,
 						fakeGuy, test_helpers.FakeIlk.Identifier, blockTwo, initialInk)
@@ -960,11 +960,11 @@ var _ = Describe("Vat storage repository", func() {
 
 				It("deletes ilk state associated with diff if identical to previous state", func() {
 					initialInk := rand.Int()
-					setupErrOne := repo.Create(headerOne.Id, urnInkMetadata, strconv.Itoa(initialInk))
+					setupErrOne := repo.Create(diffID, headerOne.Id, urnInkMetadata, strconv.Itoa(initialInk))
 					Expect(setupErrOne).NotTo(HaveOccurred())
 
 					subsequentInk := initialInk + 1
-					setupErrTwo := repo.Create(headerTwo.Id, urnInkMetadata, strconv.Itoa(subsequentInk))
+					setupErrTwo := repo.Create(diffID, headerTwo.Id, urnInkMetadata, strconv.Itoa(subsequentInk))
 					Expect(setupErrTwo).NotTo(HaveOccurred())
 					_, setupErrThree := db.Exec(insertInkQuery,
 						fakeGuy, test_helpers.FakeIlk.Identifier, blockThree, subsequentInk)
@@ -981,7 +981,7 @@ var _ = Describe("Vat storage repository", func() {
 
 				It("deletes ilk state associated with diff if it's the earliest state in the table", func() {
 					initialInk := rand.Int()
-					setupErrOne := repo.Create(headerOne.Id, urnInkMetadata, strconv.Itoa(initialInk))
+					setupErrOne := repo.Create(diffID, headerOne.Id, urnInkMetadata, strconv.Itoa(initialInk))
 					Expect(setupErrOne).NotTo(HaveOccurred())
 
 					_, deleteErr := db.Exec(deleteRowQuery, headerOne.Id)
@@ -995,11 +995,11 @@ var _ = Describe("Vat storage repository", func() {
 
 				It("updates time created for all urn's states", func() {
 					initialInk := rand.Int()
-					setupErrOne := repo.Create(headerOne.Id, urnInkMetadata, strconv.Itoa(initialInk))
+					setupErrOne := repo.Create(diffID, headerOne.Id, urnInkMetadata, strconv.Itoa(initialInk))
 					Expect(setupErrOne).NotTo(HaveOccurred())
 
 					subsequentInk := initialInk + 1
-					setupErrTwo := repo.Create(headerTwo.Id, urnInkMetadata, strconv.Itoa(subsequentInk))
+					setupErrTwo := repo.Create(diffID, headerTwo.Id, urnInkMetadata, strconv.Itoa(subsequentInk))
 					Expect(setupErrTwo).NotTo(HaveOccurred())
 					expectedTimeCreated := test_helpers.GetValidNullString(FormatTimestamp(rawTimestampTwo))
 					_, setupErrThree := db.Exec(insertInkQuery,
