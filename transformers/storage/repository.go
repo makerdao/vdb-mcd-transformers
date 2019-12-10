@@ -21,7 +21,6 @@ import (
 	"strconv"
 
 	repository2 "github.com/makerdao/vulcanizedb/libraries/shared/repository"
-
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 )
 
