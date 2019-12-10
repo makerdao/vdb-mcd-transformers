@@ -45,7 +45,7 @@ var _ = Describe("Queued sin computed columns", func() {
 			sinMappingMetadata     utils.StorageValueMetadata
 			vowRepository          vow.VowStorageRepository
 			headerRepository       repositories.HeaderRepository
-			diffID int64
+			diffID                 int64
 		)
 
 		BeforeEach(func() {
@@ -57,7 +57,7 @@ var _ = Describe("Queued sin computed columns", func() {
 			fakeEra = strconv.Itoa(timestampOne)
 			headerOne = createHeader(blockOne, timestampOne, headerRepository)
 
-			diffID = storage_helper.CreateDiffRecord(db)
+			diffID = storage_helper.CreateFakeDiffRecord(db)
 
 			vowRepository = vow.VowStorageRepository{}
 			vowRepository.SetDB(db)

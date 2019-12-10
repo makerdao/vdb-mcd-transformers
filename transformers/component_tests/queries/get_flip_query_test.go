@@ -22,7 +22,7 @@ var _ = Describe("Single flip view", func() {
 		fakeBidId              = rand.Int()
 		headerOne              core.Header
 		headerRepo             repositories.HeaderRepository
-		diffID int64
+		diffID                 int64
 	)
 
 	BeforeEach(func() {
@@ -33,7 +33,7 @@ var _ = Describe("Single flip view", func() {
 		timestampOne = int(rand.Int31())
 		headerOne = createHeader(blockOne, timestampOne, headerRepo)
 
-		diffID = storage_helper.CreateDiffRecord(db)
+		diffID = storage_helper.CreateFakeDiffRecord(db)
 	})
 
 	It("gets only the specified flip", func() {

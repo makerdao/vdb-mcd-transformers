@@ -43,7 +43,7 @@ var _ = Describe("Flip state computed columns", func() {
 		contractAddress        = fakes.FakeAddress.Hex()
 		fakeBidId              int
 		blockOne, timestampOne int
-		diffID int64
+		diffID                 int64
 	)
 
 	BeforeEach(func() {
@@ -57,7 +57,7 @@ var _ = Describe("Flip state computed columns", func() {
 		headerOne = createHeader(blockOne, timestampOne, headerRepository)
 		logId = test_data.CreateTestLog(headerOne.Id, db).ID
 
-		diffID = storage_helper.CreateDiffRecord(db)
+		diffID = storage_helper.CreateFakeDiffRecord(db)
 
 		flipStorageValues := test_helpers.GetFlipStorageValues(1, test_helpers.FakeIlk.Hex, fakeBidId)
 		test_helpers.CreateFlip(db, diffID, headerOne.Id, flipStorageValues, test_helpers.GetFlipMetadatas(strconv.Itoa(fakeBidId)), contractAddress)

@@ -29,7 +29,7 @@ var _ = Describe("Flap bid events query", func() {
 		headerOne              core.Header
 		fakeBidId              int
 		flapKickEvent          event.InsertionModel
-		diffID int64
+		diffID                 int64
 	)
 
 	BeforeEach(func() {
@@ -52,7 +52,7 @@ var _ = Describe("Flap bid events query", func() {
 		flapKickErr := event.PersistModels([]event.InsertionModel{flapKickEvent}, db)
 		Expect(flapKickErr).NotTo(HaveOccurred())
 
-		diffID = storage_helper.CreateDiffRecord(db)
+		diffID = storage_helper.CreateFakeDiffRecord(db)
 	})
 
 	Describe("all_flap_bid_events", func() {

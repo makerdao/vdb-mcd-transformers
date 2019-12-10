@@ -43,7 +43,7 @@ var _ = Describe("Flip bid event computed columns", func() {
 		contractAddress        = fakes.FakeAddress.Hex()
 		bidId                  int
 		headerRepo             repositories.HeaderRepository
-		diffID int64
+		diffID                 int64
 	)
 
 	BeforeEach(func() {
@@ -55,7 +55,7 @@ var _ = Describe("Flip bid event computed columns", func() {
 		blockOne = rand.Int()
 		timestampOne = int(rand.Int31())
 		headerOne = createHeader(blockOne, timestampOne, headerRepo)
-		diffID = storage_helper.CreateDiffRecord(db)
+		diffID = storage_helper.CreateFakeDiffRecord(db)
 	})
 
 	Describe("flip_bid_event_bid", func() {

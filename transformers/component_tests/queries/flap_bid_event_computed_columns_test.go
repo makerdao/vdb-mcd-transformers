@@ -28,7 +28,7 @@ var _ = Describe("flap_bid_event computed columns", func() {
 		flapKickEvent          event.InsertionModel
 		contractAddress        = fakes.RandomString(42)
 		fakeBidId              = rand.Int()
-		diffID int64
+		diffID                 int64
 	)
 
 	BeforeEach(func() {
@@ -51,7 +51,7 @@ var _ = Describe("flap_bid_event computed columns", func() {
 		insertFlapKickErr := event.PersistModels([]event.InsertionModel{flapKickEvent}, db)
 		Expect(insertFlapKickErr).NotTo(HaveOccurred())
 
-		diffID = storage_helper.CreateDiffRecord(db)
+		diffID = storage_helper.CreateFakeDiffRecord(db)
 	})
 
 	Describe("flap_bid_event_bid", func() {

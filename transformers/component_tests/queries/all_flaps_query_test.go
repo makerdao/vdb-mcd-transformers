@@ -19,7 +19,7 @@ var _ = Describe("All flaps query", func() {
 		contractAddress = "contract address"
 		blockOne, timestampOne int
 		headerOne              core.Header
-		diffID int64
+		diffID                 int64
 	)
 
 	BeforeEach(func() {
@@ -30,7 +30,7 @@ var _ = Describe("All flaps query", func() {
 		timestampOne = int(rand.Int31())
 		headerOne = createHeader(blockOne, timestampOne, headerRepo)
 
-		diffID = storage_helper.CreateDiffRecord(db)
+		diffID = storage_helper.CreateFakeDiffRecord(db)
 	})
 
 	It("gets the most recent flap for every bid id", func() {

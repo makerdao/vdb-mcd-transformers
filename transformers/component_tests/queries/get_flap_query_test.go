@@ -22,7 +22,7 @@ var _ = Describe("Get flap query", func() {
 		blockOne, blockTwo         int
 		timestampOne, timestampTwo int
 		headerOne, headerTwo       core.Header
-		diffID int64
+		diffID                     int64
 	)
 
 	BeforeEach(func() {
@@ -36,7 +36,7 @@ var _ = Describe("Get flap query", func() {
 		headerOne = createHeader(blockOne, timestampOne, headerRepo)
 		headerTwo = createHeader(blockTwo, timestampTwo, headerRepo)
 
-		diffID = storage_helper.CreateDiffRecord(db)
+		diffID = storage_helper.CreateFakeDiffRecord(db)
 	})
 
 	It("gets the specified flap", func() {

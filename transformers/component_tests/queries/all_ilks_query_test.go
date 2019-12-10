@@ -37,7 +37,7 @@ var _ = Describe("All Ilks query", func() {
 		fakeIlkStateBlock1        = test_helpers.GetIlkValues(1)
 		anotherFakeIlk            = test_helpers.AnotherFakeIlk
 		anotherFakeIlkStateBlock2 = test_helpers.GetIlkValues(2)
-		diffID int64
+		diffID                    int64
 	)
 
 	BeforeEach(func() {
@@ -55,7 +55,7 @@ var _ = Describe("All Ilks query", func() {
 		headerOne = createHeader(blockOne, timestampOne, headerRepository)
 		headerTwo = createHeader(blockTwo, timestampTwo, headerRepository)
 
-		diffID = storage_helper.CreateDiffRecord(db)
+		diffID = storage_helper.CreateFakeDiffRecord(db)
 
 		//creating fakeIlk at block 1
 		test_helpers.CreateVatRecords(diffID, headerOne, fakeIlkStateBlock1, test_helpers.FakeIlkVatMetadatas, vatRepository)

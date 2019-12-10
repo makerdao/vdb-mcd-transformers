@@ -53,7 +53,7 @@ var _ = Describe("Flop bid events query", func() {
 		flopKickErr := event.PersistModels([]event.InsertionModel{flopKickEvent}, db)
 		Expect(flopKickErr).NotTo(HaveOccurred())
 
-		diffID = storage_helper.CreateDiffRecord(db)
+		diffID = storage_helper.CreateFakeDiffRecord(db)
 	})
 
 	Describe("all_flop_bid_events", func() {

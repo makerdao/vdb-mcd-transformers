@@ -29,7 +29,7 @@ var _ = Describe("Flop bid event computed columns", func() {
 		flopKickGethLog        types.Log
 		flopKickEvent          event.InsertionModel
 		headerRepo             repositories.HeaderRepository
-		diffID int64
+		diffID                 int64
 	)
 
 	BeforeEach(func() {
@@ -54,7 +54,7 @@ var _ = Describe("Flop bid event computed columns", func() {
 		insertFlopKickErr := event.PersistModels([]event.InsertionModel{flopKickEvent}, db)
 		Expect(insertFlopKickErr).NotTo(HaveOccurred())
 
-		diffID = storage_helper.CreateDiffRecord(db)
+		diffID = storage_helper.CreateFakeDiffRecord(db)
 	})
 
 	Describe("flop_bid_event_bid", func() {

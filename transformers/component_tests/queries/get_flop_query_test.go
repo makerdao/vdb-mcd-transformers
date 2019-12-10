@@ -24,7 +24,7 @@ var _ = Describe("get flop query", func() {
 		headerOne, headerTwo       core.Header
 		flopStorageValuesOne       = test_helpers.GetFlopStorageValues(1, fakeBidId)
 		flopStorageValuesTwo       = test_helpers.GetFlopStorageValues(2, fakeBidId)
-		diffID int64
+		diffID                     int64
 	)
 
 	BeforeEach(func() {
@@ -38,7 +38,7 @@ var _ = Describe("get flop query", func() {
 		headerOne = createHeader(blockOne, timestampOne, headerRepo)
 		headerTwo = createHeader(blockTwo, timestampTwo, headerRepo)
 
-		diffID = storage_helper.CreateDiffRecord(db)
+		diffID = storage_helper.CreateFakeDiffRecord(db)
 	})
 
 	It("gets the specified flop", func() {

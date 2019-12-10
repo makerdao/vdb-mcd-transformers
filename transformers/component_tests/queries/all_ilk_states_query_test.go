@@ -29,7 +29,7 @@ var _ = Describe("Ilk State History Query", func() {
 		headerRepository         repositories.HeaderRepository
 		blockOne, timestampOne   int
 		headerOne, headerTwo     core.Header
-		diffID int64
+		diffID                   int64
 	)
 
 	BeforeEach(func() {
@@ -47,7 +47,7 @@ var _ = Describe("Ilk State History Query", func() {
 		headerOne = createHeader(blockOne, timestampOne, headerRepository)
 		headerTwo = createHeader(blockTwo, timestampTwo, headerRepository)
 
-		diffID = storage_helper.CreateDiffRecord(db)
+		diffID = storage_helper.CreateFakeDiffRecord(db)
 
 		blockOneIlkValues = test_helpers.GetIlkValues(0)
 		test_helpers.CreateVatRecords(diffID, headerOne, blockOneIlkValues, test_helpers.FakeIlkVatMetadatas, vatRepository)

@@ -72,7 +72,7 @@ var _ = Describe("All flip bid events query", func() {
 		flipKickErr := event.PersistModels([]event.InsertionModel{flipKickEvent}, db)
 		Expect(flipKickErr).NotTo(HaveOccurred())
 
-		diffID = storge_helper.CreateDiffRecord(db)
+		diffID = storge_helper.CreateFakeDiffRecord(db)
 	})
 
 	Describe("all_flip_bid_events", func() {

@@ -22,7 +22,7 @@ var _ = Describe("All flops query", func() {
 		contractAddress        = fakes.RandomString(42)
 		blockOne, timestampOne int
 		headerOne              core.Header
-		diffID int64
+		diffID                 int64
 	)
 
 	BeforeEach(func() {
@@ -35,7 +35,7 @@ var _ = Describe("All flops query", func() {
 		timestampOne = int(rand.Int31())
 		headerOne = createHeader(blockOne, timestampOne, headerRepo)
 
-		diffID = storage_helper.CreateDiffRecord(db)
+		diffID = storage_helper.CreateFakeDiffRecord(db)
 	})
 
 	It("gets the most recent flop for every bid id", func() {

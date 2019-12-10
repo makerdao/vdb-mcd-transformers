@@ -24,7 +24,7 @@ var _ = Describe("total ink query", func() {
 		urnTwo                 string
 		blockOne, timestampOne int
 		headerOne              core.Header
-		diffID int64
+		diffID                 int64
 	)
 
 	BeforeEach(func() {
@@ -40,7 +40,7 @@ var _ = Describe("total ink query", func() {
 		timestampOne = int(rand.Int31())
 		headerOne = createHeader(blockOne, timestampOne, headerRepo)
 
-		diffID = test_helpers.CreateDiffRecord(db)
+		diffID = test_helpers.CreateFakeDiffRecord(db)
 	})
 
 	It("gets the latest ink of a single urn", func() {

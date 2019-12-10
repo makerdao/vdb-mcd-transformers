@@ -22,7 +22,7 @@ var _ = Describe("Single urn view", func() {
 		urnOne, urnTwo         string
 		blockOne, timestampOne int
 		headerOne              core.Header
-		diffID int64
+		diffID                 int64
 	)
 
 	const getUrnQuery = `SELECT urn_identifier, ilk_identifier, ink, art, created, updated FROM api.get_urn($1, $2, $3)`
@@ -40,7 +40,7 @@ var _ = Describe("Single urn view", func() {
 		timestampOne = int(rand.Int31())
 		headerOne = createHeader(blockOne, timestampOne, headerRepo)
 
-		diffID = storage_helper.CreateDiffRecord(db)
+		diffID = storage_helper.CreateFakeDiffRecord(db)
 	})
 
 	It("gets only the specified urn", func() {

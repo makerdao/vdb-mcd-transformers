@@ -38,7 +38,7 @@ var _ = Describe("Managed CDP computed columns", func() {
 		headerRepository datastore.HeaderRepository
 		storageValues    map[string]interface{}
 		fakeCdpi         int
-		diffID int64
+		diffID           int64
 	)
 
 	BeforeEach(func() {
@@ -49,7 +49,7 @@ var _ = Describe("Managed CDP computed columns", func() {
 		timestampOne := int(rand.Int31())
 		headerOne = createHeader(blockOne, timestampOne, headerRepository)
 
-		diffID = storage_helper.CreateDiffRecord(db)
+		diffID = storage_helper.CreateFakeDiffRecord(db)
 
 		fakeCdpi = rand.Int()
 		storageValues = test_helpers.GetCdpManagerStorageValues(1, test_helpers.FakeIlk.Hex, test_data.FakeUrn, fakeCdpi)

@@ -46,7 +46,7 @@ var _ = Describe("Frob event computed columns", func() {
 		frobEvent              shared.InsertionModel
 		vatRepository          vat.VatStorageRepository
 		headerRepository       repositories.HeaderRepository
-		diffID int64
+		diffID                 int64
 	)
 
 	BeforeEach(func() {
@@ -70,7 +70,7 @@ var _ = Describe("Frob event computed columns", func() {
 		insertFrobErr := frobRepo.Create([]shared.InsertionModel{frobEvent})
 		Expect(insertFrobErr).NotTo(HaveOccurred())
 
-		diffID = storage_helper.CreateDiffRecord(db)
+		diffID = storage_helper.CreateFakeDiffRecord(db)
 	})
 
 	Describe("frob_event_ilk", func() {

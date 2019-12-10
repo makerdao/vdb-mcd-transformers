@@ -28,7 +28,7 @@ var _ = Describe("Urn view", func() {
 		urnOne                 string
 		urnTwo                 string
 		err                    error
-		diffID int64
+		diffID                 int64
 	)
 
 	const allUrnsQuery = `SELECT urn_identifier, ilk_identifier, block_height, ink, art, created, updated FROM api.all_urns($1)`
@@ -46,7 +46,7 @@ var _ = Describe("Urn view", func() {
 		timestampOne = int(rand.Int31())
 		headerOne = createHeader(blockOne, timestampOne, headerRepo)
 
-		diffID = test_helpers.CreateDiffRecord(db)
+		diffID = test_helpers.CreateFakeDiffRecord(db)
 	})
 
 	It("gets an urn", func() {

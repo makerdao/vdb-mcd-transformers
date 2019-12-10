@@ -48,7 +48,7 @@ var _ = Describe("QueuedSin", func() {
 		rawEra                 int
 		sinMappingMetadata     utils.StorageValueMetadata
 		vowRepository          vow.VowStorageRepository
-		diffID int64
+		diffID                 int64
 	)
 
 	BeforeEach(func() {
@@ -64,7 +64,7 @@ var _ = Describe("QueuedSin", func() {
 		rawEra = int(rand.Int31())
 		fakeEra = strconv.Itoa(rawEra)
 
-		diffID = storage_helper.CreateDiffRecord(db)
+		diffID = storage_helper.CreateFakeDiffRecord(db)
 
 		vowRepository = vow.VowStorageRepository{}
 		vowRepository.SetDB(db)

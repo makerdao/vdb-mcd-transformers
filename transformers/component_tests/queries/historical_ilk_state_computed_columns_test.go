@@ -42,7 +42,7 @@ var _ = Describe("current ilk state computed columns", func() {
 		fakeGuy                = fakes.RandomString(42)
 		headerOne              core.Header
 		headerRepository       repositories.HeaderRepository
-		diffID, logID                  int64
+		diffID, logID          int64
 	)
 
 	BeforeEach(func() {
@@ -55,7 +55,7 @@ var _ = Describe("current ilk state computed columns", func() {
 		fakeHeaderSyncLog := test_data.CreateTestLog(headerOne.Id, db)
 		logID = fakeHeaderSyncLog.ID
 
-		diffID = storage_helper.CreateDiffRecord(db)
+		diffID = storage_helper.CreateFakeDiffRecord(db)
 
 		ilkValues := test_helpers.GetIlkValues(0)
 		test_helpers.CreateIlk(db, diffID, headerOne, ilkValues, test_helpers.FakeIlkVatMetadatas, test_helpers.FakeIlkCatMetadatas, test_helpers.FakeIlkJugMetadatas, test_helpers.FakeIlkSpotMetadatas)

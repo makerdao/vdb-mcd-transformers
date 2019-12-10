@@ -42,7 +42,7 @@ var _ = Describe("Ilk file event computed columns", func() {
 		fileRepo               ilk.VatFileIlkRepository
 		headerOne              core.Header
 		headerRepository       repositories.HeaderRepository
-		diffID int64
+		diffID                 int64
 	)
 
 	BeforeEach(func() {
@@ -64,7 +64,7 @@ var _ = Describe("Ilk file event computed columns", func() {
 		insertFileErr := fileRepo.Create([]shared.InsertionModel{fileEvent})
 		Expect(insertFileErr).NotTo(HaveOccurred())
 
-		diffID = storage_helper.CreateDiffRecord(db)
+		diffID = storage_helper.CreateFakeDiffRecord(db)
 	})
 
 	Describe("ilk_file_event_ilk", func() {

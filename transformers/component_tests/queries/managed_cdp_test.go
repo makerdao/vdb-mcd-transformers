@@ -38,7 +38,7 @@ var _ = Describe("Managed CDP trigger-populated table", func() {
 		fakeCdpi               = rand.Int()
 		headerOne              core.Header
 		blockOne, timestampOne int
-		diffID int64
+		diffID                 int64
 	)
 
 	BeforeEach(func() {
@@ -51,7 +51,7 @@ var _ = Describe("Managed CDP trigger-populated table", func() {
 		timestampOne = int(rand.Int31())
 		headerOne = createHeader(blockOne, timestampOne, headerRepo)
 
-		diffID = storage_helper.CreateDiffRecord(db)
+		diffID = storage_helper.CreateFakeDiffRecord(db)
 	})
 
 	It("stores the state of each managed CDP, unique by cdpi", func() {

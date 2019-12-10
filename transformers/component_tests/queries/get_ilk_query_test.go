@@ -25,7 +25,7 @@ var _ = Describe("Ilk State Query", func() {
 		jugRepository                     jug.JugStorageRepository
 		spotRepository                    spot.SpotStorageRepository
 		headerRepository                  repositories.HeaderRepository
-		diffID int64
+		diffID                            int64
 	)
 
 	BeforeEach(func() {
@@ -46,7 +46,7 @@ var _ = Describe("Ilk State Query", func() {
 		headerTwo = createHeader(blockTwo, timestampTwo, headerRepository)
 		headerThree = createHeader(blockThree, timestampThree, headerRepository)
 
-		diffID = storage_helper.CreateDiffRecord(db)
+		diffID = storage_helper.CreateFakeDiffRecord(db)
 	})
 
 	It("gets an ilk", func() {

@@ -24,7 +24,7 @@ var _ = Describe("Urn history query", func() {
 		fakeUrn                string
 		blockOne, timestampOne int
 		headerOne              core.Header
-		diffID int64
+		diffID                 int64
 	)
 
 	BeforeEach(func() {
@@ -39,7 +39,7 @@ var _ = Describe("Urn history query", func() {
 		timestampOne = int(rand.Int31())
 		headerOne = createHeader(blockOne, timestampOne, headerRepo)
 
-		diffID = test_helpers.CreateDiffRecordWithHeader(db, headerOne)
+		diffID = test_helpers.CreateFakeDiffRecordWithHeader(db, headerOne)
 	})
 
 	It("returns a reverse chronological history for the given ilk and urn", func() {
@@ -67,7 +67,7 @@ var _ = Describe("Urn history query", func() {
 		headerTwo := createHeader(blockTwo, timestampTwo, headerRepo)
 
 		// Diff for header2
-		diffTwoID := test_helpers.CreateDiffRecordWithHeader(db, headerTwo)
+		diffTwoID := test_helpers.CreateFakeDiffRecordWithHeader(db, headerTwo)
 
 		// Relevant ink diff in block two
 		inkBlockTwo := rand.Int()
@@ -99,7 +99,7 @@ var _ = Describe("Urn history query", func() {
 		headerThree := createHeader(blockThree, timestampThree, headerRepo)
 
 		// Diff for header3
-		diffThreeID := test_helpers.CreateDiffRecordWithHeader(db, headerThree)
+		diffThreeID := test_helpers.CreateFakeDiffRecordWithHeader(db, headerThree)
 
 		// Relevant art diff in block three
 		artBlockThree := 0

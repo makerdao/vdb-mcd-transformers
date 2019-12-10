@@ -28,7 +28,7 @@ var _ = Describe("Bite event computed columns", func() {
 		biteEvent              event.InsertionModel
 		vatRepository          vat.VatStorageRepository
 		headerRepository       repositories.HeaderRepository
-		diffID int64
+		diffID                 int64
 	)
 
 	BeforeEach(func() {
@@ -47,7 +47,7 @@ var _ = Describe("Bite event computed columns", func() {
 		insertBiteErr := event.PersistModels([]event.InsertionModel{biteEvent}, db)
 		Expect(insertBiteErr).NotTo(HaveOccurred())
 
-		diffID = storage_helper.CreateDiffRecord(db)
+		diffID = storage_helper.CreateFakeDiffRecord(db)
 	})
 
 	Describe("bite_event_ilk", func() {

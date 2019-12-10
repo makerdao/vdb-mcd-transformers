@@ -43,7 +43,7 @@ var _ = Describe("Frobs query", func() {
 		fakeUrn                = test_data.RandomString(40)
 		blockOne, timestampOne int
 		headerOne              core.Header
-		diffID int64
+		diffID                 int64
 	)
 
 	BeforeEach(func() {
@@ -56,7 +56,7 @@ var _ = Describe("Frobs query", func() {
 		timestampOne = int(rand.Int31())
 		headerOne = createHeader(blockOne, timestampOne, headerRepo)
 
-		diffID = storage_helper.CreateDiffRecord(db)
+		diffID = storage_helper.CreateFakeDiffRecord(db)
 	})
 
 	Describe("urn_frobs", func() {

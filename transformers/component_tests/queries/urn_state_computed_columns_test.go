@@ -47,7 +47,7 @@ var _ = Describe("Urn state computed columns", func() {
 		catRepository          cat.CatStorageRepository
 		jugRepository          jug.JugStorageRepository
 		headerRepository       repositories.HeaderRepository
-		diffID int64
+		diffID                 int64
 	)
 
 	BeforeEach(func() {
@@ -64,7 +64,7 @@ var _ = Describe("Urn state computed columns", func() {
 		catRepository.SetDB(db)
 		jugRepository.SetDB(db)
 
-		diffID = storage_helper.CreateDiffRecord(db)
+		diffID = storage_helper.CreateFakeDiffRecord(db)
 	})
 
 	Describe("urn_state_ilk", func() {

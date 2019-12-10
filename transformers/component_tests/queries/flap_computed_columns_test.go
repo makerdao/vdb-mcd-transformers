@@ -25,7 +25,7 @@ var _ = Describe("Flap computed columns", func() {
 		fakeBidId              = rand.Int()
 		blockOne, timestampOne int
 		headerOne              core.Header
-		diffID int64
+		diffID                 int64
 	)
 
 	BeforeEach(func() {
@@ -36,7 +36,7 @@ var _ = Describe("Flap computed columns", func() {
 		timestampOne := int(rand.Int31())
 		headerOne = createHeader(blockOne, timestampOne, headerRepo)
 
-		diffID = storage_helper.CreateDiffRecord(db)
+		diffID = storage_helper.CreateFakeDiffRecord(db)
 	})
 
 	Describe("flap_bid_events", func() {

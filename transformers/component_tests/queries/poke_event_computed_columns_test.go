@@ -26,7 +26,7 @@ var _ = Describe("all poke events query", func() {
 		spotPokeEvent          shared.InsertionModel
 		spotPokeRepo           spot_poke.SpotPokeRepository
 		headerRepository       repositories.HeaderRepository
-		diffID int64
+		diffID                 int64
 	)
 
 	BeforeEach(func() {
@@ -48,7 +48,7 @@ var _ = Describe("all poke events query", func() {
 		insertSpotPokeErr := spotPokeRepo.Create([]shared.InsertionModel{spotPokeEvent})
 		Expect(insertSpotPokeErr).NotTo(HaveOccurred())
 
-		diffID = storage_helper.CreateDiffRecord(db)
+		diffID = storage_helper.CreateFakeDiffRecord(db)
 	})
 
 	Describe("poke_event_ilk", func() {
