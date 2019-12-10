@@ -22,7 +22,6 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vulcanizedb/pkg/core"
-	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
@@ -33,13 +32,12 @@ import (
 
 var _ = Describe("Vat grab converter", func() {
 	var (
-		converter vat_grab.Converter
-		db        *postgres.DB
+		converter = vat_grab.Converter{}
+		db = 		test_config.NewTestDB(test_config.NewTestNode())
 	)
 
 	BeforeEach(func() {
-		converter = vat_grab.Converter{}
-		db = test_config.NewTestDB(test_config.NewTestNode())
+		test_config.CleanTestDB(db)
 	})
 
 	It("returns err if log is missing topics", func() {
@@ -72,7 +70,7 @@ var _ = Describe("Vat grab converter", func() {
 		urnID, urnErr := shared.GetOrCreateUrn(urn, ilk, db)
 		Expect(urnErr).NotTo(HaveOccurred())
 
-		expectedModel := test_data.VatGrabModelWithPositiveDink
+		expectedModel := test_data.VatGrabModelWithPositiveDink()
 		expectedModel.ColumnValues[constants.UrnColumn] = urnID
 
 		Expect(len(models)).To(Equal(1))
@@ -89,7 +87,7 @@ var _ = Describe("Vat grab converter", func() {
 		urnID, urnErr := shared.GetOrCreateUrn(urn, ilk, db)
 		Expect(urnErr).NotTo(HaveOccurred())
 
-		expectedModel := test_data.VatGrabModelWithNegativeDink
+		expectedModel := test_data.VatGrabModelWithNegativeDink()
 		expectedModel.ColumnValues[constants.UrnColumn] = urnID
 
 		Expect(len(models)).To(Equal(1))

@@ -17,16 +17,13 @@
 package test_data
 
 import (
-	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
-	"math/rand"
-
-	"github.com/makerdao/vulcanizedb/pkg/core"
-
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
-
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
+	"github.com/makerdao/vulcanizedb/pkg/core"
+	"math/rand"
 )
 
 var rawVatGrabLogWithPositiveDink = types.Log{
@@ -53,7 +50,7 @@ var VatGrabHeaderSyncLogWithPositiveDink = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-var VatGrabModelWithPositiveDink = event.InsertionModel{
+var vatGrabModelWithPositiveDink = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.VatGrabTable,
 	OrderedColumns: []event.ColumnName{
@@ -93,7 +90,7 @@ var VatGrabHeaderSyncLogWithNegativeDink = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-var VatGrabModelWithNegativeDink = event.InsertionModel{
+var vatGrabModelWithNegativeDink = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.VatGrabTable,
 	OrderedColumns: []event.ColumnName{
@@ -107,4 +104,11 @@ var VatGrabModelWithNegativeDink = event.InsertionModel{
 		event.HeaderFK:       VatGrabHeaderSyncLogWithNegativeDink.HeaderID,
 		event.LogFK:          VatGrabHeaderSyncLogWithNegativeDink.ID,
 	},
+}
+
+func VatGrabModelWithPositiveDink() event.InsertionModel {
+	return CopyEventModel(vatGrabModelWithPositiveDink)
+}
+func VatGrabModelWithNegativeDink() event.InsertionModel {
+	return CopyEventModel(vatGrabModelWithNegativeDink)
 }
