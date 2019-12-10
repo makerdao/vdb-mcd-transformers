@@ -17,15 +17,11 @@
 package initializer
 
 import (
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
-
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/jug_drip"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 )
 
-var EventTransformerInitializer transformer.EventTransformerInitializer = shared.EventTransformer{
-	Config:     shared.GetEventTransformerConfig(constants.JugDripTable, constants.JugDripSignature()),
-	Converter:  &jug_drip.JugDripConverter{},
-	Repository: &jug_drip.JugDripRepository{},
-}.NewEventTransformer
+var EventTransformerInitializer transformer.EventTransformerInitializer = event.Transformer{
+	Config:    transformer.EventTransformerConfig{},
+	Converter: nil,
+}.NewTransformer
