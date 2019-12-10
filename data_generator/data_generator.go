@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	"math/rand"
 	"os"
 	"strings"
@@ -42,7 +44,7 @@ const (
 			SELECT id FROM selectedAddressId
 		)) RETURNING id`
 	insertVatFrobSql = `INSERT INTO maker.vat_frob (header_id, urn_id, v, w, dink, dart, log_id)
-		VALUES($1, $2::NUMERIC, $3, $4, $5::NUMERIC, $6::NUMERIC, $7)
+		VALUES($1::NUMERIC, $2::NUMERIC, $3, $4, $5::NUMERIC, $6::NUMERIC, $7::NUMERIC)
 		ON CONFLICT (header_id, log_id)
 		DO UPDATE SET urn_id = $2, v = $3, w = $4, dink = $5, dart = $6;`
 )
@@ -116,6 +118,7 @@ func main() {
 type GeneratorState struct {
 	db            *postgres.DB
 	currentHeader core.Header // Current work header (Read-only everywhere except in Run)
+	currentDiffID int64       // Current diff record
 	ilks          []int64     // Generated ilks
 	urns          []int64     // Generated urns
 	pgTx          *sqlx.Tx
@@ -155,6 +158,11 @@ func (state *GeneratorState) Run(steps int) error {
 			return fmt.Errorf("error inserting current header: %v", headerErr)
 		}
 
+		diffErr := state.insertDiffRecord()
+		if diffErr != nil {
+			return fmt.Errorf("error inserting current storage diff: %v", diffErr)
+		}
+
 		p = rand.Float32()
 		if p < 0.2 { // Interact with Ilks
 			err = state.touchIlks()
@@ -184,6 +192,11 @@ func (state *GeneratorState) doInitialSetup() error {
 	headerErr := state.insertCurrentHeader()
 	if headerErr != nil {
 		return fmt.Errorf("could not insert initial header: %v", headerErr)
+	}
+
+	diffErr := state.insertDiffRecord()
+	if diffErr != nil {
+		return fmt.Errorf("error inserting initial storage diff: %v", diffErr)
 	}
 
 	ilkErr := state.createIlk()
@@ -233,10 +246,10 @@ func (state *GeneratorState) updateIlk() error {
 	p := rand.Float64()
 	newValue := rand.Int()
 	if p < 0.1 {
-		_, storageErr = state.pgTx.Exec(vat.InsertIlkRateQuery, state.currentHeader.Id, randomIlkId, newValue)
+		_, storageErr = state.pgTx.Exec(vat.InsertIlkRateQuery, state.currentDiffID, state.currentHeader.Id, randomIlkId, newValue)
 		// Rate is changed in fold, event which isn't included in spec
 	} else {
-		_, storageErr = state.pgTx.Exec(vat.InsertIlkSpotQuery, state.currentHeader.Id, randomIlkId, newValue)
+		_, storageErr = state.pgTx.Exec(vat.InsertIlkSpotQuery, state.currentDiffID, state.currentHeader.Id, randomIlkId, newValue)
 		var logID int64
 		logErr = state.pgTx.QueryRow(insertLogSql, state.currentHeader.Id).Scan(&logID)
 		_, eventErr = state.pgTx.Exec(spot_poke.InsertSpotPokeQuery,
@@ -281,8 +294,8 @@ func (state *GeneratorState) createUrn() error {
 
 	ink := rand.Int()
 	art := rand.Int()
-	_, artErr := state.pgTx.Exec(vat.InsertUrnArtQuery, state.currentHeader.Id, urnId, art)
-	_, inkErr := state.pgTx.Exec(vat.InsertUrnInkQuery, state.currentHeader.Id, urnId, ink)
+	_, artErr := state.pgTx.Exec(vat.InsertUrnArtQuery, state.currentDiffID, state.currentHeader.Id, urnId, art)
+	_, inkErr := state.pgTx.Exec(vat.InsertUrnInkQuery, state.currentDiffID, state.currentHeader.Id, urnId, ink)
 	var logID int64
 	logErr := state.pgTx.QueryRow(insertLogSql, state.currentHeader.Id).Scan(&logID)
 	_, frobErr := state.pgTx.Exec(insertVatFrobSql,
@@ -313,14 +326,14 @@ func (state *GeneratorState) updateUrn() error {
 	p := rand.Float32()
 	if p < 0.5 {
 		// Update ink
-		_, updateErr = state.pgTx.Exec(vat.InsertUrnInkQuery, state.currentHeader.Id, randomUrnId, newValue)
+		_, updateErr = state.pgTx.Exec(vat.InsertUrnInkQuery, state.currentDiffID, state.currentHeader.Id, randomUrnId, newValue)
 		var logID int64
 		logErr = state.pgTx.QueryRow(insertLogSql, state.currentHeader.Id).Scan(&logID)
 		_, frobErr = state.pgTx.Exec(insertVatFrobSql,
 			state.currentHeader.Id, randomUrnId, randomGuy, randomGuy, newValue, 0, logID)
 	} else {
 		// Update art
-		_, updateErr = state.pgTx.Exec(vat.InsertUrnArtQuery, state.currentHeader.Id, randomUrnId, newValue)
+		_, updateErr = state.pgTx.Exec(vat.InsertUrnArtQuery, state.currentDiffID, state.currentHeader.Id, randomUrnId, newValue)
 		var logID int64
 		logErr = state.pgTx.QueryRow(insertLogSql, state.currentHeader.Id).Scan(&logID)
 		_, frobErr = state.pgTx.Exec(insertVatFrobSql,
@@ -382,13 +395,13 @@ func (state *GeneratorState) insertInitialIlkData(ilkId int64) error {
 	}
 
 	for _, intInsertSql := range intInsertions {
-		_, err := state.pgTx.Exec(intInsertSql, state.currentHeader.Id, ilkId, rand.Int())
+		_, err := state.pgTx.Exec(intInsertSql, state.currentDiffID, state.currentHeader.Id, ilkId, rand.Int())
 		if err != nil {
 			return fmt.Errorf("error inserting initial ilk data: %v", err)
 		}
 	}
 	_, flipErr := state.pgTx.Exec(cat.InsertCatIlkFlipQuery,
-		state.currentHeader.Id, ilkId, test_data.AlreadySeededRandomString(10))
+		state.currentDiffID, state.currentHeader.Id, ilkId, test_data.AlreadySeededRandomString(10))
 
 	if flipErr != nil {
 		return fmt.Errorf("error inserting initial ilk data: %v", flipErr)
@@ -414,6 +427,14 @@ func (state *GeneratorState) insertCurrentBlockTx() error {
 	txTo := getRandomAddress()
 	_, txErr := state.pgTx.Exec(txSql, state.currentHeader.Id, txHash, txFrom, txIndex, txTo)
 	return txErr
+}
+
+func (state *GeneratorState) insertDiffRecord() error {
+	fakeRawDiff := fakes.GetFakeStorageDiffForHeader(state.currentHeader, common.Hash{}, common.Hash{}, common.Hash{})
+	storageDiffRepo := repositories.NewStorageDiffRepository(state.db)
+	diffID, insertDiffErr := storageDiffRepo.CreateStorageDiff(fakeRawDiff)
+	state.currentDiffID = diffID
+	return insertDiffErr
 }
 
 // UTF-oblivious, names generated with alphanums anyway
