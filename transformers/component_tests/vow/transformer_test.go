@@ -42,6 +42,7 @@ var _ = Describe("Executing the transformer", func() {
 			Repository:        &repository,
 		}
 		headerID int64
+		header   = fakes.FakeHeader
 	)
 
 	BeforeEach(func() {
@@ -49,120 +50,107 @@ var _ = Describe("Executing the transformer", func() {
 		transformer.NewTransformer(db)
 		headerRepository := repositories.NewHeaderRepository(db)
 		var insertHeaderErr error
-		headerID, insertHeaderErr = headerRepository.CreateOrUpdateHeader(fakes.FakeHeader)
+		headerID, insertHeaderErr = headerRepository.CreateOrUpdateHeader(header)
 		Expect(insertHeaderErr).NotTo(HaveOccurred())
+		header.Id = headerID
 	})
 
 	It("reads in a Vow.vat storage diff row and persists it", func() {
-		vowVat := utils.StorageDiff{
-			HashedAddress: transformer.HashedAddress,
-			StorageKey:    common.HexToHash("0000000000000000000000000000000000000000000000000000000000000001"),
-			StorageValue:  common.HexToHash("00000000000000000000000067fd6c3575fc2dbe2cb596bd3bebc9edb5571fa1"),
-			HeaderID:      headerID,
-		}
+		key := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000001")
+		value := common.HexToHash("00000000000000000000000067fd6c3575fc2dbe2cb596bd3bebc9edb5571fa1")
+		vowVat := test_helpers.CreateDiffRecord(db, header, transformer.HashedAddress, key, value)
+
 		err := transformer.Execute(vowVat)
 		Expect(err).NotTo(HaveOccurred())
 
 		var vatResult test_helpers.VariableRes
-		err = db.Get(&vatResult, `SELECT header_id, vat AS value FROM maker.vow_vat`)
+		err = db.Get(&vatResult, `SELECT diff_id, header_id, vat AS value FROM maker.vow_vat`)
 		Expect(err).NotTo(HaveOccurred())
-		test_helpers.AssertVariable(vatResult, headerID, "0x67fd6c3575Fc2dBE2CB596bD3bEbc9EDb5571fA1")
+		test_helpers.AssertVariable(vatResult, vowVat.ID, headerID, "0x67fd6c3575Fc2dBE2CB596bD3bEbc9EDb5571fA1")
 	})
 
 	It("reads in a Vow.flapper storage diff row and persists it", func() {
-		vowFlapper := utils.StorageDiff{
-			HashedAddress: transformer.HashedAddress,
-			StorageKey:    common.HexToHash("0000000000000000000000000000000000000000000000000000000000000002"),
-			StorageValue:  common.HexToHash("000000000000000000000000b6e31ab6ea62be7c530c32daea96e84d92fe20b7"),
-			HeaderID:      headerID,
-		}
+		key := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000002")
+		value := common.HexToHash("000000000000000000000000b6e31ab6ea62be7c530c32daea96e84d92fe20b7")
+		vowFlapper := test_helpers.CreateDiffRecord(db, header, transformer.HashedAddress, key, value)
+
 		err := transformer.Execute(vowFlapper)
 		Expect(err).NotTo(HaveOccurred())
 
 		var flapperResult test_helpers.VariableRes
-		err = db.Get(&flapperResult, `SELECT header_id, flapper AS value FROM maker.vow_flapper`)
+		err = db.Get(&flapperResult, `SELECT diff_id, header_id, flapper AS value FROM maker.vow_flapper`)
 		Expect(err).NotTo(HaveOccurred())
-		test_helpers.AssertVariable(flapperResult, headerID, "0xB6e31ab6Ea62Be7c530C32DAEa96E84d92fe20B7")
+		test_helpers.AssertVariable(flapperResult, vowFlapper.ID, headerID, "0xB6e31ab6Ea62Be7c530C32DAEa96E84d92fe20B7")
 	})
 
 	It("reads in a Vow.flopper storage diff row and persists it", func() {
-		vowFlopper := utils.StorageDiff{
-			HashedAddress: transformer.HashedAddress,
-			StorageKey:    common.HexToHash("0000000000000000000000000000000000000000000000000000000000000003"),
-			StorageValue:  common.HexToHash("000000000000000000000000275ec1950d6406e3ce6156f9f529c047ea41c8ce"),
-			HeaderID:      headerID,
-		}
+		key := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000003")
+		value := common.HexToHash("000000000000000000000000275ec1950d6406e3ce6156f9f529c047ea41c8ce")
+		vowFlopper := test_helpers.CreateDiffRecord(db, header, transformer.HashedAddress, key, value)
+
 		err := transformer.Execute(vowFlopper)
 		Expect(err).NotTo(HaveOccurred())
 
 		var flopperResult test_helpers.VariableRes
-		err = db.Get(&flopperResult, `SELECT header_id, flopper AS value FROM maker.vow_flopper`)
+		err = db.Get(&flopperResult, `SELECT diff_id, header_id, flopper AS value FROM maker.vow_flopper`)
 		Expect(err).NotTo(HaveOccurred())
-		test_helpers.AssertVariable(flopperResult, headerID, "0x275eC1950D6406e3cE6156f9F529c047Ea41c8cE")
+		test_helpers.AssertVariable(flopperResult, vowFlopper.ID, headerID, "0x275eC1950D6406e3cE6156f9F529c047Ea41c8cE")
 	})
 
 	It("reads in a Vow.dump storage diff row and persists it", func() {
-		vowDump := utils.StorageDiff{
-			HashedAddress: transformer.HashedAddress,
-			StorageKey:    common.HexToHash("0000000000000000000000000000000000000000000000000000000000000008"),
-			StorageValue:  common.HexToHash("000000000000000000000000000000000000000000000000002386f26fc10000"),
-			HeaderID:      headerID,
-		}
+		key := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000008")
+		value := common.HexToHash("000000000000000000000000000000000000000000000000002386f26fc10000")
+		vowDump := test_helpers.CreateDiffRecord(db, header, transformer.HashedAddress, key, value)
+
 		err := transformer.Execute(vowDump)
 		Expect(err).NotTo(HaveOccurred())
 
 		var rowResult test_helpers.VariableRes
-		err = db.Get(&rowResult, `SELECT header_id, dump AS value FROM maker.vow_dump`)
+		err = db.Get(&rowResult, `SELECT diff_id, header_id, dump AS value FROM maker.vow_dump`)
 		Expect(err).NotTo(HaveOccurred())
-		test_helpers.AssertVariable(rowResult, headerID, "10000000000000000")
+		test_helpers.AssertVariable(rowResult, vowDump.ID, headerID, "10000000000000000")
 	})
 
 	It("reads in a Vow.sump storage diff row and persists it", func() {
-		vowSump := utils.StorageDiff{
-			HashedAddress: transformer.HashedAddress,
-			StorageKey:    common.HexToHash("0000000000000000000000000000000000000000000000000000000000000009"),
-			StorageValue:  common.HexToHash("00000000000000000000000000047bf19673df52e37f2410011d100000000000"),
-			HeaderID:      headerID,
-		}
+		key := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000009")
+		value := common.HexToHash("00000000000000000000000000047bf19673df52e37f2410011d100000000000")
+		vowSump := test_helpers.CreateDiffRecord(db, header, transformer.HashedAddress, key, value)
+
 		err := transformer.Execute(vowSump)
 		Expect(err).NotTo(HaveOccurred())
 
 		var rowResult test_helpers.VariableRes
-		err = db.Get(&rowResult, `SELECT header_id, sump AS value FROM maker.vow_sump`)
+		err = db.Get(&rowResult, `SELECT diff_id, header_id, sump AS value FROM maker.vow_sump`)
 		Expect(err).NotTo(HaveOccurred())
-		test_helpers.AssertVariable(rowResult, headerID, "100000000000000000000000000000000000000000000")
+		test_helpers.AssertVariable(rowResult, vowSump.ID, headerID, "100000000000000000000000000000000000000000000")
 	})
 
 	It("reads in a Vow.bump storage diff row and persists it", func() {
-		vowBump := utils.StorageDiff{
-			HashedAddress: transformer.HashedAddress,
-			StorageKey:    common.HexToHash("000000000000000000000000000000000000000000000000000000000000000a"),
-			StorageValue:  common.HexToHash("00000000000000000000000000047bf19673df52e37f2410011d100000000000"),
-			HeaderID:      headerID,
-		}
+		key := common.HexToHash("000000000000000000000000000000000000000000000000000000000000000a")
+		value := common.HexToHash("00000000000000000000000000047bf19673df52e37f2410011d100000000000")
+		vowBump := test_helpers.CreateDiffRecord(db, header, transformer.HashedAddress, key, value)
+
 		err := transformer.Execute(vowBump)
 		Expect(err).NotTo(HaveOccurred())
 
 		var rowResult test_helpers.VariableRes
-		err = db.Get(&rowResult, `SELECT header_id, bump AS value FROM maker.vow_bump`)
+		err = db.Get(&rowResult, `SELECT diff_id, header_id, bump AS value FROM maker.vow_bump`)
 		Expect(err).NotTo(HaveOccurred())
-		test_helpers.AssertVariable(rowResult, headerID, "100000000000000000000000000000000000000000000")
+		test_helpers.AssertVariable(rowResult, vowBump.ID, headerID, "100000000000000000000000000000000000000000000")
 	})
 
 	It("reads in a Vow.hump storage diff row and persists it", func() {
 		// TODO: Update with a real storage diff
-		vowHump := utils.StorageDiff{
-			HashedAddress: transformer.HashedAddress,
-			StorageKey:    common.HexToHash("000000000000000000000000000000000000000000000000000000000000000b"),
-			StorageValue:  common.HexToHash("00000000000000000000000000047bf19673df52e37f2410011d100000000000"),
-			HeaderID:      headerID,
-		}
+		key := common.HexToHash("000000000000000000000000000000000000000000000000000000000000000b")
+		value := common.HexToHash("00000000000000000000000000047bf19673df52e37f2410011d100000000000")
+		vowHump := test_helpers.CreateDiffRecord(db, header, transformer.HashedAddress, key, value)
+
 		err := transformer.Execute(vowHump)
 		Expect(err).NotTo(HaveOccurred())
 
 		var rowResult test_helpers.VariableRes
-		err = db.Get(&rowResult, `SELECT header_id, hump AS value FROM maker.vow_hump`)
+		err = db.Get(&rowResult, `SELECT diff_id, header_id, hump AS value FROM maker.vow_hump`)
 		Expect(err).NotTo(HaveOccurred())
-		test_helpers.AssertVariable(rowResult, headerID, "100000000000000000000000000000000000000000000")
+		test_helpers.AssertVariable(rowResult, vowHump.ID, headerID, "100000000000000000000000000000000000000000000")
 	})
 })

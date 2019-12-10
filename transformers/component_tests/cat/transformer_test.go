@@ -17,8 +17,6 @@
 package cat
 
 import (
-	"strconv"
-
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
@@ -31,6 +29,7 @@ import (
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"strconv"
 )
 
 var _ = Describe("Executing the transformer", func() {
@@ -45,6 +44,7 @@ var _ = Describe("Executing the transformer", func() {
 			Repository:        &repository,
 		}
 		headerID int64
+		header   = fakes.FakeHeader
 	)
 
 	BeforeEach(func() {
@@ -52,56 +52,51 @@ var _ = Describe("Executing the transformer", func() {
 		transformer.NewTransformer(db)
 		headerRepository := repositories.NewHeaderRepository(db)
 		var insertHeaderErr error
-		headerID, insertHeaderErr = headerRepository.CreateOrUpdateHeader(fakes.FakeHeader)
+		headerID, insertHeaderErr = headerRepository.CreateOrUpdateHeader(header)
 		Expect(insertHeaderErr).NotTo(HaveOccurred())
+		header.Id = headerID
 	})
 
 	It("reads in a Cat Live storage diff row and persists it", func() {
-		catLiveRow := utils.StorageDiff{
-			HashedAddress: transformer.HashedAddress,
-			StorageKey:    common.HexToHash("0000000000000000000000000000000000000000000000000000000000000002"),
-			StorageValue:  common.HexToHash("0000000000000000000000000000000000000000000000000000000000000001"),
-			HeaderID:      headerID,
-		}
-		err := transformer.Execute(catLiveRow)
+		key := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000002")
+		value := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000001")
+		catLiveDiff := test_helpers.CreateDiffRecord(db, header, transformer.HashedAddress, key, value)
+
+		err := transformer.Execute(catLiveDiff)
 		Expect(err).NotTo(HaveOccurred())
 
 		var liveResult test_helpers.VariableRes
-		err = db.Get(&liveResult, `SELECT header_id, live AS value FROM maker.cat_live`)
+		err = db.Get(&liveResult, `SELECT diff_id, header_id, live AS value FROM maker.cat_live`)
 		Expect(err).NotTo(HaveOccurred())
-		test_helpers.AssertVariable(liveResult, headerID, "1")
+		test_helpers.AssertVariable(liveResult, catLiveDiff.ID, headerID, "1")
 	})
 
 	It("reads in a Cat Vat storage diff row and persists it", func() {
-		catVatRow := utils.StorageDiff{
-			HashedAddress: transformer.HashedAddress,
-			StorageKey:    common.HexToHash("0000000000000000000000000000000000000000000000000000000000000003"),
-			StorageValue:  common.HexToHash("000000000000000000000000acdd1ee0f74954ed8f0ac581b081b7b86bd6aad9"),
-			HeaderID:      headerID,
-		}
-		err := transformer.Execute(catVatRow)
+		key := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000003")
+		value := common.HexToHash("000000000000000000000000acdd1ee0f74954ed8f0ac581b081b7b86bd6aad9")
+		catVatDiff := test_helpers.CreateDiffRecord(db, header, transformer.HashedAddress, key, value)
+
+		err := transformer.Execute(catVatDiff)
 		Expect(err).NotTo(HaveOccurred())
 
 		var vatResult test_helpers.VariableRes
-		err = db.Get(&vatResult, `SELECT header_id, vat AS value FROM maker.cat_vat`)
+		err = db.Get(&vatResult, `SELECT diff_id, header_id, vat AS value FROM maker.cat_vat`)
 		Expect(err).NotTo(HaveOccurred())
-		test_helpers.AssertVariable(vatResult, headerID, "0xaCdd1ee0F74954Ed8F0aC581b081B7b86bD6aad9")
+		test_helpers.AssertVariable(vatResult, catVatDiff.ID, headerID, "0xaCdd1ee0F74954Ed8F0aC581b081B7b86bD6aad9")
 	})
 
 	It("reads in a Cat Vow storage diff row and persists it", func() {
-		catVowRow := utils.StorageDiff{
-			HashedAddress: transformer.HashedAddress,
-			StorageKey:    common.HexToHash("0000000000000000000000000000000000000000000000000000000000000004"),
-			StorageValue:  common.HexToHash("00000000000000000000000021444ac712ccd21ce82af24ea1aec64cf07361d2"),
-			HeaderID:      headerID,
-		}
-		err := transformer.Execute(catVowRow)
+		key := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000004")
+		value := common.HexToHash("00000000000000000000000021444ac712ccd21ce82af24ea1aec64cf07361d2")
+		catVowDiff := test_helpers.CreateDiffRecord(db, header, transformer.HashedAddress, key, value)
+
+		err := transformer.Execute(catVowDiff)
 		Expect(err).NotTo(HaveOccurred())
 
 		var vowResult test_helpers.VariableRes
-		err = db.Get(&vowResult, `SELECT header_id, vow AS value FROM maker.cat_vow`)
+		err = db.Get(&vowResult, `SELECT diff_id, header_id, vow AS value FROM maker.cat_vow`)
 		Expect(err).NotTo(HaveOccurred())
-		test_helpers.AssertVariable(vowResult, headerID, "0x21444AC712cCD21ce82AF24eA1aEc64Cf07361D2")
+		test_helpers.AssertVariable(vowResult, catVowDiff.ID, headerID, "0x21444AC712cCD21ce82AF24eA1aEc64Cf07361D2")
 	})
 
 	Describe("ilk", func() {
@@ -118,51 +113,45 @@ var _ = Describe("Executing the transformer", func() {
 		})
 
 		It("reads in a Cat Ilk Flip storage diff row and persists it", func() {
-			catIlkFlipRow := utils.StorageDiff{
-				HashedAddress: transformer.HashedAddress,
-				StorageKey:    common.HexToHash("ddedd75666d350fcd985cb35e3b9f2d4f288318d97268199e03d4405df947015"),
-				StorageValue:  common.HexToHash("000000000000000000000000b88d2655aba486a06e638707fbebd858d430ac6e"),
-				HeaderID:      headerID,
-			}
-			err := transformer.Execute(catIlkFlipRow)
+			key := common.HexToHash("ddedd75666d350fcd985cb35e3b9f2d4f288318d97268199e03d4405df947015")
+			value := common.HexToHash("000000000000000000000000b88d2655aba486a06e638707fbebd858d430ac6e")
+			catIlkFlipDiff := test_helpers.CreateDiffRecord(db, header, transformer.HashedAddress, key, value)
+
+			err := transformer.Execute(catIlkFlipDiff)
 			Expect(err).NotTo(HaveOccurred())
 
 			var ilkFlipResult test_helpers.MappingRes
-			err = db.Get(&ilkFlipResult, `SELECT header_id, ilk_id AS key, flip AS value FROM maker.cat_ilk_flip`)
+			err = db.Get(&ilkFlipResult, `SELECT diff_id, header_id, ilk_id AS key, flip AS value FROM maker.cat_ilk_flip`)
 			Expect(err).NotTo(HaveOccurred())
-			test_helpers.AssertMapping(ilkFlipResult, headerID, strconv.FormatInt(ilkID, 10), "0xB88d2655abA486A06e638707FBEbD858D430AC6E")
+			test_helpers.AssertMapping(ilkFlipResult, catIlkFlipDiff.ID, headerID, strconv.FormatInt(ilkID, 10), "0xB88d2655abA486A06e638707FBEbD858D430AC6E")
 		})
 
 		It("reads in a Cat Ilk Chop storage diff row and persists it", func() {
-			catIlkChopRow := utils.StorageDiff{
-				HashedAddress: transformer.HashedAddress,
-				StorageKey:    common.HexToHash("ddedd75666d350fcd985cb35e3b9f2d4f288318d97268199e03d4405df947016"),
-				StorageValue:  common.HexToHash("0000000000000000000000000000000000000000033b2e3c9fd0803ce8000000"),
-				HeaderID:      headerID,
-			}
-			err := transformer.Execute(catIlkChopRow)
+			key := common.HexToHash("ddedd75666d350fcd985cb35e3b9f2d4f288318d97268199e03d4405df947016")
+			value := common.HexToHash("0000000000000000000000000000000000000000033b2e3c9fd0803ce8000000")
+			catIlkChopDiff := test_helpers.CreateDiffRecord(db, header, transformer.HashedAddress, key, value)
+
+			err := transformer.Execute(catIlkChopDiff)
 			Expect(err).NotTo(HaveOccurred())
 
 			var ilkChopResult test_helpers.MappingRes
-			err = db.Get(&ilkChopResult, `SELECT header_id, ilk_id AS key, chop AS value FROM maker.cat_ilk_chop`)
+			err = db.Get(&ilkChopResult, `SELECT diff_id, header_id, ilk_id AS key, chop AS value FROM maker.cat_ilk_chop`)
 			Expect(err).NotTo(HaveOccurred())
-			test_helpers.AssertMapping(ilkChopResult, headerID, strconv.FormatInt(ilkID, 10), "1000000000000000000000000000")
+			test_helpers.AssertMapping(ilkChopResult, catIlkChopDiff.ID, headerID, strconv.FormatInt(ilkID, 10), "1000000000000000000000000000")
 		})
 
 		It("reads in a Cat Ilk Lump storage diff row and persists it", func() {
-			catIlkLumpRow := utils.StorageDiff{
-				HashedAddress: transformer.HashedAddress,
-				StorageKey:    common.HexToHash("ddedd75666d350fcd985cb35e3b9f2d4f288318d97268199e03d4405df947017"),
-				StorageValue:  common.HexToHash("000000000000000000000006d79f82328ea3da61e066ebb2f88a000000000000"),
-				HeaderID:      headerID,
-			}
-			err := transformer.Execute(catIlkLumpRow)
+			key := common.HexToHash("ddedd75666d350fcd985cb35e3b9f2d4f288318d97268199e03d4405df947017")
+			value := common.HexToHash("000000000000000000000006d79f82328ea3da61e066ebb2f88a000000000000")
+			catIlkLumpDiff := test_helpers.CreateDiffRecord(db, header, transformer.HashedAddress, key, value)
+
+			err := transformer.Execute(catIlkLumpDiff)
 			Expect(err).NotTo(HaveOccurred())
 
 			var ilkLumpResult test_helpers.MappingRes
-			err = db.Get(&ilkLumpResult, `SELECT header_id, ilk_id AS key, lump AS value FROM maker.cat_ilk_lump`)
+			err = db.Get(&ilkLumpResult, `SELECT diff_id, header_id, ilk_id AS key, lump AS value FROM maker.cat_ilk_lump`)
 			Expect(err).NotTo(HaveOccurred())
-			test_helpers.AssertMapping(ilkLumpResult, headerID, strconv.FormatInt(ilkID, 10), "10000000000000000000000000000000000000000000000000")
+			test_helpers.AssertMapping(ilkLumpResult, catIlkLumpDiff.ID, headerID, strconv.FormatInt(ilkID, 10), "10000000000000000000000000000000000000000000000000")
 		})
 	})
 })

@@ -47,6 +47,7 @@ var _ = Describe("Executing the transformer", func() {
 			Repository:        &repository,
 		}
 		headerID int64
+		header   = fakes.FakeHeader
 	)
 
 	BeforeEach(func() {
@@ -57,71 +58,62 @@ var _ = Describe("Executing the transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 		headerRepository := repositories.NewHeaderRepository(db)
 		var insertHeaderErr error
-		headerID, insertHeaderErr = headerRepository.CreateOrUpdateHeader(fakes.FakeHeader)
+		headerID, insertHeaderErr = headerRepository.CreateOrUpdateHeader(header)
 		Expect(insertHeaderErr).NotTo(HaveOccurred())
+		header.Id = headerID
 	})
 
 	It("reads in a Spot Vat storage diff row and persists it", func() {
-		spotVatRow := utils.StorageDiff{
-			HashedAddress: transformer.HashedAddress,
-			StorageKey:    common.HexToHash("0000000000000000000000000000000000000000000000000000000000000002"),
-			StorageValue:  common.HexToHash("00000000000000000000000057aa8b02f5d3e28371fedcf672c8668869f9aac7"),
-			HeaderID:      headerID,
-		}
-		err := transformer.Execute(spotVatRow)
+		key := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000002")
+		value := common.HexToHash("00000000000000000000000057aa8b02f5d3e28371fedcf672c8668869f9aac7")
+		spotVatDiff := test_helpers.CreateDiffRecord(db, header, transformer.HashedAddress, key, value)
+		err := transformer.Execute(spotVatDiff)
 		Expect(err).NotTo(HaveOccurred())
 
 		var vatResult test_helpers.VariableRes
-		err = db.Get(&vatResult, `SELECT header_id, vat AS value FROM maker.spot_vat`)
+		err = db.Get(&vatResult, `SELECT diff_id, header_id, vat AS value FROM maker.spot_vat`)
 		Expect(err).NotTo(HaveOccurred())
-		test_helpers.AssertVariable(vatResult, headerID, "0x57aA8B02F5D3E28371FEdCf672C8668869f9AAC7")
+		test_helpers.AssertVariable(vatResult, spotVatDiff.ID, headerID, "0x57aA8B02F5D3E28371FEdCf672C8668869f9AAC7")
 	})
 
 	It("reads in a Spot Par storage diff row and persists it", func() {
-		spotParRow := utils.StorageDiff{
-			HashedAddress: transformer.HashedAddress,
-			StorageKey:    common.HexToHash("0000000000000000000000000000000000000000000000000000000000000003"),
-			StorageValue:  common.HexToHash("0000000000000000000000000000000000000000033b2e3c9fd0803ce8000000"),
-			HeaderID:      headerID,
-		}
-		err := transformer.Execute(spotParRow)
+		key := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000003")
+		value := common.HexToHash("0000000000000000000000000000000000000000033b2e3c9fd0803ce8000000")
+		spotParDiff := test_helpers.CreateDiffRecord(db, header, transformer.HashedAddress, key, value)
+		err := transformer.Execute(spotParDiff)
 		Expect(err).NotTo(HaveOccurred())
 
 		var parResult test_helpers.VariableRes
-		err = db.Get(&parResult, `SELECT header_id, par AS value FROM maker.spot_par`)
+		err = db.Get(&parResult, `SELECT diff_id, header_id, par AS value FROM maker.spot_par`)
 		Expect(err).NotTo(HaveOccurred())
-		test_helpers.AssertVariable(parResult, headerID, "1000000000000000000000000000")
+		test_helpers.AssertVariable(parResult, spotParDiff.ID, headerID, "1000000000000000000000000000")
 	})
 
 	It("reads in a Spot Ilk Pip storage diff row and persists it", func() {
-		spotIlkPipRow := utils.StorageDiff{
-			HashedAddress: transformer.HashedAddress,
-			StorageKey:    common.HexToHash("1730ac98111482efebd8acadb14d7fa301298e0d95bf3c34c3378ef524670bc6"),
-			StorageValue:  common.HexToHash("000000000000000000000000a53e6efb4cbed841eace02220498860905e94998"),
-			HeaderID:      headerID,
-		}
-		err := transformer.Execute(spotIlkPipRow)
+		key := common.HexToHash("1730ac98111482efebd8acadb14d7fa301298e0d95bf3c34c3378ef524670bc6")
+		value := common.HexToHash("000000000000000000000000a53e6efb4cbed841eace02220498860905e94998")
+		spotIlkPipDiff := test_helpers.CreateDiffRecord(db, header, transformer.HashedAddress, key, value)
+
+		err := transformer.Execute(spotIlkPipDiff)
 		Expect(err).NotTo(HaveOccurred())
 
 		var ilkPipResult test_helpers.MappingRes
-		err = db.Get(&ilkPipResult, `SELECT header_id, ilk_id AS key, pip AS value FROM maker.spot_ilk_pip`)
+		err = db.Get(&ilkPipResult, `SELECT diff_id, header_id, ilk_id AS key, pip AS value FROM maker.spot_ilk_pip`)
 		Expect(err).NotTo(HaveOccurred())
-		test_helpers.AssertMapping(ilkPipResult, headerID, strconv.FormatInt(ilkID, 10), "0xA53e6EFB4cBeD841Eace02220498860905E94998")
+		test_helpers.AssertMapping(ilkPipResult, spotIlkPipDiff.ID, headerID, strconv.FormatInt(ilkID, 10), "0xA53e6EFB4cBeD841Eace02220498860905E94998")
 	})
 
 	It("reads in a Spot Ilk Mat storage diff row and persists it", func() {
-		spotIlkMatRow := utils.StorageDiff{
-			HashedAddress: transformer.HashedAddress,
-			StorageKey:    common.HexToHash("1730ac98111482efebd8acadb14d7fa301298e0d95bf3c34c3378ef524670bc7"),
-			StorageValue:  common.HexToHash("000000000000000000000000000000000000000006765c793fa10079d0000000"),
-			HeaderID:      headerID,
-		}
-		err := transformer.Execute(spotIlkMatRow)
+		key := common.HexToHash("1730ac98111482efebd8acadb14d7fa301298e0d95bf3c34c3378ef524670bc7")
+		value := common.HexToHash("000000000000000000000000000000000000000006765c793fa10079d0000000")
+		spotIlkMatDiff := test_helpers.CreateDiffRecord(db, header, transformer.HashedAddress, key, value)
+
+		err := transformer.Execute(spotIlkMatDiff)
 		Expect(err).NotTo(HaveOccurred())
 
 		var ilkRhoResult test_helpers.MappingRes
-		err = db.Get(&ilkRhoResult, `SELECT header_id, ilk_id AS key, mat AS value FROM maker.spot_ilk_mat`)
+		err = db.Get(&ilkRhoResult, `SELECT diff_id, header_id, ilk_id AS key, mat AS value FROM maker.spot_ilk_mat`)
 		Expect(err).NotTo(HaveOccurred())
-		test_helpers.AssertMapping(ilkRhoResult, headerID, strconv.FormatInt(ilkID, 10), "2000000000000000000000000000")
+		test_helpers.AssertMapping(ilkRhoResult, spotIlkMatDiff.ID, headerID, strconv.FormatInt(ilkID, 10), "2000000000000000000000000000")
 	})
 })

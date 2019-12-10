@@ -47,7 +47,7 @@ func SharedStorageRepositoryVariableBehaviors(inputs *StorageVariableBehaviorInp
 			headerID, insertHeaderErr = headerRepository.CreateOrUpdateHeader(fakes.FakeHeader)
 			Expect(insertHeaderErr).NotTo(HaveOccurred())
 
-			diffID = CreateDiffRecord(database)
+			diffID = CreateFakeDiffRecord(database)
 		})
 
 		It("persists a record", func() {
@@ -127,7 +127,7 @@ func SharedIlkTriggerTests(input IlkTriggerTestInput) {
 			headerTwo = CreateHeaderWithHash(hashTwo.String(), rawTimestampTwo, blockTwo, database)
 			CreateHeaderWithHash(hashThree.String(), rawTimestampThree, blockThree, database)
 
-			diffID = CreateDiffRecord(database)
+			diffID = CreateFakeDiffRecord(database)
 		})
 
 		It("inserts a row for new ilk-block", func() {

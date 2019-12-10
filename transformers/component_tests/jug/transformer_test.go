@@ -47,6 +47,7 @@ var _ = Describe("Executing the transformer", func() {
 			Repository:        &repository,
 		}
 		headerID int64
+		header   = fakes.FakeHeader
 	)
 
 	BeforeEach(func() {
@@ -57,71 +58,64 @@ var _ = Describe("Executing the transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 		headerRepository := repositories.NewHeaderRepository(db)
 		var insertHeaderErr error
-		headerID, insertHeaderErr = headerRepository.CreateOrUpdateHeader(fakes.FakeHeader)
+		headerID, insertHeaderErr = headerRepository.CreateOrUpdateHeader(header)
 		Expect(insertHeaderErr).NotTo(HaveOccurred())
+		header.Id = headerID
 	})
 
 	It("reads in a Jug Vat storage diff row and persists it", func() {
-		jugVatRow := utils.StorageDiff{
-			HashedAddress: transformer.HashedAddress,
-			StorageKey:    common.HexToHash("0000000000000000000000000000000000000000000000000000000000000002"),
-			StorageValue:  common.HexToHash("00000000000000000000000067fd6c3575fc2dbe2cb596bd3bebc9edb5571fa1"),
-			HeaderID:      headerID,
-		}
-		err := transformer.Execute(jugVatRow)
+		key := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000002")
+		value := common.HexToHash("00000000000000000000000067fd6c3575fc2dbe2cb596bd3bebc9edb5571fa1")
+		jugVatDiff := test_helpers.CreateDiffRecord(db, header, transformer.HashedAddress, key, value)
+
+		err := transformer.Execute(jugVatDiff)
 		Expect(err).NotTo(HaveOccurred())
 
 		var vatResult test_helpers.VariableRes
-		err = db.Get(&vatResult, `SELECT header_id, vat AS value FROM maker.jug_vat`)
+		err = db.Get(&vatResult, `SELECT diff_id, header_id, vat AS value FROM maker.jug_vat`)
 		Expect(err).NotTo(HaveOccurred())
-		test_helpers.AssertVariable(vatResult, headerID, "0x67fd6c3575Fc2dBE2CB596bD3bEbc9EDb5571fA1")
+		test_helpers.AssertVariable(vatResult, jugVatDiff.ID, headerID, "0x67fd6c3575Fc2dBE2CB596bD3bEbc9EDb5571fA1")
 	})
 
 	It("reads in a Jug Vow storage diff row and persists it", func() {
-		jugVowRow := utils.StorageDiff{
-			HashedAddress: transformer.HashedAddress,
-			StorageKey:    common.HexToHash("0000000000000000000000000000000000000000000000000000000000000003"),
-			StorageValue:  common.HexToHash("17560834075da3db54f737db74377e799c865821000000000000000000000000"),
-			HeaderID:      headerID,
-		}
-		err := transformer.Execute(jugVowRow)
+		key := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000003")
+		value := common.HexToHash("17560834075da3db54f737db74377e799c865821000000000000000000000000")
+		jugVowDiff := test_helpers.CreateDiffRecord(db, header, transformer.HashedAddress, key, value)
+
+		err := transformer.Execute(jugVowDiff)
 		Expect(err).NotTo(HaveOccurred())
 
 		var vowResult test_helpers.VariableRes
-		err = db.Get(&vowResult, `SELECT header_id, vow AS value FROM maker.jug_vow`)
+		err = db.Get(&vowResult, `SELECT diff_id, header_id, vow AS value FROM maker.jug_vow`)
 		Expect(err).NotTo(HaveOccurred())
-		test_helpers.AssertVariable(vowResult, headerID, "0x17560834075da3db54f737db74377e799c865821000000000000000000000000")
+		test_helpers.AssertVariable(vowResult, jugVowDiff.ID, headerID, "0x17560834075da3db54f737db74377e799c865821000000000000000000000000")
 	})
 
 	It("reads in a Jug Ilk Duty storage diff row and persists it", func() {
-		jugIlkDutyRow := utils.StorageDiff{
-			HashedAddress: transformer.HashedAddress,
-			StorageKey:    common.HexToHash("a27f5adbce3dcb790941ebd020e02078a61e6c9748376e52ec0929d58babf97a"),
-			StorageValue:  common.HexToHash("0000000000000000000000000000000000000000033b2e3c9fd0803ce8000000"),
-			HeaderID:      headerID,
-		}
-		err := transformer.Execute(jugIlkDutyRow)
+		key := common.HexToHash("a27f5adbce3dcb790941ebd020e02078a61e6c9748376e52ec0929d58babf97a")
+		value := common.HexToHash("0000000000000000000000000000000000000000033b2e3c9fd0803ce8000000")
+		jugIlkDutyDiff := test_helpers.CreateDiffRecord(db, header, transformer.HashedAddress, key, value)
+
+		err := transformer.Execute(jugIlkDutyDiff)
 		Expect(err).NotTo(HaveOccurred())
 
 		var ilkDutyResult test_helpers.MappingRes
-		err = db.Get(&ilkDutyResult, `SELECT header_id, ilk_id AS key, duty AS value FROM maker.jug_ilk_duty`)
+		err = db.Get(&ilkDutyResult, `SELECT diff_id, header_id, ilk_id AS key, duty AS value FROM maker.jug_ilk_duty`)
 		Expect(err).NotTo(HaveOccurred())
-		test_helpers.AssertMapping(ilkDutyResult, headerID, strconv.FormatInt(ilkID, 10), "1000000000000000000000000000")
+		test_helpers.AssertMapping(ilkDutyResult, jugIlkDutyDiff.ID, headerID, strconv.FormatInt(ilkID, 10), "1000000000000000000000000000")
 	})
 
 	It("reads in a Jug Ilk Rho storage diff row and persists it", func() {
-		jugIlkRhoRow := utils.StorageDiff{
-			HashedAddress: transformer.HashedAddress,
-			StorageKey:    common.HexToHash("a27f5adbce3dcb790941ebd020e02078a61e6c9748376e52ec0929d58babf97b"),
-			StorageValue:  common.HexToHash("000000000000000000000000000000000000000000000000000000005c812808"),
-			HeaderID:      headerID,
-		}
-		err := transformer.Execute(jugIlkRhoRow)
+		key := common.HexToHash("a27f5adbce3dcb790941ebd020e02078a61e6c9748376e52ec0929d58babf97b")
+		value := common.HexToHash("000000000000000000000000000000000000000000000000000000005c812808")
+		jugIlkRhoDiff := test_helpers.CreateDiffRecord(db, header, transformer.HashedAddress, key, value)
+
+		err := transformer.Execute(jugIlkRhoDiff)
 		Expect(err).NotTo(HaveOccurred())
 
 		var ilkRhoResult test_helpers.MappingRes
-		err = db.Get(&ilkRhoResult, `SELECT header_id, ilk_id AS key, rho AS value FROM maker.jug_ilk_rho`)
+		err = db.Get(&ilkRhoResult, `SELECT diff_id, header_id, ilk_id AS key, rho AS value FROM maker.jug_ilk_rho`)
 		Expect(err).NotTo(HaveOccurred())
-		test_helpers.AssertMapping(ilkRhoResult, headerID, strconv.FormatInt(ilkID, 10), "1551968264")
+		test_helpers.AssertMapping(ilkRhoResult, jugIlkRhoDiff.ID, headerID, strconv.FormatInt(ilkID, 10), "1551968264")
 	})
 })
