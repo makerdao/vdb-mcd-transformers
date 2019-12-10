@@ -52,7 +52,7 @@ var _ = Describe("Spot storage repository", func() {
 		fakeHeaderID, insertHeaderErr = headerRepository.CreateOrUpdateHeader(fakes.FakeHeader)
 		Expect(insertHeaderErr).NotTo(HaveOccurred())
 
-		diffID = CreateDiffRecord(db)
+		diffID = CreateFakeDiffRecord(db)
 	})
 
 	Describe("Ilk", func() {
