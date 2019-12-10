@@ -20,15 +20,14 @@ import (
 	"math/big"
 	"math/rand"
 
-	"github.com/makerdao/vulcanizedb/pkg/core"
-
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/makerdao/vulcanizedb/pkg/fakes"
-
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
+	"github.com/makerdao/vulcanizedb/pkg/core"
+	"github.com/makerdao/vulcanizedb/pkg/fakes"
 )
 
 var rawJugFileIlkLog = types.Log{
@@ -98,20 +97,21 @@ var JugFileBaseHeaderSyncLog = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-var JugFileBaseModel = shared.InsertionModel{
+var jugFileBaseModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.JugFileBaseTable,
-	OrderedColumns: []string{
-		constants.HeaderFK, "what", "data", constants.LogFK,
+	OrderedColumns: []event.ColumnName{
+		event.HeaderFK, constants.WhatColumn, constants.DataColumn, event.LogFK,
 	},
-	ColumnValues: shared.ColumnValues{
-		"what":             "fake what",
-		"data":             big.NewInt(123).String(),
-		constants.HeaderFK: JugFileBaseHeaderSyncLog.HeaderID,
-		constants.LogFK:    JugFileBaseHeaderSyncLog.ID,
+	ColumnValues: event.ColumnValues{
+		constants.WhatColumn: "fake what",
+		constants.DataColumn: big.NewInt(123).String(),
+		event.HeaderFK:       JugFileBaseHeaderSyncLog.HeaderID,
+		event.LogFK:          JugFileBaseHeaderSyncLog.ID,
 	},
-	ForeignKeyValues: shared.ForeignKeyValues{},
 }
+
+func JugFileBaseModel() event.InsertionModel { return CopyEventModel(jugFileBaseModel) }
 
 var rawJugFileVowLog = types.Log{
 	Address: common.HexToAddress(JugAddress()),
