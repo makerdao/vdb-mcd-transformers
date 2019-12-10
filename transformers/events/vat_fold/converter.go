@@ -20,42 +20,42 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
+	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 )
 
-type VatFoldConverter struct{}
+type Converter struct{}
 
-const (
-	logDataRequired   = false
-	numTopicsRequired = 4
-)
-
-func (VatFoldConverter) ToModels(_ string, logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
-	var models []shared.InsertionModel
+func (Converter) ToModels(_ string, logs []core.HeaderSyncLog, db *postgres.DB) ([]event.InsertionModel, error) {
+	var models []event.InsertionModel
 	for _, log := range logs {
-		err := shared.VerifyLog(log.Log, numTopicsRequired, logDataRequired)
+		err := shared.VerifyLog(log.Log, shared.FourTopicsRequired, shared.LogDataNotRequired)
 		if err != nil {
 			return nil, err
 		}
 
 		ilk := log.Log.Topics[1].Hex()
-		urn := common.BytesToAddress(log.Log.Topics[2].Bytes()).String()
+
+		ilkID, ilkErr := shared.GetOrCreateIlk(ilk, db)
+		if ilkErr != nil {
+			return nil, shared.ErrCouldNotCreateFK(ilkErr)
+		}
+		u := common.BytesToAddress(log.Log.Topics[2].Bytes()).String()
 		rate := shared.ConvertInt256HexToBigInt(log.Log.Topics[3].Hex())
 
-		model := shared.InsertionModel{
+		model := event.InsertionModel{
 			SchemaName: constants.MakerSchema,
 			TableName:  constants.VatFoldTable,
-			OrderedColumns: []string{
-				constants.HeaderFK, string(constants.UrnFK), "rate", constants.LogFK,
+			OrderedColumns: []event.ColumnName{
+				event.HeaderFK, event.LogFK, constants.IlkColumn, constants.UColumn, constants.RateColumn,
 			},
-			ColumnValues: shared.ColumnValues{
-				"rate":             rate.String(),
-				constants.HeaderFK: log.HeaderID,
-				constants.LogFK:    log.ID,
-			},
-			ForeignKeyValues: shared.ForeignKeyValues{
-				constants.IlkFK: ilk,
-				constants.UrnFK: urn,
+			ColumnValues: event.ColumnValues{
+				event.HeaderFK:       log.HeaderID,
+				event.LogFK:          log.ID,
+				constants.IlkColumn:  ilkID,
+				constants.UColumn:    u,
+				constants.RateColumn: rate.String(),
 			},
 		}
 		models = append(models, model)

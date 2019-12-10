@@ -757,13 +757,13 @@ func insertCdpManagerCdpi(blockNumber int64, cdpi int, db *postgres.DB) {
 func insertVatFold(urn string, blockNumber int64, db *postgres.DB) {
 	headerID := insertHeader(db, blockNumber)
 	vatFoldLog := test_data.CreateTestLog(headerID, db)
-	urnID, err := shared.GetOrCreateUrn(urn, test_helpers.FakeIlk.Hex, db)
-	Expect(err).NotTo(HaveOccurred())
+	ilkID, ilkErr := shared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
+	Expect(ilkErr).NotTo(HaveOccurred())
 
 	_, execErr := db.Exec(
-		`INSERT INTO maker.vat_fold (header_id, urn_id, log_id)
-			VALUES($1, $2, $3)`,
-		headerID, urnID, vatFoldLog.ID,
+		`INSERT INTO maker.vat_fold (header_id, log_id, ilk_id, u)
+			VALUES($1, $2, $3, $4)`,
+		headerID, vatFoldLog.ID, ilkID, urn,
 	)
 	Expect(execErr).NotTo(HaveOccurred())
 }

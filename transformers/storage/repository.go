@@ -81,13 +81,12 @@ func (repository *MakerStorageRepository) GetDaiKeys() ([]string, error) {
 		UNION
 		SELECT DISTINCT v FROM maker.vat_suck
 		UNION
+		SELECT DISTINCT u FROM maker.vat_fold
+		UNION
 		SELECT DISTINCT tx_from FROM public.header_sync_transactions AS transactions
 			LEFT JOIN maker.vat_heal ON vat_heal.header_id = transactions.header_id
 			LEFT JOIN public.header_sync_logs ON header_sync_logs.id = vat_heal.log_id
 			WHERE header_sync_logs.tx_index = transactions.tx_index
-		UNION
-		SELECT DISTINCT urns.identifier FROM maker.vat_fold
-			INNER JOIN maker.urns on urns.id = maker.vat_fold.urn_id
 	`)
 	return daiKeys, err
 }

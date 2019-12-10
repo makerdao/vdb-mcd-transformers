@@ -17,36 +17,54 @@
 package vat_fold_test
 
 import (
+	"github.com/makerdao/vdb-mcd-transformers/test_config"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_fold"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 )
 
 var _ = Describe("Vat fold converter", func() {
-	var converter = vat_fold.VatFoldConverter{}
+	var converter = vat_fold.Converter{}
+	var db = test_config.NewTestDB(test_config.NewTestNode())
+
+	BeforeEach(func() {
+		test_config.CleanTestDB(db)
+	})
+
 	It("returns err if log missing topics", func() {
 		badLog := core.HeaderSyncLog{}
 
-		_, err := converter.ToModels(constants.VatABI(), []core.HeaderSyncLog{badLog})
+		_, err := converter.ToModels(constants.VatABI(), []core.HeaderSyncLog{badLog}, db)
 		Expect(err).To(HaveOccurred())
 	})
 
 	It("converts a log with positive rate to an model", func() {
-		models, err := converter.ToModels(constants.VatABI(), []core.HeaderSyncLog{test_data.VatFoldHeaderSyncLogWithPositiveRate})
-
+		models, err := converter.ToModels(constants.VatABI(), []core.HeaderSyncLog{test_data.VatFoldHeaderSyncLogWithPositiveRate}, db)
 		Expect(err).NotTo(HaveOccurred())
-		Expect(models).To(Equal([]shared.InsertionModel{test_data.VatFoldModelWithPositiveRate}))
+
+		var ilkID int64
+		ilkErr := db.Get(&ilkID, `SELECT id FROM maker.ilks`)
+		Expect(ilkErr).NotTo(HaveOccurred())
+		Expect(len(models)).To(Equal(1))
+		test_data.VatFoldModelWithPositiveRate.ColumnValues[constants.IlkColumn] = ilkID
+		Expect(models).To(Equal([]event.InsertionModel{test_data.VatFoldModelWithPositiveRate}))
 	})
 
 	It("converts a log with negative rate to an model", func() {
-		models, err := converter.ToModels(constants.VatABI(), []core.HeaderSyncLog{test_data.VatFoldHeaderSyncLogWithNegativeRate})
-
+		models, err := converter.ToModels(constants.VatABI(), []core.HeaderSyncLog{test_data.VatFoldHeaderSyncLogWithNegativeRate}, db)
 		Expect(err).NotTo(HaveOccurred())
-		Expect(models).To(Equal([]shared.InsertionModel{test_data.VatFoldModelWithNegativeRate}))
+
+		var ilkID int64
+		ilkErr := db.Get(&ilkID, `SELECT id FROM maker.ilks`)
+		Expect(ilkErr).NotTo(HaveOccurred())
+		Expect(len(models)).To(Equal(1))
+
+		test_data.VatFoldModelWithNegativeRate.ColumnValues[constants.IlkColumn] = ilkID
+		Expect(models).To(Equal([]event.InsertionModel{test_data.VatFoldModelWithNegativeRate}))
 	})
 })
