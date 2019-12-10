@@ -17,15 +17,14 @@
 package initializer
 
 import (
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
-	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
-
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_file/ilk"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
+	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 )
 
-var EventTransformerInitializer transformer.EventTransformerInitializer = shared.EventTransformer{
+var EventTransformerInitializer transformer.EventTransformerInitializer = event.Transformer{
 	Config:     shared.GetEventTransformerConfig(constants.VatFileIlkTable, constants.VatFileIlkSignature()),
-	Converter:  &ilk.VatFileIlkConverter{},
-	Repository: &ilk.VatFileIlkRepository{},
-}.NewEventTransformer
+	Converter:  &ilk.Converter{},
+}.NewTransformer

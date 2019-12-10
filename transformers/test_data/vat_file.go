@@ -17,17 +17,14 @@
 package test_data
 
 import (
-	"math/rand"
-
-	"github.com/makerdao/vulcanizedb/pkg/core"
-
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/makerdao/vulcanizedb/pkg/fakes"
-
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
+	"github.com/makerdao/vulcanizedb/pkg/core"
+	"github.com/makerdao/vulcanizedb/pkg/fakes"
+	"math/rand"
 )
 
 var rawVatFileDebtCeilingLog = types.Log{
@@ -54,21 +51,20 @@ var VatFileDebtCeilingHeaderSyncLog = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-func VatFileDebtCeilingModel() shared.InsertionModel { return CopyModel(vatFileDebtCeilingModel) }
+func VatFileDebtCeilingModel() event.InsertionModel { return CopyEventModel(vatFileDebtCeilingModel) }
 
-var vatFileDebtCeilingModel = shared.InsertionModel{
+var vatFileDebtCeilingModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.VatFileDebtCeilingTable,
-	OrderedColumns: []string{
-		constants.HeaderFK, "what", "data", constants.LogFK,
+	OrderedColumns: []event.ColumnName{
+		event.HeaderFK, constants.WhatColumn, constants.DataColumn, event.HeaderFK,
 	},
-	ColumnValues: shared.ColumnValues{
-		"what":             "Line",
-		"data":             "1000000000000000000000000000000000000000000000000000",
-		constants.HeaderFK: VatFileDebtCeilingHeaderSyncLog.HeaderID,
+	ColumnValues: event.ColumnValues{
+		constants.WhatColumn:             "Line",
+		constants.DataColumn:             "1000000000000000000000000000000000000000000000000000",
+		event.HeaderFK: VatFileDebtCeilingHeaderSyncLog.HeaderID,
 		constants.LogFK:    VatFileDebtCeilingHeaderSyncLog.ID,
 	},
-	ForeignKeyValues: shared.ForeignKeyValues{},
 }
 
 var rawVatFileIlkDustLog = types.Log{
@@ -96,22 +92,19 @@ var VatFileIlkDustHeaderSyncLog = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-func VatFileIlkDustModel() shared.InsertionModel { return CopyModel(vatFileIlkDustModel) }
+func VatFileIlkDustModel() event.InsertionModel { return CopyEventModel(vatFileIlkDustModel) }
 
-var vatFileIlkDustModel = shared.InsertionModel{
+var vatFileIlkDustModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.VatFileIlkTable,
-	OrderedColumns: []string{
-		constants.HeaderFK, string(constants.IlkFK), "what", "data", constants.LogFK,
+	OrderedColumns: []event.ColumnName{
+		event.HeaderFK, constants.IlkColumn, constants.WhatColumn, constants.DataColumn, constants.LogFK,
 	},
-	ColumnValues: shared.ColumnValues{
-		"what":             "dust",
-		"data":             "10390649719961925488562719249749",
-		constants.HeaderFK: VatFileIlkDustHeaderSyncLog.HeaderID,
+	ColumnValues: event.ColumnValues{
+		constants.WhatColumn:             "dust",
+		constants.DataColumn:             "10390649719961925488562719249749",
+		event.HeaderFK: VatFileIlkDustHeaderSyncLog.HeaderID,
 		constants.LogFK:    VatFileIlkDustHeaderSyncLog.ID,
-	},
-	ForeignKeyValues: shared.ForeignKeyValues{
-		constants.IlkFK: "0x5245500000000000000000000000000000000000000000000000000000000000",
 	},
 }
 
@@ -140,22 +133,19 @@ var VatFileIlkLineHeaderSyncLog = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-func VatFileIlkLineModel() shared.InsertionModel { return CopyModel(vatFileIlkLineModel) }
+func VatFileIlkLineModel() event.InsertionModel { return CopyEventModel(vatFileIlkLineModel) }
 
-var vatFileIlkLineModel = shared.InsertionModel{
+var vatFileIlkLineModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.VatFileIlkTable,
-	OrderedColumns: []string{
-		constants.HeaderFK, string(constants.IlkFK), "what", "data", constants.LogFK,
+	OrderedColumns: []event.ColumnName{
+		event.HeaderFK, constants.IlkColumn, constants.WhatColumn, constants.DataColumn, constants.LogFK,
 	},
-	ColumnValues: shared.ColumnValues{
-		"what":             "line",
-		"data":             "220086151196920075605",
-		constants.HeaderFK: VatFileIlkLineHeaderSyncLog.HeaderID,
+	ColumnValues: event.ColumnValues{
+		constants.WhatColumn:             "line",
+		constants.DataColumn:             "220086151196920075605",
+		event.HeaderFK: VatFileIlkLineHeaderSyncLog.HeaderID,
 		constants.LogFK:    VatFileIlkLineHeaderSyncLog.ID,
-	},
-	ForeignKeyValues: shared.ForeignKeyValues{
-		constants.IlkFK: "0x5245500000000000000000000000000000000000000000000000000000000000",
 	},
 }
 
@@ -183,21 +173,18 @@ var VatFileIlkSpotHeaderSyncLog = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-func VatFileIlkSpotModel() shared.InsertionModel { return CopyModel(vatFileIlkSpotModel) }
+func VatFileIlkSpotModel() event.InsertionModel { return CopyEventModel(vatFileIlkSpotModel) }
 
-var vatFileIlkSpotModel = shared.InsertionModel{
+var vatFileIlkSpotModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.VatFileIlkTable,
-	OrderedColumns: []string{
-		constants.HeaderFK, string(constants.IlkFK), "what", "data", constants.LogFK,
+	OrderedColumns: []event.ColumnName{
+		event.HeaderFK, constants.IlkColumn, constants.WhatColumn, constants.DataColumn, constants.LogFK,
 	},
-	ColumnValues: shared.ColumnValues{
-		"what":             "spot",
-		"data":             "91323333333333333333333333333",
-		constants.HeaderFK: VatFileIlkSpotHeaderSyncLog.HeaderID,
+	ColumnValues: event.ColumnValues{
+		constants.WhatColumn:             "spot",
+		constants.DataColumn:             "91323333333333333333333333333",
+		event.HeaderFK: VatFileIlkSpotHeaderSyncLog.HeaderID,
 		constants.LogFK:    VatFileIlkSpotHeaderSyncLog.ID,
-	},
-	ForeignKeyValues: shared.ForeignKeyValues{
-		constants.IlkFK: "0x4554480000000000000000000000000000000000000000000000000000000000",
 	},
 }

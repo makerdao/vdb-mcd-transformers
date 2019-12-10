@@ -19,42 +19,41 @@ package ilk
 import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
+	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 )
 
-type VatFileIlkConverter struct{}
+type Converter struct{}
 
-const (
-	logDataRequired   = false
-	numTopicsRequired = 4
-)
-
-func (VatFileIlkConverter) ToModels(_ string, logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
+func (Converter) ToModels(_ string, logs []core.HeaderSyncLog, db *postgres.DB) ([]event.InsertionModel, error) {
 	//NOTE: the vat contract defines its own custom Note event, rather than relying on DS-Note
-	var models []shared.InsertionModel
+	var models []event.InsertionModel
 	for _, log := range logs {
-		err := shared.VerifyLog(log.Log, numTopicsRequired, logDataRequired)
+		err := shared.VerifyLog(log.Log, shared.FourTopicsRequired, shared.LogDataNotRequired)
 		if err != nil {
 			return nil, err
 		}
 		ilk := log.Log.Topics[1].Hex()
 		what := shared.DecodeHexToText(log.Log.Topics[2].Hex())
 		data := log.Log.Topics[3].Big().String()
+		ilkID, ilkErr := shared.GetOrCreateIlk(ilk, db)
+		if ilkErr != nil {
+			return nil, shared.ErrCouldNotCreateFK(ilkErr)
+		}
 
-		model := shared.InsertionModel{
+		model := event.InsertionModel{
 			SchemaName: constants.MakerSchema,
 			TableName:  constants.VatFileIlkTable,
-			OrderedColumns: []string{
-				constants.HeaderFK, string(constants.IlkFK), "what", "data", constants.LogFK,
+			OrderedColumns: []event.ColumnName{
+				event.HeaderFK, constants.IlkColumn, "what", "data", event.LogFK,
 			},
-			ColumnValues: shared.ColumnValues{
+			ColumnValues: event.ColumnValues{
 				"what":             what,
 				"data":             data,
-				constants.HeaderFK: log.HeaderID,
-				constants.LogFK:    log.ID,
-			},
-			ForeignKeyValues: shared.ForeignKeyValues{
-				constants.IlkFK: ilk,
+				constants.IlkColumn:	ilkID,
+				event.HeaderFK: log.HeaderID,
+				event.LogFK:    log.ID,
 			},
 		}
 		models = append(models, model)
