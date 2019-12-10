@@ -11,9 +11,12 @@ CREATE TABLE maker.vow_file
 
 CREATE INDEX vow_file_header_index
     ON maker.vow_file (header_id);
+CREATE INDEX vow_file_log_index
+    ON maker.vow_file (log_id);
 
 
 -- +goose Down
+DROP INDEX maker.vow_file_log_index;
 DROP INDEX maker.vow_file_header_index;
 
 DROP TABLE maker.vow_file;

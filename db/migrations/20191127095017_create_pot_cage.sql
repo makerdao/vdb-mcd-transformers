@@ -9,9 +9,12 @@ CREATE TABLE maker.pot_cage
 
 CREATE INDEX pot_cage_header_index
     ON maker.pot_cage (header_id);
+CREATE INDEX pot_cage_log_index
+    ON maker.pot_cage (log_id);
 
 
 -- +goose Down
+DROP INDEX maker.pot_cage_log_index;
 DROP INDEX maker.pot_cage_header_index;
 
 DROP TABLE maker.pot_cage;

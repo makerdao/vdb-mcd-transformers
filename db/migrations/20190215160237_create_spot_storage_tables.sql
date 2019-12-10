@@ -39,6 +39,9 @@ CREATE TABLE maker.spot_vat
     UNIQUE (diff_id, header_id, vat)
 );
 
+CREATE INDEX spot_vat_header_id_index
+    ON maker.spot_vat (header_id);
+
 CREATE TABLE maker.spot_par
 (
     id        SERIAL PRIMARY KEY,
@@ -48,12 +51,17 @@ CREATE TABLE maker.spot_par
     UNIQUE (diff_id, header_id, par)
 );
 
+CREATE INDEX spot_par_header_id_index
+    ON maker.spot_par (header_id);
+
 -- +goose Down
 -- SQL in this section is executed when the migration is rolled back.
 DROP INDEX maker.spot_ilk_pip_header_id_index;
 DROP INDEX maker.spot_ilk_pip_ilk_index;
 DROP INDEX maker.spot_ilk_mat_header_id_index;
 DROP INDEX maker.spot_ilk_mat_ilk_index;
+DROP INDEX maker.spot_vat_header_id_index;
+DROP INDEX maker.spot_par_header_id_index;
 
 DROP TABLE maker.spot_par;
 DROP TABLE maker.spot_vat;

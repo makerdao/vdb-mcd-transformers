@@ -12,13 +12,15 @@ CREATE TABLE maker.vat_fold
 
 CREATE INDEX vat_fold_header_index
     ON maker.vat_fold (header_id);
-
+CREATE INDEX vat_fold_log_index
+    ON maker.vat_fold (log_id);
 CREATE INDEX vat_fold_ilk_index
     ON maker.vat_fold (ilk_id);
 
 
 -- +goose Down
 DROP INDEX maker.vat_fold_header_index;
+DROP INDEX maker.vat_fold_log_index;
 DROP INDEX maker.vat_fold_ilk_index;
 
 DROP TABLE maker.vat_fold;

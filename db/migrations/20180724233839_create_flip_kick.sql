@@ -21,12 +21,15 @@ CREATE INDEX flip_kick_header_index
     ON maker.flip_kick (header_id);
 CREATE INDEX flip_kick_bid_id_index
     ON maker.flip_kick (bid_id);
-CREATE INDEX flip_kick_address_id_index
+CREATE INDEX flip_kick_address_index
     ON maker.flip_kick (address_id);
+CREATE INDEX flip_kick_log_index
+    ON maker.flip_kick (log_id);
 
 
 -- +goose Down
-DROP INDEX maker.flip_kick_address_id_index;
+DROP INDEX maker.flip_kick_log_index;
+DROP INDEX maker.flip_kick_address_index;
 DROP INDEX maker.flip_kick_bid_id_index;
 DROP INDEX maker.flip_kick_header_index;
 

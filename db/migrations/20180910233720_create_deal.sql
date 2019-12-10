@@ -11,15 +11,18 @@ CREATE TABLE maker.deal
 
 CREATE INDEX deal_header_index
     ON maker.deal (header_id);
+CREATE INDEX deal_log_index
+    ON maker.deal (log_id);
 CREATE INDEX deal_bid_id_index
     ON maker.deal (bid_id);
-CREATE INDEX deal_address_id_index
+CREATE INDEX deal_address_index
     ON maker.deal (address_id);
 
 
 -- +goose Down
-DROP INDEX maker.deal_address_id_index;
+DROP INDEX maker.deal_address_index;
 DROP INDEX maker.deal_bid_id_index;
+DROP INDEX maker.deal_log_index;
 DROP INDEX maker.deal_header_index;
 
 DROP TABLE maker.deal;

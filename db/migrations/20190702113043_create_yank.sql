@@ -12,9 +12,12 @@ CREATE TABLE maker.yank
 
 CREATE INDEX yank_header_index
     ON maker.yank (header_id);
-
+CREATE INDEX yank_log_index
+    ON maker.yank (log_id);
 CREATE INDEX yank_bid_id_index
     on maker.yank (bid_id);
+CREATE INDEX yank_address_index
+    on maker.yank (address_id);
 
 ALTER TABLE public.checked_headers
     ADD COLUMN yank INTEGER NOT NULL DEFAULT 0;
@@ -22,6 +25,8 @@ ALTER TABLE public.checked_headers
 -- +goose Down
 -- SQL in this section is executed when the migration is rolled back.
 DROP INDEX maker.yank_header_index;
+DROP INDEX maker.yank_log_index;
 DROP INDEX maker.yank_bid_id_index;
+DROP INDEX maker.yank_address_index;
 
 DROP TABLE maker.yank;

@@ -10,13 +10,15 @@ CREATE TABLE maker.vat_init
 
 CREATE INDEX vat_init_header_index
     ON maker.vat_init (header_id);
-
+CREATE INDEX vat_init_log_index
+    ON maker.vat_init (log_id);
 CREATE INDEX vat_init_ilk_index
     ON maker.vat_init (ilk_id);
 
 
 -- +goose Down
 DROP INDEX maker.vat_init_header_index;
+DROP INDEX maker.vat_init_log_index;
 DROP INDEX maker.vat_init_ilk_index;
 
 DROP TABLE maker.vat_init;

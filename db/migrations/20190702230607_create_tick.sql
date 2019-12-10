@@ -11,12 +11,16 @@ CREATE TABLE maker.tick
 
 CREATE INDEX tick_header_index
     ON maker.tick (header_id);
-
-
+CREATE INDEX tick_log_index
+    ON maker.tick (log_id);
 CREATE INDEX tick_bid_id_index
     ON maker.tick (bid_id);
+CREATE INDEX tick_address_index
+    ON maker.tick (address_id);
 
 -- +goose Down
 DROP INDEX maker.tick_header_index;
+DROP INDEX maker.tick_log_index;
 DROP INDEX maker.tick_bid_id_index;
+DROP INDEX maker.tick_address_index;
 DROP TABLE maker.tick;

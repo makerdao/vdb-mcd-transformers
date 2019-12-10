@@ -2639,6 +2639,13 @@ $$;
 
 
 --
+-- Name: FUNCTION clear_time_created(old_event maker.vat_init); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.clear_time_created(old_event maker.vat_init) IS '@omit';
+
+
+--
 -- Name: delete_obsolete_urn_state(integer, integer); Type: FUNCTION; Schema: maker; Owner: -
 --
 
@@ -2671,6 +2678,13 @@ BEGIN
     RETURN NULL;
 END
 $$;
+
+
+--
+-- Name: FUNCTION delete_obsolete_urn_state(urn_id integer, header_id integer); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.delete_obsolete_urn_state(urn_id integer, header_id integer) IS '@omit';
 
 
 --
@@ -2723,6 +2737,13 @@ BEGIN
     RETURN NULL;
 END
 $$;
+
+
+--
+-- Name: FUNCTION delete_redundant_ilk_state(ilk_id integer, header_id integer); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.delete_redundant_ilk_state(ilk_id integer, header_id integer) IS '@omit';
 
 
 --
@@ -2979,6 +3000,13 @@ $$;
 
 
 --
+-- Name: FUNCTION insert_new_art(new_diff maker.vat_ilk_art); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.insert_new_art(new_diff maker.vat_ilk_art) IS '@omit';
+
+
+--
 -- Name: cat_ilk_chop; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -3036,6 +3064,13 @@ BEGIN
     RETURN new_diff;
 END
 $$;
+
+
+--
+-- Name: FUNCTION insert_new_chop(new_diff maker.cat_ilk_chop); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.insert_new_chop(new_diff maker.cat_ilk_chop) IS '@omit';
 
 
 --
@@ -3099,6 +3134,13 @@ $$;
 
 
 --
+-- Name: FUNCTION insert_new_dust(new_diff maker.vat_ilk_dust); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.insert_new_dust(new_diff maker.vat_ilk_dust) IS '@omit';
+
+
+--
 -- Name: jug_ilk_duty; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -3156,6 +3198,13 @@ BEGIN
     RETURN new_diff;
 END
 $$;
+
+
+--
+-- Name: FUNCTION insert_new_duty(new_diff maker.jug_ilk_duty); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.insert_new_duty(new_diff maker.jug_ilk_duty) IS '@omit';
 
 
 --
@@ -3219,6 +3268,13 @@ $$;
 
 
 --
+-- Name: FUNCTION insert_new_flip(new_diff maker.cat_ilk_flip); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.insert_new_flip(new_diff maker.cat_ilk_flip) IS '@omit';
+
+
+--
 -- Name: vat_ilk_line; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -3276,6 +3332,13 @@ BEGIN
     RETURN new_diff;
 END
 $$;
+
+
+--
+-- Name: FUNCTION insert_new_line(new_diff maker.vat_ilk_line); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.insert_new_line(new_diff maker.vat_ilk_line) IS '@omit';
 
 
 --
@@ -3339,6 +3402,13 @@ $$;
 
 
 --
+-- Name: FUNCTION insert_new_lump(new_diff maker.cat_ilk_lump); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.insert_new_lump(new_diff maker.cat_ilk_lump) IS '@omit';
+
+
+--
 -- Name: spot_ilk_mat; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -3396,6 +3466,13 @@ BEGIN
     RETURN new_diff;
 END
 $$;
+
+
+--
+-- Name: FUNCTION insert_new_mat(new_diff maker.spot_ilk_mat); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.insert_new_mat(new_diff maker.spot_ilk_mat) IS '@omit';
 
 
 --
@@ -3459,6 +3536,13 @@ $$;
 
 
 --
+-- Name: FUNCTION insert_new_pip(new_diff maker.spot_ilk_pip); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.insert_new_pip(new_diff maker.spot_ilk_pip) IS '@omit';
+
+
+--
 -- Name: vat_ilk_rate; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -3516,6 +3600,13 @@ BEGIN
     RETURN new_diff;
 END
 $$;
+
+
+--
+-- Name: FUNCTION insert_new_rate(new_diff maker.vat_ilk_rate); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.insert_new_rate(new_diff maker.vat_ilk_rate) IS '@omit';
 
 
 --
@@ -3579,6 +3670,13 @@ $$;
 
 
 --
+-- Name: FUNCTION insert_new_rho(new_diff maker.jug_ilk_rho); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.insert_new_rho(new_diff maker.jug_ilk_rho) IS '@omit';
+
+
+--
 -- Name: vat_ilk_spot; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -3639,6 +3737,13 @@ $$;
 
 
 --
+-- Name: FUNCTION insert_new_spot(new_diff maker.vat_ilk_spot); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.insert_new_spot(new_diff maker.vat_ilk_spot) IS '@omit';
+
+
+--
 -- Name: insert_new_time_created(maker.vat_init); Type: FUNCTION; Schema: maker; Owner: -
 --
 
@@ -3664,6 +3769,13 @@ BEGIN
     RETURN NULL;
 END
 $$;
+
+
+--
+-- Name: FUNCTION insert_new_time_created(new_event maker.vat_init); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.insert_new_time_created(new_event maker.vat_init) IS '@omit';
 
 
 --
@@ -4339,6 +4451,13 @@ $$;
 
 
 --
+-- Name: FUNCTION insert_urn_art(new_diff maker.vat_urn_art); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.insert_urn_art(new_diff maker.vat_urn_art) IS '@omit';
+
+
+--
 -- Name: vat_urn_ink; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -4385,6 +4504,13 @@ $$;
 
 
 --
+-- Name: FUNCTION insert_urn_ink(new_diff maker.vat_urn_ink); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.insert_urn_ink(new_diff maker.vat_urn_ink) IS '@omit';
+
+
+--
 -- Name: update_arts_until_next_diff(maker.vat_ilk_art, numeric); Type: FUNCTION; Schema: maker; Owner: -
 --
 
@@ -4416,6 +4542,13 @@ BEGIN
     RETURN NULL;
 END
 $$;
+
+
+--
+-- Name: FUNCTION update_arts_until_next_diff(start_at_diff maker.vat_ilk_art, new_art numeric); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.update_arts_until_next_diff(start_at_diff maker.vat_ilk_art, new_art numeric) IS '@omit';
 
 
 --
@@ -4453,6 +4586,13 @@ $$;
 
 
 --
+-- Name: FUNCTION update_chops_until_next_diff(start_at_diff maker.cat_ilk_chop, new_chop numeric); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.update_chops_until_next_diff(start_at_diff maker.cat_ilk_chop, new_chop numeric) IS '@omit';
+
+
+--
 -- Name: update_dusts_until_next_diff(maker.vat_ilk_dust, numeric); Type: FUNCTION; Schema: maker; Owner: -
 --
 
@@ -4484,6 +4624,13 @@ BEGIN
     RETURN NULL;
 END
 $$;
+
+
+--
+-- Name: FUNCTION update_dusts_until_next_diff(start_at_diff maker.vat_ilk_dust, new_dust numeric); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.update_dusts_until_next_diff(start_at_diff maker.vat_ilk_dust, new_dust numeric) IS '@omit';
 
 
 --
@@ -4521,6 +4668,13 @@ $$;
 
 
 --
+-- Name: FUNCTION update_duties_until_next_diff(start_at_diff maker.jug_ilk_duty, new_duty numeric); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.update_duties_until_next_diff(start_at_diff maker.jug_ilk_duty, new_duty numeric) IS '@omit';
+
+
+--
 -- Name: update_flips_until_next_diff(maker.cat_ilk_flip, text); Type: FUNCTION; Schema: maker; Owner: -
 --
 
@@ -4552,6 +4706,13 @@ BEGIN
     RETURN NULL;
 END
 $$;
+
+
+--
+-- Name: FUNCTION update_flips_until_next_diff(start_at_diff maker.cat_ilk_flip, new_flip text); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.update_flips_until_next_diff(start_at_diff maker.cat_ilk_flip, new_flip text) IS '@omit';
 
 
 --
@@ -4829,6 +4990,13 @@ $$;
 
 
 --
+-- Name: FUNCTION update_lines_until_next_diff(start_at_diff maker.vat_ilk_line, new_line numeric); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.update_lines_until_next_diff(start_at_diff maker.vat_ilk_line, new_line numeric) IS '@omit';
+
+
+--
 -- Name: update_lumps_until_next_diff(maker.cat_ilk_lump, numeric); Type: FUNCTION; Schema: maker; Owner: -
 --
 
@@ -4860,6 +5028,13 @@ BEGIN
     RETURN NULL;
 END
 $$;
+
+
+--
+-- Name: FUNCTION update_lumps_until_next_diff(start_at_diff maker.cat_ilk_lump, new_lump numeric); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.update_lumps_until_next_diff(start_at_diff maker.cat_ilk_lump, new_lump numeric) IS '@omit';
 
 
 --
@@ -4897,6 +5072,13 @@ $$;
 
 
 --
+-- Name: FUNCTION update_mats_until_next_diff(start_at_diff maker.spot_ilk_mat, new_mat numeric); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.update_mats_until_next_diff(start_at_diff maker.spot_ilk_mat, new_mat numeric) IS '@omit';
+
+
+--
 -- Name: update_pips_until_next_diff(maker.spot_ilk_pip, text); Type: FUNCTION; Schema: maker; Owner: -
 --
 
@@ -4928,6 +5110,13 @@ BEGIN
     RETURN NULL;
 END
 $$;
+
+
+--
+-- Name: FUNCTION update_pips_until_next_diff(start_at_diff maker.spot_ilk_pip, new_pip text); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.update_pips_until_next_diff(start_at_diff maker.spot_ilk_pip, new_pip text) IS '@omit';
 
 
 --
@@ -4965,6 +5154,13 @@ $$;
 
 
 --
+-- Name: FUNCTION update_rates_until_next_diff(start_at_diff maker.vat_ilk_rate, new_rate numeric); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.update_rates_until_next_diff(start_at_diff maker.vat_ilk_rate, new_rate numeric) IS '@omit';
+
+
+--
 -- Name: update_rhos_until_next_diff(maker.jug_ilk_rho, numeric); Type: FUNCTION; Schema: maker; Owner: -
 --
 
@@ -4996,6 +5192,13 @@ BEGIN
     RETURN NULL;
 END
 $$;
+
+
+--
+-- Name: FUNCTION update_rhos_until_next_diff(start_at_diff maker.jug_ilk_rho, new_rho numeric); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.update_rhos_until_next_diff(start_at_diff maker.jug_ilk_rho, new_rho numeric) IS '@omit';
 
 
 --
@@ -5033,6 +5236,13 @@ $$;
 
 
 --
+-- Name: FUNCTION update_spots_until_next_diff(start_at_diff maker.vat_ilk_spot, new_spot numeric); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.update_spots_until_next_diff(start_at_diff maker.vat_ilk_spot, new_spot numeric) IS '@omit';
+
+
+--
 -- Name: update_time_created(); Type: FUNCTION; Schema: maker; Owner: -
 --
 
@@ -5048,6 +5258,13 @@ BEGIN
     RETURN NULL;
 END
 $$;
+
+
+--
+-- Name: FUNCTION update_time_created(); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.update_time_created() IS '@omit';
 
 
 --
@@ -5108,6 +5325,13 @@ $$;
 
 
 --
+-- Name: FUNCTION update_urn_arts_until_next_diff(start_at_diff maker.vat_urn_art, new_art numeric); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.update_urn_arts_until_next_diff(start_at_diff maker.vat_urn_art, new_art numeric) IS '@omit';
+
+
+--
 -- Name: update_urn_created(integer); Type: FUNCTION; Schema: maker; Owner: -
 --
 
@@ -5125,6 +5349,13 @@ BEGIN
     RETURN NULL;
 END
 $$;
+
+
+--
+-- Name: FUNCTION update_urn_created(urn_id integer); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.update_urn_created(urn_id integer) IS '@omit';
 
 
 --
@@ -5187,6 +5418,13 @@ $$;
 
 
 --
+-- Name: FUNCTION update_urn_inks_until_next_diff(start_at_diff maker.vat_urn_ink, new_ink numeric); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.update_urn_inks_until_next_diff(start_at_diff maker.vat_urn_ink, new_ink numeric) IS '@omit';
+
+
+--
 -- Name: get_latest_flap_bid_bid(numeric); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -5200,6 +5438,13 @@ WHERE bid IS NOT NULL
 ORDER BY block_number DESC
 LIMIT 1
 $$;
+
+
+--
+-- Name: FUNCTION get_latest_flap_bid_bid(bid_id numeric); Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON FUNCTION public.get_latest_flap_bid_bid(bid_id numeric) IS '@omit';
 
 
 --
@@ -5219,6 +5464,13 @@ $$;
 
 
 --
+-- Name: FUNCTION get_latest_flap_bid_end(bid_id numeric); Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON FUNCTION public.get_latest_flap_bid_end(bid_id numeric) IS '@omit';
+
+
+--
 -- Name: get_latest_flap_bid_guy(numeric); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -5232,6 +5484,13 @@ WHERE guy IS NOT NULL
 ORDER BY block_number DESC
 LIMIT 1
 $$;
+
+
+--
+-- Name: FUNCTION get_latest_flap_bid_guy(bid_id numeric); Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON FUNCTION public.get_latest_flap_bid_guy(bid_id numeric) IS '@omit';
 
 
 --
@@ -5251,6 +5510,13 @@ $$;
 
 
 --
+-- Name: FUNCTION get_latest_flap_bid_lot(bid_id numeric); Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON FUNCTION public.get_latest_flap_bid_lot(bid_id numeric) IS '@omit';
+
+
+--
 -- Name: get_latest_flap_bid_tic(numeric); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -5264,6 +5530,13 @@ WHERE tic IS NOT NULL
 ORDER BY block_number DESC
 LIMIT 1
 $$;
+
+
+--
+-- Name: FUNCTION get_latest_flap_bid_tic(bid_id numeric); Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON FUNCTION public.get_latest_flap_bid_tic(bid_id numeric) IS '@omit';
 
 
 --
@@ -5283,6 +5556,13 @@ $$;
 
 
 --
+-- Name: FUNCTION get_latest_flip_bid_bid(bid_id numeric); Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON FUNCTION public.get_latest_flip_bid_bid(bid_id numeric) IS '@omit';
+
+
+--
 -- Name: get_latest_flip_bid_end(numeric); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -5296,6 +5576,13 @@ WHERE "end" IS NOT NULL
 ORDER BY block_number DESC
 LIMIT 1
 $$;
+
+
+--
+-- Name: FUNCTION get_latest_flip_bid_end(bid_id numeric); Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON FUNCTION public.get_latest_flip_bid_end(bid_id numeric) IS '@omit';
 
 
 --
@@ -5315,6 +5602,13 @@ $$;
 
 
 --
+-- Name: FUNCTION get_latest_flip_bid_gal(bid_id numeric); Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON FUNCTION public.get_latest_flip_bid_gal(bid_id numeric) IS '@omit';
+
+
+--
 -- Name: get_latest_flip_bid_guy(numeric); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -5328,6 +5622,13 @@ WHERE guy IS NOT NULL
 ORDER BY block_number DESC
 LIMIT 1
 $$;
+
+
+--
+-- Name: FUNCTION get_latest_flip_bid_guy(bid_id numeric); Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON FUNCTION public.get_latest_flip_bid_guy(bid_id numeric) IS '@omit';
 
 
 --
@@ -5347,6 +5648,13 @@ $$;
 
 
 --
+-- Name: FUNCTION get_latest_flip_bid_lot(bid_id numeric); Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON FUNCTION public.get_latest_flip_bid_lot(bid_id numeric) IS '@omit';
+
+
+--
 -- Name: get_latest_flip_bid_tab(numeric); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -5360,6 +5668,13 @@ WHERE tab IS NOT NULL
 ORDER BY block_number DESC
 LIMIT 1
 $$;
+
+
+--
+-- Name: FUNCTION get_latest_flip_bid_tab(bid_id numeric); Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON FUNCTION public.get_latest_flip_bid_tab(bid_id numeric) IS '@omit';
 
 
 --
@@ -5379,6 +5694,13 @@ $$;
 
 
 --
+-- Name: FUNCTION get_latest_flip_bid_tic(bid_id numeric); Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON FUNCTION public.get_latest_flip_bid_tic(bid_id numeric) IS '@omit';
+
+
+--
 -- Name: get_latest_flop_bid_bid(numeric); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -5392,6 +5714,13 @@ WHERE bid IS NOT NULL
 ORDER BY block_number DESC
 LIMIT 1
 $$;
+
+
+--
+-- Name: FUNCTION get_latest_flop_bid_bid(bid_id numeric); Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON FUNCTION public.get_latest_flop_bid_bid(bid_id numeric) IS '@omit';
 
 
 --
@@ -5411,6 +5740,13 @@ $$;
 
 
 --
+-- Name: FUNCTION get_latest_flop_bid_end(bid_id numeric); Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON FUNCTION public.get_latest_flop_bid_end(bid_id numeric) IS '@omit';
+
+
+--
 -- Name: get_latest_flop_bid_guy(numeric); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -5424,6 +5760,13 @@ WHERE guy IS NOT NULL
 ORDER BY block_number DESC
 LIMIT 1
 $$;
+
+
+--
+-- Name: FUNCTION get_latest_flop_bid_guy(bid_id numeric); Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON FUNCTION public.get_latest_flop_bid_guy(bid_id numeric) IS '@omit';
 
 
 --
@@ -5443,6 +5786,13 @@ $$;
 
 
 --
+-- Name: FUNCTION get_latest_flop_bid_lot(bid_id numeric); Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON FUNCTION public.get_latest_flop_bid_lot(bid_id numeric) IS '@omit';
+
+
+--
 -- Name: get_latest_flop_bid_tic(numeric); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -5456,6 +5806,13 @@ WHERE tic IS NOT NULL
 ORDER BY block_number DESC
 LIMIT 1
 $$;
+
+
+--
+-- Name: FUNCTION get_latest_flop_bid_tic(bid_id numeric); Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON FUNCTION public.get_latest_flop_bid_tic(bid_id numeric) IS '@omit';
 
 
 --
@@ -5500,6 +5857,13 @@ $$;
 
 
 --
+-- Name: FUNCTION ilk_art_before_block(ilk_id integer, header_id integer); Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON FUNCTION public.ilk_art_before_block(ilk_id integer, header_id integer) IS '@omit';
+
+
+--
 -- Name: ilk_chop_before_block(integer, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -5520,6 +5884,13 @@ WHERE cat_ilk_chop.ilk_id = ilk_chop_before_block.ilk_id
 ORDER BY block_number DESC
 LIMIT 1
 $$;
+
+
+--
+-- Name: FUNCTION ilk_chop_before_block(ilk_id integer, header_id integer); Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON FUNCTION public.ilk_chop_before_block(ilk_id integer, header_id integer) IS '@omit';
 
 
 --
@@ -5546,6 +5917,13 @@ $$;
 
 
 --
+-- Name: FUNCTION ilk_dust_before_block(ilk_id integer, header_id integer); Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON FUNCTION public.ilk_dust_before_block(ilk_id integer, header_id integer) IS '@omit';
+
+
+--
 -- Name: ilk_duty_before_block(integer, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -5566,6 +5944,13 @@ WHERE jug_ilk_duty.ilk_id = ilk_duty_before_block.ilk_id
 ORDER BY block_number DESC
 LIMIT 1
 $$;
+
+
+--
+-- Name: FUNCTION ilk_duty_before_block(ilk_id integer, header_id integer); Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON FUNCTION public.ilk_duty_before_block(ilk_id integer, header_id integer) IS '@omit';
 
 
 --
@@ -5592,6 +5977,13 @@ $$;
 
 
 --
+-- Name: FUNCTION ilk_flip_before_block(ilk_id integer, header_id integer); Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON FUNCTION public.ilk_flip_before_block(ilk_id integer, header_id integer) IS '@omit';
+
+
+--
 -- Name: ilk_line_before_block(integer, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -5612,6 +6004,13 @@ WHERE vat_ilk_line.ilk_id = ilk_line_before_block.ilk_id
 ORDER BY block_number DESC
 LIMIT 1
 $$;
+
+
+--
+-- Name: FUNCTION ilk_line_before_block(ilk_id integer, header_id integer); Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON FUNCTION public.ilk_line_before_block(ilk_id integer, header_id integer) IS '@omit';
 
 
 --
@@ -5638,6 +6037,13 @@ $$;
 
 
 --
+-- Name: FUNCTION ilk_lump_before_block(ilk_id integer, header_id integer); Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON FUNCTION public.ilk_lump_before_block(ilk_id integer, header_id integer) IS '@omit';
+
+
+--
 -- Name: ilk_mat_before_block(integer, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -5658,6 +6064,13 @@ WHERE spot_ilk_mat.ilk_id = ilk_mat_before_block.ilk_id
 ORDER BY block_number DESC
 LIMIT 1
 $$;
+
+
+--
+-- Name: FUNCTION ilk_mat_before_block(ilk_id integer, header_id integer); Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON FUNCTION public.ilk_mat_before_block(ilk_id integer, header_id integer) IS '@omit';
 
 
 --
@@ -5684,6 +6097,13 @@ $$;
 
 
 --
+-- Name: FUNCTION ilk_pip_before_block(ilk_id integer, header_id integer); Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON FUNCTION public.ilk_pip_before_block(ilk_id integer, header_id integer) IS '@omit';
+
+
+--
 -- Name: ilk_rate_before_block(integer, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -5704,6 +6124,13 @@ WHERE vat_ilk_rate.ilk_id = ilk_rate_before_block.ilk_id
 ORDER BY block_number DESC
 LIMIT 1
 $$;
+
+
+--
+-- Name: FUNCTION ilk_rate_before_block(ilk_id integer, header_id integer); Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON FUNCTION public.ilk_rate_before_block(ilk_id integer, header_id integer) IS '@omit';
 
 
 --
@@ -5731,6 +6158,13 @@ $$;
 
 
 --
+-- Name: FUNCTION ilk_rho_before_block(ilk_id integer, header_id integer); Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON FUNCTION public.ilk_rho_before_block(ilk_id integer, header_id integer) IS '@omit';
+
+
+--
 -- Name: ilk_spot_before_block(integer, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -5754,6 +6188,13 @@ $$;
 
 
 --
+-- Name: FUNCTION ilk_spot_before_block(ilk_id integer, header_id integer); Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON FUNCTION public.ilk_spot_before_block(ilk_id integer, header_id integer) IS '@omit';
+
+
+--
 -- Name: ilk_time_created(integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -5765,6 +6206,13 @@ FROM public.headers
          LEFT JOIN maker.vat_init ON vat_init.header_id = headers.id
 WHERE vat_init.ilk_id = ilk_time_created.ilk_id
 $$;
+
+
+--
+-- Name: FUNCTION ilk_time_created(ilk_id integer); Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON FUNCTION public.ilk_time_created(ilk_id integer) IS '@omit';
 
 
 --
@@ -5789,6 +6237,13 @@ $$;
 
 
 --
+-- Name: FUNCTION urn_art_before_block(urn_id integer, header_id integer); Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON FUNCTION public.urn_art_before_block(urn_id integer, header_id integer) IS '@omit';
+
+
+--
 -- Name: urn_ink_before_block(integer, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -5810,6 +6265,13 @@ $$;
 
 
 --
+-- Name: FUNCTION urn_ink_before_block(urn_id integer, header_id integer); Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON FUNCTION public.urn_ink_before_block(urn_id integer, header_id integer) IS '@omit';
+
+
+--
 -- Name: urn_time_created(integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -5821,6 +6283,13 @@ FROM maker.vat_urn_ink
          LEFT JOIN public.headers ON vat_urn_ink.header_id = headers.id
 WHERE vat_urn_ink.urn_id = urn_time_created.urn_id
 $$;
+
+
+--
+-- Name: FUNCTION urn_time_created(urn_id integer); Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON FUNCTION public.urn_time_created(urn_id integer) IS '@omit';
 
 
 --
@@ -14379,6 +14848,13 @@ CREATE INDEX bite_header_index ON maker.bite USING btree (header_id);
 
 
 --
+-- Name: bite_log_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX bite_log_index ON maker.bite USING btree (log_id);
+
+
+--
 -- Name: bite_urn_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -14400,6 +14876,13 @@ CREATE INDEX cat_file_chop_lump_ilk_index ON maker.cat_file_chop_lump USING btre
 
 
 --
+-- Name: cat_file_chop_lump_log_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX cat_file_chop_lump_log_index ON maker.cat_file_chop_lump USING btree (log_id);
+
+
+--
 -- Name: cat_file_flip_header_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -14414,10 +14897,24 @@ CREATE INDEX cat_file_flip_ilk_index ON maker.cat_file_flip USING btree (ilk_id)
 
 
 --
+-- Name: cat_file_flip_log_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX cat_file_flip_log_index ON maker.cat_file_flip USING btree (log_id);
+
+
+--
 -- Name: cat_file_vow_header_index; Type: INDEX; Schema: maker; Owner: -
 --
 
 CREATE INDEX cat_file_vow_header_index ON maker.cat_file_vow USING btree (header_id);
+
+
+--
+-- Name: cat_file_vow_log_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX cat_file_vow_log_index ON maker.cat_file_vow USING btree (log_id);
 
 
 --
@@ -14463,17 +14960,52 @@ CREATE INDEX cat_ilk_lump_ilk_index ON maker.cat_ilk_lump USING btree (ilk_id);
 
 
 --
--- Name: cdp_manager_cdpi_cdpi_index; Type: INDEX; Schema: maker; Owner: -
+-- Name: cat_live_header_id_index; Type: INDEX; Schema: maker; Owner: -
 --
 
-CREATE INDEX cdp_manager_cdpi_cdpi_index ON maker.cdp_manager_cdpi USING btree (cdpi);
+CREATE INDEX cat_live_header_id_index ON maker.cat_live USING btree (header_id);
 
 
 --
--- Name: cdp_manager_ilks_cdpi_index; Type: INDEX; Schema: maker; Owner: -
+-- Name: cat_vat_header_id_index; Type: INDEX; Schema: maker; Owner: -
 --
 
-CREATE INDEX cdp_manager_ilks_cdpi_index ON maker.cdp_manager_ilks USING btree (cdpi);
+CREATE INDEX cat_vat_header_id_index ON maker.cat_vat USING btree (header_id);
+
+
+--
+-- Name: cat_vow_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX cat_vow_header_id_index ON maker.cat_vow USING btree (header_id);
+
+
+--
+-- Name: cdp_manager_cdpi_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX cdp_manager_cdpi_header_id_index ON maker.cdp_manager_cdpi USING btree (header_id);
+
+
+--
+-- Name: cdp_manager_count_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX cdp_manager_count_header_id_index ON maker.cdp_manager_count USING btree (header_id);
+
+
+--
+-- Name: cdp_manager_first_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX cdp_manager_first_header_id_index ON maker.cdp_manager_first USING btree (header_id);
+
+
+--
+-- Name: cdp_manager_ilks_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX cdp_manager_ilks_header_id_index ON maker.cdp_manager_ilks USING btree (header_id);
 
 
 --
@@ -14484,10 +15016,31 @@ CREATE INDEX cdp_manager_ilks_ilk_id_index ON maker.cdp_manager_ilks USING btree
 
 
 --
--- Name: cdp_manager_owns_cdpi_index; Type: INDEX; Schema: maker; Owner: -
+-- Name: cdp_manager_last_header_id_index; Type: INDEX; Schema: maker; Owner: -
 --
 
-CREATE INDEX cdp_manager_owns_cdpi_index ON maker.cdp_manager_owns USING btree (cdpi);
+CREATE INDEX cdp_manager_last_header_id_index ON maker.cdp_manager_last USING btree (header_id);
+
+
+--
+-- Name: cdp_manager_list_next_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX cdp_manager_list_next_header_id_index ON maker.cdp_manager_list_next USING btree (header_id);
+
+
+--
+-- Name: cdp_manager_list_prev_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX cdp_manager_list_prev_header_id_index ON maker.cdp_manager_list_prev USING btree (header_id);
+
+
+--
+-- Name: cdp_manager_owns_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX cdp_manager_owns_header_id_index ON maker.cdp_manager_owns USING btree (header_id);
 
 
 --
@@ -14498,10 +15051,10 @@ CREATE INDEX cdp_manager_owns_owner_index ON maker.cdp_manager_owns USING btree 
 
 
 --
--- Name: cdp_manager_urns_cdpi_index; Type: INDEX; Schema: maker; Owner: -
+-- Name: cdp_manager_urns_header_id_index; Type: INDEX; Schema: maker; Owner: -
 --
 
-CREATE INDEX cdp_manager_urns_cdpi_index ON maker.cdp_manager_urns USING btree (cdpi);
+CREATE INDEX cdp_manager_urns_header_id_index ON maker.cdp_manager_urns USING btree (header_id);
 
 
 --
@@ -14512,10 +15065,17 @@ CREATE INDEX cdp_manager_urns_urn_index ON maker.cdp_manager_urns USING btree (u
 
 
 --
--- Name: deal_address_id_index; Type: INDEX; Schema: maker; Owner: -
+-- Name: cdp_manager_vat_header_id_index; Type: INDEX; Schema: maker; Owner: -
 --
 
-CREATE INDEX deal_address_id_index ON maker.deal USING btree (address_id);
+CREATE INDEX cdp_manager_vat_header_id_index ON maker.cdp_manager_vat USING btree (header_id);
+
+
+--
+-- Name: deal_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX deal_address_index ON maker.deal USING btree (address_id);
 
 
 --
@@ -14533,6 +15093,20 @@ CREATE INDEX deal_header_index ON maker.deal USING btree (header_id);
 
 
 --
+-- Name: deal_log_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX deal_log_index ON maker.deal USING btree (log_id);
+
+
+--
+-- Name: dent_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX dent_address_index ON maker.dent USING btree (address_id);
+
+
+--
 -- Name: dent_header_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -14540,10 +15114,38 @@ CREATE INDEX dent_header_index ON maker.dent USING btree (header_id);
 
 
 --
--- Name: flap_bid_bid_address_id_index; Type: INDEX; Schema: maker; Owner: -
+-- Name: dent_log_index; Type: INDEX; Schema: maker; Owner: -
 --
 
-CREATE INDEX flap_bid_bid_address_id_index ON maker.flap_bid_bid USING btree (address_id);
+CREATE INDEX dent_log_index ON maker.dent USING btree (log_id);
+
+
+--
+-- Name: flap_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flap_address_index ON maker.flap USING btree (address_id);
+
+
+--
+-- Name: flap_beg_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flap_beg_address_index ON maker.flap_beg USING btree (address_id);
+
+
+--
+-- Name: flap_beg_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flap_beg_header_id_index ON maker.flap_beg USING btree (header_id);
+
+
+--
+-- Name: flap_bid_bid_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flap_bid_bid_address_index ON maker.flap_bid_bid USING btree (address_id);
 
 
 --
@@ -14554,10 +15156,17 @@ CREATE INDEX flap_bid_bid_bid_id_index ON maker.flap_bid_bid USING btree (bid_id
 
 
 --
--- Name: flap_bid_end_bid_address_id_index; Type: INDEX; Schema: maker; Owner: -
+-- Name: flap_bid_bid_header_id_index; Type: INDEX; Schema: maker; Owner: -
 --
 
-CREATE INDEX flap_bid_end_bid_address_id_index ON maker.flap_bid_end USING btree (address_id);
+CREATE INDEX flap_bid_bid_header_id_index ON maker.flap_bid_bid USING btree (header_id);
+
+
+--
+-- Name: flap_bid_end_bid_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flap_bid_end_bid_address_index ON maker.flap_bid_end USING btree (address_id);
 
 
 --
@@ -14568,10 +15177,17 @@ CREATE INDEX flap_bid_end_bid_id_index ON maker.flap_bid_end USING btree (bid_id
 
 
 --
--- Name: flap_bid_guy_bid_address_id_index; Type: INDEX; Schema: maker; Owner: -
+-- Name: flap_bid_end_header_id_index; Type: INDEX; Schema: maker; Owner: -
 --
 
-CREATE INDEX flap_bid_guy_bid_address_id_index ON maker.flap_bid_guy USING btree (address_id);
+CREATE INDEX flap_bid_end_header_id_index ON maker.flap_bid_end USING btree (header_id);
+
+
+--
+-- Name: flap_bid_guy_bid_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flap_bid_guy_bid_address_index ON maker.flap_bid_guy USING btree (address_id);
 
 
 --
@@ -14582,10 +15198,17 @@ CREATE INDEX flap_bid_guy_bid_id_index ON maker.flap_bid_guy USING btree (bid_id
 
 
 --
--- Name: flap_bid_lot_bid_address_id_index; Type: INDEX; Schema: maker; Owner: -
+-- Name: flap_bid_guy_header_id_index; Type: INDEX; Schema: maker; Owner: -
 --
 
-CREATE INDEX flap_bid_lot_bid_address_id_index ON maker.flap_bid_lot USING btree (address_id);
+CREATE INDEX flap_bid_guy_header_id_index ON maker.flap_bid_guy USING btree (header_id);
+
+
+--
+-- Name: flap_bid_lot_bid_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flap_bid_lot_bid_address_index ON maker.flap_bid_lot USING btree (address_id);
 
 
 --
@@ -14596,10 +15219,17 @@ CREATE INDEX flap_bid_lot_bid_id_index ON maker.flap_bid_lot USING btree (bid_id
 
 
 --
--- Name: flap_bid_tic_bid_address_id_index; Type: INDEX; Schema: maker; Owner: -
+-- Name: flap_bid_lot_header_id_index; Type: INDEX; Schema: maker; Owner: -
 --
 
-CREATE INDEX flap_bid_tic_bid_address_id_index ON maker.flap_bid_tic USING btree (address_id);
+CREATE INDEX flap_bid_lot_header_id_index ON maker.flap_bid_lot USING btree (header_id);
+
+
+--
+-- Name: flap_bid_tic_bid_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flap_bid_tic_bid_address_index ON maker.flap_bid_tic USING btree (address_id);
 
 
 --
@@ -14610,6 +15240,34 @@ CREATE INDEX flap_bid_tic_bid_id_index ON maker.flap_bid_tic USING btree (bid_id
 
 
 --
+-- Name: flap_bid_tic_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flap_bid_tic_header_id_index ON maker.flap_bid_tic USING btree (header_id);
+
+
+--
+-- Name: flap_gem_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flap_gem_address_index ON maker.flap_gem USING btree (address_id);
+
+
+--
+-- Name: flap_gem_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flap_gem_header_id_index ON maker.flap_gem USING btree (header_id);
+
+
+--
+-- Name: flap_kick_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flap_kick_address_index ON maker.flap_kick USING btree (address_id);
+
+
+--
 -- Name: flap_kick_header_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -14617,24 +15275,108 @@ CREATE INDEX flap_kick_header_index ON maker.flap_kick USING btree (header_id);
 
 
 --
--- Name: flap_kicks_address_id_index; Type: INDEX; Schema: maker; Owner: -
+-- Name: flap_kick_log_index; Type: INDEX; Schema: maker; Owner: -
 --
 
-CREATE INDEX flap_kicks_address_id_index ON maker.flap_kicks USING btree (address_id);
-
-
---
--- Name: flap_kicks_kicks_index; Type: INDEX; Schema: maker; Owner: -
---
-
-CREATE INDEX flap_kicks_kicks_index ON maker.flap_kicks USING btree (kicks);
+CREATE INDEX flap_kick_log_index ON maker.flap_kick USING btree (log_id);
 
 
 --
--- Name: flip_bid_bid_address_id_index; Type: INDEX; Schema: maker; Owner: -
+-- Name: flap_kicks_address_index; Type: INDEX; Schema: maker; Owner: -
 --
 
-CREATE INDEX flip_bid_bid_address_id_index ON maker.flip_bid_bid USING btree (address_id);
+CREATE INDEX flap_kicks_address_index ON maker.flap_kicks USING btree (address_id);
+
+
+--
+-- Name: flap_kicks_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flap_kicks_header_id_index ON maker.flap_kicks USING btree (header_id);
+
+
+--
+-- Name: flap_live_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flap_live_address_index ON maker.flap_live USING btree (address_id);
+
+
+--
+-- Name: flap_live_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flap_live_header_id_index ON maker.flap_live USING btree (header_id);
+
+
+--
+-- Name: flap_tau_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flap_tau_address_index ON maker.flap_tau USING btree (address_id);
+
+
+--
+-- Name: flap_tau_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flap_tau_header_id_index ON maker.flap_tau USING btree (header_id);
+
+
+--
+-- Name: flap_ttl_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flap_ttl_address_index ON maker.flap_ttl USING btree (address_id);
+
+
+--
+-- Name: flap_ttl_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flap_ttl_header_id_index ON maker.flap_ttl USING btree (header_id);
+
+
+--
+-- Name: flap_vat_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flap_vat_address_index ON maker.flap_vat USING btree (address_id);
+
+
+--
+-- Name: flap_vat_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flap_vat_header_id_index ON maker.flap_vat USING btree (header_id);
+
+
+--
+-- Name: flip_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flip_address_index ON maker.flip USING btree (address_id);
+
+
+--
+-- Name: flip_beg_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flip_beg_address_index ON maker.flip_beg USING btree (address_id);
+
+
+--
+-- Name: flip_beg_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flip_beg_header_id_index ON maker.flip_beg USING btree (header_id);
+
+
+--
+-- Name: flip_bid_bid_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flip_bid_bid_address_index ON maker.flip_bid_bid USING btree (address_id);
 
 
 --
@@ -14645,10 +15387,17 @@ CREATE INDEX flip_bid_bid_bid_id_index ON maker.flip_bid_bid USING btree (bid_id
 
 
 --
--- Name: flip_bid_end_address_id_index; Type: INDEX; Schema: maker; Owner: -
+-- Name: flip_bid_bid_header_id_index; Type: INDEX; Schema: maker; Owner: -
 --
 
-CREATE INDEX flip_bid_end_address_id_index ON maker.flip_bid_end USING btree (address_id);
+CREATE INDEX flip_bid_bid_header_id_index ON maker.flip_bid_bid USING btree (header_id);
+
+
+--
+-- Name: flip_bid_end_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flip_bid_end_address_index ON maker.flip_bid_end USING btree (address_id);
 
 
 --
@@ -14659,10 +15408,17 @@ CREATE INDEX flip_bid_end_bid_id_index ON maker.flip_bid_end USING btree (bid_id
 
 
 --
--- Name: flip_bid_gal_address_id_index; Type: INDEX; Schema: maker; Owner: -
+-- Name: flip_bid_end_header_id_index; Type: INDEX; Schema: maker; Owner: -
 --
 
-CREATE INDEX flip_bid_gal_address_id_index ON maker.flip_bid_gal USING btree (address_id);
+CREATE INDEX flip_bid_end_header_id_index ON maker.flip_bid_end USING btree (header_id);
+
+
+--
+-- Name: flip_bid_gal_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flip_bid_gal_address_index ON maker.flip_bid_gal USING btree (address_id);
 
 
 --
@@ -14673,10 +15429,17 @@ CREATE INDEX flip_bid_gal_bid_id_index ON maker.flip_bid_gal USING btree (bid_id
 
 
 --
--- Name: flip_bid_guy_address_id_index; Type: INDEX; Schema: maker; Owner: -
+-- Name: flip_bid_gal_header_id_index; Type: INDEX; Schema: maker; Owner: -
 --
 
-CREATE INDEX flip_bid_guy_address_id_index ON maker.flip_bid_guy USING btree (address_id);
+CREATE INDEX flip_bid_gal_header_id_index ON maker.flip_bid_gal USING btree (header_id);
+
+
+--
+-- Name: flip_bid_guy_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flip_bid_guy_address_index ON maker.flip_bid_guy USING btree (address_id);
 
 
 --
@@ -14687,10 +15450,17 @@ CREATE INDEX flip_bid_guy_bid_id_index ON maker.flip_bid_guy USING btree (bid_id
 
 
 --
--- Name: flip_bid_lot_address_id_index; Type: INDEX; Schema: maker; Owner: -
+-- Name: flip_bid_guy_header_id_index; Type: INDEX; Schema: maker; Owner: -
 --
 
-CREATE INDEX flip_bid_lot_address_id_index ON maker.flip_bid_lot USING btree (address_id);
+CREATE INDEX flip_bid_guy_header_id_index ON maker.flip_bid_guy USING btree (header_id);
+
+
+--
+-- Name: flip_bid_lot_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flip_bid_lot_address_index ON maker.flip_bid_lot USING btree (address_id);
 
 
 --
@@ -14701,10 +15471,17 @@ CREATE INDEX flip_bid_lot_bid_id_index ON maker.flip_bid_lot USING btree (bid_id
 
 
 --
--- Name: flip_bid_tab_address_id_index; Type: INDEX; Schema: maker; Owner: -
+-- Name: flip_bid_lot_header_id_index; Type: INDEX; Schema: maker; Owner: -
 --
 
-CREATE INDEX flip_bid_tab_address_id_index ON maker.flip_bid_tab USING btree (address_id);
+CREATE INDEX flip_bid_lot_header_id_index ON maker.flip_bid_lot USING btree (header_id);
+
+
+--
+-- Name: flip_bid_tab_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flip_bid_tab_address_index ON maker.flip_bid_tab USING btree (address_id);
 
 
 --
@@ -14715,10 +15492,17 @@ CREATE INDEX flip_bid_tab_bid_id_index ON maker.flip_bid_tab USING btree (bid_id
 
 
 --
--- Name: flip_bid_tic_address_id_index; Type: INDEX; Schema: maker; Owner: -
+-- Name: flip_bid_tab_header_id_index; Type: INDEX; Schema: maker; Owner: -
 --
 
-CREATE INDEX flip_bid_tic_address_id_index ON maker.flip_bid_tic USING btree (address_id);
+CREATE INDEX flip_bid_tab_header_id_index ON maker.flip_bid_tab USING btree (header_id);
+
+
+--
+-- Name: flip_bid_tic_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flip_bid_tic_address_index ON maker.flip_bid_tic USING btree (address_id);
 
 
 --
@@ -14729,10 +15513,17 @@ CREATE INDEX flip_bid_tic_bid_id_index ON maker.flip_bid_tic USING btree (bid_id
 
 
 --
--- Name: flip_bid_usr_address_id_index; Type: INDEX; Schema: maker; Owner: -
+-- Name: flip_bid_tic_header_id_index; Type: INDEX; Schema: maker; Owner: -
 --
 
-CREATE INDEX flip_bid_usr_address_id_index ON maker.flip_bid_usr USING btree (address_id);
+CREATE INDEX flip_bid_tic_header_id_index ON maker.flip_bid_tic USING btree (header_id);
+
+
+--
+-- Name: flip_bid_usr_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flip_bid_usr_address_index ON maker.flip_bid_usr USING btree (address_id);
 
 
 --
@@ -14743,6 +15534,27 @@ CREATE INDEX flip_bid_usr_bid_id_index ON maker.flip_bid_usr USING btree (bid_id
 
 
 --
+-- Name: flip_bid_usr_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flip_bid_usr_header_id_index ON maker.flip_bid_usr USING btree (header_id);
+
+
+--
+-- Name: flip_ilk_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flip_ilk_address_index ON maker.flip_ilk USING btree (address_id);
+
+
+--
+-- Name: flip_ilk_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flip_ilk_header_id_index ON maker.flip_ilk USING btree (header_id);
+
+
+--
 -- Name: flip_ilk_ilk_id_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -14750,10 +15562,10 @@ CREATE INDEX flip_ilk_ilk_id_index ON maker.flip_ilk USING btree (ilk_id);
 
 
 --
--- Name: flip_kick_address_id_index; Type: INDEX; Schema: maker; Owner: -
+-- Name: flip_kick_address_index; Type: INDEX; Schema: maker; Owner: -
 --
 
-CREATE INDEX flip_kick_address_id_index ON maker.flip_kick USING btree (address_id);
+CREATE INDEX flip_kick_address_index ON maker.flip_kick USING btree (address_id);
 
 
 --
@@ -14771,24 +15583,94 @@ CREATE INDEX flip_kick_header_index ON maker.flip_kick USING btree (header_id);
 
 
 --
--- Name: flip_kicks_address_id_index; Type: INDEX; Schema: maker; Owner: -
+-- Name: flip_kick_log_index; Type: INDEX; Schema: maker; Owner: -
 --
 
-CREATE INDEX flip_kicks_address_id_index ON maker.flip_kicks USING btree (address_id);
-
-
---
--- Name: flip_kicks_kicks_index; Type: INDEX; Schema: maker; Owner: -
---
-
-CREATE INDEX flip_kicks_kicks_index ON maker.flip_kicks USING btree (kicks);
+CREATE INDEX flip_kick_log_index ON maker.flip_kick USING btree (log_id);
 
 
 --
--- Name: flop_bid_bid_address_id_index; Type: INDEX; Schema: maker; Owner: -
+-- Name: flip_kicks_address_index; Type: INDEX; Schema: maker; Owner: -
 --
 
-CREATE INDEX flop_bid_bid_address_id_index ON maker.flop_bid_bid USING btree (address_id);
+CREATE INDEX flip_kicks_address_index ON maker.flip_kicks USING btree (address_id);
+
+
+--
+-- Name: flip_kicks_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flip_kicks_header_id_index ON maker.flip_kicks USING btree (header_id);
+
+
+--
+-- Name: flip_tau_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flip_tau_address_index ON maker.flip_tau USING btree (address_id);
+
+
+--
+-- Name: flip_tau_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flip_tau_header_id_index ON maker.flip_tau USING btree (header_id);
+
+
+--
+-- Name: flip_ttl_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flip_ttl_address_index ON maker.flip_ttl USING btree (address_id);
+
+
+--
+-- Name: flip_ttl_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flip_ttl_header_id_index ON maker.flip_ttl USING btree (header_id);
+
+
+--
+-- Name: flip_vat_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flip_vat_address_index ON maker.flip_vat USING btree (address_id);
+
+
+--
+-- Name: flip_vat_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flip_vat_header_id_index ON maker.flip_vat USING btree (header_id);
+
+
+--
+-- Name: flop_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flop_address_index ON maker.flop USING btree (address_id);
+
+
+--
+-- Name: flop_beg_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flop_beg_address_index ON maker.flop_beg USING btree (address_id);
+
+
+--
+-- Name: flop_beg_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flop_beg_header_id_index ON maker.flop_beg USING btree (header_id);
+
+
+--
+-- Name: flop_bid_bid_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flop_bid_bid_address_index ON maker.flop_bid_bid USING btree (address_id);
 
 
 --
@@ -14799,10 +15681,17 @@ CREATE INDEX flop_bid_bid_bid_id_index ON maker.flop_bid_bid USING btree (bid_id
 
 
 --
--- Name: flop_bid_end_bid_address_id_index; Type: INDEX; Schema: maker; Owner: -
+-- Name: flop_bid_bid_header_id_index; Type: INDEX; Schema: maker; Owner: -
 --
 
-CREATE INDEX flop_bid_end_bid_address_id_index ON maker.flop_bid_end USING btree (address_id);
+CREATE INDEX flop_bid_bid_header_id_index ON maker.flop_bid_bid USING btree (header_id);
+
+
+--
+-- Name: flop_bid_end_bid_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flop_bid_end_bid_address_index ON maker.flop_bid_end USING btree (address_id);
 
 
 --
@@ -14813,10 +15702,17 @@ CREATE INDEX flop_bid_end_bid_id_index ON maker.flop_bid_end USING btree (bid_id
 
 
 --
--- Name: flop_bid_guy_bid_address_id_index; Type: INDEX; Schema: maker; Owner: -
+-- Name: flop_bid_end_header_id_index; Type: INDEX; Schema: maker; Owner: -
 --
 
-CREATE INDEX flop_bid_guy_bid_address_id_index ON maker.flop_bid_guy USING btree (address_id);
+CREATE INDEX flop_bid_end_header_id_index ON maker.flop_bid_end USING btree (header_id);
+
+
+--
+-- Name: flop_bid_guy_bid_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flop_bid_guy_bid_address_index ON maker.flop_bid_guy USING btree (address_id);
 
 
 --
@@ -14827,10 +15723,17 @@ CREATE INDEX flop_bid_guy_bid_id_index ON maker.flop_bid_guy USING btree (bid_id
 
 
 --
--- Name: flop_bid_lot_bid_address_id_index; Type: INDEX; Schema: maker; Owner: -
+-- Name: flop_bid_guy_header_id_index; Type: INDEX; Schema: maker; Owner: -
 --
 
-CREATE INDEX flop_bid_lot_bid_address_id_index ON maker.flop_bid_lot USING btree (address_id);
+CREATE INDEX flop_bid_guy_header_id_index ON maker.flop_bid_guy USING btree (header_id);
+
+
+--
+-- Name: flop_bid_lot_bid_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flop_bid_lot_bid_address_index ON maker.flop_bid_lot USING btree (address_id);
 
 
 --
@@ -14841,10 +15744,17 @@ CREATE INDEX flop_bid_lot_bid_id_index ON maker.flop_bid_lot USING btree (bid_id
 
 
 --
--- Name: flop_bid_tic_bid_address_id_index; Type: INDEX; Schema: maker; Owner: -
+-- Name: flop_bid_lot_header_id_index; Type: INDEX; Schema: maker; Owner: -
 --
 
-CREATE INDEX flop_bid_tic_bid_address_id_index ON maker.flop_bid_tic USING btree (address_id);
+CREATE INDEX flop_bid_lot_header_id_index ON maker.flop_bid_lot USING btree (header_id);
+
+
+--
+-- Name: flop_bid_tic_bid_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flop_bid_tic_bid_address_index ON maker.flop_bid_tic USING btree (address_id);
 
 
 --
@@ -14855,6 +15765,34 @@ CREATE INDEX flop_bid_tic_bid_id_index ON maker.flop_bid_tic USING btree (bid_id
 
 
 --
+-- Name: flop_bid_tic_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flop_bid_tic_header_id_index ON maker.flop_bid_tic USING btree (header_id);
+
+
+--
+-- Name: flop_gem_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flop_gem_address_index ON maker.flop_gem USING btree (address_id);
+
+
+--
+-- Name: flop_gem_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flop_gem_header_id_index ON maker.flop_gem USING btree (header_id);
+
+
+--
+-- Name: flop_kick_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flop_kick_address_index ON maker.flop_kick USING btree (address_id);
+
+
+--
 -- Name: flop_kick_header_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -14862,17 +15800,101 @@ CREATE INDEX flop_kick_header_index ON maker.flop_kick USING btree (header_id);
 
 
 --
--- Name: flop_kicks_address_id_index; Type: INDEX; Schema: maker; Owner: -
+-- Name: flop_kick_log_index; Type: INDEX; Schema: maker; Owner: -
 --
 
-CREATE INDEX flop_kicks_address_id_index ON maker.flop_kicks USING btree (address_id);
+CREATE INDEX flop_kick_log_index ON maker.flop_kick USING btree (log_id);
 
 
 --
--- Name: flop_kicks_kicks_index; Type: INDEX; Schema: maker; Owner: -
+-- Name: flop_kicks_address_index; Type: INDEX; Schema: maker; Owner: -
 --
 
-CREATE INDEX flop_kicks_kicks_index ON maker.flop_kicks USING btree (kicks);
+CREATE INDEX flop_kicks_address_index ON maker.flop_kicks USING btree (address_id);
+
+
+--
+-- Name: flop_kicks_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flop_kicks_header_id_index ON maker.flop_kicks USING btree (header_id);
+
+
+--
+-- Name: flop_live_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flop_live_address_index ON maker.flop_live USING btree (address_id);
+
+
+--
+-- Name: flop_live_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flop_live_header_id_index ON maker.flop_live USING btree (header_id);
+
+
+--
+-- Name: flop_pad_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flop_pad_address_index ON maker.flop_pad USING btree (address_id);
+
+
+--
+-- Name: flop_pad_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flop_pad_header_id_index ON maker.flop_pad USING btree (header_id);
+
+
+--
+-- Name: flop_tau_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flop_tau_address_index ON maker.flop_tau USING btree (address_id);
+
+
+--
+-- Name: flop_tau_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flop_tau_header_id_index ON maker.flop_tau USING btree (header_id);
+
+
+--
+-- Name: flop_ttl_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flop_ttl_address_index ON maker.flop_ttl USING btree (address_id);
+
+
+--
+-- Name: flop_ttl_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flop_ttl_header_id_index ON maker.flop_ttl USING btree (header_id);
+
+
+--
+-- Name: flop_vat_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flop_vat_address_index ON maker.flop_vat USING btree (address_id);
+
+
+--
+-- Name: flop_vat_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flop_vat_header_id_index ON maker.flop_vat USING btree (header_id);
+
+
+--
+-- Name: jug_base_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX jug_base_header_id_index ON maker.jug_base USING btree (header_id);
 
 
 --
@@ -14890,10 +15912,24 @@ CREATE INDEX jug_drip_ilk_index ON maker.jug_drip USING btree (ilk_id);
 
 
 --
+-- Name: jug_drip_log_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX jug_drip_log_index ON maker.jug_drip USING btree (log_id);
+
+
+--
 -- Name: jug_file_base_header_index; Type: INDEX; Schema: maker; Owner: -
 --
 
 CREATE INDEX jug_file_base_header_index ON maker.jug_file_base USING btree (header_id);
+
+
+--
+-- Name: jug_file_base_log_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX jug_file_base_log_index ON maker.jug_file_base USING btree (log_id);
 
 
 --
@@ -14911,10 +15947,24 @@ CREATE INDEX jug_file_ilk_ilk_index ON maker.jug_file_ilk USING btree (ilk_id);
 
 
 --
+-- Name: jug_file_ilk_log_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX jug_file_ilk_log_index ON maker.jug_file_ilk USING btree (log_id);
+
+
+--
 -- Name: jug_file_vow_header_index; Type: INDEX; Schema: maker; Owner: -
 --
 
 CREATE INDEX jug_file_vow_header_index ON maker.jug_file_vow USING btree (header_id);
+
+
+--
+-- Name: jug_file_vow_log_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX jug_file_vow_log_index ON maker.jug_file_vow USING btree (log_id);
 
 
 --
@@ -14960,10 +16010,45 @@ CREATE INDEX jug_init_ilk_index ON maker.jug_init USING btree (ilk_id);
 
 
 --
+-- Name: jug_init_log_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX jug_init_log_index ON maker.jug_init USING btree (log_id);
+
+
+--
+-- Name: jug_vat_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX jug_vat_header_id_index ON maker.jug_vat USING btree (header_id);
+
+
+--
+-- Name: jug_vow_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX jug_vow_header_id_index ON maker.jug_vow USING btree (header_id);
+
+
+--
 -- Name: log_value_header_index; Type: INDEX; Schema: maker; Owner: -
 --
 
 CREATE INDEX log_value_header_index ON maker.log_value USING btree (header_id);
+
+
+--
+-- Name: log_value_log_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX log_value_log_index ON maker.log_value USING btree (log_id);
+
+
+--
+-- Name: new_cdp_log_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX new_cdp_log_index ON maker.new_cdp USING btree (log_id);
 
 
 --
@@ -14974,6 +16059,13 @@ CREATE INDEX pot_cage_header_index ON maker.pot_cage USING btree (header_id);
 
 
 --
+-- Name: pot_cage_log_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX pot_cage_log_index ON maker.pot_cage USING btree (log_id);
+
+
+--
 -- Name: pot_file_dsr_header_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -14981,10 +16073,24 @@ CREATE INDEX pot_file_dsr_header_index ON maker.pot_file_dsr USING btree (header
 
 
 --
+-- Name: pot_file_dsr_log_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX pot_file_dsr_log_index ON maker.pot_file_dsr USING btree (log_id);
+
+
+--
 -- Name: pot_file_vow_header_index; Type: INDEX; Schema: maker; Owner: -
 --
 
 CREATE INDEX pot_file_vow_header_index ON maker.pot_file_vow USING btree (header_id);
+
+
+--
+-- Name: pot_file_vow_log_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX pot_file_vow_log_index ON maker.pot_file_vow USING btree (log_id);
 
 
 --
@@ -15002,6 +16108,13 @@ CREATE INDEX spot_file_mat_ilk_index ON maker.spot_file_mat USING btree (ilk_id)
 
 
 --
+-- Name: spot_file_mat_log_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX spot_file_mat_log_index ON maker.spot_file_mat USING btree (log_id);
+
+
+--
 -- Name: spot_file_pip_header_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -15013,6 +16126,13 @@ CREATE INDEX spot_file_pip_header_index ON maker.spot_file_pip USING btree (head
 --
 
 CREATE INDEX spot_file_pip_ilk_index ON maker.spot_file_pip USING btree (ilk_id);
+
+
+--
+-- Name: spot_file_pip_log_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX spot_file_pip_log_index ON maker.spot_file_pip USING btree (log_id);
 
 
 --
@@ -15044,6 +16164,13 @@ CREATE INDEX spot_ilk_pip_ilk_index ON maker.spot_ilk_pip USING btree (ilk_id);
 
 
 --
+-- Name: spot_par_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX spot_par_header_id_index ON maker.spot_par USING btree (header_id);
+
+
+--
 -- Name: spot_poke_header_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -15058,10 +16185,45 @@ CREATE INDEX spot_poke_ilk_index ON maker.spot_poke USING btree (ilk_id);
 
 
 --
+-- Name: spot_poke_log_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX spot_poke_log_index ON maker.spot_poke USING btree (log_id);
+
+
+--
+-- Name: spot_vat_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX spot_vat_header_id_index ON maker.spot_vat USING btree (header_id);
+
+
+--
+-- Name: tend_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX tend_address_index ON maker.tend USING btree (address_id);
+
+
+--
 -- Name: tend_header_index; Type: INDEX; Schema: maker; Owner: -
 --
 
 CREATE INDEX tend_header_index ON maker.tend USING btree (header_id);
+
+
+--
+-- Name: tend_log_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX tend_log_index ON maker.tend USING btree (log_id);
+
+
+--
+-- Name: tick_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX tick_address_index ON maker.tick USING btree (address_id);
 
 
 --
@@ -15079,6 +16241,13 @@ CREATE INDEX tick_header_index ON maker.tick USING btree (header_id);
 
 
 --
+-- Name: tick_log_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX tick_log_index ON maker.tick USING btree (log_id);
+
+
+--
 -- Name: urn_ilk_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -15086,10 +16255,31 @@ CREATE INDEX urn_ilk_index ON maker.urns USING btree (ilk_id);
 
 
 --
+-- Name: vat_dai_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vat_dai_header_id_index ON maker.vat_dai USING btree (header_id);
+
+
+--
+-- Name: vat_debt_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vat_debt_header_id_index ON maker.vat_debt USING btree (header_id);
+
+
+--
 -- Name: vat_file_debt_ceiling_header_index; Type: INDEX; Schema: maker; Owner: -
 --
 
 CREATE INDEX vat_file_debt_ceiling_header_index ON maker.vat_file_debt_ceiling USING btree (header_id);
+
+
+--
+-- Name: vat_file_debt_ceiling_log_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vat_file_debt_ceiling_log_index ON maker.vat_file_debt_ceiling USING btree (log_id);
 
 
 --
@@ -15107,6 +16297,13 @@ CREATE INDEX vat_file_ilk_ilk_index ON maker.vat_file_ilk USING btree (ilk_id);
 
 
 --
+-- Name: vat_file_ilk_log_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vat_file_ilk_log_index ON maker.vat_file_ilk USING btree (log_id);
+
+
+--
 -- Name: vat_flux_header_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -15118,6 +16315,13 @@ CREATE INDEX vat_flux_header_index ON maker.vat_flux USING btree (header_id);
 --
 
 CREATE INDEX vat_flux_ilk_index ON maker.vat_flux USING btree (ilk_id);
+
+
+--
+-- Name: vat_flux_log_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vat_flux_log_index ON maker.vat_flux USING btree (log_id);
 
 
 --
@@ -15135,6 +16339,13 @@ CREATE INDEX vat_fold_ilk_index ON maker.vat_fold USING btree (ilk_id);
 
 
 --
+-- Name: vat_fold_log_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vat_fold_log_index ON maker.vat_fold USING btree (log_id);
+
+
+--
 -- Name: vat_fork_header_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -15149,6 +16360,13 @@ CREATE INDEX vat_fork_ilk_index ON maker.vat_fork USING btree (ilk_id);
 
 
 --
+-- Name: vat_fork_log_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vat_fork_log_index ON maker.vat_fork USING btree (log_id);
+
+
+--
 -- Name: vat_frob_header_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -15156,10 +16374,24 @@ CREATE INDEX vat_frob_header_index ON maker.vat_frob USING btree (header_id);
 
 
 --
+-- Name: vat_frob_log_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vat_frob_log_index ON maker.vat_frob USING btree (log_id);
+
+
+--
 -- Name: vat_frob_urn_index; Type: INDEX; Schema: maker; Owner: -
 --
 
 CREATE INDEX vat_frob_urn_index ON maker.vat_frob USING btree (urn_id);
+
+
+--
+-- Name: vat_gem_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vat_gem_header_id_index ON maker.vat_gem USING btree (header_id);
 
 
 --
@@ -15177,6 +16409,13 @@ CREATE INDEX vat_grab_header_index ON maker.vat_grab USING btree (header_id);
 
 
 --
+-- Name: vat_grab_log_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vat_grab_log_index ON maker.vat_grab USING btree (log_id);
+
+
+--
 -- Name: vat_grab_urn_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -15188,6 +16427,13 @@ CREATE INDEX vat_grab_urn_index ON maker.vat_grab USING btree (urn_id);
 --
 
 CREATE INDEX vat_heal_header_index ON maker.vat_heal USING btree (header_id);
+
+
+--
+-- Name: vat_heal_log_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vat_heal_log_index ON maker.vat_heal USING btree (log_id);
 
 
 --
@@ -15275,10 +16521,45 @@ CREATE INDEX vat_init_ilk_index ON maker.vat_init USING btree (ilk_id);
 
 
 --
+-- Name: vat_init_log_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vat_init_log_index ON maker.vat_init USING btree (log_id);
+
+
+--
+-- Name: vat_line_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vat_line_header_id_index ON maker.vat_line USING btree (header_id);
+
+
+--
+-- Name: vat_live_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vat_live_header_id_index ON maker.vat_live USING btree (header_id);
+
+
+--
 -- Name: vat_move_header_index; Type: INDEX; Schema: maker; Owner: -
 --
 
 CREATE INDEX vat_move_header_index ON maker.vat_move USING btree (header_id);
+
+
+--
+-- Name: vat_move_log_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vat_move_log_index ON maker.vat_move USING btree (log_id);
+
+
+--
+-- Name: vat_sin_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vat_sin_header_id_index ON maker.vat_sin USING btree (header_id);
 
 
 --
@@ -15296,10 +16577,24 @@ CREATE INDEX vat_slip_ilk_index ON maker.vat_slip USING btree (ilk_id);
 
 
 --
+-- Name: vat_slip_log_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vat_slip_log_index ON maker.vat_slip USING btree (log_id);
+
+
+--
 -- Name: vat_suck_header_index; Type: INDEX; Schema: maker; Owner: -
 --
 
 CREATE INDEX vat_suck_header_index ON maker.vat_suck USING btree (header_id);
+
+
+--
+-- Name: vat_suck_log_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vat_suck_log_index ON maker.vat_suck USING btree (log_id);
 
 
 --
@@ -15331,6 +16626,34 @@ CREATE INDEX vat_urn_ink_urn_index ON maker.vat_urn_ink USING btree (urn_id);
 
 
 --
+-- Name: vat_vice_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vat_vice_header_id_index ON maker.vat_vice USING btree (header_id);
+
+
+--
+-- Name: vow_ash_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vow_ash_header_id_index ON maker.vow_ash USING btree (header_id);
+
+
+--
+-- Name: vow_bump_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vow_bump_header_id_index ON maker.vow_bump USING btree (header_id);
+
+
+--
+-- Name: vow_dump_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vow_dump_header_id_index ON maker.vow_dump USING btree (header_id);
+
+
+--
 -- Name: vow_fess_header_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -15338,10 +16661,31 @@ CREATE INDEX vow_fess_header_index ON maker.vow_fess USING btree (header_id);
 
 
 --
+-- Name: vow_fess_log_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vow_fess_log_index ON maker.vow_fess USING btree (log_id);
+
+
+--
 -- Name: vow_file_header_index; Type: INDEX; Schema: maker; Owner: -
 --
 
 CREATE INDEX vow_file_header_index ON maker.vow_file USING btree (header_id);
+
+
+--
+-- Name: vow_file_log_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vow_file_log_index ON maker.vow_file USING btree (log_id);
+
+
+--
+-- Name: vow_flapper_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vow_flapper_header_id_index ON maker.vow_flapper USING btree (header_id);
 
 
 --
@@ -15359,10 +16703,73 @@ CREATE INDEX vow_flog_header_index ON maker.vow_flog USING btree (header_id);
 
 
 --
+-- Name: vow_flog_log_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vow_flog_log_index ON maker.vow_flog USING btree (log_id);
+
+
+--
+-- Name: vow_flopper_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vow_flopper_header_id_index ON maker.vow_flopper USING btree (header_id);
+
+
+--
+-- Name: vow_hump_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vow_hump_header_id_index ON maker.vow_hump USING btree (header_id);
+
+
+--
+-- Name: vow_sin_integer_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vow_sin_integer_header_id_index ON maker.vow_sin_integer USING btree (header_id);
+
+
+--
 -- Name: vow_sin_mapping_era_index; Type: INDEX; Schema: maker; Owner: -
 --
 
 CREATE INDEX vow_sin_mapping_era_index ON maker.vow_sin_mapping USING btree (era);
+
+
+--
+-- Name: vow_sin_mapping_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vow_sin_mapping_header_id_index ON maker.vow_sin_mapping USING btree (header_id);
+
+
+--
+-- Name: vow_sump_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vow_sump_header_id_index ON maker.vow_sump USING btree (header_id);
+
+
+--
+-- Name: vow_vat_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vow_vat_header_id_index ON maker.vow_vat USING btree (header_id);
+
+
+--
+-- Name: vow_wait_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vow_wait_header_id_index ON maker.vow_wait USING btree (header_id);
+
+
+--
+-- Name: yank_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX yank_address_index ON maker.yank USING btree (address_id);
 
 
 --
@@ -15380,6 +16787,13 @@ CREATE INDEX yank_header_index ON maker.yank USING btree (header_id);
 
 
 --
+-- Name: yank_log_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX yank_log_index ON maker.yank USING btree (log_id);
+
+
+--
 -- Name: block_id_index; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -15387,10 +16801,73 @@ CREATE INDEX block_id_index ON public.full_sync_transactions USING btree (block_
 
 
 --
+-- Name: full_sync_logs_receipt; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX full_sync_logs_receipt ON public.full_sync_logs USING btree (receipt_id);
+
+
+--
+-- Name: full_sync_receipts_block; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX full_sync_receipts_block ON public.full_sync_receipts USING btree (block_id);
+
+
+--
+-- Name: full_sync_receipts_contract_address; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX full_sync_receipts_contract_address ON public.full_sync_receipts USING btree (contract_address_id);
+
+
+--
+-- Name: header_sync_logs_address; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX header_sync_logs_address ON public.header_sync_logs USING btree (address);
+
+
+--
+-- Name: header_sync_logs_transaction; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX header_sync_logs_transaction ON public.header_sync_logs USING btree (tx_hash);
+
+
+--
+-- Name: header_sync_receipts_contract_address; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX header_sync_receipts_contract_address ON public.header_sync_receipts USING btree (contract_address_id);
+
+
+--
+-- Name: header_sync_receipts_transaction; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX header_sync_receipts_transaction ON public.header_sync_receipts USING btree (transaction_id);
+
+
+--
+-- Name: header_sync_transactions_header; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX header_sync_transactions_header ON public.header_sync_transactions USING btree (header_id);
+
+
+--
 -- Name: headers_block_number; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX headers_block_number ON public.headers USING btree (block_number);
+
+
+--
+-- Name: headers_eth_node; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX headers_eth_node ON public.headers USING btree (eth_node_id);
 
 
 --
@@ -15419,6 +16896,13 @@ CREATE INDEX tx_from_index ON public.full_sync_transactions USING btree (tx_from
 --
 
 CREATE INDEX tx_to_index ON public.full_sync_transactions USING btree (tx_to);
+
+
+--
+-- Name: uncles_eth_node; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX uncles_eth_node ON public.uncles USING btree (eth_node_id);
 
 
 --

@@ -13,9 +13,15 @@ CREATE TABLE maker.tend
 
 CREATE INDEX tend_header_index
     ON maker.tend (header_id);
+CREATE INDEX tend_log_index
+    ON maker.tend (log_id);
+CREATE INDEX tend_address_index
+    ON maker.tend (address_id);
 
 
 -- +goose Down
+DROP INDEX maker.tend_address_index;
+DROP INDEX maker.tend_log_index;
 DROP INDEX maker.tend_header_index;
 
 DROP TABLE maker.tend;

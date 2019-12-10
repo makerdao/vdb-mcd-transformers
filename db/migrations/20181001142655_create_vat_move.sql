@@ -12,8 +12,11 @@ CREATE TABLE maker.vat_move
 
 CREATE INDEX vat_move_header_index
     ON maker.vat_move (header_id);
+CREATE INDEX vat_move_log_index
+    ON maker.vat_move (log_id);
 
 
 -- +goose Down
+DROP INDEX maker.vat_move_log_index;
 DROP INDEX maker.vat_move_header_index;
 DROP TABLE maker.vat_move;

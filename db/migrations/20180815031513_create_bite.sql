@@ -20,13 +20,15 @@ COMMENT ON COLUMN maker.bite.id
 
 CREATE INDEX bite_header_index
     ON maker.bite (header_id);
-
+CREATE INDEX bite_log_index
+    ON maker.bite (log_id);
 CREATE INDEX bite_urn_index
     ON maker.bite (urn_id);
 
 
 -- +goose Down
 DROP INDEX maker.bite_header_index;
+DROP INDEX maker.bite_log_index;
 DROP INDEX maker.bite_urn_index;
 
 DROP TABLE maker.bite;

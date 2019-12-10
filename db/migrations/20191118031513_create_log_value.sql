@@ -12,9 +12,12 @@ COMMENT ON COLUMN maker.log_value.id
 
 CREATE INDEX log_value_header_index
     ON maker.log_value (header_id);
+CREATE INDEX log_value_log_index
+    ON maker.log_value (log_id);
 
 
 -- +goose Down
+DROP INDEX maker.log_value_log_index;
 DROP INDEX maker.log_value_header_index;
 
 DROP TABLE maker.log_value;

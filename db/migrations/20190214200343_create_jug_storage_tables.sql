@@ -38,6 +38,9 @@ CREATE TABLE maker.jug_vat
     UNIQUE (diff_id, header_id, vat)
 );
 
+CREATE INDEX jug_vat_header_id_index
+    ON maker.jug_vat (header_id);
+
 CREATE TABLE maker.jug_vow
 (
     id        SERIAL PRIMARY KEY,
@@ -46,6 +49,9 @@ CREATE TABLE maker.jug_vow
     vow       TEXT,
     UNIQUE (diff_id, header_id, vow)
 );
+
+CREATE INDEX jug_vow_header_id_index
+    ON maker.jug_vow (header_id);
 
 CREATE TABLE maker.jug_base
 (
@@ -56,11 +62,17 @@ CREATE TABLE maker.jug_base
     UNIQUE (diff_id, header_id, base)
 );
 
+CREATE INDEX jug_base_header_id_index
+    ON maker.jug_base (header_id);
+
 -- +goose Down
 DROP INDEX maker.jug_ilk_rho_header_id_index;
 DROP INDEX maker.jug_ilk_rho_ilk_index;
 DROP INDEX maker.jug_ilk_duty_header_id_index;
 DROP INDEX maker.jug_ilk_duty_ilk_index;
+DROP INDEX maker.jug_vat_header_id_index;
+DROP INDEX maker.jug_vow_header_id_index;
+DROP INDEX maker.jug_base_header_id_index;
 
 DROP TABLE maker.jug_ilk_rho;
 DROP TABLE maker.jug_ilk_duty;

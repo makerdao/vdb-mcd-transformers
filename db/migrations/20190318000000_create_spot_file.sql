@@ -12,7 +12,8 @@ CREATE TABLE maker.spot_file_mat
 
 CREATE INDEX spot_file_mat_header_index
     ON maker.spot_file_mat (header_id);
-
+CREATE INDEX spot_file_mat_log_index
+    ON maker.spot_file_mat (log_id);
 CREATE INDEX spot_file_mat_ilk_index
     ON maker.spot_file_mat (ilk_id);
 
@@ -29,15 +30,18 @@ CREATE TABLE maker.spot_file_pip
 
 CREATE INDEX spot_file_pip_ilk_index
     ON maker.spot_file_pip (ilk_id);
-
+CREATE INDEX spot_file_pip_log_index
+    ON maker.spot_file_pip (log_id);
 CREATE INDEX spot_file_pip_header_index
     ON maker.spot_file_pip (header_id);
 
 
 -- +goose Down
 DROP INDEX maker.spot_file_mat_header_index;
+DROP INDEX maker.spot_file_mat_log_index;
 DROP INDEX maker.spot_file_mat_ilk_index;
 DROP INDEX maker.spot_file_pip_header_index;
+DROP INDEX maker.spot_file_pip_log_index;
 DROP INDEX maker.spot_file_pip_ilk_index;
 
 DROP TABLE maker.spot_file_mat;

@@ -18,6 +18,9 @@ CREATE TABLE maker.flip
     UNIQUE (block_number, bid_id)
 );
 
+CREATE INDEX flip_address_index
+    ON maker.flip (address_id);
+
 CREATE FUNCTION get_latest_flip_bid_guy(bid_id numeric) RETURNS TEXT AS
 $$
 SELECT guy
@@ -28,6 +31,9 @@ ORDER BY block_number DESC
 LIMIT 1
 $$
     LANGUAGE sql;
+
+COMMENT ON FUNCTION get_latest_flip_bid_guy
+    IS E'@omit';
 
 CREATE FUNCTION get_latest_flip_bid_tic(bid_id numeric) RETURNS BIGINT AS
 $$
@@ -40,6 +46,9 @@ LIMIT 1
 $$
     LANGUAGE sql;
 
+COMMENT ON FUNCTION get_latest_flip_bid_tic
+    IS E'@omit';
+
 CREATE FUNCTION get_latest_flip_bid_end(bid_id numeric) RETURNS BIGINT AS
 $$
 SELECT "end"
@@ -50,6 +59,9 @@ ORDER BY block_number DESC
 LIMIT 1
 $$
     LANGUAGE sql;
+
+COMMENT ON FUNCTION get_latest_flip_bid_end
+    IS E'@omit';
 
 CREATE FUNCTION get_latest_flip_bid_lot(bid_id numeric) RETURNS NUMERIC AS
 $$
@@ -62,6 +74,9 @@ LIMIT 1
 $$
     LANGUAGE sql;
 
+COMMENT ON FUNCTION get_latest_flip_bid_lot
+    IS E'@omit';
+
 CREATE FUNCTION get_latest_flip_bid_bid(bid_id numeric) RETURNS NUMERIC AS
 $$
 SELECT bid
@@ -72,6 +87,9 @@ ORDER BY block_number DESC
 LIMIT 1
 $$
     LANGUAGE sql;
+
+COMMENT ON FUNCTION get_latest_flip_bid_bid
+    IS E'@omit';
 
 CREATE FUNCTION get_latest_flip_bid_gal(bid_id numeric) RETURNS TEXT AS
 $$
@@ -84,6 +102,9 @@ LIMIT 1
 $$
     LANGUAGE sql;
 
+COMMENT ON FUNCTION get_latest_flip_bid_gal
+    IS E'@omit';
+
 CREATE FUNCTION get_latest_flip_bid_tab(bid_id numeric) RETURNS NUMERIC AS
 $$
 SELECT tab
@@ -94,6 +115,9 @@ ORDER BY block_number DESC
 LIMIT 1
 $$
     LANGUAGE sql;
+
+COMMENT ON FUNCTION get_latest_flip_bid_tab
+    IS E'@omit';
 
 
 -- +goose StatementBegin
@@ -449,4 +473,6 @@ DROP FUNCTION get_latest_flip_bid_end(numeric);
 DROP FUNCTION get_latest_flip_bid_lot(numeric);
 DROP FUNCTION get_latest_flip_bid_gal(numeric);
 DROP FUNCTION get_latest_flip_bid_tab(numeric);
+
+DROP INDEX maker.flip_address_index;
 DROP TABLE maker.flip;
