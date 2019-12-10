@@ -77,6 +77,7 @@ github.com/go-kit/kit v0.8.0/go.mod h1:xBxKIO96dXMWWy0MnWVtmwkA9/13aqxPnvrjFYMA2
 github.com/go-logfmt/logfmt v0.3.0/go.mod h1:Qt1PoO58o5twSAckw1HlFXLmHsOX5/0LbT9GBnD5lWE=
 github.com/go-logfmt/logfmt v0.4.0 h1:MP4Eh7ZCb31lleYCFuwm0oe4/YGak+5l1vA2NOE80nA=
 github.com/go-logfmt/logfmt v0.4.0/go.mod h1:3RMwSq7FuexP4Kalkev3ejPJsZTpXXBr9+V4qmtdjCk=
+github.com/go-sql-driver/mysql v1.4.0 h1:7LxgVwFb2hIQtMm87NdgAVfXjnt4OePseqT1tKx+opk=
 github.com/go-sql-driver/mysql v1.4.0/go.mod h1:zAC/RDZ24gD3HViQzih4MyKcchzm+sOG5ZlKdlhCg5w=
 github.com/go-sql-driver/mysql v1.4.1 h1:g24URVg0OFbNUTx9qqY1IRZ9D9z3iPyi5zKhQZpNwpA=
 github.com/go-sql-driver/mysql v1.4.1/go.mod h1:zAC/RDZ24gD3HViQzih4MyKcchzm+sOG5ZlKdlhCg5w=
@@ -172,6 +173,10 @@ github.com/makerdao/vulcanizedb v0.0.11-0.20191127154328-dbac1a4e6050 h1:1IUvx+p
 github.com/makerdao/vulcanizedb v0.0.11-0.20191127154328-dbac1a4e6050/go.mod h1:2JR1+4EYytD6Gx9vwwKtqhtDAhZR1s5iO9Pr4v6WGCc=
 github.com/makerdao/vulcanizedb v0.0.11-0.20191203162415-24c2ba486630 h1:uJZB+xZCh4uN+ftHM2qRWsLL2kacviQZXwJV3pr2BtI=
 github.com/makerdao/vulcanizedb v0.0.11-0.20191203162415-24c2ba486630/go.mod h1:2JR1+4EYytD6Gx9vwwKtqhtDAhZR1s5iO9Pr4v6WGCc=
+github.com/makerdao/vulcanizedb v0.0.11-0.20191210170334-0491389f8183 h1:/HIJ1NAAzE1YiG5VAzEhEL4s1h0yjs2Ib0gRUUCcQaw=
+github.com/makerdao/vulcanizedb v0.0.11-0.20191210170334-0491389f8183/go.mod h1:FZZ/SKy+7Ejdc+4Wa5oTGrr2cFuaCgGBxc2xoifaEoY=
+github.com/makerdao/vulcanizedb v0.0.11-0.20191211211257-a8cd2f83cb91 h1:9Cg+3ugTA4MOwi/sX0Mei+RKjpa04QfIP8EE/osLi1A=
+github.com/makerdao/vulcanizedb v0.0.11-0.20191211211257-a8cd2f83cb91/go.mod h1:FZZ/SKy+7Ejdc+4Wa5oTGrr2cFuaCgGBxc2xoifaEoY=
 github.com/mattn/go-colorable v0.1.2/go.mod h1:U0ppj6V5qS13XJ6of8GYAs25YV2eR4EVcfRqFIhoBtE=
 github.com/mattn/go-colorable v0.1.4 h1:snbPLB8fVfU9iwbbo30TPtbLRzwWu6aJS6Xh4eaaviA=
 github.com/mattn/go-colorable v0.1.4/go.mod h1:U0ppj6V5qS13XJ6of8GYAs25YV2eR4EVcfRqFIhoBtE=
