@@ -17,6 +17,7 @@
 package integration_tests
 
 import (
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"math/big"
 	"strconv"
 
@@ -65,11 +66,10 @@ var _ = Describe("Vat Grab Transformer", func() {
 
 		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
 
-		tr := shared.EventTransformer{
-			Config:     vatGrabConfig,
-			Converter:  &vat_grab.VatGrabConverter{},
-			Repository: &vat_grab.VatGrabRepository{},
-		}.NewEventTransformer(db)
+		tr := event.Transformer{
+			Config:    vatGrabConfig,
+			Converter: &vat_grab.Converter{},
+		}.NewTransformer(db)
 
 		err = tr.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())

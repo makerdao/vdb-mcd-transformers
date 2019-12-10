@@ -50,7 +50,9 @@ const (
 	ArtColumn     event.ColumnName = "art"
 	BidColumn     event.ColumnName = "bid"
 	BidIDColumn   event.ColumnName = "bid_id"
+	DartColumn    event.ColumnName = "dart"
 	DataColumn    event.ColumnName = "data"
+	DinkColumn    event.ColumnName = "dink"
 	DstColumn     event.ColumnName = "dst"
 	EraColumn     event.ColumnName = "era"
 	FlipColumn    event.ColumnName = "flip"
@@ -66,6 +68,7 @@ const (
 	UrnColumn     event.ColumnName = "urn_id"
 	UsrColumn     event.ColumnName = "usr"
 	VColumn       event.ColumnName = "v"
+	WColumn       event.ColumnName = "w"
 	WadColumn     event.ColumnName = "wad"
 	WhatColumn    event.ColumnName = "what"
 )

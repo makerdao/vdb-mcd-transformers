@@ -19,7 +19,10 @@ package vat_grab_test
 import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/makerdao/vdb-mcd-transformers/test_config"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vulcanizedb/pkg/core"
+	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
@@ -29,10 +32,14 @@ import (
 )
 
 var _ = Describe("Vat grab converter", func() {
-	var converter vat_grab.VatGrabConverter
+	var (
+		converter vat_grab.Converter
+		db        *postgres.DB
+	)
 
 	BeforeEach(func() {
-		converter = vat_grab.VatGrabConverter{}
+		converter = vat_grab.Converter{}
+		db = test_config.NewTestDB(test_config.NewTestNode())
 	})
 
 	It("returns err if log is missing topics", func() {
@@ -41,7 +48,7 @@ var _ = Describe("Vat grab converter", func() {
 				Data: []byte{1, 1, 1, 1, 1},
 			}}
 
-		_, err := converter.ToModels(constants.VatABI(), []core.HeaderSyncLog{badLog})
+		_, err := converter.ToModels(constants.VatABI(), []core.HeaderSyncLog{badLog}, db)
 		Expect(err).To(HaveOccurred())
 	})
 
@@ -51,23 +58,41 @@ var _ = Describe("Vat grab converter", func() {
 				Topics: []common.Hash{{}, {}, {}, {}},
 			}}
 
-		_, err := converter.ToModels(constants.VatABI(), []core.HeaderSyncLog{badLog})
+		_, err := converter.ToModels(constants.VatABI(), []core.HeaderSyncLog{badLog}, db)
 		Expect(err).To(HaveOccurred())
 	})
 
 	It("converts a log with positive dink to a model", func() {
-		models, err := converter.ToModels(constants.VatABI(), []core.HeaderSyncLog{test_data.VatGrabHeaderSyncLogWithPositiveDink})
-
+		log := []core.HeaderSyncLog{test_data.VatGrabHeaderSyncLogWithPositiveDink}
+		models, err := converter.ToModels(constants.VatABI(), []core.HeaderSyncLog{test_data.VatGrabHeaderSyncLogWithPositiveDink}, db)
 		Expect(err).NotTo(HaveOccurred())
+
+		ilk := log[0].Log.Topics[1].Hex()
+		urn := common.BytesToAddress(log[0].Log.Topics[2].Bytes()).String()
+		urnID, urnErr := shared.GetOrCreateUrn(urn, ilk, db)
+		Expect(urnErr).NotTo(HaveOccurred())
+
+		expectedModel := test_data.VatGrabModelWithPositiveDink
+		expectedModel.ColumnValues[constants.UrnColumn] = urnID
+
 		Expect(len(models)).To(Equal(1))
-		Expect(models[0]).To(Equal(test_data.VatGrabModelWithPositiveDink))
+		Expect(models[0]).To(Equal(expectedModel))
 	})
 
 	It("converts a log with negative dink to a model", func() {
-		models, err := converter.ToModels(constants.VatABI(), []core.HeaderSyncLog{test_data.VatGrabHeaderSyncLogWithNegativeDink})
-
+		log := []core.HeaderSyncLog{test_data.VatGrabHeaderSyncLogWithNegativeDink}
+		models, err := converter.ToModels(constants.VatABI(), []core.HeaderSyncLog{test_data.VatGrabHeaderSyncLogWithNegativeDink}, db)
 		Expect(err).NotTo(HaveOccurred())
+
+		ilk := log[0].Log.Topics[1].Hex()
+		urn := common.BytesToAddress(log[0].Log.Topics[2].Bytes()).String()
+		urnID, urnErr := shared.GetOrCreateUrn(urn, ilk, db)
+		Expect(urnErr).NotTo(HaveOccurred())
+
+		expectedModel := test_data.VatGrabModelWithNegativeDink
+		expectedModel.ColumnValues[constants.UrnColumn] = urnID
+
 		Expect(len(models)).To(Equal(1))
-		Expect(models[0]).To(Equal(test_data.VatGrabModelWithNegativeDink))
+		Expect(models[0]).To(Equal(expectedModel))
 	})
 })
