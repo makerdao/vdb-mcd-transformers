@@ -68,7 +68,7 @@ var _ = Describe("CDP Manager storage repository", func() {
 		var vatMetadata = utils.StorageValueMetadata{Name: cdp_manager.Vat}
 		var fakeAddress = FakeAddress
 
-		inputs := shared_behaviors.StorageVariableBehaviorInputs{
+		inputs := shared_behaviors.StorageBehaviorInputs{
 			ValueFieldName:   cdp_manager.Vat,
 			Value:            fakeAddress,
 			StorageTableName: "maker.cdp_manager_vat",
@@ -76,7 +76,7 @@ var _ = Describe("CDP Manager storage repository", func() {
 			Metadata:         vatMetadata,
 		}
 
-		shared_behaviors.SharedStorageRepositoryVariableBehaviors(&inputs)
+		shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
 	})
 
 	Describe("cdpi", func() {
@@ -98,7 +98,7 @@ var _ = Describe("CDP Manager storage repository", func() {
 			Expect(headerErr).NotTo(HaveOccurred())
 		})
 
-		inputs := shared_behaviors.StorageVariableBehaviorInputs{
+		inputs := shared_behaviors.StorageBehaviorInputs{
 			ValueFieldName:   cdp_manager.Cdpi,
 			Value:            fakeCdpi,
 			StorageTableName: "maker.cdp_manager_cdpi",
@@ -106,7 +106,7 @@ var _ = Describe("CDP Manager storage repository", func() {
 			Metadata:         cdpiMetadata,
 		}
 
-		shared_behaviors.SharedStorageRepositoryVariableBehaviors(&inputs)
+		shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
 
 		It("triggers an update to the managed_cdp table", func() {
 			fakeRawDiff := fakes.GetFakeStorageDiffForHeader(fakes.FakeHeader, common.Hash{}, common.Hash{}, common.Hash{})
@@ -148,7 +148,7 @@ var _ = Describe("CDP Manager storage repository", func() {
 				Keys: map[utils.Key]string{constants.Cdpi: fakeCdpi},
 				Type: utils.Address,
 			}
-			inputs := shared_behaviors.StorageVariableBehaviorInputs{
+			inputs := shared_behaviors.StorageBehaviorInputs{
 				KeyFieldName:     string(constants.Cdpi),
 				ValueFieldName:   "urn",
 				Key:              fakeCdpi,
@@ -159,7 +159,7 @@ var _ = Describe("CDP Manager storage repository", func() {
 				Metadata:         urnsMetadata,
 			}
 
-			shared_behaviors.SharedStorageRepositoryVariableBehaviors(&inputs)
+			shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
 
 			It("triggers an update to the managed_cdp table", func() {
 				fakeRawDiff := fakes.GetFakeStorageDiffForHeader(fakes.FakeHeader, common.Hash{}, common.Hash{}, common.Hash{})
@@ -186,7 +186,7 @@ var _ = Describe("CDP Manager storage repository", func() {
 				Keys: map[utils.Key]string{constants.Cdpi: fakeCdpi},
 				Type: utils.Uint256,
 			}
-			inputs := shared_behaviors.StorageVariableBehaviorInputs{
+			inputs := shared_behaviors.StorageBehaviorInputs{
 				KeyFieldName:     string(constants.Cdpi),
 				ValueFieldName:   "prev",
 				Key:              fakeCdpi,
@@ -197,7 +197,7 @@ var _ = Describe("CDP Manager storage repository", func() {
 				Metadata:         prevMetadata,
 			}
 
-			shared_behaviors.SharedStorageRepositoryVariableBehaviors(&inputs)
+			shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
 		})
 
 		Describe("list_next", func() {
@@ -207,7 +207,7 @@ var _ = Describe("CDP Manager storage repository", func() {
 				Keys: map[utils.Key]string{constants.Cdpi: fakeCdpi},
 				Type: utils.Uint256,
 			}
-			inputs := shared_behaviors.StorageVariableBehaviorInputs{
+			inputs := shared_behaviors.StorageBehaviorInputs{
 				KeyFieldName:     string(constants.Cdpi),
 				ValueFieldName:   "next",
 				Key:              fakeCdpi,
@@ -218,7 +218,7 @@ var _ = Describe("CDP Manager storage repository", func() {
 				Metadata:         nextMetadata,
 			}
 
-			shared_behaviors.SharedStorageRepositoryVariableBehaviors(&inputs)
+			shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
 		})
 
 		Describe("owns", func() {
@@ -228,7 +228,7 @@ var _ = Describe("CDP Manager storage repository", func() {
 				Keys: map[utils.Key]string{constants.Cdpi: fakeCdpi},
 				Type: utils.Address,
 			}
-			inputs := shared_behaviors.StorageVariableBehaviorInputs{
+			inputs := shared_behaviors.StorageBehaviorInputs{
 				KeyFieldName:     string(constants.Cdpi),
 				ValueFieldName:   "owner",
 				Key:              fakeCdpi,
@@ -239,7 +239,7 @@ var _ = Describe("CDP Manager storage repository", func() {
 				Metadata:         ownsMetadata,
 			}
 
-			shared_behaviors.SharedStorageRepositoryVariableBehaviors(&inputs)
+			shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
 
 			It("triggers an update to the managed_cdp table", func() {
 				fakeRawDiff := fakes.GetFakeStorageDiffForHeader(fakes.FakeHeader, common.Hash{}, common.Hash{}, common.Hash{})
@@ -327,7 +327,7 @@ var _ = Describe("CDP Manager storage repository", func() {
 				Keys: map[utils.Key]string{constants.Owner: fakeOwner},
 				Type: utils.Uint256,
 			}
-			inputs := shared_behaviors.StorageVariableBehaviorInputs{
+			inputs := shared_behaviors.StorageBehaviorInputs{
 				KeyFieldName:     string(constants.Owner),
 				ValueFieldName:   "first",
 				Key:              fakeOwner,
@@ -338,7 +338,7 @@ var _ = Describe("CDP Manager storage repository", func() {
 				Metadata:         firstMetadata,
 			}
 
-			shared_behaviors.SharedStorageRepositoryVariableBehaviors(&inputs)
+			shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
 		})
 
 		Describe("last", func() {
@@ -348,7 +348,7 @@ var _ = Describe("CDP Manager storage repository", func() {
 				Keys: map[utils.Key]string{constants.Owner: fakeOwner},
 				Type: utils.Uint256,
 			}
-			inputs := shared_behaviors.StorageVariableBehaviorInputs{
+			inputs := shared_behaviors.StorageBehaviorInputs{
 				KeyFieldName:     string(constants.Owner),
 				ValueFieldName:   "last",
 				Key:              fakeOwner,
@@ -359,7 +359,7 @@ var _ = Describe("CDP Manager storage repository", func() {
 				Metadata:         lastMetadata,
 			}
 
-			shared_behaviors.SharedStorageRepositoryVariableBehaviors(&inputs)
+			shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
 		})
 
 		Describe("count", func() {
@@ -369,7 +369,7 @@ var _ = Describe("CDP Manager storage repository", func() {
 				Keys: map[utils.Key]string{constants.Owner: fakeOwner},
 				Type: utils.Uint256,
 			}
-			inputs := shared_behaviors.StorageVariableBehaviorInputs{
+			inputs := shared_behaviors.StorageBehaviorInputs{
 				KeyFieldName:     string(constants.Owner),
 				ValueFieldName:   "count",
 				Key:              fakeOwner,
@@ -380,7 +380,7 @@ var _ = Describe("CDP Manager storage repository", func() {
 				Metadata:         countMetadata,
 			}
 
-			shared_behaviors.SharedStorageRepositoryVariableBehaviors(&inputs)
+			shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
 		})
 	})
 })

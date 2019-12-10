@@ -60,7 +60,7 @@ var _ = Describe("Flip storage repository", func() {
 	Describe("Variable", func() {
 		Describe("Vat", func() {
 			vatMetadata := utils.StorageValueMetadata{Name: storage.Vat}
-			inputs := shared_behaviors.StorageVariableBehaviorInputs{
+			inputs := shared_behaviors.StorageBehaviorInputs{
 				ValueFieldName:   storage.Vat,
 				Value:            FakeAddress,
 				StorageTableName: "maker.flip_vat",
@@ -68,7 +68,7 @@ var _ = Describe("Flip storage repository", func() {
 				Metadata:         vatMetadata,
 			}
 
-			shared_behaviors.SharedStorageRepositoryVariableBehaviors(&inputs)
+			shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
 		})
 
 		Describe("Ilk", func() {
@@ -107,7 +107,7 @@ var _ = Describe("Flip storage repository", func() {
 		Describe("Beg", func() {
 			begMetadata := utils.StorageValueMetadata{Name: storage.Beg}
 			fakeBeg := strconv.Itoa(rand.Int())
-			inputs := shared_behaviors.StorageVariableBehaviorInputs{
+			inputs := shared_behaviors.StorageBehaviorInputs{
 				ValueFieldName:   storage.Beg,
 				Value:            fakeBeg,
 				StorageTableName: "maker.flip_beg",
@@ -115,7 +115,7 @@ var _ = Describe("Flip storage repository", func() {
 				Metadata:         begMetadata,
 			}
 
-			shared_behaviors.SharedStorageRepositoryVariableBehaviors(&inputs)
+			shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
 		})
 
 		Describe("Ttl and Tau", func() {
@@ -178,7 +178,7 @@ var _ = Describe("Flip storage repository", func() {
 		Describe("Kicks", func() {
 			kicksMetadata := utils.StorageValueMetadata{Name: storage.Kicks}
 			fakeKicks := strconv.Itoa(rand.Int())
-			inputs := shared_behaviors.StorageVariableBehaviorInputs{
+			inputs := shared_behaviors.StorageBehaviorInputs{
 				ValueFieldName:   storage.Kicks,
 				Value:            fakeKicks,
 				StorageTableName: "maker.flip_kicks",
@@ -186,7 +186,7 @@ var _ = Describe("Flip storage repository", func() {
 				Metadata:         kicksMetadata,
 			}
 
-			shared_behaviors.SharedStorageRepositoryVariableBehaviors(&inputs)
+			shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
 		})
 	})
 
@@ -210,7 +210,7 @@ var _ = Describe("Flip storage repository", func() {
 				Keys: map[utils.Key]string{constants.BidId: fakeBidId},
 				Type: utils.Uint256,
 			}
-			inputs := shared_behaviors.StorageVariableBehaviorInputs{
+			inputs := shared_behaviors.StorageBehaviorInputs{
 				KeyFieldName:     string(constants.BidId),
 				ValueFieldName:   "bid",
 				Value:            fakeBidValue,
@@ -221,7 +221,7 @@ var _ = Describe("Flip storage repository", func() {
 				Metadata:         bidBidMetadata,
 			}
 
-			shared_behaviors.SharedStorageRepositoryVariableBehaviors(&inputs)
+			shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
 		})
 
 		Describe("BidLot", func() {
@@ -231,7 +231,7 @@ var _ = Describe("Flip storage repository", func() {
 				Keys: map[utils.Key]string{constants.BidId: fakeBidId},
 				Type: utils.Uint256,
 			}
-			inputs := shared_behaviors.StorageVariableBehaviorInputs{
+			inputs := shared_behaviors.StorageBehaviorInputs{
 				KeyFieldName:     string(constants.BidId),
 				ValueFieldName:   "lot",
 				Value:            fakeLotValue,
@@ -242,7 +242,7 @@ var _ = Describe("Flip storage repository", func() {
 				Metadata:         bidLotMetadata,
 			}
 
-			shared_behaviors.SharedStorageRepositoryVariableBehaviors(&inputs)
+			shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
 		})
 
 		Describe("BidGuy, BidTic and BidEnd packed storage", func() {
@@ -308,7 +308,7 @@ var _ = Describe("Flip storage repository", func() {
 				Keys: map[utils.Key]string{constants.BidId: fakeBidId},
 				Type: utils.Address,
 			}
-			inputs := shared_behaviors.StorageVariableBehaviorInputs{
+			inputs := shared_behaviors.StorageBehaviorInputs{
 				KeyFieldName:     string(constants.BidId),
 				ValueFieldName:   "usr",
 				Value:            FakeAddress,
@@ -319,7 +319,7 @@ var _ = Describe("Flip storage repository", func() {
 				Metadata:         bidUsrMetadata,
 			}
 
-			shared_behaviors.SharedStorageRepositoryVariableBehaviors(&inputs)
+			shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
 		})
 
 		Describe("BidGal", func() {
@@ -328,7 +328,7 @@ var _ = Describe("Flip storage repository", func() {
 				Keys: map[utils.Key]string{constants.BidId: fakeBidId},
 				Type: utils.Address,
 			}
-			inputs := shared_behaviors.StorageVariableBehaviorInputs{
+			inputs := shared_behaviors.StorageBehaviorInputs{
 				KeyFieldName:     string(constants.BidId),
 				ValueFieldName:   "gal",
 				Value:            FakeAddress,
@@ -339,7 +339,7 @@ var _ = Describe("Flip storage repository", func() {
 				Metadata:         bidGalMetadata,
 			}
 
-			shared_behaviors.SharedStorageRepositoryVariableBehaviors(&inputs)
+			shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
 		})
 
 		Describe("BidTab", func() {
@@ -349,7 +349,7 @@ var _ = Describe("Flip storage repository", func() {
 				Keys: map[utils.Key]string{constants.BidId: fakeBidId},
 				Type: utils.Uint256,
 			}
-			inputs := shared_behaviors.StorageVariableBehaviorInputs{
+			inputs := shared_behaviors.StorageBehaviorInputs{
 				KeyFieldName:     string(constants.BidId),
 				ValueFieldName:   "tab",
 				Value:            fakeTabValue,
@@ -360,7 +360,7 @@ var _ = Describe("Flip storage repository", func() {
 				Metadata:         bidTabMetadata,
 			}
 
-			shared_behaviors.SharedStorageRepositoryVariableBehaviors(&inputs)
+			shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
 		})
 	})
 })

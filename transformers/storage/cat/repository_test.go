@@ -52,7 +52,7 @@ var _ = Describe("Cat storage repository", func() {
 
 		Describe("Live", func() {
 			liveMetadata := utils.GetStorageValueMetadata(cat.Live, nil, utils.Uint256)
-			inputs := shared_behaviors.StorageVariableBehaviorInputs{
+			inputs := shared_behaviors.StorageBehaviorInputs{
 				ValueFieldName:   cat.Live,
 				Value:            fakeUint256,
 				StorageTableName: "maker.cat_live",
@@ -60,12 +60,12 @@ var _ = Describe("Cat storage repository", func() {
 				Metadata:         liveMetadata,
 			}
 
-			shared_behaviors.SharedStorageRepositoryVariableBehaviors(&inputs)
+			shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
 		})
 
 		Describe("Vat", func() {
 			vatMetadata := utils.GetStorageValueMetadata(cat.Vat, nil, utils.Address)
-			inputs := shared_behaviors.StorageVariableBehaviorInputs{
+			inputs := shared_behaviors.StorageBehaviorInputs{
 				ValueFieldName:   cat.Vat,
 				Value:            fakeAddress,
 				StorageTableName: "maker.cat_vat",
@@ -73,12 +73,12 @@ var _ = Describe("Cat storage repository", func() {
 				Metadata:         vatMetadata,
 			}
 
-			shared_behaviors.SharedStorageRepositoryVariableBehaviors(&inputs)
+			shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
 		})
 
 		Describe("Vow", func() {
 			vowMetadata := utils.GetStorageValueMetadata(cat.Vow, nil, utils.Address)
-			inputs := shared_behaviors.StorageVariableBehaviorInputs{
+			inputs := shared_behaviors.StorageBehaviorInputs{
 				ValueFieldName:   cat.Vow,
 				Value:            fakeAddress,
 				StorageTableName: "maker.cat_vow",
@@ -86,7 +86,7 @@ var _ = Describe("Cat storage repository", func() {
 				Metadata:         vowMetadata,
 			}
 
-			shared_behaviors.SharedStorageRepositoryVariableBehaviors(&inputs)
+			shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
 		})
 	})
 

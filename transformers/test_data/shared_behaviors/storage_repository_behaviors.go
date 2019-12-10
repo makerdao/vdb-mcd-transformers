@@ -20,7 +20,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-type StorageVariableBehaviorInputs struct {
+type StorageBehaviorInputs struct {
 	KeyFieldName     string
 	ValueFieldName   string
 	Key              string
@@ -31,7 +31,7 @@ type StorageVariableBehaviorInputs struct {
 	Metadata         utils.StorageValueMetadata
 }
 
-func SharedStorageRepositoryVariableBehaviors(inputs *StorageVariableBehaviorInputs) {
+func SharedStorageRepositoryBehaviors(inputs *StorageBehaviorInputs) {
 	Describe("Create", func() {
 		var (
 			repo             = inputs.Repository

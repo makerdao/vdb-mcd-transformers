@@ -99,7 +99,7 @@ var _ = Describe("Flap storage repository", func() {
 		var vatMetadata = utils.StorageValueMetadata{Name: storage.Vat}
 		var fakeAddress = FakeAddress
 
-		inputs := shared_behaviors.StorageVariableBehaviorInputs{
+		inputs := shared_behaviors.StorageBehaviorInputs{
 			ValueFieldName:   storage.Vat,
 			Value:            fakeAddress,
 			StorageTableName: "maker.flap_vat",
@@ -107,13 +107,13 @@ var _ = Describe("Flap storage repository", func() {
 			Metadata:         vatMetadata,
 		}
 
-		shared_behaviors.SharedStorageRepositoryVariableBehaviors(&inputs)
+		shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
 	})
 
 	Describe("gem", func() {
 		var gemMetadata = utils.StorageValueMetadata{Name: storage.Gem}
 		var fakeAddress = FakeAddress
-		inputs := shared_behaviors.StorageVariableBehaviorInputs{
+		inputs := shared_behaviors.StorageBehaviorInputs{
 			ValueFieldName:   storage.Gem,
 			Value:            fakeAddress,
 			StorageTableName: "maker.flap_gem",
@@ -121,13 +121,13 @@ var _ = Describe("Flap storage repository", func() {
 			Metadata:         gemMetadata,
 		}
 
-		shared_behaviors.SharedStorageRepositoryVariableBehaviors(&inputs)
+		shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
 	})
 
 	Describe("beg", func() {
 		var begMetadata = utils.StorageValueMetadata{Name: storage.Beg}
 		var fakeBeg = strconv.Itoa(rand.Int())
-		inputs := shared_behaviors.StorageVariableBehaviorInputs{
+		inputs := shared_behaviors.StorageBehaviorInputs{
 			ValueFieldName:   storage.Beg,
 			StorageTableName: "maker.flap_beg",
 			Repository:       &repository,
@@ -135,7 +135,7 @@ var _ = Describe("Flap storage repository", func() {
 			Value:            fakeBeg,
 		}
 
-		shared_behaviors.SharedStorageRepositoryVariableBehaviors(&inputs)
+		shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
 
 		It("returns an error if inserting fails", func() {
 			err := repository.Create(diffID, fakeHeaderID, begMetadata, "")
@@ -203,7 +203,7 @@ var _ = Describe("Flap storage repository", func() {
 	Describe("kicks", func() {
 		var kicksMetadata = utils.StorageValueMetadata{Name: storage.Kicks}
 		var fakeKicks = strconv.Itoa(rand.Intn(100))
-		inputs := shared_behaviors.StorageVariableBehaviorInputs{
+		inputs := shared_behaviors.StorageBehaviorInputs{
 			ValueFieldName:   storage.Kicks,
 			StorageTableName: "maker.flap_kicks",
 			Repository:       &repository,
@@ -211,7 +211,7 @@ var _ = Describe("Flap storage repository", func() {
 			Value:            fakeKicks,
 		}
 
-		shared_behaviors.SharedStorageRepositoryVariableBehaviors(&inputs)
+		shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
 
 		It("returns an error if inserting fails", func() {
 			err := repository.Create(diffID, fakeHeaderID, kicksMetadata, "")
@@ -223,7 +223,7 @@ var _ = Describe("Flap storage repository", func() {
 	Describe("live", func() {
 		var liveMetadata = utils.StorageValueMetadata{Name: storage.Live}
 		var fakeLive = strconv.Itoa(rand.Intn(100))
-		inputs := shared_behaviors.StorageVariableBehaviorInputs{
+		inputs := shared_behaviors.StorageBehaviorInputs{
 			ValueFieldName:   storage.Live,
 			StorageTableName: "maker.flap_live",
 			Repository:       &repository,
@@ -231,7 +231,7 @@ var _ = Describe("Flap storage repository", func() {
 			Value:            fakeLive,
 		}
 
-		shared_behaviors.SharedStorageRepositoryVariableBehaviors(&inputs)
+		shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
 
 		It("returns an error if inserting fails", func() {
 			err := repository.Create(diffID, fakeHeaderID, liveMetadata, "")
@@ -260,7 +260,7 @@ var _ = Describe("Flap storage repository", func() {
 				Keys: map[utils.Key]string{constants.BidId: fakeBidId},
 				Type: utils.Uint256,
 			}
-			inputs := shared_behaviors.StorageVariableBehaviorInputs{
+			inputs := shared_behaviors.StorageBehaviorInputs{
 				KeyFieldName:     string(constants.BidId),
 				ValueFieldName:   "bid",
 				Value:            fakeBidValue,
@@ -271,7 +271,7 @@ var _ = Describe("Flap storage repository", func() {
 				Metadata:         bidBidMetadata,
 			}
 
-			shared_behaviors.SharedStorageRepositoryVariableBehaviors(&inputs)
+			shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
 
 			It("triggers an update to the flap table", func() {
 				diffID = CreateFakeDiffRecord(db)
@@ -295,7 +295,7 @@ var _ = Describe("Flap storage repository", func() {
 				Keys: map[utils.Key]string{constants.BidId: fakeBidId},
 				Type: utils.Uint256,
 			}
-			inputs := shared_behaviors.StorageVariableBehaviorInputs{
+			inputs := shared_behaviors.StorageBehaviorInputs{
 				KeyFieldName:     string(constants.BidId),
 				ValueFieldName:   "lot",
 				Value:            fakeLotValue,
@@ -306,7 +306,7 @@ var _ = Describe("Flap storage repository", func() {
 				Metadata:         bidLotMetadata,
 			}
 
-			shared_behaviors.SharedStorageRepositoryVariableBehaviors(&inputs)
+			shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
 
 			It("triggers an update to the flap table", func() {
 				diffID = CreateFakeDiffRecord(db)
