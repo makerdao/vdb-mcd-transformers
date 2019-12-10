@@ -20,25 +20,22 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
-	"github.com/makerdao/vulcanizedb/pkg/core"
-	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
-
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_fork"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
+	"github.com/makerdao/vulcanizedb/pkg/core"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("VatFork converter", func() {
 	var (
-		converter vat_fork.Converter
-		db        *postgres.DB
+		converter = vat_fork.Converter{}
+		db        = test_config.NewTestDB(test_config.NewTestNode())
 	)
 	BeforeEach(func() {
-		converter = vat_fork.Converter{}
-		db = test_config.NewTestDB(test_config.NewTestNode())
+		test_config.CleanTestDB(db)
 	})
 
 	It("Converts a log with a negative dink and dart to a model", func() {
@@ -50,7 +47,7 @@ var _ = Describe("VatFork converter", func() {
 		ilkID, ilkErr := shared.GetOrCreateIlk(ilk, db)
 		Expect(ilkErr).NotTo(HaveOccurred())
 
-		expectedModel := test_data.VatForkModelWithNegativeDinkDart
+		expectedModel := test_data.VatForkModelWithNegativeDinkDart()
 		expectedModel.ColumnValues[constants.IlkColumn] = ilkID
 		Expect(models[0]).To(Equal(expectedModel))
 	})
@@ -64,7 +61,7 @@ var _ = Describe("VatFork converter", func() {
 		ilkID, ilkErr := shared.GetOrCreateIlk(ilk, db)
 		Expect(ilkErr).NotTo(HaveOccurred())
 
-		expectedModel := test_data.VatForkModelWithPositiveDinkDart
+		expectedModel := test_data.VatForkModelWithPositiveDinkDart()
 		expectedModel.ColumnValues[constants.IlkColumn] = ilkID
 		Expect(models[0]).To(Equal(expectedModel))
 	})

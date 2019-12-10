@@ -17,16 +17,13 @@
 package test_data
 
 import (
-	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
-	"math/rand"
-
-	"github.com/makerdao/vulcanizedb/pkg/core"
-
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
-
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
+	"github.com/makerdao/vulcanizedb/pkg/core"
+	"math/rand"
 )
 
 var rawVatForkLogWithNegativeDinkDart = types.Log{
@@ -53,7 +50,7 @@ var VatForkHeaderSyncLogWithNegativeDinkDart = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-var VatForkModelWithNegativeDinkDart = event.InsertionModel{
+var vatForkModelWithNegativeDinkDart = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.VatForkTable,
 	OrderedColumns: []event.ColumnName{
@@ -93,7 +90,7 @@ var VatForkHeaderSyncLogWithPositiveDinkDart = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-var VatForkModelWithPositiveDinkDart = event.InsertionModel{
+var vatForkModelWithPositiveDinkDart = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.VatForkTable,
 	OrderedColumns: []event.ColumnName{
@@ -107,4 +104,11 @@ var VatForkModelWithPositiveDinkDart = event.InsertionModel{
 		event.HeaderFK:       VatForkHeaderSyncLogWithPositiveDinkDart.HeaderID,
 		event.LogFK:          VatForkHeaderSyncLogWithPositiveDinkDart.ID,
 	},
+}
+
+func VatForkModelWithNegativeDinkDart() event.InsertionModel {
+	return CopyEventModel(vatForkModelWithNegativeDinkDart)
+}
+func VatForkModelWithPositiveDinkDart() event.InsertionModel {
+	return CopyEventModel(vatForkModelWithPositiveDinkDart)
 }
