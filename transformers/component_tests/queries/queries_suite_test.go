@@ -1,15 +1,14 @@
 package queries
 
 import (
-	"github.com/makerdao/vdb-mcd-transformers/test_config"
-	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	"io/ioutil"
 	"testing"
 
-	"github.com/sirupsen/logrus"
-
+	"github.com/makerdao/vdb-mcd-transformers/test_config"
+	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/sirupsen/logrus"
 )
 
 var db *postgres.DB
