@@ -49,7 +49,7 @@ var _ = Describe("Shared utilities", func() {
 
 				Expect(err).NotTo(HaveOccurred())
 				wadInt := shared.ConvertUint256HexToBigInt(hexutil.Encode(wadBytes))
-				Expect(wadInt.String()).To(Equal(test_data.VatFluxModel.ColumnValues["wad"].(string)))
+				Expect(wadInt.String()).To(Equal(test_data.VatFluxModel().ColumnValues["wad"].(string)))
 			})
 
 			It("extracts fourth of five arguments", func() {

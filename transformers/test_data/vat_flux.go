@@ -17,16 +17,14 @@
 package test_data
 
 import (
-	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"math/rand"
-
-	"github.com/makerdao/vulcanizedb/pkg/core"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
-
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
+	"github.com/makerdao/vulcanizedb/pkg/core"
 )
 
 var rawVatFluxLog = types.Log{
@@ -53,7 +51,7 @@ var VatFluxHeaderSyncLog = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-var VatFluxModel = event.InsertionModel{
+var vatFluxModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.VatFluxTable,
 	OrderedColumns: []event.ColumnName{
@@ -67,3 +65,5 @@ var VatFluxModel = event.InsertionModel{
 		event.LogFK:         VatFluxHeaderSyncLog.ID,
 	},
 }
+
+func VatFluxModel() event.InsertionModel { return CopyEventModel(vatFluxModel) }
