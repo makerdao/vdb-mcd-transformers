@@ -19,23 +19,41 @@ package vat_flux_test
 import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/makerdao/vdb-mcd-transformers/test_config"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vulcanizedb/pkg/core"
+	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_flux"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 )
 
 var _ = Describe("VatFlux converter", func() {
-	var converter = vat_flux.VatFluxConverter{}
-	It("Converts logs to models", func() {
-		models, err := converter.ToModels(constants.VatABI(), []core.HeaderSyncLog{test_data.VatFluxHeaderSyncLog})
+	var (
+		converter vat_flux.Converter
+		db        *postgres.DB
+	)
 
+	BeforeEach(func() {
+		converter = vat_flux.Converter{}
+		db = test_config.NewTestDB(test_config.NewTestNode())
+	})
+
+	It("Converts logs to models", func() {
+		log := []core.HeaderSyncLog{test_data.VatFluxHeaderSyncLog}
+		models, err := converter.ToModels(constants.VatABI(), log, db)
 		Expect(err).NotTo(HaveOccurred())
-		Expect(models).To(Equal([]shared.InsertionModel{test_data.VatFluxModel}))
+
+		ilk := log[0].Log.Topics[1].Hex()
+		ilkID, ilkErr := shared.GetOrCreateIlk(ilk, db)
+		Expect(ilkErr).NotTo(HaveOccurred())
+
+		expectedModel := test_data.VatFluxModel
+		expectedModel.ColumnValues[constants.IlkColumn] = ilkID
+		Expect(models[0]).To(Equal(expectedModel))
 	})
 
 	It("Returns an error there are missing topics", func() {
@@ -48,7 +66,7 @@ var _ = Describe("VatFlux converter", func() {
 				}},
 		}
 
-		_, err := converter.ToModels(constants.VatABI(), []core.HeaderSyncLog{badLog})
+		_, err := converter.ToModels(constants.VatABI(), []core.HeaderSyncLog{badLog}, db)
 		Expect(err).To(HaveOccurred())
 	})
 })

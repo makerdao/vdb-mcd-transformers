@@ -17,6 +17,7 @@
 package test_data
 
 import (
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"math/rand"
 
 	"github.com/makerdao/vulcanizedb/pkg/core"
@@ -25,7 +26,6 @@ import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
 
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 )
 
@@ -53,20 +53,17 @@ var VatFluxHeaderSyncLog = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-var VatFluxModel = shared.InsertionModel{
+var VatFluxModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.VatFluxTable,
-	OrderedColumns: []string{
-		constants.HeaderFK, string(constants.IlkFK), "src", "dst", "wad", constants.LogFK,
+	OrderedColumns: []event.ColumnName{
+		event.HeaderFK, constants.IlkColumn, constants.SrcColumn, constants.DstColumn, constants.WadColumn, event.LogFK,
 	},
-	ColumnValues: shared.ColumnValues{
-		"src":              "0x07Fa9eF6609cA7921112231F8f195138ebbA2977",
-		"dst":              "0x7340e006f4135BA6970D43bf43d88DCAD4e7a8CA",
-		"wad":              "1000000000000",
-		constants.HeaderFK: VatFluxHeaderSyncLog.HeaderID,
-		constants.LogFK:    VatFluxHeaderSyncLog.ID,
-	},
-	ForeignKeyValues: shared.ForeignKeyValues{
-		constants.IlkFK: "0x66616b6520696c6b000000000000000000000000000000000000000000000000",
+	ColumnValues: event.ColumnValues{
+		constants.SrcColumn: "0x07Fa9eF6609cA7921112231F8f195138ebbA2977",
+		constants.DstColumn: "0x7340e006f4135BA6970D43bf43d88DCAD4e7a8CA",
+		constants.WadColumn: "1000000000000",
+		event.HeaderFK:      VatFluxHeaderSyncLog.HeaderID,
+		event.LogFK:         VatFluxHeaderSyncLog.ID,
 	},
 }

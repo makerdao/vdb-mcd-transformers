@@ -17,6 +17,7 @@
 package integration_tests
 
 import (
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"strconv"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -64,12 +65,11 @@ var _ = Describe("VatFlux EventTransformer", func() {
 
 		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
 
-		initializer := shared.EventTransformer{
-			Config:     vatFluxConfig,
-			Converter:  &vat_flux.VatFluxConverter{},
-			Repository: &vat_flux.VatFluxRepository{},
+		initializer := event.Transformer{
+			Config:    vatFluxConfig,
+			Converter: &vat_flux.Converter{},
 		}
-		transformer := initializer.NewEventTransformer(db)
+		transformer := initializer.NewTransformer(db)
 
 		err = transformer.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
