@@ -19,31 +19,54 @@ package vat_fork_test
 import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/makerdao/vdb-mcd-transformers/test_config"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vulcanizedb/pkg/core"
+	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_fork"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 )
 
 var _ = Describe("VatFork converter", func() {
-	converter := vat_fork.VatForkConverter{}
+	var (
+		converter vat_fork.Converter
+		db        *postgres.DB
+	)
+	BeforeEach(func() {
+		converter = vat_fork.Converter{}
+		db = test_config.NewTestDB(test_config.NewTestNode())
+	})
 
 	It("Converts a log with a negative dink and dart to a model", func() {
-		models, err := converter.ToModels(constants.VatABI(), []core.HeaderSyncLog{test_data.VatForkHeaderSyncLogWithNegativeDinkDart})
-
+		log := []core.HeaderSyncLog{test_data.VatForkHeaderSyncLogWithNegativeDinkDart}
+		models, err := converter.ToModels(constants.VatABI(), log, db)
 		Expect(err).NotTo(HaveOccurred())
-		Expect(models).To(Equal([]shared.InsertionModel{test_data.VatForkModelWithNegativeDinkDart}))
+
+		ilk := log[0].Log.Topics[1].Hex()
+		ilkID, ilkErr := shared.GetOrCreateIlk(ilk, db)
+		Expect(ilkErr).NotTo(HaveOccurred())
+
+		expectedModel := test_data.VatForkModelWithNegativeDinkDart
+		expectedModel.ColumnValues[constants.IlkColumn] = ilkID
+		Expect(models[0]).To(Equal(expectedModel))
 	})
 
 	It("Converts a log with a positive dink and dart to a model", func() {
-		models, err := converter.ToModels(constants.VatABI(), []core.HeaderSyncLog{test_data.VatForkHeaderSyncLogWithPositiveDinkDart})
-
+		log := []core.HeaderSyncLog{test_data.VatForkHeaderSyncLogWithPositiveDinkDart}
+		models, err := converter.ToModels(constants.VatABI(), log, db)
 		Expect(err).NotTo(HaveOccurred())
-		Expect(models).To(Equal([]shared.InsertionModel{test_data.VatForkModelWithPositiveDinkDart}))
+
+		ilk := log[0].Log.Topics[1].Hex()
+		ilkID, ilkErr := shared.GetOrCreateIlk(ilk, db)
+		Expect(ilkErr).NotTo(HaveOccurred())
+
+		expectedModel := test_data.VatForkModelWithPositiveDinkDart
+		expectedModel.ColumnValues[constants.IlkColumn] = ilkID
+		Expect(models[0]).To(Equal(expectedModel))
 	})
 
 	It("Returns an error there are missing topics", func() {
@@ -56,7 +79,7 @@ var _ = Describe("VatFork converter", func() {
 				}},
 		}
 
-		_, err := converter.ToModels(constants.VatABI(), []core.HeaderSyncLog{badLog})
+		_, err := converter.ToModels(constants.VatABI(), []core.HeaderSyncLog{badLog}, db)
 		Expect(err).To(HaveOccurred())
 	})
 
@@ -66,7 +89,7 @@ var _ = Describe("VatFork converter", func() {
 				Topics: []common.Hash{{}, {}, {}, {}},
 			}}
 
-		_, err := converter.ToModels(constants.VatABI(), []core.HeaderSyncLog{badLog})
+		_, err := converter.ToModels(constants.VatABI(), []core.HeaderSyncLog{badLog}, db)
 		Expect(err).To(HaveOccurred())
 	})
 })

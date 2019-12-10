@@ -17,6 +17,7 @@
 package test_data
 
 import (
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"math/rand"
 
 	"github.com/makerdao/vulcanizedb/pkg/core"
@@ -25,7 +26,6 @@ import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
 
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 )
 
@@ -53,22 +53,19 @@ var VatForkHeaderSyncLogWithNegativeDinkDart = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-var VatForkModelWithNegativeDinkDart = shared.InsertionModel{
+var VatForkModelWithNegativeDinkDart = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.VatForkTable,
-	OrderedColumns: []string{
-		constants.HeaderFK, string(constants.IlkFK), "src", "dst", "dink", "dart", constants.LogFK,
+	OrderedColumns: []event.ColumnName{
+		event.HeaderFK, constants.IlkColumn, constants.SrcColumn, constants.DstColumn, constants.DinkColumn, constants.DartColumn, event.LogFK,
 	},
-	ColumnValues: shared.ColumnValues{
-		"src":              "0x07Fa9eF6609cA7921112231F8f195138ebbA2977",
-		"dst":              "0x7526EB4f95e2a1394797Cb38a921Fb1EbA09291B",
-		"dink":             "-1000000000000000000000",
-		"dart":             "-2000000000000000000000",
-		constants.HeaderFK: VatForkHeaderSyncLogWithNegativeDinkDart.HeaderID,
-		constants.LogFK:    VatForkHeaderSyncLogWithNegativeDinkDart.ID,
-	},
-	ForeignKeyValues: shared.ForeignKeyValues{
-		constants.IlkFK: "0x66616b6520696c6b000000000000000000000000000000000000000000000000",
+	ColumnValues: event.ColumnValues{
+		constants.SrcColumn:  "0x07Fa9eF6609cA7921112231F8f195138ebbA2977",
+		constants.DstColumn:  "0x7526EB4f95e2a1394797Cb38a921Fb1EbA09291B",
+		constants.DinkColumn: "-1000000000000000000000",
+		constants.DartColumn: "-2000000000000000000000",
+		event.HeaderFK:       VatForkHeaderSyncLogWithNegativeDinkDart.HeaderID,
+		event.LogFK:          VatForkHeaderSyncLogWithNegativeDinkDart.ID,
 	},
 }
 
@@ -96,21 +93,18 @@ var VatForkHeaderSyncLogWithPositiveDinkDart = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-var VatForkModelWithPositiveDinkDart = shared.InsertionModel{
+var VatForkModelWithPositiveDinkDart = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.VatForkTable,
-	OrderedColumns: []string{
-		constants.HeaderFK, string(constants.IlkFK), "src", "dst", "dink", "dart", constants.LogFK,
+	OrderedColumns: []event.ColumnName{
+		event.HeaderFK, constants.IlkColumn, constants.SrcColumn, constants.DstColumn, constants.DinkColumn, constants.DartColumn, event.LogFK,
 	},
-	ColumnValues: shared.ColumnValues{
-		"src":              "0x07Fa9eF6609cA7921112231F8f195138ebbA2977",
-		"dst":              "0x7526EB4f95e2a1394797Cb38a921Fb1EbA09291B",
-		"dink":             "100000000000000",
-		"dart":             "2000000000000000",
-		constants.HeaderFK: VatForkHeaderSyncLogWithPositiveDinkDart.HeaderID,
-		constants.LogFK:    VatForkHeaderSyncLogWithPositiveDinkDart.ID,
-	},
-	ForeignKeyValues: shared.ForeignKeyValues{
-		constants.IlkFK: "0x66616b6520696c6b000000000000000000000000000000000000000000000000",
+	ColumnValues: event.ColumnValues{
+		constants.SrcColumn:  "0x07Fa9eF6609cA7921112231F8f195138ebbA2977",
+		constants.DstColumn:  "0x7526EB4f95e2a1394797Cb38a921Fb1EbA09291B",
+		constants.DinkColumn: "100000000000000",
+		constants.DartColumn: "2000000000000000",
+		event.HeaderFK:       VatForkHeaderSyncLogWithPositiveDinkDart.HeaderID,
+		event.LogFK:          VatForkHeaderSyncLogWithPositiveDinkDart.ID,
 	},
 }
