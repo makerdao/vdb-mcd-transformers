@@ -48,13 +48,7 @@ func CreateFakeDiffRecordWithHeader(db *postgres.DB, header core.Header) int64 {
 }
 
 func CreateDiffRecord(db *postgres.DB, header core.Header, hashedAddress, key, value common.Hash) utils.PersistedStorageDiff {
-	rawDiff := utils.RawStorageDiff{
-		HashedAddress: hashedAddress,
-		BlockHash:     common.HexToHash(header.Hash),
-		BlockHeight:   int(header.BlockNumber),
-		StorageKey:    key,
-		StorageValue:  value,
-	}
+	rawDiff := fakes.GetFakeStorageDiffForHeader(header, hashedAddress, key, value)
 
 	repo := repositories.NewStorageDiffRepository(db)
 	diffID, insertDiffErr := repo.CreateStorageDiff(rawDiff)

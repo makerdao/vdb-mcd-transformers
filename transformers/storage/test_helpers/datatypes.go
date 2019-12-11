@@ -8,30 +8,25 @@ type BlockMetadata struct {
 	HeaderID int64 `db:"header_id"`
 }
 
-type VariableRes struct {
+type DiffMetadata struct {
 	BlockMetadata
 	DiffID int64 `db:"diff_id"`
 	Value  string
 }
 
-type AuctionVariableRes struct {
-	VariableRes
-	ContractAddress string `db:"contract_address"`
+type VariableRes struct {
+	DiffMetadata
 }
 
 type MappingRes struct {
-	BlockMetadata
-	DiffID int64 `db:"diff_id"`
+	DiffMetadata
 	Key    string
-	Value  string
 }
 
 type DoubleMappingRes struct {
-	BlockMetadata
-	DiffID int64  `db:"diff_id"`
+	DiffMetadata
 	KeyOne string `db:"key_one"`
 	KeyTwo string `db:"key_two"`
-	Value  string
 }
 
 type FlapRes struct {

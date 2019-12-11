@@ -14,7 +14,6 @@ import (
 	. "github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data/shared_behaviors"
 	"github.com/makerdao/vulcanizedb/libraries/shared/storage/utils"
-	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	. "github.com/onsi/ginkgo"
@@ -23,7 +22,7 @@ import (
 
 var _ = Describe("Cat storage repository", func() {
 	var (
-		db                   *postgres.DB
+		db = test_config.NewTestDB(test_config.NewTestNode())
 		repo                 cat.CatStorageRepository
 		diffID, fakeHeaderID int64
 		fakeAddress          = "0x12345"
@@ -31,7 +30,6 @@ var _ = Describe("Cat storage repository", func() {
 	)
 
 	BeforeEach(func() {
-		db = test_config.NewTestDB(test_config.NewTestNode())
 		test_config.CleanTestDB(db)
 		repo = cat.CatStorageRepository{}
 		repo.SetDB(db)
