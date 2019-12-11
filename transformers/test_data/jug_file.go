@@ -54,24 +54,22 @@ var JugFileIlkHeaderSyncLog = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-func JugFileIlkModel() shared.InsertionModel { return CopyModel(jugFileIlkModel) }
-
-var jugFileIlkModel = shared.InsertionModel{
+var jugFileIlkModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.JugFileIlkTable,
-	OrderedColumns: []string{
-		constants.HeaderFK, string(constants.IlkFK), "what", "data", constants.LogFK,
+	OrderedColumns: []event.ColumnName{
+		event.HeaderFK, constants.IlkColumn, constants.WhatColumn, constants.DataColumn, event.LogFK,
 	},
-	ColumnValues: shared.ColumnValues{
-		"what":             "duty",
-		"data":             "1000000000937303470807876289",
-		constants.HeaderFK: JugFileIlkHeaderSyncLog.HeaderID,
-		constants.LogFK:    JugFileIlkHeaderSyncLog.ID,
-	},
-	ForeignKeyValues: shared.ForeignKeyValues{
-		constants.IlkFK: "0x434f4c322d410000000000000000000000000000000000000000000000000000",
+	ColumnValues: event.ColumnValues{
+		constants.WhatColumn: "duty",
+		constants.DataColumn: "1000000000937303470807876289",
+		// Ilk ID
+		event.HeaderFK: JugFileIlkHeaderSyncLog.HeaderID,
+		event.LogFK:    JugFileIlkHeaderSyncLog.ID,
 	},
 }
+
+func JugFileIlkModel() event.InsertionModel { return CopyEventModel(jugFileIlkModel) }
 
 var rawJugFileBaseLog = types.Log{
 	Address: common.HexToAddress(JugAddress()),

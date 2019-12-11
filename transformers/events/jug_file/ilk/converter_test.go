@@ -19,18 +19,26 @@ package ilk_test
 import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/makerdao/vdb-mcd-transformers/test_config"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/events/jug_file/ilk"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/jug_file/ilk"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 )
 
 var _ = Describe("Jug file ilk converter", func() {
-	var converter = ilk.JugFileIlkConverter{}
+	var (
+		converter = ilk.Converter{}
+		db        = test_config.NewTestDB(test_config.NewTestNode())
+	)
+
+	BeforeEach(func() {
+		test_config.CleanTestDB(db)
+	})
+
 	It("returns err if log missing topics", func() {
 		badLog := core.HeaderSyncLog{
 			Log: types.Log{
@@ -38,7 +46,7 @@ var _ = Describe("Jug file ilk converter", func() {
 				Data:   []byte{1, 1, 1, 1, 1},
 			}}
 
-		_, err := converter.ToModels(constants.JugABI(), []core.HeaderSyncLog{badLog})
+		_, err := converter.ToModels(constants.JugABI(), []core.HeaderSyncLog{badLog}, db)
 		Expect(err).To(HaveOccurred())
 	})
 
@@ -48,13 +56,19 @@ var _ = Describe("Jug file ilk converter", func() {
 				Topics: []common.Hash{{}, {}, {}, {}},
 			}}
 
-		_, err := converter.ToModels(constants.JugABI(), []core.HeaderSyncLog{badLog})
+		_, err := converter.ToModels(constants.JugABI(), []core.HeaderSyncLog{badLog}, db)
 		Expect(err).To(HaveOccurred())
 	})
 
 	It("converts a log to a model", func() {
-		models, err := converter.ToModels(constants.JugABI(), []core.HeaderSyncLog{test_data.JugFileIlkHeaderSyncLog})
+		models, err := converter.ToModels(constants.JugABI(), []core.HeaderSyncLog{test_data.JugFileIlkHeaderSyncLog}, db)
+
 		Expect(err).NotTo(HaveOccurred())
-		Expect(models).To(Equal([]shared.InsertionModel{test_data.JugFileIlkModel()}))
+		var ilkID int64
+		ilkErr := db.Get(&ilkID, `SELECT id FROM maker.ilks where ilk = $1`, test_data.JugFileIlkHeaderSyncLog.Log.Topics[2].Hex())
+		Expect(ilkErr).NotTo(HaveOccurred())
+		expectedModel := test_data.JugFileIlkModel()
+		expectedModel.ColumnValues[constants.IlkColumn] = ilkID
+		Expect(models).To(Equal([]event.InsertionModel{expectedModel}))
 	})
 })
