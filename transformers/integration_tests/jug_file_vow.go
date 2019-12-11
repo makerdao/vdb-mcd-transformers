@@ -20,9 +20,9 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/jug_file/vow"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/fetcher"
 	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 	"github.com/makerdao/vulcanizedb/pkg/core"
@@ -61,12 +61,11 @@ var _ = Describe("Jug File Vow EventTransformer", func() {
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		initializer := shared.EventTransformer{
-			Config:     jugFileVowConfig,
-			Converter:  &vow.JugFileVowConverter{},
-			Repository: &vow.JugFileVowRepository{},
+		initializer := event.Transformer{
+			Config:    jugFileVowConfig,
+			Converter: &vow.Converter{},
 		}
-		tr := initializer.NewEventTransformer(db)
+		tr := initializer.NewTransformer(db)
 
 		f := fetcher.NewLogFetcher(blockChain)
 		logs, err := f.FetchLogs(

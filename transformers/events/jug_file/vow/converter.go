@@ -20,20 +20,17 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
+	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 )
 
-type JugFileVowConverter struct{}
+type Converter struct{}
 
-const (
-	logDataRequired   = false
-	numTopicsRequired = 4
-)
-
-func (JugFileVowConverter) ToModels(_ string, logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
-	var models []shared.InsertionModel
+func (converter Converter) ToModels(_ string, logs []core.HeaderSyncLog, _ *postgres.DB) ([]event.InsertionModel, error) {
+	var models []event.InsertionModel
 	for _, log := range logs {
-		err := shared.VerifyLog(log.Log, numTopicsRequired, logDataRequired)
+		err := shared.VerifyLog(log.Log, shared.FourTopicsRequired, shared.LogDataNotRequired)
 		if err != nil {
 			return nil, err
 		}
@@ -41,19 +38,18 @@ func (JugFileVowConverter) ToModels(_ string, logs []core.HeaderSyncLog) ([]shar
 		what := shared.DecodeHexToText(log.Log.Topics[2].Hex())
 		data := common.BytesToAddress(log.Log.Topics[3].Bytes()).String()
 
-		model := shared.InsertionModel{
+		model := event.InsertionModel{
 			SchemaName: constants.MakerSchema,
 			TableName:  constants.JugFileVowTable,
-			OrderedColumns: []string{
-				constants.HeaderFK, "what", "data", constants.LogFK,
+			OrderedColumns: []event.ColumnName{
+				event.HeaderFK, constants.WhatColumn, constants.DataColumn, event.LogFK,
 			},
-			ColumnValues: shared.ColumnValues{
-				"what":             what,
-				"data":             data,
-				constants.HeaderFK: log.HeaderID,
-				constants.LogFK:    log.ID,
+			ColumnValues: event.ColumnValues{
+				constants.WhatColumn: what,
+				constants.DataColumn: data,
+				event.HeaderFK:       log.HeaderID,
+				event.LogFK:          log.ID,
 			},
-			ForeignKeyValues: shared.ForeignKeyValues{},
 		}
 		models = append(models, model)
 	}

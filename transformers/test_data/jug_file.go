@@ -23,7 +23,6 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
@@ -135,17 +134,18 @@ var JugFileVowHeaderSyncLog = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-var JugFileVowModel = shared.InsertionModel{
+var jugFileVowModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.JugFileVowTable,
-	OrderedColumns: []string{
-		constants.HeaderFK, "what", "data", constants.LogFK,
+	OrderedColumns: []event.ColumnName{
+		event.HeaderFK, constants.WhatColumn, constants.DataColumn, event.LogFK,
 	},
-	ColumnValues: shared.ColumnValues{
-		"what":             "vow",
-		"data":             "0x17560834075DA3Db54f737db74377E799c865821",
-		constants.HeaderFK: JugFileVowHeaderSyncLog.HeaderID,
-		constants.LogFK:    JugFileVowHeaderSyncLog.ID,
+	ColumnValues: event.ColumnValues{
+		constants.WhatColumn: "vow",
+		constants.DataColumn: "0x17560834075DA3Db54f737db74377E799c865821",
+		event.HeaderFK:       JugFileVowHeaderSyncLog.HeaderID,
+		event.LogFK:          JugFileVowHeaderSyncLog.ID,
 	},
-	ForeignKeyValues: shared.ForeignKeyValues{},
 }
+
+func JugFileVowModel() event.InsertionModel { return CopyEventModel(jugFileVowModel) }
