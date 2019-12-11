@@ -22,7 +22,7 @@ import (
 
 var _ = Describe("Cat storage repository", func() {
 	var (
-		db = test_config.NewTestDB(test_config.NewTestNode())
+		db                   = test_config.NewTestDB(test_config.NewTestNode())
 		repo                 cat.CatStorageRepository
 		diffID, fakeHeaderID int64
 		fakeAddress          = "0x12345"

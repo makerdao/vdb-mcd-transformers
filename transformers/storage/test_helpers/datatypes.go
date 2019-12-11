@@ -20,7 +20,7 @@ type VariableRes struct {
 
 type MappingRes struct {
 	DiffMetadata
-	Key    string
+	Key string
 }
 
 type DoubleMappingRes struct {
