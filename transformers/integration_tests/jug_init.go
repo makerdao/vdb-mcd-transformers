@@ -25,6 +25,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/fetcher"
 	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 	. "github.com/onsi/ginkgo"
@@ -64,11 +65,10 @@ var _ = Describe("JugInit EventTransformer", func() {
 
 		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
 
-		transformer := shared.EventTransformer{
-			Config:     jugInitConfig,
-			Converter:  &jug_init.JugInitConverter{},
-			Repository: &jug_init.JugInitRepository{},
-		}.NewEventTransformer(db)
+		transformer := event.Transformer{
+			Config:    jugInitConfig,
+			Converter: &jug_init.Converter{},
+		}.NewTransformer(db)
 
 		err = transformer.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())

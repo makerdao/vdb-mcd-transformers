@@ -19,15 +19,13 @@ package test_data
 import (
 	"math/rand"
 
-	"github.com/makerdao/vulcanizedb/pkg/core"
-
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/makerdao/vulcanizedb/pkg/fakes"
-
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
+	"github.com/makerdao/vulcanizedb/pkg/core"
+	"github.com/makerdao/vulcanizedb/pkg/fakes"
 )
 
 var rawJugInitLog = types.Log{
@@ -54,17 +52,14 @@ var JugInitHeaderSyncLog = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-var JugInitModel = shared.InsertionModel{
-	SchemaName: constants.MakerSchema,
-	TableName:  constants.JugInitTable,
-	OrderedColumns: []string{
-		constants.HeaderFK, string(constants.IlkFK), constants.LogFK,
-	},
-	ColumnValues: shared.ColumnValues{
-		constants.HeaderFK: JugInitHeaderSyncLog.HeaderID,
-		constants.LogFK:    JugInitHeaderSyncLog.ID,
-	},
-	ForeignKeyValues: shared.ForeignKeyValues{
-		constants.IlkFK: "0x434f4c352d410000000000000000000000000000000000000000000000000000",
+func JugInitModel() event.InsertionModel { return CopyEventModel(jugInitModel) }
+
+var jugInitModel = event.InsertionModel{
+	SchemaName:     constants.MakerSchema,
+	TableName:      constants.JugInitTable,
+	OrderedColumns: []event.ColumnName{event.HeaderFK, event.LogFK, constants.IlkColumn},
+	ColumnValues: event.ColumnValues{
+		event.HeaderFK: JugInitHeaderSyncLog.HeaderID,
+		event.LogFK:    JugInitHeaderSyncLog.ID,
 	},
 }
