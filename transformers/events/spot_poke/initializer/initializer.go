@@ -20,11 +20,11 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/spot_poke"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 )
 
-var EventTransformerInitializer transformer.EventTransformerInitializer = shared.EventTransformer{
-	Config:     shared.GetEventTransformerConfig(constants.SpotPokeTable, constants.SpotPokeSignature()),
-	Converter:  spot_poke.SpotPokeConverter{},
-	Repository: &spot_poke.SpotPokeRepository{},
-}.NewEventTransformer
+var EventTransformerInitializer transformer.EventTransformerInitializer = event.Transformer{
+	Config:    shared.GetEventTransformerConfig(constants.SpotPokeTable, constants.SpotPokeSignature()),
+	Converter: spot_poke.Converter{},
+}.NewTransformer

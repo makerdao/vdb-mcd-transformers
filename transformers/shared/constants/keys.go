@@ -63,6 +63,7 @@ const (
 	PipColumn     event.ColumnName = "pip"
 	RadColumn     event.ColumnName = "rad"
 	RateColumn    event.ColumnName = "rate"
+	SpotColumn    event.ColumnName = "spot"
 	SrcColumn     event.ColumnName = "src"
 	TabColumn     event.ColumnName = "tab"
 	UColumn       event.ColumnName = "u"
@@ -72,4 +73,5 @@ const (
 	WColumn       event.ColumnName = "w"
 	WadColumn     event.ColumnName = "wad"
 	WhatColumn    event.ColumnName = "what"
+	ValueColumn   event.ColumnName = "value"
 )
