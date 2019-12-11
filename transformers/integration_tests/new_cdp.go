@@ -20,9 +20,9 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/new_cdp"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	mcdConstants "github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/fetcher"
 	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 	"github.com/makerdao/vulcanizedb/pkg/core"
@@ -61,11 +61,10 @@ var _ = Describe("NewCdp Transformer", func() {
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		tr := shared.EventTransformer{
-			Config:     newCdpConfig,
-			Converter:  &new_cdp.NewCdpConverter{},
-			Repository: &new_cdp.NewCdpRepository{},
-		}.NewEventTransformer(db)
+		tr := event.Transformer{
+			Config:    newCdpConfig,
+			Converter: &new_cdp.Converter{},
+		}.NewTransformer(db)
 
 		logFetcher := fetcher.NewLogFetcher(blockChain)
 		logs, err := logFetcher.FetchLogs(

@@ -8,8 +8,8 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
 )
@@ -51,20 +51,19 @@ var NewCdpHeaderSyncLog = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-func NewCdpModel() shared.InsertionModel { return CopyModel(newCdpModel) }
+func NewCdpModel() event.InsertionModel { return CopyEventModel(newCdpModel) }
 
-var newCdpModel = shared.InsertionModel{
+var newCdpModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.NewCdpTable,
-	OrderedColumns: []string{
-		constants.HeaderFK, constants.LogFK, "usr", "own", "cdp",
+	OrderedColumns: []event.ColumnName{
+		event.HeaderFK, event.LogFK, constants.UsrColumn, constants.OwnColumn, constants.CdpColumn,
 	},
-	ColumnValues: shared.ColumnValues{
-		constants.HeaderFK: NewCdpHeaderSyncLog.HeaderID,
-		constants.LogFK:    NewCdpHeaderSyncLog.ID,
-		"usr":              "0xA9fCcB07DD3f774d5b9d02e99DE1a27f47F91189",
-		"own":              "0xA9fCcB07DD3f774d5b9d02e99DE1a27f47F91189",
-		"cdp":              newCdpCdp.String(),
+	ColumnValues: event.ColumnValues{
+		event.HeaderFK:      NewCdpHeaderSyncLog.HeaderID,
+		event.LogFK:         NewCdpHeaderSyncLog.ID,
+		constants.UsrColumn: "0xA9fCcB07DD3f774d5b9d02e99DE1a27f47F91189",
+		constants.OwnColumn: "0xA9fCcB07DD3f774d5b9d02e99DE1a27f47F91189",
+		constants.CdpColumn: newCdpCdp.String(),
 	},
-	ForeignKeyValues: shared.ForeignKeyValues{},
 }
