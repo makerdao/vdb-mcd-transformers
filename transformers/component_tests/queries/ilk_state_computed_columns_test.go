@@ -21,7 +21,6 @@ import (
 
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/spot_file/mat"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_file/ilk"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_frob"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
@@ -188,8 +187,9 @@ var _ = Describe("Ilk state computed columns", func() {
 
 		Describe("result pagination", func() {
 			var (
-				headerTwo              core.Header
-				fileEvent, spotFileMat shared.InsertionModel
+				headerTwo   core.Header
+				fileEvent   shared.InsertionModel
+				spotFileMat event.InsertionModel
 			)
 
 			BeforeEach(func() {
@@ -205,13 +205,13 @@ var _ = Describe("Ilk state computed columns", func() {
 				headerTwo = createHeader(blockOne+1, timestampOne+1, headerRepository)
 				newLogId := test_data.CreateTestLog(headerTwo.Id, db).ID
 
-				spotFileMatRepo := mat.SpotFileMatRepository{}
-				spotFileMatRepo.SetDB(db)
+				ilkID, ilkErr := shared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
+				Expect(ilkErr).NotTo(HaveOccurred())
 				spotFileMat = test_data.SpotFileMatModel()
-				spotFileMat.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
-				spotFileMat.ColumnValues[constants.HeaderFK] = headerTwo.Id
-				spotFileMat.ColumnValues[constants.LogFK] = newLogId
-				spotFileMatErr := spotFileMatRepo.Create([]shared.InsertionModel{spotFileMat})
+				spotFileMat.ColumnValues[event.HeaderFK] = headerTwo.Id
+				spotFileMat.ColumnValues[event.LogFK] = newLogId
+				spotFileMat.ColumnValues[constants.IlkColumn] = ilkID
+				spotFileMatErr := event.PersistModels([]event.InsertionModel{spotFileMat}, db)
 				Expect(spotFileMatErr).NotTo(HaveOccurred())
 			})
 
@@ -227,8 +227,8 @@ var _ = Describe("Ilk state computed columns", func() {
 
 				expectedFile := test_helpers.IlkFileEvent{
 					IlkIdentifier: test_helpers.GetValidNullString(test_helpers.FakeIlk.Identifier),
-					What:          spotFileMat.ColumnValues["what"].(string),
-					Data:          spotFileMat.ColumnValues["data"].(string),
+					What:          spotFileMat.ColumnValues[constants.WhatColumn].(string),
+					Data:          spotFileMat.ColumnValues[constants.DataColumn].(string),
 				}
 				Expect(actualFiles).To(ConsistOf(expectedFile))
 			})

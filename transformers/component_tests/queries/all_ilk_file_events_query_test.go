@@ -22,7 +22,6 @@ import (
 
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/spot_file/mat"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/spot_file/pip"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_file/ilk"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
@@ -43,7 +42,6 @@ var _ = Describe("Ilk File Events Query", func() {
 		headerOne              core.Header
 		headerRepo             datastore.HeaderRepository
 		relevantIlkIdentifier  = test_helpers.GetValidNullString(test_helpers.FakeIlk.Identifier)
-		spotFileMatRepo        mat.SpotFileMatRepository
 		spotFilePipRepo        pip.SpotFilePipRepository
 		vatFileRepo            ilk.VatFileIlkRepository
 	)
@@ -55,8 +53,6 @@ var _ = Describe("Ilk File Events Query", func() {
 		timestampOne = int(rand.Int31())
 		headerOne = createHeader(blockOne, timestampOne, headerRepo)
 		logOneId = test_data.CreateTestLog(headerOne.Id, db).ID
-		spotFileMatRepo = mat.SpotFileMatRepository{}
-		spotFileMatRepo.SetDB(db)
 		spotFilePipRepo = pip.SpotFilePipRepository{}
 		spotFilePipRepo.SetDB(db)
 		vatFileRepo = ilk.VatFileIlkRepository{}
@@ -93,10 +89,10 @@ var _ = Describe("Ilk File Events Query", func() {
 
 		spotFileMatLog := test_data.CreateTestLog(headerOne.Id, db)
 		spotFileMat := test_data.SpotFileMatModel()
-		spotFileMat.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
 		spotFileMat.ColumnValues[constants.HeaderFK] = headerOne.Id
 		spotFileMat.ColumnValues[constants.LogFK] = spotFileMatLog.ID
-		spotFileMatErr := spotFileMatRepo.Create([]shared.InsertionModel{spotFileMat})
+		spotFileMat.ColumnValues[constants.IlkColumn] = ilkID
+		spotFileMatErr := event.PersistModels([]event.InsertionModel{spotFileMat}, db)
 		Expect(spotFileMatErr).NotTo(HaveOccurred())
 
 		spotFilePipLog := test_data.CreateTestLog(headerOne.Id, db)

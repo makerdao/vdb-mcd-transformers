@@ -17,14 +17,14 @@
 package test_data
 
 import (
-	"math/rand"
-
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
+	"math/rand"
 )
 
 var rawSpotFileMatLog = types.Log{
@@ -51,22 +51,23 @@ var SpotFileMatHeaderSyncLog = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-func SpotFileMatModel() shared.InsertionModel { return CopyModel(spotFileMatModel) }
+func SpotFileMatModel() event.InsertionModel { return CopyEventModel(spotFileMatModel) }
 
-var spotFileMatModel = shared.InsertionModel{
+var spotFileMatModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.SpotFileMatTable,
-	OrderedColumns: []string{
-		constants.HeaderFK, string(constants.IlkFK), "what", "data", constants.LogFK,
+	OrderedColumns: []event.ColumnName{
+		event.HeaderFK,
+		event.LogFK,
+		constants.IlkColumn,
+		constants.WhatColumn,
+		constants.DataColumn,
 	},
-	ColumnValues: shared.ColumnValues{
-		"what":             "mat",
-		"data":             "1500000000000000000000000000",
-		constants.HeaderFK: SpotFileMatHeaderSyncLog.HeaderID,
-		constants.LogFK:    SpotFileMatHeaderSyncLog.ID,
-	},
-	ForeignKeyValues: shared.ForeignKeyValues{
-		constants.IlkFK: "0x4554482d41000000000000000000000000000000000000000000000000000000",
+	ColumnValues: event.ColumnValues{
+		event.HeaderFK:       SpotFileMatHeaderSyncLog.HeaderID,
+		event.LogFK:          SpotFileMatHeaderSyncLog.ID,
+		constants.WhatColumn: "mat",
+		constants.DataColumn: "1500000000000000000000000000",
 	},
 }
 
