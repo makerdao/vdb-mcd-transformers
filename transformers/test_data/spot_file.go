@@ -20,7 +20,6 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
@@ -95,21 +94,22 @@ var SpotFilePipHeaderSyncLog = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-func SpotFilePipModel() shared.InsertionModel { return CopyModel(spotFilePipModel) }
+func SpotFilePipModel() event.InsertionModel { return CopyEventModel(spotFilePipModel) }
 
-var spotFilePipModel = shared.InsertionModel{
+var spotFilePipModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.SpotFilePipTable,
-	OrderedColumns: []string{
-		constants.HeaderFK, string(constants.IlkFK), "what", "pip", constants.LogFK,
+	OrderedColumns: []event.ColumnName{
+		event.HeaderFK,
+		event.LogFK,
+		constants.IlkColumn,
+		constants.WhatColumn,
+		constants.PipColumn,
 	},
-	ColumnValues: shared.ColumnValues{
-		"what":             "pip",
-		"pip":              "0x75dD74e8afE8110C8320eD397CcCff3B8134d981",
-		constants.HeaderFK: SpotFilePipHeaderSyncLog.HeaderID,
-		constants.LogFK:    SpotFilePipHeaderSyncLog.ID,
-	},
-	ForeignKeyValues: shared.ForeignKeyValues{
-		constants.IlkFK: "0x4554482d41000000000000000000000000000000000000000000000000000000",
+	ColumnValues: event.ColumnValues{
+		constants.HeaderFK:   SpotFilePipHeaderSyncLog.HeaderID,
+		constants.LogFK:      SpotFilePipHeaderSyncLog.ID,
+		constants.WhatColumn: "pip",
+		constants.PipColumn:  "0x75dD74e8afE8110C8320eD397CcCff3B8134d981",
 	},
 }

@@ -18,18 +18,25 @@ package pip_test
 
 import (
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/makerdao/vdb-mcd-transformers/test_config"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/events/spot_file/pip"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/spot_file/pip"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 )
 
 var _ = Describe("Spot file pip converter", func() {
-	converter := pip.SpotFilePipConverter{}
+	var (
+		converter = pip.Converter{}
+		db        = test_config.NewTestDB(test_config.NewTestNode())
+	)
+
+	BeforeEach(func() {
+		test_config.CleanTestDB(db)
+	})
 
 	It("returns err if log is missing topics", func() {
 		badLog := core.HeaderSyncLog{
@@ -37,14 +44,20 @@ var _ = Describe("Spot file pip converter", func() {
 				Data: []byte{1, 1, 1, 1, 1},
 			}}
 
-		_, err := converter.ToModels(constants.SpotABI(), []core.HeaderSyncLog{badLog})
+		_, err := converter.ToModels(constants.SpotABI(), []core.HeaderSyncLog{badLog}, db)
 		Expect(err).To(HaveOccurred())
 	})
 
 	It("converts a log to a model", func() {
-		models, err := converter.ToModels(constants.SpotABI(), []core.HeaderSyncLog{test_data.SpotFilePipHeaderSyncLog})
-
+		models, err := converter.ToModels(constants.SpotABI(), []core.HeaderSyncLog{test_data.SpotFilePipHeaderSyncLog}, db)
 		Expect(err).NotTo(HaveOccurred())
-		Expect(models).To(Equal([]shared.InsertionModel{test_data.SpotFilePipModel()}))
+
+		var ilkID int64
+		ilkErr := db.Get(&ilkID, `SELECT id FROM maker.ilks where ilk = $1`, test_data.SpotFilePipHeaderSyncLog.Log.Topics[2].Hex())
+		Expect(ilkErr).NotTo(HaveOccurred())
+		expectedModel := test_data.SpotFilePipModel()
+		expectedModel.ColumnValues[constants.IlkColumn] = ilkID
+
+		Expect(models).To(Equal([]event.InsertionModel{expectedModel}))
 	})
 })

@@ -60,6 +60,7 @@ const (
 	IlkColumn     event.ColumnName = "ilk_id"
 	InkColumn     event.ColumnName = "ink"
 	LotColumn     event.ColumnName = "lot"
+	PipColumn     event.ColumnName = "pip"
 	RadColumn     event.ColumnName = "rad"
 	RateColumn    event.ColumnName = "rate"
 	SrcColumn     event.ColumnName = "src"

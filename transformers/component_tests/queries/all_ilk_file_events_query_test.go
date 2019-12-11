@@ -22,7 +22,6 @@ import (
 
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/spot_file/pip"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_file/ilk"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
@@ -42,7 +41,6 @@ var _ = Describe("Ilk File Events Query", func() {
 		headerOne              core.Header
 		headerRepo             datastore.HeaderRepository
 		relevantIlkIdentifier  = test_helpers.GetValidNullString(test_helpers.FakeIlk.Identifier)
-		spotFilePipRepo        pip.SpotFilePipRepository
 		vatFileRepo            ilk.VatFileIlkRepository
 	)
 
@@ -53,8 +51,6 @@ var _ = Describe("Ilk File Events Query", func() {
 		timestampOne = int(rand.Int31())
 		headerOne = createHeader(blockOne, timestampOne, headerRepo)
 		logOneId = test_data.CreateTestLog(headerOne.Id, db).ID
-		spotFilePipRepo = pip.SpotFilePipRepository{}
-		spotFilePipRepo.SetDB(db)
 		vatFileRepo = ilk.VatFileIlkRepository{}
 		vatFileRepo.SetDB(db)
 	})
@@ -97,10 +93,10 @@ var _ = Describe("Ilk File Events Query", func() {
 
 		spotFilePipLog := test_data.CreateTestLog(headerOne.Id, db)
 		spotFilePip := test_data.SpotFilePipModel()
-		spotFilePip.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
 		spotFilePip.ColumnValues[constants.HeaderFK] = headerOne.Id
 		spotFilePip.ColumnValues[constants.LogFK] = spotFilePipLog.ID
-		spotFilePipErr := spotFilePipRepo.Create([]shared.InsertionModel{spotFilePip})
+		spotFilePip.ColumnValues[constants.IlkColumn] = ilkID
+		spotFilePipErr := event.PersistModels([]event.InsertionModel{spotFilePip}, db)
 		Expect(spotFilePipErr).NotTo(HaveOccurred())
 
 		vatFileLog := test_data.CreateTestLog(headerOne.Id, db)
@@ -133,13 +129,13 @@ var _ = Describe("Ilk File Events Query", func() {
 			},
 			test_helpers.IlkFileEvent{
 				IlkIdentifier: relevantIlkIdentifier,
-				What:          spotFileMat.ColumnValues["what"].(string),
-				Data:          spotFileMat.ColumnValues["data"].(string),
+				What:          spotFileMat.ColumnValues[constants.WhatColumn].(string),
+				Data:          spotFileMat.ColumnValues[constants.DataColumn].(string),
 			},
 			test_helpers.IlkFileEvent{
 				IlkIdentifier: relevantIlkIdentifier,
-				What:          "pip",
-				Data:          spotFilePip.ColumnValues["pip"].(string),
+				What:          spotFilePip.ColumnValues[constants.WhatColumn].(string),
+				Data:          spotFilePip.ColumnValues[constants.PipColumn].(string),
 			},
 			test_helpers.IlkFileEvent{
 				IlkIdentifier: relevantIlkIdentifier,
