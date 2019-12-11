@@ -2,7 +2,7 @@
 CREATE TABLE maker.vat_debt
 (
     id        SERIAL PRIMARY KEY,
-    diff_id   INTEGER NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
+    diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     debt      NUMERIC NOT NULL,
     UNIQUE (diff_id, header_id, debt)
@@ -11,7 +11,7 @@ CREATE TABLE maker.vat_debt
 CREATE TABLE maker.vat_vice
 (
     id        SERIAL PRIMARY KEY,
-    diff_id   INTEGER NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
+    diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     vice      NUMERIC NOT NULL,
     UNIQUE (diff_id, header_id, vice)
@@ -20,7 +20,7 @@ CREATE TABLE maker.vat_vice
 CREATE TABLE maker.vat_ilk_art
 (
     id        SERIAL PRIMARY KEY,
-    diff_id   INTEGER NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
+    diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     ilk_id    INTEGER NOT NULL REFERENCES maker.ilks (id) ON DELETE CASCADE,
     art       NUMERIC NOT NULL,
@@ -35,7 +35,7 @@ CREATE INDEX vat_ilk_art_ilk_index
 CREATE TABLE maker.vat_ilk_dust
 (
     id        SERIAL PRIMARY KEY,
-    diff_id   INTEGER NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
+    diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     ilk_id    INTEGER NOT NULL REFERENCES maker.ilks (id) ON DELETE CASCADE,
     dust      NUMERIC NOT NULL,
@@ -50,7 +50,7 @@ CREATE INDEX vat_ilk_dust_ilk_index
 CREATE TABLE maker.vat_ilk_line
 (
     id        SERIAL PRIMARY KEY,
-    diff_id   INTEGER NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
+    diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     ilk_id    INTEGER NOT NULL REFERENCES maker.ilks (id) ON DELETE CASCADE,
     line      NUMERIC NOT NULL,
@@ -65,7 +65,7 @@ CREATE INDEX vat_ilk_line_ilk_index
 CREATE TABLE maker.vat_ilk_spot
 (
     id        SERIAL PRIMARY KEY,
-    diff_id   INTEGER NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
+    diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     ilk_id    INTEGER NOT NULL REFERENCES maker.ilks (id) ON DELETE CASCADE,
     spot      NUMERIC NOT NULL,
@@ -80,7 +80,7 @@ CREATE INDEX vat_ilk_spot_ilk_index
 CREATE TABLE maker.vat_ilk_rate
 (
     id        SERIAL PRIMARY KEY,
-    diff_id   INTEGER NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
+    diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     ilk_id    INTEGER NOT NULL REFERENCES maker.ilks (id) ON DELETE CASCADE,
     rate      NUMERIC NOT NULL,
@@ -95,7 +95,7 @@ CREATE INDEX vat_ilk_rate_ilk_index
 CREATE TABLE maker.vat_urn_art
 (
     id        SERIAL PRIMARY KEY,
-    diff_id   INTEGER NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
+    diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     urn_id    INTEGER NOT NULL REFERENCES maker.urns (id) ON DELETE CASCADE,
     art       NUMERIC NOT NULL,
@@ -110,7 +110,7 @@ CREATE INDEX vat_urn_art_urn_index
 CREATE TABLE maker.vat_urn_ink
 (
     id        SERIAL PRIMARY KEY,
-    diff_id   INTEGER NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
+    diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     urn_id    INTEGER NOT NULL REFERENCES maker.urns (id) ON DELETE CASCADE,
     ink       NUMERIC NOT NULL,
@@ -125,7 +125,7 @@ CREATE INDEX vat_urn_ink_urn_index
 CREATE TABLE maker.vat_gem
 (
     id        SERIAL PRIMARY KEY,
-    diff_id   INTEGER NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
+    diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     ilk_id    INTEGER NOT NULL REFERENCES maker.ilks (id) ON DELETE CASCADE,
     guy       TEXT,
@@ -139,7 +139,7 @@ CREATE INDEX vat_gem_ilk_index
 CREATE TABLE maker.vat_dai
 (
     id        SERIAL PRIMARY KEY,
-    diff_id   INTEGER NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
+    diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     guy       TEXT,
     dai       NUMERIC NOT NULL,
@@ -149,7 +149,7 @@ CREATE TABLE maker.vat_dai
 CREATE TABLE maker.vat_sin
 (
     id        SERIAL PRIMARY KEY,
-    diff_id   INTEGER NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
+    diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     guy       TEXT,
     sin       NUMERIC NOT NULL,
@@ -159,7 +159,7 @@ CREATE TABLE maker.vat_sin
 CREATE TABLE maker.vat_line
 (
     id        SERIAL PRIMARY KEY,
-    diff_id   INTEGER NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
+    diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     line      NUMERIC NOT NULL,
     UNIQUE (diff_id, header_id, line)
@@ -168,7 +168,7 @@ CREATE TABLE maker.vat_line
 CREATE TABLE maker.vat_live
 (
     id        SERIAL PRIMARY KEY,
-    diff_id   INTEGER NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
+    diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     live      NUMERIC NOT NULL,
     UNIQUE (diff_id, header_id, live)

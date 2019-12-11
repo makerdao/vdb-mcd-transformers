@@ -3,7 +3,7 @@
 CREATE TABLE maker.flop_bid_bid
 (
     id         SERIAL PRIMARY KEY,
-    diff_id    INTEGER NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
+    diff_id    BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id  INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     address_id INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
     bid_id     NUMERIC NOT NULL,
@@ -19,7 +19,7 @@ CREATE INDEX flop_bid_bid_address_id_index
 CREATE TABLE maker.flop_bid_lot
 (
     id         SERIAL PRIMARY KEY,
-    diff_id    INTEGER NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
+    diff_id    BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id  INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     address_id INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
     bid_id     NUMERIC NOT NULL,
@@ -35,7 +35,7 @@ CREATE INDEX flop_bid_lot_bid_address_id_index
 CREATE TABLE maker.flop_bid_guy
 (
     id         SERIAL PRIMARY KEY,
-    diff_id    INTEGER NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
+    diff_id    BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id  INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     address_id INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
     bid_id     NUMERIC NOT NULL,
@@ -51,7 +51,7 @@ CREATE INDEX flop_bid_guy_bid_address_id_index
 CREATE TABLE maker.flop_bid_tic
 (
     id         SERIAL PRIMARY KEY,
-    diff_id    INTEGER NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
+    diff_id    BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id  INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     address_id INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
     bid_id     NUMERIC NOT NULL,
@@ -67,7 +67,7 @@ CREATE INDEX flop_bid_tic_bid_address_id_index
 CREATE TABLE maker.flop_bid_end
 (
     id         SERIAL PRIMARY KEY,
-    diff_id    INTEGER NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
+    diff_id    BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id  INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     address_id INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
     bid_id     NUMERIC NOT NULL,
@@ -83,7 +83,7 @@ CREATE INDEX flop_bid_end_bid_address_id_index
 CREATE TABLE maker.flop_vat
 (
     id         SERIAL PRIMARY KEY,
-    diff_id    INTEGER NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
+    diff_id    BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id  INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     address_id INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
     vat        TEXT,
@@ -93,7 +93,7 @@ CREATE TABLE maker.flop_vat
 CREATE TABLE maker.flop_gem
 (
     id         SERIAL PRIMARY KEY,
-    diff_id    INTEGER NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
+    diff_id    BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id  INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     address_id INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
     gem        TEXT,
@@ -103,7 +103,7 @@ CREATE TABLE maker.flop_gem
 CREATE TABLE maker.flop_beg
 (
     id         SERIAL PRIMARY KEY,
-    diff_id    INTEGER NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
+    diff_id    BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id  INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     address_id INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
     beg        NUMERIC NOT NULL,
@@ -113,7 +113,7 @@ CREATE TABLE maker.flop_beg
 CREATE TABLE maker.flop_pad
 (
     id         SERIAL PRIMARY KEY,
-    diff_id    INTEGER NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
+    diff_id    BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id  INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     address_id INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
     pad        NUMERIC NOT NULL,
@@ -123,7 +123,7 @@ CREATE TABLE maker.flop_pad
 CREATE TABLE maker.flop_ttl
 (
     id         SERIAL PRIMARY KEY,
-    diff_id    INTEGER NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
+    diff_id    BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id  INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     address_id INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
     ttl        NUMERIC NOT NULL,
@@ -133,7 +133,7 @@ CREATE TABLE maker.flop_ttl
 CREATE TABLE maker.flop_tau
 (
     id         SERIAL PRIMARY KEY,
-    diff_id    INTEGER NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
+    diff_id    BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id  INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     address_id INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
     tau        NUMERIC NOT NULL,
@@ -143,7 +143,7 @@ CREATE TABLE maker.flop_tau
 CREATE TABLE maker.flop_kicks
 (
     id         SERIAL PRIMARY KEY,
-    diff_id    INTEGER NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
+    diff_id    BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id  INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     address_id INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
     kicks      NUMERIC NOT NULL,
@@ -161,7 +161,7 @@ COMMENT ON TABLE maker.flop_kicks IS E'@name flopKicksStorage';
 CREATE TABLE maker.flop_live
 (
     id         SERIAL PRIMARY KEY,
-    diff_id    INTEGER NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
+    diff_id    BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id  INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     address_id INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
     live       NUMERIC NOT NULL,

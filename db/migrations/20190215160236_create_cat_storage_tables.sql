@@ -2,7 +2,7 @@
 CREATE TABLE maker.cat_live
 (
     id        SERIAL PRIMARY KEY,
-    diff_id   INTEGER NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
+    diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     live      NUMERIC NOT NULL,
     UNIQUE (diff_id, header_id, live)
@@ -11,7 +11,7 @@ CREATE TABLE maker.cat_live
 CREATE TABLE maker.cat_vat
 (
     id        SERIAL PRIMARY KEY,
-    diff_id   INTEGER NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
+    diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     vat       TEXT,
     UNIQUE (diff_id, header_id, vat)
@@ -20,7 +20,7 @@ CREATE TABLE maker.cat_vat
 CREATE TABLE maker.cat_vow
 (
     id        SERIAL PRIMARY KEY,
-    diff_id   INTEGER NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
+    diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     vow       TEXT,
     UNIQUE (diff_id, header_id, vow)
@@ -29,7 +29,7 @@ CREATE TABLE maker.cat_vow
 CREATE TABLE maker.cat_ilk_flip
 (
     id        SERIAL PRIMARY KEY,
-    diff_id   INTEGER NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
+    diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     ilk_id    INTEGER NOT NULL REFERENCES maker.ilks (id) ON DELETE CASCADE,
     flip      TEXT,
@@ -44,7 +44,7 @@ CREATE INDEX cat_ilk_flip_ilk_index
 CREATE TABLE maker.cat_ilk_chop
 (
     id        SERIAL PRIMARY KEY,
-    diff_id   INTEGER NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
+    diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     ilk_id    INTEGER NOT NULL REFERENCES maker.ilks (id) ON DELETE CASCADE,
     chop      NUMERIC NOT NULL,
@@ -59,7 +59,7 @@ CREATE INDEX cat_ilk_chop_ilk_index
 CREATE TABLE maker.cat_ilk_lump
 (
     id        SERIAL PRIMARY KEY,
-    diff_id   INTEGER NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
+    diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     ilk_id    INTEGER NOT NULL REFERENCES maker.ilks (id) ON DELETE CASCADE,
     lump      NUMERIC NOT NULL,

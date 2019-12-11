@@ -3,7 +3,7 @@
 CREATE TABLE maker.spot_ilk_pip
 (
     id        SERIAL PRIMARY KEY,
-    diff_id   INTEGER NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
+    diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     ilk_id    INTEGER NOT NULL REFERENCES maker.ilks (id) ON DELETE CASCADE,
     pip       TEXT,
@@ -18,7 +18,7 @@ CREATE INDEX spot_ilk_pip_ilk_index
 CREATE TABLE maker.spot_ilk_mat
 (
     id        SERIAL PRIMARY KEY,
-    diff_id   INTEGER NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
+    diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     ilk_id    INTEGER NOT NULL REFERENCES maker.ilks (id) ON DELETE CASCADE,
     mat       NUMERIC NOT NULL,
@@ -33,7 +33,7 @@ CREATE INDEX spot_ilk_mat_ilk_index
 CREATE TABLE maker.spot_vat
 (
     id        SERIAL PRIMARY KEY,
-    diff_id   INTEGER NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
+    diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     vat       TEXT,
     UNIQUE (diff_id, header_id, vat)
@@ -42,7 +42,7 @@ CREATE TABLE maker.spot_vat
 CREATE TABLE maker.spot_par
 (
     id        SERIAL PRIMARY KEY,
-    diff_id   INTEGER NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
+    diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     par       NUMERIC NOT NULL,
     UNIQUE (diff_id, header_id, par)

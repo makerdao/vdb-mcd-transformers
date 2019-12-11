@@ -2,7 +2,7 @@
 CREATE TABLE maker.jug_ilk_rho
 (
     id        SERIAL PRIMARY KEY,
-    diff_id   INTEGER NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
+    diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     ilk_id    INTEGER NOT NULL REFERENCES maker.ilks (id) ON DELETE CASCADE,
     rho       NUMERIC NOT NULL,
@@ -17,7 +17,7 @@ CREATE INDEX jug_ilk_rho_ilk_index
 CREATE TABLE maker.jug_ilk_duty
 (
     id        SERIAL PRIMARY KEY,
-    diff_id   INTEGER NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
+    diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     ilk_id    INTEGER NOT NULL REFERENCES maker.ilks (id) ON DELETE CASCADE,
     duty      NUMERIC NOT NULL,
@@ -32,7 +32,7 @@ CREATE INDEX jug_ilk_duty_ilk_index
 CREATE TABLE maker.jug_vat
 (
     id        SERIAL PRIMARY KEY,
-    diff_id   INTEGER NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
+    diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     vat       TEXT,
     UNIQUE (diff_id, header_id, vat)
@@ -41,7 +41,7 @@ CREATE TABLE maker.jug_vat
 CREATE TABLE maker.jug_vow
 (
     id        SERIAL PRIMARY KEY,
-    diff_id   INTEGER NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
+    diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     vow       TEXT,
     UNIQUE (diff_id, header_id, vow)
@@ -50,7 +50,7 @@ CREATE TABLE maker.jug_vow
 CREATE TABLE maker.jug_base
 (
     id        SERIAL PRIMARY KEY,
-    diff_id   INTEGER NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
+    diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     base      TEXT,
     UNIQUE (diff_id, header_id, base)
