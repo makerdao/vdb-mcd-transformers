@@ -1,11 +1,12 @@
 package test_helpers
 
 import (
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/makerdao/vulcanizedb/libraries/shared/storage/utils"
 	"math/rand"
 	"strconv"
 	"time"
+
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/makerdao/vulcanizedb/libraries/shared/storage/utils"
 
 	"github.com/makerdao/vulcanizedb/pkg/core"
 

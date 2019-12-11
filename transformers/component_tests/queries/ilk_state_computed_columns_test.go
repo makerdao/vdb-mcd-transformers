@@ -17,8 +17,9 @@
 package queries
 
 import (
-	storage_helper "github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	"math/rand"
+
+	storage_helper "github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"

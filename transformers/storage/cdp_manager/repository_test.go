@@ -18,10 +18,11 @@ package cdp_manager_test
 
 import (
 	"database/sql"
-	"github.com/ethereum/go-ethereum/common"
 	"math/rand"
 	"strconv"
 	"time"
+
+	"github.com/ethereum/go-ethereum/common"
 
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"

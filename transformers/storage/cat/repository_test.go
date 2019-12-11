@@ -1,9 +1,10 @@
 package cat_test
 
 import (
-	"github.com/ethereum/go-ethereum/common"
 	"math/rand"
 	"strconv"
+
+	"github.com/ethereum/go-ethereum/common"
 
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"

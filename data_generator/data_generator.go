@@ -4,12 +4,13 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	"math/rand"
 	"os"
 	"strings"
 	"time"
+
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/spot_poke"

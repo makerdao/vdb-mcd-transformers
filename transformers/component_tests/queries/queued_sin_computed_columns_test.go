@@ -17,9 +17,10 @@
 package queries
 
 import (
-	storage_helper "github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	"math/rand"
 	"strconv"
+
+	storage_helper "github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 

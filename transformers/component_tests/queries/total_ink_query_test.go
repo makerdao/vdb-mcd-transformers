@@ -1,8 +1,9 @@
 package queries
 
 import (
-	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	"math/rand"
+
+	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	query_test_helper "github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"

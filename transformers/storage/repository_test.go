@@ -17,10 +17,11 @@
 package storage_test
 
 import (
-	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	"math/big"
 	"math/rand"
 	"strconv"
+
+	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
