@@ -2924,7 +2924,7 @@ $$;
 
 CREATE TABLE maker.vat_ilk_art (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     ilk_id integer NOT NULL,
     art numeric NOT NULL
@@ -2984,7 +2984,7 @@ $$;
 
 CREATE TABLE maker.cat_ilk_chop (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     ilk_id integer NOT NULL,
     chop numeric NOT NULL
@@ -3044,7 +3044,7 @@ $$;
 
 CREATE TABLE maker.vat_ilk_dust (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     ilk_id integer NOT NULL,
     dust numeric NOT NULL
@@ -3104,7 +3104,7 @@ $$;
 
 CREATE TABLE maker.jug_ilk_duty (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     ilk_id integer NOT NULL,
     duty numeric NOT NULL
@@ -3164,7 +3164,7 @@ $$;
 
 CREATE TABLE maker.cat_ilk_flip (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     ilk_id integer NOT NULL,
     flip text
@@ -3224,7 +3224,7 @@ $$;
 
 CREATE TABLE maker.vat_ilk_line (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     ilk_id integer NOT NULL,
     line numeric NOT NULL
@@ -3284,7 +3284,7 @@ $$;
 
 CREATE TABLE maker.cat_ilk_lump (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     ilk_id integer NOT NULL,
     lump numeric NOT NULL
@@ -3344,7 +3344,7 @@ $$;
 
 CREATE TABLE maker.spot_ilk_mat (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     ilk_id integer NOT NULL,
     mat numeric NOT NULL
@@ -3404,7 +3404,7 @@ $$;
 
 CREATE TABLE maker.spot_ilk_pip (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     ilk_id integer NOT NULL,
     pip text
@@ -3464,7 +3464,7 @@ $$;
 
 CREATE TABLE maker.vat_ilk_rate (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     ilk_id integer NOT NULL,
     rate numeric NOT NULL
@@ -3524,7 +3524,7 @@ $$;
 
 CREATE TABLE maker.jug_ilk_rho (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     ilk_id integer NOT NULL,
     rho numeric NOT NULL
@@ -3584,7 +3584,7 @@ $$;
 
 CREATE TABLE maker.vat_ilk_spot (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     ilk_id integer NOT NULL,
     spot numeric NOT NULL
@@ -4298,7 +4298,7 @@ $$;
 
 CREATE TABLE maker.vat_urn_art (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     urn_id integer NOT NULL,
     art numeric NOT NULL
@@ -4344,7 +4344,7 @@ $$;
 
 CREATE TABLE maker.vat_urn_ink (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     urn_id integer NOT NULL,
     ink numeric NOT NULL
@@ -6061,7 +6061,7 @@ ALTER SEQUENCE maker.cat_ilk_lump_id_seq OWNED BY maker.cat_ilk_lump.id;
 
 CREATE TABLE maker.cat_live (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     live numeric NOT NULL
 );
@@ -6093,7 +6093,7 @@ ALTER SEQUENCE maker.cat_live_id_seq OWNED BY maker.cat_live.id;
 
 CREATE TABLE maker.cat_vat (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     vat text
 );
@@ -6125,7 +6125,7 @@ ALTER SEQUENCE maker.cat_vat_id_seq OWNED BY maker.cat_vat.id;
 
 CREATE TABLE maker.cat_vow (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     vow text
 );
@@ -6157,7 +6157,7 @@ ALTER SEQUENCE maker.cat_vow_id_seq OWNED BY maker.cat_vow.id;
 
 CREATE TABLE maker.cdp_manager_cdpi (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     cdpi numeric NOT NULL
 );
@@ -6189,7 +6189,7 @@ ALTER SEQUENCE maker.cdp_manager_cdpi_id_seq OWNED BY maker.cdp_manager_cdpi.id;
 
 CREATE TABLE maker.cdp_manager_count (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     owner text,
     count numeric NOT NULL
@@ -6222,7 +6222,7 @@ ALTER SEQUENCE maker.cdp_manager_count_id_seq OWNED BY maker.cdp_manager_count.i
 
 CREATE TABLE maker.cdp_manager_first (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     owner text,
     first numeric NOT NULL
@@ -6255,7 +6255,7 @@ ALTER SEQUENCE maker.cdp_manager_first_id_seq OWNED BY maker.cdp_manager_first.i
 
 CREATE TABLE maker.cdp_manager_ilks (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     cdpi numeric NOT NULL,
     ilk_id integer NOT NULL
@@ -6288,7 +6288,7 @@ ALTER SEQUENCE maker.cdp_manager_ilks_id_seq OWNED BY maker.cdp_manager_ilks.id;
 
 CREATE TABLE maker.cdp_manager_last (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     owner text,
     last numeric NOT NULL
@@ -6321,7 +6321,7 @@ ALTER SEQUENCE maker.cdp_manager_last_id_seq OWNED BY maker.cdp_manager_last.id;
 
 CREATE TABLE maker.cdp_manager_list_next (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     cdpi numeric NOT NULL,
     next numeric NOT NULL
@@ -6354,7 +6354,7 @@ ALTER SEQUENCE maker.cdp_manager_list_next_id_seq OWNED BY maker.cdp_manager_lis
 
 CREATE TABLE maker.cdp_manager_list_prev (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     cdpi numeric NOT NULL,
     prev numeric NOT NULL
@@ -6387,7 +6387,7 @@ ALTER SEQUENCE maker.cdp_manager_list_prev_id_seq OWNED BY maker.cdp_manager_lis
 
 CREATE TABLE maker.cdp_manager_owns (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     cdpi numeric NOT NULL,
     owner text
@@ -6420,7 +6420,7 @@ ALTER SEQUENCE maker.cdp_manager_owns_id_seq OWNED BY maker.cdp_manager_owns.id;
 
 CREATE TABLE maker.cdp_manager_urns (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     cdpi numeric NOT NULL,
     urn text
@@ -6453,7 +6453,7 @@ ALTER SEQUENCE maker.cdp_manager_urns_id_seq OWNED BY maker.cdp_manager_urns.id;
 
 CREATE TABLE maker.cdp_manager_vat (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     vat text
 );
@@ -6573,7 +6573,7 @@ CREATE TABLE maker.flap (
 
 CREATE TABLE maker.flap_beg (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     address_id integer NOT NULL,
     beg numeric NOT NULL
@@ -6606,7 +6606,7 @@ ALTER SEQUENCE maker.flap_beg_id_seq OWNED BY maker.flap_beg.id;
 
 CREATE TABLE maker.flap_bid_bid (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     address_id integer NOT NULL,
     bid_id numeric NOT NULL,
@@ -6640,7 +6640,7 @@ ALTER SEQUENCE maker.flap_bid_bid_id_seq OWNED BY maker.flap_bid_bid.id;
 
 CREATE TABLE maker.flap_bid_end (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     address_id integer NOT NULL,
     bid_id numeric NOT NULL,
@@ -6674,7 +6674,7 @@ ALTER SEQUENCE maker.flap_bid_end_id_seq OWNED BY maker.flap_bid_end.id;
 
 CREATE TABLE maker.flap_bid_guy (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     address_id integer NOT NULL,
     bid_id numeric NOT NULL,
@@ -6708,7 +6708,7 @@ ALTER SEQUENCE maker.flap_bid_guy_id_seq OWNED BY maker.flap_bid_guy.id;
 
 CREATE TABLE maker.flap_bid_lot (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     address_id integer NOT NULL,
     bid_id numeric NOT NULL,
@@ -6742,7 +6742,7 @@ ALTER SEQUENCE maker.flap_bid_lot_id_seq OWNED BY maker.flap_bid_lot.id;
 
 CREATE TABLE maker.flap_bid_tic (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     address_id integer NOT NULL,
     bid_id numeric NOT NULL,
@@ -6776,7 +6776,7 @@ ALTER SEQUENCE maker.flap_bid_tic_id_seq OWNED BY maker.flap_bid_tic.id;
 
 CREATE TABLE maker.flap_gem (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     address_id integer NOT NULL,
     gem text NOT NULL
@@ -6871,7 +6871,7 @@ ALTER SEQUENCE maker.flap_kick_id_seq OWNED BY maker.flap_kick.id;
 
 CREATE TABLE maker.flap_kicks (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     address_id integer NOT NULL,
     kicks numeric NOT NULL
@@ -6911,7 +6911,7 @@ ALTER SEQUENCE maker.flap_kicks_id_seq OWNED BY maker.flap_kicks.id;
 
 CREATE TABLE maker.flap_live (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     address_id integer NOT NULL,
     live numeric NOT NULL
@@ -6944,7 +6944,7 @@ ALTER SEQUENCE maker.flap_live_id_seq OWNED BY maker.flap_live.id;
 
 CREATE TABLE maker.flap_tau (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     address_id integer NOT NULL,
     tau integer NOT NULL
@@ -6977,7 +6977,7 @@ ALTER SEQUENCE maker.flap_tau_id_seq OWNED BY maker.flap_tau.id;
 
 CREATE TABLE maker.flap_ttl (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     address_id integer NOT NULL,
     ttl integer NOT NULL
@@ -7010,7 +7010,7 @@ ALTER SEQUENCE maker.flap_ttl_id_seq OWNED BY maker.flap_ttl.id;
 
 CREATE TABLE maker.flap_vat (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     address_id integer NOT NULL,
     vat text NOT NULL
@@ -7065,7 +7065,7 @@ CREATE TABLE maker.flip (
 
 CREATE TABLE maker.flip_beg (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     address_id integer NOT NULL,
     beg numeric NOT NULL
@@ -7098,7 +7098,7 @@ ALTER SEQUENCE maker.flip_beg_id_seq OWNED BY maker.flip_beg.id;
 
 CREATE TABLE maker.flip_bid_bid (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     address_id integer NOT NULL,
     bid_id numeric NOT NULL,
@@ -7132,7 +7132,7 @@ ALTER SEQUENCE maker.flip_bid_bid_id_seq OWNED BY maker.flip_bid_bid.id;
 
 CREATE TABLE maker.flip_bid_end (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     address_id integer NOT NULL,
     bid_id numeric NOT NULL,
@@ -7166,7 +7166,7 @@ ALTER SEQUENCE maker.flip_bid_end_id_seq OWNED BY maker.flip_bid_end.id;
 
 CREATE TABLE maker.flip_bid_gal (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     address_id integer NOT NULL,
     bid_id numeric NOT NULL,
@@ -7200,7 +7200,7 @@ ALTER SEQUENCE maker.flip_bid_gal_id_seq OWNED BY maker.flip_bid_gal.id;
 
 CREATE TABLE maker.flip_bid_guy (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     address_id integer NOT NULL,
     bid_id numeric NOT NULL,
@@ -7234,7 +7234,7 @@ ALTER SEQUENCE maker.flip_bid_guy_id_seq OWNED BY maker.flip_bid_guy.id;
 
 CREATE TABLE maker.flip_bid_lot (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     address_id integer NOT NULL,
     bid_id numeric NOT NULL,
@@ -7268,7 +7268,7 @@ ALTER SEQUENCE maker.flip_bid_lot_id_seq OWNED BY maker.flip_bid_lot.id;
 
 CREATE TABLE maker.flip_bid_tab (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     address_id integer NOT NULL,
     bid_id numeric NOT NULL,
@@ -7302,7 +7302,7 @@ ALTER SEQUENCE maker.flip_bid_tab_id_seq OWNED BY maker.flip_bid_tab.id;
 
 CREATE TABLE maker.flip_bid_tic (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     address_id integer NOT NULL,
     bid_id numeric NOT NULL,
@@ -7336,7 +7336,7 @@ ALTER SEQUENCE maker.flip_bid_tic_id_seq OWNED BY maker.flip_bid_tic.id;
 
 CREATE TABLE maker.flip_bid_usr (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     address_id integer NOT NULL,
     bid_id numeric NOT NULL,
@@ -7390,7 +7390,7 @@ ALTER SEQUENCE maker.flip_id_seq OWNED BY maker.flip.id;
 
 CREATE TABLE maker.flip_ilk (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     address_id integer NOT NULL,
     ilk_id integer NOT NULL
@@ -7468,7 +7468,7 @@ ALTER SEQUENCE maker.flip_kick_id_seq OWNED BY maker.flip_kick.id;
 
 CREATE TABLE maker.flip_kicks (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     address_id integer NOT NULL,
     kicks numeric NOT NULL
@@ -7508,7 +7508,7 @@ ALTER SEQUENCE maker.flip_kicks_id_seq OWNED BY maker.flip_kicks.id;
 
 CREATE TABLE maker.flip_tau (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     address_id integer NOT NULL,
     tau numeric NOT NULL
@@ -7541,7 +7541,7 @@ ALTER SEQUENCE maker.flip_tau_id_seq OWNED BY maker.flip_tau.id;
 
 CREATE TABLE maker.flip_ttl (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     address_id integer NOT NULL,
     ttl numeric NOT NULL
@@ -7574,7 +7574,7 @@ ALTER SEQUENCE maker.flip_ttl_id_seq OWNED BY maker.flip_ttl.id;
 
 CREATE TABLE maker.flip_vat (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     address_id integer NOT NULL,
     vat text
@@ -7627,7 +7627,7 @@ CREATE TABLE maker.flop (
 
 CREATE TABLE maker.flop_beg (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     address_id integer NOT NULL,
     beg numeric NOT NULL
@@ -7660,7 +7660,7 @@ ALTER SEQUENCE maker.flop_beg_id_seq OWNED BY maker.flop_beg.id;
 
 CREATE TABLE maker.flop_bid_bid (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     address_id integer NOT NULL,
     bid_id numeric NOT NULL,
@@ -7694,7 +7694,7 @@ ALTER SEQUENCE maker.flop_bid_bid_id_seq OWNED BY maker.flop_bid_bid.id;
 
 CREATE TABLE maker.flop_bid_end (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     address_id integer NOT NULL,
     bid_id numeric NOT NULL,
@@ -7728,7 +7728,7 @@ ALTER SEQUENCE maker.flop_bid_end_id_seq OWNED BY maker.flop_bid_end.id;
 
 CREATE TABLE maker.flop_bid_guy (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     address_id integer NOT NULL,
     bid_id numeric NOT NULL,
@@ -7762,7 +7762,7 @@ ALTER SEQUENCE maker.flop_bid_guy_id_seq OWNED BY maker.flop_bid_guy.id;
 
 CREATE TABLE maker.flop_bid_lot (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     address_id integer NOT NULL,
     bid_id numeric NOT NULL,
@@ -7796,7 +7796,7 @@ ALTER SEQUENCE maker.flop_bid_lot_id_seq OWNED BY maker.flop_bid_lot.id;
 
 CREATE TABLE maker.flop_bid_tic (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     address_id integer NOT NULL,
     bid_id numeric NOT NULL,
@@ -7830,7 +7830,7 @@ ALTER SEQUENCE maker.flop_bid_tic_id_seq OWNED BY maker.flop_bid_tic.id;
 
 CREATE TABLE maker.flop_gem (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     address_id integer NOT NULL,
     gem text
@@ -7926,7 +7926,7 @@ ALTER SEQUENCE maker.flop_kick_id_seq OWNED BY maker.flop_kick.id;
 
 CREATE TABLE maker.flop_kicks (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     address_id integer NOT NULL,
     kicks numeric NOT NULL
@@ -7966,7 +7966,7 @@ ALTER SEQUENCE maker.flop_kicks_id_seq OWNED BY maker.flop_kicks.id;
 
 CREATE TABLE maker.flop_live (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     address_id integer NOT NULL,
     live numeric NOT NULL
@@ -7999,7 +7999,7 @@ ALTER SEQUENCE maker.flop_live_id_seq OWNED BY maker.flop_live.id;
 
 CREATE TABLE maker.flop_pad (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     address_id integer NOT NULL,
     pad numeric NOT NULL
@@ -8032,7 +8032,7 @@ ALTER SEQUENCE maker.flop_pad_id_seq OWNED BY maker.flop_pad.id;
 
 CREATE TABLE maker.flop_tau (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     address_id integer NOT NULL,
     tau numeric NOT NULL
@@ -8065,7 +8065,7 @@ ALTER SEQUENCE maker.flop_tau_id_seq OWNED BY maker.flop_tau.id;
 
 CREATE TABLE maker.flop_ttl (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     address_id integer NOT NULL,
     ttl numeric NOT NULL
@@ -8098,7 +8098,7 @@ ALTER SEQUENCE maker.flop_ttl_id_seq OWNED BY maker.flop_ttl.id;
 
 CREATE TABLE maker.flop_vat (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     address_id integer NOT NULL,
     vat text
@@ -8169,7 +8169,7 @@ ALTER SEQUENCE maker.ilks_id_seq OWNED BY maker.ilks.id;
 
 CREATE TABLE maker.jug_base (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     base text
 );
@@ -8405,7 +8405,7 @@ ALTER SEQUENCE maker.jug_init_id_seq OWNED BY maker.jug_init.id;
 
 CREATE TABLE maker.jug_vat (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     vat text
 );
@@ -8437,7 +8437,7 @@ ALTER SEQUENCE maker.jug_vat_id_seq OWNED BY maker.jug_vat.id;
 
 CREATE TABLE maker.jug_vow (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     vow text
 );
@@ -8754,7 +8754,7 @@ ALTER SEQUENCE maker.spot_ilk_pip_id_seq OWNED BY maker.spot_ilk_pip.id;
 
 CREATE TABLE maker.spot_par (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     par numeric NOT NULL
 );
@@ -8820,7 +8820,7 @@ ALTER SEQUENCE maker.spot_poke_id_seq OWNED BY maker.spot_poke.id;
 
 CREATE TABLE maker.spot_vat (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     vat text
 );
@@ -8958,7 +8958,7 @@ ALTER SEQUENCE maker.urns_id_seq OWNED BY maker.urns.id;
 
 CREATE TABLE maker.vat_dai (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     guy text,
     dai numeric NOT NULL
@@ -8991,7 +8991,7 @@ ALTER SEQUENCE maker.vat_dai_id_seq OWNED BY maker.vat_dai.id;
 
 CREATE TABLE maker.vat_debt (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     debt numeric NOT NULL
 );
@@ -9231,7 +9231,7 @@ ALTER SEQUENCE maker.vat_frob_id_seq OWNED BY maker.vat_frob.id;
 
 CREATE TABLE maker.vat_gem (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     ilk_id integer NOT NULL,
     guy text,
@@ -9453,7 +9453,7 @@ ALTER SEQUENCE maker.vat_init_id_seq OWNED BY maker.vat_init.id;
 
 CREATE TABLE maker.vat_line (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     line numeric NOT NULL
 );
@@ -9485,7 +9485,7 @@ ALTER SEQUENCE maker.vat_line_id_seq OWNED BY maker.vat_line.id;
 
 CREATE TABLE maker.vat_live (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     live numeric NOT NULL
 );
@@ -9551,7 +9551,7 @@ ALTER SEQUENCE maker.vat_move_id_seq OWNED BY maker.vat_move.id;
 
 CREATE TABLE maker.vat_sin (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     guy text,
     sin numeric NOT NULL
@@ -9692,7 +9692,7 @@ ALTER SEQUENCE maker.vat_urn_ink_id_seq OWNED BY maker.vat_urn_ink.id;
 
 CREATE TABLE maker.vat_vice (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     vice numeric NOT NULL
 );
@@ -9724,7 +9724,7 @@ ALTER SEQUENCE maker.vat_vice_id_seq OWNED BY maker.vat_vice.id;
 
 CREATE TABLE maker.vow_ash (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     ash numeric
 );
@@ -9756,7 +9756,7 @@ ALTER SEQUENCE maker.vow_ash_id_seq OWNED BY maker.vow_ash.id;
 
 CREATE TABLE maker.vow_bump (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     bump numeric
 );
@@ -9788,7 +9788,7 @@ ALTER SEQUENCE maker.vow_bump_id_seq OWNED BY maker.vow_bump.id;
 
 CREATE TABLE maker.vow_dump (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     dump numeric
 );
@@ -9885,7 +9885,7 @@ ALTER SEQUENCE maker.vow_file_id_seq OWNED BY maker.vow_file.id;
 
 CREATE TABLE maker.vow_flapper (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     flapper text
 );
@@ -9949,7 +9949,7 @@ ALTER SEQUENCE maker.vow_flog_id_seq OWNED BY maker.vow_flog.id;
 
 CREATE TABLE maker.vow_flopper (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     flopper text
 );
@@ -9981,7 +9981,7 @@ ALTER SEQUENCE maker.vow_flopper_id_seq OWNED BY maker.vow_flopper.id;
 
 CREATE TABLE maker.vow_hump (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     hump numeric
 );
@@ -10013,7 +10013,7 @@ ALTER SEQUENCE maker.vow_hump_id_seq OWNED BY maker.vow_hump.id;
 
 CREATE TABLE maker.vow_sin_integer (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     sin numeric
 );
@@ -10045,7 +10045,7 @@ ALTER SEQUENCE maker.vow_sin_integer_id_seq OWNED BY maker.vow_sin_integer.id;
 
 CREATE TABLE maker.vow_sin_mapping (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     era numeric,
     tab numeric
@@ -10078,7 +10078,7 @@ ALTER SEQUENCE maker.vow_sin_mapping_id_seq OWNED BY maker.vow_sin_mapping.id;
 
 CREATE TABLE maker.vow_sump (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     sump numeric
 );
@@ -10110,7 +10110,7 @@ ALTER SEQUENCE maker.vow_sump_id_seq OWNED BY maker.vow_sump.id;
 
 CREATE TABLE maker.vow_vat (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     vat text
 );
@@ -10142,7 +10142,7 @@ ALTER SEQUENCE maker.vow_vat_id_seq OWNED BY maker.vow_vat.id;
 
 CREATE TABLE maker.vow_wait (
     id integer NOT NULL,
-    diff_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     wait numeric
 );
@@ -10727,7 +10727,7 @@ ALTER SEQUENCE public.queued_storage_id_seq OWNED BY public.queued_storage.id;
 --
 
 CREATE TABLE public.storage_diff (
-    id integer NOT NULL,
+    id bigint NOT NULL,
     block_height bigint,
     block_hash bytea,
     hashed_address bytea,
@@ -10741,7 +10741,6 @@ CREATE TABLE public.storage_diff (
 --
 
 CREATE SEQUENCE public.storage_diff_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
