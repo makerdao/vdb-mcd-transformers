@@ -73,7 +73,7 @@ var _ = Describe("Shared utilities", func() {
 
 				Expect(err).NotTo(HaveOccurred())
 				wAddress := common.BytesToAddress(wBytes)
-				Expect(wAddress.String()).To(Equal(test_data.VatGrabModelWithPositiveDink.ColumnValues["w"]))
+				Expect(wAddress.String()).To(Equal(test_data.VatGrabModelWithPositiveDink().ColumnValues["w"]))
 			})
 
 			It("extracts the fifth of six arguments", func() {
@@ -81,7 +81,7 @@ var _ = Describe("Shared utilities", func() {
 
 				Expect(err).NotTo(HaveOccurred())
 				dinkInt := shared.ConvertInt256HexToBigInt(hexutil.Encode(dinkBytes))
-				Expect(dinkInt.String()).To(Equal(test_data.VatGrabModelWithPositiveDink.ColumnValues["dink"]))
+				Expect(dinkInt.String()).To(Equal(test_data.VatGrabModelWithPositiveDink().ColumnValues["dink"]))
 			})
 
 			It("extracts the sixth of six arguments", func() {
@@ -89,7 +89,7 @@ var _ = Describe("Shared utilities", func() {
 
 				Expect(err).NotTo(HaveOccurred())
 				dartInt := shared.ConvertInt256HexToBigInt(hexutil.Encode(dartBytes))
-				Expect(dartInt.String()).To(Equal(test_data.VatGrabModelWithPositiveDink.ColumnValues["dart"]))
+				Expect(dartInt.String()).To(Equal(test_data.VatGrabModelWithPositiveDink().ColumnValues["dart"]))
 			})
 		})
 	})

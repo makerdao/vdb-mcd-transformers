@@ -21,20 +21,17 @@ import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
+	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 )
 
-type VatGrabConverter struct{}
+type Converter struct{}
 
-const (
-	logDataRequired   = true
-	numTopicsRequired = 4
-)
-
-func (VatGrabConverter) ToModels(_ string, logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
-	var models []shared.InsertionModel
+func (Converter) ToModels(_ string, logs []core.HeaderSyncLog, db *postgres.DB) ([]event.InsertionModel, error) {
+	var models []event.InsertionModel
 	for _, log := range logs {
-		err := shared.VerifyLog(log.Log, numTopicsRequired, logDataRequired)
+		err := shared.VerifyLog(log.Log, shared.FourTopicsRequired, shared.LogDataRequired)
 		if err != nil {
 			return nil, err
 		}
@@ -57,23 +54,25 @@ func (VatGrabConverter) ToModels(_ string, logs []core.HeaderSyncLog) ([]shared.
 		}
 		dart := shared.ConvertInt256HexToBigInt(hexutil.Encode(dartBytes))
 
-		model := shared.InsertionModel{
+		urnID, urnErr := shared.GetOrCreateUrn(urn, ilk, db)
+		if urnErr != nil {
+			return nil, urnErr
+		}
+
+		model := event.InsertionModel{
 			SchemaName: constants.MakerSchema,
 			TableName:  constants.VatGrabTable,
-			OrderedColumns: []string{
-				constants.HeaderFK, string(constants.UrnFK), "v", "w", "dink", "dart", constants.LogFK,
+			OrderedColumns: []event.ColumnName{
+				event.HeaderFK, constants.UrnColumn, constants.VColumn, constants.WColumn, constants.DinkColumn, constants.DartColumn, event.LogFK,
 			},
-			ColumnValues: shared.ColumnValues{
-				"v":                v,
-				"w":                w,
-				"dink":             dink.String(),
-				"dart":             dart.String(),
-				constants.HeaderFK: log.HeaderID,
-				constants.LogFK:    log.ID,
-			},
-			ForeignKeyValues: shared.ForeignKeyValues{
-				constants.IlkFK: ilk,
-				constants.UrnFK: urn,
+			ColumnValues: event.ColumnValues{
+				constants.VColumn:    v,
+				constants.WColumn:    w,
+				constants.DinkColumn: dink.String(),
+				constants.DartColumn: dart.String(),
+				constants.UrnColumn:  urnID,
+				event.HeaderFK:       log.HeaderID,
+				event.LogFK:          log.ID,
 			},
 		}
 		models = append(models, model)

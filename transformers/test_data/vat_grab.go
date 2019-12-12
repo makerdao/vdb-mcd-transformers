@@ -17,16 +17,13 @@
 package test_data
 
 import (
-	"math/rand"
-
-	"github.com/makerdao/vulcanizedb/pkg/core"
-
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
-
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
+	"github.com/makerdao/vulcanizedb/pkg/core"
+	"math/rand"
 )
 
 var rawVatGrabLogWithPositiveDink = types.Log{
@@ -53,23 +50,19 @@ var VatGrabHeaderSyncLogWithPositiveDink = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-var VatGrabModelWithPositiveDink = shared.InsertionModel{
+var vatGrabModelWithPositiveDink = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.VatGrabTable,
-	OrderedColumns: []string{
-		constants.HeaderFK, string(constants.UrnFK), "v", "w", "dink", "dart", constants.LogFK,
+	OrderedColumns: []event.ColumnName{
+		event.HeaderFK, constants.UrnColumn, constants.VColumn, constants.WColumn, constants.DinkColumn, constants.DartColumn, event.LogFK,
 	},
-	ColumnValues: shared.ColumnValues{
-		"v":                "0x7340e006f4135BA6970D43bf43d88DCAD4e7a8CA",
-		"w":                "0x7526EB4f95e2a1394797Cb38a921Fb1EbA09291B",
-		"dink":             "1000000000000000000000",
-		"dart":             "2000000000000000000000",
-		constants.HeaderFK: VatGrabHeaderSyncLogWithPositiveDink.HeaderID,
-		constants.LogFK:    VatGrabHeaderSyncLogWithPositiveDink.ID,
-	},
-	ForeignKeyValues: shared.ForeignKeyValues{
-		constants.IlkFK: "0x66616b6520696c6b000000000000000000000000000000000000000000000000",
-		constants.UrnFK: "0x07Fa9eF6609cA7921112231F8f195138ebbA2977",
+	ColumnValues: event.ColumnValues{
+		constants.VColumn:    "0x7340e006f4135BA6970D43bf43d88DCAD4e7a8CA",
+		constants.WColumn:    "0x7526EB4f95e2a1394797Cb38a921Fb1EbA09291B",
+		constants.DinkColumn: "1000000000000000000000",
+		constants.DartColumn: "2000000000000000000000",
+		event.HeaderFK:       VatGrabHeaderSyncLogWithPositiveDink.HeaderID,
+		event.LogFK:          VatGrabHeaderSyncLogWithPositiveDink.ID,
 	},
 }
 
@@ -97,22 +90,25 @@ var VatGrabHeaderSyncLogWithNegativeDink = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-var VatGrabModelWithNegativeDink = shared.InsertionModel{
+var vatGrabModelWithNegativeDink = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.VatGrabTable,
-	OrderedColumns: []string{
-		constants.HeaderFK, string(constants.UrnFK), "v", "w", "dink", "dart", constants.LogFK,
+	OrderedColumns: []event.ColumnName{
+		event.HeaderFK, constants.UrnColumn, constants.VColumn, constants.WColumn, constants.DinkColumn, constants.DartColumn, event.LogFK,
 	},
-	ColumnValues: shared.ColumnValues{
-		"v":                "0x7340e006f4135BA6970D43bf43d88DCAD4e7a8CA",
-		"w":                "0x7526EB4f95e2a1394797Cb38a921Fb1EbA09291B",
-		"dink":             "-1000000000000000000000",
-		"dart":             "-2000000000000000000000",
-		constants.HeaderFK: VatGrabHeaderSyncLogWithNegativeDink.HeaderID,
-		constants.LogFK:    VatGrabHeaderSyncLogWithNegativeDink.ID,
+	ColumnValues: event.ColumnValues{
+		constants.VColumn:    "0x7340e006f4135BA6970D43bf43d88DCAD4e7a8CA",
+		constants.WColumn:    "0x7526EB4f95e2a1394797Cb38a921Fb1EbA09291B",
+		constants.DinkColumn: "-1000000000000000000000",
+		constants.DartColumn: "-2000000000000000000000",
+		event.HeaderFK:       VatGrabHeaderSyncLogWithNegativeDink.HeaderID,
+		event.LogFK:          VatGrabHeaderSyncLogWithNegativeDink.ID,
 	},
-	ForeignKeyValues: shared.ForeignKeyValues{
-		constants.IlkFK: "0x66616b6520696c6b000000000000000000000000000000000000000000000000",
-		constants.UrnFK: "0x07Fa9eF6609cA7921112231F8f195138ebbA2977",
-	},
+}
+
+func VatGrabModelWithPositiveDink() event.InsertionModel {
+	return CopyEventModel(vatGrabModelWithPositiveDink)
+}
+func VatGrabModelWithNegativeDink() event.InsertionModel {
+	return CopyEventModel(vatGrabModelWithNegativeDink)
 }
