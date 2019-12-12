@@ -17,15 +17,14 @@
 package initializer
 
 import (
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
-	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
-
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_file/debt_ceiling"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
+	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 )
 
-var EventTransformerInitializer transformer.EventTransformerInitializer = shared.EventTransformer{
-	Config:     shared.GetEventTransformerConfig(constants.VatFileDebtCeilingTable, constants.VatFileDebtCeilingSignature()),
-	Converter:  &debt_ceiling.VatFileDebtCeilingConverter{},
-	Repository: &debt_ceiling.VatFileDebtCeilingRepository{},
-}.NewEventTransformer
+var EventTransformerInitializer transformer.EventTransformerInitializer = event.Transformer{
+	Config:    shared.GetEventTransformerConfig(constants.VatFileDebtCeilingTable, constants.VatFileDebtCeilingSignature()),
+	Converter: debt_ceiling.Converter{},
+}.NewTransformer

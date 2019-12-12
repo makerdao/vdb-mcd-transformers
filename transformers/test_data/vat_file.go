@@ -57,13 +57,13 @@ var vatFileDebtCeilingModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.VatFileDebtCeilingTable,
 	OrderedColumns: []event.ColumnName{
-		event.HeaderFK, constants.WhatColumn, constants.DataColumn, event.HeaderFK,
+		event.HeaderFK, constants.WhatColumn, constants.DataColumn, event.LogFK,
 	},
 	ColumnValues: event.ColumnValues{
-		constants.WhatColumn:             "Line",
-		constants.DataColumn:             "1000000000000000000000000000000000000000000000000000",
-		event.HeaderFK: VatFileDebtCeilingHeaderSyncLog.HeaderID,
-		constants.LogFK:    VatFileDebtCeilingHeaderSyncLog.ID,
+		constants.WhatColumn: "Line",
+		constants.DataColumn: "1000000000000000000000000000000000000000000000000000",
+		event.HeaderFK:       VatFileDebtCeilingHeaderSyncLog.HeaderID,
+		event.LogFK:          VatFileDebtCeilingHeaderSyncLog.ID,
 	},
 }
 
@@ -101,10 +101,10 @@ var vatFileIlkDustModel = event.InsertionModel{
 		event.HeaderFK, constants.IlkColumn, constants.WhatColumn, constants.DataColumn, constants.LogFK,
 	},
 	ColumnValues: event.ColumnValues{
-		constants.WhatColumn:             "dust",
-		constants.DataColumn:             "10390649719961925488562719249749",
-		event.HeaderFK: VatFileIlkDustHeaderSyncLog.HeaderID,
-		constants.LogFK:    VatFileIlkDustHeaderSyncLog.ID,
+		constants.WhatColumn: "dust",
+		constants.DataColumn: "10390649719961925488562719249749",
+		event.HeaderFK:       VatFileIlkDustHeaderSyncLog.HeaderID,
+		constants.LogFK:      VatFileIlkDustHeaderSyncLog.ID,
 	},
 }
 
@@ -142,10 +142,10 @@ var vatFileIlkLineModel = event.InsertionModel{
 		event.HeaderFK, constants.IlkColumn, constants.WhatColumn, constants.DataColumn, constants.LogFK,
 	},
 	ColumnValues: event.ColumnValues{
-		constants.WhatColumn:             "line",
-		constants.DataColumn:             "220086151196920075605",
-		event.HeaderFK: VatFileIlkLineHeaderSyncLog.HeaderID,
-		constants.LogFK:    VatFileIlkLineHeaderSyncLog.ID,
+		constants.WhatColumn: "line",
+		constants.DataColumn: "220086151196920075605",
+		event.HeaderFK:       VatFileIlkLineHeaderSyncLog.HeaderID,
+		constants.LogFK:      VatFileIlkLineHeaderSyncLog.ID,
 	},
 }
 
@@ -182,9 +182,9 @@ var vatFileIlkSpotModel = event.InsertionModel{
 		event.HeaderFK, constants.IlkColumn, constants.WhatColumn, constants.DataColumn, constants.LogFK,
 	},
 	ColumnValues: event.ColumnValues{
-		constants.WhatColumn:             "spot",
-		constants.DataColumn:             "91323333333333333333333333333",
-		event.HeaderFK: VatFileIlkSpotHeaderSyncLog.HeaderID,
-		constants.LogFK:    VatFileIlkSpotHeaderSyncLog.ID,
+		constants.WhatColumn: "spot",
+		constants.DataColumn: "91323333333333333333333333333",
+		event.HeaderFK:       VatFileIlkSpotHeaderSyncLog.HeaderID,
+		constants.LogFK:      VatFileIlkSpotHeaderSyncLog.ID,
 	},
 }

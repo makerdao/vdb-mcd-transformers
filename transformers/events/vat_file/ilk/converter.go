@@ -27,7 +27,6 @@ import (
 type Converter struct{}
 
 func (Converter) ToModels(_ string, logs []core.HeaderSyncLog, db *postgres.DB) ([]event.InsertionModel, error) {
-	//NOTE: the vat contract defines its own custom Note event, rather than relying on DS-Note
 	var models []event.InsertionModel
 	for _, log := range logs {
 		err := shared.VerifyLog(log.Log, shared.FourTopicsRequired, shared.LogDataNotRequired)
@@ -49,11 +48,11 @@ func (Converter) ToModels(_ string, logs []core.HeaderSyncLog, db *postgres.DB) 
 				event.HeaderFK, constants.IlkColumn, "what", "data", event.LogFK,
 			},
 			ColumnValues: event.ColumnValues{
-				"what":             what,
-				"data":             data,
-				constants.IlkColumn:	ilkID,
-				event.HeaderFK: log.HeaderID,
-				event.LogFK:    log.ID,
+				"what":              what,
+				"data":              data,
+				constants.IlkColumn: ilkID,
+				event.HeaderFK:      log.HeaderID,
+				event.LogFK:         log.ID,
 			},
 		}
 		models = append(models, model)

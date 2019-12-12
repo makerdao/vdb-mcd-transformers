@@ -18,33 +18,32 @@ package debt_ceiling_test
 
 import (
 	"github.com/ethereum/go-ethereum/core/types"
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
-
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_file/debt_ceiling"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/pkg/core"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("Vat file debt ceiling converter", func() {
-	var converter = debt_ceiling.VatFileDebtCeilingConverter{}
+	var converter = debt_ceiling.Converter{}
+
 	It("returns err if log is missing topics", func() {
 		badLog := core.HeaderSyncLog{
 			Log: types.Log{
 				Data: []byte{1, 1, 1, 1, 1},
 			}}
 
-		_, err := converter.ToModels(constants.VatABI(), []core.HeaderSyncLog{badLog})
+		_, err := converter.ToModels(constants.VatABI(), []core.HeaderSyncLog{badLog}, nil)
+
 		Expect(err).To(HaveOccurred())
 	})
 
 	It("converts a log to an model", func() {
-		models, err := converter.ToModels(constants.VatABI(), []core.HeaderSyncLog{test_data.VatFileDebtCeilingHeaderSyncLog})
+		models, err := converter.ToModels(constants.VatABI(), []core.HeaderSyncLog{test_data.VatFileDebtCeilingHeaderSyncLog}, nil)
 
 		Expect(err).NotTo(HaveOccurred())
-		Expect(len(models)).To(Equal(1))
-		Expect(models).To(Equal([]shared.InsertionModel{test_data.VatFileDebtCeilingModel()}))
+		Expect(models).To(ConsistOf(test_data.VatFileDebtCeilingModel()))
 	})
 })

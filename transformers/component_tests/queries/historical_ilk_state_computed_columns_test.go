@@ -21,7 +21,6 @@ import (
 
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_file/ilk"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_frob"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
@@ -157,13 +156,14 @@ var _ = Describe("current ilk state computed columns", func() {
 
 	Describe("historical_ilk_state_ilk_file_events", func() {
 		It("returns ilk file events for an historical_ilk_state", func() {
-			fileRepo := ilk.VatFileIlkRepository{}
-			fileRepo.SetDB(db)
 			fileEvent := test_data.VatFileIlkDustModel()
-			fileEvent.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
+			ilkID, createIlkError := shared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
+			Expect(createIlkError).NotTo(HaveOccurred())
+
+			fileEvent.ColumnValues[constants.IlkColumn] = ilkID
 			fileEvent.ColumnValues[constants.HeaderFK] = headerOne.Id
 			fileEvent.ColumnValues[constants.LogFK] = logID
-			insertFileErr := fileRepo.Create([]shared.InsertionModel{fileEvent})
+			insertFileErr := event.PersistModels([]event.InsertionModel{fileEvent}, db)
 			Expect(insertFileErr).NotTo(HaveOccurred())
 
 			var actualFiles []test_helpers.IlkFileEvent
@@ -184,28 +184,28 @@ var _ = Describe("current ilk state computed columns", func() {
 
 		Describe("result pagination", func() {
 			var (
-				fileEvent   shared.InsertionModel
-				spotFileMat event.InsertionModel
+				fileEvent, spotFileMat event.InsertionModel
 			)
 
 			BeforeEach(func() {
-				fileRepo := ilk.VatFileIlkRepository{}
-				fileRepo.SetDB(db)
 				fileEvent = test_data.VatFileIlkDustModel()
-				fileEvent.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
+				ilkID, createIlkError := shared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
+				Expect(createIlkError).NotTo(HaveOccurred())
+
+				fileEvent.ColumnValues[constants.IlkColumn] = ilkID
 				fileEvent.ColumnValues[constants.HeaderFK] = headerOne.Id
 				fileEvent.ColumnValues[constants.LogFK] = logID
-				insertFileErr := fileRepo.Create([]shared.InsertionModel{fileEvent})
+				insertFileErr := event.PersistModels([]event.InsertionModel{fileEvent}, db)
 				Expect(insertFileErr).NotTo(HaveOccurred())
 
 				headerTwo := createHeader(blockOne+1, timestampOne+1, headerRepository)
-				newLogId := test_data.CreateTestLog(headerTwo.Id, db).ID
+				newLogID := test_data.CreateTestLog(headerTwo.Id, db).ID
 
 				ilkID, ilkErr := shared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
 				Expect(ilkErr).NotTo(HaveOccurred())
 				spotFileMat = test_data.SpotFileMatModel()
 				spotFileMat.ColumnValues[constants.HeaderFK] = headerTwo.Id
-				spotFileMat.ColumnValues[constants.LogFK] = newLogId
+				spotFileMat.ColumnValues[constants.LogFK] = newLogID
 				spotFileMat.ColumnValues[constants.IlkColumn] = ilkID
 				spotFileMatErr := event.PersistModels([]event.InsertionModel{spotFileMat}, db)
 				Expect(spotFileMatErr).NotTo(HaveOccurred())

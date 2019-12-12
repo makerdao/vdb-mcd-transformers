@@ -29,8 +29,14 @@ import (
 )
 
 var _ = Describe("Vat file ilk converter", func() {
-	var converter = ilk.Converter{}
-	db := test_config.NewTestDB(test_config.NewTestNode())
+	var (
+		converter = ilk.Converter{}
+		db        = test_config.NewTestDB(test_config.NewTestNode())
+	)
+
+	BeforeEach(func() {
+		test_config.CleanTestDB(db)
+	})
 
 	It("returns err if log is missing topics", func() {
 		badLog := core.HeaderSyncLog{
@@ -54,8 +60,7 @@ var _ = Describe("Vat file ilk converter", func() {
 
 			expectedModel := test_data.VatFileIlkSpotModel()
 			expectedModel.ColumnValues[constants.IlkColumn] = ilkID
-
-			Expect(models[0]).To(Equal(expectedModel))
+			Expect(models).To(ConsistOf(expectedModel))
 		})
 
 		It("converts to model with data converted to wad when what is 'line'", func() {
@@ -69,8 +74,7 @@ var _ = Describe("Vat file ilk converter", func() {
 
 			expectedModel := test_data.VatFileIlkLineModel()
 			expectedModel.ColumnValues[constants.IlkColumn] = ilkID
-
-			Expect(models[0]).To(Equal(expectedModel))
+			Expect(models).To(ConsistOf(expectedModel))
 		})
 
 		It("converts to model with data converted to rad when what is 'dust'", func() {
@@ -84,8 +88,7 @@ var _ = Describe("Vat file ilk converter", func() {
 
 			expectedModel := test_data.VatFileIlkDustModel()
 			expectedModel.ColumnValues[constants.IlkColumn] = ilkID
-
-			Expect(models[0]).To(Equal(expectedModel))
+			Expect(models).To(ConsistOf(expectedModel))
 		})
 	})
 })

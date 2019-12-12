@@ -17,27 +17,27 @@
 package integration_tests
 
 import (
-	"strconv"
-
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_file/ilk"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/fetcher"
 	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"strconv"
 )
 
 var _ = Describe("VatFileIlk EventTransformer", func() {
 	var (
 		db          *postgres.DB
 		blockChain  core.BlockChain
-		initializer shared.EventTransformer
+		initializer event.Transformer
 		addresses   []common.Address
 		topics      []common.Hash
 	)
@@ -59,10 +59,9 @@ var _ = Describe("VatFileIlk EventTransformer", func() {
 		addresses = transformer.HexStringsToAddresses(vatFileIlkConfig.ContractAddresses)
 		topics = []common.Hash{common.HexToHash(vatFileIlkConfig.Topic)}
 
-		initializer = shared.EventTransformer{
-			Config:     vatFileIlkConfig,
-			Converter:  &ilk.VatFileIlkConverter{},
-			Repository: &ilk.VatFileIlkRepository{},
+		initializer = event.Transformer{
+			Config:    vatFileIlkConfig,
+			Converter: ilk.Converter{},
 		}
 	})
 
@@ -80,7 +79,7 @@ var _ = Describe("VatFileIlk EventTransformer", func() {
 
 		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
 
-		tr := initializer.NewEventTransformer(db)
+		tr := initializer.NewTransformer(db)
 		err = tr.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -110,7 +109,7 @@ var _ = Describe("VatFileIlk EventTransformer", func() {
 
 		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
 
-		tr := initializer.NewEventTransformer(db)
+		tr := initializer.NewTransformer(db)
 		err = tr.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -141,7 +140,7 @@ var _ = Describe("VatFileIlk EventTransformer", func() {
 
 		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
 
-		tr := initializer.NewEventTransformer(db)
+		tr := initializer.NewTransformer(db)
 		err = tr.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 

@@ -19,39 +19,35 @@ package debt_ceiling
 import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
+	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 )
 
-type VatFileDebtCeilingConverter struct{}
+type Converter struct{}
 
-const (
-	logDataRequired   = false
-	numTopicsRequired = 2
-)
-
-func (VatFileDebtCeilingConverter) ToModels(_ string, logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
-	var models []shared.InsertionModel
+func (Converter) ToModels(_ string, logs []core.HeaderSyncLog, _ *postgres.DB) ([]event.InsertionModel, error) {
+	var models []event.InsertionModel
 	for _, log := range logs {
-		err := shared.VerifyLog(log.Log, numTopicsRequired, logDataRequired)
+		err := shared.VerifyLog(log.Log, shared.ThreeTopicsRequired, shared.LogDataNotRequired)
 		if err != nil {
 			return nil, err
 		}
 		what := shared.DecodeHexToText(log.Log.Topics[1].Hex())
 		data := shared.ConvertUint256HexToBigInt(log.Log.Topics[2].Hex())
 
-		model := shared.InsertionModel{
+		model := event.InsertionModel{
 			SchemaName: constants.MakerSchema,
 			TableName:  constants.VatFileDebtCeilingTable,
-			OrderedColumns: []string{
-				constants.HeaderFK, "what", "data", constants.LogFK,
+			OrderedColumns: []event.ColumnName{
+				event.HeaderFK, constants.WhatColumn, constants.DataColumn, event.LogFK,
 			},
-			ColumnValues: shared.ColumnValues{
-				"what":             what,
-				"data":             data.String(),
-				constants.HeaderFK: log.HeaderID,
-				constants.LogFK:    log.ID,
+			ColumnValues: event.ColumnValues{
+				constants.WhatColumn: what,
+				constants.DataColumn: data.String(),
+				event.HeaderFK:       log.HeaderID,
+				event.LogFK:          log.ID,
 			},
-			ForeignKeyValues: shared.ForeignKeyValues{},
 		}
 		models = append(models, model)
 	}
