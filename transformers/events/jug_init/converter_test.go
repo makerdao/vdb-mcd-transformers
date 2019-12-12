@@ -17,27 +17,42 @@
 package jug_init_test
 
 import (
+	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/jug_init"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("Jug init converter", func() {
-	var converter = jug_init.JugInitConverter{}
+	var (
+		converter = jug_init.Converter{}
+		db = test_config.NewTestDB(test_config.NewTestNode())
+	)
+
+	BeforeEach(func() {
+		test_config.CleanTestDB(db)
+	})
 
 	It("returns err if log is missing topics", func() {
 		incompleteLog := core.HeaderSyncLog{}
-		_, err := converter.ToModels(constants.JugABI(), []core.HeaderSyncLog{incompleteLog})
+		_, err := converter.ToModels(constants.JugABI(), []core.HeaderSyncLog{incompleteLog}, db)
 		Expect(err).To(HaveOccurred())
 	})
 
 	It("convert a log to an insertion model", func() {
-		models, err := converter.ToModels(constants.JugABI(), []core.HeaderSyncLog{test_data.JugInitHeaderSyncLog})
+		models, err := converter.ToModels(constants.JugABI(), []core.HeaderSyncLog{test_data.JugInitHeaderSyncLog}, db)
 		Expect(err).NotTo(HaveOccurred())
-		Expect(models).To(Equal([]shared.InsertionModel{test_data.JugInitModel}))
+
+		ilkID, ilkErr := shared.GetOrCreateIlk(test_data.JugInitHeaderSyncLog.Log.Topics[2].Hex(), db)
+		Expect(ilkErr).NotTo(HaveOccurred())
+		expectedModel := test_data.JugInitModel()
+		expectedModel.ColumnValues[constants.IlkColumn] = ilkID
+
+		Expect(models).To(Equal([]event.InsertionModel{expectedModel}))
 	})
 })

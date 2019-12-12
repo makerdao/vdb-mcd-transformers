@@ -19,36 +19,35 @@ package jug_init
 import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
+	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 )
 
-type JugInitConverter struct{}
+type Converter struct{}
 
-const (
-	logDataRequired   = false
-	numTopicsRequired = 3
-)
-
-func (JugInitConverter) ToModels(_ string, logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
-	var models []shared.InsertionModel
+func (Converter) ToModels(_ string, logs []core.HeaderSyncLog, db *postgres.DB) ([]event.InsertionModel, error) {
+	var models []event.InsertionModel
 	for _, log := range logs {
-		err := shared.VerifyLog(log.Log, numTopicsRequired, logDataRequired)
+		err := shared.VerifyLog(log.Log, shared.ThreeTopicsRequired, shared.LogDataNotRequired)
 		if err != nil {
 			return nil, err
 		}
 
 		ilk := log.Log.Topics[2].Hex()
+		ilkID, ilkErr := shared.GetOrCreateIlk(ilk, db)
+		if ilkErr != nil {
+			_ = shared.ErrCouldNotCreateFK(ilkErr)
+		}
 
-		model := shared.InsertionModel{
+		model := event.InsertionModel{
 			SchemaName:     constants.MakerSchema,
 			TableName:      constants.JugInitTable,
-			OrderedColumns: []string{constants.HeaderFK, string(constants.IlkFK), constants.LogFK},
-			ColumnValues: shared.ColumnValues{
-				constants.HeaderFK: log.HeaderID,
-				constants.LogFK:    log.ID,
-			},
-			ForeignKeyValues: shared.ForeignKeyValues{
-				constants.IlkFK: ilk,
+			OrderedColumns: []event.ColumnName{event.HeaderFK, event.LogFK, constants.IlkColumn},
+			ColumnValues: event.ColumnValues{
+				event.HeaderFK:      log.HeaderID,
+				event.LogFK:         log.ID,
+				constants.IlkColumn: ilkID,
 			},
 		}
 		models = append(models, model)
