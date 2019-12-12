@@ -17,6 +17,7 @@
 package test_data
 
 import (
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"math/rand"
 
 	"github.com/makerdao/vulcanizedb/pkg/core"
@@ -26,7 +27,6 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
 
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 )
 
@@ -58,27 +58,23 @@ var VatFrobHeaderSyncLogWithPositiveDart = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-func VatFrobModelWithPositiveDart() shared.InsertionModel {
-	return CopyModel(vatFrobModelWithPositiveDart)
+func VatFrobModelWithPositiveDart() event.InsertionModel {
+	return CopyEventModel(vatFrobModelWithPositiveDart)
 }
 
-var vatFrobModelWithPositiveDart = shared.InsertionModel{
+var vatFrobModelWithPositiveDart = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.VatFrobTable,
-	OrderedColumns: []string{
-		constants.HeaderFK, string(constants.UrnFK), "v", "w", "dink", "dart", constants.LogFK,
+	OrderedColumns: []event.ColumnName{
+		event.HeaderFK, constants.UrnColumn, constants.VColumn, constants.WColumn, constants.DinkColumn, constants.DartColumn, event.LogFK,
 	},
-	ColumnValues: shared.ColumnValues{
-		"v":                "0xFc7440E2Ed4A3AEb14d40c00f02a14221Be0474d",
-		"w":                "0xEEec867B3F51ab5b619d582481BF53eea930b074",
-		"dink":             "0",
-		"dart":             "100000000000000000",
-		constants.HeaderFK: VatFrobHeaderSyncLogWithPositiveDart.HeaderID,
-		constants.LogFK:    VatFrobHeaderSyncLogWithPositiveDart.ID,
-	},
-	ForeignKeyValues: shared.ForeignKeyValues{
-		constants.IlkFK: "0x4554480000000000000000000000000000000000000000000000000000000000",
-		constants.UrnFK: "0xEEec867B3F51ab5b619d582481BF53eea930b074",
+	ColumnValues: event.ColumnValues{
+		constants.VColumn:                "0xFc7440E2Ed4A3AEb14d40c00f02a14221Be0474d",
+		constants.WColumn:                "0xEEec867B3F51ab5b619d582481BF53eea930b074",
+		constants.DinkColumn:             "0",
+		constants.DartColumn:             "100000000000000000",
+		event.HeaderFK: VatFrobHeaderSyncLogWithPositiveDart.HeaderID,
+		event.LogFK:    VatFrobHeaderSyncLogWithPositiveDart.ID,
 	},
 }
 
@@ -106,24 +102,20 @@ var VatFrobHeaderSyncLogWithNegativeDink = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-func VatFrobModelWithNegativeDink() shared.InsertionModel { return vatFrobModelWithNegativeDink }
+func VatFrobModelWithNegativeDink() event.InsertionModel { return vatFrobModelWithNegativeDink }
 
-var vatFrobModelWithNegativeDink = shared.InsertionModel{
+var vatFrobModelWithNegativeDink = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.VatFrobTable,
-	OrderedColumns: []string{
-		constants.HeaderFK, string(constants.UrnFK), "v", "w", "dink", "dart", constants.LogFK,
+	OrderedColumns: []event.ColumnName{
+		event.HeaderFK, constants.UrnColumn, constants.VColumn, constants.WColumn, constants.DinkColumn, constants.DartColumn, event.LogFK,
 	},
-	ColumnValues: shared.ColumnValues{
-		"v":                "0xFc7440E2Ed4A3AEb14d40c00f02a14221Be0474d",
-		"w":                "0x5c8c8e5895B9cCf34ACF391C99E13C79EE2eFb46",
-		"dink":             "-8000000000000000",
-		"dart":             "0",
-		constants.HeaderFK: VatFrobHeaderSyncLogWithNegativeDink.HeaderID,
-		constants.LogFK:    VatFrobHeaderSyncLogWithNegativeDink.ID,
-	},
-	ForeignKeyValues: shared.ForeignKeyValues{
-		constants.IlkFK: "0x4554482d41000000000000000000000000000000000000000000000000000000",
-		constants.UrnFK: "0x5c8c8e5895B9cCf34ACF391C99E13C79EE2eFb46",
+	ColumnValues: event.ColumnValues{
+		constants.VColumn:                "0xFc7440E2Ed4A3AEb14d40c00f02a14221Be0474d",
+		constants.WColumn:                "0x5c8c8e5895B9cCf34ACF391C99E13C79EE2eFb46",
+		constants.DinkColumn:             "-8000000000000000",
+		constants.DartColumn:             "0",
+		event.HeaderFK: VatFrobHeaderSyncLogWithNegativeDink.HeaderID,
+		event.LogFK:    VatFrobHeaderSyncLogWithNegativeDink.ID,
 	},
 }

@@ -17,20 +17,20 @@
 package integration_tests
 
 import (
-	"strconv"
-
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_frob"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/fetcher"
 	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"strconv"
 )
 
 var _ = Describe("Vat frob Transformer", func() {
@@ -39,7 +39,7 @@ var _ = Describe("Vat frob Transformer", func() {
 		blockChain    core.BlockChain
 		logFetcher    fetcher.ILogFetcher
 		vatFrobConfig transformer.EventTransformerConfig
-		initializer   shared.EventTransformer
+		initializer   event.Transformer
 	)
 
 	BeforeEach(func() {
@@ -58,10 +58,9 @@ var _ = Describe("Vat frob Transformer", func() {
 			Topic:             constants.VatFrobSignature(),
 		}
 
-		initializer = shared.EventTransformer{
+		initializer = event.Transformer{
 			Config:     vatFrobConfig,
-			Converter:  &vat_frob.VatFrobConverter{},
-			Repository: &vat_frob.VatFrobRepository{},
+			Converter:  &vat_frob.Converter{},
 		}
 	})
 
@@ -81,7 +80,7 @@ var _ = Describe("Vat frob Transformer", func() {
 
 		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
 
-		transformer := initializer.NewEventTransformer(db)
+		transformer := initializer.NewTransformer(db)
 		err = transformer.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 
