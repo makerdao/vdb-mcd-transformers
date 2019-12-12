@@ -57,7 +57,7 @@ var _ = Describe("Shared utilities", func() {
 
 				Expect(err).NotTo(HaveOccurred())
 				dinkInt := shared.ConvertInt256HexToBigInt(hexutil.Encode(dinkBytes))
-				Expect(dinkInt.String()).To(Equal(test_data.VatForkModelWithNegativeDinkDart.ColumnValues["dink"].(string)))
+				Expect(dinkInt.String()).To(Equal(test_data.VatForkModelWithNegativeDinkDart().ColumnValues["dink"].(string)))
 			})
 
 			It("extracts fifth of five arguments", func() {
@@ -65,7 +65,7 @@ var _ = Describe("Shared utilities", func() {
 
 				Expect(err).NotTo(HaveOccurred())
 				dartInt := shared.ConvertInt256HexToBigInt(hexutil.Encode(dartBytes))
-				Expect(dartInt.String()).To(Equal(test_data.VatForkModelWithNegativeDinkDart.ColumnValues["dart"].(string)))
+				Expect(dartInt.String()).To(Equal(test_data.VatForkModelWithNegativeDinkDart().ColumnValues["dart"].(string)))
 			})
 
 			It("extracts the fourth of six arguments", func() {

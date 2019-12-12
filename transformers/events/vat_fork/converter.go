@@ -21,20 +21,17 @@ import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
+	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 )
 
-type VatForkConverter struct{}
+type Converter struct{}
 
-const (
-	logDataRequired   = true
-	numTopicsRequired = 4
-)
-
-func (VatForkConverter) ToModels(_ string, logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
-	var models []shared.InsertionModel
+func (Converter) ToModels(_ string, logs []core.HeaderSyncLog, db *postgres.DB) ([]event.InsertionModel, error) {
+	var models []event.InsertionModel
 	for _, log := range logs {
-		err := shared.VerifyLog(log.Log, numTopicsRequired, logDataRequired)
+		err := shared.VerifyLog(log.Log, shared.FourTopicsRequired, shared.LogDataRequired)
 		if err != nil {
 			return nil, err
 		}
@@ -42,6 +39,11 @@ func (VatForkConverter) ToModels(_ string, logs []core.HeaderSyncLog) ([]shared.
 		ilk := log.Log.Topics[1].Hex()
 		src := common.BytesToAddress(log.Log.Topics[2].Bytes()).String()
 		dst := common.BytesToAddress(log.Log.Topics[3].Bytes()).String()
+
+		ilkID, ilkErr := shared.GetOrCreateIlk(ilk, db)
+		if ilkErr != nil {
+			return nil, shared.ErrCouldNotCreateFK(ilkErr)
+		}
 
 		dinkBytes, dinkErr := shared.GetLogNoteArgumentAtIndex(3, log.Log.Data)
 		if dinkErr != nil {
@@ -55,22 +57,20 @@ func (VatForkConverter) ToModels(_ string, logs []core.HeaderSyncLog) ([]shared.
 		}
 		dart := shared.ConvertInt256HexToBigInt(hexutil.Encode(dartBytes))
 
-		model := shared.InsertionModel{
+		model := event.InsertionModel{
 			SchemaName: constants.MakerSchema,
 			TableName:  constants.VatForkTable,
-			OrderedColumns: []string{
-				constants.HeaderFK, string(constants.IlkFK), "src", "dst", "dink", "dart", constants.LogFK,
+			OrderedColumns: []event.ColumnName{
+				event.HeaderFK, constants.IlkColumn, constants.SrcColumn, constants.DstColumn, constants.DinkColumn, constants.DartColumn, event.LogFK,
 			},
-			ColumnValues: shared.ColumnValues{
-				"src":              src,
-				"dst":              dst,
-				"dink":             dink.String(),
-				"dart":             dart.String(),
-				constants.HeaderFK: log.HeaderID,
-				constants.LogFK:    log.ID,
-			},
-			ForeignKeyValues: shared.ForeignKeyValues{
-				constants.IlkFK: ilk,
+			ColumnValues: event.ColumnValues{
+				constants.SrcColumn:  src,
+				constants.DstColumn:  dst,
+				constants.DinkColumn: dink.String(),
+				constants.DartColumn: dart.String(),
+				constants.IlkColumn:  ilkID,
+				event.HeaderFK:       log.HeaderID,
+				event.LogFK:          log.ID,
 			},
 		}
 		models = append(models, model)
