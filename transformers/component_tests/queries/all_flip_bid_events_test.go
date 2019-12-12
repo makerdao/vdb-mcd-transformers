@@ -20,8 +20,6 @@ import (
 	"math/rand"
 	"strconv"
 
-	storge_helper "github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
-
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
@@ -47,7 +45,6 @@ var _ = Describe("All flip bid events query", func() {
 		blockOne, timestampOne int
 		headerOne              core.Header
 		flipKickEvent          event.InsertionModel
-		diffID                 int64
 	)
 
 	BeforeEach(func() {
@@ -72,8 +69,6 @@ var _ = Describe("All flip bid events query", func() {
 		flipKickEvent.ColumnValues[constants.BidIDColumn] = strconv.Itoa(bidId)
 		flipKickErr := event.PersistModels([]event.InsertionModel{flipKickEvent}, db)
 		Expect(flipKickErr).NotTo(HaveOccurred())
-
-		diffID = storge_helper.CreateFakeDiffRecord(db)
 	})
 
 	Describe("all_flip_bid_events", func() {
@@ -106,7 +101,7 @@ var _ = Describe("All flip bid events query", func() {
 			Expect(tickErr).NotTo(HaveOccurred())
 
 			flipStorageValues := test_helpers.GetFlipStorageValues(1, test_helpers.FakeIlk.Hex, bidId)
-			test_helpers.CreateFlip(db, diffID, headerOne.Id, flipStorageValues, test_helpers.GetFlipMetadatas(strconv.Itoa(bidId)), contractAddress)
+			test_helpers.CreateFlip(db, headerOne, flipStorageValues, test_helpers.GetFlipMetadatas(strconv.Itoa(bidId)), contractAddress)
 
 			flipDentLog := test_data.CreateTestLog(headerOne.Id, db)
 			flipDentErr := test_helpers.CreateDent(test_helpers.DentCreationInput{
@@ -166,7 +161,7 @@ var _ = Describe("All flip bid events query", func() {
 			Expect(tickErr).NotTo(HaveOccurred())
 
 			flipStorageValuesBlockTwo := test_helpers.GetFlipStorageValues(2, test_helpers.FakeIlk.Hex, bidId)
-			test_helpers.CreateFlip(db, diffID, headerTwo.Id, flipStorageValuesBlockTwo, test_helpers.GetFlipMetadatas(strconv.Itoa(bidId)), contractAddress)
+			test_helpers.CreateFlip(db, headerTwo, flipStorageValuesBlockTwo, test_helpers.GetFlipMetadatas(strconv.Itoa(bidId)), contractAddress)
 
 			headerThree := createHeader(blockOne+2, timestampOne+2, headerRepo)
 
@@ -191,7 +186,7 @@ var _ = Describe("All flip bid events query", func() {
 			Expect(flipDealErr).NotTo(HaveOccurred())
 
 			flipStorageValuesBlockThree := test_helpers.GetFlipStorageValues(3, test_helpers.FakeIlk.Hex, bidId)
-			test_helpers.CreateFlip(db, diffID, headerThree.Id, flipStorageValuesBlockThree, test_helpers.GetFlipMetadatas(strconv.Itoa(bidId)), contractAddress)
+			test_helpers.CreateFlip(db, headerThree, flipStorageValuesBlockThree, test_helpers.GetFlipMetadatas(strconv.Itoa(bidId)), contractAddress)
 
 			var actualBidEvents []test_helpers.BidEvent
 			queryErr := db.Select(&actualBidEvents, `SELECT bid_id, bid_amount, lot, act FROM api.all_flip_bid_events()`)
@@ -223,7 +218,7 @@ var _ = Describe("All flip bid events query", func() {
 				Expect(tickErr).NotTo(HaveOccurred())
 
 				updatedFlipValues = test_helpers.GetFlipStorageValues(2, test_helpers.FakeIlk.Hex, bidId)
-				test_helpers.CreateFlip(db, diffID, headerTwo.Id, updatedFlipValues, test_helpers.GetFlipMetadatas(strconv.Itoa(bidId)), contractAddress)
+				test_helpers.CreateFlip(db, headerTwo, updatedFlipValues, test_helpers.GetFlipMetadatas(strconv.Itoa(bidId)), contractAddress)
 			})
 
 			It("limits result to latest blocks if max_results argument is provided", func() {
@@ -482,7 +477,7 @@ var _ = Describe("All flip bid events query", func() {
 				Expect(flipTendErr).NotTo(HaveOccurred())
 
 				flipStorageValues := test_helpers.GetFlipStorageValues(1, test_helpers.FakeIlk.Hex, bidId)
-				test_helpers.CreateFlip(db, diffID, headerOne.Id, flipStorageValues, test_helpers.GetFlipMetadatas(strconv.Itoa(bidId)), contractAddress)
+				test_helpers.CreateFlip(db, headerOne, flipStorageValues, test_helpers.GetFlipMetadatas(strconv.Itoa(bidId)), contractAddress)
 
 				headerTwo := createHeader(blockOne+1, timestampOne+1, headerRepo)
 
@@ -497,7 +492,7 @@ var _ = Describe("All flip bid events query", func() {
 				Expect(flipYankErr).NotTo(HaveOccurred())
 
 				updatedFlipStorageValues := test_helpers.GetFlipStorageValues(2, test_helpers.FakeIlk.Hex, bidId)
-				test_helpers.CreateFlip(db, diffID, headerTwo.Id, updatedFlipStorageValues, test_helpers.GetFlipMetadatas(strconv.Itoa(bidId)), contractAddress)
+				test_helpers.CreateFlip(db, headerTwo, updatedFlipStorageValues, test_helpers.GetFlipMetadatas(strconv.Itoa(bidId)), contractAddress)
 
 				var actualBidEvents []test_helpers.BidEvent
 				queryErr := db.Select(&actualBidEvents, `SELECT bid_id, bid_amount, lot, act FROM api.all_flip_bid_events()`)
@@ -528,7 +523,7 @@ var _ = Describe("All flip bid events query", func() {
 			Describe("tick", func() {
 				It("includes tick events", func() {
 					flipStorageValues := test_helpers.GetFlipStorageValues(1, test_helpers.FakeIlk.Hex, bidId)
-					test_helpers.CreateFlip(db, diffID, headerOne.Id, flipStorageValues, test_helpers.GetFlipMetadatas(strconv.Itoa(bidId)), contractAddress)
+					test_helpers.CreateFlip(db, headerOne, flipStorageValues, test_helpers.GetFlipMetadatas(strconv.Itoa(bidId)), contractAddress)
 					tickLog := test_data.CreateTestLog(headerOne.Id, db)
 					tickErr := test_helpers.CreateTick(test_helpers.TickCreationInput{
 						DB:              db,

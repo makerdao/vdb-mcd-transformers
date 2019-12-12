@@ -4,8 +4,6 @@ import (
 	"math/rand"
 	"strconv"
 
-	storage_helper "github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
-
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
 	"github.com/makerdao/vulcanizedb/pkg/core"
@@ -25,7 +23,6 @@ var _ = Describe("get flop query", func() {
 		headerOne, headerTwo       core.Header
 		flopStorageValuesOne       = test_helpers.GetFlopStorageValues(1, fakeBidId)
 		flopStorageValuesTwo       = test_helpers.GetFlopStorageValues(2, fakeBidId)
-		diffID                     int64
 	)
 
 	BeforeEach(func() {
@@ -38,8 +35,6 @@ var _ = Describe("get flop query", func() {
 		timestampTwo = timestampOne + 1
 		headerOne = createHeader(blockOne, timestampOne, headerRepo)
 		headerTwo = createHeader(blockTwo, timestampTwo, headerRepo)
-
-		diffID = storage_helper.CreateFakeDiffRecord(db)
 	})
 
 	It("gets the specified flop", func() {
@@ -55,8 +50,8 @@ var _ = Describe("get flop query", func() {
 		})
 		Expect(err).NotTo(HaveOccurred())
 
-		test_helpers.CreateFlop(db, diffID, headerOne.Id, flopStorageValuesOne, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
-		test_helpers.CreateFlop(db, diffID, headerTwo.Id, flopStorageValuesTwo, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
+		test_helpers.CreateFlop(db, headerOne, flopStorageValuesOne, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
+		test_helpers.CreateFlop(db, headerTwo, flopStorageValuesTwo, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
 
 		expectedBid := test_helpers.FlopBidFromValues(strconv.Itoa(fakeBidId), "true", headerOne.Timestamp, headerOne.Timestamp, flopStorageValuesOne)
 
@@ -80,12 +75,12 @@ var _ = Describe("get flop query", func() {
 		})
 		Expect(err).NotTo(HaveOccurred())
 
-		test_helpers.CreateFlop(db, diffID, headerOne.Id, flopStorageValuesOne, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
-		test_helpers.CreateFlop(db, diffID, headerTwo.Id, flopStorageValuesTwo, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
+		test_helpers.CreateFlop(db, headerOne, flopStorageValuesOne, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
+		test_helpers.CreateFlop(db, headerTwo, flopStorageValuesTwo, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
 
 		headerThree := createHeader(blockTwo+1, timestampTwo+1, headerRepo)
 		flopStorageValuesThree := test_helpers.GetFlopStorageValues(3, fakeBidId)
-		test_helpers.CreateFlop(db, diffID, headerThree.Id, flopStorageValuesThree, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
+		test_helpers.CreateFlop(db, headerThree, flopStorageValuesThree, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
 
 		expectedBid := test_helpers.FlopBidFromValues(strconv.Itoa(fakeBidId), "true", headerTwo.Timestamp, headerOne.Timestamp, flopStorageValuesTwo)
 
@@ -110,7 +105,7 @@ var _ = Describe("get flop query", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			flopStorageValues := test_helpers.GetFlopStorageValues(1, fakeBidId)
-			test_helpers.CreateFlop(db, diffID, headerOne.Id, flopStorageValues, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
+			test_helpers.CreateFlop(db, headerOne, flopStorageValues, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
 
 			expectedBid := test_helpers.FlopBidFromValues(strconv.Itoa(fakeBidId), "false", headerOne.Timestamp, headerOne.Timestamp, flopStorageValues)
 
@@ -134,8 +129,8 @@ var _ = Describe("get flop query", func() {
 			})
 			Expect(err).NotTo(HaveOccurred())
 
-			test_helpers.CreateFlop(db, diffID, headerOne.Id, flopStorageValuesOne, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
-			test_helpers.CreateFlop(db, diffID, headerTwo.Id, flopStorageValuesTwo, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
+			test_helpers.CreateFlop(db, headerOne, flopStorageValuesOne, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
+			test_helpers.CreateFlop(db, headerTwo, flopStorageValuesTwo, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
 
 			expectedBid := test_helpers.FlopBidFromValues(
 				strconv.Itoa(fakeBidId), "false", headerOne.Timestamp, headerOne.Timestamp, flopStorageValuesOne)

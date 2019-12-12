@@ -4,8 +4,6 @@ import (
 	"math/rand"
 	"strconv"
 
-	storage_helper "github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
-
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
@@ -27,7 +25,6 @@ var _ = Describe("Flop bid events query", func() {
 		contractAddress        string
 		fakeBidId              int
 		flopKickEvent          event.InsertionModel
-		diffID                 int64
 	)
 
 	BeforeEach(func() {
@@ -53,8 +50,6 @@ var _ = Describe("Flop bid events query", func() {
 		flopKickEvent.ColumnValues[constants.BidIDColumn] = strconv.Itoa(fakeBidId)
 		flopKickErr := event.PersistModels([]event.InsertionModel{flopKickEvent}, db)
 		Expect(flopKickErr).NotTo(HaveOccurred())
-
-		diffID = storage_helper.CreateFakeDiffRecord(db)
 	})
 
 	Describe("all_flop_bid_events", func() {
@@ -85,7 +80,7 @@ var _ = Describe("Flop bid events query", func() {
 			Expect(flopDealErr).NotTo(HaveOccurred())
 
 			flopStorageValues := test_helpers.GetFlopStorageValues(1, fakeBidId)
-			test_helpers.CreateFlop(db, diffID, headerTwo.Id, flopStorageValues, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
+			test_helpers.CreateFlop(db, headerTwo, flopStorageValues, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
 
 			var actualBidEvents []test_helpers.BidEvent
 			queryErr := db.Select(&actualBidEvents, `SELECT bid_id, bid_amount, lot, act FROM api.all_flop_bid_events()`)
@@ -251,12 +246,12 @@ var _ = Describe("Flop bid events query", func() {
 			fakeBidId := rand.Int()
 
 			flopStorageValues := test_helpers.GetFlopStorageValues(1, fakeBidId)
-			test_helpers.CreateFlop(db, diffID, headerOne.Id, flopStorageValues, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
+			test_helpers.CreateFlop(db, headerOne, flopStorageValues, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
 
 			headerTwo := createHeader(blockOne+1, timestampOne+1, headerRepo)
 
 			updatedFlopStorageValues := test_helpers.GetFlopStorageValues(2, fakeBidId)
-			test_helpers.CreateFlop(db, diffID, headerTwo.Id, updatedFlopStorageValues, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
+			test_helpers.CreateFlop(db, headerTwo, updatedFlopStorageValues, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
 
 			headerThree := createHeader(blockOne+2, timestampOne+2, headerRepo)
 
@@ -269,7 +264,7 @@ var _ = Describe("Flop bid events query", func() {
 			Expect(flopDealErr).NotTo(HaveOccurred())
 
 			dealBlockFlopStorageValues := test_helpers.GetFlopStorageValues(0, fakeBidId)
-			test_helpers.CreateFlop(db, diffID, headerThree.Id, dealBlockFlopStorageValues, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
+			test_helpers.CreateFlop(db, headerThree, dealBlockFlopStorageValues, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
 
 			var actualBidEvents []test_helpers.BidEvent
 			queryErr := db.Select(&actualBidEvents, `SELECT bid_id, bid_amount, lot, act FROM api.all_flop_bid_events()`)
@@ -298,7 +293,7 @@ var _ = Describe("Flop bid events query", func() {
 			Expect(flopDentErr).NotTo(HaveOccurred())
 
 			flopStorageValues := test_helpers.GetFlopStorageValues(1, fakeBidId)
-			test_helpers.CreateFlop(db, diffID, headerOne.Id, flopStorageValues, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
+			test_helpers.CreateFlop(db, headerOne, flopStorageValues, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
 
 			headerTwo := createHeader(blockOne+1, timestampOne+1, headerRepo)
 			flopYankLog := test_data.CreateTestLog(headerOne.Id, db)
@@ -313,7 +308,7 @@ var _ = Describe("Flop bid events query", func() {
 			Expect(flopYankErr).NotTo(HaveOccurred())
 
 			updatedFlopStorageValues := test_helpers.GetFlopStorageValues(2, fakeBidId)
-			test_helpers.CreateFlop(db, diffID, headerTwo.Id, updatedFlopStorageValues, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
+			test_helpers.CreateFlop(db, headerTwo, updatedFlopStorageValues, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
 
 			var actualBidEvents []test_helpers.BidEvent
 			queryErr := db.Select(&actualBidEvents, `SELECT bid_id, bid_amount, lot, act FROM api.all_flop_bid_events()`)
@@ -328,7 +323,7 @@ var _ = Describe("Flop bid events query", func() {
 
 		It("ignores flap yank events", func() {
 			flapStorageValues := test_helpers.GetFlapStorageValues(1, fakeBidId)
-			test_helpers.CreateFlap(db, diffID, headerOne.Id, flapStorageValues, test_helpers.GetFlapMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
+			test_helpers.CreateFlap(db, headerOne, flapStorageValues, test_helpers.GetFlapMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
 
 			headerTwo := createHeader(blockOne+1, timestampOne+1, headerRepo)
 			flapYankLog := test_data.CreateTestLog(headerTwo.Id, db)
@@ -390,7 +385,7 @@ var _ = Describe("Flop bid events query", func() {
 			})
 			Expect(tickErr).NotTo(HaveOccurred())
 			flopStorageValues := test_helpers.GetFlopStorageValues(1, fakeBidId)
-			test_helpers.CreateFlop(db, diffID, headerOne.Id, flopStorageValues, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
+			test_helpers.CreateFlop(db, headerOne, flopStorageValues, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
 
 			var actualBidEvents []test_helpers.BidEvent
 			queryErr := db.Select(&actualBidEvents, `SELECT bid_id, bid_amount, lot, act FROM api.all_flop_bid_events()`)

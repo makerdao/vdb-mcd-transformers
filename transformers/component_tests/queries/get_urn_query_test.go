@@ -50,21 +50,21 @@ var _ = Describe("Single urn view", func() {
 
 		urnOneMetadata := test_helpers.GetUrnMetadata(test_helpers.FakeIlk.Hex, urnOne)
 		urnOneSetupData := test_helpers.GetUrnSetupData()
-		test_helpers.CreateUrn(urnOneSetupData, diffID, headerOne.Id, urnOneMetadata, vatRepo)
+		test_helpers.CreateUrn(db, urnOneSetupData, headerOne, urnOneMetadata, vatRepo)
 
 		expectedTimestampOne := test_helpers.GetExpectedTimestamp(timestampOne)
 		expectedUrn := test_helpers.UrnState{
 			UrnIdentifier: urnOne,
 			IlkIdentifier: test_helpers.FakeIlk.Identifier,
-			Ink:           strconv.Itoa(urnOneSetupData[vat.UrnInk]),
-			Art:           strconv.Itoa(urnOneSetupData[vat.UrnArt]),
+			Ink:           strconv.Itoa(urnOneSetupData[vat.UrnInk].(int)),
+			Art:           strconv.Itoa(urnOneSetupData[vat.UrnArt].(int)),
 			Created:       test_helpers.GetValidNullString(expectedTimestampOne),
 			Updated:       test_helpers.GetValidNullString(expectedTimestampOne),
 		}
 
 		urnTwoMetadata := test_helpers.GetUrnMetadata(test_helpers.AnotherFakeIlk.Hex, urnTwo)
 		urnTwoSetupData := test_helpers.GetUrnSetupData()
-		test_helpers.CreateUrn(urnTwoSetupData, diffID, headerTwo.Id, urnTwoMetadata, vatRepo)
+		test_helpers.CreateUrn(db, urnTwoSetupData, headerTwo, urnTwoMetadata, vatRepo)
 
 		var actualUrn test_helpers.UrnState
 		getErr := db.Get(&actualUrn, getUrnQuery, test_helpers.FakeIlk.Identifier, urnOne, blockTwo)
@@ -93,7 +93,7 @@ var _ = Describe("Single urn view", func() {
 	Describe("it includes diffs only up to given block height", func() {
 		var (
 			actualUrn              test_helpers.UrnState
-			setupDataOne           map[string]int
+			setupDataOne           map[string]interface{}
 			metadata               test_helpers.UrnMetadata
 			blockTwo, timestampTwo int
 			headerTwo              core.Header
@@ -102,7 +102,7 @@ var _ = Describe("Single urn view", func() {
 		BeforeEach(func() {
 			setupDataOne = test_helpers.GetUrnSetupData()
 			metadata = test_helpers.GetUrnMetadata(test_helpers.FakeIlk.Hex, urnOne)
-			test_helpers.CreateUrn(setupDataOne, diffID, headerOne.Id, metadata, vatRepo)
+			test_helpers.CreateUrn(db, setupDataOne, headerOne, metadata, vatRepo)
 
 			blockTwo = blockOne + 1
 			timestampTwo = timestampOne + 1
@@ -119,8 +119,8 @@ var _ = Describe("Single urn view", func() {
 			expectedUrn := test_helpers.UrnState{
 				UrnIdentifier: urnOne,
 				IlkIdentifier: test_helpers.FakeIlk.Identifier,
-				Ink:           strconv.Itoa(setupDataOne[vat.UrnInk]),
-				Art:           strconv.Itoa(setupDataOne[vat.UrnArt]),
+				Ink:           strconv.Itoa(setupDataOne[vat.UrnInk].(int)),
+				Art:           strconv.Itoa(setupDataOne[vat.UrnArt].(int)),
 				Created:       test_helpers.GetValidNullString(expectedTimestampOne),
 				Updated:       test_helpers.GetValidNullString(expectedTimestampOne),
 			}
@@ -143,7 +143,7 @@ var _ = Describe("Single urn view", func() {
 				UrnIdentifier: urnOne,
 				IlkIdentifier: test_helpers.FakeIlk.Identifier,
 				Ink:           strconv.Itoa(updatedInk),
-				Art:           strconv.Itoa(setupDataOne[vat.UrnArt]), // Not changed
+				Art:           strconv.Itoa(setupDataOne[vat.UrnArt].(int)), // Not changed
 				Created:       test_helpers.GetValidNullString(expectedTimestampOne),
 				Updated:       test_helpers.GetValidNullString(expectedTimestampTwo),
 			}

@@ -132,7 +132,7 @@ func SharedIlkTriggerTests(input IlkTriggerTestInput) {
 
 		It("inserts a row for new ilk-block", func() {
 			initialIlkValues := test_helpers.GetIlkValues(0)
-			test_helpers.CreateIlk(database, diffID, headerOne, initialIlkValues, test_helpers.FakeIlkVatMetadatas, test_helpers.FakeIlkCatMetadatas, test_helpers.FakeIlkJugMetadatas, test_helpers.FakeIlkSpotMetadatas)
+			test_helpers.CreateIlk(database, headerOne, initialIlkValues, test_helpers.FakeIlkVatMetadatas, test_helpers.FakeIlkCatMetadatas, test_helpers.FakeIlkJugMetadatas, test_helpers.FakeIlkSpotMetadatas)
 
 			err := repo.Create(diffID, headerTwo.Id, input.Metadata, input.PropertyValue)
 			Expect(err).NotTo(HaveOccurred())
@@ -149,7 +149,7 @@ func SharedIlkTriggerTests(input IlkTriggerTestInput) {
 
 		It("updates row if ilk-block combination already exists in table", func() {
 			initialIlkValues := test_helpers.GetIlkValues(0)
-			test_helpers.CreateIlk(database, diffID, headerOne, initialIlkValues, test_helpers.FakeIlkVatMetadatas, test_helpers.FakeIlkCatMetadatas, test_helpers.FakeIlkJugMetadatas, test_helpers.FakeIlkSpotMetadatas)
+			test_helpers.CreateIlk(database, headerOne, initialIlkValues, test_helpers.FakeIlkVatMetadatas, test_helpers.FakeIlkCatMetadatas, test_helpers.FakeIlkJugMetadatas, test_helpers.FakeIlkSpotMetadatas)
 
 			err := repo.Create(diffID, headerOne.Id, input.Metadata, input.PropertyValue)
 			Expect(err).NotTo(HaveOccurred())

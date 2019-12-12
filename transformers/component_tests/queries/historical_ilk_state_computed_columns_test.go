@@ -19,8 +19,6 @@ package queries
 import (
 	"math/rand"
 
-	storage_helper "github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
-
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/spot_file/mat"
@@ -43,7 +41,7 @@ var _ = Describe("current ilk state computed columns", func() {
 		fakeGuy                = fakes.RandomString(42)
 		headerOne              core.Header
 		headerRepository       repositories.HeaderRepository
-		diffID, logID          int64
+		logID                  int64
 	)
 
 	BeforeEach(func() {
@@ -56,10 +54,8 @@ var _ = Describe("current ilk state computed columns", func() {
 		fakeHeaderSyncLog := test_data.CreateTestLog(headerOne.Id, db)
 		logID = fakeHeaderSyncLog.ID
 
-		diffID = storage_helper.CreateFakeDiffRecord(db)
-
 		ilkValues := test_helpers.GetIlkValues(0)
-		test_helpers.CreateIlk(db, diffID, headerOne, ilkValues, test_helpers.FakeIlkVatMetadatas, test_helpers.FakeIlkCatMetadatas, test_helpers.FakeIlkJugMetadatas, test_helpers.FakeIlkSpotMetadatas)
+		test_helpers.CreateIlk(db, headerOne, ilkValues, test_helpers.FakeIlkVatMetadatas, test_helpers.FakeIlkCatMetadatas, test_helpers.FakeIlkJugMetadatas, test_helpers.FakeIlkSpotMetadatas)
 	})
 
 	Describe("historical_ilk_state_frobs", func() {

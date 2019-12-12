@@ -4,8 +4,6 @@ import (
 	"math/rand"
 	"strconv"
 
-	storage_helper "github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
-
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
 	"github.com/makerdao/vulcanizedb/pkg/core"
@@ -20,7 +18,6 @@ var _ = Describe("All flaps query", func() {
 		contractAddress        = "contract address"
 		blockOne, timestampOne int
 		headerOne              core.Header
-		diffID                 int64
 	)
 
 	BeforeEach(func() {
@@ -30,8 +27,6 @@ var _ = Describe("All flaps query", func() {
 		blockOne = rand.Int()
 		timestampOne = int(rand.Int31())
 		headerOne = createHeader(blockOne, timestampOne, headerRepo)
-
-		diffID = storage_helper.CreateFakeDiffRecord(db)
 	})
 
 	It("gets the most recent flap for every bid id", func() {
@@ -52,10 +47,10 @@ var _ = Describe("All flaps query", func() {
 		Expect(contextErr).NotTo(HaveOccurred())
 
 		flapStorageValuesOne := test_helpers.GetFlapStorageValues(1, fakeBidIdOne)
-		test_helpers.CreateFlap(db, diffID, headerOne.Id, flapStorageValuesOne, test_helpers.GetFlapMetadatas(strconv.Itoa(fakeBidIdOne)), contractAddress)
+		test_helpers.CreateFlap(db, headerOne, flapStorageValuesOne, test_helpers.GetFlapMetadatas(strconv.Itoa(fakeBidIdOne)), contractAddress)
 
 		flapStorageValuesTwo := test_helpers.GetFlapStorageValues(2, fakeBidIdOne)
-		test_helpers.CreateFlap(db, diffID, headerTwo.Id, flapStorageValuesTwo, test_helpers.GetFlapMetadatas(strconv.Itoa(fakeBidIdOne)), contractAddress)
+		test_helpers.CreateFlap(db, headerTwo, flapStorageValuesTwo, test_helpers.GetFlapMetadatas(strconv.Itoa(fakeBidIdOne)), contractAddress)
 
 		contextErr = test_helpers.SetUpFlapBidContext(test_helpers.FlapBidCreationInput{
 			DealCreationInput: test_helpers.DealCreationInput{
@@ -68,7 +63,7 @@ var _ = Describe("All flaps query", func() {
 		})
 		Expect(contextErr).NotTo(HaveOccurred())
 		flapStorageValuesThree := test_helpers.GetFlapStorageValues(3, fakeBidIdTwo)
-		test_helpers.CreateFlap(db, diffID, headerTwo.Id, flapStorageValuesThree, test_helpers.GetFlapMetadatas(strconv.Itoa(fakeBidIdTwo)), contractAddress)
+		test_helpers.CreateFlap(db, headerTwo, flapStorageValuesThree, test_helpers.GetFlapMetadatas(strconv.Itoa(fakeBidIdTwo)), contractAddress)
 
 		var actualBids []test_helpers.FlapBid
 		queryErr := db.Select(&actualBids, `SELECT bid_id, guy, tic, "end", lot, bid, dealt, created, updated FROM api.all_flaps()`)
@@ -107,7 +102,7 @@ var _ = Describe("All flaps query", func() {
 			Expect(contextErr).NotTo(HaveOccurred())
 
 			flapStorageValuesOne = test_helpers.GetFlapStorageValues(2, fakeBidIdOne)
-			test_helpers.CreateFlap(db, diffID, headerOne.Id, flapStorageValuesOne, test_helpers.GetFlapMetadatas(strconv.Itoa(fakeBidIdOne)), contractAddress)
+			test_helpers.CreateFlap(db, headerOne, flapStorageValuesOne, test_helpers.GetFlapMetadatas(strconv.Itoa(fakeBidIdOne)), contractAddress)
 
 			headerTwo = createHeader(blockOne+1, timestampOne+1, headerRepo)
 
@@ -123,7 +118,7 @@ var _ = Describe("All flaps query", func() {
 			Expect(contextErr).NotTo(HaveOccurred())
 
 			flapStorageValuesTwo = test_helpers.GetFlapStorageValues(3, fakeBidIdTwo)
-			test_helpers.CreateFlap(db, diffID, headerTwo.Id, flapStorageValuesTwo, test_helpers.GetFlapMetadatas(strconv.Itoa(fakeBidIdTwo)), contractAddress)
+			test_helpers.CreateFlap(db, headerTwo, flapStorageValuesTwo, test_helpers.GetFlapMetadatas(strconv.Itoa(fakeBidIdTwo)), contractAddress)
 		})
 
 		It("limits results if max_results argument is provided", func() {

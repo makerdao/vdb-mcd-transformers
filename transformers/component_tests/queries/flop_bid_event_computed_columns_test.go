@@ -5,8 +5,6 @@ import (
 	"math/rand"
 	"strconv"
 
-	storage_helper "github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
-
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
@@ -30,7 +28,6 @@ var _ = Describe("Flop bid event computed columns", func() {
 		flopKickGethLog        types.Log
 		flopKickEvent          event.InsertionModel
 		headerRepo             repositories.HeaderRepository
-		diffID                 int64
 	)
 
 	BeforeEach(func() {
@@ -54,14 +51,12 @@ var _ = Describe("Flop bid event computed columns", func() {
 		flopKickEvent.ColumnValues[constants.BidIDColumn] = strconv.Itoa(fakeBidId)
 		insertFlopKickErr := event.PersistModels([]event.InsertionModel{flopKickEvent}, db)
 		Expect(insertFlopKickErr).NotTo(HaveOccurred())
-
-		diffID = storage_helper.CreateFakeDiffRecord(db)
 	})
 
 	Describe("flop_bid_event_bid", func() {
 		It("returns flop bid for a flop_bid_event", func() {
 			flopStorageValues := test_helpers.GetFlopStorageValues(1, fakeBidId)
-			test_helpers.CreateFlop(db, diffID, headerOne.Id, flopStorageValues, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
+			test_helpers.CreateFlop(db, headerOne, flopStorageValues, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
 
 			expectedBid := test_helpers.FlopBidFromValues(strconv.Itoa(fakeBidId), "false", headerOne.Timestamp, headerOne.Timestamp, flopStorageValues)
 

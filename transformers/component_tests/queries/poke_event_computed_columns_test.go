@@ -4,8 +4,6 @@ import (
 	"database/sql"
 	"math/rand"
 
-	storage_helper "github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
-
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
@@ -27,7 +25,6 @@ var _ = Describe("all poke events query", func() {
 		spotPokeEvent          shared.InsertionModel
 		spotPokeRepo           spot_poke.SpotPokeRepository
 		headerRepository       repositories.HeaderRepository
-		diffID                 int64
 	)
 
 	BeforeEach(func() {
@@ -48,14 +45,12 @@ var _ = Describe("all poke events query", func() {
 		spotPokeEvent.ColumnValues[constants.LogFK] = fakeHeaderSyncLog.ID
 		insertSpotPokeErr := spotPokeRepo.Create([]shared.InsertionModel{spotPokeEvent})
 		Expect(insertSpotPokeErr).NotTo(HaveOccurred())
-
-		diffID = storage_helper.CreateFakeDiffRecord(db)
 	})
 
 	Describe("poke_event_ilk", func() {
 		It("returns ilk_state for a poke_event", func() {
 			ilkValues := test_helpers.GetIlkValues(0)
-			test_helpers.CreateIlk(db, diffID, headerOne, ilkValues, test_helpers.FakeIlkVatMetadatas, test_helpers.FakeIlkCatMetadatas, test_helpers.FakeIlkJugMetadatas, test_helpers.FakeIlkSpotMetadatas)
+			test_helpers.CreateIlk(db, headerOne, ilkValues, test_helpers.FakeIlkVatMetadatas, test_helpers.FakeIlkCatMetadatas, test_helpers.FakeIlkJugMetadatas, test_helpers.FakeIlkSpotMetadatas)
 			expectedIlk := test_helpers.IlkStateFromValues(test_helpers.FakeIlk.Hex, headerOne.Timestamp, headerOne.Timestamp, ilkValues)
 
 			var result test_helpers.IlkState

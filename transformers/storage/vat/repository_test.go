@@ -524,7 +524,7 @@ var _ = Describe("Vat storage repository", func() {
 			It("inserts a row for new urn-block", func() {
 				initialUrnValues := test_helpers.GetUrnSetupData()
 				newArt := rand.Int()
-				test_helpers.CreateUrn(initialUrnValues, diffID, headerOne.Id, test_helpers.GetUrnMetadata(test_helpers.FakeIlk.Hex, fakeGuy), repo)
+				test_helpers.CreateUrn(db, initialUrnValues, headerOne, test_helpers.GetUrnMetadata(test_helpers.FakeIlk.Hex, fakeGuy), repo)
 
 				err := repo.Create(diffID, headerTwo.Id, urnArtMetadata, strconv.Itoa(newArt))
 				Expect(err).NotTo(HaveOccurred())
@@ -534,7 +534,7 @@ var _ = Describe("Vat storage repository", func() {
 				Expect(queryErr).NotTo(HaveOccurred())
 				Expect(len(urnStates)).To(Equal(2))
 				Expect(urnStates[1].BlockHeight).To(Equal(int(headerTwo.BlockNumber)))
-				Expect(urnStates[1].Ink).To(Equal(strconv.Itoa(initialUrnValues[vat.UrnInk])))
+				Expect(urnStates[1].Ink).To(Equal(strconv.Itoa(initialUrnValues[vat.UrnInk].(int))))
 				Expect(urnStates[1].Art).To(Equal(strconv.Itoa(newArt)))
 				Expect(urnStates[1].Created).To(Equal(test_helpers.GetValidNullString(FormatTimestamp(rawTimestampOne))))
 				Expect(urnStates[1].Updated).To(Equal(test_helpers.GetValidNullString(FormatTimestamp(rawTimestampTwo))))
@@ -543,7 +543,7 @@ var _ = Describe("Vat storage repository", func() {
 			It("updates art if urn-block combination already exists in table", func() {
 				initialUrnValues := test_helpers.GetUrnSetupData()
 				newArt := rand.Int()
-				test_helpers.CreateUrn(initialUrnValues, diffID, headerOne.Id, test_helpers.GetUrnMetadata(test_helpers.FakeIlk.Hex, fakeGuy), repo)
+				test_helpers.CreateUrn(db, initialUrnValues, headerOne, test_helpers.GetUrnMetadata(test_helpers.FakeIlk.Hex, fakeGuy), repo)
 
 				err := repo.Create(diffID, headerOne.Id, urnArtMetadata, strconv.Itoa(newArt))
 				Expect(err).NotTo(HaveOccurred())
@@ -553,7 +553,7 @@ var _ = Describe("Vat storage repository", func() {
 				Expect(queryErr).NotTo(HaveOccurred())
 				Expect(len(urnStates)).To(Equal(1))
 				Expect(urnStates[0].BlockHeight).To(Equal(int(headerOne.BlockNumber)))
-				Expect(urnStates[0].Ink).To(Equal(strconv.Itoa(initialUrnValues[vat.UrnInk])))
+				Expect(urnStates[0].Ink).To(Equal(strconv.Itoa(initialUrnValues[vat.UrnInk].(int))))
 				Expect(urnStates[0].Art).To(Equal(strconv.Itoa(newArt)))
 				Expect(urnStates[0].Created).To(Equal(test_helpers.GetValidNullString(FormatTimestamp(rawTimestampOne))))
 				Expect(urnStates[0].Updated).To(Equal(test_helpers.GetValidNullString(FormatTimestamp(rawTimestampOne))))
@@ -819,7 +819,7 @@ var _ = Describe("Vat storage repository", func() {
 			It("inserts a row for new urn-block", func() {
 				initialUrnValues := test_helpers.GetUrnSetupData()
 				newInk := rand.Int()
-				test_helpers.CreateUrn(initialUrnValues, diffID, headerOne.Id, test_helpers.GetUrnMetadata(test_helpers.FakeIlk.Hex, fakeGuy), repo)
+				test_helpers.CreateUrn(db, initialUrnValues, headerOne, test_helpers.GetUrnMetadata(test_helpers.FakeIlk.Hex, fakeGuy), repo)
 
 				err := repo.Create(diffID, headerTwo.Id, urnInkMetadata, strconv.Itoa(newInk))
 				Expect(err).NotTo(HaveOccurred())
@@ -830,7 +830,7 @@ var _ = Describe("Vat storage repository", func() {
 				Expect(len(urnStates)).To(Equal(2))
 				Expect(urnStates[1].BlockHeight).To(Equal(int(headerTwo.BlockNumber)))
 				Expect(urnStates[1].Ink).To(Equal(strconv.Itoa(newInk)))
-				Expect(urnStates[1].Art).To(Equal(strconv.Itoa(initialUrnValues[vat.UrnArt])))
+				Expect(urnStates[1].Art).To(Equal(strconv.Itoa(initialUrnValues[vat.UrnArt].(int))))
 				Expect(urnStates[1].Created).To(Equal(test_helpers.GetValidNullString(FormatTimestamp(rawTimestampOne))))
 				Expect(urnStates[1].Updated).To(Equal(test_helpers.GetValidNullString(FormatTimestamp(rawTimestampTwo))))
 			})
@@ -838,7 +838,7 @@ var _ = Describe("Vat storage repository", func() {
 			It("updates ink if urn-block combination already exists in table", func() {
 				initialUrnValues := test_helpers.GetUrnSetupData()
 				newInk := rand.Int()
-				test_helpers.CreateUrn(initialUrnValues, diffID, headerOne.Id, test_helpers.GetUrnMetadata(test_helpers.FakeIlk.Hex, fakeGuy), repo)
+				test_helpers.CreateUrn(db, initialUrnValues, headerOne, test_helpers.GetUrnMetadata(test_helpers.FakeIlk.Hex, fakeGuy), repo)
 
 				err := repo.Create(diffID, headerOne.Id, urnInkMetadata, strconv.Itoa(newInk))
 				Expect(err).NotTo(HaveOccurred())
@@ -849,7 +849,7 @@ var _ = Describe("Vat storage repository", func() {
 				Expect(len(urnStates)).To(Equal(1))
 				Expect(urnStates[0].BlockHeight).To(Equal(int(headerOne.BlockNumber)))
 				Expect(urnStates[0].Ink).To(Equal(strconv.Itoa(newInk)))
-				Expect(urnStates[0].Art).To(Equal(strconv.Itoa(initialUrnValues[vat.UrnArt])))
+				Expect(urnStates[0].Art).To(Equal(strconv.Itoa(initialUrnValues[vat.UrnArt].(int))))
 				Expect(urnStates[0].Created).To(Equal(test_helpers.GetValidNullString(FormatTimestamp(rawTimestampOne))))
 				Expect(urnStates[0].Updated).To(Equal(test_helpers.GetValidNullString(FormatTimestamp(rawTimestampOne))))
 			})

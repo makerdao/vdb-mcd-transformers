@@ -5,8 +5,6 @@ import (
 	"math/rand"
 	"strconv"
 
-	storage_helper "github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
-
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
@@ -29,7 +27,6 @@ var _ = Describe("Bite event computed columns", func() {
 		biteEvent              event.InsertionModel
 		vatRepository          vat.VatStorageRepository
 		headerRepository       repositories.HeaderRepository
-		diffID                 int64
 	)
 
 	BeforeEach(func() {
@@ -47,14 +44,12 @@ var _ = Describe("Bite event computed columns", func() {
 		biteEvent = generateBite(test_helpers.FakeIlk.Hex, fakeGuy, headerOne.Id, biteHeaderSyncLog.ID, db)
 		insertBiteErr := event.PersistModels([]event.InsertionModel{biteEvent}, db)
 		Expect(insertBiteErr).NotTo(HaveOccurred())
-
-		diffID = storage_helper.CreateFakeDiffRecord(db)
 	})
 
 	Describe("bite_event_ilk", func() {
 		It("returns ilk_state for a bite_event", func() {
 			ilkValues := test_helpers.GetIlkValues(0)
-			test_helpers.CreateIlk(db, diffID, headerOne, ilkValues, test_helpers.FakeIlkVatMetadatas, test_helpers.FakeIlkCatMetadatas, test_helpers.FakeIlkJugMetadatas, test_helpers.FakeIlkSpotMetadatas)
+			test_helpers.CreateIlk(db, headerOne, ilkValues, test_helpers.FakeIlkVatMetadatas, test_helpers.FakeIlkCatMetadatas, test_helpers.FakeIlkJugMetadatas, test_helpers.FakeIlkSpotMetadatas)
 
 			expectedIlk := test_helpers.IlkStateFromValues(test_helpers.FakeIlk.Hex, headerOne.Timestamp, headerOne.Timestamp, ilkValues)
 
@@ -75,7 +70,7 @@ var _ = Describe("Bite event computed columns", func() {
 			vatRepository.SetDB(db)
 			urnSetupData := test_helpers.GetUrnSetupData()
 			urnMetadata := test_helpers.GetUrnMetadata(test_helpers.FakeIlk.Hex, fakeGuy)
-			test_helpers.CreateUrn(urnSetupData, diffID, headerOne.Id, urnMetadata, vatRepository)
+			test_helpers.CreateUrn(db, urnSetupData, headerOne, urnMetadata, vatRepository)
 
 			var actualUrn test_helpers.UrnState
 			err := db.Get(&actualUrn, `
@@ -114,7 +109,7 @@ var _ = Describe("Bite event computed columns", func() {
 			Expect(ctxErr).NotTo(HaveOccurred())
 			flipValues := test_helpers.GetFlipStorageValues(0, test_helpers.FakeIlk.Hex, bidId)
 			flipMetadatas := test_helpers.GetFlipMetadatas(strconv.Itoa(bidId))
-			test_helpers.CreateFlip(db, diffID, headerOne.Id, flipValues, flipMetadatas, address.Hex())
+			test_helpers.CreateFlip(db, headerOne, flipValues, flipMetadatas, address.Hex())
 
 			var actualBid test_helpers.FlipBid
 			err := db.Get(&actualBid, `
