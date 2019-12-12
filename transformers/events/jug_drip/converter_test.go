@@ -17,27 +17,42 @@
 package jug_drip_test
 
 import (
+	"github.com/makerdao/vdb-mcd-transformers/test_config"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/events/jug_drip"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/jug_drip"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 )
 
 var _ = Describe("Jug drip converter", func() {
-	var converter = jug_drip.JugDripConverter{}
-	It("returns err if log is missing topics", func() {
+	var (
+		converter = jug_drip.Converter{}
+		db        = test_config.NewTestDB(test_config.NewTestNode())
+	)
+
+	BeforeEach(func() {
+		test_config.CleanTestDB(db)
+	})
+
+	It("returns err if log missing topics", func() {
 		badLog := core.HeaderSyncLog{}
-		_, err := converter.ToModels(constants.JugABI(), []core.HeaderSyncLog{badLog})
+
+		_, err := converter.ToModels(constants.JugABI(), []core.HeaderSyncLog{badLog}, db)
 		Expect(err).To(HaveOccurred())
 	})
 
-	It("converts a log to an model", func() {
-		model, err := converter.ToModels(constants.JugABI(), []core.HeaderSyncLog{test_data.JugDripHeaderSyncLog})
+	It("converts a log to model", func() {
+		model, err := converter.ToModels(constants.JugABI(), []core.HeaderSyncLog{test_data.JugDripHeaderSyncLog}, db)
+
 		Expect(err).NotTo(HaveOccurred())
-		Expect(model).To(Equal([]shared.InsertionModel{test_data.JugDripModel}))
+		var ilkID int64
+		ilkErr := db.Get(&ilkID, `SELECT id FROM maker.ilks where ilk = $1`, test_data.JugDripHeaderSyncLog.Log.Topics[2].Hex())
+		Expect(ilkErr).NotTo(HaveOccurred())
+		expectedModel := test_data.JugDripModel()
+		expectedModel.ColumnValues[constants.IlkColumn] = ilkID
+		Expect(model).To(Equal([]event.InsertionModel{expectedModel}))
 	})
 })
