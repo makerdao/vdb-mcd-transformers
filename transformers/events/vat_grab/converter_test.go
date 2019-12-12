@@ -33,7 +33,7 @@ import (
 var _ = Describe("Vat grab converter", func() {
 	var (
 		converter = vat_grab.Converter{}
-		db = 		test_config.NewTestDB(test_config.NewTestNode())
+		db        = test_config.NewTestDB(test_config.NewTestNode())
 	)
 
 	BeforeEach(func() {
