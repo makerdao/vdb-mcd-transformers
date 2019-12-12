@@ -22,7 +22,6 @@ import (
 
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
-	ilk2 "github.com/makerdao/vdb-mcd-transformers/transformers/events/jug_file/ilk"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/spot_file/mat"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/spot_file/pip"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_file/ilk"
@@ -43,7 +42,6 @@ var _ = Describe("Ilk File Events Query", func() {
 		blockOne, timestampOne int
 		headerOne              core.Header
 		headerRepo             datastore.HeaderRepository
-		jugFileRepo            ilk2.JugFileIlkRepository
 		relevantIlkIdentifier  = test_helpers.GetValidNullString(test_helpers.FakeIlk.Identifier)
 		spotFileMatRepo        mat.SpotFileMatRepository
 		spotFilePipRepo        pip.SpotFilePipRepository
@@ -57,8 +55,6 @@ var _ = Describe("Ilk File Events Query", func() {
 		timestampOne = int(rand.Int31())
 		headerOne = createHeader(blockOne, timestampOne, headerRepo)
 		logOneId = test_data.CreateTestLog(headerOne.Id, db).ID
-		jugFileRepo = ilk2.JugFileIlkRepository{}
-		jugFileRepo.SetDB(db)
 		spotFileMatRepo = mat.SpotFileMatRepository{}
 		spotFileMatRepo.SetDB(db)
 		spotFilePipRepo = pip.SpotFilePipRepository{}
@@ -70,10 +66,10 @@ var _ = Describe("Ilk File Events Query", func() {
 	It("returns all ilk file events for ilk", func() {
 		catFileChopLumpLog := test_data.CreateTestLog(headerOne.Id, db)
 		catFileChopLump := test_data.CatFileChopModel()
-		ilkId, createIlkError := shared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
+		ilkID, createIlkError := shared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
 		Expect(createIlkError).NotTo(HaveOccurred())
 
-		catFileChopLump.ColumnValues[constants.IlkColumn] = ilkId
+		catFileChopLump.ColumnValues[constants.IlkColumn] = ilkID
 		catFileChopLump.ColumnValues[constants.HeaderFK] = headerOne.Id
 		catFileChopLump.ColumnValues[constants.LogFK] = catFileChopLumpLog.ID
 		chopLumpErr := event.PersistModels([]event.InsertionModel{catFileChopLump}, db)
@@ -81,7 +77,7 @@ var _ = Describe("Ilk File Events Query", func() {
 
 		catFileFlipLog := test_data.CreateTestLog(headerOne.Id, db)
 		catFileFlip := test_data.CatFileFlipModel()
-		catFileFlip.ColumnValues[constants.IlkColumn] = ilkId
+		catFileFlip.ColumnValues[constants.IlkColumn] = ilkID
 		catFileFlip.ColumnValues[constants.HeaderFK] = headerOne.Id
 		catFileFlip.ColumnValues[constants.LogFK] = catFileFlipLog.ID
 		flipErr := event.PersistModels([]event.InsertionModel{catFileFlip}, db)
@@ -89,10 +85,10 @@ var _ = Describe("Ilk File Events Query", func() {
 
 		jugFileLog := test_data.CreateTestLog(headerOne.Id, db)
 		jugFile := test_data.JugFileIlkModel()
-		jugFile.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
+		jugFile.ColumnValues[constants.IlkColumn] = ilkID
 		jugFile.ColumnValues[constants.HeaderFK] = headerOne.Id
 		jugFile.ColumnValues[constants.LogFK] = jugFileLog.ID
-		jugErr := jugFileRepo.Create([]shared.InsertionModel{jugFile})
+		jugErr := event.PersistModels([]event.InsertionModel{jugFile}, db)
 		Expect(jugErr).NotTo(HaveOccurred())
 
 		spotFileMatLog := test_data.CreateTestLog(headerOne.Id, db)

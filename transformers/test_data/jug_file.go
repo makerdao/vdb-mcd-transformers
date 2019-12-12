@@ -20,15 +20,13 @@ import (
 	"math/big"
 	"math/rand"
 
-	"github.com/makerdao/vulcanizedb/pkg/core"
-
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/makerdao/vulcanizedb/pkg/fakes"
-
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
+	"github.com/makerdao/vulcanizedb/pkg/core"
+	"github.com/makerdao/vulcanizedb/pkg/fakes"
 )
 
 var rawJugFileIlkLog = types.Log{
@@ -55,24 +53,22 @@ var JugFileIlkHeaderSyncLog = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-func JugFileIlkModel() shared.InsertionModel { return CopyModel(jugFileIlkModel) }
-
-var jugFileIlkModel = shared.InsertionModel{
+var jugFileIlkModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.JugFileIlkTable,
-	OrderedColumns: []string{
-		constants.HeaderFK, string(constants.IlkFK), "what", "data", constants.LogFK,
+	OrderedColumns: []event.ColumnName{
+		event.HeaderFK, constants.IlkColumn, constants.WhatColumn, constants.DataColumn, event.LogFK,
 	},
-	ColumnValues: shared.ColumnValues{
-		"what":             "duty",
-		"data":             "1000000000937303470807876289",
-		constants.HeaderFK: JugFileIlkHeaderSyncLog.HeaderID,
-		constants.LogFK:    JugFileIlkHeaderSyncLog.ID,
-	},
-	ForeignKeyValues: shared.ForeignKeyValues{
-		constants.IlkFK: "0x434f4c322d410000000000000000000000000000000000000000000000000000",
+	ColumnValues: event.ColumnValues{
+		constants.WhatColumn: "duty",
+		constants.DataColumn: "1000000000937303470807876289",
+		// Ilk ID
+		event.HeaderFK: JugFileIlkHeaderSyncLog.HeaderID,
+		event.LogFK:    JugFileIlkHeaderSyncLog.ID,
 	},
 }
+
+func JugFileIlkModel() event.InsertionModel { return CopyEventModel(jugFileIlkModel) }
 
 var rawJugFileBaseLog = types.Log{
 	Address: common.HexToAddress(JugAddress()),
@@ -98,20 +94,21 @@ var JugFileBaseHeaderSyncLog = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-var JugFileBaseModel = shared.InsertionModel{
+var jugFileBaseModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.JugFileBaseTable,
-	OrderedColumns: []string{
-		constants.HeaderFK, "what", "data", constants.LogFK,
+	OrderedColumns: []event.ColumnName{
+		event.HeaderFK, constants.WhatColumn, constants.DataColumn, event.LogFK,
 	},
-	ColumnValues: shared.ColumnValues{
-		"what":             "fake what",
-		"data":             big.NewInt(123).String(),
-		constants.HeaderFK: JugFileBaseHeaderSyncLog.HeaderID,
-		constants.LogFK:    JugFileBaseHeaderSyncLog.ID,
+	ColumnValues: event.ColumnValues{
+		constants.WhatColumn: "fake what",
+		constants.DataColumn: big.NewInt(123).String(),
+		event.HeaderFK:       JugFileBaseHeaderSyncLog.HeaderID,
+		event.LogFK:          JugFileBaseHeaderSyncLog.ID,
 	},
-	ForeignKeyValues: shared.ForeignKeyValues{},
 }
+
+func JugFileBaseModel() event.InsertionModel { return CopyEventModel(jugFileBaseModel) }
 
 var rawJugFileVowLog = types.Log{
 	Address: common.HexToAddress(JugAddress()),
@@ -137,17 +134,18 @@ var JugFileVowHeaderSyncLog = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-var JugFileVowModel = shared.InsertionModel{
+var jugFileVowModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.JugFileVowTable,
-	OrderedColumns: []string{
-		constants.HeaderFK, "what", "data", constants.LogFK,
+	OrderedColumns: []event.ColumnName{
+		event.HeaderFK, constants.WhatColumn, constants.DataColumn, event.LogFK,
 	},
-	ColumnValues: shared.ColumnValues{
-		"what":             "vow",
-		"data":             "0x17560834075DA3Db54f737db74377E799c865821",
-		constants.HeaderFK: JugFileVowHeaderSyncLog.HeaderID,
-		constants.LogFK:    JugFileVowHeaderSyncLog.ID,
+	ColumnValues: event.ColumnValues{
+		constants.WhatColumn: "vow",
+		constants.DataColumn: "0x17560834075DA3Db54f737db74377E799c865821",
+		event.HeaderFK:       JugFileVowHeaderSyncLog.HeaderID,
+		event.LogFK:          JugFileVowHeaderSyncLog.ID,
 	},
-	ForeignKeyValues: shared.ForeignKeyValues{},
 }
+
+func JugFileVowModel() event.InsertionModel { return CopyEventModel(jugFileVowModel) }

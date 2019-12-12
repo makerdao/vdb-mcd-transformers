@@ -20,25 +20,26 @@ import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
+	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 )
 
-type JugFileIlkConverter struct{}
+type Converter struct{}
 
-const (
-	logDataRequired   = true
-	numTopicsRequired = 4
-)
-
-func (JugFileIlkConverter) ToModels(_ string, logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
-	var models []shared.InsertionModel
+func (converter Converter) ToModels(contractAbi string, logs []core.HeaderSyncLog, db *postgres.DB) ([]event.InsertionModel, error) {
+	var models []event.InsertionModel
 	for _, log := range logs {
-		verifyErr := shared.VerifyLog(log.Log, numTopicsRequired, logDataRequired)
+		verifyErr := shared.VerifyLog(log.Log, shared.FourTopicsRequired, shared.LogDataRequired)
 		if verifyErr != nil {
 			return nil, verifyErr
 		}
 
 		ilk := log.Log.Topics[2].Hex()
+		ilkId, ilkErr := shared.GetOrCreateIlk(ilk, db)
+		if ilkErr != nil {
+			return nil, shared.ErrCouldNotCreateFK(ilkErr)
+		}
 		what := shared.DecodeHexToText(log.Log.Topics[3].Hex())
 		dataBytes, parseErr := shared.GetLogNoteArgumentAtIndex(2, log.Log.Data)
 		if parseErr != nil {
@@ -46,20 +47,18 @@ func (JugFileIlkConverter) ToModels(_ string, logs []core.HeaderSyncLog) ([]shar
 		}
 		data := shared.ConvertUint256HexToBigInt(hexutil.Encode(dataBytes))
 
-		model := shared.InsertionModel{
+		model := event.InsertionModel{
 			SchemaName: constants.MakerSchema,
 			TableName:  constants.JugFileIlkTable,
-			OrderedColumns: []string{
-				constants.HeaderFK, string(constants.IlkFK), "what", "data", constants.LogFK,
+			OrderedColumns: []event.ColumnName{
+				event.HeaderFK, constants.IlkColumn, constants.WhatColumn, constants.DataColumn, event.LogFK,
 			},
-			ColumnValues: shared.ColumnValues{
-				"what":             what,
-				"data":             data.String(),
-				constants.HeaderFK: log.HeaderID,
-				constants.LogFK:    log.ID,
-			},
-			ForeignKeyValues: shared.ForeignKeyValues{
-				constants.IlkFK: ilk,
+			ColumnValues: event.ColumnValues{
+				constants.WhatColumn: what,
+				constants.DataColumn: data.String(),
+				constants.IlkColumn:  ilkId,
+				event.HeaderFK:       log.HeaderID,
+				event.LogFK:          log.ID,
 			},
 		}
 		models = append(models, model)

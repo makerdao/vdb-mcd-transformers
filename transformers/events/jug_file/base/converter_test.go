@@ -17,21 +17,20 @@
 package base_test
 
 import (
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/events/jug_file/base"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
-
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/jug_file/base"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 )
 
 var _ = Describe("Jug file base converter", func() {
-	var converter = base.JugFileBaseConverter{}
+	var converter = base.Converter{}
+
 	It("returns err if log missing topics", func() {
 		badLog := core.HeaderSyncLog{
 			Log: types.Log{
@@ -39,14 +38,14 @@ var _ = Describe("Jug file base converter", func() {
 				Data:   []byte{1, 1, 1, 1, 1},
 			}}
 
-		_, err := converter.ToModels(constants.JugABI(), []core.HeaderSyncLog{badLog})
+		_, err := converter.ToModels(constants.JugABI(), []core.HeaderSyncLog{badLog}, nil)
 		Expect(err).To(HaveOccurred())
 	})
 
 	It("converts a log to a model", func() {
-		models, err := converter.ToModels(constants.JugABI(), []core.HeaderSyncLog{test_data.JugFileBaseHeaderSyncLog})
+		models, err := converter.ToModels(constants.JugABI(), []core.HeaderSyncLog{test_data.JugFileBaseHeaderSyncLog}, nil)
 
 		Expect(err).NotTo(HaveOccurred())
-		Expect(models).To(Equal([]shared.InsertionModel{test_data.JugFileBaseModel}))
+		Expect(models).To(Equal([]event.InsertionModel{test_data.JugFileBaseModel()}))
 	})
 })
