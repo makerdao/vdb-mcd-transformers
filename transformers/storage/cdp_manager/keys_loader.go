@@ -42,14 +42,14 @@ const (
 
 var (
 	VatKey      = common.HexToHash(vdbStorage.IndexZero)
-	VatMetadata = vdbStorage.StorageValueMetadata{
+	VatMetadata = vdbStorage.ValueMetadata{
 		Name: Vat,
 		Keys: nil,
 		Type: vdbStorage.Address,
 	}
 
 	CdpiKey      = common.HexToHash(vdbStorage.IndexOne)
-	CdpiMetadata = vdbStorage.StorageValueMetadata{
+	CdpiMetadata = vdbStorage.ValueMetadata{
 		Name: Cdpi,
 		Keys: nil,
 		Type: vdbStorage.Uint256,
@@ -76,7 +76,7 @@ func (loader *keysLoader) SetDB(db *postgres.DB) {
 	loader.storageRepository.SetDB(db)
 }
 
-func (loader *keysLoader) LoadMappings() (map[common.Hash]vdbStorage.StorageValueMetadata, error) {
+func (loader *keysLoader) LoadMappings() (map[common.Hash]vdbStorage.ValueMetadata, error) {
 	mappings := loadStaticMappings()
 	mappings, cdpiErr := loader.loadCdpiKeyMappings(mappings)
 	if cdpiErr != nil {
@@ -85,7 +85,7 @@ func (loader *keysLoader) LoadMappings() (map[common.Hash]vdbStorage.StorageValu
 	return loader.loadOwnsKeyMappings(mappings)
 }
 
-func (loader *keysLoader) loadCdpiKeyMappings(mappings map[common.Hash]vdbStorage.StorageValueMetadata) (map[common.Hash]vdbStorage.StorageValueMetadata, error) {
+func (loader *keysLoader) loadCdpiKeyMappings(mappings map[common.Hash]vdbStorage.ValueMetadata) (map[common.Hash]vdbStorage.ValueMetadata, error) {
 	cdpis, cdpiErr := loader.storageRepository.GetCdpis()
 	if cdpiErr != nil {
 		return nil, cdpiErr
@@ -104,7 +104,7 @@ func (loader *keysLoader) loadCdpiKeyMappings(mappings map[common.Hash]vdbStorag
 	return mappings, nil
 }
 
-func (loader *keysLoader) loadOwnsKeyMappings(mappings map[common.Hash]vdbStorage.StorageValueMetadata) (map[common.Hash]vdbStorage.StorageValueMetadata, error) {
+func (loader *keysLoader) loadOwnsKeyMappings(mappings map[common.Hash]vdbStorage.ValueMetadata) (map[common.Hash]vdbStorage.ValueMetadata, error) {
 	owners, ownersErr := loader.storageRepository.GetOwners()
 	if ownersErr != nil {
 		return nil, ownersErr
@@ -121,81 +121,81 @@ func (loader *keysLoader) loadOwnsKeyMappings(mappings map[common.Hash]vdbStorag
 	return mappings, nil
 }
 
-func loadStaticMappings() map[common.Hash]vdbStorage.StorageValueMetadata {
-	mappings := make(map[common.Hash]vdbStorage.StorageValueMetadata)
+func loadStaticMappings() map[common.Hash]vdbStorage.ValueMetadata {
+	mappings := make(map[common.Hash]vdbStorage.ValueMetadata)
 	mappings[VatKey] = VatMetadata
 	mappings[CdpiKey] = CdpiMetadata
 	return mappings
 }
 
 func getUrnsKey(hexCdpi string) common.Hash {
-	return vdbStorage.GetStorageKeyForMapping(UrnsMappingIndex, hexCdpi)
+	return vdbStorage.GetKeyForMapping(UrnsMappingIndex, hexCdpi)
 }
 
-func getUrnsMetadata(cdpi string) vdbStorage.StorageValueMetadata {
+func getUrnsMetadata(cdpi string) vdbStorage.ValueMetadata {
 	keys := map[vdbStorage.Key]string{constants.Cdpi: cdpi}
-	return vdbStorage.GetStorageValueMetadata(Urns, keys, vdbStorage.Address)
+	return vdbStorage.GetValueMetadata(Urns, keys, vdbStorage.Address)
 }
 
 func getListPrevKey(hexCdpi string) common.Hash {
-	return vdbStorage.GetStorageKeyForMapping(ListMappingIndex, hexCdpi)
+	return vdbStorage.GetKeyForMapping(ListMappingIndex, hexCdpi)
 }
 
-func getListPrevMetadata(cdpi string) vdbStorage.StorageValueMetadata {
+func getListPrevMetadata(cdpi string) vdbStorage.ValueMetadata {
 	keys := map[vdbStorage.Key]string{constants.Cdpi: cdpi}
-	return vdbStorage.GetStorageValueMetadata(ListPrev, keys, vdbStorage.Uint256)
+	return vdbStorage.GetValueMetadata(ListPrev, keys, vdbStorage.Uint256)
 }
 
 func getListNextKey(hexCdpi string) common.Hash {
-	return vdbStorage.GetIncrementedStorageKey(getListPrevKey(hexCdpi), 1)
+	return vdbStorage.GetIncrementedKey(getListPrevKey(hexCdpi), 1)
 }
 
-func getListNextMetadata(cdpi string) vdbStorage.StorageValueMetadata {
+func getListNextMetadata(cdpi string) vdbStorage.ValueMetadata {
 	keys := map[vdbStorage.Key]string{constants.Cdpi: cdpi}
-	return vdbStorage.GetStorageValueMetadata(ListNext, keys, vdbStorage.Uint256)
+	return vdbStorage.GetValueMetadata(ListNext, keys, vdbStorage.Uint256)
 }
 
 func getOwnsKey(hexCdpi string) common.Hash {
-	return vdbStorage.GetStorageKeyForMapping(OwnsMappingIndex, hexCdpi)
+	return vdbStorage.GetKeyForMapping(OwnsMappingIndex, hexCdpi)
 }
 
-func getOwnsMetadata(cdpi string) vdbStorage.StorageValueMetadata {
+func getOwnsMetadata(cdpi string) vdbStorage.ValueMetadata {
 	keys := map[vdbStorage.Key]string{constants.Cdpi: cdpi}
-	return vdbStorage.GetStorageValueMetadata(Owns, keys, vdbStorage.Address)
+	return vdbStorage.GetValueMetadata(Owns, keys, vdbStorage.Address)
 }
 
 func getIlksKey(hexCdpi string) common.Hash {
-	return vdbStorage.GetStorageKeyForMapping(IlksMappingIndex, hexCdpi)
+	return vdbStorage.GetKeyForMapping(IlksMappingIndex, hexCdpi)
 }
 
-func getIlksMetadata(cdpi string) vdbStorage.StorageValueMetadata {
+func getIlksMetadata(cdpi string) vdbStorage.ValueMetadata {
 	keys := map[vdbStorage.Key]string{constants.Cdpi: cdpi}
-	return vdbStorage.GetStorageValueMetadata(Ilks, keys, vdbStorage.Bytes32)
+	return vdbStorage.GetValueMetadata(Ilks, keys, vdbStorage.Bytes32)
 }
 
 func getFirstKey(ownerAddress string) common.Hash {
-	return vdbStorage.GetStorageKeyForMapping(FirstMappingIndex, ownerAddress)
+	return vdbStorage.GetKeyForMapping(FirstMappingIndex, ownerAddress)
 }
 
-func getFirstMetadata(ownerAddress string) vdbStorage.StorageValueMetadata {
+func getFirstMetadata(ownerAddress string) vdbStorage.ValueMetadata {
 	keys := map[vdbStorage.Key]string{constants.Owner: ownerAddress}
-	return vdbStorage.GetStorageValueMetadata(First, keys, vdbStorage.Uint256)
+	return vdbStorage.GetValueMetadata(First, keys, vdbStorage.Uint256)
 }
 
 func getLastKey(ownerAddress string) common.Hash {
-	return vdbStorage.GetStorageKeyForMapping(LastMappingIndex, ownerAddress)
+	return vdbStorage.GetKeyForMapping(LastMappingIndex, ownerAddress)
 }
 
-func getLastMetadata(ownerAddress string) vdbStorage.StorageValueMetadata {
+func getLastMetadata(ownerAddress string) vdbStorage.ValueMetadata {
 	keys := map[vdbStorage.Key]string{constants.Owner: ownerAddress}
-	return vdbStorage.GetStorageValueMetadata(Last, keys, vdbStorage.Uint256)
+	return vdbStorage.GetValueMetadata(Last, keys, vdbStorage.Uint256)
 }
 
 func getCountKey(ownerAddress string) common.Hash {
-	return vdbStorage.GetStorageKeyForMapping(CountMappingIndex, ownerAddress)
+	return vdbStorage.GetKeyForMapping(CountMappingIndex, ownerAddress)
 }
 
-func getCountMetadata(ownerAddress string) vdbStorage.StorageValueMetadata {
+func getCountMetadata(ownerAddress string) vdbStorage.ValueMetadata {
 	keys := map[vdbStorage.Key]string{constants.Owner: ownerAddress}
-	return vdbStorage.GetStorageValueMetadata(Count, keys, vdbStorage.Uint256)
+	return vdbStorage.GetValueMetadata(Count, keys, vdbStorage.Uint256)
 }

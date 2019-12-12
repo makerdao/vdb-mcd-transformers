@@ -42,21 +42,21 @@ const (
 
 var (
 	VatKey      = common.HexToHash(vdbStorage.IndexOne)
-	VatMetadata = vdbStorage.StorageValueMetadata{
+	VatMetadata = vdbStorage.ValueMetadata{
 		Name: Vat,
 		Keys: nil,
 		Type: vdbStorage.Address,
 	}
 
 	FlapperKey      = common.HexToHash(vdbStorage.IndexTwo)
-	FlapperMetadata = vdbStorage.StorageValueMetadata{
+	FlapperMetadata = vdbStorage.ValueMetadata{
 		Name: Flapper,
 		Keys: nil,
 		Type: vdbStorage.Address,
 	}
 
 	FlopperKey      = common.HexToHash(vdbStorage.IndexThree)
-	FlopperMetadata = vdbStorage.StorageValueMetadata{
+	FlopperMetadata = vdbStorage.ValueMetadata{
 		Name: Flopper,
 		Keys: nil,
 		Type: vdbStorage.Address,
@@ -65,49 +65,49 @@ var (
 	SinMappingIndex = vdbStorage.IndexFour
 
 	SinIntegerKey      = common.HexToHash(vdbStorage.IndexFive)
-	SinIntegerMetadata = vdbStorage.StorageValueMetadata{
+	SinIntegerMetadata = vdbStorage.ValueMetadata{
 		Name: SinInteger,
 		Keys: nil,
 		Type: vdbStorage.Uint256,
 	}
 
 	AshKey      = common.HexToHash(vdbStorage.IndexSix)
-	AshMetadata = vdbStorage.StorageValueMetadata{
+	AshMetadata = vdbStorage.ValueMetadata{
 		Name: Ash,
 		Keys: nil,
 		Type: vdbStorage.Uint256,
 	}
 
 	WaitKey      = common.HexToHash(vdbStorage.IndexSeven)
-	WaitMetadata = vdbStorage.StorageValueMetadata{
+	WaitMetadata = vdbStorage.ValueMetadata{
 		Name: Wait,
 		Keys: nil,
 		Type: vdbStorage.Uint256,
 	}
 
 	DumpKey      = common.HexToHash(vdbStorage.IndexEight)
-	DumpMetadata = vdbStorage.StorageValueMetadata{
+	DumpMetadata = vdbStorage.ValueMetadata{
 		Name: Dump,
 		Keys: nil,
 		Type: vdbStorage.Uint256,
 	}
 
 	SumpKey      = common.HexToHash(vdbStorage.IndexNine)
-	SumpMetadata = vdbStorage.StorageValueMetadata{
+	SumpMetadata = vdbStorage.ValueMetadata{
 		Name: Sump,
 		Keys: nil,
 		Type: vdbStorage.Uint256,
 	}
 
 	BumpKey      = common.HexToHash(vdbStorage.IndexTen)
-	BumpMetadata = vdbStorage.StorageValueMetadata{
+	BumpMetadata = vdbStorage.ValueMetadata{
 		Name: Bump,
 		Keys: nil,
 		Type: vdbStorage.Uint256,
 	}
 
 	HumpKey      = common.HexToHash(vdbStorage.IndexEleven)
-	HumpMetadata = vdbStorage.StorageValueMetadata{
+	HumpMetadata = vdbStorage.ValueMetadata{
 		Name: Hump,
 		Keys: nil,
 		Type: vdbStorage.Uint256,
@@ -122,8 +122,8 @@ func NewKeysLoader(storageRepository mcdStorage.IMakerStorageRepository) storage
 	return &keysLoader{storageRepository: storageRepository}
 }
 
-func (loader *keysLoader) LoadMappings() (map[common.Hash]vdbStorage.StorageValueMetadata, error) {
-	mappings := addStaticMappings(make(map[common.Hash]vdbStorage.StorageValueMetadata))
+func (loader *keysLoader) LoadMappings() (map[common.Hash]vdbStorage.ValueMetadata, error) {
+	mappings := addStaticMappings(make(map[common.Hash]vdbStorage.ValueMetadata))
 	return loader.addDynamicMappings(mappings)
 }
 
@@ -131,7 +131,7 @@ func (loader *keysLoader) SetDB(db *postgres.DB) {
 	loader.storageRepository.SetDB(db)
 }
 
-func (loader *keysLoader) addDynamicMappings(mappings map[common.Hash]vdbStorage.StorageValueMetadata) (map[common.Hash]vdbStorage.StorageValueMetadata, error) {
+func (loader *keysLoader) addDynamicMappings(mappings map[common.Hash]vdbStorage.ValueMetadata) (map[common.Hash]vdbStorage.ValueMetadata, error) {
 	sinKeys, getErr := loader.storageRepository.GetVowSinKeys()
 	if getErr != nil {
 		return nil, getErr
@@ -146,7 +146,7 @@ func (loader *keysLoader) addDynamicMappings(mappings map[common.Hash]vdbStorage
 	return mappings, nil
 }
 
-func addStaticMappings(mappings map[common.Hash]vdbStorage.StorageValueMetadata) map[common.Hash]vdbStorage.StorageValueMetadata {
+func addStaticMappings(mappings map[common.Hash]vdbStorage.ValueMetadata) map[common.Hash]vdbStorage.ValueMetadata {
 	mappings[VatKey] = VatMetadata
 	mappings[FlapperKey] = FlapperMetadata
 	mappings[FlopperKey] = FlopperMetadata
@@ -161,10 +161,10 @@ func addStaticMappings(mappings map[common.Hash]vdbStorage.StorageValueMetadata)
 }
 
 func getSinKey(hexTimestamp string) common.Hash {
-	return vdbStorage.GetStorageKeyForMapping(SinMappingIndex, hexTimestamp)
+	return vdbStorage.GetKeyForMapping(SinMappingIndex, hexTimestamp)
 }
 
-func getSinMetadata(timestamp string) vdbStorage.StorageValueMetadata {
+func getSinMetadata(timestamp string) vdbStorage.ValueMetadata {
 	keys := map[vdbStorage.Key]string{constants.Timestamp: timestamp}
-	return vdbStorage.GetStorageValueMetadata(SinMapping, keys, vdbStorage.Uint256)
+	return vdbStorage.GetValueMetadata(SinMapping, keys, vdbStorage.Uint256)
 }

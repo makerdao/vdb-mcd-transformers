@@ -70,7 +70,7 @@ var _ = Describe("Flip storage keys loader", func() {
 				fakeBidId       = "1"
 				fakeHexBidId, _ = shared.ConvertIntStringToHex(fakeBidId)
 				bidBidKey       = common.BytesToHash(crypto.Keccak256(common.FromHex(fakeHexBidId + flip.BidsMappingIndex)))
-				mappings        map[common.Hash]vdbStorage.StorageValueMetadata
+				mappings        map[common.Hash]vdbStorage.ValueMetadata
 			)
 
 			BeforeEach(func() {
@@ -81,7 +81,7 @@ var _ = Describe("Flip storage keys loader", func() {
 			})
 
 			It("returns value metadata for bid bid", func() {
-				expectedMetadata := vdbStorage.StorageValueMetadata{
+				expectedMetadata := vdbStorage.ValueMetadata{
 					Name: mcdStorage.BidBid,
 					Keys: map[vdbStorage.Key]string{constants.BidId: fakeBidId},
 					Type: vdbStorage.Uint256,
@@ -91,8 +91,8 @@ var _ = Describe("Flip storage keys loader", func() {
 			})
 
 			It("returns value metadata for bid lot", func() {
-				bidLotKey := vdbStorage.GetIncrementedStorageKey(bidBidKey, 1)
-				expectedMetadata := vdbStorage.StorageValueMetadata{
+				bidLotKey := vdbStorage.GetIncrementedKey(bidBidKey, 1)
+				expectedMetadata := vdbStorage.ValueMetadata{
 					Name: mcdStorage.BidLot,
 					Keys: map[vdbStorage.Key]string{constants.BidId: fakeBidId},
 					Type: vdbStorage.Uint256,
@@ -102,8 +102,8 @@ var _ = Describe("Flip storage keys loader", func() {
 			})
 
 			It("returns value metadata for bid guy + tic + end packed slot", func() {
-				bidGuyKey := vdbStorage.GetIncrementedStorageKey(bidBidKey, 2)
-				expectedMetadata := vdbStorage.StorageValueMetadata{
+				bidGuyKey := vdbStorage.GetIncrementedKey(bidBidKey, 2)
+				expectedMetadata := vdbStorage.ValueMetadata{
 					Name:        mcdStorage.Packed,
 					Keys:        map[vdbStorage.Key]string{constants.BidId: fakeBidId},
 					Type:        vdbStorage.PackedSlot,
@@ -115,8 +115,8 @@ var _ = Describe("Flip storage keys loader", func() {
 			})
 
 			It("returns value metadata for bid usr", func() {
-				bidUsrKey := vdbStorage.GetIncrementedStorageKey(bidBidKey, 3)
-				expectedMetadata := vdbStorage.StorageValueMetadata{
+				bidUsrKey := vdbStorage.GetIncrementedKey(bidBidKey, 3)
+				expectedMetadata := vdbStorage.ValueMetadata{
 					Name: mcdStorage.BidUsr,
 					Keys: map[vdbStorage.Key]string{constants.BidId: fakeBidId},
 					Type: vdbStorage.Address,
@@ -126,8 +126,8 @@ var _ = Describe("Flip storage keys loader", func() {
 			})
 
 			It("returns value metadata for bid gal", func() {
-				bidGalKey := vdbStorage.GetIncrementedStorageKey(bidBidKey, 4)
-				expectedMetadata := vdbStorage.StorageValueMetadata{
+				bidGalKey := vdbStorage.GetIncrementedKey(bidBidKey, 4)
+				expectedMetadata := vdbStorage.ValueMetadata{
 					Name: mcdStorage.BidGal,
 					Keys: map[vdbStorage.Key]string{constants.BidId: fakeBidId},
 					Type: vdbStorage.Address,
@@ -137,8 +137,8 @@ var _ = Describe("Flip storage keys loader", func() {
 			})
 
 			It("returns value metadata for bid tab", func() {
-				bidTabKey := vdbStorage.GetIncrementedStorageKey(bidBidKey, 5)
-				expectedMetadata := vdbStorage.StorageValueMetadata{
+				bidTabKey := vdbStorage.GetIncrementedKey(bidBidKey, 5)
+				expectedMetadata := vdbStorage.ValueMetadata{
 					Name: mcdStorage.BidTab,
 					Keys: map[vdbStorage.Key]string{constants.BidId: fakeBidId},
 					Type: vdbStorage.Uint256,

@@ -18,17 +18,17 @@ package constants
 
 import (
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
-	vdbStorage "github.com/makerdao/vulcanizedb/libraries/shared/storage"
+	"github.com/makerdao/vulcanizedb/libraries/shared/storage"
 )
 
 const (
-	BidId     vdbStorage.Key = "bid_id"
-	Cdpi      vdbStorage.Key = "cdpi"
-	Flip      vdbStorage.Key = "flip"
-	Guy       vdbStorage.Key = "guy"
-	Ilk       vdbStorage.Key = "ilk"
-	Owner     vdbStorage.Key = "owner"
-	Timestamp vdbStorage.Key = "timestamp"
+	BidId     storage.Key = "bid_id"
+	Cdpi      storage.Key = "cdpi"
+	Flip      storage.Key = "flip"
+	Guy       storage.Key = "guy"
+	Ilk       storage.Key = "ilk"
+	Owner     storage.Key = "owner"
+	Timestamp storage.Key = "timestamp"
 )
 
 // TODO remove after transition to ColumnName

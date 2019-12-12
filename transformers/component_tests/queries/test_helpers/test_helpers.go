@@ -62,72 +62,72 @@ var (
 		Identifier: "FKE2",
 	}
 
-	EmptyMetadatas []vdbStorage.StorageValueMetadata
+	EmptyMetadatas []vdbStorage.ValueMetadata
 
-	FakeIlkRateMetadata = vdbStorage.GetStorageValueMetadata(vat.IlkRate, map[vdbStorage.Key]string{constants.Ilk: FakeIlk.Hex}, vdbStorage.Uint256)
-	FakeIlkArtMetadata  = vdbStorage.GetStorageValueMetadata(vat.IlkArt, map[vdbStorage.Key]string{constants.Ilk: FakeIlk.Hex}, vdbStorage.Uint256)
-	FakeIlkSpotMetadata = vdbStorage.GetStorageValueMetadata(vat.IlkSpot, map[vdbStorage.Key]string{constants.Ilk: FakeIlk.Hex}, vdbStorage.Uint256)
-	FakeIlkLineMetadata = vdbStorage.GetStorageValueMetadata(vat.IlkLine, map[vdbStorage.Key]string{constants.Ilk: FakeIlk.Hex}, vdbStorage.Uint256)
-	FakeIlkDustMetadata = vdbStorage.GetStorageValueMetadata(vat.IlkDust, map[vdbStorage.Key]string{constants.Ilk: FakeIlk.Hex}, vdbStorage.Uint256)
-	fakeIlkChopMetadata = vdbStorage.GetStorageValueMetadata(cat.IlkChop, map[vdbStorage.Key]string{constants.Ilk: FakeIlk.Hex}, vdbStorage.Uint256)
-	fakeIlkLumpMetadata = vdbStorage.GetStorageValueMetadata(cat.IlkLump, map[vdbStorage.Key]string{constants.Ilk: FakeIlk.Hex}, vdbStorage.Uint256)
-	fakeIlkFlipMetadata = vdbStorage.GetStorageValueMetadata(cat.IlkFlip, map[vdbStorage.Key]string{constants.Ilk: FakeIlk.Hex}, vdbStorage.Uint256)
-	fakeIlkRhoMetadata  = vdbStorage.GetStorageValueMetadata(jug.IlkRho, map[vdbStorage.Key]string{constants.Ilk: FakeIlk.Hex}, vdbStorage.Uint256)
-	fakeIlkTaxMetadata  = vdbStorage.GetStorageValueMetadata(jug.IlkDuty, map[vdbStorage.Key]string{constants.Ilk: FakeIlk.Hex}, vdbStorage.Uint256)
-	fakeIlkPipMetadata  = vdbStorage.GetStorageValueMetadata(spot.IlkPip, map[vdbStorage.Key]string{constants.Ilk: FakeIlk.Hex}, vdbStorage.Address)
-	fakeIlkMatMetadata  = vdbStorage.GetStorageValueMetadata(spot.IlkMat, map[vdbStorage.Key]string{constants.Ilk: FakeIlk.Hex}, vdbStorage.Uint256)
+	FakeIlkRateMetadata = vdbStorage.GetValueMetadata(vat.IlkRate, map[vdbStorage.Key]string{constants.Ilk: FakeIlk.Hex}, vdbStorage.Uint256)
+	FakeIlkArtMetadata  = vdbStorage.GetValueMetadata(vat.IlkArt, map[vdbStorage.Key]string{constants.Ilk: FakeIlk.Hex}, vdbStorage.Uint256)
+	FakeIlkSpotMetadata = vdbStorage.GetValueMetadata(vat.IlkSpot, map[vdbStorage.Key]string{constants.Ilk: FakeIlk.Hex}, vdbStorage.Uint256)
+	FakeIlkLineMetadata = vdbStorage.GetValueMetadata(vat.IlkLine, map[vdbStorage.Key]string{constants.Ilk: FakeIlk.Hex}, vdbStorage.Uint256)
+	FakeIlkDustMetadata = vdbStorage.GetValueMetadata(vat.IlkDust, map[vdbStorage.Key]string{constants.Ilk: FakeIlk.Hex}, vdbStorage.Uint256)
+	fakeIlkChopMetadata = vdbStorage.GetValueMetadata(cat.IlkChop, map[vdbStorage.Key]string{constants.Ilk: FakeIlk.Hex}, vdbStorage.Uint256)
+	fakeIlkLumpMetadata = vdbStorage.GetValueMetadata(cat.IlkLump, map[vdbStorage.Key]string{constants.Ilk: FakeIlk.Hex}, vdbStorage.Uint256)
+	fakeIlkFlipMetadata = vdbStorage.GetValueMetadata(cat.IlkFlip, map[vdbStorage.Key]string{constants.Ilk: FakeIlk.Hex}, vdbStorage.Uint256)
+	fakeIlkRhoMetadata  = vdbStorage.GetValueMetadata(jug.IlkRho, map[vdbStorage.Key]string{constants.Ilk: FakeIlk.Hex}, vdbStorage.Uint256)
+	fakeIlkTaxMetadata  = vdbStorage.GetValueMetadata(jug.IlkDuty, map[vdbStorage.Key]string{constants.Ilk: FakeIlk.Hex}, vdbStorage.Uint256)
+	fakeIlkPipMetadata  = vdbStorage.GetValueMetadata(spot.IlkPip, map[vdbStorage.Key]string{constants.Ilk: FakeIlk.Hex}, vdbStorage.Address)
+	fakeIlkMatMetadata  = vdbStorage.GetValueMetadata(spot.IlkMat, map[vdbStorage.Key]string{constants.Ilk: FakeIlk.Hex}, vdbStorage.Uint256)
 
-	FakeIlkVatMetadatas = []vdbStorage.StorageValueMetadata{
+	FakeIlkVatMetadatas = []vdbStorage.ValueMetadata{
 		FakeIlkRateMetadata,
 		FakeIlkArtMetadata,
 		FakeIlkSpotMetadata,
 		FakeIlkLineMetadata,
 		FakeIlkDustMetadata,
 	}
-	FakeIlkCatMetadatas = []vdbStorage.StorageValueMetadata{
+	FakeIlkCatMetadatas = []vdbStorage.ValueMetadata{
 		fakeIlkChopMetadata,
 		fakeIlkLumpMetadata,
 		fakeIlkFlipMetadata,
 	}
-	FakeIlkJugMetadatas = []vdbStorage.StorageValueMetadata{
+	FakeIlkJugMetadatas = []vdbStorage.ValueMetadata{
 		fakeIlkRhoMetadata,
 		fakeIlkTaxMetadata,
 	}
-	FakeIlkSpotMetadatas = []vdbStorage.StorageValueMetadata{
+	FakeIlkSpotMetadatas = []vdbStorage.ValueMetadata{
 		fakeIlkPipMetadata,
 		fakeIlkMatMetadata,
 	}
 
-	anotherFakeIlkRateMetadata = vdbStorage.GetStorageValueMetadata(vat.IlkRate, map[vdbStorage.Key]string{constants.Ilk: AnotherFakeIlk.Hex}, vdbStorage.Uint256)
-	anotherFakeIlkArtMetadata  = vdbStorage.GetStorageValueMetadata(vat.IlkArt, map[vdbStorage.Key]string{constants.Ilk: AnotherFakeIlk.Hex}, vdbStorage.Uint256)
-	anotherFakeIlkSpotMetadata = vdbStorage.GetStorageValueMetadata(vat.IlkSpot, map[vdbStorage.Key]string{constants.Ilk: AnotherFakeIlk.Hex}, vdbStorage.Uint256)
-	anotherFakeIlkLineMetadata = vdbStorage.GetStorageValueMetadata(vat.IlkLine, map[vdbStorage.Key]string{constants.Ilk: AnotherFakeIlk.Hex}, vdbStorage.Uint256)
-	anotherFakeIlkDustMetadata = vdbStorage.GetStorageValueMetadata(vat.IlkDust, map[vdbStorage.Key]string{constants.Ilk: AnotherFakeIlk.Hex}, vdbStorage.Uint256)
-	anotherFakeIlkChopMetadata = vdbStorage.GetStorageValueMetadata(cat.IlkChop, map[vdbStorage.Key]string{constants.Ilk: AnotherFakeIlk.Hex}, vdbStorage.Uint256)
-	anotherFakeIlkLumpMetadata = vdbStorage.GetStorageValueMetadata(cat.IlkLump, map[vdbStorage.Key]string{constants.Ilk: AnotherFakeIlk.Hex}, vdbStorage.Uint256)
-	anotherFakeIlkFlipMetadata = vdbStorage.GetStorageValueMetadata(cat.IlkFlip, map[vdbStorage.Key]string{constants.Ilk: AnotherFakeIlk.Hex}, vdbStorage.Address)
-	anotherFakeIlkRhoMetadata  = vdbStorage.GetStorageValueMetadata(jug.IlkRho, map[vdbStorage.Key]string{constants.Ilk: AnotherFakeIlk.Hex}, vdbStorage.Uint256)
-	anotherFakeIlkTaxMetadata  = vdbStorage.GetStorageValueMetadata(jug.IlkDuty, map[vdbStorage.Key]string{constants.Ilk: AnotherFakeIlk.Hex}, vdbStorage.Uint256)
-	anotherFakeIlkPipMetadata  = vdbStorage.GetStorageValueMetadata(spot.IlkPip, map[vdbStorage.Key]string{constants.Ilk: AnotherFakeIlk.Hex}, vdbStorage.Address)
-	anotherFakeIlkMatMetadata  = vdbStorage.GetStorageValueMetadata(spot.IlkMat, map[vdbStorage.Key]string{constants.Ilk: AnotherFakeIlk.Hex}, vdbStorage.Uint256)
+	anotherFakeIlkRateMetadata = vdbStorage.GetValueMetadata(vat.IlkRate, map[vdbStorage.Key]string{constants.Ilk: AnotherFakeIlk.Hex}, vdbStorage.Uint256)
+	anotherFakeIlkArtMetadata  = vdbStorage.GetValueMetadata(vat.IlkArt, map[vdbStorage.Key]string{constants.Ilk: AnotherFakeIlk.Hex}, vdbStorage.Uint256)
+	anotherFakeIlkSpotMetadata = vdbStorage.GetValueMetadata(vat.IlkSpot, map[vdbStorage.Key]string{constants.Ilk: AnotherFakeIlk.Hex}, vdbStorage.Uint256)
+	anotherFakeIlkLineMetadata = vdbStorage.GetValueMetadata(vat.IlkLine, map[vdbStorage.Key]string{constants.Ilk: AnotherFakeIlk.Hex}, vdbStorage.Uint256)
+	anotherFakeIlkDustMetadata = vdbStorage.GetValueMetadata(vat.IlkDust, map[vdbStorage.Key]string{constants.Ilk: AnotherFakeIlk.Hex}, vdbStorage.Uint256)
+	anotherFakeIlkChopMetadata = vdbStorage.GetValueMetadata(cat.IlkChop, map[vdbStorage.Key]string{constants.Ilk: AnotherFakeIlk.Hex}, vdbStorage.Uint256)
+	anotherFakeIlkLumpMetadata = vdbStorage.GetValueMetadata(cat.IlkLump, map[vdbStorage.Key]string{constants.Ilk: AnotherFakeIlk.Hex}, vdbStorage.Uint256)
+	anotherFakeIlkFlipMetadata = vdbStorage.GetValueMetadata(cat.IlkFlip, map[vdbStorage.Key]string{constants.Ilk: AnotherFakeIlk.Hex}, vdbStorage.Address)
+	anotherFakeIlkRhoMetadata  = vdbStorage.GetValueMetadata(jug.IlkRho, map[vdbStorage.Key]string{constants.Ilk: AnotherFakeIlk.Hex}, vdbStorage.Uint256)
+	anotherFakeIlkTaxMetadata  = vdbStorage.GetValueMetadata(jug.IlkDuty, map[vdbStorage.Key]string{constants.Ilk: AnotherFakeIlk.Hex}, vdbStorage.Uint256)
+	anotherFakeIlkPipMetadata  = vdbStorage.GetValueMetadata(spot.IlkPip, map[vdbStorage.Key]string{constants.Ilk: AnotherFakeIlk.Hex}, vdbStorage.Address)
+	anotherFakeIlkMatMetadata  = vdbStorage.GetValueMetadata(spot.IlkMat, map[vdbStorage.Key]string{constants.Ilk: AnotherFakeIlk.Hex}, vdbStorage.Uint256)
 
-	AnotherFakeIlkVatMetadatas = []vdbStorage.StorageValueMetadata{
+	AnotherFakeIlkVatMetadatas = []vdbStorage.ValueMetadata{
 		anotherFakeIlkRateMetadata,
 		anotherFakeIlkArtMetadata,
 		anotherFakeIlkSpotMetadata,
 		anotherFakeIlkLineMetadata,
 		anotherFakeIlkDustMetadata,
 	}
-	AnotherFakeIlkCatMetadatas = []vdbStorage.StorageValueMetadata{
+	AnotherFakeIlkCatMetadatas = []vdbStorage.ValueMetadata{
 		anotherFakeIlkChopMetadata,
 		anotherFakeIlkLumpMetadata,
 		anotherFakeIlkFlipMetadata,
 	}
-	AnotherFakeIlkJugMetadatas = []vdbStorage.StorageValueMetadata{
+	AnotherFakeIlkJugMetadatas = []vdbStorage.ValueMetadata{
 		anotherFakeIlkRhoMetadata,
 		anotherFakeIlkTaxMetadata,
 	}
-	AnotherFakeIlkSpotMetadatas = []vdbStorage.StorageValueMetadata{
+	AnotherFakeIlkSpotMetadatas = []vdbStorage.ValueMetadata{
 		anotherFakeIlkPipMetadata,
 		anotherFakeIlkMatMetadata,
 	}
@@ -201,30 +201,30 @@ func IlkStateFromValues(ilk, updated, created string, ilkValues map[string]inter
 	}
 }
 
-func CreateVatRecords(db *postgres.DB, header core.Header, valuesMap map[string]interface{}, metadatas []vdbStorage.StorageValueMetadata, repository vat.VatStorageRepository) {
+func CreateVatRecords(db *postgres.DB, header core.Header, valuesMap map[string]interface{}, metadatas []vdbStorage.ValueMetadata, repository vat.VatStorageRepository) {
 	insertValues(db, &repository, header, valuesMap, metadatas)
 }
 
-func CreateCatRecords(db *postgres.DB, header core.Header, valuesMap map[string]interface{}, metadatas []vdbStorage.StorageValueMetadata, repository cat.CatStorageRepository) {
+func CreateCatRecords(db *postgres.DB, header core.Header, valuesMap map[string]interface{}, metadatas []vdbStorage.ValueMetadata, repository cat.CatStorageRepository) {
 	insertValues(db, &repository, header, valuesMap, metadatas)
 }
 
-func CreateJugRecords(db *postgres.DB, header core.Header, valuesMap map[string]interface{}, metadatas []vdbStorage.StorageValueMetadata, repository jug.JugStorageRepository) {
+func CreateJugRecords(db *postgres.DB, header core.Header, valuesMap map[string]interface{}, metadatas []vdbStorage.ValueMetadata, repository jug.JugStorageRepository) {
 	insertValues(db, &repository, header, valuesMap, metadatas)
 }
 
-func CreateSpotRecords(db *postgres.DB, header core.Header, valuesMap map[string]interface{}, metadatas []vdbStorage.StorageValueMetadata, repository spot.SpotStorageRepository) {
+func CreateSpotRecords(db *postgres.DB, header core.Header, valuesMap map[string]interface{}, metadatas []vdbStorage.ValueMetadata, repository spot.SpotStorageRepository) {
 	insertValues(db, &repository, header, valuesMap, metadatas)
 }
 
 // Creates urn by creating necessary state diffs and the corresponding header
 func CreateUrn(db *postgres.DB, setupData map[string]interface{}, header core.Header, metadata UrnMetadata, vatRepo vat.VatStorageRepository) {
 	// This also creates the ilk if it doesn't exist
-	urnMetadata := []vdbStorage.StorageValueMetadata{metadata.UrnInk, metadata.UrnArt}
+	urnMetadata := []vdbStorage.ValueMetadata{metadata.UrnInk, metadata.UrnArt}
 	insertValues(db, &vatRepo, header, setupData, urnMetadata)
 }
 
-func CreateIlk(db *postgres.DB, header core.Header, valuesMap map[string]interface{}, vatMetadatas, catMetadatas, jugMetadatas, spotMetadatas []vdbStorage.StorageValueMetadata) {
+func CreateIlk(db *postgres.DB, header core.Header, valuesMap map[string]interface{}, vatMetadatas, catMetadatas, jugMetadatas, spotMetadatas []vdbStorage.ValueMetadata) {
 	var (
 		vatRepo  vat.VatStorageRepository
 		catRepo  cat.CatStorageRepository
@@ -250,16 +250,16 @@ func GetUrnSetupData() map[string]interface{} {
 
 func GetUrnMetadata(ilk, urn string) UrnMetadata {
 	return UrnMetadata{
-		UrnInk: vdbStorage.GetStorageValueMetadata(vat.UrnInk,
+		UrnInk: vdbStorage.GetValueMetadata(vat.UrnInk,
 			map[vdbStorage.Key]string{constants.Ilk: ilk, constants.Guy: urn}, vdbStorage.Uint256),
-		UrnArt: vdbStorage.GetStorageValueMetadata(vat.UrnArt,
+		UrnArt: vdbStorage.GetValueMetadata(vat.UrnArt,
 			map[vdbStorage.Key]string{constants.Ilk: ilk, constants.Guy: urn}, vdbStorage.Uint256),
 	}
 }
 
 type UrnMetadata struct {
-	UrnInk vdbStorage.StorageValueMetadata
-	UrnArt vdbStorage.StorageValueMetadata
+	UrnInk vdbStorage.ValueMetadata
+	UrnArt vdbStorage.ValueMetadata
 }
 
 type UrnState struct {
@@ -282,43 +282,43 @@ func AssertUrn(actual, expected UrnState) {
 	Expect(actual.Updated).To(Equal(expected.Updated))
 }
 
-func getCommonBidMetadatas(bidId string) []vdbStorage.StorageValueMetadata {
+func getCommonBidMetadatas(bidId string) []vdbStorage.ValueMetadata {
 	keys := map[vdbStorage.Key]string{constants.BidId: bidId}
 	packedNames := map[int]string{0: storage.BidGuy, 1: storage.BidTic, 2: storage.BidEnd}
 	packedTypes := map[int]vdbStorage.ValueType{0: vdbStorage.Address, 1: vdbStorage.Uint48, 2: vdbStorage.Uint48}
-	return []vdbStorage.StorageValueMetadata{
-		vdbStorage.GetStorageValueMetadata(storage.Kicks, nil, vdbStorage.Uint256),
-		vdbStorage.GetStorageValueMetadata(storage.BidBid, keys, vdbStorage.Uint256),
-		vdbStorage.GetStorageValueMetadata(storage.BidLot, keys, vdbStorage.Uint256),
-		vdbStorage.GetStorageValueMetadataForPackedSlot(storage.Packed, keys, vdbStorage.PackedSlot, packedNames, packedTypes),
+	return []vdbStorage.ValueMetadata{
+		vdbStorage.GetValueMetadata(storage.Kicks, nil, vdbStorage.Uint256),
+		vdbStorage.GetValueMetadata(storage.BidBid, keys, vdbStorage.Uint256),
+		vdbStorage.GetValueMetadata(storage.BidLot, keys, vdbStorage.Uint256),
+		vdbStorage.GetValueMetadataForPackedSlot(storage.Packed, keys, vdbStorage.PackedSlot, packedNames, packedTypes),
 	}
 }
 
-func GetFlopMetadatas(bidId string) []vdbStorage.StorageValueMetadata {
+func GetFlopMetadatas(bidId string) []vdbStorage.ValueMetadata {
 	return getCommonBidMetadatas(bidId)
 }
 
-func GetFlapMetadatas(bidId string) []vdbStorage.StorageValueMetadata {
+func GetFlapMetadatas(bidId string) []vdbStorage.ValueMetadata {
 	return getCommonBidMetadatas(bidId)
 }
 
-func GetCdpManagerMetadatas(cdpi string) []vdbStorage.StorageValueMetadata {
+func GetCdpManagerMetadatas(cdpi string) []vdbStorage.ValueMetadata {
 	keys := map[vdbStorage.Key]string{constants.Cdpi: cdpi}
-	return []vdbStorage.StorageValueMetadata{
-		vdbStorage.GetStorageValueMetadata(cdp_manager.Cdpi, nil, vdbStorage.Uint256),
-		vdbStorage.GetStorageValueMetadata(cdp_manager.Urns, keys, vdbStorage.Address),
-		vdbStorage.GetStorageValueMetadata(cdp_manager.Owns, keys, vdbStorage.Address),
-		vdbStorage.GetStorageValueMetadata(cdp_manager.Ilks, keys, vdbStorage.Bytes32),
+	return []vdbStorage.ValueMetadata{
+		vdbStorage.GetValueMetadata(cdp_manager.Cdpi, nil, vdbStorage.Uint256),
+		vdbStorage.GetValueMetadata(cdp_manager.Urns, keys, vdbStorage.Address),
+		vdbStorage.GetValueMetadata(cdp_manager.Owns, keys, vdbStorage.Address),
+		vdbStorage.GetValueMetadata(cdp_manager.Ilks, keys, vdbStorage.Bytes32),
 	}
 }
 
-func GetFlipMetadatas(bidId string) []vdbStorage.StorageValueMetadata {
+func GetFlipMetadatas(bidId string) []vdbStorage.ValueMetadata {
 	keys := map[vdbStorage.Key]string{constants.BidId: bidId}
 	return append(getCommonBidMetadatas(bidId),
-		vdbStorage.GetStorageValueMetadata(storage.Ilk, nil, vdbStorage.Bytes32),
-		vdbStorage.GetStorageValueMetadata(storage.BidUsr, keys, vdbStorage.Address),
-		vdbStorage.GetStorageValueMetadata(storage.BidGal, keys, vdbStorage.Address),
-		vdbStorage.GetStorageValueMetadata(storage.BidTab, keys, vdbStorage.Uint256))
+		vdbStorage.GetValueMetadata(storage.Ilk, nil, vdbStorage.Bytes32),
+		vdbStorage.GetValueMetadata(storage.BidUsr, keys, vdbStorage.Address),
+		vdbStorage.GetValueMetadata(storage.BidGal, keys, vdbStorage.Address),
+		vdbStorage.GetValueMetadata(storage.BidTab, keys, vdbStorage.Uint256))
 }
 
 func GetCdpManagerStorageValues(seed int, ilkHex string, urnGuy string, cdpi int) map[string]interface{} {
@@ -358,7 +358,7 @@ func GetFlipStorageValues(seed int, ilk string, bidId int) map[string]interface{
 	return valuesMap
 }
 
-func insertValues(db *postgres.DB, repo vdbStorageFactory.Repository, header core.Header, valuesMap map[string]interface{}, metadatas []vdbStorage.StorageValueMetadata) {
+func insertValues(db *postgres.DB, repo vdbStorageFactory.Repository, header core.Header, valuesMap map[string]interface{}, metadatas []vdbStorage.ValueMetadata) {
 	for _, metadata := range metadatas {
 		value := valuesMap[metadata.Name]
 		key := common.HexToHash(test_data.RandomString(32))
@@ -390,25 +390,25 @@ func insertValues(db *postgres.DB, repo vdbStorageFactory.Repository, header cor
 	}
 }
 
-func CreateFlop(db *postgres.DB, header core.Header, valuesMap map[string]interface{}, flopMetadatas []vdbStorage.StorageValueMetadata, contractAddress string) {
+func CreateFlop(db *postgres.DB, header core.Header, valuesMap map[string]interface{}, flopMetadatas []vdbStorage.ValueMetadata, contractAddress string) {
 	flopRepo := flop.FlopStorageRepository{ContractAddress: contractAddress}
 	flopRepo.SetDB(db)
 	insertValues(db, &flopRepo, header, valuesMap, flopMetadatas)
 }
 
-func CreateFlap(db *postgres.DB, header core.Header, valuesMap map[string]interface{}, flapMetadatas []vdbStorage.StorageValueMetadata, contractAddress string) {
+func CreateFlap(db *postgres.DB, header core.Header, valuesMap map[string]interface{}, flapMetadatas []vdbStorage.ValueMetadata, contractAddress string) {
 	flapRepo := flap.FlapStorageRepository{ContractAddress: contractAddress}
 	flapRepo.SetDB(db)
 	insertValues(db, &flapRepo, header, valuesMap, flapMetadatas)
 }
 
-func CreateFlip(db *postgres.DB, header core.Header, valuesMap map[string]interface{}, flipMetadatas []vdbStorage.StorageValueMetadata, contractAddress string) {
+func CreateFlip(db *postgres.DB, header core.Header, valuesMap map[string]interface{}, flipMetadatas []vdbStorage.ValueMetadata, contractAddress string) {
 	flipRepo := flip.FlipStorageRepository{ContractAddress: contractAddress}
 	flipRepo.SetDB(db)
 	insertValues(db, &flipRepo, header, valuesMap, flipMetadatas)
 }
 
-func CreateManagedCdp(db *postgres.DB, header core.Header, valuesMap map[string]interface{}, metadatas []vdbStorage.StorageValueMetadata) error {
+func CreateManagedCdp(db *postgres.DB, header core.Header, valuesMap map[string]interface{}, metadatas []vdbStorage.ValueMetadata) error {
 	cdpManagerRepo := cdp_manager.CdpManagerStorageRepository{}
 	cdpManagerRepo.SetDB(db)
 	_, err := shared.GetOrCreateUrn(valuesMap[cdp_manager.Urns].(string), valuesMap[cdp_manager.Ilks].(string), db)

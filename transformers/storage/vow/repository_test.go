@@ -21,7 +21,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	. "github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/vow"
-	vdbStorage "github.com/makerdao/vulcanizedb/libraries/shared/storage"
+	"github.com/makerdao/vulcanizedb/libraries/shared/storage"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	. "github.com/onsi/ginkgo"
@@ -126,8 +126,8 @@ var _ = Describe("Vow storage repository test", func() {
 	Describe("vow sin mapping", func() {
 		It("writes row", func() {
 			timestamp := "1538558052"
-			fakeKeys := map[vdbStorage.Key]string{constants.Timestamp: timestamp}
-			vowSinMetadata := vdbStorage.GetStorageValueMetadata(vow.SinMapping, fakeKeys, vdbStorage.Uint256)
+			fakeKeys := map[storage.Key]string{constants.Timestamp: timestamp}
+			vowSinMetadata := storage.GetValueMetadata(vow.SinMapping, fakeKeys, storage.Uint256)
 
 			err := repo.Create(diffID, fakeHeaderID, vowSinMetadata, fakeUint256)
 
@@ -141,8 +141,8 @@ var _ = Describe("Vow storage repository test", func() {
 
 		It("does not duplicate row", func() {
 			timestamp := "1538558052"
-			fakeKeys := map[vdbStorage.Key]string{constants.Timestamp: timestamp}
-			vowSinMetadata := vdbStorage.GetStorageValueMetadata(vow.SinMapping, fakeKeys, vdbStorage.Uint256)
+			fakeKeys := map[storage.Key]string{constants.Timestamp: timestamp}
+			vowSinMetadata := storage.GetValueMetadata(vow.SinMapping, fakeKeys, storage.Uint256)
 			insertOneErr := repo.Create(diffID, fakeHeaderID, vowSinMetadata, fakeUint256)
 			Expect(insertOneErr).NotTo(HaveOccurred())
 
@@ -156,12 +156,12 @@ var _ = Describe("Vow storage repository test", func() {
 		})
 
 		It("returns error if metadata missing timestamp", func() {
-			malformedVowSinMappingMetadata := vdbStorage.GetStorageValueMetadata(vow.SinMapping, nil, vdbStorage.Uint256)
+			malformedVowSinMappingMetadata := storage.GetValueMetadata(vow.SinMapping, nil, storage.Uint256)
 
 			err := repo.Create(diffID, fakeHeaderID, malformedVowSinMappingMetadata, fakeUint256)
 
 			Expect(err).To(HaveOccurred())
-			Expect(err).To(MatchError(vdbStorage.ErrMetadataMalformed{MissingData: constants.Timestamp}))
+			Expect(err).To(MatchError(storage.ErrMetadataMalformed{MissingData: constants.Timestamp}))
 		})
 	})
 

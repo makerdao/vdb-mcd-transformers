@@ -28,7 +28,7 @@ type StorageBehaviorInputs struct {
 	IsAMapping       bool
 	StorageTableName string
 	Repository       storage.Repository
-	Metadata         vdbStorage.StorageValueMetadata
+	Metadata         vdbStorage.ValueMetadata
 }
 
 func SharedStorageRepositoryBehaviors(inputs *StorageBehaviorInputs) {
@@ -88,7 +88,7 @@ func SharedStorageRepositoryBehaviors(inputs *StorageBehaviorInputs) {
 
 type IlkTriggerTestInput struct {
 	Repository    storage.Repository
-	Metadata      vdbStorage.StorageValueMetadata
+	Metadata      vdbStorage.ValueMetadata
 	TableName     string
 	PropertyName  string
 	PropertyValue string

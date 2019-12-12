@@ -37,7 +37,7 @@ var _ = Describe("Flip storage repository", func() {
 	})
 
 	It("panics if the metadata name is not recognized", func() {
-		unrecognizedMetadata := vdbStorage.StorageValueMetadata{Name: "unrecognized"}
+		unrecognizedMetadata := vdbStorage.ValueMetadata{Name: "unrecognized"}
 		flipCreate := func() {
 			_ = repo.Create(diffID, fakeHeaderID, unrecognizedMetadata, "")
 		}
@@ -46,7 +46,7 @@ var _ = Describe("Flip storage repository", func() {
 	})
 
 	It("rolls back the record and address insertions if there's a failure", func() {
-		var begMetadata = vdbStorage.StorageValueMetadata{Name: storage.Beg}
+		var begMetadata = vdbStorage.ValueMetadata{Name: storage.Beg}
 		err := repo.Create(diffID, fakeHeaderID, begMetadata, "")
 		Expect(err).To(HaveOccurred())
 		Expect(err.Error()).To(MatchRegexp("pq: invalid input syntax for type numeric"))
@@ -59,7 +59,7 @@ var _ = Describe("Flip storage repository", func() {
 
 	Describe("Variable", func() {
 		Describe("Vat", func() {
-			vatMetadata := vdbStorage.StorageValueMetadata{Name: storage.Vat}
+			vatMetadata := vdbStorage.ValueMetadata{Name: storage.Vat}
 			inputs := shared_behaviors.StorageBehaviorInputs{
 				ValueFieldName:   storage.Vat,
 				Value:            FakeAddress,
@@ -75,7 +75,7 @@ var _ = Describe("Flip storage repository", func() {
 			It("writes row", func() {
 				diffID = CreateFakeDiffRecord(db)
 
-				ilkMetadata := vdbStorage.StorageValueMetadata{Name: storage.Ilk}
+				ilkMetadata := vdbStorage.ValueMetadata{Name: storage.Ilk}
 				insertErr := repo.Create(diffID, fakeHeaderID, ilkMetadata, FakeIlk)
 				Expect(insertErr).NotTo(HaveOccurred())
 
@@ -90,7 +90,7 @@ var _ = Describe("Flip storage repository", func() {
 			It("does not duplicate row", func() {
 				diffID = CreateFakeDiffRecord(db)
 
-				ilkMetadata := vdbStorage.StorageValueMetadata{Name: storage.Ilk}
+				ilkMetadata := vdbStorage.ValueMetadata{Name: storage.Ilk}
 				insertOneErr := repo.Create(diffID, fakeHeaderID, ilkMetadata, FakeIlk)
 				Expect(insertOneErr).NotTo(HaveOccurred())
 
@@ -105,7 +105,7 @@ var _ = Describe("Flip storage repository", func() {
 		})
 
 		Describe("Beg", func() {
-			begMetadata := vdbStorage.StorageValueMetadata{Name: storage.Beg}
+			begMetadata := vdbStorage.ValueMetadata{Name: storage.Beg}
 			fakeBeg := strconv.Itoa(rand.Int())
 			inputs := shared_behaviors.StorageBehaviorInputs{
 				ValueFieldName:   storage.Beg,
@@ -122,7 +122,7 @@ var _ = Describe("Flip storage repository", func() {
 			packedNames := make(map[int]string)
 			packedNames[0] = storage.Ttl
 			packedNames[1] = storage.Tau
-			var ttlAndTauMetadata = vdbStorage.StorageValueMetadata{
+			var ttlAndTauMetadata = vdbStorage.ValueMetadata{
 				Name:        storage.Packed,
 				PackedNames: packedNames,
 			}
@@ -154,7 +154,7 @@ var _ = Describe("Flip storage repository", func() {
 				packedNames := make(map[int]string)
 				packedNames[0] = "notRecognized"
 
-				var badMetadata = vdbStorage.StorageValueMetadata{
+				var badMetadata = vdbStorage.ValueMetadata{
 					Name:        storage.Packed,
 					PackedNames: packedNames,
 				}
@@ -176,7 +176,7 @@ var _ = Describe("Flip storage repository", func() {
 		})
 
 		Describe("Kicks", func() {
-			kicksMetadata := vdbStorage.StorageValueMetadata{Name: storage.Kicks}
+			kicksMetadata := vdbStorage.ValueMetadata{Name: storage.Kicks}
 			fakeKicks := strconv.Itoa(rand.Int())
 			inputs := shared_behaviors.StorageBehaviorInputs{
 				ValueFieldName:   storage.Kicks,
@@ -194,7 +194,7 @@ var _ = Describe("Flip storage repository", func() {
 		var fakeBidId = strconv.Itoa(rand.Int())
 
 		It("mappings returns an error if the metadata is missing the bid_id", func() {
-			badMetadata := vdbStorage.StorageValueMetadata{
+			badMetadata := vdbStorage.ValueMetadata{
 				Name: storage.BidBid,
 				Keys: map[vdbStorage.Key]string{},
 				Type: vdbStorage.Uint256,
@@ -205,7 +205,7 @@ var _ = Describe("Flip storage repository", func() {
 
 		Describe("BidBid", func() {
 			fakeBidValue := strconv.Itoa(rand.Int())
-			bidBidMetadata := vdbStorage.StorageValueMetadata{
+			bidBidMetadata := vdbStorage.ValueMetadata{
 				Name: storage.BidBid,
 				Keys: map[vdbStorage.Key]string{constants.BidId: fakeBidId},
 				Type: vdbStorage.Uint256,
@@ -226,7 +226,7 @@ var _ = Describe("Flip storage repository", func() {
 
 		Describe("BidLot", func() {
 			fakeLotValue := strconv.Itoa(rand.Int())
-			bidLotMetadata := vdbStorage.StorageValueMetadata{
+			bidLotMetadata := vdbStorage.ValueMetadata{
 				Name: storage.BidLot,
 				Keys: map[vdbStorage.Key]string{constants.BidId: fakeBidId},
 				Type: vdbStorage.Uint256,
@@ -250,7 +250,7 @@ var _ = Describe("Flip storage repository", func() {
 			packedNames[0] = storage.BidGuy
 			packedNames[1] = storage.BidTic
 			packedNames[2] = storage.BidEnd
-			var bidGuyTicEndMetadata = vdbStorage.StorageValueMetadata{
+			var bidGuyTicEndMetadata = vdbStorage.ValueMetadata{
 				Name:        storage.Packed,
 				Keys:        map[vdbStorage.Key]string{constants.BidId: fakeBidId},
 				PackedNames: packedNames,
@@ -303,7 +303,7 @@ var _ = Describe("Flip storage repository", func() {
 		})
 
 		Describe("BidUsr", func() {
-			bidUsrMetadata := vdbStorage.StorageValueMetadata{
+			bidUsrMetadata := vdbStorage.ValueMetadata{
 				Name: storage.BidUsr,
 				Keys: map[vdbStorage.Key]string{constants.BidId: fakeBidId},
 				Type: vdbStorage.Address,
@@ -323,7 +323,7 @@ var _ = Describe("Flip storage repository", func() {
 		})
 
 		Describe("BidGal", func() {
-			bidGalMetadata := vdbStorage.StorageValueMetadata{
+			bidGalMetadata := vdbStorage.ValueMetadata{
 				Name: storage.BidGal,
 				Keys: map[vdbStorage.Key]string{constants.BidId: fakeBidId},
 				Type: vdbStorage.Address,
@@ -344,7 +344,7 @@ var _ = Describe("Flip storage repository", func() {
 
 		Describe("BidTab", func() {
 			fakeTabValue := strconv.Itoa(rand.Int())
-			bidTabMetadata := vdbStorage.StorageValueMetadata{
+			bidTabMetadata := vdbStorage.ValueMetadata{
 				Name: storage.BidTab,
 				Keys: map[vdbStorage.Key]string{constants.BidId: fakeBidId},
 				Type: vdbStorage.Uint256,

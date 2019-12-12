@@ -71,7 +71,7 @@ var _ = Describe("Flop storage keys loader", func() {
 			var (
 				fakeBidId string
 				bidBidKey common.Hash
-				mappings  map[common.Hash]vdbStorage.StorageValueMetadata
+				mappings  map[common.Hash]vdbStorage.ValueMetadata
 			)
 
 			BeforeEach(func() {
@@ -88,7 +88,7 @@ var _ = Describe("Flop storage keys loader", func() {
 			})
 
 			It("returns value metadata for bid bid", func() {
-				expectedMetadata := vdbStorage.StorageValueMetadata{
+				expectedMetadata := vdbStorage.ValueMetadata{
 					Name: mcdStorage.BidBid,
 					Keys: map[vdbStorage.Key]string{constants.BidId: fakeBidId},
 					Type: vdbStorage.Uint256,
@@ -98,8 +98,8 @@ var _ = Describe("Flop storage keys loader", func() {
 			})
 
 			It("returns value metadata for bid lot", func() {
-				bidLotKey := vdbStorage.GetIncrementedStorageKey(bidBidKey, 1)
-				expectedMetadata := vdbStorage.StorageValueMetadata{
+				bidLotKey := vdbStorage.GetIncrementedKey(bidBidKey, 1)
+				expectedMetadata := vdbStorage.ValueMetadata{
 					Name: mcdStorage.BidLot,
 					Keys: map[vdbStorage.Key]string{constants.BidId: fakeBidId},
 					Type: vdbStorage.Uint256,
@@ -109,8 +109,8 @@ var _ = Describe("Flop storage keys loader", func() {
 			})
 
 			It("returns value metadata for bid guy + tic + end packed slot", func() {
-				bidGuyKey := vdbStorage.GetIncrementedStorageKey(bidBidKey, 2)
-				expectedMetadata := vdbStorage.StorageValueMetadata{
+				bidGuyKey := vdbStorage.GetIncrementedKey(bidBidKey, 2)
+				expectedMetadata := vdbStorage.ValueMetadata{
 					Name:        mcdStorage.Packed,
 					Keys:        map[vdbStorage.Key]string{constants.BidId: fakeBidId},
 					Type:        vdbStorage.PackedSlot,

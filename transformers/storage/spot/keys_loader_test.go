@@ -65,7 +65,7 @@ var _ = Describe("spot storage keys loader", func() {
 			fakeIlk := "fakeIlk"
 			storageRepository.Ilks = []string{fakeIlk}
 			ilkPipKey := common.BytesToHash(crypto.Keccak256(common.FromHex("0x" + fakeIlk + spot.IlkMappingIndex)))
-			expectedMetadata := vdbStorage.StorageValueMetadata{
+			expectedMetadata := vdbStorage.ValueMetadata{
 				Name: spot.IlkPip,
 				Keys: map[vdbStorage.Key]string{constants.Ilk: fakeIlk},
 				Type: vdbStorage.Address,
@@ -84,7 +84,7 @@ var _ = Describe("spot storage keys loader", func() {
 			ilkPipAsInt := big.NewInt(0).SetBytes(ilkPipKeyBytes)
 			incrementedIlkPip := big.NewInt(0).Add(ilkPipAsInt, big.NewInt(1))
 			ilkMatKey := common.BytesToHash(incrementedIlkPip.Bytes())
-			expectedMetadata := vdbStorage.StorageValueMetadata{
+			expectedMetadata := vdbStorage.ValueMetadata{
 				Name: spot.IlkMat,
 				Keys: map[vdbStorage.Key]string{constants.Ilk: fakeIlk},
 				Type: vdbStorage.Uint256,

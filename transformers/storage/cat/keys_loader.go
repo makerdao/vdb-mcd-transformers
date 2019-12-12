@@ -40,13 +40,13 @@ var (
 	IlksMappingIndex = vdbStorage.IndexOne // bytes32 => flip address; chop (ray), lump (wad) uint256
 
 	LiveKey      = common.HexToHash(vdbStorage.IndexTwo)
-	LiveMetadata = vdbStorage.GetStorageValueMetadata(Live, nil, vdbStorage.Uint256)
+	LiveMetadata = vdbStorage.GetValueMetadata(Live, nil, vdbStorage.Uint256)
 
 	VatKey      = common.HexToHash(vdbStorage.IndexThree)
-	VatMetadata = vdbStorage.GetStorageValueMetadata(Vat, nil, vdbStorage.Address)
+	VatMetadata = vdbStorage.GetValueMetadata(Vat, nil, vdbStorage.Address)
 
 	VowKey      = common.HexToHash(vdbStorage.IndexFour)
-	VowMetadata = vdbStorage.GetStorageValueMetadata(Vow, nil, vdbStorage.Address)
+	VowMetadata = vdbStorage.GetValueMetadata(Vow, nil, vdbStorage.Address)
 )
 
 type keysLoader struct {
@@ -61,12 +61,12 @@ func (loader *keysLoader) SetDB(db *postgres.DB) {
 	loader.storageRepository.SetDB(db)
 }
 
-func (loader *keysLoader) LoadMappings() (map[common.Hash]vdbStorage.StorageValueMetadata, error) {
+func (loader *keysLoader) LoadMappings() (map[common.Hash]vdbStorage.ValueMetadata, error) {
 	mappings := loadStaticMappings()
 	return loader.addIlkKeys(mappings)
 }
 
-func (loader *keysLoader) addIlkKeys(mappings map[common.Hash]vdbStorage.StorageValueMetadata) (map[common.Hash]vdbStorage.StorageValueMetadata, error) {
+func (loader *keysLoader) addIlkKeys(mappings map[common.Hash]vdbStorage.ValueMetadata) (map[common.Hash]vdbStorage.ValueMetadata, error) {
 	ilks, err := loader.storageRepository.GetIlks()
 	if err != nil {
 		return nil, err
@@ -79,8 +79,8 @@ func (loader *keysLoader) addIlkKeys(mappings map[common.Hash]vdbStorage.Storage
 	return mappings, nil
 }
 
-func loadStaticMappings() map[common.Hash]vdbStorage.StorageValueMetadata {
-	mappings := make(map[common.Hash]vdbStorage.StorageValueMetadata)
+func loadStaticMappings() map[common.Hash]vdbStorage.ValueMetadata {
+	mappings := make(map[common.Hash]vdbStorage.ValueMetadata)
 	mappings[LiveKey] = LiveMetadata
 	mappings[VatKey] = VatMetadata
 	mappings[VowKey] = VowMetadata
@@ -88,28 +88,28 @@ func loadStaticMappings() map[common.Hash]vdbStorage.StorageValueMetadata {
 }
 
 func getIlkFlipKey(ilk string) common.Hash {
-	return vdbStorage.GetStorageKeyForMapping(IlksMappingIndex, ilk)
+	return vdbStorage.GetKeyForMapping(IlksMappingIndex, ilk)
 }
 
-func getIlkFlipMetadata(ilk string) vdbStorage.StorageValueMetadata {
+func getIlkFlipMetadata(ilk string) vdbStorage.ValueMetadata {
 	keys := map[vdbStorage.Key]string{constants.Ilk: ilk}
-	return vdbStorage.GetStorageValueMetadata(IlkFlip, keys, vdbStorage.Address)
+	return vdbStorage.GetValueMetadata(IlkFlip, keys, vdbStorage.Address)
 }
 
 func getIlkChopKey(ilk string) common.Hash {
-	return vdbStorage.GetIncrementedStorageKey(getIlkFlipKey(ilk), 1)
+	return vdbStorage.GetIncrementedKey(getIlkFlipKey(ilk), 1)
 }
 
-func getIlkChopMetadata(ilk string) vdbStorage.StorageValueMetadata {
+func getIlkChopMetadata(ilk string) vdbStorage.ValueMetadata {
 	keys := map[vdbStorage.Key]string{constants.Ilk: ilk}
-	return vdbStorage.GetStorageValueMetadata(IlkChop, keys, vdbStorage.Uint256)
+	return vdbStorage.GetValueMetadata(IlkChop, keys, vdbStorage.Uint256)
 }
 
 func getIlkLumpKey(ilk string) common.Hash {
-	return vdbStorage.GetIncrementedStorageKey(getIlkFlipKey(ilk), 2)
+	return vdbStorage.GetIncrementedKey(getIlkFlipKey(ilk), 2)
 }
 
-func getIlkLumpMetadata(ilk string) vdbStorage.StorageValueMetadata {
+func getIlkLumpMetadata(ilk string) vdbStorage.ValueMetadata {
 	keys := map[vdbStorage.Key]string{constants.Ilk: ilk}
-	return vdbStorage.GetStorageValueMetadata(IlkLump, keys, vdbStorage.Uint256)
+	return vdbStorage.GetValueMetadata(IlkLump, keys, vdbStorage.Uint256)
 }

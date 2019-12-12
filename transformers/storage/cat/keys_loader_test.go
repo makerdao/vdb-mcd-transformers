@@ -64,7 +64,7 @@ var _ = Describe("Cat storage keys loader", func() {
 		Describe("when getting ilks succeeds", func() {
 			var (
 				ilkFlipKey = common.BytesToHash(crypto.Keccak256(common.FromHex(test_helpers.FakeIlk + cat.IlksMappingIndex)))
-				mappings   map[common.Hash]vdbStorage.StorageValueMetadata
+				mappings   map[common.Hash]vdbStorage.ValueMetadata
 			)
 
 			BeforeEach(func() {
@@ -75,7 +75,7 @@ var _ = Describe("Cat storage keys loader", func() {
 			})
 
 			It("returns value metadata for ilk flip", func() {
-				expectedMetadata := vdbStorage.StorageValueMetadata{
+				expectedMetadata := vdbStorage.ValueMetadata{
 					Name: cat.IlkFlip,
 					Keys: map[vdbStorage.Key]string{constants.Ilk: test_helpers.FakeIlk},
 					Type: vdbStorage.Address,
@@ -85,8 +85,8 @@ var _ = Describe("Cat storage keys loader", func() {
 			})
 
 			It("returns value metadata for ilk chop", func() {
-				ilkChopKey := vdbStorage.GetIncrementedStorageKey(ilkFlipKey, 1)
-				expectedMetadata := vdbStorage.StorageValueMetadata{
+				ilkChopKey := vdbStorage.GetIncrementedKey(ilkFlipKey, 1)
+				expectedMetadata := vdbStorage.ValueMetadata{
 					Name: cat.IlkChop,
 					Keys: map[vdbStorage.Key]string{constants.Ilk: test_helpers.FakeIlk},
 					Type: vdbStorage.Uint256,
@@ -96,8 +96,8 @@ var _ = Describe("Cat storage keys loader", func() {
 			})
 
 			It("returns value metadata for ilk lump", func() {
-				ilkLumpKey := vdbStorage.GetIncrementedStorageKey(ilkFlipKey, 2)
-				expectedMetadata := vdbStorage.StorageValueMetadata{
+				ilkLumpKey := vdbStorage.GetIncrementedKey(ilkFlipKey, 2)
+				expectedMetadata := vdbStorage.ValueMetadata{
 					Name: cat.IlkLump,
 					Keys: map[vdbStorage.Key]string{constants.Ilk: test_helpers.FakeIlk},
 					Type: vdbStorage.Uint256,

@@ -36,10 +36,10 @@ var (
 	IlkMappingIndex = vdbStorage.IndexOne
 
 	VatKey      = common.HexToHash(vdbStorage.IndexTwo)
-	VatMetadata = vdbStorage.GetStorageValueMetadata(Vat, nil, vdbStorage.Address)
+	VatMetadata = vdbStorage.GetValueMetadata(Vat, nil, vdbStorage.Address)
 
 	ParKey      = common.HexToHash(vdbStorage.IndexThree)
-	ParMetadata = vdbStorage.GetStorageValueMetadata(Par, nil, vdbStorage.Uint256)
+	ParMetadata = vdbStorage.GetValueMetadata(Par, nil, vdbStorage.Uint256)
 )
 
 type keysLoader struct {
@@ -54,7 +54,7 @@ func (loader *keysLoader) SetDB(db *postgres.DB) {
 	loader.storageRepository.SetDB(db)
 }
 
-func (loader *keysLoader) LoadMappings() (map[common.Hash]vdbStorage.StorageValueMetadata, error) {
+func (loader *keysLoader) LoadMappings() (map[common.Hash]vdbStorage.ValueMetadata, error) {
 	mappings := getStaticMappings()
 	ilks, err := loader.storageRepository.GetIlks()
 	if err != nil {
@@ -67,27 +67,27 @@ func (loader *keysLoader) LoadMappings() (map[common.Hash]vdbStorage.StorageValu
 	return mappings, nil
 }
 
-func getStaticMappings() map[common.Hash]vdbStorage.StorageValueMetadata {
-	mappings := make(map[common.Hash]vdbStorage.StorageValueMetadata)
+func getStaticMappings() map[common.Hash]vdbStorage.ValueMetadata {
+	mappings := make(map[common.Hash]vdbStorage.ValueMetadata)
 	mappings[VatKey] = VatMetadata
 	mappings[ParKey] = ParMetadata
 	return mappings
 }
 
 func getPipKey(ilk string) common.Hash {
-	return vdbStorage.GetStorageKeyForMapping(IlkMappingIndex, ilk)
+	return vdbStorage.GetKeyForMapping(IlkMappingIndex, ilk)
 }
 
-func getPipMetadata(ilk string) vdbStorage.StorageValueMetadata {
+func getPipMetadata(ilk string) vdbStorage.ValueMetadata {
 	keys := map[vdbStorage.Key]string{constants.Ilk: ilk}
-	return vdbStorage.GetStorageValueMetadata(IlkPip, keys, vdbStorage.Address)
+	return vdbStorage.GetValueMetadata(IlkPip, keys, vdbStorage.Address)
 }
 
 func getMatKey(ilk string) common.Hash {
-	return vdbStorage.GetIncrementedStorageKey(getPipKey(ilk), 1)
+	return vdbStorage.GetIncrementedKey(getPipKey(ilk), 1)
 }
 
-func getMatMetadata(ilk string) vdbStorage.StorageValueMetadata {
+func getMatMetadata(ilk string) vdbStorage.ValueMetadata {
 	keys := map[vdbStorage.Key]string{constants.Ilk: ilk}
-	return vdbStorage.GetStorageValueMetadata(IlkMat, keys, vdbStorage.Uint256)
+	return vdbStorage.GetValueMetadata(IlkMat, keys, vdbStorage.Uint256)
 }

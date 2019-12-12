@@ -166,7 +166,7 @@ var _ = Describe("Executing the flop transformer", func() {
 		Describe("guy + tic + end packed slot", func() {
 			var (
 				bidId int
-				diff  vdbStorage.PersistedStorageDiff
+				diff  vdbStorage.PersistedDiff
 			)
 
 			BeforeEach(func() {

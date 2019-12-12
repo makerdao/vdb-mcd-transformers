@@ -6,7 +6,7 @@ require (
 	github.com/ethereum/go-ethereum v1.9.8
 	github.com/jmoiron/sqlx v0.0.0-20181024163419-82935fac6c1a
 	github.com/magiconair/properties v1.8.0
-	github.com/makerdao/vulcanizedb v0.0.11-0.20191211162058-30c501644255
+	github.com/makerdao/vulcanizedb v0.0.11-0.20191212205905-623b53fb346f
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.1 // indirect
 	github.com/onsi/ginkgo v1.10.1

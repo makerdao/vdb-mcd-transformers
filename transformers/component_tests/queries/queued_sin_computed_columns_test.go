@@ -29,7 +29,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/vow"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
-	vdbStorage "github.com/makerdao/vulcanizedb/libraries/shared/storage"
+	"github.com/makerdao/vulcanizedb/libraries/shared/storage"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	. "github.com/onsi/ginkgo"
@@ -43,7 +43,7 @@ var _ = Describe("Queued sin computed columns", func() {
 			fakeEra                string
 			headerOne              core.Header
 			fakeTab                = strconv.Itoa(rand.Int())
-			sinMappingMetadata     vdbStorage.StorageValueMetadata
+			sinMappingMetadata     storage.ValueMetadata
 			vowRepository          vow.VowStorageRepository
 			headerRepository       repositories.HeaderRepository
 			diffID                 int64
@@ -62,8 +62,8 @@ var _ = Describe("Queued sin computed columns", func() {
 
 			vowRepository = vow.VowStorageRepository{}
 			vowRepository.SetDB(db)
-			sinMappingKeys := map[vdbStorage.Key]string{constants.Timestamp: fakeEra}
-			sinMappingMetadata = vdbStorage.GetStorageValueMetadata(vow.SinMapping, sinMappingKeys, vdbStorage.Uint256)
+			sinMappingKeys := map[storage.Key]string{constants.Timestamp: fakeEra}
+			sinMappingMetadata = storage.GetValueMetadata(vow.SinMapping, sinMappingKeys, storage.Uint256)
 			insertSinMappingErr := vowRepository.Create(diffID, headerOne.Id, sinMappingMetadata, fakeTab)
 			Expect(insertSinMappingErr).NotTo(HaveOccurred())
 

@@ -66,7 +66,7 @@ var _ = Describe("jug storage keys loader", func() {
 		It("returns value metadata for tax", func() {
 			storageRepository.Ilks = []string{test_helpers.FakeIlk}
 			ilkTaxKey := common.BytesToHash(crypto.Keccak256(common.FromHex(test_helpers.FakeIlk + jug.IlkMappingIndex)))
-			expectedMetadata := vdbStorage.StorageValueMetadata{
+			expectedMetadata := vdbStorage.ValueMetadata{
 				Name: jug.IlkDuty,
 				Keys: map[vdbStorage.Key]string{constants.Ilk: test_helpers.FakeIlk},
 				Type: vdbStorage.Uint256,
@@ -84,7 +84,7 @@ var _ = Describe("jug storage keys loader", func() {
 			ilkTaxAsInt := big.NewInt(0).SetBytes(ilkTaxKeyBytes)
 			incrementedIlkTax := big.NewInt(0).Add(ilkTaxAsInt, big.NewInt(1))
 			ilkRhoKey := common.BytesToHash(incrementedIlkTax.Bytes())
-			expectedMetadata := vdbStorage.StorageValueMetadata{
+			expectedMetadata := vdbStorage.ValueMetadata{
 				Name: jug.IlkRho,
 				Keys: map[vdbStorage.Key]string{constants.Ilk: test_helpers.FakeIlk},
 				Type: vdbStorage.Uint256,

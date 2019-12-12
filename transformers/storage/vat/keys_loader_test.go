@@ -106,7 +106,7 @@ var _ = Describe("Vat storage keys loader", func() {
 			var (
 				ilkArtKey   common.Hash
 				ilkArtAsInt *big.Int
-				mappings    map[common.Hash]vdbStorage.StorageValueMetadata
+				mappings    map[common.Hash]vdbStorage.ValueMetadata
 			)
 
 			BeforeEach(func() {
@@ -119,7 +119,7 @@ var _ = Describe("Vat storage keys loader", func() {
 			})
 
 			It("returns value metadata for ilk Art", func() {
-				expectedMetadata := vdbStorage.StorageValueMetadata{
+				expectedMetadata := vdbStorage.ValueMetadata{
 					Name: vat.IlkArt,
 					Keys: map[vdbStorage.Key]string{constants.Ilk: test_helpers.FakeIlk},
 					Type: vdbStorage.Uint256,
@@ -131,7 +131,7 @@ var _ = Describe("Vat storage keys loader", func() {
 			It("returns value metadata for ilk rate", func() {
 				incrementedIlkArt := big.NewInt(0).Add(ilkArtAsInt, big.NewInt(1))
 				ilkRateKey := common.BytesToHash(incrementedIlkArt.Bytes())
-				expectedMetadata := vdbStorage.StorageValueMetadata{
+				expectedMetadata := vdbStorage.ValueMetadata{
 					Name: vat.IlkRate,
 					Keys: map[vdbStorage.Key]string{constants.Ilk: test_helpers.FakeIlk},
 					Type: vdbStorage.Uint256,
@@ -143,7 +143,7 @@ var _ = Describe("Vat storage keys loader", func() {
 			It("returns value metadata for ilk spot", func() {
 				incrementedIlkArt := big.NewInt(0).Add(ilkArtAsInt, big.NewInt(2))
 				ilkSpotKey := common.BytesToHash(incrementedIlkArt.Bytes())
-				expectedMetadata := vdbStorage.StorageValueMetadata{
+				expectedMetadata := vdbStorage.ValueMetadata{
 					Name: vat.IlkSpot,
 					Keys: map[vdbStorage.Key]string{constants.Ilk: test_helpers.FakeIlk},
 					Type: vdbStorage.Uint256,
@@ -155,7 +155,7 @@ var _ = Describe("Vat storage keys loader", func() {
 			It("returns value metadata for ilk line", func() {
 				incrementedIlkArt := big.NewInt(0).Add(ilkArtAsInt, big.NewInt(3))
 				ilkLineKey := common.BytesToHash(incrementedIlkArt.Bytes())
-				expectedMetadata := vdbStorage.StorageValueMetadata{
+				expectedMetadata := vdbStorage.ValueMetadata{
 					Name: vat.IlkLine,
 					Keys: map[vdbStorage.Key]string{constants.Ilk: test_helpers.FakeIlk},
 					Type: vdbStorage.Uint256,
@@ -167,7 +167,7 @@ var _ = Describe("Vat storage keys loader", func() {
 			It("returns value metadata for ilk dust", func() {
 				incrementedIlkArt := big.NewInt(0).Add(ilkArtAsInt, big.NewInt(4))
 				ilkDustKey := common.BytesToHash(incrementedIlkArt.Bytes())
-				expectedMetadata := vdbStorage.StorageValueMetadata{
+				expectedMetadata := vdbStorage.ValueMetadata{
 					Name: vat.IlkDust,
 					Keys: map[vdbStorage.Key]string{constants.Ilk: test_helpers.FakeIlk},
 					Type: vdbStorage.Uint256,
@@ -184,7 +184,7 @@ var _ = Describe("Vat storage keys loader", func() {
 				paddedUrnGuy := common.FromHex("0x000000000000000000000000" + test_helpers.FakeAddress[2:])
 				encodedSecondaryMapIndex := crypto.Keccak256(paddedUrnGuy, encodedPrimaryMapIndex)
 				urnInkKey := common.BytesToHash(encodedSecondaryMapIndex)
-				expectedMetadata := vdbStorage.StorageValueMetadata{
+				expectedMetadata := vdbStorage.ValueMetadata{
 					Name: vat.UrnInk,
 					Keys: map[vdbStorage.Key]string{constants.Ilk: test_helpers.FakeIlk, constants.Guy: test_helpers.FakeAddress},
 					Type: vdbStorage.Uint256,
@@ -204,7 +204,7 @@ var _ = Describe("Vat storage keys loader", func() {
 				urnInkAsInt := big.NewInt(0).SetBytes(urnInkKey)
 				incrementedUrnInk := big.NewInt(0).Add(urnInkAsInt, big.NewInt(1))
 				urnArtKey := common.BytesToHash(incrementedUrnInk.Bytes())
-				expectedMetadata := vdbStorage.StorageValueMetadata{
+				expectedMetadata := vdbStorage.ValueMetadata{
 					Name: vat.UrnArt,
 					Keys: map[vdbStorage.Key]string{constants.Ilk: test_helpers.FakeIlk, constants.Guy: test_helpers.FakeAddress},
 					Type: vdbStorage.Uint256,
@@ -223,7 +223,7 @@ var _ = Describe("Vat storage keys loader", func() {
 				paddedGemAddress := common.FromHex("0x000000000000000000000000" + test_helpers.FakeAddress[2:])
 				encodedSecondaryMapIndex := crypto.Keccak256(paddedGemAddress, encodedPrimaryMapIndex)
 				gemKey := common.BytesToHash(encodedSecondaryMapIndex)
-				expectedMetadata := vdbStorage.StorageValueMetadata{
+				expectedMetadata := vdbStorage.ValueMetadata{
 					Name: vat.Gem,
 					Keys: map[vdbStorage.Key]string{constants.Ilk: test_helpers.FakeIlk, constants.Guy: test_helpers.FakeAddress},
 					Type: vdbStorage.Uint256,
@@ -240,7 +240,7 @@ var _ = Describe("Vat storage keys loader", func() {
 				storageRepository.DaiKeys = []string{test_helpers.FakeAddress}
 				paddedDaiAddress := "0x000000000000000000000000" + test_helpers.FakeAddress[2:]
 				daiKey := common.BytesToHash(crypto.Keccak256(common.FromHex(paddedDaiAddress + vat.DaiMappingIndex)))
-				expectedMetadata := vdbStorage.StorageValueMetadata{
+				expectedMetadata := vdbStorage.ValueMetadata{
 					Name: vat.Dai,
 					Keys: map[vdbStorage.Key]string{constants.Guy: test_helpers.FakeAddress},
 					Type: vdbStorage.Uint256,
@@ -257,7 +257,7 @@ var _ = Describe("Vat storage keys loader", func() {
 				storageRepository.SinKeys = []string{test_helpers.FakeAddress}
 				paddedSinAddress := "0x000000000000000000000000" + test_helpers.FakeAddress[2:]
 				sinKey := common.BytesToHash(crypto.Keccak256(common.FromHex(paddedSinAddress + vat.SinMappingIndex)))
-				expectedMetadata := vdbStorage.StorageValueMetadata{
+				expectedMetadata := vdbStorage.ValueMetadata{
 					Name: vat.Sin,
 					Keys: map[vdbStorage.Key]string{constants.Guy: test_helpers.FakeAddress},
 					Type: vdbStorage.Uint256,

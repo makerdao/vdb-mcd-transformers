@@ -34,7 +34,7 @@ type FlipStorageRepository struct {
 	db              *postgres.DB
 }
 
-func (repository *FlipStorageRepository) Create(diffID, headerID int64, metadata vdbStorage.StorageValueMetadata, value interface{}) error {
+func (repository *FlipStorageRepository) Create(diffID, headerID int64, metadata vdbStorage.ValueMetadata, value interface{}) error {
 	switch metadata.Name {
 	case storage.Vat:
 		return repository.insertVat(diffID, headerID, value.(string))
@@ -94,7 +94,7 @@ func (repository *FlipStorageRepository) insertKicks(diffID, headerID int64, kic
 	return repository.insertRecordWithAddress(diffID, headerID, InsertFlipKicksQuery, kicks)
 }
 
-func (repository *FlipStorageRepository) insertBidBid(diffID, headerID int64, metadata vdbStorage.StorageValueMetadata, bid string) error {
+func (repository *FlipStorageRepository) insertBidBid(diffID, headerID int64, metadata vdbStorage.ValueMetadata, bid string) error {
 	bidId, err := getBidId(metadata.Keys)
 	if err != nil {
 		return err
@@ -103,7 +103,7 @@ func (repository *FlipStorageRepository) insertBidBid(diffID, headerID int64, me
 	return repository.insertRecordWithAddressAndBidId(diffID, headerID, InsertFlipBidBidQuery, bidId, bid)
 }
 
-func (repository *FlipStorageRepository) insertBidLot(diffID, headerID int64, metadata vdbStorage.StorageValueMetadata, lot string) error {
+func (repository *FlipStorageRepository) insertBidLot(diffID, headerID int64, metadata vdbStorage.ValueMetadata, lot string) error {
 	bidId, err := getBidId(metadata.Keys)
 	if err != nil {
 		return err
@@ -112,7 +112,7 @@ func (repository *FlipStorageRepository) insertBidLot(diffID, headerID int64, me
 	return repository.insertRecordWithAddressAndBidId(diffID, headerID, InsertFlipBidLotQuery, bidId, lot)
 }
 
-func (repository *FlipStorageRepository) insertBidGuy(diffID, headerID int64, metadata vdbStorage.StorageValueMetadata, guy string) error {
+func (repository *FlipStorageRepository) insertBidGuy(diffID, headerID int64, metadata vdbStorage.ValueMetadata, guy string) error {
 	bidId, err := getBidId(metadata.Keys)
 	if err != nil {
 		return err
@@ -121,7 +121,7 @@ func (repository *FlipStorageRepository) insertBidGuy(diffID, headerID int64, me
 	return repository.insertRecordWithAddressAndBidId(diffID, headerID, InsertFlipBidGuyQuery, bidId, guy)
 }
 
-func (repository *FlipStorageRepository) insertBidTic(diffID, headerID int64, metadata vdbStorage.StorageValueMetadata, tic string) error {
+func (repository *FlipStorageRepository) insertBidTic(diffID, headerID int64, metadata vdbStorage.ValueMetadata, tic string) error {
 	bidId, err := getBidId(metadata.Keys)
 	if err != nil {
 		return err
@@ -130,7 +130,7 @@ func (repository *FlipStorageRepository) insertBidTic(diffID, headerID int64, me
 	return repository.insertRecordWithAddressAndBidId(diffID, headerID, InsertFlipBidTicQuery, bidId, tic)
 }
 
-func (repository *FlipStorageRepository) insertBidEnd(diffID, headerID int64, metadata vdbStorage.StorageValueMetadata, end string) error {
+func (repository *FlipStorageRepository) insertBidEnd(diffID, headerID int64, metadata vdbStorage.ValueMetadata, end string) error {
 	bidId, err := getBidId(metadata.Keys)
 	if err != nil {
 		return err
@@ -139,7 +139,7 @@ func (repository *FlipStorageRepository) insertBidEnd(diffID, headerID int64, me
 	return repository.insertRecordWithAddressAndBidId(diffID, headerID, InsertFlipBidEndQuery, bidId, end)
 }
 
-func (repository *FlipStorageRepository) insertBidUsr(diffID, headerID int64, metadata vdbStorage.StorageValueMetadata, usr string) error {
+func (repository *FlipStorageRepository) insertBidUsr(diffID, headerID int64, metadata vdbStorage.ValueMetadata, usr string) error {
 	bidId, err := getBidId(metadata.Keys)
 	if err != nil {
 		return err
@@ -148,7 +148,7 @@ func (repository *FlipStorageRepository) insertBidUsr(diffID, headerID int64, me
 	return repository.insertRecordWithAddressAndBidId(diffID, headerID, InsertFlipBidUsrQuery, bidId, usr)
 }
 
-func (repository *FlipStorageRepository) insertBidGal(diffID, headerID int64, metadata vdbStorage.StorageValueMetadata, gal string) error {
+func (repository *FlipStorageRepository) insertBidGal(diffID, headerID int64, metadata vdbStorage.ValueMetadata, gal string) error {
 	bidId, err := getBidId(metadata.Keys)
 	if err != nil {
 		return err
@@ -157,7 +157,7 @@ func (repository *FlipStorageRepository) insertBidGal(diffID, headerID int64, me
 	return repository.insertRecordWithAddressAndBidId(diffID, headerID, InsertFlipBidGalQuery, bidId, gal)
 }
 
-func (repository *FlipStorageRepository) insertBidTab(diffID, headerID int64, metadata vdbStorage.StorageValueMetadata, tab string) error {
+func (repository *FlipStorageRepository) insertBidTab(diffID, headerID int64, metadata vdbStorage.ValueMetadata, tab string) error {
 	bidId, err := getBidId(metadata.Keys)
 	if err != nil {
 		return err
@@ -166,7 +166,7 @@ func (repository *FlipStorageRepository) insertBidTab(diffID, headerID int64, me
 	return repository.insertRecordWithAddressAndBidId(diffID, headerID, InsertFlipBidTabQuery, bidId, tab)
 }
 
-func (repository *FlipStorageRepository) insertPackedValueRecord(diffID, headerID int64, metadata vdbStorage.StorageValueMetadata, packedValues map[int]string) error {
+func (repository *FlipStorageRepository) insertPackedValueRecord(diffID, headerID int64, metadata vdbStorage.ValueMetadata, packedValues map[int]string) error {
 	for order, value := range packedValues {
 		var insertErr error
 		switch metadata.PackedNames[order] {

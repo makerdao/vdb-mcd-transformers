@@ -30,24 +30,24 @@ var (
 	BidsIndex = vdbStorage.IndexOne
 
 	VatStorageKey = common.HexToHash(vdbStorage.IndexTwo)
-	VatMetadata   = vdbStorage.GetStorageValueMetadata(mcdStorage.Vat, nil, vdbStorage.Address)
+	VatMetadata   = vdbStorage.GetValueMetadata(mcdStorage.Vat, nil, vdbStorage.Address)
 
 	GemStorageKey = common.HexToHash(vdbStorage.IndexThree)
-	GemMetadata   = vdbStorage.GetStorageValueMetadata(mcdStorage.Gem, nil, vdbStorage.Address)
+	GemMetadata   = vdbStorage.GetValueMetadata(mcdStorage.Gem, nil, vdbStorage.Address)
 
 	BegStorageKey = common.HexToHash(vdbStorage.IndexFour)
-	BegMetadata   = vdbStorage.GetStorageValueMetadata(mcdStorage.Beg, nil, vdbStorage.Uint256)
+	BegMetadata   = vdbStorage.GetValueMetadata(mcdStorage.Beg, nil, vdbStorage.Uint256)
 
 	TtlAndTauStorageKey = common.HexToHash(vdbStorage.IndexFive)
 	ttlAndTauTypes      = map[int]vdbStorage.ValueType{0: vdbStorage.Uint48, 1: vdbStorage.Uint48}
 	ttlAndTauNames      = map[int]string{0: mcdStorage.Ttl, 1: mcdStorage.Tau}
-	TtlAndTauMetadata   = vdbStorage.GetStorageValueMetadataForPackedSlot(mcdStorage.Packed, nil, vdbStorage.PackedSlot, ttlAndTauNames, ttlAndTauTypes)
+	TtlAndTauMetadata   = vdbStorage.GetValueMetadataForPackedSlot(mcdStorage.Packed, nil, vdbStorage.PackedSlot, ttlAndTauNames, ttlAndTauTypes)
 
 	KicksStorageKey = common.HexToHash(vdbStorage.IndexSix)
-	KicksMetadata   = vdbStorage.GetStorageValueMetadata(mcdStorage.Kicks, nil, vdbStorage.Uint256)
+	KicksMetadata   = vdbStorage.GetValueMetadata(mcdStorage.Kicks, nil, vdbStorage.Uint256)
 
 	LiveStorageKey = common.HexToHash(vdbStorage.IndexSeven)
-	LiveMetadata   = vdbStorage.GetStorageValueMetadata(mcdStorage.Live, nil, vdbStorage.Uint256)
+	LiveMetadata   = vdbStorage.GetValueMetadata(mcdStorage.Live, nil, vdbStorage.Uint256)
 )
 
 type keysLoader struct {
@@ -66,12 +66,12 @@ func (loader *keysLoader) SetDB(db *postgres.DB) {
 	loader.storageRepository.SetDB(db)
 }
 
-func (loader *keysLoader) LoadMappings() (map[common.Hash]vdbStorage.StorageValueMetadata, error) {
+func (loader *keysLoader) LoadMappings() (map[common.Hash]vdbStorage.ValueMetadata, error) {
 	mappings := loadStaticKeys()
 	return loader.loadBidKeys(mappings)
 }
 
-func (loader *keysLoader) loadBidKeys(mappings map[common.Hash]vdbStorage.StorageValueMetadata) (map[common.Hash]vdbStorage.StorageValueMetadata, error) {
+func (loader *keysLoader) loadBidKeys(mappings map[common.Hash]vdbStorage.ValueMetadata) (map[common.Hash]vdbStorage.ValueMetadata, error) {
 	bidIds, getBidIdsErr := loader.storageRepository.GetFlapBidIds(loader.contractAddress)
 	if getBidIdsErr != nil {
 		return nil, getBidIdsErr
@@ -88,8 +88,8 @@ func (loader *keysLoader) loadBidKeys(mappings map[common.Hash]vdbStorage.Storag
 	return mappings, nil
 }
 
-func loadStaticKeys() map[common.Hash]vdbStorage.StorageValueMetadata {
-	mappings := make(map[common.Hash]vdbStorage.StorageValueMetadata)
+func loadStaticKeys() map[common.Hash]vdbStorage.ValueMetadata {
+	mappings := make(map[common.Hash]vdbStorage.ValueMetadata)
 	mappings[VatStorageKey] = VatMetadata
 	mappings[GemStorageKey] = GemMetadata
 	mappings[BegStorageKey] = BegMetadata
@@ -100,11 +100,11 @@ func loadStaticKeys() map[common.Hash]vdbStorage.StorageValueMetadata {
 }
 
 func getBidBidKey(bidId string) common.Hash {
-	return vdbStorage.GetStorageKeyForMapping(BidsIndex, bidId)
+	return vdbStorage.GetKeyForMapping(BidsIndex, bidId)
 }
 
-func getBidBidMetadata(bidId string) vdbStorage.StorageValueMetadata {
-	return vdbStorage.StorageValueMetadata{
+func getBidBidMetadata(bidId string) vdbStorage.ValueMetadata {
+	return vdbStorage.ValueMetadata{
 		Name: mcdStorage.BidBid,
 		Keys: map[vdbStorage.Key]string{constants.BidId: bidId},
 		Type: vdbStorage.Uint256,
@@ -112,11 +112,11 @@ func getBidBidMetadata(bidId string) vdbStorage.StorageValueMetadata {
 }
 
 func getBidLotKey(bidId string) common.Hash {
-	return vdbStorage.GetIncrementedStorageKey(getBidBidKey(bidId), 1) //should this be renamed GetMappingKey?
+	return vdbStorage.GetIncrementedKey(getBidBidKey(bidId), 1) //should this be renamed GetMappingKey?
 }
 
-func getBidLotMetadata(bidId string) vdbStorage.StorageValueMetadata {
-	return vdbStorage.StorageValueMetadata{
+func getBidLotMetadata(bidId string) vdbStorage.ValueMetadata {
+	return vdbStorage.ValueMetadata{
 		Name: mcdStorage.BidLot,
 		Keys: map[vdbStorage.Key]string{constants.BidId: bidId},
 		Type: vdbStorage.Uint256,
@@ -124,12 +124,12 @@ func getBidLotMetadata(bidId string) vdbStorage.StorageValueMetadata {
 }
 
 func getBidGuyTicEndKey(hexBidId string) common.Hash {
-	return vdbStorage.GetIncrementedStorageKey(getBidBidKey(hexBidId), 2)
+	return vdbStorage.GetIncrementedKey(getBidBidKey(hexBidId), 2)
 }
 
-func getBidGuyTicEndMetadata(bidId string) vdbStorage.StorageValueMetadata {
+func getBidGuyTicEndMetadata(bidId string) vdbStorage.ValueMetadata {
 	keys := map[vdbStorage.Key]string{constants.BidId: bidId}
 	packedTypes := map[int]vdbStorage.ValueType{0: vdbStorage.Address, 1: vdbStorage.Uint48, 2: vdbStorage.Uint48}
 	packedNames := map[int]string{0: mcdStorage.BidGuy, 1: mcdStorage.BidTic, 2: mcdStorage.BidEnd}
-	return vdbStorage.GetStorageValueMetadataForPackedSlot(mcdStorage.Packed, keys, vdbStorage.PackedSlot, packedNames, packedTypes)
+	return vdbStorage.GetValueMetadataForPackedSlot(mcdStorage.Packed, keys, vdbStorage.PackedSlot, packedNames, packedTypes)
 }
