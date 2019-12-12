@@ -17,15 +17,14 @@
 package initializer
 
 import (
-	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
-
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/new_cdp"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
+	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 )
 
-var EventTransformerInitializer transformer.EventTransformerInitializer = shared.EventTransformer{
-	Config:     shared.GetEventTransformerConfig(constants.NewCdpTable, constants.NewCdpSignature()),
-	Converter:  new_cdp.NewCdpConverter{},
-	Repository: &new_cdp.NewCdpRepository{},
-}.NewEventTransformer
+var EventTransformerInitializer transformer.EventTransformerInitializer = event.Transformer{
+	Config:    shared.GetEventTransformerConfig(constants.NewCdpTable, constants.NewCdpSignature()),
+	Converter: new_cdp.Converter{},
+}.NewTransformer

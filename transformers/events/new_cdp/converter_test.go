@@ -17,28 +17,26 @@
 package new_cdp_test
 
 import (
-	"github.com/makerdao/vulcanizedb/pkg/core"
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
-
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/new_cdp"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
+	"github.com/makerdao/vulcanizedb/pkg/core"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("NewCdp Converter", func() {
-	var converter = new_cdp.NewCdpConverter{}
+	var converter = new_cdp.Converter{}
 
 	It("converts a log to a Model", func() {
-		models, err := converter.ToModels(constants.CdpManagerABI(), []core.HeaderSyncLog{test_data.NewCdpHeaderSyncLog})
-
+		models, err := converter.ToModels(constants.CdpManagerABI(), []core.HeaderSyncLog{test_data.NewCdpHeaderSyncLog}, nil)
 		Expect(err).NotTo(HaveOccurred())
-		Expect(len(models)).To(Equal(1))
-		Expect(models[0]).To(Equal(test_data.NewCdpModel()))
+
+		Expect(models).To(ConsistOf(test_data.NewCdpModel()))
 	})
 
 	It("returns an error if converting log to entity fails", func() {
-		_, err := converter.ToModels("error abi", []core.HeaderSyncLog{test_data.NewCdpHeaderSyncLog})
+		_, err := converter.ToModels("error abi", []core.HeaderSyncLog{test_data.NewCdpHeaderSyncLog}, nil)
 		Expect(err).To(HaveOccurred())
 	})
 })
