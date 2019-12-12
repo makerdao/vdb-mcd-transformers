@@ -36,6 +36,7 @@ func PotCageSignature() string            { return getLogNoteTopicZero(potCageMe
 func PotFileDSRSignature() string         { return getLogNoteTopicZero(potFileDSRMethod()) }
 func PotFileVowSignature() string         { return getLogNoteTopicZero(potFileVowMethod()) }
 func SpotFileMatSignature() string        { return getLogNoteTopicZero(spotFileMatMethod()) }
+func SpotFileParSignature() string        { return getLogNoteTopicZero(spotFileParMethod()) }
 func SpotFilePipSignature() string        { return getLogNoteTopicZero(spotFilePipMethod()) }
 func SpotPokeSignature() string           { return getEventTopicZero(spotPokeMethod()) }
 func TendSignature() string               { return getLogNoteTopicZero(tendMethod()) }

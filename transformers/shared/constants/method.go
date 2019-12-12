@@ -73,6 +73,9 @@ func potFileVowMethod() string {
 func spotFileMatMethod() string {
 	return getOverloadedFunctionSignature(SpotABI(), "file", []string{"bytes32", "bytes32", "uint256"})
 }
+func spotFileParMethod() string {
+	return getOverloadedFunctionSignature(SpotABI(), "file", []string{"bytes32", "uint256"})
+}
 func spotFilePipMethod() string {
 	return getOverloadedFunctionSignature(SpotABI(), "file", []string{"bytes32", "bytes32", "address"})
 }

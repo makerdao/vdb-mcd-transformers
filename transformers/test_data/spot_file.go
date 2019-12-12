@@ -17,6 +17,7 @@
 package test_data
 
 import (
+	"math/big"
 	"math/rand"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -25,6 +26,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
+	"github.com/makerdao/vulcanizedb/pkg/fakes"
 )
 
 var rawSpotFileMatLog = types.Log{
@@ -70,6 +72,46 @@ var spotFileMatModel = event.InsertionModel{
 		constants.DataColumn: "1500000000000000000000000000",
 	},
 }
+
+var rawSpotFileParLog = types.Log{
+	Address: common.HexToAddress(SpotAddress()),
+	Topics: []common.Hash{
+		common.HexToHash(constants.SpotFileParSignature()),
+		common.HexToHash("0x00000000000000000000000064d922894153be9eef7b7218dc565d1d0ce2a092"),
+		common.HexToHash("0x66616b6520776861740000000000000000000000000000000000000000000000"),
+		common.HexToHash("0x000000000000000000000000000000000000000000000000000000000000007b"),
+	},
+	Data:        hexutil.MustDecode("0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000004429ae811466616b6520776861740000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000007b"),
+	BlockNumber: 36,
+	TxHash:      common.HexToHash("0xeeaa16de1d91c239b66773e8c2116a26cfeaaf5d962b31466c9bf047a5caa20f"),
+	TxIndex:     13,
+	BlockHash:   fakes.FakeHash,
+	Index:       16,
+	Removed:     false,
+}
+
+var SpotFileParHeaderSyncLog = core.HeaderSyncLog{
+	ID:          int64(rand.Int31()),
+	HeaderID:    int64(rand.Int31()),
+	Log:         rawSpotFileParLog,
+	Transformed: false,
+}
+
+var spotFileParModel = event.InsertionModel{
+	SchemaName: constants.MakerSchema,
+	TableName:  constants.SpotFileParTable,
+	OrderedColumns: []event.ColumnName{
+		event.HeaderFK, constants.WhatColumn, constants.DataColumn, event.LogFK,
+	},
+	ColumnValues: event.ColumnValues{
+		constants.WhatColumn: "fake what",
+		constants.DataColumn: big.NewInt(123).String(),
+		event.HeaderFK:       SpotFileParHeaderSyncLog.HeaderID,
+		event.LogFK:          SpotFileParHeaderSyncLog.ID,
+	},
+}
+
+func SpotFileParModel() event.InsertionModel { return CopyEventModel(spotFileParModel) }
 
 var rawSpotFilePipLog = types.Log{
 	Address: common.HexToAddress(SpotAddress()),

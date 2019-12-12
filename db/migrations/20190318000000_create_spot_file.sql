@@ -17,6 +17,21 @@ CREATE INDEX spot_file_mat_log_index
 CREATE INDEX spot_file_mat_ilk_index
     ON maker.spot_file_mat (ilk_id);
 
+CREATE TABLE maker.spot_file_par
+(
+    id        SERIAL PRIMARY KEY,
+    header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
+    log_id    BIGINT  NOT NULL REFERENCES header_sync_logs (id) ON DELETE CASCADE,
+    what      TEXT,
+    data      NUMERIC,
+    UNIQUE (header_id, log_id)
+);
+
+CREATE INDEX spot_file_par_header_index
+    ON maker.spot_file_par (header_id);
+CREATE INDEX spot_file_par_log_index
+    ON maker.spot_file_par (log_id);
+
 CREATE TABLE maker.spot_file_pip
 (
     id        SERIAL PRIMARY KEY,
@@ -40,9 +55,12 @@ CREATE INDEX spot_file_pip_header_index
 DROP INDEX maker.spot_file_mat_header_index;
 DROP INDEX maker.spot_file_mat_log_index;
 DROP INDEX maker.spot_file_mat_ilk_index;
+DROP INDEX maker.spot_file_par_header_index;
+DROP INDEX maker.spot_file_par_log_index;
 DROP INDEX maker.spot_file_pip_header_index;
 DROP INDEX maker.spot_file_pip_log_index;
 DROP INDEX maker.spot_file_pip_ilk_index;
 
 DROP TABLE maker.spot_file_mat;
+DROP TABLE maker.spot_file_par;
 DROP TABLE maker.spot_file_pip;
