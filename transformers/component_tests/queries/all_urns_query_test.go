@@ -12,7 +12,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/vat"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
-	"github.com/makerdao/vulcanizedb/libraries/shared/storage/utils"
+	vdbStorage "github.com/makerdao/vulcanizedb/libraries/shared/storage"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
@@ -118,7 +118,7 @@ var _ = Describe("Urn view", func() {
 
 	It("returns available data if urn has ink but no art", func() {
 		fakeInk := rand.Int()
-		urnInkMetadata := utils.GetStorageValueMetadata(vat.UrnInk, map[utils.Key]string{constants.Ilk: helper.FakeIlk.Hex, constants.Guy: urnOne}, utils.Uint256)
+		urnInkMetadata := vdbStorage.GetStorageValueMetadata(vat.UrnInk, map[vdbStorage.Key]string{constants.Ilk: helper.FakeIlk.Hex, constants.Guy: urnOne}, vdbStorage.Uint256)
 		insertInkErr := vatRepo.Create(diffID, headerOne.Id, urnInkMetadata, strconv.Itoa(fakeInk))
 		Expect(insertInkErr).NotTo(HaveOccurred())
 

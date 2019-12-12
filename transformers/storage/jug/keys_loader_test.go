@@ -25,7 +25,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/jug"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
-	"github.com/makerdao/vulcanizedb/libraries/shared/storage/utils"
+	vdbStorage "github.com/makerdao/vulcanizedb/libraries/shared/storage"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -66,10 +66,10 @@ var _ = Describe("jug storage keys loader", func() {
 		It("returns value metadata for tax", func() {
 			storageRepository.Ilks = []string{test_helpers.FakeIlk}
 			ilkTaxKey := common.BytesToHash(crypto.Keccak256(common.FromHex(test_helpers.FakeIlk + jug.IlkMappingIndex)))
-			expectedMetadata := utils.StorageValueMetadata{
+			expectedMetadata := vdbStorage.StorageValueMetadata{
 				Name: jug.IlkDuty,
-				Keys: map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk},
-				Type: utils.Uint256,
+				Keys: map[vdbStorage.Key]string{constants.Ilk: test_helpers.FakeIlk},
+				Type: vdbStorage.Uint256,
 			}
 
 			mappings, err := storageKeysLoader.LoadMappings()
@@ -84,10 +84,10 @@ var _ = Describe("jug storage keys loader", func() {
 			ilkTaxAsInt := big.NewInt(0).SetBytes(ilkTaxKeyBytes)
 			incrementedIlkTax := big.NewInt(0).Add(ilkTaxAsInt, big.NewInt(1))
 			ilkRhoKey := common.BytesToHash(incrementedIlkTax.Bytes())
-			expectedMetadata := utils.StorageValueMetadata{
+			expectedMetadata := vdbStorage.StorageValueMetadata{
 				Name: jug.IlkRho,
-				Keys: map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk},
-				Type: utils.Uint256,
+				Keys: map[vdbStorage.Key]string{constants.Ilk: test_helpers.FakeIlk},
+				Type: vdbStorage.Uint256,
 			}
 
 			mappings, err := storageKeysLoader.LoadMappings()

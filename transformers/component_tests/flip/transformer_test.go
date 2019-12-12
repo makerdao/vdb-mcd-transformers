@@ -26,7 +26,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
-	"github.com/makerdao/vulcanizedb/libraries/shared/storage/utils"
+	vdbStorage "github.com/makerdao/vulcanizedb/libraries/shared/storage"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	. "github.com/onsi/ginkgo"
@@ -47,7 +47,7 @@ var _ = Describe("Executing the flip transformer", func() {
 	BeforeEach(func() {
 		test_config.CleanTestDB(db)
 		transformer = storage.Transformer{
-			HashedAddress:     utils.HexToKeccak256Hash(contractAddress),
+			HashedAddress:     vdbStorage.HexToKeccak256Hash(contractAddress),
 			StorageKeysLookup: storageKeysLookup,
 			Repository:        &repository,
 		}
@@ -146,7 +146,7 @@ var _ = Describe("Executing the flip transformer", func() {
 		Describe("guy + tic + end packed slot", func() {
 			var (
 				bidId int
-				diff  utils.PersistedStorageDiff
+				diff  vdbStorage.PersistedStorageDiff
 			)
 
 			BeforeEach(func() {

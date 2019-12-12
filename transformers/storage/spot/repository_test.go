@@ -27,7 +27,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/spot"
 	. "github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data/shared_behaviors"
-	"github.com/makerdao/vulcanizedb/libraries/shared/storage/utils"
+	vdbStorage "github.com/makerdao/vulcanizedb/libraries/shared/storage"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	. "github.com/onsi/ginkgo"
@@ -58,7 +58,7 @@ var _ = Describe("Spot storage repository", func() {
 	Describe("Ilk", func() {
 		Describe("Pip", func() {
 			It("writes a row", func() {
-				ilkPipMetadata := utils.GetStorageValueMetadata(spot.IlkPip, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Address)
+				ilkPipMetadata := vdbStorage.GetStorageValueMetadata(spot.IlkPip, map[vdbStorage.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, vdbStorage.Address)
 
 				err := repo.Create(diffID, fakeHeaderID, ilkPipMetadata, fakeAddress)
 
@@ -72,7 +72,7 @@ var _ = Describe("Spot storage repository", func() {
 			})
 
 			It("does not duplicate row", func() {
-				ilkPipMetadata := utils.GetStorageValueMetadata(spot.IlkPip, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Address)
+				ilkPipMetadata := vdbStorage.GetStorageValueMetadata(spot.IlkPip, map[vdbStorage.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, vdbStorage.Address)
 				insertOneErr := repo.Create(diffID, fakeHeaderID, ilkPipMetadata, fakeAddress)
 				Expect(insertOneErr).NotTo(HaveOccurred())
 
@@ -86,15 +86,15 @@ var _ = Describe("Spot storage repository", func() {
 			})
 
 			It("returns an error if metadata missing ilk", func() {
-				malformedIlkPipMetadata := utils.GetStorageValueMetadata(spot.IlkPip, nil, utils.Address)
+				malformedIlkPipMetadata := vdbStorage.GetStorageValueMetadata(spot.IlkPip, nil, vdbStorage.Address)
 
 				err := repo.Create(diffID, fakeHeaderID, malformedIlkPipMetadata, fakeAddress)
-				Expect(err).To(MatchError(utils.ErrMetadataMalformed{MissingData: constants.Ilk}))
+				Expect(err).To(MatchError(vdbStorage.ErrMetadataMalformed{MissingData: constants.Ilk}))
 			})
 
 			shared_behaviors.SharedIlkTriggerTests(shared_behaviors.IlkTriggerTestInput{
 				Repository:    &repo,
-				Metadata:      utils.GetStorageValueMetadata(spot.IlkPip, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Address),
+				Metadata:      vdbStorage.GetStorageValueMetadata(spot.IlkPip, map[vdbStorage.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, vdbStorage.Address),
 				PropertyName:  "Pip",
 				PropertyValue: fakeAddress,
 				TableName:     "maker.spot_ilk_pip",
@@ -103,7 +103,7 @@ var _ = Describe("Spot storage repository", func() {
 
 		Describe("Mat", func() {
 			It("writes a row", func() {
-				ilkMatMetadata := utils.GetStorageValueMetadata(spot.IlkMat, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Uint256)
+				ilkMatMetadata := vdbStorage.GetStorageValueMetadata(spot.IlkMat, map[vdbStorage.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, vdbStorage.Uint256)
 
 				err := repo.Create(diffID, fakeHeaderID, ilkMatMetadata, fakeUint256)
 
@@ -118,7 +118,7 @@ var _ = Describe("Spot storage repository", func() {
 			})
 
 			It("does not duplicate row", func() {
-				ilkMatMetadata := utils.GetStorageValueMetadata(spot.IlkMat, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Uint256)
+				ilkMatMetadata := vdbStorage.GetStorageValueMetadata(spot.IlkMat, map[vdbStorage.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, vdbStorage.Uint256)
 				insertOneErr := repo.Create(diffID, fakeHeaderID, ilkMatMetadata, fakeUint256)
 				Expect(insertOneErr).NotTo(HaveOccurred())
 
@@ -132,15 +132,15 @@ var _ = Describe("Spot storage repository", func() {
 			})
 
 			It("returns an error if metadata missing ilk", func() {
-				malformedIlkMatMetadata := utils.GetStorageValueMetadata(spot.IlkMat, nil, utils.Uint256)
+				malformedIlkMatMetadata := vdbStorage.GetStorageValueMetadata(spot.IlkMat, nil, vdbStorage.Uint256)
 
 				err := repo.Create(diffID, fakeHeaderID, malformedIlkMatMetadata, fakeUint256)
-				Expect(err).To(MatchError(utils.ErrMetadataMalformed{MissingData: constants.Ilk}))
+				Expect(err).To(MatchError(vdbStorage.ErrMetadataMalformed{MissingData: constants.Ilk}))
 			})
 
 			shared_behaviors.SharedIlkTriggerTests(shared_behaviors.IlkTriggerTestInput{
 				Repository:    &repo,
-				Metadata:      utils.GetStorageValueMetadata(spot.IlkMat, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Uint256),
+				Metadata:      vdbStorage.GetStorageValueMetadata(spot.IlkMat, map[vdbStorage.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, vdbStorage.Uint256),
 				PropertyName:  "Mat",
 				PropertyValue: strconv.Itoa(rand.Int()),
 				TableName:     "maker.spot_ilk_mat",

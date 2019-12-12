@@ -6,7 +6,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage"
-	"github.com/makerdao/vulcanizedb/libraries/shared/storage/utils"
+	vdbStorage "github.com/makerdao/vulcanizedb/libraries/shared/storage"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 )
 
@@ -30,7 +30,7 @@ type FlapStorageRepository struct {
 	ContractAddress string
 }
 
-func (repository *FlapStorageRepository) Create(diffID, headerID int64, metadata utils.StorageValueMetadata, value interface{}) error {
+func (repository *FlapStorageRepository) Create(diffID, headerID int64, metadata vdbStorage.StorageValueMetadata, value interface{}) error {
 	switch metadata.Name {
 	case storage.Vat:
 		return repository.insertVat(diffID, headerID, value.(string))
@@ -85,7 +85,7 @@ func (repository *FlapStorageRepository) insertLive(diffID, headerID int64, live
 	return repository.insertRecordWithAddress(diffID, headerID, insertLiveQuery, live)
 }
 
-func (repository *FlapStorageRepository) insertBidBid(diffID, headerID int64, metadata utils.StorageValueMetadata, bid string) error {
+func (repository *FlapStorageRepository) insertBidBid(diffID, headerID int64, metadata vdbStorage.StorageValueMetadata, bid string) error {
 	bidId, err := getBidId(metadata.Keys)
 	if err != nil {
 		return err
@@ -93,7 +93,7 @@ func (repository *FlapStorageRepository) insertBidBid(diffID, headerID int64, me
 	return repository.insertRecordWithAddressAndBidId(diffID, headerID, insertBidBidQuery, bidId, bid)
 }
 
-func (repository *FlapStorageRepository) insertBidLot(diffID, headerID int64, metadata utils.StorageValueMetadata, lot string) error {
+func (repository *FlapStorageRepository) insertBidLot(diffID, headerID int64, metadata vdbStorage.StorageValueMetadata, lot string) error {
 	bidId, err := getBidId(metadata.Keys)
 	if err != nil {
 		return err
@@ -101,7 +101,7 @@ func (repository *FlapStorageRepository) insertBidLot(diffID, headerID int64, me
 	return repository.insertRecordWithAddressAndBidId(diffID, headerID, insertBidLotQuery, bidId, lot)
 }
 
-func (repository *FlapStorageRepository) insertBidGuy(diffID, headerID int64, metadata utils.StorageValueMetadata, guy string) error {
+func (repository *FlapStorageRepository) insertBidGuy(diffID, headerID int64, metadata vdbStorage.StorageValueMetadata, guy string) error {
 	bidId, err := getBidId(metadata.Keys)
 	if err != nil {
 		return err
@@ -109,7 +109,7 @@ func (repository *FlapStorageRepository) insertBidGuy(diffID, headerID int64, me
 	return repository.insertRecordWithAddressAndBidId(diffID, headerID, insertBidGuyQuery, bidId, guy)
 }
 
-func (repository *FlapStorageRepository) insertBidTic(diffID, headerID int64, metadata utils.StorageValueMetadata, tic string) error {
+func (repository *FlapStorageRepository) insertBidTic(diffID, headerID int64, metadata vdbStorage.StorageValueMetadata, tic string) error {
 	bidId, err := getBidId(metadata.Keys)
 	if err != nil {
 		return err
@@ -117,7 +117,7 @@ func (repository *FlapStorageRepository) insertBidTic(diffID, headerID int64, me
 	return repository.insertRecordWithAddressAndBidId(diffID, headerID, insertBidTicQuery, bidId, tic)
 }
 
-func (repository *FlapStorageRepository) insertBidEnd(diffID, headerID int64, metadata utils.StorageValueMetadata, end string) error {
+func (repository *FlapStorageRepository) insertBidEnd(diffID, headerID int64, metadata vdbStorage.StorageValueMetadata, end string) error {
 	bidId, err := getBidId(metadata.Keys)
 	if err != nil {
 		return err
@@ -125,7 +125,7 @@ func (repository *FlapStorageRepository) insertBidEnd(diffID, headerID int64, me
 	return repository.insertRecordWithAddressAndBidId(diffID, headerID, insertBidEndQuery, bidId, end)
 }
 
-func (repository *FlapStorageRepository) insertPackedValueRecord(diffID, headerID int64, metadata utils.StorageValueMetadata, packedValues map[int]string) error {
+func (repository *FlapStorageRepository) insertPackedValueRecord(diffID, headerID int64, metadata vdbStorage.StorageValueMetadata, packedValues map[int]string) error {
 	for order, value := range packedValues {
 		var insertErr error
 		switch metadata.PackedNames[order] {
@@ -149,10 +149,10 @@ func (repository *FlapStorageRepository) insertPackedValueRecord(diffID, headerI
 	return nil
 }
 
-func getBidId(keys map[utils.Key]string) (string, error) {
+func getBidId(keys map[vdbStorage.Key]string) (string, error) {
 	bid, ok := keys[constants.BidId]
 	if !ok {
-		return "", utils.ErrMetadataMalformed{MissingData: constants.BidId}
+		return "", vdbStorage.ErrMetadataMalformed{MissingData: constants.BidId}
 	}
 	return bid, nil
 }

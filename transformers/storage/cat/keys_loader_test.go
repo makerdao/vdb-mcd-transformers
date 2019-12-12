@@ -23,7 +23,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/cat"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
-	"github.com/makerdao/vulcanizedb/libraries/shared/storage/utils"
+	vdbStorage "github.com/makerdao/vulcanizedb/libraries/shared/storage"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -64,7 +64,7 @@ var _ = Describe("Cat storage keys loader", func() {
 		Describe("when getting ilks succeeds", func() {
 			var (
 				ilkFlipKey = common.BytesToHash(crypto.Keccak256(common.FromHex(test_helpers.FakeIlk + cat.IlksMappingIndex)))
-				mappings   map[common.Hash]utils.StorageValueMetadata
+				mappings   map[common.Hash]vdbStorage.StorageValueMetadata
 			)
 
 			BeforeEach(func() {
@@ -75,32 +75,32 @@ var _ = Describe("Cat storage keys loader", func() {
 			})
 
 			It("returns value metadata for ilk flip", func() {
-				expectedMetadata := utils.StorageValueMetadata{
+				expectedMetadata := vdbStorage.StorageValueMetadata{
 					Name: cat.IlkFlip,
-					Keys: map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk},
-					Type: utils.Address,
+					Keys: map[vdbStorage.Key]string{constants.Ilk: test_helpers.FakeIlk},
+					Type: vdbStorage.Address,
 				}
 
 				Expect(mappings[ilkFlipKey]).To(Equal(expectedMetadata))
 			})
 
 			It("returns value metadata for ilk chop", func() {
-				ilkChopKey := utils.GetIncrementedStorageKey(ilkFlipKey, 1)
-				expectedMetadata := utils.StorageValueMetadata{
+				ilkChopKey := vdbStorage.GetIncrementedStorageKey(ilkFlipKey, 1)
+				expectedMetadata := vdbStorage.StorageValueMetadata{
 					Name: cat.IlkChop,
-					Keys: map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk},
-					Type: utils.Uint256,
+					Keys: map[vdbStorage.Key]string{constants.Ilk: test_helpers.FakeIlk},
+					Type: vdbStorage.Uint256,
 				}
 
 				Expect(mappings[ilkChopKey]).To(Equal(expectedMetadata))
 			})
 
 			It("returns value metadata for ilk lump", func() {
-				ilkLumpKey := utils.GetIncrementedStorageKey(ilkFlipKey, 2)
-				expectedMetadata := utils.StorageValueMetadata{
+				ilkLumpKey := vdbStorage.GetIncrementedStorageKey(ilkFlipKey, 2)
+				expectedMetadata := vdbStorage.StorageValueMetadata{
 					Name: cat.IlkLump,
-					Keys: map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk},
-					Type: utils.Uint256,
+					Keys: map[vdbStorage.Key]string{constants.Ilk: test_helpers.FakeIlk},
+					Type: vdbStorage.Uint256,
 				}
 
 				Expect(mappings[ilkLumpKey]).To(Equal(expectedMetadata))

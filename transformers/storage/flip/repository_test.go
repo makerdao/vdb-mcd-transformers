@@ -12,7 +12,7 @@ import (
 	. "github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data/shared_behaviors"
-	"github.com/makerdao/vulcanizedb/libraries/shared/storage/utils"
+	vdbStorage "github.com/makerdao/vulcanizedb/libraries/shared/storage"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	. "github.com/onsi/ginkgo"
@@ -37,7 +37,7 @@ var _ = Describe("Flip storage repository", func() {
 	})
 
 	It("panics if the metadata name is not recognized", func() {
-		unrecognizedMetadata := utils.StorageValueMetadata{Name: "unrecognized"}
+		unrecognizedMetadata := vdbStorage.StorageValueMetadata{Name: "unrecognized"}
 		flipCreate := func() {
 			_ = repo.Create(diffID, fakeHeaderID, unrecognizedMetadata, "")
 		}
@@ -46,7 +46,7 @@ var _ = Describe("Flip storage repository", func() {
 	})
 
 	It("rolls back the record and address insertions if there's a failure", func() {
-		var begMetadata = utils.StorageValueMetadata{Name: storage.Beg}
+		var begMetadata = vdbStorage.StorageValueMetadata{Name: storage.Beg}
 		err := repo.Create(diffID, fakeHeaderID, begMetadata, "")
 		Expect(err).To(HaveOccurred())
 		Expect(err.Error()).To(MatchRegexp("pq: invalid input syntax for type numeric"))
@@ -59,7 +59,7 @@ var _ = Describe("Flip storage repository", func() {
 
 	Describe("Variable", func() {
 		Describe("Vat", func() {
-			vatMetadata := utils.StorageValueMetadata{Name: storage.Vat}
+			vatMetadata := vdbStorage.StorageValueMetadata{Name: storage.Vat}
 			inputs := shared_behaviors.StorageBehaviorInputs{
 				ValueFieldName:   storage.Vat,
 				Value:            FakeAddress,
@@ -75,7 +75,7 @@ var _ = Describe("Flip storage repository", func() {
 			It("writes row", func() {
 				diffID = CreateFakeDiffRecord(db)
 
-				ilkMetadata := utils.StorageValueMetadata{Name: storage.Ilk}
+				ilkMetadata := vdbStorage.StorageValueMetadata{Name: storage.Ilk}
 				insertErr := repo.Create(diffID, fakeHeaderID, ilkMetadata, FakeIlk)
 				Expect(insertErr).NotTo(HaveOccurred())
 
@@ -90,7 +90,7 @@ var _ = Describe("Flip storage repository", func() {
 			It("does not duplicate row", func() {
 				diffID = CreateFakeDiffRecord(db)
 
-				ilkMetadata := utils.StorageValueMetadata{Name: storage.Ilk}
+				ilkMetadata := vdbStorage.StorageValueMetadata{Name: storage.Ilk}
 				insertOneErr := repo.Create(diffID, fakeHeaderID, ilkMetadata, FakeIlk)
 				Expect(insertOneErr).NotTo(HaveOccurred())
 
@@ -105,7 +105,7 @@ var _ = Describe("Flip storage repository", func() {
 		})
 
 		Describe("Beg", func() {
-			begMetadata := utils.StorageValueMetadata{Name: storage.Beg}
+			begMetadata := vdbStorage.StorageValueMetadata{Name: storage.Beg}
 			fakeBeg := strconv.Itoa(rand.Int())
 			inputs := shared_behaviors.StorageBehaviorInputs{
 				ValueFieldName:   storage.Beg,
@@ -122,7 +122,7 @@ var _ = Describe("Flip storage repository", func() {
 			packedNames := make(map[int]string)
 			packedNames[0] = storage.Ttl
 			packedNames[1] = storage.Tau
-			var ttlAndTauMetadata = utils.StorageValueMetadata{
+			var ttlAndTauMetadata = vdbStorage.StorageValueMetadata{
 				Name:        storage.Packed,
 				PackedNames: packedNames,
 			}
@@ -154,7 +154,7 @@ var _ = Describe("Flip storage repository", func() {
 				packedNames := make(map[int]string)
 				packedNames[0] = "notRecognized"
 
-				var badMetadata = utils.StorageValueMetadata{
+				var badMetadata = vdbStorage.StorageValueMetadata{
 					Name:        storage.Packed,
 					PackedNames: packedNames,
 				}
@@ -176,7 +176,7 @@ var _ = Describe("Flip storage repository", func() {
 		})
 
 		Describe("Kicks", func() {
-			kicksMetadata := utils.StorageValueMetadata{Name: storage.Kicks}
+			kicksMetadata := vdbStorage.StorageValueMetadata{Name: storage.Kicks}
 			fakeKicks := strconv.Itoa(rand.Int())
 			inputs := shared_behaviors.StorageBehaviorInputs{
 				ValueFieldName:   storage.Kicks,
@@ -194,21 +194,21 @@ var _ = Describe("Flip storage repository", func() {
 		var fakeBidId = strconv.Itoa(rand.Int())
 
 		It("mappings returns an error if the metadata is missing the bid_id", func() {
-			badMetadata := utils.StorageValueMetadata{
+			badMetadata := vdbStorage.StorageValueMetadata{
 				Name: storage.BidBid,
-				Keys: map[utils.Key]string{},
-				Type: utils.Uint256,
+				Keys: map[vdbStorage.Key]string{},
+				Type: vdbStorage.Uint256,
 			}
 			err := repo.Create(diffID, fakeHeaderID, badMetadata, "")
-			Expect(err).To(MatchError(utils.ErrMetadataMalformed{MissingData: constants.BidId}))
+			Expect(err).To(MatchError(vdbStorage.ErrMetadataMalformed{MissingData: constants.BidId}))
 		})
 
 		Describe("BidBid", func() {
 			fakeBidValue := strconv.Itoa(rand.Int())
-			bidBidMetadata := utils.StorageValueMetadata{
+			bidBidMetadata := vdbStorage.StorageValueMetadata{
 				Name: storage.BidBid,
-				Keys: map[utils.Key]string{constants.BidId: fakeBidId},
-				Type: utils.Uint256,
+				Keys: map[vdbStorage.Key]string{constants.BidId: fakeBidId},
+				Type: vdbStorage.Uint256,
 			}
 			inputs := shared_behaviors.StorageBehaviorInputs{
 				KeyFieldName:     string(constants.BidId),
@@ -226,10 +226,10 @@ var _ = Describe("Flip storage repository", func() {
 
 		Describe("BidLot", func() {
 			fakeLotValue := strconv.Itoa(rand.Int())
-			bidLotMetadata := utils.StorageValueMetadata{
+			bidLotMetadata := vdbStorage.StorageValueMetadata{
 				Name: storage.BidLot,
-				Keys: map[utils.Key]string{constants.BidId: fakeBidId},
-				Type: utils.Uint256,
+				Keys: map[vdbStorage.Key]string{constants.BidId: fakeBidId},
+				Type: vdbStorage.Uint256,
 			}
 			inputs := shared_behaviors.StorageBehaviorInputs{
 				KeyFieldName:     string(constants.BidId),
@@ -250,9 +250,9 @@ var _ = Describe("Flip storage repository", func() {
 			packedNames[0] = storage.BidGuy
 			packedNames[1] = storage.BidTic
 			packedNames[2] = storage.BidEnd
-			var bidGuyTicEndMetadata = utils.StorageValueMetadata{
+			var bidGuyTicEndMetadata = vdbStorage.StorageValueMetadata{
 				Name:        storage.Packed,
-				Keys:        map[utils.Key]string{constants.BidId: fakeBidId},
+				Keys:        map[vdbStorage.Key]string{constants.BidId: fakeBidId},
 				PackedNames: packedNames,
 			}
 
@@ -303,10 +303,10 @@ var _ = Describe("Flip storage repository", func() {
 		})
 
 		Describe("BidUsr", func() {
-			bidUsrMetadata := utils.StorageValueMetadata{
+			bidUsrMetadata := vdbStorage.StorageValueMetadata{
 				Name: storage.BidUsr,
-				Keys: map[utils.Key]string{constants.BidId: fakeBidId},
-				Type: utils.Address,
+				Keys: map[vdbStorage.Key]string{constants.BidId: fakeBidId},
+				Type: vdbStorage.Address,
 			}
 			inputs := shared_behaviors.StorageBehaviorInputs{
 				KeyFieldName:     string(constants.BidId),
@@ -323,10 +323,10 @@ var _ = Describe("Flip storage repository", func() {
 		})
 
 		Describe("BidGal", func() {
-			bidGalMetadata := utils.StorageValueMetadata{
+			bidGalMetadata := vdbStorage.StorageValueMetadata{
 				Name: storage.BidGal,
-				Keys: map[utils.Key]string{constants.BidId: fakeBidId},
-				Type: utils.Address,
+				Keys: map[vdbStorage.Key]string{constants.BidId: fakeBidId},
+				Type: vdbStorage.Address,
 			}
 			inputs := shared_behaviors.StorageBehaviorInputs{
 				KeyFieldName:     string(constants.BidId),
@@ -344,10 +344,10 @@ var _ = Describe("Flip storage repository", func() {
 
 		Describe("BidTab", func() {
 			fakeTabValue := strconv.Itoa(rand.Int())
-			bidTabMetadata := utils.StorageValueMetadata{
+			bidTabMetadata := vdbStorage.StorageValueMetadata{
 				Name: storage.BidTab,
-				Keys: map[utils.Key]string{constants.BidId: fakeBidId},
-				Type: utils.Uint256,
+				Keys: map[vdbStorage.Key]string{constants.BidId: fakeBidId},
+				Type: vdbStorage.Uint256,
 			}
 			inputs := shared_behaviors.StorageBehaviorInputs{
 				KeyFieldName:     string(constants.BidId),

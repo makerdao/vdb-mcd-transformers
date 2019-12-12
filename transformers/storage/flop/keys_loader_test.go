@@ -25,7 +25,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/flop"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
-	"github.com/makerdao/vulcanizedb/libraries/shared/storage/utils"
+	vdbStorage "github.com/makerdao/vulcanizedb/libraries/shared/storage"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -71,7 +71,7 @@ var _ = Describe("Flop storage keys loader", func() {
 			var (
 				fakeBidId string
 				bidBidKey common.Hash
-				mappings  map[common.Hash]utils.StorageValueMetadata
+				mappings  map[common.Hash]vdbStorage.StorageValueMetadata
 			)
 
 			BeforeEach(func() {
@@ -88,33 +88,33 @@ var _ = Describe("Flop storage keys loader", func() {
 			})
 
 			It("returns value metadata for bid bid", func() {
-				expectedMetadata := utils.StorageValueMetadata{
+				expectedMetadata := vdbStorage.StorageValueMetadata{
 					Name: mcdStorage.BidBid,
-					Keys: map[utils.Key]string{constants.BidId: fakeBidId},
-					Type: utils.Uint256,
+					Keys: map[vdbStorage.Key]string{constants.BidId: fakeBidId},
+					Type: vdbStorage.Uint256,
 				}
 
 				Expect(mappings[bidBidKey]).To(Equal(expectedMetadata))
 			})
 
 			It("returns value metadata for bid lot", func() {
-				bidLotKey := utils.GetIncrementedStorageKey(bidBidKey, 1)
-				expectedMetadata := utils.StorageValueMetadata{
+				bidLotKey := vdbStorage.GetIncrementedStorageKey(bidBidKey, 1)
+				expectedMetadata := vdbStorage.StorageValueMetadata{
 					Name: mcdStorage.BidLot,
-					Keys: map[utils.Key]string{constants.BidId: fakeBidId},
-					Type: utils.Uint256,
+					Keys: map[vdbStorage.Key]string{constants.BidId: fakeBidId},
+					Type: vdbStorage.Uint256,
 				}
 
 				Expect(mappings[bidLotKey]).To(Equal(expectedMetadata))
 			})
 
 			It("returns value metadata for bid guy + tic + end packed slot", func() {
-				bidGuyKey := utils.GetIncrementedStorageKey(bidBidKey, 2)
-				expectedMetadata := utils.StorageValueMetadata{
+				bidGuyKey := vdbStorage.GetIncrementedStorageKey(bidBidKey, 2)
+				expectedMetadata := vdbStorage.StorageValueMetadata{
 					Name:        mcdStorage.Packed,
-					Keys:        map[utils.Key]string{constants.BidId: fakeBidId},
-					Type:        utils.PackedSlot,
-					PackedTypes: map[int]utils.ValueType{0: utils.Address, 1: utils.Uint48, 2: utils.Uint48},
+					Keys:        map[vdbStorage.Key]string{constants.BidId: fakeBidId},
+					Type:        vdbStorage.PackedSlot,
+					PackedTypes: map[int]vdbStorage.ValueType{0: vdbStorage.Address, 1: vdbStorage.Uint48, 2: vdbStorage.Uint48},
 					PackedNames: map[int]string{0: mcdStorage.BidGuy, 1: mcdStorage.BidTic, 2: mcdStorage.BidEnd},
 				}
 

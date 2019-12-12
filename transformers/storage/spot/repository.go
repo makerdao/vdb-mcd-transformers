@@ -21,7 +21,7 @@ import (
 
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
-	"github.com/makerdao/vulcanizedb/libraries/shared/storage/utils"
+	vdbStorage "github.com/makerdao/vulcanizedb/libraries/shared/storage"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 )
 
@@ -36,7 +36,7 @@ type SpotStorageRepository struct {
 	db *postgres.DB
 }
 
-func (repository SpotStorageRepository) Create(diffID, headerID int64, metadata utils.StorageValueMetadata, value interface{}) error {
+func (repository SpotStorageRepository) Create(diffID, headerID int64, metadata vdbStorage.StorageValueMetadata, value interface{}) error {
 	switch metadata.Name {
 	case IlkPip:
 		return repository.insertIlkPip(diffID, headerID, metadata, value.(string))
@@ -56,7 +56,7 @@ func (repository *SpotStorageRepository) SetDB(db *postgres.DB) {
 	repository.db = db
 }
 
-func (repository SpotStorageRepository) insertIlkPip(diffID, headerID int64, metadata utils.StorageValueMetadata, pip string) error {
+func (repository SpotStorageRepository) insertIlkPip(diffID, headerID int64, metadata vdbStorage.StorageValueMetadata, pip string) error {
 	ilk, err := getIlk(metadata.Keys)
 	if err != nil {
 		return err
@@ -65,7 +65,7 @@ func (repository SpotStorageRepository) insertIlkPip(diffID, headerID int64, met
 	return repository.insertFieldWithIlk(diffID, headerID, ilk, IlkPip, InsertSpotIlkPipQuery, pip)
 }
 
-func (repository SpotStorageRepository) insertIlkMat(diffID, headerID int64, metadata utils.StorageValueMetadata, mat string) error {
+func (repository SpotStorageRepository) insertIlkMat(diffID, headerID int64, metadata vdbStorage.StorageValueMetadata, mat string) error {
 	ilk, err := getIlk(metadata.Keys)
 	if err != nil {
 		return err
@@ -108,10 +108,10 @@ func (repository *SpotStorageRepository) insertFieldWithIlk(diffID, headerID int
 	return tx.Commit()
 }
 
-func getIlk(keys map[utils.Key]string) (string, error) {
+func getIlk(keys map[vdbStorage.Key]string) (string, error) {
 	ilk, ok := keys[constants.Ilk]
 	if !ok {
-		return "", utils.ErrMetadataMalformed{MissingData: constants.Ilk}
+		return "", vdbStorage.ErrMetadataMalformed{MissingData: constants.Ilk}
 	}
 	return ilk, nil
 }

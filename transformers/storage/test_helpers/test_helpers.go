@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/makerdao/vulcanizedb/libraries/shared/storage/utils"
+	vdbStorage "github.com/makerdao/vulcanizedb/libraries/shared/storage"
 
 	"github.com/makerdao/vulcanizedb/pkg/core"
 
@@ -47,14 +47,14 @@ func CreateFakeDiffRecordWithHeader(db *postgres.DB, header core.Header) int64 {
 	return diffID
 }
 
-func CreateDiffRecord(db *postgres.DB, header core.Header, hashedAddress, key, value common.Hash) utils.PersistedStorageDiff {
+func CreateDiffRecord(db *postgres.DB, header core.Header, hashedAddress, key, value common.Hash) vdbStorage.PersistedStorageDiff {
 	rawDiff := fakes.GetFakeStorageDiffForHeader(header, hashedAddress, key, value)
 
 	repo := repositories.NewStorageDiffRepository(db)
 	diffID, insertDiffErr := repo.CreateStorageDiff(rawDiff)
 	Expect(insertDiffErr).NotTo(HaveOccurred())
 
-	persistedDiff := utils.PersistedStorageDiff{
+	persistedDiff := vdbStorage.PersistedStorageDiff{
 		RawStorageDiff: rawDiff,
 		ID:             diffID,
 		HeaderID:       header.Id,
