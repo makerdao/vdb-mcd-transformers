@@ -10,16 +10,14 @@ import (
 	"time"
 
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
-
 	"github.com/jmoiron/sqlx"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/spot_poke"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/cat"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/jug"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/vat"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
+	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	"golang.org/x/crypto/sha3"
 )
@@ -48,6 +46,9 @@ const (
 		VALUES($1::NUMERIC, $2::NUMERIC, $3, $4, $5::NUMERIC, $6::NUMERIC, $7::NUMERIC)
 		ON CONFLICT (header_id, log_id)
 		DO UPDATE SET urn_id = $2, v = $3, w = $4, dink = $5, dart = $6;`
+	insertSpotPokeQuery = `INSERT INTO maker.spot_poke (header_id, ilk_id, value, spot, log_id)
+		VALUES($1, $2, $3::NUMERIC, $4::NUMERIC, $5)
+		ON CONFLICT (header_id, log_id) DO UPDATE SET ilk_id = $2, value = $3, spot = $5;`
 )
 
 var (
@@ -253,7 +254,7 @@ func (state *GeneratorState) updateIlk() error {
 		_, storageErr = state.pgTx.Exec(vat.InsertIlkSpotQuery, state.currentDiffID, state.currentHeader.Id, randomIlkId, newValue)
 		var logID int64
 		logErr = state.pgTx.QueryRow(insertLogSql, state.currentHeader.Id).Scan(&logID)
-		_, eventErr = state.pgTx.Exec(spot_poke.InsertSpotPokeQuery,
+		_, eventErr = state.pgTx.Exec(insertSpotPokeQuery,
 			state.currentHeader.Id, randomIlkId, newValue, newValue, logID)
 
 		txErr := state.insertCurrentBlockTx()

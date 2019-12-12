@@ -22,8 +22,8 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 )
 
@@ -51,22 +51,23 @@ var SpotFileMatHeaderSyncLog = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-func SpotFileMatModel() shared.InsertionModel { return CopyModel(spotFileMatModel) }
+func SpotFileMatModel() event.InsertionModel { return CopyEventModel(spotFileMatModel) }
 
-var spotFileMatModel = shared.InsertionModel{
+var spotFileMatModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.SpotFileMatTable,
-	OrderedColumns: []string{
-		constants.HeaderFK, string(constants.IlkFK), "what", "data", constants.LogFK,
+	OrderedColumns: []event.ColumnName{
+		event.HeaderFK,
+		event.LogFK,
+		constants.IlkColumn,
+		constants.WhatColumn,
+		constants.DataColumn,
 	},
-	ColumnValues: shared.ColumnValues{
-		"what":             "mat",
-		"data":             "1500000000000000000000000000",
-		constants.HeaderFK: SpotFileMatHeaderSyncLog.HeaderID,
-		constants.LogFK:    SpotFileMatHeaderSyncLog.ID,
-	},
-	ForeignKeyValues: shared.ForeignKeyValues{
-		constants.IlkFK: "0x4554482d41000000000000000000000000000000000000000000000000000000",
+	ColumnValues: event.ColumnValues{
+		event.HeaderFK:       SpotFileMatHeaderSyncLog.HeaderID,
+		event.LogFK:          SpotFileMatHeaderSyncLog.ID,
+		constants.WhatColumn: "mat",
+		constants.DataColumn: "1500000000000000000000000000",
 	},
 }
 
@@ -94,21 +95,22 @@ var SpotFilePipHeaderSyncLog = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-func SpotFilePipModel() shared.InsertionModel { return CopyModel(spotFilePipModel) }
+func SpotFilePipModel() event.InsertionModel { return CopyEventModel(spotFilePipModel) }
 
-var spotFilePipModel = shared.InsertionModel{
+var spotFilePipModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.SpotFilePipTable,
-	OrderedColumns: []string{
-		constants.HeaderFK, string(constants.IlkFK), "what", "pip", constants.LogFK,
+	OrderedColumns: []event.ColumnName{
+		event.HeaderFK,
+		event.LogFK,
+		constants.IlkColumn,
+		constants.WhatColumn,
+		constants.PipColumn,
 	},
-	ColumnValues: shared.ColumnValues{
-		"what":             "pip",
-		"pip":              "0x75dD74e8afE8110C8320eD397CcCff3B8134d981",
-		constants.HeaderFK: SpotFilePipHeaderSyncLog.HeaderID,
-		constants.LogFK:    SpotFilePipHeaderSyncLog.ID,
-	},
-	ForeignKeyValues: shared.ForeignKeyValues{
-		constants.IlkFK: "0x4554482d41000000000000000000000000000000000000000000000000000000",
+	ColumnValues: event.ColumnValues{
+		constants.HeaderFK:   SpotFilePipHeaderSyncLog.HeaderID,
+		constants.LogFK:      SpotFilePipHeaderSyncLog.ID,
+		constants.WhatColumn: "pip",
+		constants.PipColumn:  "0x75dD74e8afE8110C8320eD397CcCff3B8134d981",
 	},
 }

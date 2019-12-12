@@ -17,14 +17,13 @@
 package test_data
 
 import (
-	"math/big"
 	"math/rand"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 )
 
@@ -48,27 +47,24 @@ var SpotPokeHeaderSyncLog = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-func spot() *big.Int {
-	spot := big.Int{}
-	spot.SetString("46877063947368421052631578", 10)
-	return &spot
-}
+func SpotPokeModel() event.InsertionModel { return CopyEventModel(spotPokeModel) }
 
-func SpotPokeModel() shared.InsertionModel { return CopyModel(spotPokeModel) }
+const SpotPokeIlkHex = "0x434f4c352d410000000000000000000000000000000000000000000000000000"
 
-var spotPokeModel = shared.InsertionModel{
+var spotPokeModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.SpotPokeTable,
-	OrderedColumns: []string{
-		constants.HeaderFK, constants.LogFK, string(constants.IlkFK), "value", "spot",
+	OrderedColumns: []event.ColumnName{
+		event.HeaderFK,
+		event.LogFK,
+		constants.IlkColumn,
+		constants.ValueColumn,
+		constants.SpotColumn,
 	},
-	ColumnValues: shared.ColumnValues{
-		constants.HeaderFK: SpotPokeHeaderSyncLog.HeaderID,
-		constants.LogFK:    SpotPokeHeaderSyncLog.ID,
-		"value":            "89066421500000000.000000",
-		"spot":             "46877063947368421052631578",
-	},
-	ForeignKeyValues: shared.ForeignKeyValues{
-		constants.IlkFK: "0x434f4c352d410000000000000000000000000000000000000000000000000000",
+	ColumnValues: event.ColumnValues{
+		event.HeaderFK:        SpotPokeHeaderSyncLog.HeaderID,
+		event.LogFK:           SpotPokeHeaderSyncLog.ID,
+		constants.ValueColumn: "89066421500000000.000000",
+		constants.SpotColumn:  "46877063947368421052631578",
 	},
 }

@@ -17,6 +17,7 @@
 package spot_poke_test
 
 import (
+	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/spot_poke"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
@@ -26,18 +27,30 @@ import (
 )
 
 var _ = Describe("SpotPoke Converter", func() {
-	var converter = spot_poke.SpotPokeConverter{}
+	var (
+		converter = spot_poke.Converter{}
+		db        = test_config.NewTestDB(test_config.NewTestNode())
+	)
+
+	BeforeEach(func() {
+		test_config.CleanTestDB(db)
+	})
 
 	It("converts spot poke entities to models", func() {
-		models, err := converter.ToModels(constants.SpotABI(), []core.HeaderSyncLog{test_data.SpotPokeHeaderSyncLog})
+		models, err := converter.ToModels(constants.SpotABI(), []core.HeaderSyncLog{test_data.SpotPokeHeaderSyncLog}, db)
 		Expect(err).NotTo(HaveOccurred())
 
-		Expect(len(models)).To(Equal(1))
-		Expect(models[0]).To(Equal(test_data.SpotPokeModel()))
+		var ilkID int64
+		ilkErr := db.Get(&ilkID, `SELECT id FROM maker.ilks where ilk = $1`, test_data.SpotPokeIlkHex)
+		Expect(ilkErr).NotTo(HaveOccurred())
+		expectedModel := test_data.SpotPokeModel()
+		expectedModel.ColumnValues[constants.IlkColumn] = ilkID
+
+		Expect(models).To(ConsistOf(expectedModel))
 	})
 
 	It("returns an error converting a log to an entity fails", func() {
-		_, err := converter.ToModels("error abi", []core.HeaderSyncLog{test_data.SpotPokeHeaderSyncLog})
+		_, err := converter.ToModels("error abi", []core.HeaderSyncLog{test_data.SpotPokeHeaderSyncLog}, db)
 		Expect(err).To(HaveOccurred())
 	})
 })

@@ -25,6 +25,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/fetcher"
 	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 	"github.com/makerdao/vulcanizedb/pkg/core"
@@ -63,12 +64,11 @@ var _ = Describe("SpotPoke Transformer", func() {
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		initializer := shared.EventTransformer{
-			Config:     spotPokeConfig,
-			Converter:  &spot_poke.SpotPokeConverter{},
-			Repository: &spot_poke.SpotPokeRepository{},
+		initializer := event.Transformer{
+			Config:    spotPokeConfig,
+			Converter: &spot_poke.Converter{},
 		}
-		tr := initializer.NewEventTransformer(db)
+		tr := initializer.NewTransformer(db)
 
 		f := fetcher.NewLogFetcher(blockChain)
 		logs, err := f.FetchLogs(

@@ -7,10 +7,10 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/spot_poke"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	. "github.com/onsi/ginkgo"
@@ -22,8 +22,7 @@ var _ = Describe("all poke events query", func() {
 		blockOne, timestampOne int
 		headerOne              core.Header
 		fakeGethLog            types.Log
-		spotPokeEvent          shared.InsertionModel
-		spotPokeRepo           spot_poke.SpotPokeRepository
+		spotPokeEvent          event.InsertionModel
 		headerRepository       repositories.HeaderRepository
 	)
 
@@ -37,13 +36,14 @@ var _ = Describe("all poke events query", func() {
 		fakeHeaderSyncLog := test_data.CreateTestLog(headerOne.Id, db)
 		fakeGethLog = fakeHeaderSyncLog.Log
 
-		spotPokeRepo = spot_poke.SpotPokeRepository{}
-		spotPokeRepo.SetDB(db)
+		ilkID, ilkErr := shared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
+		Expect(ilkErr).NotTo(HaveOccurred())
+
 		spotPokeEvent = test_data.SpotPokeModel()
-		spotPokeEvent.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
-		spotPokeEvent.ColumnValues[constants.HeaderFK] = headerOne.Id
-		spotPokeEvent.ColumnValues[constants.LogFK] = fakeHeaderSyncLog.ID
-		insertSpotPokeErr := spotPokeRepo.Create([]shared.InsertionModel{spotPokeEvent})
+		spotPokeEvent.ColumnValues[event.HeaderFK] = headerOne.Id
+		spotPokeEvent.ColumnValues[event.LogFK] = fakeHeaderSyncLog.ID
+		spotPokeEvent.ColumnValues[constants.IlkColumn] = ilkID
+		insertSpotPokeErr := event.PersistModels([]event.InsertionModel{spotPokeEvent}, db)
 		Expect(insertSpotPokeErr).NotTo(HaveOccurred())
 	})
 

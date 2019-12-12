@@ -27,6 +27,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/fetcher"
 	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 	"github.com/makerdao/vulcanizedb/pkg/core"
@@ -55,7 +56,7 @@ var _ = Describe("SpotFile EventTransformers", func() {
 			addresses   []common.Address
 			blockNumber int64
 			header      core.Header
-			initializer shared.EventTransformer
+			initializer event.Transformer
 			logs        []types.Log
 			topics      []common.Hash
 			tr          transformer.EventTransformer
@@ -79,10 +80,9 @@ var _ = Describe("SpotFile EventTransformers", func() {
 			addresses = transformer.HexStringsToAddresses(spotFileMatConfig.ContractAddresses)
 			topics = []common.Hash{common.HexToHash(spotFileMatConfig.Topic)}
 
-			initializer = shared.EventTransformer{
-				Config:     spotFileMatConfig,
-				Converter:  mat.SpotFileMatConverter{},
-				Repository: &mat.SpotFileMatRepository{},
+			initializer = event.Transformer{
+				Config:    spotFileMatConfig,
+				Converter: mat.Converter{},
 			}
 
 			logFetcher := fetcher.NewLogFetcher(blockChain)
@@ -92,7 +92,7 @@ var _ = Describe("SpotFile EventTransformers", func() {
 
 			headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
 
-			tr = initializer.NewEventTransformer(db)
+			tr = initializer.NewTransformer(db)
 			executeErr := tr.Execute(headerSyncLogs)
 			Expect(executeErr).NotTo(HaveOccurred())
 		})
@@ -115,7 +115,7 @@ var _ = Describe("SpotFile EventTransformers", func() {
 			addresses   []common.Address
 			blockNumber int64
 			header      core.Header
-			initializer shared.EventTransformer
+			initializer event.Transformer
 			logs        []types.Log
 			topics      []common.Hash
 			tr          transformer.EventTransformer
@@ -139,10 +139,9 @@ var _ = Describe("SpotFile EventTransformers", func() {
 			addresses = transformer.HexStringsToAddresses(spotFilePipConfig.ContractAddresses)
 			topics = []common.Hash{common.HexToHash(spotFilePipConfig.Topic)}
 
-			initializer = shared.EventTransformer{
-				Config:     spotFilePipConfig,
-				Converter:  pip.SpotFilePipConverter{},
-				Repository: &pip.SpotFilePipRepository{},
+			initializer = event.Transformer{
+				Config:    spotFilePipConfig,
+				Converter: pip.Converter{},
 			}
 
 			logFetcher := fetcher.NewLogFetcher(blockChain)
@@ -152,7 +151,7 @@ var _ = Describe("SpotFile EventTransformers", func() {
 
 			headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
 
-			tr = initializer.NewEventTransformer(db)
+			tr = initializer.NewTransformer(db)
 			executeErr := tr.Execute(headerSyncLogs)
 			Expect(executeErr).NotTo(HaveOccurred())
 		})
