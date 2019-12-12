@@ -40,6 +40,7 @@ const (
 	LogValueTable           = "log_value"
 	NewCdpTable             = "new_cdp"
 	PotCageTable            = "pot_cage"
+	PotDripTable            = "pot_drip"
 	PotFileDSRTable         = "pot_file_dsr"
 	PotFileVowTable         = "pot_file_vow"
 	PotJoinTable            = "pot_join"
