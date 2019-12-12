@@ -56,8 +56,7 @@ var _ = Describe("Managed CDP computed columns", func() {
 	Describe("managed_cdp_ilk", func() {
 		It("returns ilk_state for a managed_cdp", func() {
 			ilkValues := test_helpers.GetIlkValues(0)
-			test_helpers.CreateIlk(db, headerOne, ilkValues, test_helpers.FakeIlkVatMetadatas,
-				test_helpers.FakeIlkCatMetadatas, test_helpers.FakeIlkJugMetadatas, test_helpers.FakeIlkSpotMetadatas)
+			test_helpers.CreateIlk(db, headerOne, ilkValues, test_helpers.FakeIlkVatMetadatas, test_helpers.FakeIlkCatMetadatas, test_helpers.FakeIlkJugMetadatas, test_helpers.FakeIlkSpotMetadatas)
 
 			expectedIlk := test_helpers.IlkStateFromValues(test_helpers.FakeIlk.Hex, headerOne.Timestamp,
 				headerOne.Timestamp, ilkValues)
@@ -82,7 +81,7 @@ var _ = Describe("Managed CDP computed columns", func() {
 			urnMetadata := test_helpers.GetUrnMetadata(test_helpers.FakeIlk.Hex, test_data.FakeUrn)
 			vatRepository := vat.VatStorageRepository{}
 			vatRepository.SetDB(db)
-			test_helpers.CreateUrn(urnSetupData, headerOne.Id, urnMetadata, vatRepository)
+			test_helpers.CreateUrn(db, urnSetupData, headerOne, urnMetadata, vatRepository)
 			expectedUrn := test_helpers.UrnState{
 				UrnIdentifier: test_data.FakeUrn,
 				IlkIdentifier: test_helpers.FakeIlk.Identifier,

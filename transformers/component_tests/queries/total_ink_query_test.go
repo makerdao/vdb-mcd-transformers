@@ -4,7 +4,7 @@ import (
 	"math/rand"
 
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
+	query_test_helper "github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/vat"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/pkg/core"
@@ -40,81 +40,81 @@ var _ = Describe("total ink query", func() {
 	})
 
 	It("gets the latest ink of a single urn", func() {
-		urnMetadata := test_helpers.GetUrnMetadata(test_helpers.FakeIlk.Hex, urnOne)
+		urnMetadata := query_test_helper.GetUrnMetadata(query_test_helper.FakeIlk.Hex, urnOne)
 
-		urnSetupDataOne := test_helpers.GetUrnSetupData()
+		urnSetupDataOne := query_test_helper.GetUrnSetupData()
 		urnSetupDataOne[vat.UrnInk] = rand.Intn(1000000)
-		test_helpers.CreateUrn(urnSetupDataOne, headerOne.Id, urnMetadata, vatRepo)
+		query_test_helper.CreateUrn(db, urnSetupDataOne, headerOne, urnMetadata, vatRepo)
 
 		headerTwo := createHeader(blockOne+1, timestampOne+1, headerRepo)
-		urnSetupDataTwo := test_helpers.GetUrnSetupData()
+		urnSetupDataTwo := query_test_helper.GetUrnSetupData()
 		urnSetupDataTwo[vat.UrnInk] = rand.Intn(1000000)
-		test_helpers.CreateUrn(urnSetupDataTwo, headerTwo.Id, urnMetadata, vatRepo)
+		query_test_helper.CreateUrn(db, urnSetupDataTwo, headerTwo, urnMetadata, vatRepo)
 
 		var totalInk int
-		err := db.Get(&totalInk, `SELECT * FROM api.total_ink($1)`, test_helpers.FakeIlk.Identifier)
+		err := db.Get(&totalInk, `SELECT * FROM api.total_ink($1)`, query_test_helper.FakeIlk.Identifier)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(totalInk).To(Equal(urnSetupDataTwo[vat.UrnInk]))
 	})
 
 	It("sums up the latest ink of multiple urns for a given ilk", func() {
-		urnOneMetadata := test_helpers.GetUrnMetadata(test_helpers.FakeIlk.Hex, urnOne)
+		urnOneMetadata := query_test_helper.GetUrnMetadata(query_test_helper.FakeIlk.Hex, urnOne)
 
-		urnOneSetupData := test_helpers.GetUrnSetupData()
+		urnOneSetupData := query_test_helper.GetUrnSetupData()
 		urnOneSetupData[vat.UrnInk] = rand.Intn(1000)
-		test_helpers.CreateUrn(urnOneSetupData, headerOne.Id, urnOneMetadata, vatRepo)
+		query_test_helper.CreateUrn(db, urnOneSetupData, headerOne, urnOneMetadata, vatRepo)
 
-		urnTwoMetadata := test_helpers.GetUrnMetadata(test_helpers.FakeIlk.Hex, urnTwo)
-		urnTwoOldSetupData := test_helpers.GetUrnSetupData()
+		urnTwoMetadata := query_test_helper.GetUrnMetadata(query_test_helper.FakeIlk.Hex, urnTwo)
+		urnTwoOldSetupData := query_test_helper.GetUrnSetupData()
 		urnTwoOldSetupData[vat.UrnInk] = rand.Intn(1000)
-		test_helpers.CreateUrn(urnTwoOldSetupData, headerOne.Id, urnTwoMetadata, vatRepo)
+		query_test_helper.CreateUrn(db, urnTwoOldSetupData, headerOne, urnTwoMetadata, vatRepo)
 
 		headerTwo := createHeader(blockOne+1, timestampOne+1, headerRepo)
-		urnTwoNewSetupData := test_helpers.GetUrnSetupData()
+		urnTwoNewSetupData := query_test_helper.GetUrnSetupData()
 		urnTwoNewSetupData[vat.UrnInk] = rand.Intn(1000)
-		test_helpers.CreateUrn(urnTwoNewSetupData, headerTwo.Id, urnTwoMetadata, vatRepo)
+		query_test_helper.CreateUrn(db, urnTwoNewSetupData, headerTwo, urnTwoMetadata, vatRepo)
 
 		var totalInk int
-		err := db.Get(&totalInk, `SELECT * FROM api.total_ink($1)`, test_helpers.FakeIlk.Identifier)
+		err := db.Get(&totalInk, `SELECT * FROM api.total_ink($1)`, query_test_helper.FakeIlk.Identifier)
 		Expect(err).NotTo(HaveOccurred())
-		Expect(totalInk).To(Equal(urnOneSetupData[vat.UrnInk] + urnTwoNewSetupData[vat.UrnInk]))
+		Expect(totalInk).To(Equal(urnOneSetupData[vat.UrnInk].(int) + urnTwoNewSetupData[vat.UrnInk].(int)))
 	})
 
 	It("ignores ink after block number if block number is provided", func() {
-		urnOneMetadata := test_helpers.GetUrnMetadata(test_helpers.FakeIlk.Hex, urnOne)
-		urnOneSetupData := test_helpers.GetUrnSetupData()
+		urnOneMetadata := query_test_helper.GetUrnMetadata(query_test_helper.FakeIlk.Hex, urnOne)
+		urnOneSetupData := query_test_helper.GetUrnSetupData()
 		urnOneSetupData[vat.UrnInk] = rand.Intn(1000)
-		test_helpers.CreateUrn(urnOneSetupData, headerOne.Id, urnOneMetadata, vatRepo)
+		query_test_helper.CreateUrn(db, urnOneSetupData, headerOne, urnOneMetadata, vatRepo)
 
-		urnTwoMetadata := test_helpers.GetUrnMetadata(test_helpers.FakeIlk.Hex, urnTwo)
-		urnTwoOldSetupData := test_helpers.GetUrnSetupData()
+		urnTwoMetadata := query_test_helper.GetUrnMetadata(query_test_helper.FakeIlk.Hex, urnTwo)
+		urnTwoOldSetupData := query_test_helper.GetUrnSetupData()
 		urnTwoOldSetupData[vat.UrnInk] = rand.Intn(1000)
-		test_helpers.CreateUrn(urnTwoOldSetupData, headerOne.Id, urnTwoMetadata, vatRepo)
+		query_test_helper.CreateUrn(db, urnTwoOldSetupData, headerOne, urnTwoMetadata, vatRepo)
 
 		headerTwo := createHeader(blockOne+1, timestampOne+1, headerRepo)
-		urnTwoNewSetupData := test_helpers.GetUrnSetupData()
+		urnTwoNewSetupData := query_test_helper.GetUrnSetupData()
 		urnTwoNewSetupData[vat.UrnInk] = rand.Intn(1000)
-		test_helpers.CreateUrn(urnTwoNewSetupData, headerTwo.Id, urnTwoMetadata, vatRepo)
+		query_test_helper.CreateUrn(db, urnTwoNewSetupData, headerTwo, urnTwoMetadata, vatRepo)
 
 		var totalInk int
 		err := db.Get(&totalInk, `SELECT * FROM api.total_ink($1, $2)`,
-			test_helpers.FakeIlk.Identifier, blockOne)
+			query_test_helper.FakeIlk.Identifier, blockOne)
 		Expect(err).NotTo(HaveOccurred())
-		Expect(totalInk).To(Equal(urnOneSetupData[vat.UrnInk] + urnTwoOldSetupData[vat.UrnInk]))
+		Expect(totalInk).To(Equal(urnOneSetupData[vat.UrnInk].(int) + urnTwoOldSetupData[vat.UrnInk].(int)))
 	})
 
 	It("ignores ink from urns of different ilks", func() {
-		urnMetadata := test_helpers.GetUrnMetadata(test_helpers.FakeIlk.Hex, urnOne)
-		urnSetupData := test_helpers.GetUrnSetupData()
+		urnMetadata := query_test_helper.GetUrnMetadata(query_test_helper.FakeIlk.Hex, urnOne)
+		urnSetupData := query_test_helper.GetUrnSetupData()
 		urnSetupData[vat.UrnInk] = rand.Intn(1000)
-		test_helpers.CreateUrn(urnSetupData, headerOne.Id, urnMetadata, vatRepo)
+		query_test_helper.CreateUrn(db, urnSetupData, headerOne, urnMetadata, vatRepo)
 
-		irrelevantUrnMetadata := test_helpers.GetUrnMetadata(test_helpers.AnotherFakeIlk.Hex, urnTwo)
-		irrelevantUrnSetupData := test_helpers.GetUrnSetupData()
-		test_helpers.CreateUrn(irrelevantUrnSetupData, headerOne.Id, irrelevantUrnMetadata, vatRepo)
+		irrelevantUrnMetadata := query_test_helper.GetUrnMetadata(query_test_helper.AnotherFakeIlk.Hex, urnTwo)
+		irrelevantUrnSetupData := query_test_helper.GetUrnSetupData()
+		query_test_helper.CreateUrn(db, irrelevantUrnSetupData, headerOne, irrelevantUrnMetadata, vatRepo)
 
 		var totalInk int
-		err := db.Get(&totalInk, `SELECT * FROM api.total_ink($1)`, test_helpers.FakeIlk.Identifier)
+		err := db.Get(&totalInk, `SELECT * FROM api.total_ink($1)`, query_test_helper.FakeIlk.Identifier)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(totalInk).To(Equal(urnSetupData[vat.UrnInk]))
 	})

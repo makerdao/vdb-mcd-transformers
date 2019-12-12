@@ -5,6 +5,8 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
+
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	helper "github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
@@ -27,6 +29,7 @@ var _ = Describe("Urn view", func() {
 		urnOne                 string
 		urnTwo                 string
 		err                    error
+		diffID                 int64
 	)
 
 	const allUrnsQuery = `SELECT urn_identifier, ilk_identifier, block_height, ink, art, created, updated FROM api.all_urns($1)`
@@ -43,12 +46,14 @@ var _ = Describe("Urn view", func() {
 		blockOne = rand.Int()
 		timestampOne = int(rand.Int31())
 		headerOne = createHeader(blockOne, timestampOne, headerRepo)
+
+		diffID = test_helpers.CreateFakeDiffRecord(db)
 	})
 
 	It("gets an urn", func() {
 		setupData := helper.GetUrnSetupData()
 		metadata := helper.GetUrnMetadata(helper.FakeIlk.Hex, urnOne)
-		helper.CreateUrn(setupData, headerOne.Id, metadata, vatRepo)
+		helper.CreateUrn(db, setupData, headerOne, metadata, vatRepo)
 
 		var actualUrn helper.UrnState
 		err = db.Get(&actualUrn, allUrnsQuery, blockOne)
@@ -59,8 +64,8 @@ var _ = Describe("Urn view", func() {
 			UrnIdentifier: urnOne,
 			IlkIdentifier: helper.FakeIlk.Identifier,
 			BlockHeight:   blockOne,
-			Ink:           strconv.Itoa(setupData[vat.UrnInk]),
-			Art:           strconv.Itoa(setupData[vat.UrnArt]),
+			Ink:           strconv.Itoa(setupData[vat.UrnInk].(int)),
+			Art:           strconv.Itoa(setupData[vat.UrnArt].(int)),
 			Created:       helper.GetValidNullString(expectedTimestamp),
 			Updated:       helper.GetValidNullString(expectedTimestamp),
 		}
@@ -71,7 +76,7 @@ var _ = Describe("Urn view", func() {
 	It("returns the correct data for multiple urns", func() {
 		urnOneMetadata := helper.GetUrnMetadata(helper.FakeIlk.Hex, urnOne)
 		urnOneSetupData := helper.GetUrnSetupData()
-		helper.CreateUrn(urnOneSetupData, headerOne.Id, urnOneMetadata, vatRepo)
+		helper.CreateUrn(db, urnOneSetupData, headerOne, urnOneMetadata, vatRepo)
 
 		blockTwo := blockOne + 1
 		timestampTwo := timestampOne + 1
@@ -82,23 +87,23 @@ var _ = Describe("Urn view", func() {
 			UrnIdentifier: urnOne,
 			IlkIdentifier: helper.FakeIlk.Identifier,
 			BlockHeight:   blockTwo,
-			Ink:           strconv.Itoa(urnOneSetupData[vat.UrnInk]),
-			Art:           strconv.Itoa(urnOneSetupData[vat.UrnArt]),
+			Ink:           strconv.Itoa(urnOneSetupData[vat.UrnInk].(int)),
+			Art:           strconv.Itoa(urnOneSetupData[vat.UrnArt].(int)),
 			Created:       helper.GetValidNullString(expectedTimestamp),
 			Updated:       helper.GetValidNullString(expectedTimestamp),
 		}
 
 		urnTwoMetadata := helper.GetUrnMetadata(helper.AnotherFakeIlk.Hex, urnTwo)
 		urnTwoSetupData := helper.GetUrnSetupData()
-		helper.CreateUrn(urnTwoSetupData, headerTwo.Id, urnTwoMetadata, vatRepo)
+		helper.CreateUrn(db, urnTwoSetupData, headerTwo, urnTwoMetadata, vatRepo)
 
 		expectedTimestampTwo := helper.GetExpectedTimestamp(timestampTwo)
 		expectedUrnTwo := helper.UrnState{
 			UrnIdentifier: urnTwo,
 			IlkIdentifier: helper.AnotherFakeIlk.Identifier,
 			BlockHeight:   blockTwo,
-			Ink:           strconv.Itoa(urnTwoSetupData[vat.UrnInk]),
-			Art:           strconv.Itoa(urnTwoSetupData[vat.UrnArt]),
+			Ink:           strconv.Itoa(urnTwoSetupData[vat.UrnInk].(int)),
+			Art:           strconv.Itoa(urnTwoSetupData[vat.UrnArt].(int)),
 			Created:       helper.GetValidNullString(expectedTimestampTwo),
 			Updated:       helper.GetValidNullString(expectedTimestampTwo),
 		}
@@ -114,7 +119,7 @@ var _ = Describe("Urn view", func() {
 	It("returns available data if urn has ink but no art", func() {
 		fakeInk := rand.Int()
 		urnInkMetadata := utils.GetStorageValueMetadata(vat.UrnInk, map[utils.Key]string{constants.Ilk: helper.FakeIlk.Hex, constants.Guy: urnOne}, utils.Uint256)
-		insertInkErr := vatRepo.Create(headerOne.Id, urnInkMetadata, strconv.Itoa(fakeInk))
+		insertInkErr := vatRepo.Create(diffID, headerOne.Id, urnInkMetadata, strconv.Itoa(fakeInk))
 		Expect(insertInkErr).NotTo(HaveOccurred())
 
 		var result []helper.UrnState
@@ -138,7 +143,7 @@ var _ = Describe("Urn view", func() {
 
 	Describe("result pagination", func() {
 		var (
-			urnOneSetupData, urnTwoSetupData map[string]int
+			urnOneSetupData, urnTwoSetupData map[string]interface{}
 			timestampTwo                     int
 			blockTwo                         int
 		)
@@ -146,7 +151,7 @@ var _ = Describe("Urn view", func() {
 		BeforeEach(func() {
 			urnOneMetadata := helper.GetUrnMetadata(helper.FakeIlk.Hex, urnOne)
 			urnOneSetupData = helper.GetUrnSetupData()
-			helper.CreateUrn(urnOneSetupData, headerOne.Id, urnOneMetadata, vatRepo)
+			helper.CreateUrn(db, urnOneSetupData, headerOne, urnOneMetadata, vatRepo)
 
 			// New block
 			blockTwo = blockOne + 1
@@ -155,7 +160,7 @@ var _ = Describe("Urn view", func() {
 
 			urnTwoMetadata := helper.GetUrnMetadata(helper.AnotherFakeIlk.Hex, urnTwo)
 			urnTwoSetupData = helper.GetUrnSetupData()
-			helper.CreateUrn(urnTwoSetupData, headerTwo.Id, urnTwoMetadata, vatRepo)
+			helper.CreateUrn(db, urnTwoSetupData, headerTwo, urnTwoMetadata, vatRepo)
 		})
 
 		It("limits results if max_results argument is provided", func() {
@@ -163,8 +168,8 @@ var _ = Describe("Urn view", func() {
 			expectedUrn := helper.UrnState{
 				UrnIdentifier: urnTwo,
 				IlkIdentifier: helper.AnotherFakeIlk.Identifier,
-				Ink:           strconv.Itoa(urnTwoSetupData[vat.UrnInk]),
-				Art:           strconv.Itoa(urnTwoSetupData[vat.UrnArt]),
+				Ink:           strconv.Itoa(urnTwoSetupData[vat.UrnInk].(int)),
+				Art:           strconv.Itoa(urnTwoSetupData[vat.UrnArt].(int)),
 				Created:       helper.GetValidNullString(expectedTimestamp),
 				Updated:       helper.GetValidNullString(expectedTimestamp),
 			}
@@ -184,8 +189,8 @@ var _ = Describe("Urn view", func() {
 			expectedUrn := helper.UrnState{
 				UrnIdentifier: urnOne,
 				IlkIdentifier: helper.FakeIlk.Identifier,
-				Ink:           strconv.Itoa(urnOneSetupData[vat.UrnInk]),
-				Art:           strconv.Itoa(urnOneSetupData[vat.UrnArt]),
+				Ink:           strconv.Itoa(urnOneSetupData[vat.UrnInk].(int)),
+				Art:           strconv.Itoa(urnOneSetupData[vat.UrnArt].(int)),
 				Created:       helper.GetValidNullString(expectedTimestamp),
 				Updated:       helper.GetValidNullString(expectedTimestamp),
 			}
@@ -210,14 +215,14 @@ var _ = Describe("Urn view", func() {
 	Describe("it includes diffs only up to given block height", func() {
 		var (
 			actualUrn    helper.UrnState
-			setupDataOne map[string]int
+			setupDataOne map[string]interface{}
 			metadata     helper.UrnMetadata
 		)
 
 		BeforeEach(func() {
 			setupDataOne = helper.GetUrnSetupData()
 			metadata = helper.GetUrnMetadata(helper.FakeIlk.Hex, urnOne)
-			helper.CreateUrn(setupDataOne, headerOne.Id, metadata, vatRepo)
+			helper.CreateUrn(db, setupDataOne, headerOne, metadata, vatRepo)
 		})
 
 		It("gets urn state as of block one", func() {
@@ -229,8 +234,8 @@ var _ = Describe("Urn view", func() {
 				UrnIdentifier: urnOne,
 				IlkIdentifier: helper.FakeIlk.Identifier,
 				BlockHeight:   blockOne,
-				Ink:           strconv.Itoa(setupDataOne[vat.UrnInk]),
-				Art:           strconv.Itoa(setupDataOne[vat.UrnArt]),
+				Ink:           strconv.Itoa(setupDataOne[vat.UrnInk].(int)),
+				Art:           strconv.Itoa(setupDataOne[vat.UrnArt].(int)),
 				Created:       helper.GetValidNullString(expectedTimestamp),
 				Updated:       helper.GetValidNullString(expectedTimestamp),
 			}
@@ -250,7 +255,7 @@ var _ = Describe("Urn view", func() {
 			fakeHeaderTwoID, err := headerRepo.CreateOrUpdateHeader(fakeHeaderTwo)
 			Expect(err).NotTo(HaveOccurred())
 
-			err = vatRepo.Create(fakeHeaderTwoID, metadata.UrnInk, strconv.Itoa(updatedInk))
+			err = vatRepo.Create(diffID, fakeHeaderTwoID, metadata.UrnInk, strconv.Itoa(updatedInk))
 			Expect(err).NotTo(HaveOccurred())
 
 			expectedTimestampOne := helper.GetExpectedTimestamp(timestampOne)
@@ -260,7 +265,7 @@ var _ = Describe("Urn view", func() {
 				IlkIdentifier: helper.FakeIlk.Identifier,
 				BlockHeight:   blockTwo,
 				Ink:           strconv.Itoa(updatedInk),
-				Art:           strconv.Itoa(setupDataOne[vat.UrnArt]), // Not changed
+				Art:           strconv.Itoa(setupDataOne[vat.UrnArt].(int)), // Not changed
 				Created:       helper.GetValidNullString(expectedTimestampOne),
 				Updated:       helper.GetValidNullString(expectedTimestampTwo),
 			}

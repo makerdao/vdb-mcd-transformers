@@ -18,6 +18,7 @@ package flop_kick
 
 import (
 	"fmt"
+
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 

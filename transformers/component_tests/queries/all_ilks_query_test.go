@@ -54,15 +54,15 @@ var _ = Describe("All Ilks query", func() {
 		headerTwo = createHeader(blockTwo, timestampTwo, headerRepository)
 
 		//creating fakeIlk at block 1
-		test_helpers.CreateVatRecords(headerOne, fakeIlkStateBlock1, test_helpers.FakeIlkVatMetadatas, vatRepository)
-		test_helpers.CreateCatRecords(headerOne, fakeIlkStateBlock1, test_helpers.FakeIlkCatMetadatas, catRepository)
-		test_helpers.CreateJugRecords(headerOne, fakeIlkStateBlock1, test_helpers.FakeIlkJugMetadatas, jugRepository)
-		test_helpers.CreateSpotRecords(headerOne, fakeIlkStateBlock1, test_helpers.FakeIlkSpotMetadatas, spotRepository)
+		test_helpers.CreateVatRecords(db, headerOne, fakeIlkStateBlock1, test_helpers.FakeIlkVatMetadatas, vatRepository)
+		test_helpers.CreateCatRecords(db, headerOne, fakeIlkStateBlock1, test_helpers.FakeIlkCatMetadatas, catRepository)
+		test_helpers.CreateJugRecords(db, headerOne, fakeIlkStateBlock1, test_helpers.FakeIlkJugMetadatas, jugRepository)
+		test_helpers.CreateSpotRecords(db, headerOne, fakeIlkStateBlock1, test_helpers.FakeIlkSpotMetadatas, spotRepository)
 		//creating anotherFakeIlk at block 2
-		test_helpers.CreateVatRecords(headerTwo, anotherFakeIlkStateBlock2, test_helpers.AnotherFakeIlkVatMetadatas, vatRepository)
-		test_helpers.CreateCatRecords(headerTwo, anotherFakeIlkStateBlock2, test_helpers.AnotherFakeIlkCatMetadatas, catRepository)
-		test_helpers.CreateJugRecords(headerTwo, anotherFakeIlkStateBlock2, test_helpers.AnotherFakeIlkJugMetadatas, jugRepository)
-		test_helpers.CreateSpotRecords(headerTwo, anotherFakeIlkStateBlock2, test_helpers.AnotherFakeIlkSpotMetadatas, spotRepository)
+		test_helpers.CreateVatRecords(db, headerTwo, anotherFakeIlkStateBlock2, test_helpers.AnotherFakeIlkVatMetadatas, vatRepository)
+		test_helpers.CreateCatRecords(db, headerTwo, anotherFakeIlkStateBlock2, test_helpers.AnotherFakeIlkCatMetadatas, catRepository)
+		test_helpers.CreateJugRecords(db, headerTwo, anotherFakeIlkStateBlock2, test_helpers.AnotherFakeIlkJugMetadatas, jugRepository)
+		test_helpers.CreateSpotRecords(db, headerTwo, anotherFakeIlkStateBlock2, test_helpers.AnotherFakeIlkSpotMetadatas, spotRepository)
 	})
 
 	Context("When the headerSync is complete", func() {
@@ -70,18 +70,18 @@ var _ = Describe("All Ilks query", func() {
 			var dbResult []test_helpers.IlkState
 			expectedResult := test_helpers.IlkState{
 				IlkIdentifier: fakeIlk.Identifier,
-				Rate:          fakeIlkStateBlock1[vat.IlkRate],
-				Art:           fakeIlkStateBlock1[vat.IlkArt],
-				Spot:          fakeIlkStateBlock1[vat.IlkSpot],
-				Line:          fakeIlkStateBlock1[vat.IlkLine],
-				Dust:          fakeIlkStateBlock1[vat.IlkDust],
-				Chop:          fakeIlkStateBlock1[cat.IlkChop],
-				Lump:          fakeIlkStateBlock1[cat.IlkLump],
-				Flip:          fakeIlkStateBlock1[cat.IlkFlip],
-				Rho:           fakeIlkStateBlock1[jug.IlkRho],
-				Duty:          fakeIlkStateBlock1[jug.IlkDuty],
-				Pip:           fakeIlkStateBlock1[spot.IlkPip],
-				Mat:           fakeIlkStateBlock1[spot.IlkMat],
+				Rate:          fakeIlkStateBlock1[vat.IlkRate].(string),
+				Art:           fakeIlkStateBlock1[vat.IlkArt].(string),
+				Spot:          fakeIlkStateBlock1[vat.IlkSpot].(string),
+				Line:          fakeIlkStateBlock1[vat.IlkLine].(string),
+				Dust:          fakeIlkStateBlock1[vat.IlkDust].(string),
+				Chop:          fakeIlkStateBlock1[cat.IlkChop].(string),
+				Lump:          fakeIlkStateBlock1[cat.IlkLump].(string),
+				Flip:          fakeIlkStateBlock1[cat.IlkFlip].(string),
+				Rho:           fakeIlkStateBlock1[jug.IlkRho].(string),
+				Duty:          fakeIlkStateBlock1[jug.IlkDuty].(string),
+				Pip:           fakeIlkStateBlock1[spot.IlkPip].(string),
+				Mat:           fakeIlkStateBlock1[spot.IlkMat].(string),
 				Created:       test_helpers.GetValidNullString(getFormattedTimestamp(headerOne.Timestamp)),
 				Updated:       test_helpers.GetValidNullString(getFormattedTimestamp(headerOne.Timestamp)),
 			}
@@ -98,36 +98,36 @@ var _ = Describe("All Ilks query", func() {
 			//fakeIlk was created at block 1
 			fakeIlkExpectedResult := test_helpers.IlkState{
 				IlkIdentifier: fakeIlk.Identifier,
-				Rate:          fakeIlkStateBlock1[vat.IlkRate],
-				Art:           fakeIlkStateBlock1[vat.IlkArt],
-				Spot:          fakeIlkStateBlock1[vat.IlkSpot],
-				Line:          fakeIlkStateBlock1[vat.IlkLine],
-				Dust:          fakeIlkStateBlock1[vat.IlkDust],
-				Chop:          fakeIlkStateBlock1[cat.IlkChop],
-				Lump:          fakeIlkStateBlock1[cat.IlkLump],
-				Flip:          fakeIlkStateBlock1[cat.IlkFlip],
-				Rho:           fakeIlkStateBlock1[jug.IlkRho],
-				Duty:          fakeIlkStateBlock1[jug.IlkDuty],
-				Pip:           fakeIlkStateBlock1[spot.IlkPip],
-				Mat:           fakeIlkStateBlock1[spot.IlkMat],
+				Rate:          fakeIlkStateBlock1[vat.IlkRate].(string),
+				Art:           fakeIlkStateBlock1[vat.IlkArt].(string),
+				Spot:          fakeIlkStateBlock1[vat.IlkSpot].(string),
+				Line:          fakeIlkStateBlock1[vat.IlkLine].(string),
+				Dust:          fakeIlkStateBlock1[vat.IlkDust].(string),
+				Chop:          fakeIlkStateBlock1[cat.IlkChop].(string),
+				Lump:          fakeIlkStateBlock1[cat.IlkLump].(string),
+				Flip:          fakeIlkStateBlock1[cat.IlkFlip].(string),
+				Rho:           fakeIlkStateBlock1[jug.IlkRho].(string),
+				Duty:          fakeIlkStateBlock1[jug.IlkDuty].(string),
+				Pip:           fakeIlkStateBlock1[spot.IlkPip].(string),
+				Mat:           fakeIlkStateBlock1[spot.IlkMat].(string),
 				Created:       test_helpers.GetValidNullString(getFormattedTimestamp(headerOne.Timestamp)),
 				Updated:       test_helpers.GetValidNullString(getFormattedTimestamp(headerOne.Timestamp)),
 			}
 			//anotherFakeIlk was created at block 2
 			anotherFakeIlkExpectedResult := test_helpers.IlkState{
 				IlkIdentifier: anotherFakeIlk.Identifier,
-				Rate:          anotherFakeIlkStateBlock2[vat.IlkRate],
-				Art:           anotherFakeIlkStateBlock2[vat.IlkArt],
-				Spot:          anotherFakeIlkStateBlock2[vat.IlkSpot],
-				Line:          anotherFakeIlkStateBlock2[vat.IlkLine],
-				Dust:          anotherFakeIlkStateBlock2[vat.IlkDust],
-				Chop:          anotherFakeIlkStateBlock2[cat.IlkChop],
-				Lump:          anotherFakeIlkStateBlock2[cat.IlkLump],
-				Flip:          anotherFakeIlkStateBlock2[cat.IlkFlip],
-				Rho:           anotherFakeIlkStateBlock2[jug.IlkRho],
-				Duty:          anotherFakeIlkStateBlock2[jug.IlkDuty],
-				Pip:           anotherFakeIlkStateBlock2[spot.IlkPip],
-				Mat:           anotherFakeIlkStateBlock2[spot.IlkMat],
+				Rate:          anotherFakeIlkStateBlock2[vat.IlkRate].(string),
+				Art:           anotherFakeIlkStateBlock2[vat.IlkArt].(string),
+				Spot:          anotherFakeIlkStateBlock2[vat.IlkSpot].(string),
+				Line:          anotherFakeIlkStateBlock2[vat.IlkLine].(string),
+				Dust:          anotherFakeIlkStateBlock2[vat.IlkDust].(string),
+				Chop:          anotherFakeIlkStateBlock2[cat.IlkChop].(string),
+				Lump:          anotherFakeIlkStateBlock2[cat.IlkLump].(string),
+				Flip:          anotherFakeIlkStateBlock2[cat.IlkFlip].(string),
+				Rho:           anotherFakeIlkStateBlock2[jug.IlkRho].(string),
+				Duty:          anotherFakeIlkStateBlock2[jug.IlkDuty].(string),
+				Pip:           anotherFakeIlkStateBlock2[spot.IlkPip].(string),
+				Mat:           anotherFakeIlkStateBlock2[spot.IlkMat].(string),
 				Created:       test_helpers.GetValidNullString(getFormattedTimestamp(headerTwo.Timestamp)),
 				Updated:       test_helpers.GetValidNullString(getFormattedTimestamp(headerTwo.Timestamp)),
 			}
@@ -145,47 +145,47 @@ var _ = Describe("All Ilks query", func() {
 			//updating fakeIlk spot value at block 3
 			fakeIlkStateBlock3 := test_helpers.GetIlkValues(3)
 			spotMetadata := []utils.StorageValueMetadata{test_helpers.FakeIlkSpotMetadata}
-			test_helpers.CreateVatRecords(headerThree, fakeIlkStateBlock3, spotMetadata, vatRepository)
+			test_helpers.CreateVatRecords(db, headerThree, fakeIlkStateBlock3, spotMetadata, vatRepository)
 
 			//updating all anotherFakeIlk values at block 3
 			anotherFakeIlkStateBlock3 := test_helpers.GetIlkValues(4)
-			test_helpers.CreateVatRecords(headerThree, anotherFakeIlkStateBlock3, test_helpers.AnotherFakeIlkVatMetadatas, vatRepository)
-			test_helpers.CreateCatRecords(headerThree, anotherFakeIlkStateBlock3, test_helpers.AnotherFakeIlkCatMetadatas, catRepository)
-			test_helpers.CreateJugRecords(headerThree, anotherFakeIlkStateBlock3, test_helpers.AnotherFakeIlkJugMetadatas, jugRepository)
-			test_helpers.CreateSpotRecords(headerThree, anotherFakeIlkStateBlock3, test_helpers.AnotherFakeIlkSpotMetadatas, spotRepository)
+			test_helpers.CreateVatRecords(db, headerThree, anotherFakeIlkStateBlock3, test_helpers.AnotherFakeIlkVatMetadatas, vatRepository)
+			test_helpers.CreateCatRecords(db, headerThree, anotherFakeIlkStateBlock3, test_helpers.AnotherFakeIlkCatMetadatas, catRepository)
+			test_helpers.CreateJugRecords(db, headerThree, anotherFakeIlkStateBlock3, test_helpers.AnotherFakeIlkJugMetadatas, jugRepository)
+			test_helpers.CreateSpotRecords(db, headerThree, anotherFakeIlkStateBlock3, test_helpers.AnotherFakeIlkSpotMetadatas, spotRepository)
 
 			var dbResult []test_helpers.IlkState
 			fakeIlkExpectedResult := test_helpers.IlkState{
 				IlkIdentifier: fakeIlk.Identifier,
-				Rate:          fakeIlkStateBlock1[vat.IlkRate],
-				Art:           fakeIlkStateBlock1[vat.IlkArt],
-				Spot:          fakeIlkStateBlock3[vat.IlkSpot],
-				Line:          fakeIlkStateBlock1[vat.IlkLine],
-				Dust:          fakeIlkStateBlock1[vat.IlkDust],
-				Chop:          fakeIlkStateBlock1[cat.IlkChop],
-				Lump:          fakeIlkStateBlock1[cat.IlkLump],
-				Flip:          fakeIlkStateBlock1[cat.IlkFlip],
-				Rho:           fakeIlkStateBlock1[jug.IlkRho],
-				Duty:          fakeIlkStateBlock1[jug.IlkDuty],
-				Pip:           fakeIlkStateBlock1[spot.IlkPip],
-				Mat:           fakeIlkStateBlock1[spot.IlkMat],
+				Rate:          fakeIlkStateBlock1[vat.IlkRate].(string),
+				Art:           fakeIlkStateBlock1[vat.IlkArt].(string),
+				Spot:          fakeIlkStateBlock3[vat.IlkSpot].(string),
+				Line:          fakeIlkStateBlock1[vat.IlkLine].(string),
+				Dust:          fakeIlkStateBlock1[vat.IlkDust].(string),
+				Chop:          fakeIlkStateBlock1[cat.IlkChop].(string),
+				Lump:          fakeIlkStateBlock1[cat.IlkLump].(string),
+				Flip:          fakeIlkStateBlock1[cat.IlkFlip].(string),
+				Rho:           fakeIlkStateBlock1[jug.IlkRho].(string),
+				Duty:          fakeIlkStateBlock1[jug.IlkDuty].(string),
+				Pip:           fakeIlkStateBlock1[spot.IlkPip].(string),
+				Mat:           fakeIlkStateBlock1[spot.IlkMat].(string),
 				Created:       test_helpers.GetValidNullString(getFormattedTimestamp(headerOne.Timestamp)),
 				Updated:       test_helpers.GetValidNullString(getFormattedTimestamp(headerThree.Timestamp)),
 			}
 			anotherFakeIlkExpectedResult := test_helpers.IlkState{
 				IlkIdentifier: anotherFakeIlk.Identifier,
-				Rate:          anotherFakeIlkStateBlock3[vat.IlkRate],
-				Art:           anotherFakeIlkStateBlock3[vat.IlkArt],
-				Spot:          anotherFakeIlkStateBlock3[vat.IlkSpot],
-				Line:          anotherFakeIlkStateBlock3[vat.IlkLine],
-				Dust:          anotherFakeIlkStateBlock3[vat.IlkDust],
-				Chop:          anotherFakeIlkStateBlock3[cat.IlkChop],
-				Lump:          anotherFakeIlkStateBlock3[cat.IlkLump],
-				Flip:          anotherFakeIlkStateBlock3[cat.IlkFlip],
-				Rho:           anotherFakeIlkStateBlock3[jug.IlkRho],
-				Duty:          anotherFakeIlkStateBlock3[jug.IlkDuty],
-				Pip:           anotherFakeIlkStateBlock3[spot.IlkPip],
-				Mat:           anotherFakeIlkStateBlock3[spot.IlkMat],
+				Rate:          anotherFakeIlkStateBlock3[vat.IlkRate].(string),
+				Art:           anotherFakeIlkStateBlock3[vat.IlkArt].(string),
+				Spot:          anotherFakeIlkStateBlock3[vat.IlkSpot].(string),
+				Line:          anotherFakeIlkStateBlock3[vat.IlkLine].(string),
+				Dust:          anotherFakeIlkStateBlock3[vat.IlkDust].(string),
+				Chop:          anotherFakeIlkStateBlock3[cat.IlkChop].(string),
+				Lump:          anotherFakeIlkStateBlock3[cat.IlkLump].(string),
+				Flip:          anotherFakeIlkStateBlock3[cat.IlkFlip].(string),
+				Rho:           anotherFakeIlkStateBlock3[jug.IlkRho].(string),
+				Duty:          anotherFakeIlkStateBlock3[jug.IlkDuty].(string),
+				Pip:           anotherFakeIlkStateBlock3[spot.IlkPip].(string),
+				Mat:           anotherFakeIlkStateBlock3[spot.IlkMat].(string),
 				Created:       test_helpers.GetValidNullString(getFormattedTimestamp(headerTwo.Timestamp)),
 				Updated:       test_helpers.GetValidNullString(getFormattedTimestamp(headerThree.Timestamp)),
 			}
@@ -202,18 +202,18 @@ var _ = Describe("All Ilks query", func() {
 				//anotherFakeIlk was created at block 2
 				anotherFakeIlkExpectedResult := test_helpers.IlkState{
 					IlkIdentifier: anotherFakeIlk.Identifier,
-					Rate:          anotherFakeIlkStateBlock2[vat.IlkRate],
-					Art:           anotherFakeIlkStateBlock2[vat.IlkArt],
-					Spot:          anotherFakeIlkStateBlock2[vat.IlkSpot],
-					Line:          anotherFakeIlkStateBlock2[vat.IlkLine],
-					Dust:          anotherFakeIlkStateBlock2[vat.IlkDust],
-					Chop:          anotherFakeIlkStateBlock2[cat.IlkChop],
-					Lump:          anotherFakeIlkStateBlock2[cat.IlkLump],
-					Flip:          anotherFakeIlkStateBlock2[cat.IlkFlip],
-					Rho:           anotherFakeIlkStateBlock2[jug.IlkRho],
-					Duty:          anotherFakeIlkStateBlock2[jug.IlkDuty],
-					Pip:           anotherFakeIlkStateBlock2[spot.IlkPip],
-					Mat:           anotherFakeIlkStateBlock2[spot.IlkMat],
+					Rate:          anotherFakeIlkStateBlock2[vat.IlkRate].(string),
+					Art:           anotherFakeIlkStateBlock2[vat.IlkArt].(string),
+					Spot:          anotherFakeIlkStateBlock2[vat.IlkSpot].(string),
+					Line:          anotherFakeIlkStateBlock2[vat.IlkLine].(string),
+					Dust:          anotherFakeIlkStateBlock2[vat.IlkDust].(string),
+					Chop:          anotherFakeIlkStateBlock2[cat.IlkChop].(string),
+					Lump:          anotherFakeIlkStateBlock2[cat.IlkLump].(string),
+					Flip:          anotherFakeIlkStateBlock2[cat.IlkFlip].(string),
+					Rho:           anotherFakeIlkStateBlock2[jug.IlkRho].(string),
+					Duty:          anotherFakeIlkStateBlock2[jug.IlkDuty].(string),
+					Pip:           anotherFakeIlkStateBlock2[spot.IlkPip].(string),
+					Mat:           anotherFakeIlkStateBlock2[spot.IlkMat].(string),
 					Created:       test_helpers.GetValidNullString(getFormattedTimestamp(headerTwo.Timestamp)),
 					Updated:       test_helpers.GetValidNullString(getFormattedTimestamp(headerTwo.Timestamp)),
 				}
@@ -231,18 +231,18 @@ var _ = Describe("All Ilks query", func() {
 			It("offsets results if offset is provided", func() {
 				fakeIlkExpectedResult := test_helpers.IlkState{
 					IlkIdentifier: fakeIlk.Identifier,
-					Rate:          fakeIlkStateBlock1[vat.IlkRate],
-					Art:           fakeIlkStateBlock1[vat.IlkArt],
-					Spot:          fakeIlkStateBlock1[vat.IlkSpot],
-					Line:          fakeIlkStateBlock1[vat.IlkLine],
-					Dust:          fakeIlkStateBlock1[vat.IlkDust],
-					Chop:          fakeIlkStateBlock1[cat.IlkChop],
-					Lump:          fakeIlkStateBlock1[cat.IlkLump],
-					Flip:          fakeIlkStateBlock1[cat.IlkFlip],
-					Rho:           fakeIlkStateBlock1[jug.IlkRho],
-					Duty:          fakeIlkStateBlock1[jug.IlkDuty],
-					Pip:           fakeIlkStateBlock1[spot.IlkPip],
-					Mat:           fakeIlkStateBlock1[spot.IlkMat],
+					Rate:          fakeIlkStateBlock1[vat.IlkRate].(string),
+					Art:           fakeIlkStateBlock1[vat.IlkArt].(string),
+					Spot:          fakeIlkStateBlock1[vat.IlkSpot].(string),
+					Line:          fakeIlkStateBlock1[vat.IlkLine].(string),
+					Dust:          fakeIlkStateBlock1[vat.IlkDust].(string),
+					Chop:          fakeIlkStateBlock1[cat.IlkChop].(string),
+					Lump:          fakeIlkStateBlock1[cat.IlkLump].(string),
+					Flip:          fakeIlkStateBlock1[cat.IlkFlip].(string),
+					Rho:           fakeIlkStateBlock1[jug.IlkRho].(string),
+					Duty:          fakeIlkStateBlock1[jug.IlkDuty].(string),
+					Pip:           fakeIlkStateBlock1[spot.IlkPip].(string),
+					Mat:           fakeIlkStateBlock1[spot.IlkMat].(string),
 					Created:       test_helpers.GetValidNullString(getFormattedTimestamp(headerOne.Timestamp)),
 					Updated:       test_helpers.GetValidNullString(getFormattedTimestamp(headerOne.Timestamp)),
 				}
@@ -277,12 +277,12 @@ var _ = Describe("All Ilks query", func() {
 			Type: utils.Uint256,
 		}}
 		//only creating a vat_ilk_rate record
-		test_helpers.CreateVatRecords(headerFour, newIlkStateBlock4, metadata, vatRepository)
+		test_helpers.CreateVatRecords(db, headerFour, newIlkStateBlock4, metadata, vatRepository)
 
 		var dbResult []test_helpers.IlkState
 		newIlkExpectedResult := test_helpers.IlkState{
 			IlkIdentifier: newIlk.Identifier,
-			Rate:          newIlkStateBlock4[vat.IlkRate],
+			Rate:          newIlkStateBlock4[vat.IlkRate].(string),
 			Created:       test_helpers.GetValidNullString(getFormattedTimestamp(headerFour.Timestamp)),
 			Updated:       test_helpers.GetValidNullString(getFormattedTimestamp(headerFour.Timestamp)),
 		}

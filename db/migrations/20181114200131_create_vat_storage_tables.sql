@@ -2,26 +2,29 @@
 CREATE TABLE maker.vat_debt
 (
     id        SERIAL PRIMARY KEY,
+    diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     debt      NUMERIC NOT NULL,
-    UNIQUE (header_id, debt)
+    UNIQUE (diff_id, header_id, debt)
 );
 
 CREATE TABLE maker.vat_vice
 (
     id        SERIAL PRIMARY KEY,
+    diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     vice      NUMERIC NOT NULL,
-    UNIQUE (header_id, vice)
+    UNIQUE (diff_id, header_id, vice)
 );
 
 CREATE TABLE maker.vat_ilk_art
 (
     id        SERIAL PRIMARY KEY,
+    diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     ilk_id    INTEGER NOT NULL REFERENCES maker.ilks (id) ON DELETE CASCADE,
     art       NUMERIC NOT NULL,
-    UNIQUE (header_id, ilk_id, art)
+    UNIQUE (diff_id, header_id, ilk_id, art)
 );
 
 CREATE INDEX vat_ilk_art_header_id_index
@@ -32,10 +35,11 @@ CREATE INDEX vat_ilk_art_ilk_index
 CREATE TABLE maker.vat_ilk_dust
 (
     id        SERIAL PRIMARY KEY,
+    diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     ilk_id    INTEGER NOT NULL REFERENCES maker.ilks (id) ON DELETE CASCADE,
     dust      NUMERIC NOT NULL,
-    UNIQUE (header_id, ilk_id, dust)
+    UNIQUE (diff_id, header_id, ilk_id, dust)
 );
 
 CREATE INDEX vat_ilk_dust_header_id_index
@@ -46,10 +50,11 @@ CREATE INDEX vat_ilk_dust_ilk_index
 CREATE TABLE maker.vat_ilk_line
 (
     id        SERIAL PRIMARY KEY,
+    diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     ilk_id    INTEGER NOT NULL REFERENCES maker.ilks (id) ON DELETE CASCADE,
     line      NUMERIC NOT NULL,
-    UNIQUE (header_id, ilk_id, line)
+    UNIQUE (diff_id, header_id, ilk_id, line)
 );
 
 CREATE INDEX vat_ilk_line_header_id_index
@@ -60,10 +65,11 @@ CREATE INDEX vat_ilk_line_ilk_index
 CREATE TABLE maker.vat_ilk_spot
 (
     id        SERIAL PRIMARY KEY,
+    diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     ilk_id    INTEGER NOT NULL REFERENCES maker.ilks (id) ON DELETE CASCADE,
     spot      NUMERIC NOT NULL,
-    UNIQUE (header_id, ilk_id, spot)
+    UNIQUE (diff_id, header_id, ilk_id, spot)
 );
 
 CREATE INDEX vat_ilk_spot_header_id_index
@@ -74,10 +80,11 @@ CREATE INDEX vat_ilk_spot_ilk_index
 CREATE TABLE maker.vat_ilk_rate
 (
     id        SERIAL PRIMARY KEY,
+    diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     ilk_id    INTEGER NOT NULL REFERENCES maker.ilks (id) ON DELETE CASCADE,
     rate      NUMERIC NOT NULL,
-    UNIQUE (header_id, ilk_id, rate)
+    UNIQUE (diff_id, header_id, ilk_id, rate)
 );
 
 CREATE INDEX vat_ilk_rate_header_id_index
@@ -88,10 +95,11 @@ CREATE INDEX vat_ilk_rate_ilk_index
 CREATE TABLE maker.vat_urn_art
 (
     id        SERIAL PRIMARY KEY,
+    diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     urn_id    INTEGER NOT NULL REFERENCES maker.urns (id) ON DELETE CASCADE,
     art       NUMERIC NOT NULL,
-    UNIQUE (header_id, urn_id, art)
+    UNIQUE (diff_id, header_id, urn_id, art)
 );
 
 CREATE INDEX vat_urn_art_header_id_index
@@ -102,10 +110,11 @@ CREATE INDEX vat_urn_art_urn_index
 CREATE TABLE maker.vat_urn_ink
 (
     id        SERIAL PRIMARY KEY,
+    diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     urn_id    INTEGER NOT NULL REFERENCES maker.urns (id) ON DELETE CASCADE,
     ink       NUMERIC NOT NULL,
-    UNIQUE (header_id, urn_id, ink)
+    UNIQUE (diff_id, header_id, urn_id, ink)
 );
 
 CREATE INDEX vat_urn_ink_header_id_index
@@ -116,11 +125,12 @@ CREATE INDEX vat_urn_ink_urn_index
 CREATE TABLE maker.vat_gem
 (
     id        SERIAL PRIMARY KEY,
+    diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     ilk_id    INTEGER NOT NULL REFERENCES maker.ilks (id) ON DELETE CASCADE,
     guy       TEXT,
     gem       NUMERIC NOT NULL,
-    UNIQUE (header_id, ilk_id, guy, gem)
+    UNIQUE (diff_id, header_id, ilk_id, guy, gem)
 );
 
 CREATE INDEX vat_gem_ilk_index
@@ -129,35 +139,39 @@ CREATE INDEX vat_gem_ilk_index
 CREATE TABLE maker.vat_dai
 (
     id        SERIAL PRIMARY KEY,
+    diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     guy       TEXT,
     dai       NUMERIC NOT NULL,
-    UNIQUE (header_id, guy, dai)
+    UNIQUE (diff_id, header_id, guy, dai)
 );
 
 CREATE TABLE maker.vat_sin
 (
     id        SERIAL PRIMARY KEY,
+    diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     guy       TEXT,
     sin       NUMERIC NOT NULL,
-    UNIQUE (header_id, guy, sin)
+    UNIQUE (diff_id, header_id, guy, sin)
 );
 
 CREATE TABLE maker.vat_line
 (
     id        SERIAL PRIMARY KEY,
+    diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     line      NUMERIC NOT NULL,
-    UNIQUE (header_id, line)
+    UNIQUE (diff_id, header_id, line)
 );
 
 CREATE TABLE maker.vat_live
 (
     id        SERIAL PRIMARY KEY,
+    diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     live      NUMERIC NOT NULL,
-    UNIQUE (header_id, live)
+    UNIQUE (diff_id, header_id, live)
 );
 
 -- +goose Down

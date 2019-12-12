@@ -5,6 +5,9 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/makerdao/vulcanizedb/libraries/shared/storage/utils"
+
 	"github.com/makerdao/vulcanizedb/pkg/core"
 
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
@@ -29,4 +32,33 @@ func CreateHeaderWithHash(hash string, timestamp int64, blockNumber int, db *pos
 	Expect(headerErr).NotTo(HaveOccurred())
 	fakeHeader.Id = headerId
 	return fakeHeader
+}
+
+func CreateFakeDiffRecord(db *postgres.DB) int64 {
+	return CreateFakeDiffRecordWithHeader(db, fakes.FakeHeader)
+}
+
+func CreateFakeDiffRecordWithHeader(db *postgres.DB, header core.Header) int64 {
+	fakeRawDiff := fakes.GetFakeStorageDiffForHeader(header, common.Hash{}, common.Hash{}, common.Hash{})
+	storageDiffRepo := repositories.NewStorageDiffRepository(db)
+	diffID, insertDiffErr := storageDiffRepo.CreateStorageDiff(fakeRawDiff)
+	Expect(insertDiffErr).NotTo(HaveOccurred())
+
+	return diffID
+}
+
+func CreateDiffRecord(db *postgres.DB, header core.Header, hashedAddress, key, value common.Hash) utils.PersistedStorageDiff {
+	rawDiff := fakes.GetFakeStorageDiffForHeader(header, hashedAddress, key, value)
+
+	repo := repositories.NewStorageDiffRepository(db)
+	diffID, insertDiffErr := repo.CreateStorageDiff(rawDiff)
+	Expect(insertDiffErr).NotTo(HaveOccurred())
+
+	persistedDiff := utils.PersistedStorageDiff{
+		RawStorageDiff: rawDiff,
+		ID:             diffID,
+		HeaderID:       header.Id,
+	}
+
+	return persistedDiff
 }

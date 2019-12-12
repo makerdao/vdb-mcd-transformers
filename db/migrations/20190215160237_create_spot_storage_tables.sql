@@ -3,10 +3,11 @@
 CREATE TABLE maker.spot_ilk_pip
 (
     id        SERIAL PRIMARY KEY,
+    diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     ilk_id    INTEGER NOT NULL REFERENCES maker.ilks (id) ON DELETE CASCADE,
     pip       TEXT,
-    UNIQUE (header_id, ilk_id, pip)
+    UNIQUE (diff_id, header_id, ilk_id, pip)
 );
 
 CREATE INDEX spot_ilk_pip_header_id_index
@@ -17,10 +18,11 @@ CREATE INDEX spot_ilk_pip_ilk_index
 CREATE TABLE maker.spot_ilk_mat
 (
     id        SERIAL PRIMARY KEY,
+    diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     ilk_id    INTEGER NOT NULL REFERENCES maker.ilks (id) ON DELETE CASCADE,
     mat       NUMERIC NOT NULL,
-    UNIQUE (header_id, ilk_id, mat)
+    UNIQUE (diff_id, header_id, ilk_id, mat)
 );
 
 CREATE INDEX spot_ilk_mat_header_id_index
@@ -31,17 +33,19 @@ CREATE INDEX spot_ilk_mat_ilk_index
 CREATE TABLE maker.spot_vat
 (
     id        SERIAL PRIMARY KEY,
+    diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     vat       TEXT,
-    UNIQUE (header_id, vat)
+    UNIQUE (diff_id, header_id, vat)
 );
 
 CREATE TABLE maker.spot_par
 (
     id        SERIAL PRIMARY KEY,
+    diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     par       NUMERIC NOT NULL,
-    UNIQUE (header_id, par)
+    UNIQUE (diff_id, header_id, par)
 );
 
 -- +goose Down

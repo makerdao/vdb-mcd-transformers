@@ -20,7 +20,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-type StorageVariableBehaviorInputs struct {
+type StorageBehaviorInputs struct {
 	KeyFieldName     string
 	ValueFieldName   string
 	Key              string
@@ -31,12 +31,12 @@ type StorageVariableBehaviorInputs struct {
 	Metadata         utils.StorageValueMetadata
 }
 
-func SharedStorageRepositoryVariableBehaviors(inputs *StorageVariableBehaviorInputs) {
+func SharedStorageRepositoryBehaviors(inputs *StorageBehaviorInputs) {
 	Describe("Create", func() {
 		var (
-			repo     = inputs.Repository
-			database = test_config.NewTestDB(test_config.NewTestNode())
-			headerID int64
+			repo             = inputs.Repository
+			database         = test_config.NewTestDB(test_config.NewTestNode())
+			diffID, headerID int64
 		)
 
 		BeforeEach(func() {
@@ -46,33 +46,35 @@ func SharedStorageRepositoryVariableBehaviors(inputs *StorageVariableBehaviorInp
 			var insertHeaderErr error
 			headerID, insertHeaderErr = headerRepository.CreateOrUpdateHeader(fakes.FakeHeader)
 			Expect(insertHeaderErr).NotTo(HaveOccurred())
+
+			diffID = CreateFakeDiffRecord(database)
 		})
 
 		It("persists a record", func() {
-			err := repo.Create(headerID, inputs.Metadata, inputs.Value)
+			err := repo.Create(diffID, headerID, inputs.Metadata, inputs.Value)
 			Expect(err).NotTo(HaveOccurred())
 
 			if inputs.IsAMapping == true {
 				var result MappingRes
-				query := fmt.Sprintf("SELECT header_id, %s AS key, %s AS value FROM %s",
+				query := fmt.Sprintf("SELECT diff_id, header_id, %s AS key, %s AS value FROM %s",
 					inputs.KeyFieldName, inputs.ValueFieldName, inputs.StorageTableName)
 				err = database.Get(&result, query)
 				Expect(err).NotTo(HaveOccurred())
-				AssertMapping(result, headerID, inputs.Key, inputs.Value)
+				AssertMapping(result, diffID, headerID, inputs.Key, inputs.Value)
 			} else {
 				var result VariableRes
-				query := fmt.Sprintf("SELECT header_id, %s AS value FROM %s", inputs.ValueFieldName, inputs.StorageTableName)
+				query := fmt.Sprintf("SELECT diff_id, header_id, %s AS value FROM %s", inputs.ValueFieldName, inputs.StorageTableName)
 				err = database.Get(&result, query)
 				Expect(err).NotTo(HaveOccurred())
-				AssertVariable(result, headerID, inputs.Value)
+				AssertVariable(result, diffID, headerID, inputs.Value)
 			}
 		})
 
 		It("doesn't duplicate a record", func() {
-			err := repo.Create(headerID, inputs.Metadata, inputs.Value)
+			err := repo.Create(diffID, headerID, inputs.Metadata, inputs.Value)
 			Expect(err).NotTo(HaveOccurred())
 
-			err = repo.Create(headerID, inputs.Metadata, inputs.Value)
+			err = repo.Create(diffID, headerID, inputs.Metadata, inputs.Value)
 			Expect(err).NotTo(HaveOccurred())
 
 			var count int
@@ -100,6 +102,7 @@ func SharedIlkTriggerTests(input IlkTriggerTestInput) {
 			blockThree int
 			headerOne,
 			headerTwo core.Header
+			diffID           int64
 			repo             = input.Repository
 			database         = test_config.NewTestDB(test_config.NewTestNode())
 			hashOne          = common.BytesToHash([]byte{1, 2, 3, 4, 5})
@@ -123,14 +126,15 @@ func SharedIlkTriggerTests(input IlkTriggerTestInput) {
 			headerOne = CreateHeaderWithHash(hashOne.String(), rawTimestampOne, blockOne, database)
 			headerTwo = CreateHeaderWithHash(hashTwo.String(), rawTimestampTwo, blockTwo, database)
 			CreateHeaderWithHash(hashThree.String(), rawTimestampThree, blockThree, database)
+
+			diffID = CreateFakeDiffRecord(database)
 		})
 
 		It("inserts a row for new ilk-block", func() {
 			initialIlkValues := test_helpers.GetIlkValues(0)
-			test_helpers.CreateIlk(database, headerOne, initialIlkValues, test_helpers.FakeIlkVatMetadatas,
-				test_helpers.FakeIlkCatMetadatas, test_helpers.FakeIlkJugMetadatas, test_helpers.FakeIlkSpotMetadatas)
+			test_helpers.CreateIlk(database, headerOne, initialIlkValues, test_helpers.FakeIlkVatMetadatas, test_helpers.FakeIlkCatMetadatas, test_helpers.FakeIlkJugMetadatas, test_helpers.FakeIlkSpotMetadatas)
 
-			err := repo.Create(headerTwo.Id, input.Metadata, input.PropertyValue)
+			err := repo.Create(diffID, headerTwo.Id, input.Metadata, input.PropertyValue)
 			Expect(err).NotTo(HaveOccurred())
 
 			var ilkStates []test_helpers.IlkState
@@ -145,10 +149,9 @@ func SharedIlkTriggerTests(input IlkTriggerTestInput) {
 
 		It("updates row if ilk-block combination already exists in table", func() {
 			initialIlkValues := test_helpers.GetIlkValues(0)
-			test_helpers.CreateIlk(database, headerOne, initialIlkValues, test_helpers.FakeIlkVatMetadatas,
-				test_helpers.FakeIlkCatMetadatas, test_helpers.FakeIlkJugMetadatas, test_helpers.FakeIlkSpotMetadatas)
+			test_helpers.CreateIlk(database, headerOne, initialIlkValues, test_helpers.FakeIlkVatMetadatas, test_helpers.FakeIlkCatMetadatas, test_helpers.FakeIlkJugMetadatas, test_helpers.FakeIlkSpotMetadatas)
 
-			err := repo.Create(headerOne.Id, input.Metadata, input.PropertyValue)
+			err := repo.Create(diffID, headerOne.Id, input.Metadata, input.PropertyValue)
 			Expect(err).NotTo(HaveOccurred())
 
 			var ilkStates []test_helpers.IlkState
@@ -167,7 +170,7 @@ func SharedIlkTriggerTests(input IlkTriggerTestInput) {
 				test_helpers.FakeIlk.Identifier, headerTwo.BlockNumber, initialIlkValues[input.Metadata.Name])
 			Expect(setupErr).NotTo(HaveOccurred())
 
-			err := repo.Create(headerOne.Id, input.Metadata, input.PropertyValue)
+			err := repo.Create(diffID, headerOne.Id, input.Metadata, input.PropertyValue)
 			Expect(err).NotTo(HaveOccurred())
 
 			var ilkStates []test_helpers.IlkState
@@ -179,10 +182,10 @@ func SharedIlkTriggerTests(input IlkTriggerTestInput) {
 
 		It("ignores rows from blocks after the next time the field is updated", func() {
 			initialIlkValues := test_helpers.GetIlkValues(0)
-			setupErr := repo.Create(headerTwo.Id, input.Metadata, initialIlkValues[input.Metadata.Name])
+			setupErr := repo.Create(diffID, headerTwo.Id, input.Metadata, initialIlkValues[input.Metadata.Name])
 			Expect(setupErr).NotTo(HaveOccurred())
 
-			err := repo.Create(headerOne.Id, input.Metadata, input.PropertyValue)
+			err := repo.Create(diffID, headerOne.Id, input.Metadata, input.PropertyValue)
 			Expect(err).NotTo(HaveOccurred())
 
 			var ilkStates []test_helpers.IlkState
@@ -198,7 +201,7 @@ func SharedIlkTriggerTests(input IlkTriggerTestInput) {
 				test_helpers.AnotherFakeIlk.Identifier, headerTwo.BlockNumber, initialIlkValues[input.Metadata.Name])
 			Expect(setupErr).NotTo(HaveOccurred())
 
-			err := repo.Create(headerOne.Id, input.Metadata, input.PropertyValue)
+			err := repo.Create(diffID, headerOne.Id, input.Metadata, input.PropertyValue)
 			Expect(err).NotTo(HaveOccurred())
 
 			var ilkStates []test_helpers.IlkState
@@ -214,7 +217,7 @@ func SharedIlkTriggerTests(input IlkTriggerTestInput) {
 				test_helpers.FakeIlk.Identifier, headerOne.BlockNumber, initialIlkValues[input.Metadata.Name])
 			Expect(setupErr).NotTo(HaveOccurred())
 
-			err := repo.Create(headerTwo.Id, input.Metadata, input.PropertyValue)
+			err := repo.Create(diffID, headerTwo.Id, input.Metadata, input.PropertyValue)
 			Expect(err).NotTo(HaveOccurred())
 
 			var ilkStates []test_helpers.IlkState
@@ -227,11 +230,11 @@ func SharedIlkTriggerTests(input IlkTriggerTestInput) {
 		Describe("when diff is deleted", func() {
 			It("updates field to previous value in subsequent rows", func() {
 				initialIlkValues := test_helpers.GetIlkValues(0)
-				setupErrOne := repo.Create(headerOne.Id, input.Metadata, initialIlkValues[input.Metadata.Name])
+				setupErrOne := repo.Create(diffID, headerOne.Id, input.Metadata, initialIlkValues[input.Metadata.Name])
 				Expect(setupErrOne).NotTo(HaveOccurred())
 
 				subsequentIlkValues := test_helpers.GetIlkValues(1)
-				setupErrTwo := repo.Create(headerTwo.Id, input.Metadata, subsequentIlkValues[input.Metadata.Name])
+				setupErrTwo := repo.Create(diffID, headerTwo.Id, input.Metadata, subsequentIlkValues[input.Metadata.Name])
 				Expect(setupErrTwo).NotTo(HaveOccurred())
 				_, setupErrThree := database.Exec(insertFieldQuery,
 					test_helpers.FakeIlk.Identifier, blockThree, subsequentIlkValues[input.Metadata.Name])
@@ -248,7 +251,7 @@ func SharedIlkTriggerTests(input IlkTriggerTestInput) {
 
 			It("sets field in subsequent rows to null if no previous diff exists", func() {
 				initialIlkValues := test_helpers.GetIlkValues(0)
-				setupErrOne := repo.Create(headerOne.Id, input.Metadata, initialIlkValues[input.Metadata.Name])
+				setupErrOne := repo.Create(diffID, headerOne.Id, input.Metadata, initialIlkValues[input.Metadata.Name])
 				Expect(setupErrOne).NotTo(HaveOccurred())
 				_, setupErrTwo := database.Exec(insertFieldQuery,
 					test_helpers.FakeIlk.Identifier, blockTwo, initialIlkValues[input.Metadata.Name])
@@ -265,11 +268,11 @@ func SharedIlkTriggerTests(input IlkTriggerTestInput) {
 
 			It("deletes ilk state associated with diff if identical to previous state", func() {
 				initialIlkValues := test_helpers.GetIlkValues(0)
-				setupErrOne := repo.Create(headerOne.Id, input.Metadata, initialIlkValues[input.Metadata.Name])
+				setupErrOne := repo.Create(diffID, headerOne.Id, input.Metadata, initialIlkValues[input.Metadata.Name])
 				Expect(setupErrOne).NotTo(HaveOccurred())
 
 				subsequentIlkValues := test_helpers.GetIlkValues(1)
-				setupErrTwo := repo.Create(headerTwo.Id, input.Metadata, subsequentIlkValues[input.Metadata.Name])
+				setupErrTwo := repo.Create(diffID, headerTwo.Id, input.Metadata, subsequentIlkValues[input.Metadata.Name])
 				Expect(setupErrTwo).NotTo(HaveOccurred())
 				_, setupErrThree := database.Exec(insertFieldQuery,
 					test_helpers.FakeIlk.Identifier, blockThree, subsequentIlkValues[input.Metadata.Name])
@@ -286,7 +289,7 @@ func SharedIlkTriggerTests(input IlkTriggerTestInput) {
 
 			It("deletes ilk state associated with diff if it's the earliest state in the table", func() {
 				initialIlkValues := test_helpers.GetIlkValues(0)
-				setupErrOne := repo.Create(headerOne.Id, input.Metadata, initialIlkValues[input.Metadata.Name])
+				setupErrOne := repo.Create(diffID, headerOne.Id, input.Metadata, initialIlkValues[input.Metadata.Name])
 				Expect(setupErrOne).NotTo(HaveOccurred())
 
 				_, deleteErr := database.Exec(deleteRowQuery, headerOne.Id)

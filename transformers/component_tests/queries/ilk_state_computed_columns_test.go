@@ -41,7 +41,7 @@ var _ = Describe("Ilk state computed columns", func() {
 		fakeGuy                = fakes.RandomString(42)
 		headerOne              core.Header
 		headerRepository       repositories.HeaderRepository
-		logId                  int64
+		logID                  int64
 	)
 
 	BeforeEach(func() {
@@ -52,11 +52,10 @@ var _ = Describe("Ilk state computed columns", func() {
 		timestampOne = int(rand.Int31())
 		headerOne = createHeader(blockOne, timestampOne, headerRepository)
 		fakeHeaderSyncLog := test_data.CreateTestLog(headerOne.Id, db)
-		logId = fakeHeaderSyncLog.ID
+		logID = fakeHeaderSyncLog.ID
 
 		ilkValues := test_helpers.GetIlkValues(0)
-		test_helpers.CreateIlk(db, headerOne, ilkValues, test_helpers.FakeIlkVatMetadatas,
-			test_helpers.FakeIlkCatMetadatas, test_helpers.FakeIlkJugMetadatas, test_helpers.FakeIlkSpotMetadatas)
+		test_helpers.CreateIlk(db, headerOne, ilkValues, test_helpers.FakeIlkVatMetadatas, test_helpers.FakeIlkCatMetadatas, test_helpers.FakeIlkJugMetadatas, test_helpers.FakeIlkSpotMetadatas)
 	})
 
 	Describe("ilk_state_frobs", func() {
@@ -67,7 +66,7 @@ var _ = Describe("Ilk state computed columns", func() {
 			frobEvent.ForeignKeyValues[constants.UrnFK] = fakeGuy
 			frobEvent.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
 			frobEvent.ColumnValues[constants.HeaderFK] = headerOne.Id
-			frobEvent.ColumnValues[constants.LogFK] = logId
+			frobEvent.ColumnValues[constants.LogFK] = logID
 			insertFrobErr := frobRepo.Create([]shared.InsertionModel{frobEvent})
 			Expect(insertFrobErr).NotTo(HaveOccurred())
 
@@ -102,7 +101,7 @@ var _ = Describe("Ilk state computed columns", func() {
 				oldFrob.ForeignKeyValues[constants.UrnFK] = fakeGuy
 				oldFrob.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
 				oldFrob.ColumnValues[constants.HeaderFK] = headerOne.Id
-				oldFrob.ColumnValues[constants.LogFK] = logId
+				oldFrob.ColumnValues[constants.LogFK] = logID
 				insertOldFrobErr := frobRepo.Create([]shared.InsertionModel{oldFrob})
 				Expect(insertOldFrobErr).NotTo(HaveOccurred())
 
@@ -166,7 +165,7 @@ var _ = Describe("Ilk state computed columns", func() {
 			fileEvent := test_data.VatFileIlkDustModel()
 			fileEvent.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
 			fileEvent.ColumnValues[constants.HeaderFK] = headerOne.Id
-			fileEvent.ColumnValues[constants.LogFK] = logId
+			fileEvent.ColumnValues[constants.LogFK] = logID
 			insertFileErr := fileRepo.Create([]shared.InsertionModel{fileEvent})
 			Expect(insertFileErr).NotTo(HaveOccurred())
 
@@ -199,7 +198,7 @@ var _ = Describe("Ilk state computed columns", func() {
 				fileEvent = test_data.VatFileIlkDustModel()
 				fileEvent.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
 				fileEvent.ColumnValues[constants.HeaderFK] = headerOne.Id
-				fileEvent.ColumnValues[constants.LogFK] = logId
+				fileEvent.ColumnValues[constants.LogFK] = logID
 				insertFileErr := fileRepo.Create([]shared.InsertionModel{fileEvent})
 				Expect(insertFileErr).NotTo(HaveOccurred())
 
@@ -257,7 +256,7 @@ var _ = Describe("Ilk state computed columns", func() {
 
 	Describe("ilk_state_bites", func() {
 		It("returns bite event for an ilk state", func() {
-			biteEvent := generateBite(test_helpers.FakeIlk.Hex, fakeGuy, headerOne.Id, logId, db)
+			biteEvent := generateBite(test_helpers.FakeIlk.Hex, fakeGuy, headerOne.Id, logID, db)
 			insertBiteErr := event.PersistModels([]event.InsertionModel{biteEvent}, db)
 			Expect(insertBiteErr).NotTo(HaveOccurred())
 
@@ -290,7 +289,7 @@ var _ = Describe("Ilk state computed columns", func() {
 			)
 
 			BeforeEach(func() {
-				oldBite = generateBite(test_helpers.FakeIlk.Hex, oldGuy, headerOne.Id, logId, db)
+				oldBite = generateBite(test_helpers.FakeIlk.Hex, oldGuy, headerOne.Id, logID, db)
 				insertOldBiteErr := event.PersistModels([]event.InsertionModel{oldBite}, db)
 				Expect(insertOldBiteErr).NotTo(HaveOccurred())
 

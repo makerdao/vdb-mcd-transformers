@@ -72,6 +72,7 @@ var _ = Describe("historical urn state computed columns", func() {
 		catRepository.SetDB(db)
 		jugRepository.SetDB(db)
 	})
+
 	Describe("historical_urn_state_ilk", func() {
 		It("returns the ilk for an urn state", func() {
 			ilkValues := test_helpers.GetIlkValues(0)
@@ -81,7 +82,7 @@ var _ = Describe("historical urn state computed columns", func() {
 			fakeGuy := "fakeAddress"
 			urnSetupData := test_helpers.GetUrnSetupData()
 			urnMetadata := test_helpers.GetUrnMetadata(test_helpers.FakeIlk.Hex, fakeGuy)
-			test_helpers.CreateUrn(urnSetupData, headerOne.Id, urnMetadata, vatRepository)
+			test_helpers.CreateUrn(db, urnSetupData, headerOne, urnMetadata, vatRepository)
 
 			expectedIlk := test_helpers.IlkStateFromValues(test_helpers.FakeIlk.Hex, headerOne.Timestamp, headerOne.Timestamp, ilkValues)
 
@@ -101,7 +102,7 @@ var _ = Describe("historical urn state computed columns", func() {
 		It("returns frobs for an urn state", func() {
 			urnSetupData := test_helpers.GetUrnSetupData()
 			urnMetadata := test_helpers.GetUrnMetadata(test_helpers.FakeIlk.Hex, fakeGuy)
-			test_helpers.CreateUrn(urnSetupData, headerOne.Id, urnMetadata, vatRepository)
+			test_helpers.CreateUrn(db, urnSetupData, headerOne, urnMetadata, vatRepository)
 
 			frobRepo := vat_frob.VatFrobRepository{}
 			frobRepo.SetDB(db)
@@ -136,7 +137,7 @@ var _ = Describe("historical urn state computed columns", func() {
 			BeforeEach(func() {
 				urnSetupData := test_helpers.GetUrnSetupData()
 				urnMetadata := test_helpers.GetUrnMetadata(test_helpers.FakeIlk.Hex, fakeGuy)
-				test_helpers.CreateUrn(urnSetupData, headerTwo.Id, urnMetadata, vatRepository)
+				test_helpers.CreateUrn(db, urnSetupData, headerTwo, urnMetadata, vatRepository)
 
 				frobRepo := vat_frob.VatFrobRepository{}
 				frobRepo.SetDB(db)
@@ -201,7 +202,7 @@ var _ = Describe("historical urn state computed columns", func() {
 		It("returns bites for an urn state", func() {
 			urnSetupData := test_helpers.GetUrnSetupData()
 			urnMetadata := test_helpers.GetUrnMetadata(test_helpers.FakeIlk.Hex, fakeGuy)
-			test_helpers.CreateUrn(urnSetupData, headerOne.Id, urnMetadata, vatRepository)
+			test_helpers.CreateUrn(db, urnSetupData, headerOne, urnMetadata, vatRepository)
 
 			biteEvent := generateBite(test_helpers.FakeIlk.Hex, fakeGuy, headerOne.Id, logIdOne, db)
 			insertBiteErr := event.PersistModels([]event.InsertionModel{biteEvent}, db)
@@ -231,7 +232,7 @@ var _ = Describe("historical urn state computed columns", func() {
 			BeforeEach(func() {
 				urnSetupData := test_helpers.GetUrnSetupData()
 				urnMetadata := test_helpers.GetUrnMetadata(test_helpers.FakeIlk.Hex, fakeGuy)
-				test_helpers.CreateUrn(urnSetupData, headerTwo.Id, urnMetadata, vatRepository)
+				test_helpers.CreateUrn(db, urnSetupData, headerTwo, urnMetadata, vatRepository)
 
 				biteEventOne = generateBite(test_helpers.FakeIlk.Hex, fakeGuy, headerOne.Id, logIdOne, db)
 				insertBiteOneErr := event.PersistModels([]event.InsertionModel{biteEventOne}, db)

@@ -3,17 +3,19 @@
 CREATE TABLE maker.cdp_manager_vat
 (
     id        SERIAL PRIMARY KEY,
+    diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     vat       TEXT,
-    UNIQUE (header_id, vat)
+    UNIQUE (diff_id, header_id, vat)
 );
 
 CREATE TABLE maker.cdp_manager_cdpi
 (
     id        SERIAL PRIMARY KEY,
+    diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     cdpi      NUMERIC NOT NULL,
-    UNIQUE (header_id, cdpi)
+    UNIQUE (diff_id, header_id, cdpi)
 );
 
 CREATE INDEX cdp_manager_cdpi_cdpi_index
@@ -22,10 +24,11 @@ CREATE INDEX cdp_manager_cdpi_cdpi_index
 CREATE TABLE maker.cdp_manager_urns
 (
     id        SERIAL PRIMARY KEY,
+    diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     cdpi      NUMERIC NOT NULL,
     urn       TEXT,
-    UNIQUE (header_id, cdpi, urn)
+    UNIQUE (diff_id, header_id, cdpi, urn)
 );
 
 CREATE INDEX cdp_manager_urns_urn_index
@@ -36,28 +39,31 @@ CREATE INDEX cdp_manager_urns_cdpi_index
 CREATE TABLE maker.cdp_manager_list_prev
 (
     id        SERIAL PRIMARY KEY,
+    diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     cdpi      NUMERIC NOT NULL,
     prev      NUMERIC NOT NULL,
-    UNIQUE (header_id, cdpi, prev)
+    UNIQUE (diff_id, header_id, cdpi, prev)
 );
 
 CREATE TABLE maker.cdp_manager_list_next
 (
     id        SERIAL PRIMARY KEY,
+    diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     cdpi      NUMERIC NOT NULL,
     next      NUMERIC NOT NULL,
-    UNIQUE (header_id, cdpi, next)
+    UNIQUE (diff_id, header_id, cdpi, next)
 );
 
 CREATE TABLE maker.cdp_manager_owns
 (
     id        SERIAL PRIMARY KEY,
+    diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     cdpi      NUMERIC NOT NULL,
     owner     TEXT,
-    UNIQUE (header_id, cdpi, owner)
+    UNIQUE (diff_id, header_id, cdpi, owner)
 );
 
 CREATE INDEX cdp_manager_owns_cdpi_index
@@ -68,10 +74,11 @@ CREATE INDEX cdp_manager_owns_owner_index
 CREATE TABLE maker.cdp_manager_ilks
 (
     id        SERIAL PRIMARY KEY,
+    diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     cdpi      NUMERIC NOT NULL,
     ilk_id    INTEGER NOT NULL REFERENCES maker.ilks (id) ON DELETE CASCADE,
-    UNIQUE (header_id, cdpi, ilk_id)
+    UNIQUE (diff_id, header_id, cdpi, ilk_id)
 );
 
 CREATE INDEX cdp_manager_ilks_cdpi_index
@@ -82,28 +89,31 @@ CREATE INDEX cdp_manager_ilks_ilk_id_index
 CREATE TABLE maker.cdp_manager_first
 (
     id        SERIAL PRIMARY KEY,
+    diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     owner     TEXT,
     first     NUMERIC NOT NULL,
-    UNIQUE (header_id, owner, first)
+    UNIQUE (diff_id, header_id, owner, first)
 );
 
 CREATE TABLE maker.cdp_manager_last
 (
     id        SERIAL PRIMARY KEY,
+    diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     owner     TEXT,
     last      NUMERIC NOT NULL,
-    UNIQUE (header_id, owner, last)
+    UNIQUE (diff_id, header_id, owner, last)
 );
 
 CREATE TABLE maker.cdp_manager_count
 (
     id        SERIAL PRIMARY KEY,
+    diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     owner     TEXT,
     count     NUMERIC NOT NULL,
-    UNIQUE (header_id, owner, count)
+    UNIQUE (diff_id, header_id, owner, count)
 );
 
 -- +goose Down

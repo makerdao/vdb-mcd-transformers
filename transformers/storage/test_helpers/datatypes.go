@@ -8,27 +8,25 @@ type BlockMetadata struct {
 	HeaderID int64 `db:"header_id"`
 }
 
-type VariableRes struct {
+type DiffMetadata struct {
 	BlockMetadata
-	Value string
+	DiffID int64 `db:"diff_id"`
+	Value  string
 }
 
-type AuctionVariableRes struct {
-	VariableRes
-	ContractAddress string `db:"contract_address"`
+type VariableRes struct {
+	DiffMetadata
 }
 
 type MappingRes struct {
-	BlockMetadata
-	Key   string
-	Value string
+	DiffMetadata
+	Key string
 }
 
 type DoubleMappingRes struct {
-	BlockMetadata
+	DiffMetadata
 	KeyOne string `db:"key_one"`
 	KeyTwo string `db:"key_two"`
-	Value  string
 }
 
 type FlapRes struct {
@@ -57,18 +55,21 @@ type FlopRes struct {
 	Bid             string
 }
 
-func AssertVariable(res VariableRes, headerID int64, value string) {
+func AssertVariable(res VariableRes, diffID, headerID int64, value string) {
+	Expect(res.DiffID).To(Equal(diffID))
 	Expect(res.HeaderID).To(Equal(headerID))
 	Expect(res.Value).To(Equal(value))
 }
 
-func AssertMapping(res MappingRes, headerID int64, key, value string) {
+func AssertMapping(res MappingRes, diffID, headerID int64, key, value string) {
+	Expect(res.DiffID).To(Equal(diffID))
 	Expect(res.HeaderID).To(Equal(headerID))
 	Expect(res.Key).To(Equal(key))
 	Expect(res.Value).To(Equal(value))
 }
 
-func AssertDoubleMapping(res DoubleMappingRes, headerID int64, keyOne, keyTwo, value string) {
+func AssertDoubleMapping(res DoubleMappingRes, diffID, headerID int64, keyOne, keyTwo, value string) {
+	Expect(res.DiffID).To(Equal(diffID))
 	Expect(res.HeaderID).To(Equal(headerID))
 	Expect(res.KeyOne).To(Equal(keyOne))
 	Expect(res.KeyTwo).To(Equal(keyTwo))

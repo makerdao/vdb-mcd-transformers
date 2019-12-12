@@ -20,6 +20,8 @@ import (
 	"math/rand"
 	"strconv"
 
+	storage_helper "github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
+
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/cdp_manager"
@@ -37,6 +39,7 @@ var _ = Describe("Managed CDP trigger-populated table", func() {
 		fakeCdpi               = rand.Int()
 		headerOne              core.Header
 		blockOne, timestampOne int
+		diffID                 int64
 	)
 
 	BeforeEach(func() {
@@ -48,6 +51,8 @@ var _ = Describe("Managed CDP trigger-populated table", func() {
 		blockOne = rand.Int()
 		timestampOne = int(rand.Int31())
 		headerOne = createHeader(blockOne, timestampOne, headerRepo)
+
+		diffID = storage_helper.CreateFakeDiffRecord(db)
 	})
 
 	It("stores the state of each managed CDP, unique by cdpi", func() {
@@ -55,14 +60,12 @@ var _ = Describe("Managed CDP trigger-populated table", func() {
 		fakeUrn := test_data.FakeUrn
 
 		cdpManagerStorageValues1 := test_helpers.GetCdpManagerStorageValues(1, fakeIlk, fakeUrn, fakeCdpi)
-		cdpErr1 := test_helpers.CreateManagedCdp(db, headerOne, cdpManagerStorageValues1,
-			test_helpers.GetCdpManagerMetadatas(strconv.Itoa(fakeCdpi)))
+		cdpErr1 := test_helpers.CreateManagedCdp(db, headerOne, cdpManagerStorageValues1, test_helpers.GetCdpManagerMetadatas(strconv.Itoa(fakeCdpi)))
 		Expect(cdpErr1).NotTo(HaveOccurred())
 
 		fakeCdpi2 := fakeCdpi + 1
 		cdpManagerStorageValues2 := test_helpers.GetCdpManagerStorageValues(2, fakeIlk, fakeUrn, fakeCdpi2)
-		cdpErr2 := test_helpers.CreateManagedCdp(db, headerOne, cdpManagerStorageValues2,
-			test_helpers.GetCdpManagerMetadatas(strconv.Itoa(fakeCdpi2)))
+		cdpErr2 := test_helpers.CreateManagedCdp(db, headerOne, cdpManagerStorageValues2, test_helpers.GetCdpManagerMetadatas(strconv.Itoa(fakeCdpi2)))
 		Expect(cdpErr2).NotTo(HaveOccurred())
 
 		expectedCdp1 := test_helpers.ManagedCdpFromValues(
@@ -85,12 +88,11 @@ var _ = Describe("Managed CDP trigger-populated table", func() {
 		headerTwo := createHeader(blockOne+1, timestampOne+1, headerRepo)
 
 		newOwner := "0x16Fb96a5fa0427Af0C8F7cF1eB4870231c8154B6"
-		_, ownsErr := db.Exec(cdp_manager.InsertOwnsQuery, headerTwo.Id, fakeCdpi, newOwner)
+		_, ownsErr := db.Exec(cdp_manager.InsertOwnsQuery, diffID, headerTwo.Id, fakeCdpi, newOwner)
 		Expect(ownsErr).NotTo(HaveOccurred())
 
 		cdpManagerStorageValues := test_helpers.GetCdpManagerStorageValues(1, fakeIlk, fakeUrn, fakeCdpi)
-		cdpErr := test_helpers.CreateManagedCdp(db, headerOne, cdpManagerStorageValues,
-			test_helpers.GetCdpManagerMetadatas(strconv.Itoa(fakeCdpi)))
+		cdpErr := test_helpers.CreateManagedCdp(db, headerOne, cdpManagerStorageValues, test_helpers.GetCdpManagerMetadatas(strconv.Itoa(fakeCdpi)))
 		Expect(cdpErr).NotTo(HaveOccurred())
 
 		cdpManagerStorageValues[cdp_manager.Owns] = newOwner
@@ -112,12 +114,11 @@ var _ = Describe("Managed CDP trigger-populated table", func() {
 
 		headerTwo := createHeader(blockOne+1, timestampOne+1, headerRepo)
 
-		_, cdpiErr := db.Exec(cdp_manager.InsertCdpiQuery, headerOne.Id, fakeCdpi)
+		_, cdpiErr := db.Exec(cdp_manager.InsertCdpiQuery, diffID, headerOne.Id, fakeCdpi)
 		Expect(cdpiErr).NotTo(HaveOccurred())
 
 		cdpManagerStorageValues := test_helpers.GetCdpManagerStorageValues(1, fakeIlk, fakeUrn, fakeCdpi)
-		cdpErr := test_helpers.CreateManagedCdp(db, headerTwo, cdpManagerStorageValues,
-			test_helpers.GetCdpManagerMetadatas(strconv.Itoa(fakeCdpi)))
+		cdpErr := test_helpers.CreateManagedCdp(db, headerTwo, cdpManagerStorageValues, test_helpers.GetCdpManagerMetadatas(strconv.Itoa(fakeCdpi)))
 		Expect(cdpErr).NotTo(HaveOccurred())
 
 		expectedCdp := test_helpers.ManagedCdpFromValues(

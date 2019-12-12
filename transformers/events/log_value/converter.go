@@ -18,8 +18,9 @@ package log_value
 
 import (
 	"fmt"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"math/big"
+
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"

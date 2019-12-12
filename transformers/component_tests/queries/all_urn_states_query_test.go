@@ -1,9 +1,11 @@
 package queries
 
 import (
-	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"math/rand"
 	"strconv"
+
+	"github.com/makerdao/vdb-mcd-transformers/test_config"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 
 	helper "github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
@@ -23,6 +25,7 @@ var _ = Describe("Urn history query", func() {
 		fakeUrn                string
 		blockOne, timestampOne int
 		headerOne              core.Header
+		diffID                 int64
 	)
 
 	BeforeEach(func() {
@@ -36,12 +39,14 @@ var _ = Describe("Urn history query", func() {
 		blockOne = rand.Int()
 		timestampOne = int(rand.Int31())
 		headerOne = createHeader(blockOne, timestampOne, headerRepo)
+
+		diffID = test_helpers.CreateFakeDiffRecordWithHeader(db, headerOne)
 	})
 
 	It("returns a reverse chronological history for the given ilk and urn", func() {
 		urnSetupData := helper.GetUrnSetupData()
 		urnMetadata := helper.GetUrnMetadata(helper.FakeIlk.Hex, fakeUrn)
-		helper.CreateUrn(urnSetupData, headerOne.Id, urnMetadata, vatRepo)
+		helper.CreateUrn(db, urnSetupData, headerOne, urnMetadata, vatRepo)
 
 		inkBlockOne := urnSetupData[vat.UrnInk]
 		artBlockOne := urnSetupData[vat.UrnArt]
@@ -51,8 +56,8 @@ var _ = Describe("Urn history query", func() {
 			UrnIdentifier: fakeUrn,
 			IlkIdentifier: helper.FakeIlk.Identifier,
 			BlockHeight:   blockOne,
-			Ink:           strconv.Itoa(inkBlockOne),
-			Art:           strconv.Itoa(artBlockOne),
+			Ink:           strconv.Itoa(inkBlockOne.(int)),
+			Art:           strconv.Itoa(artBlockOne.(int)),
 			Created:       helper.GetValidNullString(expectedTimestampOne),
 			Updated:       helper.GetValidNullString(expectedTimestampOne),
 		}
@@ -62,9 +67,12 @@ var _ = Describe("Urn history query", func() {
 		timestampTwo := timestampOne + 1
 		headerTwo := createHeader(blockTwo, timestampTwo, headerRepo)
 
+		// Diff for header2
+		diffTwoID := test_helpers.CreateFakeDiffRecordWithHeader(db, headerTwo)
+
 		// Relevant ink diff in block two
 		inkBlockTwo := rand.Int()
-		err := vatRepo.Create(headerTwo.Id, urnMetadata.UrnInk, strconv.Itoa(inkBlockTwo))
+		err := vatRepo.Create(diffTwoID, headerTwo.Id, urnMetadata.UrnInk, strconv.Itoa(inkBlockTwo))
 		Expect(err).NotTo(HaveOccurred())
 
 		// Irrelevant art diff in block two
@@ -72,7 +80,7 @@ var _ = Describe("Urn history query", func() {
 		wrongArt := strconv.Itoa(rand.Int())
 		wrongMetadata := utils.GetStorageValueMetadata(vat.UrnArt,
 			map[utils.Key]string{constants.Ilk: helper.FakeIlk.Hex, constants.Guy: wrongUrn}, utils.Uint256)
-		err = vatRepo.Create(headerOne.Id, wrongMetadata, wrongArt)
+		err = vatRepo.Create(diffID, headerOne.Id, wrongMetadata, wrongArt)
 		Expect(err).NotTo(HaveOccurred())
 
 		expectedTimestampTwo := helper.GetExpectedTimestamp(timestampTwo)
@@ -81,7 +89,7 @@ var _ = Describe("Urn history query", func() {
 			IlkIdentifier: helper.FakeIlk.Identifier,
 			BlockHeight:   blockTwo,
 			Ink:           strconv.Itoa(inkBlockTwo),
-			Art:           strconv.Itoa(artBlockOne),
+			Art:           strconv.Itoa(artBlockOne.(int)),
 			Created:       helper.GetValidNullString(expectedTimestampOne),
 			Updated:       helper.GetValidNullString(expectedTimestampTwo),
 		}
@@ -91,9 +99,12 @@ var _ = Describe("Urn history query", func() {
 		timestampThree := timestampTwo + 1
 		headerThree := createHeader(blockThree, timestampThree, headerRepo)
 
+		// Diff for header3
+		diffThreeID := test_helpers.CreateFakeDiffRecordWithHeader(db, headerThree)
+
 		// Relevant art diff in block three
 		artBlockThree := 0
-		err = vatRepo.Create(headerThree.Id, urnMetadata.UrnArt, strconv.Itoa(artBlockThree))
+		err = vatRepo.Create(diffThreeID, headerThree.Id, urnMetadata.UrnArt, strconv.Itoa(artBlockThree))
 		Expect(err).NotTo(HaveOccurred())
 
 		expectedTimestampThree := helper.GetExpectedTimestamp(timestampThree)
@@ -122,13 +133,13 @@ var _ = Describe("Urn history query", func() {
 	Describe("result pagination", func() {
 		var (
 			blockTwo, timestampTwo int
-			urnSetupData           map[string]int
+			urnSetupData           map[string]interface{}
 		)
 
 		BeforeEach(func() {
 			urnSetupData = helper.GetUrnSetupData()
 			urnMetadata := helper.GetUrnMetadata(helper.FakeIlk.Hex, fakeUrn)
-			helper.CreateUrn(urnSetupData, headerOne.Id, urnMetadata, vatRepo)
+			helper.CreateUrn(db, urnSetupData, headerOne, urnMetadata, vatRepo)
 
 			// New block
 			blockTwo = blockOne + 1
@@ -136,7 +147,7 @@ var _ = Describe("Urn history query", func() {
 			headerTwo := createHeader(blockTwo, timestampTwo, headerRepo)
 
 			// diff in new block
-			err := vatRepo.Create(headerTwo.Id, urnMetadata.UrnInk, strconv.Itoa(urnSetupData[vat.UrnInk]))
+			err := vatRepo.Create(diffID, headerTwo.Id, urnMetadata.UrnInk, strconv.Itoa(urnSetupData[vat.UrnInk].(int)))
 			Expect(err).NotTo(HaveOccurred())
 		})
 
@@ -147,8 +158,8 @@ var _ = Describe("Urn history query", func() {
 				UrnIdentifier: fakeUrn,
 				IlkIdentifier: helper.FakeIlk.Identifier,
 				BlockHeight:   blockTwo,
-				Ink:           strconv.Itoa(urnSetupData[vat.UrnInk]),
-				Art:           strconv.Itoa(urnSetupData[vat.UrnArt]),
+				Ink:           strconv.Itoa(urnSetupData[vat.UrnInk].(int)),
+				Art:           strconv.Itoa(urnSetupData[vat.UrnArt].(int)),
 				Created:       helper.GetValidNullString(expectedTimeCreated),
 				Updated:       helper.GetValidNullString(expectedTimeUpdated),
 			}
@@ -170,8 +181,8 @@ var _ = Describe("Urn history query", func() {
 				UrnIdentifier: fakeUrn,
 				IlkIdentifier: helper.FakeIlk.Identifier,
 				BlockHeight:   blockOne,
-				Ink:           strconv.Itoa(urnSetupData[vat.UrnInk]),
-				Art:           strconv.Itoa(urnSetupData[vat.UrnArt]),
+				Ink:           strconv.Itoa(urnSetupData[vat.UrnInk].(int)),
+				Art:           strconv.Itoa(urnSetupData[vat.UrnArt].(int)),
 				Created:       helper.GetValidNullString(expectedTimeCreated),
 				Updated:       helper.GetValidNullString(expectedTimeCreated),
 			}

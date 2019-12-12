@@ -21,10 +21,12 @@ import (
 	"math/rand"
 	"strconv"
 
+	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
+
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
+	query_helper "github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/flap"
@@ -645,6 +647,7 @@ var _ = Describe("Maker storage repository", func() {
 func insertFlapKick(blockNumber int64, bidId string, contractAddressId int64, db *postgres.DB) {
 	//inserting a flap kick log event record
 	headerID := insertHeader(db, blockNumber)
+
 	flapKickLog := test_data.CreateTestLog(headerID, db)
 	_, insertErr := db.Exec(insertFlapKickQuery,
 		headerID, bidId, 0, 0, contractAddressId, flapKickLog.ID,
@@ -655,8 +658,9 @@ func insertFlapKick(blockNumber int64, bidId string, contractAddressId int64, db
 func insertFlapKicks(blockNumber int64, kicks string, contractAddressId int64, db *postgres.DB) {
 	//inserting a flap kicks storage record
 	headerID := insertHeader(db, blockNumber)
+	diffID := test_helpers.CreateFakeDiffRecord(db)
 	_, insertErr := db.Exec(flap.InsertKicksQuery,
-		headerID, contractAddressId, kicks,
+		diffID, headerID, contractAddressId, kicks,
 	)
 	Expect(insertErr).NotTo(HaveOccurred())
 }
@@ -685,8 +689,9 @@ func insertFlipKick(blockNumber int64, bidId string, contractAddressId int64, db
 func insertFlipKicks(blockNumber int64, kicks string, contractAddressId int64, db *postgres.DB) {
 	// flip kicks storage record
 	headerID := insertHeader(db, blockNumber)
+	diffID := test_helpers.CreateFakeDiffRecord(db)
 	_, insertErr := db.Exec(flip.InsertFlipKicksQuery,
-		headerID, contractAddressId, kicks,
+		diffID, headerID, contractAddressId, kicks,
 	)
 	Expect(insertErr).NotTo(HaveOccurred())
 }
@@ -701,8 +706,9 @@ func insertFlopKick(blockNumber int64, bidId string, contractAddressId int64, db
 
 func insertFlopKicks(blockNumber int64, kicks string, contractAddressId int64, db *postgres.DB) {
 	// inserting a flop kicks storage record
+	diffID := test_helpers.CreateFakeDiffRecord(db)
 	headerID := insertHeader(db, blockNumber)
-	_, insertErr := db.Exec(flop.InsertFlopKicksQuery, headerID, contractAddressId, kicks)
+	_, insertErr := db.Exec(flop.InsertFlopKicksQuery, diffID, headerID, contractAddressId, kicks)
 	Expect(insertErr).NotTo(HaveOccurred())
 }
 
@@ -748,16 +754,17 @@ func insertYank(blockNumber int64, bidId string, contractAddressId int64, db *po
 
 func insertCdpManagerCdpi(blockNumber int64, cdpi int, db *postgres.DB) {
 	headerID := insertHeader(db, blockNumber)
-	_, err := db.Exec(`INSERT INTO maker.cdp_manager_cdpi (header_id, cdpi)
-		VALUES($1, $2::NUMERIC)`,
-		headerID, cdpi)
+	diffID := test_helpers.CreateFakeDiffRecordWithHeader(db, fakes.GetFakeHeader(blockNumber))
+	_, err := db.Exec(`INSERT INTO maker.cdp_manager_cdpi (diff_id, header_id, cdpi)
+		VALUES($1, $2, $3::NUMERIC)`,
+		diffID, headerID, cdpi)
 	Expect(err).NotTo(HaveOccurred())
 }
 
 func insertVatFold(urn string, blockNumber int64, db *postgres.DB) {
 	headerID := insertHeader(db, blockNumber)
 	vatFoldLog := test_data.CreateTestLog(headerID, db)
-	ilkID, ilkErr := shared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
+	ilkID, ilkErr := shared.GetOrCreateIlk(query_helper.FakeIlk.Hex, db)
 	Expect(ilkErr).NotTo(HaveOccurred())
 
 	_, execErr := db.Exec(

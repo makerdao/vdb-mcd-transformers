@@ -3,11 +3,12 @@
 CREATE TABLE maker.flop_bid_bid
 (
     id         SERIAL PRIMARY KEY,
+    diff_id    BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id  INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     address_id INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
     bid_id     NUMERIC NOT NULL,
     bid        NUMERIC NOT NULL,
-    UNIQUE (header_id, bid_id, address_id, bid)
+    UNIQUE (diff_id, header_id, bid_id, address_id, bid)
 );
 
 CREATE INDEX flop_bid_bid_bid_id_index
@@ -18,11 +19,12 @@ CREATE INDEX flop_bid_bid_address_id_index
 CREATE TABLE maker.flop_bid_lot
 (
     id         SERIAL PRIMARY KEY,
+    diff_id    BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id  INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     address_id INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
     bid_id     NUMERIC NOT NULL,
     lot        NUMERIC NOT NULL,
-    UNIQUE (header_id, bid_id, address_id, lot)
+    UNIQUE (diff_id, header_id, bid_id, address_id, lot)
 );
 
 CREATE INDEX flop_bid_lot_bid_id_index
@@ -33,11 +35,12 @@ CREATE INDEX flop_bid_lot_bid_address_id_index
 CREATE TABLE maker.flop_bid_guy
 (
     id         SERIAL PRIMARY KEY,
+    diff_id    BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id  INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     address_id INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
     bid_id     NUMERIC NOT NULL,
     guy        TEXT,
-    UNIQUE (header_id, bid_id, address_id, guy)
+    UNIQUE (diff_id, header_id, bid_id, address_id, guy)
 );
 
 CREATE INDEX flop_bid_guy_bid_id_index
@@ -48,11 +51,12 @@ CREATE INDEX flop_bid_guy_bid_address_id_index
 CREATE TABLE maker.flop_bid_tic
 (
     id         SERIAL PRIMARY KEY,
+    diff_id    BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id  INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     address_id INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
     bid_id     NUMERIC NOT NULL,
     tic        BIGINT  NOT NULL,
-    UNIQUE (header_id, bid_id, address_id, tic)
+    UNIQUE (diff_id, header_id, bid_id, address_id, tic)
 );
 
 CREATE INDEX flop_bid_tic_bid_id_index
@@ -63,11 +67,12 @@ CREATE INDEX flop_bid_tic_bid_address_id_index
 CREATE TABLE maker.flop_bid_end
 (
     id         SERIAL PRIMARY KEY,
+    diff_id    BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id  INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     address_id INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
     bid_id     NUMERIC NOT NULL,
     "end"      BIGINT  NOT NULL,
-    UNIQUE (header_id, bid_id, address_id, "end")
+    UNIQUE (diff_id, header_id, bid_id, address_id, "end")
 );
 
 CREATE INDEX flop_bid_end_bid_id_index
@@ -78,64 +83,71 @@ CREATE INDEX flop_bid_end_bid_address_id_index
 CREATE TABLE maker.flop_vat
 (
     id         SERIAL PRIMARY KEY,
+    diff_id    BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id  INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     address_id INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
     vat        TEXT,
-    UNIQUE (header_id, address_id, vat)
+    UNIQUE (diff_id, header_id, address_id, vat)
 );
 
 CREATE TABLE maker.flop_gem
 (
     id         SERIAL PRIMARY KEY,
+    diff_id    BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id  INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     address_id INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
     gem        TEXT,
-    UNIQUE (header_id, address_id, gem)
+    UNIQUE (diff_id, header_id, address_id, gem)
 );
 
 CREATE TABLE maker.flop_beg
 (
     id         SERIAL PRIMARY KEY,
+    diff_id    BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id  INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     address_id INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
     beg        NUMERIC NOT NULL,
-    UNIQUE (header_id, address_id, beg)
+    UNIQUE (diff_id, header_id, address_id, beg)
 );
 
 CREATE TABLE maker.flop_pad
 (
     id         SERIAL PRIMARY KEY,
+    diff_id    BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id  INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     address_id INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
     pad        NUMERIC NOT NULL,
-    UNIQUE (header_id, address_id, pad)
+    UNIQUE (diff_id, header_id, address_id, pad)
 );
 
 CREATE TABLE maker.flop_ttl
 (
     id         SERIAL PRIMARY KEY,
+    diff_id    BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id  INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     address_id INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
     ttl        NUMERIC NOT NULL,
-    UNIQUE (header_id, address_id, ttl)
+    UNIQUE (diff_id, header_id, address_id, ttl)
 );
 
 CREATE TABLE maker.flop_tau
 (
     id         SERIAL PRIMARY KEY,
+    diff_id    BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id  INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     address_id INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
     tau        NUMERIC NOT NULL,
-    UNIQUE (header_id, address_id, tau)
+    UNIQUE (diff_id, header_id, address_id, tau)
 );
 
 CREATE TABLE maker.flop_kicks
 (
     id         SERIAL PRIMARY KEY,
+    diff_id    BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id  INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     address_id INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
     kicks      NUMERIC NOT NULL,
-    UNIQUE (header_id, address_id, kicks)
+    UNIQUE (diff_id, header_id, address_id, kicks)
 );
 
 CREATE INDEX flop_kicks_kicks_index
@@ -149,10 +161,11 @@ COMMENT ON TABLE maker.flop_kicks IS E'@name flopKicksStorage';
 CREATE TABLE maker.flop_live
 (
     id         SERIAL PRIMARY KEY,
+    diff_id    BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id  INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     address_id INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
     live       NUMERIC NOT NULL,
-    UNIQUE (header_id, address_id, live)
+    UNIQUE (diff_id, header_id, address_id, live)
 );
 
 -- +goose Down

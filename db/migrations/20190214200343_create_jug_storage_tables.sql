@@ -2,10 +2,11 @@
 CREATE TABLE maker.jug_ilk_rho
 (
     id        SERIAL PRIMARY KEY,
+    diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     ilk_id    INTEGER NOT NULL REFERENCES maker.ilks (id) ON DELETE CASCADE,
     rho       NUMERIC NOT NULL,
-    UNIQUE (header_id, ilk_id, rho)
+    UNIQUE (diff_id, header_id, ilk_id, rho)
 );
 
 CREATE INDEX jug_ilk_rho_header_id_index
@@ -16,10 +17,11 @@ CREATE INDEX jug_ilk_rho_ilk_index
 CREATE TABLE maker.jug_ilk_duty
 (
     id        SERIAL PRIMARY KEY,
+    diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     ilk_id    INTEGER NOT NULL REFERENCES maker.ilks (id) ON DELETE CASCADE,
     duty      NUMERIC NOT NULL,
-    UNIQUE (header_id, ilk_id, duty)
+    UNIQUE (diff_id, header_id, ilk_id, duty)
 );
 
 CREATE INDEX jug_ilk_duty_header_id_index
@@ -30,25 +32,28 @@ CREATE INDEX jug_ilk_duty_ilk_index
 CREATE TABLE maker.jug_vat
 (
     id        SERIAL PRIMARY KEY,
+    diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     vat       TEXT,
-    UNIQUE (header_id, vat)
+    UNIQUE (diff_id, header_id, vat)
 );
 
 CREATE TABLE maker.jug_vow
 (
     id        SERIAL PRIMARY KEY,
+    diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     vow       TEXT,
-    UNIQUE (header_id, vow)
+    UNIQUE (diff_id, header_id, vow)
 );
 
 CREATE TABLE maker.jug_base
 (
     id        SERIAL PRIMARY KEY,
+    diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
     header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     base      TEXT,
-    UNIQUE (header_id, base)
+    UNIQUE (diff_id, header_id, base)
 );
 
 -- +goose Down

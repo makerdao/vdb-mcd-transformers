@@ -36,21 +36,24 @@ import (
 
 var _ = Describe("Jug storage repository", func() {
 	var (
-		db           = test_config.NewTestDB(test_config.NewTestNode())
-		repo         jug.JugStorageRepository
-		fakeAddress  = "0x12345"
-		fakeUint256  = "12345"
-		fakeHeaderID int64
+		db                   = test_config.NewTestDB(test_config.NewTestNode())
+		repo                 jug.JugStorageRepository
+		fakeAddress          = "0x12345"
+		fakeUint256          = "12345"
+		diffID, fakeHeaderID int64
 	)
 
 	BeforeEach(func() {
 		test_config.CleanTestDB(db)
 		repo = jug.JugStorageRepository{}
 		repo.SetDB(db)
+
 		headerRepository := repositories.NewHeaderRepository(db)
 		var insertHeaderErr error
 		fakeHeaderID, insertHeaderErr = headerRepository.CreateOrUpdateHeader(fakes.FakeHeader)
 		Expect(insertHeaderErr).NotTo(HaveOccurred())
+
+		diffID = CreateFakeDiffRecord(db)
 	})
 
 	Describe("Ilk", func() {
@@ -58,23 +61,23 @@ var _ = Describe("Jug storage repository", func() {
 			It("writes a row", func() {
 				ilkRhoMetadata := utils.GetStorageValueMetadata(jug.IlkRho, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Uint256)
 
-				err := repo.Create(fakeHeaderID, ilkRhoMetadata, fakeUint256)
+				err := repo.Create(diffID, fakeHeaderID, ilkRhoMetadata, fakeUint256)
 
 				Expect(err).NotTo(HaveOccurred())
 				var result MappingRes
-				err = db.Get(&result, `SELECT header_id, ilk_id AS key, rho AS VALUE FROM maker.jug_ilk_rho`)
+				err = db.Get(&result, `SELECT diff_id, header_id, ilk_id AS key, rho AS VALUE FROM maker.jug_ilk_rho`)
 				Expect(err).NotTo(HaveOccurred())
 				ilkID, err := shared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
 				Expect(err).NotTo(HaveOccurred())
-				AssertMapping(result, fakeHeaderID, strconv.FormatInt(ilkID, 10), fakeUint256)
+				AssertMapping(result, diffID, fakeHeaderID, strconv.FormatInt(ilkID, 10), fakeUint256)
 			})
 
 			It("does not duplicate row", func() {
 				ilkRhoMetadata := utils.GetStorageValueMetadata(jug.IlkRho, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Uint256)
-				insertOneErr := repo.Create(fakeHeaderID, ilkRhoMetadata, fakeUint256)
+				insertOneErr := repo.Create(diffID, fakeHeaderID, ilkRhoMetadata, fakeUint256)
 				Expect(insertOneErr).NotTo(HaveOccurred())
 
-				insertTwoErr := repo.Create(fakeHeaderID, ilkRhoMetadata, fakeUint256)
+				insertTwoErr := repo.Create(diffID, fakeHeaderID, ilkRhoMetadata, fakeUint256)
 
 				Expect(insertTwoErr).NotTo(HaveOccurred())
 				var count int
@@ -86,7 +89,7 @@ var _ = Describe("Jug storage repository", func() {
 			It("returns an error if metadata missing ilk", func() {
 				malformedIlkRhoMetadata := utils.GetStorageValueMetadata(jug.IlkRho, nil, utils.Uint256)
 
-				err := repo.Create(fakeHeaderID, malformedIlkRhoMetadata, fakeUint256)
+				err := repo.Create(diffID, fakeHeaderID, malformedIlkRhoMetadata, fakeUint256)
 				Expect(err).To(MatchError(utils.ErrMetadataMalformed{MissingData: constants.Ilk}))
 			})
 
@@ -103,24 +106,24 @@ var _ = Describe("Jug storage repository", func() {
 			It("writes a row", func() {
 				ilkDutyMetadata := utils.GetStorageValueMetadata(jug.IlkDuty, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Uint256)
 
-				err := repo.Create(fakeHeaderID, ilkDutyMetadata, fakeUint256)
+				err := repo.Create(diffID, fakeHeaderID, ilkDutyMetadata, fakeUint256)
 
 				Expect(err).NotTo(HaveOccurred())
 				var result MappingRes
-				err = db.Get(&result, `SELECT header_id, ilk_id AS KEY, duty AS VALUE FROM maker.jug_ilk_duty`)
+				err = db.Get(&result, `SELECT diff_id, header_id, ilk_id AS KEY, duty AS VALUE FROM maker.jug_ilk_duty`)
 				Expect(err).NotTo(HaveOccurred())
 				ilkID, err := shared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
 				Expect(err).NotTo(HaveOccurred())
 
-				AssertMapping(result, fakeHeaderID, strconv.FormatInt(ilkID, 10), fakeUint256)
+				AssertMapping(result, diffID, fakeHeaderID, strconv.FormatInt(ilkID, 10), fakeUint256)
 			})
 
 			It("does not duplicate row", func() {
 				ilkDutyMetadata := utils.GetStorageValueMetadata(jug.IlkDuty, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Uint256)
-				insertOneErr := repo.Create(fakeHeaderID, ilkDutyMetadata, fakeUint256)
+				insertOneErr := repo.Create(diffID, fakeHeaderID, ilkDutyMetadata, fakeUint256)
 				Expect(insertOneErr).NotTo(HaveOccurred())
 
-				insertTwoErr := repo.Create(fakeHeaderID, ilkDutyMetadata, fakeUint256)
+				insertTwoErr := repo.Create(diffID, fakeHeaderID, ilkDutyMetadata, fakeUint256)
 
 				Expect(insertTwoErr).NotTo(HaveOccurred())
 				var count int
@@ -132,7 +135,7 @@ var _ = Describe("Jug storage repository", func() {
 			It("returns an error if metadata missing ilk", func() {
 				malformedIlkDutyMetadata := utils.GetStorageValueMetadata(jug.IlkDuty, nil, utils.Uint256)
 
-				err := repo.Create(fakeHeaderID, malformedIlkDutyMetadata, fakeUint256)
+				err := repo.Create(diffID, fakeHeaderID, malformedIlkDutyMetadata, fakeUint256)
 				Expect(err).To(MatchError(utils.ErrMetadataMalformed{MissingData: constants.Ilk}))
 			})
 
@@ -147,20 +150,20 @@ var _ = Describe("Jug storage repository", func() {
 	})
 
 	It("persists a jug vat", func() {
-		err := repo.Create(fakeHeaderID, jug.VatMetadata, fakeAddress)
+		err := repo.Create(diffID, fakeHeaderID, jug.VatMetadata, fakeAddress)
 
 		Expect(err).NotTo(HaveOccurred())
 		var result VariableRes
-		err = db.Get(&result, `SELECT header_id, vat AS value FROM maker.jug_vat`)
+		err = db.Get(&result, `SELECT diff_id, header_id, vat AS value FROM maker.jug_vat`)
 		Expect(err).NotTo(HaveOccurred())
-		AssertVariable(result, fakeHeaderID, fakeAddress)
+		AssertVariable(result, diffID, fakeHeaderID, fakeAddress)
 	})
 
 	It("does not duplicate jug vat", func() {
-		insertOneErr := repo.Create(fakeHeaderID, jug.VatMetadata, fakeAddress)
+		insertOneErr := repo.Create(diffID, fakeHeaderID, jug.VatMetadata, fakeAddress)
 		Expect(insertOneErr).NotTo(HaveOccurred())
 
-		insertTwoErr := repo.Create(fakeHeaderID, jug.VatMetadata, fakeAddress)
+		insertTwoErr := repo.Create(diffID, fakeHeaderID, jug.VatMetadata, fakeAddress)
 
 		Expect(insertTwoErr).NotTo(HaveOccurred())
 		var count int
@@ -170,20 +173,20 @@ var _ = Describe("Jug storage repository", func() {
 	})
 
 	It("persists a jug vow", func() {
-		err := repo.Create(fakeHeaderID, jug.VowMetadata, fakeUint256)
+		err := repo.Create(diffID, fakeHeaderID, jug.VowMetadata, fakeUint256)
 
 		Expect(err).NotTo(HaveOccurred())
 		var result VariableRes
-		err = db.Get(&result, `SELECT header_id, vow AS value FROM maker.jug_vow`)
+		err = db.Get(&result, `SELECT diff_id, header_id, vow AS value FROM maker.jug_vow`)
 		Expect(err).NotTo(HaveOccurred())
-		AssertVariable(result, fakeHeaderID, fakeUint256)
+		AssertVariable(result, diffID, fakeHeaderID, fakeUint256)
 	})
 
 	It("does not duplicate jug vow", func() {
-		insertOneErr := repo.Create(fakeHeaderID, jug.VowMetadata, fakeUint256)
+		insertOneErr := repo.Create(diffID, fakeHeaderID, jug.VowMetadata, fakeUint256)
 		Expect(insertOneErr).NotTo(HaveOccurred())
 
-		insertTwoErr := repo.Create(fakeHeaderID, jug.VowMetadata, fakeUint256)
+		insertTwoErr := repo.Create(diffID, fakeHeaderID, jug.VowMetadata, fakeUint256)
 
 		Expect(insertTwoErr).NotTo(HaveOccurred())
 		var count int
@@ -193,21 +196,21 @@ var _ = Describe("Jug storage repository", func() {
 	})
 
 	It("persists a jug base", func() {
-		err := repo.Create(fakeHeaderID, jug.BaseMetadata, fakeUint256)
+		err := repo.Create(diffID, fakeHeaderID, jug.BaseMetadata, fakeUint256)
 		Expect(err).NotTo(HaveOccurred())
 
 		var result VariableRes
-		err = db.Get(&result, `SELECT header_id, base AS value FROM maker.jug_base`)
+		err = db.Get(&result, `SELECT diff_id, header_id, base AS value FROM maker.jug_base`)
 		Expect(err).NotTo(HaveOccurred())
 
-		AssertVariable(result, fakeHeaderID, fakeUint256)
+		AssertVariable(result, diffID, fakeHeaderID, fakeUint256)
 	})
 
 	It("does not duplicate jug base", func() {
-		insertOneErr := repo.Create(fakeHeaderID, jug.BaseMetadata, fakeUint256)
+		insertOneErr := repo.Create(diffID, fakeHeaderID, jug.BaseMetadata, fakeUint256)
 		Expect(insertOneErr).NotTo(HaveOccurred())
 
-		insertTwoErr := repo.Create(fakeHeaderID, jug.BaseMetadata, fakeUint256)
+		insertTwoErr := repo.Create(diffID, fakeHeaderID, jug.BaseMetadata, fakeUint256)
 
 		Expect(insertTwoErr).NotTo(HaveOccurred())
 		var count int
