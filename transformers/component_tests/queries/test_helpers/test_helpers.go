@@ -576,8 +576,8 @@ func CreateDeal(input DealCreationInput) (err error) {
 	dealLog := test_data.CreateTestLog(input.DealHeaderId, input.DB)
 	dealModel := test_data.CopyEventModel(test_data.DealModel)
 	dealModel.ColumnValues[deal.Id] = strconv.Itoa(input.BidId)
-	dealModel.ColumnValues[constants.HeaderFK] = input.DealHeaderId
-	dealModel.ColumnValues[constants.LogFK] = dealLog.ID
+	dealModel.ColumnValues[event.HeaderFK] = input.DealHeaderId
+	dealModel.ColumnValues[event.LogFK] = dealLog.ID
 	dealModel.ColumnValues[constants.AddressColumn] = addressID
 	deals := []event.InsertionModel{dealModel}
 	return event.PersistModels(deals, input.DB)
@@ -626,8 +626,8 @@ func CreateTend(input TendCreationInput) (err error) {
 	tendModel.ColumnValues[tend.Lot] = strconv.Itoa(input.Lot)
 	tendModel.ColumnValues[tend.Bid] = strconv.Itoa(input.BidAmount)
 	tendModel.ColumnValues[constants.AddressColumn] = addressID
-	tendModel.ColumnValues[constants.HeaderFK] = input.TendHeaderId
-	tendModel.ColumnValues[constants.LogFK] = tendLog.ID
+	tendModel.ColumnValues[event.HeaderFK] = input.TendHeaderId
+	tendModel.ColumnValues[event.LogFK] = tendLog.ID
 	return event.PersistModels([]event.InsertionModel{tendModel}, input.DB)
 }
 
@@ -639,8 +639,8 @@ func CreateDent(input DentCreationInput) (err error) {
 	dentModel.ColumnValues[dent.Lot] = strconv.Itoa(input.Lot)
 	dentModel.ColumnValues[dent.Bid] = strconv.Itoa(input.BidAmount)
 	dentModel.ColumnValues[constants.AddressColumn] = addressID
-	dentModel.ColumnValues[constants.HeaderFK] = input.DentHeaderId
-	dentModel.ColumnValues[constants.LogFK] = input.DentLogId
+	dentModel.ColumnValues[event.HeaderFK] = input.DentHeaderId
+	dentModel.ColumnValues[event.LogFK] = input.DentLogId
 	return event.PersistModels([]event.InsertionModel{dentModel}, input.DB)
 }
 
@@ -650,8 +650,8 @@ func CreateYank(input YankCreationInput) (err error) {
 	yankModel := test_data.CopyEventModel(test_data.YankModel)
 	yankModel.ColumnValues[yank.BidId] = strconv.Itoa(input.BidId)
 	yankModel.ColumnValues[constants.AddressColumn] = addressID
-	yankModel.ColumnValues[constants.HeaderFK] = input.YankHeaderId
-	yankModel.ColumnValues[constants.LogFK] = input.YankLogId
+	yankModel.ColumnValues[event.HeaderFK] = input.YankHeaderId
+	yankModel.ColumnValues[event.LogFK] = input.YankLogId
 	return event.PersistModels([]event.InsertionModel{yankModel}, input.DB)
 }
 
@@ -662,8 +662,8 @@ func CreateTick(input TickCreationInput) (err error) {
 	tickModel := test_data.CopyEventModel(test_data.TickModel)
 	tickModel.ColumnValues[constants.BidIDColumn] = strconv.Itoa(input.BidId)
 	tickModel.ColumnValues[constants.AddressColumn] = addressID
-	tickModel.ColumnValues[constants.HeaderFK] = input.TickHeaderId
-	tickModel.ColumnValues[constants.LogFK] = tickLog.ID
+	tickModel.ColumnValues[event.HeaderFK] = input.TickHeaderId
+	tickModel.ColumnValues[event.LogFK] = tickLog.ID
 	return event.PersistModels([]event.InsertionModel{tickModel}, input.DB)
 }
 

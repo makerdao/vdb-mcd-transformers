@@ -66,15 +66,15 @@ var tendModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.TendTable,
 	OrderedColumns: []event.ColumnName{
-		constants.HeaderFK, tend.Id, tend.Lot, tend.Bid, constants.AddressColumn, constants.LogFK,
+		event.HeaderFK, tend.Id, tend.Lot, tend.Bid, constants.AddressColumn, event.LogFK,
 	},
 	ColumnValues: event.ColumnValues{
-		constants.HeaderFK:      TendHeaderSyncLog.HeaderID,
+		event.HeaderFK:          TendHeaderSyncLog.HeaderID,
 		tend.Id:                 tendBidId,
 		tend.Lot:                tendLot,
 		tend.Bid:                tendBid,
 		constants.AddressColumn: rawTendLog.Address.Hex(),
-		constants.LogFK:         TendHeaderSyncLog.ID,
+		event.LogFK:             TendHeaderSyncLog.ID,
 	},
 }
 

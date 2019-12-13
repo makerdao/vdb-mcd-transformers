@@ -20,9 +20,9 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_file/debt_ceiling"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/fetcher"
 	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 	"github.com/makerdao/vulcanizedb/pkg/core"
@@ -70,12 +70,11 @@ var _ = Describe("VatFileDebtCeiling EventTransformer", func() {
 
 		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
 
-		initializer := shared.EventTransformer{
-			Config:     vatFileDebtCeilingConfig,
-			Converter:  &debt_ceiling.VatFileDebtCeilingConverter{},
-			Repository: &debt_ceiling.VatFileDebtCeilingRepository{},
+		initializer := event.Transformer{
+			Config:    vatFileDebtCeilingConfig,
+			Converter: debt_ceiling.Converter{},
 		}
-		transformer := initializer.NewEventTransformer(db)
+		transformer := initializer.NewTransformer(db)
 
 		err = transformer.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())

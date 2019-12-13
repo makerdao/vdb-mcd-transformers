@@ -131,7 +131,7 @@ func createVatInitModel(headerId, logId int64, ilkHex string, database *postgres
 
 	vatInit := test_data.VatInitModel
 	vatInit.ColumnValues[constants.IlkColumn] = ilkID
-	vatInit.ColumnValues[constants.HeaderFK] = headerId
-	vatInit.ColumnValues[constants.LogFK] = logId
+	vatInit.ColumnValues[event.HeaderFK] = headerId
+	vatInit.ColumnValues[event.LogFK] = logId
 	return vatInit
 }

@@ -60,14 +60,14 @@ func (c Converter) ToModels(_ string, logs []core.HeaderSyncLog, db *postgres.DB
 			SchemaName: constants.MakerSchema,
 			TableName:  constants.DentTable,
 			OrderedColumns: []event.ColumnName{
-				constants.HeaderFK, Id, Lot, Bid, constants.AddressColumn, constants.LogFK,
+				event.HeaderFK, Id, Lot, Bid, constants.AddressColumn, event.LogFK,
 			},
 			ColumnValues: event.ColumnValues{
 				Id:                      bidId.String(),
 				Lot:                     lot.String(),
 				Bid:                     bid.String(),
-				constants.HeaderFK:      log.HeaderID,
-				constants.LogFK:         log.ID,
+				event.HeaderFK:          log.HeaderID,
+				event.LogFK:             log.ID,
 				constants.AddressColumn: addressID,
 			},
 		}

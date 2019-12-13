@@ -17,6 +17,9 @@
 package integration_tests
 
 import (
+	"math/big"
+	"strconv"
+
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_grab"
@@ -28,8 +31,6 @@ import (
 	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"math/big"
-	"strconv"
 )
 
 var _ = Describe("Vat Grab Transformer", func() {

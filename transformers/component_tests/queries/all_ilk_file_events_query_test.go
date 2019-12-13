@@ -22,7 +22,6 @@ import (
 
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_file/ilk"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
@@ -41,7 +40,6 @@ var _ = Describe("Ilk File Events Query", func() {
 		headerOne              core.Header
 		headerRepo             datastore.HeaderRepository
 		relevantIlkIdentifier  = test_helpers.GetValidNullString(test_helpers.FakeIlk.Identifier)
-		vatFileRepo            ilk.VatFileIlkRepository
 	)
 
 	BeforeEach(func() {
@@ -51,8 +49,6 @@ var _ = Describe("Ilk File Events Query", func() {
 		timestampOne = int(rand.Int31())
 		headerOne = createHeader(blockOne, timestampOne, headerRepo)
 		logOneId = test_data.CreateTestLog(headerOne.Id, db).ID
-		vatFileRepo = ilk.VatFileIlkRepository{}
-		vatFileRepo.SetDB(db)
 	})
 
 	It("returns all ilk file events for ilk", func() {
@@ -62,49 +58,49 @@ var _ = Describe("Ilk File Events Query", func() {
 		Expect(createIlkError).NotTo(HaveOccurred())
 
 		catFileChopLump.ColumnValues[constants.IlkColumn] = ilkID
-		catFileChopLump.ColumnValues[constants.HeaderFK] = headerOne.Id
-		catFileChopLump.ColumnValues[constants.LogFK] = catFileChopLumpLog.ID
+		catFileChopLump.ColumnValues[event.HeaderFK] = headerOne.Id
+		catFileChopLump.ColumnValues[event.LogFK] = catFileChopLumpLog.ID
 		chopLumpErr := event.PersistModels([]event.InsertionModel{catFileChopLump}, db)
 		Expect(chopLumpErr).NotTo(HaveOccurred())
 
 		catFileFlipLog := test_data.CreateTestLog(headerOne.Id, db)
 		catFileFlip := test_data.CatFileFlipModel()
 		catFileFlip.ColumnValues[constants.IlkColumn] = ilkID
-		catFileFlip.ColumnValues[constants.HeaderFK] = headerOne.Id
-		catFileFlip.ColumnValues[constants.LogFK] = catFileFlipLog.ID
+		catFileFlip.ColumnValues[event.HeaderFK] = headerOne.Id
+		catFileFlip.ColumnValues[event.LogFK] = catFileFlipLog.ID
 		flipErr := event.PersistModels([]event.InsertionModel{catFileFlip}, db)
 		Expect(flipErr).NotTo(HaveOccurred())
 
 		jugFileLog := test_data.CreateTestLog(headerOne.Id, db)
 		jugFile := test_data.JugFileIlkModel()
 		jugFile.ColumnValues[constants.IlkColumn] = ilkID
-		jugFile.ColumnValues[constants.HeaderFK] = headerOne.Id
-		jugFile.ColumnValues[constants.LogFK] = jugFileLog.ID
+		jugFile.ColumnValues[event.HeaderFK] = headerOne.Id
+		jugFile.ColumnValues[event.LogFK] = jugFileLog.ID
 		jugErr := event.PersistModels([]event.InsertionModel{jugFile}, db)
 		Expect(jugErr).NotTo(HaveOccurred())
 
 		spotFileMatLog := test_data.CreateTestLog(headerOne.Id, db)
 		spotFileMat := test_data.SpotFileMatModel()
-		spotFileMat.ColumnValues[constants.HeaderFK] = headerOne.Id
-		spotFileMat.ColumnValues[constants.LogFK] = spotFileMatLog.ID
+		spotFileMat.ColumnValues[event.HeaderFK] = headerOne.Id
+		spotFileMat.ColumnValues[event.LogFK] = spotFileMatLog.ID
 		spotFileMat.ColumnValues[constants.IlkColumn] = ilkID
 		spotFileMatErr := event.PersistModels([]event.InsertionModel{spotFileMat}, db)
 		Expect(spotFileMatErr).NotTo(HaveOccurred())
 
 		spotFilePipLog := test_data.CreateTestLog(headerOne.Id, db)
 		spotFilePip := test_data.SpotFilePipModel()
-		spotFilePip.ColumnValues[constants.HeaderFK] = headerOne.Id
-		spotFilePip.ColumnValues[constants.LogFK] = spotFilePipLog.ID
+		spotFilePip.ColumnValues[event.HeaderFK] = headerOne.Id
+		spotFilePip.ColumnValues[event.LogFK] = spotFilePipLog.ID
 		spotFilePip.ColumnValues[constants.IlkColumn] = ilkID
 		spotFilePipErr := event.PersistModels([]event.InsertionModel{spotFilePip}, db)
 		Expect(spotFilePipErr).NotTo(HaveOccurred())
 
 		vatFileLog := test_data.CreateTestLog(headerOne.Id, db)
 		vatFile := test_data.VatFileIlkDustModel()
-		vatFile.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
-		vatFile.ColumnValues[constants.HeaderFK] = headerOne.Id
-		vatFile.ColumnValues[constants.LogFK] = vatFileLog.ID
-		vatErr := vatFileRepo.Create([]shared.InsertionModel{vatFile})
+		vatFile.ColumnValues[event.HeaderFK] = headerOne.Id
+		vatFile.ColumnValues[event.LogFK] = vatFileLog.ID
+		vatFile.ColumnValues[constants.IlkColumn] = ilkID
+		vatErr := event.PersistModels([]event.InsertionModel{vatFile}, db)
 		Expect(vatErr).NotTo(HaveOccurred())
 
 		var actualFiles []test_helpers.IlkFileEvent
@@ -147,22 +143,25 @@ var _ = Describe("Ilk File Events Query", func() {
 
 	It("includes results across blocks", func() {
 		fileBlockOne := test_data.VatFileIlkDustModel()
-		fileBlockOne.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
-		fileBlockOne.ColumnValues["data"] = strconv.Itoa(rand.Int())
-		fileBlockOne.ColumnValues[constants.HeaderFK] = headerOne.Id
-		fileBlockOne.ColumnValues[constants.LogFK] = logOneId
-		fileBlockOneErr := vatFileRepo.Create([]shared.InsertionModel{fileBlockOne})
+		ilkID, createIlkError := shared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
+		Expect(createIlkError).NotTo(HaveOccurred())
+
+		fileBlockOne.ColumnValues[constants.IlkColumn] = ilkID
+		fileBlockOne.ColumnValues[constants.DataColumn] = strconv.Itoa(rand.Int())
+		fileBlockOne.ColumnValues[event.HeaderFK] = headerOne.Id
+		fileBlockOne.ColumnValues[event.LogFK] = logOneId
+		fileBlockOneErr := event.PersistModels([]event.InsertionModel{fileBlockOne}, db)
 		Expect(fileBlockOneErr).NotTo(HaveOccurred())
 
 		headerTwo := createHeader(blockOne+1, timestampOne+1, headerRepo)
 
 		logBlockTwo := test_data.CreateTestLog(headerTwo.Id, db)
 		fileBlockTwo := test_data.VatFileIlkDustModel()
-		fileBlockTwo.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
-		fileBlockTwo.ColumnValues["data"] = strconv.Itoa(rand.Int())
-		fileBlockTwo.ColumnValues[constants.HeaderFK] = headerTwo.Id
-		fileBlockTwo.ColumnValues[constants.LogFK] = logBlockTwo.ID
-		fileBlockTwoErr := vatFileRepo.Create([]shared.InsertionModel{fileBlockTwo})
+		fileBlockTwo.ColumnValues[constants.IlkColumn] = ilkID
+		fileBlockTwo.ColumnValues[constants.DataColumn] = strconv.Itoa(rand.Int())
+		fileBlockTwo.ColumnValues[event.HeaderFK] = headerTwo.Id
+		fileBlockTwo.ColumnValues[event.LogFK] = logBlockTwo.ID
+		fileBlockTwoErr := event.PersistModels([]event.InsertionModel{fileBlockTwo}, db)
 		Expect(fileBlockTwoErr).NotTo(HaveOccurred())
 
 		var actualFiles []test_helpers.IlkFileEvent
@@ -184,26 +183,29 @@ var _ = Describe("Ilk File Events Query", func() {
 	})
 
 	Describe("result pagination", func() {
-		var fileBlockOne, fileBlockTwo shared.InsertionModel
+		var fileBlockOne, fileBlockTwo event.InsertionModel
 
 		BeforeEach(func() {
 			fileBlockOne = test_data.VatFileIlkDustModel()
-			fileBlockOne.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
-			fileBlockOne.ColumnValues["data"] = strconv.Itoa(rand.Int())
-			fileBlockOne.ColumnValues[constants.HeaderFK] = headerOne.Id
-			fileBlockOne.ColumnValues[constants.LogFK] = logOneId
-			fileBlockOneErr := vatFileRepo.Create([]shared.InsertionModel{fileBlockOne})
+			ilkID, createIlkError := shared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
+			Expect(createIlkError).NotTo(HaveOccurred())
+
+			fileBlockOne.ColumnValues[constants.IlkColumn] = ilkID
+			fileBlockOne.ColumnValues[constants.DataColumn] = strconv.Itoa(rand.Int())
+			fileBlockOne.ColumnValues[event.HeaderFK] = headerOne.Id
+			fileBlockOne.ColumnValues[event.LogFK] = logOneId
+			fileBlockOneErr := event.PersistModels([]event.InsertionModel{fileBlockOne}, db)
 			Expect(fileBlockOneErr).NotTo(HaveOccurred())
 
 			headerTwo := createHeader(blockOne+1, timestampOne+1, headerRepo)
 			logTwoID := test_data.CreateTestLog(headerOne.Id, db).ID
 
 			fileBlockTwo = test_data.VatFileIlkDustModel()
-			fileBlockTwo.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
-			fileBlockTwo.ColumnValues["data"] = strconv.Itoa(rand.Int())
-			fileBlockTwo.ColumnValues[constants.HeaderFK] = headerTwo.Id
-			fileBlockTwo.ColumnValues[constants.LogFK] = logTwoID
-			fileBlockTwoErr := vatFileRepo.Create([]shared.InsertionModel{fileBlockTwo})
+			fileBlockTwo.ColumnValues[constants.IlkColumn] = ilkID
+			fileBlockTwo.ColumnValues[constants.DataColumn] = strconv.Itoa(rand.Int())
+			fileBlockTwo.ColumnValues[event.HeaderFK] = headerTwo.Id
+			fileBlockTwo.ColumnValues[event.LogFK] = logTwoID
+			fileBlockTwoErr := event.PersistModels([]event.InsertionModel{fileBlockTwo}, db)
 			Expect(fileBlockTwoErr).NotTo(HaveOccurred())
 		})
 
@@ -243,20 +245,26 @@ var _ = Describe("Ilk File Events Query", func() {
 
 	It("does not include ilk file events for a different ilk", func() {
 		relevantFile := test_data.VatFileIlkDustModel()
-		relevantFile.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
-		relevantFile.ColumnValues["data"] = strconv.Itoa(rand.Int())
-		relevantFile.ColumnValues[constants.HeaderFK] = headerOne.Id
-		relevantFile.ColumnValues[constants.LogFK] = logOneId
+		ilkID, createIlkError := shared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
+		Expect(createIlkError).NotTo(HaveOccurred())
+
+		relevantFile.ColumnValues[constants.IlkColumn] = ilkID
+		relevantFile.ColumnValues[constants.DataColumn] = strconv.Itoa(rand.Int())
+		relevantFile.ColumnValues[event.HeaderFK] = headerOne.Id
+		relevantFile.ColumnValues[event.LogFK] = logOneId
 
 		irrelevantLog := test_data.CreateTestLog(headerOne.Id, db)
 		irrelevantFile := test_data.VatFileIlkDustModel()
-		irrelevantFile.ForeignKeyValues[constants.IlkFK] = test_helpers.AnotherFakeIlk.Hex
-		irrelevantFile.ColumnValues["data"] = strconv.Itoa(rand.Int())
-		irrelevantFile.ColumnValues[constants.HeaderFK] = headerOne.Id
-		irrelevantFile.ColumnValues[constants.LogFK] = irrelevantLog.ID
+		anotherIlkID, createIlkError := shared.GetOrCreateIlk(test_helpers.AnotherFakeIlk.Hex, db)
+		Expect(createIlkError).NotTo(HaveOccurred())
 
-		models := []shared.InsertionModel{relevantFile, irrelevantFile}
-		vatBlockOneErr := vatFileRepo.Create(models)
+		irrelevantFile.ColumnValues[constants.IlkColumn] = anotherIlkID
+		irrelevantFile.ColumnValues[constants.DataColumn] = strconv.Itoa(rand.Int())
+		irrelevantFile.ColumnValues[event.HeaderFK] = headerOne.Id
+		irrelevantFile.ColumnValues[event.LogFK] = irrelevantLog.ID
+
+		models := []event.InsertionModel{relevantFile, irrelevantFile}
+		vatBlockOneErr := event.PersistModels(models, db)
 		Expect(vatBlockOneErr).NotTo(HaveOccurred())
 
 		var actualFiles []test_helpers.IlkFileEvent
@@ -266,8 +274,8 @@ var _ = Describe("Ilk File Events Query", func() {
 		Expect(actualFiles).To(ConsistOf(
 			test_helpers.IlkFileEvent{
 				IlkIdentifier: relevantIlkIdentifier,
-				What:          relevantFile.ColumnValues["what"].(string),
-				Data:          relevantFile.ColumnValues["data"].(string),
+				What:          relevantFile.ColumnValues[constants.WhatColumn].(string),
+				Data:          relevantFile.ColumnValues[constants.DataColumn].(string),
 			},
 		))
 	})

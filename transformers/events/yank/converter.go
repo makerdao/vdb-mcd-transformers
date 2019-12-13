@@ -48,12 +48,12 @@ func (c Converter) ToModels(_ string, logs []core.HeaderSyncLog, db *postgres.DB
 			SchemaName: constants.MakerSchema,
 			TableName:  constants.YankTable,
 			OrderedColumns: []event.ColumnName{
-				constants.HeaderFK, BidId, constants.AddressColumn, constants.LogFK,
+				event.HeaderFK, BidId, constants.AddressColumn, event.LogFK,
 			},
 			ColumnValues: event.ColumnValues{
 				BidId:                   bidId.String(),
-				constants.HeaderFK:      log.HeaderID,
-				constants.LogFK:         log.ID,
+				event.HeaderFK:          log.HeaderID,
+				event.LogFK:             log.ID,
 				constants.AddressColumn: addressID,
 			},
 		}

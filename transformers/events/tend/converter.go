@@ -60,15 +60,15 @@ func (c Converter) ToModels(_ string, logs []core.HeaderSyncLog, db *postgres.DB
 			SchemaName: constants.MakerSchema,
 			TableName:  constants.TendTable,
 			OrderedColumns: []event.ColumnName{
-				constants.HeaderFK, Id, Lot, Bid, constants.AddressColumn, constants.LogFK,
+				event.HeaderFK, Id, Lot, Bid, constants.AddressColumn, event.LogFK,
 			},
 			ColumnValues: event.ColumnValues{
-				constants.HeaderFK:      log.HeaderID,
+				event.HeaderFK:          log.HeaderID,
 				Id:                      bidId.String(),
 				Lot:                     lot,
 				Bid:                     bidValue,
 				constants.AddressColumn: addressID,
-				constants.LogFK:         log.ID,
+				event.LogFK:             log.ID,
 			},
 		}
 		models = append(models, model)

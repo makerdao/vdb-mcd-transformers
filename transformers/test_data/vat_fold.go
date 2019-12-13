@@ -56,11 +56,11 @@ var VatFoldModelWithPositiveRate = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.VatFoldTable,
 	OrderedColumns: []event.ColumnName{
-		constants.HeaderFK, constants.LogFK, constants.IlkColumn, constants.UColumn, constants.RateColumn,
+		event.HeaderFK, event.LogFK, constants.IlkColumn, constants.UColumn, constants.RateColumn,
 	},
 	ColumnValues: event.ColumnValues{
-		constants.HeaderFK: VatFoldHeaderSyncLogWithPositiveRate.HeaderID,
-		constants.LogFK:    VatFoldHeaderSyncLogWithPositiveRate.ID,
+		event.HeaderFK: VatFoldHeaderSyncLogWithPositiveRate.HeaderID,
+		event.LogFK:    VatFoldHeaderSyncLogWithPositiveRate.ID,
 		// constants.IlkColumn
 		constants.UColumn:    "0x3728e9777B2a0a611ee0F89e00E01044ce4736d1",
 		constants.RateColumn: "2",
@@ -95,7 +95,7 @@ var VatFoldModelWithNegativeRate = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.VatFoldTable,
 	OrderedColumns: []event.ColumnName{
-		constants.HeaderFK, constants.LogFK, constants.IlkColumn, constants.UColumn, constants.RateColumn,
+		event.HeaderFK, event.LogFK, constants.IlkColumn, constants.UColumn, constants.RateColumn,
 	},
 	ColumnValues: event.ColumnValues{
 		event.HeaderFK: VatFoldHeaderSyncLogWithNegativeRate.HeaderID,

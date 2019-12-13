@@ -152,13 +152,13 @@ var catFileFlipModel = event.InsertionModel{
 		constants.IlkColumn,
 		constants.WhatColumn,
 		constants.FlipColumn,
-		constants.LogFK,
+		event.LogFK,
 	},
 	ColumnValues: event.ColumnValues{
 		event.HeaderFK:       CatFileFlipHeaderSyncLog.HeaderID,
 		constants.WhatColumn: "flip",
 		constants.FlipColumn: "0x6E8032435c84B08E30F27bfbb812Ee365A095b31",
-		constants.LogFK:      CatFileFlipHeaderSyncLog.ID,
+		event.LogFK:          CatFileFlipHeaderSyncLog.ID,
 	},
 }
 
@@ -192,12 +192,12 @@ var catFileVowModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.CatFileVowTable,
 	OrderedColumns: []event.ColumnName{
-		constants.HeaderFK, constants.WhatColumn, constants.DataColumn, constants.LogFK,
+		event.HeaderFK, constants.WhatColumn, constants.DataColumn, event.LogFK,
 	},
 	ColumnValues: event.ColumnValues{
-		constants.HeaderFK:   CatFileVowHeaderSyncLog.HeaderID,
+		event.HeaderFK:       CatFileVowHeaderSyncLog.HeaderID,
 		constants.WhatColumn: "vow",
 		constants.DataColumn: "0x17560834075DA3Db54f737db74377E799c865821",
-		constants.LogFK:      CatFileVowHeaderSyncLog.ID,
+		event.LogFK:          CatFileVowHeaderSyncLog.ID,
 	},
 }

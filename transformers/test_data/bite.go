@@ -71,11 +71,11 @@ var biteModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.BiteTable,
 	OrderedColumns: []event.ColumnName{
-		constants.HeaderFK, constants.LogFK, constants.UrnColumn, constants.InkColumn, constants.ArtColumn, constants.TabColumn, constants.FlipColumn, constants.BidIDColumn,
+		event.HeaderFK, event.LogFK, constants.UrnColumn, constants.InkColumn, constants.ArtColumn, constants.TabColumn, constants.FlipColumn, constants.BidIDColumn,
 	},
 	ColumnValues: event.ColumnValues{
-		constants.HeaderFK: BiteHeaderSyncLog.HeaderID,
-		constants.LogFK:    BiteHeaderSyncLog.ID,
+		event.HeaderFK: BiteHeaderSyncLog.HeaderID,
+		event.LogFK:    BiteHeaderSyncLog.ID,
 		// constants.UrnColumn: Can't assert against this since we don't know the ID...
 		constants.InkColumn:   biteInk.String(),
 		constants.ArtColumn:   biteArt.String(),

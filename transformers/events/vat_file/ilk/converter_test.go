@@ -18,50 +18,77 @@ package ilk_test
 
 import (
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/makerdao/vulcanizedb/pkg/core"
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
-
+	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_file/ilk"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
+	"github.com/makerdao/vulcanizedb/pkg/core"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("Vat file ilk converter", func() {
-	var converter = ilk.VatFileIlkConverter{}
+	var (
+		converter = ilk.Converter{}
+		db        = test_config.NewTestDB(test_config.NewTestNode())
+	)
+
+	BeforeEach(func() {
+		test_config.CleanTestDB(db)
+	})
+
 	It("returns err if log is missing topics", func() {
 		badLog := core.HeaderSyncLog{
 			Log: types.Log{
 				Data: []byte{1, 1, 1, 1, 1},
 			}}
 
-		_, err := converter.ToModels(constants.VatABI(), []core.HeaderSyncLog{badLog})
+		_, err := converter.ToModels(constants.VatABI(), []core.HeaderSyncLog{badLog}, db)
 		Expect(err).To(HaveOccurred())
 	})
 
 	Describe("when log is valid", func() {
 		It("converts to model with data converted to ray when what is 'spot'", func() {
-			models, err := converter.ToModels(constants.VatABI(), []core.HeaderSyncLog{test_data.VatFileIlkSpotHeaderSyncLog})
-
+			log := []core.HeaderSyncLog{test_data.VatFileIlkSpotHeaderSyncLog}
+			models, err := converter.ToModels(constants.VatABI(), log, db)
 			Expect(err).NotTo(HaveOccurred())
-			Expect(models).To(Equal([]shared.InsertionModel{test_data.VatFileIlkSpotModel()}))
+
+			ilk := log[0].Log.Topics[1].Hex()
+			ilkID, ilkErr := shared.GetOrCreateIlk(ilk, db)
+			Expect(ilkErr).NotTo(HaveOccurred())
+
+			expectedModel := test_data.VatFileIlkSpotModel()
+			expectedModel.ColumnValues[constants.IlkColumn] = ilkID
+			Expect(models).To(ConsistOf(expectedModel))
 		})
 
 		It("converts to model with data converted to wad when what is 'line'", func() {
-			models, err := converter.ToModels(constants.VatABI(), []core.HeaderSyncLog{test_data.VatFileIlkLineHeaderSyncLog})
-
+			log := []core.HeaderSyncLog{test_data.VatFileIlkLineHeaderSyncLog}
+			models, err := converter.ToModels(constants.VatABI(), log, db)
 			Expect(err).NotTo(HaveOccurred())
-			Expect(len(models)).To(Equal(1))
-			Expect(models).To(Equal([]shared.InsertionModel{test_data.VatFileIlkLineModel()}))
+
+			ilk := log[0].Log.Topics[1].Hex()
+			ilkID, ilkErr := shared.GetOrCreateIlk(ilk, db)
+			Expect(ilkErr).NotTo(HaveOccurred())
+
+			expectedModel := test_data.VatFileIlkLineModel()
+			expectedModel.ColumnValues[constants.IlkColumn] = ilkID
+			Expect(models).To(ConsistOf(expectedModel))
 		})
 
 		It("converts to model with data converted to rad when what is 'dust'", func() {
-			models, err := converter.ToModels(constants.VatABI(), []core.HeaderSyncLog{test_data.VatFileIlkDustHeaderSyncLog})
-
+			log := []core.HeaderSyncLog{test_data.VatFileIlkDustHeaderSyncLog}
+			models, err := converter.ToModels(constants.VatABI(), log, db)
 			Expect(err).NotTo(HaveOccurred())
-			Expect(len(models)).To(Equal(1))
-			Expect(models).To(Equal([]shared.InsertionModel{test_data.VatFileIlkDustModel()}))
+
+			ilk := log[0].Log.Topics[1].Hex()
+			ilkID, ilkErr := shared.GetOrCreateIlk(ilk, db)
+			Expect(ilkErr).NotTo(HaveOccurred())
+
+			expectedModel := test_data.VatFileIlkDustModel()
+			expectedModel.ColumnValues[constants.IlkColumn] = ilkID
+			Expect(models).To(ConsistOf(expectedModel))
 		})
 	})
 })

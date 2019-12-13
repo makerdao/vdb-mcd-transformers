@@ -65,25 +65,25 @@ var potFileDSRModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.PotFileDSRTable,
 	OrderedColumns: []event.ColumnName{
-		constants.HeaderFK, constants.LogFK, dsr.What, dsr.Data,
+		event.HeaderFK, event.LogFK, dsr.What, dsr.Data,
 	},
 	ColumnValues: event.ColumnValues{
-		constants.HeaderFK: PotFileDSRHeaderSyncLog.HeaderID,
-		constants.LogFK:    PotFileDSRHeaderSyncLog.ID,
-		dsr.What:           "dsr",
-		dsr.Data:           "1000000000627937192491029810",
+		event.HeaderFK: PotFileDSRHeaderSyncLog.HeaderID,
+		event.LogFK:    PotFileDSRHeaderSyncLog.ID,
+		dsr.What:       "dsr",
+		dsr.Data:       "1000000000627937192491029810",
 	},
 }
 
 var potFileVowModel = event.InsertionModel{
 	SchemaName:     constants.MakerSchema,
 	TableName:      constants.PotFileVowTable,
-	OrderedColumns: []event.ColumnName{constants.HeaderFK, constants.LogFK, vow.What, vow.Data},
+	OrderedColumns: []event.ColumnName{event.HeaderFK, event.LogFK, vow.What, vow.Data},
 	ColumnValues: event.ColumnValues{
-		constants.HeaderFK: PotFileVowHeaderSyncLog.HeaderID,
-		constants.LogFK:    PotFileVowHeaderSyncLog.ID,
-		vow.What:           "vow",
-		vow.Data:           "0x0F4Cbe6CBA918b7488C26E29d9ECd7368F38EA3b",
+		event.HeaderFK: PotFileVowHeaderSyncLog.HeaderID,
+		event.LogFK:    PotFileVowHeaderSyncLog.ID,
+		vow.What:       "vow",
+		vow.Data:       "0x0F4Cbe6CBA918b7488C26E29d9ECd7368F38EA3b",
 	},
 }
 

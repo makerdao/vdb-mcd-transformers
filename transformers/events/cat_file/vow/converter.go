@@ -42,10 +42,10 @@ func (Converter) ToModels(_ string, logs []core.HeaderSyncLog, _ *postgres.DB) (
 			SchemaName: constants.MakerSchema,
 			TableName:  constants.CatFileVowTable,
 			OrderedColumns: []event.ColumnName{
-				constants.HeaderFK, constants.WhatColumn, constants.DataColumn, event.LogFK,
+				event.HeaderFK, constants.WhatColumn, constants.DataColumn, event.LogFK,
 			},
 			ColumnValues: event.ColumnValues{
-				constants.HeaderFK:   log.HeaderID,
+				event.HeaderFK:       log.HeaderID,
 				constants.WhatColumn: what,
 				constants.DataColumn: data,
 				event.LogFK:          log.ID,

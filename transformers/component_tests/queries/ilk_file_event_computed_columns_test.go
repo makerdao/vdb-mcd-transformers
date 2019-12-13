@@ -23,10 +23,10 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_file/ilk"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	. "github.com/onsi/ginkgo"
@@ -37,8 +37,7 @@ var _ = Describe("Ilk file event computed columns", func() {
 	var (
 		blockOne, timestampOne int
 		fakeGethLog            types.Log
-		fileEvent              shared.InsertionModel
-		fileRepo               ilk.VatFileIlkRepository
+		fileEvent              event.InsertionModel
 		headerOne              core.Header
 		headerRepository       repositories.HeaderRepository
 	)
@@ -53,13 +52,14 @@ var _ = Describe("Ilk file event computed columns", func() {
 		fakeHeaderSyncLog := test_data.CreateTestLog(headerOne.Id, db)
 		fakeGethLog = fakeHeaderSyncLog.Log
 
-		fileRepo = ilk.VatFileIlkRepository{}
-		fileRepo.SetDB(db)
 		fileEvent = test_data.VatFileIlkDustModel()
-		fileEvent.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
-		fileEvent.ColumnValues[constants.HeaderFK] = headerOne.Id
-		fileEvent.ColumnValues[constants.LogFK] = fakeHeaderSyncLog.ID
-		insertFileErr := fileRepo.Create([]shared.InsertionModel{fileEvent})
+		ilkID, createIlkError := shared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
+		Expect(createIlkError).NotTo(HaveOccurred())
+
+		fileEvent.ColumnValues[constants.IlkColumn] = ilkID
+		fileEvent.ColumnValues[event.HeaderFK] = headerOne.Id
+		fileEvent.ColumnValues[event.LogFK] = fakeHeaderSyncLog.ID
+		insertFileErr := event.PersistModels([]event.InsertionModel{fileEvent}, db)
 		Expect(insertFileErr).NotTo(HaveOccurred())
 	})
 
