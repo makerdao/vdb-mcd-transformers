@@ -27,5 +27,5 @@ import (
 
 var EventTransformerInitializer transformer.EventTransformerInitializer = event.Transformer{
 	Config:    shared.GetEventTransformerConfig(constants.VatHealTable, constants.VatHealSignature()),
-	Converter: &vat_heal.Converter{},
+	Converter: vat_heal.Converter{},
 }.NewTransformer

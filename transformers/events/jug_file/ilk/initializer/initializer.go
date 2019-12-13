@@ -26,5 +26,5 @@ import (
 
 var EventTransformerInitializer transformer.EventTransformerInitializer = event.Transformer{
 	Config:    shared.GetEventTransformerConfig(constants.JugFileIlkTable, constants.JugFileIlkSignature()),
-	Converter: &ilk.Converter{},
+	Converter: ilk.Converter{},
 }.NewTransformer

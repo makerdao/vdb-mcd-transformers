@@ -63,7 +63,7 @@ var _ = Describe("Deal transformer", func() {
 
 		initializer = event.Transformer{
 			Config:    dealConfig,
-			Converter: &deal.Converter{},
+			Converter: deal.Converter{},
 		}
 
 		logFetcher = fetcher.NewLogFetcher(blockChain)

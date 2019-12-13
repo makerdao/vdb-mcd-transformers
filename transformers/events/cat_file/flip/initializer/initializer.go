@@ -27,5 +27,5 @@ import (
 
 var EventTransformerInitializer transformer.EventTransformerInitializer = event.Transformer{
 	Config:    shared.GetEventTransformerConfig(constants.CatFileFlipTable, constants.CatFileFlipSignature()),
-	Converter: &flip.Converter{},
+	Converter: flip.Converter{},
 }.NewTransformer

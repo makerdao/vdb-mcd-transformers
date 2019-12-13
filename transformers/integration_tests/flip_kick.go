@@ -55,7 +55,7 @@ var _ = Describe("FlipKick Transformer", func() {
 
 		tr := event.Transformer{
 			Config:    flipKickConfig,
-			Converter: &flip_kick.Converter{},
+			Converter: flip_kick.Converter{},
 		}.NewTransformer(db)
 
 		f := fetcher.NewLogFetcher(blockChain)

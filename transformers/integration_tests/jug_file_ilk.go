@@ -66,7 +66,7 @@ var _ = Describe("Jug File Ilk EventTransformer", func() {
 
 		initializer := event.Transformer{
 			Config:    jugFileIlkConfig,
-			Converter: &ilk.Converter{},
+			Converter: ilk.Converter{},
 		}
 		tr := initializer.NewTransformer(db)
 

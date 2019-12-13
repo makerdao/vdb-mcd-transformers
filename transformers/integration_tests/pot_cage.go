@@ -61,7 +61,7 @@ var _ = Describe("PotCage EventTransformer", func() {
 
 			initializer := event.Transformer{
 				Config:    potCageConfig,
-				Converter: &pot_cage.Converter{},
+				Converter: pot_cage.Converter{},
 			}
 
 			logFetcher := fetcher.NewLogFetcher(blockChain)

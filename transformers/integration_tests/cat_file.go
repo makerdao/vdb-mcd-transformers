@@ -75,7 +75,7 @@ var _ = Describe("Cat File transformer", func() {
 
 		initializer := event.Transformer{
 			Config:    catFileConfig,
-			Converter: &chop_lump.Converter{},
+			Converter: chop_lump.Converter{},
 		}
 		transformer := initializer.NewTransformer(db)
 
@@ -114,7 +114,7 @@ var _ = Describe("Cat File transformer", func() {
 
 		initializer := event.Transformer{
 			Config:    catFileConfig,
-			Converter: &chop_lump.Converter{},
+			Converter: chop_lump.Converter{},
 		}
 		transformer := initializer.NewTransformer(db)
 
@@ -153,7 +153,7 @@ var _ = Describe("Cat File transformer", func() {
 
 		initializer := event.Transformer{
 			Config:    catFileConfig,
-			Converter: &flip.Converter{},
+			Converter: flip.Converter{},
 		}
 
 		t := initializer.NewTransformer(db)
@@ -192,7 +192,7 @@ var _ = Describe("Cat File transformer", func() {
 
 		initializer := event.Transformer{
 			Config:    catFileConfig,
-			Converter: &vow.Converter{},
+			Converter: vow.Converter{},
 		}
 		t := initializer.NewTransformer(db)
 

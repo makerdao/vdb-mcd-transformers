@@ -26,5 +26,5 @@ import (
 
 var EventTransformerInitializer transformer.EventTransformerInitializer = event.Transformer{
 	Config:    shared.GetEventTransformerConfig(constants.VowFessTable, constants.VowFessSignature()),
-	Converter: &vow_fess.Converter{},
+	Converter: vow_fess.Converter{},
 }.NewTransformer

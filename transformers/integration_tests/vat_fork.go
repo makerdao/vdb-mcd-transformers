@@ -64,7 +64,7 @@ var _ = Describe("Vat fork transformer", func() {
 
 		initializer := event.Transformer{
 			Config:    vatForkConfig,
-			Converter: &vat_fork.Converter{},
+			Converter: vat_fork.Converter{},
 		}
 		tr := initializer.NewTransformer(db)
 

@@ -63,7 +63,7 @@ var _ = Describe("Jug File Vow EventTransformer", func() {
 
 		initializer := event.Transformer{
 			Config:    jugFileVowConfig,
-			Converter: &vow.Converter{},
+			Converter: vow.Converter{},
 		}
 		tr := initializer.NewTransformer(db)
 

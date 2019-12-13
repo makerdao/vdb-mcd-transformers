@@ -26,5 +26,5 @@ import (
 
 var EventTransformerInitializer transformer.EventTransformerInitializer = event.Transformer{
 	Config:    shared.GetEventTransformerConfig(constants.JugInitTable, constants.JugInitSignature()),
-	Converter: &jug_init.Converter{},
+	Converter: jug_init.Converter{},
 }.NewTransformer

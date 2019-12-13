@@ -66,7 +66,7 @@ var _ = Describe("JugDrip Transformer", func() {
 
 		initializer := event.Transformer{
 			Config:    jugDripConfig,
-			Converter: &jug_drip.Converter{},
+			Converter: jug_drip.Converter{},
 		}
 		tr := initializer.NewTransformer(db)
 

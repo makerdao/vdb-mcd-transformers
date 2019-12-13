@@ -10,5 +10,5 @@ import (
 
 var EventTransformerInitializer transformer.EventTransformerInitializer = event.Transformer{
 	Config:    shared.GetEventTransformerConfig(constants.PotFileDSRTable, constants.PotFileDSRSignature()),
-	Converter: &dsr.Converter{},
+	Converter: dsr.Converter{},
 }.NewTransformer

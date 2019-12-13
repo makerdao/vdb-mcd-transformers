@@ -64,7 +64,7 @@ var _ = XDescribe("Tick EventTransformer", func() {
 
 		initializer = event.Transformer{
 			Config:    tickConfig,
-			Converter: &tick.Converter{},
+			Converter: tick.Converter{},
 		}
 	})
 

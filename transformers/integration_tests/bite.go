@@ -58,7 +58,7 @@ var _ = Describe("Bite Transformer", func() {
 
 		initializer := event.Transformer{
 			Config:    biteConfig,
-			Converter: &bite.Converter{},
+			Converter: bite.Converter{},
 		}
 		transformer := initializer.NewTransformer(db)
 

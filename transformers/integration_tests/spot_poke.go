@@ -66,7 +66,7 @@ var _ = Describe("SpotPoke Transformer", func() {
 
 		initializer := event.Transformer{
 			Config:    spotPokeConfig,
-			Converter: &spot_poke.Converter{},
+			Converter: spot_poke.Converter{},
 		}
 		tr := initializer.NewTransformer(db)
 
