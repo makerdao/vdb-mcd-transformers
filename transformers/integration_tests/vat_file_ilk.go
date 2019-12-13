@@ -17,6 +17,8 @@
 package integration_tests
 
 import (
+	"strconv"
+
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_file/ilk"
@@ -30,7 +32,6 @@ import (
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"strconv"
 )
 
 var _ = Describe("VatFileIlk EventTransformer", func() {

@@ -31,7 +31,7 @@ import (
 var _ = Describe("Jug init converter", func() {
 	var (
 		converter = jug_init.Converter{}
-		db = test_config.NewTestDB(test_config.NewTestNode())
+		db        = test_config.NewTestDB(test_config.NewTestNode())
 	)
 
 	BeforeEach(func() {

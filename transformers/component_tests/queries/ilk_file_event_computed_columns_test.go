@@ -18,6 +18,8 @@ package queries
 
 import (
 	"database/sql"
+	"math/rand"
+
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
@@ -29,7 +31,6 @@ import (
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"math/rand"
 )
 
 var _ = Describe("Ilk file event computed columns", func() {

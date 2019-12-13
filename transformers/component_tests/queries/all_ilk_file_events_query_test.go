@@ -17,6 +17,9 @@
 package queries
 
 import (
+	"math/rand"
+	"strconv"
+
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
@@ -28,8 +31,6 @@ import (
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"math/rand"
-	"strconv"
 )
 
 var _ = Describe("Ilk File Events Query", func() {
