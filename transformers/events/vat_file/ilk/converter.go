@@ -45,14 +45,14 @@ func (Converter) ToModels(_ string, logs []core.HeaderSyncLog, db *postgres.DB) 
 			SchemaName: constants.MakerSchema,
 			TableName:  constants.VatFileIlkTable,
 			OrderedColumns: []event.ColumnName{
-				event.HeaderFK, constants.IlkColumn, "what", "data", event.LogFK,
+				event.HeaderFK, constants.IlkColumn, constants.WhatColumn, constants.DataColumn, event.LogFK,
 			},
 			ColumnValues: event.ColumnValues{
-				"what":              what,
-				"data":              data,
-				constants.IlkColumn: ilkID,
-				event.HeaderFK:      log.HeaderID,
-				event.LogFK:         log.ID,
+				constants.WhatColumn: what,
+				constants.DataColumn: data,
+				constants.IlkColumn:  ilkID,
+				event.HeaderFK:       log.HeaderID,
+				event.LogFK:          log.ID,
 			},
 		}
 		models = append(models, model)

@@ -57,15 +57,15 @@ var DealModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.DealTable,
 	OrderedColumns: []event.ColumnName{
-		constants.HeaderFK,
+		event.HeaderFK,
 		deal.Id,
 		constants.AddressColumn,
-		constants.LogFK,
+		event.LogFK,
 	},
 	ColumnValues: event.ColumnValues{
-		constants.HeaderFK:      DealHeaderSyncLog.HeaderID,
+		event.HeaderFK:          DealHeaderSyncLog.HeaderID,
 		constants.BidIDColumn:   "10000000000000000",
 		constants.AddressColumn: rawDealLog.Address.Hex(),
-		constants.LogFK:         DealHeaderSyncLog.ID,
+		event.LogFK:             DealHeaderSyncLog.ID,
 	},
 }

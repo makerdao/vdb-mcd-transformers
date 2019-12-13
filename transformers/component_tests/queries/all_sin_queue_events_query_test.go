@@ -54,8 +54,8 @@ var _ = Describe("Sin queue events query", func() {
 			vowFessLog := test_data.CreateTestLog(headerOne.Id, db)
 
 			vowFessEvent := test_data.VowFessModel
-			vowFessEvent.ColumnValues[constants.HeaderFK] = headerOne.Id
-			vowFessEvent.ColumnValues[constants.LogFK] = vowFessLog.ID
+			vowFessEvent.ColumnValues[event.HeaderFK] = headerOne.Id
+			vowFessEvent.ColumnValues[event.LogFK] = vowFessLog.ID
 			vowFessErr := event.PersistModels([]event.InsertionModel{vowFessEvent}, db)
 			Expect(vowFessErr).NotTo(HaveOccurred())
 
@@ -74,8 +74,8 @@ var _ = Describe("Sin queue events query", func() {
 			fakeEra := strconv.Itoa(int(rand.Int31()))
 			vowFlogEvent := test_data.VowFlogModel
 			vowFlogEvent.ColumnValues[constants.EraColumn] = fakeEra
-			vowFlogEvent.ColumnValues[constants.HeaderFK] = headerOne.Id
-			vowFlogEvent.ColumnValues[constants.LogFK] = vowFlogLog.ID
+			vowFlogEvent.ColumnValues[event.HeaderFK] = headerOne.Id
+			vowFlogEvent.ColumnValues[event.LogFK] = vowFlogLog.ID
 			vowFlogErr := event.PersistModels([]event.InsertionModel{vowFlogEvent}, db)
 			Expect(vowFlogErr).NotTo(HaveOccurred())
 
@@ -93,8 +93,8 @@ var _ = Describe("Sin queue events query", func() {
 
 			vowFessLog := test_data.CreateTestLog(headerOne.Id, db)
 			vowFessEvent := test_data.VowFessModel
-			vowFessEvent.ColumnValues[constants.HeaderFK] = headerOne.Id
-			vowFessEvent.ColumnValues[constants.LogFK] = vowFessLog.ID
+			vowFessEvent.ColumnValues[event.HeaderFK] = headerOne.Id
+			vowFessEvent.ColumnValues[event.LogFK] = vowFessLog.ID
 			vowFessErr := event.PersistModels([]event.InsertionModel{vowFessEvent}, db)
 			Expect(vowFessErr).NotTo(HaveOccurred())
 
@@ -105,8 +105,8 @@ var _ = Describe("Sin queue events query", func() {
 			vowFlogLog := test_data.CreateTestLog(headerTwo.Id, db)
 			vowFlogEvent := test_data.VowFlogModel
 			vowFlogEvent.ColumnValues[constants.EraColumn] = fakeEra
-			vowFlogEvent.ColumnValues[constants.HeaderFK] = headerTwo.Id
-			vowFlogEvent.ColumnValues[constants.LogFK] = vowFlogLog.ID
+			vowFlogEvent.ColumnValues[event.HeaderFK] = headerTwo.Id
+			vowFlogEvent.ColumnValues[event.LogFK] = vowFlogLog.ID
 			vowFlogErr := event.PersistModels([]event.InsertionModel{vowFlogEvent}, db)
 			Expect(vowFlogErr).NotTo(HaveOccurred())
 
@@ -129,8 +129,8 @@ var _ = Describe("Sin queue events query", func() {
 
 			vowFlogEvent := test_data.VowFlogModel
 			vowFlogEvent.ColumnValues[constants.EraColumn] = fakeEra
-			vowFlogEvent.ColumnValues[constants.HeaderFK] = headerOne.Id
-			vowFlogEvent.ColumnValues[constants.LogFK] = vowFlogLog.ID
+			vowFlogEvent.ColumnValues[event.HeaderFK] = headerOne.Id
+			vowFlogEvent.ColumnValues[event.LogFK] = vowFlogLog.ID
 			vowFlogErr := event.PersistModels([]event.InsertionModel{vowFlogEvent}, db)
 			Expect(vowFlogErr).NotTo(HaveOccurred())
 
@@ -149,8 +149,8 @@ var _ = Describe("Sin queue events query", func() {
 				logId := test_data.CreateTestLog(headerOne.Id, db).ID
 
 				vowFessEvent := test_data.VowFessModel
-				vowFessEvent.ColumnValues[constants.HeaderFK] = headerOne.Id
-				vowFessEvent.ColumnValues[constants.LogFK] = logId
+				vowFessEvent.ColumnValues[event.HeaderFK] = headerOne.Id
+				vowFessEvent.ColumnValues[event.LogFK] = logId
 				vowFessErr := event.PersistModels([]event.InsertionModel{vowFessEvent}, db)
 				Expect(vowFessErr).NotTo(HaveOccurred())
 
@@ -161,8 +161,8 @@ var _ = Describe("Sin queue events query", func() {
 
 				vowFlogEvent := test_data.VowFlogModel
 				vowFlogEvent.ColumnValues[constants.EraColumn] = fakeEra
-				vowFlogEvent.ColumnValues[constants.HeaderFK] = headerTwo.Id
-				vowFlogEvent.ColumnValues[constants.LogFK] = logTwoId
+				vowFlogEvent.ColumnValues[event.HeaderFK] = headerTwo.Id
+				vowFlogEvent.ColumnValues[event.LogFK] = logTwoId
 				vowFlogErr := event.PersistModels([]event.InsertionModel{vowFlogEvent}, db)
 				Expect(vowFlogErr).NotTo(HaveOccurred())
 			})

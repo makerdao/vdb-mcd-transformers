@@ -108,8 +108,8 @@ var spotFilePipModel = event.InsertionModel{
 		constants.PipColumn,
 	},
 	ColumnValues: event.ColumnValues{
-		constants.HeaderFK:   SpotFilePipHeaderSyncLog.HeaderID,
-		constants.LogFK:      SpotFilePipHeaderSyncLog.ID,
+		event.HeaderFK:       SpotFilePipHeaderSyncLog.HeaderID,
+		event.LogFK:          SpotFilePipHeaderSyncLog.ID,
 		constants.WhatColumn: "pip",
 		constants.PipColumn:  "0x75dD74e8afE8110C8320eD397CcCff3B8134d981",
 	},

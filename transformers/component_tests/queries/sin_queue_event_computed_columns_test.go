@@ -21,13 +21,11 @@ import (
 	"math/rand"
 	"strconv"
 
-	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
-
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	. "github.com/onsi/ginkgo"
@@ -55,8 +53,8 @@ var _ = Describe("Sin queue event computed columns", func() {
 		fakeGethLog = fakeHeaderSyncLog.Log
 
 		vowFessEvent := test_data.VowFessModel
-		vowFessEvent.ColumnValues[constants.HeaderFK] = headerOne.Id
-		vowFessEvent.ColumnValues[constants.LogFK] = fakeHeaderSyncLog.ID
+		vowFessEvent.ColumnValues[event.HeaderFK] = headerOne.Id
+		vowFessEvent.ColumnValues[event.LogFK] = fakeHeaderSyncLog.ID
 		vowFessErr := event.PersistModels([]event.InsertionModel{vowFessEvent}, db)
 		Expect(vowFessErr).NotTo(HaveOccurred())
 	})

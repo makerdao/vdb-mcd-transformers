@@ -95,8 +95,8 @@ var _ = Describe("QueuedSin", func() {
 		It("returns flogged as true if era has been flogged", func() {
 			vowFlogEvent := test_data.VowFlogModel
 			vowFlogEvent.ColumnValues[constants.EraColumn] = fakeEra
-			vowFlogEvent.ColumnValues[constants.HeaderFK] = headerOne.Id
-			vowFlogEvent.ColumnValues[constants.LogFK] = logId
+			vowFlogEvent.ColumnValues[event.HeaderFK] = headerOne.Id
+			vowFlogEvent.ColumnValues[event.LogFK] = logId
 			vowFlogErr := event.PersistModels([]event.InsertionModel{vowFlogEvent}, db)
 			Expect(vowFlogErr).NotTo(HaveOccurred())
 

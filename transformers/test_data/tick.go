@@ -65,11 +65,11 @@ var TickModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.TickTable,
 	OrderedColumns: []event.ColumnName{
-		constants.HeaderFK, constants.LogFK, constants.BidIDColumn, constants.AddressColumn,
+		event.HeaderFK, event.LogFK, constants.BidIDColumn, constants.AddressColumn,
 	},
 	ColumnValues: event.ColumnValues{
-		constants.HeaderFK:      FlipTickHeaderSyncLog.HeaderID,
-		constants.LogFK:         FlipTickHeaderSyncLog.ID,
+		event.HeaderFK:          FlipTickHeaderSyncLog.HeaderID,
+		event.LogFK:             FlipTickHeaderSyncLog.ID,
 		constants.BidIDColumn:   strconv.FormatInt(tickBidId, 10),
 		constants.AddressColumn: FlipTickHeaderSyncLog.Log.Address.Hex(),
 	},

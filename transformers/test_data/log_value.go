@@ -62,11 +62,11 @@ var logValueModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.LogValueTable,
 	OrderedColumns: []event.ColumnName{
-		constants.HeaderFK, constants.LogFK, log_value.Val,
+		event.HeaderFK, event.LogFK, log_value.Val,
 	},
 	ColumnValues: event.ColumnValues{
-		constants.HeaderFK: LogValueHeaderSyncLog.HeaderID,
-		constants.LogFK:    LogValueHeaderSyncLog.ID,
-		log_value.Val:      logValueVal.String(),
+		event.HeaderFK: LogValueHeaderSyncLog.HeaderID,
+		event.LogFK:    LogValueHeaderSyncLog.ID,
+		log_value.Val:  logValueVal.String(),
 	},
 }

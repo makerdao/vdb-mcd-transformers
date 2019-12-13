@@ -51,16 +51,16 @@ func (c Converter) ToModels(_ string, logs []core.HeaderSyncLog, db *postgres.DB
 			SchemaName: constants.MakerSchema,
 			TableName:  constants.DealTable,
 			OrderedColumns: []event.ColumnName{
-				constants.HeaderFK,
+				event.HeaderFK,
 				Id,
 				constants.AddressColumn,
-				constants.LogFK,
+				event.LogFK,
 			},
 			ColumnValues: event.ColumnValues{
-				constants.HeaderFK:      log.HeaderID,
+				event.HeaderFK:          log.HeaderID,
 				Id:                      bidId.String(),
 				constants.AddressColumn: addressID,
-				constants.LogFK:         log.ID,
+				event.LogFK:             log.ID,
 			},
 		}
 		models = append(models, model)

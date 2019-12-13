@@ -339,7 +339,7 @@ func generateBite(ilk, urn string, headerID, logID int64, db *postgres.DB) event
 	biteEvent.ColumnValues["tab"] = strconv.Itoa(rand.Int())
 	biteEvent.ColumnValues["bid_id"] = strconv.Itoa(rand.Int())
 	biteEvent.ColumnValues[constants.UrnColumn] = urnID
-	biteEvent.ColumnValues[constants.HeaderFK] = headerID
-	biteEvent.ColumnValues[constants.LogFK] = logID
+	biteEvent.ColumnValues[event.HeaderFK] = headerID
+	biteEvent.ColumnValues[event.LogFK] = logID
 	return biteEvent
 }

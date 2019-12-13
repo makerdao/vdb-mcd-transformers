@@ -70,8 +70,8 @@ var _ = Describe("Queued sin computed columns", func() {
 			vowFlogLog := test_data.CreateTestLog(headerOne.Id, db)
 			vowFlogEvent := test_data.VowFlogModel
 			vowFlogEvent.ColumnValues[constants.EraColumn] = fakeEra
-			vowFlogEvent.ColumnValues[constants.HeaderFK] = headerOne.Id
-			vowFlogEvent.ColumnValues[constants.LogFK] = vowFlogLog.ID
+			vowFlogEvent.ColumnValues[event.HeaderFK] = headerOne.Id
+			vowFlogEvent.ColumnValues[event.LogFK] = vowFlogLog.ID
 			vowFlogErr := event.PersistModels([]event.InsertionModel{vowFlogEvent}, db)
 			Expect(vowFlogErr).NotTo(HaveOccurred())
 		})
@@ -79,8 +79,8 @@ var _ = Describe("Queued sin computed columns", func() {
 		It("returns sin queue events for queued sin", func() {
 			vowFessLog := test_data.CreateTestLog(headerOne.Id, db)
 			vowFessEvent := test_data.VowFessModel
-			vowFessEvent.ColumnValues[constants.HeaderFK] = headerOne.Id
-			vowFessEvent.ColumnValues[constants.LogFK] = vowFessLog.ID
+			vowFessEvent.ColumnValues[event.HeaderFK] = headerOne.Id
+			vowFessEvent.ColumnValues[event.LogFK] = vowFessLog.ID
 			vowFessErr := event.PersistModels([]event.InsertionModel{vowFessEvent}, db)
 			Expect(vowFessErr).NotTo(HaveOccurred())
 
@@ -109,8 +109,8 @@ var _ = Describe("Queued sin computed columns", func() {
 				vowFlogLogTwo := test_data.CreateTestLog(headerTwo.Id, db)
 				vowFlogEventTwo := test_data.VowFlogModel
 				vowFlogEventTwo.ColumnValues[constants.EraColumn] = fakeEra
-				vowFlogEventTwo.ColumnValues[constants.HeaderFK] = headerTwo.Id
-				vowFlogEventTwo.ColumnValues[constants.LogFK] = vowFlogLogTwo.ID
+				vowFlogEventTwo.ColumnValues[event.HeaderFK] = headerTwo.Id
+				vowFlogEventTwo.ColumnValues[event.LogFK] = vowFlogLogTwo.ID
 				vowFlogErr := event.PersistModels([]event.InsertionModel{vowFlogEventTwo}, db)
 				Expect(vowFlogErr).NotTo(HaveOccurred())
 			})

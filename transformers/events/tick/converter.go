@@ -43,11 +43,11 @@ func (c Converter) ToModels(_ string, logs []core.HeaderSyncLog, db *postgres.DB
 			SchemaName: constants.MakerSchema,
 			TableName:  constants.TickTable,
 			OrderedColumns: []event.ColumnName{
-				constants.HeaderFK, constants.LogFK, constants.BidIDColumn, constants.AddressColumn,
+				event.HeaderFK, event.LogFK, constants.BidIDColumn, constants.AddressColumn,
 			},
 			ColumnValues: event.ColumnValues{
-				constants.HeaderFK:      log.HeaderID,
-				constants.LogFK:         log.ID,
+				event.HeaderFK:          log.HeaderID,
+				event.LogFK:             log.ID,
 				constants.BidIDColumn:   log.Log.Topics[2].Big().String(),
 				constants.AddressColumn: addressID,
 			},

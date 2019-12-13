@@ -161,8 +161,8 @@ var _ = Describe("current ilk state computed columns", func() {
 			Expect(createIlkError).NotTo(HaveOccurred())
 
 			fileEvent.ColumnValues[constants.IlkColumn] = ilkID
-			fileEvent.ColumnValues[constants.HeaderFK] = headerOne.Id
-			fileEvent.ColumnValues[constants.LogFK] = logID
+			fileEvent.ColumnValues[event.HeaderFK] = headerOne.Id
+			fileEvent.ColumnValues[event.LogFK] = logID
 			insertFileErr := event.PersistModels([]event.InsertionModel{fileEvent}, db)
 			Expect(insertFileErr).NotTo(HaveOccurred())
 
@@ -193,8 +193,8 @@ var _ = Describe("current ilk state computed columns", func() {
 				Expect(createIlkError).NotTo(HaveOccurred())
 
 				fileEvent.ColumnValues[constants.IlkColumn] = ilkID
-				fileEvent.ColumnValues[constants.HeaderFK] = headerOne.Id
-				fileEvent.ColumnValues[constants.LogFK] = logID
+				fileEvent.ColumnValues[event.HeaderFK] = headerOne.Id
+				fileEvent.ColumnValues[event.LogFK] = logID
 				insertFileErr := event.PersistModels([]event.InsertionModel{fileEvent}, db)
 				Expect(insertFileErr).NotTo(HaveOccurred())
 
@@ -204,8 +204,8 @@ var _ = Describe("current ilk state computed columns", func() {
 				ilkID, ilkErr := shared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
 				Expect(ilkErr).NotTo(HaveOccurred())
 				spotFileMat = test_data.SpotFileMatModel()
-				spotFileMat.ColumnValues[constants.HeaderFK] = headerTwo.Id
-				spotFileMat.ColumnValues[constants.LogFK] = newLogID
+				spotFileMat.ColumnValues[event.HeaderFK] = headerTwo.Id
+				spotFileMat.ColumnValues[event.LogFK] = newLogID
 				spotFileMat.ColumnValues[constants.IlkColumn] = ilkID
 				spotFileMatErr := event.PersistModels([]event.InsertionModel{spotFileMat}, db)
 				Expect(spotFileMatErr).NotTo(HaveOccurred())

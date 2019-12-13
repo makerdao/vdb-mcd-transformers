@@ -163,8 +163,8 @@ var _ = Describe("Ilk state computed columns", func() {
 			Expect(createIlkError).NotTo(HaveOccurred())
 
 			fileEvent.ColumnValues[constants.IlkColumn] = ilkID
-			fileEvent.ColumnValues[constants.HeaderFK] = headerOne.Id
-			fileEvent.ColumnValues[constants.LogFK] = logID
+			fileEvent.ColumnValues[event.HeaderFK] = headerOne.Id
+			fileEvent.ColumnValues[event.LogFK] = logID
 			insertFileErr := event.PersistModels([]event.InsertionModel{fileEvent}, db)
 			Expect(insertFileErr).NotTo(HaveOccurred())
 
@@ -197,8 +197,8 @@ var _ = Describe("Ilk state computed columns", func() {
 				Expect(createIlkError).NotTo(HaveOccurred())
 
 				fileEvent.ColumnValues[constants.IlkColumn] = ilkID
-				fileEvent.ColumnValues[constants.HeaderFK] = headerOne.Id
-				fileEvent.ColumnValues[constants.LogFK] = logID
+				fileEvent.ColumnValues[event.HeaderFK] = headerOne.Id
+				fileEvent.ColumnValues[event.LogFK] = logID
 				insertFileErr := event.PersistModels([]event.InsertionModel{fileEvent}, db)
 				Expect(insertFileErr).NotTo(HaveOccurred())
 

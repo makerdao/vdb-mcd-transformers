@@ -99,13 +99,13 @@ var vatFileIlkDustModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.VatFileIlkTable,
 	OrderedColumns: []event.ColumnName{
-		event.HeaderFK, constants.IlkColumn, constants.WhatColumn, constants.DataColumn, constants.LogFK,
+		event.HeaderFK, constants.IlkColumn, constants.WhatColumn, constants.DataColumn, event.LogFK,
 	},
 	ColumnValues: event.ColumnValues{
 		constants.WhatColumn: "dust",
 		constants.DataColumn: "10390649719961925488562719249749",
 		event.HeaderFK:       VatFileIlkDustHeaderSyncLog.HeaderID,
-		constants.LogFK:      VatFileIlkDustHeaderSyncLog.ID,
+		event.LogFK:          VatFileIlkDustHeaderSyncLog.ID,
 	},
 }
 
@@ -140,13 +140,13 @@ var vatFileIlkLineModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.VatFileIlkTable,
 	OrderedColumns: []event.ColumnName{
-		event.HeaderFK, constants.IlkColumn, constants.WhatColumn, constants.DataColumn, constants.LogFK,
+		event.HeaderFK, constants.IlkColumn, constants.WhatColumn, constants.DataColumn, event.LogFK,
 	},
 	ColumnValues: event.ColumnValues{
 		constants.WhatColumn: "line",
 		constants.DataColumn: "220086151196920075605",
 		event.HeaderFK:       VatFileIlkLineHeaderSyncLog.HeaderID,
-		constants.LogFK:      VatFileIlkLineHeaderSyncLog.ID,
+		event.LogFK:          VatFileIlkLineHeaderSyncLog.ID,
 	},
 }
 
@@ -180,12 +180,12 @@ var vatFileIlkSpotModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.VatFileIlkTable,
 	OrderedColumns: []event.ColumnName{
-		event.HeaderFK, constants.IlkColumn, constants.WhatColumn, constants.DataColumn, constants.LogFK,
+		event.HeaderFK, constants.IlkColumn, constants.WhatColumn, constants.DataColumn, event.LogFK,
 	},
 	ColumnValues: event.ColumnValues{
 		constants.WhatColumn: "spot",
 		constants.DataColumn: "91323333333333333333333333333",
 		event.HeaderFK:       VatFileIlkSpotHeaderSyncLog.HeaderID,
-		constants.LogFK:      VatFileIlkSpotHeaderSyncLog.ID,
+		event.LogFK:          VatFileIlkSpotHeaderSyncLog.ID,
 	},
 }

@@ -57,8 +57,8 @@ var _ = Describe("Ilk file event computed columns", func() {
 		Expect(createIlkError).NotTo(HaveOccurred())
 
 		fileEvent.ColumnValues[constants.IlkColumn] = ilkID
-		fileEvent.ColumnValues[constants.HeaderFK] = headerOne.Id
-		fileEvent.ColumnValues[constants.LogFK] = fakeHeaderSyncLog.ID
+		fileEvent.ColumnValues[event.HeaderFK] = headerOne.Id
+		fileEvent.ColumnValues[event.LogFK] = fakeHeaderSyncLog.ID
 		insertFileErr := event.PersistModels([]event.InsertionModel{fileEvent}, db)
 		Expect(insertFileErr).NotTo(HaveOccurred())
 	})
