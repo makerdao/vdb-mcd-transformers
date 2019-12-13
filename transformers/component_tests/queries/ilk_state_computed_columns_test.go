@@ -21,7 +21,6 @@ import (
 
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_frob"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
@@ -58,14 +57,13 @@ var _ = Describe("Ilk state computed columns", func() {
 
 	Describe("ilk_state_frobs", func() {
 		It("returns relevant frobs for an ilk_state", func() {
-			frobRepo := vat_frob.VatFrobRepository{}
-			frobRepo.SetDB(db)
 			frobEvent := test_data.VatFrobModelWithPositiveDart()
-			frobEvent.ForeignKeyValues[constants.UrnFK] = fakeGuy
-			frobEvent.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
-			frobEvent.ColumnValues[constants.HeaderFK] = headerOne.Id
-			frobEvent.ColumnValues[constants.LogFK] = logID
-			insertFrobErr := frobRepo.Create([]shared.InsertionModel{frobEvent})
+			urnID, urnErr := shared.GetOrCreateUrn(fakeGuy, test_helpers.FakeIlk.Hex, db)
+			Expect(urnErr).NotTo(HaveOccurred())
+			frobEvent.ColumnValues[constants.UrnColumn] = urnID
+			frobEvent.ColumnValues[event.HeaderFK] = headerOne.Id
+			frobEvent.ColumnValues[event.LogFK] = logID
+			insertFrobErr := event.PersistModels([]event.InsertionModel{frobEvent}, db)
 			Expect(insertFrobErr).NotTo(HaveOccurred())
 
 			var actualFrobs []test_helpers.FrobEvent
@@ -79,8 +77,8 @@ var _ = Describe("Ilk state computed columns", func() {
 			expectedFrobs := []test_helpers.FrobEvent{{
 				IlkIdentifier: test_helpers.FakeIlk.Identifier,
 				UrnIdentifier: fakeGuy,
-				Dink:          frobEvent.ColumnValues["dink"].(string),
-				Dart:          frobEvent.ColumnValues["dart"].(string),
+				Dink:          frobEvent.ColumnValues[constants.DinkColumn].(string),
+				Dart:          frobEvent.ColumnValues[constants.DartColumn].(string),
 			}}
 
 			Expect(actualFrobs).To(Equal(expectedFrobs))
@@ -89,29 +87,27 @@ var _ = Describe("Ilk state computed columns", func() {
 		Describe("result pagination", func() {
 			var (
 				headerTwo        core.Header
-				oldFrob, newFrob shared.InsertionModel
+				oldFrob, newFrob event.InsertionModel
 			)
 
 			BeforeEach(func() {
-				frobRepo := vat_frob.VatFrobRepository{}
-				frobRepo.SetDB(db)
 				oldFrob = test_data.VatFrobModelWithPositiveDart()
-				oldFrob.ForeignKeyValues[constants.UrnFK] = fakeGuy
-				oldFrob.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
-				oldFrob.ColumnValues[constants.HeaderFK] = headerOne.Id
-				oldFrob.ColumnValues[constants.LogFK] = logID
-				insertOldFrobErr := frobRepo.Create([]shared.InsertionModel{oldFrob})
+				urnID, urnErr := shared.GetOrCreateUrn(fakeGuy, test_helpers.FakeIlk.Hex, db)
+				Expect(urnErr).NotTo(HaveOccurred())
+				oldFrob.ColumnValues[constants.UrnColumn] = urnID
+				oldFrob.ColumnValues[event.HeaderFK] = headerOne.Id
+				oldFrob.ColumnValues[event.LogFK] = logID
+				insertOldFrobErr := event.PersistModels([]event.InsertionModel{oldFrob}, db)
 				Expect(insertOldFrobErr).NotTo(HaveOccurred())
 
 				headerTwo = createHeader(blockOne+1, timestampOne+1, headerRepository)
 				newLogId := test_data.CreateTestLog(headerTwo.Id, db).ID
 
 				newFrob = test_data.VatFrobModelWithNegativeDink()
-				newFrob.ForeignKeyValues[constants.UrnFK] = fakeGuy
-				newFrob.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
-				newFrob.ColumnValues[constants.HeaderFK] = headerTwo.Id
-				newFrob.ColumnValues[constants.LogFK] = newLogId
-				insertNewFrobErr := frobRepo.Create([]shared.InsertionModel{newFrob})
+				newFrob.ColumnValues[constants.UrnColumn] = urnID
+				newFrob.ColumnValues[event.HeaderFK] = headerTwo.Id
+				newFrob.ColumnValues[event.LogFK] = newLogId
+				insertNewFrobErr := event.PersistModels([]event.InsertionModel{newFrob}, db)
 				Expect(insertNewFrobErr).NotTo(HaveOccurred())
 			})
 
@@ -128,8 +124,8 @@ var _ = Describe("Ilk state computed columns", func() {
 				expectedFrobs := []test_helpers.FrobEvent{{
 					IlkIdentifier: test_helpers.FakeIlk.Identifier,
 					UrnIdentifier: fakeGuy,
-					Dink:          newFrob.ColumnValues["dink"].(string),
-					Dart:          newFrob.ColumnValues["dart"].(string),
+					Dink:          newFrob.ColumnValues[constants.DinkColumn].(string),
+					Dart:          newFrob.ColumnValues[constants.DartColumn].(string),
 				}}
 				Expect(actualFrobs).To(Equal(expectedFrobs))
 			})
@@ -148,8 +144,8 @@ var _ = Describe("Ilk state computed columns", func() {
 				expectedFrobs := []test_helpers.FrobEvent{{
 					IlkIdentifier: test_helpers.FakeIlk.Identifier,
 					UrnIdentifier: fakeGuy,
-					Dink:          oldFrob.ColumnValues["dink"].(string),
-					Dart:          oldFrob.ColumnValues["dart"].(string),
+					Dink:          oldFrob.ColumnValues[constants.DinkColumn].(string),
+					Dart:          oldFrob.ColumnValues[constants.DartColumn].(string),
 				}}
 				Expect(actualFrobs).To(Equal(expectedFrobs))
 			})

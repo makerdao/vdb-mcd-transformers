@@ -25,6 +25,6 @@ import (
 )
 
 var EventTransformerInitializer transformer.EventTransformerInitializer = event.Transformer{
-	Config:     shared.GetEventTransformerConfig(constants.VatFrobTable, constants.VatFrobSignature()),
-	Converter:  &vat_frob.Converter{},
+	Config:    shared.GetEventTransformerConfig(constants.VatFrobTable, constants.VatFrobSignature()),
+	Converter: vat_frob.Converter{},
 }.NewTransformer

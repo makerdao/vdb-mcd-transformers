@@ -23,11 +23,11 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_frob"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/vat"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
@@ -41,8 +41,7 @@ var _ = Describe("Frob event computed columns", func() {
 		fakeGuy                = fakes.RandomString(42)
 		headerOne              core.Header
 		frobGethLog            types.Log
-		frobRepo               vat_frob.VatFrobRepository
-		frobEvent              shared.InsertionModel
+		frobEvent              event.InsertionModel
 		vatRepository          vat.VatStorageRepository
 		headerRepository       repositories.HeaderRepository
 	)
@@ -58,14 +57,13 @@ var _ = Describe("Frob event computed columns", func() {
 		frobHeaderSyncLog := test_data.CreateTestLog(headerOne.Id, db)
 		frobGethLog = frobHeaderSyncLog.Log
 
-		frobRepo = vat_frob.VatFrobRepository{}
-		frobRepo.SetDB(db)
 		frobEvent = test_data.VatFrobModelWithPositiveDart()
-		frobEvent.ForeignKeyValues[constants.UrnFK] = fakeGuy
-		frobEvent.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
-		frobEvent.ColumnValues[constants.HeaderFK] = headerOne.Id
-		frobEvent.ColumnValues[constants.LogFK] = frobHeaderSyncLog.ID
-		insertFrobErr := frobRepo.Create([]shared.InsertionModel{frobEvent})
+		urnID, urnErr := shared.GetOrCreateUrn(fakeGuy, test_helpers.FakeIlk.Hex, db)
+		Expect(urnErr).NotTo(HaveOccurred())
+		frobEvent.ColumnValues[constants.UrnColumn] = urnID
+		frobEvent.ColumnValues[event.HeaderFK] = headerOne.Id
+		frobEvent.ColumnValues[event.LogFK] = frobHeaderSyncLog.ID
+		insertFrobErr := event.PersistModels([]event.InsertionModel{frobEvent}, db)
 		Expect(insertFrobErr).NotTo(HaveOccurred())
 	})
 

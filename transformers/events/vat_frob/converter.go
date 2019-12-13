@@ -65,13 +65,13 @@ func (Converter) ToModels(_ string, logs []core.HeaderSyncLog, db *postgres.DB) 
 				event.HeaderFK, constants.UrnColumn, constants.VColumn, constants.WColumn, constants.DinkColumn, constants.DartColumn, event.LogFK,
 			},
 			ColumnValues: event.ColumnValues{
-				constants.VColumn:                v,
-				constants.WColumn:                w,
-				constants.DinkColumn:             dink.String(),
-				constants.DartColumn:             dart.String(),
-				constants.UrnColumn: urnID,
-				event.HeaderFK: log.HeaderID,
-				event.LogFK:    log.ID,
+				constants.VColumn:    v,
+				constants.WColumn:    w,
+				constants.DinkColumn: dink.String(),
+				constants.DartColumn: dart.String(),
+				constants.UrnColumn:  urnID,
+				event.HeaderFK:       log.HeaderID,
+				event.LogFK:          log.ID,
 			},
 		}
 		models = append(models, model)

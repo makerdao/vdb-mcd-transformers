@@ -21,7 +21,6 @@ import (
 
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_frob"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/cat"
@@ -104,14 +103,13 @@ var _ = Describe("historical urn state computed columns", func() {
 			urnMetadata := test_helpers.GetUrnMetadata(test_helpers.FakeIlk.Hex, fakeGuy)
 			test_helpers.CreateUrn(db, urnSetupData, headerOne, urnMetadata, vatRepository)
 
-			frobRepo := vat_frob.VatFrobRepository{}
-			frobRepo.SetDB(db)
 			frobEvent := test_data.VatFrobModelWithPositiveDart()
-			frobEvent.ForeignKeyValues[constants.UrnFK] = fakeGuy
-			frobEvent.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
-			frobEvent.ColumnValues[constants.HeaderFK] = headerOne.Id
-			frobEvent.ColumnValues[constants.LogFK] = logIdOne
-			insertFrobErr := frobRepo.Create([]shared.InsertionModel{frobEvent})
+			urnID, urnErr := shared.GetOrCreateUrn(fakeGuy, test_helpers.FakeIlk.Hex, db)
+			Expect(urnErr).NotTo(HaveOccurred())
+			frobEvent.ColumnValues[constants.UrnColumn] = urnID
+			frobEvent.ColumnValues[event.HeaderFK] = headerOne.Id
+			frobEvent.ColumnValues[event.LogFK] = logIdOne
+			insertFrobErr := event.PersistModels([]event.InsertionModel{frobEvent}, db)
 			Expect(insertFrobErr).NotTo(HaveOccurred())
 
 			var actualFrobs test_helpers.FrobEvent
@@ -132,30 +130,27 @@ var _ = Describe("historical urn state computed columns", func() {
 		})
 
 		Describe("result pagination", func() {
-			var frobEventOne, frobEventTwo shared.InsertionModel
+			var frobEventOne, frobEventTwo event.InsertionModel
 
 			BeforeEach(func() {
 				urnSetupData := test_helpers.GetUrnSetupData()
 				urnMetadata := test_helpers.GetUrnMetadata(test_helpers.FakeIlk.Hex, fakeGuy)
 				test_helpers.CreateUrn(db, urnSetupData, headerTwo, urnMetadata, vatRepository)
 
-				frobRepo := vat_frob.VatFrobRepository{}
-				frobRepo.SetDB(db)
-
 				frobEventOne = test_data.VatFrobModelWithPositiveDart()
-				frobEventOne.ForeignKeyValues[constants.UrnFK] = fakeGuy
-				frobEventOne.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
-				frobEventOne.ColumnValues[constants.HeaderFK] = headerOne.Id
-				frobEventOne.ColumnValues[constants.LogFK] = logIdOne
-				insertFrobErrOne := frobRepo.Create([]shared.InsertionModel{frobEventOne})
+				urnID, urnErr := shared.GetOrCreateUrn(fakeGuy, test_helpers.FakeIlk.Hex, db)
+				Expect(urnErr).NotTo(HaveOccurred())
+				frobEventOne.ColumnValues[constants.UrnColumn] = urnID
+				frobEventOne.ColumnValues[event.HeaderFK] = headerOne.Id
+				frobEventOne.ColumnValues[event.LogFK] = logIdOne
+				insertFrobErrOne := event.PersistModels([]event.InsertionModel{frobEventOne}, db)
 				Expect(insertFrobErrOne).NotTo(HaveOccurred())
 
 				frobEventTwo = test_data.VatFrobModelWithNegativeDink()
-				frobEventTwo.ForeignKeyValues[constants.UrnFK] = fakeGuy
-				frobEventTwo.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
-				frobEventTwo.ColumnValues[constants.HeaderFK] = headerTwo.Id
-				frobEventTwo.ColumnValues[constants.LogFK] = logIdTwo
-				insertFrobErrTwo := frobRepo.Create([]shared.InsertionModel{frobEventTwo})
+				frobEventTwo.ColumnValues[constants.UrnColumn] = urnID
+				frobEventTwo.ColumnValues[event.HeaderFK] = headerTwo.Id
+				frobEventTwo.ColumnValues[event.LogFK] = logIdTwo
+				insertFrobErrTwo := event.PersistModels([]event.InsertionModel{frobEventTwo}, db)
 				Expect(insertFrobErrTwo).NotTo(HaveOccurred())
 			})
 

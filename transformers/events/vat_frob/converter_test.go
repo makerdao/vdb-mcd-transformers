@@ -32,9 +32,9 @@ import (
 var _ = Describe("Frob converter", func() {
 	var (
 		converter = vat_frob.Converter{}
-		db = test_config.NewTestDB(test_config.NewTestNode())
+		db        = test_config.NewTestDB(test_config.NewTestNode())
 	)
-	BeforeEach(func(){
+	BeforeEach(func() {
 		test_config.CleanTestDB(db)
 	})
 
@@ -70,11 +70,8 @@ var _ = Describe("Frob converter", func() {
 
 		expectedModel := test_data.VatFrobModelWithPositiveDart()
 		expectedModel.ColumnValues[constants.UrnColumn] = urnID
-		Expect(len(models)).To(Equal(1))
-		Expect(models[0]).To(Equal(expectedModel))
+		Expect(models).To(ConsistOf(expectedModel))
 	})
-
-
 
 	It("converts a log with negative dink to a model", func() {
 		log := []core.HeaderSyncLog{test_data.VatFrobHeaderSyncLogWithNegativeDink}
@@ -88,7 +85,6 @@ var _ = Describe("Frob converter", func() {
 
 		expectedModel := test_data.VatFrobModelWithNegativeDink()
 		expectedModel.ColumnValues[constants.UrnColumn] = urnID
-		Expect(len(models)).To(Equal(1))
-		Expect(models[0]).To(Equal(expectedModel))
+		Expect(models).To(ConsistOf(expectedModel))
 	})
 })

@@ -17,17 +17,15 @@
 package test_data
 
 import (
-	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"math/rand"
-
-	"github.com/makerdao/vulcanizedb/pkg/core"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/makerdao/vulcanizedb/pkg/fakes"
-
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
+	"github.com/makerdao/vulcanizedb/pkg/core"
+	"github.com/makerdao/vulcanizedb/pkg/fakes"
 )
 
 var (
@@ -69,12 +67,12 @@ var vatFrobModelWithPositiveDart = event.InsertionModel{
 		event.HeaderFK, constants.UrnColumn, constants.VColumn, constants.WColumn, constants.DinkColumn, constants.DartColumn, event.LogFK,
 	},
 	ColumnValues: event.ColumnValues{
-		constants.VColumn:                "0xFc7440E2Ed4A3AEb14d40c00f02a14221Be0474d",
-		constants.WColumn:                "0xEEec867B3F51ab5b619d582481BF53eea930b074",
-		constants.DinkColumn:             "0",
-		constants.DartColumn:             "100000000000000000",
-		event.HeaderFK: VatFrobHeaderSyncLogWithPositiveDart.HeaderID,
-		event.LogFK:    VatFrobHeaderSyncLogWithPositiveDart.ID,
+		constants.VColumn:    "0xFc7440E2Ed4A3AEb14d40c00f02a14221Be0474d",
+		constants.WColumn:    "0xEEec867B3F51ab5b619d582481BF53eea930b074",
+		constants.DinkColumn: "0",
+		constants.DartColumn: "100000000000000000",
+		event.HeaderFK:       VatFrobHeaderSyncLogWithPositiveDart.HeaderID,
+		event.LogFK:          VatFrobHeaderSyncLogWithPositiveDart.ID,
 	},
 }
 
@@ -102,7 +100,9 @@ var VatFrobHeaderSyncLogWithNegativeDink = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-func VatFrobModelWithNegativeDink() event.InsertionModel { return vatFrobModelWithNegativeDink }
+func VatFrobModelWithNegativeDink() event.InsertionModel {
+	return CopyEventModel(vatFrobModelWithNegativeDink)
+}
 
 var vatFrobModelWithNegativeDink = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
@@ -111,11 +111,11 @@ var vatFrobModelWithNegativeDink = event.InsertionModel{
 		event.HeaderFK, constants.UrnColumn, constants.VColumn, constants.WColumn, constants.DinkColumn, constants.DartColumn, event.LogFK,
 	},
 	ColumnValues: event.ColumnValues{
-		constants.VColumn:                "0xFc7440E2Ed4A3AEb14d40c00f02a14221Be0474d",
-		constants.WColumn:                "0x5c8c8e5895B9cCf34ACF391C99E13C79EE2eFb46",
-		constants.DinkColumn:             "-8000000000000000",
-		constants.DartColumn:             "0",
-		event.HeaderFK: VatFrobHeaderSyncLogWithNegativeDink.HeaderID,
-		event.LogFK:    VatFrobHeaderSyncLogWithNegativeDink.ID,
+		constants.VColumn:    "0xFc7440E2Ed4A3AEb14d40c00f02a14221Be0474d",
+		constants.WColumn:    "0x5c8c8e5895B9cCf34ACF391C99E13C79EE2eFb46",
+		constants.DinkColumn: "-8000000000000000",
+		constants.DartColumn: "0",
+		event.HeaderFK:       VatFrobHeaderSyncLogWithNegativeDink.HeaderID,
+		event.LogFK:          VatFrobHeaderSyncLogWithNegativeDink.ID,
 	},
 }
