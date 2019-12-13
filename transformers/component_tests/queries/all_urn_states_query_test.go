@@ -11,7 +11,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/vat"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
-	"github.com/makerdao/vulcanizedb/libraries/shared/storage/utils"
+	"github.com/makerdao/vulcanizedb/libraries/shared/storage"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	. "github.com/onsi/ginkgo"
@@ -78,8 +78,8 @@ var _ = Describe("Urn history query", func() {
 		// Irrelevant art diff in block two
 		wrongUrn := test_data.RandomString(5)
 		wrongArt := strconv.Itoa(rand.Int())
-		wrongMetadata := utils.GetStorageValueMetadata(vat.UrnArt,
-			map[utils.Key]string{constants.Ilk: helper.FakeIlk.Hex, constants.Guy: wrongUrn}, utils.Uint256)
+		wrongMetadata := storage.GetValueMetadata(vat.UrnArt,
+			map[storage.Key]string{constants.Ilk: helper.FakeIlk.Hex, constants.Guy: wrongUrn}, storage.Uint256)
 		err = vatRepo.Create(diffID, headerOne.Id, wrongMetadata, wrongArt)
 		Expect(err).NotTo(HaveOccurred())
 

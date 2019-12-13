@@ -9,7 +9,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/jug"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/spot"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/vat"
-	"github.com/makerdao/vulcanizedb/libraries/shared/storage/utils"
+	"github.com/makerdao/vulcanizedb/libraries/shared/storage"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	. "github.com/onsi/ginkgo"
@@ -118,7 +118,7 @@ var _ = Describe("Ilk State Query", func() {
 			test_helpers.CreateIlk(db, headerOne, blockOneFakeIlkValues, test_helpers.FakeIlkVatMetadatas, test_helpers.EmptyMetadatas, test_helpers.EmptyMetadatas, test_helpers.EmptyMetadatas)
 			// block two doesn't update rate or art
 			blockTwoFakeIlkValues := test_helpers.GetIlkValues(2)
-			vatMetadatasWithoutRateOrArt := []utils.StorageValueMetadata{test_helpers.FakeIlkSpotMetadata, test_helpers.FakeIlkLineMetadata}
+			vatMetadatasWithoutRateOrArt := []storage.ValueMetadata{test_helpers.FakeIlkSpotMetadata, test_helpers.FakeIlkLineMetadata}
 			test_helpers.CreateIlk(db, headerTwo, blockTwoFakeIlkValues, vatMetadatasWithoutRateOrArt, test_helpers.EmptyMetadatas, test_helpers.EmptyMetadatas, test_helpers.EmptyMetadatas)
 
 			var blockTwoDbResult test_helpers.IlkState
@@ -141,11 +141,11 @@ var _ = Describe("Ilk State Query", func() {
 			test_helpers.CreateIlk(db, headerOne, blockOneFakeIlkValues, test_helpers.FakeIlkVatMetadatas, test_helpers.EmptyMetadatas, test_helpers.EmptyMetadatas, test_helpers.EmptyMetadatas)
 			// block two doesn't update rate or art
 			blockTwoFakeIlkValues := test_helpers.GetIlkValues(1)
-			vatMetadatasWithoutRateOrArt := []utils.StorageValueMetadata{test_helpers.FakeIlkSpotMetadata, test_helpers.FakeIlkLineMetadata}
+			vatMetadatasWithoutRateOrArt := []storage.ValueMetadata{test_helpers.FakeIlkSpotMetadata, test_helpers.FakeIlkLineMetadata}
 			test_helpers.CreateIlk(db, headerTwo, blockTwoFakeIlkValues, vatMetadatasWithoutRateOrArt, test_helpers.EmptyMetadatas, test_helpers.EmptyMetadatas, test_helpers.EmptyMetadatas)
 			// block three doesn't update art
 			blockThreeFakeIlkValues := test_helpers.GetIlkValues(3)
-			vatMetadatasWithoutArt := []utils.StorageValueMetadata{test_helpers.FakeIlkRateMetadata, test_helpers.FakeIlkSpotMetadata, test_helpers.FakeIlkLineMetadata}
+			vatMetadatasWithoutArt := []storage.ValueMetadata{test_helpers.FakeIlkRateMetadata, test_helpers.FakeIlkSpotMetadata, test_helpers.FakeIlkLineMetadata}
 			test_helpers.CreateIlk(db, headerThree, blockThreeFakeIlkValues, vatMetadatasWithoutArt, test_helpers.EmptyMetadatas, test_helpers.EmptyMetadatas, test_helpers.EmptyMetadatas)
 
 			var blockThreeDbResult test_helpers.IlkState
@@ -170,12 +170,12 @@ var _ = Describe("Ilk State Query", func() {
 			// block two doesn't update rate or art for fakeIlk
 			// and doesn't update rate, art or line for anotherFakeIlk
 			blockTwoFakeIlkValues := test_helpers.GetIlkValues(1)
-			vatMetadatasWithoutRateOrArt := []utils.StorageValueMetadata{test_helpers.FakeIlkSpotMetadata, test_helpers.FakeIlkLineMetadata}
+			vatMetadatasWithoutRateOrArt := []storage.ValueMetadata{test_helpers.FakeIlkSpotMetadata, test_helpers.FakeIlkLineMetadata}
 			test_helpers.CreateIlk(db, headerTwo, blockTwoFakeIlkValues, vatMetadatasWithoutRateOrArt, test_helpers.EmptyMetadatas, test_helpers.EmptyMetadatas, test_helpers.EmptyMetadatas)
 			// block three doesn't update ink
 			// and doesn't update take, rate or ink for anotherFakeIlk
 			blockThreeFakeIlkValues := test_helpers.GetIlkValues(3)
-			vatMetadatasWithoutRate := []utils.StorageValueMetadata{test_helpers.FakeIlkArtMetadata, test_helpers.FakeIlkSpotMetadata, test_helpers.FakeIlkLineMetadata}
+			vatMetadatasWithoutRate := []storage.ValueMetadata{test_helpers.FakeIlkArtMetadata, test_helpers.FakeIlkSpotMetadata, test_helpers.FakeIlkLineMetadata}
 			test_helpers.CreateIlk(db, headerThree, blockThreeFakeIlkValues, vatMetadatasWithoutRate, test_helpers.EmptyMetadatas, test_helpers.EmptyMetadatas, test_helpers.EmptyMetadatas)
 
 			var fakeIlkResult test_helpers.IlkState

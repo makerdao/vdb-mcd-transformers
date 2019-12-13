@@ -5,7 +5,7 @@ import (
 
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
-	"github.com/makerdao/vulcanizedb/libraries/shared/storage/utils"
+	"github.com/makerdao/vulcanizedb/libraries/shared/storage"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 )
 
@@ -23,7 +23,7 @@ type CatStorageRepository struct {
 	db *postgres.DB
 }
 
-func (repository *CatStorageRepository) Create(diffID, headerID int64, metadata utils.StorageValueMetadata, value interface{}) error {
+func (repository *CatStorageRepository) Create(diffID, headerID int64, metadata storage.ValueMetadata, value interface{}) error {
 	switch metadata.Name {
 	case Live:
 		return repository.insertLive(diffID, headerID, value.(string))
@@ -62,7 +62,7 @@ func (repository *CatStorageRepository) insertVow(diffID, headerID int64, vow st
 }
 
 // Ilks mapping: bytes32 => flip address; chop (ray), lump (wad) uint256
-func (repository *CatStorageRepository) insertIlkFlip(diffID, headerID int64, metadata utils.StorageValueMetadata, flip string) error {
+func (repository *CatStorageRepository) insertIlkFlip(diffID, headerID int64, metadata storage.ValueMetadata, flip string) error {
 	ilk, err := getIlk(metadata.Keys)
 	if err != nil {
 		return err
@@ -70,7 +70,7 @@ func (repository *CatStorageRepository) insertIlkFlip(diffID, headerID int64, me
 	return repository.insertFieldWithIlk(diffID, headerID, ilk, IlkFlip, InsertCatIlkFlipQuery, flip)
 }
 
-func (repository *CatStorageRepository) insertIlkChop(diffID, headerID int64, metadata utils.StorageValueMetadata, chop string) error {
+func (repository *CatStorageRepository) insertIlkChop(diffID, headerID int64, metadata storage.ValueMetadata, chop string) error {
 	ilk, err := getIlk(metadata.Keys)
 	if err != nil {
 		return err
@@ -78,7 +78,7 @@ func (repository *CatStorageRepository) insertIlkChop(diffID, headerID int64, me
 	return repository.insertFieldWithIlk(diffID, headerID, ilk, IlkChop, InsertCatIlkChopQuery, chop)
 }
 
-func (repository *CatStorageRepository) insertIlkLump(diffID, headerID int64, metadata utils.StorageValueMetadata, lump string) error {
+func (repository *CatStorageRepository) insertIlkLump(diffID, headerID int64, metadata storage.ValueMetadata, lump string) error {
 	ilk, err := getIlk(metadata.Keys)
 	if err != nil {
 		return err
@@ -110,18 +110,18 @@ func (repository *CatStorageRepository) insertFieldWithIlk(diffID, headerID int6
 	return tx.Commit()
 }
 
-func getIlk(keys map[utils.Key]string) (string, error) {
+func getIlk(keys map[storage.Key]string) (string, error) {
 	ilk, ok := keys[constants.Ilk]
 	if !ok {
-		return "", utils.ErrMetadataMalformed{MissingData: constants.Ilk}
+		return "", storage.ErrMetadataMalformed{MissingData: constants.Ilk}
 	}
 	return ilk, nil
 }
 
-func getFlip(keys map[utils.Key]string) (string, error) {
+func getFlip(keys map[storage.Key]string) (string, error) {
 	flip, ok := keys[constants.Flip]
 	if !ok {
-		return "", utils.ErrMetadataMalformed{MissingData: constants.Flip}
+		return "", storage.ErrMetadataMalformed{MissingData: constants.Flip}
 	}
 	return flip, nil
 }

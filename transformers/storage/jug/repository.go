@@ -21,7 +21,7 @@ import (
 
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
-	"github.com/makerdao/vulcanizedb/libraries/shared/storage/utils"
+	"github.com/makerdao/vulcanizedb/libraries/shared/storage"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 )
 
@@ -37,7 +37,7 @@ type JugStorageRepository struct {
 	db *postgres.DB
 }
 
-func (repository JugStorageRepository) Create(diffID, headerID int64, metadata utils.StorageValueMetadata, value interface{}) error {
+func (repository JugStorageRepository) Create(diffID, headerID int64, metadata storage.ValueMetadata, value interface{}) error {
 	switch metadata.Name {
 	case IlkRho:
 		return repository.insertIlkRho(diffID, headerID, metadata, value.(string))
@@ -59,7 +59,7 @@ func (repository *JugStorageRepository) SetDB(db *postgres.DB) {
 	repository.db = db
 }
 
-func (repository JugStorageRepository) insertIlkRho(diffID, headerID int64, metadata utils.StorageValueMetadata, rho string) error {
+func (repository JugStorageRepository) insertIlkRho(diffID, headerID int64, metadata storage.ValueMetadata, rho string) error {
 	ilk, err := getIlk(metadata.Keys)
 	if err != nil {
 		return err
@@ -68,7 +68,7 @@ func (repository JugStorageRepository) insertIlkRho(diffID, headerID int64, meta
 	return repository.insertFieldWithIlk(diffID, headerID, ilk, IlkRho, InsertJugIlkRhoQuery, rho)
 }
 
-func (repository JugStorageRepository) insertIlkDuty(diffID, headerID int64, metadata utils.StorageValueMetadata, duty string) error {
+func (repository JugStorageRepository) insertIlkDuty(diffID, headerID int64, metadata storage.ValueMetadata, duty string) error {
 	ilk, err := getIlk(metadata.Keys)
 	if err != nil {
 		return err
@@ -116,10 +116,10 @@ func (repository *JugStorageRepository) insertFieldWithIlk(diffID, headerID int6
 	return tx.Commit()
 }
 
-func getIlk(keys map[utils.Key]string) (string, error) {
+func getIlk(keys map[storage.Key]string) (string, error) {
 	ilk, ok := keys[constants.Ilk]
 	if !ok {
-		return "", utils.ErrMetadataMalformed{MissingData: constants.Ilk}
+		return "", storage.ErrMetadataMalformed{MissingData: constants.Ilk}
 	}
 	return ilk, nil
 }

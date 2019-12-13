@@ -31,7 +31,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/vow"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
-	"github.com/makerdao/vulcanizedb/libraries/shared/storage/utils"
+	"github.com/makerdao/vulcanizedb/libraries/shared/storage"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	. "github.com/onsi/ginkgo"
@@ -47,7 +47,7 @@ var _ = Describe("QueuedSin", func() {
 		headerRepository       repositories.HeaderRepository
 		logId                  int64
 		rawEra                 int
-		sinMappingMetadata     utils.StorageValueMetadata
+		sinMappingMetadata     storage.ValueMetadata
 		vowRepository          vow.VowStorageRepository
 		diffID                 int64
 	)
@@ -69,8 +69,8 @@ var _ = Describe("QueuedSin", func() {
 
 		vowRepository = vow.VowStorageRepository{}
 		vowRepository.SetDB(db)
-		sinMappingKeys := map[utils.Key]string{constants.Timestamp: fakeEra}
-		sinMappingMetadata = utils.GetStorageValueMetadata(vow.SinMapping, sinMappingKeys, utils.Uint256)
+		sinMappingKeys := map[storage.Key]string{constants.Timestamp: fakeEra}
+		sinMappingMetadata = storage.GetValueMetadata(vow.SinMapping, sinMappingKeys, storage.Uint256)
 		insertSinMappingErr := vowRepository.Create(diffID, headerOne.Id, sinMappingMetadata, fakeTab)
 		Expect(insertSinMappingErr).NotTo(HaveOccurred())
 	})
@@ -160,8 +160,8 @@ var _ = Describe("QueuedSin", func() {
 		It("returns queued sin for every era", func() {
 			anotherFakeEra := strconv.Itoa(int(rand.Int31()))
 			anotherFakeTab := strconv.Itoa(int(rand.Int31()))
-			anotherSinMappingKeys := map[utils.Key]string{constants.Timestamp: anotherFakeEra}
-			anotherSinMappingMetadata := utils.GetStorageValueMetadata(vow.SinMapping, anotherSinMappingKeys, utils.Uint256)
+			anotherSinMappingKeys := map[storage.Key]string{constants.Timestamp: anotherFakeEra}
+			anotherSinMappingMetadata := storage.GetValueMetadata(vow.SinMapping, anotherSinMappingKeys, storage.Uint256)
 			insertSinMappingErr := vowRepository.Create(diffID, headerOne.Id, anotherSinMappingMetadata, anotherFakeTab)
 			Expect(insertSinMappingErr).NotTo(HaveOccurred())
 
@@ -184,8 +184,8 @@ var _ = Describe("QueuedSin", func() {
 			BeforeEach(func() {
 				laterEra = strconv.Itoa(rawEra + 1)
 				anotherFakeTab = strconv.Itoa(int(rand.Int31()))
-				anotherSinMappingKeys := map[utils.Key]string{constants.Timestamp: laterEra}
-				anotherSinMappingMetadata := utils.GetStorageValueMetadata(vow.SinMapping, anotherSinMappingKeys, utils.Uint256)
+				anotherSinMappingKeys := map[storage.Key]string{constants.Timestamp: laterEra}
+				anotherSinMappingMetadata := storage.GetValueMetadata(vow.SinMapping, anotherSinMappingKeys, storage.Uint256)
 
 				insertSinMappingErr := vowRepository.Create(diffID, headerOne.Id, anotherSinMappingMetadata, anotherFakeTab)
 				Expect(insertSinMappingErr).NotTo(HaveOccurred())

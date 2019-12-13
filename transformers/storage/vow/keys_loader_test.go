@@ -22,7 +22,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/vow"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
-	"github.com/makerdao/vulcanizedb/libraries/shared/storage/utils"
+	vdbStorage "github.com/makerdao/vulcanizedb/libraries/shared/storage"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -59,8 +59,8 @@ var _ = Describe("Vow storage keys loader", func() {
 		storageRepository.SinKeys = []string{fakeTimestamp}
 		sinKey := common.HexToHash("0x409bb97b2bc2657d61f96ef15378c58e2a7d5a67559d3718cbad711b817d9000")
 		// key found at https://github.com/8thlight/maker-vulcanizedb/pull/132/files#diff-fe4d48373094a6c01df6ca0e35c677c3R1360
-		expectedKeys := map[utils.Key]string{constants.Timestamp: fakeTimestamp}
-		expectedMetadata := utils.GetStorageValueMetadata(vow.SinMapping, expectedKeys, utils.Uint256)
+		expectedKeys := map[vdbStorage.Key]string{constants.Timestamp: fakeTimestamp}
+		expectedMetadata := vdbStorage.GetValueMetadata(vow.SinMapping, expectedKeys, vdbStorage.Uint256)
 
 		mappings, err := storageKeysLoader.LoadMappings()
 
@@ -73,8 +73,8 @@ var _ = Describe("Vow storage keys loader", func() {
 		storageRepository.SinKeys = []string{fakeTimestamp}
 		sinKey := common.HexToHash("0x37f4e61f380b4127c877057bc12214bd6b243aa33839584689548356b019d8b8")
 		// key found at https://github.com/8thlight/maker-vulcanizedb/pull/132/files#diff-fe4d48373094a6c01df6ca0e35c677c3R2058
-		expectedKeys := map[utils.Key]string{constants.Timestamp: fakeTimestamp}
-		expectedMetadata := utils.GetStorageValueMetadata(vow.SinMapping, expectedKeys, utils.Uint256)
+		expectedKeys := map[vdbStorage.Key]string{constants.Timestamp: fakeTimestamp}
+		expectedMetadata := vdbStorage.GetValueMetadata(vow.SinMapping, expectedKeys, vdbStorage.Uint256)
 
 		mappings, err := storageKeysLoader.LoadMappings()
 

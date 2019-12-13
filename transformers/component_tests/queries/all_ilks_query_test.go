@@ -12,7 +12,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/jug"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/spot"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/vat"
-	"github.com/makerdao/vulcanizedb/libraries/shared/storage/utils"
+	"github.com/makerdao/vulcanizedb/libraries/shared/storage"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	. "github.com/onsi/ginkgo"
@@ -144,7 +144,7 @@ var _ = Describe("All Ilks query", func() {
 
 			//updating fakeIlk spot value at block 3
 			fakeIlkStateBlock3 := test_helpers.GetIlkValues(3)
-			spotMetadata := []utils.StorageValueMetadata{test_helpers.FakeIlkSpotMetadata}
+			spotMetadata := []storage.ValueMetadata{test_helpers.FakeIlkSpotMetadata}
 			test_helpers.CreateVatRecords(db, headerThree, fakeIlkStateBlock3, spotMetadata, vatRepository)
 
 			//updating all anotherFakeIlk values at block 3
@@ -271,10 +271,10 @@ var _ = Describe("All Ilks query", func() {
 		//updating fakeIlk spot value at block 3
 		newIlk := test_helpers.TestIlk{Identifier: "newIlk", Hex: "0x6e6577496c6b0000000000000000000000000000000000000000000000000000"}
 		newIlkStateBlock4 := test_helpers.GetIlkValues(4)
-		metadata := []utils.StorageValueMetadata{{
+		metadata := []storage.ValueMetadata{{
 			Name: vat.IlkRate,
-			Keys: map[utils.Key]string{constants.Ilk: newIlk.Hex},
-			Type: utils.Uint256,
+			Keys: map[storage.Key]string{constants.Ilk: newIlk.Hex},
+			Type: storage.Uint256,
 		}}
 		//only creating a vat_ilk_rate record
 		test_helpers.CreateVatRecords(db, headerFour, newIlkStateBlock4, metadata, vatRepository)

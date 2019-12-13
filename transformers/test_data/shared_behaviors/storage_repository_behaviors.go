@@ -12,7 +12,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
 	. "github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
-	"github.com/makerdao/vulcanizedb/libraries/shared/storage/utils"
+	vdbStorage "github.com/makerdao/vulcanizedb/libraries/shared/storage"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
@@ -28,7 +28,7 @@ type StorageBehaviorInputs struct {
 	IsAMapping       bool
 	StorageTableName string
 	Repository       storage.Repository
-	Metadata         utils.StorageValueMetadata
+	Metadata         vdbStorage.ValueMetadata
 }
 
 func SharedStorageRepositoryBehaviors(inputs *StorageBehaviorInputs) {
@@ -88,7 +88,7 @@ func SharedStorageRepositoryBehaviors(inputs *StorageBehaviorInputs) {
 
 type IlkTriggerTestInput struct {
 	Repository    storage.Repository
-	Metadata      utils.StorageValueMetadata
+	Metadata      vdbStorage.ValueMetadata
 	TableName     string
 	PropertyName  string
 	PropertyValue string

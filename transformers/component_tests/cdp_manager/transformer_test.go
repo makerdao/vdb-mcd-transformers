@@ -27,7 +27,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/cdp_manager"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
-	"github.com/makerdao/vulcanizedb/libraries/shared/storage/utils"
+	vdbStorage "github.com/makerdao/vulcanizedb/libraries/shared/storage"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	. "github.com/onsi/ginkgo"
@@ -41,7 +41,7 @@ var _ = Describe("Executing the transformer", func() {
 		repository        = cdp_manager.CdpManagerStorageRepository{}
 		contractAddress   = "7a4991c6bd1053c31f1678955ce839999d9841b1"
 		transformer       = storage.Transformer{
-			HashedAddress:     utils.HexToKeccak256Hash(contractAddress),
+			HashedAddress:     vdbStorage.HexToKeccak256Hash(contractAddress),
 			StorageKeysLookup: storageKeysLookup,
 			Repository:        &repository,
 		}

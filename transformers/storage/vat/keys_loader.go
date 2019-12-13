@@ -22,7 +22,7 @@ import (
 	mcdStorage "github.com/makerdao/vdb-mcd-transformers/transformers/storage"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/utilities"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
-	"github.com/makerdao/vulcanizedb/libraries/shared/storage/utils"
+	vdbStorage "github.com/makerdao/vulcanizedb/libraries/shared/storage"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 )
 
@@ -44,38 +44,38 @@ const (
 )
 
 var (
-	IlksMappingIndex = utils.IndexTwo
-	UrnsMappingIndex = utils.IndexThree
-	GemsMappingIndex = utils.IndexFour
-	DaiMappingIndex  = utils.IndexFive
-	SinMappingIndex  = utils.IndexSix
+	IlksMappingIndex = vdbStorage.IndexTwo
+	UrnsMappingIndex = vdbStorage.IndexThree
+	GemsMappingIndex = vdbStorage.IndexFour
+	DaiMappingIndex  = vdbStorage.IndexFive
+	SinMappingIndex  = vdbStorage.IndexSix
 
-	DebtKey      = common.HexToHash(utils.IndexSeven)
-	DebtMetadata = utils.StorageValueMetadata{
+	DebtKey      = common.HexToHash(vdbStorage.IndexSeven)
+	DebtMetadata = vdbStorage.ValueMetadata{
 		Name: Debt,
 		Keys: nil,
-		Type: utils.Uint256,
+		Type: vdbStorage.Uint256,
 	}
 
-	ViceKey      = common.HexToHash(utils.IndexEight)
-	ViceMetadata = utils.StorageValueMetadata{
+	ViceKey      = common.HexToHash(vdbStorage.IndexEight)
+	ViceMetadata = vdbStorage.ValueMetadata{
 		Name: Vice,
 		Keys: nil,
-		Type: utils.Uint256,
+		Type: vdbStorage.Uint256,
 	}
 
-	LineKey      = common.HexToHash(utils.IndexNine)
-	LineMetadata = utils.StorageValueMetadata{
+	LineKey      = common.HexToHash(vdbStorage.IndexNine)
+	LineMetadata = vdbStorage.ValueMetadata{
 		Name: Line,
 		Keys: nil,
-		Type: utils.Uint256,
+		Type: vdbStorage.Uint256,
 	}
 
-	LiveKey      = common.HexToHash(utils.IndexTen)
-	LiveMetadata = utils.StorageValueMetadata{
+	LiveKey      = common.HexToHash(vdbStorage.IndexTen)
+	LiveMetadata = vdbStorage.ValueMetadata{
 		Name: Live,
 		Keys: nil,
-		Type: utils.Uint256,
+		Type: vdbStorage.Uint256,
 	}
 )
 
@@ -91,7 +91,7 @@ func (loader *keysLoader) SetDB(db *postgres.DB) {
 	loader.storageRepository.SetDB(db)
 }
 
-func (loader *keysLoader) LoadMappings() (map[common.Hash]utils.StorageValueMetadata, error) {
+func (loader *keysLoader) LoadMappings() (map[common.Hash]vdbStorage.ValueMetadata, error) {
 	mappings := loadStaticMappings()
 	mappings, daiErr := loader.addDaiKeys(mappings)
 	if daiErr != nil {
@@ -112,8 +112,8 @@ func (loader *keysLoader) LoadMappings() (map[common.Hash]utils.StorageValueMeta
 	return loader.addUrnKeys(mappings)
 }
 
-func loadStaticMappings() map[common.Hash]utils.StorageValueMetadata {
-	mappings := make(map[common.Hash]utils.StorageValueMetadata)
+func loadStaticMappings() map[common.Hash]vdbStorage.ValueMetadata {
+	mappings := make(map[common.Hash]vdbStorage.ValueMetadata)
 	mappings[DebtKey] = DebtMetadata
 	mappings[ViceKey] = ViceMetadata
 	mappings[LineKey] = LineMetadata
@@ -121,7 +121,7 @@ func loadStaticMappings() map[common.Hash]utils.StorageValueMetadata {
 	return mappings
 }
 
-func (loader *keysLoader) addDaiKeys(mappings map[common.Hash]utils.StorageValueMetadata) (map[common.Hash]utils.StorageValueMetadata, error) {
+func (loader *keysLoader) addDaiKeys(mappings map[common.Hash]vdbStorage.ValueMetadata) (map[common.Hash]vdbStorage.ValueMetadata, error) {
 	daiKeys, err := loader.storageRepository.GetDaiKeys()
 	if err != nil {
 		return nil, err
@@ -136,7 +136,7 @@ func (loader *keysLoader) addDaiKeys(mappings map[common.Hash]utils.StorageValue
 	return mappings, nil
 }
 
-func (loader *keysLoader) addGemKeys(mappings map[common.Hash]utils.StorageValueMetadata) (map[common.Hash]utils.StorageValueMetadata, error) {
+func (loader *keysLoader) addGemKeys(mappings map[common.Hash]vdbStorage.ValueMetadata) (map[common.Hash]vdbStorage.ValueMetadata, error) {
 	gemKeys, err := loader.storageRepository.GetGemKeys()
 	if err != nil {
 		return nil, err
@@ -151,7 +151,7 @@ func (loader *keysLoader) addGemKeys(mappings map[common.Hash]utils.StorageValue
 	return mappings, nil
 }
 
-func (loader *keysLoader) addIlkKeys(mappings map[common.Hash]utils.StorageValueMetadata) (map[common.Hash]utils.StorageValueMetadata, error) {
+func (loader *keysLoader) addIlkKeys(mappings map[common.Hash]vdbStorage.ValueMetadata) (map[common.Hash]vdbStorage.ValueMetadata, error) {
 	ilks, err := loader.storageRepository.GetIlks()
 	if err != nil {
 		return nil, err
@@ -166,7 +166,7 @@ func (loader *keysLoader) addIlkKeys(mappings map[common.Hash]utils.StorageValue
 	return mappings, nil
 }
 
-func (loader *keysLoader) addSinKeys(mappings map[common.Hash]utils.StorageValueMetadata) (map[common.Hash]utils.StorageValueMetadata, error) {
+func (loader *keysLoader) addSinKeys(mappings map[common.Hash]vdbStorage.ValueMetadata) (map[common.Hash]vdbStorage.ValueMetadata, error) {
 	sinKeys, err := loader.storageRepository.GetVatSinKeys()
 	if err != nil {
 		return nil, err
@@ -181,7 +181,7 @@ func (loader *keysLoader) addSinKeys(mappings map[common.Hash]utils.StorageValue
 	return mappings, nil
 }
 
-func (loader *keysLoader) addUrnKeys(mappings map[common.Hash]utils.StorageValueMetadata) (map[common.Hash]utils.StorageValueMetadata, error) {
+func (loader *keysLoader) addUrnKeys(mappings map[common.Hash]vdbStorage.ValueMetadata) (map[common.Hash]vdbStorage.ValueMetadata, error) {
 	urns, err := loader.storageRepository.GetUrns()
 	if err != nil {
 		return nil, err
@@ -198,91 +198,91 @@ func (loader *keysLoader) addUrnKeys(mappings map[common.Hash]utils.StorageValue
 }
 
 func getIlkArtKey(ilk string) common.Hash {
-	return utils.GetStorageKeyForMapping(IlksMappingIndex, ilk)
+	return vdbStorage.GetKeyForMapping(IlksMappingIndex, ilk)
 }
 
-func getIlkArtMetadata(ilk string) utils.StorageValueMetadata {
-	keys := map[utils.Key]string{constants.Ilk: ilk}
-	return utils.GetStorageValueMetadata(IlkArt, keys, utils.Uint256)
+func getIlkArtMetadata(ilk string) vdbStorage.ValueMetadata {
+	keys := map[vdbStorage.Key]string{constants.Ilk: ilk}
+	return vdbStorage.GetValueMetadata(IlkArt, keys, vdbStorage.Uint256)
 }
 
 func getIlkRateKey(ilk string) common.Hash {
-	return utils.GetIncrementedStorageKey(getIlkArtKey(ilk), 1)
+	return vdbStorage.GetIncrementedKey(getIlkArtKey(ilk), 1)
 }
 
-func getIlkRateMetadata(ilk string) utils.StorageValueMetadata {
-	keys := map[utils.Key]string{constants.Ilk: ilk}
-	return utils.GetStorageValueMetadata(IlkRate, keys, utils.Uint256)
+func getIlkRateMetadata(ilk string) vdbStorage.ValueMetadata {
+	keys := map[vdbStorage.Key]string{constants.Ilk: ilk}
+	return vdbStorage.GetValueMetadata(IlkRate, keys, vdbStorage.Uint256)
 }
 
 func getIlkSpotKey(ilk string) common.Hash {
-	return utils.GetIncrementedStorageKey(getIlkArtKey(ilk), 2)
+	return vdbStorage.GetIncrementedKey(getIlkArtKey(ilk), 2)
 }
 
-func getIlkSpotMetadata(ilk string) utils.StorageValueMetadata {
-	keys := map[utils.Key]string{constants.Ilk: ilk}
-	return utils.GetStorageValueMetadata(IlkSpot, keys, utils.Uint256)
+func getIlkSpotMetadata(ilk string) vdbStorage.ValueMetadata {
+	keys := map[vdbStorage.Key]string{constants.Ilk: ilk}
+	return vdbStorage.GetValueMetadata(IlkSpot, keys, vdbStorage.Uint256)
 }
 
 func getIlkLineKey(ilk string) common.Hash {
-	return utils.GetIncrementedStorageKey(getIlkArtKey(ilk), 3)
+	return vdbStorage.GetIncrementedKey(getIlkArtKey(ilk), 3)
 }
 
-func getIlkLineMetadata(ilk string) utils.StorageValueMetadata {
-	keys := map[utils.Key]string{constants.Ilk: ilk}
-	return utils.GetStorageValueMetadata(IlkLine, keys, utils.Uint256)
+func getIlkLineMetadata(ilk string) vdbStorage.ValueMetadata {
+	keys := map[vdbStorage.Key]string{constants.Ilk: ilk}
+	return vdbStorage.GetValueMetadata(IlkLine, keys, vdbStorage.Uint256)
 }
 
 func getIlkDustKey(ilk string) common.Hash {
-	return utils.GetIncrementedStorageKey(getIlkArtKey(ilk), 4)
+	return vdbStorage.GetIncrementedKey(getIlkArtKey(ilk), 4)
 }
 
-func getIlkDustMetadata(ilk string) utils.StorageValueMetadata {
-	keys := map[utils.Key]string{constants.Ilk: ilk}
-	return utils.GetStorageValueMetadata(IlkDust, keys, utils.Uint256)
+func getIlkDustMetadata(ilk string) vdbStorage.ValueMetadata {
+	keys := map[vdbStorage.Key]string{constants.Ilk: ilk}
+	return vdbStorage.GetValueMetadata(IlkDust, keys, vdbStorage.Uint256)
 }
 
 func getUrnInkKey(ilk, guy string) common.Hash {
-	return utils.GetStorageKeyForNestedMapping(UrnsMappingIndex, ilk, guy)
+	return vdbStorage.GetKeyForNestedMapping(UrnsMappingIndex, ilk, guy)
 }
 
-func getUrnInkMetadata(ilk, guy string) utils.StorageValueMetadata {
-	keys := map[utils.Key]string{constants.Ilk: ilk, constants.Guy: guy}
-	return utils.GetStorageValueMetadata(UrnInk, keys, utils.Uint256)
+func getUrnInkMetadata(ilk, guy string) vdbStorage.ValueMetadata {
+	keys := map[vdbStorage.Key]string{constants.Ilk: ilk, constants.Guy: guy}
+	return vdbStorage.GetValueMetadata(UrnInk, keys, vdbStorage.Uint256)
 }
 
 func getUrnArtKey(ilk, guy string) common.Hash {
-	return utils.GetIncrementedStorageKey(getUrnInkKey(ilk, guy), 1)
+	return vdbStorage.GetIncrementedKey(getUrnInkKey(ilk, guy), 1)
 }
 
-func getUrnArtMetadata(ilk, guy string) utils.StorageValueMetadata {
-	keys := map[utils.Key]string{constants.Ilk: ilk, constants.Guy: guy}
-	return utils.GetStorageValueMetadata(UrnArt, keys, utils.Uint256)
+func getUrnArtMetadata(ilk, guy string) vdbStorage.ValueMetadata {
+	keys := map[vdbStorage.Key]string{constants.Ilk: ilk, constants.Guy: guy}
+	return vdbStorage.GetValueMetadata(UrnArt, keys, vdbStorage.Uint256)
 }
 
 func getGemKey(ilk, guy string) common.Hash {
-	return utils.GetStorageKeyForNestedMapping(GemsMappingIndex, ilk, guy)
+	return vdbStorage.GetKeyForNestedMapping(GemsMappingIndex, ilk, guy)
 }
 
-func getGemMetadata(ilk, guy string) utils.StorageValueMetadata {
-	keys := map[utils.Key]string{constants.Ilk: ilk, constants.Guy: guy}
-	return utils.GetStorageValueMetadata(Gem, keys, utils.Uint256)
+func getGemMetadata(ilk, guy string) vdbStorage.ValueMetadata {
+	keys := map[vdbStorage.Key]string{constants.Ilk: ilk, constants.Guy: guy}
+	return vdbStorage.GetValueMetadata(Gem, keys, vdbStorage.Uint256)
 }
 
 func getDaiKey(guy string) common.Hash {
-	return utils.GetStorageKeyForMapping(DaiMappingIndex, guy)
+	return vdbStorage.GetKeyForMapping(DaiMappingIndex, guy)
 }
 
-func getDaiMetadata(guy string) utils.StorageValueMetadata {
-	keys := map[utils.Key]string{constants.Guy: guy}
-	return utils.GetStorageValueMetadata(Dai, keys, utils.Uint256)
+func getDaiMetadata(guy string) vdbStorage.ValueMetadata {
+	keys := map[vdbStorage.Key]string{constants.Guy: guy}
+	return vdbStorage.GetValueMetadata(Dai, keys, vdbStorage.Uint256)
 }
 
 func getSinKey(guy string) common.Hash {
-	return utils.GetStorageKeyForMapping(SinMappingIndex, guy)
+	return vdbStorage.GetKeyForMapping(SinMappingIndex, guy)
 }
 
-func getSinMetadata(guy string) utils.StorageValueMetadata {
-	keys := map[utils.Key]string{constants.Guy: guy}
-	return utils.GetStorageValueMetadata(Sin, keys, utils.Uint256)
+func getSinMetadata(guy string) vdbStorage.ValueMetadata {
+	keys := map[vdbStorage.Key]string{constants.Guy: guy}
+	return vdbStorage.GetValueMetadata(Sin, keys, vdbStorage.Uint256)
 }

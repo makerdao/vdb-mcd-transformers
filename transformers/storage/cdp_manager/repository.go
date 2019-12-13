@@ -19,7 +19,7 @@ package cdp_manager
 import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
-	"github.com/makerdao/vulcanizedb/libraries/shared/storage/utils"
+	"github.com/makerdao/vulcanizedb/libraries/shared/storage"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 )
 
@@ -40,7 +40,7 @@ type CdpManagerStorageRepository struct {
 	db *postgres.DB
 }
 
-func (repository *CdpManagerStorageRepository) Create(diffID, headerID int64, metadata utils.StorageValueMetadata, value interface{}) error {
+func (repository *CdpManagerStorageRepository) Create(diffID, headerID int64, metadata storage.ValueMetadata, value interface{}) error {
 	switch metadata.Name {
 	case Vat:
 		return repository.insertVat(diffID, headerID, value.(string))
@@ -81,7 +81,7 @@ func (repository CdpManagerStorageRepository) insertCdpi(diffID, headerID int64,
 	return err
 }
 
-func (repository CdpManagerStorageRepository) insertUrns(diffID, headerID int64, metadata utils.StorageValueMetadata, urns string) error {
+func (repository CdpManagerStorageRepository) insertUrns(diffID, headerID int64, metadata storage.ValueMetadata, urns string) error {
 	cdpi, keyErr := getCdpi(metadata.Keys)
 	if keyErr != nil {
 		return keyErr
@@ -91,7 +91,7 @@ func (repository CdpManagerStorageRepository) insertUrns(diffID, headerID int64,
 	return writeErr
 }
 
-func (repository CdpManagerStorageRepository) insertListPrev(diffID, headerID int64, metadata utils.StorageValueMetadata, prev string) error {
+func (repository CdpManagerStorageRepository) insertListPrev(diffID, headerID int64, metadata storage.ValueMetadata, prev string) error {
 	cdpi, keyErr := getCdpi(metadata.Keys)
 	if keyErr != nil {
 		return keyErr
@@ -101,7 +101,7 @@ func (repository CdpManagerStorageRepository) insertListPrev(diffID, headerID in
 	return writeErr
 }
 
-func (repository CdpManagerStorageRepository) insertListNext(diffID, headerID int64, metadata utils.StorageValueMetadata, next string) error {
+func (repository CdpManagerStorageRepository) insertListNext(diffID, headerID int64, metadata storage.ValueMetadata, next string) error {
 	cdpi, keyErr := getCdpi(metadata.Keys)
 	if keyErr != nil {
 		return keyErr
@@ -111,7 +111,7 @@ func (repository CdpManagerStorageRepository) insertListNext(diffID, headerID in
 	return writeErr
 }
 
-func (repository CdpManagerStorageRepository) insertOwns(diffID, headerID int64, metadata utils.StorageValueMetadata, owner string) error {
+func (repository CdpManagerStorageRepository) insertOwns(diffID, headerID int64, metadata storage.ValueMetadata, owner string) error {
 	cdpi, keyErr := getCdpi(metadata.Keys)
 	if keyErr != nil {
 		return keyErr
@@ -121,7 +121,7 @@ func (repository CdpManagerStorageRepository) insertOwns(diffID, headerID int64,
 	return writeErr
 }
 
-func (repository CdpManagerStorageRepository) insertIlks(diffID, headerID int64, metadata utils.StorageValueMetadata, ilks string) error {
+func (repository CdpManagerStorageRepository) insertIlks(diffID, headerID int64, metadata storage.ValueMetadata, ilks string) error {
 	cdpi, keyErr := getCdpi(metadata.Keys)
 	if keyErr != nil {
 		return keyErr
@@ -135,7 +135,7 @@ func (repository CdpManagerStorageRepository) insertIlks(diffID, headerID int64,
 	return writeErr
 }
 
-func (repository CdpManagerStorageRepository) insertFirst(diffID, headerID int64, metadata utils.StorageValueMetadata, first string) error {
+func (repository CdpManagerStorageRepository) insertFirst(diffID, headerID int64, metadata storage.ValueMetadata, first string) error {
 	owner, keyErr := getOwner(metadata.Keys)
 	if keyErr != nil {
 		return keyErr
@@ -145,7 +145,7 @@ func (repository CdpManagerStorageRepository) insertFirst(diffID, headerID int64
 	return writeErr
 }
 
-func (repository CdpManagerStorageRepository) insertLast(diffID, headerID int64, metadata utils.StorageValueMetadata, last string) error {
+func (repository CdpManagerStorageRepository) insertLast(diffID, headerID int64, metadata storage.ValueMetadata, last string) error {
 	owner, keyErr := getOwner(metadata.Keys)
 	if keyErr != nil {
 		return keyErr
@@ -155,7 +155,7 @@ func (repository CdpManagerStorageRepository) insertLast(diffID, headerID int64,
 	return writeErr
 }
 
-func (repository CdpManagerStorageRepository) insertCount(diffID, headerID int64, metadata utils.StorageValueMetadata, count string) error {
+func (repository CdpManagerStorageRepository) insertCount(diffID, headerID int64, metadata storage.ValueMetadata, count string) error {
 	owner, keyErr := getOwner(metadata.Keys)
 	if keyErr != nil {
 		return keyErr
@@ -165,18 +165,18 @@ func (repository CdpManagerStorageRepository) insertCount(diffID, headerID int64
 	return writeErr
 }
 
-func getCdpi(keys map[utils.Key]string) (string, error) {
+func getCdpi(keys map[storage.Key]string) (string, error) {
 	cdpi, ok := keys[constants.Cdpi]
 	if !ok {
-		return "", utils.ErrMetadataMalformed{MissingData: constants.Cdpi}
+		return "", storage.ErrMetadataMalformed{MissingData: constants.Cdpi}
 	}
 	return cdpi, nil
 }
 
-func getOwner(keys map[utils.Key]string) (string, error) {
+func getOwner(keys map[storage.Key]string) (string, error) {
 	owner, ok := keys[constants.Owner]
 	if !ok {
-		return "", utils.ErrMetadataMalformed{MissingData: constants.Owner}
+		return "", storage.ErrMetadataMalformed{MissingData: constants.Owner}
 	}
 	return owner, nil
 }

@@ -25,7 +25,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/spot"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
-	"github.com/makerdao/vulcanizedb/libraries/shared/storage/utils"
+	vdbStorage "github.com/makerdao/vulcanizedb/libraries/shared/storage"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -65,10 +65,10 @@ var _ = Describe("spot storage keys loader", func() {
 			fakeIlk := "fakeIlk"
 			storageRepository.Ilks = []string{fakeIlk}
 			ilkPipKey := common.BytesToHash(crypto.Keccak256(common.FromHex("0x" + fakeIlk + spot.IlkMappingIndex)))
-			expectedMetadata := utils.StorageValueMetadata{
+			expectedMetadata := vdbStorage.ValueMetadata{
 				Name: spot.IlkPip,
-				Keys: map[utils.Key]string{constants.Ilk: fakeIlk},
-				Type: utils.Address,
+				Keys: map[vdbStorage.Key]string{constants.Ilk: fakeIlk},
+				Type: vdbStorage.Address,
 			}
 
 			mappings, err := storageKeysLoader.LoadMappings()
@@ -84,10 +84,10 @@ var _ = Describe("spot storage keys loader", func() {
 			ilkPipAsInt := big.NewInt(0).SetBytes(ilkPipKeyBytes)
 			incrementedIlkPip := big.NewInt(0).Add(ilkPipAsInt, big.NewInt(1))
 			ilkMatKey := common.BytesToHash(incrementedIlkPip.Bytes())
-			expectedMetadata := utils.StorageValueMetadata{
+			expectedMetadata := vdbStorage.ValueMetadata{
 				Name: spot.IlkMat,
-				Keys: map[utils.Key]string{constants.Ilk: fakeIlk},
-				Type: utils.Uint256,
+				Keys: map[vdbStorage.Key]string{constants.Ilk: fakeIlk},
+				Type: vdbStorage.Uint256,
 			}
 
 			mappings, err := storageKeysLoader.LoadMappings()

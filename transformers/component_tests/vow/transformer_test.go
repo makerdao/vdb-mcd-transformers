@@ -23,7 +23,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/vow"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
-	"github.com/makerdao/vulcanizedb/libraries/shared/storage/utils"
+	vdbStorage "github.com/makerdao/vulcanizedb/libraries/shared/storage"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	. "github.com/onsi/ginkgo"
@@ -37,7 +37,7 @@ var _ = Describe("Executing the transformer", func() {
 		repository        = vow.VowStorageRepository{}
 		contractAddress   = "4afcab85f27dd2e1a5ec1008b5b294e44e487f90"
 		transformer       = storage.Transformer{
-			HashedAddress:     utils.HexToKeccak256Hash(contractAddress),
+			HashedAddress:     vdbStorage.HexToKeccak256Hash(contractAddress),
 			StorageKeysLookup: storageKeysLookup,
 			Repository:        &repository,
 		}
