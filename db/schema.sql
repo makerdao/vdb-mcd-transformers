@@ -8595,6 +8595,39 @@ ALTER SEQUENCE maker.flop_vat_id_seq OWNED BY maker.flop_vat.id;
 
 
 --
+-- Name: flop_vow; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.flop_vow (
+    id integer NOT NULL,
+    diff_id bigint NOT NULL,
+    header_id integer NOT NULL,
+    address_id integer NOT NULL,
+    vow text
+);
+
+
+--
+-- Name: flop_vow_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.flop_vow_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: flop_vow_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.flop_vow_id_seq OWNED BY maker.flop_vow.id;
+
+
+--
 -- Name: ilks; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -12242,6 +12275,13 @@ ALTER TABLE ONLY maker.flop_vat ALTER COLUMN id SET DEFAULT nextval('maker.flop_
 
 
 --
+-- Name: flop_vow id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flop_vow ALTER COLUMN id SET DEFAULT nextval('maker.flop_vow_id_seq'::regclass);
+
+
+--
 -- Name: ilks id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
@@ -14029,6 +14069,22 @@ ALTER TABLE ONLY maker.flop_vat
 
 ALTER TABLE ONLY maker.flop_vat
     ADD CONSTRAINT flop_vat_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: flop_vow flop_vow_diff_id_header_id_address_id_vow_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flop_vow
+    ADD CONSTRAINT flop_vow_diff_id_header_id_address_id_vow_key UNIQUE (diff_id, header_id, address_id, vow);
+
+
+--
+-- Name: flop_vow flop_vow_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flop_vow
+    ADD CONSTRAINT flop_vow_pkey PRIMARY KEY (id);
 
 
 --
@@ -16607,6 +16663,20 @@ CREATE INDEX flop_vat_address_index ON maker.flop_vat USING btree (address_id);
 --
 
 CREATE INDEX flop_vat_header_id_index ON maker.flop_vat USING btree (header_id);
+
+
+--
+-- Name: flop_vow_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flop_vow_address_index ON maker.flop_vow USING btree (address_id);
+
+
+--
+-- Name: flop_vow_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flop_vow_header_id_index ON maker.flop_vow USING btree (header_id);
 
 
 --
@@ -19520,6 +19590,30 @@ ALTER TABLE ONLY maker.flop_vat
 
 ALTER TABLE ONLY maker.flop_vat
     ADD CONSTRAINT flop_vat_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: flop_vow flop_vow_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flop_vow
+    ADD CONSTRAINT flop_vow_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: flop_vow flop_vow_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flop_vow
+    ADD CONSTRAINT flop_vow_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
+-- Name: flop_vow flop_vow_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flop_vow
+    ADD CONSTRAINT flop_vow_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
 
 
 --

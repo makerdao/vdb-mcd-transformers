@@ -215,6 +215,20 @@ var _ = Describe("Flop storage repository", func() {
 		shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
 	})
 
+	Describe("Vow", func() {
+		var vowMetadata = vdbStorage.ValueMetadata{Name: storage.Vow}
+		inputs := shared_behaviors.StorageBehaviorInputs{
+			ValueFieldName: storage.Vow,
+			Schema:         constants.MakerSchema,
+			TableName:      constants.FlopVowTable,
+			Repository:     &repo,
+			Metadata:       vowMetadata,
+			Value:          FakeAddress,
+		}
+
+		shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
+	})
+
 	Describe("Bid", func() {
 		var fakeBidId = strconv.Itoa(rand.Int())
 

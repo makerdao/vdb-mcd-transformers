@@ -53,6 +53,7 @@ var _ = Describe("Flop storage keys loader", func() {
 		Expect(mappings[flop.TtlAndTauKey]).To(Equal(flop.TtlAndTauMetadata))
 		Expect(mappings[flop.KicksKey]).To(Equal(flop.KicksMetadata))
 		Expect(mappings[flop.LiveKey]).To(Equal(flop.LiveMetadata))
+		Expect(mappings[flop.VowKey]).To(Equal(flop.VowMetadata))
 	})
 
 	Describe("bid", func() {

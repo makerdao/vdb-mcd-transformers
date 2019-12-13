@@ -19,6 +19,7 @@ const (
 	insertFlopTauQuery   = `INSERT INTO maker.flop_tau (diff_id, header_id, address_id, tau) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
 	InsertFlopKicksQuery = `INSERT INTO maker.flop_kicks (diff_id, header_id, address_id, kicks) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
 	insertFlopLiveQuery  = `INSERT INTO maker.flop_live (diff_id, header_id, address_id, live) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
+	insertFlopVowQuery   = `INSERT INTO maker.flop_vow (diff_id, header_id, address_id, vow) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
 
 	InsertFlopBidBidQuery = `INSERT INTO maker.flop_bid_bid (diff_id, header_id, address_id, bid_id, bid) VALUES ($1, $2, $3, $4, $5) ON CONFLICT DO NOTHING`
 	InsertFlopBidLotQuery = `INSERT INTO Maker.flop_bid_lot (diff_id, header_id, address_id, bid_id, lot) VALUES ($1, $2, $3, $4, $5) ON CONFLICT DO NOTHING`
@@ -46,6 +47,8 @@ func (repository *FlopStorageRepository) Create(diffID, headerID int64, metadata
 		return repository.insertKicks(diffID, headerID, value.(string))
 	case storage.Live:
 		return repository.insertLive(diffID, headerID, value.(string))
+	case storage.Vow:
+		return repository.insertVow(diffID, headerID, value.(string))
 	case storage.Packed:
 		return repository.insertPackedValueRecord(diffID, headerID, metadata, value.(map[int]string))
 	case storage.BidBid:
@@ -91,6 +94,10 @@ func (repository *FlopStorageRepository) insertKicks(diffID, headerID int64, kic
 
 func (repository *FlopStorageRepository) insertLive(diffID, headerID int64, live string) error {
 	return repository.insertRecordWithAddress(diffID, headerID, insertFlopLiveQuery, live)
+}
+
+func (repository *FlopStorageRepository) insertVow(diffID, headerID int64, vow string) error {
+	return repository.insertRecordWithAddress(diffID, headerID, insertFlopVowQuery, vow)
 }
 
 func (repository *FlopStorageRepository) insertBidBid(diffID, headerID int64, metadata vdbStorage.ValueMetadata, bid string) error {
