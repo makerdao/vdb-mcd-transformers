@@ -13,12 +13,14 @@ CREATE TABLE maker.vat_flux
 
 CREATE INDEX vat_flux_header_index
     ON maker.vat_flux (header_id);
-
+CREATE INDEX vat_flux_log_index
+    ON maker.vat_flux (log_id);
 CREATE INDEX vat_flux_ilk_index
     ON maker.vat_flux (ilk_id);
 
 -- +goose Down
 DROP INDEX maker.vat_flux_header_index;
+DROP INDEX maker.vat_flux_log_index;
 DROP INDEX maker.vat_flux_ilk_index;
 
 DROP TABLE maker.vat_flux;

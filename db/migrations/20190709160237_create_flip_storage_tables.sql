@@ -11,9 +11,11 @@ CREATE TABLE maker.flip_bid_bid
     UNIQUE (diff_id, header_id, bid_id, address_id, bid)
 );
 
+CREATE INDEX flip_bid_bid_header_id_index
+    ON maker.flip_bid_bid (header_id);
 CREATE INDEX flip_bid_bid_bid_id_index
     ON maker.flip_bid_bid (bid_id);
-CREATE INDEX flip_bid_bid_address_id_index
+CREATE INDEX flip_bid_bid_address_index
     ON maker.flip_bid_bid (address_id);
 
 CREATE TABLE maker.flip_bid_lot
@@ -27,9 +29,11 @@ CREATE TABLE maker.flip_bid_lot
     UNIQUE (diff_id, header_id, bid_id, address_id, lot)
 );
 
+CREATE INDEX flip_bid_lot_header_id_index
+    ON maker.flip_bid_lot (header_id);
 CREATE INDEX flip_bid_lot_bid_id_index
     ON maker.flip_bid_lot (bid_id);
-CREATE INDEX flip_bid_lot_address_id_index
+CREATE INDEX flip_bid_lot_address_index
     ON maker.flip_bid_lot (address_id);
 
 CREATE TABLE maker.flip_bid_guy
@@ -43,9 +47,11 @@ CREATE TABLE maker.flip_bid_guy
     UNIQUE (diff_id, header_id, bid_id, address_id, guy)
 );
 
+CREATE INDEX flip_bid_guy_header_id_index
+    ON maker.flip_bid_guy (header_id);
 CREATE INDEX flip_bid_guy_bid_id_index
     ON maker.flip_bid_guy (bid_id);
-CREATE INDEX flip_bid_guy_address_id_index
+CREATE INDEX flip_bid_guy_address_index
     ON maker.flip_bid_guy (address_id);
 
 CREATE TABLE maker.flip_bid_tic
@@ -59,9 +65,11 @@ CREATE TABLE maker.flip_bid_tic
     UNIQUE (diff_id, header_id, bid_id, address_id, tic)
 );
 
+CREATE INDEX flip_bid_tic_header_id_index
+    ON maker.flip_bid_tic (header_id);
 CREATE INDEX flip_bid_tic_bid_id_index
     ON maker.flip_bid_tic (bid_id);
-CREATE INDEX flip_bid_tic_address_id_index
+CREATE INDEX flip_bid_tic_address_index
     ON maker.flip_bid_tic (address_id);
 
 CREATE TABLE maker.flip_bid_end
@@ -75,9 +83,11 @@ CREATE TABLE maker.flip_bid_end
     UNIQUE (diff_id, header_id, bid_id, address_id, "end")
 );
 
+CREATE INDEX flip_bid_end_header_id_index
+    ON maker.flip_bid_end (header_id);
 CREATE INDEX flip_bid_end_bid_id_index
     ON maker.flip_bid_end (bid_id);
-CREATE INDEX flip_bid_end_address_id_index
+CREATE INDEX flip_bid_end_address_index
     ON maker.flip_bid_end (address_id);
 
 CREATE TABLE maker.flip_bid_usr
@@ -91,9 +101,11 @@ CREATE TABLE maker.flip_bid_usr
     UNIQUE (diff_id, header_id, bid_id, address_id, usr)
 );
 
+CREATE INDEX flip_bid_usr_header_id_index
+    ON maker.flip_bid_usr (header_id);
 CREATE INDEX flip_bid_usr_bid_id_index
     ON maker.flip_bid_usr (bid_id);
-CREATE INDEX flip_bid_usr_address_id_index
+CREATE INDEX flip_bid_usr_address_index
     ON maker.flip_bid_usr (address_id);
 
 CREATE TABLE maker.flip_bid_gal
@@ -107,9 +119,11 @@ CREATE TABLE maker.flip_bid_gal
     UNIQUE (diff_id, header_id, bid_id, address_id, gal)
 );
 
+CREATE INDEX flip_bid_gal_header_id_index
+    ON maker.flip_bid_gal (header_id);
 CREATE INDEX flip_bid_gal_bid_id_index
     ON maker.flip_bid_gal (bid_id);
-CREATE INDEX flip_bid_gal_address_id_index
+CREATE INDEX flip_bid_gal_address_index
     ON maker.flip_bid_gal (address_id);
 
 CREATE TABLE maker.flip_bid_tab
@@ -123,9 +137,11 @@ CREATE TABLE maker.flip_bid_tab
     UNIQUE (diff_id, header_id, bid_id, address_id, tab)
 );
 
+CREATE INDEX flip_bid_tab_header_id_index
+    ON maker.flip_bid_tab (header_id);
 CREATE INDEX flip_bid_tab_bid_id_index
     ON maker.flip_bid_tab (bid_id);
-CREATE INDEX flip_bid_tab_address_id_index
+CREATE INDEX flip_bid_tab_address_index
     ON maker.flip_bid_tab (address_id);
 
 CREATE TABLE maker.flip_vat
@@ -138,6 +154,11 @@ CREATE TABLE maker.flip_vat
     UNIQUE (diff_id, header_id, address_id, vat)
 );
 
+CREATE INDEX flip_vat_header_id_index
+    ON maker.flip_vat (header_id);
+CREATE INDEX flip_vat_address_index
+    ON maker.flip_vat (address_id);
+
 CREATE TABLE maker.flip_ilk
 (
     id         SERIAL PRIMARY KEY,
@@ -148,8 +169,12 @@ CREATE TABLE maker.flip_ilk
     UNIQUE (diff_id, header_id, address_id, ilk_id)
 );
 
+CREATE INDEX flip_ilk_header_id_index
+    ON maker.flip_ilk (header_id);
 CREATE INDEX flip_ilk_ilk_id_index
     ON maker.flip_ilk (ilk_id);
+CREATE INDEX flip_ilk_address_index
+    ON maker.flip_ilk (address_id);
 
 CREATE TABLE maker.flip_beg
 (
@@ -161,6 +186,11 @@ CREATE TABLE maker.flip_beg
     UNIQUE (diff_id, header_id, address_id, beg)
 );
 
+CREATE INDEX flip_beg_header_id_index
+    ON maker.flip_beg (header_id);
+CREATE INDEX flip_beg_address_index
+    ON maker.flip_beg (address_id);
+
 CREATE TABLE maker.flip_ttl
 (
     id         SERIAL PRIMARY KEY,
@@ -170,6 +200,11 @@ CREATE TABLE maker.flip_ttl
     ttl        NUMERIC NOT NULL,
     UNIQUE (diff_id, header_id, address_id, ttl)
 );
+
+CREATE INDEX flip_ttl_header_id_index
+    ON maker.flip_ttl (header_id);
+CREATE INDEX flip_ttl_address_index
+    ON maker.flip_ttl (address_id);
 
 CREATE TABLE maker.flip_tau
 (
@@ -181,6 +216,11 @@ CREATE TABLE maker.flip_tau
     UNIQUE (diff_id, header_id, address_id, tau)
 );
 
+CREATE INDEX flip_tau_header_id_index
+    ON maker.flip_tau (header_id);
+CREATE INDEX flip_tau_address_index
+    ON maker.flip_tau (address_id);
+
 CREATE TABLE maker.flip_kicks
 (
     id         SERIAL PRIMARY KEY,
@@ -191,9 +231,9 @@ CREATE TABLE maker.flip_kicks
     UNIQUE (diff_id, header_id, address_id, kicks)
 );
 
-CREATE INDEX flip_kicks_kicks_index
-    ON maker.flip_kicks (kicks);
-CREATE INDEX flip_kicks_address_id_index
+CREATE INDEX flip_kicks_header_id_index
+    ON maker.flip_kicks (header_id);
+CREATE INDEX flip_kicks_address_index
     ON maker.flip_kicks (address_id);
 
 -- prevent naming conflict with maker.flip_kick in postgraphile
@@ -201,25 +241,43 @@ COMMENT ON TABLE maker.flip_kicks IS E'@name flipKicksStorage';
 
 -- +goose Down
 -- SQL in this section is executed when the migration is rolled back.
-DROP INDEX maker.flip_kicks_address_id_index;
-DROP INDEX maker.flip_kicks_kicks_index;
+DROP INDEX maker.flip_kicks_address_index;
+DROP INDEX maker.flip_kicks_header_id_index;
+DROP INDEX maker.flip_tau_address_index;
+DROP INDEX maker.flip_tau_header_id_index;
+DROP INDEX maker.flip_ttl_address_index;
+DROP INDEX maker.flip_ttl_header_id_index;
+DROP INDEX maker.flip_beg_address_index;
+DROP INDEX maker.flip_beg_header_id_index;
+DROP INDEX maker.flip_ilk_address_index;
 DROP INDEX maker.flip_ilk_ilk_id_index;
-DROP INDEX maker.flip_bid_tab_address_id_index;
+DROP INDEX maker.flip_ilk_header_id_index;
+DROP INDEX maker.flip_vat_address_index;
+DROP INDEX maker.flip_vat_header_id_index;
+DROP INDEX maker.flip_bid_tab_address_index;
 DROP INDEX maker.flip_bid_tab_bid_id_index;
-DROP INDEX maker.flip_bid_gal_address_id_index;
+DROP INDEX maker.flip_bid_tab_header_id_index;
+DROP INDEX maker.flip_bid_gal_address_index;
 DROP INDEX maker.flip_bid_gal_bid_id_index;
-DROP INDEX maker.flip_bid_usr_address_id_index;
+DROP INDEX maker.flip_bid_gal_header_id_index;
+DROP INDEX maker.flip_bid_usr_address_index;
 DROP INDEX maker.flip_bid_usr_bid_id_index;
-DROP INDEX maker.flip_bid_end_address_id_index;
+DROP INDEX maker.flip_bid_usr_header_id_index;
+DROP INDEX maker.flip_bid_end_address_index;
 DROP INDEX maker.flip_bid_end_bid_id_index;
-DROP INDEX maker.flip_bid_tic_address_id_index;
+DROP INDEX maker.flip_bid_end_header_id_index;
+DROP INDEX maker.flip_bid_tic_address_index;
 DROP INDEX maker.flip_bid_tic_bid_id_index;
-DROP INDEX maker.flip_bid_guy_address_id_index;
+DROP INDEX maker.flip_bid_tic_header_id_index;
+DROP INDEX maker.flip_bid_guy_address_index;
 DROP INDEX maker.flip_bid_guy_bid_id_index;
-DROP INDEX maker.flip_bid_lot_address_id_index;
+DROP INDEX maker.flip_bid_guy_header_id_index;
+DROP INDEX maker.flip_bid_lot_address_index;
 DROP INDEX maker.flip_bid_lot_bid_id_index;
-DROP INDEX maker.flip_bid_bid_address_id_index;
+DROP INDEX maker.flip_bid_lot_header_id_index;
+DROP INDEX maker.flip_bid_bid_address_index;
 DROP INDEX maker.flip_bid_bid_bid_id_index;
+DROP INDEX maker.flip_bid_bid_header_id_index;
 
 DROP TABLE maker.flip_kicks;
 DROP TABLE maker.flip_tau;

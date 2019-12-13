@@ -14,13 +14,15 @@ CREATE TABLE maker.vat_frob
 
 CREATE INDEX vat_frob_header_index
     ON maker.vat_frob (header_id);
-
+CREATE INDEX vat_frob_log_index
+    ON maker.vat_frob (log_id);
 CREATE INDEX vat_frob_urn_index
     ON maker.vat_frob (urn_id);
 
 
 -- +goose Down
 DROP INDEX maker.vat_frob_header_index;
+DROP INDEX maker.vat_frob_log_index;
 DROP INDEX maker.vat_frob_urn_index;
 
 DROP TABLE maker.vat_frob;

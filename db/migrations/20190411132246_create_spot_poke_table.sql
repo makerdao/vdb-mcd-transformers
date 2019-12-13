@@ -13,7 +13,8 @@ CREATE TABLE maker.spot_poke
 
 CREATE INDEX spot_poke_header_index
     ON maker.spot_poke (header_id);
-
+CREATE INDEX spot_poke_log_index
+    ON maker.spot_poke (log_id);
 CREATE INDEX spot_poke_ilk_index
     ON maker.spot_poke (ilk_id);
 
@@ -21,6 +22,7 @@ CREATE INDEX spot_poke_ilk_index
 -- +goose Down
 -- SQL in this section is executed when the migration is rolled back.
 DROP INDEX maker.spot_poke_header_index;
+DROP INDEX maker.spot_poke_log_index;
 DROP INDEX maker.spot_poke_ilk_index;
 
 DROP TABLE maker.spot_poke;

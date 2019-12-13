@@ -41,6 +41,9 @@ LIMIT 1
 $$
     LANGUAGE sql;
 
+COMMENT ON FUNCTION ilk_rate_before_block
+    IS E'@omit';
+
 
 CREATE FUNCTION ilk_art_before_block(ilk_id INTEGER, header_id INTEGER) RETURNS NUMERIC AS
 $$
@@ -59,6 +62,9 @@ ORDER BY block_number DESC
 LIMIT 1
 $$
     LANGUAGE sql;
+
+COMMENT ON FUNCTION ilk_art_before_block
+    IS E'@omit';
 
 
 CREATE FUNCTION ilk_spot_before_block(ilk_id INTEGER, header_id INTEGER) RETURNS NUMERIC AS
@@ -79,6 +85,9 @@ LIMIT 1
 $$
     LANGUAGE sql;
 
+COMMENT ON FUNCTION ilk_spot_before_block
+    IS E'@omit';
+
 
 CREATE FUNCTION ilk_line_before_block(ilk_id INTEGER, header_id INTEGER) RETURNS NUMERIC AS
 $$
@@ -97,6 +106,9 @@ ORDER BY block_number DESC
 LIMIT 1
 $$
     LANGUAGE sql;
+
+COMMENT ON FUNCTION ilk_line_before_block
+    IS E'@omit';
 
 
 CREATE FUNCTION ilk_dust_before_block(ilk_id INTEGER, header_id INTEGER) RETURNS NUMERIC AS
@@ -117,6 +129,9 @@ LIMIT 1
 $$
     LANGUAGE sql;
 
+COMMENT ON FUNCTION ilk_dust_before_block
+    IS E'@omit';
+
 
 CREATE FUNCTION ilk_chop_before_block(ilk_id INTEGER, header_id INTEGER) RETURNS NUMERIC AS
 $$
@@ -135,6 +150,9 @@ ORDER BY block_number DESC
 LIMIT 1
 $$
     LANGUAGE sql;
+
+COMMENT ON FUNCTION ilk_chop_before_block
+    IS E'@omit';
 
 
 CREATE FUNCTION ilk_lump_before_block(ilk_id INTEGER, header_id INTEGER) RETURNS NUMERIC AS
@@ -155,6 +173,9 @@ LIMIT 1
 $$
     LANGUAGE sql;
 
+COMMENT ON FUNCTION ilk_lump_before_block
+    IS E'@omit';
+
 
 CREATE FUNCTION ilk_flip_before_block(ilk_id INTEGER, header_id INTEGER) RETURNS TEXT AS
 $$
@@ -173,6 +194,9 @@ ORDER BY block_number DESC
 LIMIT 1
 $$
     LANGUAGE sql;
+
+COMMENT ON FUNCTION ilk_flip_before_block
+    IS E'@omit';
 
 
 CREATE FUNCTION ilk_rho_before_block(ilk_id INTEGER, header_id INTEGER) RETURNS NUMERIC AS
@@ -194,6 +218,9 @@ LIMIT 1
 $$
     LANGUAGE sql;
 
+COMMENT ON FUNCTION ilk_rho_before_block
+    IS E'@omit';
+
 
 CREATE FUNCTION ilk_duty_before_block(ilk_id INTEGER, header_id INTEGER) RETURNS NUMERIC AS
 $$
@@ -212,6 +239,9 @@ ORDER BY block_number DESC
 LIMIT 1
 $$
     LANGUAGE sql;
+
+COMMENT ON FUNCTION ilk_duty_before_block
+    IS E'@omit';
 
 
 CREATE FUNCTION ilk_pip_before_block(ilk_id INTEGER, header_id INTEGER) RETURNS TEXT AS
@@ -232,6 +262,9 @@ LIMIT 1
 $$
     LANGUAGE sql;
 
+COMMENT ON FUNCTION ilk_pip_before_block
+    IS E'@omit';
+
 
 CREATE FUNCTION ilk_mat_before_block(ilk_id INTEGER, header_id INTEGER) RETURNS NUMERIC AS
 $$
@@ -251,6 +284,9 @@ LIMIT 1
 $$
     LANGUAGE sql;
 
+COMMENT ON FUNCTION ilk_mat_before_block
+    IS E'@omit';
+
 
 CREATE FUNCTION ilk_time_created(ilk_id INTEGER) RETURNS TIMESTAMP AS
 $$
@@ -260,6 +296,9 @@ FROM public.headers
 WHERE vat_init.ilk_id = ilk_time_created.ilk_id
 $$
     LANGUAGE sql;
+
+COMMENT ON FUNCTION ilk_time_created
+    IS E'@omit';
 
 -- +goose StatementBegin
 CREATE OR REPLACE FUNCTION maker.delete_redundant_ilk_state(ilk_id INTEGER, header_id INTEGER) RETURNS api.historical_ilk_state
@@ -311,6 +350,9 @@ $$
     LANGUAGE plpgsql;
 -- +goose StatementEnd
 
+COMMENT ON FUNCTION maker.delete_redundant_ilk_state
+    IS E'@omit';
+
 
 -- +goose StatementBegin
 CREATE OR REPLACE FUNCTION maker.insert_new_rate(new_diff maker.vat_ilk_rate) RETURNS maker.vat_ilk_rate
@@ -357,6 +399,9 @@ $$
     LANGUAGE plpgsql;
 -- +goose StatementEnd
 
+COMMENT ON FUNCTION maker.insert_new_rate
+    IS E'@omit';
+
 -- +goose StatementBegin
 CREATE OR REPLACE FUNCTION maker.update_rates_until_next_diff(start_at_diff maker.vat_ilk_rate, new_rate NUMERIC) RETURNS maker.vat_ilk_rate
 AS
@@ -388,6 +433,9 @@ END
 $$
     LANGUAGE plpgsql;
 -- +goose StatementEnd
+
+COMMENT ON FUNCTION maker.update_rates_until_next_diff
+    IS E'@omit';
 
 -- +goose StatementBegin
 CREATE OR REPLACE FUNCTION maker.update_ilk_rates() RETURNS TRIGGER
@@ -459,6 +507,9 @@ $$
     LANGUAGE plpgsql;
 -- +goose StatementEnd
 
+COMMENT ON FUNCTION maker.insert_new_art
+    IS E'@omit';
+
 -- +goose StatementBegin
 CREATE OR REPLACE FUNCTION maker.update_arts_until_next_diff(start_at_diff maker.vat_ilk_art, new_art NUMERIC) RETURNS maker.vat_ilk_art
 AS
@@ -490,6 +541,9 @@ END
 $$
     LANGUAGE plpgsql;
 -- +goose StatementEnd
+
+COMMENT ON FUNCTION maker.update_arts_until_next_diff
+    IS E'@omit';
 
 -- +goose StatementBegin
 CREATE OR REPLACE FUNCTION maker.update_ilk_arts() RETURNS TRIGGER
@@ -561,6 +615,9 @@ $$
     LANGUAGE plpgsql;
 -- +goose StatementEnd
 
+COMMENT ON FUNCTION maker.insert_new_spot
+    IS E'@omit';
+
 -- +goose StatementBegin
 CREATE OR REPLACE FUNCTION maker.update_spots_until_next_diff(start_at_diff maker.vat_ilk_spot, new_spot NUMERIC) RETURNS maker.vat_ilk_spot
 AS
@@ -592,6 +649,9 @@ END
 $$
     LANGUAGE plpgsql;
 -- +goose StatementEnd
+
+COMMENT ON FUNCTION maker.update_spots_until_next_diff
+    IS E'@omit';
 
 -- +goose StatementBegin
 CREATE OR REPLACE FUNCTION maker.update_ilk_spots() RETURNS TRIGGER
@@ -663,6 +723,9 @@ $$
     LANGUAGE plpgsql;
 -- +goose StatementEnd
 
+COMMENT ON FUNCTION maker.insert_new_line
+    IS E'@omit';
+
 -- +goose StatementBegin
 CREATE OR REPLACE FUNCTION maker.update_lines_until_next_diff(start_at_diff maker.vat_ilk_line, new_line NUMERIC) RETURNS maker.vat_ilk_line
 AS
@@ -694,6 +757,9 @@ END
 $$
     LANGUAGE plpgsql;
 -- +goose StatementEnd
+
+COMMENT ON FUNCTION maker.update_lines_until_next_diff
+    IS E'@omit';
 
 -- +goose StatementBegin
 CREATE OR REPLACE FUNCTION maker.update_ilk_lines() RETURNS TRIGGER
@@ -765,6 +831,9 @@ $$
     LANGUAGE plpgsql;
 -- +goose StatementEnd
 
+COMMENT ON FUNCTION maker.insert_new_dust
+    IS E'@omit';
+
 -- +goose StatementBegin
 CREATE OR REPLACE FUNCTION maker.update_dusts_until_next_diff(start_at_diff maker.vat_ilk_dust, new_dust NUMERIC) RETURNS maker.vat_ilk_dust
 AS
@@ -796,6 +865,9 @@ END
 $$
     LANGUAGE plpgsql;
 -- +goose StatementEnd
+
+COMMENT ON FUNCTION maker.update_dusts_until_next_diff
+    IS E'@omit';
 
 -- +goose StatementBegin
 CREATE OR REPLACE FUNCTION maker.update_ilk_dusts() RETURNS TRIGGER
@@ -867,6 +939,9 @@ $$
     LANGUAGE plpgsql;
 -- +goose StatementEnd
 
+COMMENT ON FUNCTION maker.insert_new_chop
+    IS E'@omit';
+
 -- +goose StatementBegin
 CREATE OR REPLACE FUNCTION maker.update_chops_until_next_diff(start_at_diff maker.cat_ilk_chop, new_chop NUMERIC) RETURNS maker.cat_ilk_chop
 AS
@@ -898,6 +973,9 @@ END
 $$
     LANGUAGE plpgsql;
 -- +goose StatementEnd
+
+COMMENT ON FUNCTION maker.update_chops_until_next_diff
+    IS E'@omit';
 
 -- +goose StatementBegin
 CREATE OR REPLACE FUNCTION maker.update_ilk_chops() RETURNS TRIGGER
@@ -969,6 +1047,9 @@ $$
     LANGUAGE plpgsql;
 -- +goose StatementEnd
 
+COMMENT ON FUNCTION maker.insert_new_lump
+    IS E'@omit';
+
 -- +goose StatementBegin
 CREATE OR REPLACE FUNCTION maker.update_lumps_until_next_diff(start_at_diff maker.cat_ilk_lump, new_lump NUMERIC) RETURNS maker.cat_ilk_lump
 AS
@@ -1000,6 +1081,9 @@ END
 $$
     LANGUAGE plpgsql;
 -- +goose StatementEnd
+
+COMMENT ON FUNCTION maker.update_lumps_until_next_diff
+    IS E'@omit';
 
 -- +goose StatementBegin
 CREATE OR REPLACE FUNCTION maker.update_ilk_lumps() RETURNS TRIGGER
@@ -1071,6 +1155,9 @@ $$
     LANGUAGE plpgsql;
 -- +goose StatementEnd
 
+COMMENT ON FUNCTION maker.insert_new_flip
+    IS E'@omit';
+
 -- +goose StatementBegin
 CREATE OR REPLACE FUNCTION maker.update_flips_until_next_diff(start_at_diff maker.cat_ilk_flip, new_flip TEXT) RETURNS maker.cat_ilk_flip
 AS
@@ -1102,6 +1189,9 @@ END
 $$
     LANGUAGE plpgsql;
 -- +goose StatementEnd
+
+COMMENT ON FUNCTION maker.update_flips_until_next_diff
+    IS E'@omit';
 
 -- +goose StatementBegin
 CREATE OR REPLACE FUNCTION maker.update_ilk_flips() RETURNS TRIGGER
@@ -1173,6 +1263,9 @@ $$
     LANGUAGE plpgsql;
 -- +goose StatementEnd
 
+COMMENT ON FUNCTION maker.insert_new_rho
+    IS E'@omit';
+
 -- +goose StatementBegin
 CREATE OR REPLACE FUNCTION maker.update_rhos_until_next_diff(start_at_diff maker.jug_ilk_rho, new_rho NUMERIC) RETURNS maker.jug_ilk_rho
 AS
@@ -1204,6 +1297,9 @@ END
 $$
     LANGUAGE plpgsql;
 -- +goose StatementEnd
+
+COMMENT ON FUNCTION maker.update_rhos_until_next_diff
+    IS E'@omit';
 
 -- +goose StatementBegin
 CREATE OR REPLACE FUNCTION maker.update_ilk_rhos() RETURNS TRIGGER
@@ -1275,6 +1371,9 @@ $$
     LANGUAGE plpgsql;
 -- +goose StatementEnd
 
+COMMENT ON FUNCTION maker.insert_new_duty
+    IS E'@omit';
+
 -- +goose StatementBegin
 CREATE OR REPLACE FUNCTION maker.update_duties_until_next_diff(start_at_diff maker.jug_ilk_duty, new_duty NUMERIC) RETURNS maker.jug_ilk_duty
 AS
@@ -1306,6 +1405,9 @@ END
 $$
     LANGUAGE plpgsql;
 -- +goose StatementEnd
+
+COMMENT ON FUNCTION maker.update_duties_until_next_diff
+    IS E'@omit';
 
 -- +goose StatementBegin
 CREATE OR REPLACE FUNCTION maker.update_ilk_duties() RETURNS TRIGGER
@@ -1377,6 +1479,9 @@ $$
     LANGUAGE plpgsql;
 -- +goose StatementEnd
 
+COMMENT ON FUNCTION maker.insert_new_pip
+    IS E'@omit';
+
 -- +goose StatementBegin
 CREATE OR REPLACE FUNCTION maker.update_pips_until_next_diff(start_at_diff maker.spot_ilk_pip, new_pip TEXT) RETURNS maker.spot_ilk_pip
 AS
@@ -1408,6 +1513,9 @@ END
 $$
     LANGUAGE plpgsql;
 -- +goose StatementEnd
+
+COMMENT ON FUNCTION maker.update_pips_until_next_diff
+    IS E'@omit';
 
 -- +goose StatementBegin
 CREATE OR REPLACE FUNCTION maker.update_ilk_pips() RETURNS TRIGGER
@@ -1479,6 +1587,9 @@ $$
     LANGUAGE plpgsql;
 -- +goose StatementEnd
 
+COMMENT ON FUNCTION maker.insert_new_mat
+    IS E'@omit';
+
 -- +goose StatementBegin
 CREATE OR REPLACE FUNCTION maker.update_mats_until_next_diff(start_at_diff maker.spot_ilk_mat, new_mat NUMERIC) RETURNS maker.spot_ilk_mat
 AS
@@ -1510,6 +1621,9 @@ END
 $$
     LANGUAGE plpgsql;
 -- +goose StatementEnd
+
+COMMENT ON FUNCTION maker.update_mats_until_next_diff
+    IS E'@omit';
 
 -- +goose StatementBegin
 CREATE OR REPLACE FUNCTION maker.update_ilk_mats() RETURNS TRIGGER
@@ -1562,6 +1676,9 @@ $$
     LANGUAGE plpgsql;
 -- +goose StatementEnd
 
+COMMENT ON FUNCTION maker.insert_new_time_created
+    IS E'@omit';
+
 -- +goose StatementBegin
 CREATE OR REPLACE FUNCTION maker.clear_time_created(old_event maker.vat_init) RETURNS maker.vat_init
 AS
@@ -1578,6 +1695,9 @@ $$
     LANGUAGE plpgsql;
 -- +goose StatementEnd
 
+COMMENT ON FUNCTION maker.clear_time_created
+    IS E'@omit';
+
 -- +goose StatementBegin
 CREATE OR REPLACE FUNCTION maker.update_time_created() RETURNS TRIGGER
 AS
@@ -1593,6 +1713,9 @@ END
 $$
     LANGUAGE plpgsql;
 -- +goose StatementEnd
+
+COMMENT ON FUNCTION maker.update_time_created
+    IS E'@omit';
 
 CREATE TRIGGER ilk_init
     AFTER INSERT OR UPDATE OR DELETE

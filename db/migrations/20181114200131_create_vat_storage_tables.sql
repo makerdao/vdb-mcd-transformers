@@ -8,6 +8,9 @@ CREATE TABLE maker.vat_debt
     UNIQUE (diff_id, header_id, debt)
 );
 
+CREATE INDEX vat_debt_header_id_index
+    ON maker.vat_debt (header_id);
+
 CREATE TABLE maker.vat_vice
 (
     id        SERIAL PRIMARY KEY,
@@ -16,6 +19,9 @@ CREATE TABLE maker.vat_vice
     vice      NUMERIC NOT NULL,
     UNIQUE (diff_id, header_id, vice)
 );
+
+CREATE INDEX vat_vice_header_id_index
+    ON maker.vat_vice (header_id);
 
 CREATE TABLE maker.vat_ilk_art
 (
@@ -133,6 +139,8 @@ CREATE TABLE maker.vat_gem
     UNIQUE (diff_id, header_id, ilk_id, guy, gem)
 );
 
+CREATE INDEX vat_gem_header_id_index
+    ON maker.vat_gem (header_id);
 CREATE INDEX vat_gem_ilk_index
     ON maker.vat_gem (ilk_id);
 
@@ -146,6 +154,9 @@ CREATE TABLE maker.vat_dai
     UNIQUE (diff_id, header_id, guy, dai)
 );
 
+CREATE INDEX vat_dai_header_id_index
+    ON maker.vat_dai (header_id);
+
 CREATE TABLE maker.vat_sin
 (
     id        SERIAL PRIMARY KEY,
@@ -156,6 +167,9 @@ CREATE TABLE maker.vat_sin
     UNIQUE (diff_id, header_id, guy, sin)
 );
 
+CREATE INDEX vat_sin_header_id_index
+    ON maker.vat_sin (header_id);
+
 CREATE TABLE maker.vat_line
 (
     id        SERIAL PRIMARY KEY,
@@ -164,6 +178,9 @@ CREATE TABLE maker.vat_line
     line      NUMERIC NOT NULL,
     UNIQUE (diff_id, header_id, line)
 );
+
+CREATE INDEX vat_line_header_id_index
+    ON maker.vat_line (header_id);
 
 CREATE TABLE maker.vat_live
 (
@@ -174,7 +191,12 @@ CREATE TABLE maker.vat_live
     UNIQUE (diff_id, header_id, live)
 );
 
+CREATE INDEX vat_live_header_id_index
+    ON maker.vat_live (header_id);
+
 -- +goose Down
+DROP INDEX maker.vat_debt_header_id_index;
+DROP INDEX maker.vat_vice_header_id_index;
 DROP INDEX maker.vat_ilk_art_header_id_index;
 DROP INDEX maker.vat_ilk_art_ilk_index;
 DROP INDEX maker.vat_ilk_dust_header_id_index;
@@ -189,7 +211,12 @@ DROP INDEX maker.vat_urn_art_header_id_index;
 DROP INDEX maker.vat_urn_art_urn_index;
 DROP INDEX maker.vat_urn_ink_header_id_index;
 DROP INDEX maker.vat_urn_ink_urn_index;
+DROP INDEX maker.vat_gem_header_id_index;
 DROP INDEX maker.vat_gem_ilk_index;
+DROP INDEX maker.vat_dai_header_id_index;
+DROP INDEX maker.vat_sin_header_id_index;
+DROP INDEX maker.vat_line_header_id_index;
+DROP INDEX maker.vat_live_header_id_index;
 
 DROP TABLE maker.vat_debt;
 DROP TABLE maker.vat_vice;

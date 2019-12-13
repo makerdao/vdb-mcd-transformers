@@ -11,6 +11,8 @@ CREATE TABLE maker.pot_file_dsr
 
 CREATE INDEX pot_file_dsr_header_index
     ON maker.pot_file_dsr (header_id);
+CREATE INDEX pot_file_dsr_log_index
+    ON maker.pot_file_dsr (log_id);
 
 CREATE TABLE maker.pot_file_vow
 (
@@ -24,11 +26,15 @@ CREATE TABLE maker.pot_file_vow
 
 CREATE INDEX pot_file_vow_header_index
     ON maker.pot_file_vow (header_id);
+CREATE INDEX pot_file_vow_log_index
+    ON maker.pot_file_vow (log_id);
 
 
 -- +goose Down
 DROP INDEX maker.pot_file_dsr_header_index;
+DROP INDEX maker.pot_file_dsr_log_index;
 DROP INDEX maker.pot_file_vow_header_index;
+DROP INDEX maker.pot_file_vow_log_index;
 
 DROP TABLE maker.pot_file_dsr;
 DROP TABLE maker.pot_file_vow;

@@ -11,6 +11,8 @@ CREATE TABLE maker.jug_file_base
 
 CREATE INDEX jug_file_base_header_index
     ON maker.jug_file_base (header_id);
+CREATE INDEX jug_file_base_log_index
+    ON maker.jug_file_base (log_id);
 
 CREATE TABLE maker.jug_file_ilk
 (
@@ -25,7 +27,8 @@ CREATE TABLE maker.jug_file_ilk
 
 CREATE INDEX jug_file_ilk_header_index
     ON maker.jug_file_ilk (header_id);
-
+CREATE INDEX jug_file_ilk_log_index
+    ON maker.jug_file_ilk (log_id);
 CREATE INDEX jug_file_ilk_ilk_index
     ON maker.jug_file_ilk (ilk_id);
 
@@ -41,13 +44,18 @@ CREATE TABLE maker.jug_file_vow
 
 CREATE INDEX jug_file_vow_header_index
     ON maker.jug_file_vow (header_id);
+CREATE INDEX jug_file_vow_log_index
+    ON maker.jug_file_vow (log_id);
 
 
 -- +goose Down
 DROP INDEX maker.jug_file_base_header_index;
+DROP INDEX maker.jug_file_base_log_index;
 DROP INDEX maker.jug_file_ilk_header_index;
+DROP INDEX maker.jug_file_ilk_log_index;
 DROP INDEX maker.jug_file_ilk_ilk_index;
 DROP INDEX maker.jug_file_vow_header_index;
+DROP INDEX maker.jug_file_vow_log_index;
 
 DROP TABLE maker.jug_file_ilk;
 DROP TABLE maker.jug_file_base;

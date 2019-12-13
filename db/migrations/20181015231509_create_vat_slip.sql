@@ -12,13 +12,15 @@ CREATE TABLE maker.vat_slip
 
 CREATE INDEX vat_slip_header_index
     ON maker.vat_slip (header_id);
-
+CREATE INDEX vat_slip_log_index
+    ON maker.vat_slip (log_id);
 CREATE INDEX vat_slip_ilk_index
     ON maker.vat_slip (ilk_id);
 
 
 -- +goose Down
 DROP INDEX maker.vat_slip_header_index;
+DROP INDEX maker.vat_slip_log_index;
 DROP INDEX maker.vat_slip_ilk_index;
 
 DROP TABLE maker.vat_slip;

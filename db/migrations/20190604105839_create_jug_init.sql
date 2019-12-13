@@ -8,14 +8,16 @@ CREATE TABLE maker.jug_init
     UNIQUE (header_id, log_id)
 );
 
+CREATE INDEX jug_init_log_index
+    ON maker.jug_init (log_id);
 CREATE INDEX jug_init_header_index
     ON maker.jug_init (header_id);
-
 CREATE INDEX jug_init_ilk_index
     ON maker.jug_init (ilk_id);
 
 
 -- +goose Down
+DROP INDEX maker.jug_init_log_index;
 DROP INDEX maker.jug_init_header_index;
 DROP INDEX maker.jug_init_ilk_index;
 

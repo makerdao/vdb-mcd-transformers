@@ -13,9 +13,15 @@ CREATE TABLE maker.dent
 
 CREATE INDEX dent_header_index
     ON maker.dent (header_id);
+CREATE INDEX dent_log_index
+    ON maker.dent (log_id);
+CREATE INDEX dent_address_index
+    ON maker.dent (address_id);
 
 
 -- +goose Down
 DROP INDEX maker.dent_header_index;
+DROP INDEX maker.dent_log_index;
+DROP INDEX maker.dent_address_index;
 
 DROP TABLE maker.dent;

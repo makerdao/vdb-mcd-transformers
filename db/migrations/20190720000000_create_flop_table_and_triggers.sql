@@ -16,6 +16,9 @@ CREATE TABLE maker.flop
     UNIQUE (block_number, bid_id)
 );
 
+CREATE INDEX flop_address_index
+    ON maker.flop (address_id);
+
 
 CREATE FUNCTION get_latest_flop_bid_bid(bid_id numeric) RETURNS NUMERIC AS
 $$
@@ -27,6 +30,9 @@ ORDER BY block_number DESC
 LIMIT 1
 $$
     LANGUAGE sql;
+
+COMMENT ON FUNCTION get_latest_flop_bid_bid
+    IS E'@omit';
 
 
 CREATE FUNCTION get_latest_flop_bid_guy(bid_id numeric) RETURNS TEXT AS
@@ -40,6 +46,9 @@ LIMIT 1
 $$
     LANGUAGE sql;
 
+COMMENT ON FUNCTION get_latest_flop_bid_guy
+    IS E'@omit';
+
 CREATE FUNCTION get_latest_flop_bid_tic(bid_id numeric) RETURNS BIGINT AS
 $$
 SELECT tic
@@ -50,6 +59,9 @@ ORDER BY block_number DESC
 LIMIT 1
 $$
     LANGUAGE sql;
+
+COMMENT ON FUNCTION get_latest_flop_bid_tic
+    IS E'@omit';
 
 CREATE FUNCTION get_latest_flop_bid_end(bid_id numeric) RETURNS BIGINT AS
 $$
@@ -62,6 +74,9 @@ LIMIT 1
 $$
     LANGUAGE sql;
 
+COMMENT ON FUNCTION get_latest_flop_bid_end
+    IS E'@omit';
+
 CREATE FUNCTION get_latest_flop_bid_lot(bid_id numeric) RETURNS NUMERIC AS
 $$
 SELECT lot
@@ -72,6 +87,9 @@ ORDER BY block_number DESC
 LIMIT 1
 $$
     LANGUAGE sql;
+
+COMMENT ON FUNCTION get_latest_flop_bid_lot
+    IS E'@omit';
 
 -- +goose StatementBegin
 CREATE OR REPLACE FUNCTION maker.insert_updated_flop_bid() RETURNS TRIGGER
@@ -330,4 +348,6 @@ DROP FUNCTION get_latest_flop_bid_bid(numeric);
 DROP FUNCTION get_latest_flop_bid_tic(numeric);
 DROP FUNCTION get_latest_flop_bid_end(numeric);
 DROP FUNCTION get_latest_flop_bid_lot(numeric);
+
+DROP INDEX maker.flop_address_index;
 DROP TABLE maker.flop;

@@ -8,6 +8,9 @@ CREATE TABLE maker.vow_vat
     UNIQUE (diff_id, header_id, vat)
 );
 
+CREATE INDEX vow_vat_header_id_index
+    ON maker.vow_vat (header_id);
+
 CREATE TABLE maker.vow_flapper
 (
     id        SERIAL PRIMARY KEY,
@@ -16,6 +19,9 @@ CREATE TABLE maker.vow_flapper
     flapper   TEXT,
     UNIQUE (diff_id, header_id, flapper)
 );
+
+CREATE INDEX vow_flapper_header_id_index
+    ON maker.vow_flapper (header_id);
 
 CREATE TABLE maker.vow_flopper
 (
@@ -26,6 +32,9 @@ CREATE TABLE maker.vow_flopper
     UNIQUE (diff_id, header_id, flopper)
 );
 
+CREATE INDEX vow_flopper_header_id_index
+    ON maker.vow_flopper (header_id);
+
 CREATE TABLE maker.vow_sin_integer
 (
     id        SERIAL PRIMARY KEY,
@@ -34,6 +43,9 @@ CREATE TABLE maker.vow_sin_integer
     sin       numeric,
     UNIQUE (diff_id, header_id, sin)
 );
+
+CREATE INDEX vow_sin_integer_header_id_index
+    ON maker.vow_sin_integer (header_id);
 
 CREATE TABLE maker.vow_sin_mapping
 (
@@ -45,6 +57,8 @@ CREATE TABLE maker.vow_sin_mapping
     UNIQUE (diff_id, header_id, era, tab)
 );
 
+CREATE INDEX vow_sin_mapping_header_id_index
+    ON maker.vow_sin_mapping (header_id);
 CREATE INDEX vow_sin_mapping_era_index
     ON maker.vow_sin_mapping (era);
 
@@ -57,6 +71,9 @@ CREATE TABLE maker.vow_ash
     UNIQUE (diff_id, header_id, ash)
 );
 
+CREATE INDEX vow_ash_header_id_index
+    ON maker.vow_ash (header_id);
+
 CREATE TABLE maker.vow_wait
 (
     id        SERIAL PRIMARY KEY,
@@ -65,6 +82,9 @@ CREATE TABLE maker.vow_wait
     wait      numeric,
     UNIQUE (diff_id, header_id, wait)
 );
+
+CREATE INDEX vow_wait_header_id_index
+    ON maker.vow_wait (header_id);
 
 CREATE TABLE maker.vow_dump
 (
@@ -75,6 +95,9 @@ CREATE TABLE maker.vow_dump
     UNIQUE (diff_id, header_id, dump)
 );
 
+CREATE INDEX vow_dump_header_id_index
+    ON maker.vow_dump (header_id);
+
 CREATE TABLE maker.vow_sump
 (
     id        SERIAL PRIMARY KEY,
@@ -83,6 +106,9 @@ CREATE TABLE maker.vow_sump
     sump      numeric,
     UNIQUE (diff_id, header_id, sump)
 );
+
+CREATE INDEX vow_sump_header_id_index
+    ON maker.vow_sump (header_id);
 
 CREATE TABLE maker.vow_bump
 (
@@ -93,6 +119,9 @@ CREATE TABLE maker.vow_bump
     UNIQUE (diff_id, header_id, bump)
 );
 
+CREATE INDEX vow_bump_header_id_index
+    ON maker.vow_bump (header_id);
+
 CREATE TABLE maker.vow_hump
 (
     id        SERIAL PRIMARY KEY,
@@ -102,8 +131,22 @@ CREATE TABLE maker.vow_hump
     UNIQUE (diff_id, header_id, hump)
 );
 
+CREATE INDEX vow_hump_header_id_index
+    ON maker.vow_hump (header_id);
+
 -- +goose Down
+DROP INDEX maker.vow_vat_header_id_index;
+DROP INDEX maker.vow_flapper_header_id_index;
+DROP INDEX maker.vow_flopper_header_id_index;
+DROP INDEX maker.vow_sin_integer_header_id_index;
+DROP INDEX maker.vow_sin_mapping_header_id_index;
 DROP INDEX maker.vow_sin_mapping_era_index;
+DROP INDEX maker.vow_ash_header_id_index;
+DROP INDEX maker.vow_wait_header_id_index;
+DROP INDEX maker.vow_dump_header_id_index;
+DROP INDEX maker.vow_sump_header_id_index;
+DROP INDEX maker.vow_bump_header_id_index;
+DROP INDEX maker.vow_hump_header_id_index;
 
 DROP TABLE maker.vow_vat;
 DROP TABLE maker.vow_flapper;

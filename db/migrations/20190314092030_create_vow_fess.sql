@@ -10,8 +10,11 @@ CREATE TABLE maker.vow_fess
 
 CREATE INDEX vow_fess_header_index
     ON maker.vow_fess (header_id);
+CREATE INDEX vow_fess_log_index
+    ON maker.vow_fess (log_id);
 
 
 -- +goose Down
+DROP INDEX maker.vow_fess_log_index;
 DROP INDEX maker.vow_fess_header_index;
 DROP TABLE maker.vow_fess;

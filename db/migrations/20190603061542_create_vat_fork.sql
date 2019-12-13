@@ -14,13 +14,15 @@ CREATE TABLE maker.vat_fork
 
 CREATE INDEX vat_fork_header_index
     ON maker.vat_fork (header_id);
-
+CREATE INDEX vat_fork_log_index
+    ON maker.vat_fork (log_id);
 CREATE INDEX vat_fork_ilk_index
     ON maker.vat_fork (ilk_id);
 
 
 -- +goose Down
 DROP INDEX maker.vat_fork_header_index;
+DROP INDEX maker.vat_fork_log_index;
 DROP INDEX maker.vat_fork_ilk_index;
 
 DROP TABLE maker.vat_fork;

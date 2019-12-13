@@ -8,6 +8,9 @@ CREATE TABLE maker.cat_live
     UNIQUE (diff_id, header_id, live)
 );
 
+CREATE INDEX cat_live_header_id_index
+    ON maker.cat_live (header_id);
+
 CREATE TABLE maker.cat_vat
 (
     id        SERIAL PRIMARY KEY,
@@ -17,6 +20,9 @@ CREATE TABLE maker.cat_vat
     UNIQUE (diff_id, header_id, vat)
 );
 
+CREATE INDEX cat_vat_header_id_index
+    ON maker.cat_vat (header_id);
+
 CREATE TABLE maker.cat_vow
 (
     id        SERIAL PRIMARY KEY,
@@ -25,6 +31,9 @@ CREATE TABLE maker.cat_vow
     vow       TEXT,
     UNIQUE (diff_id, header_id, vow)
 );
+
+CREATE INDEX cat_vow_header_id_index
+    ON maker.cat_vow (header_id);
 
 CREATE TABLE maker.cat_ilk_flip
 (
@@ -73,6 +82,9 @@ CREATE INDEX cat_ilk_lump_ilk_index
 
 
 -- +goose Down
+DROP INDEX maker.cat_live_header_id_index;
+DROP INDEX maker.cat_vat_header_id_index;
+DROP INDEX maker.cat_vow_header_id_index;
 DROP INDEX maker.cat_ilk_flip_header_id_index;
 DROP INDEX maker.cat_ilk_flip_ilk_index;
 DROP INDEX maker.cat_ilk_chop_header_id_index;

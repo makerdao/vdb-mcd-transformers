@@ -10,8 +10,11 @@ CREATE TABLE maker.vat_heal
 
 CREATE INDEX vat_heal_header_index
     ON maker.vat_heal (header_id);
+CREATE INDEX vat_heal_log_index
+    ON maker.vat_heal (log_id);
 
 
 -- +goose Down
+DROP INDEX maker.vat_heal_log_index;
 DROP INDEX maker.vat_heal_header_index;
 DROP TABLE maker.vat_heal;

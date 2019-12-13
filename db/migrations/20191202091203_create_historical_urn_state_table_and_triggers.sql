@@ -28,6 +28,9 @@ LIMIT 1
 $$
     LANGUAGE sql;
 
+COMMENT ON FUNCTION urn_ink_before_block
+    IS E'@omit';
+
 
 CREATE FUNCTION urn_art_before_block(urn_id INTEGER, header_id INTEGER) RETURNS NUMERIC AS
 $$
@@ -45,6 +48,9 @@ LIMIT 1
 $$
     LANGUAGE sql;
 
+COMMENT ON FUNCTION urn_art_before_block
+    IS E'@omit';
+
 
 CREATE FUNCTION urn_time_created(urn_id INTEGER) RETURNS TIMESTAMP AS
 $$
@@ -54,6 +60,9 @@ FROM maker.vat_urn_ink
 WHERE vat_urn_ink.urn_id = urn_time_created.urn_id
 $$
     LANGUAGE sql;
+
+COMMENT ON FUNCTION urn_time_created
+    IS E'@omit';
 
 
 -- +goose StatementBegin
@@ -90,6 +99,9 @@ $$
     LANGUAGE plpgsql;
 -- +goose StatementEnd
 
+COMMENT ON FUNCTION maker.delete_obsolete_urn_state
+    IS E'@omit';
+
 
 -- +goose StatementBegin
 CREATE OR REPLACE FUNCTION maker.insert_urn_ink(new_diff maker.vat_urn_ink) RETURNS maker.vat_urn_ink
@@ -121,6 +133,9 @@ END
 $$
     LANGUAGE plpgsql;
 -- +goose StatementEnd
+
+COMMENT ON FUNCTION maker.insert_urn_ink
+    IS E'@omit';
 
 -- +goose StatementBegin
 CREATE OR REPLACE FUNCTION maker.update_urn_inks_until_next_diff(start_at_diff maker.vat_urn_ink, new_ink NUMERIC) RETURNS maker.vat_urn_ink
@@ -157,6 +172,9 @@ $$
     LANGUAGE plpgsql;
 -- +goose StatementEnd
 
+COMMENT ON FUNCTION maker.update_urn_inks_until_next_diff
+    IS E'@omit';
+
 -- +goose StatementBegin
 CREATE OR REPLACE FUNCTION maker.update_urn_created(urn_id INTEGER) RETURNS maker.vat_urn_ink
 AS
@@ -174,6 +192,9 @@ END
 $$
     LANGUAGE plpgsql;
 -- +goose StatementEnd
+
+COMMENT ON FUNCTION maker.update_urn_created
+    IS E'@omit';
 
 
 -- +goose StatementBegin
@@ -234,6 +255,9 @@ $$
     LANGUAGE plpgsql;
 -- +goose StatementEnd
 
+COMMENT ON FUNCTION maker.insert_urn_art
+    IS E'@omit';
+
 -- +goose StatementBegin
 CREATE OR REPLACE FUNCTION maker.update_urn_arts_until_next_diff(start_at_diff maker.vat_urn_art, new_art NUMERIC) RETURNS maker.vat_urn_art
 AS
@@ -268,6 +292,9 @@ END
 $$
     LANGUAGE plpgsql;
 -- +goose StatementEnd
+
+COMMENT ON FUNCTION maker.update_urn_arts_until_next_diff
+    IS E'@omit';
 
 
 -- +goose StatementBegin
