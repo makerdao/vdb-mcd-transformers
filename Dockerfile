@@ -10,10 +10,12 @@ ENV GO111MODULE on
 WORKDIR /go/src/github.com/makerdao/vdb-mcd-transformers
 ADD . .
 
+ARG VDB_VERSION=staging
+
 WORKDIR /go/src/github.com/makerdao
 RUN git clone https://github.com/makerdao/vulcanizedb.git
 WORKDIR /go/src/github.com/makerdao/vulcanizedb
-RUN git checkout v0.0.10
+RUN git checkout $VDB_VERSION
 RUN go build
 
 # build mcd with local vdb
