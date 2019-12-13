@@ -26,5 +26,5 @@ import (
 
 var EventTransformerInitializer transformer.EventTransformerInitializer = event.Transformer{
 	Config:    shared.GetEventTransformerConfig(constants.DentTable, constants.DentSignature()),
-	Converter: &dent.Converter{},
+	Converter: dent.Converter{},
 }.NewTransformer

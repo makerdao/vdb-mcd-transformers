@@ -63,7 +63,7 @@ var _ = Describe("NewCdp Transformer", func() {
 
 		tr := event.Transformer{
 			Config:    newCdpConfig,
-			Converter: &new_cdp.Converter{},
+			Converter: new_cdp.Converter{},
 		}.NewTransformer(db)
 
 		logFetcher := fetcher.NewLogFetcher(blockChain)

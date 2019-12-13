@@ -26,5 +26,5 @@ import (
 
 var EventTransformerInitializer transformer.EventTransformerInitializer = event.Transformer{
 	Config:    shared.GetEventTransformerConfig(constants.JugFileVowTable, constants.JugFileVowSignature()),
-	Converter: &vow.Converter{},
+	Converter: vow.Converter{},
 }.NewTransformer

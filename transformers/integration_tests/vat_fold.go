@@ -73,7 +73,7 @@ var _ = Describe("VatFold Transformer", func() {
 
 		transformer := event.Transformer{
 			Config:    vatFoldConfig,
-			Converter: &vat_fold.Converter{},
+			Converter: vat_fold.Converter{},
 		}.NewTransformer(db)
 
 		err = transformer.Execute(headerSyncLogs)

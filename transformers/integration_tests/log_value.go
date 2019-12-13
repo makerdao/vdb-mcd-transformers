@@ -55,7 +55,7 @@ var _ = Describe("LogValue Transformer", func() {
 
 		initializer := event.Transformer{
 			Config:    logValueConfig,
-			Converter: &log_value.Converter{},
+			Converter: log_value.Converter{},
 		}
 		transformer := initializer.NewTransformer(db)
 

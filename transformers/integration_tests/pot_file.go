@@ -61,7 +61,7 @@ var _ = Describe("PotFile EventTransformers", func() {
 
 			initializer := event.Transformer{
 				Config:    potFileDSRConfig,
-				Converter: &dsr.Converter{},
+				Converter: dsr.Converter{},
 			}
 
 			logFetcher := fetcher.NewLogFetcher(blockChain)
@@ -115,7 +115,7 @@ var _ = Describe("PotFile EventTransformers", func() {
 
 			initializer := event.Transformer{
 				Config:    potFileVowConfig,
-				Converter: &vow.Converter{},
+				Converter: vow.Converter{},
 			}
 
 			logFetcher := fetcher.NewLogFetcher(blockChain)

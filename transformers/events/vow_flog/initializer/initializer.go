@@ -27,5 +27,5 @@ import (
 
 var EventTransformerInitializer transformer.EventTransformerInitializer = event.Transformer{
 	Config:    shared.GetEventTransformerConfig(constants.VowFlogTable, constants.VowFlogSignature()),
-	Converter: &vow_flog.Converter{},
+	Converter: vow_flog.Converter{},
 }.NewTransformer

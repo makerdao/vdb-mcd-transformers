@@ -66,7 +66,7 @@ var _ = Describe("VatFlux EventTransformer", func() {
 
 		initializer := event.Transformer{
 			Config:    vatFluxConfig,
-			Converter: &vat_flux.Converter{},
+			Converter: vat_flux.Converter{},
 		}
 		transformer := initializer.NewTransformer(db)
 

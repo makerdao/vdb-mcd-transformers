@@ -63,7 +63,7 @@ var _ = Describe("FlapKick Transformer", func() {
 
 		tr := event.Transformer{
 			Config:    flapKickConfig,
-			Converter: &flap_kick.Converter{},
+			Converter: flap_kick.Converter{},
 		}.NewTransformer(db)
 
 		logFetcher := fetcher.NewLogFetcher(blockChain)

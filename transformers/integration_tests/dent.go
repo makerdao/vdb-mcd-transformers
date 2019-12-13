@@ -65,7 +65,7 @@ var _ = Describe("Dent transformer", func() {
 
 		initializer = event.Transformer{
 			Config:    dentConfig,
-			Converter: &dent.Converter{},
+			Converter: dent.Converter{},
 		}
 	})
 

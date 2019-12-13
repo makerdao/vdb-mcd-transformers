@@ -60,7 +60,7 @@ var _ = XDescribe("FlopKick Transformer", func() {
 
 		initializer = event.Transformer{
 			Config:    flopKickConfig,
-			Converter: &flop_kick.Converter{},
+			Converter: flop_kick.Converter{},
 		}
 
 		logFetcher = fetcher.NewLogFetcher(blockChain)

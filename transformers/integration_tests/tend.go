@@ -63,7 +63,7 @@ var _ = Describe("Tend EventTransformer", func() {
 
 		initializer = event.Transformer{
 			Config:    tendConfig,
-			Converter: &tend.Converter{},
+			Converter: tend.Converter{},
 		}
 	})
 

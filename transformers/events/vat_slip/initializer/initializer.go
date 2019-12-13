@@ -27,5 +27,5 @@ import (
 
 var EventTransformerInitializer transformer.EventTransformerInitializer = event.Transformer{
 	Config:    shared.GetEventTransformerConfig(constants.VatSlipTable, constants.VatSlipSignature()),
-	Converter: &vat_slip.Converter{},
+	Converter: vat_slip.Converter{},
 }.NewTransformer

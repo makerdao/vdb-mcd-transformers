@@ -64,7 +64,7 @@ var _ = Describe("VatMove EventTransformer", func() {
 
 		tr := event.Transformer{
 			Config:    vatMoveConfig,
-			Converter: &vat_move.Converter{},
+			Converter: vat_move.Converter{},
 		}.NewTransformer(db)
 
 		err = tr.Execute(headerSyncLogs)

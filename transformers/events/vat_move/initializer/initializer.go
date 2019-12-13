@@ -26,5 +26,5 @@ import (
 
 var EventTransformerInitializer transformer.EventTransformerInitializer = event.Transformer{
 	Config:    shared.GetEventTransformerConfig(constants.VatMoveTable, constants.VatMoveSignature()),
-	Converter: &vat_move.Converter{},
+	Converter: vat_move.Converter{},
 }.NewTransformer

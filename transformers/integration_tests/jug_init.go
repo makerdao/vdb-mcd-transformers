@@ -67,7 +67,7 @@ var _ = Describe("JugInit EventTransformer", func() {
 
 		transformer := event.Transformer{
 			Config:    jugInitConfig,
-			Converter: &jug_init.Converter{},
+			Converter: jug_init.Converter{},
 		}.NewTransformer(db)
 
 		err = transformer.Execute(headerSyncLogs)
