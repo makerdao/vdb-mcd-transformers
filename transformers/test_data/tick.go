@@ -17,6 +17,9 @@
 package test_data
 
 import (
+	"math/rand"
+	"strconv"
+
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -24,8 +27,6 @@ import (
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
-	"math/rand"
-	"strconv"
 )
 
 var (
@@ -71,4 +72,4 @@ var tickModel = event.InsertionModel{
 	},
 }
 
-func TickModel() event.InsertionModel { return CopyEventModel(tickModel) }
+func TickModel() event.InsertionModel { return CopyModel(tickModel) }

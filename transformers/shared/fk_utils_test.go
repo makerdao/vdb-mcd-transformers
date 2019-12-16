@@ -29,7 +29,6 @@ var _ = Describe("Shared repository", func() {
 	const hexIlk = "0x464b450000000000000000000000000000000000000000000000000000000000"
 
 	BeforeEach(func() {
-		db = test_config.NewTestDB(test_config.NewTestNode())
 		test_config.CleanTestDB(db)
 	})
 

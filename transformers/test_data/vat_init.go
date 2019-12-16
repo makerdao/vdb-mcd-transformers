@@ -17,6 +17,8 @@
 package test_data
 
 import (
+	"math/rand"
+
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -24,7 +26,6 @@ import (
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
-	"math/rand"
 )
 
 var rawVatInitLog = types.Log{
@@ -64,4 +65,4 @@ var vatInitModel = event.InsertionModel{
 	},
 }
 
-func VatInitModel() event.InsertionModel { return CopyEventModel(vatInitModel) }
+func VatInitModel() event.InsertionModel { return CopyModel(vatInitModel) }
