@@ -30,6 +30,7 @@ const (
 	InsertSpotIlkMatQuery = `INSERT INTO maker.spot_ilk_mat (diff_id, header_id, ilk_id, mat) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
 	insertSpotVatQuery    = `INSERT INTO maker.spot_vat (diff_id, header_id, vat) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
 	insertSpotParQuery    = `INSERT INTO maker.spot_par (diff_id, header_id, par) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
+	insertSpotLiveQuery   = `INSERT INTO maker.spot_live (diff_id, header_id, live) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
 )
 
 type SpotStorageRepository struct {
@@ -46,6 +47,8 @@ func (repository SpotStorageRepository) Create(diffID, headerID int64, metadata 
 		return repository.insertSpotVat(diffID, headerID, value.(string))
 	case Par:
 		return repository.insertSpotPar(diffID, headerID, value.(string))
+	case Live:
+		return repository.insertSpotLive(diffID, headerID, value.(string))
 
 	default:
 		panic(fmt.Sprintf("unrecognized spot contract storage name: %s", metadata.Name))
@@ -80,6 +83,11 @@ func (repository SpotStorageRepository) insertSpotVat(diffID, headerID int64, va
 
 func (repository SpotStorageRepository) insertSpotPar(diffID, headerID int64, par string) error {
 	_, err := repository.db.Exec(insertSpotParQuery, diffID, headerID, par)
+	return err
+}
+
+func (repository SpotStorageRepository) insertSpotLive(diffID, headerID int64, live string) error {
+	_, err := repository.db.Exec(insertSpotLiveQuery, diffID, headerID, live)
 	return err
 }
 

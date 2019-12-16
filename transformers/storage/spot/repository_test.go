@@ -193,4 +193,27 @@ var _ = Describe("Spot storage repository", func() {
 		Expect(getCountErr).NotTo(HaveOccurred())
 		Expect(count).To(Equal(1))
 	})
+
+	It("persists a spot live", func() {
+		err := repo.Create(diffID, fakeHeaderID, spot.LiveMetadata, fakeUint256)
+
+		Expect(err).NotTo(HaveOccurred())
+		var result VariableRes
+		err = db.Get(&result, `SELECT diff_id, header_id, live AS value FROM maker.spot_live`)
+		Expect(err).NotTo(HaveOccurred())
+		AssertVariable(result, diffID, fakeHeaderID, fakeUint256)
+	})
+
+	It("does not duplicate spot live", func() {
+		insertOneErr := repo.Create(diffID, fakeHeaderID, spot.LiveMetadata, fakeUint256)
+		Expect(insertOneErr).NotTo(HaveOccurred())
+
+		insertTwoErr := repo.Create(diffID, fakeHeaderID, spot.LiveMetadata, fakeUint256)
+
+		Expect(insertTwoErr).NotTo(HaveOccurred())
+		var count int
+		getCountErr := db.Get(&count, `SELECT count(*) FROM maker.spot_live`)
+		Expect(getCountErr).NotTo(HaveOccurred())
+		Expect(count).To(Equal(1))
+	})
 })

@@ -89,6 +89,19 @@ var _ = Describe("Executing the transformer", func() {
 		test_helpers.AssertVariable(parResult, spotParDiff.ID, headerID, "1000000000000000000000000000")
 	})
 
+	It("reads in a Spot Live storage diff row and persists it", func() {
+		key := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000004")
+		value := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000001")
+		spotLiveDiff := test_helpers.CreateDiffRecord(db, header, transformer.HashedAddress, key, value)
+
+		err := transformer.Execute(spotLiveDiff)
+		Expect(err).NotTo(HaveOccurred())
+		var liveResult test_helpers.VariableRes
+		err = db.Get(&liveResult, `SELECT diff_id, header_id, live AS value FROM maker.spot_live`)
+		Expect(err).NotTo(HaveOccurred())
+		test_helpers.AssertVariable(liveResult, spotLiveDiff.ID, headerID, "1")
+	})
+
 	It("reads in a Spot Ilk Pip storage diff row and persists it", func() {
 		key := common.HexToHash("1730ac98111482efebd8acadb14d7fa301298e0d95bf3c34c3378ef524670bc6")
 		value := common.HexToHash("000000000000000000000000a53e6efb4cbed841eace02220498860905e94998")
