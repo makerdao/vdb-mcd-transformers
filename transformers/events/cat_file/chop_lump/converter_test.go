@@ -25,20 +25,18 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
-	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("Cat file chop lump converter", func() {
 	var (
-		converter chop_lump.Converter
-		db        *postgres.DB
+		converter = chop_lump.Converter{}
+		db        = test_config.NewTestDB(test_config.NewTestNode())
 	)
 
 	BeforeEach(func() {
-		converter = chop_lump.Converter{}
-		db = test_config.NewTestDB(test_config.NewTestNode())
+		test_config.CleanTestDB(db)
 	})
 
 	Context("chop events", func() {

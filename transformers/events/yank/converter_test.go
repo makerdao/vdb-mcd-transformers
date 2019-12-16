@@ -19,20 +19,21 @@ package yank_test
 import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
-	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
-
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/yank"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("Yank Converter", func() {
-	db := test_config.NewTestDB(test_config.NewTestNode())
-	var converter yank.Converter
+	var (
+		converter = yank.Converter{}
+		db        = test_config.NewTestDB(test_config.NewTestNode())
+	)
 
 	It("converts logs to models", func() {
 		models, err := converter.ToModels(constants.FlipABI(), []core.HeaderSyncLog{test_data.YankHeaderSyncLog}, db)

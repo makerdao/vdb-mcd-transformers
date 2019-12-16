@@ -19,25 +19,22 @@ package vow_flog_test
 import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
-	"github.com/makerdao/vulcanizedb/pkg/core"
-	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
-
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/vow_flog"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
+	"github.com/makerdao/vulcanizedb/pkg/core"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("Vow flog converter", func() {
 	var (
-		converter vow_flog.Converter
-		db        *postgres.DB
+		converter = vow_flog.Converter{}
+		db        = test_config.NewTestDB(test_config.NewTestNode())
 	)
 
 	BeforeEach(func() {
-		converter = vow_flog.Converter{}
-		db = test_config.NewTestDB(test_config.NewTestNode())
+		test_config.CleanTestDB(db)
 	})
 
 	It("returns err if log is missing topics", func() {

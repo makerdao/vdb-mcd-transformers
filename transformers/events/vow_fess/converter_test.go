@@ -23,17 +23,17 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/pkg/core"
-	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("Vow fess converter", func() {
-	var converter vow_fess.Converter
-	var testDb *postgres.DB
-	BeforeEach(func() {
+	var (
 		converter = vow_fess.Converter{}
-		testDb = test_config.NewTestDB(test_config.NewTestNode())
+		testDb    = test_config.NewTestDB(test_config.NewTestNode())
+	)
+	BeforeEach(func() {
+		test_config.CleanTestDB(testDb)
 	})
 
 	It("returns err if log is missing topics", func() {

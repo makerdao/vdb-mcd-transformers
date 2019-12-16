@@ -19,24 +19,20 @@ package vat_slip_test
 import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
-	"github.com/makerdao/vulcanizedb/pkg/core"
-	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
-
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_slip"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
+	"github.com/makerdao/vulcanizedb/pkg/core"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("Vat slip converter", func() {
 	var (
-		converter vat_slip.Converter
-		db        *postgres.DB
+		converter = vat_slip.Converter{}
+		db        = test_config.NewTestDB(test_config.NewTestNode())
 	)
-	converter = vat_slip.Converter{}
-	db = test_config.NewTestDB(test_config.NewTestNode())
 
 	It("returns err if log is missing topics", func() {
 		badLog := core.HeaderSyncLog{

@@ -25,20 +25,18 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
-	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("Flip Deal Converter", func() {
 	var (
-		converter deal.Converter
-		db        *postgres.DB
+		converter = deal.Converter{}
+		db        = test_config.NewTestDB(test_config.NewTestNode())
 	)
 
 	BeforeEach(func() {
-		converter = deal.Converter{}
-		db = test_config.NewTestDB(test_config.NewTestNode())
+		test_config.CleanTestDB(db)
 	})
 
 	It("converts logs to models", func() {

@@ -28,12 +28,11 @@ import (
 
 var _ = Describe("Vat move converter", func() {
 	var (
-		converter vat_move.Converter
+		converter = vat_move.Converter{}
 		db        = test_config.NewTestDB(test_config.NewTestNode())
 	)
 
 	BeforeEach(func() {
-		converter = vat_move.Converter{}
 		test_config.CleanTestDB(db)
 	})
 
