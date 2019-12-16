@@ -40,7 +40,7 @@ var _ = Describe("Yank Converter", func() {
 		var addressID int64
 		addrErr := db.Get(&addressID, `SELECT id FROM public.addresses`)
 		Expect(addrErr).NotTo(HaveOccurred())
-		expectedModel := test_data.YankModel
+		expectedModel := test_data.YankModel()
 		expectedModel.ColumnValues[constants.AddressColumn] = addressID
 		Expect(err).NotTo(HaveOccurred())
 		Expect(models).To(Equal([]event.InsertionModel{expectedModel}))

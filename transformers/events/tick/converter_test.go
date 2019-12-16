@@ -42,7 +42,7 @@ var _ = Describe("TickConverter", func() {
 			addrErr := db.Get(&addressID, `SELECT id FROM public.addresses`)
 			Expect(addrErr).NotTo(HaveOccurred())
 
-			expectedModel := test_data.TickModel
+			expectedModel := test_data.TickModel()
 			expectedModel.ColumnValues[constants.AddressColumn] = addressID
 
 			Expect(models).To(Equal([]event.InsertionModel{expectedModel}))

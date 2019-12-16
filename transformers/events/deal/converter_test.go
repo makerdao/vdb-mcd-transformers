@@ -45,9 +45,8 @@ var _ = Describe("Flip Deal Converter", func() {
 		var addressID int64
 		addrErr := db.Get(&addressID, `SELECT id FROM public.addresses`)
 		Expect(addrErr).NotTo(HaveOccurred())
-		expectedModel := test_data.DealModel
+		expectedModel := test_data.DealModel()
 		expectedModel.ColumnValues[constants.AddressColumn] = addressID
-		expectedModel = test_data.DealModel
 		Expect(models).To(Equal([]event.InsertionModel{expectedModel}))
 	})
 

@@ -53,7 +53,7 @@ var _ = Describe("Vat init converter", func() {
 		ilkID, ilkErr := shared.GetOrCreateIlk(ilk, db)
 		Expect(ilkErr).NotTo(HaveOccurred())
 
-		expectedModel := test_data.VatInitModel
+		expectedModel := test_data.VatInitModel()
 		expectedModel.ColumnValues[constants.IlkColumn] = ilkID
 
 		Expect(len(models)).To(Equal(1))

@@ -17,8 +17,6 @@
 package test_data
 
 import (
-	"math/rand"
-
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -27,6 +25,7 @@ import (
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
+	"math/rand"
 )
 
 var rawDealLog = types.Log{
@@ -53,7 +52,7 @@ var DealHeaderSyncLog = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-var DealModel = event.InsertionModel{
+var dealModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.DealTable,
 	OrderedColumns: []event.ColumnName{
@@ -69,3 +68,5 @@ var DealModel = event.InsertionModel{
 		event.LogFK:             DealHeaderSyncLog.ID,
 	},
 }
+
+func DealModel() event.InsertionModel { return CopyEventModel(dealModel) }

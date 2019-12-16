@@ -52,7 +52,7 @@ var _ = Describe("Vat slip converter", func() {
 		ilk := log[0].Log.Topics[1].Hex()
 		ilkID, ilkErr := shared.GetOrCreateIlk(ilk, db)
 		Expect(ilkErr).NotTo(HaveOccurred())
-		expectedModel := test_data.VatSlipModelWithPositiveWad
+		expectedModel := test_data.VatSlipModelWithPositiveWad()
 		expectedModel.ColumnValues[constants.IlkColumn] = ilkID
 
 		Expect(len(models)).To(Equal(1))
@@ -67,7 +67,7 @@ var _ = Describe("Vat slip converter", func() {
 		ilk := log[0].Log.Topics[1].Hex()
 		ilkID, ilkErr := shared.GetOrCreateIlk(ilk, db)
 		Expect(ilkErr).NotTo(HaveOccurred())
-		expectedModel := test_data.VatSlipModelWithNegativeWad
+		expectedModel := test_data.VatSlipModelWithNegativeWad()
 		expectedModel.ColumnValues[constants.IlkColumn] = ilkID
 
 		Expect(len(models)).To(Equal(1))

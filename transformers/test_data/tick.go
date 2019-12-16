@@ -17,19 +17,15 @@
 package test_data
 
 import (
-	"math/rand"
-	"strconv"
-
-	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
-
-	"github.com/makerdao/vulcanizedb/pkg/core"
-
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/makerdao/vulcanizedb/pkg/fakes"
-
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
+	"github.com/makerdao/vulcanizedb/pkg/core"
+	"github.com/makerdao/vulcanizedb/pkg/fakes"
+	"math/rand"
+	"strconv"
 )
 
 var (
@@ -61,7 +57,7 @@ var FlipTickHeaderSyncLog = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-var TickModel = event.InsertionModel{
+var tickModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.TickTable,
 	OrderedColumns: []event.ColumnName{
@@ -74,3 +70,5 @@ var TickModel = event.InsertionModel{
 		constants.AddressColumn: FlipTickHeaderSyncLog.Log.Address.Hex(),
 	},
 }
+
+func TickModel() event.InsertionModel { return CopyEventModel(tickModel) }
