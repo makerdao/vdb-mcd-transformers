@@ -17,7 +17,6 @@
 package vat_move_test
 
 import (
-	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_move"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
@@ -27,24 +26,17 @@ import (
 )
 
 var _ = Describe("Vat move converter", func() {
-	var (
-		converter = vat_move.Converter{}
-		db        = test_config.NewTestDB(test_config.NewTestNode())
-	)
-
-	BeforeEach(func() {
-		test_config.CleanTestDB(db)
-	})
+	var converter = vat_move.Converter{}
 
 	It("returns err if logs are missing topics", func() {
 		badLog := core.HeaderSyncLog{}
-		_, err := converter.ToModels(constants.VatABI(), []core.HeaderSyncLog{badLog}, db)
+		_, err := converter.ToModels(constants.VatABI(), []core.HeaderSyncLog{badLog}, nil)
 
 		Expect(err).To(HaveOccurred())
 	})
 
 	It("converts a log to a model", func() {
-		models, err := converter.ToModels(constants.VatABI(), []core.HeaderSyncLog{test_data.VatMoveHeaderSyncLog}, db)
+		models, err := converter.ToModels(constants.VatABI(), []core.HeaderSyncLog{test_data.VatMoveHeaderSyncLog}, nil)
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(len(models)).To(Equal(1))

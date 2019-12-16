@@ -34,6 +34,10 @@ var _ = Describe("Vat slip converter", func() {
 		db        = test_config.NewTestDB(test_config.NewTestNode())
 	)
 
+	BeforeEach(func() {
+		test_config.CleanTestDB(db)
+	})
+
 	It("returns err if log is missing topics", func() {
 		badLog := core.HeaderSyncLog{
 			Log: types.Log{

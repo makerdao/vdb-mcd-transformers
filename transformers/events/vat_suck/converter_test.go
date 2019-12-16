@@ -19,7 +19,6 @@ package vat_suck_test
 import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_suck"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
@@ -29,13 +28,10 @@ import (
 )
 
 var _ = Describe("VatSuck converter", func() {
-	var (
-		converter = vat_suck.Converter{}
-		db        = test_config.NewTestDB(test_config.NewTestNode())
-	)
+	var converter = vat_suck.Converter{}
 
 	It("Converts log to a model", func() {
-		models, err := converter.ToModels(constants.VatABI(), []core.HeaderSyncLog{test_data.VatSuckHeaderSyncLog}, db)
+		models, err := converter.ToModels(constants.VatABI(), []core.HeaderSyncLog{test_data.VatSuckHeaderSyncLog}, nil)
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(len(models)).To(Equal(1))
@@ -52,7 +48,7 @@ var _ = Describe("VatSuck converter", func() {
 				}},
 		}
 
-		_, err := converter.ToModels(constants.VatABI(), []core.HeaderSyncLog{badLog}, db)
+		_, err := converter.ToModels(constants.VatABI(), []core.HeaderSyncLog{badLog}, nil)
 
 		Expect(err).To(HaveOccurred())
 	})

@@ -18,7 +18,6 @@ package vow_fess_test
 
 import (
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/vow_fess"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
@@ -28,13 +27,7 @@ import (
 )
 
 var _ = Describe("Vow fess converter", func() {
-	var (
-		converter = vow_fess.Converter{}
-		testDb    = test_config.NewTestDB(test_config.NewTestNode())
-	)
-	BeforeEach(func() {
-		test_config.CleanTestDB(testDb)
-	})
+	var converter = vow_fess.Converter{}
 
 	It("returns err if log is missing topics", func() {
 		badLog := core.HeaderSyncLog{
@@ -42,12 +35,12 @@ var _ = Describe("Vow fess converter", func() {
 				Data: []byte{1, 1, 1, 1, 1},
 			}}
 
-		_, err := converter.ToModels(constants.VowABI(), []core.HeaderSyncLog{badLog}, testDb)
+		_, err := converter.ToModels(constants.VowABI(), []core.HeaderSyncLog{badLog}, nil)
 		Expect(err).To(HaveOccurred())
 	})
 
 	It("converts a log to a model", func() {
-		models, err := converter.ToModels(constants.VowABI(), []core.HeaderSyncLog{test_data.VowFessHeaderSyncLog}, testDb)
+		models, err := converter.ToModels(constants.VowABI(), []core.HeaderSyncLog{test_data.VowFessHeaderSyncLog}, nil)
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(len(models)).To(Equal(1))
