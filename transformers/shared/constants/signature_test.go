@@ -102,6 +102,10 @@ var _ = Describe("Signature constants", func() {
 		Expect(PotFileVowSignature()).To(Equal("0xd4e8be8300000000000000000000000000000000000000000000000000000000"))
 	})
 
+	It("generates pot join signature", func() {
+		Expect(PotJoinSignature()).To(Equal("0x049878f300000000000000000000000000000000000000000000000000000000"))
+	})
+
 	It("generates spot file mat signature", func() {
 		Expect(SpotFileMatSignature()).To(Equal("0x1a0b287e00000000000000000000000000000000000000000000000000000000"))
 	})

@@ -9110,6 +9110,38 @@ ALTER SEQUENCE maker.pot_file_vow_id_seq OWNED BY maker.pot_file_vow.id;
 
 
 --
+-- Name: pot_join; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.pot_join (
+    id integer NOT NULL,
+    header_id integer NOT NULL,
+    log_id bigint NOT NULL,
+    wad numeric
+);
+
+
+--
+-- Name: pot_join_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.pot_join_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: pot_join_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.pot_join_id_seq OWNED BY maker.pot_join.id;
+
+
+--
 -- Name: spot_file_mat; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -11967,6 +11999,13 @@ ALTER TABLE ONLY maker.pot_file_vow ALTER COLUMN id SET DEFAULT nextval('maker.p
 
 
 --
+-- Name: pot_join id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.pot_join ALTER COLUMN id SET DEFAULT nextval('maker.pot_join_id_seq'::regclass);
+
+
+--
 -- Name: spot_file_mat id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
@@ -13822,6 +13861,22 @@ ALTER TABLE ONLY maker.pot_file_vow
 
 ALTER TABLE ONLY maker.pot_file_vow
     ADD CONSTRAINT pot_file_vow_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: pot_join pot_join_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.pot_join
+    ADD CONSTRAINT pot_join_header_id_log_id_key UNIQUE (header_id, log_id);
+
+
+--
+-- Name: pot_join pot_join_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.pot_join
+    ADD CONSTRAINT pot_join_pkey PRIMARY KEY (id);
 
 
 --
@@ -16147,6 +16202,20 @@ CREATE INDEX pot_file_vow_header_index ON maker.pot_file_vow USING btree (header
 --
 
 CREATE INDEX pot_file_vow_log_index ON maker.pot_file_vow USING btree (log_id);
+
+
+--
+-- Name: pot_join_header_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX pot_join_header_index ON maker.pot_join USING btree (header_id);
+
+
+--
+-- Name: pot_join_log_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX pot_join_log_index ON maker.pot_join USING btree (log_id);
 
 
 --
@@ -18990,6 +19059,22 @@ ALTER TABLE ONLY maker.pot_file_vow
 
 ALTER TABLE ONLY maker.pot_file_vow
     ADD CONSTRAINT pot_file_vow_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: pot_join pot_join_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.pot_join
+    ADD CONSTRAINT pot_join_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: pot_join pot_join_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.pot_join
+    ADD CONSTRAINT pot_join_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
 
 
 --
