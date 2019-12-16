@@ -45,4 +45,4 @@ var potCageModel = event.InsertionModel{
 	},
 }
 
-func PotCageModel() event.InsertionModel { return CopyEventModel(potCageModel) }
+func PotCageModel() event.InsertionModel { return CopyModel(potCageModel) }

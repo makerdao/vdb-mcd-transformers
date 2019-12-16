@@ -56,7 +56,7 @@ var LogValueHeaderSyncLog = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-func LogValueModel() event.InsertionModel { return CopyEventModel(logValueModel) }
+func LogValueModel() event.InsertionModel { return CopyModel(logValueModel) }
 
 var logValueModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,

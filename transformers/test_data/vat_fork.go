@@ -108,8 +108,8 @@ var vatForkModelWithPositiveDinkDart = event.InsertionModel{
 }
 
 func VatForkModelWithNegativeDinkDart() event.InsertionModel {
-	return CopyEventModel(vatForkModelWithNegativeDinkDart)
+	return CopyModel(vatForkModelWithNegativeDinkDart)
 }
 func VatForkModelWithPositiveDinkDart() event.InsertionModel {
-	return CopyEventModel(vatForkModelWithPositiveDinkDart)
+	return CopyModel(vatForkModelWithPositiveDinkDart)
 }

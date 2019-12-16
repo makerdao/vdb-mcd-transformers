@@ -52,7 +52,7 @@ var JugInitHeaderSyncLog = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-func JugInitModel() event.InsertionModel { return CopyEventModel(jugInitModel) }
+func JugInitModel() event.InsertionModel { return CopyModel(jugInitModel) }
 
 var jugInitModel = event.InsertionModel{
 	SchemaName:     constants.MakerSchema,

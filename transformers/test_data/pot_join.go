@@ -51,7 +51,7 @@ var PotJoinHeaderSyncLog = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-func PotJoinModel() event.InsertionModel { return CopyEventModel(potJoinModel) }
+func PotJoinModel() event.InsertionModel { return CopyModel(potJoinModel) }
 
 var potJoinModel = event.InsertionModel{
 	SchemaName:     constants.MakerSchema,

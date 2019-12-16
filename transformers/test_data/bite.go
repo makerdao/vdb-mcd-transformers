@@ -65,7 +65,7 @@ var BiteHeaderSyncLog = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-func BiteModel() event.InsertionModel { return CopyEventModel(biteModel) }
+func BiteModel() event.InsertionModel { return CopyModel(biteModel) }
 
 var biteModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,

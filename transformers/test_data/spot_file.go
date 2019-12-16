@@ -53,7 +53,7 @@ var SpotFileMatHeaderSyncLog = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-func SpotFileMatModel() event.InsertionModel { return CopyEventModel(spotFileMatModel) }
+func SpotFileMatModel() event.InsertionModel { return CopyModel(spotFileMatModel) }
 
 var spotFileMatModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
@@ -111,7 +111,7 @@ var spotFileParModel = event.InsertionModel{
 	},
 }
 
-func SpotFileParModel() event.InsertionModel { return CopyEventModel(spotFileParModel) }
+func SpotFileParModel() event.InsertionModel { return CopyModel(spotFileParModel) }
 
 var rawSpotFilePipLog = types.Log{
 	Address: common.HexToAddress(SpotAddress()),
@@ -137,7 +137,7 @@ var SpotFilePipHeaderSyncLog = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-func SpotFilePipModel() event.InsertionModel { return CopyEventModel(spotFilePipModel) }
+func SpotFilePipModel() event.InsertionModel { return CopyModel(spotFilePipModel) }
 
 var spotFilePipModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,

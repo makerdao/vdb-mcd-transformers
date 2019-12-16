@@ -51,7 +51,7 @@ var NewCdpHeaderSyncLog = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-func NewCdpModel() event.InsertionModel { return CopyEventModel(newCdpModel) }
+func NewCdpModel() event.InsertionModel { return CopyModel(newCdpModel) }
 
 var newCdpModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,

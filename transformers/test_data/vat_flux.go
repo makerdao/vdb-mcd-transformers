@@ -66,4 +66,4 @@ var vatFluxModel = event.InsertionModel{
 	},
 }
 
-func VatFluxModel() event.InsertionModel { return CopyEventModel(vatFluxModel) }
+func VatFluxModel() event.InsertionModel { return CopyModel(vatFluxModel) }

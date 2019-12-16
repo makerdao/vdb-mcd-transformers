@@ -68,7 +68,7 @@ var FlipKickHeaderSyncLog = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-func FlipKickModel() event.InsertionModel { return CopyEventModel(flipKickModel) }
+func FlipKickModel() event.InsertionModel { return CopyModel(flipKickModel) }
 
 var flipKickModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,

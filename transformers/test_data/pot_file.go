@@ -87,5 +87,5 @@ var potFileVowModel = event.InsertionModel{
 	},
 }
 
-func PotFileDSRModel() event.InsertionModel { return CopyEventModel(potFileDSRModel) }
-func PotFileVowModel() event.InsertionModel { return CopyEventModel(potFileVowModel) }
+func PotFileDSRModel() event.InsertionModel { return CopyModel(potFileDSRModel) }
+func PotFileVowModel() event.InsertionModel { return CopyModel(potFileVowModel) }

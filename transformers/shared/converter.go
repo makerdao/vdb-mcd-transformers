@@ -19,10 +19,8 @@ package shared
 import (
 	"errors"
 	"fmt"
-
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/makerdao/vulcanizedb/libraries/shared/constants"
-	"github.com/makerdao/vulcanizedb/pkg/core"
 )
 
 const (
@@ -42,11 +40,6 @@ var (
 		return fmt.Errorf("converter could not create FK: %v", err)
 	}
 )
-
-// TODO purge when everything moved to vDB interface
-type Converter interface {
-	ToModels(contractAbi string, ethLog []core.HeaderSyncLog) ([]InsertionModel, error)
-}
 
 func VerifyLog(log types.Log, expectedNumTopics int, isDataRequired bool) error {
 	actualNumTopics := len(log.Topics)

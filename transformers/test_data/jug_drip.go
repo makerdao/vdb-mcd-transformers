@@ -65,4 +65,4 @@ var jugDripModel = event.InsertionModel{
 	},
 }
 
-func JugDripModel() event.InsertionModel { return CopyEventModel(jugDripModel) }
+func JugDripModel() event.InsertionModel { return CopyModel(jugDripModel) }

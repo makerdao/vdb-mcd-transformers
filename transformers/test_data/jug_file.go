@@ -68,7 +68,7 @@ var jugFileIlkModel = event.InsertionModel{
 	},
 }
 
-func JugFileIlkModel() event.InsertionModel { return CopyEventModel(jugFileIlkModel) }
+func JugFileIlkModel() event.InsertionModel { return CopyModel(jugFileIlkModel) }
 
 var rawJugFileBaseLog = types.Log{
 	Address: common.HexToAddress(JugAddress()),
@@ -108,7 +108,7 @@ var jugFileBaseModel = event.InsertionModel{
 	},
 }
 
-func JugFileBaseModel() event.InsertionModel { return CopyEventModel(jugFileBaseModel) }
+func JugFileBaseModel() event.InsertionModel { return CopyModel(jugFileBaseModel) }
 
 var rawJugFileVowLog = types.Log{
 	Address: common.HexToAddress(JugAddress()),
@@ -148,4 +148,4 @@ var jugFileVowModel = event.InsertionModel{
 	},
 }
 
-func JugFileVowModel() event.InsertionModel { return CopyEventModel(jugFileVowModel) }
+func JugFileVowModel() event.InsertionModel { return CopyModel(jugFileVowModel) }
