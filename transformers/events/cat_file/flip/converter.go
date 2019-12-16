@@ -37,7 +37,7 @@ func (converter Converter) ToModels(_ string, logs []core.HeaderSyncLog, db *pos
 		ilk := log.Log.Topics[2].Hex()
 		ilkId, ilkErr := shared.GetOrCreateIlk(ilk, db)
 		if ilkErr != nil {
-			shared.ErrCouldNotCreateFK(ilkErr)
+			return nil, shared.ErrCouldNotCreateFK(ilkErr)
 		}
 
 		what := shared.DecodeHexToText(log.Log.Topics[3].Hex())
