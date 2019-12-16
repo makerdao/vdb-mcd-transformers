@@ -37,7 +37,7 @@ func (Converter) ToModels(_ string, logs []core.HeaderSyncLog, db *postgres.DB) 
 		ilk := log.Log.Topics[2].Hex()
 		ilkID, ilkErr := shared.GetOrCreateIlk(ilk, db)
 		if ilkErr != nil {
-			_ = shared.ErrCouldNotCreateFK(ilkErr)
+			return nil, shared.ErrCouldNotCreateFK(ilkErr)
 		}
 
 		model := event.InsertionModel{
