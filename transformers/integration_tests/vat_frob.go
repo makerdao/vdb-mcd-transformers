@@ -25,6 +25,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/fetcher"
 	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 	"github.com/makerdao/vulcanizedb/pkg/core"
@@ -39,7 +40,7 @@ var _ = Describe("Vat frob Transformer", func() {
 		blockChain    core.BlockChain
 		logFetcher    fetcher.ILogFetcher
 		vatFrobConfig transformer.EventTransformerConfig
-		initializer   shared.EventTransformer
+		initializer   event.Transformer
 	)
 
 	BeforeEach(func() {
@@ -58,10 +59,9 @@ var _ = Describe("Vat frob Transformer", func() {
 			Topic:             constants.VatFrobSignature(),
 		}
 
-		initializer = shared.EventTransformer{
-			Config:     vatFrobConfig,
-			Converter:  &vat_frob.VatFrobConverter{},
-			Repository: &vat_frob.VatFrobRepository{},
+		initializer = event.Transformer{
+			Config:    vatFrobConfig,
+			Converter: vat_frob.Converter{},
 		}
 	})
 
@@ -81,7 +81,7 @@ var _ = Describe("Vat frob Transformer", func() {
 
 		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
 
-		transformer := initializer.NewEventTransformer(db)
+		transformer := initializer.NewTransformer(db)
 		err = transformer.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 

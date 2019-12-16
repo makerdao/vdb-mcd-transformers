@@ -21,7 +21,6 @@ import (
 
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_frob"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/cat"
@@ -93,14 +92,13 @@ var _ = Describe("Urn state computed columns", func() {
 			urnMetadata := test_helpers.GetUrnMetadata(test_helpers.FakeIlk.Hex, fakeGuy)
 			test_helpers.CreateUrn(db, urnSetupData, headerOne, urnMetadata, vatRepository)
 
-			frobRepo := vat_frob.VatFrobRepository{}
-			frobRepo.SetDB(db)
 			frobEvent := test_data.VatFrobModelWithPositiveDart()
-			frobEvent.ForeignKeyValues[constants.UrnFK] = fakeGuy
-			frobEvent.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
-			frobEvent.ColumnValues[constants.HeaderFK] = headerOne.Id
-			frobEvent.ColumnValues[constants.LogFK] = logId
-			insertFrobErr := frobRepo.Create([]shared.InsertionModel{frobEvent})
+			urnID, urnErr := shared.GetOrCreateUrn(fakeGuy, test_helpers.FakeIlk.Hex, db)
+			Expect(urnErr).NotTo(HaveOccurred())
+			frobEvent.ColumnValues[event.HeaderFK] = headerOne.Id
+			frobEvent.ColumnValues[constants.UrnColumn] = urnID
+			frobEvent.ColumnValues[event.LogFK] = logId
+			insertFrobErr := event.PersistModels([]event.InsertionModel{frobEvent}, db)
 			Expect(insertFrobErr).NotTo(HaveOccurred())
 
 			var actualFrobs test_helpers.FrobEvent
@@ -114,30 +112,28 @@ var _ = Describe("Urn state computed columns", func() {
 			expectedFrobs := test_helpers.FrobEvent{
 				IlkIdentifier: test_helpers.FakeIlk.Identifier,
 				UrnIdentifier: fakeGuy,
-				Dink:          frobEvent.ColumnValues["dink"].(string),
-				Dart:          frobEvent.ColumnValues["dart"].(string),
+				Dink:          frobEvent.ColumnValues[constants.DinkColumn].(string),
+				Dart:          frobEvent.ColumnValues[constants.DartColumn].(string),
 			}
 
 			Expect(actualFrobs).To(Equal(expectedFrobs))
 		})
 
 		Describe("result pagination", func() {
-			var frobEventOne, frobEventTwo shared.InsertionModel
+			var frobEventOne, frobEventTwo event.InsertionModel
 
 			BeforeEach(func() {
 				urnSetupData := test_helpers.GetUrnSetupData()
 				urnMetadata := test_helpers.GetUrnMetadata(test_helpers.FakeIlk.Hex, fakeGuy)
 				test_helpers.CreateUrn(db, urnSetupData, headerOne, urnMetadata, vatRepository)
 
-				frobRepo := vat_frob.VatFrobRepository{}
-				frobRepo.SetDB(db)
-
 				frobEventOne = test_data.VatFrobModelWithPositiveDart()
-				frobEventOne.ForeignKeyValues[constants.UrnFK] = fakeGuy
-				frobEventOne.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
-				frobEventOne.ColumnValues[constants.HeaderFK] = headerOne.Id
-				frobEventOne.ColumnValues[constants.LogFK] = logId
-				insertFrobErrOne := frobRepo.Create([]shared.InsertionModel{frobEventOne})
+				urnID, urnErr := shared.GetOrCreateUrn(fakeGuy, test_helpers.FakeIlk.Hex, db)
+				Expect(urnErr).NotTo(HaveOccurred())
+				frobEventOne.ColumnValues[constants.UrnColumn] = urnID
+				frobEventOne.ColumnValues[event.HeaderFK] = headerOne.Id
+				frobEventOne.ColumnValues[event.LogFK] = logId
+				insertFrobErrOne := event.PersistModels([]event.InsertionModel{frobEventOne}, db)
 				Expect(insertFrobErrOne).NotTo(HaveOccurred())
 
 				// insert more recent frob for same urn
@@ -145,11 +141,10 @@ var _ = Describe("Urn state computed columns", func() {
 				logTwoId := test_data.CreateTestLog(headerTwo.Id, db).ID
 
 				frobEventTwo = test_data.VatFrobModelWithNegativeDink()
-				frobEventTwo.ForeignKeyValues[constants.UrnFK] = fakeGuy
-				frobEventTwo.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
-				frobEventTwo.ColumnValues[constants.HeaderFK] = headerTwo.Id
-				frobEventTwo.ColumnValues[constants.LogFK] = logTwoId
-				insertFrobErrTwo := frobRepo.Create([]shared.InsertionModel{frobEventTwo})
+				frobEventTwo.ColumnValues[constants.UrnColumn] = urnID
+				frobEventTwo.ColumnValues[event.HeaderFK] = headerTwo.Id
+				frobEventTwo.ColumnValues[event.LogFK] = logTwoId
+				insertFrobErrTwo := event.PersistModels([]event.InsertionModel{frobEventTwo}, db)
 				Expect(insertFrobErrTwo).NotTo(HaveOccurred())
 			})
 
@@ -165,8 +160,8 @@ var _ = Describe("Urn state computed columns", func() {
 				expectedFrob := test_helpers.FrobEvent{
 					IlkIdentifier: test_helpers.FakeIlk.Identifier,
 					UrnIdentifier: fakeGuy,
-					Dink:          frobEventTwo.ColumnValues["dink"].(string),
-					Dart:          frobEventTwo.ColumnValues["dart"].(string),
+					Dink:          frobEventTwo.ColumnValues[constants.DinkColumn].(string),
+					Dart:          frobEventTwo.ColumnValues[constants.DartColumn].(string),
 				}
 				Expect(actualFrobs).To(ConsistOf(expectedFrob))
 			})
@@ -185,8 +180,8 @@ var _ = Describe("Urn state computed columns", func() {
 				expectedFrobs := test_helpers.FrobEvent{
 					IlkIdentifier: test_helpers.FakeIlk.Identifier,
 					UrnIdentifier: fakeGuy,
-					Dink:          frobEventOne.ColumnValues["dink"].(string),
-					Dart:          frobEventOne.ColumnValues["dart"].(string),
+					Dink:          frobEventOne.ColumnValues[constants.DinkColumn].(string),
+					Dart:          frobEventOne.ColumnValues[constants.DartColumn].(string),
 				}
 				Expect(actualFrobs).To(ConsistOf(expectedFrobs))
 			})
@@ -214,9 +209,9 @@ var _ = Describe("Urn state computed columns", func() {
 			expectedBites := test_helpers.BiteEvent{
 				IlkIdentifier: test_helpers.FakeIlk.Identifier,
 				UrnIdentifier: fakeGuy,
-				Ink:           biteEvent.ColumnValues["ink"].(string),
-				Art:           biteEvent.ColumnValues["art"].(string),
-				Tab:           biteEvent.ColumnValues["tab"].(string),
+				Ink:           biteEvent.ColumnValues[constants.InkColumn].(string),
+				Art:           biteEvent.ColumnValues[constants.ArtColumn].(string),
+				Tab:           biteEvent.ColumnValues[constants.TabColumn].(string),
 			}
 
 			Expect(actualBites).To(Equal(expectedBites))
@@ -256,9 +251,9 @@ var _ = Describe("Urn state computed columns", func() {
 				expectedBite := test_helpers.BiteEvent{
 					IlkIdentifier: test_helpers.FakeIlk.Identifier,
 					UrnIdentifier: fakeGuy,
-					Ink:           biteEventTwo.ColumnValues["ink"].(string),
-					Art:           biteEventTwo.ColumnValues["art"].(string),
-					Tab:           biteEventTwo.ColumnValues["tab"].(string),
+					Ink:           biteEventTwo.ColumnValues[constants.InkColumn].(string),
+					Art:           biteEventTwo.ColumnValues[constants.ArtColumn].(string),
+					Tab:           biteEventTwo.ColumnValues[constants.TabColumn].(string),
 				}
 				Expect(actualBites).To(ConsistOf(expectedBite))
 			})
@@ -277,9 +272,9 @@ var _ = Describe("Urn state computed columns", func() {
 				expectedBite := test_helpers.BiteEvent{
 					IlkIdentifier: test_helpers.FakeIlk.Identifier,
 					UrnIdentifier: fakeGuy,
-					Ink:           biteEventOne.ColumnValues["ink"].(string),
-					Art:           biteEventOne.ColumnValues["art"].(string),
-					Tab:           biteEventOne.ColumnValues["tab"].(string),
+					Ink:           biteEventOne.ColumnValues[constants.InkColumn].(string),
+					Art:           biteEventOne.ColumnValues[constants.ArtColumn].(string),
+					Tab:           biteEventOne.ColumnValues[constants.TabColumn].(string),
 				}
 				Expect(actualBites).To(ConsistOf(expectedBite))
 			})

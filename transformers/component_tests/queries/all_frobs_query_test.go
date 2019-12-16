@@ -20,14 +20,13 @@ import (
 	"math/rand"
 	"strconv"
 
-	storage_helper "github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
-
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_frob"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	storage_helper "github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
@@ -37,7 +36,6 @@ import (
 
 var _ = Describe("Frobs query", func() {
 	var (
-		frobRepo               vat_frob.VatFrobRepository
 		headerRepo             repositories.HeaderRepository
 		fakeIlkHex             = test_helpers.FakeIlk.Hex
 		fakeIlkIdentifier      = test_helpers.FakeIlk.Identifier
@@ -50,8 +48,6 @@ var _ = Describe("Frobs query", func() {
 	BeforeEach(func() {
 		test_config.CleanTestDB(db)
 		headerRepo = repositories.NewHeaderRepository(db)
-		frobRepo = vat_frob.VatFrobRepository{}
-		frobRepo.SetDB(db)
 
 		blockOne = rand.Int()
 		timestampOne = int(rand.Int31())
@@ -65,7 +61,7 @@ var _ = Describe("Frobs query", func() {
 			vatFrobLog := test_data.CreateTestLog(headerOne.Id, db)
 			ilkRate := insertIlkRate(fakeIlkHex, diffID, headerOne.Id, db)
 			vatFrobEvent := getFakeVatFrobEvent(fakeIlkHex, fakeUrn, headerOne.Id, vatFrobLog.ID)
-			insertFrobErr := frobRepo.Create([]shared.InsertionModel{vatFrobEvent})
+			insertFrobErr := event.PersistModels([]event.InsertionModel{vatFrobEvent}, db)
 			Expect(insertFrobErr).NotTo(HaveOccurred())
 
 			var actualFrobs []test_helpers.FrobEvent
@@ -86,13 +82,13 @@ var _ = Describe("Frobs query", func() {
 		It("returns matching frobs from multiple blocks", func() {
 			vatFrobLog := test_data.CreateTestLog(headerOne.Id, db)
 			frobBlockOne := getFakeVatFrobEvent(fakeIlkHex, fakeUrn, headerOne.Id, vatFrobLog.ID)
-			insertFrobErr := frobRepo.Create([]shared.InsertionModel{frobBlockOne})
+			insertFrobErr := event.PersistModels([]event.InsertionModel{frobBlockOne}, db)
 			Expect(insertFrobErr).NotTo(HaveOccurred())
 
 			headerTwo := createHeader(blockOne+1, timestampOne+1, headerRepo)
 			vatFrobLogTwo := test_data.CreateTestLog(headerTwo.Id, db)
 			frobBlockTwo := getFakeVatFrobEvent(fakeIlkHex, fakeUrn, headerTwo.Id, vatFrobLogTwo.ID)
-			insertFrobTwoErr := frobRepo.Create([]shared.InsertionModel{frobBlockTwo})
+			insertFrobTwoErr := event.PersistModels([]event.InsertionModel{frobBlockTwo}, db)
 			Expect(insertFrobTwoErr).NotTo(HaveOccurred())
 
 			ilkRate := insertIlkRate(fakeIlkHex, diffID, headerOne.Id, db)
@@ -121,20 +117,20 @@ var _ = Describe("Frobs query", func() {
 
 		Describe("result pagination", func() {
 			var (
-				frobBlockOne, frobBlockTwo shared.InsertionModel
+				frobBlockOne, frobBlockTwo event.InsertionModel
 				ilkRate                    int
 			)
 
 			BeforeEach(func() {
 				logId := test_data.CreateTestLog(headerOne.Id, db).ID
 				frobBlockOne = getFakeVatFrobEvent(fakeIlkHex, fakeUrn, headerOne.Id, logId)
-				insertFrobErr := frobRepo.Create([]shared.InsertionModel{frobBlockOne})
+				insertFrobErr := event.PersistModels([]event.InsertionModel{frobBlockOne}, db)
 				Expect(insertFrobErr).NotTo(HaveOccurred())
 
 				headerTwo := createHeader(blockOne+1, timestampOne+1, headerRepo)
 				logTwoId := test_data.CreateTestLog(headerTwo.Id, db).ID
 				frobBlockTwo = getFakeVatFrobEvent(fakeIlkHex, fakeUrn, headerTwo.Id, logTwoId)
-				insertFrobTwoErr := frobRepo.Create([]shared.InsertionModel{frobBlockTwo})
+				insertFrobTwoErr := event.PersistModels([]event.InsertionModel{frobBlockTwo}, db)
 				Expect(insertFrobTwoErr).NotTo(HaveOccurred())
 
 				ilkRate = insertIlkRate(fakeIlkHex, diffID, headerOne.Id, db)
@@ -183,7 +179,7 @@ var _ = Describe("Frobs query", func() {
 			vatFrobEvent := getFakeVatFrobEvent(fakeIlkHex, fakeUrn, headerOne.Id, vatFrobLog.ID)
 			vatFrobLogTwo := test_data.CreateTestLog(headerOne.Id, db)
 			irrelevantVatFrobEvent := getFakeVatFrobEvent(fakeIlkHex, test_data.RandomString(40), headerOne.Id, vatFrobLogTwo.ID)
-			createFrobsErr := frobRepo.Create([]shared.InsertionModel{vatFrobEvent, irrelevantVatFrobEvent})
+			createFrobsErr := event.PersistModels([]event.InsertionModel{vatFrobEvent, irrelevantVatFrobEvent}, db)
 			Expect(createFrobsErr).NotTo(HaveOccurred())
 
 			ilkRate := insertIlkRate(fakeIlkHex, diffID, headerOne.Id, db)
@@ -207,14 +203,14 @@ var _ = Describe("Frobs query", func() {
 			vatFrobLog := test_data.CreateTestLog(headerOne.Id, db)
 			ilkRateBlockOne := insertIlkRate(fakeIlkHex, diffID, headerOne.Id, db)
 			frobBlockOne := getFakeVatFrobEvent(fakeIlkHex, fakeUrn, headerOne.Id, vatFrobLog.ID)
-			insertFrobOneErr := frobRepo.Create([]shared.InsertionModel{frobBlockOne})
+			insertFrobOneErr := event.PersistModels([]event.InsertionModel{frobBlockOne}, db)
 			Expect(insertFrobOneErr).NotTo(HaveOccurred())
 
 			headerTwo := createHeader(blockOne+1, timestampOne+1, headerRepo)
 			vatFrobLogTwo := test_data.CreateTestLog(headerTwo.Id, db)
 			ilkRateBlockTwo := insertIlkRate(fakeIlkHex, diffID, headerTwo.Id, db)
 			frobBlockTwo := getFakeVatFrobEvent(fakeIlkHex, fakeUrn, headerTwo.Id, vatFrobLogTwo.ID)
-			insertFrobTwoErr := frobRepo.Create([]shared.InsertionModel{frobBlockTwo})
+			insertFrobTwoErr := event.PersistModels([]event.InsertionModel{frobBlockTwo}, db)
 			Expect(insertFrobTwoErr).NotTo(HaveOccurred())
 
 			var actualFrobs []test_helpers.FrobEvent
@@ -245,7 +241,7 @@ var _ = Describe("Frobs query", func() {
 			headerTwo := createHeader(blockOne+1, timestampOne+1, headerRepo)
 			vatFrobLog := test_data.CreateTestLog(headerTwo.Id, db)
 			frobBlockTwo := getFakeVatFrobEvent(fakeIlkHex, fakeUrn, headerTwo.Id, vatFrobLog.ID)
-			insertFrobErr := frobRepo.Create([]shared.InsertionModel{frobBlockTwo})
+			insertFrobErr := event.PersistModels([]event.InsertionModel{frobBlockTwo}, db)
 			Expect(insertFrobErr).NotTo(HaveOccurred())
 
 			var actualFrobs []test_helpers.FrobEvent
@@ -283,7 +279,7 @@ var _ = Describe("Frobs query", func() {
 			anotherFakeUrn := test_data.RandomString(40)
 			anotherVatFrobLog := test_data.CreateTestLog(headerOne.Id, db)
 			frobTwo := getFakeVatFrobEvent(fakeIlkHex, anotherFakeUrn, headerOne.Id, anotherVatFrobLog.ID)
-			insertFrobsErr := frobRepo.Create([]shared.InsertionModel{frobOne, frobTwo})
+			insertFrobsErr := event.PersistModels([]event.InsertionModel{frobOne, frobTwo}, db)
 			Expect(insertFrobsErr).NotTo(HaveOccurred())
 			ilkRate := insertIlkRate(fakeIlkHex, diffID, headerOne.Id, db)
 
@@ -311,7 +307,7 @@ var _ = Describe("Frobs query", func() {
 
 		Describe("result pagination", func() {
 			var (
-				frobOne, frobTwo shared.InsertionModel
+				frobOne, frobTwo event.InsertionModel
 				anotherFakeUrn   string
 				headerTwo        core.Header
 			)
@@ -319,14 +315,14 @@ var _ = Describe("Frobs query", func() {
 			BeforeEach(func() {
 				logId := test_data.CreateTestLog(headerOne.Id, db).ID
 				frobOne = getFakeVatFrobEvent(fakeIlkHex, fakeUrn, headerOne.Id, logId)
-				insertFrobOneErr := frobRepo.Create([]shared.InsertionModel{frobOne})
+				insertFrobOneErr := event.PersistModels([]event.InsertionModel{frobOne}, db)
 				Expect(insertFrobOneErr).NotTo(HaveOccurred())
 
 				anotherFakeUrn = test_data.RandomString(40)
 				headerTwo = createHeader(blockOne+1, timestampOne+1, headerRepo)
 				logTwoId := test_data.CreateTestLog(headerTwo.Id, db).ID
 				frobTwo = getFakeVatFrobEvent(fakeIlkHex, anotherFakeUrn, headerTwo.Id, logTwoId)
-				insertFrobTwoErr := frobRepo.Create([]shared.InsertionModel{frobTwo})
+				insertFrobTwoErr := event.PersistModels([]event.InsertionModel{frobTwo}, db)
 				Expect(insertFrobTwoErr).NotTo(HaveOccurred())
 			})
 
@@ -379,7 +375,7 @@ var _ = Describe("Frobs query", func() {
 		It("returns frobs across multiple blocks", func() {
 			vatFrobLog := test_data.CreateTestLog(headerOne.Id, db)
 			frobOne := getFakeVatFrobEvent(fakeIlkHex, fakeUrn, headerOne.Id, vatFrobLog.ID)
-			insertFrobOneErr := frobRepo.Create([]shared.InsertionModel{frobOne})
+			insertFrobOneErr := event.PersistModels([]event.InsertionModel{frobOne}, db)
 			Expect(insertFrobOneErr).NotTo(HaveOccurred())
 
 			ilkRate := insertIlkRate(fakeIlkHex, diffID, headerOne.Id, db)
@@ -388,7 +384,7 @@ var _ = Describe("Frobs query", func() {
 			anotherVatFrobLog := test_data.CreateTestLog(headerTwo.Id, db)
 			anotherFakeUrn := test_data.RandomString(40)
 			frobTwo := getFakeVatFrobEvent(fakeIlkHex, anotherFakeUrn, headerTwo.Id, anotherVatFrobLog.ID)
-			insertFrobTwoErr := frobRepo.Create([]shared.InsertionModel{frobTwo})
+			insertFrobTwoErr := event.PersistModels([]event.InsertionModel{frobTwo}, db)
 			Expect(insertFrobTwoErr).NotTo(HaveOccurred())
 
 			var actualFrobs []test_helpers.FrobEvent
@@ -416,7 +412,7 @@ var _ = Describe("Frobs query", func() {
 		It("provides most recent rate for each block", func() {
 			vatFrobLog := test_data.CreateTestLog(headerOne.Id, db)
 			frobOne := getFakeVatFrobEvent(fakeIlkHex, fakeUrn, headerOne.Id, vatFrobLog.ID)
-			insertFrobOneErr := frobRepo.Create([]shared.InsertionModel{frobOne})
+			insertFrobOneErr := event.PersistModels([]event.InsertionModel{frobOne}, db)
 			Expect(insertFrobOneErr).NotTo(HaveOccurred())
 
 			ilkRateBlockOne := insertIlkRate(fakeIlkHex, diffID, headerOne.Id, db)
@@ -425,7 +421,7 @@ var _ = Describe("Frobs query", func() {
 			anotherVatFrobLog := test_data.CreateTestLog(headerTwo.Id, db)
 			anotherFakeUrn := test_data.RandomString(40)
 			frobTwo := getFakeVatFrobEvent(fakeIlkHex, anotherFakeUrn, headerTwo.Id, anotherVatFrobLog.ID)
-			insertFrobTwoErr := frobRepo.Create([]shared.InsertionModel{frobTwo})
+			insertFrobTwoErr := event.PersistModels([]event.InsertionModel{frobTwo}, db)
 			Expect(insertFrobTwoErr).NotTo(HaveOccurred())
 
 			ilkRateBlockTwo := insertIlkRate(fakeIlkHex, diffID, headerTwo.Id, db)
@@ -459,7 +455,7 @@ var _ = Describe("Frobs query", func() {
 			vatFrobLog := test_data.CreateTestLog(headerTwo.Id, db)
 			vatFrobEvent := getFakeVatFrobEvent(fakeIlkHex, fakeUrn, headerTwo.Id, vatFrobLog.ID)
 
-			insertFrobsErr := frobRepo.Create([]shared.InsertionModel{vatFrobEvent})
+			insertFrobsErr := event.PersistModels([]event.InsertionModel{vatFrobEvent}, db)
 			Expect(insertFrobsErr).NotTo(HaveOccurred())
 
 			var actualFrobs []test_helpers.FrobEvent
@@ -485,14 +481,15 @@ var _ = Describe("Frobs query", func() {
 	})
 })
 
-func getFakeVatFrobEvent(ilk, urn string, headerID, logID int64) shared.InsertionModel {
+func getFakeVatFrobEvent(ilk, urn string, headerID, logID int64) event.InsertionModel {
 	vatFrobEvent := test_data.VatFrobModelWithPositiveDart()
-	vatFrobEvent.ForeignKeyValues[constants.IlkFK] = ilk
-	vatFrobEvent.ForeignKeyValues[constants.UrnFK] = urn
-	vatFrobEvent.ColumnValues["dink"] = strconv.Itoa(rand.Int())
-	vatFrobEvent.ColumnValues["dart"] = strconv.Itoa(rand.Int())
-	vatFrobEvent.ColumnValues[constants.HeaderFK] = headerID
-	vatFrobEvent.ColumnValues[constants.LogFK] = logID
+	urnID, urnErr := shared.GetOrCreateUrn(urn, ilk, db)
+	Expect(urnErr).NotTo(HaveOccurred())
+	vatFrobEvent.ColumnValues[constants.UrnColumn] = urnID
+	vatFrobEvent.ColumnValues[constants.DinkColumn] = strconv.Itoa(rand.Int())
+	vatFrobEvent.ColumnValues[constants.DartColumn] = strconv.Itoa(rand.Int())
+	vatFrobEvent.ColumnValues[event.HeaderFK] = headerID
+	vatFrobEvent.ColumnValues[event.LogFK] = logID
 	return vatFrobEvent
 }
 

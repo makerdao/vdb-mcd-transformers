@@ -21,13 +21,13 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_frob"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	mcdStorage "github.com/makerdao/vdb-mcd-transformers/transformers/storage"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/vat"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
 	vdbStorage "github.com/makerdao/vulcanizedb/libraries/shared/storage"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
@@ -240,14 +240,14 @@ var _ = Describe("Executing the transformer", func() {
 
 		BeforeEach(func() {
 			vatFrobLog := test_data.CreateTestLog(headerID, db)
-			vatFrobRepository := vat_frob.VatFrobRepository{}
-			vatFrobRepository.SetDB(db)
 			vatFrob := test_data.VatFrobModelWithPositiveDart()
-			vatFrob.ForeignKeyValues[constants.IlkFK] = ilk
-			vatFrob.ColumnValues["v"] = guy
-			vatFrob.ColumnValues[constants.HeaderFK] = headerID
-			vatFrob.ColumnValues[constants.LogFK] = vatFrobLog.ID
-			insertErr := vatFrobRepository.Create([]shared.InsertionModel{vatFrob})
+			urnID, urnErr := shared.GetOrCreateUrn(guy, ilk, db)
+			Expect(urnErr).NotTo(HaveOccurred())
+			vatFrob.ColumnValues[constants.UrnColumn] = urnID
+			vatFrob.ColumnValues[constants.VColumn] = guy
+			vatFrob.ColumnValues[event.HeaderFK] = headerID
+			vatFrob.ColumnValues[event.LogFK] = vatFrobLog.ID
+			insertErr := event.PersistModels([]event.InsertionModel{vatFrob}, db)
 			Expect(insertErr).NotTo(HaveOccurred())
 		})
 
@@ -273,13 +273,15 @@ var _ = Describe("Executing the transformer", func() {
 
 		BeforeEach(func() {
 			vatFrobLog := test_data.CreateTestLog(headerID, db)
-			vatFrobRepository := vat_frob.VatFrobRepository{}
-			vatFrobRepository.SetDB(db)
 			vatFrob := test_data.VatFrobModelWithPositiveDart()
-			vatFrob.ColumnValues["w"] = guy
-			vatFrob.ColumnValues[constants.HeaderFK] = headerID
-			vatFrob.ColumnValues[constants.LogFK] = vatFrobLog.ID
-			insertErr := vatFrobRepository.Create([]shared.InsertionModel{vatFrob})
+			ilk := "0x434f4c312d410000000000000000000000000000000000000000000000000000"
+			urnID, urnErr := shared.GetOrCreateUrn(guy, ilk, db)
+			Expect(urnErr).NotTo(HaveOccurred())
+			vatFrob.ColumnValues[constants.UrnColumn] = urnID
+			vatFrob.ColumnValues[constants.WColumn] = guy
+			vatFrob.ColumnValues[event.HeaderFK] = headerID
+			vatFrob.ColumnValues[event.LogFK] = vatFrobLog.ID
+			insertErr := event.PersistModels([]event.InsertionModel{vatFrob}, db)
 			Expect(insertErr).NotTo(HaveOccurred())
 		})
 
