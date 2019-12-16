@@ -19,6 +19,7 @@ package shared
 import (
 	"errors"
 	"fmt"
+
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/makerdao/vulcanizedb/libraries/shared/constants"
 )

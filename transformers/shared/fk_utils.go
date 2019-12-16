@@ -18,6 +18,7 @@ package shared
 
 import (
 	"fmt"
+
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/jmoiron/sqlx"
 	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
