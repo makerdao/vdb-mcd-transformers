@@ -61,11 +61,12 @@ var _ = Describe("Flip storage repository", func() {
 		Describe("Vat", func() {
 			vatMetadata := vdbStorage.ValueMetadata{Name: storage.Vat}
 			inputs := shared_behaviors.StorageBehaviorInputs{
-				ValueFieldName:   storage.Vat,
-				Value:            FakeAddress,
-				StorageTableName: "maker.flip_vat",
-				Repository:       &repo,
-				Metadata:         vatMetadata,
+				ValueFieldName: storage.Vat,
+				Value:          FakeAddress,
+				Schema:         constants.MakerSchema,
+				TableName:      constants.FlipVat,
+				Repository:     &repo,
+				Metadata:       vatMetadata,
 			}
 
 			shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
@@ -108,11 +109,12 @@ var _ = Describe("Flip storage repository", func() {
 			begMetadata := vdbStorage.ValueMetadata{Name: storage.Beg}
 			fakeBeg := strconv.Itoa(rand.Int())
 			inputs := shared_behaviors.StorageBehaviorInputs{
-				ValueFieldName:   storage.Beg,
-				Value:            fakeBeg,
-				StorageTableName: "maker.flip_beg",
-				Repository:       &repo,
-				Metadata:         begMetadata,
+				ValueFieldName: storage.Beg,
+				Value:          fakeBeg,
+				Schema:         constants.MakerSchema,
+				TableName:      constants.FlipBeg,
+				Repository:     &repo,
+				Metadata:       begMetadata,
 			}
 
 			shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
@@ -179,11 +181,12 @@ var _ = Describe("Flip storage repository", func() {
 			kicksMetadata := vdbStorage.ValueMetadata{Name: storage.Kicks}
 			fakeKicks := strconv.Itoa(rand.Int())
 			inputs := shared_behaviors.StorageBehaviorInputs{
-				ValueFieldName:   storage.Kicks,
-				Value:            fakeKicks,
-				StorageTableName: "maker.flip_kicks",
-				Repository:       &repo,
-				Metadata:         kicksMetadata,
+				ValueFieldName: storage.Kicks,
+				Value:          fakeKicks,
+				Schema:         constants.MakerSchema,
+				TableName:      constants.FlipKicks,
+				Repository:     &repo,
+				Metadata:       kicksMetadata,
 			}
 
 			shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
@@ -211,14 +214,15 @@ var _ = Describe("Flip storage repository", func() {
 				Type: vdbStorage.Uint256,
 			}
 			inputs := shared_behaviors.StorageBehaviorInputs{
-				KeyFieldName:     string(constants.BidId),
-				ValueFieldName:   "bid",
-				Value:            fakeBidValue,
-				Key:              fakeBidId,
-				IsAMapping:       true,
-				StorageTableName: "maker.flip_bid_bid",
-				Repository:       &repo,
-				Metadata:         bidBidMetadata,
+				KeyFieldName:   string(constants.BidId),
+				ValueFieldName: "bid",
+				Value:          fakeBidValue,
+				Key:            fakeBidId,
+				IsAMapping:     true,
+				Schema:         constants.MakerSchema,
+				TableName:      constants.FlipBidBid,
+				Repository:     &repo,
+				Metadata:       bidBidMetadata,
 			}
 
 			shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
@@ -232,14 +236,15 @@ var _ = Describe("Flip storage repository", func() {
 				Type: vdbStorage.Uint256,
 			}
 			inputs := shared_behaviors.StorageBehaviorInputs{
-				KeyFieldName:     string(constants.BidId),
-				ValueFieldName:   "lot",
-				Value:            fakeLotValue,
-				Key:              fakeBidId,
-				IsAMapping:       true,
-				StorageTableName: "maker.flip_bid_lot",
-				Repository:       &repo,
-				Metadata:         bidLotMetadata,
+				KeyFieldName:   string(constants.BidId),
+				ValueFieldName: "lot",
+				Value:          fakeLotValue,
+				Key:            fakeBidId,
+				IsAMapping:     true,
+				Schema:         constants.MakerSchema,
+				TableName:      constants.FlipBidLot,
+				Repository:     &repo,
+				Metadata:       bidLotMetadata,
 			}
 
 			shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
@@ -309,14 +314,15 @@ var _ = Describe("Flip storage repository", func() {
 				Type: vdbStorage.Address,
 			}
 			inputs := shared_behaviors.StorageBehaviorInputs{
-				KeyFieldName:     string(constants.BidId),
-				ValueFieldName:   "usr",
-				Value:            FakeAddress,
-				Key:              fakeBidId,
-				IsAMapping:       true,
-				StorageTableName: "maker.flip_bid_usr",
-				Repository:       &repo,
-				Metadata:         bidUsrMetadata,
+				KeyFieldName:   string(constants.BidId),
+				ValueFieldName: "usr",
+				Value:          FakeAddress,
+				Key:            fakeBidId,
+				IsAMapping:     true,
+				Schema:         constants.MakerSchema,
+				TableName:      constants.FlipBidUsr,
+				Repository:     &repo,
+				Metadata:       bidUsrMetadata,
 			}
 
 			shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
@@ -329,14 +335,15 @@ var _ = Describe("Flip storage repository", func() {
 				Type: vdbStorage.Address,
 			}
 			inputs := shared_behaviors.StorageBehaviorInputs{
-				KeyFieldName:     string(constants.BidId),
-				ValueFieldName:   "gal",
-				Value:            FakeAddress,
-				Key:              fakeBidId,
-				IsAMapping:       true,
-				StorageTableName: "maker.flip_bid_gal",
-				Repository:       &repo,
-				Metadata:         bidGalMetadata,
+				KeyFieldName:   string(constants.BidId),
+				ValueFieldName: "gal",
+				Value:          FakeAddress,
+				Key:            fakeBidId,
+				IsAMapping:     true,
+				Schema:         constants.MakerSchema,
+				TableName:      constants.FlipBidGal,
+				Repository:     &repo,
+				Metadata:       bidGalMetadata,
 			}
 
 			shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
@@ -350,14 +357,15 @@ var _ = Describe("Flip storage repository", func() {
 				Type: vdbStorage.Uint256,
 			}
 			inputs := shared_behaviors.StorageBehaviorInputs{
-				KeyFieldName:     string(constants.BidId),
-				ValueFieldName:   "tab",
-				Value:            fakeTabValue,
-				Key:              fakeBidId,
-				IsAMapping:       true,
-				StorageTableName: "maker.flip_bid_tab",
-				Repository:       &repo,
-				Metadata:         bidTabMetadata,
+				KeyFieldName:   string(constants.BidId),
+				ValueFieldName: "tab",
+				Value:          fakeTabValue,
+				Key:            fakeBidId,
+				IsAMapping:     true,
+				Schema:         constants.MakerSchema,
+				TableName:      constants.FlipBidTab,
+				Repository:     &repo,
+				Metadata:       bidTabMetadata,
 			}
 
 			shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)

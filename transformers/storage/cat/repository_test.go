@@ -51,11 +51,12 @@ var _ = Describe("Cat storage repository", func() {
 		Describe("Live", func() {
 			liveMetadata := storage.GetValueMetadata(cat.Live, nil, storage.Uint256)
 			inputs := shared_behaviors.StorageBehaviorInputs{
-				ValueFieldName:   cat.Live,
-				Value:            fakeUint256,
-				StorageTableName: "maker.cat_live",
-				Repository:       &repo,
-				Metadata:         liveMetadata,
+				ValueFieldName: cat.Live,
+				Value:          fakeUint256,
+				Schema:         constants.MakerSchema,
+				TableName:      constants.CatLive,
+				Repository:     &repo,
+				Metadata:       liveMetadata,
 			}
 
 			shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
@@ -64,11 +65,12 @@ var _ = Describe("Cat storage repository", func() {
 		Describe("Vat", func() {
 			vatMetadata := storage.GetValueMetadata(cat.Vat, nil, storage.Address)
 			inputs := shared_behaviors.StorageBehaviorInputs{
-				ValueFieldName:   cat.Vat,
-				Value:            fakeAddress,
-				StorageTableName: "maker.cat_vat",
-				Repository:       &repo,
-				Metadata:         vatMetadata,
+				ValueFieldName: cat.Vat,
+				Value:          fakeAddress,
+				Schema:         constants.MakerSchema,
+				TableName:      constants.CatVat,
+				Repository:     &repo,
+				Metadata:       vatMetadata,
 			}
 
 			shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
@@ -77,11 +79,12 @@ var _ = Describe("Cat storage repository", func() {
 		Describe("Vow", func() {
 			vowMetadata := storage.GetValueMetadata(cat.Vow, nil, storage.Address)
 			inputs := shared_behaviors.StorageBehaviorInputs{
-				ValueFieldName:   cat.Vow,
-				Value:            fakeAddress,
-				StorageTableName: "maker.cat_vow",
-				Repository:       &repo,
-				Metadata:         vowMetadata,
+				ValueFieldName: cat.Vow,
+				Value:          fakeAddress,
+				Schema:         constants.MakerSchema,
+				TableName:      constants.CatVow,
+				Repository:     &repo,
+				Metadata:       vowMetadata,
 			}
 
 			shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
@@ -138,7 +141,8 @@ var _ = Describe("Cat storage repository", func() {
 				Metadata:      storage.GetValueMetadata(cat.IlkFlip, map[storage.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, storage.Address),
 				PropertyName:  "Flip",
 				PropertyValue: fakeAddress,
-				TableName:     "maker.cat_ilk_flip",
+				Schema:        constants.MakerSchema,
+				TableName:     constants.CatIlkFlip,
 			})
 		})
 
@@ -183,7 +187,8 @@ var _ = Describe("Cat storage repository", func() {
 				Metadata:      storage.GetValueMetadata(cat.IlkChop, map[storage.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, storage.Uint256),
 				PropertyName:  "Chop",
 				PropertyValue: strconv.Itoa(rand.Int()),
-				TableName:     "maker.cat_ilk_chop",
+				Schema:        constants.MakerSchema,
+				TableName:     constants.CatIlkChop,
 			})
 		})
 
@@ -228,7 +233,8 @@ var _ = Describe("Cat storage repository", func() {
 				Metadata:      storage.GetValueMetadata(cat.IlkLump, map[storage.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, storage.Uint256),
 				PropertyName:  "Lump",
 				PropertyValue: strconv.Itoa(rand.Int()),
-				TableName:     "maker.cat_ilk_lump",
+				Schema:        constants.MakerSchema,
+				TableName:     constants.CatIlkLump,
 			})
 		})
 	})

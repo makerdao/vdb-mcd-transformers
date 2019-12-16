@@ -188,7 +188,8 @@ var _ = Describe("Vat storage repository", func() {
 			Metadata:      storage.GetValueMetadata(vat.IlkArt, map[storage.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, storage.Uint256),
 			PropertyName:  "Art",
 			PropertyValue: strconv.Itoa(rand.Int()),
-			TableName:     "maker.vat_ilk_art",
+			Schema:        constants.MakerSchema,
+			TableName:     constants.VatIlkArt,
 		})
 	})
 
@@ -236,7 +237,8 @@ var _ = Describe("Vat storage repository", func() {
 			Metadata:      storage.GetValueMetadata(vat.IlkDust, map[storage.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, storage.Uint256),
 			PropertyName:  "Dust",
 			PropertyValue: strconv.Itoa(rand.Int()),
-			TableName:     "maker.vat_ilk_dust",
+			Schema:        constants.MakerSchema,
+			TableName:     constants.VatIlkDust,
 		})
 	})
 
@@ -284,7 +286,8 @@ var _ = Describe("Vat storage repository", func() {
 			Metadata:      storage.GetValueMetadata(vat.IlkLine, map[storage.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, storage.Uint256),
 			PropertyName:  "Line",
 			PropertyValue: strconv.Itoa(rand.Int()),
-			TableName:     "maker.vat_ilk_line",
+			Schema:        constants.MakerSchema,
+			TableName:     constants.VatIlkLine,
 		})
 	})
 
@@ -332,7 +335,8 @@ var _ = Describe("Vat storage repository", func() {
 			Metadata:      storage.GetValueMetadata(vat.IlkRate, map[storage.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, storage.Uint256),
 			PropertyName:  "Rate",
 			PropertyValue: strconv.Itoa(rand.Int()),
-			TableName:     "maker.vat_ilk_rate",
+			Schema:        constants.MakerSchema,
+			TableName:     constants.VatIlkRate,
 		})
 	})
 
@@ -380,7 +384,8 @@ var _ = Describe("Vat storage repository", func() {
 			Metadata:      storage.GetValueMetadata(vat.IlkSpot, map[storage.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, storage.Uint256),
 			PropertyName:  "Spot",
 			PropertyValue: strconv.Itoa(rand.Int()),
-			TableName:     "maker.vat_ilk_spot",
+			Schema:        constants.MakerSchema,
+			TableName:     constants.VatIlkSpot,
 		})
 	})
 

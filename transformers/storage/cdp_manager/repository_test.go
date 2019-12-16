@@ -70,11 +70,12 @@ var _ = Describe("CDP Manager storage repository", func() {
 		var fakeAddress = FakeAddress
 
 		inputs := shared_behaviors.StorageBehaviorInputs{
-			ValueFieldName:   cdp_manager.Vat,
-			Value:            fakeAddress,
-			StorageTableName: "maker.cdp_manager_vat",
-			Repository:       &repository,
-			Metadata:         vatMetadata,
+			ValueFieldName: cdp_manager.Vat,
+			Value:          fakeAddress,
+			Schema:         constants.MakerSchema,
+			TableName:      constants.CdpManagerVat,
+			Repository:     &repository,
+			Metadata:       vatMetadata,
 		}
 
 		shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
@@ -100,11 +101,12 @@ var _ = Describe("CDP Manager storage repository", func() {
 		})
 
 		inputs := shared_behaviors.StorageBehaviorInputs{
-			ValueFieldName:   cdp_manager.Cdpi,
-			Value:            fakeCdpi,
-			StorageTableName: "maker.cdp_manager_cdpi",
-			Repository:       &repository,
-			Metadata:         cdpiMetadata,
+			ValueFieldName: cdp_manager.Cdpi,
+			Value:          fakeCdpi,
+			Schema:         constants.MakerSchema,
+			TableName:      constants.CdpManagerCdpi,
+			Repository:     &repository,
+			Metadata:       cdpiMetadata,
 		}
 
 		shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
@@ -150,14 +152,15 @@ var _ = Describe("CDP Manager storage repository", func() {
 				Type: storage.Address,
 			}
 			inputs := shared_behaviors.StorageBehaviorInputs{
-				KeyFieldName:     string(constants.Cdpi),
-				ValueFieldName:   "urn",
-				Key:              fakeCdpi,
-				Value:            fakeUrnsValue,
-				IsAMapping:       true,
-				StorageTableName: "maker.cdp_manager_urns",
-				Repository:       &repository,
-				Metadata:         urnsMetadata,
+				KeyFieldName:   string(constants.Cdpi),
+				ValueFieldName: "urn",
+				Key:            fakeCdpi,
+				Value:          fakeUrnsValue,
+				IsAMapping:     true,
+				Schema:         constants.MakerSchema,
+				TableName:      constants.CdpManagerUrns,
+				Repository:     &repository,
+				Metadata:       urnsMetadata,
 			}
 
 			shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
@@ -188,14 +191,15 @@ var _ = Describe("CDP Manager storage repository", func() {
 				Type: storage.Uint256,
 			}
 			inputs := shared_behaviors.StorageBehaviorInputs{
-				KeyFieldName:     string(constants.Cdpi),
-				ValueFieldName:   "prev",
-				Key:              fakeCdpi,
-				Value:            fakePrevValue,
-				IsAMapping:       true,
-				StorageTableName: "maker.cdp_manager_list_prev",
-				Repository:       &repository,
-				Metadata:         prevMetadata,
+				KeyFieldName:   string(constants.Cdpi),
+				ValueFieldName: "prev",
+				Key:            fakeCdpi,
+				Value:          fakePrevValue,
+				IsAMapping:     true,
+				Schema:         constants.MakerSchema,
+				TableName:      constants.CdpManagerListPrev,
+				Repository:     &repository,
+				Metadata:       prevMetadata,
 			}
 
 			shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
@@ -209,14 +213,15 @@ var _ = Describe("CDP Manager storage repository", func() {
 				Type: storage.Uint256,
 			}
 			inputs := shared_behaviors.StorageBehaviorInputs{
-				KeyFieldName:     string(constants.Cdpi),
-				ValueFieldName:   "next",
-				Key:              fakeCdpi,
-				Value:            fakeNextValue,
-				IsAMapping:       true,
-				StorageTableName: "maker.cdp_manager_list_next",
-				Repository:       &repository,
-				Metadata:         nextMetadata,
+				KeyFieldName:   string(constants.Cdpi),
+				ValueFieldName: "next",
+				Key:            fakeCdpi,
+				Value:          fakeNextValue,
+				IsAMapping:     true,
+				Schema:         constants.MakerSchema,
+				TableName:      constants.CdpManagerListNext,
+				Repository:     &repository,
+				Metadata:       nextMetadata,
 			}
 
 			shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
@@ -230,14 +235,15 @@ var _ = Describe("CDP Manager storage repository", func() {
 				Type: storage.Address,
 			}
 			inputs := shared_behaviors.StorageBehaviorInputs{
-				KeyFieldName:     string(constants.Cdpi),
-				ValueFieldName:   "owner",
-				Key:              fakeCdpi,
-				Value:            fakeOwner,
-				IsAMapping:       true,
-				StorageTableName: "maker.cdp_manager_owns",
-				Repository:       &repository,
-				Metadata:         ownsMetadata,
+				KeyFieldName:   string(constants.Cdpi),
+				ValueFieldName: "owner",
+				Key:            fakeCdpi,
+				Value:          fakeOwner,
+				IsAMapping:     true,
+				Schema:         constants.MakerSchema,
+				TableName:      constants.CdpManagerOwns,
+				Repository:     &repository,
+				Metadata:       ownsMetadata,
 			}
 
 			shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
@@ -329,14 +335,15 @@ var _ = Describe("CDP Manager storage repository", func() {
 				Type: storage.Uint256,
 			}
 			inputs := shared_behaviors.StorageBehaviorInputs{
-				KeyFieldName:     string(constants.Owner),
-				ValueFieldName:   "first",
-				Key:              fakeOwner,
-				Value:            fakeFirstValue,
-				IsAMapping:       true,
-				StorageTableName: "maker.cdp_manager_first",
-				Repository:       &repository,
-				Metadata:         firstMetadata,
+				KeyFieldName:   string(constants.Owner),
+				ValueFieldName: "first",
+				Key:            fakeOwner,
+				Value:          fakeFirstValue,
+				IsAMapping:     true,
+				Schema:         constants.MakerSchema,
+				TableName:      constants.CdpManagerFirst,
+				Repository:     &repository,
+				Metadata:       firstMetadata,
 			}
 
 			shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
@@ -350,14 +357,15 @@ var _ = Describe("CDP Manager storage repository", func() {
 				Type: storage.Uint256,
 			}
 			inputs := shared_behaviors.StorageBehaviorInputs{
-				KeyFieldName:     string(constants.Owner),
-				ValueFieldName:   "last",
-				Key:              fakeOwner,
-				Value:            fakeLastValue,
-				IsAMapping:       true,
-				StorageTableName: "maker.cdp_manager_last",
-				Repository:       &repository,
-				Metadata:         lastMetadata,
+				KeyFieldName:   string(constants.Owner),
+				ValueFieldName: "last",
+				Key:            fakeOwner,
+				Value:          fakeLastValue,
+				IsAMapping:     true,
+				Schema:         constants.MakerSchema,
+				TableName:      constants.CdpManagerLast,
+				Repository:     &repository,
+				Metadata:       lastMetadata,
 			}
 
 			shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
@@ -371,14 +379,15 @@ var _ = Describe("CDP Manager storage repository", func() {
 				Type: storage.Uint256,
 			}
 			inputs := shared_behaviors.StorageBehaviorInputs{
-				KeyFieldName:     string(constants.Owner),
-				ValueFieldName:   "count",
-				Key:              fakeOwner,
-				Value:            fakeCountValue,
-				IsAMapping:       true,
-				StorageTableName: "maker.cdp_manager_count",
-				Repository:       &repository,
-				Metadata:         countMetadata,
+				KeyFieldName:   string(constants.Owner),
+				ValueFieldName: "count",
+				Key:            fakeOwner,
+				Value:          fakeCountValue,
+				IsAMapping:     true,
+				Schema:         constants.MakerSchema,
+				TableName:      constants.CdpManagerCount,
+				Repository:     &repository,
+				Metadata:       countMetadata,
 			}
 
 			shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)

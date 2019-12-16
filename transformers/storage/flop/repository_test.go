@@ -49,11 +49,12 @@ var _ = Describe("Flop storage repository", func() {
 		vatMetadata := vdbStorage.ValueMetadata{Name: storage.Vat}
 
 		inputs := shared_behaviors.StorageBehaviorInputs{
-			ValueFieldName:   storage.Vat,
-			Value:            FakeAddress,
-			StorageTableName: "maker.flop_vat",
-			Repository:       &repo,
-			Metadata:         vatMetadata,
+			ValueFieldName: storage.Vat,
+			Value:          FakeAddress,
+			Schema:         constants.MakerSchema,
+			TableName:      constants.FlopVat,
+			Repository:     &repo,
+			Metadata:       vatMetadata,
 		}
 
 		shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
@@ -62,11 +63,12 @@ var _ = Describe("Flop storage repository", func() {
 	Describe("Gem", func() {
 		gemMetadata := vdbStorage.ValueMetadata{Name: storage.Gem}
 		inputs := shared_behaviors.StorageBehaviorInputs{
-			ValueFieldName:   storage.Gem,
-			Value:            FakeAddress,
-			StorageTableName: "maker.flop_gem",
-			Repository:       &repo,
-			Metadata:         gemMetadata,
+			ValueFieldName: storage.Gem,
+			Value:          FakeAddress,
+			Schema:         constants.MakerSchema,
+			TableName:      constants.FlopGem,
+			Repository:     &repo,
+			Metadata:       gemMetadata,
 		}
 
 		shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
@@ -77,11 +79,12 @@ var _ = Describe("Flop storage repository", func() {
 		fakeBeg := strconv.Itoa(rand.Int())
 
 		inputs := shared_behaviors.StorageBehaviorInputs{
-			ValueFieldName:   storage.Beg,
-			Value:            fakeBeg,
-			StorageTableName: "maker.flop_beg",
-			Repository:       &repo,
-			Metadata:         begMetadata,
+			ValueFieldName: storage.Beg,
+			Value:          fakeBeg,
+			Schema:         constants.MakerSchema,
+			TableName:      constants.FlopBeg,
+			Repository:     &repo,
+			Metadata:       begMetadata,
 		}
 
 		shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
@@ -98,11 +101,12 @@ var _ = Describe("Flop storage repository", func() {
 		fakePad := strconv.Itoa(rand.Int())
 
 		inputs := shared_behaviors.StorageBehaviorInputs{
-			ValueFieldName:   storage.Pad,
-			Value:            fakePad,
-			StorageTableName: "maker.flop_pad",
-			Repository:       &repo,
-			Metadata:         padMetadata,
+			ValueFieldName: storage.Pad,
+			Value:          fakePad,
+			Schema:         constants.MakerSchema,
+			TableName:      constants.FlopPad,
+			Repository:     &repo,
+			Metadata:       padMetadata,
 		}
 
 		shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
@@ -181,11 +185,12 @@ var _ = Describe("Flop storage repository", func() {
 		var kicksMetadata = vdbStorage.ValueMetadata{Name: storage.Kicks}
 		var fakeKicks = strconv.Itoa(rand.Int())
 		inputs := shared_behaviors.StorageBehaviorInputs{
-			ValueFieldName:   storage.Kicks,
-			StorageTableName: "maker.flop_kicks",
-			Repository:       &repo,
-			Metadata:         kicksMetadata,
-			Value:            fakeKicks,
+			ValueFieldName: storage.Kicks,
+			Schema:         constants.MakerSchema,
+			TableName:      constants.FlopKicks,
+			Repository:     &repo,
+			Metadata:       kicksMetadata,
+			Value:          fakeKicks,
 		}
 
 		shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
@@ -195,11 +200,12 @@ var _ = Describe("Flop storage repository", func() {
 		var liveMetadata = vdbStorage.ValueMetadata{Name: storage.Live}
 		var fakeKicks = strconv.Itoa(rand.Intn(100))
 		inputs := shared_behaviors.StorageBehaviorInputs{
-			ValueFieldName:   storage.Live,
-			StorageTableName: "maker.flop_live",
-			Repository:       &repo,
-			Metadata:         liveMetadata,
-			Value:            fakeKicks,
+			ValueFieldName: storage.Live,
+			Schema:         constants.MakerSchema,
+			TableName:      constants.FlopLive,
+			Repository:     &repo,
+			Metadata:       liveMetadata,
+			Value:          fakeKicks,
 		}
 
 		shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
@@ -226,14 +232,15 @@ var _ = Describe("Flop storage repository", func() {
 				Type: vdbStorage.Uint256,
 			}
 			inputs := shared_behaviors.StorageBehaviorInputs{
-				KeyFieldName:     string(constants.BidId),
-				ValueFieldName:   "bid",
-				Value:            fakeBidValue,
-				Key:              fakeBidId,
-				IsAMapping:       true,
-				StorageTableName: "maker.flop_bid_bid",
-				Repository:       &repo,
-				Metadata:         bidBidMetadata,
+				KeyFieldName:   string(constants.BidId),
+				ValueFieldName: "bid",
+				Value:          fakeBidValue,
+				Key:            fakeBidId,
+				IsAMapping:     true,
+				Schema:         constants.MakerSchema,
+				TableName:      constants.FlopBidBid,
+				Repository:     &repo,
+				Metadata:       bidBidMetadata,
 			}
 
 			shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
@@ -261,14 +268,15 @@ var _ = Describe("Flop storage repository", func() {
 				Type: vdbStorage.Uint256,
 			}
 			inputs := shared_behaviors.StorageBehaviorInputs{
-				KeyFieldName:     string(constants.BidId),
-				ValueFieldName:   "lot",
-				Value:            fakeLotValue,
-				Key:              fakeBidId,
-				IsAMapping:       true,
-				StorageTableName: "maker.flop_bid_lot",
-				Repository:       &repo,
-				Metadata:         bidLotMetadata,
+				KeyFieldName:   string(constants.BidId),
+				ValueFieldName: "lot",
+				Value:          fakeLotValue,
+				Key:            fakeBidId,
+				IsAMapping:     true,
+				Schema:         constants.MakerSchema,
+				TableName:      constants.FlopBidLot,
+				Repository:     &repo,
+				Metadata:       bidLotMetadata,
 			}
 
 			shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)

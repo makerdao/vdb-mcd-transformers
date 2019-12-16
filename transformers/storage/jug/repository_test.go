@@ -98,7 +98,8 @@ var _ = Describe("Jug storage repository", func() {
 				Metadata:      storage.GetValueMetadata(jug.IlkRho, map[storage.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, storage.Uint256),
 				PropertyName:  "Rho",
 				PropertyValue: strconv.Itoa(rand.Int()),
-				TableName:     "maker.jug_ilk_rho",
+				Schema:        constants.MakerSchema,
+				TableName:     constants.JugIlkRho,
 			})
 		})
 
@@ -144,7 +145,8 @@ var _ = Describe("Jug storage repository", func() {
 				Metadata:      storage.GetValueMetadata(jug.IlkDuty, map[storage.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, storage.Uint256),
 				PropertyName:  "Duty",
 				PropertyValue: strconv.Itoa(rand.Int()),
-				TableName:     "maker.jug_ilk_duty",
+				Schema:        constants.MakerSchema,
+				TableName:     constants.JugIlkDuty,
 			})
 		})
 	})

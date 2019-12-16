@@ -3,6 +3,7 @@ package shared_behaviors
 import (
 	"database/sql"
 	"fmt"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"math/rand"
 	"reflect"
 	"strconv"
@@ -21,14 +22,15 @@ import (
 )
 
 type StorageBehaviorInputs struct {
-	KeyFieldName     string
-	ValueFieldName   string
-	Key              string
-	Value            string
-	IsAMapping       bool
-	StorageTableName string
-	Repository       storage.Repository
-	Metadata         vdbStorage.ValueMetadata
+	KeyFieldName   string
+	ValueFieldName string
+	Key            string
+	Value          string
+	IsAMapping     bool
+	Schema         string
+	TableName      string
+	Repository     storage.Repository
+	Metadata       vdbStorage.ValueMetadata
 }
 
 func SharedStorageRepositoryBehaviors(inputs *StorageBehaviorInputs) {
@@ -37,6 +39,7 @@ func SharedStorageRepositoryBehaviors(inputs *StorageBehaviorInputs) {
 			repo             = inputs.Repository
 			database         = test_config.NewTestDB(test_config.NewTestNode())
 			diffID, headerID int64
+			table            = shared.GetFullTableName(inputs.Schema, inputs.TableName)
 		)
 
 		BeforeEach(func() {
@@ -57,13 +60,13 @@ func SharedStorageRepositoryBehaviors(inputs *StorageBehaviorInputs) {
 			if inputs.IsAMapping == true {
 				var result MappingRes
 				query := fmt.Sprintf("SELECT diff_id, header_id, %s AS key, %s AS value FROM %s",
-					inputs.KeyFieldName, inputs.ValueFieldName, inputs.StorageTableName)
+					inputs.KeyFieldName, inputs.ValueFieldName, table)
 				err = database.Get(&result, query)
 				Expect(err).NotTo(HaveOccurred())
 				AssertMapping(result, diffID, headerID, inputs.Key, inputs.Value)
 			} else {
 				var result VariableRes
-				query := fmt.Sprintf("SELECT diff_id, header_id, %s AS value FROM %s", inputs.ValueFieldName, inputs.StorageTableName)
+				query := fmt.Sprintf("SELECT diff_id, header_id, %s AS value FROM %s", inputs.ValueFieldName, table)
 				err = database.Get(&result, query)
 				Expect(err).NotTo(HaveOccurred())
 				AssertVariable(result, diffID, headerID, inputs.Value)
@@ -78,7 +81,7 @@ func SharedStorageRepositoryBehaviors(inputs *StorageBehaviorInputs) {
 			Expect(err).NotTo(HaveOccurred())
 
 			var count int
-			query := fmt.Sprintf("SELECT COUNT(*) FROM %s", inputs.StorageTableName)
+			query := fmt.Sprintf("SELECT COUNT(*) FROM %s", table)
 			err = database.Get(&count, query)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(count).To(Equal(1))
@@ -89,6 +92,7 @@ func SharedStorageRepositoryBehaviors(inputs *StorageBehaviorInputs) {
 type IlkTriggerTestInput struct {
 	Repository    storage.Repository
 	Metadata      vdbStorage.ValueMetadata
+	Schema        string
 	TableName     string
 	PropertyName  string
 	PropertyValue string
@@ -108,10 +112,11 @@ func SharedIlkTriggerTests(input IlkTriggerTestInput) {
 			hashOne          = common.BytesToHash([]byte{1, 2, 3, 4, 5})
 			hashTwo          = common.BytesToHash([]byte{5, 4, 3, 2, 1})
 			hashThree        = common.BytesToHash([]byte{6, 7, 8, 9, 0})
+			table            = shared.GetFullTableName(input.Schema, input.TableName)
 			getStateQuery    = `SELECT ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, updated FROM api.historical_ilk_state ORDER BY block_number`
 			getFieldQuery    = fmt.Sprintf(`SELECT %s FROM api.historical_ilk_state ORDER BY block_number`, input.Metadata.Name)
 			insertFieldQuery = fmt.Sprintf(`INSERT INTO api.historical_ilk_state (ilk_identifier, block_number, %s) VALUES ($1, $2, $3)`, input.Metadata.Name)
-			deleteRowQuery   = fmt.Sprintf(`DELETE FROM %s WHERE header_id = $1`, input.TableName)
+			deleteRowQuery   = fmt.Sprintf(`DELETE FROM %s WHERE header_id = $1`, table)
 		)
 
 		BeforeEach(func() {

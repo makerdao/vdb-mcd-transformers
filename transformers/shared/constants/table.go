@@ -22,6 +22,7 @@ const (
 	PublicSchema = "public"
 )
 
+// event tables
 const (
 	BiteTable               = "bite"
 	CatFileChopLumpTable    = "cat_file_chop_lump"
@@ -67,4 +68,63 @@ const (
 	VowFileTable            = "vow_file"
 	VowFlogTable            = "vow_flog"
 	YankTable               = "yank"
+)
+
+// storage tables
+const (
+	CdpManagerVat      = "cdp_manager_vat"
+	CdpManagerCdpi     = "cdp_manager_cdpi"
+	CdpManagerUrns     = "cdp_manager_urns"
+	CdpManagerListPrev = "cdp_manager_list_prev"
+	CdpManagerListNext = "cdp_manager_list_next"
+	CdpManagerOwns     = "cdp_manager_owns"
+	CdpManagerFirst    = "cdp_manager_first"
+	CdpManagerLast     = "cdp_manager_last"
+	CdpManagerCount    = "cdp_manager_count"
+	CdpManagerIlks     = "cdp_manager_ilks"
+
+	CatLive    = "cat_live"
+	CatVat     = "cat_vat"
+	CatVow     = "cat_vow"
+	CatIlkFlip = "cat_ilk_flip"
+	CatIlkChop = "cat_ilk_chop"
+	CatIlkLump = "cat_ilk_lump"
+
+	FlapGem    = "flap_gem"
+	FlapVat    = "flap_vat"
+	FlapBeg    = "flap_beg"
+	FlapLive   = "flap_live"
+	FlapKicks  = "flap_kicks"
+	FlapBidBid = "flap_bid_bid"
+	FlapBidLot = "flap_bid_lot"
+
+	FlipBidGal = "flip_bid_gal"
+	FlipBidUsr = "flip_bid_usr"
+	FlipBidTab = "flip_bid_tab"
+	FlipVat    = "flip_vat"
+	FlipBeg    = "flip_beg"
+	FlipBidLot = "flip_bid_lot"
+	FlipKicks  = "flip_kicks"
+	FlipBidBid = "flip_bid_bid"
+
+	FlopVat    = "flop_vat"
+	FlopGem    = "flop_gem"
+	FlopBeg    = "flop_beg"
+	FlopPad    = "flop_pad"
+	FlopKicks  = "flop_kicks"
+	FlopLive   = "flop_live"
+	FlopBidBid = "flop_bid_bid"
+	FlopBidLot = "flop_bid_lot"
+
+	JugIlkRho  = "jug_ilk_rho"
+	JugIlkDuty = "jug_ilk_duty"
+
+	SpotIlkPip = "spot_ilk_pip"
+	SpotIlkMat = "spot_ilk_mat"
+
+	VatIlkArt  = "vat_ilk_art"
+	VatIlkDust = "vat_ilk_dust"
+	VatIlkRate = "vat_ilk_rate"
+	VatIlkLine = "vat_ilk_line"
+	VatIlkSpot = "vat_ilk_spot"
 )
