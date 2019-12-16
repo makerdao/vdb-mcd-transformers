@@ -44,6 +44,7 @@ const (
 	PotFileVowTable         = "pot_file_vow"
 	SpotFileMatTable        = "spot_file_mat"
 	SpotFilePipTable        = "spot_file_pip"
+	SpotFileParTable        = "spot_file_par"
 	SpotPokeTable           = "spot_poke"
 	TendTable               = "tend"
 	TickTable               = "tick"

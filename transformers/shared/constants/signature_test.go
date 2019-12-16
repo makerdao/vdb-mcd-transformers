@@ -106,6 +106,10 @@ var _ = Describe("Signature constants", func() {
 		Expect(SpotFileMatSignature()).To(Equal("0x1a0b287e00000000000000000000000000000000000000000000000000000000"))
 	})
 
+	It("generates spot file par signature", func() {
+		Expect(SpotFileParSignature()).To(Equal("0x29ae811400000000000000000000000000000000000000000000000000000000"))
+	})
+
 	It("generates spot file pip signature", func() {
 		Expect(SpotFilePipSignature()).To(Equal("0xebecb39d00000000000000000000000000000000000000000000000000000000"))
 	})

@@ -110,6 +110,10 @@ var _ = Describe("SpotFile EventTransformers", func() {
 		})
 	})
 
+	XDescribe("Spot file par", func() {
+		// TODO: Add when there is a Spot file par event available
+	})
+
 	Describe("Spot file pip", func() {
 		var (
 			addresses   []common.Address

@@ -9144,6 +9144,39 @@ ALTER SEQUENCE maker.spot_file_mat_id_seq OWNED BY maker.spot_file_mat.id;
 
 
 --
+-- Name: spot_file_par; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.spot_file_par (
+    id integer NOT NULL,
+    header_id integer NOT NULL,
+    log_id bigint NOT NULL,
+    what text,
+    data numeric
+);
+
+
+--
+-- Name: spot_file_par_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.spot_file_par_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: spot_file_par_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.spot_file_par_id_seq OWNED BY maker.spot_file_par.id;
+
+
+--
 -- Name: spot_file_pip; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -11941,6 +11974,13 @@ ALTER TABLE ONLY maker.spot_file_mat ALTER COLUMN id SET DEFAULT nextval('maker.
 
 
 --
+-- Name: spot_file_par id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.spot_file_par ALTER COLUMN id SET DEFAULT nextval('maker.spot_file_par_id_seq'::regclass);
+
+
+--
 -- Name: spot_file_pip id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
@@ -13798,6 +13838,22 @@ ALTER TABLE ONLY maker.spot_file_mat
 
 ALTER TABLE ONLY maker.spot_file_mat
     ADD CONSTRAINT spot_file_mat_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: spot_file_par spot_file_par_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.spot_file_par
+    ADD CONSTRAINT spot_file_par_header_id_log_id_key UNIQUE (header_id, log_id);
+
+
+--
+-- Name: spot_file_par spot_file_par_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.spot_file_par
+    ADD CONSTRAINT spot_file_par_pkey PRIMARY KEY (id);
 
 
 --
@@ -16112,6 +16168,20 @@ CREATE INDEX spot_file_mat_ilk_index ON maker.spot_file_mat USING btree (ilk_id)
 --
 
 CREATE INDEX spot_file_mat_log_index ON maker.spot_file_mat USING btree (log_id);
+
+
+--
+-- Name: spot_file_par_header_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX spot_file_par_header_index ON maker.spot_file_par USING btree (header_id);
+
+
+--
+-- Name: spot_file_par_log_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX spot_file_par_log_index ON maker.spot_file_par USING btree (log_id);
 
 
 --
@@ -18944,6 +19014,22 @@ ALTER TABLE ONLY maker.spot_file_mat
 
 ALTER TABLE ONLY maker.spot_file_mat
     ADD CONSTRAINT spot_file_mat_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: spot_file_par spot_file_par_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.spot_file_par
+    ADD CONSTRAINT spot_file_par_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: spot_file_par spot_file_par_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.spot_file_par
+    ADD CONSTRAINT spot_file_par_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
 
 
 --
