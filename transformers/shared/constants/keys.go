@@ -21,6 +21,7 @@ import (
 	"github.com/makerdao/vulcanizedb/libraries/shared/storage"
 )
 
+// Storage keys
 const (
 	BidId     storage.Key = "bid_id"
 	Cdpi      storage.Key = "cdpi"
@@ -31,20 +32,7 @@ const (
 	Timestamp storage.Key = "timestamp"
 )
 
-// TODO remove after transition to ColumnName
-type ForeignKeyField string
-
-const (
-	AddressFK ForeignKeyField = "address_id"
-	IlkFK     ForeignKeyField = "ilk_id"
-	UrnFK     ForeignKeyField = "urn_id"
-)
-
-const (
-	HeaderFK = "header_id"
-	LogFK    = "log_id"
-)
-
+// Table column names
 const (
 	AddressColumn event.ColumnName = "address_id"
 	ArtColumn     event.ColumnName = "art"

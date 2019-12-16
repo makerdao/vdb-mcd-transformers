@@ -52,7 +52,7 @@ var VatFileDebtCeilingHeaderSyncLog = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-func VatFileDebtCeilingModel() event.InsertionModel { return CopyEventModel(vatFileDebtCeilingModel) }
+func VatFileDebtCeilingModel() event.InsertionModel { return CopyModel(vatFileDebtCeilingModel) }
 
 var vatFileDebtCeilingModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
@@ -93,7 +93,7 @@ var VatFileIlkDustHeaderSyncLog = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-func VatFileIlkDustModel() event.InsertionModel { return CopyEventModel(vatFileIlkDustModel) }
+func VatFileIlkDustModel() event.InsertionModel { return CopyModel(vatFileIlkDustModel) }
 
 var vatFileIlkDustModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
@@ -134,7 +134,7 @@ var VatFileIlkLineHeaderSyncLog = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-func VatFileIlkLineModel() event.InsertionModel { return CopyEventModel(vatFileIlkLineModel) }
+func VatFileIlkLineModel() event.InsertionModel { return CopyModel(vatFileIlkLineModel) }
 
 var vatFileIlkLineModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
@@ -174,7 +174,7 @@ var VatFileIlkSpotHeaderSyncLog = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-func VatFileIlkSpotModel() event.InsertionModel { return CopyEventModel(vatFileIlkSpotModel) }
+func VatFileIlkSpotModel() event.InsertionModel { return CopyModel(vatFileIlkSpotModel) }
 
 var vatFileIlkSpotModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,

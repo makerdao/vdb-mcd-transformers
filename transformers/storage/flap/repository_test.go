@@ -196,7 +196,7 @@ var _ = Describe("Flap storage repository", func() {
 			badValues[0] = ""
 			err := repository.Create(diffID, fakeHeaderID, ttlAndTauMetadata, badValues)
 			Expect(err).To(HaveOccurred())
-			Expect(err.Error()).To(MatchRegexp("pq: invalid input syntax for integer"))
+			Expect(err.Error()).To(ContainSubstring("pq: invalid input syntax"))
 		})
 	})
 
@@ -388,7 +388,7 @@ var _ = Describe("Flap storage repository", func() {
 				badValues[1] = ""
 				err := repository.Create(diffID, fakeHeaderID, bidGuyTicEndMetadata, badValues)
 				Expect(err).To(HaveOccurred())
-				Expect(err.Error()).To(MatchRegexp("pq: invalid input syntax for integer"))
+				Expect(err.Error()).To(ContainSubstring("pq: invalid input syntax"))
 			})
 		})
 	})

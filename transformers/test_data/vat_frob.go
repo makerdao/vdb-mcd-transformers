@@ -57,7 +57,7 @@ var VatFrobHeaderSyncLogWithPositiveDart = core.HeaderSyncLog{
 }
 
 func VatFrobModelWithPositiveDart() event.InsertionModel {
-	return CopyEventModel(vatFrobModelWithPositiveDart)
+	return CopyModel(vatFrobModelWithPositiveDart)
 }
 
 var vatFrobModelWithPositiveDart = event.InsertionModel{
@@ -101,7 +101,7 @@ var VatFrobHeaderSyncLogWithNegativeDink = core.HeaderSyncLog{
 }
 
 func VatFrobModelWithNegativeDink() event.InsertionModel {
-	return CopyEventModel(vatFrobModelWithNegativeDink)
+	return CopyModel(vatFrobModelWithNegativeDink)
 }
 
 var vatFrobModelWithNegativeDink = event.InsertionModel{

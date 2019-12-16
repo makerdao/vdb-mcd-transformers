@@ -51,7 +51,7 @@ var FlopKickHeaderSyncLog = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-func FlopKickModel() event.InsertionModel { return CopyEventModel(flopKickModel) }
+func FlopKickModel() event.InsertionModel { return CopyModel(flopKickModel) }
 
 var flopKickModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,

@@ -574,7 +574,7 @@ func CreateDeal(input DealCreationInput) (err error) {
 	addressID, addressErr := shared.GetOrCreateAddress(input.ContractAddress, input.DB)
 	Expect(addressErr).NotTo(HaveOccurred())
 	dealLog := test_data.CreateTestLog(input.DealHeaderId, input.DB)
-	dealModel := test_data.CopyEventModel(test_data.DealModel)
+	dealModel := test_data.CopyModel(test_data.DealModel)
 	dealModel.ColumnValues[deal.Id] = strconv.Itoa(input.BidId)
 	dealModel.ColumnValues[event.HeaderFK] = input.DealHeaderId
 	dealModel.ColumnValues[event.LogFK] = dealLog.ID
@@ -586,7 +586,7 @@ func CreateDeal(input DealCreationInput) (err error) {
 func CreateFlipKick(contractAddress string, bidId int, headerId, logId int64, usr string, db *postgres.DB) error {
 	addressId, addressErr := shared.GetOrCreateAddress(contractAddress, db)
 	Expect(addressErr).NotTo(HaveOccurred())
-	flipKickModel := test_data.CopyEventModel(test_data.FlipKickModel())
+	flipKickModel := test_data.CopyModel(test_data.FlipKickModel())
 	flipKickModel.ColumnValues[event.HeaderFK] = headerId
 	flipKickModel.ColumnValues[event.LogFK] = logId
 	flipKickModel.ColumnValues[event.AddressFK] = addressId
@@ -647,7 +647,7 @@ func CreateDent(input DentCreationInput) (err error) {
 func CreateYank(input YankCreationInput) (err error) {
 	addressID, addressErr := shared.GetOrCreateAddress(input.ContractAddress, input.DB)
 	Expect(addressErr).NotTo(HaveOccurred())
-	yankModel := test_data.CopyEventModel(test_data.YankModel)
+	yankModel := test_data.CopyModel(test_data.YankModel)
 	yankModel.ColumnValues[yank.BidId] = strconv.Itoa(input.BidId)
 	yankModel.ColumnValues[constants.AddressColumn] = addressID
 	yankModel.ColumnValues[event.HeaderFK] = input.YankHeaderId
@@ -659,7 +659,7 @@ func CreateTick(input TickCreationInput) (err error) {
 	addressID, addressErr := shared.GetOrCreateAddress(input.ContractAddress, input.DB)
 	Expect(addressErr).NotTo(HaveOccurred())
 	tickLog := test_data.CreateTestLog(input.TickHeaderId, input.DB)
-	tickModel := test_data.CopyEventModel(test_data.TickModel)
+	tickModel := test_data.CopyModel(test_data.TickModel)
 	tickModel.ColumnValues[constants.BidIDColumn] = strconv.Itoa(input.BidId)
 	tickModel.ColumnValues[constants.AddressColumn] = addressID
 	tickModel.ColumnValues[event.HeaderFK] = input.TickHeaderId

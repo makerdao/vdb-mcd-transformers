@@ -47,7 +47,7 @@ var SpotPokeHeaderSyncLog = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-func SpotPokeModel() event.InsertionModel { return CopyEventModel(spotPokeModel) }
+func SpotPokeModel() event.InsertionModel { return CopyModel(spotPokeModel) }
 
 const SpotPokeIlkHex = "0x434f4c352d410000000000000000000000000000000000000000000000000000"
 

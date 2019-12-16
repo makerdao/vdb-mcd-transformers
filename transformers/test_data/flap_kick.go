@@ -48,7 +48,7 @@ var FlapKickHeaderSyncLog = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-func FlapKickModel() event.InsertionModel { return CopyEventModel(flapKickModel) }
+func FlapKickModel() event.InsertionModel { return CopyModel(flapKickModel) }
 
 var flapKickModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,

@@ -52,7 +52,7 @@ var CatFileChopHeaderSyncLog = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-func CatFileChopModel() event.InsertionModel { return CopyEventModel(catFileChopModel) }
+func CatFileChopModel() event.InsertionModel { return CopyModel(catFileChopModel) }
 
 var catFileChopModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
@@ -97,7 +97,7 @@ var CatFileLumpHeaderSyncLog = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-func CatFileLumpModel() event.InsertionModel { return CopyEventModel(catFileLumpModel) }
+func CatFileLumpModel() event.InsertionModel { return CopyModel(catFileLumpModel) }
 
 var catFileLumpModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
@@ -142,7 +142,7 @@ var CatFileFlipHeaderSyncLog = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-func CatFileFlipModel() event.InsertionModel { return CopyEventModel(catFileFlipModel) }
+func CatFileFlipModel() event.InsertionModel { return CopyModel(catFileFlipModel) }
 
 var catFileFlipModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
@@ -186,7 +186,7 @@ var CatFileVowHeaderSyncLog = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-func CatFileVowModel() event.InsertionModel { return CopyEventModel(catFileVowModel) }
+func CatFileVowModel() event.InsertionModel { return CopyModel(catFileVowModel) }
 
 var catFileVowModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,

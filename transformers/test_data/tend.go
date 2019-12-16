@@ -79,5 +79,5 @@ var tendModel = event.InsertionModel{
 }
 
 func TendModel() event.InsertionModel {
-	return CopyEventModel(tendModel)
+	return CopyModel(tendModel)
 }

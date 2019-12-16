@@ -23,7 +23,6 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/test_data"
 	"github.com/makerdao/vulcanizedb/pkg/core"
@@ -34,21 +33,7 @@ import (
 )
 
 // Returns a deep copy of the given model, so tests aren't getting the same map/slice references
-func CopyModel(model shared.InsertionModel) shared.InsertionModel {
-	buf := new(bytes.Buffer)
-	encoder := gob.NewEncoder(buf)
-	encErr := encoder.Encode(model)
-	Expect(encErr).NotTo(HaveOccurred())
-
-	var newModel shared.InsertionModel
-	decoder := gob.NewDecoder(buf)
-	decErr := decoder.Decode(&newModel)
-	Expect(decErr).NotTo(HaveOccurred())
-	return newModel
-}
-
-// TODO rename CopyEventModel => CopyModel
-func CopyEventModel(model event.InsertionModel) event.InsertionModel {
+func CopyModel(model event.InsertionModel) event.InsertionModel {
 	buf := new(bytes.Buffer)
 	encoder := gob.NewEncoder(buf)
 	encErr := encoder.Encode(model)

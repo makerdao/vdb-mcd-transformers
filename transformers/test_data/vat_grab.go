@@ -108,8 +108,8 @@ var vatGrabModelWithNegativeDink = event.InsertionModel{
 }
 
 func VatGrabModelWithPositiveDink() event.InsertionModel {
-	return CopyEventModel(vatGrabModelWithPositiveDink)
+	return CopyModel(vatGrabModelWithPositiveDink)
 }
 func VatGrabModelWithNegativeDink() event.InsertionModel {
-	return CopyEventModel(vatGrabModelWithNegativeDink)
+	return CopyModel(vatGrabModelWithNegativeDink)
 }

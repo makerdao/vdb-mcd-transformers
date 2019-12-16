@@ -62,7 +62,7 @@ var DentHeaderSyncLog = core.HeaderSyncLog{
 }
 
 func DentModel() event.InsertionModel {
-	return CopyEventModel(dentModel)
+	return CopyModel(dentModel)
 }
 
 var dentModel = event.InsertionModel{
