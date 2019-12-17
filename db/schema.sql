@@ -9076,6 +9076,38 @@ ALTER SEQUENCE maker.pot_drip_id_seq OWNED BY maker.pot_drip.id;
 
 
 --
+-- Name: pot_exit; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.pot_exit (
+    id integer NOT NULL,
+    header_id integer NOT NULL,
+    log_id bigint NOT NULL,
+    wad numeric
+);
+
+
+--
+-- Name: pot_exit_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.pot_exit_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: pot_exit_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.pot_exit_id_seq OWNED BY maker.pot_exit.id;
+
+
+--
 -- Name: pot_file_dsr; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -12056,6 +12088,13 @@ ALTER TABLE ONLY maker.pot_drip ALTER COLUMN id SET DEFAULT nextval('maker.pot_d
 
 
 --
+-- Name: pot_exit id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.pot_exit ALTER COLUMN id SET DEFAULT nextval('maker.pot_exit_id_seq'::regclass);
+
+
+--
 -- Name: pot_file_dsr id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
@@ -13923,6 +13962,22 @@ ALTER TABLE ONLY maker.pot_drip
 
 ALTER TABLE ONLY maker.pot_drip
     ADD CONSTRAINT pot_drip_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: pot_exit pot_exit_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.pot_exit
+    ADD CONSTRAINT pot_exit_header_id_log_id_key UNIQUE (header_id, log_id);
+
+
+--
+-- Name: pot_exit pot_exit_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.pot_exit
+    ADD CONSTRAINT pot_exit_pkey PRIMARY KEY (id);
 
 
 --
@@ -16305,6 +16360,20 @@ CREATE INDEX pot_drip_log_index ON maker.pot_drip USING btree (log_id);
 --
 
 CREATE INDEX pot_drip_msg_sender_index ON maker.pot_drip USING btree (msg_sender);
+
+
+--
+-- Name: pot_exit_header_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX pot_exit_header_index ON maker.pot_exit USING btree (header_id);
+
+
+--
+-- Name: pot_exit_log_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX pot_exit_log_index ON maker.pot_exit USING btree (log_id);
 
 
 --
@@ -19189,6 +19258,22 @@ ALTER TABLE ONLY maker.pot_drip
 
 ALTER TABLE ONLY maker.pot_drip
     ADD CONSTRAINT pot_drip_msg_sender_fkey FOREIGN KEY (msg_sender) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: pot_exit pot_exit_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.pot_exit
+    ADD CONSTRAINT pot_exit_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: pot_exit pot_exit_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.pot_exit
+    ADD CONSTRAINT pot_exit_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
 
 
 --

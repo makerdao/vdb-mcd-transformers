@@ -41,6 +41,7 @@ const (
 	NewCdpTable             = "new_cdp"
 	PotCageTable            = "pot_cage"
 	PotDripTable            = "pot_drip"
+	PotExitTable            = "pot_exit"
 	PotFileDSRTable         = "pot_file_dsr"
 	PotFileVowTable         = "pot_file_vow"
 	PotJoinTable            = "pot_join"
