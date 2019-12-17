@@ -34,6 +34,7 @@ func LogValueSignature() string           { return getEventTopicZero(logValueMet
 func NewCdpSignature() string             { return getEventTopicZero(newCdpMethod()) }
 func PotCageSignature() string            { return getLogNoteTopicZero(potCageMethod()) }
 func PotDripSignature() string            { return getLogNoteTopicZero(potDripMethod()) }
+func PotExitSignature() string            { return getLogNoteTopicZero(potExitMethod()) }
 func PotFileDSRSignature() string         { return getLogNoteTopicZero(potFileDSRMethod()) }
 func PotFileVowSignature() string         { return getLogNoteTopicZero(potFileVowMethod()) }
 func PotJoinSignature() string            { return getLogNoteTopicZero(potJoinMethod()) }

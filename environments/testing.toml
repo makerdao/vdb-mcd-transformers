@@ -44,6 +44,7 @@
         "log_value",
         "new_cdp",
         "pot_cage",
+        "pot_exit",
         "pot_file_dsr",
         "pot_file_vow",
         "pot_join",
@@ -251,6 +252,13 @@
         rank = "0"
     [exporter.pot_cage]
         path = "transformers/events/pot_cage/initializer"
+        type = "eth_event"
+        repository = "github.com/makerdao/vdb-mcd-transformers"
+        migrations = "db/migrations"
+        contracts = ["MCD_POT"]
+        rank = "0"
+    [exporter.pot_exit]
+        path = "transformers/events/pot_exit/initializer"
         type = "eth_event"
         repository = "github.com/makerdao/vdb-mcd-transformers"
         migrations = "db/migrations"
