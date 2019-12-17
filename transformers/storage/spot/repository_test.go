@@ -38,8 +38,8 @@ var _ = Describe("Spot storage repository", func() {
 	var (
 		db                   = test_config.NewTestDB(test_config.NewTestNode())
 		repo                 spot.SpotStorageRepository
-		fakeAddress          = "0x12345"
-		fakeUint256          = "12345"
+		fakeAddress          = "0x" + fakes.RandomString(20)
+		fakeUint256          = strconv.Itoa(rand.Int())
 		diffID, fakeHeaderID int64
 	)
 
@@ -148,49 +148,39 @@ var _ = Describe("Spot storage repository", func() {
 		})
 	})
 
-	It("persists a spot vat", func() {
-		err := repo.Create(diffID, fakeHeaderID, spot.VatMetadata, fakeAddress)
+	Describe("vat", func() {
+		inputs := shared_behaviors.StorageBehaviorInputs{
+			ValueFieldName:   spot.Vat,
+			Value:            fakeAddress,
+			StorageTableName: "maker.spot_vat",
+			Repository:       &repo,
+			Metadata:         spot.VatMetadata,
+		}
 
-		Expect(err).NotTo(HaveOccurred())
-		var result VariableRes
-		err = db.Get(&result, `SELECT diff_id, header_id, vat AS value FROM maker.spot_vat`)
-		Expect(err).NotTo(HaveOccurred())
-		AssertVariable(result, diffID, fakeHeaderID, fakeAddress)
+		shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
 	})
 
-	It("does not duplicate spot vat", func() {
-		insertOneErr := repo.Create(diffID, fakeHeaderID, spot.VatMetadata, fakeAddress)
-		Expect(insertOneErr).NotTo(HaveOccurred())
+	Describe("par", func() {
+		inputs := shared_behaviors.StorageBehaviorInputs{
+			ValueFieldName:   spot.Par,
+			Value:            fakeUint256,
+			StorageTableName: "maker.spot_par",
+			Repository:       &repo,
+			Metadata:         spot.ParMetadata,
+		}
 
-		insertTwoErr := repo.Create(diffID, fakeHeaderID, spot.VatMetadata, fakeAddress)
-
-		Expect(insertTwoErr).NotTo(HaveOccurred())
-		var count int
-		getCountErr := db.Get(&count, `SELECT count(*) FROM maker.spot_vat`)
-		Expect(getCountErr).NotTo(HaveOccurred())
-		Expect(count).To(Equal(1))
+		shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
 	})
 
-	It("persists a spot par", func() {
-		err := repo.Create(diffID, fakeHeaderID, spot.ParMetadata, fakeUint256)
+	Describe("live", func() {
+		inputs := shared_behaviors.StorageBehaviorInputs{
+			ValueFieldName:   spot.Live,
+			Value:            fakeUint256,
+			StorageTableName: "maker.spot_live",
+			Repository:       &repo,
+			Metadata:         spot.LiveMetadata,
+		}
 
-		Expect(err).NotTo(HaveOccurred())
-		var result VariableRes
-		err = db.Get(&result, `SELECT diff_id, header_id, par AS value FROM maker.spot_par`)
-		Expect(err).NotTo(HaveOccurred())
-		AssertVariable(result, diffID, fakeHeaderID, fakeUint256)
-	})
-
-	It("does not duplicate spot par", func() {
-		insertOneErr := repo.Create(diffID, fakeHeaderID, spot.ParMetadata, fakeUint256)
-		Expect(insertOneErr).NotTo(HaveOccurred())
-
-		insertTwoErr := repo.Create(diffID, fakeHeaderID, spot.ParMetadata, fakeUint256)
-
-		Expect(insertTwoErr).NotTo(HaveOccurred())
-		var count int
-		getCountErr := db.Get(&count, `SELECT count(*) FROM maker.spot_par`)
-		Expect(getCountErr).NotTo(HaveOccurred())
-		Expect(count).To(Equal(1))
+		shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
 	})
 })

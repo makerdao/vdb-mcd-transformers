@@ -9315,6 +9315,38 @@ ALTER SEQUENCE maker.spot_ilk_pip_id_seq OWNED BY maker.spot_ilk_pip.id;
 
 
 --
+-- Name: spot_live; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.spot_live (
+    id integer NOT NULL,
+    diff_id bigint NOT NULL,
+    header_id integer NOT NULL,
+    live numeric NOT NULL
+);
+
+
+--
+-- Name: spot_live_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.spot_live_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: spot_live_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.spot_live_id_seq OWNED BY maker.spot_live.id;
+
+
+--
 -- Name: spot_par; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -12080,6 +12112,13 @@ ALTER TABLE ONLY maker.spot_ilk_pip ALTER COLUMN id SET DEFAULT nextval('maker.s
 
 
 --
+-- Name: spot_live id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.spot_live ALTER COLUMN id SET DEFAULT nextval('maker.spot_live_id_seq'::regclass);
+
+
+--
 -- Name: spot_par id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
@@ -14012,6 +14051,22 @@ ALTER TABLE ONLY maker.spot_ilk_pip
 
 ALTER TABLE ONLY maker.spot_ilk_pip
     ADD CONSTRAINT spot_ilk_pip_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: spot_live spot_live_diff_id_header_id_live_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.spot_live
+    ADD CONSTRAINT spot_live_diff_id_header_id_live_key UNIQUE (diff_id, header_id, live);
+
+
+--
+-- Name: spot_live spot_live_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.spot_live
+    ADD CONSTRAINT spot_live_pkey PRIMARY KEY (id);
 
 
 --
@@ -16376,6 +16431,13 @@ CREATE INDEX spot_ilk_pip_header_id_index ON maker.spot_ilk_pip USING btree (hea
 --
 
 CREATE INDEX spot_ilk_pip_ilk_index ON maker.spot_ilk_pip USING btree (ilk_id);
+
+
+--
+-- Name: spot_live_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX spot_live_header_id_index ON maker.spot_live USING btree (header_id);
 
 
 --
@@ -19287,6 +19349,22 @@ ALTER TABLE ONLY maker.spot_ilk_pip
 
 ALTER TABLE ONLY maker.spot_ilk_pip
     ADD CONSTRAINT spot_ilk_pip_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id) ON DELETE CASCADE;
+
+
+--
+-- Name: spot_live spot_live_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.spot_live
+    ADD CONSTRAINT spot_live_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
+-- Name: spot_live spot_live_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.spot_live
+    ADD CONSTRAINT spot_live_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
 
 
 --

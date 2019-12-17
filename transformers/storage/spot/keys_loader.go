@@ -30,6 +30,7 @@ const (
 	IlkMat = "mat"
 	Vat    = "vat"
 	Par    = "par"
+	Live   = "live"
 )
 
 var (
@@ -40,6 +41,9 @@ var (
 
 	ParKey      = common.HexToHash(vdbStorage.IndexThree)
 	ParMetadata = vdbStorage.GetValueMetadata(Par, nil, vdbStorage.Uint256)
+
+	LiveKey      = common.HexToHash(vdbStorage.IndexFour)
+	LiveMetadata = vdbStorage.GetValueMetadata(Live, nil, vdbStorage.Uint256)
 )
 
 type keysLoader struct {
@@ -71,6 +75,7 @@ func getStaticMappings() map[common.Hash]vdbStorage.ValueMetadata {
 	mappings := make(map[common.Hash]vdbStorage.ValueMetadata)
 	mappings[VatKey] = VatMetadata
 	mappings[ParKey] = ParMetadata
+	mappings[LiveKey] = LiveMetadata
 	return mappings
 }
 

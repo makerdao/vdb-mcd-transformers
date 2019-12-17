@@ -48,6 +48,7 @@ var _ = Describe("spot storage keys loader", func() {
 		Expect(err).NotTo(HaveOccurred())
 		Expect(mappings[spot.VatKey]).To(Equal(spot.VatMetadata))
 		Expect(mappings[spot.ParKey]).To(Equal(spot.ParMetadata))
+		Expect(mappings[spot.LiveKey]).To(Equal(spot.LiveMetadata))
 	})
 
 	Describe("when getting ilks fails", func() {
