@@ -146,7 +146,7 @@ var _ = Describe("Plugin test", func() {
 	var ilk = "0x4554482d41000000000000000000000000000000000000000000000000000000"
 	var blockNumber = int64(14764569)
 	var maxConsecutiveUnexpectedErrs = 0
-	var retryInterval = time.Nanosecond
+	var retryInterval = 2 * time.Second
 
 	BeforeEach(func() {
 		test_config.CleanTestDB(db)
