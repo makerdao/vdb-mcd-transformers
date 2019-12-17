@@ -19,13 +19,12 @@ package test_data
 import (
 	"math/rand"
 
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/yank"
-	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
-
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/events/yank"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 )
 
@@ -53,7 +52,7 @@ var YankHeaderSyncLog = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-var YankModel = event.InsertionModel{
+var yankModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.YankTable,
 	OrderedColumns: []event.ColumnName{
@@ -66,3 +65,5 @@ var YankModel = event.InsertionModel{
 		constants.AddressColumn: rawYankLog.Address.Hex(),
 	},
 }
+
+func YankModel() event.InsertionModel { return CopyModel(yankModel) }

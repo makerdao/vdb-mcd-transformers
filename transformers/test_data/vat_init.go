@@ -19,16 +19,13 @@ package test_data
 import (
 	"math/rand"
 
-	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
-
-	"github.com/makerdao/vulcanizedb/pkg/core"
-
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/makerdao/vulcanizedb/pkg/fakes"
-
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
+	"github.com/makerdao/vulcanizedb/pkg/core"
+	"github.com/makerdao/vulcanizedb/pkg/fakes"
 )
 
 var rawVatInitLog = types.Log{
@@ -55,7 +52,7 @@ var VatInitHeaderSyncLog = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-var VatInitModel = event.InsertionModel{
+var vatInitModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.VatInitTable,
 	OrderedColumns: []event.ColumnName{
@@ -67,3 +64,5 @@ var VatInitModel = event.InsertionModel{
 		//constants.IlkColumn
 	},
 }
+
+func VatInitModel() event.InsertionModel { return CopyModel(vatInitModel) }

@@ -20,16 +20,15 @@ import (
 	"database/sql"
 	"math/rand"
 
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
-	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
-	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
-
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	. "github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
+	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -129,7 +128,7 @@ func createVatInitModel(headerId, logId int64, ilkHex string, database *postgres
 	ilkID, ilkErr := shared.GetOrCreateIlk(ilkHex, database)
 	Expect(ilkErr).NotTo(HaveOccurred())
 
-	vatInit := test_data.VatInitModel
+	vatInit := test_data.VatInitModel()
 	vatInit.ColumnValues[constants.IlkColumn] = ilkID
 	vatInit.ColumnValues[event.HeaderFK] = headerId
 	vatInit.ColumnValues[event.LogFK] = logId

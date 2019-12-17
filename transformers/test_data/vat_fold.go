@@ -52,7 +52,7 @@ var VatFoldHeaderSyncLogWithPositiveRate = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-var VatFoldModelWithPositiveRate = event.InsertionModel{
+var vatFoldModelWithPositiveRate = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.VatFoldTable,
 	OrderedColumns: []event.ColumnName{
@@ -91,7 +91,7 @@ var VatFoldHeaderSyncLogWithNegativeRate = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-var VatFoldModelWithNegativeRate = event.InsertionModel{
+var vatFoldModelWithNegativeRate = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.VatFoldTable,
 	OrderedColumns: []event.ColumnName{
@@ -104,4 +104,11 @@ var VatFoldModelWithNegativeRate = event.InsertionModel{
 		constants.UColumn:    "0x7d7bEe5fCfD8028cf7b00876C5b1421c800561A6",
 		constants.RateColumn: "-500000000000000000000",
 	},
+}
+
+func VatFoldModelWithNegativeRate() event.InsertionModel {
+	return CopyModel(vatFoldModelWithNegativeRate)
+}
+func VatFoldModelWithPositiveRate() event.InsertionModel {
+	return CopyModel(vatFoldModelWithPositiveRate)
 }

@@ -25,20 +25,18 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
-	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("Flip Deal Converter", func() {
 	var (
-		converter deal.Converter
-		db        *postgres.DB
+		converter = deal.Converter{}
+		db        = test_config.NewTestDB(test_config.NewTestNode())
 	)
 
 	BeforeEach(func() {
-		converter = deal.Converter{}
-		db = test_config.NewTestDB(test_config.NewTestNode())
+		test_config.CleanTestDB(db)
 	})
 
 	It("converts logs to models", func() {
@@ -47,9 +45,8 @@ var _ = Describe("Flip Deal Converter", func() {
 		var addressID int64
 		addrErr := db.Get(&addressID, `SELECT id FROM public.addresses`)
 		Expect(addrErr).NotTo(HaveOccurred())
-		expectedModel := test_data.DealModel
+		expectedModel := test_data.DealModel()
 		expectedModel.ColumnValues[constants.AddressColumn] = addressID
-		expectedModel = test_data.DealModel
 		Expect(models).To(Equal([]event.InsertionModel{expectedModel}))
 	})
 

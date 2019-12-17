@@ -53,7 +53,7 @@ var DealHeaderSyncLog = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-var DealModel = event.InsertionModel{
+var dealModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.DealTable,
 	OrderedColumns: []event.ColumnName{
@@ -69,3 +69,5 @@ var DealModel = event.InsertionModel{
 		event.LogFK:             DealHeaderSyncLog.ID,
 	},
 }
+
+func DealModel() event.InsertionModel { return CopyModel(dealModel) }

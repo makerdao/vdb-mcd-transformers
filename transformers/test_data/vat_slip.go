@@ -19,16 +19,13 @@ package test_data
 import (
 	"math/rand"
 
-	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
-
-	"github.com/makerdao/vulcanizedb/pkg/core"
-
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/makerdao/vulcanizedb/pkg/fakes"
-
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
+	"github.com/makerdao/vulcanizedb/pkg/core"
+	"github.com/makerdao/vulcanizedb/pkg/fakes"
 )
 
 var rawVatSlipLogWithPositiveWad = types.Log{
@@ -55,7 +52,7 @@ var VatSlipHeaderSyncLogWithPositiveWad = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-var VatSlipModelWithPositiveWad = event.InsertionModel{
+var vatSlipModelWithPositiveWad = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.VatSlipTable,
 	OrderedColumns: []event.ColumnName{
@@ -94,7 +91,7 @@ var VatSlipHeaderSyncLogWithNegativeWad = core.HeaderSyncLog{
 	Transformed: false,
 }
 
-var VatSlipModelWithNegativeWad = event.InsertionModel{
+var vatSlipModelWithNegativeWad = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.VatSlipTable,
 	OrderedColumns: []event.ColumnName{
@@ -107,4 +104,11 @@ var VatSlipModelWithNegativeWad = event.InsertionModel{
 		event.LogFK:         VatSlipHeaderSyncLogWithNegativeWad.ID,
 		//constants.IlkColumn DB state
 	},
+}
+
+func VatSlipModelWithPositiveWad() event.InsertionModel {
+	return CopyModel(vatSlipModelWithPositiveWad)
+}
+func VatSlipModelWithNegativeWad() event.InsertionModel {
+	return CopyModel(vatSlipModelWithNegativeWad)
 }

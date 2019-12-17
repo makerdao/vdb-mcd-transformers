@@ -19,21 +19,16 @@ package vow_file_test
 import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/makerdao/vdb-mcd-transformers/test_config"
-	"github.com/makerdao/vulcanizedb/pkg/core"
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
-
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/vow_file"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
+	"github.com/makerdao/vulcanizedb/pkg/core"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("Vow file converter", func() {
-	var (
-		converter = vow_file.Converter{}
-		db        = test_config.NewTestDB(test_config.NewTestNode())
-	)
+	var converter = vow_file.Converter{}
 
 	It("returns err if log missing topics", func() {
 		badLog := core.HeaderSyncLog{
@@ -42,12 +37,12 @@ var _ = Describe("Vow file converter", func() {
 				Data:   []byte{1, 1, 1, 1, 1},
 			}}
 
-		_, err := converter.ToModels(constants.VowABI(), []core.HeaderSyncLog{badLog}, db)
+		_, err := converter.ToModels(constants.VowABI(), []core.HeaderSyncLog{badLog}, nil)
 		Expect(err).To(HaveOccurred())
 	})
 
 	It("converts a log to a model", func() {
-		models, err := converter.ToModels(constants.VowABI(), []core.HeaderSyncLog{test_data.VowFileHeaderSyncLog}, db)
+		models, err := converter.ToModels(constants.VowABI(), []core.HeaderSyncLog{test_data.VowFileHeaderSyncLog}, nil)
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(len(models)).To(Equal(1))

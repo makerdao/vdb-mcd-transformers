@@ -50,8 +50,9 @@ var _ = Describe("Vat fold converter", func() {
 		ilkErr := db.Get(&ilkID, `SELECT id FROM maker.ilks`)
 		Expect(ilkErr).NotTo(HaveOccurred())
 		Expect(len(models)).To(Equal(1))
-		test_data.VatFoldModelWithPositiveRate.ColumnValues[constants.IlkColumn] = ilkID
-		Expect(models).To(Equal([]event.InsertionModel{test_data.VatFoldModelWithPositiveRate}))
+		expectedModel := test_data.VatFoldModelWithPositiveRate()
+		expectedModel.ColumnValues[constants.IlkColumn] = ilkID
+		Expect(models).To(Equal([]event.InsertionModel{expectedModel}))
 	})
 
 	It("converts a log with negative rate to an model", func() {
@@ -63,7 +64,8 @@ var _ = Describe("Vat fold converter", func() {
 		Expect(ilkErr).NotTo(HaveOccurred())
 		Expect(len(models)).To(Equal(1))
 
-		test_data.VatFoldModelWithNegativeRate.ColumnValues[constants.IlkColumn] = ilkID
-		Expect(models).To(Equal([]event.InsertionModel{test_data.VatFoldModelWithNegativeRate}))
+		expectedModel := test_data.VatFoldModelWithNegativeRate()
+		expectedModel.ColumnValues[constants.IlkColumn] = ilkID
+		Expect(models).To(Equal([]event.InsertionModel{expectedModel}))
 	})
 })
