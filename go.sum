@@ -136,6 +136,8 @@ github.com/magiconair/properties v1.8.0 h1:LLgXmsheXeRoUOBOjtwPQCWIYqM/LU1ayDtDe
 github.com/magiconair/properties v1.8.0/go.mod h1:PppfXfuXeibc/6YijjN8zIbojt8czPbwD3XqdrwzmxQ=
 github.com/makerdao/vulcanizedb v0.0.11-0.20191212205905-623b53fb346f h1:mE7Kn9LnyQzDh6wy9qGyZ6aBgI9MKlCzbMJP6C0Wdd0=
 github.com/makerdao/vulcanizedb v0.0.11-0.20191212205905-623b53fb346f/go.mod h1:FZZ/SKy+7Ejdc+4Wa5oTGrr2cFuaCgGBxc2xoifaEoY=
+github.com/makerdao/vulcanizedb v0.0.11-rc.1 h1:DzlcRin4xbmSWlbpPNK4s3wcA6KdhxTprBFS0ZdiaeU=
+github.com/makerdao/vulcanizedb v0.0.11-rc.1/go.mod h1:FZZ/SKy+7Ejdc+4Wa5oTGrr2cFuaCgGBxc2xoifaEoY=
 github.com/makerdao/vulcanizedb v0.0.11/go.mod h1:FZZ/SKy+7Ejdc+4Wa5oTGrr2cFuaCgGBxc2xoifaEoY=
 github.com/makerdao/vulcanizedb v0.0.12-0.20191217164949-84fe94e045ba h1:typlmO3Zn9wuV/aqOjXSsR6Cp2eSnEhfFSVe3WrAI4U=
 github.com/makerdao/vulcanizedb v0.0.12-0.20191217164949-84fe94e045ba/go.mod h1:FZZ/SKy+7Ejdc+4Wa5oTGrr2cFuaCgGBxc2xoifaEoY=
