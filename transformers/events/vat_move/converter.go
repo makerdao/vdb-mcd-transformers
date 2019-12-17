@@ -32,7 +32,7 @@ func (Converter) ToModels(_ string, logs []core.HeaderSyncLog, _ *postgres.DB) (
 	for _, log := range logs {
 		err := shared.VerifyLog(log.Log, shared.FourTopicsRequired, shared.LogDataNotRequired)
 		if err != nil {
-			return []event.InsertionModel{}, err
+			return nil, err
 		}
 
 		src := common.BytesToAddress(log.Log.Topics[1].Bytes()).String()

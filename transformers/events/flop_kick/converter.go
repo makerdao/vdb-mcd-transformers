@@ -65,7 +65,7 @@ func (c Converter) ToModels(abi string, logs []core.HeaderSyncLog, db *postgres.
 	for _, flopKickEntity := range entities {
 		addressId, addressErr := shared.GetOrCreateAddress(flopKickEntity.ContractAddress.Hex(), db)
 		if addressErr != nil {
-			_ = shared.ErrCouldNotCreateFK(addressErr)
+			return nil, shared.ErrCouldNotCreateFK(addressErr)
 		}
 
 		model := event.InsertionModel{

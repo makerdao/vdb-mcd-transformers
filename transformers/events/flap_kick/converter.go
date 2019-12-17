@@ -67,7 +67,7 @@ func (converter Converter) ToModels(abi string, logs []core.HeaderSyncLog, db *p
 		}
 		addressId, addressErr := shared.GetOrCreateAddress(flapKickEntity.ContractAddress.Hex(), db)
 		if addressErr != nil {
-			_ = shared.ErrCouldNotCreateFK(addressErr)
+			return nil, shared.ErrCouldNotCreateFK(addressErr)
 		}
 
 		model := event.InsertionModel{
