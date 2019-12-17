@@ -25,16 +25,12 @@ import (
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/fetcher"
 	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
-	"github.com/makerdao/vulcanizedb/pkg/core"
-	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("Tend EventTransformer", func() {
 	var (
-		db          *postgres.DB
-		blockChain  core.BlockChain
 		tendConfig  transformer.EventTransformerConfig
 		initializer event.Transformer
 		logFetcher  fetcher.ILogFetcher
@@ -43,11 +39,6 @@ var _ = Describe("Tend EventTransformer", func() {
 	)
 
 	BeforeEach(func() {
-		rpcClient, ethClient, err := getClients(ipc)
-		Expect(err).NotTo(HaveOccurred())
-		blockChain, err = getBlockChain(rpcClient, ethClient)
-		Expect(err).NotTo(HaveOccurred())
-		db = test_config.NewTestDB(blockChain.Node())
 		test_config.CleanTestDB(db)
 
 		tendConfig = transformer.EventTransformerConfig{

@@ -42,14 +42,7 @@ var _ = Describe("PotJoin Transformer", func() {
 		potJoinConfig.StartingBlockNumber = blockNumber
 		potJoinConfig.EndingBlockNumber = blockNumber
 
-		rpcClient, ethClient, clientErr := getClients(ipc)
-		Expect(clientErr).NotTo(HaveOccurred())
-		blockChain, blockChainErr := getBlockChain(rpcClient, ethClient)
-		Expect(blockChainErr).NotTo(HaveOccurred())
-
-		db := test_config.NewTestDB(blockChain.Node())
 		test_config.CleanTestDB(db)
-
 		header, headerErr := persistHeader(db, blockNumber, blockChain)
 		Expect(headerErr).NotTo(HaveOccurred())
 

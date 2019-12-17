@@ -46,14 +46,7 @@ var _ = Describe("VatInit EventTransformer", func() {
 		vatInitConfig.StartingBlockNumber = blockNumber
 		vatInitConfig.EndingBlockNumber = blockNumber
 
-		rpcClient, ethClient, err := getClients(ipc)
-		Expect(err).NotTo(HaveOccurred())
-		blockChain, err := getBlockChain(rpcClient, ethClient)
-		Expect(err).NotTo(HaveOccurred())
-
-		db := test_config.NewTestDB(blockChain.Node())
 		test_config.CleanTestDB(db)
-
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 

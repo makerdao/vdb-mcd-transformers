@@ -2,15 +2,16 @@ package integration_tests
 
 import (
 	"errors"
+	"io/ioutil"
 	"log"
 	"testing"
 
-	"github.com/sirupsen/logrus"
-
-	"io/ioutil"
-
+	"github.com/makerdao/vdb-mcd-transformers/test_config"
+	"github.com/makerdao/vulcanizedb/pkg/core"
+	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )
 
@@ -18,6 +19,11 @@ func TestIntegrationTests(t *testing.T) {
 	RegisterFailHandler(Fail)
 	RunSpecs(t, "IntegrationTests Suite")
 }
+
+var (
+	db         *postgres.DB
+	blockChain core.BlockChain
+)
 
 var _ = BeforeSuite(func() {
 	testConfig := viper.New()
@@ -36,6 +42,16 @@ var _ = BeforeSuite(func() {
 	if ipc == "" {
 		logrus.Fatal(errors.New("infura.toml IPC path or $INFURA_URL env variable need to be set"))
 	}
+
+	rpcClient, ethClient, clientErr := getClients(ipc)
+	Expect(clientErr).NotTo(HaveOccurred())
+	var blockChainErr error
+	blockChain, blockChainErr = getBlockChain(rpcClient, ethClient)
+	Expect(blockChainErr).NotTo(HaveOccurred())
+
+	db = test_config.NewTestDB(blockChain.Node())
+	test_config.CleanTestDB(db)
+
 	// Set log to discard logs emitted by dependencies
 	log.SetOutput(ioutil.Discard)
 	// Set logrus to discard logs emitted by mcd_transformers

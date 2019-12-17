@@ -41,17 +41,10 @@ var _ = Describe("Bite Transformer", func() {
 	}
 
 	It("fetches and transforms a Bite event from Kovan chain", func() {
+		test_config.CleanTestDB(db)
 		blockNumber := int64(14887556)
 		biteConfig.StartingBlockNumber = blockNumber
 		biteConfig.EndingBlockNumber = blockNumber
-
-		rpcClient, ethClient, err := getClients(ipc)
-		Expect(err).NotTo(HaveOccurred())
-		blockChain, err := getBlockChain(rpcClient, ethClient)
-		Expect(err).NotTo(HaveOccurred())
-
-		db := test_config.NewTestDB(blockChain.Node())
-		test_config.CleanTestDB(db)
 
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())

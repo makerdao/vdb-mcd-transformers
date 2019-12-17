@@ -25,8 +25,6 @@ import (
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/fetcher"
 	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
-	"github.com/makerdao/vulcanizedb/pkg/core"
-	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -34,8 +32,6 @@ import (
 var _ = XDescribe("FlopKick Transformer", func() {
 	//TODO: There are currently no FlopKick events on Kovan
 	var (
-		db             *postgres.DB
-		blockChain     core.BlockChain
 		flopKickConfig transformer.EventTransformerConfig
 		initializer    event.Transformer
 		logFetcher     fetcher.ILogFetcher
@@ -44,11 +40,6 @@ var _ = XDescribe("FlopKick Transformer", func() {
 	)
 
 	BeforeEach(func() {
-		rpcClient, ethClient, err := getClients(ipc)
-		Expect(err).NotTo(HaveOccurred())
-		blockChain, err = getBlockChain(rpcClient, ethClient)
-		Expect(err).NotTo(HaveOccurred())
-		db = test_config.NewTestDB(blockChain.Node())
 		test_config.CleanTestDB(db)
 
 		flopKickConfig = transformer.EventTransformerConfig{

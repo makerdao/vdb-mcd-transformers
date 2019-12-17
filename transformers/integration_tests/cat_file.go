@@ -20,7 +20,6 @@ import (
 	"strconv"
 
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/cat_file/chop_lump"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/cat_file/flip"
@@ -31,22 +30,12 @@ import (
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/fetcher"
 	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
-	"github.com/makerdao/vulcanizedb/pkg/core"
-	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
-	"github.com/makerdao/vulcanizedb/pkg/eth/client"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("Cat File transformer", func() {
-	var (
-		db         *postgres.DB
-		blockChain core.BlockChain
-		rpcClient  client.RpcClient
-		err        error
-		ethClient  *ethclient.Client
-		logFetcher fetcher.ILogFetcher
-	)
+	var logFetcher fetcher.ILogFetcher
 
 	var catFileConfig = transformer.EventTransformerConfig{
 		ContractAddresses: []string{test_data.CatAddress()},
@@ -54,13 +43,7 @@ var _ = Describe("Cat File transformer", func() {
 	}
 
 	BeforeEach(func() {
-		rpcClient, ethClient, err = getClients(ipc)
-		Expect(err).NotTo(HaveOccurred())
-		blockChain, err = getBlockChain(rpcClient, ethClient)
-		Expect(err).NotTo(HaveOccurred())
-		db = test_config.NewTestDB(blockChain.Node())
 		test_config.CleanTestDB(db)
-
 		logFetcher = fetcher.NewLogFetcher(blockChain)
 	})
 

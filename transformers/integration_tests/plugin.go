@@ -20,17 +20,14 @@ import (
 	"plugin"
 	"time"
 
-	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
-
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/constants"
 	"github.com/makerdao/vulcanizedb/libraries/shared/fetcher"
 	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 	"github.com/makerdao/vulcanizedb/libraries/shared/watcher"
 	"github.com/makerdao/vulcanizedb/pkg/config"
-	"github.com/makerdao/vulcanizedb/pkg/core"
-	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/makerdao/vulcanizedb/pkg/fs"
 	p2 "github.com/makerdao/vulcanizedb/pkg/plugin"
@@ -139,26 +136,19 @@ type Exporter interface {
 	Export() ([]transformer.EventTransformerInitializer, []transformer.StorageTransformerInitializer, []transformer.ContractTransformerInitializer)
 }
 
-func SetupDBandBC() (*postgres.DB, core.BlockChain) {
-	rpcClient, ethClient, err := getClients(ipc)
-	Expect(err).NotTo(HaveOccurred())
-	bc, err := getBlockChain(rpcClient, ethClient)
-	Expect(err).NotTo(HaveOccurred())
-	db := test_config.NewTestDB(bc.Node())
-	test_config.CleanTestDB(db)
-	return db, bc
-}
-
 var _ = Describe("Plugin test", func() {
 	var g p2.Generator
 	var goPath, soPath string
-	var db *postgres.DB
 	var hr repositories.HeaderRepository
 	var headerID int64
 	viper.SetConfigName("testing")
 	viper.AddConfigPath("$GOPATH/src/github.com/makerdao/vdb-mcd-transformers/environments/")
 	var ilk = "0x4554482d41000000000000000000000000000000000000000000000000000000"
 	var blockNumber = int64(14764569)
+
+	BeforeEach(func() {
+		test_config.CleanTestDB(db)
+	})
 
 	Describe("Event Transformers only", func() {
 		BeforeEach(func() {
@@ -190,9 +180,8 @@ var _ = Describe("Plugin test", func() {
 			})
 
 			It("Loads our generated Exporter and uses it to import an arbitrary set of TransformerInitializers that we can execute over", func() {
-				db, bc := SetupDBandBC()
 				hr = repositories.NewHeaderRepository(db)
-				header1, err := bc.GetHeaderByNumber(blockNumber)
+				header1, err := blockChain.GetHeaderByNumber(blockNumber)
 				Expect(err).ToNot(HaveOccurred())
 				headerID, err = hr.CreateOrUpdateHeader(header1)
 				Expect(err).ToNot(HaveOccurred())
@@ -205,7 +194,7 @@ var _ = Describe("Plugin test", func() {
 				Expect(ok).To(Equal(true))
 				eventTransformerInitializers, _, _ := exporter.Export()
 
-				w := watcher.NewEventWatcher(db, bc)
+				w := watcher.NewEventWatcher(db, blockChain)
 				addErr := w.AddTransformers(eventTransformerInitializers)
 				Expect(addErr).NotTo(HaveOccurred())
 
@@ -238,9 +227,8 @@ var _ = Describe("Plugin test", func() {
 			})
 
 			It("rechecks checked headers for event logs", func() {
-				db, bc := SetupDBandBC()
 				hr = repositories.NewHeaderRepository(db)
-				header1, err := bc.GetHeaderByNumber(blockNumber)
+				header1, err := blockChain.GetHeaderByNumber(blockNumber)
 				Expect(err).ToNot(HaveOccurred())
 				headerID, err = hr.CreateOrUpdateHeader(header1)
 				Expect(err).ToNot(HaveOccurred())
@@ -253,7 +241,7 @@ var _ = Describe("Plugin test", func() {
 				Expect(ok).To(Equal(true))
 				eventTransformerInitializers, _, _ := exporter.Export()
 
-				w := watcher.NewEventWatcher(db, bc)
+				w := watcher.NewEventWatcher(db, blockChain)
 				addErr := w.AddTransformers(eventTransformerInitializers)
 				Expect(addErr).NotTo(HaveOccurred())
 				var executeErrOne, executeErrTwo error
@@ -303,7 +291,6 @@ var _ = Describe("Plugin test", func() {
 			})
 
 			It("Loads our generated Exporter and uses it to import an arbitrary set of StorageTransformerInitializers that we can execute over", func() {
-				db, _ = SetupDBandBC()
 				plug, err := plugin.Open(soPath)
 				Expect(err).ToNot(HaveOccurred())
 				symExporter, err := plug.Lookup("Exporter")
@@ -353,9 +340,8 @@ var _ = Describe("Plugin test", func() {
 			})
 
 			It("Loads our generated Exporter and uses it to import an arbitrary set of TransformerInitializers and StorageTransformerInitializers that we can execute over", func() {
-				db, bc := SetupDBandBC()
 				hr = repositories.NewHeaderRepository(db)
-				header1, err := bc.GetHeaderByNumber(blockNumber)
+				header1, err := blockChain.GetHeaderByNumber(blockNumber)
 				Expect(err).ToNot(HaveOccurred())
 				headerID, err = hr.CreateOrUpdateHeader(header1)
 				Expect(err).ToNot(HaveOccurred())
@@ -368,7 +354,7 @@ var _ = Describe("Plugin test", func() {
 				Expect(ok).To(Equal(true))
 				eventInitializers, storageInitializers, _ := exporter.Export()
 
-				ew := watcher.NewEventWatcher(db, bc)
+				ew := watcher.NewEventWatcher(db, blockChain)
 				addTransformersErr := ew.AddTransformers(eventInitializers)
 				Expect(addTransformersErr).NotTo(HaveOccurred())
 
