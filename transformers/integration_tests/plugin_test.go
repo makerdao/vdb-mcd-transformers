@@ -196,7 +196,7 @@ var _ = Describe("Plugin test", func() {
 				Expect(ok).To(Equal(true))
 				eventTransformerInitializers, _, _ := exporter.Export()
 
-				w := watcher.NewEventWatcher(db, bc, maxConsecutiveUnexpectedErrs, retryInterval)
+				w := watcher.NewEventWatcher(db, blockChain, maxConsecutiveUnexpectedErrs, retryInterval)
 				addErr := w.AddTransformers(eventTransformerInitializers)
 				Expect(addErr).NotTo(HaveOccurred())
 
@@ -243,7 +243,7 @@ var _ = Describe("Plugin test", func() {
 				Expect(ok).To(Equal(true))
 				eventTransformerInitializers, _, _ := exporter.Export()
 
-				w := watcher.NewEventWatcher(db, bc, maxConsecutiveUnexpectedErrs, retryInterval)
+				w := watcher.NewEventWatcher(db, blockChain, maxConsecutiveUnexpectedErrs, retryInterval)
 				addErr := w.AddTransformers(eventTransformerInitializers)
 				Expect(addErr).NotTo(HaveOccurred())
 				var executeErrOne, executeErrTwo error
@@ -356,7 +356,7 @@ var _ = Describe("Plugin test", func() {
 				Expect(ok).To(Equal(true))
 				eventInitializers, storageInitializers, _ := exporter.Export()
 
-				ew := watcher.NewEventWatcher(db, bc, maxConsecutiveUnexpectedErrs, retryInterval)
+				ew := watcher.NewEventWatcher(db, blockChain, maxConsecutiveUnexpectedErrs, retryInterval)
 				addTransformersErr := ew.AddTransformers(eventInitializers)
 				Expect(addTransformersErr).NotTo(HaveOccurred())
 
