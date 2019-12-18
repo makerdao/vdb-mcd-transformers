@@ -9083,6 +9083,7 @@ CREATE TABLE maker.pot_exit (
     id integer NOT NULL,
     header_id integer NOT NULL,
     log_id bigint NOT NULL,
+    msg_sender integer NOT NULL,
     wad numeric
 );
 
@@ -16378,6 +16379,13 @@ CREATE INDEX pot_exit_log_index ON maker.pot_exit USING btree (log_id);
 
 
 --
+-- Name: pot_exit_msg_sender_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX pot_exit_msg_sender_index ON maker.pot_exit USING btree (msg_sender);
+
+
+--
 -- Name: pot_file_dsr_header_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -19282,6 +19290,14 @@ ALTER TABLE ONLY maker.pot_exit
 
 ALTER TABLE ONLY maker.pot_exit
     ADD CONSTRAINT pot_exit_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: pot_exit pot_exit_msg_sender_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.pot_exit
+    ADD CONSTRAINT pot_exit_msg_sender_fkey FOREIGN KEY (msg_sender) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --
