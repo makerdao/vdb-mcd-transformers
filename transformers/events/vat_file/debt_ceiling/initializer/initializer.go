@@ -24,7 +24,7 @@ import (
 	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 )
 
-var EventTransformerInitializer transformer.EventTransformerInitializer = event.Transformer{
-	Config:    shared.GetEventTransformerConfig(constants.VatFileDebtCeilingTable, constants.VatFileDebtCeilingSignature()),
-	Converter: debt_ceiling.Converter{},
+var EventTransformerInitializer transformer.EventTransformerInitializer = event.ConfiguredTransformer{
+	Config:      shared.GetEventTransformerConfig(constants.VatFileDebtCeilingTable, constants.VatFileDebtCeilingSignature()),
+	Transformer: debt_ceiling.Transformer{},
 }.NewTransformer

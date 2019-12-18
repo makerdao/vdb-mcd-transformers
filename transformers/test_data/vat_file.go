@@ -99,7 +99,7 @@ var vatFileIlkDustModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.VatFileIlkTable,
 	OrderedColumns: []event.ColumnName{
-		event.HeaderFK, constants.IlkColumn, constants.WhatColumn, constants.DataColumn, event.LogFK,
+		event.HeaderFK, event.LogFK, constants.IlkColumn, constants.WhatColumn, constants.DataColumn,
 	},
 	ColumnValues: event.ColumnValues{
 		constants.WhatColumn: "dust",
@@ -140,7 +140,7 @@ var vatFileIlkLineModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.VatFileIlkTable,
 	OrderedColumns: []event.ColumnName{
-		event.HeaderFK, constants.IlkColumn, constants.WhatColumn, constants.DataColumn, event.LogFK,
+		event.HeaderFK, event.LogFK, constants.IlkColumn, constants.WhatColumn, constants.DataColumn,
 	},
 	ColumnValues: event.ColumnValues{
 		constants.WhatColumn: "line",
@@ -180,7 +180,7 @@ var vatFileIlkSpotModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.VatFileIlkTable,
 	OrderedColumns: []event.ColumnName{
-		event.HeaderFK, constants.IlkColumn, constants.WhatColumn, constants.DataColumn, event.LogFK,
+		event.HeaderFK, event.LogFK, constants.IlkColumn, constants.WhatColumn, constants.DataColumn,
 	},
 	ColumnValues: event.ColumnValues{
 		constants.WhatColumn: "spot",

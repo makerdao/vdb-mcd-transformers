@@ -48,9 +48,9 @@ var _ = Describe("PotFile EventTransformers", func() {
 			addresses = transformer.HexStringsToAddresses(potFileDSRConfig.ContractAddresses)
 			topics = []common.Hash{common.HexToHash(potFileDSRConfig.Topic)}
 
-			initializer := event.Transformer{
-				Config:    potFileDSRConfig,
-				Converter: dsr.Converter{},
+			initializer := event.ConfiguredTransformer{
+				Config:      potFileDSRConfig,
+				Transformer: dsr.Transformer{},
 			}
 
 			logFetcher := fetcher.NewLogFetcher(blockChain)
@@ -102,9 +102,9 @@ var _ = Describe("PotFile EventTransformers", func() {
 			addresses = transformer.HexStringsToAddresses(potFileVowConfig.ContractAddresses)
 			topics = []common.Hash{common.HexToHash(potFileVowConfig.Topic)}
 
-			initializer := event.Transformer{
-				Config:    potFileVowConfig,
-				Converter: vow.Converter{},
+			initializer := event.ConfiguredTransformer{
+				Config:      potFileVowConfig,
+				Transformer: vow.Transformer{},
 			}
 
 			logFetcher := fetcher.NewLogFetcher(blockChain)

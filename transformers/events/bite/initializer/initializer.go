@@ -25,7 +25,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 )
 
-var EventTransformerInitializer transformer.EventTransformerInitializer = event.Transformer{
-	Config:    shared.GetEventTransformerConfig(constants.BiteTable, constants.BiteSignature()),
-	Converter: bite.Converter{},
+var EventTransformerInitializer transformer.EventTransformerInitializer = event.ConfiguredTransformer{
+	Config:      shared.GetEventTransformerConfig(constants.BiteTable, constants.BiteSignature()),
+	Transformer: bite.Transformer{},
 }.NewTransformer

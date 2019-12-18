@@ -24,7 +24,7 @@ import (
 	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 )
 
-var EventTransformerInitializer transformer.EventTransformerInitializer = event.Transformer{
-	Config:    shared.GetEventTransformerConfig(constants.YankTable, constants.YankSignature()),
-	Converter: yank.Converter{},
+var EventTransformerInitializer transformer.EventTransformerInitializer = event.ConfiguredTransformer{
+	Config:      shared.GetEventTransformerConfig(constants.YankTable, constants.YankSignature()),
+	Transformer: yank.Transformer{},
 }.NewTransformer

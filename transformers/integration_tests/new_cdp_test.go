@@ -49,9 +49,9 @@ var _ = Describe("NewCdp Transformer", func() {
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		tr := event.Transformer{
-			Config:    newCdpConfig,
-			Converter: new_cdp.Converter{},
+		tr := event.ConfiguredTransformer{
+			Config:      newCdpConfig,
+			Transformer: new_cdp.Transformer{},
 		}.NewTransformer(db)
 
 		logFetcher := fetcher.NewLogFetcher(blockChain)

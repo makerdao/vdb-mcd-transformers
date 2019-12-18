@@ -8,7 +8,7 @@ import (
 	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 )
 
-var EventTransformerInitializer transformer.EventTransformerInitializer = event.Transformer{
-	Config:    shared.GetEventTransformerConfig(constants.DenyTable, constants.DenySignature()),
-	Converter: deny.Converter{LogNoteArgumentOffset: -1},
+var EventTransformerInitializer transformer.EventTransformerInitializer = event.ConfiguredTransformer{
+	Config:      shared.GetEventTransformerConfig(constants.DenyTable, constants.DenySignature()),
+	Transformer: deny.Transformer{LogNoteArgumentOffset: -1},
 }.NewTransformer

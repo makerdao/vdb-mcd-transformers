@@ -59,9 +59,9 @@ var _ = XDescribe("VowFlog EventTransformer", func() {
 
 		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
 
-		tr := event.Transformer{
-			Config:    vowFlogConfig,
-			Converter: vow_flog.Converter{},
+		tr := event.ConfiguredTransformer{
+			Config:      vowFlogConfig,
+			Transformer: vow_flog.Transformer{},
 		}.NewTransformer(db)
 
 		err = tr.Execute(headerSyncLogs)

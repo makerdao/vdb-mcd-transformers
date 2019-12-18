@@ -58,9 +58,9 @@ var _ = Describe("VatFileDebtCeiling EventTransformer", func() {
 
 		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
 
-		initializer := event.Transformer{
-			Config:    vatFileDebtCeilingConfig,
-			Converter: debt_ceiling.Converter{},
+		initializer := event.ConfiguredTransformer{
+			Config:      vatFileDebtCeilingConfig,
+			Transformer: debt_ceiling.Transformer{},
 		}
 		transformer := initializer.NewTransformer(db)
 

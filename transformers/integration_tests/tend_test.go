@@ -32,7 +32,7 @@ import (
 var _ = Describe("Tend EventTransformer", func() {
 	var (
 		tendConfig  transformer.EventTransformerConfig
-		initializer event.Transformer
+		initializer event.ConfiguredTransformer
 		logFetcher  fetcher.ILogFetcher
 		addresses   []common.Address
 		topics      []common.Hash
@@ -52,9 +52,9 @@ var _ = Describe("Tend EventTransformer", func() {
 		addresses = transformer.HexStringsToAddresses(tendConfig.ContractAddresses)
 		topics = []common.Hash{common.HexToHash(tendConfig.Topic)}
 
-		initializer = event.Transformer{
-			Config:    tendConfig,
-			Converter: tend.Converter{},
+		initializer = event.ConfiguredTransformer{
+			Config:      tendConfig,
+			Transformer: tend.Transformer{},
 		}
 	})
 

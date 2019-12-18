@@ -58,9 +58,9 @@ var _ = Describe("VatFlux EventTransformer", func() {
 
 		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
 
-		initializer := event.Transformer{
-			Config:    vatFluxConfig,
-			Converter: vat_flux.Converter{},
+		initializer := event.ConfiguredTransformer{
+			Config:      vatFluxConfig,
+			Transformer: vat_flux.Transformer{},
 		}
 		transformer := initializer.NewTransformer(db)
 

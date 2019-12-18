@@ -52,9 +52,9 @@ var _ = Describe("SpotPoke Transformer", func() {
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		initializer := event.Transformer{
-			Config:    spotPokeConfig,
-			Converter: spot_poke.Converter{},
+		initializer := event.ConfiguredTransformer{
+			Config:      spotPokeConfig,
+			Transformer: spot_poke.Transformer{},
 		}
 		tr := initializer.NewTransformer(db)
 

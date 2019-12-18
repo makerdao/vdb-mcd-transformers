@@ -25,7 +25,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 )
 
-var EventTransformerInitializer transformer.EventTransformerInitializer = event.Transformer{
-	Config:    shared.GetEventTransformerConfig(constants.VatHealTable, constants.VatHealSignature()),
-	Converter: vat_heal.Converter{},
+var EventTransformerInitializer transformer.EventTransformerInitializer = event.ConfiguredTransformer{
+	Config:      shared.GetEventTransformerConfig(constants.VatHealTable, constants.VatHealSignature()),
+	Transformer: vat_heal.Transformer{},
 }.NewTransformer

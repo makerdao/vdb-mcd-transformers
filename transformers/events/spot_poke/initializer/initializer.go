@@ -24,7 +24,7 @@ import (
 	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 )
 
-var EventTransformerInitializer transformer.EventTransformerInitializer = event.Transformer{
-	Config:    shared.GetEventTransformerConfig(constants.SpotPokeTable, constants.SpotPokeSignature()),
-	Converter: spot_poke.Converter{},
+var EventTransformerInitializer transformer.EventTransformerInitializer = event.ConfiguredTransformer{
+	Config:      shared.GetEventTransformerConfig(constants.SpotPokeTable, constants.SpotPokeSignature()),
+	Transformer: spot_poke.Transformer{},
 }.NewTransformer

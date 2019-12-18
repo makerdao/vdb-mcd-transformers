@@ -49,9 +49,9 @@ var _ = Describe("Jug File Base EventTransformer", func() {
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		initializer := event.Transformer{
-			Config:    jugFileBaseConfig,
-			Converter: base.Converter{},
+		initializer := event.ConfiguredTransformer{
+			Config:      jugFileBaseConfig,
+			Transformer: base.Transformer{},
 		}
 		tr := initializer.NewTransformer(db)
 

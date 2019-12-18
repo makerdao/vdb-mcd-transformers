@@ -24,7 +24,7 @@ import (
 	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 )
 
-var EventTransformerInitializer transformer.EventTransformerInitializer = event.Transformer{
-	Config:    shared.GetEventTransformerConfig(constants.VatFoldTable, constants.VatFoldSignature()),
-	Converter: vat_fold.Converter{},
+var EventTransformerInitializer transformer.EventTransformerInitializer = event.ConfiguredTransformer{
+	Config:      shared.GetEventTransformerConfig(constants.VatFoldTable, constants.VatFoldSignature()),
+	Transformer: vat_fold.Transformer{},
 }.NewTransformer

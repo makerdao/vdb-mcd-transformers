@@ -55,7 +55,13 @@ var vatGrabModelWithPositiveDink = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.VatGrabTable,
 	OrderedColumns: []event.ColumnName{
-		event.HeaderFK, constants.UrnColumn, constants.VColumn, constants.WColumn, constants.DinkColumn, constants.DartColumn, event.LogFK,
+		event.HeaderFK,
+		event.LogFK,
+		constants.UrnColumn,
+		constants.VColumn,
+		constants.WColumn,
+		constants.DinkColumn,
+		constants.DartColumn,
 	},
 	ColumnValues: event.ColumnValues{
 		constants.VColumn:    "0x7340e006f4135BA6970D43bf43d88DCAD4e7a8CA",
@@ -95,7 +101,13 @@ var vatGrabModelWithNegativeDink = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.VatGrabTable,
 	OrderedColumns: []event.ColumnName{
-		event.HeaderFK, constants.UrnColumn, constants.VColumn, constants.WColumn, constants.DinkColumn, constants.DartColumn, event.LogFK,
+		event.HeaderFK,
+		event.LogFK,
+		constants.UrnColumn,
+		constants.VColumn,
+		constants.WColumn,
+		constants.DinkColumn,
+		constants.DartColumn,
 	},
 	ColumnValues: event.ColumnValues{
 		constants.VColumn:    "0x7340e006f4135BA6970D43bf43d88DCAD4e7a8CA",

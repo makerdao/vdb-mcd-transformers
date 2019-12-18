@@ -57,7 +57,7 @@ var VowFlogModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.VowFlogTable,
 	OrderedColumns: []event.ColumnName{
-		event.HeaderFK, constants.EraColumn, event.LogFK,
+		event.HeaderFK, event.LogFK, constants.EraColumn,
 	},
 	ColumnValues: event.ColumnValues{
 		constants.EraColumn: "1337",

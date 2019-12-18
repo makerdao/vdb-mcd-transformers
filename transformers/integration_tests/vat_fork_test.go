@@ -50,9 +50,9 @@ var _ = Describe("Vat fork transformer", func() {
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		initializer := event.Transformer{
-			Config:    vatForkConfig,
-			Converter: vat_fork.Converter{},
+		initializer := event.ConfiguredTransformer{
+			Config:      vatForkConfig,
+			Transformer: vat_fork.Transformer{},
 		}
 		tr := initializer.NewTransformer(db)
 

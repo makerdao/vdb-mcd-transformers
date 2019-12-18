@@ -57,7 +57,7 @@ var VowFessModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.VowFessTable,
 	OrderedColumns: []event.ColumnName{
-		event.HeaderFK, constants.TabColumn, event.LogFK,
+		event.HeaderFK, event.LogFK, constants.TabColumn,
 	},
 	ColumnValues: event.ColumnValues{
 		constants.TabColumn: "1337",

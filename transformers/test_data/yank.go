@@ -22,7 +22,6 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/yank"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
@@ -56,13 +55,12 @@ var yankModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.YankTable,
 	OrderedColumns: []event.ColumnName{
-		event.HeaderFK, yank.BidId, constants.AddressColumn, event.LogFK,
+		event.HeaderFK, event.AddressFK, event.LogFK, constants.BidIDColumn,
 	},
 	ColumnValues: event.ColumnValues{
-		yank.BidId:              "10000000000000000",
-		event.HeaderFK:          YankHeaderSyncLog.HeaderID,
-		event.LogFK:             YankHeaderSyncLog.ID,
-		constants.AddressColumn: rawYankLog.Address.Hex(),
+		event.HeaderFK:        YankHeaderSyncLog.HeaderID,
+		event.LogFK:           YankHeaderSyncLog.ID,
+		constants.BidIDColumn: "10000000000000000",
 	},
 }
 

@@ -33,7 +33,7 @@ import (
 var _ = Describe("Deal transformer", func() {
 	var (
 		dealConfig  transformer.EventTransformerConfig
-		initializer event.Transformer
+		initializer event.ConfiguredTransformer
 		logFetcher  fetcher.ILogFetcher
 		addresses   []common.Address
 		topics      []common.Hash
@@ -52,9 +52,9 @@ var _ = Describe("Deal transformer", func() {
 			Topic: constants.DealSignature(),
 		}
 
-		initializer = event.Transformer{
-			Config:    dealConfig,
-			Converter: deal.Converter{},
+		initializer = event.ConfiguredTransformer{
+			Config:      dealConfig,
+			Transformer: deal.Transformer{},
 		}
 
 		logFetcher = fetcher.NewLogFetcher(blockChain)

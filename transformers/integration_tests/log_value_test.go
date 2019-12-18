@@ -47,9 +47,9 @@ var _ = Describe("LogValue Transformer", func() {
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		initializer := event.Transformer{
-			Config:    logValueConfig,
-			Converter: log_value.Converter{},
+		initializer := event.ConfiguredTransformer{
+			Config:      logValueConfig,
+			Transformer: log_value.Transformer{},
 		}
 		transformer := initializer.NewTransformer(db)
 

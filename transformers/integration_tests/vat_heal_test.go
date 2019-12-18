@@ -55,9 +55,9 @@ var _ = Describe("VatHeal Transformer", func() {
 
 		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
 
-		tr := event.Transformer{
-			Config:    vatHealConfig,
-			Converter: vat_heal.Converter{},
+		tr := event.ConfiguredTransformer{
+			Config:      vatHealConfig,
+			Transformer: vat_heal.Transformer{},
 		}.NewTransformer(db)
 
 		err = tr.Execute(headerSyncLogs)

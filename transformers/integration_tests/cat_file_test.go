@@ -56,9 +56,9 @@ var _ = Describe("Cat File transformer", func() {
 		catFileConfig.StartingBlockNumber = chopLumpBlockNumber
 		catFileConfig.EndingBlockNumber = chopLumpBlockNumber
 
-		initializer := event.Transformer{
-			Config:    catFileConfig,
-			Converter: chop_lump.Converter{},
+		initializer := event.ConfiguredTransformer{
+			Config:      catFileConfig,
+			Transformer: chop_lump.Transformer{},
 		}
 		transformer := initializer.NewTransformer(db)
 
@@ -95,9 +95,9 @@ var _ = Describe("Cat File transformer", func() {
 		catFileConfig.StartingBlockNumber = chopLumpBlockNumber
 		catFileConfig.EndingBlockNumber = chopLumpBlockNumber
 
-		initializer := event.Transformer{
-			Config:    catFileConfig,
-			Converter: chop_lump.Converter{},
+		initializer := event.ConfiguredTransformer{
+			Config:      catFileConfig,
+			Transformer: chop_lump.Transformer{},
 		}
 		transformer := initializer.NewTransformer(db)
 
@@ -134,9 +134,9 @@ var _ = Describe("Cat File transformer", func() {
 		catFileConfig.StartingBlockNumber = flipBlockNumber
 		catFileConfig.EndingBlockNumber = flipBlockNumber
 
-		initializer := event.Transformer{
-			Config:    catFileConfig,
-			Converter: flip.Converter{},
+		initializer := event.ConfiguredTransformer{
+			Config:      catFileConfig,
+			Transformer: flip.Transformer{},
 		}
 
 		t := initializer.NewTransformer(db)
@@ -173,9 +173,9 @@ var _ = Describe("Cat File transformer", func() {
 		catFileConfig.StartingBlockNumber = vowBlockNumber
 		catFileConfig.EndingBlockNumber = vowBlockNumber
 
-		initializer := event.Transformer{
-			Config:    catFileConfig,
-			Converter: vow.Converter{},
+		initializer := event.ConfiguredTransformer{
+			Config:      catFileConfig,
+			Transformer: vow.Transformer{},
 		}
 		t := initializer.NewTransformer(db)
 

@@ -29,9 +29,9 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("VowFile LogNoteTransforer", func() {
+var _ = Describe("VowFile LogNoteTransformer", func() {
 	var (
-		initializer event.Transformer
+		initializer event.ConfiguredTransformer
 		addresses   []common.Address
 		topics      []common.Hash
 	)
@@ -48,9 +48,9 @@ var _ = Describe("VowFile LogNoteTransforer", func() {
 		addresses = transformer.HexStringsToAddresses(vowFileConfig.ContractAddresses)
 		topics = []common.Hash{common.HexToHash(vowFileConfig.Topic)}
 
-		initializer = event.Transformer{
-			Config:    vowFileConfig,
-			Converter: vow_file.Converter{},
+		initializer = event.ConfiguredTransformer{
+			Config:      vowFileConfig,
+			Transformer: vow_file.Transformer{},
 		}
 	})
 

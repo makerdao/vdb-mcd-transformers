@@ -59,7 +59,7 @@ var VatMoveModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.VatMoveTable,
 	OrderedColumns: []event.ColumnName{
-		event.HeaderFK, constants.SrcColumn, constants.DstColumn, constants.RadColumn, event.LogFK,
+		event.HeaderFK, event.LogFK, constants.SrcColumn, constants.DstColumn, constants.RadColumn,
 	},
 	ColumnValues: event.ColumnValues{
 		constants.SrcColumn: "0xA730d1FF8B6Bc74a26d54c20a9dda539909BaB0e",

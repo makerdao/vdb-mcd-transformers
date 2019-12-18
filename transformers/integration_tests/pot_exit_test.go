@@ -42,9 +42,9 @@ var _ = Describe("PotExit Transformer", func() {
 
 		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
 
-		tr := event.Transformer{
-			Config:    potExitConfig,
-			Converter: pot_exit.Converter{},
+		tr := event.ConfiguredTransformer{
+			Config:      potExitConfig,
+			Transformer: pot_exit.Transformer{},
 		}.NewTransformer(db)
 
 		transformErr := tr.Execute(headerSyncLogs)

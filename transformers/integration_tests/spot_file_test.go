@@ -45,7 +45,7 @@ var _ = Describe("SpotFile EventTransformers", func() {
 			addresses   []common.Address
 			blockNumber int64
 			header      core.Header
-			initializer event.Transformer
+			initializer event.ConfiguredTransformer
 			logs        []types.Log
 			topics      []common.Hash
 			tr          transformer.EventTransformer
@@ -69,9 +69,9 @@ var _ = Describe("SpotFile EventTransformers", func() {
 			addresses = transformer.HexStringsToAddresses(spotFileMatConfig.ContractAddresses)
 			topics = []common.Hash{common.HexToHash(spotFileMatConfig.Topic)}
 
-			initializer = event.Transformer{
-				Config:    spotFileMatConfig,
-				Converter: mat.Converter{},
+			initializer = event.ConfiguredTransformer{
+				Config:      spotFileMatConfig,
+				Transformer: mat.Transformer{},
 			}
 
 			logFetcher := fetcher.NewLogFetcher(blockChain)
@@ -108,7 +108,7 @@ var _ = Describe("SpotFile EventTransformers", func() {
 			addresses   []common.Address
 			blockNumber int64
 			header      core.Header
-			initializer event.Transformer
+			initializer event.ConfiguredTransformer
 			logs        []types.Log
 			topics      []common.Hash
 			tr          transformer.EventTransformer
@@ -132,9 +132,9 @@ var _ = Describe("SpotFile EventTransformers", func() {
 			addresses = transformer.HexStringsToAddresses(spotFilePipConfig.ContractAddresses)
 			topics = []common.Hash{common.HexToHash(spotFilePipConfig.Topic)}
 
-			initializer = event.Transformer{
-				Config:    spotFilePipConfig,
-				Converter: pip.Converter{},
+			initializer = event.ConfiguredTransformer{
+				Config:      spotFilePipConfig,
+				Transformer: pip.Transformer{},
 			}
 
 			logFetcher := fetcher.NewLogFetcher(blockChain)

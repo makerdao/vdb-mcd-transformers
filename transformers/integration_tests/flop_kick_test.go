@@ -35,7 +35,7 @@ import (
 var _ = Describe("FlopKick Transformer", func() {
 	var (
 		flopKickConfig transformer.EventTransformerConfig
-		initializer    event.Transformer
+		initializer    event.ConfiguredTransformer
 		logFetcher     fetcher.ILogFetcher
 		addresses      []common.Address
 		topics         []common.Hash
@@ -51,9 +51,9 @@ var _ = Describe("FlopKick Transformer", func() {
 			Topic:             constants.FlopKickSignature(),
 		}
 
-		initializer = event.Transformer{
-			Config:    flopKickConfig,
-			Converter: flop_kick.Converter{},
+		initializer = event.ConfiguredTransformer{
+			Config:      flopKickConfig,
+			Transformer: flop_kick.Transformer{},
 		}
 
 		logFetcher = fetcher.NewLogFetcher(blockChain)

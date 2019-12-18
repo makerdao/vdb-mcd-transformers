@@ -55,9 +55,9 @@ var _ = Describe("VatSuck Transformer", func() {
 
 		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
 
-		tr := event.Transformer{
-			Config:    vatSuckConfig,
-			Converter: vat_suck.Converter{},
+		tr := event.ConfiguredTransformer{
+			Config:      vatSuckConfig,
+			Transformer: vat_suck.Transformer{},
 		}.NewTransformer(db)
 
 		err = tr.Execute(headerSyncLogs)

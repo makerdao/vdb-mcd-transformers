@@ -58,9 +58,9 @@ var _ = Describe("PotJoin Transformer", func() {
 
 		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
 
-		tr := event.Transformer{
-			Config:    potJoinConfig,
-			Converter: pot_join.Converter{},
+		tr := event.ConfiguredTransformer{
+			Config:      potJoinConfig,
+			Transformer: pot_join.Transformer{},
 		}.NewTransformer(db)
 
 		transformErr := tr.Execute(headerSyncLogs)

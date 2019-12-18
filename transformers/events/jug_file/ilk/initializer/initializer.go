@@ -24,7 +24,7 @@ import (
 	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 )
 
-var EventTransformerInitializer transformer.EventTransformerInitializer = event.Transformer{
-	Config:    shared.GetEventTransformerConfig(constants.JugFileIlkTable, constants.JugFileIlkSignature()),
-	Converter: ilk.Converter{},
+var EventTransformerInitializer transformer.EventTransformerInitializer = event.ConfiguredTransformer{
+	Config:      shared.GetEventTransformerConfig(constants.JugFileIlkTable, constants.JugFileIlkSignature()),
+	Transformer: ilk.Transformer{},
 }.NewTransformer

@@ -36,7 +36,7 @@ var _ = Describe("Vat frob Transformer", func() {
 	var (
 		logFetcher    fetcher.ILogFetcher
 		vatFrobConfig transformer.EventTransformerConfig
-		initializer   event.Transformer
+		initializer   event.ConfiguredTransformer
 	)
 
 	BeforeEach(func() {
@@ -50,9 +50,9 @@ var _ = Describe("Vat frob Transformer", func() {
 			Topic:             constants.VatFrobSignature(),
 		}
 
-		initializer = event.Transformer{
-			Config:    vatFrobConfig,
-			Converter: vat_frob.Converter{},
+		initializer = event.ConfiguredTransformer{
+			Config:      vatFrobConfig,
+			Transformer: vat_frob.Transformer{},
 		}
 	})
 

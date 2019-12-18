@@ -61,9 +61,9 @@ var _ = Describe("Vat slip transformer", func() {
 
 		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
 
-		tr := event.Transformer{
-			Config:    vatSlipConfig,
-			Converter: vat_slip.Converter{},
+		tr := event.ConfiguredTransformer{
+			Config:      vatSlipConfig,
+			Transformer: vat_slip.Transformer{},
 		}.NewTransformer(db)
 
 		err = tr.Execute(headerSyncLogs)

@@ -24,7 +24,7 @@ import (
 	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 )
 
-var EventTransformerInitializer transformer.EventTransformerInitializer = event.Transformer{
-	Config:    shared.GetEventTransformerConfig(constants.NewCdpTable, constants.NewCdpSignature()),
-	Converter: new_cdp.Converter{},
+var EventTransformerInitializer transformer.EventTransformerInitializer = event.ConfiguredTransformer{
+	Config:      shared.GetEventTransformerConfig(constants.NewCdpTable, constants.NewCdpSignature()),
+	Transformer: new_cdp.Transformer{},
 }.NewTransformer

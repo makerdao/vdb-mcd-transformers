@@ -34,7 +34,7 @@ import (
 
 var _ = Describe("VatFileIlk EventTransformer", func() {
 	var (
-		initializer event.Transformer
+		initializer event.ConfiguredTransformer
 		addresses   []common.Address
 		topics      []common.Hash
 	)
@@ -51,9 +51,9 @@ var _ = Describe("VatFileIlk EventTransformer", func() {
 		addresses = transformer.HexStringsToAddresses(vatFileIlkConfig.ContractAddresses)
 		topics = []common.Hash{common.HexToHash(vatFileIlkConfig.Topic)}
 
-		initializer = event.Transformer{
-			Config:    vatFileIlkConfig,
-			Converter: ilk.Converter{},
+		initializer = event.ConfiguredTransformer{
+			Config:      vatFileIlkConfig,
+			Transformer: ilk.Transformer{},
 		}
 	})
 

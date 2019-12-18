@@ -25,7 +25,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 )
 
-var EventTransformerInitializer transformer.EventTransformerInitializer = event.Transformer{
-	Config:    shared.GetEventTransformerConfig(constants.CatFileFlipTable, constants.CatFileFlipSignature()),
-	Converter: flip.Converter{},
+var EventTransformerInitializer transformer.EventTransformerInitializer = event.ConfiguredTransformer{
+	Config:      shared.GetEventTransformerConfig(constants.CatFileFlipTable, constants.CatFileFlipSignature()),
+	Transformer: flip.Transformer{},
 }.NewTransformer

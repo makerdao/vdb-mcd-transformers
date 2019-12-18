@@ -24,7 +24,7 @@ import (
 	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 )
 
-var EventTransformerInitializer transformer.EventTransformerInitializer = event.Transformer{
-	Config:    shared.GetEventTransformerConfig(constants.FlapKickTable, constants.FlapKickSignature()),
-	Converter: flap_kick.Converter{},
+var EventTransformerInitializer transformer.EventTransformerInitializer = event.ConfiguredTransformer{
+	Config:      shared.GetEventTransformerConfig(constants.FlapKickTable, constants.FlapKickSignature()),
+	Transformer: flap_kick.Transformer{},
 }.NewTransformer

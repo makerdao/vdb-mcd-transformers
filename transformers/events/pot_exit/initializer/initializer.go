@@ -8,7 +8,7 @@ import (
 	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 )
 
-var EventTransformerInitializer transformer.EventTransformerInitializer = event.Transformer{
-	Config:    shared.GetEventTransformerConfig(constants.PotExitTable, constants.PotExitSignature()),
-	Converter: pot_exit.Converter{},
+var EventTransformerInitializer transformer.EventTransformerInitializer = event.ConfiguredTransformer{
+	Config:      shared.GetEventTransformerConfig(constants.PotExitTable, constants.PotExitSignature()),
+	Transformer: pot_exit.Transformer{},
 }.NewTransformer

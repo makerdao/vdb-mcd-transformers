@@ -74,9 +74,9 @@ func denyIntegrationTest(blockNumber int64, contractAddressHex, usrAddressHex st
 			TransformerName: constants.DenyTable,
 			Topic:           constants.DenySignature(),
 		}
-		initializer := event.Transformer{
-			Config:    denyConfig,
-			Converter: deny.Converter{LogNoteArgumentOffset: logNoteArgumentOffset},
+		initializer := event.ConfiguredTransformer{
+			Config:      denyConfig,
+			Transformer: deny.Transformer{LogNoteArgumentOffset: logNoteArgumentOffset},
 		}
 
 		header, headerErr := persistHeader(db, blockNumber, blockChain)
