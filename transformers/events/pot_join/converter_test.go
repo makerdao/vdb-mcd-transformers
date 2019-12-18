@@ -18,6 +18,7 @@ package pot_join_test
 
 import (
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/pot_join"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
@@ -28,20 +29,33 @@ import (
 )
 
 var _ = Describe("PotJoin converter", func() {
-	var converter = pot_join.Converter{}
+	var (
+		converter = pot_join.Converter{}
+		db        = test_config.NewTestDB(test_config.NewTestNode())
+	)
+
+	BeforeEach(func() {
+		test_config.CleanTestDB(db)
+	})
 
 	It("converts log to a model", func() {
-		models, err := converter.ToModels(constants.PotABI(), []core.HeaderSyncLog{test_data.PotJoinHeaderSyncLog}, nil)
-
+		models, err := converter.ToModels(constants.PotABI(), []core.HeaderSyncLog{test_data.PotJoinHeaderSyncLog}, db)
 		Expect(err).NotTo(HaveOccurred())
-		Expect(models).To(ConsistOf(test_data.PotJoinModel()))
+
+		var addressID int64
+		addressErr := db.Get(&addressID, `SELECT id FROM addresses WHERE address = $1`,
+			common.HexToAddress(test_data.PotJoinHeaderSyncLog.Log.Topics[1].Hex()).Hex())
+		Expect(addressErr).NotTo(HaveOccurred())
+		expectedModel := test_data.PotJoinModel()
+		expectedModel.ColumnValues[constants.MsgSenderColumn] = addressID
+		Expect(models).To(ConsistOf(expectedModel))
 	})
 
 	It("returns an error if there are missing topics", func() {
 		invalidLog := test_data.PotJoinHeaderSyncLog
 		invalidLog.Log.Topics = []common.Hash{}
 
-		_, err := converter.ToModels(constants.PotABI(), []core.HeaderSyncLog{invalidLog}, nil)
+		_, err := converter.ToModels(constants.PotABI(), []core.HeaderSyncLog{invalidLog}, db)
 
 		Expect(err).To(MatchError(shared.ErrLogMissingTopics(3, 0)))
 	})

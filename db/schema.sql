@@ -9181,6 +9181,7 @@ CREATE TABLE maker.pot_join (
     id integer NOT NULL,
     header_id integer NOT NULL,
     log_id bigint NOT NULL,
+    msg_sender integer NOT NULL,
     wad numeric
 );
 
@@ -16419,6 +16420,13 @@ CREATE INDEX pot_join_log_index ON maker.pot_join USING btree (log_id);
 
 
 --
+-- Name: pot_join_msg_sender_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX pot_join_msg_sender_index ON maker.pot_join USING btree (msg_sender);
+
+
+--
 -- Name: spot_file_mat_header_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -19322,6 +19330,14 @@ ALTER TABLE ONLY maker.pot_join
 
 ALTER TABLE ONLY maker.pot_join
     ADD CONSTRAINT pot_join_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: pot_join pot_join_msg_sender_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.pot_join
+    ADD CONSTRAINT pot_join_msg_sender_fkey FOREIGN KEY (msg_sender) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --
