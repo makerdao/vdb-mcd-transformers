@@ -8,7 +8,6 @@
 [client]
     ipcPath = ""
 
-
 [filesystem]
     storageDiffsPath = "INSERT-PATH-TO-STORAGE-DIFFS"
 
@@ -23,6 +22,7 @@
         "flop_storage",
         "bat_flip",
         "eth_flip_a",
+        "sai_flip",
         "jug",
         "spot",
         "vat",

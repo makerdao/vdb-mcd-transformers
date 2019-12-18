@@ -9,6 +9,7 @@
         "flop_storage",
         "bat_flip",
         "eth_flip_a",
+        "sai_flip",
         "jug",
         "spot",
         "vat",
