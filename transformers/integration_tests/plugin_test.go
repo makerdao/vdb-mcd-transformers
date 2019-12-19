@@ -145,6 +145,8 @@ var _ = Describe("Plugin test", func() {
 	viper.AddConfigPath("$GOPATH/src/github.com/makerdao/vdb-mcd-transformers/environments/")
 	var ilk = "0x4554482d41000000000000000000000000000000000000000000000000000000"
 	var blockNumber = int64(14764569)
+	var maxConsecutiveUnexpectedErrs = 0
+	var retryInterval = 2 * time.Second
 
 	BeforeEach(func() {
 		test_config.CleanTestDB(db)
@@ -194,7 +196,7 @@ var _ = Describe("Plugin test", func() {
 				Expect(ok).To(Equal(true))
 				eventTransformerInitializers, _, _ := exporter.Export()
 
-				w := watcher.NewEventWatcher(db, blockChain)
+				w := watcher.NewEventWatcher(db, blockChain, maxConsecutiveUnexpectedErrs, retryInterval)
 				addErr := w.AddTransformers(eventTransformerInitializers)
 				Expect(addErr).NotTo(HaveOccurred())
 
@@ -241,7 +243,7 @@ var _ = Describe("Plugin test", func() {
 				Expect(ok).To(Equal(true))
 				eventTransformerInitializers, _, _ := exporter.Export()
 
-				w := watcher.NewEventWatcher(db, blockChain)
+				w := watcher.NewEventWatcher(db, blockChain, maxConsecutiveUnexpectedErrs, retryInterval)
 				addErr := w.AddTransformers(eventTransformerInitializers)
 				Expect(addErr).NotTo(HaveOccurred())
 				var executeErrOne, executeErrTwo error
@@ -354,7 +356,7 @@ var _ = Describe("Plugin test", func() {
 				Expect(ok).To(Equal(true))
 				eventInitializers, storageInitializers, _ := exporter.Export()
 
-				ew := watcher.NewEventWatcher(db, blockChain)
+				ew := watcher.NewEventWatcher(db, blockChain, maxConsecutiveUnexpectedErrs, retryInterval)
 				addTransformersErr := ew.AddTransformers(eventInitializers)
 				Expect(addTransformersErr).NotTo(HaveOccurred())
 
