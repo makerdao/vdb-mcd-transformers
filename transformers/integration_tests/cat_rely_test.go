@@ -4,6 +4,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/cat_rely"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
@@ -22,6 +23,10 @@ var _ = Describe("CatRely Transformer", func() {
 	}
 
 	It("transforms CatRely log events", func() {
+		var (
+			expectedID int64
+			dbResult   catRelyModel
+		)
 		blockNumber := int64(14764546)
 		catRelyConfig.StartingBlockNumber = blockNumber
 		catRelyConfig.EndingBlockNumber = blockNumber
@@ -46,15 +51,15 @@ var _ = Describe("CatRely Transformer", func() {
 
 		transformErr := tr.Execute(headerSyncLogs)
 		Expect(transformErr).NotTo(HaveOccurred())
+		expectedID, addrErr := shared.GetOrCreateAddress(test_data.CatRelyHeaderSyncLog.Log.Topics[1].Hex(), db)
+		Expect(addrErr).NotTo(HaveOccurred())
 
-		var dbResult catRelyModel
-		queryErr := db.Get(&dbResult, `SELECT usr from maker.cat_rely`)
+		queryErr := db.Get(&dbResult, `SELECT address_id from maker.cat_rely`)
 		Expect(queryErr).NotTo(HaveOccurred())
-
-		Expect(dbResult.Usr).To(Equal("39ad5d336a4c08fac74879f796e1ea0af26c1521"))
+		Expect(dbResult.AddressId).To(Equal(expectedID))
 	})
 })
 
 type catRelyModel struct {
-	Usr string
+	AddressId int64 `db:"address_id"`
 }

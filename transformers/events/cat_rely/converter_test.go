@@ -28,7 +28,11 @@ var _ = Describe("Cat Rely converter", func() {
 	It("converts a cat rely log to a model", func() {
 		models, err := converter.ToModels(constants.CatABI(), []core.HeaderSyncLog{test_data.CatRelyHeaderSyncLog}, db)
 		Expect(err).NotTo(HaveOccurred())
+		var addressID int64
+		addrErr := db.Get(&addressID, `SELECT id FROM public.addresses`)
+		Expect(addrErr).NotTo(HaveOccurred())
 		expectedModel := test_data.CatRelyModel()
+		expectedModel.ColumnValues[constants.AddressColumn] = addressID
 		Expect(models).To(Equal([]event.InsertionModel{expectedModel}))
 	})
 

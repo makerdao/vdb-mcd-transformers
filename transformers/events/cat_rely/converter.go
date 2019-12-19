@@ -10,7 +10,7 @@ import (
 
 type Converter struct{}
 
-func (converter Converter) ToModels(_ string, logs []core.HeaderSyncLog, _ *postgres.DB) ([]event.InsertionModel, error) {
+func (converter Converter) ToModels(_ string, logs []core.HeaderSyncLog, db *postgres.DB) ([]event.InsertionModel, error) {
 	var results []event.InsertionModel
 	for _, log := range logs {
 		verifyErr := shared.VerifyLog(log.Log, shared.TwoTopicsRequired, shared.LogDataNotRequired)
@@ -18,7 +18,10 @@ func (converter Converter) ToModels(_ string, logs []core.HeaderSyncLog, _ *post
 			return nil, verifyErr
 		}
 
-		usr := shared.ConvertUint256HexToBigInt(log.Log.Topics[1].Hex())
+		addressID, addressErr := shared.GetOrCreateAddress(log.Log.Topics[1].Hex(), db)
+		if addressErr != nil {
+			return nil, shared.ErrCouldNotCreateFK(addressErr)
+		}
 
 		result := event.InsertionModel{
 			SchemaName: constants.MakerSchema,
@@ -26,12 +29,12 @@ func (converter Converter) ToModels(_ string, logs []core.HeaderSyncLog, _ *post
 			OrderedColumns: []event.ColumnName{
 				event.HeaderFK,
 				event.LogFK,
-				constants.UsrColumn,
+				constants.AddressColumn,
 			},
 			ColumnValues: event.ColumnValues{
-				event.HeaderFK:      log.HeaderID,
-				event.LogFK:         log.ID,
-				constants.UsrColumn: usr.String(),
+				event.HeaderFK:          log.HeaderID,
+				event.LogFK:             log.ID,
+				constants.AddressColumn: addressID,
 			},
 		}
 		results = append(results, result)

@@ -6557,6 +6557,38 @@ ALTER SEQUENCE maker.cat_live_id_seq OWNED BY maker.cat_live.id;
 
 
 --
+-- Name: cat_rely; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.cat_rely (
+    id integer NOT NULL,
+    header_id integer NOT NULL,
+    log_id bigint NOT NULL,
+    address_id integer
+);
+
+
+--
+-- Name: cat_rely_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.cat_rely_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: cat_rely_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.cat_rely_id_seq OWNED BY maker.cat_rely.id;
+
+
+--
 -- Name: cat_vat; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -11829,6 +11861,13 @@ ALTER TABLE ONLY maker.cat_live ALTER COLUMN id SET DEFAULT nextval('maker.cat_l
 
 
 --
+-- Name: cat_rely id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_rely ALTER COLUMN id SET DEFAULT nextval('maker.cat_rely_id_seq'::regclass);
+
+
+--
 -- Name: cat_vat id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
@@ -13085,6 +13124,22 @@ ALTER TABLE ONLY maker.cat_live
 
 ALTER TABLE ONLY maker.cat_live
     ADD CONSTRAINT cat_live_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: cat_rely cat_rely_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_rely
+    ADD CONSTRAINT cat_rely_header_id_log_id_key UNIQUE (header_id, log_id);
+
+
+--
+-- Name: cat_rely cat_rely_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_rely
+    ADD CONSTRAINT cat_rely_pkey PRIMARY KEY (id);
 
 
 --
@@ -15686,6 +15741,27 @@ CREATE INDEX cat_live_header_id_index ON maker.cat_live USING btree (header_id);
 
 
 --
+-- Name: cat_rely_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX cat_rely_address_index ON maker.cat_rely USING btree (address_id);
+
+
+--
+-- Name: cat_rely_header_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX cat_rely_header_index ON maker.cat_rely USING btree (header_id);
+
+
+--
+-- Name: cat_rely_log_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX cat_rely_log_index ON maker.cat_rely USING btree (log_id);
+
+
+--
 -- Name: cat_vat_header_id_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -18232,6 +18308,22 @@ ALTER TABLE ONLY maker.cat_live
 
 ALTER TABLE ONLY maker.cat_live
     ADD CONSTRAINT cat_live_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: cat_rely cat_rely_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_rely
+    ADD CONSTRAINT cat_rely_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: cat_rely cat_rely_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_rely
+    ADD CONSTRAINT cat_rely_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
 
 
 --

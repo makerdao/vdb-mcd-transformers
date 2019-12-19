@@ -19,6 +19,7 @@
         "cat_file_chop_lump",
         "cat_file_flip",
         "cat_file_vow",
+        "cat_rely",
         "deal",
         "dent",
         "flap_kick",
@@ -156,6 +157,13 @@
         rank = "0"
     [exporter.cat_file_vow]
         path = "transformers/events/cat_file/vow/initializer"
+        type = "eth_event"
+        repository = "github.com/makerdao/vdb-mcd-transformers"
+        migrations = "db/migrations"
+        contracts = ["MCD_CAT"]
+        rank = "0"
+    [exporter.cat_rely]
+        path = "transformers/events/cat_rely/initializer"
         type = "eth_event"
         repository = "github.com/makerdao/vdb-mcd-transformers"
         migrations = "db/migrations"
