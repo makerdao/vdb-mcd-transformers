@@ -28,6 +28,7 @@ const (
 	Flip      storage.Key = "flip"
 	Guy       storage.Key = "guy"
 	Ilk       storage.Key = "ilk"
+	MsgSender storage.Key = "msg_sender"
 	Owner     storage.Key = "owner"
 	Timestamp storage.Key = "timestamp"
 )
