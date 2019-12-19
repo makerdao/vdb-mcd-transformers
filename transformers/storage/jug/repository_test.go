@@ -17,6 +17,7 @@
 package jug_test
 
 import (
+	"fmt"
 	"math/rand"
 	"strconv"
 
@@ -65,7 +66,8 @@ var _ = Describe("Jug storage repository", func() {
 
 				Expect(err).NotTo(HaveOccurred())
 				var result MappingRes
-				err = db.Get(&result, `SELECT diff_id, header_id, ilk_id AS key, rho AS VALUE FROM maker.jug_ilk_rho`)
+				query := fmt.Sprintf(`SELECT diff_id, header_id, ilk_id AS KEY, rho AS VALUE FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.JugIlkRhoTable))
+				err = db.Get(&result, query)
 				Expect(err).NotTo(HaveOccurred())
 				ilkID, err := shared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
 				Expect(err).NotTo(HaveOccurred())
@@ -81,7 +83,8 @@ var _ = Describe("Jug storage repository", func() {
 
 				Expect(insertTwoErr).NotTo(HaveOccurred())
 				var count int
-				getCountErr := db.Get(&count, `SELECT count(*) FROM maker.jug_ilk_rho`)
+				query := fmt.Sprintf(`SELECT count(*) FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.JugIlkRhoTable))
+				getCountErr := db.Get(&count, query)
 				Expect(getCountErr).NotTo(HaveOccurred())
 				Expect(count).To(Equal(1))
 			})
@@ -99,7 +102,7 @@ var _ = Describe("Jug storage repository", func() {
 				PropertyName:  "Rho",
 				PropertyValue: strconv.Itoa(rand.Int()),
 				Schema:        constants.MakerSchema,
-				TableName:     constants.JugIlkRho,
+				TableName:     constants.JugIlkRhoTable,
 			})
 		})
 
@@ -111,7 +114,8 @@ var _ = Describe("Jug storage repository", func() {
 
 				Expect(err).NotTo(HaveOccurred())
 				var result MappingRes
-				err = db.Get(&result, `SELECT diff_id, header_id, ilk_id AS KEY, duty AS VALUE FROM maker.jug_ilk_duty`)
+				query := fmt.Sprintf(`SELECT diff_id, header_id, ilk_id AS KEY, duty AS VALUE FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.JugIlkDutyTable))
+				err = db.Get(&result, query)
 				Expect(err).NotTo(HaveOccurred())
 				ilkID, err := shared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
 				Expect(err).NotTo(HaveOccurred())
@@ -128,7 +132,8 @@ var _ = Describe("Jug storage repository", func() {
 
 				Expect(insertTwoErr).NotTo(HaveOccurred())
 				var count int
-				getCountErr := db.Get(&count, `SELECT count(*) FROM maker.jug_ilk_duty`)
+				query := fmt.Sprintf(`SELECT count(*) FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.JugIlkDutyTable))
+				getCountErr := db.Get(&count, query)
 				Expect(getCountErr).NotTo(HaveOccurred())
 				Expect(count).To(Equal(1))
 			})
@@ -146,7 +151,7 @@ var _ = Describe("Jug storage repository", func() {
 				PropertyName:  "Duty",
 				PropertyValue: strconv.Itoa(rand.Int()),
 				Schema:        constants.MakerSchema,
-				TableName:     constants.JugIlkDuty,
+				TableName:     constants.JugIlkDutyTable,
 			})
 		})
 	})
@@ -156,7 +161,8 @@ var _ = Describe("Jug storage repository", func() {
 
 		Expect(err).NotTo(HaveOccurred())
 		var result VariableRes
-		err = db.Get(&result, `SELECT diff_id, header_id, vat AS value FROM maker.jug_vat`)
+		query := fmt.Sprintf(`SELECT diff_id, header_id, vat AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.JugVatTable))
+		err = db.Get(&result, query)
 		Expect(err).NotTo(HaveOccurred())
 		AssertVariable(result, diffID, fakeHeaderID, fakeAddress)
 	})
@@ -169,7 +175,8 @@ var _ = Describe("Jug storage repository", func() {
 
 		Expect(insertTwoErr).NotTo(HaveOccurred())
 		var count int
-		getCountErr := db.Get(&count, `SELECT count(*) FROM maker.jug_vat`)
+		query := fmt.Sprintf(`SELECT count(*) FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.JugVatTable))
+		getCountErr := db.Get(&count, query)
 		Expect(getCountErr).NotTo(HaveOccurred())
 		Expect(count).To(Equal(1))
 	})
@@ -179,7 +186,8 @@ var _ = Describe("Jug storage repository", func() {
 
 		Expect(err).NotTo(HaveOccurred())
 		var result VariableRes
-		err = db.Get(&result, `SELECT diff_id, header_id, vow AS value FROM maker.jug_vow`)
+		query := fmt.Sprintf(`SELECT diff_id, header_id, vow AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.JugVowTable))
+		err = db.Get(&result, query)
 		Expect(err).NotTo(HaveOccurred())
 		AssertVariable(result, diffID, fakeHeaderID, fakeUint256)
 	})
@@ -192,7 +200,8 @@ var _ = Describe("Jug storage repository", func() {
 
 		Expect(insertTwoErr).NotTo(HaveOccurred())
 		var count int
-		getCountErr := db.Get(&count, `SELECT count(*) FROM maker.jug_vow`)
+		query := fmt.Sprintf(`SELECT count(*) FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.JugVowTable))
+		getCountErr := db.Get(&count, query)
 		Expect(getCountErr).NotTo(HaveOccurred())
 		Expect(count).To(Equal(1))
 	})
@@ -202,7 +211,8 @@ var _ = Describe("Jug storage repository", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		var result VariableRes
-		err = db.Get(&result, `SELECT diff_id, header_id, base AS value FROM maker.jug_base`)
+		query := fmt.Sprintf(`SELECT diff_id, header_id, base AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.JugBaseTable))
+		err = db.Get(&result, query)
 		Expect(err).NotTo(HaveOccurred())
 
 		AssertVariable(result, diffID, fakeHeaderID, fakeUint256)
@@ -216,7 +226,8 @@ var _ = Describe("Jug storage repository", func() {
 
 		Expect(insertTwoErr).NotTo(HaveOccurred())
 		var count int
-		getCountErr := db.Get(&count, `SELECT count(*) FROM maker.jug_base`)
+		query := fmt.Sprintf(`SELECT count(*) FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.JugBaseTable))
+		getCountErr := db.Get(&count, query)
 		Expect(getCountErr).NotTo(HaveOccurred())
 		Expect(count).To(Equal(1))
 	})

@@ -17,7 +17,10 @@
 package vow_test
 
 import (
+	"fmt"
+
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	. "github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/vow"
@@ -57,7 +60,8 @@ var _ = Describe("Vow storage repository test", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		var result VariableRes
-		err = db.Get(&result, `SELECT diff_id, header_id, vat AS value from maker.vow_vat`)
+		query := fmt.Sprintf(`SELECT diff_id, header_id, vat AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VowVatTable))
+		err = db.Get(&result, query)
 		Expect(err).NotTo(HaveOccurred())
 		AssertVariable(result, diffID, fakeHeaderID, fakeAddress)
 	})
@@ -70,7 +74,8 @@ var _ = Describe("Vow storage repository test", func() {
 
 		Expect(insertTwoErr).NotTo(HaveOccurred())
 		var count int
-		getCountErr := db.Get(&count, `SELECT count(*) FROM maker.vow_vat`)
+		query := fmt.Sprintf(`SELECT count(*) FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VowVatTable))
+		getCountErr := db.Get(&count, query)
 		Expect(getCountErr).NotTo(HaveOccurred())
 		Expect(count).To(Equal(1))
 	})
@@ -81,7 +86,8 @@ var _ = Describe("Vow storage repository test", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		var result VariableRes
-		err = db.Get(&result, `SELECT diff_id, header_id, flapper AS value from maker.vow_flapper`)
+		query := fmt.Sprintf(`SELECT diff_id, header_id, flapper AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VowFlapperTable))
+		err = db.Get(&result, query)
 		Expect(err).NotTo(HaveOccurred())
 		AssertVariable(result, diffID, fakeHeaderID, fakeAddress)
 	})
@@ -94,7 +100,8 @@ var _ = Describe("Vow storage repository test", func() {
 
 		Expect(insertTwoErr).NotTo(HaveOccurred())
 		var count int
-		getCountErr := db.Get(&count, `SELECT count(*) FROM maker.vow_flapper`)
+		query := fmt.Sprintf(`SELECT count(*) FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VowFlapperTable))
+		getCountErr := db.Get(&count, query)
 		Expect(getCountErr).NotTo(HaveOccurred())
 		Expect(count).To(Equal(1))
 	})
@@ -105,7 +112,8 @@ var _ = Describe("Vow storage repository test", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		var result VariableRes
-		err = db.Get(&result, `SELECT diff_id, header_id, flopper AS value from maker.vow_flopper`)
+		query := fmt.Sprintf(`SELECT diff_id, header_id, flopper AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VowFlopperTable))
+		err = db.Get(&result, query)
 		Expect(err).NotTo(HaveOccurred())
 		AssertVariable(result, diffID, fakeHeaderID, fakeAddress)
 	})
@@ -118,7 +126,8 @@ var _ = Describe("Vow storage repository test", func() {
 
 		Expect(insertTwoErr).NotTo(HaveOccurred())
 		var count int
-		getCountErr := db.Get(&count, `SELECT count(*) FROM maker.vow_flopper`)
+		query := fmt.Sprintf(`SELECT count(*) FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VowFlopperTable))
+		getCountErr := db.Get(&count, query)
 		Expect(getCountErr).NotTo(HaveOccurred())
 		Expect(count).To(Equal(1))
 	})
@@ -134,7 +143,8 @@ var _ = Describe("Vow storage repository test", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			var result MappingRes
-			err = db.Get(&result, `SELECT diff_id, header_id, era AS key, tab AS value FROM maker.vow_sin_mapping`)
+			query := fmt.Sprintf(`SELECT diff_id, header_id, era AS key, tab AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VowSinMappingTable))
+			err = db.Get(&result, query)
 			Expect(err).NotTo(HaveOccurred())
 			AssertMapping(result, diffID, fakeHeaderID, timestamp, fakeUint256)
 		})
@@ -150,7 +160,8 @@ var _ = Describe("Vow storage repository test", func() {
 
 			Expect(insertTwoErr).NotTo(HaveOccurred())
 			var count int
-			getCountErr := db.Get(&count, `SELECT count(*) FROM maker.vow_sin_mapping`)
+			query := fmt.Sprintf(`SELECT count(*) FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VowSinMappingTable))
+			getCountErr := db.Get(&count, query)
 			Expect(getCountErr).NotTo(HaveOccurred())
 			Expect(count).To(Equal(1))
 		})
@@ -171,7 +182,8 @@ var _ = Describe("Vow storage repository test", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		var result VariableRes
-		err = db.Get(&result, `SELECT diff_id, header_id, sin AS value from maker.vow_sin_integer`)
+		query := fmt.Sprintf(`SELECT diff_id, header_id, sin AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VowSinIntegerTable))
+		err = db.Get(&result, query)
 		Expect(err).NotTo(HaveOccurred())
 		AssertVariable(result, diffID, fakeHeaderID, fakeUint256)
 	})
@@ -184,7 +196,8 @@ var _ = Describe("Vow storage repository test", func() {
 
 		Expect(insertTwoErr).NotTo(HaveOccurred())
 		var count int
-		getCountErr := db.Get(&count, `SELECT count(*) FROM maker.vow_sin_integer`)
+		query := fmt.Sprintf(`SELECT count(*) FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VowSinIntegerTable))
+		getCountErr := db.Get(&count, query)
 		Expect(getCountErr).NotTo(HaveOccurred())
 		Expect(count).To(Equal(1))
 	})
@@ -195,7 +208,8 @@ var _ = Describe("Vow storage repository test", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		var result VariableRes
-		err = db.Get(&result, `SELECT diff_id, header_id, ash AS value from maker.vow_ash`)
+		query := fmt.Sprintf(`SELECT diff_id, header_id, ash AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VowAshTable))
+		err = db.Get(&result, query)
 		Expect(err).NotTo(HaveOccurred())
 		AssertVariable(result, diffID, fakeHeaderID, fakeUint256)
 	})
@@ -208,7 +222,8 @@ var _ = Describe("Vow storage repository test", func() {
 
 		Expect(insertTwoErr).NotTo(HaveOccurred())
 		var count int
-		getCountErr := db.Get(&count, `SELECT count(*) FROM maker.vow_ash`)
+		query := fmt.Sprintf(`SELECT count(*) FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VowAshTable))
+		getCountErr := db.Get(&count, query)
 		Expect(getCountErr).NotTo(HaveOccurred())
 		Expect(count).To(Equal(1))
 	})
@@ -219,7 +234,8 @@ var _ = Describe("Vow storage repository test", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		var result VariableRes
-		err = db.Get(&result, `SELECT diff_id, header_id, wait AS value from maker.vow_wait`)
+		query := fmt.Sprintf(`SELECT diff_id, header_id, wait AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VowWaitTable))
+		err = db.Get(&result, query)
 		Expect(err).NotTo(HaveOccurred())
 		AssertVariable(result, diffID, fakeHeaderID, fakeUint256)
 	})
@@ -232,7 +248,8 @@ var _ = Describe("Vow storage repository test", func() {
 
 		Expect(insertTwoErr).NotTo(HaveOccurred())
 		var count int
-		getCountErr := db.Get(&count, `SELECT count(*) FROM maker.vow_wait`)
+		query := fmt.Sprintf(`SELECT count(*) FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VowWaitTable))
+		getCountErr := db.Get(&count, query)
 		Expect(getCountErr).NotTo(HaveOccurred())
 		Expect(count).To(Equal(1))
 	})
@@ -243,7 +260,8 @@ var _ = Describe("Vow storage repository test", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		var result VariableRes
-		err = db.Get(&result, `SELECT diff_id, header_id, dump AS value from maker.vow_dump`)
+		query := fmt.Sprintf(`SELECT diff_id, header_id, dump AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VowDumpTable))
+		err = db.Get(&result, query)
 		Expect(err).NotTo(HaveOccurred())
 		AssertVariable(result, diffID, fakeHeaderID, fakeUint256)
 	})
@@ -256,7 +274,8 @@ var _ = Describe("Vow storage repository test", func() {
 
 		Expect(insertTwoErr).NotTo(HaveOccurred())
 		var count int
-		getCountErr := db.Get(&count, `SELECT count(*) FROM maker.vow_dump`)
+		query := fmt.Sprintf(`SELECT count(*)  FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VowDumpTable))
+		getCountErr := db.Get(&count, query)
 		Expect(getCountErr).NotTo(HaveOccurred())
 		Expect(count).To(Equal(1))
 	})
@@ -267,7 +286,8 @@ var _ = Describe("Vow storage repository test", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		var result VariableRes
-		err = db.Get(&result, `SELECT diff_id, header_id, sump AS value from maker.vow_sump`)
+		query := fmt.Sprintf(`SELECT diff_id, header_id, sump AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VowSumpTable))
+		err = db.Get(&result, query)
 		Expect(err).NotTo(HaveOccurred())
 		AssertVariable(result, diffID, fakeHeaderID, fakeUint256)
 	})
@@ -280,7 +300,8 @@ var _ = Describe("Vow storage repository test", func() {
 
 		Expect(insertTwoErr).NotTo(HaveOccurred())
 		var count int
-		getCountErr := db.Get(&count, `SELECT count(*) FROM maker.vow_sump`)
+		query := fmt.Sprintf(`SELECT count(*) FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VowSumpTable))
+		getCountErr := db.Get(&count, query)
 		Expect(getCountErr).NotTo(HaveOccurred())
 		Expect(count).To(Equal(1))
 	})
@@ -291,7 +312,8 @@ var _ = Describe("Vow storage repository test", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		var result VariableRes
-		err = db.Get(&result, `SELECT diff_id, header_id, bump AS value from maker.vow_bump`)
+		query := fmt.Sprintf(`SELECT diff_id, header_id, bump AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VowBumpTable))
+		err = db.Get(&result, query)
 		Expect(err).NotTo(HaveOccurred())
 		AssertVariable(result, diffID, fakeHeaderID, fakeUint256)
 	})
@@ -304,7 +326,8 @@ var _ = Describe("Vow storage repository test", func() {
 
 		Expect(insertTwoErr).NotTo(HaveOccurred())
 		var count int
-		getCountErr := db.Get(&count, `SELECT count(*) FROM maker.vow_bump`)
+		query := fmt.Sprintf(`SELECT count(*) FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VowBumpTable))
+		getCountErr := db.Get(&count, query)
 		Expect(getCountErr).NotTo(HaveOccurred())
 		Expect(count).To(Equal(1))
 	})
@@ -315,7 +338,8 @@ var _ = Describe("Vow storage repository test", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		var result VariableRes
-		err = db.Get(&result, `SELECT diff_id, header_id, hump AS value from maker.vow_hump`)
+		query := fmt.Sprintf(`SELECT diff_id, header_id, hump AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VowHumpTable))
+		err = db.Get(&result, query)
 		Expect(err).NotTo(HaveOccurred())
 		AssertVariable(result, diffID, fakeHeaderID, fakeUint256)
 	})
@@ -328,7 +352,8 @@ var _ = Describe("Vow storage repository test", func() {
 
 		Expect(insertTwoErr).NotTo(HaveOccurred())
 		var count int
-		getCountErr := db.Get(&count, `SELECT count(*) FROM maker.vow_hump`)
+		query := fmt.Sprintf(`SELECT count(*) FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VowHumpTable))
+		getCountErr := db.Get(&count, query)
 		Expect(getCountErr).NotTo(HaveOccurred())
 		Expect(count).To(Equal(1))
 	})

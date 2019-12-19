@@ -1,6 +1,7 @@
 package flip_test
 
 import (
+	"fmt"
 	"math/rand"
 	"strconv"
 
@@ -64,7 +65,7 @@ var _ = Describe("Flip storage repository", func() {
 				ValueFieldName: storage.Vat,
 				Value:          FakeAddress,
 				Schema:         constants.MakerSchema,
-				TableName:      constants.FlipVat,
+				TableName:      constants.FlipVatTable,
 				Repository:     &repo,
 				Metadata:       vatMetadata,
 			}
@@ -81,7 +82,8 @@ var _ = Describe("Flip storage repository", func() {
 				Expect(insertErr).NotTo(HaveOccurred())
 
 				var result VariableRes
-				getErr := db.Get(&result, `SELECT diff_id, header_id, ilk_id AS value FROM maker.flip_ilk`)
+				query := fmt.Sprintf(`SELECT diff_id, header_id, ilk_id AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.FlipIlkTable))
+				getErr := db.Get(&result, query)
 				Expect(getErr).NotTo(HaveOccurred())
 				ilkID, ilkErr := shared.GetOrCreateIlk(FakeIlk, db)
 				Expect(ilkErr).NotTo(HaveOccurred())
@@ -99,7 +101,8 @@ var _ = Describe("Flip storage repository", func() {
 
 				Expect(insertTwoErr).NotTo(HaveOccurred())
 				var count int
-				getCountErr := db.Get(&count, `SELECT count(*) FROM maker.flip_ilk`)
+				query := fmt.Sprintf(`SELECT count(*) FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.FlipIlkTable))
+				getCountErr := db.Get(&count, query)
 				Expect(getCountErr).NotTo(HaveOccurred())
 				Expect(count).To(Equal(1))
 			})
@@ -112,7 +115,7 @@ var _ = Describe("Flip storage repository", func() {
 				ValueFieldName: storage.Beg,
 				Value:          fakeBeg,
 				Schema:         constants.MakerSchema,
-				TableName:      constants.FlipBeg,
+				TableName:      constants.FlipBegTable,
 				Repository:     &repo,
 				Metadata:       begMetadata,
 			}
@@ -142,12 +145,14 @@ var _ = Describe("Flip storage repository", func() {
 				Expect(err).NotTo(HaveOccurred())
 
 				var ttlResult VariableRes
-				err = db.Get(&ttlResult, `SELECT diff_id, header_id, ttl AS value FROM maker.flip_ttl`)
+				ttlQuery := fmt.Sprintf(`SELECT diff_id, header_id, ttl AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.FlipTtlTable))
+				err = db.Get(&ttlResult, ttlQuery)
 				Expect(err).NotTo(HaveOccurred())
 				AssertVariable(ttlResult, diffID, fakeHeaderID, fakeTtl)
 
 				var tauResult VariableRes
-				err = db.Get(&tauResult, `SELECT diff_id, header_id, tau AS value FROM maker.flip_tau`)
+				tauQuery := fmt.Sprintf(`SELECT diff_id, header_id, tau AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.FlipTauTable))
+				err = db.Get(&tauResult, tauQuery)
 				Expect(err).NotTo(HaveOccurred())
 				AssertVariable(tauResult, diffID, fakeHeaderID, fakeTau)
 			})
@@ -184,7 +189,7 @@ var _ = Describe("Flip storage repository", func() {
 				ValueFieldName: storage.Kicks,
 				Value:          fakeKicks,
 				Schema:         constants.MakerSchema,
-				TableName:      constants.FlipKicks,
+				TableName:      constants.FlipKicksTable,
 				Repository:     &repo,
 				Metadata:       kicksMetadata,
 			}
@@ -220,7 +225,7 @@ var _ = Describe("Flip storage repository", func() {
 				Key:            fakeBidId,
 				IsAMapping:     true,
 				Schema:         constants.MakerSchema,
-				TableName:      constants.FlipBidBid,
+				TableName:      constants.FlipBidBidTable,
 				Repository:     &repo,
 				Metadata:       bidBidMetadata,
 			}
@@ -242,7 +247,7 @@ var _ = Describe("Flip storage repository", func() {
 				Key:            fakeBidId,
 				IsAMapping:     true,
 				Schema:         constants.MakerSchema,
-				TableName:      constants.FlipBidLot,
+				TableName:      constants.FlipBidLotTable,
 				Repository:     &repo,
 				Metadata:       bidLotMetadata,
 			}
@@ -279,21 +284,24 @@ var _ = Describe("Flip storage repository", func() {
 
 				It("persists bid guy record", func() {
 					var guyResult MappingRes
-					selectErr := db.Get(&guyResult, `SELECT diff_id, header_id, bid_id AS key, guy AS value FROM maker.flip_bid_guy`)
+					query := fmt.Sprintf(`SELECT diff_id, header_id, bid_id AS key, guy AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.FlipBidGuyTable))
+					selectErr := db.Get(&guyResult, query)
 					Expect(selectErr).NotTo(HaveOccurred())
 					AssertMapping(guyResult, diffID, fakeHeaderID, fakeBidId, fakeGuy)
 				})
 
 				It("persists bid tic record", func() {
 					var ticResult MappingRes
-					selectErr := db.Get(&ticResult, `SELECT diff_id, header_id, bid_id AS key, tic AS value FROM maker.flip_bid_tic`)
+					query := fmt.Sprintf(`SELECT diff_id, header_id, bid_id AS key, tic AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.FlipBidTicTable))
+					selectErr := db.Get(&ticResult, query)
 					Expect(selectErr).NotTo(HaveOccurred())
 					AssertMapping(ticResult, diffID, fakeHeaderID, fakeBidId, fakeTic)
 				})
 
 				It("persists bid end record", func() {
 					var endResult MappingRes
-					selectErr := db.Get(&endResult, `SELECT diff_id, header_id, bid_id AS key, "end" AS value FROM maker.flip_bid_end`)
+					query := fmt.Sprintf(`SELECT diff_id, header_id, bid_id AS key, "end" AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.FlipBidEndTable))
+					selectErr := db.Get(&endResult, query)
 					Expect(selectErr).NotTo(HaveOccurred())
 					AssertMapping(endResult, diffID, fakeHeaderID, fakeBidId, fakeEnd)
 				})
@@ -320,7 +328,7 @@ var _ = Describe("Flip storage repository", func() {
 				Key:            fakeBidId,
 				IsAMapping:     true,
 				Schema:         constants.MakerSchema,
-				TableName:      constants.FlipBidUsr,
+				TableName:      constants.FlipBidUsrTable,
 				Repository:     &repo,
 				Metadata:       bidUsrMetadata,
 			}
@@ -341,7 +349,7 @@ var _ = Describe("Flip storage repository", func() {
 				Key:            fakeBidId,
 				IsAMapping:     true,
 				Schema:         constants.MakerSchema,
-				TableName:      constants.FlipBidGal,
+				TableName:      constants.FlipBidGalTable,
 				Repository:     &repo,
 				Metadata:       bidGalMetadata,
 			}
@@ -363,7 +371,7 @@ var _ = Describe("Flip storage repository", func() {
 				Key:            fakeBidId,
 				IsAMapping:     true,
 				Schema:         constants.MakerSchema,
-				TableName:      constants.FlipBidTab,
+				TableName:      constants.FlipBidTabTable,
 				Repository:     &repo,
 				Metadata:       bidTabMetadata,
 			}

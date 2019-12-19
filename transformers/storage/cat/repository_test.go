@@ -1,6 +1,7 @@
 package cat_test
 
 import (
+	"fmt"
 	"math/rand"
 	"strconv"
 
@@ -54,7 +55,7 @@ var _ = Describe("Cat storage repository", func() {
 				ValueFieldName: cat.Live,
 				Value:          fakeUint256,
 				Schema:         constants.MakerSchema,
-				TableName:      constants.CatLive,
+				TableName:      constants.CatLiveTable,
 				Repository:     &repo,
 				Metadata:       liveMetadata,
 			}
@@ -68,7 +69,7 @@ var _ = Describe("Cat storage repository", func() {
 				ValueFieldName: cat.Vat,
 				Value:          fakeAddress,
 				Schema:         constants.MakerSchema,
-				TableName:      constants.CatVat,
+				TableName:      constants.CatVatTable,
 				Repository:     &repo,
 				Metadata:       vatMetadata,
 			}
@@ -82,7 +83,7 @@ var _ = Describe("Cat storage repository", func() {
 				ValueFieldName: cat.Vow,
 				Value:          fakeAddress,
 				Schema:         constants.MakerSchema,
-				TableName:      constants.CatVow,
+				TableName:      constants.CatVowTable,
 				Repository:     &repo,
 				Metadata:       vowMetadata,
 			}
@@ -108,7 +109,8 @@ var _ = Describe("Cat storage repository", func() {
 				Expect(err).NotTo(HaveOccurred())
 
 				var result MappingRes
-				err = db.Get(&result, `SELECT diff_id, header_id, ilk_id AS key, flip AS value FROM maker.cat_ilk_flip`)
+				query := fmt.Sprintf(`SELECT diff_id, header_id, ilk_id AS key, flip AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.CatIlkFlipTable))
+				err = db.Get(&result, query)
 				Expect(err).NotTo(HaveOccurred())
 				ilkID, err := shared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
 				Expect(err).NotTo(HaveOccurred())
@@ -124,7 +126,8 @@ var _ = Describe("Cat storage repository", func() {
 
 				Expect(insertTwoErr).NotTo(HaveOccurred())
 				var count int
-				getCountErr := db.Get(&count, `SELECT count(*) FROM maker.cat_ilk_flip`)
+				query := fmt.Sprintf(`SELECT count(*) FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.CatIlkFlipTable))
+				getCountErr := db.Get(&count, query)
 				Expect(getCountErr).NotTo(HaveOccurred())
 				Expect(count).To(Equal(1))
 			})
@@ -142,7 +145,7 @@ var _ = Describe("Cat storage repository", func() {
 				PropertyName:  "Flip",
 				PropertyValue: fakeAddress,
 				Schema:        constants.MakerSchema,
-				TableName:     constants.CatIlkFlip,
+				TableName:     constants.CatIlkFlipTable,
 			})
 		})
 
@@ -154,7 +157,8 @@ var _ = Describe("Cat storage repository", func() {
 				Expect(err).NotTo(HaveOccurred())
 
 				var result MappingRes
-				err = db.Get(&result, `SELECT diff_id, header_id, ilk_id AS key, chop AS value FROM maker.cat_ilk_chop`)
+				query := fmt.Sprintf(`SELECT diff_id, header_id, ilk_id AS key, chop AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.CatIlkChopTable))
+				err = db.Get(&result, query)
 				Expect(err).NotTo(HaveOccurred())
 				ilkID, err := shared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
 				Expect(err).NotTo(HaveOccurred())
@@ -170,7 +174,8 @@ var _ = Describe("Cat storage repository", func() {
 
 				Expect(insertTwoErr).NotTo(HaveOccurred())
 				var count int
-				getCountErr := db.Get(&count, `SELECT count(*) FROM maker.cat_ilk_chop`)
+				query := fmt.Sprintf(`SELECT count(*) FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.CatIlkChopTable))
+				getCountErr := db.Get(&count, query)
 				Expect(getCountErr).NotTo(HaveOccurred())
 				Expect(count).To(Equal(1))
 			})
@@ -188,7 +193,7 @@ var _ = Describe("Cat storage repository", func() {
 				PropertyName:  "Chop",
 				PropertyValue: strconv.Itoa(rand.Int()),
 				Schema:        constants.MakerSchema,
-				TableName:     constants.CatIlkChop,
+				TableName:     constants.CatIlkChopTable,
 			})
 		})
 
@@ -200,7 +205,8 @@ var _ = Describe("Cat storage repository", func() {
 				Expect(err).NotTo(HaveOccurred())
 
 				var result MappingRes
-				err = db.Get(&result, `SELECT diff_id, header_id, ilk_id AS key, lump AS value FROM maker.cat_ilk_lump`)
+				query := fmt.Sprintf(`SELECT diff_id, header_id, ilk_id AS key, lump AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.CatIlkLumpTable))
+				err = db.Get(&result, query)
 				Expect(err).NotTo(HaveOccurred())
 				ilkID, err := shared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
 				Expect(err).NotTo(HaveOccurred())
@@ -216,7 +222,8 @@ var _ = Describe("Cat storage repository", func() {
 
 				Expect(insertTwoErr).NotTo(HaveOccurred())
 				var count int
-				getCountErr := db.Get(&count, `SELECT count(*) FROM maker.cat_ilk_lump`)
+				query := fmt.Sprintf(`SELECT count(*) FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.CatIlkLumpTable))
+				getCountErr := db.Get(&count, query)
 				Expect(getCountErr).NotTo(HaveOccurred())
 				Expect(count).To(Equal(1))
 			})
@@ -234,7 +241,7 @@ var _ = Describe("Cat storage repository", func() {
 				PropertyName:  "Lump",
 				PropertyValue: strconv.Itoa(rand.Int()),
 				Schema:        constants.MakerSchema,
-				TableName:     constants.CatIlkLump,
+				TableName:     constants.CatIlkLumpTable,
 			})
 		})
 	})

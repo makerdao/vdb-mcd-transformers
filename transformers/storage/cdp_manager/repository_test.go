@@ -18,6 +18,7 @@ package cdp_manager_test
 
 import (
 	"database/sql"
+	"fmt"
 	"math/rand"
 	"strconv"
 	"time"
@@ -73,7 +74,7 @@ var _ = Describe("CDP Manager storage repository", func() {
 			ValueFieldName: cdp_manager.Vat,
 			Value:          fakeAddress,
 			Schema:         constants.MakerSchema,
-			TableName:      constants.CdpManagerVat,
+			TableName:      constants.CdpManagerVatTable,
 			Repository:     &repository,
 			Metadata:       vatMetadata,
 		}
@@ -104,7 +105,7 @@ var _ = Describe("CDP Manager storage repository", func() {
 			ValueFieldName: cdp_manager.Cdpi,
 			Value:          fakeCdpi,
 			Schema:         constants.MakerSchema,
-			TableName:      constants.CdpManagerCdpi,
+			TableName:      constants.CdpManagerCdpiTable,
 			Repository:     &repository,
 			Metadata:       cdpiMetadata,
 		}
@@ -158,7 +159,7 @@ var _ = Describe("CDP Manager storage repository", func() {
 				Value:          fakeUrnsValue,
 				IsAMapping:     true,
 				Schema:         constants.MakerSchema,
-				TableName:      constants.CdpManagerUrns,
+				TableName:      constants.CdpManagerUrnsTable,
 				Repository:     &repository,
 				Metadata:       urnsMetadata,
 			}
@@ -197,7 +198,7 @@ var _ = Describe("CDP Manager storage repository", func() {
 				Value:          fakePrevValue,
 				IsAMapping:     true,
 				Schema:         constants.MakerSchema,
-				TableName:      constants.CdpManagerListPrev,
+				TableName:      constants.CdpManagerListPrevTable,
 				Repository:     &repository,
 				Metadata:       prevMetadata,
 			}
@@ -219,7 +220,7 @@ var _ = Describe("CDP Manager storage repository", func() {
 				Value:          fakeNextValue,
 				IsAMapping:     true,
 				Schema:         constants.MakerSchema,
-				TableName:      constants.CdpManagerListNext,
+				TableName:      constants.CdpManagerListNextTable,
 				Repository:     &repository,
 				Metadata:       nextMetadata,
 			}
@@ -241,7 +242,7 @@ var _ = Describe("CDP Manager storage repository", func() {
 				Value:          fakeOwner,
 				IsAMapping:     true,
 				Schema:         constants.MakerSchema,
-				TableName:      constants.CdpManagerOwns,
+				TableName:      constants.CdpManagerOwnsTable,
 				Repository:     &repository,
 				Metadata:       ownsMetadata,
 			}
@@ -289,7 +290,8 @@ var _ = Describe("CDP Manager storage repository", func() {
 				Expect(createErr).NotTo(HaveOccurred())
 
 				var result MappingRes
-				readErr := db.Get(&result, "SELECT diff_id, header_id, cdpi AS key, ilk_id AS value FROM maker.cdp_manager_ilks")
+				query := fmt.Sprintf(`SELECT diff_id, header_id, cdpi AS key, ilk_id AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.CdpManagerIlksTable))
+				readErr := db.Get(&result, query)
 				Expect(readErr).NotTo(HaveOccurred())
 
 				ilkId, ilkErr := shared.GetOrCreateIlk(fakeIlksValue, db)
@@ -306,7 +308,8 @@ var _ = Describe("CDP Manager storage repository", func() {
 				Expect(err).NotTo(HaveOccurred())
 
 				var count int
-				err = db.Get(&count, "SELECT COUNT(*) FROM maker.cdp_manager_ilks")
+				query := fmt.Sprintf(`SELECT COUNT(*) FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.CdpManagerIlksTable))
+				err = db.Get(&count, query)
 				Expect(err).NotTo(HaveOccurred())
 				Expect(count).To(Equal(1))
 			})
@@ -341,7 +344,7 @@ var _ = Describe("CDP Manager storage repository", func() {
 				Value:          fakeFirstValue,
 				IsAMapping:     true,
 				Schema:         constants.MakerSchema,
-				TableName:      constants.CdpManagerFirst,
+				TableName:      constants.CdpManagerFirstTable,
 				Repository:     &repository,
 				Metadata:       firstMetadata,
 			}
@@ -363,7 +366,7 @@ var _ = Describe("CDP Manager storage repository", func() {
 				Value:          fakeLastValue,
 				IsAMapping:     true,
 				Schema:         constants.MakerSchema,
-				TableName:      constants.CdpManagerLast,
+				TableName:      constants.CdpManagerLastTable,
 				Repository:     &repository,
 				Metadata:       lastMetadata,
 			}
@@ -385,7 +388,7 @@ var _ = Describe("CDP Manager storage repository", func() {
 				Value:          fakeCountValue,
 				IsAMapping:     true,
 				Schema:         constants.MakerSchema,
-				TableName:      constants.CdpManagerCount,
+				TableName:      constants.CdpManagerCountTable,
 				Repository:     &repository,
 				Metadata:       countMetadata,
 			}

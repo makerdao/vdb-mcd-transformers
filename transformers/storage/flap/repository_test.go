@@ -1,6 +1,7 @@
 package flap_test
 
 import (
+	"fmt"
 	"math/rand"
 	"strconv"
 
@@ -103,7 +104,7 @@ var _ = Describe("Flap storage repository", func() {
 			ValueFieldName: storage.Vat,
 			Value:          fakeAddress,
 			Schema:         constants.MakerSchema,
-			TableName:      constants.FlapVat,
+			TableName:      constants.FlapVatTable,
 			Repository:     &repository,
 			Metadata:       vatMetadata,
 		}
@@ -118,7 +119,7 @@ var _ = Describe("Flap storage repository", func() {
 			ValueFieldName: storage.Gem,
 			Value:          fakeAddress,
 			Schema:         constants.MakerSchema,
-			TableName:      constants.FlapGem,
+			TableName:      constants.FlapGemTable,
 			Repository:     &repository,
 			Metadata:       gemMetadata,
 		}
@@ -132,7 +133,7 @@ var _ = Describe("Flap storage repository", func() {
 		inputs := shared_behaviors.StorageBehaviorInputs{
 			ValueFieldName: storage.Beg,
 			Schema:         constants.MakerSchema,
-			TableName:      constants.FlapBeg,
+			TableName:      constants.FlapBegTable,
 			Repository:     &repository,
 			Metadata:       begMetadata,
 			Value:          fakeBeg,
@@ -169,12 +170,14 @@ var _ = Describe("Flap storage repository", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			var ttlResult VariableRes
-			err = db.Get(&ttlResult, `SELECT diff_id, header_id, ttl AS value FROM maker.flap_ttl`)
+			ttlQuery := fmt.Sprintf(`SELECT diff_id, header_id, ttl AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.FlapTtlTable))
+			err = db.Get(&ttlResult, ttlQuery)
 			Expect(err).NotTo(HaveOccurred())
 			AssertVariable(ttlResult, diffID, fakeHeaderID, fakeTtl)
 
 			var tauResult VariableRes
-			err = db.Get(&tauResult, `SELECT diff_id, header_id, tau AS value FROM maker.flap_tau`)
+			tauQuery := fmt.Sprintf(`SELECT diff_id, header_id, tau AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.FlapTauTable))
+			err = db.Get(&tauResult, tauQuery)
 			Expect(err).NotTo(HaveOccurred())
 			AssertVariable(tauResult, diffID, fakeHeaderID, fakeTau)
 		})
@@ -209,7 +212,7 @@ var _ = Describe("Flap storage repository", func() {
 		inputs := shared_behaviors.StorageBehaviorInputs{
 			ValueFieldName: storage.Kicks,
 			Schema:         constants.MakerSchema,
-			TableName:      constants.FlapKicks,
+			TableName:      constants.FlapKicksTable,
 			Repository:     &repository,
 			Metadata:       kicksMetadata,
 			Value:          fakeKicks,
@@ -230,7 +233,7 @@ var _ = Describe("Flap storage repository", func() {
 		inputs := shared_behaviors.StorageBehaviorInputs{
 			ValueFieldName: storage.Live,
 			Schema:         constants.MakerSchema,
-			TableName:      constants.FlapLive,
+			TableName:      constants.FlapLiveTable,
 			Repository:     &repository,
 			Metadata:       liveMetadata,
 			Value:          fakeLive,
@@ -272,7 +275,7 @@ var _ = Describe("Flap storage repository", func() {
 				Key:            fakeBidId,
 				IsAMapping:     true,
 				Schema:         constants.MakerSchema,
-				TableName:      constants.FlapBidBid,
+				TableName:      constants.FlapBidBidTable,
 				Repository:     &repository,
 				Metadata:       bidBidMetadata,
 			}
@@ -308,7 +311,7 @@ var _ = Describe("Flap storage repository", func() {
 				Key:            fakeBidId,
 				IsAMapping:     true,
 				Schema:         constants.MakerSchema,
-				TableName:      constants.FlapBidLot,
+				TableName:      constants.FlapBidLotTable,
 				Repository:     &repository,
 				Metadata:       bidLotMetadata,
 			}
@@ -359,21 +362,24 @@ var _ = Describe("Flap storage repository", func() {
 
 				It("persists bid guy record", func() {
 					var guyResult MappingRes
-					selectErr := db.Get(&guyResult, `SELECT diff_id, header_id, bid_id AS key, guy AS value FROM maker.flap_bid_guy`)
+					query := fmt.Sprintf(`SELECT diff_id, header_id, bid_id AS key, guy AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.FlapBidGuyTable))
+					selectErr := db.Get(&guyResult, query)
 					Expect(selectErr).NotTo(HaveOccurred())
 					AssertMapping(guyResult, diffID, fakeHeaderID, fakeBidId, fakeGuy)
 				})
 
 				It("persists bid tic record", func() {
 					var ticResult MappingRes
-					selectErr := db.Get(&ticResult, `SELECT diff_id, header_id, bid_id AS key, tic AS value FROM maker.flap_bid_tic`)
+					query := fmt.Sprintf(`SELECT diff_id, header_id, bid_id AS key, tic AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.FlapBidTicTable))
+					selectErr := db.Get(&ticResult, query)
 					Expect(selectErr).NotTo(HaveOccurred())
 					AssertMapping(ticResult, diffID, fakeHeaderID, fakeBidId, fakeTic)
 				})
 
 				It("persists bid end record", func() {
 					var endResult MappingRes
-					selectErr := db.Get(&endResult, `SELECT diff_id, header_id, bid_id AS key, "end" AS value FROM maker.flap_bid_end`)
+					query := fmt.Sprintf(`SELECT diff_id, header_id, bid_id AS key, "end" AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.FlapBidEndTable))
+					selectErr := db.Get(&endResult, query)
 					Expect(selectErr).NotTo(HaveOccurred())
 					AssertMapping(endResult, diffID, fakeHeaderID, fakeBidId, fakeEnd)
 				})

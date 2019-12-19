@@ -3,10 +3,11 @@ package shared_behaviors
 import (
 	"database/sql"
 	"fmt"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"math/rand"
 	"reflect"
 	"strconv"
+
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
