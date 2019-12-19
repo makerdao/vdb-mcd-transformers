@@ -78,11 +78,12 @@ var _ = Describe("Pot storage repository", func() {
 
 	Describe("Pie", func() {
 		inputs := shared_behaviors.StorageBehaviorInputs{
-			ValueFieldName:   pot.Pie,
-			Value:            fakeUint256,
-			StorageTableName: "maker.pot_pie",
-			Repository:       &repo,
-			Metadata:         pot.PieMetadata,
+			ValueFieldName: pot.Pie,
+			Value:          fakeUint256,
+			Schema:         constants.MakerSchema,
+			TableName:      constants.PotPieTable,
+			Repository:     &repo,
+			Metadata:       pot.PieMetadata,
 		}
 
 		shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
@@ -90,11 +91,12 @@ var _ = Describe("Pot storage repository", func() {
 
 	Describe("dsr", func() {
 		inputs := shared_behaviors.StorageBehaviorInputs{
-			ValueFieldName:   pot.Dsr,
-			Value:            fakeUint256,
-			StorageTableName: "maker.pot_dsr",
-			Repository:       &repo,
-			Metadata:         pot.DsrMetadata,
+			ValueFieldName: pot.Dsr,
+			Value:          fakeUint256,
+			Schema:         constants.MakerSchema,
+			TableName:      constants.PotDsrTable,
+			Repository:     &repo,
+			Metadata:       pot.DsrMetadata,
 		}
 
 		shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
@@ -102,11 +104,12 @@ var _ = Describe("Pot storage repository", func() {
 
 	Describe("chi", func() {
 		inputs := shared_behaviors.StorageBehaviorInputs{
-			ValueFieldName:   pot.Chi,
-			Value:            fakeUint256,
-			StorageTableName: "maker.pot_chi",
-			Repository:       &repo,
-			Metadata:         pot.ChiMetadata,
+			ValueFieldName: pot.Chi,
+			Value:          fakeUint256,
+			Schema:         constants.MakerSchema,
+			TableName:      constants.PotChiTable,
+			Repository:     &repo,
+			Metadata:       pot.ChiMetadata,
 		}
 
 		shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
@@ -170,11 +173,12 @@ var _ = Describe("Pot storage repository", func() {
 
 	Describe("rho", func() {
 		inputs := shared_behaviors.StorageBehaviorInputs{
-			ValueFieldName:   pot.Rho,
-			Value:            fakeUint256,
-			StorageTableName: "maker.pot_rho",
-			Repository:       &repo,
-			Metadata:         pot.RhoMetadata,
+			ValueFieldName: pot.Rho,
+			Value:          fakeUint256,
+			Schema:         constants.MakerSchema,
+			TableName:      constants.PotRhoTable,
+			Repository:     &repo,
+			Metadata:       pot.RhoMetadata,
 		}
 
 		shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
@@ -182,11 +186,12 @@ var _ = Describe("Pot storage repository", func() {
 
 	Describe("live", func() {
 		inputs := shared_behaviors.StorageBehaviorInputs{
-			ValueFieldName:   pot.Live,
-			Value:            fakeUint256,
-			StorageTableName: "maker.pot_live",
-			Repository:       &repo,
-			Metadata:         pot.LiveMetadata,
+			ValueFieldName: pot.Live,
+			Value:          fakeUint256,
+			Schema:         constants.MakerSchema,
+			TableName:      constants.PotLiveTable,
+			Repository:     &repo,
+			Metadata:       pot.LiveMetadata,
 		}
 
 		shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
