@@ -9,6 +9,7 @@
         "flop_storage",
         "bat_flip",
         "eth_flip_a",
+        "sai_flip",
         "jug",
         "spot",
         "vat",
@@ -30,6 +31,7 @@
         "log_value",
         "new_cdp",
         "pot_cage",
+        "pot_drip",
         "pot_exit",
         "pot_file_dsr",
         "pot_file_vow",
@@ -238,6 +240,13 @@
         rank = "0"
     [exporter.pot_cage]
         path = "transformers/events/pot_cage/initializer"
+        type = "eth_event"
+        repository = "github.com/makerdao/vdb-mcd-transformers"
+        migrations = "db/migrations"
+        contracts = ["MCD_POT"]
+        rank = "0"
+    [exporter.pot_drip]
+        path = "transformers/events/pot_drip/initializer"
         type = "eth_event"
         repository = "github.com/makerdao/vdb-mcd-transformers"
         migrations = "db/migrations"
