@@ -45,6 +45,7 @@ func catFileFlipMethod() string {
 func catFileVowMethod() string {
 	return getOverloadedFunctionSignature(CatABI(), "file", []string{"bytes32", "address"})
 }
+func catRelyMethod() string  { return getSolidityFunctionSignature(CatABI(), "rely") }
 func dealMethod() string     { return getSolidityFunctionSignature(FlipABI(), "deal") }
 func dentMethod() string     { return getSolidityFunctionSignature(FlipABI(), "dent") }
 func flapKickMethod() string { return getSolidityFunctionSignature(FlapABI(), "Kick") }

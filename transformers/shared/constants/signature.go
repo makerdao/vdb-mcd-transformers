@@ -20,6 +20,7 @@ func BiteSignature() string               { return getEventTopicZero(biteMethod(
 func CatFileChopLumpSignature() string    { return getLogNoteTopicZero(catFileChopLumpMethod()) }
 func CatFileFlipSignature() string        { return getLogNoteTopicZero(catFileFlipMethod()) }
 func CatFileVowSignature() string         { return getLogNoteTopicZero(catFileVowMethod()) }
+func CatRelySignature() string            { return getLogNoteTopicZero(catRelyMethod()) }
 func DealSignature() string               { return getLogNoteTopicZero(dealMethod()) }
 func DentSignature() string               { return getLogNoteTopicZero(dentMethod()) }
 func FlapKickSignature() string           { return getEventTopicZero(flapKickMethod()) }

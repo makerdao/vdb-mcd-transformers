@@ -28,6 +28,7 @@ const (
 	CatFileChopLumpTable    = "cat_file_chop_lump"
 	CatFileFlipTable        = "cat_file_flip"
 	CatFileVowTable         = "cat_file_vow"
+	CatRelyTable            = "cat_rely"
 	DealTable               = "deal"
 	DentTable               = "dent"
 	FlapKickTable           = "flap_kick"
