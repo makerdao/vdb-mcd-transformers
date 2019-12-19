@@ -56,7 +56,7 @@ func PotJoinModel() event.InsertionModel { return CopyModel(potJoinModel) }
 var potJoinModel = event.InsertionModel{
 	SchemaName:     constants.MakerSchema,
 	TableName:      constants.PotJoinTable,
-	OrderedColumns: []event.ColumnName{event.HeaderFK, event.LogFK, constants.WadColumn},
+	OrderedColumns: []event.ColumnName{event.HeaderFK, event.LogFK, constants.MsgSenderColumn, constants.WadColumn},
 	ColumnValues: event.ColumnValues{
 		constants.WadColumn: "4719670301595647258",
 		event.HeaderFK:      PotJoinHeaderSyncLog.HeaderID,

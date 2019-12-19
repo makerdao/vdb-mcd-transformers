@@ -9044,6 +9044,38 @@ ALTER SEQUENCE maker.pot_cage_id_seq OWNED BY maker.pot_cage.id;
 
 
 --
+-- Name: pot_chi; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.pot_chi (
+    id integer NOT NULL,
+    diff_id bigint NOT NULL,
+    header_id integer NOT NULL,
+    chi numeric NOT NULL
+);
+
+
+--
+-- Name: pot_chi_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.pot_chi_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: pot_chi_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.pot_chi_id_seq OWNED BY maker.pot_chi.id;
+
+
+--
 -- Name: pot_drip; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -9076,6 +9108,38 @@ ALTER SEQUENCE maker.pot_drip_id_seq OWNED BY maker.pot_drip.id;
 
 
 --
+-- Name: pot_dsr; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.pot_dsr (
+    id integer NOT NULL,
+    diff_id bigint NOT NULL,
+    header_id integer NOT NULL,
+    dsr numeric NOT NULL
+);
+
+
+--
+-- Name: pot_dsr_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.pot_dsr_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: pot_dsr_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.pot_dsr_id_seq OWNED BY maker.pot_dsr.id;
+
+
+--
 -- Name: pot_exit; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -9083,6 +9147,7 @@ CREATE TABLE maker.pot_exit (
     id integer NOT NULL,
     header_id integer NOT NULL,
     log_id bigint NOT NULL,
+    msg_sender integer NOT NULL,
     wad numeric
 );
 
@@ -9181,6 +9246,7 @@ CREATE TABLE maker.pot_join (
     id integer NOT NULL,
     header_id integer NOT NULL,
     log_id bigint NOT NULL,
+    msg_sender integer NOT NULL,
     wad numeric
 );
 
@@ -9203,6 +9269,199 @@ CREATE SEQUENCE maker.pot_join_id_seq
 --
 
 ALTER SEQUENCE maker.pot_join_id_seq OWNED BY maker.pot_join.id;
+
+
+--
+-- Name: pot_live; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.pot_live (
+    id integer NOT NULL,
+    diff_id bigint NOT NULL,
+    header_id integer NOT NULL,
+    live numeric NOT NULL
+);
+
+
+--
+-- Name: pot_live_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.pot_live_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: pot_live_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.pot_live_id_seq OWNED BY maker.pot_live.id;
+
+
+--
+-- Name: pot_pie; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.pot_pie (
+    id integer NOT NULL,
+    diff_id bigint NOT NULL,
+    header_id integer NOT NULL,
+    pie numeric NOT NULL
+);
+
+
+--
+-- Name: pot_pie_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.pot_pie_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: pot_pie_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.pot_pie_id_seq OWNED BY maker.pot_pie.id;
+
+
+--
+-- Name: pot_rho; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.pot_rho (
+    id integer NOT NULL,
+    diff_id bigint NOT NULL,
+    header_id integer NOT NULL,
+    rho numeric NOT NULL
+);
+
+
+--
+-- Name: pot_rho_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.pot_rho_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: pot_rho_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.pot_rho_id_seq OWNED BY maker.pot_rho.id;
+
+
+--
+-- Name: pot_user_pie; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.pot_user_pie (
+    id integer NOT NULL,
+    diff_id bigint NOT NULL,
+    header_id integer NOT NULL,
+    "user" integer NOT NULL,
+    pie numeric NOT NULL
+);
+
+
+--
+-- Name: pot_user_pie_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.pot_user_pie_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: pot_user_pie_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.pot_user_pie_id_seq OWNED BY maker.pot_user_pie.id;
+
+
+--
+-- Name: pot_vat; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.pot_vat (
+    id integer NOT NULL,
+    diff_id bigint NOT NULL,
+    header_id integer NOT NULL,
+    vat integer NOT NULL
+);
+
+
+--
+-- Name: pot_vat_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.pot_vat_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: pot_vat_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.pot_vat_id_seq OWNED BY maker.pot_vat.id;
+
+
+--
+-- Name: pot_vow; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.pot_vow (
+    id integer NOT NULL,
+    diff_id bigint NOT NULL,
+    header_id integer NOT NULL,
+    vow integer NOT NULL
+);
+
+
+--
+-- Name: pot_vow_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.pot_vow_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: pot_vow_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.pot_vow_id_seq OWNED BY maker.pot_vow.id;
 
 
 --
@@ -12081,10 +12340,24 @@ ALTER TABLE ONLY maker.pot_cage ALTER COLUMN id SET DEFAULT nextval('maker.pot_c
 
 
 --
+-- Name: pot_chi id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.pot_chi ALTER COLUMN id SET DEFAULT nextval('maker.pot_chi_id_seq'::regclass);
+
+
+--
 -- Name: pot_drip id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.pot_drip ALTER COLUMN id SET DEFAULT nextval('maker.pot_drip_id_seq'::regclass);
+
+
+--
+-- Name: pot_dsr id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.pot_dsr ALTER COLUMN id SET DEFAULT nextval('maker.pot_dsr_id_seq'::regclass);
 
 
 --
@@ -12113,6 +12386,48 @@ ALTER TABLE ONLY maker.pot_file_vow ALTER COLUMN id SET DEFAULT nextval('maker.p
 --
 
 ALTER TABLE ONLY maker.pot_join ALTER COLUMN id SET DEFAULT nextval('maker.pot_join_id_seq'::regclass);
+
+
+--
+-- Name: pot_live id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.pot_live ALTER COLUMN id SET DEFAULT nextval('maker.pot_live_id_seq'::regclass);
+
+
+--
+-- Name: pot_pie id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.pot_pie ALTER COLUMN id SET DEFAULT nextval('maker.pot_pie_id_seq'::regclass);
+
+
+--
+-- Name: pot_rho id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.pot_rho ALTER COLUMN id SET DEFAULT nextval('maker.pot_rho_id_seq'::regclass);
+
+
+--
+-- Name: pot_user_pie id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.pot_user_pie ALTER COLUMN id SET DEFAULT nextval('maker.pot_user_pie_id_seq'::regclass);
+
+
+--
+-- Name: pot_vat id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.pot_vat ALTER COLUMN id SET DEFAULT nextval('maker.pot_vat_id_seq'::regclass);
+
+
+--
+-- Name: pot_vow id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.pot_vow ALTER COLUMN id SET DEFAULT nextval('maker.pot_vow_id_seq'::regclass);
 
 
 --
@@ -13949,6 +14264,22 @@ ALTER TABLE ONLY maker.pot_cage
 
 
 --
+-- Name: pot_chi pot_chi_diff_id_header_id_chi_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.pot_chi
+    ADD CONSTRAINT pot_chi_diff_id_header_id_chi_key UNIQUE (diff_id, header_id, chi);
+
+
+--
+-- Name: pot_chi pot_chi_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.pot_chi
+    ADD CONSTRAINT pot_chi_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: pot_drip pot_drip_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -13962,6 +14293,22 @@ ALTER TABLE ONLY maker.pot_drip
 
 ALTER TABLE ONLY maker.pot_drip
     ADD CONSTRAINT pot_drip_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: pot_dsr pot_dsr_diff_id_header_id_dsr_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.pot_dsr
+    ADD CONSTRAINT pot_dsr_diff_id_header_id_dsr_key UNIQUE (diff_id, header_id, dsr);
+
+
+--
+-- Name: pot_dsr pot_dsr_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.pot_dsr
+    ADD CONSTRAINT pot_dsr_pkey PRIMARY KEY (id);
 
 
 --
@@ -14026,6 +14373,102 @@ ALTER TABLE ONLY maker.pot_join
 
 ALTER TABLE ONLY maker.pot_join
     ADD CONSTRAINT pot_join_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: pot_live pot_live_diff_id_header_id_live_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.pot_live
+    ADD CONSTRAINT pot_live_diff_id_header_id_live_key UNIQUE (diff_id, header_id, live);
+
+
+--
+-- Name: pot_live pot_live_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.pot_live
+    ADD CONSTRAINT pot_live_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: pot_pie pot_pie_diff_id_header_id_pie_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.pot_pie
+    ADD CONSTRAINT pot_pie_diff_id_header_id_pie_key UNIQUE (diff_id, header_id, pie);
+
+
+--
+-- Name: pot_pie pot_pie_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.pot_pie
+    ADD CONSTRAINT pot_pie_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: pot_rho pot_rho_diff_id_header_id_rho_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.pot_rho
+    ADD CONSTRAINT pot_rho_diff_id_header_id_rho_key UNIQUE (diff_id, header_id, rho);
+
+
+--
+-- Name: pot_rho pot_rho_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.pot_rho
+    ADD CONSTRAINT pot_rho_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: pot_user_pie pot_user_pie_diff_id_header_id_user_pie_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.pot_user_pie
+    ADD CONSTRAINT pot_user_pie_diff_id_header_id_user_pie_key UNIQUE (diff_id, header_id, "user", pie);
+
+
+--
+-- Name: pot_user_pie pot_user_pie_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.pot_user_pie
+    ADD CONSTRAINT pot_user_pie_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: pot_vat pot_vat_diff_id_header_id_vat_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.pot_vat
+    ADD CONSTRAINT pot_vat_diff_id_header_id_vat_key UNIQUE (diff_id, header_id, vat);
+
+
+--
+-- Name: pot_vat pot_vat_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.pot_vat
+    ADD CONSTRAINT pot_vat_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: pot_vow pot_vow_diff_id_header_id_vow_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.pot_vow
+    ADD CONSTRAINT pot_vow_diff_id_header_id_vow_key UNIQUE (diff_id, header_id, vow);
+
+
+--
+-- Name: pot_vow pot_vow_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.pot_vow
+    ADD CONSTRAINT pot_vow_pkey PRIMARY KEY (id);
 
 
 --
@@ -16342,6 +16785,13 @@ CREATE INDEX pot_cage_log_index ON maker.pot_cage USING btree (log_id);
 
 
 --
+-- Name: pot_chi_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX pot_chi_header_id_index ON maker.pot_chi USING btree (header_id);
+
+
+--
 -- Name: pot_drip_header_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -16363,6 +16813,13 @@ CREATE INDEX pot_drip_msg_sender_index ON maker.pot_drip USING btree (msg_sender
 
 
 --
+-- Name: pot_dsr_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX pot_dsr_header_id_index ON maker.pot_dsr USING btree (header_id);
+
+
+--
 -- Name: pot_exit_header_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -16374,6 +16831,13 @@ CREATE INDEX pot_exit_header_index ON maker.pot_exit USING btree (header_id);
 --
 
 CREATE INDEX pot_exit_log_index ON maker.pot_exit USING btree (log_id);
+
+
+--
+-- Name: pot_exit_msg_sender_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX pot_exit_msg_sender_index ON maker.pot_exit USING btree (msg_sender);
 
 
 --
@@ -16416,6 +16880,76 @@ CREATE INDEX pot_join_header_index ON maker.pot_join USING btree (header_id);
 --
 
 CREATE INDEX pot_join_log_index ON maker.pot_join USING btree (log_id);
+
+
+--
+-- Name: pot_join_msg_sender_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX pot_join_msg_sender_index ON maker.pot_join USING btree (msg_sender);
+
+
+--
+-- Name: pot_live_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX pot_live_header_id_index ON maker.pot_live USING btree (header_id);
+
+
+--
+-- Name: pot_pie_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX pot_pie_header_id_index ON maker.pot_pie USING btree (header_id);
+
+
+--
+-- Name: pot_rho_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX pot_rho_header_id_index ON maker.pot_rho USING btree (header_id);
+
+
+--
+-- Name: pot_user_pie_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX pot_user_pie_header_id_index ON maker.pot_user_pie USING btree (header_id);
+
+
+--
+-- Name: pot_user_pie_user_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX pot_user_pie_user_index ON maker.pot_user_pie USING btree ("user");
+
+
+--
+-- Name: pot_vat_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX pot_vat_header_id_index ON maker.pot_vat USING btree (header_id);
+
+
+--
+-- Name: pot_vat_vat_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX pot_vat_vat_index ON maker.pot_vat USING btree (vat);
+
+
+--
+-- Name: pot_vow_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX pot_vow_header_id_index ON maker.pot_vow USING btree (header_id);
+
+
+--
+-- Name: pot_vow_vow_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX pot_vow_vow_index ON maker.pot_vow USING btree (vow);
 
 
 --
@@ -19237,6 +19771,22 @@ ALTER TABLE ONLY maker.pot_cage
 
 
 --
+-- Name: pot_chi pot_chi_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.pot_chi
+    ADD CONSTRAINT pot_chi_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
+-- Name: pot_chi pot_chi_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.pot_chi
+    ADD CONSTRAINT pot_chi_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
 -- Name: pot_drip pot_drip_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -19261,6 +19811,22 @@ ALTER TABLE ONLY maker.pot_drip
 
 
 --
+-- Name: pot_dsr pot_dsr_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.pot_dsr
+    ADD CONSTRAINT pot_dsr_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
+-- Name: pot_dsr pot_dsr_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.pot_dsr
+    ADD CONSTRAINT pot_dsr_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
 -- Name: pot_exit pot_exit_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -19274,6 +19840,14 @@ ALTER TABLE ONLY maker.pot_exit
 
 ALTER TABLE ONLY maker.pot_exit
     ADD CONSTRAINT pot_exit_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: pot_exit pot_exit_msg_sender_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.pot_exit
+    ADD CONSTRAINT pot_exit_msg_sender_fkey FOREIGN KEY (msg_sender) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --
@@ -19322,6 +19896,134 @@ ALTER TABLE ONLY maker.pot_join
 
 ALTER TABLE ONLY maker.pot_join
     ADD CONSTRAINT pot_join_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: pot_join pot_join_msg_sender_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.pot_join
+    ADD CONSTRAINT pot_join_msg_sender_fkey FOREIGN KEY (msg_sender) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: pot_live pot_live_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.pot_live
+    ADD CONSTRAINT pot_live_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
+-- Name: pot_live pot_live_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.pot_live
+    ADD CONSTRAINT pot_live_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: pot_pie pot_pie_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.pot_pie
+    ADD CONSTRAINT pot_pie_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
+-- Name: pot_pie pot_pie_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.pot_pie
+    ADD CONSTRAINT pot_pie_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: pot_rho pot_rho_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.pot_rho
+    ADD CONSTRAINT pot_rho_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
+-- Name: pot_rho pot_rho_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.pot_rho
+    ADD CONSTRAINT pot_rho_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: pot_user_pie pot_user_pie_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.pot_user_pie
+    ADD CONSTRAINT pot_user_pie_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
+-- Name: pot_user_pie pot_user_pie_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.pot_user_pie
+    ADD CONSTRAINT pot_user_pie_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: pot_user_pie pot_user_pie_user_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.pot_user_pie
+    ADD CONSTRAINT pot_user_pie_user_fkey FOREIGN KEY ("user") REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: pot_vat pot_vat_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.pot_vat
+    ADD CONSTRAINT pot_vat_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
+-- Name: pot_vat pot_vat_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.pot_vat
+    ADD CONSTRAINT pot_vat_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: pot_vat pot_vat_vat_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.pot_vat
+    ADD CONSTRAINT pot_vat_vat_fkey FOREIGN KEY (vat) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: pot_vow pot_vow_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.pot_vow
+    ADD CONSTRAINT pot_vow_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
+-- Name: pot_vow pot_vow_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.pot_vow
+    ADD CONSTRAINT pot_vow_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: pot_vow pot_vow_vow_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.pot_vow
+    ADD CONSTRAINT pot_vow_vow_fkey FOREIGN KEY (vow) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --

@@ -40,7 +40,7 @@ func PotExitModel() event.InsertionModel { return CopyModel(potExitModel) }
 var potExitModel = event.InsertionModel{
 	SchemaName:     constants.MakerSchema,
 	TableName:      constants.PotExitTable,
-	OrderedColumns: []event.ColumnName{event.HeaderFK, event.LogFK, constants.WadColumn},
+	OrderedColumns: []event.ColumnName{event.HeaderFK, event.LogFK, constants.MsgSenderColumn, constants.WadColumn},
 	ColumnValues: event.ColumnValues{
 		constants.WadColumn: "199632489101185590573",
 		event.HeaderFK:      PotExitHeaderSyncLog.HeaderID,

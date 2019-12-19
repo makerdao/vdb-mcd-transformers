@@ -15,6 +15,7 @@ type MockMakerStorageRepository struct {
 	GemKeys                 []storage.Urn
 	Ilks                    []string
 	Owners                  []string
+	PotPieUsers             []string
 	SinKeys                 []string
 	Urns                    []storage.Urn
 	GetCdpisCalled          bool
@@ -33,6 +34,8 @@ type MockMakerStorageRepository struct {
 	GetIlksError            error
 	GetOwnersCalled         bool
 	GetOwnersError          error
+	GetPotPieUsersCalled    bool
+	GetPotPieUsersError     error
 	GetVatSinKeysCalled     bool
 	GetVatSinKeysError      error
 	GetVowSinKeysCalled     bool
@@ -94,6 +97,11 @@ func (repository *MockMakerStorageRepository) GetCdpis() ([]string, error) {
 func (repository *MockMakerStorageRepository) GetOwners() ([]string, error) {
 	repository.GetOwnersCalled = true
 	return repository.Owners, repository.GetOwnersError
+}
+
+func (repository *MockMakerStorageRepository) GetPotPieUsers() ([]string, error) {
+	repository.GetPotPieUsersCalled = true
+	return repository.PotPieUsers, repository.GetPotPieUsersError
 }
 
 func (repository *MockMakerStorageRepository) SetDB(db *postgres.DB) {}

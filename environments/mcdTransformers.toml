@@ -24,6 +24,7 @@
         "eth_flip_a",
         "sai_flip",
         "jug",
+        "pot",
         "spot",
         "vat",
         "vow",
@@ -117,6 +118,12 @@
         rank = "0"
     [exporter.jug]
         path = "transformers/storage/jug/initializer"
+        type = "eth_storage"
+        repository = "github.com/makerdao/vdb-mcd-transformers"
+        migrations = "db/migrations"
+        rank = "0"
+    [exporter.pot]
+        path = "transformers/storage/pot/initializer"
         type = "eth_storage"
         repository = "github.com/makerdao/vdb-mcd-transformers"
         migrations = "db/migrations"

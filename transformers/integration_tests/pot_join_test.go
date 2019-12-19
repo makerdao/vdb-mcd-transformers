@@ -17,9 +17,12 @@
 package integration_tests
 
 import (
+	"strconv"
+
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/pot_join"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
@@ -64,13 +67,17 @@ var _ = Describe("PotJoin Transformer", func() {
 		Expect(transformErr).NotTo(HaveOccurred())
 
 		var dbResult potJoinModel
-		queryErr := db.Get(&dbResult, `SELECT wad from maker.pot_join`)
+		queryErr := db.Get(&dbResult, `SELECT msg_sender, wad from maker.pot_join`)
 		Expect(queryErr).NotTo(HaveOccurred())
 
+		addressID, addressErr := shared.GetOrCreateAddress("0xe7bc397DBd069fC7d0109C0636d06888bb50668c", db)
+		Expect(addressErr).NotTo(HaveOccurred())
+		Expect(dbResult.MsgSender).To(Equal(strconv.FormatInt(addressID, 10)))
 		Expect(dbResult.Wad).To(Equal("4719670301595647258"))
 	})
 })
 
 type potJoinModel struct {
-	Wad string
+	MsgSender string `db:"msg_sender"`
+	Wad       string
 }

@@ -61,7 +61,6 @@ var _ = Describe("PotDrip Transformer", func() {
 
 		addrID, addrErr := shared.GetOrCreateAddress("0x87e76b0a50efc20259cafE0530f75aE0e816aaF2", db)
 		Expect(addrErr).NotTo(HaveOccurred())
-		Expect(err).NotTo(HaveOccurred())
 		Expect(dbResult.MsgSender).To(Equal(strconv.FormatInt(addrID, 10)))
 	})
 })

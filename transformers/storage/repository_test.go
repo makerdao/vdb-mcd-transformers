@@ -17,11 +17,10 @@
 package storage_test
 
 import (
+	"fmt"
 	"math/big"
 	"math/rand"
 	"strconv"
-
-	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -32,6 +31,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/flap"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/flop"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
@@ -622,6 +622,21 @@ var _ = Describe("Maker storage repository", func() {
 		})
 	})
 
+	Describe("getting Pot pie users", func() {
+		It("gets unique msg senders from Pot join and exit events", func() {
+			userAddressOne := common.HexToAddress(test_data.RandomString(40)).Hex()
+			userAddressTwo := common.HexToAddress(test_data.RandomString(40)).Hex()
+			insertPotPieUser(1, userAddressOne, "maker.pot_join", db)
+			insertPotPieUser(2, userAddressTwo, "maker.pot_exit", db)
+			insertPotPieUser(3, userAddressTwo, "maker.pot_join", db)
+
+			userAddresses, err := repository.GetPotPieUsers()
+			Expect(err).NotTo(HaveOccurred())
+			Expect(len(userAddresses)).To(Equal(2))
+			Expect(userAddresses).To(ConsistOf(userAddressOne, userAddressTwo))
+		})
+	})
+
 	Describe("getting CDPIs", func() {
 		It("returns string version of ints ranging from 1 to the max CDPI in the table", func() {
 			insertCdpManagerCdpi(int64(rand.Int()), 2, db)
@@ -920,6 +935,17 @@ func insertVatSlip(ilk, usr string, blockNumber int64, db *postgres.DB) {
 		headerID, ilkID, usr, vatSlipLog.ID,
 	)
 	Expect(execErr).NotTo(HaveOccurred())
+}
+
+func insertPotPieUser(blockNumber int64, userAddress, tableName string, db *postgres.DB) {
+	headerID := insertHeader(db, blockNumber)
+	log := test_data.CreateTestLog(headerID, db)
+	userAddressID, addressErr := shared.GetOrCreateAddress(userAddress, db)
+	Expect(addressErr).NotTo(HaveOccurred())
+
+	insertMsgSenderQuery := fmt.Sprintf(`INSERT INTO %s (header_id, log_id, msg_sender, wad) VALUES ($1, $2, $3, $4)`, tableName)
+	_, insertErr := db.Exec(insertMsgSenderQuery, headerID, log.ID, userAddressID, rand.Int())
+	Expect(insertErr).NotTo(HaveOccurred())
 }
 
 func insertHeader(db *postgres.DB, blockNumber int64) int64 {

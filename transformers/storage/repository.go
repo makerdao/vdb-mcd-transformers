@@ -43,6 +43,7 @@ type IMakerStorageRepository interface {
 	GetOwners() ([]string, error)
 	GetFlipBidIds(contractAddress string) ([]string, error)
 	GetFlopBidIds(contractAddress string) ([]string, error)
+	GetPotPieUsers() ([]string, error)
 	SetDB(db *postgres.DB)
 }
 
@@ -217,6 +218,19 @@ func (repository *MakerStorageRepository) GetFlipBidIds(contractAddress string) 
 		SELECT DISTINCT kicks FROM maker.flip_kicks
 		WHERE address_id = $1`, addressId)
 	return bidIds, err
+}
+
+func (repository *MakerStorageRepository) GetPotPieUsers() ([]string, error) {
+	var userAddresses []string
+	err := repository.db.Select(&userAddresses, `
+		SELECT addresses.address
+		FROM maker.pot_join
+		    LEFT JOIN public.addresses ON pot_join.msg_sender = addresses.id
+		UNION
+		SELECT addresses.address
+		FROM maker.pot_exit
+		    LEFT JOIN public.addresses ON pot_exit.msg_sender = addresses.id`)
+	return userAddresses, err
 }
 
 func (repository *MakerStorageRepository) GetFlopBidIds(contractAddress string) ([]string, error) {
