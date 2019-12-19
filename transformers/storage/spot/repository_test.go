@@ -17,6 +17,7 @@
 package spot_test
 
 import (
+	"fmt"
 	"math/rand"
 	"strconv"
 
@@ -64,7 +65,8 @@ var _ = Describe("Spot storage repository", func() {
 
 				Expect(err).NotTo(HaveOccurred())
 				var result MappingRes
-				err = db.Get(&result, `SELECT diff_id, header_id, ilk_id AS key, pip AS VALUE FROM maker.spot_ilk_pip`)
+				query := fmt.Sprintf(`SELECT diff_id, header_id, ilk_id AS KEY, pip AS VALUE FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.SpotIlkPipTable))
+				err = db.Get(&result, query)
 				Expect(err).NotTo(HaveOccurred())
 				ilkID, err := shared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
 				Expect(err).NotTo(HaveOccurred())
@@ -80,7 +82,8 @@ var _ = Describe("Spot storage repository", func() {
 
 				Expect(insertTwoErr).NotTo(HaveOccurred())
 				var count int
-				getCountErr := db.Get(&count, `SELECT count(*) FROM maker.spot_ilk_pip`)
+				query := fmt.Sprintf(`SELECT count(*) FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.SpotIlkPipTable))
+				getCountErr := db.Get(&count, query)
 				Expect(getCountErr).NotTo(HaveOccurred())
 				Expect(count).To(Equal(1))
 			})
@@ -97,7 +100,8 @@ var _ = Describe("Spot storage repository", func() {
 				Metadata:      storage.GetValueMetadata(spot.IlkPip, map[storage.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, storage.Address),
 				PropertyName:  "Pip",
 				PropertyValue: fakeAddress,
-				TableName:     "maker.spot_ilk_pip",
+				Schema:        constants.MakerSchema,
+				TableName:     constants.SpotIlkPipTable,
 			})
 		})
 
@@ -109,7 +113,8 @@ var _ = Describe("Spot storage repository", func() {
 
 				Expect(err).NotTo(HaveOccurred())
 				var result MappingRes
-				err = db.Get(&result, `SELECT diff_id, header_id, ilk_id AS KEY, mat AS VALUE FROM maker.spot_ilk_mat`)
+				query := fmt.Sprintf(`SELECT diff_id, header_id, ilk_id AS KEY, mat AS VALUE FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.SpotIlkMatTable))
+				err = db.Get(&result, query)
 				Expect(err).NotTo(HaveOccurred())
 				ilkID, err := shared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
 				Expect(err).NotTo(HaveOccurred())
@@ -126,7 +131,8 @@ var _ = Describe("Spot storage repository", func() {
 
 				Expect(insertTwoErr).NotTo(HaveOccurred())
 				var count int
-				getCountErr := db.Get(&count, `SELECT count(*) FROM maker.spot_ilk_mat`)
+				query := fmt.Sprintf(`SELECT count(*) FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.SpotIlkMatTable))
+				getCountErr := db.Get(&count, query)
 				Expect(getCountErr).NotTo(HaveOccurred())
 				Expect(count).To(Equal(1))
 			})
@@ -143,18 +149,20 @@ var _ = Describe("Spot storage repository", func() {
 				Metadata:      storage.GetValueMetadata(spot.IlkMat, map[storage.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, storage.Uint256),
 				PropertyName:  "Mat",
 				PropertyValue: strconv.Itoa(rand.Int()),
-				TableName:     "maker.spot_ilk_mat",
+				Schema:        constants.MakerSchema,
+				TableName:     constants.SpotIlkMatTable,
 			})
 		})
 	})
 
 	Describe("vat", func() {
 		inputs := shared_behaviors.StorageBehaviorInputs{
-			ValueFieldName:   spot.Vat,
-			Value:            fakeAddress,
-			StorageTableName: "maker.spot_vat",
-			Repository:       &repo,
-			Metadata:         spot.VatMetadata,
+			ValueFieldName: spot.Vat,
+			Value:          fakeAddress,
+			Schema:         constants.MakerSchema,
+			TableName:      constants.SpotVatTable,
+			Repository:     &repo,
+			Metadata:       spot.VatMetadata,
 		}
 
 		shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
@@ -162,11 +170,12 @@ var _ = Describe("Spot storage repository", func() {
 
 	Describe("par", func() {
 		inputs := shared_behaviors.StorageBehaviorInputs{
-			ValueFieldName:   spot.Par,
-			Value:            fakeUint256,
-			StorageTableName: "maker.spot_par",
-			Repository:       &repo,
-			Metadata:         spot.ParMetadata,
+			ValueFieldName: spot.Par,
+			Value:          fakeUint256,
+			Schema:         constants.MakerSchema,
+			TableName:      constants.SpotParTable,
+			Repository:     &repo,
+			Metadata:       spot.ParMetadata,
 		}
 
 		shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
@@ -174,11 +183,12 @@ var _ = Describe("Spot storage repository", func() {
 
 	Describe("live", func() {
 		inputs := shared_behaviors.StorageBehaviorInputs{
-			ValueFieldName:   spot.Live,
-			Value:            fakeUint256,
-			StorageTableName: "maker.spot_live",
-			Repository:       &repo,
-			Metadata:         spot.LiveMetadata,
+			ValueFieldName: spot.Live,
+			Value:          fakeUint256,
+			Schema:         constants.MakerSchema,
+			TableName:      constants.SpotLiveTable,
+			Repository:     &repo,
+			Metadata:       spot.LiveMetadata,
 		}
 
 		shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)

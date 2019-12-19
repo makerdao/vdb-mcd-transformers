@@ -57,8 +57,8 @@ func (c Converter) ToModels(_ string, logs []core.HeaderSyncLog, db *postgres.DB
 				event.LogFK,
 			},
 			ColumnValues: event.ColumnValues{
-				event.HeaderFK:          log.HeaderID,
-				Id:                      bidId.String(),
+				event.HeaderFK: log.HeaderID,
+				Id:             bidId.String(),
 				constants.AddressColumn: addressID,
 				event.LogFK:             log.ID,
 			},

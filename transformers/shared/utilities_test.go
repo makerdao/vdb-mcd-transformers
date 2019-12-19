@@ -135,4 +135,13 @@ var _ = Describe("Shared utilities", func() {
 			Expect(actualIlkIdentifier).To(Equal(""))
 		})
 	})
+
+	Describe("GetFullTableName", func() {
+		It("Concatenates a schema and table name", func() {
+			schema := "schema_name"
+			table := "table_name"
+			fullTableName := shared.GetFullTableName(schema, table)
+			Expect(fullTableName).To(Equal("schema_name.table_name"))
+		})
+	})
 })

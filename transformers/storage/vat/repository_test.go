@@ -18,6 +18,7 @@ package vat_test
 
 import (
 	"database/sql"
+	"fmt"
 	"math/rand"
 	"strconv"
 
@@ -66,7 +67,8 @@ var _ = Describe("Vat storage repository", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			var result MappingRes
-			err = db.Get(&result, `SELECT diff_id, header_id, guy AS key, dai AS value FROM maker.vat_dai`)
+			query := fmt.Sprintf(`SELECT diff_id, header_id, guy AS KEY, dai AS VALUE FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VatDaiTable))
+			err = db.Get(&result, query)
 			Expect(err).NotTo(HaveOccurred())
 			AssertMapping(result, diffID, fakeHeaderID, fakeGuy, fakeUint256)
 		})
@@ -80,7 +82,8 @@ var _ = Describe("Vat storage repository", func() {
 
 			Expect(insertTwoErr).NotTo(HaveOccurred())
 			var count int
-			getCountErr := db.Get(&count, `SELECT count(*) FROM maker.vat_dai`)
+			query := fmt.Sprintf(`SELECT count(*) FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VatDaiTable))
+			getCountErr := db.Get(&count, query)
 			Expect(getCountErr).NotTo(HaveOccurred())
 			Expect(count).To(Equal(1))
 		})
@@ -104,7 +107,8 @@ var _ = Describe("Vat storage repository", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			var result DoubleMappingRes
-			err = db.Get(&result, `SELECT diff_id, header_id, ilk_id AS key_one, guy AS key_two, gem AS value FROM maker.vat_gem`)
+			query := fmt.Sprintf(`SELECT diff_id, header_id, ilk_id AS key_one, guy AS key_two, gem AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VatGemTable))
+			err = db.Get(&result, query)
 			Expect(err).NotTo(HaveOccurred())
 			ilkID, err := shared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
 			Expect(err).NotTo(HaveOccurred())
@@ -120,7 +124,8 @@ var _ = Describe("Vat storage repository", func() {
 
 			Expect(insertTwoErr).NotTo(HaveOccurred())
 			var count int
-			getCountErr := db.Get(&count, `SELECT count(*) FROM maker.vat_gem`)
+			query := fmt.Sprintf(`SELECT count(*) FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VatGemTable))
+			getCountErr := db.Get(&count, query)
 			Expect(getCountErr).NotTo(HaveOccurred())
 			Expect(count).To(Equal(1))
 		})
@@ -153,7 +158,8 @@ var _ = Describe("Vat storage repository", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			var result MappingRes
-			err = db.Get(&result, `SELECT diff_id, header_id, ilk_id AS key, art AS value FROM maker.vat_ilk_art`)
+			query := fmt.Sprintf(`SELECT diff_id, header_id, ilk_id AS key, art AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VatIlkArtTable))
+			err = db.Get(&result, query)
 			Expect(err).NotTo(HaveOccurred())
 			ilkID, err := shared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
 			Expect(err).NotTo(HaveOccurred())
@@ -169,7 +175,8 @@ var _ = Describe("Vat storage repository", func() {
 
 			Expect(insertTwoErr).NotTo(HaveOccurred())
 			var count int
-			getCountErr := db.Get(&count, `SELECT count(*) FROM maker.vat_ilk_art`)
+			query := fmt.Sprintf(`SELECT count(*) FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VatIlkArtTable))
+			getCountErr := db.Get(&count, query)
 			Expect(getCountErr).NotTo(HaveOccurred())
 			Expect(count).To(Equal(1))
 		})
@@ -188,7 +195,8 @@ var _ = Describe("Vat storage repository", func() {
 			Metadata:      storage.GetValueMetadata(vat.IlkArt, map[storage.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, storage.Uint256),
 			PropertyName:  "Art",
 			PropertyValue: strconv.Itoa(rand.Int()),
-			TableName:     "maker.vat_ilk_art",
+			Schema:        constants.MakerSchema,
+			TableName:     constants.VatIlkArtTable,
 		})
 	})
 
@@ -201,7 +209,8 @@ var _ = Describe("Vat storage repository", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			var result MappingRes
-			err = db.Get(&result, `SELECT diff_id, header_id, ilk_id AS key, dust AS value FROM maker.vat_ilk_dust`)
+			query := fmt.Sprintf(`SELECT diff_id, header_id, ilk_id AS key, dust AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VatIlkDustTable))
+			err = db.Get(&result, query)
 			Expect(err).NotTo(HaveOccurred())
 			ilkID, err := shared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
 			Expect(err).NotTo(HaveOccurred())
@@ -217,7 +226,8 @@ var _ = Describe("Vat storage repository", func() {
 
 			Expect(insertTwoErr).NotTo(HaveOccurred())
 			var count int
-			getCountErr := db.Get(&count, `SELECT count(*) FROM maker.vat_ilk_dust`)
+			query := fmt.Sprintf(`SELECT count(*) FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VatIlkDustTable))
+			getCountErr := db.Get(&count, query)
 			Expect(getCountErr).NotTo(HaveOccurred())
 			Expect(count).To(Equal(1))
 		})
@@ -236,7 +246,8 @@ var _ = Describe("Vat storage repository", func() {
 			Metadata:      storage.GetValueMetadata(vat.IlkDust, map[storage.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, storage.Uint256),
 			PropertyName:  "Dust",
 			PropertyValue: strconv.Itoa(rand.Int()),
-			TableName:     "maker.vat_ilk_dust",
+			Schema:        constants.MakerSchema,
+			TableName:     constants.VatIlkDustTable,
 		})
 	})
 
@@ -249,7 +260,8 @@ var _ = Describe("Vat storage repository", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			var result MappingRes
-			err = db.Get(&result, `SELECT diff_id, header_id, ilk_id AS key, line AS value FROM maker.vat_ilk_line`)
+			query := fmt.Sprintf(`SELECT diff_id, header_id, ilk_id AS key, line AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VatIlkLineTable))
+			err = db.Get(&result, query)
 			Expect(err).NotTo(HaveOccurred())
 			ilkID, err := shared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
 			Expect(err).NotTo(HaveOccurred())
@@ -265,7 +277,8 @@ var _ = Describe("Vat storage repository", func() {
 
 			Expect(insertTwoErr).NotTo(HaveOccurred())
 			var count int
-			getCountErr := db.Get(&count, `SELECT count(*) FROM maker.vat_ilk_line`)
+			query := fmt.Sprintf(`SELECT count(*) FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VatIlkLineTable))
+			getCountErr := db.Get(&count, query)
 			Expect(getCountErr).NotTo(HaveOccurred())
 			Expect(count).To(Equal(1))
 		})
@@ -284,7 +297,8 @@ var _ = Describe("Vat storage repository", func() {
 			Metadata:      storage.GetValueMetadata(vat.IlkLine, map[storage.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, storage.Uint256),
 			PropertyName:  "Line",
 			PropertyValue: strconv.Itoa(rand.Int()),
-			TableName:     "maker.vat_ilk_line",
+			Schema:        constants.MakerSchema,
+			TableName:     constants.VatIlkLineTable,
 		})
 	})
 
@@ -297,7 +311,8 @@ var _ = Describe("Vat storage repository", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			var result MappingRes
-			err = db.Get(&result, `SELECT diff_id, header_id, ilk_id AS key, rate AS value FROM maker.vat_ilk_rate`)
+			query := fmt.Sprintf(`SELECT diff_id, header_id, ilk_id AS key, rate AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VatIlkRateTable))
+			err = db.Get(&result, query)
 			Expect(err).NotTo(HaveOccurred())
 			ilkID, err := shared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
 			Expect(err).NotTo(HaveOccurred())
@@ -313,7 +328,8 @@ var _ = Describe("Vat storage repository", func() {
 
 			Expect(insertTwoErr).NotTo(HaveOccurred())
 			var count int
-			getCountErr := db.Get(&count, `SELECT count(*) FROM maker.vat_ilk_rate`)
+			query := fmt.Sprintf(`SELECT count(*) FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VatIlkRateTable))
+			getCountErr := db.Get(&count, query)
 			Expect(getCountErr).NotTo(HaveOccurred())
 			Expect(count).To(Equal(1))
 		})
@@ -332,7 +348,8 @@ var _ = Describe("Vat storage repository", func() {
 			Metadata:      storage.GetValueMetadata(vat.IlkRate, map[storage.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, storage.Uint256),
 			PropertyName:  "Rate",
 			PropertyValue: strconv.Itoa(rand.Int()),
-			TableName:     "maker.vat_ilk_rate",
+			Schema:        constants.MakerSchema,
+			TableName:     constants.VatIlkRateTable,
 		})
 	})
 
@@ -345,7 +362,8 @@ var _ = Describe("Vat storage repository", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			var result MappingRes
-			err = db.Get(&result, `SELECT diff_id, header_id, ilk_id AS key, spot AS value FROM maker.vat_ilk_spot`)
+			query := fmt.Sprintf(`SELECT diff_id, header_id, ilk_id AS key, spot AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VatIlkSpotTable))
+			err = db.Get(&result, query)
 			Expect(err).NotTo(HaveOccurred())
 			ilkID, err := shared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
 			Expect(err).NotTo(HaveOccurred())
@@ -361,7 +379,8 @@ var _ = Describe("Vat storage repository", func() {
 
 			Expect(insertTwoErr).NotTo(HaveOccurred())
 			var count int
-			getCountErr := db.Get(&count, `SELECT count(*) FROM maker.vat_ilk_spot`)
+			query := fmt.Sprintf(`SELECT count(*) FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VatIlkSpotTable))
+			getCountErr := db.Get(&count, query)
 			Expect(getCountErr).NotTo(HaveOccurred())
 			Expect(count).To(Equal(1))
 		})
@@ -380,7 +399,8 @@ var _ = Describe("Vat storage repository", func() {
 			Metadata:      storage.GetValueMetadata(vat.IlkSpot, map[storage.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, storage.Uint256),
 			PropertyName:  "Spot",
 			PropertyValue: strconv.Itoa(rand.Int()),
-			TableName:     "maker.vat_ilk_spot",
+			Schema:        constants.MakerSchema,
+			TableName:     constants.VatIlkSpotTable,
 		})
 	})
 
@@ -393,7 +413,8 @@ var _ = Describe("Vat storage repository", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			var result MappingRes
-			err = db.Get(&result, `SELECT diff_id, header_id, guy AS key, sin AS value FROM maker.vat_sin`)
+			query := fmt.Sprintf(`SELECT diff_id, header_id, guy AS KEY, sin AS VALUE FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VatSinTable))
+			err = db.Get(&result, query)
 			Expect(err).NotTo(HaveOccurred())
 			AssertMapping(result, diffID, fakeHeaderID, fakeGuy, fakeUint256)
 		})
@@ -407,7 +428,8 @@ var _ = Describe("Vat storage repository", func() {
 
 			Expect(insertTwoErr).NotTo(HaveOccurred())
 			var count int
-			getCountErr := db.Get(&count, `SELECT count(*) FROM maker.vat_sin`)
+			query := fmt.Sprintf(`SELECT count(*) FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VatSinTable))
+			getCountErr := db.Get(&count, query)
 			Expect(getCountErr).NotTo(HaveOccurred())
 			Expect(count).To(Equal(1))
 		})
@@ -431,12 +453,12 @@ var _ = Describe("Vat storage repository", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			var result DoubleMappingRes
-			err = db.Get(&result, `
-				SELECT diff_id, header_id, ilks.id AS key_one, urns.identifier AS key_two, art AS value
-				FROM maker.vat_urn_art
+			query := fmt.Sprintf(`SELECT diff_id, header_id, ilks.id AS key_one, urns.identifier AS key_two, art AS value
+				FROM %s
 				INNER JOIN maker.urns ON maker.urns.id = maker.vat_urn_art.urn_id
-				INNER JOIN maker.ilks on maker.urns.ilk_id = maker.ilks.id
-			`)
+				INNER JOIN maker.ilks on maker.urns.ilk_id = maker.ilks.id`,
+				shared.GetFullTableName(constants.MakerSchema, constants.VatUrnArtTable))
+			err = db.Get(&result, query)
 			Expect(err).NotTo(HaveOccurred())
 			ilkID, err := shared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
 			Expect(err).NotTo(HaveOccurred())
@@ -452,7 +474,8 @@ var _ = Describe("Vat storage repository", func() {
 
 			Expect(insertTwoErr).NotTo(HaveOccurred())
 			var count int
-			getCountErr := db.Get(&count, `SELECT count(*) FROM maker.vat_urn_art`)
+			query := fmt.Sprintf(`SELECT count(*) FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VatUrnArtTable))
+			getCountErr := db.Get(&count, query)
 			Expect(getCountErr).NotTo(HaveOccurred())
 			Expect(count).To(Equal(1))
 		})
@@ -489,7 +512,7 @@ var _ = Describe("Vat storage repository", func() {
 				getStateQuery  = `SELECT urn_identifier, ilk_identifier, block_height, ink, art, created, updated FROM api.historical_urn_state ORDER BY block_height`
 				getArtQuery    = `SELECT art FROM api.historical_urn_state ORDER BY block_height`
 				insertArtQuery = `INSERT INTO api.historical_urn_state (urn_identifier, ilk_identifier, block_height, art, updated) VALUES ($1, $2, $3, $4, NOW())`
-				deleteRowQuery = `DELETE FROM maker.vat_urn_art WHERE header_id = $1`
+				deleteRowQuery = fmt.Sprintf(`DELETE FROM %s WHERE header_id = $1`, shared.GetFullTableName(constants.MakerSchema, constants.VatUrnArtTable))
 				urnArtMetadata = storage.GetValueMetadata(vat.UrnArt, map[storage.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex, constants.Guy: fakeGuy}, storage.Uint256)
 			)
 
@@ -710,12 +733,11 @@ var _ = Describe("Vat storage repository", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			var result DoubleMappingRes
-			err = db.Get(&result, `
-				SELECT diff_id, header_id, ilks.id AS key_one, urns.identifier AS key_two, ink AS value
-				FROM maker.vat_urn_ink
+			query := fmt.Sprintf(`SELECT diff_id, header_id, ilks.id AS key_one, urns.identifier AS key_two, ink AS value
+				FROM %s
 				INNER JOIN maker.urns ON maker.urns.id = maker.vat_urn_ink.urn_id
-				INNER JOIN maker.ilks on maker.urns.ilk_id = maker.ilks.id
-			`)
+				INNER JOIN maker.ilks on maker.urns.ilk_id = maker.ilks.id`, shared.GetFullTableName(constants.MakerSchema, constants.VatUrnInkTable))
+			err = db.Get(&result, query)
 			Expect(err).NotTo(HaveOccurred())
 			ilkID, err := shared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
 			Expect(err).NotTo(HaveOccurred())
@@ -731,7 +753,8 @@ var _ = Describe("Vat storage repository", func() {
 
 			Expect(insertTwoErr).NotTo(HaveOccurred())
 			var count int
-			getCountErr := db.Get(&count, `SELECT count(*) FROM maker.vat_urn_ink`)
+			query := fmt.Sprintf(`SELECT count(*) FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VatUrnInkTable))
+			getCountErr := db.Get(&count, query)
 			Expect(getCountErr).NotTo(HaveOccurred())
 			Expect(count).To(Equal(1))
 		})
@@ -768,7 +791,7 @@ var _ = Describe("Vat storage repository", func() {
 				getStateQuery  = `SELECT urn_identifier, ilk_identifier, block_height, ink, art, created, updated FROM api.historical_urn_state ORDER BY block_height`
 				getInkQuery    = `SELECT ink FROM api.historical_urn_state ORDER BY block_height`
 				insertInkQuery = `INSERT INTO api.historical_urn_state (urn_identifier, ilk_identifier, block_height, ink, updated) VALUES ($1, $2, $3, $4, NOW())`
-				deleteRowQuery = `DELETE FROM maker.vat_urn_ink WHERE header_id = $1`
+				deleteRowQuery = fmt.Sprintf(`DELETE FROM %s WHERE header_id = $1`, shared.GetFullTableName(constants.MakerSchema, constants.VatUrnInkTable))
 				urnInkMetadata = storage.GetValueMetadata(vat.UrnInk, map[storage.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex, constants.Guy: fakeGuy}, storage.Uint256)
 			)
 
@@ -1026,7 +1049,8 @@ var _ = Describe("Vat storage repository", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		var result VariableRes
-		err = db.Get(&result, `SELECT diff_id, header_id, debt AS value FROM maker.vat_debt`)
+		query := fmt.Sprintf(`SELECT diff_id, header_id, debt AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VatDebtTable))
+		err = db.Get(&result, query)
 		Expect(err).NotTo(HaveOccurred())
 		AssertVariable(result, diffID, fakeHeaderID, fakeUint256)
 	})
@@ -1039,7 +1063,8 @@ var _ = Describe("Vat storage repository", func() {
 
 		Expect(insertTwoErr).NotTo(HaveOccurred())
 		var count int
-		getCountErr := db.Get(&count, `SELECT count(*) FROM maker.vat_debt`)
+		query := fmt.Sprintf(`SELECT count(*) FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VatDebtTable))
+		getCountErr := db.Get(&count, query)
 		Expect(getCountErr).NotTo(HaveOccurred())
 		Expect(count).To(Equal(1))
 	})
@@ -1050,7 +1075,8 @@ var _ = Describe("Vat storage repository", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		var result VariableRes
-		err = db.Get(&result, `SELECT diff_id, header_id, vice AS value FROM maker.vat_vice`)
+		query := fmt.Sprintf(`SELECT diff_id, header_id, vice AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VatViceTable))
+		err = db.Get(&result, query)
 		Expect(err).NotTo(HaveOccurred())
 		AssertVariable(result, diffID, fakeHeaderID, fakeUint256)
 	})
@@ -1063,7 +1089,8 @@ var _ = Describe("Vat storage repository", func() {
 
 		Expect(insertTwoErr).NotTo(HaveOccurred())
 		var count int
-		getCountErr := db.Get(&count, `SELECT count(*) FROM maker.vat_vice`)
+		query := fmt.Sprintf(`SELECT count(*) FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VatViceTable))
+		getCountErr := db.Get(&count, query)
 		Expect(getCountErr).NotTo(HaveOccurred())
 		Expect(count).To(Equal(1))
 	})
@@ -1074,7 +1101,8 @@ var _ = Describe("Vat storage repository", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		var result VariableRes
-		err = db.Get(&result, `SELECT diff_id, header_id, line AS value FROM maker.vat_line`)
+		query := fmt.Sprintf(`SELECT diff_id, header_id, line AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VatLineTable))
+		err = db.Get(&result, query)
 		Expect(err).NotTo(HaveOccurred())
 		AssertVariable(result, diffID, fakeHeaderID, fakeUint256)
 	})
@@ -1087,7 +1115,8 @@ var _ = Describe("Vat storage repository", func() {
 
 		Expect(insertTwoErr).NotTo(HaveOccurred())
 		var count int
-		getCountErr := db.Get(&count, `SELECT count(*) FROM maker.vat_line`)
+		query := fmt.Sprintf(`SELECT count(*) FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VatLineTable))
+		getCountErr := db.Get(&count, query)
 		Expect(getCountErr).NotTo(HaveOccurred())
 		Expect(count).To(Equal(1))
 	})
@@ -1098,7 +1127,8 @@ var _ = Describe("Vat storage repository", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		var result VariableRes
-		err = db.Get(&result, `SELECT diff_id, header_id, live AS value FROM maker.vat_live`)
+		query := fmt.Sprintf(`SELECT diff_id, header_id, live AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VatLiveTable))
+		err = db.Get(&result, query)
 		Expect(err).NotTo(HaveOccurred())
 		AssertVariable(result, diffID, fakeHeaderID, fakeUint256)
 	})
@@ -1111,7 +1141,8 @@ var _ = Describe("Vat storage repository", func() {
 
 		Expect(insertTwoErr).NotTo(HaveOccurred())
 		var count int
-		getCountErr := db.Get(&count, `SELECT count(*) FROM maker.vat_live`)
+		query := fmt.Sprintf(`SELECT count(*) FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VatLiveTable))
+		getCountErr := db.Get(&count, query)
 		Expect(getCountErr).NotTo(HaveOccurred())
 		Expect(count).To(Equal(1))
 	})

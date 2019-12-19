@@ -114,3 +114,7 @@ func DecodeHexToText(payload string) string {
 func FormatRollbackError(field, err string) error {
 	return fmt.Errorf("failed to rollback transaction after failing to insert %s: %s", field, err)
 }
+
+func GetFullTableName(schema, table string) string {
+	return schema + "." + table
+}

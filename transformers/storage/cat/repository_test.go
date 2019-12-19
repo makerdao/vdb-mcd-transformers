@@ -1,6 +1,7 @@
 package cat_test
 
 import (
+	"fmt"
 	"math/rand"
 	"strconv"
 
@@ -51,11 +52,12 @@ var _ = Describe("Cat storage repository", func() {
 		Describe("Live", func() {
 			liveMetadata := storage.GetValueMetadata(cat.Live, nil, storage.Uint256)
 			inputs := shared_behaviors.StorageBehaviorInputs{
-				ValueFieldName:   cat.Live,
-				Value:            fakeUint256,
-				StorageTableName: "maker.cat_live",
-				Repository:       &repo,
-				Metadata:         liveMetadata,
+				ValueFieldName: cat.Live,
+				Value:          fakeUint256,
+				Schema:         constants.MakerSchema,
+				TableName:      constants.CatLiveTable,
+				Repository:     &repo,
+				Metadata:       liveMetadata,
 			}
 
 			shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
@@ -64,11 +66,12 @@ var _ = Describe("Cat storage repository", func() {
 		Describe("Vat", func() {
 			vatMetadata := storage.GetValueMetadata(cat.Vat, nil, storage.Address)
 			inputs := shared_behaviors.StorageBehaviorInputs{
-				ValueFieldName:   cat.Vat,
-				Value:            fakeAddress,
-				StorageTableName: "maker.cat_vat",
-				Repository:       &repo,
-				Metadata:         vatMetadata,
+				ValueFieldName: cat.Vat,
+				Value:          fakeAddress,
+				Schema:         constants.MakerSchema,
+				TableName:      constants.CatVatTable,
+				Repository:     &repo,
+				Metadata:       vatMetadata,
 			}
 
 			shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
@@ -77,11 +80,12 @@ var _ = Describe("Cat storage repository", func() {
 		Describe("Vow", func() {
 			vowMetadata := storage.GetValueMetadata(cat.Vow, nil, storage.Address)
 			inputs := shared_behaviors.StorageBehaviorInputs{
-				ValueFieldName:   cat.Vow,
-				Value:            fakeAddress,
-				StorageTableName: "maker.cat_vow",
-				Repository:       &repo,
-				Metadata:         vowMetadata,
+				ValueFieldName: cat.Vow,
+				Value:          fakeAddress,
+				Schema:         constants.MakerSchema,
+				TableName:      constants.CatVowTable,
+				Repository:     &repo,
+				Metadata:       vowMetadata,
 			}
 
 			shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
@@ -105,7 +109,8 @@ var _ = Describe("Cat storage repository", func() {
 				Expect(err).NotTo(HaveOccurred())
 
 				var result MappingRes
-				err = db.Get(&result, `SELECT diff_id, header_id, ilk_id AS key, flip AS value FROM maker.cat_ilk_flip`)
+				query := fmt.Sprintf(`SELECT diff_id, header_id, ilk_id AS key, flip AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.CatIlkFlipTable))
+				err = db.Get(&result, query)
 				Expect(err).NotTo(HaveOccurred())
 				ilkID, err := shared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
 				Expect(err).NotTo(HaveOccurred())
@@ -121,7 +126,8 @@ var _ = Describe("Cat storage repository", func() {
 
 				Expect(insertTwoErr).NotTo(HaveOccurred())
 				var count int
-				getCountErr := db.Get(&count, `SELECT count(*) FROM maker.cat_ilk_flip`)
+				query := fmt.Sprintf(`SELECT count(*) FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.CatIlkFlipTable))
+				getCountErr := db.Get(&count, query)
 				Expect(getCountErr).NotTo(HaveOccurred())
 				Expect(count).To(Equal(1))
 			})
@@ -138,7 +144,8 @@ var _ = Describe("Cat storage repository", func() {
 				Metadata:      storage.GetValueMetadata(cat.IlkFlip, map[storage.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, storage.Address),
 				PropertyName:  "Flip",
 				PropertyValue: fakeAddress,
-				TableName:     "maker.cat_ilk_flip",
+				Schema:        constants.MakerSchema,
+				TableName:     constants.CatIlkFlipTable,
 			})
 		})
 
@@ -150,7 +157,8 @@ var _ = Describe("Cat storage repository", func() {
 				Expect(err).NotTo(HaveOccurred())
 
 				var result MappingRes
-				err = db.Get(&result, `SELECT diff_id, header_id, ilk_id AS key, chop AS value FROM maker.cat_ilk_chop`)
+				query := fmt.Sprintf(`SELECT diff_id, header_id, ilk_id AS key, chop AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.CatIlkChopTable))
+				err = db.Get(&result, query)
 				Expect(err).NotTo(HaveOccurred())
 				ilkID, err := shared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
 				Expect(err).NotTo(HaveOccurred())
@@ -166,7 +174,8 @@ var _ = Describe("Cat storage repository", func() {
 
 				Expect(insertTwoErr).NotTo(HaveOccurred())
 				var count int
-				getCountErr := db.Get(&count, `SELECT count(*) FROM maker.cat_ilk_chop`)
+				query := fmt.Sprintf(`SELECT count(*) FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.CatIlkChopTable))
+				getCountErr := db.Get(&count, query)
 				Expect(getCountErr).NotTo(HaveOccurred())
 				Expect(count).To(Equal(1))
 			})
@@ -183,7 +192,8 @@ var _ = Describe("Cat storage repository", func() {
 				Metadata:      storage.GetValueMetadata(cat.IlkChop, map[storage.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, storage.Uint256),
 				PropertyName:  "Chop",
 				PropertyValue: strconv.Itoa(rand.Int()),
-				TableName:     "maker.cat_ilk_chop",
+				Schema:        constants.MakerSchema,
+				TableName:     constants.CatIlkChopTable,
 			})
 		})
 
@@ -195,7 +205,8 @@ var _ = Describe("Cat storage repository", func() {
 				Expect(err).NotTo(HaveOccurred())
 
 				var result MappingRes
-				err = db.Get(&result, `SELECT diff_id, header_id, ilk_id AS key, lump AS value FROM maker.cat_ilk_lump`)
+				query := fmt.Sprintf(`SELECT diff_id, header_id, ilk_id AS key, lump AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.CatIlkLumpTable))
+				err = db.Get(&result, query)
 				Expect(err).NotTo(HaveOccurred())
 				ilkID, err := shared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
 				Expect(err).NotTo(HaveOccurred())
@@ -211,7 +222,8 @@ var _ = Describe("Cat storage repository", func() {
 
 				Expect(insertTwoErr).NotTo(HaveOccurred())
 				var count int
-				getCountErr := db.Get(&count, `SELECT count(*) FROM maker.cat_ilk_lump`)
+				query := fmt.Sprintf(`SELECT count(*) FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.CatIlkLumpTable))
+				getCountErr := db.Get(&count, query)
 				Expect(getCountErr).NotTo(HaveOccurred())
 				Expect(count).To(Equal(1))
 			})
@@ -228,7 +240,8 @@ var _ = Describe("Cat storage repository", func() {
 				Metadata:      storage.GetValueMetadata(cat.IlkLump, map[storage.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, storage.Uint256),
 				PropertyName:  "Lump",
 				PropertyValue: strconv.Itoa(rand.Int()),
-				TableName:     "maker.cat_ilk_lump",
+				Schema:        constants.MakerSchema,
+				TableName:     constants.CatIlkLumpTable,
 			})
 		})
 	})

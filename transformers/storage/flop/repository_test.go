@@ -1,10 +1,12 @@
 package flop_test
 
 import (
+	"fmt"
 	"math/rand"
 	"strconv"
 
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/flop"
@@ -49,11 +51,12 @@ var _ = Describe("Flop storage repository", func() {
 		vatMetadata := vdbStorage.ValueMetadata{Name: storage.Vat}
 
 		inputs := shared_behaviors.StorageBehaviorInputs{
-			ValueFieldName:   storage.Vat,
-			Value:            FakeAddress,
-			StorageTableName: "maker.flop_vat",
-			Repository:       &repo,
-			Metadata:         vatMetadata,
+			ValueFieldName: storage.Vat,
+			Value:          FakeAddress,
+			Schema:         constants.MakerSchema,
+			TableName:      constants.FlopVatTable,
+			Repository:     &repo,
+			Metadata:       vatMetadata,
 		}
 
 		shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
@@ -62,11 +65,12 @@ var _ = Describe("Flop storage repository", func() {
 	Describe("Gem", func() {
 		gemMetadata := vdbStorage.ValueMetadata{Name: storage.Gem}
 		inputs := shared_behaviors.StorageBehaviorInputs{
-			ValueFieldName:   storage.Gem,
-			Value:            FakeAddress,
-			StorageTableName: "maker.flop_gem",
-			Repository:       &repo,
-			Metadata:         gemMetadata,
+			ValueFieldName: storage.Gem,
+			Value:          FakeAddress,
+			Schema:         constants.MakerSchema,
+			TableName:      constants.FlopGemTable,
+			Repository:     &repo,
+			Metadata:       gemMetadata,
 		}
 
 		shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
@@ -77,11 +81,12 @@ var _ = Describe("Flop storage repository", func() {
 		fakeBeg := strconv.Itoa(rand.Int())
 
 		inputs := shared_behaviors.StorageBehaviorInputs{
-			ValueFieldName:   storage.Beg,
-			Value:            fakeBeg,
-			StorageTableName: "maker.flop_beg",
-			Repository:       &repo,
-			Metadata:         begMetadata,
+			ValueFieldName: storage.Beg,
+			Value:          fakeBeg,
+			Schema:         constants.MakerSchema,
+			TableName:      constants.FlopBegTable,
+			Repository:     &repo,
+			Metadata:       begMetadata,
 		}
 
 		shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
@@ -98,11 +103,12 @@ var _ = Describe("Flop storage repository", func() {
 		fakePad := strconv.Itoa(rand.Int())
 
 		inputs := shared_behaviors.StorageBehaviorInputs{
-			ValueFieldName:   storage.Pad,
-			Value:            fakePad,
-			StorageTableName: "maker.flop_pad",
-			Repository:       &repo,
-			Metadata:         padMetadata,
+			ValueFieldName: storage.Pad,
+			Value:          fakePad,
+			Schema:         constants.MakerSchema,
+			TableName:      constants.FlopPadTable,
+			Repository:     &repo,
+			Metadata:       padMetadata,
 		}
 
 		shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
@@ -136,7 +142,8 @@ var _ = Describe("Flop storage repository", func() {
 			Expect(createErr).NotTo(HaveOccurred())
 
 			var ttlResult VariableRes
-			getResErr := db.Get(&ttlResult, `SELECT diff_id, header_id, ttl AS value FROM maker.flop_ttl`)
+			query := fmt.Sprintf(`SELECT diff_id, header_id, ttl AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.FlopTtlTable))
+			getResErr := db.Get(&ttlResult, query)
 			Expect(getResErr).NotTo(HaveOccurred())
 			AssertVariable(ttlResult, diffID, fakeHeaderID, fakeTtl)
 		})
@@ -148,7 +155,8 @@ var _ = Describe("Flop storage repository", func() {
 			Expect(createErr).NotTo(HaveOccurred())
 
 			var tauResult VariableRes
-			getResErr := db.Get(&tauResult, `SELECT diff_id, header_id, tau AS value FROM maker.flop_tau`)
+			query := fmt.Sprintf(`SELECT diff_id, header_id, tau AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.FlopTauTable))
+			getResErr := db.Get(&tauResult, query)
 			Expect(getResErr).NotTo(HaveOccurred())
 			AssertVariable(tauResult, diffID, fakeHeaderID, fakeTau)
 		})
@@ -181,11 +189,12 @@ var _ = Describe("Flop storage repository", func() {
 		var kicksMetadata = vdbStorage.ValueMetadata{Name: storage.Kicks}
 		var fakeKicks = strconv.Itoa(rand.Int())
 		inputs := shared_behaviors.StorageBehaviorInputs{
-			ValueFieldName:   storage.Kicks,
-			StorageTableName: "maker.flop_kicks",
-			Repository:       &repo,
-			Metadata:         kicksMetadata,
-			Value:            fakeKicks,
+			ValueFieldName: storage.Kicks,
+			Schema:         constants.MakerSchema,
+			TableName:      constants.FlopKicksTable,
+			Repository:     &repo,
+			Metadata:       kicksMetadata,
+			Value:          fakeKicks,
 		}
 
 		shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
@@ -195,11 +204,12 @@ var _ = Describe("Flop storage repository", func() {
 		var liveMetadata = vdbStorage.ValueMetadata{Name: storage.Live}
 		var fakeKicks = strconv.Itoa(rand.Intn(100))
 		inputs := shared_behaviors.StorageBehaviorInputs{
-			ValueFieldName:   storage.Live,
-			StorageTableName: "maker.flop_live",
-			Repository:       &repo,
-			Metadata:         liveMetadata,
-			Value:            fakeKicks,
+			ValueFieldName: storage.Live,
+			Schema:         constants.MakerSchema,
+			TableName:      constants.FlopLiveTable,
+			Repository:     &repo,
+			Metadata:       liveMetadata,
+			Value:          fakeKicks,
 		}
 
 		shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
@@ -226,14 +236,15 @@ var _ = Describe("Flop storage repository", func() {
 				Type: vdbStorage.Uint256,
 			}
 			inputs := shared_behaviors.StorageBehaviorInputs{
-				KeyFieldName:     string(constants.BidId),
-				ValueFieldName:   "bid",
-				Value:            fakeBidValue,
-				Key:              fakeBidId,
-				IsAMapping:       true,
-				StorageTableName: "maker.flop_bid_bid",
-				Repository:       &repo,
-				Metadata:         bidBidMetadata,
+				KeyFieldName:   string(constants.BidId),
+				ValueFieldName: "bid",
+				Value:          fakeBidValue,
+				Key:            fakeBidId,
+				IsAMapping:     true,
+				Schema:         constants.MakerSchema,
+				TableName:      constants.FlopBidBidTable,
+				Repository:     &repo,
+				Metadata:       bidBidMetadata,
 			}
 
 			shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
@@ -261,14 +272,15 @@ var _ = Describe("Flop storage repository", func() {
 				Type: vdbStorage.Uint256,
 			}
 			inputs := shared_behaviors.StorageBehaviorInputs{
-				KeyFieldName:     string(constants.BidId),
-				ValueFieldName:   "lot",
-				Value:            fakeLotValue,
-				Key:              fakeBidId,
-				IsAMapping:       true,
-				StorageTableName: "maker.flop_bid_lot",
-				Repository:       &repo,
-				Metadata:         bidLotMetadata,
+				KeyFieldName:   string(constants.BidId),
+				ValueFieldName: "lot",
+				Value:          fakeLotValue,
+				Key:            fakeBidId,
+				IsAMapping:     true,
+				Schema:         constants.MakerSchema,
+				TableName:      constants.FlopBidLotTable,
+				Repository:     &repo,
+				Metadata:       bidLotMetadata,
 			}
 
 			shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
@@ -317,21 +329,24 @@ var _ = Describe("Flop storage repository", func() {
 
 				It("persists bid guy record", func() {
 					var guyResult MappingRes
-					selectErr := db.Get(&guyResult, `SELECT diff_id, header_id, bid_id AS key, guy AS value FROM maker.flop_bid_guy`)
+					query := fmt.Sprintf(`SELECT diff_id, header_id, bid_id AS key, guy AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.FlopBidGuyTable))
+					selectErr := db.Get(&guyResult, query)
 					Expect(selectErr).NotTo(HaveOccurred())
 					AssertMapping(guyResult, diffID, fakeHeaderID, fakeBidId, fakeGuy)
 				})
 
 				It("persists bid tic record", func() {
 					var ticResult MappingRes
-					selectErr := db.Get(&ticResult, `SELECT diff_id, header_id, bid_id AS key, tic AS value FROM maker.flop_bid_tic`)
+					query := fmt.Sprintf(`SELECT diff_id, header_id, bid_id AS key, tic AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.FlopBidTicTable))
+					selectErr := db.Get(&ticResult, query)
 					Expect(selectErr).NotTo(HaveOccurred())
 					AssertMapping(ticResult, diffID, fakeHeaderID, fakeBidId, fakeTic)
 				})
 
 				It("persists bid end record", func() {
 					var endResult MappingRes
-					selectErr := db.Get(&endResult, `SELECT diff_id, header_id, bid_id AS key, "end" AS value FROM maker.flop_bid_end`)
+					query := fmt.Sprintf(`SELECT diff_id, header_id, bid_id AS key, "end" AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.FlopBidEndTable))
+					selectErr := db.Get(&endResult, query)
 					Expect(selectErr).NotTo(HaveOccurred())
 					AssertMapping(endResult, diffID, fakeHeaderID, fakeBidId, fakeEnd)
 				})

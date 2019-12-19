@@ -1,6 +1,7 @@
 package flip_test
 
 import (
+	"fmt"
 	"math/rand"
 	"strconv"
 
@@ -61,11 +62,12 @@ var _ = Describe("Flip storage repository", func() {
 		Describe("Vat", func() {
 			vatMetadata := vdbStorage.ValueMetadata{Name: storage.Vat}
 			inputs := shared_behaviors.StorageBehaviorInputs{
-				ValueFieldName:   storage.Vat,
-				Value:            FakeAddress,
-				StorageTableName: "maker.flip_vat",
-				Repository:       &repo,
-				Metadata:         vatMetadata,
+				ValueFieldName: storage.Vat,
+				Value:          FakeAddress,
+				Schema:         constants.MakerSchema,
+				TableName:      constants.FlipVatTable,
+				Repository:     &repo,
+				Metadata:       vatMetadata,
 			}
 
 			shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
@@ -80,7 +82,8 @@ var _ = Describe("Flip storage repository", func() {
 				Expect(insertErr).NotTo(HaveOccurred())
 
 				var result VariableRes
-				getErr := db.Get(&result, `SELECT diff_id, header_id, ilk_id AS value FROM maker.flip_ilk`)
+				query := fmt.Sprintf(`SELECT diff_id, header_id, ilk_id AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.FlipIlkTable))
+				getErr := db.Get(&result, query)
 				Expect(getErr).NotTo(HaveOccurred())
 				ilkID, ilkErr := shared.GetOrCreateIlk(FakeIlk, db)
 				Expect(ilkErr).NotTo(HaveOccurred())
@@ -98,7 +101,8 @@ var _ = Describe("Flip storage repository", func() {
 
 				Expect(insertTwoErr).NotTo(HaveOccurred())
 				var count int
-				getCountErr := db.Get(&count, `SELECT count(*) FROM maker.flip_ilk`)
+				query := fmt.Sprintf(`SELECT count(*) FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.FlipIlkTable))
+				getCountErr := db.Get(&count, query)
 				Expect(getCountErr).NotTo(HaveOccurred())
 				Expect(count).To(Equal(1))
 			})
@@ -108,11 +112,12 @@ var _ = Describe("Flip storage repository", func() {
 			begMetadata := vdbStorage.ValueMetadata{Name: storage.Beg}
 			fakeBeg := strconv.Itoa(rand.Int())
 			inputs := shared_behaviors.StorageBehaviorInputs{
-				ValueFieldName:   storage.Beg,
-				Value:            fakeBeg,
-				StorageTableName: "maker.flip_beg",
-				Repository:       &repo,
-				Metadata:         begMetadata,
+				ValueFieldName: storage.Beg,
+				Value:          fakeBeg,
+				Schema:         constants.MakerSchema,
+				TableName:      constants.FlipBegTable,
+				Repository:     &repo,
+				Metadata:       begMetadata,
 			}
 
 			shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
@@ -140,12 +145,14 @@ var _ = Describe("Flip storage repository", func() {
 				Expect(err).NotTo(HaveOccurred())
 
 				var ttlResult VariableRes
-				err = db.Get(&ttlResult, `SELECT diff_id, header_id, ttl AS value FROM maker.flip_ttl`)
+				ttlQuery := fmt.Sprintf(`SELECT diff_id, header_id, ttl AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.FlipTtlTable))
+				err = db.Get(&ttlResult, ttlQuery)
 				Expect(err).NotTo(HaveOccurred())
 				AssertVariable(ttlResult, diffID, fakeHeaderID, fakeTtl)
 
 				var tauResult VariableRes
-				err = db.Get(&tauResult, `SELECT diff_id, header_id, tau AS value FROM maker.flip_tau`)
+				tauQuery := fmt.Sprintf(`SELECT diff_id, header_id, tau AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.FlipTauTable))
+				err = db.Get(&tauResult, tauQuery)
 				Expect(err).NotTo(HaveOccurred())
 				AssertVariable(tauResult, diffID, fakeHeaderID, fakeTau)
 			})
@@ -179,11 +186,12 @@ var _ = Describe("Flip storage repository", func() {
 			kicksMetadata := vdbStorage.ValueMetadata{Name: storage.Kicks}
 			fakeKicks := strconv.Itoa(rand.Int())
 			inputs := shared_behaviors.StorageBehaviorInputs{
-				ValueFieldName:   storage.Kicks,
-				Value:            fakeKicks,
-				StorageTableName: "maker.flip_kicks",
-				Repository:       &repo,
-				Metadata:         kicksMetadata,
+				ValueFieldName: storage.Kicks,
+				Value:          fakeKicks,
+				Schema:         constants.MakerSchema,
+				TableName:      constants.FlipKicksTable,
+				Repository:     &repo,
+				Metadata:       kicksMetadata,
 			}
 
 			shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
@@ -211,14 +219,15 @@ var _ = Describe("Flip storage repository", func() {
 				Type: vdbStorage.Uint256,
 			}
 			inputs := shared_behaviors.StorageBehaviorInputs{
-				KeyFieldName:     string(constants.BidId),
-				ValueFieldName:   "bid",
-				Value:            fakeBidValue,
-				Key:              fakeBidId,
-				IsAMapping:       true,
-				StorageTableName: "maker.flip_bid_bid",
-				Repository:       &repo,
-				Metadata:         bidBidMetadata,
+				KeyFieldName:   string(constants.BidId),
+				ValueFieldName: "bid",
+				Value:          fakeBidValue,
+				Key:            fakeBidId,
+				IsAMapping:     true,
+				Schema:         constants.MakerSchema,
+				TableName:      constants.FlipBidBidTable,
+				Repository:     &repo,
+				Metadata:       bidBidMetadata,
 			}
 
 			shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
@@ -232,14 +241,15 @@ var _ = Describe("Flip storage repository", func() {
 				Type: vdbStorage.Uint256,
 			}
 			inputs := shared_behaviors.StorageBehaviorInputs{
-				KeyFieldName:     string(constants.BidId),
-				ValueFieldName:   "lot",
-				Value:            fakeLotValue,
-				Key:              fakeBidId,
-				IsAMapping:       true,
-				StorageTableName: "maker.flip_bid_lot",
-				Repository:       &repo,
-				Metadata:         bidLotMetadata,
+				KeyFieldName:   string(constants.BidId),
+				ValueFieldName: "lot",
+				Value:          fakeLotValue,
+				Key:            fakeBidId,
+				IsAMapping:     true,
+				Schema:         constants.MakerSchema,
+				TableName:      constants.FlipBidLotTable,
+				Repository:     &repo,
+				Metadata:       bidLotMetadata,
 			}
 
 			shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
@@ -274,21 +284,24 @@ var _ = Describe("Flip storage repository", func() {
 
 				It("persists bid guy record", func() {
 					var guyResult MappingRes
-					selectErr := db.Get(&guyResult, `SELECT diff_id, header_id, bid_id AS key, guy AS value FROM maker.flip_bid_guy`)
+					query := fmt.Sprintf(`SELECT diff_id, header_id, bid_id AS key, guy AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.FlipBidGuyTable))
+					selectErr := db.Get(&guyResult, query)
 					Expect(selectErr).NotTo(HaveOccurred())
 					AssertMapping(guyResult, diffID, fakeHeaderID, fakeBidId, fakeGuy)
 				})
 
 				It("persists bid tic record", func() {
 					var ticResult MappingRes
-					selectErr := db.Get(&ticResult, `SELECT diff_id, header_id, bid_id AS key, tic AS value FROM maker.flip_bid_tic`)
+					query := fmt.Sprintf(`SELECT diff_id, header_id, bid_id AS key, tic AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.FlipBidTicTable))
+					selectErr := db.Get(&ticResult, query)
 					Expect(selectErr).NotTo(HaveOccurred())
 					AssertMapping(ticResult, diffID, fakeHeaderID, fakeBidId, fakeTic)
 				})
 
 				It("persists bid end record", func() {
 					var endResult MappingRes
-					selectErr := db.Get(&endResult, `SELECT diff_id, header_id, bid_id AS key, "end" AS value FROM maker.flip_bid_end`)
+					query := fmt.Sprintf(`SELECT diff_id, header_id, bid_id AS key, "end" AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.FlipBidEndTable))
+					selectErr := db.Get(&endResult, query)
 					Expect(selectErr).NotTo(HaveOccurred())
 					AssertMapping(endResult, diffID, fakeHeaderID, fakeBidId, fakeEnd)
 				})
@@ -309,14 +322,15 @@ var _ = Describe("Flip storage repository", func() {
 				Type: vdbStorage.Address,
 			}
 			inputs := shared_behaviors.StorageBehaviorInputs{
-				KeyFieldName:     string(constants.BidId),
-				ValueFieldName:   "usr",
-				Value:            FakeAddress,
-				Key:              fakeBidId,
-				IsAMapping:       true,
-				StorageTableName: "maker.flip_bid_usr",
-				Repository:       &repo,
-				Metadata:         bidUsrMetadata,
+				KeyFieldName:   string(constants.BidId),
+				ValueFieldName: "usr",
+				Value:          FakeAddress,
+				Key:            fakeBidId,
+				IsAMapping:     true,
+				Schema:         constants.MakerSchema,
+				TableName:      constants.FlipBidUsrTable,
+				Repository:     &repo,
+				Metadata:       bidUsrMetadata,
 			}
 
 			shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
@@ -329,14 +343,15 @@ var _ = Describe("Flip storage repository", func() {
 				Type: vdbStorage.Address,
 			}
 			inputs := shared_behaviors.StorageBehaviorInputs{
-				KeyFieldName:     string(constants.BidId),
-				ValueFieldName:   "gal",
-				Value:            FakeAddress,
-				Key:              fakeBidId,
-				IsAMapping:       true,
-				StorageTableName: "maker.flip_bid_gal",
-				Repository:       &repo,
-				Metadata:         bidGalMetadata,
+				KeyFieldName:   string(constants.BidId),
+				ValueFieldName: "gal",
+				Value:          FakeAddress,
+				Key:            fakeBidId,
+				IsAMapping:     true,
+				Schema:         constants.MakerSchema,
+				TableName:      constants.FlipBidGalTable,
+				Repository:     &repo,
+				Metadata:       bidGalMetadata,
 			}
 
 			shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
@@ -350,14 +365,15 @@ var _ = Describe("Flip storage repository", func() {
 				Type: vdbStorage.Uint256,
 			}
 			inputs := shared_behaviors.StorageBehaviorInputs{
-				KeyFieldName:     string(constants.BidId),
-				ValueFieldName:   "tab",
-				Value:            fakeTabValue,
-				Key:              fakeBidId,
-				IsAMapping:       true,
-				StorageTableName: "maker.flip_bid_tab",
-				Repository:       &repo,
-				Metadata:         bidTabMetadata,
+				KeyFieldName:   string(constants.BidId),
+				ValueFieldName: "tab",
+				Value:          fakeTabValue,
+				Key:            fakeBidId,
+				IsAMapping:     true,
+				Schema:         constants.MakerSchema,
+				TableName:      constants.FlipBidTabTable,
+				Repository:     &repo,
+				Metadata:       bidTabMetadata,
 			}
 
 			shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
