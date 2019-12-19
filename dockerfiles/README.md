@@ -1,29 +1,44 @@
-`Dockerfile` will build an alpine image containing:
-- An $GOPATH with vulcanizedb, mcd_transformers, and goose
-- An app directory with the vulcanizedb binary, startup_script.sh, and a (configurable) config.toml
-Build with (e.g. from the project directory) `docker build ./ -t vulcanize_mcd_transformers:0.0.1 --build-arg USER`
+# Dockerfile
 
+## Description
+Builds an alpine image for running the vulcanizedb `execute` command against transformers in this repo.
 
-## To use the container:
-1. Setup a postgres database matching your config (e.g. `vulcanize_public`)
-1. Determine values for the following _required_ environment variables:
-    - `CLIENT_IPCPATH`
-    - `DATABASE_NAME`
-    - `DATABASE_HOSTNAME`
-    - `DATABASE_PORT`
-    - `DATABASE_USER`
-    - `DATABASE_PASSWORD`
-    - `STARTING_BLOCK_NUMBER` which is the block that the `headerSync` process starts at
-    - `FILESYSTEM_STORAGEDIFFSPATH` or `STORAGEDIFFS_SOURCE` - this depends on where you're getting storage diffs from, see below.
-        - Use `FILESYSTEM_STORAGEDIFFSPATH` only when getting storage diffs from a CSV file - this will be the path to the CSV file.
-        - Set `STORAGEDIFFS_SOURCE` to `geth` when getting storage diffs from a subscription to a geth client. The default `STORAGEDIFFS_SOURCE` is `csv`.
-1. Run with required environment variables: `docker run -e CLIENT_IPCPATH="https://kovan.infura.io/v3/token" -e DATABASE_NAME="vulcanize_public" -e DATABASE_HOSTNAME="host.docker.internal" -e DATABASE_PORT="5432" -e DATABASE_USER="vulcanize" -e DATABASE_PASSWORD="vulcanize" -e STARTING_BLOCK_NUMBER=0 -e FILESYSTEM_STORAGEDIFFSPATH="/path/to/diffs" vulcanize_mcd_transformers:0.0.1`.
-    - This triggers `headerSync` + `composeAndExecute`.
-    - NOTE: contract addresses are currently configured in `environments/docker.toml` to point at the given release's Kovan deployment.
-       You can optionally replace any address with an environment variable, e.g. `-e CONTRACT_CONTRACT_MCD_FLIP_ETH_A_ADDRESS=0x1234"`.
-    - To use a config file other than the default (`environments/docker.toml`), pass the following flag when building the image `--build-arg config_file=path/to/your/config/file`
+## Build
+Build from the project directory with: `docker build ./ -t execute:latest`.
+The following options are available at build time:
+- `VDB_VERSION` - target a specific vulcanizedb branch/release to generate the binary (ex: `docker build ./ --build-arg VDB_VERSION=0.0.9 -t execute:latest`).
+- `CONFIG_FILE` - path to desired config file for this container (ex: `docker build ./ --build-arg CONFIG_FILE=path -t execute:latest`).
 
-NOTE: this file is written for execution on OS X, making use of `host.docker.internal` to access Postgres from the host.
+## Run
+Running the container requires an existing DB with which the container can interact.
+
+The following arguments are required at runtime:
+
+- `DATABASE_NAME`
+- `DATABASE_HOSTNAME`
+- `DATABASE_PORT`
+- `DATABASE_USER`
+- `DATABASE_PASSWORD`
+
+The following arguments are also required but can be specified via config file:
+
+- `CLIENT_IPCPATH`
+- `FILESYSTEM_STORAGEDIFFSPATH` _or_ `STORAGEDIFFS_SOURCE` (see below)
+
+### Example
+
+With arguments correctly populated, the following command will run the container on OS X:
+
+```
+docker run -e DATABASE_NAME=vulcanize_public -e DATABASE_HOSTNAME=host.docker.internal -e DATABASE_PORT=5432 -e DATABASE_USER=user -e DATABASE_PASSWORD=pw -e CLIENT_IPCPATH=https://kovan.infura.io/v3/token -e FILESYSTEM_STORAGEDIFFSPATH=/data/<csv_filename> -v <csv_filepath>:/data -it execute:latest
+```
+
+#### Explanation:
+
+With the above command, we assume the host is exposing the database `vulcanize_public` on `localhost:5432` and user `user` with password `pw` has write access to that db.
+We expect that we can successfully make calls against the [Ethereum JSON RPC API](https://github.com/ethereum/wiki/wiki/JSON-RPC) at `https://kovan.infura.io/v3/token`, and that the host has a csv file containing storage diffs at `csv_filepath` that we can expose inside the container via a volume at `/data`.
+
+Note that on OS X, we use `host.docker.internal` to access `localhost`.
 For execution on linux, replace instances of `host.docker.internal` with `localhost` and run with `--network="host"`.
 
 #### Running with a local geth client emitting statediffs:

@@ -4,6 +4,7 @@ go 1.12
 
 require (
 	github.com/ethereum/go-ethereum v1.9.8
+	github.com/go-sql-driver/mysql v1.4.1
 	github.com/howeyc/fsnotify v0.9.0 // indirect
 	github.com/jmoiron/sqlx v0.0.0-20181024163419-82935fac6c1a
 	github.com/magiconair/properties v1.8.0

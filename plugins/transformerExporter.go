@@ -17,8 +17,16 @@ import (
 	jug_file_ilk "github.com/makerdao/vdb-mcd-transformers/transformers/events/jug_file/ilk/initializer"
 	jug_file_vow "github.com/makerdao/vdb-mcd-transformers/transformers/events/jug_file/vow/initializer"
 	jug_init "github.com/makerdao/vdb-mcd-transformers/transformers/events/jug_init/initializer"
+	log_value "github.com/makerdao/vdb-mcd-transformers/transformers/events/log_value/initializer"
 	new_cdp "github.com/makerdao/vdb-mcd-transformers/transformers/events/new_cdp/initializer"
+	pot_cage "github.com/makerdao/vdb-mcd-transformers/transformers/events/pot_cage/initializer"
+	pot_drip "github.com/makerdao/vdb-mcd-transformers/transformers/events/pot_drip/initializer"
+	pot_exit "github.com/makerdao/vdb-mcd-transformers/transformers/events/pot_exit/initializer"
+	pot_file_dsr "github.com/makerdao/vdb-mcd-transformers/transformers/events/pot_file/dsr/initializer"
+	pot_file_vow "github.com/makerdao/vdb-mcd-transformers/transformers/events/pot_file/vow/initializer"
+	pot_join "github.com/makerdao/vdb-mcd-transformers/transformers/events/pot_join/initializer"
 	spot_file_mat "github.com/makerdao/vdb-mcd-transformers/transformers/events/spot_file/mat/initializer"
+	spot_file_par "github.com/makerdao/vdb-mcd-transformers/transformers/events/spot_file/par/initializer"
 	spot_file_pip "github.com/makerdao/vdb-mcd-transformers/transformers/events/spot_file/pip/initializer"
 	spot_poke "github.com/makerdao/vdb-mcd-transformers/transformers/events/spot_poke/initializer"
 	tend "github.com/makerdao/vdb-mcd-transformers/transformers/events/tend/initializer"
@@ -47,6 +55,7 @@ import (
 	sai_flip "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/sai_flip"
 	flop_storage "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flop/initializer"
 	jug "github.com/makerdao/vdb-mcd-transformers/transformers/storage/jug/initializer"
+	pot "github.com/makerdao/vdb-mcd-transformers/transformers/storage/pot/initializer"
 	spot "github.com/makerdao/vdb-mcd-transformers/transformers/storage/spot/initializer"
 	vat "github.com/makerdao/vdb-mcd-transformers/transformers/storage/vat/initializer"
 	vow "github.com/makerdao/vdb-mcd-transformers/transformers/storage/vow/initializer"
@@ -71,14 +80,24 @@ func (e exporter) Export() ([]interface1.EventTransformerInitializer, []interfac
 			jug_drip.EventTransformerInitializer,
 			jug_file_base.EventTransformerInitializer,
 			jug_file_ilk.EventTransformerInitializer,
-			jug_init.EventTransformerInitializer,
 			jug_file_vow.EventTransformerInitializer,
+			jug_init.EventTransformerInitializer,
+			log_value.EventTransformerInitializer,
 			new_cdp.EventTransformerInitializer,
+			pot_cage.EventTransformerInitializer,
+			pot_drip.EventTransformerInitializer,
+			pot_exit.EventTransformerInitializer,
+			pot_file_dsr.EventTransformerInitializer,
+			pot_file_vow.EventTransformerInitializer,
+			pot_join.EventTransformerInitializer,
 			spot_file_mat.EventTransformerInitializer,
+			spot_file_par.EventTransformerInitializer,
 			spot_file_pip.EventTransformerInitializer,
 			spot_poke.EventTransformerInitializer,
 			tend.EventTransformerInitializer,
 			tick.EventTransformerInitializer,
+			vat_file_debt_ceiling.EventTransformerInitializer,
+			vat_file_ilk.EventTransformerInitializer,
 			vat_flux.EventTransformerInitializer,
 			vat_fold.EventTransformerInitializer,
 			vat_fork.EventTransformerInitializer,
@@ -91,8 +110,6 @@ func (e exporter) Export() ([]interface1.EventTransformerInitializer, []interfac
 			vat_suck.EventTransformerInitializer,
 			vow_fess.EventTransformerInitializer,
 			vow_file.EventTransformerInitializer,
-			vat_file_debt_ceiling.EventTransformerInitializer,
-			vat_file_ilk.EventTransformerInitializer,
 			vow_flog.EventTransformerInitializer,
 			yank.EventTransformerInitializer,
 		},
@@ -104,6 +121,7 @@ func (e exporter) Export() ([]interface1.EventTransformerInitializer, []interfac
 			flap_storage.StorageTransformerInitializer,
 			flop_storage.StorageTransformerInitializer,
 			jug.StorageTransformerInitializer,
+			pot.StorageTransformerInitializer,
 			sai_flip.StorageTransformerInitializer,
 			spot.StorageTransformerInitializer,
 			vat.StorageTransformerInitializer,
