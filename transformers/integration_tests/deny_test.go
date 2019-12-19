@@ -57,7 +57,7 @@ var _ = Describe("Deny transformer", func() {
 
 	Context("Vat deny events", func() {
 		usrAddress := "0x13141b8a5e4a82ebc6b636849dd6a515185d6236"
-		denyIntegrationTest(int64(14764643), test_data.VowAddress(), usrAddress, vatOffset)
+		denyIntegrationTest(int64(14764643), test_data.VatAddress(), usrAddress, vatOffset)
 	})
 
 	Context("Vow deny events", func() {

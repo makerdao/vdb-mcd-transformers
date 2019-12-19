@@ -9531,6 +9531,39 @@ ALTER SEQUENCE maker.pot_vow_id_seq OWNED BY maker.pot_vow.id;
 
 
 --
+-- Name: rely; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.rely (
+    id integer NOT NULL,
+    header_id integer NOT NULL,
+    log_id bigint NOT NULL,
+    address_id integer NOT NULL,
+    usr integer NOT NULL
+);
+
+
+--
+-- Name: rely_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.rely_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: rely_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.rely_id_seq OWNED BY maker.rely.id;
+
+
+--
 -- Name: spot_file_mat; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -12511,6 +12544,13 @@ ALTER TABLE ONLY maker.pot_vow ALTER COLUMN id SET DEFAULT nextval('maker.pot_vo
 
 
 --
+-- Name: rely id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.rely ALTER COLUMN id SET DEFAULT nextval('maker.rely_id_seq'::regclass);
+
+
+--
 -- Name: spot_file_mat id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
@@ -14581,6 +14621,22 @@ ALTER TABLE ONLY maker.pot_vow
 
 ALTER TABLE ONLY maker.pot_vow
     ADD CONSTRAINT pot_vow_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: rely rely_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.rely
+    ADD CONSTRAINT rely_header_id_log_id_key UNIQUE (header_id, log_id);
+
+
+--
+-- Name: rely rely_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.rely
+    ADD CONSTRAINT rely_pkey PRIMARY KEY (id);
 
 
 --
@@ -17104,6 +17160,34 @@ CREATE INDEX pot_vow_header_id_index ON maker.pot_vow USING btree (header_id);
 --
 
 CREATE INDEX pot_vow_vow_index ON maker.pot_vow USING btree (vow);
+
+
+--
+-- Name: rely_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX rely_address_index ON maker.rely USING btree (address_id);
+
+
+--
+-- Name: rely_header_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX rely_header_index ON maker.rely USING btree (header_id);
+
+
+--
+-- Name: rely_log_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX rely_log_index ON maker.rely USING btree (log_id);
+
+
+--
+-- Name: rely_usr_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX rely_usr_index ON maker.rely USING btree (usr);
 
 
 --
@@ -20234,6 +20318,38 @@ ALTER TABLE ONLY maker.pot_vow
 
 ALTER TABLE ONLY maker.pot_vow
     ADD CONSTRAINT pot_vow_vow_fkey FOREIGN KEY (vow) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: rely rely_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.rely
+    ADD CONSTRAINT rely_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: rely rely_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.rely
+    ADD CONSTRAINT rely_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: rely rely_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.rely
+    ADD CONSTRAINT rely_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: rely rely_usr_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.rely
+    ADD CONSTRAINT rely_usr_fkey FOREIGN KEY (usr) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --

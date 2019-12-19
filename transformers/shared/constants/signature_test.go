@@ -114,6 +114,10 @@ var _ = Describe("Signature constants", func() {
 		Expect(PotJoinSignature()).To(Equal("0x049878f300000000000000000000000000000000000000000000000000000000"))
 	})
 
+	It("generates rely signature", func() {
+		Expect(RelySignature()).To(Equal("0x65fae35e00000000000000000000000000000000000000000000000000000000"))
+	})
+
 	It("generates spot file mat signature", func() {
 		Expect(SpotFileMatSignature()).To(Equal("0x1a0b287e00000000000000000000000000000000000000000000000000000000"))
 	})

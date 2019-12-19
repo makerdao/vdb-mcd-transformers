@@ -47,6 +47,7 @@ const (
 	PotFileDSRTable         = "pot_file_dsr"
 	PotFileVowTable         = "pot_file_vow"
 	PotJoinTable            = "pot_join"
+	RelyTable               = "rely"
 	SpotFileMatTable        = "spot_file_mat"
 	SpotFileParTable        = "spot_file_par"
 	SpotFilePipTable        = "spot_file_pip"

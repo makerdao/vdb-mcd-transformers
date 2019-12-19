@@ -51,6 +51,7 @@
         "pot_file_dsr",
         "pot_file_vow",
         "pot_join",
+        "rely",
         "spot_file_mat",
         "spot_file_par",
         "spot_file_pip",
@@ -68,6 +69,7 @@
         "vat_heal",
         "vat_init",
         "vat_move",
+        "vat_rely",
         "vat_slip",
         "vat_suck",
         "vow_fess",
@@ -310,6 +312,14 @@
         migrations = "db/migrations"
         contracts = ["MCD_POT"]
         rank = "0"
+    [exporter.rely]
+        path = "transformers/events/rely/initializer"
+        type = "eth_event"
+        repository = "github.com/makerdao/vdb-mcd-transformers"
+        migrations = "db/migrations"
+        contracts = ["MCD_CAT", "MCD_FLAP", "MCD_FLIP_ETH_A", "MCD_FLIP_BAT_A", "MCD_FLIP_SAI", "MCD_FLOP", "MCD_JUG",
+                     "MCD_POT", "MCD_SPOT", "MCD_VOW"]
+        rank = "0"
     [exporter.spot_file_mat]
         path = "transformers/events/spot_file/mat/initializer"
         type = "eth_event"
@@ -429,6 +439,13 @@
         migrations = "db/migrations"
         contracts = ["MCD_VAT"]
         rank = "0"
+    [exporter.vat_rely]
+        path = "transformers/events/rely/vat_initializer"
+        type = "eth_event"
+        repository = "github.com/makerdao/vdb-mcd-transformers"
+        migrations = "db/migrations"
+        contracts = ["MCD_VAT"]
+        rank = "0"
     [exporter.vat_slip]
         path = "transformers/events/vat_slip/initializer"
         type = "eth_event"
@@ -469,7 +486,7 @@
         type = "eth_event"
         repository = "github.com/makerdao/vdb-mcd-transformers"
         migrations = "db/migrations"
-        contracts = [ "MCD_FLIP_ETH_A", "MCD_FLIP_BAT_A", "MCD_FLIP_SAI", "MCD_FLAP", "MCD_FLOP"]
+        contracts = ["MCD_FLIP_ETH_A", "MCD_FLIP_BAT_A", "MCD_FLIP_SAI", "MCD_FLAP", "MCD_FLOP"]
         rank = "0"
 
 [contract]
