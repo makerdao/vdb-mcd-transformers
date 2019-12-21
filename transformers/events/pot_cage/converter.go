@@ -8,17 +8,12 @@ import (
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 )
 
-const (
-	logDataRequired   = false
-	numTopicsRequired = 2
-)
-
 type Converter struct{}
 
 func (converter Converter) ToModels(_ string, logs []core.HeaderSyncLog, _ *postgres.DB) ([]event.InsertionModel, error) {
 	var results []event.InsertionModel
 	for _, log := range logs {
-		verifyErr := shared.VerifyLog(log.Log, numTopicsRequired, logDataRequired)
+		verifyErr := shared.VerifyLog(log.Log, shared.TwoTopicsRequired, shared.LogDataNotRequired)
 		if verifyErr != nil {
 			return nil, verifyErr
 		}

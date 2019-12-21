@@ -8,19 +8,12 @@ import (
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 )
 
-const (
-	logDataRequired                    = false
-	numTopicsRequired                  = 4
-	What              event.ColumnName = "what"
-	Data              event.ColumnName = "data"
-)
-
 type Converter struct{}
 
 func (converter Converter) ToModels(_ string, logs []core.HeaderSyncLog, _ *postgres.DB) ([]event.InsertionModel, error) {
 	var results []event.InsertionModel
 	for _, log := range logs {
-		verifyErr := shared.VerifyLog(log.Log, numTopicsRequired, logDataRequired)
+		verifyErr := shared.VerifyLog(log.Log, shared.FourTopicsRequired, shared.LogDataNotRequired)
 		if verifyErr != nil {
 			return nil, verifyErr
 		}
@@ -32,14 +25,14 @@ func (converter Converter) ToModels(_ string, logs []core.HeaderSyncLog, _ *post
 			OrderedColumns: []event.ColumnName{
 				event.HeaderFK,
 				event.LogFK,
-				What,
-				Data,
+				constants.WhatColumn,
+				constants.DataColumn,
 			},
 			ColumnValues: event.ColumnValues{
-				event.HeaderFK: log.HeaderID,
-				event.LogFK:    log.ID,
-				What:           what,
-				Data:           data.String(),
+				event.HeaderFK:       log.HeaderID,
+				event.LogFK:          log.ID,
+				constants.WhatColumn: what,
+				constants.DataColumn: data.String(),
 			},
 		}
 		results = append(results, result)

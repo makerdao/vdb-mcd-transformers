@@ -26,15 +26,9 @@ import (
 
 type Converter struct{}
 
-const (
-	logDataRequired   = false
-	numTopicsRequired = 3
-	BidId             = "bid_id"
-)
-
 func (c Converter) ToModels(_ string, logs []core.HeaderSyncLog, db *postgres.DB) (results []event.InsertionModel, err error) {
 	for _, log := range logs {
-		validationErr := shared.VerifyLog(log.Log, numTopicsRequired, logDataRequired)
+		validationErr := shared.VerifyLog(log.Log, shared.ThreeTopicsRequired, shared.LogDataNotRequired)
 		if validationErr != nil {
 			return nil, validationErr
 		}
@@ -48,10 +42,10 @@ func (c Converter) ToModels(_ string, logs []core.HeaderSyncLog, db *postgres.DB
 			SchemaName: constants.MakerSchema,
 			TableName:  constants.YankTable,
 			OrderedColumns: []event.ColumnName{
-				event.HeaderFK, BidId, constants.AddressColumn, event.LogFK,
+				event.HeaderFK, constants.BidIDColumn, constants.AddressColumn, event.LogFK,
 			},
 			ColumnValues: event.ColumnValues{
-				BidId:                   bidId.String(),
+				constants.BidIDColumn:   bidId.String(),
 				event.HeaderFK:          log.HeaderID,
 				event.LogFK:             log.ID,
 				constants.AddressColumn: addressID,

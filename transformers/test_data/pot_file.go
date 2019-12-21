@@ -1,16 +1,13 @@
 package test_data
 
 import (
-	"math/rand"
-
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/pot_file/dsr"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/pot_file/vow"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
+	"math/rand"
 )
 
 var rawPotFileDSRLog = types.Log{
@@ -65,25 +62,25 @@ var potFileDSRModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.PotFileDSRTable,
 	OrderedColumns: []event.ColumnName{
-		event.HeaderFK, event.LogFK, dsr.What, dsr.Data,
+		event.HeaderFK, event.LogFK, constants.WhatColumn, constants.DataColumn,
 	},
 	ColumnValues: event.ColumnValues{
-		event.HeaderFK: PotFileDSRHeaderSyncLog.HeaderID,
-		event.LogFK:    PotFileDSRHeaderSyncLog.ID,
-		dsr.What:       "dsr",
-		dsr.Data:       "1000000000627937192491029810",
+		event.HeaderFK:       PotFileDSRHeaderSyncLog.HeaderID,
+		event.LogFK:          PotFileDSRHeaderSyncLog.ID,
+		constants.WhatColumn: "dsr",
+		constants.DataColumn: "1000000000627937192491029810",
 	},
 }
 
 var potFileVowModel = event.InsertionModel{
 	SchemaName:     constants.MakerSchema,
 	TableName:      constants.PotFileVowTable,
-	OrderedColumns: []event.ColumnName{event.HeaderFK, event.LogFK, vow.What, vow.Data},
+	OrderedColumns: []event.ColumnName{event.HeaderFK, event.LogFK, constants.WhatColumn, constants.DataColumn},
 	ColumnValues: event.ColumnValues{
-		event.HeaderFK: PotFileVowHeaderSyncLog.HeaderID,
-		event.LogFK:    PotFileVowHeaderSyncLog.ID,
-		vow.What:       "vow",
-		vow.Data:       "0x0F4Cbe6CBA918b7488C26E29d9ECd7368F38EA3b",
+		event.HeaderFK:       PotFileVowHeaderSyncLog.HeaderID,
+		event.LogFK:          PotFileVowHeaderSyncLog.ID,
+		constants.WhatColumn: "vow",
+		constants.DataColumn: "0x0F4Cbe6CBA918b7488C26E29d9ECd7368F38EA3b",
 	},
 }
 

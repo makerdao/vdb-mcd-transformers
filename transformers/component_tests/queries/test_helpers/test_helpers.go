@@ -19,18 +19,7 @@ package test_helpers
 import (
 	"database/sql"
 	"fmt"
-	"math/rand"
-	"strconv"
-	"strings"
-	"time"
-
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
-
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/deal"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/dent"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/tend"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/yank"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage"
@@ -41,6 +30,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/flop"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/jug"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/spot"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/vat"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
@@ -49,6 +39,10 @@ import (
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	. "github.com/onsi/gomega"
+	"math/rand"
+	"strconv"
+	"strings"
+	"time"
 )
 
 var (
@@ -575,7 +569,7 @@ func CreateDeal(input DealCreationInput) (err error) {
 	Expect(addressErr).NotTo(HaveOccurred())
 	dealLog := test_data.CreateTestLog(input.DealHeaderId, input.DB)
 	dealModel := test_data.DealModel()
-	dealModel.ColumnValues[deal.Id] = strconv.Itoa(input.BidId)
+	dealModel.ColumnValues[constants.BidIDColumn] = strconv.Itoa(input.BidId)
 	dealModel.ColumnValues[event.HeaderFK] = input.DealHeaderId
 	dealModel.ColumnValues[event.LogFK] = dealLog.ID
 	dealModel.ColumnValues[constants.AddressColumn] = addressID
@@ -622,9 +616,9 @@ func CreateTend(input TendCreationInput) (err error) {
 	Expect(addressErr).NotTo(HaveOccurred())
 	tendModel := test_data.TendModel()
 	tendLog := test_data.CreateTestLog(input.TendHeaderId, input.DB)
-	tendModel.ColumnValues[tend.Id] = strconv.Itoa(input.BidId)
-	tendModel.ColumnValues[tend.Lot] = strconv.Itoa(input.Lot)
-	tendModel.ColumnValues[tend.Bid] = strconv.Itoa(input.BidAmount)
+	tendModel.ColumnValues[constants.BidIDColumn] = strconv.Itoa(input.BidId)
+	tendModel.ColumnValues[constants.LotColumn] = strconv.Itoa(input.Lot)
+	tendModel.ColumnValues[constants.BidColumn] = strconv.Itoa(input.BidAmount)
 	tendModel.ColumnValues[constants.AddressColumn] = addressID
 	tendModel.ColumnValues[event.HeaderFK] = input.TendHeaderId
 	tendModel.ColumnValues[event.LogFK] = tendLog.ID
@@ -635,9 +629,9 @@ func CreateDent(input DentCreationInput) (err error) {
 	addressID, addressErr := shared.GetOrCreateAddress(input.ContractAddress, input.DB)
 	Expect(addressErr).NotTo(HaveOccurred())
 	dentModel := test_data.DentModel()
-	dentModel.ColumnValues[dent.Id] = strconv.Itoa(input.BidId)
-	dentModel.ColumnValues[dent.Lot] = strconv.Itoa(input.Lot)
-	dentModel.ColumnValues[dent.Bid] = strconv.Itoa(input.BidAmount)
+	dentModel.ColumnValues[constants.BidIDColumn] = strconv.Itoa(input.BidId)
+	dentModel.ColumnValues[constants.LotColumn] = strconv.Itoa(input.Lot)
+	dentModel.ColumnValues[constants.BidColumn] = strconv.Itoa(input.BidAmount)
 	dentModel.ColumnValues[constants.AddressColumn] = addressID
 	dentModel.ColumnValues[event.HeaderFK] = input.DentHeaderId
 	dentModel.ColumnValues[event.LogFK] = input.DentLogId
@@ -648,7 +642,7 @@ func CreateYank(input YankCreationInput) (err error) {
 	addressID, addressErr := shared.GetOrCreateAddress(input.ContractAddress, input.DB)
 	Expect(addressErr).NotTo(HaveOccurred())
 	yankModel := test_data.YankModel()
-	yankModel.ColumnValues[yank.BidId] = strconv.Itoa(input.BidId)
+	yankModel.ColumnValues[constants.BidIDColumn] = strconv.Itoa(input.BidId)
 	yankModel.ColumnValues[constants.AddressColumn] = addressID
 	yankModel.ColumnValues[event.HeaderFK] = input.YankHeaderId
 	yankModel.ColumnValues[event.LogFK] = input.YankLogId

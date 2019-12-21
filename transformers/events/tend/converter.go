@@ -27,18 +27,10 @@ import (
 
 type Converter struct{}
 
-const (
-	logDataRequired                    = true
-	numTopicsRequired                  = 4
-	Id                event.ColumnName = "bid_id"
-	Lot               event.ColumnName = "lot"
-	Bid               event.ColumnName = "bid"
-)
-
 func (c Converter) ToModels(_ string, logs []core.HeaderSyncLog, db *postgres.DB) ([]event.InsertionModel, error) {
 	var models []event.InsertionModel
 	for _, log := range logs {
-		err := shared.VerifyLog(log.Log, numTopicsRequired, logDataRequired)
+		err := shared.VerifyLog(log.Log, shared.FourTopicsRequired, shared.LogDataRequired)
 		if err != nil {
 			return nil, err
 		}
@@ -60,13 +52,13 @@ func (c Converter) ToModels(_ string, logs []core.HeaderSyncLog, db *postgres.DB
 			SchemaName: constants.MakerSchema,
 			TableName:  constants.TendTable,
 			OrderedColumns: []event.ColumnName{
-				event.HeaderFK, Id, Lot, Bid, constants.AddressColumn, event.LogFK,
+				event.HeaderFK, constants.BidIDColumn, constants.BidColumn, constants.LotColumn, constants.AddressColumn, event.LogFK,
 			},
 			ColumnValues: event.ColumnValues{
 				event.HeaderFK:          log.HeaderID,
-				Id:                      bidId.String(),
-				Lot:                     lot,
-				Bid:                     bidValue,
+				constants.BidIDColumn:   bidId.String(),
+				constants.LotColumn:     lot,
+				constants.BidColumn:     bidValue,
 				constants.AddressColumn: addressID,
 				event.LogFK:             log.ID,
 			},

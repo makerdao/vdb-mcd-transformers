@@ -22,7 +22,6 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/dent"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
@@ -69,14 +68,14 @@ var dentModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.DentTable,
 	OrderedColumns: []event.ColumnName{
-		event.HeaderFK, dent.Id, dent.Lot, dent.Bid, constants.AddressColumn, event.LogFK,
+		event.HeaderFK, constants.BidIDColumn, constants.LotColumn, constants.BidColumn, constants.AddressColumn, event.LogFK,
 	},
 	ColumnValues: event.ColumnValues{
-		dent.Id:        dentBidId,
-		dent.Lot:       dentLot,
-		dent.Bid:       dentBid,
-		event.HeaderFK: DentHeaderSyncLog.HeaderID,
-		event.LogFK:    DentHeaderSyncLog.ID,
+		constants.BidIDColumn: dentBidId,
+		constants.LotColumn:   dentLot,
+		constants.BidColumn:   dentBid,
+		event.HeaderFK:        DentHeaderSyncLog.HeaderID,
+		event.LogFK:           DentHeaderSyncLog.ID,
 		// constants.AddressColumn
 	},
 }

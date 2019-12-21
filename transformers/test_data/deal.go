@@ -22,7 +22,6 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/deal"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
@@ -58,7 +57,7 @@ var dealModel = event.InsertionModel{
 	TableName:  constants.DealTable,
 	OrderedColumns: []event.ColumnName{
 		event.HeaderFK,
-		deal.Id,
+		constants.BidIDColumn,
 		constants.AddressColumn,
 		event.LogFK,
 	},
