@@ -34,6 +34,7 @@
         "cat_file_vow",
         "deal",
         "dent",
+        "deny",
         "flap_kick",
         "flip_kick",
         "flop_kick",
@@ -56,6 +57,7 @@
         "spot_poke",
         "tend",
         "tick",
+        "vat_deny",
         "vat_file_debt_ceiling",
         "vat_file_ilk",
         "vat_flux",
@@ -187,6 +189,14 @@
         repository = "github.com/makerdao/vdb-mcd-transformers"
         migrations = "db/migrations"
         contracts = ["MCD_FLIP_ETH_A", "MCD_FLIP_BAT_A", "MCD_FLIP_SAI", "MCD_FLOP"]
+        rank = "0"
+    [exporter.deny]
+        path = "transformers/events/deny/initializer"
+        type = "eth_event"
+        repository = "github.com/makerdao/vdb-mcd-transformers"
+        migrations = "db/migrations"
+        contracts = ["MCD_CAT", "MCD_FLAP", "MCD_FLIP_ETH_A", "MCD_FLIP_BAT_A", "MCD_FLIP_SAI", "MCD_FLOP", "MCD_JUG",
+                     "MCD_POT", "MCD_SPOT", "MCD_VOW"]
         rank = "0"
     [exporter.flap_kick]
         path = "transformers/events/flap_kick/initializer"
@@ -341,6 +351,13 @@
         repository = "github.com/makerdao/vdb-mcd-transformers"
         migrations = "db/migrations"
         contracts = ["MCD_FLIP_ETH_A", "MCD_FLIP_BAT_A", "MCD_FLIP_SAI", "MCD_FLAP", "MCD_FLOP"]
+        rank = "0"
+    [exporter.vat_deny]
+        path = "transformers/events/deny/vat_initializer"
+        type = "eth_event"
+        repository = "github.com/makerdao/vdb-mcd-transformers"
+        migrations = "db/migrations"
+        contracts = ["MCD_VAT"]
         rank = "0"
     [exporter.vat_file_debt_ceiling]
         path = "transformers/events/vat_file/debt_ceiling/initializer"

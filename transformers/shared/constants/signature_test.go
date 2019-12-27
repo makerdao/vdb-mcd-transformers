@@ -46,6 +46,10 @@ var _ = Describe("Signature constants", func() {
 		Expect(DentSignature()).To(Equal("0x5ff3a38200000000000000000000000000000000000000000000000000000000"))
 	})
 
+	It("generates deny signature", func() {
+		Expect(DenySignature()).To(Equal("0x9c52a7f100000000000000000000000000000000000000000000000000000000"))
+	})
+
 	It("generates flap kick signature", func() {
 		Expect(FlapKickSignature()).To(Equal("0xe6dde59cbc017becba89714a037778d234a84ce7f0a137487142a007e580d609"))
 	})
