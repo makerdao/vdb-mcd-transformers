@@ -213,8 +213,25 @@ CREATE INDEX flop_live_header_id_index
 CREATE INDEX flop_live_address_index
     ON maker.flop_live (address_id);
 
+CREATE TABLE maker.flop_vow
+(
+    id         SERIAL PRIMARY KEY,
+    diff_id    BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
+    header_id  INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
+    address_id INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
+    vow        TEXT,
+    UNIQUE (diff_id, header_id, address_id, vow)
+);
+
+CREATE INDEX flop_vow_header_id_index
+    ON maker.flop_vow (header_id);
+CREATE INDEX flop_vow_address_index
+    ON maker.flop_vow (address_id);
+
 -- +goose Down
 -- SQL in this section is executed when the migration is rolled back.
+DROP INDEX maker.flop_vow_address_index;
+DROP INDEX maker.flop_vow_header_id_index;
 DROP INDEX maker.flop_live_address_index;
 DROP INDEX maker.flop_live_header_id_index;
 DROP INDEX maker.flop_kicks_address_index;
@@ -247,6 +264,7 @@ DROP INDEX maker.flop_bid_bid_address_index;
 DROP INDEX maker.flop_bid_bid_bid_id_index;
 DROP INDEX maker.flop_bid_bid_header_id_index;
 
+DROP TABLE maker.flop_vow;
 DROP TABLE maker.flop_live;
 DROP TABLE maker.flop_kicks;
 DROP TABLE maker.flop_tau;

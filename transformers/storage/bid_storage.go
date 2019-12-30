@@ -26,6 +26,7 @@ var (
 	Tau    = "tau"
 	Kicks  = "kicks"
 	Live   = "live"
+	Vow    = "vow"
 	Packed = "packed_storage_values"
 
 	BidBid = "bid_bid"

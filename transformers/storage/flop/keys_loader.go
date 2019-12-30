@@ -51,6 +51,9 @@ var (
 
 	LiveKey      = common.HexToHash(vdbStorage.IndexEight)
 	LiveMetadata = vdbStorage.GetValueMetadata(mcdStorage.Live, nil, vdbStorage.Uint256)
+
+	VowKey      = common.HexToHash(vdbStorage.IndexNine)
+	VowMetadata = vdbStorage.GetValueMetadata(mcdStorage.Vow, nil, vdbStorage.Address)
 )
 
 type keysLoader struct {
@@ -100,6 +103,7 @@ func loadStaticMappings() map[common.Hash]vdbStorage.ValueMetadata {
 	mappings[TtlAndTauKey] = TtlAndTauMetadata
 	mappings[KicksKey] = KicksMetadata
 	mappings[LiveKey] = LiveMetadata
+	mappings[VowKey] = VowMetadata
 	return mappings
 }
 

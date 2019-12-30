@@ -127,6 +127,7 @@ const (
 	FlopTauTable            = "flop_tau"
 	FlopTtlTable            = "flop_ttl"
 	FlopVatTable            = "flop_vat"
+	FlopVowTable            = "flop_vow"
 	JugBaseTable            = "jug_base"
 	JugIlkDutyTable         = "jug_ilk_duty"
 	JugIlkRhoTable          = "jug_ilk_rho"

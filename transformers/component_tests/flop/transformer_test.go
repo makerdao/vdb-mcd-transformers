@@ -161,6 +161,21 @@ var _ = Describe("Executing the flop transformer", func() {
 		test_helpers.AssertVariable(liveResult, diff.ID, headerID, "1")
 	})
 
+	It("reads in a vow storage diff and persists it", func() {
+		vow := "0x1CC5ABe5C0464F3af2a10df0c711236a8446BF75"
+		key := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000009")
+		value := common.HexToHash("0000000000000000000000001cc5abe5c0464f3af2a10df0c711236a8446bf75")
+		diff := test_helpers.CreateDiffRecord(db, header, transformer.HashedAddress, key, value)
+
+		err := transformer.Execute(diff)
+		Expect(err).NotTo(HaveOccurred())
+
+		var vowResult test_helpers.VariableRes
+		err = db.Get(&vowResult, `SELECT diff_id, header_id, vow AS value from maker.flop_vow`)
+		Expect(err).NotTo(HaveOccurred())
+		test_helpers.AssertVariable(vowResult, diff.ID, headerID, vow)
+	})
+
 	Describe("bids", func() {
 		//TODO: update when we get real flop bid storage diffs
 		Describe("guy + tic + end packed slot", func() {
