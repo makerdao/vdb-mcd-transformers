@@ -60,48 +60,97 @@ var _ = Describe("Deal transformer", func() {
 		logFetcher = fetcher.NewLogFetcher(blockChain)
 		addresses = transformer.HexStringsToAddresses(dealConfig.ContractAddresses)
 		topics = []common.Hash{common.HexToHash(dealConfig.Topic)}
-
 	})
 
 	It("persists a flip deal log event", func() {
 		flipBlockNumber := int64(14887716)
-		header, err := persistHeader(db, flipBlockNumber, blockChain)
-		Expect(err).NotTo(HaveOccurred())
+		header, headerErr := persistHeader(db, flipBlockNumber, blockChain)
+		Expect(headerErr).NotTo(HaveOccurred())
 
 		initializer.Config.StartingBlockNumber = flipBlockNumber
 		initializer.Config.EndingBlockNumber = flipBlockNumber
 
-		logs, err := logFetcher.FetchLogs(addresses, topics, header)
-		Expect(err).NotTo(HaveOccurred())
+		logs, fetchErr := logFetcher.FetchLogs(addresses, topics, header)
+		Expect(fetchErr).NotTo(HaveOccurred())
 
 		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
 
 		transformer := initializer.NewTransformer(db)
-		err = transformer.Execute(headerSyncLogs)
-		Expect(err).NotTo(HaveOccurred())
+		transformErr := transformer.Execute(headerSyncLogs)
+		Expect(transformErr).NotTo(HaveOccurred())
 
 		var dbResult []dealModel
-		err = db.Select(&dbResult, `SELECT bid_id, address_id FROM maker.deal`)
+		err := db.Select(&dbResult, `SELECT bid_id, address_id FROM maker.deal`)
 		Expect(err).NotTo(HaveOccurred())
 
-		flipContractAddressId, err := shared.GetOrCreateAddress(test_data.EthFlipAddress(), db)
-		Expect(err).NotTo(HaveOccurred())
+		flipAddressID, flipAddressErr := shared.GetOrCreateAddress(test_data.EthFlipAddress(), db)
+		Expect(flipAddressErr).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))
-		Expect(dbResult[0].BidId).To(Equal("15"))
-		Expect(dbResult[0].AddressId).To(Equal(flipContractAddressId))
+		Expect(dbResult[0].BidID).To(Equal("15"))
+		Expect(dbResult[0].AddressID).To(Equal(flipAddressID))
 	})
 
 	It("persists a flop deal log event", func() {
-		//TODO: There are currently no Flop.deal events on Kovan
+		blockNumber := int64(15788320)
+		header, headerErr := persistHeader(db, blockNumber, blockChain)
+		Expect(headerErr).NotTo(HaveOccurred())
+
+		initializer.Config.StartingBlockNumber = blockNumber
+		initializer.Config.EndingBlockNumber = blockNumber
+
+		logs, fetchErr := logFetcher.FetchLogs(addresses, topics, header)
+		Expect(fetchErr).NotTo(HaveOccurred())
+
+		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+
+		transformer := initializer.NewTransformer(db)
+		transformErr := transformer.Execute(headerSyncLogs)
+		Expect(transformErr).NotTo(HaveOccurred())
+
+		var dbResult []dealModel
+		err := db.Select(&dbResult, `SELECT bid_id, address_id FROM maker.deal`)
+		Expect(err).NotTo(HaveOccurred())
+
+		flopAddressID, addressErr := shared.GetOrCreateAddress(test_data.FlopAddress(), db)
+		Expect(addressErr).NotTo(HaveOccurred())
+
+		Expect(len(dbResult)).To(Equal(1))
+		Expect(dbResult[0].BidID).To(Equal("989"))
+		Expect(dbResult[0].AddressID).To(Equal(flopAddressID))
 	})
 
 	It("persists a flap deal log event", func() {
-		//TODO: There are currently no Flap.deal events on Kovan
+		blockNumber := int64(15240030)
+		header, headerErr := persistHeader(db, blockNumber, blockChain)
+		Expect(headerErr).NotTo(HaveOccurred())
+
+		initializer.Config.StartingBlockNumber = blockNumber
+		initializer.Config.EndingBlockNumber = blockNumber
+
+		logs, fetchErr := logFetcher.FetchLogs(addresses, topics, header)
+		Expect(fetchErr).NotTo(HaveOccurred())
+
+		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+
+		transformer := initializer.NewTransformer(db)
+		transformErr := transformer.Execute(headerSyncLogs)
+		Expect(transformErr).NotTo(HaveOccurred())
+
+		var dbResult []dealModel
+		err := db.Select(&dbResult, `SELECT bid_id, address_id FROM maker.deal ORDER BY log_id`)
+		Expect(err).NotTo(HaveOccurred())
+
+		flapAddressID, addressErr := shared.GetOrCreateAddress(test_data.FlapAddress(), db)
+		Expect(addressErr).NotTo(HaveOccurred())
+
+		Expect(len(dbResult)).To(Equal(2))
+		Expect(dbResult[0].BidID).To(Equal("506"))
+		Expect(dbResult[0].AddressID).To(Equal(flapAddressID))
 	})
 })
 
 type dealModel struct {
-	BidId     string `db:"bid_id"`
-	AddressId int64  `db:"address_id"`
+	BidID     string `db:"bid_id"`
+	AddressID int64  `db:"address_id"`
 }

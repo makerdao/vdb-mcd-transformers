@@ -36,8 +36,8 @@ var _ = Describe("Deny transformer", func() {
 	})
 
 	Context("Flop deny events", func() {
-		usrAddress := "0x13141b8a5e4a82ebc6b636849dd6a515185d6236"
-		denyIntegrationTest(int64(14764643), test_data.FlopAddress(), usrAddress, defaultOffset)
+		usrAddress := "0xdb33dfd3d61308c33c63209845dad3e6bfb2c674"
+		denyIntegrationTest(int64(15196525), test_data.FlopAddress(), usrAddress, defaultOffset)
 	})
 
 	Context("Jug deny events", func() {

@@ -17,9 +17,12 @@
 package integration_tests
 
 import (
+	"strconv"
+
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/flop_kick"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
@@ -29,8 +32,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = XDescribe("FlopKick Transformer", func() {
-	//TODO: There are currently no FlopKick events on Kovan
+var _ = Describe("FlopKick Transformer", func() {
 	var (
 		flopKickConfig transformer.EventTransformerConfig
 		initializer    event.Transformer
@@ -60,71 +62,44 @@ var _ = XDescribe("FlopKick Transformer", func() {
 	})
 
 	It("fetches and transforms a FlopKick event from Kovan chain", func() {
-		blockNumber := int64(8672119)
+		blockNumber := int64(15788324)
 		initializer.Config.StartingBlockNumber = blockNumber
 		initializer.Config.EndingBlockNumber = blockNumber
 
-		header, err := persistHeader(db, blockNumber, blockChain)
-		Expect(err).NotTo(HaveOccurred())
+		header, headerErr := persistHeader(db, blockNumber, blockChain)
+		Expect(headerErr).NotTo(HaveOccurred())
 
-		logs, err := logFetcher.FetchLogs(addresses, topics, header)
-		Expect(err).NotTo(HaveOccurred())
+		logs, fetchErr := logFetcher.FetchLogs(addresses, topics, header)
+		Expect(fetchErr).NotTo(HaveOccurred())
 
 		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
 
 		transformer := initializer.NewTransformer(db)
-		err = transformer.Execute(headerSyncLogs)
-		Expect(err).NotTo(HaveOccurred())
+		transformErr := transformer.Execute(headerSyncLogs)
+		Expect(transformErr).NotTo(HaveOccurred())
 
 		var dbResult []FlopKickModel
-		err = db.Select(&dbResult, `SELECT bid, bid_id, gal, lot FROM maker.flop_kick`)
+		err := db.Select(&dbResult, `SELECT bid, bid_id, address_id, gal, lot FROM maker.flop_kick`)
 		Expect(err).NotTo(HaveOccurred())
+
+		flopAddressID, flopAddressErr := shared.GetOrCreateAddress(test_data.FlopAddress(), db)
+		Expect(flopAddressErr).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))
-		Expect(dbResult[0].Bid).To(Equal("0"))
-		Expect(dbResult[0].BidId).To(Equal("1"))
-		Expect(dbResult[0].ContractAddress).To(Equal(""))
-		Expect(dbResult[0].Gal).To(Equal("0x9B870D55BaAEa9119dBFa71A92c5E26E79C4726d"))
-		// this very large number appears to be derived from the data including: "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
-		Expect(dbResult[0].Lot).To(Equal("115792089237316195423570985008687907853269984665640564039457584007913129639935"))
-	})
-
-	It("fetches and transforms another FlopKick event from Kovan chain", func() {
-		blockNumber := int64(8955611)
-		initializer.Config.StartingBlockNumber = blockNumber
-		initializer.Config.EndingBlockNumber = blockNumber
-
-		header, err := persistHeader(db, blockNumber, blockChain)
-		Expect(err).NotTo(HaveOccurred())
-
-		logs, err := logFetcher.FetchLogs(addresses, topics, header)
-		Expect(err).NotTo(HaveOccurred())
-
-		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
-
-		transformer := initializer.NewTransformer(db)
-		err = transformer.Execute(headerSyncLogs)
-		Expect(err).NotTo(HaveOccurred())
-
-		var dbResult []FlopKickModel
-		err = db.Select(&dbResult, `SELECT bid, bid_id, gal, lot FROM maker.flop_kick`)
-		Expect(err).NotTo(HaveOccurred())
-
-		Expect(len(dbResult)).To(Equal(1))
-		Expect(dbResult[0].Bid).To(Equal("10000000000000000000000"))
-		Expect(dbResult[0].BidId).To(Equal("2"))
-		Expect(dbResult[0].ContractAddress).To(Equal(""))
-		Expect(dbResult[0].Gal).To(Equal("0x3728e9777B2a0a611ee0F89e00E01044ce4736d1"))
-		Expect(dbResult[0].Lot).To(Equal("115792089237316195423570985008687907853269984665640564039457584007913129639935"))
+		Expect(dbResult[0].Bid).To(Equal("100000000000000000000000000000000000000000000"))
+		Expect(dbResult[0].BidId).To(Equal("2612"))
+		Expect(dbResult[0].AddressID).To(Equal(strconv.FormatInt(flopAddressID, 10)))
+		Expect(dbResult[0].Gal).To(Equal("0x0F4Cbe6CBA918b7488C26E29d9ECd7368F38EA3b"))
+		Expect(dbResult[0].Lot).To(Equal("10000000000000000"))
 	})
 })
 
 type FlopKickModel struct {
-	BidId           string `db:"bid_id"`
-	Lot             string
-	Bid             string
-	Gal             string
-	ContractAddress string `db:"address_id"`
-	HeaderID        int64  `db:"header_id"`
-	LogID           int64  `db:"log_id"`
+	BidId     string `db:"bid_id"`
+	Lot       string
+	Bid       string
+	Gal       string
+	AddressID string `db:"address_id"`
+	HeaderID  int64  `db:"header_id"`
+	LogID     int64  `db:"log_id"`
 }

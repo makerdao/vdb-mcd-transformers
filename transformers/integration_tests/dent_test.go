@@ -61,7 +61,34 @@ var _ = Describe("Dent transformer", func() {
 	})
 
 	It("persists a flop dent log event", func() {
-		//TODO: There are currently no Flop.dent events on Kovan
+		blockNumber := int64(15788325)
+		header, err := persistHeader(db, blockNumber, blockChain)
+		Expect(err).NotTo(HaveOccurred())
+
+		initializer.Config.StartingBlockNumber = blockNumber
+		initializer.Config.EndingBlockNumber = blockNumber
+
+		logs, fetchErr := logFetcher.FetchLogs(addresses, topics, header)
+		Expect(fetchErr).NotTo(HaveOccurred())
+
+		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+
+		tr = initializer.NewTransformer(db)
+		err = tr.Execute(headerSyncLogs)
+		Expect(err).NotTo(HaveOccurred())
+
+		var dbResult []dentModel
+		err = db.Select(&dbResult, `SELECT bid, bid_id, lot, address_id FROM maker.dent`)
+		Expect(err).NotTo(HaveOccurred())
+
+		flipContractAddressId, addressErr := shared.GetOrCreateAddress(test_data.FlopAddress(), db)
+		Expect(addressErr).NotTo(HaveOccurred())
+
+		Expect(len(dbResult)).To(Equal(1))
+		Expect(dbResult[0].Bid).To(Equal("100000000000000000000000000000000000000000000"))
+		Expect(dbResult[0].BidId).To(Equal("1000"))
+		Expect(dbResult[0].Lot).To(Equal("229531987479152"))
+		Expect(dbResult[0].AddressId).To(Equal(flipContractAddressId))
 	})
 
 	It("persists a flip dent log event", func() {

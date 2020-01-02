@@ -58,10 +58,6 @@ var _ = Describe("Signature constants", func() {
 		Expect(FlipKickSignature()).To(Equal("0xc84ce3a1172f0dec3173f04caaa6005151a4bfe40d4c9f3ea28dba5f719b2a7a"))
 	})
 
-	It("generates tick signature", func() {
-		Expect(TickSignature()).To(Equal("0xfc7b6aee00000000000000000000000000000000000000000000000000000000"))
-	})
-
 	It("generates flop kick signature", func() {
 		Expect(FlopKickSignature()).To(Equal("0x7e8881001566f9f89aedb9c5dc3d856a2b81e5235a8196413ed484be91cc0df6"))
 	})
@@ -86,12 +82,12 @@ var _ = Describe("Signature constants", func() {
 		Expect(JugInitSignature()).To(Equal("0x3b66319500000000000000000000000000000000000000000000000000000000"))
 	})
 
-	It("generates cdp manager new cdp signature", func() {
-		Expect(NewCdpSignature()).To(Equal("0xd6be0bc178658a382ff4f91c8c68b542aa6b71685b8fe427966b87745c3ea7a2"))
-	})
-
 	It("generates log note signature", func() {
 		Expect(LogValueSignature()).To(Equal("0x296ba4ca62c6c21c95e828080cb8aec7481b71390585605300a8a76f9e95b527"))
+	})
+
+	It("generates new cdp signature", func() {
+		Expect(NewCdpSignature()).To(Equal("0xd6be0bc178658a382ff4f91c8c68b542aa6b71685b8fe427966b87745c3ea7a2"))
 	})
 
 	It("generates pot cage signature", func() {
@@ -136,6 +132,10 @@ var _ = Describe("Signature constants", func() {
 
 	It("generates tend signature", func() {
 		Expect(TendSignature()).To(Equal("0x4b43ed1200000000000000000000000000000000000000000000000000000000"))
+	})
+
+	It("generates tick signature", func() {
+		Expect(TickSignature()).To(Equal("0xfc7b6aee00000000000000000000000000000000000000000000000000000000"))
 	})
 
 	It("generates vat file debt ceiling signature", func() {
