@@ -22,6 +22,7 @@ func CatFileFlipSignature() string        { return getLogNoteTopicZero(catFileFl
 func CatFileVowSignature() string         { return getLogNoteTopicZero(catFileVowMethod()) }
 func DealSignature() string               { return getLogNoteTopicZero(dealMethod()) }
 func DentSignature() string               { return getLogNoteTopicZero(dentMethod()) }
+func DenySignature() string               { return getLogNoteTopicZero(denyMethod()) }
 func FlapKickSignature() string           { return getEventTopicZero(flapKickMethod()) }
 func FlipKickSignature() string           { return getEventTopicZero(flipKickMethod()) }
 func FlopKickSignature() string           { return getEventTopicZero(flopKickMethod()) }

@@ -47,6 +47,7 @@ func catFileVowMethod() string {
 }
 func dealMethod() string     { return getSolidityFunctionSignature(FlipABI(), "deal") }
 func dentMethod() string     { return getSolidityFunctionSignature(FlipABI(), "dent") }
+func denyMethod() string     { return getSolidityFunctionSignature(CatABI(), "deny") }
 func flapKickMethod() string { return getSolidityFunctionSignature(FlapABI(), "Kick") }
 func flipKickMethod() string { return getSolidityFunctionSignature(FlipABI(), "Kick") }
 func flopKickMethod() string { return getSolidityFunctionSignature(FlopABI(), "Kick") }

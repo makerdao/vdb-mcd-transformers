@@ -30,6 +30,7 @@ const (
 	CatFileVowTable         = "cat_file_vow"
 	DealTable               = "deal"
 	DentTable               = "dent"
+	DenyTable               = "deny"
 	FlapKickTable           = "flap_kick"
 	FlipKickTable           = "flip_kick"
 	FlopKickTable           = "flop_kick"

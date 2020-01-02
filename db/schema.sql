@@ -7017,6 +7017,39 @@ ALTER SEQUENCE maker.dent_id_seq OWNED BY maker.dent.id;
 
 
 --
+-- Name: deny; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.deny (
+    id integer NOT NULL,
+    header_id integer NOT NULL,
+    log_id bigint NOT NULL,
+    address_id integer NOT NULL,
+    usr integer NOT NULL
+);
+
+
+--
+-- Name: deny_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.deny_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: deny_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.deny_id_seq OWNED BY maker.deny.id;
+
+
+--
 -- Name: flap; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -11960,6 +11993,13 @@ ALTER TABLE ONLY maker.dent ALTER COLUMN id SET DEFAULT nextval('maker.dent_id_s
 
 
 --
+-- Name: deny id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.deny ALTER COLUMN id SET DEFAULT nextval('maker.deny_id_seq'::regclass);
+
+
+--
 -- Name: flap id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
@@ -13349,6 +13389,22 @@ ALTER TABLE ONLY maker.dent
 
 ALTER TABLE ONLY maker.dent
     ADD CONSTRAINT dent_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: deny deny_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.deny
+    ADD CONSTRAINT deny_header_id_log_id_key UNIQUE (header_id, log_id);
+
+
+--
+-- Name: deny deny_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.deny
+    ADD CONSTRAINT deny_pkey PRIMARY KEY (id);
 
 
 --
@@ -15893,6 +15949,34 @@ CREATE INDEX dent_header_index ON maker.dent USING btree (header_id);
 --
 
 CREATE INDEX dent_log_index ON maker.dent USING btree (log_id);
+
+
+--
+-- Name: deny_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX deny_address_index ON maker.deny USING btree (address_id);
+
+
+--
+-- Name: deny_header_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX deny_header_index ON maker.deny USING btree (header_id);
+
+
+--
+-- Name: deny_log_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX deny_log_index ON maker.deny USING btree (log_id);
+
+
+--
+-- Name: deny_usr_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX deny_usr_index ON maker.deny USING btree (usr);
 
 
 --
@@ -18550,6 +18634,38 @@ ALTER TABLE ONLY maker.dent
 
 ALTER TABLE ONLY maker.dent
     ADD CONSTRAINT dent_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: deny deny_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.deny
+    ADD CONSTRAINT deny_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: deny deny_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.deny
+    ADD CONSTRAINT deny_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: deny deny_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.deny
+    ADD CONSTRAINT deny_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: deny deny_usr_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.deny
+    ADD CONSTRAINT deny_usr_fkey FOREIGN KEY (usr) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --
