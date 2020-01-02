@@ -17,10 +17,13 @@
 package integration_tests
 
 import (
+	"strconv"
+
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/tick"
-	mcdConstants "github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/fetcher"
@@ -29,8 +32,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-// TODO: Update when Tick events are on Kovan
-var _ = XDescribe("Tick EventTransformer", func() {
+var _ = Describe("Tick EventTransformer", func() {
 	var (
 		tickConfig  transformer.EventTransformerConfig
 		initializer event.Transformer
@@ -43,10 +45,10 @@ var _ = XDescribe("Tick EventTransformer", func() {
 		test_config.CleanTestDB(db)
 
 		tickConfig = transformer.EventTransformerConfig{
-			TransformerName:   mcdConstants.TickTable,
+			TransformerName:   constants.TickTable,
 			ContractAddresses: append(test_data.FlipAddresses(), test_data.FlopAddress()),
-			ContractAbi:       mcdConstants.FlipABI(),
-			Topic:             mcdConstants.TickSignature(),
+			ContractAbi:       constants.FlipABI(),
+			Topic:             constants.TickSignature(),
 		}
 
 		logFetcher = fetcher.NewLogFetcher(blockChain)
@@ -60,60 +62,95 @@ var _ = XDescribe("Tick EventTransformer", func() {
 	})
 
 	It("fetches and transforms a flip tick event from the Kovan chain", func() {
-		blockNumber := int64(8935601)
+		blockNumber := int64(15567591)
 		tickConfig.StartingBlockNumber = blockNumber
 		tickConfig.EndingBlockNumber = blockNumber
 
-		header, err := persistHeader(db, blockNumber, blockChain)
-		Expect(err).NotTo(HaveOccurred())
+		header, headerErr := persistHeader(db, blockNumber, blockChain)
+		Expect(headerErr).NotTo(HaveOccurred())
 
-		logs, err := logFetcher.FetchLogs(addresses, topics, header)
-		Expect(err).NotTo(HaveOccurred())
+		logs, fetchErr := logFetcher.FetchLogs(addresses, topics, header)
+		Expect(fetchErr).NotTo(HaveOccurred())
 		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
 
 		transformer := initializer.NewTransformer(db)
-		err = transformer.Execute(headerSyncLogs)
-		Expect(err).NotTo(HaveOccurred())
+		transformErr := transformer.Execute(headerSyncLogs)
+		Expect(transformErr).NotTo(HaveOccurred())
 
 		var dbResult []tickModel
-		err = db.Select(&dbResult, `SELECT bid_id, contract_address FROM maker.tick`)
+		err := db.Select(&dbResult, `SELECT bid_id, address_id FROM maker.tick`)
 		Expect(err).NotTo(HaveOccurred())
 
+		flipAddressID, flipAddressErr := shared.GetOrCreateAddress(test_data.EthFlipAddress(), db)
+		Expect(flipAddressErr).NotTo(HaveOccurred())
+
 		Expect(len(dbResult)).To(Equal(1))
-		Expect(dbResult[0].ContractAddress).To(Equal(""))
-		Expect(dbResult[0].BidId).To(Equal(""))
+		Expect(dbResult[0].AddressID).To(Equal(strconv.FormatInt(flipAddressID, 10)))
+		Expect(dbResult[0].BidID).To(Equal("102"))
 	})
 
 	// Todo: fill this in with flap tick event data from kovan
-	It("fetches and transforms a flap tick event from the Kovan chain", func() {
+	XIt("fetches and transforms a flap tick event from the Kovan chain", func() {
 		blockNumber := int64(8935601)
 		tickConfig.StartingBlockNumber = blockNumber
 		tickConfig.EndingBlockNumber = blockNumber
 
-		header, err := persistHeader(db, blockNumber, blockChain)
-		Expect(err).NotTo(HaveOccurred())
+		header, headerErr := persistHeader(db, blockNumber, blockChain)
+		Expect(headerErr).NotTo(HaveOccurred())
 
-		logs, err := logFetcher.FetchLogs(addresses, topics, header)
-		Expect(err).NotTo(HaveOccurred())
+		logs, fetchErr := logFetcher.FetchLogs(addresses, topics, header)
+		Expect(fetchErr).NotTo(HaveOccurred())
 		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
 
 		transformer := initializer.NewTransformer(db)
-		err = transformer.Execute(headerSyncLogs)
-		Expect(err).NotTo(HaveOccurred())
+		transformErr := transformer.Execute(headerSyncLogs)
+		Expect(transformErr).NotTo(HaveOccurred())
 
 		var dbResult []tickModel
-		err = db.Select(&dbResult, `SELECT bid_id, contract_address FROM maker.tick`)
+		err := db.Select(&dbResult, `SELECT bid_id, address_id FROM maker.tick`)
 		Expect(err).NotTo(HaveOccurred())
 
+		flapAddressID, flapAddressErr := shared.GetOrCreateAddress(test_data.FlapAddress(), db)
+		Expect(flapAddressErr).NotTo(HaveOccurred())
+
 		Expect(len(dbResult)).To(Equal(1))
-		Expect(dbResult[0].ContractAddress).To(Equal(""))
-		Expect(dbResult[0].BidId).To(Equal(""))
+		Expect(dbResult[0].AddressID).To(Equal(strconv.FormatInt(flapAddressID, 10)))
+		Expect(dbResult[0].BidID).To(Equal(""))
+	})
+
+	// Todo: fill this in with flop tick event data from kovan
+	XIt("fetches and transforms a flop tick event from the Kovan chain", func() {
+		blockNumber := int64(8935601)
+		tickConfig.StartingBlockNumber = blockNumber
+		tickConfig.EndingBlockNumber = blockNumber
+
+		header, headerErr := persistHeader(db, blockNumber, blockChain)
+		Expect(headerErr).NotTo(HaveOccurred())
+
+		logs, fetchErr := logFetcher.FetchLogs(addresses, topics, header)
+		Expect(fetchErr).NotTo(HaveOccurred())
+		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+
+		transformer := initializer.NewTransformer(db)
+		transformErr := transformer.Execute(headerSyncLogs)
+		Expect(transformErr).NotTo(HaveOccurred())
+
+		var dbResult []tickModel
+		err := db.Select(&dbResult, `SELECT bid_id, address_id FROM maker.tick`)
+		Expect(err).NotTo(HaveOccurred())
+
+		flopAddressID, flopAddressErr := shared.GetOrCreateAddress(test_data.FlopAddress(), db)
+		Expect(flopAddressErr).NotTo(HaveOccurred())
+
+		Expect(len(dbResult)).To(Equal(1))
+		Expect(dbResult[0].AddressID).To(Equal(strconv.FormatInt(flopAddressID, 10)))
+		Expect(dbResult[0].BidID).To(Equal(""))
 	})
 })
 
 type tickModel struct {
-	BidId            string `db:"bid_id"`
-	ContractAddress  string `db:"contract_address"`
+	BidID            string `db:"bid_id"`
+	AddressID        string `db:"address_id"`
 	LogIndex         uint   `db:"log_idx"`
 	TransactionIndex uint   `db:"tx_idx"`
 	Raw              []byte `db:"raw_log"`
