@@ -1,4 +1,4 @@
-package rely
+package auth
 
 import (
 	"github.com/ethereum/go-ethereum/common"
@@ -9,13 +9,14 @@ import (
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 )
 
-type Converter struct {
+type Transformer struct {
 	LogNoteArgumentOffset int
+	TableName             event.TableName
 }
 
-func (c Converter) ToModels(_ string, logs []core.HeaderSyncLog, db *postgres.DB) ([]event.InsertionModel, error) {
-	numTopicsRequired := shared.ThreeTopicsRequired + c.LogNoteArgumentOffset
-	usrTopicIndex := 2 + c.LogNoteArgumentOffset
+func (t Transformer) ToModels(_ string, logs []core.HeaderSyncLog, db *postgres.DB) ([]event.InsertionModel, error) {
+	numTopicsRequired := shared.ThreeTopicsRequired + t.LogNoteArgumentOffset
+	usrTopicIndex := 2 + t.LogNoteArgumentOffset
 	var models []event.InsertionModel
 	for _, log := range logs {
 		validationErr := shared.VerifyLog(log.Log, numTopicsRequired, shared.LogDataNotRequired)
@@ -37,7 +38,7 @@ func (c Converter) ToModels(_ string, logs []core.HeaderSyncLog, db *postgres.DB
 
 		model := event.InsertionModel{
 			SchemaName:     constants.MakerSchema,
-			TableName:      constants.RelyTable,
+			TableName:      t.TableName,
 			OrderedColumns: []event.ColumnName{event.HeaderFK, event.LogFK, event.AddressFK, constants.UsrColumn},
 			ColumnValues: event.ColumnValues{
 				event.HeaderFK:      log.HeaderID,

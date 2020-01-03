@@ -193,7 +193,7 @@
         contracts = ["MCD_FLIP_ETH_A", "MCD_FLIP_BAT_A", "MCD_FLIP_SAI", "MCD_FLOP"]
         rank = "0"
     [exporter.deny]
-        path = "transformers/events/deny/initializer"
+        path = "transformers/events/auth/deny_initializer"
         type = "eth_event"
         repository = "github.com/makerdao/vdb-mcd-transformers"
         migrations = "db/migrations"
@@ -313,7 +313,7 @@
         contracts = ["MCD_POT"]
         rank = "0"
     [exporter.rely]
-        path = "transformers/events/rely/initializer"
+        path = "transformers/events/auth/rely_initializer"
         type = "eth_event"
         repository = "github.com/makerdao/vdb-mcd-transformers"
         migrations = "db/migrations"
@@ -363,7 +363,7 @@
         contracts = ["MCD_FLIP_ETH_A", "MCD_FLIP_BAT_A", "MCD_FLIP_SAI", "MCD_FLAP", "MCD_FLOP"]
         rank = "0"
     [exporter.vat_deny]
-        path = "transformers/events/deny/vat_initializer"
+        path = "transformers/events/auth/vat_deny_initializer"
         type = "eth_event"
         repository = "github.com/makerdao/vdb-mcd-transformers"
         migrations = "db/migrations"
@@ -440,7 +440,7 @@
         contracts = ["MCD_VAT"]
         rank = "0"
     [exporter.vat_rely]
-        path = "transformers/events/rely/vat_initializer"
+        path = "transformers/events/auth/vat_rely_initializer"
         type = "eth_event"
         repository = "github.com/makerdao/vdb-mcd-transformers"
         migrations = "db/migrations"

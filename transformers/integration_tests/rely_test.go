@@ -3,7 +3,7 @@ package integration_tests
 import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/rely"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/events/auth"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
@@ -74,9 +74,9 @@ func relyIntegrationTest(blockNumber int64, contractAddressHex, usrAddressHex st
 			TransformerName: constants.RelyTable,
 			Topic:           constants.RelySignature(),
 		}
-		initializer := event.Transformer{
-			Config:    relyConfig,
-			Converter: rely.Converter{LogNoteArgumentOffset: logNoteArgumentOffset},
+		initializer := event.ConfiguredTransformer{
+			Config:      relyConfig,
+			Transformer: auth.Transformer{LogNoteArgumentOffset: logNoteArgumentOffset, TableName: constants.RelyTable},
 		}
 
 		header, headerErr := persistHeader(db, blockNumber, blockChain)

@@ -3,7 +3,7 @@ package integration_tests
 import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/deny"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/events/auth"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
@@ -76,7 +76,7 @@ func denyIntegrationTest(blockNumber int64, contractAddressHex, usrAddressHex st
 		}
 		initializer := event.ConfiguredTransformer{
 			Config:      denyConfig,
-			Transformer: deny.Transformer{LogNoteArgumentOffset: logNoteArgumentOffset},
+			Transformer: auth.Transformer{LogNoteArgumentOffset: logNoteArgumentOffset, TableName: constants.DenyTable},
 		}
 
 		header, headerErr := persistHeader(db, blockNumber, blockChain)
