@@ -22,7 +22,6 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/tend"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
@@ -66,15 +65,14 @@ var tendModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.TendTable,
 	OrderedColumns: []event.ColumnName{
-		event.HeaderFK, tend.Id, tend.Lot, tend.Bid, constants.AddressColumn, event.LogFK,
+		event.HeaderFK, event.AddressFK, event.LogFK, constants.BidIDColumn, constants.LotColumn, constants.BidColumn,
 	},
 	ColumnValues: event.ColumnValues{
-		event.HeaderFK:          TendHeaderSyncLog.HeaderID,
-		tend.Id:                 tendBidId,
-		tend.Lot:                tendLot,
-		tend.Bid:                tendBid,
-		constants.AddressColumn: rawTendLog.Address.Hex(),
-		event.LogFK:             TendHeaderSyncLog.ID,
+		event.HeaderFK:        TendHeaderSyncLog.HeaderID,
+		event.LogFK:           TendHeaderSyncLog.ID,
+		constants.BidIDColumn: tendBidId,
+		constants.LotColumn:   tendLot,
+		constants.BidColumn:   tendBid,
 	},
 }
 

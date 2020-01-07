@@ -8,7 +8,7 @@ import (
 	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 )
 
-var EventTransformerInitializer transformer.EventTransformerInitializer = event.Transformer{
-	Config:    shared.GetEventTransformerConfig(constants.PotCageTable, constants.PotCageSignature()),
-	Converter: pot_cage.Converter{},
+var EventTransformerInitializer transformer.EventTransformerInitializer = event.ConfiguredTransformer{
+	Config:      shared.GetEventTransformerConfig(constants.PotCageTable, constants.PotCageSignature()),
+	Transformer: pot_cage.Transformer{},
 }.NewTransformer

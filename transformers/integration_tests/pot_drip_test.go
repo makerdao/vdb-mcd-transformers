@@ -37,9 +37,9 @@ var _ = Describe("PotDrip Transformer", func() {
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		initializer := event.Transformer{
-			Config:    potDripConfig,
-			Converter: pot_drip.Converter{},
+		initializer := event.ConfiguredTransformer{
+			Config:      potDripConfig,
+			Transformer: pot_drip.Transformer{},
 		}
 		tr := initializer.NewTransformer(db)
 

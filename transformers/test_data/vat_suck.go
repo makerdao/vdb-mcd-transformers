@@ -58,7 +58,7 @@ var VatSuckModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.VatSuckTable,
 	OrderedColumns: []event.ColumnName{
-		event.HeaderFK, constants.UColumn, constants.VColumn, constants.RadColumn, event.LogFK,
+		event.HeaderFK, event.LogFK, constants.UColumn, constants.VColumn, constants.RadColumn,
 	},
 	ColumnValues: event.ColumnValues{
 		constants.UColumn:   "0x07Fa9eF6609cA7921112231F8f195138ebbA2977",

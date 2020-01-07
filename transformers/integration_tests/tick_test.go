@@ -35,7 +35,7 @@ import (
 var _ = Describe("Tick EventTransformer", func() {
 	var (
 		tickConfig  transformer.EventTransformerConfig
-		initializer event.Transformer
+		initializer event.ConfiguredTransformer
 		logFetcher  fetcher.ILogFetcher
 		addresses   []common.Address
 		topics      []common.Hash
@@ -55,9 +55,9 @@ var _ = Describe("Tick EventTransformer", func() {
 		addresses = transformer.HexStringsToAddresses(tickConfig.ContractAddresses)
 		topics = []common.Hash{common.HexToHash(tickConfig.Topic)}
 
-		initializer = event.Transformer{
-			Config:    tickConfig,
-			Converter: tick.Converter{},
+		initializer = event.ConfiguredTransformer{
+			Config:      tickConfig,
+			Transformer: tick.Transformer{},
 		}
 	})
 

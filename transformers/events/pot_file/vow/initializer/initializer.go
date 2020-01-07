@@ -8,7 +8,7 @@ import (
 	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 )
 
-var EventTransformerInitializer transformer.EventTransformerInitializer = event.Transformer{
-	Config:    shared.GetEventTransformerConfig(constants.PotFileVowTable, constants.PotFileVowSignature()),
-	Converter: vow.Converter{},
+var EventTransformerInitializer transformer.EventTransformerInitializer = event.ConfiguredTransformer{
+	Config:      shared.GetEventTransformerConfig(constants.PotFileVowTable, constants.PotFileVowSignature()),
+	Transformer: vow.Transformer{},
 }.NewTransformer

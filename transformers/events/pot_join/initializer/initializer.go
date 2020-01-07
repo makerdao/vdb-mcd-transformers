@@ -24,7 +24,7 @@ import (
 	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 )
 
-var EventTransformerInitializer transformer.EventTransformerInitializer = event.Transformer{
-	Config:    shared.GetEventTransformerConfig(constants.PotJoinTable, constants.PotJoinSignature()),
-	Converter: pot_join.Converter{},
+var EventTransformerInitializer transformer.EventTransformerInitializer = event.ConfiguredTransformer{
+	Config:      shared.GetEventTransformerConfig(constants.PotJoinTable, constants.PotJoinSignature()),
+	Transformer: pot_join.Transformer{},
 }.NewTransformer

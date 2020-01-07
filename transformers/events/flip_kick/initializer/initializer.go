@@ -25,7 +25,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/flip_kick"
 )
 
-var EventTransformerInitializer transformer.EventTransformerInitializer = event.Transformer{
-	Config:    shared.GetEventTransformerConfig(constants.FlipKickTable, constants.FlipKickSignature()),
-	Converter: flip_kick.Converter{},
+var EventTransformerInitializer transformer.EventTransformerInitializer = event.ConfiguredTransformer{
+	Config:      shared.GetEventTransformerConfig(constants.FlipKickTable, constants.FlipKickSignature()),
+	Transformer: flip_kick.Transformer{},
 }.NewTransformer

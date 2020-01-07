@@ -56,7 +56,7 @@ var vatInitModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.VatInitTable,
 	OrderedColumns: []event.ColumnName{
-		event.HeaderFK, constants.IlkColumn, event.LogFK,
+		event.HeaderFK, event.LogFK, constants.IlkColumn,
 	},
 	ColumnValues: event.ColumnValues{
 		event.HeaderFK: VatInitHeaderSyncLog.HeaderID,

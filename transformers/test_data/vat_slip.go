@@ -56,7 +56,7 @@ var vatSlipModelWithPositiveWad = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.VatSlipTable,
 	OrderedColumns: []event.ColumnName{
-		event.HeaderFK, constants.IlkColumn, constants.UsrColumn, constants.WadColumn, event.LogFK,
+		event.HeaderFK, event.LogFK, constants.IlkColumn, constants.UsrColumn, constants.WadColumn,
 	},
 	ColumnValues: event.ColumnValues{
 		constants.UsrColumn: "0x5c8c8e5895B9cCf34ACF391C99E13C79EE2eFb46",
@@ -95,7 +95,7 @@ var vatSlipModelWithNegativeWad = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.VatSlipTable,
 	OrderedColumns: []event.ColumnName{
-		event.HeaderFK, constants.IlkColumn, constants.UsrColumn, constants.WadColumn, event.LogFK,
+		event.HeaderFK, event.LogFK, constants.IlkColumn, constants.UsrColumn, constants.WadColumn,
 	},
 	ColumnValues: event.ColumnValues{
 		constants.UsrColumn: "0xFc7440E2Ed4A3AEb14d40c00f02a14221Be0474d",

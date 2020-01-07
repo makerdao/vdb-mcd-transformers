@@ -53,9 +53,9 @@ var _ = Describe("JugDrip Transformer", func() {
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		initializer := event.Transformer{
-			Config:    jugDripConfig,
-			Converter: jug_drip.Converter{},
+		initializer := event.ConfiguredTransformer{
+			Config:      jugDripConfig,
+			Transformer: jug_drip.Transformer{},
 		}
 		tr := initializer.NewTransformer(db)
 

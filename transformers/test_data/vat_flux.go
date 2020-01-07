@@ -55,7 +55,7 @@ var vatFluxModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.VatFluxTable,
 	OrderedColumns: []event.ColumnName{
-		event.HeaderFK, constants.IlkColumn, constants.SrcColumn, constants.DstColumn, constants.WadColumn, event.LogFK,
+		event.HeaderFK, event.LogFK, constants.IlkColumn, constants.SrcColumn, constants.DstColumn, constants.WadColumn,
 	},
 	ColumnValues: event.ColumnValues{
 		constants.SrcColumn: "0x07Fa9eF6609cA7921112231F8f195138ebbA2977",

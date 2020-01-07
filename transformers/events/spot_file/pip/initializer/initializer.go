@@ -24,7 +24,7 @@ import (
 	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 )
 
-var EventTransformerInitializer transformer.EventTransformerInitializer = event.Transformer{
-	Config:    shared.GetEventTransformerConfig(constants.SpotFilePipTable, constants.SpotFilePipSignature()),
-	Converter: pip.Converter{},
+var EventTransformerInitializer transformer.EventTransformerInitializer = event.ConfiguredTransformer{
+	Config:      shared.GetEventTransformerConfig(constants.SpotFilePipTable, constants.SpotFilePipSignature()),
+	Transformer: pip.Transformer{},
 }.NewTransformer

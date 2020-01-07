@@ -56,7 +56,7 @@ var VatHealModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.VatHealTable,
 	OrderedColumns: []event.ColumnName{
-		event.HeaderFK, constants.RadColumn, event.LogFK,
+		event.HeaderFK, event.LogFK, constants.RadColumn,
 	},
 	ColumnValues: event.ColumnValues{
 		constants.RadColumn: "10001",

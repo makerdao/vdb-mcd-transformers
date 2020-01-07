@@ -25,7 +25,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 )
 
-var EventTransformerInitializer transformer.EventTransformerInitializer = event.Transformer{
-	Config:    shared.GetEventTransformerConfig(constants.SpotFileMatTable, constants.SpotFileMatSignature()),
-	Converter: mat.Converter{},
+var EventTransformerInitializer transformer.EventTransformerInitializer = event.ConfiguredTransformer{
+	Config:      shared.GetEventTransformerConfig(constants.SpotFileMatTable, constants.SpotFileMatSignature()),
+	Transformer: mat.Transformer{},
 }.NewTransformer

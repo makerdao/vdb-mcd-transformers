@@ -35,7 +35,6 @@ const (
 
 // Table column names
 const (
-	AddressColumn   event.ColumnName = "address_id"
 	ArtColumn       event.ColumnName = "art"
 	BidColumn       event.ColumnName = "bid"
 	BidIDColumn     event.ColumnName = "bid_id"

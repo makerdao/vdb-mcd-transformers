@@ -8,7 +8,7 @@ import (
 	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 )
 
-var EventTransformerInitializer transformer.EventTransformerInitializer = event.Transformer{
-	Config:    shared.GetEventTransformerConfig(constants.PotFileDSRTable, constants.PotFileDSRSignature()),
-	Converter: dsr.Converter{},
+var EventTransformerInitializer transformer.EventTransformerInitializer = event.ConfiguredTransformer{
+	Config:      shared.GetEventTransformerConfig(constants.PotFileDSRTable, constants.PotFileDSRSignature()),
+	Transformer: dsr.Transformer{},
 }.NewTransformer

@@ -59,9 +59,9 @@ var _ = Describe("Vat Grab Transformer", func() {
 
 		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
 
-		tr := event.Transformer{
-			Config:    vatGrabConfig,
-			Converter: vat_grab.Converter{},
+		tr := event.ConfiguredTransformer{
+			Config:      vatGrabConfig,
+			Transformer: vat_grab.Transformer{},
 		}.NewTransformer(db)
 
 		err = tr.Execute(headerSyncLogs)

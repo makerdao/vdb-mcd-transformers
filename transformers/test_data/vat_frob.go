@@ -64,7 +64,13 @@ var vatFrobModelWithPositiveDart = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.VatFrobTable,
 	OrderedColumns: []event.ColumnName{
-		event.HeaderFK, constants.UrnColumn, constants.VColumn, constants.WColumn, constants.DinkColumn, constants.DartColumn, event.LogFK,
+		event.HeaderFK,
+		event.LogFK,
+		constants.UrnColumn,
+		constants.VColumn,
+		constants.WColumn,
+		constants.DinkColumn,
+		constants.DartColumn,
 	},
 	ColumnValues: event.ColumnValues{
 		constants.VColumn:    "0xFc7440E2Ed4A3AEb14d40c00f02a14221Be0474d",
@@ -108,7 +114,13 @@ var vatFrobModelWithNegativeDink = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.VatFrobTable,
 	OrderedColumns: []event.ColumnName{
-		event.HeaderFK, constants.UrnColumn, constants.VColumn, constants.WColumn, constants.DinkColumn, constants.DartColumn, event.LogFK,
+		event.HeaderFK,
+		event.LogFK,
+		constants.UrnColumn,
+		constants.VColumn,
+		constants.WColumn,
+		constants.DinkColumn,
+		constants.DartColumn,
 	},
 	ColumnValues: event.ColumnValues{
 		constants.VColumn:    "0xFc7440E2Ed4A3AEb14d40c00f02a14221Be0474d",

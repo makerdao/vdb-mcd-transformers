@@ -27,10 +27,6 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/deal"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/dent"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/tend"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/yank"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage"
@@ -575,10 +571,10 @@ func CreateDeal(input DealCreationInput) (err error) {
 	Expect(addressErr).NotTo(HaveOccurred())
 	dealLog := test_data.CreateTestLog(input.DealHeaderId, input.DB)
 	dealModel := test_data.DealModel()
-	dealModel.ColumnValues[deal.Id] = strconv.Itoa(input.BidId)
+	dealModel.ColumnValues[constants.BidIDColumn] = strconv.Itoa(input.BidId)
 	dealModel.ColumnValues[event.HeaderFK] = input.DealHeaderId
 	dealModel.ColumnValues[event.LogFK] = dealLog.ID
-	dealModel.ColumnValues[constants.AddressColumn] = addressID
+	dealModel.ColumnValues[event.AddressFK] = addressID
 	deals := []event.InsertionModel{dealModel}
 	return event.PersistModels(deals, input.DB)
 }
@@ -622,10 +618,10 @@ func CreateTend(input TendCreationInput) (err error) {
 	Expect(addressErr).NotTo(HaveOccurred())
 	tendModel := test_data.TendModel()
 	tendLog := test_data.CreateTestLog(input.TendHeaderId, input.DB)
-	tendModel.ColumnValues[tend.Id] = strconv.Itoa(input.BidId)
-	tendModel.ColumnValues[tend.Lot] = strconv.Itoa(input.Lot)
-	tendModel.ColumnValues[tend.Bid] = strconv.Itoa(input.BidAmount)
-	tendModel.ColumnValues[constants.AddressColumn] = addressID
+	tendModel.ColumnValues[constants.BidIDColumn] = strconv.Itoa(input.BidId)
+	tendModel.ColumnValues[constants.LotColumn] = strconv.Itoa(input.Lot)
+	tendModel.ColumnValues[constants.BidColumn] = strconv.Itoa(input.BidAmount)
+	tendModel.ColumnValues[event.AddressFK] = addressID
 	tendModel.ColumnValues[event.HeaderFK] = input.TendHeaderId
 	tendModel.ColumnValues[event.LogFK] = tendLog.ID
 	return event.PersistModels([]event.InsertionModel{tendModel}, input.DB)
@@ -635,10 +631,10 @@ func CreateDent(input DentCreationInput) (err error) {
 	addressID, addressErr := shared.GetOrCreateAddress(input.ContractAddress, input.DB)
 	Expect(addressErr).NotTo(HaveOccurred())
 	dentModel := test_data.DentModel()
-	dentModel.ColumnValues[dent.Id] = strconv.Itoa(input.BidId)
-	dentModel.ColumnValues[dent.Lot] = strconv.Itoa(input.Lot)
-	dentModel.ColumnValues[dent.Bid] = strconv.Itoa(input.BidAmount)
-	dentModel.ColumnValues[constants.AddressColumn] = addressID
+	dentModel.ColumnValues[constants.BidIDColumn] = strconv.Itoa(input.BidId)
+	dentModel.ColumnValues[constants.LotColumn] = strconv.Itoa(input.Lot)
+	dentModel.ColumnValues[constants.BidColumn] = strconv.Itoa(input.BidAmount)
+	dentModel.ColumnValues[event.AddressFK] = addressID
 	dentModel.ColumnValues[event.HeaderFK] = input.DentHeaderId
 	dentModel.ColumnValues[event.LogFK] = input.DentLogId
 	return event.PersistModels([]event.InsertionModel{dentModel}, input.DB)
@@ -648,8 +644,8 @@ func CreateYank(input YankCreationInput) (err error) {
 	addressID, addressErr := shared.GetOrCreateAddress(input.ContractAddress, input.DB)
 	Expect(addressErr).NotTo(HaveOccurred())
 	yankModel := test_data.YankModel()
-	yankModel.ColumnValues[yank.BidId] = strconv.Itoa(input.BidId)
-	yankModel.ColumnValues[constants.AddressColumn] = addressID
+	yankModel.ColumnValues[constants.BidIDColumn] = strconv.Itoa(input.BidId)
+	yankModel.ColumnValues[event.AddressFK] = addressID
 	yankModel.ColumnValues[event.HeaderFK] = input.YankHeaderId
 	yankModel.ColumnValues[event.LogFK] = input.YankLogId
 	return event.PersistModels([]event.InsertionModel{yankModel}, input.DB)
@@ -661,7 +657,7 @@ func CreateTick(input TickCreationInput) (err error) {
 	tickLog := test_data.CreateTestLog(input.TickHeaderId, input.DB)
 	tickModel := test_data.TickModel()
 	tickModel.ColumnValues[constants.BidIDColumn] = strconv.Itoa(input.BidId)
-	tickModel.ColumnValues[constants.AddressColumn] = addressID
+	tickModel.ColumnValues[event.AddressFK] = addressID
 	tickModel.ColumnValues[event.HeaderFK] = input.TickHeaderId
 	tickModel.ColumnValues[event.LogFK] = tickLog.ID
 	return event.PersistModels([]event.InsertionModel{tickModel}, input.DB)

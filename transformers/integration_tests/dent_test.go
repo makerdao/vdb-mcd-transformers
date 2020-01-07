@@ -37,7 +37,7 @@ var _ = Describe("Dent transformer", func() {
 		dentConfig  transformer.EventTransformerConfig
 		addresses   []common.Address
 		topics      []common.Hash
-		initializer event.Transformer
+		initializer event.ConfiguredTransformer
 	)
 
 	BeforeEach(func() {
@@ -54,9 +54,9 @@ var _ = Describe("Dent transformer", func() {
 		topics = []common.Hash{common.HexToHash(dentConfig.Topic)}
 		logFetcher = fetcher.NewLogFetcher(blockChain)
 
-		initializer = event.Transformer{
-			Config:    dentConfig,
-			Converter: dent.Converter{},
+		initializer = event.ConfiguredTransformer{
+			Config:      dentConfig,
+			Transformer: dent.Transformer{},
 		}
 	})
 

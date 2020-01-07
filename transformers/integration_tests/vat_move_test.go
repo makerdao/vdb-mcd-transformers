@@ -55,9 +55,9 @@ var _ = Describe("VatMove EventTransformer", func() {
 
 		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
 
-		tr := event.Transformer{
-			Config:    vatMoveConfig,
-			Converter: vat_move.Converter{},
+		tr := event.ConfiguredTransformer{
+			Config:      vatMoveConfig,
+			Transformer: vat_move.Transformer{},
 		}.NewTransformer(db)
 
 		err = tr.Execute(headerSyncLogs)

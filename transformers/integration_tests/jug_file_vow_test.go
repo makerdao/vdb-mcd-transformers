@@ -49,9 +49,9 @@ var _ = Describe("Jug File Vow EventTransformer", func() {
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		initializer := event.Transformer{
-			Config:    jugFileVowConfig,
-			Converter: vow.Converter{},
+		initializer := event.ConfiguredTransformer{
+			Config:      jugFileVowConfig,
+			Transformer: vow.Transformer{},
 		}
 		tr := initializer.NewTransformer(db)
 

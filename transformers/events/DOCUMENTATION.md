@@ -4,11 +4,7 @@
 
 Transformers fetch logs from Ethereum, convert/decode them into usable data, and then persist them in postgres.
 
-A transformer consists of:
-
-- A fetcher -> Fetches raw logs from the blockchain and encodes them as go datatypes
-- A converter -> Converts this raw data into a human friendly representation suitable for consumption in the API
-- A repository -> Abstracts the database
+A transformer converts the raw chain data into a human friendly representation suitable for consumption in the API
 
 For Maker, vulcanize will be run in `lightSync` mode, so it will store all headers, and then fetchers pull relevant logs by making RPC calls.
 
@@ -32,9 +28,7 @@ The transformer process for each of these different log types is the same, excep
 1. Add a line to clean the new table `CleanTestDB` (in [`test_config.go`](../../test_config/test_config.go))
 1. Define `model.go`
 1. Create test event in [`test_data`](../test_data)
-1. Write converter + converter tests
-1. Write repository + repository tests
-1. Create converter + repository mocks
+1. Write transformer + transformer tests
 1. Create an config object [`shared.EventTransformerConfig`](https://github.com/vulcanize/maker-vulcanizedb/blob/staging/libraries/shared/transformer/event_transformer.go) in `config.go`
 1. Wire up transformer in [`transformers.go`](../transformers.go), remembering to add it to `EventTransformerInitializers()`
 1. Add transformer to config file for `composeAndExecute`.
@@ -76,8 +70,8 @@ The transformer process for each of these different log types is the same, excep
             }
         ```
       - Using go-ethereum's `contract.UnpackLog` method we can unpack the raw log into the FlopperKick struct (which we're referring to as the `entity`).
-        - See the `ToEntity` method in [`events/flop_kick/converter.go`](flop_kick/converter.go).
-  1.  Convert the entity into a database model. See the `ToModel` method in `pkg/transformers/flop_kick/converter`.
+        - See the `ToEntity` method in [`events/flop_kick/transformer.go`](flop_kick/transformer.go).
+  1.  Convert the entity into a database model. See the `ToModel` method in `pkg/transformers/flop_kick/transformer`.
 
 - **Converting LogNote events** (such as tend)
   - Since LogNote events are a generic structure, they depend on the method signature of the method that is calling them. For example, the `tend` method is called on the [flip.sol contract](https://github.com/makerdao/dss/blob/master/src/flip.sol#L123), and it's method signature looks like this: `tend(uint,uint,uint)`.

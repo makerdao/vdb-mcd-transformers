@@ -52,9 +52,9 @@ var _ = Describe("Jug File Ilk EventTransformer", func() {
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		initializer := event.Transformer{
-			Config:    jugFileIlkConfig,
-			Converter: ilk.Converter{},
+		initializer := event.ConfiguredTransformer{
+			Config:      jugFileIlkConfig,
+			Transformer: ilk.Transformer{},
 		}
 		tr := initializer.NewTransformer(db)
 
