@@ -2,145 +2,132 @@
 
 [![Build Status](https://travis-ci.com/makerdao/vdb-mcd-transformers.svg?token=yVLfQ4hNQCqvt2qjLkus&branch=staging)](https://travis-ci.com/makerdao/vdb-mcd-transformers)
 
-## About
 
-Vulcanize DB is a set of tools that make it easier for developers to write application-specific indexes and caches for dapps built on Ethereum.
+## Table of Contents
+1. [Background](#background)
+1. [Install](#install)
+1. [Usage](#usage)
+1. [Contributing](#contributing)
+1. [License](#license)
 
-## Dependencies
- - Go 1.11+
- - Postgres 11
+## Background
+This repository is a collection of transformers to be used along with VDB as a plugin to fetch, transform and persist log events and storage slots of
+specified MCD contracts.
+
+## Install
+### Dependencies
+ - [VulcanizeDB](https://github.com/makerdao/vulcanizedb)
+ - Go 1.12+
+ - Postgres 11.2
  - Ethereum Node
-   - [Go Ethereum](https://ethereum.github.io/go-ethereum/downloads/) (1.8.23)
+   - [Go Ethereum](https://ethereum.github.io/go-ethereum/downloads/) (1.8.23+)
    - [Parity 1.8.11+](https://github.com/paritytech/parity/releases)
+   
+### Getting the project
+Download the transformer codebase to your local local `GOPATH` via:
+`go get github.com/makerdao/vdb-mcd-transformers`
 
-## Project Setup
+## Usage
+As mentioned above this repository is a plugin for VulcanizeDB.  As such it cannot be run as a standalone executable,
+but instead is intended to be included as part of a VulcanizeDB core command. There are two VulcanizeDB core commands that 
+are required for events and storage slots to be transformed and persisted to the Postgres database.
 
-Using Vulcanize for the first time requires several steps be done in order to allow use of the software. The following instructions will offer a guide through the steps of the process:
+1. `headerSync` fetches raw Ethereum data and syncs it into VulcanizeDB's Postgres database where then it can be used for
+transformations. More information about the `headerSync` command can be found in the [VulcanizeDB repository](https://github.com/makerdao/vulcanizedb/blob/staging/documentation/data-syncing.md#headersync).
 
-1. Fetching the project
-2. Installing dependencies
-3. Configuring shell environment
-4. Database setup
-5. Configuring synced Ethereum node integration
-6. Data syncing
+1. `execute` uses the raw Ethereum data that has been synced into Postgres and applies transformations to configured MCD
+contract data via [event](./transformers/events) and [storage](./transformers/storage) transformers. The VulcanizeDB
+repository includes a [general description](https://github.com/makerdao/vulcanizedb/blob/staging/documentation/custom-transformers.md)
+about transformers.
 
-## Installation
-
-In order to fetch the project codebase for local use or modification, install it to your `GOPATH` via:
-
-`go get github.com/makerdao/vulcanizedb`
-`go get gopkg.in/DataDog/dd-trace-go.v1/ddtrace`
-
-Once fetched, dependencies can be installed via `go get` or (the preferred method) at specific versions via `golang/dep`, the prototype golang pakcage manager. Installation instructions are [here](https://golang.github.io/dep/docs/installation.html).
-
-In order to install packages with `dep`, ensure you are in the project directory now within your `GOPATH` (default location is `~/go/src/github.com/makerdao/vulcanizedb/`) and run:
-
-`dep ensure`
-
-After `dep` finishes, dependencies should be installed within your `GOPATH` at the versions specified in `Gopkg.toml`.
-
-Lastly, ensure that `GOPATH` is defined in your shell. If necessary, `GOPATH` can be set in `~/.bashrc` or `~/.bash_profile`, depending upon your system. It can be additionally helpful to add `$GOPATH/bin` to your shell's `$PATH`.
-
-## Setting up the Database
+These core commands can be run via Docker images which is the preferred method, or they can be built and run via the
+command line interface. In either method, a postgres database will first need to be created:
 1. Install Postgres
 1. Create a superuser for yourself and make sure `psql --list` works without prompting for a password.
 1. `createdb vulcanize_public`
-1. `cd $GOPATH/src/github.com/makerdao/vulcanizedb`
-1.  Run the migrations: `make migrate HOST_NAME=localhost NAME=vulcanize_public PORT=5432`
-    - To rollback a single step: `make rollback NAME=vulcanize_public`
-    - To rollback to a certain migration: `make rollback_to MIGRATION=n NAME=vulcanize_public`
-    - To see status of migrations: `make migration_status NAME=vulcanize_public`
+1. Migrating the database manually is unnecessary as the commands handle this.
 
-    * See below for configuring additional environments
+In some cases (such as recent Ubuntu systems), it may be necessary to overcome failures of password authentication from
+localhost. To allow access on Ubuntu, set localhost connections via hostname, ipv4, and ipv6 from peer/md5 to trust in: /etc/postgresql/<version>/pg_hba.conf
 
-### Setting up GraphQL frontend
-The database migrations sets up prerequisites for a GraphQL API, which can be generated with Postgraphile.
-To present the API as specified [here](https://github.com/makerdao/vulcan.spec/blob/master/mcd.graphql):
+(It should be noted that trusted auth should only be enabled on systems without sensitive data in them: development and local test databases)
 
-1. Install Postgraphile: `npm install -g postgraphile`
-1. Invoke `postgraphile --connection postgres://[superuser]:[password]@localhost:5432/vulcanize_public --schema api --disable-default-mutations --no-ignore-rbac --watch --enhance-graphiql`
-1. The GraphiQL frontend can be found at `localhost:5000/graphiql`, and the GraphQL endpoint at `/graphql`
+### Running With Docker
+#### Running `headerSync`
+`headerSync` Docker images are located in the [MakerDao Dockerhub organization](https://hub.docker.com/repository/docker/makerdao/vdb-headersync).
 
-## Configuration
-- To use a local Ethereum node, copy `environments/public.toml.example` to
-  `environments/public.toml` and update the `ipcPath` and `levelDbPath`.
-  - `ipcPath` should match the local node's IPC filepath:
-      - For Geth:
-        - The IPC file is called `geth.ipc`.
-        - The geth IPC file path is printed to the console when you start geth.
-        - The default location is:
-          - Mac: `<full home path>/Library/Ethereum`
-          - Linux: `<full home path>/ethereum/geth.ipc`
+Start `headerSync`:
+```
+docker run -e DATABASE_USER=<user> -e DATABASE_PASSWORD=<pw> -e DATABASE_HOSTNAME=<host> -e DATABASE_PORT=<port> -e DATABASE_NAME=<name> -e STARTING_BLOCK_NUMBER=<starting block number> -e CLIENT_IPCPATH=<path> makerdao/vdb-headersync:latest
+```
+- `STARTING_BLOCK_NUMBER` indicates where to start syncing raw headers. If you don't care about headers before the contracts
+of interest were deployed, it is recommended to use the earliest deployment block of those contracts. Otherwise, the command
+will sync all headers starting at the genesis block.
+- To allow the docker container to connect to a local database and a local Ethereum node:
+    - when running on Linux include `--network=host`
+    - when running on MacOSX use `host.docker.internal` as the `DATABASE_HOSTNAME` and as the host in the `CLIENT_IPCPATH`
 
-      - For Parity:
-        - The IPC file is called `jsonrpc.ipc`.
-        - The default location is:
-          - Mac: `<full home path>/Library/Application\ Support/io.parity.ethereum/`
-          - Linux: `<full home path>/local/share/io.parity.ethereum/`
-          
-  - `levelDbPath` should match Geth's chaindata directory path.
-      - The geth LevelDB chaindata path is printed to the console when you start geth.
-      - The default location is:
-          - Mac: `<full home path>/Library/Ethereum/geth/chaindata`
-          - Linux: `<full home path>/ethereum/geth/chaindata`
-      - `levelDbPath` is irrelevant (and `coldImport` is currently unavailable) if only running parity.
+#### Running `execute`
+`execute` Docker images are located in the [MakerDao Dockerhub organization](https://hub.docker.com/repository/docker/makerdao/vdb-execute).
+See the [Docker README](./dockerfiles/README.md) for further information.
 
-- See `environments/infura.toml` to configure commands to run against infura, if a local node is unavailable.
-- Copy `environments/local.toml.example` to `environments/local.toml` to configure commands to run against a local node such as [Ganache](https://truffleframework.com/ganache) or [ganache-cli](https://github.com/trufflesuite/ganache-clihttps://github.com/trufflesuite/ganache-cli).
+### With the CLI
 
-## Start syncing with postgres
-Syncs VulcanizeDB with the configured Ethereum node, populating blocks, transactions, receipts, and logs.
-This command is useful when you want to maintain a broad cache of what's happening on the blockchain.
-1. Start Ethereum node (**if fast syncing your Ethereum node, wait for initial sync to finish**)
-1. In a separate terminal start VulcanizeDB:
-    - `./vulcanizedb sync --config <config.toml> --starting-block-number <block-number>`
+1. Move to the project directory:
+```cd $GOPATH/src/github.com/makerdao/vulcanizedb```
 
-## Alternatively, sync from Geth's underlying LevelDB
-Sync VulcanizeDB from the LevelDB underlying a Geth node.
-1. Assure node is not running, and that it has synced to the desired block height.
-1. Start vulcanize_db
-   - `./vulcanizedb coldImport --config <config.toml>`
-1. Optional flags:
-    - `--starting-block-number <block number>`/`-s <block number>`: block number to start syncing from
-    - `--ending-block-number <block number>`/`-e <block number>`: block number to sync to
-    - `--all`/`-a`: sync all missing blocks
+1. Be sure you have enabled Go Modules (`export GO111MODULE=on`), and build the executable with:
+```make build```
 
-## Alternatively, only sync the headers
-Syncs VulcanizeDB with the configured Ethereum node, populating only block headers.
-This command is useful when you want a minimal baseline from which to track targeted data on the blockchain (e.g. individual smart contract storage values).
-1. Start Ethereum node
-1. In a separate terminal start VulcanizeDB:
-    - `./vulcanizedb headerSync --config <config.toml> --starting-block-number <block-number>`
+#### Running `headerSync`
+```./vulcanizedb headerSync --config <config.toml> --starting-block-number <block-number>```
 
-## Continuously sync Maker event logs from header sync
-Continuously syncs Maker event logs from the configured Ethereum node based on the populated block headers.
-This includes logs related to auctions, multi-collateral dai, and price feeds.
-This command requires that the `headerSync` process is also being run so as to be able to sync in real time.
+For more information, see the [VulcanizeDB data-syncing documentation](https://github.com/makerdao/vulcanizedb/blob/staging/documentation/data-syncing.md).
 
-1. Start Ethereum node (or plan to configure the commands to point to a remote IPC path).
-1. In a separate terminal run the headerSync command (see above).
-1. In another terminal window run the continuousLogSync command:
-  - `./vulcanizedb continuousLogSync --config <config.toml>`
-  - An option `--transformers` flag may be passed to the command to specific which transformers to execute, this will default to all transformers if the flag is not passed.
-    - `./vulcanizedb continuousLogSync --config environments/private.toml --transformers="priceFeed"`
-    - see the `buildTransformerInitializerMap` method in `cmd/continuousLogSync.go` for available transformers
+#### Running `execute`
+Instead of running `execute`, you will also need to `compose` the transformer initializer plugin prior to execution. This
+step is not explicitly required when using Docker because it is included in the `vdb-execute` container.
 
-## Backfill Maker event logs from header sync
-Backfills Maker event logs from the configured Ethereum node based on the populated block headers.
-This includes logs related to auctions, multi-collateral dai, and price feeds.
-This command requires that a header sync (see command above) has previously been run.
+There is a convenience command called `composeAndExecute` in `vulcanizedb` which encapsulates both composing the plugin, and then
+executing it. 
 
-_Since auction/mcd contracts have not yet been deployed, this command will need to be run a local blockchain at the moment. As such, a new environment file will need to be added. See `environments/local.toml.example`._
+```
+./vulcanizedb composeAndExecute --config=$GOPATH/makerdao/vdb-mcd-transformers/environments/mcdTransformers.toml
+```
+   
+Notes:
+- Make sure that `vulcanizedb` and `vdb-mcd-transformers` versions are compatible. `vulcanizedb` will default to grabbing
+the [most recent vdb-mcd-transformers release](https://github.com/makerdao/vdb-mcd-transformers/releases). You can check
+the `vdb-mcd-transformers` [go.mod](./go.mod) file to see what `vulcanizedb` version is expects.
+- Make sure that the transformers in the config file you're using match up with the ones included in the release.
+- The dependencies between the two repositories need to be in sync, otherwise the plugins will not be able to be composed properly.
+There is a [script](https://github.com/makerdao/vulcanizedb/blob/staging/scripts/gomoderator.py) in the VulcanizeDB
+repository to take care of this. This mismatch of dependencies versions should not happen if two compatible releases are
+used, but is possible in development.
+- If you need to use a different dependency than what is currently defined in `go.mod` in either repository, it may be
+helpful to look into [the replace directive](https://github.com/golang/go/wiki/Modules#when-should-i-use-the-replace-directive).
+This instruction enables you to point at a fork or the local filesystem for dependency resolution.
+- If you are running into issues, ensure that `GOPATH` is defined in your shell. If necessary, `GOPATH` can be set in 
+`~/.bashrc` or `~/.bash_profile`, depending upon your system. It can be additionally helpful to add `$GOPATH/bin` to your
+shell's `$PATH`.
 
-1. Start Ethereum node
-1. In a separate terminal run the backfill command:
-  - `./vulcanizedb backfillMakerLogs --config <config.toml>`
-  
-## Running the Tests
+### Exposing the data
+[Postgraphile](https://www.graphile.org/postgraphile/) is used to expose GraphQL endpoints for our database schemas, this is described in detail [here](documentation/postgraphile.md).
+
+### Tests
+- Set the ipc path to a Kovan node either by:
+    - replacing the empty `ipcPath` in the `environments/testing.toml` with a path to a full node's eth_jsonrpc endpoint (e.g. local geth node ipc path or infura url)
+    - Or, setting the INFURA_URL environment variable
 - `make test` will run the unit tests and skip the integration tests
-- `make integrationtest` will run the just the integration tests
+- `make integrationtest` will run just the integration tests
+- `make test` and `make integrationtest` setup a clean `vulcanize_testing` db
 
-## Deploying
-1. you will need to make sure you have ssh agent running and your ssh key added to it. instructions [here](https://developer.github.com/v3/guides/using-ssh-agent-forwarding/#your-key-must-be-available-to-ssh-agent)
-1. `go get -u github.com/pressly/sup/cmd/sup`
-1. `sup staging deploy`
+## Contributing
+Contributions are welcome!
+
+VulcanizeDB follows the [Contributor Covenant Code of Conduct](https://www.contributor-covenant.org/version/1/4/code-of-conduct).
+
+For more information on contributing, please see [here](documentation/contributing.md).
+
+## License
+[AGPL-3.0](LICENSE) © Vulcanize Inc
