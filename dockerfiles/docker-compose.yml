@@ -6,11 +6,32 @@
 version: "3.7"
 services:
   header-sync:
-    image: makerdao/vdb-headersync
+    image: makerdao/vdb-headersync # add tag to image
     env_file: vdb-header-sync.env
+    depends_on:
+      - postgres
     restart: unless-stopped
 
+  # Add wait-for-it to allow postgres to start
   execute:
     image: makerdao/vdb-execute
     env_file: vdb-execute.env
+    depends_on:
+      - postgres
     restart: unless-stopped
+
+  postgres: # TODO user/pwd?
+    image: postgres:12.1-alpine
+    ports: 5432
+    environment:
+      - POSTGRES_DB=vdb
+    restart: unless-stopped
+
+  postgraphile:
+    image: m0ar/vdb-postgraphile # TODO change for makerdao/vdb-postgraphile
+    environment:
+      - SCHEMAS=api
+      - DATABASE_URL="postgres://postgres:postgres@vdb:5432"
+    depends_on:
+      - postgres
+    restart: always
