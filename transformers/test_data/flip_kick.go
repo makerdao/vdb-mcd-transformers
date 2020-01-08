@@ -61,7 +61,7 @@ var rawFlipKickLog = types.Log{
 	Removed:     false,
 }
 
-var FlipKickHeaderSyncLog = core.HeaderSyncLog{
+var FlipKickEventLog = core.EventLog{
 	ID:          int64(rand.Int31()),
 	HeaderID:    int64(rand.Int31()),
 	Log:         rawFlipKickLog,
@@ -85,8 +85,8 @@ var flipKickModel = event.InsertionModel{
 		constants.GalColumn,
 	},
 	ColumnValues: event.ColumnValues{
-		event.HeaderFK:        FlipKickHeaderSyncLog.HeaderID,
-		event.LogFK:           FlipKickHeaderSyncLog.ID,
+		event.HeaderFK:        FlipKickEventLog.HeaderID,
+		event.LogFK:           FlipKickEventLog.ID,
 		constants.BidIDColumn: flipID.String(),
 		constants.LotColumn:   lot.String(),
 		constants.BidColumn:   bid.String(),

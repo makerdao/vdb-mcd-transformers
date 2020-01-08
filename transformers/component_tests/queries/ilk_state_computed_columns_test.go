@@ -48,8 +48,8 @@ var _ = Describe("Ilk state computed columns", func() {
 		blockOne = rand.Int()
 		timestampOne = int(rand.Int31())
 		headerOne = createHeader(blockOne, timestampOne, headerRepository)
-		fakeHeaderSyncLog := test_data.CreateTestLog(headerOne.Id, db)
-		logID = fakeHeaderSyncLog.ID
+		fakeEventLog := test_data.CreateTestLog(headerOne.Id, db)
+		logID = fakeEventLog.ID
 
 		ilkValues := test_helpers.GetIlkValues(0)
 		test_helpers.CreateIlk(db, headerOne, ilkValues, test_helpers.FakeIlkVatMetadatas, test_helpers.FakeIlkCatMetadatas, test_helpers.FakeIlkJugMetadatas, test_helpers.FakeIlkSpotMetadatas)

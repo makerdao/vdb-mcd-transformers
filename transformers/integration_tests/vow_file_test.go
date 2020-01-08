@@ -66,10 +66,10 @@ var _ = Describe("VowFile LogNoteTransformer", func() {
 		logs, err := logFetcher.FetchLogs(addresses, topics, header)
 		Expect(err).NotTo(HaveOccurred())
 
-		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+		eventLogs := test_data.CreateLogs(header.Id, logs, db)
 
 		tr := initializer.NewTransformer(db)
-		err = tr.Execute(headerSyncLogs)
+		err = tr.Execute(eventLogs)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []vowFileModel

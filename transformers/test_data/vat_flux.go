@@ -44,7 +44,7 @@ var rawVatFluxLog = types.Log{
 	Removed:     false,
 }
 
-var VatFluxHeaderSyncLog = core.HeaderSyncLog{
+var VatFluxEventLog = core.EventLog{
 	ID:          int64(rand.Int31()),
 	HeaderID:    int64(rand.Int31()),
 	Log:         rawVatFluxLog,
@@ -61,8 +61,8 @@ var vatFluxModel = event.InsertionModel{
 		constants.SrcColumn: "0x07Fa9eF6609cA7921112231F8f195138ebbA2977",
 		constants.DstColumn: "0x7340e006f4135BA6970D43bf43d88DCAD4e7a8CA",
 		constants.WadColumn: "1000000000000",
-		event.HeaderFK:      VatFluxHeaderSyncLog.HeaderID,
-		event.LogFK:         VatFluxHeaderSyncLog.ID,
+		event.HeaderFK:      VatFluxEventLog.HeaderID,
+		event.LogFK:         VatFluxEventLog.ID,
 	},
 }
 

@@ -29,14 +29,14 @@ var _ = Describe("Vat move transformer", func() {
 	var transformer = vat_move.Transformer{}
 
 	It("returns err if logs are missing topics", func() {
-		badLog := core.HeaderSyncLog{}
-		_, err := transformer.ToModels(constants.VatABI(), []core.HeaderSyncLog{badLog}, nil)
+		badLog := core.EventLog{}
+		_, err := transformer.ToModels(constants.VatABI(), []core.EventLog{badLog}, nil)
 
 		Expect(err).To(HaveOccurred())
 	})
 
 	It("converts a log to a model", func() {
-		models, err := transformer.ToModels(constants.VatABI(), []core.HeaderSyncLog{test_data.VatMoveHeaderSyncLog}, nil)
+		models, err := transformer.ToModels(constants.VatABI(), []core.EventLog{test_data.VatMoveEventLog}, nil)
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(len(models)).To(Equal(1))

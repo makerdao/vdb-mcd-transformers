@@ -45,7 +45,7 @@ var rawDealLog = types.Log{
 	Removed:     false,
 }
 
-var DealHeaderSyncLog = core.HeaderSyncLog{
+var DealEventLog = core.EventLog{
 	ID:          int64(rand.Int31()),
 	HeaderID:    int64(rand.Int31()),
 	Log:         rawDealLog,
@@ -62,8 +62,8 @@ var dealModel = event.InsertionModel{
 		constants.BidIDColumn,
 	},
 	ColumnValues: event.ColumnValues{
-		event.HeaderFK:        DealHeaderSyncLog.HeaderID,
-		event.LogFK:           DealHeaderSyncLog.ID,
+		event.HeaderFK:        DealEventLog.HeaderID,
+		event.LogFK:           DealEventLog.ID,
 		constants.BidIDColumn: "10000000000000000",
 	},
 }

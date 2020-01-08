@@ -32,7 +32,7 @@ import (
 
 type Transformer struct{}
 
-func (Transformer) toEntities(contractAbi string, logs []core.HeaderSyncLog) ([]SpotPokeEntity, error) {
+func (Transformer) toEntities(contractAbi string, logs []core.EventLog) ([]SpotPokeEntity, error) {
 	var entities []SpotPokeEntity
 	for _, log := range logs {
 		var entity SpotPokeEntity
@@ -56,7 +56,7 @@ func (Transformer) toEntities(contractAbi string, logs []core.HeaderSyncLog) ([]
 	return entities, nil
 }
 
-func (t Transformer) ToModels(abi string, logs []core.HeaderSyncLog, db *postgres.DB) ([]event.InsertionModel, error) {
+func (t Transformer) ToModels(abi string, logs []core.EventLog, db *postgres.DB) ([]event.InsertionModel, error) {
 	entities, entityErr := t.toEntities(abi, logs)
 	if entityErr != nil {
 		return nil, fmt.Errorf("SpotPoke transformer couldn't convert logs to entities: %v", entityErr)

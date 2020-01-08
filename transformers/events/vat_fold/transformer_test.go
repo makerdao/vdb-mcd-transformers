@@ -36,14 +36,14 @@ var _ = Describe("Vat fold transformer", func() {
 	})
 
 	It("returns err if log missing topics", func() {
-		badLog := core.HeaderSyncLog{}
+		badLog := core.EventLog{}
 
-		_, err := transformer.ToModels(constants.VatABI(), []core.HeaderSyncLog{badLog}, db)
+		_, err := transformer.ToModels(constants.VatABI(), []core.EventLog{badLog}, db)
 		Expect(err).To(HaveOccurred())
 	})
 
 	It("converts a log with positive rate to an model", func() {
-		models, err := transformer.ToModels(constants.VatABI(), []core.HeaderSyncLog{test_data.VatFoldHeaderSyncLogWithPositiveRate}, db)
+		models, err := transformer.ToModels(constants.VatABI(), []core.EventLog{test_data.VatFoldEventLogWithPositiveRate}, db)
 		Expect(err).NotTo(HaveOccurred())
 
 		var ilkID int64
@@ -56,7 +56,7 @@ var _ = Describe("Vat fold transformer", func() {
 	})
 
 	It("converts a log with negative rate to an model", func() {
-		models, err := transformer.ToModels(constants.VatABI(), []core.HeaderSyncLog{test_data.VatFoldHeaderSyncLogWithNegativeRate}, db)
+		models, err := transformer.ToModels(constants.VatABI(), []core.EventLog{test_data.VatFoldEventLogWithNegativeRate}, db)
 		Expect(err).NotTo(HaveOccurred())
 
 		var ilkID int64

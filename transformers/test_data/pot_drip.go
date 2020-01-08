@@ -28,7 +28,7 @@ var rawPotDripLog = types.Log{
 	Removed:     false,
 }
 
-var PotDripHeaderSyncLog = core.HeaderSyncLog{
+var PotDripEventLog = core.EventLog{
 	ID:          int64(rand.Int31()),
 	HeaderID:    int64(rand.Int31()),
 	Log:         rawPotDripLog,
@@ -40,8 +40,8 @@ var potDripModel = event.InsertionModel{
 	TableName:      constants.PotDripTable,
 	OrderedColumns: []event.ColumnName{event.HeaderFK, event.LogFK, constants.MsgSenderColumn},
 	ColumnValues: event.ColumnValues{
-		event.HeaderFK: PotDripHeaderSyncLog.HeaderID,
-		event.LogFK:    PotDripHeaderSyncLog.ID,
+		event.HeaderFK: PotDripEventLog.HeaderID,
+		event.LogFK:    PotDripEventLog.ID,
 		// MsgSender column
 	},
 }

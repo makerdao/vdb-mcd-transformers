@@ -40,14 +40,14 @@ var _ = Describe("PotExit Transformer", func() {
 			header)
 		Expect(fetchErr).NotTo(HaveOccurred())
 
-		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+		eventLogs := test_data.CreateLogs(header.Id, logs, db)
 
 		tr := event.ConfiguredTransformer{
 			Config:      potExitConfig,
 			Transformer: pot_exit.Transformer{},
 		}.NewTransformer(db)
 
-		transformErr := tr.Execute(headerSyncLogs)
+		transformErr := tr.Execute(eventLogs)
 		Expect(transformErr).NotTo(HaveOccurred())
 
 		var dbResult potExitModel

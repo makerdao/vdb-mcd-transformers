@@ -39,7 +39,7 @@ var _ = Describe("VatFork transformer", func() {
 	})
 
 	It("Converts a log with a negative dink and dart to a model", func() {
-		log := []core.HeaderSyncLog{test_data.VatForkHeaderSyncLogWithNegativeDinkDart}
+		log := []core.EventLog{test_data.VatForkEventLogWithNegativeDinkDart}
 		models, err := transformer.ToModels(constants.VatABI(), log, db)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -53,7 +53,7 @@ var _ = Describe("VatFork transformer", func() {
 	})
 
 	It("Converts a log with a positive dink and dart to a model", func() {
-		log := []core.HeaderSyncLog{test_data.VatForkHeaderSyncLogWithPositiveDinkDart}
+		log := []core.EventLog{test_data.VatForkEventLogWithPositiveDinkDart}
 		models, err := transformer.ToModels(constants.VatABI(), log, db)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -67,7 +67,7 @@ var _ = Describe("VatFork transformer", func() {
 	})
 
 	It("Returns an error there are missing topics", func() {
-		badLog := core.HeaderSyncLog{
+		badLog := core.EventLog{
 			Log: types.Log{
 				Topics: []common.Hash{
 					common.HexToHash("0x"),
@@ -76,17 +76,17 @@ var _ = Describe("VatFork transformer", func() {
 				}},
 		}
 
-		_, err := transformer.ToModels(constants.VatABI(), []core.HeaderSyncLog{badLog}, db)
+		_, err := transformer.ToModels(constants.VatABI(), []core.EventLog{badLog}, db)
 		Expect(err).To(HaveOccurred())
 	})
 
 	It("returns err if log is missing data", func() {
-		badLog := core.HeaderSyncLog{
+		badLog := core.EventLog{
 			Log: types.Log{
 				Topics: []common.Hash{{}, {}, {}, {}},
 			}}
 
-		_, err := transformer.ToModels(constants.VatABI(), []core.HeaderSyncLog{badLog}, db)
+		_, err := transformer.ToModels(constants.VatABI(), []core.EventLog{badLog}, db)
 		Expect(err).To(HaveOccurred())
 	})
 })

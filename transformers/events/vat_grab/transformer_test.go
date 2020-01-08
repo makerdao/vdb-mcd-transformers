@@ -40,28 +40,28 @@ var _ = Describe("Vat grab transformer", func() {
 	})
 
 	It("returns err if log is missing topics", func() {
-		badLog := core.HeaderSyncLog{
+		badLog := core.EventLog{
 			Log: types.Log{
 				Data: []byte{1, 1, 1, 1, 1},
 			}}
 
-		_, err := transformer.ToModels(constants.VatABI(), []core.HeaderSyncLog{badLog}, db)
+		_, err := transformer.ToModels(constants.VatABI(), []core.EventLog{badLog}, db)
 		Expect(err).To(HaveOccurred())
 	})
 
 	It("returns err if log is missing data", func() {
-		badLog := core.HeaderSyncLog{
+		badLog := core.EventLog{
 			Log: types.Log{
 				Topics: []common.Hash{{}, {}, {}, {}},
 			}}
 
-		_, err := transformer.ToModels(constants.VatABI(), []core.HeaderSyncLog{badLog}, db)
+		_, err := transformer.ToModels(constants.VatABI(), []core.EventLog{badLog}, db)
 		Expect(err).To(HaveOccurred())
 	})
 
 	It("converts a log with positive dink to a model", func() {
-		log := []core.HeaderSyncLog{test_data.VatGrabHeaderSyncLogWithPositiveDink}
-		models, err := transformer.ToModels(constants.VatABI(), []core.HeaderSyncLog{test_data.VatGrabHeaderSyncLogWithPositiveDink}, db)
+		log := []core.EventLog{test_data.VatGrabEventLogWithPositiveDink}
+		models, err := transformer.ToModels(constants.VatABI(), []core.EventLog{test_data.VatGrabEventLogWithPositiveDink}, db)
 		Expect(err).NotTo(HaveOccurred())
 
 		ilk := log[0].Log.Topics[1].Hex()
@@ -77,8 +77,8 @@ var _ = Describe("Vat grab transformer", func() {
 	})
 
 	It("converts a log with negative dink to a model", func() {
-		log := []core.HeaderSyncLog{test_data.VatGrabHeaderSyncLogWithNegativeDink}
-		models, err := transformer.ToModels(constants.VatABI(), []core.HeaderSyncLog{test_data.VatGrabHeaderSyncLogWithNegativeDink}, db)
+		log := []core.EventLog{test_data.VatGrabEventLogWithNegativeDink}
+		models, err := transformer.ToModels(constants.VatABI(), []core.EventLog{test_data.VatGrabEventLogWithNegativeDink}, db)
 		Expect(err).NotTo(HaveOccurred())
 
 		ilk := log[0].Log.Topics[1].Hex()

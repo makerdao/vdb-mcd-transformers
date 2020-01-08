@@ -33,7 +33,7 @@ import (
 
 type Transformer struct{}
 
-func (Transformer) toEntities(contractAbi string, logs []core.HeaderSyncLog) ([]FlopKickEntity, error) {
+func (Transformer) toEntities(contractAbi string, logs []core.EventLog) ([]FlopKickEntity, error) {
 	var results []FlopKickEntity
 	for _, log := range logs {
 		var entity FlopKickEntity
@@ -56,7 +56,7 @@ func (Transformer) toEntities(contractAbi string, logs []core.HeaderSyncLog) ([]
 	return results, nil
 }
 
-func (t Transformer) ToModels(abi string, logs []core.HeaderSyncLog, db *postgres.DB) ([]event.InsertionModel, error) {
+func (t Transformer) ToModels(abi string, logs []core.EventLog, db *postgres.DB) ([]event.InsertionModel, error) {
 	var results []event.InsertionModel
 	entities, entityErr := t.toEntities(abi, logs)
 	if entityErr != nil {

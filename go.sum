@@ -156,8 +156,10 @@ github.com/konsorten/go-windows-terminal-sequences v1.0.2 h1:DB17ag19krx9CFsz4o3
 github.com/konsorten/go-windows-terminal-sequences v1.0.2/go.mod h1:T0+1ngSBFLxvqU3pZ+m/2kptfBszLMUkC4ZK/EgS/cQ=
 github.com/kr/logfmt v0.0.0-20140226030751-b84e30acd515 h1:T+h1c/A9Gawja4Y9mFVWj2vyii2bbUNDw3kt9VxK2EY=
 github.com/kr/logfmt v0.0.0-20140226030751-b84e30acd515/go.mod h1:+0opPa2QZZtGFBFZlji/RkVcI2GknAs/DXo4wKdlNEc=
+github.com/kr/pretty v0.1.0 h1:L/CwN0zerZDmRFUapSPitk6f+Q3+0za1rQkzVuMiMFI=
 github.com/kr/pretty v0.1.0/go.mod h1:dAy3ld7l9f0ibDNOQOHHMYYIIbhfbHSm3C4ZsoJORNo=
 github.com/kr/pty v1.1.1/go.mod h1:pFQYn66WHrOpPYNljwOMqo10TkYh1fy3cYio2l3bCsQ=
+github.com/kr/text v0.1.0 h1:45sCR5RtlFHMR4UwH9sdQ5TC8v0qDQCHnXt+kaKSTVE=
 github.com/kr/text v0.1.0/go.mod h1:4Jbv+DJW3UT/LiOwJeYQe1efqtUx/iVham/4vfdArNI=
 github.com/kylelemons/godebug v1.1.0/go.mod h1:9/0rRGxNHcop5bhtWyNeEfOS8JIWk580+fNqagV/RAw=
 github.com/lib/pq v1.0.0 h1:X5PMW56eZitiTeO7tKzZxFCSpbFZJtkMMooicw2us9A=
@@ -173,6 +175,10 @@ github.com/makerdao/vulcanizedb v0.0.11-rc.1.0.20191218145154-58047e576bd6 h1:cV
 github.com/makerdao/vulcanizedb v0.0.11-rc.1.0.20191218145154-58047e576bd6/go.mod h1:FZZ/SKy+7Ejdc+4Wa5oTGrr2cFuaCgGBxc2xoifaEoY=
 github.com/makerdao/vulcanizedb v0.0.11-rc.1.0.20200107121621-5e309d9d5639 h1:+zw+vSwFo1hoDRAWrVG/QCRElQO0LKaWe0zenAJ2N74=
 github.com/makerdao/vulcanizedb v0.0.11-rc.1.0.20200107121621-5e309d9d5639/go.mod h1:FZZ/SKy+7Ejdc+4Wa5oTGrr2cFuaCgGBxc2xoifaEoY=
+github.com/makerdao/vulcanizedb v0.0.11-rc.1.0.20200108195001-bf0b51219826 h1:1r2UD9w2hlAhsXIWEcrLfSExL1RXu6J3iADHrYvyMhs=
+github.com/makerdao/vulcanizedb v0.0.11-rc.1.0.20200108195001-bf0b51219826/go.mod h1:FZZ/SKy+7Ejdc+4Wa5oTGrr2cFuaCgGBxc2xoifaEoY=
+github.com/makerdao/vulcanizedb v0.0.11-rc.1.0.20200113164544-b2dcd150f864 h1:+C3rrB8JCscJ3DttnrtepI6kMMot7Ffs5uAwvKOkqlw=
+github.com/makerdao/vulcanizedb v0.0.11-rc.1.0.20200113164544-b2dcd150f864/go.mod h1:FZZ/SKy+7Ejdc+4Wa5oTGrr2cFuaCgGBxc2xoifaEoY=
 github.com/mattn/go-colorable v0.1.4 h1:snbPLB8fVfU9iwbbo30TPtbLRzwWu6aJS6Xh4eaaviA=
 github.com/mattn/go-colorable v0.1.4/go.mod h1:U0ppj6V5qS13XJ6of8GYAs25YV2eR4EVcfRqFIhoBtE=
 github.com/mattn/go-isatty v0.0.8/go.mod h1:Iq45c/XA43vh69/j3iqttzPXn0bhXyGjM0Hdxcsrc5s=
@@ -403,6 +409,7 @@ gopkg.in/alecthomas/kingpin.v2 v2.2.6/go.mod h1:FMv+mEhP44yOT+4EoQTLFTRgOQ1FBLks
 gopkg.in/bsm/ratelimit.v1 v1.0.0-20160220154919-db14e161995a/go.mod h1:KF9sEfUPAXdG8Oev9e99iLGnl2uJMjc5B+4y3O7x610=
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405 h1:yhCVgyC4o1eVCa2tZl7eS0r+SDo693bJlVdllGtEeKM=
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405/go.mod h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0=
+gopkg.in/check.v1 v1.0.0-20180628173108-788fd7840127 h1:qIbj1fsPNlZgppZ+VLlY7N33q108Sa+fhmuc+sWQYwY=
 gopkg.in/check.v1 v1.0.0-20180628173108-788fd7840127/go.mod h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0=
 gopkg.in/fsnotify.v1 v1.4.7 h1:xOHLXZwVvI9hhs+cLKq5+I5onOuwQLhQwiu63xxlHs4=
 gopkg.in/fsnotify.v1 v1.4.7/go.mod h1:Tz8NjZHkW78fSQdbUxIjBTcgA1z1m8ZHf0WmKUhAMys=

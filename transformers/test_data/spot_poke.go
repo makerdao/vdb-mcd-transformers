@@ -40,7 +40,7 @@ var rawEthSpotPokeLog = types.Log{
 	Index:       2,
 	Removed:     false,
 }
-var SpotPokeHeaderSyncLog = core.HeaderSyncLog{
+var SpotPokeEventLog = core.EventLog{
 	ID:          int64(rand.Int31()),
 	HeaderID:    int64(rand.Int31()),
 	Log:         rawEthSpotPokeLog,
@@ -62,8 +62,8 @@ var spotPokeModel = event.InsertionModel{
 		constants.SpotColumn,
 	},
 	ColumnValues: event.ColumnValues{
-		event.HeaderFK:        SpotPokeHeaderSyncLog.HeaderID,
-		event.LogFK:           SpotPokeHeaderSyncLog.ID,
+		event.HeaderFK:        SpotPokeEventLog.HeaderID,
+		event.LogFK:           SpotPokeEventLog.ID,
 		constants.ValueColumn: "89066421500000000.000000",
 		constants.SpotColumn:  "46877063947368421052631578",
 	},

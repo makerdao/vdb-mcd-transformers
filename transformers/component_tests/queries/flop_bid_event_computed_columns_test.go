@@ -38,15 +38,15 @@ var _ = Describe("Flop bid event computed columns", func() {
 		timestampOne = int(rand.Int31())
 		headerOne = createHeader(blockOne, timestampOne, headerRepo)
 
-		flopKickHeaderSyncLog := test_data.CreateTestLog(headerOne.Id, db)
-		flopKickGethLog = flopKickHeaderSyncLog.Log
+		flopKickEventLog := test_data.CreateTestLog(headerOne.Id, db)
+		flopKickGethLog = flopKickEventLog.Log
 
 		addressId, addressErr := shared.GetOrCreateAddress(contractAddress, db)
 		Expect(addressErr).NotTo(HaveOccurred())
 
 		flopKickEvent = test_data.FlopKickModel()
 		flopKickEvent.ColumnValues[event.HeaderFK] = headerOne.Id
-		flopKickEvent.ColumnValues[event.LogFK] = flopKickHeaderSyncLog.ID
+		flopKickEvent.ColumnValues[event.LogFK] = flopKickEventLog.ID
 		flopKickEvent.ColumnValues[event.AddressFK] = addressId
 		flopKickEvent.ColumnValues[constants.BidIDColumn] = strconv.Itoa(fakeBidId)
 		insertFlopKickErr := event.PersistModels([]event.InsertionModel{flopKickEvent}, db)
@@ -83,7 +83,7 @@ var _ = Describe("Flop bid event computed columns", func() {
 				TxTo:             test_helpers.GetValidNullString("toAddress"),
 			}
 
-			_, insertErr := db.Exec(`INSERT INTO header_sync_transactions (header_id, hash, tx_from, tx_index, tx_to)
+			_, insertErr := db.Exec(`INSERT INTO public.transactions (header_id, hash, tx_from, tx_index, tx_to)
 				VALUES ($1, $2, $3, $4, $5)`, headerOne.Id, expectedTx.TransactionHash, expectedTx.TxFrom,
 				expectedTx.TransactionIndex, expectedTx.TxTo)
 			Expect(insertErr).NotTo(HaveOccurred())
@@ -110,7 +110,7 @@ var _ = Describe("Flop bid event computed columns", func() {
 				TxTo:        test_helpers.GetValidNullString("wrongToAddress"),
 			}
 
-			_, insertErr := db.Exec(`INSERT INTO header_sync_transactions (header_id, hash, tx_from, tx_index, tx_to)
+			_, insertErr := db.Exec(`INSERT INTO public.transactions (header_id, hash, tx_from, tx_index, tx_to)
 				VALUES ($1, $2, $3, $4, $5)`, headerOne.Id, wrongTx.TransactionHash, wrongTx.TxFrom,
 				wrongTx.TransactionIndex, wrongTx.TxTo)
 			Expect(insertErr).NotTo(HaveOccurred())
@@ -138,7 +138,7 @@ var _ = Describe("Flop bid event computed columns", func() {
 				TxTo:        test_helpers.GetValidNullString("wrongToAddress"),
 			}
 
-			_, insertErr := db.Exec(`INSERT INTO header_sync_transactions (header_id, hash, tx_from, tx_index, tx_to)
+			_, insertErr := db.Exec(`INSERT INTO public.transactions (header_id, hash, tx_from, tx_index, tx_to)
 				VALUES ($1, $2, $3, $4, $5)`, headerZero.Id, wrongTx.TransactionHash, wrongTx.TxFrom,
 				wrongTx.TransactionIndex, wrongTx.TxTo)
 			Expect(insertErr).NotTo(HaveOccurred())

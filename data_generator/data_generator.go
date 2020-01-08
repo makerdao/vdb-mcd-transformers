@@ -13,6 +13,7 @@ import (
 	"github.com/jmoiron/sqlx"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/cat"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/jug"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/vat"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/pkg/core"
@@ -26,7 +27,7 @@ const (
 	headerSql = `INSERT INTO public.headers (hash, block_number, raw, block_timestamp, eth_node_id)
 		VALUES ($1, $2, $3, $4, $5) RETURNING id`
 	nodeSql = `INSERT INTO public.eth_nodes (genesis_block, network_id, eth_node_id) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
-	txSql   = `INSERT INTO header_sync_transactions (header_id, hash, tx_from, tx_index, tx_to)
+	txSql   = `INSERT INTO public.transactions (header_id, hash, tx_from, tx_index, tx_to)
 		VALUES ($1, $2, $3, $4, $5)`
 	insertIlkQuery = `INSERT INTO maker.ilks (ilk, identifier) VALUES ($1, $2) RETURNING id`
 	insertUrnQuery = `INSERT INTO maker.urns (identifier, ilk_id) VALUES ($1, $2) RETURNING id`
@@ -37,7 +38,7 @@ const (
 		selectedAddressId AS (
 			SELECT id FROM public.addresses WHERE address = '0x1234567890123456789012345678901234567890'
 		)
-		INSERT INTO public.header_sync_logs (header_id, address) VALUES ($1, (
+		INSERT INTO public.event_logs (header_id, address) VALUES ($1, (
 			SELECT id FROM insertedAddressId
 			UNION
 			SELECT id FROM selectedAddressId
@@ -432,7 +433,7 @@ func (state *GeneratorState) insertCurrentBlockTx() error {
 }
 
 func (state *GeneratorState) insertDiffRecord() error {
-	fakeRawDiff := fakes.GetFakeStorageDiffForHeader(state.currentHeader, common.Hash{}, common.Hash{}, common.Hash{})
+	fakeRawDiff := test_helpers.GetFakeStorageDiffForHeader(state.currentHeader, common.Hash{}, common.Hash{}, common.Hash{})
 	storageDiffRepo := repositories.NewStorageDiffRepository(state.db)
 	diffID, insertDiffErr := storageDiffRepo.CreateStorageDiff(fakeRawDiff)
 	state.currentDiffID = diffID

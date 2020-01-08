@@ -42,11 +42,11 @@ var _ = Describe("FlipKick Transformer", func() {
 	})
 
 	It("converts a log to a model", func() {
-		models, err := transformer.ToModels(constants.FlipABI(), []core.HeaderSyncLog{test_data.FlipKickHeaderSyncLog}, db)
+		models, err := transformer.ToModels(constants.FlipABI(), []core.EventLog{test_data.FlipKickEventLog}, db)
 		Expect(err).NotTo(HaveOccurred())
 
 		expectedKick := test_data.FlipKickModel()
-		addressId, addressErr := shared.GetOrCreateAddress(test_data.FlipKickHeaderSyncLog.Log.Address.Hex(), db)
+		addressId, addressErr := shared.GetOrCreateAddress(test_data.FlipKickEventLog.Log.Address.Hex(), db)
 		Expect(addressErr).NotTo(HaveOccurred())
 		expectedKick.ColumnValues[event.AddressFK] = addressId
 
@@ -54,7 +54,7 @@ var _ = Describe("FlipKick Transformer", func() {
 	})
 
 	It("returns an error if converting log to entity fails", func() {
-		_, err := transformer.ToModels("error abi", []core.HeaderSyncLog{test_data.FlipKickHeaderSyncLog}, db)
+		_, err := transformer.ToModels("error abi", []core.EventLog{test_data.FlipKickEventLog}, db)
 
 		Expect(err).To(HaveOccurred())
 	})

@@ -45,7 +45,7 @@ var rawJugDripLog = types.Log{
 	Removed:     false,
 }
 
-var JugDripHeaderSyncLog = core.HeaderSyncLog{
+var JugDripEventLog = core.EventLog{
 	ID:          int64(rand.Int31()),
 	HeaderID:    int64(rand.Int31()),
 	Log:         rawJugDripLog,
@@ -59,8 +59,8 @@ var jugDripModel = event.InsertionModel{
 		event.HeaderFK, constants.IlkColumn, event.LogFK,
 	},
 	ColumnValues: event.ColumnValues{
-		event.HeaderFK: JugDripHeaderSyncLog.HeaderID,
-		event.LogFK:    JugDripHeaderSyncLog.ID,
+		event.HeaderFK: JugDripEventLog.HeaderID,
+		event.LogFK:    JugDripEventLog.ID,
 		// Ilk column
 	},
 }

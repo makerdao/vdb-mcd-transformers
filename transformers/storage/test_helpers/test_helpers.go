@@ -7,9 +7,7 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vulcanizedb/libraries/shared/storage"
-
 	"github.com/makerdao/vulcanizedb/pkg/core"
-
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
@@ -39,7 +37,7 @@ func CreateFakeDiffRecord(db *postgres.DB) int64 {
 }
 
 func CreateFakeDiffRecordWithHeader(db *postgres.DB, header core.Header) int64 {
-	fakeRawDiff := fakes.GetFakeStorageDiffForHeader(header, common.Hash{}, common.Hash{}, common.Hash{})
+	fakeRawDiff := GetFakeStorageDiffForHeader(header, common.Hash{}, common.Hash{}, common.Hash{})
 	storageDiffRepo := repositories.NewStorageDiffRepository(db)
 	diffID, insertDiffErr := storageDiffRepo.CreateStorageDiff(fakeRawDiff)
 	Expect(insertDiffErr).NotTo(HaveOccurred())
@@ -48,7 +46,7 @@ func CreateFakeDiffRecordWithHeader(db *postgres.DB, header core.Header) int64 {
 }
 
 func CreateDiffRecord(db *postgres.DB, header core.Header, hashedAddress, key, value common.Hash) storage.PersistedDiff {
-	rawDiff := fakes.GetFakeStorageDiffForHeader(header, hashedAddress, key, value)
+	rawDiff := GetFakeStorageDiffForHeader(header, hashedAddress, key, value)
 
 	repo := repositories.NewStorageDiffRepository(db)
 	diffID, insertDiffErr := repo.CreateStorageDiff(rawDiff)
@@ -61,4 +59,14 @@ func CreateDiffRecord(db *postgres.DB, header core.Header, hashedAddress, key, v
 	}
 
 	return persistedDiff
+}
+
+func GetFakeStorageDiffForHeader(header core.Header, hashedAddress, storageKey, storageValue common.Hash) storage.RawDiff {
+	return storage.RawDiff{
+		HashedAddress: hashedAddress,
+		BlockHash:     common.HexToHash(header.Hash),
+		BlockHeight:   int(header.BlockNumber),
+		StorageKey:    storageKey,
+		StorageValue:  storageValue,
+	}
 }

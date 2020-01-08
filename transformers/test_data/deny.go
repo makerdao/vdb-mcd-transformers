@@ -29,7 +29,7 @@ var rawDenyLog = types.Log{
 	Removed:     false,
 }
 
-var DenyHeaderSyncLog = core.HeaderSyncLog{
+var DenyEventLog = core.EventLog{
 	ID:          int64(rand.Int31()),
 	HeaderID:    int64(rand.Int31()),
 	Log:         rawDenyLog,
@@ -42,7 +42,7 @@ var denyModel = event.InsertionModel{
 	SchemaName:     constants.MakerSchema,
 	TableName:      constants.DenyTable,
 	OrderedColumns: []event.ColumnName{event.HeaderFK, event.LogFK, event.AddressFK, constants.UsrColumn},
-	ColumnValues:   event.ColumnValues{event.HeaderFK: DenyHeaderSyncLog.HeaderID, event.LogFK: DenyHeaderSyncLog.ID},
+	ColumnValues:   event.ColumnValues{event.HeaderFK: DenyEventLog.HeaderID, event.LogFK: DenyEventLog.ID},
 }
 
 var rawVatDenyLog = types.Log{
@@ -62,7 +62,7 @@ var rawVatDenyLog = types.Log{
 	Removed:     false,
 }
 
-var VatDenyHeaderSyncLog = core.HeaderSyncLog{
+var VatDenyEventLog = core.EventLog{
 	ID:          int64(rand.Int31()),
 	HeaderID:    int64(rand.Int31()),
 	Log:         rawVatDenyLog,
@@ -76,7 +76,7 @@ var vatDenyModel = event.InsertionModel{
 	TableName:      constants.DenyTable,
 	OrderedColumns: []event.ColumnName{event.HeaderFK, event.LogFK, event.AddressFK, constants.UsrColumn},
 	ColumnValues: event.ColumnValues{
-		event.HeaderFK: VatDenyHeaderSyncLog.HeaderID,
-		event.LogFK:    VatDenyHeaderSyncLog.ID,
+		event.HeaderFK: VatDenyEventLog.HeaderID,
+		event.LogFK:    VatDenyEventLog.ID,
 	},
 }

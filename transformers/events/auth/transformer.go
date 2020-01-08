@@ -14,7 +14,7 @@ type Transformer struct {
 	TableName             event.TableName
 }
 
-func (t Transformer) ToModels(_ string, logs []core.HeaderSyncLog, db *postgres.DB) ([]event.InsertionModel, error) {
+func (t Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) ([]event.InsertionModel, error) {
 	numTopicsRequired := shared.ThreeTopicsRequired + t.LogNoteArgumentOffset
 	usrTopicIndex := 2 + t.LogNoteArgumentOffset
 	var models []event.InsertionModel

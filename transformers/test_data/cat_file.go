@@ -45,7 +45,7 @@ var rawCatFileChopLog = types.Log{
 	Removed:     false,
 }
 
-var CatFileChopHeaderSyncLog = core.HeaderSyncLog{
+var CatFileChopEventLog = core.EventLog{
 	ID:          int64(rand.Int31()),
 	HeaderID:    int64(rand.Int31()),
 	Log:         rawCatFileChopLog,
@@ -65,11 +65,11 @@ var catFileChopModel = event.InsertionModel{
 		event.LogFK,
 	},
 	ColumnValues: event.ColumnValues{
-		event.HeaderFK: CatFileChopHeaderSyncLog.HeaderID,
+		event.HeaderFK: CatFileChopEventLog.HeaderID,
 		//constants.IlkIdColumn changes with each insertion so it's best to assert directly in the test itself
 		constants.WhatColumn: "chop",
 		constants.DataColumn: "1000000000000000000000000000",
-		event.LogFK:          CatFileChopHeaderSyncLog.ID,
+		event.LogFK:          CatFileChopEventLog.ID,
 	},
 }
 
@@ -90,7 +90,7 @@ var rawCatFileLumpLog = types.Log{
 	Removed:     false,
 }
 
-var CatFileLumpHeaderSyncLog = core.HeaderSyncLog{
+var CatFileLumpEventLog = core.EventLog{
 	ID:          int64(rand.Int31()),
 	HeaderID:    int64(rand.Int31()),
 	Log:         rawCatFileLumpLog,
@@ -110,11 +110,11 @@ var catFileLumpModel = event.InsertionModel{
 		event.LogFK,
 	},
 	ColumnValues: event.ColumnValues{
-		event.HeaderFK: CatFileLumpHeaderSyncLog.HeaderID,
+		event.HeaderFK: CatFileLumpEventLog.HeaderID,
 		//constants.IlkIdColumn changes with each insertion so it's best to assert directly in the test itself
 		constants.WhatColumn: "lump",
 		constants.DataColumn: "10000000000000000000000000000000000000000000000000",
-		event.LogFK:          CatFileLumpHeaderSyncLog.ID,
+		event.LogFK:          CatFileLumpEventLog.ID,
 	},
 }
 
@@ -135,7 +135,7 @@ var rawCatFileFlipLog = types.Log{
 	Removed:     false,
 }
 
-var CatFileFlipHeaderSyncLog = core.HeaderSyncLog{
+var CatFileFlipEventLog = core.EventLog{
 	ID:          int64(rand.Int31()),
 	HeaderID:    int64(rand.Int31()),
 	Log:         rawCatFileFlipLog,
@@ -155,10 +155,10 @@ var catFileFlipModel = event.InsertionModel{
 		event.LogFK,
 	},
 	ColumnValues: event.ColumnValues{
-		event.HeaderFK:       CatFileFlipHeaderSyncLog.HeaderID,
+		event.HeaderFK:       CatFileFlipEventLog.HeaderID,
 		constants.WhatColumn: "flip",
 		constants.FlipColumn: "0x6E8032435c84B08E30F27bfbb812Ee365A095b31",
-		event.LogFK:          CatFileFlipHeaderSyncLog.ID,
+		event.LogFK:          CatFileFlipEventLog.ID,
 	},
 }
 
@@ -179,7 +179,7 @@ var rawCatFileVowLog = types.Log{
 	Removed:     false,
 }
 
-var CatFileVowHeaderSyncLog = core.HeaderSyncLog{
+var CatFileVowEventLog = core.EventLog{
 	ID:          int64(rand.Int31()),
 	HeaderID:    int64(rand.Int31()),
 	Log:         rawCatFileVowLog,
@@ -195,9 +195,9 @@ var catFileVowModel = event.InsertionModel{
 		event.HeaderFK, constants.WhatColumn, constants.DataColumn, event.LogFK,
 	},
 	ColumnValues: event.ColumnValues{
-		event.HeaderFK:       CatFileVowHeaderSyncLog.HeaderID,
+		event.HeaderFK:       CatFileVowEventLog.HeaderID,
 		constants.WhatColumn: "vow",
 		constants.DataColumn: "0x17560834075DA3Db54f737db74377E799c865821",
-		event.LogFK:          CatFileVowHeaderSyncLog.ID,
+		event.LogFK:          CatFileVowEventLog.ID,
 	},
 }

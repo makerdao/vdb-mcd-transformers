@@ -39,17 +39,17 @@ var _ = Describe("Vat slip transformer", func() {
 	})
 
 	It("returns err if log is missing topics", func() {
-		badLog := core.HeaderSyncLog{
+		badLog := core.EventLog{
 			Log: types.Log{
 				Data: []byte{1, 1, 1, 1, 1},
 			}}
 
-		_, err := transformer.ToModels(constants.VatABI(), []core.HeaderSyncLog{badLog}, db)
+		_, err := transformer.ToModels(constants.VatABI(), []core.EventLog{badLog}, db)
 		Expect(err).To(HaveOccurred())
 	})
 
 	It("converts a log with positive wad to a model", func() {
-		log := []core.HeaderSyncLog{test_data.VatSlipHeaderSyncLogWithPositiveWad}
+		log := []core.EventLog{test_data.VatSlipEventLogWithPositiveWad}
 		models, err := transformer.ToModels(constants.VatABI(), log, db)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -64,7 +64,7 @@ var _ = Describe("Vat slip transformer", func() {
 	})
 
 	It("converts a log with a negative wad to a model", func() {
-		log := []core.HeaderSyncLog{test_data.VatSlipHeaderSyncLogWithNegativeWad}
+		log := []core.EventLog{test_data.VatSlipEventLogWithNegativeWad}
 		models, err := transformer.ToModels(constants.VatABI(), log, db)
 		Expect(err).NotTo(HaveOccurred())
 

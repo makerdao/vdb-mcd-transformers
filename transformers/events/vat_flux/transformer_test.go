@@ -39,7 +39,7 @@ var _ = Describe("VatFlux transformer", func() {
 	})
 
 	It("Converts logs to models", func() {
-		log := []core.HeaderSyncLog{test_data.VatFluxHeaderSyncLog}
+		log := []core.EventLog{test_data.VatFluxEventLog}
 		models, err := transformer.ToModels(constants.VatABI(), log, db)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -53,7 +53,7 @@ var _ = Describe("VatFlux transformer", func() {
 	})
 
 	It("Returns an error there are missing topics", func() {
-		badLog := core.HeaderSyncLog{
+		badLog := core.EventLog{
 			Log: types.Log{
 				Topics: []common.Hash{
 					common.HexToHash("0x"),
@@ -62,7 +62,7 @@ var _ = Describe("VatFlux transformer", func() {
 				}},
 		}
 
-		_, err := transformer.ToModels(constants.VatABI(), []core.HeaderSyncLog{badLog}, db)
+		_, err := transformer.ToModels(constants.VatABI(), []core.EventLog{badLog}, db)
 		Expect(err).To(HaveOccurred())
 	})
 })

@@ -38,14 +38,14 @@ var _ = Describe("Vat init transformer", func() {
 	})
 
 	It("returns err if log missing topics", func() {
-		badLog := core.HeaderSyncLog{}
-		_, err := transformer.ToModels(constants.VatABI(), []core.HeaderSyncLog{badLog}, db)
+		badLog := core.EventLog{}
+		_, err := transformer.ToModels(constants.VatABI(), []core.EventLog{badLog}, db)
 
 		Expect(err).To(HaveOccurred())
 	})
 
 	It("converts a log to a model", func() {
-		log := []core.HeaderSyncLog{test_data.VatInitHeaderSyncLog}
+		log := []core.EventLog{test_data.VatInitEventLog}
 		models, err := transformer.ToModels(constants.VatABI(), log, db)
 		Expect(err).NotTo(HaveOccurred())
 

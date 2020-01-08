@@ -57,14 +57,14 @@ var _ = Describe("Vat Grab Transformer", func() {
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
-		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+		eventLogs := test_data.CreateLogs(header.Id, logs, db)
 
 		tr := event.ConfiguredTransformer{
 			Config:      vatGrabConfig,
 			Transformer: vat_grab.Transformer{},
 		}.NewTransformer(db)
 
-		err = tr.Execute(headerSyncLogs)
+		err = tr.Execute(eventLogs)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []vatGrabModel

@@ -38,18 +38,18 @@ var _ = Describe("Jug drip transformer", func() {
 	})
 
 	It("returns err if log missing topics", func() {
-		badLog := core.HeaderSyncLog{}
+		badLog := core.EventLog{}
 
-		_, err := transformer.ToModels(constants.JugABI(), []core.HeaderSyncLog{badLog}, db)
+		_, err := transformer.ToModels(constants.JugABI(), []core.EventLog{badLog}, db)
 		Expect(err).To(HaveOccurred())
 	})
 
 	It("converts a log to model", func() {
-		model, err := transformer.ToModels(constants.JugABI(), []core.HeaderSyncLog{test_data.JugDripHeaderSyncLog}, db)
+		model, err := transformer.ToModels(constants.JugABI(), []core.EventLog{test_data.JugDripEventLog}, db)
 
 		Expect(err).NotTo(HaveOccurred())
 		var ilkID int64
-		ilkErr := db.Get(&ilkID, `SELECT id FROM maker.ilks where ilk = $1`, test_data.JugDripHeaderSyncLog.Log.Topics[2].Hex())
+		ilkErr := db.Get(&ilkID, `SELECT id FROM maker.ilks where ilk = $1`, test_data.JugDripEventLog.Log.Topics[2].Hex())
 		Expect(ilkErr).NotTo(HaveOccurred())
 		expectedModel := test_data.JugDripModel()
 		expectedModel.ColumnValues[constants.IlkColumn] = ilkID

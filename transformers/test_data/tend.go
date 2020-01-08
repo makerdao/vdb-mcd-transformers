@@ -54,7 +54,7 @@ var rawTendLog = types.Log{
 	Removed:     false,
 }
 
-var TendHeaderSyncLog = core.HeaderSyncLog{
+var TendEventLog = core.EventLog{
 	ID:          int64(rand.Int31()),
 	HeaderID:    int64(rand.Int31()),
 	Log:         rawTendLog,
@@ -68,8 +68,8 @@ var tendModel = event.InsertionModel{
 		event.HeaderFK, event.AddressFK, event.LogFK, constants.BidIDColumn, constants.LotColumn, constants.BidColumn,
 	},
 	ColumnValues: event.ColumnValues{
-		event.HeaderFK:        TendHeaderSyncLog.HeaderID,
-		event.LogFK:           TendHeaderSyncLog.ID,
+		event.HeaderFK:        TendEventLog.HeaderID,
+		event.LogFK:           TendEventLog.ID,
 		constants.BidIDColumn: tendBidId,
 		constants.LotColumn:   tendLot,
 		constants.BidColumn:   tendBid,

@@ -56,14 +56,14 @@ var _ = Describe("PotJoin Transformer", func() {
 			header)
 		Expect(fetchErr).NotTo(HaveOccurred())
 
-		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+		eventLogs := test_data.CreateLogs(header.Id, logs, db)
 
 		tr := event.ConfiguredTransformer{
 			Config:      potJoinConfig,
 			Transformer: pot_join.Transformer{},
 		}.NewTransformer(db)
 
-		transformErr := tr.Execute(headerSyncLogs)
+		transformErr := tr.Execute(eventLogs)
 		Expect(transformErr).NotTo(HaveOccurred())
 
 		var dbResult potJoinModel

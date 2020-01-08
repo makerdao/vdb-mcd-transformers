@@ -46,7 +46,7 @@ var rawVowFlogLog = types.Log{
 	Removed:     false,
 }
 
-var VowFlogHeaderSyncLog = core.HeaderSyncLog{
+var VowFlogEventLog = core.EventLog{
 	ID:          int64(rand.Int31()),
 	HeaderID:    int64(rand.Int31()),
 	Log:         rawVowFlogLog,
@@ -61,7 +61,7 @@ var VowFlogModel = event.InsertionModel{
 	},
 	ColumnValues: event.ColumnValues{
 		constants.EraColumn: "1337",
-		event.HeaderFK:      VowFlogHeaderSyncLog.HeaderID,
-		event.LogFK:         VowFlogHeaderSyncLog.ID,
+		event.HeaderFK:      VowFlogEventLog.HeaderID,
+		event.LogFK:         VowFlogEventLog.ID,
 	},
 }

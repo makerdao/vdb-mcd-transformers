@@ -45,7 +45,7 @@ var rawVatInitLog = types.Log{
 	Removed:     false,
 }
 
-var VatInitHeaderSyncLog = core.HeaderSyncLog{
+var VatInitEventLog = core.EventLog{
 	ID:          int64(rand.Int31()),
 	HeaderID:    int64(rand.Int31()),
 	Log:         rawVatInitLog,
@@ -59,8 +59,8 @@ var vatInitModel = event.InsertionModel{
 		event.HeaderFK, event.LogFK, constants.IlkColumn,
 	},
 	ColumnValues: event.ColumnValues{
-		event.HeaderFK: VatInitHeaderSyncLog.HeaderID,
-		event.LogFK:    VatInitHeaderSyncLog.ID,
+		event.HeaderFK: VatInitEventLog.HeaderID,
+		event.LogFK:    VatInitEventLog.ID,
 		//constants.IlkColumn
 	},
 }

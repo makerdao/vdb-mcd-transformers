@@ -40,33 +40,33 @@ var _ = Describe("Cat file flip transformer", func() {
 	})
 
 	It("returns err if log is missing topics", func() {
-		badLog := core.HeaderSyncLog{
+		badLog := core.EventLog{
 			Log: types.Log{
 				Data: []byte{1, 1, 1, 1, 1},
 			},
 		}
 
-		_, err := transformer.ToModels(constants.CatABI(), []core.HeaderSyncLog{badLog}, db)
+		_, err := transformer.ToModels(constants.CatABI(), []core.EventLog{badLog}, db)
 		Expect(err).To(HaveOccurred())
 	})
 
 	It("returns err if log is missing data", func() {
-		badLog := core.HeaderSyncLog{
+		badLog := core.EventLog{
 			Log: types.Log{
 				Topics: []common.Hash{{}, {}, {}, {}},
 			},
 		}
 
-		_, err := transformer.ToModels(constants.CatABI(), []core.HeaderSyncLog{badLog}, db)
+		_, err := transformer.ToModels(constants.CatABI(), []core.EventLog{badLog}, db)
 		Expect(err).To(HaveOccurred())
 	})
 
 	It("converts a log to an model", func() {
-		models, err := transformer.ToModels(constants.CatABI(), []core.HeaderSyncLog{test_data.CatFileFlipHeaderSyncLog}, db)
+		models, err := transformer.ToModels(constants.CatABI(), []core.EventLog{test_data.CatFileFlipEventLog}, db)
 		Expect(err).NotTo(HaveOccurred())
 
 		var ilkID int64
-		ilkErr := db.Get(&ilkID, `SELECT id FROM maker.ilks where ilk = $1`, test_data.CatFileFlipHeaderSyncLog.Log.Topics[2].Hex())
+		ilkErr := db.Get(&ilkID, `SELECT id FROM maker.ilks where ilk = $1`, test_data.CatFileFlipEventLog.Log.Topics[2].Hex())
 		Expect(ilkErr).NotTo(HaveOccurred())
 		expectedModel := test_data.CatFileFlipModel()
 		expectedModel.ColumnValues[constants.IlkColumn] = ilkID

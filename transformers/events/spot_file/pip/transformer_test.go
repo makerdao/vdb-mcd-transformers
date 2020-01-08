@@ -39,21 +39,21 @@ var _ = Describe("Spot file pip transformer", func() {
 	})
 
 	It("returns err if log is missing topics", func() {
-		badLog := core.HeaderSyncLog{
+		badLog := core.EventLog{
 			Log: types.Log{
 				Data: []byte{1, 1, 1, 1, 1},
 			}}
 
-		_, err := transformer.ToModels(constants.SpotABI(), []core.HeaderSyncLog{badLog}, db)
+		_, err := transformer.ToModels(constants.SpotABI(), []core.EventLog{badLog}, db)
 		Expect(err).To(HaveOccurred())
 	})
 
 	It("converts a log to a model", func() {
-		models, err := transformer.ToModels(constants.SpotABI(), []core.HeaderSyncLog{test_data.SpotFilePipHeaderSyncLog}, db)
+		models, err := transformer.ToModels(constants.SpotABI(), []core.EventLog{test_data.SpotFilePipEventLog}, db)
 		Expect(err).NotTo(HaveOccurred())
 
 		var ilkID int64
-		ilkErr := db.Get(&ilkID, `SELECT id FROM maker.ilks where ilk = $1`, test_data.SpotFilePipHeaderSyncLog.Log.Topics[2].Hex())
+		ilkErr := db.Get(&ilkID, `SELECT id FROM maker.ilks where ilk = $1`, test_data.SpotFilePipEventLog.Log.Topics[2].Hex())
 		Expect(ilkErr).NotTo(HaveOccurred())
 		expectedModel := test_data.SpotFilePipModel()
 		expectedModel.ColumnValues[constants.IlkColumn] = ilkID

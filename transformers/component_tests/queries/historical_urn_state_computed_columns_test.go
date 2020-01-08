@@ -62,10 +62,10 @@ var _ = Describe("historical urn state computed columns", func() {
 		timestampTwo = timestampOne + 1
 		headerOne = createHeader(blockOne, timestampOne, headerRepository)
 		headerTwo = createHeader(blockTwo, timestampTwo, headerRepository)
-		fakeHeaderSyncLogOne := test_data.CreateTestLog(headerOne.Id, db)
-		fakeHeaderSyncLogTwo := test_data.CreateTestLog(headerOne.Id, db)
-		logIdOne = fakeHeaderSyncLogOne.ID
-		logIdTwo = fakeHeaderSyncLogTwo.ID
+		fakeEventLogOne := test_data.CreateTestLog(headerOne.Id, db)
+		fakeEventLogTwo := test_data.CreateTestLog(headerOne.Id, db)
+		logIdOne = fakeEventLogOne.ID
+		logIdTwo = fakeEventLogTwo.ID
 
 		vatRepository.SetDB(db)
 		catRepository.SetDB(db)

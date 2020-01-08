@@ -40,32 +40,32 @@ var _ = Describe("Jug file ilk transformer", func() {
 	})
 
 	It("returns err if log missing topics", func() {
-		badLog := core.HeaderSyncLog{
+		badLog := core.EventLog{
 			Log: types.Log{
 				Topics: []common.Hash{{}},
 				Data:   []byte{1, 1, 1, 1, 1},
 			}}
 
-		_, err := transformer.ToModels(constants.JugABI(), []core.HeaderSyncLog{badLog}, db)
+		_, err := transformer.ToModels(constants.JugABI(), []core.EventLog{badLog}, db)
 		Expect(err).To(HaveOccurred())
 	})
 
 	It("returns err if log missing data", func() {
-		badLog := core.HeaderSyncLog{
+		badLog := core.EventLog{
 			Log: types.Log{
 				Topics: []common.Hash{{}, {}, {}, {}},
 			}}
 
-		_, err := transformer.ToModels(constants.JugABI(), []core.HeaderSyncLog{badLog}, db)
+		_, err := transformer.ToModels(constants.JugABI(), []core.EventLog{badLog}, db)
 		Expect(err).To(HaveOccurred())
 	})
 
 	It("converts a log to a model", func() {
-		models, err := transformer.ToModels(constants.JugABI(), []core.HeaderSyncLog{test_data.JugFileIlkHeaderSyncLog}, db)
+		models, err := transformer.ToModels(constants.JugABI(), []core.EventLog{test_data.JugFileIlkEventLog}, db)
 
 		Expect(err).NotTo(HaveOccurred())
 		var ilkID int64
-		ilkErr := db.Get(&ilkID, `SELECT id FROM maker.ilks where ilk = $1`, test_data.JugFileIlkHeaderSyncLog.Log.Topics[2].Hex())
+		ilkErr := db.Get(&ilkID, `SELECT id FROM maker.ilks where ilk = $1`, test_data.JugFileIlkEventLog.Log.Topics[2].Hex())
 		Expect(ilkErr).NotTo(HaveOccurred())
 		expectedModel := test_data.JugFileIlkModel()
 		expectedModel.ColumnValues[constants.IlkColumn] = ilkID

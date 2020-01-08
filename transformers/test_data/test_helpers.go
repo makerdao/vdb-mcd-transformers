@@ -63,7 +63,7 @@ func CreateTestHeader(db *postgres.DB) int64 {
 }
 
 // Create a header sync log to reference in an event, returning inserted header sync log
-func CreateTestLog(headerID int64, db *postgres.DB) core.HeaderSyncLog {
+func CreateTestLog(headerID int64, db *postgres.DB) core.EventLog {
 	log := types.Log{
 		Address:     common.Address{},
 		Topics:      nil,
@@ -77,34 +77,34 @@ func CreateTestLog(headerID int64, db *postgres.DB) core.HeaderSyncLog {
 	}
 	headerRepo := repositories.NewHeaderRepository(db)
 	test_data.CreateMatchingTx(log, headerID, headerRepo)
-	headerSyncLogRepository := repositories.NewHeaderSyncLogRepository(db)
-	insertLogsErr := headerSyncLogRepository.CreateHeaderSyncLogs(headerID, []types.Log{log})
+	eventLogRepository := repositories.NewEventLogRepository(db)
+	insertLogsErr := eventLogRepository.CreateEventLogs(headerID, []types.Log{log})
 	Expect(insertLogsErr).NotTo(HaveOccurred())
-	headerSyncLogs, getLogsErr := headerSyncLogRepository.GetUntransformedHeaderSyncLogs()
+	eventLogs, getLogsErr := eventLogRepository.GetUntransformedEventLogs()
 	Expect(getLogsErr).NotTo(HaveOccurred())
-	for _, headerSyncLog := range headerSyncLogs {
-		if headerSyncLog.Log.TxIndex == log.TxIndex {
-			return headerSyncLog
+	for _, EventLog := range eventLogs {
+		if EventLog.Log.TxIndex == log.TxIndex {
+			return EventLog
 		}
 	}
 	panic("couldn't find inserted test log")
 }
 
-func CreateLogs(headerID int64, logs []types.Log, db *postgres.DB) []core.HeaderSyncLog {
+func CreateLogs(headerID int64, logs []types.Log, db *postgres.DB) []core.EventLog {
 	headerRepo := repositories.NewHeaderRepository(db)
 	for _, log := range logs {
 		test_data.CreateMatchingTx(log, headerID, headerRepo)
 	}
-	headerSyncLogRepository := repositories.NewHeaderSyncLogRepository(db)
-	insertLogsErr := headerSyncLogRepository.CreateHeaderSyncLogs(headerID, logs)
+	eventLogRepository := repositories.NewEventLogRepository(db)
+	insertLogsErr := eventLogRepository.CreateEventLogs(headerID, logs)
 	Expect(insertLogsErr).NotTo(HaveOccurred())
-	headerSyncLogs, getLogsErr := headerSyncLogRepository.GetUntransformedHeaderSyncLogs()
+	eventLogs, getLogsErr := eventLogRepository.GetUntransformedEventLogs()
 	Expect(getLogsErr).NotTo(HaveOccurred())
-	var results []core.HeaderSyncLog
-	for _, headerSyncLog := range headerSyncLogs {
+	var results []core.EventLog
+	for _, EventLog := range eventLogs {
 		for _, log := range logs {
-			if headerSyncLog.Log.BlockNumber == log.BlockNumber && headerSyncLog.Log.TxIndex == log.TxIndex && headerSyncLog.Log.Index == log.Index {
-				results = append(results, headerSyncLog)
+			if EventLog.Log.BlockNumber == log.BlockNumber && EventLog.Log.TxIndex == log.TxIndex && EventLog.Log.Index == log.Index {
+				results = append(results, EventLog)
 			}
 		}
 	}

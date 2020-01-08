@@ -48,7 +48,7 @@ var rawVatMoveLog = types.Log{
 	Removed:     false,
 }
 
-var VatMoveHeaderSyncLog = core.HeaderSyncLog{
+var VatMoveEventLog = core.EventLog{
 	ID:          int64(rand.Int31()),
 	HeaderID:    int64(rand.Int31()),
 	Log:         rawVatMoveLog,
@@ -65,7 +65,7 @@ var VatMoveModel = event.InsertionModel{
 		constants.SrcColumn: "0xA730d1FF8B6Bc74a26d54c20a9dda539909BaB0e",
 		constants.DstColumn: "0xB730D1fF8b6BC74a26D54c20a9ddA539909BAb0e",
 		constants.RadColumn: "42",
-		event.HeaderFK:      VatMoveHeaderSyncLog.HeaderID,
-		event.LogFK:         VatMoveHeaderSyncLog.ID,
+		event.HeaderFK:      VatMoveEventLog.HeaderID,
+		event.LogFK:         VatMoveEventLog.ID,
 	},
 }

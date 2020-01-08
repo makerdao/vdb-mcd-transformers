@@ -45,7 +45,7 @@ var rawVatFileDebtCeilingLog = types.Log{
 	Removed:     false,
 }
 
-var VatFileDebtCeilingHeaderSyncLog = core.HeaderSyncLog{
+var VatFileDebtCeilingEventLog = core.EventLog{
 	ID:          int64(rand.Int31()),
 	HeaderID:    int64(rand.Int31()),
 	Log:         rawVatFileDebtCeilingLog,
@@ -63,8 +63,8 @@ var vatFileDebtCeilingModel = event.InsertionModel{
 	ColumnValues: event.ColumnValues{
 		constants.WhatColumn: "Line",
 		constants.DataColumn: "1000000000000000000000000000000000000000000000000000",
-		event.HeaderFK:       VatFileDebtCeilingHeaderSyncLog.HeaderID,
-		event.LogFK:          VatFileDebtCeilingHeaderSyncLog.ID,
+		event.HeaderFK:       VatFileDebtCeilingEventLog.HeaderID,
+		event.LogFK:          VatFileDebtCeilingEventLog.ID,
 	},
 }
 
@@ -86,7 +86,7 @@ var rawVatFileIlkDustLog = types.Log{
 	Removed:     false,
 }
 
-var VatFileIlkDustHeaderSyncLog = core.HeaderSyncLog{
+var VatFileIlkDustEventLog = core.EventLog{
 	ID:          int64(rand.Int31()),
 	HeaderID:    int64(rand.Int31()),
 	Log:         rawVatFileIlkDustLog,
@@ -104,8 +104,8 @@ var vatFileIlkDustModel = event.InsertionModel{
 	ColumnValues: event.ColumnValues{
 		constants.WhatColumn: "dust",
 		constants.DataColumn: "10390649719961925488562719249749",
-		event.HeaderFK:       VatFileIlkDustHeaderSyncLog.HeaderID,
-		event.LogFK:          VatFileIlkDustHeaderSyncLog.ID,
+		event.HeaderFK:       VatFileIlkDustEventLog.HeaderID,
+		event.LogFK:          VatFileIlkDustEventLog.ID,
 	},
 }
 
@@ -127,7 +127,7 @@ var rawVatFileIlkLineLog = types.Log{
 	Removed:     false,
 }
 
-var VatFileIlkLineHeaderSyncLog = core.HeaderSyncLog{
+var VatFileIlkLineEventLog = core.EventLog{
 	ID:          int64(rand.Int31()),
 	HeaderID:    int64(rand.Int31()),
 	Log:         rawVatFileIlkLineLog,
@@ -145,8 +145,8 @@ var vatFileIlkLineModel = event.InsertionModel{
 	ColumnValues: event.ColumnValues{
 		constants.WhatColumn: "line",
 		constants.DataColumn: "220086151196920075605",
-		event.HeaderFK:       VatFileIlkLineHeaderSyncLog.HeaderID,
-		event.LogFK:          VatFileIlkLineHeaderSyncLog.ID,
+		event.HeaderFK:       VatFileIlkLineEventLog.HeaderID,
+		event.LogFK:          VatFileIlkLineEventLog.ID,
 	},
 }
 
@@ -167,7 +167,7 @@ var rawVatFileIlkSpotLog = types.Log{
 	Removed:     false,
 }
 
-var VatFileIlkSpotHeaderSyncLog = core.HeaderSyncLog{
+var VatFileIlkSpotEventLog = core.EventLog{
 	ID:          int64(rand.Int31()),
 	HeaderID:    int64(rand.Int31()),
 	Log:         rawVatFileIlkSpotLog,
@@ -185,7 +185,7 @@ var vatFileIlkSpotModel = event.InsertionModel{
 	ColumnValues: event.ColumnValues{
 		constants.WhatColumn: "spot",
 		constants.DataColumn: "91323333333333333333333333333",
-		event.HeaderFK:       VatFileIlkSpotHeaderSyncLog.HeaderID,
-		event.LogFK:          VatFileIlkSpotHeaderSyncLog.ID,
+		event.HeaderFK:       VatFileIlkSpotEventLog.HeaderID,
+		event.LogFK:          VatFileIlkSpotEventLog.ID,
 	},
 }

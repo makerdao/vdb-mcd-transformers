@@ -49,12 +49,12 @@ var _ = Describe("Sin queue event computed columns", func() {
 		timestampOne = int(rand.Int31())
 		headerOne = createHeader(blockOne, timestampOne, headerRepository)
 		fakeEra = strconv.Itoa(timestampOne)
-		fakeHeaderSyncLog := test_data.CreateTestLog(headerOne.Id, db)
-		fakeGethLog = fakeHeaderSyncLog.Log
+		fakeEventLog := test_data.CreateTestLog(headerOne.Id, db)
+		fakeGethLog = fakeEventLog.Log
 
 		vowFessEvent := test_data.VowFessModel
 		vowFessEvent.ColumnValues[event.HeaderFK] = headerOne.Id
-		vowFessEvent.ColumnValues[event.LogFK] = fakeHeaderSyncLog.ID
+		vowFessEvent.ColumnValues[event.LogFK] = fakeEventLog.ID
 		vowFessErr := event.PersistModels([]event.InsertionModel{vowFessEvent}, db)
 		Expect(vowFessErr).NotTo(HaveOccurred())
 	})
@@ -70,7 +70,7 @@ var _ = Describe("Sin queue event computed columns", func() {
 				TxTo:             test_helpers.GetValidNullString("toAddress"),
 			}
 
-			_, err := db.Exec(`INSERT INTO header_sync_transactions (header_id, hash, tx_from, tx_index, tx_to)
+			_, err := db.Exec(`INSERT INTO public.transactions (header_id, hash, tx_from, tx_index, tx_to)
 		        VALUES ($1, $2, $3, $4, $5)`, headerOne.Id, expectedTx.TransactionHash, expectedTx.TxFrom,
 				expectedTx.TransactionIndex, expectedTx.TxTo)
 			Expect(err).NotTo(HaveOccurred())
@@ -98,7 +98,7 @@ var _ = Describe("Sin queue event computed columns", func() {
 				TxTo:        test_helpers.GetValidNullString("wrongToAddress"),
 			}
 
-			_, insertErr := db.Exec(`INSERT INTO header_sync_transactions (header_id, hash, tx_from, tx_index, tx_to)
+			_, insertErr := db.Exec(`INSERT INTO public.transactions (header_id, hash, tx_from, tx_index, tx_to)
 				VALUES ($1, $2, $3, $4, $5)`, headerOne.Id, wrongTx.TransactionHash, wrongTx.TxFrom,
 				wrongTx.TransactionIndex, wrongTx.TxTo)
 			Expect(insertErr).NotTo(HaveOccurred())
@@ -127,7 +127,7 @@ var _ = Describe("Sin queue event computed columns", func() {
 				TxTo:        test_helpers.GetValidNullString("wrongToAddress"),
 			}
 
-			_, insertErr := db.Exec(`INSERT INTO header_sync_transactions (header_id, hash, tx_from, tx_index, tx_to)
+			_, insertErr := db.Exec(`INSERT INTO public.transactions (header_id, hash, tx_from, tx_index, tx_to)
 				VALUES ($1, $2, $3, $4, $5)`, headerZero.Id, wrongTx.TransactionHash, wrongTx.TxFrom,
 				wrongTx.TransactionIndex, wrongTx.TxTo)
 			Expect(insertErr).NotTo(HaveOccurred())

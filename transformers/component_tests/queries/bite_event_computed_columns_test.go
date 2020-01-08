@@ -38,10 +38,10 @@ var _ = Describe("Bite event computed columns", func() {
 		timestampOne = int(rand.Int31())
 		headerOne = createHeader(blockOne, timestampOne, headerRepository)
 
-		biteHeaderSyncLog := test_data.CreateTestLog(headerOne.Id, db)
-		biteGethLog = biteHeaderSyncLog.Log
+		biteEventLog := test_data.CreateTestLog(headerOne.Id, db)
+		biteGethLog = biteEventLog.Log
 
-		biteEvent = generateBite(test_helpers.FakeIlk.Hex, fakeGuy, headerOne.Id, biteHeaderSyncLog.ID, db)
+		biteEvent = generateBite(test_helpers.FakeIlk.Hex, fakeGuy, headerOne.Id, biteEventLog.ID, db)
 		insertBiteErr := event.PersistModels([]event.InsertionModel{biteEvent}, db)
 		Expect(insertBiteErr).NotTo(HaveOccurred())
 	})
@@ -135,7 +135,7 @@ var _ = Describe("Bite event computed columns", func() {
 				TxTo:             test_helpers.GetValidNullString("toAddress"),
 			}
 
-			_, err := db.Exec(`INSERT INTO header_sync_transactions (header_id, hash, tx_from, tx_index, tx_to)
+			_, err := db.Exec(`INSERT INTO public.transactions (header_id, hash, tx_from, tx_index, tx_to)
 		        VALUES ($1, $2, $3, $4, $5)`, headerOne.Id, expectedTx.TransactionHash, expectedTx.TxFrom,
 				expectedTx.TransactionIndex, expectedTx.TxTo)
 			Expect(err).NotTo(HaveOccurred())
@@ -163,7 +163,7 @@ var _ = Describe("Bite event computed columns", func() {
 				TxTo:        test_helpers.GetValidNullString("wrongToAddress"),
 			}
 
-			_, insertErr := db.Exec(`INSERT INTO header_sync_transactions (header_id, hash, tx_from, tx_index, tx_to)
+			_, insertErr := db.Exec(`INSERT INTO public.transactions (header_id, hash, tx_from, tx_index, tx_to)
 				VALUES ($1, $2, $3, $4, $5)`, headerOne.Id, wrongTx.TransactionHash, wrongTx.TxFrom,
 				wrongTx.TransactionIndex, wrongTx.TxTo)
 			Expect(insertErr).NotTo(HaveOccurred())
@@ -192,7 +192,7 @@ var _ = Describe("Bite event computed columns", func() {
 				TxTo:        test_helpers.GetValidNullString("wrongToAddress"),
 			}
 
-			_, insertErr := db.Exec(`INSERT INTO header_sync_transactions (header_id, hash, tx_from, tx_index, tx_to)
+			_, insertErr := db.Exec(`INSERT INTO public.transactions (header_id, hash, tx_from, tx_index, tx_to)
 				VALUES ($1, $2, $3, $4, $5)`, headerZero.Id, wrongTx.TransactionHash, wrongTx.TxFrom,
 				wrongTx.TransactionIndex, wrongTx.TxTo)
 			Expect(insertErr).NotTo(HaveOccurred())

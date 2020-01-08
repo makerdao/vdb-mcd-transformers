@@ -34,7 +34,7 @@ type Transformer struct{}
 
 const Val event.ColumnName = "val"
 
-func (Transformer) toEntities(contractAbi string, logs []core.HeaderSyncLog) ([]LogValueEntity, error) {
+func (Transformer) toEntities(contractAbi string, logs []core.EventLog) ([]LogValueEntity, error) {
 	var entities []LogValueEntity
 	for _, log := range logs {
 		var entity LogValueEntity
@@ -58,7 +58,7 @@ func (Transformer) toEntities(contractAbi string, logs []core.HeaderSyncLog) ([]
 	return entities, nil
 }
 
-func (t Transformer) ToModels(abi string, logs []core.HeaderSyncLog, _ *postgres.DB) ([]event.InsertionModel, error) {
+func (t Transformer) ToModels(abi string, logs []core.EventLog, _ *postgres.DB) ([]event.InsertionModel, error) {
 	entities, entityErr := t.toEntities(abi, logs)
 	if entityErr != nil {
 		return nil, fmt.Errorf("transformer couldn't convert logs to entities: %v", entityErr)

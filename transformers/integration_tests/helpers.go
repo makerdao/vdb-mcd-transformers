@@ -19,13 +19,12 @@ package integration_tests
 import (
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/ethereum/go-ethereum/rpc"
-
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/makerdao/vulcanizedb/pkg/eth"
 	"github.com/makerdao/vulcanizedb/pkg/eth/client"
-	rpc2 "github.com/makerdao/vulcanizedb/pkg/eth/converters/rpc"
+	"github.com/makerdao/vulcanizedb/pkg/eth/converters"
 	"github.com/makerdao/vulcanizedb/pkg/eth/node"
 )
 
@@ -40,10 +39,10 @@ func getClients(ipc string) (client.RpcClient, *ethclient.Client, error) {
 }
 
 func getBlockChain(rpcClient client.RpcClient, ethClient *ethclient.Client) (core.BlockChain, error) {
-	client := client.NewEthClient(ethClient)
-	node := node.MakeNode(rpcClient)
-	transactionConverter := rpc2.NewRpcTransactionConverter(client)
-	blockChain := eth.NewBlockChain(client, rpcClient, node, transactionConverter)
+	testClient := client.NewEthClient(ethClient)
+	testNode := node.MakeNode(rpcClient)
+	transactionConverter := converters.NewTransactionConverter(testClient)
+	blockChain := eth.NewBlockChain(testClient, rpcClient, testNode, transactionConverter)
 	return blockChain, nil
 }
 

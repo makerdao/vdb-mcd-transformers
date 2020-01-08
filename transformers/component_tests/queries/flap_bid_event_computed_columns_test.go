@@ -22,7 +22,7 @@ var _ = Describe("flap_bid_event computed columns", func() {
 	var (
 		blockOne, timestampOne int
 		headerOne              core.Header
-		flapKickLog            core.HeaderSyncLog
+		flapKickLog            core.EventLog
 		headerRepo             repositories.HeaderRepository
 		flapKickEvent          event.InsertionModel
 		contractAddress        = fakes.RandomString(42)
@@ -81,7 +81,7 @@ var _ = Describe("flap_bid_event computed columns", func() {
 				TxTo:             test_helpers.GetValidNullString("toAddress"),
 			}
 
-			_, insertErr := db.Exec(`INSERT INTO header_sync_transactions (header_id, hash, tx_from, tx_index, tx_to)
+			_, insertErr := db.Exec(`INSERT INTO public.transactions (header_id, hash, tx_from, tx_index, tx_to)
 				VALUES ($1, $2, $3, $4, $5)`, headerOne.Id, expectedTx.TransactionHash, expectedTx.TxFrom,
 				expectedTx.TransactionIndex, expectedTx.TxTo)
 			Expect(insertErr).NotTo(HaveOccurred())
@@ -109,7 +109,7 @@ var _ = Describe("flap_bid_event computed columns", func() {
 				TxTo:        test_helpers.GetValidNullString("wrongToAddress"),
 			}
 
-			_, insertErr := db.Exec(`INSERT INTO header_sync_transactions (header_id, hash, tx_from, tx_index, tx_to)
+			_, insertErr := db.Exec(`INSERT INTO public.transactions (header_id, hash, tx_from, tx_index, tx_to)
 				VALUES ($1, $2, $3, $4, $5)`, headerOne.Id, wrongTx.TransactionHash, wrongTx.TxFrom,
 				wrongTx.TransactionIndex, wrongTx.TxTo)
 			Expect(insertErr).NotTo(HaveOccurred())
@@ -138,7 +138,7 @@ var _ = Describe("flap_bid_event computed columns", func() {
 				TxTo:        test_helpers.GetValidNullString("wrongToAddress"),
 			}
 
-			_, insertErr := db.Exec(`INSERT INTO header_sync_transactions (header_id, hash, tx_from, tx_index, tx_to)
+			_, insertErr := db.Exec(`INSERT INTO public.transactions (header_id, hash, tx_from, tx_index, tx_to)
 				VALUES ($1, $2, $3, $4, $5)`, headerZero.Id, wrongTx.TransactionHash, wrongTx.TxFrom,
 				wrongTx.TransactionIndex, wrongTx.TxTo)
 			Expect(insertErr).NotTo(HaveOccurred())

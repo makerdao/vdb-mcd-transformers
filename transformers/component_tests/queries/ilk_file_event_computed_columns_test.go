@@ -49,8 +49,8 @@ var _ = Describe("Ilk file event computed columns", func() {
 		blockOne = rand.Int()
 		timestampOne = int(rand.Int31())
 		headerOne = createHeader(blockOne, timestampOne, headerRepository)
-		fakeHeaderSyncLog := test_data.CreateTestLog(headerOne.Id, db)
-		fakeGethLog = fakeHeaderSyncLog.Log
+		fakeEventLog := test_data.CreateTestLog(headerOne.Id, db)
+		fakeGethLog = fakeEventLog.Log
 
 		fileEvent = test_data.VatFileIlkDustModel()
 		ilkID, createIlkError := shared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
@@ -58,7 +58,7 @@ var _ = Describe("Ilk file event computed columns", func() {
 
 		fileEvent.ColumnValues[constants.IlkColumn] = ilkID
 		fileEvent.ColumnValues[event.HeaderFK] = headerOne.Id
-		fileEvent.ColumnValues[event.LogFK] = fakeHeaderSyncLog.ID
+		fileEvent.ColumnValues[event.LogFK] = fakeEventLog.ID
 		insertFileErr := event.PersistModels([]event.InsertionModel{fileEvent}, db)
 		Expect(insertFileErr).NotTo(HaveOccurred())
 	})
@@ -96,7 +96,7 @@ var _ = Describe("Ilk file event computed columns", func() {
 				TxTo:        test_helpers.GetValidNullString("toAddress"),
 			}
 
-			_, insertErr := db.Exec(`INSERT INTO header_sync_transactions (header_id, hash, tx_from, tx_index, tx_to)
+			_, insertErr := db.Exec(`INSERT INTO public.transactions (header_id, hash, tx_from, tx_index, tx_to)
 				VALUES ($1, $2, $3, $4, $5)`, headerOne.Id, expectedTx.TransactionHash, expectedTx.TxFrom,
 				expectedTx.TransactionIndex, expectedTx.TxTo)
 			Expect(insertErr).NotTo(HaveOccurred())
@@ -123,7 +123,7 @@ var _ = Describe("Ilk file event computed columns", func() {
 				TxTo:        test_helpers.GetValidNullString("wrongToAddress"),
 			}
 
-			_, insertErr := db.Exec(`INSERT INTO header_sync_transactions (header_id, hash, tx_from, tx_index, tx_to)
+			_, insertErr := db.Exec(`INSERT INTO public.transactions (header_id, hash, tx_from, tx_index, tx_to)
 				VALUES ($1, $2, $3, $4, $5)`, headerOne.Id, wrongTx.TransactionHash, wrongTx.TxFrom,
 				wrongTx.TransactionIndex, wrongTx.TxTo)
 			Expect(insertErr).NotTo(HaveOccurred())
@@ -151,7 +151,7 @@ var _ = Describe("Ilk file event computed columns", func() {
 				TxTo:        test_helpers.GetValidNullString("wrongToAddress"),
 			}
 
-			_, insertErr := db.Exec(`INSERT INTO header_sync_transactions (header_id, hash, tx_from, tx_index, tx_to)
+			_, insertErr := db.Exec(`INSERT INTO public.transactions (header_id, hash, tx_from, tx_index, tx_to)
 				VALUES ($1, $2, $3, $4, $5)`, headerZero.Id, wrongTx.TransactionHash, wrongTx.TxFrom,
 				wrongTx.TransactionIndex, wrongTx.TxTo)
 			Expect(insertErr).NotTo(HaveOccurred())

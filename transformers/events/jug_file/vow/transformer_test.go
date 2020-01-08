@@ -32,19 +32,19 @@ var _ = Describe("Jug file vow transformer", func() {
 	var transformer = vow.Transformer{}
 
 	It("returns err if log missing topics", func() {
-		badLog := core.HeaderSyncLog{
+		badLog := core.EventLog{
 			Log: types.Log{
 				Topics: []common.Hash{{}},
 				Data:   []byte{1, 1, 1, 1, 1},
 			}}
 
-		_, err := transformer.ToModels(constants.JugABI(), []core.HeaderSyncLog{badLog}, nil)
+		_, err := transformer.ToModels(constants.JugABI(), []core.EventLog{badLog}, nil)
 
 		Expect(err).To(HaveOccurred())
 	})
 
 	It("converts a log to a model", func() {
-		models, err := transformer.ToModels(constants.JugABI(), []core.HeaderSyncLog{test_data.JugFileVowHeaderSyncLog}, nil)
+		models, err := transformer.ToModels(constants.JugABI(), []core.EventLog{test_data.JugFileVowEventLog}, nil)
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(models).To(Equal([]event.InsertionModel{test_data.JugFileVowModel()}))

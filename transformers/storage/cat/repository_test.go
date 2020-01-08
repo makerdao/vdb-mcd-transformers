@@ -94,7 +94,7 @@ var _ = Describe("Cat storage repository", func() {
 
 	Describe("Ilk", func() {
 		BeforeEach(func() {
-			fakeRawDiff := fakes.GetFakeStorageDiffForHeader(fakes.FakeHeader, common.Hash{}, common.Hash{}, common.Hash{})
+			fakeRawDiff := GetFakeStorageDiffForHeader(fakes.FakeHeader, common.Hash{}, common.Hash{}, common.Hash{})
 			storageDiffRepo := repositories.NewStorageDiffRepository(db)
 			var insertDiffErr error
 			diffID, insertDiffErr = storageDiffRepo.CreateStorageDiff(fakeRawDiff)

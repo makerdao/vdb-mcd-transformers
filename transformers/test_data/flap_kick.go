@@ -41,7 +41,7 @@ var rawFlapKickLog = types.Log{
 	Removed:     false,
 }
 
-var FlapKickHeaderSyncLog = core.HeaderSyncLog{
+var FlapKickEventLog = core.EventLog{
 	ID:          int64(rand.Int31()),
 	HeaderID:    int64(rand.Int31()),
 	Log:         rawFlapKickLog,
@@ -57,8 +57,8 @@ var flapKickModel = event.InsertionModel{
 		event.HeaderFK, event.LogFK, event.AddressFK, constants.BidIDColumn, constants.LotColumn, constants.BidColumn,
 	},
 	ColumnValues: event.ColumnValues{
-		event.HeaderFK:        FlapKickHeaderSyncLog.HeaderID,
-		event.LogFK:           FlapKickHeaderSyncLog.ID,
+		event.HeaderFK:        FlapKickEventLog.HeaderID,
+		event.LogFK:           FlapKickEventLog.ID,
 		constants.BidIDColumn: big.NewInt(1).String(),
 		constants.LotColumn:   big.NewInt(1000000000).String(),
 		constants.BidColumn:   big.NewInt(20000000).String(),

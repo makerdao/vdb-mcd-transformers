@@ -68,9 +68,9 @@ var _ = Describe("Cat File transformer", func() {
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
-		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+		eventLogs := test_data.CreateLogs(header.Id, logs, db)
 
-		err = transformer.Execute(headerSyncLogs)
+		err = transformer.Execute(eventLogs)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []catFileChopLumpModel
@@ -107,9 +107,9 @@ var _ = Describe("Cat File transformer", func() {
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
-		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+		eventLogs := test_data.CreateLogs(header.Id, logs, db)
 
-		err = transformer.Execute(headerSyncLogs)
+		err = transformer.Execute(eventLogs)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []catFileChopLumpModel
@@ -147,9 +147,9 @@ var _ = Describe("Cat File transformer", func() {
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
-		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+		eventLogs := test_data.CreateLogs(header.Id, logs, db)
 
-		err = t.Execute(headerSyncLogs)
+		err = t.Execute(eventLogs)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []catFileFlipModel
@@ -185,9 +185,9 @@ var _ = Describe("Cat File transformer", func() {
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
-		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+		eventLogs := test_data.CreateLogs(header.Id, logs, db)
 
-		err = t.Execute(headerSyncLogs)
+		err = t.Execute(eventLogs)
 		Expect(err).NotTo(HaveOccurred())
 
 		var headerID int64

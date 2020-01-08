@@ -36,7 +36,10 @@ var _ = BeforeSuite(func() {
 	}
 	// If we don't have an ipc path in the config file, check the env variable
 	if ipc == "" {
-		testConfig.BindEnv("url", "INFURA_URL")
+		configErr := testConfig.BindEnv("url", "INFURA_URL")
+		if configErr != nil {
+			logrus.Fatalf("Unable to bind url to INFURA_URL env var")
+		}
 		ipc = testConfig.GetString("url")
 	}
 	if ipc == "" {

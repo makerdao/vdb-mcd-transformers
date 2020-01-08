@@ -30,17 +30,17 @@ var _ = Describe("Vow flog transformer", func() {
 	var transformer = vow_flog.Transformer{}
 
 	It("returns err if log is missing topics", func() {
-		badLog := core.HeaderSyncLog{
+		badLog := core.EventLog{
 			Log: types.Log{
 				Data: []byte{1, 1, 1, 1, 1},
 			}}
 
-		_, err := transformer.ToModels(constants.VowABI(), []core.HeaderSyncLog{badLog}, nil)
+		_, err := transformer.ToModels(constants.VowABI(), []core.EventLog{badLog}, nil)
 		Expect(err).To(HaveOccurred())
 	})
 
 	It("converts a log to a model", func() {
-		models, err := transformer.ToModels(constants.VowABI(), []core.HeaderSyncLog{test_data.VowFlogHeaderSyncLog}, nil)
+		models, err := transformer.ToModels(constants.VowABI(), []core.EventLog{test_data.VowFlogEventLog}, nil)
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(len(models)).To(Equal(1))

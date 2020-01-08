@@ -31,7 +31,7 @@ var _ = Describe("VatHeal transformer", func() {
 	var transformer = vat_heal.Transformer{}
 
 	It("Convert log with positive rad to a model", func() {
-		models, err := transformer.ToModels(constants.VatABI(), []core.HeaderSyncLog{test_data.VatHealHeaderSyncLog}, nil)
+		models, err := transformer.ToModels(constants.VatABI(), []core.EventLog{test_data.VatHealEventLog}, nil)
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(len(models)).To(Equal(1))
@@ -39,14 +39,14 @@ var _ = Describe("VatHeal transformer", func() {
 	})
 
 	It("Returns an error there are missing topics", func() {
-		badLog := core.HeaderSyncLog{
+		badLog := core.EventLog{
 			Log: types.Log{
 				Topics: []common.Hash{
 					common.HexToHash("0x"),
 				}},
 		}
 
-		_, err := transformer.ToModels(constants.VatABI(), []core.HeaderSyncLog{badLog}, nil)
+		_, err := transformer.ToModels(constants.VatABI(), []core.EventLog{badLog}, nil)
 
 		Expect(err).To(HaveOccurred())
 	})

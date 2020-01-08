@@ -22,17 +22,17 @@ var _ = Describe("Deny Transformer", func() {
 
 	It("converts normal rely logs to models", func() {
 		transformer := auth.Transformer{TableName: constants.RelyTable}
-		models, err := transformer.ToModels(constants.CatABI(), []core.HeaderSyncLog{test_data.RelyHeaderSyncLog}, db)
+		models, err := transformer.ToModels(constants.CatABI(), []core.EventLog{test_data.RelyEventLog}, db)
 		Expect(err).NotTo(HaveOccurred())
 
 		var contractAddressID int64
 		contractAddressErr := db.Get(&contractAddressID, `SELECT id FROM addresses WHERE address = $1`,
-			test_data.RelyHeaderSyncLog.Log.Address.String())
+			test_data.RelyEventLog.Log.Address.String())
 		Expect(contractAddressErr).NotTo(HaveOccurred())
 
 		var usrAddressID int64
 		usrAddressErr := db.Get(&usrAddressID, `SELECT id FROM addresses WHERE address = $1`,
-			common.HexToAddress(test_data.RelyHeaderSyncLog.Log.Topics[2].Hex()).Hex())
+			common.HexToAddress(test_data.RelyEventLog.Log.Topics[2].Hex()).Hex())
 		Expect(usrAddressErr).NotTo(HaveOccurred())
 
 		expectedModel := test_data.RelyModel()
@@ -44,17 +44,17 @@ var _ = Describe("Deny Transformer", func() {
 
 	It("converts Vat rely logs to models", func() {
 		transformer := auth.Transformer{TableName: constants.RelyTable, LogNoteArgumentOffset: -1}
-		models, err := transformer.ToModels(constants.VatABI(), []core.HeaderSyncLog{test_data.VatRelyHeaderSyncLog}, db)
+		models, err := transformer.ToModels(constants.VatABI(), []core.EventLog{test_data.VatRelyEventLog}, db)
 		Expect(err).NotTo(HaveOccurred())
 
 		var contractAddressID int64
 		contractAddressErr := db.Get(&contractAddressID, `SELECT id FROM addresses WHERE address = $1`,
-			test_data.VatRelyHeaderSyncLog.Log.Address.String())
+			test_data.VatRelyEventLog.Log.Address.String())
 		Expect(contractAddressErr).NotTo(HaveOccurred())
 
 		var usrAddressID int64
 		usrAddressErr := db.Get(&usrAddressID, `SELECT id FROM addresses WHERE address = $1`,
-			common.HexToAddress(test_data.VatRelyHeaderSyncLog.Log.Topics[1].Hex()).Hex())
+			common.HexToAddress(test_data.VatRelyEventLog.Log.Topics[1].Hex()).Hex())
 		Expect(usrAddressErr).NotTo(HaveOccurred())
 
 		expectedModel := test_data.VatRelyModel()
@@ -66,17 +66,17 @@ var _ = Describe("Deny Transformer", func() {
 
 	It("converts normal deny logs to models", func() {
 		transformer := auth.Transformer{TableName: constants.DenyTable}
-		models, err := transformer.ToModels(constants.CatABI(), []core.HeaderSyncLog{test_data.DenyHeaderSyncLog}, db)
+		models, err := transformer.ToModels(constants.CatABI(), []core.EventLog{test_data.DenyEventLog}, db)
 		Expect(err).NotTo(HaveOccurred())
 
 		var contractAddressID int64
 		contractAddressErr := db.Get(&contractAddressID, `SELECT id FROM addresses WHERE address = $1`,
-			test_data.DenyHeaderSyncLog.Log.Address.String())
+			test_data.DenyEventLog.Log.Address.String())
 		Expect(contractAddressErr).NotTo(HaveOccurred())
 
 		var usrAddressID int64
 		usrAddressErr := db.Get(&usrAddressID, `SELECT id FROM addresses WHERE address = $1`,
-			common.HexToAddress(test_data.DenyHeaderSyncLog.Log.Topics[2].Hex()).Hex())
+			common.HexToAddress(test_data.DenyEventLog.Log.Topics[2].Hex()).Hex())
 		Expect(usrAddressErr).NotTo(HaveOccurred())
 
 		expectedModel := test_data.DenyModel()
@@ -88,17 +88,17 @@ var _ = Describe("Deny Transformer", func() {
 
 	It("converts Vat deny logs to models", func() {
 		transformer := auth.Transformer{TableName: constants.DenyTable, LogNoteArgumentOffset: -1}
-		models, err := transformer.ToModels(constants.VatABI(), []core.HeaderSyncLog{test_data.VatDenyHeaderSyncLog}, db)
+		models, err := transformer.ToModels(constants.VatABI(), []core.EventLog{test_data.VatDenyEventLog}, db)
 		Expect(err).NotTo(HaveOccurred())
 
 		var contractAddressID int64
 		contractAddressErr := db.Get(&contractAddressID, `SELECT id FROM addresses WHERE address = $1`,
-			test_data.VatDenyHeaderSyncLog.Log.Address.String())
+			test_data.VatDenyEventLog.Log.Address.String())
 		Expect(contractAddressErr).NotTo(HaveOccurred())
 
 		var usrAddressID int64
 		usrAddressErr := db.Get(&usrAddressID, `SELECT id FROM addresses WHERE address = $1`,
-			common.HexToAddress(test_data.VatDenyHeaderSyncLog.Log.Topics[1].Hex()).Hex())
+			common.HexToAddress(test_data.VatDenyEventLog.Log.Topics[1].Hex()).Hex())
 		Expect(usrAddressErr).NotTo(HaveOccurred())
 
 		expectedModel := test_data.VatDenyModel()
@@ -110,10 +110,10 @@ var _ = Describe("Deny Transformer", func() {
 
 	It("returns an error if the expected amount of topics aren't in the log", func() {
 		transformer := auth.Transformer{}
-		invalidLog := test_data.DenyHeaderSyncLog
+		invalidLog := test_data.DenyEventLog
 		invalidLog.Log.Topics = []common.Hash{}
 
-		_, err := transformer.ToModels(constants.CatABI(), []core.HeaderSyncLog{invalidLog}, db)
+		_, err := transformer.ToModels(constants.CatABI(), []core.EventLog{invalidLog}, db)
 
 		Expect(err).To(HaveOccurred())
 		Expect(err).To(MatchError(shared.ErrLogMissingTopics(3, 0)))
