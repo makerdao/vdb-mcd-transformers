@@ -6,32 +6,51 @@
 version: "3.7"
 services:
   header-sync:
-    image: makerdao/vdb-headersync # add tag to image
-    env_file: vdb-header-sync.env
+    image: makerdao/vdb-headersync:v0.0.11-lite
+    env_file: mainnet-1.0.1.env
+    environment:
+      - CLIENT_IPCPATH="https://geth0.mainnet.makerfoundation.com:8545"
+      - DATABASE_NAME=vdb
+      - DATABASE_HOSTNAME=db
+      - DATABASE_PORT=5432
+      - DATABASE_USER=vulcanize
+      - DATABASE_PASSWORD=vulcanize
+      - STARTING_BLOCK_NUMBER=8928152
     depends_on:
-      - postgres
+      - db
+    command: ["./wait-for-it.sh", "db:5432", "--strict", "--", "./startup_script.sh"]
     restart: unless-stopped
 
-  # Add wait-for-it to allow postgres to start
   execute:
-    image: makerdao/vdb-execute
-    env_file: vdb-execute.env
+    image: makerdao/vdb-execute:v1.0.1-mainnet-lite-with-recheck
+    env_file: mainnet-1.0.1.env
+    environment:
+      - CLIENT_IPCPATH="https://geth0.mainnet.makerfoundation.com:8545"
+      - DATABASE_NAME=vdb
+      - DATABASE_HOSTNAME=db
+      - DATABASE_PORT=5432
+      - DATABASE_USER=vulcanize
+      - DATABASE_PASSWORD=vulcanize
     depends_on:
-      - postgres
+      - db
+    command: ["./wait-for-it.sh", "db:5432", "--strict", "--", "./startup_script.sh"]
     restart: unless-stopped
 
-  postgres: # TODO user/pwd?
+  db:
     image: postgres:12.1-alpine
-    ports: 5432
+    ports:
+      - 5432
     environment:
       - POSTGRES_DB=vdb
-    restart: unless-stopped
+      - POSTGRES_USER=vulcanize
+      - POSTGRES_PASSWORD=vulcanize
+    restart: always
 
   postgraphile:
-    image: m0ar/vdb-postgraphile # TODO change for makerdao/vdb-postgraphile
+    image: makerdao/vdb-postgraphile
     environment:
       - SCHEMAS=api
-      - DATABASE_URL="postgres://postgres:postgres@vdb:5432"
+      - DATABASE_URL="postgres://vulcanize:vulcanize@db:5432/vdb"
     depends_on:
-      - postgres
+      - db
     restart: always
