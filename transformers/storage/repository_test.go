@@ -637,6 +637,26 @@ var _ = Describe("Maker storage repository", func() {
 		})
 	})
 
+	Describe("getting auth keys", func() {
+		It("gets unique rely and deny users and msg.senders for a given contract ", func() {
+			msgSenderAddressOne := common.HexToAddress(test_data.RandomString(40)).Hex()
+			msgSenderAddressTwo := common.HexToAddress(test_data.RandomString(40)).Hex()
+			userAddressOne := common.HexToAddress(test_data.RandomString(40)).Hex()
+			userAddressTwo := common.HexToAddress(test_data.RandomString(40)).Hex()
+			insertAuthEvent(1, test_data.CatAddress(), msgSenderAddressOne, userAddressOne, "maker.rely", db)
+			insertAuthEvent(2, test_data.VowAddress(), msgSenderAddressOne, userAddressTwo, "maker.rely", db)
+			insertAuthEvent(3, test_data.VowAddress(), msgSenderAddressTwo, userAddressTwo, "maker.deny", db)
+
+			catUserAddresses, catUserErr := repository.GetWardsAddresses(test_data.CatAddress())
+			Expect(catUserErr).NotTo(HaveOccurred())
+			Expect(catUserAddresses).To(ConsistOf(msgSenderAddressOne, userAddressOne))
+
+			vowUserAddresses, vowUserErr := repository.GetWardsAddresses(test_data.VowAddress())
+			Expect(vowUserErr).NotTo(HaveOccurred())
+			Expect(vowUserAddresses).To(ConsistOf(msgSenderAddressOne, msgSenderAddressTwo, userAddressTwo))
+		})
+	})
+
 	Describe("getting CDPIs", func() {
 		It("returns string version of ints ranging from 1 to the max CDPI in the table", func() {
 			insertCdpManagerCdpi(int64(rand.Int()), 2, db)
@@ -935,6 +955,22 @@ func insertVatSlip(ilk, usr string, blockNumber int64, db *postgres.DB) {
 		headerID, ilkID, usr, vatSlipLog.ID,
 	)
 	Expect(execErr).NotTo(HaveOccurred())
+}
+
+func insertAuthEvent(blockNumber int64, contractAddress, msgSenderAddress, userAddress, tableName string, db *postgres.DB) {
+	headerID := insertHeader(db, blockNumber)
+	log := test_data.CreateTestLog(headerID, db)
+	contractAddressID, contractAddressErr := shared.GetOrCreateAddress(contractAddress, db)
+	Expect(contractAddressErr).NotTo(HaveOccurred())
+
+	msgSenderAddressID, msgSenderAddressErr := shared.GetOrCreateAddress(msgSenderAddress, db)
+	Expect(msgSenderAddressErr).NotTo(HaveOccurred())
+	userAddressID, userAddressErr := shared.GetOrCreateAddress(userAddress, db)
+	Expect(userAddressErr).NotTo(HaveOccurred())
+
+	insertAuthEventQuery := fmt.Sprintf(`INSERT INTO %s (header_id, log_id, address_id, msg_sender, usr) VALUES ($1, $2, $3, $4, $5)`, tableName)
+	_, insertErr := db.Exec(insertAuthEventQuery, headerID, log.ID, contractAddressID, msgSenderAddressID, userAddressID)
+	Expect(insertErr).NotTo(HaveOccurred())
 }
 
 func insertPotPieUser(blockNumber int64, userAddress, tableName string, db *postgres.DB) {

@@ -16,7 +16,7 @@ var rawRelyLog = types.Log{
 	Address: common.HexToAddress(CatAddress()),
 	Topics: []common.Hash{
 		common.HexToHash(constants.RelySignature()),
-		common.HexToHash("0x0000000000000000000000000000000000000000000000000000000000000000"),
+		common.HexToHash("0x00000000000000000000000039ad5d336a4c08fac74879f796e1ea0af26c1521"),
 		common.HexToHash("0x0000000000000000000000000e4725db88bb038bba4c4723e91ba183be11edf3"),
 		common.HexToHash("0x0000000000000000000000000000000000000000000000000000000000000000"),
 	},
@@ -39,10 +39,16 @@ var RelyEventLog = core.EventLog{
 func RelyModel() event.InsertionModel { return CopyModel(relyModel) }
 
 var relyModel = event.InsertionModel{
-	SchemaName:     constants.MakerSchema,
-	TableName:      constants.RelyTable,
-	OrderedColumns: []event.ColumnName{event.HeaderFK, event.LogFK, event.AddressFK, constants.UsrColumn},
-	ColumnValues:   event.ColumnValues{event.HeaderFK: RelyEventLog.HeaderID, event.LogFK: RelyEventLog.ID},
+	SchemaName: constants.MakerSchema,
+	TableName:  constants.RelyTable,
+	OrderedColumns: []event.ColumnName{
+		event.HeaderFK,
+		event.LogFK,
+		event.AddressFK,
+		constants.MsgSenderColumn,
+		constants.UsrColumn,
+	},
+	ColumnValues: event.ColumnValues{event.HeaderFK: RelyEventLog.HeaderID, event.LogFK: RelyEventLog.ID},
 }
 
 var rawVatRelyLog = types.Log{
@@ -73,7 +79,7 @@ func VatRelyModel() event.InsertionModel { return CopyModel(vatRelyModel) }
 
 var vatRelyModel = event.InsertionModel{
 	SchemaName:     constants.MakerSchema,
-	TableName:      constants.RelyTable,
+	TableName:      constants.VatRelyTable,
 	OrderedColumns: []event.ColumnName{event.HeaderFK, event.LogFK, event.AddressFK, constants.UsrColumn},
 	ColumnValues: event.ColumnValues{
 		event.HeaderFK: VatRelyEventLog.HeaderID,

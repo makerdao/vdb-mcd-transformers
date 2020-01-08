@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 11.5
--- Dumped by pg_dump version 11.5
+-- Dumped from database version 12.1
+-- Dumped by pg_dump version 12.1
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -2155,7 +2155,7 @@ $_$;
 
 SET default_tablespace = '';
 
-SET default_with_oids = false;
+SET default_table_access_method = heap;
 
 --
 -- Name: historical_ilk_state; Type: TABLE; Schema: api; Owner: -
@@ -7214,6 +7214,7 @@ CREATE TABLE maker.deny (
     header_id integer NOT NULL,
     log_id bigint NOT NULL,
     address_id integer NOT NULL,
+    msg_sender integer NOT NULL,
     usr integer NOT NULL
 );
 
@@ -10078,6 +10079,7 @@ CREATE TABLE maker.rely (
     header_id integer NOT NULL,
     log_id bigint NOT NULL,
     address_id integer NOT NULL,
+    msg_sender integer NOT NULL,
     usr integer NOT NULL
 );
 
@@ -10577,6 +10579,39 @@ CREATE SEQUENCE maker.vat_debt_id_seq
 --
 
 ALTER SEQUENCE maker.vat_debt_id_seq OWNED BY maker.vat_debt.id;
+
+
+--
+-- Name: vat_deny; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.vat_deny (
+    id integer NOT NULL,
+    header_id integer NOT NULL,
+    log_id bigint NOT NULL,
+    address_id integer NOT NULL,
+    usr integer NOT NULL
+);
+
+
+--
+-- Name: vat_deny_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.vat_deny_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: vat_deny_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.vat_deny_id_seq OWNED BY maker.vat_deny.id;
 
 
 --
@@ -11126,6 +11161,39 @@ CREATE SEQUENCE maker.vat_move_id_seq
 --
 
 ALTER SEQUENCE maker.vat_move_id_seq OWNED BY maker.vat_move.id;
+
+
+--
+-- Name: vat_rely; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.vat_rely (
+    id integer NOT NULL,
+    header_id integer NOT NULL,
+    log_id bigint NOT NULL,
+    address_id integer NOT NULL,
+    usr integer NOT NULL
+);
+
+
+--
+-- Name: vat_rely_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.vat_rely_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: vat_rely_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.vat_rely_id_seq OWNED BY maker.vat_rely.id;
 
 
 --
@@ -11840,6 +11908,40 @@ CREATE SEQUENCE maker.vow_wait_id_seq
 --
 
 ALTER SEQUENCE maker.vow_wait_id_seq OWNED BY maker.vow_wait.id;
+
+
+--
+-- Name: wards; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.wards (
+    id integer NOT NULL,
+    diff_id bigint NOT NULL,
+    header_id integer NOT NULL,
+    address_id integer NOT NULL,
+    usr integer NOT NULL,
+    wards integer NOT NULL
+);
+
+
+--
+-- Name: wards_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.wards_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: wards_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.wards_id_seq OWNED BY maker.wards.id;
 
 
 --
@@ -13070,6 +13172,13 @@ ALTER TABLE ONLY maker.vat_debt ALTER COLUMN id SET DEFAULT nextval('maker.vat_d
 
 
 --
+-- Name: vat_deny id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_deny ALTER COLUMN id SET DEFAULT nextval('maker.vat_deny_id_seq'::regclass);
+
+
+--
 -- Name: vat_file_debt_ceiling id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
@@ -13193,6 +13302,13 @@ ALTER TABLE ONLY maker.vat_live ALTER COLUMN id SET DEFAULT nextval('maker.vat_l
 --
 
 ALTER TABLE ONLY maker.vat_move ALTER COLUMN id SET DEFAULT nextval('maker.vat_move_id_seq'::regclass);
+
+
+--
+-- Name: vat_rely id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_rely ALTER COLUMN id SET DEFAULT nextval('maker.vat_rely_id_seq'::regclass);
 
 
 --
@@ -13333,6 +13449,13 @@ ALTER TABLE ONLY maker.vow_vat ALTER COLUMN id SET DEFAULT nextval('maker.vow_va
 --
 
 ALTER TABLE ONLY maker.vow_wait ALTER COLUMN id SET DEFAULT nextval('maker.vow_wait_id_seq'::regclass);
+
+
+--
+-- Name: wards id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.wards ALTER COLUMN id SET DEFAULT nextval('maker.wards_id_seq'::regclass);
 
 
 --
@@ -15236,6 +15359,22 @@ ALTER TABLE ONLY maker.vat_debt
 
 
 --
+-- Name: vat_deny vat_deny_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_deny
+    ADD CONSTRAINT vat_deny_header_id_log_id_key UNIQUE (header_id, log_id);
+
+
+--
+-- Name: vat_deny vat_deny_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_deny
+    ADD CONSTRAINT vat_deny_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: vat_file_debt_ceiling vat_file_debt_ceiling_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -15521,6 +15660,22 @@ ALTER TABLE ONLY maker.vat_move
 
 ALTER TABLE ONLY maker.vat_move
     ADD CONSTRAINT vat_move_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: vat_rely vat_rely_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_rely
+    ADD CONSTRAINT vat_rely_header_id_log_id_key UNIQUE (header_id, log_id);
+
+
+--
+-- Name: vat_rely vat_rely_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_rely
+    ADD CONSTRAINT vat_rely_pkey PRIMARY KEY (id);
 
 
 --
@@ -15841,6 +15996,22 @@ ALTER TABLE ONLY maker.vow_wait
 
 ALTER TABLE ONLY maker.vow_wait
     ADD CONSTRAINT vow_wait_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: wards wards_diff_id_header_id_address_id_usr_wards_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.wards
+    ADD CONSTRAINT wards_diff_id_header_id_address_id_usr_wards_key UNIQUE (diff_id, header_id, address_id, usr, wards);
+
+
+--
+-- Name: wards wards_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.wards
+    ADD CONSTRAINT wards_pkey PRIMARY KEY (id);
 
 
 --
@@ -16318,6 +16489,13 @@ CREATE INDEX deny_header_index ON maker.deny USING btree (header_id);
 --
 
 CREATE INDEX deny_log_index ON maker.deny USING btree (log_id);
+
+
+--
+-- Name: deny_msg_sender_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX deny_msg_sender_index ON maker.deny USING btree (msg_sender);
 
 
 --
@@ -17476,6 +17654,13 @@ CREATE INDEX rely_log_index ON maker.rely USING btree (log_id);
 
 
 --
+-- Name: rely_msg_sender_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX rely_msg_sender_index ON maker.rely USING btree (msg_sender);
+
+
+--
 -- Name: rely_usr_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -17676,6 +17861,34 @@ CREATE INDEX vat_dai_header_id_index ON maker.vat_dai USING btree (header_id);
 --
 
 CREATE INDEX vat_debt_header_id_index ON maker.vat_debt USING btree (header_id);
+
+
+--
+-- Name: vat_deny_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vat_deny_address_index ON maker.vat_deny USING btree (address_id);
+
+
+--
+-- Name: vat_deny_header_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vat_deny_header_index ON maker.vat_deny USING btree (header_id);
+
+
+--
+-- Name: vat_deny_log_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vat_deny_log_index ON maker.vat_deny USING btree (log_id);
+
+
+--
+-- Name: vat_deny_usr_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vat_deny_usr_index ON maker.vat_deny USING btree (usr);
 
 
 --
@@ -17966,6 +18179,34 @@ CREATE INDEX vat_move_log_index ON maker.vat_move USING btree (log_id);
 
 
 --
+-- Name: vat_rely_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vat_rely_address_index ON maker.vat_rely USING btree (address_id);
+
+
+--
+-- Name: vat_rely_header_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vat_rely_header_index ON maker.vat_rely USING btree (header_id);
+
+
+--
+-- Name: vat_rely_log_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vat_rely_log_index ON maker.vat_rely USING btree (log_id);
+
+
+--
+-- Name: vat_rely_usr_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vat_rely_usr_index ON maker.vat_rely USING btree (usr);
+
+
+--
 -- Name: vat_sin_header_id_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -18176,6 +18417,27 @@ CREATE INDEX vow_wait_header_id_index ON maker.vow_wait USING btree (header_id);
 
 
 --
+-- Name: wards_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX wards_address_index ON maker.wards USING btree (address_id);
+
+
+--
+-- Name: wards_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX wards_header_id_index ON maker.wards USING btree (header_id);
+
+
+--
+-- Name: wards_usr_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX wards_usr_index ON maker.wards USING btree (usr);
+
+
+--
 -- Name: yank_address_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -18270,273 +18532,273 @@ CREATE INDEX transactions_header ON public.transactions USING btree (header_id);
 -- Name: flap_bid_bid flap_bid_bid; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER flap_bid_bid AFTER INSERT OR UPDATE ON maker.flap_bid_bid FOR EACH ROW EXECUTE PROCEDURE maker.insert_updated_flap_bid();
+CREATE TRIGGER flap_bid_bid AFTER INSERT OR UPDATE ON maker.flap_bid_bid FOR EACH ROW EXECUTE FUNCTION maker.insert_updated_flap_bid();
 
 
 --
 -- Name: flap_bid_end flap_bid_end; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER flap_bid_end AFTER INSERT OR UPDATE ON maker.flap_bid_end FOR EACH ROW EXECUTE PROCEDURE maker.insert_updated_flap_end();
+CREATE TRIGGER flap_bid_end AFTER INSERT OR UPDATE ON maker.flap_bid_end FOR EACH ROW EXECUTE FUNCTION maker.insert_updated_flap_end();
 
 
 --
 -- Name: flap_bid_guy flap_bid_guy; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER flap_bid_guy AFTER INSERT OR UPDATE ON maker.flap_bid_guy FOR EACH ROW EXECUTE PROCEDURE maker.insert_updated_flap_guy();
+CREATE TRIGGER flap_bid_guy AFTER INSERT OR UPDATE ON maker.flap_bid_guy FOR EACH ROW EXECUTE FUNCTION maker.insert_updated_flap_guy();
 
 
 --
 -- Name: flap_bid_lot flap_bid_lot; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER flap_bid_lot AFTER INSERT OR UPDATE ON maker.flap_bid_lot FOR EACH ROW EXECUTE PROCEDURE maker.insert_updated_flap_lot();
+CREATE TRIGGER flap_bid_lot AFTER INSERT OR UPDATE ON maker.flap_bid_lot FOR EACH ROW EXECUTE FUNCTION maker.insert_updated_flap_lot();
 
 
 --
 -- Name: flap_bid_tic flap_bid_tic; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER flap_bid_tic AFTER INSERT OR UPDATE ON maker.flap_bid_tic FOR EACH ROW EXECUTE PROCEDURE maker.insert_updated_flap_tic();
+CREATE TRIGGER flap_bid_tic AFTER INSERT OR UPDATE ON maker.flap_bid_tic FOR EACH ROW EXECUTE FUNCTION maker.insert_updated_flap_tic();
 
 
 --
 -- Name: flap_kick flap_created_trigger; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER flap_created_trigger AFTER INSERT ON maker.flap_kick FOR EACH ROW EXECUTE PROCEDURE maker.flap_created();
+CREATE TRIGGER flap_created_trigger AFTER INSERT ON maker.flap_kick FOR EACH ROW EXECUTE FUNCTION maker.flap_created();
 
 
 --
 -- Name: flip_bid_bid flip_bid_bid; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER flip_bid_bid AFTER INSERT OR UPDATE ON maker.flip_bid_bid FOR EACH ROW EXECUTE PROCEDURE maker.insert_updated_flip_bid();
+CREATE TRIGGER flip_bid_bid AFTER INSERT OR UPDATE ON maker.flip_bid_bid FOR EACH ROW EXECUTE FUNCTION maker.insert_updated_flip_bid();
 
 
 --
 -- Name: flip_bid_end flip_bid_end; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER flip_bid_end AFTER INSERT OR UPDATE ON maker.flip_bid_end FOR EACH ROW EXECUTE PROCEDURE maker.insert_updated_flip_end();
+CREATE TRIGGER flip_bid_end AFTER INSERT OR UPDATE ON maker.flip_bid_end FOR EACH ROW EXECUTE FUNCTION maker.insert_updated_flip_end();
 
 
 --
 -- Name: flip_bid_gal flip_bid_gal; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER flip_bid_gal AFTER INSERT OR UPDATE ON maker.flip_bid_gal FOR EACH ROW EXECUTE PROCEDURE maker.insert_updated_flip_gal();
+CREATE TRIGGER flip_bid_gal AFTER INSERT OR UPDATE ON maker.flip_bid_gal FOR EACH ROW EXECUTE FUNCTION maker.insert_updated_flip_gal();
 
 
 --
 -- Name: flip_bid_guy flip_bid_guy; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER flip_bid_guy AFTER INSERT OR UPDATE ON maker.flip_bid_guy FOR EACH ROW EXECUTE PROCEDURE maker.insert_updated_flip_guy();
+CREATE TRIGGER flip_bid_guy AFTER INSERT OR UPDATE ON maker.flip_bid_guy FOR EACH ROW EXECUTE FUNCTION maker.insert_updated_flip_guy();
 
 
 --
 -- Name: flip_bid_lot flip_bid_lot; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER flip_bid_lot AFTER INSERT OR UPDATE ON maker.flip_bid_lot FOR EACH ROW EXECUTE PROCEDURE maker.insert_updated_flip_lot();
+CREATE TRIGGER flip_bid_lot AFTER INSERT OR UPDATE ON maker.flip_bid_lot FOR EACH ROW EXECUTE FUNCTION maker.insert_updated_flip_lot();
 
 
 --
 -- Name: flip_bid_tab flip_bid_tab; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER flip_bid_tab AFTER INSERT OR UPDATE ON maker.flip_bid_tab FOR EACH ROW EXECUTE PROCEDURE maker.insert_updated_flip_tab();
+CREATE TRIGGER flip_bid_tab AFTER INSERT OR UPDATE ON maker.flip_bid_tab FOR EACH ROW EXECUTE FUNCTION maker.insert_updated_flip_tab();
 
 
 --
 -- Name: flip_bid_tic flip_bid_tic; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER flip_bid_tic AFTER INSERT OR UPDATE ON maker.flip_bid_tic FOR EACH ROW EXECUTE PROCEDURE maker.insert_updated_flip_tic();
+CREATE TRIGGER flip_bid_tic AFTER INSERT OR UPDATE ON maker.flip_bid_tic FOR EACH ROW EXECUTE FUNCTION maker.insert_updated_flip_tic();
 
 
 --
 -- Name: flip_kick flip_created_trigger; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER flip_created_trigger AFTER INSERT ON maker.flip_kick FOR EACH ROW EXECUTE PROCEDURE maker.flip_created();
+CREATE TRIGGER flip_created_trigger AFTER INSERT ON maker.flip_kick FOR EACH ROW EXECUTE FUNCTION maker.flip_created();
 
 
 --
 -- Name: flop_bid_bid flop_bid_bid; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER flop_bid_bid AFTER INSERT OR UPDATE ON maker.flop_bid_bid FOR EACH ROW EXECUTE PROCEDURE maker.insert_updated_flop_bid();
+CREATE TRIGGER flop_bid_bid AFTER INSERT OR UPDATE ON maker.flop_bid_bid FOR EACH ROW EXECUTE FUNCTION maker.insert_updated_flop_bid();
 
 
 --
 -- Name: flop_bid_end flop_bid_end; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER flop_bid_end AFTER INSERT OR UPDATE ON maker.flop_bid_end FOR EACH ROW EXECUTE PROCEDURE maker.insert_updated_flop_end();
+CREATE TRIGGER flop_bid_end AFTER INSERT OR UPDATE ON maker.flop_bid_end FOR EACH ROW EXECUTE FUNCTION maker.insert_updated_flop_end();
 
 
 --
 -- Name: flop_bid_guy flop_bid_guy; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER flop_bid_guy AFTER INSERT OR UPDATE ON maker.flop_bid_guy FOR EACH ROW EXECUTE PROCEDURE maker.insert_updated_flop_guy();
+CREATE TRIGGER flop_bid_guy AFTER INSERT OR UPDATE ON maker.flop_bid_guy FOR EACH ROW EXECUTE FUNCTION maker.insert_updated_flop_guy();
 
 
 --
 -- Name: flop_bid_lot flop_bid_lot; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER flop_bid_lot AFTER INSERT OR UPDATE ON maker.flop_bid_lot FOR EACH ROW EXECUTE PROCEDURE maker.insert_updated_flop_lot();
+CREATE TRIGGER flop_bid_lot AFTER INSERT OR UPDATE ON maker.flop_bid_lot FOR EACH ROW EXECUTE FUNCTION maker.insert_updated_flop_lot();
 
 
 --
 -- Name: flop_bid_tic flop_bid_tic; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER flop_bid_tic AFTER INSERT OR UPDATE ON maker.flop_bid_tic FOR EACH ROW EXECUTE PROCEDURE maker.insert_updated_flop_tic();
+CREATE TRIGGER flop_bid_tic AFTER INSERT OR UPDATE ON maker.flop_bid_tic FOR EACH ROW EXECUTE FUNCTION maker.insert_updated_flop_tic();
 
 
 --
 -- Name: flop_kick flop_created_trigger; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER flop_created_trigger AFTER INSERT ON maker.flop_kick FOR EACH ROW EXECUTE PROCEDURE maker.flop_created();
+CREATE TRIGGER flop_created_trigger AFTER INSERT ON maker.flop_kick FOR EACH ROW EXECUTE FUNCTION maker.flop_created();
 
 
 --
 -- Name: vat_ilk_art ilk_art; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER ilk_art AFTER INSERT OR DELETE OR UPDATE ON maker.vat_ilk_art FOR EACH ROW EXECUTE PROCEDURE maker.update_ilk_arts();
+CREATE TRIGGER ilk_art AFTER INSERT OR DELETE OR UPDATE ON maker.vat_ilk_art FOR EACH ROW EXECUTE FUNCTION maker.update_ilk_arts();
 
 
 --
 -- Name: cat_ilk_chop ilk_chop; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER ilk_chop AFTER INSERT OR DELETE OR UPDATE ON maker.cat_ilk_chop FOR EACH ROW EXECUTE PROCEDURE maker.update_ilk_chops();
+CREATE TRIGGER ilk_chop AFTER INSERT OR DELETE OR UPDATE ON maker.cat_ilk_chop FOR EACH ROW EXECUTE FUNCTION maker.update_ilk_chops();
 
 
 --
 -- Name: vat_ilk_dust ilk_dust; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER ilk_dust AFTER INSERT OR DELETE OR UPDATE ON maker.vat_ilk_dust FOR EACH ROW EXECUTE PROCEDURE maker.update_ilk_dusts();
+CREATE TRIGGER ilk_dust AFTER INSERT OR DELETE OR UPDATE ON maker.vat_ilk_dust FOR EACH ROW EXECUTE FUNCTION maker.update_ilk_dusts();
 
 
 --
 -- Name: jug_ilk_duty ilk_duty; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER ilk_duty AFTER INSERT OR DELETE OR UPDATE ON maker.jug_ilk_duty FOR EACH ROW EXECUTE PROCEDURE maker.update_ilk_duties();
+CREATE TRIGGER ilk_duty AFTER INSERT OR DELETE OR UPDATE ON maker.jug_ilk_duty FOR EACH ROW EXECUTE FUNCTION maker.update_ilk_duties();
 
 
 --
 -- Name: cat_ilk_flip ilk_flip; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER ilk_flip AFTER INSERT OR DELETE OR UPDATE ON maker.cat_ilk_flip FOR EACH ROW EXECUTE PROCEDURE maker.update_ilk_flips();
+CREATE TRIGGER ilk_flip AFTER INSERT OR DELETE OR UPDATE ON maker.cat_ilk_flip FOR EACH ROW EXECUTE FUNCTION maker.update_ilk_flips();
 
 
 --
 -- Name: vat_init ilk_init; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER ilk_init AFTER INSERT OR DELETE OR UPDATE ON maker.vat_init FOR EACH ROW EXECUTE PROCEDURE maker.update_time_created();
+CREATE TRIGGER ilk_init AFTER INSERT OR DELETE OR UPDATE ON maker.vat_init FOR EACH ROW EXECUTE FUNCTION maker.update_time_created();
 
 
 --
 -- Name: vat_ilk_line ilk_line; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER ilk_line AFTER INSERT OR DELETE OR UPDATE ON maker.vat_ilk_line FOR EACH ROW EXECUTE PROCEDURE maker.update_ilk_lines();
+CREATE TRIGGER ilk_line AFTER INSERT OR DELETE OR UPDATE ON maker.vat_ilk_line FOR EACH ROW EXECUTE FUNCTION maker.update_ilk_lines();
 
 
 --
 -- Name: cat_ilk_lump ilk_lump; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER ilk_lump AFTER INSERT OR DELETE OR UPDATE ON maker.cat_ilk_lump FOR EACH ROW EXECUTE PROCEDURE maker.update_ilk_lumps();
+CREATE TRIGGER ilk_lump AFTER INSERT OR DELETE OR UPDATE ON maker.cat_ilk_lump FOR EACH ROW EXECUTE FUNCTION maker.update_ilk_lumps();
 
 
 --
 -- Name: spot_ilk_mat ilk_mat; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER ilk_mat AFTER INSERT OR DELETE OR UPDATE ON maker.spot_ilk_mat FOR EACH ROW EXECUTE PROCEDURE maker.update_ilk_mats();
+CREATE TRIGGER ilk_mat AFTER INSERT OR DELETE OR UPDATE ON maker.spot_ilk_mat FOR EACH ROW EXECUTE FUNCTION maker.update_ilk_mats();
 
 
 --
 -- Name: spot_ilk_pip ilk_pip; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER ilk_pip AFTER INSERT OR DELETE OR UPDATE ON maker.spot_ilk_pip FOR EACH ROW EXECUTE PROCEDURE maker.update_ilk_pips();
+CREATE TRIGGER ilk_pip AFTER INSERT OR DELETE OR UPDATE ON maker.spot_ilk_pip FOR EACH ROW EXECUTE FUNCTION maker.update_ilk_pips();
 
 
 --
 -- Name: vat_ilk_rate ilk_rate; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER ilk_rate AFTER INSERT OR DELETE OR UPDATE ON maker.vat_ilk_rate FOR EACH ROW EXECUTE PROCEDURE maker.update_ilk_rates();
+CREATE TRIGGER ilk_rate AFTER INSERT OR DELETE OR UPDATE ON maker.vat_ilk_rate FOR EACH ROW EXECUTE FUNCTION maker.update_ilk_rates();
 
 
 --
 -- Name: jug_ilk_rho ilk_rho; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER ilk_rho AFTER INSERT OR DELETE OR UPDATE ON maker.jug_ilk_rho FOR EACH ROW EXECUTE PROCEDURE maker.update_ilk_rhos();
+CREATE TRIGGER ilk_rho AFTER INSERT OR DELETE OR UPDATE ON maker.jug_ilk_rho FOR EACH ROW EXECUTE FUNCTION maker.update_ilk_rhos();
 
 
 --
 -- Name: vat_ilk_spot ilk_spot; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER ilk_spot AFTER INSERT OR DELETE OR UPDATE ON maker.vat_ilk_spot FOR EACH ROW EXECUTE PROCEDURE maker.update_ilk_spots();
+CREATE TRIGGER ilk_spot AFTER INSERT OR DELETE OR UPDATE ON maker.vat_ilk_spot FOR EACH ROW EXECUTE FUNCTION maker.update_ilk_spots();
 
 
 --
 -- Name: cdp_manager_cdpi managed_cdp_cdpi; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER managed_cdp_cdpi AFTER INSERT OR UPDATE ON maker.cdp_manager_cdpi FOR EACH ROW EXECUTE PROCEDURE maker.insert_cdp_created();
+CREATE TRIGGER managed_cdp_cdpi AFTER INSERT OR UPDATE ON maker.cdp_manager_cdpi FOR EACH ROW EXECUTE FUNCTION maker.insert_cdp_created();
 
 
 --
 -- Name: cdp_manager_ilks managed_cdp_ilk; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER managed_cdp_ilk AFTER INSERT OR UPDATE ON maker.cdp_manager_ilks FOR EACH ROW EXECUTE PROCEDURE maker.insert_cdp_ilk_identifier();
+CREATE TRIGGER managed_cdp_ilk AFTER INSERT OR UPDATE ON maker.cdp_manager_ilks FOR EACH ROW EXECUTE FUNCTION maker.insert_cdp_ilk_identifier();
 
 
 --
 -- Name: cdp_manager_urns managed_cdp_urn; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER managed_cdp_urn AFTER INSERT OR UPDATE ON maker.cdp_manager_urns FOR EACH ROW EXECUTE PROCEDURE maker.insert_cdp_urn_identifier();
+CREATE TRIGGER managed_cdp_urn AFTER INSERT OR UPDATE ON maker.cdp_manager_urns FOR EACH ROW EXECUTE FUNCTION maker.insert_cdp_urn_identifier();
 
 
 --
 -- Name: cdp_manager_owns managed_cdp_usr; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER managed_cdp_usr AFTER INSERT OR UPDATE ON maker.cdp_manager_owns FOR EACH ROW EXECUTE PROCEDURE maker.insert_cdp_usr();
+CREATE TRIGGER managed_cdp_usr AFTER INSERT OR UPDATE ON maker.cdp_manager_owns FOR EACH ROW EXECUTE FUNCTION maker.insert_cdp_usr();
 
 
 --
 -- Name: vat_urn_art urn_art; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER urn_art AFTER INSERT OR DELETE OR UPDATE ON maker.vat_urn_art FOR EACH ROW EXECUTE PROCEDURE maker.update_urn_arts();
+CREATE TRIGGER urn_art AFTER INSERT OR DELETE OR UPDATE ON maker.vat_urn_art FOR EACH ROW EXECUTE FUNCTION maker.update_urn_arts();
 
 
 --
 -- Name: vat_urn_ink urn_ink; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER urn_ink AFTER INSERT OR DELETE OR UPDATE ON maker.vat_urn_ink FOR EACH ROW EXECUTE PROCEDURE maker.update_urn_inks();
+CREATE TRIGGER urn_ink AFTER INSERT OR DELETE OR UPDATE ON maker.vat_urn_ink FOR EACH ROW EXECUTE FUNCTION maker.update_urn_inks();
 
 
 --
@@ -18985,6 +19247,14 @@ ALTER TABLE ONLY maker.deny
 
 ALTER TABLE ONLY maker.deny
     ADD CONSTRAINT deny_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: deny deny_msg_sender_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.deny
+    ADD CONSTRAINT deny_msg_sender_fkey FOREIGN KEY (msg_sender) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --
@@ -20588,6 +20858,14 @@ ALTER TABLE ONLY maker.rely
 
 
 --
+-- Name: rely rely_msg_sender_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.rely
+    ADD CONSTRAINT rely_msg_sender_fkey FOREIGN KEY (msg_sender) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
 -- Name: rely rely_usr_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -20865,6 +21143,38 @@ ALTER TABLE ONLY maker.vat_debt
 
 ALTER TABLE ONLY maker.vat_debt
     ADD CONSTRAINT vat_debt_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: vat_deny vat_deny_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_deny
+    ADD CONSTRAINT vat_deny_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: vat_deny vat_deny_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_deny
+    ADD CONSTRAINT vat_deny_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: vat_deny vat_deny_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_deny
+    ADD CONSTRAINT vat_deny_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: vat_deny vat_deny_usr_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_deny
+    ADD CONSTRAINT vat_deny_usr_fkey FOREIGN KEY (usr) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --
@@ -21260,6 +21570,38 @@ ALTER TABLE ONLY maker.vat_move
 
 
 --
+-- Name: vat_rely vat_rely_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_rely
+    ADD CONSTRAINT vat_rely_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: vat_rely vat_rely_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_rely
+    ADD CONSTRAINT vat_rely_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: vat_rely vat_rely_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_rely
+    ADD CONSTRAINT vat_rely_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: vat_rely vat_rely_usr_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_rely
+    ADD CONSTRAINT vat_rely_usr_fkey FOREIGN KEY (usr) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
 -- Name: vat_sin vat_sin_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -21601,6 +21943,38 @@ ALTER TABLE ONLY maker.vow_wait
 
 ALTER TABLE ONLY maker.vow_wait
     ADD CONSTRAINT vow_wait_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: wards wards_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.wards
+    ADD CONSTRAINT wards_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: wards wards_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.wards
+    ADD CONSTRAINT wards_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
+-- Name: wards wards_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.wards
+    ADD CONSTRAINT wards_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: wards wards_usr_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.wards
+    ADD CONSTRAINT wards_usr_fkey FOREIGN KEY (usr) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --

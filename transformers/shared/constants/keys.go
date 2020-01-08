@@ -31,6 +31,7 @@ const (
 	MsgSender storage.Key = "msg_sender"
 	Owner     storage.Key = "owner"
 	Timestamp storage.Key = "timestamp"
+	User      storage.Key = "usr"
 )
 
 // Table column names
