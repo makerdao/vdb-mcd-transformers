@@ -29,6 +29,11 @@ type DoubleMappingRes struct {
 	KeyTwo string `db:"key_two"`
 }
 
+type WardsMappingRes struct {
+	MappingRes
+	AddressID string `db:"address_id"`
+}
+
 type FlapRes struct {
 	BlockMetadata
 	BlockNumber     int64  `db:"block_number"`

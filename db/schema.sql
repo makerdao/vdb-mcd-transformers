@@ -11157,6 +11157,40 @@ ALTER SEQUENCE maker.vow_wait_id_seq OWNED BY maker.vow_wait.id;
 
 
 --
+-- Name: wards; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.wards (
+    id integer NOT NULL,
+    diff_id bigint NOT NULL,
+    header_id integer NOT NULL,
+    address_id integer NOT NULL,
+    usr integer NOT NULL,
+    wards integer NOT NULL
+);
+
+
+--
+-- Name: wards_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.wards_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: wards_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.wards_id_seq OWNED BY maker.wards.id;
+
+
+--
 -- Name: yank; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -12912,6 +12946,13 @@ ALTER TABLE ONLY maker.vow_vat ALTER COLUMN id SET DEFAULT nextval('maker.vow_va
 --
 
 ALTER TABLE ONLY maker.vow_wait ALTER COLUMN id SET DEFAULT nextval('maker.vow_wait_id_seq'::regclass);
+
+
+--
+-- Name: wards id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.wards ALTER COLUMN id SET DEFAULT nextval('maker.wards_id_seq'::regclass);
 
 
 --
@@ -15472,6 +15513,22 @@ ALTER TABLE ONLY maker.vow_wait
 
 
 --
+-- Name: wards wards_diff_id_header_id_address_id_usr_wards_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.wards
+    ADD CONSTRAINT wards_diff_id_header_id_address_id_usr_wards_key UNIQUE (diff_id, header_id, address_id, usr, wards);
+
+
+--
+-- Name: wards wards_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.wards
+    ADD CONSTRAINT wards_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: yank yank_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -17881,6 +17938,27 @@ CREATE INDEX vow_vat_header_id_index ON maker.vow_vat USING btree (header_id);
 --
 
 CREATE INDEX vow_wait_header_id_index ON maker.vow_wait USING btree (header_id);
+
+
+--
+-- Name: wards_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX wards_address_index ON maker.wards USING btree (address_id);
+
+
+--
+-- Name: wards_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX wards_header_id_index ON maker.wards USING btree (header_id);
+
+
+--
+-- Name: wards_usr_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX wards_usr_index ON maker.wards USING btree (usr);
 
 
 --
@@ -21365,6 +21443,38 @@ ALTER TABLE ONLY maker.vow_wait
 
 ALTER TABLE ONLY maker.vow_wait
     ADD CONSTRAINT vow_wait_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: wards wards_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.wards
+    ADD CONSTRAINT wards_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: wards wards_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.wards
+    ADD CONSTRAINT wards_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
+-- Name: wards wards_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.wards
+    ADD CONSTRAINT wards_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: wards wards_usr_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.wards
+    ADD CONSTRAINT wards_usr_fkey FOREIGN KEY (usr) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --

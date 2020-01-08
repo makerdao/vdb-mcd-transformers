@@ -20,7 +20,7 @@ import (
 	"errors"
 	"strconv"
 
-	repository2 "github.com/makerdao/vulcanizedb/libraries/shared/repository"
+	vdbRepository "github.com/makerdao/vulcanizedb/libraries/shared/repository"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 )
 
@@ -32,18 +32,19 @@ type Urn struct {
 var ErrNoFlips = errors.New("no flips exist in db")
 
 type IMakerStorageRepository interface {
+	GetAuthUsers(string) ([]string, error)
+	GetCdpis() ([]string, error)
 	GetDaiKeys() ([]string, error)
 	GetFlapBidIds(string) ([]string, error)
-	GetGemKeys() ([]Urn, error)
-	GetIlks() ([]string, error)
-	GetVatSinKeys() ([]string, error)
-	GetVowSinKeys() ([]string, error)
-	GetUrns() ([]Urn, error)
-	GetCdpis() ([]string, error)
-	GetOwners() ([]string, error)
 	GetFlipBidIds(contractAddress string) ([]string, error)
 	GetFlopBidIds(contractAddress string) ([]string, error)
+	GetGemKeys() ([]Urn, error)
+	GetIlks() ([]string, error)
+	GetOwners() ([]string, error)
 	GetPotPieUsers() ([]string, error)
+	GetUrns() ([]Urn, error)
+	GetVatSinKeys() ([]string, error)
+	GetVowSinKeys() ([]string, error)
 	SetDB(db *postgres.DB)
 }
 
@@ -257,8 +258,27 @@ func (repository *MakerStorageRepository) GetFlopBidIds(contractAddress string) 
 	return bidIds, err
 }
 
+func (repository *MakerStorageRepository) GetAuthUsers(contractAddress string) ([]string, error) {
+	contractAddressID, addressErr := repository.GetOrCreateAddress(contractAddress)
+	if addressErr != nil {
+		return nil, addressErr
+	}
+	var userAddresses []string
+	selectErr := repository.db.Select(&userAddresses, `
+		SELECT addresses.address
+		FROM maker.rely
+		    LEFT JOIN public.addresses ON rely.usr = addresses.id
+		WHERE rely.address_id = $1
+		UNION
+		SELECT addresses.address
+		FROM maker.deny
+		    LEFT JOIN public.addresses ON deny.usr = addresses.id
+		WHERE deny.address_id = $1`, contractAddressID)
+	return userAddresses, selectErr
+}
+
 func (repository *MakerStorageRepository) GetOrCreateAddress(contractAddress string) (int64, error) {
-	return repository2.GetOrCreateAddress(repository.db, contractAddress)
+	return vdbRepository.GetOrCreateAddress(repository.db, contractAddress)
 }
 
 func (repository *MakerStorageRepository) SetDB(db *postgres.DB) {

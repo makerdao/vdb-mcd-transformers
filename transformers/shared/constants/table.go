@@ -170,4 +170,5 @@ const (
 	VowSumpTable            = "vow_sump"
 	VowVatTable             = "vow_vat"
 	VowWaitTable            = "vow_wait"
+	WardsTable              = "wards"
 )

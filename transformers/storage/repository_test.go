@@ -637,6 +637,24 @@ var _ = Describe("Maker storage repository", func() {
 		})
 	})
 
+	Describe("getting wards users", func() {
+		It("gets unique rely and deny users for a given contract ", func() {
+			userAddressOne := common.HexToAddress(test_data.RandomString(40)).Hex()
+			userAddressTwo := common.HexToAddress(test_data.RandomString(40)).Hex()
+			insertAuthEvent(1, test_data.CatAddress(), userAddressOne, "maker.rely", db)
+			insertAuthEvent(2, test_data.VatAddress(), userAddressTwo, "maker.rely", db)
+			insertAuthEvent(3, test_data.VatAddress(), userAddressTwo, "maker.deny", db)
+
+			catUserAddresses, catUserErr := repository.GetAuthUsers(test_data.CatAddress())
+			Expect(catUserErr).NotTo(HaveOccurred())
+			Expect(catUserAddresses).To(ConsistOf(userAddressOne))
+
+			vatUserAddresses, vatUserErr := repository.GetAuthUsers(test_data.VatAddress())
+			Expect(vatUserErr).NotTo(HaveOccurred())
+			Expect(vatUserAddresses).To(ConsistOf(userAddressTwo))
+		})
+	})
+
 	Describe("getting CDPIs", func() {
 		It("returns string version of ints ranging from 1 to the max CDPI in the table", func() {
 			insertCdpManagerCdpi(int64(rand.Int()), 2, db)
@@ -935,6 +953,19 @@ func insertVatSlip(ilk, usr string, blockNumber int64, db *postgres.DB) {
 		headerID, ilkID, usr, vatSlipLog.ID,
 	)
 	Expect(execErr).NotTo(HaveOccurred())
+}
+
+func insertAuthEvent(blockNumber int64, contractAddress, userAddress, tableName string, db *postgres.DB) {
+	headerID := insertHeader(db, blockNumber)
+	log := test_data.CreateTestLog(headerID, db)
+	contractAddressID, contractAddressErr := shared.GetOrCreateAddress(contractAddress, db)
+	Expect(contractAddressErr).NotTo(HaveOccurred())
+	userAddressID, userAddressErr := shared.GetOrCreateAddress(userAddress, db)
+	Expect(userAddressErr).NotTo(HaveOccurred())
+
+	insertAuthEventQuery := fmt.Sprintf(`INSERT INTO %s (header_id, log_id, address_id, usr) VALUES ($1, $2, $3, $4)`, tableName)
+	_, insertErr := db.Exec(insertAuthEventQuery, headerID, log.ID, contractAddressID, userAddressID)
+	Expect(insertErr).NotTo(HaveOccurred())
 }
 
 func insertPotPieUser(blockNumber int64, userAddress, tableName string, db *postgres.DB) {

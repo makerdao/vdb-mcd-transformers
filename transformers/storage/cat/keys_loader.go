@@ -30,13 +30,15 @@ const (
 	Vat  = "vat"
 	Vow  = "vow"
 
+	Wards   = "wards"
 	IlkFlip = "flip"
 	IlkChop = "chop"
 	IlkLump = "lump"
 )
 
 var (
-	// wards takes up index 0
+	WardsMappingIndex = vdbStorage.IndexZero
+
 	IlksMappingIndex = vdbStorage.IndexOne // bytes32 => flip address; chop (ray), lump (wad) uint256
 
 	LiveKey      = common.HexToHash(vdbStorage.IndexTwo)
@@ -51,10 +53,11 @@ var (
 
 type keysLoader struct {
 	storageRepository mcdStorage.IMakerStorageRepository
+	contractAddress   string
 }
 
-func NewKeysLoader(storageRepository mcdStorage.IMakerStorageRepository) storage.KeysLoader {
-	return &keysLoader{storageRepository: storageRepository}
+func NewKeysLoader(storageRepository mcdStorage.IMakerStorageRepository, contractAddress string) storage.KeysLoader {
+	return &keysLoader{storageRepository: storageRepository, contractAddress: contractAddress}
 }
 
 func (loader *keysLoader) SetDB(db *postgres.DB) {
@@ -63,7 +66,15 @@ func (loader *keysLoader) SetDB(db *postgres.DB) {
 
 func (loader *keysLoader) LoadMappings() (map[common.Hash]vdbStorage.ValueMetadata, error) {
 	mappings := loadStaticMappings()
-	return loader.addIlkKeys(mappings)
+	mappings, ilkErr := loader.addIlkKeys(mappings)
+	if ilkErr != nil {
+		return nil, ilkErr
+	}
+	mappings, userErr := loader.addWardsKeys(mappings)
+	if userErr != nil {
+		return nil, userErr
+	}
+	return mappings, nil
 }
 
 func (loader *keysLoader) addIlkKeys(mappings map[common.Hash]vdbStorage.ValueMetadata) (map[common.Hash]vdbStorage.ValueMetadata, error) {
@@ -75,6 +86,17 @@ func (loader *keysLoader) addIlkKeys(mappings map[common.Hash]vdbStorage.ValueMe
 		mappings[getIlkFlipKey(ilk)] = getIlkFlipMetadata(ilk)
 		mappings[getIlkChopKey(ilk)] = getIlkChopMetadata(ilk)
 		mappings[getIlkLumpKey(ilk)] = getIlkLumpMetadata(ilk)
+	}
+	return mappings, nil
+}
+
+func (loader *keysLoader) addWardsKeys(mappings map[common.Hash]vdbStorage.ValueMetadata) (map[common.Hash]vdbStorage.ValueMetadata, error) {
+	users, err := loader.storageRepository.GetAuthUsers(loader.contractAddress)
+	if err != nil {
+		return nil, err
+	}
+	for _, user := range users {
+		mappings[getWardsKey(user)] = getWardsMetadata(user)
 	}
 	return mappings, nil
 }
@@ -112,4 +134,13 @@ func getIlkLumpKey(ilk string) common.Hash {
 func getIlkLumpMetadata(ilk string) vdbStorage.ValueMetadata {
 	keys := map[vdbStorage.Key]string{constants.Ilk: ilk}
 	return vdbStorage.GetValueMetadata(IlkLump, keys, vdbStorage.Uint256)
+}
+
+func getWardsKey(user string) common.Hash {
+	return vdbStorage.GetKeyForMapping(WardsMappingIndex, user)
+}
+
+func getWardsMetadata(user string) vdbStorage.ValueMetadata {
+	keys := map[vdbStorage.Key]string{constants.User: user}
+	return vdbStorage.GetValueMetadata(Wards, keys, vdbStorage.Uint256)
 }
