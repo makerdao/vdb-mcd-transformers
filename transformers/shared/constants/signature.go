@@ -39,6 +39,7 @@ func PotExitSignature() string            { return getLogNoteTopicZero(potExitMe
 func PotFileDSRSignature() string         { return getLogNoteTopicZero(potFileDSRMethod()) }
 func PotFileVowSignature() string         { return getLogNoteTopicZero(potFileVowMethod()) }
 func PotJoinSignature() string            { return getLogNoteTopicZero(potJoinMethod()) }
+func RelySignature() string               { return getLogNoteTopicZero(relyMethod()) }
 func SpotFileMatSignature() string        { return getLogNoteTopicZero(spotFileMatMethod()) }
 func SpotFileParSignature() string        { return getLogNoteTopicZero(spotFileParMethod()) }
 func SpotFilePipSignature() string        { return getLogNoteTopicZero(spotFilePipMethod()) }

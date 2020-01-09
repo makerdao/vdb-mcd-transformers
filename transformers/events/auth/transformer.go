@@ -1,4 +1,4 @@
-package deny
+package auth
 
 import (
 	"github.com/ethereum/go-ethereum/common"
@@ -11,6 +11,7 @@ import (
 
 type Transformer struct {
 	LogNoteArgumentOffset int
+	TableName             event.TableName
 }
 
 func (t Transformer) ToModels(_ string, logs []core.HeaderSyncLog, db *postgres.DB) ([]event.InsertionModel, error) {
@@ -37,7 +38,7 @@ func (t Transformer) ToModels(_ string, logs []core.HeaderSyncLog, db *postgres.
 
 		model := event.InsertionModel{
 			SchemaName:     constants.MakerSchema,
-			TableName:      constants.DenyTable,
+			TableName:      t.TableName,
 			OrderedColumns: []event.ColumnName{event.HeaderFK, event.LogFK, event.AddressFK, constants.UsrColumn},
 			ColumnValues: event.ColumnValues{
 				event.HeaderFK:      log.HeaderID,

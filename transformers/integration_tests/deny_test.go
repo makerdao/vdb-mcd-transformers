@@ -3,7 +3,7 @@ package integration_tests
 import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/deny"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/events/auth"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
@@ -57,7 +57,7 @@ var _ = Describe("Deny transformer", func() {
 
 	Context("Vat deny events", func() {
 		usrAddress := "0x13141b8a5e4a82ebc6b636849dd6a515185d6236"
-		denyIntegrationTest(int64(14764643), test_data.VowAddress(), usrAddress, vatOffset)
+		denyIntegrationTest(int64(14764643), test_data.VatAddress(), usrAddress, vatOffset)
 	})
 
 	Context("Vow deny events", func() {
@@ -76,7 +76,7 @@ func denyIntegrationTest(blockNumber int64, contractAddressHex, usrAddressHex st
 		}
 		initializer := event.ConfiguredTransformer{
 			Config:      denyConfig,
-			Transformer: deny.Transformer{LogNoteArgumentOffset: logNoteArgumentOffset},
+			Transformer: auth.Transformer{LogNoteArgumentOffset: logNoteArgumentOffset, TableName: constants.DenyTable},
 		}
 
 		header, headerErr := persistHeader(db, blockNumber, blockChain)

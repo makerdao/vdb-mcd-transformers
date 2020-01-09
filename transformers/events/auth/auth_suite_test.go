@@ -1,4 +1,4 @@
-package deny_test
+package auth_test
 
 import (
 	"testing"
@@ -7,7 +7,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-func TestDeny(t *testing.T) {
+func TestAuth(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "Deny Suite")
+	RunSpecs(t, "Auth Suite")
 }
