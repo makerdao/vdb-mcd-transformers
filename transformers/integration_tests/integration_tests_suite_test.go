@@ -49,9 +49,6 @@ var _ = BeforeSuite(func() {
 	blockChain, blockChainErr = getBlockChain(rpcClient, ethClient)
 	Expect(blockChainErr).NotTo(HaveOccurred())
 
-	// catDeploymentBlock, _ := blockChain.GetBlockByNumber(14764546)
-	// fmt.Println(catDeploymentBlock.Transactions)
-
 	db = test_config.NewTestDB(blockChain.Node())
 	test_config.CleanTestDB(db)
 

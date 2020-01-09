@@ -32,7 +32,6 @@ type Urn struct {
 var ErrNoFlips = errors.New("no flips exist in db")
 
 type IMakerStorageRepository interface {
-	GetAuthUsers(string) ([]string, error)
 	GetCdpis() ([]string, error)
 	GetDaiKeys() ([]string, error)
 	GetFlapBidIds(string) ([]string, error)
@@ -45,6 +44,7 @@ type IMakerStorageRepository interface {
 	GetUrns() ([]Urn, error)
 	GetVatSinKeys() ([]string, error)
 	GetVowSinKeys() ([]string, error)
+	GetWardsAddresses(string) ([]string, error)
 	SetDB(db *postgres.DB)
 }
 
@@ -258,13 +258,13 @@ func (repository *MakerStorageRepository) GetFlopBidIds(contractAddress string) 
 	return bidIds, err
 }
 
-func (repository *MakerStorageRepository) GetAuthUsers(contractAddress string) ([]string, error) {
+func (repository *MakerStorageRepository) GetWardsAddresses(contractAddress string) ([]string, error) {
 	contractAddressID, addressErr := repository.GetOrCreateAddress(contractAddress)
 	if addressErr != nil {
 		return nil, addressErr
 	}
-	var userAddresses []string
-	selectErr := repository.db.Select(&userAddresses, `
+	var wardsKeys []string
+	selectErr := repository.db.Select(&wardsKeys, `
 		SELECT addresses.address
 		FROM maker.rely
 		    LEFT JOIN public.addresses ON rely.usr = addresses.id
@@ -284,7 +284,7 @@ func (repository *MakerStorageRepository) GetAuthUsers(contractAddress string) (
 		FROM maker.deny
 		LEFT JOIN public.addresses ON deny.msg_sender = addresses.id
 		WHERE deny.address_id = $1`, contractAddressID)
-	return userAddresses, selectErr
+	return wardsKeys, selectErr
 }
 
 func (repository *MakerStorageRepository) GetOrCreateAddress(contractAddress string) (int64, error) {

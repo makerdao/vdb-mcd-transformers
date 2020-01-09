@@ -91,12 +91,12 @@ func (loader *keysLoader) addIlkKeys(mappings map[common.Hash]vdbStorage.ValueMe
 }
 
 func (loader *keysLoader) addWardsKeys(mappings map[common.Hash]vdbStorage.ValueMetadata) (map[common.Hash]vdbStorage.ValueMetadata, error) {
-	users, err := loader.storageRepository.GetAuthUsers(loader.contractAddress)
+	addresses, err := loader.storageRepository.GetWardsAddresses(loader.contractAddress)
 	if err != nil {
 		return nil, err
 	}
-	for _, user := range users {
-		mappings[getWardsKey(user)] = getWardsMetadata(user)
+	for _, address := range addresses {
+		mappings[getWardsKey(address)] = getWardsMetadata(address)
 	}
 	return mappings, nil
 }
@@ -136,8 +136,8 @@ func getIlkLumpMetadata(ilk string) vdbStorage.ValueMetadata {
 	return vdbStorage.GetValueMetadata(IlkLump, keys, vdbStorage.Uint256)
 }
 
-func getWardsKey(user string) common.Hash {
-	return vdbStorage.GetKeyForMapping(WardsMappingIndex, user)
+func getWardsKey(address string) common.Hash {
+	return vdbStorage.GetKeyForMapping(WardsMappingIndex, address)
 }
 
 func getWardsMetadata(user string) vdbStorage.ValueMetadata {

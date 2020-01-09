@@ -7,7 +7,6 @@ import (
 )
 
 type MockMakerStorageRepository struct {
-	AuthUsers               []string
 	Cdpis                   []string
 	DaiKeys                 []string
 	FlapBidIds              []string
@@ -19,8 +18,7 @@ type MockMakerStorageRepository struct {
 	PotPieUsers             []string
 	SinKeys                 []string
 	Urns                    []storage.Urn
-	GetAuthUsersCalledWith  string
-	GetAuthUsersError       error
+	WardsKeys               []string
 	GetCdpisCalled          bool
 	GetCdpisError           error
 	GetDaiKeysCalled        bool
@@ -45,11 +43,8 @@ type MockMakerStorageRepository struct {
 	GetVowSinKeysError      error
 	GetUrnsCalled           bool
 	GetUrnsError            error
-}
-
-func (repository *MockMakerStorageRepository) GetAuthUsers(contractAddress string) ([]string, error) {
-	repository.GetAuthUsersCalledWith = contractAddress
-	return repository.AuthUsers, repository.GetAuthUsersError
+	GetWardsKeysCalledWith  string
+	GetWardsKeysError       error
 }
 
 func (repository *MockMakerStorageRepository) GetCdpis() ([]string, error) {
@@ -110,6 +105,11 @@ func (repository *MockMakerStorageRepository) GetVowSinKeys() ([]string, error) 
 func (repository *MockMakerStorageRepository) GetUrns() ([]storage.Urn, error) {
 	repository.GetUrnsCalled = true
 	return repository.Urns, repository.GetUrnsError
+}
+
+func (repository *MockMakerStorageRepository) GetWardsAddresses(contractAddress string) ([]string, error) {
+	repository.GetWardsKeysCalledWith = contractAddress
+	return repository.WardsKeys, repository.GetWardsKeysError
 }
 
 func (repository *MockMakerStorageRepository) SetDB(db *postgres.DB) {}

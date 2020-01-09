@@ -112,7 +112,7 @@ var _ = Describe("Cat storage keys loader", func() {
 	Describe("wards", func() {
 		It("returns value metadata for wards", func() {
 			wardsKey := common.BytesToHash(crypto.Keccak256(common.FromHex(fakes.FakeAddress.Hex() + cat.WardsMappingIndex)))
-			storageRepository.AuthUsers = []string{fakes.FakeAddress.Hex()}
+			storageRepository.WardsKeys = []string{fakes.FakeAddress.Hex()}
 			expectedMetadata := vdbStorage.ValueMetadata{
 				Name: cat.Wards,
 				Keys: map[vdbStorage.Key]string{constants.User: fakes.FakeAddress.Hex()},
@@ -122,12 +122,13 @@ var _ = Describe("Cat storage keys loader", func() {
 			mappings, err := storageKeysLoader.LoadMappings()
 			Expect(err).NotTo(HaveOccurred())
 
+			Expect(storageRepository.GetWardsKeysCalledWith).To(Equal(test_data.CatAddress()))
 			Expect(mappings[wardsKey]).To(Equal(expectedMetadata))
 		})
 
 		Describe("when getting users fails", func() {
 			It("returns error", func() {
-				storageRepository.GetAuthUsersError = fakes.FakeError
+				storageRepository.GetWardsKeysError = fakes.FakeError
 
 				_, err := storageKeysLoader.LoadMappings()
 

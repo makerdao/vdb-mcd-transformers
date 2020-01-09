@@ -647,11 +647,11 @@ var _ = Describe("Maker storage repository", func() {
 			insertAuthEvent(2, test_data.VowAddress(), msgSenderAddressOne, userAddressTwo, "maker.rely", db)
 			insertAuthEvent(3, test_data.VowAddress(), msgSenderAddressTwo, userAddressTwo, "maker.deny", db)
 
-			catUserAddresses, catUserErr := repository.GetAuthUsers(test_data.CatAddress())
+			catUserAddresses, catUserErr := repository.GetWardsAddresses(test_data.CatAddress())
 			Expect(catUserErr).NotTo(HaveOccurred())
 			Expect(catUserAddresses).To(ConsistOf(msgSenderAddressOne, userAddressOne))
 
-			vowUserAddresses, vowUserErr := repository.GetAuthUsers(test_data.VowAddress())
+			vowUserAddresses, vowUserErr := repository.GetWardsAddresses(test_data.VowAddress())
 			Expect(vowUserErr).NotTo(HaveOccurred())
 			Expect(vowUserAddresses).To(ConsistOf(msgSenderAddressOne, msgSenderAddressTwo, userAddressTwo))
 		})
