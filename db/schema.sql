@@ -7025,6 +7025,7 @@ CREATE TABLE maker.deny (
     header_id integer NOT NULL,
     log_id bigint NOT NULL,
     address_id integer NOT NULL,
+    msg_sender integer NOT NULL,
     usr integer NOT NULL
 );
 
@@ -9539,6 +9540,7 @@ CREATE TABLE maker.rely (
     header_id integer NOT NULL,
     log_id bigint NOT NULL,
     address_id integer NOT NULL,
+    msg_sender integer NOT NULL,
     usr integer NOT NULL
 );
 
@@ -10003,6 +10005,39 @@ CREATE SEQUENCE maker.vat_debt_id_seq
 --
 
 ALTER SEQUENCE maker.vat_debt_id_seq OWNED BY maker.vat_debt.id;
+
+
+--
+-- Name: vat_deny; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.vat_deny (
+    id integer NOT NULL,
+    header_id integer NOT NULL,
+    log_id bigint NOT NULL,
+    address_id integer NOT NULL,
+    usr integer NOT NULL
+);
+
+
+--
+-- Name: vat_deny_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.vat_deny_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: vat_deny_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.vat_deny_id_seq OWNED BY maker.vat_deny.id;
 
 
 --
@@ -10531,6 +10566,39 @@ CREATE SEQUENCE maker.vat_move_id_seq
 --
 
 ALTER SEQUENCE maker.vat_move_id_seq OWNED BY maker.vat_move.id;
+
+
+--
+-- Name: vat_rely; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.vat_rely (
+    id integer NOT NULL,
+    header_id integer NOT NULL,
+    log_id bigint NOT NULL,
+    address_id integer NOT NULL,
+    usr integer NOT NULL
+);
+
+
+--
+-- Name: vat_rely_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.vat_rely_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: vat_rely_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.vat_rely_id_seq OWNED BY maker.vat_rely.id;
 
 
 --
@@ -12683,6 +12751,13 @@ ALTER TABLE ONLY maker.vat_debt ALTER COLUMN id SET DEFAULT nextval('maker.vat_d
 
 
 --
+-- Name: vat_deny id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_deny ALTER COLUMN id SET DEFAULT nextval('maker.vat_deny_id_seq'::regclass);
+
+
+--
 -- Name: vat_file_debt_ceiling id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
@@ -12806,6 +12881,13 @@ ALTER TABLE ONLY maker.vat_live ALTER COLUMN id SET DEFAULT nextval('maker.vat_l
 --
 
 ALTER TABLE ONLY maker.vat_move ALTER COLUMN id SET DEFAULT nextval('maker.vat_move_id_seq'::regclass);
+
+
+--
+-- Name: vat_rely id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_rely ALTER COLUMN id SET DEFAULT nextval('maker.vat_rely_id_seq'::regclass);
 
 
 --
@@ -14905,6 +14987,22 @@ ALTER TABLE ONLY maker.vat_debt
 
 
 --
+-- Name: vat_deny vat_deny_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_deny
+    ADD CONSTRAINT vat_deny_header_id_log_id_key UNIQUE (header_id, log_id);
+
+
+--
+-- Name: vat_deny vat_deny_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_deny
+    ADD CONSTRAINT vat_deny_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: vat_file_debt_ceiling vat_file_debt_ceiling_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -15190,6 +15288,22 @@ ALTER TABLE ONLY maker.vat_move
 
 ALTER TABLE ONLY maker.vat_move
     ADD CONSTRAINT vat_move_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: vat_rely vat_rely_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_rely
+    ADD CONSTRAINT vat_rely_header_id_log_id_key UNIQUE (header_id, log_id);
+
+
+--
+-- Name: vat_rely vat_rely_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_rely
+    ADD CONSTRAINT vat_rely_pkey PRIMARY KEY (id);
 
 
 --
@@ -16083,6 +16197,13 @@ CREATE INDEX deny_header_index ON maker.deny USING btree (header_id);
 --
 
 CREATE INDEX deny_log_index ON maker.deny USING btree (log_id);
+
+
+--
+-- Name: deny_msg_sender_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX deny_msg_sender_index ON maker.deny USING btree (msg_sender);
 
 
 --
@@ -17241,6 +17362,13 @@ CREATE INDEX rely_log_index ON maker.rely USING btree (log_id);
 
 
 --
+-- Name: rely_msg_sender_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX rely_msg_sender_index ON maker.rely USING btree (msg_sender);
+
+
+--
 -- Name: rely_usr_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -17441,6 +17569,34 @@ CREATE INDEX vat_dai_header_id_index ON maker.vat_dai USING btree (header_id);
 --
 
 CREATE INDEX vat_debt_header_id_index ON maker.vat_debt USING btree (header_id);
+
+
+--
+-- Name: vat_deny_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vat_deny_address_index ON maker.vat_deny USING btree (address_id);
+
+
+--
+-- Name: vat_deny_header_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vat_deny_header_index ON maker.vat_deny USING btree (header_id);
+
+
+--
+-- Name: vat_deny_log_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vat_deny_log_index ON maker.vat_deny USING btree (log_id);
+
+
+--
+-- Name: vat_deny_usr_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vat_deny_usr_index ON maker.vat_deny USING btree (usr);
 
 
 --
@@ -17728,6 +17884,34 @@ CREATE INDEX vat_move_header_index ON maker.vat_move USING btree (header_id);
 --
 
 CREATE INDEX vat_move_log_index ON maker.vat_move USING btree (log_id);
+
+
+--
+-- Name: vat_rely_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vat_rely_address_index ON maker.vat_rely USING btree (address_id);
+
+
+--
+-- Name: vat_rely_header_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vat_rely_header_index ON maker.vat_rely USING btree (header_id);
+
+
+--
+-- Name: vat_rely_log_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vat_rely_log_index ON maker.vat_rely USING btree (log_id);
+
+
+--
+-- Name: vat_rely_usr_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vat_rely_usr_index ON maker.vat_rely USING btree (usr);
 
 
 --
@@ -18827,6 +19011,14 @@ ALTER TABLE ONLY maker.deny
 
 ALTER TABLE ONLY maker.deny
     ADD CONSTRAINT deny_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: deny deny_msg_sender_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.deny
+    ADD CONSTRAINT deny_msg_sender_fkey FOREIGN KEY (msg_sender) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --
@@ -20430,6 +20622,14 @@ ALTER TABLE ONLY maker.rely
 
 
 --
+-- Name: rely rely_msg_sender_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.rely
+    ADD CONSTRAINT rely_msg_sender_fkey FOREIGN KEY (msg_sender) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
 -- Name: rely rely_usr_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -20707,6 +20907,38 @@ ALTER TABLE ONLY maker.vat_debt
 
 ALTER TABLE ONLY maker.vat_debt
     ADD CONSTRAINT vat_debt_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: vat_deny vat_deny_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_deny
+    ADD CONSTRAINT vat_deny_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: vat_deny vat_deny_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_deny
+    ADD CONSTRAINT vat_deny_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: vat_deny vat_deny_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_deny
+    ADD CONSTRAINT vat_deny_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: vat_deny vat_deny_usr_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_deny
+    ADD CONSTRAINT vat_deny_usr_fkey FOREIGN KEY (usr) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --
@@ -21099,6 +21331,38 @@ ALTER TABLE ONLY maker.vat_move
 
 ALTER TABLE ONLY maker.vat_move
     ADD CONSTRAINT vat_move_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: vat_rely vat_rely_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_rely
+    ADD CONSTRAINT vat_rely_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: vat_rely vat_rely_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_rely
+    ADD CONSTRAINT vat_rely_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: vat_rely vat_rely_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_rely
+    ADD CONSTRAINT vat_rely_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: vat_rely vat_rely_usr_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_rely
+    ADD CONSTRAINT vat_rely_usr_fkey FOREIGN KEY (usr) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --

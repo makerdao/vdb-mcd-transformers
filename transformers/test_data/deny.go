@@ -16,7 +16,7 @@ var rawDenyLog = types.Log{
 	Address: common.HexToAddress(CatAddress()),
 	Topics: []common.Hash{
 		common.HexToHash(constants.DenySignature()),
-		common.HexToHash("0x0000000000000000000000000000000000000000000000000000000000000000"),
+		common.HexToHash("0x00000000000000000000000013141b8a5e4a82ebc6b636849dd6a515185d6237"),
 		common.HexToHash("0x00000000000000000000000013141b8a5e4a82ebc6b636849dd6a515185d6236"),
 		common.HexToHash("0x0000000000000000000000000000000000000000000000000000000000000000"),
 	},
@@ -39,10 +39,16 @@ var DenyHeaderSyncLog = core.HeaderSyncLog{
 func DenyModel() event.InsertionModel { return CopyModel(denyModel) }
 
 var denyModel = event.InsertionModel{
-	SchemaName:     constants.MakerSchema,
-	TableName:      constants.DenyTable,
-	OrderedColumns: []event.ColumnName{event.HeaderFK, event.LogFK, event.AddressFK, constants.UsrColumn},
-	ColumnValues:   event.ColumnValues{event.HeaderFK: DenyHeaderSyncLog.HeaderID, event.LogFK: DenyHeaderSyncLog.ID},
+	SchemaName: constants.MakerSchema,
+	TableName:  constants.DenyTable,
+	OrderedColumns: []event.ColumnName{
+		event.HeaderFK,
+		event.LogFK,
+		event.AddressFK,
+		constants.MsgSenderColumn,
+		constants.UsrColumn,
+	},
+	ColumnValues: event.ColumnValues{event.HeaderFK: DenyHeaderSyncLog.HeaderID, event.LogFK: DenyHeaderSyncLog.ID},
 }
 
 var rawVatDenyLog = types.Log{
@@ -73,7 +79,7 @@ func VatDenyModel() event.InsertionModel { return CopyModel(vatDenyModel) }
 
 var vatDenyModel = event.InsertionModel{
 	SchemaName:     constants.MakerSchema,
-	TableName:      constants.DenyTable,
+	TableName:      constants.VatDenyTable,
 	OrderedColumns: []event.ColumnName{event.HeaderFK, event.LogFK, event.AddressFK, constants.UsrColumn},
 	ColumnValues: event.ColumnValues{
 		event.HeaderFK: VatDenyHeaderSyncLog.HeaderID,

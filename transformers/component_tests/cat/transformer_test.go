@@ -115,9 +115,14 @@ var _ = Describe("Executing the transformer", func() {
 			userAddressID, userAddressErr := shared.GetOrCreateAddress(userAddress, db)
 			Expect(userAddressErr).NotTo(HaveOccurred())
 
+			msgSenderAddress := "0x" + fakes.RandomString(40)
+			msgSenderAddressID, msgSenderAddressErr := shared.GetOrCreateAddress(msgSenderAddress, db)
+			Expect(msgSenderAddressErr).NotTo(HaveOccurred())
+
 			denyModel.ColumnValues[event.HeaderFK] = header.Id
 			denyModel.ColumnValues[event.LogFK] = denyLog.ID
 			denyModel.ColumnValues[event.AddressFK] = catAddressID
+			denyModel.ColumnValues[constants.MsgSenderColumn] = msgSenderAddressID
 			denyModel.ColumnValues[constants.UsrColumn] = userAddressID
 			insertErr := event.PersistModels([]event.InsertionModel{denyModel}, db)
 			Expect(insertErr).NotTo(HaveOccurred())

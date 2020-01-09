@@ -960,11 +960,15 @@ func insertAuthEvent(blockNumber int64, contractAddress, userAddress, tableName 
 	log := test_data.CreateTestLog(headerID, db)
 	contractAddressID, contractAddressErr := shared.GetOrCreateAddress(contractAddress, db)
 	Expect(contractAddressErr).NotTo(HaveOccurred())
+
+	msgSenderAddress := "0x" + fakes.RandomString(40)
+	msgSenderAddressID, msgSenderAddressErr := shared.GetOrCreateAddress(msgSenderAddress, db)
+	Expect(msgSenderAddressErr).NotTo(HaveOccurred())
 	userAddressID, userAddressErr := shared.GetOrCreateAddress(userAddress, db)
 	Expect(userAddressErr).NotTo(HaveOccurred())
 
-	insertAuthEventQuery := fmt.Sprintf(`INSERT INTO %s (header_id, log_id, address_id, usr) VALUES ($1, $2, $3, $4)`, tableName)
-	_, insertErr := db.Exec(insertAuthEventQuery, headerID, log.ID, contractAddressID, userAddressID)
+	insertAuthEventQuery := fmt.Sprintf(`INSERT INTO %s (header_id, log_id, address_id, msg_sender, usr) VALUES ($1, $2, $3, $4, $5)`, tableName)
+	_, insertErr := db.Exec(insertAuthEventQuery, headerID, log.ID, contractAddressID, msgSenderAddressID, userAddressID)
 	Expect(insertErr).NotTo(HaveOccurred())
 }
 

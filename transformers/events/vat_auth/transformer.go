@@ -1,4 +1,4 @@
-package auth
+package vat_auth
 
 import (
 	"github.com/ethereum/go-ethereum/common"
@@ -16,7 +16,7 @@ type Transformer struct {
 func (t Transformer) ToModels(_ string, logs []core.HeaderSyncLog, db *postgres.DB) ([]event.InsertionModel, error) {
 	var models []event.InsertionModel
 	for _, log := range logs {
-		validationErr := shared.VerifyLog(log.Log, shared.ThreeTopicsRequired, shared.LogDataNotRequired)
+		validationErr := shared.VerifyLog(log.Log, shared.TwoTopicsRequired, shared.LogDataNotRequired)
 		if validationErr != nil {
 			return nil, validationErr
 		}
@@ -27,34 +27,21 @@ func (t Transformer) ToModels(_ string, logs []core.HeaderSyncLog, db *postgres.
 			return nil, shared.ErrCouldNotCreateFK(contractAddressErr)
 		}
 
-		msgSenderAddress := common.HexToAddress(log.Log.Topics[1].Hex()).Hex()
-		msgSenderAddressID, msgSenderAddressErr := shared.GetOrCreateAddress(msgSenderAddress, db)
-		if msgSenderAddressErr != nil {
-			return nil, shared.ErrCouldNotCreateFK(msgSenderAddressErr)
-		}
-
-		usrAddress := common.HexToAddress(log.Log.Topics[2].Hex()).Hex()
+		usrAddress := common.HexToAddress(log.Log.Topics[1].Hex()).Hex()
 		usrAddressID, usrAddressErr := shared.GetOrCreateAddress(usrAddress, db)
 		if usrAddressErr != nil {
 			return nil, shared.ErrCouldNotCreateFK(usrAddressErr)
 		}
 
 		model := event.InsertionModel{
-			SchemaName: constants.MakerSchema,
-			TableName:  t.TableName,
-			OrderedColumns: []event.ColumnName{
-				event.HeaderFK,
-				event.LogFK,
-				event.AddressFK,
-				constants.MsgSenderColumn,
-				constants.UsrColumn,
-			},
+			SchemaName:     constants.MakerSchema,
+			TableName:      t.TableName,
+			OrderedColumns: []event.ColumnName{event.HeaderFK, event.LogFK, event.AddressFK, constants.UsrColumn},
 			ColumnValues: event.ColumnValues{
-				event.HeaderFK:            log.HeaderID,
-				event.LogFK:               log.ID,
-				event.AddressFK:           contractAddressID,
-				constants.MsgSenderColumn: msgSenderAddressID,
-				constants.UsrColumn:       usrAddressID,
+				event.HeaderFK:      log.HeaderID,
+				event.LogFK:         log.ID,
+				event.AddressFK:     contractAddressID,
+				constants.UsrColumn: usrAddressID,
 			},
 		}
 		models = append(models, model)
