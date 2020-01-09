@@ -271,8 +271,18 @@ func (repository *MakerStorageRepository) GetAuthUsers(contractAddress string) (
 		WHERE rely.address_id = $1
 		UNION
 		SELECT addresses.address
+		FROM maker.rely
+		    LEFT JOIN public.addresses ON rely.msg_sender = addresses.id
+		WHERE rely.address_id = $1
+		UNION
+		SELECT addresses.address
 		FROM maker.deny
 		    LEFT JOIN public.addresses ON deny.usr = addresses.id
+		WHERE deny.address_id = $1
+		UNION
+		SELECT addresses.address
+		FROM maker.deny
+		LEFT JOIN public.addresses ON deny.msg_sender = addresses.id
 		WHERE deny.address_id = $1`, contractAddressID)
 	return userAddresses, selectErr
 }

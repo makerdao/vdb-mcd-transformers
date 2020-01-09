@@ -637,21 +637,23 @@ var _ = Describe("Maker storage repository", func() {
 		})
 	})
 
-	Describe("getting wards users", func() {
-		It("gets unique rely and deny users for a given contract ", func() {
+	Describe("getting auth keys", func() {
+		It("gets unique rely and deny users and msg.senders for a given contract ", func() {
+			msgSenderAddressOne := common.HexToAddress(test_data.RandomString(40)).Hex()
+			msgSenderAddressTwo := common.HexToAddress(test_data.RandomString(40)).Hex()
 			userAddressOne := common.HexToAddress(test_data.RandomString(40)).Hex()
 			userAddressTwo := common.HexToAddress(test_data.RandomString(40)).Hex()
-			insertAuthEvent(1, test_data.CatAddress(), userAddressOne, "maker.rely", db)
-			insertAuthEvent(2, test_data.VatAddress(), userAddressTwo, "maker.rely", db)
-			insertAuthEvent(3, test_data.VatAddress(), userAddressTwo, "maker.deny", db)
+			insertAuthEvent(1, test_data.CatAddress(), msgSenderAddressOne, userAddressOne, "maker.rely", db)
+			insertAuthEvent(2, test_data.VowAddress(), msgSenderAddressOne, userAddressTwo, "maker.rely", db)
+			insertAuthEvent(3, test_data.VowAddress(), msgSenderAddressTwo, userAddressTwo, "maker.deny", db)
 
 			catUserAddresses, catUserErr := repository.GetAuthUsers(test_data.CatAddress())
 			Expect(catUserErr).NotTo(HaveOccurred())
-			Expect(catUserAddresses).To(ConsistOf(userAddressOne))
+			Expect(catUserAddresses).To(ConsistOf(msgSenderAddressOne, userAddressOne))
 
-			vatUserAddresses, vatUserErr := repository.GetAuthUsers(test_data.VatAddress())
-			Expect(vatUserErr).NotTo(HaveOccurred())
-			Expect(vatUserAddresses).To(ConsistOf(userAddressTwo))
+			vowUserAddresses, vowUserErr := repository.GetAuthUsers(test_data.VowAddress())
+			Expect(vowUserErr).NotTo(HaveOccurred())
+			Expect(vowUserAddresses).To(ConsistOf(msgSenderAddressOne, msgSenderAddressTwo, userAddressTwo))
 		})
 	})
 
@@ -955,13 +957,12 @@ func insertVatSlip(ilk, usr string, blockNumber int64, db *postgres.DB) {
 	Expect(execErr).NotTo(HaveOccurred())
 }
 
-func insertAuthEvent(blockNumber int64, contractAddress, userAddress, tableName string, db *postgres.DB) {
+func insertAuthEvent(blockNumber int64, contractAddress, msgSenderAddress, userAddress, tableName string, db *postgres.DB) {
 	headerID := insertHeader(db, blockNumber)
 	log := test_data.CreateTestLog(headerID, db)
 	contractAddressID, contractAddressErr := shared.GetOrCreateAddress(contractAddress, db)
 	Expect(contractAddressErr).NotTo(HaveOccurred())
 
-	msgSenderAddress := "0x" + fakes.RandomString(40)
 	msgSenderAddressID, msgSenderAddressErr := shared.GetOrCreateAddress(msgSenderAddress, db)
 	Expect(msgSenderAddressErr).NotTo(HaveOccurred())
 	userAddressID, userAddressErr := shared.GetOrCreateAddress(userAddress, db)
