@@ -19,6 +19,8 @@ CREATE TABLE maker.flop
 CREATE INDEX flop_address_index
     ON maker.flop (address_id);
 
+COMMENT ON TABLE maker.flop
+    IS E'@name historicalFlopState';
 
 CREATE FUNCTION get_latest_flop_bid_bid(bid_id numeric) RETURNS NUMERIC AS
 $$

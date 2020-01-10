@@ -12,7 +12,7 @@ require (
 	github.com/jmoiron/sqlx v0.0.0-20181024163419-82935fac6c1a
 	github.com/konsorten/go-windows-terminal-sequences v1.0.2 // indirect
 	github.com/lib/pq v1.3.0 // indirect
-	github.com/makerdao/vulcanizedb v0.0.11-rc.1.0.20200113164544-b2dcd150f864
+	github.com/makerdao/vulcanizedb v0.0.11-rc.1.0.20200113223901-c8c4572161bb
 	github.com/mattn/go-isatty v0.0.11 // indirect
 	github.com/olekukonko/tablewriter v0.0.4 // indirect
 	github.com/onsi/ginkgo v1.10.1
