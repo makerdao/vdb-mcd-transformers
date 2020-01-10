@@ -20,6 +20,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	mcdStorage "github.com/makerdao/vdb-mcd-transformers/transformers/storage"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/utilities"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
 	vdbStorage "github.com/makerdao/vulcanizedb/libraries/shared/storage"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
@@ -70,9 +71,9 @@ func (loader *keysLoader) LoadMappings() (map[common.Hash]vdbStorage.ValueMetada
 	if ilkErr != nil {
 		return nil, ilkErr
 	}
-	mappings, userErr := loader.addWardsKeys(mappings)
-	if userErr != nil {
-		return nil, userErr
+	mappings, wardsErr := loader.addWardsKeys(mappings)
+	if wardsErr != nil {
+		return nil, wardsErr
 	}
 	return mappings, nil
 }
@@ -96,7 +97,11 @@ func (loader *keysLoader) addWardsKeys(mappings map[common.Hash]vdbStorage.Value
 		return nil, err
 	}
 	for _, address := range addresses {
-		mappings[getWardsKey(address)] = getWardsMetadata(address)
+		paddedAddress, padErr := utilities.PadAddress(address)
+		if padErr != nil {
+			return nil, padErr
+		}
+		mappings[getWardsKey(paddedAddress)] = getWardsMetadata(address)
 	}
 	return mappings, nil
 }

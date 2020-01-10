@@ -137,7 +137,7 @@ var _ = Describe("Cat storage repository", func() {
 			Expect(count).To(Equal(1))
 		})
 
-		It("returns an error if metadata missing ilk", func() {
+		It("returns an error if metadata missing user", func() {
 			malformedWardsMetadata := storage.GetValueMetadata(cat.Wards, map[storage.Key]string{}, storage.Uint256)
 
 			err := repo.Create(diffID, fakeHeaderID, malformedWardsMetadata, fakeUint256)

@@ -17,12 +17,14 @@
 package vow
 
 import (
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vulcanizedb/libraries/shared/storage"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 )
 
 const (
+	insertWardsQuery      = `INSERT INTO maker.wards (diff_id, header_id, address_id, usr, wards) VALUES ($1, $2, $3, $4, $5) ON CONFLICT DO NOTHING`
 	insertVatQuery        = `INSERT INTO maker.vow_vat (diff_id, header_id, vat) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
 	insertFlapperQuery    = `INSERT INTO maker.vow_flapper (diff_id, header_id, flapper) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
 	insertFlopperQuery    = `INSERT INTO maker.vow_flopper (diff_id, header_id, flopper) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
@@ -38,6 +40,7 @@ const (
 
 type VowStorageRepository struct {
 	db *postgres.DB
+	ContractAddress string
 }
 
 func (repository *VowStorageRepository) SetDB(db *postgres.DB) {
@@ -46,6 +49,8 @@ func (repository *VowStorageRepository) SetDB(db *postgres.DB) {
 
 func (repository VowStorageRepository) Create(diffID, headerID int64, metadata storage.ValueMetadata, value interface{}) error {
 	switch metadata.Name {
+	case Wards:
+		return repository.insertWards(diffID, headerID, metadata, value.(string))
 	case Vat:
 		return repository.insertVowVat(diffID, headerID, value.(string))
 	case Flapper:
@@ -71,6 +76,46 @@ func (repository VowStorageRepository) Create(diffID, headerID int64, metadata s
 	default:
 		panic("unrecognized storage metadata name")
 	}
+}
+
+func (repository *VowStorageRepository) insertWards(diffID, headerID int64, metadata storage.ValueMetadata, wards string) error {
+	user, userErr := getUser(metadata.Keys)
+	if userErr != nil {
+		return userErr
+	}
+
+	tx, txErr := repository.db.Beginx()
+	if txErr != nil {
+		return txErr
+	}
+
+	addressID, addressErr := shared.GetOrCreateAddress(repository.ContractAddress, repository.db)
+	if addressErr != nil {
+		rollbackErr := tx.Rollback()
+		if rollbackErr != nil {
+			return shared.FormatRollbackError("vow address", addressErr.Error())
+		}
+		return addressErr
+	}
+
+	userAddressID, userAddressErr := shared.GetOrCreateAddress(user, repository.db)
+	if userAddressErr != nil {
+		rollbackErr := tx.Rollback()
+		if rollbackErr != nil {
+			return shared.FormatRollbackError("vow user address", userAddressErr.Error())
+		}
+		return addressErr
+	}
+
+	_, insertErr := tx.Exec(insertWardsQuery, diffID, headerID, addressID, userAddressID, wards)
+	if insertErr != nil {
+		rollbackErr := tx.Rollback()
+		if rollbackErr != nil {
+			return shared.FormatRollbackError("vow wards with address", insertErr.Error())
+		}
+		return insertErr
+	}
+	return tx.Commit()
 }
 
 func (repository VowStorageRepository) insertVowVat(diffID, headerID int64, vat string) error {
@@ -149,4 +194,12 @@ func getTimestamp(keys map[storage.Key]string) (string, error) {
 		return "", storage.ErrMetadataMalformed{MissingData: constants.Timestamp}
 	}
 	return timestamp, nil
+}
+
+func getUser(keys map[storage.Key]string) (string, error) {
+	user, ok := keys[constants.User]
+	if !ok {
+		return "", storage.ErrMetadataMalformed{MissingData: constants.User}
+	}
+	return user, nil
 }

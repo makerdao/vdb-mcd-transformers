@@ -111,8 +111,10 @@ var _ = Describe("Cat storage keys loader", func() {
 
 	Describe("wards", func() {
 		It("returns value metadata for wards", func() {
-			wardsKey := common.BytesToHash(crypto.Keccak256(common.FromHex(fakes.FakeAddress.Hex() + cat.WardsMappingIndex)))
-			storageRepository.WardsKeys = []string{fakes.FakeAddress.Hex()}
+			wardsUser := fakes.FakeAddress.Hex()
+			storageRepository.WardsKeys = []string{wardsUser}
+			paddedWardsUser := "0x000000000000000000000000" + wardsUser[2:]
+			wardsKey := common.BytesToHash(crypto.Keccak256(common.FromHex(paddedWardsUser + cat.WardsMappingIndex)))
 			expectedMetadata := vdbStorage.ValueMetadata{
 				Name: cat.Wards,
 				Keys: map[vdbStorage.Key]string{constants.User: fakes.FakeAddress.Hex()},
