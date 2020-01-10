@@ -111,7 +111,7 @@ var _ = Describe("Executing the transformer", func() {
 			catAddressID, catAddressErr := shared.GetOrCreateAddress(test_data.CatAddress(), db)
 			Expect(catAddressErr).NotTo(HaveOccurred())
 
-			userAddress := "0x13141b8a5e4a82ebc6b636849dd6a515185d6236"
+			userAddress := "0x39ad5d336a4c08fac74879f796e1ea0af26c1521"
 			userAddressID, userAddressErr := shared.GetOrCreateAddress(userAddress, db)
 			Expect(userAddressErr).NotTo(HaveOccurred())
 
@@ -127,7 +127,7 @@ var _ = Describe("Executing the transformer", func() {
 			insertErr := event.PersistModels([]event.InsertionModel{denyModel}, db)
 			Expect(insertErr).NotTo(HaveOccurred())
 
-			key := common.HexToHash("d017f9e94318721f8f69ea22f089555ab823c8cda66a25f15651a0f72ffd3d98")
+			key := common.HexToHash("b6d2a4300cc4010859f67ce7c804312ce9cc8f1032cdeb24e96d4b5562a4d01b")
 			value := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000001")
 			wardsDiff := test_helpers.CreateDiffRecord(db, header, transformer.HashedAddress, key, value)
 

@@ -12,6 +12,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/cat"
 	. "github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/utilities/wards"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data/shared_behaviors"
 	"github.com/makerdao/vulcanizedb/libraries/shared/storage"
@@ -104,7 +105,7 @@ var _ = Describe("Cat storage repository", func() {
 
 		It("writes a row", func() {
 			fakeUserAddress := "0x" + fakes.RandomString(40)
-			wardsMetadata := storage.GetValueMetadata(cat.Wards, map[storage.Key]string{constants.User: fakeUserAddress}, storage.Uint256)
+			wardsMetadata := storage.GetValueMetadata(wards.Wards, map[storage.Key]string{constants.User: fakeUserAddress}, storage.Uint256)
 
 			setupErr := repo.Create(diffID, fakeHeaderID, wardsMetadata, fakeUint256)
 			Expect(setupErr).NotTo(HaveOccurred())
@@ -123,7 +124,7 @@ var _ = Describe("Cat storage repository", func() {
 
 		It("does not duplicate row", func() {
 			fakeUserAddress := "0x" + fakes.RandomString(40)
-			wardsMetadata := storage.GetValueMetadata(cat.Wards, map[storage.Key]string{constants.User: fakeUserAddress}, storage.Uint256)
+			wardsMetadata := storage.GetValueMetadata(wards.Wards, map[storage.Key]string{constants.User: fakeUserAddress}, storage.Uint256)
 			insertOneErr := repo.Create(diffID, fakeHeaderID, wardsMetadata, fakeUint256)
 			Expect(insertOneErr).NotTo(HaveOccurred())
 
@@ -137,8 +138,8 @@ var _ = Describe("Cat storage repository", func() {
 			Expect(count).To(Equal(1))
 		})
 
-		It("returns an error if metadata missing ilk", func() {
-			malformedWardsMetadata := storage.GetValueMetadata(cat.Wards, map[storage.Key]string{}, storage.Uint256)
+		It("returns an error if metadata missing user", func() {
+			malformedWardsMetadata := storage.GetValueMetadata(wards.Wards, map[storage.Key]string{}, storage.Uint256)
 
 			err := repo.Create(diffID, fakeHeaderID, malformedWardsMetadata, fakeUint256)
 			Expect(err).To(MatchError(storage.ErrMetadataMalformed{MissingData: constants.User}))

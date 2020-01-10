@@ -18,6 +18,7 @@ package vow
 
 import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/utilities/wards"
 	"github.com/makerdao/vulcanizedb/libraries/shared/storage"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 )
@@ -38,6 +39,7 @@ const (
 
 type VowStorageRepository struct {
 	db *postgres.DB
+	ContractAddress string
 }
 
 func (repository *VowStorageRepository) SetDB(db *postgres.DB) {
@@ -46,6 +48,8 @@ func (repository *VowStorageRepository) SetDB(db *postgres.DB) {
 
 func (repository VowStorageRepository) Create(diffID, headerID int64, metadata storage.ValueMetadata, value interface{}) error {
 	switch metadata.Name {
+	case wards.Wards:
+		return wards.InsertWards(diffID, headerID, metadata, repository.ContractAddress, value.(string), repository.db)
 	case Vat:
 		return repository.insertVowVat(diffID, headerID, value.(string))
 	case Flapper:
