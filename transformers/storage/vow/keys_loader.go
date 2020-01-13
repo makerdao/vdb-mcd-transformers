@@ -21,14 +21,13 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	mcdStorage "github.com/makerdao/vdb-mcd-transformers/transformers/storage"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/utilities"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/utilities/wards"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
 	vdbStorage "github.com/makerdao/vulcanizedb/libraries/shared/storage"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 )
 
 const (
-	Wards      = "wards"
 	Vat        = "vat"
 	Flapper    = "flapper"
 	Flopper    = "flopper"
@@ -43,8 +42,6 @@ const (
 )
 
 var (
-	WardsMappingIndex = vdbStorage.IndexZero
-
 	VatKey      = common.HexToHash(vdbStorage.IndexOne)
 	VatMetadata = vdbStorage.ValueMetadata{
 		Name: Vat,
@@ -153,14 +150,7 @@ func (loader *keysLoader) addWardsKeys(mappings map[common.Hash]vdbStorage.Value
 	if err != nil {
 		return nil, err
 	}
-	for _, address := range addresses {
-		paddedAddress, padErr := utilities.PadAddress(address)
-		if padErr != nil {
-			return nil, padErr
-		}
-		mappings[getWardsKey(paddedAddress)] = getWardsMetadata(address)
-	}
-	return mappings, nil
+	return wards.AddWardsKeys(mappings, addresses)
 }
 
 func (loader *keysLoader) addVowSinKeys(mappings map[common.Hash]vdbStorage.ValueMetadata) (map[common.Hash]vdbStorage.ValueMetadata, error) {
@@ -190,15 +180,6 @@ func addStaticMappings(mappings map[common.Hash]vdbStorage.ValueMetadata) map[co
 	mappings[BumpKey] = BumpMetadata
 	mappings[HumpKey] = HumpMetadata
 	return mappings
-}
-
-func getWardsKey(address string) common.Hash {
-	return vdbStorage.GetKeyForMapping(WardsMappingIndex, address)
-}
-
-func getWardsMetadata(user string) vdbStorage.ValueMetadata {
-	keys := map[vdbStorage.Key]string{constants.User: user}
-	return vdbStorage.GetValueMetadata(Wards, keys, vdbStorage.Uint256)
 }
 
 func getSinKey(hexTimestamp string) common.Hash {

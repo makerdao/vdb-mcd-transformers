@@ -20,7 +20,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	mcdStorage "github.com/makerdao/vdb-mcd-transformers/transformers/storage"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/utilities"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/utilities/wards"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
 	vdbStorage "github.com/makerdao/vulcanizedb/libraries/shared/storage"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
@@ -31,15 +31,12 @@ const (
 	Vat  = "vat"
 	Vow  = "vow"
 
-	Wards   = "wards"
 	IlkFlip = "flip"
 	IlkChop = "chop"
 	IlkLump = "lump"
 )
 
 var (
-	WardsMappingIndex = vdbStorage.IndexZero
-
 	IlksMappingIndex = vdbStorage.IndexOne // bytes32 => flip address; chop (ray), lump (wad) uint256
 
 	LiveKey      = common.HexToHash(vdbStorage.IndexTwo)
@@ -96,14 +93,7 @@ func (loader *keysLoader) addWardsKeys(mappings map[common.Hash]vdbStorage.Value
 	if err != nil {
 		return nil, err
 	}
-	for _, address := range addresses {
-		paddedAddress, padErr := utilities.PadAddress(address)
-		if padErr != nil {
-			return nil, padErr
-		}
-		mappings[getWardsKey(paddedAddress)] = getWardsMetadata(address)
-	}
-	return mappings, nil
+	return wards.AddWardsKeys(mappings, addresses)
 }
 
 func loadStaticMappings() map[common.Hash]vdbStorage.ValueMetadata {
@@ -139,13 +129,4 @@ func getIlkLumpKey(ilk string) common.Hash {
 func getIlkLumpMetadata(ilk string) vdbStorage.ValueMetadata {
 	keys := map[vdbStorage.Key]string{constants.Ilk: ilk}
 	return vdbStorage.GetValueMetadata(IlkLump, keys, vdbStorage.Uint256)
-}
-
-func getWardsKey(address string) common.Hash {
-	return vdbStorage.GetKeyForMapping(WardsMappingIndex, address)
-}
-
-func getWardsMetadata(user string) vdbStorage.ValueMetadata {
-	keys := map[vdbStorage.Key]string{constants.User: user}
-	return vdbStorage.GetValueMetadata(Wards, keys, vdbStorage.Uint256)
 }

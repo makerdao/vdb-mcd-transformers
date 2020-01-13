@@ -22,6 +22,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/cat"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/utilities/wards"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
 	vdbStorage "github.com/makerdao/vulcanizedb/libraries/shared/storage"
@@ -114,9 +115,9 @@ var _ = Describe("Cat storage keys loader", func() {
 			wardsUser := fakes.FakeAddress.Hex()
 			storageRepository.WardsKeys = []string{wardsUser}
 			paddedWardsUser := "0x000000000000000000000000" + wardsUser[2:]
-			wardsKey := common.BytesToHash(crypto.Keccak256(common.FromHex(paddedWardsUser + cat.WardsMappingIndex)))
+			wardsKey := common.BytesToHash(crypto.Keccak256(common.FromHex(paddedWardsUser + wards.WardsMappingIndex)))
 			expectedMetadata := vdbStorage.ValueMetadata{
-				Name: cat.Wards,
+				Name: wards.Wards,
 				Keys: map[vdbStorage.Key]string{constants.User: fakes.FakeAddress.Hex()},
 				Type: vdbStorage.Uint256,
 			}
