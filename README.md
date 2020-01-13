@@ -43,7 +43,7 @@ about transformers.
 These core commands can be run via Docker images which is the preferred method, or they can be built and run via the
 command line interface. In either method, a postgres database will first need to be created:
 1. Install Postgres
-1. Create a superuser for yourself and make sure `psql --list` works without prompting for a password.
+1. Create a user for yourself that is able run migrations and add extensions.
 1. `createdb vulcanize_public`
 1. Migrating the database manually is unnecessary as the commands handle this.
 
