@@ -28,7 +28,7 @@ var rawPotCageLog = types.Log{
 	Removed:     false,
 }
 
-var PotCageHeaderSyncLog = core.HeaderSyncLog{
+var PotCageEventLog = core.EventLog{
 	ID:          int64(rand.Int31()),
 	HeaderID:    int64(rand.Int31()),
 	Log:         rawPotCageLog,
@@ -40,8 +40,8 @@ var potCageModel = event.InsertionModel{
 	TableName:      constants.PotCageTable,
 	OrderedColumns: []event.ColumnName{event.HeaderFK, event.LogFK},
 	ColumnValues: event.ColumnValues{
-		event.HeaderFK: PotCageHeaderSyncLog.HeaderID,
-		event.LogFK:    PotCageHeaderSyncLog.ID,
+		event.HeaderFK: PotCageEventLog.HeaderID,
+		event.LogFK:    PotCageEventLog.ID,
 	},
 }
 

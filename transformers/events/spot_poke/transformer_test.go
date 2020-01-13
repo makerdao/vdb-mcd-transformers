@@ -37,7 +37,7 @@ var _ = Describe("SpotPoke Transformer", func() {
 	})
 
 	It("converts spot poke entities to models", func() {
-		models, err := transformer.ToModels(constants.SpotABI(), []core.HeaderSyncLog{test_data.SpotPokeHeaderSyncLog}, db)
+		models, err := transformer.ToModels(constants.SpotABI(), []core.EventLog{test_data.SpotPokeEventLog}, db)
 		Expect(err).NotTo(HaveOccurred())
 
 		var ilkID int64
@@ -50,7 +50,7 @@ var _ = Describe("SpotPoke Transformer", func() {
 	})
 
 	It("returns an error converting a log to an entity fails", func() {
-		_, err := transformer.ToModels("error abi", []core.HeaderSyncLog{test_data.SpotPokeHeaderSyncLog}, db)
+		_, err := transformer.ToModels("error abi", []core.EventLog{test_data.SpotPokeEventLog}, db)
 		Expect(err).To(HaveOccurred())
 	})
 })

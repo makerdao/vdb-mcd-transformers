@@ -44,7 +44,7 @@ var rawVatGrabLogWithPositiveDink = types.Log{
 	Removed:     false,
 }
 
-var VatGrabHeaderSyncLogWithPositiveDink = core.HeaderSyncLog{
+var VatGrabEventLogWithPositiveDink = core.EventLog{
 	ID:          int64(rand.Int31()),
 	HeaderID:    int64(rand.Int31()),
 	Log:         rawVatGrabLogWithPositiveDink,
@@ -68,8 +68,8 @@ var vatGrabModelWithPositiveDink = event.InsertionModel{
 		constants.WColumn:    "0x7526EB4f95e2a1394797Cb38a921Fb1EbA09291B",
 		constants.DinkColumn: "1000000000000000000000",
 		constants.DartColumn: "2000000000000000000000",
-		event.HeaderFK:       VatGrabHeaderSyncLogWithPositiveDink.HeaderID,
-		event.LogFK:          VatGrabHeaderSyncLogWithPositiveDink.ID,
+		event.HeaderFK:       VatGrabEventLogWithPositiveDink.HeaderID,
+		event.LogFK:          VatGrabEventLogWithPositiveDink.ID,
 	},
 }
 
@@ -90,7 +90,7 @@ var rawVatGrabLogWithNegativeDink = types.Log{
 	Removed:     false,
 }
 
-var VatGrabHeaderSyncLogWithNegativeDink = core.HeaderSyncLog{
+var VatGrabEventLogWithNegativeDink = core.EventLog{
 	ID:          int64(rand.Int31()),
 	HeaderID:    int64(rand.Int31()),
 	Log:         rawVatGrabLogWithNegativeDink,
@@ -114,8 +114,8 @@ var vatGrabModelWithNegativeDink = event.InsertionModel{
 		constants.WColumn:    "0x7526EB4f95e2a1394797Cb38a921Fb1EbA09291B",
 		constants.DinkColumn: "-1000000000000000000000",
 		constants.DartColumn: "-2000000000000000000000",
-		event.HeaderFK:       VatGrabHeaderSyncLogWithNegativeDink.HeaderID,
-		event.LogFK:          VatGrabHeaderSyncLogWithNegativeDink.ID,
+		event.HeaderFK:       VatGrabEventLogWithNegativeDink.HeaderID,
+		event.LogFK:          VatGrabEventLogWithNegativeDink.ID,
 	},
 }
 

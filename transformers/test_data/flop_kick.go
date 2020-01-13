@@ -44,7 +44,7 @@ var rawFlopKickLog = types.Log{
 	Removed:     false,
 }
 
-var FlopKickHeaderSyncLog = core.HeaderSyncLog{
+var FlopKickEventLog = core.EventLog{
 	ID:          int64(rand.Int31()),
 	HeaderID:    int64(rand.Int31()),
 	Log:         rawFlopKickLog,
@@ -66,8 +66,8 @@ var flopKickModel = event.InsertionModel{
 		constants.GalColumn,
 	},
 	ColumnValues: event.ColumnValues{
-		event.HeaderFK:        FlopKickHeaderSyncLog.HeaderID,
-		event.LogFK:           FlopKickHeaderSyncLog.ID,
+		event.HeaderFK:        FlopKickEventLog.HeaderID,
+		event.LogFK:           FlopKickEventLog.ID,
 		constants.BidIDColumn: big.NewInt(30000000000000000).String(),
 		constants.LotColumn:   big.NewInt(1000000000000000000).String(),
 		constants.BidColumn:   big.NewInt(2000000000000000000).String(),

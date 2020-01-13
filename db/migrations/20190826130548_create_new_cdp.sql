@@ -2,8 +2,8 @@
 CREATE TABLE maker.new_cdp
 (
     id        SERIAL PRIMARY KEY,
-    header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
-    log_id    BIGINT  NOT NULL REFERENCES header_sync_logs (id) ON DELETE CASCADE,
+    header_id INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
+    log_id    BIGINT  NOT NULL REFERENCES public.event_logs (id) ON DELETE CASCADE,
     usr       TEXT,
     own       TEXT,
     cdp       NUMERIC,

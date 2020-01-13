@@ -44,7 +44,7 @@ var rawYankLog = types.Log{
 	Removed:     false,
 }
 
-var YankHeaderSyncLog = core.HeaderSyncLog{
+var YankEventLog = core.EventLog{
 	ID:          int64(rand.Int31()),
 	HeaderID:    int64(rand.Int31()),
 	Log:         rawYankLog,
@@ -58,8 +58,8 @@ var yankModel = event.InsertionModel{
 		event.HeaderFK, event.AddressFK, event.LogFK, constants.BidIDColumn,
 	},
 	ColumnValues: event.ColumnValues{
-		event.HeaderFK:        YankHeaderSyncLog.HeaderID,
-		event.LogFK:           YankHeaderSyncLog.ID,
+		event.HeaderFK:        YankEventLog.HeaderID,
+		event.LogFK:           YankEventLog.ID,
 		constants.BidIDColumn: "10000000000000000",
 	},
 }

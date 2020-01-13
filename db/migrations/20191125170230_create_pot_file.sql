@@ -2,8 +2,8 @@
 CREATE TABLE maker.pot_file_dsr
 (
     id        SERIAL PRIMARY KEY,
-    header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
-    log_id    BIGINT  NOT NULL REFERENCES header_sync_logs (id) ON DELETE CASCADE,
+    header_id INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
+    log_id    BIGINT  NOT NULL REFERENCES public.event_logs (id) ON DELETE CASCADE,
     what      TEXT,
     data      NUMERIC,
     UNIQUE (header_id, log_id)
@@ -17,8 +17,8 @@ CREATE INDEX pot_file_dsr_log_index
 CREATE TABLE maker.pot_file_vow
 (
     id        SERIAL PRIMARY KEY,
-    header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
-    log_id    BIGINT  NOT NULL REFERENCES header_sync_logs (id) ON DELETE CASCADE,
+    header_id INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
+    log_id    BIGINT  NOT NULL REFERENCES public.event_logs (id) ON DELETE CASCADE,
     what      TEXT,
     data      TEXT,
     UNIQUE (header_id, log_id)

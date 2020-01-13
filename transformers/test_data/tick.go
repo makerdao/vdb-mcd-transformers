@@ -51,7 +51,7 @@ var rawFlipTickLog = types.Log{
 	Removed:     false,
 }
 
-var FlipTickHeaderSyncLog = core.HeaderSyncLog{
+var FlipTickEventLog = core.EventLog{
 	ID:          int64(rand.Int31()),
 	HeaderID:    int64(rand.Int31()),
 	Log:         rawFlipTickLog,
@@ -65,8 +65,8 @@ var tickModel = event.InsertionModel{
 		event.HeaderFK, event.LogFK, constants.BidIDColumn, event.AddressFK,
 	},
 	ColumnValues: event.ColumnValues{
-		event.HeaderFK:        FlipTickHeaderSyncLog.HeaderID,
-		event.LogFK:           FlipTickHeaderSyncLog.ID,
+		event.HeaderFK:        FlipTickEventLog.HeaderID,
+		event.LogFK:           FlipTickEventLog.ID,
 		constants.BidIDColumn: strconv.FormatInt(tickBidId, 10),
 	},
 }

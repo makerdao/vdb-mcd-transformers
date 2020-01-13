@@ -23,7 +23,7 @@ var _ = Describe("Pot file dsr transformer", func() {
 	})
 
 	It("converts a pot file dsr log to a model", func() {
-		models, err := transformer.ToModels(constants.PotABI(), []core.HeaderSyncLog{test_data.PotFileDSRHeaderSyncLog}, db)
+		models, err := transformer.ToModels(constants.PotABI(), []core.EventLog{test_data.PotFileDSREventLog}, db)
 
 		Expect(err).NotTo(HaveOccurred())
 		expectedModel := test_data.PotFileDSRModel()
@@ -31,13 +31,13 @@ var _ = Describe("Pot file dsr transformer", func() {
 	})
 
 	It("returns err if log is missing topics", func() {
-		badLog := core.HeaderSyncLog{
+		badLog := core.EventLog{
 			Log: types.Log{
 				Data: []byte{1, 1, 1, 1, 1},
 			},
 		}
 
-		_, err := transformer.ToModels(constants.PotABI(), []core.HeaderSyncLog{badLog}, db)
+		_, err := transformer.ToModels(constants.PotABI(), []core.EventLog{badLog}, db)
 		Expect(err).To(HaveOccurred())
 	})
 })

@@ -113,7 +113,7 @@ var _ = Describe("CDP Manager storage repository", func() {
 		shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
 
 		It("triggers an update to the managed_cdp table", func() {
-			fakeRawDiff := fakes.GetFakeStorageDiffForHeader(fakes.FakeHeader, common.Hash{}, common.Hash{}, common.Hash{})
+			fakeRawDiff := GetFakeStorageDiffForHeader(fakes.FakeHeader, common.Hash{}, common.Hash{}, common.Hash{})
 			storageDiffRepo := repositories.NewStorageDiffRepository(db)
 			var insertDiffErr error
 			diffID, insertDiffErr = storageDiffRepo.CreateStorageDiff(fakeRawDiff)
@@ -167,7 +167,7 @@ var _ = Describe("CDP Manager storage repository", func() {
 			shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
 
 			It("triggers an update to the managed_cdp table", func() {
-				fakeRawDiff := fakes.GetFakeStorageDiffForHeader(fakes.FakeHeader, common.Hash{}, common.Hash{}, common.Hash{})
+				fakeRawDiff := GetFakeStorageDiffForHeader(fakes.FakeHeader, common.Hash{}, common.Hash{}, common.Hash{})
 				storageDiffRepo := repositories.NewStorageDiffRepository(db)
 				var insertDiffErr error
 				diffID, insertDiffErr = storageDiffRepo.CreateStorageDiff(fakeRawDiff)
@@ -250,7 +250,7 @@ var _ = Describe("CDP Manager storage repository", func() {
 			shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
 
 			It("triggers an update to the managed_cdp table", func() {
-				fakeRawDiff := fakes.GetFakeStorageDiffForHeader(fakes.FakeHeader, common.Hash{}, common.Hash{}, common.Hash{})
+				fakeRawDiff := GetFakeStorageDiffForHeader(fakes.FakeHeader, common.Hash{}, common.Hash{}, common.Hash{})
 				storageDiffRepo := repositories.NewStorageDiffRepository(db)
 				var insertDiffErr error
 				diffID, insertDiffErr = storageDiffRepo.CreateStorageDiff(fakeRawDiff)
@@ -278,7 +278,7 @@ var _ = Describe("CDP Manager storage repository", func() {
 			)
 
 			BeforeEach(func() {
-				fakeRawDiff := fakes.GetFakeStorageDiffForHeader(fakes.FakeHeader, common.Hash{}, common.Hash{}, common.Hash{})
+				fakeRawDiff := GetFakeStorageDiffForHeader(fakes.FakeHeader, common.Hash{}, common.Hash{}, common.Hash{})
 				storageDiffRepo := repositories.NewStorageDiffRepository(db)
 				var insertDiffErr error
 				diffID, insertDiffErr = storageDiffRepo.CreateStorageDiff(fakeRawDiff)

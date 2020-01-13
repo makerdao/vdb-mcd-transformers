@@ -45,7 +45,7 @@ var rawVatSlipLogWithPositiveWad = types.Log{
 	Removed:     false,
 }
 
-var VatSlipHeaderSyncLogWithPositiveWad = core.HeaderSyncLog{
+var VatSlipEventLogWithPositiveWad = core.EventLog{
 	ID:          int64(rand.Int31()),
 	HeaderID:    int64(rand.Int31()),
 	Log:         rawVatSlipLogWithPositiveWad,
@@ -61,8 +61,8 @@ var vatSlipModelWithPositiveWad = event.InsertionModel{
 	ColumnValues: event.ColumnValues{
 		constants.UsrColumn: "0x5c8c8e5895B9cCf34ACF391C99E13C79EE2eFb46",
 		constants.WadColumn: "10000000000000000",
-		event.HeaderFK:      VatSlipHeaderSyncLogWithPositiveWad.HeaderID,
-		event.LogFK:         VatSlipHeaderSyncLogWithPositiveWad.ID,
+		event.HeaderFK:      VatSlipEventLogWithPositiveWad.HeaderID,
+		event.LogFK:         VatSlipEventLogWithPositiveWad.ID,
 		constants.IlkColumn: "0x4554482d41000000000000000000000000000000000000000000000000000000",
 	},
 }
@@ -84,7 +84,7 @@ var rawVatSlipLogWithNegativeWad = types.Log{
 	Removed:     false,
 }
 
-var VatSlipHeaderSyncLogWithNegativeWad = core.HeaderSyncLog{
+var VatSlipEventLogWithNegativeWad = core.EventLog{
 	ID:          int64(rand.Int31()),
 	HeaderID:    int64(rand.Int31()),
 	Log:         rawVatSlipLogWithNegativeWad,
@@ -100,8 +100,8 @@ var vatSlipModelWithNegativeWad = event.InsertionModel{
 	ColumnValues: event.ColumnValues{
 		constants.UsrColumn: "0xFc7440E2Ed4A3AEb14d40c00f02a14221Be0474d",
 		constants.WadColumn: "-5000000000000000",
-		event.HeaderFK:      VatSlipHeaderSyncLogWithNegativeWad.HeaderID,
-		event.LogFK:         VatSlipHeaderSyncLogWithNegativeWad.ID,
+		event.HeaderFK:      VatSlipEventLogWithNegativeWad.HeaderID,
+		event.LogFK:         VatSlipEventLogWithNegativeWad.ID,
 		//constants.IlkColumn DB state
 	},
 }

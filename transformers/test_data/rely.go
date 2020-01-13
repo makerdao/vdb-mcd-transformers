@@ -29,7 +29,7 @@ var rawRelyLog = types.Log{
 	Removed:     false,
 }
 
-var RelyHeaderSyncLog = core.HeaderSyncLog{
+var RelyEventLog = core.EventLog{
 	ID:          int64(rand.Int31()),
 	HeaderID:    int64(rand.Int31()),
 	Log:         rawRelyLog,
@@ -42,7 +42,7 @@ var relyModel = event.InsertionModel{
 	SchemaName:     constants.MakerSchema,
 	TableName:      constants.RelyTable,
 	OrderedColumns: []event.ColumnName{event.HeaderFK, event.LogFK, event.AddressFK, constants.UsrColumn},
-	ColumnValues:   event.ColumnValues{event.HeaderFK: RelyHeaderSyncLog.HeaderID, event.LogFK: RelyHeaderSyncLog.ID},
+	ColumnValues:   event.ColumnValues{event.HeaderFK: RelyEventLog.HeaderID, event.LogFK: RelyEventLog.ID},
 }
 
 var rawVatRelyLog = types.Log{
@@ -62,7 +62,7 @@ var rawVatRelyLog = types.Log{
 	Removed:     false,
 }
 
-var VatRelyHeaderSyncLog = core.HeaderSyncLog{
+var VatRelyEventLog = core.EventLog{
 	ID:          int64(rand.Int31()),
 	HeaderID:    int64(rand.Int31()),
 	Log:         rawVatRelyLog,
@@ -76,7 +76,7 @@ var vatRelyModel = event.InsertionModel{
 	TableName:      constants.RelyTable,
 	OrderedColumns: []event.ColumnName{event.HeaderFK, event.LogFK, event.AddressFK, constants.UsrColumn},
 	ColumnValues: event.ColumnValues{
-		event.HeaderFK: VatRelyHeaderSyncLog.HeaderID,
-		event.LogFK:    VatRelyHeaderSyncLog.ID,
+		event.HeaderFK: VatRelyEventLog.HeaderID,
+		event.LogFK:    VatRelyEventLog.ID,
 	},
 }

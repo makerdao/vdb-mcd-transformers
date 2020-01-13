@@ -40,7 +40,7 @@ var _ = Describe("Flip Deal Transformer", func() {
 	})
 
 	It("converts logs to models", func() {
-		models, err := transformer.ToModels(constants.FlipABI(), []core.HeaderSyncLog{test_data.DealHeaderSyncLog}, db)
+		models, err := transformer.ToModels(constants.FlipABI(), []core.EventLog{test_data.DealEventLog}, db)
 		Expect(err).NotTo(HaveOccurred())
 		var addressID int64
 		addrErr := db.Get(&addressID, `SELECT id FROM public.addresses`)
@@ -51,10 +51,10 @@ var _ = Describe("Flip Deal Transformer", func() {
 	})
 
 	It("returns an error if the expected amount of topics aren't in the log", func() {
-		invalidLog := test_data.DealHeaderSyncLog
+		invalidLog := test_data.DealEventLog
 		invalidLog.Log.Topics = []common.Hash{}
 
-		_, err := transformer.ToModels(constants.FlipABI(), []core.HeaderSyncLog{invalidLog}, db)
+		_, err := transformer.ToModels(constants.FlipABI(), []core.EventLog{invalidLog}, db)
 
 		Expect(err).To(HaveOccurred())
 		Expect(err).To(MatchError(shared.ErrLogMissingTopics(3, 0)))

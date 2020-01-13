@@ -29,14 +29,14 @@ var _ = Describe("NewCdp Transformer", func() {
 	var transformer = new_cdp.Transformer{}
 
 	It("converts a log to a Model", func() {
-		models, err := transformer.ToModels(constants.CdpManagerABI(), []core.HeaderSyncLog{test_data.NewCdpHeaderSyncLog}, nil)
+		models, err := transformer.ToModels(constants.CdpManagerABI(), []core.EventLog{test_data.NewCdpEventLog}, nil)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(models).To(ConsistOf(test_data.NewCdpModel()))
 	})
 
 	It("returns an error if converting log to entity fails", func() {
-		_, err := transformer.ToModels("error abi", []core.HeaderSyncLog{test_data.NewCdpHeaderSyncLog}, nil)
+		_, err := transformer.ToModels("error abi", []core.EventLog{test_data.NewCdpEventLog}, nil)
 		Expect(err).To(HaveOccurred())
 	})
 })

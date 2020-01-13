@@ -45,7 +45,7 @@ var rawVatHealLog = types.Log{
 	Removed:     false,
 }
 
-var VatHealHeaderSyncLog = core.HeaderSyncLog{
+var VatHealEventLog = core.EventLog{
 	ID:          int64(rand.Int31()),
 	HeaderID:    int64(rand.Int31()),
 	Log:         rawVatHealLog,
@@ -60,7 +60,7 @@ var VatHealModel = event.InsertionModel{
 	},
 	ColumnValues: event.ColumnValues{
 		constants.RadColumn: "10001",
-		event.HeaderFK:      VatHealHeaderSyncLog.HeaderID,
-		event.LogFK:         VatHealHeaderSyncLog.ID,
+		event.HeaderFK:      VatHealEventLog.HeaderID,
+		event.LogFK:         VatHealEventLog.ID,
 	},
 }

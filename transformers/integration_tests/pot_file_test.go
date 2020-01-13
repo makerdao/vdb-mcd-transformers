@@ -58,10 +58,10 @@ var _ = Describe("PotFile EventTransformers", func() {
 			logs, fetcherErr = logFetcher.FetchLogs(addresses, topics, header)
 			Expect(fetcherErr).NotTo(HaveOccurred())
 
-			headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+			eventLogs := test_data.CreateLogs(header.Id, logs, db)
 
 			tr := initializer.NewTransformer(db)
-			executeErr := tr.Execute(headerSyncLogs)
+			executeErr := tr.Execute(eventLogs)
 			Expect(executeErr).NotTo(HaveOccurred())
 		})
 
@@ -112,10 +112,10 @@ var _ = Describe("PotFile EventTransformers", func() {
 			logs, fetcherErr = logFetcher.FetchLogs(addresses, topics, header)
 			Expect(fetcherErr).NotTo(HaveOccurred())
 
-			headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+			eventLogs := test_data.CreateLogs(header.Id, logs, db)
 
 			tr := initializer.NewTransformer(db)
-			executeErr := tr.Execute(headerSyncLogs)
+			executeErr := tr.Execute(eventLogs)
 			Expect(executeErr).NotTo(HaveOccurred())
 		})
 

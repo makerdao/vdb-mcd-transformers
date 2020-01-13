@@ -24,7 +24,7 @@ var (
 	newCdpUsr        = common.HexToAddress("0x000000000000000000000000a9fccb07dd3f774d5b9d02e99de1a27f47f91189")
 	newCdpOwn        = common.HexToAddress("0x000000000000000000000000a9fccb07dd3f774d5b9d02e99de1a27f47f91189")
 	newCdpCdp        = big.NewInt(83)
-	newCdpRawJson, _ = json.Marshal(NewCdpHeaderSyncLog)
+	newCdpRawJson, _ = json.Marshal(NewCdpEventLog)
 )
 
 var rawNewCdpLog = types.Log{
@@ -44,7 +44,7 @@ var rawNewCdpLog = types.Log{
 	Removed:     false,
 }
 
-var NewCdpHeaderSyncLog = core.HeaderSyncLog{
+var NewCdpEventLog = core.EventLog{
 	ID:          int64(rand.Int31()),
 	HeaderID:    int64(rand.Int31()),
 	Log:         rawNewCdpLog,
@@ -60,8 +60,8 @@ var newCdpModel = event.InsertionModel{
 		event.HeaderFK, event.LogFK, constants.UsrColumn, constants.OwnColumn, constants.CdpColumn,
 	},
 	ColumnValues: event.ColumnValues{
-		event.HeaderFK:      NewCdpHeaderSyncLog.HeaderID,
-		event.LogFK:         NewCdpHeaderSyncLog.ID,
+		event.HeaderFK:      NewCdpEventLog.HeaderID,
+		event.LogFK:         NewCdpEventLog.ID,
 		constants.UsrColumn: "0xA9fCcB07DD3f774d5b9d02e99DE1a27f47F91189",
 		constants.OwnColumn: "0xA9fCcB07DD3f774d5b9d02e99DE1a27f47F91189",
 		constants.CdpColumn: newCdpCdp.String(),

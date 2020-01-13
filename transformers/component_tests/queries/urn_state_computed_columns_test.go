@@ -54,8 +54,8 @@ var _ = Describe("Urn state computed columns", func() {
 		blockOne = rand.Int()
 		timestampOne = int(rand.Int31())
 		headerOne = createHeader(blockOne, timestampOne, headerRepository)
-		fakeHeaderSyncLog := test_data.CreateTestLog(headerOne.Id, db)
-		logId = fakeHeaderSyncLog.ID
+		fakeEventLog := test_data.CreateTestLog(headerOne.Id, db)
+		logId = fakeEventLog.ID
 
 		vatRepository.SetDB(db)
 		catRepository.SetDB(db)

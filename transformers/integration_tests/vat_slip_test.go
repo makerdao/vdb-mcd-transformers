@@ -59,14 +59,14 @@ var _ = Describe("Vat slip transformer", func() {
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
-		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+		eventLogs := test_data.CreateLogs(header.Id, logs, db)
 
 		tr := event.ConfiguredTransformer{
 			Config:      vatSlipConfig,
 			Transformer: vat_slip.Transformer{},
 		}.NewTransformer(db)
 
-		err = tr.Execute(headerSyncLogs)
+		err = tr.Execute(eventLogs)
 
 		Expect(err).NotTo(HaveOccurred())
 		var headerID int64

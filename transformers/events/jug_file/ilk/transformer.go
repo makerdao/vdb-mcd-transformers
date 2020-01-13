@@ -27,7 +27,7 @@ import (
 
 type Transformer struct{}
 
-func (Transformer) ToModels(contractAbi string, logs []core.HeaderSyncLog, db *postgres.DB) ([]event.InsertionModel, error) {
+func (Transformer) ToModels(contractAbi string, logs []core.EventLog, db *postgres.DB) ([]event.InsertionModel, error) {
 	var models []event.InsertionModel
 	for _, log := range logs {
 		verifyErr := shared.VerifyLog(log.Log, shared.FourTopicsRequired, shared.LogDataRequired)

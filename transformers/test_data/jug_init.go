@@ -45,7 +45,7 @@ var rawJugInitLog = types.Log{
 	Removed:     false,
 }
 
-var JugInitHeaderSyncLog = core.HeaderSyncLog{
+var JugInitEventLog = core.EventLog{
 	ID:          int64(rand.Int31()),
 	HeaderID:    int64(rand.Int31()),
 	Log:         rawJugInitLog,
@@ -59,7 +59,7 @@ var jugInitModel = event.InsertionModel{
 	TableName:      constants.JugInitTable,
 	OrderedColumns: []event.ColumnName{event.HeaderFK, event.LogFK, constants.IlkColumn},
 	ColumnValues: event.ColumnValues{
-		event.HeaderFK: JugInitHeaderSyncLog.HeaderID,
-		event.LogFK:    JugInitHeaderSyncLog.ID,
+		event.HeaderFK: JugInitEventLog.HeaderID,
+		event.LogFK:    JugInitEventLog.ID,
 	},
 }

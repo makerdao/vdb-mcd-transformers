@@ -31,7 +31,7 @@ import (
 
 type Transformer struct{}
 
-func (Transformer) toEntities(contractAbi string, logs []core.HeaderSyncLog) ([]FlipKickEntity, error) {
+func (Transformer) toEntities(contractAbi string, logs []core.EventLog) ([]FlipKickEntity, error) {
 	var entities []FlipKickEntity
 	for _, log := range logs {
 		var entity FlipKickEntity
@@ -55,7 +55,7 @@ func (Transformer) toEntities(contractAbi string, logs []core.HeaderSyncLog) ([]
 	return entities, nil
 }
 
-func (t Transformer) ToModels(abi string, logs []core.HeaderSyncLog, db *postgres.DB) ([]event.InsertionModel, error) {
+func (t Transformer) ToModels(abi string, logs []core.EventLog, db *postgres.DB) ([]event.InsertionModel, error) {
 	entities, entityErr := t.toEntities(abi, logs)
 	if entityErr != nil {
 		return nil, fmt.Errorf("FlipKick transformer couldn't convert logs to entities: %v", entityErr)

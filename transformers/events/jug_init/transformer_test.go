@@ -39,16 +39,16 @@ var _ = Describe("Jug init transformer", func() {
 	})
 
 	It("returns err if log is missing topics", func() {
-		incompleteLog := core.HeaderSyncLog{}
-		_, err := transformer.ToModels(constants.JugABI(), []core.HeaderSyncLog{incompleteLog}, db)
+		incompleteLog := core.EventLog{}
+		_, err := transformer.ToModels(constants.JugABI(), []core.EventLog{incompleteLog}, db)
 		Expect(err).To(HaveOccurred())
 	})
 
 	It("convert a log to an insertion model", func() {
-		models, err := transformer.ToModels(constants.JugABI(), []core.HeaderSyncLog{test_data.JugInitHeaderSyncLog}, db)
+		models, err := transformer.ToModels(constants.JugABI(), []core.EventLog{test_data.JugInitEventLog}, db)
 		Expect(err).NotTo(HaveOccurred())
 
-		ilkID, ilkErr := shared.GetOrCreateIlk(test_data.JugInitHeaderSyncLog.Log.Topics[2].Hex(), db)
+		ilkID, ilkErr := shared.GetOrCreateIlk(test_data.JugInitEventLog.Log.Topics[2].Hex(), db)
 		Expect(ilkErr).NotTo(HaveOccurred())
 		expectedModel := test_data.JugInitModel()
 		expectedModel.ColumnValues[constants.IlkColumn] = ilkID

@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 12.1
--- Dumped by pg_dump version 12.1
+-- Dumped from database version 11.5
+-- Dumped by pg_dump version 11.5
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -2155,7 +2155,7 @@ $_$;
 
 SET default_tablespace = '';
 
-SET default_table_access_method = heap;
+SET default_with_oids = false;
 
 --
 -- Name: historical_ilk_state; Type: TABLE; Schema: api; Owner: -
@@ -5823,11 +5823,11 @@ CREATE FUNCTION public.get_tx_data(block_height bigint, log_id bigint) RETURNS S
     LANGUAGE sql STABLE
     AS $$
 SELECT txs.hash, txs.tx_index, headers.block_number, headers.hash, tx_from, tx_to
-FROM public.header_sync_transactions txs
-         LEFT JOIN headers ON txs.header_id = headers.id
-         LEFT JOIN header_sync_logs ON txs.tx_index = header_sync_logs.tx_index
+FROM public.transactions txs
+         LEFT JOIN public.headers ON txs.header_id = headers.id
+         LEFT JOIN public.event_logs ON txs.tx_index = event_logs.tx_index
 WHERE headers.block_number = block_height
-  AND header_sync_logs.id = log_id
+  AND event_logs.id = log_id
 ORDER BY block_number DESC
 
 $$;
@@ -11221,80 +11221,6 @@ ALTER SEQUENCE public.addresses_id_seq OWNED BY public.addresses.id;
 
 
 --
--- Name: full_sync_logs; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.full_sync_logs (
-    id integer NOT NULL,
-    block_number bigint,
-    address character varying(66),
-    tx_hash character varying(66),
-    index bigint,
-    topic0 character varying(66),
-    topic1 character varying(66),
-    topic2 character varying(66),
-    topic3 character varying(66),
-    data text,
-    receipt_id integer
-);
-
-
---
--- Name: block_stats; Type: VIEW; Schema: public; Owner: -
---
-
-CREATE VIEW public.block_stats AS
- SELECT max(full_sync_logs.block_number) AS max_block,
-    min(full_sync_logs.block_number) AS min_block
-   FROM public.full_sync_logs;
-
-
---
--- Name: blocks; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.blocks (
-    id integer NOT NULL,
-    difficulty bigint,
-    extra_data character varying,
-    gas_limit bigint,
-    gas_used bigint,
-    hash character varying(66),
-    miner character varying(42),
-    nonce character varying(20),
-    number bigint,
-    parent_hash character varying(66),
-    reward numeric,
-    uncles_reward numeric,
-    size character varying,
-    "time" bigint,
-    is_final boolean,
-    uncle_hash character varying(66),
-    eth_node_id integer NOT NULL
-);
-
-
---
--- Name: blocks_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.blocks_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: blocks_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.blocks_id_seq OWNED BY public.blocks.id;
-
-
---
 -- Name: checked_headers; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -11340,10 +11266,10 @@ CREATE TABLE public.eth_nodes (
 
 
 --
--- Name: full_sync_logs_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+-- Name: eth_nodes_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.full_sync_logs_id_seq
+CREATE SEQUENCE public.eth_nodes_id_seq
     AS integer
     START WITH 1
     INCREMENT BY 1
@@ -11353,73 +11279,37 @@ CREATE SEQUENCE public.full_sync_logs_id_seq
 
 
 --
--- Name: full_sync_logs_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+-- Name: eth_nodes_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE public.full_sync_logs_id_seq OWNED BY public.full_sync_logs.id;
+ALTER SEQUENCE public.eth_nodes_id_seq OWNED BY public.eth_nodes.id;
 
 
 --
--- Name: full_sync_receipts; Type: TABLE; Schema: public; Owner: -
+-- Name: event_logs; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.full_sync_receipts (
+CREATE TABLE public.event_logs (
     id integer NOT NULL,
-    contract_address_id integer NOT NULL,
-    cumulative_gas_used numeric,
-    gas_used numeric,
-    state_root character varying(66),
-    status integer,
+    header_id integer NOT NULL,
+    address integer NOT NULL,
+    topics bytea[],
+    data bytea,
+    block_number bigint,
+    block_hash character varying(66),
     tx_hash character varying(66),
-    block_id integer NOT NULL
-);
-
-
---
--- Name: full_sync_receipts_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.full_sync_receipts_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: full_sync_receipts_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.full_sync_receipts_id_seq OWNED BY public.full_sync_receipts.id;
-
-
---
--- Name: full_sync_transactions; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.full_sync_transactions (
-    id integer NOT NULL,
-    block_id integer NOT NULL,
-    gas_limit numeric,
-    gas_price numeric,
-    hash character varying(66),
-    input_data bytea,
-    nonce numeric,
-    raw bytea,
-    tx_from character varying(66),
     tx_index integer,
-    tx_to character varying(66),
-    value numeric
+    log_index integer,
+    raw jsonb,
+    transformed boolean DEFAULT false NOT NULL
 );
 
 
 --
--- Name: full_sync_transactions_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+-- Name: event_logs_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.full_sync_transactions_id_seq
+CREATE SEQUENCE public.event_logs_id_seq
     AS integer
     START WITH 1
     INCREMENT BY 1
@@ -11429,10 +11319,10 @@ CREATE SEQUENCE public.full_sync_transactions_id_seq
 
 
 --
--- Name: full_sync_transactions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+-- Name: event_logs_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE public.full_sync_transactions_id_seq OWNED BY public.full_sync_transactions.id;
+ALTER SEQUENCE public.event_logs_id_seq OWNED BY public.event_logs.id;
 
 
 --
@@ -11465,124 +11355,6 @@ CREATE SEQUENCE public.goose_db_version_id_seq
 --
 
 ALTER SEQUENCE public.goose_db_version_id_seq OWNED BY public.goose_db_version.id;
-
-
---
--- Name: header_sync_logs; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.header_sync_logs (
-    id integer NOT NULL,
-    header_id integer NOT NULL,
-    address integer NOT NULL,
-    topics bytea[],
-    data bytea,
-    block_number bigint,
-    block_hash character varying(66),
-    tx_hash character varying(66),
-    tx_index integer,
-    log_index integer,
-    raw jsonb,
-    transformed boolean DEFAULT false NOT NULL
-);
-
-
---
--- Name: header_sync_logs_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.header_sync_logs_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: header_sync_logs_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.header_sync_logs_id_seq OWNED BY public.header_sync_logs.id;
-
-
---
--- Name: header_sync_receipts; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.header_sync_receipts (
-    id integer NOT NULL,
-    transaction_id integer NOT NULL,
-    header_id integer NOT NULL,
-    contract_address_id integer NOT NULL,
-    cumulative_gas_used numeric,
-    gas_used numeric,
-    state_root character varying(66),
-    status integer,
-    tx_hash character varying(66),
-    rlp bytea
-);
-
-
---
--- Name: header_sync_receipts_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.header_sync_receipts_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: header_sync_receipts_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.header_sync_receipts_id_seq OWNED BY public.header_sync_receipts.id;
-
-
---
--- Name: header_sync_transactions; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.header_sync_transactions (
-    id integer NOT NULL,
-    header_id integer NOT NULL,
-    hash character varying(66) NOT NULL,
-    gas_limit numeric,
-    gas_price numeric,
-    input_data bytea,
-    nonce numeric,
-    raw bytea,
-    tx_from character varying(44),
-    tx_index integer,
-    tx_to character varying(44),
-    value numeric
-);
-
-
---
--- Name: header_sync_transactions_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.header_sync_transactions_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: header_sync_transactions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.header_sync_transactions_id_seq OWNED BY public.header_sync_transactions.id;
 
 
 --
@@ -11621,66 +11393,6 @@ ALTER SEQUENCE public.headers_id_seq OWNED BY public.headers.id;
 
 
 --
--- Name: log_filters; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.log_filters (
-    id integer NOT NULL,
-    name character varying NOT NULL,
-    from_block bigint,
-    to_block bigint,
-    address character varying(66),
-    topic0 character varying(66),
-    topic1 character varying(66),
-    topic2 character varying(66),
-    topic3 character varying(66),
-    CONSTRAINT log_filters_from_block_check CHECK ((from_block >= 0)),
-    CONSTRAINT log_filters_name_check CHECK (((name)::text <> ''::text)),
-    CONSTRAINT log_filters_to_block_check CHECK ((to_block >= 0))
-);
-
-
---
--- Name: log_filters_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.log_filters_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: log_filters_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.log_filters_id_seq OWNED BY public.log_filters.id;
-
-
---
--- Name: nodes_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.nodes_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: nodes_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.nodes_id_seq OWNED BY public.eth_nodes.id;
-
-
---
 -- Name: queued_storage; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -11708,6 +11420,44 @@ CREATE SEQUENCE public.queued_storage_id_seq
 --
 
 ALTER SEQUENCE public.queued_storage_id_seq OWNED BY public.queued_storage.id;
+
+
+--
+-- Name: receipts; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.receipts (
+    id integer NOT NULL,
+    transaction_id integer NOT NULL,
+    header_id integer NOT NULL,
+    contract_address_id integer NOT NULL,
+    cumulative_gas_used numeric,
+    gas_used numeric,
+    state_root character varying(66),
+    status integer,
+    tx_hash character varying(66),
+    rlp bytea
+);
+
+
+--
+-- Name: receipts_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.receipts_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: receipts_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.receipts_id_seq OWNED BY public.receipts.id;
 
 
 --
@@ -11744,26 +11494,30 @@ ALTER SEQUENCE public.storage_diff_id_seq OWNED BY public.storage_diff.id;
 
 
 --
--- Name: uncles; Type: TABLE; Schema: public; Owner: -
+-- Name: transactions; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.uncles (
+CREATE TABLE public.transactions (
     id integer NOT NULL,
+    header_id integer NOT NULL,
     hash character varying(66) NOT NULL,
-    block_id integer NOT NULL,
-    reward numeric NOT NULL,
-    miner character varying(42) NOT NULL,
-    raw jsonb,
-    block_timestamp numeric,
-    eth_node_id integer NOT NULL
+    gas_limit numeric,
+    gas_price numeric,
+    input_data bytea,
+    nonce numeric,
+    raw bytea,
+    tx_from character varying(44),
+    tx_index integer,
+    tx_to character varying(44),
+    value numeric
 );
 
 
 --
--- Name: uncles_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+-- Name: transactions_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.uncles_id_seq
+CREATE SEQUENCE public.transactions_id_seq
     AS integer
     START WITH 1
     INCREMENT BY 1
@@ -11773,64 +11527,10 @@ CREATE SEQUENCE public.uncles_id_seq
 
 
 --
--- Name: uncles_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+-- Name: transactions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE public.uncles_id_seq OWNED BY public.uncles.id;
-
-
---
--- Name: watched_contracts; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.watched_contracts (
-    contract_id integer NOT NULL,
-    contract_abi json,
-    contract_hash character varying(66)
-);
-
-
---
--- Name: watched_contracts_contract_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.watched_contracts_contract_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: watched_contracts_contract_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.watched_contracts_contract_id_seq OWNED BY public.watched_contracts.contract_id;
-
-
---
--- Name: watched_event_logs; Type: VIEW; Schema: public; Owner: -
---
-
-CREATE VIEW public.watched_event_logs AS
- SELECT log_filters.name,
-    full_sync_logs.id,
-    full_sync_logs.block_number,
-    full_sync_logs.address,
-    full_sync_logs.tx_hash,
-    full_sync_logs.index,
-    full_sync_logs.topic0,
-    full_sync_logs.topic1,
-    full_sync_logs.topic2,
-    full_sync_logs.topic3,
-    full_sync_logs.data,
-    full_sync_logs.receipt_id
-   FROM ((public.log_filters
-     CROSS JOIN public.block_stats)
-     JOIN public.full_sync_logs ON ((((full_sync_logs.address)::text = (log_filters.address)::text) AND (full_sync_logs.block_number >= COALESCE(log_filters.from_block, block_stats.min_block)) AND (full_sync_logs.block_number <= COALESCE(log_filters.to_block, block_stats.max_block)))))
-  WHERE ((((log_filters.topic0)::text = (full_sync_logs.topic0)::text) OR (log_filters.topic0 IS NULL)) AND (((log_filters.topic1)::text = (full_sync_logs.topic1)::text) OR (log_filters.topic1 IS NULL)) AND (((log_filters.topic2)::text = (full_sync_logs.topic2)::text) OR (log_filters.topic2 IS NULL)) AND (((log_filters.topic3)::text = (full_sync_logs.topic3)::text) OR (log_filters.topic3 IS NULL)));
+ALTER SEQUENCE public.transactions_id_seq OWNED BY public.transactions.id;
 
 
 --
@@ -12929,13 +12629,6 @@ ALTER TABLE ONLY public.addresses ALTER COLUMN id SET DEFAULT nextval('public.ad
 
 
 --
--- Name: blocks id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.blocks ALTER COLUMN id SET DEFAULT nextval('public.blocks_id_seq'::regclass);
-
-
---
 -- Name: checked_headers id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -12946,28 +12639,14 @@ ALTER TABLE ONLY public.checked_headers ALTER COLUMN id SET DEFAULT nextval('pub
 -- Name: eth_nodes id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.eth_nodes ALTER COLUMN id SET DEFAULT nextval('public.nodes_id_seq'::regclass);
+ALTER TABLE ONLY public.eth_nodes ALTER COLUMN id SET DEFAULT nextval('public.eth_nodes_id_seq'::regclass);
 
 
 --
--- Name: full_sync_logs id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: event_logs id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.full_sync_logs ALTER COLUMN id SET DEFAULT nextval('public.full_sync_logs_id_seq'::regclass);
-
-
---
--- Name: full_sync_receipts id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.full_sync_receipts ALTER COLUMN id SET DEFAULT nextval('public.full_sync_receipts_id_seq'::regclass);
-
-
---
--- Name: full_sync_transactions id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.full_sync_transactions ALTER COLUMN id SET DEFAULT nextval('public.full_sync_transactions_id_seq'::regclass);
+ALTER TABLE ONLY public.event_logs ALTER COLUMN id SET DEFAULT nextval('public.event_logs_id_seq'::regclass);
 
 
 --
@@ -12978,38 +12657,10 @@ ALTER TABLE ONLY public.goose_db_version ALTER COLUMN id SET DEFAULT nextval('pu
 
 
 --
--- Name: header_sync_logs id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.header_sync_logs ALTER COLUMN id SET DEFAULT nextval('public.header_sync_logs_id_seq'::regclass);
-
-
---
--- Name: header_sync_receipts id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.header_sync_receipts ALTER COLUMN id SET DEFAULT nextval('public.header_sync_receipts_id_seq'::regclass);
-
-
---
--- Name: header_sync_transactions id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.header_sync_transactions ALTER COLUMN id SET DEFAULT nextval('public.header_sync_transactions_id_seq'::regclass);
-
-
---
 -- Name: headers id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.headers ALTER COLUMN id SET DEFAULT nextval('public.headers_id_seq'::regclass);
-
-
---
--- Name: log_filters id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.log_filters ALTER COLUMN id SET DEFAULT nextval('public.log_filters_id_seq'::regclass);
 
 
 --
@@ -13020,6 +12671,13 @@ ALTER TABLE ONLY public.queued_storage ALTER COLUMN id SET DEFAULT nextval('publ
 
 
 --
+-- Name: receipts id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.receipts ALTER COLUMN id SET DEFAULT nextval('public.receipts_id_seq'::regclass);
+
+
+--
 -- Name: storage_diff id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -13027,17 +12685,10 @@ ALTER TABLE ONLY public.storage_diff ALTER COLUMN id SET DEFAULT nextval('public
 
 
 --
--- Name: uncles id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: transactions id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.uncles ALTER COLUMN id SET DEFAULT nextval('public.uncles_id_seq'::regclass);
-
-
---
--- Name: watched_contracts contract_id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.watched_contracts ALTER COLUMN contract_id SET DEFAULT nextval('public.watched_contracts_contract_id_seq'::regclass);
+ALTER TABLE ONLY public.transactions ALTER COLUMN id SET DEFAULT nextval('public.transactions_id_seq'::regclass);
 
 
 --
@@ -15504,14 +15155,6 @@ ALTER TABLE ONLY public.addresses
 
 
 --
--- Name: blocks blocks_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.blocks
-    ADD CONSTRAINT blocks_pkey PRIMARY KEY (id);
-
-
---
 -- Name: checked_headers checked_headers_header_id_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -15528,43 +15171,35 @@ ALTER TABLE ONLY public.checked_headers
 
 
 --
--- Name: blocks eth_node_id_block_number_uc; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.blocks
-    ADD CONSTRAINT eth_node_id_block_number_uc UNIQUE (number, eth_node_id);
-
-
---
--- Name: eth_nodes eth_node_uc; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: eth_nodes eth_nodes_genesis_block_network_id_eth_node_id_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.eth_nodes
-    ADD CONSTRAINT eth_node_uc UNIQUE (genesis_block, network_id, eth_node_id);
+    ADD CONSTRAINT eth_nodes_genesis_block_network_id_eth_node_id_key UNIQUE (genesis_block, network_id, eth_node_id);
 
 
 --
--- Name: full_sync_logs full_sync_logs_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: eth_nodes eth_nodes_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.full_sync_logs
-    ADD CONSTRAINT full_sync_logs_pkey PRIMARY KEY (id);
-
-
---
--- Name: full_sync_receipts full_sync_receipts_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.full_sync_receipts
-    ADD CONSTRAINT full_sync_receipts_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public.eth_nodes
+    ADD CONSTRAINT eth_nodes_pkey PRIMARY KEY (id);
 
 
 --
--- Name: full_sync_transactions full_sync_transactions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: event_logs event_logs_header_id_tx_index_log_index_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.full_sync_transactions
-    ADD CONSTRAINT full_sync_transactions_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public.event_logs
+    ADD CONSTRAINT event_logs_header_id_tx_index_log_index_key UNIQUE (header_id, tx_index, log_index);
+
+
+--
+-- Name: event_logs event_logs_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.event_logs
+    ADD CONSTRAINT event_logs_pkey PRIMARY KEY (id);
 
 
 --
@@ -15573,54 +15208,6 @@ ALTER TABLE ONLY public.full_sync_transactions
 
 ALTER TABLE ONLY public.goose_db_version
     ADD CONSTRAINT goose_db_version_pkey PRIMARY KEY (id);
-
-
---
--- Name: header_sync_logs header_sync_logs_header_id_tx_index_log_index_key; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.header_sync_logs
-    ADD CONSTRAINT header_sync_logs_header_id_tx_index_log_index_key UNIQUE (header_id, tx_index, log_index);
-
-
---
--- Name: header_sync_logs header_sync_logs_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.header_sync_logs
-    ADD CONSTRAINT header_sync_logs_pkey PRIMARY KEY (id);
-
-
---
--- Name: header_sync_receipts header_sync_receipts_header_id_transaction_id_key; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.header_sync_receipts
-    ADD CONSTRAINT header_sync_receipts_header_id_transaction_id_key UNIQUE (header_id, transaction_id);
-
-
---
--- Name: header_sync_receipts header_sync_receipts_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.header_sync_receipts
-    ADD CONSTRAINT header_sync_receipts_pkey PRIMARY KEY (id);
-
-
---
--- Name: header_sync_transactions header_sync_transactions_hash_key; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.header_sync_transactions
-    ADD CONSTRAINT header_sync_transactions_hash_key UNIQUE (hash);
-
-
---
--- Name: header_sync_transactions header_sync_transactions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.header_sync_transactions
-    ADD CONSTRAINT header_sync_transactions_pkey PRIMARY KEY (id);
 
 
 --
@@ -15640,22 +15227,6 @@ ALTER TABLE ONLY public.headers
 
 
 --
--- Name: log_filters name_uc; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.log_filters
-    ADD CONSTRAINT name_uc UNIQUE (name);
-
-
---
--- Name: eth_nodes nodes_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.eth_nodes
-    ADD CONSTRAINT nodes_pkey PRIMARY KEY (id);
-
-
---
 -- Name: queued_storage queued_storage_diff_id_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -15669,6 +15240,22 @@ ALTER TABLE ONLY public.queued_storage
 
 ALTER TABLE ONLY public.queued_storage
     ADD CONSTRAINT queued_storage_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: receipts receipts_header_id_transaction_id_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.receipts
+    ADD CONSTRAINT receipts_header_id_transaction_id_key UNIQUE (header_id, transaction_id);
+
+
+--
+-- Name: receipts receipts_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.receipts
+    ADD CONSTRAINT receipts_pkey PRIMARY KEY (id);
 
 
 --
@@ -15688,35 +15275,19 @@ ALTER TABLE ONLY public.storage_diff
 
 
 --
--- Name: uncles uncles_block_id_hash_key; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: transactions transactions_hash_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.uncles
-    ADD CONSTRAINT uncles_block_id_hash_key UNIQUE (block_id, hash);
-
-
---
--- Name: uncles uncles_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.uncles
-    ADD CONSTRAINT uncles_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public.transactions
+    ADD CONSTRAINT transactions_hash_key UNIQUE (hash);
 
 
 --
--- Name: watched_contracts watched_contracts_contract_hash_key; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: transactions transactions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.watched_contracts
-    ADD CONSTRAINT watched_contracts_contract_hash_key UNIQUE (contract_hash);
-
-
---
--- Name: watched_contracts watched_contracts_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.watched_contracts
-    ADD CONSTRAINT watched_contracts_pkey PRIMARY KEY (contract_id);
+ALTER TABLE ONLY public.transactions
+    ADD CONSTRAINT transactions_pkey PRIMARY KEY (id);
 
 
 --
@@ -17912,73 +17483,24 @@ CREATE INDEX yank_log_index ON maker.yank USING btree (log_id);
 
 
 --
--- Name: block_id_index; Type: INDEX; Schema: public; Owner: -
+-- Name: event_logs_address; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX block_id_index ON public.full_sync_transactions USING btree (block_id);
-
-
---
--- Name: full_sync_logs_receipt; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX full_sync_logs_receipt ON public.full_sync_logs USING btree (receipt_id);
+CREATE INDEX event_logs_address ON public.event_logs USING btree (address);
 
 
 --
--- Name: full_sync_receipts_block; Type: INDEX; Schema: public; Owner: -
+-- Name: event_logs_transaction; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX full_sync_receipts_block ON public.full_sync_receipts USING btree (block_id);
-
-
---
--- Name: full_sync_receipts_contract_address; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX full_sync_receipts_contract_address ON public.full_sync_receipts USING btree (contract_address_id);
+CREATE INDEX event_logs_transaction ON public.event_logs USING btree (tx_hash);
 
 
 --
--- Name: header_sync_logs_address; Type: INDEX; Schema: public; Owner: -
+-- Name: event_logs_untransformed; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX header_sync_logs_address ON public.header_sync_logs USING btree (address);
-
-
---
--- Name: header_sync_logs_transaction; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX header_sync_logs_transaction ON public.header_sync_logs USING btree (tx_hash);
-
-
---
--- Name: header_sync_logs_untransformed; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX header_sync_logs_untransformed ON public.header_sync_logs USING btree (transformed) WHERE (transformed IS FALSE);
-
-
---
--- Name: header_sync_receipts_contract_address; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX header_sync_receipts_contract_address ON public.header_sync_receipts USING btree (contract_address_id);
-
-
---
--- Name: header_sync_receipts_transaction; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX header_sync_receipts_transaction ON public.header_sync_receipts USING btree (transaction_id);
-
-
---
--- Name: header_sync_transactions_header; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX header_sync_transactions_header ON public.header_sync_transactions USING btree (header_id);
+CREATE INDEX event_logs_untransformed ON public.event_logs USING btree (transformed) WHERE (transformed IS FALSE);
 
 
 --
@@ -17989,6 +17511,13 @@ CREATE INDEX headers_block_number ON public.headers USING btree (block_number);
 
 
 --
+-- Name: headers_check_count; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX headers_check_count ON public.headers USING btree (check_count);
+
+
+--
 -- Name: headers_eth_node; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -17996,311 +17525,297 @@ CREATE INDEX headers_eth_node ON public.headers USING btree (eth_node_id);
 
 
 --
--- Name: node_id_index; Type: INDEX; Schema: public; Owner: -
+-- Name: receipts_contract_address; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX node_id_index ON public.blocks USING btree (eth_node_id);
-
-
---
--- Name: number_index; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX number_index ON public.blocks USING btree (number);
+CREATE INDEX receipts_contract_address ON public.receipts USING btree (contract_address_id);
 
 
 --
--- Name: tx_from_index; Type: INDEX; Schema: public; Owner: -
+-- Name: receipts_transaction; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX tx_from_index ON public.full_sync_transactions USING btree (tx_from);
-
-
---
--- Name: tx_to_index; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX tx_to_index ON public.full_sync_transactions USING btree (tx_to);
+CREATE INDEX receipts_transaction ON public.receipts USING btree (transaction_id);
 
 
 --
--- Name: uncles_eth_node; Type: INDEX; Schema: public; Owner: -
+-- Name: transactions_header; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX uncles_eth_node ON public.uncles USING btree (eth_node_id);
+CREATE INDEX transactions_header ON public.transactions USING btree (header_id);
 
 
 --
 -- Name: flap_bid_bid flap_bid_bid; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER flap_bid_bid AFTER INSERT OR UPDATE ON maker.flap_bid_bid FOR EACH ROW EXECUTE FUNCTION maker.insert_updated_flap_bid();
+CREATE TRIGGER flap_bid_bid AFTER INSERT OR UPDATE ON maker.flap_bid_bid FOR EACH ROW EXECUTE PROCEDURE maker.insert_updated_flap_bid();
 
 
 --
 -- Name: flap_bid_end flap_bid_end; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER flap_bid_end AFTER INSERT OR UPDATE ON maker.flap_bid_end FOR EACH ROW EXECUTE FUNCTION maker.insert_updated_flap_end();
+CREATE TRIGGER flap_bid_end AFTER INSERT OR UPDATE ON maker.flap_bid_end FOR EACH ROW EXECUTE PROCEDURE maker.insert_updated_flap_end();
 
 
 --
 -- Name: flap_bid_guy flap_bid_guy; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER flap_bid_guy AFTER INSERT OR UPDATE ON maker.flap_bid_guy FOR EACH ROW EXECUTE FUNCTION maker.insert_updated_flap_guy();
+CREATE TRIGGER flap_bid_guy AFTER INSERT OR UPDATE ON maker.flap_bid_guy FOR EACH ROW EXECUTE PROCEDURE maker.insert_updated_flap_guy();
 
 
 --
 -- Name: flap_bid_lot flap_bid_lot; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER flap_bid_lot AFTER INSERT OR UPDATE ON maker.flap_bid_lot FOR EACH ROW EXECUTE FUNCTION maker.insert_updated_flap_lot();
+CREATE TRIGGER flap_bid_lot AFTER INSERT OR UPDATE ON maker.flap_bid_lot FOR EACH ROW EXECUTE PROCEDURE maker.insert_updated_flap_lot();
 
 
 --
 -- Name: flap_bid_tic flap_bid_tic; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER flap_bid_tic AFTER INSERT OR UPDATE ON maker.flap_bid_tic FOR EACH ROW EXECUTE FUNCTION maker.insert_updated_flap_tic();
+CREATE TRIGGER flap_bid_tic AFTER INSERT OR UPDATE ON maker.flap_bid_tic FOR EACH ROW EXECUTE PROCEDURE maker.insert_updated_flap_tic();
 
 
 --
 -- Name: flap_kick flap_created_trigger; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER flap_created_trigger AFTER INSERT ON maker.flap_kick FOR EACH ROW EXECUTE FUNCTION maker.flap_created();
+CREATE TRIGGER flap_created_trigger AFTER INSERT ON maker.flap_kick FOR EACH ROW EXECUTE PROCEDURE maker.flap_created();
 
 
 --
 -- Name: flip_bid_bid flip_bid_bid; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER flip_bid_bid AFTER INSERT OR UPDATE ON maker.flip_bid_bid FOR EACH ROW EXECUTE FUNCTION maker.insert_updated_flip_bid();
+CREATE TRIGGER flip_bid_bid AFTER INSERT OR UPDATE ON maker.flip_bid_bid FOR EACH ROW EXECUTE PROCEDURE maker.insert_updated_flip_bid();
 
 
 --
 -- Name: flip_bid_end flip_bid_end; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER flip_bid_end AFTER INSERT OR UPDATE ON maker.flip_bid_end FOR EACH ROW EXECUTE FUNCTION maker.insert_updated_flip_end();
+CREATE TRIGGER flip_bid_end AFTER INSERT OR UPDATE ON maker.flip_bid_end FOR EACH ROW EXECUTE PROCEDURE maker.insert_updated_flip_end();
 
 
 --
 -- Name: flip_bid_gal flip_bid_gal; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER flip_bid_gal AFTER INSERT OR UPDATE ON maker.flip_bid_gal FOR EACH ROW EXECUTE FUNCTION maker.insert_updated_flip_gal();
+CREATE TRIGGER flip_bid_gal AFTER INSERT OR UPDATE ON maker.flip_bid_gal FOR EACH ROW EXECUTE PROCEDURE maker.insert_updated_flip_gal();
 
 
 --
 -- Name: flip_bid_guy flip_bid_guy; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER flip_bid_guy AFTER INSERT OR UPDATE ON maker.flip_bid_guy FOR EACH ROW EXECUTE FUNCTION maker.insert_updated_flip_guy();
+CREATE TRIGGER flip_bid_guy AFTER INSERT OR UPDATE ON maker.flip_bid_guy FOR EACH ROW EXECUTE PROCEDURE maker.insert_updated_flip_guy();
 
 
 --
 -- Name: flip_bid_lot flip_bid_lot; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER flip_bid_lot AFTER INSERT OR UPDATE ON maker.flip_bid_lot FOR EACH ROW EXECUTE FUNCTION maker.insert_updated_flip_lot();
+CREATE TRIGGER flip_bid_lot AFTER INSERT OR UPDATE ON maker.flip_bid_lot FOR EACH ROW EXECUTE PROCEDURE maker.insert_updated_flip_lot();
 
 
 --
 -- Name: flip_bid_tab flip_bid_tab; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER flip_bid_tab AFTER INSERT OR UPDATE ON maker.flip_bid_tab FOR EACH ROW EXECUTE FUNCTION maker.insert_updated_flip_tab();
+CREATE TRIGGER flip_bid_tab AFTER INSERT OR UPDATE ON maker.flip_bid_tab FOR EACH ROW EXECUTE PROCEDURE maker.insert_updated_flip_tab();
 
 
 --
 -- Name: flip_bid_tic flip_bid_tic; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER flip_bid_tic AFTER INSERT OR UPDATE ON maker.flip_bid_tic FOR EACH ROW EXECUTE FUNCTION maker.insert_updated_flip_tic();
+CREATE TRIGGER flip_bid_tic AFTER INSERT OR UPDATE ON maker.flip_bid_tic FOR EACH ROW EXECUTE PROCEDURE maker.insert_updated_flip_tic();
 
 
 --
 -- Name: flip_kick flip_created_trigger; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER flip_created_trigger AFTER INSERT ON maker.flip_kick FOR EACH ROW EXECUTE FUNCTION maker.flip_created();
+CREATE TRIGGER flip_created_trigger AFTER INSERT ON maker.flip_kick FOR EACH ROW EXECUTE PROCEDURE maker.flip_created();
 
 
 --
 -- Name: flop_bid_bid flop_bid_bid; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER flop_bid_bid AFTER INSERT OR UPDATE ON maker.flop_bid_bid FOR EACH ROW EXECUTE FUNCTION maker.insert_updated_flop_bid();
+CREATE TRIGGER flop_bid_bid AFTER INSERT OR UPDATE ON maker.flop_bid_bid FOR EACH ROW EXECUTE PROCEDURE maker.insert_updated_flop_bid();
 
 
 --
 -- Name: flop_bid_end flop_bid_end; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER flop_bid_end AFTER INSERT OR UPDATE ON maker.flop_bid_end FOR EACH ROW EXECUTE FUNCTION maker.insert_updated_flop_end();
+CREATE TRIGGER flop_bid_end AFTER INSERT OR UPDATE ON maker.flop_bid_end FOR EACH ROW EXECUTE PROCEDURE maker.insert_updated_flop_end();
 
 
 --
 -- Name: flop_bid_guy flop_bid_guy; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER flop_bid_guy AFTER INSERT OR UPDATE ON maker.flop_bid_guy FOR EACH ROW EXECUTE FUNCTION maker.insert_updated_flop_guy();
+CREATE TRIGGER flop_bid_guy AFTER INSERT OR UPDATE ON maker.flop_bid_guy FOR EACH ROW EXECUTE PROCEDURE maker.insert_updated_flop_guy();
 
 
 --
 -- Name: flop_bid_lot flop_bid_lot; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER flop_bid_lot AFTER INSERT OR UPDATE ON maker.flop_bid_lot FOR EACH ROW EXECUTE FUNCTION maker.insert_updated_flop_lot();
+CREATE TRIGGER flop_bid_lot AFTER INSERT OR UPDATE ON maker.flop_bid_lot FOR EACH ROW EXECUTE PROCEDURE maker.insert_updated_flop_lot();
 
 
 --
 -- Name: flop_bid_tic flop_bid_tic; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER flop_bid_tic AFTER INSERT OR UPDATE ON maker.flop_bid_tic FOR EACH ROW EXECUTE FUNCTION maker.insert_updated_flop_tic();
+CREATE TRIGGER flop_bid_tic AFTER INSERT OR UPDATE ON maker.flop_bid_tic FOR EACH ROW EXECUTE PROCEDURE maker.insert_updated_flop_tic();
 
 
 --
 -- Name: flop_kick flop_created_trigger; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER flop_created_trigger AFTER INSERT ON maker.flop_kick FOR EACH ROW EXECUTE FUNCTION maker.flop_created();
+CREATE TRIGGER flop_created_trigger AFTER INSERT ON maker.flop_kick FOR EACH ROW EXECUTE PROCEDURE maker.flop_created();
 
 
 --
 -- Name: vat_ilk_art ilk_art; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER ilk_art AFTER INSERT OR DELETE OR UPDATE ON maker.vat_ilk_art FOR EACH ROW EXECUTE FUNCTION maker.update_ilk_arts();
+CREATE TRIGGER ilk_art AFTER INSERT OR DELETE OR UPDATE ON maker.vat_ilk_art FOR EACH ROW EXECUTE PROCEDURE maker.update_ilk_arts();
 
 
 --
 -- Name: cat_ilk_chop ilk_chop; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER ilk_chop AFTER INSERT OR DELETE OR UPDATE ON maker.cat_ilk_chop FOR EACH ROW EXECUTE FUNCTION maker.update_ilk_chops();
+CREATE TRIGGER ilk_chop AFTER INSERT OR DELETE OR UPDATE ON maker.cat_ilk_chop FOR EACH ROW EXECUTE PROCEDURE maker.update_ilk_chops();
 
 
 --
 -- Name: vat_ilk_dust ilk_dust; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER ilk_dust AFTER INSERT OR DELETE OR UPDATE ON maker.vat_ilk_dust FOR EACH ROW EXECUTE FUNCTION maker.update_ilk_dusts();
+CREATE TRIGGER ilk_dust AFTER INSERT OR DELETE OR UPDATE ON maker.vat_ilk_dust FOR EACH ROW EXECUTE PROCEDURE maker.update_ilk_dusts();
 
 
 --
 -- Name: jug_ilk_duty ilk_duty; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER ilk_duty AFTER INSERT OR DELETE OR UPDATE ON maker.jug_ilk_duty FOR EACH ROW EXECUTE FUNCTION maker.update_ilk_duties();
+CREATE TRIGGER ilk_duty AFTER INSERT OR DELETE OR UPDATE ON maker.jug_ilk_duty FOR EACH ROW EXECUTE PROCEDURE maker.update_ilk_duties();
 
 
 --
 -- Name: cat_ilk_flip ilk_flip; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER ilk_flip AFTER INSERT OR DELETE OR UPDATE ON maker.cat_ilk_flip FOR EACH ROW EXECUTE FUNCTION maker.update_ilk_flips();
+CREATE TRIGGER ilk_flip AFTER INSERT OR DELETE OR UPDATE ON maker.cat_ilk_flip FOR EACH ROW EXECUTE PROCEDURE maker.update_ilk_flips();
 
 
 --
 -- Name: vat_init ilk_init; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER ilk_init AFTER INSERT OR DELETE OR UPDATE ON maker.vat_init FOR EACH ROW EXECUTE FUNCTION maker.update_time_created();
+CREATE TRIGGER ilk_init AFTER INSERT OR DELETE OR UPDATE ON maker.vat_init FOR EACH ROW EXECUTE PROCEDURE maker.update_time_created();
 
 
 --
 -- Name: vat_ilk_line ilk_line; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER ilk_line AFTER INSERT OR DELETE OR UPDATE ON maker.vat_ilk_line FOR EACH ROW EXECUTE FUNCTION maker.update_ilk_lines();
+CREATE TRIGGER ilk_line AFTER INSERT OR DELETE OR UPDATE ON maker.vat_ilk_line FOR EACH ROW EXECUTE PROCEDURE maker.update_ilk_lines();
 
 
 --
 -- Name: cat_ilk_lump ilk_lump; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER ilk_lump AFTER INSERT OR DELETE OR UPDATE ON maker.cat_ilk_lump FOR EACH ROW EXECUTE FUNCTION maker.update_ilk_lumps();
+CREATE TRIGGER ilk_lump AFTER INSERT OR DELETE OR UPDATE ON maker.cat_ilk_lump FOR EACH ROW EXECUTE PROCEDURE maker.update_ilk_lumps();
 
 
 --
 -- Name: spot_ilk_mat ilk_mat; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER ilk_mat AFTER INSERT OR DELETE OR UPDATE ON maker.spot_ilk_mat FOR EACH ROW EXECUTE FUNCTION maker.update_ilk_mats();
+CREATE TRIGGER ilk_mat AFTER INSERT OR DELETE OR UPDATE ON maker.spot_ilk_mat FOR EACH ROW EXECUTE PROCEDURE maker.update_ilk_mats();
 
 
 --
 -- Name: spot_ilk_pip ilk_pip; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER ilk_pip AFTER INSERT OR DELETE OR UPDATE ON maker.spot_ilk_pip FOR EACH ROW EXECUTE FUNCTION maker.update_ilk_pips();
+CREATE TRIGGER ilk_pip AFTER INSERT OR DELETE OR UPDATE ON maker.spot_ilk_pip FOR EACH ROW EXECUTE PROCEDURE maker.update_ilk_pips();
 
 
 --
 -- Name: vat_ilk_rate ilk_rate; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER ilk_rate AFTER INSERT OR DELETE OR UPDATE ON maker.vat_ilk_rate FOR EACH ROW EXECUTE FUNCTION maker.update_ilk_rates();
+CREATE TRIGGER ilk_rate AFTER INSERT OR DELETE OR UPDATE ON maker.vat_ilk_rate FOR EACH ROW EXECUTE PROCEDURE maker.update_ilk_rates();
 
 
 --
 -- Name: jug_ilk_rho ilk_rho; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER ilk_rho AFTER INSERT OR DELETE OR UPDATE ON maker.jug_ilk_rho FOR EACH ROW EXECUTE FUNCTION maker.update_ilk_rhos();
+CREATE TRIGGER ilk_rho AFTER INSERT OR DELETE OR UPDATE ON maker.jug_ilk_rho FOR EACH ROW EXECUTE PROCEDURE maker.update_ilk_rhos();
 
 
 --
 -- Name: vat_ilk_spot ilk_spot; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER ilk_spot AFTER INSERT OR DELETE OR UPDATE ON maker.vat_ilk_spot FOR EACH ROW EXECUTE FUNCTION maker.update_ilk_spots();
+CREATE TRIGGER ilk_spot AFTER INSERT OR DELETE OR UPDATE ON maker.vat_ilk_spot FOR EACH ROW EXECUTE PROCEDURE maker.update_ilk_spots();
 
 
 --
 -- Name: cdp_manager_cdpi managed_cdp_cdpi; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER managed_cdp_cdpi AFTER INSERT OR UPDATE ON maker.cdp_manager_cdpi FOR EACH ROW EXECUTE FUNCTION maker.insert_cdp_created();
+CREATE TRIGGER managed_cdp_cdpi AFTER INSERT OR UPDATE ON maker.cdp_manager_cdpi FOR EACH ROW EXECUTE PROCEDURE maker.insert_cdp_created();
 
 
 --
 -- Name: cdp_manager_ilks managed_cdp_ilk; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER managed_cdp_ilk AFTER INSERT OR UPDATE ON maker.cdp_manager_ilks FOR EACH ROW EXECUTE FUNCTION maker.insert_cdp_ilk_identifier();
+CREATE TRIGGER managed_cdp_ilk AFTER INSERT OR UPDATE ON maker.cdp_manager_ilks FOR EACH ROW EXECUTE PROCEDURE maker.insert_cdp_ilk_identifier();
 
 
 --
 -- Name: cdp_manager_urns managed_cdp_urn; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER managed_cdp_urn AFTER INSERT OR UPDATE ON maker.cdp_manager_urns FOR EACH ROW EXECUTE FUNCTION maker.insert_cdp_urn_identifier();
+CREATE TRIGGER managed_cdp_urn AFTER INSERT OR UPDATE ON maker.cdp_manager_urns FOR EACH ROW EXECUTE PROCEDURE maker.insert_cdp_urn_identifier();
 
 
 --
 -- Name: cdp_manager_owns managed_cdp_usr; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER managed_cdp_usr AFTER INSERT OR UPDATE ON maker.cdp_manager_owns FOR EACH ROW EXECUTE FUNCTION maker.insert_cdp_usr();
+CREATE TRIGGER managed_cdp_usr AFTER INSERT OR UPDATE ON maker.cdp_manager_owns FOR EACH ROW EXECUTE PROCEDURE maker.insert_cdp_usr();
 
 
 --
 -- Name: vat_urn_art urn_art; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER urn_art AFTER INSERT OR DELETE OR UPDATE ON maker.vat_urn_art FOR EACH ROW EXECUTE FUNCTION maker.update_urn_arts();
+CREATE TRIGGER urn_art AFTER INSERT OR DELETE OR UPDATE ON maker.vat_urn_art FOR EACH ROW EXECUTE PROCEDURE maker.update_urn_arts();
 
 
 --
 -- Name: vat_urn_ink urn_ink; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER urn_ink AFTER INSERT OR DELETE OR UPDATE ON maker.vat_urn_ink FOR EACH ROW EXECUTE FUNCTION maker.update_urn_inks();
+CREATE TRIGGER urn_ink AFTER INSERT OR DELETE OR UPDATE ON maker.vat_urn_ink FOR EACH ROW EXECUTE PROCEDURE maker.update_urn_inks();
 
 
 --
@@ -18316,7 +17831,7 @@ ALTER TABLE ONLY maker.bite
 --
 
 ALTER TABLE ONLY maker.bite
-    ADD CONSTRAINT bite_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
+    ADD CONSTRAINT bite_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
 
 
 --
@@ -18348,7 +17863,7 @@ ALTER TABLE ONLY maker.cat_file_chop_lump
 --
 
 ALTER TABLE ONLY maker.cat_file_chop_lump
-    ADD CONSTRAINT cat_file_chop_lump_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
+    ADD CONSTRAINT cat_file_chop_lump_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
 
 
 --
@@ -18372,7 +17887,7 @@ ALTER TABLE ONLY maker.cat_file_flip
 --
 
 ALTER TABLE ONLY maker.cat_file_flip
-    ADD CONSTRAINT cat_file_flip_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
+    ADD CONSTRAINT cat_file_flip_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
 
 
 --
@@ -18388,7 +17903,7 @@ ALTER TABLE ONLY maker.cat_file_vow
 --
 
 ALTER TABLE ONLY maker.cat_file_vow
-    ADD CONSTRAINT cat_file_vow_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
+    ADD CONSTRAINT cat_file_vow_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
 
 
 --
@@ -18700,7 +18215,7 @@ ALTER TABLE ONLY maker.deal
 --
 
 ALTER TABLE ONLY maker.deal
-    ADD CONSTRAINT deal_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
+    ADD CONSTRAINT deal_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
 
 
 --
@@ -18724,7 +18239,7 @@ ALTER TABLE ONLY maker.dent
 --
 
 ALTER TABLE ONLY maker.dent
-    ADD CONSTRAINT dent_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
+    ADD CONSTRAINT dent_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
 
 
 --
@@ -18748,7 +18263,7 @@ ALTER TABLE ONLY maker.deny
 --
 
 ALTER TABLE ONLY maker.deny
-    ADD CONSTRAINT deny_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
+    ADD CONSTRAINT deny_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
 
 
 --
@@ -18956,7 +18471,7 @@ ALTER TABLE ONLY maker.flap_kick
 --
 
 ALTER TABLE ONLY maker.flap_kick
-    ADD CONSTRAINT flap_kick_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
+    ADD CONSTRAINT flap_kick_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
 
 
 --
@@ -19356,7 +18871,7 @@ ALTER TABLE ONLY maker.flip_kick
 --
 
 ALTER TABLE ONLY maker.flip_kick
-    ADD CONSTRAINT flip_kick_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
+    ADD CONSTRAINT flip_kick_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
 
 
 --
@@ -19652,7 +19167,7 @@ ALTER TABLE ONLY maker.flop_kick
 --
 
 ALTER TABLE ONLY maker.flop_kick
-    ADD CONSTRAINT flop_kick_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
+    ADD CONSTRAINT flop_kick_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
 
 
 --
@@ -19860,7 +19375,7 @@ ALTER TABLE ONLY maker.jug_drip
 --
 
 ALTER TABLE ONLY maker.jug_drip
-    ADD CONSTRAINT jug_drip_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
+    ADD CONSTRAINT jug_drip_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
 
 
 --
@@ -19876,7 +19391,7 @@ ALTER TABLE ONLY maker.jug_file_base
 --
 
 ALTER TABLE ONLY maker.jug_file_base
-    ADD CONSTRAINT jug_file_base_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
+    ADD CONSTRAINT jug_file_base_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
 
 
 --
@@ -19900,7 +19415,7 @@ ALTER TABLE ONLY maker.jug_file_ilk
 --
 
 ALTER TABLE ONLY maker.jug_file_ilk
-    ADD CONSTRAINT jug_file_ilk_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
+    ADD CONSTRAINT jug_file_ilk_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
 
 
 --
@@ -19916,7 +19431,7 @@ ALTER TABLE ONLY maker.jug_file_vow
 --
 
 ALTER TABLE ONLY maker.jug_file_vow
-    ADD CONSTRAINT jug_file_vow_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
+    ADD CONSTRAINT jug_file_vow_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
 
 
 --
@@ -19988,7 +19503,7 @@ ALTER TABLE ONLY maker.jug_init
 --
 
 ALTER TABLE ONLY maker.jug_init
-    ADD CONSTRAINT jug_init_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
+    ADD CONSTRAINT jug_init_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
 
 
 --
@@ -20036,7 +19551,7 @@ ALTER TABLE ONLY maker.log_value
 --
 
 ALTER TABLE ONLY maker.log_value
-    ADD CONSTRAINT log_value_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
+    ADD CONSTRAINT log_value_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
 
 
 --
@@ -20052,7 +19567,7 @@ ALTER TABLE ONLY maker.new_cdp
 --
 
 ALTER TABLE ONLY maker.new_cdp
-    ADD CONSTRAINT new_cdp_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
+    ADD CONSTRAINT new_cdp_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
 
 
 --
@@ -20068,7 +19583,7 @@ ALTER TABLE ONLY maker.pot_cage
 --
 
 ALTER TABLE ONLY maker.pot_cage
-    ADD CONSTRAINT pot_cage_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
+    ADD CONSTRAINT pot_cage_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
 
 
 --
@@ -20100,7 +19615,7 @@ ALTER TABLE ONLY maker.pot_drip
 --
 
 ALTER TABLE ONLY maker.pot_drip
-    ADD CONSTRAINT pot_drip_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
+    ADD CONSTRAINT pot_drip_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
 
 
 --
@@ -20140,7 +19655,7 @@ ALTER TABLE ONLY maker.pot_exit
 --
 
 ALTER TABLE ONLY maker.pot_exit
-    ADD CONSTRAINT pot_exit_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
+    ADD CONSTRAINT pot_exit_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
 
 
 --
@@ -20164,7 +19679,7 @@ ALTER TABLE ONLY maker.pot_file_dsr
 --
 
 ALTER TABLE ONLY maker.pot_file_dsr
-    ADD CONSTRAINT pot_file_dsr_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
+    ADD CONSTRAINT pot_file_dsr_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
 
 
 --
@@ -20180,7 +19695,7 @@ ALTER TABLE ONLY maker.pot_file_vow
 --
 
 ALTER TABLE ONLY maker.pot_file_vow
-    ADD CONSTRAINT pot_file_vow_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
+    ADD CONSTRAINT pot_file_vow_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
 
 
 --
@@ -20196,7 +19711,7 @@ ALTER TABLE ONLY maker.pot_join
 --
 
 ALTER TABLE ONLY maker.pot_join
-    ADD CONSTRAINT pot_join_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
+    ADD CONSTRAINT pot_join_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
 
 
 --
@@ -20348,7 +19863,7 @@ ALTER TABLE ONLY maker.rely
 --
 
 ALTER TABLE ONLY maker.rely
-    ADD CONSTRAINT rely_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
+    ADD CONSTRAINT rely_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
 
 
 --
@@ -20380,7 +19895,7 @@ ALTER TABLE ONLY maker.spot_file_mat
 --
 
 ALTER TABLE ONLY maker.spot_file_mat
-    ADD CONSTRAINT spot_file_mat_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
+    ADD CONSTRAINT spot_file_mat_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
 
 
 --
@@ -20396,7 +19911,7 @@ ALTER TABLE ONLY maker.spot_file_par
 --
 
 ALTER TABLE ONLY maker.spot_file_par
-    ADD CONSTRAINT spot_file_par_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
+    ADD CONSTRAINT spot_file_par_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
 
 
 --
@@ -20420,7 +19935,7 @@ ALTER TABLE ONLY maker.spot_file_pip
 --
 
 ALTER TABLE ONLY maker.spot_file_pip
-    ADD CONSTRAINT spot_file_pip_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
+    ADD CONSTRAINT spot_file_pip_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
 
 
 --
@@ -20524,7 +20039,7 @@ ALTER TABLE ONLY maker.spot_poke
 --
 
 ALTER TABLE ONLY maker.spot_poke
-    ADD CONSTRAINT spot_poke_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
+    ADD CONSTRAINT spot_poke_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
 
 
 --
@@ -20564,7 +20079,7 @@ ALTER TABLE ONLY maker.tend
 --
 
 ALTER TABLE ONLY maker.tend
-    ADD CONSTRAINT tend_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
+    ADD CONSTRAINT tend_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
 
 
 --
@@ -20588,7 +20103,7 @@ ALTER TABLE ONLY maker.tick
 --
 
 ALTER TABLE ONLY maker.tick
-    ADD CONSTRAINT tick_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
+    ADD CONSTRAINT tick_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
 
 
 --
@@ -20644,7 +20159,7 @@ ALTER TABLE ONLY maker.vat_file_debt_ceiling
 --
 
 ALTER TABLE ONLY maker.vat_file_debt_ceiling
-    ADD CONSTRAINT vat_file_debt_ceiling_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
+    ADD CONSTRAINT vat_file_debt_ceiling_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
 
 
 --
@@ -20668,7 +20183,7 @@ ALTER TABLE ONLY maker.vat_file_ilk
 --
 
 ALTER TABLE ONLY maker.vat_file_ilk
-    ADD CONSTRAINT vat_file_ilk_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
+    ADD CONSTRAINT vat_file_ilk_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
 
 
 --
@@ -20692,7 +20207,7 @@ ALTER TABLE ONLY maker.vat_flux
 --
 
 ALTER TABLE ONLY maker.vat_flux
-    ADD CONSTRAINT vat_flux_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
+    ADD CONSTRAINT vat_flux_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
 
 
 --
@@ -20716,7 +20231,7 @@ ALTER TABLE ONLY maker.vat_fold
 --
 
 ALTER TABLE ONLY maker.vat_fold
-    ADD CONSTRAINT vat_fold_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
+    ADD CONSTRAINT vat_fold_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
 
 
 --
@@ -20740,7 +20255,7 @@ ALTER TABLE ONLY maker.vat_fork
 --
 
 ALTER TABLE ONLY maker.vat_fork
-    ADD CONSTRAINT vat_fork_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
+    ADD CONSTRAINT vat_fork_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
 
 
 --
@@ -20756,7 +20271,7 @@ ALTER TABLE ONLY maker.vat_frob
 --
 
 ALTER TABLE ONLY maker.vat_frob
-    ADD CONSTRAINT vat_frob_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
+    ADD CONSTRAINT vat_frob_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
 
 
 --
@@ -20804,7 +20319,7 @@ ALTER TABLE ONLY maker.vat_grab
 --
 
 ALTER TABLE ONLY maker.vat_grab
-    ADD CONSTRAINT vat_grab_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
+    ADD CONSTRAINT vat_grab_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
 
 
 --
@@ -20828,7 +20343,7 @@ ALTER TABLE ONLY maker.vat_heal
 --
 
 ALTER TABLE ONLY maker.vat_heal
-    ADD CONSTRAINT vat_heal_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
+    ADD CONSTRAINT vat_heal_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
 
 
 --
@@ -20972,7 +20487,7 @@ ALTER TABLE ONLY maker.vat_init
 --
 
 ALTER TABLE ONLY maker.vat_init
-    ADD CONSTRAINT vat_init_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
+    ADD CONSTRAINT vat_init_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
 
 
 --
@@ -21020,7 +20535,7 @@ ALTER TABLE ONLY maker.vat_move
 --
 
 ALTER TABLE ONLY maker.vat_move
-    ADD CONSTRAINT vat_move_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
+    ADD CONSTRAINT vat_move_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
 
 
 --
@@ -21060,7 +20575,7 @@ ALTER TABLE ONLY maker.vat_slip
 --
 
 ALTER TABLE ONLY maker.vat_slip
-    ADD CONSTRAINT vat_slip_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
+    ADD CONSTRAINT vat_slip_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
 
 
 --
@@ -21076,7 +20591,7 @@ ALTER TABLE ONLY maker.vat_suck
 --
 
 ALTER TABLE ONLY maker.vat_suck
-    ADD CONSTRAINT vat_suck_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
+    ADD CONSTRAINT vat_suck_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
 
 
 --
@@ -21204,7 +20719,7 @@ ALTER TABLE ONLY maker.vow_fess
 --
 
 ALTER TABLE ONLY maker.vow_fess
-    ADD CONSTRAINT vow_fess_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
+    ADD CONSTRAINT vow_fess_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
 
 
 --
@@ -21220,7 +20735,7 @@ ALTER TABLE ONLY maker.vow_file
 --
 
 ALTER TABLE ONLY maker.vow_file
-    ADD CONSTRAINT vow_file_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
+    ADD CONSTRAINT vow_file_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
 
 
 --
@@ -21252,7 +20767,7 @@ ALTER TABLE ONLY maker.vow_flog
 --
 
 ALTER TABLE ONLY maker.vow_flog
-    ADD CONSTRAINT vow_flog_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
+    ADD CONSTRAINT vow_flog_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
 
 
 --
@@ -21388,15 +20903,7 @@ ALTER TABLE ONLY maker.yank
 --
 
 ALTER TABLE ONLY maker.yank
-    ADD CONSTRAINT yank_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.header_sync_logs(id) ON DELETE CASCADE;
-
-
---
--- Name: full_sync_receipts blocks_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.full_sync_receipts
-    ADD CONSTRAINT blocks_fk FOREIGN KEY (block_id) REFERENCES public.blocks(id) ON DELETE CASCADE;
+    ADD CONSTRAINT yank_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
 
 
 --
@@ -21408,75 +20915,27 @@ ALTER TABLE ONLY public.checked_headers
 
 
 --
--- Name: full_sync_receipts full_sync_receipts_contract_address_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: event_logs event_logs_address_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.full_sync_receipts
-    ADD CONSTRAINT full_sync_receipts_contract_address_id_fkey FOREIGN KEY (contract_address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
-
-
---
--- Name: full_sync_transactions full_sync_transactions_block_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.full_sync_transactions
-    ADD CONSTRAINT full_sync_transactions_block_id_fkey FOREIGN KEY (block_id) REFERENCES public.blocks(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.event_logs
+    ADD CONSTRAINT event_logs_address_fkey FOREIGN KEY (address) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --
--- Name: header_sync_logs header_sync_logs_address_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: event_logs event_logs_header_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.header_sync_logs
-    ADD CONSTRAINT header_sync_logs_address_fkey FOREIGN KEY (address) REFERENCES public.addresses(id) ON DELETE CASCADE;
-
-
---
--- Name: header_sync_logs header_sync_logs_header_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.header_sync_logs
-    ADD CONSTRAINT header_sync_logs_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.event_logs
+    ADD CONSTRAINT event_logs_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
 
 
 --
--- Name: header_sync_logs header_sync_logs_tx_hash_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: event_logs event_logs_tx_hash_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.header_sync_logs
-    ADD CONSTRAINT header_sync_logs_tx_hash_fkey FOREIGN KEY (tx_hash) REFERENCES public.header_sync_transactions(hash) ON DELETE CASCADE;
-
-
---
--- Name: header_sync_receipts header_sync_receipts_contract_address_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.header_sync_receipts
-    ADD CONSTRAINT header_sync_receipts_contract_address_id_fkey FOREIGN KEY (contract_address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
-
-
---
--- Name: header_sync_receipts header_sync_receipts_header_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.header_sync_receipts
-    ADD CONSTRAINT header_sync_receipts_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
-
-
---
--- Name: header_sync_receipts header_sync_receipts_transaction_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.header_sync_receipts
-    ADD CONSTRAINT header_sync_receipts_transaction_id_fkey FOREIGN KEY (transaction_id) REFERENCES public.header_sync_transactions(id) ON DELETE CASCADE;
-
-
---
--- Name: header_sync_transactions header_sync_transactions_header_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.header_sync_transactions
-    ADD CONSTRAINT header_sync_transactions_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.event_logs
+    ADD CONSTRAINT event_logs_tx_hash_fkey FOREIGN KEY (tx_hash) REFERENCES public.transactions(hash) ON DELETE CASCADE;
 
 
 --
@@ -21488,14 +20947,6 @@ ALTER TABLE ONLY public.headers
 
 
 --
--- Name: blocks node_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.blocks
-    ADD CONSTRAINT node_fk FOREIGN KEY (eth_node_id) REFERENCES public.eth_nodes(id) ON DELETE CASCADE;
-
-
---
 -- Name: queued_storage queued_storage_diff_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -21504,27 +20955,35 @@ ALTER TABLE ONLY public.queued_storage
 
 
 --
--- Name: full_sync_logs receipts_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: receipts receipts_contract_address_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.full_sync_logs
-    ADD CONSTRAINT receipts_fk FOREIGN KEY (receipt_id) REFERENCES public.full_sync_receipts(id) ON DELETE CASCADE;
-
-
---
--- Name: uncles uncles_block_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.uncles
-    ADD CONSTRAINT uncles_block_id_fkey FOREIGN KEY (block_id) REFERENCES public.blocks(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.receipts
+    ADD CONSTRAINT receipts_contract_address_id_fkey FOREIGN KEY (contract_address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --
--- Name: uncles uncles_eth_node_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: receipts receipts_header_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.uncles
-    ADD CONSTRAINT uncles_eth_node_id_fkey FOREIGN KEY (eth_node_id) REFERENCES public.eth_nodes(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.receipts
+    ADD CONSTRAINT receipts_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: receipts receipts_transaction_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.receipts
+    ADD CONSTRAINT receipts_transaction_id_fkey FOREIGN KEY (transaction_id) REFERENCES public.transactions(id) ON DELETE CASCADE;
+
+
+--
+-- Name: transactions transactions_header_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.transactions
+    ADD CONSTRAINT transactions_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
 
 
 --

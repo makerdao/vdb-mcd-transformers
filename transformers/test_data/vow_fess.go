@@ -46,7 +46,7 @@ var rawVowFessLog = types.Log{
 	Removed:     false,
 }
 
-var VowFessHeaderSyncLog = core.HeaderSyncLog{
+var VowFessEventLog = core.EventLog{
 	ID:          int64(rand.Int31()),
 	HeaderID:    int64(rand.Int31()),
 	Log:         rawVowFessLog,
@@ -61,7 +61,7 @@ var VowFessModel = event.InsertionModel{
 	},
 	ColumnValues: event.ColumnValues{
 		constants.TabColumn: "1337",
-		event.HeaderFK:      VowFessHeaderSyncLog.HeaderID,
-		event.LogFK:         VowFessHeaderSyncLog.ID,
+		event.HeaderFK:      VowFessEventLog.HeaderID,
+		event.LogFK:         VowFessEventLog.ID,
 	},
 }

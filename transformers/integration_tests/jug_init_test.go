@@ -57,14 +57,14 @@ var _ = Describe("JugInit EventTransformer", func() {
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
-		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+		eventLogs := test_data.CreateLogs(header.Id, logs, db)
 
 		transformer := event.ConfiguredTransformer{
 			Config:      jugInitConfig,
 			Transformer: jug_init.Transformer{},
 		}.NewTransformer(db)
 
-		err = transformer.Execute(headerSyncLogs)
+		err = transformer.Execute(eventLogs)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResults []JugInitModel

@@ -45,7 +45,7 @@ var rawVowFileLog = types.Log{
 	Removed:     false,
 }
 
-var VowFileHeaderSyncLog = core.HeaderSyncLog{
+var VowFileEventLog = core.EventLog{
 	ID:          int64(rand.Int31()),
 	HeaderID:    int64(rand.Int31()),
 	Log:         rawVowFileLog,
@@ -61,7 +61,7 @@ var VowFileModel = event.InsertionModel{
 	ColumnValues: event.ColumnValues{
 		constants.WhatColumn: "wait",
 		constants.DataColumn: "100000000000000000000000",
-		event.HeaderFK:       VowFileHeaderSyncLog.HeaderID,
-		event.LogFK:          VowFileHeaderSyncLog.ID,
+		event.HeaderFK:       VowFileEventLog.HeaderID,
+		event.LogFK:          VowFileEventLog.ID,
 	},
 }

@@ -28,7 +28,7 @@ var rawPotExitLog = types.Log{
 	Removed:     false,
 }
 
-var PotExitHeaderSyncLog = core.HeaderSyncLog{
+var PotExitEventLog = core.EventLog{
 	ID:          int64(rand.Int31()),
 	HeaderID:    int64(rand.Int31()),
 	Log:         rawPotExitLog,
@@ -43,7 +43,7 @@ var potExitModel = event.InsertionModel{
 	OrderedColumns: []event.ColumnName{event.HeaderFK, event.LogFK, constants.MsgSenderColumn, constants.WadColumn},
 	ColumnValues: event.ColumnValues{
 		constants.WadColumn: "199632489101185590573",
-		event.HeaderFK:      PotExitHeaderSyncLog.HeaderID,
-		event.LogFK:         PotExitHeaderSyncLog.ID,
+		event.HeaderFK:      PotExitEventLog.HeaderID,
+		event.LogFK:         PotExitEventLog.ID,
 	},
 }

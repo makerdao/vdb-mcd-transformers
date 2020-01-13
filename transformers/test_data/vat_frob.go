@@ -49,7 +49,7 @@ var rawVatFrobLogWithPositiveDart = types.Log{
 	Removed:     false,
 }
 
-var VatFrobHeaderSyncLogWithPositiveDart = core.HeaderSyncLog{
+var VatFrobEventLogWithPositiveDart = core.EventLog{
 	ID:          int64(rand.Int31()),
 	HeaderID:    int64(rand.Int31()),
 	Log:         rawVatFrobLogWithPositiveDart,
@@ -77,8 +77,8 @@ var vatFrobModelWithPositiveDart = event.InsertionModel{
 		constants.WColumn:    "0xEEec867B3F51ab5b619d582481BF53eea930b074",
 		constants.DinkColumn: "0",
 		constants.DartColumn: "100000000000000000",
-		event.HeaderFK:       VatFrobHeaderSyncLogWithPositiveDart.HeaderID,
-		event.LogFK:          VatFrobHeaderSyncLogWithPositiveDart.ID,
+		event.HeaderFK:       VatFrobEventLogWithPositiveDart.HeaderID,
+		event.LogFK:          VatFrobEventLogWithPositiveDart.ID,
 	},
 }
 
@@ -99,7 +99,7 @@ var rawVatFrobLogWithNegativeDink = types.Log{
 	Removed:     false,
 }
 
-var VatFrobHeaderSyncLogWithNegativeDink = core.HeaderSyncLog{
+var VatFrobEventLogWithNegativeDink = core.EventLog{
 	ID:          int64(rand.Int31()),
 	HeaderID:    int64(rand.Int31()),
 	Log:         rawVatFrobLogWithNegativeDink,
@@ -127,7 +127,7 @@ var vatFrobModelWithNegativeDink = event.InsertionModel{
 		constants.WColumn:    "0x5c8c8e5895B9cCf34ACF391C99E13C79EE2eFb46",
 		constants.DinkColumn: "-8000000000000000",
 		constants.DartColumn: "0",
-		event.HeaderFK:       VatFrobHeaderSyncLogWithNegativeDink.HeaderID,
-		event.LogFK:          VatFrobHeaderSyncLogWithNegativeDink.ID,
+		event.HeaderFK:       VatFrobEventLogWithNegativeDink.HeaderID,
+		event.LogFK:          VatFrobEventLogWithNegativeDink.ID,
 	},
 }

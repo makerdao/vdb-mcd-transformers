@@ -47,7 +47,7 @@ var rawVatSuckLog = types.Log{
 	Removed:     false,
 }
 
-var VatSuckHeaderSyncLog = core.HeaderSyncLog{
+var VatSuckEventLog = core.EventLog{
 	ID:          int64(rand.Int31()),
 	HeaderID:    int64(rand.Int31()),
 	Log:         rawVatSuckLog,
@@ -64,7 +64,7 @@ var VatSuckModel = event.InsertionModel{
 		constants.UColumn:   "0x07Fa9eF6609cA7921112231F8f195138ebbA2977",
 		constants.VColumn:   "0x7340e006f4135BA6970D43bf43d88DCAD4e7a8CA",
 		constants.RadColumn: "1000000000000000000000",
-		event.HeaderFK:      VatSuckHeaderSyncLog.HeaderID,
-		event.LogFK:         VatSuckHeaderSyncLog.ID,
+		event.HeaderFK:      VatSuckEventLog.HeaderID,
+		event.LogFK:         VatSuckEventLog.ID,
 	},
 }

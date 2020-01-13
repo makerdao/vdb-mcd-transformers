@@ -31,11 +31,11 @@ CREATE FUNCTION get_tx_data(block_height bigint, log_id bigint)
     RETURNS SETOF api.tx AS
 $$
 SELECT txs.hash, txs.tx_index, headers.block_number, headers.hash, tx_from, tx_to
-FROM public.header_sync_transactions txs
-         LEFT JOIN headers ON txs.header_id = headers.id
-         LEFT JOIN header_sync_logs ON txs.tx_index = header_sync_logs.tx_index
+FROM public.transactions txs
+         LEFT JOIN public.headers ON txs.header_id = headers.id
+         LEFT JOIN public.event_logs ON txs.tx_index = event_logs.tx_index
 WHERE headers.block_number = block_height
-  AND header_sync_logs.id = log_id
+  AND event_logs.id = log_id
 ORDER BY block_number DESC
 
 $$

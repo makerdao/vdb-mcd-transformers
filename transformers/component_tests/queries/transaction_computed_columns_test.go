@@ -26,14 +26,14 @@ var _ = Describe("Transaction computed columns", func() {
 			txFrom := "fromAddress"
 			txTo := "toAddress"
 			txIndex := rand.Intn(10)
-			_, insertTxErr := db.Exec(`INSERT INTO header_sync_transactions (header_id, hash, tx_from, tx_index, tx_to)
+			_, insertTxErr := db.Exec(`INSERT INTO public.transactions (header_id, hash, tx_from, tx_index, tx_to)
                 VALUES ($1, $2, $3, $4, $5)`, headerId, fakeHeader.Hash, txFrom, txIndex, txTo)
 			Expect(insertTxErr).NotTo(HaveOccurred())
 
 			var actualEra Era
 			getEraErr := db.Get(&actualEra, `SELECT * FROM api.tx_era(
                     (SELECT (txs.hash, txs.tx_index, h.block_number, h.hash, txs.tx_from, txs.tx_to)::api.tx
-			        FROM header_sync_transactions txs
+			        FROM public.transactions txs
 			        LEFT JOIN headers h ON h.id = txs.header_id)
 			    )`)
 			Expect(getEraErr).NotTo(HaveOccurred())

@@ -143,15 +143,15 @@ var _ = Describe("Flip bid event computed columns", func() {
 		var flipKickGethLog types.Log
 
 		BeforeEach(func() {
-			flipKickHeaderSyncLog := test_data.CreateTestLog(headerOne.Id, db)
-			flipKickGethLog = flipKickHeaderSyncLog.Log
+			flipKickEventLog := test_data.CreateTestLog(headerOne.Id, db)
+			flipKickGethLog = flipKickEventLog.Log
 
 			addressId, addressErr := shared.GetOrCreateAddress(contractAddress, db)
 			Expect(addressErr).NotTo(HaveOccurred())
 
 			flipKickEvent := test_data.FlipKickModel()
 			flipKickEvent.ColumnValues[event.HeaderFK] = headerOne.Id
-			flipKickEvent.ColumnValues[event.LogFK] = flipKickHeaderSyncLog.ID
+			flipKickEvent.ColumnValues[event.LogFK] = flipKickEventLog.ID
 			flipKickEvent.ColumnValues[event.AddressFK] = addressId
 			flipKickEvent.ColumnValues[constants.BidIDColumn] = strconv.Itoa(bidId)
 			flipKickErr := event.PersistModels([]event.InsertionModel{flipKickEvent}, db)
@@ -168,7 +168,7 @@ var _ = Describe("Flip bid event computed columns", func() {
 				TxTo:             test_helpers.GetValidNullString("toAddress"),
 			}
 
-			_, insertErr := db.Exec(`INSERT INTO header_sync_transactions (header_id, hash, tx_from, tx_index, tx_to)
+			_, insertErr := db.Exec(`INSERT INTO public.transactions (header_id, hash, tx_from, tx_index, tx_to)
 				VALUES ($1, $2, $3, $4, $5)`, headerOne.Id, expectedTx.TransactionHash, expectedTx.TxFrom,
 				expectedTx.TransactionIndex, expectedTx.TxTo)
 			Expect(insertErr).NotTo(HaveOccurred())
@@ -195,7 +195,7 @@ var _ = Describe("Flip bid event computed columns", func() {
 				TxTo:        test_helpers.GetValidNullString("wrongToAddress"),
 			}
 
-			_, insertErr := db.Exec(`INSERT INTO header_sync_transactions (header_id, hash, tx_from, tx_index, tx_to)
+			_, insertErr := db.Exec(`INSERT INTO public.transactions (header_id, hash, tx_from, tx_index, tx_to)
 				VALUES ($1, $2, $3, $4, $5)`, headerOne.Id, wrongTx.TransactionHash, wrongTx.TxFrom,
 				wrongTx.TransactionIndex, wrongTx.TxTo)
 			Expect(insertErr).NotTo(HaveOccurred())
@@ -223,7 +223,7 @@ var _ = Describe("Flip bid event computed columns", func() {
 				TxTo:        test_helpers.GetValidNullString("wrongToAddress"),
 			}
 
-			_, insertErr := db.Exec(`INSERT INTO header_sync_transactions (header_id, hash, tx_from, tx_index, tx_to)
+			_, insertErr := db.Exec(`INSERT INTO public.transactions (header_id, hash, tx_from, tx_index, tx_to)
 				VALUES ($1, $2, $3, $4, $5)`, headerZero.Id, wrongTx.TransactionHash, wrongTx.TxFrom,
 				wrongTx.TransactionIndex, wrongTx.TxTo)
 			Expect(insertErr).NotTo(HaveOccurred())

@@ -69,10 +69,10 @@ var _ = Describe("Tend EventTransformer", func() {
 		logs, err := logFetcher.FetchLogs(addresses, topics, header)
 		Expect(err).NotTo(HaveOccurred())
 
-		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+		eventLogs := test_data.CreateLogs(header.Id, logs, db)
 
 		transformer := initializer.NewTransformer(db)
-		err = transformer.Execute(headerSyncLogs)
+		err = transformer.Execute(eventLogs)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []tendModel

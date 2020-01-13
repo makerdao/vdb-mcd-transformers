@@ -30,18 +30,18 @@ var _ = Describe("Vat file debt ceiling transformer", func() {
 	var transformer = debt_ceiling.Transformer{}
 
 	It("returns err if log is missing topics", func() {
-		badLog := core.HeaderSyncLog{
+		badLog := core.EventLog{
 			Log: types.Log{
 				Data: []byte{1, 1, 1, 1, 1},
 			}}
 
-		_, err := transformer.ToModels(constants.VatABI(), []core.HeaderSyncLog{badLog}, nil)
+		_, err := transformer.ToModels(constants.VatABI(), []core.EventLog{badLog}, nil)
 
 		Expect(err).To(HaveOccurred())
 	})
 
 	It("converts a log to an model", func() {
-		models, err := transformer.ToModels(constants.VatABI(), []core.HeaderSyncLog{test_data.VatFileDebtCeilingHeaderSyncLog}, nil)
+		models, err := transformer.ToModels(constants.VatABI(), []core.EventLog{test_data.VatFileDebtCeilingEventLog}, nil)
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(models).To(ConsistOf(test_data.VatFileDebtCeilingModel()))

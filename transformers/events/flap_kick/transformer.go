@@ -31,7 +31,7 @@ import (
 
 type Transformer struct{}
 
-func (t Transformer) toEntities(contractAbi string, logs []core.HeaderSyncLog) ([]FlapKickEntity, error) {
+func (t Transformer) toEntities(contractAbi string, logs []core.EventLog) ([]FlapKickEntity, error) {
 	var entities []FlapKickEntity
 	abi, parseErr := eth.ParseAbi(contractAbi)
 	if parseErr != nil {
@@ -54,7 +54,7 @@ func (t Transformer) toEntities(contractAbi string, logs []core.HeaderSyncLog) (
 	return entities, nil
 }
 
-func (t Transformer) ToModels(abi string, logs []core.HeaderSyncLog, db *postgres.DB) ([]event.InsertionModel, error) {
+func (t Transformer) ToModels(abi string, logs []core.EventLog, db *postgres.DB) ([]event.InsertionModel, error) {
 	entities, entityErr := t.toEntities(abi, logs)
 	if entityErr != nil {
 		return nil, fmt.Errorf("FlapKick transformer couldn't convert logs to entities: %v", entityErr)

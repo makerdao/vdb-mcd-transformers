@@ -45,7 +45,7 @@ var rawVatFoldLogWithPositiveRate = types.Log{
 	Removed:     false,
 }
 
-var VatFoldHeaderSyncLogWithPositiveRate = core.HeaderSyncLog{
+var VatFoldEventLogWithPositiveRate = core.EventLog{
 	ID:          int64(rand.Int31()),
 	HeaderID:    int64(rand.Int31()),
 	Log:         rawVatFoldLogWithPositiveRate,
@@ -59,8 +59,8 @@ var vatFoldModelWithPositiveRate = event.InsertionModel{
 		event.HeaderFK, event.LogFK, constants.IlkColumn, constants.UColumn, constants.RateColumn,
 	},
 	ColumnValues: event.ColumnValues{
-		event.HeaderFK: VatFoldHeaderSyncLogWithPositiveRate.HeaderID,
-		event.LogFK:    VatFoldHeaderSyncLogWithPositiveRate.ID,
+		event.HeaderFK: VatFoldEventLogWithPositiveRate.HeaderID,
+		event.LogFK:    VatFoldEventLogWithPositiveRate.ID,
 		// constants.IlkColumn
 		constants.UColumn:    "0x3728e9777B2a0a611ee0F89e00E01044ce4736d1",
 		constants.RateColumn: "2",
@@ -84,7 +84,7 @@ var rawVatFoldLogWithNegativeRate = types.Log{
 	Removed:     false,
 }
 
-var VatFoldHeaderSyncLogWithNegativeRate = core.HeaderSyncLog{
+var VatFoldEventLogWithNegativeRate = core.EventLog{
 	ID:          int64(rand.Int31()),
 	HeaderID:    int64(rand.Int31()),
 	Log:         rawVatFoldLogWithNegativeRate,
@@ -98,8 +98,8 @@ var vatFoldModelWithNegativeRate = event.InsertionModel{
 		event.HeaderFK, event.LogFK, constants.IlkColumn, constants.UColumn, constants.RateColumn,
 	},
 	ColumnValues: event.ColumnValues{
-		event.HeaderFK: VatFoldHeaderSyncLogWithNegativeRate.HeaderID,
-		event.LogFK:    VatFoldHeaderSyncLogWithNegativeRate.ID,
+		event.HeaderFK: VatFoldEventLogWithNegativeRate.HeaderID,
+		event.LogFK:    VatFoldEventLogWithNegativeRate.ID,
 		// constants.IlkColumn
 		constants.UColumn:    "0x7d7bEe5fCfD8028cf7b00876C5b1421c800561A6",
 		constants.RateColumn: "-500000000000000000000",

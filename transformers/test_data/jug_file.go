@@ -46,7 +46,7 @@ var rawJugFileIlkLog = types.Log{
 	Removed:     false,
 }
 
-var JugFileIlkHeaderSyncLog = core.HeaderSyncLog{
+var JugFileIlkEventLog = core.EventLog{
 	ID:          int64(rand.Int31()),
 	HeaderID:    int64(rand.Int31()),
 	Log:         rawJugFileIlkLog,
@@ -63,8 +63,8 @@ var jugFileIlkModel = event.InsertionModel{
 		constants.WhatColumn: "duty",
 		constants.DataColumn: "1000000000937303470807876289",
 		// Ilk ID
-		event.HeaderFK: JugFileIlkHeaderSyncLog.HeaderID,
-		event.LogFK:    JugFileIlkHeaderSyncLog.ID,
+		event.HeaderFK: JugFileIlkEventLog.HeaderID,
+		event.LogFK:    JugFileIlkEventLog.ID,
 	},
 }
 
@@ -87,7 +87,7 @@ var rawJugFileBaseLog = types.Log{
 	Removed:     false,
 }
 
-var JugFileBaseHeaderSyncLog = core.HeaderSyncLog{
+var JugFileBaseEventLog = core.EventLog{
 	ID:          int64(rand.Int31()),
 	HeaderID:    int64(rand.Int31()),
 	Log:         rawJugFileBaseLog,
@@ -103,8 +103,8 @@ var jugFileBaseModel = event.InsertionModel{
 	ColumnValues: event.ColumnValues{
 		constants.WhatColumn: "fake what",
 		constants.DataColumn: big.NewInt(123).String(),
-		event.HeaderFK:       JugFileBaseHeaderSyncLog.HeaderID,
-		event.LogFK:          JugFileBaseHeaderSyncLog.ID,
+		event.HeaderFK:       JugFileBaseEventLog.HeaderID,
+		event.LogFK:          JugFileBaseEventLog.ID,
 	},
 }
 
@@ -127,7 +127,7 @@ var rawJugFileVowLog = types.Log{
 	Removed:     false,
 }
 
-var JugFileVowHeaderSyncLog = core.HeaderSyncLog{
+var JugFileVowEventLog = core.EventLog{
 	ID:          int64(rand.Int31()),
 	HeaderID:    int64(rand.Int31()),
 	Log:         rawJugFileVowLog,
@@ -143,8 +143,8 @@ var jugFileVowModel = event.InsertionModel{
 	ColumnValues: event.ColumnValues{
 		constants.WhatColumn: "vow",
 		constants.DataColumn: "0x17560834075DA3Db54f737db74377E799c865821",
-		event.HeaderFK:       JugFileVowHeaderSyncLog.HeaderID,
-		event.LogFK:          JugFileVowHeaderSyncLog.ID,
+		event.HeaderFK:       JugFileVowEventLog.HeaderID,
+		event.LogFK:          JugFileVowEventLog.ID,
 	},
 }
 

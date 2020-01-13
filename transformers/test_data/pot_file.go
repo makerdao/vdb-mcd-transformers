@@ -45,14 +45,14 @@ var rawPotFileVowLog = types.Log{
 	Removed:     false,
 }
 
-var PotFileDSRHeaderSyncLog = core.HeaderSyncLog{
+var PotFileDSREventLog = core.EventLog{
 	ID:          int64(rand.Int31()),
 	HeaderID:    int64(rand.Int31()),
 	Log:         rawPotFileDSRLog,
 	Transformed: false,
 }
 
-var PotFileVowHeaderSyncLog = core.HeaderSyncLog{
+var PotFileVowEventLog = core.EventLog{
 	ID:          int64(rand.Int31()),
 	HeaderID:    int64(rand.Int31()),
 	Log:         rawPotFileVowLog,
@@ -66,8 +66,8 @@ var potFileDSRModel = event.InsertionModel{
 		event.HeaderFK, event.LogFK, constants.WhatColumn, constants.DataColumn,
 	},
 	ColumnValues: event.ColumnValues{
-		event.HeaderFK:       PotFileDSRHeaderSyncLog.HeaderID,
-		event.LogFK:          PotFileDSRHeaderSyncLog.ID,
+		event.HeaderFK:       PotFileDSREventLog.HeaderID,
+		event.LogFK:          PotFileDSREventLog.ID,
 		constants.WhatColumn: "dsr",
 		constants.DataColumn: "1000000000627937192491029810",
 	},
@@ -78,8 +78,8 @@ var potFileVowModel = event.InsertionModel{
 	TableName:      constants.PotFileVowTable,
 	OrderedColumns: []event.ColumnName{event.HeaderFK, event.LogFK, constants.WhatColumn, constants.DataColumn},
 	ColumnValues: event.ColumnValues{
-		event.HeaderFK:       PotFileVowHeaderSyncLog.HeaderID,
-		event.LogFK:          PotFileVowHeaderSyncLog.ID,
+		event.HeaderFK:       PotFileVowEventLog.HeaderID,
+		event.LogFK:          PotFileVowEventLog.ID,
 		constants.WhatColumn: "vow",
 		constants.DataColumn: "0x0F4Cbe6CBA918b7488C26E29d9ECd7368F38EA3b",
 	},

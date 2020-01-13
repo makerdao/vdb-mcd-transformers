@@ -72,10 +72,10 @@ var _ = Describe("FlopKick Transformer", func() {
 		logs, fetchErr := logFetcher.FetchLogs(addresses, topics, header)
 		Expect(fetchErr).NotTo(HaveOccurred())
 
-		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+		eventLogs := test_data.CreateLogs(header.Id, logs, db)
 
 		transformer := initializer.NewTransformer(db)
-		transformErr := transformer.Execute(headerSyncLogs)
+		transformErr := transformer.Execute(eventLogs)
 		Expect(transformErr).NotTo(HaveOccurred())
 
 		var dbResult []FlopKickModel

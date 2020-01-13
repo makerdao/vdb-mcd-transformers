@@ -2,15 +2,15 @@
 CREATE TABLE maker.flip_kick
 (
     id         SERIAL PRIMARY KEY,
-    header_id  INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
+    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     bid_id     NUMERIC NOT NULL,
     lot        NUMERIC,
     bid        NUMERIC,
     tab        NUMERIC,
     usr        TEXT,
     gal        TEXT,
-    address_id INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
-    log_id     BIGINT NOT NULL REFERENCES header_sync_logs (id) ON DELETE CASCADE,
+    address_id INTEGER NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
+    log_id     BIGINT NOT NULL REFERENCES public.event_logs (id) ON DELETE CASCADE,
     UNIQUE (header_id, log_id)
 );
 

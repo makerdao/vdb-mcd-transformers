@@ -41,11 +41,11 @@ var _ = Describe("Cat file chop lump transformer", func() {
 
 	Context("chop events", func() {
 		It("converts a chop log to a model", func() {
-			models, err := transformer.ToModels(constants.CatABI(), []core.HeaderSyncLog{test_data.CatFileChopHeaderSyncLog}, db)
+			models, err := transformer.ToModels(constants.CatABI(), []core.EventLog{test_data.CatFileChopEventLog}, db)
 			Expect(err).NotTo(HaveOccurred())
 
 			var ilkID int64
-			ilkErr := db.Get(&ilkID, `SELECT id FROM maker.ilks where ilk = $1`, test_data.CatFileChopHeaderSyncLog.Log.Topics[2].Hex())
+			ilkErr := db.Get(&ilkID, `SELECT id FROM maker.ilks where ilk = $1`, test_data.CatFileChopEventLog.Log.Topics[2].Hex())
 			Expect(ilkErr).NotTo(HaveOccurred())
 			expectedModel := test_data.CatFileChopModel()
 			expectedModel.ColumnValues[constants.IlkColumn] = ilkID
@@ -56,11 +56,11 @@ var _ = Describe("Cat file chop lump transformer", func() {
 
 	Context("lump events", func() {
 		It("converts a lump log to a model", func() {
-			models, err := transformer.ToModels(constants.CatABI(), []core.HeaderSyncLog{test_data.CatFileLumpHeaderSyncLog}, db)
+			models, err := transformer.ToModels(constants.CatABI(), []core.EventLog{test_data.CatFileLumpEventLog}, db)
 			Expect(err).NotTo(HaveOccurred())
 
 			var ilkID int64
-			ilkErr := db.Get(&ilkID, `SELECT id FROM maker.ilks where ilk = $1`, test_data.CatFileLumpHeaderSyncLog.Log.Topics[2].Hex())
+			ilkErr := db.Get(&ilkID, `SELECT id FROM maker.ilks where ilk = $1`, test_data.CatFileLumpEventLog.Log.Topics[2].Hex())
 			Expect(ilkErr).NotTo(HaveOccurred())
 			expectedModel := test_data.CatFileLumpModel()
 			expectedModel.ColumnValues[constants.IlkColumn] = ilkID
@@ -70,24 +70,24 @@ var _ = Describe("Cat file chop lump transformer", func() {
 	})
 
 	It("returns err if log is missing topics", func() {
-		badLog := core.HeaderSyncLog{
+		badLog := core.EventLog{
 			Log: types.Log{
 				Data: []byte{1, 1, 1, 1, 1},
 			},
 		}
 
-		_, err := transformer.ToModels(constants.CatABI(), []core.HeaderSyncLog{badLog}, db)
+		_, err := transformer.ToModels(constants.CatABI(), []core.EventLog{badLog}, db)
 		Expect(err).To(HaveOccurred())
 	})
 
 	It("returns err if log is missing data", func() {
-		badLog := core.HeaderSyncLog{
+		badLog := core.EventLog{
 			Log: types.Log{
 				Topics: []common.Hash{{}, {}, {}, {}},
 			},
 		}
 
-		_, err := transformer.ToModels(constants.CatABI(), []core.HeaderSyncLog{badLog}, db)
+		_, err := transformer.ToModels(constants.CatABI(), []core.EventLog{badLog}, db)
 		Expect(err).To(HaveOccurred())
 	})
 })

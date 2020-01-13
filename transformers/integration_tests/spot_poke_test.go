@@ -65,9 +65,9 @@ var _ = Describe("SpotPoke Transformer", func() {
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
-		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+		eventLogs := test_data.CreateLogs(header.Id, logs, db)
 
-		err = tr.Execute(headerSyncLogs)
+		err = tr.Execute(eventLogs)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []spotPokeModel

@@ -39,18 +39,18 @@ var _ = Describe("Vat file ilk transformer", func() {
 	})
 
 	It("returns err if log is missing topics", func() {
-		badLog := core.HeaderSyncLog{
+		badLog := core.EventLog{
 			Log: types.Log{
 				Data: []byte{1, 1, 1, 1, 1},
 			}}
 
-		_, err := transformer.ToModels(constants.VatABI(), []core.HeaderSyncLog{badLog}, db)
+		_, err := transformer.ToModels(constants.VatABI(), []core.EventLog{badLog}, db)
 		Expect(err).To(HaveOccurred())
 	})
 
 	Describe("when log is valid", func() {
 		It("converts to model with data converted to ray when what is 'spot'", func() {
-			log := []core.HeaderSyncLog{test_data.VatFileIlkSpotHeaderSyncLog}
+			log := []core.EventLog{test_data.VatFileIlkSpotEventLog}
 			models, err := transformer.ToModels(constants.VatABI(), log, db)
 			Expect(err).NotTo(HaveOccurred())
 
@@ -64,7 +64,7 @@ var _ = Describe("Vat file ilk transformer", func() {
 		})
 
 		It("converts to model with data converted to wad when what is 'line'", func() {
-			log := []core.HeaderSyncLog{test_data.VatFileIlkLineHeaderSyncLog}
+			log := []core.EventLog{test_data.VatFileIlkLineEventLog}
 			models, err := transformer.ToModels(constants.VatABI(), log, db)
 			Expect(err).NotTo(HaveOccurred())
 
@@ -78,7 +78,7 @@ var _ = Describe("Vat file ilk transformer", func() {
 		})
 
 		It("converts to model with data converted to rad when what is 'dust'", func() {
-			log := []core.HeaderSyncLog{test_data.VatFileIlkDustHeaderSyncLog}
+			log := []core.EventLog{test_data.VatFileIlkDustEventLog}
 			models, err := transformer.ToModels(constants.VatABI(), log, db)
 			Expect(err).NotTo(HaveOccurred())
 

@@ -30,7 +30,7 @@ import (
 
 type Transformer struct{}
 
-func (Transformer) toEntities(contractAbi string, logs []core.HeaderSyncLog) ([]NewCdpEntity, error) {
+func (Transformer) toEntities(contractAbi string, logs []core.EventLog) ([]NewCdpEntity, error) {
 	var entities []NewCdpEntity
 	for _, log := range logs {
 		var entity NewCdpEntity
@@ -55,7 +55,7 @@ func (Transformer) toEntities(contractAbi string, logs []core.HeaderSyncLog) ([]
 	return entities, nil
 }
 
-func (t Transformer) ToModels(abi string, logs []core.HeaderSyncLog, _ *postgres.DB) ([]event.InsertionModel, error) {
+func (t Transformer) ToModels(abi string, logs []core.EventLog, _ *postgres.DB) ([]event.InsertionModel, error) {
 	entities, entityErr := t.toEntities(abi, logs)
 	if entityErr != nil {
 		return nil, fmt.Errorf("NewCDP transformer couldn't convert logs to entities: %v", entityErr)

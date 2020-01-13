@@ -53,7 +53,7 @@ var rawDentLog = types.Log{
 	Removed:     false,
 }
 
-var DentHeaderSyncLog = core.HeaderSyncLog{
+var DentEventLog = core.EventLog{
 	ID:          int64(rand.Int31()),
 	HeaderID:    int64(rand.Int31()),
 	Log:         rawDentLog,
@@ -71,8 +71,8 @@ var dentModel = event.InsertionModel{
 		event.HeaderFK, event.AddressFK, event.LogFK, constants.BidIDColumn, constants.LotColumn, constants.BidColumn,
 	},
 	ColumnValues: event.ColumnValues{
-		event.HeaderFK:        DentHeaderSyncLog.HeaderID,
-		event.LogFK:           DentHeaderSyncLog.ID,
+		event.HeaderFK:        DentEventLog.HeaderID,
+		event.LogFK:           DentEventLog.ID,
 		constants.BidIDColumn: dentBidId,
 		constants.LotColumn:   dentLot,
 		constants.BidColumn:   dentBid,

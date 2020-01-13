@@ -32,14 +32,14 @@ var _ = Describe("LogValue Transformer", func() {
 	var transformer = log_value.Transformer{}
 
 	It("converts a log to a Model", func() {
-		models, err := transformer.ToModels(constants.OsmABI(), []core.HeaderSyncLog{test_data.LogValueHeaderSyncLog}, db)
+		models, err := transformer.ToModels(constants.OsmABI(), []core.EventLog{test_data.LogValueEventLog}, db)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(models).To(Equal([]event.InsertionModel{test_data.LogValueModel()}))
 	})
 
 	It("returns an error if converting log to entity fails", func() {
-		_, err := transformer.ToModels("error abi", []core.HeaderSyncLog{test_data.LogValueHeaderSyncLog}, db)
+		_, err := transformer.ToModels("error abi", []core.EventLog{test_data.LogValueEventLog}, db)
 
 		Expect(err).To(HaveOccurred())
 	})

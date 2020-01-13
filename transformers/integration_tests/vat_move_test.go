@@ -53,14 +53,14 @@ var _ = Describe("VatMove EventTransformer", func() {
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
-		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+		eventLogs := test_data.CreateLogs(header.Id, logs, db)
 
 		tr := event.ConfiguredTransformer{
 			Config:      vatMoveConfig,
 			Transformer: vat_move.Transformer{},
 		}.NewTransformer(db)
 
-		err = tr.Execute(headerSyncLogs)
+		err = tr.Execute(eventLogs)
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResults []vatMoveModel

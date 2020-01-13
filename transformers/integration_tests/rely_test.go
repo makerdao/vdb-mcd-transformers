@@ -92,10 +92,10 @@ func relyIntegrationTest(blockNumber int64, contractAddressHex, usrAddressHex st
 		logs, logsErr := logFetcher.FetchLogs([]common.Address{address}, topics, header)
 		Expect(logsErr).NotTo(HaveOccurred())
 
-		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+		eventLogs := test_data.CreateLogs(header.Id, logs, db)
 
 		relyTransformer := initializer.NewTransformer(db)
-		transformErr := relyTransformer.Execute(headerSyncLogs)
+		transformErr := relyTransformer.Execute(eventLogs)
 		Expect(transformErr).NotTo(HaveOccurred())
 
 		var dbResult []relyModel

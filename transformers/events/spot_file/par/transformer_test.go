@@ -16,18 +16,18 @@ var _ = Describe("Spot file par transformer", func() {
 	var transformer = par.Transformer{}
 
 	It("returns err if log missing topics", func() {
-		badLog := core.HeaderSyncLog{
+		badLog := core.EventLog{
 			Log: types.Log{
 				Topics: []common.Hash{{}},
 				Data:   []byte{1, 1, 1, 1, 1},
 			}}
 
-		_, err := transformer.ToModels(constants.SpotABI(), []core.HeaderSyncLog{badLog}, nil)
+		_, err := transformer.ToModels(constants.SpotABI(), []core.EventLog{badLog}, nil)
 		Expect(err).To(HaveOccurred())
 	})
 
 	It("converts a log to a model", func() {
-		models, err := transformer.ToModels(constants.SpotABI(), []core.HeaderSyncLog{test_data.SpotFileParHeaderSyncLog}, nil)
+		models, err := transformer.ToModels(constants.SpotABI(), []core.EventLog{test_data.SpotFileParEventLog}, nil)
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(models).To(Equal([]event.InsertionModel{test_data.SpotFileParModel()}))

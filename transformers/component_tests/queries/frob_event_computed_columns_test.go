@@ -54,15 +54,15 @@ var _ = Describe("Frob event computed columns", func() {
 		timestampOne = int(rand.Int31())
 		headerOne = createHeader(blockOne, timestampOne, headerRepository)
 
-		frobHeaderSyncLog := test_data.CreateTestLog(headerOne.Id, db)
-		frobGethLog = frobHeaderSyncLog.Log
+		frobEventLog := test_data.CreateTestLog(headerOne.Id, db)
+		frobGethLog = frobEventLog.Log
 
 		frobEvent = test_data.VatFrobModelWithPositiveDart()
 		urnID, urnErr := shared.GetOrCreateUrn(fakeGuy, test_helpers.FakeIlk.Hex, db)
 		Expect(urnErr).NotTo(HaveOccurred())
 		frobEvent.ColumnValues[constants.UrnColumn] = urnID
 		frobEvent.ColumnValues[event.HeaderFK] = headerOne.Id
-		frobEvent.ColumnValues[event.LogFK] = frobHeaderSyncLog.ID
+		frobEvent.ColumnValues[event.LogFK] = frobEventLog.ID
 		insertFrobErr := event.PersistModels([]event.InsertionModel{frobEvent}, db)
 		Expect(insertFrobErr).NotTo(HaveOccurred())
 	})
@@ -123,7 +123,7 @@ var _ = Describe("Frob event computed columns", func() {
 				TxTo:        test_helpers.GetValidNullString("toAddress"),
 			}
 
-			_, insertTxErr := db.Exec(`INSERT INTO header_sync_transactions (header_id, hash, tx_from, tx_index, tx_to)
+			_, insertTxErr := db.Exec(`INSERT INTO public.transactions (header_id, hash, tx_from, tx_index, tx_to)
 				VALUES ($1, $2, $3, $4, $5)`, headerOne.Id, expectedTx.TransactionHash, expectedTx.TxFrom,
 				expectedTx.TransactionIndex, expectedTx.TxTo)
 			Expect(insertTxErr).NotTo(HaveOccurred())
@@ -150,7 +150,7 @@ var _ = Describe("Frob event computed columns", func() {
 				TxTo:        test_helpers.GetValidNullString("wrongToAddress"),
 			}
 
-			_, insertTxErr := db.Exec(`INSERT INTO header_sync_transactions (header_id, hash, tx_from, tx_index, tx_to)
+			_, insertTxErr := db.Exec(`INSERT INTO public.transactions (header_id, hash, tx_from, tx_index, tx_to)
 				VALUES ($1, $2, $3, $4, $5)`, headerOne.Id, wrongTx.TransactionHash, wrongTx.TxFrom,
 				wrongTx.TransactionIndex, wrongTx.TxTo)
 			Expect(insertTxErr).NotTo(HaveOccurred())
@@ -178,7 +178,7 @@ var _ = Describe("Frob event computed columns", func() {
 				TxTo:        test_helpers.GetValidNullString("wrongToAddress"),
 			}
 
-			_, insertTxErr := db.Exec(`INSERT INTO header_sync_transactions (header_id, hash, tx_from, tx_index, tx_to)
+			_, insertTxErr := db.Exec(`INSERT INTO public.transactions (header_id, hash, tx_from, tx_index, tx_to)
 				VALUES ($1, $2, $3, $4, $5)`, headerZero.Id, wrongTx.TransactionHash, wrongTx.TxFrom,
 				wrongTx.TransactionIndex, wrongTx.TxTo)
 			Expect(insertTxErr).NotTo(HaveOccurred())

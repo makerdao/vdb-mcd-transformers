@@ -26,7 +26,7 @@ import (
 
 type Transformer struct{}
 
-func (Transformer) ToModels(_ string, logs []core.HeaderSyncLog, db *postgres.DB) (results []event.InsertionModel, err error) {
+func (Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) (results []event.InsertionModel, err error) {
 	for _, log := range logs {
 		validationErr := shared.VerifyLog(log.Log, shared.ThreeTopicsRequired, shared.LogDataNotRequired)
 		if validationErr != nil {

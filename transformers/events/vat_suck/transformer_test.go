@@ -31,7 +31,7 @@ var _ = Describe("VatSuck transformer", func() {
 	var transformer = vat_suck.Transformer{}
 
 	It("Converts log to a model", func() {
-		models, err := transformer.ToModels(constants.VatABI(), []core.HeaderSyncLog{test_data.VatSuckHeaderSyncLog}, nil)
+		models, err := transformer.ToModels(constants.VatABI(), []core.EventLog{test_data.VatSuckEventLog}, nil)
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(len(models)).To(Equal(1))
@@ -39,7 +39,7 @@ var _ = Describe("VatSuck transformer", func() {
 	})
 
 	It("Returns an error if there are missing topics", func() {
-		badLog := core.HeaderSyncLog{
+		badLog := core.EventLog{
 			Log: types.Log{
 				Topics: []common.Hash{
 					common.HexToHash("0x"),
@@ -48,7 +48,7 @@ var _ = Describe("VatSuck transformer", func() {
 				}},
 		}
 
-		_, err := transformer.ToModels(constants.VatABI(), []core.HeaderSyncLog{badLog}, nil)
+		_, err := transformer.ToModels(constants.VatABI(), []core.EventLog{badLog}, nil)
 
 		Expect(err).To(HaveOccurred())
 	})

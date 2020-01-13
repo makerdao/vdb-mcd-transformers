@@ -92,10 +92,10 @@ func denyIntegrationTest(blockNumber int64, contractAddressHex, usrAddressHex st
 		logs, logsErr := logFetcher.FetchLogs([]common.Address{address}, topics, header)
 		Expect(logsErr).NotTo(HaveOccurred())
 
-		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+		eventLogs := test_data.CreateLogs(header.Id, logs, db)
 
 		denyTransformer := initializer.NewTransformer(db)
-		transformErr := denyTransformer.Execute(headerSyncLogs)
+		transformErr := denyTransformer.Execute(eventLogs)
 		Expect(transformErr).NotTo(HaveOccurred())
 
 		var dbResult []denyModel

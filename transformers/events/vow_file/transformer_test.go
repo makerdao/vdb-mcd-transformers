@@ -31,18 +31,18 @@ var _ = Describe("Vow file transformer", func() {
 	var transformer = vow_file.Transformer{}
 
 	It("returns err if log missing topics", func() {
-		badLog := core.HeaderSyncLog{
+		badLog := core.EventLog{
 			Log: types.Log{
 				Topics: []common.Hash{{}},
 				Data:   []byte{1, 1, 1, 1, 1},
 			}}
 
-		_, err := transformer.ToModels(constants.VowABI(), []core.HeaderSyncLog{badLog}, nil)
+		_, err := transformer.ToModels(constants.VowABI(), []core.EventLog{badLog}, nil)
 		Expect(err).To(HaveOccurred())
 	})
 
 	It("converts a log to a model", func() {
-		models, err := transformer.ToModels(constants.VowABI(), []core.HeaderSyncLog{test_data.VowFileHeaderSyncLog}, nil)
+		models, err := transformer.ToModels(constants.VowABI(), []core.EventLog{test_data.VowFileEventLog}, nil)
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(len(models)).To(Equal(1))

@@ -39,27 +39,27 @@ var _ = Describe("Frob transformer", func() {
 	})
 
 	It("returns err if log is missing topics", func() {
-		badLog := core.HeaderSyncLog{
+		badLog := core.EventLog{
 			Log: types.Log{
 				Data: []byte{1, 1, 1, 1, 1},
 			}}
 
-		_, err := transformer.ToModels(constants.VatABI(), []core.HeaderSyncLog{badLog}, db)
+		_, err := transformer.ToModels(constants.VatABI(), []core.EventLog{badLog}, db)
 		Expect(err).To(HaveOccurred())
 	})
 
 	It("returns err if log is missing data", func() {
-		badLog := core.HeaderSyncLog{
+		badLog := core.EventLog{
 			Log: types.Log{
 				Topics: []common.Hash{{}, {}, {}, {}},
 			}}
 
-		_, err := transformer.ToModels(constants.VatABI(), []core.HeaderSyncLog{badLog}, db)
+		_, err := transformer.ToModels(constants.VatABI(), []core.EventLog{badLog}, db)
 		Expect(err).To(HaveOccurred())
 	})
 
 	It("converts a log with positive dart to a model", func() {
-		log := []core.HeaderSyncLog{test_data.VatFrobHeaderSyncLogWithPositiveDart}
+		log := []core.EventLog{test_data.VatFrobEventLogWithPositiveDart}
 		models, err := transformer.ToModels(constants.VatABI(), log, db)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -74,7 +74,7 @@ var _ = Describe("Frob transformer", func() {
 	})
 
 	It("converts a log with negative dink to a model", func() {
-		log := []core.HeaderSyncLog{test_data.VatFrobHeaderSyncLogWithNegativeDink}
+		log := []core.EventLog{test_data.VatFrobEventLogWithNegativeDink}
 		models, err := transformer.ToModels(constants.VatABI(), log, db)
 		Expect(err).NotTo(HaveOccurred())
 

@@ -44,7 +44,7 @@ var rawPotJoinLog = types.Log{
 	Removed:     false,
 }
 
-var PotJoinHeaderSyncLog = core.HeaderSyncLog{
+var PotJoinEventLog = core.EventLog{
 	ID:          int64(rand.Int31()),
 	HeaderID:    int64(rand.Int31()),
 	Log:         rawPotJoinLog,
@@ -59,7 +59,7 @@ var potJoinModel = event.InsertionModel{
 	OrderedColumns: []event.ColumnName{event.HeaderFK, event.LogFK, constants.MsgSenderColumn, constants.WadColumn},
 	ColumnValues: event.ColumnValues{
 		constants.WadColumn: "4719670301595647258",
-		event.HeaderFK:      PotJoinHeaderSyncLog.HeaderID,
-		event.LogFK:         PotJoinHeaderSyncLog.ID,
+		event.HeaderFK:      PotJoinEventLog.HeaderID,
+		event.LogFK:         PotJoinEventLog.ID,
 	},
 }

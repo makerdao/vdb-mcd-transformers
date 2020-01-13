@@ -58,7 +58,7 @@ var rawBiteLog = types.Log{
 	Index:       7,
 	Removed:     false,
 }
-var BiteHeaderSyncLog = core.HeaderSyncLog{
+var BiteEventLog = core.EventLog{
 	ID:          int64(rand.Int31()),
 	HeaderID:    int64(rand.Int31()),
 	Log:         rawBiteLog,
@@ -81,8 +81,8 @@ var biteModel = event.InsertionModel{
 		constants.BidIDColumn,
 	},
 	ColumnValues: event.ColumnValues{
-		event.HeaderFK: BiteHeaderSyncLog.HeaderID,
-		event.LogFK:    BiteHeaderSyncLog.ID,
+		event.HeaderFK: BiteEventLog.HeaderID,
+		event.LogFK:    BiteEventLog.ID,
 		// constants.UrnColumn: Can't assert against this since we don't know the ID...
 		constants.InkColumn:   biteInk.String(),
 		constants.ArtColumn:   biteArt.String(),

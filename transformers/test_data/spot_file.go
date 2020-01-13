@@ -46,7 +46,7 @@ var rawSpotFileMatLog = types.Log{
 	Removed:     false,
 }
 
-var SpotFileMatHeaderSyncLog = core.HeaderSyncLog{
+var SpotFileMatEventLog = core.EventLog{
 	ID:          int64(rand.Int31()),
 	HeaderID:    int64(rand.Int31()),
 	Log:         rawSpotFileMatLog,
@@ -66,8 +66,8 @@ var spotFileMatModel = event.InsertionModel{
 		constants.DataColumn,
 	},
 	ColumnValues: event.ColumnValues{
-		event.HeaderFK:       SpotFileMatHeaderSyncLog.HeaderID,
-		event.LogFK:          SpotFileMatHeaderSyncLog.ID,
+		event.HeaderFK:       SpotFileMatEventLog.HeaderID,
+		event.LogFK:          SpotFileMatEventLog.ID,
 		constants.WhatColumn: "mat",
 		constants.DataColumn: "1500000000000000000000000000",
 	},
@@ -90,7 +90,7 @@ var rawSpotFileParLog = types.Log{
 	Removed:     false,
 }
 
-var SpotFileParHeaderSyncLog = core.HeaderSyncLog{
+var SpotFileParEventLog = core.EventLog{
 	ID:          int64(rand.Int31()),
 	HeaderID:    int64(rand.Int31()),
 	Log:         rawSpotFileParLog,
@@ -106,8 +106,8 @@ var spotFileParModel = event.InsertionModel{
 	ColumnValues: event.ColumnValues{
 		constants.WhatColumn: "fake what",
 		constants.DataColumn: big.NewInt(123).String(),
-		event.HeaderFK:       SpotFileParHeaderSyncLog.HeaderID,
-		event.LogFK:          SpotFileParHeaderSyncLog.ID,
+		event.HeaderFK:       SpotFileParEventLog.HeaderID,
+		event.LogFK:          SpotFileParEventLog.ID,
 	},
 }
 
@@ -130,7 +130,7 @@ var rawSpotFilePipLog = types.Log{
 	Removed:     false,
 }
 
-var SpotFilePipHeaderSyncLog = core.HeaderSyncLog{
+var SpotFilePipEventLog = core.EventLog{
 	ID:          int64(rand.Int31()),
 	HeaderID:    int64(rand.Int31()),
 	Log:         rawSpotFilePipLog,
@@ -150,8 +150,8 @@ var spotFilePipModel = event.InsertionModel{
 		constants.PipColumn,
 	},
 	ColumnValues: event.ColumnValues{
-		event.HeaderFK:       SpotFilePipHeaderSyncLog.HeaderID,
-		event.LogFK:          SpotFilePipHeaderSyncLog.ID,
+		event.HeaderFK:       SpotFilePipEventLog.HeaderID,
+		event.LogFK:          SpotFilePipEventLog.ID,
 		constants.WhatColumn: "pip",
 		constants.PipColumn:  "0x75dD74e8afE8110C8320eD397CcCff3B8134d981",
 	},

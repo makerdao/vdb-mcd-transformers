@@ -49,7 +49,7 @@ var rawLogValueLog = types.Log{
 	Index:       7,
 	Removed:     false,
 }
-var LogValueHeaderSyncLog = core.HeaderSyncLog{
+var LogValueEventLog = core.EventLog{
 	ID:          int64(rand.Int31()),
 	HeaderID:    int64(rand.Int31()),
 	Log:         rawLogValueLog,
@@ -65,8 +65,8 @@ var logValueModel = event.InsertionModel{
 		event.HeaderFK, event.LogFK, log_value.Val,
 	},
 	ColumnValues: event.ColumnValues{
-		event.HeaderFK: LogValueHeaderSyncLog.HeaderID,
-		event.LogFK:    LogValueHeaderSyncLog.ID,
+		event.HeaderFK: LogValueEventLog.HeaderID,
+		event.LogFK:    LogValueEventLog.ID,
 		log_value.Val:  logValueVal.String(),
 	},
 }
