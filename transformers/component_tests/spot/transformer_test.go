@@ -22,9 +22,12 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	mcdStorage "github.com/makerdao/vdb-mcd-transformers/transformers/storage"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/spot"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
 	vdbStorage "github.com/makerdao/vulcanizedb/libraries/shared/storage"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
@@ -36,9 +39,9 @@ import (
 var _ = Describe("Executing the transformer", func() {
 	var (
 		db                = test_config.NewTestDB(test_config.NewTestNode())
-		storageKeysLookup = storage.NewKeysLookup(spot.NewKeysLoader(&mcdStorage.MakerStorageRepository{}))
-		repository        = spot.SpotStorageRepository{}
-		contractAddress   = "a57d4123c8a80ac410e924df9d5e47765ffd1375"
+		contractAddress   = test_data.SpotAddress()
+		storageKeysLookup = storage.NewKeysLookup(spot.NewKeysLoader(&mcdStorage.MakerStorageRepository{}, contractAddress))
+		repository        = spot.SpotStorageRepository{ContractAddress: contractAddress}
 		transformer       = storage.Transformer{
 			HashedAddress:     vdbStorage.HexToKeccak256Hash(contractAddress),
 			StorageKeysLookup: storageKeysLookup,
@@ -96,6 +99,45 @@ var _ = Describe("Executing the transformer", func() {
 		getErr := db.Get(&liveResult, `SELECT diff_id, header_id, live AS value FROM maker.spot_live`)
 		Expect(getErr).NotTo(HaveOccurred())
 		test_helpers.AssertVariable(liveResult, spotLiveDiff.ID, header.Id, "1")
+	})
+
+	Describe("wards", func() {
+		It("reads in a wards storage diff row and persists it", func() {
+			denyLog := test_data.CreateTestLog(header.Id, db)
+			denyModel := test_data.DenyModel()
+
+			spotAddressID, spotAddressErr := shared.GetOrCreateAddress(test_data.SpotAddress(), db)
+			Expect(spotAddressErr).NotTo(HaveOccurred())
+
+			userAddress := "0x2be4b34a34c3cda056dc9e514a30040b6358bf89"
+			userAddressID, userAddressErr := shared.GetOrCreateAddress(userAddress, db)
+			Expect(userAddressErr).NotTo(HaveOccurred())
+
+			msgSenderAddress := "0x" + fakes.RandomString(40)
+			msgSenderAddressID, msgSenderAddressErr := shared.GetOrCreateAddress(msgSenderAddress, db)
+			Expect(msgSenderAddressErr).NotTo(HaveOccurred())
+
+			denyModel.ColumnValues[event.HeaderFK] = header.Id
+			denyModel.ColumnValues[event.LogFK] = denyLog.ID
+			denyModel.ColumnValues[event.AddressFK] = spotAddressID
+			denyModel.ColumnValues[constants.MsgSenderColumn] = msgSenderAddressID
+			denyModel.ColumnValues[constants.UsrColumn] = userAddressID
+			insertErr := event.PersistModels([]event.InsertionModel{denyModel}, db)
+			Expect(insertErr).NotTo(HaveOccurred())
+
+			key := common.HexToHash("acbda0c7abc278c8fb8df441982ecd46bd66bed192fdc761196288a48630eb70")
+			value := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000001")
+			wardsDiff := test_helpers.CreateDiffRecord(db, header, transformer.HashedAddress, key, value)
+
+			transformErr := transformer.Execute(wardsDiff)
+			Expect(transformErr).NotTo(HaveOccurred())
+
+			var wardsResult test_helpers.WardsMappingRes
+			err := db.Get(&wardsResult, `SELECT diff_id, header_id, address_id, usr AS key, wards.wards AS value FROM maker.wards`)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(wardsResult.AddressID).To(Equal(strconv.FormatInt(spotAddressID, 10)))
+			test_helpers.AssertMapping(wardsResult.MappingRes, wardsDiff.ID, header.Id, strconv.FormatInt(userAddressID, 10), "1")
+		})
 	})
 
 	Describe("ilk", func() {

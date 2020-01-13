@@ -20,6 +20,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	mcdStorage "github.com/makerdao/vdb-mcd-transformers/transformers/storage"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/utilities/wards"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
 	vdbStorage "github.com/makerdao/vulcanizedb/libraries/shared/storage"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
@@ -48,10 +49,11 @@ var (
 
 type keysLoader struct {
 	storageRepository mcdStorage.IMakerStorageRepository
+	contractAddress string
 }
 
-func NewKeysLoader(storageRepository mcdStorage.IMakerStorageRepository) storage.KeysLoader {
-	return &keysLoader{storageRepository: storageRepository}
+func NewKeysLoader(storageRepository mcdStorage.IMakerStorageRepository, contractAddress string) storage.KeysLoader {
+	return &keysLoader{storageRepository: storageRepository, contractAddress: contractAddress}
 }
 
 func (loader *keysLoader) SetDB(db *postgres.DB) {
@@ -60,6 +62,26 @@ func (loader *keysLoader) SetDB(db *postgres.DB) {
 
 func (loader *keysLoader) LoadMappings() (map[common.Hash]vdbStorage.ValueMetadata, error) {
 	mappings := getStaticMappings()
+	return loader.addDynamicMappings(mappings)
+}
+
+func (loader *keysLoader) addDynamicMappings(mappings map[common.Hash]vdbStorage.ValueMetadata) (map[common.Hash]vdbStorage.ValueMetadata, error) {
+	mappings, wardsErr := loader.addWardsKeys(mappings)
+	if wardsErr != nil {
+		return nil, wardsErr
+	}
+	return loader.addIlkKeys(mappings)
+}
+
+func (loader *keysLoader) addWardsKeys(mappings map[common.Hash]vdbStorage.ValueMetadata) (map[common.Hash]vdbStorage.ValueMetadata, error) {
+	addresses, err := loader.storageRepository.GetWardsAddresses(loader.contractAddress)
+	if err != nil {
+		return nil, err
+	}
+	return wards.AddWardsKeys(mappings, addresses)
+}
+
+func (loader *keysLoader) addIlkKeys(mappings map[common.Hash]vdbStorage.ValueMetadata) (map[common.Hash]vdbStorage.ValueMetadata, error) {
 	ilks, err := loader.storageRepository.GetIlks()
 	if err != nil {
 		return nil, err

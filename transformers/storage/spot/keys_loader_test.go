@@ -24,6 +24,8 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/spot"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/utilities/wards"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
 	vdbStorage "github.com/makerdao/vulcanizedb/libraries/shared/storage"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
@@ -39,7 +41,7 @@ var _ = Describe("spot storage keys loader", func() {
 
 	BeforeEach(func() {
 		storageRepository = &test_helpers.MockMakerStorageRepository{}
-		storageKeysLoader = spot.NewKeysLoader(storageRepository)
+		storageKeysLoader = spot.NewKeysLoader(storageRepository, test_data.SpotAddress())
 	})
 
 	It("returns value metadata for static keys", func() {
@@ -49,6 +51,37 @@ var _ = Describe("spot storage keys loader", func() {
 		Expect(mappings[spot.VatKey]).To(Equal(spot.VatMetadata))
 		Expect(mappings[spot.ParKey]).To(Equal(spot.ParMetadata))
 		Expect(mappings[spot.LiveKey]).To(Equal(spot.LiveMetadata))
+	})
+
+	Describe("wards", func() {
+		It("returns value metadata for wards", func() {
+			wardsUser := fakes.FakeAddress.Hex()
+			storageRepository.WardsKeys = []string{wardsUser}
+			paddedWardsUser := "0x000000000000000000000000" + wardsUser[2:]
+			wardsKey := common.BytesToHash(crypto.Keccak256(common.FromHex(paddedWardsUser + wards.WardsMappingIndex)))
+			expectedMetadata := vdbStorage.ValueMetadata{
+				Name: wards.Wards,
+				Keys: map[vdbStorage.Key]string{constants.User: fakes.FakeAddress.Hex()},
+				Type: vdbStorage.Uint256,
+			}
+
+			mappings, err := storageKeysLoader.LoadMappings()
+			Expect(err).NotTo(HaveOccurred())
+
+			Expect(storageRepository.GetWardsKeysCalledWith).To(Equal(test_data.SpotAddress()))
+			Expect(mappings[wardsKey]).To(Equal(expectedMetadata))
+		})
+
+		Describe("when getting users fails", func() {
+			It("returns error", func() {
+				storageRepository.GetWardsKeysError = fakes.FakeError
+
+				_, err := storageKeysLoader.LoadMappings()
+
+				Expect(err).To(HaveOccurred())
+				Expect(err).To(MatchError(fakes.FakeError))
+			})
+		})
 	})
 
 	Describe("when getting ilks fails", func() {
