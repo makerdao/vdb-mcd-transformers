@@ -4,6 +4,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	mcdStorage "github.com/makerdao/vdb-mcd-transformers/transformers/storage"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/utilities"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
 	vdbStorage "github.com/makerdao/vulcanizedb/libraries/shared/storage"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
@@ -64,7 +65,11 @@ func (loader *keysLoader) LoadMappings() (map[common.Hash]vdbStorage.ValueMetada
 		return nil, err
 	}
 	for _, user := range users {
-		mappings[getUserPieKey(user)] = getUserPieMetadata(user)
+		paddedUser, padErr := utilities.PadAddress(user)
+		if padErr != nil {
+			return nil, padErr
+		}
+		mappings[getUserPieKey(paddedUser)] = getUserPieMetadata(user)
 	}
 	return mappings, nil
 }

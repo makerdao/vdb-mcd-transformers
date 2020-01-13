@@ -49,9 +49,10 @@ var _ = Describe("pot storage keys loader", func() {
 
 	Describe("when getting users succeeds", func() {
 		It("returns value metadata for user pie", func() {
-			fakeUser := fakes.RandomString(40)
+			fakeUser := "0x" + fakes.RandomString(40)
+			paddedUser := "0x000000000000000000000000" + fakeUser[2:]
 			storageRepository.PotPieUsers = []string{fakeUser}
-			userPieKey := common.BytesToHash(crypto.Keccak256(common.FromHex("0x" + fakeUser + pot.UserPieIndex)))
+			userPieKey := common.BytesToHash(crypto.Keccak256(common.FromHex(paddedUser + pot.UserPieIndex)))
 			expectedMetadata := vdbStorage.ValueMetadata{
 				Name: pot.UserPie,
 				Keys: map[vdbStorage.Key]string{constants.MsgSender: fakeUser},
