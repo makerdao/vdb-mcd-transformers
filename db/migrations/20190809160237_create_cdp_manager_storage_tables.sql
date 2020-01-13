@@ -12,6 +12,9 @@ CREATE TABLE maker.cdp_manager_vat
 CREATE INDEX cdp_manager_vat_header_id_index
     ON maker.cdp_manager_vat (header_id);
 
+COMMENT ON TABLE maker.cdp_manager_vat
+    IS E'@omit';
+
 CREATE TABLE maker.cdp_manager_cdpi
 (
     id        SERIAL PRIMARY KEY,
@@ -23,6 +26,9 @@ CREATE TABLE maker.cdp_manager_cdpi
 
 CREATE INDEX cdp_manager_cdpi_header_id_index
     ON maker.cdp_manager_cdpi (header_id);
+
+COMMENT ON TABLE maker.cdp_manager_cdpi
+    IS E'@omit';
 
 CREATE TABLE maker.cdp_manager_urns
 (
@@ -39,6 +45,9 @@ CREATE INDEX cdp_manager_urns_header_id_index
 CREATE INDEX cdp_manager_urns_urn_index
     ON maker.cdp_manager_urns (urn);
 
+COMMENT ON TABLE maker.cdp_manager_urns
+    IS E'@omit';
+
 CREATE TABLE maker.cdp_manager_list_prev
 (
     id        SERIAL PRIMARY KEY,
@@ -52,6 +61,9 @@ CREATE TABLE maker.cdp_manager_list_prev
 CREATE INDEX cdp_manager_list_prev_header_id_index
     ON maker.cdp_manager_list_prev (header_id);
 
+COMMENT ON TABLE maker.cdp_manager_list_prev
+    IS E'@omit';
+
 CREATE TABLE maker.cdp_manager_list_next
 (
     id        SERIAL PRIMARY KEY,
@@ -64,6 +76,9 @@ CREATE TABLE maker.cdp_manager_list_next
 
 CREATE INDEX cdp_manager_list_next_header_id_index
     ON maker.cdp_manager_list_next (header_id);
+
+COMMENT ON TABLE maker.cdp_manager_list_next
+    IS E'@omit';
 
 CREATE TABLE maker.cdp_manager_owns
 (
@@ -80,6 +95,9 @@ CREATE INDEX cdp_manager_owns_header_id_index
 CREATE INDEX cdp_manager_owns_owner_index
     ON maker.cdp_manager_owns (owner);
 
+COMMENT ON TABLE maker.cdp_manager_owns
+    IS E'@omit';
+
 CREATE TABLE maker.cdp_manager_ilks
 (
     id        SERIAL PRIMARY KEY,
@@ -95,6 +113,9 @@ CREATE INDEX cdp_manager_ilks_header_id_index
 CREATE INDEX cdp_manager_ilks_ilk_id_index
     ON maker.cdp_manager_ilks (ilk_id);
 
+COMMENT ON TABLE maker.cdp_manager_ilks
+    IS E'@omit';
+
 CREATE TABLE maker.cdp_manager_first
 (
     id        SERIAL PRIMARY KEY,
@@ -107,6 +128,9 @@ CREATE TABLE maker.cdp_manager_first
 
 CREATE INDEX cdp_manager_first_header_id_index
     ON maker.cdp_manager_first (header_id);
+
+COMMENT ON TABLE maker.cdp_manager_first
+    IS E'@omit';
 
 CREATE TABLE maker.cdp_manager_last
 (
@@ -121,6 +145,9 @@ CREATE TABLE maker.cdp_manager_last
 CREATE INDEX cdp_manager_last_header_id_index
     ON maker.cdp_manager_last (header_id);
 
+COMMENT ON TABLE maker.cdp_manager_last
+    IS E'@omit';
+
 CREATE TABLE maker.cdp_manager_count
 (
     id        SERIAL PRIMARY KEY,
@@ -133,6 +160,9 @@ CREATE TABLE maker.cdp_manager_count
 
 CREATE INDEX cdp_manager_count_header_id_index
     ON maker.cdp_manager_count (header_id);
+
+COMMENT ON TABLE maker.cdp_manager_count
+    IS E'@omit';
 
 -- +goose Down
 -- SQL in this section is executed when the migration is rolled back.

@@ -14,6 +14,9 @@ CREATE INDEX jug_ilk_rho_header_id_index
 CREATE INDEX jug_ilk_rho_ilk_index
     ON maker.jug_ilk_rho (ilk_id);
 
+COMMENT ON TABLE maker.jug_ilk_rho
+    IS E'@omit';
+
 CREATE TABLE maker.jug_ilk_duty
 (
     id        SERIAL PRIMARY KEY,
@@ -29,6 +32,9 @@ CREATE INDEX jug_ilk_duty_header_id_index
 CREATE INDEX jug_ilk_duty_ilk_index
     ON maker.jug_ilk_duty (ilk_id);
 
+COMMENT ON TABLE maker.jug_ilk_duty
+    IS E'@omit';
+
 CREATE TABLE maker.jug_vat
 (
     id        SERIAL PRIMARY KEY,
@@ -40,6 +46,9 @@ CREATE TABLE maker.jug_vat
 
 CREATE INDEX jug_vat_header_id_index
     ON maker.jug_vat (header_id);
+
+COMMENT ON TABLE maker.jug_vat
+    IS E'@omit';
 
 CREATE TABLE maker.jug_vow
 (
@@ -53,6 +62,9 @@ CREATE TABLE maker.jug_vow
 CREATE INDEX jug_vow_header_id_index
     ON maker.jug_vow (header_id);
 
+COMMENT ON TABLE maker.jug_vow
+    IS E'@omit';
+
 CREATE TABLE maker.jug_base
 (
     id        SERIAL PRIMARY KEY,
@@ -64,6 +76,9 @@ CREATE TABLE maker.jug_base
 
 CREATE INDEX jug_base_header_id_index
     ON maker.jug_base (header_id);
+
+COMMENT ON TABLE maker.jug_base
+    IS E'@omit';
 
 -- +goose Down
 DROP INDEX maker.jug_ilk_rho_header_id_index;

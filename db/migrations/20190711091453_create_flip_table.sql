@@ -21,6 +21,9 @@ CREATE TABLE maker.flip
 CREATE INDEX flip_address_index
     ON maker.flip (address_id);
 
+COMMENT ON TABLE maker.flip
+    IS E'@name historicalFlipState';
+
 CREATE FUNCTION get_latest_flip_bid_guy(bid_id numeric) RETURNS TEXT AS
 $$
 SELECT guy

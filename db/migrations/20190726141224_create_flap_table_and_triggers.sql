@@ -19,6 +19,9 @@ CREATE TABLE maker.flap
     UNIQUE (block_number, bid_id)
 );
 
+COMMENT ON TABLE maker.flap
+    IS E'@name historicalFlapState';
+
 CREATE INDEX flap_address_index
     ON maker.flap (address_id);
 
