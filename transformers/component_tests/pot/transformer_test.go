@@ -56,7 +56,7 @@ var _ = Describe("Executing the transformer", func() {
 		insertErr := event.PersistModels([]event.InsertionModel{potJoin}, db)
 		Expect(insertErr).NotTo(HaveOccurred())
 
-		key := common.HexToHash("500eb85e2e1fd94136d06add7669b5b5657bcf4f2b6ab52668ae026dc56ac264")
+		key := common.HexToHash("727c626d1f473b2fe91b66946682443a691c9d83c3d5816a53bc3365286f89f4")
 		value := common.HexToHash("0000000000000000000000000000000000000000033b2e3c9fd0803ce8000000")
 		potPieDiff := test_helpers.CreateDiffRecord(db, header, transformer.HashedAddress, key, value)
 
