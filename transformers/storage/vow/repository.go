@@ -38,7 +38,7 @@ const (
 )
 
 type VowStorageRepository struct {
-	db *postgres.DB
+	db              *postgres.DB
 	ContractAddress string
 }
 

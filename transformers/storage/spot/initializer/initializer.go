@@ -25,8 +25,9 @@ import (
 	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 )
 
+var spotAddress = constants.GetContractAddress("MCD_SPOT")
 var StorageTransformerInitializer transformer.StorageTransformerInitializer = storage.Transformer{
-	HashedAddress:     vdbStorage.HexToKeccak256Hash(constants.GetContractAddress("MCD_SPOT")),
-	StorageKeysLookup: storage.NewKeysLookup(spot.NewKeysLoader(&mcdStorage.MakerStorageRepository{})),
-	Repository:        &spot.SpotStorageRepository{},
+	HashedAddress:     vdbStorage.HexToKeccak256Hash(spotAddress),
+	StorageKeysLookup: storage.NewKeysLookup(spot.NewKeysLoader(&mcdStorage.MakerStorageRepository{}, spotAddress)),
+	Repository:        &spot.SpotStorageRepository{ContractAddress: spotAddress},
 }.NewTransformer
