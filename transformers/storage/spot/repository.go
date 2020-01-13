@@ -35,7 +35,7 @@ const (
 )
 
 type SpotStorageRepository struct {
-	db *postgres.DB
+	db              *postgres.DB
 	ContractAddress string
 }
 

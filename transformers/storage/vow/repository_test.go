@@ -18,6 +18,7 @@ package vow_test
 
 import (
 	"fmt"
+	"math/rand"
 	"strconv"
 
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
@@ -45,7 +46,7 @@ var _ = Describe("Vow storage repository test", func() {
 
 	BeforeEach(func() {
 		fakeAddress = fakes.FakeAddress.Hex()
-		fakeUint256 = "12345"
+		fakeUint256 = strconv.Itoa(rand.Intn(1000000))
 		test_config.CleanTestDB(db)
 		repo = vow.VowStorageRepository{}
 		repo.SetDB(db)

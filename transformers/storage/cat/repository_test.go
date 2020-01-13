@@ -28,7 +28,7 @@ var _ = Describe("Cat storage repository", func() {
 		repo                 cat.CatStorageRepository
 		diffID, fakeHeaderID int64
 		fakeAddress          = "0x" + fakes.RandomString(40)
-		fakeUint256          = "12345"
+		fakeUint256          = strconv.Itoa(rand.Intn(1000000))
 	)
 
 	BeforeEach(func() {

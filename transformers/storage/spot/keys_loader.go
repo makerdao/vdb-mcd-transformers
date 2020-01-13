@@ -49,7 +49,7 @@ var (
 
 type keysLoader struct {
 	storageRepository mcdStorage.IMakerStorageRepository
-	contractAddress string
+	contractAddress   string
 }
 
 func NewKeysLoader(storageRepository mcdStorage.IMakerStorageRepository, contractAddress string) storage.KeysLoader {

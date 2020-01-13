@@ -42,7 +42,7 @@ var _ = Describe("Spot storage repository", func() {
 		db                   = test_config.NewTestDB(test_config.NewTestNode())
 		repo                 spot.SpotStorageRepository
 		fakeAddress          = "0x" + fakes.RandomString(20)
-		fakeUint256          = strconv.Itoa(rand.Int())
+		fakeUint256          = strconv.Itoa(rand.Intn(1000000))
 		diffID, fakeHeaderID int64
 	)
 
