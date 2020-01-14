@@ -22,6 +22,8 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/cat"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/utilities/wards"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
 	vdbStorage "github.com/makerdao/vulcanizedb/libraries/shared/storage"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
@@ -37,7 +39,7 @@ var _ = Describe("Cat storage keys loader", func() {
 
 	BeforeEach(func() {
 		storageRepository = &test_helpers.MockMakerStorageRepository{}
-		storageKeysLoader = cat.NewKeysLoader(storageRepository)
+		storageKeysLoader = cat.NewKeysLoader(storageRepository, test_data.CatAddress())
 	})
 
 	It("returns value metadata for static keys", func() {
@@ -104,6 +106,37 @@ var _ = Describe("Cat storage keys loader", func() {
 				}
 
 				Expect(mappings[ilkLumpKey]).To(Equal(expectedMetadata))
+			})
+		})
+	})
+
+	Describe("wards", func() {
+		It("returns value metadata for wards", func() {
+			wardsUser := fakes.FakeAddress.Hex()
+			storageRepository.WardsKeys = []string{wardsUser}
+			paddedWardsUser := "0x000000000000000000000000" + wardsUser[2:]
+			wardsKey := common.BytesToHash(crypto.Keccak256(common.FromHex(paddedWardsUser + wards.WardsMappingIndex)))
+			expectedMetadata := vdbStorage.ValueMetadata{
+				Name: wards.Wards,
+				Keys: map[vdbStorage.Key]string{constants.User: fakes.FakeAddress.Hex()},
+				Type: vdbStorage.Uint256,
+			}
+
+			mappings, err := storageKeysLoader.LoadMappings()
+			Expect(err).NotTo(HaveOccurred())
+
+			Expect(storageRepository.GetWardsKeysCalledWith).To(Equal(test_data.CatAddress()))
+			Expect(mappings[wardsKey]).To(Equal(expectedMetadata))
+		})
+
+		Describe("when getting users fails", func() {
+			It("returns error", func() {
+				storageRepository.GetWardsKeysError = fakes.FakeError
+
+				_, err := storageKeysLoader.LoadMappings()
+
+				Expect(err).To(HaveOccurred())
+				Expect(err).To(MatchError(fakes.FakeError))
 			})
 		})
 	})

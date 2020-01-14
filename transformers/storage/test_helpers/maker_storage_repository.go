@@ -18,18 +18,19 @@ type MockMakerStorageRepository struct {
 	PotPieUsers             []string
 	SinKeys                 []string
 	Urns                    []storage.Urn
+	WardsKeys               []string
 	GetCdpisCalled          bool
 	GetCdpisError           error
 	GetDaiKeysCalled        bool
 	GetDaiKeysError         error
-	GetGemKeysCalled        bool
-	GetGemKeysError         error
 	GetFlapBidIdsCalled     bool
 	GetFlapBidIdsError      error
 	GetFlipBidIdsCalledWith string
 	GetFlipBidIdsError      error
 	GetFlopBidIdsCalledWith string
 	GetFlopBidIdsError      error
+	GetGemKeysCalled        bool
+	GetGemKeysError         error
 	GetIlksCalled           bool
 	GetIlksError            error
 	GetOwnersCalled         bool
@@ -42,6 +43,18 @@ type MockMakerStorageRepository struct {
 	GetVowSinKeysError      error
 	GetUrnsCalled           bool
 	GetUrnsError            error
+	GetWardsKeysCalledWith  string
+	GetWardsKeysError       error
+}
+
+func (repository *MockMakerStorageRepository) GetCdpis() ([]string, error) {
+	repository.GetCdpisCalled = true
+	return repository.Cdpis, repository.GetCdpisError
+}
+
+func (repository *MockMakerStorageRepository) GetDaiKeys() ([]string, error) {
+	repository.GetDaiKeysCalled = true
+	return repository.DaiKeys, repository.GetDaiKeysError
 }
 
 func (repository *MockMakerStorageRepository) GetFlapBidIds(string) ([]string, error) {
@@ -49,9 +62,14 @@ func (repository *MockMakerStorageRepository) GetFlapBidIds(string) ([]string, e
 	return repository.FlapBidIds, repository.GetFlapBidIdsError
 }
 
-func (repository *MockMakerStorageRepository) GetDaiKeys() ([]string, error) {
-	repository.GetDaiKeysCalled = true
-	return repository.DaiKeys, repository.GetDaiKeysError
+func (repository *MockMakerStorageRepository) GetFlipBidIds(contractAddress string) ([]string, error) {
+	repository.GetFlipBidIdsCalledWith = contractAddress
+	return repository.FlipBidIds, repository.GetFlipBidIdsError
+}
+
+func (repository *MockMakerStorageRepository) GetFlopBidIds(contractAddress string) ([]string, error) {
+	repository.GetFlopBidIdsCalledWith = contractAddress
+	return repository.FlopBidIds, repository.GetFlopBidIdsError
 }
 
 func (repository *MockMakerStorageRepository) GetGemKeys() ([]storage.Urn, error) {
@@ -62,6 +80,16 @@ func (repository *MockMakerStorageRepository) GetGemKeys() ([]storage.Urn, error
 func (repository *MockMakerStorageRepository) GetIlks() ([]string, error) {
 	repository.GetIlksCalled = true
 	return repository.Ilks, repository.GetIlksError
+}
+
+func (repository *MockMakerStorageRepository) GetOwners() ([]string, error) {
+	repository.GetOwnersCalled = true
+	return repository.Owners, repository.GetOwnersError
+}
+
+func (repository *MockMakerStorageRepository) GetPotPieUsers() ([]string, error) {
+	repository.GetPotPieUsersCalled = true
+	return repository.PotPieUsers, repository.GetPotPieUsersError
 }
 
 func (repository *MockMakerStorageRepository) GetVatSinKeys() ([]string, error) {
@@ -79,29 +107,9 @@ func (repository *MockMakerStorageRepository) GetUrns() ([]storage.Urn, error) {
 	return repository.Urns, repository.GetUrnsError
 }
 
-func (repository *MockMakerStorageRepository) GetFlipBidIds(contractAddress string) ([]string, error) {
-	repository.GetFlipBidIdsCalledWith = contractAddress
-	return repository.FlipBidIds, repository.GetFlipBidIdsError
-}
-
-func (repository *MockMakerStorageRepository) GetFlopBidIds(contractAddress string) ([]string, error) {
-	repository.GetFlopBidIdsCalledWith = contractAddress
-	return repository.FlopBidIds, repository.GetFlopBidIdsError
-}
-
-func (repository *MockMakerStorageRepository) GetCdpis() ([]string, error) {
-	repository.GetCdpisCalled = true
-	return repository.Cdpis, repository.GetCdpisError
-}
-
-func (repository *MockMakerStorageRepository) GetOwners() ([]string, error) {
-	repository.GetOwnersCalled = true
-	return repository.Owners, repository.GetOwnersError
-}
-
-func (repository *MockMakerStorageRepository) GetPotPieUsers() ([]string, error) {
-	repository.GetPotPieUsersCalled = true
-	return repository.PotPieUsers, repository.GetPotPieUsersError
+func (repository *MockMakerStorageRepository) GetWardsAddresses(contractAddress string) ([]string, error) {
+	repository.GetWardsKeysCalledWith = contractAddress
+	return repository.WardsKeys, repository.GetWardsKeysError
 }
 
 func (repository *MockMakerStorageRepository) SetDB(db *postgres.DB) {}

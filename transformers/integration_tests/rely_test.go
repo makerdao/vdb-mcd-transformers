@@ -15,58 +15,56 @@ import (
 )
 
 var _ = Describe("Rely transformer", func() {
-	const (
-		defaultOffset int = 0
-		vatOffset     int = -1
-	)
-
 	Context("Cat rely events", func() {
 		usrAddress := "0x0e4725db88bb038bba4c4723e91ba183be11edf3"
-		relyIntegrationTest(int64(14764552), test_data.CatAddress(), usrAddress, defaultOffset)
+		msgSenderAddress := "0x13141b8a5e4a82ebc6b636849dd6a515185d6236"
+		relyIntegrationTest(int64(14764552), test_data.CatAddress(), msgSenderAddress, usrAddress)
 	})
 
 	Context("Flap rely events", func() {
 		usrAddress := "0x0e4725db88bb038bba4c4723e91ba183be11edf3"
-		relyIntegrationTest(int64(14764552), test_data.FlapAddress(), usrAddress, defaultOffset)
+		msgSenderAddress := "0x13141b8a5e4a82ebc6b636849dd6a515185d6236"
+		relyIntegrationTest(int64(14764552), test_data.FlapAddress(), msgSenderAddress, usrAddress)
 	})
 
 	Context("Flip rely events", func() {
 		usrAddress := "0x13141b8a5e4a82ebc6b636849dd6a515185d6236"
-		relyIntegrationTest(int64(14764569), test_data.EthFlipAddress(), usrAddress, defaultOffset)
+		msgSenderAddress := "0xffb0382ca7cfdc4fc4d5cc8913af1393d7ee1ef1"
+		relyIntegrationTest(int64(14764569), test_data.EthFlipAddress(), msgSenderAddress, usrAddress)
 	})
 
 	Context("Flop rely events", func() {
 		usrAddress := "0x0f4cbe6cba918b7488c26e29d9ecd7368f38ea3b"
-		relyIntegrationTest(int64(15196765), test_data.FlopAddress(), usrAddress, defaultOffset)
+		msgSenderAddress := "0x0e4725db88bb038bba4c4723e91ba183be11edf3"
+		relyIntegrationTest(int64(15196765), test_data.FlopAddress(), msgSenderAddress, usrAddress)
 	})
 
 	Context("Jug rely events", func() {
 		usrAddress := "0x0e4725db88bb038bba4c4723e91ba183be11edf3"
-		relyIntegrationTest(int64(14764552), test_data.JugAddress(), usrAddress, defaultOffset)
+		msgSenderAddress := "0x13141b8a5e4a82ebc6b636849dd6a515185d6236"
+		relyIntegrationTest(int64(14764552), test_data.JugAddress(), msgSenderAddress, usrAddress)
 	})
 
 	Context("Pot rely events", func() {
 		usrAddress := "0x0e4725db88bb038bba4c4723e91ba183be11edf3"
-		relyIntegrationTest(int64(14764552), test_data.PotAddress(), usrAddress, defaultOffset)
+		msgSenderAddress := "0x13141b8a5e4a82ebc6b636849dd6a515185d6236"
+		relyIntegrationTest(int64(14764552), test_data.PotAddress(), msgSenderAddress, usrAddress)
 	})
 
 	Context("Spot rely events", func() {
 		usrAddress := "0x0e4725db88bb038bba4c4723e91ba183be11edf3"
-		relyIntegrationTest(int64(14764552), test_data.SpotAddress(), usrAddress, defaultOffset)
-	})
-
-	Context("Vat rely events", func() {
-		usrAddress := "0x0e4725db88bb038bba4c4723e91ba183be11edf3"
-		relyIntegrationTest(int64(14764552), test_data.VatAddress(), usrAddress, vatOffset)
+		msgSenderAddress := "0x13141b8a5e4a82ebc6b636849dd6a515185d6236"
+		relyIntegrationTest(int64(14764552), test_data.SpotAddress(), msgSenderAddress, usrAddress)
 	})
 
 	Context("Vow rely events", func() {
 		usrAddress := "0x0e4725db88bb038bba4c4723e91ba183be11edf3"
-		relyIntegrationTest(int64(14764552), test_data.VowAddress(), usrAddress, defaultOffset)
+		msgSenderAddress := "0x13141b8a5e4a82ebc6b636849dd6a515185d6236"
+		relyIntegrationTest(int64(14764552), test_data.VowAddress(), msgSenderAddress, usrAddress)
 	})
 })
 
-func relyIntegrationTest(blockNumber int64, contractAddressHex, usrAddressHex string, logNoteArgumentOffset int) {
+func relyIntegrationTest(blockNumber int64, contractAddressHex, msgSenderAddressHex, usrAddressHex string) {
 	It("persists event", func() {
 		test_config.CleanTestDB(db)
 		logFetcher := fetcher.NewLogFetcher(blockChain)
@@ -76,7 +74,7 @@ func relyIntegrationTest(blockNumber int64, contractAddressHex, usrAddressHex st
 		}
 		initializer := event.ConfiguredTransformer{
 			Config:      relyConfig,
-			Transformer: auth.Transformer{LogNoteArgumentOffset: logNoteArgumentOffset, TableName: constants.RelyTable},
+			Transformer: auth.Transformer{TableName: constants.RelyTable},
 		}
 
 		header, headerErr := persistHeader(db, blockNumber, blockChain)
@@ -99,20 +97,24 @@ func relyIntegrationTest(blockNumber int64, contractAddressHex, usrAddressHex st
 		Expect(transformErr).NotTo(HaveOccurred())
 
 		var dbResult []relyModel
-		err := db.Select(&dbResult, `SELECT address_id, usr FROM maker.rely ORDER BY log_id`)
+		err := db.Select(&dbResult, `SELECT address_id, msg_sender, usr FROM maker.rely ORDER BY log_id`)
 		Expect(err).NotTo(HaveOccurred())
 
 		contractAddressID, contractAddressErr := shared.GetOrCreateAddress(contractAddressHex, db)
 		Expect(contractAddressErr).NotTo(HaveOccurred())
+		msgSenderAddressID, msgSenderAddressErr := shared.GetOrCreateAddress(msgSenderAddressHex, db)
+		Expect(msgSenderAddressErr).NotTo(HaveOccurred())
 		usrAddressID, usrAddressErr := shared.GetOrCreateAddress(usrAddressHex, db)
 		Expect(usrAddressErr).NotTo(HaveOccurred())
 
-		Expect(dbResult[0].AddressId).To(Equal(contractAddressID))
+		Expect(dbResult[0].AddressID).To(Equal(contractAddressID))
+		Expect(dbResult[0].MsgSender).To(Equal(msgSenderAddressID))
 		Expect(dbResult[0].Usr).To(Equal(usrAddressID))
 	})
 }
 
 type relyModel struct {
 	Usr       int64 `db:"usr"`
-	AddressId int64 `db:"address_id"`
+	MsgSender int64 `db:"msg_sender"`
+	AddressID int64 `db:"address_id"`
 }

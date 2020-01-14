@@ -5,6 +5,7 @@ import (
 
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/utilities/wards"
 	"github.com/makerdao/vulcanizedb/libraries/shared/storage"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 )
@@ -20,7 +21,8 @@ const (
 )
 
 type CatStorageRepository struct {
-	db *postgres.DB
+	db              *postgres.DB
+	ContractAddress string
 }
 
 func (repository *CatStorageRepository) Create(diffID, headerID int64, metadata storage.ValueMetadata, value interface{}) error {
@@ -31,6 +33,8 @@ func (repository *CatStorageRepository) Create(diffID, headerID int64, metadata 
 		return repository.insertVat(diffID, headerID, value.(string))
 	case Vow:
 		return repository.insertVow(diffID, headerID, value.(string))
+	case wards.Wards:
+		return wards.InsertWards(diffID, headerID, metadata, repository.ContractAddress, value.(string), repository.db)
 	case IlkChop:
 		return repository.insertIlkChop(diffID, headerID, metadata, value.(string))
 	case IlkFlip:
@@ -116,12 +120,4 @@ func getIlk(keys map[storage.Key]string) (string, error) {
 		return "", storage.ErrMetadataMalformed{MissingData: constants.Ilk}
 	}
 	return ilk, nil
-}
-
-func getFlip(keys map[storage.Key]string) (string, error) {
-	flip, ok := keys[constants.Flip]
-	if !ok {
-		return "", storage.ErrMetadataMalformed{MissingData: constants.Flip}
-	}
-	return flip, nil
 }
