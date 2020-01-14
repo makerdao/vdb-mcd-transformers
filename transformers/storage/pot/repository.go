@@ -6,6 +6,7 @@ import (
 	"github.com/jmoiron/sqlx"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/utilities/wards"
 	"github.com/makerdao/vulcanizedb/libraries/shared/storage"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 )
@@ -22,7 +23,8 @@ const (
 )
 
 type PotStorageRepository struct {
-	db *postgres.DB
+	db              *postgres.DB
+	ContractAddress string
 }
 
 type diffInserter func(int64, *sqlx.Tx) error
@@ -31,6 +33,8 @@ func (repository PotStorageRepository) Create(diffID, headerID int64, metadata s
 	switch metadata.Name {
 	case UserPie:
 		return repository.insertUserPie(diffID, headerID, metadata, value.(string))
+	case wards.Wards:
+		return wards.InsertWards(diffID, headerID, metadata, repository.ContractAddress, value.(string), repository.db)
 	case Pie:
 		return repository.insertPie(diffID, headerID, value.(string))
 	case Dsr:
