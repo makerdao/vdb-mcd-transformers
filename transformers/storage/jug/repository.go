@@ -21,6 +21,7 @@ import (
 
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/utilities/wards"
 	"github.com/makerdao/vulcanizedb/libraries/shared/storage"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 )
@@ -34,11 +35,14 @@ const (
 )
 
 type JugStorageRepository struct {
-	db *postgres.DB
+	db              *postgres.DB
+	ContractAddress string
 }
 
 func (repository JugStorageRepository) Create(diffID, headerID int64, metadata storage.ValueMetadata, value interface{}) error {
 	switch metadata.Name {
+	case wards.Wards:
+		return wards.InsertWards(diffID, headerID, metadata, repository.ContractAddress, value.(string), repository.db)
 	case IlkRho:
 		return repository.insertIlkRho(diffID, headerID, metadata, value.(string))
 	case IlkDuty:

@@ -22,9 +22,12 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	mcdStorage "github.com/makerdao/vdb-mcd-transformers/transformers/storage"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/jug"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
 	vdbStorage "github.com/makerdao/vulcanizedb/libraries/shared/storage"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
@@ -36,18 +39,18 @@ import (
 var _ = Describe("Executing the transformer", func() {
 	var (
 		db                = test_config.NewTestDB(test_config.NewTestNode())
-		err               error
-		ilkID             int64
-		storageKeysLookup = storage.NewKeysLookup(jug.NewKeysLoader(&mcdStorage.MakerStorageRepository{}))
-		repository        = jug.JugStorageRepository{}
-		contractAddress   = "25a008bf942ce6d5b362f91ed7ae3e4104286a12"
+		contractAddress   = test_data.JugAddress()
+		storageKeysLookup = storage.NewKeysLookup(jug.NewKeysLoader(&mcdStorage.MakerStorageRepository{}, contractAddress))
+		repository        = jug.JugStorageRepository{ContractAddress: contractAddress}
 		transformer       = storage.Transformer{
 			HashedAddress:     vdbStorage.HexToKeccak256Hash(contractAddress),
 			StorageKeysLookup: storageKeysLookup,
 			Repository:        &repository,
 		}
-		headerID int64
 		header   = fakes.FakeHeader
+		headerID int64
+		err      error
+		ilkID    int64
 	)
 
 	BeforeEach(func() {
@@ -89,6 +92,43 @@ var _ = Describe("Executing the transformer", func() {
 		err = db.Get(&vowResult, `SELECT diff_id, header_id, vow AS value FROM maker.jug_vow`)
 		Expect(err).NotTo(HaveOccurred())
 		test_helpers.AssertVariable(vowResult, jugVowDiff.ID, headerID, "0x17560834075da3db54f737db74377e799c865821000000000000000000000000")
+	})
+
+	It("reads in a wards storage diff row and persists it", func() {
+		denyLog := test_data.CreateTestLog(header.Id, db)
+		denyModel := test_data.DenyModel()
+
+		jugAddressID, jugAddressErr := shared.GetOrCreateAddress(contractAddress, db)
+		Expect(jugAddressErr).NotTo(HaveOccurred())
+
+		userAddress := "0x13141b8a5e4a82ebc6b636849dd6a515185d6236"
+		userAddressID, userAddressErr := shared.GetOrCreateAddress(userAddress, db)
+		Expect(userAddressErr).NotTo(HaveOccurred())
+
+		msgSenderAddress := "0x" + fakes.RandomString(40)
+		msgSenderAddressID, msgSenderAddressErr := shared.GetOrCreateAddress(msgSenderAddress, db)
+		Expect(msgSenderAddressErr).NotTo(HaveOccurred())
+
+		denyModel.ColumnValues[event.HeaderFK] = header.Id
+		denyModel.ColumnValues[event.LogFK] = denyLog.ID
+		denyModel.ColumnValues[event.AddressFK] = jugAddressID
+		denyModel.ColumnValues[constants.MsgSenderColumn] = msgSenderAddressID
+		denyModel.ColumnValues[constants.UsrColumn] = userAddressID
+		insertErr := event.PersistModels([]event.InsertionModel{denyModel}, db)
+		Expect(insertErr).NotTo(HaveOccurred())
+
+		key := common.HexToHash("614c9873ec2671d6eb30d7a22b531442a34fc10f8c24a6598ef401fe94d9cb7d")
+		value := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000001")
+		wardsDiff := test_helpers.CreateDiffRecord(db, header, transformer.HashedAddress, key, value)
+
+		transformErr := transformer.Execute(wardsDiff)
+		Expect(transformErr).NotTo(HaveOccurred())
+
+		var wardsResult test_helpers.WardsMappingRes
+		err := db.Get(&wardsResult, `SELECT diff_id, header_id, address_id, usr AS key, wards.wards AS value FROM maker.wards`)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(wardsResult.AddressID).To(Equal(strconv.FormatInt(jugAddressID, 10)))
+		test_helpers.AssertMapping(wardsResult.MappingRes, wardsDiff.ID, header.Id, strconv.FormatInt(userAddressID, 10), "1")
 	})
 
 	It("reads in a Jug Ilk Duty storage diff row and persists it", func() {
