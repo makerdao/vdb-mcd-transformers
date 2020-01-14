@@ -27,6 +27,7 @@ import (
 	mcdStorage "github.com/makerdao/vdb-mcd-transformers/transformers/storage"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/flap"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/utilities/wards"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
 	vdbStorage "github.com/makerdao/vulcanizedb/libraries/shared/storage"
@@ -81,6 +82,37 @@ var _ = Describe("Flap storage keys loader", func() {
 			Keys: nil,
 			Type: vdbStorage.Uint256,
 		}))
+	})
+
+	Describe("wards", func() {
+		It("returns value metadata for wards", func() {
+			wardsUser := fakes.FakeAddress.Hex()
+			storageRepository.WardsKeys = []string{wardsUser}
+			paddedWardsUser := "0x000000000000000000000000" + wardsUser[2:]
+			wardsKey := common.BytesToHash(crypto.Keccak256(common.FromHex(paddedWardsUser + wards.WardsMappingIndex)))
+			expectedMetadata := vdbStorage.ValueMetadata{
+				Name: wards.Wards,
+				Keys: map[vdbStorage.Key]string{constants.User: fakes.FakeAddress.Hex()},
+				Type: vdbStorage.Uint256,
+			}
+
+			mappings, err := storageKeysLoader.LoadMappings()
+			Expect(err).NotTo(HaveOccurred())
+
+			Expect(storageRepository.GetWardsKeysCalledWith).To(Equal(test_data.FlapAddress()))
+			Expect(mappings[wardsKey]).To(Equal(expectedMetadata))
+		})
+
+		Describe("when getting users fails", func() {
+			It("returns error", func() {
+				storageRepository.GetWardsKeysError = fakes.FakeError
+
+				_, err := storageKeysLoader.LoadMappings()
+
+				Expect(err).To(HaveOccurred())
+				Expect(err).To(MatchError(fakes.FakeError))
+			})
+		})
 	})
 
 	Describe("flap bids", func() {

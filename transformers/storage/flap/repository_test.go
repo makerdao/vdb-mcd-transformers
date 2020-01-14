@@ -11,6 +11,8 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/flap"
 	. "github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/utilities/wards"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data/shared_behaviors"
 	vdbStorage "github.com/makerdao/vulcanizedb/libraries/shared/storage"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
@@ -22,23 +24,22 @@ import (
 var _ = Describe("Flap storage repository", func() {
 	var (
 		db                   = test_config.NewTestDB(test_config.NewTestNode())
+		flapContractAddress  = test_data.FlapAddress()
 		repository           flap.FlapStorageRepository
 		blockNumber          int64
 		diffID, fakeHeaderID int64
-		flapContractAddress  = "flapContractAddress"
 	)
 
 	BeforeEach(func() {
 		test_config.CleanTestDB(db)
-		repository = flap.FlapStorageRepository{
-			ContractAddress: flapContractAddress,
-		}
+		repository = flap.FlapStorageRepository{ContractAddress: flapContractAddress}
 		repository.SetDB(db)
 		blockNumber = rand.Int63()
 		headerRepository := repositories.NewHeaderRepository(db)
 		var insertHeaderErr error
 		fakeHeaderID, insertHeaderErr = headerRepository.CreateOrUpdateHeader(fakes.GetFakeHeader(blockNumber))
 		Expect(insertHeaderErr).NotTo(HaveOccurred())
+		diffID = CreateFakeDiffRecord(db)
 	})
 
 	It("panics if the metadata name is not recognized", func() {
@@ -80,8 +81,6 @@ var _ = Describe("Flap storage repository", func() {
 	})
 
 	It("gets or creates the address record", func() {
-		diffID = CreateFakeDiffRecord(db)
-
 		var begMetadata = vdbStorage.ValueMetadata{Name: storage.Beg}
 		createErr := repository.Create(diffID, fakeHeaderID, begMetadata, strconv.Itoa(rand.Int()))
 		Expect(createErr).NotTo(HaveOccurred())
@@ -94,6 +93,52 @@ var _ = Describe("Flap storage repository", func() {
 		getErr := db.Get(&ttlContractAddressId, query)
 		Expect(getErr).NotTo(HaveOccurred())
 		Expect(ttlContractAddressId).To(Equal(addressId))
+	})
+
+	Describe("Wards mapping", func() {
+		var fakeUint256 = strconv.Itoa(rand.Intn(1000000))
+
+		It("writes a row", func() {
+			fakeUserAddress := "0x" + fakes.RandomString(40)
+			wardsMetadata := vdbStorage.GetValueMetadata(wards.Wards, map[vdbStorage.Key]string{constants.User: fakeUserAddress}, vdbStorage.Uint256)
+
+			setupErr := repository.Create(diffID, fakeHeaderID, wardsMetadata, fakeUint256)
+			Expect(setupErr).NotTo(HaveOccurred())
+
+			var result WardsMappingRes
+			query := fmt.Sprintf(`SELECT diff_id, header_id, address_id, usr AS key, wards AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.WardsTable))
+			err := db.Get(&result, query)
+			Expect(err).NotTo(HaveOccurred())
+			contractAddressID, contractAddressErr := shared.GetOrCreateAddress(repository.ContractAddress, db)
+			Expect(contractAddressErr).NotTo(HaveOccurred())
+			userAddressID, userAddressErr := shared.GetOrCreateAddress(fakeUserAddress, db)
+			Expect(userAddressErr).NotTo(HaveOccurred())
+			Expect(result.AddressID).To(Equal(strconv.FormatInt(contractAddressID, 10)))
+			AssertMapping(result.MappingRes, diffID, fakeHeaderID, strconv.FormatInt(userAddressID, 10), fakeUint256)
+		})
+
+		It("does not duplicate row", func() {
+			fakeUserAddress := "0x" + fakes.RandomString(40)
+			wardsMetadata := vdbStorage.GetValueMetadata(wards.Wards, map[vdbStorage.Key]string{constants.User: fakeUserAddress}, vdbStorage.Uint256)
+			insertOneErr := repository.Create(diffID, fakeHeaderID, wardsMetadata, fakeUint256)
+			Expect(insertOneErr).NotTo(HaveOccurred())
+
+			insertTwoErr := repository.Create(diffID, fakeHeaderID, wardsMetadata, fakeUint256)
+
+			Expect(insertTwoErr).NotTo(HaveOccurred())
+			var count int
+			query := fmt.Sprintf(`SELECT count(*) FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.WardsTable))
+			getCountErr := db.Get(&count, query)
+			Expect(getCountErr).NotTo(HaveOccurred())
+			Expect(count).To(Equal(1))
+		})
+
+		It("returns an error if metadata missing user", func() {
+			malformedWardsMetadata := vdbStorage.GetValueMetadata(wards.Wards, map[vdbStorage.Key]string{}, vdbStorage.Uint256)
+
+			err := repository.Create(diffID, fakeHeaderID, malformedWardsMetadata, fakeUint256)
+			Expect(err).To(MatchError(vdbStorage.ErrMetadataMalformed{MissingData: constants.User}))
+		})
 	})
 
 	Describe("vat", func() {
@@ -164,8 +209,6 @@ var _ = Describe("Flap storage repository", func() {
 		values[1] = fakeTau
 
 		It("persists ttl and tau records", func() {
-			diffID = CreateFakeDiffRecord(db)
-
 			err := repository.Create(diffID, fakeHeaderID, ttlAndTauMetadata, values)
 			Expect(err).NotTo(HaveOccurred())
 
@@ -283,8 +326,6 @@ var _ = Describe("Flap storage repository", func() {
 			shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
 
 			It("triggers an update to the flap table", func() {
-				diffID = CreateFakeDiffRecord(db)
-
 				err := repository.Create(diffID, fakeHeaderID, bidBidMetadata, fakeBidValue)
 				Expect(err).NotTo(HaveOccurred())
 
@@ -319,8 +360,6 @@ var _ = Describe("Flap storage repository", func() {
 			shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
 
 			It("triggers an update to the flap table", func() {
-				diffID = CreateFakeDiffRecord(db)
-
 				err := repository.Create(diffID, fakeHeaderID, bidLotMetadata, fakeLotValue)
 				Expect(err).NotTo(HaveOccurred())
 
@@ -354,7 +393,6 @@ var _ = Describe("Flap storage repository", func() {
 				values[2] = fakeEnd
 
 				BeforeEach(func() {
-					diffID = CreateFakeDiffRecord(db)
 
 					err := repository.Create(diffID, fakeHeaderID, bidGuyTicEndMetadata, values)
 					Expect(err).NotTo(HaveOccurred())
