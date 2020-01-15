@@ -80,7 +80,7 @@ func VatRelyModel() event.InsertionModel { return CopyModel(vatRelyModel) }
 var vatRelyModel = event.InsertionModel{
 	SchemaName:     constants.MakerSchema,
 	TableName:      constants.VatRelyTable,
-	OrderedColumns: []event.ColumnName{event.HeaderFK, event.LogFK, event.AddressFK, constants.UsrColumn},
+	OrderedColumns: []event.ColumnName{event.HeaderFK, event.LogFK, constants.UsrColumn},
 	ColumnValues: event.ColumnValues{
 		event.HeaderFK: VatRelyEventLog.HeaderID,
 		event.LogFK:    VatRelyEventLog.ID,
