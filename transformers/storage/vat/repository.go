@@ -21,6 +21,7 @@ import (
 
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/utilities/wards"
 	"github.com/makerdao/vulcanizedb/libraries/shared/storage"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 )
@@ -47,7 +48,10 @@ type VatStorageRepository struct {
 }
 
 func (repository *VatStorageRepository) Create(diffID, headerID int64, metadata storage.ValueMetadata, value interface{}) error {
+	contractAddress := constants.GetContractAddress("MCD_VAT")
 	switch metadata.Name {
+	case wards.Wards:
+		return wards.InsertWards(diffID, headerID, metadata, contractAddress, value.(string), repository.db)
 	case Dai:
 		return repository.insertDai(diffID, headerID, metadata, value.(string))
 	case Gem:

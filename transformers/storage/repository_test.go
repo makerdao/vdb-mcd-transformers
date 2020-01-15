@@ -637,8 +637,22 @@ var _ = Describe("Maker storage repository", func() {
 		})
 	})
 
+	Describe("getting vat auth keys", func() {
+		It("gets unique vat users", func() {
+			userAddressOne := common.HexToAddress(test_data.RandomString(40)).Hex()
+			userAddressTwo := common.HexToAddress(test_data.RandomString(40)).Hex()
+			insertVatAuthEvent(1, userAddressOne, "maker.vat_rely", db)
+			insertVatAuthEvent(2, userAddressTwo, "maker.vat_rely", db)
+			insertVatAuthEvent(3, userAddressTwo, "maker.vat_deny", db)
+
+			allUsers, userErr := repository.GetVatWardsAddresses()
+			Expect(userErr).NotTo(HaveOccurred())
+			Expect(allUsers).To(ConsistOf(userAddressOne, userAddressTwo))
+		})
+	})
+
 	Describe("getting auth keys", func() {
-		It("gets unique rely and deny users and msg.senders for a given contract ", func() {
+		It("gets unique rely and deny users and msg.senders for a given contract", func() {
 			msgSenderAddressOne := common.HexToAddress(test_data.RandomString(40)).Hex()
 			msgSenderAddressTwo := common.HexToAddress(test_data.RandomString(40)).Hex()
 			userAddressOne := common.HexToAddress(test_data.RandomString(40)).Hex()
@@ -955,6 +969,18 @@ func insertVatSlip(ilk, usr string, blockNumber int64, db *postgres.DB) {
 		headerID, ilkID, usr, vatSlipLog.ID,
 	)
 	Expect(execErr).NotTo(HaveOccurred())
+}
+
+func insertVatAuthEvent(blockNumber int64, userAddress, tableName string, db *postgres.DB) {
+	headerID := insertHeader(db, blockNumber)
+	log := test_data.CreateTestLog(headerID, db)
+
+	userAddressID, userAddressErr := shared.GetOrCreateAddress(userAddress, db)
+	Expect(userAddressErr).NotTo(HaveOccurred())
+
+	insertAuthEventQuery := fmt.Sprintf(`INSERT INTO %s (header_id, log_id, usr) VALUES ($1, $2, $3)`, tableName)
+	_, insertErr := db.Exec(insertAuthEventQuery, headerID, log.ID, userAddressID)
+	Expect(insertErr).NotTo(HaveOccurred())
 }
 
 func insertAuthEvent(blockNumber int64, contractAddress, msgSenderAddress, userAddress, tableName string, db *postgres.DB) {

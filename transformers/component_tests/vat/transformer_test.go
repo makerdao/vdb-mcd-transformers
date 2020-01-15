@@ -61,6 +61,43 @@ var _ = Describe("Executing the transformer", func() {
 		header.Id = headerID
 	})
 
+	It("reads in a Vat wards storage diff row and persists it", func() {
+		vatDenyLog := test_data.CreateTestLog(header.Id, db)
+		vatDenyModel := test_data.VatDenyModel()
+
+		vatAddressID, vatAddressErr := shared.GetOrCreateAddress(test_data.VatAddress(), db)
+		Expect(vatAddressErr).NotTo(HaveOccurred())
+
+		userAddress := "0x13141b8a5e4a82ebc6b636849dd6a515185d6236"
+		userAddressID, userAddressErr := shared.GetOrCreateAddress(userAddress, db)
+		Expect(userAddressErr).NotTo(HaveOccurred())
+
+		msgSenderAddress := "0x" + fakes.RandomString(40)
+		msgSenderAddressID, msgSenderAddressErr := shared.GetOrCreateAddress(msgSenderAddress, db)
+		Expect(msgSenderAddressErr).NotTo(HaveOccurred())
+
+		vatDenyModel.ColumnValues[event.HeaderFK] = header.Id
+		vatDenyModel.ColumnValues[event.LogFK] = vatDenyLog.ID
+		vatDenyModel.ColumnValues[event.AddressFK] = vatAddressID
+		vatDenyModel.ColumnValues[constants.MsgSenderColumn] = msgSenderAddressID
+		vatDenyModel.ColumnValues[constants.UsrColumn] = userAddressID
+		insertErr := event.PersistModels([]event.InsertionModel{vatDenyModel}, db)
+		Expect(insertErr).NotTo(HaveOccurred())
+
+		key := common.HexToHash("614c9873ec2671d6eb30d7a22b531442a34fc10f8c24a6598ef401fe94d9cb7d")
+		value := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000001")
+		wardsDiff := test_helpers.CreateDiffRecord(db, header, transformer.HashedAddress, key, value)
+
+		transformErr := transformer.Execute(wardsDiff)
+		Expect(transformErr).NotTo(HaveOccurred())
+
+		var wardsResult test_helpers.WardsMappingRes
+		err := db.Get(&wardsResult, `SELECT diff_id, header_id, address_id, usr AS key, wards.wards AS value FROM maker.wards`)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(wardsResult.AddressID).To(Equal(strconv.FormatInt(vatAddressID, 10)))
+		test_helpers.AssertMapping(wardsResult.MappingRes, wardsDiff.ID, headerID, strconv.FormatInt(userAddressID, 10), "1")
+	})
+
 	It("reads in a Vat debt storage diff row and persists it", func() {
 		key := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000007")
 		value := common.HexToHash("00000000000000000000000000047bf19673df52e37f2410011d100000000000")
