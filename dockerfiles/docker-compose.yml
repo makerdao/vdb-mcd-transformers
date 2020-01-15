@@ -1,20 +1,37 @@
 
-# This composition runs header sync and execute with automatic restarts.
-# Environment variables for each can be set in their respective `.env` file,
-# or overridden with a shell variable.
+# This composition runs a full vdb instance with automatic service restarts,
+# preconfigured for mainnet.
+#
+# When running you can access:
+# postgres   @ localhost:5432
+# graph(i)ql @ localhost:5000
+#
+# The client and database service stores the data on the *host* machine in a docker volume.
+# This means that if the cluster is gracefully stopped, it can be restarted again
+# without data loss.
+#
+# Commands:
+# To start the cluster: `> docker-compose up`
+# To stop the cluster, just `ctrl+c` (once, to allow a graceful exit)
+# To reset the cluster: `docker-compose down --volumes` (after stopping the cluster)
+#
+# Note that it'll take a couple of days for the client to sync with thge network before
+# vdb can do it's work.
 
 version: "3.7"
 services:
   header-sync:
-    image: makerdao/vdb-headersync:v0.0.11-lite
+    image: makerdao/vdb-headersync:latest # (needs wait-for-it.sh)
     env_file: mainnet-1.0.1.env
     environment:
-      - CLIENT_IPCPATH="https://geth0.mainnet.makerfoundation.com:8545"
+      # Remote client would need to be statediff enabled, and backfill needs to work
+      # - CLIENT_IPCPATH="https://geth0.mainnet.makerfoundation.com:8545"
+      - CLIENT_IPCPATH=ws://geth-statediffing:8546
       - DATABASE_NAME=vdb
       - DATABASE_HOSTNAME=db
       - DATABASE_PORT=5432
-      - DATABASE_USER=vulcanize
-      - DATABASE_PASSWORD=vulcanize
+      - DATABASE_USER=vdb
+      - DATABASE_PASSWORD=vdb
       - STARTING_BLOCK_NUMBER=8928152
     depends_on:
       - db
@@ -22,15 +39,18 @@ services:
     restart: unless-stopped
 
   execute:
-    image: makerdao/vdb-execute:v1.0.1-mainnet-lite-with-recheck
+    image: makerdao/vdb-execute:latest # (needs wait-for-it.sh)
     env_file: mainnet-1.0.1.env
     environment:
-      - CLIENT_IPCPATH="https://geth0.mainnet.makerfoundation.com:8545"
+      # Remote client would need to be statediff enabled, and backfill needs to work
+      # - CLIENT_IPCPATH="https://geth0.mainnet.makerfoundation.com:8545"
+      - CLIENT_IPCPATH=ws://geth-statediffing:8546
+      - STORAGEDIFFS_SOURCE=geth
       - DATABASE_NAME=vdb
       - DATABASE_HOSTNAME=db
       - DATABASE_PORT=5432
-      - DATABASE_USER=vulcanize
-      - DATABASE_PASSWORD=vulcanize
+      - DATABASE_USER=vdb
+      - DATABASE_PASSWORD=vdb
     depends_on:
       - db
     command: ["./wait-for-it.sh", "db:5432", "--strict", "--", "./startup_script.sh"]
@@ -39,18 +59,52 @@ services:
   db:
     image: postgres:12.1-alpine
     ports:
-      - 5432
+      - 5432:5432
     environment:
-      - POSTGRES_DB=vdb
-      - POSTGRES_USER=vulcanize
-      - POSTGRES_PASSWORD=vulcanize
+      - POSTGRES_USER=vdb
+      - POSTGRES_PASSWORD=vdb
     restart: always
 
   postgraphile:
     image: makerdao/vdb-postgraphile
+    ports:
+      - 5000:5000
     environment:
       - SCHEMAS=api
-      - DATABASE_URL="postgres://vulcanize:vulcanize@db:5432/vdb"
+      - DATABASE_URL="postgres://vdb:vdb@db:5432/vdb"
     depends_on:
       - db
     restart: always
+
+  # Optional in-cluster client. This will need to sync for a few days until you catch up with watched contracts
+  geth-statediffing:
+    image: makerdao/vdb-go-ethereum:v1.10-alpha.0
+    ports:
+      - 8545
+      - 8546
+      - 30303
+    command: [
+      "--verbosity", "2",
+      "--rpc",
+      "--rpcaddr", "0.0.0.0",
+      "--ws",
+      "--wsaddr", "0.0.0.0",
+      "--statediff",
+      "--syncmode", "full",
+      # The following can be re-generated from another env file with:
+      # awk -F= '/CONTRACT_.+_ADDRESS/{print "\"--statediff.watchedaddresses\", " "\""$2 "\", # " $1}' dockerfiles/mainnet-1.0.1.env
+      "--statediff.watchedaddresses", "0xd8a04f5412223f513dc55f839574430f5ec15531", # CONTRACT_MCD_FLIP_ETH_A_ADDRESS
+      "--statediff.watchedaddresses", "0xaa745404d55f88c108a28c86abe7b5a1e7817c07", # CONTRACT_MCD_FLIP_BAT_A_ADDRESS
+      "--statediff.watchedaddresses", "0x5432b2f3c0dff95aa191c45e5cbd539e2820ae72", # CONTRACT_MCD_FLIP_SAI_ADDRESS
+      "--statediff.watchedaddresses", "0x78f2c2af65126834c51822f56be0d7469d7a523e", # CONTRACT_MCD_CAT_ADDRESS
+      "--statediff.watchedaddresses", "0x5ef30b9986345249bc32d8928b7ee64de9435e39", # CONTRACT_CDP_MANAGER_ADDRESS
+      "--statediff.watchedaddresses", "0xdfe0fb1be2a52cdbf8fb962d5701d7fd0902db9f", # CONTRACT_MCD_FLAP_ADDRESS
+      "--statediff.watchedaddresses", "0x4d95a049d5b0b7d32058cd3f2163015747522e99", # CONTRACT_MCD_FLOP_ADDRESS
+      "--statediff.watchedaddresses", "0x19c0976f590d67707e62397c87829d896dc0f1f1", # CONTRACT_MCD_JUG_ADDRESS
+      "--statediff.watchedaddresses", "0x197e90f9fad81970ba7976f33cbd77088e5d7cf7", # CONTRACT_MCD_POT_ADDRESS
+      "--statediff.watchedaddresses", "0x65c79fcb50ca1594b025960e539ed7a9a6d434a3", # CONTRACT_MCD_SPOT_ADDRESS
+      "--statediff.watchedaddresses", "0x35d1b3f3d7966a1dfe207aa4514c12a259a0492b", # CONTRACT_MCD_VAT_ADDRESS
+      "--statediff.watchedaddresses", "0xa950524441892a31ebddf91d3ceefa04bf454466", # CONTRACT_MCD_VOW_ADDRESS
+      "--statediff.watchedaddresses", "0x81FE72B5A8d1A857d176C3E7d5Bd2679A9B85763", # CONTRACT_OSM_ETH_ADDRESS
+      "--statediff.watchedaddresses", "0xb4eb54af9cc7882df0121d26c5b97e802915abe6", # CONTRACT_OSM_BAT_ADDRESS
+    ]

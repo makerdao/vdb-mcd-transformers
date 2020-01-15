@@ -31,10 +31,12 @@ FROM golang:alpine
 WORKDIR /go/src/github.com/makerdao/vulcanizedb
 
 # add certificates for node requests via https
+# bash for wait-for-it
 RUN apk update \
         && apk upgrade \
         && apk add --no-cache \
         ca-certificates \
+        bash \
         && update-ca-certificates 2>/dev/null || true
 
 # add go so we can build the plugin
