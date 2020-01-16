@@ -24,6 +24,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	mcdStorage "github.com/makerdao/vdb-mcd-transformers/transformers/storage"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/utilities/wards"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/vat"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
 	vdbStorage "github.com/makerdao/vulcanizedb/libraries/shared/storage"
@@ -57,6 +58,15 @@ var _ = Describe("Vat storage keys loader", func() {
 	})
 
 	Describe("looking up dynamic keys", func() {
+		It("returns error if wards keys lookup fails", func() {
+			storageRepository.GetVatWardsKeysError = fakes.FakeError
+
+			_, err := storageKeysLoader.LoadMappings()
+
+			Expect(err).To(HaveOccurred())
+			Expect(err).To(MatchError(fakes.FakeError))
+		})
+
 		It("returns error if dai keys lookup fails", func() {
 			storageRepository.GetDaiKeysError = fakes.FakeError
 
@@ -100,6 +110,26 @@ var _ = Describe("Vat storage keys loader", func() {
 
 			Expect(err).To(HaveOccurred())
 			Expect(err).To(MatchError(fakes.FakeError))
+		})
+
+		Describe("wards", func() {
+			It("returns value metadata for wards", func() {
+				wardsUser := fakes.FakeAddress.Hex()
+				storageRepository.VatWardsKeys = []string{wardsUser}
+				paddedWardsUser := "0x000000000000000000000000" + wardsUser[2:]
+				wardsKey := common.BytesToHash(crypto.Keccak256(common.FromHex(paddedWardsUser + wards.WardsMappingIndex)))
+				expectedMetadata := vdbStorage.ValueMetadata{
+					Name: wards.Wards,
+					Keys: map[vdbStorage.Key]string{constants.User: fakes.FakeAddress.Hex()},
+					Type: vdbStorage.Uint256,
+				}
+
+				mappings, err := storageKeysLoader.LoadMappings()
+				Expect(err).NotTo(HaveOccurred())
+
+				Expect(storageRepository.GetVatWardsKeysCalled).To(Equal(true))
+				Expect(mappings[wardsKey]).To(Equal(expectedMetadata))
+			})
 		})
 
 		Describe("ilk", func() {

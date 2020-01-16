@@ -80,7 +80,7 @@ func VatDenyModel() event.InsertionModel { return CopyModel(vatDenyModel) }
 var vatDenyModel = event.InsertionModel{
 	SchemaName:     constants.MakerSchema,
 	TableName:      constants.VatDenyTable,
-	OrderedColumns: []event.ColumnName{event.HeaderFK, event.LogFK, event.AddressFK, constants.UsrColumn},
+	OrderedColumns: []event.ColumnName{event.HeaderFK, event.LogFK, constants.UsrColumn},
 	ColumnValues: event.ColumnValues{
 		event.HeaderFK: VatDenyEventLog.HeaderID,
 		event.LogFK:    VatDenyEventLog.ID,

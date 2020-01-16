@@ -25,18 +25,12 @@ var _ = Describe("Vat Auth Transformer", func() {
 		models, err := converter.ToModels(constants.VatABI(), []core.EventLog{test_data.VatRelyEventLog}, db)
 		Expect(err).NotTo(HaveOccurred())
 
-		var contractAddressID int64
-		contractAddressErr := db.Get(&contractAddressID, `SELECT id FROM addresses WHERE address = $1`,
-			test_data.VatRelyEventLog.Log.Address.String())
-		Expect(contractAddressErr).NotTo(HaveOccurred())
-
 		var usrAddressID int64
 		usrAddressErr := db.Get(&usrAddressID, `SELECT id FROM addresses WHERE address = $1`,
 			common.HexToAddress(test_data.VatRelyEventLog.Log.Topics[1].Hex()).Hex())
 		Expect(usrAddressErr).NotTo(HaveOccurred())
 
 		expectedModel := test_data.VatRelyModel()
-		expectedModel.ColumnValues[event.AddressFK] = contractAddressID
 		expectedModel.ColumnValues[constants.UsrColumn] = usrAddressID
 
 		Expect(models).To(Equal([]event.InsertionModel{expectedModel}))
@@ -47,18 +41,12 @@ var _ = Describe("Vat Auth Transformer", func() {
 		models, err := converter.ToModels(constants.VatABI(), []core.EventLog{test_data.VatDenyEventLog}, db)
 		Expect(err).NotTo(HaveOccurred())
 
-		var contractAddressID int64
-		contractAddressErr := db.Get(&contractAddressID, `SELECT id FROM addresses WHERE address = $1`,
-			test_data.VatDenyEventLog.Log.Address.String())
-		Expect(contractAddressErr).NotTo(HaveOccurred())
-
 		var usrAddressID int64
 		usrAddressErr := db.Get(&usrAddressID, `SELECT id FROM addresses WHERE address = $1`,
 			common.HexToAddress(test_data.VatDenyEventLog.Log.Topics[1].Hex()).Hex())
 		Expect(usrAddressErr).NotTo(HaveOccurred())
 
 		expectedModel := test_data.VatDenyModel()
-		expectedModel.ColumnValues[event.AddressFK] = contractAddressID
 		expectedModel.ColumnValues[constants.UsrColumn] = usrAddressID
 
 		Expect(models).To(Equal([]event.InsertionModel{expectedModel}))

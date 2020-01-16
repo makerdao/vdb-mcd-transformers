@@ -6,6 +6,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/utilities/wards"
 	vdbStorage "github.com/makerdao/vulcanizedb/libraries/shared/storage"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 )
@@ -49,6 +50,8 @@ func (repository *FlopStorageRepository) Create(diffID, headerID int64, metadata
 		return repository.insertLive(diffID, headerID, value.(string))
 	case storage.Vow:
 		return repository.insertVow(diffID, headerID, value.(string))
+	case wards.Wards:
+		return wards.InsertWards(diffID, headerID, metadata, repository.ContractAddress, value.(string), repository.db)
 	case storage.Packed:
 		return repository.insertPackedValueRecord(diffID, headerID, metadata, value.(map[int]string))
 	case storage.BidBid:

@@ -45,8 +45,7 @@ var _ = Describe("Executing the transformer", func() {
 			StorageKeysLookup: storageKeysLookup,
 			Repository:        &repository,
 		}
-		headerID int64
-		header   = fakes.FakeHeader
+		header = fakes.FakeHeader
 	)
 
 	BeforeEach(func() {
@@ -54,10 +53,8 @@ var _ = Describe("Executing the transformer", func() {
 		transformer.NewTransformer(db)
 		headerRepository := repositories.NewHeaderRepository(db)
 		var insertHeaderErr error
-		headerID, insertHeaderErr = headerRepository.CreateOrUpdateHeader(header)
+		header.Id, insertHeaderErr = headerRepository.CreateOrUpdateHeader(header)
 		Expect(insertHeaderErr).NotTo(HaveOccurred())
-
-		header.Id = headerID
 	})
 
 	It("reads in a vat storage diff row and persists it", func() {
@@ -71,7 +68,7 @@ var _ = Describe("Executing the transformer", func() {
 		var vatResult test_helpers.VariableRes
 		err = db.Get(&vatResult, `SELECT diff_id, header_id, vat AS value FROM maker.cdp_manager_vat`)
 		Expect(err).NotTo(HaveOccurred())
-		test_helpers.AssertVariable(vatResult, vatDiff.ID, headerID, "0x04C67ea772EBb467383772Cb1b64c7a9b1e02BCa")
+		test_helpers.AssertVariable(vatResult, vatDiff.ID, header.Id, "0x04C67ea772EBb467383772Cb1b64c7a9b1e02BCa")
 	})
 
 	It("reads in a cdpi storage diff row and persists it", func() {
@@ -85,7 +82,7 @@ var _ = Describe("Executing the transformer", func() {
 		var cdpiResult test_helpers.VariableRes
 		err = db.Get(&cdpiResult, `SELECT diff_id, header_id, cdpi AS value FROM maker.cdp_manager_cdpi`)
 		Expect(err).NotTo(HaveOccurred())
-		test_helpers.AssertVariable(cdpiResult, cdpiDiff.ID, headerID, "3")
+		test_helpers.AssertVariable(cdpiResult, cdpiDiff.ID, header.Id, "3")
 	})
 
 	Describe("cdpi key mappings", func() {
@@ -96,7 +93,7 @@ var _ = Describe("Executing the transformer", func() {
 			value := common.HexToHash("00000000000000000000000031f92649bf2d780be06bab1c5f591d0f1cc4b0d2")
 			urnsDiff := test_helpers.CreateDiffRecord(db, header, transformer.HashedAddress, key, value)
 
-			_, insertErr := db.Exec(cdp_manager.InsertCdpiQuery, urnsDiff.ID, headerID, cdpi)
+			_, insertErr := db.Exec(cdp_manager.InsertCdpiQuery, urnsDiff.ID, header.Id, cdpi)
 			Expect(insertErr).NotTo(HaveOccurred())
 
 			err := transformer.Execute(urnsDiff)
@@ -105,7 +102,7 @@ var _ = Describe("Executing the transformer", func() {
 			var urnsResult test_helpers.MappingRes
 			err = db.Get(&urnsResult, `SELECT diff_id, header_id, cdpi AS key, urn AS value FROM maker.cdp_manager_urns`)
 			Expect(err).NotTo(HaveOccurred())
-			test_helpers.AssertMapping(urnsResult, urnsDiff.ID, headerID, strconv.Itoa(cdpi), "0x31f92649BF2d780BE06BAB1C5F591d0f1Cc4b0D2")
+			test_helpers.AssertMapping(urnsResult, urnsDiff.ID, header.Id, strconv.Itoa(cdpi), "0x31f92649BF2d780BE06BAB1C5F591d0f1Cc4b0D2")
 		})
 
 		It("reads in a list prev storage diff row and persists it", func() {
@@ -113,7 +110,7 @@ var _ = Describe("Executing the transformer", func() {
 			value := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000001")
 			listPrevDiff := test_helpers.CreateDiffRecord(db, header, transformer.HashedAddress, key, value)
 
-			_, insertErr := db.Exec(cdp_manager.InsertCdpiQuery, listPrevDiff.ID, headerID, cdpi)
+			_, insertErr := db.Exec(cdp_manager.InsertCdpiQuery, listPrevDiff.ID, header.Id, cdpi)
 			Expect(insertErr).NotTo(HaveOccurred())
 
 			err := transformer.Execute(listPrevDiff)
@@ -122,7 +119,7 @@ var _ = Describe("Executing the transformer", func() {
 			var listPrevResult test_helpers.MappingRes
 			err = db.Get(&listPrevResult, `SELECT diff_id, header_id, cdpi AS key, prev AS value FROM maker.cdp_manager_list_prev`)
 			Expect(err).NotTo(HaveOccurred())
-			test_helpers.AssertMapping(listPrevResult, listPrevDiff.ID, headerID, strconv.Itoa(cdpi), "1")
+			test_helpers.AssertMapping(listPrevResult, listPrevDiff.ID, header.Id, strconv.Itoa(cdpi), "1")
 		})
 
 		It("reads in a list next storage diff row and persists it", func() {
@@ -130,7 +127,7 @@ var _ = Describe("Executing the transformer", func() {
 			value := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000003")
 			listNextDiff := test_helpers.CreateDiffRecord(db, header, transformer.HashedAddress, key, value)
 
-			_, insertErr := db.Exec(cdp_manager.InsertCdpiQuery, listNextDiff.ID, headerID, cdpi)
+			_, insertErr := db.Exec(cdp_manager.InsertCdpiQuery, listNextDiff.ID, header.Id, cdpi)
 			Expect(insertErr).NotTo(HaveOccurred())
 
 			err := transformer.Execute(listNextDiff)
@@ -139,7 +136,7 @@ var _ = Describe("Executing the transformer", func() {
 			var listNextResult test_helpers.MappingRes
 			err = db.Get(&listNextResult, `SELECT diff_id, header_id, cdpi AS key, next AS value FROM maker.cdp_manager_list_next`)
 			Expect(err).NotTo(HaveOccurred())
-			test_helpers.AssertMapping(listNextResult, listNextDiff.ID, headerID, strconv.Itoa(cdpi), "3")
+			test_helpers.AssertMapping(listNextResult, listNextDiff.ID, header.Id, strconv.Itoa(cdpi), "3")
 		})
 
 		It("reads in an owns storage diff row and persists it", func() {
@@ -147,7 +144,7 @@ var _ = Describe("Executing the transformer", func() {
 			value := common.HexToHash("00000000000000000000000016fb96a5fa0427af0c8f7cf1eb4870231c8154b6")
 			ownsDiff := test_helpers.CreateDiffRecord(db, header, transformer.HashedAddress, key, value)
 
-			_, insertErr := db.Exec(cdp_manager.InsertCdpiQuery, ownsDiff.ID, headerID, cdpi)
+			_, insertErr := db.Exec(cdp_manager.InsertCdpiQuery, ownsDiff.ID, header.Id, cdpi)
 			Expect(insertErr).NotTo(HaveOccurred())
 
 			err := transformer.Execute(ownsDiff)
@@ -156,7 +153,7 @@ var _ = Describe("Executing the transformer", func() {
 			var ownsResult test_helpers.MappingRes
 			err = db.Get(&ownsResult, `SELECT diff_id, header_id, cdpi AS key, owner AS value FROM maker.cdp_manager_owns`)
 			Expect(err).NotTo(HaveOccurred())
-			test_helpers.AssertMapping(ownsResult, ownsDiff.ID, headerID, strconv.Itoa(cdpi), "0x16Fb96a5fa0427Af0C8F7cF1eB4870231c8154B6")
+			test_helpers.AssertMapping(ownsResult, ownsDiff.ID, header.Id, strconv.Itoa(cdpi), "0x16Fb96a5fa0427Af0C8F7cF1eB4870231c8154B6")
 		})
 
 		It("reads in an ilks storage diff row and persists it", func() {
@@ -164,7 +161,7 @@ var _ = Describe("Executing the transformer", func() {
 			value := common.HexToHash("4554482d41000000000000000000000000000000000000000000000000000000")
 			ilksDiff := test_helpers.CreateDiffRecord(db, header, transformer.HashedAddress, key, value)
 
-			_, insertErr := db.Exec(cdp_manager.InsertCdpiQuery, ilksDiff.ID, headerID, cdpi)
+			_, insertErr := db.Exec(cdp_manager.InsertCdpiQuery, ilksDiff.ID, header.Id, cdpi)
 			Expect(insertErr).NotTo(HaveOccurred())
 
 			ilk := "0x4554482d41000000000000000000000000000000000000000000000000000000"
@@ -176,7 +173,7 @@ var _ = Describe("Executing the transformer", func() {
 			Expect(readErr).NotTo(HaveOccurred())
 			ilkId, ilkErr := shared.GetOrCreateIlk(ilk, db)
 			Expect(ilkErr).NotTo(HaveOccurred())
-			test_helpers.AssertMapping(ilksResult, ilksDiff.ID, headerID, strconv.Itoa(cdpi), strconv.FormatInt(ilkId, 10))
+			test_helpers.AssertMapping(ilksResult, ilksDiff.ID, header.Id, strconv.Itoa(cdpi), strconv.FormatInt(ilkId, 10))
 		})
 	})
 
@@ -188,7 +185,7 @@ var _ = Describe("Executing the transformer", func() {
 			value := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000001")
 			firstDiff := test_helpers.CreateDiffRecord(db, header, transformer.HashedAddress, key, value)
 
-			_, insertErr := db.Exec(cdp_manager.InsertOwnsQuery, firstDiff.ID, headerID, rand.Int(), owner)
+			_, insertErr := db.Exec(cdp_manager.InsertOwnsQuery, firstDiff.ID, header.Id, rand.Int(), owner)
 			Expect(insertErr).NotTo(HaveOccurred())
 
 			err := transformer.Execute(firstDiff)
@@ -197,7 +194,7 @@ var _ = Describe("Executing the transformer", func() {
 			var firstResult test_helpers.MappingRes
 			err = db.Get(&firstResult, `SELECT diff_id, header_id, owner AS key, first AS value FROM maker.cdp_manager_first`)
 			Expect(err).NotTo(HaveOccurred())
-			test_helpers.AssertMapping(firstResult, firstDiff.ID, headerID, owner, "1")
+			test_helpers.AssertMapping(firstResult, firstDiff.ID, header.Id, owner, "1")
 		})
 
 		It("reads in a last storage diff row and persists it", func() {
@@ -205,7 +202,7 @@ var _ = Describe("Executing the transformer", func() {
 			value := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000002")
 			lastDiff := test_helpers.CreateDiffRecord(db, header, transformer.HashedAddress, key, value)
 
-			_, insertErr := db.Exec(cdp_manager.InsertOwnsQuery, lastDiff.ID, headerID, rand.Int(), owner)
+			_, insertErr := db.Exec(cdp_manager.InsertOwnsQuery, lastDiff.ID, header.Id, rand.Int(), owner)
 			Expect(insertErr).NotTo(HaveOccurred())
 
 			err := transformer.Execute(lastDiff)
@@ -214,7 +211,7 @@ var _ = Describe("Executing the transformer", func() {
 			var lastResult test_helpers.MappingRes
 			err = db.Get(&lastResult, `SELECT diff_id, header_id, owner AS key, last AS value FROM maker.cdp_manager_last`)
 			Expect(err).NotTo(HaveOccurred())
-			test_helpers.AssertMapping(lastResult, lastDiff.ID, headerID, owner, "2")
+			test_helpers.AssertMapping(lastResult, lastDiff.ID, header.Id, owner, "2")
 		})
 
 		It("reads in a count storage diff row and persists it", func() {
@@ -222,7 +219,7 @@ var _ = Describe("Executing the transformer", func() {
 			value := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000002")
 			countDiff := test_helpers.CreateDiffRecord(db, header, transformer.HashedAddress, key, value)
 
-			_, insertErr := db.Exec(cdp_manager.InsertOwnsQuery, countDiff.ID, headerID, rand.Int(), owner)
+			_, insertErr := db.Exec(cdp_manager.InsertOwnsQuery, countDiff.ID, header.Id, rand.Int(), owner)
 			Expect(insertErr).NotTo(HaveOccurred())
 
 			err := transformer.Execute(countDiff)
@@ -231,7 +228,7 @@ var _ = Describe("Executing the transformer", func() {
 			var lastResult test_helpers.MappingRes
 			err = db.Get(&lastResult, `SELECT diff_id, header_id, owner AS key, count AS value FROM maker.cdp_manager_count`)
 			Expect(err).NotTo(HaveOccurred())
-			test_helpers.AssertMapping(lastResult, countDiff.ID, headerID, owner, "2")
+			test_helpers.AssertMapping(lastResult, countDiff.ID, header.Id, owner, "2")
 		})
 	})
 })

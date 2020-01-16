@@ -11,6 +11,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip"
 	. "github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/utilities/wards"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data/shared_behaviors"
 	vdbStorage "github.com/makerdao/vulcanizedb/libraries/shared/storage"
@@ -35,6 +36,7 @@ var _ = Describe("Flip storage repository", func() {
 		var insertHeaderErr error
 		fakeHeaderID, insertHeaderErr = headerRepository.CreateOrUpdateHeader(fakes.FakeHeader)
 		Expect(insertHeaderErr).NotTo(HaveOccurred())
+		diffID = CreateFakeDiffRecord(db)
 	})
 
 	It("panics if the metadata name is not recognized", func() {
@@ -73,9 +75,54 @@ var _ = Describe("Flip storage repository", func() {
 			shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
 		})
 
+		Describe("Wards", func() {
+			var fakeUint256 = strconv.Itoa(rand.Intn(1000000))
+
+			It("writes a row", func() {
+				fakeUserAddress := "0x" + fakes.RandomString(40)
+				wardsMetadata := vdbStorage.GetValueMetadata(wards.Wards, map[vdbStorage.Key]string{constants.User: fakeUserAddress}, vdbStorage.Uint256)
+
+				setupErr := repo.Create(diffID, fakeHeaderID, wardsMetadata, fakeUint256)
+				Expect(setupErr).NotTo(HaveOccurred())
+
+				var result WardsMappingRes
+				query := fmt.Sprintf(`SELECT diff_id, header_id, address_id, usr AS key, wards AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.WardsTable))
+				err := db.Get(&result, query)
+				Expect(err).NotTo(HaveOccurred())
+				contractAddressID, contractAddressErr := shared.GetOrCreateAddress(repo.ContractAddress, db)
+				Expect(contractAddressErr).NotTo(HaveOccurred())
+				userAddressID, userAddressErr := shared.GetOrCreateAddress(fakeUserAddress, db)
+				Expect(userAddressErr).NotTo(HaveOccurred())
+				Expect(result.AddressID).To(Equal(strconv.FormatInt(contractAddressID, 10)))
+				AssertMapping(result.MappingRes, diffID, fakeHeaderID, strconv.FormatInt(userAddressID, 10), fakeUint256)
+			})
+
+			It("does not duplicate row", func() {
+				fakeUserAddress := "0x" + fakes.RandomString(40)
+				wardsMetadata := vdbStorage.GetValueMetadata(wards.Wards, map[vdbStorage.Key]string{constants.User: fakeUserAddress}, vdbStorage.Uint256)
+				insertOneErr := repo.Create(diffID, fakeHeaderID, wardsMetadata, fakeUint256)
+				Expect(insertOneErr).NotTo(HaveOccurred())
+
+				insertTwoErr := repo.Create(diffID, fakeHeaderID, wardsMetadata, fakeUint256)
+
+				Expect(insertTwoErr).NotTo(HaveOccurred())
+				var count int
+				query := fmt.Sprintf(`SELECT count(*) FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.WardsTable))
+				getCountErr := db.Get(&count, query)
+				Expect(getCountErr).NotTo(HaveOccurred())
+				Expect(count).To(Equal(1))
+			})
+
+			It("returns an error if metadata missing user", func() {
+				malformedWardsMetadata := vdbStorage.GetValueMetadata(wards.Wards, map[vdbStorage.Key]string{}, vdbStorage.Uint256)
+
+				err := repo.Create(diffID, fakeHeaderID, malformedWardsMetadata, fakeUint256)
+				Expect(err).To(MatchError(vdbStorage.ErrMetadataMalformed{MissingData: constants.User}))
+			})
+		})
+
 		Describe("Ilk", func() {
 			It("writes row", func() {
-				diffID = CreateFakeDiffRecord(db)
 
 				ilkMetadata := vdbStorage.ValueMetadata{Name: storage.Ilk}
 				insertErr := repo.Create(diffID, fakeHeaderID, ilkMetadata, FakeIlk)
@@ -91,8 +138,6 @@ var _ = Describe("Flip storage repository", func() {
 			})
 
 			It("does not duplicate row", func() {
-				diffID = CreateFakeDiffRecord(db)
-
 				ilkMetadata := vdbStorage.ValueMetadata{Name: storage.Ilk}
 				insertOneErr := repo.Create(diffID, fakeHeaderID, ilkMetadata, FakeIlk)
 				Expect(insertOneErr).NotTo(HaveOccurred())
@@ -139,8 +184,6 @@ var _ = Describe("Flip storage repository", func() {
 			values[1] = fakeTau
 
 			It("persists a ttl record", func() {
-				diffID = CreateFakeDiffRecord(db)
-
 				err := repo.Create(diffID, fakeHeaderID, ttlAndTauMetadata, values)
 				Expect(err).NotTo(HaveOccurred())
 
@@ -276,8 +319,6 @@ var _ = Describe("Flip storage repository", func() {
 				values[2] = fakeEnd
 
 				BeforeEach(func() {
-					diffID = CreateFakeDiffRecord(db)
-
 					err := repo.Create(diffID, fakeHeaderID, bidGuyTicEndMetadata, values)
 					Expect(err).NotTo(HaveOccurred())
 				})

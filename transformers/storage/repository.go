@@ -44,6 +44,7 @@ type IMakerStorageRepository interface {
 	GetUrns() ([]Urn, error)
 	GetVatSinKeys() ([]string, error)
 	GetVowSinKeys() ([]string, error)
+	GetVatWardsAddresses() ([]string, error)
 	GetWardsAddresses(string) ([]string, error)
 	SetDB(db *postgres.DB)
 }
@@ -256,6 +257,19 @@ func (repository *MakerStorageRepository) GetFlopBidIds(contractAddress string) 
 		SELECT DISTINCT kicks FROM maker.flop_kicks
 		WHERE address_id = $1`, addressId)
 	return bidIds, err
+}
+
+func (repository *MakerStorageRepository) GetVatWardsAddresses() ([]string, error) {
+	var wardsKeys []string
+	selectErr := repository.db.Select(&wardsKeys, `
+		SELECT addresses.address
+		FROM maker.vat_rely
+		    LEFT JOIN public.addresses ON vat_rely.usr = addresses.id
+		UNION
+		SELECT addresses.address
+		FROM maker.vat_deny
+		    LEFT JOIN public.addresses ON vat_deny.usr = addresses.id`)
+	return wardsKeys, selectErr
 }
 
 func (repository *MakerStorageRepository) GetWardsAddresses(contractAddress string) ([]string, error) {

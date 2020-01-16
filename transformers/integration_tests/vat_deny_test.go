@@ -51,23 +51,18 @@ var _ = Describe("Vat Deny transformer", func() {
 		Expect(transformErr).NotTo(HaveOccurred())
 
 		var dbResult []vatDenyModel
-		err := db.Select(&dbResult, `SELECT address_id, usr FROM maker.vat_deny`)
+		err := db.Select(&dbResult, `SELECT usr FROM maker.vat_deny`)
 		Expect(err).NotTo(HaveOccurred())
-
-		contractAddressID, contractAddressErr := shared.GetOrCreateAddress(denyConfig.ContractAddresses[0], db)
-		Expect(contractAddressErr).NotTo(HaveOccurred())
 
 		usrAddress := "0x13141b8a5e4a82ebc6b636849dd6a515185d6236"
 		usrAddressID, usrAddressErr := shared.GetOrCreateAddress(usrAddress, db)
 		Expect(usrAddressErr).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))
-		Expect(dbResult[0].AddressID).To(Equal(contractAddressID))
 		Expect(dbResult[0].Usr).To(Equal(usrAddressID))
 	})
 })
 
 type vatDenyModel struct {
-	Usr       int64 `db:"usr"`
-	AddressID int64 `db:"address_id"`
+	Usr int64 `db:"usr"`
 }

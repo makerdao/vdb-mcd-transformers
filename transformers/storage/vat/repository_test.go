@@ -28,7 +28,9 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	. "github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/utilities/wards"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/vat"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data/shared_behaviors"
 	"github.com/makerdao/vulcanizedb/libraries/shared/storage"
 	"github.com/makerdao/vulcanizedb/pkg/core"
@@ -56,6 +58,50 @@ var _ = Describe("Vat storage repository", func() {
 		fakeHeaderID, insertHeaderErr = headerRepository.CreateOrUpdateHeader(fakes.FakeHeader)
 		Expect(insertHeaderErr).NotTo(HaveOccurred())
 		diffID = CreateFakeDiffRecord(db)
+	})
+
+	Describe("Wards mapping", func() {
+		It("writes a row", func() {
+			fakeUserAddress := "0x" + fakes.RandomString(40)
+			wardsMetadata := storage.GetValueMetadata(wards.Wards, map[storage.Key]string{constants.User: fakeUserAddress}, storage.Uint256)
+
+			setupErr := repo.Create(diffID, fakeHeaderID, wardsMetadata, fakeUint256)
+			Expect(setupErr).NotTo(HaveOccurred())
+
+			var result WardsMappingRes
+			query := fmt.Sprintf(`SELECT diff_id, header_id, address_id, usr AS key, wards AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.WardsTable))
+			err := db.Get(&result, query)
+			Expect(err).NotTo(HaveOccurred())
+			contractAddressID, contractAddressErr := shared.GetOrCreateAddress(test_data.VatAddress(), db)
+			Expect(contractAddressErr).NotTo(HaveOccurred())
+			userAddressID, userAddressErr := shared.GetOrCreateAddress(fakeUserAddress, db)
+			Expect(userAddressErr).NotTo(HaveOccurred())
+			Expect(result.AddressID).To(Equal(strconv.FormatInt(contractAddressID, 10)))
+			AssertMapping(result.MappingRes, diffID, fakeHeaderID, strconv.FormatInt(userAddressID, 10), fakeUint256)
+		})
+
+		It("does not duplicate row", func() {
+			fakeUserAddress := "0x" + fakes.RandomString(40)
+			wardsMetadata := storage.GetValueMetadata(wards.Wards, map[storage.Key]string{constants.User: fakeUserAddress}, storage.Uint256)
+			insertOneErr := repo.Create(diffID, fakeHeaderID, wardsMetadata, fakeUint256)
+			Expect(insertOneErr).NotTo(HaveOccurred())
+
+			insertTwoErr := repo.Create(diffID, fakeHeaderID, wardsMetadata, fakeUint256)
+
+			Expect(insertTwoErr).NotTo(HaveOccurred())
+			var count int
+			query := fmt.Sprintf(`SELECT count(*) FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.WardsTable))
+			getCountErr := db.Get(&count, query)
+			Expect(getCountErr).NotTo(HaveOccurred())
+			Expect(count).To(Equal(1))
+		})
+
+		It("returns an error if metadata missing user", func() {
+			malformedWardsMetadata := storage.GetValueMetadata(wards.Wards, map[storage.Key]string{}, storage.Uint256)
+
+			err := repo.Create(diffID, fakeHeaderID, malformedWardsMetadata, fakeUint256)
+			Expect(err).To(MatchError(storage.ErrMetadataMalformed{MissingData: constants.User}))
+		})
 	})
 
 	Describe("dai", func() {

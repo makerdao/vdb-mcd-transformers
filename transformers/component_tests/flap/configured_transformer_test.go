@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2019 Vulcanize
+// Copyright © 2018 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package flip
+package flap
 
 import (
 	"strconv"
@@ -22,9 +22,12 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	mcdStorage "github.com/makerdao/vdb-mcd-transformers/transformers/storage"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/flap"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
 	vdbStorage "github.com/makerdao/vulcanizedb/libraries/shared/storage"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
@@ -33,15 +36,14 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("Executing the flip transformer", func() {
+var _ = Describe("Executing the flap transformer", func() {
 	var (
 		db                = test_config.NewTestDB(test_config.NewTestNode())
-		repository        = flip.FlipStorageRepository{}
-		transformer       storage.Transformer
-		contractAddress   = "0x43c331c0389a92af62ee726d5ae0c8a424320c31"
-		storageKeysLookup = storage.NewKeysLookup(flip.NewKeysLoader(&mcdStorage.MakerStorageRepository{}, contractAddress))
-		headerID          int64
+		contractAddress   = test_data.FlapAddress()
+		repository        = flap.FlapStorageRepository{ContractAddress: contractAddress}
+		storageKeysLookup = storage.NewKeysLookup(flap.NewKeysLoader(&mcdStorage.MakerStorageRepository{}, contractAddress))
 		header            = fakes.FakeHeader
+		transformer       storage.Transformer
 	)
 
 	BeforeEach(func() {
@@ -54,9 +56,8 @@ var _ = Describe("Executing the flip transformer", func() {
 		transformer.NewTransformer(db)
 		headerRepository := repositories.NewHeaderRepository(db)
 		var insertHeaderErr error
-		headerID, insertHeaderErr = headerRepository.CreateOrUpdateHeader(header)
+		header.Id, insertHeaderErr = headerRepository.CreateOrUpdateHeader(header)
 		Expect(insertHeaderErr).NotTo(HaveOccurred())
-		header.Id = headerID
 	})
 
 	It("reads in a vat storage diff and persists it", func() {
@@ -69,27 +70,24 @@ var _ = Describe("Executing the flip transformer", func() {
 
 		var vatResult test_helpers.VariableRes
 		err = db.Get(&vatResult,
-			`SELECT diff_id, header_id, vat AS value FROM maker.flip_vat`)
+			`SELECT diff_id, header_id, vat AS value FROM maker.flap_vat`)
 		Expect(err).NotTo(HaveOccurred())
-		test_helpers.AssertVariable(vatResult, diff.ID, headerID, "0x284ecB5880CdC3362D979D07D162bf1d8488975D")
+		test_helpers.AssertVariable(vatResult, diff.ID, header.Id, "0x284ecB5880CdC3362D979D07D162bf1d8488975D")
 	})
 
-	It("reads in an ilk storage diff and persists it", func() {
-		ilk := "4554482d41000000000000000000000000000000000000000000000000000000"
+	It("reads in a gem storage diff and persists it", func() {
 		key := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000003")
-		value := common.HexToHash(ilk)
+		value := common.HexToHash("000000000000000000000000a90843676a7f747a3c8adda142471369346369c1")
 		diff := test_helpers.CreateDiffRecord(db, header, transformer.HashedAddress, key, value)
 
 		err := transformer.Execute(diff)
 		Expect(err).NotTo(HaveOccurred())
 
-		var ilkResult test_helpers.VariableRes
-		err = db.Get(&ilkResult,
-			`SELECT diff_id, header_id, ilk_id AS value FROM maker.flip_ilk`)
+		var gemResult test_helpers.VariableRes
+		err = db.Get(&gemResult,
+			`SELECT diff_id, header_id, gem AS value FROM maker.flap_gem`)
 		Expect(err).NotTo(HaveOccurred())
-		ilkID, ilkErr := shared.GetOrCreateIlk(ilk, db)
-		Expect(ilkErr).NotTo(HaveOccurred())
-		test_helpers.AssertVariable(ilkResult, diff.ID, headerID, strconv.FormatInt(ilkID, 10))
+		test_helpers.AssertVariable(gemResult, diff.ID, header.Id, "0xa90843676A7F747A3c8aDDa142471369346369c1")
 	})
 
 	It("reads in a beg storage diff and persists it", func() {
@@ -102,9 +100,9 @@ var _ = Describe("Executing the flip transformer", func() {
 
 		var begResult test_helpers.VariableRes
 		err = db.Get(&begResult,
-			`SELECT diff_id, header_id, beg AS value FROM maker.flip_beg`)
+			`SELECT diff_id, header_id, beg AS value FROM maker.flap_beg`)
 		Expect(err).NotTo(HaveOccurred())
-		test_helpers.AssertVariable(begResult, diff.ID, headerID, "1050000000000000000000000000")
+		test_helpers.AssertVariable(begResult, diff.ID, header.Id, "1050000000000000000000000000")
 	})
 
 	It("reads in a ttl storage diff and persists it", func() {
@@ -117,9 +115,9 @@ var _ = Describe("Executing the flip transformer", func() {
 
 		var ttlResult test_helpers.VariableRes
 		err = db.Get(&ttlResult,
-			`SELECT diff_id, header_id, ttl AS value FROM maker.flip_ttl`)
+			`SELECT diff_id, header_id, ttl AS value FROM maker.flap_ttl`)
 		Expect(err).NotTo(HaveOccurred())
-		test_helpers.AssertVariable(ttlResult, diff.ID, headerID, "10800")
+		test_helpers.AssertVariable(ttlResult, diff.ID, header.Id, "10800")
 	})
 
 	It("reads in a tau storage diff and persists it", func() {
@@ -132,17 +130,71 @@ var _ = Describe("Executing the flip transformer", func() {
 
 		var ttlResult test_helpers.VariableRes
 		err = db.Get(&ttlResult,
-			`SELECT diff_id, header_id, tau AS value FROM maker.flip_tau`)
+			`SELECT diff_id, header_id, tau AS value FROM maker.flap_tau`)
 		Expect(err).NotTo(HaveOccurred())
-		test_helpers.AssertVariable(ttlResult, diff.ID, headerID, "172800")
+		test_helpers.AssertVariable(ttlResult, diff.ID, header.Id, "172800")
 	})
 
 	XIt("reads in a kicks storage diff and persists it", func() {
 		//TODO: update this when we get a storage diff row for Flap kicks
 	})
 
+	It("reads in a live storage diff and persists it", func() {
+		key := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000007")
+		value := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000001")
+		diff := test_helpers.CreateDiffRecord(db, header, transformer.HashedAddress, key, value)
+
+		err := transformer.Execute(diff)
+		Expect(err).NotTo(HaveOccurred())
+
+		var liveResult test_helpers.VariableRes
+		err = db.Get(&liveResult,
+			`SELECT diff_id, header_id, live AS value FROM maker.flap_live`)
+		Expect(err).NotTo(HaveOccurred())
+		test_helpers.AssertVariable(liveResult, diff.ID, header.Id, "1")
+	})
+
+	Describe("wards", func() {
+		It("reads in a wards storage diff row and persists it", func() {
+			denyLog := test_data.CreateTestLog(header.Id, db)
+			denyModel := test_data.DenyModel()
+
+			flapAddressID, flapAddressErr := shared.GetOrCreateAddress(test_data.FlapAddress(), db)
+			Expect(flapAddressErr).NotTo(HaveOccurred())
+
+			userAddress := "0x13141b8a5e4a82ebc6b636849dd6a515185d6236"
+			userAddressID, userAddressErr := shared.GetOrCreateAddress(userAddress, db)
+			Expect(userAddressErr).NotTo(HaveOccurred())
+
+			msgSenderAddress := "0x" + fakes.RandomString(40)
+			msgSenderAddressID, msgSenderAddressErr := shared.GetOrCreateAddress(msgSenderAddress, db)
+			Expect(msgSenderAddressErr).NotTo(HaveOccurred())
+
+			denyModel.ColumnValues[event.HeaderFK] = header.Id
+			denyModel.ColumnValues[event.LogFK] = denyLog.ID
+			denyModel.ColumnValues[event.AddressFK] = flapAddressID
+			denyModel.ColumnValues[constants.MsgSenderColumn] = msgSenderAddressID
+			denyModel.ColumnValues[constants.UsrColumn] = userAddressID
+			insertErr := event.PersistModels([]event.InsertionModel{denyModel}, db)
+			Expect(insertErr).NotTo(HaveOccurred())
+
+			key := common.HexToHash("614c9873ec2671d6eb30d7a22b531442a34fc10f8c24a6598ef401fe94d9cb7d")
+			value := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000001")
+			wardsDiff := test_helpers.CreateDiffRecord(db, header, transformer.HashedAddress, key, value)
+
+			transformErr := transformer.Execute(wardsDiff)
+			Expect(transformErr).NotTo(HaveOccurred())
+
+			var wardsResult test_helpers.WardsMappingRes
+			err := db.Get(&wardsResult, `SELECT diff_id, header_id, address_id, usr AS key, wards.wards AS value FROM maker.wards`)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(wardsResult.AddressID).To(Equal(strconv.FormatInt(flapAddressID, 10)))
+			test_helpers.AssertMapping(wardsResult.MappingRes, wardsDiff.ID, header.Id, strconv.FormatInt(userAddressID, 10), "1")
+		})
+	})
+
 	Describe("bids", func() {
-		//TODO: update when we get real flip bid storage diffs
+		//TODO: update when we get real flap bid storage diffs
 		Describe("guy + tic + end packed slot", func() {
 			var (
 				bidId int
@@ -158,7 +210,7 @@ var _ = Describe("Executing the flip transformer", func() {
 				addressId, addressErr := shared.GetOrCreateAddress(contractAddress, db)
 				Expect(addressErr).NotTo(HaveOccurred())
 
-				_, writeErr := db.Exec(flip.InsertFlipKicksQuery, diff.ID, headerID, addressId, bidId)
+				_, writeErr := db.Exec(flap.InsertKicksQuery, diff.ID, header.Id, addressId, bidId)
 				Expect(writeErr).NotTo(HaveOccurred())
 
 				executeErr := transformer.Execute(diff)
@@ -167,23 +219,23 @@ var _ = Describe("Executing the flip transformer", func() {
 
 			It("reads and persists a guy diff", func() {
 				var bidGuyResult test_helpers.MappingRes
-				dbErr := db.Get(&bidGuyResult, `SELECT diff_id, header_id, bid_id AS key, guy AS value FROM maker.flip_bid_guy`)
+				dbErr := db.Get(&bidGuyResult, `SELECT diff_id, header_id, bid_id AS key, guy AS value FROM maker.flap_bid_guy`)
 				Expect(dbErr).NotTo(HaveOccurred())
-				test_helpers.AssertMapping(bidGuyResult, diff.ID, headerID, strconv.Itoa(bidId), "0x284ecB5880CdC3362D979D07D162bf1d8488975D")
+				test_helpers.AssertMapping(bidGuyResult, diff.ID, header.Id, strconv.Itoa(bidId), "0x284ecB5880CdC3362D979D07D162bf1d8488975D")
 			})
 
 			It("reads and persists a tic diff", func() {
 				var bidTicResult test_helpers.MappingRes
-				dbErr := db.Get(&bidTicResult, `SELECT diff_id, header_id, bid_id AS key, tic AS value FROM maker.flip_bid_tic`)
+				dbErr := db.Get(&bidTicResult, `SELECT diff_id, header_id, bid_id AS key, tic AS value FROM maker.flap_bid_tic`)
 				Expect(dbErr).NotTo(HaveOccurred())
-				test_helpers.AssertMapping(bidTicResult, diff.ID, headerID, strconv.Itoa(bidId), "10800")
+				test_helpers.AssertMapping(bidTicResult, diff.ID, header.Id, strconv.Itoa(bidId), "10800")
 			})
 
 			It("reads and persists an end diff", func() {
 				var bidEndResult test_helpers.MappingRes
-				dbErr := db.Get(&bidEndResult, `SELECT diff_id, header_id, bid_id AS key, "end" AS value FROM maker.flip_bid_end`)
+				dbErr := db.Get(&bidEndResult, `SELECT diff_id, header_id, bid_id AS key, "end" AS value FROM maker.flap_bid_end`)
 				Expect(dbErr).NotTo(HaveOccurred())
-				test_helpers.AssertMapping(bidEndResult, diff.ID, headerID, strconv.Itoa(bidId), "172800")
+				test_helpers.AssertMapping(bidEndResult, diff.ID, header.Id, strconv.Itoa(bidId), "172800")
 			})
 		})
 	})

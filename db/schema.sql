@@ -10589,7 +10589,6 @@ CREATE TABLE maker.vat_deny (
     id integer NOT NULL,
     header_id integer NOT NULL,
     log_id bigint NOT NULL,
-    address_id integer NOT NULL,
     usr integer NOT NULL
 );
 
@@ -11171,7 +11170,6 @@ CREATE TABLE maker.vat_rely (
     id integer NOT NULL,
     header_id integer NOT NULL,
     log_id bigint NOT NULL,
-    address_id integer NOT NULL,
     usr integer NOT NULL
 );
 
@@ -17864,13 +17862,6 @@ CREATE INDEX vat_debt_header_id_index ON maker.vat_debt USING btree (header_id);
 
 
 --
--- Name: vat_deny_address_index; Type: INDEX; Schema: maker; Owner: -
---
-
-CREATE INDEX vat_deny_address_index ON maker.vat_deny USING btree (address_id);
-
-
---
 -- Name: vat_deny_header_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -18176,13 +18167,6 @@ CREATE INDEX vat_move_header_index ON maker.vat_move USING btree (header_id);
 --
 
 CREATE INDEX vat_move_log_index ON maker.vat_move USING btree (log_id);
-
-
---
--- Name: vat_rely_address_index; Type: INDEX; Schema: maker; Owner: -
---
-
-CREATE INDEX vat_rely_address_index ON maker.vat_rely USING btree (address_id);
 
 
 --
@@ -21146,14 +21130,6 @@ ALTER TABLE ONLY maker.vat_debt
 
 
 --
--- Name: vat_deny vat_deny_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.vat_deny
-    ADD CONSTRAINT vat_deny_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
-
-
---
 -- Name: vat_deny vat_deny_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -21567,14 +21543,6 @@ ALTER TABLE ONLY maker.vat_move
 
 ALTER TABLE ONLY maker.vat_move
     ADD CONSTRAINT vat_move_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
-
-
---
--- Name: vat_rely vat_rely_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.vat_rely
-    ADD CONSTRAINT vat_rely_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --

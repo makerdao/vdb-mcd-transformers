@@ -21,12 +21,6 @@ func (t Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) (
 			return nil, validationErr
 		}
 
-		contractAddress := log.Log.Address.String()
-		contractAddressID, contractAddressErr := shared.GetOrCreateAddress(contractAddress, db)
-		if contractAddressErr != nil {
-			return nil, shared.ErrCouldNotCreateFK(contractAddressErr)
-		}
-
 		usrAddress := common.HexToAddress(log.Log.Topics[1].Hex()).Hex()
 		usrAddressID, usrAddressErr := shared.GetOrCreateAddress(usrAddress, db)
 		if usrAddressErr != nil {
@@ -36,11 +30,10 @@ func (t Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) (
 		model := event.InsertionModel{
 			SchemaName:     constants.MakerSchema,
 			TableName:      t.TableName,
-			OrderedColumns: []event.ColumnName{event.HeaderFK, event.LogFK, event.AddressFK, constants.UsrColumn},
+			OrderedColumns: []event.ColumnName{event.HeaderFK, event.LogFK, constants.UsrColumn},
 			ColumnValues: event.ColumnValues{
 				event.HeaderFK:      log.HeaderID,
 				event.LogFK:         log.ID,
-				event.AddressFK:     contractAddressID,
 				constants.UsrColumn: usrAddressID,
 			},
 		}

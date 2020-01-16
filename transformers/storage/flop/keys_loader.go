@@ -21,6 +21,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	mcdStorage "github.com/makerdao/vdb-mcd-transformers/transformers/storage"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/utilities/wards"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
 	vdbStorage "github.com/makerdao/vulcanizedb/libraries/shared/storage"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
@@ -74,7 +75,19 @@ func (loader *keysLoader) SetDB(db *postgres.DB) {
 
 func (loader *keysLoader) LoadMappings() (map[common.Hash]vdbStorage.ValueMetadata, error) {
 	mappings := loadStaticMappings()
+	mappings, wardsErr := loader.loadWardsKeys(mappings)
+	if wardsErr != nil {
+		return nil, wardsErr
+	}
 	return loader.loadBidKeys(mappings)
+}
+
+func (loader *keysLoader) loadWardsKeys(mappings map[common.Hash]vdbStorage.ValueMetadata) (map[common.Hash]vdbStorage.ValueMetadata, error) {
+	addresses, err := loader.storageRepository.GetWardsAddresses(loader.contractAddress)
+	if err != nil {
+		return nil, err
+	}
+	return wards.AddWardsKeys(mappings, addresses)
 }
 
 func (loader *keysLoader) loadBidKeys(mappings map[common.Hash]vdbStorage.ValueMetadata) (map[common.Hash]vdbStorage.ValueMetadata, error) {
