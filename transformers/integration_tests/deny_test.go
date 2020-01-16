@@ -15,42 +15,42 @@ import (
 )
 
 var _ = Describe("Deny transformer", func() {
-	Context("Cat deny events", func() {
+	XContext("Cat deny events", func() {
 		usrAddress := "0x13141b8a5e4a82ebc6b636849dd6a515185d6236"
 		denyIntegrationTest(int64(14764643), test_data.CatAddress(), usrAddress, usrAddress)
 	})
 
 	Context("Flap deny events", func() {
-		usrAddress := "0x13141b8a5e4a82ebc6b636849dd6a515185d6236"
-		denyIntegrationTest(int64(14764643), test_data.FlapAddress(), usrAddress, usrAddress)
+		usrAddress := "0xd27a5f3416d8791fc238c148c93630d9e3c882e5"
+		denyIntegrationTest(int64(8928163), test_data.FlapAddress(), usrAddress, usrAddress)
 	})
 
 	Context("Flip deny events", func() {
-		usrAddress := "0x13141b8a5e4a82ebc6b636849dd6a515185d6236"
-		denyIntegrationTest(int64(14764652), test_data.EthFlipAddress(), usrAddress, usrAddress)
+		usrAddress := "0xbab4fbea257abbfe84f4588d4eedc43656e46fc5"
+		denyIntegrationTest(int64(8928180), test_data.EthFlipAddress(), usrAddress, usrAddress)
 	})
 
 	Context("Flop deny events", func() {
-		usrAddress := "0xdb33dfd3d61308c33c63209845dad3e6bfb2c674"
-		denyIntegrationTest(int64(15196525), test_data.FlopAddress(), usrAddress, usrAddress)
+		usrAddress := "0xc41c4759f67ff54c7a7314d155f40fc6504f5d28"
+		denyIntegrationTest(int64(8928163), test_data.FlopAddress(), usrAddress, usrAddress)
 	})
 
-	Context("Jug deny events", func() {
+	XContext("Jug deny events", func() {
 		usrAddress := "0x13141b8a5e4a82ebc6b636849dd6a515185d6236"
 		denyIntegrationTest(int64(14764643), test_data.JugAddress(), usrAddress, usrAddress)
 	})
 
-	Context("Pot deny events", func() {
+	XContext("Pot deny events", func() {
 		usrAddress := "0x13141b8a5e4a82ebc6b636849dd6a515185d6236"
 		denyIntegrationTest(int64(14764643), test_data.PotAddress(), usrAddress, usrAddress)
 	})
 
-	Context("Spot deny events", func() {
+	XContext("Spot deny events", func() {
 		usrAddress := "0x13141b8a5e4a82ebc6b636849dd6a515185d6236"
 		denyIntegrationTest(int64(14764643), test_data.SpotAddress(), usrAddress, usrAddress)
 	})
 
-	Context("Vow deny events", func() {
+	XContext("Vow deny events", func() {
 		usrAddress := "0x13141b8a5e4a82ebc6b636849dd6a515185d6236"
 		denyIntegrationTest(int64(14764643), test_data.VowAddress(), usrAddress, usrAddress)
 	})
