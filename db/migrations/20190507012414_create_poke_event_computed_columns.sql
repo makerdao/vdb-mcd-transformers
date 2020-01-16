@@ -2,13 +2,16 @@
 -- SQL in this section is executed when the migration is applied.
 
 -- Extend type poke_event with ilk field
-CREATE FUNCTION api.poke_event_ilk(priceUpdate api.poke_event)
-    RETURNS api.ilk_state AS
+CREATE FUNCTION api.poke_event_ilk(event api.poke_event)
+    RETURNS api.historical_ilk_state AS
 $$
-WITH raw_ilk AS (SELECT * FROM maker.ilks WHERE ilks.id = priceUpdate.ilk_id)
-
-SELECT *
-FROM api.get_ilk((SELECT identifier FROM raw_ilk), priceUpdate.block_height)
+SELECT i.*
+FROM api.historical_ilk_state i
+         LEFT JOIN maker.ilks ON ilks.identifier = i.ilk_identifier
+WHERE ilks.id = event.ilk_id
+  AND i.block_number <= event.block_height
+ORDER BY i.block_number DESC
+LIMIT 1
 $$
     LANGUAGE sql
     STABLE;
@@ -17,7 +20,8 @@ $$
 CREATE FUNCTION api.poke_event_tx(priceUpdate api.poke_event)
     RETURNS api.tx AS
 $$
-SELECT * FROM get_tx_data(priceUpdate.block_height, priceUpdate.log_id)
+SELECT *
+FROM get_tx_data(priceUpdate.block_height, priceUpdate.log_id)
 $$
     LANGUAGE sql
     STABLE;

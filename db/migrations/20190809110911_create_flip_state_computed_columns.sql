@@ -2,11 +2,16 @@
 -- SQL in this section is executed when the migration is applied.
 
 -- Extend flip_state with ilk_state
-CREATE FUNCTION api.flip_state_ilk(flip api.flip_state)
-    RETURNS api.ilk_state AS
+CREATE FUNCTION api.flip_state_ilk(flip_state api.flip_state)
+    RETURNS api.historical_ilk_state AS
 $$
-SELECT *
-FROM api.get_ilk((SELECT identifier FROM maker.ilks WHERE ilks.id = flip.ilk_id), flip.block_height)
+SELECT i.*
+FROM api.historical_ilk_state i
+         LEFT JOIN maker.ilks ON ilks.identifier = i.ilk_identifier
+WHERE ilks.id = flip_state.ilk_id
+  AND i.block_number <= flip_state.block_height
+ORDER BY i.block_number DESC
+LIMIT 1
 $$
     LANGUAGE sql
     STABLE;

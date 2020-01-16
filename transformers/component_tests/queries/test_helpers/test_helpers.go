@@ -235,6 +235,26 @@ func CreateIlk(db *postgres.DB, header core.Header, valuesMap map[string]interfa
 	CreateCatRecords(db, header, valuesMap, catMetadatas, catRepo)
 	CreateJugRecords(db, header, valuesMap, jugMetadatas, jugRepo)
 	CreateSpotRecords(db, header, valuesMap, spotMetadatas, spotRepo)
+	if len(vatMetadatas) >= 1 {
+		CreateVatInit(db, header.Id, vatMetadatas[0].Keys[constants.Ilk])
+	}
+}
+
+func CreateVatInit(db *postgres.DB, headerID int64, ilkHex string) event.InsertionModel {
+	ilkID, ilkErr := shared.GetOrCreateIlk(ilkHex, db)
+	Expect(ilkErr).NotTo(HaveOccurred())
+
+	logID := test_data.CreateTestLog(headerID, db).ID
+
+	vatInit := test_data.VatInitModel()
+	vatInit.ColumnValues[constants.IlkColumn] = ilkID
+	vatInit.ColumnValues[event.HeaderFK] = headerID
+	vatInit.ColumnValues[event.LogFK] = logID
+
+	insertErr := event.PersistModels([]event.InsertionModel{vatInit}, db)
+	Expect(insertErr).NotTo(HaveOccurred())
+
+	return vatInit
 }
 
 func GetUrnSetupData() map[string]interface{} {

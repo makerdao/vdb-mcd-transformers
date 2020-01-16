@@ -3,10 +3,14 @@
 
 -- Extend urn_state with ilk_state
 CREATE FUNCTION api.urn_state_ilk(state api.urn_state)
-    RETURNS api.ilk_state AS
+    RETURNS api.historical_ilk_state AS
 $$
 SELECT *
-FROM api.get_ilk(state.ilk_identifier, state.block_height)
+FROM api.historical_ilk_state i
+WHERE i.ilk_identifier = state.ilk_identifier
+  AND i.block_number <= state.block_height
+ORDER BY i.block_number DESC
+LIMIT 1
 $$
     LANGUAGE sql
     STABLE;
@@ -19,7 +23,9 @@ $$
 SELECT *
 FROM api.urn_frobs(state.ilk_identifier, state.urn_identifier)
 WHERE block_height <= state.block_height
-LIMIT urn_state_frobs.max_results OFFSET urn_state_frobs.result_offset
+LIMIT urn_state_frobs.max_results
+OFFSET
+urn_state_frobs.result_offset
 $$
     LANGUAGE sql
     STABLE;
@@ -33,7 +39,9 @@ $$
 SELECT *
 FROM api.urn_bites(state.ilk_identifier, state.urn_identifier)
 WHERE block_height <= state.block_height
-LIMIT urn_state_bites.max_results OFFSET urn_state_bites.result_offset
+LIMIT urn_state_bites.max_results
+OFFSET
+urn_state_bites.result_offset
 $$
     LANGUAGE sql
     STABLE;

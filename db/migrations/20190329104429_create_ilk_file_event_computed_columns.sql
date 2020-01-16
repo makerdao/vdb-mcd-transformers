@@ -3,10 +3,14 @@
 
 -- Extend file_event with ilk_state
 CREATE FUNCTION api.ilk_file_event_ilk(event api.ilk_file_event)
-    RETURNS SETOF api.ilk_state AS
+    RETURNS SETOF api.historical_ilk_state AS
 $$
 SELECT *
-FROM api.get_ilk(event.ilk_identifier, event.block_height)
+FROM api.historical_ilk_state i
+WHERE i.ilk_identifier = event.ilk_identifier
+  AND i.block_number <= event.block_height
+ORDER BY i.block_number DESC
+LIMIT 1
 $$
     LANGUAGE sql
     STABLE;
@@ -15,7 +19,8 @@ $$
 CREATE FUNCTION api.ilk_file_event_tx(event api.ilk_file_event)
     RETURNS api.tx AS
 $$
-SELECT * FROM get_tx_data(event.block_height, event.log_id)
+SELECT *
+FROM get_tx_data(event.block_height, event.log_id)
 $$
     LANGUAGE sql
     STABLE;
