@@ -47,8 +47,7 @@ var _ = Describe("Executing the transformer", func() {
 			StorageKeysLookup: storageKeysLookup,
 			Repository:        &repository,
 		}
-		headerID int64
-		header   = fakes.FakeHeader
+		header = fakes.FakeHeader
 	)
 
 	BeforeEach(func() {
@@ -56,9 +55,8 @@ var _ = Describe("Executing the transformer", func() {
 		transformer.NewTransformer(db)
 		headerRepository := repositories.NewHeaderRepository(db)
 		var insertHeaderErr error
-		headerID, insertHeaderErr = headerRepository.CreateOrUpdateHeader(header)
+		header.Id, insertHeaderErr = headerRepository.CreateOrUpdateHeader(header)
 		Expect(insertHeaderErr).NotTo(HaveOccurred())
-		header.Id = headerID
 	})
 
 	It("reads in a Cat Live storage diff row and persists it", func() {
@@ -72,7 +70,7 @@ var _ = Describe("Executing the transformer", func() {
 		var liveResult test_helpers.VariableRes
 		err = db.Get(&liveResult, `SELECT diff_id, header_id, live AS value FROM maker.cat_live`)
 		Expect(err).NotTo(HaveOccurred())
-		test_helpers.AssertVariable(liveResult, catLiveDiff.ID, headerID, "1")
+		test_helpers.AssertVariable(liveResult, catLiveDiff.ID, header.Id, "1")
 	})
 
 	It("reads in a Cat Vat storage diff row and persists it", func() {
@@ -86,7 +84,7 @@ var _ = Describe("Executing the transformer", func() {
 		var vatResult test_helpers.VariableRes
 		err = db.Get(&vatResult, `SELECT diff_id, header_id, vat AS value FROM maker.cat_vat`)
 		Expect(err).NotTo(HaveOccurred())
-		test_helpers.AssertVariable(vatResult, catVatDiff.ID, headerID, "0xaCdd1ee0F74954Ed8F0aC581b081B7b86bD6aad9")
+		test_helpers.AssertVariable(vatResult, catVatDiff.ID, header.Id, "0xaCdd1ee0F74954Ed8F0aC581b081B7b86bD6aad9")
 	})
 
 	It("reads in a Cat Vow storage diff row and persists it", func() {
@@ -100,7 +98,7 @@ var _ = Describe("Executing the transformer", func() {
 		var vowResult test_helpers.VariableRes
 		err = db.Get(&vowResult, `SELECT diff_id, header_id, vow AS value FROM maker.cat_vow`)
 		Expect(err).NotTo(HaveOccurred())
-		test_helpers.AssertVariable(vowResult, catVowDiff.ID, headerID, "0x21444AC712cCD21ce82AF24eA1aEc64Cf07361D2")
+		test_helpers.AssertVariable(vowResult, catVowDiff.ID, header.Id, "0x21444AC712cCD21ce82AF24eA1aEc64Cf07361D2")
 	})
 
 	Describe("wards", func() {
@@ -138,7 +136,7 @@ var _ = Describe("Executing the transformer", func() {
 			err := db.Get(&wardsResult, `SELECT diff_id, header_id, address_id, usr AS key, wards.wards AS value FROM maker.wards`)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(wardsResult.AddressID).To(Equal(strconv.FormatInt(catAddressID, 10)))
-			test_helpers.AssertMapping(wardsResult.MappingRes, wardsDiff.ID, headerID, strconv.FormatInt(userAddressID, 10), "1")
+			test_helpers.AssertMapping(wardsResult.MappingRes, wardsDiff.ID, header.Id, strconv.FormatInt(userAddressID, 10), "1")
 		})
 	})
 
@@ -166,7 +164,7 @@ var _ = Describe("Executing the transformer", func() {
 			var ilkFlipResult test_helpers.MappingRes
 			err = db.Get(&ilkFlipResult, `SELECT diff_id, header_id, ilk_id AS key, flip AS value FROM maker.cat_ilk_flip`)
 			Expect(err).NotTo(HaveOccurred())
-			test_helpers.AssertMapping(ilkFlipResult, catIlkFlipDiff.ID, headerID, strconv.FormatInt(ilkID, 10), "0xB88d2655abA486A06e638707FBEbD858D430AC6E")
+			test_helpers.AssertMapping(ilkFlipResult, catIlkFlipDiff.ID, header.Id, strconv.FormatInt(ilkID, 10), "0xB88d2655abA486A06e638707FBEbD858D430AC6E")
 		})
 
 		It("reads in a Cat Ilk Chop storage diff row and persists it", func() {
@@ -180,7 +178,7 @@ var _ = Describe("Executing the transformer", func() {
 			var ilkChopResult test_helpers.MappingRes
 			err = db.Get(&ilkChopResult, `SELECT diff_id, header_id, ilk_id AS key, chop AS value FROM maker.cat_ilk_chop`)
 			Expect(err).NotTo(HaveOccurred())
-			test_helpers.AssertMapping(ilkChopResult, catIlkChopDiff.ID, headerID, strconv.FormatInt(ilkID, 10), "1000000000000000000000000000")
+			test_helpers.AssertMapping(ilkChopResult, catIlkChopDiff.ID, header.Id, strconv.FormatInt(ilkID, 10), "1000000000000000000000000000")
 		})
 
 		It("reads in a Cat Ilk Lump storage diff row and persists it", func() {
@@ -194,7 +192,7 @@ var _ = Describe("Executing the transformer", func() {
 			var ilkLumpResult test_helpers.MappingRes
 			err = db.Get(&ilkLumpResult, `SELECT diff_id, header_id, ilk_id AS key, lump AS value FROM maker.cat_ilk_lump`)
 			Expect(err).NotTo(HaveOccurred())
-			test_helpers.AssertMapping(ilkLumpResult, catIlkLumpDiff.ID, headerID, strconv.FormatInt(ilkID, 10), "10000000000000000000000000000000000000000000000000")
+			test_helpers.AssertMapping(ilkLumpResult, catIlkLumpDiff.ID, header.Id, strconv.FormatInt(ilkID, 10), "10000000000000000000000000000000000000000000000000")
 		})
 	})
 })

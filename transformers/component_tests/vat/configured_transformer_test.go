@@ -47,8 +47,7 @@ var _ = Describe("Executing the transformer", func() {
 			StorageKeysLookup: storageKeysLookup,
 			Repository:        &repository,
 		}
-		headerID int64
-		header   = fakes.FakeHeader
+		header = fakes.FakeHeader
 	)
 
 	BeforeEach(func() {
@@ -56,9 +55,8 @@ var _ = Describe("Executing the transformer", func() {
 		transformer.NewTransformer(db)
 		headerRepository := repositories.NewHeaderRepository(db)
 		var insertHeaderErr error
-		headerID, insertHeaderErr = headerRepository.CreateOrUpdateHeader(header)
+		header.Id, insertHeaderErr = headerRepository.CreateOrUpdateHeader(header)
 		Expect(insertHeaderErr).NotTo(HaveOccurred())
-		header.Id = headerID
 	})
 
 	It("reads in a Vat wards storage diff row and persists it", func() {
@@ -95,7 +93,7 @@ var _ = Describe("Executing the transformer", func() {
 		err := db.Get(&wardsResult, `SELECT diff_id, header_id, address_id, usr AS key, wards.wards AS value FROM maker.wards`)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(wardsResult.AddressID).To(Equal(strconv.FormatInt(vatAddressID, 10)))
-		test_helpers.AssertMapping(wardsResult.MappingRes, wardsDiff.ID, headerID, strconv.FormatInt(userAddressID, 10), "1")
+		test_helpers.AssertMapping(wardsResult.MappingRes, wardsDiff.ID, header.Id, strconv.FormatInt(userAddressID, 10), "1")
 	})
 
 	It("reads in a Vat debt storage diff row and persists it", func() {
@@ -109,7 +107,7 @@ var _ = Describe("Executing the transformer", func() {
 		var debtResult test_helpers.VariableRes
 		err = db.Get(&debtResult, `SELECT diff_id, header_id, debt AS value FROM maker.vat_debt`)
 		Expect(err).NotTo(HaveOccurred())
-		test_helpers.AssertVariable(debtResult, vatDebtDiff.ID, headerID, "100000000000000000000000000000000000000000000")
+		test_helpers.AssertVariable(debtResult, vatDebtDiff.ID, header.Id, "100000000000000000000000000000000000000000000")
 	})
 
 	It("reads in a Vat Line storage diff row and persists it", func() {
@@ -123,7 +121,7 @@ var _ = Describe("Executing the transformer", func() {
 		var lineResult test_helpers.VariableRes
 		err = db.Get(&lineResult, `SELECT diff_id, header_id, line AS value FROM maker.vat_line`)
 		Expect(err).NotTo(HaveOccurred())
-		test_helpers.AssertVariable(lineResult, vatLineDiff.ID, headerID, "1000000000000000000000000000000000000000000000000000")
+		test_helpers.AssertVariable(lineResult, vatLineDiff.ID, header.Id, "1000000000000000000000000000000000000000000000000000")
 	})
 
 	It("reads in a Vat live storage diff row and persists it", func() {
@@ -137,7 +135,7 @@ var _ = Describe("Executing the transformer", func() {
 		var liveResult test_helpers.VariableRes
 		err = db.Get(&liveResult, `SELECT diff_id, header_id, live AS value FROM maker.vat_live`)
 		Expect(err).NotTo(HaveOccurred())
-		test_helpers.AssertVariable(liveResult, vatLiveDiff.ID, headerID, "1")
+		test_helpers.AssertVariable(liveResult, vatLiveDiff.ID, header.Id, "1")
 	})
 
 	Describe("ilk", func() {
@@ -163,7 +161,7 @@ var _ = Describe("Executing the transformer", func() {
 			var artResult test_helpers.MappingRes
 			err = db.Get(&artResult, `SELECT diff_id, header_id, ilk_id AS key, art AS value FROM maker.vat_ilk_art`)
 			Expect(err).NotTo(HaveOccurred())
-			test_helpers.AssertMapping(artResult, ilkArtDiff.ID, headerID, strconv.FormatInt(ilkId, 10), "1000000000000000000")
+			test_helpers.AssertMapping(artResult, ilkArtDiff.ID, header.Id, strconv.FormatInt(ilkId, 10), "1000000000000000000")
 		})
 
 		It("reads in a Vat ilk rate storage diff row and persists it", func() {
@@ -177,7 +175,7 @@ var _ = Describe("Executing the transformer", func() {
 			var rateResult test_helpers.MappingRes
 			err = db.Get(&rateResult, `SELECT diff_id, header_id, ilk_id AS key, rate AS value FROM maker.vat_ilk_rate`)
 			Expect(err).NotTo(HaveOccurred())
-			test_helpers.AssertMapping(rateResult, ilkRateDiff.ID, headerID, strconv.FormatInt(ilkId, 10), "1000000000000000000000000000")
+			test_helpers.AssertMapping(rateResult, ilkRateDiff.ID, header.Id, strconv.FormatInt(ilkId, 10), "1000000000000000000000000000")
 		})
 
 		It("reads in a Vat ilk spot storage diff row and persists it", func() {
@@ -191,7 +189,7 @@ var _ = Describe("Executing the transformer", func() {
 			var spotResult test_helpers.MappingRes
 			err = db.Get(&spotResult, `SELECT diff_id, header_id, ilk_id AS key, spot AS value FROM maker.vat_ilk_spot`)
 			Expect(err).NotTo(HaveOccurred())
-			test_helpers.AssertMapping(spotResult, ilkSpotDiff.ID, headerID, strconv.FormatInt(ilkId, 10), "89550000000000000000000000000")
+			test_helpers.AssertMapping(spotResult, ilkSpotDiff.ID, header.Id, strconv.FormatInt(ilkId, 10), "89550000000000000000000000000")
 		})
 
 		It("reads in a Vat ilk spot storage diff with a hashed storage key", func() {
@@ -209,7 +207,7 @@ var _ = Describe("Executing the transformer", func() {
 			var spotResult test_helpers.MappingRes
 			err = db.Get(&spotResult, `SELECT diff_id, header_id, ilk_id AS key, spot AS value FROM maker.vat_ilk_spot`)
 			Expect(err).NotTo(HaveOccurred())
-			test_helpers.AssertMapping(spotResult, ilkSpotDiff.ID, headerID, strconv.FormatInt(anotherIlkID, 10), "43051901220750297886077900117")
+			test_helpers.AssertMapping(spotResult, ilkSpotDiff.ID, header.Id, strconv.FormatInt(anotherIlkID, 10), "43051901220750297886077900117")
 		})
 
 		It("reads in a Vat ilk line storage diff row and persists it", func() {
@@ -223,7 +221,7 @@ var _ = Describe("Executing the transformer", func() {
 			var lineResult test_helpers.MappingRes
 			err = db.Get(&lineResult, `SELECT diff_id, header_id, ilk_id AS key, line AS value FROM maker.vat_ilk_line`)
 			Expect(err).NotTo(HaveOccurred())
-			test_helpers.AssertMapping(lineResult, ilkLineDiff.ID, headerID, strconv.FormatInt(ilkId, 10), "100000000000000000000000000000000000000000000")
+			test_helpers.AssertMapping(lineResult, ilkLineDiff.ID, header.Id, strconv.FormatInt(ilkId, 10), "100000000000000000000000000000000000000000000")
 		})
 	})
 
@@ -251,7 +249,7 @@ var _ = Describe("Executing the transformer", func() {
 			var inkResult test_helpers.MappingRes
 			err = db.Get(&inkResult, `SELECT diff_id, header_id, urn_id AS key, ink AS value FROM maker.vat_urn_ink`)
 			Expect(err).NotTo(HaveOccurred())
-			test_helpers.AssertMapping(inkResult, urnInkDiff.ID, headerID, strconv.FormatInt(urnID, 10), "50000000000000000000")
+			test_helpers.AssertMapping(inkResult, urnInkDiff.ID, header.Id, strconv.FormatInt(urnID, 10), "50000000000000000000")
 		})
 
 		It("reads in a Vat urn art storage diff row and persists it", func() {
@@ -265,7 +263,7 @@ var _ = Describe("Executing the transformer", func() {
 			var artResult test_helpers.MappingRes
 			err = db.Get(&artResult, `SELECT diff_id, header_id, urn_id AS key, art AS value FROM maker.vat_urn_art`)
 			Expect(err).NotTo(HaveOccurred())
-			test_helpers.AssertMapping(artResult, urnArtDiff.ID, headerID, strconv.FormatInt(urnID, 10), "1000000000000000000")
+			test_helpers.AssertMapping(artResult, urnArtDiff.ID, header.Id, strconv.FormatInt(urnID, 10), "1000000000000000000")
 		})
 	})
 
@@ -276,13 +274,13 @@ var _ = Describe("Executing the transformer", func() {
 		)
 
 		BeforeEach(func() {
-			vatFrobLog := test_data.CreateTestLog(headerID, db)
+			vatFrobLog := test_data.CreateTestLog(header.Id, db)
 			vatFrob := test_data.VatFrobModelWithPositiveDart()
 			urnID, urnErr := shared.GetOrCreateUrn(guy, ilk, db)
 			Expect(urnErr).NotTo(HaveOccurred())
 			vatFrob.ColumnValues[constants.UrnColumn] = urnID
 			vatFrob.ColumnValues[constants.VColumn] = guy
-			vatFrob.ColumnValues[event.HeaderFK] = headerID
+			vatFrob.ColumnValues[event.HeaderFK] = header.Id
 			vatFrob.ColumnValues[event.LogFK] = vatFrobLog.ID
 			insertErr := event.PersistModels([]event.InsertionModel{vatFrob}, db)
 			Expect(insertErr).NotTo(HaveOccurred())
@@ -301,7 +299,7 @@ var _ = Describe("Executing the transformer", func() {
 			Expect(err).NotTo(HaveOccurred())
 			ilkID, ilkErr := shared.GetOrCreateIlk(ilk, db)
 			Expect(ilkErr).NotTo(HaveOccurred())
-			test_helpers.AssertDoubleMapping(gemResult, vatGemDiff.ID, headerID, strconv.FormatInt(ilkID, 10), guy, "0")
+			test_helpers.AssertDoubleMapping(gemResult, vatGemDiff.ID, header.Id, strconv.FormatInt(ilkID, 10), guy, "0")
 		})
 	})
 
@@ -309,14 +307,14 @@ var _ = Describe("Executing the transformer", func() {
 		var guy = "0x118D6a283f9044Ce17b95226822e5c73F50e0B90"
 
 		BeforeEach(func() {
-			vatFrobLog := test_data.CreateTestLog(headerID, db)
+			vatFrobLog := test_data.CreateTestLog(header.Id, db)
 			vatFrob := test_data.VatFrobModelWithPositiveDart()
 			ilk := "0x434f4c312d410000000000000000000000000000000000000000000000000000"
 			urnID, urnErr := shared.GetOrCreateUrn(guy, ilk, db)
 			Expect(urnErr).NotTo(HaveOccurred())
 			vatFrob.ColumnValues[constants.UrnColumn] = urnID
 			vatFrob.ColumnValues[constants.WColumn] = guy
-			vatFrob.ColumnValues[event.HeaderFK] = headerID
+			vatFrob.ColumnValues[event.HeaderFK] = header.Id
 			vatFrob.ColumnValues[event.LogFK] = vatFrobLog.ID
 			insertErr := event.PersistModels([]event.InsertionModel{vatFrob}, db)
 			Expect(insertErr).NotTo(HaveOccurred())
@@ -333,7 +331,7 @@ var _ = Describe("Executing the transformer", func() {
 			var daiResult test_helpers.MappingRes
 			err = db.Get(&daiResult, `SELECT diff_id, header_id, guy AS key, dai AS value FROM maker.vat_dai`)
 			Expect(err).NotTo(HaveOccurred())
-			test_helpers.AssertMapping(daiResult, vatDaiDiff.ID, headerID, guy, "0")
+			test_helpers.AssertMapping(daiResult, vatDaiDiff.ID, header.Id, guy, "0")
 		})
 	})
 })

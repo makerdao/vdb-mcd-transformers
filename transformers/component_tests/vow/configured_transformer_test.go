@@ -47,8 +47,7 @@ var _ = Describe("Executing the transformer", func() {
 			StorageKeysLookup: storageKeysLookup,
 			Repository:        &repository,
 		}
-		headerID int64
-		header   = fakes.FakeHeader
+		header = fakes.FakeHeader
 	)
 
 	BeforeEach(func() {
@@ -56,9 +55,8 @@ var _ = Describe("Executing the transformer", func() {
 		transformer.NewTransformer(db)
 		headerRepository := repositories.NewHeaderRepository(db)
 		var insertHeaderErr error
-		headerID, insertHeaderErr = headerRepository.CreateOrUpdateHeader(header)
+		header.Id, insertHeaderErr = headerRepository.CreateOrUpdateHeader(header)
 		Expect(insertHeaderErr).NotTo(HaveOccurred())
-		header.Id = headerID
 	})
 
 	Describe("wards", func() {
@@ -96,7 +94,7 @@ var _ = Describe("Executing the transformer", func() {
 			err := db.Get(&wardsResult, `SELECT diff_id, header_id, address_id, usr AS key, wards.wards AS value FROM maker.wards`)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(wardsResult.AddressID).To(Equal(strconv.FormatInt(vowAddressID, 10)))
-			test_helpers.AssertMapping(wardsResult.MappingRes, wardsDiff.ID, headerID, strconv.FormatInt(userAddressID, 10), "1")
+			test_helpers.AssertMapping(wardsResult.MappingRes, wardsDiff.ID, header.Id, strconv.FormatInt(userAddressID, 10), "1")
 		})
 	})
 
@@ -111,7 +109,7 @@ var _ = Describe("Executing the transformer", func() {
 		var vatResult test_helpers.VariableRes
 		err = db.Get(&vatResult, `SELECT diff_id, header_id, vat AS value FROM maker.vow_vat`)
 		Expect(err).NotTo(HaveOccurred())
-		test_helpers.AssertVariable(vatResult, vowVat.ID, headerID, "0x67fd6c3575Fc2dBE2CB596bD3bEbc9EDb5571fA1")
+		test_helpers.AssertVariable(vatResult, vowVat.ID, header.Id, "0x67fd6c3575Fc2dBE2CB596bD3bEbc9EDb5571fA1")
 	})
 
 	It("reads in a Vow.flapper storage diff row and persists it", func() {
@@ -125,7 +123,7 @@ var _ = Describe("Executing the transformer", func() {
 		var flapperResult test_helpers.VariableRes
 		err = db.Get(&flapperResult, `SELECT diff_id, header_id, flapper AS value FROM maker.vow_flapper`)
 		Expect(err).NotTo(HaveOccurred())
-		test_helpers.AssertVariable(flapperResult, vowFlapper.ID, headerID, "0xB6e31ab6Ea62Be7c530C32DAEa96E84d92fe20B7")
+		test_helpers.AssertVariable(flapperResult, vowFlapper.ID, header.Id, "0xB6e31ab6Ea62Be7c530C32DAEa96E84d92fe20B7")
 	})
 
 	It("reads in a Vow.flopper storage diff row and persists it", func() {
@@ -139,7 +137,7 @@ var _ = Describe("Executing the transformer", func() {
 		var flopperResult test_helpers.VariableRes
 		err = db.Get(&flopperResult, `SELECT diff_id, header_id, flopper AS value FROM maker.vow_flopper`)
 		Expect(err).NotTo(HaveOccurred())
-		test_helpers.AssertVariable(flopperResult, vowFlopper.ID, headerID, "0x275eC1950D6406e3cE6156f9F529c047Ea41c8cE")
+		test_helpers.AssertVariable(flopperResult, vowFlopper.ID, header.Id, "0x275eC1950D6406e3cE6156f9F529c047Ea41c8cE")
 	})
 
 	It("reads in a Vow.dump storage diff row and persists it", func() {
@@ -153,7 +151,7 @@ var _ = Describe("Executing the transformer", func() {
 		var rowResult test_helpers.VariableRes
 		err = db.Get(&rowResult, `SELECT diff_id, header_id, dump AS value FROM maker.vow_dump`)
 		Expect(err).NotTo(HaveOccurred())
-		test_helpers.AssertVariable(rowResult, vowDump.ID, headerID, "10000000000000000")
+		test_helpers.AssertVariable(rowResult, vowDump.ID, header.Id, "10000000000000000")
 	})
 
 	It("reads in a Vow.sump storage diff row and persists it", func() {
@@ -167,7 +165,7 @@ var _ = Describe("Executing the transformer", func() {
 		var rowResult test_helpers.VariableRes
 		err = db.Get(&rowResult, `SELECT diff_id, header_id, sump AS value FROM maker.vow_sump`)
 		Expect(err).NotTo(HaveOccurred())
-		test_helpers.AssertVariable(rowResult, vowSump.ID, headerID, "100000000000000000000000000000000000000000000")
+		test_helpers.AssertVariable(rowResult, vowSump.ID, header.Id, "100000000000000000000000000000000000000000000")
 	})
 
 	It("reads in a Vow.bump storage diff row and persists it", func() {
@@ -181,7 +179,7 @@ var _ = Describe("Executing the transformer", func() {
 		var rowResult test_helpers.VariableRes
 		err = db.Get(&rowResult, `SELECT diff_id, header_id, bump AS value FROM maker.vow_bump`)
 		Expect(err).NotTo(HaveOccurred())
-		test_helpers.AssertVariable(rowResult, vowBump.ID, headerID, "100000000000000000000000000000000000000000000")
+		test_helpers.AssertVariable(rowResult, vowBump.ID, header.Id, "100000000000000000000000000000000000000000000")
 	})
 
 	It("reads in a Vow.hump storage diff row and persists it", func() {
@@ -196,6 +194,6 @@ var _ = Describe("Executing the transformer", func() {
 		var rowResult test_helpers.VariableRes
 		err = db.Get(&rowResult, `SELECT diff_id, header_id, hump AS value FROM maker.vow_hump`)
 		Expect(err).NotTo(HaveOccurred())
-		test_helpers.AssertVariable(rowResult, vowHump.ID, headerID, "100000000000000000000000000000000000000000000")
+		test_helpers.AssertVariable(rowResult, vowHump.ID, header.Id, "100000000000000000000000000000000000000000000")
 	})
 })
