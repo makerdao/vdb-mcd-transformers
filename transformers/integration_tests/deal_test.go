@@ -63,7 +63,7 @@ var _ = Describe("Deal transformer", func() {
 	})
 
 	It("persists a flip deal log event", func() {
-		flipBlockNumber := int64(14887716)
+		flipBlockNumber := int64(8997455)
 		header, headerErr := persistHeader(db, flipBlockNumber, blockChain)
 		Expect(headerErr).NotTo(HaveOccurred())
 
@@ -87,11 +87,11 @@ var _ = Describe("Deal transformer", func() {
 		Expect(flipAddressErr).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))
-		Expect(dbResult[0].BidID).To(Equal("15"))
+		Expect(dbResult[0].BidID).To(Equal("115"))
 		Expect(dbResult[0].AddressID).To(Equal(flipAddressID))
 	})
-
-	It("persists a flop deal log event", func() {
+	//TODO: There are no flop deal events on mainnet
+	XIt("persists a flop deal log event", func() {
 		blockNumber := int64(15788320)
 		header, headerErr := persistHeader(db, blockNumber, blockChain)
 		Expect(headerErr).NotTo(HaveOccurred())
@@ -120,7 +120,8 @@ var _ = Describe("Deal transformer", func() {
 		Expect(dbResult[0].AddressID).To(Equal(flopAddressID))
 	})
 
-	It("persists a flap deal log event", func() {
+	//TODO: There are no flap deal events on mainnet
+	XIt("persists a flap deal log event", func() {
 		blockNumber := int64(15240030)
 		header, headerErr := persistHeader(db, blockNumber, blockChain)
 		Expect(headerErr).NotTo(HaveOccurred())

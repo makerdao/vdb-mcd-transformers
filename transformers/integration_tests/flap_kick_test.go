@@ -40,8 +40,8 @@ var _ = Describe("FlapKick Transformer", func() {
 		ContractAbi:       constants.FlapABI(),
 		Topic:             constants.FlapKickSignature(),
 	}
-
-	It("fetches and transforms a FlapKick event from Kovan chain", func() {
+	//TODO: There are no flap kick events on mainnet
+	XIt("fetches and transforms a FlapKick event", func() {
 		blockNumber := int64(14883695)
 		flapKickConfig.StartingBlockNumber = blockNumber
 		flapKickConfig.EndingBlockNumber = blockNumber
