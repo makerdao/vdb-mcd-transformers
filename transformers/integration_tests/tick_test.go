@@ -61,8 +61,8 @@ var _ = Describe("Tick EventTransformer", func() {
 		}
 	})
 
-	It("fetches and transforms a flip tick event from the Kovan chain", func() {
-		blockNumber := int64(15567591)
+	It("fetches and transforms a flip tick event", func() {
+		blockNumber := int64(8974350)
 		tickConfig.StartingBlockNumber = blockNumber
 		tickConfig.EndingBlockNumber = blockNumber
 
@@ -86,7 +86,7 @@ var _ = Describe("Tick EventTransformer", func() {
 
 		Expect(len(dbResult)).To(Equal(1))
 		Expect(dbResult[0].AddressID).To(Equal(strconv.FormatInt(flipAddressID, 10)))
-		Expect(dbResult[0].BidID).To(Equal("102"))
+		Expect(dbResult[0].BidID).To(Equal("15"))
 	})
 
 	// Todo: fill this in with flap tick event data from kovan

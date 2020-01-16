@@ -38,7 +38,7 @@ var _ = Describe("VatHeal Transformer", func() {
 	}
 
 	It("transforms VatHeal log events", func() {
-		blockNumber := int64(14883486)
+		blockNumber := int64(8957867)
 		vatHealConfig.StartingBlockNumber = blockNumber
 		vatHealConfig.EndingBlockNumber = blockNumber
 
@@ -67,7 +67,7 @@ var _ = Describe("VatHeal Transformer", func() {
 		err = db.Get(&dbResult, `SELECT rad from maker.vat_heal`)
 		Expect(err).NotTo(HaveOccurred())
 
-		Expect(dbResult.Rad).To(Equal("88730079194963819108278188144142294477657210"))
+		Expect(dbResult.Rad).To(Equal("331024328758114038198514075052115218961684178"))
 	})
 })
 

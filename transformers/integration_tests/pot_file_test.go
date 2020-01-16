@@ -31,7 +31,7 @@ var _ = Describe("PotFile EventTransformers", func() {
 		)
 
 		BeforeEach(func() {
-			blockNumber = int64(14764699)
+			blockNumber = int64(8928300)
 			var insertHeaderErr error
 			header, insertHeaderErr = persistHeader(db, blockNumber, blockChain)
 			Expect(insertHeaderErr).NotTo(HaveOccurred())
@@ -65,7 +65,7 @@ var _ = Describe("PotFile EventTransformers", func() {
 			Expect(executeErr).NotTo(HaveOccurred())
 		})
 
-		It("fetches and transforms a Pot.file dsr event from Kovan", func() {
+		It("fetches and transforms a Pot.file dsr event", func() {
 			var dbResult potFileDSRModel
 			getFileErr := db.Get(&dbResult, `SELECT what, data FROM maker.pot_file_dsr`)
 			Expect(getFileErr).NotTo(HaveOccurred())
@@ -85,7 +85,7 @@ var _ = Describe("PotFile EventTransformers", func() {
 		)
 
 		BeforeEach(func() {
-			blockNumber = int64(14764543)
+			blockNumber = int64(8928163)
 			var insertHeaderErr error
 			header, insertHeaderErr = persistHeader(db, blockNumber, blockChain)
 			Expect(insertHeaderErr).NotTo(HaveOccurred())
@@ -119,7 +119,7 @@ var _ = Describe("PotFile EventTransformers", func() {
 			Expect(executeErr).NotTo(HaveOccurred())
 		})
 
-		It("fetches and transforms a Pot.file vow event from Kovan", func() {
+		It("fetches and transforms a Pot.file vow event", func() {
 			var dbResult potFileDSRModel
 			getFileErr := db.Get(&dbResult, `SELECT what, data FROM maker.pot_file_vow`)
 			Expect(getFileErr).NotTo(HaveOccurred())

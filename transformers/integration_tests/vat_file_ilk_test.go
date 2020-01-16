@@ -58,7 +58,7 @@ var _ = Describe("VatFileIlk EventTransformer", func() {
 	})
 
 	It("fetches and transforms a Vat.file ilk 'spot' event from Kovan", func() {
-		blockNumber := int64(14781185)
+		blockNumber := int64(8928374)
 		initializer.Config.StartingBlockNumber = blockNumber
 		initializer.Config.EndingBlockNumber = blockNumber
 
@@ -88,7 +88,7 @@ var _ = Describe("VatFileIlk EventTransformer", func() {
 	})
 
 	It("fetches and transforms a Vat.file ilk 'line' event from Kovan", func() {
-		blockNumber := int64(14764761)
+		blockNumber := int64(9201340)
 		initializer.Config.StartingBlockNumber = blockNumber
 		initializer.Config.EndingBlockNumber = blockNumber
 
@@ -110,7 +110,7 @@ var _ = Describe("VatFileIlk EventTransformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResults)).To(Equal(1))
-		ilkID, err := shared.GetOrCreateIlk("0x5341490000000000000000000000000000000000000000000000000000000000", db)
+		ilkID, err := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
 		dbResult := dbResults[0]
 		Expect(dbResult.Ilk).To(Equal(strconv.FormatInt(ilkID, 10)))
@@ -118,8 +118,8 @@ var _ = Describe("VatFileIlk EventTransformer", func() {
 		Expect(dbResult.Data).To(Equal("100000000000000000000000000000000000000000000000000000"))
 	})
 
-	It("fetches and transforms a Vat.file ilk 'dust' event from Kovan", func() {
-		blockNumber := int64(14764768)
+	It("fetches and transforms a Vat.file ilk 'dust' event", func() {
+		blockNumber := int64(8928348)
 		initializer.Config.StartingBlockNumber = blockNumber
 		initializer.Config.EndingBlockNumber = blockNumber
 
@@ -141,7 +141,7 @@ var _ = Describe("VatFileIlk EventTransformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResults)).To(Equal(1))
-		ilkID, err := shared.GetOrCreateIlk("0x4241542d41000000000000000000000000000000000000000000000000000000", db)
+		ilkID, err := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
 		dbResult := dbResults[0]
 		Expect(dbResult.Ilk).To(Equal(strconv.FormatInt(ilkID, 10)))

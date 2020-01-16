@@ -30,7 +30,7 @@ var _ = Describe("PotDrip Transformer", func() {
 	})
 
 	It("transforms PotDrip log events", func() {
-		blockNumber := int64(15407546)
+		blockNumber := int64(9127348)
 		potDripConfig.StartingBlockNumber = blockNumber
 		potDripConfig.EndingBlockNumber = blockNumber
 
@@ -59,7 +59,7 @@ var _ = Describe("PotDrip Transformer", func() {
 		err = db.Get(&dbResult, `SELECT msg_sender from maker.pot_drip`)
 		Expect(err).NotTo(HaveOccurred())
 
-		addrID, addrErr := shared.GetOrCreateAddress("0x87e76b0a50efc20259cafE0530f75aE0e816aaF2", db)
+		addrID, addrErr := shared.GetOrCreateAddress("0x825100c63933cABA16C8CE40814DAc88305D8810", db)
 		Expect(addrErr).NotTo(HaveOccurred())
 		Expect(dbResult.MsgSender).To(Equal(strconv.FormatInt(addrID, 10)))
 	})
