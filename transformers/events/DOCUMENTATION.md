@@ -20,7 +20,7 @@ The transformer process for each of these different log types is the same, excep
 
 ## Creating a Transformer
 
-1. Pull an example event (from kovan / ganache etc.)
+1. Pull an example event (from mainnet, kovan, ganache etc.)
 1. Add event & method sig, contract address, `checked_headers` column name, and label to relevant files in [`constants`](../shared/constants)
 1. Write a test for the event sig in [`event_signature_generator_test.go`](../shared/constants/event_signature_generator_test.go)
 1. Create DB table (using `make new_migration`).

@@ -144,7 +144,7 @@ var _ = Describe("Plugin test", func() {
 	viper.SetConfigName("testing")
 	viper.AddConfigPath("$GOPATH/src/github.com/makerdao/vdb-mcd-transformers/environments/")
 	var ilk = "0x4554482d41000000000000000000000000000000000000000000000000000000"
-	var blockNumber = int64(14764569)
+	var blockNumber = int64(8928180) //needs a mainnet block with a cat file flip
 	var maxConsecutiveUnexpectedErrs = 0
 	var retryInterval = 2 * time.Second
 
@@ -169,7 +169,7 @@ var _ = Describe("Plugin test", func() {
 		})
 
 		Describe("GenerateTransformerPlugin", func() {
-			XIt("It bundles the specified  TransformerInitializers into a Exporter object and creates .so", func() {
+			It("It bundles the specified  TransformerInitializers into a Exporter object and creates .so", func() {
 				plug, err := plugin.Open(soPath)
 				Expect(err).ToNot(HaveOccurred())
 				symExporter, err := plug.Lookup("Exporter")
@@ -181,7 +181,7 @@ var _ = Describe("Plugin test", func() {
 				Expect(len(storageTransformerInitializers)).To(Equal(0))
 			})
 
-			XIt("Loads our generated Exporter and uses it to import an arbitrary set of TransformerInitializers that we can execute over", func() {
+			It("Loads our generated Exporter and uses it to import an arbitrary set of TransformerInitializers that we can execute over", func() {
 				hr = repositories.NewHeaderRepository(db)
 				header1, err := blockChain.GetHeaderByNumber(blockNumber)
 				Expect(err).ToNot(HaveOccurred())
@@ -228,7 +228,7 @@ var _ = Describe("Plugin test", func() {
 				}).Should(Equal(test_data.EthFlipAddress()))
 			})
 
-			XIt("rechecks checked headers for event logs", func() {
+			It("rechecks checked headers for event logs", func() {
 				hr = repositories.NewHeaderRepository(db)
 				header1, err := blockChain.GetHeaderByNumber(blockNumber)
 				Expect(err).ToNot(HaveOccurred())
@@ -280,7 +280,7 @@ var _ = Describe("Plugin test", func() {
 		})
 
 		Describe("GenerateTransformerPlugin", func() {
-			XIt("It bundles the specified StorageTransformerInitializers into a Exporter object and creates .so", func() {
+			It("It bundles the specified StorageTransformerInitializers into a Exporter object and creates .so", func() {
 				plug, err := plugin.Open(soPath)
 				Expect(err).ToNot(HaveOccurred())
 				symExporter, err := plug.Lookup("Exporter")
@@ -292,7 +292,7 @@ var _ = Describe("Plugin test", func() {
 				Expect(len(eventTransformerInitializers)).To(Equal(0))
 			})
 
-			XIt("Loads our generated Exporter and uses it to import an arbitrary set of StorageTransformerInitializers that we can execute over", func() {
+			It("Loads our generated Exporter and uses it to import an arbitrary set of StorageTransformerInitializers that we can execute over", func() {
 				plug, err := plugin.Open(soPath)
 				Expect(err).ToNot(HaveOccurred())
 				symExporter, err := plug.Lookup("Exporter")
@@ -329,7 +329,7 @@ var _ = Describe("Plugin test", func() {
 		})
 
 		Describe("GenerateTransformerPlugin", func() {
-			XIt("It bundles the specified TransformerInitializers and StorageTransformerInitializers into a Exporter object and creates .so", func() {
+			It("It bundles the specified TransformerInitializers and StorageTransformerInitializers into a Exporter object and creates .so", func() {
 				plug, err := plugin.Open(soPath)
 				Expect(err).ToNot(HaveOccurred())
 				symExporter, err := plug.Lookup("Exporter")
@@ -341,7 +341,7 @@ var _ = Describe("Plugin test", func() {
 				Expect(len(storageInitializers)).To(Equal(2))
 			})
 
-			XIt("Loads our generated Exporter and uses it to import an arbitrary set of TransformerInitializers and StorageTransformerInitializers that we can execute over", func() {
+			It("Loads our generated Exporter and uses it to import an arbitrary set of TransformerInitializers and StorageTransformerInitializers that we can execute over", func() {
 				hr = repositories.NewHeaderRepository(db)
 				header1, err := blockChain.GetHeaderByNumber(blockNumber)
 				Expect(err).ToNot(HaveOccurred())

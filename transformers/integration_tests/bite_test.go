@@ -40,7 +40,7 @@ var _ = Describe("Bite Transformer", func() {
 		Topic:             constants.BiteSignature(),
 	}
 
-	It("fetches and transforms a Bite event from Kovan chain", func() {
+	It("fetches and transforms a Bite event", func() {
 		test_config.CleanTestDB(db)
 		blockNumber := int64(8997324)
 		biteConfig.StartingBlockNumber = blockNumber

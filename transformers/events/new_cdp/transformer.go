@@ -60,7 +60,6 @@ func (t Transformer) ToModels(abi string, logs []core.EventLog, _ *postgres.DB) 
 	if entityErr != nil {
 		return nil, fmt.Errorf("NewCDP transformer couldn't convert logs to entities: %v", entityErr)
 	}
-
 	var models []event.InsertionModel
 	for _, newCdpEntity := range entities {
 		model := event.InsertionModel{

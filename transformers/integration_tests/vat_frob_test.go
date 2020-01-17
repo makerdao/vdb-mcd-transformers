@@ -56,7 +56,7 @@ var _ = Describe("Vat frob Transformer", func() {
 		}
 	})
 
-	It("fetches and transforms a vat frob event from Kovan chain", func() {
+	It("fetches and transforms a vat frob event", func() {
 		blockNumber := int64(8928903)
 		initializer.Config.StartingBlockNumber = blockNumber
 		initializer.Config.EndingBlockNumber = blockNumber

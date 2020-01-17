@@ -61,7 +61,7 @@ var _ = Describe("FlopKick Transformer", func() {
 		topics = []common.Hash{common.HexToHash(flopKickConfig.Topic)}
 	})
 	//TODO: There are no flop kick events on Mainnet
-	XIt("fetches and transforms a FlopKick event from Kovan chain", func() {
+	XIt("fetches and transforms a FlopKick event", func() {
 		blockNumber := int64(15788324)
 		initializer.Config.StartingBlockNumber = blockNumber
 		initializer.Config.EndingBlockNumber = blockNumber

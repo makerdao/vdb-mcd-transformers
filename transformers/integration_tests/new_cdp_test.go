@@ -29,7 +29,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = XDescribe("NewCdp Transformer", func() {
+var _ = Describe("NewCdp Transformer", func() {
 	BeforeEach(func() {
 		test_config.CleanTestDB(db)
 	})
@@ -41,8 +41,8 @@ var _ = XDescribe("NewCdp Transformer", func() {
 		Topic:             mcdConstants.NewCdpSignature(),
 	}
 
-	It("fetches and transforms a NewCdp event from Kovan chain", func() {
-		blockNumber := int64(8930579)
+	It("fetches and transforms a NewCdp event", func() {
+		blockNumber := int64(9297652)
 		newCdpConfig.StartingBlockNumber = blockNumber
 		newCdpConfig.EndingBlockNumber = blockNumber
 
@@ -70,9 +70,9 @@ var _ = XDescribe("NewCdp Transformer", func() {
 		Expect(queryErr).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))
-		Expect(dbResult[0].Usr).To(Equal("0x094766D0C35300C1fc2D8A7DA8d641886Df0e5FD"))
-		Expect(dbResult[0].Own).To(Equal("0xB2AA786Be6264c3F29f96513f13bA927f8b350c2"))
-		Expect(dbResult[0].Cdp).To(Equal("99"))
+		Expect(dbResult[0].Usr).To(Equal("0xc73e0383F3Aff3215E6f04B0331D58CeCf0Ab849"))
+		Expect(dbResult[0].Own).To(Equal("0xc73e0383F3Aff3215E6f04B0331D58CeCf0Ab849"))
+		Expect(dbResult[0].Cdp).To(Equal("3881"))
 	})
 })
 

@@ -86,7 +86,7 @@ var _ = Describe("SpotFile EventTransformers", func() {
 			Expect(executeErr).NotTo(HaveOccurred())
 		})
 
-		It("fetches and transforms a Spot.file mat event from Kovan", func() {
+		It("fetches and transforms a Spot.file mat event", func() {
 			var dbResult spotFileMatModel
 			getSpotErr := db.Get(&dbResult, `SELECT ilk_id, what, data FROM maker.spot_file_mat`)
 			Expect(getSpotErr).NotTo(HaveOccurred())
@@ -149,7 +149,7 @@ var _ = Describe("SpotFile EventTransformers", func() {
 			Expect(executeErr).NotTo(HaveOccurred())
 		})
 
-		It("fetches and transforms a Spot.file pip event from Kovan", func() {
+		It("fetches and transforms a Spot.file pip event", func() {
 			var dbResult spotFilePipModel
 			getSpotErr := db.Get(&dbResult, `SELECT ilk_id, pip from maker.spot_file_pip`)
 			Expect(getSpotErr).NotTo(HaveOccurred())

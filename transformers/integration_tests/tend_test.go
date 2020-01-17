@@ -85,8 +85,8 @@ var _ = Describe("Tend EventTransformer", func() {
 		Expect(dbResult[0].Lot).To(Equal("700000000000000000"))
 	})
 
-	//TODO: There are currently no Flap Tend events on Kovan
-	It("fetches and transforms a Flap Tend event from the Kovan chain", func() {})
+	//TODO: There are currently no Flap Tend events
+	It("fetches and transforms a Flap Tend event", func() {})
 })
 
 type tendModel struct {

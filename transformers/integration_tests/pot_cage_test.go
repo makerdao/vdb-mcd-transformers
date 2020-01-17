@@ -67,7 +67,7 @@ var _ = XDescribe("PotCage EventTransformer", func() {
 			Expect(executeErr).NotTo(HaveOccurred())
 		})
 
-		It("fetches and transforms a Pot.cage event from Kovan", func() {
+		It("fetches and transforms a Pot.cage event", func() {
 			var dbResult []potCageModel
 			getFileErr := db.Select(&dbResult, `SELECT id FROM maker.pot_cage`)
 

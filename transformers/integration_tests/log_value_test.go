@@ -29,7 +29,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = XDescribe("LogValue Transformer", func() {
+var _ = Describe("LogValue Transformer", func() {
 	logValueConfig := transformer.EventTransformerConfig{
 		TransformerName:   constants.LogValueTable,
 		ContractAddresses: test_data.OsmAddresses(),
@@ -37,8 +37,8 @@ var _ = XDescribe("LogValue Transformer", func() {
 		Topic:             constants.LogValueSignature(),
 	}
 
-	It("fetches and transforms a LogValue event from Kovan chain", func() {
-		blockNumber := int64(9045760)
+	It("fetches and transforms a LogValue event", func() {
+		blockNumber := int64(9290757)
 		logValueConfig.StartingBlockNumber = blockNumber
 		logValueConfig.EndingBlockNumber = blockNumber
 
@@ -70,7 +70,7 @@ var _ = XDescribe("LogValue Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))
-		Expect(dbResult[0].Val).To(Equal("148590141490000000000"))
+		Expect(dbResult[0].Val).To(Equal("160720000000000000000"))
 	})
 })
 

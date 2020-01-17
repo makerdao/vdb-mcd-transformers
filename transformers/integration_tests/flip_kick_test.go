@@ -38,7 +38,7 @@ var _ = Describe("FlipKick Transformer", func() {
 		Topic:             constants.FlipKickSignature(),
 	}
 
-	It("fetches and transforms a FlipKick event from Kovan chain", func() {
+	It("fetches and transforms a FlipKick event", func() {
 		blockNumber := int64(8997383)
 		flipKickConfig.StartingBlockNumber = blockNumber
 		flipKickConfig.EndingBlockNumber = blockNumber
