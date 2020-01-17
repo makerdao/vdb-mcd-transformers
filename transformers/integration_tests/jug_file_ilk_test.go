@@ -32,7 +32,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = XDescribe("Jug File Ilk EventTransformer", func() {
+var _ = Describe("Jug File Ilk EventTransformer", func() {
 	BeforeEach(func() {
 		test_config.CleanTestDB(db)
 	})

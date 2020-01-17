@@ -15,10 +15,10 @@ import (
 )
 
 var _ = Describe("Rely transformer", func() {
-	XContext("Cat rely events", func() {
-		usrAddress := "0x0e4725db88bb038bba4c4723e91ba183be11edf3"
-		msgSenderAddress := "0x13141b8a5e4a82ebc6b636849dd6a515185d6236"
-		relyIntegrationTest(int64(14764552), test_data.CatAddress(), msgSenderAddress, usrAddress)
+	Context("Cat rely events", func() {
+		usrAddress := "0xbaa65281c2fa2baacb2cb550ba051525a480d3f4"
+		msgSenderAddress := "0xa9ee75d81d78c36c4163004e6cc7a988eec9433e"
+		relyIntegrationTest(int64(8928165), test_data.CatAddress(), msgSenderAddress, usrAddress)
 	})
 
 	Context("Flap rely events", func() {
@@ -28,8 +28,8 @@ var _ = Describe("Rely transformer", func() {
 	})
 
 	Context("Flip rely events", func() {
-		usrAddress := "0x13141b8a5e4a82ebc6b636849dd6a515185d6236"
-		msgSenderAddress := "0xffb0382ca7cfdc4fc4d5cc8913af1393d7ee1ef1"
+		usrAddress := "0xbaa65281c2FA2baAcb2cb550BA051525A480D3F4"
+		msgSenderAddress := "0xBAB4FbeA257ABBfe84F4588d4Eedc43656E46Fc5"
 		relyIntegrationTest(int64(8928180), test_data.EthFlipAddress(), msgSenderAddress, usrAddress)
 	})
 
@@ -39,28 +39,28 @@ var _ = Describe("Rely transformer", func() {
 		relyIntegrationTest(int64(8928163), test_data.FlopAddress(), msgSenderAddress, usrAddress)
 	})
 
-	XContext("Jug rely events", func() {
-		usrAddress := "0x0e4725db88bb038bba4c4723e91ba183be11edf3"
-		msgSenderAddress := "0x13141b8a5e4a82ebc6b636849dd6a515185d6236"
-		relyIntegrationTest(int64(14764552), test_data.JugAddress(), msgSenderAddress, usrAddress)
-	})
-
-	XContext("Pot rely events", func() {
-		usrAddress := "0x0e4725db88bb038bba4c4723e91ba183be11edf3"
-		msgSenderAddress := "0x13141b8a5e4a82ebc6b636849dd6a515185d6236"
-		relyIntegrationTest(int64(14764552), test_data.PotAddress(), msgSenderAddress, usrAddress)
-	})
-
-	XContext("Spot rely events", func() {
-		usrAddress := "0x0e4725db88bb038bba4c4723e91ba183be11edf3"
-		msgSenderAddress := "0x13141b8a5e4a82ebc6b636849dd6a515185d6236"
-		relyIntegrationTest(int64(14764552), test_data.SpotAddress(), msgSenderAddress, usrAddress)
-	})
-
-	XContext("Vow rely events", func() {
+	Context("Jug rely events", func() {
 		usrAddress := "0xbaa65281c2fa2baacb2cb550ba051525a480d3f4"
-		msgSenderAddress := "0xc41c4759f67ff54c7a7314d155f40fc6504f5d28"
-		relyIntegrationTest(int64(14764552), test_data.VowAddress(), msgSenderAddress, usrAddress)
+		msgSenderAddress := "0x45f0a929889ec8cc2d5b8cd79ab55e3279945cde"
+		relyIntegrationTest(int64(8928160), test_data.JugAddress(), msgSenderAddress, usrAddress)
+	})
+
+	Context("Pot rely events", func() {
+		usrAddress := "0xbaa65281c2fa2baacb2cb550ba051525a480d3f4"
+		msgSenderAddress := "0x1a5ee7c64cf874c735968e3a42fa13f1c03427f9"
+		relyIntegrationTest(int64(8928160), test_data.PotAddress(), msgSenderAddress, usrAddress)
+	})
+
+	Context("Spot rely events", func() {
+		usrAddress := "0xbaa65281c2fa2baacb2cb550ba051525a480d3f4"
+		msgSenderAddress := "0xdedd12bcb045c02b2fe11031c2b269bcde457410"
+		relyIntegrationTest(int64(8928152), test_data.SpotAddress(), msgSenderAddress, usrAddress)
+	})
+
+	Context("Vow rely events", func() {
+		usrAddress := "0xbaa65281c2fa2baacb2cb550ba051525a480d3f4"
+		msgSenderAddress := "0x68322ca1a9aeb8c1d610b5fc8a8920aa0fba423b"
+		relyIntegrationTest(int64(8928163), test_data.VowAddress(), msgSenderAddress, usrAddress)
 	})
 })
 
