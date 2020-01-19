@@ -2799,31 +2799,18 @@ $$;
 CREATE FUNCTION maker.flip_created() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
-BEGIN
-    WITH block_info AS (
-        SELECT block_number, hash, api.epoch_to_datetime(headers.block_timestamp) AS datetime
+DECLARE
+    diff_timestamp TIMESTAMP := (
+        SELECT api.epoch_to_datetime(block_timestamp)
         FROM public.headers
-        WHERE headers.id = NEW.header_id
-        LIMIT 1
-    )
-    INSERT
-    INTO maker.flip(bid_id, address_id, block_number, block_hash, created, updated, guy, tic, "end", lot, bid,
-                    gal, tab)
-    VALUES (NEW.bid_id, NEW.address_id,
-            (SELECT block_number FROM block_info),
-            (SELECT hash FROM block_info),
-            (SELECT datetime FROM block_info),
-            (SELECT datetime FROM block_info),
-            (SELECT get_latest_flip_bid_guy(NEW.bid_id)),
-            (SELECT get_latest_flip_bid_tic(NEW.bid_id)),
-            (SELECT get_latest_flip_bid_end(NEW.bid_id)),
-            (SELECT get_latest_flip_bid_lot(NEW.bid_id)),
-            (SELECT get_latest_flip_bid_bid(NEW.bid_id)),
-            (SELECT get_latest_flip_bid_gal(NEW.bid_id)),
-            (SELECT get_latest_flip_bid_tab(NEW.bid_id)))
-    ON CONFLICT (bid_id, block_number) DO UPDATE SET created = (SELECT datetime FROM block_info),
-                                                     updated = (SELECT datetime FROM block_info);
-    return NEW;
+        WHERE headers.id = NEW.header_id);
+BEGIN
+    UPDATE maker.flip
+    SET created = diff_timestamp
+    WHERE flip.address_id = NEW.address_id
+      AND flip.bid_id = NEW.bid_id
+      AND flip.created IS NULL;
+    RETURN NULL;
 END
 $$;
 
@@ -4063,32 +4050,24 @@ CREATE FUNCTION maker.insert_updated_flip_bid() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 BEGIN
-    WITH created AS (
-        SELECT created
-        FROM maker.flip
-        WHERE flip.bid_id = NEW.bid_id
-        ORDER BY flip.block_number
-        LIMIT 1
-    ),
-         diff_block AS (
-             select block_number, hash, block_timestamp
-             FROM public.headers
-             WHERE id = NEW.header_id
-         )
+    WITH diff_block AS (
+        SELECT block_number, hash, block_timestamp
+        FROM public.headers
+        WHERE id = NEW.header_id
+    )
     INSERT
-    INTO maker.flip(bid_id, address_id, block_number, block_hash, bid, guy, tic, "end", lot, gal, tab, updated,
-                    created)
-    VALUES (NEW.bid_id, NEW.address_id, (SELECT block_number FROM diff_block), (SELECT hash FROM diff_block), NEW.bid,
-            (SELECT get_latest_flip_bid_guy(NEW.bid_id)),
-            (SELECT get_latest_flip_bid_tic(NEW.bid_id)),
-            (SELECT get_latest_flip_bid_end(NEW.bid_id)),
-            (SELECT get_latest_flip_bid_lot(NEW.bid_id)),
-            (SELECT get_latest_flip_bid_gal(NEW.bid_id)),
-            (SELECT get_latest_flip_bid_tab(NEW.bid_id)),
+    INTO maker.flip (bid_id, address_id, block_number, bid, guy, tic, "end", lot, gal, tab, updated, created)
+    VALUES (NEW.bid_id, NEW.address_id, (SELECT block_number FROM diff_block), NEW.bid,
+            get_latest_flip_bid_guy(NEW.bid_id),
+            get_latest_flip_bid_tic(NEW.bid_id),
+            get_latest_flip_bid_end(NEW.bid_id),
+            get_latest_flip_bid_lot(NEW.bid_id),
+            get_latest_flip_bid_gal(NEW.bid_id),
+            get_latest_flip_bid_tab(NEW.bid_id),
             (SELECT api.epoch_to_datetime(block_timestamp) FROM diff_block),
-            (SELECT created FROM created))
-    ON CONFLICT (bid_id, block_number) DO UPDATE SET bid = NEW.bid;
-    return NEW;
+            flip_bid_time_created(NEW.address_id, NEW.bid_id))
+    ON CONFLICT (block_number, bid_id, address_id) DO UPDATE SET bid = NEW.bid;
+    RETURN NEW;
 END
 $$;
 
@@ -4101,32 +4080,24 @@ CREATE FUNCTION maker.insert_updated_flip_end() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 BEGIN
-    WITH created AS (
-        SELECT created
-        FROM maker.flip
-        WHERE flip.bid_id = NEW.bid_id
-        ORDER BY flip.block_number
-        LIMIT 1
-    ),
-         diff_block AS (
-             select block_number, hash, block_timestamp
-             FROM public.headers
-             WHERE id = NEW.header_id
-         )
+    WITH diff_block AS (
+        SELECT block_number, hash, block_timestamp
+        FROM public.headers
+        WHERE id = NEW.header_id
+    )
     INSERT
-    INTO maker.flip(bid_id, address_id, block_number, block_hash, "end", guy, tic, lot, bid, gal, tab, updated,
-                    created)
-    VALUES (NEW.bid_id, NEW.address_id, (SELECT block_number FROM diff_block), (SELECT hash FROM diff_block), NEW."end",
-            (SELECT get_latest_flip_bid_guy(NEW.bid_id)),
-            (SELECT get_latest_flip_bid_tic(NEW.bid_id)),
-            (SELECT get_latest_flip_bid_lot(NEW.bid_id)),
-            (SELECT get_latest_flip_bid_bid(NEW.bid_id)),
-            (SELECT get_latest_flip_bid_gal(NEW.bid_id)),
-            (SELECT get_latest_flip_bid_tab(NEW.bid_id)),
+    INTO maker.flip (bid_id, address_id, block_number, "end", guy, tic, lot, bid, gal, tab, updated, created)
+    VALUES (NEW.bid_id, NEW.address_id, (SELECT block_number FROM diff_block), NEW."end",
+            get_latest_flip_bid_guy(NEW.bid_id),
+            get_latest_flip_bid_tic(NEW.bid_id),
+            get_latest_flip_bid_lot(NEW.bid_id),
+            get_latest_flip_bid_bid(NEW.bid_id),
+            get_latest_flip_bid_gal(NEW.bid_id),
+            get_latest_flip_bid_tab(NEW.bid_id),
             (SELECT api.epoch_to_datetime(block_timestamp) FROM diff_block),
-            (SELECT created FROM created))
-    ON CONFLICT (bid_id, block_number) DO UPDATE SET "end" = NEW."end";
-    return NEW;
+            flip_bid_time_created(NEW.address_id, NEW.bid_id))
+    ON CONFLICT (block_number, bid_id, address_id) DO UPDATE SET "end" = NEW."end";
+    RETURN NEW;
 END
 $$;
 
@@ -4139,32 +4110,24 @@ CREATE FUNCTION maker.insert_updated_flip_gal() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 BEGIN
-    WITH created AS (
-        SELECT created
-        FROM maker.flip
-        WHERE flip.bid_id = NEW.bid_id
-        ORDER BY flip.block_number
-        LIMIT 1
-    ),
-         diff_block AS (
-             select block_number, hash, block_timestamp
-             FROM public.headers
-             WHERE id = NEW.header_id
-         )
+    WITH diff_block AS (
+        SELECT block_number, hash, block_timestamp
+        FROM public.headers
+        WHERE id = NEW.header_id
+    )
     INSERT
-    INTO maker.flip(bid_id, address_id, block_number, block_hash, gal, guy, tic, "end", lot, bid, tab, updated,
-                    created)
-    VALUES (NEW.bid_id, NEW.address_id, (SELECT block_number FROM diff_block), (SELECT hash FROM diff_block), NEW.gal,
-            (SELECT get_latest_flip_bid_guy(NEW.bid_id)),
-            (SELECT get_latest_flip_bid_tic(NEW.bid_id)),
-            (SELECT get_latest_flip_bid_end(NEW.bid_id)),
-            (SELECT get_latest_flip_bid_lot(NEW.bid_id)),
-            (SELECT get_latest_flip_bid_bid(NEW.bid_id)),
-            (SELECT get_latest_flip_bid_tab(NEW.bid_id)),
+    INTO maker.flip (bid_id, address_id, block_number, gal, guy, tic, "end", lot, bid, tab, updated, created)
+    VALUES (NEW.bid_id, NEW.address_id, (SELECT block_number FROM diff_block), NEW.gal,
+            get_latest_flip_bid_guy(NEW.bid_id),
+            get_latest_flip_bid_tic(NEW.bid_id),
+            get_latest_flip_bid_end(NEW.bid_id),
+            get_latest_flip_bid_lot(NEW.bid_id),
+            get_latest_flip_bid_bid(NEW.bid_id),
+            get_latest_flip_bid_tab(NEW.bid_id),
             (SELECT api.epoch_to_datetime(block_timestamp) FROM diff_block),
-            (SELECT created FROM created))
-    ON CONFLICT (bid_id, block_number) DO UPDATE SET gal = NEW.gal;
-    return NEW;
+            flip_bid_time_created(NEW.address_id, NEW.bid_id))
+    ON CONFLICT (block_number, bid_id, address_id) DO UPDATE SET gal = NEW.gal;
+    RETURN NEW;
 END
 $$;
 
@@ -4177,32 +4140,24 @@ CREATE FUNCTION maker.insert_updated_flip_guy() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 BEGIN
-    WITH created AS (
-        SELECT created
-        FROM maker.flip
-        WHERE flip.bid_id = NEW.bid_id
-        ORDER BY flip.block_number
-        LIMIT 1
-    ),
-         diff_block AS (
-             select block_number, hash, block_timestamp
-             FROM public.headers
-             WHERE id = NEW.header_id
-         )
+    WITH diff_block AS (
+        SELECT block_number, hash, block_timestamp
+        FROM public.headers
+        WHERE id = NEW.header_id
+    )
     INSERT
-    INTO maker.flip(bid_id, address_id, block_number, block_hash, guy, tic, "end", lot, bid, gal, tab, updated,
-                    created)
-    VALUES (NEW.bid_id, NEW.address_id, (SELECT block_number FROM diff_block), (SELECT hash FROM diff_block), NEW.guy,
-            (SELECT get_latest_flip_bid_tic(NEW.bid_id)),
-            (SELECT get_latest_flip_bid_end(NEW.bid_id)),
-            (SELECT get_latest_flip_bid_lot(NEW.bid_id)),
-            (SELECT get_latest_flip_bid_bid(NEW.bid_id)),
-            (SELECT get_latest_flip_bid_gal(NEW.bid_id)),
-            (SELECT get_latest_flip_bid_tab(NEW.bid_id)),
+    INTO maker.flip (bid_id, address_id, block_number, guy, tic, "end", lot, bid, gal, tab, updated, created)
+    VALUES (NEW.bid_id, NEW.address_id, (SELECT block_number FROM diff_block), NEW.guy,
+            get_latest_flip_bid_tic(NEW.bid_id),
+            get_latest_flip_bid_end(NEW.bid_id),
+            get_latest_flip_bid_lot(NEW.bid_id),
+            get_latest_flip_bid_bid(NEW.bid_id),
+            get_latest_flip_bid_gal(NEW.bid_id),
+            get_latest_flip_bid_tab(NEW.bid_id),
             (SELECT api.epoch_to_datetime(block_timestamp) FROM diff_block),
-            (SELECT created FROM created))
-    ON CONFLICT (bid_id, block_number) DO UPDATE SET guy = NEW.guy;
-    return NEW;
+            flip_bid_time_created(NEW.address_id, NEW.bid_id))
+    ON CONFLICT (block_number, bid_id, address_id) DO UPDATE SET guy = NEW.guy;
+    RETURN NEW;
 END
 $$;
 
@@ -4215,32 +4170,24 @@ CREATE FUNCTION maker.insert_updated_flip_lot() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 BEGIN
-    WITH created AS (
-        SELECT created
-        FROM maker.flip
-        WHERE flip.bid_id = NEW.bid_id
-        ORDER BY flip.block_number
-        LIMIT 1
-    ),
-         diff_block AS (
-             select block_number, hash, block_timestamp
-             FROM public.headers
-             WHERE id = NEW.header_id
-         )
+    WITH diff_block AS (
+        SELECT block_number, hash, block_timestamp
+        FROM public.headers
+        WHERE id = NEW.header_id
+    )
     INSERT
-    INTO maker.flip(bid_id, address_id, block_number, block_hash, lot, guy, tic, "end", bid, gal, tab, updated,
-                    created)
-    VALUES (NEW.bid_id, NEW.address_id, (SELECT block_number FROM diff_block), (SELECT hash FROM diff_block), NEW.lot,
-            (SELECT get_latest_flip_bid_guy(NEW.bid_id)),
-            (SELECT get_latest_flip_bid_tic(NEW.bid_id)),
-            (SELECT get_latest_flip_bid_end(NEW.bid_id)),
-            (SELECT get_latest_flip_bid_bid(NEW.bid_id)),
-            (SELECT get_latest_flip_bid_gal(NEW.bid_id)),
-            (SELECT get_latest_flip_bid_tab(NEW.bid_id)),
+    INTO maker.flip (bid_id, address_id, block_number, lot, guy, tic, "end", bid, gal, tab, updated, created)
+    VALUES (NEW.bid_id, NEW.address_id, (SELECT block_number FROM diff_block), NEW.lot,
+            get_latest_flip_bid_guy(NEW.bid_id),
+            get_latest_flip_bid_tic(NEW.bid_id),
+            get_latest_flip_bid_end(NEW.bid_id),
+            get_latest_flip_bid_bid(NEW.bid_id),
+            get_latest_flip_bid_gal(NEW.bid_id),
+            get_latest_flip_bid_tab(NEW.bid_id),
             (SELECT api.epoch_to_datetime(block_timestamp) FROM diff_block),
-            (SELECT created FROM created))
-    ON CONFLICT (bid_id, block_number) DO UPDATE SET lot = NEW.lot;
-    return NEW;
+            flip_bid_time_created(NEW.address_id, NEW.bid_id))
+    ON CONFLICT (block_number, bid_id, address_id) DO UPDATE SET lot = NEW.lot;
+    RETURN NEW;
 END
 $$;
 
@@ -4253,32 +4200,24 @@ CREATE FUNCTION maker.insert_updated_flip_tab() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 BEGIN
-    WITH created AS (
-        SELECT created
-        FROM maker.flip
-        WHERE flip.bid_id = NEW.bid_id
-        ORDER BY flip.block_number
-        LIMIT 1
-    ),
-         diff_block AS (
-             select block_number, hash, block_timestamp
-             FROM public.headers
-             WHERE id = NEW.header_id
-         )
+    WITH diff_block AS (
+        SELECT block_number, hash, block_timestamp
+        FROM public.headers
+        WHERE id = NEW.header_id
+    )
     INSERT
-    INTO maker.flip(bid_id, address_id, block_number, block_hash, tab, guy, tic, "end", lot, bid, gal, updated,
-                    created)
-    VALUES (NEW.bid_id, NEW.address_id, (SELECT block_number FROM diff_block), (SELECT hash FROM diff_block), NEW.tab,
-            (SELECT get_latest_flip_bid_guy(NEW.bid_id)),
-            (SELECT get_latest_flip_bid_tic(NEW.bid_id)),
-            (SELECT get_latest_flip_bid_end(NEW.bid_id)),
-            (SELECT get_latest_flip_bid_lot(NEW.bid_id)),
-            (SELECT get_latest_flip_bid_bid(NEW.bid_id)),
-            (SELECT get_latest_flip_bid_gal(NEW.bid_id)),
+    INTO maker.flip (bid_id, address_id, block_number, tab, guy, tic, "end", lot, bid, gal, updated, created)
+    VALUES (NEW.bid_id, NEW.address_id, (SELECT block_number FROM diff_block), NEW.tab,
+            get_latest_flip_bid_guy(NEW.bid_id),
+            get_latest_flip_bid_tic(NEW.bid_id),
+            get_latest_flip_bid_end(NEW.bid_id),
+            get_latest_flip_bid_lot(NEW.bid_id),
+            get_latest_flip_bid_bid(NEW.bid_id),
+            get_latest_flip_bid_gal(NEW.bid_id),
             (SELECT api.epoch_to_datetime(block_timestamp) FROM diff_block),
-            (SELECT created FROM created))
-    ON CONFLICT (bid_id, block_number) DO UPDATE SET tab = NEW.tab;
-    return NEW;
+            flip_bid_time_created(NEW.address_id, NEW.bid_id))
+    ON CONFLICT (block_number, bid_id, address_id) DO UPDATE SET tab = NEW.tab;
+    RETURN NEW;
 END
 $$;
 
@@ -4291,32 +4230,24 @@ CREATE FUNCTION maker.insert_updated_flip_tic() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 BEGIN
-    WITH created AS (
-        SELECT created
-        FROM maker.flip
-        WHERE flip.bid_id = NEW.bid_id
-        ORDER BY flip.block_number
-        LIMIT 1
-    ),
-         diff_block AS (
-             select block_number, hash, block_timestamp
-             FROM public.headers
-             WHERE id = NEW.header_id
-         )
+    WITH diff_block AS (
+        SELECT block_number, hash, block_timestamp
+        FROM public.headers
+        WHERE id = NEW.header_id
+    )
     INSERT
-    INTO maker.flip(bid_id, address_id, block_number, block_hash, tic, guy, "end", lot, bid, gal, tab, updated,
-                    created)
-    VALUES (NEW.bid_id, NEW.address_id, (SELECT block_number FROM diff_block), (SELECT hash FROM diff_block), NEW.tic,
-            (SELECT get_latest_flip_bid_guy(NEW.bid_id)),
-            (SELECT get_latest_flip_bid_end(NEW.bid_id)),
-            (SELECT get_latest_flip_bid_lot(NEW.bid_id)),
-            (SELECT get_latest_flip_bid_bid(NEW.bid_id)),
-            (SELECT get_latest_flip_bid_gal(NEW.bid_id)),
-            (SELECT get_latest_flip_bid_tab(NEW.bid_id)),
+    INTO maker.flip (bid_id, address_id, block_number, tic, guy, "end", lot, bid, gal, tab, updated, created)
+    VALUES (NEW.bid_id, NEW.address_id, (SELECT block_number FROM diff_block), NEW.tic,
+            get_latest_flip_bid_guy(NEW.bid_id),
+            get_latest_flip_bid_end(NEW.bid_id),
+            get_latest_flip_bid_lot(NEW.bid_id),
+            get_latest_flip_bid_bid(NEW.bid_id),
+            get_latest_flip_bid_gal(NEW.bid_id),
+            get_latest_flip_bid_tab(NEW.bid_id),
             (SELECT api.epoch_to_datetime(block_timestamp) FROM diff_block),
-            (SELECT created FROM created))
-    ON CONFLICT (bid_id, block_number) DO UPDATE SET tic = NEW.tic;
-    return NEW;
+            flip_bid_time_created(NEW.address_id, NEW.bid_id))
+    ON CONFLICT (block_number, bid_id, address_id) DO UPDATE SET tic = NEW.tic;
+    RETURN NEW;
 END
 $$;
 
@@ -5533,6 +5464,28 @@ $$;
 --
 
 COMMENT ON FUNCTION maker.update_urn_inks_until_next_diff(start_at_diff maker.vat_urn_ink, new_ink numeric) IS '@omit';
+
+
+--
+-- Name: flip_bid_time_created(integer, numeric); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.flip_bid_time_created(address_id integer, bid_id numeric) RETURNS timestamp without time zone
+    LANGUAGE sql
+    AS $$
+SELECT api.epoch_to_datetime(MIN(block_timestamp))
+FROM public.headers
+         LEFT JOIN maker.flip_kick ON flip_kick.header_id = headers.id
+WHERE flip_kick.address_id = flip_bid_time_created.address_id
+  AND flip_kick.bid_id = flip_bid_time_created.bid_id
+$$;
+
+
+--
+-- Name: FUNCTION flip_bid_time_created(address_id integer, bid_id numeric); Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON FUNCTION public.flip_bid_time_created(address_id integer, bid_id numeric) IS '@omit';
 
 
 --
@@ -7824,11 +7777,9 @@ ALTER SEQUENCE maker.flap_vat_id_seq OWNED BY maker.flap_vat.id;
 --
 
 CREATE TABLE maker.flip (
-    id integer NOT NULL,
-    block_number bigint,
-    block_hash text,
     address_id integer NOT NULL,
-    bid_id numeric,
+    block_number bigint NOT NULL,
+    bid_id numeric NOT NULL,
     guy text,
     tic bigint,
     "end" bigint,
@@ -7837,7 +7788,7 @@ CREATE TABLE maker.flip (
     gal text,
     tab numeric,
     created timestamp without time zone,
-    updated timestamp without time zone
+    updated timestamp without time zone NOT NULL
 );
 
 
@@ -8214,26 +8165,6 @@ CREATE SEQUENCE maker.flip_bid_usr_id_seq
 --
 
 ALTER SEQUENCE maker.flip_bid_usr_id_seq OWNED BY maker.flip_bid_usr.id;
-
-
---
--- Name: flip_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
---
-
-CREATE SEQUENCE maker.flip_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: flip_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
---
-
-ALTER SEQUENCE maker.flip_id_seq OWNED BY maker.flip.id;
 
 
 --
@@ -12665,13 +12596,6 @@ ALTER TABLE ONLY maker.flap_vat ALTER COLUMN id SET DEFAULT nextval('maker.flap_
 
 
 --
--- Name: flip id; Type: DEFAULT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.flip ALTER COLUMN id SET DEFAULT nextval('maker.flip_id_seq'::regclass);
-
-
---
 -- Name: flip_beg id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
@@ -14322,14 +14246,6 @@ ALTER TABLE ONLY maker.flip_bid_usr
 
 
 --
--- Name: flip flip_block_number_bid_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.flip
-    ADD CONSTRAINT flip_block_number_bid_id_key UNIQUE (block_number, bid_id);
-
-
---
 -- Name: flip_ilk flip_ilk_diff_id_header_id_address_id_ilk_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -14382,7 +14298,7 @@ ALTER TABLE ONLY maker.flip_kicks
 --
 
 ALTER TABLE ONLY maker.flip
-    ADD CONSTRAINT flip_pkey PRIMARY KEY (id);
+    ADD CONSTRAINT flip_pkey PRIMARY KEY (block_number, bid_id, address_id);
 
 
 --
