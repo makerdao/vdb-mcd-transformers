@@ -54,8 +54,6 @@ var _ = Describe("Vat Deny transformer", func() {
 		err := db.Select(&dbResult, `SELECT usr FROM maker.vat_deny`)
 		Expect(err).NotTo(HaveOccurred())
 
-		contractAddressID, contractAddressErr := shared.GetOrCreateAddress(denyConfig.ContractAddresses[0], db)
-		Expect(contractAddressErr).NotTo(HaveOccurred())
 		usrAddress := "0x403689148fa98a5a6fdcc0b984914ae968d788e5"
 		usrAddressID, usrAddressErr := shared.GetOrCreateAddress(usrAddress, db)
 		Expect(usrAddressErr).NotTo(HaveOccurred())

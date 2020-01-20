@@ -54,15 +54,11 @@ var _ = Describe("Vat Rely transformer", func() {
 		err := db.Select(&dbResult, `SELECT usr FROM maker.vat_rely`)
 		Expect(err).NotTo(HaveOccurred())
 
-		contractAddressID, contractAddressErr := shared.GetOrCreateAddress(relyConfig.ContractAddresses[0], db)
-		Expect(contractAddressErr).NotTo(HaveOccurred())
-
 		usrAddress := "0xbaa65281c2fa2baacb2cb550ba051525a480d3f4"
 		usrAddressID, usrAddressErr := shared.GetOrCreateAddress(usrAddress, db)
 		Expect(usrAddressErr).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(2))
-		Expect(dbResult[0].AddressID).To(Equal(contractAddressID))
 		Expect(dbResult[0].Usr).To(Equal(usrAddressID))
 	})
 })
