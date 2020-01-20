@@ -174,3 +174,10 @@ const (
 	VowWaitTable            = "vow_wait"
 	WardsTable              = "wards"
 )
+
+// trigger tables
+const (
+	FlapTable = "flap"
+	FlipTable = "flip"
+	FlopTable = "flop"
+)
