@@ -8,14 +8,14 @@ import (
 	. "github.com/onsi/ginkgo"
 )
 
-var _ = Describe("flip created trigger", func() {
-	var flipKickModel event.InsertionModel
+var _ = Describe("flap created trigger", func() {
+	var flapKickModel event.InsertionModel
 
 	BeforeEach(func() {
-		flipKickModel = test_data.FlipKickModel()
+		flapKickModel = test_data.FlapKickModel()
 	})
 
 	Describe("updating flop created", func() {
-		bid_creation.SharedBidCreationTriggerTests(constants.FlipTable, test_data.EthFlipAddress(), &flipKickModel)
+		bid_creation.SharedBidCreationTriggerTests(constants.FlapTable, test_data.FlapAddress(), &flapKickModel)
 	})
 })

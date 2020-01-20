@@ -139,7 +139,7 @@ CREATE OR REPLACE FUNCTION maker.insert_updated_flip_guy() RETURNS TRIGGER AS
 $$
 BEGIN
     WITH diff_block AS (
-        SELECT block_number, hash, block_timestamp
+        SELECT block_number, block_timestamp
         FROM public.headers
         WHERE id = NEW.header_id
     )
@@ -166,7 +166,7 @@ CREATE OR REPLACE FUNCTION maker.insert_updated_flip_tic() RETURNS TRIGGER AS
 $$
 BEGIN
     WITH diff_block AS (
-        SELECT block_number, hash, block_timestamp
+        SELECT block_number, block_timestamp
         FROM public.headers
         WHERE id = NEW.header_id
     )
@@ -193,7 +193,7 @@ CREATE OR REPLACE FUNCTION maker.insert_updated_flip_end() RETURNS TRIGGER AS
 $$
 BEGIN
     WITH diff_block AS (
-        SELECT block_number, hash, block_timestamp
+        SELECT block_number, block_timestamp
         FROM public.headers
         WHERE id = NEW.header_id
     )
@@ -220,7 +220,7 @@ CREATE OR REPLACE FUNCTION maker.insert_updated_flip_lot() RETURNS TRIGGER AS
 $$
 BEGIN
     WITH diff_block AS (
-        SELECT block_number, hash, block_timestamp
+        SELECT block_number, block_timestamp
         FROM public.headers
         WHERE id = NEW.header_id
     )
@@ -247,7 +247,7 @@ CREATE OR REPLACE FUNCTION maker.insert_updated_flip_bid() RETURNS TRIGGER AS
 $$
 BEGIN
     WITH diff_block AS (
-        SELECT block_number, hash, block_timestamp
+        SELECT block_number, block_timestamp
         FROM public.headers
         WHERE id = NEW.header_id
     )
@@ -274,7 +274,7 @@ CREATE OR REPLACE FUNCTION maker.insert_updated_flip_gal() RETURNS TRIGGER AS
 $$
 BEGIN
     WITH diff_block AS (
-        SELECT block_number, hash, block_timestamp
+        SELECT block_number, block_timestamp
         FROM public.headers
         WHERE id = NEW.header_id
     )
@@ -301,7 +301,7 @@ CREATE OR REPLACE FUNCTION maker.insert_updated_flip_tab() RETURNS TRIGGER AS
 $$
 BEGIN
     WITH diff_block AS (
-        SELECT block_number, hash, block_timestamp
+        SELECT block_number, block_timestamp
         FROM public.headers
         WHERE id = NEW.header_id
     )

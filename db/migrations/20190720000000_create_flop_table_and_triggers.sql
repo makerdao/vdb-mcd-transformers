@@ -110,7 +110,7 @@ AS
 $$
 BEGIN
     WITH diff_block AS (
-        SELECT block_number, hash, block_timestamp
+        SELECT block_number, block_timestamp
         FROM public.headers
         WHERE id = NEW.header_id
     )
@@ -137,7 +137,7 @@ AS
 $$
 BEGIN
     WITH diff_block AS (
-        SELECT block_number, hash, block_timestamp
+        SELECT block_number, block_timestamp
         FROM public.headers
         WHERE id = NEW.header_id
     )
@@ -164,7 +164,7 @@ AS
 $$
 BEGIN
     WITH diff_block AS (
-        SELECT block_number, hash, block_timestamp
+        SELECT block_number, block_timestamp
         FROM public.headers
         WHERE id = NEW.header_id
     )
@@ -191,7 +191,7 @@ AS
 $$
 BEGIN
     WITH diff_block AS (
-        SELECT block_number, hash, block_timestamp
+        SELECT block_number, block_timestamp
         FROM public.headers
         WHERE id = NEW.header_id
     )
@@ -218,7 +218,7 @@ AS
 $$
 BEGIN
     WITH diff_block AS (
-        SELECT block_number, hash, block_timestamp
+        SELECT block_number, block_timestamp
         FROM public.headers
         WHERE id = NEW.header_id
     )

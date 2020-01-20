@@ -1,22 +1,17 @@
 -- +goose Up
 CREATE TABLE maker.flap
 (
-    id           SERIAL PRIMARY KEY,
-    -- TODO: remove hash?
-    -- Can we replace block number + hash with header_id?
-    -- Tricky because there might be multiple diffs contributing to a single row
-    block_number BIGINT  DEFAULT NULL,
-    block_hash   TEXT    DEFAULT NULL,
-    address_id   INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
-    bid_id       NUMERIC DEFAULT NULL,
-    guy          TEXT    DEFAULT NULL,
-    tic          BIGINT  DEFAULT NULL,
-    "end"        BIGINT  DEFAULT NULL,
-    lot          NUMERIC DEFAULT NULL,
-    bid          NUMERIC DEFAULT NULL,
-    created      TIMESTAMP,
-    updated      TIMESTAMP,
-    UNIQUE (block_number, bid_id)
+    address_id   INTEGER   NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
+    block_number BIGINT    NOT NULL,
+    bid_id       NUMERIC   NOT NULL,
+    guy          TEXT      DEFAULT NULL,
+    tic          BIGINT    DEFAULT NULL,
+    "end"        BIGINT    DEFAULT NULL,
+    lot          NUMERIC   DEFAULT NULL,
+    bid          NUMERIC   DEFAULT NULL,
+    created      TIMESTAMP DEFAULT NULL,
+    updated      TIMESTAMP NOT NULL,
+    PRIMARY KEY (block_number, bid_id, address_id)
 );
 
 COMMENT ON TABLE maker.flap
@@ -95,34 +90,39 @@ $$
 COMMENT ON FUNCTION get_latest_flap_bid_lot
     IS E'@omit';
 
+CREATE FUNCTION flap_bid_time_created(address_id INTEGER, bid_id NUMERIC) RETURNS TIMESTAMP AS
+$$
+SELECT api.epoch_to_datetime(MIN(block_timestamp))
+FROM public.headers
+         LEFT JOIN maker.flap_kick ON flap_kick.header_id = headers.id
+WHERE flap_kick.address_id = flap_bid_time_created.address_id
+  AND flap_kick.bid_id = flap_bid_time_created.bid_id
+$$
+    LANGUAGE sql;
+
+COMMENT ON FUNCTION flap_bid_time_created
+    IS E'@omit';
+
 -- +goose StatementBegin
 CREATE OR REPLACE FUNCTION maker.insert_updated_flap_bid() RETURNS TRIGGER
 AS
 $$
 BEGIN
-    WITH created AS (
-        SELECT created
-        FROM maker.flap
-        WHERE flap.bid_id = NEW.bid_id
-        ORDER BY flap.block_number
-        LIMIT 1
-    ),
-         diff_block AS (
-             SELECT block_number, hash, block_timestamp
-             FROM public.headers
-             WHERE id = NEW.header_id
-         )
+    WITH diff_block AS (
+        SELECT block_number, block_timestamp
+        FROM public.headers
+        WHERE id = NEW.header_id
+    )
     INSERT
-    INTO maker.flap(bid_id, address_id, block_number, block_hash, bid, guy, tic, "end", lot, updated,
-                    created)
-    VALUES (NEW.bid_id, NEW.address_id, (SELECT block_number FROM diff_block), (SELECT hash FROM diff_block), NEW.bid,
-            (SELECT get_latest_flap_bid_guy(NEW.bid_id)),
-            (SELECT get_latest_flap_bid_tic(NEW.bid_id)),
-            (SELECT get_latest_flap_bid_end(NEW.bid_id)),
-            (SELECT get_latest_flap_bid_lot(NEW.bid_id)),
+    INTO maker.flap (bid_id, address_id, block_number, bid, guy, tic, "end", lot, updated, created)
+    VALUES (NEW.bid_id, NEW.address_id, (SELECT block_number FROM diff_block), NEW.bid,
+            get_latest_flap_bid_guy(NEW.bid_id),
+            get_latest_flap_bid_tic(NEW.bid_id),
+            get_latest_flap_bid_end(NEW.bid_id),
+            get_latest_flap_bid_lot(NEW.bid_id),
             (SELECT api.epoch_to_datetime(block_timestamp) FROM diff_block),
-            (SELECT created FROM created))
-    ON CONFLICT (bid_id, block_number) DO UPDATE SET bid = NEW.bid;
+            flap_bid_time_created(NEW.address_id, NEW.bid_id))
+    ON CONFLICT (address_id, bid_id, block_number) DO UPDATE SET bid = NEW.bid;
     return NEW;
 END
 $$
@@ -134,29 +134,21 @@ CREATE OR REPLACE FUNCTION maker.insert_updated_flap_guy() RETURNS TRIGGER
 AS
 $$
 BEGIN
-    WITH created AS (
-        SELECT created
-        FROM maker.flap
-        WHERE flap.bid_id = NEW.bid_id
-        ORDER BY flap.block_number
-        LIMIT 1
-    ),
-         diff_block AS (
-             SELECT block_number, hash, block_timestamp
-             FROM public.headers
-             WHERE id = NEW.header_id
-         )
+    WITH diff_block AS (
+        SELECT block_number, block_timestamp
+        FROM public.headers
+        WHERE id = NEW.header_id
+    )
     INSERT
-    INTO maker.flap(bid_id, address_id, block_number, block_hash, guy, bid, tic, "end", lot, updated,
-                    created)
-    VALUES (NEW.bid_id, NEW.address_id, (SELECT block_number FROM diff_block), (SELECT hash FROM diff_block), NEW.guy,
-            (SELECT get_latest_flap_bid_bid(NEW.bid_id)),
-            (SELECT get_latest_flap_bid_tic(NEW.bid_id)),
-            (SELECT get_latest_flap_bid_end(NEW.bid_id)),
-            (SELECT get_latest_flap_bid_lot(NEW.bid_id)),
+    INTO maker.flap (bid_id, address_id, block_number, guy, bid, tic, "end", lot, updated, created)
+    VALUES (NEW.bid_id, NEW.address_id, (SELECT block_number FROM diff_block), NEW.guy,
+            get_latest_flap_bid_bid(NEW.bid_id),
+            get_latest_flap_bid_tic(NEW.bid_id),
+            get_latest_flap_bid_end(NEW.bid_id),
+            get_latest_flap_bid_lot(NEW.bid_id),
             (SELECT api.epoch_to_datetime(block_timestamp) FROM diff_block),
-            (SELECT created FROM created))
-    ON CONFLICT (bid_id, block_number) DO UPDATE SET guy = NEW.guy;
+            flap_bid_time_created(NEW.address_id, NEW.bid_id))
+    ON CONFLICT (address_id, bid_id, block_number) DO UPDATE SET guy = NEW.guy;
     return NEW;
 END
 $$
@@ -168,29 +160,21 @@ CREATE OR REPLACE FUNCTION maker.insert_updated_flap_tic() RETURNS TRIGGER
 AS
 $$
 BEGIN
-    WITH created AS (
-        SELECT created
-        FROM maker.flap
-        WHERE flap.bid_id = NEW.bid_id
-        ORDER BY flap.block_number
-        LIMIT 1
-    ),
-         diff_block AS (
-             SELECT block_number, hash, block_timestamp
-             FROM public.headers
-             WHERE id = NEW.header_id
-         )
+    WITH diff_block AS (
+        SELECT block_number, block_timestamp
+        FROM public.headers
+        WHERE id = NEW.header_id
+    )
     INSERT
-    INTO maker.flap(bid_id, address_id, block_number, block_hash, tic, bid, guy, "end", lot, updated,
-                    created)
-    VALUES (NEW.bid_id, NEW.address_id, (SELECT block_number FROM diff_block), (SELECT hash FROM diff_block), NEW.tic,
-            (SELECT get_latest_flap_bid_bid(NEW.bid_id)),
-            (SELECT get_latest_flap_bid_guy(NEW.bid_id)),
-            (SELECT get_latest_flap_bid_end(NEW.bid_id)),
-            (SELECT get_latest_flap_bid_lot(NEW.bid_id)),
+    INTO maker.flap (bid_id, address_id, block_number, tic, bid, guy, "end", lot, updated, created)
+    VALUES (NEW.bid_id, NEW.address_id, (SELECT block_number FROM diff_block), NEW.tic,
+            get_latest_flap_bid_bid(NEW.bid_id),
+            get_latest_flap_bid_guy(NEW.bid_id),
+            get_latest_flap_bid_end(NEW.bid_id),
+            get_latest_flap_bid_lot(NEW.bid_id),
             (SELECT api.epoch_to_datetime(block_timestamp) FROM diff_block),
-            (SELECT created FROM created))
-    ON CONFLICT (bid_id, block_number) DO UPDATE SET tic = NEW.tic;
+            flap_bid_time_created(NEW.address_id, NEW.bid_id))
+    ON CONFLICT (address_id, bid_id, block_number) DO UPDATE SET tic = NEW.tic;
     return NEW;
 END
 $$
@@ -202,29 +186,21 @@ CREATE OR REPLACE FUNCTION maker.insert_updated_flap_end() RETURNS TRIGGER
 AS
 $$
 BEGIN
-    WITH created AS (
-        SELECT created
-        FROM maker.flap
-        WHERE flap.bid_id = NEW.bid_id
-        ORDER BY flap.block_number
-        LIMIT 1
-    ),
-         diff_block AS (
-             SELECT block_number, hash, block_timestamp
-             FROM public.headers
-             WHERE id = NEW.header_id
-         )
+    WITH diff_block AS (
+        SELECT block_number, block_timestamp
+        FROM public.headers
+        WHERE id = NEW.header_id
+    )
     INSERT
-    INTO maker.flap(bid_id, address_id, block_number, block_hash, "end", bid, guy, tic, lot, updated,
-                    created)
-    VALUES (NEW.bid_id, NEW.address_id, (SELECT block_number FROM diff_block), (SELECT hash FROM diff_block), NEW."end",
-            (SELECT get_latest_flap_bid_bid(NEW.bid_id)),
-            (SELECT get_latest_flap_bid_guy(NEW.bid_id)),
-            (SELECT get_latest_flap_bid_tic(NEW.bid_id)),
-            (SELECT get_latest_flap_bid_lot(NEW.bid_id)),
+    INTO maker.flap (bid_id, address_id, block_number, "end", bid, guy, tic, lot, updated, created)
+    VALUES (NEW.bid_id, NEW.address_id, (SELECT block_number FROM diff_block), NEW."end",
+            get_latest_flap_bid_bid(NEW.bid_id),
+            get_latest_flap_bid_guy(NEW.bid_id),
+            get_latest_flap_bid_tic(NEW.bid_id),
+            get_latest_flap_bid_lot(NEW.bid_id),
             (SELECT api.epoch_to_datetime(block_timestamp) FROM diff_block),
-            (SELECT created FROM created))
-    ON CONFLICT (bid_id, block_number) DO UPDATE SET "end" = NEW."end";
+            flap_bid_time_created(NEW.address_id, NEW.bid_id))
+    ON CONFLICT (address_id, bid_id, block_number) DO UPDATE SET "end" = NEW."end";
     return NEW;
 END
 $$
@@ -236,29 +212,21 @@ CREATE OR REPLACE FUNCTION maker.insert_updated_flap_lot() RETURNS TRIGGER
 AS
 $$
 BEGIN
-    WITH created AS (
-        SELECT created
-        FROM maker.flap
-        WHERE flap.bid_id = NEW.bid_id
-        ORDER BY flap.block_number
-        LIMIT 1
-    ),
-         diff_block AS (
-             SELECT block_number, hash, block_timestamp
-             FROM public.headers
-             WHERE id = NEW.header_id
-         )
+    WITH diff_block AS (
+        SELECT block_number, block_timestamp
+        FROM public.headers
+        WHERE id = NEW.header_id
+    )
     INSERT
-    INTO maker.flap(bid_id, address_id, block_number, block_hash, lot, bid, guy, tic, "end", updated,
-                    created)
-    VALUES (NEW.bid_id, NEW.address_id, (SELECT block_number FROM diff_block), (SELECT hash FROM diff_block), NEW.lot,
-            (SELECT get_latest_flap_bid_bid(NEW.bid_id)),
-            (SELECT get_latest_flap_bid_guy(NEW.bid_id)),
-            (SELECT get_latest_flap_bid_tic(NEW.bid_id)),
-            (SELECT get_latest_flap_bid_end(NEW.bid_id)),
+    INTO maker.flap (bid_id, address_id, block_number, lot, bid, guy, tic, "end", updated, created)
+    VALUES (NEW.bid_id, NEW.address_id, (SELECT block_number FROM diff_block), NEW.lot,
+            get_latest_flap_bid_bid(NEW.bid_id),
+            get_latest_flap_bid_guy(NEW.bid_id),
+            get_latest_flap_bid_tic(NEW.bid_id),
+            get_latest_flap_bid_end(NEW.bid_id),
             (SELECT api.epoch_to_datetime(block_timestamp) FROM diff_block),
-            (SELECT created FROM created))
-    ON CONFLICT (bid_id, block_number) DO UPDATE SET lot = NEW.lot;
+            flap_bid_time_created(NEW.address_id, NEW.bid_id))
+    ON CONFLICT (address_id, bid_id, block_number) DO UPDATE SET lot = NEW.lot;
     return NEW;
 END
 $$
@@ -269,28 +237,18 @@ $$
 CREATE OR REPLACE FUNCTION maker.flap_created() RETURNS TRIGGER
 AS
 $$
-BEGIN
-    WITH block_info AS (
-        SELECT block_number, hash, api.epoch_to_datetime(headers.block_timestamp) AS datetime
+DECLARE
+    diff_timestamp TIMESTAMP := (
+        SELECT api.epoch_to_datetime(block_timestamp)
         FROM public.headers
-        WHERE headers.id = NEW.header_id
-        LIMIT 1
-    )
-    INSERT
-    INTO maker.flap(bid_id, address_id, block_number, block_hash, created, updated, bid, guy, tic, "end", lot)
-    VALUES (NEW.bid_id, NEW.address_id,
-            (SELECT block_number FROM block_info),
-            (SELECT hash FROM block_info),
-            (SELECT datetime FROM block_info),
-            (SELECT datetime FROM block_info),
-            (SELECT get_latest_flap_bid_bid(NEW.bid_id)),
-            (SELECT get_latest_flap_bid_guy(NEW.bid_id)),
-            (SELECT get_latest_flap_bid_tic(NEW.bid_id)),
-            (SELECT get_latest_flap_bid_end(NEW.bid_id)),
-            (SELECT get_latest_flap_bid_lot(NEW.bid_id)))
-    ON CONFLICT (bid_id, block_number) DO UPDATE SET created = (SELECT datetime FROM block_info),
-                                                     updated = (SELECT datetime FROM block_info);
-    return NEW;
+        WHERE headers.id = NEW.header_id);
+BEGIN
+    UPDATE maker.flap
+    SET created = diff_timestamp
+    WHERE flap.address_id = NEW.address_id
+      AND flap.bid_id = NEW.bid_id
+      AND flap.created IS NULL;
+    RETURN NULL;
 END
 $$
     LANGUAGE plpgsql;
@@ -351,6 +309,7 @@ DROP FUNCTION get_latest_flap_bid_bid(numeric);
 DROP FUNCTION get_latest_flap_bid_tic(numeric);
 DROP FUNCTION get_latest_flap_bid_end(numeric);
 DROP FUNCTION get_latest_flap_bid_lot(numeric);
+DROP FUNCTION flap_bid_time_created(INTEGER, NUMERIC);
 
 DROP INDEX maker.flap_address_index;
 DROP TABLE maker.flap;
