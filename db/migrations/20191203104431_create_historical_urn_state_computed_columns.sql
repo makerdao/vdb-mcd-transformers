@@ -2,10 +2,14 @@
 -- SQL in this section is executed when the migration is applied.
 
 CREATE FUNCTION api.historical_urn_state_ilk(state api.historical_urn_state)
-    RETURNS api.ilk_state AS
+    RETURNS api.historical_ilk_state AS
 $$
 SELECT *
-FROM api.get_ilk(state.ilk_identifier, state.block_height)
+FROM api.historical_ilk_state i
+WHERE i.ilk_identifier = state.ilk_identifier
+  AND i.block_number <= state.block_height
+ORDER BY i.block_number DESC
+LIMIT 1
 $$
     LANGUAGE sql
     STABLE;

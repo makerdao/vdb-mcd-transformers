@@ -1027,30 +1027,6 @@ COMMENT ON FUNCTION api.max_block() IS '@omit';
 
 
 --
--- Name: all_ilk_states(text, bigint, integer, integer); Type: FUNCTION; Schema: api; Owner: -
---
-
-CREATE FUNCTION api.all_ilk_states(ilk_identifier text, block_height bigint DEFAULT api.max_block(), max_results integer DEFAULT '-1'::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.ilk_state
-    LANGUAGE plpgsql STABLE STRICT
-    AS $$
-BEGIN
-    RETURN QUERY (
-        WITH relevant_blocks AS (
-            SELECT get_ilk_blocks_before.block_height
-            FROM api.get_ilk_blocks_before(ilk_identifier, all_ilk_states.block_height)
-        )
-        SELECT r.*
-        FROM relevant_blocks,
-             LATERAL api.get_ilk(ilk_identifier, relevant_blocks.block_height) r
-        LIMIT CASE WHEN max_results = -1 THEN NULL ELSE max_results END
-        OFFSET
-        all_ilk_states.result_offset
-    );
-END;
-$$;
-
-
---
 -- Name: all_ilks(bigint, integer, integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
@@ -1380,15 +1356,54 @@ FROM api.get_flip(event.bid_id, event.ilk_identifier, event.block_height)
 $$;
 
 
+SET default_tablespace = '';
+
+SET default_table_access_method = heap;
+
+--
+-- Name: historical_ilk_state; Type: TABLE; Schema: api; Owner: -
+--
+
+CREATE TABLE api.historical_ilk_state (
+    ilk_identifier text NOT NULL,
+    block_number bigint NOT NULL,
+    rate numeric,
+    art numeric,
+    spot numeric,
+    line numeric,
+    dust numeric,
+    chop numeric,
+    lump numeric,
+    flip text,
+    rho numeric,
+    duty numeric,
+    pip text,
+    mat numeric,
+    created timestamp without time zone,
+    updated timestamp without time zone
+);
+
+
+--
+-- Name: COLUMN historical_ilk_state.ilk_identifier; Type: COMMENT; Schema: api; Owner: -
+--
+
+COMMENT ON COLUMN api.historical_ilk_state.ilk_identifier IS '@name id';
+
+
 --
 -- Name: bite_event_ilk(api.bite_event); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.bite_event_ilk(event api.bite_event) RETURNS api.ilk_state
+CREATE FUNCTION api.bite_event_ilk(event api.bite_event) RETURNS api.historical_ilk_state
     LANGUAGE sql STABLE
     AS $$
 SELECT *
-FROM api.get_ilk(event.ilk_identifier, event.block_height)
+FROM api.historical_ilk_state i
+WHERE i.ilk_identifier = event.ilk_identifier
+  AND i.block_number <= event.block_height
+ORDER BY i.block_number DESC
+LIMIT 1
 $$;
 
 
@@ -1535,11 +1550,16 @@ $$;
 -- Name: flip_state_ilk(api.flip_state); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.flip_state_ilk(flip api.flip_state) RETURNS api.ilk_state
+CREATE FUNCTION api.flip_state_ilk(flip_state api.flip_state) RETURNS api.historical_ilk_state
     LANGUAGE sql STABLE
     AS $$
-SELECT *
-FROM api.get_ilk((SELECT identifier FROM maker.ilks WHERE ilks.id = flip.ilk_id), flip.block_height)
+SELECT i.*
+FROM api.historical_ilk_state i
+         LEFT JOIN maker.ilks ON ilks.identifier = i.ilk_identifier
+WHERE ilks.id = flip_state.ilk_id
+  AND i.block_number <= flip_state.block_height
+ORDER BY i.block_number DESC
+LIMIT 1
 $$;
 
 
@@ -1599,11 +1619,15 @@ $$;
 -- Name: frob_event_ilk(api.frob_event); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.frob_event_ilk(event api.frob_event) RETURNS api.ilk_state
+CREATE FUNCTION api.frob_event_ilk(event api.frob_event) RETURNS api.historical_ilk_state
     LANGUAGE sql STABLE
     AS $$
 SELECT *
-FROM api.get_ilk(event.ilk_identifier, event.block_height)
+FROM api.historical_ilk_state i
+WHERE i.ilk_identifier = event.ilk_identifier
+  AND i.block_number <= event.block_height
+ORDER BY i.block_number DESC
+LIMIT 1
 $$;
 
 
@@ -2153,41 +2177,6 @@ WHERE ink.urn_id IS NOT NULL
 $_$;
 
 
-SET default_tablespace = '';
-
-SET default_table_access_method = heap;
-
---
--- Name: historical_ilk_state; Type: TABLE; Schema: api; Owner: -
---
-
-CREATE TABLE api.historical_ilk_state (
-    ilk_identifier text NOT NULL,
-    block_number bigint NOT NULL,
-    rate numeric,
-    art numeric,
-    spot numeric,
-    line numeric,
-    dust numeric,
-    chop numeric,
-    lump numeric,
-    flip text,
-    rho numeric,
-    duty numeric,
-    pip text,
-    mat numeric,
-    created timestamp without time zone,
-    updated timestamp without time zone
-);
-
-
---
--- Name: COLUMN historical_ilk_state.ilk_identifier; Type: COMMENT; Schema: api; Owner: -
---
-
-COMMENT ON COLUMN api.historical_ilk_state.ilk_identifier IS '@name id';
-
-
 --
 -- Name: historical_ilk_state_bites(api.historical_ilk_state, integer, integer); Type: FUNCTION; Schema: api; Owner: -
 --
@@ -2286,11 +2275,15 @@ $$;
 -- Name: historical_urn_state_ilk(api.historical_urn_state); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.historical_urn_state_ilk(state api.historical_urn_state) RETURNS api.ilk_state
+CREATE FUNCTION api.historical_urn_state_ilk(state api.historical_urn_state) RETURNS api.historical_ilk_state
     LANGUAGE sql STABLE
     AS $$
 SELECT *
-FROM api.get_ilk(state.ilk_identifier, state.block_height)
+FROM api.historical_ilk_state i
+WHERE i.ilk_identifier = state.ilk_identifier
+  AND i.block_number <= state.block_height
+ORDER BY i.block_number DESC
+LIMIT 1
 $$;
 
 
@@ -2298,11 +2291,15 @@ $$;
 -- Name: ilk_file_event_ilk(api.ilk_file_event); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.ilk_file_event_ilk(event api.ilk_file_event) RETURNS SETOF api.ilk_state
+CREATE FUNCTION api.ilk_file_event_ilk(event api.ilk_file_event) RETURNS SETOF api.historical_ilk_state
     LANGUAGE sql STABLE
     AS $$
 SELECT *
-FROM api.get_ilk(event.ilk_identifier, event.block_height)
+FROM api.historical_ilk_state i
+WHERE i.ilk_identifier = event.ilk_identifier
+  AND i.block_number <= event.block_height
+ORDER BY i.block_number DESC
+LIMIT 1
 $$;
 
 
@@ -2313,7 +2310,8 @@ $$;
 CREATE FUNCTION api.ilk_file_event_tx(event api.ilk_file_event) RETURNS api.tx
     LANGUAGE sql STABLE
     AS $$
-SELECT * FROM get_tx_data(event.block_height, event.log_id)
+SELECT *
+FROM get_tx_data(event.block_height, event.log_id)
 $$;
 
 
@@ -2400,11 +2398,14 @@ COMMENT ON COLUMN api.managed_cdp.cdpi IS '@name id';
 -- Name: managed_cdp_ilk(api.managed_cdp); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.managed_cdp_ilk(cdp api.managed_cdp) RETURNS api.ilk_state
+CREATE FUNCTION api.managed_cdp_ilk(cdp api.managed_cdp) RETURNS api.historical_ilk_state
     LANGUAGE sql STABLE
     AS $$
 SELECT *
-FROM api.get_ilk(cdp.ilk_identifier)
+FROM api.historical_ilk_state i
+WHERE i.ilk_identifier = cdp.ilk_identifier
+ORDER BY block_number DESC
+LIMIT 1
 $$;
 
 
@@ -2424,13 +2425,16 @@ $$;
 -- Name: poke_event_ilk(api.poke_event); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.poke_event_ilk(priceupdate api.poke_event) RETURNS api.ilk_state
+CREATE FUNCTION api.poke_event_ilk(event api.poke_event) RETURNS api.historical_ilk_state
     LANGUAGE sql STABLE
     AS $$
-WITH raw_ilk AS (SELECT * FROM maker.ilks WHERE ilks.id = priceUpdate.ilk_id)
-
-SELECT *
-FROM api.get_ilk((SELECT identifier FROM raw_ilk), priceUpdate.block_height)
+SELECT i.*
+FROM api.historical_ilk_state i
+         LEFT JOIN maker.ilks ON ilks.identifier = i.ilk_identifier
+WHERE ilks.id = event.ilk_id
+  AND i.block_number <= event.block_height
+ORDER BY i.block_number DESC
+LIMIT 1
 $$;
 
 
@@ -2441,7 +2445,8 @@ $$;
 CREATE FUNCTION api.poke_event_tx(priceupdate api.poke_event) RETURNS api.tx
     LANGUAGE sql STABLE
     AS $$
-SELECT * FROM get_tx_data(priceUpdate.block_height, priceUpdate.log_id)
+SELECT *
+FROM get_tx_data(priceUpdate.block_height, priceUpdate.log_id)
 $$;
 
 
@@ -2578,7 +2583,9 @@ CREATE FUNCTION api.urn_state_bites(state api.urn_state, max_results integer DEF
 SELECT *
 FROM api.urn_bites(state.ilk_identifier, state.urn_identifier)
 WHERE block_height <= state.block_height
-LIMIT urn_state_bites.max_results OFFSET urn_state_bites.result_offset
+LIMIT urn_state_bites.max_results
+OFFSET
+urn_state_bites.result_offset
 $$;
 
 
@@ -2592,7 +2599,9 @@ CREATE FUNCTION api.urn_state_frobs(state api.urn_state, max_results integer DEF
 SELECT *
 FROM api.urn_frobs(state.ilk_identifier, state.urn_identifier)
 WHERE block_height <= state.block_height
-LIMIT urn_state_frobs.max_results OFFSET urn_state_frobs.result_offset
+LIMIT urn_state_frobs.max_results
+OFFSET
+urn_state_frobs.result_offset
 $$;
 
 
@@ -2600,11 +2609,15 @@ $$;
 -- Name: urn_state_ilk(api.urn_state); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.urn_state_ilk(state api.urn_state) RETURNS api.ilk_state
+CREATE FUNCTION api.urn_state_ilk(state api.urn_state) RETURNS api.historical_ilk_state
     LANGUAGE sql STABLE
     AS $$
 SELECT *
-FROM api.get_ilk(state.ilk_identifier, state.block_height)
+FROM api.historical_ilk_state i
+WHERE i.ilk_identifier = state.ilk_identifier
+  AND i.block_number <= state.block_height
+ORDER BY i.block_number DESC
+LIMIT 1
 $$;
 
 

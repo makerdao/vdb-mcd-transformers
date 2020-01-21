@@ -22,13 +22,9 @@ import (
 
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	. "github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
-	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -41,7 +37,6 @@ var _ = Describe("Updating historical_ilk_state table", func() {
 		headerTwo core.Header
 		rawTimestampOne,
 		rawTimestampTwo int64
-		logIdOne            int64
 		vatInitModel        event.InsertionModel
 		database            = test_config.NewTestDB(test_config.NewTestNode())
 		getTimeCreatedQuery = `SELECT created FROM api.historical_ilk_state ORDER BY block_number`
@@ -57,8 +52,7 @@ var _ = Describe("Updating historical_ilk_state table", func() {
 		rawTimestampTwo = rawTimestampOne + 1
 		headerOne = CreateHeader(rawTimestampOne, blockOne, database)
 		headerTwo = CreateHeader(rawTimestampTwo, blockTwo, database)
-		logIdOne = test_data.CreateTestLog(headerOne.Id, database).ID
-		vatInitModel = createVatInitModel(headerOne.Id, logIdOne, test_helpers.FakeIlk.Hex, database)
+		vatInitModel = test_helpers.CreateVatInit(database, headerOne.Id, test_helpers.FakeIlk.Hex)
 	})
 
 	It("updates time created of all records for an ilk", func() {
@@ -122,15 +116,3 @@ var _ = Describe("Updating historical_ilk_state table", func() {
 		Expect(ilkStates[0].Created).To(Equal(sql.NullString{Valid: false, String: ""}))
 	})
 })
-
-func createVatInitModel(headerId, logId int64, ilkHex string, database *postgres.DB) event.InsertionModel {
-
-	ilkID, ilkErr := shared.GetOrCreateIlk(ilkHex, database)
-	Expect(ilkErr).NotTo(HaveOccurred())
-
-	vatInit := test_data.VatInitModel()
-	vatInit.ColumnValues[constants.IlkColumn] = ilkID
-	vatInit.ColumnValues[event.HeaderFK] = headerId
-	vatInit.ColumnValues[event.LogFK] = logId
-	return vatInit
-}

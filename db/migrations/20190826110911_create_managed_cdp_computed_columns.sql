@@ -3,10 +3,13 @@
 
 -- Extend managed_cdp with ilk_state
 CREATE FUNCTION api.managed_cdp_ilk(cdp api.managed_cdp)
-    RETURNS api.ilk_state AS
+    RETURNS api.historical_ilk_state AS
 $$
 SELECT *
-FROM api.get_ilk(cdp.ilk_identifier)
+FROM api.historical_ilk_state i
+WHERE i.ilk_identifier = cdp.ilk_identifier
+ORDER BY block_number DESC
+LIMIT 1
 $$
     LANGUAGE sql
     STABLE;
