@@ -3997,14 +3997,17 @@ BEGIN
         WHERE id = NEW.header_id
     )
     INSERT
-    INTO maker.flip (bid_id, address_id, block_number, bid, guy, tic, "end", lot, gal, tab, updated, created)
-    VALUES (NEW.bid_id, NEW.address_id, (SELECT block_number FROM diff_block), NEW.bid,
-            get_latest_flip_bid_guy(NEW.bid_id),
-            get_latest_flip_bid_tic(NEW.bid_id),
-            get_latest_flip_bid_end(NEW.bid_id),
-            get_latest_flip_bid_lot(NEW.bid_id),
-            get_latest_flip_bid_gal(NEW.bid_id),
-            get_latest_flip_bid_tab(NEW.bid_id),
+    INTO maker.flip (bid_id,address_id, block_number, guy, tic, "end", lot, bid, gal, tab, updated, created)
+    VALUES (NEW.bid_id,
+            NEW.address_id,
+            (SELECT block_number FROM diff_block),
+            flip_bid_guy_before_block(NEW.bid_id, NEW.address_id, NEW.header_id),
+            flip_bid_tic_before_block(NEW.bid_id, NEW.address_id, NEW.header_id),
+            flip_bid_end_before_block(NEW.bid_id, NEW.address_id, NEW.header_id),
+            flip_bid_lot_before_block(NEW.bid_id, NEW.address_id, NEW.header_id),
+            NEW.bid,
+            flip_bid_gal_before_block(NEW.bid_id, NEW.address_id, NEW.header_id),
+            flip_bid_tab_before_block(NEW.bid_id, NEW.address_id, NEW.header_id),
             (SELECT api.epoch_to_datetime(block_timestamp) FROM diff_block),
             flip_bid_time_created(NEW.address_id, NEW.bid_id))
     ON CONFLICT (block_number, bid_id, address_id) DO UPDATE SET bid = NEW.bid;
@@ -4027,14 +4030,17 @@ BEGIN
         WHERE id = NEW.header_id
     )
     INSERT
-    INTO maker.flip (bid_id, address_id, block_number, "end", guy, tic, lot, bid, gal, tab, updated, created)
-    VALUES (NEW.bid_id, NEW.address_id, (SELECT block_number FROM diff_block), NEW."end",
-            get_latest_flip_bid_guy(NEW.bid_id),
-            get_latest_flip_bid_tic(NEW.bid_id),
-            get_latest_flip_bid_lot(NEW.bid_id),
-            get_latest_flip_bid_bid(NEW.bid_id),
-            get_latest_flip_bid_gal(NEW.bid_id),
-            get_latest_flip_bid_tab(NEW.bid_id),
+    INTO maker.flip (bid_id, address_id, block_number, guy, tic, "end", lot, bid, gal, tab, updated, created)
+    VALUES (NEW.bid_id,
+            NEW.address_id,
+            (SELECT block_number FROM diff_block),
+            flip_bid_guy_before_block(NEW.bid_id, NEW.address_id, NEW.header_id),
+            flip_bid_tic_before_block(NEW.bid_id, NEW.address_id, NEW.header_id),
+            NEW."end",
+            flip_bid_lot_before_block(NEW.bid_id, NEW.address_id, NEW.header_id),
+            flip_bid_bid_before_block(NEW.bid_id, NEW.address_id, NEW.header_id),
+            flip_bid_gal_before_block(NEW.bid_id, NEW.address_id, NEW.header_id),
+            flip_bid_tab_before_block(NEW.bid_id, NEW.address_id, NEW.header_id),
             (SELECT api.epoch_to_datetime(block_timestamp) FROM diff_block),
             flip_bid_time_created(NEW.address_id, NEW.bid_id))
     ON CONFLICT (block_number, bid_id, address_id) DO UPDATE SET "end" = NEW."end";
@@ -4057,14 +4063,17 @@ BEGIN
         WHERE id = NEW.header_id
     )
     INSERT
-    INTO maker.flip (bid_id, address_id, block_number, gal, guy, tic, "end", lot, bid, tab, updated, created)
-    VALUES (NEW.bid_id, NEW.address_id, (SELECT block_number FROM diff_block), NEW.gal,
-            get_latest_flip_bid_guy(NEW.bid_id),
-            get_latest_flip_bid_tic(NEW.bid_id),
-            get_latest_flip_bid_end(NEW.bid_id),
-            get_latest_flip_bid_lot(NEW.bid_id),
-            get_latest_flip_bid_bid(NEW.bid_id),
-            get_latest_flip_bid_tab(NEW.bid_id),
+    INTO maker.flip (bid_id, address_id, block_number, guy, tic, "end", lot, bid, gal, tab, updated, created)
+    VALUES (NEW.bid_id,
+            NEW.address_id,
+            (SELECT block_number FROM diff_block),
+            flip_bid_guy_before_block(NEW.bid_id, NEW.address_id, NEW.header_id),
+            flip_bid_tic_before_block(NEW.bid_id, NEW.address_id, NEW.header_id),
+            flip_bid_end_before_block(NEW.bid_id, NEW.address_id, NEW.header_id),
+            flip_bid_lot_before_block(NEW.bid_id, NEW.address_id, NEW.header_id),
+            flip_bid_bid_before_block(NEW.bid_id, NEW.address_id, NEW.header_id),
+            NEW.gal,
+            flip_bid_tab_before_block(NEW.bid_id, NEW.address_id, NEW.header_id),
             (SELECT api.epoch_to_datetime(block_timestamp) FROM diff_block),
             flip_bid_time_created(NEW.address_id, NEW.bid_id))
     ON CONFLICT (block_number, bid_id, address_id) DO UPDATE SET gal = NEW.gal;
@@ -4088,13 +4097,16 @@ BEGIN
     )
     INSERT
     INTO maker.flip (bid_id, address_id, block_number, guy, tic, "end", lot, bid, gal, tab, updated, created)
-    VALUES (NEW.bid_id, NEW.address_id, (SELECT block_number FROM diff_block), NEW.guy,
-            get_latest_flip_bid_tic(NEW.bid_id),
-            get_latest_flip_bid_end(NEW.bid_id),
-            get_latest_flip_bid_lot(NEW.bid_id),
-            get_latest_flip_bid_bid(NEW.bid_id),
-            get_latest_flip_bid_gal(NEW.bid_id),
-            get_latest_flip_bid_tab(NEW.bid_id),
+    VALUES (NEW.bid_id,
+            NEW.address_id,
+            (SELECT block_number FROM diff_block),
+            NEW.guy,
+            flip_bid_tic_before_block(NEW.bid_id, NEW.address_id, NEW.header_id),
+            flip_bid_end_before_block(NEW.bid_id, NEW.address_id, NEW.header_id),
+            flip_bid_lot_before_block(NEW.bid_id, NEW.address_id, NEW.header_id),
+            flip_bid_bid_before_block(NEW.bid_id, NEW.address_id, NEW.header_id),
+            flip_bid_gal_before_block(NEW.bid_id, NEW.address_id, NEW.header_id),
+            flip_bid_tab_before_block(NEW.bid_id, NEW.address_id, NEW.header_id),
             (SELECT api.epoch_to_datetime(block_timestamp) FROM diff_block),
             flip_bid_time_created(NEW.address_id, NEW.bid_id))
     ON CONFLICT (block_number, bid_id, address_id) DO UPDATE SET guy = NEW.guy;
@@ -4117,14 +4129,17 @@ BEGIN
         WHERE id = NEW.header_id
     )
     INSERT
-    INTO maker.flip (bid_id, address_id, block_number, lot, guy, tic, "end", bid, gal, tab, updated, created)
-    VALUES (NEW.bid_id, NEW.address_id, (SELECT block_number FROM diff_block), NEW.lot,
-            get_latest_flip_bid_guy(NEW.bid_id),
-            get_latest_flip_bid_tic(NEW.bid_id),
-            get_latest_flip_bid_end(NEW.bid_id),
-            get_latest_flip_bid_bid(NEW.bid_id),
-            get_latest_flip_bid_gal(NEW.bid_id),
-            get_latest_flip_bid_tab(NEW.bid_id),
+    INTO maker.flip (bid_id, address_id, block_number, guy, tic, "end", lot, bid, gal, tab, updated, created)
+    VALUES (NEW.bid_id,
+            NEW.address_id,
+            (SELECT block_number FROM diff_block),
+            flip_bid_guy_before_block(NEW.bid_id, NEW.address_id, NEW.header_id),
+            flip_bid_tic_before_block(NEW.bid_id, NEW.address_id, NEW.header_id),
+            flip_bid_end_before_block(NEW.bid_id, NEW.address_id, NEW.header_id),
+            NEW.lot,
+            flip_bid_bid_before_block(NEW.bid_id, NEW.address_id, NEW.header_id),
+            flip_bid_gal_before_block(NEW.bid_id, NEW.address_id, NEW.header_id),
+            flip_bid_tab_before_block(NEW.bid_id, NEW.address_id, NEW.header_id),
             (SELECT api.epoch_to_datetime(block_timestamp) FROM diff_block),
             flip_bid_time_created(NEW.address_id, NEW.bid_id))
     ON CONFLICT (block_number, bid_id, address_id) DO UPDATE SET lot = NEW.lot;
@@ -4147,14 +4162,17 @@ BEGIN
         WHERE id = NEW.header_id
     )
     INSERT
-    INTO maker.flip (bid_id, address_id, block_number, tab, guy, tic, "end", lot, bid, gal, updated, created)
-    VALUES (NEW.bid_id, NEW.address_id, (SELECT block_number FROM diff_block), NEW.tab,
-            get_latest_flip_bid_guy(NEW.bid_id),
-            get_latest_flip_bid_tic(NEW.bid_id),
-            get_latest_flip_bid_end(NEW.bid_id),
-            get_latest_flip_bid_lot(NEW.bid_id),
-            get_latest_flip_bid_bid(NEW.bid_id),
-            get_latest_flip_bid_gal(NEW.bid_id),
+    INTO maker.flip (bid_id, address_id, block_number, guy, tic, "end", lot, bid, gal, tab, updated, created)
+    VALUES (NEW.bid_id,
+            NEW.address_id,
+            (SELECT block_number FROM diff_block),
+            flip_bid_guy_before_block(NEW.bid_id, NEW.address_id, NEW.header_id),
+            flip_bid_tic_before_block(NEW.bid_id, NEW.address_id, NEW.header_id),
+            flip_bid_end_before_block(NEW.bid_id, NEW.address_id, NEW.header_id),
+            flip_bid_lot_before_block(NEW.bid_id, NEW.address_id, NEW.header_id),
+            flip_bid_bid_before_block(NEW.bid_id, NEW.address_id, NEW.header_id),
+            flip_bid_gal_before_block(NEW.bid_id, NEW.address_id, NEW.header_id),
+            NEW.tab,
             (SELECT api.epoch_to_datetime(block_timestamp) FROM diff_block),
             flip_bid_time_created(NEW.address_id, NEW.bid_id))
     ON CONFLICT (block_number, bid_id, address_id) DO UPDATE SET tab = NEW.tab;
@@ -4177,14 +4195,17 @@ BEGIN
         WHERE id = NEW.header_id
     )
     INSERT
-    INTO maker.flip (bid_id, address_id, block_number, tic, guy, "end", lot, bid, gal, tab, updated, created)
-    VALUES (NEW.bid_id, NEW.address_id, (SELECT block_number FROM diff_block), NEW.tic,
-            get_latest_flip_bid_guy(NEW.bid_id),
-            get_latest_flip_bid_end(NEW.bid_id),
-            get_latest_flip_bid_lot(NEW.bid_id),
-            get_latest_flip_bid_bid(NEW.bid_id),
-            get_latest_flip_bid_gal(NEW.bid_id),
-            get_latest_flip_bid_tab(NEW.bid_id),
+    INTO maker.flip (bid_id, address_id, block_number, guy, tic, "end", lot, bid, gal, tab, updated, created)
+    VALUES (NEW.bid_id,
+            NEW.address_id,
+            (SELECT block_number FROM diff_block),
+            flip_bid_guy_before_block(NEW.bid_id, NEW.address_id, NEW.header_id),
+            NEW.tic,
+            flip_bid_end_before_block(NEW.bid_id, NEW.address_id, NEW.header_id),
+            flip_bid_lot_before_block(NEW.bid_id, NEW.address_id, NEW.header_id),
+            flip_bid_bid_before_block(NEW.bid_id, NEW.address_id, NEW.header_id),
+            flip_bid_gal_before_block(NEW.bid_id, NEW.address_id, NEW.header_id),
+            flip_bid_tab_before_block(NEW.bid_id, NEW.address_id, NEW.header_id),
             (SELECT api.epoch_to_datetime(block_timestamp) FROM diff_block),
             flip_bid_time_created(NEW.address_id, NEW.bid_id))
     ON CONFLICT (block_number, bid_id, address_id) DO UPDATE SET tic = NEW.tic;
@@ -5395,6 +5416,181 @@ COMMENT ON FUNCTION public.flap_bid_time_created(address_id integer, bid_id nume
 
 
 --
+-- Name: flip_bid_bid_before_block(numeric, integer, integer); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.flip_bid_bid_before_block(bid_id numeric, address_id integer, header_id integer) RETURNS numeric
+    LANGUAGE sql
+    AS $$
+SELECT bid
+FROM maker.flip_bid_bid
+         LEFT JOIN public.headers ON flip_bid_bid.header_id = headers.id
+WHERE flip_bid_bid.bid_id = flip_bid_bid_before_block.bid_id
+  AND flip_bid_bid.address_id = flip_bid_bid_before_block.address_id
+  AND headers.block_number < (SELECT block_number FROM public.headers WHERE id = flip_bid_bid_before_block.header_id)
+ORDER BY block_number DESC
+LIMIT 1
+$$;
+
+
+--
+-- Name: FUNCTION flip_bid_bid_before_block(bid_id numeric, address_id integer, header_id integer); Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON FUNCTION public.flip_bid_bid_before_block(bid_id numeric, address_id integer, header_id integer) IS '@omit';
+
+
+--
+-- Name: flip_bid_end_before_block(numeric, integer, integer); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.flip_bid_end_before_block(bid_id numeric, address_id integer, header_id integer) RETURNS bigint
+    LANGUAGE sql
+    AS $$
+SELECT "end"
+FROM maker.flip_bid_end
+         LEFT JOIN public.headers ON flip_bid_end.header_id = headers.id
+WHERE flip_bid_end.bid_id = flip_bid_end_before_block.bid_id
+  AND flip_bid_end.address_id = flip_bid_end_before_block.address_id
+  AND headers.block_number < (SELECT block_number FROM public.headers WHERE id = flip_bid_end_before_block.header_id)
+ORDER BY block_number DESC
+LIMIT 1
+$$;
+
+
+--
+-- Name: FUNCTION flip_bid_end_before_block(bid_id numeric, address_id integer, header_id integer); Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON FUNCTION public.flip_bid_end_before_block(bid_id numeric, address_id integer, header_id integer) IS '@omit';
+
+
+--
+-- Name: flip_bid_gal_before_block(numeric, integer, integer); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.flip_bid_gal_before_block(bid_id numeric, address_id integer, header_id integer) RETURNS text
+    LANGUAGE sql
+    AS $$
+SELECT gal
+FROM maker.flip_bid_gal
+         LEFT JOIN public.headers ON flip_bid_gal.header_id = headers.id
+WHERE flip_bid_gal.bid_id = flip_bid_gal_before_block.bid_id
+  AND flip_bid_gal.address_id = flip_bid_gal_before_block.address_id
+  AND headers.block_number < (SELECT block_number FROM public.headers WHERE id = flip_bid_gal_before_block.header_id)
+ORDER BY block_number DESC
+LIMIT 1
+$$;
+
+
+--
+-- Name: FUNCTION flip_bid_gal_before_block(bid_id numeric, address_id integer, header_id integer); Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON FUNCTION public.flip_bid_gal_before_block(bid_id numeric, address_id integer, header_id integer) IS '@omit';
+
+
+--
+-- Name: flip_bid_guy_before_block(numeric, integer, integer); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.flip_bid_guy_before_block(bid_id numeric, address_id integer, header_id integer) RETURNS text
+    LANGUAGE sql
+    AS $$
+SELECT guy
+FROM maker.flip_bid_guy
+         LEFT JOIN public.headers ON flip_bid_guy.header_id = headers.id
+WHERE flip_bid_guy.bid_id = flip_bid_guy_before_block.bid_id
+  AND flip_bid_guy.address_id = flip_bid_guy_before_block.address_id
+  AND headers.block_number < (SELECT block_number FROM public.headers WHERE id = flip_bid_guy_before_block.header_id)
+ORDER BY block_number DESC
+LIMIT 1
+$$;
+
+
+--
+-- Name: FUNCTION flip_bid_guy_before_block(bid_id numeric, address_id integer, header_id integer); Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON FUNCTION public.flip_bid_guy_before_block(bid_id numeric, address_id integer, header_id integer) IS '@omit';
+
+
+--
+-- Name: flip_bid_lot_before_block(numeric, integer, integer); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.flip_bid_lot_before_block(bid_id numeric, address_id integer, header_id integer) RETURNS numeric
+    LANGUAGE sql
+    AS $$
+SELECT lot
+FROM maker.flip_bid_lot
+         LEFT JOIN public.headers ON flip_bid_lot.header_id = headers.id
+WHERE flip_bid_lot.bid_id = flip_bid_lot_before_block.bid_id
+  AND flip_bid_lot.address_id = flip_bid_lot_before_block.address_id
+  AND headers.block_number < (SELECT block_number FROM public.headers WHERE id = flip_bid_lot_before_block.header_id)
+ORDER BY block_number DESC
+LIMIT 1
+$$;
+
+
+--
+-- Name: FUNCTION flip_bid_lot_before_block(bid_id numeric, address_id integer, header_id integer); Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON FUNCTION public.flip_bid_lot_before_block(bid_id numeric, address_id integer, header_id integer) IS '@omit';
+
+
+--
+-- Name: flip_bid_tab_before_block(numeric, integer, integer); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.flip_bid_tab_before_block(bid_id numeric, address_id integer, header_id integer) RETURNS numeric
+    LANGUAGE sql
+    AS $$
+SELECT tab
+FROM maker.flip_bid_tab
+         LEFT JOIN public.headers ON flip_bid_tab.header_id = headers.id
+WHERE flip_bid_tab.bid_id = flip_bid_tab_before_block.bid_id
+  AND flip_bid_tab.address_id = flip_bid_tab_before_block.address_id
+  AND headers.block_number < (SELECT block_number FROM public.headers WHERE id = flip_bid_tab_before_block.header_id)
+ORDER BY block_number DESC
+LIMIT 1
+$$;
+
+
+--
+-- Name: FUNCTION flip_bid_tab_before_block(bid_id numeric, address_id integer, header_id integer); Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON FUNCTION public.flip_bid_tab_before_block(bid_id numeric, address_id integer, header_id integer) IS '@omit';
+
+
+--
+-- Name: flip_bid_tic_before_block(numeric, integer, integer); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.flip_bid_tic_before_block(bid_id numeric, address_id integer, header_id integer) RETURNS bigint
+    LANGUAGE sql
+    AS $$
+SELECT tic
+FROM maker.flip_bid_tic
+         LEFT JOIN public.headers ON flip_bid_tic.header_id = headers.id
+WHERE flip_bid_tic.bid_id = flip_bid_tic_before_block.bid_id
+  AND flip_bid_tic.address_id = flip_bid_tic_before_block.address_id
+  AND headers.block_number < (SELECT block_number FROM public.headers WHERE id = flip_bid_tic_before_block.header_id)
+ORDER BY block_number DESC
+LIMIT 1
+$$;
+
+
+--
+-- Name: FUNCTION flip_bid_tic_before_block(bid_id numeric, address_id integer, header_id integer); Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON FUNCTION public.flip_bid_tic_before_block(bid_id numeric, address_id integer, header_id integer) IS '@omit';
+
+
+--
 -- Name: flip_bid_time_created(integer, numeric); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -5551,167 +5747,6 @@ $$;
 --
 
 COMMENT ON FUNCTION public.get_latest_flap_bid_tic(bid_id numeric) IS '@omit';
-
-
---
--- Name: get_latest_flip_bid_bid(numeric); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION public.get_latest_flip_bid_bid(bid_id numeric) RETURNS numeric
-    LANGUAGE sql
-    AS $$
-SELECT bid
-FROM maker.flip
-WHERE bid IS NOT NULL
-  AND flip.bid_id = bid_id
-ORDER BY block_number DESC
-LIMIT 1
-$$;
-
-
---
--- Name: FUNCTION get_latest_flip_bid_bid(bid_id numeric); Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON FUNCTION public.get_latest_flip_bid_bid(bid_id numeric) IS '@omit';
-
-
---
--- Name: get_latest_flip_bid_end(numeric); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION public.get_latest_flip_bid_end(bid_id numeric) RETURNS bigint
-    LANGUAGE sql
-    AS $$
-SELECT "end"
-FROM maker.flip
-WHERE "end" IS NOT NULL
-  AND flip.bid_id = bid_id
-ORDER BY block_number DESC
-LIMIT 1
-$$;
-
-
---
--- Name: FUNCTION get_latest_flip_bid_end(bid_id numeric); Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON FUNCTION public.get_latest_flip_bid_end(bid_id numeric) IS '@omit';
-
-
---
--- Name: get_latest_flip_bid_gal(numeric); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION public.get_latest_flip_bid_gal(bid_id numeric) RETURNS text
-    LANGUAGE sql
-    AS $$
-SELECT gal
-FROM maker.flip
-WHERE gal IS NOT NULL
-  AND flip.bid_id = bid_id
-ORDER BY block_number DESC
-LIMIT 1
-$$;
-
-
---
--- Name: FUNCTION get_latest_flip_bid_gal(bid_id numeric); Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON FUNCTION public.get_latest_flip_bid_gal(bid_id numeric) IS '@omit';
-
-
---
--- Name: get_latest_flip_bid_guy(numeric); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION public.get_latest_flip_bid_guy(bid_id numeric) RETURNS text
-    LANGUAGE sql
-    AS $$
-SELECT guy
-FROM maker.flip
-WHERE guy IS NOT NULL
-  AND flip.bid_id = bid_id
-ORDER BY block_number DESC
-LIMIT 1
-$$;
-
-
---
--- Name: FUNCTION get_latest_flip_bid_guy(bid_id numeric); Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON FUNCTION public.get_latest_flip_bid_guy(bid_id numeric) IS '@omit';
-
-
---
--- Name: get_latest_flip_bid_lot(numeric); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION public.get_latest_flip_bid_lot(bid_id numeric) RETURNS numeric
-    LANGUAGE sql
-    AS $$
-SELECT lot
-FROM maker.flip
-WHERE lot IS NOT NULL
-  AND flip.bid_id = bid_id
-ORDER BY block_number DESC
-LIMIT 1
-$$;
-
-
---
--- Name: FUNCTION get_latest_flip_bid_lot(bid_id numeric); Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON FUNCTION public.get_latest_flip_bid_lot(bid_id numeric) IS '@omit';
-
-
---
--- Name: get_latest_flip_bid_tab(numeric); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION public.get_latest_flip_bid_tab(bid_id numeric) RETURNS numeric
-    LANGUAGE sql
-    AS $$
-SELECT tab
-FROM maker.flip
-WHERE tab IS NOT NULL
-  AND flip.bid_id = bid_id
-ORDER BY block_number DESC
-LIMIT 1
-$$;
-
-
---
--- Name: FUNCTION get_latest_flip_bid_tab(bid_id numeric); Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON FUNCTION public.get_latest_flip_bid_tab(bid_id numeric) IS '@omit';
-
-
---
--- Name: get_latest_flip_bid_tic(numeric); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION public.get_latest_flip_bid_tic(bid_id numeric) RETURNS bigint
-    LANGUAGE sql
-    AS $$
-SELECT tic
-FROM maker.flip
-WHERE tic IS NOT NULL
-  AND flip.bid_id = bid_id
-ORDER BY block_number DESC
-LIMIT 1
-$$;
-
-
---
--- Name: FUNCTION get_latest_flip_bid_tic(bid_id numeric); Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON FUNCTION public.get_latest_flip_bid_tic(bid_id numeric) IS '@omit';
 
 
 --
