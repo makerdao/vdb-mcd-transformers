@@ -60,7 +60,8 @@ WITH ilk_ids AS (SELECT id FROM maker.ilks WHERE ilks.identifier = get_flip.ilk)
                 created,
                 updated
          FROM maker.flip
-         WHERE bid_id = get_flip.bid_id
+         WHERE flip.bid_id = get_flip.bid_id
+           AND flip.address_id = (SELECT address_id FROM address_id)
            AND block_number <= block_height
          ORDER BY block_number DESC
          LIMIT 1

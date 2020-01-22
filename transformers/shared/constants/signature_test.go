@@ -82,7 +82,7 @@ var _ = Describe("Signature constants", func() {
 		Expect(JugInitSignature()).To(Equal("0x3b66319500000000000000000000000000000000000000000000000000000000"))
 	})
 
-	It("generates log note signature", func() {
+	It("generates log value signature", func() {
 		Expect(LogValueSignature()).To(Equal("0x296ba4ca62c6c21c95e828080cb8aec7481b71390585605300a8a76f9e95b527"))
 	})
 
