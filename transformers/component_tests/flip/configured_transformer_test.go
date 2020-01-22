@@ -182,7 +182,6 @@ var _ = Describe("Executing the flip transformer", func() {
 	})
 
 	Describe("bids", func() {
-		//TODO: update when we get real flip bid storage diffs
 		Describe("guy + tic + end packed slot", func() {
 			var (
 				bidId int
