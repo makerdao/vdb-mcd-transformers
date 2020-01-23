@@ -78,7 +78,7 @@ services:
 
   # Optional in-cluster client. This will need to sync for a few days until you catch up with watched contracts
   geth-statediffing:
-    image: makerdao/vdb-go-ethereum:v1.10-alpha.0
+    image: makerdao/vdb-go-ethereum:latest
     ports:
       - 8545
       - 8546
