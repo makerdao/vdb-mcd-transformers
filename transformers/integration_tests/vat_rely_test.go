@@ -55,11 +55,14 @@ var _ = Describe("Vat Rely transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		usrAddress := "0xbaa65281c2fa2baacb2cb550ba051525a480d3f4"
+		usrAddress2 := "0x65c79fcb50ca1594b025960e539ed7a9a6d434a3"
 		usrAddressID, usrAddressErr := shared.GetOrCreateAddress(usrAddress, db)
 		Expect(usrAddressErr).NotTo(HaveOccurred())
+		usrAddressID2, usrAddressErr2 := shared.GetOrCreateAddress(usrAddress2, db)
+		Expect(usrAddressErr2).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(2))
-		Expect(dbResult[0].Usr).To(Equal(usrAddressID))
+		Expect(dbResult[0].Usr).To(Or(Equal(usrAddressID), Equal(usrAddressID2)))
 	})
 })
 

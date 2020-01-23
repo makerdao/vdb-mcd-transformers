@@ -15,7 +15,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-//TODO: Need tu update when there are events on mainnet
+//TODO: Need to update when there are events on mainnet
 var _ = XDescribe("PotCage EventTransformer", func() {
 	var cageDeploymentPotAddress = "0x52ca216f93836eea1ee605cf6aa41127134b9754"
 

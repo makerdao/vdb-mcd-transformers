@@ -1,7 +1,7 @@
 ## Updating Addresses, ABIs, Deployment Blocks, and Integration Tests for Maker Releases
 [MakerDAO Changelog](https://changelog.makerdao.com/)
 
-Visit the changelog for the latest release, ie https://changelog.makerdao.com/releases/mainnet/1.0.0/index.html 
+Visit the changelog for the latest release, ie https://changelog.makerdao.com/
 
 ## Overview
 ### Updating Toml Files

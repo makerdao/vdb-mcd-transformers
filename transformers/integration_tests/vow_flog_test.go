@@ -29,7 +29,6 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-// TODO: replace block number when there is a flog event on the updated Vow
 var _ = Describe("VowFlog EventTransformer", func() {
 	BeforeEach(func() {
 		test_config.CleanTestDB(db)
