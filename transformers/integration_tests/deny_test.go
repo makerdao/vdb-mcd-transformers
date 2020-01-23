@@ -16,43 +16,43 @@ import (
 
 var _ = Describe("Deny transformer", func() {
 	Context("Cat deny events", func() {
-		usrAddress := "0x13141b8a5e4a82ebc6b636849dd6a515185d6236"
-		denyIntegrationTest(int64(14764643), test_data.CatAddress(), usrAddress, usrAddress)
+		usrAddress := "0xa9ee75d81d78c36c4163004e6cc7a988eec9433e"
+		denyIntegrationTest(int64(8928165), test_data.CatAddress(), usrAddress, usrAddress)
 	})
 
 	Context("Flap deny events", func() {
-		usrAddress := "0x13141b8a5e4a82ebc6b636849dd6a515185d6236"
-		denyIntegrationTest(int64(14764643), test_data.FlapAddress(), usrAddress, usrAddress)
+		usrAddress := "0xd27a5f3416d8791fc238c148c93630d9e3c882e5"
+		denyIntegrationTest(int64(8928163), test_data.FlapAddress(), usrAddress, usrAddress)
 	})
 
 	Context("Flip deny events", func() {
-		usrAddress := "0x13141b8a5e4a82ebc6b636849dd6a515185d6236"
-		denyIntegrationTest(int64(14764652), test_data.EthFlipAddress(), usrAddress, usrAddress)
+		usrAddress := "0xbab4fbea257abbfe84f4588d4eedc43656e46fc5"
+		denyIntegrationTest(int64(8928180), test_data.EthFlipAddress(), usrAddress, usrAddress)
 	})
 
 	Context("Flop deny events", func() {
-		usrAddress := "0xdb33dfd3d61308c33c63209845dad3e6bfb2c674"
-		denyIntegrationTest(int64(15196525), test_data.FlopAddress(), usrAddress, usrAddress)
+		usrAddress := "0xc41c4759f67ff54c7a7314d155f40fc6504f5d28"
+		denyIntegrationTest(int64(8928163), test_data.FlopAddress(), usrAddress, usrAddress)
 	})
 
 	Context("Jug deny events", func() {
-		usrAddress := "0x13141b8a5e4a82ebc6b636849dd6a515185d6236"
-		denyIntegrationTest(int64(14764643), test_data.JugAddress(), usrAddress, usrAddress)
+		usrAddress := "0x45f0a929889ec8cc2d5b8cd79ab55e3279945cde"
+		denyIntegrationTest(int64(8928160), test_data.JugAddress(), usrAddress, usrAddress)
 	})
 
 	Context("Pot deny events", func() {
-		usrAddress := "0x13141b8a5e4a82ebc6b636849dd6a515185d6236"
-		denyIntegrationTest(int64(14764643), test_data.PotAddress(), usrAddress, usrAddress)
+		usrAddress := "0x1a5ee7c64cf874c735968e3a42fa13f1c03427f9"
+		denyIntegrationTest(int64(8928160), test_data.PotAddress(), usrAddress, usrAddress)
 	})
 
 	Context("Spot deny events", func() {
-		usrAddress := "0x13141b8a5e4a82ebc6b636849dd6a515185d6236"
-		denyIntegrationTest(int64(14764643), test_data.SpotAddress(), usrAddress, usrAddress)
+		usrAddress := "0xdedd12bcb045c02b2fe11031c2b269bcde457410"
+		denyIntegrationTest(int64(8928152), test_data.SpotAddress(), usrAddress, usrAddress)
 	})
 
 	Context("Vow deny events", func() {
-		usrAddress := "0x13141b8a5e4a82ebc6b636849dd6a515185d6236"
-		denyIntegrationTest(int64(14764643), test_data.VowAddress(), usrAddress, usrAddress)
+		usrAddress := "0x68322ca1a9aeb8c1d610b5fc8a8920aa0fba423b"
+		denyIntegrationTest(int64(8928163), test_data.VowAddress(), usrAddress, usrAddress)
 	})
 })
 

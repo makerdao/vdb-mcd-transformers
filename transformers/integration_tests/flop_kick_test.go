@@ -60,8 +60,8 @@ var _ = Describe("FlopKick Transformer", func() {
 		addresses = transformer.HexStringsToAddresses(flopKickConfig.ContractAddresses)
 		topics = []common.Hash{common.HexToHash(flopKickConfig.Topic)}
 	})
-
-	It("fetches and transforms a FlopKick event from Kovan chain", func() {
+	//TODO: There are no flop kick events on Mainnet
+	XIt("fetches and transforms a FlopKick event", func() {
 		blockNumber := int64(15788324)
 		initializer.Config.StartingBlockNumber = blockNumber
 		initializer.Config.EndingBlockNumber = blockNumber

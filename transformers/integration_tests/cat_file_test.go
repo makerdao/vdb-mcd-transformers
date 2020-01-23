@@ -48,7 +48,7 @@ var _ = Describe("Cat File transformer", func() {
 	})
 
 	It("persists a chop lump event (lump)", func() {
-		chopLumpBlockNumber := int64(14764797)
+		chopLumpBlockNumber := int64(8928392)
 		header, err := persistHeader(db, chopLumpBlockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 		catFileConfig.TransformerName = constants.CatFileChopLumpTable
@@ -79,15 +79,15 @@ var _ = Describe("Cat File transformer", func() {
 
 		Expect(len(dbResult)).To(Equal(1))
 
-		ilkID, err := shared.GetOrCreateIlk("0x4241542d41000000000000000000000000000000000000000000000000000000", db)
+		ilkID, err := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(dbResult[0].Ilk).To(Equal(strconv.FormatInt(ilkID, 10)))
 		Expect(dbResult[0].What).To(Equal("lump"))
-		Expect(dbResult[0].Data).To(Equal("1550000000000000000000"))
+		Expect(dbResult[0].Data).To(Equal("50000000000000000000"))
 	})
 
 	It("persists a chop lump event (chop)", func() {
-		chopLumpBlockNumber := int64(14764791)
+		chopLumpBlockNumber := int64(8928383)
 		header, err := persistHeader(db, chopLumpBlockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 		catFileConfig.TransformerName = constants.CatFileChopLumpTable
@@ -118,7 +118,7 @@ var _ = Describe("Cat File transformer", func() {
 
 		Expect(len(dbResult)).To(Equal(1))
 
-		ilkID, err := shared.GetOrCreateIlk("0x4241542d41000000000000000000000000000000000000000000000000000000", db)
+		ilkID, err := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(dbResult[0].Ilk).To(Equal(strconv.FormatInt(ilkID, 10)))
 		Expect(dbResult[0].What).To(Equal("chop"))
@@ -126,7 +126,7 @@ var _ = Describe("Cat File transformer", func() {
 	})
 
 	It("persists a flip event", func() {
-		flipBlockNumber := int64(14764569)
+		flipBlockNumber := int64(8928180)
 		header, err := persistHeader(db, flipBlockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 		catFileConfig.TransformerName = constants.CatFileFlipTable
@@ -165,7 +165,7 @@ var _ = Describe("Cat File transformer", func() {
 	})
 
 	It("persists a vow event", func() {
-		vowBlockNumber := int64(14764546)
+		vowBlockNumber := int64(8928165)
 		header, err := persistHeader(db, vowBlockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 		catFileConfig.TransformerName = constants.CatFileVowTable

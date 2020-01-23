@@ -26,7 +26,7 @@ var _ = Describe("Vat Deny transformer", func() {
 	})
 
 	It("persists event", func() {
-		blockNumber := int64(14764643)
+		blockNumber := int64(8928152)
 		denyConfig.StartingBlockNumber = blockNumber
 		denyConfig.EndingBlockNumber = blockNumber
 
@@ -54,7 +54,7 @@ var _ = Describe("Vat Deny transformer", func() {
 		err := db.Select(&dbResult, `SELECT usr FROM maker.vat_deny`)
 		Expect(err).NotTo(HaveOccurred())
 
-		usrAddress := "0x13141b8a5e4a82ebc6b636849dd6a515185d6236"
+		usrAddress := "0x403689148fa98a5a6fdcc0b984914ae968d788e5"
 		usrAddressID, usrAddressErr := shared.GetOrCreateAddress(usrAddress, db)
 		Expect(usrAddressErr).NotTo(HaveOccurred())
 

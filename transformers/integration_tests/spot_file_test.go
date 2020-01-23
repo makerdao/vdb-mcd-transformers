@@ -52,7 +52,7 @@ var _ = Describe("SpotFile EventTransformers", func() {
 		)
 
 		BeforeEach(func() {
-			blockNumber = int64(14764751)
+			blockNumber = int64(8928336)
 			var insertHeaderErr error
 			header, insertHeaderErr = persistHeader(db, blockNumber, blockChain)
 			Expect(insertHeaderErr).NotTo(HaveOccurred())
@@ -86,16 +86,16 @@ var _ = Describe("SpotFile EventTransformers", func() {
 			Expect(executeErr).NotTo(HaveOccurred())
 		})
 
-		It("fetches and transforms a Spot.file mat event from Kovan", func() {
+		It("fetches and transforms a Spot.file mat event", func() {
 			var dbResult spotFileMatModel
 			getSpotErr := db.Get(&dbResult, `SELECT ilk_id, what, data FROM maker.spot_file_mat`)
 			Expect(getSpotErr).NotTo(HaveOccurred())
 
-			ilkID, ilkErr := shared.GetOrCreateIlk("0x5341490000000000000000000000000000000000000000000000000000000000", db)
+			ilkID, ilkErr := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
 			Expect(ilkErr).NotTo(HaveOccurred())
 			Expect(dbResult.Ilk).To(Equal(strconv.FormatInt(ilkID, 10)))
 			Expect(dbResult.What).To(Equal("mat"))
-			Expect(dbResult.Data).To(Equal("10000"))
+			Expect(dbResult.Data).To(Equal("1500000000000000000000000000"))
 		})
 	})
 
@@ -115,7 +115,7 @@ var _ = Describe("SpotFile EventTransformers", func() {
 		)
 
 		BeforeEach(func() {
-			blockNumber = int64(14764612)
+			blockNumber = int64(8928180)
 			var insertHeaderErr error
 			header, insertHeaderErr = persistHeader(db, blockNumber, blockChain)
 			Expect(insertHeaderErr).NotTo(HaveOccurred())
@@ -149,15 +149,15 @@ var _ = Describe("SpotFile EventTransformers", func() {
 			Expect(executeErr).NotTo(HaveOccurred())
 		})
 
-		It("fetches and transforms a Spot.file pip event from Kovan", func() {
+		It("fetches and transforms a Spot.file pip event", func() {
 			var dbResult spotFilePipModel
 			getSpotErr := db.Get(&dbResult, `SELECT ilk_id, pip from maker.spot_file_pip`)
 			Expect(getSpotErr).NotTo(HaveOccurred())
 
-			ilkID, ilkErr := shared.GetOrCreateIlk("0x5341490000000000000000000000000000000000000000000000000000000000", db)
+			ilkID, ilkErr := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
 			Expect(ilkErr).NotTo(HaveOccurred())
 			Expect(dbResult.Ilk).To(Equal(strconv.FormatInt(ilkID, 10)))
-			Expect(dbResult.Pip).To(Equal("0x62eaf847dfd5De95a09a2708366a0525749A1f6D"))
+			Expect(dbResult.Pip).To(Equal("0x81FE72B5A8d1A857d176C3E7d5Bd2679A9B85763"))
 		})
 	})
 })

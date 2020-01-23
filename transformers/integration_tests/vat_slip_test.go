@@ -45,7 +45,7 @@ var _ = Describe("Vat slip transformer", func() {
 	}
 
 	It("persists vat slip event", func() {
-		blockNumber := int64(14911655)
+		blockNumber := int64(9284026)
 		vatSlipConfig.StartingBlockNumber = blockNumber
 		vatSlipConfig.EndingBlockNumber = blockNumber
 
@@ -78,8 +78,8 @@ var _ = Describe("Vat slip transformer", func() {
 		ilkID, err := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(model.Ilk).To(Equal(strconv.FormatInt(ilkID, 10)))
-		Expect(model.Usr).To(Equal("0x293E7ED907Ce834Cb3d4D1124FC432377eeb6443"))
-		Expect(model.Wad).To(Equal("1000000000000000000"))
+		Expect(model.Usr).To(Equal("0xA7Efab80520784e2d5eCB65ccA4af8b09e271dD7"))
+		Expect(model.Wad).To(Equal("-1610898610000000000"))
 	})
 })
 

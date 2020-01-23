@@ -15,7 +15,8 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("PotCage EventTransformer", func() {
+//TODO: Need to update when there are events on mainnet
+var _ = XDescribe("PotCage EventTransformer", func() {
 	var cageDeploymentPotAddress = "0x52ca216f93836eea1ee605cf6aa41127134b9754"
 
 	BeforeEach(func() {
@@ -66,7 +67,7 @@ var _ = Describe("PotCage EventTransformer", func() {
 			Expect(executeErr).NotTo(HaveOccurred())
 		})
 
-		It("fetches and transforms a Pot.cage event from Kovan", func() {
+		It("fetches and transforms a Pot.cage event", func() {
 			var dbResult []potCageModel
 			getFileErr := db.Select(&dbResult, `SELECT id FROM maker.pot_cage`)
 

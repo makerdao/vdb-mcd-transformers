@@ -144,7 +144,7 @@ var _ = Describe("Plugin test", func() {
 	viper.SetConfigName("testing")
 	viper.AddConfigPath("$GOPATH/src/github.com/makerdao/vdb-mcd-transformers/environments/")
 	var ilk = "0x4554482d41000000000000000000000000000000000000000000000000000000"
-	var blockNumber = int64(14764569)
+	var blockNumber = int64(8928180) //needs a mainnet block with a cat file flip
 	var maxConsecutiveUnexpectedErrs = 0
 	var retryInterval = 2 * time.Second
 

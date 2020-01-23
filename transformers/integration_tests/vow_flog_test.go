@@ -29,8 +29,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-// TODO: replace block number when there is a flog event on the updated Vow
-var _ = XDescribe("VowFlog EventTransformer", func() {
+var _ = Describe("VowFlog EventTransformer", func() {
 	BeforeEach(func() {
 		test_config.CleanTestDB(db)
 	})
@@ -43,7 +42,7 @@ var _ = XDescribe("VowFlog EventTransformer", func() {
 	}
 
 	It("transforms VowFlog log events", func() {
-		blockNumber := int64(10921609)
+		blockNumber := int64(9242813)
 		vowFlogConfig.StartingBlockNumber = blockNumber
 		vowFlogConfig.EndingBlockNumber = blockNumber
 
@@ -72,7 +71,7 @@ var _ = XDescribe("VowFlog EventTransformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))
-		Expect(dbResult[0].Era).To(Equal("0"))
+		Expect(dbResult[0].Era).To(Equal("1577965150"))
 	})
 })
 
