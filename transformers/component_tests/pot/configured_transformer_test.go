@@ -31,8 +31,7 @@ var _ = Describe("Executing the transformer", func() {
 			StorageKeysLookup: storageKeysLookup,
 			Repository:        &repository,
 		}
-		headerID int64
-		header   = fakes.FakeHeader
+		header = fakes.FakeHeader
 	)
 
 	BeforeEach(func() {
@@ -40,9 +39,8 @@ var _ = Describe("Executing the transformer", func() {
 		transformer.NewTransformer(db)
 		headerRepository := repositories.NewHeaderRepository(db)
 		var insertHeaderErr error
-		headerID, insertHeaderErr = headerRepository.CreateOrUpdateHeader(header)
+		header.Id, insertHeaderErr = headerRepository.CreateOrUpdateHeader(header)
 		Expect(insertHeaderErr).NotTo(HaveOccurred())
-		header.Id = headerID
 	})
 
 	It("reads in a Pot user pie storage diff row and persists it", func() {
@@ -194,7 +192,7 @@ var _ = Describe("Executing the transformer", func() {
 			err := db.Get(&wardsResult, `SELECT diff_id, header_id, address_id, usr AS key, wards.wards AS value FROM maker.wards`)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(wardsResult.AddressID).To(Equal(strconv.FormatInt(potAddressID, 10)))
-			test_helpers.AssertMapping(wardsResult.MappingRes, wardsDiff.ID, headerID, strconv.FormatInt(userAddressID, 10), "1")
+			test_helpers.AssertMapping(wardsResult.MappingRes, wardsDiff.ID, header.Id, strconv.FormatInt(userAddressID, 10), "1")
 		})
 	})
 
