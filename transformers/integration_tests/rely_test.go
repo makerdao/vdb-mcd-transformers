@@ -34,9 +34,10 @@ var _ = Describe("Rely transformer", func() {
 	})
 
 	Context("Flop rely events", func() {
-		usrAddress := "0xbaa65281c2fa2baacb2cb550ba051525a480d3f4"
-		msgSenderAddress := "0xc41c4759f67ff54c7a7314d155f40fc6504f5d28"
-		relyIntegrationTest(int64(8928163), test_data.FlopAddress(), msgSenderAddress, usrAddress)
+
+		usrAddress := "0xbe8e3e3618f7474f8cb1d074a26affef007e98fb"
+		msgSenderAddress := "0xddb108893104de4e1c6d0e47c42237db4e617acc"
+		relyIntegrationTest(int64(9008136), test_data.FlopAddress(), msgSenderAddress, usrAddress)
 	})
 
 	Context("Jug rely events", func() {
