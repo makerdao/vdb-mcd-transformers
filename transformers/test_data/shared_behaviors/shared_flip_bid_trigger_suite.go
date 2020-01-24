@@ -290,7 +290,7 @@ func CommonBidSnapshotTriggerTests(input BidTriggerTestInput) {
 			test_helpers.InsertValues(db, repo, headerOne, initialBidValues,
 				test_helpers.GetCommonBidMetadatas(strconv.Itoa(bidID)))
 
-			updatedRepoVal, updatedColumnVal := randomBidStorageValue(input.Metadata.Type, input.PackedValueType)
+			updatedRepoVal, _ := randomBidStorageValue(input.Metadata.Type, input.PackedValueType)
 			err := input.Repository.Create(diffID, headerOne.Id, input.Metadata, updatedRepoVal)
 			Expect(err).NotTo(HaveOccurred())
 
@@ -298,7 +298,7 @@ func CommonBidSnapshotTriggerTests(input BidTriggerTestInput) {
 			queryErr := db.Select(&bidSnapshots, getBidStateQuery)
 			Expect(queryErr).NotTo(HaveOccurred())
 			Expect(len(bidSnapshots)).To(Equal(1))
-			initialBidValues[input.Metadata.Name] = updatedColumnVal
+			initialBidValues[input.Metadata.Name] = updatedRepoVal
 			expectedBid := commonBidSnapshotFromValues(bidID, headerTwo.BlockNumber, addressID, headerOne.Timestamp,
 				initialBidValues)
 			assertBidSnapshot(bidSnapshots[0], expectedBid, headerOne.BlockNumber)
