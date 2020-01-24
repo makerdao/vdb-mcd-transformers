@@ -24,14 +24,13 @@ import (
 var _ = Describe("Flop storage repository", func() {
 	var (
 		db                   = test_config.NewTestDB(test_config.NewTestNode())
-		repo                 flop.FlopStorageRepository
+		repo                 = &flop.FlopStorageRepository{ContractAddress: test_data.FlopAddress()}
 		blockNumber          int64
 		diffID, fakeHeaderID int64
 	)
 
 	BeforeEach(func() {
 		test_config.CleanTestDB(db)
-		repo = flop.FlopStorageRepository{ContractAddress: test_data.FlopAddress()}
 		repo.SetDB(db)
 		blockNumber = rand.Int63()
 		headerRepository := repositories.NewHeaderRepository(db)
@@ -58,7 +57,7 @@ var _ = Describe("Flop storage repository", func() {
 			Value:          FakeAddress,
 			Schema:         constants.MakerSchema,
 			TableName:      constants.FlopVatTable,
-			Repository:     &repo,
+			Repository:     repo,
 			Metadata:       vatMetadata,
 		}
 
@@ -72,7 +71,7 @@ var _ = Describe("Flop storage repository", func() {
 			Value:          FakeAddress,
 			Schema:         constants.MakerSchema,
 			TableName:      constants.FlopGemTable,
-			Repository:     &repo,
+			Repository:     repo,
 			Metadata:       gemMetadata,
 		}
 
@@ -88,7 +87,7 @@ var _ = Describe("Flop storage repository", func() {
 			Value:          fakeBeg,
 			Schema:         constants.MakerSchema,
 			TableName:      constants.FlopBegTable,
-			Repository:     &repo,
+			Repository:     repo,
 			Metadata:       begMetadata,
 		}
 
@@ -110,7 +109,7 @@ var _ = Describe("Flop storage repository", func() {
 			Value:          fakePad,
 			Schema:         constants.MakerSchema,
 			TableName:      constants.FlopPadTable,
-			Repository:     &repo,
+			Repository:     repo,
 			Metadata:       padMetadata,
 		}
 
@@ -192,7 +191,7 @@ var _ = Describe("Flop storage repository", func() {
 			ValueFieldName: storage.Kicks,
 			Schema:         constants.MakerSchema,
 			TableName:      constants.FlopKicksTable,
-			Repository:     &repo,
+			Repository:     repo,
 			Metadata:       kicksMetadata,
 			Value:          fakeKicks,
 		}
@@ -207,7 +206,7 @@ var _ = Describe("Flop storage repository", func() {
 			ValueFieldName: storage.Live,
 			Schema:         constants.MakerSchema,
 			TableName:      constants.FlopLiveTable,
-			Repository:     &repo,
+			Repository:     repo,
 			Metadata:       liveMetadata,
 			Value:          fakeKicks,
 		}
@@ -221,7 +220,7 @@ var _ = Describe("Flop storage repository", func() {
 			ValueFieldName: storage.Vow,
 			Schema:         constants.MakerSchema,
 			TableName:      constants.FlopVowTable,
-			Repository:     &repo,
+			Repository:     repo,
 			Metadata:       vowMetadata,
 			Value:          FakeAddress,
 		}
@@ -289,12 +288,13 @@ var _ = Describe("Flop storage repository", func() {
 		})
 
 		Describe("bid_bid", func() {
-			var fakeBidValue = strconv.Itoa(rand.Int())
 			var bidBidMetadata = types.ValueMetadata{
 				Name: storage.BidBid,
 				Keys: map[types.Key]string{constants.BidId: fakeBidId},
 				Type: types.Uint256,
 			}
+
+			var fakeBidValue = strconv.Itoa(rand.Int())
 			inputs := shared_behaviors.StorageBehaviorInputs{
 				KeyFieldName:   string(constants.BidId),
 				ValueFieldName: "bid",
@@ -303,11 +303,21 @@ var _ = Describe("Flop storage repository", func() {
 				IsAMapping:     true,
 				Schema:         constants.MakerSchema,
 				TableName:      constants.FlopBidBidTable,
-				Repository:     &repo,
+				Repository:     repo,
 				Metadata:       bidBidMetadata,
 			}
-
 			shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
+
+			triggerInput := shared_behaviors.BidTriggerTestInput{
+				Repository:      repo,
+				Metadata:        bidBidMetadata,
+				ContractAddress: repo.ContractAddress,
+				TriggerTable:    constants.FlopTable,
+				FieldTable:      constants.FlopBidBidTable,
+				ColumnName:      constants.BidColumn,
+			}
+			shared_behaviors.CommonBidSnapshotTriggerTests(triggerInput)
+			shared_behaviors.SharedBidHistoryTriggerTests(triggerInput)
 
 			It("triggers an update to the flop table", func() {
 				err := repo.Create(diffID, fakeHeaderID, bidBidMetadata, fakeBidValue)
@@ -323,12 +333,13 @@ var _ = Describe("Flop storage repository", func() {
 		})
 
 		Describe("bid_lot", func() {
-			var fakeLotValue = strconv.Itoa(rand.Int())
 			var bidLotMetadata = types.ValueMetadata{
 				Name: storage.BidLot,
 				Keys: map[types.Key]string{constants.BidId: fakeBidId},
 				Type: types.Uint256,
 			}
+
+			var fakeLotValue = strconv.Itoa(rand.Int())
 			inputs := shared_behaviors.StorageBehaviorInputs{
 				KeyFieldName:   string(constants.BidId),
 				ValueFieldName: "lot",
@@ -337,11 +348,21 @@ var _ = Describe("Flop storage repository", func() {
 				IsAMapping:     true,
 				Schema:         constants.MakerSchema,
 				TableName:      constants.FlopBidLotTable,
-				Repository:     &repo,
+				Repository:     repo,
 				Metadata:       bidLotMetadata,
 			}
-
 			shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
+
+			triggerInput := shared_behaviors.BidTriggerTestInput{
+				Repository:      repo,
+				Metadata:        bidLotMetadata,
+				ContractAddress: repo.ContractAddress,
+				TriggerTable:    constants.FlopTable,
+				FieldTable:      constants.FlopBidLotTable,
+				ColumnName:      constants.LotColumn,
+			}
+			shared_behaviors.CommonBidSnapshotTriggerTests(triggerInput)
+			shared_behaviors.SharedBidHistoryTriggerTests(triggerInput)
 
 			It("triggers an update to the flop table", func() {
 				err := repo.Create(diffID, fakeHeaderID, bidLotMetadata, fakeLotValue)
@@ -424,6 +445,60 @@ var _ = Describe("Flop storage repository", func() {
 				Expect(err).To(HaveOccurred())
 				Expect(err.Error()).To(ContainSubstring("pq: invalid input syntax"))
 			})
+
+			var bidGuyMetadata = types.ValueMetadata{
+				Name:        storage.Packed,
+				Keys:        map[types.Key]string{constants.BidId: fakeBidId},
+				Type:        types.PackedSlot,
+				PackedNames: map[int]string{0: storage.BidGuy},
+			}
+			guyTriggerInput := shared_behaviors.BidTriggerTestInput{
+				Repository:      repo,
+				Metadata:        bidGuyMetadata,
+				ContractAddress: repo.ContractAddress,
+				TriggerTable:    constants.FlopTable,
+				FieldTable:      constants.FlopBidGuyTable,
+				ColumnName:      constants.GuyColumn,
+				PackedValueType: types.Address,
+			}
+			shared_behaviors.CommonBidSnapshotTriggerTests(guyTriggerInput)
+			shared_behaviors.SharedBidHistoryTriggerTests(guyTriggerInput)
+
+			var bidTicMetadata = types.ValueMetadata{
+				Name:        storage.Packed,
+				Keys:        map[types.Key]string{constants.BidId: fakeBidId},
+				Type:        types.PackedSlot,
+				PackedNames: map[int]string{0: storage.BidTic},
+			}
+			ticTriggerInput := shared_behaviors.BidTriggerTestInput{
+				Repository:      repo,
+				Metadata:        bidTicMetadata,
+				ContractAddress: repo.ContractAddress,
+				TriggerTable:    constants.FlopTable,
+				FieldTable:      constants.FlopBidTicTable,
+				ColumnName:      constants.TicColumn,
+				PackedValueType: types.Uint48,
+			}
+			shared_behaviors.CommonBidSnapshotTriggerTests(ticTriggerInput)
+			shared_behaviors.SharedBidHistoryTriggerTests(ticTriggerInput)
+
+			var bidEndMetadata = types.ValueMetadata{
+				Name:        storage.Packed,
+				Keys:        map[types.Key]string{constants.BidId: fakeBidId},
+				Type:        types.PackedSlot,
+				PackedNames: map[int]string{0: storage.BidEnd},
+			}
+			endTriggerInput := shared_behaviors.BidTriggerTestInput{
+				Repository:      repo,
+				Metadata:        bidEndMetadata,
+				ContractAddress: repo.ContractAddress,
+				TriggerTable:    constants.FlopTable,
+				FieldTable:      constants.FlopBidEndTable,
+				ColumnName:      constants.EndColumn,
+				PackedValueType: types.Uint48,
+			}
+			shared_behaviors.CommonBidSnapshotTriggerTests(endTriggerInput)
+			shared_behaviors.SharedBidHistoryTriggerTests(endTriggerInput)
 		})
 	})
 })

@@ -3952,6 +3952,251 @@ $$;
 
 
 --
+-- Name: flop_bid_bid; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.flop_bid_bid (
+    id integer NOT NULL,
+    diff_id bigint NOT NULL,
+    header_id integer NOT NULL,
+    address_id integer NOT NULL,
+    bid_id numeric NOT NULL,
+    bid numeric NOT NULL
+);
+
+
+--
+-- Name: TABLE flop_bid_bid; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.flop_bid_bid IS '@omit';
+
+
+--
+-- Name: insert_new_flop_bid(maker.flop_bid_bid); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.insert_new_flop_bid(new_diff maker.flop_bid_bid) RETURNS void
+    LANGUAGE sql
+    AS $$
+WITH diff_block AS (
+    SELECT block_number, block_timestamp
+    FROM public.headers
+    WHERE id = new_diff.header_id
+)
+INSERT
+INTO maker.flop (bid_id, address_id, block_number, guy, tic, "end", lot, bid, updated, created)
+VALUES (new_diff.bid_id,
+        new_diff.address_id,
+        (SELECT block_number FROM diff_block),
+        flop_bid_guy_before_block(new_diff.bid_id, new_diff.address_id, new_diff.header_id),
+        flop_bid_tic_before_block(new_diff.bid_id, new_diff.address_id, new_diff.header_id),
+        flop_bid_end_before_block(new_diff.bid_id, new_diff.address_id, new_diff.header_id),
+        flop_bid_lot_before_block(new_diff.bid_id, new_diff.address_id, new_diff.header_id),
+        new_diff.bid,
+        (SELECT api.epoch_to_datetime(block_timestamp) FROM diff_block),
+        flop_bid_time_created(new_diff.address_id, new_diff.bid_id))
+ON CONFLICT (block_number, bid_id, address_id) DO UPDATE SET bid = new_diff.bid;
+$$;
+
+
+--
+-- Name: flop_bid_end; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.flop_bid_end (
+    id integer NOT NULL,
+    diff_id bigint NOT NULL,
+    header_id integer NOT NULL,
+    address_id integer NOT NULL,
+    bid_id numeric NOT NULL,
+    "end" bigint NOT NULL
+);
+
+
+--
+-- Name: TABLE flop_bid_end; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.flop_bid_end IS '@omit';
+
+
+--
+-- Name: insert_new_flop_end(maker.flop_bid_end); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.insert_new_flop_end(new_diff maker.flop_bid_end) RETURNS void
+    LANGUAGE sql
+    AS $$
+WITH diff_block AS (
+    SELECT block_number, block_timestamp
+    FROM public.headers
+    WHERE id = new_diff.header_id
+)
+INSERT
+INTO maker.flop (bid_id, address_id, block_number, guy, tic, "end", lot, bid, updated, created)
+VALUES (new_diff.bid_id,
+        new_diff.address_id,
+        (SELECT block_number FROM diff_block),
+        flop_bid_guy_before_block(new_diff.bid_id, new_diff.address_id, new_diff.header_id),
+        flop_bid_tic_before_block(new_diff.bid_id, new_diff.address_id, new_diff.header_id),
+        new_diff."end",
+        flop_bid_lot_before_block(new_diff.bid_id, new_diff.address_id, new_diff.header_id),
+        flop_bid_bid_before_block(new_diff.bid_id, new_diff.address_id, new_diff.header_id),
+        (SELECT api.epoch_to_datetime(block_timestamp) FROM diff_block),
+        flop_bid_time_created(new_diff.address_id, new_diff.bid_id))
+ON CONFLICT (block_number, bid_id, address_id) DO UPDATE SET "end" = new_diff."end";
+$$;
+
+
+--
+-- Name: flop_bid_guy; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.flop_bid_guy (
+    id integer NOT NULL,
+    diff_id bigint NOT NULL,
+    header_id integer NOT NULL,
+    address_id integer NOT NULL,
+    bid_id numeric NOT NULL,
+    guy text
+);
+
+
+--
+-- Name: TABLE flop_bid_guy; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.flop_bid_guy IS '@omit';
+
+
+--
+-- Name: insert_new_flop_guy(maker.flop_bid_guy); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.insert_new_flop_guy(new_diff maker.flop_bid_guy) RETURNS void
+    LANGUAGE sql
+    AS $$
+WITH diff_block AS (
+    SELECT block_number, block_timestamp
+    FROM public.headers
+    WHERE id = new_diff.header_id
+)
+INSERT
+INTO maker.flop (bid_id, address_id, block_number, guy, tic, "end", lot, bid, updated, created)
+VALUES (new_diff.bid_id,
+        new_diff.address_id,
+        (SELECT block_number FROM diff_block),
+        new_diff.guy,
+        flop_bid_tic_before_block(new_diff.bid_id, new_diff.address_id, new_diff.header_id),
+        flop_bid_end_before_block(new_diff.bid_id, new_diff.address_id, new_diff.header_id),
+        flop_bid_lot_before_block(new_diff.bid_id, new_diff.address_id, new_diff.header_id),
+        flop_bid_bid_before_block(new_diff.bid_id, new_diff.address_id, new_diff.header_id),
+        (SELECT api.epoch_to_datetime(block_timestamp) FROM diff_block),
+        flop_bid_time_created(new_diff.address_id, new_diff.bid_id))
+ON CONFLICT (block_number, bid_id, address_id) DO UPDATE SET guy = new_diff.guy;
+$$;
+
+
+--
+-- Name: flop_bid_lot; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.flop_bid_lot (
+    id integer NOT NULL,
+    diff_id bigint NOT NULL,
+    header_id integer NOT NULL,
+    address_id integer NOT NULL,
+    bid_id numeric NOT NULL,
+    lot numeric NOT NULL
+);
+
+
+--
+-- Name: TABLE flop_bid_lot; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.flop_bid_lot IS '@omit';
+
+
+--
+-- Name: insert_new_flop_lot(maker.flop_bid_lot); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.insert_new_flop_lot(new_diff maker.flop_bid_lot) RETURNS void
+    LANGUAGE sql
+    AS $$
+WITH diff_block AS (
+    SELECT block_number, block_timestamp
+    FROM public.headers
+    WHERE id = new_diff.header_id
+)
+INSERT
+INTO maker.flop (bid_id, address_id, block_number, guy, tic, "end", lot, bid, updated, created)
+VALUES (new_diff.bid_id,
+        new_diff.address_id,
+        (SELECT block_number FROM diff_block),
+        flop_bid_guy_before_block(new_diff.bid_id, new_diff.address_id, new_diff.header_id),
+        flop_bid_tic_before_block(new_diff.bid_id, new_diff.address_id, new_diff.header_id),
+        flop_bid_end_before_block(new_diff.bid_id, new_diff.address_id, new_diff.header_id),
+        new_diff.lot,
+        flop_bid_bid_before_block(new_diff.bid_id, new_diff.address_id, new_diff.header_id),
+        (SELECT api.epoch_to_datetime(block_timestamp) FROM diff_block),
+        flop_bid_time_created(new_diff.address_id, new_diff.bid_id))
+ON CONFLICT (block_number, bid_id, address_id) DO UPDATE SET lot = new_diff.lot;
+$$;
+
+
+--
+-- Name: flop_bid_tic; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.flop_bid_tic (
+    id integer NOT NULL,
+    diff_id bigint NOT NULL,
+    header_id integer NOT NULL,
+    address_id integer NOT NULL,
+    bid_id numeric NOT NULL,
+    tic bigint NOT NULL
+);
+
+
+--
+-- Name: TABLE flop_bid_tic; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.flop_bid_tic IS '@omit';
+
+
+--
+-- Name: insert_new_flop_tic(maker.flop_bid_tic); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.insert_new_flop_tic(new_diff maker.flop_bid_tic) RETURNS void
+    LANGUAGE sql
+    AS $$
+WITH diff_block AS (
+    SELECT block_number, block_timestamp
+    FROM public.headers
+    WHERE id = new_diff.header_id
+)
+INSERT
+INTO maker.flop (bid_id, address_id, block_number, guy, tic, "end", lot, bid, updated, created)
+VALUES (new_diff.bid_id,
+        new_diff.address_id,
+        (SELECT block_number FROM diff_block),
+        flop_bid_guy_before_block(new_diff.bid_id, new_diff.address_id, new_diff.header_id),
+        new_diff.tic,
+        flop_bid_end_before_block(new_diff.bid_id, new_diff.address_id, new_diff.header_id),
+        flop_bid_lot_before_block(new_diff.bid_id, new_diff.address_id, new_diff.header_id),
+        flop_bid_bid_before_block(new_diff.bid_id, new_diff.address_id, new_diff.header_id),
+        (SELECT api.epoch_to_datetime(block_timestamp) FROM diff_block),
+        flop_bid_time_created(new_diff.address_id, new_diff.bid_id))
+ON CONFLICT (block_number, bid_id, address_id) DO UPDATE SET tic = new_diff.tic;
+$$;
+
+
+--
 -- Name: vat_ilk_line; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -4502,151 +4747,6 @@ $$;
 --
 
 COMMENT ON FUNCTION maker.insert_new_time_created(new_event maker.vat_init) IS '@omit';
-
-
---
--- Name: insert_updated_flop_bid(); Type: FUNCTION; Schema: maker; Owner: -
---
-
-CREATE FUNCTION maker.insert_updated_flop_bid() RETURNS trigger
-    LANGUAGE plpgsql
-    AS $$
-BEGIN
-    WITH diff_block AS (
-        SELECT block_number, block_timestamp
-        FROM public.headers
-        WHERE id = NEW.header_id
-    )
-    INSERT
-    INTO maker.flop (address_id, bid_id, block_number, bid, guy, tic, "end", lot, updated, created)
-    VALUES (NEW.address_id, NEW.bid_id,
-            (SELECT block_number FROM diff_block), NEW.bid,
-            get_latest_flop_bid_guy(NEW.bid_id),
-            get_latest_flop_bid_tic(NEW.bid_id),
-            get_latest_flop_bid_end(NEW.bid_id),
-            get_latest_flop_bid_lot(NEW.bid_id),
-            (SELECT api.epoch_to_datetime(block_timestamp) FROM diff_block),
-            flop_bid_time_created(NEW.address_id, NEW.bid_id))
-    ON CONFLICT (address_id, bid_id, block_number) DO UPDATE SET bid = NEW.bid;
-    RETURN NEW;
-END
-$$;
-
-
---
--- Name: insert_updated_flop_end(); Type: FUNCTION; Schema: maker; Owner: -
---
-
-CREATE FUNCTION maker.insert_updated_flop_end() RETURNS trigger
-    LANGUAGE plpgsql
-    AS $$
-BEGIN
-    WITH diff_block AS (
-        SELECT block_number, block_timestamp
-        FROM public.headers
-        WHERE id = NEW.header_id
-    )
-    INSERT
-    INTO maker.flop (address_id, bid_id, block_number, "end", bid, guy, tic, lot, updated, created)
-    VALUES (NEW.address_id, NEW.bid_id,
-            (SELECT block_number FROM diff_block), NEW."end",
-            get_latest_flop_bid_bid(NEW.bid_id),
-            get_latest_flop_bid_guy(NEW.bid_id),
-            get_latest_flop_bid_tic(NEW.bid_id),
-            get_latest_flop_bid_lot(NEW.bid_id),
-            (SELECT api.epoch_to_datetime(block_timestamp) FROM diff_block),
-            flop_bid_time_created(NEW.address_id, NEW.bid_id))
-    ON CONFLICT (address_id, bid_id, block_number) DO UPDATE SET "end" = NEW."end";
-    RETURN NEW;
-END
-$$;
-
-
---
--- Name: insert_updated_flop_guy(); Type: FUNCTION; Schema: maker; Owner: -
---
-
-CREATE FUNCTION maker.insert_updated_flop_guy() RETURNS trigger
-    LANGUAGE plpgsql
-    AS $$
-BEGIN
-    WITH diff_block AS (
-        SELECT block_number, block_timestamp
-        FROM public.headers
-        WHERE id = NEW.header_id
-    )
-    INSERT
-    INTO maker.flop (address_id, bid_id, block_number, guy, bid, tic, "end", lot, updated, created)
-    VALUES (NEW.address_id, NEW.bid_id,
-            (SELECT block_number FROM diff_block), NEW.guy,
-            get_latest_flop_bid_bid(NEW.bid_id),
-            get_latest_flop_bid_tic(NEW.bid_id),
-            get_latest_flop_bid_end(NEW.bid_id),
-            get_latest_flop_bid_lot(NEW.bid_id),
-            (SELECT api.epoch_to_datetime(block_timestamp) FROM diff_block),
-            flop_bid_time_created(NEW.address_id, NEW.bid_id))
-    ON CONFLICT (address_id, bid_id, block_number) DO UPDATE SET guy = NEW.guy;
-    RETURN NEW;
-END
-$$;
-
-
---
--- Name: insert_updated_flop_lot(); Type: FUNCTION; Schema: maker; Owner: -
---
-
-CREATE FUNCTION maker.insert_updated_flop_lot() RETURNS trigger
-    LANGUAGE plpgsql
-    AS $$
-BEGIN
-    WITH diff_block AS (
-        SELECT block_number, block_timestamp
-        FROM public.headers
-        WHERE id = NEW.header_id
-    )
-    INSERT
-    INTO maker.flop (address_id, bid_id, block_number, lot, bid, guy, tic, "end", updated, created)
-    VALUES (NEW.address_id, NEW.bid_id,
-            (SELECT block_number FROM diff_block), NEW.lot,
-            get_latest_flop_bid_bid(NEW.bid_id),
-            get_latest_flop_bid_guy(NEW.bid_id),
-            get_latest_flop_bid_tic(NEW.bid_id),
-            get_latest_flop_bid_end(NEW.bid_id),
-            (SELECT api.epoch_to_datetime(block_timestamp) FROM diff_block),
-            flop_bid_time_created(NEW.address_id, NEW.bid_id))
-    ON CONFLICT (address_id, bid_id, block_number) DO UPDATE SET lot = NEW.lot;
-    RETURN NEW;
-END
-$$;
-
-
---
--- Name: insert_updated_flop_tic(); Type: FUNCTION; Schema: maker; Owner: -
---
-
-CREATE FUNCTION maker.insert_updated_flop_tic() RETURNS trigger
-    LANGUAGE plpgsql
-    AS $$
-BEGIN
-    WITH diff_block AS (
-        SELECT block_number, block_timestamp
-        FROM public.headers
-        WHERE id = NEW.header_id
-    )
-    INSERT
-    INTO maker.flop (address_id, bid_id, block_number, tic, bid, guy, "end", lot, updated, created)
-    VALUES (NEW.address_id, NEW.bid_id,
-            (SELECT block_number FROM diff_block), NEW.tic,
-            get_latest_flop_bid_bid(NEW.bid_id),
-            get_latest_flop_bid_guy(NEW.bid_id),
-            get_latest_flop_bid_end(NEW.bid_id),
-            get_latest_flop_bid_lot(NEW.bid_id),
-            (SELECT api.epoch_to_datetime(block_timestamp) FROM diff_block),
-            flop_bid_time_created(NEW.address_id, NEW.bid_id))
-    ON CONFLICT (address_id, bid_id, block_number) DO UPDATE SET tic = NEW.tic;
-    RETURN NEW;
-END
-$$;
 
 
 --
@@ -5661,6 +5761,271 @@ $$;
 --
 
 COMMENT ON FUNCTION maker.update_flips_until_next_diff(start_at_diff maker.cat_ilk_flip, new_flip text) IS '@omit';
+
+
+--
+-- Name: update_flop_bids(); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.update_flop_bids() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    PERFORM maker.insert_new_flop_bid(NEW);
+    PERFORM maker.update_flop_bids_until_next_diff(NEW);
+    RETURN NULL;
+END
+$$;
+
+
+--
+-- Name: update_flop_bids_until_next_diff(maker.flop_bid_bid); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.update_flop_bids_until_next_diff(new_diff maker.flop_bid_bid) RETURNS void
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+    diff_block_number   BIGINT := (
+        SELECT block_number
+        FROM public.headers
+        WHERE id = new_diff.header_id);
+    next_bid_diff_block BIGINT := (
+        SELECT MIN(block_number)
+        FROM maker.flop_bid_bid
+                 LEFT JOIN public.headers ON flop_bid_bid.header_id = headers.id
+        WHERE flop_bid_bid.bid_id = new_diff.bid_id
+          AND flop_bid_bid.address_id = new_diff.address_id
+          AND block_number > diff_block_number);
+BEGIN
+    UPDATE maker.flop
+    SET bid = new_diff.bid
+    WHERE flop.bid_id = new_diff.bid_id
+      AND flop.address_id = new_diff.address_id
+      AND flop.block_number >= diff_block_number
+      AND (next_bid_diff_block IS NULL
+        OR flop.block_number < next_bid_diff_block);
+END
+$$;
+
+
+--
+-- Name: FUNCTION update_flop_bids_until_next_diff(new_diff maker.flop_bid_bid); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.update_flop_bids_until_next_diff(new_diff maker.flop_bid_bid) IS '@omit';
+
+
+--
+-- Name: update_flop_ends(); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.update_flop_ends() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    PERFORM maker.insert_new_flop_end(NEW);
+    PERFORM maker.update_flop_ends_until_next_diff(NEW);
+    RETURN NULL;
+END
+$$;
+
+
+--
+-- Name: update_flop_ends_until_next_diff(maker.flop_bid_end); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.update_flop_ends_until_next_diff(new_diff maker.flop_bid_end) RETURNS void
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+    diff_block_number   BIGINT := (
+        SELECT block_number
+        FROM public.headers
+        WHERE id = new_diff.header_id);
+    next_end_diff_block BIGINT := (
+        SELECT MIN(block_number)
+        FROM maker.flop_bid_end
+                 LEFT JOIN public.headers ON flop_bid_end.header_id = headers.id
+        WHERE flop_bid_end.bid_id = new_diff.bid_id
+          AND flop_bid_end.address_id = new_diff.address_id
+          AND block_number > diff_block_number);
+BEGIN
+    UPDATE maker.flop
+    SET "end" = new_diff."end"
+    WHERE flop.bid_id = new_diff.bid_id
+      AND flop.address_id = new_diff.address_id
+      AND flop.block_number >= diff_block_number
+      AND (next_end_diff_block IS NULL
+        OR flop.block_number < next_end_diff_block);
+END
+$$;
+
+
+--
+-- Name: FUNCTION update_flop_ends_until_next_diff(new_diff maker.flop_bid_end); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.update_flop_ends_until_next_diff(new_diff maker.flop_bid_end) IS '@omit';
+
+
+--
+-- Name: update_flop_guys(); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.update_flop_guys() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    PERFORM maker.insert_new_flop_guy(NEW);
+    PERFORM maker.update_flop_guys_until_next_diff(NEW);
+    RETURN NULL;
+END
+$$;
+
+
+--
+-- Name: update_flop_guys_until_next_diff(maker.flop_bid_guy); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.update_flop_guys_until_next_diff(new_diff maker.flop_bid_guy) RETURNS void
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+    diff_block_number   BIGINT := (
+        SELECT block_number
+        FROM public.headers
+        WHERE id = new_diff.header_id);
+    next_guy_diff_block BIGINT := (
+        SELECT MIN(block_number)
+        FROM maker.flop_bid_guy
+                 LEFT JOIN public.headers ON flop_bid_guy.header_id = headers.id
+        WHERE flop_bid_guy.bid_id = new_diff.bid_id
+          AND flop_bid_guy.address_id = new_diff.address_id
+          AND block_number > diff_block_number);
+BEGIN
+    UPDATE maker.flop
+    SET guy = new_diff.guy
+    WHERE flop.bid_id = new_diff.bid_id
+      AND flop.address_id = new_diff.address_id
+      AND flop.block_number >= diff_block_number
+      AND (next_guy_diff_block IS NULL
+        OR flop.block_number < next_guy_diff_block);
+END
+$$;
+
+
+--
+-- Name: FUNCTION update_flop_guys_until_next_diff(new_diff maker.flop_bid_guy); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.update_flop_guys_until_next_diff(new_diff maker.flop_bid_guy) IS '@omit';
+
+
+--
+-- Name: update_flop_lots(); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.update_flop_lots() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    PERFORM maker.insert_new_flop_lot(NEW);
+    PERFORM maker.update_flop_lots_until_next_diff(NEW);
+    RETURN NULL;
+END
+$$;
+
+
+--
+-- Name: update_flop_lots_until_next_diff(maker.flop_bid_lot); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.update_flop_lots_until_next_diff(new_diff maker.flop_bid_lot) RETURNS void
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+    diff_block_number   BIGINT := (
+        SELECT block_number
+        FROM public.headers
+        WHERE id = new_diff.header_id);
+    next_lot_diff_block BIGINT := (
+        SELECT MIN(block_number)
+        FROM maker.flop_bid_lot
+                 LEFT JOIN public.headers ON flop_bid_lot.header_id = headers.id
+        WHERE flop_bid_lot.bid_id = new_diff.bid_id
+          AND flop_bid_lot.address_id = new_diff.address_id
+          AND block_number > diff_block_number);
+BEGIN
+    UPDATE maker.flop
+    SET lot = new_diff.lot
+    WHERE flop.bid_id = new_diff.bid_id
+      AND flop.address_id = new_diff.address_id
+      AND flop.block_number >= diff_block_number
+      AND (next_lot_diff_block IS NULL
+        OR flop.block_number < next_lot_diff_block);
+END
+$$;
+
+
+--
+-- Name: FUNCTION update_flop_lots_until_next_diff(new_diff maker.flop_bid_lot); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.update_flop_lots_until_next_diff(new_diff maker.flop_bid_lot) IS '@omit';
+
+
+--
+-- Name: update_flop_tics(); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.update_flop_tics() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    PERFORM maker.insert_new_flop_tic(NEW);
+    PERFORM maker.update_flop_tics_until_next_diff(NEW);
+    RETURN NULL;
+END
+$$;
+
+
+--
+-- Name: update_flop_tics_until_next_diff(maker.flop_bid_tic); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.update_flop_tics_until_next_diff(new_diff maker.flop_bid_tic) RETURNS void
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+    diff_block_number   BIGINT := (
+        SELECT block_number
+        FROM public.headers
+        WHERE id = new_diff.header_id);
+    next_tic_diff_block BIGINT := (
+        SELECT MIN(block_number)
+        FROM maker.flop_bid_tic
+                 LEFT JOIN public.headers ON flop_bid_tic.header_id = headers.id
+        WHERE flop_bid_tic.bid_id = new_diff.bid_id
+          AND flop_bid_tic.address_id = new_diff.address_id
+          AND block_number > diff_block_number);
+BEGIN
+    UPDATE maker.flop
+    SET tic = new_diff.tic
+    WHERE flop.bid_id = new_diff.bid_id
+      AND flop.address_id = new_diff.address_id
+      AND flop.block_number >= diff_block_number
+      AND (next_tic_diff_block IS NULL
+        OR flop.block_number < next_tic_diff_block);
+END
+$$;
+
+
+--
+-- Name: FUNCTION update_flop_tics_until_next_diff(new_diff maker.flop_bid_tic); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.update_flop_tics_until_next_diff(new_diff maker.flop_bid_tic) IS '@omit';
 
 
 --
@@ -6742,6 +7107,131 @@ COMMENT ON FUNCTION public.flip_bid_usr_before_block(bid_id numeric, address_id 
 
 
 --
+-- Name: flop_bid_bid_before_block(numeric, integer, integer); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.flop_bid_bid_before_block(bid_id numeric, address_id integer, header_id integer) RETURNS numeric
+    LANGUAGE sql
+    AS $$
+SELECT bid
+FROM maker.flop_bid_bid
+         LEFT JOIN public.headers ON flop_bid_bid.header_id = headers.id
+WHERE flop_bid_bid.bid_id = flop_bid_bid_before_block.bid_id
+  AND flop_bid_bid.address_id = flop_bid_bid_before_block.address_id
+  AND headers.block_number < (SELECT block_number FROM public.headers WHERE id = flop_bid_bid_before_block.header_id)
+ORDER BY block_number DESC
+LIMIT 1
+$$;
+
+
+--
+-- Name: FUNCTION flop_bid_bid_before_block(bid_id numeric, address_id integer, header_id integer); Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON FUNCTION public.flop_bid_bid_before_block(bid_id numeric, address_id integer, header_id integer) IS '@omit';
+
+
+--
+-- Name: flop_bid_end_before_block(numeric, integer, integer); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.flop_bid_end_before_block(bid_id numeric, address_id integer, header_id integer) RETURNS bigint
+    LANGUAGE sql
+    AS $$
+SELECT "end"
+FROM maker.flop_bid_end
+         LEFT JOIN public.headers ON flop_bid_end.header_id = headers.id
+WHERE flop_bid_end.bid_id = flop_bid_end_before_block.bid_id
+  AND flop_bid_end.address_id = flop_bid_end_before_block.address_id
+  AND headers.block_number < (SELECT block_number FROM public.headers WHERE id = flop_bid_end_before_block.header_id)
+ORDER BY block_number DESC
+LIMIT 1
+$$;
+
+
+--
+-- Name: FUNCTION flop_bid_end_before_block(bid_id numeric, address_id integer, header_id integer); Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON FUNCTION public.flop_bid_end_before_block(bid_id numeric, address_id integer, header_id integer) IS '@omit';
+
+
+--
+-- Name: flop_bid_guy_before_block(numeric, integer, integer); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.flop_bid_guy_before_block(bid_id numeric, address_id integer, header_id integer) RETURNS text
+    LANGUAGE sql
+    AS $$
+SELECT guy
+FROM maker.flop_bid_guy
+         LEFT JOIN public.headers ON flop_bid_guy.header_id = headers.id
+WHERE flop_bid_guy.bid_id = flop_bid_guy_before_block.bid_id
+  AND flop_bid_guy.address_id = flop_bid_guy_before_block.address_id
+  AND headers.block_number < (SELECT block_number FROM public.headers WHERE id = flop_bid_guy_before_block.header_id)
+ORDER BY block_number DESC
+LIMIT 1
+$$;
+
+
+--
+-- Name: FUNCTION flop_bid_guy_before_block(bid_id numeric, address_id integer, header_id integer); Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON FUNCTION public.flop_bid_guy_before_block(bid_id numeric, address_id integer, header_id integer) IS '@omit';
+
+
+--
+-- Name: flop_bid_lot_before_block(numeric, integer, integer); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.flop_bid_lot_before_block(bid_id numeric, address_id integer, header_id integer) RETURNS numeric
+    LANGUAGE sql
+    AS $$
+SELECT lot
+FROM maker.flop_bid_lot
+         LEFT JOIN public.headers ON flop_bid_lot.header_id = headers.id
+WHERE flop_bid_lot.bid_id = flop_bid_lot_before_block.bid_id
+  AND flop_bid_lot.address_id = flop_bid_lot_before_block.address_id
+  AND headers.block_number < (SELECT block_number FROM public.headers WHERE id = flop_bid_lot_before_block.header_id)
+ORDER BY block_number DESC
+LIMIT 1
+$$;
+
+
+--
+-- Name: FUNCTION flop_bid_lot_before_block(bid_id numeric, address_id integer, header_id integer); Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON FUNCTION public.flop_bid_lot_before_block(bid_id numeric, address_id integer, header_id integer) IS '@omit';
+
+
+--
+-- Name: flop_bid_tic_before_block(numeric, integer, integer); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.flop_bid_tic_before_block(bid_id numeric, address_id integer, header_id integer) RETURNS bigint
+    LANGUAGE sql
+    AS $$
+SELECT tic
+FROM maker.flop_bid_tic
+         LEFT JOIN public.headers ON flop_bid_tic.header_id = headers.id
+WHERE flop_bid_tic.bid_id = flop_bid_tic_before_block.bid_id
+  AND flop_bid_tic.address_id = flop_bid_tic_before_block.address_id
+  AND headers.block_number < (SELECT block_number FROM public.headers WHERE id = flop_bid_tic_before_block.header_id)
+ORDER BY block_number DESC
+LIMIT 1
+$$;
+
+
+--
+-- Name: FUNCTION flop_bid_tic_before_block(bid_id numeric, address_id integer, header_id integer); Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON FUNCTION public.flop_bid_tic_before_block(bid_id numeric, address_id integer, header_id integer) IS '@omit';
+
+
+--
 -- Name: flop_bid_time_created(integer, numeric); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -6761,121 +7251,6 @@ $$;
 --
 
 COMMENT ON FUNCTION public.flop_bid_time_created(address_id integer, bid_id numeric) IS '@omit';
-
-
---
--- Name: get_latest_flop_bid_bid(numeric); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION public.get_latest_flop_bid_bid(bid_id numeric) RETURNS numeric
-    LANGUAGE sql
-    AS $$
-SELECT bid
-FROM maker.flop
-WHERE bid IS NOT NULL
-  AND flop.bid_id = bid_id
-ORDER BY block_number DESC
-LIMIT 1
-$$;
-
-
---
--- Name: FUNCTION get_latest_flop_bid_bid(bid_id numeric); Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON FUNCTION public.get_latest_flop_bid_bid(bid_id numeric) IS '@omit';
-
-
---
--- Name: get_latest_flop_bid_end(numeric); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION public.get_latest_flop_bid_end(bid_id numeric) RETURNS bigint
-    LANGUAGE sql
-    AS $$
-SELECT "end"
-FROM maker.flop
-WHERE "end" IS NOT NULL
-  AND flop.bid_id = bid_id
-ORDER BY block_number DESC
-LIMIT 1
-$$;
-
-
---
--- Name: FUNCTION get_latest_flop_bid_end(bid_id numeric); Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON FUNCTION public.get_latest_flop_bid_end(bid_id numeric) IS '@omit';
-
-
---
--- Name: get_latest_flop_bid_guy(numeric); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION public.get_latest_flop_bid_guy(bid_id numeric) RETURNS text
-    LANGUAGE sql
-    AS $$
-SELECT guy
-FROM maker.flop
-WHERE guy IS NOT NULL
-  AND flop.bid_id = bid_id
-ORDER BY block_number DESC
-LIMIT 1
-$$;
-
-
---
--- Name: FUNCTION get_latest_flop_bid_guy(bid_id numeric); Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON FUNCTION public.get_latest_flop_bid_guy(bid_id numeric) IS '@omit';
-
-
---
--- Name: get_latest_flop_bid_lot(numeric); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION public.get_latest_flop_bid_lot(bid_id numeric) RETURNS numeric
-    LANGUAGE sql
-    AS $$
-SELECT lot
-FROM maker.flop
-WHERE lot IS NOT NULL
-  AND flop.bid_id = bid_id
-ORDER BY block_number DESC
-LIMIT 1
-$$;
-
-
---
--- Name: FUNCTION get_latest_flop_bid_lot(bid_id numeric); Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON FUNCTION public.get_latest_flop_bid_lot(bid_id numeric) IS '@omit';
-
-
---
--- Name: get_latest_flop_bid_tic(numeric); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION public.get_latest_flop_bid_tic(bid_id numeric) RETURNS bigint
-    LANGUAGE sql
-    AS $$
-SELECT tic
-FROM maker.flop
-WHERE tic IS NOT NULL
-  AND flop.bid_id = bid_id
-ORDER BY block_number DESC
-LIMIT 1
-$$;
-
-
---
--- Name: FUNCTION get_latest_flop_bid_tic(bid_id numeric); Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON FUNCTION public.get_latest_flop_bid_tic(bid_id numeric) IS '@omit';
 
 
 --
@@ -9183,27 +9558,6 @@ ALTER SEQUENCE maker.flop_beg_id_seq OWNED BY maker.flop_beg.id;
 
 
 --
--- Name: flop_bid_bid; Type: TABLE; Schema: maker; Owner: -
---
-
-CREATE TABLE maker.flop_bid_bid (
-    id integer NOT NULL,
-    diff_id bigint NOT NULL,
-    header_id integer NOT NULL,
-    address_id integer NOT NULL,
-    bid_id numeric NOT NULL,
-    bid numeric NOT NULL
-);
-
-
---
--- Name: TABLE flop_bid_bid; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.flop_bid_bid IS '@omit';
-
-
---
 -- Name: flop_bid_bid_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -9221,27 +9575,6 @@ CREATE SEQUENCE maker.flop_bid_bid_id_seq
 --
 
 ALTER SEQUENCE maker.flop_bid_bid_id_seq OWNED BY maker.flop_bid_bid.id;
-
-
---
--- Name: flop_bid_end; Type: TABLE; Schema: maker; Owner: -
---
-
-CREATE TABLE maker.flop_bid_end (
-    id integer NOT NULL,
-    diff_id bigint NOT NULL,
-    header_id integer NOT NULL,
-    address_id integer NOT NULL,
-    bid_id numeric NOT NULL,
-    "end" bigint NOT NULL
-);
-
-
---
--- Name: TABLE flop_bid_end; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.flop_bid_end IS '@omit';
 
 
 --
@@ -9265,27 +9598,6 @@ ALTER SEQUENCE maker.flop_bid_end_id_seq OWNED BY maker.flop_bid_end.id;
 
 
 --
--- Name: flop_bid_guy; Type: TABLE; Schema: maker; Owner: -
---
-
-CREATE TABLE maker.flop_bid_guy (
-    id integer NOT NULL,
-    diff_id bigint NOT NULL,
-    header_id integer NOT NULL,
-    address_id integer NOT NULL,
-    bid_id numeric NOT NULL,
-    guy text
-);
-
-
---
--- Name: TABLE flop_bid_guy; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.flop_bid_guy IS '@omit';
-
-
---
 -- Name: flop_bid_guy_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -9306,27 +9618,6 @@ ALTER SEQUENCE maker.flop_bid_guy_id_seq OWNED BY maker.flop_bid_guy.id;
 
 
 --
--- Name: flop_bid_lot; Type: TABLE; Schema: maker; Owner: -
---
-
-CREATE TABLE maker.flop_bid_lot (
-    id integer NOT NULL,
-    diff_id bigint NOT NULL,
-    header_id integer NOT NULL,
-    address_id integer NOT NULL,
-    bid_id numeric NOT NULL,
-    lot numeric NOT NULL
-);
-
-
---
--- Name: TABLE flop_bid_lot; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.flop_bid_lot IS '@omit';
-
-
---
 -- Name: flop_bid_lot_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -9344,27 +9635,6 @@ CREATE SEQUENCE maker.flop_bid_lot_id_seq
 --
 
 ALTER SEQUENCE maker.flop_bid_lot_id_seq OWNED BY maker.flop_bid_lot.id;
-
-
---
--- Name: flop_bid_tic; Type: TABLE; Schema: maker; Owner: -
---
-
-CREATE TABLE maker.flop_bid_tic (
-    id integer NOT NULL,
-    diff_id bigint NOT NULL,
-    header_id integer NOT NULL,
-    address_id integer NOT NULL,
-    bid_id numeric NOT NULL,
-    tic bigint NOT NULL
-);
-
-
---
--- Name: TABLE flop_bid_tic; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.flop_bid_tic IS '@omit';
 
 
 --
@@ -19200,38 +19470,10 @@ CREATE TRIGGER flip_usr AFTER INSERT OR UPDATE ON maker.flip_bid_usr FOR EACH RO
 
 
 --
--- Name: flop_bid_bid flop_bid_bid; Type: TRIGGER; Schema: maker; Owner: -
+-- Name: flop_bid_bid flop_bid; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER flop_bid_bid AFTER INSERT OR UPDATE ON maker.flop_bid_bid FOR EACH ROW EXECUTE FUNCTION maker.insert_updated_flop_bid();
-
-
---
--- Name: flop_bid_end flop_bid_end; Type: TRIGGER; Schema: maker; Owner: -
---
-
-CREATE TRIGGER flop_bid_end AFTER INSERT OR UPDATE ON maker.flop_bid_end FOR EACH ROW EXECUTE FUNCTION maker.insert_updated_flop_end();
-
-
---
--- Name: flop_bid_guy flop_bid_guy; Type: TRIGGER; Schema: maker; Owner: -
---
-
-CREATE TRIGGER flop_bid_guy AFTER INSERT OR UPDATE ON maker.flop_bid_guy FOR EACH ROW EXECUTE FUNCTION maker.insert_updated_flop_guy();
-
-
---
--- Name: flop_bid_lot flop_bid_lot; Type: TRIGGER; Schema: maker; Owner: -
---
-
-CREATE TRIGGER flop_bid_lot AFTER INSERT OR UPDATE ON maker.flop_bid_lot FOR EACH ROW EXECUTE FUNCTION maker.insert_updated_flop_lot();
-
-
---
--- Name: flop_bid_tic flop_bid_tic; Type: TRIGGER; Schema: maker; Owner: -
---
-
-CREATE TRIGGER flop_bid_tic AFTER INSERT OR UPDATE ON maker.flop_bid_tic FOR EACH ROW EXECUTE FUNCTION maker.insert_updated_flop_tic();
+CREATE TRIGGER flop_bid AFTER INSERT OR UPDATE ON maker.flop_bid_bid FOR EACH ROW EXECUTE FUNCTION maker.update_flop_bids();
 
 
 --
@@ -19239,6 +19481,34 @@ CREATE TRIGGER flop_bid_tic AFTER INSERT OR UPDATE ON maker.flop_bid_tic FOR EAC
 --
 
 CREATE TRIGGER flop_created_trigger AFTER INSERT ON maker.flop_kick FOR EACH ROW EXECUTE FUNCTION maker.flop_created();
+
+
+--
+-- Name: flop_bid_end flop_end; Type: TRIGGER; Schema: maker; Owner: -
+--
+
+CREATE TRIGGER flop_end AFTER INSERT OR UPDATE ON maker.flop_bid_end FOR EACH ROW EXECUTE FUNCTION maker.update_flop_ends();
+
+
+--
+-- Name: flop_bid_guy flop_guy; Type: TRIGGER; Schema: maker; Owner: -
+--
+
+CREATE TRIGGER flop_guy AFTER INSERT OR UPDATE ON maker.flop_bid_guy FOR EACH ROW EXECUTE FUNCTION maker.update_flop_guys();
+
+
+--
+-- Name: flop_bid_lot flop_lot; Type: TRIGGER; Schema: maker; Owner: -
+--
+
+CREATE TRIGGER flop_lot AFTER INSERT OR UPDATE ON maker.flop_bid_lot FOR EACH ROW EXECUTE FUNCTION maker.update_flop_lots();
+
+
+--
+-- Name: flop_bid_tic flop_tic; Type: TRIGGER; Schema: maker; Owner: -
+--
+
+CREATE TRIGGER flop_tic AFTER INSERT OR UPDATE ON maker.flop_bid_tic FOR EACH ROW EXECUTE FUNCTION maker.update_flop_tics();
 
 
 --
