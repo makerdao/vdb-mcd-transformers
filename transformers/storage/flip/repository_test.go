@@ -282,8 +282,8 @@ var _ = Describe("Flip storage repository", func() {
 				FieldTable:      constants.FlipBidBidTable,
 				ColumnName:      constants.BidColumn,
 			}
-			shared_behaviors.FlipBidSnapshotTriggerTests(triggerInput)
-			shared_behaviors.SharedBidHistoryTriggerTests(triggerInput)
+			shared_behaviors.InsertFlipBidSnapshotTriggerTests(triggerInput)
+			shared_behaviors.UpdateBidSnapshotTriggerTests(triggerInput)
 		})
 
 		Describe("BidLot", func() {
@@ -315,8 +315,8 @@ var _ = Describe("Flip storage repository", func() {
 				FieldTable:      constants.FlipBidLotTable,
 				ColumnName:      constants.LotColumn,
 			}
-			shared_behaviors.FlipBidSnapshotTriggerTests(triggerInput)
-			shared_behaviors.SharedBidHistoryTriggerTests(triggerInput)
+			shared_behaviors.InsertFlipBidSnapshotTriggerTests(triggerInput)
+			shared_behaviors.UpdateBidSnapshotTriggerTests(triggerInput)
 		})
 
 		Describe("BidGuy, BidTic and BidEnd packed storage", func() {
@@ -392,8 +392,8 @@ var _ = Describe("Flip storage repository", func() {
 				ColumnName:      constants.GuyColumn,
 				PackedValueType: types.Address,
 			}
-			shared_behaviors.FlipBidSnapshotTriggerTests(guyTriggerInput)
-			shared_behaviors.SharedBidHistoryTriggerTests(guyTriggerInput)
+			shared_behaviors.InsertFlipBidSnapshotTriggerTests(guyTriggerInput)
+			shared_behaviors.UpdateBidSnapshotTriggerTests(guyTriggerInput)
 
 			var bidTicMetadata = types.ValueMetadata{
 				Name:        storage.Packed,
@@ -410,8 +410,8 @@ var _ = Describe("Flip storage repository", func() {
 				ColumnName:      constants.TicColumn,
 				PackedValueType: types.Uint48,
 			}
-			shared_behaviors.FlipBidSnapshotTriggerTests(ticTriggerInput)
-			shared_behaviors.SharedBidHistoryTriggerTests(ticTriggerInput)
+			shared_behaviors.InsertFlipBidSnapshotTriggerTests(ticTriggerInput)
+			shared_behaviors.UpdateBidSnapshotTriggerTests(ticTriggerInput)
 
 			var bidEndMetadata = types.ValueMetadata{
 				Name:        storage.Packed,
@@ -428,8 +428,8 @@ var _ = Describe("Flip storage repository", func() {
 				ColumnName:      constants.EndColumn,
 				PackedValueType: types.Uint48,
 			}
-			shared_behaviors.FlipBidSnapshotTriggerTests(endTriggerInput)
-			shared_behaviors.SharedBidHistoryTriggerTests(endTriggerInput)
+			shared_behaviors.InsertFlipBidSnapshotTriggerTests(endTriggerInput)
+			shared_behaviors.UpdateBidSnapshotTriggerTests(endTriggerInput)
 		})
 
 		Describe("BidUsr", func() {
@@ -460,8 +460,8 @@ var _ = Describe("Flip storage repository", func() {
 				FieldTable:      constants.FlipBidUsrTable,
 				ColumnName:      constants.UsrColumn,
 			}
-			shared_behaviors.FlipBidSnapshotTriggerTests(triggerInput)
-			shared_behaviors.SharedBidHistoryTriggerTests(triggerInput)
+			shared_behaviors.InsertFlipBidSnapshotTriggerTests(triggerInput)
+			shared_behaviors.UpdateBidSnapshotTriggerTests(triggerInput)
 		})
 
 		Describe("BidGal", func() {
@@ -492,8 +492,8 @@ var _ = Describe("Flip storage repository", func() {
 				FieldTable:      constants.FlipBidGalTable,
 				ColumnName:      constants.GalColumn,
 			}
-			shared_behaviors.FlipBidSnapshotTriggerTests(triggerInput)
-			shared_behaviors.SharedBidHistoryTriggerTests(triggerInput)
+			shared_behaviors.InsertFlipBidSnapshotTriggerTests(triggerInput)
+			shared_behaviors.UpdateBidSnapshotTriggerTests(triggerInput)
 		})
 
 		Describe("BidTab", func() {
@@ -525,8 +525,8 @@ var _ = Describe("Flip storage repository", func() {
 				FieldTable:      constants.FlipBidTabTable,
 				ColumnName:      constants.TabColumn,
 			}
-			shared_behaviors.FlipBidSnapshotTriggerTests(triggerInput)
-			shared_behaviors.SharedBidHistoryTriggerTests(triggerInput)
+			shared_behaviors.InsertFlipBidSnapshotTriggerTests(triggerInput)
+			shared_behaviors.UpdateBidSnapshotTriggerTests(triggerInput)
 		})
 	})
 })

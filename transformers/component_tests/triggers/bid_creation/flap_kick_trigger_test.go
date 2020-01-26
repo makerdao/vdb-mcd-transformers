@@ -15,7 +15,7 @@ var _ = Describe("flap created trigger", func() {
 		flapKickModel = test_data.FlapKickModel()
 	})
 
-	Describe("updating flop created", func() {
+	Describe("updating flap created", func() {
 		bid_creation.SharedBidCreationTriggerTests(constants.FlapTable, test_data.FlapAddress(), &flapKickModel)
 	})
 })
