@@ -16,9 +16,9 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/vat"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
+	"github.com/makerdao/vulcanizedb/libraries/shared/storage"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
-	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	"golang.org/x/crypto/sha3"
 )
@@ -434,7 +434,7 @@ func (state *GeneratorState) insertCurrentBlockTx() error {
 
 func (state *GeneratorState) insertDiffRecord() error {
 	fakeRawDiff := test_helpers.GetFakeStorageDiffForHeader(state.currentHeader, common.Hash{}, common.Hash{}, common.Hash{})
-	storageDiffRepo := repositories.NewStorageDiffRepository(state.db)
+	storageDiffRepo := storage.NewDiffRepository(state.db)
 	diffID, insertDiffErr := storageDiffRepo.CreateStorageDiff(fakeRawDiff)
 	state.currentDiffID = diffID
 	return insertDiffErr

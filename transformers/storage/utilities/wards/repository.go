@@ -3,13 +3,13 @@ package wards
 import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
-	"github.com/makerdao/vulcanizedb/libraries/shared/storage"
+	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 )
 
 var insertWardsQuery = `INSERT INTO maker.wards (diff_id, header_id, address_id, usr, wards) VALUES ($1, $2, $3, $4, $5) ON CONFLICT DO NOTHING`
 
-func InsertWards(diffID, headerID int64, metadata storage.ValueMetadata, contractAddress, wards string, db *postgres.DB) error {
+func InsertWards(diffID, headerID int64, metadata types.ValueMetadata, contractAddress, wards string, db *postgres.DB) error {
 	user, userErr := getUser(metadata.Keys)
 	if userErr != nil {
 		return userErr
@@ -49,10 +49,10 @@ func InsertWards(diffID, headerID int64, metadata storage.ValueMetadata, contrac
 	return tx.Commit()
 }
 
-func getUser(keys map[storage.Key]string) (string, error) {
+func getUser(keys map[types.Key]string) (string, error) {
 	user, ok := keys[constants.User]
 	if !ok {
-		return "", storage.ErrMetadataMalformed{MissingData: constants.User}
+		return "", types.ErrMetadataMalformed{MissingData: constants.User}
 	}
 	return user, nil
 }

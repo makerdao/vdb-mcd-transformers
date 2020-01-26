@@ -32,7 +32,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/vat"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data/shared_behaviors"
-	"github.com/makerdao/vulcanizedb/libraries/shared/storage"
+	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
@@ -63,7 +63,7 @@ var _ = Describe("Vat storage repository", func() {
 	Describe("Wards mapping", func() {
 		It("writes a row", func() {
 			fakeUserAddress := "0x" + fakes.RandomString(40)
-			wardsMetadata := storage.GetValueMetadata(wards.Wards, map[storage.Key]string{constants.User: fakeUserAddress}, storage.Uint256)
+			wardsMetadata := types.GetValueMetadata(wards.Wards, map[types.Key]string{constants.User: fakeUserAddress}, types.Uint256)
 
 			setupErr := repo.Create(diffID, fakeHeaderID, wardsMetadata, fakeUint256)
 			Expect(setupErr).NotTo(HaveOccurred())
@@ -82,7 +82,7 @@ var _ = Describe("Vat storage repository", func() {
 
 		It("does not duplicate row", func() {
 			fakeUserAddress := "0x" + fakes.RandomString(40)
-			wardsMetadata := storage.GetValueMetadata(wards.Wards, map[storage.Key]string{constants.User: fakeUserAddress}, storage.Uint256)
+			wardsMetadata := types.GetValueMetadata(wards.Wards, map[types.Key]string{constants.User: fakeUserAddress}, types.Uint256)
 			insertOneErr := repo.Create(diffID, fakeHeaderID, wardsMetadata, fakeUint256)
 			Expect(insertOneErr).NotTo(HaveOccurred())
 
@@ -97,16 +97,16 @@ var _ = Describe("Vat storage repository", func() {
 		})
 
 		It("returns an error if metadata missing user", func() {
-			malformedWardsMetadata := storage.GetValueMetadata(wards.Wards, map[storage.Key]string{}, storage.Uint256)
+			malformedWardsMetadata := types.GetValueMetadata(wards.Wards, map[types.Key]string{}, types.Uint256)
 
 			err := repo.Create(diffID, fakeHeaderID, malformedWardsMetadata, fakeUint256)
-			Expect(err).To(MatchError(storage.ErrMetadataMalformed{MissingData: constants.User}))
+			Expect(err).To(MatchError(types.ErrMetadataMalformed{MissingData: constants.User}))
 		})
 	})
 
 	Describe("dai", func() {
 		It("writes a row", func() {
-			daiMetadata := storage.GetValueMetadata(vat.Dai, map[storage.Key]string{constants.Guy: fakeGuy}, storage.Uint256)
+			daiMetadata := types.GetValueMetadata(vat.Dai, map[types.Key]string{constants.Guy: fakeGuy}, types.Uint256)
 
 			err := repo.Create(diffID, fakeHeaderID, daiMetadata, fakeUint256)
 
@@ -120,7 +120,7 @@ var _ = Describe("Vat storage repository", func() {
 		})
 
 		It("does not duplicate row", func() {
-			daiMetadata := storage.GetValueMetadata(vat.Dai, map[storage.Key]string{constants.Guy: fakeGuy}, storage.Uint256)
+			daiMetadata := types.GetValueMetadata(vat.Dai, map[types.Key]string{constants.Guy: fakeGuy}, types.Uint256)
 			insertOneErr := repo.Create(diffID, fakeHeaderID, daiMetadata, fakeUint256)
 			Expect(insertOneErr).NotTo(HaveOccurred())
 
@@ -135,18 +135,18 @@ var _ = Describe("Vat storage repository", func() {
 		})
 
 		It("returns error if metadata missing guy", func() {
-			malformedDaiMetadata := storage.GetValueMetadata(vat.Dai, nil, storage.Uint256)
+			malformedDaiMetadata := types.GetValueMetadata(vat.Dai, nil, types.Uint256)
 
 			err := repo.Create(diffID, fakeHeaderID, malformedDaiMetadata, fakeUint256)
 
 			Expect(err).To(HaveOccurred())
-			Expect(err).To(MatchError(storage.ErrMetadataMalformed{MissingData: constants.Guy}))
+			Expect(err).To(MatchError(types.ErrMetadataMalformed{MissingData: constants.Guy}))
 		})
 	})
 
 	Describe("gem", func() {
 		It("writes row", func() {
-			gemMetadata := storage.GetValueMetadata(vat.Gem, map[storage.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex, constants.Guy: fakeGuy}, storage.Uint256)
+			gemMetadata := types.GetValueMetadata(vat.Gem, map[types.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex, constants.Guy: fakeGuy}, types.Uint256)
 
 			err := repo.Create(diffID, fakeHeaderID, gemMetadata, fakeUint256)
 
@@ -162,7 +162,7 @@ var _ = Describe("Vat storage repository", func() {
 		})
 
 		It("does not duplicate row", func() {
-			gemMetadata := storage.GetValueMetadata(vat.Gem, map[storage.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex, constants.Guy: fakeGuy}, storage.Uint256)
+			gemMetadata := types.GetValueMetadata(vat.Gem, map[types.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex, constants.Guy: fakeGuy}, types.Uint256)
 			insertOneErr := repo.Create(diffID, fakeHeaderID, gemMetadata, fakeUint256)
 			Expect(insertOneErr).NotTo(HaveOccurred())
 
@@ -177,27 +177,27 @@ var _ = Describe("Vat storage repository", func() {
 		})
 
 		It("returns error if metadata missing ilk", func() {
-			malformedGemMetadata := storage.GetValueMetadata(vat.Gem, map[storage.Key]string{constants.Guy: fakeGuy}, storage.Uint256)
+			malformedGemMetadata := types.GetValueMetadata(vat.Gem, map[types.Key]string{constants.Guy: fakeGuy}, types.Uint256)
 
 			err := repo.Create(diffID, fakeHeaderID, malformedGemMetadata, fakeUint256)
 
 			Expect(err).To(HaveOccurred())
-			Expect(err).To(MatchError(storage.ErrMetadataMalformed{MissingData: constants.Ilk}))
+			Expect(err).To(MatchError(types.ErrMetadataMalformed{MissingData: constants.Ilk}))
 		})
 
 		It("returns error if metadata missing guy", func() {
-			malformedGemMetadata := storage.GetValueMetadata(vat.Gem, map[storage.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, storage.Uint256)
+			malformedGemMetadata := types.GetValueMetadata(vat.Gem, map[types.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, types.Uint256)
 
 			err := repo.Create(diffID, fakeHeaderID, malformedGemMetadata, fakeUint256)
 
 			Expect(err).To(HaveOccurred())
-			Expect(err).To(MatchError(storage.ErrMetadataMalformed{MissingData: constants.Guy}))
+			Expect(err).To(MatchError(types.ErrMetadataMalformed{MissingData: constants.Guy}))
 		})
 	})
 
 	Describe("ilk Art", func() {
 		It("writes row", func() {
-			ilkArtMetadata := storage.GetValueMetadata(vat.IlkArt, map[storage.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, storage.Uint256)
+			ilkArtMetadata := types.GetValueMetadata(vat.IlkArt, map[types.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, types.Uint256)
 
 			err := repo.Create(diffID, fakeHeaderID, ilkArtMetadata, fakeUint256)
 
@@ -213,7 +213,7 @@ var _ = Describe("Vat storage repository", func() {
 		})
 
 		It("does not duplicate row", func() {
-			ilkArtMetadata := storage.GetValueMetadata(vat.IlkArt, map[storage.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, storage.Uint256)
+			ilkArtMetadata := types.GetValueMetadata(vat.IlkArt, map[types.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, types.Uint256)
 			insertOneErr := repo.Create(diffID, fakeHeaderID, ilkArtMetadata, fakeUint256)
 			Expect(insertOneErr).NotTo(HaveOccurred())
 
@@ -228,17 +228,17 @@ var _ = Describe("Vat storage repository", func() {
 		})
 
 		It("returns error if metadata missing ilk", func() {
-			malformedIlkArtMetadata := storage.GetValueMetadata(vat.IlkArt, nil, storage.Uint256)
+			malformedIlkArtMetadata := types.GetValueMetadata(vat.IlkArt, nil, types.Uint256)
 
 			err := repo.Create(diffID, fakeHeaderID, malformedIlkArtMetadata, fakeUint256)
 
 			Expect(err).To(HaveOccurred())
-			Expect(err).To(MatchError(storage.ErrMetadataMalformed{MissingData: constants.Ilk}))
+			Expect(err).To(MatchError(types.ErrMetadataMalformed{MissingData: constants.Ilk}))
 		})
 
 		shared_behaviors.SharedIlkTriggerTests(shared_behaviors.IlkTriggerTestInput{
 			Repository:    &repo,
-			Metadata:      storage.GetValueMetadata(vat.IlkArt, map[storage.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, storage.Uint256),
+			Metadata:      types.GetValueMetadata(vat.IlkArt, map[types.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, types.Uint256),
 			PropertyName:  "Art",
 			PropertyValue: strconv.Itoa(rand.Int()),
 			Schema:        constants.MakerSchema,
@@ -248,7 +248,7 @@ var _ = Describe("Vat storage repository", func() {
 
 	Describe("ilk dust", func() {
 		It("writes row", func() {
-			ilkDustMetadata := storage.GetValueMetadata(vat.IlkDust, map[storage.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, storage.Uint256)
+			ilkDustMetadata := types.GetValueMetadata(vat.IlkDust, map[types.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, types.Uint256)
 
 			err := repo.Create(diffID, fakeHeaderID, ilkDustMetadata, fakeUint256)
 
@@ -264,7 +264,7 @@ var _ = Describe("Vat storage repository", func() {
 		})
 
 		It("does not duplicate row", func() {
-			ilkDustMetadata := storage.GetValueMetadata(vat.IlkDust, map[storage.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, storage.Uint256)
+			ilkDustMetadata := types.GetValueMetadata(vat.IlkDust, map[types.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, types.Uint256)
 			insertOneErr := repo.Create(diffID, fakeHeaderID, ilkDustMetadata, fakeUint256)
 			Expect(insertOneErr).NotTo(HaveOccurred())
 
@@ -279,17 +279,17 @@ var _ = Describe("Vat storage repository", func() {
 		})
 
 		It("returns error if metadata missing ilk", func() {
-			malformedIlkDustMetadata := storage.GetValueMetadata(vat.IlkDust, nil, storage.Uint256)
+			malformedIlkDustMetadata := types.GetValueMetadata(vat.IlkDust, nil, types.Uint256)
 
 			err := repo.Create(diffID, fakeHeaderID, malformedIlkDustMetadata, fakeUint256)
 
 			Expect(err).To(HaveOccurred())
-			Expect(err).To(MatchError(storage.ErrMetadataMalformed{MissingData: constants.Ilk}))
+			Expect(err).To(MatchError(types.ErrMetadataMalformed{MissingData: constants.Ilk}))
 		})
 
 		shared_behaviors.SharedIlkTriggerTests(shared_behaviors.IlkTriggerTestInput{
 			Repository:    &repo,
-			Metadata:      storage.GetValueMetadata(vat.IlkDust, map[storage.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, storage.Uint256),
+			Metadata:      types.GetValueMetadata(vat.IlkDust, map[types.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, types.Uint256),
 			PropertyName:  "Dust",
 			PropertyValue: strconv.Itoa(rand.Int()),
 			Schema:        constants.MakerSchema,
@@ -299,7 +299,7 @@ var _ = Describe("Vat storage repository", func() {
 
 	Describe("ilk line", func() {
 		It("writes row", func() {
-			ilkLineMetadata := storage.GetValueMetadata(vat.IlkLine, map[storage.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, storage.Uint256)
+			ilkLineMetadata := types.GetValueMetadata(vat.IlkLine, map[types.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, types.Uint256)
 
 			err := repo.Create(diffID, fakeHeaderID, ilkLineMetadata, fakeUint256)
 
@@ -315,7 +315,7 @@ var _ = Describe("Vat storage repository", func() {
 		})
 
 		It("does not duplicate row", func() {
-			ilkLineMetadata := storage.GetValueMetadata(vat.IlkLine, map[storage.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, storage.Uint256)
+			ilkLineMetadata := types.GetValueMetadata(vat.IlkLine, map[types.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, types.Uint256)
 			insertOneErr := repo.Create(diffID, fakeHeaderID, ilkLineMetadata, fakeUint256)
 			Expect(insertOneErr).NotTo(HaveOccurred())
 
@@ -330,17 +330,17 @@ var _ = Describe("Vat storage repository", func() {
 		})
 
 		It("returns error if metadata missing ilk", func() {
-			malformedIlkLineMetadata := storage.GetValueMetadata(vat.IlkLine, nil, storage.Uint256)
+			malformedIlkLineMetadata := types.GetValueMetadata(vat.IlkLine, nil, types.Uint256)
 
 			err := repo.Create(diffID, fakeHeaderID, malformedIlkLineMetadata, fakeUint256)
 
 			Expect(err).To(HaveOccurred())
-			Expect(err).To(MatchError(storage.ErrMetadataMalformed{MissingData: constants.Ilk}))
+			Expect(err).To(MatchError(types.ErrMetadataMalformed{MissingData: constants.Ilk}))
 		})
 
 		shared_behaviors.SharedIlkTriggerTests(shared_behaviors.IlkTriggerTestInput{
 			Repository:    &repo,
-			Metadata:      storage.GetValueMetadata(vat.IlkLine, map[storage.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, storage.Uint256),
+			Metadata:      types.GetValueMetadata(vat.IlkLine, map[types.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, types.Uint256),
 			PropertyName:  "Line",
 			PropertyValue: strconv.Itoa(rand.Int()),
 			Schema:        constants.MakerSchema,
@@ -350,7 +350,7 @@ var _ = Describe("Vat storage repository", func() {
 
 	Describe("ilk rate", func() {
 		It("writes row", func() {
-			ilkRateMetadata := storage.GetValueMetadata(vat.IlkRate, map[storage.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, storage.Uint256)
+			ilkRateMetadata := types.GetValueMetadata(vat.IlkRate, map[types.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, types.Uint256)
 
 			err := repo.Create(diffID, fakeHeaderID, ilkRateMetadata, fakeUint256)
 
@@ -366,7 +366,7 @@ var _ = Describe("Vat storage repository", func() {
 		})
 
 		It("does not duplicate row", func() {
-			ilkRateMetadata := storage.GetValueMetadata(vat.IlkRate, map[storage.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, storage.Uint256)
+			ilkRateMetadata := types.GetValueMetadata(vat.IlkRate, map[types.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, types.Uint256)
 			insertOneErr := repo.Create(diffID, fakeHeaderID, ilkRateMetadata, fakeUint256)
 			Expect(insertOneErr).NotTo(HaveOccurred())
 
@@ -381,17 +381,17 @@ var _ = Describe("Vat storage repository", func() {
 		})
 
 		It("returns error if metadata missing ilk", func() {
-			malformedIlkRateMetadata := storage.GetValueMetadata(vat.IlkRate, nil, storage.Uint256)
+			malformedIlkRateMetadata := types.GetValueMetadata(vat.IlkRate, nil, types.Uint256)
 
 			err := repo.Create(diffID, fakeHeaderID, malformedIlkRateMetadata, fakeUint256)
 
 			Expect(err).To(HaveOccurred())
-			Expect(err).To(MatchError(storage.ErrMetadataMalformed{MissingData: constants.Ilk}))
+			Expect(err).To(MatchError(types.ErrMetadataMalformed{MissingData: constants.Ilk}))
 		})
 
 		shared_behaviors.SharedIlkTriggerTests(shared_behaviors.IlkTriggerTestInput{
 			Repository:    &repo,
-			Metadata:      storage.GetValueMetadata(vat.IlkRate, map[storage.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, storage.Uint256),
+			Metadata:      types.GetValueMetadata(vat.IlkRate, map[types.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, types.Uint256),
 			PropertyName:  "Rate",
 			PropertyValue: strconv.Itoa(rand.Int()),
 			Schema:        constants.MakerSchema,
@@ -401,7 +401,7 @@ var _ = Describe("Vat storage repository", func() {
 
 	Describe("ilk spot", func() {
 		It("writes row", func() {
-			ilkSpotMetadata := storage.GetValueMetadata(vat.IlkSpot, map[storage.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, storage.Uint256)
+			ilkSpotMetadata := types.GetValueMetadata(vat.IlkSpot, map[types.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, types.Uint256)
 
 			err := repo.Create(diffID, fakeHeaderID, ilkSpotMetadata, fakeUint256)
 
@@ -417,7 +417,7 @@ var _ = Describe("Vat storage repository", func() {
 		})
 
 		It("does not duplicate row", func() {
-			ilkSpotMetadata := storage.GetValueMetadata(vat.IlkSpot, map[storage.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, storage.Uint256)
+			ilkSpotMetadata := types.GetValueMetadata(vat.IlkSpot, map[types.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, types.Uint256)
 			insertOneErr := repo.Create(diffID, fakeHeaderID, ilkSpotMetadata, fakeUint256)
 			Expect(insertOneErr).NotTo(HaveOccurred())
 
@@ -432,17 +432,17 @@ var _ = Describe("Vat storage repository", func() {
 		})
 
 		It("returns error if metadata missing ilk", func() {
-			malformedIlkSpotMetadata := storage.GetValueMetadata(vat.IlkSpot, nil, storage.Uint256)
+			malformedIlkSpotMetadata := types.GetValueMetadata(vat.IlkSpot, nil, types.Uint256)
 
 			err := repo.Create(diffID, fakeHeaderID, malformedIlkSpotMetadata, fakeUint256)
 
 			Expect(err).To(HaveOccurred())
-			Expect(err).To(MatchError(storage.ErrMetadataMalformed{MissingData: constants.Ilk}))
+			Expect(err).To(MatchError(types.ErrMetadataMalformed{MissingData: constants.Ilk}))
 		})
 
 		shared_behaviors.SharedIlkTriggerTests(shared_behaviors.IlkTriggerTestInput{
 			Repository:    &repo,
-			Metadata:      storage.GetValueMetadata(vat.IlkSpot, map[storage.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, storage.Uint256),
+			Metadata:      types.GetValueMetadata(vat.IlkSpot, map[types.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, types.Uint256),
 			PropertyName:  "Spot",
 			PropertyValue: strconv.Itoa(rand.Int()),
 			Schema:        constants.MakerSchema,
@@ -452,7 +452,7 @@ var _ = Describe("Vat storage repository", func() {
 
 	Describe("sin", func() {
 		It("writes a row", func() {
-			sinMetadata := storage.GetValueMetadata(vat.Sin, map[storage.Key]string{constants.Guy: fakeGuy}, storage.Uint256)
+			sinMetadata := types.GetValueMetadata(vat.Sin, map[types.Key]string{constants.Guy: fakeGuy}, types.Uint256)
 
 			err := repo.Create(diffID, fakeHeaderID, sinMetadata, fakeUint256)
 
@@ -466,7 +466,7 @@ var _ = Describe("Vat storage repository", func() {
 		})
 
 		It("does not duplicate row", func() {
-			sinMetadata := storage.GetValueMetadata(vat.Sin, map[storage.Key]string{constants.Guy: fakeGuy}, storage.Uint256)
+			sinMetadata := types.GetValueMetadata(vat.Sin, map[types.Key]string{constants.Guy: fakeGuy}, types.Uint256)
 			insertOneErr := repo.Create(diffID, fakeHeaderID, sinMetadata, fakeUint256)
 			Expect(insertOneErr).NotTo(HaveOccurred())
 
@@ -481,18 +481,18 @@ var _ = Describe("Vat storage repository", func() {
 		})
 
 		It("returns error if metadata missing guy", func() {
-			malformedSinMetadata := storage.GetValueMetadata(vat.Sin, nil, storage.Uint256)
+			malformedSinMetadata := types.GetValueMetadata(vat.Sin, nil, types.Uint256)
 
 			err := repo.Create(diffID, fakeHeaderID, malformedSinMetadata, fakeUint256)
 
 			Expect(err).To(HaveOccurred())
-			Expect(err).To(MatchError(storage.ErrMetadataMalformed{MissingData: constants.Guy}))
+			Expect(err).To(MatchError(types.ErrMetadataMalformed{MissingData: constants.Guy}))
 		})
 	})
 
 	Describe("urn art", func() {
 		It("writes row", func() {
-			urnArtMetadata := storage.GetValueMetadata(vat.UrnArt, map[storage.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex, constants.Guy: fakeGuy}, storage.Uint256)
+			urnArtMetadata := types.GetValueMetadata(vat.UrnArt, map[types.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex, constants.Guy: fakeGuy}, types.Uint256)
 
 			err := repo.Create(diffID, fakeHeaderID, urnArtMetadata, fakeUint256)
 
@@ -512,7 +512,7 @@ var _ = Describe("Vat storage repository", func() {
 		})
 
 		It("does not duplicate row", func() {
-			urnArtMetadata := storage.GetValueMetadata(vat.UrnArt, map[storage.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex, constants.Guy: fakeGuy}, storage.Uint256)
+			urnArtMetadata := types.GetValueMetadata(vat.UrnArt, map[types.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex, constants.Guy: fakeGuy}, types.Uint256)
 			insertOneErr := repo.Create(diffID, fakeHeaderID, urnArtMetadata, fakeUint256)
 			Expect(insertOneErr).NotTo(HaveOccurred())
 
@@ -527,21 +527,21 @@ var _ = Describe("Vat storage repository", func() {
 		})
 
 		It("returns error if metadata missing ilk", func() {
-			malformedUrnArtMetadata := storage.GetValueMetadata(vat.UrnArt, map[storage.Key]string{constants.Guy: fakeGuy}, storage.Uint256)
+			malformedUrnArtMetadata := types.GetValueMetadata(vat.UrnArt, map[types.Key]string{constants.Guy: fakeGuy}, types.Uint256)
 
 			err := repo.Create(diffID, fakeHeaderID, malformedUrnArtMetadata, fakeUint256)
 
 			Expect(err).To(HaveOccurred())
-			Expect(err).To(MatchError(storage.ErrMetadataMalformed{MissingData: constants.Ilk}))
+			Expect(err).To(MatchError(types.ErrMetadataMalformed{MissingData: constants.Ilk}))
 		})
 
 		It("returns error if metadata missing guy", func() {
-			malformedUrnArtMetadata := storage.GetValueMetadata(vat.UrnArt, map[storage.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, storage.Uint256)
+			malformedUrnArtMetadata := types.GetValueMetadata(vat.UrnArt, map[types.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, types.Uint256)
 
 			err := repo.Create(diffID, fakeHeaderID, malformedUrnArtMetadata, fakeUint256)
 
 			Expect(err).To(HaveOccurred())
-			Expect(err).To(MatchError(storage.ErrMetadataMalformed{MissingData: constants.Guy}))
+			Expect(err).To(MatchError(types.ErrMetadataMalformed{MissingData: constants.Guy}))
 		})
 
 		Describe("updating historical_ilk_state trigger table", func() {
@@ -559,7 +559,7 @@ var _ = Describe("Vat storage repository", func() {
 				getArtQuery    = `SELECT art FROM api.historical_urn_state ORDER BY block_height`
 				insertArtQuery = `INSERT INTO api.historical_urn_state (urn_identifier, ilk_identifier, block_height, art, updated) VALUES ($1, $2, $3, $4, NOW())`
 				deleteRowQuery = fmt.Sprintf(`DELETE FROM %s WHERE header_id = $1`, shared.GetFullTableName(constants.MakerSchema, constants.VatUrnArtTable))
-				urnArtMetadata = storage.GetValueMetadata(vat.UrnArt, map[storage.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex, constants.Guy: fakeGuy}, storage.Uint256)
+				urnArtMetadata = types.GetValueMetadata(vat.UrnArt, map[types.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex, constants.Guy: fakeGuy}, types.Uint256)
 			)
 
 			BeforeEach(func() {
@@ -575,7 +575,7 @@ var _ = Describe("Vat storage repository", func() {
 			})
 
 			It("inserts time of first ink diff into created", func() {
-				urnInkMetadata := storage.GetValueMetadata(vat.UrnInk, map[storage.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex, constants.Guy: fakeGuy}, storage.Uint256)
+				urnInkMetadata := types.GetValueMetadata(vat.UrnInk, map[types.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex, constants.Guy: fakeGuy}, types.Uint256)
 				setupErrOne := repo.Create(diffID, headerOne.Id, urnInkMetadata, strconv.Itoa(rand.Int()))
 				Expect(setupErrOne).NotTo(HaveOccurred())
 				expectedTimeCreated := test_helpers.GetValidNullString(FormatTimestamp(rawTimestampOne))
@@ -772,7 +772,7 @@ var _ = Describe("Vat storage repository", func() {
 
 	Describe("urn ink", func() {
 		It("writes row", func() {
-			urnInkMetadata := storage.GetValueMetadata(vat.UrnInk, map[storage.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex, constants.Guy: fakeGuy}, storage.Uint256)
+			urnInkMetadata := types.GetValueMetadata(vat.UrnInk, map[types.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex, constants.Guy: fakeGuy}, types.Uint256)
 
 			err := repo.Create(diffID, fakeHeaderID, urnInkMetadata, fakeUint256)
 
@@ -791,7 +791,7 @@ var _ = Describe("Vat storage repository", func() {
 		})
 
 		It("does not duplicate row", func() {
-			urnInkMetadata := storage.GetValueMetadata(vat.UrnInk, map[storage.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex, constants.Guy: fakeGuy}, storage.Uint256)
+			urnInkMetadata := types.GetValueMetadata(vat.UrnInk, map[types.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex, constants.Guy: fakeGuy}, types.Uint256)
 			insertOneErr := repo.Create(diffID, fakeHeaderID, urnInkMetadata, fakeUint256)
 			Expect(insertOneErr).NotTo(HaveOccurred())
 
@@ -806,21 +806,21 @@ var _ = Describe("Vat storage repository", func() {
 		})
 
 		It("returns error if metadata missing ilk", func() {
-			malformedUrnInkMetadata := storage.GetValueMetadata(vat.UrnInk, map[storage.Key]string{constants.Guy: fakeGuy}, storage.Uint256)
+			malformedUrnInkMetadata := types.GetValueMetadata(vat.UrnInk, map[types.Key]string{constants.Guy: fakeGuy}, types.Uint256)
 
 			err := repo.Create(diffID, fakeHeaderID, malformedUrnInkMetadata, fakeUint256)
 
 			Expect(err).To(HaveOccurred())
-			Expect(err).To(MatchError(storage.ErrMetadataMalformed{MissingData: constants.Ilk}))
+			Expect(err).To(MatchError(types.ErrMetadataMalformed{MissingData: constants.Ilk}))
 		})
 
 		It("returns error if metadata missing guy", func() {
-			malformedUrnInkMetadata := storage.GetValueMetadata(vat.UrnInk, map[storage.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, storage.Uint256)
+			malformedUrnInkMetadata := types.GetValueMetadata(vat.UrnInk, map[types.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, types.Uint256)
 
 			err := repo.Create(diffID, fakeHeaderID, malformedUrnInkMetadata, fakeUint256)
 
 			Expect(err).To(HaveOccurred())
-			Expect(err).To(MatchError(storage.ErrMetadataMalformed{MissingData: constants.Guy}))
+			Expect(err).To(MatchError(types.ErrMetadataMalformed{MissingData: constants.Guy}))
 		})
 
 		Describe("updating historical_ilk_state trigger table", func() {
@@ -838,7 +838,7 @@ var _ = Describe("Vat storage repository", func() {
 				getInkQuery    = `SELECT ink FROM api.historical_urn_state ORDER BY block_height`
 				insertInkQuery = `INSERT INTO api.historical_urn_state (urn_identifier, ilk_identifier, block_height, ink, updated) VALUES ($1, $2, $3, $4, NOW())`
 				deleteRowQuery = fmt.Sprintf(`DELETE FROM %s WHERE header_id = $1`, shared.GetFullTableName(constants.MakerSchema, constants.VatUrnInkTable))
-				urnInkMetadata = storage.GetValueMetadata(vat.UrnInk, map[storage.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex, constants.Guy: fakeGuy}, storage.Uint256)
+				urnInkMetadata = types.GetValueMetadata(vat.UrnInk, map[types.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex, constants.Guy: fakeGuy}, types.Uint256)
 			)
 
 			BeforeEach(func() {
@@ -869,7 +869,7 @@ var _ = Describe("Vat storage repository", func() {
 			})
 
 			It("updates time created for all the urn's states when new ink is added", func() {
-				urnArtMetadata := storage.GetValueMetadata(vat.UrnArt, map[storage.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex, constants.Guy: fakeGuy}, storage.Uint256)
+				urnArtMetadata := types.GetValueMetadata(vat.UrnArt, map[types.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex, constants.Guy: fakeGuy}, types.Uint256)
 				setupErr := repo.Create(diffID, headerOne.Id, urnArtMetadata, strconv.Itoa(rand.Int()))
 				Expect(setupErr).NotTo(HaveOccurred())
 

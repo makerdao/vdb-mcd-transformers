@@ -26,6 +26,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
 	vdbStorage "github.com/makerdao/vulcanizedb/libraries/shared/storage"
+	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -66,7 +67,7 @@ var _ = Describe("Cat storage keys loader", func() {
 		Describe("when getting ilks succeeds", func() {
 			var (
 				ilkFlipKey = common.BytesToHash(crypto.Keccak256(common.FromHex(test_helpers.FakeIlk + cat.IlksMappingIndex)))
-				mappings   map[common.Hash]vdbStorage.ValueMetadata
+				mappings   map[common.Hash]types.ValueMetadata
 			)
 
 			BeforeEach(func() {
@@ -77,10 +78,10 @@ var _ = Describe("Cat storage keys loader", func() {
 			})
 
 			It("returns value metadata for ilk flip", func() {
-				expectedMetadata := vdbStorage.ValueMetadata{
+				expectedMetadata := types.ValueMetadata{
 					Name: cat.IlkFlip,
-					Keys: map[vdbStorage.Key]string{constants.Ilk: test_helpers.FakeIlk},
-					Type: vdbStorage.Address,
+					Keys: map[types.Key]string{constants.Ilk: test_helpers.FakeIlk},
+					Type: types.Address,
 				}
 
 				Expect(mappings[ilkFlipKey]).To(Equal(expectedMetadata))
@@ -88,10 +89,10 @@ var _ = Describe("Cat storage keys loader", func() {
 
 			It("returns value metadata for ilk chop", func() {
 				ilkChopKey := vdbStorage.GetIncrementedKey(ilkFlipKey, 1)
-				expectedMetadata := vdbStorage.ValueMetadata{
+				expectedMetadata := types.ValueMetadata{
 					Name: cat.IlkChop,
-					Keys: map[vdbStorage.Key]string{constants.Ilk: test_helpers.FakeIlk},
-					Type: vdbStorage.Uint256,
+					Keys: map[types.Key]string{constants.Ilk: test_helpers.FakeIlk},
+					Type: types.Uint256,
 				}
 
 				Expect(mappings[ilkChopKey]).To(Equal(expectedMetadata))
@@ -99,10 +100,10 @@ var _ = Describe("Cat storage keys loader", func() {
 
 			It("returns value metadata for ilk lump", func() {
 				ilkLumpKey := vdbStorage.GetIncrementedKey(ilkFlipKey, 2)
-				expectedMetadata := vdbStorage.ValueMetadata{
+				expectedMetadata := types.ValueMetadata{
 					Name: cat.IlkLump,
-					Keys: map[vdbStorage.Key]string{constants.Ilk: test_helpers.FakeIlk},
-					Type: vdbStorage.Uint256,
+					Keys: map[types.Key]string{constants.Ilk: test_helpers.FakeIlk},
+					Type: types.Uint256,
 				}
 
 				Expect(mappings[ilkLumpKey]).To(Equal(expectedMetadata))
@@ -116,10 +117,10 @@ var _ = Describe("Cat storage keys loader", func() {
 			storageRepository.WardsKeys = []string{wardsUser}
 			paddedWardsUser := "0x000000000000000000000000" + wardsUser[2:]
 			wardsKey := common.BytesToHash(crypto.Keccak256(common.FromHex(paddedWardsUser + wards.WardsMappingIndex)))
-			expectedMetadata := vdbStorage.ValueMetadata{
+			expectedMetadata := types.ValueMetadata{
 				Name: wards.Wards,
-				Keys: map[vdbStorage.Key]string{constants.User: fakes.FakeAddress.Hex()},
-				Type: vdbStorage.Uint256,
+				Keys: map[types.Key]string{constants.User: fakes.FakeAddress.Hex()},
+				Type: types.Uint256,
 			}
 
 			mappings, err := storageKeysLoader.LoadMappings()

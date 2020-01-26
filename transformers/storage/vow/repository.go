@@ -17,9 +17,11 @@
 package vow
 
 import (
+	"fmt"
+
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/utilities/wards"
-	"github.com/makerdao/vulcanizedb/libraries/shared/storage"
+	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 )
 
@@ -46,7 +48,7 @@ func (repository *VowStorageRepository) SetDB(db *postgres.DB) {
 	repository.db = db
 }
 
-func (repository VowStorageRepository) Create(diffID, headerID int64, metadata storage.ValueMetadata, value interface{}) error {
+func (repository VowStorageRepository) Create(diffID, headerID int64, metadata types.ValueMetadata, value interface{}) error {
 	switch metadata.Name {
 	case wards.Wards:
 		return wards.InsertWards(diffID, headerID, metadata, repository.ContractAddress, value.(string), repository.db)
@@ -73,7 +75,7 @@ func (repository VowStorageRepository) Create(diffID, headerID int64, metadata s
 	case Hump:
 		return repository.insertVowHump(diffID, headerID, value.(string))
 	default:
-		panic("unrecognized storage metadata name")
+		panic(fmt.Sprintf("unrecognized storage metadata name: %s", metadata.Name))
 	}
 }
 
@@ -101,7 +103,7 @@ func (repository VowStorageRepository) insertSinInteger(diffID, headerID int64, 
 	return err
 }
 
-func (repository VowStorageRepository) insertSinMapping(diffID, headerID int64, metadata storage.ValueMetadata, sin string) error {
+func (repository VowStorageRepository) insertSinMapping(diffID, headerID int64, metadata types.ValueMetadata, sin string) error {
 	timestamp, err := getTimestamp(metadata.Keys)
 	if err != nil {
 		return err
@@ -147,10 +149,10 @@ func (repository VowStorageRepository) insertVowHump(diffID, headerID int64, hum
 	return err
 }
 
-func getTimestamp(keys map[storage.Key]string) (string, error) {
+func getTimestamp(keys map[types.Key]string) (string, error) {
 	timestamp, ok := keys[constants.Timestamp]
 	if !ok {
-		return "", storage.ErrMetadataMalformed{MissingData: constants.Timestamp}
+		return "", types.ErrMetadataMalformed{MissingData: constants.Timestamp}
 	}
 	return timestamp, nil
 }

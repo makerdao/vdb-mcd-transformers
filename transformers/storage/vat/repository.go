@@ -22,7 +22,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/utilities/wards"
-	"github.com/makerdao/vulcanizedb/libraries/shared/storage"
+	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 )
 
@@ -47,7 +47,7 @@ type VatStorageRepository struct {
 	db *postgres.DB
 }
 
-func (repository *VatStorageRepository) Create(diffID, headerID int64, metadata storage.ValueMetadata, value interface{}) error {
+func (repository *VatStorageRepository) Create(diffID, headerID int64, metadata types.ValueMetadata, value interface{}) error {
 	contractAddress := constants.GetContractAddress("MCD_VAT")
 	switch metadata.Name {
 	case wards.Wards:
@@ -89,7 +89,7 @@ func (repository *VatStorageRepository) SetDB(db *postgres.DB) {
 	repository.db = db
 }
 
-func (repository *VatStorageRepository) insertDai(diffID, headerID int64, metadata storage.ValueMetadata, dai string) error {
+func (repository *VatStorageRepository) insertDai(diffID, headerID int64, metadata types.ValueMetadata, dai string) error {
 	guy, err := getGuy(metadata.Keys)
 	if err != nil {
 		return err
@@ -98,7 +98,7 @@ func (repository *VatStorageRepository) insertDai(diffID, headerID int64, metada
 	return writeErr
 }
 
-func (repository *VatStorageRepository) insertGem(diffID, headerID int64, metadata storage.ValueMetadata, gem string) error {
+func (repository *VatStorageRepository) insertGem(diffID, headerID int64, metadata types.ValueMetadata, gem string) error {
 	ilk, err := getIlk(metadata.Keys)
 	if err != nil {
 		return err
@@ -130,7 +130,7 @@ func (repository *VatStorageRepository) insertGem(diffID, headerID int64, metada
 	return tx.Commit()
 }
 
-func (repository *VatStorageRepository) insertIlkArt(diffID, headerID int64, metadata storage.ValueMetadata, art string) error {
+func (repository *VatStorageRepository) insertIlkArt(diffID, headerID int64, metadata types.ValueMetadata, art string) error {
 	ilk, err := getIlk(metadata.Keys)
 	if err != nil {
 		return err
@@ -138,7 +138,7 @@ func (repository *VatStorageRepository) insertIlkArt(diffID, headerID int64, met
 	return repository.insertFieldWithIlk(diffID, headerID, ilk, IlkArt, InsertIlkArtQuery, art)
 }
 
-func (repository *VatStorageRepository) insertIlkDust(diffID, headerID int64, metadata storage.ValueMetadata, dust string) error {
+func (repository *VatStorageRepository) insertIlkDust(diffID, headerID int64, metadata types.ValueMetadata, dust string) error {
 	ilk, err := getIlk(metadata.Keys)
 	if err != nil {
 		return err
@@ -146,7 +146,7 @@ func (repository *VatStorageRepository) insertIlkDust(diffID, headerID int64, me
 	return repository.insertFieldWithIlk(diffID, headerID, ilk, IlkDust, InsertIlkDustQuery, dust)
 }
 
-func (repository *VatStorageRepository) insertIlkLine(diffID, headerID int64, metadata storage.ValueMetadata, line string) error {
+func (repository *VatStorageRepository) insertIlkLine(diffID, headerID int64, metadata types.ValueMetadata, line string) error {
 	ilk, err := getIlk(metadata.Keys)
 	if err != nil {
 		return err
@@ -154,7 +154,7 @@ func (repository *VatStorageRepository) insertIlkLine(diffID, headerID int64, me
 	return repository.insertFieldWithIlk(diffID, headerID, ilk, IlkLine, InsertIlkLineQuery, line)
 }
 
-func (repository *VatStorageRepository) insertIlkRate(diffID, headerID int64, metadata storage.ValueMetadata, rate string) error {
+func (repository *VatStorageRepository) insertIlkRate(diffID, headerID int64, metadata types.ValueMetadata, rate string) error {
 	ilk, err := getIlk(metadata.Keys)
 	if err != nil {
 		return err
@@ -162,7 +162,7 @@ func (repository *VatStorageRepository) insertIlkRate(diffID, headerID int64, me
 	return repository.insertFieldWithIlk(diffID, headerID, ilk, IlkRate, InsertIlkRateQuery, rate)
 }
 
-func (repository *VatStorageRepository) insertIlkSpot(diffID, headerID int64, metadata storage.ValueMetadata, spot string) error {
+func (repository *VatStorageRepository) insertIlkSpot(diffID, headerID int64, metadata types.ValueMetadata, spot string) error {
 	ilk, err := getIlk(metadata.Keys)
 	if err != nil {
 		return err
@@ -170,7 +170,7 @@ func (repository *VatStorageRepository) insertIlkSpot(diffID, headerID int64, me
 	return repository.insertFieldWithIlk(diffID, headerID, ilk, IlkSpot, InsertIlkSpotQuery, spot)
 }
 
-func (repository *VatStorageRepository) insertSin(diffID, headerID int64, metadata storage.ValueMetadata, sin string) error {
+func (repository *VatStorageRepository) insertSin(diffID, headerID int64, metadata types.ValueMetadata, sin string) error {
 	guy, err := getGuy(metadata.Keys)
 	if err != nil {
 		return err
@@ -179,7 +179,7 @@ func (repository *VatStorageRepository) insertSin(diffID, headerID int64, metada
 	return writeErr
 }
 
-func (repository *VatStorageRepository) insertUrnArt(diffID, headerID int64, metadata storage.ValueMetadata, art string) error {
+func (repository *VatStorageRepository) insertUrnArt(diffID, headerID int64, metadata types.ValueMetadata, art string) error {
 	ilk, err := getIlk(metadata.Keys)
 	if err != nil {
 		return err
@@ -191,7 +191,7 @@ func (repository *VatStorageRepository) insertUrnArt(diffID, headerID int64, met
 	return repository.insertFieldWithIlkAndUrn(diffID, headerID, ilk, guy, UrnArt, InsertUrnArtQuery, art)
 }
 
-func (repository *VatStorageRepository) insertUrnInk(diffID, headerID int64, metadata storage.ValueMetadata, ink string) error {
+func (repository *VatStorageRepository) insertUrnInk(diffID, headerID int64, metadata types.ValueMetadata, ink string) error {
 	ilk, ilkErr := getIlk(metadata.Keys)
 	if ilkErr != nil {
 		return ilkErr
@@ -272,18 +272,18 @@ func (repository *VatStorageRepository) insertFieldWithIlkAndUrn(diffID, headerI
 	return tx.Commit()
 }
 
-func getGuy(keys map[storage.Key]string) (string, error) {
+func getGuy(keys map[types.Key]string) (string, error) {
 	guy, ok := keys[constants.Guy]
 	if !ok {
-		return "", storage.ErrMetadataMalformed{MissingData: constants.Guy}
+		return "", types.ErrMetadataMalformed{MissingData: constants.Guy}
 	}
 	return guy, nil
 }
 
-func getIlk(keys map[storage.Key]string) (string, error) {
+func getIlk(keys map[types.Key]string) (string, error) {
 	ilk, ok := keys[constants.Ilk]
 	if !ok {
-		return "", storage.ErrMetadataMalformed{MissingData: constants.Ilk}
+		return "", types.ErrMetadataMalformed{MissingData: constants.Ilk}
 	}
 	return ilk, nil
 }

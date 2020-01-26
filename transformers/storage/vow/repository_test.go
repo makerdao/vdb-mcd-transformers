@@ -27,7 +27,7 @@ import (
 	. "github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/utilities/wards"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/vow"
-	"github.com/makerdao/vulcanizedb/libraries/shared/storage"
+	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	. "github.com/onsi/ginkgo"
@@ -60,7 +60,7 @@ var _ = Describe("Vow storage repository test", func() {
 	Describe("Wards mapping", func() {
 		It("writes a row", func() {
 			fakeUserAddress := "0x" + fakes.RandomString(40)
-			wardsMetadata := storage.GetValueMetadata(wards.Wards, map[storage.Key]string{constants.User: fakeUserAddress}, storage.Uint256)
+			wardsMetadata := types.GetValueMetadata(wards.Wards, map[types.Key]string{constants.User: fakeUserAddress}, types.Uint256)
 
 			setupErr := repo.Create(diffID, fakeHeaderID, wardsMetadata, fakeUint256)
 			Expect(setupErr).NotTo(HaveOccurred())
@@ -79,7 +79,7 @@ var _ = Describe("Vow storage repository test", func() {
 
 		It("does not duplicate row", func() {
 			fakeUserAddress := "0x" + fakes.RandomString(40)
-			wardsMetadata := storage.GetValueMetadata(wards.Wards, map[storage.Key]string{constants.User: fakeUserAddress}, storage.Uint256)
+			wardsMetadata := types.GetValueMetadata(wards.Wards, map[types.Key]string{constants.User: fakeUserAddress}, types.Uint256)
 			insertOneErr := repo.Create(diffID, fakeHeaderID, wardsMetadata, fakeUint256)
 			Expect(insertOneErr).NotTo(HaveOccurred())
 
@@ -94,10 +94,10 @@ var _ = Describe("Vow storage repository test", func() {
 		})
 
 		It("returns an error if metadata missing user", func() {
-			malformedWardsMetadata := storage.GetValueMetadata(wards.Wards, map[storage.Key]string{}, storage.Uint256)
+			malformedWardsMetadata := types.GetValueMetadata(wards.Wards, map[types.Key]string{}, types.Uint256)
 
 			err := repo.Create(diffID, fakeHeaderID, malformedWardsMetadata, fakeUint256)
-			Expect(err).To(MatchError(storage.ErrMetadataMalformed{MissingData: constants.User}))
+			Expect(err).To(MatchError(types.ErrMetadataMalformed{MissingData: constants.User}))
 		})
 	})
 
@@ -182,8 +182,8 @@ var _ = Describe("Vow storage repository test", func() {
 	Describe("vow sin mapping", func() {
 		It("writes row", func() {
 			timestamp := "1538558052"
-			fakeKeys := map[storage.Key]string{constants.Timestamp: timestamp}
-			vowSinMetadata := storage.GetValueMetadata(vow.SinMapping, fakeKeys, storage.Uint256)
+			fakeKeys := map[types.Key]string{constants.Timestamp: timestamp}
+			vowSinMetadata := types.GetValueMetadata(vow.SinMapping, fakeKeys, types.Uint256)
 
 			err := repo.Create(diffID, fakeHeaderID, vowSinMetadata, fakeUint256)
 
@@ -198,8 +198,8 @@ var _ = Describe("Vow storage repository test", func() {
 
 		It("does not duplicate row", func() {
 			timestamp := "1538558052"
-			fakeKeys := map[storage.Key]string{constants.Timestamp: timestamp}
-			vowSinMetadata := storage.GetValueMetadata(vow.SinMapping, fakeKeys, storage.Uint256)
+			fakeKeys := map[types.Key]string{constants.Timestamp: timestamp}
+			vowSinMetadata := types.GetValueMetadata(vow.SinMapping, fakeKeys, types.Uint256)
 			insertOneErr := repo.Create(diffID, fakeHeaderID, vowSinMetadata, fakeUint256)
 			Expect(insertOneErr).NotTo(HaveOccurred())
 
@@ -214,12 +214,12 @@ var _ = Describe("Vow storage repository test", func() {
 		})
 
 		It("returns error if metadata missing timestamp", func() {
-			malformedVowSinMappingMetadata := storage.GetValueMetadata(vow.SinMapping, nil, storage.Uint256)
+			malformedVowSinMappingMetadata := types.GetValueMetadata(vow.SinMapping, nil, types.Uint256)
 
 			err := repo.Create(diffID, fakeHeaderID, malformedVowSinMappingMetadata, fakeUint256)
 
 			Expect(err).To(HaveOccurred())
-			Expect(err).To(MatchError(storage.ErrMetadataMalformed{MissingData: constants.Timestamp}))
+			Expect(err).To(MatchError(types.ErrMetadataMalformed{MissingData: constants.Timestamp}))
 		})
 	})
 

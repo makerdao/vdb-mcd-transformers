@@ -8,6 +8,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/utilities/wards"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
 	vdbStorage "github.com/makerdao/vulcanizedb/libraries/shared/storage"
+	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 )
 
@@ -26,25 +27,25 @@ var (
 	UserPieIndex = vdbStorage.IndexOne
 
 	PieKey      = common.HexToHash(vdbStorage.IndexTwo)
-	PieMetadata = vdbStorage.GetValueMetadata(Pie, nil, vdbStorage.Uint256)
+	PieMetadata = types.GetValueMetadata(Pie, nil, types.Uint256)
 
 	DsrKey      = common.HexToHash(vdbStorage.IndexThree)
-	DsrMetadata = vdbStorage.GetValueMetadata(Dsr, nil, vdbStorage.Uint256)
+	DsrMetadata = types.GetValueMetadata(Dsr, nil, types.Uint256)
 
 	ChiKey      = common.HexToHash(vdbStorage.IndexFour)
-	ChiMetadata = vdbStorage.GetValueMetadata(Chi, nil, vdbStorage.Uint256)
+	ChiMetadata = types.GetValueMetadata(Chi, nil, types.Uint256)
 
 	VatKey      = common.HexToHash(vdbStorage.IndexFive)
-	VatMetadata = vdbStorage.GetValueMetadata(Vat, nil, vdbStorage.Address)
+	VatMetadata = types.GetValueMetadata(Vat, nil, types.Address)
 
 	VowKey      = common.HexToHash(vdbStorage.IndexSix)
-	VowMetadata = vdbStorage.GetValueMetadata(Vow, nil, vdbStorage.Address)
+	VowMetadata = types.GetValueMetadata(Vow, nil, types.Address)
 
 	RhoKey      = common.HexToHash(vdbStorage.IndexSeven)
-	RhoMetadata = vdbStorage.GetValueMetadata(Rho, nil, vdbStorage.Uint256)
+	RhoMetadata = types.GetValueMetadata(Rho, nil, types.Uint256)
 
 	LiveKey      = common.HexToHash(vdbStorage.IndexEight)
-	LiveMetadata = vdbStorage.GetValueMetadata(Live, nil, vdbStorage.Uint256)
+	LiveMetadata = types.GetValueMetadata(Live, nil, types.Uint256)
 )
 
 type keysLoader struct {
@@ -60,7 +61,7 @@ func (loader *keysLoader) SetDB(db *postgres.DB) {
 	loader.storageRepository.SetDB(db)
 }
 
-func (loader *keysLoader) LoadMappings() (map[common.Hash]vdbStorage.ValueMetadata, error) {
+func (loader *keysLoader) LoadMappings() (map[common.Hash]types.ValueMetadata, error) {
 	mappings := getStaticMappings()
 	users, err := loader.storageRepository.GetPotPieUsers()
 	if err != nil {
@@ -80,7 +81,7 @@ func (loader *keysLoader) LoadMappings() (map[common.Hash]vdbStorage.ValueMetada
 	return mappings, nil
 }
 
-func (loader *keysLoader) addWardsKeys(mappings map[common.Hash]vdbStorage.ValueMetadata) (map[common.Hash]vdbStorage.ValueMetadata, error) {
+func (loader *keysLoader) addWardsKeys(mappings map[common.Hash]types.ValueMetadata) (map[common.Hash]types.ValueMetadata, error) {
 	addresses, err := loader.storageRepository.GetWardsAddresses(loader.contractAddress)
 	if err != nil {
 		return nil, err
@@ -88,8 +89,8 @@ func (loader *keysLoader) addWardsKeys(mappings map[common.Hash]vdbStorage.Value
 	return wards.AddWardsKeys(mappings, addresses)
 }
 
-func getStaticMappings() map[common.Hash]vdbStorage.ValueMetadata {
-	mappings := make(map[common.Hash]vdbStorage.ValueMetadata)
+func getStaticMappings() map[common.Hash]types.ValueMetadata {
+	mappings := make(map[common.Hash]types.ValueMetadata)
 	mappings[PieKey] = PieMetadata
 	mappings[DsrKey] = DsrMetadata
 	mappings[ChiKey] = ChiMetadata
@@ -104,7 +105,7 @@ func getUserPieKey(user string) common.Hash {
 	return vdbStorage.GetKeyForMapping(UserPieIndex, user)
 }
 
-func getUserPieMetadata(user string) vdbStorage.ValueMetadata {
-	keys := map[vdbStorage.Key]string{constants.MsgSender: user}
-	return vdbStorage.GetValueMetadata(UserPie, keys, vdbStorage.Uint256)
+func getUserPieMetadata(user string) types.ValueMetadata {
+	keys := map[types.Key]string{constants.MsgSender: user}
+	return types.GetValueMetadata(UserPie, keys, types.Uint256)
 }

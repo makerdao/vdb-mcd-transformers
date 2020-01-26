@@ -7,14 +7,13 @@ import (
 	"reflect"
 	"strconv"
 
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
-
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	. "github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
-	vdbStorage "github.com/makerdao/vulcanizedb/libraries/shared/storage"
+	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
@@ -31,7 +30,7 @@ type StorageBehaviorInputs struct {
 	Schema         string
 	TableName      string
 	Repository     storage.Repository
-	Metadata       vdbStorage.ValueMetadata
+	Metadata       types.ValueMetadata
 }
 
 func SharedStorageRepositoryBehaviors(inputs *StorageBehaviorInputs) {
@@ -92,7 +91,7 @@ func SharedStorageRepositoryBehaviors(inputs *StorageBehaviorInputs) {
 
 type IlkTriggerTestInput struct {
 	Repository    storage.Repository
-	Metadata      vdbStorage.ValueMetadata
+	Metadata      types.ValueMetadata
 	Schema        string
 	TableName     string
 	PropertyName  string

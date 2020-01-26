@@ -24,7 +24,6 @@ import (
 	"time"
 
 	"github.com/ethereum/go-ethereum/common"
-
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
@@ -33,6 +32,7 @@ import (
 	. "github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data/shared_behaviors"
 	"github.com/makerdao/vulcanizedb/libraries/shared/storage"
+	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
@@ -58,7 +58,7 @@ var _ = Describe("CDP Manager storage repository", func() {
 	})
 
 	It("panics if the metadata name is not recognized", func() {
-		unrecognizedMetadata := storage.ValueMetadata{Name: "unrecognized"}
+		unrecognizedMetadata := types.ValueMetadata{Name: "unrecognized"}
 		repoCreate := func() {
 			repository.Create(diffID, fakeHeaderID, unrecognizedMetadata, "")
 		}
@@ -67,7 +67,7 @@ var _ = Describe("CDP Manager storage repository", func() {
 	})
 
 	Describe("vat", func() {
-		var vatMetadata = storage.ValueMetadata{Name: cdp_manager.Vat}
+		var vatMetadata = types.ValueMetadata{Name: cdp_manager.Vat}
 		var fakeAddress = FakeAddress
 
 		inputs := shared_behaviors.StorageBehaviorInputs{
@@ -84,7 +84,7 @@ var _ = Describe("CDP Manager storage repository", func() {
 
 	Describe("cdpi", func() {
 		var (
-			cdpiMetadata  = storage.ValueMetadata{Name: cdp_manager.Cdpi}
+			cdpiMetadata  = types.ValueMetadata{Name: cdp_manager.Cdpi}
 			fakeCdpi      = strconv.Itoa(rand.Int())
 			fakeTimestamp int
 			header        core.Header
@@ -114,7 +114,7 @@ var _ = Describe("CDP Manager storage repository", func() {
 
 		It("triggers an update to the managed_cdp table", func() {
 			fakeRawDiff := GetFakeStorageDiffForHeader(fakes.FakeHeader, common.Hash{}, common.Hash{}, common.Hash{})
-			storageDiffRepo := repositories.NewStorageDiffRepository(db)
+			storageDiffRepo := storage.NewDiffRepository(db)
 			var insertDiffErr error
 			diffID, insertDiffErr = storageDiffRepo.CreateStorageDiff(fakeRawDiff)
 			Expect(insertDiffErr).NotTo(HaveOccurred())
@@ -136,21 +136,21 @@ var _ = Describe("CDP Manager storage repository", func() {
 		fakeCdpi := strconv.Itoa(rand.Int())
 
 		It("returns an error if mapping metadata is missing the key", func() {
-			badMetadata := storage.ValueMetadata{
+			badMetadata := types.ValueMetadata{
 				Name: cdp_manager.Urns,
-				Keys: map[storage.Key]string{},
-				Type: storage.Address,
+				Keys: map[types.Key]string{},
+				Type: types.Address,
 			}
 			err := repository.Create(diffID, fakeHeaderID, badMetadata, "")
-			Expect(err).To(MatchError(storage.ErrMetadataMalformed{MissingData: constants.Cdpi}))
+			Expect(err).To(MatchError(types.ErrMetadataMalformed{MissingData: constants.Cdpi}))
 		})
 
 		Describe("urns", func() {
 			var fakeUrnsValue = FakeAddress
-			var urnsMetadata = storage.ValueMetadata{
+			var urnsMetadata = types.ValueMetadata{
 				Name: cdp_manager.Urns,
-				Keys: map[storage.Key]string{constants.Cdpi: fakeCdpi},
-				Type: storage.Address,
+				Keys: map[types.Key]string{constants.Cdpi: fakeCdpi},
+				Type: types.Address,
 			}
 			inputs := shared_behaviors.StorageBehaviorInputs{
 				KeyFieldName:   string(constants.Cdpi),
@@ -168,7 +168,7 @@ var _ = Describe("CDP Manager storage repository", func() {
 
 			It("triggers an update to the managed_cdp table", func() {
 				fakeRawDiff := GetFakeStorageDiffForHeader(fakes.FakeHeader, common.Hash{}, common.Hash{}, common.Hash{})
-				storageDiffRepo := repositories.NewStorageDiffRepository(db)
+				storageDiffRepo := storage.NewDiffRepository(db)
 				var insertDiffErr error
 				diffID, insertDiffErr = storageDiffRepo.CreateStorageDiff(fakeRawDiff)
 				Expect(insertDiffErr).NotTo(HaveOccurred())
@@ -186,10 +186,10 @@ var _ = Describe("CDP Manager storage repository", func() {
 
 		Describe("list_prev", func() {
 			var fakePrevValue = strconv.Itoa(rand.Int())
-			var prevMetadata = storage.ValueMetadata{
+			var prevMetadata = types.ValueMetadata{
 				Name: cdp_manager.ListPrev,
-				Keys: map[storage.Key]string{constants.Cdpi: fakeCdpi},
-				Type: storage.Uint256,
+				Keys: map[types.Key]string{constants.Cdpi: fakeCdpi},
+				Type: types.Uint256,
 			}
 			inputs := shared_behaviors.StorageBehaviorInputs{
 				KeyFieldName:   string(constants.Cdpi),
@@ -208,10 +208,10 @@ var _ = Describe("CDP Manager storage repository", func() {
 
 		Describe("list_next", func() {
 			var fakeNextValue = strconv.Itoa(rand.Int())
-			var nextMetadata = storage.ValueMetadata{
+			var nextMetadata = types.ValueMetadata{
 				Name: cdp_manager.ListNext,
-				Keys: map[storage.Key]string{constants.Cdpi: fakeCdpi},
-				Type: storage.Uint256,
+				Keys: map[types.Key]string{constants.Cdpi: fakeCdpi},
+				Type: types.Uint256,
 			}
 			inputs := shared_behaviors.StorageBehaviorInputs{
 				KeyFieldName:   string(constants.Cdpi),
@@ -230,10 +230,10 @@ var _ = Describe("CDP Manager storage repository", func() {
 
 		Describe("owns", func() {
 			var fakeOwner = FakeAddress
-			var ownsMetadata = storage.ValueMetadata{
+			var ownsMetadata = types.ValueMetadata{
 				Name: cdp_manager.Owns,
-				Keys: map[storage.Key]string{constants.Cdpi: fakeCdpi},
-				Type: storage.Address,
+				Keys: map[types.Key]string{constants.Cdpi: fakeCdpi},
+				Type: types.Address,
 			}
 			inputs := shared_behaviors.StorageBehaviorInputs{
 				KeyFieldName:   string(constants.Cdpi),
@@ -251,7 +251,7 @@ var _ = Describe("CDP Manager storage repository", func() {
 
 			It("triggers an update to the managed_cdp table", func() {
 				fakeRawDiff := GetFakeStorageDiffForHeader(fakes.FakeHeader, common.Hash{}, common.Hash{}, common.Hash{})
-				storageDiffRepo := repositories.NewStorageDiffRepository(db)
+				storageDiffRepo := storage.NewDiffRepository(db)
 				var insertDiffErr error
 				diffID, insertDiffErr = storageDiffRepo.CreateStorageDiff(fakeRawDiff)
 				Expect(insertDiffErr).NotTo(HaveOccurred())
@@ -269,17 +269,17 @@ var _ = Describe("CDP Manager storage repository", func() {
 
 		Describe("ilks", func() {
 			var (
-				ilksMetadata = storage.ValueMetadata{
+				ilksMetadata = types.ValueMetadata{
 					Name: cdp_manager.Ilks,
-					Keys: map[storage.Key]string{constants.Cdpi: fakeCdpi},
-					Type: storage.Bytes32,
+					Keys: map[types.Key]string{constants.Cdpi: fakeCdpi},
+					Type: types.Bytes32,
 				}
 				fakeIlksValue = test_helpers.FakeIlk.Hex
 			)
 
 			BeforeEach(func() {
 				fakeRawDiff := GetFakeStorageDiffForHeader(fakes.FakeHeader, common.Hash{}, common.Hash{}, common.Hash{})
-				storageDiffRepo := repositories.NewStorageDiffRepository(db)
+				storageDiffRepo := storage.NewDiffRepository(db)
 				var insertDiffErr error
 				diffID, insertDiffErr = storageDiffRepo.CreateStorageDiff(fakeRawDiff)
 				Expect(insertDiffErr).NotTo(HaveOccurred())
@@ -332,10 +332,10 @@ var _ = Describe("CDP Manager storage repository", func() {
 
 		Describe("first", func() {
 			var fakeFirstValue = strconv.Itoa(rand.Int())
-			var firstMetadata = storage.ValueMetadata{
+			var firstMetadata = types.ValueMetadata{
 				Name: cdp_manager.First,
-				Keys: map[storage.Key]string{constants.Owner: fakeOwner},
-				Type: storage.Uint256,
+				Keys: map[types.Key]string{constants.Owner: fakeOwner},
+				Type: types.Uint256,
 			}
 			inputs := shared_behaviors.StorageBehaviorInputs{
 				KeyFieldName:   string(constants.Owner),
@@ -354,10 +354,10 @@ var _ = Describe("CDP Manager storage repository", func() {
 
 		Describe("last", func() {
 			var fakeLastValue = strconv.Itoa(rand.Int())
-			var lastMetadata = storage.ValueMetadata{
+			var lastMetadata = types.ValueMetadata{
 				Name: cdp_manager.Last,
-				Keys: map[storage.Key]string{constants.Owner: fakeOwner},
-				Type: storage.Uint256,
+				Keys: map[types.Key]string{constants.Owner: fakeOwner},
+				Type: types.Uint256,
 			}
 			inputs := shared_behaviors.StorageBehaviorInputs{
 				KeyFieldName:   string(constants.Owner),
@@ -376,10 +376,10 @@ var _ = Describe("CDP Manager storage repository", func() {
 
 		Describe("count", func() {
 			var fakeCountValue = strconv.Itoa(rand.Int())
-			var countMetadata = storage.ValueMetadata{
+			var countMetadata = types.ValueMetadata{
 				Name: cdp_manager.Count,
-				Keys: map[storage.Key]string{constants.Owner: fakeOwner},
-				Type: storage.Uint256,
+				Keys: map[types.Key]string{constants.Owner: fakeOwner},
+				Type: types.Uint256,
 			}
 			inputs := shared_behaviors.StorageBehaviorInputs{
 				KeyFieldName:   string(constants.Owner),

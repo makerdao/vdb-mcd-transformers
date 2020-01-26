@@ -29,6 +29,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/utilities"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
 	vdbStorage "github.com/makerdao/vulcanizedb/libraries/shared/storage"
+	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -71,7 +72,7 @@ var _ = Describe("CDP Manager storage keys loader", func() {
 				var (
 					cdpi       = strconv.FormatInt(rand.Int63(), 10)
 					cdpiHex, _ = shared.ConvertIntStringToHex(cdpi)
-					mappings   map[common.Hash]vdbStorage.ValueMetadata
+					mappings   map[common.Hash]types.ValueMetadata
 				)
 
 				BeforeEach(func() {
@@ -84,10 +85,10 @@ var _ = Describe("CDP Manager storage keys loader", func() {
 				It("gets Urns metadata", func() {
 					urnsKey := common.BytesToHash(crypto.Keccak256(common.FromHex(cdpiHex + cdp_manager.UrnsMappingIndex)))
 
-					Expect(mappings[urnsKey]).To(Equal(vdbStorage.ValueMetadata{
+					Expect(mappings[urnsKey]).To(Equal(types.ValueMetadata{
 						Name: cdp_manager.Urns,
-						Keys: map[vdbStorage.Key]string{constants.Cdpi: cdpi},
-						Type: vdbStorage.Address,
+						Keys: map[types.Key]string{constants.Cdpi: cdpi},
+						Type: types.Address,
 					}))
 				})
 
@@ -96,20 +97,20 @@ var _ = Describe("CDP Manager storage keys loader", func() {
 						crypto.Keccak256(common.FromHex(cdpiHex + cdp_manager.ListMappingIndex)))
 
 					It("gets prev metadata", func() {
-						Expect(mappings[listPrevKey]).To(Equal(vdbStorage.ValueMetadata{
+						Expect(mappings[listPrevKey]).To(Equal(types.ValueMetadata{
 							Name: cdp_manager.ListPrev,
-							Keys: map[vdbStorage.Key]string{constants.Cdpi: cdpi},
-							Type: vdbStorage.Uint256,
+							Keys: map[types.Key]string{constants.Cdpi: cdpi},
+							Type: types.Uint256,
 						}))
 					})
 
 					It("gets next metadata", func() {
 						listNextKey := vdbStorage.GetIncrementedKey(listPrevKey, 1)
 
-						Expect(mappings[listNextKey]).To(Equal(vdbStorage.ValueMetadata{
+						Expect(mappings[listNextKey]).To(Equal(types.ValueMetadata{
 							Name: cdp_manager.ListNext,
-							Keys: map[vdbStorage.Key]string{constants.Cdpi: cdpi},
-							Type: vdbStorage.Uint256,
+							Keys: map[types.Key]string{constants.Cdpi: cdpi},
+							Type: types.Uint256,
 						}))
 					})
 				})
@@ -117,20 +118,20 @@ var _ = Describe("CDP Manager storage keys loader", func() {
 				It("gets Owner metadata", func() {
 					ownsKey := common.BytesToHash(crypto.Keccak256(common.FromHex(cdpiHex + cdp_manager.OwnsMappingIndex)))
 
-					Expect(mappings[ownsKey]).To(Equal(vdbStorage.ValueMetadata{
+					Expect(mappings[ownsKey]).To(Equal(types.ValueMetadata{
 						Name: cdp_manager.Owns,
-						Keys: map[vdbStorage.Key]string{constants.Cdpi: cdpi},
-						Type: vdbStorage.Address,
+						Keys: map[types.Key]string{constants.Cdpi: cdpi},
+						Type: types.Address,
 					}))
 				})
 
 				It("gets Ilks metadata", func() {
 					ilksKey := common.BytesToHash(crypto.Keccak256(common.FromHex(cdpiHex + cdp_manager.IlksMappingIndex)))
 
-					Expect(mappings[ilksKey]).To(Equal(vdbStorage.ValueMetadata{
+					Expect(mappings[ilksKey]).To(Equal(types.ValueMetadata{
 						Name: cdp_manager.Ilks,
-						Keys: map[vdbStorage.Key]string{constants.Cdpi: cdpi},
-						Type: vdbStorage.Bytes32,
+						Keys: map[types.Key]string{constants.Cdpi: cdpi},
+						Type: types.Bytes32,
 					}))
 				})
 			})
@@ -152,7 +153,7 @@ var _ = Describe("CDP Manager storage keys loader", func() {
 				var (
 					owns          = test_helpers.FakeAddress
 					paddedOwns, _ = utilities.PadAddress(owns)
-					mappings      map[common.Hash]vdbStorage.ValueMetadata
+					mappings      map[common.Hash]types.ValueMetadata
 				)
 
 				BeforeEach(func() {
@@ -165,30 +166,30 @@ var _ = Describe("CDP Manager storage keys loader", func() {
 				It("gets First metadata", func() {
 					firstKey := common.BytesToHash(crypto.Keccak256(common.FromHex(paddedOwns + cdp_manager.FirstMappingIndex)))
 
-					Expect(mappings[firstKey]).To(Equal(vdbStorage.ValueMetadata{
+					Expect(mappings[firstKey]).To(Equal(types.ValueMetadata{
 						Name: cdp_manager.First,
-						Keys: map[vdbStorage.Key]string{constants.Owner: owns},
-						Type: vdbStorage.Uint256,
+						Keys: map[types.Key]string{constants.Owner: owns},
+						Type: types.Uint256,
 					}))
 				})
 
 				It("gets Last metadata", func() {
 					lastKey := common.BytesToHash(crypto.Keccak256(common.FromHex(paddedOwns + cdp_manager.LastMappingIndex)))
 
-					Expect(mappings[lastKey]).To(Equal(vdbStorage.ValueMetadata{
+					Expect(mappings[lastKey]).To(Equal(types.ValueMetadata{
 						Name: cdp_manager.Last,
-						Keys: map[vdbStorage.Key]string{constants.Owner: owns},
-						Type: vdbStorage.Uint256,
+						Keys: map[types.Key]string{constants.Owner: owns},
+						Type: types.Uint256,
 					}))
 				})
 
 				It("gets Count metadata", func() {
 					countKey := common.BytesToHash(crypto.Keccak256(common.FromHex(paddedOwns + cdp_manager.CountMappingIndex)))
 
-					Expect(mappings[countKey]).To(Equal(vdbStorage.ValueMetadata{
+					Expect(mappings[countKey]).To(Equal(types.ValueMetadata{
 						Name: cdp_manager.Count,
-						Keys: map[vdbStorage.Key]string{constants.Owner: owns},
-						Type: vdbStorage.Uint256,
+						Keys: map[types.Key]string{constants.Owner: owns},
+						Type: types.Uint256,
 					}))
 				})
 			})
