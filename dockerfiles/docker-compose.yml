@@ -32,7 +32,9 @@ services:
       - DATABASE_PORT=5432
       - DATABASE_USER=vdb
       - DATABASE_PASSWORD=vdb
-      - STARTING_BLOCK_NUMBER=8928152
+      # Oasis deployment block
+      # Seems like there's a possibility for a conflict between what's declared here and mainnet-1.0.1.env...
+      - STARTING_BLOCK_NUMBER=7183773
     depends_on:
       - db
     command: ["./wait-for-it.sh", "db:5432", "--strict", "--", "./startup_script.sh"]
@@ -56,6 +58,21 @@ services:
     command: ["./wait-for-it.sh", "db:5432", "--strict", "--", "./startup_script.sh"]
     restart: unless-stopped
 
+  oasis-watcher:
+    image: robmulholand/vdb-oasis-watcher:latest
+    env_file: mainnet-1.0.1.env
+    environment:
+      - CLIENT_IPCPATH=ws://geth-statediffing:8546
+      - DATABASE_NAME=vdb
+      - DATABASE_HOSTNAME=db
+      - DATABASE_PORT=5432
+      - DATABASE_USER=vdb
+      - DATABASE_PASSWORD=vdb
+    depends_on:
+      - db
+    command: ["./wait-for-it.sh", "db:5432", "--strict", "--", "./vulcanizedb", "contractWatcher", "--config", "oasisContractWatcher.toml"]
+    restart: unless-stopped
+
   db:
     image: postgres:12.1-alpine
     ports:
@@ -70,7 +87,7 @@ services:
     ports:
       - 5000:5000
     environment:
-      - SCHEMAS=api,maker,public
+      - SCHEMAS=api,maker,public,cw_0x39755357759ce0d7f32dc8dc45414cca409ae24e
       - DATABASE_URL=postgres://vdb:vdb@db:5432/vdb
     depends_on:
       - db
