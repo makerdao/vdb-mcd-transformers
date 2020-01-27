@@ -25,7 +25,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/vow"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
-	vdbStorage "github.com/makerdao/vulcanizedb/libraries/shared/storage"
+	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -63,8 +63,8 @@ var _ = Describe("Vow storage keys loader", func() {
 		storageRepository.SinKeys = []string{fakeTimestamp}
 		sinKey := common.HexToHash("0x409bb97b2bc2657d61f96ef15378c58e2a7d5a67559d3718cbad711b817d9000")
 		// key found at https://github.com/8thlight/maker-vulcanizedb/pull/132/files#diff-fe4d48373094a6c01df6ca0e35c677c3R1360
-		expectedKeys := map[vdbStorage.Key]string{constants.Timestamp: fakeTimestamp}
-		expectedMetadata := vdbStorage.GetValueMetadata(vow.SinMapping, expectedKeys, vdbStorage.Uint256)
+		expectedKeys := map[types.Key]string{constants.Timestamp: fakeTimestamp}
+		expectedMetadata := types.GetValueMetadata(vow.SinMapping, expectedKeys, types.Uint256)
 
 		mappings, err := storageKeysLoader.LoadMappings()
 
@@ -77,8 +77,8 @@ var _ = Describe("Vow storage keys loader", func() {
 		storageRepository.SinKeys = []string{fakeTimestamp}
 		sinKey := common.HexToHash("0x37f4e61f380b4127c877057bc12214bd6b243aa33839584689548356b019d8b8")
 		// key found at https://github.com/8thlight/maker-vulcanizedb/pull/132/files#diff-fe4d48373094a6c01df6ca0e35c677c3R2058
-		expectedKeys := map[vdbStorage.Key]string{constants.Timestamp: fakeTimestamp}
-		expectedMetadata := vdbStorage.GetValueMetadata(vow.SinMapping, expectedKeys, vdbStorage.Uint256)
+		expectedKeys := map[types.Key]string{constants.Timestamp: fakeTimestamp}
+		expectedMetadata := types.GetValueMetadata(vow.SinMapping, expectedKeys, types.Uint256)
 
 		mappings, err := storageKeysLoader.LoadMappings()
 
@@ -92,10 +92,10 @@ var _ = Describe("Vow storage keys loader", func() {
 			storageRepository.WardsKeys = []string{wardsUser}
 			paddedWardsUser := "0x000000000000000000000000" + wardsUser[2:]
 			wardsKey := common.BytesToHash(crypto.Keccak256(common.FromHex(paddedWardsUser + wards.WardsMappingIndex)))
-			expectedMetadata := vdbStorage.ValueMetadata{
+			expectedMetadata := types.ValueMetadata{
 				Name: wards.Wards,
-				Keys: map[vdbStorage.Key]string{constants.User: fakes.FakeAddress.Hex()},
-				Type: vdbStorage.Uint256,
+				Keys: map[types.Key]string{constants.User: fakes.FakeAddress.Hex()},
+				Type: types.Uint256,
 			}
 
 			mappings, err := storageKeysLoader.LoadMappings()

@@ -27,7 +27,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/utilities/wards"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
-	vdbStorage "github.com/makerdao/vulcanizedb/libraries/shared/storage"
+	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -59,10 +59,10 @@ var _ = Describe("spot storage keys loader", func() {
 			storageRepository.WardsKeys = []string{wardsUser}
 			paddedWardsUser := "0x000000000000000000000000" + wardsUser[2:]
 			wardsKey := common.BytesToHash(crypto.Keccak256(common.FromHex(paddedWardsUser + wards.WardsMappingIndex)))
-			expectedMetadata := vdbStorage.ValueMetadata{
+			expectedMetadata := types.ValueMetadata{
 				Name: wards.Wards,
-				Keys: map[vdbStorage.Key]string{constants.User: fakes.FakeAddress.Hex()},
-				Type: vdbStorage.Uint256,
+				Keys: map[types.Key]string{constants.User: fakes.FakeAddress.Hex()},
+				Type: types.Uint256,
 			}
 
 			mappings, err := storageKeysLoader.LoadMappings()
@@ -99,10 +99,10 @@ var _ = Describe("spot storage keys loader", func() {
 			fakeIlk := "fakeIlk"
 			storageRepository.Ilks = []string{fakeIlk}
 			ilkPipKey := common.BytesToHash(crypto.Keccak256(common.FromHex("0x" + fakeIlk + spot.IlkMappingIndex)))
-			expectedMetadata := vdbStorage.ValueMetadata{
+			expectedMetadata := types.ValueMetadata{
 				Name: spot.IlkPip,
-				Keys: map[vdbStorage.Key]string{constants.Ilk: fakeIlk},
-				Type: vdbStorage.Address,
+				Keys: map[types.Key]string{constants.Ilk: fakeIlk},
+				Type: types.Address,
 			}
 
 			mappings, err := storageKeysLoader.LoadMappings()
@@ -118,10 +118,10 @@ var _ = Describe("spot storage keys loader", func() {
 			ilkPipAsInt := big.NewInt(0).SetBytes(ilkPipKeyBytes)
 			incrementedIlkPip := big.NewInt(0).Add(ilkPipAsInt, big.NewInt(1))
 			ilkMatKey := common.BytesToHash(incrementedIlkPip.Bytes())
-			expectedMetadata := vdbStorage.ValueMetadata{
+			expectedMetadata := types.ValueMetadata{
 				Name: spot.IlkMat,
-				Keys: map[vdbStorage.Key]string{constants.Ilk: fakeIlk},
-				Type: vdbStorage.Uint256,
+				Keys: map[types.Key]string{constants.Ilk: fakeIlk},
+				Type: types.Uint256,
 			}
 
 			mappings, err := storageKeysLoader.LoadMappings()

@@ -13,7 +13,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/utilities/wards"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data/shared_behaviors"
-	"github.com/makerdao/vulcanizedb/libraries/shared/storage"
+	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	. "github.com/onsi/ginkgo"
@@ -43,7 +43,7 @@ var _ = Describe("Pot storage repository", func() {
 
 	Describe("Variable", func() {
 		It("panics if the metadata name is not recognized", func() {
-			unrecognizedMetadata := storage.ValueMetadata{Name: "unrecognized"}
+			unrecognizedMetadata := types.ValueMetadata{Name: "unrecognized"}
 			repoCreate := func() {
 				repo.Create(diffID, fakeHeaderID, unrecognizedMetadata, "")
 			}
@@ -54,7 +54,7 @@ var _ = Describe("Pot storage repository", func() {
 
 	Describe("User pie", func() {
 		It("writes a row", func() {
-			userPieMetadata := storage.GetValueMetadata(pot.UserPie, map[storage.Key]string{constants.MsgSender: fakeAddress}, storage.Uint256)
+			userPieMetadata := types.GetValueMetadata(pot.UserPie, map[types.Key]string{constants.MsgSender: fakeAddress}, types.Uint256)
 
 			insertErr := repo.Create(diffID, fakeHeaderID, userPieMetadata, fakeUint256)
 			Expect(insertErr).NotTo(HaveOccurred())
@@ -68,7 +68,7 @@ var _ = Describe("Pot storage repository", func() {
 		})
 
 		It("does not duplicate row", func() {
-			userPieMetadata := storage.GetValueMetadata(pot.UserPie, map[storage.Key]string{constants.MsgSender: fakeAddress}, storage.Uint256)
+			userPieMetadata := types.GetValueMetadata(pot.UserPie, map[types.Key]string{constants.MsgSender: fakeAddress}, types.Uint256)
 			setupErr := repo.Create(diffID, fakeHeaderID, userPieMetadata, fakeUint256)
 			Expect(setupErr).NotTo(HaveOccurred())
 
@@ -83,10 +83,10 @@ var _ = Describe("Pot storage repository", func() {
 		})
 
 		It("returns an error if metadata missing ilk", func() {
-			malformedUserPieMetadata := storage.GetValueMetadata(pot.UserPie, nil, storage.Uint256)
+			malformedUserPieMetadata := types.GetValueMetadata(pot.UserPie, nil, types.Uint256)
 
 			err := repo.Create(diffID, fakeHeaderID, malformedUserPieMetadata, fakeUint256)
-			Expect(err).To(MatchError(storage.ErrMetadataMalformed{MissingData: constants.MsgSender}))
+			Expect(err).To(MatchError(types.ErrMetadataMalformed{MissingData: constants.MsgSender}))
 		})
 	})
 
@@ -213,7 +213,7 @@ var _ = Describe("Pot storage repository", func() {
 	Describe("Wards mapping", func() {
 		It("writes a row", func() {
 			fakeUserAddress := "0x" + fakes.RandomString(40)
-			wardsMetadata := storage.GetValueMetadata(wards.Wards, map[storage.Key]string{constants.User: fakeUserAddress}, storage.Uint256)
+			wardsMetadata := types.GetValueMetadata(wards.Wards, map[types.Key]string{constants.User: fakeUserAddress}, types.Uint256)
 
 			setupErr := repo.Create(diffID, fakeHeaderID, wardsMetadata, fakeUint256)
 			Expect(setupErr).NotTo(HaveOccurred())
@@ -232,7 +232,7 @@ var _ = Describe("Pot storage repository", func() {
 
 		It("does not duplicate row", func() {
 			fakeUserAddress := "0x" + fakes.RandomString(40)
-			wardsMetadata := storage.GetValueMetadata(wards.Wards, map[storage.Key]string{constants.User: fakeUserAddress}, storage.Uint256)
+			wardsMetadata := types.GetValueMetadata(wards.Wards, map[types.Key]string{constants.User: fakeUserAddress}, types.Uint256)
 			insertOneErr := repo.Create(diffID, fakeHeaderID, wardsMetadata, fakeUint256)
 			Expect(insertOneErr).NotTo(HaveOccurred())
 
@@ -247,10 +247,10 @@ var _ = Describe("Pot storage repository", func() {
 		})
 
 		It("returns an error if metadata missing user", func() {
-			malformedWardsMetadata := storage.GetValueMetadata(wards.Wards, map[storage.Key]string{}, storage.Uint256)
+			malformedWardsMetadata := types.GetValueMetadata(wards.Wards, map[types.Key]string{}, types.Uint256)
 
 			err := repo.Create(diffID, fakeHeaderID, malformedWardsMetadata, fakeUint256)
-			Expect(err).To(MatchError(storage.ErrMetadataMalformed{MissingData: constants.User}))
+			Expect(err).To(MatchError(types.ErrMetadataMalformed{MissingData: constants.User}))
 		})
 	})
 })

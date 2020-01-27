@@ -5,6 +5,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/utilities"
 	"github.com/makerdao/vulcanizedb/libraries/shared/storage"
+	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
 )
 
 var (
@@ -12,7 +13,7 @@ var (
 	WardsMappingIndex = storage.IndexZero
 )
 
-func AddWardsKeys(mappings map[common.Hash]storage.ValueMetadata, addresses []string) (map[common.Hash]storage.ValueMetadata, error) {
+func AddWardsKeys(mappings map[common.Hash]types.ValueMetadata, addresses []string) (map[common.Hash]types.ValueMetadata, error) {
 	for _, address := range addresses {
 		paddedAddress, padErr := utilities.PadAddress(address)
 		if padErr != nil {
@@ -27,7 +28,7 @@ func getWardsKey(address string) common.Hash {
 	return storage.GetKeyForMapping(WardsMappingIndex, address)
 }
 
-func getWardsMetadata(user string) storage.ValueMetadata {
-	keys := map[storage.Key]string{constants.User: user}
-	return storage.GetValueMetadata(Wards, keys, storage.Uint256)
+func getWardsMetadata(user string) types.ValueMetadata {
+	keys := map[types.Key]string{constants.User: user}
+	return types.GetValueMetadata(Wards, keys, types.Uint256)
 }

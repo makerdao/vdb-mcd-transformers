@@ -22,7 +22,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/utilities/wards"
-	"github.com/makerdao/vulcanizedb/libraries/shared/storage"
+	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 )
 
@@ -39,7 +39,7 @@ type JugStorageRepository struct {
 	ContractAddress string
 }
 
-func (repository JugStorageRepository) Create(diffID, headerID int64, metadata storage.ValueMetadata, value interface{}) error {
+func (repository JugStorageRepository) Create(diffID, headerID int64, metadata types.ValueMetadata, value interface{}) error {
 	switch metadata.Name {
 	case wards.Wards:
 		return wards.InsertWards(diffID, headerID, metadata, repository.ContractAddress, value.(string), repository.db)
@@ -63,7 +63,7 @@ func (repository *JugStorageRepository) SetDB(db *postgres.DB) {
 	repository.db = db
 }
 
-func (repository JugStorageRepository) insertIlkRho(diffID, headerID int64, metadata storage.ValueMetadata, rho string) error {
+func (repository JugStorageRepository) insertIlkRho(diffID, headerID int64, metadata types.ValueMetadata, rho string) error {
 	ilk, err := getIlk(metadata.Keys)
 	if err != nil {
 		return err
@@ -72,7 +72,7 @@ func (repository JugStorageRepository) insertIlkRho(diffID, headerID int64, meta
 	return repository.insertFieldWithIlk(diffID, headerID, ilk, IlkRho, InsertJugIlkRhoQuery, rho)
 }
 
-func (repository JugStorageRepository) insertIlkDuty(diffID, headerID int64, metadata storage.ValueMetadata, duty string) error {
+func (repository JugStorageRepository) insertIlkDuty(diffID, headerID int64, metadata types.ValueMetadata, duty string) error {
 	ilk, err := getIlk(metadata.Keys)
 	if err != nil {
 		return err
@@ -120,10 +120,10 @@ func (repository *JugStorageRepository) insertFieldWithIlk(diffID, headerID int6
 	return tx.Commit()
 }
 
-func getIlk(keys map[storage.Key]string) (string, error) {
+func getIlk(keys map[types.Key]string) (string, error) {
 	ilk, ok := keys[constants.Ilk]
 	if !ok {
-		return "", storage.ErrMetadataMalformed{MissingData: constants.Ilk}
+		return "", types.ErrMetadataMalformed{MissingData: constants.Ilk}
 	}
 	return ilk, nil
 }

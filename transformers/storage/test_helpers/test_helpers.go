@@ -1,6 +1,7 @@
 package test_helpers
 
 import (
+	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
 	"math/rand"
 	"strconv"
 	"time"
@@ -38,21 +39,21 @@ func CreateFakeDiffRecord(db *postgres.DB) int64 {
 
 func CreateFakeDiffRecordWithHeader(db *postgres.DB, header core.Header) int64 {
 	fakeRawDiff := GetFakeStorageDiffForHeader(header, common.Hash{}, common.Hash{}, common.Hash{})
-	storageDiffRepo := repositories.NewStorageDiffRepository(db)
+	storageDiffRepo := storage.NewDiffRepository(db)
 	diffID, insertDiffErr := storageDiffRepo.CreateStorageDiff(fakeRawDiff)
 	Expect(insertDiffErr).NotTo(HaveOccurred())
 
 	return diffID
 }
 
-func CreateDiffRecord(db *postgres.DB, header core.Header, hashedAddress, key, value common.Hash) storage.PersistedDiff {
+func CreateDiffRecord(db *postgres.DB, header core.Header, hashedAddress, key, value common.Hash) types.PersistedDiff {
 	rawDiff := GetFakeStorageDiffForHeader(header, hashedAddress, key, value)
 
-	repo := repositories.NewStorageDiffRepository(db)
+	repo := storage.NewDiffRepository(db)
 	diffID, insertDiffErr := repo.CreateStorageDiff(rawDiff)
 	Expect(insertDiffErr).NotTo(HaveOccurred())
 
-	persistedDiff := storage.PersistedDiff{
+	persistedDiff := types.PersistedDiff{
 		RawDiff:  rawDiff,
 		ID:       diffID,
 		HeaderID: header.Id,
@@ -61,8 +62,8 @@ func CreateDiffRecord(db *postgres.DB, header core.Header, hashedAddress, key, v
 	return persistedDiff
 }
 
-func GetFakeStorageDiffForHeader(header core.Header, hashedAddress, storageKey, storageValue common.Hash) storage.RawDiff {
-	return storage.RawDiff{
+func GetFakeStorageDiffForHeader(header core.Header, hashedAddress, storageKey, storageValue common.Hash) types.RawDiff {
+	return types.RawDiff{
 		HashedAddress: hashedAddress,
 		BlockHash:     common.HexToHash(header.Hash),
 		BlockHeight:   int(header.BlockNumber),

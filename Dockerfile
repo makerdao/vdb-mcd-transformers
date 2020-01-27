@@ -31,10 +31,12 @@ FROM golang:alpine
 WORKDIR /go/src/github.com/makerdao/vulcanizedb
 
 # add certificates for node requests via https
+# bash for wait-for-it
 RUN apk update \
         && apk upgrade \
         && apk add --no-cache \
         ca-certificates \
+        bash \
         && update-ca-certificates 2>/dev/null || true
 
 # add go so we can build the plugin
@@ -52,6 +54,7 @@ COPY --from=builder /go/src/github.com/makerdao/vdb-mcd-transformers/dockerfiles
 COPY --from=builder /go/src/github.com/pressly/goose/cmd/goose/goose goose
 COPY --from=builder /go/src/github.com/makerdao/vdb-mcd-transformers/db/migrations/* db/migrations/
 COPY --from=builder /go/src/github.com/makerdao/vdb-mcd-transformers/plugins/transformerExporter.so plugins/transformerExporter.so
+COPY --from=builder /go/src/github.com/makerdao/vdb-mcd-transformers/dockerfiles/wait-for-it.sh .
 
 # need to execute with a shell to access env variables
 CMD ["./startup_script.sh"]

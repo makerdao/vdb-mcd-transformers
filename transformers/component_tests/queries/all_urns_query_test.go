@@ -5,14 +5,13 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
-
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	helper "github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/vat"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
-	"github.com/makerdao/vulcanizedb/libraries/shared/storage"
+	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
@@ -118,7 +117,7 @@ var _ = Describe("Urn view", func() {
 
 	It("returns available data if urn has ink but no art", func() {
 		fakeInk := rand.Int()
-		urnInkMetadata := storage.GetValueMetadata(vat.UrnInk, map[storage.Key]string{constants.Ilk: helper.FakeIlk.Hex, constants.Guy: urnOne}, storage.Uint256)
+		urnInkMetadata := types.GetValueMetadata(vat.UrnInk, map[types.Key]string{constants.Ilk: helper.FakeIlk.Hex, constants.Guy: urnOne}, types.Uint256)
 		insertInkErr := vatRepo.Create(diffID, headerOne.Id, urnInkMetadata, strconv.Itoa(fakeInk))
 		Expect(insertInkErr).NotTo(HaveOccurred())
 

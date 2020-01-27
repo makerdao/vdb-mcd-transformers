@@ -22,7 +22,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/utilities/wards"
-	"github.com/makerdao/vulcanizedb/libraries/shared/storage"
+	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 )
 
@@ -39,7 +39,7 @@ type SpotStorageRepository struct {
 	ContractAddress string
 }
 
-func (repository SpotStorageRepository) Create(diffID, headerID int64, metadata storage.ValueMetadata, value interface{}) error {
+func (repository SpotStorageRepository) Create(diffID, headerID int64, metadata types.ValueMetadata, value interface{}) error {
 	switch metadata.Name {
 	case wards.Wards:
 		return wards.InsertWards(diffID, headerID, metadata, repository.ContractAddress, value.(string), repository.db)
@@ -63,7 +63,7 @@ func (repository *SpotStorageRepository) SetDB(db *postgres.DB) {
 	repository.db = db
 }
 
-func (repository SpotStorageRepository) insertIlkPip(diffID, headerID int64, metadata storage.ValueMetadata, pip string) error {
+func (repository SpotStorageRepository) insertIlkPip(diffID, headerID int64, metadata types.ValueMetadata, pip string) error {
 	ilk, err := getIlk(metadata.Keys)
 	if err != nil {
 		return err
@@ -72,7 +72,7 @@ func (repository SpotStorageRepository) insertIlkPip(diffID, headerID int64, met
 	return repository.insertFieldWithIlk(diffID, headerID, ilk, IlkPip, InsertSpotIlkPipQuery, pip)
 }
 
-func (repository SpotStorageRepository) insertIlkMat(diffID, headerID int64, metadata storage.ValueMetadata, mat string) error {
+func (repository SpotStorageRepository) insertIlkMat(diffID, headerID int64, metadata types.ValueMetadata, mat string) error {
 	ilk, err := getIlk(metadata.Keys)
 	if err != nil {
 		return err
@@ -120,10 +120,10 @@ func (repository *SpotStorageRepository) insertFieldWithIlk(diffID, headerID int
 	return tx.Commit()
 }
 
-func getIlk(keys map[storage.Key]string) (string, error) {
+func getIlk(keys map[types.Key]string) (string, error) {
 	ilk, ok := keys[constants.Ilk]
 	if !ok {
-		return "", storage.ErrMetadataMalformed{MissingData: constants.Ilk}
+		return "", types.ErrMetadataMalformed{MissingData: constants.Ilk}
 	}
 	return ilk, nil
 }

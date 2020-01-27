@@ -31,6 +31,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
 	vdbStorage "github.com/makerdao/vulcanizedb/libraries/shared/storage"
+	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -51,36 +52,36 @@ var _ = Describe("Flap storage keys loader", func() {
 		mappings, err := storageKeysLoader.LoadMappings()
 
 		Expect(err).NotTo(HaveOccurred())
-		Expect(mappings[flap.VatStorageKey]).To(Equal(vdbStorage.ValueMetadata{
+		Expect(mappings[flap.VatStorageKey]).To(Equal(types.ValueMetadata{
 			Name: mcdStorage.Vat,
 			Keys: nil,
-			Type: vdbStorage.Address,
+			Type: types.Address,
 		}))
-		Expect(mappings[flap.GemStorageKey]).To(Equal(vdbStorage.ValueMetadata{
+		Expect(mappings[flap.GemStorageKey]).To(Equal(types.ValueMetadata{
 			Name: mcdStorage.Gem,
 			Keys: nil,
-			Type: vdbStorage.Address,
+			Type: types.Address,
 		}))
-		Expect(mappings[flap.BegStorageKey]).To(Equal(vdbStorage.ValueMetadata{
+		Expect(mappings[flap.BegStorageKey]).To(Equal(types.ValueMetadata{
 			Name: mcdStorage.Beg,
 			Keys: nil,
-			Type: vdbStorage.Uint256,
+			Type: types.Uint256,
 		}))
-		Expect(mappings[flap.TtlAndTauStorageKey]).To(Equal(vdbStorage.ValueMetadata{
+		Expect(mappings[flap.TtlAndTauStorageKey]).To(Equal(types.ValueMetadata{
 			Name:        mcdStorage.Packed,
-			Type:        vdbStorage.PackedSlot,
-			PackedTypes: map[int]vdbStorage.ValueType{0: vdbStorage.Uint48, 1: vdbStorage.Uint48},
+			Type:        types.PackedSlot,
+			PackedTypes: map[int]types.ValueType{0: types.Uint48, 1: types.Uint48},
 			PackedNames: map[int]string{0: mcdStorage.Ttl, 1: mcdStorage.Tau},
 		}))
-		Expect(mappings[flap.KicksStorageKey]).To(Equal(vdbStorage.ValueMetadata{
+		Expect(mappings[flap.KicksStorageKey]).To(Equal(types.ValueMetadata{
 			Name: mcdStorage.Kicks,
 			Keys: nil,
-			Type: vdbStorage.Uint256,
+			Type: types.Uint256,
 		}))
-		Expect(mappings[flap.LiveStorageKey]).To(Equal(vdbStorage.ValueMetadata{
+		Expect(mappings[flap.LiveStorageKey]).To(Equal(types.ValueMetadata{
 			Name: mcdStorage.Live,
 			Keys: nil,
-			Type: vdbStorage.Uint256,
+			Type: types.Uint256,
 		}))
 	})
 
@@ -90,10 +91,10 @@ var _ = Describe("Flap storage keys loader", func() {
 			storageRepository.WardsKeys = []string{wardsUser}
 			paddedWardsUser := "0x000000000000000000000000" + wardsUser[2:]
 			wardsKey := common.BytesToHash(crypto.Keccak256(common.FromHex(paddedWardsUser + wards.WardsMappingIndex)))
-			expectedMetadata := vdbStorage.ValueMetadata{
+			expectedMetadata := types.ValueMetadata{
 				Name: wards.Wards,
-				Keys: map[vdbStorage.Key]string{constants.User: fakes.FakeAddress.Hex()},
-				Type: vdbStorage.Uint256,
+				Keys: map[types.Key]string{constants.User: fakes.FakeAddress.Hex()},
+				Type: types.Uint256,
 			}
 
 			mappings, err := storageKeysLoader.LoadMappings()
@@ -134,7 +135,7 @@ var _ = Describe("Flap storage keys loader", func() {
 				flapBidBidKey = common.BytesToHash(
 					crypto.Keccak256(
 						common.FromHex(bidIdHex + flap.BidsIndex)))
-				mappings map[common.Hash]vdbStorage.ValueMetadata
+				mappings map[common.Hash]types.ValueMetadata
 			)
 
 			BeforeEach(func() {
@@ -145,10 +146,10 @@ var _ = Describe("Flap storage keys loader", func() {
 			})
 
 			It("gets bid metadata", func() {
-				expectedMetadata := vdbStorage.ValueMetadata{
+				expectedMetadata := types.ValueMetadata{
 					Name: mcdStorage.BidBid,
-					Keys: map[vdbStorage.Key]string{constants.BidId: bidId},
-					Type: vdbStorage.Uint256,
+					Keys: map[types.Key]string{constants.BidId: bidId},
+					Type: types.Uint256,
 				}
 
 				Expect(mappings[flapBidBidKey]).To(Equal(expectedMetadata))
@@ -156,10 +157,10 @@ var _ = Describe("Flap storage keys loader", func() {
 
 			It("gets lot metadata", func() {
 				flapBidLotKey := vdbStorage.GetIncrementedKey(flapBidBidKey, 1)
-				expectedMetadata := vdbStorage.ValueMetadata{
+				expectedMetadata := types.ValueMetadata{
 					Name: mcdStorage.BidLot,
-					Keys: map[vdbStorage.Key]string{constants.BidId: bidId},
-					Type: vdbStorage.Uint256,
+					Keys: map[types.Key]string{constants.BidId: bidId},
+					Type: types.Uint256,
 				}
 
 				Expect(mappings[flapBidLotKey]).To(Equal(expectedMetadata))
@@ -167,11 +168,11 @@ var _ = Describe("Flap storage keys loader", func() {
 
 			It("returns value metadata for bid guy + tic + end packed slot", func() {
 				bidGuyKey := vdbStorage.GetIncrementedKey(flapBidBidKey, 2)
-				expectedMetadata := vdbStorage.ValueMetadata{
+				expectedMetadata := types.ValueMetadata{
 					Name:        mcdStorage.Packed,
-					Keys:        map[vdbStorage.Key]string{constants.BidId: bidId},
-					Type:        vdbStorage.PackedSlot,
-					PackedTypes: map[int]vdbStorage.ValueType{0: vdbStorage.Address, 1: vdbStorage.Uint48, 2: vdbStorage.Uint48},
+					Keys:        map[types.Key]string{constants.BidId: bidId},
+					Type:        types.PackedSlot,
+					PackedTypes: map[int]types.ValueType{0: types.Address, 1: types.Uint48, 2: types.Uint48},
 					PackedNames: map[int]string{0: mcdStorage.BidGuy, 1: mcdStorage.BidTic, 2: mcdStorage.BidEnd},
 				}
 

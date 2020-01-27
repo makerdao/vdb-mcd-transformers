@@ -7,7 +7,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/utilities/wards"
-	"github.com/makerdao/vulcanizedb/libraries/shared/storage"
+	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 )
 
@@ -29,7 +29,7 @@ type PotStorageRepository struct {
 
 type diffInserter func(int64, *sqlx.Tx) error
 
-func (repository PotStorageRepository) Create(diffID, headerID int64, metadata storage.ValueMetadata, value interface{}) error {
+func (repository PotStorageRepository) Create(diffID, headerID int64, metadata types.ValueMetadata, value interface{}) error {
 	switch metadata.Name {
 	case UserPie:
 		return repository.insertUserPie(diffID, headerID, metadata, value.(string))
@@ -58,7 +58,7 @@ func (repository *PotStorageRepository) SetDB(db *postgres.DB) {
 	repository.db = db
 }
 
-func (repository PotStorageRepository) insertUserPie(diffID, headerID int64, metadata storage.ValueMetadata, pie string) error {
+func (repository PotStorageRepository) insertUserPie(diffID, headerID int64, metadata types.ValueMetadata, pie string) error {
 	user, err := getUser(metadata.Keys)
 	if err != nil {
 		return err
@@ -137,10 +137,10 @@ func (repository *PotStorageRepository) insertRecordWithAddress(address, variabl
 	return tx.Commit()
 }
 
-func getUser(keys map[storage.Key]string) (string, error) {
+func getUser(keys map[types.Key]string) (string, error) {
 	ilk, ok := keys[constants.MsgSender]
 	if !ok {
-		return "", storage.ErrMetadataMalformed{MissingData: constants.MsgSender}
+		return "", types.ErrMetadataMalformed{MissingData: constants.MsgSender}
 	}
 	return ilk, nil
 }

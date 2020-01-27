@@ -30,7 +30,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/utilities/wards"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data/shared_behaviors"
-	"github.com/makerdao/vulcanizedb/libraries/shared/storage"
+	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	. "github.com/onsi/ginkgo"
@@ -62,7 +62,7 @@ var _ = Describe("Jug storage repository", func() {
 	Describe("Wards", func() {
 		It("writes a row", func() {
 			fakeUserAddress := "0x" + fakes.RandomString(40)
-			wardsMetadata := storage.GetValueMetadata(wards.Wards, map[storage.Key]string{constants.User: fakeUserAddress}, storage.Uint256)
+			wardsMetadata := types.GetValueMetadata(wards.Wards, map[types.Key]string{constants.User: fakeUserAddress}, types.Uint256)
 
 			setupErr := repo.Create(diffID, fakeHeaderID, wardsMetadata, fakeUint256)
 			Expect(setupErr).NotTo(HaveOccurred())
@@ -81,7 +81,7 @@ var _ = Describe("Jug storage repository", func() {
 
 		It("does not duplicate row", func() {
 			fakeUserAddress := "0x" + fakes.RandomString(40)
-			wardsMetadata := storage.GetValueMetadata(wards.Wards, map[storage.Key]string{constants.User: fakeUserAddress}, storage.Uint256)
+			wardsMetadata := types.GetValueMetadata(wards.Wards, map[types.Key]string{constants.User: fakeUserAddress}, types.Uint256)
 			insertOneErr := repo.Create(diffID, fakeHeaderID, wardsMetadata, fakeUint256)
 			Expect(insertOneErr).NotTo(HaveOccurred())
 
@@ -96,17 +96,17 @@ var _ = Describe("Jug storage repository", func() {
 		})
 
 		It("returns an error if metadata missing user", func() {
-			malformedWardsMetadata := storage.GetValueMetadata(wards.Wards, map[storage.Key]string{}, storage.Uint256)
+			malformedWardsMetadata := types.GetValueMetadata(wards.Wards, map[types.Key]string{}, types.Uint256)
 
 			err := repo.Create(diffID, fakeHeaderID, malformedWardsMetadata, fakeUint256)
-			Expect(err).To(MatchError(storage.ErrMetadataMalformed{MissingData: constants.User}))
+			Expect(err).To(MatchError(types.ErrMetadataMalformed{MissingData: constants.User}))
 		})
 	})
 
 	Describe("Ilk", func() {
 		Describe("Rho", func() {
 			It("writes a row", func() {
-				ilkRhoMetadata := storage.GetValueMetadata(jug.IlkRho, map[storage.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, storage.Uint256)
+				ilkRhoMetadata := types.GetValueMetadata(jug.IlkRho, map[types.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, types.Uint256)
 
 				err := repo.Create(diffID, fakeHeaderID, ilkRhoMetadata, fakeUint256)
 
@@ -121,7 +121,7 @@ var _ = Describe("Jug storage repository", func() {
 			})
 
 			It("does not duplicate row", func() {
-				ilkRhoMetadata := storage.GetValueMetadata(jug.IlkRho, map[storage.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, storage.Uint256)
+				ilkRhoMetadata := types.GetValueMetadata(jug.IlkRho, map[types.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, types.Uint256)
 				insertOneErr := repo.Create(diffID, fakeHeaderID, ilkRhoMetadata, fakeUint256)
 				Expect(insertOneErr).NotTo(HaveOccurred())
 
@@ -136,15 +136,15 @@ var _ = Describe("Jug storage repository", func() {
 			})
 
 			It("returns an error if metadata missing ilk", func() {
-				malformedIlkRhoMetadata := storage.GetValueMetadata(jug.IlkRho, nil, storage.Uint256)
+				malformedIlkRhoMetadata := types.GetValueMetadata(jug.IlkRho, nil, types.Uint256)
 
 				err := repo.Create(diffID, fakeHeaderID, malformedIlkRhoMetadata, fakeUint256)
-				Expect(err).To(MatchError(storage.ErrMetadataMalformed{MissingData: constants.Ilk}))
+				Expect(err).To(MatchError(types.ErrMetadataMalformed{MissingData: constants.Ilk}))
 			})
 
 			shared_behaviors.SharedIlkTriggerTests(shared_behaviors.IlkTriggerTestInput{
 				Repository:    &repo,
-				Metadata:      storage.GetValueMetadata(jug.IlkRho, map[storage.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, storage.Uint256),
+				Metadata:      types.GetValueMetadata(jug.IlkRho, map[types.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, types.Uint256),
 				PropertyName:  "Rho",
 				PropertyValue: strconv.Itoa(rand.Int()),
 				Schema:        constants.MakerSchema,
@@ -154,7 +154,7 @@ var _ = Describe("Jug storage repository", func() {
 
 		Describe("Duty", func() {
 			It("writes a row", func() {
-				ilkDutyMetadata := storage.GetValueMetadata(jug.IlkDuty, map[storage.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, storage.Uint256)
+				ilkDutyMetadata := types.GetValueMetadata(jug.IlkDuty, map[types.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, types.Uint256)
 
 				err := repo.Create(diffID, fakeHeaderID, ilkDutyMetadata, fakeUint256)
 
@@ -170,7 +170,7 @@ var _ = Describe("Jug storage repository", func() {
 			})
 
 			It("does not duplicate row", func() {
-				ilkDutyMetadata := storage.GetValueMetadata(jug.IlkDuty, map[storage.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, storage.Uint256)
+				ilkDutyMetadata := types.GetValueMetadata(jug.IlkDuty, map[types.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, types.Uint256)
 				insertOneErr := repo.Create(diffID, fakeHeaderID, ilkDutyMetadata, fakeUint256)
 				Expect(insertOneErr).NotTo(HaveOccurred())
 
@@ -185,15 +185,15 @@ var _ = Describe("Jug storage repository", func() {
 			})
 
 			It("returns an error if metadata missing ilk", func() {
-				malformedIlkDutyMetadata := storage.GetValueMetadata(jug.IlkDuty, nil, storage.Uint256)
+				malformedIlkDutyMetadata := types.GetValueMetadata(jug.IlkDuty, nil, types.Uint256)
 
 				err := repo.Create(diffID, fakeHeaderID, malformedIlkDutyMetadata, fakeUint256)
-				Expect(err).To(MatchError(storage.ErrMetadataMalformed{MissingData: constants.Ilk}))
+				Expect(err).To(MatchError(types.ErrMetadataMalformed{MissingData: constants.Ilk}))
 			})
 
 			shared_behaviors.SharedIlkTriggerTests(shared_behaviors.IlkTriggerTestInput{
 				Repository:    &repo,
-				Metadata:      storage.GetValueMetadata(jug.IlkDuty, map[storage.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, storage.Uint256),
+				Metadata:      types.GetValueMetadata(jug.IlkDuty, map[types.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, types.Uint256),
 				PropertyName:  "Duty",
 				PropertyValue: strconv.Itoa(rand.Int()),
 				Schema:        constants.MakerSchema,

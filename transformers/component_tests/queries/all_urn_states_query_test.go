@@ -5,13 +5,12 @@ import (
 	"strconv"
 
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
-
 	helper "github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/vat"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
-	"github.com/makerdao/vulcanizedb/libraries/shared/storage"
+	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	. "github.com/onsi/ginkgo"
@@ -78,8 +77,8 @@ var _ = Describe("Urn history query", func() {
 		// Irrelevant art diff in block two
 		wrongUrn := test_data.RandomString(5)
 		wrongArt := strconv.Itoa(rand.Int())
-		wrongMetadata := storage.GetValueMetadata(vat.UrnArt,
-			map[storage.Key]string{constants.Ilk: helper.FakeIlk.Hex, constants.Guy: wrongUrn}, storage.Uint256)
+		wrongMetadata := types.GetValueMetadata(vat.UrnArt,
+			map[types.Key]string{constants.Ilk: helper.FakeIlk.Hex, constants.Guy: wrongUrn}, types.Uint256)
 		err = vatRepo.Create(diffID, headerOne.Id, wrongMetadata, wrongArt)
 		Expect(err).NotTo(HaveOccurred())
 

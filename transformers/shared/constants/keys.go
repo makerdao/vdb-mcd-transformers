@@ -18,20 +18,20 @@ package constants
 
 import (
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
-	"github.com/makerdao/vulcanizedb/libraries/shared/storage"
+	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
 )
 
 // Storage keys
 const (
-	BidId     storage.Key = "bid_id"
-	Cdpi      storage.Key = "cdpi"
-	Flip      storage.Key = "flip"
-	Guy       storage.Key = "guy"
-	Ilk       storage.Key = "ilk"
-	MsgSender storage.Key = "msg_sender"
-	Owner     storage.Key = "owner"
-	Timestamp storage.Key = "timestamp"
-	User      storage.Key = "usr"
+	BidId     types.Key = "bid_id"
+	Cdpi      types.Key = "cdpi"
+	Flip      types.Key = "flip"
+	Guy       types.Key = "guy"
+	Ilk       types.Key = "ilk"
+	MsgSender types.Key = "msg_sender"
+	Owner     types.Key = "owner"
+	Timestamp types.Key = "timestamp"
+	User      types.Key = "usr"
 )
 
 // Table column names
