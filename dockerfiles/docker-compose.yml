@@ -70,8 +70,8 @@ services:
     ports:
       - 5000:5000
     environment:
-      - SCHEMAS=api
-      - DATABASE_URL="postgres://vdb:vdb@db:5432/vdb"
+      - SCHEMAS=api,maker,public
+      - DATABASE_URL=postgres://vdb:vdb@db:5432/vdb
     depends_on:
       - db
     restart: always
