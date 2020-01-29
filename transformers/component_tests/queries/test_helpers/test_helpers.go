@@ -197,26 +197,26 @@ func IlkStateFromValues(ilk, updated, created string, ilkValues map[string]inter
 }
 
 func CreateVatRecords(db *postgres.DB, header core.Header, valuesMap map[string]interface{}, metadatas []types.ValueMetadata, repository vat.VatStorageRepository) {
-	insertValues(db, &repository, header, valuesMap, metadatas)
+	InsertValues(db, &repository, header, valuesMap, metadatas)
 }
 
 func CreateCatRecords(db *postgres.DB, header core.Header, valuesMap map[string]interface{}, metadatas []types.ValueMetadata, repository cat.CatStorageRepository) {
-	insertValues(db, &repository, header, valuesMap, metadatas)
+	InsertValues(db, &repository, header, valuesMap, metadatas)
 }
 
 func CreateJugRecords(db *postgres.DB, header core.Header, valuesMap map[string]interface{}, metadatas []types.ValueMetadata, repository jug.JugStorageRepository) {
-	insertValues(db, &repository, header, valuesMap, metadatas)
+	InsertValues(db, &repository, header, valuesMap, metadatas)
 }
 
 func CreateSpotRecords(db *postgres.DB, header core.Header, valuesMap map[string]interface{}, metadatas []types.ValueMetadata, repository spot.SpotStorageRepository) {
-	insertValues(db, &repository, header, valuesMap, metadatas)
+	InsertValues(db, &repository, header, valuesMap, metadatas)
 }
 
 // Creates urn by creating necessary state diffs and the corresponding header
 func CreateUrn(db *postgres.DB, setupData map[string]interface{}, header core.Header, metadata UrnMetadata, vatRepo vat.VatStorageRepository) {
 	// This also creates the ilk if it doesn't exist
 	urnMetadata := []types.ValueMetadata{metadata.UrnInk, metadata.UrnArt}
-	insertValues(db, &vatRepo, header, setupData, urnMetadata)
+	InsertValues(db, &vatRepo, header, setupData, urnMetadata)
 }
 
 func CreateIlk(db *postgres.DB, header core.Header, valuesMap map[string]interface{}, vatMetadatas, catMetadatas, jugMetadatas, spotMetadatas []types.ValueMetadata) {
@@ -297,7 +297,7 @@ func AssertUrn(actual, expected UrnState) {
 	Expect(actual.Updated).To(Equal(expected.Updated))
 }
 
-func getCommonBidMetadatas(bidId string) []types.ValueMetadata {
+func GetCommonBidMetadatas(bidId string) []types.ValueMetadata {
 	keys := map[types.Key]string{constants.BidId: bidId}
 	packedNames := map[int]string{0: storage.BidGuy, 1: storage.BidTic, 2: storage.BidEnd}
 	packedTypes := map[int]types.ValueType{0: types.Address, 1: types.Uint48, 2: types.Uint48}
@@ -310,11 +310,11 @@ func getCommonBidMetadatas(bidId string) []types.ValueMetadata {
 }
 
 func GetFlopMetadatas(bidId string) []types.ValueMetadata {
-	return getCommonBidMetadatas(bidId)
+	return GetCommonBidMetadatas(bidId)
 }
 
 func GetFlapMetadatas(bidId string) []types.ValueMetadata {
-	return getCommonBidMetadatas(bidId)
+	return GetCommonBidMetadatas(bidId)
 }
 
 func GetCdpManagerMetadatas(cdpi string) []types.ValueMetadata {
@@ -329,7 +329,7 @@ func GetCdpManagerMetadatas(cdpi string) []types.ValueMetadata {
 
 func GetFlipMetadatas(bidId string) []types.ValueMetadata {
 	keys := map[types.Key]string{constants.BidId: bidId}
-	return append(getCommonBidMetadatas(bidId),
+	return append(GetCommonBidMetadatas(bidId),
 		types.GetValueMetadata(storage.Ilk, nil, types.Bytes32),
 		types.GetValueMetadata(storage.BidUsr, keys, types.Address),
 		types.GetValueMetadata(storage.BidGal, keys, types.Address),
@@ -345,7 +345,7 @@ func GetCdpManagerStorageValues(seed int, ilkHex string, urnGuy string, cdpi int
 	return valuesMap
 }
 
-func getCommonBidStorageValues(seed, bidId int) map[string]interface{} {
+func GetCommonBidStorageValues(seed, bidId int) map[string]interface{} {
 	packedValues := map[int]string{0: "address1" + strconv.Itoa(seed), 1: strconv.Itoa(1 + seed), 2: strconv.Itoa(2 + seed)}
 	valuesMap := make(map[string]interface{})
 	valuesMap[storage.Kicks] = strconv.Itoa(bidId)
@@ -357,15 +357,15 @@ func getCommonBidStorageValues(seed, bidId int) map[string]interface{} {
 }
 
 func GetFlopStorageValues(seed, bidId int) map[string]interface{} {
-	return getCommonBidStorageValues(seed, bidId)
+	return GetCommonBidStorageValues(seed, bidId)
 }
 
 func GetFlapStorageValues(seed, bidId int) map[string]interface{} {
-	return getCommonBidStorageValues(seed, bidId)
+	return GetCommonBidStorageValues(seed, bidId)
 }
 
 func GetFlipStorageValues(seed int, ilk string, bidId int) map[string]interface{} {
-	valuesMap := getCommonBidStorageValues(seed, bidId)
+	valuesMap := GetCommonBidStorageValues(seed, bidId)
 	valuesMap[storage.Ilk] = ilk
 	valuesMap[storage.BidGal] = "address2" + strconv.Itoa(seed)
 	valuesMap[storage.BidUsr] = "address3" + strconv.Itoa(seed)
@@ -373,7 +373,7 @@ func GetFlipStorageValues(seed int, ilk string, bidId int) map[string]interface{
 	return valuesMap
 }
 
-func insertValues(db *postgres.DB, repo vdbStorageFactory.Repository, header core.Header, valuesMap map[string]interface{}, metadatas []types.ValueMetadata) {
+func InsertValues(db *postgres.DB, repo vdbStorageFactory.Repository, header core.Header, valuesMap map[string]interface{}, metadatas []types.ValueMetadata) {
 	for _, metadata := range metadatas {
 		value := valuesMap[metadata.Name]
 		key := common.HexToHash(test_data.RandomString(32))
@@ -408,19 +408,19 @@ func insertValues(db *postgres.DB, repo vdbStorageFactory.Repository, header cor
 func CreateFlop(db *postgres.DB, header core.Header, valuesMap map[string]interface{}, flopMetadatas []types.ValueMetadata, contractAddress string) {
 	flopRepo := flop.FlopStorageRepository{ContractAddress: contractAddress}
 	flopRepo.SetDB(db)
-	insertValues(db, &flopRepo, header, valuesMap, flopMetadatas)
+	InsertValues(db, &flopRepo, header, valuesMap, flopMetadatas)
 }
 
 func CreateFlap(db *postgres.DB, header core.Header, valuesMap map[string]interface{}, flapMetadatas []types.ValueMetadata, contractAddress string) {
 	flapRepo := flap.FlapStorageRepository{ContractAddress: contractAddress}
 	flapRepo.SetDB(db)
-	insertValues(db, &flapRepo, header, valuesMap, flapMetadatas)
+	InsertValues(db, &flapRepo, header, valuesMap, flapMetadatas)
 }
 
 func CreateFlip(db *postgres.DB, header core.Header, valuesMap map[string]interface{}, flipMetadatas []types.ValueMetadata, contractAddress string) {
 	flipRepo := flip.FlipStorageRepository{ContractAddress: contractAddress}
 	flipRepo.SetDB(db)
-	insertValues(db, &flipRepo, header, valuesMap, flipMetadatas)
+	InsertValues(db, &flipRepo, header, valuesMap, flipMetadatas)
 }
 
 func CreateManagedCdp(db *postgres.DB, header core.Header, valuesMap map[string]interface{}, metadatas []types.ValueMetadata) error {
@@ -430,7 +430,7 @@ func CreateManagedCdp(db *postgres.DB, header core.Header, valuesMap map[string]
 	if err != nil {
 		return err
 	}
-	insertValues(db, &cdpManagerRepo, header, valuesMap, metadatas)
+	InsertValues(db, &cdpManagerRepo, header, valuesMap, metadatas)
 	return nil
 }
 

@@ -25,14 +25,13 @@ var _ = Describe("Flap storage repository", func() {
 	var (
 		db                   = test_config.NewTestDB(test_config.NewTestNode())
 		flapContractAddress  = test_data.FlapAddress()
-		repository           flap.FlapStorageRepository
+		repository           = &flap.FlapStorageRepository{ContractAddress: flapContractAddress}
 		blockNumber          int64
 		diffID, fakeHeaderID int64
 	)
 
 	BeforeEach(func() {
 		test_config.CleanTestDB(db)
-		repository = flap.FlapStorageRepository{ContractAddress: flapContractAddress}
 		repository.SetDB(db)
 		blockNumber = rand.Int63()
 		headerRepository := repositories.NewHeaderRepository(db)
@@ -150,7 +149,7 @@ var _ = Describe("Flap storage repository", func() {
 			Value:          fakeAddress,
 			Schema:         constants.MakerSchema,
 			TableName:      constants.FlapVatTable,
-			Repository:     &repository,
+			Repository:     repository,
 			Metadata:       vatMetadata,
 		}
 
@@ -165,7 +164,7 @@ var _ = Describe("Flap storage repository", func() {
 			Value:          fakeAddress,
 			Schema:         constants.MakerSchema,
 			TableName:      constants.FlapGemTable,
-			Repository:     &repository,
+			Repository:     repository,
 			Metadata:       gemMetadata,
 		}
 
@@ -179,7 +178,7 @@ var _ = Describe("Flap storage repository", func() {
 			ValueFieldName: storage.Beg,
 			Schema:         constants.MakerSchema,
 			TableName:      constants.FlapBegTable,
-			Repository:     &repository,
+			Repository:     repository,
 			Metadata:       begMetadata,
 			Value:          fakeBeg,
 		}
@@ -256,7 +255,7 @@ var _ = Describe("Flap storage repository", func() {
 			ValueFieldName: storage.Kicks,
 			Schema:         constants.MakerSchema,
 			TableName:      constants.FlapKicksTable,
-			Repository:     &repository,
+			Repository:     repository,
 			Metadata:       kicksMetadata,
 			Value:          fakeKicks,
 		}
@@ -277,7 +276,7 @@ var _ = Describe("Flap storage repository", func() {
 			ValueFieldName: storage.Live,
 			Schema:         constants.MakerSchema,
 			TableName:      constants.FlapLiveTable,
-			Repository:     &repository,
+			Repository:     repository,
 			Metadata:       liveMetadata,
 			Value:          fakeLive,
 		}
@@ -305,12 +304,13 @@ var _ = Describe("Flap storage repository", func() {
 		})
 
 		Describe("bid_bid", func() {
-			var fakeBidValue = strconv.Itoa(rand.Int())
 			var bidBidMetadata = types.ValueMetadata{
 				Name: storage.BidBid,
 				Keys: map[types.Key]string{constants.BidId: fakeBidId},
 				Type: types.Uint256,
 			}
+
+			var fakeBidValue = strconv.Itoa(rand.Int())
 			inputs := shared_behaviors.StorageBehaviorInputs{
 				KeyFieldName:   string(constants.BidId),
 				ValueFieldName: "bid",
@@ -319,11 +319,21 @@ var _ = Describe("Flap storage repository", func() {
 				IsAMapping:     true,
 				Schema:         constants.MakerSchema,
 				TableName:      constants.FlapBidBidTable,
-				Repository:     &repository,
+				Repository:     repository,
 				Metadata:       bidBidMetadata,
 			}
-
 			shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
+
+			triggerInput := shared_behaviors.BidTriggerTestInput{
+				Repository:      repository,
+				Metadata:        bidBidMetadata,
+				ContractAddress: repository.ContractAddress,
+				TriggerTable:    constants.FlapTable,
+				FieldTable:      constants.FlapBidBidTable,
+				ColumnName:      constants.BidColumn,
+			}
+			shared_behaviors.CommonBidSnapshotTriggerTests(triggerInput)
+			shared_behaviors.SharedBidHistoryTriggerTests(triggerInput)
 
 			It("triggers an update to the flap table", func() {
 				err := repository.Create(diffID, fakeHeaderID, bidBidMetadata, fakeBidValue)
@@ -339,12 +349,13 @@ var _ = Describe("Flap storage repository", func() {
 		})
 
 		Describe("bid_lot", func() {
-			var fakeLotValue = strconv.Itoa(rand.Int())
 			var bidLotMetadata = types.ValueMetadata{
 				Name: storage.BidLot,
 				Keys: map[types.Key]string{constants.BidId: fakeBidId},
 				Type: types.Uint256,
 			}
+
+			var fakeLotValue = strconv.Itoa(rand.Int())
 			inputs := shared_behaviors.StorageBehaviorInputs{
 				KeyFieldName:   string(constants.BidId),
 				ValueFieldName: "lot",
@@ -353,11 +364,21 @@ var _ = Describe("Flap storage repository", func() {
 				IsAMapping:     true,
 				Schema:         constants.MakerSchema,
 				TableName:      constants.FlapBidLotTable,
-				Repository:     &repository,
+				Repository:     repository,
 				Metadata:       bidLotMetadata,
 			}
-
 			shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
+
+			triggerInput := shared_behaviors.BidTriggerTestInput{
+				Repository:      repository,
+				Metadata:        bidLotMetadata,
+				ContractAddress: repository.ContractAddress,
+				TriggerTable:    constants.FlapTable,
+				FieldTable:      constants.FlapBidLotTable,
+				ColumnName:      constants.LotColumn,
+			}
+			shared_behaviors.CommonBidSnapshotTriggerTests(triggerInput)
+			shared_behaviors.SharedBidHistoryTriggerTests(triggerInput)
 
 			It("triggers an update to the flap table", func() {
 				err := repository.Create(diffID, fakeHeaderID, bidLotMetadata, fakeLotValue)
@@ -442,5 +463,59 @@ var _ = Describe("Flap storage repository", func() {
 				Expect(err.Error()).To(ContainSubstring("pq: invalid input syntax"))
 			})
 		})
+
+		var bidGuyMetadata = types.ValueMetadata{
+			Name:        storage.Packed,
+			Keys:        map[types.Key]string{constants.BidId: fakeBidId},
+			Type:        types.PackedSlot,
+			PackedNames: map[int]string{0: storage.BidGuy},
+		}
+		guyTriggerInput := shared_behaviors.BidTriggerTestInput{
+			Repository:      repository,
+			Metadata:        bidGuyMetadata,
+			ContractAddress: repository.ContractAddress,
+			TriggerTable:    constants.FlapTable,
+			FieldTable:      constants.FlapBidGuyTable,
+			ColumnName:      constants.GuyColumn,
+			PackedValueType: types.Address,
+		}
+		shared_behaviors.CommonBidSnapshotTriggerTests(guyTriggerInput)
+		shared_behaviors.SharedBidHistoryTriggerTests(guyTriggerInput)
+
+		var bidTicMetadata = types.ValueMetadata{
+			Name:        storage.Packed,
+			Keys:        map[types.Key]string{constants.BidId: fakeBidId},
+			Type:        types.PackedSlot,
+			PackedNames: map[int]string{0: storage.BidTic},
+		}
+		ticTriggerInput := shared_behaviors.BidTriggerTestInput{
+			Repository:      repository,
+			Metadata:        bidTicMetadata,
+			ContractAddress: repository.ContractAddress,
+			TriggerTable:    constants.FlapTable,
+			FieldTable:      constants.FlapBidTicTable,
+			ColumnName:      constants.TicColumn,
+			PackedValueType: types.Uint48,
+		}
+		shared_behaviors.CommonBidSnapshotTriggerTests(ticTriggerInput)
+		shared_behaviors.SharedBidHistoryTriggerTests(ticTriggerInput)
+
+		var bidEndMetadata = types.ValueMetadata{
+			Name:        storage.Packed,
+			Keys:        map[types.Key]string{constants.BidId: fakeBidId},
+			Type:        types.PackedSlot,
+			PackedNames: map[int]string{0: storage.BidEnd},
+		}
+		endTriggerInput := shared_behaviors.BidTriggerTestInput{
+			Repository:      repository,
+			Metadata:        bidEndMetadata,
+			ContractAddress: repository.ContractAddress,
+			TriggerTable:    constants.FlapTable,
+			FieldTable:      constants.FlapBidEndTable,
+			ColumnName:      constants.EndColumn,
+			PackedValueType: types.Uint48,
+		}
+		shared_behaviors.CommonBidSnapshotTriggerTests(endTriggerInput)
+		shared_behaviors.SharedBidHistoryTriggerTests(endTriggerInput)
 	})
 })
