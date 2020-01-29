@@ -2,7 +2,7 @@
 -- SQL in this section is executed when the migration is applied.
 
 CREATE OR REPLACE FUNCTION api.all_flips(ilk TEXT, max_results INTEGER DEFAULT -1, result_offset INTEGER DEFAULT 0)
-    RETURNS SETOF api.flip_state AS
+    RETURNS SETOF api.flip_bid_snapshot AS
 -- +goose StatementBegin
 $BODY$
 BEGIN

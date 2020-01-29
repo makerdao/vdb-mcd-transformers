@@ -99,7 +99,7 @@ type IlkTriggerTestInput struct {
 }
 
 func SharedIlkTriggerTests(input IlkTriggerTestInput) {
-	Describe("updating historical_ilk_state trigger table", func() {
+	Describe("updating ilk_snapshot trigger table", func() {
 		var (
 			blockOne,
 			blockTwo,
@@ -113,9 +113,9 @@ func SharedIlkTriggerTests(input IlkTriggerTestInput) {
 			hashTwo          = common.BytesToHash([]byte{5, 4, 3, 2, 1})
 			hashThree        = common.BytesToHash([]byte{6, 7, 8, 9, 0})
 			table            = shared.GetFullTableName(input.Schema, input.TableName)
-			getStateQuery    = `SELECT ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, updated FROM api.historical_ilk_state ORDER BY block_number`
-			getFieldQuery    = fmt.Sprintf(`SELECT %s FROM api.historical_ilk_state ORDER BY block_number`, input.Metadata.Name)
-			insertFieldQuery = fmt.Sprintf(`INSERT INTO api.historical_ilk_state (ilk_identifier, block_number, %s) VALUES ($1, $2, $3)`, input.Metadata.Name)
+			getStateQuery    = `SELECT ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, updated FROM api.ilk_snapshot ORDER BY block_number`
+			getFieldQuery    = fmt.Sprintf(`SELECT %s FROM api.ilk_snapshot ORDER BY block_number`, input.Metadata.Name)
+			insertFieldQuery = fmt.Sprintf(`INSERT INTO api.ilk_snapshot (ilk_identifier, block_number, %s) VALUES ($1, $2, $3)`, input.Metadata.Name)
 			deleteRowQuery   = fmt.Sprintf(`DELETE FROM %s WHERE header_id = $1`, table)
 		)
 
@@ -142,14 +142,14 @@ func SharedIlkTriggerTests(input IlkTriggerTestInput) {
 			err := repo.Create(diffID, headerTwo.Id, input.Metadata, input.PropertyValue)
 			Expect(err).NotTo(HaveOccurred())
 
-			var ilkStates []test_helpers.IlkState
-			queryErr := database.Select(&ilkStates, getStateQuery)
+			var ilkSnapshots []test_helpers.IlkSnapshot
+			queryErr := database.Select(&ilkSnapshots, getStateQuery)
 			Expect(queryErr).NotTo(HaveOccurred())
-			Expect(len(ilkStates)).To(Equal(2))
+			Expect(len(ilkSnapshots)).To(Equal(2))
 			initialIlkValues[input.Metadata.Name] = input.PropertyValue
-			expectedIlk := test_helpers.IlkStateFromValues(test_helpers.FakeIlk.Hex,
+			expectedIlk := test_helpers.IlkSnapshotFromValues(test_helpers.FakeIlk.Hex,
 				headerTwo.Timestamp, headerOne.Timestamp, initialIlkValues)
-			assertIlk(ilkStates[1], expectedIlk, headerTwo.BlockNumber)
+			assertIlk(ilkSnapshots[1], expectedIlk, headerTwo.BlockNumber)
 		})
 
 		It("updates row if ilk-block combination already exists in table", func() {
@@ -159,14 +159,14 @@ func SharedIlkTriggerTests(input IlkTriggerTestInput) {
 			err := repo.Create(diffID, headerOne.Id, input.Metadata, input.PropertyValue)
 			Expect(err).NotTo(HaveOccurred())
 
-			var ilkStates []test_helpers.IlkState
-			queryErr := database.Select(&ilkStates, getStateQuery)
+			var ilkSnapshots []test_helpers.IlkSnapshot
+			queryErr := database.Select(&ilkSnapshots, getStateQuery)
 			Expect(queryErr).NotTo(HaveOccurred())
-			Expect(len(ilkStates)).To(Equal(1))
+			Expect(len(ilkSnapshots)).To(Equal(1))
 			initialIlkValues[input.Metadata.Name] = input.PropertyValue
-			expectedIlk := test_helpers.IlkStateFromValues(test_helpers.FakeIlk.Hex,
+			expectedIlk := test_helpers.IlkSnapshotFromValues(test_helpers.FakeIlk.Hex,
 				headerOne.Timestamp, headerOne.Timestamp, initialIlkValues)
-			assertIlk(ilkStates[0], expectedIlk, headerOne.BlockNumber)
+			assertIlk(ilkSnapshots[0], expectedIlk, headerOne.BlockNumber)
 		})
 
 		It("updates field in subsequent blocks", func() {
@@ -178,11 +178,11 @@ func SharedIlkTriggerTests(input IlkTriggerTestInput) {
 			err := repo.Create(diffID, headerOne.Id, input.Metadata, input.PropertyValue)
 			Expect(err).NotTo(HaveOccurred())
 
-			var ilkStates []test_helpers.IlkState
-			queryErr := database.Select(&ilkStates, getFieldQuery)
+			var ilkSnapshots []test_helpers.IlkSnapshot
+			queryErr := database.Select(&ilkSnapshots, getFieldQuery)
 			Expect(queryErr).NotTo(HaveOccurred())
-			Expect(len(ilkStates)).To(Equal(2))
-			Expect(getIlkProperty(ilkStates[1], input.PropertyName)).To(Equal(input.PropertyValue))
+			Expect(len(ilkSnapshots)).To(Equal(2))
+			Expect(getIlkProperty(ilkSnapshots[1], input.PropertyName)).To(Equal(input.PropertyValue))
 		})
 
 		It("ignores rows from blocks after the next time the field is updated", func() {
@@ -193,11 +193,11 @@ func SharedIlkTriggerTests(input IlkTriggerTestInput) {
 			err := repo.Create(diffID, headerOne.Id, input.Metadata, input.PropertyValue)
 			Expect(err).NotTo(HaveOccurred())
 
-			var ilkStates []test_helpers.IlkState
-			queryErr := database.Select(&ilkStates, getFieldQuery)
+			var ilkSnapshots []test_helpers.IlkSnapshot
+			queryErr := database.Select(&ilkSnapshots, getFieldQuery)
 			Expect(queryErr).NotTo(HaveOccurred())
-			Expect(len(ilkStates)).To(Equal(2))
-			Expect(getIlkProperty(ilkStates[1], input.PropertyName)).To(Equal(initialIlkValues[input.Metadata.Name]))
+			Expect(len(ilkSnapshots)).To(Equal(2))
+			Expect(getIlkProperty(ilkSnapshots[1], input.PropertyName)).To(Equal(initialIlkValues[input.Metadata.Name]))
 		})
 
 		It("ignores rows from different ilk", func() {
@@ -209,11 +209,11 @@ func SharedIlkTriggerTests(input IlkTriggerTestInput) {
 			err := repo.Create(diffID, headerOne.Id, input.Metadata, input.PropertyValue)
 			Expect(err).NotTo(HaveOccurred())
 
-			var ilkStates []test_helpers.IlkState
-			queryErr := database.Select(&ilkStates, getFieldQuery)
+			var ilkSnapshots []test_helpers.IlkSnapshot
+			queryErr := database.Select(&ilkSnapshots, getFieldQuery)
 			Expect(queryErr).NotTo(HaveOccurred())
-			Expect(len(ilkStates)).To(Equal(2))
-			Expect(getIlkProperty(ilkStates[1], input.PropertyName)).To(Equal(initialIlkValues[input.Metadata.Name]))
+			Expect(len(ilkSnapshots)).To(Equal(2))
+			Expect(getIlkProperty(ilkSnapshots[1], input.PropertyName)).To(Equal(initialIlkValues[input.Metadata.Name]))
 		})
 
 		It("ignores rows from earlier blocks", func() {
@@ -225,11 +225,11 @@ func SharedIlkTriggerTests(input IlkTriggerTestInput) {
 			err := repo.Create(diffID, headerTwo.Id, input.Metadata, input.PropertyValue)
 			Expect(err).NotTo(HaveOccurred())
 
-			var ilkStates []test_helpers.IlkState
-			queryErr := database.Select(&ilkStates, getFieldQuery)
+			var ilkSnapshots []test_helpers.IlkSnapshot
+			queryErr := database.Select(&ilkSnapshots, getFieldQuery)
 			Expect(queryErr).NotTo(HaveOccurred())
-			Expect(len(ilkStates)).To(Equal(2))
-			Expect(getIlkProperty(ilkStates[0], input.PropertyName)).To(Equal(initialIlkValues[input.Metadata.Name]))
+			Expect(len(ilkSnapshots)).To(Equal(2))
+			Expect(getIlkProperty(ilkSnapshots[0], input.PropertyName)).To(Equal(initialIlkValues[input.Metadata.Name]))
 		})
 
 		Describe("when diff is deleted", func() {
@@ -248,10 +248,10 @@ func SharedIlkTriggerTests(input IlkTriggerTestInput) {
 				_, deleteErr := database.Exec(deleteRowQuery, headerTwo.Id)
 				Expect(deleteErr).NotTo(HaveOccurred())
 
-				var ilkStates []test_helpers.IlkState
-				queryErr := database.Select(&ilkStates, getFieldQuery)
+				var ilkSnapshots []test_helpers.IlkSnapshot
+				queryErr := database.Select(&ilkSnapshots, getFieldQuery)
 				Expect(queryErr).NotTo(HaveOccurred())
-				Expect(getIlkProperty(ilkStates[1], input.PropertyName)).To(Equal(initialIlkValues[input.Metadata.Name]))
+				Expect(getIlkProperty(ilkSnapshots[1], input.PropertyName)).To(Equal(initialIlkValues[input.Metadata.Name]))
 			})
 
 			It("sets field in subsequent rows to null if no previous diff exists", func() {
@@ -271,7 +271,7 @@ func SharedIlkTriggerTests(input IlkTriggerTestInput) {
 				Expect(fieldValues[0].Valid).To(BeFalse())
 			})
 
-			It("deletes ilk state associated with diff if identical to previous state", func() {
+			It("deletes ilk_snapshot associated with diff if identical to previous snapshot", func() {
 				initialIlkValues := test_helpers.GetIlkValues(0)
 				setupErrOne := repo.Create(diffID, headerOne.Id, input.Metadata, initialIlkValues[input.Metadata.Name])
 				Expect(setupErrOne).NotTo(HaveOccurred())
@@ -286,13 +286,13 @@ func SharedIlkTriggerTests(input IlkTriggerTestInput) {
 				_, deleteErr := database.Exec(deleteRowQuery, headerTwo.Id)
 				Expect(deleteErr).NotTo(HaveOccurred())
 
-				var ilkStates []test_helpers.IlkState
-				queryErr := database.Select(&ilkStates, getFieldQuery)
+				var ilkSnapshots []test_helpers.IlkSnapshot
+				queryErr := database.Select(&ilkSnapshots, getFieldQuery)
 				Expect(queryErr).NotTo(HaveOccurred())
-				Expect(len(ilkStates)).To(Equal(2))
+				Expect(len(ilkSnapshots)).To(Equal(2))
 			})
 
-			It("deletes ilk state associated with diff if it's the earliest state in the table", func() {
+			It("deletes ilk_snapshot associated with diff if it's the earliest snapshot in the table", func() {
 				initialIlkValues := test_helpers.GetIlkValues(0)
 				setupErrOne := repo.Create(diffID, headerOne.Id, input.Metadata, initialIlkValues[input.Metadata.Name])
 				Expect(setupErrOne).NotTo(HaveOccurred())
@@ -300,22 +300,22 @@ func SharedIlkTriggerTests(input IlkTriggerTestInput) {
 				_, deleteErr := database.Exec(deleteRowQuery, headerOne.Id)
 				Expect(deleteErr).NotTo(HaveOccurred())
 
-				var ilkStates []test_helpers.IlkState
-				queryErr := database.Select(&ilkStates, getFieldQuery)
+				var ilkSnapshots []test_helpers.IlkSnapshot
+				queryErr := database.Select(&ilkSnapshots, getFieldQuery)
 				Expect(queryErr).NotTo(HaveOccurred())
-				Expect(len(ilkStates)).To(Equal(0))
+				Expect(len(ilkSnapshots)).To(Equal(0))
 			})
 		})
 	})
 }
 
-func getIlkProperty(ilk test_helpers.IlkState, fieldName string) string {
+func getIlkProperty(ilk test_helpers.IlkSnapshot, fieldName string) string {
 	r := reflect.ValueOf(ilk)
 	property := reflect.Indirect(r).FieldByName(fieldName)
 	return property.String()
 }
 
-func assertIlk(actualIlk test_helpers.IlkState, expectedIlk test_helpers.IlkState, expectedBlockNumber int64) {
+func assertIlk(actualIlk test_helpers.IlkSnapshot, expectedIlk test_helpers.IlkSnapshot, expectedBlockNumber int64) {
 	Expect(actualIlk.IlkIdentifier).To(Equal(expectedIlk.IlkIdentifier))
 	Expect(actualIlk.BlockNumber).To(Equal(strconv.FormatInt(expectedBlockNumber, 10)))
 	Expect(actualIlk.Rate).To(Equal(expectedIlk.Rate))

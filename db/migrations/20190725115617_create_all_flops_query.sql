@@ -1,7 +1,7 @@
 -- +goose Up
 -- +goose StatementBegin
 CREATE OR REPLACE FUNCTION api.all_flops(max_results INTEGER DEFAULT NULL, result_offset INTEGER DEFAULT 0)
-    RETURNS SETOF api.flop_state
+    RETURNS SETOF api.flop_bid_snapshot
 AS
 $BODY$
 BEGIN

@@ -133,7 +133,7 @@ type TestIlk struct {
 	Identifier string
 }
 
-type IlkState struct {
+type IlkSnapshot struct {
 	IlkIdentifier string `db:"ilk_identifier"`
 	BlockNumber   string `db:"block_number"`
 	Rate          string
@@ -170,14 +170,14 @@ func GetIlkValues(seed int) map[string]interface{} {
 	return valuesMap
 }
 
-func IlkStateFromValues(ilk, updated, created string, ilkValues map[string]interface{}) IlkState {
+func IlkSnapshotFromValues(ilk, updated, created string, ilkValues map[string]interface{}) IlkSnapshot {
 	parsedCreated, _ := strconv.ParseInt(created, 10, 64)
 	parsedUpdated, _ := strconv.ParseInt(updated, 10, 64)
 	createdTimestamp := time.Unix(parsedCreated, 0).UTC().Format(time.RFC3339)
 	updatedTimestamp := time.Unix(parsedUpdated, 0).UTC().Format(time.RFC3339)
 
 	ilkIdentifier := shared.DecodeHexToText(ilk)
-	return IlkState{
+	return IlkSnapshot{
 		IlkIdentifier: ilkIdentifier,
 		Rate:          ilkValues[vat.IlkRate].(string),
 		Art:           ilkValues[vat.IlkArt].(string),
@@ -234,9 +234,7 @@ func CreateIlk(db *postgres.DB, header core.Header, valuesMap map[string]interfa
 	CreateCatRecords(db, header, valuesMap, catMetadatas, catRepo)
 	CreateJugRecords(db, header, valuesMap, jugMetadatas, jugRepo)
 	CreateSpotRecords(db, header, valuesMap, spotMetadatas, spotRepo)
-	if len(vatMetadatas) >= 1 {
-		CreateVatInit(db, header.Id, vatMetadatas[0].Keys[constants.Ilk])
-	}
+	CreateVatInit(db, header.Id, vatMetadatas[0].Keys[constants.Ilk])
 }
 
 func CreateVatInit(db *postgres.DB, headerID int64, ilkHex string) event.InsertionModel {

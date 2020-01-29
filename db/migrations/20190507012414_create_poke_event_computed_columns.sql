@@ -3,10 +3,10 @@
 
 -- Extend type poke_event with ilk field
 CREATE FUNCTION api.poke_event_ilk(event api.poke_event)
-    RETURNS api.historical_ilk_state AS
+    RETURNS api.ilk_snapshot AS
 $$
 SELECT i.*
-FROM api.historical_ilk_state i
+FROM api.ilk_snapshot i
          LEFT JOIN maker.ilks ON ilks.identifier = i.ilk_identifier
 WHERE ilks.id = event.ilk_id
   AND i.block_number <= event.block_height

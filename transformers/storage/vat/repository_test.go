@@ -544,7 +544,7 @@ var _ = Describe("Vat storage repository", func() {
 			Expect(err).To(MatchError(types.ErrMetadataMalformed{MissingData: constants.Guy}))
 		})
 
-		Describe("updating historical_ilk_state trigger table", func() {
+		Describe("updating urn_snapshot trigger table", func() {
 			var (
 				blockOne,
 				blockTwo,
@@ -555,9 +555,9 @@ var _ = Describe("Vat storage repository", func() {
 				hashOne        = common.BytesToHash([]byte{1, 2, 3, 4, 5})
 				hashTwo        = common.BytesToHash([]byte{5, 4, 3, 2, 1})
 				hashThree      = common.BytesToHash([]byte{9, 8, 7, 6, 5})
-				getStateQuery  = `SELECT urn_identifier, ilk_identifier, block_height, ink, art, created, updated FROM api.historical_urn_state ORDER BY block_height`
-				getArtQuery    = `SELECT art FROM api.historical_urn_state ORDER BY block_height`
-				insertArtQuery = `INSERT INTO api.historical_urn_state (urn_identifier, ilk_identifier, block_height, art, updated) VALUES ($1, $2, $3, $4, NOW())`
+				getStateQuery  = `SELECT urn_identifier, ilk_identifier, block_height, ink, art, created, updated FROM api.urn_snapshot ORDER BY block_height`
+				getArtQuery    = `SELECT art FROM api.urn_snapshot ORDER BY block_height`
+				insertArtQuery = `INSERT INTO api.urn_snapshot (urn_identifier, ilk_identifier, block_height, art, updated) VALUES ($1, $2, $3, $4, NOW())`
 				deleteRowQuery = fmt.Sprintf(`DELETE FROM %s WHERE header_id = $1`, shared.GetFullTableName(constants.MakerSchema, constants.VatUrnArtTable))
 				urnArtMetadata = types.GetValueMetadata(vat.UrnArt, map[types.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex, constants.Guy: fakeGuy}, types.Uint256)
 			)
@@ -585,7 +585,7 @@ var _ = Describe("Vat storage repository", func() {
 
 				var timeCreated sql.NullString
 				queryErr := db.Get(&timeCreated,
-					`SELECT created FROM api.historical_urn_state WHERE block_height = $1`, headerTwo.BlockNumber)
+					`SELECT created FROM api.urn_snapshot WHERE block_height = $1`, headerTwo.BlockNumber)
 				Expect(queryErr).NotTo(HaveOccurred())
 				Expect(timeCreated).To(Equal(expectedTimeCreated))
 			})
@@ -732,7 +732,7 @@ var _ = Describe("Vat storage repository", func() {
 					Expect(actualArts[0].Valid).To(BeFalse())
 				})
 
-				It("deletes ilk state associated with diff if identical to previous state", func() {
+				It("deletes urn state associated with diff if identical to previous state", func() {
 					initialArt := rand.Int()
 					setupErrOne := repo.Create(diffID, headerOne.Id, urnArtMetadata, strconv.Itoa(initialArt))
 					Expect(setupErrOne).NotTo(HaveOccurred())
@@ -753,7 +753,7 @@ var _ = Describe("Vat storage repository", func() {
 					Expect(len(urnStates)).To(Equal(2))
 				})
 
-				It("deletes ilk state associated with diff if it's the earliest state in the table", func() {
+				It("deletes urn state associated with diff if it's the earliest state in the table", func() {
 					initialArt := rand.Int()
 					setupErrOne := repo.Create(diffID, headerOne.Id, urnArtMetadata, strconv.Itoa(initialArt))
 					Expect(setupErrOne).NotTo(HaveOccurred())
@@ -823,7 +823,7 @@ var _ = Describe("Vat storage repository", func() {
 			Expect(err).To(MatchError(types.ErrMetadataMalformed{MissingData: constants.Guy}))
 		})
 
-		Describe("updating historical_ilk_state trigger table", func() {
+		Describe("updating urn_snapshot trigger table", func() {
 			var (
 				blockOne,
 				blockTwo,
@@ -834,9 +834,9 @@ var _ = Describe("Vat storage repository", func() {
 				hashOne        = common.BytesToHash([]byte{1, 2, 3, 4, 5})
 				hashTwo        = common.BytesToHash([]byte{5, 4, 3, 2, 1})
 				hashThree      = common.BytesToHash([]byte{9, 8, 7, 6, 5})
-				getStateQuery  = `SELECT urn_identifier, ilk_identifier, block_height, ink, art, created, updated FROM api.historical_urn_state ORDER BY block_height`
-				getInkQuery    = `SELECT ink FROM api.historical_urn_state ORDER BY block_height`
-				insertInkQuery = `INSERT INTO api.historical_urn_state (urn_identifier, ilk_identifier, block_height, ink, updated) VALUES ($1, $2, $3, $4, NOW())`
+				getStateQuery  = `SELECT urn_identifier, ilk_identifier, block_height, ink, art, created, updated FROM api.urn_snapshot ORDER BY block_height`
+				getInkQuery    = `SELECT ink FROM api.urn_snapshot ORDER BY block_height`
+				insertInkQuery = `INSERT INTO api.urn_snapshot (urn_identifier, ilk_identifier, block_height, ink, updated) VALUES ($1, $2, $3, $4, NOW())`
 				deleteRowQuery = fmt.Sprintf(`DELETE FROM %s WHERE header_id = $1`, shared.GetFullTableName(constants.MakerSchema, constants.VatUrnInkTable))
 				urnInkMetadata = types.GetValueMetadata(vat.UrnInk, map[types.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex, constants.Guy: fakeGuy}, types.Uint256)
 			)
@@ -860,7 +860,7 @@ var _ = Describe("Vat storage repository", func() {
 				expectedTimeCreated := test_helpers.GetValidNullString(FormatTimestamp(rawTimestampOne))
 
 				var timeCreatedValues []sql.NullString
-				queryErr := db.Select(&timeCreatedValues, `SELECT created FROM api.historical_urn_state`)
+				queryErr := db.Select(&timeCreatedValues, `SELECT created FROM api.urn_snapshot`)
 				Expect(queryErr).NotTo(HaveOccurred())
 
 				Expect(len(timeCreatedValues)).To(Equal(2))
@@ -878,7 +878,7 @@ var _ = Describe("Vat storage repository", func() {
 				expectedTimeCreated := test_helpers.GetValidNullString(FormatTimestamp(rawTimestampTwo))
 
 				var timeCreatedValues []sql.NullString
-				queryErr := db.Select(&timeCreatedValues, `SELECT created FROM api.historical_urn_state`)
+				queryErr := db.Select(&timeCreatedValues, `SELECT created FROM api.urn_snapshot`)
 				Expect(queryErr).NotTo(HaveOccurred())
 				Expect(len(timeCreatedValues)).To(Equal(2))
 				Expect(timeCreatedValues[0]).To(Equal(expectedTimeCreated))
@@ -1027,7 +1027,7 @@ var _ = Describe("Vat storage repository", func() {
 					Expect(actualInks[0].Valid).To(BeFalse())
 				})
 
-				It("deletes ilk state associated with diff if identical to previous state", func() {
+				It("deletes urn state associated with diff if identical to previous state", func() {
 					initialInk := rand.Int()
 					setupErrOne := repo.Create(diffID, headerOne.Id, urnInkMetadata, strconv.Itoa(initialInk))
 					Expect(setupErrOne).NotTo(HaveOccurred())
@@ -1048,7 +1048,7 @@ var _ = Describe("Vat storage repository", func() {
 					Expect(len(urnStates)).To(Equal(2))
 				})
 
-				It("deletes ilk state associated with diff if it's the earliest state in the table", func() {
+				It("deletes urn state associated with diff if it's the earliest state in the table", func() {
 					initialInk := rand.Int()
 					setupErrOne := repo.Create(diffID, headerOne.Id, urnInkMetadata, strconv.Itoa(initialInk))
 					Expect(setupErrOne).NotTo(HaveOccurred())
@@ -1079,7 +1079,7 @@ var _ = Describe("Vat storage repository", func() {
 					Expect(deleteErr).NotTo(HaveOccurred())
 
 					var actualCreatedValues []sql.NullString
-					queryErr := db.Select(&actualCreatedValues, `SELECT created FROM api.historical_urn_state`)
+					queryErr := db.Select(&actualCreatedValues, `SELECT created FROM api.urn_snapshot`)
 					Expect(queryErr).NotTo(HaveOccurred())
 					Expect(len(actualCreatedValues)).To(Equal(2))
 					Expect(actualCreatedValues[0]).To(Equal(expectedTimeCreated))
