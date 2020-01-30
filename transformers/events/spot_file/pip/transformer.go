@@ -47,7 +47,11 @@ func (Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) ([]
 		if getErr != nil {
 			return nil, getErr
 		}
-		pip := common.BytesToAddress(pipBytes)
+		pipAddress := common.BytesToAddress(pipBytes)
+		addressID, addressErr := shared.GetOrCreateAddress(pipAddress.Hex(), db)
+		if addressErr != nil {
+			return nil, addressErr
+		}
 
 		model := event.InsertionModel{
 			SchemaName: constants.MakerSchema,
@@ -64,7 +68,7 @@ func (Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) ([]
 				event.LogFK:          log.ID,
 				constants.IlkColumn:  ilkID,
 				constants.WhatColumn: what,
-				constants.PipColumn:  pip.Hex(),
+				constants.PipColumn:  addressID,
 			},
 		}
 		models = append(models, model)

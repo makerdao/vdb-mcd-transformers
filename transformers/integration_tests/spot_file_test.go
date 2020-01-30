@@ -151,13 +151,17 @@ var _ = Describe("SpotFile EventTransformers", func() {
 
 		It("fetches and transforms a Spot.file pip event", func() {
 			var dbResult spotFilePipModel
-			getSpotErr := db.Get(&dbResult, `SELECT ilk_id, pip from maker.spot_file_pip`)
+			getSpotErr := db.Get(&dbResult, `SELECT ilk_id, what, pip from maker.spot_file_pip`)
 			Expect(getSpotErr).NotTo(HaveOccurred())
 
 			ilkID, ilkErr := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
 			Expect(ilkErr).NotTo(HaveOccurred())
+
+			addressID, addressErr := shared.GetOrCreateAddress("0x81FE72B5A8d1A857d176C3E7d5Bd2679A9B85763", db)
+			Expect(addressErr).NotTo(HaveOccurred())
 			Expect(dbResult.Ilk).To(Equal(strconv.FormatInt(ilkID, 10)))
-			Expect(dbResult.Pip).To(Equal("0x81FE72B5A8d1A857d176C3E7d5Bd2679A9B85763"))
+			Expect(dbResult.What).To(Equal("pip"))
+			Expect(dbResult.Pip).To(Equal(strconv.FormatInt(addressID, 10)))
 		})
 	})
 })
@@ -169,6 +173,7 @@ type spotFileMatModel struct {
 }
 
 type spotFilePipModel struct {
-	Ilk string `db:"ilk_id"`
-	Pip string
+	Ilk  string `db:"ilk_id"`
+	What string
+	Pip  string
 }

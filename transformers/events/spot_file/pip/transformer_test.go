@@ -17,9 +17,11 @@
 package pip_test
 
 import (
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/spot_file/pip"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
@@ -55,8 +57,16 @@ var _ = Describe("Spot file pip transformer", func() {
 		var ilkID int64
 		ilkErr := db.Get(&ilkID, `SELECT id FROM maker.ilks where ilk = $1`, test_data.SpotFilePipEventLog.Log.Topics[2].Hex())
 		Expect(ilkErr).NotTo(HaveOccurred())
+
+		pipBytes, getErr := shared.GetLogNoteArgumentAtIndex(2, test_data.SpotFilePipEventLog.Log.Data)
+		pipAddress := common.BytesToAddress(pipBytes)
+		Expect(getErr).NotTo(HaveOccurred())
+
+		addressID, addressErr := shared.GetOrCreateAddress(pipAddress.Hex(), db)
+		Expect(addressErr).NotTo(HaveOccurred())
 		expectedModel := test_data.SpotFilePipModel()
 		expectedModel.ColumnValues[constants.IlkColumn] = ilkID
+		expectedModel.ColumnValues[constants.PipColumn] = addressID
 
 		Expect(models).To(Equal([]event.InsertionModel{expectedModel}))
 	})
