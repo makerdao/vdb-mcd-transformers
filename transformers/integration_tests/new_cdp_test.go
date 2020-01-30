@@ -17,9 +17,12 @@
 package integration_tests
 
 import (
+	"strconv"
+
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/new_cdp"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	mcdConstants "github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
@@ -69,9 +72,15 @@ var _ = Describe("NewCdp Transformer", func() {
 		queryErr := db.Select(&dbResult, `SELECT usr, own, cdp FROM maker.new_cdp`)
 		Expect(queryErr).NotTo(HaveOccurred())
 
+		usrAddressID, usrAddressErr := shared.GetOrCreateAddress("0xc73e0383F3Aff3215E6f04B0331D58CeCf0Ab849", db)
+		Expect(usrAddressErr).NotTo(HaveOccurred())
+
+		ownAddressID, ownAddressErr := shared.GetOrCreateAddress("0xc73e0383F3Aff3215E6f04B0331D58CeCf0Ab849", db)
+		Expect(ownAddressErr).NotTo(HaveOccurred())
+
 		Expect(len(dbResult)).To(Equal(1))
-		Expect(dbResult[0].Usr).To(Equal("0xc73e0383F3Aff3215E6f04B0331D58CeCf0Ab849"))
-		Expect(dbResult[0].Own).To(Equal("0xc73e0383F3Aff3215E6f04B0331D58CeCf0Ab849"))
+		Expect(dbResult[0].Usr).To(Equal(strconv.FormatInt(usrAddressID, 10)))
+		Expect(dbResult[0].Own).To(Equal(strconv.FormatInt(ownAddressID, 10)))
 		Expect(dbResult[0].Cdp).To(Equal("3881"))
 	})
 })

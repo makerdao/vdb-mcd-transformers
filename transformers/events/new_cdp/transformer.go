@@ -55,13 +55,23 @@ func (Transformer) toEntities(contractAbi string, logs []core.EventLog) ([]NewCd
 	return entities, nil
 }
 
-func (t Transformer) ToModels(abi string, logs []core.EventLog, _ *postgres.DB) ([]event.InsertionModel, error) {
+func (t Transformer) ToModels(abi string, logs []core.EventLog, db *postgres.DB) ([]event.InsertionModel, error) {
 	entities, entityErr := t.toEntities(abi, logs)
 	if entityErr != nil {
 		return nil, fmt.Errorf("NewCDP transformer couldn't convert logs to entities: %v", entityErr)
 	}
 	var models []event.InsertionModel
 	for _, newCdpEntity := range entities {
+
+		usrAddressID, usrAddressErr := shared.GetOrCreateAddress(newCdpEntity.Usr.Hex(), db)
+		if usrAddressErr != nil {
+			return nil, usrAddressErr
+		}
+		ownAddressID, ownAddressErr := shared.GetOrCreateAddress(newCdpEntity.Own.Hex(), db)
+		if ownAddressErr != nil {
+			return nil, ownAddressErr
+		}
+
 		model := event.InsertionModel{
 			SchemaName: constants.MakerSchema,
 			TableName:  constants.NewCdpTable,
@@ -71,8 +81,8 @@ func (t Transformer) ToModels(abi string, logs []core.EventLog, _ *postgres.DB) 
 			ColumnValues: event.ColumnValues{
 				event.HeaderFK:      newCdpEntity.HeaderID,
 				event.LogFK:         newCdpEntity.LogID,
-				constants.UsrColumn: newCdpEntity.Usr.Hex(),
-				constants.OwnColumn: newCdpEntity.Own.Hex(),
+				constants.UsrColumn: usrAddressID,
+				constants.OwnColumn: ownAddressID,
 				constants.CdpColumn: shared.BigIntToString(newCdpEntity.Cdp),
 			},
 		}

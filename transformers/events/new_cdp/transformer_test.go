@@ -17,7 +17,9 @@
 package new_cdp_test
 
 import (
+	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/new_cdp"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/pkg/core"
@@ -26,13 +28,25 @@ import (
 )
 
 var _ = Describe("NewCdp Transformer", func() {
-	var transformer = new_cdp.Transformer{}
+	var (
+		transformer = new_cdp.Transformer{}
+		db          = test_config.NewTestDB(test_config.NewTestNode())
+	)
 
 	It("converts a log to a Model", func() {
-		models, err := transformer.ToModels(constants.CdpManagerABI(), []core.EventLog{test_data.NewCdpEventLog}, nil)
+		models, err := transformer.ToModels(constants.CdpManagerABI(), []core.EventLog{test_data.NewCdpEventLog}, db)
 		Expect(err).NotTo(HaveOccurred())
 
-		Expect(models).To(ConsistOf(test_data.NewCdpModel()))
+		var usrAddressID, ownAddressID int64
+		usrAddressID, usrAddressErr := shared.GetOrCreateAddress(test_data.NewCdpEventLog.Log.Topics[1].Hex(), db)
+		Expect(usrAddressErr).NotTo(HaveOccurred())
+		ownAddressID, ownAddressErr := shared.GetOrCreateAddress(test_data.NewCdpEventLog.Log.Topics[2].Hex(), db)
+		Expect(ownAddressErr).NotTo(HaveOccurred())
+		expectedModel := test_data.NewCdpModel()
+		expectedModel.ColumnValues[constants.UsrColumn] = usrAddressID
+		expectedModel.ColumnValues[constants.OwnColumn] = ownAddressID
+
+		Expect(models).To(ConsistOf(expectedModel))
 	})
 
 	It("returns an error if converting log to entity fails", func() {
