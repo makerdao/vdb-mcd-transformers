@@ -3,6 +3,8 @@
 package main
 
 import (
+	deny "github.com/makerdao/vdb-mcd-transformers/transformers/events/auth/deny_initializer"
+	rely "github.com/makerdao/vdb-mcd-transformers/transformers/events/auth/rely_initializer"
 	bite "github.com/makerdao/vdb-mcd-transformers/transformers/events/bite/initializer"
 	cat_file_chop_lump "github.com/makerdao/vdb-mcd-transformers/transformers/events/cat_file/chop_lump/initializer"
 	cat_file_flip "github.com/makerdao/vdb-mcd-transformers/transformers/events/cat_file/flip/initializer"
@@ -31,6 +33,8 @@ import (
 	spot_poke "github.com/makerdao/vdb-mcd-transformers/transformers/events/spot_poke/initializer"
 	tend "github.com/makerdao/vdb-mcd-transformers/transformers/events/tend/initializer"
 	tick "github.com/makerdao/vdb-mcd-transformers/transformers/events/tick/initializer"
+	vat_deny "github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_auth/deny_initializer"
+	vat_rely "github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_auth/rely_initializer"
 	vat_file_debt_ceiling "github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_file/debt_ceiling/initializer"
 	vat_file_ilk "github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_file/ilk/initializer"
 	vat_flux "github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_flux/initializer"
@@ -47,18 +51,6 @@ import (
 	vow_file "github.com/makerdao/vdb-mcd-transformers/transformers/events/vow_file/initializer"
 	vow_flog "github.com/makerdao/vdb-mcd-transformers/transformers/events/vow_flog/initializer"
 	yank "github.com/makerdao/vdb-mcd-transformers/transformers/events/yank/initializer"
-	cat "github.com/makerdao/vdb-mcd-transformers/transformers/storage/cat/initializer"
-	cdp_manager "github.com/makerdao/vdb-mcd-transformers/transformers/storage/cdp_manager/initializer"
-	flap_storage "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flap/initializer"
-	bat_flip "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/bat_flip"
-	eth_flip_a "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/eth_flip_a"
-	sai_flip "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/sai_flip"
-	flop_storage "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flop/initializer"
-	jug "github.com/makerdao/vdb-mcd-transformers/transformers/storage/jug/initializer"
-	pot "github.com/makerdao/vdb-mcd-transformers/transformers/storage/pot/initializer"
-	spot "github.com/makerdao/vdb-mcd-transformers/transformers/storage/spot/initializer"
-	vat "github.com/makerdao/vdb-mcd-transformers/transformers/storage/vat/initializer"
-	vow "github.com/makerdao/vdb-mcd-transformers/transformers/storage/vow/initializer"
 	interface1 "github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 )
 
@@ -74,6 +66,7 @@ func (e exporter) Export() ([]interface1.EventTransformerInitializer, []interfac
 			cat_file_vow.EventTransformerInitializer,
 			deal.EventTransformerInitializer,
 			dent.EventTransformerInitializer,
+			deny.EventTransformerInitializer,
 			flap_kick.EventTransformerInitializer,
 			flip_kick.EventTransformerInitializer,
 			flop_kick.EventTransformerInitializer,
@@ -90,12 +83,14 @@ func (e exporter) Export() ([]interface1.EventTransformerInitializer, []interfac
 			pot_file_dsr.EventTransformerInitializer,
 			pot_file_vow.EventTransformerInitializer,
 			pot_join.EventTransformerInitializer,
+			rely.EventTransformerInitializer,
 			spot_file_mat.EventTransformerInitializer,
 			spot_file_par.EventTransformerInitializer,
 			spot_file_pip.EventTransformerInitializer,
 			spot_poke.EventTransformerInitializer,
 			tend.EventTransformerInitializer,
 			tick.EventTransformerInitializer,
+			vat_deny.EventTransformerInitializer,
 			vat_file_debt_ceiling.EventTransformerInitializer,
 			vat_file_ilk.EventTransformerInitializer,
 			vat_flux.EventTransformerInitializer,
@@ -106,6 +101,7 @@ func (e exporter) Export() ([]interface1.EventTransformerInitializer, []interfac
 			vat_heal.EventTransformerInitializer,
 			vat_init.EventTransformerInitializer,
 			vat_move.EventTransformerInitializer,
+			vat_rely.EventTransformerInitializer,
 			vat_slip.EventTransformerInitializer,
 			vat_suck.EventTransformerInitializer,
 			vow_fess.EventTransformerInitializer,
@@ -113,19 +109,6 @@ func (e exporter) Export() ([]interface1.EventTransformerInitializer, []interfac
 			vow_flog.EventTransformerInitializer,
 			yank.EventTransformerInitializer,
 		},
-		[]interface1.StorageTransformerInitializer{
-			bat_flip.StorageTransformerInitializer,
-			cat.StorageTransformerInitializer,
-			cdp_manager.StorageTransformerInitializer,
-			eth_flip_a.StorageTransformerInitializer,
-			flap_storage.StorageTransformerInitializer,
-			flop_storage.StorageTransformerInitializer,
-			jug.StorageTransformerInitializer,
-			pot.StorageTransformerInitializer,
-			sai_flip.StorageTransformerInitializer,
-			spot.StorageTransformerInitializer,
-			vat.StorageTransformerInitializer,
-			vow.StorageTransformerInitializer,
-		},
+		[]interface1.StorageTransformerInitializer{},
 		[]interface1.ContractTransformerInitializer{}
 }

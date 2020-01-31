@@ -3,18 +3,6 @@
     name     = "transformerExporter"
     save     = false
     transformerNames = [
-        "cat",
-        "cdp_manager",
-        "flap_storage",
-        "flop_storage",
-        "bat_flip",
-        "eth_flip_a",
-        "sai_flip",
-        "jug",
-        "pot",
-        "spot",
-        "vat",
-        "vow",
         "bite",
         "cat_file_chop_lump",
         "cat_file_flip",
@@ -65,78 +53,6 @@
         "yank"
     ]
 
-    [exporter.cat]
-        path = "transformers/storage/cat/initializer"
-        type = "eth_storage"
-        repository = "github.com/makerdao/vdb-mcd-transformers"
-        migrations = "db/migrations"
-        rank = "0"
-    [exporter.cdp_manager]
-        path = "transformers/storage/cdp_manager/initializer"
-        type = "eth_storage"
-        repository = "github.com/makerdao/vdb-mcd-transformers"
-        migrations = "db/migrations"
-        rank = "0"
-    [exporter.flap_storage]
-        path = "transformers/storage/flap/initializer"
-        type = "eth_storage"
-        repository = "github.com/makerdao/vdb-mcd-transformers"
-        migrations = "db/migrations"
-        rank = "0"
-    [exporter.flop_storage]
-        path = "transformers/storage/flop/initializer"
-        type = "eth_storage"
-        repository = "github.com/makerdao/vdb-mcd-transformers"
-        migrations = "db/migrations"
-        rank = "0"
-    [exporter.bat_flip]
-        path = "transformers/storage/flip/initializers/bat_flip"
-        type = "eth_storage"
-        repository = "github.com/makerdao/vdb-mcd-transformers"
-        migrations = "db/migrations"
-        rank = "0"
-    [exporter.eth_flip_a]
-        path = "transformers/storage/flip/initializers/eth_flip_a"
-        type = "eth_storage"
-        repository = "github.com/makerdao/vdb-mcd-transformers"
-        migrations = "db/migrations"
-        rank = "0"
-    [exporter.sai_flip]
-        path = "transformers/storage/flip/initializers/sai_flip"
-        type = "eth_storage"
-        repository = "github.com/makerdao/vdb-mcd-transformers"
-        migrations = "db/migrations"
-        rank = "0"
-    [exporter.jug]
-        path = "transformers/storage/jug/initializer"
-        type = "eth_storage"
-        repository = "github.com/makerdao/vdb-mcd-transformers"
-        migrations = "db/migrations"
-        rank = "0"
-    [exporter.pot]
-        path = "transformers/storage/pot/initializer"
-        type = "eth_storage"
-        repository = "github.com/makerdao/vdb-mcd-transformers"
-        migrations = "db/migrations"
-        rank = "0"
-    [exporter.spot]
-        path = "transformers/storage/spot/initializer"
-        type = "eth_storage"
-        repository = "github.com/makerdao/vdb-mcd-transformers"
-        migrations = "db/migrations"
-        rank = "0"
-    [exporter.vat]
-        path = "transformers/storage/vat/initializer"
-        type = "eth_storage"
-        repository = "github.com/makerdao/vdb-mcd-transformers"
-        migrations = "db/migrations"
-        rank = "0"
-    [exporter.vow]
-        path = "transformers/storage/vow/initializer"
-        type = "eth_storage"
-        repository = "github.com/makerdao/vdb-mcd-transformers"
-        migrations = "db/migrations"
-        rank = "0"
     [exporter.bite]
         path = "transformers/events/bite/initializer"
         type = "eth_event"
