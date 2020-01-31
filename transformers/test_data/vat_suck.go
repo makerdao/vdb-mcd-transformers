@@ -54,7 +54,9 @@ var VatSuckEventLog = core.EventLog{
 	Transformed: false,
 }
 
-var VatSuckModel = event.InsertionModel{
+func VatSuckModel() event.InsertionModel { return CopyModel(vatSuckModel) }
+
+var vatSuckModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.VatSuckTable,
 	OrderedColumns: []event.ColumnName{

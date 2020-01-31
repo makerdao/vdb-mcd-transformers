@@ -27,7 +27,7 @@ import (
 
 type Transformer struct{}
 
-func (Transformer) ToModels(_ string, logs []core.EventLog, _ *postgres.DB) ([]event.InsertionModel, error) {
+func (Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) ([]event.InsertionModel, error) {
 	var models []event.InsertionModel
 	for _, log := range logs {
 		err := shared.VerifyLog(log.Log, shared.FourTopicsRequired, shared.LogDataNotRequired)
@@ -36,7 +36,15 @@ func (Transformer) ToModels(_ string, logs []core.EventLog, _ *postgres.DB) ([]e
 		}
 
 		u := common.BytesToAddress(log.Log.Topics[1].Bytes()).String()
+		uID, uErr := shared.GetOrCreateAddress(u, db)
+		if uErr != nil {
+			return nil, uErr
+		}
 		v := common.BytesToAddress(log.Log.Topics[2].Bytes()).String()
+		vID, vErr := shared.GetOrCreateAddress(v, db)
+		if vErr != nil {
+			return nil, vErr
+		}
 		radInt := shared.ConvertUint256HexToBigInt(log.Log.Topics[3].Hex())
 
 		model := event.InsertionModel{
@@ -48,8 +56,8 @@ func (Transformer) ToModels(_ string, logs []core.EventLog, _ *postgres.DB) ([]e
 			ColumnValues: event.ColumnValues{
 				event.HeaderFK:      log.HeaderID,
 				event.LogFK:         log.ID,
-				constants.UColumn:   u,
-				constants.VColumn:   v,
+				constants.UColumn:   uID,
+				constants.VColumn:   vID,
 				constants.RadColumn: radInt.String(),
 			},
 		}

@@ -19,7 +19,9 @@ package vat_suck_test
 import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_suck"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/pkg/core"
@@ -28,14 +30,27 @@ import (
 )
 
 var _ = Describe("VatSuck transformer", func() {
-	var transformer = vat_suck.Transformer{}
+	var (
+		transformer = vat_suck.Transformer{}
+		db          = test_config.NewTestDB(test_config.NewTestNode())
+	)
 
 	It("Converts log to a model", func() {
-		models, err := transformer.ToModels(constants.VatABI(), []core.EventLog{test_data.VatSuckEventLog}, nil)
-
+		models, err := transformer.ToModels(constants.VatABI(), []core.EventLog{test_data.VatSuckEventLog}, db)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(len(models)).To(Equal(1))
-		Expect(models[0]).To(Equal(test_data.VatSuckModel))
+
+		u := common.BytesToAddress(test_data.VatSuckEventLog.Log.Topics[1].Bytes()).String()
+		uID, uErr := shared.GetOrCreateAddress(u, db)
+		Expect(uErr).NotTo(HaveOccurred())
+		v := common.BytesToAddress(test_data.VatSuckEventLog.Log.Topics[2].Bytes()).String()
+		vID, vErr := shared.GetOrCreateAddress(v, db)
+		Expect(vErr).NotTo(HaveOccurred())
+
+		expectedModel := test_data.VatSuckModel()
+		expectedModel.ColumnValues[constants.UColumn] = uID
+		expectedModel.ColumnValues[constants.VColumn] = vID
+		Expect(models[0]).To(Equal(expectedModel))
 	})
 
 	It("Returns an error if there are missing topics", func() {

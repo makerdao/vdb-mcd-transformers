@@ -20,6 +20,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_suck"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
@@ -27,6 +28,7 @@ import (
 	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"strconv"
 )
 
 var _ = Describe("VatSuck Transformer", func() {
@@ -66,11 +68,16 @@ var _ = Describe("VatSuck Transformer", func() {
 		var dbResults []vatSuckModel
 		err = db.Select(&dbResults, `SELECT u, v, rad from maker.vat_suck`)
 		Expect(err).NotTo(HaveOccurred())
-
 		Expect(len(dbResults)).To(Equal(1))
+
+		uID, uErr := shared.GetOrCreateAddress("0xA950524441892A31ebddF91d3cEEFa04Bf454466", db)
+		Expect(uErr).NotTo(HaveOccurred())
+		vID, vErr := shared.GetOrCreateAddress("0x197E90f9FAD81970bA7976f33CbD77088E5D7cf7", db)
+		Expect(vErr).NotTo(HaveOccurred())
+
 		dbResult := dbResults[0]
-		Expect(dbResult.U).To(Equal("0xA950524441892A31ebddF91d3cEEFa04Bf454466"))
-		Expect(dbResult.V).To(Equal("0x197E90f9FAD81970bA7976f33CbD77088E5D7cf7"))
+		Expect(dbResult.U).To(Equal(strconv.FormatInt(uID, 10)))
+		Expect(dbResult.V).To(Equal(strconv.FormatInt(vID, 10)))
 		Expect(dbResult.Rad).To(Equal("4332795804245033237727555911778362823964149575"))
 	})
 })
