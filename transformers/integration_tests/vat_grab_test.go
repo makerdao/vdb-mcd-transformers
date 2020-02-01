@@ -76,8 +76,18 @@ var _ = Describe("Vat Grab Transformer", func() {
 			"0x4554482d41000000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(dbResult[0].Urn).To(Equal(strconv.FormatInt(urnID, 10)))
-		Expect(dbResult[0].V).To(Equal(test_data.CatAddress())) //cat contract address as bytes32
-		Expect(dbResult[0].W).To(Equal("0xA950524441892A31ebddF91d3cEEFa04Bf454466"))
+
+		v := test_data.CatAddress() //cat contract address as bytes32
+		vID, vErr := shared.GetOrCreateAddress(v, db)
+		Expect(vErr).NotTo(HaveOccurred())
+		Expect(dbResult[0].V).To(Equal(strconv.FormatInt(vID, 10)))
+
+		wBytes, wErr := shared.GetLogNoteArgumentAtIndex(3, logs[0].Data)
+		w := common.BytesToAddress(wBytes).String()
+		wID, wErr := shared.GetOrCreateAddress(w, db)
+		Expect(wErr).NotTo(HaveOccurred())
+		Expect(dbResult[0].W).To(Equal(strconv.FormatInt(wID, 10)))
+
 		expectedDink := new(big.Int)
 		expectedDink.SetString("-50000000000000000000", 10)
 		Expect(dbResult[0].Dink).To(Equal(expectedDink.String()))

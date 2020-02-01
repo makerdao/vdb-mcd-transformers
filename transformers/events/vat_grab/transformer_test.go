@@ -69,8 +69,19 @@ var _ = Describe("Vat grab transformer", func() {
 		urnID, urnErr := shared.GetOrCreateUrn(urn, ilk, db)
 		Expect(urnErr).NotTo(HaveOccurred())
 
+		v := common.BytesToAddress(log[0].Log.Topics[3].Bytes()).String()
+		vID, vErr := shared.GetOrCreateAddress(v, db)
+		Expect(vErr).NotTo(HaveOccurred())
+
+		wBytes, wErr := shared.GetLogNoteArgumentAtIndex(3, log[0].Log.Data)
+		w := common.BytesToAddress(wBytes).String()
+		wID, wErr := shared.GetOrCreateAddress(w, db)
+		Expect(wErr).NotTo(HaveOccurred())
+
 		expectedModel := test_data.VatGrabModelWithPositiveDink()
 		expectedModel.ColumnValues[constants.UrnColumn] = urnID
+		expectedModel.ColumnValues[constants.VColumn] = vID
+		expectedModel.ColumnValues[constants.WColumn] = wID
 
 		Expect(len(models)).To(Equal(1))
 		Expect(models[0]).To(Equal(expectedModel))
@@ -86,8 +97,19 @@ var _ = Describe("Vat grab transformer", func() {
 		urnID, urnErr := shared.GetOrCreateUrn(urn, ilk, db)
 		Expect(urnErr).NotTo(HaveOccurred())
 
+		v := common.BytesToAddress(log[0].Log.Topics[3].Bytes()).String()
+		vID, vErr := shared.GetOrCreateAddress(v, db)
+		Expect(vErr).NotTo(HaveOccurred())
+
+		wBytes, wErr := shared.GetLogNoteArgumentAtIndex(3, log[0].Log.Data)
+		w := common.BytesToAddress(wBytes).String()
+		wID, wErr := shared.GetOrCreateAddress(w, db)
+		Expect(wErr).NotTo(HaveOccurred())
+
 		expectedModel := test_data.VatGrabModelWithNegativeDink()
 		expectedModel.ColumnValues[constants.UrnColumn] = urnID
+		expectedModel.ColumnValues[constants.VColumn] = vID
+		expectedModel.ColumnValues[constants.WColumn] = wID
 
 		Expect(len(models)).To(Equal(1))
 		Expect(models[0]).To(Equal(expectedModel))

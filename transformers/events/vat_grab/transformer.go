@@ -38,13 +38,22 @@ func (Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) ([]
 
 		ilk := log.Log.Topics[1].Hex()
 		urn := common.BytesToAddress(log.Log.Topics[2].Bytes()).String()
+
 		v := common.BytesToAddress(log.Log.Topics[3].Bytes()).String()
+		vID, vErr := shared.GetOrCreateAddress(v, db)
+		if vErr != nil {
+			return nil, vErr
+		}
 
 		wBytes, wErr := shared.GetLogNoteArgumentAtIndex(3, log.Log.Data)
 		if wErr != nil {
 			return nil, wErr
 		}
 		w := common.BytesToAddress(wBytes).String()
+		wID, wErr := shared.GetOrCreateAddress(w, db)
+		if wErr != nil {
+			return nil, wErr
+		}
 
 		dinkBytes, dinkErr := shared.GetLogNoteArgumentAtIndex(4, log.Log.Data)
 		if dinkErr != nil {
@@ -72,8 +81,8 @@ func (Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) ([]
 			ColumnValues: event.ColumnValues{
 				event.HeaderFK:       log.HeaderID,
 				event.LogFK:          log.ID,
-				constants.VColumn:    v,
-				constants.WColumn:    w,
+				constants.VColumn:    vID,
+				constants.WColumn:    wID,
 				constants.DinkColumn: dink.String(),
 				constants.DartColumn: dart.String(),
 				constants.UrnColumn:  urnID,
