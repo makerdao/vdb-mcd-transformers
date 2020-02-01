@@ -35,6 +35,10 @@ var _ = Describe("Yank Transformer", func() {
 		db          = test_config.NewTestDB(test_config.NewTestNode())
 	)
 
+	BeforeEach(func() {
+		test_config.CleanTestDB(db)
+	})
+
 	It("converts logs to models", func() {
 		models, err := transformer.ToModels(constants.FlipABI(), []core.EventLog{test_data.YankEventLog}, db)
 		var addressID int64
