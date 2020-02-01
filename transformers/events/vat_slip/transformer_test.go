@@ -56,8 +56,14 @@ var _ = Describe("Vat slip transformer", func() {
 		ilk := log[0].Log.Topics[1].Hex()
 		ilkID, ilkErr := shared.GetOrCreateIlk(ilk, db)
 		Expect(ilkErr).NotTo(HaveOccurred())
+
+		usrAddress := log[0].Log.Topics[2].Hex()
+		usrAddressID, usrErr := shared.GetOrCreateAddress(usrAddress, db)
+		Expect(usrErr).NotTo(HaveOccurred())
+
 		expectedModel := test_data.VatSlipModelWithPositiveWad()
 		expectedModel.ColumnValues[constants.IlkColumn] = ilkID
+		expectedModel.ColumnValues[constants.UsrColumn] = usrAddressID
 
 		Expect(len(models)).To(Equal(1))
 		Expect(models[0]).To(Equal(expectedModel))
@@ -71,8 +77,12 @@ var _ = Describe("Vat slip transformer", func() {
 		ilk := log[0].Log.Topics[1].Hex()
 		ilkID, ilkErr := shared.GetOrCreateIlk(ilk, db)
 		Expect(ilkErr).NotTo(HaveOccurred())
+		usrAddress := log[0].Log.Topics[2].Hex()
+		usrAddressID, usrErr := shared.GetOrCreateAddress(usrAddress, db)
+		Expect(usrErr).NotTo(HaveOccurred())
 		expectedModel := test_data.VatSlipModelWithNegativeWad()
 		expectedModel.ColumnValues[constants.IlkColumn] = ilkID
+		expectedModel.ColumnValues[constants.UsrColumn] = usrAddressID
 
 		Expect(len(models)).To(Equal(1))
 		Expect(models[0]).To(Equal(expectedModel))

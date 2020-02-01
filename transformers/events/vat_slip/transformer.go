@@ -41,6 +41,10 @@ func (Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) ([]
 			return nil, shared.ErrCouldNotCreateFK(ilkErr)
 		}
 		usr := common.BytesToAddress(log.Log.Topics[2].Bytes()).String()
+		usrID, usrErr := shared.GetOrCreateAddress(usr, db)
+		if usrErr != nil {
+			return nil, usrErr
+		}
 		wad := shared.ConvertInt256HexToBigInt(log.Log.Topics[3].Hex())
 
 		model := event.InsertionModel{
@@ -52,7 +56,7 @@ func (Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) ([]
 			ColumnValues: event.ColumnValues{
 				event.HeaderFK:      log.HeaderID,
 				event.LogFK:         log.ID,
-				constants.UsrColumn: usr,
+				constants.UsrColumn: usrID,
 				constants.WadColumn: wad.String(),
 				constants.IlkColumn: ilkID,
 			},

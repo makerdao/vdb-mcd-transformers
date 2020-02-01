@@ -59,11 +59,11 @@ var vatSlipModelWithPositiveWad = event.InsertionModel{
 		event.HeaderFK, event.LogFK, constants.IlkColumn, constants.UsrColumn, constants.WadColumn,
 	},
 	ColumnValues: event.ColumnValues{
-		constants.UsrColumn: "0x5c8c8e5895B9cCf34ACF391C99E13C79EE2eFb46",
+		//constants.UsrColumn DB state
 		constants.WadColumn: "10000000000000000",
 		event.HeaderFK:      VatSlipEventLogWithPositiveWad.HeaderID,
 		event.LogFK:         VatSlipEventLogWithPositiveWad.ID,
-		constants.IlkColumn: "0x4554482d41000000000000000000000000000000000000000000000000000000",
+		//constants.IlkColumn DB state
 	},
 }
 
@@ -98,7 +98,7 @@ var vatSlipModelWithNegativeWad = event.InsertionModel{
 		event.HeaderFK, event.LogFK, constants.IlkColumn, constants.UsrColumn, constants.WadColumn,
 	},
 	ColumnValues: event.ColumnValues{
-		constants.UsrColumn: "0xFc7440E2Ed4A3AEb14d40c00f02a14221Be0474d",
+		//constants.UsrColumn DB state
 		constants.WadColumn: "-5000000000000000",
 		event.HeaderFK:      VatSlipEventLogWithNegativeWad.HeaderID,
 		event.LogFK:         VatSlipEventLogWithNegativeWad.ID,
