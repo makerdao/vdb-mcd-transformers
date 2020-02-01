@@ -17,7 +17,9 @@
 package vat_move_test
 
 import (
+	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_move"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/pkg/core"
@@ -26,7 +28,10 @@ import (
 )
 
 var _ = Describe("Vat move transformer", func() {
-	var transformer = vat_move.Transformer{}
+	var (
+		transformer = vat_move.Transformer{}
+		db          = test_config.NewTestDB(test_config.NewTestNode())
+	)
 
 	It("returns err if logs are missing topics", func() {
 		badLog := core.EventLog{}
@@ -36,10 +41,19 @@ var _ = Describe("Vat move transformer", func() {
 	})
 
 	It("converts a log to a model", func() {
-		models, err := transformer.ToModels(constants.VatABI(), []core.EventLog{test_data.VatMoveEventLog}, nil)
-
+		models, err := transformer.ToModels(constants.VatABI(), []core.EventLog{test_data.VatMoveEventLog}, db)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(len(models)).To(Equal(1))
-		Expect(models[0]).To(Equal(test_data.VatMoveModel))
+
+		expectedModel := test_data.VatMoveModel()
+		srcID, srcErr := shared.GetOrCreateAddress(test_data.VatMoveEventLog.Log.Topics[1].String(), db)
+		Expect(srcErr).NotTo(HaveOccurred())
+
+		dstID, dstErr := shared.GetOrCreateAddress(test_data.VatMoveEventLog.Log.Topics[2].String(), db)
+		Expect(dstErr).NotTo(HaveOccurred())
+
+		expectedModel.ColumnValues[constants.SrcColumn] = srcID
+		expectedModel.ColumnValues[constants.DstColumn] = dstID
+		Expect(models[0]).To(Equal(expectedModel))
 	})
 })

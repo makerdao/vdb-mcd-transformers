@@ -20,6 +20,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_move"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
@@ -27,6 +28,7 @@ import (
 	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"strconv"
 )
 
 var _ = Describe("VatMove EventTransformer", func() {
@@ -67,10 +69,16 @@ var _ = Describe("VatMove EventTransformer", func() {
 		err = db.Select(&dbResults, `SELECT src, dst, rad from maker.vat_move`)
 		Expect(err).NotTo(HaveOccurred())
 
+		srcID, srcErr := shared.GetOrCreateAddress("0x9759A6Ac90977b93B58547b4A71c78317f391A28", db)
+		Expect(srcErr).NotTo(HaveOccurred())
+
+		dstID, dstErr := shared.GetOrCreateAddress("0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643", db)
+		Expect(dstErr).NotTo(HaveOccurred())
+
 		Expect(len(dbResults)).To(Equal(4))
 		dbResult := dbResults[0]
-		Expect(dbResult.Src).To(Equal("0x9759A6Ac90977b93B58547b4A71c78317f391A28"))
-		Expect(dbResult.Dst).To(Equal("0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643"))
+		Expect(dbResult.Src).To(Equal(strconv.FormatInt(srcID, 10)))
+		Expect(dbResult.Dst).To(Equal(strconv.FormatInt(dstID, 10)))
 		Expect(dbResult.Rad).To(Equal("8170620340000000000000000000000000000000000000000"))
 	})
 })

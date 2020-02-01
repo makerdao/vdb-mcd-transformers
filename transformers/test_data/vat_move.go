@@ -55,7 +55,7 @@ var VatMoveEventLog = core.EventLog{
 	Transformed: false,
 }
 
-var VatMoveModel = event.InsertionModel{
+var vatMoveModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.VatMoveTable,
 	OrderedColumns: []event.ColumnName{
@@ -69,3 +69,5 @@ var VatMoveModel = event.InsertionModel{
 		event.LogFK:         VatMoveEventLog.ID,
 	},
 }
+
+func VatMoveModel() event.InsertionModel { return CopyModel(vatMoveModel) }
