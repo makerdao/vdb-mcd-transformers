@@ -32,6 +32,7 @@ func SharedBidCreationTriggerTests(tableName, contractAddress string, kickModel 
 			db                  = test_config.NewTestDB(test_config.NewTestNode())
 			getTimeCreatedQuery = fmt.Sprintf(`SELECT created FROM maker.%s ORDER BY block_number`, tableName)
 			insertEmptyRowQuery = fmt.Sprintf(`INSERT INTO maker.%s (block_number, bid_id, address_id, updated) VALUES ($1, $2, $3, $4)`, tableName)
+			deleteRowQuery      = fmt.Sprintf(`DELETE FROM maker.%s_kick WHERE header_id = $1`, tableName)
 		)
 
 		BeforeEach(func() {
@@ -94,6 +95,22 @@ func SharedBidCreationTriggerTests(tableName, contractAddress string, kickModel 
 			queryErr := db.Select(&creationTimes, getTimeCreatedQuery)
 			Expect(queryErr).NotTo(HaveOccurred())
 			Expect(len(creationTimes)).To(Equal(1))
+			Expect(creationTimes[0].Valid).To(BeFalse())
+		})
+
+		It("sets created to null when record is deleted", func() {
+			_, setupErr := db.Exec(insertEmptyRowQuery, headerOne.BlockNumber, bidID,
+				kickModel.ColumnValues[event.AddressFK], FormatTimestamp(rawTimestampOne))
+			Expect(setupErr).NotTo(HaveOccurred())
+			kickErr := event.PersistModels([]event.InsertionModel{*kickModel}, db)
+			Expect(kickErr).NotTo(HaveOccurred())
+
+			_, err := db.Exec(deleteRowQuery, kickModel.ColumnValues[event.HeaderFK])
+			Expect(err).NotTo(HaveOccurred())
+
+			var creationTimes []sql.NullString
+			queryErr := db.Select(&creationTimes, getTimeCreatedQuery)
+			Expect(queryErr).NotTo(HaveOccurred())
 			Expect(creationTimes[0].Valid).To(BeFalse())
 		})
 	})

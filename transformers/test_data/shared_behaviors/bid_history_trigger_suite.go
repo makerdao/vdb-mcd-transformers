@@ -34,22 +34,26 @@ type BidTriggerTestInput struct {
 	PackedValueType types.ValueType
 }
 
-func SharedBidHistoryTriggerTests(input BidTriggerTestInput) {
+func UpdateBidSnapshotTriggerTests(input BidTriggerTestInput) {
 	Describe(fmt.Sprintf(`updating %s trigger table`, input.TriggerTable), func() {
 		var (
 			bidID int
 			headerOne,
-			headerTwo core.Header
+			headerTwo,
+			headerThree core.Header
 			timestampOne,
-			timestampTwo string
+			timestampTwo,
+			timestampThree string
 			diffID,
 			addressID int64
 			repo             = input.Repository
 			db               = test_config.NewTestDB(test_config.NewTestNode())
 			hashOne          = common.BytesToHash([]byte{1, 2, 3, 4, 5})
 			hashTwo          = common.BytesToHash([]byte{5, 4, 3, 2, 1})
+			hashThree        = common.BytesToHash([]byte{6, 7, 8, 9, 0})
 			getFieldQuery    = fmt.Sprintf(`SELECT "%s" FROM maker.%s ORDER BY block_number`, input.ColumnName, input.TriggerTable)
 			insertFieldQuery = fmt.Sprintf(`INSERT INTO maker.%s (address_id, block_number, bid_id, "%s", updated) VALUES ($1, $2, $3, $4, $5)`, input.TriggerTable, input.ColumnName)
+			deleteRowQuery   = fmt.Sprintf(`DELETE FROM maker.%s WHERE header_id = $1`, input.FieldTable)
 		)
 
 		BeforeEach(func() {
@@ -57,12 +61,16 @@ func SharedBidHistoryTriggerTests(input BidTriggerTestInput) {
 			repo.SetDB(db)
 			blockOne := rand.Int()
 			blockTwo := blockOne + 1
+			blockThree := blockTwo + 1
 			rawTimestampOne := int64(rand.Int31())
 			rawTimestampTwo := rawTimestampOne + 1
+			rawTimestampThree := rawTimestampTwo + 1
 			timestampOne = FormatTimestamp(rawTimestampOne)
 			timestampTwo = FormatTimestamp(rawTimestampTwo)
+			timestampThree = FormatTimestamp(rawTimestampTwo)
 			headerOne = CreateHeaderWithHash(hashOne.String(), rawTimestampOne, blockOne, db)
 			headerTwo = CreateHeaderWithHash(hashTwo.String(), rawTimestampTwo, blockTwo, db)
+			headerThree = CreateHeaderWithHash(hashThree.String(), rawTimestampThree, blockThree, db)
 			diffID = CreateFakeDiffRecord(db)
 			var parseErr error
 			bidID, parseErr = strconv.Atoi(input.Metadata.Keys[constants.BidId])
@@ -73,7 +81,7 @@ func SharedBidHistoryTriggerTests(input BidTriggerTestInput) {
 		})
 
 		Describe("updating history with new value", func() {
-			It("updates field in subsequent blocks", func() {
+			It(fmt.Sprintf("updates field in subsequent blocks until next %s diff", input.FieldTable), func() {
 				_, initialColumnVal := randomBidStorageValue(input.Metadata.Type, input.PackedValueType)
 				_, setupErr := db.Exec(insertFieldQuery, addressID, headerTwo.BlockNumber, bidID, initialColumnVal, timestampTwo)
 				Expect(setupErr).NotTo(HaveOccurred())
@@ -86,6 +94,7 @@ func SharedBidHistoryTriggerTests(input BidTriggerTestInput) {
 				queryErr := db.Select(&valueHistory, getFieldQuery)
 				Expect(queryErr).NotTo(HaveOccurred())
 				Expect(len(valueHistory)).To(Equal(2))
+				Expect(valueHistory[0].String).To(Equal(newColumnVal))
 				Expect(valueHistory[1].String).To(Equal(newColumnVal))
 			})
 
@@ -94,14 +103,15 @@ func SharedBidHistoryTriggerTests(input BidTriggerTestInput) {
 				setupErr := repo.Create(diffID, headerTwo.Id, input.Metadata, initialRepoVal)
 				Expect(setupErr).NotTo(HaveOccurred())
 
-				newRepoValue, _ := randomBidStorageValue(input.Metadata.Type, input.PackedValueType)
-				err := repo.Create(diffID, headerOne.Id, input.Metadata, newRepoValue)
+				newRepoVal, newColumnVal := randomBidStorageValue(input.Metadata.Type, input.PackedValueType)
+				err := repo.Create(diffID, headerOne.Id, input.Metadata, newRepoVal)
 				Expect(err).NotTo(HaveOccurred())
 
 				var valueHistory []sql.NullString
 				queryErr := db.Select(&valueHistory, getFieldQuery)
 				Expect(queryErr).NotTo(HaveOccurred())
 				Expect(len(valueHistory)).To(Equal(2))
+				Expect(valueHistory[0].String).To(Equal(newColumnVal))
 				Expect(valueHistory[1].String).To(Equal(initialColumnVal))
 			})
 
@@ -110,8 +120,8 @@ func SharedBidHistoryTriggerTests(input BidTriggerTestInput) {
 				_, setupErr := db.Exec(insertFieldQuery, addressID, headerOne.BlockNumber, bidID, initialColumnVal, timestampOne)
 				Expect(setupErr).NotTo(HaveOccurred())
 
-				newRepoValue, _ := randomBidStorageValue(input.Metadata.Type, input.PackedValueType)
-				err := repo.Create(diffID, headerTwo.Id, input.Metadata, newRepoValue)
+				newRepoVal, newColumnVal := randomBidStorageValue(input.Metadata.Type, input.PackedValueType)
+				err := repo.Create(diffID, headerTwo.Id, input.Metadata, newRepoVal)
 				Expect(err).NotTo(HaveOccurred())
 
 				var valueHistory []sql.NullString
@@ -119,6 +129,7 @@ func SharedBidHistoryTriggerTests(input BidTriggerTestInput) {
 				Expect(queryErr).NotTo(HaveOccurred())
 				Expect(len(valueHistory)).To(Equal(2))
 				Expect(valueHistory[0].String).To(Equal(initialColumnVal))
+				Expect(valueHistory[1].String).To(Equal(newColumnVal))
 			})
 
 			It("ignores rows from different address", func() {
@@ -128,14 +139,15 @@ func SharedBidHistoryTriggerTests(input BidTriggerTestInput) {
 				_, setupErr := db.Exec(insertFieldQuery, differentAddressID, headerTwo.BlockNumber, bidID, initialColumnVal, timestampTwo)
 				Expect(setupErr).NotTo(HaveOccurred())
 
-				newRepoValue, _ := randomBidStorageValue(input.Metadata.Type, input.PackedValueType)
-				err := repo.Create(diffID, headerOne.Id, input.Metadata, newRepoValue)
+				newRepoVal, newColumnVal := randomBidStorageValue(input.Metadata.Type, input.PackedValueType)
+				err := repo.Create(diffID, headerOne.Id, input.Metadata, newRepoVal)
 				Expect(err).NotTo(HaveOccurred())
 
 				var valueHistory []sql.NullString
 				queryErr := db.Select(&valueHistory, getFieldQuery)
 				Expect(queryErr).NotTo(HaveOccurred())
 				Expect(len(valueHistory)).To(Equal(2))
+				Expect(valueHistory[0].String).To(Equal(newColumnVal))
 				Expect(valueHistory[1].String).To(Equal(initialColumnVal))
 			})
 
@@ -145,21 +157,97 @@ func SharedBidHistoryTriggerTests(input BidTriggerTestInput) {
 				_, setupErr := db.Exec(insertFieldQuery, addressID, headerTwo.BlockNumber, differentBidID, initialColumnVal, timestampTwo)
 				Expect(setupErr).NotTo(HaveOccurred())
 
-				newRepoValue, _ := randomBidStorageValue(input.Metadata.Type, input.PackedValueType)
-				err := repo.Create(diffID, headerOne.Id, input.Metadata, newRepoValue)
+				newRepoVal, newColumnVal := randomBidStorageValue(input.Metadata.Type, input.PackedValueType)
+				err := repo.Create(diffID, headerOne.Id, input.Metadata, newRepoVal)
 				Expect(err).NotTo(HaveOccurred())
 
 				var valueHistory []sql.NullString
 				queryErr := db.Select(&valueHistory, getFieldQuery)
 				Expect(queryErr).NotTo(HaveOccurred())
 				Expect(len(valueHistory)).To(Equal(2))
+				Expect(valueHistory[0].String).To(Equal(newColumnVal))
 				Expect(valueHistory[1].String).To(Equal(initialColumnVal))
+			})
+		})
+
+		Describe("when diff is deleted", func() {
+			It("updates field to previous value in subsequent rows", func() {
+				initialRepoVal, initialColumnVal := randomBidStorageValue(input.Metadata.Type, input.PackedValueType)
+				setupErrOne := repo.Create(diffID, headerOne.Id, input.Metadata, initialRepoVal)
+				Expect(setupErrOne).NotTo(HaveOccurred())
+
+				subsequentRepoVal, subsequentColumnVal := randomBidStorageValue(input.Metadata.Type, input.PackedValueType)
+				setupErrTwo := repo.Create(diffID, headerTwo.Id, input.Metadata, subsequentRepoVal)
+				Expect(setupErrTwo).NotTo(HaveOccurred())
+				_, setupErrThree := db.Exec(insertFieldQuery, addressID, headerThree.BlockNumber, bidID, subsequentColumnVal, timestampThree)
+				Expect(setupErrThree).NotTo(HaveOccurred())
+
+				_, deleteErr := db.Exec(deleteRowQuery, headerTwo.Id)
+				Expect(deleteErr).NotTo(HaveOccurred())
+
+				var valueHistory []sql.NullString
+				queryErr := db.Select(&valueHistory, getFieldQuery)
+				Expect(queryErr).NotTo(HaveOccurred())
+				Expect(valueHistory[0].String).To(Equal(initialColumnVal))
+				Expect(valueHistory[1].String).To(Equal(initialColumnVal))
+			})
+
+			It("sets field in subsequent rows to null if no previous diff exists", func() {
+				initialRepoVal, initialColumnVal := randomBidStorageValue(input.Metadata.Type, input.PackedValueType)
+				setupErrOne := repo.Create(diffID, headerOne.Id, input.Metadata, initialRepoVal)
+				Expect(setupErrOne).NotTo(HaveOccurred())
+				_, setupErrTwo := db.Exec(insertFieldQuery, addressID, headerTwo.BlockNumber, bidID, initialColumnVal, timestampTwo)
+				Expect(setupErrTwo).NotTo(HaveOccurred())
+
+				_, deleteErr := db.Exec(deleteRowQuery, headerOne.Id)
+				Expect(deleteErr).NotTo(HaveOccurred())
+
+				var valueHistory []sql.NullString
+				queryErr := db.Select(&valueHistory, getFieldQuery)
+				Expect(queryErr).NotTo(HaveOccurred())
+				Expect(valueHistory[0].Valid).To(BeFalse())
+			})
+
+			It("deletes bid state associated with diff if identical to previous state", func() {
+				initialRepoVal, initialColumnVal := randomBidStorageValue(input.Metadata.Type, input.PackedValueType)
+				setupErrOne := repo.Create(diffID, headerOne.Id, input.Metadata, initialRepoVal)
+				Expect(setupErrOne).NotTo(HaveOccurred())
+
+				subsequentRepoVal, _ := randomBidStorageValue(input.Metadata.Type, input.PackedValueType)
+				setupErrTwo := repo.Create(diffID, headerTwo.Id, input.Metadata, subsequentRepoVal)
+				Expect(setupErrTwo).NotTo(HaveOccurred())
+				_, setupErrThree := db.Exec(insertFieldQuery, addressID, headerThree.BlockNumber, bidID, initialColumnVal, timestampThree)
+				Expect(setupErrThree).NotTo(HaveOccurred())
+
+				_, deleteErr := db.Exec(deleteRowQuery, headerTwo.Id)
+				Expect(deleteErr).NotTo(HaveOccurred())
+
+				var valueHistory []sql.NullString
+				queryErr := db.Select(&valueHistory, getFieldQuery)
+				Expect(queryErr).NotTo(HaveOccurred())
+				Expect(len(valueHistory)).To(Equal(2))
+				Expect(valueHistory[0].String).To(Equal(initialColumnVal))
+				Expect(valueHistory[1].String).To(Equal(initialColumnVal))
+			})
+
+			It("deletes bid state associated with diff if it's the earliest state in the table", func() {
+				initialRepoVal, _ := randomBidStorageValue(input.Metadata.Type, input.PackedValueType)
+				setupErr := repo.Create(diffID, headerOne.Id, input.Metadata, initialRepoVal)
+				Expect(setupErr).NotTo(HaveOccurred())
+
+				_, deleteErr := db.Exec(deleteRowQuery, headerOne.Id)
+				Expect(deleteErr).NotTo(HaveOccurred())
+
+				var valueHistory []sql.NullString
+				queryErr := db.Select(&valueHistory, getFieldQuery)
+				Expect(queryErr).NotTo(HaveOccurred())
+				Expect(valueHistory).To(BeEmpty())
 			})
 		})
 	})
 }
 
-func FlipBidSnapshotTriggerTests(input BidTriggerTestInput) {
+func InsertFlipBidSnapshotTriggerTests(input BidTriggerTestInput) {
 	Describe("inserting a new field", func() {
 		var (
 			bidID                int
@@ -203,9 +291,13 @@ func FlipBidSnapshotTriggerTests(input BidTriggerTestInput) {
 			queryErr := db.Select(&bidSnapshots, getFlipStateQuery)
 			Expect(queryErr).NotTo(HaveOccurred())
 			Expect(len(bidSnapshots)).To(Equal(2))
+			initialBid := flipBidSnapshotFromValues(bidID, headerOne.BlockNumber, addressID, headerOne.Timestamp,
+				initialBidValues)
 			initialBidValues[input.Metadata.Name] = updatedRepoVal
 			expectedBid := flipBidSnapshotFromValues(bidID, headerTwo.BlockNumber, addressID, headerTwo.Timestamp,
 				initialBidValues)
+			assertFlipSnapshot(bidSnapshots[0], initialBid, headerOne.BlockNumber)
+			assertSingleField(bidSnapshots[0], initialBid, input.ColumnName)
 			assertFlipSnapshot(bidSnapshots[1], expectedBid, headerTwo.BlockNumber)
 			assertSingleField(bidSnapshots[1], expectedBid, input.ColumnName)
 		})
@@ -232,7 +324,7 @@ func FlipBidSnapshotTriggerTests(input BidTriggerTestInput) {
 	})
 }
 
-func CommonBidSnapshotTriggerTests(input BidTriggerTestInput) {
+func InsertBidSnapshotTriggerTests(input BidTriggerTestInput) {
 	Describe("inserting a new field", func() {
 		var (
 			bidID int
@@ -274,13 +366,17 @@ func CommonBidSnapshotTriggerTests(input BidTriggerTestInput) {
 			err := input.Repository.Create(diffID, headerTwo.Id, input.Metadata, updatedRepoVal)
 			Expect(err).NotTo(HaveOccurred())
 
-			var bidSnapshots []commonBidSnapshot
+			var bidSnapshots []bidSnapshot
 			queryErr := db.Select(&bidSnapshots, getBidStateQuery)
 			Expect(queryErr).NotTo(HaveOccurred())
 			Expect(len(bidSnapshots)).To(Equal(2))
-			initialBidValues[input.Metadata.Name] = updatedRepoVal
-			expectedBid := commonBidSnapshotFromValues(bidID, headerTwo.BlockNumber, addressID, headerTwo.Timestamp,
+			initialBid := bidSnapshotFromValues(bidID, headerOne.BlockNumber, addressID, headerOne.Timestamp,
 				initialBidValues)
+			initialBidValues[input.Metadata.Name] = updatedRepoVal
+			expectedBid := bidSnapshotFromValues(bidID, headerTwo.BlockNumber, addressID, headerTwo.Timestamp,
+				initialBidValues)
+			assertBidSnapshot(bidSnapshots[0], initialBid, headerOne.BlockNumber)
+			assertSingleField(bidSnapshots[0], initialBid, input.ColumnName)
 			assertBidSnapshot(bidSnapshots[1], expectedBid, headerTwo.BlockNumber)
 			assertSingleField(bidSnapshots[1], expectedBid, input.ColumnName)
 		})
@@ -294,12 +390,12 @@ func CommonBidSnapshotTriggerTests(input BidTriggerTestInput) {
 			err := input.Repository.Create(diffID, headerOne.Id, input.Metadata, updatedRepoVal)
 			Expect(err).NotTo(HaveOccurred())
 
-			var bidSnapshots []commonBidSnapshot
+			var bidSnapshots []bidSnapshot
 			queryErr := db.Select(&bidSnapshots, getBidStateQuery)
 			Expect(queryErr).NotTo(HaveOccurred())
 			Expect(len(bidSnapshots)).To(Equal(1))
 			initialBidValues[input.Metadata.Name] = updatedRepoVal
-			expectedBid := commonBidSnapshotFromValues(bidID, headerTwo.BlockNumber, addressID, headerOne.Timestamp,
+			expectedBid := bidSnapshotFromValues(bidID, headerTwo.BlockNumber, addressID, headerOne.Timestamp,
 				initialBidValues)
 			assertBidSnapshot(bidSnapshots[0], expectedBid, headerOne.BlockNumber)
 			assertSingleField(bidSnapshots[0], expectedBid, input.ColumnName)
@@ -334,7 +430,7 @@ func randomBidStorageValue(valueType types.ValueType, packedValueType types.Valu
 	return repoVal, columnVal
 }
 
-type commonBidSnapshot struct {
+type bidSnapshot struct {
 	AddressID   string `db:"address_id"`
 	BlockNumber string `db:"block_number"`
 	BidID       string `db:"bid_id"`
@@ -347,18 +443,18 @@ type commonBidSnapshot struct {
 }
 
 type flipBidSnapshot struct {
-	commonBidSnapshot
+	bidSnapshot
 	Usr sql.NullString
 	Gal sql.NullString
 	Tab sql.NullString
 }
 
-func commonBidSnapshotFromValues(bidID int, blockNumber, addressID int64, updated string, bidValues map[string]interface{}) commonBidSnapshot {
+func bidSnapshotFromValues(bidID int, blockNumber, addressID int64, updated string, bidValues map[string]interface{}) bidSnapshot {
 	parsedUpdated, parseErr := strconv.ParseInt(updated, 10, 64)
 	Expect(parseErr).NotTo(HaveOccurred())
 	packedValues := bidValues[mcdStorage.Packed].(map[int]string)
 
-	return commonBidSnapshot{
+	return bidSnapshot{
 		AddressID:   strconv.FormatInt(addressID, 10),
 		BlockNumber: strconv.FormatInt(blockNumber, 10),
 		BidID:       strconv.Itoa(bidID),
@@ -373,14 +469,14 @@ func commonBidSnapshotFromValues(bidID int, blockNumber, addressID int64, update
 
 func flipBidSnapshotFromValues(bidID int, blockNumber, addressID int64, updated string, bidValues map[string]interface{}) flipBidSnapshot {
 	return flipBidSnapshot{
-		commonBidSnapshot: commonBidSnapshotFromValues(bidID, blockNumber, addressID, updated, bidValues),
-		Usr:               test_helpers.GetValidNullString(bidValues[mcdStorage.BidUsr].(string)),
-		Gal:               test_helpers.GetValidNullString(bidValues[mcdStorage.BidGal].(string)),
-		Tab:               test_helpers.GetValidNullString(bidValues[mcdStorage.BidTab].(string)),
+		bidSnapshot: bidSnapshotFromValues(bidID, blockNumber, addressID, updated, bidValues),
+		Usr:         test_helpers.GetValidNullString(bidValues[mcdStorage.BidUsr].(string)),
+		Gal:         test_helpers.GetValidNullString(bidValues[mcdStorage.BidGal].(string)),
+		Tab:         test_helpers.GetValidNullString(bidValues[mcdStorage.BidTab].(string)),
 	}
 }
 
-func assertBidSnapshot(actualBid, expectedBid commonBidSnapshot, expectedBlockNumber int64) {
+func assertBidSnapshot(actualBid, expectedBid bidSnapshot, expectedBlockNumber int64) {
 	Expect(actualBid.AddressID).To(Equal(expectedBid.AddressID))
 	Expect(actualBid.BlockNumber).To(Equal(strconv.FormatInt(expectedBlockNumber, 10)))
 	Expect(actualBid.BidID).To(Equal(expectedBid.BidID))
@@ -390,7 +486,7 @@ func assertBidSnapshot(actualBid, expectedBid commonBidSnapshot, expectedBlockNu
 }
 
 func assertFlipSnapshot(actualFlip, expectedFlip flipBidSnapshot, expectedBlockNumber int64) {
-	assertBidSnapshot(actualFlip.commonBidSnapshot, expectedFlip.commonBidSnapshot, expectedBlockNumber)
+	assertBidSnapshot(actualFlip.bidSnapshot, expectedFlip.bidSnapshot, expectedBlockNumber)
 	Expect(actualFlip.Usr).To(Equal(expectedFlip.Usr))
 	Expect(actualFlip.Gal).To(Equal(expectedFlip.Gal))
 	Expect(actualFlip.Tab).To(Equal(expectedFlip.Tab))

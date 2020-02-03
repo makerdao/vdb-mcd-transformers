@@ -332,8 +332,8 @@ var _ = Describe("Flap storage repository", func() {
 				FieldTable:      constants.FlapBidBidTable,
 				ColumnName:      constants.BidColumn,
 			}
-			shared_behaviors.CommonBidSnapshotTriggerTests(triggerInput)
-			shared_behaviors.SharedBidHistoryTriggerTests(triggerInput)
+			shared_behaviors.InsertBidSnapshotTriggerTests(triggerInput)
+			shared_behaviors.UpdateBidSnapshotTriggerTests(triggerInput)
 
 			It("triggers an update to the flap table", func() {
 				err := repository.Create(diffID, fakeHeaderID, bidBidMetadata, fakeBidValue)
@@ -377,8 +377,8 @@ var _ = Describe("Flap storage repository", func() {
 				FieldTable:      constants.FlapBidLotTable,
 				ColumnName:      constants.LotColumn,
 			}
-			shared_behaviors.CommonBidSnapshotTriggerTests(triggerInput)
-			shared_behaviors.SharedBidHistoryTriggerTests(triggerInput)
+			shared_behaviors.InsertBidSnapshotTriggerTests(triggerInput)
+			shared_behaviors.UpdateBidSnapshotTriggerTests(triggerInput)
 
 			It("triggers an update to the flap table", func() {
 				err := repository.Create(diffID, fakeHeaderID, bidLotMetadata, fakeLotValue)
@@ -479,8 +479,8 @@ var _ = Describe("Flap storage repository", func() {
 			ColumnName:      constants.GuyColumn,
 			PackedValueType: types.Address,
 		}
-		shared_behaviors.CommonBidSnapshotTriggerTests(guyTriggerInput)
-		shared_behaviors.SharedBidHistoryTriggerTests(guyTriggerInput)
+		shared_behaviors.InsertBidSnapshotTriggerTests(guyTriggerInput)
+		shared_behaviors.UpdateBidSnapshotTriggerTests(guyTriggerInput)
 
 		var bidTicMetadata = types.ValueMetadata{
 			Name:        storage.Packed,
@@ -497,8 +497,8 @@ var _ = Describe("Flap storage repository", func() {
 			ColumnName:      constants.TicColumn,
 			PackedValueType: types.Uint48,
 		}
-		shared_behaviors.CommonBidSnapshotTriggerTests(ticTriggerInput)
-		shared_behaviors.SharedBidHistoryTriggerTests(ticTriggerInput)
+		shared_behaviors.InsertBidSnapshotTriggerTests(ticTriggerInput)
+		shared_behaviors.UpdateBidSnapshotTriggerTests(ticTriggerInput)
 
 		var bidEndMetadata = types.ValueMetadata{
 			Name:        storage.Packed,
@@ -515,7 +515,7 @@ var _ = Describe("Flap storage repository", func() {
 			ColumnName:      constants.EndColumn,
 			PackedValueType: types.Uint48,
 		}
-		shared_behaviors.CommonBidSnapshotTriggerTests(endTriggerInput)
-		shared_behaviors.SharedBidHistoryTriggerTests(endTriggerInput)
+		shared_behaviors.InsertBidSnapshotTriggerTests(endTriggerInput)
+		shared_behaviors.UpdateBidSnapshotTriggerTests(endTriggerInput)
 	})
 })
