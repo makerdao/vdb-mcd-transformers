@@ -24,6 +24,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/constants"
+	"github.com/makerdao/vulcanizedb/libraries/shared/logs"
 	"github.com/makerdao/vulcanizedb/libraries/shared/storage/fetcher"
 	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 	"github.com/makerdao/vulcanizedb/libraries/shared/watcher"
@@ -147,6 +148,8 @@ var _ = Describe("Plugin test", func() {
 	var blockNumber = int64(8928180) //needs a mainnet block with a cat file flip
 	var maxConsecutiveUnexpectedErrs = 0
 	var retryInterval = 2 * time.Second
+	var delegator logs.ILogDelegator
+	var extractor logs.ILogExtractor
 
 	BeforeEach(func() {
 		test_config.CleanTestDB(db)
@@ -161,6 +164,8 @@ var _ = Describe("Plugin test", func() {
 			Expect(initErr).ToNot(HaveOccurred())
 			generateErr = g.GenerateExporterPlugin()
 			Expect(generateErr).ToNot(HaveOccurred())
+			extractor = logs.NewLogExtractor(db, blockChain)
+			delegator = logs.NewLogDelegator(db)
 		})
 
 		AfterEach(func() {
@@ -196,7 +201,7 @@ var _ = Describe("Plugin test", func() {
 				Expect(ok).To(Equal(true))
 				eventTransformerInitializers, _, _ := exporter.Export()
 
-				w := watcher.NewEventWatcher(db, blockChain, maxConsecutiveUnexpectedErrs, retryInterval)
+				w := watcher.NewEventWatcher(db, blockChain, extractor, delegator, maxConsecutiveUnexpectedErrs, retryInterval)
 				addErr := w.AddTransformers(eventTransformerInitializers)
 				Expect(addErr).NotTo(HaveOccurred())
 
@@ -243,7 +248,7 @@ var _ = Describe("Plugin test", func() {
 				Expect(ok).To(Equal(true))
 				eventTransformerInitializers, _, _ := exporter.Export()
 
-				w := watcher.NewEventWatcher(db, blockChain, maxConsecutiveUnexpectedErrs, retryInterval)
+				w := watcher.NewEventWatcher(db, blockChain, extractor, delegator, maxConsecutiveUnexpectedErrs, retryInterval)
 				addErr := w.AddTransformers(eventTransformerInitializers)
 				Expect(addErr).NotTo(HaveOccurred())
 				var executeErrOne, executeErrTwo error
@@ -321,6 +326,8 @@ var _ = Describe("Plugin test", func() {
 			Expect(initErr).ToNot(HaveOccurred())
 			generateErr = g.GenerateExporterPlugin()
 			Expect(generateErr).ToNot(HaveOccurred())
+			extractor = logs.NewLogExtractor(db, blockChain)
+			delegator = logs.NewLogDelegator(db)
 		})
 
 		AfterEach(func() {
@@ -356,7 +363,7 @@ var _ = Describe("Plugin test", func() {
 				Expect(ok).To(Equal(true))
 				eventInitializers, storageInitializers, _ := exporter.Export()
 
-				ew := watcher.NewEventWatcher(db, blockChain, maxConsecutiveUnexpectedErrs, retryInterval)
+				ew := watcher.NewEventWatcher(db, blockChain, extractor, delegator, maxConsecutiveUnexpectedErrs, retryInterval)
 				addTransformersErr := ew.AddTransformers(eventInitializers)
 				Expect(addTransformersErr).NotTo(HaveOccurred())
 
