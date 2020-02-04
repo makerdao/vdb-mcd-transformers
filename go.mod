@@ -8,8 +8,10 @@ require (
 	github.com/howeyc/fsnotify v0.9.0 // indirect
 	github.com/jmoiron/sqlx v0.0.0-20181024163419-82935fac6c1a
 	github.com/magiconair/properties v1.8.0
-	github.com/makerdao/vulcanizedb v0.0.11-rc.1.0.20200123180410-2120ecbd669d
+	github.com/makerdao/vulcanizedb v0.0.11-rc.1.0.20200203234132-9b9f771a6590
 	github.com/mattn/go-runewidth v0.0.6
+	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
+	github.com/modern-go/reflect2 v1.0.1 // indirect
 	github.com/onsi/ginkgo v1.10.1
 	github.com/onsi/gomega v1.7.0
 	github.com/sirupsen/logrus v1.2.0
