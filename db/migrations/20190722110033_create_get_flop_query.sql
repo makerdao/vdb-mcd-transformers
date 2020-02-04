@@ -1,5 +1,5 @@
 -- +goose Up
-CREATE TYPE api.flop_state AS (
+CREATE TYPE api.flop_bid_snapshot AS (
     bid_id NUMERIC,
     guy TEXT,
     tic BIGINT,
@@ -12,7 +12,7 @@ CREATE TYPE api.flop_state AS (
     );
 
 CREATE OR REPLACE FUNCTION api.get_flop(bid_id NUMERIC, block_height BIGINT DEFAULT api.max_block())
-    RETURNS api.flop_state
+    RETURNS api.flop_bid_snapshot
 AS
 $$
 WITH address_id AS (
@@ -67,4 +67,4 @@ $$
     STABLE;
 -- +goose Down
 DROP FUNCTION api.get_flop(NUMERIC, BIGINT);
-DROP TYPE api.flop_state CASCADE;
+DROP TYPE api.flop_bid_snapshot CASCADE;

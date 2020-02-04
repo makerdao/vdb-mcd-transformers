@@ -34,7 +34,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("Flip state computed columns", func() {
+var _ = Describe("flip_bid_snapshot computed columns", func() {
 	var (
 		headerOne              core.Header
 		headerRepository       repositories.HeaderRepository
@@ -72,18 +72,18 @@ var _ = Describe("Flip state computed columns", func() {
 		Expect(err).NotTo(HaveOccurred())
 	})
 
-	Describe("flip_state_ilk", func() {
-		It("returns ilk_state for a flip_state", func() {
+	Describe("flip_bid_snapshot_ilk", func() {
+		It("returns ilk_snapshot for a flip_bid_snapshot", func() {
 			ilkValues := test_helpers.GetIlkValues(0)
 			test_helpers.CreateIlk(db, headerOne, ilkValues, test_helpers.FakeIlkVatMetadatas, test_helpers.FakeIlkCatMetadatas, test_helpers.FakeIlkJugMetadatas, test_helpers.FakeIlkSpotMetadatas)
 
-			expectedIlk := test_helpers.IlkStateFromValues(test_helpers.FakeIlk.Hex, headerOne.Timestamp, headerOne.Timestamp, ilkValues)
+			expectedIlk := test_helpers.IlkSnapshotFromValues(test_helpers.FakeIlk.Hex, headerOne.Timestamp, headerOne.Timestamp, ilkValues)
 
-			var result test_helpers.IlkState
+			var result test_helpers.IlkSnapshot
 			getIlkErr := db.Get(&result, `
 				SELECT ilk_identifier, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated
-				FROM api.flip_state_ilk(
-					(SELECT (block_height, bid_id, ilk_id, urn_id, guy, tic, "end", lot, bid, gal, dealt, tab, created, updated)::api.flip_state
+				FROM api.flip_bid_snapshot_ilk(
+					(SELECT (block_height, bid_id, ilk_id, urn_id, guy, tic, "end", lot, bid, gal, dealt, tab, created, updated)::api.flip_bid_snapshot
 					 FROM api.get_flip($1, $2, $3))
 			)`, fakeBidId, test_helpers.FakeIlk.Identifier, blockOne)
 
@@ -92,8 +92,8 @@ var _ = Describe("Flip state computed columns", func() {
 		})
 	})
 
-	Describe("flip_state_urn", func() {
-		It("returns urn_state for a flip_state", func() {
+	Describe("flip_bid_snapshot_urn", func() {
+		It("returns urn_state for a flip_bid_snapshot", func() {
 			urnSetupData := test_helpers.GetUrnSetupData()
 			urnMetadata := test_helpers.GetUrnMetadata(test_helpers.FakeIlk.Hex, test_data.FlipKickModel().ColumnValues[constants.UsrColumn].(string))
 			vatRepository := vat.VatStorageRepository{}
@@ -103,8 +103,8 @@ var _ = Describe("Flip state computed columns", func() {
 			var actualUrn test_helpers.UrnState
 			getUrnErr := db.Get(&actualUrn, `
 				SELECT urn_identifier, ilk_identifier
-				FROM api.flip_state_urn(
-					(SELECT (block_height, bid_id, ilk_id, urn_id, guy, tic, "end", lot, bid, gal, dealt, tab, created, updated)::api.flip_state
+				FROM api.flip_bid_snapshot_urn(
+					(SELECT (block_height, bid_id, ilk_id, urn_id, guy, tic, "end", lot, bid, gal, dealt, tab, created, updated)::api.flip_bid_snapshot
 					FROM api.get_flip($1, $2, $3))
 			)`, fakeBidId, test_helpers.FakeIlk.Identifier, blockOne)
 
@@ -119,7 +119,7 @@ var _ = Describe("Flip state computed columns", func() {
 		})
 	})
 
-	Describe("flip_state_bid_events", func() {
+	Describe("flip_bid_snapshot_bid_events", func() {
 		It("returns the bid events for a flip", func() {
 			// flip kick created in BeforeEach
 			expectedFlipKickEvent := test_helpers.BidEvent{
@@ -154,8 +154,8 @@ var _ = Describe("Flip state computed columns", func() {
 
 			var actualBidEvents []test_helpers.BidEvent
 			queryErr := db.Select(&actualBidEvents,
-				`SELECT bid_id, bid_amount, lot, act, contract_address FROM api.flip_state_bid_events(
-    					(SELECT (block_height, bid_id, ilk_id, urn_id, guy, tic, "end", lot, bid, gal, dealt, tab, created, updated)::api.flip_state 
+				`SELECT bid_id, bid_amount, lot, act, contract_address FROM api.flip_bid_snapshot_bid_events(
+    					(SELECT (block_height, bid_id, ilk_id, urn_id, guy, tic, "end", lot, bid, gal, dealt, tab, created, updated)::api.flip_bid_snapshot 
     					FROM api.get_flip($1, $2)))`, fakeBidId, test_helpers.FakeIlk.Identifier)
 			Expect(queryErr).NotTo(HaveOccurred())
 			Expect(actualBidEvents).To(ConsistOf(expectedFlipKickEvent, expectedTendEvent))
@@ -208,8 +208,8 @@ var _ = Describe("Flip state computed columns", func() {
 				maxResults := 1
 				var actualBidEvents []test_helpers.BidEvent
 				queryErr := db.Select(&actualBidEvents,
-					`SELECT bid_id, bid_amount, lot, act, contract_address FROM api.flip_state_bid_events(
-    					(SELECT (block_height, bid_id, ilk_id, urn_id, guy, tic, "end", lot, bid, gal, dealt, tab, created, updated)::api.flip_state 
+					`SELECT bid_id, bid_amount, lot, act, contract_address FROM api.flip_bid_snapshot_bid_events(
+    					(SELECT (block_height, bid_id, ilk_id, urn_id, guy, tic, "end", lot, bid, gal, dealt, tab, created, updated)::api.flip_bid_snapshot 
     					FROM api.get_flip($1, $2)), $3)`, fakeBidId, test_helpers.FakeIlk.Identifier, maxResults)
 				Expect(queryErr).NotTo(HaveOccurred())
 
@@ -229,8 +229,8 @@ var _ = Describe("Flip state computed columns", func() {
 				resultOffset := 1
 				var actualBidEvents []test_helpers.BidEvent
 				queryErr := db.Select(&actualBidEvents,
-					`SELECT bid_id, bid_amount, lot, act, contract_address FROM api.flip_state_bid_events(
-    					(SELECT (block_height, bid_id, ilk_id, urn_id, guy, tic, "end", lot, bid, gal, dealt, tab, created, updated)::api.flip_state 
+					`SELECT bid_id, bid_amount, lot, act, contract_address FROM api.flip_bid_snapshot_bid_events(
+    					(SELECT (block_height, bid_id, ilk_id, urn_id, guy, tic, "end", lot, bid, gal, dealt, tab, created, updated)::api.flip_bid_snapshot 
     					FROM api.get_flip($1, $2)), $3, $4)`,
 					fakeBidId, test_helpers.FakeIlk.Identifier, maxResults, resultOffset)
 				Expect(queryErr).NotTo(HaveOccurred())
@@ -268,8 +268,8 @@ var _ = Describe("Flip state computed columns", func() {
 
 			var actualBidEvents []test_helpers.BidEvent
 			queryErr := db.Select(&actualBidEvents,
-				`SELECT bid_id, bid_amount, lot, act, contract_address FROM api.flip_state_bid_events(
-    					(SELECT (block_height, bid_id, ilk_id, urn_id, guy, tic, "end", lot, bid, gal, dealt, tab, created, updated)::api.flip_state 
+				`SELECT bid_id, bid_amount, lot, act, contract_address FROM api.flip_bid_snapshot_bid_events(
+    					(SELECT (block_height, bid_id, ilk_id, urn_id, guy, tic, "end", lot, bid, gal, dealt, tab, created, updated)::api.flip_bid_snapshot 
     					FROM api.get_flip($1, $2)))`, fakeBidId, test_helpers.FakeIlk.Identifier)
 			Expect(queryErr).NotTo(HaveOccurred())
 			Expect(actualBidEvents).To(ConsistOf(expectedBidEvent))
@@ -299,8 +299,8 @@ var _ = Describe("Flip state computed columns", func() {
 
 			var actualBidEvents []test_helpers.BidEvent
 			queryErr := db.Select(&actualBidEvents,
-				`SELECT bid_id, bid_amount, lot, act, contract_address FROM api.flip_state_bid_events(
-    					(SELECT (block_height, bid_id, ilk_id, urn_id, guy, tic, "end", lot, bid, gal, dealt, tab, created, updated)::api.flip_state 
+				`SELECT bid_id, bid_amount, lot, act, contract_address FROM api.flip_bid_snapshot_bid_events(
+    					(SELECT (block_height, bid_id, ilk_id, urn_id, guy, tic, "end", lot, bid, gal, dealt, tab, created, updated)::api.flip_bid_snapshot 
     					FROM api.get_flip($1, $2)))`, irrelevantBidId, test_helpers.FakeIlk.Identifier)
 			Expect(queryErr).NotTo(HaveOccurred())
 			Expect(actualBidEvents).To(BeZero())

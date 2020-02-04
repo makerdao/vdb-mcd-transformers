@@ -1,12 +1,12 @@
 -- +goose Up
 -- SQL in this section is executed when the migration is applied.
 
--- Extend frob_event with ilk_state
+-- Extend frob_event with ilk_snapshot
 CREATE FUNCTION api.frob_event_ilk(event api.frob_event)
-    RETURNS api.historical_ilk_state AS
+    RETURNS api.ilk_snapshot AS
 $$
 SELECT *
-FROM api.historical_ilk_state i
+FROM api.ilk_snapshot i
 WHERE i.ilk_identifier = event.ilk_identifier
   AND i.block_number <= event.block_height
 ORDER BY i.block_number DESC

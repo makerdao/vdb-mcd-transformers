@@ -1,8 +1,8 @@
 -- +goose Up
 -- SQL in this section is executed when the migration is applied.
 
--- Extend ilk_state with frob_events
-CREATE FUNCTION api.historical_ilk_state_frobs(state api.historical_ilk_state, max_results INTEGER DEFAULT NULL,
+-- Extend ilk_snapshot with frob_events
+CREATE FUNCTION api.ilk_snapshot_frobs(state api.ilk_snapshot, max_results INTEGER DEFAULT NULL,
                                             result_offset INTEGER DEFAULT 0)
     RETURNS SETOF api.frob_event AS
 $$
@@ -17,8 +17,8 @@ $$
     STABLE;
 
 
--- Extend ilk_state with file events
-CREATE FUNCTION api.historical_ilk_state_ilk_file_events(state api.historical_ilk_state, max_results INTEGER DEFAULT NULL,
+-- Extend ilk_snapshot with file events
+CREATE FUNCTION api.ilk_snapshot_ilk_file_events(state api.ilk_snapshot, max_results INTEGER DEFAULT NULL,
                                                       result_offset INTEGER DEFAULT 0)
     RETURNS SETOF api.ilk_file_event AS
 $$
@@ -32,8 +32,8 @@ $$
     STABLE;
 
 
--- Extend ilk_state with bite events
-CREATE FUNCTION api.historical_ilk_state_bites(state api.historical_ilk_state, max_results INTEGER DEFAULT NULL,
+-- Extend ilk_snapshot with bite events
+CREATE FUNCTION api.ilk_snapshot_bites(state api.ilk_snapshot, max_results INTEGER DEFAULT NULL,
                                             result_offset INTEGER DEFAULT 0)
     RETURNS SETOF api.bite_event AS
 $$
@@ -49,6 +49,6 @@ $$
 
 -- +goose Down
 -- SQL in this section is executed when the migration is rolled back.
-DROP FUNCTION api.historical_ilk_state_bites(api.historical_ilk_state, INTEGER, INTEGER);
-DROP FUNCTION api.historical_ilk_state_ilk_file_events(api.historical_ilk_state, INTEGER, INTEGER);
-DROP FUNCTION api.historical_ilk_state_frobs(api.historical_ilk_state, INTEGER, INTEGER);
+DROP FUNCTION api.ilk_snapshot_bites(api.ilk_snapshot, INTEGER, INTEGER);
+DROP FUNCTION api.ilk_snapshot_ilk_file_events(api.ilk_snapshot, INTEGER, INTEGER);
+DROP FUNCTION api.ilk_snapshot_frobs(api.ilk_snapshot, INTEGER, INTEGER);

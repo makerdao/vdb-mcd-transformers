@@ -1,7 +1,6 @@
 -- +goose Up
 -- SQL in this section is executed when the migration is applied.
 
--- Extend managed_cdp with ilk_state
 CREATE FUNCTION api.total_ink(ilk_identifier TEXT, block_height BIGINT DEFAULT api.max_block())
     RETURNS NUMERIC AS
 $$

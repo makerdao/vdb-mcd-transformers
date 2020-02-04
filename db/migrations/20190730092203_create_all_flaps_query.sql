@@ -1,7 +1,7 @@
 -- +goose Up
 -- +goose StatementBegin
 CREATE OR REPLACE FUNCTION api.all_flaps(max_results INTEGER DEFAULT NULL, result_offset INTEGER DEFAULT 0)
-    RETURNS SETOF api.flap_state AS
+    RETURNS SETOF api.flap_bid_snapshot AS
 $BODY$
 BEGIN
     RETURN QUERY (

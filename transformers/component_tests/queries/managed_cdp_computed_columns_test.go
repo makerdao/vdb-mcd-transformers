@@ -54,14 +54,14 @@ var _ = Describe("Managed CDP computed columns", func() {
 	})
 
 	Describe("managed_cdp_ilk", func() {
-		It("returns ilk_state for a managed_cdp", func() {
+		It("returns ilk_snapshot for a managed_cdp", func() {
 			ilkValues := test_helpers.GetIlkValues(0)
 			test_helpers.CreateIlk(db, headerOne, ilkValues, test_helpers.FakeIlkVatMetadatas, test_helpers.FakeIlkCatMetadatas, test_helpers.FakeIlkJugMetadatas, test_helpers.FakeIlkSpotMetadatas)
 
-			expectedIlk := test_helpers.IlkStateFromValues(test_helpers.FakeIlk.Hex, headerOne.Timestamp,
+			expectedIlk := test_helpers.IlkSnapshotFromValues(test_helpers.FakeIlk.Hex, headerOne.Timestamp,
 				headerOne.Timestamp, ilkValues)
 
-			var result test_helpers.IlkState
+			var result test_helpers.IlkSnapshot
 			getIlkErr := db.Get(&result, `
 				SELECT ilk_identifier, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated
 				FROM api.managed_cdp_ilk(

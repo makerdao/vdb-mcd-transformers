@@ -1,5 +1,5 @@
 -- +goose Up
-CREATE TYPE api.flap_state AS (
+CREATE TYPE api.flap_bid_snapshot AS (
     bid_id NUMERIC,
     guy TEXT,
     tic BIGINT,
@@ -12,7 +12,7 @@ CREATE TYPE api.flap_state AS (
     );
 
 CREATE FUNCTION api.get_flap(bid_id NUMERIC, block_height BIGINT DEFAULT api.max_block())
-    RETURNS api.flap_state
+    RETURNS api.flap_bid_snapshot
 AS
 $$
 WITH address_id AS (
@@ -67,4 +67,4 @@ $$
     STABLE;
 -- +goose Down
 DROP FUNCTION api.get_flap(NUMERIC, BIGINT);
-DROP TYPE api.flap_state CASCADE;
+DROP TYPE api.flap_bid_snapshot CASCADE;

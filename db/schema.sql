@@ -135,10 +135,10 @@ COMMENT ON COLUMN api.flap_bid_event.contract_address IS '@omit';
 
 
 --
--- Name: flap_state; Type: TYPE; Schema: api; Owner: -
+-- Name: flap_bid_snapshot; Type: TYPE; Schema: api; Owner: -
 --
 
-CREATE TYPE api.flap_state AS (
+CREATE TYPE api.flap_bid_snapshot AS (
 	bid_id numeric,
 	guy text,
 	tic bigint,
@@ -188,10 +188,10 @@ COMMENT ON COLUMN api.flip_bid_event.contract_address IS '@omit';
 
 
 --
--- Name: flip_state; Type: TYPE; Schema: api; Owner: -
+-- Name: flip_bid_snapshot; Type: TYPE; Schema: api; Owner: -
 --
 
-CREATE TYPE api.flip_state AS (
+CREATE TYPE api.flip_bid_snapshot AS (
 	block_height bigint,
 	bid_id numeric,
 	ilk_id integer,
@@ -210,24 +210,24 @@ CREATE TYPE api.flip_state AS (
 
 
 --
--- Name: COLUMN flip_state.block_height; Type: COMMENT; Schema: api; Owner: -
+-- Name: COLUMN flip_bid_snapshot.block_height; Type: COMMENT; Schema: api; Owner: -
 --
 
-COMMENT ON COLUMN api.flip_state.block_height IS '@omit';
-
-
---
--- Name: COLUMN flip_state.ilk_id; Type: COMMENT; Schema: api; Owner: -
---
-
-COMMENT ON COLUMN api.flip_state.ilk_id IS '@omit';
+COMMENT ON COLUMN api.flip_bid_snapshot.block_height IS '@omit';
 
 
 --
--- Name: COLUMN flip_state.urn_id; Type: COMMENT; Schema: api; Owner: -
+-- Name: COLUMN flip_bid_snapshot.ilk_id; Type: COMMENT; Schema: api; Owner: -
 --
 
-COMMENT ON COLUMN api.flip_state.urn_id IS '@omit';
+COMMENT ON COLUMN api.flip_bid_snapshot.ilk_id IS '@omit';
+
+
+--
+-- Name: COLUMN flip_bid_snapshot.urn_id; Type: COMMENT; Schema: api; Owner: -
+--
+
+COMMENT ON COLUMN api.flip_bid_snapshot.urn_id IS '@omit';
 
 
 --
@@ -267,10 +267,10 @@ COMMENT ON COLUMN api.flop_bid_event.contract_address IS '@omit';
 
 
 --
--- Name: flop_state; Type: TYPE; Schema: api; Owner: -
+-- Name: flop_bid_snapshot; Type: TYPE; Schema: api; Owner: -
 --
 
-CREATE TYPE api.flop_state AS (
+CREATE TYPE api.flop_bid_snapshot AS (
 	bid_id numeric,
 	guy text,
 	tic bigint,
@@ -347,30 +347,6 @@ COMMENT ON COLUMN api.ilk_file_event.log_id IS '@omit';
 
 
 --
--- Name: ilk_state; Type: TYPE; Schema: api; Owner: -
---
-
-CREATE TYPE api.ilk_state AS (
-	ilk_identifier text,
-	block_height bigint,
-	rate numeric,
-	art numeric,
-	spot numeric,
-	line numeric,
-	dust numeric,
-	chop numeric,
-	lump numeric,
-	flip text,
-	rho numeric,
-	duty numeric,
-	pip text,
-	mat numeric,
-	created timestamp without time zone,
-	updated timestamp without time zone
-);
-
-
---
 -- Name: poke_event; Type: TYPE; Schema: api; Owner: -
 --
 
@@ -414,18 +390,6 @@ CREATE TYPE api.queued_sin AS (
 	flogged boolean,
 	created timestamp without time zone,
 	updated timestamp without time zone
-);
-
-
---
--- Name: relevant_block; Type: TYPE; Schema: api; Owner: -
---
-
-CREATE TYPE api.relevant_block AS (
-	block_height bigint,
-	block_hash text,
-	block_timestamp numeric,
-	ilk_id integer
 );
 
 
@@ -635,7 +599,7 @@ $$;
 -- Name: all_flaps(integer, integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.all_flaps(max_results integer DEFAULT NULL::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.flap_state
+CREATE FUNCTION api.all_flaps(max_results integer DEFAULT NULL::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.flap_bid_snapshot
     LANGUAGE plpgsql STABLE
     AS $$
 BEGIN
@@ -769,7 +733,7 @@ $$;
 -- Name: all_flips(text, integer, integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.all_flips(ilk text, max_results integer DEFAULT '-1'::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.flip_state
+CREATE FUNCTION api.all_flips(ilk text, max_results integer DEFAULT '-1'::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.flip_bid_snapshot
     LANGUAGE plpgsql STABLE STRICT
     AS $$
 BEGIN
@@ -910,7 +874,7 @@ $$;
 -- Name: all_flops(integer, integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.all_flops(max_results integer DEFAULT NULL::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.flop_state
+CREATE FUNCTION api.all_flops(max_results integer DEFAULT NULL::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.flop_bid_snapshot
     LANGUAGE plpgsql STABLE
     AS $$
 BEGIN
@@ -1026,126 +990,52 @@ $$;
 COMMENT ON FUNCTION api.max_block() IS '@omit';
 
 
+SET default_tablespace = '';
+
+SET default_table_access_method = heap;
+
 --
--- Name: all_ilks(bigint, integer, integer); Type: FUNCTION; Schema: api; Owner: -
+-- Name: ilk_snapshot; Type: TABLE; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.all_ilks(block_height bigint DEFAULT api.max_block(), max_results integer DEFAULT NULL::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.ilk_state
+CREATE TABLE api.ilk_snapshot (
+    ilk_identifier text NOT NULL,
+    block_number bigint NOT NULL,
+    rate numeric,
+    art numeric,
+    spot numeric,
+    line numeric,
+    dust numeric,
+    chop numeric,
+    lump numeric,
+    flip text,
+    rho numeric,
+    duty numeric,
+    pip text,
+    mat numeric,
+    created timestamp without time zone,
+    updated timestamp without time zone
+);
+
+
+--
+-- Name: COLUMN ilk_snapshot.ilk_identifier; Type: COMMENT; Schema: api; Owner: -
+--
+
+COMMENT ON COLUMN api.ilk_snapshot.ilk_identifier IS '@name id';
+
+
+--
+-- Name: all_ilks(bigint); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.all_ilks(block_height bigint DEFAULT api.max_block()) RETURNS SETOF api.ilk_snapshot
     LANGUAGE sql STABLE
     AS $$
-WITH rates AS (SELECT DISTINCT ON (ilk_id) rate, ilk_id
-               FROM maker.vat_ilk_rate
-                        LEFT JOIN public.headers ON vat_ilk_rate.header_id = headers.id
-               WHERE block_number <= all_ilks.block_height
-               ORDER BY ilk_id, block_number DESC),
-     arts AS (SELECT DISTINCT ON (ilk_id) art, ilk_id
-              FROM maker.vat_ilk_art
-                       LEFT JOIN public.headers ON vat_ilk_art.header_id = headers.id
-              WHERE block_number <= all_ilks.block_height
-              ORDER BY ilk_id, block_number DESC),
-     spots AS (SELECT DISTINCT ON (ilk_id) spot, ilk_id
-               FROM maker.vat_ilk_spot
-                        LEFT JOIN public.headers ON vat_ilk_spot.header_id = headers.id
-               WHERE block_number <= all_ilks.block_height
-               ORDER BY ilk_id, block_number DESC),
-     lines AS (SELECT DISTINCT ON (ilk_id) line, ilk_id
-               FROM maker.vat_ilk_line
-                        LEFT JOIN public.headers ON vat_ilk_line.header_id = headers.id
-               WHERE block_number <= all_ilks.block_height
-               ORDER BY ilk_id, block_number DESC),
-     dusts AS (SELECT DISTINCT ON (ilk_id) dust, ilk_id
-               FROM maker.vat_ilk_dust
-                        LEFT JOIN public.headers ON vat_ilk_dust.header_id = headers.id
-               WHERE block_number <= all_ilks.block_height
-               ORDER BY ilk_id, block_number DESC),
-     chops AS (SELECT DISTINCT ON (ilk_id) chop, ilk_id
-               FROM maker.cat_ilk_chop
-                        LEFT JOIN public.headers ON cat_ilk_chop.header_id = headers.id
-               WHERE block_number <= all_ilks.block_height
-               ORDER BY ilk_id, block_number DESC),
-     lumps AS (SELECT DISTINCT ON (ilk_id) lump, ilk_id
-               FROM maker.cat_ilk_lump
-                        LEFT JOIN public.headers ON cat_ilk_lump.header_id = headers.id
-               WHERE block_number <= all_ilks.block_height
-               ORDER BY ilk_id, block_number DESC),
-     flips AS (SELECT DISTINCT ON (ilk_id) flip, ilk_id
-               FROM maker.cat_ilk_flip
-                        LEFT JOIN public.headers ON cat_ilk_flip.header_id = headers.id
-               WHERE block_number <= all_ilks.block_height
-               ORDER BY ilk_id, block_number DESC),
-     rhos AS (SELECT DISTINCT ON (ilk_id) rho, ilk_id
-              FROM maker.jug_ilk_rho
-                       LEFT JOIN public.headers ON jug_ilk_rho.header_id = headers.id
-              WHERE block_number <= all_ilks.block_height
-              ORDER BY ilk_id, block_number DESC),
-     duties AS (SELECT DISTINCT ON (ilk_id) duty, ilk_id
-                FROM maker.jug_ilk_duty
-                         LEFT JOIN public.headers ON jug_ilk_duty.header_id = headers.id
-                WHERE block_number <= all_ilks.block_height
-                ORDER BY ilk_id, block_number DESC),
-     pips AS (SELECT DISTINCT ON (ilk_id) pip, ilk_id
-              FROM maker.spot_ilk_pip
-                       LEFT JOIN public.headers ON spot_ilk_pip.header_id = headers.id
-              WHERE block_number <= all_ilks.block_height
-              ORDER BY ilk_id, block_number DESC),
-     mats AS (SELECT DISTINCT ON (ilk_id) mat, ilk_id
-              FROM maker.spot_ilk_mat
-                       LEFT JOIN public.headers ON spot_ilk_mat.header_id = headers.id
-              WHERE block_number <= all_ilks.block_height
-              ORDER BY ilk_id, block_number DESC)
-SELECT ilks.identifier,
-       all_ilks.block_height,
-       rates.rate,
-       arts.art,
-       spots.spot,
-       lines.line,
-       dusts.dust,
-       chops.chop,
-       lumps.lump,
-       flips.flip,
-       rhos.rho,
-       duties.duty,
-       pips.pip,
-       mats.mat,
-       (SELECT api.epoch_to_datetime(b.block_timestamp) AS created
-        FROM api.get_ilk_blocks_before(ilks.identifier, all_ilks.block_height) b
-        ORDER BY b.block_height ASC
-        LIMIT 1),
-       (SELECT api.epoch_to_datetime(b.block_timestamp) AS updated
-        FROM api.get_ilk_blocks_before(ilks.identifier, all_ilks.block_height) b
-        ORDER BY b.block_height DESC
-        LIMIT 1)
-FROM maker.ilks AS ilks
-         LEFT JOIN rates on rates.ilk_id = ilks.id
-         LEFT JOIN arts on arts.ilk_id = ilks.id
-         LEFT JOIN spots on spots.ilk_id = ilks.id
-         LEFT JOIN lines on lines.ilk_id = ilks.id
-         LEFT JOIN dusts on dusts.ilk_id = ilks.id
-         LEFT JOIN chops on chops.ilk_id = ilks.id
-         LEFT JOIN lumps on lumps.ilk_id = ilks.id
-         LEFT JOIN flips on flips.ilk_id = ilks.id
-         LEFT JOIN rhos on rhos.ilk_id = ilks.id
-         LEFT JOIN duties on duties.ilk_id = ilks.id
-         LEFT JOIN pips on pips.ilk_id = ilks.id
-         LEFT JOIN mats on mats.ilk_id = ilks.id
-WHERE (
-              rates.rate is not null OR
-              arts.art is not null OR
-              spots.spot is not null OR
-              lines.line is not null OR
-              dusts.dust is not null OR
-              chops.chop is not null OR
-              lumps.lump is not null OR
-              flips.flip is not null OR
-              rhos.rho is not null OR
-              duties.duty is not null OR
-              pips.pip is not null OR
-              mats.mat is not null
-          )
-ORDER BY updated DESC
-LIMIT all_ilks.max_results
-OFFSET
-all_ilks.result_offset
+SELECT DISTINCT ON (ilk_identifier) *
+FROM api.ilk_snapshot
+WHERE block_number <= block_height
+ORDER BY ilk_identifier, block_number DESC
 $$;
 
 
@@ -1348,7 +1238,7 @@ $$;
 -- Name: bite_event_bid(api.bite_event); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.bite_event_bid(event api.bite_event) RETURNS api.flip_state
+CREATE FUNCTION api.bite_event_bid(event api.bite_event) RETURNS api.flip_bid_snapshot
     LANGUAGE sql STABLE
     AS $$
 SELECT *
@@ -1356,50 +1246,15 @@ FROM api.get_flip(event.bid_id, event.ilk_identifier, event.block_height)
 $$;
 
 
-SET default_tablespace = '';
-
-SET default_table_access_method = heap;
-
---
--- Name: historical_ilk_state; Type: TABLE; Schema: api; Owner: -
---
-
-CREATE TABLE api.historical_ilk_state (
-    ilk_identifier text NOT NULL,
-    block_number bigint NOT NULL,
-    rate numeric,
-    art numeric,
-    spot numeric,
-    line numeric,
-    dust numeric,
-    chop numeric,
-    lump numeric,
-    flip text,
-    rho numeric,
-    duty numeric,
-    pip text,
-    mat numeric,
-    created timestamp without time zone,
-    updated timestamp without time zone
-);
-
-
---
--- Name: COLUMN historical_ilk_state.ilk_identifier; Type: COMMENT; Schema: api; Owner: -
---
-
-COMMENT ON COLUMN api.historical_ilk_state.ilk_identifier IS '@name id';
-
-
 --
 -- Name: bite_event_ilk(api.bite_event); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.bite_event_ilk(event api.bite_event) RETURNS api.historical_ilk_state
+CREATE FUNCTION api.bite_event_ilk(event api.bite_event) RETURNS api.ilk_snapshot
     LANGUAGE sql STABLE
     AS $$
 SELECT *
-FROM api.historical_ilk_state i
+FROM api.ilk_snapshot i
 WHERE i.ilk_identifier = event.ilk_identifier
   AND i.block_number <= event.block_height
 ORDER BY i.block_number DESC
@@ -1453,7 +1308,7 @@ COMMENT ON FUNCTION api.epoch_to_datetime(epoch numeric) IS '@omit';
 -- Name: flap_bid_event_bid(api.flap_bid_event); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.flap_bid_event_bid(event api.flap_bid_event) RETURNS api.flap_state
+CREATE FUNCTION api.flap_bid_event_bid(event api.flap_bid_event) RETURNS api.flap_bid_snapshot
     LANGUAGE sql STABLE
     AS $$
 SELECT *
@@ -1474,17 +1329,19 @@ $$;
 
 
 --
--- Name: flap_state_bid_events(api.flap_state, integer, integer); Type: FUNCTION; Schema: api; Owner: -
+-- Name: flap_bid_snapshot_bid_events(api.flap_bid_snapshot, integer, integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.flap_state_bid_events(flap api.flap_state, max_results integer DEFAULT NULL::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.flap_bid_event
+CREATE FUNCTION api.flap_bid_snapshot_bid_events(flap api.flap_bid_snapshot, max_results integer DEFAULT NULL::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.flap_bid_event
     LANGUAGE sql STABLE
     AS $$
 SELECT *
 FROM api.all_flap_bid_events() bids
 WHERE bid_id = flap.bid_id
 ORDER BY bids.block_height DESC
-LIMIT flap_state_bid_events.max_results OFFSET flap_state_bid_events.result_offset
+LIMIT flap_bid_snapshot_bid_events.max_results
+OFFSET
+flap_bid_snapshot_bid_events.result_offset
 $$;
 
 
@@ -1492,7 +1349,7 @@ $$;
 -- Name: flip_bid_event_bid(api.flip_bid_event); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.flip_bid_event_bid(event api.flip_bid_event) RETURNS api.flip_state
+CREATE FUNCTION api.flip_bid_event_bid(event api.flip_bid_event) RETURNS api.flip_bid_snapshot
     LANGUAGE sql STABLE
     AS $$
 WITH ilks AS (
@@ -1520,10 +1377,10 @@ $$;
 
 
 --
--- Name: flip_state_bid_events(api.flip_state, integer, integer); Type: FUNCTION; Schema: api; Owner: -
+-- Name: flip_bid_snapshot_bid_events(api.flip_bid_snapshot, integer, integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.flip_state_bid_events(flip api.flip_state, max_results integer DEFAULT NULL::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.flip_bid_event
+CREATE FUNCTION api.flip_bid_snapshot_bid_events(flip api.flip_bid_snapshot, max_results integer DEFAULT NULL::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.flip_bid_event
     LANGUAGE sql STABLE
     AS $$
 WITH address_ids AS ( -- get the contract address from flip_ilk table using the ilk_id from flip
@@ -1542,32 +1399,34 @@ FROM api.all_flip_bid_events() AS events
 WHERE bid_id = flip.bid_id
   AND contract_address = (SELECT address FROM addresses)
 ORDER BY block_height DESC
-LIMIT flip_state_bid_events.max_results OFFSET flip_state_bid_events.result_offset
+LIMIT flip_bid_snapshot_bid_events.max_results
+OFFSET
+flip_bid_snapshot_bid_events.result_offset
 $$;
 
 
 --
--- Name: flip_state_ilk(api.flip_state); Type: FUNCTION; Schema: api; Owner: -
+-- Name: flip_bid_snapshot_ilk(api.flip_bid_snapshot); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.flip_state_ilk(flip_state api.flip_state) RETURNS api.historical_ilk_state
+CREATE FUNCTION api.flip_bid_snapshot_ilk(flip_bid_snapshot api.flip_bid_snapshot) RETURNS api.ilk_snapshot
     LANGUAGE sql STABLE
     AS $$
 SELECT i.*
-FROM api.historical_ilk_state i
+FROM api.ilk_snapshot i
          LEFT JOIN maker.ilks ON ilks.identifier = i.ilk_identifier
-WHERE ilks.id = flip_state.ilk_id
-  AND i.block_number <= flip_state.block_height
+WHERE ilks.id = flip_bid_snapshot.ilk_id
+  AND i.block_number <= flip_bid_snapshot.block_height
 ORDER BY i.block_number DESC
 LIMIT 1
 $$;
 
 
 --
--- Name: flip_state_urn(api.flip_state); Type: FUNCTION; Schema: api; Owner: -
+-- Name: flip_bid_snapshot_urn(api.flip_bid_snapshot); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.flip_state_urn(flip api.flip_state) RETURNS SETOF api.urn_state
+CREATE FUNCTION api.flip_bid_snapshot_urn(flip api.flip_bid_snapshot) RETURNS SETOF api.urn_state
     LANGUAGE sql STABLE
     AS $$
 SELECT *
@@ -1580,7 +1439,7 @@ $$;
 -- Name: flop_bid_event_bid(api.flop_bid_event); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.flop_bid_event_bid(event api.flop_bid_event) RETURNS api.flop_state
+CREATE FUNCTION api.flop_bid_event_bid(event api.flop_bid_event) RETURNS api.flop_bid_snapshot
     LANGUAGE sql STABLE
     AS $$
 SELECT *
@@ -1601,17 +1460,19 @@ $$;
 
 
 --
--- Name: flop_state_bid_events(api.flop_state, integer, integer); Type: FUNCTION; Schema: api; Owner: -
+-- Name: flop_bid_snapshot_bid_events(api.flop_bid_snapshot, integer, integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.flop_state_bid_events(flop api.flop_state, max_results integer DEFAULT NULL::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.flop_bid_event
+CREATE FUNCTION api.flop_bid_snapshot_bid_events(flop api.flop_bid_snapshot, max_results integer DEFAULT NULL::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.flop_bid_event
     LANGUAGE sql STABLE
     AS $$
 SELECT *
 FROM api.all_flop_bid_events() bids
 WHERE bid_id = flop.bid_id
 ORDER BY bids.block_height DESC
-LIMIT flop_state_bid_events.max_results OFFSET flop_state_bid_events.result_offset
+LIMIT flop_bid_snapshot_bid_events.max_results
+OFFSET
+flop_bid_snapshot_bid_events.result_offset
 $$;
 
 
@@ -1619,11 +1480,11 @@ $$;
 -- Name: frob_event_ilk(api.frob_event); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.frob_event_ilk(event api.frob_event) RETURNS api.historical_ilk_state
+CREATE FUNCTION api.frob_event_ilk(event api.frob_event) RETURNS api.ilk_snapshot
     LANGUAGE sql STABLE
     AS $$
 SELECT *
-FROM api.historical_ilk_state i
+FROM api.ilk_snapshot i
 WHERE i.ilk_identifier = event.ilk_identifier
   AND i.block_number <= event.block_height
 ORDER BY i.block_number DESC
@@ -1658,7 +1519,7 @@ $$;
 -- Name: get_flap(numeric, bigint); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.get_flap(bid_id numeric, block_height bigint DEFAULT api.max_block()) RETURNS api.flap_state
+CREATE FUNCTION api.get_flap(bid_id numeric, block_height bigint DEFAULT api.max_block()) RETURNS api.flap_bid_snapshot
     LANGUAGE sql STABLE STRICT
     AS $$
 WITH address_id AS (
@@ -1714,7 +1575,7 @@ $$;
 -- Name: get_flip(numeric, text, bigint); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.get_flip(bid_id numeric, ilk text, block_height bigint DEFAULT api.max_block()) RETURNS api.flip_state
+CREATE FUNCTION api.get_flip(bid_id numeric, ilk text, block_height bigint DEFAULT api.max_block()) RETURNS api.flip_bid_snapshot
     LANGUAGE sql STABLE STRICT
     AS $$
 WITH ilk_ids AS (SELECT id FROM maker.ilks WHERE ilks.identifier = get_flip.ilk),
@@ -1783,7 +1644,7 @@ $$;
 -- Name: get_flop(numeric, bigint); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.get_flop(bid_id numeric, block_height bigint DEFAULT api.max_block()) RETURNS api.flop_state
+CREATE FUNCTION api.get_flop(bid_id numeric, block_height bigint DEFAULT api.max_block()) RETURNS api.flop_bid_snapshot
     LANGUAGE sql STABLE STRICT
     AS $$
 WITH address_id AS (
@@ -1833,242 +1694,6 @@ SELECT get_flop.bid_id,
        storage_values.updated
 FROM storage_values
 $$;
-
-
---
--- Name: get_ilk(text, bigint); Type: FUNCTION; Schema: api; Owner: -
---
-
-CREATE FUNCTION api.get_ilk(ilk_identifier text, block_height bigint DEFAULT api.max_block()) RETURNS api.ilk_state
-    LANGUAGE sql STABLE STRICT
-    AS $$
-WITH ilk AS (SELECT id FROM maker.ilks WHERE identifier = ilk_identifier),
-     rates AS (SELECT rate, ilk_id, hash
-               FROM maker.vat_ilk_rate
-                        LEFT JOIN public.headers ON vat_ilk_rate.header_id = headers.id
-               WHERE ilk_id = (SELECT id FROM ilk)
-                 AND block_number <= get_ilk.block_height
-               ORDER BY ilk_id, block_number DESC
-               LIMIT 1),
-     arts AS (SELECT art, ilk_id, hash
-              FROM maker.vat_ilk_art
-                       LEFT JOIN public.headers ON vat_ilk_art.header_id = headers.id
-              WHERE ilk_id = (SELECT id FROM ilk)
-                AND block_number <= get_ilk.block_height
-              ORDER BY ilk_id, block_number DESC
-              LIMIT 1),
-     spots AS (SELECT spot, ilk_id, hash
-               FROM maker.vat_ilk_spot
-                        LEFT JOIN public.headers ON vat_ilk_spot.header_id = headers.id
-               WHERE ilk_id = (SELECT id FROM ilk)
-                 AND block_number <= get_ilk.block_height
-               ORDER BY ilk_id, block_number DESC
-               LIMIT 1),
-     lines AS (SELECT line, ilk_id, hash
-               FROM maker.vat_ilk_line
-                        LEFT JOIN public.headers ON vat_ilk_line.header_id = headers.id
-               WHERE ilk_id = (SELECT id FROM ilk)
-                 AND block_number <= get_ilk.block_height
-               ORDER BY ilk_id, block_number DESC
-               LIMIT 1),
-     dusts AS (SELECT dust, ilk_id, hash
-               FROM maker.vat_ilk_dust
-                        LEFT JOIN public.headers ON vat_ilk_dust.header_id = headers.id
-               WHERE ilk_id = (SELECT id FROM ilk)
-                 AND block_number <= get_ilk.block_height
-               ORDER BY ilk_id, block_number DESC
-               LIMIT 1),
-     chops AS (SELECT chop, ilk_id, hash
-               FROM maker.cat_ilk_chop
-                        LEFT JOIN public.headers ON cat_ilk_chop.header_id = headers.id
-               WHERE ilk_id = (SELECT id FROM ilk)
-                 AND block_number <= get_ilk.block_height
-               ORDER BY ilk_id, block_number DESC
-               LIMIT 1),
-     lumps AS (SELECT lump, ilk_id, hash
-               FROM maker.cat_ilk_lump
-                        LEFT JOIN public.headers ON cat_ilk_lump.header_id = headers.id
-               WHERE ilk_id = (SELECT id FROM ilk)
-                 AND block_number <= get_ilk.block_height
-               ORDER BY ilk_id, block_number DESC
-               LIMIT 1),
-     flips AS (SELECT flip, ilk_id, hash
-               FROM maker.cat_ilk_flip
-                        LEFT JOIN public.headers ON cat_ilk_flip.header_id = headers.id
-               WHERE ilk_id = (SELECT id FROM ilk)
-                 AND block_number <= get_ilk.block_height
-               ORDER BY ilk_id, block_number DESC
-               LIMIT 1),
-     rhos AS (SELECT rho, ilk_id, hash
-              FROM maker.jug_ilk_rho
-                       LEFT JOIN public.headers ON jug_ilk_rho.header_id = headers.id
-              WHERE ilk_id = (SELECT id FROM ilk)
-                AND block_number <= get_ilk.block_height
-              ORDER BY ilk_id, block_number DESC
-              LIMIT 1),
-     duties AS (SELECT duty, ilk_id, hash
-                FROM maker.jug_ilk_duty
-                         LEFT JOIN public.headers ON jug_ilk_duty.header_id = headers.id
-                WHERE ilk_id = (SELECT id FROM ilk)
-                  AND block_number <= get_ilk.block_height
-                ORDER BY ilk_id, block_number DESC
-                LIMIT 1),
-     pips AS (SELECT pip, ilk_id, hash
-              FROM maker.spot_ilk_pip
-                       LEFT JOIN public.headers ON spot_ilk_pip.header_id = headers.id
-              WHERE ilk_id = (SELECT id FROM ilk)
-                AND block_number <= get_ilk.block_height
-              ORDER BY ilk_id, block_number DESC
-              LIMIT 1),
-     mats AS (SELECT mat, ilk_id, hash
-              FROM maker.spot_ilk_mat
-                       LEFT JOIN public.headers ON spot_ilk_mat.header_id = headers.id
-              WHERE ilk_id = (SELECT id FROM ilk)
-                AND block_number <= get_ilk.block_height
-              ORDER BY ilk_id, block_number DESC
-              LIMIT 1),
-     relevant_blocks AS (SELECT * FROM api.get_ilk_blocks_before(ilk_identifier, get_ilk.block_height)),
-     created AS (SELECT DISTINCT ON (relevant_blocks.ilk_id,
-         relevant_blocks.block_height) relevant_blocks.block_height,
-                                       relevant_blocks.block_hash,
-                                       relevant_blocks.ilk_id,
-                                       api.epoch_to_datetime(relevant_blocks.block_timestamp) AS datetime
-                 FROM relevant_blocks
-                 ORDER BY relevant_blocks.block_height ASC
-                 LIMIT 1),
-     updated AS (SELECT DISTINCT ON (relevant_blocks.ilk_id,
-         relevant_blocks.block_height) relevant_blocks.block_height,
-                                       relevant_blocks.block_hash,
-                                       relevant_blocks.ilk_id,
-                                       api.epoch_to_datetime(relevant_blocks.block_timestamp) AS datetime
-                 FROM relevant_blocks
-                 ORDER BY relevant_blocks.block_height DESC
-                 LIMIT 1)
-
-SELECT ilks.identifier,
-       get_ilk.block_height,
-       rates.rate,
-       arts.art,
-       spots.spot,
-       lines.line,
-       dusts.dust,
-       chops.chop,
-       lumps.lump,
-       flips.flip,
-       rhos.rho,
-       duties.duty,
-       pips.pip,
-       mats.mat,
-       created.datetime,
-       updated.datetime
-FROM maker.ilks AS ilks
-         LEFT JOIN rates ON rates.ilk_id = ilks.id
-         LEFT JOIN arts ON arts.ilk_id = ilks.id
-         LEFT JOIN spots ON spots.ilk_id = ilks.id
-         LEFT JOIN lines ON lines.ilk_id = ilks.id
-         LEFT JOIN dusts ON dusts.ilk_id = ilks.id
-         LEFT JOIN chops ON chops.ilk_id = ilks.id
-         LEFT JOIN lumps ON lumps.ilk_id = ilks.id
-         LEFT JOIN flips ON flips.ilk_id = ilks.id
-         LEFT JOIN rhos ON rhos.ilk_id = ilks.id
-         LEFT JOIN duties ON duties.ilk_id = ilks.id
-         LEFT JOIN pips ON pips.ilk_id = ilks.id
-         LEFT JOIN mats ON mats.ilk_id = ilks.id
-         LEFT JOIN created ON created.ilk_id = ilks.id
-         LEFT JOIN updated ON updated.ilk_id = ilks.id
-WHERE (
-              rates.rate is not null OR
-              arts.art is not null OR
-              spots.spot is not null OR
-              lines.line is not null OR
-              dusts.dust is not null OR
-              chops.chop is not null OR
-              lumps.lump is not null OR
-              flips.flip is not null OR
-              rhos.rho is not null OR
-              duties.duty is not null OR
-              pips.pip is not null OR
-              mats.mat is not null
-          )
-$$;
-
-
---
--- Name: get_ilk_blocks_before(text, bigint); Type: FUNCTION; Schema: api; Owner: -
---
-
-CREATE FUNCTION api.get_ilk_blocks_before(ilk_identifier text, block_height bigint) RETURNS SETOF api.relevant_block
-    LANGUAGE sql STABLE
-    AS $$
-WITH ilk AS (SELECT id FROM maker.ilks WHERE identifier = ilk_identifier)
-SELECT block_number AS block_height, hash, block_timestamp, ilk_id
-FROM maker.vat_ilk_rate
-         LEFT JOIN public.headers ON vat_ilk_rate.header_id = headers.id
-WHERE block_number <= get_ilk_blocks_before.block_height
-  AND ilk_id = (SELECT id FROM ilk)
-UNION
-SELECT block_number AS block_height, hash, block_timestamp, ilk_id
-FROM maker.vat_ilk_art
-         LEFT JOIN public.headers ON vat_ilk_art.header_id = headers.id
-WHERE block_number <= get_ilk_blocks_before.block_height
-  AND ilk_id = (SELECT id FROM ilk)
-UNION
-SELECT block_number AS block_height, hash, block_timestamp, ilk_id
-FROM maker.vat_ilk_spot
-         LEFT JOIN public.headers ON vat_ilk_spot.header_id = headers.id
-WHERE block_number <= get_ilk_blocks_before.block_height
-  AND ilk_id = (SELECT id FROM ilk)
-UNION
-SELECT block_number AS block_height, hash, block_timestamp, ilk_id
-FROM maker.vat_ilk_line
-         LEFT JOIN public.headers ON vat_ilk_line.header_id = headers.id
-WHERE block_number <= get_ilk_blocks_before.block_height
-  AND ilk_id = (SELECT id FROM ilk)
-UNION
-SELECT block_number AS block_height, hash, block_timestamp, ilk_id
-FROM maker.vat_ilk_dust
-         LEFT JOIN public.headers ON vat_ilk_dust.header_id = headers.id
-WHERE block_number <= get_ilk_blocks_before.block_height
-  AND ilk_id = (SELECT id FROM ilk)
-UNION
-SELECT block_number AS block_height, hash, block_timestamp, ilk_id
-FROM maker.cat_ilk_chop
-         LEFT JOIN public.headers ON cat_ilk_chop.header_id = headers.id
-WHERE block_number <= get_ilk_blocks_before.block_height
-  AND ilk_id = (SELECT id FROM ilk)
-UNION
-SELECT block_number AS block_height, hash, block_timestamp, ilk_id
-FROM maker.cat_ilk_lump
-         LEFT JOIN public.headers ON cat_ilk_lump.header_id = headers.id
-WHERE block_number <= get_ilk_blocks_before.block_height
-  AND ilk_id = (SELECT id FROM ilk)
-UNION
-SELECT block_number AS block_height, hash, block_timestamp, ilk_id
-FROM maker.cat_ilk_flip
-         LEFT JOIN public.headers ON cat_ilk_flip.header_id = headers.id
-WHERE block_number <= get_ilk_blocks_before.block_height
-  AND ilk_id = (SELECT id FROM ilk)
-UNION
-SELECT block_number AS block_height, hash, block_timestamp, ilk_id
-FROM maker.jug_ilk_rho
-         LEFT JOIN public.headers ON jug_ilk_rho.header_id = headers.id
-WHERE block_number <= get_ilk_blocks_before.block_height
-  AND ilk_id = (SELECT id FROM ilk)
-UNION
-SELECT block_number AS block_height, hash, block_timestamp, ilk_id
-FROM maker.jug_ilk_duty
-         LEFT JOIN public.headers ON jug_ilk_duty.header_id = headers.id
-WHERE block_number <= get_ilk_blocks_before.block_height
-  AND ilk_id = (SELECT id FROM ilk)
-ORDER BY block_height DESC
-$$;
-
-
---
--- Name: FUNCTION get_ilk_blocks_before(ilk_identifier text, block_height bigint); Type: COMMENT; Schema: api; Owner: -
---
-
-COMMENT ON FUNCTION api.get_ilk_blocks_before(ilk_identifier text, block_height bigint) IS '@omit';
 
 
 --
@@ -2179,124 +1804,14 @@ $_$;
 
 
 --
--- Name: historical_ilk_state_bites(api.historical_ilk_state, integer, integer); Type: FUNCTION; Schema: api; Owner: -
---
-
-CREATE FUNCTION api.historical_ilk_state_bites(state api.historical_ilk_state, max_results integer DEFAULT NULL::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.bite_event
-    LANGUAGE sql STABLE
-    AS $$
-SELECT *
-FROM api.all_bites(state.ilk_identifier)
-ORDER BY block_height DESC
-LIMIT max_results
-OFFSET
-result_offset
-$$;
-
-
---
--- Name: historical_ilk_state_frobs(api.historical_ilk_state, integer, integer); Type: FUNCTION; Schema: api; Owner: -
---
-
-CREATE FUNCTION api.historical_ilk_state_frobs(state api.historical_ilk_state, max_results integer DEFAULT NULL::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.frob_event
-    LANGUAGE sql STABLE
-    AS $$
-SELECT *
-FROM api.all_frobs(state.ilk_identifier)
-ORDER BY block_height DESC
-LIMIT max_results
-OFFSET
-result_offset
-$$;
-
-
---
--- Name: historical_ilk_state_ilk_file_events(api.historical_ilk_state, integer, integer); Type: FUNCTION; Schema: api; Owner: -
---
-
-CREATE FUNCTION api.historical_ilk_state_ilk_file_events(state api.historical_ilk_state, max_results integer DEFAULT NULL::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.ilk_file_event
-    LANGUAGE sql STABLE
-    AS $$
-SELECT *
-FROM api.all_ilk_file_events(state.ilk_identifier)
-LIMIT max_results
-OFFSET
-result_offset
-$$;
-
-
---
--- Name: historical_urn_state; Type: TABLE; Schema: api; Owner: -
---
-
-CREATE TABLE api.historical_urn_state (
-    urn_identifier text NOT NULL,
-    ilk_identifier text NOT NULL,
-    block_height bigint NOT NULL,
-    ink numeric,
-    art numeric,
-    created timestamp without time zone,
-    updated timestamp without time zone NOT NULL
-);
-
-
---
--- Name: historical_urn_state_bites(api.historical_urn_state, integer, integer); Type: FUNCTION; Schema: api; Owner: -
---
-
-CREATE FUNCTION api.historical_urn_state_bites(state api.historical_urn_state, max_results integer DEFAULT NULL::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.bite_event
-    LANGUAGE sql STABLE
-    AS $$
-SELECT *
-FROM api.urn_bites(state.ilk_identifier, state.urn_identifier)
-WHERE block_height <= state.block_height
-LIMIT historical_urn_state_bites.max_results
-OFFSET
-historical_urn_state_bites.result_offset
-$$;
-
-
---
--- Name: historical_urn_state_frobs(api.historical_urn_state, integer, integer); Type: FUNCTION; Schema: api; Owner: -
---
-
-CREATE FUNCTION api.historical_urn_state_frobs(state api.historical_urn_state, max_results integer DEFAULT NULL::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.frob_event
-    LANGUAGE sql STABLE
-    AS $$
-SELECT *
-FROM api.urn_frobs(state.ilk_identifier, state.urn_identifier)
-WHERE block_height <= state.block_height
-LIMIT historical_urn_state_frobs.max_results
-OFFSET
-historical_urn_state_frobs.result_offset
-$$;
-
-
---
--- Name: historical_urn_state_ilk(api.historical_urn_state); Type: FUNCTION; Schema: api; Owner: -
---
-
-CREATE FUNCTION api.historical_urn_state_ilk(state api.historical_urn_state) RETURNS api.historical_ilk_state
-    LANGUAGE sql STABLE
-    AS $$
-SELECT *
-FROM api.historical_ilk_state i
-WHERE i.ilk_identifier = state.ilk_identifier
-  AND i.block_number <= state.block_height
-ORDER BY i.block_number DESC
-LIMIT 1
-$$;
-
-
---
 -- Name: ilk_file_event_ilk(api.ilk_file_event); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.ilk_file_event_ilk(event api.ilk_file_event) RETURNS SETOF api.historical_ilk_state
+CREATE FUNCTION api.ilk_file_event_ilk(event api.ilk_file_event) RETURNS SETOF api.ilk_snapshot
     LANGUAGE sql STABLE
     AS $$
 SELECT *
-FROM api.historical_ilk_state i
+FROM api.ilk_snapshot i
 WHERE i.ilk_identifier = event.ilk_identifier
   AND i.block_number <= event.block_height
 ORDER BY i.block_number DESC
@@ -2317,46 +1832,49 @@ $$;
 
 
 --
--- Name: ilk_state_bites(api.ilk_state, integer, integer); Type: FUNCTION; Schema: api; Owner: -
+-- Name: ilk_snapshot_bites(api.ilk_snapshot, integer, integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.ilk_state_bites(state api.ilk_state, max_results integer DEFAULT NULL::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.bite_event
+CREATE FUNCTION api.ilk_snapshot_bites(state api.ilk_snapshot, max_results integer DEFAULT NULL::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.bite_event
     LANGUAGE sql STABLE
     AS $$
 SELECT *
 FROM api.all_bites(state.ilk_identifier)
-WHERE block_height <= state.block_height
 ORDER BY block_height DESC
-LIMIT ilk_state_bites.max_results OFFSET ilk_state_bites.result_offset
+LIMIT max_results
+OFFSET
+result_offset
 $$;
 
 
 --
--- Name: ilk_state_frobs(api.ilk_state, integer, integer); Type: FUNCTION; Schema: api; Owner: -
+-- Name: ilk_snapshot_frobs(api.ilk_snapshot, integer, integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.ilk_state_frobs(state api.ilk_state, max_results integer DEFAULT NULL::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.frob_event
+CREATE FUNCTION api.ilk_snapshot_frobs(state api.ilk_snapshot, max_results integer DEFAULT NULL::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.frob_event
     LANGUAGE sql STABLE
     AS $$
 SELECT *
 FROM api.all_frobs(state.ilk_identifier)
-WHERE block_height <= state.block_height
 ORDER BY block_height DESC
-LIMIT ilk_state_frobs.max_results OFFSET ilk_state_frobs.result_offset
+LIMIT max_results
+OFFSET
+result_offset
 $$;
 
 
 --
--- Name: ilk_state_ilk_file_events(api.ilk_state, integer, integer); Type: FUNCTION; Schema: api; Owner: -
+-- Name: ilk_snapshot_ilk_file_events(api.ilk_snapshot, integer, integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.ilk_state_ilk_file_events(state api.ilk_state, max_results integer DEFAULT NULL::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.ilk_file_event
+CREATE FUNCTION api.ilk_snapshot_ilk_file_events(state api.ilk_snapshot, max_results integer DEFAULT NULL::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.ilk_file_event
     LANGUAGE sql STABLE
     AS $$
 SELECT *
 FROM api.all_ilk_file_events(state.ilk_identifier)
-WHERE block_height <= state.block_height
-LIMIT ilk_state_ilk_file_events.max_results OFFSET ilk_state_ilk_file_events.result_offset
+LIMIT max_results
+OFFSET
+result_offset
 $$;
 
 
@@ -2399,11 +1917,11 @@ COMMENT ON COLUMN api.managed_cdp.cdpi IS '@name id';
 -- Name: managed_cdp_ilk(api.managed_cdp); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.managed_cdp_ilk(cdp api.managed_cdp) RETURNS api.historical_ilk_state
+CREATE FUNCTION api.managed_cdp_ilk(cdp api.managed_cdp) RETURNS api.ilk_snapshot
     LANGUAGE sql STABLE
     AS $$
 SELECT *
-FROM api.historical_ilk_state i
+FROM api.ilk_snapshot i
 WHERE i.ilk_identifier = cdp.ilk_identifier
 ORDER BY block_number DESC
 LIMIT 1
@@ -2426,11 +1944,11 @@ $$;
 -- Name: poke_event_ilk(api.poke_event); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.poke_event_ilk(event api.poke_event) RETURNS api.historical_ilk_state
+CREATE FUNCTION api.poke_event_ilk(event api.poke_event) RETURNS api.ilk_snapshot
     LANGUAGE sql STABLE
     AS $$
 SELECT i.*
-FROM api.historical_ilk_state i
+FROM api.ilk_snapshot i
          LEFT JOIN maker.ilks ON ilks.identifier = i.ilk_identifier
 WHERE ilks.id = event.ilk_id
   AND i.block_number <= event.block_height
@@ -2575,6 +2093,69 @@ $$;
 
 
 --
+-- Name: urn_snapshot; Type: TABLE; Schema: api; Owner: -
+--
+
+CREATE TABLE api.urn_snapshot (
+    urn_identifier text NOT NULL,
+    ilk_identifier text NOT NULL,
+    block_height bigint NOT NULL,
+    ink numeric,
+    art numeric,
+    created timestamp without time zone,
+    updated timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: urn_snapshot_bites(api.urn_snapshot, integer, integer); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.urn_snapshot_bites(state api.urn_snapshot, max_results integer DEFAULT NULL::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.bite_event
+    LANGUAGE sql STABLE
+    AS $$
+SELECT *
+FROM api.urn_bites(state.ilk_identifier, state.urn_identifier)
+WHERE block_height <= state.block_height
+LIMIT urn_snapshot_bites.max_results
+OFFSET
+urn_snapshot_bites.result_offset
+$$;
+
+
+--
+-- Name: urn_snapshot_frobs(api.urn_snapshot, integer, integer); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.urn_snapshot_frobs(state api.urn_snapshot, max_results integer DEFAULT NULL::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.frob_event
+    LANGUAGE sql STABLE
+    AS $$
+SELECT *
+FROM api.urn_frobs(state.ilk_identifier, state.urn_identifier)
+WHERE block_height <= state.block_height
+LIMIT urn_snapshot_frobs.max_results
+OFFSET
+urn_snapshot_frobs.result_offset
+$$;
+
+
+--
+-- Name: urn_snapshot_ilk(api.urn_snapshot); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.urn_snapshot_ilk(state api.urn_snapshot) RETURNS api.ilk_snapshot
+    LANGUAGE sql STABLE
+    AS $$
+SELECT *
+FROM api.ilk_snapshot i
+WHERE i.ilk_identifier = state.ilk_identifier
+  AND i.block_number <= state.block_height
+ORDER BY i.block_number DESC
+LIMIT 1
+$$;
+
+
+--
 -- Name: urn_state_bites(api.urn_state, integer, integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
@@ -2610,11 +2191,11 @@ $$;
 -- Name: urn_state_ilk(api.urn_state); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.urn_state_ilk(state api.urn_state) RETURNS api.historical_ilk_state
+CREATE FUNCTION api.urn_state_ilk(state api.urn_state) RETURNS api.ilk_snapshot
     LANGUAGE sql STABLE
     AS $$
 SELECT *
-FROM api.historical_ilk_state i
+FROM api.ilk_snapshot i
 WHERE i.ilk_identifier = state.ilk_identifier
   AND i.block_number <= state.block_height
 ORDER BY i.block_number DESC
@@ -2775,10 +2356,10 @@ CREATE FUNCTION maker.clear_time_created(old_event maker.vat_init) RETURNS maker
     LANGUAGE plpgsql
     AS $$
 BEGIN
-    UPDATE api.historical_ilk_state
+    UPDATE api.ilk_snapshot
     SET created = ilk_time_created(old_event.ilk_id)
     FROM maker.ilks
-    WHERE ilks.identifier = historical_ilk_state.ilk_identifier
+    WHERE ilks.identifier = ilk_snapshot.ilk_identifier
       AND ilks.id = old_event.ilk_id;
     RETURN NULL;
 END
@@ -2943,7 +2524,7 @@ COMMENT ON FUNCTION maker.delete_obsolete_flop(bid_id numeric, address_id intege
 -- Name: delete_obsolete_urn_state(integer, integer); Type: FUNCTION; Schema: maker; Owner: -
 --
 
-CREATE FUNCTION maker.delete_obsolete_urn_state(urn_id integer, header_id integer) RETURNS api.historical_urn_state
+CREATE FUNCTION maker.delete_obsolete_urn_state(urn_id integer, header_id integer) RETURNS api.urn_snapshot
     LANGUAGE plpgsql
     AS $$
 DECLARE
@@ -2953,12 +2534,12 @@ DECLARE
         WHERE id = header_id);
 BEGIN
     DELETE
-    FROM api.historical_urn_state
+    FROM api.urn_snapshot
         USING maker.urns LEFT JOIN maker.ilks ON urns.ilk_id = ilks.id
-    WHERE historical_urn_state.urn_identifier = urns.identifier
-      AND historical_urn_state.ilk_identifier = ilks.identifier
+    WHERE urn_snapshot.urn_identifier = urns.identifier
+      AND urn_snapshot.ilk_identifier = ilks.identifier
       AND urns.id = urn_id
-      AND historical_urn_state.block_height = urn_state_block_number
+      AND urn_snapshot.block_height = urn_state_block_number
       AND NOT (EXISTS(
             SELECT *
             FROM maker.vat_urn_ink
@@ -2982,62 +2563,62 @@ COMMENT ON FUNCTION maker.delete_obsolete_urn_state(urn_id integer, header_id in
 
 
 --
--- Name: delete_redundant_ilk_state(integer, integer); Type: FUNCTION; Schema: maker; Owner: -
+-- Name: delete_redundant_ilk_snapshot(integer, integer); Type: FUNCTION; Schema: maker; Owner: -
 --
 
-CREATE FUNCTION maker.delete_redundant_ilk_state(ilk_id integer, header_id integer) RETURNS api.historical_ilk_state
+CREATE FUNCTION maker.delete_redundant_ilk_snapshot(ilk_id integer, header_id integer) RETURNS api.ilk_snapshot
     LANGUAGE plpgsql
     AS $$
 DECLARE
-    associated_ilk         TEXT                     := (
+    associated_ilk        TEXT             := (
         SELECT identifier
         FROM maker.ilks
-        WHERE id = delete_redundant_ilk_state.ilk_id);
-    ilk_state_block_number BIGINT                   := (
+        WHERE id = delete_redundant_ilk_snapshot.ilk_id);
+    snapshot_block_number BIGINT           := (
         SELECT block_number
         FROM public.headers
         WHERE id = header_id);
-    ilk_state              api.historical_ilk_state := (
-        SELECT (ilk_identifier, historical_ilk_state.block_number, rate, art, spot, line, dust, chop, lump, flip, rho,
-                duty, pip, mat, created, updated)
-        FROM api.historical_ilk_state
+    snapshot              api.ilk_snapshot := (
+        SELECT (ilk_identifier, ilk_snapshot.block_number, rate, art, spot, line, dust, chop, lump, flip, rho, duty,
+                pip, mat, created, updated)
+        FROM api.ilk_snapshot
         WHERE ilk_identifier = associated_ilk
-          AND historical_ilk_state.block_number = ilk_state_block_number);
-    prev_ilk_state         api.historical_ilk_state := (
-        SELECT (ilk_identifier, historical_ilk_state.block_number, rate, art, spot, line, dust, chop, lump, flip, rho,
-                duty, pip, mat, created, updated)
-        FROM api.historical_ilk_state
+          AND ilk_snapshot.block_number = snapshot_block_number);
+    prev_snapshot         api.ilk_snapshot := (
+        SELECT (ilk_identifier, ilk_snapshot.block_number, rate, art, spot, line, dust, chop, lump, flip, rho, duty,
+                pip, mat, created, updated)
+        FROM api.ilk_snapshot
         WHERE ilk_identifier = associated_ilk
-          AND historical_ilk_state.block_number < ilk_state_block_number
-        ORDER BY historical_ilk_state.block_number DESC
+          AND ilk_snapshot.block_number < snapshot_block_number
+        ORDER BY ilk_snapshot.block_number DESC
         LIMIT 1);
 BEGIN
     DELETE
-    FROM api.historical_ilk_state
-    WHERE historical_ilk_state.ilk_identifier = associated_ilk
-      AND historical_ilk_state.block_number = ilk_state_block_number
-      AND (ilk_state.rate IS NULL OR ilk_state.rate = prev_ilk_state.rate)
-      AND (ilk_state.art IS NULL OR ilk_state.art = prev_ilk_state.art)
-      AND (ilk_state.spot IS NULL OR ilk_state.spot = prev_ilk_state.spot)
-      AND (ilk_state.line IS NULL OR ilk_state.line = prev_ilk_state.line)
-      AND (ilk_state.dust IS NULL OR ilk_state.dust = prev_ilk_state.dust)
-      AND (ilk_state.chop IS NULL OR ilk_state.chop = prev_ilk_state.chop)
-      AND (ilk_state.lump IS NULL OR ilk_state.lump = prev_ilk_state.lump)
-      AND (ilk_state.flip IS NULL OR ilk_state.flip = prev_ilk_state.flip)
-      AND (ilk_state.rho IS NULL OR ilk_state.rho = prev_ilk_state.rho)
-      AND (ilk_state.duty IS NULL OR ilk_state.duty = prev_ilk_state.duty)
-      AND (ilk_state.pip IS NULL OR ilk_state.pip = prev_ilk_state.pip)
-      AND (ilk_state.mat IS NULL OR ilk_state.mat = prev_ilk_state.mat);
+    FROM api.ilk_snapshot
+    WHERE ilk_snapshot.ilk_identifier = associated_ilk
+      AND ilk_snapshot.block_number = snapshot_block_number
+      AND (snapshot.rate IS NULL OR snapshot.rate = prev_snapshot.rate)
+      AND (snapshot.art IS NULL OR snapshot.art = prev_snapshot.art)
+      AND (snapshot.spot IS NULL OR snapshot.spot = prev_snapshot.spot)
+      AND (snapshot.line IS NULL OR snapshot.line = prev_snapshot.line)
+      AND (snapshot.dust IS NULL OR snapshot.dust = prev_snapshot.dust)
+      AND (snapshot.chop IS NULL OR snapshot.chop = prev_snapshot.chop)
+      AND (snapshot.lump IS NULL OR snapshot.lump = prev_snapshot.lump)
+      AND (snapshot.flip IS NULL OR snapshot.flip = prev_snapshot.flip)
+      AND (snapshot.rho IS NULL OR snapshot.rho = prev_snapshot.rho)
+      AND (snapshot.duty IS NULL OR snapshot.duty = prev_snapshot.duty)
+      AND (snapshot.pip IS NULL OR snapshot.pip = prev_snapshot.pip)
+      AND (snapshot.mat IS NULL OR snapshot.mat = prev_snapshot.mat);
     RETURN NULL;
 END
 $$;
 
 
 --
--- Name: FUNCTION delete_redundant_ilk_state(ilk_id integer, header_id integer); Type: COMMENT; Schema: maker; Owner: -
+-- Name: FUNCTION delete_redundant_ilk_snapshot(ilk_id integer, header_id integer); Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON FUNCTION maker.delete_redundant_ilk_state(ilk_id integer, header_id integer) IS '@omit';
+COMMENT ON FUNCTION maker.delete_redundant_ilk_snapshot(ilk_id integer, header_id integer) IS '@omit';
 
 
 --
@@ -3245,8 +2826,8 @@ DECLARE
         WHERE id = new_diff.header_id);
 BEGIN
     INSERT
-    INTO api.historical_ilk_state (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho,
-                                   duty, pip, mat, created, updated)
+    INTO api.ilk_snapshot (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho,
+                           duty, pip, mat, created, updated)
     VALUES (diff_ilk_identifier,
             diff_block_number,
             ilk_rate_before_block(new_diff.ilk_id, new_diff.header_id),
@@ -3319,8 +2900,8 @@ DECLARE
         WHERE id = new_diff.header_id);
 BEGIN
     INSERT
-    INTO api.historical_ilk_state (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho,
-                                   duty, pip, mat, created, updated)
+    INTO api.ilk_snapshot (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho,
+                           duty, pip, mat, created, updated)
     VALUES (diff_ilk_identifier,
             diff_block_number,
             ilk_rate_before_block(new_diff.ilk_id, new_diff.header_id),
@@ -3393,8 +2974,8 @@ DECLARE
         WHERE id = new_diff.header_id);
 BEGIN
     INSERT
-    INTO api.historical_ilk_state (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho,
-                                   duty, pip, mat, created, updated)
+    INTO api.ilk_snapshot (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho,
+                           duty, pip, mat, created, updated)
     VALUES (diff_ilk_identifier,
             diff_block_number,
             ilk_rate_before_block(new_diff.ilk_id, new_diff.header_id),
@@ -3467,8 +3048,8 @@ DECLARE
         WHERE id = new_diff.header_id);
 BEGIN
     INSERT
-    INTO api.historical_ilk_state (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho,
-                                   duty, pip, mat, created, updated)
+    INTO api.ilk_snapshot (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho,
+                           duty, pip, mat, created, updated)
     VALUES (diff_ilk_identifier,
             diff_block_number,
             ilk_rate_before_block(new_diff.ilk_id, new_diff.header_id),
@@ -3786,8 +3367,8 @@ DECLARE
         WHERE id = new_diff.header_id);
 BEGIN
     INSERT
-    INTO api.historical_ilk_state (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho,
-                                   duty, pip, mat, created, updated)
+    INTO api.ilk_snapshot (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho,
+                           duty, pip, mat, created, updated)
     VALUES (diff_ilk_identifier,
             diff_block_number,
             ilk_rate_before_block(new_diff.ilk_id, new_diff.header_id),
@@ -4521,8 +4102,8 @@ DECLARE
         WHERE id = new_diff.header_id);
 BEGIN
     INSERT
-    INTO api.historical_ilk_state (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho,
-                                   duty, pip, mat, created, updated)
+    INTO api.ilk_snapshot (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho,
+                           duty, pip, mat, created, updated)
     VALUES (diff_ilk_identifier,
             diff_block_number,
             ilk_rate_before_block(new_diff.ilk_id, new_diff.header_id),
@@ -4595,8 +4176,8 @@ DECLARE
         WHERE id = new_diff.header_id);
 BEGIN
     INSERT
-    INTO api.historical_ilk_state (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho,
-                                   duty, pip, mat, created, updated)
+    INTO api.ilk_snapshot (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho,
+                           duty, pip, mat, created, updated)
     VALUES (diff_ilk_identifier,
             diff_block_number,
             ilk_rate_before_block(new_diff.ilk_id, new_diff.header_id),
@@ -4669,8 +4250,8 @@ DECLARE
         WHERE id = new_diff.header_id);
 BEGIN
     INSERT
-    INTO api.historical_ilk_state (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho,
-                                   duty, pip, mat, created, updated)
+    INTO api.ilk_snapshot (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho,
+                           duty, pip, mat, created, updated)
     VALUES (diff_ilk_identifier,
             diff_block_number,
             ilk_rate_before_block(new_diff.ilk_id, new_diff.header_id),
@@ -4743,8 +4324,8 @@ DECLARE
         WHERE id = new_diff.header_id);
 BEGIN
     INSERT
-    INTO api.historical_ilk_state (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho,
-                                   duty, pip, mat, created, updated)
+    INTO api.ilk_snapshot (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho,
+                           duty, pip, mat, created, updated)
     VALUES (diff_ilk_identifier,
             diff_block_number,
             ilk_rate_before_block(new_diff.ilk_id, new_diff.header_id),
@@ -4817,8 +4398,8 @@ DECLARE
         WHERE id = new_diff.header_id);
 BEGIN
     INSERT
-    INTO api.historical_ilk_state (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho,
-                                   duty, pip, mat, created, updated)
+    INTO api.ilk_snapshot (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho,
+                           duty, pip, mat, created, updated)
     VALUES (diff_ilk_identifier,
             diff_block_number,
             new_diff.rate,
@@ -4891,8 +4472,8 @@ DECLARE
         WHERE id = new_diff.header_id);
 BEGIN
     INSERT
-    INTO api.historical_ilk_state (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho,
-                                   duty, pip, mat, created, updated)
+    INTO api.ilk_snapshot (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho,
+                           duty, pip, mat, created, updated)
     VALUES (diff_ilk_identifier,
             diff_block_number,
             ilk_rate_before_block(new_diff.ilk_id, new_diff.header_id),
@@ -4965,8 +4546,8 @@ DECLARE
         WHERE headers.id = new_diff.header_id);
 BEGIN
     INSERT
-    INTO api.historical_ilk_state (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho,
-                                   duty, pip, mat, created, updated)
+    INTO api.ilk_snapshot (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho,
+                           duty, pip, mat, created, updated)
     VALUES (diff_ilk_identifier,
             diff_block_number,
             ilk_rate_before_block(new_diff.ilk_id, new_diff.header_id),
@@ -5014,12 +4595,12 @@ DECLARE
         FROM public.headers
         WHERE headers.id = new_event.header_id);
 BEGIN
-    UPDATE api.historical_ilk_state
+    UPDATE api.ilk_snapshot
     SET created = diff_timestamp
     FROM public.headers
-    WHERE headers.block_number = historical_ilk_state.block_number
-      AND historical_ilk_state.ilk_identifier = diff_ilk_identifier
-      AND historical_ilk_state.created IS NULL;
+    WHERE headers.block_number = ilk_snapshot.block_number
+      AND ilk_snapshot.ilk_identifier = diff_ilk_identifier
+      AND ilk_snapshot.created IS NULL;
     RETURN NULL;
 END
 $$;
@@ -5070,7 +4651,7 @@ BEGIN
              FROM public.headers
              WHERE id = new_diff.header_id)
     INSERT
-    INTO api.historical_urn_state (urn_identifier, ilk_identifier, block_height, ink, art, created, updated)
+    INTO api.urn_snapshot (urn_identifier, ilk_identifier, block_height, ink, art, created, updated)
     VALUES ((SELECT urn_identifier FROM urn),
             (SELECT ilk_identifier FROM urn),
             (SELECT block_number FROM new_diff_header),
@@ -5130,7 +4711,7 @@ BEGIN
              FROM public.headers
              WHERE id = new_diff.header_id)
     INSERT
-    INTO api.historical_urn_state (urn_identifier, ilk_identifier, block_height, ink, art, created, updated)
+    INTO api.urn_snapshot (urn_identifier, ilk_identifier, block_height, ink, art, created, updated)
     VALUES ((SELECT urn_identifier FROM urn),
             (SELECT ilk_identifier FROM urn),
             (SELECT block_number FROM new_diff_header),
@@ -5175,12 +4756,12 @@ DECLARE
         WHERE vat_ilk_art.ilk_id = start_at_diff.ilk_id
           AND block_number > diff_block_number);
 BEGIN
-    UPDATE api.historical_ilk_state
+    UPDATE api.ilk_snapshot
     SET art = new_art
-    WHERE historical_ilk_state.ilk_identifier = diff_ilk_identifier
-      AND historical_ilk_state.block_number >= diff_block_number
+    WHERE ilk_snapshot.ilk_identifier = diff_ilk_identifier
+      AND ilk_snapshot.block_number >= diff_block_number
       AND (next_art_diff_block IS NULL
-        OR historical_ilk_state.block_number < next_art_diff_block);
+        OR ilk_snapshot.block_number < next_art_diff_block);
     RETURN NULL;
 END
 $$;
@@ -5216,12 +4797,12 @@ DECLARE
         WHERE cat_ilk_chop.ilk_id = start_at_diff.ilk_id
           AND block_number > diff_block_number);
 BEGIN
-    UPDATE api.historical_ilk_state
+    UPDATE api.ilk_snapshot
     SET chop = new_chop
-    WHERE historical_ilk_state.ilk_identifier = diff_ilk_identifier
-      AND historical_ilk_state.block_number >= diff_block_number
+    WHERE ilk_snapshot.ilk_identifier = diff_ilk_identifier
+      AND ilk_snapshot.block_number >= diff_block_number
       AND (next_chop_diff_block IS NULL
-        OR historical_ilk_state.block_number < next_chop_diff_block);
+        OR ilk_snapshot.block_number < next_chop_diff_block);
     RETURN NULL;
 END
 $$;
@@ -5257,12 +4838,12 @@ DECLARE
         WHERE vat_ilk_dust.ilk_id = start_at_diff.ilk_id
           AND block_number > diff_block_number);
 BEGIN
-    UPDATE api.historical_ilk_state
+    UPDATE api.ilk_snapshot
     SET dust = new_dust
-    WHERE historical_ilk_state.ilk_identifier = diff_ilk_identifier
-      AND historical_ilk_state.block_number >= diff_block_number
+    WHERE ilk_snapshot.ilk_identifier = diff_ilk_identifier
+      AND ilk_snapshot.block_number >= diff_block_number
       AND (next_dust_diff_block IS NULL
-        OR historical_ilk_state.block_number < next_dust_diff_block);
+        OR ilk_snapshot.block_number < next_dust_diff_block);
     RETURN NULL;
 END
 $$;
@@ -5298,12 +4879,12 @@ DECLARE
         WHERE jug_ilk_duty.ilk_id = start_at_diff.ilk_id
           AND block_number > diff_block_number);
 BEGIN
-    UPDATE api.historical_ilk_state
+    UPDATE api.ilk_snapshot
     SET duty = new_duty
-    WHERE historical_ilk_state.ilk_identifier = diff_ilk_identifier
-      AND historical_ilk_state.block_number >= diff_block_number
+    WHERE ilk_snapshot.ilk_identifier = diff_ilk_identifier
+      AND ilk_snapshot.block_number >= diff_block_number
       AND (next_duty_diff_block IS NULL
-        OR historical_ilk_state.block_number < next_duty_diff_block);
+        OR ilk_snapshot.block_number < next_duty_diff_block);
     RETURN NULL;
 END
 $$;
@@ -6169,12 +5750,12 @@ DECLARE
         WHERE cat_ilk_flip.ilk_id = start_at_diff.ilk_id
           AND block_number > diff_block_number);
 BEGIN
-    UPDATE api.historical_ilk_state
+    UPDATE api.ilk_snapshot
     SET flip = new_flip
-    WHERE historical_ilk_state.ilk_identifier = diff_ilk_identifier
-      AND historical_ilk_state.block_number >= diff_block_number
+    WHERE ilk_snapshot.ilk_identifier = diff_ilk_identifier
+      AND ilk_snapshot.block_number >= diff_block_number
       AND (next_flip_diff_block IS NULL
-        OR historical_ilk_state.block_number < next_flip_diff_block);
+        OR ilk_snapshot.block_number < next_flip_diff_block);
     RETURN NULL;
 END
 $$;
@@ -6525,7 +6106,7 @@ BEGIN
         PERFORM maker.update_arts_until_next_diff(NEW, NEW.art);
     ELSIF (TG_OP = 'DELETE') THEN
         PERFORM maker.update_arts_until_next_diff(OLD, ilk_art_before_block(OLD.ilk_id, OLD.header_id));
-        PERFORM maker.delete_redundant_ilk_state(OLD.ilk_id, OLD.header_id);
+        PERFORM maker.delete_redundant_ilk_snapshot(OLD.ilk_id, OLD.header_id);
     END IF;
     RETURN NULL;
 END
@@ -6545,7 +6126,7 @@ BEGIN
         PERFORM maker.update_chops_until_next_diff(NEW, NEW.chop);
     ELSIF (TG_OP = 'DELETE') THEN
         PERFORM maker.update_chops_until_next_diff(OLD, ilk_chop_before_block(OLD.ilk_id, OLD.header_id));
-        PERFORM maker.delete_redundant_ilk_state(OLD.ilk_id, OLD.header_id);
+        PERFORM maker.delete_redundant_ilk_snapshot(OLD.ilk_id, OLD.header_id);
     END IF;
     RETURN NULL;
 END
@@ -6565,7 +6146,7 @@ BEGIN
         PERFORM maker.update_dusts_until_next_diff(NEW, NEW.dust);
     ELSIF (TG_OP = 'DELETE') THEN
         PERFORM maker.update_dusts_until_next_diff(OLD, ilk_dust_before_block(OLD.ilk_id, OLD.header_id));
-        PERFORM maker.delete_redundant_ilk_state(OLD.ilk_id, OLD.header_id);
+        PERFORM maker.delete_redundant_ilk_snapshot(OLD.ilk_id, OLD.header_id);
     END IF;
     RETURN NULL;
 END
@@ -6585,7 +6166,7 @@ BEGIN
         PERFORM maker.update_duties_until_next_diff(NEW, NEW.duty);
     ELSIF (TG_OP = 'DELETE') THEN
         PERFORM maker.update_duties_until_next_diff(OLD, ilk_duty_before_block(OLD.ilk_id, OLD.header_id));
-        PERFORM maker.delete_redundant_ilk_state(OLD.ilk_id, OLD.header_id);
+        PERFORM maker.delete_redundant_ilk_snapshot(OLD.ilk_id, OLD.header_id);
     END IF;
     RETURN NULL;
 END
@@ -6605,7 +6186,7 @@ BEGIN
         PERFORM maker.update_flips_until_next_diff(NEW, NEW.flip);
     ELSIF (TG_OP = 'DELETE') THEN
         PERFORM maker.update_flips_until_next_diff(OLD, ilk_flip_before_block(OLD.ilk_id, OLD.header_id));
-        PERFORM maker.delete_redundant_ilk_state(OLD.ilk_id, OLD.header_id);
+        PERFORM maker.delete_redundant_ilk_snapshot(OLD.ilk_id, OLD.header_id);
     END IF;
     RETURN NULL;
 END
@@ -6625,7 +6206,7 @@ BEGIN
         PERFORM maker.update_lines_until_next_diff(NEW, NEW.line);
     ELSIF (TG_OP = 'DELETE') THEN
         PERFORM maker.update_lines_until_next_diff(OLD, ilk_line_before_block(OLD.ilk_id, OLD.header_id));
-        PERFORM maker.delete_redundant_ilk_state(OLD.ilk_id, OLD.header_id);
+        PERFORM maker.delete_redundant_ilk_snapshot(OLD.ilk_id, OLD.header_id);
     END IF;
     RETURN NULL;
 END
@@ -6645,7 +6226,7 @@ BEGIN
         PERFORM maker.update_lumps_until_next_diff(NEW, NEW.lump);
     ELSIF (TG_OP = 'DELETE') THEN
         PERFORM maker.update_lumps_until_next_diff(OLD, ilk_lump_before_block(OLD.ilk_id, OLD.header_id));
-        PERFORM maker.delete_redundant_ilk_state(OLD.ilk_id, OLD.header_id);
+        PERFORM maker.delete_redundant_ilk_snapshot(OLD.ilk_id, OLD.header_id);
     END IF;
     RETURN NULL;
 END
@@ -6665,7 +6246,7 @@ BEGIN
         PERFORM maker.update_mats_until_next_diff(NEW, NEW.mat);
     ELSIF (TG_OP = 'DELETE') THEN
         PERFORM maker.update_mats_until_next_diff(OLD, ilk_mat_before_block(OLD.ilk_id, OLD.header_id));
-        PERFORM maker.delete_redundant_ilk_state(OLD.ilk_id, OLD.header_id);
+        PERFORM maker.delete_redundant_ilk_snapshot(OLD.ilk_id, OLD.header_id);
     END IF;
     RETURN NULL;
 END
@@ -6685,7 +6266,7 @@ BEGIN
         PERFORM maker.update_pips_until_next_diff(NEW, NEW.pip);
     ELSIF (TG_OP = 'DELETE') THEN
         PERFORM maker.update_pips_until_next_diff(OLD, ilk_pip_before_block(OLD.ilk_id, OLD.header_id));
-        PERFORM maker.delete_redundant_ilk_state(OLD.ilk_id, OLD.header_id);
+        PERFORM maker.delete_redundant_ilk_snapshot(OLD.ilk_id, OLD.header_id);
     END IF;
     RETURN NULL;
 END
@@ -6705,7 +6286,7 @@ BEGIN
         PERFORM maker.update_rates_until_next_diff(NEW, NEW.rate);
     ELSIF (TG_OP = 'DELETE') THEN
         PERFORM maker.update_rates_until_next_diff(OLD, ilk_rate_before_block(OLD.ilk_id, OLD.header_id));
-        PERFORM maker.delete_redundant_ilk_state(OLD.ilk_id, OLD.header_id);
+        PERFORM maker.delete_redundant_ilk_snapshot(OLD.ilk_id, OLD.header_id);
     END IF;
     RETURN NULL;
 END
@@ -6725,7 +6306,7 @@ BEGIN
         PERFORM maker.update_rhos_until_next_diff(NEW, NEW.rho);
     ELSIF (TG_OP = 'DELETE') THEN
         PERFORM maker.update_rhos_until_next_diff(OLD, ilk_rho_before_block(OLD.ilk_id, OLD.header_id));
-        PERFORM maker.delete_redundant_ilk_state(OLD.ilk_id, OLD.header_id);
+        PERFORM maker.delete_redundant_ilk_snapshot(OLD.ilk_id, OLD.header_id);
     END IF;
     RETURN NULL;
 END
@@ -6745,7 +6326,7 @@ BEGIN
         PERFORM maker.update_spots_until_next_diff(NEW, NEW.spot);
     ELSIF (TG_OP = 'DELETE') THEN
         PERFORM maker.update_spots_until_next_diff(OLD, ilk_spot_before_block(OLD.ilk_id, OLD.header_id));
-        PERFORM maker.delete_redundant_ilk_state(OLD.ilk_id, OLD.header_id);
+        PERFORM maker.delete_redundant_ilk_snapshot(OLD.ilk_id, OLD.header_id);
     END IF;
     RETURN NULL;
 END
@@ -6775,12 +6356,12 @@ DECLARE
         WHERE vat_ilk_line.ilk_id = start_at_diff.ilk_id
           AND block_number > diff_block_number);
 BEGIN
-    UPDATE api.historical_ilk_state
+    UPDATE api.ilk_snapshot
     SET line = new_line
-    WHERE historical_ilk_state.ilk_identifier = diff_ilk_identifier
-      AND historical_ilk_state.block_number >= diff_block_number
+    WHERE ilk_snapshot.ilk_identifier = diff_ilk_identifier
+      AND ilk_snapshot.block_number >= diff_block_number
       AND (next_line_diff_block IS NULL
-        OR historical_ilk_state.block_number < next_line_diff_block);
+        OR ilk_snapshot.block_number < next_line_diff_block);
     RETURN NULL;
 END
 $$;
@@ -6816,12 +6397,12 @@ DECLARE
         WHERE cat_ilk_lump.ilk_id = start_at_diff.ilk_id
           AND block_number > diff_block_number);
 BEGIN
-    UPDATE api.historical_ilk_state
+    UPDATE api.ilk_snapshot
     SET lump = new_lump
-    WHERE historical_ilk_state.ilk_identifier = diff_ilk_identifier
-      AND historical_ilk_state.block_number >= diff_block_number
+    WHERE ilk_snapshot.ilk_identifier = diff_ilk_identifier
+      AND ilk_snapshot.block_number >= diff_block_number
       AND (next_lump_diff_block IS NULL
-        OR historical_ilk_state.block_number < next_lump_diff_block);
+        OR ilk_snapshot.block_number < next_lump_diff_block);
     RETURN NULL;
 END
 $$;
@@ -6857,12 +6438,12 @@ DECLARE
         WHERE spot_ilk_mat.ilk_id = start_at_diff.ilk_id
           AND block_number > diff_block_number);
 BEGIN
-    UPDATE api.historical_ilk_state
+    UPDATE api.ilk_snapshot
     SET mat = new_mat
-    WHERE historical_ilk_state.ilk_identifier = diff_ilk_identifier
-      AND historical_ilk_state.block_number >= diff_block_number
+    WHERE ilk_snapshot.ilk_identifier = diff_ilk_identifier
+      AND ilk_snapshot.block_number >= diff_block_number
       AND (next_mat_diff_block IS NULL
-        OR historical_ilk_state.block_number < next_mat_diff_block);
+        OR ilk_snapshot.block_number < next_mat_diff_block);
     RETURN NULL;
 END
 $$;
@@ -6898,12 +6479,12 @@ DECLARE
         WHERE spot_ilk_pip.ilk_id = start_at_diff.ilk_id
           AND block_number > diff_block_number);
 BEGIN
-    UPDATE api.historical_ilk_state
+    UPDATE api.ilk_snapshot
     SET pip = new_pip
-    WHERE historical_ilk_state.ilk_identifier = diff_ilk_identifier
-      AND historical_ilk_state.block_number >= diff_block_number
+    WHERE ilk_snapshot.ilk_identifier = diff_ilk_identifier
+      AND ilk_snapshot.block_number >= diff_block_number
       AND (next_pip_diff_block IS NULL
-        OR historical_ilk_state.block_number < next_pip_diff_block);
+        OR ilk_snapshot.block_number < next_pip_diff_block);
     RETURN NULL;
 END
 $$;
@@ -6939,12 +6520,12 @@ DECLARE
         WHERE vat_ilk_rate.ilk_id = start_at_diff.ilk_id
           AND block_number > diff_block_number);
 BEGIN
-    UPDATE api.historical_ilk_state
+    UPDATE api.ilk_snapshot
     SET rate = new_rate
-    WHERE historical_ilk_state.ilk_identifier = diff_ilk_identifier
-      AND historical_ilk_state.block_number >= diff_block_number
+    WHERE ilk_snapshot.ilk_identifier = diff_ilk_identifier
+      AND ilk_snapshot.block_number >= diff_block_number
       AND (next_rate_diff_block IS NULL
-        OR historical_ilk_state.block_number < next_rate_diff_block);
+        OR ilk_snapshot.block_number < next_rate_diff_block);
     RETURN NULL;
 END
 $$;
@@ -6980,12 +6561,12 @@ DECLARE
         WHERE jug_ilk_rho.ilk_id = start_at_diff.ilk_id
           AND block_number > diff_block_number);
 BEGIN
-    UPDATE api.historical_ilk_state
+    UPDATE api.ilk_snapshot
     SET rho = new_rho
-    WHERE historical_ilk_state.ilk_identifier = diff_ilk_identifier
-      AND historical_ilk_state.block_number >= diff_block_number
+    WHERE ilk_snapshot.ilk_identifier = diff_ilk_identifier
+      AND ilk_snapshot.block_number >= diff_block_number
       AND (next_rho_diff_block IS NULL
-        OR historical_ilk_state.block_number < next_rho_diff_block);
+        OR ilk_snapshot.block_number < next_rho_diff_block);
     RETURN NULL;
 END
 $$;
@@ -7021,12 +6602,12 @@ DECLARE
         WHERE vat_ilk_spot.ilk_id = start_at_diff.ilk_id
           AND block_number > diff_block_number);
 BEGIN
-    UPDATE api.historical_ilk_state
+    UPDATE api.ilk_snapshot
     SET spot = new_spot
-    WHERE historical_ilk_state.ilk_identifier = diff_ilk_identifier
-      AND historical_ilk_state.block_number >= diff_block_number
+    WHERE ilk_snapshot.ilk_identifier = diff_ilk_identifier
+      AND ilk_snapshot.block_number >= diff_block_number
       AND (next_spot_diff_block IS NULL
-        OR historical_ilk_state.block_number < next_spot_diff_block);
+        OR ilk_snapshot.block_number < next_spot_diff_block);
     RETURN NULL;
 END
 $$;
@@ -7108,14 +6689,14 @@ BEGIN
         FROM maker.urns
                  LEFT JOIN maker.ilks ON urns.ilk_id = ilks.id
         WHERE urns.id = start_at_diff.urn_id)
-    UPDATE api.historical_urn_state
+    UPDATE api.urn_snapshot
     SET art = new_art
     FROM urn
-    WHERE historical_urn_state.urn_identifier = urn.urn_identifier
-      AND historical_urn_state.ilk_identifier = urn.ilk_identifier
-      AND historical_urn_state.block_height >= diff_block_number
+    WHERE urn_snapshot.urn_identifier = urn.urn_identifier
+      AND urn_snapshot.ilk_identifier = urn.ilk_identifier
+      AND urn_snapshot.block_height >= diff_block_number
       AND (next_rate_diff_block IS NULL
-        OR historical_urn_state.block_height < next_rate_diff_block);
+        OR urn_snapshot.block_height < next_rate_diff_block);
     RETURN NULL;
 END
 $$;
@@ -7136,12 +6717,12 @@ CREATE FUNCTION maker.update_urn_created(urn_id integer) RETURNS maker.vat_urn_i
     LANGUAGE plpgsql
     AS $$
 BEGIN
-    UPDATE api.historical_urn_state
+    UPDATE api.urn_snapshot
     SET created = urn_time_created(urn_id)
     FROM maker.urns
              LEFT JOIN maker.ilks ON urns.ilk_id = ilks.id
-    WHERE urns.identifier = historical_urn_state.urn_identifier
-      AND ilks.identifier = historical_urn_state.ilk_identifier
+    WHERE urns.identifier = urn_snapshot.urn_identifier
+      AND ilks.identifier = urn_snapshot.ilk_identifier
       AND urns.id = urn_id;
     RETURN NULL;
 END
@@ -7201,14 +6782,14 @@ BEGIN
         FROM maker.urns
                  LEFT JOIN maker.ilks ON urns.ilk_id = ilks.id
         WHERE urns.id = start_at_diff.urn_id)
-    UPDATE api.historical_urn_state
+    UPDATE api.urn_snapshot
     SET ink = new_ink
     FROM urn
-    WHERE historical_urn_state.urn_identifier = urn.urn_identifier
-      AND historical_urn_state.ilk_identifier = urn.ilk_identifier
-      AND historical_urn_state.block_height >= diff_block_number
+    WHERE urn_snapshot.urn_identifier = urn.urn_identifier
+      AND urn_snapshot.ilk_identifier = urn.ilk_identifier
+      AND urn_snapshot.block_height >= diff_block_number
       AND (next_rate_diff_block IS NULL
-        OR historical_urn_state.block_height < next_rate_diff_block);
+        OR urn_snapshot.block_height < next_rate_diff_block);
     RETURN NULL;
 END
 $$;
@@ -14831,19 +14412,11 @@ ALTER TABLE ONLY public.watched_logs ALTER COLUMN id SET DEFAULT nextval('public
 
 
 --
--- Name: historical_ilk_state historical_ilk_state_pkey; Type: CONSTRAINT; Schema: api; Owner: -
+-- Name: ilk_snapshot ilk_snapshot_pkey; Type: CONSTRAINT; Schema: api; Owner: -
 --
 
-ALTER TABLE ONLY api.historical_ilk_state
-    ADD CONSTRAINT historical_ilk_state_pkey PRIMARY KEY (ilk_identifier, block_number);
-
-
---
--- Name: historical_urn_state historical_urn_state_pkey; Type: CONSTRAINT; Schema: api; Owner: -
---
-
-ALTER TABLE ONLY api.historical_urn_state
-    ADD CONSTRAINT historical_urn_state_pkey PRIMARY KEY (urn_identifier, ilk_identifier, block_height);
+ALTER TABLE ONLY api.ilk_snapshot
+    ADD CONSTRAINT ilk_snapshot_pkey PRIMARY KEY (ilk_identifier, block_number);
 
 
 --
@@ -14860,6 +14433,14 @@ ALTER TABLE ONLY api.managed_cdp
 
 ALTER TABLE ONLY api.managed_cdp
     ADD CONSTRAINT managed_cdp_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: urn_snapshot urn_snapshot_pkey; Type: CONSTRAINT; Schema: api; Owner: -
+--
+
+ALTER TABLE ONLY api.urn_snapshot
+    ADD CONSTRAINT urn_snapshot_pkey PRIMARY KEY (urn_identifier, ilk_identifier, block_height);
 
 
 --

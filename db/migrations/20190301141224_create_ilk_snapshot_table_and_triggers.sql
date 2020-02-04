@@ -1,5 +1,5 @@
 -- +goose Up
-CREATE TABLE api.historical_ilk_state
+CREATE TABLE api.ilk_snapshot
 (
     ilk_identifier TEXT,
     block_number   BIGINT,
@@ -20,7 +20,7 @@ CREATE TABLE api.historical_ilk_state
     PRIMARY KEY (ilk_identifier, block_number)
 );
 
-COMMENT ON COLUMN api.historical_ilk_state.ilk_identifier IS '@name id';
+COMMENT ON COLUMN api.ilk_snapshot.ilk_identifier IS '@name id';
 
 
 CREATE FUNCTION ilk_rate_before_block(ilk_id INTEGER, header_id INTEGER) RETURNS NUMERIC AS
@@ -301,56 +301,56 @@ COMMENT ON FUNCTION ilk_time_created
     IS E'@omit';
 
 -- +goose StatementBegin
-CREATE OR REPLACE FUNCTION maker.delete_redundant_ilk_state(ilk_id INTEGER, header_id INTEGER) RETURNS api.historical_ilk_state
+CREATE OR REPLACE FUNCTION maker.delete_redundant_ilk_snapshot(ilk_id INTEGER, header_id INTEGER) RETURNS api.ilk_snapshot
 AS
 $$
 DECLARE
-    associated_ilk         TEXT                     := (
+    associated_ilk        TEXT             := (
         SELECT identifier
         FROM maker.ilks
-        WHERE id = delete_redundant_ilk_state.ilk_id);
-    ilk_state_block_number BIGINT                   := (
+        WHERE id = delete_redundant_ilk_snapshot.ilk_id);
+    snapshot_block_number BIGINT           := (
         SELECT block_number
         FROM public.headers
         WHERE id = header_id);
-    ilk_state              api.historical_ilk_state := (
-        SELECT (ilk_identifier, historical_ilk_state.block_number, rate, art, spot, line, dust, chop, lump, flip, rho,
-                duty, pip, mat, created, updated)
-        FROM api.historical_ilk_state
+    snapshot              api.ilk_snapshot := (
+        SELECT (ilk_identifier, ilk_snapshot.block_number, rate, art, spot, line, dust, chop, lump, flip, rho, duty,
+                pip, mat, created, updated)
+        FROM api.ilk_snapshot
         WHERE ilk_identifier = associated_ilk
-          AND historical_ilk_state.block_number = ilk_state_block_number);
-    prev_ilk_state         api.historical_ilk_state := (
-        SELECT (ilk_identifier, historical_ilk_state.block_number, rate, art, spot, line, dust, chop, lump, flip, rho,
-                duty, pip, mat, created, updated)
-        FROM api.historical_ilk_state
+          AND ilk_snapshot.block_number = snapshot_block_number);
+    prev_snapshot         api.ilk_snapshot := (
+        SELECT (ilk_identifier, ilk_snapshot.block_number, rate, art, spot, line, dust, chop, lump, flip, rho, duty,
+                pip, mat, created, updated)
+        FROM api.ilk_snapshot
         WHERE ilk_identifier = associated_ilk
-          AND historical_ilk_state.block_number < ilk_state_block_number
-        ORDER BY historical_ilk_state.block_number DESC
+          AND ilk_snapshot.block_number < snapshot_block_number
+        ORDER BY ilk_snapshot.block_number DESC
         LIMIT 1);
 BEGIN
     DELETE
-    FROM api.historical_ilk_state
-    WHERE historical_ilk_state.ilk_identifier = associated_ilk
-      AND historical_ilk_state.block_number = ilk_state_block_number
-      AND (ilk_state.rate IS NULL OR ilk_state.rate = prev_ilk_state.rate)
-      AND (ilk_state.art IS NULL OR ilk_state.art = prev_ilk_state.art)
-      AND (ilk_state.spot IS NULL OR ilk_state.spot = prev_ilk_state.spot)
-      AND (ilk_state.line IS NULL OR ilk_state.line = prev_ilk_state.line)
-      AND (ilk_state.dust IS NULL OR ilk_state.dust = prev_ilk_state.dust)
-      AND (ilk_state.chop IS NULL OR ilk_state.chop = prev_ilk_state.chop)
-      AND (ilk_state.lump IS NULL OR ilk_state.lump = prev_ilk_state.lump)
-      AND (ilk_state.flip IS NULL OR ilk_state.flip = prev_ilk_state.flip)
-      AND (ilk_state.rho IS NULL OR ilk_state.rho = prev_ilk_state.rho)
-      AND (ilk_state.duty IS NULL OR ilk_state.duty = prev_ilk_state.duty)
-      AND (ilk_state.pip IS NULL OR ilk_state.pip = prev_ilk_state.pip)
-      AND (ilk_state.mat IS NULL OR ilk_state.mat = prev_ilk_state.mat);
+    FROM api.ilk_snapshot
+    WHERE ilk_snapshot.ilk_identifier = associated_ilk
+      AND ilk_snapshot.block_number = snapshot_block_number
+      AND (snapshot.rate IS NULL OR snapshot.rate = prev_snapshot.rate)
+      AND (snapshot.art IS NULL OR snapshot.art = prev_snapshot.art)
+      AND (snapshot.spot IS NULL OR snapshot.spot = prev_snapshot.spot)
+      AND (snapshot.line IS NULL OR snapshot.line = prev_snapshot.line)
+      AND (snapshot.dust IS NULL OR snapshot.dust = prev_snapshot.dust)
+      AND (snapshot.chop IS NULL OR snapshot.chop = prev_snapshot.chop)
+      AND (snapshot.lump IS NULL OR snapshot.lump = prev_snapshot.lump)
+      AND (snapshot.flip IS NULL OR snapshot.flip = prev_snapshot.flip)
+      AND (snapshot.rho IS NULL OR snapshot.rho = prev_snapshot.rho)
+      AND (snapshot.duty IS NULL OR snapshot.duty = prev_snapshot.duty)
+      AND (snapshot.pip IS NULL OR snapshot.pip = prev_snapshot.pip)
+      AND (snapshot.mat IS NULL OR snapshot.mat = prev_snapshot.mat);
     RETURN NULL;
 END
 $$
     LANGUAGE plpgsql;
 -- +goose StatementEnd
 
-COMMENT ON FUNCTION maker.delete_redundant_ilk_state
+COMMENT ON FUNCTION maker.delete_redundant_ilk_snapshot
     IS E'@omit';
 
 
@@ -373,8 +373,8 @@ DECLARE
         WHERE id = new_diff.header_id);
 BEGIN
     INSERT
-    INTO api.historical_ilk_state (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho,
-                                   duty, pip, mat, created, updated)
+    INTO api.ilk_snapshot (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho,
+                           duty, pip, mat, created, updated)
     VALUES (diff_ilk_identifier,
             diff_block_number,
             new_diff.rate,
@@ -422,12 +422,12 @@ DECLARE
         WHERE vat_ilk_rate.ilk_id = start_at_diff.ilk_id
           AND block_number > diff_block_number);
 BEGIN
-    UPDATE api.historical_ilk_state
+    UPDATE api.ilk_snapshot
     SET rate = new_rate
-    WHERE historical_ilk_state.ilk_identifier = diff_ilk_identifier
-      AND historical_ilk_state.block_number >= diff_block_number
+    WHERE ilk_snapshot.ilk_identifier = diff_ilk_identifier
+      AND ilk_snapshot.block_number >= diff_block_number
       AND (next_rate_diff_block IS NULL
-        OR historical_ilk_state.block_number < next_rate_diff_block);
+        OR ilk_snapshot.block_number < next_rate_diff_block);
     RETURN NULL;
 END
 $$
@@ -447,7 +447,7 @@ BEGIN
         PERFORM maker.update_rates_until_next_diff(NEW, NEW.rate);
     ELSIF (TG_OP = 'DELETE') THEN
         PERFORM maker.update_rates_until_next_diff(OLD, ilk_rate_before_block(OLD.ilk_id, OLD.header_id));
-        PERFORM maker.delete_redundant_ilk_state(OLD.ilk_id, OLD.header_id);
+        PERFORM maker.delete_redundant_ilk_snapshot(OLD.ilk_id, OLD.header_id);
     END IF;
     RETURN NULL;
 END
@@ -481,8 +481,8 @@ DECLARE
         WHERE id = new_diff.header_id);
 BEGIN
     INSERT
-    INTO api.historical_ilk_state (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho,
-                                   duty, pip, mat, created, updated)
+    INTO api.ilk_snapshot (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho,
+                           duty, pip, mat, created, updated)
     VALUES (diff_ilk_identifier,
             diff_block_number,
             ilk_rate_before_block(new_diff.ilk_id, new_diff.header_id),
@@ -530,12 +530,12 @@ DECLARE
         WHERE vat_ilk_art.ilk_id = start_at_diff.ilk_id
           AND block_number > diff_block_number);
 BEGIN
-    UPDATE api.historical_ilk_state
+    UPDATE api.ilk_snapshot
     SET art = new_art
-    WHERE historical_ilk_state.ilk_identifier = diff_ilk_identifier
-      AND historical_ilk_state.block_number >= diff_block_number
+    WHERE ilk_snapshot.ilk_identifier = diff_ilk_identifier
+      AND ilk_snapshot.block_number >= diff_block_number
       AND (next_art_diff_block IS NULL
-        OR historical_ilk_state.block_number < next_art_diff_block);
+        OR ilk_snapshot.block_number < next_art_diff_block);
     RETURN NULL;
 END
 $$
@@ -555,7 +555,7 @@ BEGIN
         PERFORM maker.update_arts_until_next_diff(NEW, NEW.art);
     ELSIF (TG_OP = 'DELETE') THEN
         PERFORM maker.update_arts_until_next_diff(OLD, ilk_art_before_block(OLD.ilk_id, OLD.header_id));
-        PERFORM maker.delete_redundant_ilk_state(OLD.ilk_id, OLD.header_id);
+        PERFORM maker.delete_redundant_ilk_snapshot(OLD.ilk_id, OLD.header_id);
     END IF;
     RETURN NULL;
 END
@@ -589,8 +589,8 @@ DECLARE
         WHERE headers.id = new_diff.header_id);
 BEGIN
     INSERT
-    INTO api.historical_ilk_state (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho,
-                                   duty, pip, mat, created, updated)
+    INTO api.ilk_snapshot (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho,
+                           duty, pip, mat, created, updated)
     VALUES (diff_ilk_identifier,
             diff_block_number,
             ilk_rate_before_block(new_diff.ilk_id, new_diff.header_id),
@@ -638,12 +638,12 @@ DECLARE
         WHERE vat_ilk_spot.ilk_id = start_at_diff.ilk_id
           AND block_number > diff_block_number);
 BEGIN
-    UPDATE api.historical_ilk_state
+    UPDATE api.ilk_snapshot
     SET spot = new_spot
-    WHERE historical_ilk_state.ilk_identifier = diff_ilk_identifier
-      AND historical_ilk_state.block_number >= diff_block_number
+    WHERE ilk_snapshot.ilk_identifier = diff_ilk_identifier
+      AND ilk_snapshot.block_number >= diff_block_number
       AND (next_spot_diff_block IS NULL
-        OR historical_ilk_state.block_number < next_spot_diff_block);
+        OR ilk_snapshot.block_number < next_spot_diff_block);
     RETURN NULL;
 END
 $$
@@ -663,7 +663,7 @@ BEGIN
         PERFORM maker.update_spots_until_next_diff(NEW, NEW.spot);
     ELSIF (TG_OP = 'DELETE') THEN
         PERFORM maker.update_spots_until_next_diff(OLD, ilk_spot_before_block(OLD.ilk_id, OLD.header_id));
-        PERFORM maker.delete_redundant_ilk_state(OLD.ilk_id, OLD.header_id);
+        PERFORM maker.delete_redundant_ilk_snapshot(OLD.ilk_id, OLD.header_id);
     END IF;
     RETURN NULL;
 END
@@ -697,8 +697,8 @@ DECLARE
         WHERE id = new_diff.header_id);
 BEGIN
     INSERT
-    INTO api.historical_ilk_state (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho,
-                                   duty, pip, mat, created, updated)
+    INTO api.ilk_snapshot (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho,
+                           duty, pip, mat, created, updated)
     VALUES (diff_ilk_identifier,
             diff_block_number,
             ilk_rate_before_block(new_diff.ilk_id, new_diff.header_id),
@@ -746,12 +746,12 @@ DECLARE
         WHERE vat_ilk_line.ilk_id = start_at_diff.ilk_id
           AND block_number > diff_block_number);
 BEGIN
-    UPDATE api.historical_ilk_state
+    UPDATE api.ilk_snapshot
     SET line = new_line
-    WHERE historical_ilk_state.ilk_identifier = diff_ilk_identifier
-      AND historical_ilk_state.block_number >= diff_block_number
+    WHERE ilk_snapshot.ilk_identifier = diff_ilk_identifier
+      AND ilk_snapshot.block_number >= diff_block_number
       AND (next_line_diff_block IS NULL
-        OR historical_ilk_state.block_number < next_line_diff_block);
+        OR ilk_snapshot.block_number < next_line_diff_block);
     RETURN NULL;
 END
 $$
@@ -771,7 +771,7 @@ BEGIN
         PERFORM maker.update_lines_until_next_diff(NEW, NEW.line);
     ELSIF (TG_OP = 'DELETE') THEN
         PERFORM maker.update_lines_until_next_diff(OLD, ilk_line_before_block(OLD.ilk_id, OLD.header_id));
-        PERFORM maker.delete_redundant_ilk_state(OLD.ilk_id, OLD.header_id);
+        PERFORM maker.delete_redundant_ilk_snapshot(OLD.ilk_id, OLD.header_id);
     END IF;
     RETURN NULL;
 END
@@ -805,8 +805,8 @@ DECLARE
         WHERE id = new_diff.header_id);
 BEGIN
     INSERT
-    INTO api.historical_ilk_state (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho,
-                                   duty, pip, mat, created, updated)
+    INTO api.ilk_snapshot (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho,
+                           duty, pip, mat, created, updated)
     VALUES (diff_ilk_identifier,
             diff_block_number,
             ilk_rate_before_block(new_diff.ilk_id, new_diff.header_id),
@@ -854,12 +854,12 @@ DECLARE
         WHERE vat_ilk_dust.ilk_id = start_at_diff.ilk_id
           AND block_number > diff_block_number);
 BEGIN
-    UPDATE api.historical_ilk_state
+    UPDATE api.ilk_snapshot
     SET dust = new_dust
-    WHERE historical_ilk_state.ilk_identifier = diff_ilk_identifier
-      AND historical_ilk_state.block_number >= diff_block_number
+    WHERE ilk_snapshot.ilk_identifier = diff_ilk_identifier
+      AND ilk_snapshot.block_number >= diff_block_number
       AND (next_dust_diff_block IS NULL
-        OR historical_ilk_state.block_number < next_dust_diff_block);
+        OR ilk_snapshot.block_number < next_dust_diff_block);
     RETURN NULL;
 END
 $$
@@ -879,7 +879,7 @@ BEGIN
         PERFORM maker.update_dusts_until_next_diff(NEW, NEW.dust);
     ELSIF (TG_OP = 'DELETE') THEN
         PERFORM maker.update_dusts_until_next_diff(OLD, ilk_dust_before_block(OLD.ilk_id, OLD.header_id));
-        PERFORM maker.delete_redundant_ilk_state(OLD.ilk_id, OLD.header_id);
+        PERFORM maker.delete_redundant_ilk_snapshot(OLD.ilk_id, OLD.header_id);
     END IF;
     RETURN NULL;
 END
@@ -913,8 +913,8 @@ DECLARE
         WHERE id = new_diff.header_id);
 BEGIN
     INSERT
-    INTO api.historical_ilk_state (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho,
-                                   duty, pip, mat, created, updated)
+    INTO api.ilk_snapshot (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho,
+                           duty, pip, mat, created, updated)
     VALUES (diff_ilk_identifier,
             diff_block_number,
             ilk_rate_before_block(new_diff.ilk_id, new_diff.header_id),
@@ -962,12 +962,12 @@ DECLARE
         WHERE cat_ilk_chop.ilk_id = start_at_diff.ilk_id
           AND block_number > diff_block_number);
 BEGIN
-    UPDATE api.historical_ilk_state
+    UPDATE api.ilk_snapshot
     SET chop = new_chop
-    WHERE historical_ilk_state.ilk_identifier = diff_ilk_identifier
-      AND historical_ilk_state.block_number >= diff_block_number
+    WHERE ilk_snapshot.ilk_identifier = diff_ilk_identifier
+      AND ilk_snapshot.block_number >= diff_block_number
       AND (next_chop_diff_block IS NULL
-        OR historical_ilk_state.block_number < next_chop_diff_block);
+        OR ilk_snapshot.block_number < next_chop_diff_block);
     RETURN NULL;
 END
 $$
@@ -987,7 +987,7 @@ BEGIN
         PERFORM maker.update_chops_until_next_diff(NEW, NEW.chop);
     ELSIF (TG_OP = 'DELETE') THEN
         PERFORM maker.update_chops_until_next_diff(OLD, ilk_chop_before_block(OLD.ilk_id, OLD.header_id));
-        PERFORM maker.delete_redundant_ilk_state(OLD.ilk_id, OLD.header_id);
+        PERFORM maker.delete_redundant_ilk_snapshot(OLD.ilk_id, OLD.header_id);
     END IF;
     RETURN NULL;
 END
@@ -1021,8 +1021,8 @@ DECLARE
         WHERE id = new_diff.header_id);
 BEGIN
     INSERT
-    INTO api.historical_ilk_state (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho,
-                                   duty, pip, mat, created, updated)
+    INTO api.ilk_snapshot (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho,
+                           duty, pip, mat, created, updated)
     VALUES (diff_ilk_identifier,
             diff_block_number,
             ilk_rate_before_block(new_diff.ilk_id, new_diff.header_id),
@@ -1070,12 +1070,12 @@ DECLARE
         WHERE cat_ilk_lump.ilk_id = start_at_diff.ilk_id
           AND block_number > diff_block_number);
 BEGIN
-    UPDATE api.historical_ilk_state
+    UPDATE api.ilk_snapshot
     SET lump = new_lump
-    WHERE historical_ilk_state.ilk_identifier = diff_ilk_identifier
-      AND historical_ilk_state.block_number >= diff_block_number
+    WHERE ilk_snapshot.ilk_identifier = diff_ilk_identifier
+      AND ilk_snapshot.block_number >= diff_block_number
       AND (next_lump_diff_block IS NULL
-        OR historical_ilk_state.block_number < next_lump_diff_block);
+        OR ilk_snapshot.block_number < next_lump_diff_block);
     RETURN NULL;
 END
 $$
@@ -1095,7 +1095,7 @@ BEGIN
         PERFORM maker.update_lumps_until_next_diff(NEW, NEW.lump);
     ELSIF (TG_OP = 'DELETE') THEN
         PERFORM maker.update_lumps_until_next_diff(OLD, ilk_lump_before_block(OLD.ilk_id, OLD.header_id));
-        PERFORM maker.delete_redundant_ilk_state(OLD.ilk_id, OLD.header_id);
+        PERFORM maker.delete_redundant_ilk_snapshot(OLD.ilk_id, OLD.header_id);
     END IF;
     RETURN NULL;
 END
@@ -1129,8 +1129,8 @@ DECLARE
         WHERE id = new_diff.header_id);
 BEGIN
     INSERT
-    INTO api.historical_ilk_state (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho,
-                                   duty, pip, mat, created, updated)
+    INTO api.ilk_snapshot (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho,
+                           duty, pip, mat, created, updated)
     VALUES (diff_ilk_identifier,
             diff_block_number,
             ilk_rate_before_block(new_diff.ilk_id, new_diff.header_id),
@@ -1178,12 +1178,12 @@ DECLARE
         WHERE cat_ilk_flip.ilk_id = start_at_diff.ilk_id
           AND block_number > diff_block_number);
 BEGIN
-    UPDATE api.historical_ilk_state
+    UPDATE api.ilk_snapshot
     SET flip = new_flip
-    WHERE historical_ilk_state.ilk_identifier = diff_ilk_identifier
-      AND historical_ilk_state.block_number >= diff_block_number
+    WHERE ilk_snapshot.ilk_identifier = diff_ilk_identifier
+      AND ilk_snapshot.block_number >= diff_block_number
       AND (next_flip_diff_block IS NULL
-        OR historical_ilk_state.block_number < next_flip_diff_block);
+        OR ilk_snapshot.block_number < next_flip_diff_block);
     RETURN NULL;
 END
 $$
@@ -1203,7 +1203,7 @@ BEGIN
         PERFORM maker.update_flips_until_next_diff(NEW, NEW.flip);
     ELSIF (TG_OP = 'DELETE') THEN
         PERFORM maker.update_flips_until_next_diff(OLD, ilk_flip_before_block(OLD.ilk_id, OLD.header_id));
-        PERFORM maker.delete_redundant_ilk_state(OLD.ilk_id, OLD.header_id);
+        PERFORM maker.delete_redundant_ilk_snapshot(OLD.ilk_id, OLD.header_id);
     END IF;
     RETURN NULL;
 END
@@ -1237,8 +1237,8 @@ DECLARE
         WHERE id = new_diff.header_id);
 BEGIN
     INSERT
-    INTO api.historical_ilk_state (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho,
-                                   duty, pip, mat, created, updated)
+    INTO api.ilk_snapshot (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho,
+                           duty, pip, mat, created, updated)
     VALUES (diff_ilk_identifier,
             diff_block_number,
             ilk_rate_before_block(new_diff.ilk_id, new_diff.header_id),
@@ -1286,12 +1286,12 @@ DECLARE
         WHERE jug_ilk_rho.ilk_id = start_at_diff.ilk_id
           AND block_number > diff_block_number);
 BEGIN
-    UPDATE api.historical_ilk_state
+    UPDATE api.ilk_snapshot
     SET rho = new_rho
-    WHERE historical_ilk_state.ilk_identifier = diff_ilk_identifier
-      AND historical_ilk_state.block_number >= diff_block_number
+    WHERE ilk_snapshot.ilk_identifier = diff_ilk_identifier
+      AND ilk_snapshot.block_number >= diff_block_number
       AND (next_rho_diff_block IS NULL
-        OR historical_ilk_state.block_number < next_rho_diff_block);
+        OR ilk_snapshot.block_number < next_rho_diff_block);
     RETURN NULL;
 END
 $$
@@ -1311,7 +1311,7 @@ BEGIN
         PERFORM maker.update_rhos_until_next_diff(NEW, NEW.rho);
     ELSIF (TG_OP = 'DELETE') THEN
         PERFORM maker.update_rhos_until_next_diff(OLD, ilk_rho_before_block(OLD.ilk_id, OLD.header_id));
-        PERFORM maker.delete_redundant_ilk_state(OLD.ilk_id, OLD.header_id);
+        PERFORM maker.delete_redundant_ilk_snapshot(OLD.ilk_id, OLD.header_id);
     END IF;
     RETURN NULL;
 END
@@ -1345,8 +1345,8 @@ DECLARE
         WHERE id = new_diff.header_id);
 BEGIN
     INSERT
-    INTO api.historical_ilk_state (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho,
-                                   duty, pip, mat, created, updated)
+    INTO api.ilk_snapshot (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho,
+                           duty, pip, mat, created, updated)
     VALUES (diff_ilk_identifier,
             diff_block_number,
             ilk_rate_before_block(new_diff.ilk_id, new_diff.header_id),
@@ -1394,12 +1394,12 @@ DECLARE
         WHERE jug_ilk_duty.ilk_id = start_at_diff.ilk_id
           AND block_number > diff_block_number);
 BEGIN
-    UPDATE api.historical_ilk_state
+    UPDATE api.ilk_snapshot
     SET duty = new_duty
-    WHERE historical_ilk_state.ilk_identifier = diff_ilk_identifier
-      AND historical_ilk_state.block_number >= diff_block_number
+    WHERE ilk_snapshot.ilk_identifier = diff_ilk_identifier
+      AND ilk_snapshot.block_number >= diff_block_number
       AND (next_duty_diff_block IS NULL
-        OR historical_ilk_state.block_number < next_duty_diff_block);
+        OR ilk_snapshot.block_number < next_duty_diff_block);
     RETURN NULL;
 END
 $$
@@ -1419,7 +1419,7 @@ BEGIN
         PERFORM maker.update_duties_until_next_diff(NEW, NEW.duty);
     ELSIF (TG_OP = 'DELETE') THEN
         PERFORM maker.update_duties_until_next_diff(OLD, ilk_duty_before_block(OLD.ilk_id, OLD.header_id));
-        PERFORM maker.delete_redundant_ilk_state(OLD.ilk_id, OLD.header_id);
+        PERFORM maker.delete_redundant_ilk_snapshot(OLD.ilk_id, OLD.header_id);
     END IF;
     RETURN NULL;
 END
@@ -1453,8 +1453,8 @@ DECLARE
         WHERE id = new_diff.header_id);
 BEGIN
     INSERT
-    INTO api.historical_ilk_state (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho,
-                                   duty, pip, mat, created, updated)
+    INTO api.ilk_snapshot (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho,
+                           duty, pip, mat, created, updated)
     VALUES (diff_ilk_identifier,
             diff_block_number,
             ilk_rate_before_block(new_diff.ilk_id, new_diff.header_id),
@@ -1502,12 +1502,12 @@ DECLARE
         WHERE spot_ilk_pip.ilk_id = start_at_diff.ilk_id
           AND block_number > diff_block_number);
 BEGIN
-    UPDATE api.historical_ilk_state
+    UPDATE api.ilk_snapshot
     SET pip = new_pip
-    WHERE historical_ilk_state.ilk_identifier = diff_ilk_identifier
-      AND historical_ilk_state.block_number >= diff_block_number
+    WHERE ilk_snapshot.ilk_identifier = diff_ilk_identifier
+      AND ilk_snapshot.block_number >= diff_block_number
       AND (next_pip_diff_block IS NULL
-        OR historical_ilk_state.block_number < next_pip_diff_block);
+        OR ilk_snapshot.block_number < next_pip_diff_block);
     RETURN NULL;
 END
 $$
@@ -1527,7 +1527,7 @@ BEGIN
         PERFORM maker.update_pips_until_next_diff(NEW, NEW.pip);
     ELSIF (TG_OP = 'DELETE') THEN
         PERFORM maker.update_pips_until_next_diff(OLD, ilk_pip_before_block(OLD.ilk_id, OLD.header_id));
-        PERFORM maker.delete_redundant_ilk_state(OLD.ilk_id, OLD.header_id);
+        PERFORM maker.delete_redundant_ilk_snapshot(OLD.ilk_id, OLD.header_id);
     END IF;
     RETURN NULL;
 END
@@ -1561,8 +1561,8 @@ DECLARE
         WHERE id = new_diff.header_id);
 BEGIN
     INSERT
-    INTO api.historical_ilk_state (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho,
-                                   duty, pip, mat, created, updated)
+    INTO api.ilk_snapshot (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho,
+                           duty, pip, mat, created, updated)
     VALUES (diff_ilk_identifier,
             diff_block_number,
             ilk_rate_before_block(new_diff.ilk_id, new_diff.header_id),
@@ -1610,12 +1610,12 @@ DECLARE
         WHERE spot_ilk_mat.ilk_id = start_at_diff.ilk_id
           AND block_number > diff_block_number);
 BEGIN
-    UPDATE api.historical_ilk_state
+    UPDATE api.ilk_snapshot
     SET mat = new_mat
-    WHERE historical_ilk_state.ilk_identifier = diff_ilk_identifier
-      AND historical_ilk_state.block_number >= diff_block_number
+    WHERE ilk_snapshot.ilk_identifier = diff_ilk_identifier
+      AND ilk_snapshot.block_number >= diff_block_number
       AND (next_mat_diff_block IS NULL
-        OR historical_ilk_state.block_number < next_mat_diff_block);
+        OR ilk_snapshot.block_number < next_mat_diff_block);
     RETURN NULL;
 END
 $$
@@ -1635,7 +1635,7 @@ BEGIN
         PERFORM maker.update_mats_until_next_diff(NEW, NEW.mat);
     ELSIF (TG_OP = 'DELETE') THEN
         PERFORM maker.update_mats_until_next_diff(OLD, ilk_mat_before_block(OLD.ilk_id, OLD.header_id));
-        PERFORM maker.delete_redundant_ilk_state(OLD.ilk_id, OLD.header_id);
+        PERFORM maker.delete_redundant_ilk_snapshot(OLD.ilk_id, OLD.header_id);
     END IF;
     RETURN NULL;
 END
@@ -1664,12 +1664,12 @@ DECLARE
         FROM public.headers
         WHERE headers.id = new_event.header_id);
 BEGIN
-    UPDATE api.historical_ilk_state
+    UPDATE api.ilk_snapshot
     SET created = diff_timestamp
     FROM public.headers
-    WHERE headers.block_number = historical_ilk_state.block_number
-      AND historical_ilk_state.ilk_identifier = diff_ilk_identifier
-      AND historical_ilk_state.created IS NULL;
+    WHERE headers.block_number = ilk_snapshot.block_number
+      AND ilk_snapshot.ilk_identifier = diff_ilk_identifier
+      AND ilk_snapshot.created IS NULL;
     RETURN NULL;
 END
 $$
@@ -1684,10 +1684,10 @@ CREATE OR REPLACE FUNCTION maker.clear_time_created(old_event maker.vat_init) RE
 AS
 $$
 BEGIN
-    UPDATE api.historical_ilk_state
+    UPDATE api.ilk_snapshot
     SET created = ilk_time_created(old_event.ilk_id)
     FROM maker.ilks
-    WHERE ilks.identifier = historical_ilk_state.ilk_identifier
+    WHERE ilks.identifier = ilk_snapshot.ilk_identifier
       AND ilks.id = old_event.ilk_id;
     RETURN NULL;
 END
@@ -1781,7 +1781,7 @@ DROP FUNCTION maker.insert_new_spot(maker.vat_ilk_spot);
 DROP FUNCTION maker.insert_new_art(maker.vat_ilk_art);
 DROP FUNCTION maker.insert_new_rate(maker.vat_ilk_rate);
 
-DROP FUNCTION maker.delete_redundant_ilk_state(INTEGER, INTEGER);
+DROP FUNCTION maker.delete_redundant_ilk_snapshot(INTEGER, INTEGER);
 
 DROP FUNCTION ilk_time_created(INTEGER);
 DROP FUNCTION ilk_mat_before_block(INTEGER, INTEGER);
@@ -1797,4 +1797,4 @@ DROP FUNCTION ilk_spot_before_block(INTEGER, INTEGER);
 DROP FUNCTION ilk_art_before_block(INTEGER, INTEGER);
 DROP FUNCTION ilk_rate_before_block(INTEGER, INTEGER);
 
-DROP TABLE api.historical_ilk_state;
+DROP TABLE api.ilk_snapshot;

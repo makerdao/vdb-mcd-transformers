@@ -29,7 +29,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("Updating historical_ilk_state table", func() {
+var _ = Describe("Updating ilk_snapshot table", func() {
 	var (
 		blockOne,
 		blockTwo int
@@ -39,9 +39,9 @@ var _ = Describe("Updating historical_ilk_state table", func() {
 		rawTimestampTwo int64
 		vatInitModel        event.InsertionModel
 		database            = test_config.NewTestDB(test_config.NewTestNode())
-		getTimeCreatedQuery = `SELECT created FROM api.historical_ilk_state ORDER BY block_number`
-		insertRecordQuery   = `INSERT INTO api.historical_ilk_state (ilk_identifier, block_number, created) VALUES ($1, $2, $3::TIMESTAMP)`
-		insertEmptyRowQuery = `INSERT INTO api.historical_ilk_state (ilk_identifier, block_number) VALUES ($1, $2)`
+		getTimeCreatedQuery = `SELECT created FROM api.ilk_snapshot ORDER BY block_number`
+		insertRecordQuery   = `INSERT INTO api.ilk_snapshot (ilk_identifier, block_number, created) VALUES ($1, $2, $3::TIMESTAMP)`
+		insertEmptyRowQuery = `INSERT INTO api.ilk_snapshot (ilk_identifier, block_number) VALUES ($1, $2)`
 	)
 
 	BeforeEach(func() {
@@ -63,11 +63,11 @@ var _ = Describe("Updating historical_ilk_state table", func() {
 		vatInitErr := event.PersistModels([]event.InsertionModel{vatInitModel}, database)
 		Expect(vatInitErr).NotTo(HaveOccurred())
 
-		var ilkStates []test_helpers.IlkState
-		queryErr := database.Select(&ilkStates, getTimeCreatedQuery)
+		var ilkSnapshots []test_helpers.IlkSnapshot
+		queryErr := database.Select(&ilkSnapshots, getTimeCreatedQuery)
 		Expect(queryErr).NotTo(HaveOccurred())
-		Expect(len(ilkStates)).To(Equal(1))
-		Expect(ilkStates[0].Created).To(Equal(expectedTimeCreated))
+		Expect(len(ilkSnapshots)).To(Equal(1))
+		Expect(ilkSnapshots[0].Created).To(Equal(expectedTimeCreated))
 	})
 
 	It("does not update time created if old time created is not null", func() {
@@ -79,11 +79,11 @@ var _ = Describe("Updating historical_ilk_state table", func() {
 		vatInitErr := event.PersistModels([]event.InsertionModel{vatInitModel}, database)
 		Expect(vatInitErr).NotTo(HaveOccurred())
 
-		var ilkStates []test_helpers.IlkState
-		queryErr := database.Select(&ilkStates, getTimeCreatedQuery)
+		var ilkSnapshots []test_helpers.IlkSnapshot
+		queryErr := database.Select(&ilkSnapshots, getTimeCreatedQuery)
 		Expect(queryErr).NotTo(HaveOccurred())
-		Expect(len(ilkStates)).To(Equal(1))
-		Expect(ilkStates[0].Created).To(Equal(expectedTimeCreated))
+		Expect(len(ilkSnapshots)).To(Equal(1))
+		Expect(ilkSnapshots[0].Created).To(Equal(expectedTimeCreated))
 	})
 
 	It("does not update records with a different ilk", func() {
@@ -94,11 +94,11 @@ var _ = Describe("Updating historical_ilk_state table", func() {
 		vatInitErr := event.PersistModels([]event.InsertionModel{vatInitModel}, database)
 		Expect(vatInitErr).NotTo(HaveOccurred())
 
-		var ilkStates []test_helpers.IlkState
-		queryErr := database.Select(&ilkStates, getTimeCreatedQuery)
+		var ilkSnapshots []test_helpers.IlkSnapshot
+		queryErr := database.Select(&ilkSnapshots, getTimeCreatedQuery)
 		Expect(queryErr).NotTo(HaveOccurred())
-		Expect(len(ilkStates)).To(Equal(1))
-		Expect(ilkStates[0].Created).To(Equal(expectedTimeCreated))
+		Expect(len(ilkSnapshots)).To(Equal(1))
+		Expect(ilkSnapshots[0].Created).To(Equal(expectedTimeCreated))
 	})
 
 	It("sets created to null when record is deleted", func() {
@@ -110,9 +110,9 @@ var _ = Describe("Updating historical_ilk_state table", func() {
 		_, err := database.Exec(`DELETE FROM maker.vat_init WHERE header_id = $1`, headerOne.Id)
 		Expect(err).NotTo(HaveOccurred())
 
-		var ilkStates []test_helpers.IlkState
-		queryErr := database.Select(&ilkStates, getTimeCreatedQuery)
+		var ilkSnapshots []test_helpers.IlkSnapshot
+		queryErr := database.Select(&ilkSnapshots, getTimeCreatedQuery)
 		Expect(queryErr).NotTo(HaveOccurred())
-		Expect(ilkStates[0].Created).To(Equal(sql.NullString{Valid: false, String: ""}))
+		Expect(ilkSnapshots[0].Created).To(Equal(sql.NullString{Valid: false, String: ""}))
 	})
 })

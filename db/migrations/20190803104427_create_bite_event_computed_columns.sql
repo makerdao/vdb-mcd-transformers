@@ -3,10 +3,10 @@
 
 -- Extend type bite_event with ilk field
 CREATE FUNCTION api.bite_event_ilk(event api.bite_event)
-    RETURNS api.historical_ilk_state AS
+    RETURNS api.ilk_snapshot AS
 $$
 SELECT *
-FROM api.historical_ilk_state i
+FROM api.ilk_snapshot i
 WHERE i.ilk_identifier = event.ilk_identifier
   AND i.block_number <= event.block_height
 ORDER BY i.block_number DESC
@@ -29,7 +29,7 @@ $$
 
 -- Extend type bite_event with bid field
 CREATE FUNCTION api.bite_event_bid(event api.bite_event)
-    RETURNS api.flip_state AS
+    RETURNS api.flip_bid_snapshot AS
 $$
 SELECT *
 FROM api.get_flip(event.bid_id, event.ilk_identifier, event.block_height)

@@ -1,7 +1,7 @@
 -- +goose Up
 -- SQL in this section is executed when the migration is applied.
 
-CREATE TYPE api.flip_state AS (
+CREATE TYPE api.flip_bid_snapshot AS (
     block_height BIGINT,
     bid_id NUMERIC,
     ilk_id INTEGER,
@@ -18,17 +18,17 @@ CREATE TYPE api.flip_state AS (
     updated TIMESTAMP
     );
 
-COMMENT ON COLUMN api.flip_state.block_height
+COMMENT ON COLUMN api.flip_bid_snapshot.block_height
     IS E'@omit';
-COMMENT ON COLUMN api.flip_state.ilk_id
+COMMENT ON COLUMN api.flip_bid_snapshot.ilk_id
     IS E'@omit';
-COMMENT ON COLUMN api.flip_state.urn_id
+COMMENT ON COLUMN api.flip_bid_snapshot.urn_id
     IS E'@omit';
 
 
 -- Function returning the state for a single flip as of the given block height and ilk
 CREATE FUNCTION api.get_flip(bid_id NUMERIC, ilk TEXT, block_height BIGINT DEFAULT api.max_block())
-    RETURNS api.flip_state
+    RETURNS api.flip_bid_snapshot
 AS
 $$
 WITH ilk_ids AS (SELECT id FROM maker.ilks WHERE ilks.identifier = get_flip.ilk),
@@ -97,4 +97,4 @@ $$
 
 -- +goose Down
 DROP FUNCTION api.get_flip(NUMERIC, TEXT, BIGINT);
-DROP TYPE api.flip_state CASCADE;
+DROP TYPE api.flip_bid_snapshot CASCADE;

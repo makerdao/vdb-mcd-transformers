@@ -1,12 +1,12 @@
 -- +goose Up
 -- SQL in this section is executed when the migration is applied.
 
--- Extend urn_state with ilk_state
+-- Extend urn_state with ilk_snapshot
 CREATE FUNCTION api.urn_state_ilk(state api.urn_state)
-    RETURNS api.historical_ilk_state AS
+    RETURNS api.ilk_snapshot AS
 $$
 SELECT *
-FROM api.historical_ilk_state i
+FROM api.ilk_snapshot i
 WHERE i.ilk_identifier = state.ilk_identifier
   AND i.block_number <= state.block_height
 ORDER BY i.block_number DESC

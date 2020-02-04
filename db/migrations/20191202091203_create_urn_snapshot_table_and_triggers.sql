@@ -1,5 +1,5 @@
 -- +goose Up
-CREATE TABLE api.historical_urn_state
+CREATE TABLE api.urn_snapshot
 (
     urn_identifier TEXT,
     ilk_identifier TEXT,
@@ -66,7 +66,7 @@ COMMENT ON FUNCTION urn_time_created
 
 
 -- +goose StatementBegin
-CREATE OR REPLACE FUNCTION maker.delete_obsolete_urn_state(urn_id INTEGER, header_id INTEGER) RETURNS api.historical_urn_state
+CREATE OR REPLACE FUNCTION maker.delete_obsolete_urn_state(urn_id INTEGER, header_id INTEGER) RETURNS api.urn_snapshot
     -- deletes row if there are no longer any diffs in that block for the associated urn
 AS
 $$
@@ -77,12 +77,12 @@ DECLARE
         WHERE id = header_id);
 BEGIN
     DELETE
-    FROM api.historical_urn_state
+    FROM api.urn_snapshot
         USING maker.urns LEFT JOIN maker.ilks ON urns.ilk_id = ilks.id
-    WHERE historical_urn_state.urn_identifier = urns.identifier
-      AND historical_urn_state.ilk_identifier = ilks.identifier
+    WHERE urn_snapshot.urn_identifier = urns.identifier
+      AND urn_snapshot.ilk_identifier = ilks.identifier
       AND urns.id = urn_id
-      AND historical_urn_state.block_height = urn_state_block_number
+      AND urn_snapshot.block_height = urn_state_block_number
       AND NOT (EXISTS(
             SELECT *
             FROM maker.vat_urn_ink
@@ -118,7 +118,7 @@ BEGIN
              FROM public.headers
              WHERE id = new_diff.header_id)
     INSERT
-    INTO api.historical_urn_state (urn_identifier, ilk_identifier, block_height, ink, art, created, updated)
+    INTO api.urn_snapshot (urn_identifier, ilk_identifier, block_height, ink, art, created, updated)
     VALUES ((SELECT urn_identifier FROM urn),
             (SELECT ilk_identifier FROM urn),
             (SELECT block_number FROM new_diff_header),
@@ -158,14 +158,14 @@ BEGIN
         FROM maker.urns
                  LEFT JOIN maker.ilks ON urns.ilk_id = ilks.id
         WHERE urns.id = start_at_diff.urn_id)
-    UPDATE api.historical_urn_state
+    UPDATE api.urn_snapshot
     SET ink = new_ink
     FROM urn
-    WHERE historical_urn_state.urn_identifier = urn.urn_identifier
-      AND historical_urn_state.ilk_identifier = urn.ilk_identifier
-      AND historical_urn_state.block_height >= diff_block_number
+    WHERE urn_snapshot.urn_identifier = urn.urn_identifier
+      AND urn_snapshot.ilk_identifier = urn.ilk_identifier
+      AND urn_snapshot.block_height >= diff_block_number
       AND (next_rate_diff_block IS NULL
-        OR historical_urn_state.block_height < next_rate_diff_block);
+        OR urn_snapshot.block_height < next_rate_diff_block);
     RETURN NULL;
 END
 $$
@@ -180,12 +180,12 @@ CREATE OR REPLACE FUNCTION maker.update_urn_created(urn_id INTEGER) RETURNS make
 AS
 $$
 BEGIN
-    UPDATE api.historical_urn_state
+    UPDATE api.urn_snapshot
     SET created = urn_time_created(urn_id)
     FROM maker.urns
              LEFT JOIN maker.ilks ON urns.ilk_id = ilks.id
-    WHERE urns.identifier = historical_urn_state.urn_identifier
-      AND ilks.identifier = historical_urn_state.ilk_identifier
+    WHERE urns.identifier = urn_snapshot.urn_identifier
+      AND ilks.identifier = urn_snapshot.ilk_identifier
       AND urns.id = urn_id;
     RETURN NULL;
 END
@@ -239,7 +239,7 @@ BEGIN
              FROM public.headers
              WHERE id = new_diff.header_id)
     INSERT
-    INTO api.historical_urn_state (urn_identifier, ilk_identifier, block_height, ink, art, created, updated)
+    INTO api.urn_snapshot (urn_identifier, ilk_identifier, block_height, ink, art, created, updated)
     VALUES ((SELECT urn_identifier FROM urn),
             (SELECT ilk_identifier FROM urn),
             (SELECT block_number FROM new_diff_header),
@@ -279,14 +279,14 @@ BEGIN
         FROM maker.urns
                  LEFT JOIN maker.ilks ON urns.ilk_id = ilks.id
         WHERE urns.id = start_at_diff.urn_id)
-    UPDATE api.historical_urn_state
+    UPDATE api.urn_snapshot
     SET art = new_art
     FROM urn
-    WHERE historical_urn_state.urn_identifier = urn.urn_identifier
-      AND historical_urn_state.ilk_identifier = urn.ilk_identifier
-      AND historical_urn_state.block_height >= diff_block_number
+    WHERE urn_snapshot.urn_identifier = urn.urn_identifier
+      AND urn_snapshot.ilk_identifier = urn.ilk_identifier
+      AND urn_snapshot.block_height >= diff_block_number
       AND (next_rate_diff_block IS NULL
-        OR historical_urn_state.block_height < next_rate_diff_block);
+        OR urn_snapshot.block_height < next_rate_diff_block);
     RETURN NULL;
 END
 $$
@@ -342,4 +342,4 @@ DROP FUNCTION urn_time_created(INTEGER);
 DROP FUNCTION urn_art_before_block(INTEGER, INTEGER);
 DROP FUNCTION urn_ink_before_block(INTEGER, INTEGER);
 
-DROP TABLE api.historical_urn_state;
+DROP TABLE api.urn_snapshot;
