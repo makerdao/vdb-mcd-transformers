@@ -4,8 +4,8 @@ CREATE TABLE maker.new_cdp
     id        SERIAL PRIMARY KEY,
     header_id INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     log_id    BIGINT  NOT NULL REFERENCES public.event_logs (id) ON DELETE CASCADE,
-    usr       TEXT,
-    own       TEXT,
+    usr       INTEGER NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
+    own       INTEGER NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
     cdp       NUMERIC,
     UNIQUE (header_id, log_id)
 );

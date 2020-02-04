@@ -10840,8 +10840,8 @@ CREATE TABLE maker.new_cdp (
     id integer NOT NULL,
     header_id integer NOT NULL,
     log_id bigint NOT NULL,
-    usr text,
-    own text,
+    usr integer NOT NULL,
+    own integer NOT NULL,
     cdp numeric
 );
 
@@ -21816,6 +21816,22 @@ ALTER TABLE ONLY maker.new_cdp
 
 ALTER TABLE ONLY maker.new_cdp
     ADD CONSTRAINT new_cdp_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: new_cdp new_cdp_own_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.new_cdp
+    ADD CONSTRAINT new_cdp_own_fkey FOREIGN KEY (own) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: new_cdp new_cdp_usr_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.new_cdp
+    ADD CONSTRAINT new_cdp_usr_fkey FOREIGN KEY (usr) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --

@@ -33,6 +33,10 @@ var _ = Describe("NewCdp Transformer", func() {
 		db          = test_config.NewTestDB(test_config.NewTestNode())
 	)
 
+	BeforeEach(func() {
+		test_config.CleanTestDB(db)
+	})
+
 	It("converts a log to a Model", func() {
 		models, err := transformer.ToModels(constants.CdpManagerABI(), []core.EventLog{test_data.NewCdpEventLog}, db)
 		Expect(err).NotTo(HaveOccurred())
