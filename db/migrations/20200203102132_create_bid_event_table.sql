@@ -40,13 +40,35 @@ VALUES (insert_bid_event.bid_id,
 $$
     LANGUAGE sql;
 
+CREATE OR REPLACE FUNCTION maker.delete_bid_event(bid_id NUMERIC, address_id INTEGER, header_id INTEGER,
+                                                  act api.bid_act, lot NUMERIC, bid_amount NUMERIC) RETURNS VOID AS
+$$
+DELETE
+FROM api.bid_event
+    USING public.addresses, public.headers
+WHERE bid_event.contract_address = addresses.address
+  AND bid_event.block_height = headers.block_number
+  AND addresses.id = delete_bid_event.address_id
+  AND headers.id = delete_bid_event.header_id
+  AND bid_event.bid_id = delete_bid_event.bid_id
+  AND bid_event.act = delete_bid_event.act
+  AND bid_event.lot = delete_bid_event.lot
+  AND bid_event.bid_amount = delete_bid_event.bid_amount
+$$
+    LANGUAGE sql;
+
 -- +goose StatementBegin
 CREATE OR REPLACE FUNCTION maker.update_bid_kick_tend_dent_event() RETURNS TRIGGER
 AS
 $$
 BEGIN
-    PERFORM maker.insert_bid_event(NEW.bid_id, NEW.address_id, NEW.header_id, TG_ARGV[0]::api.bid_act, NEW.lot,
-                                   NEW.bid);
+    IF TG_OP = 'INSERT' THEN
+        PERFORM maker.insert_bid_event(NEW.bid_id, NEW.address_id, NEW.header_id, TG_ARGV[0]::api.bid_act, NEW.lot,
+                                       NEW.bid);
+    ELSIF TG_OP = 'DELETE' THEN
+        PERFORM maker.delete_bid_event(OLD.bid_id, OLD.address_id, OLD.header_id, TG_ARGV[0]::api.bid_act, OLD.lot,
+                                       OLD.bid);
+    END IF;
     RETURN NULL;
 END
 $$
@@ -54,31 +76,31 @@ $$
 -- +goose StatementEnd
 
 CREATE TRIGGER flap_kick
-    AFTER INSERT
+    AFTER INSERT OR DELETE
     ON maker.flap_kick
     FOR EACH ROW
 EXECUTE PROCEDURE maker.update_bid_kick_tend_dent_event('kick');
 
 CREATE TRIGGER flip_kick
-    AFTER INSERT
+    AFTER INSERT OR DELETE
     ON maker.flip_kick
     FOR EACH ROW
 EXECUTE PROCEDURE maker.update_bid_kick_tend_dent_event('kick');
 
 CREATE TRIGGER flop_kick
-    AFTER INSERT
+    AFTER INSERT OR DELETE
     ON maker.flop_kick
     FOR EACH ROW
 EXECUTE PROCEDURE maker.update_bid_kick_tend_dent_event('kick');
 
 CREATE TRIGGER tend
-    AFTER INSERT
+    AFTER INSERT OR DELETE
     ON maker.tend
     FOR EACH ROW
 EXECUTE PROCEDURE maker.update_bid_kick_tend_dent_event('tend');
 
 CREATE TRIGGER dent
-    AFTER INSERT
+    AFTER INSERT OR DELETE
     ON maker.dent
     FOR EACH ROW
 EXECUTE PROCEDURE maker.update_bid_kick_tend_dent_event('dent');
@@ -88,7 +110,11 @@ CREATE OR REPLACE FUNCTION maker.update_bid_tick_deal_yank_event() RETURNS TRIGG
 AS
 $$
 BEGIN
-    PERFORM maker.insert_bid_event(NEW.bid_id, NEW.address_id, NEW.header_id, TG_ARGV[0]::api.bid_act, NULL, NULL);
+    IF TG_OP = 'INSERT' THEN
+        PERFORM maker.insert_bid_event(NEW.bid_id, NEW.address_id, NEW.header_id, TG_ARGV[0]::api.bid_act, NULL, NULL);
+    ELSIF TG_OP = 'DELETE' THEN
+        PERFORM maker.delete_bid_event(OLD.bid_id, OLD.address_id, OLD.header_id, TG_ARGV[0]::api.bid_act, NULL, NULL);
+    END IF;
     RETURN NULL;
 END
 $$
@@ -96,19 +122,19 @@ $$
 -- +goose StatementEnd
 
 CREATE TRIGGER tick
-    AFTER INSERT
+    AFTER INSERT OR DELETE
     ON maker.tick
     FOR EACH ROW
 EXECUTE PROCEDURE maker.update_bid_tick_deal_yank_event('tick');
 
 CREATE TRIGGER deal
-    AFTER INSERT
+    AFTER INSERT OR DELETE
     ON maker.deal
     FOR EACH ROW
 EXECUTE PROCEDURE maker.update_bid_tick_deal_yank_event('deal');
 
 CREATE TRIGGER yank
-    AFTER INSERT
+    AFTER INSERT OR DELETE
     ON maker.yank
     FOR EACH ROW
 EXECUTE PROCEDURE maker.update_bid_tick_deal_yank_event('yank');
@@ -121,12 +147,24 @@ WHERE bid_event.contract_address = (SELECT address FROM public.addresses WHERE i
 $$
     LANGUAGE sql;
 
+CREATE OR REPLACE FUNCTION maker.clear_bid_event_ilk(old_diff maker.flip_ilk) RETURNS VOID AS
+$$
+UPDATE api.bid_event
+SET ilk_identifier = NULL
+WHERE bid_event.contract_address = (SELECT address FROM public.addresses WHERE id = old_diff.address_id)
+$$
+    LANGUAGE sql;
+
 -- +goose StatementBegin
 CREATE OR REPLACE FUNCTION maker.update_bid_event_ilk() RETURNS TRIGGER
 AS
 $$
 BEGIN
-    PERFORM maker.insert_bid_event_ilk(NEW);
+    IF TG_OP = 'INSERT' THEN
+        PERFORM maker.insert_bid_event_ilk(NEW);
+    ELSIF TG_OP = 'DELETE' THEN
+        PERFORM maker.clear_bid_event_ilk(OLD);
+    END IF;
     RETURN NULL;
 END
 $$
@@ -134,18 +172,18 @@ $$
 -- +goose StatementEnd
 
 CREATE TRIGGER flip_ilk
-    AFTER INSERT
+    AFTER INSERT OR DELETE
     ON maker.flip_ilk
     FOR EACH ROW
 EXECUTE PROCEDURE maker.update_bid_event_ilk();
 
 
-CREATE OR REPLACE FUNCTION maker.insert_bid_event_urn(new_diff maker.flip_bid_usr) RETURNS VOID AS
+CREATE OR REPLACE FUNCTION maker.insert_bid_event_urn(diff maker.flip_bid_usr, new_usr TEXT) RETURNS VOID AS
 $$
 UPDATE api.bid_event
-SET urn_identifier = new_diff.usr
-WHERE bid_event.bid_id = new_diff.bid_id
-  AND bid_event.contract_address = (SELECT address FROM public.addresses WHERE id = new_diff.address_id)
+SET urn_identifier = new_usr
+WHERE bid_event.bid_id = diff.bid_id
+  AND bid_event.contract_address = (SELECT address FROM public.addresses WHERE id = diff.address_id)
 $$
     LANGUAGE sql;
 
@@ -154,7 +192,11 @@ CREATE OR REPLACE FUNCTION maker.update_bid_event_urn() RETURNS TRIGGER
 AS
 $$
 BEGIN
-    PERFORM maker.insert_bid_event_urn(NEW);
+    IF TG_OP = 'INSERT' THEN
+        PERFORM maker.insert_bid_event_urn(NEW, NEW.usr);
+    ELSIF TG_OP = 'DELETE' THEN
+        PERFORM maker.insert_bid_event_urn(OLD, NULL);
+    END IF;
     RETURN NULL;
 END
 $$
@@ -162,7 +204,7 @@ $$
 -- +goose StatementEnd
 
 CREATE TRIGGER flip_urn
-    AFTER INSERT
+    AFTER INSERT OR DELETE
     ON maker.flip_bid_usr
     FOR EACH ROW
 EXECUTE PROCEDURE maker.update_bid_event_urn();
@@ -184,7 +226,10 @@ DROP FUNCTION maker.update_bid_event_ilk();
 DROP FUNCTION maker.update_bid_tick_deal_yank_event();
 DROP FUNCTION maker.update_bid_kick_tend_dent_event();
 
-DROP FUNCTION maker.insert_bid_event_urn(maker.flip_bid_usr);
+DROP FUNCTION maker.clear_bid_event_ilk(maker.flip_ilk);
+DROP FUNCTION maker.delete_bid_event(NUMERIC, INTEGER, INTEGER, api.bid_act, NUMERIC, NUMERIC);
+
+DROP FUNCTION maker.insert_bid_event_urn(maker.flip_bid_usr, TEXT);
 DROP FUNCTION maker.insert_bid_event_ilk(maker.flip_ilk);
 DROP FUNCTION maker.insert_bid_event(NUMERIC, INTEGER, INTEGER, api.bid_act, NUMERIC, NUMERIC);
 
