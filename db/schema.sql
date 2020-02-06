@@ -2640,6 +2640,106 @@ COMMENT ON FUNCTION maker.delete_redundant_ilk_snapshot(ilk_id integer, header_i
 
 
 --
+-- Name: insert_bid_event(numeric, integer, integer, api.bid_act, numeric, numeric); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.insert_bid_event(bid_id numeric, address_id integer, header_id integer, act api.bid_act, lot numeric, bid_amount numeric) RETURNS void
+    LANGUAGE sql
+    AS $$
+INSERT
+INTO api.bid_event (bid_id, contract_address, act, lot, bid_amount, ilk_identifier, urn_identifier, block_height)
+VALUES (insert_bid_event.bid_id,
+        (SELECT address FROM public.addresses WHERE addresses.id = insert_bid_event.address_id),
+        insert_bid_event.act,
+        insert_bid_event.lot,
+        insert_bid_event.bid_amount,
+        (SELECT ilks.identifier
+         FROM maker.flip_ilk
+                  JOIN maker.ilks ON flip_ilk.ilk_id = ilks.id
+                  JOIN public.headers ON flip_ilk.header_id = headers.id
+         WHERE flip_ilk.address_id = insert_bid_event.address_id
+         ORDER BY headers.block_number DESC
+         LIMIT 1),
+        (SELECT usr
+         FROM maker.flip_bid_usr
+                  JOIN public.headers ON flip_bid_usr.header_id = headers.id
+         WHERE flip_bid_usr.bid_id = insert_bid_event.bid_id
+           AND flip_bid_usr.address_id = insert_bid_event.address_id
+         ORDER BY headers.block_number DESC
+         LIMIT 1),
+        (SELECT block_number FROM public.headers WHERE id = insert_bid_event.header_id))
+$$;
+
+
+--
+-- Name: flip_ilk; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.flip_ilk (
+    id integer NOT NULL,
+    diff_id bigint NOT NULL,
+    header_id integer NOT NULL,
+    address_id integer NOT NULL,
+    ilk_id integer NOT NULL
+);
+
+
+--
+-- Name: TABLE flip_ilk; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.flip_ilk IS '@omit';
+
+
+--
+-- Name: insert_bid_event_ilk(maker.flip_ilk); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.insert_bid_event_ilk(new_diff maker.flip_ilk) RETURNS void
+    LANGUAGE sql
+    AS $$
+UPDATE api.bid_event
+SET ilk_identifier = (SELECT identifier FROM maker.ilks WHERE id = new_diff.ilk_id)
+WHERE bid_event.contract_address = (SELECT address FROM public.addresses WHERE id = new_diff.address_id)
+$$;
+
+
+--
+-- Name: flip_bid_usr; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.flip_bid_usr (
+    id integer NOT NULL,
+    diff_id bigint NOT NULL,
+    header_id integer NOT NULL,
+    address_id integer NOT NULL,
+    bid_id numeric NOT NULL,
+    usr text
+);
+
+
+--
+-- Name: TABLE flip_bid_usr; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.flip_bid_usr IS '@omit';
+
+
+--
+-- Name: insert_bid_event_urn(maker.flip_bid_usr); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.insert_bid_event_urn(new_diff maker.flip_bid_usr) RETURNS void
+    LANGUAGE sql
+    AS $$
+UPDATE api.bid_event
+SET urn_identifier = new_diff.usr
+WHERE bid_event.bid_id = new_diff.bid_id
+  AND bid_event.contract_address = (SELECT address FROM public.addresses WHERE id = new_diff.address_id)
+$$;
+
+
+--
 -- Name: insert_cdp_created(); Type: FUNCTION; Schema: maker; Owner: -
 --
 
@@ -3782,27 +3882,6 @@ $$;
 
 
 --
--- Name: flip_bid_usr; Type: TABLE; Schema: maker; Owner: -
---
-
-CREATE TABLE maker.flip_bid_usr (
-    id integer NOT NULL,
-    diff_id bigint NOT NULL,
-    header_id integer NOT NULL,
-    address_id integer NOT NULL,
-    bid_id numeric NOT NULL,
-    usr text
-);
-
-
---
--- Name: TABLE flip_bid_usr; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.flip_bid_usr IS '@omit';
-
-
---
 -- Name: insert_new_flip_usr(maker.flip_bid_usr); Type: FUNCTION; Schema: maker; Owner: -
 --
 
@@ -4790,6 +4869,63 @@ $$;
 --
 
 COMMENT ON FUNCTION maker.update_arts_until_next_diff(start_at_diff maker.vat_ilk_art, new_art numeric) IS '@omit';
+
+
+--
+-- Name: update_bid_event_ilk(); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.update_bid_event_ilk() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    PERFORM maker.insert_bid_event_ilk(NEW);
+    RETURN NULL;
+END
+$$;
+
+
+--
+-- Name: update_bid_event_urn(); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.update_bid_event_urn() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    PERFORM maker.insert_bid_event_urn(NEW);
+    RETURN NULL;
+END
+$$;
+
+
+--
+-- Name: update_bid_kick_tend_dent_event(); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.update_bid_kick_tend_dent_event() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    PERFORM maker.insert_bid_event(NEW.bid_id, NEW.address_id, NEW.header_id, TG_ARGV[0]::api.bid_act, NEW.lot,
+                                   NEW.bid);
+    RETURN NULL;
+END
+$$;
+
+
+--
+-- Name: update_bid_tick_deal_yank_event(); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.update_bid_tick_deal_yank_event() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    PERFORM maker.insert_bid_event(NEW.bid_id, NEW.address_id, NEW.header_id, TG_ARGV[0]::api.bid_act, NULL, NULL);
+    RETURN NULL;
+END
+$$;
 
 
 --
@@ -7814,6 +7950,22 @@ COMMENT ON FUNCTION public.urn_time_created(urn_id integer) IS '@omit';
 
 
 --
+-- Name: bid_event; Type: TABLE; Schema: api; Owner: -
+--
+
+CREATE TABLE api.bid_event (
+    bid_id numeric NOT NULL,
+    contract_address text NOT NULL,
+    act api.bid_act NOT NULL,
+    lot numeric,
+    bid_amount numeric,
+    ilk_identifier text,
+    urn_identifier text,
+    block_height bigint NOT NULL
+);
+
+
+--
 -- Name: managed_cdp_id_seq; Type: SEQUENCE; Schema: api; Owner: -
 --
 
@@ -9306,26 +9458,6 @@ CREATE SEQUENCE maker.flip_bid_usr_id_seq
 --
 
 ALTER SEQUENCE maker.flip_bid_usr_id_seq OWNED BY maker.flip_bid_usr.id;
-
-
---
--- Name: flip_ilk; Type: TABLE; Schema: maker; Owner: -
---
-
-CREATE TABLE maker.flip_ilk (
-    id integer NOT NULL,
-    diff_id bigint NOT NULL,
-    header_id integer NOT NULL,
-    address_id integer NOT NULL,
-    ilk_id integer NOT NULL
-);
-
-
---
--- Name: TABLE flip_ilk; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.flip_ilk IS '@omit';
 
 
 --
@@ -19378,6 +19510,20 @@ CREATE INDEX transactions_header ON public.transactions USING btree (header_id);
 
 
 --
+-- Name: deal deal; Type: TRIGGER; Schema: maker; Owner: -
+--
+
+CREATE TRIGGER deal AFTER INSERT ON maker.deal FOR EACH ROW EXECUTE FUNCTION maker.update_bid_tick_deal_yank_event('deal');
+
+
+--
+-- Name: dent dent; Type: TRIGGER; Schema: maker; Owner: -
+--
+
+CREATE TRIGGER dent AFTER INSERT ON maker.dent FOR EACH ROW EXECUTE FUNCTION maker.update_bid_kick_tend_dent_event('dent');
+
+
+--
 -- Name: flap_bid_bid flap_bid; Type: TRIGGER; Schema: maker; Owner: -
 --
 
@@ -19403,6 +19549,13 @@ CREATE TRIGGER flap_end AFTER INSERT OR DELETE OR UPDATE ON maker.flap_bid_end F
 --
 
 CREATE TRIGGER flap_guy AFTER INSERT OR DELETE OR UPDATE ON maker.flap_bid_guy FOR EACH ROW EXECUTE FUNCTION maker.update_flap_guys();
+
+
+--
+-- Name: flap_kick flap_kick; Type: TRIGGER; Schema: maker; Owner: -
+--
+
+CREATE TRIGGER flap_kick AFTER INSERT ON maker.flap_kick FOR EACH ROW EXECUTE FUNCTION maker.update_bid_kick_tend_dent_event('kick');
 
 
 --
@@ -19455,6 +19608,20 @@ CREATE TRIGGER flip_guy AFTER INSERT OR DELETE OR UPDATE ON maker.flip_bid_guy F
 
 
 --
+-- Name: flip_ilk flip_ilk; Type: TRIGGER; Schema: maker; Owner: -
+--
+
+CREATE TRIGGER flip_ilk AFTER INSERT ON maker.flip_ilk FOR EACH ROW EXECUTE FUNCTION maker.update_bid_event_ilk();
+
+
+--
+-- Name: flip_kick flip_kick; Type: TRIGGER; Schema: maker; Owner: -
+--
+
+CREATE TRIGGER flip_kick AFTER INSERT ON maker.flip_kick FOR EACH ROW EXECUTE FUNCTION maker.update_bid_kick_tend_dent_event('kick');
+
+
+--
 -- Name: flip_bid_lot flip_lot; Type: TRIGGER; Schema: maker; Owner: -
 --
 
@@ -19473,6 +19640,13 @@ CREATE TRIGGER flip_tab AFTER INSERT OR DELETE OR UPDATE ON maker.flip_bid_tab F
 --
 
 CREATE TRIGGER flip_tic AFTER INSERT OR DELETE OR UPDATE ON maker.flip_bid_tic FOR EACH ROW EXECUTE FUNCTION maker.update_flip_tics();
+
+
+--
+-- Name: flip_bid_usr flip_urn; Type: TRIGGER; Schema: maker; Owner: -
+--
+
+CREATE TRIGGER flip_urn AFTER INSERT ON maker.flip_bid_usr FOR EACH ROW EXECUTE FUNCTION maker.update_bid_event_urn();
 
 
 --
@@ -19508,6 +19682,13 @@ CREATE TRIGGER flop_end AFTER INSERT OR DELETE OR UPDATE ON maker.flop_bid_end F
 --
 
 CREATE TRIGGER flop_guy AFTER INSERT OR DELETE OR UPDATE ON maker.flop_bid_guy FOR EACH ROW EXECUTE FUNCTION maker.update_flop_guys();
+
+
+--
+-- Name: flop_kick flop_kick; Type: TRIGGER; Schema: maker; Owner: -
+--
+
+CREATE TRIGGER flop_kick AFTER INSERT ON maker.flop_kick FOR EACH ROW EXECUTE FUNCTION maker.update_bid_kick_tend_dent_event('kick');
 
 
 --
@@ -19644,6 +19825,20 @@ CREATE TRIGGER managed_cdp_usr AFTER INSERT OR UPDATE ON maker.cdp_manager_owns 
 
 
 --
+-- Name: tend tend; Type: TRIGGER; Schema: maker; Owner: -
+--
+
+CREATE TRIGGER tend AFTER INSERT ON maker.tend FOR EACH ROW EXECUTE FUNCTION maker.update_bid_kick_tend_dent_event('tend');
+
+
+--
+-- Name: tick tick; Type: TRIGGER; Schema: maker; Owner: -
+--
+
+CREATE TRIGGER tick AFTER INSERT ON maker.tick FOR EACH ROW EXECUTE FUNCTION maker.update_bid_tick_deal_yank_event('tick');
+
+
+--
 -- Name: vat_urn_art urn_art; Type: TRIGGER; Schema: maker; Owner: -
 --
 
@@ -19655,6 +19850,13 @@ CREATE TRIGGER urn_art AFTER INSERT OR DELETE OR UPDATE ON maker.vat_urn_art FOR
 --
 
 CREATE TRIGGER urn_ink AFTER INSERT OR DELETE OR UPDATE ON maker.vat_urn_ink FOR EACH ROW EXECUTE FUNCTION maker.update_urn_inks();
+
+
+--
+-- Name: yank yank; Type: TRIGGER; Schema: maker; Owner: -
+--
+
+CREATE TRIGGER yank AFTER INSERT ON maker.yank FOR EACH ROW EXECUTE FUNCTION maker.update_bid_tick_deal_yank_event('yank');
 
 
 --
