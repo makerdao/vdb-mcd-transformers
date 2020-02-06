@@ -68,7 +68,7 @@ var _ = Describe("Updating bid_event table", func() {
 		Expect(insertErr).NotTo(HaveOccurred())
 
 		var bidEvents []bidEvent
-		queryErr := db.Select(&bidEvents, `SELECT bid_id, contract_address, act, lot, bid_amount, block_height FROM api.bid_event`)
+		queryErr := db.Select(&bidEvents, `SELECT bid_id, contract_address, act, lot, bid_amount, block_height FROM maker.bid_event`)
 		Expect(queryErr).NotTo(HaveOccurred())
 		Expect(bidEvents).To(ConsistOf(expectedEvent))
 	})
@@ -88,7 +88,7 @@ var _ = Describe("Updating bid_event table", func() {
 		Expect(insertErr).NotTo(HaveOccurred())
 
 		var bidEvents []bidEvent
-		queryErr := db.Select(&bidEvents, `SELECT bid_id, contract_address, act, lot, bid_amount, block_height FROM api.bid_event`)
+		queryErr := db.Select(&bidEvents, `SELECT bid_id, contract_address, act, lot, bid_amount, block_height FROM maker.bid_event`)
 		Expect(queryErr).NotTo(HaveOccurred())
 		Expect(bidEvents).To(ConsistOf(expectedEvent))
 	})
@@ -108,7 +108,7 @@ var _ = Describe("Updating bid_event table", func() {
 		Expect(insertErr).NotTo(HaveOccurred())
 
 		var bidEvents []bidEvent
-		queryErr := db.Select(&bidEvents, `SELECT bid_id, contract_address, act, lot, bid_amount, block_height FROM api.bid_event`)
+		queryErr := db.Select(&bidEvents, `SELECT bid_id, contract_address, act, lot, bid_amount, block_height FROM maker.bid_event`)
 		Expect(queryErr).NotTo(HaveOccurred())
 		Expect(bidEvents).To(ConsistOf(expectedEvent))
 	})
@@ -128,7 +128,7 @@ var _ = Describe("Updating bid_event table", func() {
 		Expect(insertErr).NotTo(HaveOccurred())
 
 		var bidEvents []bidEvent
-		queryErr := db.Select(&bidEvents, `SELECT bid_id, contract_address, act, lot, bid_amount, block_height FROM api.bid_event`)
+		queryErr := db.Select(&bidEvents, `SELECT bid_id, contract_address, act, lot, bid_amount, block_height FROM maker.bid_event`)
 		Expect(queryErr).NotTo(HaveOccurred())
 		Expect(bidEvents).To(ConsistOf(expectedEvent))
 	})
@@ -148,7 +148,7 @@ var _ = Describe("Updating bid_event table", func() {
 		Expect(insertErr).NotTo(HaveOccurred())
 
 		var bidEvents []bidEvent
-		queryErr := db.Select(&bidEvents, `SELECT bid_id, contract_address, act, lot, bid_amount, block_height FROM api.bid_event`)
+		queryErr := db.Select(&bidEvents, `SELECT bid_id, contract_address, act, lot, bid_amount, block_height FROM maker.bid_event`)
 		Expect(queryErr).NotTo(HaveOccurred())
 		Expect(bidEvents).To(ConsistOf(expectedEvent))
 	})
@@ -168,7 +168,7 @@ var _ = Describe("Updating bid_event table", func() {
 		Expect(insertErr).NotTo(HaveOccurred())
 
 		var bidEvents []bidEvent
-		queryErr := db.Select(&bidEvents, `SELECT bid_id, contract_address, act, lot, bid_amount, block_height FROM api.bid_event`)
+		queryErr := db.Select(&bidEvents, `SELECT bid_id, contract_address, act, lot, bid_amount, block_height FROM maker.bid_event`)
 		Expect(queryErr).NotTo(HaveOccurred())
 		Expect(bidEvents).To(ConsistOf(expectedEvent))
 	})
@@ -188,7 +188,7 @@ var _ = Describe("Updating bid_event table", func() {
 		Expect(insertErr).NotTo(HaveOccurred())
 
 		var bidEvents []bidEvent
-		queryErr := db.Select(&bidEvents, `SELECT bid_id, contract_address, act, lot, bid_amount, block_height FROM api.bid_event`)
+		queryErr := db.Select(&bidEvents, `SELECT bid_id, contract_address, act, lot, bid_amount, block_height FROM maker.bid_event`)
 		Expect(queryErr).NotTo(HaveOccurred())
 		Expect(bidEvents).To(ConsistOf(expectedEvent))
 	})
@@ -208,7 +208,7 @@ var _ = Describe("Updating bid_event table", func() {
 		Expect(insertErr).NotTo(HaveOccurred())
 
 		var bidEvents []bidEvent
-		queryErr := db.Select(&bidEvents, `SELECT bid_id, contract_address, act, lot, bid_amount, block_height FROM api.bid_event`)
+		queryErr := db.Select(&bidEvents, `SELECT bid_id, contract_address, act, lot, bid_amount, block_height FROM maker.bid_event`)
 		Expect(queryErr).NotTo(HaveOccurred())
 		Expect(bidEvents).To(ConsistOf(expectedEvent))
 	})
@@ -244,7 +244,7 @@ var _ = Describe("Updating bid_event table", func() {
 			Expect(insertErr).NotTo(HaveOccurred())
 
 			var bidEvents []bidEvent
-			queryErr := db.Select(&bidEvents, `SELECT bid_id, contract_address, act, lot, bid_amount, ilk_identifier, block_height FROM api.bid_event`)
+			queryErr := db.Select(&bidEvents, `SELECT bid_id, contract_address, act, lot, bid_amount, ilk_identifier, block_height FROM maker.bid_event`)
 			Expect(queryErr).NotTo(HaveOccurred())
 			Expect(bidEvents).To(ConsistOf(expectedEvent))
 		})
@@ -262,7 +262,7 @@ var _ = Describe("Updating bid_event table", func() {
 			Expect(insertErr).NotTo(HaveOccurred())
 
 			var bidEvents []bidEvent
-			queryErr := db.Select(&bidEvents, `SELECT bid_id, contract_address, act, lot, bid_amount, urn_identifier, block_height FROM api.bid_event`)
+			queryErr := db.Select(&bidEvents, `SELECT bid_id, contract_address, act, lot, bid_amount, urn_identifier, block_height FROM maker.bid_event`)
 			Expect(queryErr).NotTo(HaveOccurred())
 			Expect(bidEvents).To(ConsistOf(expectedEvent))
 		})
@@ -299,7 +299,7 @@ var _ = Describe("Updating bid_event table", func() {
 			Expect(flipIlkErr).NotTo(HaveOccurred())
 
 			var bidEvents []bidEvent
-			queryErr := db.Select(&bidEvents, `SELECT bid_id, contract_address, act, lot, bid_amount, ilk_identifier, block_height FROM api.bid_event`)
+			queryErr := db.Select(&bidEvents, `SELECT bid_id, contract_address, act, lot, bid_amount, ilk_identifier, block_height FROM maker.bid_event`)
 			Expect(queryErr).NotTo(HaveOccurred())
 			Expect(bidEvents).To(ConsistOf(expectedEvent))
 		})
@@ -315,7 +315,7 @@ var _ = Describe("Updating bid_event table", func() {
 			Expect(usrErr).NotTo(HaveOccurred())
 
 			var bidEvents []bidEvent
-			queryErr := db.Select(&bidEvents, `SELECT bid_id, contract_address, act, lot, bid_amount, urn_identifier, block_height FROM api.bid_event`)
+			queryErr := db.Select(&bidEvents, `SELECT bid_id, contract_address, act, lot, bid_amount, urn_identifier, block_height FROM maker.bid_event`)
 			Expect(queryErr).NotTo(HaveOccurred())
 			Expect(bidEvents).To(ConsistOf(expectedEvent))
 		})
@@ -395,35 +395,35 @@ var _ = Describe("Updating bid_event table", func() {
 			expectedTend := expectedBidEvent(tendModel, "tend", flipAddress, headerOne.BlockNumber)
 
 			var initialBidEvents []bidEvent
-			initialQueryErr := db.Select(&initialBidEvents, `SELECT bid_id, contract_address, act, lot, bid_amount, block_height FROM api.bid_event`)
+			initialQueryErr := db.Select(&initialBidEvents, `SELECT bid_id, contract_address, act, lot, bid_amount, block_height FROM maker.bid_event`)
 			Expect(initialQueryErr).NotTo(HaveOccurred())
 			Expect(initialBidEvents).To(ConsistOf(expectedFlipKickOne, expectedFlipKickTwo, expectedTend))
 
 			_, deleteTendErr := db.Exec(`DELETE FROM maker.tend WHERE bid_id = $1`, bidOneID)
 			Expect(deleteTendErr).NotTo(HaveOccurred())
 			var kickEvents []bidEvent
-			kickQueryErr := db.Select(&kickEvents, `SELECT bid_id, contract_address, act, lot, bid_amount, block_height FROM api.bid_event`)
+			kickQueryErr := db.Select(&kickEvents, `SELECT bid_id, contract_address, act, lot, bid_amount, block_height FROM maker.bid_event`)
 			Expect(kickQueryErr).NotTo(HaveOccurred())
 			Expect(kickEvents).To(ConsistOf(expectedFlipKickOne, expectedFlipKickTwo))
 
 			_, deleteKickTwoErr := db.Exec(`DELETE FROM maker.flip_kick WHERE bid_id = $1`, bidTwoID)
 			Expect(deleteKickTwoErr).NotTo(HaveOccurred())
 			var kickEventOne []bidEvent
-			kickOneQueryErr := db.Select(&kickEventOne, `SELECT bid_id, contract_address, act, lot, bid_amount, block_height FROM api.bid_event`)
+			kickOneQueryErr := db.Select(&kickEventOne, `SELECT bid_id, contract_address, act, lot, bid_amount, block_height FROM maker.bid_event`)
 			Expect(kickOneQueryErr).NotTo(HaveOccurred())
 			Expect(kickEventOne).To(ConsistOf(expectedFlipKickOne))
 
 			_, deleteKickErr := db.Exec(`DELETE FROM maker.flip_kick WHERE bid_id = $1`, bidOneID)
 			Expect(deleteKickErr).NotTo(HaveOccurred())
 			var emptyEvents []bidEvent
-			emptyEventQueryErr := db.Select(&emptyEvents, `SELECT bid_id, contract_address, act, lot, bid_amount, block_height FROM api.bid_event`)
+			emptyEventQueryErr := db.Select(&emptyEvents, `SELECT bid_id, contract_address, act, lot, bid_amount, block_height FROM maker.bid_event`)
 			Expect(emptyEventQueryErr).NotTo(HaveOccurred())
 			Expect(emptyEvents).To(BeEmpty())
 		})
 
 		Specify("deleting a flip_ilk sets corresponding events' ilk_identifier to null", func() {
 			var initialIlks []string
-			initialIlkErr := db.Select(&initialIlks, `SELECT ilk_identifier FROM api.bid_event`)
+			initialIlkErr := db.Select(&initialIlks, `SELECT ilk_identifier FROM maker.bid_event`)
 			Expect(initialIlkErr).NotTo(HaveOccurred())
 			ilkIdentifier := test_helpers.FakeIlk.Identifier
 			Expect(initialIlks).To(ConsistOf(ilkIdentifier, ilkIdentifier, ilkIdentifier))
@@ -435,7 +435,7 @@ var _ = Describe("Updating bid_event table", func() {
 			Expect(deleteIlkErr).NotTo(HaveOccurred())
 
 			var eventIlks []sql.NullString
-			ilkErr := db.Select(&eventIlks, `SELECT ilk_identifier FROM api.bid_event`)
+			ilkErr := db.Select(&eventIlks, `SELECT ilk_identifier FROM maker.bid_event`)
 			Expect(ilkErr).NotTo(HaveOccurred())
 			nullString := sql.NullString{Valid: false}
 			Expect(eventIlks).To(ConsistOf(nullString, nullString, nullString))
@@ -443,7 +443,7 @@ var _ = Describe("Updating bid_event table", func() {
 
 		Specify("deleting a flip_bid_usr sets corresponding events' urn_identifier to null", func() {
 			var initialUrns []string
-			initialUrnErr := db.Select(&initialUrns, `SELECT urn_identifier FROM api.bid_event`)
+			initialUrnErr := db.Select(&initialUrns, `SELECT urn_identifier FROM maker.bid_event`)
 			Expect(initialUrnErr).NotTo(HaveOccurred())
 			Expect(initialUrns).To(ConsistOf(usrOne, usrOne, usrTwo))
 
@@ -451,7 +451,7 @@ var _ = Describe("Updating bid_event table", func() {
 			Expect(deleteUrnErr).NotTo(HaveOccurred())
 
 			var eventUrns []sql.NullString
-			urnErr := db.Select(&eventUrns, `SELECT urn_identifier FROM api.bid_event`)
+			urnErr := db.Select(&eventUrns, `SELECT urn_identifier FROM maker.bid_event`)
 			Expect(urnErr).NotTo(HaveOccurred())
 			expectedUsrOne := test_helpers.GetValidNullString(usrOne)
 			Expect(eventUrns).To(ConsistOf(expectedUsrOne, expectedUsrOne, sql.NullString{Valid: false}))

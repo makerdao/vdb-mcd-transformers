@@ -1,5 +1,5 @@
 -- +goose Up
-CREATE TABLE api.bid_event
+CREATE TABLE maker.bid_event
 (
     bid_id           NUMERIC     NOT NULL,
     contract_address TEXT        NOT NULL,
@@ -11,12 +11,15 @@ CREATE TABLE api.bid_event
     block_height     BIGINT      NOT NULL
 );
 
+CREATE INDEX bid_event_index ON maker.bid_event (contract_address, bid_id);
+CREATE INDEX bid_event_urn_index ON maker.bid_event (ilk_identifier, urn_identifier);
+
 
 CREATE OR REPLACE FUNCTION maker.insert_bid_event(bid_id NUMERIC, address_id INTEGER, header_id INTEGER,
                                                   act api.bid_act, lot NUMERIC, bid_amount NUMERIC) RETURNS VOID AS
 $$
 INSERT
-INTO api.bid_event (bid_id, contract_address, act, lot, bid_amount, ilk_identifier, urn_identifier, block_height)
+INTO maker.bid_event (bid_id, contract_address, act, lot, bid_amount, ilk_identifier, urn_identifier, block_height)
 VALUES (insert_bid_event.bid_id,
         (SELECT address FROM public.addresses WHERE addresses.id = insert_bid_event.address_id),
         insert_bid_event.act,
@@ -44,7 +47,7 @@ CREATE OR REPLACE FUNCTION maker.delete_bid_event(bid_id NUMERIC, address_id INT
                                                   act api.bid_act, lot NUMERIC, bid_amount NUMERIC) RETURNS VOID AS
 $$
 DELETE
-FROM api.bid_event
+FROM maker.bid_event
     USING public.addresses, public.headers
 WHERE bid_event.contract_address = addresses.address
   AND bid_event.block_height = headers.block_number
@@ -141,7 +144,7 @@ EXECUTE PROCEDURE maker.update_bid_tick_deal_yank_event('yank');
 
 CREATE OR REPLACE FUNCTION maker.insert_bid_event_ilk(new_diff maker.flip_ilk) RETURNS VOID AS
 $$
-UPDATE api.bid_event
+UPDATE maker.bid_event
 SET ilk_identifier = (SELECT identifier FROM maker.ilks WHERE id = new_diff.ilk_id)
 WHERE bid_event.contract_address = (SELECT address FROM public.addresses WHERE id = new_diff.address_id)
 $$
@@ -149,7 +152,7 @@ $$
 
 CREATE OR REPLACE FUNCTION maker.clear_bid_event_ilk(old_diff maker.flip_ilk) RETURNS VOID AS
 $$
-UPDATE api.bid_event
+UPDATE maker.bid_event
 SET ilk_identifier = NULL
 WHERE bid_event.contract_address = (SELECT address FROM public.addresses WHERE id = old_diff.address_id)
 $$
@@ -180,7 +183,7 @@ EXECUTE PROCEDURE maker.update_bid_event_ilk();
 
 CREATE OR REPLACE FUNCTION maker.insert_bid_event_urn(diff maker.flip_bid_usr, new_usr TEXT) RETURNS VOID AS
 $$
-UPDATE api.bid_event
+UPDATE maker.bid_event
 SET urn_identifier = new_usr
 WHERE bid_event.bid_id = diff.bid_id
   AND bid_event.contract_address = (SELECT address FROM public.addresses WHERE id = diff.address_id)
@@ -233,4 +236,4 @@ DROP FUNCTION maker.insert_bid_event_urn(maker.flip_bid_usr, TEXT);
 DROP FUNCTION maker.insert_bid_event_ilk(maker.flip_ilk);
 DROP FUNCTION maker.insert_bid_event(NUMERIC, INTEGER, INTEGER, api.bid_act, NUMERIC, NUMERIC);
 
-DROP TABLE api.bid_event CASCADE;
+DROP TABLE maker.bid_event CASCADE;

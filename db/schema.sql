@@ -2026,20 +2026,32 @@ $$;
 
 
 --
+-- Name: bid_event; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.bid_event (
+    bid_id numeric NOT NULL,
+    contract_address text NOT NULL,
+    act api.bid_act NOT NULL,
+    lot numeric,
+    bid_amount numeric,
+    ilk_identifier text,
+    urn_identifier text,
+    block_height bigint NOT NULL
+);
+
+
+--
 -- Name: urn_bid_events(text, text); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.urn_bid_events(urn_identifier text, ilk_identifier text) RETURNS SETOF api.flip_bid_event
+CREATE FUNCTION api.urn_bid_events(urn_identifier text, ilk_identifier text) RETURNS SETOF maker.bid_event
     LANGUAGE sql STABLE STRICT
     AS $$
-SELECT bid_events.*
-FROM api.all_flip_bid_events() bid_events
-         JOIN public.addresses ON bid_events.contract_address = addresses.address
-         JOIN maker.flip_ilk ON addresses.id = flip_ilk.address_id
-         JOIN maker.ilks ON flip_ilk.ilk_id = ilks.id
-         JOIN maker.flip_bid_usr ON bid_events.bid_id = flip_bid_usr.bid_id AND addresses.id = flip_bid_usr.address_id
-WHERE ilks.identifier = ilk_identifier
-  AND flip_bid_usr.usr = urn_identifier
+SELECT *
+FROM maker.bid_event
+WHERE bid_event.ilk_identifier = urn_bid_events.ilk_identifier
+  AND bid_event.urn_identifier = urn_bid_events.urn_identifier
 $$;
 
 
@@ -2248,7 +2260,7 @@ COMMENT ON TABLE maker.flip_ilk IS '@omit';
 CREATE FUNCTION maker.clear_bid_event_ilk(old_diff maker.flip_ilk) RETURNS void
     LANGUAGE sql
     AS $$
-UPDATE api.bid_event
+UPDATE maker.bid_event
 SET ilk_identifier = NULL
 WHERE bid_event.contract_address = (SELECT address FROM public.addresses WHERE id = old_diff.address_id)
 $$;
@@ -2432,7 +2444,7 @@ CREATE FUNCTION maker.delete_bid_event(bid_id numeric, address_id integer, heade
     LANGUAGE sql
     AS $$
 DELETE
-FROM api.bid_event
+FROM maker.bid_event
     USING public.addresses, public.headers
 WHERE bid_event.contract_address = addresses.address
   AND bid_event.block_height = headers.block_number
@@ -2701,7 +2713,7 @@ CREATE FUNCTION maker.insert_bid_event(bid_id numeric, address_id integer, heade
     LANGUAGE sql
     AS $$
 INSERT
-INTO api.bid_event (bid_id, contract_address, act, lot, bid_amount, ilk_identifier, urn_identifier, block_height)
+INTO maker.bid_event (bid_id, contract_address, act, lot, bid_amount, ilk_identifier, urn_identifier, block_height)
 VALUES (insert_bid_event.bid_id,
         (SELECT address FROM public.addresses WHERE addresses.id = insert_bid_event.address_id),
         insert_bid_event.act,
@@ -2732,7 +2744,7 @@ $$;
 CREATE FUNCTION maker.insert_bid_event_ilk(new_diff maker.flip_ilk) RETURNS void
     LANGUAGE sql
     AS $$
-UPDATE api.bid_event
+UPDATE maker.bid_event
 SET ilk_identifier = (SELECT identifier FROM maker.ilks WHERE id = new_diff.ilk_id)
 WHERE bid_event.contract_address = (SELECT address FROM public.addresses WHERE id = new_diff.address_id)
 $$;
@@ -2766,7 +2778,7 @@ COMMENT ON TABLE maker.flip_bid_usr IS '@omit';
 CREATE FUNCTION maker.insert_bid_event_urn(diff maker.flip_bid_usr, new_usr text) RETURNS void
     LANGUAGE sql
     AS $$
-UPDATE api.bid_event
+UPDATE maker.bid_event
 SET urn_identifier = new_usr
 WHERE bid_event.bid_id = diff.bid_id
   AND bid_event.contract_address = (SELECT address FROM public.addresses WHERE id = diff.address_id)
@@ -7998,22 +8010,6 @@ $$;
 --
 
 COMMENT ON FUNCTION public.urn_time_created(urn_id integer) IS '@omit';
-
-
---
--- Name: bid_event; Type: TABLE; Schema: api; Owner: -
---
-
-CREATE TABLE api.bid_event (
-    bid_id numeric NOT NULL,
-    contract_address text NOT NULL,
-    act api.bid_act NOT NULL,
-    lot numeric,
-    bid_amount numeric,
-    ilk_identifier text,
-    urn_identifier text,
-    block_height bigint NOT NULL
-);
 
 
 --
@@ -17234,6 +17230,20 @@ ALTER TABLE ONLY public.transactions
 
 ALTER TABLE ONLY public.watched_logs
     ADD CONSTRAINT watched_logs_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: bid_event_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX bid_event_index ON maker.bid_event USING btree (contract_address, bid_id);
+
+
+--
+-- Name: bid_event_urn_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX bid_event_urn_index ON maker.bid_event USING btree (ilk_identifier, urn_identifier);
 
 
 --
