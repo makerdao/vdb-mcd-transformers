@@ -17,6 +17,8 @@
 package integration_tests
 
 import (
+	"strconv"
+
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/flip_kick"
@@ -64,20 +66,28 @@ var _ = Describe("FlipKick Transformer", func() {
 		err = tr.Execute(eventLogs)
 		Expect(err).NotTo(HaveOccurred())
 
+		usrAddress := eventLogs[0].Log.Topics[1].String()
+		usrID, usrErr := shared.GetOrCreateAddress(usrAddress, db)
+		Expect(usrErr).NotTo(HaveOccurred())
+
+		galAddress := eventLogs[0].Log.Topics[2].String()
+		galID, galErr := shared.GetOrCreateAddress(galAddress, db)
+		Expect(galErr).NotTo(HaveOccurred())
+
 		var dbResult []FlipKickModel
 		err = db.Select(&dbResult, `SELECT bid_id, lot, bid, tab, usr, gal, address_id FROM maker.flip_kick`)
 		Expect(err).NotTo(HaveOccurred())
 
-		flipContractAddressId, err := shared.GetOrCreateAddress(test_data.EthFlipAddress(), db)
+		flipContractAddressID, err := shared.GetOrCreateAddress(test_data.EthFlipAddress(), db)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))
 		Expect(dbResult[0].Bid).To(Equal("0"))
 		Expect(dbResult[0].Lot).To(Equal("50000000000000000000"))
 		Expect(dbResult[0].Tab).To(Equal("5046619216084543990261356563876808629308883826941"))
-		Expect(dbResult[0].Usr).To(Equal("0x0A051CD913dFD1820dbf87a9bf62B04A129F88A5"))
-		Expect(dbResult[0].Gal).To(Equal("0xA950524441892A31ebddF91d3cEEFa04Bf454466"))
-		Expect(dbResult[0].AddressId).To(Equal(flipContractAddressId))
+		Expect(dbResult[0].Usr).To(Equal(strconv.FormatInt(usrID, 10)))
+		Expect(dbResult[0].Gal).To(Equal(strconv.FormatInt(galID, 10)))
+		Expect(dbResult[0].AddressId).To(Equal(flipContractAddressID))
 	})
 })
 

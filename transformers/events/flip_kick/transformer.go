@@ -69,7 +69,16 @@ func (t Transformer) ToModels(abi string, logs []core.EventLog, db *postgres.DB)
 		if addressErr != nil {
 			return nil, shared.ErrCouldNotCreateFK(addressErr)
 		}
-
+		usrAddress := flipKickEntity.Usr.String()
+		usrID, usrErr := shared.GetOrCreateAddress(usrAddress, db)
+		if usrErr != nil {
+			return nil, shared.ErrCouldNotCreateFK(usrErr)
+		}
+		galAddress := flipKickEntity.Gal.String()
+		galID, galErr := shared.GetOrCreateAddress(galAddress, db)
+		if galErr != nil {
+			return nil, shared.ErrCouldNotCreateFK(galErr)
+		}
 		model := event.InsertionModel{
 			SchemaName: constants.MakerSchema,
 			TableName:  constants.FlipKickTable,
@@ -92,8 +101,8 @@ func (t Transformer) ToModels(abi string, logs []core.EventLog, db *postgres.DB)
 				constants.LotColumn:   shared.BigIntToString(flipKickEntity.Lot),
 				constants.BidColumn:   shared.BigIntToString(flipKickEntity.Bid),
 				constants.TabColumn:   shared.BigIntToString(flipKickEntity.Tab),
-				constants.UsrColumn:   flipKickEntity.Usr.String(),
-				constants.GalColumn:   flipKickEntity.Gal.String(),
+				constants.UsrColumn:   usrID,
+				constants.GalColumn:   galID,
 			},
 		}
 
