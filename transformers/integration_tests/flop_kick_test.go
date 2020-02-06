@@ -85,11 +85,14 @@ var _ = Describe("FlopKick Transformer", func() {
 		flopAddressID, flopAddressErr := shared.GetOrCreateAddress(test_data.FlopAddress(), db)
 		Expect(flopAddressErr).NotTo(HaveOccurred())
 
+		galID, galErr := shared.GetOrCreateAddress(eventLogs[0].Log.Topics[1].String(), db)
+		Expect(galErr).NotTo(HaveOccurred())
+
 		Expect(len(dbResult)).To(Equal(1))
 		Expect(dbResult[0].Bid).To(Equal("100000000000000000000000000000000000000000000"))
 		Expect(dbResult[0].BidId).To(Equal("2612"))
 		Expect(dbResult[0].AddressID).To(Equal(strconv.FormatInt(flopAddressID, 10)))
-		Expect(dbResult[0].Gal).To(Equal("0x0F4Cbe6CBA918b7488C26E29d9ECd7368F38EA3b"))
+		Expect(dbResult[0].Gal).To(Equal(strconv.FormatInt(galID, 10)))
 		Expect(dbResult[0].Lot).To(Equal("10000000000000000"))
 	})
 })

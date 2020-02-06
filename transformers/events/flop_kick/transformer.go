@@ -68,6 +68,11 @@ func (t Transformer) ToModels(abi string, logs []core.EventLog, db *postgres.DB)
 			return nil, shared.ErrCouldNotCreateFK(addressErr)
 		}
 
+		galID, galErr := shared.GetOrCreateAddress(flopKickEntity.Gal.String(), db)
+		if galErr != nil {
+			return nil, shared.ErrCouldNotCreateFK(galErr)
+		}
+
 		model := event.InsertionModel{
 			SchemaName: constants.MakerSchema,
 			TableName:  constants.FlopKickTable,
@@ -87,7 +92,7 @@ func (t Transformer) ToModels(abi string, logs []core.EventLog, db *postgres.DB)
 				constants.BidIDColumn: shared.BigIntToString(flopKickEntity.Id),
 				constants.LotColumn:   shared.BigIntToString(flopKickEntity.Lot),
 				constants.BidColumn:   shared.BigIntToString(flopKickEntity.Bid),
-				constants.GalColumn:   flopKickEntity.Gal.String(),
+				constants.GalColumn:   galID,
 			},
 		}
 		results = append(results, model)

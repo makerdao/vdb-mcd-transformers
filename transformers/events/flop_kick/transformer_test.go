@@ -43,9 +43,12 @@ var _ = Describe("FlopKick Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		expectedKick := test_data.FlopKickModel()
-		addressId, addressErr := shared.GetOrCreateAddress(test_data.FlopKickEventLog.Log.Address.Hex(), db)
+		addressID, addressErr := shared.GetOrCreateAddress(test_data.FlopKickEventLog.Log.Address.Hex(), db)
 		Expect(addressErr).NotTo(HaveOccurred())
-		expectedKick.ColumnValues[event.AddressFK] = addressId
+		galID, galErr := shared.GetOrCreateAddress(test_data.FlopKickEventLog.Log.Topics[1].String(), db)
+		Expect(galErr).NotTo(HaveOccurred())
+		expectedKick.ColumnValues[event.AddressFK] = addressID
+		expectedKick.ColumnValues[constants.GalColumn] = galID
 
 		Expect(models[0]).To(Equal(expectedKick))
 	})
