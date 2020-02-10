@@ -1,19 +1,3 @@
-// VulcanizeDB
-// Copyright © 2019 Vulcanize
-
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU Affero General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU Affero General Public License for more details.
-
-// You should have received a copy of the GNU Affero General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
 package trigger_test
 
 import (
@@ -68,7 +52,7 @@ var _ = Describe("Updating bid_event table", func() {
 		Expect(insertErr).NotTo(HaveOccurred())
 
 		var bidEvents []bidEvent
-		queryErr := db.Select(&bidEvents, `SELECT bid_id, contract_address, act, lot, bid_amount, block_height FROM maker.bid_event`)
+		queryErr := db.Select(&bidEvents, `SELECT log_id, bid_id, contract_address, act, lot, bid_amount, block_height FROM maker.bid_event`)
 		Expect(queryErr).NotTo(HaveOccurred())
 		Expect(bidEvents).To(ConsistOf(expectedEvent))
 	})
@@ -88,7 +72,7 @@ var _ = Describe("Updating bid_event table", func() {
 		Expect(insertErr).NotTo(HaveOccurred())
 
 		var bidEvents []bidEvent
-		queryErr := db.Select(&bidEvents, `SELECT bid_id, contract_address, act, lot, bid_amount, block_height FROM maker.bid_event`)
+		queryErr := db.Select(&bidEvents, `SELECT log_id, bid_id, contract_address, act, lot, bid_amount, block_height FROM maker.bid_event`)
 		Expect(queryErr).NotTo(HaveOccurred())
 		Expect(bidEvents).To(ConsistOf(expectedEvent))
 	})
@@ -108,7 +92,7 @@ var _ = Describe("Updating bid_event table", func() {
 		Expect(insertErr).NotTo(HaveOccurred())
 
 		var bidEvents []bidEvent
-		queryErr := db.Select(&bidEvents, `SELECT bid_id, contract_address, act, lot, bid_amount, block_height FROM maker.bid_event`)
+		queryErr := db.Select(&bidEvents, `SELECT log_id, bid_id, contract_address, act, lot, bid_amount, block_height FROM maker.bid_event`)
 		Expect(queryErr).NotTo(HaveOccurred())
 		Expect(bidEvents).To(ConsistOf(expectedEvent))
 	})
@@ -128,7 +112,7 @@ var _ = Describe("Updating bid_event table", func() {
 		Expect(insertErr).NotTo(HaveOccurred())
 
 		var bidEvents []bidEvent
-		queryErr := db.Select(&bidEvents, `SELECT bid_id, contract_address, act, lot, bid_amount, block_height FROM maker.bid_event`)
+		queryErr := db.Select(&bidEvents, `SELECT log_id, bid_id, contract_address, act, lot, bid_amount, block_height FROM maker.bid_event`)
 		Expect(queryErr).NotTo(HaveOccurred())
 		Expect(bidEvents).To(ConsistOf(expectedEvent))
 	})
@@ -148,7 +132,7 @@ var _ = Describe("Updating bid_event table", func() {
 		Expect(insertErr).NotTo(HaveOccurred())
 
 		var bidEvents []bidEvent
-		queryErr := db.Select(&bidEvents, `SELECT bid_id, contract_address, act, lot, bid_amount, block_height FROM maker.bid_event`)
+		queryErr := db.Select(&bidEvents, `SELECT log_id, bid_id, contract_address, act, lot, bid_amount, block_height FROM maker.bid_event`)
 		Expect(queryErr).NotTo(HaveOccurred())
 		Expect(bidEvents).To(ConsistOf(expectedEvent))
 	})
@@ -168,7 +152,7 @@ var _ = Describe("Updating bid_event table", func() {
 		Expect(insertErr).NotTo(HaveOccurred())
 
 		var bidEvents []bidEvent
-		queryErr := db.Select(&bidEvents, `SELECT bid_id, contract_address, act, lot, bid_amount, block_height FROM maker.bid_event`)
+		queryErr := db.Select(&bidEvents, `SELECT log_id, bid_id, contract_address, act, lot, bid_amount, block_height FROM maker.bid_event`)
 		Expect(queryErr).NotTo(HaveOccurred())
 		Expect(bidEvents).To(ConsistOf(expectedEvent))
 	})
@@ -188,7 +172,7 @@ var _ = Describe("Updating bid_event table", func() {
 		Expect(insertErr).NotTo(HaveOccurred())
 
 		var bidEvents []bidEvent
-		queryErr := db.Select(&bidEvents, `SELECT bid_id, contract_address, act, lot, bid_amount, block_height FROM maker.bid_event`)
+		queryErr := db.Select(&bidEvents, `SELECT log_id, bid_id, contract_address, act, lot, bid_amount, block_height FROM maker.bid_event`)
 		Expect(queryErr).NotTo(HaveOccurred())
 		Expect(bidEvents).To(ConsistOf(expectedEvent))
 	})
@@ -208,7 +192,7 @@ var _ = Describe("Updating bid_event table", func() {
 		Expect(insertErr).NotTo(HaveOccurred())
 
 		var bidEvents []bidEvent
-		queryErr := db.Select(&bidEvents, `SELECT bid_id, contract_address, act, lot, bid_amount, block_height FROM maker.bid_event`)
+		queryErr := db.Select(&bidEvents, `SELECT log_id, bid_id, contract_address, act, lot, bid_amount, block_height FROM maker.bid_event`)
 		Expect(queryErr).NotTo(HaveOccurred())
 		Expect(bidEvents).To(ConsistOf(expectedEvent))
 	})
@@ -244,7 +228,7 @@ var _ = Describe("Updating bid_event table", func() {
 			Expect(insertErr).NotTo(HaveOccurred())
 
 			var bidEvents []bidEvent
-			queryErr := db.Select(&bidEvents, `SELECT bid_id, contract_address, act, lot, bid_amount, ilk_identifier, block_height FROM maker.bid_event`)
+			queryErr := db.Select(&bidEvents, `SELECT log_id, bid_id, contract_address, act, lot, bid_amount, ilk_identifier, block_height FROM maker.bid_event`)
 			Expect(queryErr).NotTo(HaveOccurred())
 			Expect(bidEvents).To(ConsistOf(expectedEvent))
 		})
@@ -262,7 +246,7 @@ var _ = Describe("Updating bid_event table", func() {
 			Expect(insertErr).NotTo(HaveOccurred())
 
 			var bidEvents []bidEvent
-			queryErr := db.Select(&bidEvents, `SELECT bid_id, contract_address, act, lot, bid_amount, urn_identifier, block_height FROM maker.bid_event`)
+			queryErr := db.Select(&bidEvents, `SELECT log_id, bid_id, contract_address, act, lot, bid_amount, urn_identifier, block_height FROM maker.bid_event`)
 			Expect(queryErr).NotTo(HaveOccurred())
 			Expect(bidEvents).To(ConsistOf(expectedEvent))
 		})
@@ -299,7 +283,7 @@ var _ = Describe("Updating bid_event table", func() {
 			Expect(flipIlkErr).NotTo(HaveOccurred())
 
 			var bidEvents []bidEvent
-			queryErr := db.Select(&bidEvents, `SELECT bid_id, contract_address, act, lot, bid_amount, ilk_identifier, block_height FROM maker.bid_event`)
+			queryErr := db.Select(&bidEvents, `SELECT log_id, bid_id, contract_address, act, lot, bid_amount, ilk_identifier, block_height FROM maker.bid_event`)
 			Expect(queryErr).NotTo(HaveOccurred())
 			Expect(bidEvents).To(ConsistOf(expectedEvent))
 		})
@@ -315,7 +299,7 @@ var _ = Describe("Updating bid_event table", func() {
 			Expect(usrErr).NotTo(HaveOccurred())
 
 			var bidEvents []bidEvent
-			queryErr := db.Select(&bidEvents, `SELECT bid_id, contract_address, act, lot, bid_amount, urn_identifier, block_height FROM maker.bid_event`)
+			queryErr := db.Select(&bidEvents, `SELECT log_id, bid_id, contract_address, act, lot, bid_amount, urn_identifier, block_height FROM maker.bid_event`)
 			Expect(queryErr).NotTo(HaveOccurred())
 			Expect(bidEvents).To(ConsistOf(expectedEvent))
 		})
@@ -327,8 +311,10 @@ var _ = Describe("Updating bid_event table", func() {
 			flipAddress        string
 			usrOne, usrTwo     string
 			flipRepo           flip.FlipStorageRepository
-			diffID, logTwoID   int64
 			bidOneID, bidTwoID int
+			diffID,
+			logTwoID,
+			logThreeID int64
 			flipKickModelOne,
 			tendModel,
 			flipKickModelTwo event.InsertionModel
@@ -337,6 +323,7 @@ var _ = Describe("Updating bid_event table", func() {
 		BeforeEach(func() {
 			headerTwo = CreateHeader(int64(timestampOne+1), blockOne+1, db)
 			logTwoID = test_data.CreateTestLog(headerTwo.Id, db).ID
+			logThreeID = test_data.CreateTestLog(headerTwo.Id, db).ID
 
 			flipAddress = test_data.EthFlipAddress()
 			ethFlipAddressID, ethFlipAddressErr := shared.GetOrCreateAddress(flipAddress, db)
@@ -375,7 +362,7 @@ var _ = Describe("Updating bid_event table", func() {
 			tendModel = test_data.TendModel()
 			tendModel.ColumnValues[event.HeaderFK] = headerOne.Id
 			tendModel.ColumnValues[event.AddressFK] = ethFlipAddressID
-			tendModel.ColumnValues[event.LogFK] = logID
+			tendModel.ColumnValues[event.LogFK] = logTwoID
 			tendModel.ColumnValues[constants.BidIDColumn] = strconv.Itoa(bidOneID)
 			insertTendErr := event.PersistModels([]event.InsertionModel{tendModel}, db)
 			Expect(insertTendErr).NotTo(HaveOccurred())
@@ -383,42 +370,10 @@ var _ = Describe("Updating bid_event table", func() {
 			flipKickModelTwo = test_data.FlipKickModel()
 			flipKickModelTwo.ColumnValues[event.HeaderFK] = headerTwo.Id
 			flipKickModelTwo.ColumnValues[event.AddressFK] = ethFlipAddressID
-			flipKickModelTwo.ColumnValues[event.LogFK] = logTwoID
+			flipKickModelTwo.ColumnValues[event.LogFK] = logThreeID
 			flipKickModelTwo.ColumnValues[constants.BidIDColumn] = strconv.Itoa(bidTwoID)
 			insertKickErrTwo := event.PersistModels([]event.InsertionModel{flipKickModelTwo}, db)
 			Expect(insertKickErrTwo).NotTo(HaveOccurred())
-		})
-
-		Specify("deleting an event removes it from the bid_event table", func() {
-			expectedFlipKickOne := expectedBidEvent(flipKickModelOne, "kick", flipAddress, headerOne.BlockNumber)
-			expectedFlipKickTwo := expectedBidEvent(flipKickModelTwo, "kick", flipAddress, headerTwo.BlockNumber)
-			expectedTend := expectedBidEvent(tendModel, "tend", flipAddress, headerOne.BlockNumber)
-
-			var initialBidEvents []bidEvent
-			initialQueryErr := db.Select(&initialBidEvents, `SELECT bid_id, contract_address, act, lot, bid_amount, block_height FROM maker.bid_event`)
-			Expect(initialQueryErr).NotTo(HaveOccurred())
-			Expect(initialBidEvents).To(ConsistOf(expectedFlipKickOne, expectedFlipKickTwo, expectedTend))
-
-			_, deleteTendErr := db.Exec(`DELETE FROM maker.tend WHERE bid_id = $1`, bidOneID)
-			Expect(deleteTendErr).NotTo(HaveOccurred())
-			var kickEvents []bidEvent
-			kickQueryErr := db.Select(&kickEvents, `SELECT bid_id, contract_address, act, lot, bid_amount, block_height FROM maker.bid_event`)
-			Expect(kickQueryErr).NotTo(HaveOccurred())
-			Expect(kickEvents).To(ConsistOf(expectedFlipKickOne, expectedFlipKickTwo))
-
-			_, deleteKickTwoErr := db.Exec(`DELETE FROM maker.flip_kick WHERE bid_id = $1`, bidTwoID)
-			Expect(deleteKickTwoErr).NotTo(HaveOccurred())
-			var kickEventOne []bidEvent
-			kickOneQueryErr := db.Select(&kickEventOne, `SELECT bid_id, contract_address, act, lot, bid_amount, block_height FROM maker.bid_event`)
-			Expect(kickOneQueryErr).NotTo(HaveOccurred())
-			Expect(kickEventOne).To(ConsistOf(expectedFlipKickOne))
-
-			_, deleteKickErr := db.Exec(`DELETE FROM maker.flip_kick WHERE bid_id = $1`, bidOneID)
-			Expect(deleteKickErr).NotTo(HaveOccurred())
-			var emptyEvents []bidEvent
-			emptyEventQueryErr := db.Select(&emptyEvents, `SELECT bid_id, contract_address, act, lot, bid_amount, block_height FROM maker.bid_event`)
-			Expect(emptyEventQueryErr).NotTo(HaveOccurred())
-			Expect(emptyEvents).To(BeEmpty())
 		})
 
 		Specify("deleting a flip_ilk sets corresponding events' ilk_identifier to null", func() {
@@ -461,6 +416,7 @@ var _ = Describe("Updating bid_event table", func() {
 
 func expectedBidEvent(eventModel event.InsertionModel, bidAct, contractAddress string, blockHeight int64) bidEvent {
 	return bidEvent{
+		LogID:           strconv.FormatInt(eventModel.ColumnValues[event.LogFK].(int64), 10),
 		BidID:           eventModel.ColumnValues[constants.BidIDColumn].(string),
 		ContractAddress: contractAddress,
 		Act:             bidAct,
@@ -472,6 +428,7 @@ func expectedBidEvent(eventModel event.InsertionModel, bidAct, contractAddress s
 
 func expectedBidEventNullStrings(eventModel event.InsertionModel, bidAct, contractAddress string, blockHeight int64) bidEvent {
 	return bidEvent{
+		LogID:           strconv.FormatInt(eventModel.ColumnValues[event.LogFK].(int64), 10),
 		BidID:           eventModel.ColumnValues[constants.BidIDColumn].(string),
 		ContractAddress: contractAddress,
 		Act:             bidAct,
@@ -482,6 +439,7 @@ func expectedBidEventNullStrings(eventModel event.InsertionModel, bidAct, contra
 }
 
 type bidEvent struct {
+	LogID           string `db:"log_id"`
 	BidID           string `db:"bid_id"`
 	ContractAddress string `db:"contract_address"`
 	Act             string

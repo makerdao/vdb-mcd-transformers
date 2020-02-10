@@ -2030,6 +2030,7 @@ $$;
 --
 
 CREATE TABLE maker.bid_event (
+    log_id bigint NOT NULL,
     bid_id numeric NOT NULL,
     contract_address text NOT NULL,
     act api.bid_act NOT NULL,
@@ -2039,6 +2040,13 @@ CREATE TABLE maker.bid_event (
     urn_identifier text,
     block_height bigint NOT NULL
 );
+
+
+--
+-- Name: COLUMN bid_event.log_id; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON COLUMN maker.bid_event.log_id IS '@omit';
 
 
 --
@@ -2437,27 +2445,6 @@ COMMENT ON FUNCTION maker.clear_time_created(old_event maker.vat_init) IS '@omit
 
 
 --
--- Name: delete_bid_event(numeric, integer, integer, api.bid_act, numeric, numeric); Type: FUNCTION; Schema: maker; Owner: -
---
-
-CREATE FUNCTION maker.delete_bid_event(bid_id numeric, address_id integer, header_id integer, act api.bid_act, lot numeric, bid_amount numeric) RETURNS void
-    LANGUAGE sql
-    AS $$
-DELETE
-FROM maker.bid_event
-    USING public.addresses, public.headers
-WHERE bid_event.contract_address = addresses.address
-  AND bid_event.block_height = headers.block_number
-  AND addresses.id = delete_bid_event.address_id
-  AND headers.id = delete_bid_event.header_id
-  AND bid_event.bid_id = delete_bid_event.bid_id
-  AND bid_event.act = delete_bid_event.act
-  AND bid_event.lot = delete_bid_event.lot
-  AND bid_event.bid_amount = delete_bid_event.bid_amount
-$$;
-
-
---
 -- Name: delete_obsolete_flap(numeric, integer, integer); Type: FUNCTION; Schema: maker; Owner: -
 --
 
@@ -2706,15 +2693,17 @@ COMMENT ON FUNCTION maker.delete_redundant_ilk_snapshot(ilk_id integer, header_i
 
 
 --
--- Name: insert_bid_event(numeric, integer, integer, api.bid_act, numeric, numeric); Type: FUNCTION; Schema: maker; Owner: -
+-- Name: insert_bid_event(bigint, numeric, integer, integer, api.bid_act, numeric, numeric); Type: FUNCTION; Schema: maker; Owner: -
 --
 
-CREATE FUNCTION maker.insert_bid_event(bid_id numeric, address_id integer, header_id integer, act api.bid_act, lot numeric, bid_amount numeric) RETURNS void
+CREATE FUNCTION maker.insert_bid_event(log_id bigint, bid_id numeric, address_id integer, header_id integer, act api.bid_act, lot numeric, bid_amount numeric) RETURNS void
     LANGUAGE sql
     AS $$
 INSERT
-INTO maker.bid_event (bid_id, contract_address, act, lot, bid_amount, ilk_identifier, urn_identifier, block_height)
-VALUES (insert_bid_event.bid_id,
+INTO maker.bid_event (log_id, bid_id, contract_address, act, lot, bid_amount, ilk_identifier, urn_identifier,
+                      block_height)
+VALUES (insert_bid_event.log_id,
+        insert_bid_event.bid_id,
         (SELECT address FROM public.addresses WHERE addresses.id = insert_bid_event.address_id),
         insert_bid_event.act,
         insert_bid_event.lot,
@@ -4961,13 +4950,8 @@ CREATE FUNCTION maker.update_bid_kick_tend_dent_event() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 BEGIN
-    IF TG_OP = 'INSERT' THEN
-        PERFORM maker.insert_bid_event(NEW.bid_id, NEW.address_id, NEW.header_id, TG_ARGV[0]::api.bid_act, NEW.lot,
-                                       NEW.bid);
-    ELSIF TG_OP = 'DELETE' THEN
-        PERFORM maker.delete_bid_event(OLD.bid_id, OLD.address_id, OLD.header_id, TG_ARGV[0]::api.bid_act, OLD.lot,
-                                       OLD.bid);
-    END IF;
+    PERFORM maker.insert_bid_event(NEW.log_id, NEW.bid_id, NEW.address_id, NEW.header_id, TG_ARGV[0]::api.bid_act,
+                                   NEW.lot, NEW.bid);
     RETURN NULL;
 END
 $$;
@@ -4981,11 +4965,8 @@ CREATE FUNCTION maker.update_bid_tick_deal_yank_event() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 BEGIN
-    IF TG_OP = 'INSERT' THEN
-        PERFORM maker.insert_bid_event(NEW.bid_id, NEW.address_id, NEW.header_id, TG_ARGV[0]::api.bid_act, NULL, NULL);
-    ELSIF TG_OP = 'DELETE' THEN
-        PERFORM maker.delete_bid_event(OLD.bid_id, OLD.address_id, OLD.header_id, TG_ARGV[0]::api.bid_act, NULL, NULL);
-    END IF;
+    PERFORM maker.insert_bid_event(NEW.log_id, NEW.bid_id, NEW.address_id, NEW.header_id, TG_ARGV[0]::api.bid_act, NULL,
+                                   NULL);
     RETURN NULL;
 END
 $$;
@@ -14641,6 +14622,14 @@ ALTER TABLE ONLY api.urn_snapshot
 
 
 --
+-- Name: bid_event bid_event_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.bid_event
+    ADD CONSTRAINT bid_event_pkey PRIMARY KEY (log_id);
+
+
+--
 -- Name: bite bite_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -19574,14 +19563,14 @@ CREATE INDEX transactions_header ON public.transactions USING btree (header_id);
 -- Name: deal deal; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER deal AFTER INSERT OR DELETE ON maker.deal FOR EACH ROW EXECUTE FUNCTION maker.update_bid_tick_deal_yank_event('deal');
+CREATE TRIGGER deal AFTER INSERT ON maker.deal FOR EACH ROW EXECUTE FUNCTION maker.update_bid_tick_deal_yank_event('deal');
 
 
 --
 -- Name: dent dent; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER dent AFTER INSERT OR DELETE ON maker.dent FOR EACH ROW EXECUTE FUNCTION maker.update_bid_kick_tend_dent_event('dent');
+CREATE TRIGGER dent AFTER INSERT ON maker.dent FOR EACH ROW EXECUTE FUNCTION maker.update_bid_kick_tend_dent_event('dent');
 
 
 --
@@ -19616,7 +19605,7 @@ CREATE TRIGGER flap_guy AFTER INSERT OR DELETE OR UPDATE ON maker.flap_bid_guy F
 -- Name: flap_kick flap_kick; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER flap_kick AFTER INSERT OR DELETE ON maker.flap_kick FOR EACH ROW EXECUTE FUNCTION maker.update_bid_kick_tend_dent_event('kick');
+CREATE TRIGGER flap_kick AFTER INSERT ON maker.flap_kick FOR EACH ROW EXECUTE FUNCTION maker.update_bid_kick_tend_dent_event('kick');
 
 
 --
@@ -19679,7 +19668,7 @@ CREATE TRIGGER flip_ilk AFTER INSERT OR DELETE ON maker.flip_ilk FOR EACH ROW EX
 -- Name: flip_kick flip_kick; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER flip_kick AFTER INSERT OR DELETE ON maker.flip_kick FOR EACH ROW EXECUTE FUNCTION maker.update_bid_kick_tend_dent_event('kick');
+CREATE TRIGGER flip_kick AFTER INSERT ON maker.flip_kick FOR EACH ROW EXECUTE FUNCTION maker.update_bid_kick_tend_dent_event('kick');
 
 
 --
@@ -19749,7 +19738,7 @@ CREATE TRIGGER flop_guy AFTER INSERT OR DELETE OR UPDATE ON maker.flop_bid_guy F
 -- Name: flop_kick flop_kick; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER flop_kick AFTER INSERT OR DELETE ON maker.flop_kick FOR EACH ROW EXECUTE FUNCTION maker.update_bid_kick_tend_dent_event('kick');
+CREATE TRIGGER flop_kick AFTER INSERT ON maker.flop_kick FOR EACH ROW EXECUTE FUNCTION maker.update_bid_kick_tend_dent_event('kick');
 
 
 --
@@ -19889,14 +19878,14 @@ CREATE TRIGGER managed_cdp_usr AFTER INSERT OR UPDATE ON maker.cdp_manager_owns 
 -- Name: tend tend; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER tend AFTER INSERT OR DELETE ON maker.tend FOR EACH ROW EXECUTE FUNCTION maker.update_bid_kick_tend_dent_event('tend');
+CREATE TRIGGER tend AFTER INSERT ON maker.tend FOR EACH ROW EXECUTE FUNCTION maker.update_bid_kick_tend_dent_event('tend');
 
 
 --
 -- Name: tick tick; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER tick AFTER INSERT OR DELETE ON maker.tick FOR EACH ROW EXECUTE FUNCTION maker.update_bid_tick_deal_yank_event('tick');
+CREATE TRIGGER tick AFTER INSERT ON maker.tick FOR EACH ROW EXECUTE FUNCTION maker.update_bid_tick_deal_yank_event('tick');
 
 
 --
@@ -19917,7 +19906,15 @@ CREATE TRIGGER urn_ink AFTER INSERT OR DELETE OR UPDATE ON maker.vat_urn_ink FOR
 -- Name: yank yank; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER yank AFTER INSERT OR DELETE ON maker.yank FOR EACH ROW EXECUTE FUNCTION maker.update_bid_tick_deal_yank_event('yank');
+CREATE TRIGGER yank AFTER INSERT ON maker.yank FOR EACH ROW EXECUTE FUNCTION maker.update_bid_tick_deal_yank_event('yank');
+
+
+--
+-- Name: bid_event bid_event_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.bid_event
+    ADD CONSTRAINT bid_event_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
 
 
 --
