@@ -31,8 +31,6 @@ import (
 var TestConfig *viper.Viper
 var DBConfig config.Database
 var TestClient config.Client
-var Infura *viper.Viper
-var InfuraClient config.Client
 var ABIFilePath string
 var wipeTableQueries []string
 
