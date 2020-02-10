@@ -197,7 +197,7 @@ var _ = Describe("Updating bid_event table", func() {
 		Expect(bidEvents).To(ConsistOf(expectedEvent))
 	})
 
-	Describe("inserting events after diffs", func() {
+	Describe("inserting events after flip-specific diffs", func() {
 		var (
 			flipAddress   = test_data.EthFlipAddress()
 			flipRepo      flip.FlipStorageRepository
@@ -252,7 +252,7 @@ var _ = Describe("Updating bid_event table", func() {
 		})
 	})
 
-	Describe("when diffs are inserted after events", func() {
+	Describe("when flip-specific diffs are inserted after events", func() {
 		var (
 			flipAddress   string
 			flipRepo      flip.FlipStorageRepository
@@ -276,6 +276,10 @@ var _ = Describe("Updating bid_event table", func() {
 		})
 
 		Specify("inserting a flip_ilk diff triggers an update to the ilk_identifier of related bids", func() {
+			var initialIlks []sql.NullString
+			initialQueryErr := db.Select(&initialIlks, `SELECT ilk_identifier FROM maker.bid_event`)
+			Expect(initialQueryErr).NotTo(HaveOccurred())
+			Expect(initialIlks).To(ConsistOf(sql.NullString{Valid: false}))
 			expectedEvent := expectedBidEvent(flipKickModel, "kick", flipAddress, headerOne.BlockNumber)
 			expectedEvent.IlkIdentifier = test_helpers.FakeIlk.Identifier
 
@@ -289,6 +293,10 @@ var _ = Describe("Updating bid_event table", func() {
 		})
 
 		Specify("inserting a flip_bid_usr diff triggers an update to the urn_identifier of related bids", func() {
+			var initialUrns []sql.NullString
+			initialQueryErr := db.Select(&initialUrns, `SELECT urn_identifier FROM maker.bid_event`)
+			Expect(initialQueryErr).NotTo(HaveOccurred())
+			Expect(initialUrns).To(ConsistOf(sql.NullString{Valid: false}))
 			usr := common.HexToAddress("0x" + test_data.RandomString(40)).Hex()
 			expectedEvent := expectedBidEvent(flipKickModel, "kick", flipAddress, headerOne.BlockNumber)
 			bidUsrMetadata := types.GetValueMetadata(storage.BidUsr,
