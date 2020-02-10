@@ -41,9 +41,12 @@ var _ = Describe("urn bid events query", func() {
 		bidThreeID = bidTwoID + 1
 
 		diffID := storageHelpers.CreateFakeDiffRecord(db)
-		logID := test_data.CreateTestLog(headerOneID, db).ID
 		usrOne = "0x" + test_data.RandomString(40)
 		usrTwo = "0x" + test_data.RandomString(40)
+		logOneID := test_data.CreateTestLog(headerOneID, db).ID
+		logTwoID := test_data.CreateTestLog(headerOneID, db).ID
+		logThreeID := test_data.CreateTestLog(headerOneID, db).ID
+		logFourID := test_data.CreateTestLog(headerOneID, db).ID
 
 		// insert records used in join
 		repo := flip.FlipStorageRepository{ContractAddress: ethFlipAddress}
@@ -74,13 +77,13 @@ var _ = Describe("urn bid events query", func() {
 		Expect(batBidUsrErr).NotTo(HaveOccurred())
 
 		// insert 4 kicks for 3 different urns
-		kickErrOne := test_helpers.CreateFlipKick(ethFlipAddress, bidOneID, headerOneID, logID, usrOne, db)
+		kickErrOne := test_helpers.CreateFlipKick(ethFlipAddress, bidOneID, headerOneID, logOneID, usrOne, db)
 		Expect(kickErrOne).NotTo(HaveOccurred())
-		kickErrTwo := test_helpers.CreateFlipKick(ethFlipAddress, bidTwoID, headerTwoID, logID, usrTwo, db)
+		kickErrTwo := test_helpers.CreateFlipKick(ethFlipAddress, bidTwoID, headerTwoID, logTwoID, usrTwo, db)
 		Expect(kickErrTwo).NotTo(HaveOccurred())
-		kickErrThree := test_helpers.CreateFlipKick(ethFlipAddress, bidThreeID, headerThreeID, logID, usrTwo, db)
+		kickErrThree := test_helpers.CreateFlipKick(ethFlipAddress, bidThreeID, headerThreeID, logThreeID, usrTwo, db)
 		Expect(kickErrThree).NotTo(HaveOccurred())
-		kickErrFour := test_helpers.CreateFlipKick(batFlipAddress, bidOneID, headerFourID, logID, usrTwo, db)
+		kickErrFour := test_helpers.CreateFlipKick(batFlipAddress, bidOneID, headerFourID, logFourID, usrTwo, db)
 		Expect(kickErrFour).NotTo(HaveOccurred())
 	})
 
