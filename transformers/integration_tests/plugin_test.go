@@ -25,12 +25,10 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/constants"
 	"github.com/makerdao/vulcanizedb/libraries/shared/logs"
-	"github.com/makerdao/vulcanizedb/libraries/shared/storage/fetcher"
 	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 	"github.com/makerdao/vulcanizedb/libraries/shared/watcher"
 	"github.com/makerdao/vulcanizedb/pkg/config"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
-	"github.com/makerdao/vulcanizedb/pkg/fs"
 	p2 "github.com/makerdao/vulcanizedb/pkg/plugin"
 	"github.com/makerdao/vulcanizedb/pkg/plugin/helpers"
 	. "github.com/onsi/ginkgo"
@@ -306,9 +304,7 @@ var _ = Describe("Plugin test", func() {
 				Expect(ok).To(Equal(true))
 				_, storageTransformerInitializers, _ := exporter.Export()
 
-				tailer := fs.FileTailer{Path: viper.GetString("filesystem.storageDiffsPath")}
-				storageFetcher := fetcher.NewCsvTailStorageFetcher(tailer)
-				w := watcher.NewStorageWatcher(storageFetcher, db)
+				w := watcher.NewStorageWatcher(db, time.Nanosecond)
 				w.AddTransformers(storageTransformerInitializers)
 				// This blocks right now, need to make test file to read from
 				//err = w.Execute()
@@ -394,9 +390,7 @@ var _ = Describe("Plugin test", func() {
 					return flip
 				}).Should(Equal(test_data.EthFlipAddress()))
 
-				tailer := fs.FileTailer{Path: viper.GetString("filesystem.storageDiffsPath")}
-				storageFetcher := fetcher.NewCsvTailStorageFetcher(tailer)
-				sw := watcher.NewStorageWatcher(storageFetcher, db)
+				sw := watcher.NewStorageWatcher(db, time.Nanosecond)
 				sw.AddTransformers(storageInitializers)
 				// This blocks right now, need to make test file to read from
 				//err = w.Execute()

@@ -19,34 +19,23 @@ The following arguments are required at runtime:
 - `DATABASE_PORT`
 - `DATABASE_USER`
 - `DATABASE_PASSWORD`
-
-The following arguments are also required but can be specified via config file:
-
 - `CLIENT_IPCPATH`
-- `FILESYSTEM_STORAGEDIFFSPATH` _or_ `STORAGEDIFFS_SOURCE` (see below)
 
 ### Example
 
 With arguments correctly populated, the following command will run the container on OS X:
 
 ```
-docker run -e DATABASE_NAME=vulcanize_public -e DATABASE_HOSTNAME=host.docker.internal -e DATABASE_PORT=5432 -e DATABASE_USER=user -e DATABASE_PASSWORD=pw -e CLIENT_IPCPATH=https://kovan.infura.io/v3/token -e FILESYSTEM_STORAGEDIFFSPATH=/data/<csv_filename> -v <csv_filepath>:/data -it execute:latest
+docker run -e DATABASE_NAME=vulcanize_public -e DATABASE_HOSTNAME=host.docker.internal -e DATABASE_PORT=5432 -e DATABASE_USER=user -e DATABASE_PASSWORD=pw -e CLIENT_IPCPATH=https://kovan.infura.io/v3/token -it execute:latest
 ```
 
 #### Explanation:
 
 With the above command, we assume the host is exposing the database `vulcanize_public` on `localhost:5432` and user `user` with password `pw` has write access to that db.
-We expect that we can successfully make calls against the [Ethereum JSON RPC API](https://github.com/ethereum/wiki/wiki/JSON-RPC) at `https://kovan.infura.io/v3/token`, and that the host has a csv file containing storage diffs at `csv_filepath` that we can expose inside the container via a volume at `/data`.
+We expect that we can successfully make calls against the [Ethereum JSON RPC API](https://github.com/ethereum/wiki/wiki/JSON-RPC) at `https://kovan.infura.io/v3/token`.
 
 Note that on OS X, we use `host.docker.internal` to access `localhost`.
 For execution on linux, replace instances of `host.docker.internal` with `localhost` and run with `--network="host"`.
-
-#### Running with a local geth client emitting statediffs:
-- Use the v1.10-alpha.0 release of the vulcanize go-ethereum patch.
-    - this patch allows for statediffs to be emitted
-    - start geth with the following flags `--statediff`, `--ws`
-- Make sure to set CLIENT_IPCPATH to use either the websocket or ipc interface with geth (notifications required for subscriptions are not supported with http).
-    e.g. `docker run -e CLIENT_IPCPATH="ws://host.docker.internal:8546" -e DATABASE_NAME="vulcanize_public" -e DATABASE_HOSTNAME="host.docker.internal" -e DATABASE_PORT="5432" -e DATABASE_USER="vulcanize" -e DATABASE_PASSWORD="vulcanize" -e STORAGEDIFFS_SOURCE="geth" -e STARTING_BLOCK_NUMBER=0 vulcanize_mcd_transformers:0.0.1`.
 
 #### Running with a geth docker container:
 - On the `v.10-alpha.0` geth release, run `docker build ./ -t geth-statediffing`
