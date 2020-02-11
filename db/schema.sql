@@ -7917,6 +7917,20 @@ COMMENT ON FUNCTION public.ilk_time_created(ilk_id integer) IS '@omit';
 
 
 --
+-- Name: set_header_updated(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.set_header_updated() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    NEW.updated = NOW();
+    RETURN NEW;
+END;
+$$;
+
+
+--
 -- Name: urn_art_before_block(integer, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -13238,7 +13252,9 @@ CREATE TABLE public.headers (
     raw jsonb,
     block_timestamp numeric,
     check_count integer DEFAULT 0 NOT NULL,
-    eth_node_id integer NOT NULL
+    eth_node_id integer NOT NULL,
+    created timestamp without time zone DEFAULT now() NOT NULL,
+    updated timestamp without time zone DEFAULT now() NOT NULL
 );
 
 
@@ -19848,6 +19864,13 @@ CREATE TRIGGER urn_ink AFTER INSERT OR DELETE OR UPDATE ON maker.vat_urn_ink FOR
 --
 
 CREATE TRIGGER yank AFTER INSERT ON maker.yank FOR EACH ROW EXECUTE FUNCTION maker.update_bid_tick_deal_yank_event('yank');
+
+
+--
+-- Name: headers header_updated; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER header_updated BEFORE UPDATE ON public.headers FOR EACH ROW EXECUTE FUNCTION public.set_header_updated();
 
 
 --
