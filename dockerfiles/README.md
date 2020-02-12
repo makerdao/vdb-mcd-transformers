@@ -59,7 +59,7 @@ For execution on linux, replace instances of `host.docker.internal` with `localh
         - `--statediff.watchedaddresses <contract address>`
     - e.g.
     ```shell script
-        docker run -v /Users/elizabethengelman/Library/Ethereum:/root/.ethereum -p 8545:8545 -p 8546:8546 -p 30303:30303 statediffing-geth
+        docker run -v /Users/elizabethengelman/Library/Ethereum:/root/.ethereum -p 8545:8545 -p 8546:8546 -p 30303:30303 geth-statediffing
           --rpc --rpcaddr "0.0.0.0" --ws --wsaddr "0.0.0.0" --statediff --syncmode full --statediff.watchedaddresses <contract address>
           --statediff.watchedaddresses <contract address>
     ```
