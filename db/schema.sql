@@ -608,7 +608,9 @@ BEGIN
             SELECT DISTINCT bid_id
             FROM maker.flap
             ORDER BY bid_id DESC
-            LIMIT all_flaps.max_results OFFSET all_flaps.result_offset
+            LIMIT all_flaps.max_results
+            OFFSET
+            all_flaps.result_offset
         )
         SELECT f.*
         FROM bid_ids,
@@ -725,7 +727,9 @@ UNION
 SELECT *
 FROM ticks
 ORDER BY block_height DESC
-LIMIT all_flip_bid_events.max_results OFFSET all_flip_bid_events.result_offset
+LIMIT all_flip_bid_events.max_results
+OFFSET
+all_flip_bid_events.result_offset
 $$;
 
 
@@ -866,7 +870,9 @@ UNION
 SELECT *
 FROM ticks
 ORDER BY block_height DESC
-LIMIT all_flop_bid_events.max_results OFFSET all_flop_bid_events.result_offset
+LIMIT all_flop_bid_events.max_results
+OFFSET
+all_flop_bid_events.result_offset
 $$;
 
 
@@ -883,7 +889,9 @@ BEGIN
             SELECT DISTINCT bid_id
             FROM maker.flop
             ORDER BY bid_id DESC
-            LIMIT all_flops.max_results OFFSET all_flops.result_offset
+            LIMIT all_flops.max_results
+            OFFSET
+            all_flops.result_offset
         )
         SELECT f.*
         FROM bid_ids,
@@ -1070,7 +1078,9 @@ FROM maker.spot_poke
          LEFT JOIN public.headers ON spot_poke.header_id = headers.id
 WHERE block_timestamp BETWEEN beginTime AND endTime
 ORDER BY block_height DESC
-LIMIT all_poke_events.max_results OFFSET all_poke_events.result_offset
+LIMIT all_poke_events.max_results
+OFFSET
+all_poke_events.result_offset
 $$;
 
 
@@ -1087,7 +1097,9 @@ BEGIN
             SELECT DISTINCT era
             FROM maker.vow_sin_mapping
             ORDER BY era DESC
-            LIMIT all_queued_sin.max_results OFFSET all_queued_sin.result_offset
+            LIMIT all_queued_sin.max_results
+            OFFSET
+            all_queued_sin.result_offset
         )
         SELECT sin.*
         FROM eras,
@@ -1140,13 +1152,13 @@ BEGIN
              relevant_blocks AS (
                  SELECT block_number
                  FROM maker.vat_urn_ink
-                    LEFT JOIN public.headers ON vat_urn_ink.header_id = headers.id
+                          LEFT JOIN public.headers ON vat_urn_ink.header_id = headers.id
                  WHERE vat_urn_ink.urn_id = (SELECT * FROM urn_id)
                    AND block_number <= all_urn_states.block_height
                  UNION
                  SELECT block_number
                  FROM maker.vat_urn_art
-                    LEFT JOIN public.headers ON vat_urn_art.header_id = headers.id
+                          LEFT JOIN public.headers ON vat_urn_art.header_id = headers.id
                  WHERE vat_urn_art.urn_id = (SELECT * FROM urn_id)
                    AND block_number <= all_urn_states.block_height)
         SELECT r.*
@@ -1499,7 +1511,8 @@ $$;
 CREATE FUNCTION api.frob_event_tx(event api.frob_event) RETURNS api.tx
     LANGUAGE sql STABLE
     AS $$
-SELECT * FROM get_tx_data(event.block_height, event.log_id)
+SELECT *
+FROM get_tx_data(event.block_height, event.log_id)
 $$;
 
 
@@ -1978,7 +1991,9 @@ CREATE FUNCTION api.queued_sin_sin_queue_events(state api.queued_sin, max_result
     AS $$
 SELECT *
 FROM api.all_sin_queue_events(state.era)
-LIMIT queued_sin_sin_queue_events.max_results OFFSET queued_sin_sin_queue_events.result_offset
+LIMIT queued_sin_sin_queue_events.max_results
+OFFSET
+queued_sin_sin_queue_events.result_offset
 $$;
 
 
@@ -1989,7 +2004,8 @@ $$;
 CREATE FUNCTION api.sin_queue_event_tx(event api.sin_queue_event) RETURNS api.tx
     LANGUAGE sql STABLE
     AS $$
-SELECT * FROM get_tx_data(event.block_height, event.log_id)
+SELECT *
+FROM get_tx_data(event.block_height, event.log_id)
 $$;
 
 
@@ -2847,7 +2863,9 @@ CREATE FUNCTION maker.insert_cdp_usr() RETURNS trigger
     AS $$
 BEGIN
     WITH new_block_number AS (
-        SELECT block_number FROM public.headers WHERE id = NEW.header_id
+        SELECT block_number
+        FROM public.headers
+        WHERE id = NEW.header_id
     )
     INSERT
     INTO api.managed_cdp (cdpi, usr)
@@ -2858,7 +2876,7 @@ BEGIN
     WHERE (SELECT block_number FROM new_block_number) >= (
         SELECT MAX(block_number)
         FROM maker.cdp_manager_owns
-            LEFT JOIN public.headers ON cdp_manager_owns.header_id = headers.id
+                 LEFT JOIN public.headers ON cdp_manager_owns.header_id = headers.id
         WHERE cdp_manager_owns.cdpi = NEW.cdpi);
     RETURN NEW;
 END

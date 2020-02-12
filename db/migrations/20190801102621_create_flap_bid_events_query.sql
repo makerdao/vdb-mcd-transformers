@@ -9,15 +9,16 @@ CREATE TYPE api.bid_act AS ENUM (
     'yank'
     );
 
-CREATE TYPE api.flap_bid_event AS (
-    bid_id NUMERIC,
-    lot NUMERIC,
-    bid_amount NUMERIC,
-    act api.bid_act,
-    block_height BIGINT,
-    log_id BIGINT,
+CREATE TYPE api.flap_bid_event AS
+(
+    bid_id           NUMERIC,
+    lot              NUMERIC,
+    bid_amount       NUMERIC,
+    act              api.bid_act,
+    block_height     BIGINT,
+    log_id           BIGINT,
     contract_address TEXT
-    );
+);
 
 COMMENT ON COLUMN api.flap_bid_event.block_height
     IS E'@omit';

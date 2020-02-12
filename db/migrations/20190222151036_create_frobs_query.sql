@@ -1,17 +1,18 @@
 -- +goose Up
 -- SQL in this section is executed when the migration is applied.
-CREATE TYPE api.frob_event AS (
+CREATE TYPE api.frob_event AS
+(
     ilk_identifier TEXT,
     -- ilk object
     urn_identifier TEXT,
     -- urn object
-    dink NUMERIC,
-    dart NUMERIC,
-    ilk_rate NUMERIC,
-    block_height BIGINT,
-    log_id BIGINT
+    dink           NUMERIC,
+    dart           NUMERIC,
+    ilk_rate       NUMERIC,
+    block_height   BIGINT,
+    log_id         BIGINT
     -- tx
-    );
+);
 
 COMMENT ON COLUMN api.frob_event.block_height
     IS E'@omit';

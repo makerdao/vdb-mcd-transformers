@@ -1,12 +1,13 @@
 -- +goose Up
-CREATE TYPE api.queued_sin AS (
-    era NUMERIC,
-    tab NUMERIC,
+CREATE TYPE api.queued_sin AS
+(
+    era     NUMERIC,
+    tab     NUMERIC,
     -- events
     flogged BOOLEAN,
     created TIMESTAMP,
     updated TIMESTAMP
-    );
+);
 
 CREATE FUNCTION api.get_queued_sin(era NUMERIC)
     RETURNS api.queued_sin AS

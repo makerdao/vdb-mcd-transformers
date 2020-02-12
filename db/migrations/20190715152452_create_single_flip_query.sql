@@ -1,22 +1,23 @@
 -- +goose Up
 -- SQL in this section is executed when the migration is applied.
 
-CREATE TYPE api.flip_bid_snapshot AS (
+CREATE TYPE api.flip_bid_snapshot AS
+(
     block_height BIGINT,
-    bid_id NUMERIC,
-    ilk_id INTEGER,
-    urn_id INTEGER,
-    guy TEXT,
-    tic BIGINT,
-    "end" BIGINT,
-    lot NUMERIC,
-    bid NUMERIC,
-    gal TEXT,
-    dealt BOOLEAN,
-    tab NUMERIC,
-    created TIMESTAMP,
-    updated TIMESTAMP
-    );
+    bid_id       NUMERIC,
+    ilk_id       INTEGER,
+    urn_id       INTEGER,
+    guy          TEXT,
+    tic          BIGINT,
+    "end"        BIGINT,
+    lot          NUMERIC,
+    bid          NUMERIC,
+    gal          TEXT,
+    dealt        BOOLEAN,
+    tab          NUMERIC,
+    created      TIMESTAMP,
+    updated      TIMESTAMP
+);
 
 COMMENT ON COLUMN api.flip_bid_snapshot.block_height
     IS E'@omit';

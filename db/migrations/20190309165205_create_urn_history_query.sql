@@ -18,13 +18,13 @@ BEGIN
              relevant_blocks AS (
                  SELECT block_number
                  FROM maker.vat_urn_ink
-                    LEFT JOIN public.headers ON vat_urn_ink.header_id = headers.id
+                          LEFT JOIN public.headers ON vat_urn_ink.header_id = headers.id
                  WHERE vat_urn_ink.urn_id = (SELECT * FROM urn_id)
                    AND block_number <= all_urn_states.block_height
                  UNION
                  SELECT block_number
                  FROM maker.vat_urn_art
-                    LEFT JOIN public.headers ON vat_urn_art.header_id = headers.id
+                          LEFT JOIN public.headers ON vat_urn_art.header_id = headers.id
                  WHERE vat_urn_art.urn_id = (SELECT * FROM urn_id)
                    AND block_number <= all_urn_states.block_height)
         SELECT r.*

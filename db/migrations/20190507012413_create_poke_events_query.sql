@@ -1,14 +1,15 @@
 -- +goose Up
 -- SQL in this section is executed when the migration is applied.
-CREATE TYPE api.poke_event AS (
-    ilk_id INTEGER,
+CREATE TYPE api.poke_event AS
+(
+    ilk_id       INTEGER,
     -- ilk object
-    val NUMERIC,
-    spot NUMERIC,
+    val          NUMERIC,
+    spot         NUMERIC,
     block_height BIGINT,
-    log_id BIGINT
+    log_id       BIGINT
     -- tx
-    );
+);
 
 COMMENT ON COLUMN api.poke_event.ilk_id
     IS E'@omit';
@@ -38,7 +39,9 @@ FROM maker.spot_poke
          LEFT JOIN public.headers ON spot_poke.header_id = headers.id
 WHERE block_timestamp BETWEEN beginTime AND endTime
 ORDER BY block_height DESC
-LIMIT all_poke_events.max_results OFFSET all_poke_events.result_offset
+LIMIT all_poke_events.max_results
+OFFSET
+all_poke_events.result_offset
 $body$
     LANGUAGE sql
     STABLE;

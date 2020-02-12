@@ -5,7 +5,7 @@ CREATE TABLE maker.vat_fold
     header_id INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     log_id    BIGINT  NOT NULL REFERENCES public.event_logs (id) ON DELETE CASCADE,
     ilk_id    INTEGER NOT NULL REFERENCES maker.ilks (id) ON DELETE CASCADE,
-    u         TEXT NOT NULL,
+    u         TEXT    NOT NULL,
     rate      NUMERIC,
     UNIQUE (header_id, log_id)
 );

@@ -41,7 +41,9 @@ AS
 $$
 BEGIN
     WITH new_block_number AS (
-        SELECT block_number FROM public.headers WHERE id = NEW.header_id
+        SELECT block_number
+        FROM public.headers
+        WHERE id = NEW.header_id
     )
     INSERT
     INTO api.managed_cdp (cdpi, usr)
@@ -52,7 +54,7 @@ BEGIN
     WHERE (SELECT block_number FROM new_block_number) >= (
         SELECT MAX(block_number)
         FROM maker.cdp_manager_owns
-            LEFT JOIN public.headers ON cdp_manager_owns.header_id = headers.id
+                 LEFT JOIN public.headers ON cdp_manager_owns.header_id = headers.id
         WHERE cdp_manager_owns.cdpi = NEW.cdpi);
     RETURN NEW;
 END

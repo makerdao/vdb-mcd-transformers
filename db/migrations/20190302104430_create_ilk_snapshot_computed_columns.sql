@@ -3,7 +3,7 @@
 
 -- Extend ilk_snapshot with frob_events
 CREATE FUNCTION api.ilk_snapshot_frobs(state api.ilk_snapshot, max_results INTEGER DEFAULT NULL,
-                                            result_offset INTEGER DEFAULT 0)
+                                       result_offset INTEGER DEFAULT 0)
     RETURNS SETOF api.frob_event AS
 $$
 SELECT *
@@ -19,7 +19,7 @@ $$
 
 -- Extend ilk_snapshot with file events
 CREATE FUNCTION api.ilk_snapshot_ilk_file_events(state api.ilk_snapshot, max_results INTEGER DEFAULT NULL,
-                                                      result_offset INTEGER DEFAULT 0)
+                                                 result_offset INTEGER DEFAULT 0)
     RETURNS SETOF api.ilk_file_event AS
 $$
 SELECT *
@@ -34,7 +34,7 @@ $$
 
 -- Extend ilk_snapshot with bite events
 CREATE FUNCTION api.ilk_snapshot_bites(state api.ilk_snapshot, max_results INTEGER DEFAULT NULL,
-                                            result_offset INTEGER DEFAULT 0)
+                                       result_offset INTEGER DEFAULT 0)
     RETURNS SETOF api.bite_event AS
 $$
 SELECT *

@@ -9,7 +9,9 @@ BEGIN
             SELECT DISTINCT bid_id
             FROM maker.flap
             ORDER BY bid_id DESC
-            LIMIT all_flaps.max_results OFFSET all_flaps.result_offset
+            LIMIT all_flaps.max_results
+            OFFSET
+            all_flaps.result_offset
         )
         SELECT f.*
         FROM bid_ids,

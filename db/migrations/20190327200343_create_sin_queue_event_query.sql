@@ -5,13 +5,14 @@ CREATE TYPE api.sin_act AS ENUM (
     'fess'
     );
 
-CREATE TYPE api.sin_queue_event AS (
-    era NUMERIC,
-    act api.sin_act,
+CREATE TYPE api.sin_queue_event AS
+(
+    era          NUMERIC,
+    act          api.sin_act,
     block_height BIGINT,
-    log_id BIGINT
+    log_id       BIGINT
     -- tx
-    );
+);
 
 COMMENT ON COLUMN api.sin_queue_event.block_height
     IS E'@omit';

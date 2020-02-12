@@ -1,19 +1,20 @@
 -- +goose Up
 -- SQL in this section is executed when the migration is applied.
-CREATE TYPE api.bite_event AS (
+CREATE TYPE api.bite_event AS
+(
     ilk_identifier TEXT,
     -- ilk object
     urn_identifier TEXT,
     -- urn object
-    bid_id NUMERIC,
+    bid_id         NUMERIC,
     -- bid object
-    ink NUMERIC,
-    art NUMERIC,
-    tab NUMERIC,
-    block_height BIGINT,
-    log_id BIGINT
+    ink            NUMERIC,
+    art            NUMERIC,
+    tab            NUMERIC,
+    block_height   BIGINT,
+    log_id         BIGINT
     -- tx
-    );
+);
 
 COMMENT ON COLUMN api.bite_event.block_height
     IS E'@omit';

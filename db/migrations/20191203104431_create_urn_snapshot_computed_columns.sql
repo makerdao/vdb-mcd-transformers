@@ -15,7 +15,7 @@ $$
     STABLE;
 
 CREATE FUNCTION api.urn_snapshot_frobs(state api.urn_snapshot, max_results INTEGER DEFAULT NULL,
-                                               result_offset INTEGER DEFAULT 0)
+                                       result_offset INTEGER DEFAULT 0)
     RETURNS SETOF api.frob_event AS
 $$
 SELECT *
@@ -30,7 +30,7 @@ $$
 
 
 CREATE FUNCTION api.urn_snapshot_bites(state api.urn_snapshot, max_results INTEGER DEFAULT NULL,
-                                               result_offset INTEGER DEFAULT 0)
+                                       result_offset INTEGER DEFAULT 0)
     RETURNS SETOF api.bite_event AS
 $$
 SELECT *
