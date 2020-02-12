@@ -17,6 +17,7 @@
 package initializers
 
 import (
+	"github.com/ethereum/go-ethereum/common"
 	mcdStorage "github.com/makerdao/vdb-mcd-transformers/transformers/storage"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
@@ -26,6 +27,7 @@ import (
 
 func GenerateStorageTransformerInitializer(contractAddress string) transformer.StorageTransformerInitializer {
 	return storage.Transformer{
+		Address:           common.HexToAddress(contractAddress),
 		HashedAddress:     types.HexToKeccak256Hash(contractAddress),
 		StorageKeysLookup: storage.NewKeysLookup(flip.NewKeysLoader(&mcdStorage.MakerStorageRepository{}, contractAddress)),
 		Repository:        &flip.FlipStorageRepository{ContractAddress: contractAddress},

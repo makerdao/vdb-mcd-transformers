@@ -17,6 +17,7 @@
 package initializer
 
 import (
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	mcdStorage "github.com/makerdao/vdb-mcd-transformers/transformers/storage"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/cat"
@@ -27,6 +28,7 @@ import (
 
 var catAddress = constants.GetContractAddress("MCD_CAT")
 var StorageTransformerInitializer transformer.StorageTransformerInitializer = storage.Transformer{
+	Address:           common.HexToAddress(constants.GetContractAddress("MCD_CAT")),
 	HashedAddress:     types.HexToKeccak256Hash(constants.GetContractAddress("MCD_CAT")),
 	StorageKeysLookup: storage.NewKeysLookup(cat.NewKeysLoader(&mcdStorage.MakerStorageRepository{}, catAddress)),
 	Repository:        &cat.CatStorageRepository{ContractAddress: catAddress},
