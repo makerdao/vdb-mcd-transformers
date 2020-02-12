@@ -10,7 +10,9 @@ BEGIN
             SELECT DISTINCT bid_id
             FROM maker.flop
             ORDER BY bid_id DESC
-            LIMIT all_flops.max_results OFFSET all_flops.result_offset
+            LIMIT all_flops.max_results
+            OFFSET
+            all_flops.result_offset
         )
         SELECT f.*
         FROM bid_ids,

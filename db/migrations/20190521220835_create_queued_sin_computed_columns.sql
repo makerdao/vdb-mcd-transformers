@@ -7,7 +7,9 @@ CREATE FUNCTION api.queued_sin_sin_queue_events(state api.queued_sin, max_result
 $$
 SELECT *
 FROM api.all_sin_queue_events(state.era)
-LIMIT queued_sin_sin_queue_events.max_results OFFSET queued_sin_sin_queue_events.result_offset
+LIMIT queued_sin_sin_queue_events.max_results
+OFFSET
+queued_sin_sin_queue_events.result_offset
 $$
     LANGUAGE sql
     STABLE;

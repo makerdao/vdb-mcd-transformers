@@ -1,20 +1,22 @@
 -- +goose Up
 -- SQL in this section is executed when the migration is applied.
 
-CREATE TYPE api.tx AS (
-    transaction_hash TEXT,
+CREATE TYPE api.tx AS
+(
+    transaction_hash  TEXT,
     transaction_index INTEGER,
-    block_height BIGINT,
-    block_hash TEXT,
+    block_height      BIGINT,
+    block_hash        TEXT,
     -- Era object
-    tx_from TEXT,
-    tx_to TEXT
-    );
+    tx_from           TEXT,
+    tx_to             TEXT
+);
 
-CREATE TYPE api.era AS (
+CREATE TYPE api.era AS
+(
     "epoch" BIGINT,
-    iso TIMESTAMP
-    );
+    iso     TIMESTAMP
+);
 
 -- Extend tx type with era
 CREATE FUNCTION api.tx_era(tx api.tx)

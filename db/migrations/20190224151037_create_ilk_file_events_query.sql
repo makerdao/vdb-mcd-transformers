@@ -1,14 +1,15 @@
 -- +goose Up
 -- SQL in this section is executed when the migration is applied.
-CREATE TYPE api.ilk_file_event AS (
+CREATE TYPE api.ilk_file_event AS
+(
     ilk_identifier TEXT,
     -- ilk
-    what TEXT,
-    data TEXT,
-    block_height BIGINT,
-    log_id BIGINT
+    what           TEXT,
+    data           TEXT,
+    block_height   BIGINT,
+    log_id         BIGINT
     -- tx
-    );
+);
 
 COMMENT ON COLUMN api.ilk_file_event.ilk_identifier
     IS E'@omit';

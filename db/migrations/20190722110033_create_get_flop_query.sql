@@ -1,15 +1,16 @@
 -- +goose Up
-CREATE TYPE api.flop_bid_snapshot AS (
-    bid_id NUMERIC,
-    guy TEXT,
-    tic BIGINT,
-    "end" BIGINT,
-    lot NUMERIC,
-    bid NUMERIC,
-    dealt BOOLEAN,
+CREATE TYPE api.flop_bid_snapshot AS
+(
+    bid_id  NUMERIC,
+    guy     TEXT,
+    tic     BIGINT,
+    "end"   BIGINT,
+    lot     NUMERIC,
+    bid     NUMERIC,
+    dealt   BOOLEAN,
     created TIMESTAMP,
     updated TIMESTAMP
-    );
+);
 
 CREATE OR REPLACE FUNCTION api.get_flop(bid_id NUMERIC, block_height BIGINT DEFAULT api.max_block())
     RETURNS api.flop_bid_snapshot

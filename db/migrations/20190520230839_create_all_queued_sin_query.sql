@@ -9,7 +9,9 @@ BEGIN
             SELECT DISTINCT era
             FROM maker.vow_sin_mapping
             ORDER BY era DESC
-            LIMIT all_queued_sin.max_results OFFSET all_queued_sin.result_offset
+            LIMIT all_queued_sin.max_results
+            OFFSET
+            all_queued_sin.result_offset
         )
         SELECT sin.*
         FROM eras,

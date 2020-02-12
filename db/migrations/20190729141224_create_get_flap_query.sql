@@ -1,15 +1,16 @@
 -- +goose Up
-CREATE TYPE api.flap_bid_snapshot AS (
-    bid_id NUMERIC,
-    guy TEXT,
-    tic BIGINT,
-    "end" BIGINT,
-    lot NUMERIC,
-    bid NUMERIC,
-    dealt BOOLEAN,
+CREATE TYPE api.flap_bid_snapshot AS
+(
+    bid_id  NUMERIC,
+    guy     TEXT,
+    tic     BIGINT,
+    "end"   BIGINT,
+    lot     NUMERIC,
+    bid     NUMERIC,
+    dealt   BOOLEAN,
     created TIMESTAMP,
     updated TIMESTAMP
-    );
+);
 
 CREATE FUNCTION api.get_flap(bid_id NUMERIC, block_height BIGINT DEFAULT api.max_block())
     RETURNS api.flap_bid_snapshot

@@ -1,13 +1,14 @@
 -- +goose Up
-CREATE TYPE api.flop_bid_event AS (
-    bid_id NUMERIC,
-    lot NUMERIC,
-    bid_amount NUMERIC,
-    act api.bid_act,
-    block_height BIGINT,
-    log_id BIGINT,
+CREATE TYPE api.flop_bid_event AS
+(
+    bid_id           NUMERIC,
+    lot              NUMERIC,
+    bid_amount       NUMERIC,
+    act              api.bid_act,
+    block_height     BIGINT,
+    log_id           BIGINT,
     contract_address TEXT
-    );
+);
 
 COMMENT ON COLUMN api.flop_bid_event.block_height
     IS E'@omit';
@@ -116,7 +117,9 @@ UNION
 SELECT *
 FROM ticks
 ORDER BY block_height DESC
-LIMIT all_flop_bid_events.max_results OFFSET all_flop_bid_events.result_offset
+LIMIT all_flop_bid_events.max_results
+OFFSET
+all_flop_bid_events.result_offset
 $$
     LANGUAGE sql
     STABLE;

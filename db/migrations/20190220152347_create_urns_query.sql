@@ -2,18 +2,19 @@
 
 -- Spec: https://github.com/makerdao/vulcan.spec/blob/master/mcd.graphql
 
-CREATE TYPE api.urn_state AS (
+CREATE TYPE api.urn_state AS
+(
     urn_identifier TEXT,
     ilk_identifier TEXT,
-    block_height BIGINT,
+    block_height   BIGINT,
     -- ilk object
-    ink NUMERIC,
-    art NUMERIC,
+    ink            NUMERIC,
+    art            NUMERIC,
     -- frobs
     -- bites
-    created TIMESTAMP,
-    updated TIMESTAMP
-    );
+    created        TIMESTAMP,
+    updated        TIMESTAMP
+);
 
 CREATE FUNCTION api.epoch_to_datetime(epoch NUMERIC)
     RETURNS TIMESTAMP AS
