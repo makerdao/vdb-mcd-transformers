@@ -117,7 +117,7 @@ shell's `$PATH`.
 ### Tests
 - Set the ipc path to a Kovan node either by:
     - replacing the empty `ipcPath` in the `environments/testing.toml` with a path to a full node's eth_jsonrpc endpoint (e.g. local geth node ipc path or infura url)
-    - Or, setting the INFURA_URL environment variable
+    - Or, setting the CLIENT_IPCPATH environment variable
 - `make test` will run the unit tests and skip the integration tests
 - `make integrationtest` will run just the integration tests
 - `make test` and `make integrationtest` setup a clean `vulcanize_testing` db
