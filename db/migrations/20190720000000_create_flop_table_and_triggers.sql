@@ -15,7 +15,7 @@ CREATE TABLE maker.flop
 );
 
 COMMENT ON TABLE maker.flop
-    IS E'@name historicalFlapState';
+    IS E'@name historicalFlopState';
 
 CREATE INDEX flop_address_index
     ON maker.flop (address_id);
