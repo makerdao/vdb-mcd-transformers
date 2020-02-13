@@ -22,8 +22,7 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
-
-	shared_t "github.com/makerdao/vulcanizedb/libraries/shared/transformer"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 )
 
 type GenericModel struct{}
@@ -39,7 +38,7 @@ var GenericTestLogs = []types.Log{{
 	BlockNumber: uint64(startingBlockNumber),
 }}
 
-var GenericTestConfig = shared_t.EventTransformerConfig{
+var GenericTestConfig = event.TransformerConfig{
 	TransformerName:     "generic-test-transformer",
 	ContractAddresses:   []string{address},
 	ContractAbi:         RandomString(100),

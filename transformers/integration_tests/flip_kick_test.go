@@ -25,13 +25,12 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/fetcher"
-	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("FlipKick Transformer", func() {
-	flipKickConfig := transformer.EventTransformerConfig{
+	flipKickConfig := event.TransformerConfig{
 		TransformerName:   constants.FlipKickTable,
 		ContractAddresses: []string{test_data.EthFlipAddress()},
 		ContractAbi:       constants.FlipABI(),
@@ -54,7 +53,7 @@ var _ = Describe("FlipKick Transformer", func() {
 
 		f := fetcher.NewLogFetcher(blockChain)
 		logs, err := f.FetchLogs(
-			transformer.HexStringsToAddresses(flipKickConfig.ContractAddresses),
+			event.HexStringsToAddresses(flipKickConfig.ContractAddresses),
 			[]common.Hash{common.HexToHash(flipKickConfig.Topic)},
 			header)
 		Expect(err).NotTo(HaveOccurred())

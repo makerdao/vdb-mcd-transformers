@@ -24,13 +24,12 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/fetcher"
-	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("VatSuck Transformer", func() {
-	vatSuckConfig := transformer.EventTransformerConfig{
+	vatSuckConfig := event.TransformerConfig{
 		TransformerName:   constants.VatSuckTable,
 		ContractAddresses: []string{test_data.VatAddress()},
 		ContractAbi:       constants.VatABI(),
@@ -48,7 +47,7 @@ var _ = Describe("VatSuck Transformer", func() {
 
 		logFetcher := fetcher.NewLogFetcher(blockChain)
 		logs, err := logFetcher.FetchLogs(
-			transformer.HexStringsToAddresses(vatSuckConfig.ContractAddresses),
+			event.HexStringsToAddresses(vatSuckConfig.ContractAddresses),
 			[]common.Hash{common.HexToHash(vatSuckConfig.Topic)},
 			header)
 		Expect(err).NotTo(HaveOccurred())

@@ -9,13 +9,12 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/fetcher"
-	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("Vat Deny transformer", func() {
-	denyConfig := transformer.EventTransformerConfig{
+	denyConfig := event.TransformerConfig{
 		TransformerName:   constants.VatDenyTable,
 		ContractAddresses: []string{test_data.VatAddress()},
 		Topic:             constants.DenySignature(),

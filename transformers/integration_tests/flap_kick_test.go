@@ -24,7 +24,6 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/fetcher"
-	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -34,7 +33,7 @@ var _ = Describe("FlapKick Transformer", func() {
 		test_config.CleanTestDB(db)
 	})
 
-	flapKickConfig := transformer.EventTransformerConfig{
+	flapKickConfig := event.TransformerConfig{
 		TransformerName:   constants.FlapKickTable,
 		ContractAddresses: []string{test_data.FlapAddress()},
 		ContractAbi:       constants.FlapABI(),
@@ -56,7 +55,7 @@ var _ = Describe("FlapKick Transformer", func() {
 
 		logFetcher := fetcher.NewLogFetcher(blockChain)
 		logs, err := logFetcher.FetchLogs(
-			transformer.HexStringsToAddresses(flapKickConfig.ContractAddresses),
+			event.HexStringsToAddresses(flapKickConfig.ContractAddresses),
 			[]common.Hash{common.HexToHash(flapKickConfig.Topic)},
 			header)
 		Expect(err).NotTo(HaveOccurred())

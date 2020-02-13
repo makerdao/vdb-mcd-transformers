@@ -17,15 +17,14 @@
 package shared
 
 import (
-	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
-
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 )
 
 // Creates a transformer config by pulling values from configuration environment
-func GetEventTransformerConfig(transformerLabel, signature string) transformer.EventTransformerConfig {
+func GetEventTransformerConfig(transformerLabel, signature string) event.TransformerConfig {
 	contractNames := constants.GetTransformerContractNames(transformerLabel)
-	return transformer.EventTransformerConfig{
+	return event.TransformerConfig{
 		TransformerName:     transformerLabel,
 		ContractAddresses:   constants.GetContractAddresses(contractNames),
 		ContractAbi:         constants.GetContractsABI(contractNames),

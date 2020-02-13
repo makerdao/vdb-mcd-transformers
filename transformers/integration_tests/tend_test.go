@@ -24,14 +24,13 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/fetcher"
-	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("Tend EventTransformer", func() {
 	var (
-		tendConfig  transformer.EventTransformerConfig
+		tendConfig  event.TransformerConfig
 		initializer event.ConfiguredTransformer
 		logFetcher  fetcher.ILogFetcher
 		addresses   []common.Address
@@ -41,7 +40,7 @@ var _ = Describe("Tend EventTransformer", func() {
 	BeforeEach(func() {
 		test_config.CleanTestDB(db)
 
-		tendConfig = transformer.EventTransformerConfig{
+		tendConfig = event.TransformerConfig{
 			TransformerName:   constants.TendTable,
 			ContractAddresses: []string{test_data.EthFlipAddress()},
 			ContractAbi:       constants.FlipABI(),
@@ -49,7 +48,7 @@ var _ = Describe("Tend EventTransformer", func() {
 		}
 
 		logFetcher = fetcher.NewLogFetcher(blockChain)
-		addresses = transformer.HexStringsToAddresses(tendConfig.ContractAddresses)
+		addresses = event.HexStringsToAddresses(tendConfig.ContractAddresses)
 		topics = []common.Hash{common.HexToHash(tendConfig.Topic)}
 
 		initializer = event.ConfiguredTransformer{

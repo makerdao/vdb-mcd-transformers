@@ -27,7 +27,6 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/fetcher"
-	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -37,7 +36,7 @@ var _ = Describe("Jug File Ilk EventTransformer", func() {
 		test_config.CleanTestDB(db)
 	})
 
-	jugFileIlkConfig := transformer.EventTransformerConfig{
+	jugFileIlkConfig := event.TransformerConfig{
 		TransformerName:   constants.JugFileIlkTable,
 		ContractAddresses: []string{test_data.JugAddress()},
 		ContractAbi:       constants.JugABI(),
@@ -60,7 +59,7 @@ var _ = Describe("Jug File Ilk EventTransformer", func() {
 
 		f := fetcher.NewLogFetcher(blockChain)
 		logs, err := f.FetchLogs(
-			transformer.HexStringsToAddresses(jugFileIlkConfig.ContractAddresses),
+			event.HexStringsToAddresses(jugFileIlkConfig.ContractAddresses),
 			[]common.Hash{common.HexToHash(jugFileIlkConfig.Topic)},
 			header)
 		Expect(err).NotTo(HaveOccurred())
