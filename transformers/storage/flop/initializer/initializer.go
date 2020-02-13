@@ -22,11 +22,12 @@ import (
 	mcdStorage "github.com/makerdao/vdb-mcd-transformers/transformers/storage"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/flop"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
-	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
+	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
 )
 
-var StorageTransformerInitializer transformer.StorageTransformerInitializer = storage.Transformer{
-	Address: common.HexToAddress(constants.GetContractAddress("MCD_FLOP")),
+var StorageTransformerInitializer storage.TransformerInitializer = storage.Transformer{
+	Address:       common.HexToAddress(constants.GetContractAddress("MCD_FLOP")),
+	HashedAddress: types.HexToKeccak256Hash(constants.GetContractAddress("MCD_FLOP")),
 	StorageKeysLookup: storage.NewKeysLookup(flop.NewKeysLoader(
 		&mcdStorage.MakerStorageRepository{},
 		constants.GetContractAddress("MCD_FLOP"))),

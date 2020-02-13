@@ -22,11 +22,11 @@ import (
 	mcdStorage "github.com/makerdao/vdb-mcd-transformers/transformers/storage"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/vow"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
-	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
+	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
 )
 
 var vowAddress = constants.GetContractAddress("MCD_VOW")
-var StorageTransformerInitializer transformer.StorageTransformerInitializer = storage.Transformer{
+var StorageTransformerInitializer storage.TransformerInitializer = storage.Transformer{
 	Address:           common.HexToAddress(vowAddress),
 	StorageKeysLookup: storage.NewKeysLookup(vow.NewKeysLoader(&mcdStorage.MakerStorageRepository{}, vowAddress)),
 	Repository:        &vow.VowStorageRepository{ContractAddress: vowAddress},

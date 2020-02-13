@@ -21,10 +21,10 @@ import (
 	mcdStorage "github.com/makerdao/vdb-mcd-transformers/transformers/storage"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
-	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
+	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
 )
 
-func GenerateStorageTransformerInitializer(contractAddress string) transformer.StorageTransformerInitializer {
+func GenerateStorageTransformerInitializer(contractAddress string) storage.TransformerInitializer {
 	return storage.Transformer{
 		Address:           common.HexToAddress(contractAddress),
 		StorageKeysLookup: storage.NewKeysLookup(flip.NewKeysLoader(&mcdStorage.MakerStorageRepository{}, contractAddress)),

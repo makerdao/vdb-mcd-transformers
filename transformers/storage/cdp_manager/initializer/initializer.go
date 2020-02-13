@@ -22,10 +22,10 @@ import (
 	mcdStorage "github.com/makerdao/vdb-mcd-transformers/transformers/storage"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/cdp_manager"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
-	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
+	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
 )
 
-var StorageTransformerInitializer transformer.StorageTransformerInitializer = storage.Transformer{
+var StorageTransformerInitializer storage.TransformerInitializer = storage.Transformer{
 	Address:           common.HexToAddress(constants.GetContractAddress("CDP_MANAGER")),
 	StorageKeysLookup: storage.NewKeysLookup(cdp_manager.NewKeysLoader(&mcdStorage.MakerStorageRepository{})),
 	Repository:        &cdp_manager.CdpManagerStorageRepository{},
