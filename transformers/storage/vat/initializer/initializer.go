@@ -22,13 +22,11 @@ import (
 	mcdStorage "github.com/makerdao/vdb-mcd-transformers/transformers/storage"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/vat"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
-	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
 	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 )
 
 var StorageTransformerInitializer transformer.StorageTransformerInitializer = storage.Transformer{
 	Address:           common.HexToAddress(constants.GetContractAddress("MCD_VAT")),
-	HashedAddress:     types.HexToKeccak256Hash(constants.GetContractAddress("MCD_VAT")),
 	StorageKeysLookup: storage.NewKeysLookup(vat.NewKeysLoader(&mcdStorage.MakerStorageRepository{})),
 	Repository:        &vat.VatStorageRepository{},
 }.NewTransformer
