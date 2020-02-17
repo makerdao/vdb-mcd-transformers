@@ -40,10 +40,11 @@ var _ = Describe("Executing the transformer", func() {
 	var (
 		db                = test_config.NewTestDB(test_config.NewTestNode())
 		contractAddress   = test_data.CatAddress()
+		keccakOfAddress   = types.HexToKeccak256Hash(contractAddress)
 		repository        = cat.CatStorageRepository{ContractAddress: contractAddress}
 		storageKeysLookup = storage.NewKeysLookup(cat.NewKeysLoader(&mcdStorage.MakerStorageRepository{}, contractAddress))
 		transformer       = storage.Transformer{
-			HashedAddress:     types.HexToKeccak256Hash(contractAddress),
+			Address:           common.HexToAddress(contractAddress),
 			StorageKeysLookup: storageKeysLookup,
 			Repository:        &repository,
 		}
@@ -62,7 +63,7 @@ var _ = Describe("Executing the transformer", func() {
 	It("reads in a Cat Live storage diff row and persists it", func() {
 		key := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000002")
 		value := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000001")
-		catLiveDiff := test_helpers.CreateDiffRecord(db, header, transformer.HashedAddress, key, value)
+		catLiveDiff := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
 
 		err := transformer.Execute(catLiveDiff)
 		Expect(err).NotTo(HaveOccurred())
@@ -76,7 +77,7 @@ var _ = Describe("Executing the transformer", func() {
 	It("reads in a Cat Vat storage diff row and persists it", func() {
 		key := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000003")
 		value := common.HexToHash("000000000000000000000000acdd1ee0f74954ed8f0ac581b081b7b86bd6aad9")
-		catVatDiff := test_helpers.CreateDiffRecord(db, header, transformer.HashedAddress, key, value)
+		catVatDiff := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
 
 		err := transformer.Execute(catVatDiff)
 		Expect(err).NotTo(HaveOccurred())
@@ -90,7 +91,7 @@ var _ = Describe("Executing the transformer", func() {
 	It("reads in a Cat Vow storage diff row and persists it", func() {
 		key := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000004")
 		value := common.HexToHash("00000000000000000000000021444ac712ccd21ce82af24ea1aec64cf07361d2")
-		catVowDiff := test_helpers.CreateDiffRecord(db, header, transformer.HashedAddress, key, value)
+		catVowDiff := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
 
 		err := transformer.Execute(catVowDiff)
 		Expect(err).NotTo(HaveOccurred())
@@ -127,7 +128,7 @@ var _ = Describe("Executing the transformer", func() {
 
 			key := common.HexToHash("b6d2a4300cc4010859f67ce7c804312ce9cc8f1032cdeb24e96d4b5562a4d01b")
 			value := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000001")
-			wardsDiff := test_helpers.CreateDiffRecord(db, header, transformer.HashedAddress, key, value)
+			wardsDiff := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
 
 			transformErr := transformer.Execute(wardsDiff)
 			Expect(transformErr).NotTo(HaveOccurred())
@@ -156,7 +157,7 @@ var _ = Describe("Executing the transformer", func() {
 		It("reads in a Cat Ilk Flip storage diff row and persists it", func() {
 			key := common.HexToHash("ddedd75666d350fcd985cb35e3b9f2d4f288318d97268199e03d4405df947015")
 			value := common.HexToHash("000000000000000000000000b88d2655aba486a06e638707fbebd858d430ac6e")
-			catIlkFlipDiff := test_helpers.CreateDiffRecord(db, header, transformer.HashedAddress, key, value)
+			catIlkFlipDiff := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
 
 			err := transformer.Execute(catIlkFlipDiff)
 			Expect(err).NotTo(HaveOccurred())
@@ -170,7 +171,7 @@ var _ = Describe("Executing the transformer", func() {
 		It("reads in a Cat Ilk Chop storage diff row and persists it", func() {
 			key := common.HexToHash("ddedd75666d350fcd985cb35e3b9f2d4f288318d97268199e03d4405df947016")
 			value := common.HexToHash("0000000000000000000000000000000000000000033b2e3c9fd0803ce8000000")
-			catIlkChopDiff := test_helpers.CreateDiffRecord(db, header, transformer.HashedAddress, key, value)
+			catIlkChopDiff := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
 
 			err := transformer.Execute(catIlkChopDiff)
 			Expect(err).NotTo(HaveOccurred())
@@ -184,7 +185,7 @@ var _ = Describe("Executing the transformer", func() {
 		It("reads in a Cat Ilk Lump storage diff row and persists it", func() {
 			key := common.HexToHash("ddedd75666d350fcd985cb35e3b9f2d4f288318d97268199e03d4405df947017")
 			value := common.HexToHash("000000000000000000000006d79f82328ea3da61e066ebb2f88a000000000000")
-			catIlkLumpDiff := test_helpers.CreateDiffRecord(db, header, transformer.HashedAddress, key, value)
+			catIlkLumpDiff := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
 
 			err := transformer.Execute(catIlkLumpDiff)
 			Expect(err).NotTo(HaveOccurred())
