@@ -22,7 +22,6 @@ import (
 	mcdStorage "github.com/makerdao/vdb-mcd-transformers/transformers/storage"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/jug"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
-	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
 )
 
 var jugAddress = constants.GetContractAddress("MCD_JUG")

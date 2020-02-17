@@ -25,3 +25,5 @@ require (
 replace gopkg.in/urfave/cli.v1 => gopkg.in/urfave/cli.v1 v1.20.0
 
 replace github.com/ethereum/go-ethereum => github.com/vulcanize/go-ethereum v0.0.0-20190731183759-8e20673bd101
+
+replace github.com/makerdao/vulcanizedb => github.com/makerdao/vulcanizedb v0.0.12-rc.1.0.20200217180812-b78462973795

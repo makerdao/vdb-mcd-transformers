@@ -6,7 +6,6 @@ import (
 	mcdStorage "github.com/makerdao/vdb-mcd-transformers/transformers/storage"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/pot"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
-	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
 )
 
 var potAddress = constants.GetContractAddress("MCD_POT")

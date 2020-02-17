@@ -21,7 +21,6 @@ import (
 	mcdStorage "github.com/makerdao/vdb-mcd-transformers/transformers/storage"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
-	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
 )
 
 func GenerateStorageTransformerInitializer(contractAddress string) storage.TransformerInitializer {
