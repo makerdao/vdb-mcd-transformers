@@ -8,7 +8,7 @@ require (
 	github.com/howeyc/fsnotify v0.9.0 // indirect
 	github.com/jmoiron/sqlx v0.0.0-20181024163419-82935fac6c1a
 	github.com/magiconair/properties v1.8.0
-	github.com/makerdao/vulcanizedb v0.0.12-rc.1.0.20200214143851-ed7b7a5347e1
+	github.com/makerdao/vulcanizedb v0.0.12-rc.1.0.20200217221111-3a5ac65a18b1
 	github.com/mattn/go-runewidth v0.0.6
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.1 // indirect
@@ -25,5 +25,3 @@ require (
 replace gopkg.in/urfave/cli.v1 => gopkg.in/urfave/cli.v1 v1.20.0
 
 replace github.com/ethereum/go-ethereum => github.com/vulcanize/go-ethereum v0.0.0-20190731183759-8e20673bd101
-
-replace github.com/makerdao/vulcanizedb => github.com/makerdao/vulcanizedb v0.0.12-rc.1.0.20200217180812-b78462973795
