@@ -27,7 +27,6 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/fetcher"
-	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -37,7 +36,7 @@ var _ = Describe("SpotPoke Transformer", func() {
 		test_config.CleanTestDB(db)
 	})
 
-	spotPokeConfig := transformer.EventTransformerConfig{
+	spotPokeConfig := event.TransformerConfig{
 		TransformerName:   constants.SpotPokeTable,
 		ContractAddresses: []string{test_data.SpotAddress()},
 		ContractAbi:       constants.SpotABI(),
@@ -60,7 +59,7 @@ var _ = Describe("SpotPoke Transformer", func() {
 
 		f := fetcher.NewLogFetcher(blockChain)
 		logs, err := f.FetchLogs(
-			transformer.HexStringsToAddresses(spotPokeConfig.ContractAddresses),
+			event.HexStringsToAddresses(spotPokeConfig.ContractAddresses),
 			[]common.Hash{common.HexToHash(spotPokeConfig.Topic)},
 			header)
 		Expect(err).NotTo(HaveOccurred())

@@ -9,13 +9,12 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/fetcher"
-	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("Vat Rely transformer", func() {
-	relyConfig := transformer.EventTransformerConfig{
+	relyConfig := event.TransformerConfig{
 		TransformerName:   constants.VatRelyTable,
 		ContractAddresses: []string{test_data.VatAddress()},
 		Topic:             constants.RelySignature(),

@@ -24,7 +24,6 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/fetcher"
-	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -34,7 +33,7 @@ var _ = Describe("NewCdp Transformer", func() {
 		test_config.CleanTestDB(db)
 	})
 
-	newCdpConfig := transformer.EventTransformerConfig{
+	newCdpConfig := event.TransformerConfig{
 		TransformerName:   mcdConstants.NewCdpTable,
 		ContractAddresses: []string{test_data.CdpManagerAddress()},
 		ContractAbi:       mcdConstants.CdpManagerABI(),
@@ -56,7 +55,7 @@ var _ = Describe("NewCdp Transformer", func() {
 
 		logFetcher := fetcher.NewLogFetcher(blockChain)
 		logs, err := logFetcher.FetchLogs(
-			transformer.HexStringsToAddresses(newCdpConfig.ContractAddresses),
+			event.HexStringsToAddresses(newCdpConfig.ContractAddresses),
 			[]common.Hash{common.HexToHash(newCdpConfig.Topic)},
 			header)
 		Expect(err).NotTo(HaveOccurred())

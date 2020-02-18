@@ -25,7 +25,6 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/fetcher"
-	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -33,8 +32,8 @@ import (
 var _ = Describe("Dent transformer", func() {
 	var (
 		logFetcher  fetcher.ILogFetcher
-		tr          transformer.EventTransformer
-		dentConfig  transformer.EventTransformerConfig
+		tr          event.ITransformer
+		dentConfig  event.TransformerConfig
 		addresses   []common.Address
 		topics      []common.Hash
 		initializer event.ConfiguredTransformer
@@ -43,14 +42,14 @@ var _ = Describe("Dent transformer", func() {
 	BeforeEach(func() {
 		test_config.CleanTestDB(db)
 
-		dentConfig = transformer.EventTransformerConfig{
+		dentConfig = event.TransformerConfig{
 			TransformerName:   constants.DentTable,
 			ContractAddresses: append(test_data.FlipAddresses(), test_data.FlopAddress()),
 			ContractAbi:       constants.FlipABI(),
 			Topic:             constants.DentSignature(),
 		}
 
-		addresses = transformer.HexStringsToAddresses(dentConfig.ContractAddresses)
+		addresses = event.HexStringsToAddresses(dentConfig.ContractAddresses)
 		topics = []common.Hash{common.HexToHash(dentConfig.Topic)}
 		logFetcher = fetcher.NewLogFetcher(blockChain)
 

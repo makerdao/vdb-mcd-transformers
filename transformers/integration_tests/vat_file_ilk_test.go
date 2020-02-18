@@ -27,7 +27,6 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/fetcher"
-	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -41,14 +40,14 @@ var _ = Describe("VatFileIlk EventTransformer", func() {
 
 	BeforeEach(func() {
 		test_config.CleanTestDB(db)
-		vatFileIlkConfig := transformer.EventTransformerConfig{
+		vatFileIlkConfig := event.TransformerConfig{
 			TransformerName:   constants.VatFileIlkTable,
 			ContractAddresses: []string{test_data.VatAddress()},
 			ContractAbi:       constants.VatABI(),
 			Topic:             constants.VatFileIlkSignature(),
 		}
 
-		addresses = transformer.HexStringsToAddresses(vatFileIlkConfig.ContractAddresses)
+		addresses = event.HexStringsToAddresses(vatFileIlkConfig.ContractAddresses)
 		topics = []common.Hash{common.HexToHash(vatFileIlkConfig.Topic)}
 
 		initializer = event.ConfiguredTransformer{

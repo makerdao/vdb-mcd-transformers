@@ -11,18 +11,17 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/fetcher"
-	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("PotDrip Transformer", func() {
-	var potDripConfig transformer.EventTransformerConfig
+	var potDripConfig event.TransformerConfig
 
 	BeforeEach(func() {
 		test_config.CleanTestDB(db)
 
-		potDripConfig = transformer.EventTransformerConfig{
+		potDripConfig = event.TransformerConfig{
 			ContractAddresses: []string{test_data.PotAddress()},
 			ContractAbi:       constants.PotABI(),
 			Topic:             constants.PotDripSignature(),
@@ -45,7 +44,7 @@ var _ = Describe("PotDrip Transformer", func() {
 
 		logFetcher := fetcher.NewLogFetcher(blockChain)
 		logs, err := logFetcher.FetchLogs(
-			transformer.HexStringsToAddresses(potDripConfig.ContractAddresses),
+			event.HexStringsToAddresses(potDripConfig.ContractAddresses),
 			[]common.Hash{common.HexToHash(potDripConfig.Topic)},
 			header)
 		Expect(err).NotTo(HaveOccurred())

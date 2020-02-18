@@ -22,11 +22,10 @@ import (
 	mcdStorage "github.com/makerdao/vdb-mcd-transformers/transformers/storage"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/jug"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
-	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 )
 
 var jugAddress = constants.GetContractAddress("MCD_JUG")
-var StorageTransformerInitializer transformer.StorageTransformerInitializer = storage.Transformer{
+var StorageTransformerInitializer storage.TransformerInitializer = storage.Transformer{
 	Address:           common.HexToAddress(jugAddress),
 	StorageKeysLookup: storage.NewKeysLookup(jug.NewKeysLoader(&mcdStorage.MakerStorageRepository{}, jugAddress)),
 	Repository:        &jug.JugStorageRepository{ContractAddress: jugAddress},

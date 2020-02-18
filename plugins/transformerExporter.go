@@ -63,6 +63,8 @@ import (
 	spot "github.com/makerdao/vdb-mcd-transformers/transformers/storage/spot/initializer"
 	vat "github.com/makerdao/vdb-mcd-transformers/transformers/storage/vat/initializer"
 	vow "github.com/makerdao/vdb-mcd-transformers/transformers/storage/vow/initializer"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
+	storage "github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
 	interface1 "github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 )
 
@@ -70,8 +72,8 @@ type exporter string
 
 var Exporter exporter
 
-func (e exporter) Export() ([]interface1.EventTransformerInitializer, []interface1.StorageTransformerInitializer, []interface1.ContractTransformerInitializer) {
-	return []interface1.EventTransformerInitializer{
+func (e exporter) Export() ([]event.TransformerInitializer, []storage.TransformerInitializer, []interface1.ContractTransformerInitializer) {
+	return []event.TransformerInitializer{
 			bite.EventTransformerInitializer,
 			cat_file_chop_lump.EventTransformerInitializer,
 			cat_file_flip.EventTransformerInitializer,
@@ -121,7 +123,7 @@ func (e exporter) Export() ([]interface1.EventTransformerInitializer, []interfac
 			vow_flog.EventTransformerInitializer,
 			yank.EventTransformerInitializer,
 		},
-		[]interface1.StorageTransformerInitializer{
+		[]storage.TransformerInitializer{
 			bat_flip.StorageTransformerInitializer,
 			cat.StorageTransformerInitializer,
 			cdp_manager.StorageTransformerInitializer,

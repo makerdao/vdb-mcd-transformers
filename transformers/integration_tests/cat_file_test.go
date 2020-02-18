@@ -29,7 +29,6 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/fetcher"
-	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -37,7 +36,7 @@ import (
 var _ = Describe("Cat File transformer", func() {
 	var logFetcher fetcher.ILogFetcher
 
-	var catFileConfig = transformer.EventTransformerConfig{
+	var catFileConfig = event.TransformerConfig{
 		ContractAddresses: []string{test_data.CatAddress()},
 		ContractAbi:       constants.CatABI(),
 	}

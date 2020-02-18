@@ -27,13 +27,12 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/fetcher"
-	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("Bite Transformer", func() {
-	biteConfig := transformer.EventTransformerConfig{
+	biteConfig := event.TransformerConfig{
 		TransformerName:   constants.BiteTable,
 		ContractAddresses: []string{test_data.CatAddress()},
 		ContractAbi:       constants.CatABI(),

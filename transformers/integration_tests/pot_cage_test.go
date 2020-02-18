@@ -9,7 +9,6 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/fetcher"
-	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -38,7 +37,7 @@ var _ = XDescribe("PotCage EventTransformer", func() {
 			header, insertHeaderErr = persistHeader(db, blockNumber, blockChain)
 			Expect(insertHeaderErr).NotTo(HaveOccurred())
 
-			potCageConfig := transformer.EventTransformerConfig{
+			potCageConfig := event.TransformerConfig{
 				TransformerName:     constants.PotCageTable,
 				ContractAddresses:   []string{cageDeploymentPotAddress},
 				ContractAbi:         constants.PotABI(),
@@ -47,7 +46,7 @@ var _ = XDescribe("PotCage EventTransformer", func() {
 				EndingBlockNumber:   blockNumber,
 			}
 
-			addresses = transformer.HexStringsToAddresses(potCageConfig.ContractAddresses)
+			addresses = event.HexStringsToAddresses(potCageConfig.ContractAddresses)
 			topics = []common.Hash{common.HexToHash(potCageConfig.Topic)}
 
 			initializer := event.ConfiguredTransformer{
