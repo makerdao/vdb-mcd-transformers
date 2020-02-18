@@ -35,5 +35,4 @@ fi
 
 # Run getStorageValue
 echo "Running getStorageValue for block: $GET_STORAGE_VALUE_BLOCK_NUMBER"
-echo header_block_number: $HEADER_BLOCK_NUMBER
-./vulcanizedb getStorageValue --get-storage-value-block-number=$GET_STORAGE_VALUE_BLOCK_NUMBER ./vulcanizedb execute --config config.toml
+./vulcanizedb getStorageValue --get-storage-value-block-number=$GET_STORAGE_VALUE_BLOCK_NUMBER --config config.toml
