@@ -9742,7 +9742,7 @@ CREATE TABLE maker.flop (
 -- Name: TABLE flop; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.flop IS '@name historicalFlapState';
+COMMENT ON TABLE maker.flop IS '@name historicalFlopState';
 
 
 --
@@ -17086,11 +17086,11 @@ ALTER TABLE ONLY public.checked_headers
 
 
 --
--- Name: eth_nodes eth_nodes_genesis_block_network_id_eth_node_id_key; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: eth_nodes eth_nodes_genesis_block_network_id_eth_node_id_client_name_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.eth_nodes
-    ADD CONSTRAINT eth_nodes_genesis_block_network_id_eth_node_id_key UNIQUE (genesis_block, network_id, eth_node_id);
+    ADD CONSTRAINT eth_nodes_genesis_block_network_id_eth_node_id_client_name_key UNIQUE (genesis_block, network_id, eth_node_id, client_name);
 
 
 --
