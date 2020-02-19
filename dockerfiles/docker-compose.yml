@@ -22,10 +22,7 @@ version: "3.7"
 services:
   header-sync:
     image: makerdao/vdb-headersync:latest # (needs wait-for-it.sh)
-    env_file: mainnet-1.0.1.env
     environment:
-      # Remote client would need to be statediff enabled, and backfill needs to work
-      # - CLIENT_IPCPATH="https://geth0.mainnet.makerfoundation.com:8545"
       - CLIENT_IPCPATH=ws://geth-statediffing:8546
       - DATABASE_NAME=vdb
       - DATABASE_HOSTNAME=db
@@ -38,14 +35,25 @@ services:
     command: ["./wait-for-it.sh", "db:5432", "--strict", "--", "./startup_script.sh"]
     restart: unless-stopped
 
-  execute:
-    image: makerdao/vdb-execute:latest # (needs wait-for-it.sh)
-    env_file: mainnet-1.0.1.env
+  extract-diffs:
+    image: makerdao/vdb-extract-diffs:latest # (needs wait-for-it.sh)
     environment:
-      # Remote client would need to be statediff enabled, and backfill needs to work
-      # - CLIENT_IPCPATH="https://geth0.mainnet.makerfoundation.com:8545"
+      # Remote client would need to be statediff enabled
       - CLIENT_IPCPATH=ws://geth-statediffing:8546
       - STORAGEDIFFS_SOURCE=geth
+      - DATABASE_NAME=vdb
+      - DATABASE_HOSTNAME=db
+      - DATABASE_PORT=5432
+      - DATABASE_USER=vdb
+      - DATABASE_PASSWORD=vdb
+    depends_on:
+      - db
+    command: ["./wait-for-it.sh", "db:5432", "--strict", "--", "./startup_script.sh"]
+
+  execute:
+    image: makerdao/vdb-execute:latest # (needs wait-for-it.sh)
+    environment:
+      - CLIENT_IPCPATH=ws://geth-statediffing:8546
       - DATABASE_NAME=vdb
       - DATABASE_HOSTNAME=db
       - DATABASE_PORT=5432
