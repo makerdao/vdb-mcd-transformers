@@ -25,8 +25,8 @@ if [ -z "$ENVIRONMENT" ]; then
     exit 1
 fi
 
-message BUILDING DOCKER IMAGE
-docker build -t makerdao/vdb-execute:$TAG .
+message BUILDING EXECUTE DOCKER IMAGE
+docker build -f dockerfiles/execute/Dockerfile . -t makerdao/vdb-execute:$TAG
 
 message LOGGING INTO DOCKERHUB
 echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USER" --password-stdin
