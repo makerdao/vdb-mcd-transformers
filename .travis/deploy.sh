@@ -28,10 +28,16 @@ fi
 message BUILDING EXECUTE DOCKER IMAGE
 docker build -f dockerfiles/execute/Dockerfile . -t makerdao/vdb-execute:$TAG
 
+message BUILDING GET-STORAGE-VALUE DOCKER IMAGE
+docker build -f dockerfiles/get_storage_value/Dockerfile . -t makerdao/vdb-get-storage-value:$TAG
+
 message LOGGING INTO DOCKERHUB
 echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USER" --password-stdin
 
-message PUSHING DOCKER IMAGE
-docker push makerdao/vdb-execute:$TAG .
+message PUSHING EXECUTE DOCKER IMAGE
+docker push makerdao/vdb-execute:$TAG
+
+message PUSHING GET-STORAGE-VALUE DOCKER IMAGE
+docker push makerdao/vdb-get-storage-value:$TAG
 
 # message DEPLOYING SERVICE
