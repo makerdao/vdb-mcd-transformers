@@ -50,7 +50,7 @@ RUN ln -sf /dev/stdout /go/src/github.com/makerdao/vulcanizedb/vulcanizedb.log
 # keep binaries immutable
 COPY --from=builder /go/src/github.com/makerdao/vulcanizedb .
 COPY --from=builder /go/src/github.com/makerdao/vdb-mcd-transformers/$CONFIG_FILE config.toml
-COPY --from=builder /go/src/github.com/makerdao/vdb-mcd-transformers/dockerfiles/startup_script.sh .
+COPY --from=builder /go/src/github.com/makerdao/vdb-mcd-transformers/dockerfiles/execute/startup_script.sh .
 COPY --from=builder /go/src/github.com/pressly/goose/cmd/goose/goose goose
 COPY --from=builder /go/src/github.com/makerdao/vdb-mcd-transformers/db/migrations/* db/migrations/
 COPY --from=builder /go/src/github.com/makerdao/vdb-mcd-transformers/plugins/transformerExporter.so plugins/transformerExporter.so
