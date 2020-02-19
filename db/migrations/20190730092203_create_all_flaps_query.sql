@@ -22,5 +22,9 @@ $BODY$
     LANGUAGE plpgsql
     STABLE;
 -- +goose StatementEnd
+
+COMMENT ON FUNCTION api.all_flaps(max_results integer, result_offset integer)
+    IS E'Get the state of all Flap auctions as of the most recent block. maxResults and resultOffset arguments are optional and default to no max/offset.';
+
 -- +goose Down
 DROP FUNCTION api.all_flaps(INTEGER, INTEGER);

@@ -42,5 +42,8 @@ $$
     STABLE;
 -- +goose StatementEnd
 
+COMMENT ON FUNCTION api.all_urn_states(ilk_identifier TEXT, urn_identifier TEXT, block_height BIGINT, max_results INTEGER, result_offset INTEGER)
+    IS E'Get all historical states for an Urn prior to a given block. ilkIdentifier (e.g. "ETH-A") and urnIdentifier (e.g. "0xC93C178EC17B06bddBa0CC798546161aF9D25e8A") are required. blockHeight, maxResults, and resultOffset are optional. blockHeight defaults to most recent block. maxResults defaults to null (no max). resultOffset defaults to 0.';
+
 -- +goose Down
 DROP FUNCTION api.all_urn_states(TEXT, TEXT, BIGINT, INTEGER, INTEGER);

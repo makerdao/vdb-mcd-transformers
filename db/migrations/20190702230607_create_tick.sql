@@ -9,6 +9,9 @@ CREATE TABLE maker.tick
     UNIQUE (header_id, log_id)
 );
 
+COMMENT ON TABLE maker.tick
+    IS E'Note event emitted when tick is called on Flap, Flip, or Flop contracts.';
+
 CREATE INDEX tick_header_index
     ON maker.tick (header_id);
 CREATE INDEX tick_log_index

@@ -7,7 +7,7 @@ CREATE TABLE maker.ilks
 );
 
 COMMENT ON TABLE maker.ilks
-    IS E'@name raw_ilks';
+    IS E'@name raw_ilks\nCollateral type.';
 
 -- +goose Down
 DROP TABLE maker.ilks;

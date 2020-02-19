@@ -34,5 +34,8 @@ $BODY$
     STABLE;
 -- +goose StatementEnd
 
+COMMENT ON FUNCTION api.all_flips(ilk TEXT, max_results INTEGER, result_offset INTEGER)
+    IS E'Get the state of all Flip auctions for a given Ilk as of the most recent block. ilk (e.g. "ETH-A") argument is required. maxResults and resultOffset arguments are optional and default to no max/offset.';
+
 -- +goose Down
 DROP FUNCTION api.all_flips(TEXT, INTEGER, INTEGER);

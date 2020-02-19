@@ -11,6 +11,8 @@ CREATE TABLE api.urn_snapshot
     PRIMARY KEY (urn_identifier, ilk_identifier, block_height)
 );
 
+COMMENT ON TABLE api.urn_snapshot
+    IS E'Historical snapshots of the state of Urns.';
 
 CREATE FUNCTION urn_ink_before_block(urn_id INTEGER, header_id INTEGER) RETURNS NUMERIC AS
 $$

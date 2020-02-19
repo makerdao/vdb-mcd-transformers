@@ -11,6 +11,9 @@ CREATE TYPE api.ilk_file_event AS
     -- tx
 );
 
+COMMENT ON TYPE api.ilk_file_event
+    IS E'File event associated with an Ilk emitted by Cat, Jug, Spot, or Vat contract, with nested data regarding associated Ilk and Tx.';
+
 COMMENT ON COLUMN api.ilk_file_event.ilk_identifier
     IS E'@omit';
 COMMENT ON COLUMN api.ilk_file_event.block_height
@@ -61,6 +64,9 @@ $$
     LANGUAGE sql
     STRICT --necessary for postgraphile queries with required arguments
     STABLE;
+
+COMMENT ON FUNCTION api.all_ilk_file_events(ilk_identifier TEXT, max_results INTEGER, result_offset INTEGER)
+    IS E'Get all File events associated with an Ilk. ilkIdentifier (e.g. "ETH-A") is required. maxResults and resultOffset are optional, defaulting to no max/offset.';
 
 -- +goose Down
 -- SQL in this section is executed when the migration is rolled back.

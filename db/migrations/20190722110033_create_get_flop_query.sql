@@ -12,6 +12,9 @@ CREATE TYPE api.flop_bid_snapshot AS
     updated TIMESTAMP
 );
 
+COMMENT ON TYPE api.flop_bid_snapshot
+    IS E'Historical snapshots of the state of auctions on the Flop contract.';
+
 CREATE OR REPLACE FUNCTION api.get_flop(bid_id NUMERIC, block_height BIGINT DEFAULT api.max_block())
     RETURNS api.flop_bid_snapshot
 AS
@@ -66,6 +69,10 @@ $$
     LANGUAGE SQL
     STRICT --necessary for postgraphile queries with required arguments
     STABLE;
+
+COMMENT ON FUNCTION api.get_flop(bid_id NUMERIC, block_height BIGINT)
+    IS E'Get the state of a Flop auction at a given block height. bidID (e.g. "1") argument is required. blockHeight argument is optional and defaults to the most recent block.';
+
 -- +goose Down
 DROP FUNCTION api.get_flop(NUMERIC, BIGINT);
 DROP TYPE api.flop_bid_snapshot CASCADE;

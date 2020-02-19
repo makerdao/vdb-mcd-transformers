@@ -9,6 +9,9 @@ CREATE TABLE maker.jug_file_base
     UNIQUE (header_id, log_id)
 );
 
+COMMENT ON TABLE maker.jug_file_base
+    IS E'Note event emitted when file(bytes32,uint256) is called on Jug contract.';
+
 CREATE INDEX jug_file_base_header_index
     ON maker.jug_file_base (header_id);
 CREATE INDEX jug_file_base_log_index
@@ -24,6 +27,9 @@ CREATE TABLE maker.jug_file_ilk
     data      NUMERIC,
     UNIQUE (header_id, log_id)
 );
+
+COMMENT ON TABLE maker.jug_file_ilk
+    IS E'Note event emitted when file(bytes32,bytes32,uint256) is called on Jug contract.';
 
 CREATE INDEX jug_file_ilk_header_index
     ON maker.jug_file_ilk (header_id);
@@ -41,6 +47,9 @@ CREATE TABLE maker.jug_file_vow
     data      TEXT,
     UNIQUE (header_id, log_id)
 );
+
+COMMENT ON TABLE maker.jug_file_vow
+    IS E'Note event emitted when file(bytes32,address) is called on Jug contract.';
 
 CREATE INDEX jug_file_vow_header_index
     ON maker.jug_file_vow (header_id);

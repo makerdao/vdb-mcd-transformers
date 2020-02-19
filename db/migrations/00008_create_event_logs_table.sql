@@ -17,6 +17,9 @@ CREATE TABLE public.event_logs
     UNIQUE (header_id, tx_index, log_index)
 );
 
+COMMENT ON TABLE public.event_logs
+    IS E'Ethereum transaction receipt log.';
+
 CREATE INDEX event_logs_address
     ON event_logs (address);
 CREATE INDEX event_logs_transaction

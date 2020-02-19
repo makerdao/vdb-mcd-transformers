@@ -8,6 +8,9 @@ CREATE TABLE maker.jug_init
     UNIQUE (header_id, log_id)
 );
 
+COMMENT ON TABLE maker.jug_init
+    IS E'Note event emitted when init is called on Jug contract.';
+
 CREATE INDEX jug_init_log_index
     ON maker.jug_init (log_id);
 CREATE INDEX jug_init_header_index

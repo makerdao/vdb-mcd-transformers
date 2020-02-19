@@ -20,6 +20,9 @@ CREATE TYPE api.flap_bid_event AS
     contract_address TEXT
 );
 
+COMMENT ON TYPE api.flap_bid_event
+    IS E'Event log related to a Flap auction.';
+
 COMMENT ON COLUMN api.flap_bid_event.block_height
     IS E'@omit';
 COMMENT ON COLUMN api.flap_bid_event.log_id
@@ -132,6 +135,9 @@ all_flap_bid_events.result_offset
 $$
     LANGUAGE sql
     STABLE;
+
+COMMENT ON FUNCTION api.all_flap_bid_events(max_results INTEGER, result_offset INTEGER)
+    IS E'Get all event logs related to Flap auctions. maxResults and resultOffset arguments are optional and default to no max/offset.';
 
 -- +goose StatementEnd
 -- +goose Down

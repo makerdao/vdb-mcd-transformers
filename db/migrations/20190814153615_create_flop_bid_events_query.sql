@@ -10,6 +10,9 @@ CREATE TYPE api.flop_bid_event AS
     contract_address TEXT
 );
 
+COMMENT ON TYPE api.flop_bid_event
+    IS E'Event log related to a Flop auction.';
+
 COMMENT ON COLUMN api.flop_bid_event.block_height
     IS E'@omit';
 COMMENT ON COLUMN api.flop_bid_event.log_id
@@ -123,6 +126,9 @@ all_flop_bid_events.result_offset
 $$
     LANGUAGE sql
     STABLE;
+
+COMMENT ON FUNCTION api.all_flop_bid_events(max_results INTEGER, result_offset INTEGER)
+    IS E'Get all event logs related to Flop auctions. maxResults and resultOffset arguments are optional and default to no max/offset.';
 
 -- +goose Down
 DROP FUNCTION api.all_flop_bid_events(INTEGER, INTEGER);

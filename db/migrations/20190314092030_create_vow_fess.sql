@@ -8,6 +8,9 @@ CREATE TABLE maker.vow_fess
     UNIQUE (header_id, log_id)
 );
 
+COMMENT ON TABLE maker.vow_fess
+    IS E'Note event emitted when fess is called on Vow contract.';
+
 CREATE INDEX vow_fess_header_index
     ON maker.vow_fess (header_id);
 CREATE INDEX vow_fess_log_index

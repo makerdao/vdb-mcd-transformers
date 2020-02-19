@@ -9,6 +9,9 @@ CREATE TABLE maker.pot_file_dsr
     UNIQUE (header_id, log_id)
 );
 
+COMMENT ON TABLE maker.pot_file_dsr
+    IS E'Note event emitted when file(bytes32,uint256) is called on Pot contract.';
+
 CREATE INDEX pot_file_dsr_header_index
     ON maker.pot_file_dsr (header_id);
 CREATE INDEX pot_file_dsr_log_index
@@ -23,6 +26,9 @@ CREATE TABLE maker.pot_file_vow
     data      TEXT,
     UNIQUE (header_id, log_id)
 );
+
+COMMENT ON TABLE maker.pot_file_vow
+    IS E'Note event emitted when file(bytes32,address) is called on Pot contract.';
 
 CREATE INDEX pot_file_vow_header_index
     ON maker.pot_file_vow (header_id);

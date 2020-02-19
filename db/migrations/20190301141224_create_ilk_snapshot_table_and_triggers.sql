@@ -20,6 +20,9 @@ CREATE TABLE api.ilk_snapshot
     PRIMARY KEY (ilk_identifier, block_number)
 );
 
+COMMENT ON TABLE api.ilk_snapshot
+    IS E'Historical snapshots of the state of Ilks.';
+
 COMMENT ON COLUMN api.ilk_snapshot.ilk_identifier IS '@name id';
 
 

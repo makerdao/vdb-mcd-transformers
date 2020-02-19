@@ -9,6 +9,9 @@ CREATE TABLE maker.vow_file
     UNIQUE (header_id, log_id)
 );
 
+COMMENT ON TABLE maker.vow_file
+    IS E'Note event emitted when file(bytes32,uint256) is called on Vow contract.';
+
 CREATE INDEX vow_file_header_index
     ON maker.vow_file (header_id);
 CREATE INDEX vow_file_log_index

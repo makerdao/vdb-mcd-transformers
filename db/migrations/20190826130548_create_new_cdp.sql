@@ -10,6 +10,9 @@ CREATE TABLE maker.new_cdp
     UNIQUE (header_id, log_id)
 );
 
+COMMENT ON TABLE maker.new_cdp
+    IS E'NewCdp event on CdpManager contract.';
+
 COMMENT ON COLUMN maker.new_cdp.id
     IS E'@omit';
 

@@ -12,6 +12,9 @@ CREATE TABLE maker.vat_frob
     UNIQUE (header_id, log_id)
 );
 
+COMMENT ON TABLE maker.vat_frob
+    IS E'Note event emitted when frob is called on Vat contract.';
+
 CREATE INDEX vat_frob_header_index
     ON maker.vat_frob (header_id);
 CREATE INDEX vat_frob_log_index

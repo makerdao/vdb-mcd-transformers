@@ -26,6 +26,7 @@ WITH urn AS (SELECT urns.id AS urn_id, ilks.id AS ilk_id, ilks.ilk, urns.identif
          WHERE urn_id = (SELECT urn_id from urn where identifier = urn_identifier)
            AND block_number <= get_urn.block_height
          ORDER BY urn_id, block_number DESC),
+     -- TODO: remove unused
      rate AS ( -- Latest rate for ilk
          SELECT DISTINCT ON (ilk_id) ilk_id, rate, block_number
          FROM maker.vat_ilk_rate
@@ -74,6 +75,9 @@ $body$
     LANGUAGE SQL
     STABLE
     STRICT;
+
+COMMENT ON FUNCTION api.get_urn(ilk_identifier TEXT, urn_identifier TEXT, block_height BIGINT)
+    IS E'Get the state of an Urn at a given block. ilkIdentifier (e.g. "ETH-A") and urnIdentifier (e.g. "0xC93C178EC17B06bddBa0CC798546161aF9D25e8A") are required. blockHeight is optional and defaults to the most recent known block.';
 
 -- +goose Down
 DROP FUNCTION api.get_urn(TEXT, TEXT, BIGINT);

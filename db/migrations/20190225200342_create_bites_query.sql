@@ -16,6 +16,9 @@ CREATE TYPE api.bite_event AS
     -- tx
 );
 
+COMMENT ON TYPE api.bite_event
+    IS E'Bite event emitted by Cat contract, with nested data regarding associated Ilk, Urn, Bid, and Tx.';
+
 COMMENT ON COLUMN api.bite_event.block_height
     IS E'@omit';
 COMMENT ON COLUMN api.bite_event.log_id
@@ -47,6 +50,9 @@ $$
     STRICT --necessary for postgraphile queries with required arguments
     STABLE;
 
+COMMENT ON FUNCTION api.all_bites(ilk_identifier TEXT, max_results INTEGER, result_offset INTEGER)
+    IS E'Get Bite events associated with a given Ilk. ilkIdentifier (e.g. "ETH-A") is required. maxResults and resultOffset are optional, defaulting to no max/offset.';
+
 
 CREATE FUNCTION api.urn_bites(ilk_identifier TEXT, urn_identifier TEXT, max_results INTEGER DEFAULT -1,
                               result_offset INTEGER DEFAULT 0)
@@ -77,6 +83,9 @@ $$
     LANGUAGE sql
     STRICT --necessary for postgraphile queries with required arguments
     STABLE;
+
+COMMENT ON FUNCTION api.urn_bites(ilk_identifier TEXT, urn_identifier TEXT, max_results INTEGER, result_offset INTEGER)
+    IS E'Get Bite events associated with a given Urn. ilkIdentifier (e.g. "ETH-A") and urnIdentifier (e.g. "0xC93C178EC17B06bddBa0CC798546161aF9D25e8A") are required. maxResults and resultOffset are optional, defaulting to no max/offset.';
 
 -- +goose Down
 -- SQL in this section is executed when the migration is rolled back.

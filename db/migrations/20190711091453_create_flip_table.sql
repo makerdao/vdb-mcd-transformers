@@ -21,7 +21,7 @@ CREATE INDEX flip_address_index
     ON maker.flip (address_id);
 
 COMMENT ON TABLE maker.flip
-    IS E'@name historicalFlipState';
+    IS E'@name historicalFlipState\nHistorical snapshots of the state of auctions on the Flip contracts.';
 
 CREATE FUNCTION flip_bid_guy_before_block(bid_id NUMERIC, address_id INTEGER, header_id INTEGER) RETURNS TEXT AS
 $$

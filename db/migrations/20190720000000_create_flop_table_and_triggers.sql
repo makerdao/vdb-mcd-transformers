@@ -15,7 +15,7 @@ CREATE TABLE maker.flop
 );
 
 COMMENT ON TABLE maker.flop
-    IS E'@name historicalFlopState';
+    IS E'@name historicalFlopState\nHistorical snapshots of the state of auctions on the Flop contracts.';
 
 CREATE INDEX flop_address_index
     ON maker.flop (address_id);

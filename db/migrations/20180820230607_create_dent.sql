@@ -11,6 +11,9 @@ CREATE TABLE maker.dent
     UNIQUE (header_id, log_id)
 );
 
+COMMENT ON TABLE maker.dent
+    IS E'Note event emitted when dent is called on Flip or Flop contract.';
+
 CREATE INDEX dent_header_index
     ON maker.dent (header_id);
 CREATE INDEX dent_log_index

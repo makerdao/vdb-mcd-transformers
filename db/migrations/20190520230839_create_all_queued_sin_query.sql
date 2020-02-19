@@ -23,6 +23,9 @@ $$
     STABLE;
 -- +goose StatementEnd
 
+COMMENT ON FUNCTION api.all_queued_sin(max_results INTEGER, result_offset INTEGER)
+    IS E'Get the queued sin associated with all known eras. maxResults and resultOffset are optional, defaulting to no max/offset.';
+
 
 -- +goose Down
 DROP FUNCTION api.all_queued_sin(INTEGER, INTEGER);

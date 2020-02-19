@@ -14,7 +14,7 @@ CREATE TABLE maker.bite
 );
 
 COMMENT ON TABLE maker.bite
-    IS E'@name raw_bites';
+    IS E'@name raw_bites\nBite event emitted by Cat contract.';
 COMMENT ON COLUMN maker.bite.id
     IS E'@omit';
 

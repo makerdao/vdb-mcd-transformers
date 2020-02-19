@@ -15,6 +15,9 @@ CREATE TABLE public.transactions
     "value"    NUMERIC
 );
 
+COMMENT ON TABLE public.transactions
+    IS E'Ethereum transaction.';
+
 CREATE INDEX transactions_header
     ON transactions (header_id);
 

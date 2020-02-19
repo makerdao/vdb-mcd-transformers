@@ -10,7 +10,7 @@ CREATE TABLE maker.urns
 );
 
 COMMENT ON TABLE maker.urns
-    IS E'@name raw_urns';
+    IS E'@name raw_urns\nCDP.';
 
 CREATE INDEX urn_ilk_index
     ON maker.urns (ilk_id);

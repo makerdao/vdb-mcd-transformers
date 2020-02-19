@@ -9,6 +9,9 @@ CREATE TABLE maker.pot_exit
     UNIQUE (header_id, log_id)
 );
 
+COMMENT ON TABLE maker.pot_exit
+    IS E'Note event emitted when exit is called on Pot contract.';
+
 CREATE INDEX pot_exit_header_index
     ON maker.pot_exit (header_id);
 CREATE INDEX pot_exit_log_index

@@ -11,6 +11,10 @@ CREATE TABLE maker.bid_event
     urn_identifier   TEXT    DEFAULT NULL,
     block_height     BIGINT      NOT NULL
 );
+
+COMMENT ON TABLE maker.bid_event
+    IS E'Events related to auctions on the Flap, Flip, or Flop contracts.';
+
 COMMENT ON COLUMN maker.bid_event.log_id IS E'@omit';
 
 CREATE INDEX bid_event_index ON maker.bid_event (contract_address, bid_id);

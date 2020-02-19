@@ -8,6 +8,9 @@ CREATE TABLE maker.vow_flog
     UNIQUE (header_id, log_id)
 );
 
+COMMENT ON TABLE maker.vow_flog
+    IS E'Note event emitted when flog is called on Vow contract.';
+
 CREATE INDEX vow_flog_era_index
     ON maker.vow_flog (era);
 CREATE INDEX vow_flog_log_index

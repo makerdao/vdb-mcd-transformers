@@ -10,6 +10,9 @@ CREATE TABLE maker.vat_move
     UNIQUE (header_id, log_id)
 );
 
+COMMENT ON TABLE maker.vat_move
+    IS E'Note event emitted when move is called on Vat contract.';
+
 CREATE INDEX vat_move_header_index
     ON maker.vat_move (header_id);
 CREATE INDEX vat_move_log_index

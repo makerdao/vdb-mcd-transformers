@@ -16,6 +16,9 @@ CREATE TYPE api.urn_state AS
     updated        TIMESTAMP
 );
 
+COMMENT ON TYPE api.urn_state
+    IS E'State of an Urn at a given block height, with nested data regarding associated Ilk, Frob events, and Bite events.';
+
 CREATE FUNCTION api.epoch_to_datetime(epoch NUMERIC)
     RETURNS TIMESTAMP AS
 $$
@@ -61,6 +64,7 @@ WITH urns AS (SELECT urns.id AS urn_id, ilks.id AS ilk_id, ilks.ilk, urns.identi
                   LEFT JOIN public.headers ON vat_urn_art.header_id = headers.id
          WHERE block_number <= all_urns.block_height
          ORDER BY urn_id, block_number DESC),
+     -- TODO: remove unused
      rates AS ( -- Latest rate for each ilk
          SELECT DISTINCT ON (ilk_id) ilk_id, rate, block_number
          FROM maker.vat_ilk_rate
@@ -112,6 +116,9 @@ all_urns.result_offset
 $body$
     LANGUAGE SQL
     STABLE;
+
+COMMENT ON FUNCTION api.all_urns(block_height BIGINT, max_results INTEGER, result_offset INTEGER)
+    IS E'Get the state of all Urns at a given block height. All arguments are optional. blockHeight defaults to most recent block. maxResults defaults to null (no limit). resultOffset defaults to 0.';
 
 -- +goose Down
 DROP FUNCTION api.all_urns(BIGINT, INTEGER, INTEGER);

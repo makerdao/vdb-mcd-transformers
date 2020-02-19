@@ -11,6 +11,9 @@ CREATE TYPE api.poke_event AS
     -- tx
 );
 
+COMMENT ON TYPE api.poke_event
+    IS E'Poke event emitted by Spot contract, with nested data regarding associated Ilk and Tx.';
+
 COMMENT ON COLUMN api.poke_event.ilk_id
     IS E'@omit';
 COMMENT ON COLUMN api.poke_event.block_height
@@ -45,6 +48,9 @@ all_poke_events.result_offset
 $body$
     LANGUAGE sql
     STABLE;
+
+COMMENT ON FUNCTION api.all_poke_events(beginTime NUMERIC, endTime NUMERIC, max_results INTEGER, result_offset INTEGER)
+    IS E'Get all Poke events in a given range of time. All arguments are optional. beginTime (e.g. 1582164329) defaults to 0. endTime (e.g. 1582164329) defaults to the timestamp of the most recent block. maxResults defaults to null (no max). resultOffset defaults to 0.';
 
 -- +goose Down
 -- SQL in this section is executed when the migration is rolled back

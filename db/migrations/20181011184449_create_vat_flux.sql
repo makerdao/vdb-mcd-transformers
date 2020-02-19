@@ -11,6 +11,9 @@ CREATE TABLE maker.vat_flux
     UNIQUE (header_id, log_id)
 );
 
+COMMENT ON TABLE maker.vat_flux
+    IS E'Note event emitted when flux is called on Vat contract.';
+
 CREATE INDEX vat_flux_header_index
     ON maker.vat_flux (header_id);
 CREATE INDEX vat_flux_log_index
