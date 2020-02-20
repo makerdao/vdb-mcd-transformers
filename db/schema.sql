@@ -10016,6 +10016,47 @@ ALTER SEQUENCE maker.new_cdp_id_seq OWNED BY maker.new_cdp.id;
 
 
 --
+-- Name: osm_change; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.osm_change (
+    id integer NOT NULL,
+    log_id bigint NOT NULL,
+    header_id integer NOT NULL,
+    address_id integer NOT NULL,
+    msg_sender integer NOT NULL,
+    src integer NOT NULL
+);
+
+
+--
+-- Name: TABLE osm_change; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.osm_change IS 'Note event emitted when change is called on OSM/PIP contract(s)';
+
+
+--
+-- Name: osm_change_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.osm_change_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: osm_change_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.osm_change_id_seq OWNED BY maker.osm_change.id;
+
+
+--
 -- Name: pot_cage; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -13128,6 +13169,13 @@ ALTER TABLE ONLY maker.new_cdp ALTER COLUMN id SET DEFAULT nextval('maker.new_cd
 
 
 --
+-- Name: osm_change id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.osm_change ALTER COLUMN id SET DEFAULT nextval('maker.osm_change_id_seq'::regclass);
+
+
+--
 -- Name: pot_cage id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
@@ -15028,6 +15076,22 @@ ALTER TABLE ONLY maker.new_cdp
 
 ALTER TABLE ONLY maker.new_cdp
     ADD CONSTRAINT new_cdp_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: osm_change osm_change_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.osm_change
+    ADD CONSTRAINT osm_change_header_id_log_id_key UNIQUE (header_id, log_id);
+
+
+--
+-- Name: osm_change osm_change_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.osm_change
+    ADD CONSTRAINT osm_change_pkey PRIMARY KEY (id);
 
 
 --
@@ -17582,6 +17646,41 @@ CREATE INDEX log_value_log_index ON maker.log_value USING btree (log_id);
 --
 
 CREATE INDEX new_cdp_log_index ON maker.new_cdp USING btree (log_id);
+
+
+--
+-- Name: osm_change_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX osm_change_address_index ON maker.osm_change USING btree (address_id);
+
+
+--
+-- Name: osm_change_header_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX osm_change_header_index ON maker.osm_change USING btree (header_id);
+
+
+--
+-- Name: osm_change_log_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX osm_change_log_index ON maker.osm_change USING btree (log_id);
+
+
+--
+-- Name: osm_change_msg_sender_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX osm_change_msg_sender_index ON maker.osm_change USING btree (msg_sender);
+
+
+--
+-- Name: osm_change_src_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX osm_change_src_index ON maker.osm_change USING btree (src);
 
 
 --
@@ -20771,6 +20870,46 @@ ALTER TABLE ONLY maker.new_cdp
 
 ALTER TABLE ONLY maker.new_cdp
     ADD CONSTRAINT new_cdp_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: osm_change osm_change_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.osm_change
+    ADD CONSTRAINT osm_change_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: osm_change osm_change_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.osm_change
+    ADD CONSTRAINT osm_change_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: osm_change osm_change_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.osm_change
+    ADD CONSTRAINT osm_change_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: osm_change osm_change_msg_sender_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.osm_change
+    ADD CONSTRAINT osm_change_msg_sender_fkey FOREIGN KEY (msg_sender) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: osm_change osm_change_src_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.osm_change
+    ADD CONSTRAINT osm_change_src_fkey FOREIGN KEY (src) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --

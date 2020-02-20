@@ -94,6 +94,10 @@ var _ = Describe("Signature constants", func() {
 		Expect(PotCageSignature()).To(Equal("0x6924500900000000000000000000000000000000000000000000000000000000"))
 	})
 
+	It("generates osm change signature", func() {
+		Expect(OsmChangeSignature()).To(Equal("0x1e77933e00000000000000000000000000000000000000000000000000000000"))
+	})
+
 	It("generates pot drip signature", func() {
 		Expect(PotDripSignature()).To(Equal("0x9f678cca00000000000000000000000000000000000000000000000000000000"))
 	})
