@@ -235,6 +235,9 @@ ON CONFLICT (block_number, bid_id, address_id) DO UPDATE SET guy = new_diff.guy
 $$
     LANGUAGE sql;
 
+COMMENT ON FUNCTION maker.insert_new_flip_guy(new_diff maker.flip_bid_guy)
+    IS E'@omit';
+
 -- +goose StatementBegin
 CREATE OR REPLACE FUNCTION maker.update_flip_guys_until_next_diff(start_at_diff maker.flip_bid_guy, new_guy TEXT) RETURNS VOID
 AS
@@ -318,6 +321,9 @@ VALUES (new_diff.bid_id,
 ON CONFLICT (block_number, bid_id, address_id) DO UPDATE SET tic = new_diff.tic
 $$
     LANGUAGE sql;
+
+COMMENT ON FUNCTION maker.insert_new_flip_tic(new_diff maker.flip_bid_tic)
+    IS E'@omit';
 
 -- +goose StatementBegin
 CREATE OR REPLACE FUNCTION maker.update_flip_tics_until_next_diff(start_at_diff maker.flip_bid_tic, new_tic NUMERIC) RETURNS VOID
@@ -403,6 +409,9 @@ ON CONFLICT (block_number, bid_id, address_id) DO UPDATE SET "end" = new_diff."e
 $$
     LANGUAGE sql;
 
+COMMENT ON FUNCTION maker.insert_new_flip_end(new_diff maker.flip_bid_end)
+    IS E'@omit';
+
 -- +goose StatementBegin
 CREATE OR REPLACE FUNCTION maker.update_flip_ends_until_next_diff(start_at_diff maker.flip_bid_end, new_end NUMERIC) RETURNS VOID
 AS
@@ -486,6 +495,9 @@ VALUES (new_diff.bid_id,
 ON CONFLICT (block_number, bid_id, address_id) DO UPDATE SET lot = new_diff.lot
 $$
     LANGUAGE sql;
+
+COMMENT ON FUNCTION maker.insert_new_flip_lot(new_diff maker.flip_bid_lot)
+    IS E'@omit';
 
 -- +goose StatementBegin
 CREATE OR REPLACE FUNCTION maker.update_flip_lots_until_next_diff(start_at_diff maker.flip_bid_lot, new_lot NUMERIC) RETURNS VOID
@@ -571,6 +583,9 @@ ON CONFLICT (block_number, bid_id, address_id) DO UPDATE SET bid = new_diff.bid
 $$
     LANGUAGE sql;
 
+COMMENT ON FUNCTION maker.insert_new_flip_bid(new_diff maker.flip_bid_bid)
+    IS E'@omit';
+
 -- +goose StatementBegin
 CREATE OR REPLACE FUNCTION maker.update_flip_bids_until_next_diff(start_at_diff maker.flip_bid_bid, new_bid NUMERIC) RETURNS VOID
 AS
@@ -654,6 +669,9 @@ VALUES (new_diff.bid_id,
 ON CONFLICT (block_number, bid_id, address_id) DO UPDATE SET usr = new_diff.usr
 $$
     LANGUAGE sql;
+
+COMMENT ON FUNCTION maker.insert_new_flip_usr(new_diff maker.flip_bid_usr)
+    IS E'@omit';
 
 -- +goose StatementBegin
 CREATE OR REPLACE FUNCTION maker.update_flip_usrs_until_next_diff(stat_at_diff maker.flip_bid_usr, new_usr TEXT) RETURNS VOID
@@ -739,6 +757,9 @@ ON CONFLICT (block_number, bid_id, address_id) DO UPDATE SET gal = new_diff.gal
 $$
     LANGUAGE sql;
 
+COMMENT ON FUNCTION maker.insert_new_flip_gal(new_diff maker.flip_bid_gal)
+    IS E'@omit';
+
 -- +goose StatementBegin
 CREATE OR REPLACE FUNCTION maker.update_flip_gals_until_next_diff(start_at_diff maker.flip_bid_gal, new_gal TEXT) RETURNS VOID
 AS
@@ -822,6 +843,9 @@ VALUES (new_diff.bid_id,
 ON CONFLICT (block_number, bid_id, address_id) DO UPDATE SET tab = new_diff.tab
 $$
     LANGUAGE sql;
+
+COMMENT ON FUNCTION maker.insert_new_flip_tab(new_diff maker.flip_bid_tab)
+    IS E'@omit';
 
 -- +goose StatementBegin
 CREATE OR REPLACE FUNCTION maker.update_flip_tabs_until_next_diff(start_at_diff maker.flip_bid_tab, new_tab NUMERIC) RETURNS VOID

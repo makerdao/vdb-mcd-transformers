@@ -2545,6 +2545,13 @@ $$;
 
 
 --
+-- Name: FUNCTION clear_bid_event_ilk(old_diff maker.flip_ilk); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.clear_bid_event_ilk(old_diff maker.flip_ilk) IS '@omit';
+
+
+--
 -- Name: flap_kick; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -3007,6 +3014,13 @@ $$;
 
 
 --
+-- Name: FUNCTION insert_bid_event(log_id bigint, bid_id numeric, address_id integer, header_id integer, act api.bid_act, lot numeric, bid_amount numeric); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.insert_bid_event(log_id bigint, bid_id numeric, address_id integer, header_id integer, act api.bid_act, lot numeric, bid_amount numeric) IS '@omit';
+
+
+--
 -- Name: insert_bid_event_ilk(maker.flip_ilk); Type: FUNCTION; Schema: maker; Owner: -
 --
 
@@ -3017,6 +3031,13 @@ UPDATE maker.bid_event
 SET ilk_identifier = (SELECT identifier FROM maker.ilks WHERE id = new_diff.ilk_id)
 WHERE bid_event.contract_address = (SELECT address FROM public.addresses WHERE id = new_diff.address_id)
 $$;
+
+
+--
+-- Name: FUNCTION insert_bid_event_ilk(new_diff maker.flip_ilk); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.insert_bid_event_ilk(new_diff maker.flip_ilk) IS '@omit';
 
 
 --
@@ -3052,6 +3073,13 @@ SET urn_identifier = new_usr
 WHERE bid_event.bid_id = diff.bid_id
   AND bid_event.contract_address = (SELECT address FROM public.addresses WHERE id = diff.address_id)
 $$;
+
+
+--
+-- Name: FUNCTION insert_bid_event_urn(diff maker.flip_bid_usr, new_usr text); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.insert_bid_event_urn(diff maker.flip_bid_usr, new_usr text) IS '@omit';
 
 
 --
@@ -3565,6 +3593,13 @@ $$;
 
 
 --
+-- Name: FUNCTION insert_new_flap_bid(new_diff maker.flap_bid_bid); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.insert_new_flap_bid(new_diff maker.flap_bid_bid) IS '@omit';
+
+
+--
 -- Name: flap_bid_end; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -3611,6 +3646,13 @@ VALUES (new_diff.bid_id,
         flap_bid_time_created(new_diff.address_id, new_diff.bid_id))
 ON CONFLICT (block_number, bid_id, address_id) DO UPDATE SET "end" = new_diff."end"
 $$;
+
+
+--
+-- Name: FUNCTION insert_new_flap_end(new_diff maker.flap_bid_end); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.insert_new_flap_end(new_diff maker.flap_bid_end) IS '@omit';
 
 
 --
@@ -3663,6 +3705,13 @@ $$;
 
 
 --
+-- Name: FUNCTION insert_new_flap_guy(new_diff maker.flap_bid_guy); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.insert_new_flap_guy(new_diff maker.flap_bid_guy) IS '@omit';
+
+
+--
 -- Name: flap_bid_lot; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -3712,6 +3761,13 @@ $$;
 
 
 --
+-- Name: FUNCTION insert_new_flap_lot(new_diff maker.flap_bid_lot); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.insert_new_flap_lot(new_diff maker.flap_bid_lot) IS '@omit';
+
+
+--
 -- Name: flap_bid_tic; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -3758,6 +3814,13 @@ VALUES (new_diff.bid_id,
         flap_bid_time_created(new_diff.address_id, new_diff.bid_id))
 ON CONFLICT (block_number, bid_id, address_id) DO UPDATE SET tic = new_diff.tic
 $$;
+
+
+--
+-- Name: FUNCTION insert_new_flap_tic(new_diff maker.flap_bid_tic); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.insert_new_flap_tic(new_diff maker.flap_bid_tic) IS '@omit';
 
 
 --
@@ -3887,6 +3950,13 @@ $$;
 
 
 --
+-- Name: FUNCTION insert_new_flip_bid(new_diff maker.flip_bid_bid); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.insert_new_flip_bid(new_diff maker.flip_bid_bid) IS '@omit';
+
+
+--
 -- Name: flip_bid_end; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -3936,6 +4006,13 @@ VALUES (new_diff.bid_id,
         flip_bid_time_created(new_diff.address_id, new_diff.bid_id))
 ON CONFLICT (block_number, bid_id, address_id) DO UPDATE SET "end" = new_diff."end"
 $$;
+
+
+--
+-- Name: FUNCTION insert_new_flip_end(new_diff maker.flip_bid_end); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.insert_new_flip_end(new_diff maker.flip_bid_end) IS '@omit';
 
 
 --
@@ -3991,6 +4068,13 @@ $$;
 
 
 --
+-- Name: FUNCTION insert_new_flip_gal(new_diff maker.flip_bid_gal); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.insert_new_flip_gal(new_diff maker.flip_bid_gal) IS '@omit';
+
+
+--
 -- Name: flip_bid_guy; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -4040,6 +4124,13 @@ VALUES (new_diff.bid_id,
         flip_bid_time_created(new_diff.address_id, new_diff.bid_id))
 ON CONFLICT (block_number, bid_id, address_id) DO UPDATE SET guy = new_diff.guy
 $$;
+
+
+--
+-- Name: FUNCTION insert_new_flip_guy(new_diff maker.flip_bid_guy); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.insert_new_flip_guy(new_diff maker.flip_bid_guy) IS '@omit';
 
 
 --
@@ -4095,6 +4186,13 @@ $$;
 
 
 --
+-- Name: FUNCTION insert_new_flip_lot(new_diff maker.flip_bid_lot); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.insert_new_flip_lot(new_diff maker.flip_bid_lot) IS '@omit';
+
+
+--
 -- Name: flip_bid_tab; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -4144,6 +4242,13 @@ VALUES (new_diff.bid_id,
         flip_bid_time_created(new_diff.address_id, new_diff.bid_id))
 ON CONFLICT (block_number, bid_id, address_id) DO UPDATE SET tab = new_diff.tab
 $$;
+
+
+--
+-- Name: FUNCTION insert_new_flip_tab(new_diff maker.flip_bid_tab); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.insert_new_flip_tab(new_diff maker.flip_bid_tab) IS '@omit';
 
 
 --
@@ -4199,6 +4304,13 @@ $$;
 
 
 --
+-- Name: FUNCTION insert_new_flip_tic(new_diff maker.flip_bid_tic); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.insert_new_flip_tic(new_diff maker.flip_bid_tic) IS '@omit';
+
+
+--
 -- Name: insert_new_flip_usr(maker.flip_bid_usr); Type: FUNCTION; Schema: maker; Owner: -
 --
 
@@ -4227,6 +4339,13 @@ VALUES (new_diff.bid_id,
         flip_bid_time_created(new_diff.address_id, new_diff.bid_id))
 ON CONFLICT (block_number, bid_id, address_id) DO UPDATE SET usr = new_diff.usr
 $$;
+
+
+--
+-- Name: FUNCTION insert_new_flip_usr(new_diff maker.flip_bid_usr); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.insert_new_flip_usr(new_diff maker.flip_bid_usr) IS '@omit';
 
 
 --
@@ -4279,6 +4398,13 @@ $$;
 
 
 --
+-- Name: FUNCTION insert_new_flop_bid(new_diff maker.flop_bid_bid); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.insert_new_flop_bid(new_diff maker.flop_bid_bid) IS '@omit';
+
+
+--
 -- Name: flop_bid_end; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -4325,6 +4451,13 @@ VALUES (new_diff.bid_id,
         flop_bid_time_created(new_diff.address_id, new_diff.bid_id))
 ON CONFLICT (block_number, bid_id, address_id) DO UPDATE SET "end" = new_diff."end"
 $$;
+
+
+--
+-- Name: FUNCTION insert_new_flop_end(new_diff maker.flop_bid_end); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.insert_new_flop_end(new_diff maker.flop_bid_end) IS '@omit';
 
 
 --
@@ -4377,6 +4510,13 @@ $$;
 
 
 --
+-- Name: FUNCTION insert_new_flop_guy(new_diff maker.flop_bid_guy); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.insert_new_flop_guy(new_diff maker.flop_bid_guy) IS '@omit';
+
+
+--
 -- Name: flop_bid_lot; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -4426,6 +4566,13 @@ $$;
 
 
 --
+-- Name: FUNCTION insert_new_flop_lot(new_diff maker.flop_bid_lot); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.insert_new_flop_lot(new_diff maker.flop_bid_lot) IS '@omit';
+
+
+--
 -- Name: flop_bid_tic; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -4472,6 +4619,13 @@ VALUES (new_diff.bid_id,
         flop_bid_time_created(new_diff.address_id, new_diff.bid_id))
 ON CONFLICT (block_number, bid_id, address_id) DO UPDATE SET tic = new_diff.tic
 $$;
+
+
+--
+-- Name: FUNCTION insert_new_flop_tic(new_diff maker.flop_bid_tic); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.insert_new_flop_tic(new_diff maker.flop_bid_tic) IS '@omit';
 
 
 --
