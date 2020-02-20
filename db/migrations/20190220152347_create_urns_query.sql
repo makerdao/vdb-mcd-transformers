@@ -64,19 +64,6 @@ WITH urns AS (SELECT urns.id AS urn_id, ilks.id AS ilk_id, ilks.ilk, urns.identi
                   LEFT JOIN public.headers ON vat_urn_art.header_id = headers.id
          WHERE block_number <= all_urns.block_height
          ORDER BY urn_id, block_number DESC),
-     -- TODO: remove unused
-     rates AS ( -- Latest rate for each ilk
-         SELECT DISTINCT ON (ilk_id) ilk_id, rate, block_number
-         FROM maker.vat_ilk_rate
-                  LEFT JOIN public.headers ON vat_ilk_rate.header_id = headers.id
-         WHERE block_number <= all_urns.block_height
-         ORDER BY ilk_id, block_number DESC),
-     spots AS ( -- Get latest price update for ilk. Problematic from update frequency, slow query?
-         SELECT DISTINCT ON (ilk_id) ilk_id, spot, block_number
-         FROM maker.vat_ilk_spot
-                  LEFT JOIN public.headers ON vat_ilk_spot.header_id = headers.id
-         WHERE block_number <= all_urns.block_height
-         ORDER BY ilk_id, block_number DESC),
      created AS (SELECT urn_id, api.epoch_to_datetime(block_timestamp) AS datetime
                  FROM (SELECT DISTINCT ON (urn_id) urn_id, block_timestamp
                        FROM maker.vat_urn_ink
