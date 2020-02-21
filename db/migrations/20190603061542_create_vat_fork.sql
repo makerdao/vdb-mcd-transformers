@@ -12,9 +12,6 @@ CREATE TABLE maker.vat_fork
     UNIQUE (header_id, log_id)
 );
 
-COMMENT ON TABLE maker.vat_fork
-    IS E'Note event emitted when fork is called on Vat contract.';
-
 CREATE INDEX vat_fork_header_index
     ON maker.vat_fork (header_id);
 CREATE INDEX vat_fork_log_index

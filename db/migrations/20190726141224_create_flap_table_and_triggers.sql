@@ -14,9 +14,6 @@ CREATE TABLE maker.flap
     PRIMARY KEY (address_id, bid_id, block_number)
 );
 
-COMMENT ON TABLE maker.flap
-    IS E'@name historicalFlapState\nHistorical snapshots of the state of auctions on the Flap contracts.';
-
 CREATE INDEX flap_address_index
     ON maker.flap (address_id);
 

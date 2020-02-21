@@ -8,9 +8,6 @@ CREATE TABLE maker.vat_heal
     UNIQUE (header_id, log_id)
 );
 
-COMMENT ON TABLE maker.vat_heal
-    IS E'Note event emitted when heal is called on Vat contract.';
-
 CREATE INDEX vat_heal_header_index
     ON maker.vat_heal (header_id);
 CREATE INDEX vat_heal_log_index

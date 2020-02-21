@@ -10,9 +10,6 @@ CREATE TABLE maker.vat_fold
     UNIQUE (header_id, log_id)
 );
 
-COMMENT ON TABLE maker.vat_fold
-    IS E'Note event emitted when fold is called on Vat contract.';
-
 CREATE INDEX vat_fold_header_index
     ON maker.vat_fold (header_id);
 CREATE INDEX vat_fold_log_index

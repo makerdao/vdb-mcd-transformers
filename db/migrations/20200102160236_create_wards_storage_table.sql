@@ -10,9 +10,6 @@ CREATE TABLE maker.wards
     UNIQUE (diff_id, header_id, address_id, usr, wards)
 );
 
-COMMENT ON TABLE maker.wards
-    IS E'Usr values involved in contract Auth (via rely/deny calls, etc.)';
-
 CREATE INDEX wards_header_id_index
     ON maker.wards (header_id);
 CREATE INDEX wards_address_index

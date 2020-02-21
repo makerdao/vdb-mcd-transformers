@@ -8,9 +8,6 @@ CREATE TABLE maker.jug_drip
     UNIQUE (header_id, log_id)
 );
 
-COMMENT ON TABLE maker.jug_drip
-    IS E'Note event emitted when drip is called on Jug contract.';
-
 CREATE INDEX jug_drip_header_index
     ON maker.jug_drip (header_id);
 CREATE INDEX jug_drip_log_index

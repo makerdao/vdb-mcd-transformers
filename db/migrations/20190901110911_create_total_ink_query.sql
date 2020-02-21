@@ -18,9 +18,6 @@ $$
     STRICT
     STABLE;
 
-COMMENT ON FUNCTION api.total_ink(ilk_identifier TEXT, block_height BIGINT)
-    IS E'Get the aggregate total ink for a given Ilk. ilkIdentifier (e.g. "ETH-A") argument is required. blockHeight argument is optional and defaults to the most recent block.';
-
 -- +goose Down
 -- SQL in this section is executed when the migration is rolled back.
 DROP FUNCTION api.total_ink(TEXT, BIGINT);

@@ -10,9 +10,6 @@ CREATE TABLE maker.spot_file_mat
     UNIQUE (header_id, log_id)
 );
 
-COMMENT ON TABLE maker.spot_file_mat
-    IS E'Note event emitted when file(bytes32,bytes32,uint256) is called on Spot contract.';
-
 CREATE INDEX spot_file_mat_header_index
     ON maker.spot_file_mat (header_id);
 CREATE INDEX spot_file_mat_log_index
@@ -30,9 +27,6 @@ CREATE TABLE maker.spot_file_par
     UNIQUE (header_id, log_id)
 );
 
-COMMENT ON TABLE maker.spot_file_par
-    IS E'Note event emitted when file(bytes32,uint256) is called on Spot contract.';
-
 CREATE INDEX spot_file_par_header_index
     ON maker.spot_file_par (header_id);
 CREATE INDEX spot_file_par_log_index
@@ -48,9 +42,6 @@ CREATE TABLE maker.spot_file_pip
     pip       TEXT,
     UNIQUE (header_id, log_id)
 );
-
-COMMENT ON TABLE maker.spot_file_pip
-    IS E'Note event emitted when file(bytes32,bytes32,address) is called on Spot contract.';
 
 CREATE INDEX spot_file_pip_ilk_index
     ON maker.spot_file_pip (ilk_id);

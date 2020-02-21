@@ -13,8 +13,5 @@ $$
     LANGUAGE SQL
     STABLE;
 
-COMMENT ON FUNCTION api.all_ilks(block_height bigint)
-    IS E'Get the state of every Ilk as of a given block height. blockHeight argument is optional and defaults to the most recent block.';
-
 -- +goose Down
 DROP FUNCTION api.all_ilks(BIGINT);

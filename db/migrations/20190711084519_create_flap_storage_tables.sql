@@ -18,9 +18,6 @@ CREATE INDEX flap_bid_bid_bid_id_index
 CREATE INDEX flap_bid_bid_address_index
     ON maker.flap_bid_bid (address_id);
 
-COMMENT ON TABLE maker.flap_bid_bid
-    IS E'Value of a Bid\'s bid field on the Flap contract as of a block header.';
-
 CREATE TABLE maker.flap_bid_lot
 (
     id         SERIAL PRIMARY KEY,
@@ -38,9 +35,6 @@ CREATE INDEX flap_bid_lot_bid_id_index
     ON maker.flap_bid_lot (bid_id);
 CREATE INDEX flap_bid_lot_bid_address_index
     ON maker.flap_bid_lot (address_id);
-
-COMMENT ON TABLE maker.flap_bid_lot
-    IS E'Value of a Bid\'s lot field on the Flap contract as of a block header.';
 
 CREATE TABLE maker.flap_bid_guy
 (
@@ -60,9 +54,6 @@ CREATE INDEX flap_bid_guy_bid_id_index
 CREATE INDEX flap_bid_guy_bid_address_index
     ON maker.flap_bid_guy (address_id);
 
-COMMENT ON TABLE maker.flap_bid_guy
-    IS E'Value of a Bid\'s guy field on the Flap contract as of a block header.';
-
 CREATE TABLE maker.flap_bid_tic
 (
     id         SERIAL PRIMARY KEY,
@@ -80,9 +71,6 @@ CREATE INDEX flap_bid_tic_bid_id_index
     ON maker.flap_bid_tic (bid_id);
 CREATE INDEX flap_bid_tic_bid_address_index
     ON maker.flap_bid_tic (address_id);
-
-COMMENT ON TABLE maker.flap_bid_tic
-    IS E'Value of a Bid\'s tic field on the Flap contract as of a block header.';
 
 CREATE TABLE maker.flap_bid_end
 (
@@ -102,9 +90,6 @@ CREATE INDEX flap_bid_end_bid_id_index
 CREATE INDEX flap_bid_end_bid_address_index
     ON maker.flap_bid_end (address_id);
 
-COMMENT ON TABLE maker.flap_bid_end
-    IS E'Value of a Bid\'s end field on the Flap contract as of a block header.';
-
 CREATE TABLE maker.flap_vat
 (
     id         SERIAL PRIMARY KEY,
@@ -119,9 +104,6 @@ CREATE INDEX flap_vat_header_id_index
     ON maker.flap_vat (header_id);
 CREATE INDEX flap_vat_address_index
     ON maker.flap_vat (address_id);
-
-COMMENT ON TABLE maker.flap_vat
-    IS E'Value of the Flap contract\'s vat variable as of a block header.';
 
 CREATE TABLE maker.flap_gem
 (
@@ -138,9 +120,6 @@ CREATE INDEX flap_gem_header_id_index
 CREATE INDEX flap_gem_address_index
     ON maker.flap_gem (address_id);
 
-COMMENT ON TABLE maker.flap_gem
-    IS E'Value of the Flap contract\'s gem variable as of a block header.';
-
 CREATE TABLE maker.flap_beg
 (
     id         SERIAL PRIMARY KEY,
@@ -155,9 +134,6 @@ CREATE INDEX flap_beg_header_id_index
     ON maker.flap_beg (header_id);
 CREATE INDEX flap_beg_address_index
     ON maker.flap_beg (address_id);
-
-COMMENT ON TABLE maker.flap_beg
-    IS E'Value of the Flap contract\'s beg variable as of a block header.';
 
 CREATE TABLE maker.flap_ttl
 (
@@ -174,9 +150,6 @@ CREATE INDEX flap_ttl_header_id_index
 CREATE INDEX flap_ttl_address_index
     ON maker.flap_ttl (address_id);
 
-COMMENT ON TABLE maker.flap_ttl
-    IS E'Value of the Flap contract\'s ttl variable as of a block header.';
-
 CREATE TABLE maker.flap_tau
 (
     id         SERIAL PRIMARY KEY,
@@ -191,9 +164,6 @@ CREATE INDEX flap_tau_header_id_index
     ON maker.flap_tau (header_id);
 CREATE INDEX flap_tau_address_index
     ON maker.flap_tau (address_id);
-
-COMMENT ON TABLE maker.flap_tau
-    IS E'Value of the Flap contract\'s tau variable as of a block header.';
 
 CREATE TABLE maker.flap_kicks
 (
@@ -210,10 +180,6 @@ CREATE INDEX flap_kicks_header_id_index
 CREATE INDEX flap_kicks_address_index
     ON maker.flap_kicks (address_id);
 
--- prevent naming conflict with maker.flap_kick in postgraphile
-COMMENT ON TABLE maker.flap_kicks
-    IS E'@name flapKicksStorage\nValue of the Flap contract\'s kicks variable as of a block header.';
-
 CREATE TABLE maker.flap_live
 (
     id         SERIAL PRIMARY KEY,
@@ -228,9 +194,6 @@ CREATE INDEX flap_live_header_id_index
     ON maker.flap_live (header_id);
 CREATE INDEX flap_live_address_index
     ON maker.flap_live (address_id);
-
-COMMENT ON TABLE maker.flap_live
-    IS E'Value of the Flap contract\'s live variable as of a block header.';
 
 -- +goose Down
 -- SQL in this section is executed when the migration is rolled back.

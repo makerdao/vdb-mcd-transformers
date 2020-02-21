@@ -10,9 +10,6 @@ CREATE TABLE maker.vat_suck
     UNIQUE (header_id, log_id)
 );
 
-COMMENT ON TABLE maker.vat_suck
-    IS E'Note event emitted when suck is called on Vat contract.';
-
 CREATE INDEX vat_suck_header_index
     ON maker.vat_suck (header_id);
 CREATE INDEX vat_suck_log_index

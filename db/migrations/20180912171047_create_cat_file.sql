@@ -10,9 +10,6 @@ CREATE TABLE maker.cat_file_chop_lump
     UNIQUE (header_id, log_id)
 );
 
-COMMENT ON TABLE maker.cat_file_chop_lump
-    IS E'Note event emitted when file(bytes32,bytes32,uint256) is called on Cat contract.';
-
 CREATE INDEX cat_file_chop_lump_header_index
     ON maker.cat_file_chop_lump (header_id);
 CREATE INDEX cat_file_chop_lump_log_index
@@ -31,9 +28,6 @@ CREATE TABLE maker.cat_file_flip
     UNIQUE (header_id, log_id)
 );
 
-COMMENT ON TABLE maker.cat_file_flip
-    IS E'Note event emitted when file(bytes32,bytes32,address) is called on Cat contract.';
-
 CREATE INDEX cat_file_flip_header_index
     ON maker.cat_file_flip (header_id);
 CREATE INDEX cat_file_flip_log_index
@@ -50,9 +44,6 @@ CREATE TABLE maker.cat_file_vow
     data      TEXT,
     UNIQUE (header_id, log_id)
 );
-
-COMMENT ON TABLE maker.cat_file_vow
-    IS E'Note event emitted when file(bytes32,address) is called on Cat contract.';
 
 CREATE INDEX cat_file_vow_header_index
     ON maker.cat_file_vow (header_id);

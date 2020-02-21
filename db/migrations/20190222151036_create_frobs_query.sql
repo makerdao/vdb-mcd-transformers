@@ -14,14 +14,6 @@ CREATE TYPE api.frob_event AS
     -- tx
 );
 
-COMMENT ON TYPE api.frob_event
-    IS E'Note event emitted when frob is called on Vat contract, with nested data regarding associated Ilk, Urn, and Tx.';
-
-COMMENT ON COLUMN api.frob_event.block_height
-    IS E'@omit';
-COMMENT ON COLUMN api.frob_event.log_id
-    IS E'@omit';
-
 CREATE FUNCTION api.urn_frobs(ilk_identifier TEXT, urn_identifier TEXT, max_results INTEGER DEFAULT -1,
                               result_offset INTEGER DEFAULT 0)
     RETURNS SETOF api.frob_event AS
@@ -57,9 +49,6 @@ $$
     STRICT --necessary for postgraphile queries with required arguments
     STABLE;
 
-COMMENT ON FUNCTION api.urn_frobs(ilk_identifier TEXT, urn_identifier TEXT, max_results INTEGER, result_offset INTEGER)
-    IS E'Get Frob events associated with an Urn. ilkIdentifier (e.g. "ETH-A") and urnIdentifier (e.g. "0xC93C178EC17B06bddBa0CC798546161aF9D25e8A") are required. maxResults and resultOffset are optional, defaulting to no max/offset.';
-
 CREATE FUNCTION api.all_frobs(ilk_identifier TEXT, max_results INTEGER DEFAULT -1, result_offset INTEGER DEFAULT 0)
     RETURNS SETOF api.frob_event AS
 $$
@@ -90,9 +79,6 @@ $$
     LANGUAGE sql
     STRICT --necessary for postgraphile queries with required arguments
     STABLE;
-
-COMMENT ON FUNCTION api.all_frobs(ilk_identifier TEXT, max_results INTEGER, result_offset INTEGER)
-    IS E'Get Frob events associated with an Ilk. ilkIdentifier (e.g. "ETH-A") is required. maxResults and resultOffset are optional, defaulting to no max/offset.';
 
 -- +goose Down
 -- SQL in this section is executed when the migration is rolled back.

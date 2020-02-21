@@ -10,9 +10,6 @@ CREATE TABLE maker.yank
     UNIQUE (header_id, log_id)
 );
 
-COMMENT ON TABLE maker.yank
-    IS E'Note event emitted when yank is called on Flap, Flip, or Flop contracts.';
-
 CREATE INDEX yank_header_index
     ON maker.yank (header_id);
 CREATE INDEX yank_log_index

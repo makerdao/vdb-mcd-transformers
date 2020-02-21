@@ -13,9 +13,6 @@ CREATE TABLE public.headers
     UNIQUE (block_number, hash, eth_node_id)
 );
 
-COMMENT ON TABLE public.headers
-    IS E'Ethereum block header.';
-
 -- +goose StatementBegin
 CREATE FUNCTION set_header_updated() RETURNS TRIGGER AS
 $$

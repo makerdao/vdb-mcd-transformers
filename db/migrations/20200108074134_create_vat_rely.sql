@@ -9,9 +9,6 @@ CREATE TABLE maker.vat_rely
     UNIQUE (header_id, log_id)
 );
 
-COMMENT ON TABLE maker.vat_rely
-    IS E'Note event emitted when rely is called on Vat contract.';
-
 CREATE INDEX vat_rely_header_index
     ON maker.vat_rely (header_id);
 CREATE INDEX vat_rely_log_index

@@ -9,9 +9,6 @@ CREATE TABLE maker.deal
     UNIQUE (header_id, log_id)
 );
 
-COMMENT ON TABLE maker.deal
-    IS E'Note event emitted when deal is called on Flap, Flip, or Flop contracts.';
-
 CREATE INDEX deal_header_index
     ON maker.deal (header_id);
 CREATE INDEX deal_log_index

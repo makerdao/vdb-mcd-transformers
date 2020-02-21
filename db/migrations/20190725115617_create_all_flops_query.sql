@@ -24,8 +24,5 @@ $BODY$
     STABLE;
 -- +goose StatementEnd
 
-COMMENT ON FUNCTION api.all_flops(max_results INTEGER, result_offset INTEGER)
-    IS E'Get the state of all Flop auctions as of the most recent block. maxResults and resultOffset arguments are optional and default to no max/offset.';
-
 -- +goose Down
 DROP FUNCTION api.all_flops(INTEGER, INTEGER);

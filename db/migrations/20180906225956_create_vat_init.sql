@@ -8,9 +8,6 @@ CREATE TABLE maker.vat_init
     UNIQUE (header_id, log_id)
 );
 
-COMMENT ON TABLE maker.vat_init
-    IS E'Note event emitted when init is called on Vat contract.';
-
 CREATE INDEX vat_init_header_index
     ON maker.vat_init (header_id);
 CREATE INDEX vat_init_log_index

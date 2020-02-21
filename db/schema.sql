@@ -75,27 +75,6 @@ CREATE TYPE api.bite_event AS (
 
 
 --
--- Name: TYPE bite_event; Type: COMMENT; Schema: api; Owner: -
---
-
-COMMENT ON TYPE api.bite_event IS 'Bite event emitted by Cat contract, with nested data regarding associated Ilk, Urn, Bid, and Tx.';
-
-
---
--- Name: COLUMN bite_event.block_height; Type: COMMENT; Schema: api; Owner: -
---
-
-COMMENT ON COLUMN api.bite_event.block_height IS '@omit';
-
-
---
--- Name: COLUMN bite_event.log_id; Type: COMMENT; Schema: api; Owner: -
---
-
-COMMENT ON COLUMN api.bite_event.log_id IS '@omit';
-
-
---
 -- Name: era; Type: TYPE; Schema: api; Owner: -
 --
 
@@ -121,34 +100,6 @@ CREATE TYPE api.flap_bid_event AS (
 
 
 --
--- Name: TYPE flap_bid_event; Type: COMMENT; Schema: api; Owner: -
---
-
-COMMENT ON TYPE api.flap_bid_event IS 'Event log related to a Flap auction.';
-
-
---
--- Name: COLUMN flap_bid_event.block_height; Type: COMMENT; Schema: api; Owner: -
---
-
-COMMENT ON COLUMN api.flap_bid_event.block_height IS '@omit';
-
-
---
--- Name: COLUMN flap_bid_event.log_id; Type: COMMENT; Schema: api; Owner: -
---
-
-COMMENT ON COLUMN api.flap_bid_event.log_id IS '@omit';
-
-
---
--- Name: COLUMN flap_bid_event.contract_address; Type: COMMENT; Schema: api; Owner: -
---
-
-COMMENT ON COLUMN api.flap_bid_event.contract_address IS '@omit';
-
-
---
 -- Name: flap_bid_snapshot; Type: TYPE; Schema: api; Owner: -
 --
 
@@ -166,13 +117,6 @@ CREATE TYPE api.flap_bid_snapshot AS (
 
 
 --
--- Name: TYPE flap_bid_snapshot; Type: COMMENT; Schema: api; Owner: -
---
-
-COMMENT ON TYPE api.flap_bid_snapshot IS 'Historical snapshots of the state of auctions on the Flap contract.';
-
-
---
 -- Name: flip_bid_event; Type: TYPE; Schema: api; Owner: -
 --
 
@@ -185,34 +129,6 @@ CREATE TYPE api.flip_bid_event AS (
 	log_id bigint,
 	contract_address text
 );
-
-
---
--- Name: TYPE flip_bid_event; Type: COMMENT; Schema: api; Owner: -
---
-
-COMMENT ON TYPE api.flip_bid_event IS 'Event log related to a Flip auction.';
-
-
---
--- Name: COLUMN flip_bid_event.block_height; Type: COMMENT; Schema: api; Owner: -
---
-
-COMMENT ON COLUMN api.flip_bid_event.block_height IS '@omit';
-
-
---
--- Name: COLUMN flip_bid_event.log_id; Type: COMMENT; Schema: api; Owner: -
---
-
-COMMENT ON COLUMN api.flip_bid_event.log_id IS '@omit';
-
-
---
--- Name: COLUMN flip_bid_event.contract_address; Type: COMMENT; Schema: api; Owner: -
---
-
-COMMENT ON COLUMN api.flip_bid_event.contract_address IS '@omit';
 
 
 --
@@ -238,34 +154,6 @@ CREATE TYPE api.flip_bid_snapshot AS (
 
 
 --
--- Name: TYPE flip_bid_snapshot; Type: COMMENT; Schema: api; Owner: -
---
-
-COMMENT ON TYPE api.flip_bid_snapshot IS 'Historical snapshots of the state of auctions on the Flip contracts, with data about associated Urn.';
-
-
---
--- Name: COLUMN flip_bid_snapshot.block_height; Type: COMMENT; Schema: api; Owner: -
---
-
-COMMENT ON COLUMN api.flip_bid_snapshot.block_height IS '@omit';
-
-
---
--- Name: COLUMN flip_bid_snapshot.ilk_id; Type: COMMENT; Schema: api; Owner: -
---
-
-COMMENT ON COLUMN api.flip_bid_snapshot.ilk_id IS '@omit';
-
-
---
--- Name: COLUMN flip_bid_snapshot.urn_id; Type: COMMENT; Schema: api; Owner: -
---
-
-COMMENT ON COLUMN api.flip_bid_snapshot.urn_id IS '@omit';
-
-
---
 -- Name: flop_bid_event; Type: TYPE; Schema: api; Owner: -
 --
 
@@ -278,34 +166,6 @@ CREATE TYPE api.flop_bid_event AS (
 	log_id bigint,
 	contract_address text
 );
-
-
---
--- Name: TYPE flop_bid_event; Type: COMMENT; Schema: api; Owner: -
---
-
-COMMENT ON TYPE api.flop_bid_event IS 'Event log related to a Flop auction.';
-
-
---
--- Name: COLUMN flop_bid_event.block_height; Type: COMMENT; Schema: api; Owner: -
---
-
-COMMENT ON COLUMN api.flop_bid_event.block_height IS '@omit';
-
-
---
--- Name: COLUMN flop_bid_event.log_id; Type: COMMENT; Schema: api; Owner: -
---
-
-COMMENT ON COLUMN api.flop_bid_event.log_id IS '@omit';
-
-
---
--- Name: COLUMN flop_bid_event.contract_address; Type: COMMENT; Schema: api; Owner: -
---
-
-COMMENT ON COLUMN api.flop_bid_event.contract_address IS '@omit';
 
 
 --
@@ -326,13 +186,6 @@ CREATE TYPE api.flop_bid_snapshot AS (
 
 
 --
--- Name: TYPE flop_bid_snapshot; Type: COMMENT; Schema: api; Owner: -
---
-
-COMMENT ON TYPE api.flop_bid_snapshot IS 'Historical snapshots of the state of auctions on the Flop contract.';
-
-
---
 -- Name: frob_event; Type: TYPE; Schema: api; Owner: -
 --
 
@@ -345,27 +198,6 @@ CREATE TYPE api.frob_event AS (
 	block_height bigint,
 	log_id bigint
 );
-
-
---
--- Name: TYPE frob_event; Type: COMMENT; Schema: api; Owner: -
---
-
-COMMENT ON TYPE api.frob_event IS 'Note event emitted when frob is called on Vat contract, with nested data regarding associated Ilk, Urn, and Tx.';
-
-
---
--- Name: COLUMN frob_event.block_height; Type: COMMENT; Schema: api; Owner: -
---
-
-COMMENT ON COLUMN api.frob_event.block_height IS '@omit';
-
-
---
--- Name: COLUMN frob_event.log_id; Type: COMMENT; Schema: api; Owner: -
---
-
-COMMENT ON COLUMN api.frob_event.log_id IS '@omit';
 
 
 --
@@ -382,34 +214,6 @@ CREATE TYPE api.ilk_file_event AS (
 
 
 --
--- Name: TYPE ilk_file_event; Type: COMMENT; Schema: api; Owner: -
---
-
-COMMENT ON TYPE api.ilk_file_event IS 'File event associated with an Ilk emitted by Cat, Jug, Spot, or Vat contract, with nested data regarding associated Ilk and Tx.';
-
-
---
--- Name: COLUMN ilk_file_event.ilk_identifier; Type: COMMENT; Schema: api; Owner: -
---
-
-COMMENT ON COLUMN api.ilk_file_event.ilk_identifier IS '@omit';
-
-
---
--- Name: COLUMN ilk_file_event.block_height; Type: COMMENT; Schema: api; Owner: -
---
-
-COMMENT ON COLUMN api.ilk_file_event.block_height IS '@omit';
-
-
---
--- Name: COLUMN ilk_file_event.log_id; Type: COMMENT; Schema: api; Owner: -
---
-
-COMMENT ON COLUMN api.ilk_file_event.log_id IS '@omit';
-
-
---
 -- Name: poke_event; Type: TYPE; Schema: api; Owner: -
 --
 
@@ -423,34 +227,6 @@ CREATE TYPE api.poke_event AS (
 
 
 --
--- Name: TYPE poke_event; Type: COMMENT; Schema: api; Owner: -
---
-
-COMMENT ON TYPE api.poke_event IS 'Poke event emitted by Spot contract, with nested data regarding associated Ilk and Tx.';
-
-
---
--- Name: COLUMN poke_event.ilk_id; Type: COMMENT; Schema: api; Owner: -
---
-
-COMMENT ON COLUMN api.poke_event.ilk_id IS '@omit';
-
-
---
--- Name: COLUMN poke_event.block_height; Type: COMMENT; Schema: api; Owner: -
---
-
-COMMENT ON COLUMN api.poke_event.block_height IS '@omit';
-
-
---
--- Name: COLUMN poke_event.log_id; Type: COMMENT; Schema: api; Owner: -
---
-
-COMMENT ON COLUMN api.poke_event.log_id IS '@omit';
-
-
---
 -- Name: queued_sin; Type: TYPE; Schema: api; Owner: -
 --
 
@@ -461,13 +237,6 @@ CREATE TYPE api.queued_sin AS (
 	created timestamp without time zone,
 	updated timestamp without time zone
 );
-
-
---
--- Name: TYPE queued_sin; Type: COMMENT; Schema: api; Owner: -
---
-
-COMMENT ON TYPE api.queued_sin IS 'Data regarding the queued sin (tab) for an era, with nested data regarding associated events.';
 
 
 --
@@ -490,27 +259,6 @@ CREATE TYPE api.sin_queue_event AS (
 	block_height bigint,
 	log_id bigint
 );
-
-
---
--- Name: TYPE sin_queue_event; Type: COMMENT; Schema: api; Owner: -
---
-
-COMMENT ON TYPE api.sin_queue_event IS 'Note events emitted when flog or fess is called on Vow contract, with nested data regarding associated Tx.';
-
-
---
--- Name: COLUMN sin_queue_event.block_height; Type: COMMENT; Schema: api; Owner: -
---
-
-COMMENT ON COLUMN api.sin_queue_event.block_height IS '@omit';
-
-
---
--- Name: COLUMN sin_queue_event.log_id; Type: COMMENT; Schema: api; Owner: -
---
-
-COMMENT ON COLUMN api.sin_queue_event.log_id IS '@omit';
 
 
 --
@@ -543,13 +291,6 @@ CREATE TYPE api.urn_state AS (
 
 
 --
--- Name: TYPE urn_state; Type: COMMENT; Schema: api; Owner: -
---
-
-COMMENT ON TYPE api.urn_state IS 'State of an Urn at a given block height, with nested data regarding associated Ilk, Frob events, and Bite events.';
-
-
---
 -- Name: all_bites(text, integer, integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
@@ -575,13 +316,6 @@ LIMIT CASE WHEN max_results = -1 THEN NULL ELSE max_results END
 OFFSET
 all_bites.result_offset
 $$;
-
-
---
--- Name: FUNCTION all_bites(ilk_identifier text, max_results integer, result_offset integer); Type: COMMENT; Schema: api; Owner: -
---
-
-COMMENT ON FUNCTION api.all_bites(ilk_identifier text, max_results integer, result_offset integer) IS 'Get Bite events associated with a given Ilk. ilkIdentifier (e.g. "ETH-A") is required. maxResults and resultOffset are optional, defaulting to no max/offset.';
 
 
 --
@@ -694,13 +428,6 @@ $$;
 
 
 --
--- Name: FUNCTION all_flap_bid_events(max_results integer, result_offset integer); Type: COMMENT; Schema: api; Owner: -
---
-
-COMMENT ON FUNCTION api.all_flap_bid_events(max_results integer, result_offset integer) IS 'Get all event logs related to Flap auctions. maxResults and resultOffset arguments are optional and default to no max/offset.';
-
-
---
 -- Name: all_flaps(integer, integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
@@ -723,13 +450,6 @@ BEGIN
     );
 END
 $$;
-
-
---
--- Name: FUNCTION all_flaps(max_results integer, result_offset integer); Type: COMMENT; Schema: api; Owner: -
---
-
-COMMENT ON FUNCTION api.all_flaps(max_results integer, result_offset integer) IS 'Get the state of all Flap auctions as of the most recent block. maxResults and resultOffset arguments are optional and default to no max/offset.';
 
 
 --
@@ -846,13 +566,6 @@ $$;
 
 
 --
--- Name: FUNCTION all_flip_bid_events(max_results integer, result_offset integer); Type: COMMENT; Schema: api; Owner: -
---
-
-COMMENT ON FUNCTION api.all_flip_bid_events(max_results integer, result_offset integer) IS 'Get all event logs related to Flip auctions. maxResults and resultOffset arguments are optional and default to no max/offset.';
-
-
---
 -- Name: all_flips(text, integer, integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
@@ -883,13 +596,6 @@ BEGIN
     );
 END
 $$;
-
-
---
--- Name: FUNCTION all_flips(ilk text, max_results integer, result_offset integer); Type: COMMENT; Schema: api; Owner: -
---
-
-COMMENT ON FUNCTION api.all_flips(ilk text, max_results integer, result_offset integer) IS 'Get the state of all Flip auctions for a given Ilk as of the most recent block. ilk (e.g. "ETH-A") argument is required. maxResults and resultOffset arguments are optional and default to no max/offset.';
 
 
 --
@@ -1003,13 +709,6 @@ $$;
 
 
 --
--- Name: FUNCTION all_flop_bid_events(max_results integer, result_offset integer); Type: COMMENT; Schema: api; Owner: -
---
-
-COMMENT ON FUNCTION api.all_flop_bid_events(max_results integer, result_offset integer) IS 'Get all event logs related to Flop auctions. maxResults and resultOffset arguments are optional and default to no max/offset.';
-
-
---
 -- Name: all_flops(integer, integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
@@ -1032,13 +731,6 @@ BEGIN
     );
 END
 $$;
-
-
---
--- Name: FUNCTION all_flops(max_results integer, result_offset integer); Type: COMMENT; Schema: api; Owner: -
---
-
-COMMENT ON FUNCTION api.all_flops(max_results integer, result_offset integer) IS 'Get the state of all Flop auctions as of the most recent block. maxResults and resultOffset arguments are optional and default to no max/offset.';
 
 
 --
@@ -1072,13 +764,6 @@ LIMIT CASE WHEN max_results = -1 THEN NULL ELSE max_results END
 OFFSET
 all_frobs.result_offset
 $$;
-
-
---
--- Name: FUNCTION all_frobs(ilk_identifier text, max_results integer, result_offset integer); Type: COMMENT; Schema: api; Owner: -
---
-
-COMMENT ON FUNCTION api.all_frobs(ilk_identifier text, max_results integer, result_offset integer) IS 'Get Frob events associated with an Ilk. ilkIdentifier (e.g. "ETH-A") is required. maxResults and resultOffset are optional, defaulting to no max/offset.';
 
 
 --
@@ -1127,13 +812,6 @@ $$;
 
 
 --
--- Name: FUNCTION all_ilk_file_events(ilk_identifier text, max_results integer, result_offset integer); Type: COMMENT; Schema: api; Owner: -
---
-
-COMMENT ON FUNCTION api.all_ilk_file_events(ilk_identifier text, max_results integer, result_offset integer) IS 'Get all File events associated with an Ilk. ilkIdentifier (e.g. "ETH-A") is required. maxResults and resultOffset are optional, defaulting to no max/offset.';
-
-
---
 -- Name: max_block(); Type: FUNCTION; Schema: api; Owner: -
 --
 
@@ -1143,13 +821,6 @@ CREATE FUNCTION api.max_block() RETURNS bigint
 SELECT max(block_number)
 FROM public.headers
 $$;
-
-
---
--- Name: FUNCTION max_block(); Type: COMMENT; Schema: api; Owner: -
---
-
-COMMENT ON FUNCTION api.max_block() IS '@omit';
 
 
 SET default_tablespace = '';
@@ -1181,20 +852,6 @@ CREATE TABLE api.ilk_snapshot (
 
 
 --
--- Name: TABLE ilk_snapshot; Type: COMMENT; Schema: api; Owner: -
---
-
-COMMENT ON TABLE api.ilk_snapshot IS 'Historical snapshots of the state of Ilks.';
-
-
---
--- Name: COLUMN ilk_snapshot.ilk_identifier; Type: COMMENT; Schema: api; Owner: -
---
-
-COMMENT ON COLUMN api.ilk_snapshot.ilk_identifier IS '@name id';
-
-
---
 -- Name: all_ilks(bigint); Type: FUNCTION; Schema: api; Owner: -
 --
 
@@ -1206,13 +863,6 @@ FROM api.ilk_snapshot
 WHERE block_number <= block_height
 ORDER BY ilk_identifier, block_number DESC
 $$;
-
-
---
--- Name: FUNCTION all_ilks(block_height bigint); Type: COMMENT; Schema: api; Owner: -
---
-
-COMMENT ON FUNCTION api.all_ilks(block_height bigint) IS 'Get the state of every Ilk as of a given block height. blockHeight argument is optional and defaults to the most recent block.';
 
 
 --
@@ -1253,13 +903,6 @@ $$;
 
 
 --
--- Name: FUNCTION all_poke_events(begintime numeric, endtime numeric, max_results integer, result_offset integer); Type: COMMENT; Schema: api; Owner: -
---
-
-COMMENT ON FUNCTION api.all_poke_events(begintime numeric, endtime numeric, max_results integer, result_offset integer) IS 'Get all Poke events in a given range of time. All arguments are optional. beginTime (e.g. 1582164329) defaults to 0. endTime (e.g. 1582164329) defaults to the timestamp of the most recent block. maxResults defaults to null (no max). resultOffset defaults to 0.';
-
-
---
 -- Name: all_queued_sin(integer, integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
@@ -1285,13 +928,6 @@ $$;
 
 
 --
--- Name: FUNCTION all_queued_sin(max_results integer, result_offset integer); Type: COMMENT; Schema: api; Owner: -
---
-
-COMMENT ON FUNCTION api.all_queued_sin(max_results integer, result_offset integer) IS 'Get the queued sin associated with all known eras. maxResults and resultOffset are optional, defaulting to no max/offset.';
-
-
---
 -- Name: all_sin_queue_events(numeric, integer, integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
@@ -1312,13 +948,6 @@ LIMIT CASE WHEN max_results = -1 THEN NULL ELSE max_results END
 OFFSET
 all_sin_queue_events.result_offset
 $$;
-
-
---
--- Name: FUNCTION all_sin_queue_events(era numeric, max_results integer, result_offset integer); Type: COMMENT; Schema: api; Owner: -
---
-
-COMMENT ON FUNCTION api.all_sin_queue_events(era numeric, max_results integer, result_offset integer) IS 'Get events related to the debt queue in a given era (block timestamp). era argument (e.g. 1582164329) is required. maxResults and resultOffset are optional, defaulting to no max/offset.';
 
 
 --
@@ -1360,13 +989,6 @@ BEGIN
     );
 END;
 $$;
-
-
---
--- Name: FUNCTION all_urn_states(ilk_identifier text, urn_identifier text, block_height bigint, max_results integer, result_offset integer); Type: COMMENT; Schema: api; Owner: -
---
-
-COMMENT ON FUNCTION api.all_urn_states(ilk_identifier text, urn_identifier text, block_height bigint, max_results integer, result_offset integer) IS 'Get all historical states for an Urn prior to a given block. ilkIdentifier (e.g. "ETH-A") and urnIdentifier (e.g. "0xC93C178EC17B06bddBa0CC798546161aF9D25e8A") are required. blockHeight, maxResults, and resultOffset are optional. blockHeight defaults to most recent block. maxResults defaults to null (no max). resultOffset defaults to 0.';
 
 
 --
@@ -1431,13 +1053,6 @@ $$;
 
 
 --
--- Name: FUNCTION all_urns(block_height bigint, max_results integer, result_offset integer); Type: COMMENT; Schema: api; Owner: -
---
-
-COMMENT ON FUNCTION api.all_urns(block_height bigint, max_results integer, result_offset integer) IS 'Get the state of all Urns at a given block height. All arguments are optional. blockHeight defaults to most recent block. maxResults defaults to null (no limit). resultOffset defaults to 0.';
-
-
---
 -- Name: bite_event_bid(api.bite_event); Type: FUNCTION; Schema: api; Owner: -
 --
 
@@ -1498,13 +1113,6 @@ CREATE FUNCTION api.epoch_to_datetime(epoch numeric) RETURNS timestamp without t
     AS $$
 SELECT TIMESTAMP 'epoch' + epoch * INTERVAL '1 second' AS datetime
 $$;
-
-
---
--- Name: FUNCTION epoch_to_datetime(epoch numeric); Type: COMMENT; Schema: api; Owner: -
---
-
-COMMENT ON FUNCTION api.epoch_to_datetime(epoch numeric) IS '@omit';
 
 
 --
@@ -1776,13 +1384,6 @@ $$;
 
 
 --
--- Name: FUNCTION get_flap(bid_id numeric, block_height bigint); Type: COMMENT; Schema: api; Owner: -
---
-
-COMMENT ON FUNCTION api.get_flap(bid_id numeric, block_height bigint) IS 'Get the state of a Flap auction at a given block height. bidID (e.g. "1") argument is required. blockHeight argument is optional and defaults to the most recent block.';
-
-
---
 -- Name: get_flip(numeric, text, bigint); Type: FUNCTION; Schema: api; Owner: -
 --
 
@@ -1852,13 +1453,6 @@ $$;
 
 
 --
--- Name: FUNCTION get_flip(bid_id numeric, ilk text, block_height bigint); Type: COMMENT; Schema: api; Owner: -
---
-
-COMMENT ON FUNCTION api.get_flip(bid_id numeric, ilk text, block_height bigint) IS 'Get the state of a Flip auction at a given block height. bidId (e.g. "1") and ilk (e.g. "ETH-A") arguments are required. blockHeight argument is optional and defaults to most recent block.';
-
-
---
 -- Name: get_flop(numeric, bigint); Type: FUNCTION; Schema: api; Owner: -
 --
 
@@ -1915,13 +1509,6 @@ $$;
 
 
 --
--- Name: FUNCTION get_flop(bid_id numeric, block_height bigint); Type: COMMENT; Schema: api; Owner: -
---
-
-COMMENT ON FUNCTION api.get_flop(bid_id numeric, block_height bigint) IS 'Get the state of a Flop auction at a given block height. bidID (e.g. "1") argument is required. blockHeight argument is optional and defaults to the most recent block.';
-
-
---
 -- Name: get_queued_sin(numeric); Type: FUNCTION; Schema: api; Owner: -
 --
 
@@ -1953,13 +1540,6 @@ FROM maker.vow_sin_mapping
 WHERE vow_sin_mapping.era = get_queued_sin.era
 ORDER BY headers.block_number DESC
 $$;
-
-
---
--- Name: FUNCTION get_queued_sin(era numeric); Type: COMMENT; Schema: api; Owner: -
---
-
-COMMENT ON FUNCTION api.get_queued_sin(era numeric) IS 'Get the queued sin associated with an era (block timestamp). era argument (e.g. 1582164329) is required.';
 
 
 --
@@ -2019,13 +1599,6 @@ FROM ink
          LEFT JOIN updated ON updated.urn_id = art.urn_id
 WHERE ink.urn_id IS NOT NULL
 $_$;
-
-
---
--- Name: FUNCTION get_urn(ilk_identifier text, urn_identifier text, block_height bigint); Type: COMMENT; Schema: api; Owner: -
---
-
-COMMENT ON FUNCTION api.get_urn(ilk_identifier text, urn_identifier text, block_height bigint) IS 'Get the state of an Urn at a given block. ilkIdentifier (e.g. "ETH-A") and urnIdentifier (e.g. "0xC93C178EC17B06bddBa0CC798546161aF9D25e8A") are required. blockHeight is optional and defaults to the most recent known block.';
 
 
 --
@@ -2115,27 +1688,6 @@ CREATE TABLE api.managed_cdp (
     ilk_identifier text,
     created timestamp without time zone
 );
-
-
---
--- Name: TABLE managed_cdp; Type: COMMENT; Schema: api; Owner: -
---
-
-COMMENT ON TABLE api.managed_cdp IS '@omit create,update,delete\nHistorical snapshots of CDPs managed by the CdpManager contract.';
-
-
---
--- Name: COLUMN managed_cdp.id; Type: COMMENT; Schema: api; Owner: -
---
-
-COMMENT ON COLUMN api.managed_cdp.id IS '@omit';
-
-
---
--- Name: COLUMN managed_cdp.cdpi; Type: COMMENT; Schema: api; Owner: -
---
-
-COMMENT ON COLUMN api.managed_cdp.cdpi IS '@name id';
 
 
 --
@@ -2241,13 +1793,6 @@ $$;
 
 
 --
--- Name: FUNCTION total_ink(ilk_identifier text, block_height bigint); Type: COMMENT; Schema: api; Owner: -
---
-
-COMMENT ON FUNCTION api.total_ink(ilk_identifier text, block_height bigint) IS 'Get the aggregate total ink for a given Ilk. ilkIdentifier (e.g. "ETH-A") argument is required. blockHeight argument is optional and defaults to the most recent block.';
-
-
---
 -- Name: tx_era(api.tx); Type: FUNCTION; Schema: api; Owner: -
 --
 
@@ -2278,20 +1823,6 @@ CREATE TABLE maker.bid_event (
 
 
 --
--- Name: TABLE bid_event; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.bid_event IS 'Events related to auctions on the Flap, Flip, or Flop contracts.';
-
-
---
--- Name: COLUMN bid_event.log_id; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON COLUMN maker.bid_event.log_id IS '@omit';
-
-
---
 -- Name: urn_bid_events(text, text); Type: FUNCTION; Schema: api; Owner: -
 --
 
@@ -2303,13 +1834,6 @@ FROM maker.bid_event
 WHERE bid_event.ilk_identifier = urn_bid_events.ilk_identifier
   AND bid_event.urn_identifier = urn_bid_events.urn_identifier
 $$;
-
-
---
--- Name: FUNCTION urn_bid_events(urn_identifier text, ilk_identifier text); Type: COMMENT; Schema: api; Owner: -
---
-
-COMMENT ON FUNCTION api.urn_bid_events(urn_identifier text, ilk_identifier text) IS 'Get bid events related to an auction associated with a given Urn. urnIdentifier (e.g. "0xC93C178EC17B06bddBa0CC798546161aF9D25e8A") and ilkIdentifier (e.g. "ETH-A") are required.';
 
 
 --
@@ -2341,13 +1865,6 @@ LIMIT CASE WHEN max_results = -1 THEN NULL ELSE max_results END
 OFFSET
 urn_bites.result_offset
 $$;
-
-
---
--- Name: FUNCTION urn_bites(ilk_identifier text, urn_identifier text, max_results integer, result_offset integer); Type: COMMENT; Schema: api; Owner: -
---
-
-COMMENT ON FUNCTION api.urn_bites(ilk_identifier text, urn_identifier text, max_results integer, result_offset integer) IS 'Get Bite events associated with a given Urn. ilkIdentifier (e.g. "ETH-A") and urnIdentifier (e.g. "0xC93C178EC17B06bddBa0CC798546161aF9D25e8A") are required. maxResults and resultOffset are optional, defaulting to no max/offset.';
 
 
 --
@@ -2387,13 +1904,6 @@ $$;
 
 
 --
--- Name: FUNCTION urn_frobs(ilk_identifier text, urn_identifier text, max_results integer, result_offset integer); Type: COMMENT; Schema: api; Owner: -
---
-
-COMMENT ON FUNCTION api.urn_frobs(ilk_identifier text, urn_identifier text, max_results integer, result_offset integer) IS 'Get Frob events associated with an Urn. ilkIdentifier (e.g. "ETH-A") and urnIdentifier (e.g. "0xC93C178EC17B06bddBa0CC798546161aF9D25e8A") are required. maxResults and resultOffset are optional, defaulting to no max/offset.';
-
-
---
 -- Name: urn_snapshot; Type: TABLE; Schema: api; Owner: -
 --
 
@@ -2406,13 +1916,6 @@ CREATE TABLE api.urn_snapshot (
     created timestamp without time zone,
     updated timestamp without time zone NOT NULL
 );
-
-
---
--- Name: TABLE urn_snapshot; Type: COMMENT; Schema: api; Owner: -
---
-
-COMMENT ON TABLE api.urn_snapshot IS 'Historical snapshots of the state of Urns.';
 
 
 --
@@ -2525,13 +2028,6 @@ CREATE TABLE maker.flip_ilk (
 
 
 --
--- Name: TABLE flip_ilk; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.flip_ilk IS 'Value of a Flip contract''s ilk variable as of a block header.';
-
-
---
 -- Name: clear_bid_event_ilk(maker.flip_ilk); Type: FUNCTION; Schema: maker; Owner: -
 --
 
@@ -2564,14 +2060,6 @@ CREATE TABLE maker.flap_kick (
     bid numeric NOT NULL,
     address_id integer NOT NULL
 );
-
-
---
--- Name: TABLE flap_kick; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.flap_kick IS '@name flapKickEvent
-Kick event emitted by Flap contract.';
 
 
 --
@@ -2614,14 +2102,6 @@ CREATE TABLE maker.flip_kick (
 
 
 --
--- Name: TABLE flip_kick; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.flip_kick IS '@name flipKickEvent
-Kick event emitted by Flip contract.';
-
-
---
 -- Name: clear_flip_created(maker.flip_kick); Type: FUNCTION; Schema: maker; Owner: -
 --
 
@@ -2659,14 +2139,6 @@ CREATE TABLE maker.flop_kick (
 
 
 --
--- Name: TABLE flop_kick; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.flop_kick IS '@name flopKickEvent
-Kick event emitted by Flop contract.';
-
-
---
 -- Name: clear_flop_created(maker.flop_kick); Type: FUNCTION; Schema: maker; Owner: -
 --
 
@@ -2697,13 +2169,6 @@ CREATE TABLE maker.vat_init (
     log_id bigint NOT NULL,
     ilk_id integer NOT NULL
 );
-
-
---
--- Name: TABLE vat_init; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.vat_init IS 'Note event emitted when init is called on Vat contract.';
 
 
 --
@@ -3055,13 +2520,6 @@ CREATE TABLE maker.flip_bid_usr (
 
 
 --
--- Name: TABLE flip_bid_usr; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.flip_bid_usr IS 'Value of a Bid''s usr field on a Flip contract as of a block header.';
-
-
---
 -- Name: insert_bid_event_urn(maker.flip_bid_usr, text); Type: FUNCTION; Schema: maker; Owner: -
 --
 
@@ -3261,13 +2719,6 @@ CREATE TABLE maker.vat_ilk_art (
 
 
 --
--- Name: TABLE vat_ilk_art; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.vat_ilk_art IS 'Value of an Ilk''s Art field on the Vat contract as of a block header.';
-
-
---
 -- Name: insert_new_art(maker.vat_ilk_art); Type: FUNCTION; Schema: maker; Owner: -
 --
 
@@ -3332,13 +2783,6 @@ CREATE TABLE maker.cat_ilk_chop (
     ilk_id integer NOT NULL,
     chop numeric NOT NULL
 );
-
-
---
--- Name: TABLE cat_ilk_chop; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.cat_ilk_chop IS 'Value of an Ilk''s chop field on the Cat contract as of a block header.';
 
 
 --
@@ -3409,13 +2853,6 @@ CREATE TABLE maker.vat_ilk_dust (
 
 
 --
--- Name: TABLE vat_ilk_dust; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.vat_ilk_dust IS 'Value of an Ilk''s dust field on the Vat contract as of a block header.';
-
-
---
 -- Name: insert_new_dust(maker.vat_ilk_dust); Type: FUNCTION; Schema: maker; Owner: -
 --
 
@@ -3480,13 +2917,6 @@ CREATE TABLE maker.jug_ilk_duty (
     ilk_id integer NOT NULL,
     duty numeric NOT NULL
 );
-
-
---
--- Name: TABLE jug_ilk_duty; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.jug_ilk_duty IS 'Value of an Ilk''s duty field on the Jug contract as of a block header.';
 
 
 --
@@ -3558,13 +2988,6 @@ CREATE TABLE maker.flap_bid_bid (
 
 
 --
--- Name: TABLE flap_bid_bid; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.flap_bid_bid IS 'Value of a Bid''s bid field on the Flap contract as of a block header.';
-
-
---
 -- Name: insert_new_flap_bid(maker.flap_bid_bid); Type: FUNCTION; Schema: maker; Owner: -
 --
 
@@ -3611,13 +3034,6 @@ CREATE TABLE maker.flap_bid_end (
     bid_id numeric NOT NULL,
     "end" bigint NOT NULL
 );
-
-
---
--- Name: TABLE flap_bid_end; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.flap_bid_end IS 'Value of a Bid''s end field on the Flap contract as of a block header.';
 
 
 --
@@ -3670,13 +3086,6 @@ CREATE TABLE maker.flap_bid_guy (
 
 
 --
--- Name: TABLE flap_bid_guy; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.flap_bid_guy IS 'Value of a Bid''s guy field on the Flap contract as of a block header.';
-
-
---
 -- Name: insert_new_flap_guy(maker.flap_bid_guy); Type: FUNCTION; Schema: maker; Owner: -
 --
 
@@ -3723,13 +3132,6 @@ CREATE TABLE maker.flap_bid_lot (
     bid_id numeric NOT NULL,
     lot numeric NOT NULL
 );
-
-
---
--- Name: TABLE flap_bid_lot; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.flap_bid_lot IS 'Value of a Bid''s lot field on the Flap contract as of a block header.';
 
 
 --
@@ -3782,13 +3184,6 @@ CREATE TABLE maker.flap_bid_tic (
 
 
 --
--- Name: TABLE flap_bid_tic; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.flap_bid_tic IS 'Value of a Bid''s tic field on the Flap contract as of a block header.';
-
-
---
 -- Name: insert_new_flap_tic(maker.flap_bid_tic); Type: FUNCTION; Schema: maker; Owner: -
 --
 
@@ -3834,13 +3229,6 @@ CREATE TABLE maker.cat_ilk_flip (
     ilk_id integer NOT NULL,
     flip text
 );
-
-
---
--- Name: TABLE cat_ilk_flip; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.cat_ilk_flip IS 'Value of an Ilk''s flip field on the Cat contract as of a block header.';
 
 
 --
@@ -3912,13 +3300,6 @@ CREATE TABLE maker.flip_bid_bid (
 
 
 --
--- Name: TABLE flip_bid_bid; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.flip_bid_bid IS 'Value of a Bid''s bid field on a Flip contract as of a block header.';
-
-
---
 -- Name: insert_new_flip_bid(maker.flip_bid_bid); Type: FUNCTION; Schema: maker; Owner: -
 --
 
@@ -3968,13 +3349,6 @@ CREATE TABLE maker.flip_bid_end (
     bid_id numeric NOT NULL,
     "end" bigint NOT NULL
 );
-
-
---
--- Name: TABLE flip_bid_end; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.flip_bid_end IS 'Value of a Bid''s end field on a Flip contract as of a block header.';
 
 
 --
@@ -4030,13 +3404,6 @@ CREATE TABLE maker.flip_bid_gal (
 
 
 --
--- Name: TABLE flip_bid_gal; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.flip_bid_gal IS 'Value of a Bid''s gal field on a Flip contract as of a block header.';
-
-
---
 -- Name: insert_new_flip_gal(maker.flip_bid_gal); Type: FUNCTION; Schema: maker; Owner: -
 --
 
@@ -4086,13 +3453,6 @@ CREATE TABLE maker.flip_bid_guy (
     bid_id numeric NOT NULL,
     guy text
 );
-
-
---
--- Name: TABLE flip_bid_guy; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.flip_bid_guy IS 'Value of a Bid''s guy field on a Flip contract as of a block header.';
 
 
 --
@@ -4148,13 +3508,6 @@ CREATE TABLE maker.flip_bid_lot (
 
 
 --
--- Name: TABLE flip_bid_lot; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.flip_bid_lot IS 'Value of a Bid''s lot field on a Flip contract as of a block header.';
-
-
---
 -- Name: insert_new_flip_lot(maker.flip_bid_lot); Type: FUNCTION; Schema: maker; Owner: -
 --
 
@@ -4207,13 +3560,6 @@ CREATE TABLE maker.flip_bid_tab (
 
 
 --
--- Name: TABLE flip_bid_tab; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.flip_bid_tab IS 'Value of a Bid''s tab field on a Flip contract as of a block header.';
-
-
---
 -- Name: insert_new_flip_tab(maker.flip_bid_tab); Type: FUNCTION; Schema: maker; Owner: -
 --
 
@@ -4263,13 +3609,6 @@ CREATE TABLE maker.flip_bid_tic (
     bid_id numeric NOT NULL,
     tic bigint NOT NULL
 );
-
-
---
--- Name: TABLE flip_bid_tic; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.flip_bid_tic IS 'Value of a Bid''s tic field on a Flip contract as of a block header.';
 
 
 --
@@ -4363,13 +3702,6 @@ CREATE TABLE maker.flop_bid_bid (
 
 
 --
--- Name: TABLE flop_bid_bid; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.flop_bid_bid IS 'Value of a Bid''s bid field on the Flop contract as of a block header.';
-
-
---
 -- Name: insert_new_flop_bid(maker.flop_bid_bid); Type: FUNCTION; Schema: maker; Owner: -
 --
 
@@ -4416,13 +3748,6 @@ CREATE TABLE maker.flop_bid_end (
     bid_id numeric NOT NULL,
     "end" bigint NOT NULL
 );
-
-
---
--- Name: TABLE flop_bid_end; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.flop_bid_end IS 'Value of a Bid''s end field on the Flop contract as of a block header.';
 
 
 --
@@ -4475,13 +3800,6 @@ CREATE TABLE maker.flop_bid_guy (
 
 
 --
--- Name: TABLE flop_bid_guy; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.flop_bid_guy IS 'Value of a Bid''s guy field on the Flop contract as of a block header.';
-
-
---
 -- Name: insert_new_flop_guy(maker.flop_bid_guy); Type: FUNCTION; Schema: maker; Owner: -
 --
 
@@ -4528,13 +3846,6 @@ CREATE TABLE maker.flop_bid_lot (
     bid_id numeric NOT NULL,
     lot numeric NOT NULL
 );
-
-
---
--- Name: TABLE flop_bid_lot; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.flop_bid_lot IS 'Value of a Bid''s lot field on the Flop contract as of a block header.';
 
 
 --
@@ -4587,13 +3898,6 @@ CREATE TABLE maker.flop_bid_tic (
 
 
 --
--- Name: TABLE flop_bid_tic; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.flop_bid_tic IS 'Value of a Bid''s tic field on the Flop contract as of a block header.';
-
-
---
 -- Name: insert_new_flop_tic(maker.flop_bid_tic); Type: FUNCTION; Schema: maker; Owner: -
 --
 
@@ -4639,13 +3943,6 @@ CREATE TABLE maker.vat_ilk_line (
     ilk_id integer NOT NULL,
     line numeric NOT NULL
 );
-
-
---
--- Name: TABLE vat_ilk_line; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.vat_ilk_line IS 'Value of an Ilk''s line field on the Vat contract as of a block header.';
 
 
 --
@@ -4716,13 +4013,6 @@ CREATE TABLE maker.cat_ilk_lump (
 
 
 --
--- Name: TABLE cat_ilk_lump; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.cat_ilk_lump IS 'Value of an Ilk''s lump field on the Cat contract as of a block header.';
-
-
---
 -- Name: insert_new_lump(maker.cat_ilk_lump); Type: FUNCTION; Schema: maker; Owner: -
 --
 
@@ -4787,13 +4077,6 @@ CREATE TABLE maker.spot_ilk_mat (
     ilk_id integer NOT NULL,
     mat numeric NOT NULL
 );
-
-
---
--- Name: TABLE spot_ilk_mat; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.spot_ilk_mat IS 'Value of an Ilk''s mat field on the Spot contract as of a block header.';
 
 
 --
@@ -4864,13 +4147,6 @@ CREATE TABLE maker.spot_ilk_pip (
 
 
 --
--- Name: TABLE spot_ilk_pip; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.spot_ilk_pip IS 'Value of an Ilk''s pip field on the Spot contract as of a block header.';
-
-
---
 -- Name: insert_new_pip(maker.spot_ilk_pip); Type: FUNCTION; Schema: maker; Owner: -
 --
 
@@ -4935,13 +4211,6 @@ CREATE TABLE maker.vat_ilk_rate (
     ilk_id integer NOT NULL,
     rate numeric NOT NULL
 );
-
-
---
--- Name: TABLE vat_ilk_rate; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.vat_ilk_rate IS 'Value of an Ilk''s rate field on the Vat contract as of a block header.';
 
 
 --
@@ -5012,13 +4281,6 @@ CREATE TABLE maker.jug_ilk_rho (
 
 
 --
--- Name: TABLE jug_ilk_rho; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.jug_ilk_rho IS 'Value of an Ilk''s rho field on the Jug contract as of a block header.';
-
-
---
 -- Name: insert_new_rho(maker.jug_ilk_rho); Type: FUNCTION; Schema: maker; Owner: -
 --
 
@@ -5083,13 +4345,6 @@ CREATE TABLE maker.vat_ilk_spot (
     ilk_id integer NOT NULL,
     spot numeric NOT NULL
 );
-
-
---
--- Name: TABLE vat_ilk_spot; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.vat_ilk_spot IS 'Value of an Ilk''s spot field on the Vat contract as of a block header.';
 
 
 --
@@ -5195,13 +4450,6 @@ CREATE TABLE maker.vat_urn_art (
 
 
 --
--- Name: TABLE vat_urn_art; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.vat_urn_art IS 'Value of an Urn''s art field on the Vat contract as of a block header.';
-
-
---
 -- Name: insert_urn_art(maker.vat_urn_art); Type: FUNCTION; Schema: maker; Owner: -
 --
 
@@ -5252,13 +4500,6 @@ CREATE TABLE maker.vat_urn_ink (
     urn_id integer NOT NULL,
     ink numeric NOT NULL
 );
-
-
---
--- Name: TABLE vat_urn_ink; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.vat_urn_ink IS 'Value of an Urn''s ink field on the Vat contract as of a block header.';
 
 
 --
@@ -8481,21 +7722,6 @@ CREATE TABLE maker.bite (
 
 
 --
--- Name: TABLE bite; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.bite IS '@name raw_bites
-Bite event emitted by Cat contract.';
-
-
---
--- Name: COLUMN bite.id; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON COLUMN maker.bite.id IS '@omit';
-
-
---
 -- Name: bite_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -8527,13 +7753,6 @@ CREATE TABLE maker.cat_file_chop_lump (
     what text,
     data numeric
 );
-
-
---
--- Name: TABLE cat_file_chop_lump; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.cat_file_chop_lump IS 'Note event emitted when file(bytes32,bytes32,uint256) is called on Cat contract.';
 
 
 --
@@ -8571,13 +7790,6 @@ CREATE TABLE maker.cat_file_flip (
 
 
 --
--- Name: TABLE cat_file_flip; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.cat_file_flip IS 'Note event emitted when file(bytes32,bytes32,address) is called on Cat contract.';
-
-
---
 -- Name: cat_file_flip_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -8608,13 +7820,6 @@ CREATE TABLE maker.cat_file_vow (
     what text,
     data text
 );
-
-
---
--- Name: TABLE cat_file_vow; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.cat_file_vow IS 'Note event emitted when file(bytes32,address) is called on Cat contract.';
 
 
 --
@@ -8710,13 +7915,6 @@ CREATE TABLE maker.cat_live (
 
 
 --
--- Name: TABLE cat_live; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.cat_live IS 'Value of the Cat contract''s live variable as of a block header.';
-
-
---
 -- Name: cat_live_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -8746,13 +7944,6 @@ CREATE TABLE maker.cat_vat (
     header_id integer NOT NULL,
     vat text
 );
-
-
---
--- Name: TABLE cat_vat; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.cat_vat IS 'Value of the Cat contract''s vat variable as of a block header.';
 
 
 --
@@ -8788,13 +7979,6 @@ CREATE TABLE maker.cat_vow (
 
 
 --
--- Name: TABLE cat_vow; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.cat_vow IS 'Value of the Cat contract''s vow variable as of a block header.';
-
-
---
 -- Name: cat_vow_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -8824,13 +8008,6 @@ CREATE TABLE maker.cdp_manager_cdpi (
     header_id integer NOT NULL,
     cdpi numeric NOT NULL
 );
-
-
---
--- Name: TABLE cdp_manager_cdpi; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.cdp_manager_cdpi IS 'Value of the CdpManager contract''s cdpi variable as a block header.';
 
 
 --
@@ -8867,13 +8044,6 @@ CREATE TABLE maker.cdp_manager_count (
 
 
 --
--- Name: TABLE cdp_manager_count; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.cdp_manager_count IS 'Value of an entry in the CdpManager contract''s count mapping as of a block header.';
-
-
---
 -- Name: cdp_manager_count_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -8904,13 +8074,6 @@ CREATE TABLE maker.cdp_manager_first (
     owner text,
     first numeric NOT NULL
 );
-
-
---
--- Name: TABLE cdp_manager_first; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.cdp_manager_first IS 'Value of an entry in the CdpManager contract''s first mapping as of a block header.';
 
 
 --
@@ -8947,13 +8110,6 @@ CREATE TABLE maker.cdp_manager_ilks (
 
 
 --
--- Name: TABLE cdp_manager_ilks; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.cdp_manager_ilks IS 'Value of an entry in the CdpManager contract''s ilks mapping as of a block header.';
-
-
---
 -- Name: cdp_manager_ilks_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -8984,13 +8140,6 @@ CREATE TABLE maker.cdp_manager_last (
     owner text,
     last numeric NOT NULL
 );
-
-
---
--- Name: TABLE cdp_manager_last; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.cdp_manager_last IS 'Value of an entry in the CdpManager contract''s last mapping as of a block header.';
 
 
 --
@@ -9027,13 +8176,6 @@ CREATE TABLE maker.cdp_manager_list_next (
 
 
 --
--- Name: TABLE cdp_manager_list_next; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.cdp_manager_list_next IS 'Value of a List''s next field on the CdpManager contract as of a block header.';
-
-
---
 -- Name: cdp_manager_list_next_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -9064,13 +8206,6 @@ CREATE TABLE maker.cdp_manager_list_prev (
     cdpi numeric NOT NULL,
     prev numeric NOT NULL
 );
-
-
---
--- Name: TABLE cdp_manager_list_prev; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.cdp_manager_list_prev IS 'Value a List''s prev field on the CdpManager contract as of a block header.';
 
 
 --
@@ -9107,13 +8242,6 @@ CREATE TABLE maker.cdp_manager_owns (
 
 
 --
--- Name: TABLE cdp_manager_owns; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.cdp_manager_owns IS 'Value of an entry in the CdpManager contract''s owns mapping as of a block header.';
-
-
---
 -- Name: cdp_manager_owns_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -9144,13 +8272,6 @@ CREATE TABLE maker.cdp_manager_urns (
     cdpi numeric NOT NULL,
     urn text
 );
-
-
---
--- Name: TABLE cdp_manager_urns; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.cdp_manager_urns IS 'Value of an entry in the CdpManager contract''s urns mapping as of a block header.';
 
 
 --
@@ -9186,13 +8307,6 @@ CREATE TABLE maker.cdp_manager_vat (
 
 
 --
--- Name: TABLE cdp_manager_vat; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.cdp_manager_vat IS 'Value of the CdpManager contract''s vat variable as of a block header.';
-
-
---
 -- Name: cdp_manager_vat_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -9223,13 +8337,6 @@ CREATE TABLE maker.deal (
     bid_id numeric NOT NULL,
     address_id integer NOT NULL
 );
-
-
---
--- Name: TABLE deal; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.deal IS 'Note event emitted when deal is called on Flap, Flip, or Flop contracts.';
 
 
 --
@@ -9268,13 +8375,6 @@ CREATE TABLE maker.dent (
 
 
 --
--- Name: TABLE dent; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.dent IS 'Note event emitted when dent is called on Flip or Flop contract.';
-
-
---
 -- Name: dent_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -9306,13 +8406,6 @@ CREATE TABLE maker.deny (
     msg_sender integer NOT NULL,
     usr integer NOT NULL
 );
-
-
---
--- Name: TABLE deny; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.deny IS 'Note event emitted when deny is called on Cat, Flap, Flip, Flop, Jug, Pot, Spot, or Vow contracts.';
 
 
 --
@@ -9354,14 +8447,6 @@ CREATE TABLE maker.flap (
 
 
 --
--- Name: TABLE flap; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.flap IS '@name historicalFlapState
-Historical snapshots of the state of auctions on the Flap contracts.';
-
-
---
 -- Name: flap_beg; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -9372,13 +8457,6 @@ CREATE TABLE maker.flap_beg (
     address_id integer NOT NULL,
     beg numeric NOT NULL
 );
-
-
---
--- Name: TABLE flap_beg; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.flap_beg IS 'Value of the Flap contract''s beg variable as of a block header.';
 
 
 --
@@ -9515,13 +8593,6 @@ CREATE TABLE maker.flap_gem (
 
 
 --
--- Name: TABLE flap_gem; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.flap_gem IS 'Value of the Flap contract''s gem variable as of a block header.';
-
-
---
 -- Name: flap_gem_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -9575,14 +8646,6 @@ CREATE TABLE maker.flap_kicks (
 
 
 --
--- Name: TABLE flap_kicks; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.flap_kicks IS '@name flapKicksStorage
-Value of the Flap contract''s kicks variable as of a block header.';
-
-
---
 -- Name: flap_kicks_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -9613,13 +8676,6 @@ CREATE TABLE maker.flap_live (
     address_id integer NOT NULL,
     live numeric NOT NULL
 );
-
-
---
--- Name: TABLE flap_live; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.flap_live IS 'Value of the Flap contract''s live variable as of a block header.';
 
 
 --
@@ -9656,13 +8712,6 @@ CREATE TABLE maker.flap_tau (
 
 
 --
--- Name: TABLE flap_tau; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.flap_tau IS 'Value of the Flap contract''s tau variable as of a block header.';
-
-
---
 -- Name: flap_tau_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -9696,13 +8745,6 @@ CREATE TABLE maker.flap_ttl (
 
 
 --
--- Name: TABLE flap_ttl; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.flap_ttl IS 'Value of the Flap contract''s ttl variable as of a block header.';
-
-
---
 -- Name: flap_ttl_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -9733,13 +8775,6 @@ CREATE TABLE maker.flap_vat (
     address_id integer NOT NULL,
     vat text NOT NULL
 );
-
-
---
--- Name: TABLE flap_vat; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.flap_vat IS 'Value of the Flap contract''s vat variable as of a block header.';
 
 
 --
@@ -9784,14 +8819,6 @@ CREATE TABLE maker.flip (
 
 
 --
--- Name: TABLE flip; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.flip IS '@name historicalFlipState
-Historical snapshots of the state of auctions on the Flip contracts.';
-
-
---
 -- Name: flip_beg; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -9802,13 +8829,6 @@ CREATE TABLE maker.flip_beg (
     address_id integer NOT NULL,
     beg numeric NOT NULL
 );
-
-
---
--- Name: TABLE flip_beg; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.flip_beg IS 'Value of a Flip contract''s beg variable as of a block header.';
 
 
 --
@@ -10045,14 +9065,6 @@ CREATE TABLE maker.flip_kicks (
 
 
 --
--- Name: TABLE flip_kicks; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.flip_kicks IS '@name flipKicksStorage
-Value of a Flip contract''s kicks variable as of a block header.';
-
-
---
 -- Name: flip_kicks_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -10083,13 +9095,6 @@ CREATE TABLE maker.flip_tau (
     address_id integer NOT NULL,
     tau numeric NOT NULL
 );
-
-
---
--- Name: TABLE flip_tau; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.flip_tau IS 'Value of a Flip contract''s tau variable as of a block header.';
 
 
 --
@@ -10126,13 +9131,6 @@ CREATE TABLE maker.flip_ttl (
 
 
 --
--- Name: TABLE flip_ttl; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.flip_ttl IS 'Value of a Flip contract''s ttl variable as of a block header.';
-
-
---
 -- Name: flip_ttl_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -10163,13 +9161,6 @@ CREATE TABLE maker.flip_vat (
     address_id integer NOT NULL,
     vat text
 );
-
-
---
--- Name: TABLE flip_vat; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.flip_vat IS 'Value of a Flip contract''s vat variable as of a block header.';
 
 
 --
@@ -10211,14 +9202,6 @@ CREATE TABLE maker.flop (
 
 
 --
--- Name: TABLE flop; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.flop IS '@name historicalFlopState
-Historical snapshots of the state of auctions on the Flop contracts.';
-
-
---
 -- Name: flop_beg; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -10229,13 +9212,6 @@ CREATE TABLE maker.flop_beg (
     address_id integer NOT NULL,
     beg numeric NOT NULL
 );
-
-
---
--- Name: TABLE flop_beg; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.flop_beg IS 'Value of the Flop contract''s beg variable as of a block header.';
 
 
 --
@@ -10372,13 +9348,6 @@ CREATE TABLE maker.flop_gem (
 
 
 --
--- Name: TABLE flop_gem; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.flop_gem IS 'Value of the Flop contract''s gem variable as of a block header.';
-
-
---
 -- Name: flop_gem_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -10432,14 +9401,6 @@ CREATE TABLE maker.flop_kicks (
 
 
 --
--- Name: TABLE flop_kicks; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.flop_kicks IS '@name flopKicksStorage
-Value of the Flop contract''s kicks variable as of a block header.';
-
-
---
 -- Name: flop_kicks_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -10470,13 +9431,6 @@ CREATE TABLE maker.flop_live (
     address_id integer NOT NULL,
     live numeric NOT NULL
 );
-
-
---
--- Name: TABLE flop_live; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.flop_live IS 'Value of the Flop contract''s live variable as of a block header.';
 
 
 --
@@ -10513,13 +9467,6 @@ CREATE TABLE maker.flop_pad (
 
 
 --
--- Name: TABLE flop_pad; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.flop_pad IS 'Value of the Flop contract''s pad variable as of a block header.';
-
-
---
 -- Name: flop_pad_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -10550,13 +9497,6 @@ CREATE TABLE maker.flop_tau (
     address_id integer NOT NULL,
     tau numeric NOT NULL
 );
-
-
---
--- Name: TABLE flop_tau; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.flop_tau IS 'Value of the Flop contract''s tau variable as of a block header.';
 
 
 --
@@ -10593,13 +9533,6 @@ CREATE TABLE maker.flop_ttl (
 
 
 --
--- Name: TABLE flop_ttl; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.flop_ttl IS 'Value of the Flop contract''s ttl variable as of a block header.';
-
-
---
 -- Name: flop_ttl_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -10630,13 +9563,6 @@ CREATE TABLE maker.flop_vat (
     address_id integer NOT NULL,
     vat text
 );
-
-
---
--- Name: TABLE flop_vat; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.flop_vat IS 'Value of the Flop contract''s vat variable as of a block header.';
 
 
 --
@@ -10673,13 +9599,6 @@ CREATE TABLE maker.flop_vow (
 
 
 --
--- Name: TABLE flop_vow; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.flop_vow IS 'Value of the Flop contract''s vow variable as of a block header.';
-
-
---
 -- Name: flop_vow_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -10708,14 +9627,6 @@ CREATE TABLE maker.ilks (
     ilk text NOT NULL,
     identifier text NOT NULL
 );
-
-
---
--- Name: TABLE ilks; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.ilks IS '@name raw_ilks
-Collateral type.';
 
 
 --
@@ -10751,13 +9662,6 @@ CREATE TABLE maker.jug_base (
 
 
 --
--- Name: TABLE jug_base; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.jug_base IS 'Value of the Jug contract''s base variable as of a block header.';
-
-
---
 -- Name: jug_base_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -10787,13 +9691,6 @@ CREATE TABLE maker.jug_drip (
     log_id bigint NOT NULL,
     ilk_id integer NOT NULL
 );
-
-
---
--- Name: TABLE jug_drip; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.jug_drip IS 'Note event emitted when drip is called on Jug contract.';
 
 
 --
@@ -10827,13 +9724,6 @@ CREATE TABLE maker.jug_file_base (
     what text,
     data numeric
 );
-
-
---
--- Name: TABLE jug_file_base; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.jug_file_base IS 'Note event emitted when file(bytes32,uint256) is called on Jug contract.';
 
 
 --
@@ -10871,13 +9761,6 @@ CREATE TABLE maker.jug_file_ilk (
 
 
 --
--- Name: TABLE jug_file_ilk; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.jug_file_ilk IS 'Note event emitted when file(bytes32,bytes32,uint256) is called on Jug contract.';
-
-
---
 -- Name: jug_file_ilk_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -10908,13 +9791,6 @@ CREATE TABLE maker.jug_file_vow (
     what text,
     data text
 );
-
-
---
--- Name: TABLE jug_file_vow; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.jug_file_vow IS 'Note event emitted when file(bytes32,address) is called on Jug contract.';
 
 
 --
@@ -10990,13 +9866,6 @@ CREATE TABLE maker.jug_init (
 
 
 --
--- Name: TABLE jug_init; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.jug_init IS 'Note event emitted when init is called on Jug contract.';
-
-
---
 -- Name: jug_init_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -11026,13 +9895,6 @@ CREATE TABLE maker.jug_vat (
     header_id integer NOT NULL,
     vat text
 );
-
-
---
--- Name: TABLE jug_vat; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.jug_vat IS 'Value of the Jug contract''s vat variable as of a block header.';
 
 
 --
@@ -11068,13 +9930,6 @@ CREATE TABLE maker.jug_vow (
 
 
 --
--- Name: TABLE jug_vow; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.jug_vow IS 'Value of the Jug contract''s vow variable as of a block header.';
-
-
---
 -- Name: jug_vow_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -11104,20 +9959,6 @@ CREATE TABLE maker.log_value (
     log_id bigint NOT NULL,
     val numeric
 );
-
-
---
--- Name: TABLE log_value; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.log_value IS 'LogValue event on OSM/PIP contract(s).';
-
-
---
--- Name: COLUMN log_value.id; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON COLUMN maker.log_value.id IS '@omit';
 
 
 --
@@ -11155,20 +9996,6 @@ CREATE TABLE maker.new_cdp (
 
 
 --
--- Name: TABLE new_cdp; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.new_cdp IS 'NewCdp event on CdpManager contract.';
-
-
---
--- Name: COLUMN new_cdp.id; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON COLUMN maker.new_cdp.id IS '@omit';
-
-
---
 -- Name: new_cdp_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -11197,13 +10024,6 @@ CREATE TABLE maker.pot_cage (
     header_id integer NOT NULL,
     log_id bigint NOT NULL
 );
-
-
---
--- Name: TABLE pot_cage; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.pot_cage IS 'Note event emitted when cage is called on Pot contract.';
 
 
 --
@@ -11239,13 +10059,6 @@ CREATE TABLE maker.pot_chi (
 
 
 --
--- Name: TABLE pot_chi; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.pot_chi IS 'Value of the Pot contract''s chi variable as of a block header.';
-
-
---
 -- Name: pot_chi_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -11278,13 +10091,6 @@ CREATE TABLE maker.pot_drip (
 
 
 --
--- Name: TABLE pot_drip; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.pot_drip IS 'Note event emitted when drip is called on Pot contract.';
-
-
---
 -- Name: pot_drip_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -11314,13 +10120,6 @@ CREATE TABLE maker.pot_dsr (
     header_id integer NOT NULL,
     dsr numeric NOT NULL
 );
-
-
---
--- Name: TABLE pot_dsr; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.pot_dsr IS 'Value of the Pot contract''s dsr variable as of a block header.';
 
 
 --
@@ -11357,13 +10156,6 @@ CREATE TABLE maker.pot_exit (
 
 
 --
--- Name: TABLE pot_exit; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.pot_exit IS 'Note event emitted when exit is called on Pot contract.';
-
-
---
 -- Name: pot_exit_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -11394,13 +10186,6 @@ CREATE TABLE maker.pot_file_dsr (
     what text,
     data numeric
 );
-
-
---
--- Name: TABLE pot_file_dsr; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.pot_file_dsr IS 'Note event emitted when file(bytes32,uint256) is called on Pot contract.';
 
 
 --
@@ -11437,13 +10222,6 @@ CREATE TABLE maker.pot_file_vow (
 
 
 --
--- Name: TABLE pot_file_vow; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.pot_file_vow IS 'Note event emitted when file(bytes32,address) is called on Pot contract.';
-
-
---
 -- Name: pot_file_vow_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -11474,13 +10252,6 @@ CREATE TABLE maker.pot_join (
     msg_sender integer NOT NULL,
     wad numeric
 );
-
-
---
--- Name: TABLE pot_join; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.pot_join IS 'Note event emitted when join is called on Pot contract.';
 
 
 --
@@ -11516,13 +10287,6 @@ CREATE TABLE maker.pot_live (
 
 
 --
--- Name: TABLE pot_live; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.pot_live IS 'Value of the Pot contract''s live variable as of a block header.';
-
-
---
 -- Name: pot_live_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -11555,13 +10319,6 @@ CREATE TABLE maker.pot_pie (
 
 
 --
--- Name: TABLE pot_pie; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.pot_pie IS 'Value of the Pot contract''s Pie variable as of a block header.';
-
-
---
 -- Name: pot_pie_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -11591,13 +10348,6 @@ CREATE TABLE maker.pot_rho (
     header_id integer NOT NULL,
     rho numeric NOT NULL
 );
-
-
---
--- Name: TABLE pot_rho; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.pot_rho IS 'Value of the Pot contract''s rho variable as of a block header.';
 
 
 --
@@ -11634,13 +10384,6 @@ CREATE TABLE maker.pot_user_pie (
 
 
 --
--- Name: TABLE pot_user_pie; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.pot_user_pie IS 'Value of an entry in the Pot contract''s pie mapping as of a block header.';
-
-
---
 -- Name: pot_user_pie_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -11673,13 +10416,6 @@ CREATE TABLE maker.pot_vat (
 
 
 --
--- Name: TABLE pot_vat; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.pot_vat IS 'Value of the Pot contract''s vat variable as of a block header.';
-
-
---
 -- Name: pot_vat_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -11709,13 +10445,6 @@ CREATE TABLE maker.pot_vow (
     header_id integer NOT NULL,
     vow integer NOT NULL
 );
-
-
---
--- Name: TABLE pot_vow; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.pot_vow IS 'Value of the Pot contract''s vow variable as of a block header.';
 
 
 --
@@ -11753,13 +10482,6 @@ CREATE TABLE maker.rely (
 
 
 --
--- Name: TABLE rely; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.rely IS 'Note event emitted when rely is called on Cat, Flap, Flip, Flop, Jug, Pot, Spot, or Vow contracts.';
-
-
---
 -- Name: rely_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -11791,13 +10513,6 @@ CREATE TABLE maker.spot_file_mat (
     what text,
     data numeric
 );
-
-
---
--- Name: TABLE spot_file_mat; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.spot_file_mat IS 'Note event emitted when file(bytes32,bytes32,uint256) is called on Spot contract.';
 
 
 --
@@ -11834,13 +10549,6 @@ CREATE TABLE maker.spot_file_par (
 
 
 --
--- Name: TABLE spot_file_par; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.spot_file_par IS 'Note event emitted when file(bytes32,uint256) is called on Spot contract.';
-
-
---
 -- Name: spot_file_par_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -11872,13 +10580,6 @@ CREATE TABLE maker.spot_file_pip (
     what text,
     pip text
 );
-
-
---
--- Name: TABLE spot_file_pip; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.spot_file_pip IS 'Note event emitted when file(bytes32,bytes32,address) is called on Spot contract.';
 
 
 --
@@ -11954,13 +10655,6 @@ CREATE TABLE maker.spot_live (
 
 
 --
--- Name: TABLE spot_live; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.spot_live IS 'Value of the Spot contract''s live variable as of a block header.';
-
-
---
 -- Name: spot_live_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -11990,13 +10684,6 @@ CREATE TABLE maker.spot_par (
     header_id integer NOT NULL,
     par numeric NOT NULL
 );
-
-
---
--- Name: TABLE spot_par; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.spot_par IS 'Value of the Spot contract''s par variable as of a block header.';
 
 
 --
@@ -12034,13 +10721,6 @@ CREATE TABLE maker.spot_poke (
 
 
 --
--- Name: TABLE spot_poke; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.spot_poke IS 'Poke event emitted by Spot contract.';
-
-
---
 -- Name: spot_poke_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -12070,13 +10750,6 @@ CREATE TABLE maker.spot_vat (
     header_id integer NOT NULL,
     vat text
 );
-
-
---
--- Name: TABLE spot_vat; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.spot_vat IS 'Value of the Spot contract''s vat variable as of a block header.';
 
 
 --
@@ -12115,13 +10788,6 @@ CREATE TABLE maker.tend (
 
 
 --
--- Name: TABLE tend; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.tend IS 'Note event emitted when tend is called on Flap or Flip contract.';
-
-
---
 -- Name: tend_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -12155,13 +10821,6 @@ CREATE TABLE maker.tick (
 
 
 --
--- Name: TABLE tick; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.tick IS 'Note event emitted when tick is called on Flap, Flip, or Flop contracts.';
-
-
---
 -- Name: tick_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -12190,14 +10849,6 @@ CREATE TABLE maker.urns (
     ilk_id integer NOT NULL,
     identifier public.citext
 );
-
-
---
--- Name: TABLE urns; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.urns IS '@name raw_urns
-CDP.';
 
 
 --
@@ -12234,13 +10885,6 @@ CREATE TABLE maker.vat_dai (
 
 
 --
--- Name: TABLE vat_dai; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.vat_dai IS 'Value of an entry in the Vat contract''s dai mapping as of a block header.';
-
-
---
 -- Name: vat_dai_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -12273,13 +10917,6 @@ CREATE TABLE maker.vat_debt (
 
 
 --
--- Name: TABLE vat_debt; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.vat_debt IS 'Value of the Vat contract''s debt variable as of a block header.';
-
-
---
 -- Name: vat_debt_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -12309,13 +10946,6 @@ CREATE TABLE maker.vat_deny (
     log_id bigint NOT NULL,
     usr integer NOT NULL
 );
-
-
---
--- Name: TABLE vat_deny; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.vat_deny IS 'Note event emitted when deny is called on Vat contract.';
 
 
 --
@@ -12352,13 +10982,6 @@ CREATE TABLE maker.vat_file_debt_ceiling (
 
 
 --
--- Name: TABLE vat_file_debt_ceiling; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.vat_file_debt_ceiling IS 'Note event emitted when file(bytes32,uint256) is called on Vat contract.';
-
-
---
 -- Name: vat_file_debt_ceiling_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -12390,13 +11013,6 @@ CREATE TABLE maker.vat_file_ilk (
     what text,
     data numeric
 );
-
-
---
--- Name: TABLE vat_file_ilk; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.vat_file_ilk IS 'Note event emitted when file(bytes32,bytes32,uint256) is called on Vat contract.';
 
 
 --
@@ -12435,13 +11051,6 @@ CREATE TABLE maker.vat_flux (
 
 
 --
--- Name: TABLE vat_flux; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.vat_flux IS 'Note event emitted when flux is called on Vat contract.';
-
-
---
 -- Name: vat_flux_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -12473,13 +11082,6 @@ CREATE TABLE maker.vat_fold (
     u text NOT NULL,
     rate numeric
 );
-
-
---
--- Name: TABLE vat_fold; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.vat_fold IS 'Note event emitted when fold is called on Vat contract.';
 
 
 --
@@ -12519,13 +11121,6 @@ CREATE TABLE maker.vat_fork (
 
 
 --
--- Name: TABLE vat_fork; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.vat_fork IS 'Note event emitted when fork is called on Vat contract.';
-
-
---
 -- Name: vat_fork_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -12562,13 +11157,6 @@ CREATE TABLE maker.vat_frob (
 
 
 --
--- Name: TABLE vat_frob; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.vat_frob IS 'Note event emitted when frob is called on Vat contract.';
-
-
---
 -- Name: vat_frob_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -12600,13 +11188,6 @@ CREATE TABLE maker.vat_gem (
     guy text,
     gem numeric NOT NULL
 );
-
-
---
--- Name: TABLE vat_gem; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.vat_gem IS 'Value of an entry in the Vat contract''s gem mapping as of a block header.';
 
 
 --
@@ -12646,13 +11227,6 @@ CREATE TABLE maker.vat_grab (
 
 
 --
--- Name: TABLE vat_grab; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.vat_grab IS 'Note event emitted when grab is called on Vat contract.';
-
-
---
 -- Name: vat_grab_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -12682,13 +11256,6 @@ CREATE TABLE maker.vat_heal (
     log_id bigint NOT NULL,
     rad numeric
 );
-
-
---
--- Name: TABLE vat_heal; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.vat_heal IS 'Note event emitted when heal is called on Vat contract.';
 
 
 --
@@ -12844,13 +11411,6 @@ CREATE TABLE maker.vat_line (
 
 
 --
--- Name: TABLE vat_line; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.vat_line IS 'Value of the Vat contract''s Line variable as of a block header.';
-
-
---
 -- Name: vat_line_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -12880,13 +11440,6 @@ CREATE TABLE maker.vat_live (
     header_id integer NOT NULL,
     live numeric NOT NULL
 );
-
-
---
--- Name: TABLE vat_live; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.vat_live IS 'Value of the Vat contract''s live variable as of a block header.';
 
 
 --
@@ -12924,13 +11477,6 @@ CREATE TABLE maker.vat_move (
 
 
 --
--- Name: TABLE vat_move; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.vat_move IS 'Note event emitted when move is called on Vat contract.';
-
-
---
 -- Name: vat_move_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -12960,13 +11506,6 @@ CREATE TABLE maker.vat_rely (
     log_id bigint NOT NULL,
     usr integer NOT NULL
 );
-
-
---
--- Name: TABLE vat_rely; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.vat_rely IS 'Note event emitted when rely is called on Vat contract.';
 
 
 --
@@ -13000,13 +11539,6 @@ CREATE TABLE maker.vat_sin (
     guy text,
     sin numeric NOT NULL
 );
-
-
---
--- Name: TABLE vat_sin; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.vat_sin IS 'Value of an entry in the Vat contract'' sin mapping as of a block header.';
 
 
 --
@@ -13044,13 +11576,6 @@ CREATE TABLE maker.vat_slip (
 
 
 --
--- Name: TABLE vat_slip; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.vat_slip IS 'Note event emitted when slip is called on Vat contract.';
-
-
---
 -- Name: vat_slip_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -13082,13 +11607,6 @@ CREATE TABLE maker.vat_suck (
     v text,
     rad numeric
 );
-
-
---
--- Name: TABLE vat_suck; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.vat_suck IS 'Note event emitted when suck is called on Vat contract.';
 
 
 --
@@ -13164,13 +11682,6 @@ CREATE TABLE maker.vat_vice (
 
 
 --
--- Name: TABLE vat_vice; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.vat_vice IS 'Value of the Vat contract''s vice variable as of a block header.';
-
-
---
 -- Name: vat_vice_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -13200,13 +11711,6 @@ CREATE TABLE maker.vow_ash (
     header_id integer NOT NULL,
     ash numeric
 );
-
-
---
--- Name: TABLE vow_ash; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.vow_ash IS 'Value of the Vow contract''s Ash variable as of a block header.';
 
 
 --
@@ -13242,13 +11746,6 @@ CREATE TABLE maker.vow_bump (
 
 
 --
--- Name: TABLE vow_bump; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.vow_bump IS 'Value of the Vow contract''s bump variable as of a block header.';
-
-
---
 -- Name: vow_bump_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -13281,13 +11778,6 @@ CREATE TABLE maker.vow_dump (
 
 
 --
--- Name: TABLE vow_dump; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.vow_dump IS 'Value of the Vow contract''s dump variable as of a block header.';
-
-
---
 -- Name: vow_dump_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -13317,13 +11807,6 @@ CREATE TABLE maker.vow_fess (
     log_id bigint NOT NULL,
     tab numeric NOT NULL
 );
-
-
---
--- Name: TABLE vow_fess; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.vow_fess IS 'Note event emitted when fess is called on Vow contract.';
 
 
 --
@@ -13360,13 +11843,6 @@ CREATE TABLE maker.vow_file (
 
 
 --
--- Name: TABLE vow_file; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.vow_file IS 'Note event emitted when file(bytes32,uint256) is called on Vow contract.';
-
-
---
 -- Name: vow_file_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -13396,13 +11872,6 @@ CREATE TABLE maker.vow_flapper (
     header_id integer NOT NULL,
     flapper text
 );
-
-
---
--- Name: TABLE vow_flapper; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.vow_flapper IS 'Value of the Vow contract''s flapper variable as of a block header.';
 
 
 --
@@ -13438,13 +11907,6 @@ CREATE TABLE maker.vow_flog (
 
 
 --
--- Name: TABLE vow_flog; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.vow_flog IS 'Note event emitted when flog is called on Vow contract.';
-
-
---
 -- Name: vow_flog_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -13474,13 +11936,6 @@ CREATE TABLE maker.vow_flopper (
     header_id integer NOT NULL,
     flopper text
 );
-
-
---
--- Name: TABLE vow_flopper; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.vow_flopper IS 'Value of the Vow contract''s flopper variable as of a block header.';
 
 
 --
@@ -13516,13 +11971,6 @@ CREATE TABLE maker.vow_hump (
 
 
 --
--- Name: TABLE vow_hump; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.vow_hump IS 'Value of the Vow contract''s hump variable as of a block header.';
-
-
---
 -- Name: vow_hump_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -13552,13 +12000,6 @@ CREATE TABLE maker.vow_sin_integer (
     header_id integer NOT NULL,
     sin numeric
 );
-
-
---
--- Name: TABLE vow_sin_integer; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.vow_sin_integer IS 'Value of the Vow contract''s Sin variable as of a block header.';
 
 
 --
@@ -13595,13 +12036,6 @@ CREATE TABLE maker.vow_sin_mapping (
 
 
 --
--- Name: TABLE vow_sin_mapping; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.vow_sin_mapping IS 'Value of an entry in the Vow contract''s sin mapping as of a block header.';
-
-
---
 -- Name: vow_sin_mapping_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -13631,13 +12065,6 @@ CREATE TABLE maker.vow_sump (
     header_id integer NOT NULL,
     sump numeric
 );
-
-
---
--- Name: TABLE vow_sump; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.vow_sump IS 'Value of the Vow contract''s sump variable as of a block header.';
 
 
 --
@@ -13673,13 +12100,6 @@ CREATE TABLE maker.vow_vat (
 
 
 --
--- Name: TABLE vow_vat; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.vow_vat IS 'Value of the Vow contract''s vat variable as of a block header.';
-
-
---
 -- Name: vow_vat_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -13709,13 +12129,6 @@ CREATE TABLE maker.vow_wait (
     header_id integer NOT NULL,
     wait numeric
 );
-
-
---
--- Name: TABLE vow_wait; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.vow_wait IS 'Value of the Vow contract''s wait variable as of a block header.';
 
 
 --
@@ -13753,13 +12166,6 @@ CREATE TABLE maker.wards (
 
 
 --
--- Name: TABLE wards; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.wards IS 'Usr values involved in contract Auth (via rely/deny calls, etc.)';
-
-
---
 -- Name: wards_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -13793,13 +12199,6 @@ CREATE TABLE maker.yank (
 
 
 --
--- Name: TABLE yank; Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON TABLE maker.yank IS 'Note event emitted when yank is called on Flap, Flip, or Flop contracts.';
-
-
---
 -- Name: yank_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -13828,13 +12227,6 @@ CREATE TABLE public.addresses (
     address character varying(42),
     hashed_address character varying(66)
 );
-
-
---
--- Name: TABLE addresses; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON TABLE public.addresses IS 'Ethereum address.';
 
 
 --
@@ -13870,13 +12262,6 @@ CREATE TABLE public.checked_headers (
 
 
 --
--- Name: TABLE checked_headers; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON TABLE public.checked_headers IS '@omit';
-
-
---
 -- Name: checked_headers_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -13907,13 +12292,6 @@ CREATE TABLE public.eth_nodes (
     network_id numeric,
     eth_node_id character varying(128)
 );
-
-
---
--- Name: TABLE eth_nodes; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON TABLE public.eth_nodes IS '@omit';
 
 
 --
@@ -13954,13 +12332,6 @@ CREATE TABLE public.event_logs (
     raw jsonb,
     transformed boolean DEFAULT false NOT NULL
 );
-
-
---
--- Name: TABLE event_logs; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON TABLE public.event_logs IS 'Ethereum transaction receipt log.';
 
 
 --
@@ -14033,13 +12404,6 @@ CREATE TABLE public.headers (
 
 
 --
--- Name: TABLE headers; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON TABLE public.headers IS 'Ethereum block header.';
-
-
---
 -- Name: headers_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -14078,13 +12442,6 @@ CREATE TABLE public.receipts (
 
 
 --
--- Name: TABLE receipts; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON TABLE public.receipts IS '@omit';
-
-
---
 -- Name: receipts_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -14118,13 +12475,6 @@ CREATE TABLE public.storage_diff (
     checked boolean DEFAULT false NOT NULL,
     from_backfill boolean DEFAULT false NOT NULL
 );
-
-
---
--- Name: TABLE storage_diff; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON TABLE public.storage_diff IS 'Ethereum contract storage trie leaf node.';
 
 
 --
@@ -14167,13 +12517,6 @@ CREATE TABLE public.transactions (
 
 
 --
--- Name: TABLE transactions; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON TABLE public.transactions IS 'Ethereum transaction.';
-
-
---
 -- Name: transactions_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -14202,13 +12545,6 @@ CREATE TABLE public.watched_logs (
     contract_address character varying(42),
     topic_zero character varying(66)
 );
-
-
---
--- Name: TABLE watched_logs; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON TABLE public.watched_logs IS '@omit';
 
 
 --

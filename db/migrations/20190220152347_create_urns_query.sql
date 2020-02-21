@@ -16,9 +16,6 @@ CREATE TYPE api.urn_state AS
     updated        TIMESTAMP
 );
 
-COMMENT ON TYPE api.urn_state
-    IS E'State of an Urn at a given block height, with nested data regarding associated Ilk, Frob events, and Bite events.';
-
 CREATE FUNCTION api.epoch_to_datetime(epoch NUMERIC)
     RETURNS TIMESTAMP AS
 $$
@@ -26,9 +23,6 @@ SELECT TIMESTAMP 'epoch' + epoch * INTERVAL '1 second' AS datetime
 $$
     LANGUAGE SQL
     IMMUTABLE;
-
-COMMENT ON FUNCTION api.epoch_to_datetime(epoch NUMERIC)
-    IS E'@omit';
 
 CREATE FUNCTION api.max_block()
     RETURNS BIGINT AS
@@ -38,9 +32,6 @@ FROM public.headers
 $$
     LANGUAGE SQL
     STABLE;
-
-COMMENT ON FUNCTION api.max_block()
-    IS E'@omit';
 
 -- Function returning state for all urns as of given block
 CREATE FUNCTION api.all_urns(block_height BIGINT DEFAULT api.max_block(), max_results INTEGER DEFAULT NULL,
@@ -103,9 +94,6 @@ all_urns.result_offset
 $body$
     LANGUAGE SQL
     STABLE;
-
-COMMENT ON FUNCTION api.all_urns(block_height BIGINT, max_results INTEGER, result_offset INTEGER)
-    IS E'Get the state of all Urns at a given block height. All arguments are optional. blockHeight defaults to most recent block. maxResults defaults to null (no limit). resultOffset defaults to 0.';
 
 -- +goose Down
 DROP FUNCTION api.all_urns(BIGINT, INTEGER, INTEGER);

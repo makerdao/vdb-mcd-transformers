@@ -8,9 +8,6 @@ CREATE TABLE maker.pot_drip
     UNIQUE (header_id, log_id)
 );
 
-COMMENT ON TABLE maker.pot_drip
-    IS E'Note event emitted when drip is called on Pot contract.';
-
 CREATE INDEX pot_drip_header_index
     ON maker.pot_drip (header_id);
 CREATE INDEX pot_drip_log_index

@@ -7,9 +7,6 @@ CREATE TABLE maker.pot_cage
     UNIQUE (header_id, log_id)
 );
 
-COMMENT ON TABLE maker.pot_cage
-    IS E'Note event emitted when cage is called on Pot contract.';
-
 CREATE INDEX pot_cage_header_index
     ON maker.pot_cage (header_id);
 CREATE INDEX pot_cage_log_index

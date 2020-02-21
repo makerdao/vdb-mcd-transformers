@@ -14,14 +14,6 @@ CREATE TYPE api.sin_queue_event AS
     -- tx
 );
 
-COMMENT ON TYPE api.sin_queue_event
-    IS E'Note events emitted when flog or fess is called on Vow contract, with nested data regarding associated Tx.';
-
-COMMENT ON COLUMN api.sin_queue_event.block_height
-    IS E'@omit';
-COMMENT ON COLUMN api.sin_queue_event.log_id
-    IS E'@omit';
-
 CREATE FUNCTION api.all_sin_queue_events(era NUMERIC, max_results INTEGER DEFAULT -1, result_offset INTEGER DEFAULT 0)
     RETURNS SETOF api.sin_queue_event AS
 $$
@@ -42,9 +34,6 @@ $$
     LANGUAGE sql
     STRICT --necessary for postgraphile queries with required arguments
     STABLE;
-
-COMMENT ON FUNCTION api.all_sin_queue_events(era NUMERIC, max_results INTEGER, result_offset INTEGER)
-    IS E'Get events related to the debt queue in a given era (block timestamp). era argument (e.g. 1582164329) is required. maxResults and resultOffset are optional, defaulting to no max/offset.';
 
 -- +goose Down
 -- SQL in this section is executed when the migration is rolled back.

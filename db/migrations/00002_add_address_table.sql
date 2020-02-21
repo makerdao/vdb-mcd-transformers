@@ -7,8 +7,5 @@ CREATE TABLE public.addresses
     UNIQUE (address)
 );
 
-COMMENT ON TABLE public.addresses
-    IS E'Ethereum address.';
-
 -- +goose Down
 DROP TABLE public.addresses;

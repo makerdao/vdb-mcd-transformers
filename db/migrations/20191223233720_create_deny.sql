@@ -10,9 +10,6 @@ CREATE TABLE maker.deny
     UNIQUE (header_id, log_id)
 );
 
-COMMENT ON TABLE maker.deny
-    IS E'Note event emitted when deny is called on Cat, Flap, Flip, Flop, Jug, Pot, Spot, or Vow contracts.';
-
 CREATE INDEX deny_header_index
     ON maker.deny (header_id);
 CREATE INDEX deny_log_index

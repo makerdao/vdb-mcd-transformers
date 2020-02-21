@@ -8,12 +8,6 @@ CREATE TABLE maker.log_value
     UNIQUE (header_id, log_id)
 );
 
-COMMENT ON TABLE maker.log_value
-    IS E'LogValue event on OSM/PIP contract(s).';
-
-COMMENT ON COLUMN maker.log_value.id
-    IS E'@omit';
-
 CREATE INDEX log_value_header_index
     ON maker.log_value (header_id);
 CREATE INDEX log_value_log_index

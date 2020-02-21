@@ -61,8 +61,5 @@ $body$
     STABLE
     STRICT;
 
-COMMENT ON FUNCTION api.get_urn(ilk_identifier TEXT, urn_identifier TEXT, block_height BIGINT)
-    IS E'Get the state of an Urn at a given block. ilkIdentifier (e.g. "ETH-A") and urnIdentifier (e.g. "0xC93C178EC17B06bddBa0CC798546161aF9D25e8A") are required. blockHeight is optional and defaults to the most recent known block.';
-
 -- +goose Down
 DROP FUNCTION api.get_urn(TEXT, TEXT, BIGINT);

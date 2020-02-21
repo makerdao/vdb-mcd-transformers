@@ -12,9 +12,6 @@ CREATE TABLE maker.vat_grab
     UNIQUE (header_id, log_id)
 );
 
-COMMENT ON TABLE maker.vat_grab
-    IS E'Note event emitted when grab is called on Vat contract.';
-
 CREATE INDEX vat_grab_header_index
     ON maker.vat_grab (header_id);
 CREATE INDEX vat_grab_log_index

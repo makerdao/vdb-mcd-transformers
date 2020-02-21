@@ -8,9 +8,6 @@ CREATE TABLE maker.vat_deny
     UNIQUE (header_id, log_id)
 );
 
-COMMENT ON TABLE maker.vat_deny
-    IS E'Note event emitted when deny is called on Vat contract.';
-
 CREATE INDEX vat_deny_header_index
     ON maker.vat_deny (header_id);
 CREATE INDEX vat_deny_log_index

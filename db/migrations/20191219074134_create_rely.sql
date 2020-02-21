@@ -11,9 +11,6 @@ CREATE TABLE maker.rely
     UNIQUE (header_id, log_id)
 );
 
-COMMENT ON TABLE maker.rely
-    IS E'Note event emitted when rely is called on Cat, Flap, Flip, Flop, Jug, Pot, Spot, or Vow contracts.';
-
 CREATE INDEX rely_header_index
     ON maker.rely (header_id);
 CREATE INDEX rely_log_index

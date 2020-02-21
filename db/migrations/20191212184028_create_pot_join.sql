@@ -9,9 +9,6 @@ CREATE TABLE maker.pot_join
     UNIQUE (header_id, log_id)
 );
 
-COMMENT ON TABLE maker.pot_join
-    IS E'Note event emitted when join is called on Pot contract.';
-
 CREATE INDEX pot_join_header_index
     ON maker.pot_join (header_id);
 CREATE INDEX pot_join_log_index

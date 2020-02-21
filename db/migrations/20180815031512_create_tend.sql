@@ -11,9 +11,6 @@ CREATE TABLE maker.tend
     UNIQUE (header_id, log_id)
 );
 
-COMMENT ON TABLE maker.tend
-    IS E'Note event emitted when tend is called on Flap or Flip contract.';
-
 CREATE INDEX tend_header_index
     ON maker.tend (header_id);
 CREATE INDEX tend_log_index

@@ -20,12 +20,6 @@ CREATE TABLE api.ilk_snapshot
     PRIMARY KEY (ilk_identifier, block_number)
 );
 
-COMMENT ON TABLE api.ilk_snapshot
-    IS E'Historical snapshots of the state of Ilks.';
-
-COMMENT ON COLUMN api.ilk_snapshot.ilk_identifier IS '@name id';
-
-
 CREATE FUNCTION ilk_rate_before_block(ilk_id INTEGER, header_id INTEGER) RETURNS NUMERIC AS
 $$
 WITH passed_block_number AS (
@@ -44,9 +38,8 @@ LIMIT 1
 $$
     LANGUAGE sql;
 
-COMMENT ON FUNCTION ilk_rate_before_block
+COMMENT ON FUNCTION ilk_rate_before_block(ilk_id INTEGER, header_id INTEGER)
     IS E'@omit';
-
 
 CREATE FUNCTION ilk_art_before_block(ilk_id INTEGER, header_id INTEGER) RETURNS NUMERIC AS
 $$
@@ -66,9 +59,8 @@ LIMIT 1
 $$
     LANGUAGE sql;
 
-COMMENT ON FUNCTION ilk_art_before_block
+COMMENT ON FUNCTION ilk_art_before_block(ilk_id INTEGER, header_id INTEGER)
     IS E'@omit';
-
 
 CREATE FUNCTION ilk_spot_before_block(ilk_id INTEGER, header_id INTEGER) RETURNS NUMERIC AS
 $$
@@ -88,9 +80,8 @@ LIMIT 1
 $$
     LANGUAGE sql;
 
-COMMENT ON FUNCTION ilk_spot_before_block
+COMMENT ON FUNCTION ilk_spot_before_block(ilk_id INTEGER, header_id INTEGER)
     IS E'@omit';
-
 
 CREATE FUNCTION ilk_line_before_block(ilk_id INTEGER, header_id INTEGER) RETURNS NUMERIC AS
 $$
@@ -110,9 +101,8 @@ LIMIT 1
 $$
     LANGUAGE sql;
 
-COMMENT ON FUNCTION ilk_line_before_block
+COMMENT ON FUNCTION ilk_line_before_block(ilk_id INTEGER, header_id INTEGER)
     IS E'@omit';
-
 
 CREATE FUNCTION ilk_dust_before_block(ilk_id INTEGER, header_id INTEGER) RETURNS NUMERIC AS
 $$
@@ -132,9 +122,8 @@ LIMIT 1
 $$
     LANGUAGE sql;
 
-COMMENT ON FUNCTION ilk_dust_before_block
+COMMENT ON FUNCTION ilk_dust_before_block(ilk_id INTEGER, header_id INTEGER)
     IS E'@omit';
-
 
 CREATE FUNCTION ilk_chop_before_block(ilk_id INTEGER, header_id INTEGER) RETURNS NUMERIC AS
 $$
@@ -154,9 +143,8 @@ LIMIT 1
 $$
     LANGUAGE sql;
 
-COMMENT ON FUNCTION ilk_chop_before_block
+COMMENT ON FUNCTION ilk_chop_before_block(ilk_id INTEGER, header_id INTEGER)
     IS E'@omit';
-
 
 CREATE FUNCTION ilk_lump_before_block(ilk_id INTEGER, header_id INTEGER) RETURNS NUMERIC AS
 $$
@@ -176,9 +164,8 @@ LIMIT 1
 $$
     LANGUAGE sql;
 
-COMMENT ON FUNCTION ilk_lump_before_block
+COMMENT ON FUNCTION ilk_lump_before_block(ilk_id INTEGER, header_id INTEGER)
     IS E'@omit';
-
 
 CREATE FUNCTION ilk_flip_before_block(ilk_id INTEGER, header_id INTEGER) RETURNS TEXT AS
 $$
@@ -198,9 +185,8 @@ LIMIT 1
 $$
     LANGUAGE sql;
 
-COMMENT ON FUNCTION ilk_flip_before_block
+COMMENT ON FUNCTION ilk_flip_before_block(ilk_id INTEGER, header_id INTEGER)
     IS E'@omit';
-
 
 CREATE FUNCTION ilk_rho_before_block(ilk_id INTEGER, header_id INTEGER) RETURNS NUMERIC AS
 $$
@@ -221,9 +207,8 @@ LIMIT 1
 $$
     LANGUAGE sql;
 
-COMMENT ON FUNCTION ilk_rho_before_block
+COMMENT ON FUNCTION ilk_rho_before_block(ilk_id INTEGER, header_id INTEGER)
     IS E'@omit';
-
 
 CREATE FUNCTION ilk_duty_before_block(ilk_id INTEGER, header_id INTEGER) RETURNS NUMERIC AS
 $$
@@ -243,9 +228,8 @@ LIMIT 1
 $$
     LANGUAGE sql;
 
-COMMENT ON FUNCTION ilk_duty_before_block
+COMMENT ON FUNCTION ilk_duty_before_block(ilk_id INTEGER, header_id INTEGER)
     IS E'@omit';
-
 
 CREATE FUNCTION ilk_pip_before_block(ilk_id INTEGER, header_id INTEGER) RETURNS TEXT AS
 $$
@@ -265,9 +249,8 @@ LIMIT 1
 $$
     LANGUAGE sql;
 
-COMMENT ON FUNCTION ilk_pip_before_block
+COMMENT ON FUNCTION ilk_pip_before_block(ilk_id INTEGER, header_id INTEGER)
     IS E'@omit';
-
 
 CREATE FUNCTION ilk_mat_before_block(ilk_id INTEGER, header_id INTEGER) RETURNS NUMERIC AS
 $$
@@ -287,9 +270,8 @@ LIMIT 1
 $$
     LANGUAGE sql;
 
-COMMENT ON FUNCTION ilk_mat_before_block
+COMMENT ON FUNCTION ilk_mat_before_block(ilk_id INTEGER, header_id INTEGER)
     IS E'@omit';
-
 
 CREATE FUNCTION ilk_time_created(ilk_id INTEGER) RETURNS TIMESTAMP AS
 $$
@@ -300,7 +282,7 @@ WHERE vat_init.ilk_id = ilk_time_created.ilk_id
 $$
     LANGUAGE sql;
 
-COMMENT ON FUNCTION ilk_time_created
+COMMENT ON FUNCTION ilk_time_created(ilk_id INTEGER)
     IS E'@omit';
 
 -- +goose StatementBegin

@@ -9,9 +9,6 @@ CREATE TYPE api.queued_sin AS
     updated TIMESTAMP
 );
 
-COMMENT ON TYPE api.queued_sin
-    IS E'Data regarding the queued sin (tab) for an era, with nested data regarding associated events.';
-
 CREATE FUNCTION api.get_queued_sin(era NUMERIC)
     RETURNS api.queued_sin AS
 $body$
@@ -43,9 +40,6 @@ $body$
     LANGUAGE sql
     STABLE
     STRICT;
-
-COMMENT ON FUNCTION api.get_queued_sin(era NUMERIC)
-    IS E'Get the queued sin associated with an era (block timestamp). era argument (e.g. 1582164329) is required.';
 
 -- +goose Down
 DROP FUNCTION api.get_queued_sin(NUMERIC);

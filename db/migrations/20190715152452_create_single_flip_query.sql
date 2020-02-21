@@ -19,17 +19,6 @@ CREATE TYPE api.flip_bid_snapshot AS
     updated      TIMESTAMP
 );
 
-COMMENT ON TYPE api.flip_bid_snapshot
-    IS E'Historical snapshots of the state of auctions on the Flip contracts, with data about associated Urn.';
-
-COMMENT ON COLUMN api.flip_bid_snapshot.block_height
-    IS E'@omit';
-COMMENT ON COLUMN api.flip_bid_snapshot.ilk_id
-    IS E'@omit';
-COMMENT ON COLUMN api.flip_bid_snapshot.urn_id
-    IS E'@omit';
-
-
 -- Function returning the state for a single flip as of the given block height and ilk
 CREATE FUNCTION api.get_flip(bid_id NUMERIC, ilk TEXT, block_height BIGINT DEFAULT api.max_block())
     RETURNS api.flip_bid_snapshot
@@ -98,9 +87,6 @@ $$
     LANGUAGE SQL
     STABLE
     STRICT;
-
-COMMENT ON FUNCTION api.get_flip(bid_id NUMERIC, ilk TEXT, block_height BIGINT)
-    IS E'Get the state of a Flip auction at a given block height. bidId (e.g. "1") and ilk (e.g. "ETH-A") arguments are required. blockHeight argument is optional and defaults to most recent block.';
 
 -- +goose Down
 DROP FUNCTION api.get_flip(NUMERIC, TEXT, BIGINT);

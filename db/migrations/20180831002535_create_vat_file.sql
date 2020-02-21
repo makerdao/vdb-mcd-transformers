@@ -10,9 +10,6 @@ CREATE TABLE maker.vat_file_ilk
     UNIQUE (header_id, log_id)
 );
 
-COMMENT ON TABLE maker.vat_file_ilk
-    IS E'Note event emitted when file(bytes32,bytes32,uint256) is called on Vat contract.';
-
 CREATE INDEX vat_file_ilk_header_index
     ON maker.vat_file_ilk (header_id);
 CREATE INDEX vat_file_ilk_log_index
@@ -29,9 +26,6 @@ CREATE TABLE maker.vat_file_debt_ceiling
     data      NUMERIC,
     UNIQUE (header_id, log_id)
 );
-
-COMMENT ON TABLE maker.vat_file_debt_ceiling
-    IS E'Note event emitted when file(bytes32,uint256) is called on Vat contract.';
 
 CREATE INDEX vat_file_debt_ceiling_header_index
     ON maker.vat_file_debt_ceiling (header_id);

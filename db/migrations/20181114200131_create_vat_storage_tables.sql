@@ -12,7 +12,7 @@ CREATE INDEX vat_debt_header_id_index
     ON maker.vat_debt (header_id);
 
 COMMENT ON TABLE maker.vat_debt
-    IS E'Value of the Vat contract\'s debt variable as of a block header.';
+    IS E'';
 
 CREATE TABLE maker.vat_vice
 (
@@ -25,9 +25,6 @@ CREATE TABLE maker.vat_vice
 
 CREATE INDEX vat_vice_header_id_index
     ON maker.vat_vice (header_id);
-
-COMMENT ON TABLE maker.vat_vice
-    IS E'Value of the Vat contract\'s vice variable as of a block header.';
 
 CREATE TABLE maker.vat_ilk_art
 (
@@ -44,9 +41,6 @@ CREATE INDEX vat_ilk_art_header_id_index
 CREATE INDEX vat_ilk_art_ilk_index
     ON maker.vat_ilk_art (ilk_id);
 
-COMMENT ON TABLE maker.vat_ilk_art
-    IS E'Value of an Ilk\'s Art field on the Vat contract as of a block header.';
-
 CREATE TABLE maker.vat_ilk_dust
 (
     id        SERIAL PRIMARY KEY,
@@ -61,9 +55,6 @@ CREATE INDEX vat_ilk_dust_header_id_index
     ON maker.vat_ilk_dust (header_id);
 CREATE INDEX vat_ilk_dust_ilk_index
     ON maker.vat_ilk_dust (ilk_id);
-
-COMMENT ON TABLE maker.vat_ilk_dust
-    IS E'Value of an Ilk\'s dust field on the Vat contract as of a block header.';
 
 CREATE TABLE maker.vat_ilk_line
 (
@@ -80,9 +71,6 @@ CREATE INDEX vat_ilk_line_header_id_index
 CREATE INDEX vat_ilk_line_ilk_index
     ON maker.vat_ilk_line (ilk_id);
 
-COMMENT ON TABLE maker.vat_ilk_line
-    IS E'Value of an Ilk\'s line field on the Vat contract as of a block header.';
-
 CREATE TABLE maker.vat_ilk_spot
 (
     id        SERIAL PRIMARY KEY,
@@ -97,9 +85,6 @@ CREATE INDEX vat_ilk_spot_header_id_index
     ON maker.vat_ilk_spot (header_id);
 CREATE INDEX vat_ilk_spot_ilk_index
     ON maker.vat_ilk_spot (ilk_id);
-
-COMMENT ON TABLE maker.vat_ilk_spot
-    IS E'Value of an Ilk\'s spot field on the Vat contract as of a block header.';
 
 CREATE TABLE maker.vat_ilk_rate
 (
@@ -116,9 +101,6 @@ CREATE INDEX vat_ilk_rate_header_id_index
 CREATE INDEX vat_ilk_rate_ilk_index
     ON maker.vat_ilk_rate (ilk_id);
 
-COMMENT ON TABLE maker.vat_ilk_rate
-    IS E'Value of an Ilk\'s rate field on the Vat contract as of a block header.';
-
 CREATE TABLE maker.vat_urn_art
 (
     id        SERIAL PRIMARY KEY,
@@ -134,9 +116,6 @@ CREATE INDEX vat_urn_art_header_id_index
 CREATE INDEX vat_urn_art_urn_index
     ON maker.vat_urn_art (urn_id);
 
-COMMENT ON TABLE maker.vat_urn_art
-    IS E'Value of an Urn\'s art field on the Vat contract as of a block header.';
-
 CREATE TABLE maker.vat_urn_ink
 (
     id        SERIAL PRIMARY KEY,
@@ -151,9 +130,6 @@ CREATE INDEX vat_urn_ink_header_id_index
     ON maker.vat_urn_ink (header_id);
 CREATE INDEX vat_urn_ink_urn_index
     ON maker.vat_urn_ink (urn_id);
-
-COMMENT ON TABLE maker.vat_urn_ink
-    IS E'Value of an Urn\'s ink field on the Vat contract as of a block header.';
 
 CREATE TABLE maker.vat_gem
 (
@@ -171,9 +147,6 @@ CREATE INDEX vat_gem_header_id_index
 CREATE INDEX vat_gem_ilk_index
     ON maker.vat_gem (ilk_id);
 
-COMMENT ON TABLE maker.vat_gem
-    IS E'Value of an entry in the Vat contract\'s gem mapping as of a block header.';
-
 CREATE TABLE maker.vat_dai
 (
     id        SERIAL PRIMARY KEY,
@@ -186,9 +159,6 @@ CREATE TABLE maker.vat_dai
 
 CREATE INDEX vat_dai_header_id_index
     ON maker.vat_dai (header_id);
-
-COMMENT ON TABLE maker.vat_dai
-    IS E'Value of an entry in the Vat contract\'s dai mapping as of a block header.';
 
 CREATE TABLE maker.vat_sin
 (
@@ -203,9 +173,6 @@ CREATE TABLE maker.vat_sin
 CREATE INDEX vat_sin_header_id_index
     ON maker.vat_sin (header_id);
 
-COMMENT ON TABLE maker.vat_sin
-    IS E'Value of an entry in the Vat contract\' sin mapping as of a block header.';
-
 CREATE TABLE maker.vat_line
 (
     id        SERIAL PRIMARY KEY,
@@ -218,9 +185,6 @@ CREATE TABLE maker.vat_line
 CREATE INDEX vat_line_header_id_index
     ON maker.vat_line (header_id);
 
-COMMENT ON TABLE maker.vat_line
-    IS E'Value of the Vat contract\'s Line variable as of a block header.';
-
 CREATE TABLE maker.vat_live
 (
     id        SERIAL PRIMARY KEY,
@@ -232,9 +196,6 @@ CREATE TABLE maker.vat_live
 
 CREATE INDEX vat_live_header_id_index
     ON maker.vat_live (header_id);
-
-COMMENT ON TABLE maker.vat_live
-    IS E'Value of the Vat contract\'s live variable as of a block header.';
 
 -- +goose Down
 DROP INDEX maker.vat_debt_header_id_index;

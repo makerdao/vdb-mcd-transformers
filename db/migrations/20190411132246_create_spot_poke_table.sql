@@ -11,9 +11,6 @@ CREATE TABLE maker.spot_poke
     UNIQUE (header_id, log_id)
 );
 
-COMMENT ON TABLE maker.spot_poke
-    IS E'Poke event emitted by Spot contract.';
-
 CREATE INDEX spot_poke_header_index
     ON maker.spot_poke (header_id);
 CREATE INDEX spot_poke_log_index

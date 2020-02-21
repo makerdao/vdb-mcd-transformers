@@ -10,9 +10,6 @@ CREATE TABLE maker.vat_slip
     UNIQUE (header_id, log_id)
 );
 
-COMMENT ON TABLE maker.vat_slip
-    IS E'Note event emitted when slip is called on Vat contract.';
-
 CREATE INDEX vat_slip_header_index
     ON maker.vat_slip (header_id);
 CREATE INDEX vat_slip_log_index
