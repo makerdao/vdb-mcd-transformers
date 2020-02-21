@@ -2528,7 +2528,7 @@ CREATE TABLE maker.flip_ilk (
 -- Name: TABLE flip_ilk; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.flip_ilk IS '@omit';
+COMMENT ON TABLE maker.flip_ilk IS 'Value of a Flip contract''s ilk variable as of a block header.';
 
 
 --
@@ -3058,7 +3058,7 @@ CREATE TABLE maker.flip_bid_usr (
 -- Name: TABLE flip_bid_usr; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.flip_bid_usr IS '@omit';
+COMMENT ON TABLE maker.flip_bid_usr IS 'Value of a Bid''s usr field on a Flip contract as of a block header.';
 
 
 --
@@ -3264,7 +3264,7 @@ CREATE TABLE maker.vat_ilk_art (
 -- Name: TABLE vat_ilk_art; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.vat_ilk_art IS '@omit';
+COMMENT ON TABLE maker.vat_ilk_art IS 'Value of an Ilk''s Art field on the Vat contract as of a block header.';
 
 
 --
@@ -3338,7 +3338,7 @@ CREATE TABLE maker.cat_ilk_chop (
 -- Name: TABLE cat_ilk_chop; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.cat_ilk_chop IS '@omit';
+COMMENT ON TABLE maker.cat_ilk_chop IS 'Value of an Ilk''s chop field on the Cat contract as of a block header.';
 
 
 --
@@ -3412,7 +3412,7 @@ CREATE TABLE maker.vat_ilk_dust (
 -- Name: TABLE vat_ilk_dust; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.vat_ilk_dust IS '@omit';
+COMMENT ON TABLE maker.vat_ilk_dust IS 'Value of an Ilk''s dust field on the Vat contract as of a block header.';
 
 
 --
@@ -3486,7 +3486,7 @@ CREATE TABLE maker.jug_ilk_duty (
 -- Name: TABLE jug_ilk_duty; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.jug_ilk_duty IS '@omit';
+COMMENT ON TABLE maker.jug_ilk_duty IS 'Value of an Ilk''s duty field on the Jug contract as of a block header.';
 
 
 --
@@ -3561,7 +3561,7 @@ CREATE TABLE maker.flap_bid_bid (
 -- Name: TABLE flap_bid_bid; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.flap_bid_bid IS '@omit';
+COMMENT ON TABLE maker.flap_bid_bid IS 'Value of a Bid''s bid field on the Flap contract as of a block header.';
 
 
 --
@@ -3617,7 +3617,7 @@ CREATE TABLE maker.flap_bid_end (
 -- Name: TABLE flap_bid_end; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.flap_bid_end IS '@omit';
+COMMENT ON TABLE maker.flap_bid_end IS 'Value of a Bid''s end field on the Flap contract as of a block header.';
 
 
 --
@@ -3673,7 +3673,7 @@ CREATE TABLE maker.flap_bid_guy (
 -- Name: TABLE flap_bid_guy; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.flap_bid_guy IS '@omit';
+COMMENT ON TABLE maker.flap_bid_guy IS 'Value of a Bid''s guy field on the Flap contract as of a block header.';
 
 
 --
@@ -3729,7 +3729,7 @@ CREATE TABLE maker.flap_bid_lot (
 -- Name: TABLE flap_bid_lot; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.flap_bid_lot IS '@omit';
+COMMENT ON TABLE maker.flap_bid_lot IS 'Value of a Bid''s lot field on the Flap contract as of a block header.';
 
 
 --
@@ -3785,7 +3785,7 @@ CREATE TABLE maker.flap_bid_tic (
 -- Name: TABLE flap_bid_tic; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.flap_bid_tic IS '@omit';
+COMMENT ON TABLE maker.flap_bid_tic IS 'Value of a Bid''s tic field on the Flap contract as of a block header.';
 
 
 --
@@ -3840,7 +3840,7 @@ CREATE TABLE maker.cat_ilk_flip (
 -- Name: TABLE cat_ilk_flip; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.cat_ilk_flip IS '@omit';
+COMMENT ON TABLE maker.cat_ilk_flip IS 'Value of an Ilk''s flip field on the Cat contract as of a block header.';
 
 
 --
@@ -3915,7 +3915,7 @@ CREATE TABLE maker.flip_bid_bid (
 -- Name: TABLE flip_bid_bid; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.flip_bid_bid IS '@omit';
+COMMENT ON TABLE maker.flip_bid_bid IS 'Value of a Bid''s bid field on a Flip contract as of a block header.';
 
 
 --
@@ -3974,7 +3974,7 @@ CREATE TABLE maker.flip_bid_end (
 -- Name: TABLE flip_bid_end; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.flip_bid_end IS '@omit';
+COMMENT ON TABLE maker.flip_bid_end IS 'Value of a Bid''s end field on a Flip contract as of a block header.';
 
 
 --
@@ -4033,7 +4033,7 @@ CREATE TABLE maker.flip_bid_gal (
 -- Name: TABLE flip_bid_gal; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.flip_bid_gal IS '@omit';
+COMMENT ON TABLE maker.flip_bid_gal IS 'Value of a Bid''s gal field on a Flip contract as of a block header.';
 
 
 --
@@ -4092,7 +4092,7 @@ CREATE TABLE maker.flip_bid_guy (
 -- Name: TABLE flip_bid_guy; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.flip_bid_guy IS '@omit';
+COMMENT ON TABLE maker.flip_bid_guy IS 'Value of a Bid''s guy field on a Flip contract as of a block header.';
 
 
 --
@@ -4151,7 +4151,7 @@ CREATE TABLE maker.flip_bid_lot (
 -- Name: TABLE flip_bid_lot; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.flip_bid_lot IS '@omit';
+COMMENT ON TABLE maker.flip_bid_lot IS 'Value of a Bid''s lot field on a Flip contract as of a block header.';
 
 
 --
@@ -4210,7 +4210,7 @@ CREATE TABLE maker.flip_bid_tab (
 -- Name: TABLE flip_bid_tab; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.flip_bid_tab IS '@omit';
+COMMENT ON TABLE maker.flip_bid_tab IS 'Value of a Bid''s tab field on a Flip contract as of a block header.';
 
 
 --
@@ -4269,7 +4269,7 @@ CREATE TABLE maker.flip_bid_tic (
 -- Name: TABLE flip_bid_tic; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.flip_bid_tic IS '@omit';
+COMMENT ON TABLE maker.flip_bid_tic IS 'Value of a Bid''s tic field on a Flip contract as of a block header.';
 
 
 --
@@ -4366,7 +4366,7 @@ CREATE TABLE maker.flop_bid_bid (
 -- Name: TABLE flop_bid_bid; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.flop_bid_bid IS '@omit';
+COMMENT ON TABLE maker.flop_bid_bid IS 'Value of a Bid''s bid field on the Flop contract as of a block header.';
 
 
 --
@@ -4422,7 +4422,7 @@ CREATE TABLE maker.flop_bid_end (
 -- Name: TABLE flop_bid_end; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.flop_bid_end IS '@omit';
+COMMENT ON TABLE maker.flop_bid_end IS 'Value of a Bid''s end field on the Flop contract as of a block header.';
 
 
 --
@@ -4478,7 +4478,7 @@ CREATE TABLE maker.flop_bid_guy (
 -- Name: TABLE flop_bid_guy; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.flop_bid_guy IS '@omit';
+COMMENT ON TABLE maker.flop_bid_guy IS 'Value of a Bid''s guy field on the Flop contract as of a block header.';
 
 
 --
@@ -4534,7 +4534,7 @@ CREATE TABLE maker.flop_bid_lot (
 -- Name: TABLE flop_bid_lot; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.flop_bid_lot IS '@omit';
+COMMENT ON TABLE maker.flop_bid_lot IS 'Value of a Bid''s lot field on the Flop contract as of a block header.';
 
 
 --
@@ -4590,7 +4590,7 @@ CREATE TABLE maker.flop_bid_tic (
 -- Name: TABLE flop_bid_tic; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.flop_bid_tic IS '@omit';
+COMMENT ON TABLE maker.flop_bid_tic IS 'Value of a Bid''s tic field on the Flop contract as of a block header.';
 
 
 --
@@ -4645,7 +4645,7 @@ CREATE TABLE maker.vat_ilk_line (
 -- Name: TABLE vat_ilk_line; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.vat_ilk_line IS '@omit';
+COMMENT ON TABLE maker.vat_ilk_line IS 'Value of an Ilk''s line field on the Vat contract as of a block header.';
 
 
 --
@@ -4719,7 +4719,7 @@ CREATE TABLE maker.cat_ilk_lump (
 -- Name: TABLE cat_ilk_lump; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.cat_ilk_lump IS '@omit';
+COMMENT ON TABLE maker.cat_ilk_lump IS 'Value of an Ilk''s lump field on the Cat contract as of a block header.';
 
 
 --
@@ -4793,7 +4793,7 @@ CREATE TABLE maker.spot_ilk_mat (
 -- Name: TABLE spot_ilk_mat; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.spot_ilk_mat IS '@omit';
+COMMENT ON TABLE maker.spot_ilk_mat IS 'Value of an Ilk''s mat field on the Spot contract as of a block header.';
 
 
 --
@@ -4867,7 +4867,7 @@ CREATE TABLE maker.spot_ilk_pip (
 -- Name: TABLE spot_ilk_pip; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.spot_ilk_pip IS '@omit';
+COMMENT ON TABLE maker.spot_ilk_pip IS 'Value of an Ilk''s pip field on the Spot contract as of a block header.';
 
 
 --
@@ -4941,7 +4941,7 @@ CREATE TABLE maker.vat_ilk_rate (
 -- Name: TABLE vat_ilk_rate; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.vat_ilk_rate IS '@omit';
+COMMENT ON TABLE maker.vat_ilk_rate IS 'Value of an Ilk''s rate field on the Vat contract as of a block header.';
 
 
 --
@@ -5015,7 +5015,7 @@ CREATE TABLE maker.jug_ilk_rho (
 -- Name: TABLE jug_ilk_rho; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.jug_ilk_rho IS '@omit';
+COMMENT ON TABLE maker.jug_ilk_rho IS 'Value of an Ilk''s rho field on the Jug contract as of a block header.';
 
 
 --
@@ -5089,7 +5089,7 @@ CREATE TABLE maker.vat_ilk_spot (
 -- Name: TABLE vat_ilk_spot; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.vat_ilk_spot IS '@omit';
+COMMENT ON TABLE maker.vat_ilk_spot IS 'Value of an Ilk''s spot field on the Vat contract as of a block header.';
 
 
 --
@@ -5198,7 +5198,7 @@ CREATE TABLE maker.vat_urn_art (
 -- Name: TABLE vat_urn_art; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.vat_urn_art IS '@omit';
+COMMENT ON TABLE maker.vat_urn_art IS 'Value of an Urn''s art field on the Vat contract as of a block header.';
 
 
 --
@@ -5258,7 +5258,7 @@ CREATE TABLE maker.vat_urn_ink (
 -- Name: TABLE vat_urn_ink; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.vat_urn_ink IS '@omit';
+COMMENT ON TABLE maker.vat_urn_ink IS 'Value of an Urn''s ink field on the Vat contract as of a block header.';
 
 
 --
@@ -8713,7 +8713,7 @@ CREATE TABLE maker.cat_live (
 -- Name: TABLE cat_live; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.cat_live IS '@omit';
+COMMENT ON TABLE maker.cat_live IS 'Value of the Cat contract''s live variable as of a block header.';
 
 
 --
@@ -8752,7 +8752,7 @@ CREATE TABLE maker.cat_vat (
 -- Name: TABLE cat_vat; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.cat_vat IS '@omit';
+COMMENT ON TABLE maker.cat_vat IS 'Value of the Cat contract''s vat variable as of a block header.';
 
 
 --
@@ -8791,7 +8791,7 @@ CREATE TABLE maker.cat_vow (
 -- Name: TABLE cat_vow; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.cat_vow IS '@omit';
+COMMENT ON TABLE maker.cat_vow IS 'Value of the Cat contract''s vow variable as of a block header.';
 
 
 --
@@ -8830,7 +8830,7 @@ CREATE TABLE maker.cdp_manager_cdpi (
 -- Name: TABLE cdp_manager_cdpi; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.cdp_manager_cdpi IS '@omit';
+COMMENT ON TABLE maker.cdp_manager_cdpi IS 'Value of the CdpManager contract''s cdpi variable as a block header.';
 
 
 --
@@ -8870,7 +8870,7 @@ CREATE TABLE maker.cdp_manager_count (
 -- Name: TABLE cdp_manager_count; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.cdp_manager_count IS '@omit';
+COMMENT ON TABLE maker.cdp_manager_count IS 'Value of an entry in the CdpManager contract''s count mapping as of a block header.';
 
 
 --
@@ -8910,7 +8910,7 @@ CREATE TABLE maker.cdp_manager_first (
 -- Name: TABLE cdp_manager_first; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.cdp_manager_first IS '@omit';
+COMMENT ON TABLE maker.cdp_manager_first IS 'Value of an entry in the CdpManager contract''s first mapping as of a block header.';
 
 
 --
@@ -8950,7 +8950,7 @@ CREATE TABLE maker.cdp_manager_ilks (
 -- Name: TABLE cdp_manager_ilks; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.cdp_manager_ilks IS '@omit';
+COMMENT ON TABLE maker.cdp_manager_ilks IS 'Value of an entry in the CdpManager contract''s ilks mapping as of a block header.';
 
 
 --
@@ -8990,7 +8990,7 @@ CREATE TABLE maker.cdp_manager_last (
 -- Name: TABLE cdp_manager_last; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.cdp_manager_last IS '@omit';
+COMMENT ON TABLE maker.cdp_manager_last IS 'Value of an entry in the CdpManager contract''s last mapping as of a block header.';
 
 
 --
@@ -9030,7 +9030,7 @@ CREATE TABLE maker.cdp_manager_list_next (
 -- Name: TABLE cdp_manager_list_next; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.cdp_manager_list_next IS '@omit';
+COMMENT ON TABLE maker.cdp_manager_list_next IS 'Value of a List''s next field on the CdpManager contract as of a block header.';
 
 
 --
@@ -9070,7 +9070,7 @@ CREATE TABLE maker.cdp_manager_list_prev (
 -- Name: TABLE cdp_manager_list_prev; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.cdp_manager_list_prev IS '@omit';
+COMMENT ON TABLE maker.cdp_manager_list_prev IS 'Value a List''s prev field on the CdpManager contract as of a block header.';
 
 
 --
@@ -9110,7 +9110,7 @@ CREATE TABLE maker.cdp_manager_owns (
 -- Name: TABLE cdp_manager_owns; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.cdp_manager_owns IS '@omit';
+COMMENT ON TABLE maker.cdp_manager_owns IS 'Value of an entry in the CdpManager contract''s owns mapping as of a block header.';
 
 
 --
@@ -9150,7 +9150,7 @@ CREATE TABLE maker.cdp_manager_urns (
 -- Name: TABLE cdp_manager_urns; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.cdp_manager_urns IS '@omit';
+COMMENT ON TABLE maker.cdp_manager_urns IS 'Value of an entry in the CdpManager contract''s urns mapping as of a block header.';
 
 
 --
@@ -9189,7 +9189,7 @@ CREATE TABLE maker.cdp_manager_vat (
 -- Name: TABLE cdp_manager_vat; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.cdp_manager_vat IS '@omit';
+COMMENT ON TABLE maker.cdp_manager_vat IS 'Value of the CdpManager contract''s vat variable as of a block header.';
 
 
 --
@@ -9378,7 +9378,7 @@ CREATE TABLE maker.flap_beg (
 -- Name: TABLE flap_beg; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.flap_beg IS '@omit';
+COMMENT ON TABLE maker.flap_beg IS 'Value of the Flap contract''s beg variable as of a block header.';
 
 
 --
@@ -9518,7 +9518,7 @@ CREATE TABLE maker.flap_gem (
 -- Name: TABLE flap_gem; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.flap_gem IS '@omit';
+COMMENT ON TABLE maker.flap_gem IS 'Value of the Flap contract''s gem variable as of a block header.';
 
 
 --
@@ -9578,7 +9578,8 @@ CREATE TABLE maker.flap_kicks (
 -- Name: TABLE flap_kicks; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.flap_kicks IS '@omit';
+COMMENT ON TABLE maker.flap_kicks IS '@name flapKicksStorage
+Value of the Flap contract''s kicks variable as of a block header.';
 
 
 --
@@ -9612,6 +9613,13 @@ CREATE TABLE maker.flap_live (
     address_id integer NOT NULL,
     live numeric NOT NULL
 );
+
+
+--
+-- Name: TABLE flap_live; Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON TABLE maker.flap_live IS 'Value of the Flap contract''s live variable as of a block header.';
 
 
 --
@@ -9651,7 +9659,7 @@ CREATE TABLE maker.flap_tau (
 -- Name: TABLE flap_tau; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.flap_tau IS '@omit';
+COMMENT ON TABLE maker.flap_tau IS 'Value of the Flap contract''s tau variable as of a block header.';
 
 
 --
@@ -9691,7 +9699,7 @@ CREATE TABLE maker.flap_ttl (
 -- Name: TABLE flap_ttl; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.flap_ttl IS '@omit';
+COMMENT ON TABLE maker.flap_ttl IS 'Value of the Flap contract''s ttl variable as of a block header.';
 
 
 --
@@ -9731,7 +9739,7 @@ CREATE TABLE maker.flap_vat (
 -- Name: TABLE flap_vat; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.flap_vat IS '@omit';
+COMMENT ON TABLE maker.flap_vat IS 'Value of the Flap contract''s vat variable as of a block header.';
 
 
 --
@@ -9800,7 +9808,7 @@ CREATE TABLE maker.flip_beg (
 -- Name: TABLE flip_beg; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.flip_beg IS '@omit';
+COMMENT ON TABLE maker.flip_beg IS 'Value of a Flip contract''s beg variable as of a block header.';
 
 
 --
@@ -10040,7 +10048,8 @@ CREATE TABLE maker.flip_kicks (
 -- Name: TABLE flip_kicks; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.flip_kicks IS '@omit';
+COMMENT ON TABLE maker.flip_kicks IS '@name flipKicksStorage
+Value of a Flip contract''s kicks variable as of a block header.';
 
 
 --
@@ -10080,7 +10089,7 @@ CREATE TABLE maker.flip_tau (
 -- Name: TABLE flip_tau; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.flip_tau IS '@omit';
+COMMENT ON TABLE maker.flip_tau IS 'Value of a Flip contract''s tau variable as of a block header.';
 
 
 --
@@ -10120,7 +10129,7 @@ CREATE TABLE maker.flip_ttl (
 -- Name: TABLE flip_ttl; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.flip_ttl IS '@omit';
+COMMENT ON TABLE maker.flip_ttl IS 'Value of a Flip contract''s ttl variable as of a block header.';
 
 
 --
@@ -10160,7 +10169,7 @@ CREATE TABLE maker.flip_vat (
 -- Name: TABLE flip_vat; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.flip_vat IS '@omit';
+COMMENT ON TABLE maker.flip_vat IS 'Value of a Flip contract''s vat variable as of a block header.';
 
 
 --
@@ -10226,7 +10235,7 @@ CREATE TABLE maker.flop_beg (
 -- Name: TABLE flop_beg; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.flop_beg IS '@omit';
+COMMENT ON TABLE maker.flop_beg IS 'Value of the Flop contract''s beg variable as of a block header.';
 
 
 --
@@ -10366,7 +10375,7 @@ CREATE TABLE maker.flop_gem (
 -- Name: TABLE flop_gem; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.flop_gem IS '@omit';
+COMMENT ON TABLE maker.flop_gem IS 'Value of the Flop contract''s gem variable as of a block header.';
 
 
 --
@@ -10426,7 +10435,8 @@ CREATE TABLE maker.flop_kicks (
 -- Name: TABLE flop_kicks; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.flop_kicks IS '@omit';
+COMMENT ON TABLE maker.flop_kicks IS '@name flopKicksStorage
+Value of the Flop contract''s kicks variable as of a block header.';
 
 
 --
@@ -10466,7 +10476,7 @@ CREATE TABLE maker.flop_live (
 -- Name: TABLE flop_live; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.flop_live IS '@omit';
+COMMENT ON TABLE maker.flop_live IS 'Value of the Flop contract''s live variable as of a block header.';
 
 
 --
@@ -10506,7 +10516,7 @@ CREATE TABLE maker.flop_pad (
 -- Name: TABLE flop_pad; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.flop_pad IS '@omit';
+COMMENT ON TABLE maker.flop_pad IS 'Value of the Flop contract''s pad variable as of a block header.';
 
 
 --
@@ -10546,7 +10556,7 @@ CREATE TABLE maker.flop_tau (
 -- Name: TABLE flop_tau; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.flop_tau IS '@omit';
+COMMENT ON TABLE maker.flop_tau IS 'Value of the Flop contract''s tau variable as of a block header.';
 
 
 --
@@ -10586,7 +10596,7 @@ CREATE TABLE maker.flop_ttl (
 -- Name: TABLE flop_ttl; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.flop_ttl IS '@omit';
+COMMENT ON TABLE maker.flop_ttl IS 'Value of the Flop contract''s ttl variable as of a block header.';
 
 
 --
@@ -10626,7 +10636,7 @@ CREATE TABLE maker.flop_vat (
 -- Name: TABLE flop_vat; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.flop_vat IS '@omit';
+COMMENT ON TABLE maker.flop_vat IS 'Value of the Flop contract''s vat variable as of a block header.';
 
 
 --
@@ -10666,7 +10676,7 @@ CREATE TABLE maker.flop_vow (
 -- Name: TABLE flop_vow; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.flop_vow IS '@omit';
+COMMENT ON TABLE maker.flop_vow IS 'Value of the Flop contract''s vow variable as of a block header.';
 
 
 --
@@ -10744,7 +10754,7 @@ CREATE TABLE maker.jug_base (
 -- Name: TABLE jug_base; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.jug_base IS '@omit';
+COMMENT ON TABLE maker.jug_base IS 'Value of the Jug contract''s base variable as of a block header.';
 
 
 --
@@ -11022,7 +11032,7 @@ CREATE TABLE maker.jug_vat (
 -- Name: TABLE jug_vat; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.jug_vat IS '@omit';
+COMMENT ON TABLE maker.jug_vat IS 'Value of the Jug contract''s vat variable as of a block header.';
 
 
 --
@@ -11061,7 +11071,7 @@ CREATE TABLE maker.jug_vow (
 -- Name: TABLE jug_vow; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.jug_vow IS '@omit';
+COMMENT ON TABLE maker.jug_vow IS 'Value of the Jug contract''s vow variable as of a block header.';
 
 
 --
@@ -11232,7 +11242,7 @@ CREATE TABLE maker.pot_chi (
 -- Name: TABLE pot_chi; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.pot_chi IS '@omit';
+COMMENT ON TABLE maker.pot_chi IS 'Value of the Pot contract''s chi variable as of a block header.';
 
 
 --
@@ -11310,7 +11320,7 @@ CREATE TABLE maker.pot_dsr (
 -- Name: TABLE pot_dsr; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.pot_dsr IS '@omit';
+COMMENT ON TABLE maker.pot_dsr IS 'Value of the Pot contract''s dsr variable as of a block header.';
 
 
 --
@@ -11509,7 +11519,7 @@ CREATE TABLE maker.pot_live (
 -- Name: TABLE pot_live; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.pot_live IS '@omit';
+COMMENT ON TABLE maker.pot_live IS 'Value of the Pot contract''s live variable as of a block header.';
 
 
 --
@@ -11548,7 +11558,7 @@ CREATE TABLE maker.pot_pie (
 -- Name: TABLE pot_pie; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.pot_pie IS '@omit';
+COMMENT ON TABLE maker.pot_pie IS 'Value of the Pot contract''s Pie variable as of a block header.';
 
 
 --
@@ -11587,7 +11597,7 @@ CREATE TABLE maker.pot_rho (
 -- Name: TABLE pot_rho; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.pot_rho IS '@omit';
+COMMENT ON TABLE maker.pot_rho IS 'Value of the Pot contract''s rho variable as of a block header.';
 
 
 --
@@ -11627,7 +11637,7 @@ CREATE TABLE maker.pot_user_pie (
 -- Name: TABLE pot_user_pie; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.pot_user_pie IS '@omit';
+COMMENT ON TABLE maker.pot_user_pie IS 'Value of an entry in the Pot contract''s pie mapping as of a block header.';
 
 
 --
@@ -11666,7 +11676,7 @@ CREATE TABLE maker.pot_vat (
 -- Name: TABLE pot_vat; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.pot_vat IS '@omit';
+COMMENT ON TABLE maker.pot_vat IS 'Value of the Pot contract''s vat variable as of a block header.';
 
 
 --
@@ -11705,7 +11715,7 @@ CREATE TABLE maker.pot_vow (
 -- Name: TABLE pot_vow; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.pot_vow IS '@omit';
+COMMENT ON TABLE maker.pot_vow IS 'Value of the Pot contract''s vow variable as of a block header.';
 
 
 --
@@ -11947,7 +11957,7 @@ CREATE TABLE maker.spot_live (
 -- Name: TABLE spot_live; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.spot_live IS '@omit';
+COMMENT ON TABLE maker.spot_live IS 'Value of the Spot contract''s live variable as of a block header.';
 
 
 --
@@ -11986,7 +11996,7 @@ CREATE TABLE maker.spot_par (
 -- Name: TABLE spot_par; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.spot_par IS '@omit';
+COMMENT ON TABLE maker.spot_par IS 'Value of the Spot contract''s par variable as of a block header.';
 
 
 --
@@ -12066,7 +12076,7 @@ CREATE TABLE maker.spot_vat (
 -- Name: TABLE spot_vat; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.spot_vat IS '@omit';
+COMMENT ON TABLE maker.spot_vat IS 'Value of the Spot contract''s vat variable as of a block header.';
 
 
 --
@@ -12227,7 +12237,7 @@ CREATE TABLE maker.vat_dai (
 -- Name: TABLE vat_dai; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.vat_dai IS '@omit';
+COMMENT ON TABLE maker.vat_dai IS 'Value of an entry in the Vat contract''s dai mapping as of a block header.';
 
 
 --
@@ -12266,7 +12276,7 @@ CREATE TABLE maker.vat_debt (
 -- Name: TABLE vat_debt; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.vat_debt IS '@omit';
+COMMENT ON TABLE maker.vat_debt IS 'Value of the Vat contract''s debt variable as of a block header.';
 
 
 --
@@ -12596,7 +12606,7 @@ CREATE TABLE maker.vat_gem (
 -- Name: TABLE vat_gem; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.vat_gem IS '@omit';
+COMMENT ON TABLE maker.vat_gem IS 'Value of an entry in the Vat contract''s gem mapping as of a block header.';
 
 
 --
@@ -12837,7 +12847,7 @@ CREATE TABLE maker.vat_line (
 -- Name: TABLE vat_line; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.vat_line IS '@omit';
+COMMENT ON TABLE maker.vat_line IS 'Value of the Vat contract''s Line variable as of a block header.';
 
 
 --
@@ -12876,7 +12886,7 @@ CREATE TABLE maker.vat_live (
 -- Name: TABLE vat_live; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.vat_live IS '@omit';
+COMMENT ON TABLE maker.vat_live IS 'Value of the Vat contract''s live variable as of a block header.';
 
 
 --
@@ -12996,7 +13006,7 @@ CREATE TABLE maker.vat_sin (
 -- Name: TABLE vat_sin; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.vat_sin IS '@omit';
+COMMENT ON TABLE maker.vat_sin IS 'Value of an entry in the Vat contract'' sin mapping as of a block header.';
 
 
 --
@@ -13157,7 +13167,7 @@ CREATE TABLE maker.vat_vice (
 -- Name: TABLE vat_vice; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.vat_vice IS '@omit';
+COMMENT ON TABLE maker.vat_vice IS 'Value of the Vat contract''s vice variable as of a block header.';
 
 
 --
@@ -13196,7 +13206,7 @@ CREATE TABLE maker.vow_ash (
 -- Name: TABLE vow_ash; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.vow_ash IS '@omit';
+COMMENT ON TABLE maker.vow_ash IS 'Value of the Vow contract''s Ash variable as of a block header.';
 
 
 --
@@ -13235,7 +13245,7 @@ CREATE TABLE maker.vow_bump (
 -- Name: TABLE vow_bump; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.vow_bump IS '@omit';
+COMMENT ON TABLE maker.vow_bump IS 'Value of the Vow contract''s bump variable as of a block header.';
 
 
 --
@@ -13274,7 +13284,7 @@ CREATE TABLE maker.vow_dump (
 -- Name: TABLE vow_dump; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.vow_dump IS '@omit';
+COMMENT ON TABLE maker.vow_dump IS 'Value of the Vow contract''s dump variable as of a block header.';
 
 
 --
@@ -13392,7 +13402,7 @@ CREATE TABLE maker.vow_flapper (
 -- Name: TABLE vow_flapper; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.vow_flapper IS '@omit';
+COMMENT ON TABLE maker.vow_flapper IS 'Value of the Vow contract''s flapper variable as of a block header.';
 
 
 --
@@ -13470,7 +13480,7 @@ CREATE TABLE maker.vow_flopper (
 -- Name: TABLE vow_flopper; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.vow_flopper IS '@omit';
+COMMENT ON TABLE maker.vow_flopper IS 'Value of the Vow contract''s flopper variable as of a block header.';
 
 
 --
@@ -13509,7 +13519,7 @@ CREATE TABLE maker.vow_hump (
 -- Name: TABLE vow_hump; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.vow_hump IS '@omit';
+COMMENT ON TABLE maker.vow_hump IS 'Value of the Vow contract''s hump variable as of a block header.';
 
 
 --
@@ -13548,7 +13558,7 @@ CREATE TABLE maker.vow_sin_integer (
 -- Name: TABLE vow_sin_integer; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.vow_sin_integer IS '@omit';
+COMMENT ON TABLE maker.vow_sin_integer IS 'Value of the Vow contract''s Sin variable as of a block header.';
 
 
 --
@@ -13588,7 +13598,7 @@ CREATE TABLE maker.vow_sin_mapping (
 -- Name: TABLE vow_sin_mapping; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.vow_sin_mapping IS '@omit';
+COMMENT ON TABLE maker.vow_sin_mapping IS 'Value of an entry in the Vow contract''s sin mapping as of a block header.';
 
 
 --
@@ -13627,7 +13637,7 @@ CREATE TABLE maker.vow_sump (
 -- Name: TABLE vow_sump; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.vow_sump IS '@omit';
+COMMENT ON TABLE maker.vow_sump IS 'Value of the Vow contract''s sump variable as of a block header.';
 
 
 --
@@ -13666,7 +13676,7 @@ CREATE TABLE maker.vow_vat (
 -- Name: TABLE vow_vat; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.vow_vat IS '@omit';
+COMMENT ON TABLE maker.vow_vat IS 'Value of the Vow contract''s vat variable as of a block header.';
 
 
 --
@@ -13705,7 +13715,7 @@ CREATE TABLE maker.vow_wait (
 -- Name: TABLE vow_wait; Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON TABLE maker.vow_wait IS '@omit';
+COMMENT ON TABLE maker.vow_wait IS 'Value of the Vow contract''s wait variable as of a block header.';
 
 
 --

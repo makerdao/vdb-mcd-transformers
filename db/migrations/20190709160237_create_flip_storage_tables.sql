@@ -19,7 +19,7 @@ CREATE INDEX flip_bid_bid_address_index
     ON maker.flip_bid_bid (address_id);
 
 COMMENT ON TABLE maker.flip_bid_bid
-    IS E'@omit';
+    IS E'Value of a Bid\'s bid field on a Flip contract as of a block header.';
 
 CREATE TABLE maker.flip_bid_lot
 (
@@ -40,7 +40,7 @@ CREATE INDEX flip_bid_lot_address_index
     ON maker.flip_bid_lot (address_id);
 
 COMMENT ON TABLE maker.flip_bid_lot
-    IS E'@omit';
+    IS E'Value of a Bid\'s lot field on a Flip contract as of a block header.';
 
 CREATE TABLE maker.flip_bid_guy
 (
@@ -61,7 +61,7 @@ CREATE INDEX flip_bid_guy_address_index
     ON maker.flip_bid_guy (address_id);
 
 COMMENT ON TABLE maker.flip_bid_guy
-    IS E'@omit';
+    IS E'Value of a Bid\'s guy field on a Flip contract as of a block header.';
 
 CREATE TABLE maker.flip_bid_tic
 (
@@ -82,7 +82,7 @@ CREATE INDEX flip_bid_tic_address_index
     ON maker.flip_bid_tic (address_id);
 
 COMMENT ON TABLE maker.flip_bid_tic
-    IS E'@omit';
+    IS E'Value of a Bid\'s tic field on a Flip contract as of a block header.';
 
 CREATE TABLE maker.flip_bid_end
 (
@@ -103,7 +103,7 @@ CREATE INDEX flip_bid_end_address_index
     ON maker.flip_bid_end (address_id);
 
 COMMENT ON TABLE maker.flip_bid_end
-    IS E'@omit';
+    IS E'Value of a Bid\'s end field on a Flip contract as of a block header.';
 
 CREATE TABLE maker.flip_bid_usr
 (
@@ -124,7 +124,7 @@ CREATE INDEX flip_bid_usr_address_index
     ON maker.flip_bid_usr (address_id);
 
 COMMENT ON TABLE maker.flip_bid_usr
-    IS E'@omit';
+    IS E'Value of a Bid\'s usr field on a Flip contract as of a block header.';
 
 CREATE TABLE maker.flip_bid_gal
 (
@@ -145,7 +145,7 @@ CREATE INDEX flip_bid_gal_address_index
     ON maker.flip_bid_gal (address_id);
 
 COMMENT ON TABLE maker.flip_bid_gal
-    IS E'@omit';
+    IS E'Value of a Bid\'s gal field on a Flip contract as of a block header.';
 
 CREATE TABLE maker.flip_bid_tab
 (
@@ -166,7 +166,7 @@ CREATE INDEX flip_bid_tab_address_index
     ON maker.flip_bid_tab (address_id);
 
 COMMENT ON TABLE maker.flip_bid_tab
-    IS E'@omit';
+    IS E'Value of a Bid\'s tab field on a Flip contract as of a block header.';
 
 CREATE TABLE maker.flip_vat
 (
@@ -184,7 +184,7 @@ CREATE INDEX flip_vat_address_index
     ON maker.flip_vat (address_id);
 
 COMMENT ON TABLE maker.flip_vat
-    IS E'@omit';
+    IS E'Value of a Flip contract\'s vat variable as of a block header.';
 
 CREATE TABLE maker.flip_ilk
 (
@@ -204,7 +204,7 @@ CREATE INDEX flip_ilk_address_index
     ON maker.flip_ilk (address_id);
 
 COMMENT ON TABLE maker.flip_ilk
-    IS E'@omit';
+    IS E'Value of a Flip contract\'s ilk variable as of a block header.';
 
 CREATE TABLE maker.flip_beg
 (
@@ -222,7 +222,7 @@ CREATE INDEX flip_beg_address_index
     ON maker.flip_beg (address_id);
 
 COMMENT ON TABLE maker.flip_beg
-    IS E'@omit';
+    IS E'Value of a Flip contract\'s beg variable as of a block header.';
 
 CREATE TABLE maker.flip_ttl
 (
@@ -240,7 +240,7 @@ CREATE INDEX flip_ttl_address_index
     ON maker.flip_ttl (address_id);
 
 COMMENT ON TABLE maker.flip_ttl
-    IS E'@omit';
+    IS E'Value of a Flip contract\'s ttl variable as of a block header.';
 
 CREATE TABLE maker.flip_tau
 (
@@ -258,7 +258,7 @@ CREATE INDEX flip_tau_address_index
     ON maker.flip_tau (address_id);
 
 COMMENT ON TABLE maker.flip_tau
-    IS E'@omit';
+    IS E'Value of a Flip contract\'s tau variable as of a block header.';
 
 CREATE TABLE maker.flip_kicks
 (
@@ -276,10 +276,7 @@ CREATE INDEX flip_kicks_address_index
     ON maker.flip_kicks (address_id);
 
 -- prevent naming conflict with maker.flip_kick in postgraphile
-COMMENT ON TABLE maker.flip_kicks IS E'@name flipKicksStorage';
-
-COMMENT ON TABLE maker.flip_kicks
-    IS E'@omit';
+COMMENT ON TABLE maker.flip_kicks IS E'@name flipKicksStorage\nValue of a Flip contract\'s kicks variable as of a block header.';
 
 -- +goose Down
 -- SQL in this section is executed when the migration is rolled back.

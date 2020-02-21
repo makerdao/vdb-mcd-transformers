@@ -15,7 +15,7 @@ CREATE INDEX jug_ilk_rho_ilk_index
     ON maker.jug_ilk_rho (ilk_id);
 
 COMMENT ON TABLE maker.jug_ilk_rho
-    IS E'@omit';
+    IS E'Value of an Ilk\'s rho field on the Jug contract as of a block header.';
 
 CREATE TABLE maker.jug_ilk_duty
 (
@@ -33,7 +33,7 @@ CREATE INDEX jug_ilk_duty_ilk_index
     ON maker.jug_ilk_duty (ilk_id);
 
 COMMENT ON TABLE maker.jug_ilk_duty
-    IS E'@omit';
+    IS E'Value of an Ilk\'s duty field on the Jug contract as of a block header.';
 
 CREATE TABLE maker.jug_vat
 (
@@ -48,7 +48,7 @@ CREATE INDEX jug_vat_header_id_index
     ON maker.jug_vat (header_id);
 
 COMMENT ON TABLE maker.jug_vat
-    IS E'@omit';
+    IS E'Value of the Jug contract\'s vat variable as of a block header.';
 
 CREATE TABLE maker.jug_vow
 (
@@ -63,7 +63,7 @@ CREATE INDEX jug_vow_header_id_index
     ON maker.jug_vow (header_id);
 
 COMMENT ON TABLE maker.jug_vow
-    IS E'@omit';
+    IS E'Value of the Jug contract\'s vow variable as of a block header.';
 
 CREATE TABLE maker.jug_base
 (
@@ -78,7 +78,7 @@ CREATE INDEX jug_base_header_id_index
     ON maker.jug_base (header_id);
 
 COMMENT ON TABLE maker.jug_base
-    IS E'@omit';
+    IS E'Value of the Jug contract\'s base variable as of a block header.';
 
 -- +goose Down
 DROP INDEX maker.jug_ilk_rho_header_id_index;

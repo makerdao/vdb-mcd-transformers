@@ -16,7 +16,7 @@ CREATE INDEX spot_ilk_pip_ilk_index
     ON maker.spot_ilk_pip (ilk_id);
 
 COMMENT ON TABLE maker.spot_ilk_pip
-    IS E'@omit';
+    IS E'Value of an Ilk\'s pip field on the Spot contract as of a block header.';
 
 CREATE TABLE maker.spot_ilk_mat
 (
@@ -34,7 +34,7 @@ CREATE INDEX spot_ilk_mat_ilk_index
     ON maker.spot_ilk_mat (ilk_id);
 
 COMMENT ON TABLE maker.spot_ilk_mat
-    IS E'@omit';
+    IS E'Value of an Ilk\'s mat field on the Spot contract as of a block header.';
 
 CREATE TABLE maker.spot_vat
 (
@@ -49,7 +49,7 @@ CREATE INDEX spot_vat_header_id_index
     ON maker.spot_vat (header_id);
 
 COMMENT ON TABLE maker.spot_vat
-    IS E'@omit';
+    IS E'Value of the Spot contract\'s vat variable as of a block header.';
 
 CREATE TABLE maker.spot_par
 (
@@ -64,7 +64,7 @@ CREATE INDEX spot_par_header_id_index
     ON maker.spot_par (header_id);
 
 COMMENT ON TABLE maker.spot_par
-    IS E'@omit';
+    IS E'Value of the Spot contract\'s par variable as of a block header.';
 
 CREATE TABLE maker.spot_live
 (
@@ -79,7 +79,7 @@ CREATE INDEX spot_live_header_id_index
     ON maker.spot_live (header_id);
 
 COMMENT ON TABLE maker.spot_live
-    IS E'@omit';
+    IS E'Value of the Spot contract\'s live variable as of a block header.';
 
 -- +goose Down
 -- SQL in this section is executed when the migration is rolled back.

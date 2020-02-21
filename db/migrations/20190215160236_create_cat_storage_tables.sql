@@ -12,7 +12,7 @@ CREATE INDEX cat_live_header_id_index
     ON maker.cat_live (header_id);
 
 COMMENT ON TABLE maker.cat_live
-    IS E'@omit';
+    IS E'Value of the Cat contract\'s live variable as of a block header.';
 
 CREATE TABLE maker.cat_vat
 (
@@ -27,7 +27,7 @@ CREATE INDEX cat_vat_header_id_index
     ON maker.cat_vat (header_id);
 
 COMMENT ON TABLE maker.cat_vat
-    IS E'@omit';
+    IS E'Value of the Cat contract\'s vat variable as of a block header.';
 
 CREATE TABLE maker.cat_vow
 (
@@ -42,7 +42,7 @@ CREATE INDEX cat_vow_header_id_index
     ON maker.cat_vow (header_id);
 
 COMMENT ON TABLE maker.cat_vow
-    IS E'@omit';
+    IS E'Value of the Cat contract\'s vow variable as of a block header.';
 
 CREATE TABLE maker.cat_ilk_flip
 (
@@ -60,7 +60,7 @@ CREATE INDEX cat_ilk_flip_ilk_index
     ON maker.cat_ilk_flip (ilk_id);
 
 COMMENT ON TABLE maker.cat_ilk_flip
-    IS E'@omit';
+    IS E'Value of an Ilk\'s flip field on the Cat contract as of a block header.';
 
 CREATE TABLE maker.cat_ilk_chop
 (
@@ -78,7 +78,7 @@ CREATE INDEX cat_ilk_chop_ilk_index
     ON maker.cat_ilk_chop (ilk_id);
 
 COMMENT ON TABLE maker.cat_ilk_chop
-    IS E'@omit';
+    IS E'Value of an Ilk\'s chop field on the Cat contract as of a block header.';
 
 CREATE TABLE maker.cat_ilk_lump
 (
@@ -96,7 +96,7 @@ CREATE INDEX cat_ilk_lump_ilk_index
     ON maker.cat_ilk_lump (ilk_id);
 
 COMMENT ON TABLE maker.cat_ilk_lump
-    IS E'@omit';
+    IS E'Value of an Ilk\'s lump field on the Cat contract as of a block header.';
 
 -- +goose Down
 DROP INDEX maker.cat_live_header_id_index;

@@ -19,7 +19,7 @@ CREATE INDEX flop_bid_bid_address_index
     ON maker.flop_bid_bid (address_id);
 
 COMMENT ON TABLE maker.flop_bid_bid
-    IS E'@omit';
+    IS E'Value of a Bid\'s bid field on the Flop contract as of a block header.';
 
 CREATE TABLE maker.flop_bid_lot
 (
@@ -40,7 +40,7 @@ CREATE INDEX flop_bid_lot_bid_address_index
     ON maker.flop_bid_lot (address_id);
 
 COMMENT ON TABLE maker.flop_bid_lot
-    IS E'@omit';
+    IS E'Value of a Bid\'s lot field on the Flop contract as of a block header.';
 
 CREATE TABLE maker.flop_bid_guy
 (
@@ -61,7 +61,7 @@ CREATE INDEX flop_bid_guy_bid_address_index
     ON maker.flop_bid_guy (address_id);
 
 COMMENT ON TABLE maker.flop_bid_guy
-    IS E'@omit';
+    IS E'Value of a Bid\'s guy field on the Flop contract as of a block header.';
 
 CREATE TABLE maker.flop_bid_tic
 (
@@ -82,7 +82,7 @@ CREATE INDEX flop_bid_tic_bid_address_index
     ON maker.flop_bid_tic (address_id);
 
 COMMENT ON TABLE maker.flop_bid_tic
-    IS E'@omit';
+    IS E'Value of a Bid\'s tic field on the Flop contract as of a block header.';
 
 CREATE TABLE maker.flop_bid_end
 (
@@ -103,7 +103,7 @@ CREATE INDEX flop_bid_end_bid_address_index
     ON maker.flop_bid_end (address_id);
 
 COMMENT ON TABLE maker.flop_bid_end
-    IS E'@omit';
+    IS E'Value of a Bid\'s end field on the Flop contract as of a block header.';
 
 CREATE TABLE maker.flop_vat
 (
@@ -121,7 +121,7 @@ CREATE INDEX flop_vat_address_index
     ON maker.flop_vat (address_id);
 
 COMMENT ON TABLE maker.flop_vat
-    IS E'@omit';
+    IS E'Value of the Flop contract\'s vat variable as of a block header.';
 
 CREATE TABLE maker.flop_gem
 (
@@ -139,7 +139,7 @@ CREATE INDEX flop_gem_address_index
     ON maker.flop_gem (address_id);
 
 COMMENT ON TABLE maker.flop_gem
-    IS E'@omit';
+    IS E'Value of the Flop contract\'s gem variable as of a block header.';
 
 CREATE TABLE maker.flop_beg
 (
@@ -157,7 +157,7 @@ CREATE INDEX flop_beg_address_index
     ON maker.flop_beg (address_id);
 
 COMMENT ON TABLE maker.flop_beg
-    IS E'@omit';
+    IS E'Value of the Flop contract\'s beg variable as of a block header.';
 
 CREATE TABLE maker.flop_pad
 (
@@ -175,7 +175,7 @@ CREATE INDEX flop_pad_address_index
     ON maker.flop_pad (address_id);
 
 COMMENT ON TABLE maker.flop_pad
-    IS E'@omit';
+    IS E'Value of the Flop contract\'s pad variable as of a block header.';
 
 CREATE TABLE maker.flop_ttl
 (
@@ -193,7 +193,7 @@ CREATE INDEX flop_ttl_address_index
     ON maker.flop_ttl (address_id);
 
 COMMENT ON TABLE maker.flop_ttl
-    IS E'@omit';
+    IS E'Value of the Flop contract\'s ttl variable as of a block header.';
 
 CREATE TABLE maker.flop_tau
 (
@@ -211,7 +211,7 @@ CREATE INDEX flop_tau_address_index
     ON maker.flop_tau (address_id);
 
 COMMENT ON TABLE maker.flop_tau
-    IS E'@omit';
+    IS E'Value of the Flop contract\'s tau variable as of a block header.';
 
 CREATE TABLE maker.flop_kicks
 (
@@ -229,10 +229,8 @@ CREATE INDEX flop_kicks_address_index
     ON maker.flop_kicks (address_id);
 
 -- prevent naming conflict with maker.flop_kick in postgraphile
-COMMENT ON TABLE maker.flop_kicks IS E'@name flopKicksStorage';
-
 COMMENT ON TABLE maker.flop_kicks
-    IS E'@omit';
+    IS E'@name flopKicksStorage\nValue of the Flop contract\'s kicks variable as of a block header.';
 
 CREATE TABLE maker.flop_live
 (
@@ -250,7 +248,7 @@ CREATE INDEX flop_live_address_index
     ON maker.flop_live (address_id);
 
 COMMENT ON TABLE maker.flop_live
-    IS E'@omit';
+    IS E'Value of the Flop contract\'s live variable as of a block header.';
 
 CREATE TABLE maker.flop_vow
 (
@@ -268,7 +266,7 @@ CREATE INDEX flop_vow_address_index
     ON maker.flop_vow (address_id);
 
 COMMENT ON TABLE maker.flop_vow
-    IS E'@omit';
+    IS E'Value of the Flop contract\'s vow variable as of a block header.';
 
 -- +goose Down
 -- SQL in this section is executed when the migration is rolled back.
