@@ -4,6 +4,7 @@ go:
 - 1.12
 services:
 - postgresql
+- docker
 addons:
   postgresql: '11.2'
 go_import_path: github.com/makerdao/vdb-mcd-transformers
@@ -17,8 +18,20 @@ script:
 - scripts/check_config.sh
 - env GO111MODULE=on make test
 - env GO111MODULE=on make integrationtest
+deploy:
+- provider: script
+  script: bash ./.travis/deploy.sh staging
+  on:
+    branch: staging
+- provider: script
+  script: bash ./.travis/deploy.sh prod
+  on:
+    branch: master
 notifications:
   email: false
 env:
   matrix:
     secure: grptfgF1K2cGb0umoR8XmBwGGEYxa0xu4qxoB31PsAuR5AVi8G5w/8C9sOQUC9bVz7xDaY08i0DXKqzGMyn4YcyXILnECY2V9Nki+EGpRTM5QCyZMpgRqRYRsuy+0d5bf9qK8LFD1fmQMUtjvULoJlUFMTObs//ZJFT5dxnPkwFmDTh2IfH+3xzd53gTuMtJcPfkoqruNckH2z73H025zASMdJe1muUaq05DuI2HEmNKATyHG3xGCj/kLiD8Lx0qT9OwMjLOwJaq2f6aZcbJ56W0gMmw3BLBrXEHPkEPR+dZvRqys8gh+Ga02RPsZNMyQ5dh1ec71zb8mWrBvJTT4uT78g5CwEjpgcBKpo+Yn74t2cWAAiXC3mcvG5Qv1q3X6eDL+dZgdN1oD3tsgCqyhtt72qqukDCcXF7y+SVm2+Bl9LcDkPMURQG3r14E5VV6W1oncTwxRO9c7qpRlcb6hU1A/OP7YwFagviyD68EKXgMPSarCRCEw1KhQ9eR75QIHyFVqxFLT0t5clQfKCifzCGkfmDR5U/rcPzKVrE4uhIUfC7pblpLQIUU/+1bTKBttcuV9/Fu8A28ldaee2hJ2MuqqZgNo0oQ9B4w7V6GaQYgbYiB/SSIC7OUeGuh4pbX3oQyApNtdLMWqXu01+LHg4mRltRQdmHQIMD9scVutN4=
+  global:
+  - secure: ZJTMhc7TP/vYoywCx7gjOOwBBzfUtoZ0ija3+Lfta94zrL1sUOVvPQdQO/ytZ98IrHSI4l+aaaZ37CdmGn/dDsCgyzP2ml8MtCbhLY8hbXgvq7aIosUft1tvkgxZ5fAf9J3VQL8nt0Y67q+SndPTBcrALM8FaTUO37ckJisjz7lrN02E0RHZ70jUWIPphKwatLTbx+4aWkSQ2ej796AXHFDW7cAZNJWg5oAdOF66zQVrTIUhXl8MlYbpDlQQk9/KKXCiyRuN9PWQqdcVf4jUFQ6fknCIZKWnmZ+jYzbITh9PmLL44JhKlM6P9WGot9Cyvp0YdTs/9KyYwCFnOc+5noKXpMaFjnA6/wfOj+XwEcQLsUH75W3rMPJky61pYXzQlbHmV+2Mlx9FMNZLhzYUC5O+961kiNkMIsgeeBNRH9/us3EliEVgsUdmYTso2bhfYtsRpxwKpxkW4X9ObkRHJyPxzYXpd+/tNfamwOyyTUyENAfM6s/Dn65fLOGyAJazmb7Z/DErwefVvHIq6MAgM37u3cGfTRDoJZiZYhkmcFynyYxthO6sHinlouEyJWqCifsDC8Wp4kBRYEPlq+92x+4LtV9J7LcB28fkGYZdGL3DknAaZY8Tqhcq3Wc6eZy7vS1KBHnrAf0Y3SoaUP5OHgUxkwbV2Ll+eb7xtPSN61w=
+  - secure: rEoxr5PrpvttS4Bl1RhP4P5MsmopXkFD2EoHC8Ut0Mb7hDN2dMrdjmHk34s8fDKKhTdCqTL59C4XAL4XhNJDcV7j8Kpsw7y4n0QlInthMqNjhgMKuzeEYHTrQuUTbtzJYNXcgf1y07UumUXenZE8qDmJzVx37VSx4R9GCgTqzCKxORT0l/MkkjwcyqSPbCzDGmiukOPLTq4yCHYn2klszJRHGGpDiIZ0rqAOzmsLDHo3J5xIZRweC6JBUBzGwoRa12nfW3ZNocKRKjPDwPpRJrmLXagv/Ufgo+Z+ZjsS0fxhWoxCLu8WV4wIq1YUuhYG7AtwmcmqfDyU/QwUFNTbx3zzR0b8H9BqjjADDiugvswo/Y+vaBLT+bOCltBsGf/RNaKoB4+z6Jcg+Z9rbzc+uq+uC4zJb4vIXIC7PpSqVbd58EeWajvVZJ5ybwP1gw6Nx7qbf4TtO8lomaMqVJITksKw+cORgOAuKbRqGlsuNv+Q4cWBI11ZxHuWJYB82pcU6UpKIqzMNn1tF4SxQX/kNB5lO3wY7wfElwqFY9TwNP0X/cwad9DW3fUK/HytQRpAeAV5aUisHauyvDtf1eEoOo5NwvXfgcmMAbq/z+7Pohyd5gnwcvSEZ9Au+ztgQgBE9YhcD/pLS5RMYb4y/YWTel8VN0yfvprPLvBBy1N0SOE=
