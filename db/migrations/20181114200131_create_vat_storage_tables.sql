@@ -11,9 +11,6 @@ CREATE TABLE maker.vat_debt
 CREATE INDEX vat_debt_header_id_index
     ON maker.vat_debt (header_id);
 
-COMMENT ON TABLE maker.vat_debt
-    IS E'';
-
 CREATE TABLE maker.vat_vice
 (
     id        SERIAL PRIMARY KEY,
