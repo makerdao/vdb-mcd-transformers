@@ -11,13 +11,6 @@ CREATE TYPE api.ilk_file_event AS
     -- tx
 );
 
-COMMENT ON COLUMN api.ilk_file_event.ilk_identifier
-    IS E'@omit';
-COMMENT ON COLUMN api.ilk_file_event.block_height
-    IS E'@omit';
-COMMENT ON COLUMN api.ilk_file_event.log_id
-    IS E'@omit';
-
 CREATE FUNCTION api.all_ilk_file_events(ilk_identifier TEXT, max_results INTEGER DEFAULT -1,
                                         result_offset INTEGER DEFAULT 0)
     RETURNS SETOF api.ilk_file_event AS

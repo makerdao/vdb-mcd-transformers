@@ -23,6 +23,5 @@ $$
     STABLE;
 -- +goose StatementEnd
 
-
 -- +goose Down
 DROP FUNCTION api.all_queued_sin(INTEGER, INTEGER);

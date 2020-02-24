@@ -7,8 +7,6 @@ CREATE TABLE maker.log_value
     val       NUMERIC,
     UNIQUE (header_id, log_id)
 );
-COMMENT ON COLUMN maker.log_value.id
-    IS E'@omit';
 
 CREATE INDEX log_value_header_index
     ON maker.log_value (header_id);

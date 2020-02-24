@@ -14,9 +14,6 @@ CREATE TABLE maker.flop
     PRIMARY KEY (address_id, bid_id, block_number)
 );
 
-COMMENT ON TABLE maker.flop
-    IS E'@name historicalFlopState';
-
 CREATE INDEX flop_address_index
     ON maker.flop (address_id);
 
@@ -178,6 +175,9 @@ ON CONFLICT (block_number, bid_id, address_id) DO UPDATE SET guy = new_diff.guy
 $$
     LANGUAGE sql;
 
+COMMENT ON FUNCTION maker.insert_new_flop_guy(new_diff maker.flop_bid_guy)
+    IS E'@omit';
+
 -- +goose StatementBegin
 CREATE OR REPLACE FUNCTION maker.update_flop_guys_until_next_diff(start_at_diff maker.flop_bid_guy, new_guy TEXT) RETURNS VOID
 AS
@@ -260,6 +260,9 @@ ON CONFLICT (block_number, bid_id, address_id) DO UPDATE SET tic = new_diff.tic
 $$
     LANGUAGE sql;
 
+COMMENT ON FUNCTION maker.insert_new_flop_tic(new_diff maker.flop_bid_tic)
+    IS E'@omit';
+
 -- +goose StatementBegin
 CREATE OR REPLACE FUNCTION maker.update_flop_tics_until_next_diff(start_at_diff maker.flop_bid_tic, new_tic NUMERIC) RETURNS VOID
 AS
@@ -340,6 +343,9 @@ VALUES (new_diff.bid_id,
 ON CONFLICT (block_number, bid_id, address_id) DO UPDATE SET "end" = new_diff."end"
 $$
     LANGUAGE sql;
+
+COMMENT ON FUNCTION maker.insert_new_flop_end(new_diff maker.flop_bid_end)
+    IS E'@omit';
 
 -- +goose StatementBegin
 CREATE OR REPLACE FUNCTION maker.update_flop_ends_until_next_diff(start_at_diff maker.flop_bid_end, new_end NUMERIC) RETURNS VOID
@@ -422,6 +428,9 @@ ON CONFLICT (block_number, bid_id, address_id) DO UPDATE SET lot = new_diff.lot
 $$
     LANGUAGE sql;
 
+COMMENT ON FUNCTION maker.insert_new_flop_lot(new_diff maker.flop_bid_lot)
+    IS E'@omit';
+
 -- +goose StatementBegin
 CREATE OR REPLACE FUNCTION maker.update_flop_lots_until_next_diff(start_at_diff maker.flop_bid_lot, new_lot NUMERIC) RETURNS VOID
 AS
@@ -502,6 +511,9 @@ VALUES (new_diff.bid_id,
 ON CONFLICT (block_number, bid_id, address_id) DO UPDATE SET bid = new_diff.bid
 $$
     LANGUAGE sql;
+
+COMMENT ON FUNCTION maker.insert_new_flop_bid(new_diff maker.flop_bid_bid)
+    IS E'@omit';
 
 -- +goose StatementBegin
 CREATE OR REPLACE FUNCTION maker.update_flop_bids_until_next_diff(start_at_diff maker.flop_bid_bid, new_bid NUMERIC) RETURNS VOID

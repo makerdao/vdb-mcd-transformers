@@ -15,9 +15,6 @@ CREATE INDEX pot_user_pie_header_id_index
 CREATE INDEX pot_user_pie_user_index
     ON maker.pot_user_pie ("user");
 
-COMMENT ON TABLE maker.pot_user_pie
-    IS E'@omit';
-
 CREATE TABLE maker.pot_pie
 (
     id        SERIAL PRIMARY KEY,
@@ -29,9 +26,6 @@ CREATE TABLE maker.pot_pie
 
 CREATE INDEX pot_pie_header_id_index
     ON maker.pot_pie (header_id);
-
-COMMENT ON TABLE maker.pot_pie
-    IS E'@omit';
 
 CREATE TABLE maker.pot_dsr
 (
@@ -45,9 +39,6 @@ CREATE TABLE maker.pot_dsr
 CREATE INDEX pot_dsr_header_id_index
     ON maker.pot_dsr (header_id);
 
-COMMENT ON TABLE maker.pot_dsr
-    IS E'@omit';
-
 CREATE TABLE maker.pot_chi
 (
     id        SERIAL PRIMARY KEY,
@@ -59,9 +50,6 @@ CREATE TABLE maker.pot_chi
 
 CREATE INDEX pot_chi_header_id_index
     ON maker.pot_chi (header_id);
-
-COMMENT ON TABLE maker.pot_chi
-    IS E'@omit';
 
 CREATE TABLE maker.pot_vat
 (
@@ -77,9 +65,6 @@ CREATE INDEX pot_vat_header_id_index
 CREATE INDEX pot_vat_vat_index
     ON maker.pot_vat (vat);
 
-COMMENT ON TABLE maker.pot_vat
-    IS E'@omit';
-
 CREATE TABLE maker.pot_vow
 (
     id        SERIAL PRIMARY KEY,
@@ -94,9 +79,6 @@ CREATE INDEX pot_vow_header_id_index
 CREATE INDEX pot_vow_vow_index
     ON maker.pot_vow (vow);
 
-COMMENT ON TABLE maker.pot_vow
-    IS E'@omit';
-
 CREATE TABLE maker.pot_rho
 (
     id        SERIAL PRIMARY KEY,
@@ -109,9 +91,6 @@ CREATE TABLE maker.pot_rho
 CREATE INDEX pot_rho_header_id_index
     ON maker.pot_rho (header_id);
 
-COMMENT ON TABLE maker.pot_rho
-    IS E'@omit';
-
 CREATE TABLE maker.pot_live
 (
     id        SERIAL PRIMARY KEY,
@@ -123,9 +102,6 @@ CREATE TABLE maker.pot_live
 
 CREATE INDEX pot_live_header_id_index
     ON maker.pot_live (header_id);
-
-COMMENT ON TABLE maker.pot_live
-    IS E'@omit';
 
 -- +goose Down
 -- SQL in this section is executed when the migration is rolled back.
