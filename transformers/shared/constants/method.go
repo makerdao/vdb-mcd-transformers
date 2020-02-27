@@ -32,6 +32,7 @@ func OsmABI() string {
 }
 func PotABI() string  { return getContractABI("MCD_POT") }
 func SpotABI() string { return getContractABI("MCD_SPOT") }
+func ValABI() string  { return getContractABI("MCD_VAL") }
 func VatABI() string  { return getContractABI("MCD_VAT") }
 func VowABI() string  { return getContractABI("MCD_VOW") }
 
@@ -87,6 +88,8 @@ func spotFilePipMethod() string {
 func spotPokeMethod() string { return getSolidityFunctionSignature(SpotABI(), "Poke") }
 func tendMethod() string     { return getSolidityFunctionSignature(FlipABI(), "tend") }
 func tickMethod() string     { return getSolidityFunctionSignature(FlipABI(), "tick") }
+func valPokeMethod() string  { return getSolidityFunctionSignature(ValABI(), "poke") }
+func valVoidMethod() string  { return getSolidityFunctionSignature(ValABI(), "void") }
 func vatFileDebtCeilingMethod() string {
 	return getOverloadedFunctionSignature(VatABI(), "file", []string{"bytes32", "uint256"})
 }

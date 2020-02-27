@@ -54,6 +54,8 @@ const (
 	SpotPokeTable           = "spot_poke"
 	TendTable               = "tend"
 	TickTable               = "tick"
+	ValPokeTable            = "val_poke"
+	ValVoidTable            = "val_void"
 	VatDenyTable            = "vat_deny"
 	VatFileDebtCeilingTable = "vat_file_debt_ceiling"
 	VatFileIlkTable         = "vat_file_ilk"

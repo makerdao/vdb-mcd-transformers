@@ -142,6 +142,14 @@ var _ = Describe("Signature constants", func() {
 		Expect(TickSignature()).To(Equal("0xfc7b6aee00000000000000000000000000000000000000000000000000000000"))
 	})
 
+	It("generates val poke signature", func() {
+		Expect(ValPokeSignature()).To(Equal("0x1504460f00000000000000000000000000000000000000000000000000000000"))
+	})
+
+	It("generates val void signature", func() {
+		Expect(ValVoidSignature()).To(Equal("0xac4c25b200000000000000000000000000000000000000000000000000000000"))
+	})
+
 	It("generates vat file debt ceiling signature", func() {
 		Expect(VatFileDebtCeilingSignature()).To(Equal("0x29ae811400000000000000000000000000000000000000000000000000000000"))
 	})

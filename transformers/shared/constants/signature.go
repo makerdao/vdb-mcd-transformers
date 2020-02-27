@@ -46,6 +46,8 @@ func SpotFilePipSignature() string        { return getLogNoteTopicZero(spotFileP
 func SpotPokeSignature() string           { return getEventTopicZero(spotPokeMethod()) }
 func TendSignature() string               { return getLogNoteTopicZero(tendMethod()) }
 func TickSignature() string               { return getLogNoteTopicZero(tickMethod()) }
+func ValPokeSignature() string            { return getLogNoteTopicZero(valPokeMethod()) }
+func ValVoidSignature() string            { return getLogNoteTopicZero(valVoidMethod()) }
 func VatFileDebtCeilingSignature() string { return getLogNoteTopicZero(vatFileDebtCeilingMethod()) }
 func VatFileIlkSignature() string         { return getLogNoteTopicZero(vatFileIlkMethod()) }
 func VatFluxSignature() string            { return getLogNoteTopicZero(vatFluxMethod()) }

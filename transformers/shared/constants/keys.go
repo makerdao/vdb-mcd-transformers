@@ -68,5 +68,6 @@ const (
 	WColumn         event.ColumnName = "w"
 	WadColumn       event.ColumnName = "wad"
 	WhatColumn      event.ColumnName = "what"
+	WutColumn       event.ColumnName = "wut"
 	ValueColumn     event.ColumnName = "value"
 )

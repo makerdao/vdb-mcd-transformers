@@ -10872,6 +10872,73 @@ ALTER SEQUENCE maker.urns_id_seq OWNED BY maker.urns.id;
 
 
 --
+-- Name: val_poke; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.val_poke (
+    id integer NOT NULL,
+    header_id integer NOT NULL,
+    log_id bigint NOT NULL,
+    address_id integer NOT NULL,
+    msg_sender integer NOT NULL,
+    wut text
+);
+
+
+--
+-- Name: val_poke_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.val_poke_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: val_poke_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.val_poke_id_seq OWNED BY maker.val_poke.id;
+
+
+--
+-- Name: val_void; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.val_void (
+    id integer NOT NULL,
+    header_id integer NOT NULL,
+    log_id bigint NOT NULL,
+    address_id integer NOT NULL,
+    msg_sender integer NOT NULL
+);
+
+
+--
+-- Name: val_void_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.val_void_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: val_void_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.val_void_id_seq OWNED BY maker.val_void.id;
+
+
+--
 -- Name: vat_dai; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -13317,6 +13384,20 @@ ALTER TABLE ONLY maker.urns ALTER COLUMN id SET DEFAULT nextval('maker.urns_id_s
 
 
 --
+-- Name: val_poke id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.val_poke ALTER COLUMN id SET DEFAULT nextval('maker.val_poke_id_seq'::regclass);
+
+
+--
+-- Name: val_void id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.val_void ALTER COLUMN id SET DEFAULT nextval('maker.val_void_id_seq'::regclass);
+
+
+--
 -- Name: vat_dai id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
@@ -15460,6 +15541,38 @@ ALTER TABLE ONLY maker.urns
 
 ALTER TABLE ONLY maker.urns
     ADD CONSTRAINT urns_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: val_poke val_poke_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.val_poke
+    ADD CONSTRAINT val_poke_header_id_log_id_key UNIQUE (header_id, log_id);
+
+
+--
+-- Name: val_poke val_poke_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.val_poke
+    ADD CONSTRAINT val_poke_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: val_void val_void_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.val_void
+    ADD CONSTRAINT val_void_header_id_log_id_key UNIQUE (header_id, log_id);
+
+
+--
+-- Name: val_void val_void_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.val_void
+    ADD CONSTRAINT val_void_pkey PRIMARY KEY (id);
 
 
 --
@@ -17981,6 +18094,62 @@ CREATE INDEX tick_log_index ON maker.tick USING btree (log_id);
 --
 
 CREATE INDEX urn_ilk_index ON maker.urns USING btree (ilk_id);
+
+
+--
+-- Name: val_poke_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX val_poke_address_index ON maker.val_poke USING btree (address_id);
+
+
+--
+-- Name: val_poke_header_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX val_poke_header_index ON maker.val_poke USING btree (header_id);
+
+
+--
+-- Name: val_poke_log_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX val_poke_log_index ON maker.val_poke USING btree (log_id);
+
+
+--
+-- Name: val_poke_msg_sender_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX val_poke_msg_sender_index ON maker.val_poke USING btree (msg_sender);
+
+
+--
+-- Name: val_void_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX val_void_address_index ON maker.val_void USING btree (address_id);
+
+
+--
+-- Name: val_void_header_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX val_void_header_index ON maker.val_void USING btree (header_id);
+
+
+--
+-- Name: val_void_log_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX val_void_log_index ON maker.val_void USING btree (log_id);
+
+
+--
+-- Name: val_void_msg_sender_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX val_void_msg_sender_index ON maker.val_void USING btree (msg_sender);
 
 
 --
@@ -21323,6 +21492,70 @@ ALTER TABLE ONLY maker.tick
 
 ALTER TABLE ONLY maker.urns
     ADD CONSTRAINT urns_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id) ON DELETE CASCADE;
+
+
+--
+-- Name: val_poke val_poke_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.val_poke
+    ADD CONSTRAINT val_poke_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: val_poke val_poke_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.val_poke
+    ADD CONSTRAINT val_poke_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: val_poke val_poke_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.val_poke
+    ADD CONSTRAINT val_poke_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: val_poke val_poke_msg_sender_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.val_poke
+    ADD CONSTRAINT val_poke_msg_sender_fkey FOREIGN KEY (msg_sender) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: val_void val_void_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.val_void
+    ADD CONSTRAINT val_void_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: val_void val_void_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.val_void
+    ADD CONSTRAINT val_void_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: val_void val_void_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.val_void
+    ADD CONSTRAINT val_void_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: val_void val_void_msg_sender_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.val_void
+    ADD CONSTRAINT val_void_msg_sender_fkey FOREIGN KEY (msg_sender) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --
