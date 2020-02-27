@@ -45,6 +45,7 @@
         "jug_init",
         "log_value",
         "new_cdp",
+        "osm_change",
         "pot_cage",
         "pot_drip",
         "pot_exit",
@@ -269,6 +270,13 @@
         repository = "github.com/makerdao/vdb-mcd-transformers"
         migrations = "db/migrations"
         contracts = ["CDP_MANAGER"]
+        rank = "0"
+    [exporter.osm_change]
+        path = "transformers/events/osm_change/initializer"
+        type = "eth_event"
+        repository = "github.com/makerdao/vdb-mcd-transformers"
+        migrations = "db/migrations"
+        contracts = ["OSM_ETH", "OSM_BAT"]
         rank = "0"
     [exporter.pot_cage]
         path = "transformers/events/pot_cage/initializer"

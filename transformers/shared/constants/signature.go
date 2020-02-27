@@ -33,6 +33,7 @@ func JugFileVowSignature() string         { return getLogNoteTopicZero(jugFileVo
 func JugInitSignature() string            { return getLogNoteTopicZero(jugInitMethod()) }
 func LogValueSignature() string           { return getEventTopicZero(logValueMethod()) }
 func NewCdpSignature() string             { return getEventTopicZero(newCdpMethod()) }
+func OsmChangeSignature() string          { return getLogNoteTopicZero(osmChangeMethod()) }
 func PotCageSignature() string            { return getLogNoteTopicZero(potCageMethod()) }
 func PotDripSignature() string            { return getLogNoteTopicZero(potDripMethod()) }
 func PotExitSignature() string            { return getLogNoteTopicZero(potExitMethod()) }

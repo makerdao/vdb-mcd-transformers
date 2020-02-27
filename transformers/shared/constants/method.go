@@ -61,12 +61,13 @@ func jugFileIlkMethod() string {
 func jugFileVowMethod() string {
 	return getOverloadedFunctionSignature(JugABI(), "file", []string{"bytes32", "address"})
 }
-func jugInitMethod() string  { return getSolidityFunctionSignature(JugABI(), "init") }
-func logValueMethod() string { return getSolidityFunctionSignature(OsmABI(), "LogValue") }
-func newCdpMethod() string   { return getSolidityFunctionSignature(CdpManagerABI(), "NewCdp") }
-func potCageMethod() string  { return getSolidityFunctionSignature(PotABI(), "cage") }
-func potDripMethod() string  { return getSolidityFunctionSignature(PotABI(), "drip") }
-func potExitMethod() string  { return getSolidityFunctionSignature(PotABI(), "exit") }
+func jugInitMethod() string   { return getSolidityFunctionSignature(JugABI(), "init") }
+func logValueMethod() string  { return getSolidityFunctionSignature(OsmABI(), "LogValue") }
+func newCdpMethod() string    { return getSolidityFunctionSignature(CdpManagerABI(), "NewCdp") }
+func osmChangeMethod() string { return getSolidityFunctionSignature(OsmABI(), "change") }
+func potCageMethod() string   { return getSolidityFunctionSignature(PotABI(), "cage") }
+func potDripMethod() string   { return getSolidityFunctionSignature(PotABI(), "drip") }
+func potExitMethod() string   { return getSolidityFunctionSignature(PotABI(), "exit") }
 func potFileDSRMethod() string {
 	return getOverloadedFunctionSignature(PotABI(), "file", []string{"bytes32", "uint256"})
 }
