@@ -11,7 +11,6 @@ CREATE TABLE api.urn_snapshot
     PRIMARY KEY (urn_identifier, ilk_identifier, block_height)
 );
 
-
 CREATE FUNCTION urn_ink_before_block(urn_id INTEGER, header_id INTEGER) RETURNS NUMERIC AS
 $$
 WITH passed_block_number AS (

@@ -17,17 +17,16 @@
 package initializer
 
 import (
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	mcdStorage "github.com/makerdao/vdb-mcd-transformers/transformers/storage"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/spot"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
-	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
-	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 )
 
 var spotAddress = constants.GetContractAddress("MCD_SPOT")
-var StorageTransformerInitializer transformer.StorageTransformerInitializer = storage.Transformer{
-	HashedAddress:     types.HexToKeccak256Hash(spotAddress),
+var StorageTransformerInitializer storage.TransformerInitializer = storage.Transformer{
+	Address:           common.HexToAddress(spotAddress),
 	StorageKeysLookup: storage.NewKeysLookup(spot.NewKeysLoader(&mcdStorage.MakerStorageRepository{}, spotAddress)),
 	Repository:        &spot.SpotStorageRepository{ContractAddress: spotAddress},
 }.NewTransformer

@@ -14,11 +14,6 @@ CREATE TYPE api.sin_queue_event AS
     -- tx
 );
 
-COMMENT ON COLUMN api.sin_queue_event.block_height
-    IS E'@omit';
-COMMENT ON COLUMN api.sin_queue_event.log_id
-    IS E'@omit';
-
 CREATE FUNCTION api.all_sin_queue_events(era NUMERIC, max_results INTEGER DEFAULT -1, result_offset INTEGER DEFAULT 0)
     RETURNS SETOF api.sin_queue_event AS
 $$

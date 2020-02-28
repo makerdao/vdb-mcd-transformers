@@ -10,9 +10,6 @@ CREATE TABLE maker.new_cdp
     UNIQUE (header_id, log_id)
 );
 
-COMMENT ON COLUMN maker.new_cdp.id
-    IS E'@omit';
-
 CREATE INDEX new_cdp_log_index
     ON maker.new_cdp (log_id);
 

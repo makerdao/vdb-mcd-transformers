@@ -11,7 +11,6 @@ CREATE TABLE maker.bid_event
     urn_identifier   TEXT    DEFAULT NULL,
     block_height     BIGINT      NOT NULL
 );
-COMMENT ON COLUMN maker.bid_event.log_id IS E'@omit';
 
 CREATE INDEX bid_event_index ON maker.bid_event (contract_address, bid_id);
 CREATE INDEX bid_event_urn_index ON maker.bid_event (ilk_identifier, urn_identifier);
@@ -46,6 +45,9 @@ VALUES (insert_bid_event.log_id,
         (SELECT block_number FROM public.headers WHERE id = insert_bid_event.header_id))
 $$
     LANGUAGE sql;
+
+COMMENT ON FUNCTION maker.insert_bid_event(log_id BIGINT, bid_id NUMERIC, address_id INTEGER, header_id INTEGER, act api.bid_act, lot NUMERIC, bid_amount NUMERIC)
+    IS E'@omit';
 
 -- +goose StatementBegin
 CREATE OR REPLACE FUNCTION maker.update_bid_kick_tend_dent_event() RETURNS TRIGGER
@@ -129,6 +131,9 @@ WHERE bid_event.contract_address = (SELECT address FROM public.addresses WHERE i
 $$
     LANGUAGE sql;
 
+COMMENT ON FUNCTION maker.insert_bid_event_ilk(new_diff maker.flip_ilk)
+    IS E'@omit';
+
 CREATE OR REPLACE FUNCTION maker.clear_bid_event_ilk(old_diff maker.flip_ilk) RETURNS VOID AS
 $$
 UPDATE maker.bid_event
@@ -136,6 +141,9 @@ SET ilk_identifier = NULL
 WHERE bid_event.contract_address = (SELECT address FROM public.addresses WHERE id = old_diff.address_id)
 $$
     LANGUAGE sql;
+
+COMMENT ON FUNCTION maker.clear_bid_event_ilk(old_diff maker.flip_ilk)
+    IS E'@omit';
 
 -- +goose StatementBegin
 CREATE OR REPLACE FUNCTION maker.update_bid_event_ilk() RETURNS TRIGGER
@@ -168,6 +176,9 @@ WHERE bid_event.bid_id = diff.bid_id
   AND bid_event.contract_address = (SELECT address FROM public.addresses WHERE id = diff.address_id)
 $$
     LANGUAGE sql;
+
+COMMENT ON FUNCTION maker.insert_bid_event_urn(diff maker.flip_bid_usr, new_usr TEXT)
+    IS E'@omit';
 
 -- +goose StatementBegin
 CREATE OR REPLACE FUNCTION maker.update_bid_event_urn() RETURNS TRIGGER

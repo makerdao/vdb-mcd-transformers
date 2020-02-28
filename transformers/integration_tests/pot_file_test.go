@@ -10,7 +10,6 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/fetcher"
-	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -36,7 +35,7 @@ var _ = Describe("PotFile EventTransformers", func() {
 			header, insertHeaderErr = persistHeader(db, blockNumber, blockChain)
 			Expect(insertHeaderErr).NotTo(HaveOccurred())
 
-			potFileDSRConfig := transformer.EventTransformerConfig{
+			potFileDSRConfig := event.TransformerConfig{
 				TransformerName:     constants.PotFileDSRTable,
 				ContractAddresses:   []string{test_data.PotAddress()},
 				ContractAbi:         constants.PotABI(),
@@ -45,7 +44,7 @@ var _ = Describe("PotFile EventTransformers", func() {
 				EndingBlockNumber:   blockNumber,
 			}
 
-			addresses = transformer.HexStringsToAddresses(potFileDSRConfig.ContractAddresses)
+			addresses = event.HexStringsToAddresses(potFileDSRConfig.ContractAddresses)
 			topics = []common.Hash{common.HexToHash(potFileDSRConfig.Topic)}
 
 			initializer := event.ConfiguredTransformer{
@@ -90,7 +89,7 @@ var _ = Describe("PotFile EventTransformers", func() {
 			header, insertHeaderErr = persistHeader(db, blockNumber, blockChain)
 			Expect(insertHeaderErr).NotTo(HaveOccurred())
 
-			potFileVowConfig := transformer.EventTransformerConfig{
+			potFileVowConfig := event.TransformerConfig{
 				TransformerName:     constants.PotFileVowTable,
 				ContractAddresses:   []string{test_data.PotAddress()},
 				ContractAbi:         constants.PotABI(),
@@ -99,7 +98,7 @@ var _ = Describe("PotFile EventTransformers", func() {
 				EndingBlockNumber:   blockNumber,
 			}
 
-			addresses = transformer.HexStringsToAddresses(potFileVowConfig.ContractAddresses)
+			addresses = event.HexStringsToAddresses(potFileVowConfig.ContractAddresses)
 			topics = []common.Hash{common.HexToHash(potFileVowConfig.Topic)}
 
 			initializer := event.ConfiguredTransformer{

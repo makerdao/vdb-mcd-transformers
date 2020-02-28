@@ -27,14 +27,13 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/fetcher"
-	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("FlopKick Transformer", func() {
 	var (
-		flopKickConfig transformer.EventTransformerConfig
+		flopKickConfig event.TransformerConfig
 		initializer    event.ConfiguredTransformer
 		logFetcher     fetcher.ILogFetcher
 		addresses      []common.Address
@@ -44,7 +43,7 @@ var _ = Describe("FlopKick Transformer", func() {
 	BeforeEach(func() {
 		test_config.CleanTestDB(db)
 
-		flopKickConfig = transformer.EventTransformerConfig{
+		flopKickConfig = event.TransformerConfig{
 			TransformerName:   constants.FlopKickTable,
 			ContractAddresses: []string{test_data.FlopAddress()},
 			ContractAbi:       constants.FlopABI(),
@@ -57,7 +56,7 @@ var _ = Describe("FlopKick Transformer", func() {
 		}
 
 		logFetcher = fetcher.NewLogFetcher(blockChain)
-		addresses = transformer.HexStringsToAddresses(flopKickConfig.ContractAddresses)
+		addresses = event.HexStringsToAddresses(flopKickConfig.ContractAddresses)
 		topics = []common.Hash{common.HexToHash(flopKickConfig.Topic)}
 	})
 	//TODO: There are no flop kick events on Mainnet

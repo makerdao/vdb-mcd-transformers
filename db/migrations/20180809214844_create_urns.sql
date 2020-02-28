@@ -9,9 +9,6 @@ CREATE TABLE maker.urns
     UNIQUE (ilk_id, identifier)
 );
 
-COMMENT ON TABLE maker.urns
-    IS E'@name raw_urns';
-
 CREATE INDEX urn_ilk_index
     ON maker.urns (ilk_id);
 

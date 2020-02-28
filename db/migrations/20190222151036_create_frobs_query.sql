@@ -14,11 +14,6 @@ CREATE TYPE api.frob_event AS
     -- tx
 );
 
-COMMENT ON COLUMN api.frob_event.block_height
-    IS E'@omit';
-COMMENT ON COLUMN api.frob_event.log_id
-    IS E'@omit';
-
 CREATE FUNCTION api.urn_frobs(ilk_identifier TEXT, urn_identifier TEXT, max_results INTEGER DEFAULT -1,
                               result_offset INTEGER DEFAULT 0)
     RETURNS SETOF api.frob_event AS
@@ -53,7 +48,6 @@ $$
     LANGUAGE sql
     STRICT --necessary for postgraphile queries with required arguments
     STABLE;
-
 
 CREATE FUNCTION api.all_frobs(ilk_identifier TEXT, max_results INTEGER DEFAULT -1, result_offset INTEGER DEFAULT 0)
     RETURNS SETOF api.frob_event AS

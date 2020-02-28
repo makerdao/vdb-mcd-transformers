@@ -11,9 +11,6 @@ CREATE TABLE maker.cat_live
 CREATE INDEX cat_live_header_id_index
     ON maker.cat_live (header_id);
 
-COMMENT ON TABLE maker.cat_live
-    IS E'@omit';
-
 CREATE TABLE maker.cat_vat
 (
     id        SERIAL PRIMARY KEY,
@@ -26,9 +23,6 @@ CREATE TABLE maker.cat_vat
 CREATE INDEX cat_vat_header_id_index
     ON maker.cat_vat (header_id);
 
-COMMENT ON TABLE maker.cat_vat
-    IS E'@omit';
-
 CREATE TABLE maker.cat_vow
 (
     id        SERIAL PRIMARY KEY,
@@ -40,9 +34,6 @@ CREATE TABLE maker.cat_vow
 
 CREATE INDEX cat_vow_header_id_index
     ON maker.cat_vow (header_id);
-
-COMMENT ON TABLE maker.cat_vow
-    IS E'@omit';
 
 CREATE TABLE maker.cat_ilk_flip
 (
@@ -59,9 +50,6 @@ CREATE INDEX cat_ilk_flip_header_id_index
 CREATE INDEX cat_ilk_flip_ilk_index
     ON maker.cat_ilk_flip (ilk_id);
 
-COMMENT ON TABLE maker.cat_ilk_flip
-    IS E'@omit';
-
 CREATE TABLE maker.cat_ilk_chop
 (
     id        SERIAL PRIMARY KEY,
@@ -77,9 +65,6 @@ CREATE INDEX cat_ilk_chop_header_id_index
 CREATE INDEX cat_ilk_chop_ilk_index
     ON maker.cat_ilk_chop (ilk_id);
 
-COMMENT ON TABLE maker.cat_ilk_chop
-    IS E'@omit';
-
 CREATE TABLE maker.cat_ilk_lump
 (
     id        SERIAL PRIMARY KEY,
@@ -94,9 +79,6 @@ CREATE INDEX cat_ilk_lump_header_id_index
     ON maker.cat_ilk_lump (header_id);
 CREATE INDEX cat_ilk_lump_ilk_index
     ON maker.cat_ilk_lump (ilk_id);
-
-COMMENT ON TABLE maker.cat_ilk_lump
-    IS E'@omit';
 
 -- +goose Down
 DROP INDEX maker.cat_live_header_id_index;

@@ -14,9 +14,6 @@ CREATE TABLE maker.flap
     PRIMARY KEY (address_id, bid_id, block_number)
 );
 
-COMMENT ON TABLE maker.flap
-    IS E'@name historicalFlapState';
-
 CREATE INDEX flap_address_index
     ON maker.flap (address_id);
 
@@ -178,6 +175,9 @@ ON CONFLICT (block_number, bid_id, address_id) DO UPDATE SET guy = new_diff.guy
 $$
     LANGUAGE sql;
 
+COMMENT ON FUNCTION maker.insert_new_flap_guy(new_diff maker.flap_bid_guy)
+    IS E'@omit';
+
 -- +goose StatementBegin
 CREATE OR REPLACE FUNCTION maker.update_flap_guys_until_next_diff(start_at_diff maker.flap_bid_guy, new_guy TEXT) RETURNS VOID
 AS
@@ -258,6 +258,9 @@ VALUES (new_diff.bid_id,
 ON CONFLICT (block_number, bid_id, address_id) DO UPDATE SET tic = new_diff.tic
 $$
     LANGUAGE sql;
+
+COMMENT ON FUNCTION maker.insert_new_flap_tic(new_diff maker.flap_bid_tic)
+    IS E'@omit';
 
 -- +goose StatementBegin
 CREATE OR REPLACE FUNCTION maker.update_flap_tics_until_next_diff(start_at_diff maker.flap_bid_tic, new_tic NUMERIC) RETURNS VOID
@@ -340,6 +343,9 @@ ON CONFLICT (block_number, bid_id, address_id) DO UPDATE SET "end" = new_diff."e
 $$
     LANGUAGE sql;
 
+COMMENT ON FUNCTION maker.insert_new_flap_end(new_diff maker.flap_bid_end)
+    IS E'@omit';
+
 -- +goose StatementBegin
 CREATE OR REPLACE FUNCTION maker.update_flap_ends_until_next_diff(start_at_diff maker.flap_bid_end, new_end NUMERIC) RETURNS VOID
 AS
@@ -421,6 +427,9 @@ ON CONFLICT (block_number, bid_id, address_id) DO UPDATE SET lot = new_diff.lot
 $$
     LANGUAGE sql;
 
+COMMENT ON FUNCTION maker.insert_new_flap_lot(new_diff maker.flap_bid_lot)
+    IS E'@omit';
+
 -- +goose StatementBegin
 CREATE OR REPLACE FUNCTION maker.update_flap_lots_until_next_diff(start_at_diff maker.flap_bid_lot, new_lot NUMERIC) RETURNS VOID
 AS
@@ -501,6 +510,9 @@ VALUES (new_diff.bid_id,
 ON CONFLICT (block_number, bid_id, address_id) DO UPDATE SET bid = new_diff.bid
 $$
     LANGUAGE sql;
+
+COMMENT ON FUNCTION maker.insert_new_flap_bid(new_diff maker.flap_bid_bid)
+    IS E'@omit';
 
 -- +goose StatementBegin
 CREATE OR REPLACE FUNCTION maker.update_flap_bids_until_next_diff(start_at_diff maker.flap_bid_bid, new_bid NUMERIC) RETURNS VOID

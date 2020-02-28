@@ -11,13 +11,6 @@ CREATE TYPE api.poke_event AS
     -- tx
 );
 
-COMMENT ON COLUMN api.poke_event.ilk_id
-    IS E'@omit';
-COMMENT ON COLUMN api.poke_event.block_height
-    IS E'@omit';
-COMMENT ON COLUMN api.poke_event.log_id
-    IS E'@omit';
-
 CREATE FUNCTION api.max_timestamp()
     RETURNS NUMERIC AS
 $$

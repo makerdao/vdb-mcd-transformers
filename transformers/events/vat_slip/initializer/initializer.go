@@ -17,15 +17,13 @@
 package initializer
 
 import (
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
-	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
-	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
-
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_slip"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 )
 
-var EventTransformerInitializer transformer.EventTransformerInitializer = event.ConfiguredTransformer{
+var EventTransformerInitializer event.TransformerInitializer = event.ConfiguredTransformer{
 	Config:      shared.GetEventTransformerConfig(constants.VatSlipTable, constants.VatSlipSignature()),
 	Transformer: vat_slip.Transformer{},
 }.NewTransformer

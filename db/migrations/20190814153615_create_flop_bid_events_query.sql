@@ -10,13 +10,6 @@ CREATE TYPE api.flop_bid_event AS
     contract_address TEXT
 );
 
-COMMENT ON COLUMN api.flop_bid_event.block_height
-    IS E'@omit';
-COMMENT ON COLUMN api.flop_bid_event.log_id
-    IS E'@omit';
-COMMENT ON COLUMN api.flop_bid_event.contract_address
-    IS E'@omit';
-
 CREATE FUNCTION api.all_flop_bid_events(max_results INTEGER DEFAULT NULL, result_offset INTEGER DEFAULT 0)
     RETURNS SETOF api.flop_bid_event AS
 $$

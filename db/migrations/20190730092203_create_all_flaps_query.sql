@@ -22,5 +22,6 @@ $BODY$
     LANGUAGE plpgsql
     STABLE;
 -- +goose StatementEnd
+
 -- +goose Down
 DROP FUNCTION api.all_flaps(INTEGER, INTEGER);

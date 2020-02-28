@@ -24,7 +24,6 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/fetcher"
-	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -38,14 +37,14 @@ var _ = Describe("VowFile LogNoteTransformer", func() {
 
 	BeforeEach(func() {
 		test_config.CleanTestDB(db)
-		vowFileConfig := transformer.EventTransformerConfig{
+		vowFileConfig := event.TransformerConfig{
 			TransformerName:   constants.VowFileTable,
 			ContractAddresses: []string{test_data.VowAddress()},
 			ContractAbi:       constants.VowABI(),
 			Topic:             constants.VowFileSignature(),
 		}
 
-		addresses = transformer.HexStringsToAddresses(vowFileConfig.ContractAddresses)
+		addresses = event.HexStringsToAddresses(vowFileConfig.ContractAddresses)
 		topics = []common.Hash{common.HexToHash(vowFileConfig.Topic)}
 
 		initializer = event.ConfiguredTransformer{

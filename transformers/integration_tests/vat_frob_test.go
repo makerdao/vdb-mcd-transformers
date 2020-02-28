@@ -27,7 +27,6 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/fetcher"
-	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -35,7 +34,7 @@ import (
 var _ = Describe("Vat frob Transformer", func() {
 	var (
 		logFetcher    fetcher.ILogFetcher
-		vatFrobConfig transformer.EventTransformerConfig
+		vatFrobConfig event.TransformerConfig
 		initializer   event.ConfiguredTransformer
 	)
 
@@ -43,7 +42,7 @@ var _ = Describe("Vat frob Transformer", func() {
 		test_config.CleanTestDB(db)
 
 		logFetcher = fetcher.NewLogFetcher(blockChain)
-		vatFrobConfig = transformer.EventTransformerConfig{
+		vatFrobConfig = event.TransformerConfig{
 			TransformerName:   constants.VatFrobTable,
 			ContractAddresses: []string{test_data.VatAddress()},
 			ContractAbi:       constants.VatABI(),
@@ -65,7 +64,7 @@ var _ = Describe("Vat frob Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		logs, err := logFetcher.FetchLogs(
-			transformer.HexStringsToAddresses(vatFrobConfig.ContractAddresses),
+			event.HexStringsToAddresses(vatFrobConfig.ContractAddresses),
 			[]common.Hash{common.HexToHash(vatFrobConfig.Topic)},
 			header)
 		Expect(err).NotTo(HaveOccurred())

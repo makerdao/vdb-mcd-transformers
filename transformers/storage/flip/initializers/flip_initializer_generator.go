@@ -17,16 +17,15 @@
 package initializers
 
 import (
+	"github.com/ethereum/go-ethereum/common"
 	mcdStorage "github.com/makerdao/vdb-mcd-transformers/transformers/storage"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
-	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
-	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 )
 
-func GenerateStorageTransformerInitializer(contractAddress string) transformer.StorageTransformerInitializer {
+func GenerateStorageTransformerInitializer(contractAddress string) storage.TransformerInitializer {
 	return storage.Transformer{
-		HashedAddress:     types.HexToKeccak256Hash(contractAddress),
+		Address:           common.HexToAddress(contractAddress),
 		StorageKeysLookup: storage.NewKeysLookup(flip.NewKeysLoader(&mcdStorage.MakerStorageRepository{}, contractAddress)),
 		Repository:        &flip.FlipStorageRepository{ContractAddress: contractAddress},
 	}.NewTransformer

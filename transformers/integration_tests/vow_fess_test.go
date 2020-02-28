@@ -24,7 +24,6 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/fetcher"
-	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -34,7 +33,7 @@ var _ = Describe("VowFess EventTransformer", func() {
 		test_config.CleanTestDB(db)
 	})
 
-	vowFessConfig := transformer.EventTransformerConfig{
+	vowFessConfig := event.TransformerConfig{
 		TransformerName:   constants.VowFessTable,
 		ContractAddresses: []string{test_data.VowAddress()},
 		ContractAbi:       constants.VowABI(),
@@ -51,7 +50,7 @@ var _ = Describe("VowFess EventTransformer", func() {
 
 		logFetcher := fetcher.NewLogFetcher(blockChain)
 		logs, err := logFetcher.FetchLogs(
-			transformer.HexStringsToAddresses(vowFessConfig.ContractAddresses),
+			event.HexStringsToAddresses(vowFessConfig.ContractAddresses),
 			[]common.Hash{common.HexToHash(vowFessConfig.Topic)},
 			header)
 		Expect(len(logs)).To(Equal(1))

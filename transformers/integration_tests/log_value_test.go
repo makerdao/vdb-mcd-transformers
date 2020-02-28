@@ -24,13 +24,12 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/fetcher"
-	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("LogValue Transformer", func() {
-	logValueConfig := transformer.EventTransformerConfig{
+	logValueConfig := event.TransformerConfig{
 		TransformerName:   constants.LogValueTable,
 		ContractAddresses: test_data.OsmAddresses(),
 		ContractAbi:       constants.OsmABI(),

@@ -29,7 +29,6 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/fetcher"
-	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -48,7 +47,7 @@ var _ = Describe("SpotFile EventTransformers", func() {
 			initializer event.ConfiguredTransformer
 			logs        []types.Log
 			topics      []common.Hash
-			tr          transformer.EventTransformer
+			tr          event.ITransformer
 		)
 
 		BeforeEach(func() {
@@ -57,7 +56,7 @@ var _ = Describe("SpotFile EventTransformers", func() {
 			header, insertHeaderErr = persistHeader(db, blockNumber, blockChain)
 			Expect(insertHeaderErr).NotTo(HaveOccurred())
 
-			spotFileMatConfig := transformer.EventTransformerConfig{
+			spotFileMatConfig := event.TransformerConfig{
 				TransformerName:     constants.SpotFileMatTable,
 				ContractAddresses:   []string{test_data.SpotAddress()},
 				ContractAbi:         constants.SpotABI(),
@@ -66,7 +65,7 @@ var _ = Describe("SpotFile EventTransformers", func() {
 				EndingBlockNumber:   blockNumber,
 			}
 
-			addresses = transformer.HexStringsToAddresses(spotFileMatConfig.ContractAddresses)
+			addresses = event.HexStringsToAddresses(spotFileMatConfig.ContractAddresses)
 			topics = []common.Hash{common.HexToHash(spotFileMatConfig.Topic)}
 
 			initializer = event.ConfiguredTransformer{
@@ -111,7 +110,7 @@ var _ = Describe("SpotFile EventTransformers", func() {
 			initializer event.ConfiguredTransformer
 			logs        []types.Log
 			topics      []common.Hash
-			tr          transformer.EventTransformer
+			tr          event.ITransformer
 		)
 
 		BeforeEach(func() {
@@ -120,7 +119,7 @@ var _ = Describe("SpotFile EventTransformers", func() {
 			header, insertHeaderErr = persistHeader(db, blockNumber, blockChain)
 			Expect(insertHeaderErr).NotTo(HaveOccurred())
 
-			spotFilePipConfig := transformer.EventTransformerConfig{
+			spotFilePipConfig := event.TransformerConfig{
 				TransformerName:     constants.SpotFilePipTable,
 				ContractAddresses:   []string{test_data.SpotAddress()},
 				ContractAbi:         constants.SpotABI(),
@@ -129,7 +128,7 @@ var _ = Describe("SpotFile EventTransformers", func() {
 				EndingBlockNumber:   blockNumber,
 			}
 
-			addresses = transformer.HexStringsToAddresses(spotFilePipConfig.ContractAddresses)
+			addresses = event.HexStringsToAddresses(spotFilePipConfig.ContractAddresses)
 			topics = []common.Hash{common.HexToHash(spotFilePipConfig.Topic)}
 
 			initializer = event.ConfiguredTransformer{

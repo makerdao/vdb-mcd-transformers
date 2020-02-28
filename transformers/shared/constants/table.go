@@ -41,6 +41,7 @@ const (
 	JugInitTable            = "jug_init"
 	LogValueTable           = "log_value"
 	NewCdpTable             = "new_cdp"
+	OsmChangeTable          = "osm_change"
 	PotCageTable            = "pot_cage"
 	PotDripTable            = "pot_drip"
 	PotExitTable            = "pot_exit"

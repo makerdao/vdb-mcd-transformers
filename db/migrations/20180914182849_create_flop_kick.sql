@@ -12,9 +12,6 @@ CREATE TABLE maker.flop_kick
     UNIQUE (header_id, log_id)
 );
 
--- prevent naming conflict with maker.flop_kicks in postgraphile
-COMMENT ON TABLE maker.flop_kick IS E'@name flopKickEvent';
-
 CREATE INDEX flop_kick_header_index
     ON maker.flop_kick (header_id);
 CREATE INDEX flop_kick_log_index

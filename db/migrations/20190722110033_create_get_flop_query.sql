@@ -66,6 +66,7 @@ $$
     LANGUAGE SQL
     STRICT --necessary for postgraphile queries with required arguments
     STABLE;
+
 -- +goose Down
 DROP FUNCTION api.get_flop(NUMERIC, BIGINT);
 DROP TYPE api.flop_bid_snapshot CASCADE;

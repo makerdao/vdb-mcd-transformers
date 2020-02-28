@@ -9,7 +9,6 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/fetcher"
-	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -69,7 +68,7 @@ func relyIntegrationTest(blockNumber int64, contractAddressHex, msgSenderAddress
 	It("persists event", func() {
 		test_config.CleanTestDB(db)
 		logFetcher := fetcher.NewLogFetcher(blockChain)
-		relyConfig := transformer.EventTransformerConfig{
+		relyConfig := event.TransformerConfig{
 			TransformerName: constants.RelyTable,
 			Topic:           constants.RelySignature(),
 		}

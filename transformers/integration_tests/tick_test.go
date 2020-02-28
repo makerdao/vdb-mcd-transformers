@@ -27,14 +27,13 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/fetcher"
-	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("Tick EventTransformer", func() {
 	var (
-		tickConfig  transformer.EventTransformerConfig
+		tickConfig  event.TransformerConfig
 		initializer event.ConfiguredTransformer
 		logFetcher  fetcher.ILogFetcher
 		addresses   []common.Address
@@ -44,7 +43,7 @@ var _ = Describe("Tick EventTransformer", func() {
 	BeforeEach(func() {
 		test_config.CleanTestDB(db)
 
-		tickConfig = transformer.EventTransformerConfig{
+		tickConfig = event.TransformerConfig{
 			TransformerName:   constants.TickTable,
 			ContractAddresses: append(test_data.FlipAddresses(), test_data.FlopAddress()),
 			ContractAbi:       constants.FlipABI(),
@@ -52,7 +51,7 @@ var _ = Describe("Tick EventTransformer", func() {
 		}
 
 		logFetcher = fetcher.NewLogFetcher(blockChain)
-		addresses = transformer.HexStringsToAddresses(tickConfig.ContractAddresses)
+		addresses = event.HexStringsToAddresses(tickConfig.ContractAddresses)
 		topics = []common.Hash{common.HexToHash(tickConfig.Topic)}
 
 		initializer = event.ConfiguredTransformer{

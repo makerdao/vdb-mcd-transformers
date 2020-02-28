@@ -21,6 +21,7 @@ import (
 	jug_init "github.com/makerdao/vdb-mcd-transformers/transformers/events/jug_init/initializer"
 	log_value "github.com/makerdao/vdb-mcd-transformers/transformers/events/log_value/initializer"
 	new_cdp "github.com/makerdao/vdb-mcd-transformers/transformers/events/new_cdp/initializer"
+	osm_change "github.com/makerdao/vdb-mcd-transformers/transformers/events/osm_change/initializer"
 	pot_cage "github.com/makerdao/vdb-mcd-transformers/transformers/events/pot_cage/initializer"
 	pot_drip "github.com/makerdao/vdb-mcd-transformers/transformers/events/pot_drip/initializer"
 	pot_exit "github.com/makerdao/vdb-mcd-transformers/transformers/events/pot_exit/initializer"
@@ -63,6 +64,8 @@ import (
 	spot "github.com/makerdao/vdb-mcd-transformers/transformers/storage/spot/initializer"
 	vat "github.com/makerdao/vdb-mcd-transformers/transformers/storage/vat/initializer"
 	vow "github.com/makerdao/vdb-mcd-transformers/transformers/storage/vow/initializer"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
+	storage "github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
 	interface1 "github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 )
 
@@ -70,8 +73,8 @@ type exporter string
 
 var Exporter exporter
 
-func (e exporter) Export() ([]interface1.EventTransformerInitializer, []interface1.StorageTransformerInitializer, []interface1.ContractTransformerInitializer) {
-	return []interface1.EventTransformerInitializer{
+func (e exporter) Export() ([]event.TransformerInitializer, []storage.TransformerInitializer, []interface1.ContractTransformerInitializer) {
+	return []event.TransformerInitializer{
 			bite.EventTransformerInitializer,
 			cat_file_chop_lump.EventTransformerInitializer,
 			cat_file_flip.EventTransformerInitializer,
@@ -89,6 +92,7 @@ func (e exporter) Export() ([]interface1.EventTransformerInitializer, []interfac
 			jug_init.EventTransformerInitializer,
 			log_value.EventTransformerInitializer,
 			new_cdp.EventTransformerInitializer,
+			osm_change.EventTransformerInitializer,
 			pot_cage.EventTransformerInitializer,
 			pot_drip.EventTransformerInitializer,
 			pot_exit.EventTransformerInitializer,
@@ -121,7 +125,7 @@ func (e exporter) Export() ([]interface1.EventTransformerInitializer, []interfac
 			vow_flog.EventTransformerInitializer,
 			yank.EventTransformerInitializer,
 		},
-		[]interface1.StorageTransformerInitializer{
+		[]storage.TransformerInitializer{
 			bat_flip.StorageTransformerInitializer,
 			cat.StorageTransformerInitializer,
 			cdp_manager.StorageTransformerInitializer,
