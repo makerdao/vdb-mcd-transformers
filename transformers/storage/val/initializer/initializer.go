@@ -12,7 +12,7 @@
 // GNU Affero General Public License for more details.
 
 // You should have received a copy of the GNU Affero General Public License
-// along with this program.  If not, see <http://www.gnu.org/licen
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package initializer
 
@@ -28,4 +28,5 @@ var valAddress = constants.GetContractAddress("MCD_VAL")
 var StorageTransformerInitializer storage.TransformerInitializer = storage.Transformer{
 	Address:           common.HexToAddress(constants.GetContractAddress("MCD_VAL")),
 	StorageKeysLookup: storage.NewKeysLookup(val.NewKeysLoader(&mcdStorage.MakerStorageRepository{}, valAddress)),
+	Repository:        &val.ValStorageRepository{ContractAddress: valAddress},
 }.NewTransformer

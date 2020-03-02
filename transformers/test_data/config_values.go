@@ -36,6 +36,7 @@ func OsmAddresses() []string {
 }
 func PotAddress() string        { return checksum(constants.GetContractAddress("MCD_POT")) }
 func SpotAddress() string       { return checksum(constants.GetContractAddress("MCD_SPOT")) }
+func ValAddress() string        { return checksum(constants.GetContractAddress("MCD_VAL")) }
 func VatAddress() string        { return checksum(constants.GetContractAddress("MCD_VAT")) }
 func VowAddress() string        { return checksum(constants.GetContractAddress("MCD_VOW")) }
 func CdpManagerAddress() string { return checksum(constants.GetContractAddress("CDP_MANAGER")) }
