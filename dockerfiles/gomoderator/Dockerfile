@@ -12,7 +12,6 @@ WORKDIR /go/src/github.com/makerdao/vulcanizedb
 RUN git checkout $VDB_VERSION
 RUN go build
 WORKDIR /go/src/github.com/makerdao/vdb-mcd-transformers
-RUN git checkout $VDB_VERSION
 RUN go build
 
 # app container
@@ -24,8 +23,6 @@ WORKDIR /go/src/github.com/makerdao/vulcanizedb
 RUN apk update \
         && apk upgrade \
         && apk add --no-cache \
-        ca-certificates \
-        bash \
         && update-ca-certificates 2>/dev/null || true
 
 # add go so we can build the plugin
@@ -33,6 +30,6 @@ RUN apk add --update --no-cache git g++ linux-headers python3
 
 # get access to go.mod files in directories
 COPY --from=builder /go/src/github.com/makerdao/vulcanizedb .
-COPY --from=builder /go/src/github.com/makerdao/vdb-mcd-transformers/go.mod ./vdb/go.mod
+COPY --from=builder /go/src/github.com/makerdao/vdb-mcd-transformers/go.mod ./mcd-transformers/go.mod
 
-RUN python3 scripts/gomoderator.py ./ vdb/
+RUN python3 scripts/gomoderator.py ./ mcd-transformers/
