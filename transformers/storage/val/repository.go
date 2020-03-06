@@ -23,7 +23,6 @@ import (
 )
 
 const (
-	insertValHasQuery = `INSERT INTO maker.val_has (diff_id, header_id, has) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
 	insertValValQuery = `INSERT INTO maker.val_val (diff_id, header_id, val) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
 )
 
@@ -38,18 +37,11 @@ func (repository *ValStorageRepository) SetDB(db *postgres.DB) {
 
 func (repository *ValStorageRepository) Create(diffID, headerID int64, metadata types.ValueMetadata, value interface{}) error {
 	switch metadata.Name {
-	case Has:
-		return repository.insertHas(diffID, headerID, value.(string))
 	case Val:
 		return repository.insertVal(diffID, headerID, value.(string))
 	default:
 		panic(fmt.Sprintf("unrecognized val contract storage name: %s", metadata.Name))
 	}
-}
-
-func (repository *ValStorageRepository) insertHas(diffID, headerID int64, has string) error {
-	_, writeErr := repository.db.Exec(insertValHasQuery, diffID, headerID, has)
-	return writeErr
 }
 
 func (repository *ValStorageRepository) insertVal(diffID, headerID int64, val string) error {

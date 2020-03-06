@@ -26,14 +26,10 @@ import (
 )
 
 const (
-	Has = "has"
 	Val = "val"
 )
 
 var (
-	HasKey      = common.HexToHash(vdbStorage.IndexZero)
-	HasMetadata = types.GetValueMetadata(Has, nil, types.Uint256)
-
 	ValKey      = common.HexToHash(vdbStorage.IndexOne)
 	ValMetadata = types.GetValueMetadata(Val, nil, types.Bytes32)
 )
@@ -53,7 +49,6 @@ func (loader *keysLoader) SetDB(db *postgres.DB) {
 
 func (loader *keysLoader) LoadMappings() (map[common.Hash]types.ValueMetadata, error) {
 	mappings := make(map[common.Hash]types.ValueMetadata)
-	mappings[HasKey] = HasMetadata
 	mappings[ValKey] = ValMetadata
 	return mappings, nil
 }

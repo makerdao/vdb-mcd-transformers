@@ -11,8 +11,6 @@ import (
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"math/rand"
-	"strconv"
 )
 
 var _ = Describe("Val storage repository", func() {
@@ -21,12 +19,11 @@ var _ = Describe("Val storage repository", func() {
 		repo                 val.ValStorageRepository
 		diffID, fakeHeaderID int64
 		fakeAddress          = "0x" + fakes.RandomString(40)
-		fakeUint256          = strconv.Itoa(rand.Intn(1000000))
 	)
 
 	BeforeEach(func() {
 		test_config.CleanTestDB(db)
-		repo = val.ValStorageRepository{ContractAddress: test_data.ValAddress()}
+		repo = val.ValStorageRepository{ContractAddress: test_data.MedianizerAddress()}
 		repo.SetDB(db)
 		headerRepository := repositories.NewHeaderRepository(db)
 		var insertHeaderErr error
@@ -42,20 +39,6 @@ var _ = Describe("Val storage repository", func() {
 			}
 
 			Expect(repoCreate).Should(Panic())
-		})
-
-		Describe("Has", func() {
-			hasMetadata := types.GetValueMetadata(val.Has, nil, types.Uint256)
-			inputs := shared_behaviors.StorageBehaviorInputs{
-				ValueFieldName: val.Has,
-				Value:          fakeUint256,
-				Schema:         constants.MakerSchema,
-				TableName:      constants.ValHasTable,
-				Repository:     &repo,
-				Metadata:       hasMetadata,
-			}
-
-			shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
 		})
 
 		Describe("Val", func() {

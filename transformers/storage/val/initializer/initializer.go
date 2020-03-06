@@ -24,7 +24,7 @@ import (
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
 )
 
-var valAddress = constants.GetContractAddress("MCD_VAL")
+var valAddress = constants.GetContractAddress("MCD_MEDIAN")
 var StorageTransformerInitializer storage.TransformerInitializer = storage.Transformer{
 	Address:           common.HexToAddress(constants.GetContractAddress("MCD_VAL")),
 	StorageKeysLookup: storage.NewKeysLookup(val.NewKeysLoader(&mcdStorage.MakerStorageRepository{}, valAddress)),

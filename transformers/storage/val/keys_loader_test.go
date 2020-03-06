@@ -17,14 +17,13 @@ var _ = Describe("Val storage keys loader", func() {
 
 	BeforeEach(func() {
 		storageRepository = &test_helpers.MockMakerStorageRepository{}
-		storageKeysLoader = val.NewKeysLoader(storageRepository, test_data.ValAddress())
+		storageKeysLoader = val.NewKeysLoader(storageRepository, test_data.MedianizerAddress())
 	})
 
 	It("returns value metadata for static keys", func() {
 		mappings, err := storageKeysLoader.LoadMappings()
 
 		Expect(err).NotTo(HaveOccurred())
-		Expect(mappings[val.HasKey]).To(Equal(val.HasMetadata))
 		Expect(mappings[val.ValKey]).To(Equal(val.ValMetadata))
 	})
 })
