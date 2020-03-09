@@ -12,5 +12,5 @@ var medianizerAddress = constants.GetContractAddress("MCD_MEDIANIZER")
 var StorageTransformerInitializer storage.TransformerInitializer = storage.Transformer{
 	Address:           common.HexToAddress(medianizerAddress),
 	StorageKeysLookup: storage.NewKeysLookup(medianizer.NewKeysLoader(&mcdStorage.MakerStorageRepository{}, medianizerAddress)),
-	Repository:        &medianizer.medianizerStorageRepository{ContractAddress: medianizerAddress},
+	Repository:        &medianizer.MedianizerStorageRepository{ContractAddress: medianizerAddress},
 }.NewTransformer
