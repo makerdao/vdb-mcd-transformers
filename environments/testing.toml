@@ -28,6 +28,7 @@
         "usdc_b_flip",
         "wbtc_flip",
         "jug",
+        "medianizer",
         "pot",
         "spot",
         "vat",
@@ -175,6 +176,12 @@
     [exporter.jug]
         path = "transformers/storage/jug/initializer"
         type = "eth_storage"
+        repository = "github.com/makerdao/vdb-mcd-transformers"
+        migrations = "db/migrations"
+        rank = "0"
+    [exporter.medianizer]
+    	path = "transformers/storage/medianizer/initializer"
+    	type = "eth_storage"
         repository = "github.com/makerdao/vdb-mcd-transformers"
         migrations = "db/migrations"
         rank = "0"
