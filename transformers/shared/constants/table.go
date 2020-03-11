@@ -40,6 +40,8 @@ const (
 	JugFileVowTable         = "jug_file_vow"
 	JugInitTable            = "jug_init"
 	LogValueTable           = "log_value"
+	MedianDissSingleTable   = "median_diss_single"
+	MedianKissSingleTable   = "median_kiss_single"
 	NewCdpTable             = "new_cdp"
 	OsmChangeTable          = "osm_change"
 	PotCageTable            = "pot_cage"
