@@ -2,7 +2,7 @@ package medianizer
 
 import (
 	"fmt"
-
+	"github.com/makerdao/vdb-mcd-transformers/transformers/storage"
 	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 )
@@ -20,15 +20,12 @@ type MedianizerStorageRepository struct {
 
 func (repository MedianizerStorageRepository) Create(diffID, headerID int64, metadata types.ValueMetadata, value interface{}) error {
 	switch metadata.Name {
-	case Val:
-		return repository.insertMedianizerVal(diffID, headerID, value.(string))
-	case Age:
-		return repository.insertMedianizerAge(diffID, headerID, value.(string))
+	case storage.Packed:
+		return repository.insertPackedValueRecord(diffID, headerID, metadata, value.(map[int]string))
 	case Bar:
 		return repository.insertMedianizerBar(diffID, headerID, value.(string))
-
 	default:
-		panic(fmt.Sprintf("unrecognized spot contract storage name: %s", metadata.Name))
+		panic(fmt.Sprintf("unrecognized medianizer contract storage name: %s", metadata.Name))
 	}
 }
 func (repository *MedianizerStorageRepository) SetDB(db *postgres.DB) {
@@ -48,4 +45,21 @@ func (repository MedianizerStorageRepository) insertMedianizerAge(diffID, header
 func (repository MedianizerStorageRepository) insertMedianizerBar(diffID, headerID int64, bar string) error {
 	_, err := repository.db.Exec(insertMedianizerBarQuery, diffID, headerID, bar)
 	return err
+}
+func (repository *MedianizerStorageRepository) insertPackedValueRecord(diffID, headerID int64, metadata types.ValueMetadata, packedValues map[int]string) error {
+	for order, value := range packedValues {
+		var insertErr error
+		switch metadata.PackedNames[order] {
+		case Val:
+			insertErr = repository.insertMedianizerVal(diffID, headerID, value)
+		case Age:
+			insertErr = repository.insertMedianizerAge(diffID, headerID, value)
+		default:
+			panic(fmt.Sprintf("unrecognized medianizer contract storage name in packed values: %s", metadata.Name))
+		}
+		if insertErr != nil {
+			return insertErr
+		}
+	}
+	return nil
 }
