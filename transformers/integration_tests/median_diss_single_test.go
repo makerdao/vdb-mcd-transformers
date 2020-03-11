@@ -5,7 +5,7 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/median_kiss/single"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/events/median_diss/single"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
@@ -15,18 +15,19 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("MedianKissSingle EventTransformer", func() {
-	medianKissConfig := event.TransformerConfig{
-		TransformerName:   constants.MedianKissSingleTable,
+// TODO: Update once a diss event has happened
+var _ = XDescribe("MedianDissSingle EventTransformer", func() {
+	medianDissConfig := event.TransformerConfig{
+		TransformerName:   constants.MedianDissSingleTable,
 		ContractAddresses: test_data.MedianAddresses(),
 		ContractAbi:       constants.MedianABI(),
-		Topic:             constants.MedianKissSingleSignature(),
+		Topic:             constants.MedianDissSingleSignature(),
 	}
 
-	It("transforms Median kiss single log events", func() {
+	It("transforms Median diss single log events", func() {
 		blockNumber := int64(8936530)
-		medianKissConfig.StartingBlockNumber = blockNumber
-		medianKissConfig.EndingBlockNumber = blockNumber
+		medianDissConfig.StartingBlockNumber = blockNumber
+		medianDissConfig.EndingBlockNumber = blockNumber
 
 		test_config.CleanTestDB(db)
 
@@ -35,23 +36,23 @@ var _ = Describe("MedianKissSingle EventTransformer", func() {
 
 		logFetcher := fetcher.NewLogFetcher(blockChain)
 		logs, logErr := logFetcher.FetchLogs(
-			event.HexStringsToAddresses(medianKissConfig.ContractAddresses),
-			[]common.Hash{common.HexToHash(medianKissConfig.Topic)},
+			event.HexStringsToAddresses(medianDissConfig.ContractAddresses),
+			[]common.Hash{common.HexToHash(medianDissConfig.Topic)},
 			header)
 		Expect(logErr).NotTo(HaveOccurred())
 
 		eventLogs := test_data.CreateLogs(header.Id, logs, db)
 
 		transformer := event.ConfiguredTransformer{
-			Config:      medianKissConfig,
+			Config:      medianDissConfig,
 			Transformer: single.Transformer{},
 		}.NewTransformer(db)
 
 		transformErr := transformer.Execute(eventLogs)
 		Expect(transformErr).NotTo(HaveOccurred())
 
-		var dbResults []MedianKissSingleModel
-		err = db.Select(&dbResults, `SELECT address_id, msg_sender, a FROM maker.median_kiss_single ORDER BY address_id`)
+		var dbResults []MedianDissSingleModel
+		err = db.Select(&dbResults, `SELECT address_id, msg_sender, a FROM maker.median_diss_single ORDER BY address_id`)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResults)).To(Equal(2))
@@ -71,7 +72,7 @@ var _ = Describe("MedianKissSingle EventTransformer", func() {
 	})
 })
 
-type MedianKissSingleModel struct {
+type MedianDissSingleModel struct {
 	AddressID string `db:"address_id"`
 	MsgSender string `db:"msg_sender"`
 	A         string
