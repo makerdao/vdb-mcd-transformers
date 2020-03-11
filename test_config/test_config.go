@@ -91,7 +91,11 @@ func CleanTestDB(db *postgres.DB) {
 	}
 
 	for _, query := range wipeTableQueries {
-		db.MustExec(query)
+		_, wipeErr := db.Exec(query)
+		if wipeErr != nil {
+			fmt.Println("Unable to execute query: ", query)
+			fmt.Println(wipeErr)
+		}
 	}
 }
 
