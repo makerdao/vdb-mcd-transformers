@@ -10077,6 +10077,40 @@ ALTER SEQUENCE maker.log_value_id_seq OWNED BY maker.log_value.id;
 
 
 --
+-- Name: median_diss_single; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.median_diss_single (
+    id integer NOT NULL,
+    log_id bigint NOT NULL,
+    header_id integer NOT NULL,
+    address_id integer NOT NULL,
+    msg_sender integer NOT NULL,
+    a integer NOT NULL
+);
+
+
+--
+-- Name: median_diss_single_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.median_diss_single_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: median_diss_single_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.median_diss_single_id_seq OWNED BY maker.median_diss_single.id;
+
+
+--
 -- Name: median_kiss_single; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -13284,6 +13318,13 @@ ALTER TABLE ONLY maker.log_value ALTER COLUMN id SET DEFAULT nextval('maker.log_
 
 
 --
+-- Name: median_diss_single id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_diss_single ALTER COLUMN id SET DEFAULT nextval('maker.median_diss_single_id_seq'::regclass);
+
+
+--
 -- Name: median_kiss_single id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
@@ -15189,6 +15230,22 @@ ALTER TABLE ONLY maker.log_value
 
 ALTER TABLE ONLY maker.log_value
     ADD CONSTRAINT log_value_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: median_diss_single median_diss_single_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_diss_single
+    ADD CONSTRAINT median_diss_single_header_id_log_id_key UNIQUE (header_id, log_id);
+
+
+--
+-- Name: median_diss_single median_diss_single_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_diss_single
+    ADD CONSTRAINT median_diss_single_pkey PRIMARY KEY (id);
 
 
 --
@@ -17784,6 +17841,41 @@ CREATE INDEX log_value_header_index ON maker.log_value USING btree (header_id);
 --
 
 CREATE INDEX log_value_log_index ON maker.log_value USING btree (log_id);
+
+
+--
+-- Name: median_diss_single_a_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX median_diss_single_a_index ON maker.median_diss_single USING btree (a);
+
+
+--
+-- Name: median_diss_single_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX median_diss_single_address_index ON maker.median_diss_single USING btree (address_id);
+
+
+--
+-- Name: median_diss_single_header_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX median_diss_single_header_index ON maker.median_diss_single USING btree (header_id);
+
+
+--
+-- Name: median_diss_single_log_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX median_diss_single_log_index ON maker.median_diss_single USING btree (log_id);
+
+
+--
+-- Name: median_diss_single_msg_sender_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX median_diss_single_msg_sender_index ON maker.median_diss_single USING btree (msg_sender);
 
 
 --
@@ -21034,6 +21126,46 @@ ALTER TABLE ONLY maker.log_value
 
 ALTER TABLE ONLY maker.log_value
     ADD CONSTRAINT log_value_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: median_diss_single median_diss_single_a_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_diss_single
+    ADD CONSTRAINT median_diss_single_a_fkey FOREIGN KEY (a) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: median_diss_single median_diss_single_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_diss_single
+    ADD CONSTRAINT median_diss_single_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: median_diss_single median_diss_single_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_diss_single
+    ADD CONSTRAINT median_diss_single_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: median_diss_single median_diss_single_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_diss_single
+    ADD CONSTRAINT median_diss_single_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: median_diss_single median_diss_single_msg_sender_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_diss_single
+    ADD CONSTRAINT median_diss_single_msg_sender_fkey FOREIGN KEY (msg_sender) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --
