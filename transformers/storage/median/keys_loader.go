@@ -1,4 +1,4 @@
-package medianizer
+package median
 
 import (
 	"github.com/ethereum/go-ethereum/common"
@@ -20,8 +20,8 @@ var (
 	valAndAgeTypes      = map[int]types.ValueType{0: types.Uint128, 1: types.Uint48} //no Uint32 type in vulcanizedb
 	valAndAgeNames      = map[int]string{0: Val, 1: Age}
 	ValAndAgeMetadata   = types.GetValueMetadataForPackedSlot(mcdStorage.Packed, nil, types.PackedSlot, valAndAgeNames, valAndAgeTypes)
-	BarKey      = common.HexToHash(vdbStorage.IndexTwo)
-	BarMetadata = types.GetValueMetadata(Bar, nil, types.Uint256)
+	BarKey              = common.HexToHash(vdbStorage.IndexTwo)
+	BarMetadata         = types.GetValueMetadata(Bar, nil, types.Uint256)
 )
 
 type keysLoader struct {

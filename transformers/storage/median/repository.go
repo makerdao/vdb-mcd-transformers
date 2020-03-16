@@ -1,7 +1,8 @@
-package medianizer
+package median
 
 import (
 	"fmt"
+
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage"
 	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
@@ -25,7 +26,7 @@ func (repository MedianizerStorageRepository) Create(diffID, headerID int64, met
 	case Bar:
 		return repository.insertMedianizerBar(diffID, headerID, value.(string))
 	default:
-		panic(fmt.Sprintf("unrecognized medianizer contract storage name: %s", metadata.Name))
+		panic(fmt.Sprintf("unrecognized median contract storage name: %s", metadata.Name))
 	}
 }
 func (repository *MedianizerStorageRepository) SetDB(db *postgres.DB) {
@@ -55,7 +56,7 @@ func (repository *MedianizerStorageRepository) insertPackedValueRecord(diffID, h
 		case Age:
 			insertErr = repository.insertMedianizerAge(diffID, headerID, value)
 		default:
-			panic(fmt.Sprintf("unrecognized medianizer contract storage name in packed values: %s", metadata.Name))
+			panic(fmt.Sprintf("unrecognized median contract storage name in packed values: %s", metadata.Name))
 		}
 		if insertErr != nil {
 			return insertErr

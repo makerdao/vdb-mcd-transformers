@@ -1,12 +1,15 @@
-package medianizer_test
+package median_test
 
 import (
 	"fmt"
+	"math/rand"
+	"strconv"
+
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/medianizer"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/median"
 	. "github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data/shared_behaviors"
@@ -15,14 +18,12 @@ import (
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"math/rand"
-	"strconv"
 )
 
 var _ = Describe("Medianizer Storage Repository", func() {
 	var (
 		db                   = test_config.NewTestDB(test_config.NewTestNode())
-		repo                 medianizer.MedianizerStorageRepository
+		repo                 median.MedianizerStorageRepository
 		fakeUint256          = strconv.Itoa(rand.Intn(1000000))
 		blockNumber          int64
 		diffID, fakeHeaderID int64
@@ -30,7 +31,7 @@ var _ = Describe("Medianizer Storage Repository", func() {
 
 	BeforeEach(func() {
 		test_config.CleanTestDB(db)
-		repo = medianizer.MedianizerStorageRepository{ContractAddress: test_data.MedianizerAddress()}
+		repo = median.MedianizerStorageRepository{ContractAddress: test_data.MedianizerAddress()}
 		repo.SetDB(db)
 		blockNumber = rand.Int63()
 		var insertHeaderErr error
@@ -42,8 +43,8 @@ var _ = Describe("Medianizer Storage Repository", func() {
 
 	Describe("val and age", func() {
 		packedNames := make(map[int]string)
-		packedNames[0] = medianizer.Val
-		packedNames[1] = medianizer.Age
+		packedNames[0] = median.Val
+		packedNames[1] = median.Age
 		var valAndAgeMetadata = types.ValueMetadata{
 			Name:        storage.Packed,
 			PackedNames: packedNames,
@@ -98,12 +99,12 @@ var _ = Describe("Medianizer Storage Repository", func() {
 
 	Describe("bar", func() {
 		inputs := shared_behaviors.StorageBehaviorInputs{
-			ValueFieldName: medianizer.Bar,
+			ValueFieldName: median.Bar,
 			Value:          fakeUint256,
 			Schema:         constants.MakerSchema,
 			TableName:      constants.MedianizerBarTable,
 			Repository:     &repo,
-			Metadata:       medianizer.BarMetadata,
+			Metadata:       median.BarMetadata,
 		}
 
 		shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
