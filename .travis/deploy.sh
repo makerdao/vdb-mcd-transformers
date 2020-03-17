@@ -40,4 +40,13 @@ docker push makerdao/vdb-execute:$TAG
 message PUSHING GET-STORAGE-VALUE DOCKER IMAGE
 docker push makerdao/vdb-get-storage-value:$TAG
 
-# message DEPLOYING SERVICE
+# service deploy
+if [ "$ENVIRONMENT" == "prod" ]; then
+  message DEPLOYING EXECUTE
+  aws ecs update-service --cluster vdb-cluster-$ENVIRONMENT --service vdb-execute-$ENVIRONMENT --force-new-deployment --endpoint https://ecs.$PROD_REGION.amazonaws.com --region $PROD_REGION
+elif [ "$ENVIRONMENT" == "staging" ]; then
+  message DEPLOYING EXECUTE
+  aws ecs update-service --cluster vdb-cluster-$ENVIRONMENT --service vdb-execute-$ENVIRONMENT --force-new-deployment --endpoint https://ecs.$STAGING_REGION.amazonaws.com --region $STAGING_REGION
+else
+   message UNKNOWN ENVIRONMENT
+fi
