@@ -41,6 +41,7 @@ const (
 	JugInitTable            = "jug_init"
 	LogValueTable           = "log_value"
 	MedianDissSingleTable   = "median_diss_single"
+	MedianDropTable         = "median_drop"
 	MedianKissSingleTable   = "median_kiss_single"
 	NewCdpTable             = "new_cdp"
 	OsmChangeTable          = "osm_change"
