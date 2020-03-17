@@ -8,7 +8,7 @@ require (
 	github.com/howeyc/fsnotify v0.9.0 // indirect
 	github.com/jmoiron/sqlx v0.0.0-20181024163419-82935fac6c1a
 	github.com/magiconair/properties v1.8.0
-	github.com/makerdao/vulcanizedb v0.0.13-rc.2.0.20200309155515-0dcc44e856be
+	github.com/makerdao/vulcanizedb v0.0.14-rc.1
 	github.com/mattn/go-runewidth v0.0.6
 	github.com/onsi/ginkgo v1.10.1
 	github.com/onsi/gomega v1.7.0
