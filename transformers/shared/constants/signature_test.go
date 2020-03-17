@@ -96,6 +96,8 @@ var _ = Describe("Signature constants", func() {
 
 	It("generates kiss (batch) signature", func() {
 		Expect(MedianKissBatchSignature()).To(Equal("0x1b25b65f00000000000000000000000000000000000000000000000000000000"))
+	It("generates drop signature", func() {
+		Expect(MedianDropSignature()).To(Equal("0x8ef5eaf000000000000000000000000000000000000000000000000000000000"))
 	})
 
 	It("generates kiss (single) signature", func() {
