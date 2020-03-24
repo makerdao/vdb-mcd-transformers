@@ -77,7 +77,7 @@ func medianDissSingleMethod() string {
 func medianKissBatchMethod() string {
 	return getOverloadedFunctionSignature(MedianABI(), "kiss", []string{"address[]"})
 func medianDropMethod() string {
-	return getOverloadedFunctionSignature(MedianABI(), "drop", []string{"address[]"})
+	return getSolidityFunctionSignature(MedianABI(), "drop")
 }
 func medianKissSingleMethod() string {
 	return getOverloadedFunctionSignature(MedianABI(), "kiss", []string{"address"})

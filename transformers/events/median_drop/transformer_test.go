@@ -40,47 +40,73 @@ var _ = Describe("Median drop transformer", func() {
 		Expect(err).To(HaveOccurred())
 	})
 
-	It("convert a log to an insertion model", func() {
-		models, err := transformer.ToModels(constants.MedianABI(), []core.EventLog{test_data.MedianDropLog}, db)
+	It("convert a log with 4 accounts to an insertion model", func() {
+		models, err := transformer.ToModels(constants.MedianABI(), []core.EventLog{test_data.MedianDropLogWithFourAccounts}, db)
 		Expect(err).NotTo(HaveOccurred())
 
-		var aAddressID, a2AddressID, a3AddressID, a4AddressID int64
-		aBytes, aErr := shared.GetLogNoteArgumentAtIndex(2, test_data.MedianDropLog.Log.Data)
+		var addressID1, addressID2, addressID3, addressID4 int64
+		a1Bytes, aErr := shared.GetLogNoteArgumentAtIndex(2, test_data.MedianDropLogWithFourAccounts.Log.Data)
 		Expect(aErr).NotTo(HaveOccurred())
-		aAddress := common.BytesToAddress(aBytes).String()
-		aErr = db.Get(&aAddressID, `SELECT id FROM public.addresses where address = $1`, aAddress)
+		address1 := common.BytesToAddress(a1Bytes).String()
+		aErr = db.Get(&addressID1, `SELECT id FROM public.addresses where address = $1`, address1)
 		Expect(aErr).NotTo(HaveOccurred())
 
-		a2Bytes, a2Err := shared.GetLogNoteArgumentAtIndex(3, test_data.MedianDropLog.Log.Data)
+		a2Bytes, a2Err := shared.GetLogNoteArgumentAtIndex(3, test_data.MedianDropLogWithFourAccounts.Log.Data)
 		Expect(a2Err).NotTo(HaveOccurred())
-		a2Address := common.BytesToAddress(a2Bytes).String()
-		a2Err = db.Get(&a2AddressID, `SELECT id FROM public.addresses where address = $1`, a2Address)
+		address2 := common.BytesToAddress(a2Bytes).String()
+		a2Err = db.Get(&addressID2, `SELECT id FROM public.addresses where address = $1`, address2)
 		Expect(a2Err).NotTo(HaveOccurred())
 
-		a3Bytes, a3Err := shared.GetLogNoteArgumentAtIndex(4, test_data.MedianDropLog.Log.Data)
+		a3Bytes, a3Err := shared.GetLogNoteArgumentAtIndex(4, test_data.MedianDropLogWithFourAccounts.Log.Data)
 		Expect(a3Err).NotTo(HaveOccurred())
-		a3Address := common.BytesToAddress(a3Bytes).String()
-		a3Err = db.Get(&a3AddressID, `SELECT id FROM public.addresses where address = $1`, a3Address)
+		address3 := common.BytesToAddress(a3Bytes).String()
+		a3Err = db.Get(&addressID3, `SELECT id FROM public.addresses where address = $1`, address3)
 		Expect(a3Err).NotTo(HaveOccurred())
 
-		a4Bytes, a4Err := shared.GetLogNoteArgumentAtIndex(5, test_data.MedianDropLog.Log.Data)
+		a4Bytes, a4Err := shared.GetLogNoteArgumentAtIndex(5, test_data.MedianDropLogWithFourAccounts.Log.Data)
 		Expect(a4Err).NotTo(HaveOccurred())
-		a4Address := common.BytesToAddress(a4Bytes).String()
-		a4Err = db.Get(&a4AddressID, `SELECT id FROM public.addresses where address = $1`, a4Address)
+		address4 := common.BytesToAddress(a4Bytes).String()
+		a4Err = db.Get(&addressID4, `SELECT id FROM public.addresses where address = $1`, address4)
 		Expect(a4Err).NotTo(HaveOccurred())
 
-		expectedModel := test_data.MedianDropModel()
-		contractAddressID, contractAddressErr := shared.GetOrCreateAddress(test_data.MedianDropLog.Log.Address.String(), db)
+		expectedModel := test_data.MedianDropModelWithFourAccounts()
+		contractAddressID, contractAddressErr := shared.GetOrCreateAddress(test_data.MedianDropLogWithFourAccounts.Log.Address.String(), db)
 		Expect(contractAddressErr).NotTo(HaveOccurred())
-		msgSenderAddressID, msgSenderAddressErr := shared.GetOrCreateAddress(test_data.MedianDropLog.Log.Topics[1].Hex(), db)
+		msgSenderAddressID, msgSenderAddressErr := shared.GetOrCreateAddress(test_data.MedianDropLogWithFourAccounts.Log.Topics[1].Hex(), db)
 		Expect(msgSenderAddressErr).NotTo(HaveOccurred())
 		expectedModel.ColumnValues[event.AddressFK] = contractAddressID
 		expectedModel.ColumnValues[constants.MsgSenderColumn] = msgSenderAddressID
-		expectedModel.ColumnValues[constants.AColumn] = aAddressID
-		expectedModel.ColumnValues[constants.A2Column] = a2AddressID
-		expectedModel.ColumnValues[constants.A3Column] = a3AddressID
-		expectedModel.ColumnValues[constants.A4Column] = a4AddressID
+		expectedModel.ColumnValues[constants.AColumn] = addressID1
+		expectedModel.ColumnValues[constants.A2Column] = addressID2
+		expectedModel.ColumnValues[constants.A3Column] = addressID3
+		expectedModel.ColumnValues[constants.A4Column] = addressID4
 
-		Expect(models).To(ConsistOf(expectedModel))
+		Expect(models[0]).To(Equal(expectedModel))
+	})
+
+	It("convert a log with 1 account to an insertion model", func() {
+		models, err := transformer.ToModels(constants.MedianABI(), []core.EventLog{test_data.MedianDropLogWithOneAccount}, db)
+		Expect(err).NotTo(HaveOccurred())
+
+		var addressID1, emptySlot int64
+		aBytes, aErr := shared.GetLogNoteArgumentAtIndex(2, test_data.MedianDropLogWithOneAccount.Log.Data)
+		Expect(aErr).NotTo(HaveOccurred())
+		address1 := common.BytesToAddress(aBytes).String()
+		aErr = db.Get(&addressID1, `SELECT id FROM public.addresses where address = $1`, address1)
+		Expect(aErr).NotTo(HaveOccurred())
+
+		expectedModel := test_data.MedianDropModelWithOneAccount()
+		contractAddressID, contractAddressErr := shared.GetOrCreateAddress(test_data.MedianDropLogWithOneAccount.Log.Address.String(), db)
+		Expect(contractAddressErr).NotTo(HaveOccurred())
+		msgSenderAddressID, msgSenderAddressErr := shared.GetOrCreateAddress(test_data.MedianDropLogWithOneAccount.Log.Topics[1].Hex(), db)
+		Expect(msgSenderAddressErr).NotTo(HaveOccurred())
+		expectedModel.ColumnValues[event.AddressFK] = contractAddressID
+		expectedModel.ColumnValues[constants.MsgSenderColumn] = msgSenderAddressID
+		expectedModel.ColumnValues[constants.AColumn] = addressID1
+		expectedModel.ColumnValues[constants.A2Column] = emptySlot
+		expectedModel.ColumnValues[constants.A3Column] = emptySlot
+		expectedModel.ColumnValues[constants.A4Column] = emptySlot
+
+		Expect(models[0]).To(Equal(expectedModel))
 	})
 })

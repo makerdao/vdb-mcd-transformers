@@ -32,6 +32,8 @@ const (
 	FourTopicsRequired  = 4
 	LogDataRequired     = true
 	LogDataNotRequired  = false
+	emptyLogDataSlot    = "0x0000000000000000000000000000000000000000"
+	lastDataIndex       = 5
 )
 
 var (
