@@ -20,8 +20,10 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/makerdao/vulcanizedb/libraries/shared/constants"
+	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 )
 
 const (
@@ -30,6 +32,8 @@ const (
 	FourTopicsRequired  = 4
 	LogDataRequired     = true
 	LogDataNotRequired  = false
+	emptyLogDataSlot    = "0x0000000000000000000000000000000000000000"
+	lastDataIndex       = 5
 )
 
 var (
@@ -51,4 +55,23 @@ func VerifyLog(log types.Log, expectedNumTopics int, isDataRequired bool) error 
 		return ErrLogMissingData
 	}
 	return nil
+}
+
+func GetLogNoteData(startingIndex int, eventLogData []byte, db *postgres.DB) ([]int64, error) {
+	var addressIDs []int64
+	for j := startingIndex; j <= lastDataIndex; j++ {
+		logDataBytes, _ := GetLogNoteArgumentAtIndex(j, eventLogData)
+		logData := common.BytesToAddress(logDataBytes).String()
+		addressID, addressErr := GetOrCreateAddress(logData, db)
+		if addressErr != nil {
+			return nil, addressErr
+		}
+		if logData == emptyLogDataSlot {
+			addressIDs = append(addressIDs, 0)
+		} else {
+			addressIDs = append(addressIDs, addressID)
+		}
+
+	}
+	return addressIDs, nil
 }
