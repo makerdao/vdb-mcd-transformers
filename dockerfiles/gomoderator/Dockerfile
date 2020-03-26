@@ -12,7 +12,6 @@ RUN git checkout $VDB_VERSION
 RUN go build
 WORKDIR /go/src/github.com/makerdao/vdb-mcd-transformers
 COPY . .
-RUN go build
 
 # app container
 FROM golang:alpine
