@@ -7,11 +7,11 @@ ENV GO111MODULE on
 
 WORKDIR /go/src/github.com/makerdao
 RUN git clone https://github.com/makerdao/vulcanizedb.git
-RUN git clone https://github.com/makerdao/vdb-mcd-transformers.git
 WORKDIR /go/src/github.com/makerdao/vulcanizedb
 RUN git checkout $VDB_VERSION
 RUN go build
 WORKDIR /go/src/github.com/makerdao/vdb-mcd-transformers
+COPY . .
 RUN go build
 
 # app container
