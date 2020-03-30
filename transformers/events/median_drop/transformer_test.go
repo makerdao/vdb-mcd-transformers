@@ -76,10 +76,10 @@ var _ = Describe("Median drop transformer", func() {
 		Expect(msgSenderAddressErr).NotTo(HaveOccurred())
 		expectedModel.ColumnValues[event.AddressFK] = contractAddressID
 		expectedModel.ColumnValues[constants.MsgSenderColumn] = msgSenderAddressID
-		expectedModel.ColumnValues[constants.AColumn] = addressID1
-		expectedModel.ColumnValues[constants.A2Column] = addressID2
-		expectedModel.ColumnValues[constants.A3Column] = addressID3
-		expectedModel.ColumnValues[constants.A4Column] = addressID4
+		expectedModel.ColumnValues[constants.A0Column] = addressID1
+		expectedModel.ColumnValues[constants.A1Column] = addressID2
+		expectedModel.ColumnValues[constants.A2Column] = addressID3
+		expectedModel.ColumnValues[constants.A3Column] = addressID4
 
 		Expect(models[0]).To(Equal(expectedModel))
 	})
@@ -102,10 +102,10 @@ var _ = Describe("Median drop transformer", func() {
 		Expect(msgSenderAddressErr).NotTo(HaveOccurred())
 		expectedModel.ColumnValues[event.AddressFK] = contractAddressID
 		expectedModel.ColumnValues[constants.MsgSenderColumn] = msgSenderAddressID
-		expectedModel.ColumnValues[constants.AColumn] = addressID1
+		expectedModel.ColumnValues[constants.A0Column] = addressID1
+		expectedModel.ColumnValues[constants.A1Column] = emptySlot
 		expectedModel.ColumnValues[constants.A2Column] = emptySlot
 		expectedModel.ColumnValues[constants.A3Column] = emptySlot
-		expectedModel.ColumnValues[constants.A4Column] = emptySlot
 
 		Expect(models[0]).To(Equal(expectedModel))
 	})
