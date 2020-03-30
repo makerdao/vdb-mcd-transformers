@@ -40,17 +40,17 @@ func (Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) ([]
 			SchemaName: constants.MakerSchema,
 			TableName:  constants.MedianDropTable,
 			OrderedColumns: []event.ColumnName{
-				event.HeaderFK, event.LogFK, event.AddressFK, constants.MsgSenderColumn, constants.AColumn, constants.A2Column, constants.A3Column, constants.A4Column,
+				event.HeaderFK, event.LogFK, event.AddressFK, constants.MsgSenderColumn, constants.A0Column, constants.A1Column, constants.A2Column, constants.A3Column,
 			},
 			ColumnValues: event.ColumnValues{
 				event.HeaderFK:            log.HeaderID,
 				event.LogFK:               log.ID,
 				event.AddressFK:           contractAddressID,
 				constants.MsgSenderColumn: msgSenderAddressID,
-				constants.AColumn:         addressIDs[0],
-				constants.A2Column:        addressIDs[1],
-				constants.A3Column:        addressIDs[2],
-				constants.A4Column:        addressIDs[3],
+				constants.A0Column:        addressIDs[0],
+				constants.A1Column:        addressIDs[1],
+				constants.A2Column:        addressIDs[2],
+				constants.A3Column:        addressIDs[3],
 			},
 		}
 		models = append(models, model)
