@@ -7,9 +7,9 @@ require (
 	github.com/gogo/protobuf v1.1.1
 	github.com/howeyc/fsnotify v0.9.0 // indirect
 	github.com/jmoiron/sqlx v0.0.0-20181024163419-82935fac6c1a
-	github.com/lib/pq v1.3.0
+	github.com/lib/pq v1.0.0
 	github.com/magiconair/properties v1.8.0
-	github.com/makerdao/vulcanizedb v0.0.14-rc.1.0.20200406214119-09da08aee3bf
+	github.com/makerdao/vulcanizedb v0.0.14-rc.1.0.20200406234740-7cf862c061c9
 	github.com/mattn/go-runewidth v0.0.6
 	github.com/onsi/ginkgo v1.10.1
 	github.com/onsi/gomega v1.7.0

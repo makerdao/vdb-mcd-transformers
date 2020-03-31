@@ -6,7 +6,7 @@ ARG VDB_VERSION=staging
 ENV GO111MODULE on
 
 WORKDIR /go/src/github.com/makerdao/vdb-mcd-transformers
-ADD . .
+COPY . .
 
 WORKDIR /go/src/github.com/makerdao
 RUN git clone https://github.com/makerdao/vulcanizedb.git
@@ -44,7 +44,7 @@ RUN ln -sf /dev/stdout /go/src/github.com/makerdao/vulcanizedb/vulcanizedb.log
 # keep binaries immutable
 COPY --from=builder /go/src/github.com/makerdao/vulcanizedb .
 COPY --from=builder /go/src/github.com/makerdao/vdb-mcd-transformers/$CONFIG_FILE config.toml
-COPY --from=builder /go/src/github.com/makerdao/vdb-mcd-transformers/dockerfiles/get_storage_value/startup_script.sh .
+COPY --from=builder /go/src/github.com/makerdao/vdb-mcd-transformers/dockerfiles/backfill_storage/startup_script.sh .
 COPY --from=builder /go/src/github.com/makerdao/vdb-mcd-transformers/plugins/transformerExporter.so plugins/transformerExporter.so
 
 # need to execute with a shell to access env variables
