@@ -33,6 +33,7 @@
         "jug_init",
         "log_value",
         "median_diss_single",
+        "median_drop",
         "median_kiss_single",
         "new_cdp",
         "osm_change",
@@ -263,6 +264,13 @@
     [exporter.median_diss_single]
         path = "transformers/events/median_diss/single/initializer"
         type = "eth_event"
+        repository = "github.com/makerdao/vdb-mcd-transformers"
+        migrations = "db/migrations"
+        contracts = ["MEDIAN_BAT", "MEDIAN_ETH"]
+        rank = "0"
+    [exporter.median_drop]
+    	path = "transformers/events/media_drop/initializer"
+    	type = "eth_event"
         repository = "github.com/makerdao/vdb-mcd-transformers"
         migrations = "db/migrations"
         contracts = ["MEDIAN_BAT", "MEDIAN_ETH"]
