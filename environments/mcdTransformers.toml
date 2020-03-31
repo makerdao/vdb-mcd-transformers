@@ -21,7 +21,9 @@
         "flap_storage",
         "flop_storage",
         "bat_flip",
+        "bat_median",
         "eth_flip_a",
+        "eth_median",
         "sai_flip",
         "tusd_flip",
         "usdc_a_flip",
@@ -138,6 +140,12 @@
         rank = "0"
     [exporter.eth_flip_a]
         path = "transformers/storage/flip/initializers/eth_flip_a"
+        type = "eth_storage"
+        repository = "github.com/makerdao/vdb-mcd-transformers"
+        migrations = "db/migrations"
+        rank = "0"
+    [exporter.eth_median]
+        path = "transformers/storage/median/initializers/eth_median"
         type = "eth_storage"
         repository = "github.com/makerdao/vdb-mcd-transformers"
         migrations = "db/migrations"
