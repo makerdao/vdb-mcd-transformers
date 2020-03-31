@@ -10086,7 +10086,10 @@ CREATE TABLE maker.median_diss_single (
     header_id integer NOT NULL,
     address_id integer NOT NULL,
     msg_sender integer NOT NULL,
-    a integer NOT NULL
+    a0 integer NOT NULL,
+    a1 integer,
+    a2 integer,
+    a3 integer
 );
 
 
@@ -17936,10 +17939,31 @@ CREATE INDEX median_diss_single_msg_sender_index ON maker.median_diss_single USI
 
 
 --
--- Name: median_drop_a_index; Type: INDEX; Schema: maker; Owner: -
+-- Name: median_drop_a0_index; Type: INDEX; Schema: maker; Owner: -
 --
 
-CREATE INDEX median_drop_a_index ON maker.median_drop USING btree (a);
+CREATE INDEX median_drop_a0_index ON maker.median_drop USING btree (a0);
+
+
+--
+-- Name: median_drop_a1_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX median_drop_a1_index ON maker.median_drop USING btree (a1);
+
+
+--
+-- Name: median_drop_a2_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX median_drop_a2_index ON maker.median_drop USING btree (a2);
+
+
+--
+-- Name: median_drop_a3_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX median_drop_a3_index ON maker.median_drop USING btree (a3);
 
 
 --
@@ -21261,11 +21285,35 @@ ALTER TABLE ONLY maker.median_diss_single
 
 
 --
--- Name: median_drop median_drop_a_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+-- Name: median_drop median_drop_a0_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.median_drop
-    ADD CONSTRAINT median_drop_a_fkey FOREIGN KEY (a) REFERENCES public.addresses(id) ON DELETE CASCADE;
+    ADD CONSTRAINT median_drop_a0_fkey FOREIGN KEY (a0) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: median_drop median_drop_a1_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_drop
+    ADD CONSTRAINT median_drop_a1_fkey FOREIGN KEY (a1) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: median_drop median_drop_a2_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_drop
+    ADD CONSTRAINT median_drop_a2_fkey FOREIGN KEY (a2) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: median_drop median_drop_a3_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_drop
+    ADD CONSTRAINT median_drop_a3_fkey FOREIGN KEY (a3) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --
