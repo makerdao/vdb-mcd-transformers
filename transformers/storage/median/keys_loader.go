@@ -17,7 +17,7 @@ const (
 
 var (
 	ValAndAgeStorageKey = common.HexToHash(vdbStorage.IndexOne)
-	valAndAgeTypes      = map[int]types.ValueType{0: types.Uint128, 1: types.Uint32} //no Uint32 type in vulcanizedb
+	valAndAgeTypes      = map[int]types.ValueType{0: types.Uint128, 1: types.Uint32}
 	valAndAgeNames      = map[int]string{0: Val, 1: Age}
 	ValAndAgeMetadata   = types.GetValueMetadataForPackedSlot(mcdStorage.Packed, nil, types.PackedSlot, valAndAgeNames, valAndAgeTypes)
 	BarKey              = common.HexToHash(vdbStorage.IndexTwo)

@@ -18,7 +18,7 @@ var _ = Describe("Medianizer storage keys loader", func() {
 	)
 	BeforeEach(func() {
 		storageRepository = &test_helpers.MockMakerStorageRepository{}
-		storageKeysLoader = median.NewKeysLoader(storageRepository, test_data.MedianizerAddress())
+		storageKeysLoader = median.NewKeysLoader(storageRepository, test_data.EthMedianAddress())
 	})
 
 	It("returns value metadata for static keys", func() {
@@ -28,7 +28,7 @@ var _ = Describe("Medianizer storage keys loader", func() {
 		Expect(mappings[median.ValAndAgeStorageKey]).To(Equal(types.ValueMetadata{
 			Name:        mcdStorage.Packed,
 			Type:        types.PackedSlot,
-			PackedTypes: map[int]types.ValueType{0: types.Uint128, 1: types.Uint48},
+			PackedTypes: map[int]types.ValueType{0: types.Uint128, 1: types.Uint32},
 			PackedNames: map[int]string{0: median.Val, 1: median.Age},
 		}))
 
