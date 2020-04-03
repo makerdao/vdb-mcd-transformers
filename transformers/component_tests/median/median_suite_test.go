@@ -1,4 +1,4 @@
-package median
+package median_test
 
 import (
 	"io/ioutil"

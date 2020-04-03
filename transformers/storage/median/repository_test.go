@@ -20,10 +20,10 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("Medianizer Storage Repository", func() {
+var _ = Describe("Median Storage Repository", func() {
 	var (
 		db                   = test_config.NewTestDB(test_config.NewTestNode())
-		repo                 median.MedianizerStorageRepository
+		repo                 median.MedianStorageRepository
 		fakeUint256          = strconv.Itoa(rand.Intn(1000000))
 		blockNumber          int64
 		diffID, fakeHeaderID int64
@@ -31,7 +31,7 @@ var _ = Describe("Medianizer Storage Repository", func() {
 
 	BeforeEach(func() {
 		test_config.CleanTestDB(db)
-		repo = median.MedianizerStorageRepository{ContractAddress: test_data.EthMedianAddress()}
+		repo = median.MedianStorageRepository{ContractAddress: test_data.EthMedianAddress()}
 		repo.SetDB(db)
 		blockNumber = rand.Int63()
 		var insertHeaderErr error
@@ -61,13 +61,13 @@ var _ = Describe("Medianizer Storage Repository", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			var valResult VariableRes
-			valQuery := fmt.Sprintf(`SELECT diff_id, header_id, val AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.MedianizerValTable))
+			valQuery := fmt.Sprintf(`SELECT diff_id, header_id, val AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.MedianValTable))
 			err = db.Get(&valResult, valQuery)
 			Expect(err).NotTo(HaveOccurred())
 			AssertVariable(valResult, diffID, fakeHeaderID, fakeVal)
 
 			var ageResult VariableRes
-			ageQuery := fmt.Sprintf(`SELECT diff_id, header_id, age AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.MedianizerAgeTable))
+			ageQuery := fmt.Sprintf(`SELECT diff_id, header_id, age AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.MedianAgeTable))
 			err = db.Get(&ageResult, ageQuery)
 			Expect(err).NotTo(HaveOccurred())
 			AssertVariable(ageResult, diffID, fakeHeaderID, fakeAge)
@@ -102,7 +102,7 @@ var _ = Describe("Medianizer Storage Repository", func() {
 			ValueFieldName: median.Bar,
 			Value:          fakeUint256,
 			Schema:         constants.MakerSchema,
-			TableName:      constants.MedianizerBarTable,
+			TableName:      constants.MedianBarTable,
 			Repository:     &repo,
 			Metadata:       median.BarMetadata,
 		}

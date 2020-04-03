@@ -1,21 +1,27 @@
 package median_test
 
 import (
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	mcdStorage "github.com/makerdao/vdb-mcd-transformers/transformers/storage"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/median"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/utilities/wards"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
 	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
+	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("Medianizer storage keys loader", func() {
+var _ = Describe("Median storage keys loader", func() {
 	var (
 		storageRepository *test_helpers.MockMakerStorageRepository
 		storageKeysLoader storage.KeysLoader
 	)
+
 	BeforeEach(func() {
 		storageRepository = &test_helpers.MockMakerStorageRepository{}
 		storageKeysLoader = median.NewKeysLoader(storageRepository, test_data.EthMedianAddress())
@@ -33,5 +39,34 @@ var _ = Describe("Medianizer storage keys loader", func() {
 		}))
 
 		Expect(mappings[median.BarKey]).To(Equal(median.BarMetadata))
+	})
+
+	Describe("wards", func() {
+		It("returns value metadata for wards", func() {
+			wardsUser := fakes.FakeAddress.Hex()
+			storageRepository.WardsKeys = []string{wardsUser}
+			paddedWardsUser := "0x000000000000000000000000" + wardsUser[2:]
+			wardsKey := common.BytesToHash(crypto.Keccak256(common.FromHex(paddedWardsUser + wards.WardsMappingIndex)))
+			expectedMetadata := types.ValueMetadata{
+				Name: wards.Wards,
+				Keys: map[types.Key]string{constants.User: fakes.FakeAddress.Hex()},
+				Type: types.Uint256,
+			}
+
+			mappings, err := storageKeysLoader.LoadMappings()
+			Expect(err).NotTo(HaveOccurred())
+
+			Expect(storageRepository.GetWardsKeysCalledWith).To(Equal(test_data.EthMedianAddress()))
+			Expect(mappings[wardsKey]).To(Equal(expectedMetadata))
+		})
+
+		It("returns error on failure", func() {
+			storageRepository.GetWardsKeysError = fakes.FakeError
+
+			_, err := storageKeysLoader.LoadMappings()
+
+			Expect(err).To(HaveOccurred())
+			Expect(err).To(MatchError(fakes.FakeError))
+		})
 	})
 })
