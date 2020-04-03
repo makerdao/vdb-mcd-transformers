@@ -19,9 +19,7 @@ package shared_test
 import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -82,48 +80,6 @@ var _ = Describe("Shared transformer utils", func() {
 			err := shared.VerifyLog(log, 2, true)
 
 			Expect(err).NotTo(HaveOccurred())
-		})
-	})
-
-	Describe("getLogNoteData", func() {
-		var (
-			db = test_config.NewTestDB(test_config.NewTestNode())
-		)
-		BeforeEach(func() {
-			test_config.CleanTestDB(db)
-		})
-
-		It("gets event log data when there is one indexed value", func() {
-			var expectedIDs []int64
-			accountIDs, accountErr := shared.GetLogNoteData(2, test_data.MedianDropLogWithOneAccount.Log.Data, db)
-			Expect(accountErr).NotTo(HaveOccurred())
-
-			expectedID, addressErr := shared.GetOrCreateAddress("0xacB48fD097f1E0B24d3853BeAd826E5E9278B700", db)
-			expectedIDs = append(expectedIDs, expectedID, 0, 0, 0)
-			Expect(addressErr).NotTo(HaveOccurred())
-			Expect(accountIDs).To(Equal(expectedIDs))
-		})
-
-		It("gets event log data when there are four indexed values", func() {
-			var expectedIDs []int64
-			accountIDs, accountErr := shared.GetLogNoteData(2, test_data.MedianDropLogWithFourAccounts.Log.Data, db)
-			Expect(accountErr).NotTo(HaveOccurred())
-
-			expectedID1, addressErr := shared.GetOrCreateAddress("0xc45E7858EEf1318337A803Ede8C5A9bE12E2B40f", db)
-			Expect(addressErr).NotTo(HaveOccurred())
-
-			expectedID2, addressErr2 := shared.GetOrCreateAddress("0xEf6B95815E215635bd77851f1Fc42e8750873024", db)
-			Expect(addressErr2).NotTo(HaveOccurred())
-
-			expectedID3, addressErr3 := shared.GetOrCreateAddress("0x8efccC4eCb27F7f233A7fF4e74E86c5E979d1c43", db)
-			Expect(addressErr3).NotTo(HaveOccurred())
-
-			expectedID4, addressErr4 := shared.GetOrCreateAddress("0xc2D2D553A39cc08e7e294427edE2C38A89c0066A", db)
-			Expect(addressErr4).NotTo(HaveOccurred())
-
-			expectedIDs = append(expectedIDs, expectedID1, expectedID2, expectedID3, expectedID4)
-
-			Expect(accountIDs).To(Equal(expectedIDs))
 		})
 	})
 })

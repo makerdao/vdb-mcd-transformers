@@ -12,15 +12,15 @@ import (
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
 )
 
-var rawMedianDropLogWithFourAccounts = types.Log{
+var rawMedianDropLogWithFiveAccounts = types.Log{
 	Address: common.HexToAddress(EthMedianAddress()),
 	Topics: []common.Hash{
 		common.HexToHash(constants.MedianDropSignature()),
 		common.HexToHash("0x000000000000000000000000c45e7858eef1318337a803ede8c5a9be12e2b40f"),
 		common.HexToHash("0x0000000000000000000000000000000000000000000000000000000000000020"),
-		common.HexToHash("0x000000000000000000000000000000000000000000000000000000000000000a"),
+		common.HexToHash("0x0000000000000000000000000000000000000000000000000000000000000005"),
 	},
-	Data:        hexutil.MustDecode("0x000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000e08ef5eaf00000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000a000000000000000000000000c45e7858eef1318337a803ede8c5a9be12e2b40f000000000000000000000000ef6b95815e215635bd77851f1fc42e87508730240000000000000000000000008efccc4ecb27f7f233a7ff4e74e86c5e979d1c43000000000000000000000000c2d2d553a39cc08e7e294427ede2c38a89c0066a00000000000000000000000036c7d1aee129f32a07609a03dc5ffff6"),
+	Data:        hexutil.MustDecode("0x000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000e046d4577d00000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000005000000000000000000000000a52f23a651d1fa7c2610753c768103ee8c498f22000000000000000000000000ce91db32ad1c91278a56cbb2d8f24f9315043de90000000000000000000000003482f7a06db71f8ecac04f882546a66081311667000000000000000000000000702f365e1e559d9dc7b1af6ab9be64feb9c4d822000000000000000000000000ae37ab846ce92cf19031e602bf7dd3ae"),
 	BlockNumber: 8936530,
 	TxHash:      common.HexToHash("0x27f7834f778ec7d4289cf3337f8e428785c6d023164c02fc44565dbf2e26c49a"),
 	TxIndex:     10,
@@ -29,18 +29,18 @@ var rawMedianDropLogWithFourAccounts = types.Log{
 	Removed:     false,
 }
 
-var MedianDropLogWithFourAccounts = core.EventLog{
+var MedianDropLogWithFiveAccounts = core.EventLog{
 	ID:          int64(rand.Int31()),
 	HeaderID:    int64(rand.Int31()),
-	Log:         rawMedianDropLogWithFourAccounts,
+	Log:         rawMedianDropLogWithFiveAccounts,
 	Transformed: false,
 }
 
-func MedianDropModelWithFourAccounts() event.InsertionModel {
-	return CopyModel(medianDropModelWithFourAccounts)
+func MedianDropModelWithFiveAccounts() event.InsertionModel {
+	return CopyModel(medianDropModelWithFiveAccounts)
 }
 
-var medianDropModelWithFourAccounts = event.InsertionModel{
+var medianDropModelWithFiveAccounts = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.MedianDropTable,
 	OrderedColumns: []event.ColumnName{
@@ -48,14 +48,13 @@ var medianDropModelWithFourAccounts = event.InsertionModel{
 		event.LogFK,
 		event.AddressFK,
 		constants.MsgSenderColumn,
-		constants.A0Column,
-		constants.A1Column,
-		constants.A2Column,
-		constants.A3Column,
+		constants.ALengthColumn,
+		constants.AColumn,
 	},
 	ColumnValues: event.ColumnValues{
-		event.HeaderFK: MedianDropLogWithFourAccounts.HeaderID,
-		event.LogFK:    MedianDropLogWithFourAccounts.ID,
+		event.HeaderFK:          MedianDropLogWithFiveAccounts.HeaderID,
+		event.LogFK:             MedianDropLogWithFiveAccounts.ID,
+		constants.ALengthColumn: "5",
 	},
 }
 
@@ -65,7 +64,7 @@ var rawMedianDropLogWithOneAccount = types.Log{
 		common.HexToHash(constants.MedianDropSignature()),
 		common.HexToHash("0x000000000000000000000000c45e7858eef1318337a803ede8c5a9be12e2b40f"),
 		common.HexToHash("0x0000000000000000000000000000000000000000000000000000000000000020"),
-		common.HexToHash("0x000000000000000000000000000000000000000000000000000000000000000a"),
+		common.HexToHash("0x0000000000000000000000000000000000000000000000000000000000000001"),
 	},
 	Data:        hexutil.MustDecode("0x000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000e08ef5eaf000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000001000000000000000000000000acb48fd097f1e0b24d3853bead826e5e9278b70000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"),
 	BlockNumber: 8936534,
@@ -95,13 +94,12 @@ var medianDropModelWithOneAccount = event.InsertionModel{
 		event.LogFK,
 		event.AddressFK,
 		constants.MsgSenderColumn,
-		constants.A0Column,
-		constants.A1Column,
-		constants.A2Column,
-		constants.A3Column,
+		constants.ALengthColumn,
+		constants.AColumn,
 	},
 	ColumnValues: event.ColumnValues{
-		event.HeaderFK: MedianDropLogWithOneAccount.HeaderID,
-		event.LogFK:    MedianDropLogWithOneAccount.ID,
+		event.HeaderFK:          MedianDropLogWithOneAccount.HeaderID,
+		event.LogFK:             MedianDropLogWithOneAccount.ID,
+		constants.ALengthColumn: "1",
 	},
 }
