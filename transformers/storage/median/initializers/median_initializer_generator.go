@@ -11,6 +11,6 @@ func GenerateStorageTransformerInitializer(contractAddress string) storage.Trans
 	return storage.Transformer{
 		Address:           common.HexToAddress(contractAddress),
 		StorageKeysLookup: storage.NewKeysLookup(median.NewKeysLoader(&mcdStorage.MakerStorageRepository{}, contractAddress)),
-		Repository:        &median.MedianizerStorageRepository{ContractAddress: contractAddress},
+		Repository:        &median.MedianStorageRepository{ContractAddress: contractAddress},
 	}.NewTransformer
 }

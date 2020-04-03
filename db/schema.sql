@@ -10077,6 +10077,70 @@ ALTER SEQUENCE maker.log_value_id_seq OWNED BY maker.log_value.id;
 
 
 --
+-- Name: median_age; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.median_age (
+    id integer NOT NULL,
+    diff_id bigint NOT NULL,
+    header_id integer NOT NULL,
+    age numeric NOT NULL
+);
+
+
+--
+-- Name: median_age_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.median_age_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: median_age_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.median_age_id_seq OWNED BY maker.median_age.id;
+
+
+--
+-- Name: median_bar; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.median_bar (
+    id integer NOT NULL,
+    diff_id bigint NOT NULL,
+    header_id integer NOT NULL,
+    bar numeric NOT NULL
+);
+
+
+--
+-- Name: median_bar_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.median_bar_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: median_bar_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.median_bar_id_seq OWNED BY maker.median_bar.id;
+
+
+--
 -- Name: median_diss_batch; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -10250,74 +10314,10 @@ ALTER SEQUENCE maker.median_kiss_single_id_seq OWNED BY maker.median_kiss_single
 
 
 --
--- Name: medianizer_age; Type: TABLE; Schema: maker; Owner: -
+-- Name: median_val; Type: TABLE; Schema: maker; Owner: -
 --
 
-CREATE TABLE maker.medianizer_age (
-    id integer NOT NULL,
-    diff_id bigint NOT NULL,
-    header_id integer NOT NULL,
-    age numeric NOT NULL
-);
-
-
---
--- Name: medianizer_age_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
---
-
-CREATE SEQUENCE maker.medianizer_age_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: medianizer_age_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
---
-
-ALTER SEQUENCE maker.medianizer_age_id_seq OWNED BY maker.medianizer_age.id;
-
-
---
--- Name: medianizer_bar; Type: TABLE; Schema: maker; Owner: -
---
-
-CREATE TABLE maker.medianizer_bar (
-    id integer NOT NULL,
-    diff_id bigint NOT NULL,
-    header_id integer NOT NULL,
-    bar numeric NOT NULL
-);
-
-
---
--- Name: medianizer_bar_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
---
-
-CREATE SEQUENCE maker.medianizer_bar_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: medianizer_bar_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
---
-
-ALTER SEQUENCE maker.medianizer_bar_id_seq OWNED BY maker.medianizer_bar.id;
-
-
---
--- Name: medianizer_val; Type: TABLE; Schema: maker; Owner: -
---
-
-CREATE TABLE maker.medianizer_val (
+CREATE TABLE maker.median_val (
     id integer NOT NULL,
     diff_id bigint NOT NULL,
     header_id integer NOT NULL,
@@ -10326,10 +10326,10 @@ CREATE TABLE maker.medianizer_val (
 
 
 --
--- Name: medianizer_val_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+-- Name: median_val_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
-CREATE SEQUENCE maker.medianizer_val_id_seq
+CREATE SEQUENCE maker.median_val_id_seq
     AS integer
     START WITH 1
     INCREMENT BY 1
@@ -10339,10 +10339,10 @@ CREATE SEQUENCE maker.medianizer_val_id_seq
 
 
 --
--- Name: medianizer_val_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+-- Name: median_val_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
 --
 
-ALTER SEQUENCE maker.medianizer_val_id_seq OWNED BY maker.medianizer_val.id;
+ALTER SEQUENCE maker.median_val_id_seq OWNED BY maker.median_val.id;
 
 
 --
@@ -13519,6 +13519,20 @@ ALTER TABLE ONLY maker.log_value ALTER COLUMN id SET DEFAULT nextval('maker.log_
 
 
 --
+-- Name: median_age id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_age ALTER COLUMN id SET DEFAULT nextval('maker.median_age_id_seq'::regclass);
+
+
+--
+-- Name: median_bar id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_bar ALTER COLUMN id SET DEFAULT nextval('maker.median_bar_id_seq'::regclass);
+
+
+--
 -- Name: median_diss_batch id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
@@ -13554,24 +13568,10 @@ ALTER TABLE ONLY maker.median_kiss_single ALTER COLUMN id SET DEFAULT nextval('m
 
 
 --
--- Name: medianizer_age id; Type: DEFAULT; Schema: maker; Owner: -
+-- Name: median_val id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
-ALTER TABLE ONLY maker.medianizer_age ALTER COLUMN id SET DEFAULT nextval('maker.medianizer_age_id_seq'::regclass);
-
-
---
--- Name: medianizer_bar id; Type: DEFAULT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.medianizer_bar ALTER COLUMN id SET DEFAULT nextval('maker.medianizer_bar_id_seq'::regclass);
-
-
---
--- Name: medianizer_val id; Type: DEFAULT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.medianizer_val ALTER COLUMN id SET DEFAULT nextval('maker.medianizer_val_id_seq'::regclass);
+ALTER TABLE ONLY maker.median_val ALTER COLUMN id SET DEFAULT nextval('maker.median_val_id_seq'::regclass);
 
 
 --
@@ -15476,6 +15476,38 @@ ALTER TABLE ONLY maker.log_value
 
 
 --
+-- Name: median_age median_age_diff_id_header_id_age_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_age
+    ADD CONSTRAINT median_age_diff_id_header_id_age_key UNIQUE (diff_id, header_id, age);
+
+
+--
+-- Name: median_age median_age_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_age
+    ADD CONSTRAINT median_age_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: median_bar median_bar_diff_id_header_id_bar_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_bar
+    ADD CONSTRAINT median_bar_diff_id_header_id_bar_key UNIQUE (diff_id, header_id, bar);
+
+
+--
+-- Name: median_bar median_bar_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_bar
+    ADD CONSTRAINT median_bar_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: median_diss_batch median_diss_batch_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -15556,51 +15588,19 @@ ALTER TABLE ONLY maker.median_kiss_single
 
 
 --
--- Name: medianizer_age medianizer_age_diff_id_header_id_age_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: median_val median_val_diff_id_header_id_val_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
-ALTER TABLE ONLY maker.medianizer_age
-    ADD CONSTRAINT medianizer_age_diff_id_header_id_age_key UNIQUE (diff_id, header_id, age);
-
-
---
--- Name: medianizer_age medianizer_age_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.medianizer_age
-    ADD CONSTRAINT medianizer_age_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY maker.median_val
+    ADD CONSTRAINT median_val_diff_id_header_id_val_key UNIQUE (diff_id, header_id, val);
 
 
 --
--- Name: medianizer_bar medianizer_bar_diff_id_header_id_bar_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: median_val median_val_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
-ALTER TABLE ONLY maker.medianizer_bar
-    ADD CONSTRAINT medianizer_bar_diff_id_header_id_bar_key UNIQUE (diff_id, header_id, bar);
-
-
---
--- Name: medianizer_bar medianizer_bar_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.medianizer_bar
-    ADD CONSTRAINT medianizer_bar_pkey PRIMARY KEY (id);
-
-
---
--- Name: medianizer_val medianizer_val_diff_id_header_id_val_key; Type: CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.medianizer_val
-    ADD CONSTRAINT medianizer_val_diff_id_header_id_val_key UNIQUE (diff_id, header_id, val);
-
-
---
--- Name: medianizer_val medianizer_val_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.medianizer_val
-    ADD CONSTRAINT medianizer_val_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY maker.median_val
+    ADD CONSTRAINT median_val_pkey PRIMARY KEY (id);
 
 
 --
@@ -18183,6 +18183,20 @@ CREATE INDEX log_value_log_index ON maker.log_value USING btree (log_id);
 
 
 --
+-- Name: median_age_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX median_age_header_id_index ON maker.median_age USING btree (header_id);
+
+
+--
+-- Name: median_bar_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX median_bar_header_id_index ON maker.median_bar USING btree (header_id);
+
+
+--
 -- Name: median_diss_batch_address_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -18337,24 +18351,10 @@ CREATE INDEX median_kiss_single_msg_sender_index ON maker.median_kiss_single USI
 
 
 --
--- Name: medianizer_age_header_id_index; Type: INDEX; Schema: maker; Owner: -
+-- Name: median_val_header_id_index; Type: INDEX; Schema: maker; Owner: -
 --
 
-CREATE INDEX medianizer_age_header_id_index ON maker.medianizer_age USING btree (header_id);
-
-
---
--- Name: medianizer_bar_header_id_index; Type: INDEX; Schema: maker; Owner: -
---
-
-CREATE INDEX medianizer_bar_header_id_index ON maker.medianizer_bar USING btree (header_id);
-
-
---
--- Name: medianizer_val_header_id_index; Type: INDEX; Schema: maker; Owner: -
---
-
-CREATE INDEX medianizer_val_header_id_index ON maker.medianizer_val USING btree (header_id);
+CREATE INDEX median_val_header_id_index ON maker.median_val USING btree (header_id);
 
 
 --
@@ -21573,6 +21573,38 @@ ALTER TABLE ONLY maker.log_value
 
 
 --
+-- Name: median_age median_age_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_age
+    ADD CONSTRAINT median_age_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
+-- Name: median_age median_age_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_age
+    ADD CONSTRAINT median_age_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: median_bar median_bar_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_bar
+    ADD CONSTRAINT median_bar_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
+-- Name: median_bar median_bar_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_bar
+    ADD CONSTRAINT median_bar_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
 -- Name: median_diss_batch median_diss_batch_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -21749,51 +21781,19 @@ ALTER TABLE ONLY maker.median_kiss_single
 
 
 --
--- Name: medianizer_age medianizer_age_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+-- Name: median_val median_val_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
-ALTER TABLE ONLY maker.medianizer_age
-    ADD CONSTRAINT medianizer_age_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
-
-
---
--- Name: medianizer_age medianizer_age_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.medianizer_age
-    ADD CONSTRAINT medianizer_age_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+ALTER TABLE ONLY maker.median_val
+    ADD CONSTRAINT median_val_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
 
 
 --
--- Name: medianizer_bar medianizer_bar_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+-- Name: median_val median_val_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
-ALTER TABLE ONLY maker.medianizer_bar
-    ADD CONSTRAINT medianizer_bar_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
-
-
---
--- Name: medianizer_bar medianizer_bar_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.medianizer_bar
-    ADD CONSTRAINT medianizer_bar_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
-
-
---
--- Name: medianizer_val medianizer_val_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.medianizer_val
-    ADD CONSTRAINT medianizer_val_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
-
-
---
--- Name: medianizer_val medianizer_val_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.medianizer_val
-    ADD CONSTRAINT medianizer_val_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+ALTER TABLE ONLY maker.median_val
+    ADD CONSTRAINT median_val_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
 
 
 --
