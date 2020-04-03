@@ -86,6 +86,14 @@ var _ = Describe("Signature constants", func() {
 		Expect(LogValueSignature()).To(Equal("0x296ba4ca62c6c21c95e828080cb8aec7481b71390585605300a8a76f9e95b527"))
 	})
 
+	It("generates diss (single) signature", func() {
+		Expect(MedianDissSingleSignature()).To(Equal("0x65c4ce7a00000000000000000000000000000000000000000000000000000000"))
+	})
+
+	It("generates kiss (single) signature", func() {
+		Expect(MedianKissSingleSignature()).To(Equal("0xf29c29c400000000000000000000000000000000000000000000000000000000"))
+	})
+
 	It("generates new cdp signature", func() {
 		Expect(NewCdpSignature()).To(Equal("0xd6be0bc178658a382ff4f91c8c68b542aa6b71685b8fe427966b87745c3ea7a2"))
 	})

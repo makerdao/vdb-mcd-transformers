@@ -27,6 +27,11 @@ func FlipABI() string {
 }
 func FlopABI() string { return getContractABI("MCD_FLOP") }
 func JugABI() string  { return getContractABI("MCD_JUG") }
+func MedianABI() string {
+	return GetContractsABI([]string{
+		"MEDIAN_ETH", "MEDIAN_BAT",
+	})
+}
 func OsmABI() string {
 	return GetContractsABI([]string{"OSM_ETH", "OSM_BAT"})
 }
@@ -61,8 +66,14 @@ func jugFileIlkMethod() string {
 func jugFileVowMethod() string {
 	return getOverloadedFunctionSignature(JugABI(), "file", []string{"bytes32", "address"})
 }
-func jugInitMethod() string   { return getSolidityFunctionSignature(JugABI(), "init") }
-func logValueMethod() string  { return getSolidityFunctionSignature(OsmABI(), "LogValue") }
+func jugInitMethod() string  { return getSolidityFunctionSignature(JugABI(), "init") }
+func logValueMethod() string { return getSolidityFunctionSignature(OsmABI(), "LogValue") }
+func medianDissSingleMethod() string {
+	return getOverloadedFunctionSignature(MedianABI(), "diss", []string{"address"})
+}
+func medianKissSingleMethod() string {
+	return getOverloadedFunctionSignature(MedianABI(), "kiss", []string{"address"})
+}
 func newCdpMethod() string    { return getSolidityFunctionSignature(CdpManagerABI(), "NewCdp") }
 func osmChangeMethod() string { return getSolidityFunctionSignature(OsmABI(), "change") }
 func potCageMethod() string   { return getSolidityFunctionSignature(PotABI(), "cage") }
