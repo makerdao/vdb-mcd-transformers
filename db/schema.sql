@@ -10141,6 +10141,40 @@ ALTER SEQUENCE maker.median_bar_id_seq OWNED BY maker.median_bar.id;
 
 
 --
+-- Name: median_bud; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.median_bud (
+    id integer NOT NULL,
+    diff_id bigint NOT NULL,
+    header_id integer NOT NULL,
+    address_id integer NOT NULL,
+    a integer NOT NULL,
+    bud integer NOT NULL
+);
+
+
+--
+-- Name: median_bud_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.median_bud_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: median_bud_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.median_bud_id_seq OWNED BY maker.median_bud.id;
+
+
+--
 -- Name: median_diss_batch; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -13533,6 +13567,13 @@ ALTER TABLE ONLY maker.median_bar ALTER COLUMN id SET DEFAULT nextval('maker.med
 
 
 --
+-- Name: median_bud id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_bud ALTER COLUMN id SET DEFAULT nextval('maker.median_bud_id_seq'::regclass);
+
+
+--
 -- Name: median_diss_batch id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
@@ -15505,6 +15546,22 @@ ALTER TABLE ONLY maker.median_bar
 
 ALTER TABLE ONLY maker.median_bar
     ADD CONSTRAINT median_bar_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: median_bud median_bud_diff_id_header_id_address_id_a_bud_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_bud
+    ADD CONSTRAINT median_bud_diff_id_header_id_address_id_a_bud_key UNIQUE (diff_id, header_id, address_id, a, bud);
+
+
+--
+-- Name: median_bud median_bud_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_bud
+    ADD CONSTRAINT median_bud_pkey PRIMARY KEY (id);
 
 
 --
@@ -18194,6 +18251,27 @@ CREATE INDEX median_age_header_id_index ON maker.median_age USING btree (header_
 --
 
 CREATE INDEX median_bar_header_id_index ON maker.median_bar USING btree (header_id);
+
+
+--
+-- Name: median_bud_a_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX median_bud_a_index ON maker.median_bud USING btree (a);
+
+
+--
+-- Name: median_bud_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX median_bud_address_index ON maker.median_bud USING btree (address_id);
+
+
+--
+-- Name: median_bud_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX median_bud_header_id_index ON maker.median_bud USING btree (header_id);
 
 
 --
@@ -21602,6 +21680,38 @@ ALTER TABLE ONLY maker.median_bar
 
 ALTER TABLE ONLY maker.median_bar
     ADD CONSTRAINT median_bar_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: median_bud median_bud_a_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_bud
+    ADD CONSTRAINT median_bud_a_fkey FOREIGN KEY (a) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: median_bud median_bud_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_bud
+    ADD CONSTRAINT median_bud_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: median_bud median_bud_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_bud
+    ADD CONSTRAINT median_bud_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
+-- Name: median_bud median_bud_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_bud
+    ADD CONSTRAINT median_bud_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
 
 
 --

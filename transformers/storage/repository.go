@@ -39,6 +39,7 @@ type IMakerStorageRepository interface {
 	GetFlopBidIds(contractAddress string) ([]string, error)
 	GetGemKeys() ([]Urn, error)
 	GetIlks() ([]string, error)
+	GetMedianBudAddresses(string) ([]string, error)
 	GetOwners() ([]string, error)
 	GetPotPieUsers() ([]string, error)
 	GetUrns() ([]Urn, error)
@@ -119,6 +120,34 @@ func (repository *MakerStorageRepository) GetGemKeys() ([]Urn, error) {
 		INNER JOIN maker.ilks ilks ON ilks.id = urns.ilk_id
 	`)
 	return gems, err
+}
+
+func (repository *MakerStorageRepository) GetMedianBudAddresses(contractAddress string) ([]string, error) {
+	addressID, addressErr := repository.GetOrCreateAddress(contractAddress)
+	if addressErr != nil {
+		return nil, addressErr
+	}
+	var budAddresses []string
+	err := repository.db.Select(&budAddresses, `
+		SELECT addresses.address
+		FROM maker.median_kiss_single
+		LEFT JOIN public.addresses ON median_kiss_single.a = addresses.id
+		WHERE median_kiss_single.address_id = $1
+		UNION
+		SELECT addresses.address
+		FROM maker.median_diss_single
+		LEFT JOIN public.addresses ON median_diss_single.a = addresses.id
+		WHERE median_diss_single.address_id = $1
+		UNION
+		SELECT a_address
+		FROM maker.median_kiss_batch, UNNEST(a) a_address
+		WHERE address_id = $1
+		UNION
+		SELECT a_address
+		FROM maker.median_diss_batch, UNNEST(a) a_address
+		WHERE address_id = $1
+	`, addressID)
+	return budAddresses, err
 }
 
 func (repository MakerStorageRepository) GetIlks() ([]string, error) {

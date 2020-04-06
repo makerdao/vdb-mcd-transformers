@@ -24,6 +24,7 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/lib/pq"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	query_helper "github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
@@ -622,6 +623,28 @@ var _ = Describe("Maker storage repository", func() {
 		})
 	})
 
+	Describe("getting bud keys", func() {
+		It("fetches unique addresses from kiss and diss (single and batch) events", func() {
+			a1 := common.HexToAddress(test_data.RandomString(40)).Hex()
+			a2 := common.HexToAddress(test_data.RandomString(40)).Hex()
+			a3 := common.HexToAddress(test_data.RandomString(40)).Hex()
+			a4 := common.HexToAddress(test_data.RandomString(40)).Hex()
+			a5 := common.HexToAddress(test_data.RandomString(40)).Hex()
+			medianAddressID, addressErr := shared.GetOrCreateAddress(test_data.EthMedianAddress(), db)
+			Expect(addressErr).NotTo(HaveOccurred())
+			insertMedianKissSingle(a1, medianAddressID, db)
+			insertMedianDissSingle(a2, medianAddressID, db)
+			insertMedianKissBatch([]string{a1, a3}, medianAddressID, db)
+			insertMedianDissBatch([]string{a2, a4}, medianAddressID, db)
+			insertMedianKissSingle(a5, addressId, db)
+
+			aAddresses, err := repository.GetMedianBudAddresses(test_data.EthMedianAddress())
+			Expect(err).NotTo(HaveOccurred())
+
+			Expect(aAddresses).To(ConsistOf(a1, a2, a3, a4))
+		})
+	})
+
 	Describe("getting Pot pie users", func() {
 		It("gets unique msg senders from Pot join and exit events", func() {
 			userAddressOne := common.HexToAddress(test_data.RandomString(40)).Hex()
@@ -798,6 +821,50 @@ func insertYank(blockNumber int64, bidId string, contractAddressId int64, db *po
 		VALUES($1, $2::NUMERIC, $3, $4)`,
 		headerID, bidId, contractAddressId, yankLog.ID,
 	)
+	Expect(err).NotTo(HaveOccurred())
+}
+
+func insertMedianKissSingle(a string, contractAddressID int64, db *postgres.DB) {
+	headerID := insertHeader(db, rand.Int63n(1000))
+	kissLog := test_data.CreateTestLog(headerID, db)
+	addressID, addressErr := shared.GetOrCreateAddress(a, db)
+	Expect(addressErr).NotTo(HaveOccurred())
+	_, err := db.Exec(`INSERT into maker.median_kiss_single (header_id, address_id, log_id, msg_sender, a)
+		VALUES($1, $2::NUMERIC, $3, $4, $4)`,
+		headerID, contractAddressID, kissLog.ID, addressID)
+	Expect(err).NotTo(HaveOccurred())
+}
+
+func insertMedianDissSingle(a string, contractAddressID int64, db *postgres.DB) {
+	headerID := insertHeader(db, rand.Int63n(1000))
+	dissLog := test_data.CreateTestLog(headerID, db)
+	addressID, addressErr := shared.GetOrCreateAddress(a, db)
+	Expect(addressErr).NotTo(HaveOccurred())
+	_, err := db.Exec(`INSERT into maker.median_diss_single (header_id, address_id, log_id, msg_sender, a)
+		VALUES($1, $2::NUMERIC, $3, $4, $4)`,
+		headerID, contractAddressID, dissLog.ID, addressID)
+	Expect(err).NotTo(HaveOccurred())
+}
+
+func insertMedianKissBatch(a []string, contractAddressID int64, db *postgres.DB) {
+	headerID := insertHeader(db, rand.Int63n(1000))
+	kissLog := test_data.CreateTestLog(headerID, db)
+	msgSenderID, addressErr := shared.GetOrCreateAddress(a[0], db)
+	Expect(addressErr).NotTo(HaveOccurred())
+	_, err := db.Exec(`INSERT into maker.median_kiss_batch (header_id, address_id, log_id, msg_sender, a_length, a)
+		VALUES($1, $2::NUMERIC, $3, $4, $5, $6)`,
+		headerID, contractAddressID, kissLog.ID, msgSenderID, len(a), pq.Array(a))
+	Expect(err).NotTo(HaveOccurred())
+}
+
+func insertMedianDissBatch(a []string, contractAddressID int64, db *postgres.DB) {
+	headerID := insertHeader(db, rand.Int63n(1000))
+	dissLog := test_data.CreateTestLog(headerID, db)
+	msgSenderID, addressErr := shared.GetOrCreateAddress(a[0], db)
+	Expect(addressErr).NotTo(HaveOccurred())
+	_, err := db.Exec(`INSERT into maker.median_diss_batch (header_id, address_id, log_id, msg_sender, a_length, a)
+		VALUES($1, $2::NUMERIC, $3, $4, $5, $6)`,
+		headerID, contractAddressID, dissLog.ID, msgSenderID, len(a), pq.Array(a))
 	Expect(err).NotTo(HaveOccurred())
 }
 

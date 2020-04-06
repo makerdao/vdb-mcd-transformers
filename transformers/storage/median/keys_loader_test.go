@@ -69,4 +69,33 @@ var _ = Describe("Median storage keys loader", func() {
 			Expect(err).To(MatchError(fakes.FakeError))
 		})
 	})
+
+	Describe("bud", func() {
+		It("returns value metadata for bud", func() {
+			budAddress := common.HexToAddress(test_data.RandomString(40)).Hex()
+			storageRepository.MedianBudAddresses = []string{budAddress}
+			paddedBudAddress := "0x000000000000000000000000" + budAddress[2:]
+			budKey := common.BytesToHash(crypto.Keccak256(common.FromHex(paddedBudAddress + median.BudMappingIndex)))
+			expectedMetadata := types.ValueMetadata{
+				Name: median.Bud,
+				Keys: map[types.Key]string{constants.A: budAddress},
+				Type: types.Uint256,
+			}
+
+			mappings, err := storageKeysLoader.LoadMappings()
+			Expect(err).NotTo(HaveOccurred())
+
+			Expect(storageRepository.GetMedianBudAddressesCalledWith).To(Equal(test_data.EthMedianAddress()))
+			Expect(mappings[budKey]).To(Equal(expectedMetadata))
+		})
+
+		It("returns error on failure", func() {
+			storageRepository.GetMedianBudAddressesError = fakes.FakeError
+
+			_, err := storageKeysLoader.LoadMappings()
+
+			Expect(err).To(HaveOccurred())
+			Expect(err).To(MatchError(fakes.FakeError))
+		})
+	})
 })
