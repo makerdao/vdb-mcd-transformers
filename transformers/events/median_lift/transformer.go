@@ -1,6 +1,9 @@
 package median_lift
 
 import (
+	"strconv"
+
+	"github.com/lib/pq"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
@@ -31,26 +34,29 @@ func (Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) ([]
 			return nil, shared.ErrCouldNotCreateFK(msgSenderAddressErr)
 		}
 
-		addressIDs, addressErr := shared.GetLogNoteData(2, log.Log.Data, db)
-		if addressErr != nil {
-			return nil, addressErr
+		aLength, aLengthErr := strconv.ParseUint(log.Log.Topics[3].Hex(), 0, 64)
+		if aLengthErr != nil {
+			return nil, aLengthErr
+		}
+
+		aAddresses, aAddressErr := shared.GetLogNoteAddresses(aLength, log.Log.Data)
+		if aAddressErr != nil {
+			return nil, aAddressErr
 		}
 
 		model := event.InsertionModel{
 			SchemaName: constants.MakerSchema,
 			TableName:  constants.MedianLiftTable,
 			OrderedColumns: []event.ColumnName{
-				event.HeaderFK, event.LogFK, event.AddressFK, constants.MsgSenderColumn, constants.A0Column, constants.A1Column, constants.A2Column, constants.A3Column,
+				event.HeaderFK, event.LogFK, event.AddressFK, constants.MsgSenderColumn, constants.ALengthColumn, constants.AColumn,
 			},
 			ColumnValues: event.ColumnValues{
 				event.HeaderFK:            log.HeaderID,
 				event.LogFK:               log.ID,
 				event.AddressFK:           contractAddressID,
 				constants.MsgSenderColumn: msgSenderAddressID,
-				constants.A0Column:        addressIDs[0],
-				constants.A1Column:        addressIDs[1],
-				constants.A2Column:        addressIDs[2],
-				constants.A3Column:        addressIDs[3],
+				constants.ALengthColumn:   strconv.FormatUint(aLength, 10),
+				constants.AColumn:         pq.Array(aAddresses),
 			},
 		}
 		models = append(models, model)
