@@ -32,7 +32,9 @@ func JugFileIlkSignature() string         { return getLogNoteTopicZero(jugFileIl
 func JugFileVowSignature() string         { return getLogNoteTopicZero(jugFileVowMethod()) }
 func JugInitSignature() string            { return getLogNoteTopicZero(jugInitMethod()) }
 func LogValueSignature() string           { return getEventTopicZero(logValueMethod()) }
+func MedianDissBatchSignature() string    { return getLogNoteTopicZero(medianDissBatchMethod()) }
 func MedianDissSingleSignature() string   { return getLogNoteTopicZero(medianDissSingleMethod()) }
+func MedianKissBatchSignature() string    { return getLogNoteTopicZero(medianKissBatchMethod()) }
 func MedianKissSingleSignature() string   { return getLogNoteTopicZero(medianKissSingleMethod()) }
 func NewCdpSignature() string             { return getEventTopicZero(newCdpMethod()) }
 func OsmChangeSignature() string          { return getLogNoteTopicZero(osmChangeMethod()) }

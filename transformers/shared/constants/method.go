@@ -68,8 +68,14 @@ func jugFileVowMethod() string {
 }
 func jugInitMethod() string  { return getSolidityFunctionSignature(JugABI(), "init") }
 func logValueMethod() string { return getSolidityFunctionSignature(OsmABI(), "LogValue") }
+func medianDissBatchMethod() string {
+	return getOverloadedFunctionSignature(MedianABI(), "diss", []string{"address[]"})
+}
 func medianDissSingleMethod() string {
 	return getOverloadedFunctionSignature(MedianABI(), "diss", []string{"address"})
+}
+func medianKissBatchMethod() string {
+	return getOverloadedFunctionSignature(MedianABI(), "kiss", []string{"address[]"})
 }
 func medianKissSingleMethod() string {
 	return getOverloadedFunctionSignature(MedianABI(), "kiss", []string{"address"})

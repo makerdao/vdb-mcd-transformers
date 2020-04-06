@@ -37,6 +37,7 @@ const (
 // Table column names
 const (
 	AColumn         event.ColumnName = "a"
+	ALengthColumn   event.ColumnName = "a_length"
 	ArtColumn       event.ColumnName = "art"
 	BidColumn       event.ColumnName = "bid"
 	BidIDColumn     event.ColumnName = "bid_id"
