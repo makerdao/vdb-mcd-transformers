@@ -86,8 +86,16 @@ var _ = Describe("Signature constants", func() {
 		Expect(LogValueSignature()).To(Equal("0x296ba4ca62c6c21c95e828080cb8aec7481b71390585605300a8a76f9e95b527"))
 	})
 
+	It("generates diss (batch) signature", func() {
+		Expect(MedianDissBatchSignature()).To(Equal("0x46d4577d00000000000000000000000000000000000000000000000000000000"))
+	})
+
 	It("generates diss (single) signature", func() {
 		Expect(MedianDissSingleSignature()).To(Equal("0x65c4ce7a00000000000000000000000000000000000000000000000000000000"))
+	})
+
+	It("generates kiss (batch) signature", func() {
+		Expect(MedianKissBatchSignature()).To(Equal("0x1b25b65f00000000000000000000000000000000000000000000000000000000"))
 	})
 
 	It("generates kiss (single) signature", func() {
