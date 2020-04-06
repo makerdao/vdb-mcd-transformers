@@ -7,7 +7,7 @@ require (
 	github.com/ethereum/go-ethereum v1.9.11
 	github.com/howeyc/fsnotify v0.9.0 // indirect
 	github.com/jmoiron/sqlx v0.0.0-20181024163419-82935fac6c1a
-	github.com/lib/pq v1.0.0
+	github.com/lib/pq v1.3.0
 	github.com/magiconair/properties v1.8.0
 	github.com/makerdao/vulcanizedb v0.0.14-rc.1.0.20200526232336-ac90e4306d86
 	github.com/mattn/go-runewidth v0.0.6

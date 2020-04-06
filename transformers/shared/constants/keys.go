@@ -23,6 +23,7 @@ import (
 
 // Storage keys
 const (
+	A         types.Key = "a"
 	BidId     types.Key = "bid_id"
 	Cdpi      types.Key = "cdpi"
 	Flip      types.Key = "flip"
