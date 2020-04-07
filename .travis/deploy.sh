@@ -28,8 +28,8 @@ fi
 message BUILDING EXECUTE DOCKER IMAGE
 docker build -f dockerfiles/execute/Dockerfile . -t makerdao/vdb-execute:$TAG
 
-message BUILDING GET-STORAGE-VALUE DOCKER IMAGE
-docker build -f dockerfiles/get_storage_value/Dockerfile . -t makerdao/vdb-get-storage-value:$TAG
+message BUILDING BACKFILL-STORAGE DOCKER IMAGE
+docker build -f dockerfiles/backfill_storage/Dockerfile . -t makerdao/vdb-backfill-storage:$TAG
 
 message LOGGING INTO DOCKERHUB
 echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USER" --password-stdin
@@ -37,8 +37,8 @@ echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USER" --password-stdi
 message PUSHING EXECUTE DOCKER IMAGE
 docker push makerdao/vdb-execute:$TAG
 
-message PUSHING GET-STORAGE-VALUE DOCKER IMAGE
-docker push makerdao/vdb-get-storage-value:$TAG
+message PUSHING BACKFILL-STORAGE DOCKER IMAGE
+docker push makerdao/vdb-backfill-storage:$TAG
 
 # service deploy
 if [ "$ENVIRONMENT" == "prod" ]; then
