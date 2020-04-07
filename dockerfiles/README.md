@@ -64,21 +64,21 @@ For execution on linux, replace instances of `host.docker.internal` with `localh
           --statediff.watchedaddresses <contract address>
     ```
 
-## getStorageAt
-Dockerfile for getting storage for all configured transformers at the given block, and persisting them into the
-`public.storage_diff` table. This is useful in case it is suspected that a storage diff was missed. Please note that the
-storage value of every storage key for every transformer will be fetched and persisted, regardless if the value actually
-changed at the given block.
+## backfillStorage
+Dockerfile for getting storage for all configured transformers in a range of blocks, and persisting them into the
+`public.storage_diff` table. This is useful in case storage diffs were missed. Please note that the storage value for
+every storage key for every transformer will be fetched, regardless of if the value actually changed at the given block.
 
 ### Build
 From project root directory:
 ```
-docker build -f dockerfiles/get_storage_value/Dockerfile . -t get_storage_value:latest
+docker build -f dockerfiles/backfill_storage/Dockerfile . -t backfill_storage:latest
 ```
 
 ### Run
 ```
-docker run -e CLIENT_IPCPATH=ipc_path -e DATABASE_USER=user -e DATABASE_PASSWORD=password -e DATABASE_HOSTNAME=host -e DATABASE_PORT=port -e DATABASE_NAME=name -e GET_STORAGE_VALUE_BLOCK_NUMBER=block-number -it get_storage_value:latest
+docker run -e CLIENT_IPCPATH=ipc_path -e DATABASE_USER=user -e DATABASE_PASSWORD=password -e DATABASE_HOSTNAME=host -e DATABASE_PORT=port -e DATABASE_NAME=name -e STARTING_BLOCK_NUMBER=block-number -e ENDING_BLOCK_NUMBER=block-number -it backfill_storage:latest
 ```
 Notes:
-- `GET_STORAGE_VALUE_BLOCK_NUMBER` variable is required
+- `STARTING_BLOCK_NUMBER` and `ENDING_BLOCK_NUMBER` variables are required
+- `CLIENT_IPCPATH` should point at an archive node to enable accessing historical state
