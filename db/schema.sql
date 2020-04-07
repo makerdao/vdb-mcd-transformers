@@ -10520,10 +10520,8 @@ CREATE TABLE maker.median_lift (
     header_id integer NOT NULL,
     address_id integer NOT NULL,
     msg_sender integer NOT NULL,
-    a0 integer NOT NULL,
-    a1 integer,
-    a2 integer,
-    a3 integer
+    a_length integer NOT NULL,
+    a text[] NOT NULL
 );
 
 
@@ -19057,34 +19055,6 @@ CREATE INDEX median_kiss_single_msg_sender_index ON maker.median_kiss_single USI
 
 
 --
--- Name: median_lift_a0_index; Type: INDEX; Schema: maker; Owner: -
---
-
-CREATE INDEX median_lift_a0_index ON maker.median_lift USING btree (a0);
-
-
---
--- Name: median_lift_a1_index; Type: INDEX; Schema: maker; Owner: -
---
-
-CREATE INDEX median_lift_a1_index ON maker.median_lift USING btree (a1);
-
-
---
--- Name: median_lift_a2_index; Type: INDEX; Schema: maker; Owner: -
---
-
-CREATE INDEX median_lift_a2_index ON maker.median_lift USING btree (a2);
-
-
---
--- Name: median_lift_a3_index; Type: INDEX; Schema: maker; Owner: -
---
-
-CREATE INDEX median_lift_a3_index ON maker.median_lift USING btree (a3);
-
-
---
 -- Name: median_lift_address_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -22829,38 +22799,6 @@ ALTER TABLE ONLY maker.median_kiss_single
 
 ALTER TABLE ONLY maker.median_kiss_single
     ADD CONSTRAINT median_kiss_single_msg_sender_fkey FOREIGN KEY (msg_sender) REFERENCES public.addresses(id) ON DELETE CASCADE;
-
-
---
--- Name: median_lift median_lift_a0_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.median_lift
-    ADD CONSTRAINT median_lift_a0_fkey FOREIGN KEY (a0) REFERENCES public.addresses(id) ON DELETE CASCADE;
-
-
---
--- Name: median_lift median_lift_a1_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.median_lift
-    ADD CONSTRAINT median_lift_a1_fkey FOREIGN KEY (a1) REFERENCES public.addresses(id) ON DELETE CASCADE;
-
-
---
--- Name: median_lift median_lift_a2_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.median_lift
-    ADD CONSTRAINT median_lift_a2_fkey FOREIGN KEY (a2) REFERENCES public.addresses(id) ON DELETE CASCADE;
-
-
---
--- Name: median_lift median_lift_a3_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.median_lift
-    ADD CONSTRAINT median_lift_a3_fkey FOREIGN KEY (a3) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --

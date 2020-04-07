@@ -88,6 +88,7 @@ func medianDissSingleMethod() string {
 }
 func medianDropMethod() string {
 	return getSolidityFunctionSignature(MedianABI(), "drop")
+}
 func medianLiftMethod() string {
 	return getSolidityFunctionSignature(MedianABI(), "lift")
 }
