@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 11.7
--- Dumped by pg_dump version 11.7
+-- Dumped from database version 11.6
+-- Dumped by pg_dump version 11.6
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -10077,6 +10077,41 @@ ALTER SEQUENCE maker.log_value_id_seq OWNED BY maker.log_value.id;
 
 
 --
+-- Name: median_diss_batch; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.median_diss_batch (
+    id integer NOT NULL,
+    log_id bigint NOT NULL,
+    header_id integer NOT NULL,
+    address_id integer NOT NULL,
+    msg_sender integer NOT NULL,
+    a_length integer NOT NULL,
+    a text[] NOT NULL
+);
+
+
+--
+-- Name: median_diss_batch_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.median_diss_batch_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: median_diss_batch_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.median_diss_batch_id_seq OWNED BY maker.median_diss_batch.id;
+
+
+--
 -- Name: median_diss_single; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -10086,10 +10121,7 @@ CREATE TABLE maker.median_diss_single (
     header_id integer NOT NULL,
     address_id integer NOT NULL,
     msg_sender integer NOT NULL,
-    a0 integer NOT NULL,
-    a1 integer,
-    a2 integer,
-    a3 integer
+    a integer NOT NULL
 );
 
 
@@ -10146,6 +10178,41 @@ CREATE SEQUENCE maker.median_drop_id_seq
 --
 
 ALTER SEQUENCE maker.median_drop_id_seq OWNED BY maker.median_drop.id;
+
+
+--
+-- Name: median_kiss_batch; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.median_kiss_batch (
+    id integer NOT NULL,
+    log_id bigint NOT NULL,
+    header_id integer NOT NULL,
+    address_id integer NOT NULL,
+    msg_sender integer NOT NULL,
+    a_length integer NOT NULL,
+    a text[] NOT NULL
+);
+
+
+--
+-- Name: median_kiss_batch_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.median_kiss_batch_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: median_kiss_batch_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.median_kiss_batch_id_seq OWNED BY maker.median_kiss_batch.id;
 
 
 --
@@ -13356,6 +13423,13 @@ ALTER TABLE ONLY maker.log_value ALTER COLUMN id SET DEFAULT nextval('maker.log_
 
 
 --
+-- Name: median_diss_batch id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_diss_batch ALTER COLUMN id SET DEFAULT nextval('maker.median_diss_batch_id_seq'::regclass);
+
+
+--
 -- Name: median_diss_single id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
@@ -13367,6 +13441,13 @@ ALTER TABLE ONLY maker.median_diss_single ALTER COLUMN id SET DEFAULT nextval('m
 --
 
 ALTER TABLE ONLY maker.median_drop ALTER COLUMN id SET DEFAULT nextval('maker.median_drop_id_seq'::regclass);
+
+
+--
+-- Name: median_kiss_batch id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_kiss_batch ALTER COLUMN id SET DEFAULT nextval('maker.median_kiss_batch_id_seq'::regclass);
 
 
 --
@@ -15278,6 +15359,22 @@ ALTER TABLE ONLY maker.log_value
 
 
 --
+-- Name: median_diss_batch median_diss_batch_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_diss_batch
+    ADD CONSTRAINT median_diss_batch_header_id_log_id_key UNIQUE (header_id, log_id);
+
+
+--
+-- Name: median_diss_batch median_diss_batch_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_diss_batch
+    ADD CONSTRAINT median_diss_batch_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: median_diss_single median_diss_single_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -15307,6 +15404,22 @@ ALTER TABLE ONLY maker.median_drop
 
 ALTER TABLE ONLY maker.median_drop
     ADD CONSTRAINT median_drop_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: median_kiss_batch median_kiss_batch_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_kiss_batch
+    ADD CONSTRAINT median_kiss_batch_header_id_log_id_key UNIQUE (header_id, log_id);
+
+
+--
+-- Name: median_kiss_batch median_kiss_batch_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_kiss_batch
+    ADD CONSTRAINT median_kiss_batch_pkey PRIMARY KEY (id);
 
 
 --
@@ -17905,6 +18018,34 @@ CREATE INDEX log_value_log_index ON maker.log_value USING btree (log_id);
 
 
 --
+-- Name: median_diss_batch_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX median_diss_batch_address_index ON maker.median_diss_batch USING btree (address_id);
+
+
+--
+-- Name: median_diss_batch_header_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX median_diss_batch_header_index ON maker.median_diss_batch USING btree (header_id);
+
+
+--
+-- Name: median_diss_batch_log_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX median_diss_batch_log_index ON maker.median_diss_batch USING btree (log_id);
+
+
+--
+-- Name: median_diss_batch_msg_sender_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX median_diss_batch_msg_sender_index ON maker.median_diss_batch USING btree (msg_sender);
+
+
+--
 -- Name: median_diss_single_a_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -17965,6 +18106,34 @@ CREATE INDEX median_drop_log_index ON maker.median_drop USING btree (log_id);
 --
 
 CREATE INDEX median_drop_msg_sender_index ON maker.median_drop USING btree (msg_sender);
+
+
+--
+-- Name: median_kiss_batch_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX median_kiss_batch_address_index ON maker.median_kiss_batch USING btree (address_id);
+
+
+--
+-- Name: median_kiss_batch_header_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX median_kiss_batch_header_index ON maker.median_kiss_batch USING btree (header_id);
+
+
+--
+-- Name: median_kiss_batch_log_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX median_kiss_batch_log_index ON maker.median_kiss_batch USING btree (log_id);
+
+
+--
+-- Name: median_kiss_batch_msg_sender_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX median_kiss_batch_msg_sender_index ON maker.median_kiss_batch USING btree (msg_sender);
 
 
 --
@@ -21218,6 +21387,38 @@ ALTER TABLE ONLY maker.log_value
 
 
 --
+-- Name: median_diss_batch median_diss_batch_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_diss_batch
+    ADD CONSTRAINT median_diss_batch_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: median_diss_batch median_diss_batch_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_diss_batch
+    ADD CONSTRAINT median_diss_batch_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: median_diss_batch median_diss_batch_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_diss_batch
+    ADD CONSTRAINT median_diss_batch_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: median_diss_batch median_diss_batch_msg_sender_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_diss_batch
+    ADD CONSTRAINT median_diss_batch_msg_sender_fkey FOREIGN KEY (msg_sender) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
 -- Name: median_diss_single median_diss_single_a_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -21287,6 +21488,38 @@ ALTER TABLE ONLY maker.median_drop
 
 ALTER TABLE ONLY maker.median_drop
     ADD CONSTRAINT median_drop_msg_sender_fkey FOREIGN KEY (msg_sender) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: median_kiss_batch median_kiss_batch_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_kiss_batch
+    ADD CONSTRAINT median_kiss_batch_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: median_kiss_batch median_kiss_batch_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_kiss_batch
+    ADD CONSTRAINT median_kiss_batch_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: median_kiss_batch median_kiss_batch_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_kiss_batch
+    ADD CONSTRAINT median_kiss_batch_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: median_kiss_batch median_kiss_batch_msg_sender_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_kiss_batch
+    ADD CONSTRAINT median_kiss_batch_msg_sender_fkey FOREIGN KEY (msg_sender) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --

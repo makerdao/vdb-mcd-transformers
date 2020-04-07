@@ -1,4 +1,5 @@
 -- +goose Up
+
 CREATE TABLE maker.median_drop
 (
     id         SERIAL PRIMARY KEY,

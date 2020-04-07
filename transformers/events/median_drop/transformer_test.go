@@ -41,25 +41,25 @@ var _ = Describe("Median drop transformer", func() {
 		Expect(err).To(HaveOccurred())
 	})
 
-	It("convert a log with 4 accounts to an insertion model", func() {
+	It("convert a log with 5 accounts to an insertion model and expect 5th to be truncated", func() {
 		models, err := transformer.ToModels(constants.MedianABI(), []core.EventLog{test_data.MedianDropLogWithFiveAccounts}, db)
 		Expect(err).NotTo(HaveOccurred())
 
-		a1Bytes, aErr := shared.GetLogNoteArgumentAtIndex(2, test_data.MedianDropLogWithFiveAccounts.Log.Data)
-		Expect(aErr).NotTo(HaveOccurred())
-		address0 := common.BytesToAddress(a1Bytes).Hex()
+		a0Bytes, a0Err := shared.GetLogNoteArgumentAtIndex(2, test_data.MedianDropLogWithFiveAccounts.Log.Data)
+		Expect(a0Err).NotTo(HaveOccurred())
+		address0 := common.BytesToAddress(a0Bytes).Hex()
 
-		a2Bytes, a2Err := shared.GetLogNoteArgumentAtIndex(3, test_data.MedianDropLogWithFiveAccounts.Log.Data)
+		a1Bytes, a1Err := shared.GetLogNoteArgumentAtIndex(3, test_data.MedianDropLogWithFiveAccounts.Log.Data)
+		Expect(a1Err).NotTo(HaveOccurred())
+		address1 := common.BytesToAddress(a1Bytes).Hex()
+
+		a2Bytes, a2Err := shared.GetLogNoteArgumentAtIndex(4, test_data.MedianDropLogWithFiveAccounts.Log.Data)
 		Expect(a2Err).NotTo(HaveOccurred())
-		address1 := common.BytesToAddress(a2Bytes).Hex()
+		address2 := common.BytesToAddress(a2Bytes).Hex()
 
-		a3Bytes, a3Err := shared.GetLogNoteArgumentAtIndex(4, test_data.MedianDropLogWithFiveAccounts.Log.Data)
+		a3Bytes, a3Err := shared.GetLogNoteArgumentAtIndex(5, test_data.MedianDropLogWithFiveAccounts.Log.Data)
 		Expect(a3Err).NotTo(HaveOccurred())
-		address2 := common.BytesToAddress(a3Bytes).Hex()
-
-		a4Bytes, a4Err := shared.GetLogNoteArgumentAtIndex(5, test_data.MedianDropLogWithFiveAccounts.Log.Data)
-		Expect(a4Err).NotTo(HaveOccurred())
-		address3 := common.BytesToAddress(a4Bytes).Hex()
+		address3 := common.BytesToAddress(a3Bytes).Hex()
 
 		expectedModel := test_data.MedianDropModelWithFiveAccounts()
 		contractAddressID, contractAddressErr := shared.GetOrCreateAddress(test_data.MedianDropLogWithFiveAccounts.Log.Address.String(), db)
@@ -77,8 +77,8 @@ var _ = Describe("Median drop transformer", func() {
 		models, err := transformer.ToModels(constants.MedianABI(), []core.EventLog{test_data.MedianDropLogWithOneAccount}, db)
 		Expect(err).NotTo(HaveOccurred())
 
-		a0Bytes, aErr := shared.GetLogNoteArgumentAtIndex(2, test_data.MedianDropLogWithOneAccount.Log.Data)
-		Expect(aErr).NotTo(HaveOccurred())
+		a0Bytes, a0Err := shared.GetLogNoteArgumentAtIndex(2, test_data.MedianDropLogWithOneAccount.Log.Data)
+		Expect(a0Err).NotTo(HaveOccurred())
 		address0 := common.BytesToAddress(a0Bytes).Hex()
 
 		expectedModel := test_data.MedianDropModelWithOneAccount()

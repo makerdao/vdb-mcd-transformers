@@ -14,9 +14,8 @@ import (
 type Transformer struct{}
 
 func (Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) ([]event.InsertionModel, error) {
-	var (
-		models []event.InsertionModel
-	)
+	var models []event.InsertionModel
+
 	for _, log := range logs {
 		err := shared.VerifyLog(log.Log, shared.FourTopicsRequired, shared.LogDataRequired)
 		if err != nil {

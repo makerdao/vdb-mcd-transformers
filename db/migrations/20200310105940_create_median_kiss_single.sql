@@ -6,7 +6,7 @@ CREATE TABLE maker.median_kiss_single
     header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     address_id INTEGER NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
     msg_sender INTEGER NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
-    a        INTEGER NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
+    a          INTEGER NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
     UNIQUE (header_id, log_id)
 );
 
