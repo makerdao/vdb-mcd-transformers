@@ -32,6 +32,9 @@ func MedianABI() string {
 		"MEDIAN_ETH", "MEDIAN_BAT",
 	})
 }
+func OasisABI() string {
+	return GetContractsABI([]string{"OASIS_ONE", "OASIS_TWO"})
+}
 func OsmABI() string {
 	return GetContractsABI([]string{"OSM_ETH", "OSM_BAT"})
 }
@@ -68,6 +71,7 @@ func jugFileVowMethod() string {
 }
 func jugInitMethod() string  { return getSolidityFunctionSignature(JugABI(), "init") }
 func logValueMethod() string { return getSolidityFunctionSignature(OsmABI(), "LogValue") }
+func logItemUpdateEvent() string { return getSolidityFunctionSignature(OasisABI(), "LogItemUpdate")}
 func medianDissBatchMethod() string {
 	return getOverloadedFunctionSignature(MedianABI(), "diss", []string{"address[]"})
 }

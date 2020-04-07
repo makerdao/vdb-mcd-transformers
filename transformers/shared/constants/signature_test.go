@@ -110,6 +110,10 @@ var _ = Describe("Signature constants", func() {
 		Expect(NewCdpSignature()).To(Equal("0xd6be0bc178658a382ff4f91c8c68b542aa6b71685b8fe427966b87745c3ea7a2"))
 	})
 
+	It("generates oasis log item update signature", func() {
+		Expect(LogItemUpdateSignature()).To(Equal("0xa2c251311b1a7a475913900a2a73dc9789a21b04bc737e050bbc506dd4eb3488"))
+	})
+
 	It("generates pot cage signature", func() {
 		Expect(PotCageSignature()).To(Equal("0x6924500900000000000000000000000000000000000000000000000000000000"))
 	})
