@@ -29,7 +29,7 @@ type DoubleMappingRes struct {
 	KeyTwo string `db:"key_two"`
 }
 
-type WardsMappingRes struct {
+type MappingResWithAddress struct {
 	MappingRes
 	AddressID string `db:"address_id"`
 }

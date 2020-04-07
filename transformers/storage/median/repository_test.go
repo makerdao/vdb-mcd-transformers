@@ -52,7 +52,7 @@ var _ = Describe("Median Storage Repository", func() {
 			writeErr := repo.Create(diffID, fakeHeaderID, wardsMetadata, fakeUint256)
 			Expect(writeErr).NotTo(HaveOccurred())
 
-			var result WardsMappingRes
+			var result MappingResWithAddress
 			query := fmt.Sprintf(`SELECT diff_id, header_id, address_id, usr AS key, wards AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.WardsTable))
 			readErr := db.Get(&result, query)
 			Expect(readErr).NotTo(HaveOccurred())
@@ -167,7 +167,7 @@ var _ = Describe("Median Storage Repository", func() {
 			writeErr := repo.Create(diffID, fakeHeaderID, budMetadata, fakeUint256)
 			Expect(writeErr).NotTo(HaveOccurred())
 
-			var result WardsMappingRes
+			var result MappingResWithAddress
 			query := fmt.Sprintf(`SELECT diff_id, header_id, address_id, a AS key, bud AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.MedianBudTable))
 			readErr := db.Get(&result, query)
 			Expect(readErr).NotTo(HaveOccurred())
