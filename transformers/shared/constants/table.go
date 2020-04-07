@@ -40,6 +40,7 @@ const (
 	JugFileVowTable         = "jug_file_vow"
 	JugInitTable            = "jug_init"
 	LogValueTable           = "log_value"
+	LogItemUpdateTable      = "log_item_update"
 	MedianDissBatchTable    = "median_diss_batch"
 	MedianDissSingleTable   = "median_diss_single"
 	MedianKissBatchTable    = "median_kiss_batch"
