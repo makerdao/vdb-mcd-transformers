@@ -16,7 +16,7 @@ import (
 
 var (
 	logItemUpdateOfferId, _ = new(big.Int).SetString("228696", 10)
-	logItemUpdateRawLog = types.Log{
+	logItemUpdateRawLog     = types.Log{
 		Address:     common.HexToAddress(OasisAddresses()[0]),
 		Topics:      []common.Hash{common.HexToHash(constants.LogItemUpdateSignature())},
 		Data:        hexutil.MustDecode("0x0000000000000000000000000000000000000000000000000000000000037d58"),
@@ -36,14 +36,14 @@ var (
 	}
 
 	logItemUpdateModel = event.InsertionModel{
-		SchemaName:     constants.MakerSchema,
-		TableName:      constants.LogItemUpdateTable,
+		SchemaName: constants.MakerSchema,
+		TableName:  constants.LogItemUpdateTable,
 		OrderedColumns: []event.ColumnName{
 			event.HeaderFK, event.LogFK, log_item_update.OfferId,
 		},
-		ColumnValues:   event.ColumnValues{
-			event.HeaderFK: LogItemUpdateEventLog.HeaderID,
-			event.LogFK: LogItemUpdateEventLog.ID,
+		ColumnValues: event.ColumnValues{
+			event.HeaderFK:          LogItemUpdateEventLog.HeaderID,
+			event.LogFK:             LogItemUpdateEventLog.ID,
 			log_item_update.OfferId: logItemUpdateOfferId.String(),
 		},
 	}

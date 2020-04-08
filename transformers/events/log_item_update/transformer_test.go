@@ -1,7 +1,6 @@
 package log_item_update_test
 
 import (
-
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/log_item_update"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
@@ -9,7 +8,6 @@ import (
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-
 )
 
 var _ = Describe("LogItemUpdate Transformer", func() {

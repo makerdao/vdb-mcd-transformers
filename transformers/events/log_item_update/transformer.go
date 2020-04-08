@@ -62,4 +62,3 @@ func (t Transformer) ToModels(abi string, logs []core.EventLog, db *postgres.DB)
 	}
 	return models, nil
 }
-

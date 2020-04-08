@@ -7,4 +7,3 @@ type LogItemUpdateEntity struct {
 	HeaderID int64
 	LogID    int64
 }
-
