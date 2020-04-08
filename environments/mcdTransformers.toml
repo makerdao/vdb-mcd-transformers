@@ -45,6 +45,7 @@
         "jug_file_vow",
         "jug_init",
         "log_value",
+        "log_item_update",
         "median_diss_batch",
         "median_diss_single",
         "median_drop",
@@ -275,6 +276,13 @@
         repository = "github.com/makerdao/vdb-mcd-transformers"
         migrations = "db/migrations"
         contracts = ["OSM_ETH", "OSM_BAT", "OSM_USDC"]
+        rank = "0"
+    [exporter.log_item_update]
+        path = "transformers/events/log_item_update/initializer"
+        type = "eth_event"
+        repository = "github.com/makerdao/vdb-mcd-transformers"
+        migrations = "db/migrations"
+        contracts = ["OASIS_ONE", "OASIS_TWO"]
         rank = "0"
     [exporter.median_diss_batch]
         path = "transformers/events/median_diss/batch/initializer"
