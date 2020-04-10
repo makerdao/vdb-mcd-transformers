@@ -37,7 +37,7 @@ func MedianAddresses() []string {
 }
 func OasisAddresses() []string {
 	var addressesResult []string
-	oasisAddresses := constants.GetContractAddresses([]string{"OASIS_ONE", "OASIS_TWO"})
+	oasisAddresses := constants.GetContractAddresses([]string{"OASIS_MATCHING_MARKET_ONE", "OASIS_MATCHING_MARKET_TWO"})
 
 	for _, address := range oasisAddresses {
 		addressesResult = append(addressesResult, checksum(address))

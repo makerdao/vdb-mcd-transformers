@@ -33,7 +33,7 @@ func MedianABI() string {
 	})
 }
 func OasisABI() string {
-	return GetContractsABI([]string{"OASIS_ONE", "OASIS_TWO"})
+	return GetContractsABI([]string{"OASIS_MATCHING_MARKET_ONE", "OASIS_MATCHING_MARKET_TWO"})
 }
 func OsmABI() string {
 	return GetContractsABI([]string{"OSM_ETH", "OSM_BAT"})

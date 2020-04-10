@@ -20,7 +20,7 @@ var _ = Describe("LogItemUpdate Transformer", func() {
 		Topic:             constants.LogItemUpdateSignature(),
 	}
 
-	It("fetches and transforms a LogItemUpdate event for OASIS_ONE contract", func() {
+	It("fetches and transforms a LogItemUpdate event for OASIS_MATCHING_MARKET_ONE contract", func() {
 		blockNumber := int64(9613377)
 		logItemUpdateConfig.StartingBlockNumber = blockNumber
 		logItemUpdateConfig.EndingBlockNumber = blockNumber
@@ -36,10 +36,10 @@ var _ = Describe("LogItemUpdate Transformer", func() {
 		}
 		transformer := initializer.NewTransformer(db)
 
-		oasis_two_address := constants.GetContractAddress("OASIS_ONE")
+		oasis_one_address := constants.GetContractAddress("OASIS_MATCHING_MARKET_ONE")
 		logFetcher := fetcher.NewLogFetcher(blockChain)
 		logs, err := logFetcher.FetchLogs(
-			[]common.Address{common.HexToAddress(oasis_two_address)},
+			[]common.Address{common.HexToAddress(oasis_one_address)},
 			[]common.Hash{common.HexToHash(logItemUpdateConfig.Topic)},
 			header)
 		Expect(err).NotTo(HaveOccurred())
@@ -64,7 +64,7 @@ var _ = Describe("LogItemUpdate Transformer", func() {
 			"809995", "637558", "559973", "548250", "772805",
 		}))
 	})
-	It("fetches and transforms a LogItemUpdate event for OASIS_TWO contract", func() {
+	It("fetches and transforms a LogItemUpdate event for OASIS_MATCHING_MARKET_TWO contract", func() {
 		blockNumber := int64(9827320)
 		logItemUpdateConfig.StartingBlockNumber = blockNumber
 		logItemUpdateConfig.EndingBlockNumber = blockNumber
@@ -80,7 +80,7 @@ var _ = Describe("LogItemUpdate Transformer", func() {
 		}
 		transformer := initializer.NewTransformer(db)
 
-		oasis_two_address := constants.GetContractAddress("OASIS_TWO")
+		oasis_two_address := constants.GetContractAddress("OASIS_MATCHING_MARKET_TWO")
 		logFetcher := fetcher.NewLogFetcher(blockChain)
 		logs, err := logFetcher.FetchLogs(
 			[]common.Address{common.HexToAddress(oasis_two_address)},
