@@ -35,6 +35,7 @@ func LogValueSignature() string           { return getEventTopicZero(logValueMet
 func MedianDissBatchSignature() string    { return getLogNoteTopicZero(medianDissBatchMethod()) }
 func MedianDissSingleSignature() string   { return getLogNoteTopicZero(medianDissSingleMethod()) }
 func MedianKissBatchSignature() string    { return getLogNoteTopicZero(medianKissBatchMethod()) }
+func MedianDropSignature() string         { return getLogNoteTopicZero(medianDropMethod()) }
 func MedianKissSingleSignature() string   { return getLogNoteTopicZero(medianKissSingleMethod()) }
 func NewCdpSignature() string             { return getEventTopicZero(newCdpMethod()) }
 func OsmChangeSignature() string          { return getLogNoteTopicZero(osmChangeMethod()) }
