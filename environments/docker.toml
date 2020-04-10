@@ -104,6 +104,12 @@
         repository = "github.com/makerdao/vdb-mcd-transformers"
         migrations = "db/migrations"
         rank = "0"
+    [exporter.bat_median]
+        path = "transformers/storage/flip/initializers/bat_median"
+        type = "eth_storage"
+        repository = "github.com/makerdao/vdb-mcd-transformers"
+        migrations = "db/migrations"
+        rank = "0"
     [exporter.eth_flip_a]
         path = "transformers/storage/flip/initializers/eth_flip_a"
         type = "eth_storage"
