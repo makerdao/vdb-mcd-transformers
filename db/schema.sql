@@ -10052,6 +10052,7 @@ CREATE TABLE maker.log_item_update (
     id integer NOT NULL,
     log_id bigint NOT NULL,
     header_id integer NOT NULL,
+    address_id integer NOT NULL,
     offer_id integer
 );
 
@@ -18059,6 +18060,13 @@ CREATE INDEX jug_vow_header_id_index ON maker.jug_vow USING btree (header_id);
 
 
 --
+-- Name: log_item_update_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX log_item_update_address_index ON maker.log_item_update USING btree (address_id);
+
+
+--
 -- Name: log_item_update_header_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -21437,6 +21445,14 @@ ALTER TABLE ONLY maker.jug_vow
 
 ALTER TABLE ONLY maker.jug_vow
     ADD CONSTRAINT jug_vow_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: log_item_update log_item_update_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_item_update
+    ADD CONSTRAINT log_item_update_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --

@@ -34,6 +34,7 @@ func (Transformer) toEntities(contractAbi string, logs []core.EventLog) ([]LogIt
 
 		entity.HeaderID = log.HeaderID
 		entity.LogID = log.ID
+		entity.ContractAddress = address
 		entities = append(entities, entity)
 	}
 
@@ -46,16 +47,21 @@ func (t Transformer) ToModels(abi string, logs []core.EventLog, db *postgres.DB)
 	}
 	var models []event.InsertionModel
 	for _, logItemUpdateEntity := range entities {
+		addressId, addressErr := shared.GetOrCreateAddress(logItemUpdateEntity.ContractAddress.Hex(), db)
+		if addressErr != nil {
+			return nil, shared.ErrCouldNotCreateFK(addressErr)
+		}
 		model := event.InsertionModel{
 			SchemaName: constants.MakerSchema,
 			TableName:  constants.LogItemUpdateTable,
 			OrderedColumns: []event.ColumnName{
-				event.HeaderFK, event.LogFK, OfferId,
+				event.HeaderFK, event.LogFK, event.AddressFK, OfferId,
 			},
 			ColumnValues: event.ColumnValues{
-				event.HeaderFK: logItemUpdateEntity.HeaderID,
-				event.LogFK:    logItemUpdateEntity.LogID,
-				OfferId:        shared.BigIntToString(logItemUpdateEntity.Id),
+				event.HeaderFK:  logItemUpdateEntity.HeaderID,
+				event.LogFK:     logItemUpdateEntity.LogID,
+				event.AddressFK: addressId,
+				OfferId:         shared.BigIntToString(logItemUpdateEntity.Id),
 			},
 		}
 		models = append(models, model)

@@ -39,7 +39,7 @@ var (
 		SchemaName: constants.MakerSchema,
 		TableName:  constants.LogItemUpdateTable,
 		OrderedColumns: []event.ColumnName{
-			event.HeaderFK, event.LogFK, log_item_update.OfferId,
+			event.HeaderFK, event.LogFK, event.AddressFK, log_item_update.OfferId,
 		},
 		ColumnValues: event.ColumnValues{
 			event.HeaderFK:          LogItemUpdateEventLog.HeaderID,
