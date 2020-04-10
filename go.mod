@@ -8,7 +8,7 @@ require (
 	github.com/jmoiron/sqlx v0.0.0-20181024163419-82935fac6c1a
 	github.com/lib/pq v1.0.0
 	github.com/magiconair/properties v1.8.0
-	github.com/makerdao/vulcanizedb v0.0.14-rc.1.0.20200407142825-97afac17eb51
+	github.com/makerdao/vulcanizedb v0.0.14-rc.1.0.20200409172210-88f478f05b7b
 	github.com/mattn/go-runewidth v0.0.6
 	github.com/onsi/ginkgo v1.10.1
 	github.com/onsi/gomega v1.7.0
@@ -21,5 +21,3 @@ require (
 replace gopkg.in/urfave/cli.v1 => gopkg.in/urfave/cli.v1 v1.20.0
 
 replace github.com/ethereum/go-ethereum => github.com/vulcanize/go-ethereum v0.0.0-20190731183759-8e20673bd101
-
-replace github.com/makerdao/vulcanizedb => ../vulcanizedb
