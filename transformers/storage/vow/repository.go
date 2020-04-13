@@ -37,6 +37,7 @@ const (
 	insertSumpQuery       = `INSERT INTO maker.vow_sump (diff_id, header_id, sump) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
 	insertBumpQuery       = `INSERT INTO maker.vow_bump (diff_id, header_id, bump) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
 	insertHumpQuery       = `INSERT INTO maker.vow_hump (diff_id, header_id, hump) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
+	insertLiveQuery       = `INSERT INTO maker.vow_live (diff_id, header_id, live) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
 )
 
 type VowStorageRepository struct {
@@ -74,6 +75,8 @@ func (repository VowStorageRepository) Create(diffID, headerID int64, metadata t
 		return repository.insertVowBump(diffID, headerID, value.(string))
 	case Hump:
 		return repository.insertVowHump(diffID, headerID, value.(string))
+	case Live:
+		return repository.insertVowLive(diffID, headerID, value.(string))
 	default:
 		panic(fmt.Sprintf("unrecognized storage metadata name: %s", metadata.Name))
 	}
@@ -145,6 +148,12 @@ func (repository VowStorageRepository) insertVowBump(diffID, headerID int64, bum
 
 func (repository VowStorageRepository) insertVowHump(diffID, headerID int64, hump string) error {
 	_, err := repository.db.Exec(insertHumpQuery, diffID, headerID, hump)
+
+	return err
+}
+
+func (repository VowStorageRepository) insertVowLive(diffID, headerID int64, live string) error {
+	_, err := repository.db.Exec(insertLiveQuery, diffID, headerID, live)
 
 	return err
 }

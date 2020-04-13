@@ -174,6 +174,7 @@ const (
 	VowFlapperTable         = "vow_flapper"
 	VowFlopperTable         = "vow_flopper"
 	VowHumpTable            = "vow_hump"
+	VowLiveTable            = "vow_live"
 	VowSinIntegerTable      = "vow_sin_integer"
 	VowSinMappingTable      = "vow_sin_mapping"
 	VowSumpTable            = "vow_sump"

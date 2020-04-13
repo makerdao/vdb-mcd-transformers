@@ -404,4 +404,30 @@ var _ = Describe("Vow storage repository test", func() {
 		Expect(getCountErr).NotTo(HaveOccurred())
 		Expect(count).To(Equal(1))
 	})
+
+	It("persists a vow live", func() {
+		err = repo.Create(diffID, fakeHeaderID, vow.LiveMetadata, fakeUint256)
+
+		Expect(err).NotTo(HaveOccurred())
+
+		var result VariableRes
+		query := fmt.Sprintf(`SELECT diff_id, header_id, live AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VowLiveTable))
+		err = db.Get(&result, query)
+		Expect(err).NotTo(HaveOccurred())
+		AssertVariable(result, diffID, fakeHeaderID, fakeUint256)
+	})
+
+	It("does not duplicate vow live", func() {
+		insertOneErr := repo.Create(diffID, fakeHeaderID, vow.LiveMetadata, fakeUint256)
+		Expect(insertOneErr).NotTo(HaveOccurred())
+
+		insertTwoErr := repo.Create(diffID, fakeHeaderID, vow.LiveMetadata, fakeUint256)
+
+		Expect(insertTwoErr).NotTo(HaveOccurred())
+		var count int
+		query := fmt.Sprintf(`SELECT count(*) FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VowLiveTable))
+		getCountErr := db.Get(&count, query)
+		Expect(getCountErr).NotTo(HaveOccurred())
+		Expect(count).To(Equal(1))
+	})
 })
