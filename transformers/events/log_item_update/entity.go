@@ -7,8 +7,8 @@ import (
 )
 
 type LogItemUpdateEntity struct {
-	Id       *big.Int
-	HeaderID int64
-	LogID    int64
+	Id              *big.Int
+	HeaderID        int64
+	LogID           int64
 	ContractAddress common.Address
 }

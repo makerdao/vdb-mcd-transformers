@@ -15,7 +15,7 @@ import (
 var _ = Describe("LogItemUpdate Transformer", func() {
 	var (
 		transformer = log_item_update.Transformer{}
-		db = test_config.NewTestDB(test_config.NewTestNode())
+		db          = test_config.NewTestDB(test_config.NewTestNode())
 	)
 
 	BeforeEach(func() {

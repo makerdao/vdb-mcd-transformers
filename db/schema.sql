@@ -12326,6 +12326,38 @@ ALTER SEQUENCE maker.vow_hump_id_seq OWNED BY maker.vow_hump.id;
 
 
 --
+-- Name: vow_live; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.vow_live (
+    id integer NOT NULL,
+    diff_id bigint NOT NULL,
+    header_id integer NOT NULL,
+    live numeric NOT NULL
+);
+
+
+--
+-- Name: vow_live_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.vow_live_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: vow_live_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.vow_live_id_seq OWNED BY maker.vow_live.id;
+
+
+--
 -- Name: vow_sin_integer; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -13957,6 +13989,13 @@ ALTER TABLE ONLY maker.vow_flopper ALTER COLUMN id SET DEFAULT nextval('maker.vo
 --
 
 ALTER TABLE ONLY maker.vow_hump ALTER COLUMN id SET DEFAULT nextval('maker.vow_hump_id_seq'::regclass);
+
+
+--
+-- Name: vow_live id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_live ALTER COLUMN id SET DEFAULT nextval('maker.vow_live_id_seq'::regclass);
 
 
 --
@@ -16548,6 +16587,22 @@ ALTER TABLE ONLY maker.vow_hump
 
 ALTER TABLE ONLY maker.vow_hump
     ADD CONSTRAINT vow_hump_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: vow_live vow_live_diff_id_header_id_live_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_live
+    ADD CONSTRAINT vow_live_diff_id_header_id_live_key UNIQUE (diff_id, header_id, live);
+
+
+--
+-- Name: vow_live vow_live_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_live
+    ADD CONSTRAINT vow_live_pkey PRIMARY KEY (id);
 
 
 --
@@ -19198,6 +19253,13 @@ CREATE INDEX vow_flopper_header_id_index ON maker.vow_flopper USING btree (heade
 --
 
 CREATE INDEX vow_hump_header_id_index ON maker.vow_hump USING btree (header_id);
+
+
+--
+-- Name: vow_live_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vow_live_header_id_index ON maker.vow_live USING btree (header_id);
 
 
 --
@@ -23005,6 +23067,22 @@ ALTER TABLE ONLY maker.vow_hump
 
 ALTER TABLE ONLY maker.vow_hump
     ADD CONSTRAINT vow_hump_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: vow_live vow_live_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_live
+    ADD CONSTRAINT vow_live_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
+-- Name: vow_live vow_live_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_live
+    ADD CONSTRAINT vow_live_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
 
 
 --

@@ -56,6 +56,7 @@ var _ = Describe("Vow storage keys loader", func() {
 		Expect(mappings[vow.SumpKey]).To(Equal(vow.SumpMetadata))
 		Expect(mappings[vow.BumpKey]).To(Equal(vow.BumpMetadata))
 		Expect(mappings[vow.HumpKey]).To(Equal(vow.HumpMetadata))
+		Expect(mappings[vow.LiveKey]).To(Equal(vow.LiveMetadata))
 	})
 
 	It("returns value metadata for sin with vow flog event", func() {

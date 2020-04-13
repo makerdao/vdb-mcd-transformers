@@ -197,4 +197,18 @@ var _ = Describe("Executing the transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 		test_helpers.AssertVariable(rowResult, vowHump.ID, header.Id, "100000000000000000000000000000000000000000000")
 	})
+
+	It("reads in a Vow.live storage diff row and persists it", func() {
+		key := common.HexToHash("000000000000000000000000000000000000000000000000000000000000000c")
+		value := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000001")
+		vowLive := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
+
+		err := transformer.Execute(vowLive)
+		Expect(err).NotTo(HaveOccurred())
+
+		var rowResult test_helpers.VariableRes
+		err = db.Get(&rowResult, `SELECT diff_id, header_id, live AS value FROM maker.vow_live`)
+		Expect(err).NotTo(HaveOccurred())
+		test_helpers.AssertVariable(rowResult, vowLive.ID, header.Id, "1")
+	})
 })
