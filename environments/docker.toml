@@ -291,15 +291,15 @@
         migrations = "db/migrations"
         contracts = ["MEDIAN_BAT", "MEDIAN_ETH"]
         rank = "0"
-    [exporter.median_kiss_batch]
-        path = "transformers/events/median_kiss/batch/initializer"
+    [exporter.median_drop]
+        path = "transformers/events/median_drop/initializer"
         type = "eth_event"
         repository = "github.com/makerdao/vdb-mcd-transformers"
         migrations = "db/migrations"
         contracts = ["MEDIAN_BAT", "MEDIAN_ETH"]
         rank = "0"
-    [exporter.median_drop]
-        path = "transformers/events/median_drop/initializer"
+    [exporter.median_kiss_batch]
+        path = "transformers/events/median_kiss/batch/initializer"
         type = "eth_event"
         repository = "github.com/makerdao/vdb-mcd-transformers"
         migrations = "db/migrations"
