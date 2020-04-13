@@ -35,6 +35,16 @@ func MedianAddresses() []string {
 	}
 	return addressesResult
 }
+func OasisAddresses() []string {
+	var addressesResult []string
+	oasisAddresses := constants.GetContractAddresses([]string{"OASIS_MATCHING_MARKET_ONE", "OASIS_MATCHING_MARKET_TWO"})
+
+	for _, address := range oasisAddresses {
+		addressesResult = append(addressesResult, checksum(address))
+	}
+	return addressesResult
+
+}
 func OsmAddresses() []string {
 	var addressesResult []string
 	osmAddresses := constants.GetContractAddresses([]string{"OSM_ETH", "OSM_BAT"})

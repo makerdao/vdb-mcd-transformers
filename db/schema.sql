@@ -10045,6 +10045,39 @@ ALTER SEQUENCE maker.jug_vow_id_seq OWNED BY maker.jug_vow.id;
 
 
 --
+-- Name: log_item_update; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.log_item_update (
+    id integer NOT NULL,
+    log_id bigint NOT NULL,
+    header_id integer NOT NULL,
+    address_id integer NOT NULL,
+    offer_id integer
+);
+
+
+--
+-- Name: log_item_update_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.log_item_update_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: log_item_update_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.log_item_update_id_seq OWNED BY maker.log_item_update.id;
+
+
+--
 -- Name: log_value; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -13416,6 +13449,13 @@ ALTER TABLE ONLY maker.jug_vow ALTER COLUMN id SET DEFAULT nextval('maker.jug_vo
 
 
 --
+-- Name: log_item_update id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_item_update ALTER COLUMN id SET DEFAULT nextval('maker.log_item_update_id_seq'::regclass);
+
+
+--
 -- Name: log_value id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
@@ -15340,6 +15380,22 @@ ALTER TABLE ONLY maker.jug_vow
 
 ALTER TABLE ONLY maker.jug_vow
     ADD CONSTRAINT jug_vow_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: log_item_update log_item_update_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_item_update
+    ADD CONSTRAINT log_item_update_header_id_log_id_key UNIQUE (header_id, log_id);
+
+
+--
+-- Name: log_item_update log_item_update_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_item_update
+    ADD CONSTRAINT log_item_update_pkey PRIMARY KEY (id);
 
 
 --
@@ -18001,6 +18057,27 @@ CREATE INDEX jug_vat_header_id_index ON maker.jug_vat USING btree (header_id);
 --
 
 CREATE INDEX jug_vow_header_id_index ON maker.jug_vow USING btree (header_id);
+
+
+--
+-- Name: log_item_update_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX log_item_update_address_index ON maker.log_item_update USING btree (address_id);
+
+
+--
+-- Name: log_item_update_header_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX log_item_update_header_index ON maker.log_item_update USING btree (header_id);
+
+
+--
+-- Name: log_item_update_log_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX log_item_update_log_index ON maker.log_item_update USING btree (log_id);
 
 
 --
@@ -21368,6 +21445,30 @@ ALTER TABLE ONLY maker.jug_vow
 
 ALTER TABLE ONLY maker.jug_vow
     ADD CONSTRAINT jug_vow_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: log_item_update log_item_update_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_item_update
+    ADD CONSTRAINT log_item_update_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: log_item_update log_item_update_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_item_update
+    ADD CONSTRAINT log_item_update_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: log_item_update log_item_update_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_item_update
+    ADD CONSTRAINT log_item_update_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
 
 
 --
