@@ -70,6 +70,7 @@ const (
 	VatFrobTable            = "vat_frob"
 	VatGrabTable            = "vat_grab"
 	VatHealTable            = "vat_heal"
+	VatHopeTable            = "vat_hope"
 	VatInitTable            = "vat_init"
 	VatMoveTable            = "vat_move"
 	VatRelyTable            = "vat_rely"

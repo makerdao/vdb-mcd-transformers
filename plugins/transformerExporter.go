@@ -41,6 +41,7 @@ import (
 	tend "github.com/makerdao/vdb-mcd-transformers/transformers/events/tend/initializer"
 	tick "github.com/makerdao/vdb-mcd-transformers/transformers/events/tick/initializer"
 	vat_deny "github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_auth/deny_initializer"
+	vat_hope "github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_auth/hope_initializer"
 	vat_rely "github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_auth/rely_initializer"
 	vat_file_debt_ceiling "github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_file/debt_ceiling/initializer"
 	vat_file_ilk "github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_file/ilk/initializer"
@@ -99,12 +100,12 @@ func (e exporter) Export() ([]event.TransformerInitializer, []storage.Transforme
 			jug_init.EventTransformerInitializer,
 			log_value.EventTransformerInitializer,
 			log_item_update.EventTransformerInitializer,
-			new_cdp.EventTransformerInitializer,
 			median_diss_batch.EventTransformerInitializer,
 			median_diss_single.EventTransformerInitializer,
 			median_drop.EventTransformerInitializer,
 			median_kiss_batch.EventTransformerInitializer,
 			median_kiss_single.EventTransformerInitializer,
+			new_cdp.EventTransformerInitializer,
 			osm_change.EventTransformerInitializer,
 			pot_cage.EventTransformerInitializer,
 			pot_drip.EventTransformerInitializer,
@@ -128,6 +129,7 @@ func (e exporter) Export() ([]event.TransformerInitializer, []storage.Transforme
 			vat_frob.EventTransformerInitializer,
 			vat_grab.EventTransformerInitializer,
 			vat_heal.EventTransformerInitializer,
+			vat_hope.EventTransformerInitializer,
 			vat_init.EventTransformerInitializer,
 			vat_move.EventTransformerInitializer,
 			vat_rely.EventTransformerInitializer,

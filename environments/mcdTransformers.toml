@@ -75,6 +75,7 @@
         "vat_frob",
         "vat_grab",
         "vat_heal",
+        "vat_hope",
         "vat_init",
         "vat_move",
         "vat_rely",
@@ -483,6 +484,13 @@
         rank = "0"
     [exporter.vat_heal]
         path = "transformers/events/vat_heal/initializer"
+        type = "eth_event"
+        repository = "github.com/makerdao/vdb-mcd-transformers"
+        migrations = "db/migrations"
+        contracts = ["MCD_VAT"]
+        rank = "0"
+    [exporter.vat_hope]
+        path = "transformers/events/vat_auth/hope_initializer"
         type = "eth_event"
         repository = "github.com/makerdao/vdb-mcd-transformers"
         migrations = "db/migrations"

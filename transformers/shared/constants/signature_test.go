@@ -202,6 +202,10 @@ var _ = Describe("Signature constants", func() {
 		Expect(VatHealSignature()).To(Equal("0xf37ac61c00000000000000000000000000000000000000000000000000000000"))
 	})
 
+	It("generates vat hope signature", func() {
+		Expect(VatHopeSignature()).To(Equal("0xa3b22fc400000000000000000000000000000000000000000000000000000000"))
+	})
+
 	It("generates vat init signature", func() {
 		Expect(VatInitSignature()).To(Equal("0x3b66319500000000000000000000000000000000000000000000000000000000"))
 	})

@@ -22,7 +22,7 @@ var _ = Describe("Vat Auth Transformer", func() {
 
 	It("converts Vat rely logs to models", func() {
 		converter := vat_auth.Transformer{TableName: constants.VatRelyTable}
-		models, err := converter.ToModels(constants.VatABI(), []core.EventLog{test_data.VatRelyEventLog}, db)
+		models, err := converter.ToModels("", []core.EventLog{test_data.VatRelyEventLog}, db)
 		Expect(err).NotTo(HaveOccurred())
 
 		var usrAddressID int64
@@ -38,7 +38,7 @@ var _ = Describe("Vat Auth Transformer", func() {
 
 	It("converts Vat deny logs to models", func() {
 		converter := vat_auth.Transformer{TableName: constants.VatDenyTable}
-		models, err := converter.ToModels(constants.VatABI(), []core.EventLog{test_data.VatDenyEventLog}, db)
+		models, err := converter.ToModels("", []core.EventLog{test_data.VatDenyEventLog}, db)
 		Expect(err).NotTo(HaveOccurred())
 
 		var usrAddressID int64
@@ -47,6 +47,22 @@ var _ = Describe("Vat Auth Transformer", func() {
 		Expect(usrAddressErr).NotTo(HaveOccurred())
 
 		expectedModel := test_data.VatDenyModel()
+		expectedModel.ColumnValues[constants.UsrColumn] = usrAddressID
+
+		Expect(models).To(Equal([]event.InsertionModel{expectedModel}))
+	})
+
+	It("converts Vat hope logs to models", func() {
+		converter := vat_auth.Transformer{TableName: constants.VatHopeTable}
+		models, err := converter.ToModels("", []core.EventLog{test_data.VatHopeEventLog}, db)
+		Expect(err).NotTo(HaveOccurred())
+
+		var usrAddressID int64
+		usrAddressErr := db.Get(&usrAddressID, `SELECT id FROM addresses WHERE address = $1`,
+			common.HexToAddress(test_data.VatHopeEventLog.Log.Topics[1].Hex()).Hex())
+		Expect(usrAddressErr).NotTo(HaveOccurred())
+
+		expectedModel := test_data.VatHopeModel()
 		expectedModel.ColumnValues[constants.UsrColumn] = usrAddressID
 
 		Expect(models).To(Equal([]event.InsertionModel{expectedModel}))
