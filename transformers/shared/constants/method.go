@@ -127,6 +127,7 @@ func vatHealMethod() string { return getSolidityFunctionSignature(VatABI(), "hea
 func vatHopeMethod() string { return getSolidityFunctionSignature(VatABI(), "hope") }
 func vatInitMethod() string { return getSolidityFunctionSignature(VatABI(), "init") }
 func vatMoveMethod() string { return getSolidityFunctionSignature(VatABI(), "move") }
+func vatNopeMethod() string { return getSolidityFunctionSignature(VatABI(), "nope") }
 func vatSlipMethod() string { return getSolidityFunctionSignature(VatABI(), "slip") }
 func vatSuckMethod() string { return getSolidityFunctionSignature(VatABI(), "suck") }
 func vowFessMethod() string { return getSolidityFunctionSignature(VowABI(), "fess") }

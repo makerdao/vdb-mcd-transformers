@@ -65,6 +65,7 @@
         "vat_hope",
         "vat_init",
         "vat_move",
+        "vat_nope",
         "vat_rely",
         "vat_slip",
         "vat_suck",
@@ -492,6 +493,13 @@
         rank = "0"
     [exporter.vat_move]
         path = "transformers/events/vat_move/initializer"
+        type = "eth_event"
+        repository = "github.com/makerdao/vdb-mcd-transformers"
+        migrations = "db/migrations"
+        contracts = ["MCD_VAT"]
+        rank = "0"
+    [exporter.vat_nope]
+        path = "transformers/events/vat_auth/nope_initializer"
         type = "eth_event"
         repository = "github.com/makerdao/vdb-mcd-transformers"
         migrations = "db/migrations"

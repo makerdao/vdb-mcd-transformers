@@ -11864,6 +11864,38 @@ ALTER SEQUENCE maker.vat_move_id_seq OWNED BY maker.vat_move.id;
 
 
 --
+-- Name: vat_nope; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.vat_nope (
+    id integer NOT NULL,
+    header_id integer NOT NULL,
+    log_id bigint NOT NULL,
+    usr integer NOT NULL
+);
+
+
+--
+-- Name: vat_nope_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.vat_nope_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: vat_nope_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.vat_nope_id_seq OWNED BY maker.vat_nope.id;
+
+
+--
 -- Name: vat_rely; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -13916,6 +13948,13 @@ ALTER TABLE ONLY maker.vat_live ALTER COLUMN id SET DEFAULT nextval('maker.vat_l
 --
 
 ALTER TABLE ONLY maker.vat_move ALTER COLUMN id SET DEFAULT nextval('maker.vat_move_id_seq'::regclass);
+
+
+--
+-- Name: vat_nope id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_nope ALTER COLUMN id SET DEFAULT nextval('maker.vat_nope_id_seq'::regclass);
 
 
 --
@@ -16386,6 +16425,22 @@ ALTER TABLE ONLY maker.vat_move
 
 ALTER TABLE ONLY maker.vat_move
     ADD CONSTRAINT vat_move_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: vat_nope vat_nope_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_nope
+    ADD CONSTRAINT vat_nope_header_id_log_id_key UNIQUE (header_id, log_id);
+
+
+--
+-- Name: vat_nope vat_nope_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_nope
+    ADD CONSTRAINT vat_nope_pkey PRIMARY KEY (id);
 
 
 --
@@ -19140,6 +19195,27 @@ CREATE INDEX vat_move_header_index ON maker.vat_move USING btree (header_id);
 --
 
 CREATE INDEX vat_move_log_index ON maker.vat_move USING btree (log_id);
+
+
+--
+-- Name: vat_nope_header_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vat_nope_header_index ON maker.vat_nope USING btree (header_id);
+
+
+--
+-- Name: vat_nope_log_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vat_nope_log_index ON maker.vat_nope USING btree (log_id);
+
+
+--
+-- Name: vat_nope_usr_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vat_nope_usr_index ON maker.vat_nope USING btree (usr);
 
 
 --
@@ -22879,6 +22955,30 @@ ALTER TABLE ONLY maker.vat_move
 
 ALTER TABLE ONLY maker.vat_move
     ADD CONSTRAINT vat_move_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: vat_nope vat_nope_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_nope
+    ADD CONSTRAINT vat_nope_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: vat_nope vat_nope_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_nope
+    ADD CONSTRAINT vat_nope_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: vat_nope vat_nope_usr_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_nope
+    ADD CONSTRAINT vat_nope_usr_fkey FOREIGN KEY (usr) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --

@@ -68,6 +68,22 @@ var _ = Describe("Vat Auth Transformer", func() {
 		Expect(models).To(Equal([]event.InsertionModel{expectedModel}))
 	})
 
+	It("converts Vat nope logs to models", func() {
+		converter := vat_auth.Transformer{TableName: constants.VatNopeTable}
+		models, err := converter.ToModels("", []core.EventLog{test_data.VatNopeEventLog}, db)
+		Expect(err).NotTo(HaveOccurred())
+
+		var usrAddressID int64
+		usrAddressErr := db.Get(&usrAddressID, `SELECT id FROM addresses WHERE address = $1`,
+			common.HexToAddress(test_data.VatNopeEventLog.Log.Topics[1].Hex()).Hex())
+		Expect(usrAddressErr).NotTo(HaveOccurred())
+
+		expectedModel := test_data.VatNopeModel()
+		expectedModel.ColumnValues[constants.UsrColumn] = usrAddressID
+
+		Expect(models).To(Equal([]event.InsertionModel{expectedModel}))
+	})
+
 	It("returns an error if the expected amount of topics aren't in the log", func() {
 		converter := vat_auth.Transformer{}
 		invalidLog := test_data.VatDenyEventLog

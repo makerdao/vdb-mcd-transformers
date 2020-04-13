@@ -42,6 +42,7 @@ import (
 	tick "github.com/makerdao/vdb-mcd-transformers/transformers/events/tick/initializer"
 	vat_deny "github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_auth/deny_initializer"
 	vat_hope "github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_auth/hope_initializer"
+	vat_nope "github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_auth/nope_initializer"
 	vat_rely "github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_auth/rely_initializer"
 	vat_file_debt_ceiling "github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_file/debt_ceiling/initializer"
 	vat_file_ilk "github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_file/ilk/initializer"
@@ -132,6 +133,7 @@ func (e exporter) Export() ([]event.TransformerInitializer, []storage.Transforme
 			vat_hope.EventTransformerInitializer,
 			vat_init.EventTransformerInitializer,
 			vat_move.EventTransformerInitializer,
+			vat_nope.EventTransformerInitializer,
 			vat_rely.EventTransformerInitializer,
 			vat_slip.EventTransformerInitializer,
 			vat_suck.EventTransformerInitializer,

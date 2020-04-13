@@ -73,6 +73,7 @@ const (
 	VatHopeTable            = "vat_hope"
 	VatInitTable            = "vat_init"
 	VatMoveTable            = "vat_move"
+	VatNopeTable            = "vat_nope"
 	VatRelyTable            = "vat_rely"
 	VatSlipTable            = "vat_slip"
 	VatSuckTable            = "vat_suck"

@@ -214,6 +214,10 @@ var _ = Describe("Signature constants", func() {
 		Expect(VatMoveSignature()).To(Equal("0xbb35783b00000000000000000000000000000000000000000000000000000000"))
 	})
 
+	It("generates vat nope signature", func() {
+		Expect(VatNopeSignature()).To(Equal("0xdc4d20fa00000000000000000000000000000000000000000000000000000000"))
+	})
+
 	It("generates vat slip signature", func() {
 		Expect(VatSlipSignature()).To(Equal("0x7cdd3fde00000000000000000000000000000000000000000000000000000000"))
 	})
