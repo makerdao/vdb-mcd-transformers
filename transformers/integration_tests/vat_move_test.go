@@ -26,6 +26,7 @@ import (
 	"github.com/makerdao/vulcanizedb/libraries/shared/fetcher"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"sort"
 )
 
 var _ = Describe("VatMove EventTransformer", func() {
@@ -67,12 +68,27 @@ var _ = Describe("VatMove EventTransformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResults)).To(Equal(4))
-		dbResult := dbResults[0]
+		sort.Sort(byRad(dbResults))
+		dbResult := dbResults[2]
 		Expect(dbResult.Src).To(Equal("0x9759A6Ac90977b93B58547b4A71c78317f391A28"))
 		Expect(dbResult.Dst).To(Equal("0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643"))
 		Expect(dbResult.Rad).To(Equal("8170620340000000000000000000000000000000000000000"))
 	})
 })
+
+type byRad []vatMoveModel
+
+func (b byRad) Len() int {
+	return len(b)
+}
+
+func (b byRad) Less(i, j int) bool {
+	return b[i].Rad < b[j].Rad
+}
+
+func (b byRad) Swap(i, j int) {
+	b[i], b[j] = b[j], b[i]
+}
 
 type vatMoveModel struct {
 	Src string

@@ -61,8 +61,10 @@ func VatForkSignature() string            { return getLogNoteTopicZero(vatForkMe
 func VatFrobSignature() string            { return getLogNoteTopicZero(vatFrobMethod()) }
 func VatGrabSignature() string            { return getLogNoteTopicZero(vatGrabMethod()) }
 func VatHealSignature() string            { return getLogNoteTopicZero(vatHealMethod()) }
+func VatHopeSignature() string            { return getLogNoteTopicZero(vatHopeMethod()) }
 func VatInitSignature() string            { return getLogNoteTopicZero(vatInitMethod()) }
 func VatMoveSignature() string            { return getLogNoteTopicZero(vatMoveMethod()) }
+func VatNopeSignature() string            { return getLogNoteTopicZero(vatNopeMethod()) }
 func VatSlipSignature() string            { return getLogNoteTopicZero(vatSlipMethod()) }
 func VatSuckSignature() string            { return getLogNoteTopicZero(vatSuckMethod()) }
 func VowFessSignature() string            { return getLogNoteTopicZero(vowFessMethod()) }
