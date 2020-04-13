@@ -8,7 +8,7 @@ require (
 	github.com/jmoiron/sqlx v0.0.0-20181024163419-82935fac6c1a
 	github.com/lib/pq v1.0.0
 	github.com/magiconair/properties v1.8.0
-	github.com/makerdao/vulcanizedb v0.0.14-rc.1.0.20200413150139-a4cbd0f90765
+	github.com/makerdao/vulcanizedb v0.0.14-rc.1.0.20200415184210-88db36560852
 	github.com/mattn/go-runewidth v0.0.6
 	github.com/onsi/ginkgo v1.10.1
 	github.com/onsi/gomega v1.7.0
