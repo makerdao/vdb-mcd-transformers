@@ -83,4 +83,43 @@ var _ = Describe("Executing the flip transformer", func() {
 			test_helpers.AssertMapping(wardsResult.MappingRes, wardsDiff.ID, header.Id, strconv.FormatInt(userAddressID, 10), "1")
 		})
 	})
+
+	Describe("bud", func() {
+		It("reads in a bud storage diff row and persists it", func() {
+			kissLog := test_data.CreateTestLog(header.Id, db)
+			kissModel := test_data.MedianKissSingleModel()
+
+			medianAddressID, medianAddressErr := shared.GetOrCreateAddress(test_data.EthMedianAddress(), db)
+			Expect(medianAddressErr).NotTo(HaveOccurred())
+
+			aAddress := "0xffb0382ca7cfdc4fc4d5cc8913af1393d7ee1ef1"
+			aAddressID, aAddressErr := shared.GetOrCreateAddress(aAddress, db)
+			Expect(aAddressErr).NotTo(HaveOccurred())
+
+			msgSenderAddress := "0x" + fakes.RandomString(40)
+			msgSenderAddressID, msgSenderAddressErr := shared.GetOrCreateAddress(msgSenderAddress, db)
+			Expect(msgSenderAddressErr).NotTo(HaveOccurred())
+
+			kissModel.ColumnValues[event.HeaderFK] = header.Id
+			kissModel.ColumnValues[event.LogFK] = kissLog.ID
+			kissModel.ColumnValues[event.AddressFK] = medianAddressID
+			kissModel.ColumnValues[constants.MsgSenderColumn] = msgSenderAddressID
+			kissModel.ColumnValues[constants.AColumn] = aAddressID
+			insertErr := event.PersistModels([]event.InsertionModel{kissModel}, db)
+			Expect(insertErr).NotTo(HaveOccurred())
+
+			key := common.HexToHash("6e8bbf796f21b82c83c834b2cacf88452e5bba3a2fb53ad9e5b2c0e6c54820fd")
+			value := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000001")
+			wardsDiff := test_helpers.CreateDiffRecord(db, header, keccakAddress, key, value)
+
+			transformErr := transformer.Execute(wardsDiff)
+			Expect(transformErr).NotTo(HaveOccurred())
+
+			var budResult test_helpers.MappingResWithAddress
+			err := db.Get(&budResult, `SELECT diff_id, header_id, address_id, a AS key, bud AS value FROM maker.median_bud`)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(budResult.AddressID).To(Equal(strconv.FormatInt(medianAddressID, 10)))
+			test_helpers.AssertMapping(budResult.MappingRes, wardsDiff.ID, header.Id, strconv.FormatInt(aAddressID, 10), "1")
+		})
+	})
 })
