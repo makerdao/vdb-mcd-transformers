@@ -19562,6 +19562,13 @@ CREATE INDEX receipts_transaction ON public.receipts USING btree (transaction_id
 
 
 --
+-- Name: storage_diff_checked_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX storage_diff_checked_index ON public.storage_diff USING btree (checked) WHERE (checked IS FALSE);
+
+
+--
 -- Name: transactions_header; Type: INDEX; Schema: public; Owner: -
 --
 
