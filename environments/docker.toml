@@ -31,8 +31,9 @@
         "jug_file_ilk",
         "jug_file_vow",
         "jug_init",
-        "log_value",
         "log_item_update",
+        "log_make",
+        "log_value",
         "median_diss_batch",
         "median_diss_single",
         "median_drop",
@@ -259,19 +260,26 @@
         migrations = "db/migrations"
         contracts = ["MCD_JUG"]
         rank = "0"
+    [exporter.log_item_update]
+        path = "transformers/events/log_item_update/initializer"
+        type = "eth_event"
+        repository = "github.com/makerdao/vdb-mcd-transformers"
+        migrations = "db/migrations"
+        contracts = ["OASIS_MATCHING_MARKET_ONE", "OASIS_MATCHING_MARKET_TWO"]
+        rank = "0"
+    [exporter.log_make]
+        path = "transformers/events/log_make/initializer"
+        type = "eth_event"
+        repository = "github.com/makerdao/vdb-mcd-transformers"
+        migrations = "db/migrations"
+        contracts = ["OASIS_MATCHING_MARKET_ONE", "OASIS_MATCHING_MARKET_TWO"]
+        rank = "0"
     [exporter.log_value]
         path = "transformers/events/log_value/initializer"
         type = "eth_event"
         repository = "github.com/makerdao/vdb-mcd-transformers"
         migrations = "db/migrations"
         contracts = ["OSM_ETH", "OSM_BAT", "OSM_USDC"]
-        rank = "0"
-     [exporter.log_item_update]
-        path = "transformers/events/log_item_update/initializer"
-        type = "eth_event"
-        repository = "github.com/makerdao/vdb-mcd-transformers"
-        migrations = "db/migrations"
-        contracts = ["OASIS_MATCHING_MARKET_ONE", "OASIS_MATCHING_MARKET_TWO"]
         rank = "0"
     [exporter.median_diss_batch]
         path = "transformers/events/median_diss/batch/initializer"

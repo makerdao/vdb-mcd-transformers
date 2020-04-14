@@ -7,7 +7,6 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/log_item_update"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
@@ -39,12 +38,12 @@ var (
 		SchemaName: constants.MakerSchema,
 		TableName:  constants.LogItemUpdateTable,
 		OrderedColumns: []event.ColumnName{
-			event.HeaderFK, event.LogFK, event.AddressFK, log_item_update.OfferId,
+			event.HeaderFK, event.LogFK, event.AddressFK, constants.OfferId,
 		},
 		ColumnValues: event.ColumnValues{
-			event.HeaderFK:          LogItemUpdateEventLog.HeaderID,
-			event.LogFK:             LogItemUpdateEventLog.ID,
-			log_item_update.OfferId: logItemUpdateOfferId.String(),
+			event.HeaderFK:    LogItemUpdateEventLog.HeaderID,
+			event.LogFK:       LogItemUpdateEventLog.ID,
+			constants.OfferId: logItemUpdateOfferId.String(),
 		},
 	}
 )

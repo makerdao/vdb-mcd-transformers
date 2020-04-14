@@ -10078,6 +10078,46 @@ ALTER SEQUENCE maker.log_item_update_id_seq OWNED BY maker.log_item_update.id;
 
 
 --
+-- Name: log_make; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.log_make (
+    id integer NOT NULL,
+    log_id bigint NOT NULL,
+    header_id integer NOT NULL,
+    address_id integer NOT NULL,
+    offer_id numeric,
+    pair character varying(66),
+    maker integer NOT NULL,
+    pay_gem integer NOT NULL,
+    buy_gem integer NOT NULL,
+    pay_amt numeric,
+    buy_amt numeric,
+    "timestamp" integer
+);
+
+
+--
+-- Name: log_make_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.log_make_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: log_make_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.log_make_id_seq OWNED BY maker.log_make.id;
+
+
+--
 -- Name: log_value; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -13552,6 +13592,13 @@ ALTER TABLE ONLY maker.log_item_update ALTER COLUMN id SET DEFAULT nextval('make
 
 
 --
+-- Name: log_make id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_make ALTER COLUMN id SET DEFAULT nextval('maker.log_make_id_seq'::regclass);
+
+
+--
 -- Name: log_value id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
@@ -15513,6 +15560,22 @@ ALTER TABLE ONLY maker.log_item_update
 
 ALTER TABLE ONLY maker.log_item_update
     ADD CONSTRAINT log_item_update_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: log_make log_make_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_make
+    ADD CONSTRAINT log_make_header_id_log_id_key UNIQUE (header_id, log_id);
+
+
+--
+-- Name: log_make log_make_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_make
+    ADD CONSTRAINT log_make_pkey PRIMARY KEY (id);
 
 
 --
@@ -18243,6 +18306,48 @@ CREATE INDEX log_item_update_header_index ON maker.log_item_update USING btree (
 --
 
 CREATE INDEX log_item_update_log_index ON maker.log_item_update USING btree (log_id);
+
+
+--
+-- Name: log_make_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX log_make_address_index ON maker.log_make USING btree (address_id);
+
+
+--
+-- Name: log_make_buy_gem_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX log_make_buy_gem_index ON maker.log_make USING btree (buy_gem);
+
+
+--
+-- Name: log_make_header_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX log_make_header_index ON maker.log_make USING btree (header_id);
+
+
+--
+-- Name: log_make_log_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX log_make_log_index ON maker.log_make USING btree (log_id);
+
+
+--
+-- Name: log_make_maker_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX log_make_maker_index ON maker.log_make USING btree (maker);
+
+
+--
+-- Name: log_make_pay_gem_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX log_make_pay_gem_index ON maker.log_make USING btree (pay_gem);
 
 
 --
@@ -21690,6 +21795,54 @@ ALTER TABLE ONLY maker.log_item_update
 
 ALTER TABLE ONLY maker.log_item_update
     ADD CONSTRAINT log_item_update_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: log_make log_make_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_make
+    ADD CONSTRAINT log_make_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: log_make log_make_buy_gem_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_make
+    ADD CONSTRAINT log_make_buy_gem_fkey FOREIGN KEY (buy_gem) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: log_make log_make_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_make
+    ADD CONSTRAINT log_make_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: log_make log_make_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_make
+    ADD CONSTRAINT log_make_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: log_make log_make_maker_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_make
+    ADD CONSTRAINT log_make_maker_fkey FOREIGN KEY (maker) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: log_make log_make_pay_gem_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_make
+    ADD CONSTRAINT log_make_pay_gem_fkey FOREIGN KEY (pay_gem) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --
