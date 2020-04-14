@@ -10053,7 +10053,7 @@ CREATE TABLE maker.log_item_update (
     log_id bigint NOT NULL,
     header_id integer NOT NULL,
     address_id integer NOT NULL,
-    offer_id integer
+    offer_id numeric
 );
 
 
