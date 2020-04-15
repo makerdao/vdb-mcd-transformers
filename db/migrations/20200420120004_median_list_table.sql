@@ -19,6 +19,7 @@ CREATE INDEX median_lift_address_index
     ON maker.median_lift (address_id);
 CREATE INDEX median_lift_msg_sender_index
     ON maker.median_lift (msg_sender);
+
 -- +goose Down
 
 DROP TABLE maker.median_lift;

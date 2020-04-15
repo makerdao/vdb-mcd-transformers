@@ -12,15 +12,15 @@ import (
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
 )
 
-var rawMedianLiftLogWithFourAccounts = types.Log{
+var RawMedianLiftLogWithFiveAccounts = types.Log{
 	Address: common.HexToAddress(EthMedianAddress()),
 	Topics: []common.Hash{
 		common.HexToHash(constants.MedianLiftSignature()),
 		common.HexToHash("0x000000000000000000000000c45e7858eef1318337a803ede8c5a9be12e2b40f"),
 		common.HexToHash("0x0000000000000000000000000000000000000000000000000000000000000020"),
-		common.HexToHash("0x0000000000000000000000000000000000000000000000000000000000000004"),
+		common.HexToHash("0x0000000000000000000000000000000000000000000000000000000000000005"),
 	},
-	Data:        hexutil.MustDecode("0x000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000e094318106000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000040000000000000000000000006bdbc0ccc17d72a33bf72a4657781a37dc2aa94e00000000000000000000000026c45f7b0e456e36fc85781488a3cd42a57ccbd200000000000000000000000020c576f989ee94e571f027b30314acf709267f7c000000000000000000000000fcb1fb52e114b364b3aab63d8a6f65fe8dcbef9d000000000000000000000000c2de180006ed15273f8dc59c436b954b"),
+	Data:        hexutil.MustDecode("0x000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000e094318106000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000050000000000000000000000006bdbc0ccc17d72a33bf72a4657781a37dc2aa94e00000000000000000000000026c45f7b0e456e36fc85781488a3cd42a57ccbd200000000000000000000000020c576f989ee94e571f027b30314acf709267f7c000000000000000000000000fcb1fb52e114b364b3aab63d8a6f65fe8dcbef9d000000000000000000000000c2de180006ed15273f8dc59c436b954b"),
 	BlockNumber: 8936530,
 	TxHash:      common.HexToHash("0xd17875c308e4778ebe4335e445d84e9b280e181cd60e65ecce68f43da5e390b8"),
 	TxIndex:     10,
@@ -29,18 +29,18 @@ var rawMedianLiftLogWithFourAccounts = types.Log{
 	Removed:     false,
 }
 
-var MedianLiftLogWithFourAccounts = core.EventLog{
+var MedianLiftLogWithFiveAccounts = core.EventLog{
 	ID:          int64(rand.Int31()),
 	HeaderID:    int64(rand.Int31()),
-	Log:         rawMedianLiftLogWithFourAccounts,
+	Log:         RawMedianLiftLogWithFiveAccounts,
 	Transformed: false,
 }
 
-func MedianLiftModelWithFourAccounts() event.InsertionModel {
-	return CopyModel(medianLiftModelWithFourAccounts)
+func MedianLiftModelWithFiveAccounts() event.InsertionModel {
+	return CopyModel(medianLiftModelWithFiveAccounts)
 }
 
-var medianLiftModelWithFourAccounts = event.InsertionModel{
+var medianLiftModelWithFiveAccounts = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.MedianLiftTable,
 	OrderedColumns: []event.ColumnName{
@@ -52,9 +52,9 @@ var medianLiftModelWithFourAccounts = event.InsertionModel{
 		constants.AColumn,
 	},
 	ColumnValues: event.ColumnValues{
-		event.HeaderFK:          MedianLiftLogWithFourAccounts.HeaderID,
-		event.LogFK:             MedianLiftLogWithFourAccounts.ID,
-		constants.ALengthColumn: "4",
+		event.HeaderFK:          MedianLiftLogWithFiveAccounts.HeaderID,
+		event.LogFK:             MedianLiftLogWithFiveAccounts.ID,
+		constants.ALengthColumn: "5",
 	},
 }
 
