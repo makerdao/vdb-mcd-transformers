@@ -10,3 +10,4 @@ test_scripts/
 vulcanizedb.log
 db/migrations/00*.sql
 vdb-mcd-transformers
+.DS_Store
