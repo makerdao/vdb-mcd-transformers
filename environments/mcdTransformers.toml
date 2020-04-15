@@ -214,7 +214,7 @@
         repository = "github.com/makerdao/vdb-mcd-transformers"
         migrations = "db/migrations"
         contracts = ["MCD_CAT", "MCD_FLAP", "MCD_FLIP_ETH_A", "MCD_FLIP_BAT_A", "MCD_FLIP_SAI", "MCD_FLIP_USDC_A",
-                     "MCD_FLOP", "MCD_JUG", "MCD_POT", "MCD_SPOT", "MCD_VOW"]
+                     "MCD_FLOP", "MCD_JUG", "MCD_POT", "MCD_SPOT", "MCD_VOW", "MEDIAN_BAT", "MEDIAN_ETH"]
         rank = "0"
     [exporter.flap_kick]
         path = "transformers/events/flap_kick/initializer"
@@ -383,7 +383,7 @@
         repository = "github.com/makerdao/vdb-mcd-transformers"
         migrations = "db/migrations"
         contracts = ["MCD_CAT", "MCD_FLAP", "MCD_FLIP_ETH_A", "MCD_FLIP_BAT_A", "MCD_FLIP_SAI", "MCD_FLIP_USDC_A",
-                     "MCD_FLOP", "MCD_JUG", "MCD_POT", "MCD_SPOT", "MCD_VOW"]
+                     "MCD_FLOP", "MCD_JUG", "MCD_POT", "MCD_SPOT", "MCD_VOW", "MEDIAN_BAT", "MEDIAN_ETH"]
         rank = "0"
     [exporter.spot_file_mat]
         path = "transformers/events/spot_file/mat/initializer"
