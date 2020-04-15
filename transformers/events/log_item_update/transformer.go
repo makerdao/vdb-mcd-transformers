@@ -12,8 +12,6 @@ import (
 	"github.com/makerdao/vulcanizedb/pkg/eth"
 )
 
-const OfferId event.ColumnName = "offer_id"
-
 type Transformer struct{}
 
 func (Transformer) toEntities(contractAbi string, logs []core.EventLog) ([]LogItemUpdateEntity, error) {
@@ -55,13 +53,13 @@ func (t Transformer) ToModels(abi string, logs []core.EventLog, db *postgres.DB)
 			SchemaName: constants.MakerSchema,
 			TableName:  constants.LogItemUpdateTable,
 			OrderedColumns: []event.ColumnName{
-				event.HeaderFK, event.LogFK, event.AddressFK, OfferId,
+				event.HeaderFK, event.LogFK, event.AddressFK, constants.OfferId,
 			},
 			ColumnValues: event.ColumnValues{
-				event.HeaderFK:  logItemUpdateEntity.HeaderID,
-				event.LogFK:     logItemUpdateEntity.LogID,
-				event.AddressFK: addressId,
-				OfferId:         shared.BigIntToString(logItemUpdateEntity.Id),
+				event.HeaderFK:    logItemUpdateEntity.HeaderID,
+				event.LogFK:       logItemUpdateEntity.LogID,
+				event.AddressFK:   addressId,
+				constants.OfferId: shared.BigIntToString(logItemUpdateEntity.Id),
 			},
 		}
 		models = append(models, model)
