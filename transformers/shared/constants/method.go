@@ -74,6 +74,7 @@ func logBumpEvent() string         { return getSolidityFunctionSignature(OasisAB
 func logItemUpdateEvent() string   { return getSolidityFunctionSignature(OasisABI(), "LogItemUpdate") }
 func logKillEvent() string         { return getSolidityFunctionSignature(OasisABI(), "LogKill") }
 func logMakeEvent() string         { return getSolidityFunctionSignature(OasisABI(), "LogMake") }
+func logMinSellEvent() string      { return getSolidityFunctionSignature(OasisABI(), "LogMinSell") }
 func logSortedOfferMethod() string { return getSolidityFunctionSignature(OasisABI(), "LogSortedOffer") }
 func logTakeEvent() string         { return getSolidityFunctionSignature(OasisABI(), "LogTake") }
 func logTradeEvent() string        { return getSolidityFunctionSignature(OasisABI(), "LogTrade") }
@@ -81,6 +82,7 @@ func logUnsortedOfferMethod() string {
 	return getSolidityFunctionSignature(OasisABI(), "LogUnsortedOffer")
 }
 func logValueMethod() string { return getSolidityFunctionSignature(OsmABI(), "LogValue") }
+
 func medianDissBatchMethod() string {
 	return getOverloadedFunctionSignature(MedianABI(), "diss", []string{"address[]"})
 }
