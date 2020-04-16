@@ -10119,6 +10119,46 @@ ALTER SEQUENCE maker.log_item_update_id_seq OWNED BY maker.log_item_update.id;
 
 
 --
+-- Name: log_kill; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.log_kill (
+    id integer NOT NULL,
+    log_id bigint NOT NULL,
+    header_id integer NOT NULL,
+    address_id integer NOT NULL,
+    offer_id numeric,
+    pair character varying(66),
+    maker integer NOT NULL,
+    pay_gem integer NOT NULL,
+    buy_gem integer NOT NULL,
+    pay_amt numeric,
+    buy_amt numeric,
+    "timestamp" bigint
+);
+
+
+--
+-- Name: log_kill_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.log_kill_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: log_kill_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.log_kill_id_seq OWNED BY maker.log_kill.id;
+
+
+--
 -- Name: log_make; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -13747,6 +13787,13 @@ ALTER TABLE ONLY maker.log_item_update ALTER COLUMN id SET DEFAULT nextval('make
 
 
 --
+-- Name: log_kill id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_kill ALTER COLUMN id SET DEFAULT nextval('maker.log_kill_id_seq'::regclass);
+
+
+--
 -- Name: log_make id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
@@ -15752,6 +15799,22 @@ ALTER TABLE ONLY maker.log_item_update
 
 ALTER TABLE ONLY maker.log_item_update
     ADD CONSTRAINT log_item_update_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: log_kill log_kill_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_kill
+    ADD CONSTRAINT log_kill_header_id_log_id_key UNIQUE (header_id, log_id);
+
+
+--
+-- Name: log_kill log_kill_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_kill
+    ADD CONSTRAINT log_kill_pkey PRIMARY KEY (id);
 
 
 --
@@ -18588,6 +18651,27 @@ CREATE INDEX log_item_update_header_index ON maker.log_item_update USING btree (
 --
 
 CREATE INDEX log_item_update_log_index ON maker.log_item_update USING btree (log_id);
+
+
+--
+-- Name: log_kill_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX log_kill_address_index ON maker.log_kill USING btree (address_id);
+
+
+--
+-- Name: log_kill_header_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX log_kill_header_index ON maker.log_kill USING btree (header_id);
+
+
+--
+-- Name: log_kill_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX log_kill_index ON maker.log_kill USING btree (log_id);
 
 
 --
@@ -22216,6 +22300,54 @@ ALTER TABLE ONLY maker.log_item_update
 
 ALTER TABLE ONLY maker.log_item_update
     ADD CONSTRAINT log_item_update_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: log_kill log_kill_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_kill
+    ADD CONSTRAINT log_kill_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: log_kill log_kill_buy_gem_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_kill
+    ADD CONSTRAINT log_kill_buy_gem_fkey FOREIGN KEY (buy_gem) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: log_kill log_kill_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_kill
+    ADD CONSTRAINT log_kill_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: log_kill log_kill_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_kill
+    ADD CONSTRAINT log_kill_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: log_kill log_kill_maker_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_kill
+    ADD CONSTRAINT log_kill_maker_fkey FOREIGN KEY (maker) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: log_kill log_kill_pay_gem_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_kill
+    ADD CONSTRAINT log_kill_pay_gem_fkey FOREIGN KEY (pay_gem) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --

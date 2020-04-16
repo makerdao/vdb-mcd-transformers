@@ -118,6 +118,10 @@ var _ = Describe("Signature constants", func() {
 		Expect(LogItemUpdateSignature()).To(Equal("0xa2c251311b1a7a475913900a2a73dc9789a21b04bc737e050bbc506dd4eb3488"))
 	})
 
+	It("generates oasis log kill signature", func() {
+		Expect(LogKillSignature()).To(Equal("0x9577941d28fff863bfbee4694a6a4a56fb09e169619189d2eaa750b5b4819995"))
+	})
+
 	It("generates oasis log make signature", func() {
 		Expect(LogMakeSignature()).To(Equal("0x773ff502687307abfa024ac9f62f9752a0d210dac2ffd9a29e38e12e2ea82c82"))
 	})

@@ -72,6 +72,7 @@ func jugFileVowMethod() string {
 func jugInitMethod() string        { return getSolidityFunctionSignature(JugABI(), "init") }
 func logBumpEvent() string         { return getSolidityFunctionSignature(OasisABI(), "LogBump") }
 func logItemUpdateEvent() string   { return getSolidityFunctionSignature(OasisABI(), "LogItemUpdate") }
+func logKillEvent() string         { return getSolidityFunctionSignature(OasisABI(), "LogKill") }
 func logMakeEvent() string         { return getSolidityFunctionSignature(OasisABI(), "LogMake") }
 func logSortedOfferMethod() string { return getSolidityFunctionSignature(OasisABI(), "LogSortedOffer") }
 func logTakeEvent() string         { return getSolidityFunctionSignature(OasisABI(), "LogTake") }
