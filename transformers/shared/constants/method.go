@@ -73,7 +73,10 @@ func jugInitMethod() string        { return getSolidityFunctionSignature(JugABI(
 func logItemUpdateEvent() string   { return getSolidityFunctionSignature(OasisABI(), "LogItemUpdate") }
 func logMakeEvent() string         { return getSolidityFunctionSignature(OasisABI(), "LogMake") }
 func logSortedOfferMethod() string { return getSolidityFunctionSignature(OasisABI(), "LogSortedOffer") }
-func logValueMethod() string       { return getSolidityFunctionSignature(OsmABI(), "LogValue") }
+func logUnsortedOfferMethod() string {
+	return getSolidityFunctionSignature(OasisABI(), "LogUnsortedOffer")
+}
+func logValueMethod() string { return getSolidityFunctionSignature(OsmABI(), "LogValue") }
 func medianDissBatchMethod() string {
 	return getOverloadedFunctionSignature(MedianABI(), "diss", []string{"address[]"})
 }

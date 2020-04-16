@@ -35,6 +35,7 @@ func LogValueSignature() string           { return getEventTopicZero(logValueMet
 func LogItemUpdateSignature() string      { return getEventTopicZero(logItemUpdateEvent()) }
 func LogMakeSignature() string            { return getEventTopicZero(logMakeEvent()) }
 func LogSortedOfferSignature() string     { return getEventTopicZero(logSortedOfferMethod()) }
+func LogUnsortedOfferSignature() string   { return getEventTopicZero(logUnsortedOfferMethod()) }
 func MedianDissBatchSignature() string    { return getLogNoteTopicZero(medianDissBatchMethod()) }
 func MedianDissSingleSignature() string   { return getLogNoteTopicZero(medianDissSingleMethod()) }
 func MedianKissBatchSignature() string    { return getLogNoteTopicZero(medianKissBatchMethod()) }

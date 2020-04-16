@@ -49,13 +49,11 @@ var _ = Describe("LogSortedOffer Transformer", func() {
 		err = transformer.Execute(eventLogs)
 		Expect(err).NotTo(HaveOccurred())
 
-		var dbResult []logSortedOfferModel
-		err = db.Select(&dbResult, `SELECT offer_id FROM maker.log_sorted_offer ORDER BY offer_id`)
+		var dbResult []string
+		err = db.Select(&dbResult, `SELECT offer_id FROM maker.log_sorted_offer`)
 		Expect(err).NotTo(HaveOccurred())
 
-		Expect(len(dbResult)).To(Equal(2))
-		Expect(dbResult[0].OfferID).To(Equal("811647"))
-		Expect(dbResult[1].OfferID).To(Equal("811648"))
+		Expect(dbResult).To(ConsistOf("811647", "811648"))
 	})
 
 	It("fetches and transforms a LogSortedOffer event for OASIS_MATCHING_MARKET_TWO contract", func() {
@@ -87,17 +85,10 @@ var _ = Describe("LogSortedOffer Transformer", func() {
 		err = transformer.Execute(eventLogs)
 		Expect(err).NotTo(HaveOccurred())
 
-		var dbResult []logSortedOfferModel
+		var dbResult []string
 		err = db.Select(&dbResult, `SELECT offer_id from maker.log_sorted_offer`)
 		Expect(err).NotTo(HaveOccurred())
 
-		Expect(len(dbResult)).To(Equal(1))
-		Expect(dbResult[0].OfferID).To(Equal("253097"))
+		Expect(dbResult).To(ConsistOf("253097"))
 	})
 })
-
-type logSortedOfferModel struct {
-	OfferID  string `db:"offer_id"`
-	HeaderID int64
-	LogID    int64 `db:"log_id"`
-}

@@ -22,6 +22,7 @@ import (
 	log_item_update "github.com/makerdao/vdb-mcd-transformers/transformers/events/log_item_update/initializer"
 	log_make "github.com/makerdao/vdb-mcd-transformers/transformers/events/log_make/initializer"
 	log_sorted_offer "github.com/makerdao/vdb-mcd-transformers/transformers/events/log_sorted_offer/initializer"
+	log_unsorted_offer "github.com/makerdao/vdb-mcd-transformers/transformers/events/log_unsorted_offer/initializer"
 	log_value "github.com/makerdao/vdb-mcd-transformers/transformers/events/log_value/initializer"
 	median_diss_batch "github.com/makerdao/vdb-mcd-transformers/transformers/events/median_diss/batch/initializer"
 	median_diss_single "github.com/makerdao/vdb-mcd-transformers/transformers/events/median_diss/single/initializer"
@@ -104,6 +105,7 @@ func (e exporter) Export() ([]event.TransformerInitializer, []storage.Transforme
 			log_item_update.EventTransformerInitializer,
 			log_make.EventTransformerInitializer,
 			log_sorted_offer.EventTransformerInitializer,
+			log_unsorted_offer.EventTransformerInitializer,
 			log_value.EventTransformerInitializer,
 			median_diss_batch.EventTransformerInitializer,
 			median_diss_single.EventTransformerInitializer,

@@ -13,37 +13,37 @@ import (
 )
 
 var (
-	logSortedOfferRawLog = types.Log{
+	logUnsortedOfferRawLog = types.Log{
 		Address:     common.HexToAddress(OasisAddresses()[0]),
-		Topics:      []common.Hash{common.HexToHash(constants.LogSortedOfferSignature())},
-		Data:        hexutil.MustDecode("0x00000000000000000000000000000000000000000000000000000000000c6280"),
-		BlockNumber: 9440502,
-		TxHash:      common.HexToHash("0xb2f2f13a6ef0d1d6dd153d1a019929a31799498dcb1c100e04695fc0e95b9e58"),
-		TxIndex:     124,
+		Topics:      []common.Hash{common.HexToHash(constants.LogUnsortedOfferSignature())},
+		Data:        hexutil.MustDecode("0x00000000000000000000000000000000000000000000000000000000000af0fa"),
+		BlockNumber: 9243052,
+		TxHash:      common.HexToHash("0x8dff61bb629b1f45f31d8f91a644b8c3cdac48a3b85f04d3267f951a254d3968"),
+		TxIndex:     157,
 		BlockHash:   fakes.FakeHash,
-		Index:       97,
+		Index:       207,
 		Removed:     false,
 	}
 
-	LogSortedOfferEventLog = core.EventLog{
+	LogUnsortedOfferEventLog = core.EventLog{
 		ID:          int64(rand.Int31()),
 		HeaderID:    int64(rand.Int31()),
-		Log:         logSortedOfferRawLog,
+		Log:         logUnsortedOfferRawLog,
 		Transformed: false,
 	}
 
-	logSortedOfferModel = event.InsertionModel{
+	logUnsortedOfferModel = event.InsertionModel{
 		SchemaName: constants.MakerSchema,
-		TableName:  constants.LogSortedOfferTable,
+		TableName:  constants.LogUnsortedOfferTable,
 		OrderedColumns: []event.ColumnName{
 			event.HeaderFK, event.LogFK, event.AddressFK, constants.OfferId,
 		},
 		ColumnValues: event.ColumnValues{
-			event.HeaderFK:    LogSortedOfferEventLog.HeaderID,
-			event.LogFK:       LogSortedOfferEventLog.ID,
-			constants.OfferId: "811648",
+			event.HeaderFK:    LogUnsortedOfferEventLog.HeaderID,
+			event.LogFK:       LogUnsortedOfferEventLog.ID,
+			constants.OfferId: "717050",
 		},
 	}
 )
 
-func LogSortedOfferModel() event.InsertionModel { return CopyModel(logSortedOfferModel) }
+func LogUnsortedOfferModel() event.InsertionModel { return CopyModel(logUnsortedOfferModel) }
