@@ -69,10 +69,11 @@ func jugFileIlkMethod() string {
 func jugFileVowMethod() string {
 	return getOverloadedFunctionSignature(JugABI(), "file", []string{"bytes32", "address"})
 }
-func jugInitMethod() string      { return getSolidityFunctionSignature(JugABI(), "init") }
-func logValueMethod() string     { return getSolidityFunctionSignature(OsmABI(), "LogValue") }
-func logItemUpdateEvent() string { return getSolidityFunctionSignature(OasisABI(), "LogItemUpdate") }
-func logMakeEvent() string       { return getSolidityFunctionSignature(OasisABI(), "LogMake") }
+func jugInitMethod() string        { return getSolidityFunctionSignature(JugABI(), "init") }
+func logItemUpdateEvent() string   { return getSolidityFunctionSignature(OasisABI(), "LogItemUpdate") }
+func logMakeEvent() string         { return getSolidityFunctionSignature(OasisABI(), "LogMake") }
+func logSortedOfferMethod() string { return getSolidityFunctionSignature(OasisABI(), "LogSortedOffer") }
+func logValueMethod() string       { return getSolidityFunctionSignature(OsmABI(), "LogValue") }
 func medianDissBatchMethod() string {
 	return getOverloadedFunctionSignature(MedianABI(), "diss", []string{"address[]"})
 }
