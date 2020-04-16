@@ -138,6 +138,10 @@ var _ = Describe("Signature constants", func() {
 		Expect(LogTakeSignature()).To(Equal("0x3383e3357c77fd2e3a4b30deea81179bc70a795d053d14d5b7f2f01d0fd4596f"))
 	})
 
+	It("generates oasis log trade signature", func() {
+		Expect(LogTradeSignature()).To(Equal("0x819e390338feffe95e2de57172d6faf337853dfd15c7a09a32d76f7fd2443875"))
+	})
+
 	It("generates oasis log unsorted offer signature", func() {
 		Expect(LogUnsortedOfferSignature()).To(Equal("0x8173832a493e0a3989e521458e55bfe9feac9f9b675a94e100b9d5a85f814862"))
 	})

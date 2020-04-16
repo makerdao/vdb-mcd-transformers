@@ -45,6 +45,7 @@ const (
 	LogMakeTable            = "log_make"
 	LogSortedOfferTable     = "log_sorted_offer"
 	LogTakeTable            = "log_take"
+	LogTradeTable           = "log_trade"
 	LogUnsortedOfferTable   = "log_unsorted_offer"
 	LogValueTable           = "log_value"
 	MedianDissBatchTable    = "median_diss_batch"

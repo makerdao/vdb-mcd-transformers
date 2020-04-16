@@ -76,6 +76,7 @@ func logKillEvent() string         { return getSolidityFunctionSignature(OasisAB
 func logMakeEvent() string         { return getSolidityFunctionSignature(OasisABI(), "LogMake") }
 func logSortedOfferMethod() string { return getSolidityFunctionSignature(OasisABI(), "LogSortedOffer") }
 func logTakeEvent() string         { return getSolidityFunctionSignature(OasisABI(), "LogTake") }
+func logTradeEvent() string        { return getSolidityFunctionSignature(OasisABI(), "LogTrade") }
 func logUnsortedOfferMethod() string {
 	return getSolidityFunctionSignature(OasisABI(), "LogUnsortedOffer")
 }
