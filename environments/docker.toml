@@ -33,6 +33,8 @@
         "jug_init",
         "log_item_update",
         "log_make",
+        "log_sorted_offer",
+        "log_unsorted_offer",
         "log_value",
         "median_diss_batch",
         "median_diss_single",
@@ -269,6 +271,20 @@
         rank = "0"
     [exporter.log_make]
         path = "transformers/events/log_make/initializer"
+        type = "eth_event"
+        repository = "github.com/makerdao/vdb-mcd-transformers"
+        migrations = "db/migrations"
+        contracts = ["OASIS_MATCHING_MARKET_ONE", "OASIS_MATCHING_MARKET_TWO"]
+        rank = "0"
+    [exporter.log_sorted_offer]
+        path = "transformers/events/log_sorted_offer/initializer"
+        type = "eth_event"
+        repository = "github.com/makerdao/vdb-mcd-transformers"
+        migrations = "db/migrations"
+        contracts = ["OASIS_MATCHING_MARKET_ONE", "OASIS_MATCHING_MARKET_TWO"]
+        rank = "0"
+    [exporter.log_unsorted_offer]
+        path = "transformers/events/log_unsorted_offer/initializer"
         type = "eth_event"
         repository = "github.com/makerdao/vdb-mcd-transformers"
         migrations = "db/migrations"
