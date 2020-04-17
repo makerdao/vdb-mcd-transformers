@@ -31,6 +31,7 @@
         "jug_file_ilk",
         "jug_file_vow",
         "jug_init",
+        "log_bump",
         "log_item_update",
         "log_make",
         "log_sorted_offer",
@@ -261,6 +262,13 @@
         repository = "github.com/makerdao/vdb-mcd-transformers"
         migrations = "db/migrations"
         contracts = ["MCD_JUG"]
+        rank = "0"
+    [exporter.log_bump]
+        path = "transformers/events/log_bump/initializer"
+        type = "eth_event"
+        repository = "github.com/makerdao/vdb-mcd-transformers"
+        migrations = "db/migrations"
+        contracts = ["OASIS_MATCHING_MARKET_ONE", "OASIS_MATCHING_MARKET_TWO"]
         rank = "0"
     [exporter.log_item_update]
         path = "transformers/events/log_item_update/initializer"

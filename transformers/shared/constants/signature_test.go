@@ -110,6 +110,10 @@ var _ = Describe("Signature constants", func() {
 		Expect(NewCdpSignature()).To(Equal("0xd6be0bc178658a382ff4f91c8c68b542aa6b71685b8fe427966b87745c3ea7a2"))
 	})
 
+	It("generates oasis log bump signature", func() {
+		Expect(LogBumpSignature()).To(Equal("0x70a14c213064359ede031fd2a1645a11ce2ec825ffe6ab5cfb5b160c3ef4d0a2"))
+	})
+
 	It("generates oasis log item update signature", func() {
 		Expect(LogItemUpdateSignature()).To(Equal("0xa2c251311b1a7a475913900a2a73dc9789a21b04bc737e050bbc506dd4eb3488"))
 	})
