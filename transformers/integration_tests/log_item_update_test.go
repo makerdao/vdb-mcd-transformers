@@ -36,10 +36,10 @@ var _ = Describe("LogItemUpdate Transformer", func() {
 		}
 		transformer := initializer.NewTransformer(db)
 
-		oasis_one_address := constants.GetContractAddress("OASIS_MATCHING_MARKET_ONE")
+		oasisOneAddress := constants.GetContractAddress("OASIS_MATCHING_MARKET_ONE")
 		logFetcher := fetcher.NewLogFetcher(blockChain)
 		logs, err := logFetcher.FetchLogs(
-			[]common.Address{common.HexToAddress(oasis_one_address)},
+			[]common.Address{common.HexToAddress(oasisOneAddress)},
 			[]common.Hash{common.HexToHash(logItemUpdateConfig.Topic)},
 			header)
 		Expect(err).NotTo(HaveOccurred())
@@ -80,10 +80,10 @@ var _ = Describe("LogItemUpdate Transformer", func() {
 		}
 		transformer := initializer.NewTransformer(db)
 
-		oasis_two_address := constants.GetContractAddress("OASIS_MATCHING_MARKET_TWO")
+		oasisTwoAddress := constants.GetContractAddress("OASIS_MATCHING_MARKET_TWO")
 		logFetcher := fetcher.NewLogFetcher(blockChain)
 		logs, err := logFetcher.FetchLogs(
-			[]common.Address{common.HexToAddress(oasis_two_address)},
+			[]common.Address{common.HexToAddress(oasisTwoAddress)},
 			[]common.Hash{common.HexToHash(logItemUpdateConfig.Topic)},
 			header)
 		Expect(err).NotTo(HaveOccurred())

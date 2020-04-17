@@ -37,10 +37,10 @@ var _ = Describe("LogTake Transformer", func() {
 		}
 		transformer := initializer.NewTransformer(db)
 
-		oasis_one_address := constants.GetContractAddress("OASIS_MATCHING_MARKET_ONE")
+		oasisOneAddress := constants.GetContractAddress("OASIS_MATCHING_MARKET_ONE")
 		logFetcher := fetcher.NewLogFetcher(blockChain)
 		logs, err := logFetcher.FetchLogs(
-			[]common.Address{common.HexToAddress(oasis_one_address)},
+			[]common.Address{common.HexToAddress(oasisOneAddress)},
 			[]common.Hash{common.HexToHash(config.Topic)},
 			header)
 		Expect(err).NotTo(HaveOccurred())
@@ -54,7 +54,7 @@ var _ = Describe("LogTake Transformer", func() {
 		err = db.Select(&dbResults, `SELECT offer_id, pair, maker, pay_gem, buy_gem, taker, take_amt, give_amt, timestamp, address_id from maker.log_take`)
 		Expect(err).NotTo(HaveOccurred())
 
-		expectedAddressID, addressErr := shared.GetOrCreateAddress(oasis_one_address, db)
+		expectedAddressID, addressErr := shared.GetOrCreateAddress(oasisOneAddress, db)
 		Expect(addressErr).NotTo(HaveOccurred())
 		expectedMakerID, makerErr := shared.GetOrCreateAddress("0x6ff7d252627d35b8eb02607c8f27acdb18032718", db)
 		Expect(makerErr).NotTo(HaveOccurred())
@@ -94,10 +94,10 @@ var _ = Describe("LogTake Transformer", func() {
 		}
 		transformer := initializer.NewTransformer(db)
 
-		oasis_two_address := constants.GetContractAddress("OASIS_MATCHING_MARKET_TWO")
+		oasisTwoAddress := constants.GetContractAddress("OASIS_MATCHING_MARKET_TWO")
 		logFetcher := fetcher.NewLogFetcher(blockChain)
 		logs, err := logFetcher.FetchLogs(
-			[]common.Address{common.HexToAddress(oasis_two_address)},
+			[]common.Address{common.HexToAddress(oasisTwoAddress)},
 			[]common.Hash{common.HexToHash(config.Topic)},
 			header)
 		Expect(err).NotTo(HaveOccurred())
@@ -112,7 +112,7 @@ var _ = Describe("LogTake Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResults)).To(Equal(1))
-		expectedAddressID, addressErr := shared.GetOrCreateAddress(oasis_two_address, db)
+		expectedAddressID, addressErr := shared.GetOrCreateAddress(oasisTwoAddress, db)
 		Expect(addressErr).NotTo(HaveOccurred())
 		expectedMakerID, makerErr := shared.GetOrCreateAddress("0xd62824c0a9f7d12a2e3b9674fbbfc63e5db4c5a0", db)
 		Expect(makerErr).NotTo(HaveOccurred())
