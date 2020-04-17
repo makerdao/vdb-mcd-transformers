@@ -39,6 +39,7 @@ const (
 	JugFileIlkTable         = "jug_file_ilk"
 	JugFileVowTable         = "jug_file_vow"
 	JugInitTable            = "jug_init"
+	LogBumpTable            = "log_bump"
 	LogValueTable           = "log_value"
 	LogItemUpdateTable      = "log_item_update"
 	LogMakeTable            = "log_make"

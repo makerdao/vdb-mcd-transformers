@@ -31,11 +31,12 @@ func JugFileBaseSignature() string        { return getLogNoteTopicZero(jugFileBa
 func JugFileIlkSignature() string         { return getLogNoteTopicZero(jugFileIlkMethod()) }
 func JugFileVowSignature() string         { return getLogNoteTopicZero(jugFileVowMethod()) }
 func JugInitSignature() string            { return getLogNoteTopicZero(jugInitMethod()) }
-func LogValueSignature() string           { return getEventTopicZero(logValueMethod()) }
+func LogBumpSignature() string            { return getEventTopicZero(logBumpEvent()) }
 func LogItemUpdateSignature() string      { return getEventTopicZero(logItemUpdateEvent()) }
 func LogMakeSignature() string            { return getEventTopicZero(logMakeEvent()) }
 func LogSortedOfferSignature() string     { return getEventTopicZero(logSortedOfferMethod()) }
 func LogUnsortedOfferSignature() string   { return getEventTopicZero(logUnsortedOfferMethod()) }
+func LogValueSignature() string           { return getEventTopicZero(logValueMethod()) }
 func MedianDissBatchSignature() string    { return getLogNoteTopicZero(medianDissBatchMethod()) }
 func MedianDissSingleSignature() string   { return getLogNoteTopicZero(medianDissSingleMethod()) }
 func MedianKissBatchSignature() string    { return getLogNoteTopicZero(medianKissBatchMethod()) }
