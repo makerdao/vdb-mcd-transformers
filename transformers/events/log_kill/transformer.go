@@ -84,16 +84,16 @@ func (t Transformer) ToModels(abi string, logs []core.EventLog, db *postgres.DB)
 				constants.TimestampColumn,
 			},
 			ColumnValues: event.ColumnValues{
-				event.HeaderFK:  logKillEntity.HeaderID,
-				event.LogFK:     logKillEntity.LogID,
-				event.AddressFK: contractAddressId,
-				constants.OfferId: shared.BigIntToString(logKillEntity.Id),
-				constants.PairColumn: logKillEntity.Pair.Hex(),
-				constants.MakerColumn: makerAddressId,
-				constants.PayGemColumn: payGemAddressId,
-				constants.BuyGemColumn: buyGemAddressId,
-				constants.PayAmtColumn: shared.BigIntToString(logKillEntity.PayAmt),
-				constants.BuyAmtColumn: shared.BigIntToString(logKillEntity.BuyAmt),
+				event.HeaderFK:            logKillEntity.HeaderID,
+				event.LogFK:               logKillEntity.LogID,
+				event.AddressFK:           contractAddressId,
+				constants.OfferId:         shared.BigIntToString(logKillEntity.Id),
+				constants.PairColumn:      logKillEntity.Pair.Hex(),
+				constants.MakerColumn:     makerAddressId,
+				constants.PayGemColumn:    payGemAddressId,
+				constants.BuyGemColumn:    buyGemAddressId,
+				constants.PayAmtColumn:    shared.BigIntToString(logKillEntity.PayAmt),
+				constants.BuyAmtColumn:    shared.BigIntToString(logKillEntity.BuyAmt),
 				constants.TimestampColumn: strconv.FormatUint(logKillEntity.Timestamp, 10),
 			},
 		}
@@ -101,5 +101,3 @@ func (t Transformer) ToModels(abi string, logs []core.EventLog, db *postgres.DB)
 	}
 	return models, nil
 }
-
-

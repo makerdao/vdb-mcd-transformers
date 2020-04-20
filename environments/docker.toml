@@ -36,6 +36,7 @@
         "log_make",
         "log_sorted_offer",
         "log_take",
+        "log_trade",
         "log_unsorted_offer",
         "log_value",
         "median_diss_batch",
@@ -295,6 +296,13 @@
         rank = "0"
     [exporter.log_take]
         path = "transformers/events/log_take/initializer"
+        type = "eth_event"
+        repository = "github.com/makerdao/vdb-mcd-transformers"
+        migrations = "db/migrations"
+        contracts = ["OASIS_MATCHING_MARKET_ONE", "OASIS_MATCHING_MARKET_TWO"]
+        rank = "0"
+    [exporter.log_trade]
+        path = "transformers/events/log_trade/initializer"
         type = "eth_event"
         repository = "github.com/makerdao/vdb-mcd-transformers"
         migrations = "db/migrations"
