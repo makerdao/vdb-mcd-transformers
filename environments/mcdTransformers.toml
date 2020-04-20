@@ -47,6 +47,7 @@
         "log_bump",
         "log_item_update",
         "log_make",
+        "log_min_sell",
         "log_sorted_offer",
         "log_take",
         "log_trade",
@@ -295,6 +296,13 @@
         rank = "0"
     [exporter.log_make]
         path = "transformers/events/log_make/initializer"
+        type = "eth_event"
+        repository = "github.com/makerdao/vdb-mcd-transformers"
+        migrations = "db/migrations"
+        contracts = ["OASIS_MATCHING_MARKET_ONE", "OASIS_MATCHING_MARKET_TWO"]
+        rank = "0"
+    [exporter.log_min_sell]
+        path = "transformers/events/log_min_sell/initializer"
         type = "eth_event"
         repository = "github.com/makerdao/vdb-mcd-transformers"
         migrations = "db/migrations"
