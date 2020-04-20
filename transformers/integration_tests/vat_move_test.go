@@ -17,6 +17,8 @@
 package integration_tests
 
 import (
+	"sort"
+
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_move"
@@ -26,7 +28,6 @@ import (
 	"github.com/makerdao/vulcanizedb/libraries/shared/fetcher"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"sort"
 )
 
 var _ = Describe("VatMove EventTransformer", func() {

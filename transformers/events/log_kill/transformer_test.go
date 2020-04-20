@@ -44,7 +44,6 @@ var _ = Describe("LogKill Transformer", func() {
 		Expect(models).To(Equal([]event.InsertionModel{expectedModel}))
 	})
 
-
 	It("returns an error if converting log to entity fails", func() {
 		_, err := transformer.ToModels("error abi", []core.EventLog{test_data.LogKillEventLog}, db)
 
