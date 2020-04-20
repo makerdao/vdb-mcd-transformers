@@ -43,6 +43,7 @@
         "median_drop",
         "median_kiss_batch",
         "median_kiss_single",
+        "median_lift",
         "new_cdp",
         "osm_change",
         "pot_cage",
@@ -327,13 +328,6 @@
         migrations = "db/migrations"
         contracts = ["MEDIAN_BAT", "MEDIAN_ETH"]
         rank = "0"
-    [exporter.median_kiss_batch]
-        path = "transformers/events/median_kiss/batch/initializer"
-        type = "eth_event"
-        repository = "github.com/makerdao/vdb-mcd-transformers"
-        migrations = "db/migrations"
-        contracts = ["MEDIAN_BAT", "MEDIAN_ETH"]
-        rank = "0"
     [exporter.median_drop]
         path = "transformers/events/median_drop/initializer"
         type = "eth_event"
@@ -341,8 +335,22 @@
         migrations = "db/migrations"
         contracts = ["MEDIAN_BAT", "MEDIAN_ETH"]
         rank = "0"
+    [exporter.median_kiss_batch]
+        path = "transformers/events/median_kiss/batch/initializer"
+        type = "eth_event"
+        repository = "github.com/makerdao/vdb-mcd-transformers"
+        migrations = "db/migrations"
+        contracts = ["MEDIAN_BAT", "MEDIAN_ETH"]
+        rank = "0"
     [exporter.median_kiss_single]
         path = "transformers/events/median_kiss/single/initializer"
+        type = "eth_event"
+        repository = "github.com/makerdao/vdb-mcd-transformers"
+        migrations = "db/migrations"
+        contracts = ["MEDIAN_BAT", "MEDIAN_ETH"]
+        rank = "0"
+    [exporter.median_lift]
+        path = "transformers/events/median_lift/initializer"
         type = "eth_event"
         repository = "github.com/makerdao/vdb-mcd-transformers"
         migrations = "db/migrations"

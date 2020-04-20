@@ -52,6 +52,7 @@ const (
 	MedianDropTable         = "median_drop"
 	MedianKissBatchTable    = "median_kiss_batch"
 	MedianKissSingleTable   = "median_kiss_single"
+	MedianLiftTable         = "median_lift"
 	NewCdpTable             = "new_cdp"
 	OsmChangeTable          = "osm_change"
 	PotCageTable            = "pot_cage"
