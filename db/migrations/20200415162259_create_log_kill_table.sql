@@ -16,12 +16,18 @@ CREATE TABLE maker.log_kill
     UNIQUE (header_id, log_id)
 );
 
-CREATE INDEX log_kill_header_index
-    ON maker.log_kill (header_id);
 CREATE INDEX log_kill_index
     ON maker.log_kill (log_id);
+CREATE INDEX log_kill_header_index
+    ON maker.log_kill (header_id);
 CREATE INDEX log_kill_address_index
     ON maker.log_kill (address_id);
+CREATE INDEX log_kill_maker_index
+    ON maker.log_kill (maker);
+CREATE INDEX log_kill_pay_gem_index
+    ON maker.log_kill (pay_gem);
+CREATE INDEX log_kill_buy_gem_index
+    ON maker.log_kill (buy_gem);
 
 -- +goose Down
 DROP TABLE maker.log_kill;

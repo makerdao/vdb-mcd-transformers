@@ -80,7 +80,7 @@ var _ = Describe("LogKill Transformer", func() {
 		Expect(dbResult.AddressID).To(Equal(expectedAddressID))
 	})
 
-	FIt("fetches and transforms a LogKill event for OASIS_MATCHING_MARKET_TWO contract", func() {
+	It("fetches and transforms a LogKill event for OASIS_MATCHING_MARKET_TWO contract", func() {
 		blockNumber := int64(9883734)
 		config.StartingBlockNumber = blockNumber
 		config.EndingBlockNumber = blockNumber

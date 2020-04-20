@@ -18661,6 +18661,13 @@ CREATE INDEX log_kill_address_index ON maker.log_kill USING btree (address_id);
 
 
 --
+-- Name: log_kill_buy_gem_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX log_kill_buy_gem_index ON maker.log_kill USING btree (buy_gem);
+
+
+--
 -- Name: log_kill_header_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -18672,6 +18679,20 @@ CREATE INDEX log_kill_header_index ON maker.log_kill USING btree (header_id);
 --
 
 CREATE INDEX log_kill_index ON maker.log_kill USING btree (log_id);
+
+
+--
+-- Name: log_kill_maker_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX log_kill_maker_index ON maker.log_kill USING btree (maker);
+
+
+--
+-- Name: log_kill_pay_gem_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX log_kill_pay_gem_index ON maker.log_kill USING btree (pay_gem);
 
 
 --
