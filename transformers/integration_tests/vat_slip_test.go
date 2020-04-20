@@ -17,6 +17,7 @@
 package integration_tests
 
 import (
+	"sort"
 	"strconv"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -66,19 +67,23 @@ var _ = Describe("Vat slip transformer", func() {
 		}.NewTransformer(db)
 
 		err = tr.Execute(eventLogs)
-
 		Expect(err).NotTo(HaveOccurred())
+
 		var headerID int64
 		err = db.Get(&headerID, `SELECT id FROM public.headers WHERE block_number = $1`, blockNumber)
 		Expect(err).NotTo(HaveOccurred())
-		var model vatSlipModel
-		err = db.Get(&model, `SELECT ilk_id, usr, wad FROM maker.vat_slip WHERE header_id = $1`, headerID)
+
+		var models []vatSlipModel
+		err = db.Select(&models, `SELECT ilk_id, usr, wad FROM maker.vat_slip WHERE header_id = $1`, headerID)
 		Expect(err).NotTo(HaveOccurred())
+		Expect(len(models)).To(Equal(2))
+		sort.Sort(byWad(models))
+
 		ilkID, err := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
-		Expect(model.Ilk).To(Equal(strconv.FormatInt(ilkID, 10)))
-		Expect(model.Usr).To(Equal("0xA7Efab80520784e2d5eCB65ccA4af8b09e271dD7"))
-		Expect(model.Wad).To(Equal("-1610898610000000000"))
+		Expect(models[0].Ilk).To(Equal(strconv.FormatInt(ilkID, 10)))
+		Expect(models[0].Usr).To(Equal("0xA7Efab80520784e2d5eCB65ccA4af8b09e271dD7"))
+		Expect(models[0].Wad).To(Equal("-1610898610000000000"))
 	})
 })
 
@@ -87,3 +92,9 @@ type vatSlipModel struct {
 	Usr string
 	Wad string
 }
+
+type byWad []vatSlipModel
+
+func (b byWad) Len() int           { return len(b) }
+func (b byWad) Less(i, j int) bool { return b[i].Wad < b[j].Wad }
+func (b byWad) Swap(i, j int)      { b[i], b[j] = b[j], b[i] }
