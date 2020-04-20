@@ -9,5 +9,5 @@ import (
 
 func TestUtilities(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "Utilities Suite")
+	RunSpecs(t, "Storage Transformer Utilities Suite")
 }

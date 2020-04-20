@@ -9,5 +9,5 @@ import (
 
 func TestVow(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "Storage Diff Vow Suite")
+	RunSpecs(t, "Vow Storage Transformer Suite")
 }

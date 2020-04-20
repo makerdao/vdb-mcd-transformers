@@ -9,5 +9,5 @@ import (
 
 func TestCdpManager(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "CDP Manager Suite")
+	RunSpecs(t, "CDP Manager Component Test Suite")
 }

@@ -17,10 +17,7 @@
 package debt_ceiling_test
 
 import (
-	"io/ioutil"
 	"testing"
-
-	log "github.com/sirupsen/logrus"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -28,9 +25,5 @@ import (
 
 func TestDebtCeiling(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "DebtCeiling Suite")
+	RunSpecs(t, "VatFileDebtCeiling Event Transformer Suite")
 }
-
-var _ = BeforeSuite(func() {
-	log.SetOutput(ioutil.Discard)
-})

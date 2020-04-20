@@ -9,5 +9,5 @@ import (
 
 func TestAuth(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "Vat Auth Suite")
+	RunSpecs(t, "VatAuth Event Transformer Suite")
 }

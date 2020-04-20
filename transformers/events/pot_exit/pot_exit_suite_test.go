@@ -9,5 +9,5 @@ import (
 
 func TestPotExit(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "PotExit Suite")
+	RunSpecs(t, "PotExit Event Transformer Suite")
 }

@@ -9,5 +9,5 @@ import (
 
 func TestLogKill(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "LogKill Suite")
+	RunSpecs(t, "LogKill Event Transformer Suite")
 }

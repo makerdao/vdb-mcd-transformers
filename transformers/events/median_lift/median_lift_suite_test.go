@@ -9,5 +9,5 @@ import (
 
 func TestMedianLift(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "MedianLift Suite")
+	RunSpecs(t, "MedianLift Event Transformer Suite")
 }

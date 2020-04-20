@@ -17,19 +17,13 @@
 package jug_drip_test
 
 import (
-	"io/ioutil"
 	"testing"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/sirupsen/logrus"
 )
 
 func TestJugDrip(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "JugDrip Suite")
+	RunSpecs(t, "JugDrip Event Transformer Suite")
 }
-
-var _ = BeforeSuite(func() {
-	logrus.SetOutput(ioutil.Discard)
-})

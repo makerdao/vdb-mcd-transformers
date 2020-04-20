@@ -25,5 +25,5 @@ import (
 
 func TestYank(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "Yank Suite")
+	RunSpecs(t, "Yank Event Transformer Suite")
 }

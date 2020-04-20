@@ -9,5 +9,5 @@ import (
 
 func TestVow(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "Vow Suite")
+	RunSpecs(t, "Vow Component Test Suite")
 }

@@ -9,5 +9,5 @@ import (
 
 func TestLogBump(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "LogBump Suite")
+	RunSpecs(t, "LogBump Event Transformer Suite")
 }

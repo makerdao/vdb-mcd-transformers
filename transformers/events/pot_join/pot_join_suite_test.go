@@ -9,5 +9,5 @@ import (
 
 func TestPotJoin(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "PotJoin Suite")
+	RunSpecs(t, "PotJoin Event Transformer Suite")
 }

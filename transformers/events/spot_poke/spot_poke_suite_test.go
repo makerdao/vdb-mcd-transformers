@@ -1,8 +1,6 @@
 package spot_poke_test
 
 import (
-	"io/ioutil"
-	"log"
 	"testing"
 
 	. "github.com/onsi/ginkgo"
@@ -11,9 +9,5 @@ import (
 
 func TestSpotPoke(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "SpotPoke Suite")
+	RunSpecs(t, "SpotPoke Event Transformer Suite")
 }
-
-var _ = BeforeSuite(func() {
-	log.SetOutput(ioutil.Discard)
-})

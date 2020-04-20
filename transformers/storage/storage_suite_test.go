@@ -17,10 +17,7 @@
 package storage_test
 
 import (
-	"io/ioutil"
 	"testing"
-
-	"github.com/sirupsen/logrus"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -28,9 +25,5 @@ import (
 
 func TestMaker(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "Storage Suite")
+	RunSpecs(t, "Storage Transformer Suite")
 }
-
-var _ = BeforeSuite(func() {
-	logrus.SetOutput(ioutil.Discard)
-})

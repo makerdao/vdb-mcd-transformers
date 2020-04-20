@@ -1,10 +1,7 @@
 package vat_fold_test
 
 import (
-	"io/ioutil"
 	"testing"
-
-	log "github.com/sirupsen/logrus"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -12,9 +9,5 @@ import (
 
 func TestVatFold(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "VatFold Suite")
+	RunSpecs(t, "VatFold Event Transformer Suite")
 }
-
-var _ = BeforeSuite(func() {
-	log.SetOutput(ioutil.Discard)
-})
