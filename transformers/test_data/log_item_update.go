@@ -28,8 +28,8 @@ var (
 	}
 
 	LogItemUpdateEventLog = core.EventLog{
-		ID:          int64(rand.Int31()),
-		HeaderID:    int64(rand.Int31()),
+		ID:          rand.Int63(),
+		HeaderID:    rand.Int63(),
 		Log:         logItemUpdateRawLog,
 		Transformed: false,
 	}
