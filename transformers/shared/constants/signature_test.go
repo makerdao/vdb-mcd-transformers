@@ -118,6 +118,10 @@ var _ = Describe("Signature constants", func() {
 		Expect(LogBumpSignature()).To(Equal("0x70a14c213064359ede031fd2a1645a11ce2ec825ffe6ab5cfb5b160c3ef4d0a2"))
 	})
 
+	It("generates oasis log buy enabled signature", func() {
+		Expect(LogBuyEnabledSignature()).To(Equal("0x7089e4f0bcc948f9f723a361590c32d9c2284da7ab1981b1249ad2edb9f953c1"))
+	})
+
 	It("generates oasis log item update signature", func() {
 		Expect(LogItemUpdateSignature()).To(Equal("0xa2c251311b1a7a475913900a2a73dc9789a21b04bc737e050bbc506dd4eb3488"))
 	})
@@ -128,6 +132,10 @@ var _ = Describe("Signature constants", func() {
 
 	It("generates oasis log make signature", func() {
 		Expect(LogMakeSignature()).To(Equal("0x773ff502687307abfa024ac9f62f9752a0d210dac2ffd9a29e38e12e2ea82c82"))
+	})
+
+	It("generates oasis log matching enabled signature", func() {
+		Expect(LogMatchingEnabledSignature()).To(Equal("0xea11e00ec1642be9b494019b756440e2c57dbe9e59242c4f9c64ce33fb4f41d9"))
 	})
 
 	It("generates oasis log minsell signature", func() {

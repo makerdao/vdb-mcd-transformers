@@ -10087,6 +10087,39 @@ ALTER SEQUENCE maker.log_bump_id_seq OWNED BY maker.log_bump.id;
 
 
 --
+-- Name: log_buy_enabled; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.log_buy_enabled (
+    id integer NOT NULL,
+    log_id bigint NOT NULL,
+    header_id integer NOT NULL,
+    address_id integer NOT NULL,
+    is_enabled boolean
+);
+
+
+--
+-- Name: log_buy_enabled_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.log_buy_enabled_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: log_buy_enabled_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.log_buy_enabled_id_seq OWNED BY maker.log_buy_enabled.id;
+
+
+--
 -- Name: log_item_update; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -13921,6 +13954,13 @@ ALTER TABLE ONLY maker.log_bump ALTER COLUMN id SET DEFAULT nextval('maker.log_b
 
 
 --
+-- Name: log_buy_enabled id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_buy_enabled ALTER COLUMN id SET DEFAULT nextval('maker.log_buy_enabled_id_seq'::regclass);
+
+
+--
 -- Name: log_item_update id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
@@ -15952,6 +15992,22 @@ ALTER TABLE ONLY maker.log_bump
 
 ALTER TABLE ONLY maker.log_bump
     ADD CONSTRAINT log_bump_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: log_buy_enabled log_buy_enabled_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_buy_enabled
+    ADD CONSTRAINT log_buy_enabled_header_id_log_id_key UNIQUE (header_id, log_id);
+
+
+--
+-- Name: log_buy_enabled log_buy_enabled_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_buy_enabled
+    ADD CONSTRAINT log_buy_enabled_pkey PRIMARY KEY (id);
 
 
 --
@@ -18863,6 +18919,27 @@ CREATE INDEX log_bump_maker_index ON maker.log_bump USING btree (maker);
 --
 
 CREATE INDEX log_bump_pay_gem_index ON maker.log_bump USING btree (pay_gem);
+
+
+--
+-- Name: log_buy_enabled_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX log_buy_enabled_address_index ON maker.log_buy_enabled USING btree (address_id);
+
+
+--
+-- Name: log_buy_enabled_header_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX log_buy_enabled_header_index ON maker.log_buy_enabled USING btree (header_id);
+
+
+--
+-- Name: log_buy_enabled_log_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX log_buy_enabled_log_index ON maker.log_buy_enabled USING btree (log_id);
 
 
 --
@@ -22656,6 +22733,30 @@ ALTER TABLE ONLY maker.log_bump
 
 ALTER TABLE ONLY maker.log_bump
     ADD CONSTRAINT log_bump_pay_gem_fkey FOREIGN KEY (pay_gem) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: log_buy_enabled log_buy_enabled_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_buy_enabled
+    ADD CONSTRAINT log_buy_enabled_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: log_buy_enabled log_buy_enabled_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_buy_enabled
+    ADD CONSTRAINT log_buy_enabled_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: log_buy_enabled log_buy_enabled_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_buy_enabled
+    ADD CONSTRAINT log_buy_enabled_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
 
 
 --
