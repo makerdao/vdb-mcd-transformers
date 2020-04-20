@@ -58,6 +58,7 @@ const (
 	InkColumn       event.ColumnName = "ink"
 	LotColumn       event.ColumnName = "lot"
 	MakerColumn     event.ColumnName = "maker"
+	MinAmountColumn event.ColumnName = "min_amount"
 	MsgSenderColumn event.ColumnName = "msg_sender"
 	OfferId         event.ColumnName = "offer_id"
 	OwnColumn       event.ColumnName = "own"
