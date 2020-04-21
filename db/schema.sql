@@ -6592,8 +6592,9 @@ CREATE FUNCTION maker.update_urn_created(urn_id integer) RETURNS maker.vat_urn_i
     LANGUAGE plpgsql
     AS $$
 BEGIN
+    WITH utc AS (select urn_time_created(urn_id) as utc)
     UPDATE api.urn_snapshot
-    SET created = urn_time_created(urn_id)
+    SET created = (SELECT utc FROM utc)
     FROM maker.urns
              LEFT JOIN maker.ilks ON urns.ilk_id = ilks.id
     WHERE urns.identifier = urn_snapshot.urn_identifier
