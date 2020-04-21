@@ -6622,11 +6622,9 @@ BEGIN
     IF (TG_OP IN ('INSERT', 'UPDATE')) THEN
         PERFORM maker.insert_urn_ink(NEW);
         PERFORM maker.update_urn_inks_until_next_diff(NEW, NEW.ink);
-        PERFORM maker.update_urn_created(NEW.urn_id);
     ELSIF (TG_OP = 'DELETE') THEN
         PERFORM maker.update_urn_inks_until_next_diff(OLD, urn_ink_before_block(OLD.urn_id, OLD.header_id));
         PERFORM maker.delete_obsolete_urn_state(OLD.urn_id, OLD.header_id);
-        PERFORM maker.update_urn_created(OLD.urn_id);
     END IF;
     RETURN NULL;
 END
