@@ -22,6 +22,7 @@ import (
 	log_bump "github.com/makerdao/vdb-mcd-transformers/transformers/events/log_bump/initializer"
 	log_item_update "github.com/makerdao/vdb-mcd-transformers/transformers/events/log_item_update/initializer"
 	log_make "github.com/makerdao/vdb-mcd-transformers/transformers/events/log_make/initializer"
+	log_min_sell "github.com/makerdao/vdb-mcd-transformers/transformers/events/log_min_sell/initializer"
 	log_sorted_offer "github.com/makerdao/vdb-mcd-transformers/transformers/events/log_sorted_offer/initializer"
 	log_take "github.com/makerdao/vdb-mcd-transformers/transformers/events/log_take/initializer"
 	log_trade "github.com/makerdao/vdb-mcd-transformers/transformers/events/log_trade/initializer"
@@ -109,6 +110,7 @@ func (e exporter) Export() ([]event.TransformerInitializer, []storage.Transforme
 			log_bump.EventTransformerInitializer,
 			log_item_update.EventTransformerInitializer,
 			log_make.EventTransformerInitializer,
+			log_min_sell.EventTransformerInitializer,
 			log_sorted_offer.EventTransformerInitializer,
 			log_take.EventTransformerInitializer,
 			log_trade.EventTransformerInitializer,

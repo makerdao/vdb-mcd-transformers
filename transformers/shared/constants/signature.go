@@ -35,6 +35,7 @@ func LogBumpSignature() string            { return getEventTopicZero(logBumpEven
 func LogItemUpdateSignature() string      { return getEventTopicZero(logItemUpdateEvent()) }
 func LogKillSignature() string            { return getEventTopicZero(logKillEvent()) }
 func LogMakeSignature() string            { return getEventTopicZero(logMakeEvent()) }
+func LogMinSellSignature() string         { return getEventTopicZero(logMinSellEvent()) }
 func LogSortedOfferSignature() string     { return getEventTopicZero(logSortedOfferMethod()) }
 func LogTakeSignature() string            { return getEventTopicZero(logTakeEvent()) }
 func LogTradeSignature() string           { return getEventTopicZero(logTradeEvent()) }
