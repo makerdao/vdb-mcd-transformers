@@ -44,7 +44,7 @@ var (
 		ColumnValues: event.ColumnValues{
 			event.HeaderFK: LogMinSellEventLog.HeaderID,
 			event.LogFK:    LogMinSellEventLog.ID,
-			// pay gem address id
+			// Pay Gem address id
 			constants.MinAmountColumn: "2000000000000000000",
 		},
 	}

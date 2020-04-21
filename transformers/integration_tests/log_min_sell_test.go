@@ -23,9 +23,6 @@ var _ = Describe("LogMinSell Transformer", func() {
 		Topic:             constants.LogMinSellSignature(),
 	}
 
-	// OASIS_MATCHING_MARKET_ONE 0x39755357759ce0d7f32dc8dc45414cca409ae24e
-	// OASIS_MATCHING_MARKET_TWO 0x794e6e91555438afc3ccf1c5076a74f42133d08d
-
 	It("fetches and transforms a LogMinSell event for OASIS_MATCHING_MARKET_ONE contract", func() {
 		blockNumber := int64(8944595)
 		config.StartingBlockNumber = blockNumber

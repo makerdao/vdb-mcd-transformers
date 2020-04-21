@@ -7,7 +7,6 @@ import (
 )
 
 type LogMinSellEntity struct {
-	Id              *big.Int
 	PayGem          common.Address
 	MinAmount       *big.Int
 	HeaderID        int64
